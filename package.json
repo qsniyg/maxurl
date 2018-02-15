@@ -1,0 +1,13 @@
+{
+  "name": "maximage",
+  "version": "0.0.1",
+  "main": "bot.js",
+  "dependencies": {
+    "dotenv": "^5.0.0",
+    "image-size": "^0.6.2",
+    "probe-image-size": "^3.2.0",
+    "request": "^2.83.0",
+    "snoostorm": "0.0.5",
+    "snoowrap": "^1.15.2"
+  }
+}
