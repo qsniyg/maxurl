@@ -13,7 +13,7 @@ const Snoowrap = require('snoowrap');
 const Snoostorm = require('snoostorm');
 
 const r = new Snoowrap({
-    userAgent: 'maximage',
+    userAgent: 'pc:maximage:v0.0.1 (by /u/MaxImageBot)',
     clientId: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET,
     username: process.env.REDDIT_USER,
@@ -107,10 +107,11 @@ function dourl(url, post) {
                newdata.height > data.height) ||
               ((newdata.height - data.height) > thresh_px &&
                newdata.width > data.width)) {
-            var comment = "Larger (" + r.toFixed(1) + "x) version of linked image: " + big + "\n\n";
+            var comment = "Larger (" + r.toFixed(1) + "x) version of linked image:\n\n" + big + "\n\n";
             comment += "*****\n\n";
-            comment += "^^[source&nbsp;code]()&nbsp;|&nbsp;[userscript](https://greasyfork.org/en/scripts/36662-image-max-url)";
+            comment += "^^[source&nbsp;code](https://github.com/qsniyg/maxurl)&nbsp;|&nbsp;[userscript](https://greasyfork.org/en/scripts/36662-image-max-url)";
             console.log(comment);
+            post.reply(comment);
           } else {
             console.log("Ratio too small: " + wr + ", " + hr);
           }
