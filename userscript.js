@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.1.29
+// @version      0.1.30
 // @description  Redirects to the maximum possible URL for images
 // @author       qsniyg
 // @include *
@@ -3442,7 +3442,7 @@
     if (is_node) {
         module.exports = bigimage_recursive;
     } else {
-        var newhref = document.location.href;
+        /*var newhref = document.location.href;
         while (true) {
             var newhref1 = fullurl(newhref, bigimage(newhref));
             if (newhref1 !== newhref) {
@@ -3454,7 +3454,8 @@
             if (_nir_debug_) {
                 break;
             }
-        }
+            }*/
+        var newhref = bigimage_recursive(document.location.href);
 
         if (newhref !== document.location.href) {
             if (!_nir_debug_)
