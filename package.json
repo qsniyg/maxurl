@@ -5,6 +5,7 @@
   "dependencies": {
     "dotenv": "^5.0.0",
     "image-size": "^0.6.2",
+    "node-cache": "^4.1.1",
     "probe-image-size": "^3.2.0",
     "request": "^2.83.0",
     "snoostorm": "0.0.5",

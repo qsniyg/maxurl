@@ -4,6 +4,7 @@ var probe = require('probe-image-size');
 var http = require('http');
 var https = require('https');
 var url = require('url');
+const NodeCache = require( "node-cache" );
 
 require('dotenv').config();
 
@@ -131,13 +132,19 @@ function dourl(url, post) {
   );
 }
 
+const links = new NodeCache({ stdTTL: 600, checkperiod: 1000 });
+
 submissionStream.on("submission", function(post) {
   if (post.domain.startsWith("self.")) {
     return;
   }
 
-  /*if (post.domain === "i.imgur.com" || post.domain === "i.redd.it")
-    return;*/
+  if (links.get(post.permalink)) {
+    console.log("Already processed " + post.permalink + ", skipping");
+    return;
+  }
+
+  links.set(post.permalink, true);
 
   var url = post.url;
   dourl(url, post);
