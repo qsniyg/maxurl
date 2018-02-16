@@ -34,6 +34,8 @@
 
         if (b.length === 0)
             return a;
+        if (b.match(/[a-z]*:\/\//))
+            return b;
         if (b.length >= 2 && b.slice(0, 2) === "//")
             return protocol + ":" + b;
         if (b.length >= 1 && b.slice(0, 1) === "/")
@@ -3420,8 +3422,25 @@
         return src;
     }
 
+    var bigimage_recursive = function(url) {
+        var newhref = url;
+        while (true) {
+            var newhref1 = fullurl(newhref, bigimage(newhref));
+            if (newhref1 !== newhref) {
+                newhref = newhref1;
+            } else {
+                break;
+            }
+
+            if (_nir_debug_) {
+                break;
+            }
+        }
+        return newhref;
+    };
+
     if (is_node) {
-        module.exports = bigimage;
+        module.exports = bigimage_recursive;
     } else {
         var newhref = document.location.href;
         while (true) {

@@ -7,7 +7,7 @@ var url = require('url');
 
 require('dotenv').config();
 
-var thresh_px = 300;
+var thresh_px = 200;
 
 const Snoowrap = require('snoowrap');
 const Snoostorm = require('snoostorm');
@@ -103,15 +103,16 @@ function dourl(url, post) {
           var wr = newdata.width / data.width;
           var hr = newdata.height / data.height;
           var r = (wr + hr) / 2;
-          if (((newdata.width - data.width) > thresh_px &&
-               newdata.height > data.height) ||
-              ((newdata.height - data.height) > thresh_px &&
-               newdata.width > data.width)) {
-            var comment = "Larger (" + r.toFixed(1) + "x) version of linked image:\n\n" + big + "\n\n";
+          if (r >= 1.1 && (((newdata.width - data.width) > thresh_px &&
+                            newdata.height > data.height) ||
+                           ((newdata.height - data.height) > thresh_px &&
+                            newdata.width > data.width))) {
+            var comment = "" + r.toFixed(1) + "x larger (" + newdata.width + "x" + newdata.height + ") version of linked image:\n\n" + big + "\n\n";
             comment += "*****\n\n";
-            comment += "^^[source&nbsp;code](https://github.com/qsniyg/maxurl)&nbsp;|&nbsp;[userscript](https://greasyfork.org/en/scripts/36662-image-max-url)";
+            comment += "^[source&nbsp;code](https://github.com/qsniyg/maxurl)&nbsp;|&nbsp;[userscript](https://greasyfork.org/en/scripts/36662-image-max-url)";
             console.log(comment);
-            post.reply(comment);
+            if (post)
+              post.reply(comment);
           } else {
             console.log("Ratio too small: " + wr + ", " + hr);
           }
