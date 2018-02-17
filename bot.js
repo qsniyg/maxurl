@@ -139,8 +139,8 @@ submissionStream.on("submission", function(post) {
     return;
   }
 
-  if (links.get(post.permalink)) {
-    console.log("Already processed " + post.permalink + ", skipping");
+  if (links.get(post.permalink) === true) {
+    //console.log("Already processed " + post.permalink + ", skipping");
     return;
   }
 

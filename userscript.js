@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.1.31
+// @version      0.1.32
 // @description  Redirects to the maximum possible URL for images
 // @author       qsniyg
 // @include *
@@ -568,7 +568,11 @@
             domain === "media.golfdigest.com" ||
             // https://media.architecturaldigest.com/photos/56380571a6f997a353b888a2/master/w_640,c_limit/worlds-best-stained-glass-windows-13-10.jpg
             domain === "media.architecturaldigest.com" ||
-            domain.indexOf("media.allure.com") >= 0) {
+            // https://media.cntraveler.com/photos/59bb6a56e35d8f08044a32cf/16:9/pass/Rakotzbrucke-GettyImages-538162756.jpg
+            // http://media.cntraveler.com/photos/59305e5611e6e853c33e7587/master/w_1440,c_limit/car-free-halibut-cove-alaska-GettyImages-496660709.jpg
+            domain === "media.cntraveler.com" ||
+            domain.indexOf("media.allure.com") >= 0 ||
+            src.match(/:\/\/[^/]*\/photos\/[0-9a-f]{24}\/[^/]*\/[^/]*\/[^/]*$/)) {
             return src.replace(/\/[^/]*\/[^/]*\/([^/]*)$/, "/original/original/$1");
         }
 
@@ -581,6 +585,7 @@
         // http://thefader-res.cloudinary.com/private_images/w_1440,c_limit,f_auto,q_auto:best/Badgyal5RGB_wbgyon/bad-gyal-nicest-cocky-interview-dancehall-catalan.jpg
         //   http://thefader-res.cloudinary.com/private_images/c_limit/Badgyal5RGB_wbgyon/bad-gyal-nicest-cocky-interview-dancehall-catalan.jpg
         // https://res.cloudinary.com/dk-find-out/image/upload/q_80,w_1920,f_auto/MA_00079563_yvu84f.jpg
+        // https://res.cloudinary.com/jerrick/image/upload/p7jbqvi0aoxm4mdn3x6x
         if (domain.indexOf("res.cloudinary.com") >= 0) {
             return src
                 .replace(/(\/image\/upload\/)(?:(?:.*?\/?(v1\/))|(?:[^/]*\/))/, "$1$2")
@@ -595,6 +600,7 @@
             //   https://images.spot.im/image/upload/production/watfc8itl4hcgavprfku
             domain === "images.spot.im" ||
             // https://fashionista.com/.image/ar_16:9%2Cc_fill%2Ccs_srgb%2Cg_faces:center%2Cq_80%2Cw_620/MTQyNjI1MjYyNTc4NzA1NzM0/emma-watson-promojpg.jpg
+            // https://fashionista.com/.image/t_share/MTQ2Njg0NzA2NzUzMDk1NTQ3/gettyimages-672499332.jpg
             domain === "fashionista.com" ||
             // http://images.pigeonsandplanes.com/images/c_crop,h_2268,w_3024,x_0,y_330/c_limit,f_auto,fl_lossy,q_auto,w_1030/obk4degjo35h2jzuwyd7/opal-press-2017
             domain === "images.pigeonsandplanes.com" ||
@@ -611,7 +617,7 @@
             domain === "images.moviepilot.com") {
             return src
                 .replace(/%2C/g, ",")
-                .replace(/\/[a-z]+_[^/_,]+(?:,[^/]*)\//, "/")
+                .replace(/\/[a-z]+_[^/_,]+(?:,[^/]*)?\//, "/")
                 .replace(/\/v[0-9]+\//, "/");
         }
 
@@ -820,6 +826,12 @@
             // http://img.huffingtonpost.com/asset/5936853f2200003d00c6c785.png
             // http://img.huffingtonpost.com/asset/5a6b56b02d00004900942e4e.jpeg
             return src.replace(/\/asset\/[^/]*\/([^/.]*\.[^/.]*)$/, "/asset/$1").replace(/\?[^/]*$/, "");
+        }
+
+        if (domain === "images.huffingtonpost.com") {
+            // https://images.huffingtonpost.com/2015-12-15-1450212883-2879887-356670f8740946d741c648b23_villarufologardensravellocampaniaitalycrgetty-thumb.jpg
+            //   https://images.huffingtonpost.com/2015-12-15-1450212883-2879887-356670f8740946d741c648b23_villarufologardensravellocampaniaitalycrgetty.jpg
+            return src.replace(/-thumb(\.[^/.]*)$/, "$1");
         }
 
         if (domain === "i.huffpost.com" ||
@@ -1093,6 +1105,11 @@
             // http://trendy.nikkeibp.co.jp/atcl/column/17/011800066/020900003/01.jpg?__scale=w:400,h:267&_sh=08d0b10ff0
             // http://wol.nikkeibp.co.jp/atcl/column/15/011500044/021300142/icon_m.jpg?__scale=w:214,h:147&_sh=0820dc0240
             domain.indexOf(".nikkeibp.co.jp") >= 0 ||
+            // http://media.beliefnet.com/~/media/photos/inspiration/galleries/20-most-beautiful-places-in-the-world/tunnel_of_love_ukraine.jpg?as=1&w=400
+            domain === "media.beliefnet.com" ||
+            // http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
+            // https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
+            src.match(/\/demandware\.static\//)||
             // https://cdn1.kongcdn.com/assets/avatars/defaults/robotboy.png?i10c=img.resize(width:40)
             src.match(/\?i10c=[^/]*$/) ||
             src.indexOf("/wp-content/uploads/") >= 0 ||
@@ -1114,6 +1131,11 @@
             domain.indexOf("blogs-images.forbes.com") >= 0 ||
             domain.indexOf("static.gofugyourself.com") >= 0 ||
             domain.indexOf("static.thesuperficial.com") >= 0 ||
+            // doesn't work:
+            // http://static.celebuzz.com/uploads/2011/06/10/Emma-Roberts-Outside-Today-Show-in-NYC-e1435832610488-385x560.jpg
+            // http://static.celebuzz.com/uploads/2011/06/10/Emma-Roberts-Outside-Today-Show-in-NYC.jpg
+            // http://static.celebuzz.com/uploads/2011/06/10/Emma-Roberts-Outside-Today-Show-in-NYC-e1435832660684-310x560.jpg
+            // http://static.celebuzz.com/uploads/2011/06/10/Emma-Roberts-Outside-Today-Show-in-NYC.JPG
             domain.indexOf("static.celebuzz.com") >= 0 ||
             domain.indexOf("img.vogue.co.kr") >= 0 ||
             domain.indexOf("static.spin.com") >= 0 ||
@@ -1154,6 +1176,10 @@
             domain === "www.rap-up.com" ||
             // http://img.snacker.hankyung.com/hk-content/2017/08/terracotta-army-1865006__340-400x300.jpg
             domain.match(/img\..*?\.hankyung\.com/) ||
+            // https://www.traveltipy.com/content/uploads/2015/10/Gorlitz-Germany-1024x692.jpg
+            domain === "www.traveltipy.com" ||
+            // http://coveteur.com/content/uploads/2017/03/Emma-Roberts-Hair-3-940x940.jpg
+            domain === "coveteur.com" ||
             src.indexOf("/wp-content/uploads/") >= 0 ||
             src.indexOf("/wp/uploads/") >= 0) {
             // http://arissa-x.com/miss-x-channel/wp-content/uploads/2017/06/IMG_0005.jpg
@@ -1676,7 +1702,11 @@
             return src.replace(/\/image_size\/[0-9]*x[0-9]*\//, "/image_size/0x0/");
         }
 
-        if (domain.indexOf(".media.tumblr.com") > 0) {
+        if (domain.indexOf(".media.tumblr.com") > 0 &&
+            !src.match(/_[0-9]*\.gif$/)) {
+            // some gifs don't play properly
+            // handle this?
+            // https://78.media.tumblr.com/25e643db76a1e626ff4e79faa2f7bb3d/tumblr_inline_mvspvogcB51sq8rci.jpg
             return src.replace(/_[0-9]*(\.[^/.]*)$/, "_1280$1");
         }
 
@@ -2293,6 +2323,11 @@
             //   https://cdn.cnn.com/cnnnext/dam/assets/180209112927-10-winter-olympics-opening-ceremony-0209.jpg
             // https://cdn.cnn.com/cnnnext/dam/assets/180208122950-palestinian-deportee-6-large-alt-11.jpg
             //   https://cdn.cnn.com/cnnnext/dam/assets/180208122950-palestinian-deportee-6.jpg
+            // doesn't work:
+            // http://cdn.cnn.com/cnnnext/dam/assets/140630134917-12-canada-most-beautiful-places-super-169.jpg
+            // http://cdn.cnn.com/cnnnext/dam/assets/140630134917-12-canada-most-beautiful-places-large-169.jpg
+            // http://cdn.cnn.com/cnnnext/dam/assets/140630134917-12-canada-most-beautiful-places-exlarge-169.jpg
+            // http://cdn.cnn.com/cnnnext/dam/assets/140630134917-12-canada-most-beautiful-places-full-169.jpg
             //return src.replace(/-(?:small|medium|large|exlarge|super|full|overlay)-[0-9]*(\.[^/.]*)$/, "$1");
             return src.replace(/-(?:small|medium|large|exlarge|super|full|overlay|alt|tease)(?:-(?:small|medium|large|exlarge|super|full|overlay|alt|tease))?(?:-[0-9]*)?(\.[^/.]*)$/, "$1");
             //return src.replace(/-[a-z]*-(?:169|tease)(\.[^/.]*)$/, "$1");
@@ -3030,6 +3065,8 @@
 
         // fixme: find other and merge with it
         if (domain === "media.mnn.com" ||
+            // https://alljapantours.com/places-to-visit-in-japan/most-beautiful-places-in-japan/img/issue_04most_photo01.jpg.pagespeed.ce.woxsyqYnu2.jpg
+            domain === "alljapantours.com" ||
             domain === "d26oc3sg82pgk3.cloudfront.net" ||
             domain === "d53l9d6fqlxs2.cloudfront.net") {
             // https://media.mnn.com/assets/images/2017/03/cyclops-2-titanic-wreck.jpg.653x0_q80_crop-smart.jpg
@@ -3392,6 +3429,90 @@
             return src.replace(/\/([^/]*)$/, "/l_$1");
         }
 
+        if (domain.match(/cdn[0-9]*\.bigcommerce\.com/)) {
+            // http://cdn7.bigcommerce.com/s-aeyni5y9/images/stencil/500x659/products/517/520/bear_papa_7328_2__12787.1400287249.jpg?c=2
+            //   http://cdn7.bigcommerce.com/s-aeyni5y9/images/stencil/original/products/517/520/bear_papa_7328_2__12787.1400287249.jpg?c=2
+            // https://cdn7.bigcommerce.com/s-c14n6tful3/images/stencil/735x374/products/136/460/checkbox-categories-filter-for-product-search-preview-734x374__10327.1518675514.jpg?c=2&imbypass=on
+            //   https://cdn7.bigcommerce.com/s-c14n6tful3/images/stencil/original/products/136/460/checkbox-categories-filter-for-product-search-preview-734x374__10327.1518675514.jpg?c=2&imbypass=on
+            return src.replace(/\/images\/stencil\/[0-9]+x[0-9]+\//, "/images/stencil/original/");
+        }
+
+        if (domain.indexOf(".behance.net") >= 0 &&
+            src.indexOf("/project_modules/") >= 0) {
+            // https://mir-s3-cdn-cf.behance.net/project_modules/max_1200/9e81bc25691931.5634a6d5ee11a.png
+            // https://mir-s3-cdn-cf.behance.net/project_modules/1400/9e81bc25691931.5634a6d5ee11a.png
+            // https://mir-s3-cdn-cf.behance.net/project_modules/disp/9e81bc25691931.5634a6d5ee11a.png
+            // https://mir-s3-cdn-cf.behance.net/project_modules/hd/9e81bc25691931.5634a6d5ee11a.png
+            // https://mir-s3-cdn-cf.behance.net/project_modules/fs/9e81bc25691931.5634a6d5ee11a.png
+            //
+            // https://mir-s3-cdn-cf.behance.net/project_modules/1400/828dc625691931.5634a721e19dd.jpg
+            // https://mir-cdn.behance.net/v1/rendition/project_modules/1400/828dc625691931.5634a721e19dd.jpg
+            // https://mir-s3-cdn-cf.behance.net/project_modules/fs/828dc625691931.5634a721e19dd.jpg
+            //
+            // https://mir-s3-cdn-cf.behance.net/project_modules/hd/ad62c919260569.562e23ee8f6be.jpg
+            // https://mir-s3-cdn-cf.behance.net/project_modules/fs/ad62c919260569.562e23ee8f6be.jpg
+            return src.replace(/\/project_modules\/[^/]*\//, "/project_modules/fs/");
+        }
+
+        if (domain === "www.worldatlas.com") {
+            // https://www.worldatlas.com/r/w728-h425-c728x425/upload/22/a1/0a/shutterstock-330445028.jpg
+            //   https://www.worldatlas.com/upload/22/a1/0a/shutterstock-330445028.jpg
+            return src.replace(/(:\/\/[^/]*\/)r\/[^/]*\/(upload\/)/, "$1$2");
+        }
+
+        if (domain.match(/assets[0-9]*\.thrillist\.com/)) {
+            // https://assets3.thrillist.com/v1/image/2642818/size/tmg-article_default_mobile.jpg
+            // https://assets3.thrillist.com/v1/image/2642818/size/tl-horizontal_main.jpg
+            // https://assets3.thrillist.com/v1/image/2729043/size/tl-right_rail_short.jpg
+            // https://assets3.thrillist.com/v1/image/2728632/size/gn-gift_guide_variable_c.jpg
+            // https://assets3.thrillist.com/v1/image/2442399/size/tmg-article_tall.jpg
+            //   https://assets3.thrillist.com/v1/image/2442399
+            // http://assets3.thrillist.com/v1/image/1210040
+            return src.replace(/\/size\/[^/]*$/, "");
+        }
+
+        if (domain === "vacationidea.com" &&
+            src.indexOf("/pix/") >= 0) {
+            // http://vacationidea.com/pix/img25Hy8R/articles/t-b4_beautiful_places_oia,_santorin_27304_mobi.jpg
+            //   http://vacationidea.com/pix/img25Hy8R/articles/t-b4_beautiful_places_oia,_santorin_27304.jpg
+            return src.replace(/_mobi(\.[^/.]*)$/, "$1");
+        }
+
+        if (domain === "qph.fs.quoracdn.net") {
+            // https://qph.fs.quoracdn.net/main-qimg-0f9434ad2ebdb0024bab1b334ce791a9-c
+            return src.replace(/-[a-z]$/, "");
+        }
+
+        if (domain.indexOf(".fan.pw") >= 0 &&
+            src.indexOf("/cpg/albums/") >= 0) {
+            // http://actresses.fan.pw/cpg/albums/userpics/10001/thumb_001~64.jpg
+            // http://actresses.fan.pw/cpg/albums/userpics/10001/normal_002~51.jpg
+            //   http://actresses.fan.pw/cpg/albums/userpics/10001/002~51.jpg
+            return src.replace(/\/[a-z]*_([^/]*)$/, "/$1");
+        }
+
+        if (domain.match(/c[0-9]*\.haibao\.cn/)) {
+            // http://c3.haibao.cn/img/600_0_100_0/1258349756.6184/bigfiles/200946/1258349756.6184.jpg
+            return src.replace(/\/img\/[0-9]+_[0-9]+_[0-9]+_[0-9]+\//, "/img/0_0_0_0/");
+        }
+
+        if (domain === "wallpaperset.com") {
+            // https://wallpaperset.com/w/small/6/7/2/314686.jpg
+            return src.replace(/(:\/\/[^/]*\/w\/)[^/]*\//, "$1full/");
+        }
+
+        // disabled due to redirects
+        if (domain.indexOf(".wallpapermania.eu") >= 0 && false) {
+            // http://www.wallpapermania.eu/download/2012-04/1037/emma-roberts-11-sexy-hd-wallpaper_1366x768.jpg
+            //   http://www.wallpapermania.eu/images/data/2012-04/1037_emma-roberts-11-sexy-hd-wallpaper.jpg
+            // http://static.wallpapermania.eu/images/thumbs/2012-04/1030_emma-roberts-4-sexy-hd-wallpaper.jpg
+            //   http://www.wallpapermania.eu/images/data/2012-04/1030_emma-roberts-4-sexy-hd-wallpaper.jpg
+            return src
+                .replace("://static.wallpapermania.eu/", "://www.wallpapermania.eu/")
+                .replace("/images/thumbs/", "/images/data/")
+                .replace(/\/download\/([^/]*)\/([0-9]*)\/([^/.]*)_[0-9]+x[0-9]+(\.[^/.]*)$/, "/images/data/$1/$2_$3$4");
+        }
+
 
 
 
@@ -3492,6 +3613,25 @@
             // https://www.beautybybeccy.com.au/images/phocagallery/photoshoot/Promo%20Model%20shoot/thumbs/phoca_thumb_m_DSC09589-edit.jpg
             //   https://www.beautybybeccy.com.au/images/phocagallery/photoshoot/Promo%20Model%20shoot/DSC09589-edit.jpg
             return src.replace(/\/thumbs\/phoca_thumb_[^/._]*_/, "/");
+        }
+
+        if (src.match(/\/sfc\/servlet\.shepherd\/version\/renditionDownload/) && false) {
+            // wip, need way to disable downloading?
+            // sources:
+            // https://salesforce.stackexchange.com/questions/171149/lightning-component-using-renditiondownload-to-view-files-img-doc-xlxs-etc
+            // https://forum.bigcommerce.com/s/question/0D51B00003zftI0SAI/hide-the-bigcommerce-cdn-image-path-on-image-mouseover-product-detail-page
+            // https://developer.salesforce.com/docs/atlas.en-us.chatterapi.meta/chatterapi/connect_resources_files_rendition.htm
+            // https://developer.salesforce.com/docs/atlas.en-us.chatterapi.meta/chatterapi/connect_resources_files_preview_format.htm
+            //
+            // https://forum.bigcommerce.com/sfc/servlet.shepherd/version/renditionDownload?rendition=THUMB720BY480&versionId=0681B0000064R3r&operationContext=CHATTER&contentId=05T1B00000GDv1i&page=0
+            //   https://forum.bigcommerce.com/sfc/servlet.shepherd/version/renditionDownload?rendition=ORIGINAL_Png&versionId=0681B0000064R3r&operationContext=CHATTER&contentId=05T1B00000GDv1i
+            //   https://forum.bigcommerce.com/sfc/servlet.shepherd/version/download/0681B0000064R3r (versionId, works, but requires download)
+            // https://support.bigcommerce.com/servlet/rtaImage?eid=ka61B000000ClUi&feoid=00N1300000BR3CT&refid=0EM130000018Xoh
+            //
+            // doesn't work:
+            // https://forum.bigcommerce.com/sfc/servlet.shepherd/version/renditionDownload?rendition=THUMB720BY480&versionId=06813000005iizB&operationContext=CHATTER&contentId=05T1300000FCL6J
+            //   https://forum.bigcommerce.com/sfc/servlet.shepherd/version/renditionDownload?rendition=ORIGINAL_Jpg&versionId=06813000005iizB&operationContext=CHATTER&contentId=05T1300000FCL6J -- works
+            //return src.replace(/(\/renditionDownload.*?[?&]rendition=)[^&]*/, "$1ORIGINAL_Png");
         }
 
 
