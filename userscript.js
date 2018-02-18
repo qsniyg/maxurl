@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.1.32
-// @description  Redirects to the maximum possible URL for images
+// @version      0.1.33
+// @description  Redirects to the maximum possible size for images
 // @author       qsniyg
 // @include *
 // @grant        none
@@ -576,6 +576,20 @@
             return src.replace(/\/[^/]*\/[^/]*\/([^/]*)$/, "/original/original/$1");
         }
 
+        if (domain.indexOf(".cloudinary.com") >= 0) {
+            // https://res.cloudinary.com/emazecom/image/fetch/c_limit,a_ignore,w_320,h_200/https%3A%2F%2Fimg-aws.ehowcdn.com%2F877x500p%2Fs3.amazonaws.com%2Fcme_public_images%2Fwww_ehow_com%2Fi.ehow.com%2Fimages%2Fa04%2Fbd%2Fic%2Fchemical-energy-work-3.1-800x800.jpg
+            if (src.search(/.*\.cloudinary\.com\/[^/]*\/image\/fetch\//) >= 0) {
+                newsrc = src.replace(/.*\.cloudinary\.com\/[^/]*\/image\/fetch\/(?:.*?\/)?([^/]*(?::|%3A).*)/, "$1");
+                if (newsrc.match(/^[^/:]*%3A/))
+                    newsrc = decodeURIComponent(newsrc);
+                return newsrc;
+            }
+
+            newsrc = src.replace(/(\/iu\/[^/]*)\/.*?(\/v[0-9]*)/, "$1$2");
+            if (newsrc !== src)
+                return newsrc;
+        }
+
         // https://res.cloudinary.com/beamly/image/upload/s--Ayyiome3--/c_fill,g_face,q_70,w_479/f_jpg/v1/news/sites/6/2014/11/Nick-Hewer-The-Apprentice.jpg
         //   https://res.cloudinary.com/beamly/image/upload/v1/news/sites/6/2014/11/Nick-Hewer-The-Apprentice.jpg
         // https://res.cloudinary.com/beamly/image/upload/s--pMOefc2U--/c_fill,g_face,q_70,w_1160/f_jpg/v1/news/sites/6/2014/05/LuisaSwimsuit621.jpg
@@ -645,14 +659,6 @@
             // https://www.guitarworld.com/.image/ar_8:10%2Cc_fill%2Ccs_srgb%2Cg_faces:center%2Cq_80%2Cw_620/MTUwNjEyNDY4MDM2MzQ3MjU2/keith_richards_2jpg.jpg
             //   https://www.guitarworld.com/.image//MTUwNjEyNDY4MDM2MzQ3MjU2/keith_richards_2jpg.jpg
             return src.replace(/(\/.image)\/[^/]*(\/[^/]*\/[^/]*)$/, "$1$2");
-        }
-
-        if (domain.indexOf(".cloudinary.com") >= 0) {
-            if (src.search(/.*\.cloudinary\.com\/[^/]*\/image\/fetch\//) >= 0) {
-                return src.replace(/.*\.cloudinary\.com\/[^/]*\/image\/fetch\/(.*?\/)?([^/]*:.*)/, "$2");
-            }
-
-            return src.replace(/(\/iu\/[^/]*)\/.*?(\/v[0-9]*)/, "$1$2");
         }
 
         if (domain.indexOf("www.vogue.de") >= 0 &&
@@ -954,8 +960,9 @@
             return src.replace(/\/images\/[0-9]*\//, "/images/0/").replace(/\?.*$/, "");
         }
 
-        if (src.search(/\/i[0-9]\.wp\.com\//) >= 0) {
-            return src.replace(/.*\/i[0-9]\.wp\.com\//, "http://");
+        if (domain.match(/i[0-9]\.wp\.com/)) {
+            // https://i1.wp.com/img-aws.ehowcdn.com/default/cme/cme_public_images/www_ehow_com/photos.demandstudios.com/getty/article/240/3/178773543_XS.jpg?resize=400%2C267
+            return src.replace(/.*\/i[0-9]\.wp\.com\/(.*?)\?.*$/, "http://$1");
         }
 
         if (domain.indexOf("imagesmtv-a.akamaihd.net") >= 0) {
@@ -1109,7 +1116,7 @@
             domain === "media.beliefnet.com" ||
             // http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
             // https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
-            src.match(/\/demandware\.static\//)||
+            src.match(/\/demandware\.static\//) ||
             // https://cdn1.kongcdn.com/assets/avatars/defaults/robotboy.png?i10c=img.resize(width:40)
             src.match(/\?i10c=[^/]*$/) ||
             src.indexOf("/wp-content/uploads/") >= 0 ||
@@ -1180,6 +1187,10 @@
             domain === "www.traveltipy.com" ||
             // http://coveteur.com/content/uploads/2017/03/Emma-Roberts-Hair-3-940x940.jpg
             domain === "coveteur.com" ||
+            // http://food-ehow-com.blog.ehow.com/files/2014/12/edits-2282-1024x682.jpg
+            domain.indexOf(".blog.ehow.com") >= 0 ||
+            // https://cdn2.theheartysoul.com/uploads/2016/06/image1-798x418.jpg
+            domain.match(/cdn[0-9]*\.theheartysoul\.com/) ||
             src.indexOf("/wp-content/uploads/") >= 0 ||
             src.indexOf("/wp/uploads/") >= 0) {
             // http://arissa-x.com/miss-x-channel/wp-content/uploads/2017/06/IMG_0005.jpg
@@ -3513,6 +3524,103 @@
                 .replace(/\/download\/([^/]*)\/([0-9]*)\/([^/.]*)_[0-9]+x[0-9]+(\.[^/.]*)$/, "/images/data/$1/$2_$3$4");
         }
 
+        if (domain === "img-aws.ehowcdn.com" ||
+            domain === "img.aws.ehowcdn.com" ||
+            domain === "img.aws.livestrongcdn.com" ||
+            domain === "img-aws.livestrongcdn.com") {
+            // wip
+            // https://img-aws.ehowcdn.com/750x428p/photos.demandstudios.com/getty/article/165/202/96162194.jpg
+            //   http://photos.demandstudios.com/getty/article/165/202/96162194.jpg
+            //
+            // https://img-aws.ehowcdn.com/1440x520/cme/uploadedimages.demandmedia/chocmouse.jpg
+            //
+            // https://img-aws.ehowcdn.com/640/cme/photography.prod.demandstudios.com/8f9cba5d-f28d-47e7-bcc7-985cc310ce6a.jpg
+            // https://img-aws.ehowcdn.com/1440/cme/photography.prod.demandstudios.com/8f9cba5d-f28d-47e7-bcc7-985cc310ce6a.jpg
+            // http://img.aws.ehowcdn.com/intl-300m200/ds-photo/getty/article/129/156/86543427.jpg
+            // http://img.aws.ehowcdn.com/intl-1200x630/ehow/images/a04/8n/pn/sell-wholesale-pandora-jewelry-800x800.jpg
+            // http://img-aws.ehowcdn.com/default/ds-photo/getty/article/190/38/153473402_XS.jpg
+            // https://img-aws.ehowcdn.com/default/getty/xc/87706466.jpg?v=1&c=EWSAsset&k=2&d=910C62E22B9F47AA92D0F6B5F9282134E184698B84D1D7E2E240CBB021893A9E
+            //
+            // http://img.aws.livestrongcdn.com/ls-article-image-400/cme/cme_public_images/www_livestrong_com/photos.demandstudios.com/getty/article/106/30/113475809_XS.jpg
+            /*newsrc = src.replace(/.*?:\/\/[^/]*\/[0-9]+x[0-9]+p\//, "http://")
+            if (newsrc !== src) {
+                return newsrc;
+            }*/
+            newsrc = src
+                .replace(/(:\/\/[^/]*\/)[^/]*\//, "$1default/");
+            // breaks some urls:
+            // https://img-aws.ehowcdn.com/150X100/getty/xc/87613263.jpg?v=1&c=EWSAsset&k=2&d=860EC25688CC8B2E9617B166F6C00C467D8EB72EFB52D4B89BE18AFE639C03A0
+            //   https://img-aws.ehowcdn.com/default/getty/xc/87613263.jpg?v=1&c=EWSAsset&k=2&d=860EC25688CC8B2E9617B166F6C00C467D8EB72EFB52D4B89BE18AFE639C03A0
+            //.replace(/\?.*$/, "");
+            if (newsrc !== src) {
+                return newsrc;
+            }
+
+            // http://img-aws.ehowcdn.com/300x200/photos.demandstudios.com/getty/article/88/150/87682980.jpg
+            // http://img.aws.livestrongcdn.com/default/cme/cme_public_images/www_livestrong_com/photos.demandstudios.com/getty/article/92/185/472711312_XS.jpg
+            newsrc = src.replace(/.*?:\/\/[^/]*\/.*?\/(photos\.demandstudios\.com\/)/, "http://$1");
+            if (newsrc !== src) {
+                return newsrc;
+            }
+
+            // https://img-aws.ehowcdn.com/640/ehow-food-blog-us/files/2014/12/edits-2282-1024x682.jpg
+            // http://food-ehow-com.blog.ehow.com/files/2014/12/edits-2282-1024x682.jpg
+            //   http://food-ehow-com.blog.ehow.com/files/2014/12/edits-2282.jpg
+            newsrc = src.replace(/.*?:\/\/[^/]*\/[^/]*\/ehow-([^-/.]*)-blog-([^/.]*)\//, "http://$1-ehow-com.blog.ehow.com/");
+            if (newsrc !== src) {
+                return newsrc;
+            }
+
+            // http://img-aws.ehowcdn.com/615x200/cpi-studiod-com/www_ehow_com/i.ehow.com/images/a07/ai/07/prevent-soggy-graham-cracker-crust-800x800.jpg
+            //   http://i.ehow.com/images/a07/ai/07/prevent-soggy-graham-cracker-crust-800x800.jpg
+            // https://img-aws.ehowcdn.com/default/cme/cme_public_images/www_ehow_com/i.ehow.com/images/a04/pc/d6/season-pizza-stone-800x800.jpg
+            // http://img-aws.ehowcdn.com/default/cme/cme_public_images/www_ehow_com/cdn-write.demandstudios.com/upload/image/18/2F/99D61A9C-FD10-4110-9241-BAA39E072F18/99D61A9C-FD10-4110-9241-BAA39E072F18.jpg
+            //   http://cdn-write.demandstudios.com/upload/image/18/2F/99D61A9C-FD10-4110-9241-BAA39E072F18/99D61A9C-FD10-4110-9241-BAA39E072F18.jpg
+            // doesn't work:
+            // https://img-aws.ehowcdn.com/default/s3.amazonaws.com/cme_public_images/www_demandstudios_com/sitelife.studiod.com/ver1.0/Content/images/store/5/12/45fe6090-8ca0-4f71-9cb1-14efedc73b2e.Small.jpg
+            newsrc = src.replace(/.*?:\/\/[^/]*\/.*?\/www_ehow_com\/([^/.]*\.[^/]*)\//, "http://$1/");
+            if (newsrc !== src) {
+                return newsrc;
+            }
+
+            // https://img-aws.ehowcdn.com/default/s3.amazonaws.com/cme_public_images/www_demandstudios_com/sitelife.studiod.com/ver1.0/Content/images/store/5/12/45fe6090-8ca0-4f71-9cb1-14efedc73b2e.Small.jpg
+            newsrc = src.replace(/.*?:\/\/[^/]*\/[^/]*\/s3\.amazonaws\.com\//, "https://s3.amazonaws.com/");
+            if (newsrc !== src) {
+                return newsrc;
+            }
+        }
+
+        if (domain === "s3.amazonaws.com" &&
+            src.indexOf("s3.amazonaws.com/cme_public_images/") >= 0) {
+            // http://s3.amazonaws.com/cme_public_images/www_livestrong_com/photos.demandstudios.com/getty/article/142/9/78291574_XS.jpg
+            newsrc = src.replace(/.*?:\/\/[^/]*\/.*?\/(photos\.demandstudios\.com\/)/, "http://$1");
+            if (newsrc !== src) {
+                return newsrc;
+            }
+        }
+
+        if (domain === "imageproxy.themaven.net") {
+            // https://imageproxy.themaven.net/http%3A%2F%2Fimg.aws.livestrongcdn.com%2Fls-1200x630%2Fcme%2Fcme_public_images%2Fwww_livestrong_com%2Fphotos.demandstudios.com%2Fgetty%2Farticle%2F178%2F99%2F79711775_XS.jpg
+            return decodeURIComponent(src.replace(/^.*?:\/\/[^/]*\//, ""));
+        }
+
+        if (domain.match(/photos[0-9]*\.demandstudios\.com/) &&
+            src.indexOf("/dm-resize/") >= 0) {
+            // http://photos2.demandstudios.com/dm-resize/s3.amazonaws.com%2Fcme_public_images%2Fwww_livestrong_com%2Fphotos.demandstudios.com%2Fgetty%2Farticle%2F142%2F9%2F78291574_XS.jpg?w=267&h=10000&keep_ratio=1
+            console.log(src);
+            return decodeURIComponent(src.replace(/.*?\/dm-resize\/([^/?]*).*/, "http://$1"))
+        }
+
+        if (domain.match(/photos[0-9]*\.demandstudios\.com/)) {
+            // http://photos.demandstudios.com/getty/article/92/121/114336181_XS.jpg
+            //   http://photos.demandstudios.com/getty/article/92/121/114336181.jpg
+            // http://photos.demandstudios.com/getty/article/94/77/145190904_XS.jpg
+            // http://photos.demandstudios.com/getty/article/225/172/476257962_XS.jpg
+            // doesn't work:
+            // photos.demandstudios.com/74/208/fotolia_608243_XS.jpg
+            return src.replace(/(\/[0-9]+)_XS(\.[^/.]*)$/, "$1$2");
+        }
+
 
 
 
@@ -3664,7 +3772,7 @@
 
     var bigimage_recursive = function(url) {
         var newhref = url;
-        while (true) {
+        for (var i = 0; i < 1000; i++) {
             var newhref1 = fullurl(newhref, bigimage(newhref));
             if (newhref1 !== newhref) {
                 newhref = newhref1;
