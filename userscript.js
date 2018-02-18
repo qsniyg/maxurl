@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.1.33
+// @version      0.1.34
 // @description  Redirects to the maximum possible size for images
 // @author       qsniyg
 // @include *
@@ -626,6 +626,8 @@
             domain === "www.maxim.com" ||
             // https://img.thedailybeast.com/image/upload/c_crop,d_placeholder_euli9k,h_1439,w_2560,x_0,y_0/dpr_2.0/c_limit,w_740/fl_lossy,q_auto/v1492195023/articles/2014/10/19/the-world-s-most-beautiful-boat-yours-for-half-a-billion-dollars/141018-teeman-star-yacht-tease_tlw0nl
             domain === "img.thedailybeast.com" ||
+            // https://alibaba.kumpar.com/kumpar/image/upload/h_153,w_273,c_fill,ar_16:9,g_face,f_jpg,q_auto,fl_progressive,fl_lossy/hzwutxv6kqhrj3grgbtf.jpg
+            domain === "alibaba.kumpar.com" ||
             // https://images.moviepilot.com/images/c_limit,q_auto:good,w_600/uom2udz4ogmkncouu83q/beauty-and-the-beast-credit-disney.jpg
             // https://images.moviepilot.com/image/upload/c_fill,h_64,q_auto,w_64/lpgwdrrgc3m8duvg7zt2.jpg
             domain === "images.moviepilot.com") {
@@ -651,13 +653,17 @@
 
         if ((domain.indexOf("biography.com") >= 0 ||
              domain === "www.guitarworld.com" ||
-             domain === "www.guitaraficionado.com") &&
-            src.indexOf("/.image/") >= 0) {
+             domain === "www.guitaraficionado.com" ||
+             domain === "www.psneurope.com") &&
+            src.indexOf("/.image/") >= 0 ||
+            src.match(/:\/\/[^/]*\/\.image\/[^/]*_[^/]*\/[A-Za-z-0-9]{24}\/[^/]*$/)) {
             // https://www.biography.com/.image/c_limit%2Ccs_srgb%2Cq_80%2Cw_960/MTI2NDQwNDA2NTg5MTUwNDgy/ariana-grande-shutterstock_213445195-600x487jpg.webp
             // https://www.guitarworld.com/.image/t_share/MTUxNDQ0NTk1MTMyMDgxNDA3/keithrichardsgettyimages-71684054.jpg
             //   https://www.guitarworld.com/.image//MTUxNDQ0NTk1MTMyMDgxNDA3/keithrichardsgettyimages-71684054.jpg
             // https://www.guitarworld.com/.image/ar_8:10%2Cc_fill%2Ccs_srgb%2Cg_faces:center%2Cq_80%2Cw_620/MTUwNjEyNDY4MDM2MzQ3MjU2/keith_richards_2jpg.jpg
             //   https://www.guitarworld.com/.image//MTUwNjEyNDY4MDM2MzQ3MjU2/keith_richards_2jpg.jpg
+            // https://www.psneurope.com/.image/c_limit%2Ccs_srgb%2Cq_80%2Cw_482/MTUwNjU0MjczNjQ2NjM0NjU3/vintage-studios-web.webp
+            //   https://www.psneurope.com/.image/MTUwNjU0MjczNjQ2NjM0NjU3/vintage-studios-web.webp
             return src.replace(/(\/.image)\/[^/]*(\/[^/]*\/[^/]*)$/, "$1$2");
         }
 
@@ -891,7 +897,13 @@
         }
 
         if (domain.match(/^a[0-9]*\.foxnews\.com/)) {
-            return src.replace(/.*\/a[0-9]*\.foxnews\.com\/(.*)\/[0-9]+\/[0-9]+\/([^/]*)$/, "http://$1/$2");
+            // http://a57.foxnews.com/images.foxnews.com/content/fox-news/world/2017/11/15/firefighters-in-thailands-capital-on-front-line-citys-fight-against-snakes/_jcr_content/par/featured_image/media-0.img.jpg/931/524/1510749948281.jpg?ve=1&tl=1
+            // down for now?
+            console.log(src.replace(/.*\/a[0-9]*\.foxnews\.com\/(.*).*/, "$1"));
+            if (src.replace(/.*\/a[0-9]*\.foxnews\.com\/([^/]*).*/, "$1") !== "images.foxnews.com") {
+                return src.replace(/.*\/a[0-9]*\.foxnews\.com\/(.*)\/[0-9]+\/[0-9]+\/([^/]*)$/, "http://$1/$2");
+            }
+            return src.replace(/(\/a[0-9]*\.foxnews\.com\/.*)\/[0-9]+\/[0-9]+\/([^/?]*)(?:\?.*)?$/, "$1/0/0/$2");
         }
 
         if (domain.indexOf("cdn.cliqueinc.com") >= 0) {
@@ -925,7 +937,12 @@
         }
 
         if (src.indexOf("pbs.twimg.com/media/") >= 0) {
-            return src.replace(/(:[^/]*)?$/, ":orig");
+            // https://pbs.twimg.com/media/DWREhilXkAAcafr?format=jpg&name=small
+            //   https://pbs.twimg.com/media/DWREhilXkAAcafr.jpg:orig
+            return src
+                .replace(/(\/[^?&]*)([^/]*)[?&]format=([^&]*)/, "$1.$3$2")
+                .replace(/(\/[^?&]*)[?&][^/]*$/, "$1")
+                .replace(/(:[^/]*)?$/, ":orig");
         }
 
         if (src.indexOf("pbs.twimg.com/profile_images/") >= 0) {
@@ -1114,6 +1131,16 @@
             domain.indexOf(".nikkeibp.co.jp") >= 0 ||
             // http://media.beliefnet.com/~/media/photos/inspiration/galleries/20-most-beautiful-places-in-the-world/tunnel_of_love_ukraine.jpg?as=1&w=400
             domain === "media.beliefnet.com" ||
+            // http://img.cdn2.vietnamnet.vn/Images/english/2017/11/10/09/20171110093351-sez.jpg?w=80&h=45
+            domain.match(/img\.cdn[0-9]*\.vietnamnet\.vn/) ||
+            // https://i.gadgets360cdn.com/large/tara_main_1511903994721.jpg?output-quality=70&output-format=webp
+            domain === "i.gadgets360cdn.com" ||
+            // https://i.ndtvimg.com/video/images/vod/medium/2018-02/big_478201_1517848813.jpg?downsize=298:224&output-quality=70&output-format=webp
+            domain === "i.ndtvimg.com" ||
+            // https://d3lp4xedbqa8a5.cloudfront.net/s3/digital-cougar-assets/Now/2018/02/16/44694/Healthy-pizza.jpg?width=132&height=107&mode=crop&scale=both&anchor=middlecenter&quality=85
+            domain === "d3lp4xedbqa8a5.cloudfront.net" ||
+            // https://brnow.org/getattachment/cc67f65b-b0b7-4365-abd5-258e4e1c1680?maxsidesize=50
+            domain === "brnow.org" ||
             // http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
             // https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
             src.match(/\/demandware\.static\//) ||
@@ -1191,6 +1218,10 @@
             domain.indexOf(".blog.ehow.com") >= 0 ||
             // https://cdn2.theheartysoul.com/uploads/2016/06/image1-798x418.jpg
             domain.match(/cdn[0-9]*\.theheartysoul\.com/) ||
+            // http://www.bandt.com.au/information/uploads/2017/08/Screen-Shot-2017-08-01-at-10.58.17-am-420x280.png
+            domain === "www.bandt.com.au" ||
+            // https://www.theepochtimes.com/assets/uploads/2017/08/28/Agriculture-dependent-to-the-river-5-700x420.jpg
+            domain === "www.theepochtimes.com" ||
             src.indexOf("/wp-content/uploads/") >= 0 ||
             src.indexOf("/wp/uploads/") >= 0) {
             // http://arissa-x.com/miss-x-channel/wp-content/uploads/2017/06/IMG_0005.jpg
@@ -1326,7 +1357,9 @@
                 .replace(/\/image\/([^-/]*)[^/]*\//, "/image/$1/");
         }
 
-        if (domain.indexOf("media.nbcwashington.com") >= 0) {
+        if (domain.indexOf("media.nbcwashington.com") >= 0 ||
+            domain.indexOf("media.nbcnewyork.com") >= 0) {
+            // https://media.nbcnewyork.com/images/653*367/AP_18012240030020.jpg
             return src.replace(/\/images\/[0-9]+\*[0-9]+\//, "/images/");
         }
 
@@ -1453,13 +1486,6 @@
         if (domain.indexOf("celebmafia.com") >= 0 ||
             domain.indexOf("hawtcelebs.com") >= 0) {
             return src.replace(/\/([^/]*)_thumbnail\.([^/.]*)$/, "/$1.$2");
-        }
-
-        if (domain.indexOf("cdn.vox-cdn.com") >= 0) {
-            // https://cdn.vox-cdn.com/thumbor/ta2xdyUViVrBXCLGapdwLY7is_s=/0x0:3000x2355/1200x800/filters:focal(1116x773:1596x1253)/cdn.vox-cdn.com/uploads/chorus_image/image/55856727/815434448.0.jpg
-            // https://cdn.vox-cdn.com/thumbor/dXu99BQwBagCavae7oYNG0uBfxQ=/0x46:1100x779/1200x800/filters:focal(0x46:1100x779)/cdn.vox-cdn.com/assets/1763547/Screenshot_2012.11.12_10.39.10.jpg
-            // https://cdn.vox-cdn.com/thumbor/iTJF1PhWPiR3-LoITuXxS2u8su0=/1200x0/filters:no_upscale()/cdn.vox-cdn.com/uploads/chorus_asset/file/4998263/keenan_2010.0.jpg
-            return src.replace(/.*\/thumbor\/.*?\/([^/]*\..*)/, "http://$1");
         }
 
         if (domain.match(/[a-z]*[0-9]*\.pixhost\.org/)) {
@@ -2097,6 +2123,10 @@
             domain === "media.indiatimes.in" ||
             // https://vcdn-ione.vnecdn.net/2018/02/04/topoppp-1681-1517742371_500x300.jpg
             domain === "vcdn-ione.vnecdn.net" ||
+            // https://www.bangkokpost.com/media/content/20180126/c1_1401970_180126042828_620x413.jpg
+            domain === "www.bangkokpost.com" ||
+            // https://media2.mensxp.com/media/content/2018/Feb/congress-takes-digs-at-bjp-and-pm-modi-with-a-valentines-day-video-1400x653-1518681640_401x187.jpg
+            domain.match(/media[0-9]*\.mensxp\.com/) ||
             // http://images.cinefil.com/movies/1053952_1600x450.jpg
             //   http://images.cinefil.com/movies/1053952.jpg
             domain === "images.cinefil.com") {
@@ -3205,6 +3235,7 @@
             //   http://static.dailymirror.lk/media/images/image_1491276594-bc6ed40255.jpg
             // https://cdn-01.independent.ie/incoming/article35675982.ece/70a4f/AUTOCROP/w940/675787992.jpg
             // https://i2-prod.birminghammail.co.uk/news/midlands-news/article8438687.ece/ALTERNATES/s615b/Felicity-Jones-The-Worst-Witch.jpg
+            // https://i2-prod.mirror.co.uk/incoming/article9801836.ece/ALTERNATES/s810/SUNDAYPEOPLE-PROD-Tara-Palmer-Tomkinson.jpg
         }
 
         if (domain === "images.fandango.com") {
@@ -3621,6 +3652,90 @@
             return src.replace(/(\/[0-9]+)_XS(\.[^/.]*)$/, "$1$2");
         }
 
+        if (domain === "s.abcnews.com") {
+            // https://s.abcnews.com/images/International/WireAP_118c1517b7f34b8bb7746eedfc01c12d_12x5_992.jpg
+            //   https://s.abcnews.com/images/International/WireAP_118c1517b7f34b8bb7746eedfc01c12d.jpg
+            // https://s.abcnews.com/images/US/chicago-pd-funeral-02-ap-jrl-180217_16x9t_240.jpg
+            //   https://s.abcnews.com/images/US/chicago-pd-funeral-02-ap-jrl-180217.jpg
+            return src.replace(/_[0-9]+x[0-9]+[a-z]?_[0-9]+(\.[^/.]*)$/, "$1");
+        }
+
+        if (domain === "www.nationmultimedia.com") {
+            // http://www.nationmultimedia.com/img/gallery/2017/10/14/194/9ef48d31930c4bbe00957654ab1aaf1a-vps.jpeg
+            //   http://www.nationmultimedia.com/img/gallery/2017/10/14/194/9ef48d31930c4bbe00957654ab1aaf1a.jpeg
+            // http://www.nationmultimedia.com/img/news/2018/02/18/30339149/b4065a2adeea2230b7d230a13eda5701-atwb.jpeg
+            //   http://www.nationmultimedia.com/img/news/2018/02/18/30339149/b4065a2adeea2230b7d230a13eda5701.jpeg
+            return src.replace(/-[^/.]*(\.[^/.]*)$/, "$1");
+        }
+
+        if (domain.indexOf(".indiatimes.com") >= 0 ||
+            domain === "static.toiimg.com") {
+            // https://timesofindia.indiatimes.com/thumb/msid-62829284,width-400,resizemode-4/62829284.jpg
+            //   https://timesofindia.indiatimes.com/photo/62829284.cms
+            // http://photogallery.indiatimes.com/thumb/62742103.cms?width=164&height=122
+            //   http://photogallery.indiatimes.com/photo/62742103.cms
+            // https://economictimes.indiatimes.com/thumb/msid-62966896,width-274,height-198/how-the-rs-11k-cr-nirav-modi-scandal-will-affect-diamantaires.jpg
+            //   https://economictimes.indiatimes.com/photo/62966896.cms
+            // https://static.toiimg.com/thumb/imgsize-376350,msid-62972146,width-200,resizemode-4/62972146.jpg
+            //   https://static.toiimg.com/photo/62972146.cms
+            newsrc = src.replace(/\/(?:thumb|photo)\/[^/]*msid-([0-9]*)[,/].*$/, "/photo/$1.cms");
+            if (newsrc !== src)
+                return newsrc;
+
+            newsrc = src.replace(/\/(?:thumb|photo)\/(?:[^/]*\/)?([0-9]*)\.[^/.]*$/, "/photo/$1.cms");
+            if (newsrc !== src)
+                return newsrc;
+        }
+
+        if (domain === "www.jawapos.com") {
+            // https://www.jawapos.com/thumbs/xs/news/2018/02/18/tips-menghadapi-kulit-kering-di-musim-hujan_m_189572.jpeg
+            //   https://www.jawapos.com/thumbs/l/news/2018/02/18/tips-menghadapi-kulit-kering-di-musim-hujan_m_189572.jpeg
+            //   https://www.jawapos.com/uploads/news/2018/02/18/tips-menghadapi-kulit-kering-di-musim-hujan_m_189572.jpeg
+            return src.replace(/\/thumbs\/[^/]*\//, "/uploads/");
+        }
+
+        if (domain === "asia.nikkei.com") {
+            // https://asia.nikkei.com/var/site_cache/storage/images/node_43/node_51/2018/201802/20180208t/20180208_malaysia-worker/8879284-1-eng-GB/20180208_Malaysia-worker_article_thumbnail.jpg
+            // https://asia.nikkei.com/var/site_cache/storage/images/node_43/node_51/2018/201802/20180208t/20180208_malaysia-worker/8879284-1-eng-GB/20180208_Malaysia-worker_article_main_image.jpg
+            // https://asia.nikkei.com/var/site_cache/storage/images/node_43/node_51/2018/201802/0217n/0217n-audi/8939471-1-eng-GB/0217N-Audi_large_image.jpg
+            // https://asia.nikkei.com/var/site_cache/storage/images/node_43/node_51/2018/201802/20180213t/20180213_rocket/8908091-1-eng-GB/20180213_rocket_photo_galleries_thumbnail.jpg
+            // https://asia.nikkei.com/var/site_cache/storage/images/node_43/node_51/2018/201802/20180213t/20180213_rocket/8908091-1-eng-GB/20180213_rocket_article_main_image.jpg
+            // https://asia.nikkei.com/var/site_cache/storage/images/node_43/node_51/2018/201802/20180205t/20180130citiesocial-founder-eric-wang/8846170-2-eng-GB/20180130Citiesocial-Founder-Eric-Wang_more_in_thumbnail.jpg
+            //   https://asia.nikkei.com/var/site_cache/storage/images/node_43/node_51/2018/201802/20180205t/20180130citiesocial-founder-eric-wang/8846170-2-eng-GB/20180130Citiesocial-Founder-Eric-Wang.jpg
+            // https://asia.nikkei.com/var/site_cache/storage/images/top/viewpoints/humphrey-hawksley/5784021-2-app-WF/Humphrey-Hawksley_square80_thumbnail.png
+            // https://asia.nikkei.com/var/site_cache/storage/images/top/magazine/20180215/8920429-1-app-WF/FREEDOM-OF-THE-OPPRESSION_cover_image.jpg
+            // https://asia.nikkei.com/var/site_cache/storage/images/node_43/node_51/2018/201802/20180217t/20180217_panda/8940872-1-eng-GB/20180217_Panda_medium_thumbnail.jpg
+            return src.replace(/_(?:article|large|medium|photo_galleries|more_in_thumbnail|square[0-9]*|cover_image)(?:_[a-z_]*)?(\.[^/.]*)$/, "$1");
+        }
+
+        if (domain === "www.tnnthailand.com") {
+            // http://www.tnnthailand.com/stocks/media/thumb_big/0656a4.jpg
+            //   http://www.tnnthailand.com/stocks/media/0656a4.jpg
+            return src.replace(/\/media\/[^/]*\/([^/]*)$/, "/media/$1");
+        }
+
+        if (domain.match(/data[0-9]*\.ibtimes\.co\.in/)) {
+            // http://data1.ibtimes.co.in/cache-img-0-450/en/full/554638/1420537417_beant-singh.jpg
+            //   http://data1.ibtimes.co.in/en/full/554638/1420537417_beant-singh.jpg
+            return src.replace(/(:\/\/[^/]*\/)cache-img-[0-9]*-[0-9]*\//, "$1");
+        }
+
+        if (domain.match(/astro-image-resizer\.([^.]*\.)?amazonaws\.com/)) {
+            // http://astro-image-resizer.s3-ap-southeast-1.amazonaws.com/17/resize/rojakdaily/media/jessica-chua/news/2018/jan/saying%20goodbye%20to%20anw%20pj%20outlet/115x76_a-w.png
+            //   http://astrokentico.s3.amazonaws.com/rojakdaily/media/jessica-chua/news/2018/jan/saying%20goodbye%20to%20anw%20pj%20outlet/a-w.png?ext=.png
+            //   http://astrokentico.s3.amazonaws.com/rojakdaily/media/jessica-chua/news/2018/jan/saying%20goodbye%20to%20anw%20pj%20outlet/a-w.png
+            return src
+                .replace(/astro-image-resizer\.([^.]*\.)?amazonaws\.com/, "astrokentico.s3.amazonaws.com")
+                .replace(/(:\/\/[^/]*)\/[0-9]*\/resize\//, "$1/")
+                .replace(/\/[0-9]+x[0-9]+_/, "/");
+        }
+
+        if (domain === "s3.amazonaws.com" &&
+            src.indexOf("s3.amazonaws.com/nxs-wkrgtv-media") >= 0) {
+            // http://s3.amazonaws.com/nxs-wkrgtv-media-us-east-1/photo/2018/02/17/Bail_Bonds_0_34542427_ver1.0_320_180.jpg
+            return src.replace(/_[0-9]+_[0-9]+(\.[^/.]*)$/, "$1");
+        }
+
 
 
 
@@ -3740,6 +3855,21 @@
             // https://forum.bigcommerce.com/sfc/servlet.shepherd/version/renditionDownload?rendition=THUMB720BY480&versionId=06813000005iizB&operationContext=CHATTER&contentId=05T1300000FCL6J
             //   https://forum.bigcommerce.com/sfc/servlet.shepherd/version/renditionDownload?rendition=ORIGINAL_Jpg&versionId=06813000005iizB&operationContext=CHATTER&contentId=05T1300000FCL6J -- works
             //return src.replace(/(\/renditionDownload.*?[?&]rendition=)[^&]*/, "$1ORIGINAL_Png");
+        }
+
+        if (domain.indexOf("cdn.vox-cdn.com") >= 0 ||
+            src.indexOf(/:\/\/[^/]*\/thumbor\/[^/]*=\//)) {
+            // https://cdn.vox-cdn.com/thumbor/ta2xdyUViVrBXCLGapdwLY7is_s=/0x0:3000x2355/1200x800/filters:focal(1116x773:1596x1253)/cdn.vox-cdn.com/uploads/chorus_image/image/55856727/815434448.0.jpg
+            // https://cdn.vox-cdn.com/thumbor/dXu99BQwBagCavae7oYNG0uBfxQ=/0x46:1100x779/1200x800/filters:focal(0x46:1100x779)/cdn.vox-cdn.com/assets/1763547/Screenshot_2012.11.12_10.39.10.jpg
+            // https://cdn.vox-cdn.com/thumbor/iTJF1PhWPiR3-LoITuXxS2u8su0=/1200x0/filters:no_upscale()/cdn.vox-cdn.com/uploads/chorus_asset/file/4998263/keenan_2010.0.jpg
+            // https://dotesports-cdn-prod-tqgiyve.stackpathdns.com/thumbor/baiRf8sOE9flXNjU5cHytZ9fqwA=/1200x0/filters:no_upscale()/https://dotesports-cdn-prod-tqgiyve.stackpathdns.com/article/ee3f5018-0e8b-4e5f-b040-c466c8979315.png
+            //   https://dotesports-cdn-prod-tqgiyve.stackpathdns.com/article/ee3f5018-0e8b-4e5f-b040-c466c8979315.png
+            //return src.replace(/.*\/thumbor\/.*?\/([^/]*\..*)/, "http://$1");
+            newsrc = src.replace(/.*\/thumbor\/.*?\/filters:[^/]*\/([a-z]*:\/\/.*)/, "$1");
+            if (newsrc !== src)
+                return newsrc;
+
+            return src.replace(/.*\/thumbor\/.*?\/filters:[^/]*\/([^/]*\..*)/, "http://$1");
         }
 
 
