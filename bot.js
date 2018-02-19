@@ -22,6 +22,29 @@ const r = new Snoowrap({
 });
 const client = new Snoostorm(r);
 
+var blacklist = [
+  "killed",
+  "died",
+  "death",
+  "murdered",
+  "murder"
+];
+
+function inblacklist(x) {
+  var black = false;
+  x.toLowerCase().split(" ").forEach((word) => {
+    word = word
+      .replace(/^[^a-z]*/, "")
+      .replace(/[^a-z]*$/, "");
+    if (blacklist.indexOf(word) >= 0) {
+      black = true;
+      return;
+    }
+  });
+
+  return black;
+}
+
 
 var submissionStream = client.SubmissionStream({
   "subreddit": "all",
@@ -90,6 +113,11 @@ function getimagesize(url) {
 function dourl(url, post) {
   var big = bigimage(url);
   if (big === url) {
+    return;
+  }
+
+  if (inblacklist(post.title)) {
+    console.log("Post blacklisted:\n" + post.title + "\n" + post.permalink + "\n" + post.url + "\n=====\n\n");
     return;
   }
 
