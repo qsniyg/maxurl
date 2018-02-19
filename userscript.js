@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.1.34
+// @version      0.1.35
 // @description  Redirects to the maximum possible size for images
 // @author       qsniyg
 // @include *
@@ -347,6 +347,8 @@
             domain === "www.hidomin.com" ||
             // http://www.newsfreezone.co.kr/news/thumbnail/201802/38623_37635_844_v150.jpg
             domain === "www.newsfreezone.co.kr" ||
+            // http://www.newsinside.kr/news/thumbnail/201606/412819_220009_299_v150.jpg
+            domain === "www.newsinside.kr" ||
             // http://www.newstown.co.kr/news/thumbnail/201801/311251_198441_4816_v150.jpg
             domain.indexOf("www.newstown.co.kr") >= 0) {
             return src
@@ -414,6 +416,11 @@
 
             // http://photo.hankooki.com/newsphoto/v001/thumbs/2018/01/28/20180128000108_1_holic.jpg -- doesn't work
             //   http://photo.hankooki.com/newsphoto/v001/2018/01/27/jay1220180127233802_P_02_C_1.jpg (unrelated url?)
+
+            // http://photo.hankooki.com/newsphoto/v001/thumbs/2014/11/11/tegeriace20141111172610_X_01_C_1.jpg -- doesn't work, tries to go to:
+            //   http://photo.hankooki.com/newsphoto/v001/2014/11/11/egeriace20141111172610_X_01_C_1.jpg
+            // real:
+            //   http://photo.hankooki.com/newsphoto/v001/2014/11/11/wegeriace20141111172610_X_01_C_1.jpg
             newsrc =
                 src.replace("/arch/photo/", "/arch/original/")
                    .replace("/arch/thumbs/", "/arch/original/")
@@ -939,6 +946,8 @@
         if (src.indexOf("pbs.twimg.com/media/") >= 0) {
             // https://pbs.twimg.com/media/DWREhilXkAAcafr?format=jpg&name=small
             //   https://pbs.twimg.com/media/DWREhilXkAAcafr.jpg:orig
+            // https://pbs.twimg.com/media/DWO61F5X4AISSsF?format=jpg
+            //   https://pbs.twimg.com/media/DWO61F5X4AISSsF.jpg:orig
             return src
                 .replace(/(\/[^?&]*)([^/]*)[?&]format=([^&]*)/, "$1.$3$2")
                 .replace(/(\/[^?&]*)[?&][^/]*$/, "$1")
@@ -1073,7 +1082,7 @@
             // https://cdn.heatworld.com/one/lifestyle-images/celebrity/58357d749f0e322331739515/Screen%20Shot%202016-10-06%20at%2014.43.52.png?quality=50&width=960&ratio=16-9&resizeStyle=aspectfill&format=jpg
             domain === "cdn.heatworld.com" ||
             // https://www.thetimes.co.uk/imageserver/image/methode%2Fsundaytimes%2Fprodmigration%2Fweb%2Fbin%2F1ed9d88f-d652-4563-8d8b-fcbad22a1d0a.jpg?crop=1024%2C683%2C0%2C0&resize=685
-            domain === "www.thetimes.co.uk" ||
+            (domain === "www.thetimes.co.uk" && src.indexOf("/imageserver/") >= 0) ||
             // http://static.ok.co.uk/media/images/625x417_ct/737562_nick_hewer_9ab914ab8a82c5effdb695a41741ab84.jpg?w=900
             domain === "static.ok.co.uk" ||
             // https://media.gettyimages.com/photos/nick-hewer-arriving-for-the-2012-arqiva-british-academy-television-picture-id848052898?k=6&m=848052898&s=612x612&w=0&h=4QnBTCuNyp6nYhAumGR6k9gqH3iYagsnqkDo0ouGnts=
@@ -1141,6 +1150,8 @@
             domain === "d3lp4xedbqa8a5.cloudfront.net" ||
             // https://brnow.org/getattachment/cc67f65b-b0b7-4365-abd5-258e4e1c1680?maxsidesize=50
             domain === "brnow.org" ||
+            // https://p3.ssl.cdn.btime.com/t01b3d8cb1040fbe0ba.jpg?size=730x1110
+            domain.match(/p[0-9]*\.(?:ssl\.)?cdn\.btime\.com/) ||
             // http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
             // https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
             src.match(/\/demandware\.static\//) ||
@@ -3282,8 +3293,9 @@
             return src.replace(/_th(\.[^/.]*)$/, "$1");
         }
 
-        if (domain === "mmbiz.qpic.cn") {
+        if (domain.indexOf(".qpic.cn") >= 0) {
             // http://mmbiz.qpic.cn/mmbiz_jpg/HiaNy8LPboMwzXqYuvrlHAicCbwUffgUbjY2EgQa81icMQxeKHeG5dTmhupXk7MKHibwKQAtNxEbeceH7elpaTT2fw/640?wx_fmt=jpeg&_ot=1514246400129
+            // https://puui.qpic.cn/vcover_vt_pic/0/7m7cvdfbslfme4u1478827029/260
             return src.replace(/\/[0-9]*(?:\?.*)?$/, "/0");
         }
 
@@ -3418,7 +3430,8 @@
             return src.replace(/\/wallpaper\/[^/]*\//, "/wallpaper/original/");
         }
 
-        if (domain.indexOf(".c.yimg.jp") >= 0) {
+        if (domain.indexOf(".c.yimg.jp") >= 0 &&
+            src.match(/:\/\/[^/]*\/im_/)) {
             // https://lpt.c.yimg.jp/im_siggiQbAsU9YOpUOxobTU3EtUg---x200-y200/amd/20180215-00205238-okinawat-000-view.jpg
             //   https://lpt.c.yimg.jp/amd/20180215-00205238-okinawat-000-view.jpg
             // https://amd.c.yimg.jp/im_siggfkAIHQmt2wB5qZ4fql1LCw---x900-y506-q90-exp3h-pril/amd/20180216-00010002-ksbv-000-1-view.jpg
@@ -3427,6 +3440,12 @@
             //   https://iwiz-news-profile.c.yimg.jp/d/iwiz-news-profile/img/nb34khhuyczsy7o6f4dsott4zq.png?1477551484
             //return src.replace(/(:\/\/[^/]*)\/[^/]*(\/amd\/[^/]*)$/, "$1$2");
             return src.replace(/(:\/\/[^/]*\/)im_[^/]*\//, "$1");
+        }
+
+        if (domain.indexOf(".c.yimg.jp") >= 0 &&
+            src.match(/:\/\/[^/]*\/sim\?/)) {
+             // https://wing-auctions.c.yimg.jp/sim?furl=auctions.c.yimg.jp/images.auctions.yahoo.co.jp/image/dr000/auc0402/users/0/4/9/4/ane6371969-img600x425-1518659462gyve6525845.jpg&dc=1&sr.fs=20000
+            return src.replace(/.*:\/\/[^/]*\/sim.*?[?&]furl=([^&]*).*/, "http://$1");
         }
 
         if (domain === "av.watch.impress.co.jp") {
@@ -3736,6 +3755,100 @@
             return src.replace(/_[0-9]+_[0-9]+(\.[^/.]*)$/, "$1");
         }
 
+        if (domain === "image.photohito.k-img.com") {
+            // http://image.photohito.k-img.com/uploads/photo33/user32067/a/7/a77a9f46cca054d6d488ab039382d140/a77a9f46cca054d6d488ab039382d140_s.jpg
+            //   http://image.photohito.k-img.com/uploads/photo33/user32067/a/7/a77a9f46cca054d6d488ab039382d140/a77a9f46cca054d6d488ab039382d140_o.jpg
+            // o, l, s
+            return src.replace(/_[a-z]*(\.[^/]*)/, "_o$1");
+        }
+
+        if (domain === "image.yes24.com") {
+            // http://image.yes24.com/goods/24213246/S
+            // http://image.yes24.com/goods/24213246
+            //   http://image.yes24.com/goods/24213246/L
+            // http://image.yes24.com/dms/201802/%EC%8A%A4%EC%B9%B4%EC%9D%B4-%EA%B3%A0%EC%A0%95%EC%9A%B1.jpg
+            return src.replace(/(:\/\/[^/]*\/goods\/[0-9]+)(?:\/.*)?$/, "$1/L");
+        }
+
+        if (domain === "img.danawa.com") {
+            // http://img.danawa.com/cms/img/2010/11/19/%C7%D6%C6%D1_thumb.png
+            return src.replace(/_thumb(\.[^/.]*)$/, "$1");
+        }
+
+        if (domain === "item.ssgcdn.com") {
+            // http://item.ssgcdn.com/58/31/79/item/1000023793158_i1_1000.jpg
+            //   http://item.ssgcdn.com/58/31/79/item/1000023793158_i1.jpg
+            return src.replace(/(\/item\/[^/]*)_[0-9]+(\.[^/.]*)$/, "$1$2");
+        }
+
+        if (domain.match(/thumbnail[0-9]*\.coupangcdn\.com/)) {
+            // https://thumbnail3.coupangcdn.com/thumbnails/remote/48x48ex/image/product/image/vendoritem/2016/11/02/3054079121/95e6ce14-cd6e-43ef-89af-6f50046c19e8.jpg
+            //   https://image3.coupangcdn.com/image/product/image/vendoritem/2016/11/02/3054079121/95e6ce14-cd6e-43ef-89af-6f50046c19e8.jpg
+            return src
+                .replace(/thumbnail([0-9]*\.coupangcdn\.com)/, "image$1")
+                .replace(/\/thumbnails\/remote\/[^/]*\//, "/");
+        }
+
+        if (domain === "image.notepet.co.kr") {
+            // http://image.notepet.co.kr/resize/540x-/seimage/20160127%2F201601271000_61120010294826_1.jpg
+            return src.replace(/\/resize\/[^/]*\//, "/");
+        }
+
+        if (domain === "koreamg.com") {
+            // http://koreamg.com/web/product/big/201511/1198_shop1_844046.jpg
+            return src.replace(/\/web\/product\/(?:small|medium)\//, "/web/product/big/");
+        }
+
+        if (domain.indexOf(".mynavi.jp") >= 0) {
+            // https://news.mynavi.jp/article/20160717-a030/images/004.jpg
+            // https://news.mynavi.jp/article/20180219-586202/index_images/index.jpg/iapp
+            //   https://news.mynavi.jp/article/20180219-586202/index_images/index.jpg
+            //   https://news.mynavi.jp/article/20180219-586202/images/001l.jpg
+            return src
+                .replace(/\/index_images\/[^/]*(?:\/[^/]*)?$/, "/images/001l.jpg")
+                .replace(/\/images\/([0-9]+)(\.[^/.]*)$/, "/images/$1l$2");
+        }
+
+        if (domain === "cdn.deview.co.jp") {
+            // https://cdn.deview.co.jp/imgs/news_image.img.php?am_file=757f7eac8208248ef689a9c8f195cc0a.jpg&am_width=10&am_height=10
+            // https://cdn.deview.co.jp/imgs/news_image.img.php?am_file=8a0abbef91348f3b44e2225c761fe8e8.jpg&am_width=0&am_height=0
+            //   https://cdn.deview.co.jp/imgs/news/8/a/0/8a0abbef91348f3b44e2225c761fe8e8.jpg
+            //return src.replace(/\/imgs\/news_image\.img\.php.*?(am_file=[^&]*).*/, "/imgs/news_image.img.php?$1&am_width=0&am_height=0");
+            return src.replace(/\/imgs\/news_image\.img\.php.*?am_file=([^&])([^&])([^&])([^&]*).*/, "/imgs/news/$1/$2/$3/$1$2$3$4");
+        }
+
+        if (domain === "imgcache.dealmoon.com") {
+            // http://imgcache.dealmoon.com/fsvr.dealmoon.com/dealmoon/082/3a3/a3a/e33/eed/93a/ffd/aae/d10/29e/37.jpg_600_0_15_363b.jpg
+            //   http://fsvr.dealmoon.com/dealmoon/082/3a3/a3a/e33/eed/93a/ffd/aae/d10/29e/37.jpg
+            return src.replace(/.*?:\/\/[^/]*\/(.*?)(\.[^/._]*)_[^/]*?$/, "http://$1$2");
+        }
+
+        if (domain === "www.usmall.us") {
+            // http://www.usmall.us/media/catalog/product/cache/16/image/600x600/d58d44b981214661663244ef00ea7e30/1/7/17_9__2.jpg
+            //   http://www.usmall.us/media/catalog/product/cache/16/image/d58d44b981214661663244ef00ea7e30/1/7/17_9__2.jpg
+            return src.replace(/\/image\/[0-9]+x[0-9]+\//, "/image/");
+        }
+
+        if (domain === "img.nextmag.com.tw") {
+            // http://img.nextmag.com.tw//campaign/28/640x_dc09fc97b8f881555c21e8df08f39d01.jpg
+            return src.replace(/\/[0-9]+x(?:[0-9]+)?_([^/]*)$/, "/$1");
+        }
+
+        if (domain.indexOf(".meitudata.com") >= 0) {
+            // http://mvimg10.meitudata.com/568fd904846585397.jpg!thumb320
+            return src.replace(/![^/]*$/, "");
+        }
+
+        if (domain === "www.shogakukan.co.jp") {
+            // https://www.shogakukan.co.jp/thumbnail/books/09682221
+            return src.replace(/\/thumbnail\/books\//, "/thumbnail/snsbooks/");
+        }
+
+        if (domain === "images.sysapi.mtg.now.com") {
+            // https://images.sysapi.mtg.now.com/mposter/album/m/VASB00139622A_m.jpg
+            return src.replace(/\/[a-z]\/([^/]*)_[a-z](\.[^/.]*)$/, "/o/$1_o$2");
+        }
+
 
 
 
@@ -3749,7 +3862,9 @@
         // coppermine
         if (src.search(/\/(gallery|photos)\/albums\/[^/]*\/[^/]*\/(normal)|(thumb)_[^/._]*\.[^/.]*$/) >= 0 ||
            src.search(/\/(gallery|photos)\/albums\/[^/]*\/[^/]*\/[^/]*\/(normal)|(thumb)_[^/._]*\.[^/.]*$/) >= 0) {
-            return src.replace(/(\/(gallery|photos)\/albums\/.*\/)[a-z]*_([^/._]*\.[^/.]*)$/, "$1$4");
+            newsrc = src.replace(/(\/(gallery|photos)\/albums\/.*\/)[a-z]*_([^/._]*\.[^/.]*)$/, "$1$4");
+            if (newsrc !== src)
+                return newsrc;
         }
 
         // gnuboard
@@ -3858,7 +3973,7 @@
         }
 
         if (domain.indexOf("cdn.vox-cdn.com") >= 0 ||
-            src.indexOf(/:\/\/[^/]*\/thumbor\/[^/]*=\//)) {
+            src.indexOf(/:\/\/[^/]*\/thumbor\/[^/]*=\//) >= 0) {
             // https://cdn.vox-cdn.com/thumbor/ta2xdyUViVrBXCLGapdwLY7is_s=/0x0:3000x2355/1200x800/filters:focal(1116x773:1596x1253)/cdn.vox-cdn.com/uploads/chorus_image/image/55856727/815434448.0.jpg
             // https://cdn.vox-cdn.com/thumbor/dXu99BQwBagCavae7oYNG0uBfxQ=/0x46:1100x779/1200x800/filters:focal(0x46:1100x779)/cdn.vox-cdn.com/assets/1763547/Screenshot_2012.11.12_10.39.10.jpg
             // https://cdn.vox-cdn.com/thumbor/iTJF1PhWPiR3-LoITuXxS2u8su0=/1200x0/filters:no_upscale()/cdn.vox-cdn.com/uploads/chorus_asset/file/4998263/keenan_2010.0.jpg
@@ -3870,6 +3985,14 @@
                 return newsrc;
 
             return src.replace(/.*\/thumbor\/.*?\/filters:[^/]*\/([^/]*\..*)/, "http://$1");
+        }
+
+        if (src.match(/:\/\/[^/]*\/astronaut\/uploads\/[a-z]_[^/]*$/)) {
+            // http://zoodydesign.com/astronaut/uploads/m_dt8a0843-1.jpg
+            // http://astronaut-project.com/astronaut/uploads/s_scenes-1.jpg
+            // http://coffeemegane.com/astronaut/uploads/s_buttertoast3.jpg
+            // m, s, t
+            return src.replace(/\/[a-z]_([^/]*)$/, "/$1");
         }
 
 
@@ -3936,8 +4059,10 @@
         var newhref = bigimage_recursive(document.location.href);
 
         if (newhref !== document.location.href) {
-            if (!_nir_debug_)
+            if (!_nir_debug_) {
+                window.stop();
                 document.location = newhref;
+            }
             console.log(newhref);
         }
     }
