@@ -5,6 +5,9 @@ var http = require('http');
 var https = require('https');
 var url = require('url');
 const NodeCache = require( "node-cache" );
+var fs = require("fs");
+
+var blacklist_json = JSON.parse(fs.readFileSync("./blacklist.json"));
 
 require('dotenv').config();
 
@@ -162,9 +165,17 @@ function dourl(url, post) {
 
 const links = new NodeCache({ stdTTL: 600, checkperiod: 1000 });
 
+//console.dir(blacklist_json.disallowed);
 submissionStream.on("submission", function(post) {
   if (post.domain.startsWith("self.")) {
     return;
+  }
+
+  if (post.subreddit.display_name) {
+    if (blacklist_json.disallowed.indexOf(post.subreddit.display_name.toLowerCase()) >= 0) {
+      //console.log(post.subreddit);
+      return;
+    }
   }
 
   if (links.get(post.permalink) === true) {
