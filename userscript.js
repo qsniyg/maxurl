@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.1.35
+// @version      0.1.36
 // @description  Redirects to the maximum possible size for images
 // @author       qsniyg
 // @include *
@@ -349,6 +349,8 @@
             domain === "www.newsfreezone.co.kr" ||
             // http://www.newsinside.kr/news/thumbnail/201606/412819_220009_299_v150.jpg
             domain === "www.newsinside.kr" ||
+            // http://cdn.newsfreezone.co.kr/news/thumbnail/201802/41850_39614_2056_v150.jpg
+            domain === "cdn.newsfreezone.co.kr" ||
             // http://www.newstown.co.kr/news/thumbnail/201801/311251_198441_4816_v150.jpg
             domain.indexOf("www.newstown.co.kr") >= 0) {
             return src
@@ -1152,6 +1154,24 @@
             domain === "brnow.org" ||
             // https://p3.ssl.cdn.btime.com/t01b3d8cb1040fbe0ba.jpg?size=730x1110
             domain.match(/p[0-9]*\.(?:ssl\.)?cdn\.btime\.com/) ||
+            // http://images.twistmagazine.com/uploads/images/file/21604/sabrina-carpenter-selfie.jpg?fit=crop&h=666&w=500
+            domain === "images.twistmagazine.com" ||
+            // https://sites.google.com/site/faustrolemodel/_/rsrc/1427391714266/sabrina-carpenter/452204682.jpg?height=400&width=331
+            domain === "sites.google.com" ||
+            // https://images.pexels.com/photos/68147/waterfall-thac-dray-nur-buon-me-thuot-daklak-68147.jpeg?h=350&auto=compress&cs=tinysrgb
+            domain === "images.pexels.com" ||
+            // https://images.unsplash.com/photo-1503320748329-9455bea97a68?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=324bf91b29fb196d6aefb2f4806d04c0&auto=format&fit=crop&w=1000&q=60
+            domain === "images.unsplash.com" ||
+            // tshop will automatically be replaced to shop
+            // https://tshop.r10s.jp/book/cabinet/3966/4907953093966.jpg?fitin=200:300&composite-to=*,*|200:300
+            //   https://shop.r10s.jp/book/cabinet/3966/4907953093966.jpg
+            domain === "tshop.r10s.jp" ||
+            // https://image.thanhnien.vn/Uploaded/phinp/2018_02_19/thumnail-bi-mat-tuan-anh_cms_VOVN.jpg?width=178&height=100&crop=auto&scale=both
+            domain === "image.thanhnien.vn" ||
+            // http://static.netlife.vn//2017/11/07/14/43/sao-han-trong-1-tuan-tara-den-viet-nam-2-lan_1.jpg?maxwidth=480
+            domain === "static.netlife.vn" ||
+            // http://rs.phunuonline.com.vn/staticFile/Subject/2018/02/14/7391244/unnamed_182138203.png?w=51&h=32
+            domain === "rs.phunuonline.com.vn" ||
             // http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
             // https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
             src.match(/\/demandware\.static\//) ||
@@ -1233,10 +1253,23 @@
             domain === "www.bandt.com.au" ||
             // https://www.theepochtimes.com/assets/uploads/2017/08/28/Agriculture-dependent-to-the-river-5-700x420.jpg
             domain === "www.theepochtimes.com" ||
+            // https://images.gamme.com.tw/news2/2018/82/30/pJySpaabj56WsKQ-300x250.jpg
+            domain === "images.gamme.com.tw" ||
+            // http://cdn.hoahoctro.vn/uploads/2018/02/5a87a07c09b7e-pagehihi-600x450.jpg
+            domain === "cdn.hoahoctro.vn" ||
+            // https://vnn-imgs-f.vgcloud.vn/2018/02/22/09/fan-xon-xao-mat-son-tung-beo-u-sau-tet-nguyen-dan-140x78.jpg
+            domain === "vnn-imgs-f.vgcloud.vn" ||
+            // http://f.imgs.vietnamnet.vn/2017/11/05/09/t-ara-roi-nuoc-mat-vi-fan-viet-4-100x30.jpg
+            domain.indexOf(".imgs.vietnamnet.vn") >= 0 ||
             src.indexOf("/wp-content/uploads/") >= 0 ||
             src.indexOf("/wp/uploads/") >= 0) {
             // http://arissa-x.com/miss-x-channel/wp-content/uploads/2017/06/IMG_0005.jpg
             src = src.replace(/-[0-9]*x[0-9]*\.([^/.]*)$/, ".$1");
+        }
+
+        // http://www.mediaonlinevn.com/wp-content/uploads/2016/03/160315-pantech-launch-hcm-41_resize-680x365_c.jpg
+        if (domain === "www.mediaonlinevn.com") {
+            src = src.replace(/-[0-9]*x[0-9]*(?:_[a-z])?\.([^/.]*)$/, ".$1");
         }
 
         // http://felipepitta.com/blog/wp-content/uploads/2014/08/Harry-Potter-Hogwarts-Express-Jacobite-Fort-William-Scotland-Train(pp_w970_h646).jpg
@@ -1578,10 +1611,6 @@
             return src.replace(/(\/[^/]*)\.[0-9]*(\.[0-9]*\.[^/.]*$)/, "$1.full$2");
         }
 
-        if (domain.indexOf("kenh14cdn.com") >= 0) {
-            return src.replace(/\/zoom\/[^/]*\//, "/").replace(/\/([^/]*)-[0-9]*-[0-9]*-[0-9]*-[0-9]*-crop-[0-9]*(\.[^/-]*)$/, "/$1$2");
-        }
-
         if (domain.indexOf("pic.xiami.net") >= 0) {
             return src.replace(/@[^/]*$/, "");
         }
@@ -1631,7 +1660,13 @@
 
         // img1.doubanio.com
         if (domain.search(/img[0-9]\.doubanio\.com/) >= 0) {
-            return src.replace(/\/.pic\//, "/opic/");
+            // https://img3.doubanio.com/lpic/s26811681.jpg
+            //   https://img3.doubanio.com/opic/s26811681.jpg
+            // https://img3.doubanio.com/img/musician/small/24961.jpg
+            //   https://img3.doubanio.com/img/musician/large/24961.jpg
+            return src
+                .replace(/\/(?:small|medium)\//, "/large/")
+                .replace(/\/.pic\//, "/opic/");
         }
 
         if (domain.search(/img\.idol001\.com/) >= 0) {
@@ -2138,6 +2173,10 @@
             domain === "www.bangkokpost.com" ||
             // https://media2.mensxp.com/media/content/2018/Feb/congress-takes-digs-at-bjp-and-pm-modi-with-a-valentines-day-video-1400x653-1518681640_401x187.jpg
             domain.match(/media[0-9]*\.mensxp\.com/) ||
+            // http://221.132.38.109/nvdata/uploads/thumbnail/2017/12/01/baogiohetbatlucnhintremamnonbibaohanh_20171201151535_220x124.jpg
+            domain === "221.132.38.109" ||
+            // https://i-ngoisao.vnecdn.net/2012/11/26/10-585669-1376858787_500x0.jpg
+            domain === "i-ngoisao.vnecdn.net" ||
             // http://images.cinefil.com/movies/1053952_1600x450.jpg
             //   http://images.cinefil.com/movies/1053952.jpg
             domain === "images.cinefil.com") {
@@ -2852,11 +2891,17 @@
             return src.replace(/(\/[0-9]*)s(\.[^/.]*)$/, "$1$2");
         }
 
-        if (domain === "file.tinnhac.com") {
+        if (domain === "file.tinnhac.com" ||
+            domain === "file.tintuckpop.net" ||
+            // different though? - and crop don't work
+            // https://image.vtc.vn/resize/80x60/files/news/2018/02/21/-210540.jpg
+            domain === "image.vtc.vn") {
             // https://file.tinnhac.com/crop/97x74/music/2018/02/03/3-e875.jpg
             //   https://file.tinnhac.com/music/2018/02/03/3-e875.jpg
             // https://file.tinnhac.com/resize/600x-/2016/05/25/1eca49c4b-0953.jpg
             //   https://file.tinnhac.com/2016/05/25/1eca49c4b-0953.jpg
+            // http://file.tintuckpop.net/resize/640x-/2016/05/16/1a922-1670.jpg
+            // http://file.tintuckpop.net/crop/210x158/tintuckpop/2018/02/22/shinminah-1519107250-d126.jpg
             return src
                 .replace(/\/crop\/[-0-9]+x[-0-9]+\//, "/")
                 .replace(/\/resize\/[-0-9]+x[-0-9]+\//, "/");
@@ -2880,14 +2925,38 @@
         }
 
         if (domain === "cdn.tuoitre.vn" ||
-            domain === "dantricdn.com") {
+            domain === "dantricdn.com" ||
+            // http://afamilycdn.com/thumb_w/660/2017/taf-0942-1509860607829.jpg
+            domain === "afamilycdn.com" ||
+            // https://cafebiz.cafebizcdn.vn/thumb_w/600/2016/14593683-10210661710609628-1503569961-n-1475666918244-crop-1475673547715.jpg
+            //   https://cafebiz.cafebizcdn.vn/2016/14593683-10210661710609628-1503569961-n-1475666918244-crop-1475673547715.jpg
+            //   http://cafebiz.cafebizcdn.vn/2016/14593683-10210661710609628-1503569961-n-1475666918244.jpg
+            domain.indexOf(".cafebizcdn.vn") >= 0 ||
+            domain.indexOf(".sohacdn.com") >= 0 ||
+            domain.indexOf("kenh14cdn.com") >= 0 ||
+            // https://dantricdn.com/zoom/327_245/2018/2/22/img4232-15192810897621333688893.jpg
+            //   https://dantricdn.com/thumb_w/600/2018/2/22/img4232-15192810897621333688893.jpg
+            domain === "dantricdn.com" ||
+            // https://cafebiz.cafebizcdn.vn/zoom/420_264/2018/2/22/photo1519268407880-15192684078814005972.jpg
+            domain === "cafebiz.cafebizcdn.vn" ||
+            // https://vtv1.mediacdn.vn/zoom/93_93/2018/2/22/nauy-crop-1519281533709468961755.jpg
+            domain.indexOf(".mediacdn.vn") >= 0) {
             // https://cdn.tuoitre.vn/thumb_w/640/2017/5-nguoi-ham-mo-1509855071319.jpg
             //   https://cdn.tuoitre.vn/2017/5-nguoi-ham-mo-1509855071319.jpg
             // https://dantricdn.com/thumb_w/640/487bd2df65/2016/09/24/chipi-1474675645816.jpg
-            return src.replace(/(:\/\/[^/]*)\/thumb_[a-z]\/[0-9]+\//, "$1/");
+            // http://sohanews.sohacdn.com/thumb_w/1000/2017/photo-1-1510035508692-0-57-337-600-crop-1510035607740.jpg
+            //   http://sohanews.sohacdn.com/2017/photo-1-1510035508692.jpg
+            return src
+                .replace(/\/zoom\/[^/]*\//, "/")
+                .replace(/-[0-9]+-[0-9]+-[0-9]+-[0-9]+-crop-[0-9]+(\.[^/.]*)$/, "$1")
+                .replace(/-crop-[0-9]{13,}(\.[^/.]*)$/, "$1")
+                .replace(/(:\/\/[^/]*)\/thumb_[a-z]\/[0-9]+\//, "$1/");
         }
 
-        if (domain === "eva-img.24hstatic.com") {
+        if (domain === "eva-img.24hstatic.com" ||
+            // http://anh.24h.com.vn//upload/4-2017/images/2017-11-08/medium/1510125598-629-151011694144796-chi-pu-5.jpg
+            domain === "anh.24h.com.vn" ||
+            domain === "anh.eva.vn") {
             // https://eva-img.24hstatic.com/upload/1-2017/images/2017-01-18/large/1484712995-1ava.jpg
             //   https://eva-img.24hstatic.com/upload/1-2017/images/2017-01-18/large/1484712995-1ava.jpg
             // https://eva-img.24hstatic.com/upload/1-2017/images/2017-01-18/san-khau-dem-nhac-bi-chay-t-ara-van-nhiet-tinh-het-minh-vi-khan-gia-1-1484711458-width500height334.jpg
@@ -2895,6 +2964,7 @@
             //   https://eva-img.24hstatic.com/upload/4-2017/images/2017-10-15/1508037671-thumbnail.jpg
             // https://eva-img.24hstatic.com/upload/1-2018/images/2018-02-01/thumbnail/cover1-1517500750-188-width640height480.jpg
             //   https://eva-img.24hstatic.com/upload/1-2018/images/2018-02-01/cover1-1517500750-188-width640height480.jpg
+            // https://anh.eva.vn///upload/1-2016/images/2016-03-13/medium/1457807610-ava1.jpg
             return src.replace(/(\/images\/[0-9]*-[0-9]*-[0-9]*\/)[^/]*\/([^/]*)$/, "$1$2");
         }
 
@@ -3849,6 +3919,210 @@
             return src.replace(/\/[a-z]\/([^/]*)_[a-z](\.[^/.]*)$/, "/o/$1_o$2");
         }
 
+        if (domain.match(/img[0-9]*[^.]*\.lst\.fm/)) {
+            // http://img2-ak.lst.fm/i/u/174s/ac79a7aa21de5694760ad9228e15c6a5.png
+            //   http://img2-ak.lst.fm/i/u/ac79a7aa21de5694760ad9228e15c6a5.png
+            return src.replace(/(\/i\/[a-z]\/)[0-9]+s\//, "$1");
+        }
+
+        if (domain === "www.hdwallpapers.in") {
+            // https://www.hdwallpapers.in/download/selena_gomez_2018_4k_8k-1440x2560.jpg
+            // https://www.hdwallpapers.in/thumbs/2018/selena_gomez_2018_4k_8k-t2.jpg
+            //   https://www.hdwallpapers.in/walls/selena_gomez_2018_4k_8k-wide.jpg
+            return src
+                .replace(/\/(?:download|thumbs)\//, "/walls/")
+                .replace(/-[^-_/.]*(\.[^/.]*)$/, "-wide$1");
+        }
+
+        if (domain.indexOf("images.deezer.com") >= 0) {
+            // http://e-cdn-images.deezer.com/images/artist/7d026f08b34a098e270a663839d8ae8e/200x200-000000-80-0-0.jpg
+            //   http://e-cdn-images.deezer.com/images/artist/7d026f08b34a098e270a663839d8ae8e/99999999999x99999999999-000000-100-0-0.jpg
+            return src.replace(/\/[0-9]+x[0-9]+-[0-9]+-[0-9]+-[0-9]+-[0-9]+(\.[^/.]*)$/, "/99999999999x99999999999-000000-100-0-0$1");
+        }
+
+        if (domain === "cdn.wallpaper.com") {
+            // https://cdn.wallpaper.com/main/styles/wp_medium_grid/s3/2018/02/astonmartindb11volantefrontsideview.jpg
+            // https://cdn.wallpaper.com/main/styles/wp_large/s3/2018/02/go_gardenofrussolo.jpg
+            return src.replace(/\/styles\/[^/]*\/s[0-9]*\/[0-9]+\/[0-9]+\/([^/]*)$/, "/$1");
+        }
+
+        if (domain === "static.warthunder.com") {
+            // https://static.warthunder.com/upload/image/wallpapers/_thumbs/280x/magach_3_1920x1080_logo_com_73e9f4582d0d841a6abf1f2c75beaf4d.jpg
+            return src.replace(/\/_thumbs\/[0-9]+x(?:[0-9]+)?\//, "/");
+        }
+
+        if (domain === "cdn.wallpaperdirect.com") {
+            // https://cdn.wallpaperdirect.com/shared-assets/images/products/094269_163x163_thumb.jpg
+            //   https://cdn.wallpaperdirect.com/shared-assets/images/products/094269orig.jpg
+            return src.replace(/(\/[0-9]*)_[^/.]*(\.[^/.]*)$/, "$1orig$2");
+        }
+
+        if (domain.indexOf(".bamcontent.com") >= 0) {
+            // https://nhl.bamcontent.com/images/photos/291203200/2568x1444/cut.jpg
+            return src.replace(/(\/images\/photos\/[0-9]*\/)[0-9]+x[0-9]+\/[^/.]*(\.[^/.]*)$/, "$1raw$2");
+        }
+
+        if (domain.match(/filed.*\.mail\.ru$/) &&
+            src.match(/:\/\/[^/]*\/pic/)) {
+            // https://filed17-26.my.mail.ru/pic?url=https%3A%2F%2Fcontent-17.foto.my.mail.ru%2Fmail%2Faudioknigi.online%2F_musicplaylistcover%2Fi-760.jpg&sigt=a2f820fc2604a1526688be9b380e7e24&ts=1519171200&mw=156&mh=156&croped=1
+            //   https://content-17.foto.my.mail.ru/mail/audioknigi.online/_musicplaylistcover/i-760.jpg
+            return decodeURIComponent(src.replace(/.*\/pic.*?[?&]url=([^&]*).*?$/, "$1"));
+        }
+
+        if (domain === "mg.soupingguo.com") {
+            // http://mg.soupingguo.com/attchment2/AppImg/110x73/2016/01/26/c2d275d9-ffc4-4ca3-86d0-70f717f789dc.jpg
+            //   http://mg.soupingguo.com/attchment2/AppImg/0x0/2016/01/26/c2d275d9-ffc4-4ca3-86d0-70f717f789dc.jpg
+            return src.replace(/(\/attchment[^/]*\/[^/]*Img\/)[0-9]+x[0-9]+\//, "$10x0/");
+        }
+
+        if (domain === "img.yaplog.jp") {
+            // http://img.yaplog.jp/img/17/mo/y/a/m/yamu98/24/24094.jpg
+            //   http://img.yaplog.jp/img/17/pc/y/a/m/yamu98/24/24094.jpg
+            return src.replace(/(\/img\/[^/]*\/)mo\//, "$1pc/");
+        }
+
+        if (domain === "www.hochi.co.jp") {
+            // http://www.hochi.co.jp/photo/20180220/20180220-OHT1I50164-L.jpg
+            // L, T, N
+            return src.replace(/-[A-Z](\.[^/.]*)$/, "-L$1");
+        }
+
+        if (domain.indexOf(".wikispaces.com") >= 0) {
+            // https://sweetteaandscience.wikispaces.com/file/view/111.jpg/539497268/460x315/111.jpg
+            //   https://sweetteaandscience.wikispaces.com/file/view/111.jpg
+            return src.replace(/(\/view\/[^/]*\.[^/]*)\/.*?$/, "$1");
+        }
+
+        if (domain === "cdn.mdpr.jp") {
+            // wip
+            // https://cdn.mdpr.jp/photo/images/9b/c4b/244c1e_129677c70cb47761dc2243224aee09db43068c042b172144.jpg
+            // aligned:
+            //   https://cdn.mdpr.jp/photo/images/9b/c4b/244c1e_  129677c70cb47761dc2243224aee09db43068c042b172144.jpg
+            //   https://cdn.mdpr.jp/photo/images/9b/c4b/w700c-ez_129677c70cb47761dc22432245d7f66fdae68c042b172144.jpg
+            // https://mdpr.jp/photo/images/2016/02/21/e_1997280.jpg
+            //   https://mdpr.jp/photo/images/2016/02/21/1997280.jpg
+            // https://mdpr.jp/photo/detail/3179461
+            //   https://cdn.mdpr.jp/photo/images/73/014/w700c-ez_923f6fd535f050dd50a0c1844e00845cfda81f02f814a731.jpg
+            // https://mdpr.jp/news/detail/1319088
+            //   https://mdpr.jp/photo/images/2014/01/17/600c-_1181978.jpg
+            //   https://mdpr.jp/photo/images/2014/01/17/e_1181978.jpg
+            //   https://cdn.mdpr.jp/photo/images/de/f96/w700c-ez_5f31b9207ce33a447ceff0069f5057adc853bf29a07018d6.jpg
+            // https://cdn.mdpr.jp/photo/images/ff/357/w720c-e_86733135a9e323a66d900f9f12614d8db65c8521f7b16fdc.jpg
+            // http://mdpr.jp/news/detail/1672412
+            //   https://cdn.mdpr.jp/photo/images/cb/aba/0_3c3602ff62198c52f8e11a287cfbf2542e7a8470e1cfdbc2.jpg
+            //  https://mdpr.jp/photo/detail/2714005
+            //   https://cdn.mdpr.jp/photo/images/4d/9be/0_eb892aca2b6f152631f04dbe0b7ec6d67bad6240e6373cd5.jpg
+            //   https://cdn.mdpr.jp/photo/images/4d/9be/0_eb892aca2b6f152631f04dbe05759594bb7ec6d6e6373cd5.jpg - broken
+            //   https://cdn.mdpr.jp/photo/images/4d/9be/w700c-ez_eb892aca2b6f152631f04dbe05759594bb7ec6d6e6373cd5.jpg
+            //   https://cdn.mdpr.jp/photo/images/4d/9be/eb892aca2b6f152631f04dbe0b7ec6d67bad6240e6373cd5.jpg
+        }
+
+        if (domain === "www.sponichi.co.jp") {
+            // http://www.sponichi.co.jp/entertainment/news/2017/12/12/jpeg/20171211s00041000381000p_thum.jpg
+            //   http://www.sponichi.co.jp/entertainment/news/2017/12/12/jpeg/20171211s00041000381000p_view.jpg
+            return src.replace(/_thum(\.[^/.]*)$/, "_view$1");
+        }
+
+        if (domain === "thumbnail.image.rakuten.co.jp") {
+            // source:
+            // https://books.rakuten.co.jp/rb/12499383/?scid=af_pc_etc&sc2id=af_111_1_10000673
+            //
+            // https://thumbnail.image.rakuten.co.jp/@0_mall/book/cabinet/3966/4907953093966.jpg?_ex=76x76
+            //   https://tshop.r10s.jp/book/cabinet/3966/4907953093966.jpg?fitin=200:300&composite-to=*,*|200:300
+            //   https://shop.r10s.jp/book/cabinet/3966/4907953093966.jpg
+            return src.replace(/.*?:\/\/[^/]*\/@[^/]*\/([^?]*).*?$/, "http://shop.r10s.jp/$1");
+        }
+
+        if (domain === "www.billboard-japan.com") {
+            // http://www.billboard-japan.com/scale/news/00000057/57632/800x_image.jpg - upscaled
+            // http://www.billboard-japan.com/scale/news/00000057/57981/170x170_image.jpg
+            return src.replace(/\/[0-9]+x(?:[0-9]+)?_([^/]*)$/, "/$1");
+        }
+
+        if (domain === "cdn.top.tsite.jp") {
+            // http://cdn.top.tsite.jp/static/top/sys/contents_image/038/778/192/38778192_0_sl.jpg
+            return src.replace(/_sl(\.[^/.]*)$/, "$1");
+        }
+
+        if (domain === "www.sanspo.com") {
+            // http://www.sanspo.com/geino/images/20171108/geo17110807000004-m1.jpg
+            //   http://www.sanspo.com/geino/images/20171108/geo17110807000004-p1.jpg
+            // http://www.sanspo.com/geino/images/20140818/oth14081805030011-s3.jpg
+            //   http://www.sanspo.com/geino/images/20140818/oth14081805030011-p3.jpg
+            // http://www.sanspo.com/geino/images/20140818/oth14081805030011-m1.jpg
+            //   http://www.sanspo.com/geino/images/20140818/oth14081805030011-p1.jpg
+            //
+            // p, m, n, s
+            // https://sankei2img.durasite.net/images//uploads/creative/image1/111885/20180221_bmw_150x150.jpg
+            //   http://www.sankei.com/images/news/180221/lif1802210001-p1.jpg -- unrelated?
+            return src.replace(/(\/images\/[0-9]*\/[^/]*-)[a-z]([0-9]+\.[^/.]*)$/, "$1p$2");
+        }
+
+        if (domain === "www.sonymusicshop.jp") {
+            // https://www.sonymusicshop.jp/img/1/item/SRC/L00/000/SRCL000009658_SHOP__576_320_102400_jpg.jpg?tf=gray
+            //   https://www.sonymusicshop.jp/img/1/item/SRC/L00/000/SRCL000009658_SHOP__9999999999999999_9999999999999999_102400_jpg.jpg?tf=gray
+            return src.replace(/__[0-9]+_[0-9]+(_[0-9]+_[a-z]+\.[a-z]*)(?:\?.*)?$/, "__9999999999999999_9999999999999999$1");
+        }
+
+        if (domain === "prtimes.jp") {
+            // https://prtimes.jp/i/13546/1204/thumb/68x45/d13546-1204-280004-0.jpg
+            // https://prtimes.jp/i/13546/826/resize/d13546-826-654115-3.jpg
+            // https://prtimes.jp/i/13546/826/original/d13546-826-654115-3.jpg
+            return src
+                .replace(/\/thumb\/[0-9]+x[0-9]+\//, "/original/")
+                .replace(/\/resize\/([^/]*)$/, "/original/$1");
+        }
+
+        if (domain.indexOf(".vietbao.vn") >= 0) {
+            // http://vietbao.vn/The-gioi-giai-tri/Hot-girl-Le-Huyen-Anh-Mong-xuan-nay-co-nguoi-som-hoi-cuoi/2147799797/235/ - article
+            // http://img.vietbao.vn/images/280/vn888/hot/v2014/cropping-1518416661-27540512-1833666450263816-461803420186171326-n.jpeg
+            //   http://img.vietbao.vn/images/0/vn888/hot/v2014/cropping-1518416661-27540512-1833666450263816-461803420186171326-n.jpeg - larger, not full
+            //      http://a9.vietbao.vn/images/vn888/hot/v2014/cropping-1518416661-27540512-1833666450263816-461803420186171326-n.jpeg - same
+            //
+            //   http://img.vietbao.vn/images/0/vn999/upload/hangct/27540512_1833666450263816_461803420186171326_n.jpg - full
+            //      http://a9.vietbao.vn/images/vn999/upload/hangct/27540512_1833666450263816_461803420186171326_n.jpg - orig
+            //
+            // http://vietbao.vn/The-gioi-giai-tri/Thieu-gia-giau-nhat-Trung-Quoc-lao-dao-vi-tin-chong-lung-tang-sieu-xe-tien-ty-cho-Tara/55932319/235/ - article
+            // http://a9.vietbao.vn/images/vn888/hot/v2014/cropping-1515483333-nhat-trung-quoc-lao-dao-vi-tin-chong-lung-tang-sieu-xe-tien-ty-cho-t-ara-1.jpeg
+            //   http://a9.vietbao.vn/images/vn999/55/2018/01/20180109-ia-giau-nhat-trung-quoc-lao-dao-vi-tin-chong-lung-tang-sieu-xe-tien-ty-cho-t-ara-1.jpg
+            return src
+                //.replace(/\/images\/[0-9]+\//, "/images/0/")
+                .replace(/:\/\/img\.vietbao\.vn\/images\/[0-9]+\//, "://a9.vietbao.vn/images/");
+        }
+
+        if (domain === "www.vir.com.vn") {
+            // http://www.vir.com.vn/stores/news_dataimages/hung/022018/22/09/in_article/croped/fred-gives-shakhtar-edge-over-roma.jpg
+            //   http://www.vir.com.vn/stores/news_dataimages/hung/022018/22/09/fred-gives-shakhtar-edge-over-roma.jpg
+            return src
+                .replace(/\/in_article\//, "/")
+                .replace(/\/croped\//, "/");
+        }
+
+        if (domain === "media.tinnong.net.vn") {
+            // http://media.tinnong.net.vn/uploaded/Images/Thumb/2018/02/22/Toi_dau_don_roi_bo_anh_de_den_voi_mot_nguoi_khong_binh_thuong_vi_mot_chu_hieu2_2202144833.jpg
+            return src.replace(/\/Images\/[^/]*\//, "/Images/Original/");
+        }
+
+        if (domain === "images.kienthuc.net.vn") {
+            // http://images.kienthuc.net.vn/zoomh/500/uploaded/nguyenvan/2018_02_22/vang/vang-1_CUMV.jpg
+            //   http://images.kienthuc.net.vn/uploaded/nguyenvan/2018_02_22/vang/vang-1_CUMV.jpg
+            return src.replace(/\/zoom[a-z]\/[0-9]*\//, "/");
+        }
+
+        if (domain === "rez.cdn.kul.vn") {
+            // http://rez.cdn.kul.vn/media/cache/thumbnail_16x10_672x420/uploads/media/thumbnail/59db/29/thumbnail_16x9_t-ara4.jpg
+            //   http://rez.cdn.kul.vn/uploads/media/kul/59db/28/kul_news_t-ara4.jpg
+            return src.replace(/\/media\/cache\/[^/]*\//, "/");
+        }
+
+        if (domain === "static.kstyle.com") {
+            // http://static.kstyle.com/stf/ad622b862613fa27895446d446bca918.jpg/r.580x0
+            //   http://static.kstyle.com/stf/ad622b862613fa27895446d446bca918.jpg
+            return src.replace(/\/r\.[0-9]+x[0-9]+$/, "");
+        }
+
+
+
 
 
 
@@ -3993,6 +4267,18 @@
             // http://coffeemegane.com/astronaut/uploads/s_buttertoast3.jpg
             // m, s, t
             return src.replace(/\/[a-z]_([^/]*)$/, "/$1");
+        }
+
+        if (src.match(/\/spree\/images\/attachments\/[0-9]+\/[0-9]+\/[0-9]+\//)) {
+            // https://static-assets.glossier.com/production/spree/images/attachments/000/001/802/square_tiny/1.jpg?1518217843
+            //   https://static-assets.glossier.com/production/spree/images/attachments/000/001/802/original/1.jpg?1518217843
+            return src.replace(/(\/spree\/images\/attachments\/[0-9]+\/[0-9]+\/[0-9]+\/)[^/]*\/([^/?]*)[^/]*?$/, "$1original/$2");
+        }
+
+        if (src.match(/\/applications\/core\/interface\/imageproxy\/imageproxy\.php/)) {
+            // https://www.gfsquad.com/forums/applications/core/interface/imageproxy/imageproxy.php?img=http%3A%2F%2Fpds.joins.com%2Fnews%2Fcomponent%2Filgan_isplus%2F201701%2F13%2F2017011315392489300.jpeg&key=6b519f95396e21199c45a761bfe54fadbb09cf562c31b39591a14f25386ea26c
+            //   http://pds.joins.com/news/component/ilgan_isplus/201701/13/2017011315392489300.jpeg
+            return decodeURIComponent(src.replace(/.*\/imageproxy\/imageproxy\.php.*?[&?]img=([^&]*).*?$/, "$1"));
         }
 
 
