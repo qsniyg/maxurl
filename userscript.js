@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.1.38
+// @version      0.1.39
 // @description  Redirects to the maximum possible size for images
 // @author       qsniyg
 // @include *
@@ -643,7 +643,17 @@
         }
 
         if (domain.indexOf("images.complex.com") >= 0) {
-            return src.replace(/\/images\/[^/]*_[^/]*\/[^/]*\//, "/images/");
+            // https://images.complex.com/complex/images/c_crop,h_2437,w_3289,x_0,y_1067/c_limit,w_680/fl_lossy,pg_1,q_auto/gc123hobhudxx063ak8v/converse-yung-lean-one-star
+            //   https://images.complex.com/complex/images/gc123hobhudxx063ak8v/converse-yung-lean-one-star
+            // https://images.complex.com/complex/image/upload/c_limit,w_680/fl_lossy,pg_1,q_auto/qh1ve8ncxzxlfiy9aauw.jpg
+            //   https://images.complex.com/complex/image/upload/qh1ve8ncxzxlfiy9aauw.jpg
+            // https://images.complex.com/complex/images/c_scale,w_1100/fl_lossy,pg_1,q_auto/blwjl76jv2vcqdgd3sqy/bella-thorne
+            //   https://images.complex.com/complex/images/blwjl76jv2vcqdgd3sqy/bella-thorne
+            // http://images.complex.com/complex/image/upload/t_article_image/ckxhi0lpw2jsvm3rx3f4.jpg
+            //   http://images.complex.com/complex/image/upload/ckxhi0lpw2jsvm3rx3f4.jpg
+            // https://images.complex.com/complex/images/c_scale,w_1100/fl_lossy,pg_1,q_auto/brfqstj5jihhzr9eu1bw/bella-thorne
+            //   https://images.complex.com/complex/images/brfqstj5jihhzr9eu1bw/bella-thorne
+            return src.replace(/\/(images|image\/upload)\/[^/]*_[^/]*\//, "/$1/");
         }
 
         if (// https://images.spot.im/image/upload/q_70,fl_lossy,dpr_1.0,h_300,w_320,c_fill,g_face/v200/production/watfc8itl4hcgavprfku
@@ -1003,6 +1013,12 @@
             return src.replace(/(\?[^/]*&?name=)[^&/]*([^/]*)$/, "$1orig$2");
         }
 
+        if (src.indexOf("pbs.twimg.com/profile_banners/") >= 0) {
+            // https://pbs.twimg.com/profile_banners/811769379020947458/1503413326/1500x500 -- stretched
+            //   https://pbs.twimg.com/profile_banners/811769379020947458/1503413326
+            return src.replace(/\/[0-9]+x[0-9]+$/, "");
+        }
+
         // disabling because too many urls are broken
         /*if (domain.indexOf("ytimg.googleusercontent.com") >= 0 ||
             domain.indexOf("i.ytimg.com") >= 0 ||
@@ -1218,6 +1234,10 @@
             domain === "www.rdfm-radio.fr" ||
             // http://image-api.nrj.fr/02_5a02579e3cb49.png?w=730&h=410
             domain === "image-api.nrj.fr" ||
+            // http://api.hdwallpapers5k.com/resource/fileuploads/photos/albums/1400/5382c527-5081-4bf4-8b2b-25ea11356bf4.jpeg?quality=100&w=2560&h=2560&mode=crop
+            domain === "api.hdwallpapers5k.com" ||
+            // http://images.en.koreaportal.com/data/images/full/14639/rita-ora.jpg?w=600
+            domain.match(/images\.[^.]*\.koreaportal\.com/) ||
             // http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
             // https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
             src.match(/\/demandware\.static\//) ||
@@ -1402,7 +1422,6 @@
             if (newsrc !== src)
                 return newsrc;
 
-            // wip
             // http://ichef.bbci.co.uk/wwhp/999/cpsprodpb/7432/production/_99764792_8e240163-62f5-4b0f-bf90-6def2cdc883b.jpg
             //   http://ichef.bbci.co.uk/news/999/cpsprodpb/7432/production/_99764792_8e240163-62f5-4b0f-bf90-6def2cdc883b.jpg
             // https://ichef.bbci.co.uk/news/999/media/images/79831000/jpg/_79831755_hewer2_bbc.jpg
@@ -1410,6 +1429,16 @@
             // https://ichef-1.bbci.co.uk/news/235/cpsprodpb/A771/production/_99756824_trumpmueller.jpg
             // http://ichef.bbci.co.uk/news/999/mcs/media/images/79839000/jpg/_79839098_bbcnickhewer.jpg
             //   http://news.bbcimg.co.uk/media/images/79839000/jpg/_79839098_bbcnickhewer.jpg
+            // http://news.bbcimg.co.uk/news/special/2016/newsspec_15380/img/trump_annotated_976v2.png
+            // http://news.bbcimg.co.uk/news/special/2017/newsspec_17595/img/hurricane_globe_v6.gif
+            // http://ichef.bbci.co.uk/news/976/cpsprodpb/11B74/production/_88046527_getty_ora.jpg
+            //   http://news.bbcimg.co.uk/media/images/88046527/jpg/_88046527_getty_ora.jpg -- not found
+            //   http://c.files.bbci.co.uk/11B74/production/_88046527_getty_ora.jpg
+            // http://news.bbcimg.co.uk/media/images/74104000/jpg/_74104195_6671990f-809f-432b-8699-7b5b92d053a0.jpg
+            // http://news.bbcimg.co.uk/media/images/61015000/jpg/_61015960_3a79d215-7772-4ec1-b157-1655c66793ad.jpg
+            // http://news.bbcimg.co.uk/news/special/2016/newsspec_12799/content/full-width/common/img/italy_graves_intro_1400.jpg
+            // https://ichef.bbci.co.uk/onesport/cps/800/cpsprodpb/41F9/production/_98998861_ragnbone.jpg
+            // http://c.files.bbci.co.uk/28EE/production/_98587401_afoty_624x351_player5.jpg
             //
             //
             // different cropping:
@@ -1420,11 +1449,13 @@
             if (newsrc !== src)
                 return newsrc;
 
+            return src.replace(/.*\/cpsprodpb\//, "https://c.files.bbci.co.uk/");
+
             var origsize = src.match(/\.bbci\.co\.uk\/[^/]*\/([0-9]*)\//);
-            if (origsize) {
+            if (origsize && false) { // scales up
                 var size = parseInt(origsize[1], 10);
-                if (size < 999) {
-                    return src.replace(/(\.bbci\.co\.uk\/[^/]*)\/[0-9]*\//, "$1/999/");
+                if (size < 2048) {
+                    return src.replace(/(\.bbci\.co\.uk\/[^/]*)\/[0-9]*\//, "$1/2048/");
                 }
             }
         }
@@ -1867,10 +1898,13 @@
 
         if (domain.indexOf(".media.tumblr.com") > 0 &&
             !src.match(/_[0-9]*\.gif$/)) {
-            // some gifs don't play properly
+            // some gifs don't play properly (same case with raw?)
             // handle this?
             // https://78.media.tumblr.com/25e643db76a1e626ff4e79faa2f7bb3d/tumblr_inline_mvspvogcB51sq8rci.jpg
-            return src.replace(/_[0-9]*(\.[^/.]*)$/, "_1280$1");
+            //return src.replace(/_[0-9]*(\.[^/.]*)$/, "_1280$1");
+            return src
+                .replace(/.*?:\/\/[^/]*\//, "http://data.tumblr.com/")
+                .replace(/_[0-9]*(\.[^/.]*)$/, "_raw$1");
         }
 
         if (domain === "s.booth.pm") {
@@ -2219,7 +2253,8 @@
             // https://img.buzzfeed.com/buzzfeed-static/static/2014-11/19/17/campaign_images/webdr03/nick-hewer-has-just-done-his-best-ever-facial-exp-2-32167-1416437197-0_dblbig.jpg
             // https://img.buzzfeed.com/buzzfeed-static/static/2018-01/26/9/campaign_images/buzzfeed-prod-fastlane-03/the-us-olympic-committee-demands-all-usa-gymnasti-2-2591-1516975268-0_dblwide.jpg
             // https://img.buzzfeed.com/buzzfeed-static/static/2018-01/26/8/campaign_images/buzzfeed-prod-fastlane-01/the-supreme-court-stopped-alabama-from-executing--2-14117-1516973637-0_dblwide.jpg
-            //   https://img.buzzfeed.com/buzzfeed-static/static/2018-01/25/22/asset/buzzfeed-prod-fastlane-02/sub-buzz-5552-1516935824-2.jpg
+            //   https://img.buzzfeed.com/buzzfeed-static/static/2018-01/25/22/asset/buzzfeed-prod-fastlane-02/sub-buzz-5552-1516935824-2.jpg -- unrelated?
+            // https://img.buzzfeed.com/buzzfeed-static/static/2016-05/12/16/enhanced/webdr08/original-6479-1463084088-1.jpg
             return src
                 .replace(/_big(\.[^/.]*)$/, "_dblbig$1")
                 .replace(/_wide(\.[^/.]*)$/, "_dblbig$1")
@@ -2543,6 +2578,8 @@
         }
 
         if (domain.indexOf(".vogue.fr") >= 0 ||
+            // http://www.glamourparis.com/uploads/images/thumbs/201637/48/rodarte_jpg_8718_north_458x687_white.jpg
+            domain === "www.glamourparis.com" ||
             domain === "www.gqmagazine.fr") {
             // https://en.vogue.fr/uploads/images/thumbs/201804/a0/tee_1841.jpeg_north_499x_white.jpg
             //   https://en.vogue.fr/uploads/images/201804/a0/tee_1841.jpeg
@@ -3744,6 +3781,8 @@
 
         if (domain.match(/c[0-9]*\.haibao\.cn/)) {
             // http://c3.haibao.cn/img/600_0_100_0/1258349756.6184/bigfiles/200946/1258349756.6184.jpg
+            // doesn't work: (any changes fail)
+            // http://c3.haibao.cn/img/600_0_100_1/1443219715.4295/44ceff65db35a823fafb9572341a17e4.jpg
             return src.replace(/\/img\/[0-9]+_[0-9]+_[0-9]+_[0-9]+\//, "/img/0_0_0_0/");
         }
 
@@ -4417,6 +4456,28 @@
             // https://media.guim.co.uk/25e99cf42defaf460da04eb3fa08fac1f10aac55/0_138_3500_2100/master/3500.jpg
             //   https://media.guim.co.uk/25e99cf42defaf460da04eb3fa08fac1f10aac55/0_138_3500_2100/3500.jpg
             return src.replace(/\/((?:[0-9]*_){3}[0-9]*)\/[^/]*\/([0-9]*\.[^/.]*)$/, "/$1/$2");
+        }
+
+        if (domain === "www.myproana.com") {
+            // http://www.myproana.com/uploads/gallery/album_28122/med_gallery_463850_28122_30414.jpg
+            return src.replace(/\/med_([^/]*)$/, "/$1");
+        }
+
+        if (domain === "vogue.gjstatic.nl") {
+            // https://vogue.gjstatic.nl/thumbnails/GenjArticleBundle/Article/fileUpload/medium/00/58/12/dit-heeft-gigi-hadid-te-zeggen-tegen-al-haar-body-shamers-5812.jpg
+            // https://vogue.gjstatic.nl/thumbnails/GenjArticleBundle/Article/fileUpload/detail/01/06/15/glitter-sparkle-shine-alexa-chung-staat-op-de-cover-van-vogue-december-2017-10615.jpg
+            // https://vogue.gjstatic.nl/uploads/media/image/dolce-gabbana-make-capri-a-paparazzi-free-zone_9.jpg
+            // https://vogue.gjstatic.nl/uploads/media/image/singer-songwriter-angela-vertelt-de-californie-hea-1.jpg
+            // https://vogue.gjstatic.nl/thumbnails/GenjArticleBundle/Article/teaserFileUpload/teaser/00/84/17/tommy-x-gigi-has-landed-dit-zijn-vogue-s-favorieten-uit-de-ultieme-cali-girl-collectie-8417.jpg
+            //   https://vogue.gjstatic.nl/thumbnails/GenjArticleBundle/Article/fileUpload/detail/00/84/17/tommy-x-gigi-has-landed-dit-zijn-vogue-s-favorieten-uit-de-ultieme-cali-girl-collectie-8417.jpg
+            // https://vogue.gjstatic.nl/thumbnails/GenjArticleBundle/Article/fileUpload/detail/00/89/30/gigi-hadid-verlengt-samenwerking-met-tommy-hilfiger-8930.jpg
+            //   https://vogue.gjstatic.nl/thumbnails/GenjArticleBundle/Article/fileUpload/big/00/89/30/gigi-hadid-verlengt-samenwerking-met-tommy-hilfiger-8930.jpg
+            // https://designer-vintage.gjstatic.nl/thumbnails/GenjArticleBundle/Article/fileUpload/detail/00/19/42/the-top-5-best-snow-white-winter-bags-1942.jpg
+            // https://designer-vintage.gjstatic.nl/uploads/media/image/the-exclusive-designer-vintage-summer-sale.jpg
+            // https://designer-vintage.gjstatic.nl/thumbnails/GenjArticleBundle/Article/fileUpload/detail/00/13/27/the-exclusive-designer-vintage-summer-sale-1327.jpg
+            return src
+                .replace(/\/teaserFileUpload\//, "/fileUpload/")
+                .replace(/\/fileUpload\/[^/]*\//, "/fileUpload/big/");
         }
 
 
