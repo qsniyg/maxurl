@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.1.37
+// @version      0.1.38
 // @description  Redirects to the maximum possible size for images
 // @author       qsniyg
 // @include *
@@ -664,6 +664,8 @@
             domain === "img.thedailybeast.com" ||
             // https://alibaba.kumpar.com/kumpar/image/upload/h_153,w_273,c_fill,ar_16:9,g_face,f_jpg,q_auto,fl_progressive,fl_lossy/hzwutxv6kqhrj3grgbtf.jpg
             domain === "alibaba.kumpar.com" ||
+            // https://5b0988e595225.cdn.sohucs.com/q_70,c_zoom,w_640/images/20180121/1fad12f07c90464295f05598305a08ad.jpeg
+            domain === "5b0988e595225.cdn.sohucs.com" ||
             // https://images.moviepilot.com/images/c_limit,q_auto:good,w_600/uom2udz4ogmkncouu83q/beauty-and-the-beast-credit-disney.jpg
             // https://images.moviepilot.com/image/upload/c_fill,h_64,q_auto,w_64/lpgwdrrgc3m8duvg7zt2.jpg
             domain === "images.moviepilot.com") {
@@ -703,8 +705,9 @@
             return src.replace(/(\/.image)\/[^/]*(\/[^/]*\/[^/]*)$/, "$1$2");
         }
 
-        if (domain.indexOf("www.vogue.de") >= 0 &&
+        if (domain.indexOf(".vogue.de") >= 0 &&
             src.indexOf("/storage/images/") >= 0) {
+            // http://m.vogue.de/var/vogue/storage/images/home/vogue/fashion-shows/kollektionen/fruehjahr-2017-hc/paris/alexandre-vauthier/runway/_arc0726/23291608-1-ger-DE/_arc0726_v540x910.jpg
             return src.replace(/_v[0-9]*x[0-9]*\.([^/]*)$/, ".$1");
         }
 
@@ -896,7 +899,11 @@
 
             // http://i.huffpost.com/gadgets/slideshows/331487/slide_331487_3313386_free.jpg
             // http://i.huffpost.com/gadgets/slideshows/331487/slide_331487_3313616_free.jpg
-            return src.replace(/(\/gen\/[0-9]*\/).*(\.[^/.?]*)(?:\?[^/]*)?$/, "$1original$2");
+            // http://i.huffpost.com/gadgets/slideshows/366854/slide_366854_4186736_compressed.jpg
+            // http://i.huffpost.com/gadgets/slideshows/278815/slide_278815_2063217_original.jpg
+            return src
+                .replace(/(\/gadgets\/slideshows\/[0-9]*\/slide_[^/]*_)[a-z]*(\.[^/.]*)$/, "$1original$2")
+                .replace(/(\/gen\/[0-9]*\/).*(\.[^/.?]*)(?:\?[^/]*)?$/, "$1original$2");
         }
 
         if ((domain.indexOf(".washingtonpost.com") >= 0 ||
@@ -1018,7 +1025,8 @@
 
         if (domain.match(/i[0-9]\.wp\.com/)) {
             // https://i1.wp.com/img-aws.ehowcdn.com/default/cme/cme_public_images/www_ehow_com/photos.demandstudios.com/getty/article/240/3/178773543_XS.jpg?resize=400%2C267
-            return src.replace(/.*\/i[0-9]\.wp\.com\/(.*?)\?.*$/, "http://$1");
+            // http://i0.wp.com/mmsns.qpic.cn/mmsns/7KE858KbWtJWJFCnub4OrBAHial0SicILILia7G2I1h6VwXG5cWSWpnPQ/0 -- redirect error, but works
+            return src.replace(/.*\/i[0-9]\.wp\.com\/(.*?)(?:\?.*)?$/, "http://$1");
         }
 
         if (domain.indexOf("imagesmtv-a.akamaihd.net") >= 0) {
@@ -1215,6 +1223,8 @@
             src.match(/\/demandware\.static\//) ||
             // https://cdn1.kongcdn.com/assets/avatars/defaults/robotboy.png?i10c=img.resize(width:40)
             src.match(/\?i10c=[^/]*$/) ||
+            // http://hypebeast.com/wp-content/blogs.dir/4/files/2018/01/louis-vuitton-2018-fall-winter-50.jpg?q=75&w=400
+            src.indexOf("/wp-content/blogs.dir/") >= 0 ||
             src.indexOf("/wp-content/uploads/") >= 0 ||
             src.indexOf("/wp/uploads/") >= 0) {
             src = src.replace(/\?[^/]*$/, "");
@@ -1933,8 +1943,12 @@
 
         if (domain.match(/images[0-9]*\.fanpop\.com/)) {
             // http://images6.fanpop.com/image/photos/33100000/Zetsuen-No-Tempest-zetsuen-no-tempest-33126825-2048-2970.jpg
+            //   http://images6.fanpop.com/image/photos/33100000/Zetsuen-No-Tempest-zetsuen-no-tempest-33126825.jpg
             // http://images1.fanpop.com/images/image_uploads/cf-calista-flockhart-912712_525_700.jpg
             // http://images.fanpop.com/images/image_uploads/Emma-Watson--emma-watson-95242_500_400.jpg
+            //
+            // http://images6.fanpop.com/image/photos/38000000/Zayn-Malik-2015-one-direction-38049270-2121-2500.jpg
+            //   http://images6.fanpop.com/image/photos/38000000/Zayn-Malik-2015-one-direction-38049270.jpg - doesn't work
             return src.replace(/([0-9]+)-[0-9]+-[0-9]+(\.[^/.]*)$/, "$1$2").replace(/([0-9]+)_[0-9]+_[0-9]+(\.[^/.]*)$/, "$1$2");
         }
 
@@ -2528,7 +2542,8 @@
                 .replace(/(:\/\/[^/]*)\/([^/-]*?-[0-9]*-)[^/-]*(-f[^/]*)?\//, "$1/$2redim$3/");
         }
 
-        if (domain.indexOf(".vogue.fr") >= 0) {
+        if (domain.indexOf(".vogue.fr") >= 0 ||
+            domain === "www.gqmagazine.fr") {
             // https://en.vogue.fr/uploads/images/thumbs/201804/a0/tee_1841.jpeg_north_499x_white.jpg
             //   https://en.vogue.fr/uploads/images/201804/a0/tee_1841.jpeg
             // https://en.vogue.fr/uploads/images/thumbs/201725/26/emma_watson__jpg_3972_jpeg_2620.jpeg_north_499x_white.jpg
@@ -2540,12 +2555,15 @@
             //   https://en.vogue.fr/uploads/images/201712/d2/gettyimages_647393804_jpg_9242.jpg
             // https://en.vogue.fr/uploads/images/thumbs/201712/a4/emma_watson_in_givenchy_hc_par_rt_jpg_340_north_499x_white.jpg
             //   https://en.vogue.fr/uploads/images/201712/a4/emma_watson_in_givenchy_hc_par_rt_jpg_340.jpg
+            //
+            // http://www.gqmagazine.fr/uploads/images/thumbs/201803/b7/_vui0653_jpg_9983_north_640x960_transparent.jpg
+            //   http://www.gqmagazine.fr/uploads/images/201803/b7/_vui0653_jpg_9983.jpg
             src = src
                 .replace("/images/thumbs/", "/images/");
             newsrc = src.replace(/(\.[^/._]*)_[^/]*$/, "$1");
             if (newsrc !== src)
                 return newsrc;
-            return src.replace(/_north_[0-9]*x_white(\.[^/.]*)$/, "$1");
+            return src.replace(/_north_[0-9]*x(?:[0-9]+)?_(?:white|transparent)(\.[^/.]*)$/, "$1");
         }
 
         if (domain === "img.culturacolectiva.com") {
@@ -3275,6 +3293,10 @@
         if (domain === "media.mnn.com" ||
             // https://alljapantours.com/places-to-visit-in-japan/most-beautiful-places-in-japan/img/issue_04most_photo01.jpg.pagespeed.ce.woxsyqYnu2.jpg
             domain === "alljapantours.com" ||
+            // http://shows.gqimg.com.cn/showspic/FashionImages/F2018MEN/paris/louis-vuitton/collection/_VUI0653h.jpg.100X150.jpg
+            domain === "shows.gqimg.com.cn" ||
+            // http://shows.vogueimg.com.cn/showspic/FashionImages/S2017CTR/paris/alexandre-vauthier/collection/_ARC0726h.jpg.100X150.jpg
+            domain === "shows.vogueimg.com.cn" ||
             domain === "d26oc3sg82pgk3.cloudfront.net" ||
             domain === "d53l9d6fqlxs2.cloudfront.net") {
             // https://media.mnn.com/assets/images/2017/03/cyclops-2-titanic-wreck.jpg.653x0_q80_crop-smart.jpg
@@ -3373,9 +3395,11 @@
         }
 
         if (domain === "www.thehindu.com" ||
+            domain === "www.gloria.hr" ||
             domain.match(/i[0-9]*-prod\.mirror\.co\.uk/) ||
             domain.match(/i[0-9]*-prod\.birminghammail\.co\.uk/) ||
             domain.match(/i[0-9]*-prod\.dailypost\.co\.uk/) ||
+            domain.match(/i[0-9]*-prod\.bristolpost\.co\.uk/) ||
             domain.match(/cdn-[0-9]*\.independent\.ie/)) {
             // wip
             // http://www.thehindu.com/migration_catalog/article14926809.ece/alternates/FREE_660/30MPSQUIRREL
@@ -3409,7 +3433,10 @@
             // https://i2-prod.mirror.co.uk/incoming/article9801836.ece/ALTERNATES/s810/SUNDAYPEOPLE-PROD-Tara-Palmer-Tomkinson.jpg
             // https://i2-prod.mirror.co.uk/incoming/article7009917.ece/BINARY/CS85701845-1.png
             // https://i2-prod.dailypost.co.uk/incoming/article12849370.ece/binary/BigBubble.jpg
-            return src.replace(/(\/article[0-9]*\.ece\/.*?)(?:alternates|ALTERNATES|AUTOCROP|autocrop)\/[^/]*\//, "$1BINARY/");
+            // https://i2-prod.bristolpost.co.uk/incoming/article1143957.ece/BINARY/Elise-Britten-profile-pic-square.jpg
+            // https://www.gloria.hr/moda/novosti/naomicampbell01jpg/6949668/alternates/FREE_580/NaomiCampbell01.jpg
+            //return src.replace(/(\/article[0-9]*\.ece\/.*?)(?:alternates|ALTERNATES|AUTOCROP|autocrop)\/[^/]*\//, "$1BINARY/");
+            return src.replace(/(?:alternates|ALTERNATES|AUTOCROP|autocrop)\/[^/]*\/([^/]*)$/, "BINARY/$1");
         }
 
         if (domain === "images.fandango.com") {
@@ -4309,6 +4336,87 @@
             return src
                 .replace(/\/img-set(.*?)&size=[^&]*/, "/img-set$1&size=c99999x99999")
                 .replace(/\/img-thing(.*?)&size=[^&]*/, "/img-thing$1&size=y");
+        }
+
+        if (domain === "aliyun-cdn.hypebeast.cn" &&
+            src.indexOf("/hypebeast.com/") >= 0) {
+            // https://aliyun-cdn.hypebeast.cn/hypebeast.com/wp-content/blogs.dir/4/files/2018/01/louis-vuitton-2018-fall-winter-50.jpg?q=75&w=400
+            return src.replace(/.*:\/\/[^/]*\//, "http://");
+        }
+
+        if (domain === "www.buro247.mn") {
+            // http://www.buro247.mn/thumb/1000x700/local/images/buro/galleries/2018/01/_VUI0653.jpg
+            //   http://www.buro247.mn/local/images/buro/galleries/2018/01/_VUI0653.jpg
+            // https://www.buro247.kz/thumb/125x185/galleries/2018/01/Vuitton%20m%20RF18%201109.jpg -- doesn't work (not .mn though)
+            return src.replace(/\/thumb\/[0-9]+x[0-9]+\//, "/");
+        }
+
+        if (domain === "www.elle.rs") {
+            // http://www.elle.rs/files.php?file=images/2018/01/kate_i_naomi_na_reviji_1_169904615.jpg
+            // http://www.elle.rs/thumbnail.php?file=images/2018/02/gucci_moschino_fall_winter_2018_abs___983890735.jpg&size=summary_large
+            //   http://www.elle.rs/files.php?file=images/2018/02/gucci_moschino_fall_winter_2018_abs___983890735.jpg
+            return src.replace(/\/thumbnail.php.*?file=([^&]*).*/, "/files.php?file=$1");
+        }
+
+        if (domain === "www.zkpm.net") {
+            // http://www.zkpm.net/img.php?url=http://mmbiz.qpic.cn/mmbiz_jpg/Hey2N7g1r13EPyvv9cxxvy7uYsT9NZuAkbahJGeFoQGO9r0Wwicu7Oh2YiceaMgfObxznBkn4hx61JzCYnwWwMNA/0?wx_fmt=jpeg
+            return src.replace(/.*\/img\.php.*?url=(.*)/, "$1");
+        }
+
+        if (domain === "img.xiaohuazu.com") {
+            // http://img.xiaohuazu.com/?tag=a&url=mmbizz-zqpicz-zcn/mmbiz_jpg/bm1gUegOAnjmwzCcibTuzlH2uqYZnAgPqZHUjew7icxAIAGIkfUdxFaBMuGs5wVEiboyXw4dS94DHATt6ibPhgCK1Q/0?wx_fmt=jpeg
+            //   http://mmbiz.qpic.cn/mmbiz_jpg/bm1gUegOAnjmwzCcibTuzlH2uqYZnAgPqZHUjew7icxAIAGIkfUdxFaBMuGs5wVEiboyXw4dS94DHATt6ibPhgCK1Q/0?wx_fmt=jpeg
+            return src.replace(/.*?[?&]url=(.*)/, "$1").replace(/z-z/g, ".").replace(/^/, "http://");
+        }
+
+        if (domain === "www.viewsofia.com") {
+            // https://www.viewsofia.com/upload/fck_editor_thumb/fck_editor/Image/LV18/_VUI0653.jpg
+            //   https://www.viewsofia.com/upload/fck_editor/fck_editor/Image/LV18/_VUI0653.jpg
+            return src.replace("/fck_editor_thumb/", "/fck_editor/");
+        }
+
+        if (domain.indexOf(".static.media.condenast.ru") >= 0) {
+            // https://d6.static.media.condenast.ru/vogue/collection/49d7fa92bdcb9696c7ebac700ca6983e.jpg/0ce73d99/o/t214x320
+            // http://static.glamour.ru/iblock/d4c/71048307.jpg
+            return src.replace(/\/[a-z][0-9]*(?:x[0-9]+)?$/, "/w99999999");
+        }
+
+        if (domain === "www.vogue.co.jp") {
+            // https://www.vogue.co.jp/uploads/media/2017/01/25/ALEXANDRE_VAUTHIER_2017SS_Haute_Couture_Collection_runway_gallery-26-171-256.jpg
+            //   https://www.vogue.co.jp/uploads/media/2017/01/25/ALEXANDRE_VAUTHIER_2017SS_Haute_Couture_Collection_runway_gallery-26.jpg
+            return src.replace(/-[0-9]+-[0-9]+(\.[^/.]*)$/, "$1");
+        }
+
+        if (domain === "cdn.vogue.mx") {
+            // http://cdn.vogue.mx/uploads/images/thumbs/mx/vog/2/c/2017/04/alexandre_vauthier_pasarela_387309230_377x566.jpg
+            //   http://cdn.vogue.mx/uploads/images/thumbs/mx/vog/2/c/2017/04/alexandre_vauthier_pasarela_387309230_1200x1800.jpg
+            //   http://cdn.vogue.mx/uploads/images/mx/vog/c/2017/04/alexandre_vauthier_pasarela_170811342.jpg
+            // http://cdn.vogue.mx/uploads/images/thumbs/mx/vog/2/c/2017/04/alexandre_vauthier_pasarela_170811342_185x278.jpg
+            //   http://cdn.vogue.mx/uploads/images/mx/vog/c/2017/04/alexandre_vauthier_pasarela_170811342.jpg
+            // http://cdn.vogue.mx/uploads/images/mx/vog/s/2016/10/familia_real_britanica_780685680.jpg
+            return src
+                .replace(/\/thumbs\/mx\/vog\/[0-9]*\/(.*)_[0-9]+x[0-9]+(\.[^/.]*)$/, "/mx/vog/$1$2")
+        }
+
+        if (domain.match(/\.ykt[0-9]*\.ru$/)) {
+            // http://cs-msk-fd-4.ykt2.ru/media/upload/photo/2015/11/16/thumb/561772143a52dw350h530cr.jpeg
+            // http://www.news.ykt.ru/upload/image/2017/04/55619/thumb/58ec2ea7219bd.jpg
+            return src.replace(/\/thumb\/([^/]*)$/, "/$1");
+        }
+
+        if (domain === "i.guim.co.uk") {
+            // https://static.guim.co.uk/sys-images/Guardian/Pix/pictures/2014/6/2/1401727592551/Jeremy-Paxman--014.jpg
+            // https://i.guim.co.uk/img/media/25e99cf42defaf460da04eb3fa08fac1f10aac55/0_138_3500_2100/master/3500.jpg?w=600&q=20&auto=format&usm=12&fit=max&dpr=2&s=5366bc1d02c96c9062f7c1c19318626f
+            //   https://media.guim.co.uk/25e99cf42defaf460da04eb3fa08fac1f10aac55/0_138_3500_2100/master/3500.jpg
+            // https://i.guim.co.uk/img/static/sys-images/Guardian/Pix/pictures/2015/2/18/1424261816248/34329776-7c4a-488a-a767-57ee9477cad3-2060x1236.jpeg
+            //   https://static.guim.co.uk/sys-images/Guardian/Pix/pictures/2015/2/18/1424261816248/34329776-7c4a-488a-a767-57ee9477cad3-2060x1236.jpeg
+            return src.replace(/:\/\/[^/]*\/img\/([^/]*)\/([^?]*).*?$/, "://$1.guim.co.uk/$2");
+        }
+
+        if (domain === "media.guim.co.uk") {
+            // https://media.guim.co.uk/25e99cf42defaf460da04eb3fa08fac1f10aac55/0_138_3500_2100/master/3500.jpg
+            //   https://media.guim.co.uk/25e99cf42defaf460da04eb3fa08fac1f10aac55/0_138_3500_2100/3500.jpg
+            return src.replace(/\/((?:[0-9]*_){3}[0-9]*)\/[^/]*\/([0-9]*\.[^/.]*)$/, "/$1/$2");
         }
 
 
