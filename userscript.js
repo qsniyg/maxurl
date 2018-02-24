@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.1.39
+// @version      0.1.40
 // @description  Redirects to the maximum possible size for images
 // @author       qsniyg
 // @include *
@@ -1896,15 +1896,38 @@
             return src.replace(/\/image_size\/[0-9]*x[0-9]*\//, "/image_size/0x0/");
         }
 
-        if (domain.indexOf(".media.tumblr.com") > 0 &&
+        if (domain.indexOf("media.tumblr.com") > 0 &&
             !src.match(/_[0-9]*\.gif$/)) {
             // some gifs don't play properly (same case with raw?)
             // handle this?
             // https://78.media.tumblr.com/25e643db76a1e626ff4e79faa2f7bb3d/tumblr_inline_mvspvogcB51sq8rci.jpg
-            //return src.replace(/_[0-9]*(\.[^/.]*)$/, "_1280$1");
-            return src
-                .replace(/.*?:\/\/[^/]*\//, "http://data.tumblr.com/")
-                .replace(/_[0-9]*(\.[^/.]*)$/, "_raw$1");
+            // https://static.tumblr.com/2074b5c013a08663cbfe4f86f54aad99/b70lpcc/m9Vnkyvyw/tumblr_static_d04dkibmyqokwgwsgcwggkowg.jpg
+            // https://static.tumblr.com/978c2da2706d61fcdc5a13083a05c70c/yffueik/n9Znvprsi/tumblr_static_bp7fdwcxpbwc8k440ksocks8c.png
+            // https://static.tumblr.com/rpaguup/J6wmdtouh/tumblr_mdipupjoku1r2xx88o1_500.png
+            //   http://data.tumblr.com/rpaguup/J6wmdtouh/tumblr_mdipupjoku1r2xx88o1_raw.png -- doesn't work
+            // http://media.tumblr.com/tumblr_m94wh56woC1ro0opg.png
+            // http://media.tumblr.com/bbeec3764efd6b63c14fe1e56f4f5b22/tumblr_inline_mn9bgayRCZ1qz4rgp.png
+            // https://78.media.tumblr.com/tumblr_m2p6yiRZNR1qha0cy.gif
+            // https://static.tumblr.com/ae53741763a8e9a937e587fd71c24ee5/065fclu/Okon9yxx0/tumblr_static_filename_640_v2.jpg
+            // https://static.tumblr.com/9d9cb03d00947212897f5fa390615bb1/szhmsgg/PW8ok7jgi/tumblr_static_tumblr_static__640.jpg
+            //
+            // working gifs:
+            // https://78.media.tumblr.com/4b9573a2fdd97a6e6cac771d4a0c0edd/tumblr_ntg9jreu9X1s5q5l6o4_400.gif
+            //   http://data.tumblr.com/4b9573a2fdd97a6e6cac771d4a0c0edd/tumblr_ntg9jreu9X1s5q5l6o4_raw.gif
+            // https://78.media.tumblr.com/e7976904bb598ed701324ee471056156/tumblr_ntg9jreu9X1s5q5l6o3_400.gif
+            //   http://data.tumblr.com/e7976904bb598ed701324ee471056156/tumblr_ntg9jreu9X1s5q5l6o3_raw.gif
+            if (src.match(/:\/\/[^/]*\/[0-9a-f]*\/[^/]*$/)) {
+                // https://78.media.tumblr.com/3ebf4c3e175553194b3c9a0867a47719/tumblr_nugefiK7yj1u0c780o1_500.jpg
+                //   http://data.tumblr.com/3ebf4c3e175553194b3c9a0867a47719/tumblr_nugefiK7yj1u0c780o1_raw.jpg
+                // https://78.media.tumblr.com/96a4d0ab5a1e05ecc6f3eb638a5504a5/tumblr_oxin3qLmFS1spqhdqo7_500.jpg
+                //   http://data.tumblr.com/96a4d0ab5a1e05ecc6f3eb638a5504a5/tumblr_oxin3qLmFS1spqhdqo7_raw.jpg -- width of 1400 (vs 1280)
+                return src
+                    .replace(/.*?:\/\/[^/]*\/(.*)_[0-9]*(\.[^/.]*)$/, "http://data.tumblr.com/$1_raw$2");
+            } else if (src.match(/:\/\/[^/]*\/[^/]*$/)) {
+                // https://78.media.tumblr.com/tumblr_m4fhyoiFd51rqmd7mo1_500.jpg
+                //   https://78.media.tumblr.com/tumblr_m4fhyoiFd51rqmd7mo1_1280.jpg
+                return src.replace(/_[0-9]*(\.[^/.]*)$/, "_1280$1");
+            }
         }
 
         if (domain === "s.booth.pm") {
@@ -4476,8 +4499,16 @@
             // https://designer-vintage.gjstatic.nl/uploads/media/image/the-exclusive-designer-vintage-summer-sale.jpg
             // https://designer-vintage.gjstatic.nl/thumbnails/GenjArticleBundle/Article/fileUpload/detail/00/13/27/the-exclusive-designer-vintage-summer-sale-1327.jpg
             return src
-                .replace(/\/teaserFileUpload\//, "/fileUpload/")
+                .replace(/\/teaserFileUpload\//, "/fileUpload/") // doesn't work on all
                 .replace(/\/fileUpload\/[^/]*\//, "/fileUpload/big/");
+        }
+
+        if (domain.match(/s[0-9]*\.favim\.com/)) {
+            // https://s10.favim.com/mini/171202/book-Favim.com-5265965.jpeg
+            //   https://s10.favim.com/orig/171202/book-Favim.com-5265965.jpeg
+            // https://s8.favim.com/mini/151114/girls-generation-icons-snsd-taeyeon-Favim.com-3566828.png
+            //   https://s8.favim.com/orig/151114/girls-generation-icons-snsd-taeyeon-Favim.com-3566828.png
+            return src.replace(/(:\/\/[^/]*\/)[^/]*\//, "$1orig/");
         }
 
 
