@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.1.40
+// @version      0.1.41
 // @description  Redirects to the maximum possible size for images
 // @author       qsniyg
 // @include *
@@ -1922,7 +1922,7 @@
                 // https://78.media.tumblr.com/96a4d0ab5a1e05ecc6f3eb638a5504a5/tumblr_oxin3qLmFS1spqhdqo7_500.jpg
                 //   http://data.tumblr.com/96a4d0ab5a1e05ecc6f3eb638a5504a5/tumblr_oxin3qLmFS1spqhdqo7_raw.jpg -- width of 1400 (vs 1280)
                 return src
-                    .replace(/.*?:\/\/[^/]*\/(.*)_[0-9]*(\.[^/.]*)$/, "http://data.tumblr.com/$1_raw$2");
+                    .replace(/:\/\/[^/]*\/(.*)_[0-9]*(\.[^/.]*)$/, "://s3.amazonaws.com/data.tumblr.com/$1_raw$2");
             } else if (src.match(/:\/\/[^/]*\/[^/]*$/)) {
                 // https://78.media.tumblr.com/tumblr_m4fhyoiFd51rqmd7mo1_500.jpg
                 //   https://78.media.tumblr.com/tumblr_m4fhyoiFd51rqmd7mo1_1280.jpg
