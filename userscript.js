@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.1.42
+// @version      0.1.43
 // @description  Redirects to the maximum possible size for images
 // @author       qsniyg
 // @include *
@@ -793,7 +793,9 @@
         }
 
         if (domain.indexOf("imagesvc.timeincapp.com") >= 0) {
-            return decodeURIComponent(src.replace(/.*image\?.*url=([^&]*).*/, "$1"));
+            // http://imagesvc.timeincapp.com/v3/foundry/image/?q=70&w=1440&url=https%3A%2F%2Ftimedotcom.files.wordpress.com%2F2017%2F11%2Fcolumbia-1.jpg%3Fquality%3D85
+            //   https://timedotcom.files.wordpress.com/2017/11/columbia-1.jpg
+            return decodeURIComponent(src.replace(/.*image\/?\?.*url=([^&]*).*/, "$1"));
         }
 
         if (domain.indexOf(".photoshelter.com") >= 0) {
@@ -2690,7 +2692,16 @@
             //   https://i.ebayimg.com/images/g/2lIAAOSwsS1Zkh1k/s-l9999.jpg
             // https://ssli.ebayimg.com/images/g/nqQAAOSwh2RZ6b1q/s-l500.jpg
             //   https://ssli.ebayimg.com/images/g/nqQAAOSwh2RZ6b1q/s-l9999.jpg
-            return src.replace(/-l[0-9]+(\.[^/.]*)$/, "-l9999$1");
+           // http://i.ebayimg.com/00/s/NjAwWDQ1MA==/z/mEAAAOSwKIpWBa25/$_23.JPG
+            //   http://i.ebayimg.com/images/g/mEAAAOSwKIpWBa25/s-l9999.jpg
+            newsrc = src.replace(/\/[0-9]+\/[a-z]+\/[^/]*\/[a-z]+\/([^/]+)\/[^/.]*(\.[^/.]*)$/, "/images/g/$1/s-l9999$2");
+            if (newsrc !== src) {
+                newsrc = newsrc.replace(/(.*\.)[^/.]*$/, "$1") + newsrc.replace(/.*\.([^/.]*)$/, "$1").toLowerCase();
+                return newsrc;
+            }
+
+            return src
+                .replace(/-l[0-9]+(\.[^/.]*)$/, "-l9999$1");
         }
 
         if (domain === "i.slkimg.com") {
@@ -4643,6 +4654,43 @@
             return src.replace(/:\/\/[^/]*\/(?:[^/_]*_[^/_]*\/)*/, "://static.ddmcdn.com/");
         }
 
+        if (domain.match(/images[0-9]*\.newegg\.com/)) {
+            // https://images10.newegg.com/ProductImageCompressAll300/A24G_131515246497615592Gsxgghs342.jpg
+            //   https://images10.newegg.com/ProductImageOriginal/A24G_131515246497615592Gsxgghs342.jpg
+            // https://images10.newegg.com/NeweggImage/ProductImage/11-129-212-Z01.jpg
+            //   https://images10.newegg.com/NeweggImage/ProductImageCompressAll1280/11-129-212-Z01.jpg
+            //   https://images10.newegg.com/ProductImageOriginal/11-129-212-Z01.jpg
+            // https://images10.newegg.com/NeweggImage/productimage/11-154-087-13.jpg
+            //   https://images10.newegg.com/ProductImageOriginal/11-154-087-13.jpg
+            // ignore:
+            // https://images10.newegg.com/BizIntell/item/11/129/11-129-209/a6_120817.jpg
+            return src.replace(/(:\/\/[^/]*\/)(?:NeweggImage\/)?(?:ProductImage|productimage)[^/]*\//, "$1ProductImageOriginal/");
+        }
+
+        if (domain === "images.costco-static.com" ||
+            domain.match(/images\.costcobusinesscentre\..*/)) {
+            // https://images.costco-static.com/ImageDelivery/imageService?profileId=12026539&imageId=1660214-894__1&recipeName=350
+            //   https://images.costco-static.com/ImageDelivery/imageService?profileId=12026539&imageId=1660214-894__1
+            // https://images.costcobusinesscentre.ca/ImageDelivery/imageService?profileId=12027981&imageId=1030100__1&recipeName=350
+            //   https://images.costcobusinesscentre.ca/ImageDelivery/imageService?profileId=12027981&imageId=1030100__1
+            return src
+                .replace(/([?&])recipeName=[^&]*/, "$1")
+                .replace(/&$/, "");
+        }
+
+        if (domain === "emerge-tech.s3.amazonaws.com") {
+            // https://emerge-tech.s3.amazonaws.com/content/thumb/24764608_main_thumb.jpeg
+            //   https://emerge-tech.s3.amazonaws.com/content/full/24764608_main_full.jpeg
+            return src.replace(/\/[a-z]*\/([0-9]*_[a-z]*_)[a-z]*(\.[^/.]*)$/, "/full/$1full$2");
+        }
+
+        if (domain.match(/img[0-9]*(?:-[^.]*)?\.wfcdn\.com/)) {
+            // https://secure.img1-fg.wfcdn.com/im/46823086/resize-h800%5Ecompr-r85/1292/12924520/Water+Resistant+Combination+Security+Safe+with+Dial+/+Combination/Key/Dual-Lock.jpg
+            //   https://secure.img1-fg.wfcdn.com/im/46823086/compr-r85/1292/12924520/Water+Resistant+Combination+Security+Safe+with+Dial+/+Combination/Key/Dual-Lock.jpg
+            // https://secure.img1-fg.wfcdn.com/lf/maxsquare/hash/11510/9457200/1/Waverly-Imperial-Dress-Porcelain-50-Curtain-Valance.jpg
+            return src.replace(/(\/im\/[0-9]+\/)[^/]*\//, "$1compr-r85/");
+        }
+
 
 
 
@@ -4770,18 +4818,21 @@
         }
 
         if (domain.indexOf("cdn.vox-cdn.com") >= 0 ||
-            src.indexOf(/:\/\/[^/]*\/thumbor\/[^/]*=\//) >= 0) {
+            src.match(/:\/\/[^/]*\/thumbor\/[^/]*=\//) ||
+            src.match(/:\/\/[^/]*\/resizer\/[^/]*=\/[0-9]+x[0-9]+\/filters:[^/]*\//)) {
             // https://cdn.vox-cdn.com/thumbor/ta2xdyUViVrBXCLGapdwLY7is_s=/0x0:3000x2355/1200x800/filters:focal(1116x773:1596x1253)/cdn.vox-cdn.com/uploads/chorus_image/image/55856727/815434448.0.jpg
             // https://cdn.vox-cdn.com/thumbor/dXu99BQwBagCavae7oYNG0uBfxQ=/0x46:1100x779/1200x800/filters:focal(0x46:1100x779)/cdn.vox-cdn.com/assets/1763547/Screenshot_2012.11.12_10.39.10.jpg
             // https://cdn.vox-cdn.com/thumbor/iTJF1PhWPiR3-LoITuXxS2u8su0=/1200x0/filters:no_upscale()/cdn.vox-cdn.com/uploads/chorus_asset/file/4998263/keenan_2010.0.jpg
             // https://dotesports-cdn-prod-tqgiyve.stackpathdns.com/thumbor/baiRf8sOE9flXNjU5cHytZ9fqwA=/1200x0/filters:no_upscale()/https://dotesports-cdn-prod-tqgiyve.stackpathdns.com/article/ee3f5018-0e8b-4e5f-b040-c466c8979315.png
             //   https://dotesports-cdn-prod-tqgiyve.stackpathdns.com/article/ee3f5018-0e8b-4e5f-b040-c466c8979315.png
+            // https://www.armytimes.com/resizer/M5qc8PYkbDFYKpOg0Bt-5rxWMXE=/1200x0/filters:quality(100)/arc-anglerfish-arc2-prod-mco.s3.amazonaws.com/public/QRMIMUNV7ZDDJFOLI5FJSYZKQI.jpg
+            //   http://arc-anglerfish-arc2-prod-mco.s3.amazonaws.com/public/QRMIMUNV7ZDDJFOLI5FJSYZKQI.jpg
             //return src.replace(/.*\/thumbor\/.*?\/([^/]*\..*)/, "http://$1");
-            newsrc = src.replace(/.*\/thumbor\/.*?\/filters:[^/]*\/([a-z]*:\/\/.*)/, "$1");
+            newsrc = src.replace(/.*\/(?:thumbor|resizer)\/.*?\/filters:[^/]*\/([a-z]*:\/\/.*)/, "$1");
             if (newsrc !== src)
                 return newsrc;
 
-            return src.replace(/.*\/thumbor\/.*?\/filters:[^/]*\/([^/]*\..*)/, "http://$1");
+            return src.replace(/.*\/(?:thumbor|resizer)\/.*?\/filters:[^/]*\/([^/]*\..*)/, "http://$1");
         }
 
         if (src.match(/:\/\/[^/]*\/astronaut\/uploads\/[a-z]_[^/]*$/)) {
