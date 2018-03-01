@@ -141,7 +141,7 @@ function dourl(url, post) {
                             newdata.width > data.width))) {
             var comment = "" + r.toFixed(1) + "x larger (" + newdata.width + "x" + newdata.height + ") version of linked image:\n\n" + big + "\n\n";
             comment += "*****\n\n";
-            comment += "^[source&nbsp;code](https://github.com/qsniyg/maxurl)&nbsp;|&nbsp;[userscript](https://greasyfork.org/en/scripts/36662-image-max-url)";
+            comment += "^[source&nbsp;code](https://github.com/qsniyg/maxurl)&nbsp;|&nbsp;[userscript&nbsp;(redirects&nbsp;images)](https://greasyfork.org/en/scripts/36662-image-max-url)";
             console.log(comment);
             if (post)
               post.reply(comment);
