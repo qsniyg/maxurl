@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.1.44
+// @version      0.1.45
 // @description  Redirects to the maximum possible size for images
 // @author       qsniyg
 // @include *
@@ -375,6 +375,8 @@
             domain === "www.egn.kr" ||
             // http://www.whitepaper.co.kr/news/thumbnail/201802/95633_76403_5942_v150.jpg
             domain === "www.whitepaper.co.kr" ||
+            // http://www.outdoornews.co.kr/news/thumbnail/201802/30078_79659_4819_v150.jpg
+            domain === "www.outdoornews.co.kr" ||
             // http://www.newstown.co.kr/news/thumbnail/201801/311251_198441_4816_v150.jpg
             domain.indexOf("www.newstown.co.kr") >= 0) {
             return src
@@ -422,9 +424,26 @@
             //   http://ekr.chosunonline.com/site/data/img_dir/2018/02/23/2018022301051_1.jpg
             // http://ekr.chosunonline.com/site/data/thumb_dir/2018/02/21/2018022101757_3_thumb.jpg
             //   http://ekr.chosunonline.com/site/data/img_dir/2018/02/21/2018022101757_3.jpg
+            // http://sccdn.chosun.com/news/photobook/201504/13267_scr_201504140000000022741_t.jpg
+            //   http://sccdn.chosun.com/news/photobook/201504/13267_201504140000000022741.jpg
+            // http://sccdn.chosun.com/news/photobook/201504/13267_2015041400000000000122741_t.jpg
+            //   http://sccdn.chosun.com/news/photobook/201504/13267_2015041400000000000122741.jpg
+            // http://sccdn.chosun.com/news/photobook/201203/4488_scr_%EB%8D%9C%EB%8D%9C_t.jpg
+            //
             // doesn't work:
             // http://woman.chosun.com/up_fd/wc_news/2018-01/simg_org/1801_164s.jpg
             // http://ekr.chosunonline.com/site/data/img_dir/2015/07/16/2015071601601_thumb.jpg
+            // large:
+            // http://sccdn.chosun.com/news/photobook/201710/23202_2017101301010007001.jpeg
+            // http://sccdn.chosun.com/news/photobook/201412/11896_20141201010101000972.jpeg
+            // http://sccdn.chosun.com/news/photobook/201607/18084_207777778888816070401010002381.jpeg
+            // http://sccdn.chosun.com/news/photobook/201412/11896_2014120101000156100006731.jpg - small
+            // http://sccdn.chosun.com/news/photobook/201412/11896_2014120101000155800006701.jpg - ^
+
+            if (domain === "sccdn.chosun.com") {
+                return src.replace(/\/([0-9]*_)(?:scr_)?([^._/]*)(?:_t)?(\.[^/.]*)$/, "/$1$2$3");
+            }
+
             return src
                 //.replace(/\/simg_(?:thumb|org)\/([^/]*)s(\.[^/.]*)$/, "/bimg_org/$1$2")
                 .replace("/simg_thumb/", "/simg_org/")
@@ -1122,8 +1141,15 @@
             return decodeURIComponent(src.replace(/.*i\.amz\.mshcdn\.com\/[^/]*\/[^/]*\/[^/]*\/([^/]*).*/, "$1"));
         }
 
-        if (domain.indexOf("s.yimg.com") >= 0) {
-            return src.replace(/.*\/[^/]*\/api\/[^/]*\/[^/]*\/[^/]*\/[^/]*\//, "");
+        if (domain.indexOf("s.yimg.com") >= 0 ||
+            domain === "l.yimg.com") {
+            // http://l.yimg.com/bt/api/res/1.2/YIgTLkK5SkGYHzqDt4_e8Q--/YXBwaWQ9eW5ld3M7cT04NQ--/http:/mit.zenfs.com/316/2011/11/T-ZUCKERBERG_AP.jpg
+            //   http://mit.zenfs.com/316/2011/11/T-ZUCKERBERG_AP.jpg
+            // https://s.yimg.com/uu/api/res/1.2/dO0cMruL5vXOYMSnK577KQ--~B/aD03OTg7dz0xMzMwO3NtPTE7YXBwaWQ9eXRhY2h5b24-/https://s.yimg.com/cd/resizer/2.0/FIT_TO_WIDTH-w1330/a8b0bce04276cee4a1a80ea615a18c6e087e3b28.jpg
+            //   https://s.yimg.com/cd/resizer/2.0/FIT_TO_WIDTH-w1330/a8b0bce04276cee4a1a80ea615a18c6e087e3b28.jpg
+            return src
+                .replace(/.*\/[^/]*\/api\/[^/]*\/[^/]*\/[^/]*\/[^/]*\//, "")
+                .replace(/^([a-z]*:\/)([^/])/, "$1/$2");
         }
 
         if (domain.indexOf("image.iol.co.za") >= 0) {
@@ -1166,6 +1192,10 @@
             // http://akns-images.eonline.com/eol_images/Entire_Site/2014519/rs_1024x759-140619060822-1024.Harry-Potter-Cast-JR-61914.jpg
             domain.indexOf("akns-images.eonline.com") >= 0 ||
             domain.indexOf("www.telegraph.co.uk") >= 0 ||
+            // http://subscriber.telegraph.co.uk/content/dam/news/2018/01/08/GettyImages-862428716_trans_NvBQzQNjv4BqZgEkZX3M936N5BQK4Va8RWtT0gK_6EfZT336f62EI5U.jpg?imwidth=480
+            domain === "subscriber.telegraph.co.uk" ||
+            // https://secure.aws.telegraph.co.uk/content/dam/wellbeing/2016/12/28/graham5_trans_NvBQzQNjv4BqNyaloxhBNUSEitvcqmzeaNrVK9LoR4c_wZH1EhIay9c.jpg?imwidth=480
+            domain.indexOf("aws.telegraph.co.uk") >= 0 ||
             domain.indexOf("img.buzzfeed.com") >= 0 ||
             // p1.music.126.net
             domain.search(/p[0-9]\.music\.126\.net/) >= 0 ||
@@ -2180,7 +2210,10 @@
             return src.replace(/_[0-9]*_[0-9]*(\.[^/.]*)$/, "$1");
         }
 
-        if (domain === "www.telegraph.co.uk") {
+        if (domain === "www.telegraph.co.uk" ||
+            // https://secure.aws.telegraph.co.uk/content/dam/wellbeing/2016/12/28/graham5_trans_NvBQzQNjv4BqNyaloxhBNUSEitvcqmzeaNrVK9LoR4c_wZH1EhIay9c.jpg?imwidth=480
+            domain.indexOf("aws.telegraph.co.uk") >= 0 ||
+            domain === "subscriber.telegraph.co.uk") {
             // http://www.telegraph.co.uk/content/dam/men/2016/02/26/Headerraz-small_trans_NvBQzQNjv4BqqVzuuqpFlyLIwiB6NTmJwfSVWeZ_vEN7c6bHu2jJnT8.jpg
             //       http://www.telegraph.co.uk/content/dam/men/2016/02/26/Headerraz_trans_NvBQzQNjv4BqqVzuuqpFlyLIwiB6NTmJwfSVWeZ_vEN7c6bHu2jJnT8.jpg
             // http://www.telegraph.co.uk/content/dam/luxury/2018/01/17/018_MM4_9844-large_trans_NvBQzQNjv4BqeqwG1mMdY8c_ukC_8VAhqgb1Y9UHRh9-1rvsHveO7k8.JPG
@@ -2194,19 +2227,28 @@
             return src.replace(/-(?:x*(?:large|medium|small))(_[^/]*)?(\.[^/.]*$)$/, "$1$2");
         }
 
-        if (domain === "i.telegraph.co.uk") {
+        if (domain === "i.telegraph.co.uk" ||
+            domain === "secure.i.telegraph.co.uk") {
             // works:
             // http://i.telegraph.co.uk/multimedia/archive/03218/Hogwarts_3218917c.jpg
             // k, a, m, i, b, n, l, c, d, e, f, g, o, p, j, h
             // doesn't work:
             // http://i.telegraph.co.uk/multimedia/archive/02804/Felicity-Jones_2804773c.jpg
             // n, b, i, l, d, c, a, f, g, o, p, j, h
-            return src.replace(/[a-z](\.[^/.]*)$/, "k$1");
+            // doesn't work:
+            // https://secure.i.telegraph.co.uk/multimedia/archive/03443/London-Connections_3443046a.jpg
+            //
+            // https://i.telegraph.co.uk/multimedia/archive/03049/night-tube-full_3049237a.jpg
+            //   https://i.telegraph.co.uk/multimedia/archive/03049/night-tube-full_3049237a.jpg - smaller
+            //return src.replace(/[a-z](\.[^/.]*)$/, "k$1");
         }
 
         if (domain === "image.munhwa.com") {
             // http://image.munhwa.com/gen_thumb/201605/20160510MW162123225413_120.jpg
             //    http://image.munhwa.com/gen_news/201605/20160510MW162123225413_b.jpg
+            // http://image.munhwa.com/gen_news/201708/2017081701032603000001_b.jpg
+            // http://marathon.munhwa.com/munhwa_anyadmin/amboard/imgview.php?no=785&fno=23996&group=basic&code=gallery - very large
+            //   http://marathon.munhwa.com/netizen/index02.php?sno=60&group=basic&code=gallery&category=&&abmode=view&no=23996&bsort=&bfsort=&PHPSESSID=91245c6b3debc2a851d802574460ea78 - article
             return src.replace("/gen_thumb/", "/gen_news/").replace(/_[^/._]*(\.[^/.]*$)/, "_b$1");
         }
 
@@ -2228,6 +2270,9 @@
 
         if (domain.indexOf(".kukinews.com") >= 0 ||
             domain === "www.inews365.com" ||
+            // http://www.newsinstar.com/data/cache/public/photos/20180309/art_15200463472991_6c6a6f_90x60_c0.jpg
+            //   http://www.newsinstar.com/data/photos/20180309/art_15200463472991_6c6a6f.jpg
+            domain === "www.newsinstar.com" ||
             domain === "www.ddaily.co.kr") {
             // http://www.inews365.com/data/cache/public/photos/20180205/art_15174759398393_648x365.jpg
             //   http://www.inews365.com/data/photos/20180205/art_15174723165416.jpg
@@ -2236,7 +2281,10 @@
             //   http://cdn.kukinews.com/data/photos/cdn/20180104/art_1516601165.jpg
             // http://news.kukinews.com/data/cache/public/photos/20180119/art_1516353322_300x190.jpg
             //   http://news.kukinews.com/data/photos/20180119/art_1516353322.jpg
-            return src.replace(/\/data\/cache\/public\//, "/data/").replace(/_[0-9]+x[0-9]+\.([^/.]*)/, ".$1");
+            // http://cdn.kukinews.com/data/photos/kukiArticle/2011/0719/2011071901.jpg - 3594x2202
+            // http://m.kukinews.com/data/photos/kukiArticle/2013/0527/09251832521234.jpg - 4636x2891
+            // http://cdn.kukinews.com/data/photos/kukiArticle/2013/1208/contax_34.jpg
+            return src.replace(/\/data\/cache\/public\//, "/data/").replace(/_[0-9]+x[0-9]+(?:_c[0-9]*)?\.([^/.]*)/, ".$1");
         }
 
         // wip
@@ -2246,19 +2294,26 @@
         //   http://cdn.emetro.co.kr/imagebank/2018/01/23/0320/20180123000047.jpg - 320 pixels
         // http://cdn.emetro.co.kr/html/image_view.php?f=20180123000037.jpg&x=122&y=105&b=0&p=tc&ds=1024
         //   http://cdn.emetro.co.kr/imagebank/2018/01/23/0640/20180123000037.jpg
+        // http://cdn.emetro.co.kr/html/image_view_maxw.php?f=20180207000150.jpg&x=640&ds=640
+        //   http://cdn.emetro.co.kr/html/image_view_maxw.php?f=20180207000150.jpg&x=9999&ds=9999
+        //   http://cdn.emetro.co.kr/html/image_view_maxw.php?f=20180207000150.jpg&x=9999999999&ds=9999999999
         //
         // p: position (tl = top left, tc = top center?, etc.), optional
         // d: quality? the higher it is, the less blurry it is, optional
         // b: no idea, optional
         // x, y: required, 0 doesn't work (blank page), -1 returns a 10x10? image, 1 returns 1px, larger stretches it
         if (domain === "cdn.emetro.co.kr") {
-            origsize = src.match(/\/([0-9]*)\/[^/]*$/);
+            return src
+                .replace(/\/image_view\.php.*?[?&]f=([^&]*).*/, "/image_view_maxw.php?f=$1&x=9999999999&ds=9999999999")
+                .replace(/\/imagebank\/[0-9]*\/[0-9]*\/[0-9]*\/[0-9]*\/([^/]*)$/, "/html/image_view_maxw.php?f=$1&x=9999999999&ds=9999999999")
+                .replace(/\/image_view_maxw.php.*?[?&]f=([^&]*).*/, "/image_view_maxw.php?f=$1&x=9999999999&ds=9999999999");
+            /*origsize = src.match(/\/([0-9]*)\/[^/]*$/);
             if (origsize) {
                 size = parseInt(origsize[1], 10);
                 if (size < 1024) {
                     return src.replace(/\/[0-9]*(\/[^/]*)$/, "/1024$1");
                 }
-            }
+            }*/
         }
 
         if (domain === "50.7.164.242:8182") {
@@ -4793,6 +4848,23 @@
             return src.replace(/.*\/services\/proxy\/[0-9]+\/[^/]*\/([a-z]+)\/(.*)$/, "$1://$2");
         }
 
+        if (domain === "www.mbcsportsplus.com") {
+            // http://www.mbcsportsplus.com/images/img.php?srv=1&type=m&src=/201803/99908540_2018030209204161.jpg&gImg=1&refresh=&w=300
+            //   http://www.mbcsportsplus.com/data/home/data/msplMain/201803/99908540_2018030209204161.jpg
+            if (src.match(/[?&]type=m[^a-z0-9A-Z]/))
+                return src.replace(/\/images\/img\.php.*?[?&]src=([^&]*).*/, "/data/home/data/msplMain");
+        }
+
+        if (domain.match(/s[0-9]*cdn\.joomag\.com/)) {
+            // https://view.joomag.com/%EB%85%84-%EC%9B%94%ED%98%B8-maxim%EB%A7%A5%EC%8B%AC-%ED%91%9C%EC%A7%80%EB%AA%A8%EB%8D%B8-%EB%A0%88%EC%9D%B8%EB%B3%B4%EC%9A%B0-%EC%A7%80%EC%88%99-%EC%B5%9C%ED%98%84%EC%84%9D-new-07-2015/0970864001438089053
+            // https://s2cdn.joomag.com/mobile/0/548/548615/102_1-0.PNG?.1520177124
+            //   https://s2cdn.joomag.com/mobile/0/548/548615/102_0-0.PNG?.1520177124
+            //   https://www.joomag.com/Frontend/WebService/getPageCopy.php?uID=0/548/548615/102_0-0.PNG
+            // https://s2cdn.joomag.com/res_mag/0/305/305387/548615/thumbs/spread/102.jpg?1458945882
+            //   https://s2cdn.joomag.com/res_mag/0/305/305387/548615/thumbs/spread/101.jpg?1458945882 - 101 == 102
+            return src.replace(/(\/mobile\/.*\/[0-9]+_)[0-9]+(-[0-9]*\.[^/]*)$/, "$10$2");
+        }
+
 
 
 
@@ -4829,8 +4901,14 @@
         // http://cgeimage.commutil.kr/phpwas/restmb_setimgmake.php?w=90&h=60&m=1&simg=201712231138280443342246731f35814122117.jpg
         //   http://cgeimage.commutil.kr/phpwas/restmb_allidxmake.php?idx=999&simg=201712231138280443342246731f35814122117.jpg
         // http://res.heraldm.com/phpwas/restmb_jhidxmake.php?idx=5&simg=201507120010285799190_20150712001052_01.jpg
+        // doesn't work:
+        // http://cliimage.commutil.kr/phpwas/restmb_setimgmake.php?w=550&h=412&m=5&simg=2018030210280201075d307c1aeb0121131233211.jpg
+        //   http://cliimage.commutil.kr/phpwas/restmb_setimgmake.php?idx=999&simg=2018030210280201075d307c1aeb0121131233211.jpg
+        //   error: nIdx null
+        //   http://cliimage.commutil.kr/phpwas/restmb_allidxmake.php?idx=999&simg=2018030210280201075d307c1aeb0121131233211.jpg - works
         if (src.search(/\/phpwas\/restmb_[a-z]*make\.php\?/) >= 0) {
-            if (domain === "cgeimage.commutil.kr") {
+            if (domain === "cgeimage.commutil.kr" ||
+                domain === "cliimage.commutil.kr") {
                 src = src.replace(/\/phpwas\/restmb_[a-z]*make\.php/, "/phpwas/restmb_allidxmake.php");
             }
 
