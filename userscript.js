@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.1.46
+// @version      0.1.47
 // @description  Redirects to the maximum possible size for images
 // @author       qsniyg
 // @include *
@@ -144,6 +144,8 @@
         }
 
         if (domain.indexOf("img.tenasia.hankyung.com") >= 0) {
+            // http://img.hankyung.com/photo/201612/AA.12967766.4.jpg -- larger than .1.
+            //   http://img.hankyung.com/photo/201612/AA.12967766.1.jpg
             return src.replace(/-[0-9]+x[0-9]+\.([^/.]*)$/, ".$1");
         }
 
@@ -324,7 +326,40 @@
             // http://thumb.mt.co.kr/06/2017/12/2017122222438260548_1.jpg
             // 06 and 21 seem to be identical
             // after that, in order of size: 05, 07, 17, 11, 16, 10, 20, 04, 15, 03, 14, 19
-            src = src.replace(/(thumb\.[^/]*)\/[0-9]+(\/[0-9]*\/[0-9]*\/[^/]*).*/, "$1/06$2");
+            src = src.replace(/(thumb\.[^/]*)\/[0-9]+(\/[0-9]*\/[0-9]*\/[^/]*).*/, "$1/07$2");
+        }
+
+        if (domain === "menu.mt.co.kr") {
+            // http://moneys.mt.co.kr/photoDb/mwPhotoDbList.php?no=2017013115555978429&page=1&idx=3
+            //   http://menu.mt.co.kr/moneyweek/photoDb/2017/01/31/20170131155559784294333.jpg/dims/optimize
+            //   http://menu.mt.co.kr/moneyweek/thumb/2017/01/31/06/2017013115108024857_1.jpg -- smaller
+            //   http://menu.mt.co.kr/moneyweek/thumb/2017/01/31/00/2017013115108024857_1.jpg -- not found
+            // http://menu.mt.co.kr/moneyweek/thumb/2018/03/05/19/2018030511008030850_1.jpg
+            //   http://menu.mt.co.kr/moneyweek/thumb/2018/03/05/06/2018030511008030850_1.jpg
+            //   http://menu.mt.co.kr/moneyweek/thumb/2018/03/05/00/2018030511008030850_1.jpg -- larger
+            // http://menu.mt.co.kr/moneyweek/thumb/2017/11/16/00/2017111614558031796_1.jpg/dims/optimize/
+            //   http://menu.mt.co.kr/moneyweek/thumb/2017/11/16/00/2017111614558031796_1.jpg
+            //   http://menu.mt.co.kr/moneyweek/thumb/2017/11/16/06/2017111614558031796_1.jpg -- smaller
+            // http://menu.mt.co.kr/moneyweek/thumb/2018/01/14/00/2018011416088035798_2.jpg/dims/optimize/
+            // http://menu.mt.co.kr/moneyweek/thumb/2018/03/09/06/2018030917238012410_1.jpg (found on sidebar)
+            //   http://menu.mt.co.kr/moneyweek/thumb/2018/03/09/00/2018030917238012410_1.jpg
+            // http://menu.mt.co.kr/moneyweek/thumb/2017/06/24/06/2017062410078087905_1.jpg - larger than 00, but looks scaled
+
+            // http://menu.mt.co.kr/moneyweek/thumb/2017/05/26/00/2017052617068063683_1.jpg -- works
+            // http://menu.mt.co.kr/moneyweek/thumb/2017/05/23/00/2017052310108026652_1.jpg -- doesn't
+            var obj = src.match(/\/thumb\/(?:[0-9]+\/){3}([0-9]+)\//);
+            if (obj && obj[1] !== "00") {
+                var obj1_str = src.replace(/.*\/thumb\/([0-9]+\/[0-9]+\/[0-9]+\/).*/, "$1").replace(/\//g, "");
+                var obj1 = parseInt(obj1_str);
+                console.log(obj1_str);
+                if (obj1 >= 20170526)
+                    src = src.replace(/(\/thumb\/(?:[0-9]+\/){3})[0-9]+\//, "$100/");
+                else
+                    src = src.replace(/(\/thumb\/(?:[0-9]+\/){3})[0-9]+\//, "$106/");
+            }
+
+            return src
+                .replace(/\/dims\/.*/, "");
         }
 
         if (domain.indexOf("stardailynews.co.kr") >= 0 ||
@@ -377,6 +412,22 @@
             domain === "www.whitepaper.co.kr" ||
             // http://www.outdoornews.co.kr/news/thumbnail/201802/30078_79659_4819_v150.jpg
             domain === "www.outdoornews.co.kr" ||
+            // http://www.shinailbo.co.kr/news/thumbnail/201803/1049737_358211_645_v150.jpg
+            // http://www.shinailbo.co.kr/news/articleView.html?idxno=319278
+            //   http://www.shinailbo.co.kr/news/photo/201304/319278_175094_5325.jpg - 3500x1807
+            domain === "www.shinailbo.co.kr" ||
+            // http://www.ngtv.tv/news/thumbnail/201803/44169_57237_2756_v150.jpg
+            // http://www.ngtv.tv/news/articleView.html?idxno=24743
+            //   http://www.ngtv.tv/news/thumbnail/201503/24743_28146_3449_v150.jpg
+            //     http://www.ngtv.tv/news/photo/201503/24743_28146_3449.jpg - 2364x1971
+            domain === "www.ngtv.tv" ||
+            // http://www.rnx.kr/news/thumbnail/201803/62152_50525_470_150.jpg
+            // http://m.rnx.kr/news/articleView.html?idxno=1390
+            domain === "www.rnx.kr" ||
+            // http://www.intronews.net/news/thumbnail/201803/85854_115174_717_v150.jpg
+            // http://www.intronews.net/news/articleView.html?idxno=85633
+            //   http://www.intronews.net/news/thumbnail/201802/85633_114974_1625_v150.jpg
+            domain === "www.intronews.net" ||
             // http://www.newstown.co.kr/news/thumbnail/201801/311251_198441_4816_v150.jpg
             domain.indexOf("www.newstown.co.kr") >= 0) {
             return src
@@ -448,7 +499,9 @@
                 //.replace(/\/simg_(?:thumb|org)\/([^/]*)s(\.[^/.]*)$/, "/bimg_org/$1$2")
                 .replace("/simg_thumb/", "/simg_org/")
                 .replace(/\/thumb_dir\/(.*)_thumb(\.[^/.]*)$/, "/img_dir/$1$2")
-                .replace("/thumbnail/", "/image/");
+                // http://image.chosun.com/sitedata/thumbnail/201803/08/2018030801755_0_thumb.jpg
+                //   http://image.chosun.com/sitedata/image/201803/08/2018030801755_0.jpg
+                .replace(/\/thumbnail\/(.*?)(?:_thumb)?(\.[^/.]*)$/, "/image/$1$2");
         }
 
         if (domain.indexOf("ph.spotvnews.co.kr") >= 0) {
@@ -489,6 +542,7 @@
         }
 
         if (domain.indexOf("img.mbn.co.kr") >= 0) {
+            // http://img.mbn.co.kr/filewww/news/other/2012/04/30/340200121110.jpg - 5705x2917
             return src.replace(/_s[0-9]+x[0-9]+(\.[^/]*)$/, "$1");
         }
 
@@ -536,7 +590,8 @@
             return src.replace(/\/[a-z]*::/, "/");
         }
 
-        if (src.indexOf("rr.img.naver.jp/mig") >= 0) {
+        if (src.match(/rr.img[0-9]*.naver.jp\/mig/)) {
+            // https://rr.img1.naver.jp/mig?src=http%3A%2F%2Fimgcc.naver.jp%2Fkaze%2Fmission%2FUSER%2F20161018%2F76%2F7776016%2F17%2F600x450x28290423f03522c4ff136cd5.jpg&twidth=414&theight=0&qlt=80&res_format=jpg&op=r
             return decodeURIComponent(src.replace(/.*src=([^&]*).*/, "$1"));
         }
 
@@ -876,11 +931,14 @@
 
         if (domain.indexOf("images-na.ssl-images-amazon.com") >= 0 ||
             domain.indexOf("images-eu.ssl-images-amazon.com") >= 0 ||
+            domain.indexOf(".images-amazon.com") >= 0 ||
+            domain.indexOf(".ssl-images-amazon.com") >= 0 ||
             domain.indexOf(".media-amazon.com") >= 0 ||
             domain === "i.gr-assets.com") {
             // https://images-eu.ssl-images-amazon.com/images/I/41TMMGD0XZL._SL500_AC_SS350_.jpg
             // https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1497668011i/22813064._UX100_CR0,0,100,100_.jpg
             // https://m.media-amazon.com/images/I/61rtKO6VrUL._SL500_.jpg
+            // http://ec2.images-amazon.com/images/I/81IotHEYjBL._AA1417_.jpg
             return src.replace(/\._[^/]*\.([^./]*)$/, "._.$1");
         }
 
@@ -1312,6 +1370,8 @@
             // https://tshop.r10s.jp/book/cabinet/3966/4907953093966.jpg?fitin=200:300&composite-to=*,*|200:300
             //   https://shop.r10s.jp/book/cabinet/3966/4907953093966.jpg
             domain === "tshop.r10s.jp" ||
+            // https://rakuma.r10s.jp/d/strg/ctrl/25/af89f9418a6f8fc899e2e0a280d79acd0c274d16.79.1.25.2.jpg?fit=inside%7C300%3A300
+            domain === "rakuma.r10s.jp" ||
             // https://image.thanhnien.vn/Uploaded/phinp/2018_02_19/thumnail-bi-mat-tuan-anh_cms_VOVN.jpg?width=178&height=100&crop=auto&scale=both
             domain === "image.thanhnien.vn" ||
             // http://static.netlife.vn//2017/11/07/14/43/sao-han-trong-1-tuan-tara-den-viet-nam-2-lan_1.jpg?maxwidth=480
@@ -1346,6 +1406,8 @@
             domain === "images.streamable.com" ||
             // https://citywonders.com/media/11395/mt-vesuvius-crater.jpg?anchor=center&mode=crop&quality=65&width=1200&height=900
             domain === "citywonders.com" ||
+            // https://cdn.amebaowndme.com/madrid-prd/madrid-web/images/sites/121508/7b13cca970a6eae1f46625638213900b_3a2cc2bd26844834e05b77f95b7500b7.jpg?width=724
+            domain === "cdn.amebaowndme.com" ||
             // http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
             // https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
             src.match(/\/demandware\.static\//) ||
@@ -1441,6 +1503,10 @@
             domain === "static.vibe.com" ||
             // https://rightsinfo.org/app/uploads/2018/02/nathan-dumlao-378988-unsplash-1024x671.jpg
             domain === "rightsinfo.org" ||
+            // http://img.marieclairekorea.com/2018/03/mck_5a9de416ee7a4-570x381.jpg
+            domain === "img.marieclairekorea.com" ||
+            // http://tokyopopline.com/images/2013/01/130106kara6-515x341.jpg
+            domain === "tokyopopline.com" ||
             // https://media.extratv.com/2017/01/09/sophie-turner-getty-510x600.jpg
             domain === "media.extratv.com" ||
             src.indexOf("/wp-content/uploads/") >= 0 ||
@@ -2447,11 +2513,6 @@
             // http://www.sohobluesgallery.com/mm5/graphics/00000001/Rolling_Stones_Keith_Richards_Guitar_God_475x705.jpg
             //   http://www.sohobluesgallery.com/mm5/graphics/00000001/Rolling_Stones_Keith_Richards_Guitar_God.jpg
             domain === "www.sohobluesgallery.com" ||
-            // https://cdn.shopify.com/s/files/1/0947/6410/products/a2178934757_10_1024x1024.jpeg?v=1458824230
-            //   https://cdn.shopify.com/s/files/1/0947/6410/products/a2178934757_10.jpeg?v=1458824230
-            // https://cdn.shopify.com/s/files/1/0947/6410/products/Om-Sweet-Om_1024x1024.png?v=1450196316
-            //   https://cdn.shopify.com/s/files/1/0947/6410/products/Om-Sweet-Om.png?v=1450196316
-            domain === "cdn.shopify.com" ||
             // https://i.vimeocdn.com/video/530332183_780x439.jpg
             domain === "i.vimeocdn.com" ||
             // https://media.indiatimes.in/media/content/2018/Feb/arun_jaitley_allocates_rs_1200_crore_to_promote_bamboo_cultivation_1517487222_100x150.jpg
@@ -2475,9 +2536,17 @@
         }
 
         if (domain === "cdn.shopify.com") {
+            // https://cdn.shopify.com/s/files/1/0947/6410/products/a2178934757_10_1024x1024.jpeg?v=1458824230
+            //   https://cdn.shopify.com/s/files/1/0947/6410/products/a2178934757_10.jpeg?v=1458824230
+            // https://cdn.shopify.com/s/files/1/0947/6410/products/Om-Sweet-Om_1024x1024.png?v=1450196316
+            //   https://cdn.shopify.com/s/files/1/0947/6410/products/Om-Sweet-Om.png?v=1450196316
+            // https://cdn.shopify.com/s/files/1/2220/9229/products/Siticker_laptop_image_2048x.jpg
+            //   https://cdn.shopify.com/s/files/1/2220/9229/products/Siticker_laptop_image.jpg
             // https://cdn.shopify.com/s/files/1/0846/3086/products/DM21_copy2_large.jpg?v=1464040850
+            //   https://cdn.shopify.com/s/files/1/0846/3086/products/DM21_copy2.jpg?v=1464040850
             // http://cdn.shopify.com/s/files/1/0683/4117/products/IMG_6727_grande.jpg?v=1514569448
-            return src.replace(/_(?:large|medium|small|grande)(\.[^/.]*)$/, "$1");
+            //   https://cdn.shopify.com/s/files/1/0683/4117/products/IMG_6727.jpg?v=1514569448
+            return src.replace(/_(?:large|medium|small|grande|[0-9]+x(?:[0-9]+)?)(\.[^/.]*)$/, "$1");
         }
 
         if (domain === "cdn.itv.com") {
@@ -3059,8 +3128,26 @@
 
         if (domain === "db.kookje.co.kr") {
             // http://db.kookje.co.kr/news2000/photo/2018/0202/L20180202.22001000306i1.jpg
+            // http://db.kookje.co.kr/news2000/photo/2012/0414/20120414.99002182507i1.jpg - 2568x1640
+            //   http://db.kookje.co.kr/news2000/photo/2012/0414/L20120414.99002182507i1.jpg ??? (website overloaded, try again later, also generic 404 page)
             // L, S
             return src.replace(/\/[A-Z]([^/]*)$/, "/L$1");
+        }
+
+        if (domain === "www.kookje.co.kr") {
+            // http://www.kookje.co.kr/news2011/screennews/thumb/466_20180305_20180305.99099001307i1.jpg
+            //   http://www.kookje.co.kr/news2011/screennews/466_20180305_20180305.99099001307i1.jpg
+            //   http://db.kookje.co.kr/news2000/photo/2018/0305/20180305.99099001307i1.jpg
+            //   http://db.kookje.co.kr/news2000/photo/2018/0305/L20180305.99099001307i1.jpg
+            // http://www.kookje.co.kr/news2011/screennews/466_20180305_20180305.99099001300i1.jpg
+            //   http://db.kookje.co.kr/news2000/photo/2018/0305/20180305.99099001300i1.jpg
+            //   http://db.kookje.co.kr/news2000/photo/2018/0305/L20180305.99099001300i1.jpg
+            // http://www.kookje.co.kr/news2011/screennews/thumb/466_20180305_20180211.99099004174i1.jpg
+            //   http://db.kookje.co.kr/news2000/photo/2018/0211/20180211.99099004174i1.jpg
+            //   http://db.kookje.co.kr/news2000/photo/2018/0211/L20180211.99099004174i1.jpg
+            return src
+                .replace("/thumb/", "/")
+                .replace(/.*\/[0-9]+_[0-9]+_([0-9]{4})([0-9]{4})([^/]*)$/, "http://db.kookje.co.kr/news2000/photo/$1/$2/L$1$2$3");
         }
 
         if (domain === "www.joongdo.co.kr") {
@@ -3069,9 +3156,14 @@
             return src.replace(/\/webdata\/content\//, "/file/").replace(/\/[^0-9]*([0-9]*\.[^/.]*)$/, "/$1");
         }
 
-        if (domain === "img.asiatoday.co.kr") {
+        if (domain === "img.asiatoday.co.kr" && false) {
             // http://img.asiatoday.co.kr/webdata/content/2018y/02m/28d/20180228002024152_77_58.jpg
             //   http://img.asiatoday.co.kr/file/2018y/02m/28d/20180228002024152_1.jpg
+            // http://img.asiatoday.co.kr/webdata/content/2018y/03m/09d/20180309010004779_77_58.jpg
+            //   http://img.asiatoday.co.kr/file/2018y/03m/09d/20180309010004779_1.jpg - doesn't work
+            //   http://img.asiatoday.co.kr/file/2018y/03m/09d/2018030901000828800047791.jpg - works
+            // http://img.asiatoday.co.kr/webdata/content/2017y/03m/31d/20170331010021088_300_300.jpg
+            //   http://img.asiatoday.co.kr/file/2017y/03m/31d/2017033101002937000210881.jpg
             return src.replace(/\/webdata\/content\/(.*)_[0-9]+_[0-9]+(\.[^/.]*)$/, "/file/$1_1$2");
         }
 
@@ -3861,9 +3953,12 @@
         if (domain.match(/[a-z]*\.wallhere\.com/)) {
             // https://c.wallhere.com/photos/e2/9a/women_brunette_model_Marina_Shimkovich_window_sill_jean_shorts_legs_barefoot-285016.jpg!d
             //   https://get.wallhere.com/photo/women_brunette_model_Marina_Shimkovich_window_sill_jean_shorts_legs_barefoot-285016.jpg
+            // https://get.wallhere.com/photo/Asian-Sunny-Girls-Generation-SNSD-Person-Kwon-Yuri-Jessica-Jung-Im-Yoona-Choi-Sooyoung-Kim-Taeyeon-Kim-Hyoyeon-Seohyun-Tiffany-Hwang-finger-2560x1600-px-523643.jpg
+            //   https://get.wallhere.com/photo/Asian-Sunny-Girls-Generation-SNSD-Person-Kwon-Yuri-Jessica-Jung-Im-Yoona-Choi-Sooyoung-Kim-Taeyeon-Kim-Hyoyeon-Seohyun-Tiffany-Hwang-finger-523643.jpg
             return src
                 .replace(/[a-z]*\.wallhere\.com/, "get.wallhere.com")
-                .replace(/\/photos\/[0-9a-f]*\/[0-9a-f]*\/([^/.]*\.[^/.!]*).*?$/, "/photo/$1");
+                .replace(/\/photos\/[0-9a-f]*\/[0-9a-f]*\/([^/.]*\.[^/.!]*).*?$/, "/photo/$1")
+                .replace(/-[0-9]+x[0-9]+-px-([0-9]+\.[^/.]*)$/, "-$1");
         }
 
         if (domain === "img.grouponcdn.com") {
@@ -4926,11 +5021,130 @@
             return src.replace(/\/photos\/[^/]*\//, "/photos/original/");
         }
 
-        if (domain.match(/.*cdn.*\.myportfolio\.com/)) {
+        if (domain.match(/.*cdn.*\.myportfolio\.com$/)) {
             // https://pro2-bar-s3-cdn-cf.myportfolio.com/4b7b32c34c99b966ad6f0ba84341a0df/8c698e4c5561ed288f2350a6_rw_3840.jpg?h=ec899b0e004e5d1cd5bcf474b259302d
             //   https://pro2-bar-s3-cdn-cf.myportfolio.com/4b7b32c34c99b966ad6f0ba84341a0df/8c698e4c5561ed288f2350a6.jpg
-            return src.replace(/_[^/.]*(\.[^/.?]*)(?:\?.*)?$/, "$1");
+            //   https://pro2-bar.myportfolio.com/v1/assets/4b7b32c34c99b966ad6f0ba84341a0df/8c698e4c5561ed288f2350a6.jpg -- hash is required
+            // https://pro2-bar-s3-cdn-cf2.myportfolio.com/fc87a328b5563b3948ee90b56bb47c80/df42aa71-c29a-4ccb-b40d-70e9f87872bf_car_202x158.jpg?h=8332ff2d4ba2a81d4cd8957d4a8f9d85
+            //   https://pro2-bar-s3-cdn-cf2.myportfolio.com/fc87a328b5563b3948ee90b56bb47c80/df42aa71-c29a-4ccb-b40d-70e9f87872bf_car_202x158.jpg - still works
+            //   https://pro2-bar.myportfolio.com/v1/assets/fc87a328b5563b3948ee90b56bb47c80/df42aa71-c29a-4ccb-b40d-70e9f87872bf_car_202x158.jpg -- hash is required
+            //   https://pro2-bar-s3-cdn-cf2.myportfolio.com/fc87a328b5563b3948ee90b56bb47c80/df42aa71-c29a-4ccb-b40d-70e9f87872bf.jpg:
+            //     https://pro2-bar.myportfolio.com/v1/assets/fc87a328b5563b3948ee90b56bb47c80/df42aa71-c29a-4ccb-b40d-70e9f87872bf.jpg -- hash is required
+            return src.replace(/_rw_[0-9]+(\.[^/.?]*)(?:\?.*)?$/, "$1");
         }
+
+        if (domain === "i.dell.com") {
+            // http://i.dell.com/das/xa.ashx/global-site-design%20web/00000000-0000-0000-0000-000000000000/1/LargePNG?id=Dell/Product_Images/Dell_Client_Products/Desktops/Inspiron_Desktops/Inspiron_3250_SFF/global_spi/desktop-inspiron-3250-small-form-factor-black-right-hero-504x350.psd
+            //   http://i.dell.com/das/xa.ashx/global-site-design%20web/00000000-0000-0000-0000-000000000000/1/originalpng?id=Dell/Product_Images/Dell_Client_Products/Desktops/Inspiron_Desktops/Inspiron_3250_SFF/global_spi/desktop-inspiron-3250-small-form-factor-black-right-hero-504x350.psd
+            // http://i.dell.com/sites/imagecontent/app-merchandizing/responsive/HomePage/en/PublishingImages/22437-home-desktop-inspiron-3650-silver-3656-red-150x120.png
+            // http://i.dell.com/das/dih.ashx/189w/das/xa_____/global-site-design%20web/c09863ef-2675-4682-0704-6dc976226db3/1/originalpng?id=Dell/Product_Images/Dell_Client_Products/Desktops/Inspiron_Desktops/Inspiron_3250_SFF/global_spi/desktop-inspiron-3250-small-form-factor-black-left-bestof-500-ng.psd
+            // http://si.cdn.dell.com/sites/imagecontent/consumer/merchandizing/en/publishingimages/24031-desktop-inspiron-3268-169x121.png
+            return src.replace(/(\/(?:[0-9a-f]+-){4}[0-9a-f]+\/[0-9]+\/)LargePNG/, "$1originalpng");
+        }
+
+        if (domain === "thumb.zumst.com") {
+            // http://thumb.zumst.com/530x0/http://static.news.zumst.com/images/23/2018/03/09/73abd6e986ec4160b1e9a8459532eed2.jpg
+            //   http://static.news.zumst.com/images/23/2018/03/09/73abd6e986ec4160b1e9a8459532eed2.jpg
+            // http://news.zum.com/articles/5254413
+            //   http://static.news.zum.com/images/18/2013/01/18/20130118_1358493810.jpg - 2132x2845
+            return src.replace(/.*:\/\/[^/]*\/[0-9]+[^/]*\//, "");
+        }
+
+        if (domain === "file.mk.co.kr") {
+            // http://file.mk.co.kr/meet/2018/03/image_listtop_2018_156502_1520579288.jpg.thumb
+            //   http://file.mk.co.kr/meet/2018/03/image_listtop_2018_156502_1520579288.jpg - slightly larger
+            //   http://file.mk.co.kr/meet/2018/03/image_readtop_2018_156502_1520578294.jpg
+            return src
+                .replace(/\.thumb$/, "");
+        }
+
+        if (domain === "kobis.or.kr") {
+            // http://kobis.or.kr/common/mast/movie/2016/04/thumb/thn_4ddde64e76f64663998f4123ae837fcc.jpg
+            //   http://kobis.or.kr/common/mast/movie/2016/04/4ddde64e76f64663998f4123ae837fcc.jpg
+            return src.replace("/thumb/thn_", "/");
+        }
+
+        if (domain === "www.breaknews.com" ||
+            domain === "breaknews.com") {
+            // http://www.breaknews.com/data/breaknews_com/mainimages/201803/2018020713038427.jpg
+            //   http://www.breaknews.com/imgdata/breaknews_com/201802/2018020713038427.jpg
+            // http://www.breaknews.com/sub_read.html?uid=488764&section=sc4
+            //   http://www.breaknews.com/imgdata/breaknews_com/201701/2017012752287231.jpg - 2000x3159
+            // http://breaknews.com/data/breaknews_com/mainimages/201803/2018030742107604.jpg
+            // doesn't always work:
+            // http://breaknews.com/data/breaknews_com/mainimages/201803/2018030742107604.jpg
+            //   http://www.breaknews.com/imgdata/breaknews_com/201803/2018030742107604.jpg -- doesn't work
+            //   http://www.breaknews.com/imgdata/breaknews_com/201803/2018030604302058.jpg -- works
+            // http://breaknews.com/data/breaknews_com/mainimages/201803/2017090815222839.jpg
+            //   http://breaknews.com/imgdata/breaknews_com/201709/2017090815222839.jpg -- works (not a problem with www.)
+            return src.replace(/\/data\/([^/]*)\/mainimages\/[0-9]*\/([0-9]{6})/, "/imgdata/$1/$2/$2");
+        }
+
+        if (domain === "ilyo.co.kr") {
+            // http://ilyo.co.kr/contents/article/images/2015/0306/thm200_1425610033458142.jpg
+            //   http://ilyo.co.kr/contents/article/images/2015/0306/1425610033458142.jpg - 1788x2698
+            return src.replace(/\/thm[0-9]+_/, "/");
+        }
+
+        if (domain === "www.joseilbo.com") {
+            // http://www.joseilbo.com/gisa_img_origin/15090052681509005268_yumju423_origin.jpg - 5312x2988
+            // http://www.joseilbo.com/gisa_img/1518397320.thumbnail.jpg
+            //   http://www.joseilbo.com/gisa_img/1518397320.jpg
+            // http://www.joseilbo.com/gisa_img/15199713541519971354_kiruki54.jpg
+            //   http://www.joseilbo.com/gisa_img_origin/15199713541519971354_kiruki54_origin.jpg
+            // http://www.joseilbo.com/xml/racing/image/6f1f52ac11d533a84f41705a5f09411f.thumbnail.jpg
+            //   http://www.joseilbo.com/xml/racing/image/6f1f52ac11d533a84f41705a5f09411f.jpg
+            return src
+                .replace(/\.thumbnail(\.[^/.]*)$/, "$1")
+                .replace(/\/gisa_img\/([0-9]+_[^/._]+)(\.[^/.]*)$/, "/gisa_img_origin/$1_origin$2");
+        }
+
+        if (domain.indexOf(".phncdn.com") >= 0) {
+            // https://ci.phncdn.com/pics/albums/000/430/541/4503569/(m=eiJ_8b)(mh=EvXtHOjNcliZ7ja0)original_4503569.jpg
+            //   https://ci.phncdn.com/pics/albums/000/430/541/4503569/original_4503569.jpg
+            return src.replace(/\/(?:\([a-z]+=[^/)]*\))*([^/]*)$/, "/$1");
+        }
+
+        if (domain === "img.fril.jp") {
+            // https://img.fril.jp/img/102398107/s/288867076.jpg?1506827930
+            // l, m, s
+            return src.replace(/\/[a-z]\/([^/]*)$/, "/l/$1");
+        }
+
+        if (domain === "img.cinematoday.jp") {
+            // https://img.cinematoday.jp/a/E0000548/_size_c640x/_v_1337344420/18.JPG
+            //   https://img.cinematoday.jp/a/E0000548/_v_1337344420/18.JPG
+            // https://img.cinematoday.jp/res/GA/2015/0725_05/v1437812942/DSC_0027-cx.JPG
+            //   https://img.cinematoday.jp/res/GA/2015/0725_05/v1437812942/DSC_0027.JPG
+            // http://img.cinematoday.jp/res/GA/2014/0712_02/v1405139653/IMG_2930-x.JPG
+            // https://img.cinematoday.jp/a/E0010088/_size_1200x/_v_1473853900/19.jpg
+            // https://img.cinematoday.jp/res/GA/2015/1028_08/v1446033979/07-0x0.JPG
+            //   https://img.cinematoday.jp/res/GA/2015/1028_08/v1446033979/07.JPG
+            // http://s.cinematoday.jp/res/N0/04/86/v1355451846/N0048658_l.jpg
+            //   http://s.cinematoday.jp/res/N0/04/86/v1355451846/N0048658.jpg -- smaller
+            //   https://img.cinematoday.jp/res/N0/04/86/v1355451846/N0048658.jpg -- same
+            // https://img.cinematoday.jp/res/GA/2016/0624_01/v1466737624/IMG_1177-560x600.JPG
+            // https://img.cinematoday.jp/a/A0005070/_size_/_v_1469826000/11.jpg
+            // https://img.cinematoday.jp/a/E0011605/_size_c640x/_v_1499569440/02.jpg
+            return src
+                .replace(/-[a-z0-9]*x[a-z0-9]*(\.[^/.]*)$/, "$1")
+                .replace(/\/_size_[^/]*\//, "/");
+        }
+
+        if (domain.indexOf(".seesaa.net") >= 0) {
+            // http://flamant.up.seesaa.net/image/1981AAA9-2780-4445-8DF7-C72FA57A6738-thumbnail2.jpg
+            //   http://flamant.up.seesaa.net/image/1981AAA9-2780-4445-8DF7-C72FA57A6738.jpg
+            return src.replace(/-thumbnail[0-9]*(\.[^/.]*)$/, "$1");
+        }
+
+        if (domain.indexOf(".biglobe.ne.jp") >= 0) {
+            // https://news.biglobe.ne.jp/entertainment/1227/5332001629/nrn_2016-12-27-050012_thum630.jpg
+            // https://news.biglobe.ne.jp/animal/0309/8840287090/pec_301481_thum500.png
+            // removing thum[0-9]* makes it smaller
+        }
+
+
+
 
 
 
