@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.1.47
+// @version      0.1.48
 // @description  Redirects to the maximum possible size for images
 // @author       qsniyg
 // @include *
@@ -1422,6 +1422,8 @@
 
         if (// https://c1.hoopchina.com.cn/uploads/star/event/images/180215/bmiddle-5e8c9e13a07a397579c89590685b479db07ff6b8.png?x-oss-process=image/resize,w_800/format,webp
             domain.match(/[ci][0-9]*\.hoopchina\.com\.cn/) ||
+            // https://cdn.odigo.net/60168923a5f06af67f74250c44de7861.png?imageView2/2/w/800/interlace/1%7Cimageslim
+            domain === "cdn.odigo.net" ||
             // http://upload-images.jianshu.io/upload_images/1685198-ebfc2a22664f623c?imageMogr2/auto-orient/strip%7CimageView2/2/w/300
             domain === "upload-images.jianshu.io") {
             src = src.replace(/\?.*$/, "");
@@ -1509,6 +1511,8 @@
             domain === "tokyopopline.com" ||
             // https://media.extratv.com/2017/01/09/sophie-turner-getty-510x600.jpg
             domain === "media.extratv.com" ||
+            // http://px1img.getnews.jp/img/archives/2017/10/ba35fadf68725a24224b306250f20c2f-1024x761.jpg
+            domain === "px1img.getnews.jp" ||
             src.indexOf("/wp-content/uploads/") >= 0 ||
             src.indexOf("/wp/uploads/") >= 0) {
             // http://arissa-x.com/miss-x-channel/wp-content/uploads/2017/06/IMG_0005.jpg
@@ -1536,7 +1540,9 @@
         }
 
         if (domain.indexOf("storage.journaldemontreal.com") >= 0 ||
-            domain.indexOf("storage.torontosun.com") >= 0) {
+            domain.indexOf("storage.torontosun.com") >= 0 ||
+            // http://storage.journaldequebec.com/v1/dynamic_resize/sws_path/jdx-prod-images/e3b49bbd-ba13-4f0e-99e4-e0d0ee77bbfe_ORIGINAL.jpg?quality=80&size=700x&version=1
+            domain === "storage.journaldequebec.com") {
             //return src.replace(/(\/dynamic_resize\/.*)\?[^/]*$/, "$1?size=99999999");
             return src.replace(/\/dynamic_resize\/[^/]*\//, "/").replace(/\?[^/]*$/, "");
         }
@@ -4552,10 +4558,16 @@
             return src.replace(/\/[0-9]+x(?:[0-9]+)?_([^/]*)$/, "/$1");
         }
 
-        if (domain === "cdn.top.tsite.jp") {
+        if (domain.indexOf("top.tsite.jp") >= 0 &&
+            src.indexOf("/contents_image/") >= 0) {
             // http://cdn.top.tsite.jp/static/top/sys/contents_image/038/778/192/38778192_0_sl.jpg
             //   http://cdn.top.tsite.jp/static/top/sys/contents_image/038/778/192/38778192_0.jpg
-            return src.replace(/_sl(\.[^/.]*)$/, "$1");
+            // http://cdn.top.tsite.jp/static/top/sys/contents_image/034/410/417/34410417_0_rl.jpg
+            //   http://cdn.top.tsite.jp/static/top/sys/contents_image/034/410/417/34410417_0.jpg
+            // http://top.tsite.jp/static/top/sys/contents_image/038/780/255/38780255_133963.jpg
+            // http://cdn.top.tsite.jp/static/top/sys/contents_image/media_image/035/136/128/35136128_0.jpeg
+            //return src.replace(/_sl(\.[^/.]*)$/, "$1");
+            return src.replace(/(\/[0-9]+)_[0-9]+(?:_[^/.]+)?(\.[^/.]*)$/, "$1_0$2");
         }
 
         if (domain === "www.sanspo.com") {
@@ -5143,6 +5155,67 @@
             // removing thum[0-9]* makes it smaller
         }
 
+        if (domain.match(/media[0-9]*\.ledevoir\.com/)) {
+            // http://media2.ledevoir.com/images_galerie/nwl_602637_453756/image.jpg
+            //   http://media2.ledevoir.com/images_galerie/nwdp_602637_453756/image.jpg
+            // http://media1.ledevoir.com/images_galerie/nwlb_602533_453783/image.jpg
+            //   http://media1.ledevoir.com/images_galerie/nwdp_602533_453783/image.jpg
+            // http://media2.ledevoir.com/images_galerie/1_453723/le-coup-de-crayon-du-10-mars.jpg
+            //   http://media2.ledevoir.com/images_galerie/nwdp_1_453723/le-coup-de-crayon-du-10-mars.jpg
+            // http://media1.ledevoir.com/images_galerie/app_1_452365/le-coup-de-crayon-du-7-mars.jpg
+            //   http://media1.ledevoir.com/images_galerie/nwdp_1_452365/le-coup-de-crayon-du-7-mars.jpg
+            return src.replace(/\/images_galerie\/(?:[^-/._]*_)?([0-9]+_[0-9]+)\//, "/images_galerie/nwdp_$1/");
+        }
+
+        if (domain === "infotel.ca") {
+            // https://infotel.ca/news/medialibrary/image/hl-mediaitemid50826-1365.jpg
+            //   https://infotel.ca/news/medialibrary/image/hd-mediaitemid50826-1365.jpg
+            //   https://infotel.ca/news/medialibrary/image/orig-mediaitemid50826-1365.jpg
+            return src.replace(/\/medialibrary\/image\/[^-_/.]*-/, "/medialibrary/image/orig-");
+        }
+
+        if (domain === "www.eleconomista.com.mx" && src.indexOf("/img/") >= 0) {
+            // https://www.eleconomista.com.mx/__export/1518538244604/sites/eleconomista/img/2018/02/13/mario_draghi.jpg_332989735.jpg
+            //   https://www.eleconomista.com.mx/__export/1518538244604/sites/eleconomista/img/2018/02/13/mario_draghi.jpg
+            return src.replace(/(\/[^/.]*\.[^/._]*)_[^/.]*\.[^/.]*$/, "$1");
+        }
+
+        if (domain === "gcm-v2.omerlocdn.com") {
+            // https://gcm-v2.omerlocdn.com/production/global/files/image/16c89c8b-58a1-490f-b9a6-323adb16ca75_1024.jpg
+            //   https://gcm-v2.omerlocdn.com/production/global/files/image/16c89c8b-58a1-490f-b9a6-323adb16ca75.jpg
+            return src.replace(/_[0-9]+(\.[^/.]*)$/, "$1");
+        }
+
+        if (domain === "www.dailystar.com.lb") {
+            // https://www.dailystar.com.lb/dailystar/Comics/23-02-2018/7cartoon%20New%20maths%20teacher_636549414776995725_main.jpg
+            //   https://www.dailystar.com.lb/dailystar/Comics/23-02-2018/7cartoon%20New%20maths%20teacher_636549414776995725.jpg
+            // http://www.dailystar.com.lb/dailystar/Pictures/2011/06/27/SaudiSpecialForces03_634448139672228001_img900x550_img900x550_crop.jpg
+            //   http://www.dailystar.com.lb/dailystar/Pictures/2011/06/27/SaudiSpecialForces03_634448139672228001.jpg
+            // http://www.dailystar.com.lb/dailystar/Pictures/2011/05/06/Mirna-Chaker-Jeita-Grotto-4_634403009433363875_img900x550_img900x550_crop.jpg
+            // http://www.dailystar.com.lb/dailystar/Pictures/2011/07/04/13_634453800140116703_img900x550_img900x550_crop.jpg
+            // http://www.dailystar.com.lb/dailystar/Pictures/2018/01/11/669500_img900x550_img900x550_crop.jpg
+            //   http://www.dailystar.com.lb/dailystar/Pictures/2018/01/11/669500.jpg
+            // http://www.dailystar.com.lb/dailystar/Pictures/2015/04/27/411756_img900x550_img900x550_crop.jpg
+            //   http://www.dailystar.com.lb/dailystar/Pictures/2015/04/27/411756.jpg
+            // http://www.dailystar.com.lb/dailystar/Pictures/2014/02/26/253362_img900x550_img900x550_crop.jpg
+            //   http://www.dailystar.com.lb/dailystar/Pictures/2014/02/26/253362.jpg
+            // http://www.dailystar.com.lb/dailystar/Pictures/2011/07/12/IMG_0080_634461096008782915_img900x550_img900x550_crop.JPG
+            //   http://www.dailystar.com.lb/dailystar/Pictures/2011/07/12/IMG_0080_634461096008782915.JPG
+            return src.replace(/([0-9]+)(?:_[^0-9][^/.]*)*(\.[^/.]*)$/, "$1$2");
+        }
+
+        if (domain === "images.dailykos.com") {
+            // https://images.dailykos.com/images/359004/story_image/2016_Comparison_of_Presidential_and_House_Election_Margins_-_Republican_Incumbents.png?1485791213
+            //   https://images.dailykos.com/images/359004/original/2016_Comparison_of_Presidential_and_House_Election_Margins_-_Republican_Incumbents.png?1485791213
+            // https://images.dailykos.com/images/402092/small/GettyImages-135785191.jpg?1495062293
+            //   https://images.dailykos.com/images/402092/original/GettyImages-135785191.jpg?1495062293
+            // https://images.dailykos.com/images/489359/small/GpfQTnJ_1_.gif?1514432636
+            //   https://images.dailykos.com/images/489359/original/GpfQTnJ_1_.gif?1514432636
+            // https://images.dailykos.com/avatars/363/small/image.jpg?1454078865
+            //   https://images.dailykos.com/avatars/363/original/image.jpg?1454078865
+            return src.replace(/(\/(?:images|avatars)\/[0-9]+\/)[^/]*\/([^/]*)$/, "$1original/$2");
+        }
+
 
 
 
@@ -5348,6 +5421,15 @@
             if (newsrc !== src)
                 return newsrc;
             return decodeURIComponent(src.replace(/.*\/thumbnail\/.*?\/\?url=(https?.*)/, "$1"));
+        }
+
+        // joomla
+        if (src.match(/\/media\/k2\/items\/cache\/[^/]*_[^/]*\.[^/.]*$/)) {
+            // http://www.truth-out.org/media/k2/items/cache/3393b2ec8c305f926fd19b07e9a77e2a_L.jpg
+            //   http://www.truth-out.org/media/k2/items/src/3393b2ec8c305f926fd19b07e9a77e2a.jpg
+            // http://www.frankie.com.au/media/k2/items/cache/d3a6ffb9fa95acd07ae12a9b3648acf3_M.jpg
+            //   http://www.frankie.com.au/media/k2/items/src/d3a6ffb9fa95acd07ae12a9b3648acf3.jpg
+            return src.replace(/\/cache\/([^/]*)_[^/._]*?(\.[^/.]*)$/, "/src/$1$2");
         }
 
 
