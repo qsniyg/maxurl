@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.1.48
+// @version      0.2.0
 // @description  Redirects to the maximum possible size for images
 // @author       qsniyg
 // @include *
@@ -5435,7 +5435,7 @@
 
 
 
-        if (domain.indexOf("media.toofab.com") >= 0 && false) { // doesn't work for all urls
+        if (domain.indexOf("media.toofab.com") >= 0 && true) { // doesn't work for all urls
             // works:
             // https://media.toofab.com/2017/12/13/gettyimages-891360920-master-1000w.jpg
             // https://media.toofab.com/2017/12/13/gettyimages-891258416-master-1000w.jpg
@@ -5495,14 +5495,30 @@
 
         if (newhref !== document.location.href) {
             if (!_nir_debug_) {
-                // wrap in try/catch due to nano defender
-                try {
-                    window.stop();
-                } catch (e) {
-                }
-                document.location = newhref;
+                console.log(newhref);
+
+                var http = new XMLHttpRequest();
+                http.open('HEAD', newhref);
+                http.onreadystatechange = function() {
+                    if (this.readyState == this.DONE) {
+                        var digit = this.status.toString()[0];
+
+                        if ((digit === "4" || digit === "5") &&
+                            this.status !== 405) {
+                            console.log("Error: " + this.status);
+                            return;
+                        }
+
+                        // wrap in try/catch due to nano defender
+                        try {
+                            window.stop();
+                        } catch (e) {
+                        }
+                        document.location = newhref;
+                    }
+                };
+                http.send();
             }
-            console.log(newhref);
         }
     }
 })();
