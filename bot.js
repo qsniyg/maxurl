@@ -143,8 +143,13 @@ function dourl(url, post) {
             comment += "*****\n\n";
             comment += "^[source&nbsp;code](https://github.com/qsniyg/maxurl)&nbsp;|&nbsp;[userscript&nbsp;(redirects&nbsp;images)](https://greasyfork.org/en/scripts/36662-image-max-url)";
             console.log(comment);
-            if (post)
-              post.reply(comment);
+            if (post) {
+              post.reply(comment).then((comment_data) => {
+                comment_data.edit(
+                  comment + "&nbsp;|&nbsp;[remove](https://www.reddit.com/message/compose/?to=MaxImageBot&subject=delete:+" + comment_data.id + "&message=delete)"
+                );
+              });
+            }
           } else {
             console.log("Ratio too small: " + wr + ", " + hr);
           }
@@ -164,6 +169,36 @@ function dourl(url, post) {
 }
 
 const links = new NodeCache({ stdTTL: 600, checkperiod: 1000 });
+
+setInterval(() => {
+  r.getInbox({"filter":"messages"}).then((inbox) => {
+    inbox.forEach((message_data) => {
+      if (message_data.subject.indexOf("delete: ") !== 0 ||
+          message_data.subject.length >= 50) {
+        return;
+      }
+
+      var comment = message_data.subject.replace(/.*: *([A-Za-z0-9_]+).*/, "$1");
+      if (comment === message_data.subject)
+        return;
+
+      r.getComment(comment).fetch().then((comment_data) => {
+        if (comment_data.author.name.toLowerCase() !== "maximagebot")
+          return;
+
+        r.getComment(comment_data.parent_id).fetch().then((post_data) => {
+          if (post_data.author.name.toLowerCase() !== message_data.author.name.toLowerCase()) {
+            return;
+          }
+
+          console.log("Deleting " + comment);
+          comment_data.delete();
+          message_data.deleteFromInbox();
+        });
+      });
+    });
+  });
+}, 10*1000);
 
 //console.dir(blacklist_json.disallowed);
 submissionStream.on("submission", function(post) {
