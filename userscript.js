@@ -1,13 +1,17 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.2.2
+// @version      0.2.3
 // @description  Redirects to the maximum possible size for images
 // @author       qsniyg
-// @include *
-// @grant        none
+// @include      *
+// @grant        GM_xmlhttpRequest
+// @connect      *
 // @run-at       document-start
 // ==/UserScript==
+
+// If you see "A userscript wants to access a cross-origin resource.", it's used to detect whether or not the destination URL exists before redirecting.
+// The code that manages those requests is at the very end of the script (or search for GM_xmlhttpRequest in the script)
 
 (function() {
     'use strict';
@@ -366,7 +370,7 @@
             if (obj && obj[1] !== "00") {
                 var obj1_str = src.replace(/.*\/thumb\/([0-9]+\/[0-9]+\/[0-9]+\/).*/, "$1").replace(/\//g, "");
                 var obj1 = parseInt(obj1_str);
-                console.log(obj1_str);
+                //console.log(obj1_str);
                 if (obj1 >= 20170526)
                     src = src.replace(/(\/thumb\/(?:[0-9]+\/){3})[0-9]+\//, "$100/");
                 else
@@ -763,9 +767,11 @@
         // https://res.cloudinary.com/dk-find-out/image/upload/q_80,w_1920,f_auto/MA_00079563_yvu84f.jpg
         // https://res.cloudinary.com/jerrick/image/upload/p7jbqvi0aoxm4mdn3x6x
         if (domain.indexOf("res.cloudinary.com") >= 0) {
-            return src
+            newsrc = src
                 .replace(/(\/image\/upload\/)(?:(?:.*?\/?(v1\/))|(?:[^/]*\/))/, "$1$2")
                 .replace(/(\/private_images\/)[^/]*\//, "$1c_limit/");
+            if (newsrc !== src)
+                return newsrc;
         }
 
         if (domain.indexOf("images.complex.com") >= 0) {
@@ -807,6 +813,9 @@
             domain === "images-cdn.moviepilot.com" ||
             // http://img.playbuzz.com/image/upload/f_auto,fl_lossy,q_auto/cdn/a205ab41-8564-4ed6-8bc2-42d742b284f0/de57f9d2-be24-43e8-910a-c972d8cf6cb8.jpg
             domain === "img.playbuzz.com" ||
+            // https://planet-sports-res.cloudinary.com/images/q_80,f_auto,dpr_2.0,d_planetsports:products:nopic.jpg/planetsports/products/46867500_00/rip-curl-fiesta-bandeau-bikini-set-women-black.jpg
+            //   https://planet-sports-res.cloudinary.com/images/planetsports/products/46867500_00/rip-curl-fiesta-bandeau-bikini-set-women-black.jpg
+            domain.indexOf("res.cloudinary.com") >= 0 ||
             // https://images.moviepilot.com/images/c_limit,q_auto:good,w_600/uom2udz4ogmkncouu83q/beauty-and-the-beast-credit-disney.jpg
             // https://images.moviepilot.com/image/upload/c_fill,h_64,q_auto,w_64/lpgwdrrgc3m8duvg7zt2.jpg
             domain === "images.moviepilot.com") {
@@ -1112,7 +1121,7 @@
         if (domain.match(/^a[0-9]*\.foxnews\.com/)) {
             // http://a57.foxnews.com/images.foxnews.com/content/fox-news/world/2017/11/15/firefighters-in-thailands-capital-on-front-line-citys-fight-against-snakes/_jcr_content/par/featured_image/media-0.img.jpg/931/524/1510749948281.jpg?ve=1&tl=1
             // down for now?
-            console.log(src.replace(/.*\/a[0-9]*\.foxnews\.com\/(.*).*/, "$1"));
+            //console.log(src.replace(/.*\/a[0-9]*\.foxnews\.com\/(.*).*/, "$1"));
             if (src.replace(/.*\/a[0-9]*\.foxnews\.com\/([^/]*).*/, "$1") !== "images.foxnews.com") {
                 return src.replace(/.*\/a[0-9]*\.foxnews\.com\/(.*)\/[0-9]+\/[0-9]+\/([^/]*)$/, "http://$1/$2");
             }
@@ -1440,6 +1449,12 @@
             (domain.indexOf("nosdn.127.net") >= 0 && src.indexOf("/photo/") >= 0) ||
             // https://sumo.cdn.tv2.no/imageapi/v2/img/58aff90284ae6c3cc0945755-1519386606657?width=1920&height=1080&location=list
             (domain === "sumo.cdn.tv2.no" && src.indexOf("/imageapi/") >= 0) ||
+            // https://media.missguided.com/s/missguided/L4227488_set/1/brown-square-back-thong-swimsuit.jpg?$category-page__grid--1x$
+            domain === "media.missguided.com" ||
+            // https://photo.venus.com/im/V1092-COB_V2362-COB.0288.s.jpg?preset=product
+            domain === "photo.venus.com" ||
+            // https://cdn-images.prettylittlething.com/c/4/f/f/c4ffac27c350089f9cb5214a68bad59c7a943bb5_CLW1289_1.JPG?imwidth=60
+            domain === "cdn-images.prettylittlething.com" ||
             // http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
             // https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
             src.match(/\/demandware\.static\//) ||
@@ -2275,7 +2290,12 @@
         }
 
         if (domain.match(/cdn-images-[0-9]*\.medium\.com/)) {
-            return src.replace(/\/max\/[^/]*\//, "/");
+            // https://cdn-images-1.medium.com/fit/c/120/120/1*EBmQkTlD1aZEsZOHFiBcdg.png
+            //   https://cdn-images-1.medium.com/1*EBmQkTlD1aZEsZOHFiBcdg.png
+            // https://cdn-images-1.medium.com/max/800/1*BvC8Rvz4L-CLuK5Ou37qoA.png
+            //   https://cdn-images-1.medium.com/1*BvC8Rvz4L-CLuK5Ou37qoA.png
+            //return src.replace(/\/max\/[^/]*\//, "/");
+            return src.replace(/(:\/\/[^/]*\/).*?\/([^/]*)$/, "$1$2");
         }
 
         if (domain === "image.kpopstarz.com") {
@@ -2405,6 +2425,9 @@
             // http://www.newsinstar.com/data/cache/public/photos/20180309/art_15200463472991_6c6a6f_90x60_c0.jpg
             //   http://www.newsinstar.com/data/photos/20180309/art_15200463472991_6c6a6f.jpg
             domain === "www.newsinstar.com" ||
+            // http://www.artkoreatv.com/data/cache/public/photos/20180311/art_15209739753682_ce7de1_260x364_c0.jpg
+            //   http://www.artkoreatv.com/data/photos/20180311/art_15209739753682_ce7de1.jpg
+            domain === "www.artkoreatv.com" ||
             domain === "www.ddaily.co.kr") {
             // http://www.inews365.com/data/cache/public/photos/20180205/art_15174759398393_648x365.jpg
             //   http://www.inews365.com/data/photos/20180205/art_15174723165416.jpg
@@ -2655,7 +2678,7 @@
             // https://static01.nyt.com/images/2011/11/17/fashion/17felicityspan/17felicityspan-jumbo.jpg
             var matched = src.match(/-([^/.]*)\.[^/.]*$/);
             if (matched) {
-                console.log(matched[1]);
+                //console.log(matched[1]);
                 if (matched[1] === "jumbo" ||
                     matched[1] === "thumbStandard" ||
                     matched[1].slice(0, 6) === "master") {
@@ -4477,7 +4500,18 @@
             // http://www.bridesmaidca.ca/media/catalog/product/cache/1/image/9df78eab33525d08d6e5fb8d27136e95/B/D/BD1749-03/Short-Lace-and-Tulle-Black-Bridesmaid-Dress-BD-CA1749-33.jpg
             // http://www.bridesmaidca.ca/media/catalog/product/cache/1/image/9df78eab33525d08d6e5fb8d27136e95/B/D/BD1749-02/Short-Lace-and-Tulle-Black-Bridesmaid-Dress-BD-CA1749-32.jpg
             domain === "www.bridesmaidca.ca" || // doesn't work
-            domain === "www.lizandliz.com") {
+            // http://www.sisley-paris.com/ko-KR/media/catalog/product/cache/3/sisley_hd_image/450x/9df78eab33525d08d6e5fb8d27136e95/sisley_hd_image/3473311704000.jpg
+            //   http://www.sisley-paris.com/ko-KR/media/catalog/product/cache/3/sisley_hd_image/9df78eab33525d08d6e5fb8d27136e95/sisley_hd_image/3473311704000.jpg
+            //   http://www.sisley-paris.com/ko-KR/media/catalog/product/sisley_hd_image/3473311704000.jpg
+            domain === "www.sisley-paris.com" ||
+            // https://d2ovdo5ynwfl3w.cloudfront.net/media/catalog/product/cache/5/image/03deeb199a85666540b12534551b8531/0/0/001CH-003-03172-1_1_1-DS.jpg
+            domain === "d2ovdo5ynwfl3w.cloudfront.net" ||
+            // https://d1cizyvjjqnss7.cloudfront.net/media/catalog/product/cache/1/image/700x700/af097278c5db4767b0fe9bb92fe21690/2/0/2017-9-26-isabelle-31991_2_2.jpg
+            domain === "d1cizyvjjqnss7.cloudfront.net" ||
+            // https://executiveponies.com/media/catalog/product/cache/2/thumbnail/90x144/9df78eab33525d08d6e5fb8d27136e95/3/2/327a6104_copy.jpg
+            domain === "executiveponies.com" ||
+            domain === "www.lizandliz.com" ||
+            src.match(/\/media\/catalog\/product\/cache\/[0-9]*\/[^/]*\/(?:[0-9]+x(?:[0-9]+)?\/)?[0-9a-f]{32}\//)) {
             // https://www.sonassi.com/blog/knowledge-base/deconstructing-the-cache-image-path-on-magento
             //
             // http://www.usmall.us/media/catalog/product/cache/16/image/600x600/d58d44b981214661663244ef00ea7e30/1/7/17_9__2.jpg
@@ -4491,7 +4525,7 @@
             /*return src
                 .replace(/(\/cache\/[0-9]*\/)small_image\//, "$1/image/")
                 .replace(/\/(thumbnail|image)\/[0-9]+x[0-9]+\//, "/$1/");*/
-            return src.replace(/\/cache\/[0-9]*\/[^/]*\/(?:[0-9]+x(?:[0-9]+)?\/)?[0-9a-f]{32}\/(.\/.\/[^/]*)$/, "/$1");
+            return src.replace(/\/cache\/[0-9]*\/[^/]*\/(?:[0-9]+x(?:[0-9]+)?\/)?[0-9a-f]{32}\/((?:.\/.\/)|(?:[^/]*\/))([^/]*)$/, "/$1$2");
             //return src.replace(/\/image\/[0-9]+x[0-9]+\//, "/image/");
         }
 
@@ -5547,6 +5581,58 @@
             return src.replace(/\/(?:large|small|thumb_lg|thumb)_([^/]*)$/, "/$1");
         }
 
+        if (domain === "www.vettri.net") {
+            // http://www.vettri.net/gallery/celeb/emma_watson/2015-Time-100-Gala/thumb/Emma_Watson_2015Time100Gala_Vettri.Net-03_resize.jpg
+            //   http://www.vettri.net/gallery/celeb/emma_watson/2015-Time-100-Gala/Emma_Watson_2015Time100Gala_Vettri.Net-03.jpg
+            return src.replace(/\/thumb\/([^/]*)_resize(\.[^/.]*)$/, "/$1$2");
+        }
+
+        // PrestaShop
+        if (domain === "www.tiarashop.eu" ||
+            domain === "flyhighstore.pl") {
+            // https://www.tiarashop.eu/3412-home_default/o.jpg
+            //   https://www.tiarashop.eu/3412/o.jpg
+            // http://flyhighstore.pl/2210-home_default/fh-cool-red-winter-jacket.jpg
+            return src.replace(/(:\/\/[^/]*\/[0-9]+)[-_][^/]*(\/[^/]*)$/, "$1$2");
+        }
+
+        if (domain === "skinzwearphotography.com") {
+            // https://skinzwearphotography.com/prodMids/sexy-animal-print-boy-shorts-B78L-6517-F.jpg
+            //   https://skinzwearphotography.com/prodImages/sexy-animal-print-boy-shorts-B78L-6517-F.jpg
+            return src.replace(/\/prod[A-Z][a-z]*\//, "/prodImages/");
+        }
+
+        if (domain === "www.shelot.com") {
+            // https://www.shelot.com/images/com_hikashop/upload/thumbnails/500x500f/0479_1199671901.jpg
+            //   https://www.shelot.com/images/com_hikashop/upload/0479_1199671901.jpg
+            //   https://www.shelot.com/images/BIKINI0400-0500/0479.jpg
+            // https://www.shelot.com/images/com_hikashop/upload/thumbnails/500x500f/0480-5.jpg
+            //   https://www.shelot.com/images/com_hikashop/upload/0480-5.jpg
+            return src.replace(/\/upload\/thumbnails\/[0-9]+x[0-9]+[^/]*\//, "/upload/");
+        }
+
+        if (domain === "xo.lulus.com") {
+            // https://xo.lulus.com/images/product/small-medium/2192052_408952.jpg
+            //   https://xo.lulus.com/images/product/xlarge/2192052_408952.jpg
+            //   https://xo.lulus.com/images/product/w_1.0/2192052_408952.jpg
+            // https://xo.lulus.com/images/content/w_1.0/content_298_15400_holidaylanding02.jpg
+            return src.replace(/(\/images\/[^/]*\/)[^/]*\/([^/]*)$/, "$1w_1.0/$2");
+        }
+
+        if (domain === "in-tense.se") {
+            // http://in-tense.se/shop/thumbnails/shop/32353/art53/h1698/115801698-origpic-011d3c.jpg_0_0_100_100_405_654_85.jpg
+            //   http://in-tense.se/shop/32353/art53/h1698/115801698-origpic-011d3c.jpg
+            return src
+                .replace(/\/thumbnails\/[^/]*\//, "/")
+                .replace(/(\.[^/._])*_[^/]*$/, "$1");
+        }
+
+        if (domain === "image.brazilianbikinishop.com") {
+            // https://image.brazilianbikinishop.com/images/products/cache_images/set-laplaya-aguas-do-mar-0_80_80_defined.jpg
+            //   https://image.brazilianbikinishop.com/images/products/set-laplaya-aguas-do-mar-0.jpg
+            return src.replace(/\/cache_images\/([^/_]*)_[^/.]*(\.[^/.]*)$/, "/$1$2");
+        }
+
 
 
 
@@ -5829,30 +5915,31 @@
                 console.log(newhref);
 
                 document.documentElement.style.cursor = "wait";
-                // problem: access control origin header
-                var http = new XMLHttpRequest();
-                http.open('HEAD', force_https(newhref));
-                http.onreadystatechange = function() {
-                    if (this.readyState == this.DONE) {
-                        document.documentElement.style.cursor = "default";
+                var http = new GM_xmlhttpRequest({
+                    method: 'HEAD',
+                    url: newhref,
+                    onload: function() {
+                        if (this.readyState == this.DONE) {
+                            document.documentElement.style.cursor = "default";
 
-                        var digit = this.status.toString()[0];
+                            var digit = this.status.toString()[0];
 
-                        if ((digit === "4" || digit === "5") &&
-                            this.status !== 405) {
-                            console.log("Error: " + this.status);
-                            return;
+                            if ((digit === "4" || digit === "5") &&
+                                this.status !== 405) {
+                                console.log("Error: " + this.status);
+                                return;
+                            }
+
+                            // wrap in try/catch due to nano defender
+                            try {
+                                // avoid downloading more before redirecting
+                                window.stop();
+                            } catch (e) {
+                            }
+                            document.location = newhref;
                         }
-
-                        // wrap in try/catch due to nano defender
-                        try {
-                            window.stop();
-                        } catch (e) {
-                        }
-                        document.location = newhref;
                     }
-                };
-                http.send();
+                });
             }
         }
     }
