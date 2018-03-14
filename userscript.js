@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.2.3
+// @version      0.2.3.1
 // @description  Redirects to the maximum possible size for images
 // @author       qsniyg
 // @include      *
@@ -52,13 +52,6 @@
         a.href = x;
         return a.href;
     };
-
-    var force_https = function(url) {
-        if (url.match(/^http:\/\//)) {
-            return url.replace(/^http:\/\//, "https://i0.wp.com/");
-        }
-        return url;
-    }
 
     if (is_node) {
         fullurl = function(url, x) {
