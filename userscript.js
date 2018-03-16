@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.2.5
+// @version      0.2.6
 // @description  Redirects to the maximum possible size for images
 // @author       qsniyg
 // @include      *
@@ -6129,15 +6129,15 @@
                 var http = new GM_xmlhttpRequest({
                     method: 'HEAD',
                     url: newhref,
-                    onload: function() {
+                    onload: function(resp) {
                         // nano defender removes this.DONE
-                        if (this.readyState == 4) {
+                        if (resp.readyState == 4) {
                             document.documentElement.style.cursor = "default";
 
-                            var digit = this.status.toString()[0];
+                            var digit = resp.status.toString()[0];
 
                             if ((digit === "4" || digit === "5") &&
-                                this.status !== 405) {
+                                resp.status !== 405) {
                                 console.log("Error: " + this.status);
                                 return;
                             }
