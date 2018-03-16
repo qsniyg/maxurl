@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.2.4
+// @version      0.2.5
 // @description  Redirects to the maximum possible size for images
 // @author       qsniyg
 // @include      *
@@ -974,6 +974,8 @@
 
         // drupal
         // https://italyxp.com/sites/default/files/mediaitalyxp/vesuvius.jpg?width=820&height=620&iframe=true
+        // https://www.windowscentral.com/sites/wpcentral.com/files/styles/xlarge_wm_brw/public/field/image/2018/03/surviving-mars-hero.jpg?itok=4_uW-AOb
+        //   https://www.windowscentral.com/sites/wpcentral.com/files/field/image/2018/03/surviving-mars-hero.jpg -- different image
         if (domain.indexOf("cdn-img.instyle.com") >= 0 ||
             domain.indexOf("static.independent.co.uk") >= 0 ||
             domain.indexOf("static.standard.co.uk") >= 0 ||
@@ -1015,14 +1017,17 @@
         }
 
         if (domain.indexOf(".bp.blogspot.com") >= 0 ||
-            domain.search(/\/lh[0-9]\.googleusercontent\.com\//) >= 0 ||
-            domain.search(/\/ci[0-9]\.googleusercontent\.com\//) >= 0 ||
+            domain.search(/lh[0-9]\.googleusercontent\.com/) === 0 ||
+            domain.search(/ci[0-9]\.googleusercontent\.com/) === 0 ||
             domain.indexOf(".ggpht.com") >= 0) {
             // https://lh3.googleusercontent.com/qAhRBhfciCcosUoYHPJr5WtNYSJ81vpSqcQwbQitZtsR3mB2aCUj7J5LvhJOCfWn-CWqiLB18SyTr1VJvm_HI7B72opIAMZiZvg=w9999-h9999
+            // https://lh3.googleusercontent.com/j7RWveJMFLh5TNHWRRvQnTpwFF3Xzz-mZd8ff-2PmKGIycRxZkUaOmf14g7wIj7D5x2ci1d6DbstteRtb9GN5OXF6ozB32KIY0HUtXFKnN48A1DaxnV-7Nk3YoGbI5ITVJiHA6HyN1cGo_djsw
+            // http://lh4.ggpht.com/__zoKJ77EvEc/TO-9wdVTcwI/AAAAAAAAJEA/SbyR-4a03S0/dekotora%20%289%29%5B2%5D.jpg?imgmax=800 -- larger than s0?
             return src
                 .replace(/#.*$/, "")
+                .replace(/\?.*$/, "")
                 .replace(/\/[swh][0-9]*(-[^/]*]*)?\/([^/]*)$/, "/s0/$2")
-                .replace(/(=[^/]*)?$/, "=s0");
+                .replace(/(=[^/]*)?$/, "=s0?imgmax=0");
         }
 
         if (domain.indexOf("images.thestar.com") >= 0) {
@@ -1288,11 +1293,12 @@
             // http://akns-images.eonline.com/eol_images/Entire_Site/2014519/rs_300x300-140619060824-600.Harry-Potter-Cast-JR-61914.jpg
             // http://akns-images.eonline.com/eol_images/Entire_Site/2014519/rs_1024x759-140619060822-1024.Harry-Potter-Cast-JR-61914.jpg
             domain.indexOf("akns-images.eonline.com") >= 0 ||
-            domain.indexOf("www.telegraph.co.uk") >= 0 ||
+            /*domain.indexOf("www.telegraph.co.uk") >= 0 ||
             // http://subscriber.telegraph.co.uk/content/dam/news/2018/01/08/GettyImages-862428716_trans_NvBQzQNjv4BqZgEkZX3M936N5BQK4Va8RWtT0gK_6EfZT336f62EI5U.jpg?imwidth=480
             domain === "subscriber.telegraph.co.uk" ||
             // https://secure.aws.telegraph.co.uk/content/dam/wellbeing/2016/12/28/graham5_trans_NvBQzQNjv4BqNyaloxhBNUSEitvcqmzeaNrVK9LoR4c_wZH1EhIay9c.jpg?imwidth=480
-            domain.indexOf("aws.telegraph.co.uk") >= 0 ||
+            domain.indexOf("aws.telegraph.co.uk") >= 0 ||*/
+            (domain.indexOf(".telegraph.co.uk") && src.indexOf("/content/dam/") >= 0) ||
             domain.indexOf("img.buzzfeed.com") >= 0 ||
             // p1.music.126.net
             domain.search(/p[0-9]\.music\.126\.net/) >= 0 ||
@@ -1339,7 +1345,7 @@
             domain === "imageservice.nordjyske.dk" ||
             domain === "wac.450f.edgecastcdn.net" ||
             // http://www.gosoutheast.com/images/2015/9/29/Tony_Anderson-150917-JR.jpg?width=300
-            domain === "www.gosoutheast.com" ||
+            (domain === "www.gosoutheast.com" && src.indexOf("/images/") >= 0) ||
             // http://itpro.nikkeibp.co.jp/atcl/column/17/010900605/011000014/ph01.jpg?__scale=w:450,h:501&_sh=0e0c309803
             domain === "itpro.nikkeibp.co.jp" ||
             // http://s-a4.best.gg/rosters/players/default2.png?image=c_fill,g_south,h_90,w_90
@@ -1383,7 +1389,7 @@
             // https://d3lp4xedbqa8a5.cloudfront.net/s3/digital-cougar-assets/Now/2018/02/16/44694/Healthy-pizza.jpg?width=132&height=107&mode=crop&scale=both&anchor=middlecenter&quality=85
             domain === "d3lp4xedbqa8a5.cloudfront.net" ||
             // https://brnow.org/getattachment/cc67f65b-b0b7-4365-abd5-258e4e1c1680?maxsidesize=50
-            domain === "brnow.org" ||
+            (domain === "brnow.org" && src.indexOf("/getattachment/") >= 0) ||
             // https://p3.ssl.cdn.btime.com/t01b3d8cb1040fbe0ba.jpg?size=730x1110
             domain.match(/p[0-9]*\.(?:ssl\.)?cdn\.btime\.com/) ||
             // http://images.twistmagazine.com/uploads/images/file/21604/sabrina-carpenter-selfie.jpg?fit=crop&h=666&w=500
@@ -1413,7 +1419,7 @@
             // https://media.gannett-cdn.com/29906170001/29906170001_5720100432001_5720093419001-vs.jpg?pubId=29906170001&quality=10
             domain === "media.gannett-cdn.com" ||
             // http://www.rdfm-radio.fr/medias/images/media.nrj.fr-2f436x327-2f2017-2f11-2fbiographie-de-mc-fioti-484.jpg?fx=c_180_180
-            domain === "www.rdfm-radio.fr" ||
+            (domain === "www.rdfm-radio.fr" && src.indexOf("/medias/") >= 0) ||
             // http://image-api.nrj.fr/02_5a02579e3cb49.png?w=730&h=410
             domain === "image-api.nrj.fr" ||
             // http://api.hdwallpapers5k.com/resource/fileuploads/photos/albums/1400/5382c527-5081-4bf4-8b2b-25ea11356bf4.jpeg?quality=100&w=2560&h=2560&mode=crop
@@ -1424,6 +1430,8 @@
             domain.match(/images\.[^.]*\.koreaportal\.com/) ||
             // http://www.officialcharts.com/media/653733/taylor-swift-press-image-1100.jpg?width=796&mode=stretch
             (domain === "www.officialcharts.com" && src.indexOf("/media/") >= 0) ||
+            // https://citywonders.com/media/11395/mt-vesuvius-crater.jpg?anchor=center&mode=crop&quality=65&width=1200&height=900
+            (domain === "citywonders.com" && src.indexOf("/media/") >= 0) ||
             // http://pix10.agoda.net/hotelImages/519/519394/519394_14031416100018704350.jpg?s=1024x768
             domain.match(/pix[0-9]*\.agoda\.net/) ||
             // https://images.pottermore.com/bxd3o8b291gf/1FC5pSmkSg44SMew0osm4Y/afb1fbf505eaf4c6a398b80ca075e014/DracoMalfoy_WB_F6_DracoMalfoyOnBathroomFloorHarryStanding_Still_080615_Land.jpg?w=1330&q=85
@@ -1432,8 +1440,6 @@
             (domain === "www.google.com" && src.match(/\/photos\/public\/[^/]*$/)) ||
             // https://images.streamable.com/east/image/pqxns_first.jpg?height=100
             domain === "images.streamable.com" ||
-            // https://citywonders.com/media/11395/mt-vesuvius-crater.jpg?anchor=center&mode=crop&quality=65&width=1200&height=900
-            domain === "citywonders.com" ||
             // https://cdn.amebaowndme.com/madrid-prd/madrid-web/images/sites/121508/7b13cca970a6eae1f46625638213900b_3a2cc2bd26844834e05b77f95b7500b7.jpg?width=724
             domain === "cdn.amebaowndme.com" ||
             // http://www.kaixian.tv/gd/d/file/201803/13/6b65c9bc4e0128a92a0e9fc0aa2d2d2d.jpg?imageView&thumbnail=100y75
@@ -1451,15 +1457,23 @@
             // https://cdn-images.prettylittlething.com/c/4/f/f/c4ffac27c350089f9cb5214a68bad59c7a943bb5_CLW1289_1.JPG?imwidth=60
             domain === "cdn-images.prettylittlething.com" ||
             // http://www.oxfordmail.co.uk/resources/images/4817793.jpg?display=1&htype=0&type=responsive-gallery
-            domain === "www.oxfordmail.co.uk" ||
+            (domain === "www.oxfordmail.co.uk" && src.indexOf("/resources/") >= 0) ||
             // http://popcrush.com/files/2014/07/EmmaWatson1.jpg?w=980&q=75
-            domain === "popcrush.com" ||
+            (domain === "popcrush.com" && src.indexOf("/files/") >= 0) ||
             // http://screencrush.com/files/2013/03/50_shades_of_grey_emma_watson.jpg?w=980&q=75
-            domain === "screencrush.com" ||
+            (domain === "screencrush.com" && src.indexOf("/files/") >= 0) ||
             // http://assets.cougar.nineentertainment.com.au/assets/Dolly/2014/03/20/52622/3.jpg?mode=max&quality=80&width=1024
             domain.match(/assets\.[^.]*\.nineentertainment\.com\.au/) ||
             // https://www.thenational.ae/image/policy:1.479136:1499670177/image/jpeg.jpg?f=16x9&w=1024&$p$f$w=2589da4
-            domain === "www.thenational.ae" ||
+            (domain === "www.thenational.ae" && src.indexOf("/image/") >= 0) ||
+            // https://s3.kh1.co/80e0569ad275cc700a5b9bee37447bd432a63ced.jpg?m=thumb&w=400&h=560
+            domain.match(/s[0-9]*\.kh1\.co/) ||
+            // https://uploads.disquscdn.com/images/9b96ed95917fe3b747f0b441246985a838e3e0b370607817a540b4a40119b9a6.gif?w=800&h=253
+            domain === "uploads.disquscdn.com" ||
+            // https://www.voidu.com/content/products/gallery/99832a851b23b8a91f296adac...-20180216101631.jpg?width=1140&height=450&mode=crop&scale=both
+            (domain === "www.voidu.com" && src.indexOf("/gallery/") >= 0) ||
+            // https://store.playstation.com/store/api/chihiro/00_09_000/container/US/en/99/UP4139-CUSA10160_00-SURVIVINGMARSFCE//image?_version=00_09_000&platform=chihiro&w=720&h=720&bg_color=000000&opacity=100
+            (domain === "store.playstation.com" && src.indexOf("/image?") >= 0) ||
             // http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
             // https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
             src.match(/\/demandware\.static\//) ||
@@ -1569,6 +1583,8 @@
             domain === "px1img.getnews.jp" ||
             // https://media.thetab.com/blogs.dir/279/files/2017/03/emma-1177x557.jpg
             domain === "media.thetab.com" ||
+            // https://assets.rockpapershotgun.com/images//2018/02/survivingmars2-620x315.jpg
+            domain === "assets.rockpapershotgun.com" ||
             src.indexOf("/wp-content/uploads/") >= 0 ||
             src.indexOf("/wp/uploads/") >= 0) {
             // http://arissa-x.com/miss-x-channel/wp-content/uploads/2017/06/IMG_0005.jpg
@@ -2515,13 +2531,16 @@
             return src.replace(/(\/prod\/media\/images\/)[^/]*\//, "$1original/");
         }
 
-        if (domain === "www.irishexaminer.com") {
+        if (domain === "www.irishexaminer.com" ||
+            domain === "ip.trueachievements.com") {
             // removing ?.* entirely returns 500
             // https://www.irishexaminer.com/remote/image.assets.pressassociation.io/v2/image/production/144492a205ad478ef0233c59e6617054Y29udGVudHNlYXJjaCwxNTEzMDczMTc2/2.30748323.jpg?crop=0,102,3712,2190&ext=.jpg&width=600
             //   https://www.irishexaminer.com/remote/image.assets.pressassociation.io/v2/image/production/144492a205ad478ef0233c59e6617054Y29udGVudHNlYXJjaCwxNTEzMDczMTc2/2.30748323.jpg?ext=.jpg&width=600
             // however, /remote/ is a remote address
             //   http://image.assets.pressassociation.io/v2/image/production/144492a205ad478ef0233c59e6617054Y29udGVudHNlYXJjaCwxNTEzMDczMTc2/2.30748323.jpg
-            return src.replace(/.*www\.irishexaminer\.com\/remote\/([^?]*).*/, "http://$1");
+            // https://ip.trueachievements.com/remote/images-eds-ssl.xboxlive.com%2Fimage%3Furl%3D8Oaj9Ryq1G1_p3lLnXlsaZgGzAie6Mnu24_PawYuDYIoH77pJ.X5Z.MqQPibUVTcSEliFeYEcpYdMffymmILaXcS00LePBQajKrVx_Va4DQAxgf7VKT9o10FP5RijVvisttt9.R8el9KW5aWefdGAyAK7PHk.TSf1spbv8.x6hWsZrJa2pOp_PXzU7fSK76BcdJyPe_XVC7ZQNPT1kWf.D_KXVQtjCDHj7_wiu8ekYM-?width=1200&height=675
+            //   http://images-eds-ssl.xboxlive.com/image?url=8Oaj9Ryq1G1_p3lLnXlsaZgGzAie6Mnu24_PawYuDYIoH77pJ.X5Z.MqQPibUVTcSEliFeYEcpYdMffymmILaXcS00LePBQajKrVx_Va4DQAxgf7VKT9o10FP5RijVvisttt9.R8el9KW5aWefdGAyAK7PHk.TSf1spbv8.x6hWsZrJa2pOp_PXzU7fSK76BcdJyPe_XVC7ZQNPT1kWf.D_KXVQtjCDHj7_wiu8ekYM-
+            return "http://" + decodeURIComponent(src.replace(/.*:\/\/[^/]*\/remote\/([^?]*).*/, "$1"));
         }
 
         if (domain === "tellymix-spykawebgroup.netdna-ssl.com" &&
@@ -3599,6 +3618,12 @@
             return src.replace(/(\/www\/[^/]*\/)assets_[^/]*\/[0-9]*\/[0-9]*\/([^-]*)-.*(\.[^/.]*)$/, "$1$2$3");
         }
 
+        if (domain === "www.beauty-co.jp") {
+            // https://www.beauty-co.jp/news/assets_c/2018/02/180228_lucy_01-thumb-142xauto-21539.jpg
+            //   https://www.beauty-co.jp/news/img/180228_lucy_01.jpg
+            return src.replace(/\/news\/assets_[^/]*\/[0-9]*\/[0-9]*\/([^-]*)-.*(\.[^/.]*)$/, "/news/img/$1$2");
+        }
+
         if (domain === "www.agencyteo.com") {
             // http://www.agencyteo.com/news/download/28302/w/600/KakaoTalk_20161121_144905918.jpg
             //   http://www.agencyteo.com/news/download/28302/KakaoTalk_20161121_144905918.jpg
@@ -3740,6 +3765,8 @@
             domain === "shows.gqimg.com.cn" ||
             // http://shows.vogueimg.com.cn/showspic/FashionImages/S2017CTR/paris/alexandre-vauthier/collection/_ARC0726h.jpg.100X150.jpg
             domain === "shows.vogueimg.com.cn" ||
+            // https://smedia.webcollage.net/rwvfp/wc/cp/22757735/module/cpwalmart/_cp/products/1472244742078/tab-0e3f8313-5e4d-4103-9de5-caca68cf8437/eaddf5d5-afe7-4086-9bc7-149b6b486cdd.jpg.w480.jpg
+            domain.indexOf("media.webcollage.net") >= 0 ||
             domain === "d26oc3sg82pgk3.cloudfront.net" ||
             domain === "d53l9d6fqlxs2.cloudfront.net") {
             // https://media.mnn.com/assets/images/2017/03/cyclops-2-titanic-wreck.jpg.653x0_q80_crop-smart.jpg
@@ -4448,6 +4475,11 @@
         }
 
         if (domain === "img.danawa.com" ||
+            // http://wallpoper.com/images/00/26/57/27/taylor-momsen_00265727_thumb.jpg
+            //   http://wallpoper.com/images/00/26/57/27/taylor-momsen_00265727.jpg
+            domain === "wallpoper.com" ||
+            // https://cdn.maximsfinest.com/930d55d5bae81ab5ab5c4bca2a2eab8b42e503f85bbd48086c9a9c89945f12e7_thumb.jpg
+            domain === "cdn.maximsfinest.com" ||
             // https://www.bellazon.com/main/uploads/monthly_01_2015/post-40923-0-58758100-1422215257_thumb.jpg
             domain === "www.bellazon.com") {
             // http://img.danawa.com/cms/img/2010/11/19/%C7%D6%C6%D1_thumb.png
@@ -5407,12 +5439,6 @@
             return src.replace("/small/", "/big/");
         }
 
-        if (domain === "wallpoper.com") {
-            // http://wallpoper.com/images/00/26/57/27/taylor-momsen_00265727_thumb.jpg
-            //   http://wallpoper.com/images/00/26/57/27/taylor-momsen_00265727.jpg
-            return src.replace(/_thumb(\.[^/.]*)$/, "$1");
-        }
-
         if (domain === "cdn.wallpaperjam.com") {
             // http://cdn.wallpaperjam.com/static/images/m/2b/35/2b359c913f740935e350c0b42c8c5b9da9804763.jpg
             //   https://cdn.wallpaperjam.com/2b359c913f740935e350c0b42c8c5b9da9804763/image.jpg
@@ -5482,7 +5508,7 @@
 
         if (domain === "v.img.pplive.cn") {
             // http://v.img.pplive.cn/sp240/ac/70/ac70a84165ea6782446f267948a0cd4e/3.jpg.webp
-            //   http://v.img.pplive.cn/sp240/ac/70/ac70a84165ea6782446f267948a0cd4e/3.jpg.webp
+            //   http://v.img.pplive.cn/ac/70/ac70a84165ea6782446f267948a0cd4e/3.jpg.webp
             return src.replace(/(:\/\/[^/]*\/)sp[0-9]+\//, "$1");
         }
 
@@ -5490,6 +5516,7 @@
             // http://uploadfile.bizhizu.cn/2015/0821/20150821111539262.jpg
             //   http://uploadfile.bizhizu.cn/2015/0821/20150821111539262.jpg.source.jpg
             // http://uploadfile.bizhizu.cn/2017/1014/f9ddc2a68f0f516dcdbdbc0a32a7d187.jpg
+            //   https://uploadfile.bizhizu.cn/2017/1014/f9ddc2a68f0f516dcdbdbc0a32a7d187.jpg.source.jpg
             return src.replace(/(\/[0-9a-f]*\.)([^/.]*)$/, "$1$2.source.$2");
         }
 
@@ -5555,7 +5582,7 @@
             // http://a3.espncdn.com/photo/2016/0114/r44141_1296x729_16-9.jpg
             //   http://a3.espncdn.com/photo/2016/0114/r44141.jpg
             // http://a3.espncdn.com/combiner/i?img=%2Fphoto%2F2015%2F0429%2Fnba_g_crittenton1x_1296x729.jpg
-            // http://a3.espncdn.com/photo/2015/0429/nba_g_crittenton1x_1296x729.jpg
+            //   http://a3.espncdn.com/photo/2015/0429/nba_g_crittenton1x_1296x729.jpg
             // http://a3.espncdn.com/photo/2013/0209/nba_jordan_36.jpg
             // http://a.espncdn.com/photo/2012/0930/rn_georgiatennessee_ms_21.jpg
             // http://a.espncdn.com/photo/2013/0922/nfl_u_darnelldockett_cmg_600.jpg
@@ -5597,6 +5624,7 @@
         if (domain === "www.outlookweekly.net" &&
             src.indexOf("/images/") >= 0) {
             // http://www.outlookweekly.net/images/cfile5.uf.tistory.com/image/2338CD4D5312E8CF036158
+            //   http://cfile5.uf.tistory.com/image/2338CD4D5312E8CF036158
             return src.replace(/.*:\/\/[^/]*\/images\//, "http://");
         }
 
@@ -5606,10 +5634,13 @@
         }
 
         if (domain === "media-spiceee.net") {
-            // https://media-spiceee.net/uploads/content/image/828907/large_zzzzzzzzzzzzzzzzzzzzzzzz156.jpg
             // https://media-spiceee.net/uploads/content/image/828907/small_zzzzzzzzzzzzzzzzzzzzzzzz156.jpg
+            //   https://media-spiceee.net/uploads/content/image/828907/large_zzzzzzzzzzzzzzzzzzzzzzzz156.jpg
+            //   https://media-spiceee.net/uploads/content/image/828907/zzzzzzzzzzzzzzzzzzzzzzzz156.jpg
             // https://media-spiceee.net/uploads/article/image/36221/thumb_lg_ee41b4b3-5fc8-453d-b160-2fa8c3f2ee07.png
+            //   https://media-spiceee.net/uploads/article/image/36221/ee41b4b3-5fc8-453d-b160-2fa8c3f2ee07.png
             // https://media-spiceee.net/uploads/shopper/product_image/extra_image/2086/thumb_a8.jpg
+            //   https://media-spiceee.net/uploads/shopper/product_image/extra_image/2086/a8.jpg
             return src.replace(/\/(?:large|small|thumb_lg|thumb)_([^/]*)$/, "/$1");
         }
 
@@ -5621,10 +5652,11 @@
 
         // PrestaShop
         if (domain === "www.tiarashop.eu" ||
+            // http://flyhighstore.pl/2210-home_default/fh-cool-red-winter-jacket.jpg
+            //   http://flyhighstore.pl/2210/fh-cool-red-winter-jacket.jpg
             domain === "flyhighstore.pl") {
             // https://www.tiarashop.eu/3412-home_default/o.jpg
             //   https://www.tiarashop.eu/3412/o.jpg
-            // http://flyhighstore.pl/2210-home_default/fh-cool-red-winter-jacket.jpg
             return src.replace(/(:\/\/[^/]*\/[0-9]+)[-_][^/]*(\/[^/]*)$/, "$1$2");
         }
 
@@ -5730,6 +5762,92 @@
             // https://www.xdressy.com/uploads/product/1/R/1R550/emma-watson-vintage-queen-anne-neck-short-navy-cocktail-dress-lancome-dinner-1-thumb.jpg
             //   https://www.xdressy.com/uploads/product/1/R/1R550/emma-watson-vintage-queen-anne-neck-short-navy-cocktail-dress-lancome-dinner-1.jpg
             return src.replace(/-thumb(\.[^/.]*)$/, "$1");
+        }
+
+        if (domain === "cdn.store-assets.com") {
+            // https://cdn.store-assets.com/s/5319/i/1058445_480x.jpeg
+            //   https://cdn.store-assets.com/s/5319/i/1058445.jpeg
+            return src.replace(/_[0-9]+x(?:[0-9]+)?(\.[^/.]*)$/, "$1");
+        }
+
+        if (domain === "img.shopperboard.com") {
+            // https://img.shopperboard.com/1184938/5a20a29ecfdea-small.jpg
+            //   https://img.shopperboard.com/1184938/5a20a29ecfdea.jpg
+            return src.replace(/-[a-z]+(\.[^/.]*)$/, "$1");
+        }
+
+        // OpenCart
+        if (domain === "www.i-aurai.com" ||
+            domain === "www.malaysiadropship.com") {
+            // http://www.i-aurai.com/OpenCart/image/cache/data/demo/apple_cinema_30-80x80.jpg
+            //   http://www.i-aurai.com/OpenCart/image/data/demo/apple_cinema_30.jpg
+            // https://www.malaysiadropship.com/image/creativeffects/image/cache/data/all_product_images/product-1707/1sexy-bikini-babydoll-yw672-536-850x1000-700x700.jpg
+            //   https://www.malaysiadropship.com/image/creativeffects/image/data/all_product_images/product-1707/1sexy-bikini-babydoll-yw672-536-850x1000.jpg
+            return src.replace(/\/image\/cache\/data\/(.*)-[0-9]+x(?:[0-9]+)?(\.[^/.]*)$/, "/image/data/$1$2");
+        }
+
+        if (domain.match(/images.*\.gog\.com/)) {
+            // https://images-2.gog.com/859a7d00d0c0d46c8c4a215906479580f06837daa13d90837deba59ad51fdd8a_product_card_screenshot_112.jpg
+            //   https://images-2.gog.com/859a7d00d0c0d46c8c4a215906479580f06837daa13d90837deba59ad51fdd8a.jpg
+            return src.replace(/(\/[0-9a-f]*)_[^/.]*(\.[^/.]*)$/, "$1$2");
+        }
+
+        if (domain === "www.destructoid.com") {
+            // https://www.destructoid.com/ul/494427-AB-t.jpg
+            //   https://www.destructoid.com//ul/494427-AB.jpg'); -- yes, not a typo
+            //   https://www.destructoid.com//ul/494427-AB.jpg
+            // https://www.destructoid.com/ul/493655-review-surviving-mars/DWawyA4XcAAHojb-noscale.jpg
+            //   https://www.destructoid.com/ul/493655-review-surviving-mars/DWawyA4XcAAHojb.jpg
+            // https://www.destructoid.com//ul/492359-h1-t.jpg
+            //   https://www.destructoid.com//ul/492359-h1.jpg
+            return src.replace(/-(?:t|noscale)(\.[^/.]*)$/, "$1");
+        }
+
+        if (domain.match(/images.*\.xboxlive\.com/) &&
+            src.match(/\/image\?/)) {
+            // https://images-eds-ssl.xboxlive.com/image?url=8Oaj9Ryq1G1_p3lLnXlsaZgGzAie6Mnu24_PawYuDYIoH77pJ.X5Z.MqQPibUVTc6mdXIF7EzzBzjbCi0PAFFm9oIFRURAIJY671mz65mpafwXTRitZCcs1mXngtlGKXGL6FtVwx1C9b1AIuJhv8KnSQBHdQ22A122Oh6Fpn5ncAYey7_nKGGXB7mkCs9jnrsclui.l_ItF9D7zgF8n0o3RXWpfe8IGE7Wkqn5ZMTac-&w=200&h=300&format=jpg
+            //   https://images-eds-ssl.xboxlive.com/image?url=8Oaj9Ryq1G1_p3lLnXlsaZgGzAie6Mnu24_PawYuDYIoH77pJ.X5Z.MqQPibUVTc6mdXIF7EzzBzjbCi0PAFFm9oIFRURAIJY671mz65mpafwXTRitZCcs1mXngtlGKXGL6FtVwx1C9b1AIuJhv8KnSQBHdQ22A122Oh6Fpn5ncAYey7_nKGGXB7mkCs9jnrsclui.l_ItF9D7zgF8n0o3RXWpfe8IGE7Wkqn5ZMTac-
+            return src.replace(/\/image[^/]?[?&]url=([^&]*).*/, "/image?url=$1");
+        }
+
+        if (domain === "media.withtank.com") {
+            // http://media.withtank.com/e077b4d7c8/img_6535_690_wide.jpg
+            //   http://media.withtank.com/e077b4d7c8/img_6535.jpg
+            // http://media.withtank.com/1d7cdaeb6c/bb_colour_swatch_720_wide.jpg
+            //   http://media.withtank.com/1d7cdaeb6c/bb_colour_swatch.jpg
+            return src.replace(/_[0-9]+_wide(\.[^/.]*)$/, "$1");
+        }
+
+        if (domain === "images.cdn.realviewdigital.com") {
+            // http://images.cdn.realviewdigital.com/rvimageserver/Intimo%20Lingerie/The%20Intimo%20Opportunity/The%20Intimo%20Opportunity/page0000002.jpg?type=3&width=920&quality=70&v=v2
+            //   http://images.cdn.realviewdigital.com/rvimageserver/Intimo%20Lingerie/The%20Intimo%20Opportunity/The%20Intimo%20Opportunity/page0000002.jpg?type=3
+            var type = src.match(/[?&]type=([^&]*)/);
+            return src.replace(/\?.*/, "?type=" + type[1]);
+        }
+
+        if (domain === "proxy.duckduckgo.com") {
+            // https://proxy.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.-fIJ70TgJpidmW2R6qcp3QHaE1%26pid%3D15.1&f=1
+            //   https://tse1.mm.bing.net/th?id=OIP.-fIJ70TgJpidmW2R6qcp3QHaE1
+            return decodeURIComponent(src.replace(/.*\/iu\/.*?[?&]u=([^&]*).*/, "$1"));
+        }
+
+        // Mura CMS (http://www.getmura.com/)
+        if (domain === "static.scientificamerican.com") {
+            // https://static.scientificamerican.com/blogs/cache/file/95AC5EF1-B21C-4B68-8A6CA35ED072425A_medium.jpg?w=170&h=113&fit=crop
+            //   https://static.scientificamerican.com/blogs/cache/file/95AC5EF1-B21C-4B68-8A6CA35ED072425A.jpg
+            //   https://static.scientificamerican.com/blogs/cache/file/95AC5EF1-B21C-4B68-8A6CA35ED072425A_source.jpg
+            // https://static.scientificamerican.com/sciam/cache/file/DD410F93-4B85-4031-90CEF95B8C722F36.jpg?w=590&h=393
+            //   https://static.scientificamerican.com/sciam/cache/file/DD410F93-4B85-4031-90CEF95B8C722F36.jpg
+            //   https://static.scientificamerican.com/sciam/cache/file/DD410F93-4B85-4031-90CEF95B8C722F36_source.jpg
+            // https://static.scientificamerican.com/sciam/cache/file/6A6323ED-DC05-47CA-B132FF74AAEC4163_agenda.jpg?w=210&amp;h=140
+            //   https://static.scientificamerican.com/sciam/cache/file/6A6323ED-DC05-47CA-B132FF74AAEC4163.jpg
+            //   https://static.scientificamerican.com/sciam/cache/file/6A6323ED-DC05-47CA-B132FF74AAEC4163_source.jpg
+            // https://static.scientificamerican.com/blogs/cache/file/95AC5EF1-B21C-4B68-8A6CA35ED072425A_small.jpg?fit=crop
+            //   https://static.scientificamerican.com/blogs/cache/file/95AC5EF1-B21C-4B68-8A6CA35ED072425A.jpg
+            //   https://static.scientificamerican.com/blogs/cache/file/95AC5EF1-B21C-4B68-8A6CA35ED072425A_source.jpg
+            // https://static.scientificamerican.com/sciam/cache/file/E82AEBA1-0A06-4B0F-9B1CFF1CE6BD8745_source.png?w=220&amp;h=100
+            //   https://static.scientificamerican.com/sciam/cache/file/E82AEBA1-0A06-4B0F-9B1CFF1CE6BD8745_source.png
+            return src.replace(/(?:_[^/.]*)?(\.[^/.?]*)(?:\?.*)?$/, "_source$1");
         }
 
 
@@ -6001,19 +6119,6 @@
     if (is_node) {
         module.exports = bigimage_recursive;
     } else {
-        /*var newhref = document.location.href;
-        while (true) {
-            var newhref1 = fullurl(newhref, bigimage(newhref));
-            if (newhref1 !== newhref) {
-                newhref = newhref1;
-            } else {
-                break;
-            }
-
-            if (_nir_debug_) {
-                break;
-            }
-            }*/
         var newhref = bigimage_recursive(document.location.href);
 
         if (newhref !== document.location.href) {
@@ -6025,7 +6130,7 @@
                     method: 'HEAD',
                     url: newhref,
                     onload: function() {
-                        // // nano defender removes this.DONE
+                        // nano defender removes this.DONE
                         if (this.readyState == 4) {
                             document.documentElement.style.cursor = "default";
 
