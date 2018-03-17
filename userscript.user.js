@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.2.6
+// @version      0.2.7
 // @description  Redirects to the maximum possible size for images
 // @author       qsniyg
 // @include      *
@@ -1678,6 +1678,12 @@
             return src
                 .replace(/\/image\.[^_/]*_gen\/derivatives\/[^/]*\//, "/")
                 .replace(/\/image\/[^_/]*_gen\/derivatives\/[^/]*\//, "/image/");
+        }
+
+        if (domain === "www.tsn.ca") {
+            // https://www.tsn.ca/polopoly_fs/1.738832!/fileimage/httpImage/image.jpg_gen/derivatives/landscape_620/kyle-fuller.jpg
+            //   https://www.tsn.ca/polopoly_fs/1.738832!/fileimage/httpImage/image.jpg_gen/derivatives/default/kyle-fuller.jpg
+            return src.replace(/(\/image\.[^_/]*_gen\/derivatives\/)[^/]*\//, "$1default/")
         }
 
         if (domain.match(/ichef(?:-[0-9]*)?.bbci.co.uk/)) {
@@ -4567,7 +4573,7 @@
             // https://executiveponies.com/media/catalog/product/cache/2/thumbnail/90x144/9df78eab33525d08d6e5fb8d27136e95/3/2/327a6104_copy.jpg
             domain === "executiveponies.com" ||
             domain === "www.lizandliz.com" ||
-            src.match(/\/media\/catalog\/product\/cache\/[0-9]*\/[^/]*\/(?:[0-9]+x(?:[0-9]+)?\/)?[0-9a-f]{32}\//)) {
+            src.match(/(?:\/media)?\/catalog\/product\/cache\/[0-9]*\/[^/]*\/(?:[0-9]+x(?:[0-9]+)?\/)?[0-9a-f]{32}\//)) {
             // https://www.sonassi.com/blog/knowledge-base/deconstructing-the-cache-image-path-on-magento
             //
             // http://www.usmall.us/media/catalog/product/cache/16/image/600x600/d58d44b981214661663244ef00ea7e30/1/7/17_9__2.jpg
@@ -5652,12 +5658,17 @@
 
         // PrestaShop
         if (domain === "www.tiarashop.eu" ||
+            // http://streetstylestore.com/img/p/7/4/7/7/3/74773-home_default.jpg
+            //   http://streetstylestore.com/img/p/7/4/7/7/3/74773.jpg
+            domain === "streetstylestore.com" ||
             // http://flyhighstore.pl/2210-home_default/fh-cool-red-winter-jacket.jpg
             //   http://flyhighstore.pl/2210/fh-cool-red-winter-jacket.jpg
             domain === "flyhighstore.pl") {
             // https://www.tiarashop.eu/3412-home_default/o.jpg
             //   https://www.tiarashop.eu/3412/o.jpg
-            return src.replace(/(:\/\/[^/]*\/[0-9]+)[-_][^/]*(\/[^/]*)$/, "$1$2");
+            return src
+                .replace(/(:\/\/[^/]*\/img\/.*\/[0-9]*)[-_][^/.]*(\.[^/.]*)$/, "$1$2")
+                .replace(/(:\/\/[^/]*\/[0-9]+)[-_][^/]*(\/[^/]*)$/, "$1$2");
         }
 
         if (domain === "skinzwearphotography.com") {
@@ -5848,6 +5859,36 @@
             // https://static.scientificamerican.com/sciam/cache/file/E82AEBA1-0A06-4B0F-9B1CFF1CE6BD8745_source.png?w=220&amp;h=100
             //   https://static.scientificamerican.com/sciam/cache/file/E82AEBA1-0A06-4B0F-9B1CFF1CE6BD8745_source.png
             return src.replace(/(?:_[^/.]*)?(\.[^/.?]*)(?:\?.*)?$/, "_source$1");
+        }
+
+        if (domain.match(/s[0-9]*\.qwant\.com/) &&
+            src.indexOf("/thumbr/") >= 0) {
+            // https://s1.qwant.com/thumbr/0x110/a/6/415e8905eb30e1a48a6374550f1852/b_1_q_0_p_0.jpg?u=https%3A%2F%2Fb.fssta.com%2Fuploads%2Fcontent%2Fdam%2Ffsdigital%2Ffscom%2Fnfl%2Fimages%2F2016%2F09%2F19%2F9034572-kyle-fuller-nfl-detroit-lions-chicago-bears.vresize.1200.630.high.0.jpg&q=0&b=1&p=0&a=0
+            //   https://b.fssta.com/uploads/content/dam/fsdigital/fscom/nfl/images/2016/09/19/9034572-kyle-fuller-nfl-detroit-lions-chicago-bears.vresize.1200.630.high.0.jpg
+            return decodeURIComponent(src.replace(/.*[?&]u=([^&]*).*/, "$1"));
+        }
+
+        if (domain === "b.fssta.com") {
+            // https://b.fssta.com/uploads/content/dam/fsdigital/fscom/nfl/images/2016/09/19/9034572-kyle-fuller-nfl-detroit-lions-chicago-bears.vresize.1200.630.high.0.jpg -- stretched
+            //   https://b.fssta.com/uploads/content/dam/fsdigital/fscom/nfl/images/2016/09/19/9034572-kyle-fuller-nfl-detroit-lions-chicago-bears.jpg
+            return src.replace(/(\/[^/.]*)\.[^/]*(\.[^/.]*)$/, "$1$2");
+        }
+
+        if (domain.match(/media\..*\.espn\.com$/)) {
+            // http://media.video-cdn.espn.com/motion/2018/0316/dm_180316_ncb_bilas_on_buffalo/dm_180316_ncb_bilas_on_buffalo_default.jpg
+            //   http://media.video-cdn.espn.com/motion/2018/0316/dm_180316_ncb_bilas_on_buffalo/dm_180316_ncb_bilas_on_buffalo.jpg
+            return src.replace(/(\/[0-9]+\/[0-9]+\/)([^/]*)\/[^/]*(\.[^/.]*)$/, "$1$2\/$2$3");
+        }
+
+        if (domain === "img.skysports.com" ||
+            domain.indexOf(".365dm.com") >= 0) {
+            // http://img.skysports.com/18/02/768x432/skysports-matt-patricia-detroit-lions_4225501.jpg?20180208065403
+            //   http://img.skysports.com/18/02/master/skysports-matt-patricia-detroit-lions_4225501.jpg?20180208065403
+            // http://img.skysports.com/18/02/1-1/40/skysports-matt-patricia-detroit-lions_4225501.jpg?20180208065403
+            //   http://img.skysports.com/18/02/master/skysports-matt-patricia-detroit-lions_4225501.jpg?20180208065403
+            // http://e2.365dm.com/18/02/1-1/40/skysports-matt-patricia-detroit-lions_4225501.jpg?20180208065403
+            //   http://e2.365dm.com/18/02/master/skysports-matt-patricia-detroit-lions_4225501.jpg?20180208065403
+            return src.replace(/(:\/\/[^/]*\/[0-9]*\/[0-9]*\/)[^/]*\/(?:[0-9]*\/)?([^/]*)$/, "$1master/$2");
         }
 
 
@@ -6122,9 +6163,8 @@
         var newhref = bigimage_recursive(document.location.href);
 
         if (newhref !== document.location.href) {
+            console.log(newhref);
             if (!_nir_debug_) {
-                console.log(newhref);
-
                 document.documentElement.style.cursor = "wait";
                 var http = new GM_xmlhttpRequest({
                     method: 'HEAD',
