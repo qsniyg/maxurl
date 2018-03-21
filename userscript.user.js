@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.2.7
+// @version      0.2.8
 // @description  Redirects to the maximum possible size for images
 // @author       qsniyg
 // @include      *
@@ -440,6 +440,11 @@
             // http://www.intronews.net/news/articleView.html?idxno=85633
             //   http://www.intronews.net/news/thumbnail/201802/85633_114974_1625_v150.jpg
             domain === "www.intronews.net" ||
+            // http://www.hg-times.com/news/thumbnail/201803/178090_128993_4414_v150.jpg
+            //   http://www.hg-times.com/news/photo/201803/178090_128993_4414.jpg
+            domain === "www.hg-times.com" ||
+            // http://www.iemn.kr/news/thumbnail/201606/2457_2879_40_v150.jpg
+            domain === "www.iemn.kr" ||
             // http://www.newstown.co.kr/news/thumbnail/201801/311251_198441_4816_v150.jpg
             domain.indexOf("www.newstown.co.kr") >= 0) {
             return src
@@ -867,7 +872,14 @@
             //   https://media1.popsugar-assets.com/files/2015/03/30/647/n/1922564/ccc1eafd_edit_img_cover_file_864129_1397566805/i/Emma-Watson-Best-Red-Carpet-Looks.png
             // https://media1.popsugar-assets.com/files/thumbor/1ktKvFdaPtIVjrL085ZgDu-0IUM/160x160/filters:format_auto-!!-:strip_icc-!!-:sharpen-!1,0,true!-/2014/04/09/959/n/1922564/d006b9f456c00f56_478466321_10/i/Emma-Watson-Wes-Gordon-2014-Noah-Germany-Premiere.jpg
             //   https://media1.popsugar-assets.com/files/2014/04/09/959/n/1922564/d006b9f456c00f56_478466321_10/i/Emma-Watson-Wes-Gordon-2014-Noah-Germany-Premiere.jpg
-            return src.replace(/\/thumbor\/[^/]*\/(?:fit-in\/)?[^/]*\/filters:[^/]*\//, "/");
+            newsrc = src.replace(/\/thumbor\/[^/]*\/(?:fit-in\/)?[^/]*\/filters:[^/]*\//, "/");
+            if (newsrc !== src)
+                return newsrc;
+
+            // http://media1.popsugar-assets.com/files/2013/02/08/2/192/1922398/13bc50e021acd58e_wenn10840119.xxxlarge/i/Spring-Breakers-Berlin-Red-Carpet-Premiere-Pictures.jpg
+            //   http://media1.popsugar-assets.com/files/2013/02/08/2/192/1922398/13bc50e021acd58e_wenn10840119/i/Spring-Breakers-Berlin-Red-Carpet-Premiere-Pictures.jpg
+            // https://media1.popsugar-assets.com/files/2015/09/02/221/n/37139775/d391fe8f30364ef0_15._2007_GettyImages-81449203/i/Selena-Gomez.jpg
+            return src.replace(/\.[a-z]*(\/i\/[^/]*)$/, "$1");
         }
 
         if (domain === "elleuk.cdnds.net") {
@@ -979,13 +991,13 @@
         if (domain.indexOf("cdn-img.instyle.com") >= 0 ||
             domain.indexOf("static.independent.co.uk") >= 0 ||
             domain.indexOf("static.standard.co.uk") >= 0 ||
-            domain.indexOf("www.billboard.com") >= 0 ||
+            /*domain.indexOf("www.billboard.com") >= 0 ||
             domain.indexOf("www.harpersbazaararabia.com") >= 0 ||
-            domain.indexOf("www.etonline.com") >= 0 ||
+            domain.indexOf("www.etonline.com") >= 0 ||*/
             domain.indexOf("o.oystermag.com") >= 0 ||
-            domain.indexOf("www.metro.us") >= 0 ||
+            /*domain.indexOf("www.metro.us") >= 0 ||
             domain.indexOf("www.mtv.co.uk") >= 0 ||
-            domain.indexOf("www.grammy.com") >= 0 ||
+            domain.indexOf("www.grammy.com") >= 0 ||*/
             domain.match(/cdn[0-9]*\.thr\.com/) ||
             domain.match(/s[0-9]*\.ibtimes\.com/) ||
             // https://www.standard.co.uk/s3fs-public/styles/hero_tablet/public/thumbnails/image/2014/11/18/15/nickhewer4.jpg
@@ -996,7 +1008,7 @@
             // http://www.standard.co.uk/s3/files/image/2014/11/18/15/nickhewer4.jpg
             // which is not found
             // but replacing /s3fs-public/ to /s3/files/ doesn't work
-            domain === "www.standard.co.uk" ||
+            //domain === "www.standard.co.uk" ||
             // https://media.pri.org/s3fs-public/styles/story_main/public/story/images/coco-movie.jpg?itok=Uo82G_FI
             src.match(/\/s3fs-public\/styles\/[^/]*\/public\//) ||
             domain === "media.pri.org" ||
@@ -1474,6 +1486,11 @@
             (domain === "www.voidu.com" && src.indexOf("/gallery/") >= 0) ||
             // https://store.playstation.com/store/api/chihiro/00_09_000/container/US/en/99/UP4139-CUSA10160_00-SURVIVINGMARSFCE//image?_version=00_09_000&platform=chihiro&w=720&h=720&bg_color=000000&opacity=100
             (domain === "store.playstation.com" && src.indexOf("/image?") >= 0) ||
+            // https://images.interactives.dk/cdn-connect/98f5b7864bfb4efba3e65b9d0c983122.jpg?auto=compress&ch=Width%2CDPR&ixjsv=2.2.4&w=750
+            domain === "images.interactives.dk" ||
+            // https://toyo-arhxo0vh6d1oh9i0c.stackpathdns.com/media/1200/xl-hero-tire-pr-ra1.jpg?quality=10
+            // https://toyo-arhxo0vh6d1oh9i0c.stackpathdns.com/media/1908/xl-pxr8r-hero-740x740.jpg?anchor=center&mode=crop&quality=90&width=470&rnd=131206940370000000
+            domain === "toyo-arhxo0vh6d1oh9i0c.stackpathdns.com" ||
             // http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
             // https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
             src.match(/\/demandware\.static\//) ||
@@ -2749,7 +2766,12 @@
             // http://rs375.pbsrc.com/albums/oo198/ZaraTTucker/Get%20Italian%20Translation%20Services%20to%20Boost_zpsms99llho.jpg~c400
             //   http://i375.photobucket.com/albums/oo198/ZaraTTucker/Get%20Italian%20Translation%20Services%20to%20Boost_zpsms99llho.jpg
             // http://i843.photobucket.com/albums/zz352/loaloauk/dlp%20encounter/New%20Album%2042/4640363830_9e9c2ae51b_z.jpg~original
-            return src.replace(/rs([0-9]*)\.pbsrc\.com/, "i$1.photobucket.com").replace(/~[^/.]*$/, "~original");
+            // http://rs414.pbsrc.com/albums/pp228/sweetblonda/NATURA.jpg?w=280&h=210&fit=crop
+            //   http://i414.photobucket.com/albums/pp228/sweetblonda/NATURA.jpg
+            return src
+                .replace(/rs([0-9]*)\.pbsrc\.com/, "i$1.photobucket.com")
+                .replace(/\?.*/, "")
+                .replace(/(?:~[^/.]*)?$/, "~original");
         }
 
         if (domain === "www.welt.de") {
@@ -5891,6 +5913,56 @@
             return src.replace(/(:\/\/[^/]*\/[0-9]*\/[0-9]*\/)[^/]*\/(?:[0-9]*\/)?([^/]*)$/, "$1master/$2");
         }
 
+        if (domain.match(/f[0-9]*\.bcbits\.com/) &&
+            src.indexOf("/img/") >= 0) {
+            // https://f4.bcbits.com/img/0012903078_36.jpg
+            //   https://f4.bcbits.com/img/0012903078_0.jpg
+            return src.replace(/_[0-9]+(\.[^/.]*)$/, "_0$1");
+        }
+
+        if (domain.indexOf(".motherlessmedia.com") >= 0) {
+            // http://cdn4.thumbs.motherlessmedia.com/thumbs/FDE845E-zoom.jpg?fs=opencloud
+            //   http://cdn4.images.motherlessmedia.com/images/FDE845E.jpg
+            return src
+                .replace(/(:\/\/cdn[0-9]*\.)thumbs(\.motherlessmedia\.com\/)/, "$1images$2")
+                .replace(/\/thumbs\//, "/images/")
+                .replace(/-[a-z]*(\.[^/.?]*)(?:\?.*)?$/, "$1");
+        }
+
+        if (domain.indexOf("shram.kiev.ua") >= 0 &&
+            src.indexOf("/img/") >= 0) {
+            // http://en.shram.kiev.ua/img/fun/emilia-clarke/Emilia_Clarke_2013-small.jpg
+            //   http://en.shram.kiev.ua/img/fun/emilia-clarke/Emilia_Clarke_2013-big.jpg
+            // http://en.shram.kiev.ua/img/fun/emilia-clarke/emilia-clarke2-w370.jpg
+            //   http://en.shram.kiev.ua/img/fun/emilia-clarke/emilia-clarke2.jpg
+            return src
+                .replace(/-small(\.[^/.]*)$/, "-big$1")
+                .replace(/-w[0-9]+(\.[^/.]*)$/, "$1");
+        }
+
+        if (domain == "storage.googleapis.com" &&
+            src.indexOf("/cr-resource/image/") >= 0) {
+            // http://storage.googleapis.com/cr-resource/image/5a1100e09ab0cc45cb108bbcd5d1238d/nosenter/800/151e456e844516e04e222d9d9487e79c.jpg
+            //   http://storage.googleapis.com/cr-resource/image/5a1100e09ab0cc45cb108bbcd5d1238d/nosenter/151e456e844516e04e222d9d9487e79c.jpg
+            return src.replace(/\/[0-9]+(\/[0-9a-f]*\.[^/.]*)$/, "$1");
+        }
+
+        if (domain.indexOf(".iol.pt") >= 0 &&
+            src.indexOf("/multimedia/") >= 0) {
+            // http://www.iol.pt/multimedia/oratvi/multimedia/imagem/id/13513489/800
+            // http://www.iol.pt/multimedia/oratvi/multimedia/imagem/id/5903556c0cf2572470620c62/800
+            // http://www.tvi24.iol.pt/multimedia/oratvi/multimedia/imagem/id/5734c40c0cf209b36b78bd3a/600.jpg
+            return src.replace(/(\/id\/[0-9a-f]+)\/[0-9]+(?:\.[^/.]*)?$/, "$1");
+        }
+
+        if (domain === "img.purch.com") {
+            // https://img.purch.com/w/660/aHR0cDovL3d3dy5saXZlc2NpZW5jZS5jb20vaW1hZ2VzL2kvMDAwLzAwMy8xMjQvb3JpZ2luYWwvMDkwNjA4LWNvcm4tc25ha2UtMDIuanBn -- mildly stretched
+            //   https://img.purch.com/o/aHR0cDovL3d3dy5saXZlc2NpZW5jZS5jb20vaW1hZ2VzL2kvMDAwLzAwMy8xMjQvb3JpZ2luYWwvMDkwNjA4LWNvcm4tc25ha2UtMDIuanBn
+            return src.replace(/\/[wh]\/[0-9]+\//, "/o/");
+        }
+
+
+
 
 
 
@@ -5913,11 +5985,12 @@
         }
 
         // coppermine
-        if (src.search(/\/(gallery|photos)\/albums\/[^/]*\/[^/]*\/(normal)|(thumb)_[^/._]*\.[^/.]*$/) >= 0 ||
-           src.search(/\/(gallery|photos)\/albums\/[^/]*\/[^/]*\/[^/]*\/(normal)|(thumb)_[^/._]*\.[^/.]*$/) >= 0) {
+        if (src.search(/\/(gallery|photos)\/albums\/[^/]*\/[^/]*\/(normal)|(thumb)_[^/.]*\.[^/.]*$/) >= 0 ||
+           src.search(/\/(gallery|photos)\/albums\/[^/]*\/[^/]*\/[^/]*\/(normal)|(thumb)_[^/.]*\.[^/.]*$/) >= 0) {
             // http://emma-w.net/photos/albums/Events/2017/MARCH13/001/thumb_001.jpg
             //   http://emma-w.net/photos/albums/Events/2017/MARCH13/001/001.jpg
-            newsrc = src.replace(/(\/(?:gallery|photos)\/albums\/.*\/)[a-z]*_([^/._]*\.[^/.]*)$/, "$1$2");
+            // http://emilia-clarke.net/gallery/albums/Photoshoots/Session031/thumb_2013_10_12.jpg
+            newsrc = src.replace(/(\/(?:gallery|photos)\/albums\/.*\/)[a-z]*_([^/.]*\.[^/.]*)$/, "$1$2");
             if (newsrc !== src)
                 return newsrc;
         }

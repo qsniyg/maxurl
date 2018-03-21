@@ -52,7 +52,7 @@ function inblacklist(x) {
 var submissionStream = client.SubmissionStream({
   "subreddit": "all",
   "results": 100,
-  "pollTime": 2000
+  "pollTime": 3000
 });
 
 /*function getimagesize(imgUrl, olddata) {
