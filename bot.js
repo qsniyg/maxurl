@@ -26,11 +26,27 @@ const r = new Snoowrap({
 const client = new Snoostorm(r);
 
 var blacklist = [
+  // Posts that would be insensitive to comment on
   "killed",
   "died",
   "death",
   "murdered",
-  "murder"
+  "murder",
+
+  // Posts in-between the first and second category
+  "embarrassed",
+  "embarrassing",
+  "cringe",
+  "cringiest",
+  "cringefest",
+
+  // Posts that people commonly dislike the bot commenting on
+  "trump",
+  "hillary",
+  "punch",
+  "punchable",
+  "ugly",
+  "fat"
 ];
 
 function inblacklist(x) {
@@ -139,9 +155,13 @@ function dourl(url, post) {
                             newdata.height > data.height) ||
                            ((newdata.height - data.height) > thresh_px &&
                             newdata.width > data.width))) {
-            var comment = "" + r.toFixed(1) + "x larger (" + newdata.width + "x" + newdata.height + ") version of linked image:\n\n" + big + "\n\n";
+            var times = "" + r.toFixed(1) + "x";
+            if (r < 1.995) {
+              times = "" + ((r-1) * 100).toFixed(0) + "%";
+            }
+            var comment = times + " larger (" + newdata.width + "x" + newdata.height + ") version of linked image:\n\n" + big + "\n\n";
             comment += "*****\n\n";
-            comment += "^[source&nbsp;code](https://github.com/qsniyg/maxurl)&nbsp;|&nbsp;[userscript&nbsp;(redirects&nbsp;images)](https://greasyfork.org/en/scripts/36662-image-max-url)";
+            comment += "^[source&nbsp;code](https://github.com/qsniyg/maxurl)&nbsp;|&nbsp;[userscript&nbsp;(redirects&nbsp;to&nbsp;larger&nbsp;images)](https://greasyfork.org/en/scripts/36662-image-max-url)";
             console.log(comment);
             if (post) {
               post.reply(comment).then((comment_data) => {
