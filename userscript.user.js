@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.2.9
+// @version      0.2.10
 // @description  Redirects to larger versions of images
 // @author       qsniyg
 // @include      *
@@ -1448,7 +1448,9 @@
             // https://compote.slate.com/images/4e1e4179-fb17-436b-a890-1a4fdb417d45.jpeg?width=1180&offset=0x0&rect=1560x1040&height=842
             domain === "compote.slate.com" ||
             // https://media.gannett-cdn.com/29906170001/29906170001_5720100432001_5720093419001-vs.jpg?pubId=29906170001&quality=10
-            domain === "media.gannett-cdn.com" ||
+            //domain === "media.gannett-cdn.com" ||
+            // https://www.gannett-cdn.com/media/2016/04/15/USATODAY/USATODAY/635963424849581175-GTY-463036250-70683098.JPG?width=299&height=168&fit=bounds
+            domain.indexOf(".gannett-cdn.com") >= 0 ||
             // http://www.rdfm-radio.fr/medias/images/media.nrj.fr-2f436x327-2f2017-2f11-2fbiographie-de-mc-fioti-484.jpg?fx=c_180_180
             (domain === "www.rdfm-radio.fr" && src.indexOf("/medias/") >= 0) ||
             // http://image-api.nrj.fr/02_5a02579e3cb49.png?w=730&h=410
@@ -1514,6 +1516,8 @@
             (domain === "www.zmonline.com" && src.indexOf("/media/") >= 0) ||
             // https://img-s-msn-com.akamaized.net/tenant/amp/entityid/AAtV5nt.img?h=328&w=270&m=6&q=60&o=f&l=f&x=277&y=235
             domain === "img-s-msn-com.akamaized.net" ||
+            // http://www.heraldscotland.com/resources/images/5792318.jpg?display=1&htype=0&type=responsive-gallery
+            domain === "www.heraldscotland.com" ||
             // http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
             // https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
             src.match(/\/demandware\.static\//) ||
@@ -3939,6 +3943,13 @@
             domain.match(/i[0-9]*-prod\.birminghammail\.co\.uk/) ||
             domain.match(/i[0-9]*-prod\.dailypost\.co\.uk/) ||
             domain.match(/i[0-9]*-prod\.bristolpost\.co\.uk/) ||
+            // https://i2-prod.irishmirror.ie/incoming/article8862957.ece/ALTERNATES/s615b/abb08375.jpg
+            domain.match(/i[0-9]*-prod\.irishmirror\.ie/) ||
+            // https://i2-prod.coventrytelegraph.net/incoming/article14083906.ece/ALTERNATES/s1200/Davina-McCall-1.jpg
+            //   https://i2-prod.coventrytelegraph.net/incoming/article14083906.ece/BINARY/Davina-McCall-1.jpg
+            domain.match(/i[0-9]*-prod\.coventrytelegraph\.net/) ||
+            // https://beta.images.theglobeandmail.com/76a/sports/hockey/article38351471.ece/ALTERNATES/w620/web-sp-hk-senators-0326.JPG
+            domain === "beta.images.theglobeandmail.com" ||
             domain.match(/cdn-[0-9]*\.independent\.ie/)) {
             // wip
             // http://www.thehindu.com/migration_catalog/article14926809.ece/alternates/FREE_660/30MPSQUIRREL
@@ -6050,6 +6061,24 @@
             //   http://img.hani.co.kr/imgdb/resize/2012/0823/1345624227_134562400908_20120823.JPG
             //   original doesn't work
             return src.replace(/:\/\/[^/]*\/flexible\/.*?\/imgdb\//, "://img.hani.co.kr/imgdb/");
+        }
+
+        if (domain === "static.ok.co.uk" ||
+            domain === "static.ok.co.uk.s3.amazonaws.com" ||
+            domain === "ns.hitcreative.com.s3.amazonaws.com") {
+            // https://static.ok.co.uk/media/images/625x938_ct/1060392_GettyImages_488606950_ddcc7556b12de0d94bf5118cda2310d2.jpg
+            //   https://static.ok.co.uk/media/images/original/1060392_GettyImages_488606950_ddcc7556b12de0d94bf5118cda2310d2.jpg
+            // http://static.ok.co.uk.s3.amazonaws.com/media/images/625x938_ct/635516_1433940709_dani-dyer-age-of-kill-private-screening_ba3b9a6ae1c2f94238d6371b18ab9c9d.jpg
+            //   http://static.ok.co.uk.s3.amazonaws.com/media/images/original/635516_1433940709_dani-dyer-age-of-kill-private-screening_ba3b9a6ae1c2f94238d6371b18ab9c9d.jpg -- same size
+            // http://ns.hitcreative.com.s3.amazonaws.com/media/images/640x960/651.jpg
+            //   http://ns.hitcreative.com.s3.amazonaws.com/media/images/original/651.jpg
+            return src.replace(/\/media\/images\/[^/]*\//, "/media/images/original/");
+        }
+
+        if (domain.match(/rs[0-9]*\.galaxypub\.vn/)) {
+            // http://rs100.galaxypub.vn/staticFile/Subject/2018/02/14/361011/2_141343791.jpg?w=300&h=168
+            //   http://st.galaxypub.vn/staticFile/Subject/2018/02/14/361011/2_141343791.jpg
+            return src.replace(/:\/\/[^/]*(\/.*?)(?:\?.*)$/, "://st.galaxypub.vn$1");
         }
 
 
