@@ -17,12 +17,13 @@ const Snoowrap = require('snoowrap');
 const Snoostorm = require('snoostorm');
 
 const r = new Snoowrap({
-    userAgent: 'pc:maximage:v0.0.1 (by /u/MaxImageBot)',
+    userAgent: 'pc:maximage:v0.0.2 (by /u/MaxImageBot)',
     clientId: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET,
     username: process.env.REDDIT_USER,
     password: process.env.REDDIT_PASS
 });
+r.config({requestDelay: 1001});
 const client = new Snoostorm(r);
 
 var blacklist = [
@@ -68,7 +69,7 @@ function inblacklist(x) {
 var submissionStream = client.SubmissionStream({
   "subreddit": "all",
   "results": 100,
-  "pollTime": 3000
+  "pollTime": 1000
 });
 
 /*function getimagesize(imgUrl, olddata) {
@@ -198,7 +199,7 @@ setInterval(() => {
         return;
       }
 
-      var comment = message_data.subject.replace(/.*: *([A-Za-z0-9_]+).*/, "$1");
+      var comment = message_data.subject.replace(/.*:[ +]*([A-Za-z0-9_]+).*/, "$1");
       if (comment === message_data.subject)
         return;
 
@@ -218,7 +219,7 @@ setInterval(() => {
       });
     });
   });
-}, 10*1000);
+}, 5*1000);
 
 //console.dir(blacklist_json.disallowed);
 submissionStream.on("submission", function(post) {
