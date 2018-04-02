@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.2.10
+// @version      0.2.11
 // @description  Redirects to larger versions of images
 // @author       qsniyg
 // @include      *
@@ -451,6 +451,8 @@
             domain === "www.iemn.kr" ||
             // http://www.newscj.com/news/thumbnail/201803/newscj_%EC%B2%9C%EC%A7%80%EC%9D%BC%EB%B3%B4_505243_487804_229_v150.jpg
             domain === "www.newscj.com" ||
+            // http://www.ggilbo.com/news/thumbnail/201802/444114_351433_497_v150.jpg
+            domain === "www.ggilbo.com" ||
             // http://www.newstown.co.kr/news/thumbnail/201801/311251_198441_4816_v150.jpg
             domain.indexOf("www.newstown.co.kr") >= 0) {
             return src
@@ -1518,6 +1520,8 @@
             domain === "img-s-msn-com.akamaized.net" ||
             // http://www.heraldscotland.com/resources/images/5792318.jpg?display=1&htype=0&type=responsive-gallery
             domain === "www.heraldscotland.com" ||
+            // https://cdn.instructables.com/ORIG/FLU/3BAI/JF8IWE1M/FLU3BAIJF8IWE1M.jpg?width=400&crop=3:2
+            domain === "cdn.instructables.com" ||
             // http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
             // https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
             src.match(/\/demandware\.static\//) ||
@@ -1530,8 +1534,8 @@
             src = src.replace(/\?[^/]*$/, "");
         }
 
-        if (// https://c1.hoopchina.com.cn/uploads/star/event/images/180215/bmiddle-5e8c9e13a07a397579c89590685b479db07ff6b8.png?x-oss-process=image/resize,w_800/format,webp
-            domain.match(/[ci][0-9]*\.hoopchina\.com\.cn/) ||
+        // https://c1.hoopchina.com.cn/uploads/star/event/images/180215/bmiddle-5e8c9e13a07a397579c89590685b479db07ff6b8.png?x-oss-process=image/resize,w_800/format,webp
+        if (domain.match(/[ci][0-9]*\.hoopchina\.com\.cn/) ||
             // https://cdn.odigo.net/60168923a5f06af67f74250c44de7861.png?imageView2/2/w/800/interlace/1%7Cimageslim
             domain === "cdn.odigo.net" ||
             // https://i.linkeddb.com/person2/bc2b/4ac6/d18db22f165a63046031cbb9.jpg?x-oss-process=image/resize,m_fill,w_170,h_230
@@ -1543,8 +1547,8 @@
 
         // check to make sure this doesn't break anything
         // test: https://s3.amazonaws.com/oscars-img-abc/wp-content/uploads/2017/02/26164054/950c51cde0a1cab411efdbf8f1abc117a6aad749397172c9b95dd3c47bfb6f6f-370x492.jpg
-        if (//domain.indexOf(".files.wordpress.com") >= 0 || // doesn't work
-            domain.indexOf(".imimg.com") >= 0 ||
+        if (domain.indexOf(".imimg.com") >= 0 ||
+            //domain.indexOf(".files.wordpress.com") >= 0 || // doesn't work
             domain.indexOf("blogs-images.forbes.com") >= 0 ||
             domain.indexOf("static.gofugyourself.com") >= 0 ||
             domain.indexOf("static.thesuperficial.com") >= 0 ||
@@ -1629,6 +1633,8 @@
             domain === "media.thetab.com" ||
             // https://assets.rockpapershotgun.com/images//2018/02/survivingmars2-620x315.jpg
             domain === "assets.rockpapershotgun.com" ||
+            // http://spotted.tv/app/uploads/20131210-2339481-750x355.jpg
+            domain === "spotted.tv" ||
             src.indexOf("/wp-content/uploads/") >= 0 ||
             src.indexOf("/wp/uploads/") >= 0) {
             // http://arissa-x.com/miss-x-channel/wp-content/uploads/2017/06/IMG_0005.jpg
@@ -1717,6 +1723,8 @@
             domain.indexOf("www.irishtimes.com") >= 0 ||
             domain.indexOf("www.ctvnews.ca") >= 0 ||
             domain.indexOf("www.lancashirelife.co.uk") >= 0 ||
+            // http://images.archant.co.uk/polopoly_fs/1.5453783.1522228810!/image/image.jpg_gen/derivatives/landscape_630/image.jpg
+            domain === "images.archant.co.uk" ||
             domain.indexOf("www.edp24.co.uk") >= 0) {
             // http://www.lancashirelife.co.uk/polopoly_fs/1.1596808!/image/2417471173.jpg_gen/derivatives/landscape_490/2417471173.jpg
             return src
@@ -2135,7 +2143,9 @@
         }
 
         if (domain.indexOf("thumbnews.nateimg.co.kr") >= 0) {
-            return src.replace(/.*\/view[0-9]*\//, "");
+            // http://thumbnews.nateimg.co.kr/news130/http://news.nateimg.co.kr/orgImg/nn/2018/03/30/201803302311296710_1.jpg
+            // http://thumbnews.nateimg.co.kr/mnews105/http://news.nateimg.co.kr/orgImg/dh/2018/03/30/b38bab99257a78968bceed1266895c20.jpg
+            return src.replace(/.*\/(?:view|m?news)[0-9]*\//, "");
         }
 
         if (domain.indexOf("img.sedaily.com") >= 0) {
@@ -2868,7 +2878,11 @@
             //   http://lb1.lisimg.com/10752485/0full.jpg
             // http://ilarge.lisimg.com/image/6915143/780full-sol%C3%A8ne-rigot.jpg
             //   http://ilarge.lisimg.com/image/6915143/0full.jpg
-            return src.replace(/\/([^/]*)\.jpg$/, "/0full.jpg");
+            // http://iv1.lisimg.com/image/2916057/516full-rachel-riley.jpg
+            //   http://ilarge.lisimg.com/image/2916057/0full.jpg
+            return src
+                .replace(/:\/\/[^\./]*\.lisimg\.com\//, "://ilarge.lisimg.com/")
+                .replace(/\/([^/]*)\.jpg$/, "/0full.jpg");
         }
 
         if (domain.indexOf(".lesinrocks.com") >= 0) {
@@ -3294,6 +3308,16 @@
             //   http://www.yeongnam.com/Photo/2018/01/26/R20180126.99001151846332501.jpg
             // R, L, M, S
             return src.replace(/\/[A-Z]([^/]*)$/, "/R$1");
+        }
+
+        // doesn't always work, due to .jpg/.jpeg
+        if (domain === "www.yeongnam.com" &&
+            src.indexOf("/news/screennews/") >= 0) {
+            // http://www.yeongnam.com/news/screennews/159_20180329_L20180327_99001152405345001.jpg
+            //   http://www.yeongnam.com/Photo/2018/03/27/R20180327.99001152405345001.jpeg
+            return src
+                .replace(/\/news\/screennews\/[0-9]+_[0-9]+_[A-Z]([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]+)(\.[^/.]*)/,
+                         "/Photo/$1/$2/$3/R$1$2$3.$4.jpeg");
         }
 
         if (domain === "db.kookje.co.kr") {
@@ -3948,8 +3972,11 @@
             // https://i2-prod.coventrytelegraph.net/incoming/article14083906.ece/ALTERNATES/s1200/Davina-McCall-1.jpg
             //   https://i2-prod.coventrytelegraph.net/incoming/article14083906.ece/BINARY/Davina-McCall-1.jpg
             domain.match(/i[0-9]*-prod\.coventrytelegraph\.net/) ||
+            // https://i2-prod.dublinlive.ie/incoming/article14444188.ece/ALTERNATES/s458/CC-METRO-FIRE190393751.jpg
+            domain.match(/i[0-9]*-prod\.dublinlive\.ie/) ||
             // https://beta.images.theglobeandmail.com/76a/sports/hockey/article38351471.ece/ALTERNATES/w620/web-sp-hk-senators-0326.JPG
             domain === "beta.images.theglobeandmail.com" ||
+            src.match(/:\/\/i[0-9]*-prod\..*\/article[^/]*\.ece\//) ||
             domain.match(/cdn-[0-9]*\.independent\.ie/)) {
             // wip
             // http://www.thehindu.com/migration_catalog/article14926809.ece/alternates/FREE_660/30MPSQUIRREL
@@ -5718,6 +5745,8 @@
             // http://streetstylestore.com/img/p/7/4/7/7/3/74773-home_default.jpg
             //   http://streetstylestore.com/img/p/7/4/7/7/3/74773.jpg
             domain === "streetstylestore.com" ||
+            // https://cdn.poplook.com/15360-92883-large_default/lane-bubble-sleeve-blouse-dusty-teal.jpg
+            domain === "cdn.poplook.com" ||
             // http://flyhighstore.pl/2210-home_default/fh-cool-red-winter-jacket.jpg
             //   http://flyhighstore.pl/2210/fh-cool-red-winter-jacket.jpg
             domain === "flyhighstore.pl") {
@@ -5725,7 +5754,7 @@
             //   https://www.tiarashop.eu/3412/o.jpg
             return src
                 .replace(/(:\/\/[^/]*\/img\/.*\/[0-9]*)[-_][^/.]*(\.[^/.]*)$/, "$1$2")
-                .replace(/(:\/\/[^/]*\/[0-9]+)[-_][^/]*(\/[^/]*)$/, "$1$2");
+                .replace(/(:\/\/[^/]*\/[0-9]+(?:-[0-9]+)?)(?:[-_][^/]*?)?(\/[^/]*)$/, "$1$2");
         }
 
         if (domain === "skinzwearphotography.com") {
@@ -6078,8 +6107,92 @@
         if (domain.match(/rs[0-9]*\.galaxypub\.vn/)) {
             // http://rs100.galaxypub.vn/staticFile/Subject/2018/02/14/361011/2_141343791.jpg?w=300&h=168
             //   http://st.galaxypub.vn/staticFile/Subject/2018/02/14/361011/2_141343791.jpg
-            return src.replace(/:\/\/[^/]*(\/.*?)(?:\?.*)$/, "://st.galaxypub.vn$1");
+            return src.replace(/:\/\/[^/]*(\/.*?)(?:\?.*)?$/, "://st.galaxypub.vn$1");
         }
+
+        if (domain === "www.implanetcorp.com" &&
+            src.indexOf("/upload/ctoon/") >= 0) {
+            // http://www.implanetcorp.com/upload/ctoon/gravure/15/2cx368d9b03d25a21839e3ff2c8b4ff3e266gyv5/15_thumb_0f4b73d6eb051c635a246df3e36d712c.jpg
+            //   http://www.implanetcorp.com/upload/ctoon/gravure/15/2cx368d9b03d25a21839e3ff2c8b4ff3e266gyv5/resize/001.JPG
+            //   http://www.implanetcorp.com/upload/ctoon/gravure/15/2cx368d9b03d25a21839e3ff2c8b4ff3e266gyv5/original/001.JPG
+            // http://www.implanetcorp.com/upload/ctoon/gravure/15/m1648d5a7d3f7856e668c7fa20336f9a97bc6vro/15_thumb_fecc0a9e6650bca40094b86194629705.jpg
+            //   http://www.implanetcorp.com/upload/ctoon/gravure/15/m1648d5a7d3f7856e668c7fa20336f9a97bc6vro/original/001.jpg
+            return src
+                //.replace(/\/[0-9]+_thumb_[0-9a-f]+(\.[^/.]*)$/, "/original/001.JPG")
+                .replace(/\/[a-z]*\/([0-9]+\.[^/.]*)$/, "/original/$1");
+        }
+
+        if (domain === "doramakun.ru") {
+            // http://doramakun.ru/thumbs/users/15581/photo/84/TQPg5IWwQTQ-185.jpg
+            //   http://doramakun.ru/users/15581/photo/84/TQPg5IWwQTQ.jpg
+            // http://doramakun.ru/thumbs/users/15581/photo/84/bRhbKntPXhI-185.jpg
+            //   http://doramakun.ru/thumbs/users/15581/photo/84/bRhbKntPXhI-413.jpg
+            //   http://doramakun.ru/users/15581/photo/84/bRhbKntPXhI.jpg -- same size
+            return src.replace(/\/thumbs\/(.*)-[0-9]+(\.[^/.]*)$/, "/$1$2");
+        }
+
+        if (domain === "1gr.cz") {
+            // https://1gr.cz/fotky/idnes/15/043/cl5/ZAR5ab634_MA210_USA_ENTERTAINMENT_0421_11.JPG
+            //   https://1gr.cz/fotky/idnes/15/043/org/ZAR5ab634_MA210_USA_ENTERTAINMENT_0421_11.JPG
+            return src.replace(/(\/[0-9]+\/[0-9]+\/)[^/]*\/([^/]*)$/, "$1org/$2");
+        }
+
+        if (domain === "ancensored.com" ||
+            src.match(/\/files\/images\//)) {
+            // http://ancensored.com/files/images/vthumbs/r/f284d8efea6df08d1df56ced003397f2.jpg
+            //   http://ancensored.com/files/images/vthumbs/r/f284d8efea6df08d1df56ced003397f2_full.jpg
+            return src.replace(/(\/[0-9a-f]*)(?:_[a-z]*)?(\.[^/.]*)$/, "$1_full$2");
+        }
+
+        if (domain === "www.desktopbackground.org") {
+            // https://www.desktopbackground.org/download/800x600/2014/11/15/856176_hd-wallpapers-4users-rachel-riley-hd-wallpapers-1080p_1600x1000_h.jpg
+            //   https://www.desktopbackground.org/p/2014/11/15/856176_hd-wallpapers-4users-rachel-riley-hd-wallpapers-1080p_1600x1000_h.jpg
+            //   https://www.desktopbackground.org/download/o/2014/11/15/856176_hd-wallpapers-4users-rachel-riley-hd-wallpapers-1080p_1600x1000_h.jpg
+            return src
+                .replace(/\/download\/[^/]*\//, "/download/o/")
+                .replace(/(:\/\/[^/]*)\/p\//, "$1/download/o/");
+        }
+
+        if (domain === "image.mlive.com") {
+            // http://image.mlive.com/home/mlive-media/width307/img/grpress/news_impact/photo/24285148-standard.jpg
+            //   https://image-api.advance.net/prod/resize?key=home/mlive-media/width307/img/grpress/news_impact/photo/24285148-standard.jpg
+            //   http://media.mlive.com/grpress/news_impact/photo/24285148-standard.jpg
+            return src.replace(/:\/\/[^/]*\/home\/mlive-media\/[^/]*\/img\//, "://media.mlive.com/");
+        }
+
+        if (domain.indexOf(".hwcdn.net") >= 0) {
+            // https://s9v7j7a4.ssl.hwcdn.net/galleries/new_big/58/df/5c/58df5c4f13e698517e6a9aa00e311f9a/3.jpg
+            //   https://s9v7j7a4.ssl.hwcdn.net/galleries/full/58/df/5c/58df5c4f13e698517e6a9aa00e311f9a/3.jpg
+            return src.replace(/\/galleries\/[^/]*\//, "/galleries/full/");
+        }
+
+        if (domain === "aws-foto.amateri.com") {
+            // https://aws-foto.amateri.com/foto/4/9/7/1/g1778419/14400873/170x220c.jpg
+            //   https://aws-foto.amateri.com/foto/4/9/7/1/g1778419/14400873/x.jpg
+            return src.replace(/\/[0-9]+x[^/.]*(\.[^/.]*)$/, "/x$1");
+        }
+
+        if (domain === "cdn.tobi.com") {
+            // https://cdn.tobi.com/product_images/sm/1/natural-infinite-glow-layered-bracelet-set.jpg
+            //   https://cdn.tobi.com/product_images/lg/1/natural-infinite-glow-layered-bracelet-set@2x.jpg
+            // https://cdn.tobi.com/product_images/md/1/rose-eyes-on-you-knotted-maxi-dress.jpg
+            //   https://cdn.tobi.com/product_images/lg/1/rose-eyes-on-you-knotted-maxi-dress@2x.jpg
+            // https://cdn.tobi.com/product_images/xs/1/black-zeira-top.jpg
+            //   https://cdn.tobi.com/product_images/lg/1/black-zeira-top@2x.jpg
+            return src
+                .replace(/\/product_images\/[a-z]+\//, "/product_images/lg/")
+                .replace(/(\/[^/.@]*)(\.[^/.]*)$/, "$1@2x$2");
+        }
+
+        if (domain === "www.rfa.org") {
+            // https://www.rfa.org/english/commentaries/energy_watch/tariff-row-may-do-little-economic-damage-in-china-04022018101727.html/china-shopper-supermarket-beijing-apr2-2018.jpg/@@images/0fe75452-e65b-4e6b-a5b3-3db87b335e19.jpeg
+            //   https://www.rfa.org/english/commentaries/energy_watch/tariff-row-may-do-little-economic-damage-in-china-04022018101727.html/china-shopper-supermarket-beijing-apr2-2018.jpg
+            // https://www.rfa.org/english/news/china/surveillance-03302018111415.html/china-security-camera-beijing-march-2018.jpg/@@images/87f9b6b7-fcea-43d1-845b-a1ae6a022908.jpeg
+            //   https://www.rfa.org/english/news/china/surveillance-03302018111415.html/china-security-camera-beijing-march-2018.jpg
+            return src.replace(/\/@@images\/.*/, "");
+        }
+
+
 
 
 
@@ -6275,7 +6388,7 @@
             return decodeURIComponent(src.replace(/.*\/imageproxy\/imageproxy\.php.*?[&?]img=([^&]*).*?$/, "$1"));
         }
 
-        if (src.match(/\/dims[0-9]*\/.*?\/thumbnail\/[0-9]+[xX][0-9]+[^/]*\/.*?(?:\/https?:\/\/|\?url=https?%3A)/)) {
+        if (src.match(/\/dims[0-9]*\/.*?\/(?:(?:thumbnail\/[0-9]+[xX][0-9]+[^/]*\/)|(?:crop\/[0-9]+[xX][0-9]+)).*?(?:\/https?:\/\/|\?url=https?%3A)/)) {
             // https://www.usnews.com/dims4/USNEWS/b09d13c/2147483647/thumbnail/970x647/quality/85/?url=http%3A%2F%2Fmedia.beam.usnews.com%2Fd0%2F686a3b584a63500605362dd3a1da31%2Ftag%3Areuters.com%2C2018%3Anewsml_LYNXNPEE25072%3A12018-03-06T044537Z_1_LYNXNPEE25072_RTROPTP_3_THAILAND-POLITICS.JPG
             // https://www.usnews.com/dims4/USNEWS/f128de1/2147483647/thumbnail/640x420/quality/85/?url=http%3A%2F%2Fmedia.beam.usnews.com%2Fbd%2F0cf00f10ccd3788e7b9a42f1717e9d%2Ftag%3Areuters.com%2C2018%3Anewsml_LYNXNPEE1R088%3A12018-02-28T035131Z_1_LYNXNPEE1R088_RTROPTP_3_NORTHKOREA-SOUTHKOREA.JPG
             // https://assets.sourcemedia.com/dims4/default/80669dd/2147483647/thumbnail/1200x630%3E/quality/90/?url=https%3A%2F%2Fassets.sourcemedia.com%2Fd9%2Fdf%2Fdf39cfb641848cd34eb997e96dc1%2Ffp-hockey-thumbnail-3-7-18.jpg
@@ -6286,16 +6399,18 @@
             // http://cdn2.uvnimg.com/dims4/default/2fc4182/2147483647/thumbnail/400x250%3E/quality/75/?url=http%3A%2F%2Fcdn4.uvnimg.com%2F18%2F9e%2F0bc507aa44d6a563d06d223a647c%2Funtitled-1.jpg
             // https://cdn.video.nationalgeographic.com/dims4/default/8efd9cf/2147483647/thumbnail/354x199%3E/quality/90/?url=http%3A%2F%2Fcdn.video.nationalgeographic.com%2F6b%2F61%2F546ff7344acaac17399cd281fcef%2Fnw-seo-srt-013-nobel-prize-thumbnail-final.jpg
             //   http://cdn.video.nationalgeographic.com/6b/61/546ff7344acaac17399cd281fcef/nw-seo-srt-013-nobel-prize-thumbnail-final.jpg
+            // https://mediadc.brightspotcdn.com/dims4/default/2a5e0c0/2147483647/strip/true/crop/2300x1302+0+16/resize/1060x600!/quality/90/?url=https%3A%2F%2Fmediadc.brightspotcdn.com%2F02%2F1d%2Fbbc21ecf48179b92cc23616443d3%2Fsun.jpg
+            //   https://mediadc.brightspotcdn.com/02/1d/bbc21ecf48179b92cc23616443d3/sun.jpg
             //
             // https://d33ljpvc0tflz5.cloudfront.net/dims3/MMH/thumbnail/620x392/quality/75/?url=https%3A%2F%2Fd26ua9paks4zq.cloudfront.net%2F68%2F8d%2F197eef2a45cb84795efda4607102%2Fendoscopy-738x399-s1-stk-119373043.jpg
             //   https://d26ua9paks4zq.cloudfront.net/68/8d/197eef2a45cb84795efda4607102/endoscopy-738x399-s1-stk-119373043.jpg
             // http://o.aolcdn.com/dims-shared/dims3/MUSIC/thumbnail/280X390/quality/90/http://o.aolcdn.com/os/music/artist/wikipedia/the-platters-1970.jpg
             // http://o.aolcdn.com/dims-shared/dims3/MUSIC/thumbnail/280X390/http://o.aolcdn.com/os/music/artist/wikipedia/the-platters-1970.jpg
             //   http://o.aolcdn.com/os/music/artist/wikipedia/the-platters-1970.jpg
-            newsrc = src.replace(/.*\/thumbnail\/.*?\/(https?:\/\/.*)/, "$1");
+            newsrc = src.replace(/.*\/(?:thumbnail|crop)\/.*?\/(https?:\/\/.*)/, "$1");
             if (newsrc !== src)
                 return newsrc;
-            return decodeURIComponent(src.replace(/.*\/thumbnail\/.*?\/\?url=(https?.*)/, "$1"));
+            return decodeURIComponent(src.replace(/.*\/(?:thumbnail|crop)\/.*?\/\?url=(https?.*)/, "$1"));
         }
 
         // joomla
