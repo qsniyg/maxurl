@@ -1,13 +1,14 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.2.12
+// @version      0.2.13
 // @description  Redirects to larger versions of images
 // @author       qsniyg
 // @include      *
 // @grant        GM_xmlhttpRequest
 // @connect      *
 // @run-at       document-start
+// @license      Apache 2.0
 // ==/UserScript==
 
 // If you see "A userscript wants to access a cross-origin resource.", it's used to detect whether or not the destination URL exists before redirecting.
@@ -1365,7 +1366,9 @@
             domain === "subscriber.telegraph.co.uk" ||
             // https://secure.aws.telegraph.co.uk/content/dam/wellbeing/2016/12/28/graham5_trans_NvBQzQNjv4BqNyaloxhBNUSEitvcqmzeaNrVK9LoR4c_wZH1EhIay9c.jpg?imwidth=480
             domain.indexOf("aws.telegraph.co.uk") >= 0 ||*/
-            (domain.indexOf(".telegraph.co.uk") && src.indexOf("/content/dam/") >= 0) ||
+            // https://airbus-h.assetsadobe2.com/is/image/content/dam/products-and-solutions/commercial-aircraft/beluga/belugaxl/BelugaXL.jpg?wid=1920&fit=fit,1&qlt=85,0
+            //   https://airbus-h.assetsadobe2.com/is/image/content/dam/products-and-solutions/commercial-aircraft/beluga/belugaxl/BelugaXL.jpg -- much smaller (300x203)
+            (domain.indexOf(".telegraph.co.uk") >= 0 && src.indexOf("/content/dam/") >= 0) ||
             domain.indexOf("img.buzzfeed.com") >= 0 ||
             // p1.music.126.net
             domain.search(/p[0-9]\.music\.126\.net/) >= 0 ||
@@ -1556,6 +1559,12 @@
             domain === "www.heraldscotland.com" ||
             // https://cdn.instructables.com/ORIG/FLU/3BAI/JF8IWE1M/FLU3BAIJF8IWE1M.jpg?width=400&crop=3:2
             domain === "cdn.instructables.com" ||
+            // http://images.ctfassets.net/55tpbg0qcsp4/5zeVQCnhqowcwiIw4kM80S/f70edd51832e8640f72c375cb1d72b6b/nagative_farewell4.jpg?w=144&h=102
+            domain === "images.ctfassets.net" ||
+            // http://images.performgroup.com/di/library/sporting_news/a5/be/edmonton-oilers-getty-images-041102017-ftrjpg_jt08mu2eqgwn1xr30wgvpqdzv.jpg?t=1619857107&w=960&quality=70
+            domain === "images.performgroup.com" ||
+            // http://media.playmobil.com/i/playmobil/9022_product_detail?locale=en-US,en,*&$pdp_product_main_xl$
+            domain === "media.playmobil.com" ||
             // http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
             // https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
             src.match(/\/demandware\.static\//) ||
@@ -1750,6 +1759,8 @@
         }
 
         if (domain.indexOf("assets.nydailynews.com") >= 0 ||
+            // https://i.cbc.ca/1.4304676.1506225777!/fileImage/httpImage/edmonton-oilers.JPG?imwidth=720
+            //   https://i.cbc.ca/1.4304676.1506225777!/fileImage/httpImage/edmonton-oilers.JPG
             domain.indexOf("i.cbc.ca") >= 0 ||
             domain.indexOf("cdn.newsday.com") >= 0 ||
             domain.indexOf("www.stripes.com") >= 0 ||
@@ -1759,11 +1770,16 @@
             domain.indexOf("www.lancashirelife.co.uk") >= 0 ||
             // http://images.archant.co.uk/polopoly_fs/1.5453783.1522228810!/image/image.jpg_gen/derivatives/landscape_630/image.jpg
             domain === "images.archant.co.uk" ||
+            // https://www.tsn.ca/polopoly_fs/1.432481!/fileimage/httpImage/image.jpg_gen/derivatives/default/connor-mcdavid.jpg -- doesn't work
+            //domain === "www.tsn.ca" ||
+            // http://images.glaciermedia.ca/polopoly_fs/1.23165389.1517899084!/fileImage/httpImage/image.jpg_gen/derivatives/landscape_804/edm110453004-jpg.jpg
+            domain === "images.glaciermedia.ca" ||
             domain.indexOf("www.edp24.co.uk") >= 0) {
             // http://www.lancashirelife.co.uk/polopoly_fs/1.1596808!/image/2417471173.jpg_gen/derivatives/landscape_490/2417471173.jpg
             return src
                 .replace(/\/image\.[^_/]*_gen\/derivatives\/[^/]*\//, "/")
-                .replace(/\/image\/[^_/]*_gen\/derivatives\/[^/]*\//, "/image/");
+                .replace(/\/image\/[^_/]*_gen\/derivatives\/[^/]*\//, "/image/")
+                .replace(/\?.*/, "");
         }
 
         if (domain === "www.tsn.ca") {
@@ -3886,6 +3902,8 @@
             domain === "shows.vogueimg.com.cn" ||
             // https://smedia.webcollage.net/rwvfp/wc/cp/22757735/module/cpwalmart/_cp/products/1472244742078/tab-0e3f8313-5e4d-4103-9de5-caca68cf8437/eaddf5d5-afe7-4086-9bc7-149b6b486cdd.jpg.w480.jpg
             domain.indexOf("media.webcollage.net") >= 0 ||
+            // http://www.metronews.ca/content/dam/thestar/uploads/2017/3/29/oilers.jpg.size.xxlarge.promo.jpg
+            domain === "www.metronews.ca" ||
             domain === "d26oc3sg82pgk3.cloudfront.net" ||
             domain === "d53l9d6fqlxs2.cloudfront.net") {
             // https://media.mnn.com/assets/images/2017/03/cyclops-2-titanic-wreck.jpg.653x0_q80_crop-smart.jpg
@@ -4017,6 +4035,7 @@
             // https://i2-prod.dublinlive.ie/incoming/article14444188.ece/ALTERNATES/s458/CC-METRO-FIRE190393751.jpg
             domain.match(/i[0-9]*-prod\.dublinlive\.ie/) ||
             // https://beta.images.theglobeandmail.com/76a/sports/hockey/article38351471.ece/ALTERNATES/w620/web-sp-hk-senators-0326.JPG
+            // https://beta.images.theglobeandmail.com/339/sports/article34852751.ece/BINARY/w620/hk-moss28sp3.JPG
             domain === "beta.images.theglobeandmail.com" ||
             src.match(/:\/\/i[0-9]*-prod\..*\/article[^/]*\.ece\//) ||
             domain.match(/cdn-[0-9]*\.independent\.ie/)) {
@@ -4055,7 +4074,7 @@
             // https://i2-prod.bristolpost.co.uk/incoming/article1143957.ece/BINARY/Elise-Britten-profile-pic-square.jpg
             // https://www.gloria.hr/moda/novosti/naomicampbell01jpg/6949668/alternates/FREE_580/NaomiCampbell01.jpg
             //return src.replace(/(\/article[0-9]*\.ece\/.*?)(?:alternates|ALTERNATES|AUTOCROP|autocrop)\/[^/]*\//, "$1BINARY/");
-            return src.replace(/(?:alternates|ALTERNATES|AUTOCROP|autocrop)\/[^/]*\/([^/]*)$/, "BINARY/$1");
+            return src.replace(/(?:alternates|ALTERNATES|AUTOCROP|autocrop|binary|BINARY)\/[^/]*\/([^/]*)$/, "BINARY/$1");
         }
 
         if (domain === "images.fandango.com") {
@@ -5923,6 +5942,9 @@
 
         // OpenCart
         if (domain === "www.i-aurai.com" ||
+            // http://www.onesieponatime.com/image/cache/data/NHL%20Edmongton%20Oilers%20Onesie-500x500.jpg
+            //   http://www.onesieponatime.com/image/data/NHL%20Edmongton%20Oilers%20Onesie.jpg
+            domain === "www.onesieponatime.com" ||
             domain === "www.malaysiadropship.com") {
             // http://www.i-aurai.com/OpenCart/image/cache/data/demo/apple_cinema_30-80x80.jpg
             //   http://www.i-aurai.com/OpenCart/image/data/demo/apple_cinema_30.jpg
@@ -6306,6 +6328,60 @@
             return src.replace(/\/thumb_([0-9]+\.[^/.]*)$/, "/$1");
         }
 
+        if (domain === "r.kelkoo.com") {
+            // http://r.kelkoo.com/r/uk/15002013/146501/auto/auto/https%253A%252F%252Fdyson-h.assetsadobe2.com%252Fis%252Fimage%252Fcontent%252Fdam%252Fdyson%252Fimages%252Fproducts%252Fprimary%252F231868-01.png%253F%2524responsive%2524%2526fmt%253Dpng-alpha%2526cropPathE%253Ddesktop%2526fit%253Dstretch%252C1%2526wid%253D800/T5JylUsrxw8XjkR2zJUTmqQIfK8oIrzwXgEbTo_Jtn0-?searchId=10769920122096_1520492759094_270260&offerId=206b270741bc0810a4c2fc0d1b48d86f
+            //   https://dyson-h.assetsadobe2.com/is/image/content/dam/dyson/images/products/primary/231868-01.png?$responsive$&fmt=png-alpha&cropPathE=desktop&fit=stretch,1&wid=800
+            return decodeURIComponent(decodeURIComponent(src.replace(/^[a-z]*:\/\/(?:[^/]*\/){7}(http[^/]*).*?$/, "$1")));
+        }
+
+        if (domain.indexOf(".assetsadobe2.com") >= 0) {
+            // https://dyson-h.assetsadobe2.com/is/image//content/dam/dyson/products/hair-care/dyson-supersonic/customisation/personal-care-dyson-supersonic-customisation-homepage.jpg?scl=1
+            // https://dyson-h.assetsadobe2.com/is/image//content/dam/dyson/icons/owner-footer/register-my-machine.png?scl=1&fmt=png-alpha
+            // https://airbus-h.assetsadobe2.com/is/image/content/dam/products-and-solutions/commercial-aircraft/beluga/belugaxl/BelugaXL.jpg?wid=1920&fit=fit,1&qlt=85,0
+            // https://dyson-h.assetsadobe2.com/is/image//content/dam/dyson/services-and-support/troubleshoot/hassle-free-repalcement.png
+            if (src.match(/\.jpg(?:\?.*)?$/))
+                return src.replace(/(?:\?.*)?$/, "?scl=1");
+            else
+                return src.replace(/(?:\?.*)?$/, "?scl=1&fmt=png-alpha");
+        }
+
+        if (domain === "sm.ign.com") {
+            // http://sm.ign.com/t/ign_in/feature/a/afl-clubs-/afl-clubs-recognise-that-esports-are-sports-why-hasnt-everyo_azz8.300.jpg
+            //   http://sm.ign.com/t/ign_in/feature/a/afl-clubs-/afl-clubs-recognise-that-esports-are-sports-why-hasnt-everyo_azz8.999999999999999.jpg
+            return src.replace(/\.[0-9]+\.([^/.]*)$/, ".999999999999999.$1");
+        }
+
+        // nopCommerce
+        if (domain === "shop.unitedcycle.com" &&
+            src.indexOf("/images/thumbs/") >= 0) {
+            // https://shop.unitedcycle.com/content/images/thumbs/0277134_mens-nhl-edmonton-oilers-connor-mcdavid-authentic-home-jersey_276.jpeg
+            //   https://shop.unitedcycle.com/content/images/thumbs/0277134_mens-nhl-edmonton-oilers-connor-mcdavid-authentic-home-jersey.jpeg
+            return src.replace(/_[0-9]+(\.[^/.]*)$/, "$1");
+        }
+
+        if (domain === "imgr.es") {
+            // https://imgr.es/4AVP/thumb
+            //   https://imgr.es/4AVP
+            return src.replace(/\/thumb$/, "");
+        }
+
+        if (domain.indexOf(".frgimages.com") >= 0 ||
+            domain === "images.footballfanatics.com") {
+            // http://nhl.frgimages.com/FFImage/thumb.aspx?i=/productImages/_2799000/ff_2799544_full.jpg&w=340
+            //   http://nhl.frgimages.com/productImages/_2799000/ff_2799544_full.jpg
+            // http://images.footballfanatics.com/FFImage/thumb.aspx?i=/productImages/_821000/ff_821054_xl.jpg&amp;w=200
+            //   http://images.footballfanatics.com/productImages/_821000/ff_821054_xl.jpg
+            //   http://images.footballfanatics.com/productImages/_821000/ff_821054_full.jpg
+            // http://images.footballfanatics.com/FFImage/thumb.aspx?i=%2fproductImages%2f_1759000%2fff_1759679_xl.jpg&w=400
+            //   http://images.footballfanatics.com/productImages/_1759000/ff_1759679_full.jpg
+            newsrc = decodeURIComponent(src.replace(/\/FFImage\/thumb.aspx.*?[?&]i=([^&]*).*/, "$1"));
+            if (newsrc !== src)
+                return newsrc;
+
+            return src
+                .replace(/_[a-z]+(\.[^/.?&]*)$/, "_full$1");
+        }
+
 
 
 
@@ -6456,8 +6532,9 @@
 
         if (domain.indexOf("cdn.vox-cdn.com") >= 0 ||
             domain === "thumbnails.trvl-media.com" ||
+            domain === "thumbor-static.factorymedia.com" ||
             src.match(/:\/\/[^/]*\/thumbor\/[^/]*=\//) ||
-            src.match(/:\/\/[^/]*\/resizer\/[^/]*=\/[0-9]+x[0-9]+\/(?:filters:[^/]*\/)?/)) {
+            src.match(/:\/\/[^/]*\/resizer\/[^/]*=\/[0-9]+x[0-9]+(?::[^/]*\/[0-9]+x[0-9]+)?\/(?:filters:[^/]*\/)?/)) {
             // https://cdn.vox-cdn.com/thumbor/ta2xdyUViVrBXCLGapdwLY7is_s=/0x0:3000x2355/1200x800/filters:focal(1116x773:1596x1253)/cdn.vox-cdn.com/uploads/chorus_image/image/55856727/815434448.0.jpg
             // https://cdn.vox-cdn.com/thumbor/dXu99BQwBagCavae7oYNG0uBfxQ=/0x46:1100x779/1200x800/filters:focal(0x46:1100x779)/cdn.vox-cdn.com/assets/1763547/Screenshot_2012.11.12_10.39.10.jpg
             // https://cdn.vox-cdn.com/thumbor/iTJF1PhWPiR3-LoITuXxS2u8su0=/1200x0/filters:no_upscale()/cdn.vox-cdn.com/uploads/chorus_asset/file/4998263/keenan_2010.0.jpg
@@ -6470,6 +6547,10 @@
             // https://thumbnails.trvl-media.com/8ngGMfPTsqKt4MGmUrf-ErVrGm4=/a.travel-assets.com/mediavault.le/media/9eed34ce4955bc445d38357fa3eb076400431778.jpeg
             //   http://a.travel-assets.com/mediavault.le/media/9eed34ce4955bc445d38357fa3eb076400431778.jpeg
             // https://thumbnails.trvl-media.com/cPqnei5uS1AEzRn7k5XzNoUjFuo=/534x356/images.trvl-media.com/hotels/1000000/30000/22100/22046/22046_358_y.jpg
+            // https://www.theglobeandmail.com/resizer/fyZn3o3OC1db2M-zd1Vkc0Z-O8I=/0x80:5738x3906/400x0/filters:quality(80)/arc-anglerfish-tgam-prod-tgam.s3.amazonaws.com/public/GVZVQCEPZFKPHG4UAE2AEI3PQU.jpg
+            //   http://arc-anglerfish-tgam-prod-tgam.s3.amazonaws.com/public/GVZVQCEPZFKPHG4UAE2AEI3PQU.jpg
+            // https://thumbor-static.factorymedia.com/qBeNkBSFgEWpq0AbpElby6YyNTs=/1920x1080/smart/http%3A%2F%2Fcoresites-cdn.factorymedia.com%2Fmpora_new%2Fwp-content%2Fuploads%2F2015%2F12%2FSea-Life-Aquariums-Animal-Captivity-Beluga-Whale.jpg
+            //   http://coresites-cdn.factorymedia.com/mpora_new/wp-content/uploads/2015/12/Sea-Life-Aquariums-Animal-Captivity-Beluga-Whale.jpg
             //return src.replace(/.*\/thumbor\/.*?\/([^/]*\..*)/, "http://$1");
             newsrc = src.replace(/.*\/(?:thumbor|resizer)\/.*?\/(?:filters:[^/]*\/)?([a-z]*:\/\/.*)/, "$1");
             if (newsrc !== src)
@@ -6479,7 +6560,14 @@
             if (newsrc !== src)
                 return newsrc;
 
-            return src.replace(/.*\/[-_A-Za-z0-9]+=\/(?:[0-9x:]+\/)?(?:filters:[^/]*\/)?([^/]*\..*)/, "http://$1");
+            newsrc = src.replace(/.*\/[-_A-Za-z0-9]+=\/(?:[0-9x:]+\/)?(?:smart\/)?(?:filters:[^/]*\/)?([^/]*\..*)/, "$1");
+            if (newsrc.indexOf("http") !== 0) {
+                newsrc = "http://" + newsrc;
+            }
+
+            if (newsrc.match(/^[a-z]*%3/))
+                newsrc = decodeURIComponent(newsrc);
+            return newsrc;
         }
 
         if (src.match(/:\/\/[^/]*\/astronaut\/uploads\/[a-z]_[^/]*$/)) {
@@ -6539,6 +6627,15 @@
         // xenforo
         if (src.match(/:\/\/[^/]*\/proxy\.php.*?[?&]image=http/)) {
             return decodeURIComponent(src.replace(/.*:\/\/[^/]*\/proxy\.php.*?[?&]image=(http[^&]*).*/, "$1"));
+        }
+
+        // django-photologue
+        if (src.match(/\/media\/photologue\/photos\/cache\//)) {
+            // http://www.thewesternstar.com/media/photologue/photos/cache/EDM113447235_large.jpg
+            //   http://www.thewesternstar.com/media/photologue/photos/EDM113447235.jpg
+            // http://www.django-photologue.net/media/photologue/photos/cache/312960255_85e378833b_o_thumbnail.jpg
+            //   http://www.django-photologue.net/media/photologue/photos/312960255_85e378833b_o.jpg
+            return src.replace(/\/cache\/([^/]*)_[a-z]+(\.[^/.]*)$/, "/$1$2");
         }
 
 

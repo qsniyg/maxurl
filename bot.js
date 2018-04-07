@@ -17,12 +17,13 @@ const Snoowrap = require('snoowrap');
 const Snoostorm = require('snoostorm');
 
 const r = new Snoowrap({
-    userAgent: 'pc:maximage:v0.0.2 (by /u/MaxImageBot)',
-    clientId: process.env.CLIENT_ID,
-    clientSecret: process.env.CLIENT_SECRET,
-    username: process.env.REDDIT_USER,
-    password: process.env.REDDIT_PASS
+  userAgent: process.env.USERAGENT,//'pc:maximagebot:v0.0.3 (by /u/qsniyg)',
+  clientId: process.env.CLIENT_ID,
+  clientSecret: process.env.CLIENT_SECRET,
+  username: process.env.REDDIT_USER,
+  password: process.env.REDDIT_PASS
 });
+
 r.config({requestDelay: 1001});
 const client = new Snoostorm(r);
 
@@ -160,7 +161,7 @@ function dourl(url, post) {
             if (r < 1.995) {
               times = "" + ((r-1) * 100).toFixed(0) + "%";
             }
-            var comment = times + " larger (" + newdata.width + "x" + newdata.height + ") version of linked image:\n\n" + big + "\n\n";
+            var comment = times + " larger (" + parseInt(newdata.width) + "x" + parseInt(newdata.height) + ") version of linked image:\n\n" + big + "\n\n";
             comment += "*****\n\n";
             comment += "^[source&nbsp;code](https://github.com/qsniyg/maxurl)&nbsp;|&nbsp;[userscript&nbsp;(redirects&nbsp;to&nbsp;larger&nbsp;images)](https://greasyfork.org/en/scripts/36662-image-max-url)";
             console.log(comment);
@@ -194,14 +195,16 @@ const links = new NodeCache({ stdTTL: 600, checkperiod: 1000 });
 setInterval(() => {
   r.getInbox({"filter":"messages"}).then((inbox) => {
     inbox.forEach((message_data) => {
-      if (message_data.subject.indexOf("delete: ") !== 0 ||
-          message_data.subject.length >= 50) {
+      if (message_data.subject.indexOf("delete:") !== 0 ||
+          message_data.subject.length >= 50 ||
+          !message_data["new"]) {
         return;
       }
 
       var comment = message_data.subject.replace(/.*:[ +]*([A-Za-z0-9_]+).*/, "$1");
       if (comment === message_data.subject)
         return;
+      console.log(comment);
 
       r.getComment(comment).fetch().then((comment_data) => {
         if (comment_data.author.name.toLowerCase() !== "maximagebot")
@@ -219,11 +222,11 @@ setInterval(() => {
       });
     });
   });
-}, 5*1000);
+}, 10*1000);
 
 //console.dir(blacklist_json.disallowed);
 submissionStream.on("submission", function(post) {
-  if (post.domain.startsWith("self.")) {
+  if (post.domain.startsWith("self.") || post.over_18) {
     return;
   }
 
