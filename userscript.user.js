@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.2.13
+// @version      0.2.14
 // @description  Redirects to larger versions of images
 // @author       qsniyg
 // @include      *
@@ -468,6 +468,8 @@
             // http://www.bstoday.kr/photobox/photo/2018032371050517410.jpg
             //   http://www.bstoday.kr/news/photo/201508/5090_4090_1029.jpg
             domain === "www.bstoday.kr" ||
+            // http://interfootball.heraldcorp.com/news/thumbnail/201803/194965_212367_3835_150.jpg
+            domain === "interfootball.heraldcorp.com" ||
             // http://www.newstown.co.kr/news/thumbnail/201801/311251_198441_4816_v150.jpg
             domain.indexOf("www.newstown.co.kr") >= 0) {
             return src
@@ -914,7 +916,8 @@
             return src.replace(/_v[0-9]*x[0-9]*\.([^/]*)$/, ".$1");
         }
 
-        if (domain.indexOf(".popsugar-assets.com") >= 0) {
+        if (domain.indexOf(".popsugar-assets.com") >= 0 ||
+            domain.indexOf(".onsugar.com") >= 0) {
             // http://media3.popsugar-assets.com/files/2013/09/16/795/n/1922564/b962955383f6b80f_1592163256t6a65.xxxlarge_2x/i/Emma-Watson-all-legs-sexy-Peter-Pilotto-cutout-minidress.jpg
             // https://media1.popsugar-assets.com/files/thumbor/Aq5Tn8-7kqPSJs4U0_QaYoM6x8Q/fit-in/1024x1024/filters:format_auto-!!-:strip_icc-!!-/2015/03/30/647/n/1922564/ccc1eafd_edit_img_cover_file_864129_1397566805/i/Emma-Watson-Best-Red-Carpet-Looks.png
             //   https://media1.popsugar-assets.com/files/2015/03/30/647/n/1922564/ccc1eafd_edit_img_cover_file_864129_1397566805/i/Emma-Watson-Best-Red-Carpet-Looks.png
@@ -927,6 +930,8 @@
             // http://media1.popsugar-assets.com/files/2013/02/08/2/192/1922398/13bc50e021acd58e_wenn10840119.xxxlarge/i/Spring-Breakers-Berlin-Red-Carpet-Premiere-Pictures.jpg
             //   http://media1.popsugar-assets.com/files/2013/02/08/2/192/1922398/13bc50e021acd58e_wenn10840119/i/Spring-Breakers-Berlin-Red-Carpet-Premiere-Pictures.jpg
             // https://media1.popsugar-assets.com/files/2015/09/02/221/n/37139775/d391fe8f30364ef0_15._2007_GettyImages-81449203/i/Selena-Gomez.jpg
+            // http://media4.onsugar.com/files/2013/12/16/757/n/1922398/1f2e71247e26b096_Twoimageskinnyheadshot_R.jpg.xlarge/i/Gisele-Bundchen-Wearing-Bikini-Miami.jpg
+            //   http://media4.onsugar.com/files/2013/12/16/757/n/1922398/1f2e71247e26b096_Twoimageskinnyheadshot_R/i/Gisele-Bundchen-Wearing-Bikini-Miami.jpg
             return src.replace(/\.[a-z]*(\/i\/[^/]*)$/, "$1");
         }
 
@@ -1565,6 +1570,10 @@
             domain === "images.performgroup.com" ||
             // http://media.playmobil.com/i/playmobil/9022_product_detail?locale=en-US,en,*&$pdp_product_main_xl$
             domain === "media.playmobil.com" ||
+            // https://img.crocdn.co.uk/images/products2/pl/00/00/00/38/pl0000003849.jpg?width=940&height=940
+            domain === "img.crocdn.co.uk" ||
+            // http://www.calgaryherald.com/life/cms/binary/6748001.jpg?size=sw620x65
+            domain === "www.calgaryherald.com" ||
             // http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
             // https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
             src.match(/\/demandware\.static\//) ||
@@ -1678,6 +1687,10 @@
             domain === "assets.rockpapershotgun.com" ||
             // http://spotted.tv/app/uploads/20131210-2339481-750x355.jpg
             domain === "spotted.tv" ||
+            // https://sloanreview.mit.edu/content/uploads/2018/04/GEN-Ross-Digital-Transformation-Speed-Long-Term-1200-300x300.jpg
+            domain === "sloanreview.mit.edu" ||
+            // http://business.inquirer.net/files/2017/09/pet6-1024x682.jpg
+            domain === "business.inquirer.net" ||
             src.indexOf("/wp-content/uploads/") >= 0 ||
             src.indexOf("/wp/uploads/") >= 0) {
             // http://arissa-x.com/miss-x-channel/wp-content/uploads/2017/06/IMG_0005.jpg
@@ -2236,6 +2249,7 @@
             //   http://cdnimg.melon.co.kr/cm/album/images/003/74/978/374978_org.jpg
             // http://cdnimg.melon.co.kr/cm/artistcrop/images/006/72/337/672337_500.jpg?f88c5a23497a77f68d8ac296e218db02/melon/resize/416/quality/80/optimize
             //   http://cdnimg.melon.co.kr/cm/artistcrop/images/006/72/337/672337_org.jpg
+            // http://cdnimg.melon.co.kr/cm/artistcrop/images/010/24/317/1024317_500.jpg
 
             // http://cdnimg.melon.co.kr/cm/mv/images/43/501/78/990/50178990_1_640.jpg/melon/quality/80/resize/144/optimize
             //   http://cdnimg.melon.co.kr/cm/mv/images/43/501/78/990/50178990_1_org.jpg
@@ -2249,9 +2263,9 @@
                 return newsrc;
 
             if (src.indexOf("/images/main/") >= 0) {
-                return src.replace(/(images\/.*\/[^/_]*)((_[^/.]*)_)?(_?[^/._]*)?(\.[^/.]*)[?/].*$/, "$1$3$5");
+                return src.replace(/(images\/.*\/[^/_]*)((_[^/.]*)_)?(_?[^/._]*)?(\.[^/.?]*)(?:[?/].*)?$/, "$1$3$5");
             } else {
-                return src.replace(/(images\/.*\/[^/_]*)((_[^/.]*)_)?(_?[^/._]*)?(\.[^/.]*)[?/].*$/, "$1$3_org$5");
+                return src.replace(/(images\/.*\/[^/_]*)((_[^/.]*)_)?(_?[^/._]*)?(\.[^/.?]*)(?:[?/].*)?$/, "$1$3_org$5");
             }
         }
 
@@ -3560,9 +3574,11 @@
             return src.replace(/(\/i\/[0-9]*)\/.*/, "$1");
         }
 
-        if (domain.match(/tse[0-9]*\.mm\.bing\.net/)) {
+        if (domain.match(/tse[0-9]*\.mm\.bing\.net/) ||
+            domain.indexOf(".bing.com") >= 0) {
             // https://tse1.mm.bing.net/th?id=Ad9e81485410912702a018d5f48ec0f5c&w=136&h=183&c=8&rs=1&qlt=90&pid=3.1&rm=2
-            return src.replace(/\/th[^/]*[?&]id=([^&]*)&[^/]*$/, "/th?id=$1");
+            // https://www.bing.com/th?id=OPN.RTNews_jJZmvGD6PzvUt22LbHHUUg&w=186&h=88&c=7&rs=2&qlt=80&cdv=1&pid=News
+            return src.replace(/(:\/\/[^/]*)\/th[^/]*[?&]id=([^&]*)&[^/]*$/, "$1/th?id=$2");
         }
 
         if (domain === "cdn.4archive.org") {
@@ -3904,6 +3920,8 @@
             domain.indexOf("media.webcollage.net") >= 0 ||
             // http://www.metronews.ca/content/dam/thestar/uploads/2017/3/29/oilers.jpg.size.xxlarge.promo.jpg
             domain === "www.metronews.ca" ||
+            // https://images.meredith.com/content/dam/bhg/Images/life-in-color/arnold%20gian.jpg.rendition.largest.jpg
+            domain === "images.meredith.com" ||
             domain === "d26oc3sg82pgk3.cloudfront.net" ||
             domain === "d53l9d6fqlxs2.cloudfront.net") {
             // https://media.mnn.com/assets/images/2017/03/cyclops-2-titanic-wreck.jpg.653x0_q80_crop-smart.jpg
@@ -4723,7 +4741,7 @@
             // https://executiveponies.com/media/catalog/product/cache/2/thumbnail/90x144/9df78eab33525d08d6e5fb8d27136e95/3/2/327a6104_copy.jpg
             domain === "executiveponies.com" ||
             domain === "www.lizandliz.com" ||
-            src.match(/(?:\/media)?\/catalog\/product\/cache\/[0-9]*\/[^/]*\/(?:[0-9]+x(?:[0-9]+)?\/)?[0-9a-f]{32}\//)) {
+            src.match(/(?:\/media)?\/catalog\/product\/cache\/(?:[0-9]*\/[^/]*\/)?(?:[0-9]+x(?:[0-9]+)?\/)?[0-9a-f]{32}\//)) {
             // https://www.sonassi.com/blog/knowledge-base/deconstructing-the-cache-image-path-on-magento
             //
             // http://www.usmall.us/media/catalog/product/cache/16/image/600x600/d58d44b981214661663244ef00ea7e30/1/7/17_9__2.jpg
@@ -4734,10 +4752,12 @@
             // https://www.lizandliz.com/media/catalog/product/cache/4/image/492x705/9df78eab33525d08d6e5fb8d27136e95/t/a/taylor-swift-red-dress-cma-awards-2013-01.jpg
             //   https://www.lizandliz.com/media/catalog/product/cache/4/image/9df78eab33525d08d6e5fb8d27136e95/t/a/taylor-swift-red-dress-cma-awards-2013-01.jpg
             //   https://www.lizandliz.com/media/catalog/product/t/a/taylor-swift-red-dress-cma-awards-2013-01.jpg
+            // https://www.naturehills.com/media/catalog/product/cache/5643cdae475c4be953fc8c21f6960dc2/f/o/forsythia-fiesta-medium-shrub-425x425.jpg
+            //   https://www.naturehills.com/media/catalog/product/f/o/forsythia-fiesta-medium-shrub-425x425.jpg
             /*return src
                 .replace(/(\/cache\/[0-9]*\/)small_image\//, "$1/image/")
                 .replace(/\/(thumbnail|image)\/[0-9]+x[0-9]+\//, "/$1/");*/
-            return src.replace(/\/cache\/[0-9]*\/[^/]*\/(?:[0-9]+x(?:[0-9]+)?\/)?[0-9a-f]{32}\/((?:.\/.\/)|(?:[^/]*\/))([^/]*)$/, "/$1$2");
+            return src.replace(/\/cache\/(?:[0-9]*\/[^/]*\/)?(?:[0-9]+x(?:[0-9]+)?\/)?[0-9a-f]{32}\/((?:.\/.\/)|(?:[^/]*\/))([^/]*)$/, "/$1$2");
             //return src.replace(/\/image\/[0-9]+x[0-9]+\//, "/image/");
         }
 
@@ -5814,6 +5834,8 @@
             domain === "streetstylestore.com" ||
             // https://cdn.poplook.com/15360-92883-large_default/lane-bubble-sleeve-blouse-dusty-teal.jpg
             domain === "cdn.poplook.com" ||
+            // https://www.directgardening.com/878-large_default/forsythia.jpg
+            domain === "www.directgardening.com" ||
             // http://flyhighstore.pl/2210-home_default/fh-cool-red-winter-jacket.jpg
             //   http://flyhighstore.pl/2210/fh-cool-red-winter-jacket.jpg
             domain === "flyhighstore.pl") {
@@ -6107,10 +6129,23 @@
             return src.replace(/\/pictures\/[a-z]*\//, "/pictures/originali/");
         }
 
-        if (domain === "popdustroar-img.rbl.ms") {
+        if (domain === "popdustroar-img.rbl.ms" ||
+            // https://papermag-img.rbl.ms/simage/https%3A%2F%2Fassets.rbl.ms%2F3967597%2F1200x600.jpg/2000%2C2000/3Bthb8U2RPWmDNU8/img.jpg
+            //   https://assets.rbl.ms/3967597/1200x600.jpg
+            //   https://assets.rbl.ms/3967597/980x.jpg
+            // https://assets.rbl.ms/17099886/210x.jpg
+            // https://assets.rbl.ms/1361449/origin.jpg
+            (domain.indexOf(".rbl.ms") >= 0 && src.indexOf("/simage/") >= 0)) {
             // https://popdustroar-img.rbl.ms/simage/https%3A%2F%2Fassets.rbl.ms%2F6588627%2F980x.jpg/2000%2C2000/FSxn6Qs9PAa0aHKs/img.jpg
             //   https://assets.rbl.ms/6588627/980x.jpg
             return decodeURIComponent(src.replace(/.*?\/simage\/([^/]*)\/.*/, "$1"));
+        }
+
+        if (domain === "assets.rbl.ms") {
+            // https://odysseyonline-img.rbl.ms/simage/https%3A%2F%2Fassets.rbl.ms%2F10613549%2F980x.jpg/2000%2C2000/CUjBUrbDC4rUON8Q/img.jpg
+            //   https://assets.rbl.ms/10613549/origin.jpg
+            // https://assets.rbl.ms/17487152/origin.jpg - 3600x2400
+            return src.replace(/(:\/\/[^/]*\/[0-9]+\/)[^/.]*(\.[^/.]*)$/, "$1origin$2");
         }
 
         if (domain.match(/media[0-9]*\.santabanta\.com/)) {
@@ -6380,6 +6415,114 @@
 
             return src
                 .replace(/_[a-z]+(\.[^/.?&]*)$/, "_full$1");
+        }
+
+        if (domain === "myanimelist.cdn-dena.com") {
+            // https://myanimelist.cdn-dena.com/r/23x32/images/characters/5/303016.webp?s=3e198afde53adfb2b47dc59782dc82f7
+            //   https://myanimelist.cdn-dena.com/images/characters/5/303016.webp?s=3e198afde53adfb2b47dc59782dc82f7
+            return src.replace(/\/r\/[0-9]+x[0-9]+\//, "/");
+        }
+
+        if (domain === "picture-cdn.wheretoget.it") {
+            // http://picture-cdn.wheretoget.it/qey8wu-i-c60x60.jpg
+            //   http://picture-cdn.wheretoget.it/qey8wu-i.jpg
+            return src.replace(/(\/[a-z0-9]*-[a-z])[^/.]*(\.[^/.]*)$/, "$1$2");
+        }
+
+        if (domain === "sl.sbs.com.au") {
+            // https://sl.sbs.com.au/public/image/file/4f4cf0a2-ec64-46e8-9958-faa712440c28/crop/16x9_medium
+            //   https://sl.sbs.com.au/public/image/file/4f4cf0a2-ec64-46e8-9958-faa712440c28
+            // https://sl.sbs.com.au/public/image/file/0c3ca54a-0cfa-400e-9cb0-d09631c81769/crop/1x1_small
+            //   https://sl.sbs.com.au/public/image/file/0c3ca54a-0cfa-400e-9cb0-d09631c81769
+            return src.replace(/(\/public\/image\/file\/[-a-f0-9]*)\/.*/, "$1");
+        }
+
+        if (domain.indexOf(".assets.prezly.com") >= 0) {
+            // https://cdn.uc.assets.prezly.com/d24b5696-a65c-48d6-9cfd-1b0b98ca1f3c/-/preview/1108x1108/
+            //   https://cdn.uc.assets.prezly.com/d24b5696-a65c-48d6-9cfd-1b0b98ca1f3c/-
+            // https://cdn.uc.assets.prezly.com/6201f512-e09d-440f-95e3-d1aa316f70e6/-/resize/1108x/-/quality/best/
+            //   https://cdn.uc.assets.prezly.com/6201f512-e09d-440f-95e3-d1aa316f70e6/-
+            // https://cdn.uc.assets.prezly.com/c204db5f-a17a-4c64-96b2-112b0876cb84/-/preview/1108x1108/
+            //   https://cdn.uc.assets.prezly.com/c204db5f-a17a-4c64-96b2-112b0876cb84/-
+            return src.replace(/(:\/\/[^/]*\/[-a-f0-9]*\/).*/, "$1-");
+        }
+
+        if (domain === "cdn.iview.abc.net.au") {
+            // https://cdn.iview.abc.net.au/thumbs/460/nn/NN1603D568368a49e2fa8.38197525_940.jpg
+            //   https://cdn.iview.abc.net.au/thumbs/i/nn/NN1603D568368a49e2fa8.38197525_940.jpg
+            return src.replace(/\/thumbs\/[0-9]+\//, "/thumbs/i/");
+        }
+
+        if (domain === "ipstatic.net" ||
+            domain.indexOf(".ipstatic.net") >= 0) {
+            // http://ipstatic.net/img?url=http%3A%2F%2Fstatic.independent.co.uk%2Fs3fs-public%2Fthumbnails%2Fimage%2F2015%2F12%2F22%2F23%2FSesame-Credit.jpg
+            //   http://static.independent.co.uk/s3fs-public/thumbnails/image/2015/12/22/23/Sesame-Credit.jpg
+            // http://ipstatic.net/img?url=http%3A%2F%2Fi.imgur.com%2FfauqaqC.png
+            newsrc = decodeURIComponent(src.replace(/.*\/img.*?[?&]url=([^&]*).*?$/, "$1"));
+            if (newsrc !== src)
+                return newsrc;
+
+            // https://th1-us.ipstatic.net/thumbs/100x100/57/26/700x699_830169982986518529_830172363316953088.jpg
+            //   https://us.ipstatic.net/photos/57/26/700x699_830169982986518529_830172363316953088.jpg
+            return src.replace(/\/thumbs\/[0-9]+x[0-9]+\//, "/photos/");
+        }
+
+        if (domain === "image.fnnews.com") {
+            // http://image.fnnews.com/resource/paper/image/2018/02/22/f201802222005_s.jpg - 150x252
+            //   http://image.fnnews.com/resource/paper/image/2018/02/22/f201802222005_m.jpg - 1024x1826
+            //   http://image.fnnews.com/resource/paper/image/2018/02/22/f201802222005_l.jpg - 2048x3452
+            //   http://image.fnnews.com/resource/paper/image/2018/02/22/f201802222005.jpg - 2294x3867
+            // http://image.fnnews.com/resource/media/image/2015/01/07/201501071226571964.jpg
+            // http://image.fnnews.com/resource/media/image/2015/02/09/201502091020442956_s.jpg
+            //
+            // http://image.fnnews.com/resource/crop_image/2018/03/28/thumb/201803280955183839_1522283684662.jpg
+            //   http://image.fnnews.com/resource/media/image/2018/03/28/201803281002583124.jpg
+            return src
+                .replace(/(\/[a-z]?[0-9]+)_[a-z](\.[^/.]*)/, "$1$2");
+        }
+
+        if (domain.indexOf(".kym-cdn.com") >= 0) {
+            // http://i0.kym-cdn.com/featured_items/icons/wide/000/007/926/46b.jpg
+            //   http://i0.kym-cdn.com/featured_items/icons/original/000/007/926/46b.jpg
+            // http://i0.kym-cdn.com/photos/images/newsfeed/001/318/958/c7d.png
+            //   http://i0.kym-cdn.com/photos/images/original/001/318/958/c7d.png
+            // http://i0.kym-cdn.com/entries/icons/mobile/000/025/888/the-problem-with-apu.jpg
+            //   http://i0.kym-cdn.com/entries/icons/original/000/025/888/the-problem-with-apu.png
+            return src.replace(/(:\/\/[^/]*\/[^/]*\/(?:images|icons)\/)[^/]*\//, "$1original/");
+        }
+
+        if (domain === "cmeimg-a.akamaihd.net" ||
+            domain === "leafimg-a.akamaihd.net") {
+            // https://cmeimg-a.akamaihd.net/640/photos.demandstudios.com/getty/article/144/8/178883146.jpg
+            //   http://photos.demandstudios.com/getty/article/144/8/178883146.jpg
+            // http://cmeimg-a.akamaihd.net/640/photos.demandstudios.com/getty/article/56/93/78034732.jpg
+            //   http://photos.demandstudios.com/getty/article/56/93/78034732.jpg
+            // https://cmeimg-a.akamaihd.net/640/ppds/1ad05338-0679-4fa1-b259-631df59b4a89.png -- default doesn't work
+            // https://cmeimg-a.akamaihd.net/400x400/ppds/53e36ed7-8bb2-4448-b7f5-96acdc58ee1b.jpg
+            //   https://cmeimg-a.akamaihd.net/default/ppds/53e36ed7-8bb2-4448-b7f5-96acdc58ee1b.jpg
+            // https://cmeimg-a.akamaihd.net/x650/clsd/4/3/11bf5d91994d4b90a21192a6c464390c
+            //   https://cmeimg-a.akamaihd.net/default/clsd/4/3/11bf5d91994d4b90a21192a6c464390c
+            // https://cmeimg-a.akamaihd.net/400x269/photos.demandstudios.com/getty/article/181/85/492145443.jpg
+            //   http://photos.demandstudios.com/getty/article/181/85/492145443.jpg
+            // https://cmeimg-a.akamaihd.net/default/clsd/4/3/fb64bd3f01f541f3bbcd4fd0f3c821fc
+            // https://cmeimg-a.akamaihd.net/default/ppds/d88f0042-735e-404f-8156-519ba9c85d8c.png
+            // https://cmeimg-a.akamaihd.net/cute-article-rcp/photos.demandstudios.com/getty/article/110/112/87490270.jpg
+            //   http://photos.demandstudios.com/getty/article/110/112/87490270.jpg
+            // https://leafimg-a.akamaihd.net/640/ppds/00e86e6a-fcfc-4bea-b451-4b58187cf0cf.jpg
+            //   https://leafimg-a.akamaihd.net/default/ppds/00e86e6a-fcfc-4bea-b451-4b58187cf0cf.jpg
+            newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/(?:[0-9]+(?:x[0-9]+)?|x[0-9]+|cute-article-rcp)\/([^/.]*\.[^/]*\/.*)/, "http://$1");
+            if (newsrc !== src)
+                return newsrc;
+
+            return src.replace(/^([a-z]+:\/\/[^/]*\/)(?:[0-9]+(?:x[0-9]+)?|x[0-9]+)\//, "$1default/");
+        }
+
+        if (domain.match(/imagecdn[0-9]*\.luxnet\.ua/)) {
+            // https://imagecdn1.luxnet.ua/football24/resources/photos/news/660x364_DIR/201803/443933.jpg?201803090027
+            //   https://imagecdn1.luxnet.ua/football24/resources/photos/news/201803/443933.jpg?201803090027
+            // https://imagecdn1.luxnet.ua/radio24/uploads/640_DIR/media_news/2017/07/16340fc3f938eec4245df2c441b49bf67fb0ad28.jpg
+            //   https://imagecdn1.luxnet.ua/radio24/uploads/media_news/2017/07/16340fc3f938eec4245df2c441b49bf67fb0ad28.jpg
+            return src.replace(/\/[0-9]+(?:x[0-9]+)?_DIR\//, "/");
         }
 
 
