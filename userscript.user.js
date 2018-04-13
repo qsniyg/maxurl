@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.2.14
+// @version      0.2.15
 // @description  Redirects to larger versions of images
 // @author       qsniyg
 // @include      *
@@ -743,16 +743,28 @@
             return src.replace(/-[0-9]+(\.[^/.]*)$/, "$1");
         }
 
-        if (domain.indexOf("image.edaily.co.kr") >= 0) {
+        if (domain.indexOf("image.edaily.co.kr") >= 0 ||
+            domain.indexOf("img.edaily.co.kr") >= 0) {
             // http://spnimage.edaily.co.kr/images/Photo/files/NP/S/2018/02/PS18021400011h.jpg
             // http://image.edaily.co.kr/images/Photo/files/NP/S/2018/02/PS18021100248t.jpg
             // (none, g), b, t, h, s, m
+            // http://img.edaily.co.kr/images/photo/files/NP/S/2018/04/b_5ACD63A4B813DB7E7DBDBA63.jpg
+            //   http://img.edaily.co.kr/images/photo/files/NP/S/2018/04/5ACD63A4B813DB7E7DBDBA63.jpg
             // others:
             // http://www.edaily.co.kr/news/news_detail.asp?newsId=01203766619110520&mediaCodeNo=257
             //  http://image.edaily.co.kr/images/photo/files/NP/S/2018/02/PS18021400103.jpg (original?)
             //  http://image.edaily.co.kr/images/photo/files/HN/H/2018/02/HNE01203766619110520_LV1.jpg - zoomed in
             //  http://image.edaily.co.kr/images/photo/files/HN/H/2018/02/HNE01203766619110520.jpg - not zoomed in, but cropped
-            return src.replace(/(\/[A-Z0-9]+)[a-z]\.([a-z0-9A-Z]*)$/, "$1.$2");
+            // http://image.edaily.co.kr/images/photo/files/NP/S/2016/04/PS16040100068.jpg - 3278x4918
+
+            // http://edaily.co.kr/news/news_detail.asp?newsId=02059846615960080&mediaCodeNo=257
+            //  http://image.edaily.co.kr/images/photo/files/NP/S/2017/06/PS17060900211.jpg
+            //
+            //    http://beautyin.edaily.co.kr/read/news.asp?newsid=329216886615960080
+            //     http://superdeskapi.edaily.co.kr/api/upload/5939e0ffb813db52b1fb81aa/raw?_schema=http
+            return src
+                .replace(/\/[a-z]_([A-Z0-9]+)\.([a-z0-9A-Z]*)$/, "/$1.$2")
+                .replace(/(\/[A-Z0-9]+)[a-z]\.([a-z0-9A-Z]*)$/, "$1.$2");
         }
 
         // cloudinary
@@ -1789,10 +1801,12 @@
             domain === "images.glaciermedia.ca" ||
             domain.indexOf("www.edp24.co.uk") >= 0) {
             // http://www.lancashirelife.co.uk/polopoly_fs/1.1596808!/image/2417471173.jpg_gen/derivatives/landscape_490/2417471173.jpg
-            return src
+            newsrc = src
                 .replace(/\/image\.[^_/]*_gen\/derivatives\/[^/]*\//, "/")
-                .replace(/\/image\/[^_/]*_gen\/derivatives\/[^/]*\//, "/image/")
-                .replace(/\?.*/, "");
+                .replace(/\/image\/[^_/]*_gen\/derivatives\/[^/]*\//, "/image/");
+            if (newsrc !== src) {
+                return newsrc.replace(/\?.*/, "");
+            }
         }
 
         if (domain === "www.tsn.ca") {
@@ -6525,7 +6539,78 @@
             return src.replace(/\/[0-9]+(?:x[0-9]+)?_DIR\//, "/");
         }
 
+        if (domain === "userstyles.org") {
+            // https://userstyles.org/style_screenshot_thumbnails/139772_after.jpeg
+            //   https://userstyles.org/style_screenshots/139772_after.jpeg
+            return src.replace("/style_screenshot_thumbnails/", "/style_screenshots/");
+        }
 
+        if (domain.indexOf(".narvii.com") >= 0) {
+            // https://pm1.narvii.com/6144/3af419d28deec398f490c7b1e0106d41165f84e0_128.jpg
+            //   https://pm1.narvii.com/6144/3af419d28deec398f490c7b1e0106d41165f84e0_hq.jpg
+            // https://pm1.narvii.com/6795/59948b2d6d93878fcfbcbf091d9edfa9399b93c4v2_00.jpg
+            //   https://pm1.narvii.com/6795/59948b2d6d93878fcfbcbf091d9edfa9399b93c4v2_hq.jpg
+            return src.replace(/(\/[0-9a-fv]+_)[^/.]*(\.[^/.]*)/, "$1hq$2");
+        }
+
+        if (domain === "img.oastatic.com") {
+            // https://img.oastatic.com/img2/14456082/671x335r/view-from-zumstein.jpg
+            //   https://img.oastatic.com/img/14456082/view-from-zumstein.jpg -- much smaller
+            //   https://img.oastatic.com/imgmax/14456082/view-from-zumstein.jpg -- smaller (2048x1149)
+            //   https://img.oastatic.com/img2/14456082/full/view-from-zumstein.jpg (3648x2048)
+            //   https://img.oastatic.com/imgsrc/14456082/view-from-zumstein.jpg (3648x2048)
+            // https://img.oastatic.com/img/671/335/fit/3159891/baeume-im-urwald-reinhardswald.jpg
+            //   https://img.oastatic.com/img2/3159891/full/baeume-im-urwald-reinhardswald.jpg
+            // http://img.oastatic.com/img/800/600/7214820/7214820.jpg
+            //   http://img.oastatic.com/img2/7214820/full/7214820.jpg
+            // http://img.oastatic.com/img/22917128/.jpg
+            //   http://img.oastatic.com/img2/22917128/full/.jpg
+            // http://img.oastatic.com/imgmax/8078056/das-alte-oesterreichische-zollhaus-am-krimmler-tauern.jpg (2000x1328)
+            //   http://img.oastatic.com/img2/8078056/full/das-alte-oesterreichische-zollhaus-am-krimmler-tauern.jpg (2000x1328)
+            // https://img.oastatic.com/img2/4273466/671x335r/der-historic-firetower-am-gipfel-des-mount-revelstoke..jpg
+            //   https://img.oastatic.com/img2/4273466/full/der-historic-firetower-am-gipfel-des-mount-revelstoke..jpg (4320x2880)
+            //   https://img.oastatic.com/imgsrc/4273466/der-historic-firetower-am-gipfel-des-mount-revelstoke..jpg (4320x2880)
+            // http://img.oastatic.com/imgsrc/6128163/.jpg
+            // https://img.oastatic.com/img/6351623/der-septimer-pass-wo-koenige-und-kaiser-die-alpen-ueberschritten.jpg
+            //   https://img.oastatic.com/img2/6351623/full/der-septimer-pass-wo-koenige-und-kaiser-die-alpen-ueberschritten.jpg -- doesn't work
+            //   https://img.oastatic.com/imgsrc/6351623/der-septimer-pass-wo-koenige-und-kaiser-die-alpen-ueberschritten.jpg -- doesn't work
+            return src
+                .replace(/\/img\/[0-9]+\/[0-9]+(?:\/fit)?\/([0-9]+)\/([^/]*)$/, "/img/$1/$2")
+                .replace(/\/img\/([0-9]+)\/([^/]*)$/, "/img2/$1/full/$2")
+                .replace(/\/imgmax\/([0-9]+)\/([^/]*)$/, "/img2/$1/full/$2")
+                .replace(/(\/img2\/[0-9]+\/)[^/]*\/([^/]*)$/, "$1full/$2")
+                .replace(/\/img2\/([0-9]+)\/full\/([^/]*)$/, "/imgsrc/$1/$2");
+        }
+
+        if (domain === "img.valais.ch") {
+            // https://img.valais.ch/?url=img.oastatic.com%2Fimg%2F22917128%2F.jpg&w=940&h=580&t=square&q=75
+            //   http://img.oastatic.com/img/22917128/.jpg
+            return "http://" + decodeURIComponent(src.replace(/^[a-z]+:\/\/[^/]*\/.*?[?&]url=([^&]*).*/, "$1"));
+        }
+
+        // Storenvy
+        if (domain.indexOf(".cloudfront.net") >= 0 &&
+            src.match(/:\/\/[^/]*\/product_photos\/[0-9]+\/[^/.]*_[^/.]*\.[^/.]*$/)) {
+            // http://d2a2wjuuf1c30f.cloudfront.net/product_photos/52139630/2118646912_1845346882_original_original_medium.jpg
+            //   http://d2a2wjuuf1c30f.cloudfront.net/product_photos/52139630/2118646912_1845346882_original_original_original.jpg
+            // http://dlp2gfjvaz867.cloudfront.net/product_photos/62536200/file_e5a4ce5fa4_medium.jpg
+            //   http://dlp2gfjvaz867.cloudfront.net/product_photos/62536200/file_e5a4ce5fa4_original.jpg
+            return src.replace(/(\/product_photos\/[0-9]+\/[^/]*)_[^/._]*(\.[^/.]*)$/, "$1_original$2");
+        }
+
+        if (domain.match(/img[0-9]*\.etsystatic\.com/)) {
+            // https://img.etsystatic.com/il/ee4147/687832738/il_340x270.687832738_akcv.jpg?version=3
+            //   https://img.etsystatic.com/il/ee4147/687832738/il_570xN.687832738_akcv.jpg?version=3
+            //   https://img.etsystatic.com/il/ee4147/687832738/il_fullxfull.687832738_akcv.jpg?version=3
+            // https://img0.etsystatic.com/024/0/41472418/icm_fullxfull.34237406_jkqru58m5s84804o448s.jpg
+            // https://img0.etsystatic.com/204/0/116068862/iusa_fullxfull.52864766_sco2.jpg
+            // https://img1.etsystatic.com/188/0/14551365/isla_fullxfull.26904175_4smpme6j.jpg
+            // https://img1.etsystatic.com/182/0/6993388/iss_fullxfull.12517843_i8l62k59.jpg
+            // https://img0.etsystatic.com/196/0/7799858/igwp_fullxfull.1357445390_9pt1mltn.jpg
+            // https://img0.etsystatic.com/189/0/274695830074/inv_fullxfull.1434228736_9e2pmqxr.jpg
+            // https://img1.etsystatic.com/191/0/96548065/imfs_fullxfull.22421_y67munzc.jpg
+            return src.replace(/(\/[a-z]+_)[0-9a-z]+x[0-9a-z]+\./, "$1fullxfull.");
+        }
 
 
 
