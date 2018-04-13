@@ -1,3 +1,4 @@
 .env
+.env.json
 node_modules
 *~

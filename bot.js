@@ -8,21 +8,26 @@ const NodeCache = require( "node-cache" );
 var fs = require("fs");
 
 var blacklist_json = JSON.parse(fs.readFileSync("./blacklist.json"));
+//var env_json = JSON.parse(fs.readFileSync("./.env.json"));
+var env_json = {};
 
 require('dotenv').config();
+env_json.user_agent = process.env.USERAGENT;
+env_json.client_id = process.env.CLIENT_ID;
+env_json.client_secret = process.env.CLIENT_SECRET;
+env_json.refresh_token = process.env.REFRESH_TOKEN;
+env_json.access_token = process.env.ACCESS_TOKEN;
+//env_json.username = process.env.REDDIT_USER;
+//env_json.password = process.env.REDDIT_PASS;
+
+//console.dir(env_json);
 
 var thresh_px = 200;
 
 const Snoowrap = require('snoowrap');
 const Snoostorm = require('snoostorm');
 
-const r = new Snoowrap({
-  userAgent: process.env.USERAGENT,//'pc:maximagebot:v0.0.3 (by /u/qsniyg)',
-  clientId: process.env.CLIENT_ID,
-  clientSecret: process.env.CLIENT_SECRET,
-  username: process.env.REDDIT_USER,
-  password: process.env.REDDIT_PASS
-});
+const r = new Snoowrap(env_json);
 
 r.config({requestDelay: 1001});
 const client = new Snoostorm(r);
@@ -70,7 +75,7 @@ function inblacklist(x) {
 var submissionStream = client.SubmissionStream({
   "subreddit": "all",
   "results": 100,
-  "pollTime": 1000
+  "pollTime": 2000
 });
 
 /*function getimagesize(imgUrl, olddata) {
