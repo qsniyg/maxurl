@@ -24,3 +24,11 @@ var oReq = new XMLHttpRequest();
 oReq.addEventListener("load", reqListener);
 oReq.open("GET", "https://rawgit.com/qsniyg/maxurl/master/userscript.user.js");
 oReq.send();
+
+document.onreadystatechange = function() {
+  if (document.readyState !== "complete")
+    return;
+
+  if (!("google_tag_manager" in window))
+    document.getElementById("analytics-blocked").innerHTML = " but your browser has blocked it.";
+};

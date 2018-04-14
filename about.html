@@ -72,6 +72,7 @@
                   <span>Q. Does this website track the images I send?</span>
                   <div>
                     <p>A. No, everything is done entirely within your browser.</p>
+                    <p>This website uses Google Analytics, <span id="analytics-blocked">but you can use an adblocker with a tracking filter list enabled to block it.</span></p>
                   </div>
                 </div>
 
@@ -82,19 +83,29 @@
                     <p>Please don't send links containing NSFW content.</p>
                   </div>
                 </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <div id="footer">
-        <div id="footer_container">
-          <a href="index.html">Home</a> |
-          <span>About</span> |
-          <a href="https://greasyfork.org/en/scripts/36662-image-max-url" target="_blank">Userscript</a> |
-          <a href="https://github.com/qsniyg/maxurl" target="_blank">Github</a>
+        <div id="footer">
+          <div id="footer_container">
+            <a href="index.html">Home</a> |
+            <span>About</span> |
+            <a href="https://greasyfork.org/en/scripts/36662-image-max-url" target="_blank">Userscript</a> |
+            <a href="https://github.com/qsniyg/maxurl" target="_blank">Github</a>
+          </div>
         </div>
+        <script src="about.js"></script>
+
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-117521491-1"></script>
+        <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+
+          gtag('config', 'UA-117521491-1');
+        </script>
       </div>
-      <script src="about.js"></script>
-    </div>
   </body>
 </html>
