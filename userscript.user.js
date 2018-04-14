@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.2.15
+// @version      0.2.16
 // @description  Redirects to larger versions of images
 // @author       qsniyg
 // @include      *
@@ -24,6 +24,10 @@
         typeof window === 'undefined' && typeof document === 'undefined') {
         is_node = true;
     }
+
+    var is_scripttag = false;
+    if (typeof imu_variable !== 'undefined')
+        is_scripttag = true;
 
     // https://stackoverflow.com/a/17323608
     function mod(n, m) {
@@ -1005,8 +1009,10 @@
             var regex1 = /.*image_uri=([^&]*).*/;
 
             if (src.match(regex1)) {
+                // https://o.aolcdn.com/images/dims?thumbnail=640%2C420&quality=75&format=jpg&image_uri=https%3A%2F%2Faol-releases-assets-production.s3.amazonaws.com%2Fgenerator%2F07A13DEB.jpg&client=cbc79c14efcebee57402&signature=09ed437d01bfde0d182a609c759f58006578aa3a
                 newsrc = decodeURIComponent(src.replace(/.*image_uri=([^&]*).*/, "$1"));
             } else {
+                // https://o.aolcdn.com/images/dims3/GLOB/legacy_thumbnail/1028x675/format/jpg/quality/85/http%3A%2F%2Fo.aolcdn.com%2Fhss%2Fstorage%2Fmidas%2F652aa88cb26c6aafe4dca4eef405c15%2F205409332%2FScreen%2BShot%2B2017-06-23%2Bat%2B2.36.37%2BPM.png
                 newsrc = decodeURIComponent(src).replace(/.*o\.aolcdn\.com\/images\/[^:]*\/([^:/]*:.*)/, "$1");
             }
 
@@ -2225,6 +2231,18 @@
             return src.replace(/.*\/(?:view|m?news)[0-9]*\//, "");
         }
 
+        if (domain === "thumb.pann.com") {
+            // http://thumb.pann.com/tc_100x75/http://fimg4.pann.com/new/download.jsp?FileID=45339728
+            //   http://fimg4.pann.com/new/download.jsp?FileID=45339728
+            return src.replace(/^[a-z]+:\/\/[^/]*\/[^/]*\//, "");
+        }
+
+        if (domain.indexOf(".video.nate.com") >= 0) {
+            // http://mpmedia003.video.nate.com/img/thumb/75_57/006/76/00/0F/B_20180413100402594366711006.jpg
+            //   http://mpmedia003.video.nate.com/img/006/76/00/0F/B_20180413100402594366711006.jpg
+            return src.replace(/\/img\/thumb\/[0-9]+[^/]*\//, "/img/");
+        }
+
         if (domain.indexOf("img.sedaily.com") >= 0) {
             return src.replace(/(\/[0-9]*)_[^/.]*(\.[^/.]*)$/, "$1$2");
         }
@@ -2880,7 +2898,17 @@
         if (domain === "media.npr.org") {
             // https://media.npr.org/assets/artslife/arts/2010/10/keith-richards/keith-richards-730d749c083f177cc443b4114ee1b19b1e257988-s400-c85.jpg
             //   https://media.npr.org/assets/artslife/arts/2010/10/keith-richards/keith-richards-730d749c083f177cc443b4114ee1b19b1e257988.jpg
-            return src.replace(/(\/[^/]*)-[sc][0-9]*(?:-[sc][0-9]*)?(\.[^/.]*)/, "$1$2");
+            // https://media.npr.org/assets/img/2018/04/13/ap_17339773700572_wide-5b2806a60758e44c259842da1f23f45ac58b1c47.jpg
+            //   https://media.npr.org/assets/img/2018/04/13/ap_17339773700572-5b2806a60758e44c259842da1f23f45ac58b1c47.jpg
+            // https://media.npr.org/assets/img/2018/02/27/ap_17299821347425-0a0868f089eae2f95d1e5a4aaa0252c2176f1334-s800-c85.jpg
+            //   https://media.npr.org/assets/img/2018/02/27/ap_17299821347425-0a0868f089eae2f95d1e5a4aaa0252c2176f1334.jpg
+            // https://media.npr.org/assets/img/2018/04/13/gettyimages-111077711_wide-7cec6f88bb5f86c005767e5866a00404396e869e.jpg?s=400
+            //   https://media.npr.org/assets/img/2018/04/13/gettyimages-111077711-7cec6f88bb5f86c005767e5866a00404396e869e.jpg
+            // https://media.npr.org/assets/img/2018/01/27/rtx4ixrd_sq-744e57fe23b306ed1ccb050b38967d41b5a9c8bd-s400-c85.jpg
+            //   https://media.npr.org/assets/img/2018/01/27/rtx4ixrd-744e57fe23b306ed1ccb050b38967d41b5a9c8bd.jpg
+            return src
+                .replace(/(\/[^/]*)-[sc][0-9]*(?:-[sc][0-9]*)?(\.[^/.]*)/, "$1$2")
+                .replace(/_[a-z]+-([a-f0-9]{30,})(\.[^/.]*)$/, "-$1$2");
         }
 
         if (domain.match(/rs[0-9]*\.pbsrc\.com/)) {
@@ -4537,7 +4565,9 @@
 
         if (domain === "imageproxy.themaven.net") {
             // https://imageproxy.themaven.net/http%3A%2F%2Fimg.aws.livestrongcdn.com%2Fls-1200x630%2Fcme%2Fcme_public_images%2Fwww_livestrong_com%2Fphotos.demandstudios.com%2Fgetty%2Farticle%2F178%2F99%2F79711775_XS.jpg
-            return decodeURIComponent(src.replace(/^.*?:\/\/[^/]*\//, ""));
+            // https://imageproxy.themaven.net/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fmaven-user-photos%2Fthe-maven%2Fpress%2FhAfH0nLTEU-5d4pCxu-TUA%2F2wNFvsqAbUaqAch2Ndhq9w?w=688&q=75&h=512&auto=format&fit=crop
+            //   https://s3-us-west-2.amazonaws.com/maven-user-photos/the-maven/press/hAfH0nLTEU-5d4pCxu-TUA/2wNFvsqAbUaqAch2Ndhq9w
+            return decodeURIComponent(src.replace(/^.*?:\/\/[^/]*\//, "").replace(/\?.*/, ""));
         }
 
         if (domain.match(/photos[0-9]*\.demandstudios\.com/) &&
@@ -6612,6 +6642,27 @@
             return src.replace(/(\/[a-z]+_)[0-9a-z]+x[0-9a-z]+\./, "$1fullxfull.");
         }
 
+        if (domain.indexOf(".twnmm.com") >= 0) {
+            // https://s1.twnmm.com/thumb?src=http://pelmorexpd-a.akamaihd.net/img/1942203455001/201804/1942203455001_5769239466001_5769162032001-vs.jpg?pubId=1942203455001&videoId=5769162032001&w=268&h=151&scale=1&crop=1
+            //   http://pelmorexpd-a.akamaihd.net/img/1942203455001/201804/1942203455001_5769239466001_5769162032001-vs.jpg
+            // https://s1.twnmm.com/thumb?src=//s1.twnmm.com/images/en_ca/12/GETTY%20-%20Snow%20and%20freezing%20rain-99295.jpg&w=145&h=80&scale=1&crop=1
+            //   https://s1.twnmm.com/images/en_ca/12/GETTY%20-%20Snow%20and%20freezing%20rain-99295.jpg
+            return urljoin(src, src.replace(/^[a-z]+:\/\/[^/]*\/thumb.*?[?&]src=([^?&]*).*/, "$1"));
+        }
+
+        if (domain === "www.findx.com" &&
+            src.indexOf("/api/images/assets/") >= 0) {
+            // https://www.findx.com/api/images/assets/500,sJb7dhfdfn7FbXJ9txRO2ZJNsRJNSBrHH5D-lTi8zPa8/https://image.shutterstock.com/display_pic_with_logo/3323144/524606014/stock-vector-la-vie-est-belle-postcard-life-is-beautiful-in-french-ink-illustration-modern-brush-calligraphy-524606014.jpg
+            //   https://image.shutterstock.com/display_pic_with_logo/3323144/524606014/stock-vector-la-vie-est-belle-postcard-life-is-beautiful-in-french-ink-illustration-modern-brush-calligraphy-524606014.jpg
+            return src.replace(/^[a-z]+:\/\/[^/]*\/api\/images\/assets\/[^/]*\//, "");
+        }
+
+        if (domain === "www.konsolinet.fi") {
+            // https://www.konsolinet.fi/tuotekuvat/900x600/dims-quality-100-image_uri-http-3A-2F-2Fo-aolcdn-com-2Fhss-2Fstorage-2Fmidas-2Fc580709e7625f4ae45b7728ca8e4c68c-2F205370453-2Fmatterfall-cutscene-jpg-client-cbc79c14efcebee57402-signature-d89cb8da745b275966310f72eeb47f993dd3f470.jpg
+            //   https://www.konsolinet.fi/tuotekuvat/dims-quality-100-image_uri-http-3A-2F-2Fo-aolcdn-com-2Fhss-2Fstorage-2Fmidas-2Fc580709e7625f4ae45b7728ca8e4c68c-2F205370453-2Fmatterfall-cutscene-jpg-client-cbc79c14efcebee57402-signature-d89cb8da745b275966310f72eeb47f993dd3f470.jpg
+            return src.replace(/(:\/\/[^/]*\/[^/]*\/)[0-9]+x[0-9]+\//, "$1");
+        }
+
 
 
 
@@ -6911,6 +6962,8 @@
 
     if (is_node) {
         module.exports = bigimage_recursive;
+    } else if (is_scripttag) {
+        imu_variable = bigimage_recursive;
     } else {
         var newhref = bigimage_recursive(document.location.href);
 
