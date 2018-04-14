@@ -1,0 +1,100 @@
+<!-- REDIRECTS -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Image Max URL - About</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="main_container">
+      <div id="content">
+        <div id="outer-container">
+          <div id="container">
+            <div id="info">
+              <h1>FAQ</h1>
+              <div class="big_break"></div>
+
+              <div class="questions">
+                <div class="question">
+                  <span>Q. What is this?</span>
+                  <div>
+                    <p>A. It tries to return original versions of images by modifying the URL.</p>
+                    <p>For example, if you have this image:</p>
+                    <ul>
+                      <li><a href="https://pbs.twimg.com/media/DSSzBa3VwAEiXtX.jpg" target="_blank">https://pbs.twimg.com/media/DSSzBa3VwAEiXtX.jpg</a> (1200x800)</li>
+                    </ul>
+                    <p>By adding :orig, you will get a much larger image:</p>
+                    <ul>
+                      <li><a href="https://pbs.twimg.com/media/DSSzBa3VwAEiXtX.jpg:orig" target="_blank">https://pbs.twimg.com/media/DSSzBa3VwAEiXtX.jpg:orig</a> (3240x2160)</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="question">
+                  <span>Q. How many sites are supported?</span>
+                  <div>
+                    <p>A. Currently ~<span id="sites">1100</span> hardcoded websites (~<span id="rules">800</span> rules).</p>
+                    <p>But since it supports many generic engines (e.g. WordPress, Drupal, etc.), it can support millions of websites.</p>
+                  </div>
+                </div>
+
+                <div class="question">
+                  <span>Q. Why is the returned image broken?</span>
+                  <div>
+                    <p>A. Since the rules simply modify URLs, there's a number of reasons why this could happen.</p>
+                    <p>Although <a href="https://greasyfork.org/en/scripts/36662-image-max-url">the userscript</a> will check to make sure the resulting URL is valid (because userscripts have extra privileges), this website can't, because of cross-origin problems.</p>
+                  </div>
+                </div>
+
+                <div class="question">
+                  <span>Q. Why is the returned image smaller?</span>
+                  <div>
+                    <p>A. Websites will sometimes scale images higher than their original resolution. This script's purpose is to return the original unscaled image, which is sometimes smaller.</p>
+                    <p>But if the first image is larger and not scaled up, please <a href="https://github.com/qsniyg/maxurl/issues">file an issue on Github</a>, and I will fix it ASAP.</p>
+                  </div>
+                </div>
+
+                <div class="question">
+                  <span>Q. Why is the returned image scaled up?</span>
+                  <div>
+                    <p>A. Probably because the original image is scaled up. I try to make sure the script doesn't return any URLs that will scale up an image, but if you believe there's an error, please <a href="https://github.com/qsniyg/maxurl/issues">file an issue on Github</a>.</p>
+                  </div>
+                </div>
+
+                <div class="question">
+                  <span>Q. Can I have this run automatically on images I view?</span>
+                  <div>
+                    <p>A. Yes, use <a href="https://greasyfork.org/en/scripts/36662-image-max-url">the userscript</a>.</p>
+                  </div>
+                </div>
+
+                <div class="question">
+                  <span>Q. Does this website track the images I send?</span>
+                  <div>
+                    <p>A. No, everything is done entirely within your browser.</p>
+                  </div>
+                </div>
+
+                <div class="question">
+                  <span>Q. Can another website be supported?</span>
+                  <div>
+                    <p>A. Yes, please send the website and some test URLs (preferrably pairs of thumbnail and original links) <a href="https://github.com/qsniyg/maxurl/issues">to Github</a> and I'll take a look at it.</p>
+                    <p>Please don't send links containing NSFW content.</p>
+                  </div>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="footer">
+        <div id="footer_container">
+          <a href="index.html">Home</a> |
+          <span>About</span> |
+          <a href="https://greasyfork.org/en/scripts/36662-image-max-url" target="_blank">Userscript</a> |
+          <a href="https://github.com/qsniyg/maxurl" target="_blank">Github</a>
+        </div>
+      </div>
+      <script src="about.js"></script>
+    </div>
+  </body>
+</html>
