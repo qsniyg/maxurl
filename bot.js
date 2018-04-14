@@ -236,7 +236,8 @@ submissionStream.on("submission", function(post) {
   }
 
   if (post.subreddit.display_name) {
-    if (blacklist_json.disallowed.indexOf(post.subreddit.display_name.toLowerCase()) >= 0) {
+    if (blacklist_json.disallowed.indexOf(post.subreddit.display_name.toLowerCase()) >= 0 ||
+        blacklist_json.users.indexOf(post.author.name.toLowerCase()) >= 0) {
       //console.log(post.subreddit);
       return;
     }

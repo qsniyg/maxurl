@@ -2,3 +2,4 @@
 .env.json
 node_modules
 *~
+site/
