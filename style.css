@@ -214,8 +214,26 @@ hr {
 
 #footer a, #footer span {
   font-weight: 400;
+}
+
+#footer a, #footer span {
   margin-left: 1em;
   margin-right: 1em;
+}
+
+@media (max-width:700px) {
+  #footer a, #footer span {
+    margin-left: .5em;
+    margin-right: .5em;
+  }
+}
+
+@media (max-width:400px) {
+  #footer a, #footer span {
+    font-size: .8em;
+    margin-left: .5em;
+    margin-right: .5em;
+  }
 }
 
 #footer a {
