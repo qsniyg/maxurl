@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.3.0
+// @version      0.3.1
 // @description  Redirects to larger versions of images
 // @author       qsniyg
 // @include      *
@@ -11,8 +11,10 @@
 // @license      Apache 2.0
 // ==/UserScript==
 
-// If you see "A userscript wants to access a cross-origin resource.", it's used to detect whether or not the destination URL exists before redirecting.
-// The code that manages those requests is at the very end of the script (or search for GM_xmlhttpRequest in the script)
+// If you see "A userscript wants to access a cross-origin resource.",
+//   it's either used to detect whether or not the destination URL exists before redirecting (near the end of the script),
+//   or used to query flickr's API to get larger images.
+// Search for GM_xmlhttpRequest and do_request if you want to see what the code does exactly.
 
 (function() {
     'use strict';
@@ -21,13 +23,15 @@
 
     var default_options = {
         fill_object: false,
-        iterations: 1000
+        iterations: 1000,
+        cb: null
     };
 
     var default_object = {
         url: null,
         always_ok: false,
         can_head: true,
+        waiting: false,
         headers: {}
     };
 
@@ -76,7 +80,11 @@
         };
     }
 
-    function bigimage(src) {
+    var do_request = null;
+    if (typeof(GM_xmlhttpRequest) !== "undefined")
+        do_request = GM_xmlhttpRequest;
+
+    function bigimage(src, cb) {
         if (!src)
             return src;
 
@@ -7186,6 +7194,97 @@
             return src.replace(/(\/thumb\/[^/]*\/[^/]*)\/[0-9]+x[0-9]+(\.[^/.]*)$/, "$1$2");
         }
 
+        if (domain === "www.superiorpics.com") {
+            // http://www.superiorpics.com/pictures2/thumb168/1TeenChoRD2028754.jpg
+            //   http://www.superiorpics.com/pictures2/1TeenChoRD2028754.jpg
+            return src.replace(/\/thumb[0-9]+\//, "/");
+        }
+
+        if (domain === "www.celebjihad.com") {
+            // https://www.celebjihad.com/celeb-jihad/harlots/victoria_justice38/t_victoria_justice1.jpg
+            //   https://www.celebjihad.com/celeb-jihad/harlots/victoria_justice38/victoria_justice1.jpg
+            return src.replace(/\/t_([^/]*)$/, "/$1");
+        }
+
+        if (domain === "www.looktothestars.org" &&
+            src.indexOf("/photo/") >= 0 && false) {
+            // https://www.looktothestars.org/photo/6950-victoria-justice-fronts-psa/story_wide.jpg
+            //   https://www.looktothestars.org/photo/6950-victoria-justice-fronts-psa/large.jpg
+            // https://www.looktothestars.org/photo/3-george-clooney/small_square-1503121378.jpg
+            //   https://www.looktothestars.org/photo/3-george-clooney/large.jpg -- stretched
+            return src.replace(/\/[^/]*(\.[^/.]*)$/, "/large$1");
+        }
+
+        if (domain === "cdn.teamcococdn.com") {
+            // http://cdn.teamcococdn.com/image/1000x1000,scale:none/victoria-justice-54ed2693b4bf1.jpg -- stretched
+            //   http://cdn.teamcococdn.com/file/victoria-justice-54ed2693b4bf1.jpg
+            return src.replace(/\/image\/[^/]*\//, "/file/");
+        }
+
+        if ((domain.indexOf(".staticflickr.com") >= 0 ||
+             domain.indexOf(".static.flickr.com") >= 0) &&
+            do_request && cb) {
+            // https://c1.staticflickr.com/5/4190/34341416210_29e6098b30.jpg
+            //   https://farm5.staticflickr.com/4190/34341416210_9f14cc1576_o.jpg
+            // https://farm5.static.flickr.com/4157/34467046051_631ea7efa7_b.jpg
+            //   https://farm5.staticflickr.com/4157/34467046051_9b6f0e9a7c_o.jpg
+            do_request({
+                url: "https://www.flickr.com/",
+                method: "GET",
+                headers: {
+                    "Origin": "",
+                    "Referer": "",
+                    "Cookie": ""
+                },
+                onload: function(resp) {
+                    if (resp.readyState === 4) {
+                        var regex = /root\.YUI_config\.flickr\.api\.site_key *= *['"]([^'"]*)['"] *; */;
+                        var matchobj = resp.responseText.match(regex);
+                        if (!matchobj) {
+                            cb(null);
+                            return;
+                        }
+
+                        var key = matchobj[1];
+                        var photoid = src.replace(/.*\/([0-9]+)_[^/]*$/, "$1");
+                        var nexturl = "https://api.flickr.com/services/rest?csrf=&api_key=" + key + "&format=json&nojsoncallback=1&method=flickr.photos.getSizes&photo_id=" + photoid;
+                        do_request({
+                            url: nexturl,
+                            method: "GET",
+                            headers: {
+                                "Origin": "",
+                                "Referer": "",
+                                "Cookie": ""
+                            },
+                            onload: function(resp) {
+                                try {
+                                    var out = JSON.parse(resp.responseText);
+                                    var largesturl = null;
+                                    var largestsize = 0;
+                                    out.sizes.size.forEach((size) => {
+                                        var currentsize = parseInt(size.width) * parseInt(size.height);
+                                        if (currentsize > largestsize) {
+                                            largestsize = currentsize;
+                                            largesturl = size.source;
+                                        }
+                                    });
+                                    cb(largesturl);
+                                    return;
+                                } catch (e) {
+                                    cb(null);
+                                    return;
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+
+            return {
+                "waiting": true
+            };
+        }
+
 
 
 
@@ -7285,10 +7384,10 @@
             return src.replace(/(\/phpwas\/restmb_[a-z]*make\.php)\?.*(simg=[^&]*)/, "$1?idx=999&$2");
         }
 
-        if (src.match(/\/wp-content\/.*?\/includes\/timthumb\.php/)) {
+        if (src.match(/\/wp-content\/.*?\/timthumb\.php/)) {
             // http://dublinfilms.fr/wp-content/themes/purity/includes/timthumb.php?src=http://dublinfilms.fr/wp-content/uploads/2014/06/Actu-bandeau-bis.jpg&h=260&w=662&zc=1
             //   http://dublinfilms.fr/wp-content/uploads/2014/06/Actu-bandeau-bis.jpg
-            return src.replace(/.*\/wp-content\/.*?\/includes\/timthumb\.php\?.*?src=([^&]*).*/, "$1");
+            return decodeURIComponent(src.replace(/.*\/timthumb\.php\?.*?src=([^&]*).*/, "$1"));
         }
 
         if (src.match(/\/fotogallery\/[0-9]+X[0-9]+\//)) {
@@ -7499,6 +7598,21 @@
         }
     };
 
+    var fillobj = function(obj) {
+        if (obj instanceof Array ||
+            typeof(obj) === "string") {
+            obj = {url: obj};
+        }
+
+        for (var item in default_object) {
+            if (!(item in obj)) {
+                obj[item] = default_object[item];
+            }
+        }
+
+        return obj;
+    };
+
     var bigimage_recursive = function(url, options) {
         if (!options)
             options = {};
@@ -7509,23 +7623,41 @@
             }
         }
 
+        var cb = null;
+        if (options.cb) {
+            cb = function(x) {
+                options.cb(fillobj(x));
+            };
+        }
+
+        var waiting = false;
+
         var newhref = url;
         var currenthref = newhref;
         for (var i = 0; i < options.iterations; i++) {
+            waiting = false;
             /*if (newhref instanceof Array)
                 currenthref = newhref[0];*/
 
-            var newhref1 = fullurl_obj(currenthref, bigimage(currenthref));
+            var newhref1 = fullurl_obj(currenthref, bigimage(currenthref, cb));
+            if (!newhref1)
+                break;
+
             if (newhref1 !== currenthref) {
                 if (newhref1 instanceof Array) {
                     if (newhref1.indexOf(currenthref) >= 0)
                         break;
                     currenthref = newhref1[0];
                 } else if (typeof(newhref1) === "object") {
+                    if (newhref1.waiting)
+                        waiting = true;
                     if (newhref1.url instanceof Array) {
                         if (newhref1.url.indexOf(currenthref) >= 0)
                             break;
                         currenthref = newhref1.url[0];
+                    } else if (!newhref1.url) {
+                        newhref = newhref1;
+                        break;
                     } else {
                         if (newhref1.url === currenthref)
                             break;
@@ -7545,16 +7677,11 @@
         }
 
         if (options.fill_object) {
-            if (newhref instanceof Array ||
-                typeof(newhref) === "string") {
-                newhref = {url: newhref};
-            }
+            newhref = fillobj(newhref);
+        }
 
-            for (var item in default_object) {
-                if (!(item in newhref)) {
-                    newhref[item] = default_object[item];
-                }
-            }
+        if (options.cb && !waiting) {
+            options.cb(newhref);
         }
 
         return newhref;
@@ -7618,13 +7745,6 @@
                                 return;
                             }
 
-                            /*// wrap in try/catch due to nano defender
-                            try {
-                                // avoid downloading more before redirecting
-                                window.stop();
-                            } catch (e) {
-                            }
-                            document.location = url;*/
                             redirect(url);
                         }
                     }
@@ -7642,61 +7762,34 @@
             return;
         }
 
-        var newhref = bigimage_recursive(document.location.href, {fill_object: true});
-
-        if (!newhref.can_head || newhref.always_ok) {
-            if (newhref.url instanceof Array) {
-                redirect(newhref.url[0]);
-            } else {
-                redirect(newhref.url);
-            }
-            return;
-        }
-
-        if (newhref.url instanceof Array) {
-            var index = 0;
-            var cb = function() {
-                index++;
-                if (index >= newhref.url.length)
+        bigimage_recursive(document.location.href, {
+            fill_object: true,
+            cb: function(newhref) {
+                if (!newhref)
                     return;
-                check_image(newhref.url[index], cb);
-            };
-            check_image(newhref.url[0], cb);
-        } else {
-            check_image(newhref.url);
-        }
-        return;
-        if (newhref !== document.location.href) {
-            console.log(newhref);
-            if (!_nir_debug_) {
-                document.documentElement.style.cursor = "wait";
-                var http = new GM_xmlhttpRequest({
-                    method: 'HEAD',
-                    url: newhref,
-                    onload: function(resp) {
-                        // nano defender removes this.DONE
-                        if (resp.readyState == 4) {
-                            document.documentElement.style.cursor = "default";
 
-                            var digit = resp.status.toString()[0];
-
-                            if ((digit === "4" || digit === "5") &&
-                                resp.status !== 405) {
-                                console.log("Error: " + this.status);
-                                return;
-                            }
-
-                            // wrap in try/catch due to nano defender
-                            try {
-                                // avoid downloading more before redirecting
-                                window.stop();
-                            } catch (e) {
-                            }
-                            document.location = newhref;
-                        }
+                if (!newhref.can_head || newhref.always_ok) {
+                    if (newhref.url instanceof Array) {
+                        redirect(newhref.url[0]);
+                    } else {
+                        redirect(newhref.url);
                     }
-                });
+                    return;
+                }
+
+                if (newhref.url instanceof Array) {
+                    var index = 0;
+                    var cb = function() {
+                        index++;
+                        if (index >= newhref.url.length)
+                            return;
+                        check_image(newhref.url[index], cb);
+                    };
+                    check_image(newhref.url[0], cb);
+                } else {
+                    check_image(newhref.url);
+                }
             }
-        }
+        });
     }
 })();
