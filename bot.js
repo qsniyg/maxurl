@@ -133,16 +133,51 @@ var submissionStream = client.SubmissionStream({
   }*/
 
 function getimagesize(url) {
-  return probe(url);
+  if (typeof(url) === "string") {
+    return probe(url);
+  }
+
+  if (typeof(url.url) === "string") {
+    return getimagesize(url.url);
+  }
+
+  return new Promise((resolve, reject) => {
+    var do_getimage = function(urls, err) {
+      if (urls.length === 0) {
+        reject(err);
+        return;
+      }
+
+      getimagesize(urls[0]).then(
+        (data) => {
+          resolve(data);
+        },
+        (err) => {
+          do_getimage(urls.slice(1), err);
+        }
+      );
+    };
+
+    do_getimage(url.url);
+  });
 }
 
 function dourl(url, post) {
-  var big = bigimage(url);
-  if (big === url) {
+  var big = bigimage(url, {fill_object:true});
+
+  if (big.url instanceof Array) {
+    if (big.url.indexOf(url) >= 0) {
+      return;
+    }
+  } else if (big.url === url) {
     return;
   }
 
-  if (inblacklist(post.title)) {
+  /*if (big === url) {
+    return;
+  }*/
+
+  if (post && inblacklist(post.title)) {
     console.log("Post blacklisted:\n" + post.title + "\n" + post.permalink + "\n" + post.url + "\n=====\n\n");
     return;
   }
@@ -166,9 +201,9 @@ function dourl(url, post) {
             if (r < 1.995) {
               times = "" + ((r-1) * 100).toFixed(0) + "%";
             }
-            var comment = times + " larger (" + parseInt(newdata.width) + "x" + parseInt(newdata.height) + ") version of linked image:\n\n" + big + "\n\n";
+            var comment = times + " larger (" + parseInt(newdata.width) + "x" + parseInt(newdata.height) + ") version of linked image:\n\n" + newdata.url + "\n\n";
             comment += "*****\n\n";
-            comment += "^[source&nbsp;code](https://github.com/qsniyg/maxurl)&nbsp;|&nbsp;[userscript&nbsp;(redirects&nbsp;to&nbsp;larger&nbsp;images)](https://greasyfork.org/en/scripts/36662-image-max-url)";
+            comment += "^[source&nbsp;code](https://github.com/qsniyg/maxurl)&nbsp;|&nbsp;[website](https://qsniyg.github.io/maxurl/)&nbsp;/&nbsp;[userscript](https://greasyfork.org/en/scripts/36662-image-max-url)&nbsp;(finds&nbsp;larger&nbsp;images)";
             console.log(comment);
             if (post) {
               post.reply(comment).then((comment_data) => {
@@ -230,26 +265,28 @@ setInterval(() => {
 }, 10*1000);
 
 //console.dir(blacklist_json.disallowed);
-submissionStream.on("submission", function(post) {
-  if (post.domain.startsWith("self.") || post.over_18) {
-    return;
-  }
-
-  if (post.subreddit.display_name) {
-    if (blacklist_json.disallowed.indexOf(post.subreddit.display_name.toLowerCase()) >= 0 ||
-        blacklist_json.users.indexOf(post.author.name.toLowerCase()) >= 0) {
-      //console.log(post.subreddit);
+if (true) {
+  submissionStream.on("submission", function(post) {
+    if (post.domain.startsWith("self.") || (post.over_18 && false)) {
       return;
     }
-  }
 
-  if (links.get(post.permalink) === true) {
-    //console.log("Already processed " + post.permalink + ", skipping");
-    return;
-  }
+    if (post.subreddit.display_name) {
+      if (blacklist_json.disallowed.indexOf(post.subreddit.display_name.toLowerCase()) >= 0 ||
+          blacklist_json.users.indexOf(post.author.name.toLowerCase()) >= 0) {
+        //console.log(post.subreddit);
+        return;
+      }
+    }
 
-  links.set(post.permalink, true);
+    if (links.get(post.permalink) === true) {
+      //console.log("Already processed " + post.permalink + ", skipping");
+      return;
+    }
 
-  var url = post.url;
-  dourl(url, post);
-});
+    links.set(post.permalink, true);
+
+    var url = post.url;
+    dourl(url, post);
+  });
+}
