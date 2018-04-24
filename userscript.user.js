@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.3.1
+// @version      0.3.2
 // @description  Redirects to larger versions of images
 // @author       qsniyg
 // @include      *
@@ -20,6 +20,12 @@
     'use strict';
 
     var _nir_debug_ = false;
+
+    if (_nir_debug_) {
+        _nir_debug_ = {
+            no_request: false
+        };
+    }
 
     var default_options = {
         fill_object: false,
@@ -48,6 +54,19 @@
     // https://stackoverflow.com/a/17323608
     function mod(n, m) {
         return ((n % m) + m) % m;
+    }
+
+    function urlsplit(a) {
+        var protocol_split = a.split("://");
+        var protocol = protocol_split[0];
+        var splitted = protocol_split[1].split("/");
+        var domain = splitted[0];
+        var start = protocol + "://" + domain;
+        return {
+            protocol,
+            domain,
+            url: a
+        };
     }
 
     function urljoin(a, b) {
@@ -93,6 +112,7 @@
         var splitted = protocol_split[1].split("/");
         var domain = splitted[0];
         var domain_nowww = domain.replace(/^www\./, "");
+        var domain_nosub = domain.replace(/^.*\.([^.]*\.[^.]*)$/, "$1");
         var newsrc, i, size, origsize;
 
         // instart logic morpheus
@@ -1650,6 +1670,8 @@
             (domain === "colorwallpaper.net" && src.indexOf("/img/") >= 0) ||
             // https://img.cache.vevo.com/thumb/cms/6adeb8f9fb65d67e94044181f4e102c6/281x159.jpg?resize=fit&remove_borders=true
             domain === "img.cache.vevo.com" ||
+            // https://drop.ndtv.com/albums/uploadedpics/small/vivo_v9_youth_small_636598304295938786.jpg?downsize=120:90&output-quality=70&output-format=webp
+            (domain === "drop.ndtv.com" && src.indexOf("/albums/") >= 0) ||
             // http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
             // https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
             src.match(/\/demandware\.static\//) ||
@@ -1841,6 +1863,7 @@
             return src.replace(/\/[0-9]*x[0-9]*\.([^/.?]*)(\?.*)?/, "/0x0.$1");
         }
 
+        // MediaWiki
         if (domain.indexOf("upload.wikimedia.org") >= 0 ||
             domain.indexOf("www.generasia.com") >= 0 ||
             // https://cdn.wikimg.net/strategywiki/images/thumb/0/01/PW_JFA_Official_Artwork.jpg/350px-PW_JFA_Official_Artwork.jpg
@@ -1848,7 +1871,9 @@
             // http://liquipedia.net/commons/images/thumb/d/df/Tossgirl_2008_stx081014.jpg/269px-Tossgirl_2008_stx081014.jpg
             //   http://liquipedia.net/commons/images/d/df/Tossgirl_2008_stx081014.jpg
             domain === "liquipedia.net" ||
-            src.match(/\/images\/thumb\/[^/]*\/[^/]*\/[^/]*\.[^/]*\/[0-9]*px-/)) {
+            // http://oyster.ignimgs.com/mediawiki/apis.ign.com/best-of-2017-awards/thumb/8/86/Anime.jpg/610px-Anime.jpg
+            //   http://oyster.ignimgs.com/mediawiki/apis.ign.com/best-of-2017-awards/8/86/Anime.jpg
+            src.match(/\/thumb\/.\/..\/[^/]*\.[^/]*\/[0-9]*px-/)) {
             return src.replace(/\/thumb\/([^/]*)\/([^/]*)\/([^/]*)\/.*/, "/$1/$2/$3");
         }
 
@@ -2324,7 +2349,10 @@
             return src.replace(/\/t[0-9]*_([^/]*)$/, "/o$1");
         }
 
-        if (domain === "livedoor.blogimg.jp") {
+        //if (domain === "livedoor.blogimg.jp") {
+        if (domain.indexOf(".blogimg.jp") >= 0) {
+            // http://lineofficial.blogimg.jp/en/imgs/c/5/c5832999-s.png
+            //   http://lineofficial.blogimg.jp/en/imgs/c/5/c5832999.png
             return src.replace(/(\/[^/.]*)-[^/.]*(\.[^/.]*)/, "$1$2");
         }
 
@@ -4567,15 +4595,30 @@
         }
 
         // disabled due to redirects
-        if (domain.indexOf(".wallpapermania.eu") >= 0 && false) {
+        if ((domain.indexOf(".wallpapermania.eu") >= 0 ||
+             domain_nowww === "wallpapermania.eu")) {
             // http://www.wallpapermania.eu/download/2012-04/1037/emma-roberts-11-sexy-hd-wallpaper_1366x768.jpg
             //   http://www.wallpapermania.eu/images/data/2012-04/1037_emma-roberts-11-sexy-hd-wallpaper.jpg
             // http://static.wallpapermania.eu/images/thumbs/2012-04/1030_emma-roberts-4-sexy-hd-wallpaper.jpg
             //   http://www.wallpapermania.eu/images/data/2012-04/1030_emma-roberts-4-sexy-hd-wallpaper.jpg
-            return src
+            // http://www.wallpapermania.eu/wallpaper/victoria-justice-6-sexy-hd-wallpaper
+            // http://www.wallpapermania.eu/images/lthumbs/2012-04/2210_victoria-justice-6-sexy-hd-wallpaper.jpg
+            //   http://www.wallpapermania.eu/images/data/2012-04/2210_victoria-justice-6-sexy-hd-wallpaper.jpg
+            newsrc = src
                 .replace("://static.wallpapermania.eu/", "://www.wallpapermania.eu/")
-                .replace("/images/thumbs/", "/images/data/")
+                .replace(/\/images\/[a-z]?thumbs\//, "/images/data/")
                 .replace(/\/download\/([^/]*)\/([0-9]*)\/([^/.]*)_[0-9]+x[0-9]+(\.[^/.]*)$/, "/images/data/$1/$2_$3$4");
+            if (newsrc !== src) {
+                var referer = newsrc.replace(/.*\/[0-9]+_([^/.]*)(?:_[0-9]+x[0-9]+)?\.[^/.]*$/,
+                                             "http://www.wallpapermania.eu/wallpaper/$1");
+                return {
+                    url: newsrc,
+                    headers: {
+                        "Referer": referer
+                    }
+                };
+            }
+            //return newsrc;
         }
 
         if (domain === "img-aws.ehowcdn.com" ||
@@ -5918,7 +5961,9 @@
             // http://a3.espncdn.com/photo/2013/0209/nba_jordan_36.jpg
             // http://a.espncdn.com/photo/2012/0930/rn_georgiatennessee_ms_21.jpg
             // http://a.espncdn.com/photo/2013/0922/nfl_u_darnelldockett_cmg_600.jpg
-            newsrc = decodeURIComponent(src.replace(/\/combiner\/i\?img=([^&]*)/, "$1"));
+            // http://a.espncdn.com/combiner/i?img=/i/headshots/nba/players/full/2968436.png&w=350&h=254
+            //   http://a.espncdn.com/i/headshots/nba/players/full/2968436.png
+            newsrc = decodeURIComponent(src.replace(/\/combiner\/i\?img=([^&]*).*/, "$1"));
             if (newsrc !== src)
                 return newsrc;
 
@@ -6059,10 +6104,18 @@
             return decodeURIComponent(src.replace(/.*\/[0-9a-f]+.*?[?&]url=([^&]*).*/, "$1"));
         }
 
-        if (domain === "hdqwalls.com") {
+        /*if (domain === "hdqwalls.com") {
             // http://hdqwalls.com/wallpapers/thumb/emma-watson-16-pic.jpg
             //   http://hdqwalls.com/wallpapers/emma-watson-16-pic.jpg
             return src.replace(/\/wallpapers\/thumb\//, "/wallpapers/");
+        }*/
+
+        if (domain_nowww === "hdqwalls.com") {
+            // http://www.hdqwalls.com/wallpapers/bthumb/victoria-justice-4-do.jpg
+            //   http://www.hdqwalls.com/wallpapers/victoria-justice-4-do.jpg
+            // http://hdqwalls.com/wallpapers/thumb/victoria-justice.jpg
+            //   http://hdqwalls.com/wallpapers/victoria-justice.jpg
+            return src.replace(/\/wallpapers\/[a-z]?thumb\//, "/wallpapers/");
         }
 
         if (domain === "wallpaperclicker.com") {
@@ -7285,6 +7338,254 @@
             };
         }
 
+        if (domain === "www.imagozone.com") {
+            // http://www.imagozone.com/var/resizes/vedete/Victoria%20Justice/Victoria%20Justice%203012.jpg
+            //   http://www.imagozone.com/var/albums/vedete/Victoria%20Justice/Victoria%20Justice%203012.jpg
+            // http://www.imagozone.com/var/thumbs/vedete/Amber%20Heard/Amber%20Heard%20005.jpg?m=1312958883
+            //   http://www.imagozone.com/var/albums/vedete/Amber%20Heard/Amber%20Heard%20005.jpg?m=1312958883
+            // doesn't work:
+            // http://www.imagozone.com/var/thumbs/vedete/Amber%20Heard/2007/.album.jpg?m=1312542209
+            if (!src.match(/\/\.album\.[^/.]*$/))
+                return src.replace(/\/var\/(?:resizes|thumbs)\//, "/var/albums/");
+        }
+
+        if (domain_nosub === "tunes.zone") {
+            // http://ru.tunes.zone/poster/person/230x230/29/22/72/0/292272-fotografii-iz-victoria-justice.jpg
+            //   http://tunes.zone/poster/person/full/29/22/72/0/292272-fotografii-iz-victoria-justice.jpg
+            // http://ru.tunes.zone/poster/banner/400x250o/15/84/57/9/1584579/19572-spider-man-homecoming.jpg
+            // doesn't work for all:
+            // http://ru.tunes.zone/poster/person/100x100/29/22/68/0/292268-fotografii-iz-victoria-justice-4.jpg
+            //   http://ru.tunes.zone/poster/person/full/29/22/68/0/292268-fotografii-iz-4.jpg
+            // http://tunes.zone/poster/person/100x100/57/48/0/0/5748-photos-with-galia-albin-1.jpg
+            //   http://tunes.zone/poster/person/full/57/48/0/0/5748-photos-with-1.jpg
+            // http://es.tunes.zone/poster/person/full/33/52/63/0/335263-las-fotografias-de-2.jpg
+            var basic = src.replace(/\/[0-9]+x[0-9]+[a-z]?\//, "/full/");
+            if (basic !== src) {
+                var other = basic.replace(/-[a-z]+-[a-z]+(-[0-9]+)?(\.[^/.]*)$/, "$1$2");
+                if (basic.match(/-[0-9]+\.[^/.]*$/))
+                    return [other, basic];
+                else
+                    return [basic, other];
+            }
+        }
+
+        if (domain === "sf.co.ua") {
+            // http://sf.co.ua/16/12/tn-4358.jpg
+            //   http://sf.co.ua/16/12/wallpaper-4358.jpg
+            return src.replace(/\/tn-([0-9]*\.[^/.]*)/, "/wallpaper-$1");
+        }
+
+        if (domain.match(/^s[^.]*.zerochan.net/)) {
+            // https://s3.zerochan.net/IA.240.878867.jpg
+            //   https://static.zerochan.net/IA.240.878867.jpg
+            return src
+                .replace(/:\/\/s[^.]*.zerochan.net\//, "://static.zerochan.net/")
+                .replace(/(:\/\/[^/]*\/[^/.]*\.)[0-9]+(\.[0-9]+\.[^/.]*)$/, "$1full$2");
+        }
+
+        if (domain.indexOf(".donmai.us") >= 0) {
+            // https://hijiribe.donmai.us/data/sample/__nishimori_yusa_otosaka_ayumi_and_tomori_nao_charlotte_anime_and_newtype_drawn_by_higashiji_kazuki_inoue_katsue_kato_chie_satou_youko_sekiguchi_kanami_and_sugawara_mika__sample-5bae8d2a395e9b9b9f9f803a8c3eb4b1.jpg
+            //   https://hijiribe.donmai.us/data/__nishimori_yusa_otosaka_ayumi_and_tomori_nao_charlotte_anime_and_newtype_drawn_by_higashiji_kazuki_inoue_katsue_kato_chie_satou_youko_sekiguchi_kanami_and_sugawara_mika__5bae8d2a395e9b9b9f9f803a8c3eb4b1.jpg
+            return src.replace(/\/data\/sample\/([^/]*__)sample-([0-9a-f]*\.[^/.]*)$/, "/data/$1$2");
+        }
+
+        if (domain === "cdn.vor.us") {
+            // https://cdn.vor.us/event/350763/thumbsm/458aa4c3a2c74b409282dd83a36cbf25.image!jpeg.9752676.jpg._Z5J5526.jpg
+            //   https://cdn.vor.us/event/350763/og/458aa4c3a2c74b409282dd83a36cbf25.image!jpeg.9752676.jpg._Z5J5526.jpg
+            // https://cdn.vor.us/event/350763/thumbsm/0aa7913a692d4f97b1a549660eb80eba.image!jpeg.16170343.jpg._Z5J4082.jpg
+            //   https://cdn.vor.us/event/350763/og/0aa7913a692d4f97b1a549660eb80eba.image!jpeg.16170343.jpg._Z5J4082.jpg
+            return src.replace(/\/thumbs[a-z]?\//, "/og/");
+        }
+
+        if (domain === "wallpapers.wallhaven.cc") {
+            // https://wallpapers.wallhaven.cc/wallpapers/thumb/small/th-68352.jpg
+            //   https://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-68352.jpg
+            return src.replace(/\/thumb\/[^/]*\/th-/, "/full/wallhaven-");
+        }
+
+        if (domain === "cdn.animenewsnetwork.com") {
+            // https://cdn.animenewsnetwork.com/thumbnails/max350x1000/cms/interview/40076/keyart.jpg.jpg
+            //   https://cdn.animenewsnetwork.com/thumbnails/hotlink-full/cms/interview/40076/keyart.jpg.jpg
+            return src.replace(/\/thumbnails\/[^/]*\//, "/thumbnails/hotlink-full/");
+        }
+
+        if (domain === "digitalart.io" &&
+            src.indexOf("/storage/") >= 0) {
+            // https://digitalart.io/storage/artworks/1301/h250_anime_protagonist-wide.jpeg
+            //   https://digitalart.io/storage/artworks/1301/anime_protagonist-wide.jpeg
+            // https://digitalart.io/storage/artworks/709/h250_Asuka-Langley-Neon-Genesis-Evangelist-Wallpaper.jpeg
+            //   https://digitalart.io/storage/artworks/709/Asuka-Langley-Neon-Genesis-Evangelist-Wallpaper.jpeg
+            return src.replace(/(\/[0-9]*\/)[wh][0-9]+_([^/]*)$/, "$1$2");
+        }
+
+        if (domain === "4everstatic.com" ||
+            domain === "pictures.4ever.eu") {
+            // still has logo though
+            // http://4everstatic.com/pictures/850xX/cartoons/anime-and-fantasy/anime-girl,-red-dress,-river-218133.jpg
+            //   http://4everstatic.com/pictures/cartoons/anime-and-fantasy/anime-girl,-red-dress,-river-218133.jpg
+            //   http://pictures.4ever.eu/data/download/cartoons/anime-and-fantasy/anime-girl,-red-dress,-river-218133.jpg?no-logo
+            return src.replace(/\/pictures\/[0-9X]+x[0-9X]+\//, "/pictures/");
+
+            // removes the logo, but forces download
+            //return src.replace(/:\/\/4everstatic\.com\/pictures\/(?:[0-9X]+x[0-9X]+\/)?([^?]*).*?$/, "://pictures.4ever.eu/data/download/$1?no-logo");
+        }
+
+        if (domain_nowww === "tapeciarnia.pl") {
+            // https://tapeciarnia.pl/tapety/srednie/264402_dziewczyna_manga_anime.jpg
+            //   https://tapeciarnia.pl/tapety/normalne/264402_dziewczyna_manga_anime.jpg
+            return src.replace(/\/tapety\/[^/]*\//, "/tapety/normalne/");
+        }
+
+        if (domain === "files.yande.re") {
+            // https://files.yande.re/sample/c3e3fd1d97b4e237e996e6b1bfafa4e6/yande.re%20190111%20sample%20anime_tenchou%20anizawa_meito%20cosplay%20hiiragi_kagami%20izumi_konata%20kusakabe_misao%20lucky_star%20seifuku%20sword%20takara_miyuki%20thighhighs%20vocaloid.jpg
+            //   https://files.yande.re/image/c3e3fd1d97b4e237e996e6b1bfafa4e6/yande.re%20190111%20anime_tenchou%20anizawa_meito%20cosplay%20hiiragi_kagami%20izumi_konata%20kusakabe_misao%20lucky_star%20seifuku%20sword%20takara_miyuki%20thighhighs%20vocaloid.jpg
+            return src
+                .replace(/\/sample\//, "/image/");
+        }
+
+        if (domain === "assets.yande.re") {
+            // https://assets.yande.re/data/preview/5c/0d/5c0dce008b820e531309e54a17c83f3a.jpg
+            //   https://files.yande.re/image/5c0dce008b820e531309e54a17c83f3a.jpg
+            return src.replace(/:\/\/assets.yande.re\/data\/preview\/[0-9a-f]+\/[0-9a-f]+\//, "://files.yande.re/image/");
+        }
+
+        if (domain_nowww === "zastavki.com") {
+            // http://zastavki.com/pictures/640x480/2015/Anime_Picnic_on_the_lawn__anime_Klannad_102412_29.jpg
+            //   http://zastavki.com/pictures/originals/2015/Anime_Picnic_on_the_lawn__anime_Klannad_102412_.jpg
+            // http://www.zastavki.com/pictures/286x180/2015/Anime_Yuki_Asuna_smiles_092918_32.jpg
+            //   http://www.zastavki.com/pictures/originals/2015/Anime_Yuki_Asuna_smiles_092918_.jpg
+            // http://www.zastavki.com/pictures/640x480/2018Animals___Dogs_A_little_funny_puppy_with_his_tongue_hanging_out_122826_29.jpg
+            //   http://www.zastavki.com/pictures/originals/2018Animals___Dogs_A_little_funny_puppy_with_his_tongue_hanging_out_122826_.jpg
+            return src.replace(/\/pictures\/[0-9]+x[0-9]+\/(.*_[0-9]+)_[0-9]+(\.[^/.]*)$/, "/pictures/originals/$1_$2");
+        }
+
+        if (domain.match(/w[0-9]*\.wallls.com/)) {
+            // http://w4.wallls.com/uploads/high-thumbnail/201702/01/121462.jpg
+            //   http://w4.wallls.com/uploads/original/201702/01/wallls.com_121462.jpg
+            // http://w4.wallls.com/uploads/thumbnail/201711/21/157267.jpg
+            //   http://w4.wallls.com/uploads/original/201711/21/wallls.com_157267.jpg
+            return src.replace(/\/uploads\/[^/]*\/([0-9]*\/[0-9]*\/)([0-9]*\.[^/.]*)$/, "/uploads/original/$1wallls.com_$2");
+        }
+
+        if (domain === "www.wallpaperflare.com" &&
+            src.indexOf("/static/") >= 0) {
+            // https://www.wallpaperflare.com/static/786/500/37/girl-anime-automaton-guns-wallpaper-preview.jpg
+            //   https://www.wallpaperflare.com/static/786/500/37/girl-anime-automaton-guns-wallpaper.jpg
+            return src.replace(/-preview(\.[^/.]*)$/, "$1");
+        }
+
+        if (domain === "content.hardtunes.com") {
+            // https://content.hardtunes.com/albums/6541/6815/248x248.jpg
+            //   https://content.hardtunes.com/albums/6541/6815/original.jpg
+            return src.replace(/\/[0-9]+x[0-9]+(\.[^/.]*)$/, "/original$1");
+        }
+
+        if (domain_nowww === "4kw.in" &&
+            src.indexOf("/Wallpapers/") >= 0) {
+            // http://4kw.in/Wallpapers/Beautiful-anime-girl-4k-3840x21601.jpg
+            //   http://www.4kw.in/Wallpapers/Beautiful-anime-girl-4k-3840x2160.jpg
+            // http://4kw.in/Wallpapers/Anime-girl-ice-cream-desert-4k1.jpg
+            //   http://4kw.in/Wallpapers/Anime-girl-ice-cream-desert-4k.jpg
+            return src.replace(/1(\.[^/.]*)$/, "$1");
+        }
+
+        if (domain === "imgs-art-dragoart-386112.c.cdn77.org") {
+            // https://imgs-art-dragoart-386112.c.cdn77.org/anime-girl-running-into-the-light_1_000000074972_4.jpg
+            //   https://imgs-art-dragoart-386112.c.cdn77.org/anime-girl-running-into-the-light_1_000000074972_1.jpg
+            return src.replace(/_[0-9]*(\.[^/.]*)$/, "_1$1");
+        }
+
+        if (domain.match(/archive-media-[0-9]*\.nyafuu\.org/)) {
+            // https://archive-media-0.nyafuu.org/w/thumb/1524/41/1524414969310s.jpg
+            //   https://archive-media-0.nyafuu.org/w/image/1524/41/1524414969310.jpg
+            // doesn't work for all:
+            // https://archive-media-0.nyafuu.org/w/thumb/1490/20/1490207933485s.jpg
+            //   https://archive-media-0.nyafuu.org/w/image/1490/20/1490207933485.png
+            return src
+                .replace(/:\/\/archive-media-[0-9]*\./, "://archive-media-0.")
+                .replace(/\/thumb\//, "/image/")
+                .replace(/(\/[0-9]*)[a-z](\.[^/.]*)$/, "$1$2");
+        }
+
+        if (domain.match(/s[0-9]*\.hulkshare\.com/)) {
+            // http://s0.hulkshare.com//artists/180/c/3/6/c361bc7b2c033a83d663b8d9fb4be56e.jpg?dd=1513632152
+            //   http://s0.hulkshare.com//artists/original/c/3/6/c361bc7b2c033a83d663b8d9fb4be56e.jpg?dd=1513632152
+            // http://s3.hulkshare.com/song_images/120/a/3/4/a342dfe999a823948f4472afed3ecc74.jpg?dd=1405601334
+            //   http://s3.hulkshare.com/song_images/original/a/3/4/a342dfe999a823948f4472afed3ecc74.jpg?dd=1405601334
+            return src.replace(/\/[0-9]*\/([0-9a-f]\/[0-9a-f]\/[0-9a-f]\/[0-9a-f]*\.[^/.]*)$/, "/original/$1");
+        }
+
+        if (domain.match(/static\.[^.]*\.zumst\.com/)) {
+            // http://static.news.zumst.com/images/thumb/18/2018/04/17/a9f0d24d1aa64b9f868a5743640e8de8.jpg
+            //   http://static.news.zumst.com/images/18/2018/04/17/a9f0d24d1aa64b9f868a5743640e8de8.jpg
+            return src.replace("/thumb/", "/");
+        }
+
+        if (domain === "www.wikihow.com" &&
+            src.indexOf("/images/") >= 0) {
+            // https://www.wikihow.com/images/thumb/b/ba/Roll-Sod-Step-14-Version-3.jpg/aid1391676-v4-728px-Roll-Sod-Step-14-Version-3.jpg
+            //   https://www.wikihow.com/images/b/ba/Roll-Sod-Step-14-Version-3.jpg
+            return src.replace(/\/thumb\/(.*?\.[^/.]*)(?:\/.*)/, "/$1");
+        }
+
+        if ((domain.indexOf(".kakaocdn.net") >= 0 ||
+             domain.indexOf(".kakao.co.kr") >= 0) && false) {
+            // https://dn-s-story.kakaocdn.net/dn/Qqfey/hytef1ArTx/qZmOLz8iP9oj5eZDEQEbDk/img_m.jpg?width=650&height=975&avg=%2523817f77&v=2
+            //   http://dn-s-story.kakao.co.kr/dn/Qqfey/hytef1ArTx/qZmOLz8iP9oj5eZDEQEbDk/img_m.jpg
+            //   https://dn-xl0-story.kakaocdn.net/dn/Qqfey/hytef1ArTx/qZmOLz8iP9oj5eZDEQEbDk/img_xl.jpg?width=650&height=975&avg=%2523817f77&v=2
+            //   http://dn-s-story.kakao.co.kr/dn/Qqfey/hytef1ArTx/qZmOLz8iP9oj5eZDEQEbDk/img.jpg
+            // http://dn-l1-story.kakao.co.kr/dn/bpU40i/hyglUiBxbK/TgKflthO9wKjHf1TemKnx0/img_l.jpg?width=1446&height=1920
+            //   http://dn-l1-story.kakao.co.kr/dn/bpU40i/hyglUiBxbK/TgKflthO9wKjHf1TemKnx0/img_l.jpg
+            //   http://dn-l1-story.kakao.co.kr/dn/bpU40i/hyglUiBxbK/TgKflthO9wKjHf1TemKnx0/img_xl.jpg -- stretched?
+            //   http://dn-l1-story.kakao.co.kr/dn/bpU40i/hyglUiBxbK/TgKflthO9wKjHf1TemKnx0/img.jpg -- 404
+        }
+
+        if (domain === "obs.line-scdn.net") {
+            // https://obs.line-scdn.net/0hHuiuzxHgF1pUDDvjJ95oDSBRETUtbw1SPnQAYCFaHXQhYABaPHYebDRcFjoqaAxUNzoQYm0OGQwONQBwIDgIQjpSPCl8YBUFNBxcfQleMT0BQQpJOHZYOHIJTWh4NVMMaGIKaXcLQW48PVkMODpcOnU/small
+            //   https://obs.line-scdn.net/0hHuiuzxHgF1pUDDvjJ95oDSBRETUtbw1SPnQAYCFaHXQhYABaPHYebDRcFjoqaAxUNzoQYm0OGQwONQBwIDgIQjpSPCl8YBUFNBxcfQleMT0BQQpJOHZYOHIJTWh4NVMMaGIKaXcLQW48PVkMODpcOnU
+            // https://obs.line-scdn.net/0hKIDhz0IEFGZ5ETjf-dFrMQ1MEgkAcg5uE2kDXAxHHkgMfQNmEWsdUBlBFQYHdQ9oGicTXkARHjcwVzJLLBYfaw5kPgYwegxiNjMJa1VXMwhdRzNZOmtbBF8UTlRRJlU4RX8JUFwZSFERIFowFSReCVo/small
+            //   https://obs.line-scdn.net/0hKIDhz0IEFGZ5ETjf-dFrMQ1MEgkAcg5uE2kDXAxHHkgMfQNmEWsdUBlBFQYHdQ9oGicTXkARHjcwVzJLLBYfaw5kPgYwegxiNjMJa1VXMwhdRzNZOmtbBF8UTlRRJlU4RX8JUFwZSFERIFowFSReCVo
+            // https://obs.line-scdn.net/0hC4kQ_ABvHBtWKDChhAhjTCJ1GnQvSwYTPFALISN-FjUjRAsbPlIVLTZ4HXsoTAcVNR4bI293JmJ8YBIxNBESKQEuR04wQyZPDDw3GwZMQlg-S10dPVJTeXAtRyN6GFpPakYBKHQvSi4-GVJNOk9UenU/small
+            //   https://obs.line-scdn.net/0hC4kQ_ABvHBtWKDChhAhjTCJ1GnQvSwYTPFALISN-FjUjRAsbPlIVLTZ4HXsoTAcVNR4bI293JmJ8YBIxNBESKQEuR04wQyZPDDw3GwZMQlg-S10dPVJTeXAtRyN6GFpPakYBKHQvSi4-GVJNOk9UenU
+            // https://obs.line-scdn.net/0hkNQBJYc8NGFsOxgIp3lLNiRmMg4VWC5pBkMjWxltPk8ZVyNhBEE4Vwt5LhIRVDZ1TCYNTk1aGQc2UiFvJikLRA96KRQ_YCx2LiQhDjZiAxADF3MzUFxzB088blNBAyFgUFp9AAw6bFQRXyY2VA/small
+            //   https://obs.line-scdn.net/0hkNQBJYc8NGFsOxgIp3lLNiRmMg4VWC5pBkMjWxltPk8ZVyNhBEE4Vwt5LhIRVDZ1TCYNTk1aGQc2UiFvJikLRA96KRQ_YCx2LiQhDjZiAxADF3MzUFxzB088blNBAyFgUFp9AAw6bFQRXyY2VA - 4032x3168
+            return {
+                can_head: false,
+                url: src.replace(/(:\/\/[^/]*\/[-_0-9A-Za-z]*)\/[a-z]*$/, "$1")
+            };
+        }
+
+        if (domain === "resize-image.lineblog.me") {
+            // https://resize-image.lineblog.me/47c5e2ea477a5b48ce91fcca631bbd99655224b0/crop1/60x60/https://obs.line-scdn.net/0hKIDhz0IEFGZ5ETjf-dFrMQ1MEgkAcg5uE2kDXAxHHkgMfQNmEWsdUBlBFQYHdQ9oGicTXkARHjcwVzJLLBYfaw5kPgYwegxiNjMJa1VXMwhdRzNZOmtbBF8UTlRRJlU4RX8JUFwZSFERIFowFSReCVo/small
+            return src.replace(/^[a-z]+:\/\/[^/]*\/[0-9a-f]*\/.*?\/([a-z]+:\/\/.*)/, "$1");
+        }
+
+        if (domain.match(/^[0-9]*\.viki\.io/)) {
+            // https://6.viki.io/image/8c632348fc5d4e8b80db59c38fbf6f29.jpeg?x=b&a=0x0&s=780x436&q=h&e=t&f=t&cb=1
+            return {
+                can_head: false,
+                url: src.replace(/\?.*/, "")
+            };
+        }
+
+        if (domain.match(/img[0-9]*\.[^/.]*\.crunchyroll\.com/)) {
+            // http://img1.ak.crunchyroll.com/i/spire1/863ba423b729f58769a4004834e5554e1491069428_thumb.jpg
+            //   http://img1.ak.crunchyroll.com/i/spire1/863ba423b729f58769a4004834e5554e1491069428_full.jpg
+            return src.replace(/(\/[0-9a-f]+)_[a-z]*(\.[^/.]*)$/, "$1_full$2");
+        }
+
+        if (domain === "d3ieicw58ybon5.cloudfront.net") {
+            // https://d3ieicw58ybon5.cloudfront.net/resize/1600/u/e33bc7c858c44506a860fc2409f80d7b.jpg.webp
+            //   https://d3ieicw58ybon5.cloudfront.net/full/u/e33bc7c858c44506a860fc2409f80d7b.jpg.webp
+            return src.replace(/\/resize\/[0-9]+\//, "/full/");
+        }
+
+        if (domain === "az616578.vo.msecnd.net") {
+            // https://az616578.vo.msecnd.net/files/responsive/cover/main/desktop/2016/05/22/6359949242235344891413001074_All%20the%20anime.jpeg
+            //   https://az616578.vo.msecnd.net/files/2016/05/22/6359949242235344891413001074_All%20the%20anime.jpeg
+            return src.replace(/\/files\/responsive\/[^/]*\/[^/]*\/[^/]*\//, "/files/");
+        }
+
 
 
 
@@ -7598,19 +7899,37 @@
         }
     };
 
-    var fillobj = function(obj) {
+    var fillobj = function(obj, baseobj) {
         if (obj instanceof Array ||
             typeof(obj) === "string") {
             obj = {url: obj};
         }
 
-        for (var item in default_object) {
+        var item;
+        if (baseobj) {
+            for (item in baseobj) {
+                if (!(item in obj)) {
+                    obj[item] = baseobj[item];
+                }
+            }
+        }
+
+        for (item in default_object) {
             if (!(item in obj)) {
                 obj[item] = default_object[item];
             }
         }
 
         return obj;
+    };
+
+    var same_url = function(url, obj) {
+        obj = fillobj(obj);
+        if (obj.url instanceof Array) {
+            return obj.url.indexOf(url) >= 0;
+        } else {
+            return obj.url === url;
+        }
     };
 
     var bigimage_recursive = function(url, options) {
@@ -7634,16 +7953,37 @@
 
         var newhref = url;
         var currenthref = newhref;
+        var currentobj = null;
         for (var i = 0; i < options.iterations; i++) {
             waiting = false;
             /*if (newhref instanceof Array)
                 currenthref = newhref[0];*/
 
             var newhref1 = fullurl_obj(currenthref, bigimage(currenthref, cb));
-            if (!newhref1)
+            if (!newhref1) {
                 break;
+            }
 
-            if (newhref1 !== currenthref) {
+            var objified = fillobj(newhref1);
+
+            if (typeof(newhref1) === "object") {
+                currentobj = newhref1;
+                if (newhref1.waiting)
+                    waiting = true;
+            } else {
+                currentobj = null;
+            }
+
+            if (same_url(currenthref, objified)) {
+                break;
+            } else {
+                if (objified.url instanceof Array)
+                    currenthref = objified.url[0];
+                else
+                    currenthref = objified.url;
+                newhref = newhref1;
+            }
+            /*if (newhref1 !== currenthref) {
                 if (newhref1 instanceof Array) {
                     if (newhref1.indexOf(currenthref) >= 0)
                         break;
@@ -7669,7 +8009,7 @@
                 newhref = newhref1;
             } else {
                 break;
-            }
+            }*/
 
             if (_nir_debug_) {
                 break;
@@ -7677,7 +8017,7 @@
         }
 
         if (options.fill_object) {
-            newhref = fillobj(newhref);
+            newhref = fillobj(newhref, currentobj);
         }
 
         if (options.cb && !waiting) {
@@ -7688,6 +8028,12 @@
     };
 
     var redirect = function(url) {
+        if (_nir_debug_)
+            return;
+
+        if (url === document.location.href)
+            return;
+
         // wrap in try/catch due to nano defender
         try {
             // avoid downloading more before redirecting
@@ -7697,18 +8043,57 @@
         document.location = url;
     };
 
-    var check_image = function(url, err_cb) {
+    var check_image = function(url, headers, err_cb) {
         if (url !== document.location.href) {
             console.log(url);
-            if (!_nir_debug_) {
+            if (!_nir_debug_ || !_nir_debug_.no_request) {
                 document.documentElement.style.cursor = "wait";
+
+                var url_domain = url.replace(/^([a-z]+:\/\/[^/]*).*?$/, "$1");
+
+                var customheaders = true;
+                if (!headers || Object.keys(headers).length === 0) {
+                    customheaders = false;
+                    headers = {
+                        "Origin": url_domain,
+                        "Referer": url
+                    };
+                } else if (!headers.Origin && !headers.origin) {
+                    headers.Origin = url_domain;
+                }
+
+                if (customheaders) {
+                    document.documentElement.style.cursor = "default";
+                    console.log("Custom headers needed, currently unhandled");
+                    return;
+                }
+
                 var http = new GM_xmlhttpRequest({
                     method: 'HEAD',
                     url: url,
+                    headers: headers,
                     onload: function(resp) {
+                        if (_nir_debug_)
+                            console.dir(resp);
+
                         // nano defender removes this.DONE
                         if (resp.readyState == 4) {
                             document.documentElement.style.cursor = "default";
+
+                            var headers = {};
+                            var headers_splitted = resp.responseHeaders.split("\n");
+                            headers_splitted.forEach((header) => {
+                                header = header
+                                    .replace(/^\s*/, "")
+                                    .replace(/\s*$/, "");
+                                var headername = header.replace(/^([^:]*?):\s*.*/, "$1");
+                                var headerbody = header.replace(/^[^:]*?:\s*(.*)/, "$1");
+                                headers[headername.toLowerCase()] = headerbody;
+                            });
+
+                            if (_nir_debug_)
+                                console.dir(headers);
+
 
                             var digit = resp.status.toString()[0];
 
@@ -7723,17 +8108,6 @@
                                 return;
                             }
 
-                            var headers = {};
-                            var headers_splitted = resp.responseHeaders.split("\n");
-                            headers_splitted.forEach((header) => {
-                                header = header
-                                    .replace(/^\s*/, "")
-                                    .replace(/\s*$/, "");
-                                var headername = header.replace(/^([^:]*?):\s*.*/, "$1");
-                                var headerbody = header.replace(/^[^:]*?:\s*(.*)/, "$1");
-                                headers[headername.toLowerCase()] = headerbody;
-                            });
-
                             if (headers["content-type"] &&
                                 headers["content-type"].toLowerCase().match(/text\/html/)) {
                                 if (err_cb) {
@@ -7745,7 +8119,15 @@
                                 return;
                             }
 
-                            redirect(url);
+                            if (headers["content-length"] && headers["content-length"] == "0") {
+                                console.error("Zero-length image");
+                                return;
+                            }
+
+                            if (!customheaders)
+                                redirect(url);
+                            else
+                                console.log("Custom headers needed, currently unhandled");
                         }
                     }
                 });
@@ -7768,12 +8150,24 @@
                 if (!newhref)
                     return;
 
+                if (_nir_debug_)
+                    console.dir(newhref);
+
                 if (!newhref.can_head || newhref.always_ok) {
-                    if (newhref.url instanceof Array) {
-                        redirect(newhref.url[0]);
-                    } else {
-                        redirect(newhref.url);
+                    var newurl = newhref.url;
+                    if (newurl instanceof Array) {
+                        newurl = newurl[0];
                     }
+
+                    if (newurl === document.location.href) {
+                        return;
+                    }
+
+                    if (_nir_debug_) {
+                        console.log("Not checking due to can_head == false || always_ok == true");
+                    }
+
+                    redirect(newhref.url);
                     return;
                 }
 
@@ -7783,11 +8177,11 @@
                         index++;
                         if (index >= newhref.url.length)
                             return;
-                        check_image(newhref.url[index], cb);
+                        check_image(newhref.url[index], newhref.headers, cb);
                     };
-                    check_image(newhref.url[0], cb);
+                    check_image(newhref.url[0], newhref.headers, cb);
                 } else {
-                    check_image(newhref.url);
+                    check_image(newhref.url, newhref.headers);
                 }
             }
         });
