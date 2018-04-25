@@ -46,6 +46,8 @@ var blacklist = [
   "cringe",
   "cringiest",
   "cringefest",
+  "shame",
+  "shaming",
 
   // Posts that people commonly dislike the bot commenting on
   "trump",
@@ -71,12 +73,6 @@ function inblacklist(x) {
   return black;
 }
 
-
-var submissionStream = client.SubmissionStream({
-  "subreddit": "all",
-  "results": 100,
-  "pollTime": 2000
-});
 
 /*function getimagesize(imgUrl, olddata) {
   var options = url.parse(imgUrl);
@@ -201,7 +197,13 @@ function dourl(url, post) {
             if (r < 1.995) {
               times = "" + ((r-1) * 100).toFixed(0) + "%";
             }
-            var comment = times + " larger (" + parseInt(newdata.width) + "x" + parseInt(newdata.height) + ") version of linked image:\n\n" + newdata.url + "\n\n";
+
+            var filesize_text = "";
+            var mbs = newdata.length / 1024 / 1024;
+            if (mbs > 5) {
+              filesize_text = ", " + mbs.toFixed(1) + "MB";
+            }
+            var comment = times + " larger (" + parseInt(newdata.width) + "x" + parseInt(newdata.height) + filesize_text + ") version of linked image:\n\n" + newdata.url + "\n\n";
             comment += "*****\n\n";
             comment += "^[source&nbsp;code](https://github.com/qsniyg/maxurl)&nbsp;|&nbsp;[website](https://qsniyg.github.io/maxurl/)&nbsp;/&nbsp;[userscript](https://greasyfork.org/en/scripts/36662-image-max-url)&nbsp;(finds&nbsp;larger&nbsp;images)";
             console.log(comment);
@@ -232,40 +234,50 @@ function dourl(url, post) {
 
 const links = new NodeCache({ stdTTL: 600, checkperiod: 1000 });
 
-setInterval(() => {
-  r.getInbox({"filter":"messages"}).then((inbox) => {
-    inbox.forEach((message_data) => {
-      if (message_data.subject.indexOf("delete:") !== 0 ||
-          message_data.subject.length >= 50 ||
-          !message_data["new"]) {
-        return;
-      }
 
-      var comment = message_data.subject.replace(/.*:[ +]*([A-Za-z0-9_]+).*/, "$1");
-      if (comment === message_data.subject)
-        return;
-      console.log(comment);
-
-      r.getComment(comment).fetch().then((comment_data) => {
-        if (comment_data.author.name.toLowerCase() !== "maximagebot")
-          return;
-
-        r.getComment(comment_data.parent_id).fetch().then((post_data) => {
-          if (post_data.author.name.toLowerCase() !== message_data.author.name.toLowerCase()) {
-            return;
-          }
-
-          console.log("Deleting " + comment);
-          comment_data.delete();
-          message_data.deleteFromInbox();
-        });
-      });
-    });
-  });
-}, 10*1000);
+// large image
+//dourl("https://i.guim.co.uk/img/media/856021cc9b024ee18480297110f6a9f38923b4ee/0_0_15637_9599/master/15637.jpg?w=1920&q=55&auto=format&usm=12&fit=max&s=774b471892a2a1870261227f29e9d77a");
 
 //console.dir(blacklist_json.disallowed);
 if (true) {
+  var submissionStream = client.SubmissionStream({
+    "subreddit": "all",
+    "results": 100,
+    "pollTime": 2000
+  });
+
+  setInterval(() => {
+    r.getInbox({"filter":"messages"}).then((inbox) => {
+      inbox.forEach((message_data) => {
+        if (message_data.subject.indexOf("delete:") !== 0 ||
+            message_data.subject.length >= 50 ||
+            !message_data["new"]) {
+          return;
+        }
+
+        var comment = message_data.subject.replace(/.*:[ +]*([A-Za-z0-9_]+).*/, "$1");
+        if (comment === message_data.subject)
+          return;
+        console.log(comment);
+
+        r.getComment(comment).fetch().then((comment_data) => {
+          if (comment_data.author.name.toLowerCase() !== "maximagebot")
+            return;
+
+          r.getComment(comment_data.parent_id).fetch().then((post_data) => {
+            if (post_data.author.name.toLowerCase() !== message_data.author.name.toLowerCase()) {
+              return;
+            }
+
+            console.log("Deleting " + comment);
+            comment_data.delete();
+            message_data.deleteFromInbox();
+          });
+        });
+      });
+    });
+  }, 10*1000);
+
   submissionStream.on("submission", function(post) {
     if (post.domain.startsWith("self.") || (post.over_18 && false)) {
       return;
