@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.3.4
+// @version      0.3.5
 // @description  Redirects to larger versions of images
 // @author       qsniyg
 // @include      *
@@ -118,7 +118,7 @@
         if (domain.indexOf(".amazonaws.com") >= 0)
             amazon_container = src.replace(/^[a-z]*:\/\/[^/]*\/([^/]*)\/.*/, "$1");
 
-        var newsrc, i, size, origsize;
+        var newsrc, i, size, origsize, regex;
 
         // instart logic morpheus
         // test urls:
@@ -1313,21 +1313,32 @@
 
         if (domain === "pbs.twimg.com" &&
             src.indexOf("pbs.twimg.com/media/") >= 0) {
+            // use ?name=orig instead of :orig, see:
+            //   https://github.com/qsniyg/maxurl/issues/2
+
             // https://pbs.twimg.com/media/DWREhilXkAAcafr?format=jpg&name=small
             //   https://pbs.twimg.com/media/DWREhilXkAAcafr.jpg:orig
+            //   https://pbs.twimg.com/media/DWREhilXkAAcafr?format=jpg&name=orig
+            //   https://pbs.twimg.com/media/DWREhilXkAAcafr.jpg?name=orig
             // https://pbs.twimg.com/media/DWO61F5X4AISSsF?format=jpg
             //   https://pbs.twimg.com/media/DWO61F5X4AISSsF.jpg:orig
+            //   https://pbs.twimg.com/media/DWO61F5X4AISSsF?format=jpg&name=orig
             return src
                 .replace(/(\/[^?&]*)([^/]*)[?&]format=([^&]*)/, "$1.$3$2")
                 .replace(/(\/[^?&]*)[?&][^/]*$/, "$1")
-                .replace(/(:[^/]*)?$/, ":orig");
+                .replace(/(:[^/]*)?$/, ":orig")
+                //.replace(/\.([^/.:]*)(?::[^/.]*)$/, "?format=$1&name=orig")
+                .replace(/\.([^/.:]*)(?::[^/.]*)$/, ".$1?name=orig");
         }
 
         if (domain === "pbs.twimg.com" &&
             src.indexOf("pbs.twimg.com/profile_images/") >= 0) {
             // https://pbs.twimg.com/profile_images/539057632435122178/1_MUcoAZ_bigger.jpeg
             //return src.replace(/_[a-zA-Z0-9]+\.([^/_]*)$/, "\.$1");
-            return src.replace(/_bigger\.([^/_]*)$/, "\.$1").replace(/_normal\.([^/_]*)$/, "\.$1").replace(/_[0-9]+x[0-9]+\.([^/_]*)$/, "\.$1");
+            return src
+                .replace(/_bigger\.([^/_]*)$/, "\.$1")
+                .replace(/_normal\.([^/_]*)$/, "\.$1")
+                .replace(/_[0-9]+x[0-9]+\.([^/_]*)$/, "\.$1");
         }
 
         if (domain === "pbs.twimg.com" &&
@@ -1682,6 +1693,10 @@
             (domain === "drop.ndtv.com" && src.indexOf("/albums/") >= 0) ||
             // http://kr.images.christianitydaily.com/data/images/full/107742/97.jpg?w=304&h=152&l=50&t=40
             domain.indexOf("images.christianitydaily.com") >= 0 ||
+            // https://blogimg.goo.ne.jp/cnv/v1/user_image/5d/9d/e2b49057338c93324e0f70dd6fc4be03.jpg?dw=110,dh=110,cw=110,ch=110,q=90,da=s,ds=s
+            domain === "blogimg.goo.ne.jp" ||
+            // https://cdn.clien.net/web/api/file/F01/6848785/5a32dafe05c22a.jpg?w=780&h=30000
+            domain === "cdn.clien.net" ||
             // http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
             // https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
             src.match(/\/demandware\.static\//) ||
@@ -1807,6 +1822,8 @@
             domain === "static.thefrisky.com" ||
             // http://hobby.dengeki.com/ss/hobby/uploads/2017/12/P1014922-440x586.jpg
             domain === "hobby.dengeki.com" ||
+            // https://cdn-blog.adafruit.com/uploads/2017/06/megumin-cosplay-360x480.jpg
+            domain === "cdn-blog.adafruit.com" ||
             src.indexOf("/wp-content/uploads/") >= 0 ||
             src.indexOf("/wp/uploads/") >= 0) {
             // http://arissa-x.com/miss-x-channel/wp-content/uploads/2017/06/IMG_0005.jpg
@@ -1926,7 +1943,7 @@
         if (domain === "www.tsn.ca") {
             // https://www.tsn.ca/polopoly_fs/1.738832!/fileimage/httpImage/image.jpg_gen/derivatives/landscape_620/kyle-fuller.jpg
             //   https://www.tsn.ca/polopoly_fs/1.738832!/fileimage/httpImage/image.jpg_gen/derivatives/default/kyle-fuller.jpg
-            return src.replace(/(\/image\.[^_/]*_gen\/derivatives\/)[^/]*\//, "$1default/")
+            return src.replace(/(\/image\.[^_/]*_gen\/derivatives\/)[^/]*\//, "$1default/");
         }
 
         if (domain.match(/ichef(?:-[0-9]*)?.bbci.co.uk/)) {
@@ -2366,7 +2383,10 @@
         }
 
         //if (domain === "livedoor.blogimg.jp") {
-        if (domain.indexOf(".blogimg.jp") >= 0) {
+        if (domain.indexOf(".blogimg.jp") >= 0 ||
+            // http://image.news.livedoor.com/newsimage/stf/5/6/5634f_249_20180424039-m.jpg
+            //   http://image.news.livedoor.com/newsimage/stf/5/6/5634f_249_20180424039.jpg
+            domain === "image.news.livedoor.com") {
             // http://lineofficial.blogimg.jp/en/imgs/c/5/c5832999-s.png
             //   http://lineofficial.blogimg.jp/en/imgs/c/5/c5832999.png
             return src.replace(/(\/[^/.]*)-[^/.]*(\.[^/.]*)/, "$1$2");
@@ -3603,8 +3623,11 @@
             return src.replace(/\/webdata\/content\/(.*)_[0-9]+_[0-9]+(\.[^/.]*)$/, "/file/$1_1$2");
         }
 
-        if (domain === "jmagazine.joins.com") {
+        if (domain === "jmagazine.joins.com" ||
+            domain_nowww === "popco.net") {
             // https://jmagazine.joins.com/_data/photo/2018/01/thumb_237268740_ZeJ4MpkI_1.jpg
+            // https://www.popco.net/zboard/data/sigma_forum/2018/04/25/thumb_53666d20e05f8691128b91b8456961a7.jpeg
+            //   https://popco.net/zboard/data/sigma_forum/2018/04/25/53666d20e05f8691128b91b8456961a7.jpeg
             return src.replace(/\/thumb_([^/]*)$/, "/$1");
         }
 
@@ -5043,7 +5066,7 @@
             // https://cdn.wallpaper.com/main/styles/wp_medium_grid/s3/2018/04/hermessalonedelmobile2018.jpg
             //   https://cdn.wallpaper.com/main/2018/04/hermessalonedelmobile2018.jpg
             //   https://cdn.wallpaper.com/main/hermessalonedelmobile2018.jpg -- doesn't work
-            var regex = /\/main\/styles\/[^/]*\/[^/]*\/(.*\/)?(?:l-)?([^/]*)/;
+            regex = /\/main\/styles\/[^/]*\/[^/]*\/(.*\/)?(?:l-)?([^/]*)/;
             return [src.replace(regex, "/main/$2"), src.replace(regex, "/main/$1$2")];
             //return src.replace(/\/styles\/[^/]*\/s[0-9]*\/[0-9]+\/[0-9]+\/([^/]*)$/, "/$1");
         }
@@ -6187,7 +6210,7 @@
             var querystr = src.replace(/.*\/r\/\?/, "&");
             var d = querystr.replace(/.*&d=([^&]*).*/, "$1");
             var t = "2";//querystr.replace(/.*&t=([^&]*).*/, "$1");
-            var i = querystr.replace(/.*&i=([^&]*).*/, "$1");
+            i = querystr.replace(/.*&i=([^&]*).*/, "$1");
             return src.replace(/\/r\/\?.*/, "/r/?d=" + d + "&t=" + t + "&i=" + i);
         }
 
@@ -6367,7 +6390,9 @@
         if (domain === "img.purch.com") {
             // https://img.purch.com/w/660/aHR0cDovL3d3dy5saXZlc2NpZW5jZS5jb20vaW1hZ2VzL2kvMDAwLzAwMy8xMjQvb3JpZ2luYWwvMDkwNjA4LWNvcm4tc25ha2UtMDIuanBn -- mildly stretched
             //   https://img.purch.com/o/aHR0cDovL3d3dy5saXZlc2NpZW5jZS5jb20vaW1hZ2VzL2kvMDAwLzAwMy8xMjQvb3JpZ2luYWwvMDkwNjA4LWNvcm4tc25ha2UtMDIuanBn
-            return src.replace(/\/[wh]\/[0-9]+\//, "/o/");
+            // https://img.purch.com/rc/317x177/aHR0cDovL3d3dy5saXZlc2NpZW5jZS5jb20vaW1hZ2VzL2kvMDAwLzA2MC84MzQvb3JpZ2luYWwvYW5jaWVudC1mYWJyaWMzLmpwZw==
+            //   https://img.purch.com/o/aHR0cDovL3d3dy5saXZlc2NpZW5jZS5jb20vaW1hZ2VzL2kvMDAwLzA2MC84MzQvb3JpZ2luYWwvYW5jaWVudC1mYWJyaWMzLmpwZw==
+            return src.replace(/\/[a-z]+\/[0-9]+(?:x[0-9]+)?\//, "/o/");
         }
 
         if (domain.match(/img[0-9]*\.taobaocdn\.com/)) {
@@ -7223,7 +7248,7 @@
             // https://i03.fotocdn.net/s28/142/user_l/328/2680637325.jpg
             // https://i01.fotocdn.net/s13/206/gallery_m/79/2370850509.jpg
             // https://i03.fotocdn.net/s10/119/public_pin_l/473/2467682422.jpg -- don't believe there's a public_pin_xl
-            var regex = /_[a-z]+(\/[0-9]+\/[0-9]+\.[^/.]*)$/;
+            regex = /_[a-z]+(\/[0-9]+\/[0-9]+\.[^/.]*)$/;
             return [
                 src.replace(regex, "_xl$1"),
                 src.replace(regex, "_l$1")
@@ -7832,6 +7857,90 @@
             return src.replace(/\/small_([^/]*)$/, "/$1");
         }
 
+        if (domain === "getfile.fmkorea.com") {
+            // https://getfile.fmkorea.com/getfile.php?code=a210413ef29c311aa833f8b468e8d4dc&file=http%3A%2F%2Fimg.ruliweb.com%2Fdata%2Fnews18%2F06m%2F12%2Fmulti%2Fmai01s.jpg&r=
+            //   http://img.ruliweb.com/data/news18/06m/12/multi/mai01s.jpg
+            return decodeURIComponent(src.replace(/.*?\/getfile\.php.*?[?&]file=([^&]*).*/, "$1"));
+        }
+
+        if (domain === "img.ruliweb.com") {
+            // http://img.ruliweb.com/data/news18/06m/12/multi/mai01s.jpg
+            //   http://img.ruliweb.com/data/news18/06m/12/multi/mai01.jpg
+            return src.replace(/s(\.[^/.]*)$/, "$1");
+        }
+
+        if (domain === "file.thisisgame.com") {
+            // http://file.thisisgame.com/upload/nboard/news/2017/06/27/s_20170627110032_1557.jpg
+            //   http://file.thisisgame.com/upload/nboard/news/2017/06/27/20170627110032_1557.jpg
+            return src.replace(/\/s_([0-9]+_[0-9]+\.[^/.]*)$/, "/$1");
+        }
+
+        if (domain === "www.op.gg") {
+            // http://www.op.gg/forum/outImage/https://attach.s.op.gg/forum/20180426004418_551404.png
+            //   https://attach.s.op.gg/forum/20180426004418_551404.png
+            return src.replace(/^.*?\/forum\/outImage\/(http.*)$/, "$1");
+        }
+
+        if (domain === "ssproxy.ucloudbiz.olleh.com") {
+            // http://ssproxy.ucloudbiz.olleh.com/v1/AUTH_6a92e249-183a-47ef-870b-b6f2fb771cfa/gae9/trend/f4867c07f1d60768.small
+            //   http://ssproxy.ucloudbiz.olleh.com/v1/AUTH_6a92e249-183a-47ef-870b-b6f2fb771cfa/gae9/trend/f4867c07f1d60768.orig
+            return src.replace(/\.[a-z]*$/, ".orig");
+        }
+
+        if (domain.match(/cdn[a-z]*\.artstation\.com/)) {
+            // https://cdnb.artstation.com/p/assets/images/images/001/982/361/small/kevin-lourdel-2012-06-12-09-53-11.jpg?1455539239
+            //   https://cdnb.artstation.com/p/assets/images/images/001/982/361/large/kevin-lourdel-2012-06-12-09-53-11.jpg?1455539239
+            // there's also /original/, but it's forbidden?
+            return src.replace(/\/(?:small|medium)\/([^/]*)$/, "/large/$1");
+        }
+
+        if (domain === "static.cosplay-it.com") {
+            // forces download (binary/octet-stream)
+            // https://static.cosplay-it.com/b391a71e-4306-46df-9d3e-ff61e3c2f73b_medium.jpg
+            return src.replace(/(\/[-0-9a-f]*)_[a-z]+(\.[^/.]*)/, "$1$2");
+        }
+
+        if (domain === "a.fsdn.com") {
+            // https://a.fsdn.com/con/app/proj/paintball2/screenshots/build036_midnight2_1.jpg/245/183/1
+            //   https://a.fsdn.com/con/app/proj/paintball2/screenshots/build036_midnight2_1.jpg
+            return src.replace(/(\/screenshots\/[^/]*)\/[0-9]+\/.*/, "$1");
+        }
+
+        if (domain === "media.moddb.com" ||
+            domain === "media.indiedb.com") {
+            // http://media.moddb.com/cache/images/mods/1/4/3463/crop_120x90/62199.jpg
+            //   http://media.moddb.com/cache/images/mods/1/4/3463/thumb_620x2000/62199.jpg
+            //   http://media.moddb.com/images/mods/1/4/3463/62199.jpg
+            // http://media.indiedb.com/cache/images/articles/1/253/252120/crop_120x90/DevStream_Thumbnail2.png
+            //   http://media.indiedb.com/images/articles/1/253/252120/DevStream_Thumbnail2.png
+            return src.replace(/\/cache\/images\/(.*?)\/[a-z]+_[0-9]+[^/]*(\/[^/]*\.[^/.]*)$/, "/images/$1$2");
+        }
+
+        if (domain === "static.gamefront.com") {
+            // https://static.gamefront.com/storage/images/games/thumbnails/Hd6mCPO4MFbqTI9c75olYsSgVXv5Za7EjEheIZ2L.jpeg
+            //   https://static.gamefront.com/storage/images/games/Hd6mCPO4MFbqTI9c75olYsSgVXv5Za7EjEheIZ2L.jpeg
+            return src.replace("/thumbnails/", "/");
+        }
+
+        if (domain === "thumb.test.mod.io") {
+            // https://thumb.test.mod.io/mods/ca81/866/thumb_1020x2000/modio-bg.jpg
+            //   https://image.test.mod.io/mods/ca81/866/modio-bg.jpg
+            return src.replace(/:\/\/thumb\.([^/]*\..*?\/)[a-z]+_[0-9]+[^/]*\/([^/]*)$/, "://image.$1$2");
+        }
+
+        if (domain.match(/static[0-9]*\.scirra\.net/)) {
+            // https://static4.scirra.net/avatars/128/eadc0da9f707ff5a5a5195d405639f71.png
+            // error when using size 0:
+            // https://pastebin.com/UkcRAMwt
+            return src.replace(/\/avatars\/[0-9]+\//, "/avatars/256/");
+        }
+
+        if (domain === "cdn.gamer-network.net") {
+            // https://cdn.gamer-network.net/2018/articles/2018-04-25-13-25/fifa.png/EG11/resize/690x-1/quality/75/format/jpg
+            //   https://cdn.gamer-network.net/2018/articles/2018-04-25-13-25/fifa.png
+            return src.replace(/(\/[^/.]*\.[^/.]*)\/EG[0-9]+\/.*/, "$1");
+        }
+
 
 
 
@@ -8356,14 +8465,24 @@
                                 return;
                             }
 
-                            if (headers["content-type"] &&
-                                headers["content-type"].toLowerCase().match(/text\/html/)) {
+                            var content_type = headers["content-type"];
+                            if (!content_type)
+                                content_type = "";
+                            content_type = content_type.toLowerCase();
+
+                            if (content_type.match(/text\/html/)) {
                                 if (err_cb) {
                                     err_cb();
                                 } else {
                                     console.error("Error: Not an image");
                                 }
 
+                                return;
+                            }
+
+                            if (content_type.match(/binary\//) ||
+                                content_type.match(/application\//)) {
+                                console.error("Forces download");
                                 return;
                             }
 
