@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.3.5
+// @version      0.3.6
 // @description  Redirects to larger versions of images
 // @author       qsniyg
 // @include      *
@@ -1323,6 +1323,8 @@
             // https://pbs.twimg.com/media/DWO61F5X4AISSsF?format=jpg
             //   https://pbs.twimg.com/media/DWO61F5X4AISSsF.jpg:orig
             //   https://pbs.twimg.com/media/DWO61F5X4AISSsF?format=jpg&name=orig
+            // https://pbs.twimg.com/media/Dbxmq4BV4AA2ozg.jpg:orig
+            //   https://pbs.twimg.com/media/Dbxmq4BV4AA2ozg.jpg?name=orig
             return src
                 .replace(/(\/[^?&]*)([^/]*)[?&]format=([^&]*)/, "$1.$3$2")
                 .replace(/(\/[^?&]*)[?&][^/]*$/, "$1")
@@ -2485,9 +2487,12 @@
             //   http://data.tumblr.com/rpaguup/J6wmdtouh/tumblr_mdipupjoku1r2xx88o1_raw.png -- doesn't work
             // http://media.tumblr.com/tumblr_m94wh56woC1ro0opg.png
             // http://media.tumblr.com/bbeec3764efd6b63c14fe1e56f4f5b22/tumblr_inline_mn9bgayRCZ1qz4rgp.png
+            // http://media.tumblr.com/cd90bd6fe3989956567f086153430e4c/tumblr_inline_mimvhtpoYw1qz4rgp.gif
             // https://78.media.tumblr.com/tumblr_m2p6yiRZNR1qha0cy.gif
+            // http://media.tumblr.com/tumblr_mah067upzv1rtyo86.gif
             // https://static.tumblr.com/ae53741763a8e9a937e587fd71c24ee5/065fclu/Okon9yxx0/tumblr_static_filename_640_v2.jpg
             // https://static.tumblr.com/9d9cb03d00947212897f5fa390615bb1/szhmsgg/PW8ok7jgi/tumblr_static_tumblr_static__640.jpg
+            // https://static.tumblr.com/9873073729f37d9fb36dce1576f1f3ee/gtqzlnb/34Ync89wm/tumblr_static_tumblr_static_79qnyyc3l2os0c84swcswowks_640.gif
             //
             // working gifs:
             // https://78.media.tumblr.com/4b9573a2fdd97a6e6cac771d4a0c0edd/tumblr_ntg9jreu9X1s5q5l6o4_400.gif
@@ -2496,6 +2501,23 @@
             //   http://data.tumblr.com/e7976904bb598ed701324ee471056156/tumblr_ntg9jreu9X1s5q5l6o3_raw.gif
             // https://78.media.tumblr.com/2d799573226814e336e0984263269507/tumblr_nwe2hfH0dX1u9vqklo1_250.gif
             //   https://s3.amazonaws.com/data.tumblr.com/2d799573226814e336e0984263269507/tumblr_nwe2hfH0dX1u9vqklo1_raw.gif
+            // https://78.media.tumblr.com/tumblr_lyqq4hsfo01qdphnvo1_500.gif
+            //   https://78.media.tumblr.com/tumblr_lyqq4hsfo01qdphnvo1_1280.gif
+            //
+            // semi-working gifs: (thanks to rEnr3n on github)
+            // https://78.media.tumblr.com/b6a2ed8abae3e9f0a64ccc5bd14b5bbf/tumblr_n8w8k50vpR1r3kk98o1_250.gif -- works
+            //
+            // https://78.media.tumblr.com/a1dfad9537af0e38063ec186e2ff392e/tumblr_n87ft44o4Y1r3kk98o1_250.gif -- works
+            //   https://78.media.tumblr.com/a1dfad9537af0e38063ec186e2ff392e/tumblr_n87ft44o4Y1r3kk98o1_500.gif -- doesn't work
+            //   https://78.media.tumblr.com/a1dfad9537af0e38063ec186e2ff392e/tumblr_n87ft44o4Y1r3kk98o1_1280.gif -- doesn't work
+            //   https://s3.amazonaws.com/data.tumblr.com/a1dfad9537af0e38063ec186e2ff392e/tumblr_n87ft44o4Y1r3kk98o1_raw.gif -- works
+            // https://78.media.tumblr.com/b6a2ed8abae3e9f0a64ccc5bd14b5bbf/tumblr_n8w8k50vpR1r3kk98o1_250.gif
+            //
+            // non-working gifs: (all sizes don't work, except for _raw, credit to rEnr3n again for finding these)
+            // https://78.media.tumblr.com/102fca5704db6aa1cc5e56ed7d9aa369/tumblr_n5ltfvGJC51r3kk98o1_250.gif
+            //   https://s3.amazonaws.com/data.tumblr.com/102fca5704db6aa1cc5e56ed7d9aa369/tumblr_n5ltfvGJC51r3kk98o1_raw.gif -- works
+            // https://78.media.tumblr.com/257cce1bd6ec64e56b1c55129ddc547d/tumblr_n5lbkmnp5g1r3kk98o1_250.gif
+            //   https://s3.amazonaws.com/data.tumblr.com/257cce1bd6ec64e56b1c55129ddc547d/tumblr_n5lbkmnp5g1r3kk98o1_raw.gif -- works
             if (src.match(/:\/\/[^/]*\/[0-9a-f]*\/[^/]*$/)) {
                 // https://78.media.tumblr.com/3ebf4c3e175553194b3c9a0867a47719/tumblr_nugefiK7yj1u0c780o1_500.jpg
                 //   http://data.tumblr.com/3ebf4c3e175553194b3c9a0867a47719/tumblr_nugefiK7yj1u0c780o1_raw.jpg
@@ -2506,7 +2528,7 @@
             } else if (src.match(/:\/\/[^/]*\/[^/]*$/)) {
                 // https://78.media.tumblr.com/tumblr_m4fhyoiFd51rqmd7mo1_500.jpg
                 //   https://78.media.tumblr.com/tumblr_m4fhyoiFd51rqmd7mo1_1280.jpg
-                if (!src.match(/_[0-9]*\.gif$/))
+                if (!src.match(/_[0-9]*\.gif$/) || true) // disable check for now, unless something is found
                     return src.replace(/_[0-9]*(\.[^/.]*)$/, "_1280$1");
             }
         }
@@ -7939,6 +7961,18 @@
             // https://cdn.gamer-network.net/2018/articles/2018-04-25-13-25/fifa.png/EG11/resize/690x-1/quality/75/format/jpg
             //   https://cdn.gamer-network.net/2018/articles/2018-04-25-13-25/fifa.png
             return src.replace(/(\/[^/.]*\.[^/.]*)\/EG[0-9]+\/.*/, "$1");
+        }
+
+        if (domain.match(/uploads[0-9]*\.wikiart\.org/)) {
+            // https://uploads5.wikiart.org/images/anton-melbye/laguna-di-venezia-1878.jpg!PinterestSmall.jpg
+            //   https://uploads5.wikiart.org/images/anton-melbye/laguna-di-venezia-1878.jpg
+            return src.replace(/![^/]*$/, "");
+        }
+
+        if (domain.match(/media[0-9]*\.fdncms\.com/)) {
+            // https://media2.fdncms.com/stranger/imager/u/small/26096836/1524685866-nether_render_2.jpg
+            //   https://media2.fdncms.com/stranger/imager/u/original/26096836/1524685866-nether_render_2.jpg
+            return src.replace(/\/imager\/u\/[a-z]+\//, "/imager/u/original/");
         }
 
 
