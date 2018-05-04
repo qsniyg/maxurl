@@ -1,10 +1,11 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.3.7
+// @version      0.3.8
 // @description  Redirects to larger versions of images
 // @author       qsniyg
 // @include      *
+// @grant        GM.xmlHttpRequest
 // @grant        GM_xmlhttpRequest
 // @connect      *
 // @run-at       document-start
@@ -103,6 +104,8 @@
     var do_request = null;
     if (typeof(GM_xmlhttpRequest) !== "undefined")
         do_request = GM_xmlhttpRequest;
+    else if (typeof(GM) !== "undefined" && typeof(GM.xmlHttpRequest) !== "undefined")
+        do_request = GM.xmlHttpRequest;
 
     function bigimage(src, cb) {
         if (!src)
@@ -8782,7 +8785,8 @@
                     return;
                 }
 
-                var http = new GM_xmlhttpRequest({
+                //var http = new GM_xmlhttpRequest({
+                do_request({
                     method: 'HEAD',
                     url: url,
                     headers: headers,
