@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.3.10
+// @version      0.3.11
 // @description  Redirects to larger versions of images
 // @author       qsniyg
 // @include      *
@@ -1124,13 +1124,13 @@
                 // https://o.aolcdn.com/images/dims3/GLOB/legacy_thumbnail/1028x675/format/jpg/quality/85/http%3A%2F%2Fo.aolcdn.com%2Fhss%2Fstorage%2Fmidas%2F652aa88cb26c6aafe4dca4eef405c15%2F205409332%2FScreen%2BShot%2B2017-06-23%2Bat%2B2.36.37%2BPM.png
                 //   http://o.aolcdn.com/hss/storage/midas/652aa88cb26c6aafe4dca4eef405c15/205409332/Screen+Shot+2017-06-23+at+2.36.37+PM.png
                 newsrc = decodeURIComponent(src).replace(/.*o\.aolcdn\.com\/images\/[^:]*\/([^:/]*:.*)/, "$1");
-            } else if (src.match(/\/hss\/storage\/midas\//)) {
+            } else if (src.match(/^[a-z]+:\/\/[^/]*\/hss\/storage\/midas\//)) {
                 // https://s.aolcdn.com/hss/storage/midas/668dd572f108685386710ff09bb15f2a/205350917/1280_selena_gomez_the_weeknd_carbone_backgrid_BGUS_879674_007.jpg
                 //   https://s.aolcdn.com/hss/storage/midas/668dd572f108685386710ff09bb15f2a/205350917/selena_gomez_the_weeknd_carbone_backgrid_BGUS_879674_007.jpg
                 return src.replace(/\/[0-9]+_([^/]*)$/, "/$1");
             }
 
-            if (newsrc !== src)
+            if (newsrc && newsrc !== src)
                 return newsrc;
         }
 
@@ -1149,21 +1149,29 @@
         }
 
         // https://images-na.ssl-images-amazon.com/images/I/B1GLFkULdTS._CR0,0,3840,2880_._SL1000_.png
+        //   https://images-na.ssl-images-amazon.com/images/I/B1GLFkULdTS.png
         if (domain.indexOf("images-na.ssl-images-amazon.com") >= 0 ||
             // https://images-eu.ssl-images-amazon.com/images/I/41TMMGD0XZL._SL500_AC_SS350_.jpg
+            //   https://images-eu.ssl-images-amazon.com/images/I/41TMMGD0XZL.jpg
             domain.indexOf("images-eu.ssl-images-amazon.com") >= 0 ||
             // http://ec2.images-amazon.com/images/I/81IotHEYjBL._AA1417_.jpg
+            //   http://ec2.images-amazon.com/images/I/81IotHEYjBL.jpg
             domain.indexOf(".images-amazon.com") >= 0 ||
             domain.indexOf(".ssl-images-amazon.com") >= 0 ||
             // https://m.media-amazon.com/images/I/61rtKO6VrUL._SL500_.jpg
+            //   https://m.media-amazon.com/images/I/61rtKO6VrUL.jpg
             domain.indexOf(".media-amazon.com") >= 0 ||
             // https://ia.media-imdb.com/images/M/MV5BNjA1NDYwMDQ3MF5BMl5BanBnXkFtZTcwOTYyNDQ0MQ@@._V1_UY268_CR1,0,182,268_AL_.jpg
+            //   https://ia.media-imdb.com/images/M/MV5BNjA1NDYwMDQ3MF5BMl5BanBnXkFtZTcwOTYyNDQ0MQ@@.jpg
             // https://ia.media-imdb.com/images/M/MV5BMTU2NDI2YjktYjYxMy00OGIwLWEzMjktNzEzNzA4YzVmZGRjXkEyXkFqcGdeQXVyNDU4MDk4OA@@._V1_UY317_CR51,0,214,317_AL_.jpg
+            //   https://ia.media-imdb.com/images/M/MV5BMTU2NDI2YjktYjYxMy00OGIwLWEzMjktNzEzNzA4YzVmZGRjXkEyXkFqcGdeQXVyNDU4MDk4OA@@.jpg
             domain.indexOf(".media-imdb.com") >= 0 ||
             // https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1497668011i/22813064._UX100_CR0,0,100,100_.jpg
+            //   https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1497668011i/22813064.jpg
             domain === "i.gr-assets.com") {
             return {
-                url: src.replace(/\._[^/]*\.([^./]*)$/, "._.$1"),
+                //url: src.replace(/\._[^/]*\.([^./]*)$/, "._.$1"),
+                url: src.replace(/\._[^/]*\.([^./]*)$/, ".$1"), // for now this seems to work for all images
                 always_ok: true,
                 can_head: false
             };
@@ -4512,6 +4520,8 @@
             // https://beta.images.theglobeandmail.com/76a/sports/hockey/article38351471.ece/ALTERNATES/w620/web-sp-hk-senators-0326.JPG
             // https://beta.images.theglobeandmail.com/339/sports/article34852751.ece/BINARY/w620/hk-moss28sp3.JPG
             domain === "beta.images.theglobeandmail.com" ||
+            // http://www.globalblue.com/destinations/uk/london/article288436.ece/alternates/LANDSCAPE2_970/cara_delevingne_rochas.jpg
+            domain === "www.globalblue.com" ||
             src.match(/:\/\/i[0-9]*(?:-prod)?\..*\/article[^/]*\.ece\//) ||
             domain.match(/cdn-[0-9]*\.independent\.ie/)) {
             // wip
@@ -8577,6 +8587,8 @@
         if (domain === "image.afcdn.com" && false) {
             // https://image.afcdn.com/story/20170706/selena-gomez-1102651_w767h767c1cx1816cy877.jpg
             //   https://image.afcdn.com/story/20170706/selena-gomez-1102651.jpg
+            // https://image.afcdn.com/story/20130911/cara-delevingne-98052_w767h767c1cx345cy200.jpg
+            //   https://image.afcdn.com/story/20130911/cara-delevingne-98052.jpg
             // doesn't work: (redirects to blank image, no content-length header, can't find differences in headers)
             // https://image.afcdn.com/story/20170706/selena-gomez-1102505_w670.jpg
             // https://image.afcdn.com/story/20170706/selena-gomez-1102441_w670.jpg
@@ -8768,6 +8780,21 @@
         if (domain === "cdn.teenidols4you.com") {
             // http://cdn.teenidols4you.com/thumb/Actors/katyperry/88katy-perry-1379801521.jpg
             return src.replace(/:\/\/[^/]*\/thumb\/(.*?)\/[0-9]+([^/]*)$/, "://www.teenidols4you.com/blink/$1/$2");
+        }
+
+        if (domain === "cdn.pixabay.com") {
+            // https://cdn.pixabay.com/photo/2017/03/10/12/16/airbus-2132610_960_720.jpg
+            //   https://pixabay.com/en/photos/download/airbus-2132610.jpg
+            newsrc = src.replace(/.*?\/photo\/.*\/([^/]*-[0-9]+)_+[0-9]+[^/]*(\.[^/.]*)$/,
+                                 "https://pixabay.com/en/photos/download/$1$2");
+            if (newsrc !== src)
+                return {
+                    url: newsrc,
+                    redirects: true,
+                    headers: {
+                        Cookie: "is_human=1"
+                    }
+                };
         }
 
 
@@ -9032,6 +9059,8 @@
             // http://o.aolcdn.com/dims-shared/dims3/MUSIC/thumbnail/280X390/quality/90/http://o.aolcdn.com/os/music/artist/wikipedia/the-platters-1970.jpg
             // http://o.aolcdn.com/dims-shared/dims3/MUSIC/thumbnail/280X390/http://o.aolcdn.com/os/music/artist/wikipedia/the-platters-1970.jpg
             //   http://o.aolcdn.com/os/music/artist/wikipedia/the-platters-1970.jpg
+            // https://s.aolcdn.com/dims-shared/dims3/GLOB/crop/2039x3000+0+0/resize/630x927!/format/jpg/quality/85/https://s.aolcdn.com/hss/storage/midas/4d5ea3524916327c5b9a2d8b7b75dad6/205490598/cara-delevingne-attends-the-premiere-of-europacorp-and-stx-valerian-picture-id817090276
+            //   https://s.aolcdn.com/hss/storage/midas/4d5ea3524916327c5b9a2d8b7b75dad6/205490598/cara-delevingne-attends-the-premiere-of-europacorp-and-stx-valerian-picture-id817090276
             newsrc = src.replace(/.*\/(?:thumbnail|crop|resize)\/.*?\/(https?:\/\/.*)/, "$1");
             if (newsrc !== src)
                 return newsrc;
