@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.3.11
+// @version      0.3.12
 // @description  Redirects to larger versions of images
 // @author       qsniyg
 // @include      *
@@ -1150,6 +1150,8 @@
 
         // https://images-na.ssl-images-amazon.com/images/I/B1GLFkULdTS._CR0,0,3840,2880_._SL1000_.png
         //   https://images-na.ssl-images-amazon.com/images/I/B1GLFkULdTS.png
+        // https://images-na.ssl-images-amazon.com/images/I/81yxJ9lr5vL.AC_SL1500_.jpg -- no ._
+        //   https://images-na.ssl-images-amazon.com/images/I/81yxJ9lr5vL.jpg
         if (domain.indexOf("images-na.ssl-images-amazon.com") >= 0 ||
             // https://images-eu.ssl-images-amazon.com/images/I/41TMMGD0XZL._SL500_AC_SS350_.jpg
             //   https://images-eu.ssl-images-amazon.com/images/I/41TMMGD0XZL.jpg
@@ -1171,7 +1173,7 @@
             domain === "i.gr-assets.com") {
             return {
                 //url: src.replace(/\._[^/]*\.([^./]*)$/, "._.$1"),
-                url: src.replace(/\._[^/]*\.([^./]*)$/, ".$1"), // for now this seems to work for all images
+                url: src.replace(/\.[^/]*\.([^./]*)$/, ".$1"), // for now this seems to work for all images
                 always_ok: true,
                 can_head: false
             };
@@ -1790,6 +1792,14 @@
             (domain === "displate.com" && src.indexOf("/displates/") >= 0) ||
             // https://cdn56.picsart.com/169599975000202.jpeg?r1024x1024
             domain.match(/cdn[0-9]*\.picsart\.com/) ||
+            // https://cdn.ndtv.com/tech/gadgets/Electronic_Arts_Dragon_Age_Inquisition_Cover.jpg?output-quality=10
+            domain === "cdn.ndtv.com" ||
+            // https://assets-a1.kompasiana.com/images/avatar/13267750-10207923832071268-7573729854263131153-n-57aeadc0d89373090f9eb6eb.jpg?t=t&v=70&x=70
+            domain.match(/assets(?:-[a-z][0-9])?\.kompasiana\.com/) ||
+            // https://images.popbuzz.com/images/2126?crop=1_1&width=200&signature=CbNpTNT994BxnDA7v5idqFKtsOs=
+            domain === "images.popbuzz.com" ||
+            // https://i1.adis.ws/i/Marc_Jacobs/friends_dovecameron_beautyconfestival_spring17?w=800&qlt=70&img404=NOIMAGEMEDIUM
+            domain.match(/i[0-9]*\.adis\.ws/) ||
             // http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
             // https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
             src.match(/\/demandware\.static\//) ||
@@ -1944,8 +1954,18 @@
             domain === "am24.akamaized.net" ||
             // http://snappa.static.pressassociation.io/assets/2016/04/08154418/1460126656-210b91ce6f5398e743add7f71b3e9b72-600x986.jpg
             domain.indexOf("static.pressassociation.io") >= 0 ||
+            // https://icdn2.digitaltrends.com/image/dragon-age-inquisition-multiplayer-header-720x720.jpg?ver=1.jpg
+            domain.match(/icdn[0-9]*\.digitaltrends\.com/) ||
+            // https://assets.vg247.com/current/2014/09/sep_23_-_keyart_inquisitormf_v3-156x108.jpg
+            domain === "assets.vg247.com" ||
             // https://www.theblemish.com/images/2015/02/taylor-swift-stops-by-kelsey-edwards-studio-17-640x881.jpg
             (domain_nowww === "theblemish.com" && src.indexOf("/images/") >= 0) ||
+            // https://www.dailyxtra.com/content/uploads/2017/06/billc36-479x270.jpg
+            (domain === "www.dailyxtra.com" && src.indexOf("/content/uploads/") >= 0) ||
+            // https://media.metrolatam.com/2018/05/12/neymarseponecamistapsg2018-09b3bddb47d54ac1e4d12b24697bc2e8-300x200.jpg
+            domain === "media.metrolatam.com" ||
+            // http://media.comicbook.com/2018/01/dove-cameron-ruby-agents-of-shield-1079103-1280x0.jpeg
+            domain === "media.comicbook.com" ||
             // http://www.randomnude.com/wp-content/uploads/sites/39/2017/06/gomez__7__1-333x500.jpg
             //   http://www.randomnude.com/wp-content/uploads/sites/39/2017/06/gomez__7__1.jpg
             // https://cdn.gamerant.com/wp-content/uploads/resident-evil-2-director-remake-faith-738x410.jpg.webp
@@ -2168,7 +2188,11 @@
             //   https://static2.thisisinsider.com/image/58c2c3d580c5ac1f008b47dc/
             // https://amp.businessinsider.com/images/56dc9a3052bcd028008b4703-750-887.jpg
             //   https://static2.thisisinsider.com/image/56dc9a3052bcd028008b4703/
-            return urljoin(src, src.replace(/.*\/images\/([^-]*)[^/]*(\.[^/.]*)$/, "//static2.thisisinsider.com/image/$1/"));
+            // https://amp.businessinsider.com/images/5a383bcc7101ad309463675a-480-320.jpg
+            //   https://static2.thisisinsider.com/image/5a383bcc7101ad309463675a/ -- doesn't work
+            //   https://static2.businessinsider.com/image/5a383bcc7101ad309463675a.jpg
+            //   https://static2.businessinsider.com/image/5a383bcc7101ad309463675a/
+            return urljoin(src, src.replace(/^[a-z]+:\/\/amp\.([^/]*)\/images\/([^-]*)[^/]*(\.[^/.]*)$/, "//static2.$1/image/$2/"));
         }
 
         // why was this commented out?
@@ -4284,7 +4308,9 @@
 
         if (domain === "www.primagames.com") {
             // https://www.primagames.com/media/images/news/Playdead-Inside-ResearchFacility-40.jpg/PRIMA/resize/100x/format/jpg
-            return src.replace(/\/PRIMA\/.*/, "");
+            // https://www.primagames.com/media/files/news/dragon-age-inquisition-landing-page/dragon-age-inquisition-cover-ce.png/PRIMAP/resize/618x/format/jpg/quality/80 -- scaled up
+            //   https://www.primagames.com/media/files/news/dragon-age-inquisition-landing-page/dragon-age-inquisition-cover-ce.png
+            return src.replace(/\/PRIMAP?\/.*/, "");
         }
 
         if (domain.match(/s[0-9]*-[^.]*\.ixquick\.com/)) {
@@ -4384,6 +4410,7 @@
             domain === "img-cdn.jg.jugem.jp" ||
             // http://styleyen.com/galleries/6/image_slide/2/taylor-swift-bangs.jpg.thumb_200_width.jpg
             domain_nowww === "styleyen.com" ||
+
             domain === "d26oc3sg82pgk3.cloudfront.net" ||
             domain === "d53l9d6fqlxs2.cloudfront.net") {
             // https://media.mnn.com/assets/images/2017/03/cyclops-2-titanic-wreck.jpg.653x0_q80_crop-smart.jpg
@@ -4396,6 +4423,20 @@
             if (newsrc !== src)
                 return newsrc;
         }
+
+        if (domain === "media.contentapi.ea.com") {
+            // https://media.contentapi.ea.com/content/dam/ea/dragonage/inquisition-refresh/videos/2018/01/90614bfc-1566-7230-3359-3ea9a1f39577.youtube/subassets/poster.jpg.adapt.crop16x9.1920w.jpg
+            //   https://media.contentapi.ea.com/content/dam/ea/dragonage/inquisition-refresh/videos/2018/01/90614bfc-1566-7230-3359-3ea9a1f39577.youtube/subassets/poster.jpg
+            // https://media.contentapi.ea.com/content/dam/ea/dragonage/inquisition-refresh/images/2018/01/ea-hero-medium-dai-homepage-7x2-xl.jpg.adapt.crop3x5.320w.jpg
+            //   https://media.contentapi.ea.com/content/dam/ea/dragonage/inquisition-refresh/images/2018/01/ea-hero-medium-dai-homepage-7x2-xl.jpg
+            newsrc = src.replace(/(\/[^/.]*\.[^/.]*)\.[^/]*$/, "$1");
+            if (newsrc !== src)
+                return {
+                    url: newsrc,
+                    can_head: false
+                };
+        }
+
 
         if (domain === "img.bleacherreport.net") {
             // https://img.bleacherreport.net/cms/media/image/fa/2f/08/6e/dfb9/4c1f/b030/48ba951160bd/crop_exact_USATSI_10579599.jpg?w=460&h=259&q=75
@@ -6573,7 +6614,17 @@
             src.match(/\/image\?/)) {
             // https://images-eds-ssl.xboxlive.com/image?url=8Oaj9Ryq1G1_p3lLnXlsaZgGzAie6Mnu24_PawYuDYIoH77pJ.X5Z.MqQPibUVTc6mdXIF7EzzBzjbCi0PAFFm9oIFRURAIJY671mz65mpafwXTRitZCcs1mXngtlGKXGL6FtVwx1C9b1AIuJhv8KnSQBHdQ22A122Oh6Fpn5ncAYey7_nKGGXB7mkCs9jnrsclui.l_ItF9D7zgF8n0o3RXWpfe8IGE7Wkqn5ZMTac-&w=200&h=300&format=jpg
             //   https://images-eds-ssl.xboxlive.com/image?url=8Oaj9Ryq1G1_p3lLnXlsaZgGzAie6Mnu24_PawYuDYIoH77pJ.X5Z.MqQPibUVTc6mdXIF7EzzBzjbCi0PAFFm9oIFRURAIJY671mz65mpafwXTRitZCcs1mXngtlGKXGL6FtVwx1C9b1AIuJhv8KnSQBHdQ22A122Oh6Fpn5ncAYey7_nKGGXB7mkCs9jnrsclui.l_ItF9D7zgF8n0o3RXWpfe8IGE7Wkqn5ZMTac-
-            return src.replace(/\/image[^/]?[?&]url=([^&]*).*/, "/image?url=$1");
+            newsrc = src.replace(/\/image[^/]?[?&]url=([^&]*).*/, "/image?url=$1");
+            if (newsrc !== src)
+                return newsrc;
+        }
+
+        if (domain === "musicimage.xboxlive.com") {
+            // https://musicimage.xboxlive.com/catalog/video.contributor.EF755600-0200-11DB-89CA-0019B92A3933/image?locale=en-CA&target=circle&mode=crop&q=90&h=373&w=373
+            return {
+                url: src.replace(/\/image\?.*/, "/image?locale=en-US"),
+                can_head: false // GET, OPTIONS
+            };
         }
 
         if (domain === "media.withtank.com") {
@@ -8797,6 +8848,167 @@
                 };
         }
 
+        if (domain.indexOf(".meetupstatic.com") >= 0) {
+            // https://secure.meetupstatic.com/photos/member/4/b/1/6/thumb_180259222.jpeg
+            // https://secure.meetupstatic.com/photo_api/event/rx308x180/cpt/cr308x180/ql90/sgb54c13bc46/314373292.jpeg
+            //   https://secure.meetupstatic.com/photos/event/8/2/0/c/600_314373292.jpeg
+            //   https://secure.meetupstatic.com/photos/event/8/2/0/c/highres_314373292.jpeg
+            //   https://secure.meetupstatic.com/photos/event/0/0/0/highres_314373292.jpeg
+            // http://photos3.meetupstatic.com/photos/event/1/e/1/a/highres_13507706.jpeg -- 3264x2448
+            return src
+                .replace(/\/photo_api\/([^/]*)\/.*\/([0-9]+\.[^/.]*)$/, "/photos/$1/0/0/0/highres_$2")
+                .replace(/\/(?:thumb|[0-9]+)_([0-9]+\.[^/.]*)$/, "/highres_$1");
+        }
+
+        if (domain === "d38c5dutwb1t0j.cloudfront.net") {
+            // https://d38c5dutwb1t0j.cloudfront.net/Pictures/780xany/7/6/2/130762_shutterstock_174080612.jpg
+            //   https://d38c5dutwb1t0j.cloudfront.net/Pictures/9999999xany/7/6/2/130762_shutterstock_174080612.jpg
+            return src.replace(/\/Pictures\/[0-9a-z]+x[0-9a-z]+\//, "/Pictures/9999999xany/");
+        }
+
+        if (domain === "img.drillspin.com") {
+            // http://img.drillspin.com/oi/200/06/DSAX259106.jpg
+            //   http://img.drillspin.com/oi/orig/06/DSAX259106.jpg
+            // http://img.drillspin.com/ar/144/27/DSAX317727.jpg
+            //   http://img.drillspin.com/ar/orig/27/DSAX317727.jpg
+            return src.replace(/(:\/\/[^/]*\/[a-z]+\/)[0-9]+\//, "$1orig/");
+        }
+
+        if (domain === "pics.drillspin.com") {
+            // http://pics.drillspin.com/url/park/db05/bf82/d9aa/9177/dec1/596a/7871/95e3/200.jpg
+            //   http://pics.drillspin.com/url/park/db05/bf82/d9aa/9177/dec1/596a/7871/95e3/orig.jpg
+            return src.replace(/\/[0-9]+(\.[^/.]*)$/, "/orig$1");
+        }
+
+        if (domain === "cdn.britannica.com") {
+            // https://cdn.britannica.com/100x53/50/71350-118-1F17F9C4.jpg
+            //   https://cdn.britannica.com/50/71350-118-1F17F9C4.jpg
+            return src.replace(/(:\/\/[^/]*\/)[0-9]+x[0-9]+\//, "$1");
+        }
+
+        if (domain_nowww === "pets4homes.co.uk") {
+            // https://www.pets4homes.co.uk/images/articles/4276/large/why-might-your-cats-whiskers-fall-out-597f347251d52.jpg
+            //   https://www.pets4homes.co.uk/images/articles/4276/original/why-might-your-cats-whiskers-fall-out-597f347251d52.jpg
+            return src.replace(/(\/images\/articles\/[0-9]+\/)[a-z]+\/([^/]*)$/, "$1original/$2");
+        }
+
+        if (domain === "r.hswstatic.com") {
+            // https://r.hswstatic.com/w_256/gif/now-EOAfigPY-tomatoeyes_hansneleman_gettyimagesjpg-1210-680.jpg
+            //   https://s.hswstatic.com/gif/now-EOAfigPY-tomatoeyes_hansneleman_gettyimagesjpg-1210-680.jpg
+            return src.replace(/:\/\/[^/]*\/[a-z]_[0-9]+\//, "://s.hswstatic.com/");
+        }
+
+        if (domain === "www.candb.com") {
+            // https://www.candb.com/site/candb/cache/artwork/130/dragon-age_the-queen-of-staves_bioware-main_104x180.jpg
+            //   https://www.candb.com/site/candb/images/artwork/dragon-age_the-queen-of-staves_bioware-main.jpg
+            // https://www.candb.com/site/candb/cache/artwork/1600/dragon-age_the-queen-of-staves_bioware-main_926x1600_marked.jpg
+            //   https://www.candb.com/site/candb/images/artwork/dragon-age_the-queen-of-staves_bioware-main.jpg
+            return src.replace(/(\/candb\/)cache\/([^/]*\/)[0-9]+\/([^/]*)_[0-9]+x[0-9]+(?:[^/]*)?(\.[^/.]*)$/, "$1images/$2$3$4");
+        }
+
+        if (domain === "www.ottawalife.com") {
+            // http://www.ottawalife.com/admin/cms/images/small/olmgamer-dives-back-into-thedas-with-dragonage-inquisition-3-jpg.jpg
+            //   http://www.ottawalife.com/admin/cms/images/large/olmgamer-dives-back-into-thedas-with-dragonage-inquisition-3-jpg.jpg
+            return src.replace(/\/cms\/images\/[a-z]+\//, "/cms/images/large/");
+        }
+
+        if (domain === "assets.rpgsite.net") {
+            // https://assets.rpgsite.net/images/images/000/026/311/block/DAI_Jun92014_16.jpg
+            //   https://assets.rpgsite.net/images/images/000/026/311/original/DAI_Jun92014_16.jpg
+            return src.replace(/(\/images\/[0-9]+\/[0-9]+\/[0-9]+\/)[a-z]+\/([^/]+)$/, "$1original/$2");
+        }
+
+        if (domain_nowww === "nusabali.com") {
+            // https://www.nusabali.com/article_images/30694/berryhardianto-juara-australia-terbuka-2018-thumb-2018-05-14-153840_0.jpg
+            //   https://www.nusabali.com/article_images/30694/berryhardianto-juara-australia-terbuka-2018-2018-05-14-153840_0.jpg
+            // https://www.nusabali.com/article_images/30694/berryhardianto-juara-australia-terbuka-2018-800-2018-05-14-153840_0.jpg
+            //   https://www.nusabali.com/article_images/30694/berryhardianto-juara-australia-terbuka-2018-2018-05-14-153840_0.jpg
+            // doesn't work for all:
+            // https://www.nusabali.com/article_images/30669/pgri-bali-soroti-turunnya-nilai-un-800-2018-05-14-115025_0.jpg
+            // https://www.nusabali.com/article_images/30669/pgri-bali-soroti-turunnya-nilai-un-thumb-2018-05-14-115025_0.jpg
+            return src.replace(/(\/article_images\/[0-9]+\/[^/]*)-(?:thumb|800)(-[0-9]+-[0-9]+-[0-9]+-[0-9]+_[0-9]+\.[^/.]*)$/, "$1$2");
+        }
+
+        if (domain === "www.wowkeren.com") {
+            // https://www.wowkeren.com/display/images/160x117/2018/05/13/00208257.jpg
+            //   https://www.wowkeren.com/display/images/photo/2018/05/13/00208257.jpg
+            return src.replace(/\/display\/images\/[0-9]+x[0-9]+\//, "/display/images/photo/");
+        }
+
+        if (domain === "asset.kompas.com") {
+            // https://asset.kompas.com/crop/113x0:787x449/185x124/data/photo/2018/05/14/4120396036.jpg
+            //   https://asset.kompas.com/data/photo/2018/05/14/4120396036.jpg
+            return src.replace(/\/crop\/[0-9x:]+\/[0-9]+x[0-9]+\//, "/");
+        }
+
+        if (domain === "img.4plebs.org") {
+            // http://img.4plebs.org/boards/hr/thumb/1526/06/1526064949904s.jpg
+            //   http://img.4plebs.org/boards/hr/image/1526/06/1526064949904.jpg
+            return src.replace(/\/thumb(\/[0-9]+\/[0-9]+\/[0-9]+)[a-z](\.[^/.]*)$/, "/image$1$2");
+        }
+
+        if (domain === "cdn.thinglink.me") {
+            // https://cdn.thinglink.me/api/image/777977483742937091/1024/10/scaletowidth
+            //   https://cdn.thinglink.me/api/image/777977483742937091
+            return src.replace(/(\/api\/image\/[0-9]+)\/.*$/, "$1");
+        }
+
+        if (domain === "images.sk-static.com") {
+            // https://images.sk-static.com/images/media/profile_images/artists/8825119/huge_avatar
+            //   https://images.sk-static.com/images/media/profile_images/artists/8825119/original
+            return src.replace(/(\/[0-9]+\/)[a-z_]+$/, "$1original");
+        }
+
+        if (domain === "www.stalkcelebs.com" && src.indexOf("/img-folder/") >= 0) {
+            // http://www.stalkcelebs.com/img-folder/2018/04/dove-cameron-in-bikini-top-at-v-house-at-coachella-april-14-2018_t_119071958.jpg
+            //   http://www.stalkcelebs.com/img-folder/2018/04/dove-cameron-in-bikini-top-at-v-house-at-coachella-april-14-2018_119071958.jpg
+            return src.replace(/_t(_[0-9]+\.[^/.]*)$/, "$1");
+        }
+
+        if (domain === "www.picsofcelebrities.com") {
+            // https://www.picsofcelebrities.com/media/celebrity/dove-cameron/pictures/medium/dove-cameron-kids.jpg
+            //   https://www.picsofcelebrities.com/celebrity/dove-cameron/pictures/large/dove-cameron-kids.jpg
+            // https://www.picsofcelebrities.com/media/celebrity/dove-cameron/pictures/medium/dove-cameron-2016.jpg
+            //   https://www.picsofcelebrities.com/celebrity/dove-cameron/pictures/large/dove-cameron-2016.jpg
+            return src.replace(/\/media(\/.*\/pictures\/)[a-z]+(\/[^/]*)$/, "$1large$2");
+        }
+
+        if (domain === "dxglax8otc2dg.cloudfront.net") {
+            // https://dxglax8otc2dg.cloudfront.net/media/cache/people/idols/akiyama20090906-thumb.6648e6aae2cc.jpg
+            //   https://dxglax8otc2dg.cloudfront.net/media/people/idols/akiyama20090906.jpg
+            // https://dxglax8otc2dg.cloudfront.net/media/cache/people/groups/momusu_googleprofile_20150101_thumb.08ba8c8b3ef2.jpg
+            //   https://dxglax8otc2dg.cloudfront.net/media/people/groups/momusu_googleprofile_20150101.jpg
+            return src.replace(/\/media\/cache\/(.*)[-_]thumb\.[a-f0-9]+(\.[^/.]*)$/, "/media/$1$2");
+        }
+
+        if (domain === "photos.smugmug.com") {
+            // thanks to /u/GarlicoinAccount on reddit for the example URLs and regex!
+            // https://photos.smugmug.com/Portfolio/i-FsKpjtH/0/bc0067fc/L/Dubai%20at%20Dusk-L.jpg
+            //   https://photos.smugmug.com/Portfolio/i-FsKpjtH/0/bc0067fc/O/Dubai%20at%20Dusk-O.jpg
+            // https://photos.smugmug.com/Galleries/Portfolio/i-97t56hx/0/85d1ded6/S/brentgoesoutside%20-%20Deep%20Cold%20-%2020180116_Deep%20Cold_Madison%20WI-S.jpg
+            //   https://photos.smugmug.com/Portfolio/i-97t56hx/0/85d1ded6/O/brentgoesoutside%20-%20Deep%20Cold%20-%2020180116_Deep%20Cold_Madison%20WI-O.jpg
+            //   gets redirected to:
+            //   https://photos.smugmug.com/Galleries/Portfolio/i-97t56hx/0/85d1ded6/XL/brentgoesoutside%20-%20Deep%20Cold%20-%2020180116_Deep%20Cold_Madison%20WI-XL.jpg
+            // https://photos.smugmug.com/Portfolio/i-97t56hx/0/85d1ded6/M/brentgoesoutside%20-%20Deep%20Cold%20-%2020180116_Deep%20Cold_Madison%20WI-M.jpg
+            //   https://photos.smugmug.com/Portfolio/i-97t56hx/0/85d1ded6/O/brentgoesoutside%20-%20Deep%20Cold%20-%2020180116_Deep%20Cold_Madison%20WI-O.jpg
+            // https://photos.smugmug.com/Outdoors/Los-Padres-National-Forest/i-Pm68s3d/0/f60a0297/X5/MCJ05326-X5.jpg
+            //   https://photos.smugmug.com/Outdoors/Los-Padres-National-Forest/i-Pm68s3d/0/f60a0297/O/MCJ05326-O.jpg
+            //   gets redirected to:
+            //   https://photos.smugmug.com/Outdoors/Los-Padres-National-Forest/i-Pm68s3d/0/f60a0297/5K/MCJ05326-5K.jpg
+            // https://photos.smugmug.com/Outdoors/Los-Padres-National-Forest/i-Pm68s3d/0/f60a0297/4K/MCJ05326-4K.jpg
+            //   https://photos.smugmug.com/Outdoors/Los-Padres-National-Forest/i-Pm68s3d/0/f60a0297/O/MCJ05326-O.jpg
+            // https://photos.smugmug.com/Outdoors/Los-Padres-National-Forest/i-Pm68s3d/0/f60a0297/XL/MCJ05326-XL.jpg
+            //   https://photos.smugmug.com/Outdoors/Los-Padres-National-Forest/i-Pm68s3d/0/f60a0297/O/MCJ05326-O.jpg
+            // https://photos.smugmug.com/Portfolio/Seattle-Sights/West-Seattle/i-PXJzQVB/1/7e0dd2ae/XL/DSC01014-Edit-1-XL.jpg
+            //   https://photos.smugmug.com/Portfolio/Seattle-Sights/West-Seattle/i-PXJzQVB/1/7e0dd2ae/O/DSC01014-Edit-1-O.jpg -- 5168x3448, doesn't get redirected after
+            //return src.replace(/^((?:https?:)\/\/photos\.smugmug\.com\.?\/.+?\/)[A-Z0-9]{1,2}(\/[^\/]+?-)[A-Z0-9]{1,2}\.jpg(?:$|\?|#)/i,'$1O$2O.jpg');
+            return {
+                url: src.replace(/(\/i-[A-Za-z0-9]+\/[0-9]\/[a-f0-9]+\/)[A-Z0-9]+(\/[^/.]*-)[A-Z0-9]+(\.[^/.?]*)(?:\?.*)?$/, "$1O$2O$3"),
+                redirects: true
+            };
+        }
+
+
 
 
 
@@ -8981,6 +9193,8 @@
         if (domain.indexOf("cdn.vox-cdn.com") >= 0 ||
             domain === "thumbnails.trvl-media.com" ||
             domain === "thumbor-static.factorymedia.com" ||
+            // https://www.infobae.com/new-resizer/jfCQ7-AjnQyNdmWHdFGYvzYmVx4=/600x0/filters:quality(100)/arc-anglerfish-arc2-prod-infobae.s3.amazonaws.com/public/4IOFEV5GJVES3DVJ2XHDFXA2TE
+            domain === "www.infobae.com" ||
             src.match(/:\/\/[^/]*\/thumbor\/[^/]*=\//) ||
             src.match(/:\/\/[^/]*\/resizer\/[^/]*=\/[0-9]+x[0-9]+(?::[^/]*\/[0-9]+x[0-9]+)?\/(?:filters:[^/]*\/)?/)) {
             // https://cdn.vox-cdn.com/thumbor/ta2xdyUViVrBXCLGapdwLY7is_s=/0x0:3000x2355/1200x800/filters:focal(1116x773:1596x1253)/cdn.vox-cdn.com/uploads/chorus_image/image/55856727/815434448.0.jpg
@@ -9000,11 +9214,11 @@
             // https://thumbor-static.factorymedia.com/qBeNkBSFgEWpq0AbpElby6YyNTs=/1920x1080/smart/http%3A%2F%2Fcoresites-cdn.factorymedia.com%2Fmpora_new%2Fwp-content%2Fuploads%2F2015%2F12%2FSea-Life-Aquariums-Animal-Captivity-Beluga-Whale.jpg
             //   http://coresites-cdn.factorymedia.com/mpora_new/wp-content/uploads/2015/12/Sea-Life-Aquariums-Animal-Captivity-Beluga-Whale.jpg
             //return src.replace(/.*\/thumbor\/.*?\/([^/]*\..*)/, "http://$1");
-            newsrc = src.replace(/.*\/(?:thumbor|resizer)\/.*?\/(?:filters:[^/]*\/)?([a-z]*:\/\/.*)/, "$1");
+            newsrc = src.replace(/.*\/(?:thumbor|(?:new-)?resizer)\/.*?\/(?:filters:[^/]*\/)?([a-z]*:\/\/.*)/, "$1");
             if (newsrc !== src)
                 return newsrc;
 
-            newsrc = src.replace(/.*\/(?:thumbor|resizer)\/.*?\/(?:filters:[^/]*\/)?([^/]*\..*)/, "http://$1");
+            newsrc = src.replace(/.*\/(?:thumbor|(?:new-)?resizer)\/.*?\/(?:filters:[^/]*\/)?([^/]*\..*)/, "http://$1");
             if (newsrc !== src)
                 return newsrc;
 
