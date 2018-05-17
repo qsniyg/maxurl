@@ -279,7 +279,7 @@ if (true) {
   }, 10*1000);
 
   submissionStream.on("submission", function(post) {
-    if (post.domain.startsWith("self.") || (post.over_18 && false)) {
+    if (post.domain.startsWith("self.") || (post.over_18)) {
       return;
     }
 
