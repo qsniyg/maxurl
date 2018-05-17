@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.3.12
+// @version      0.3.13
 // @description  Redirects to larger versions of images
 // @author       qsniyg
 // @include      *
@@ -1220,13 +1220,15 @@
             src.match(/\/sites\/[^/]*\/files\/styles\/[^/]*/) ||
             src.match(/\/sites\/[^/]*\/files\/[^/]*\/styles\/[^/]*/) ||
             // https://cdn2.benzinga.com/files/imagecache/1024x768xUP/images/story/2012/rihanna.jpg
+            // http://mobile.dlisted.com/files/imagecache/photo-preview-mobile/files/hotslutweeknorwoodyoung.jpg
+            //   http://i.dlisted.com/files/hotslutweeknorwoodyoung.jpg
             src.match(/(?:\/sites\/[^/]*)?\/files\/imagecache\/[^/]*/) ||
             src.search(/\/files\/styles\/[^/]*\/public\//) >= 0 ||
             // https://www.straight.com/files/v3/styles/gs_large/public/2013/09/MUS_Nostalghia_2386.jpg
             //   https://www.straight.com/files/v3/2013/09/MUS_Nostalghia_2386.jpg
             src.search(/\/files\/[^/]*\/styles\/[^/]*\/public\//) >= 0) {
 
-            newsrc = src.replace(/\/styles\/.*?\/public\//, "/").replace(/\/imagecache\/[^/]*\//, "/").replace(/\?.*$/, "");
+            newsrc = src.replace(/\/styles\/.*?\/public\//, "/").replace(/\/imagecache\/[^/]*\/(?:files\/)?/, "/").replace(/\?.*$/, "");
             if (newsrc !== src)
                 return newsrc;
         }
@@ -1800,6 +1802,10 @@
             domain === "images.popbuzz.com" ||
             // https://i1.adis.ws/i/Marc_Jacobs/friends_dovecameron_beautyconfestival_spring17?w=800&qlt=70&img404=NOIMAGEMEDIUM
             domain.match(/i[0-9]*\.adis\.ws/) ||
+            // http://images2.9c9media.com/image_asset/2017_6_18_79194164-a321-4264-a5e3-f641dad7e65b_png_1920x1080.jpg?size=400
+            domain.match(/images2\.9c9media\.com/) ||
+            // http://img1-azcdn.newser.com/image/1180030-0-20180515094436.jpeg?width=76&height=76&crop=yes
+            domain.match(/img[0-9]*(?:-[a-z]+)?\.newser\.com/) ||
             // http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
             // https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
             src.match(/\/demandware\.static\//) ||
@@ -3576,8 +3582,10 @@
             //   https://i.ebayimg.com/images/g/2lIAAOSwsS1Zkh1k/s-l9999.jpg
             // https://ssli.ebayimg.com/images/g/nqQAAOSwh2RZ6b1q/s-l500.jpg
             //   https://ssli.ebayimg.com/images/g/nqQAAOSwh2RZ6b1q/s-l9999.jpg
-           // http://i.ebayimg.com/00/s/NjAwWDQ1MA==/z/mEAAAOSwKIpWBa25/$_23.JPG
+            // http://i.ebayimg.com/00/s/NjAwWDQ1MA==/z/mEAAAOSwKIpWBa25/$_23.JPG
             //   http://i.ebayimg.com/images/g/mEAAAOSwKIpWBa25/s-l9999.jpg
+            // https://i.ebayimg.com/thumbs/images/g/2FMAAOSw4A5Y0l-Z/s-l200.jpg
+            //   https://i.ebayimg.com/images/g/2FMAAOSw4A5Y0l-Z/s-l9999.jpg
             newsrc = src.replace(/\/[0-9]+\/[a-z]+\/[^/]*\/[a-z]+\/([^/]+)\/[^/.]*(\.[^/.]*)$/, "/images/g/$1/s-l9999$2");
             if (newsrc !== src) {
                 newsrc = newsrc.replace(/(.*\.)[^/.]*$/, "$1") + newsrc.replace(/.*\.([^/.]*)$/, "$1").toLowerCase();
@@ -3585,7 +3593,17 @@
             }
 
             return src
+                .replace(/\/thumbs\/images\//, "/images/")
                 .replace(/-l[0-9]+(\.[^/.]*)$/, "-l9999$1");
+        }
+
+        if (domain === "www.picclickimg.com") {
+            // https://www.picclickimg.com/d/l400/pict/232427221641_/Dove-Cameron-Delicate-8x10-Photo-Picture-Celebrity-Print.jpg
+            //   https://www.picclickimg.com/d/l9999/pict/232427221641_/Dove-Cameron-Delicate-8x10-Photo-Picture-Celebrity-Print.jpg
+            return {
+                url: src.replace(/\/d\/[a-z][0-9]+\/pict\//, "/d/l9999/pict/"),
+                can_head: false // it just hangs
+            };
         }
 
         if (domain === "i.slkimg.com") {
@@ -8985,6 +9003,7 @@
             // thanks to /u/GarlicoinAccount on reddit for the example URLs and regex!
             // https://photos.smugmug.com/Portfolio/i-FsKpjtH/0/bc0067fc/L/Dubai%20at%20Dusk-L.jpg
             //   https://photos.smugmug.com/Portfolio/i-FsKpjtH/0/bc0067fc/O/Dubai%20at%20Dusk-O.jpg
+            //   https://photos.smugmug.com/Portfolio/i-FsKpjtH/0/bc0067fc/O/.jpg
             // https://photos.smugmug.com/Galleries/Portfolio/i-97t56hx/0/85d1ded6/S/brentgoesoutside%20-%20Deep%20Cold%20-%2020180116_Deep%20Cold_Madison%20WI-S.jpg
             //   https://photos.smugmug.com/Portfolio/i-97t56hx/0/85d1ded6/O/brentgoesoutside%20-%20Deep%20Cold%20-%2020180116_Deep%20Cold_Madison%20WI-O.jpg
             //   gets redirected to:
@@ -9001,11 +9020,86 @@
             //   https://photos.smugmug.com/Outdoors/Los-Padres-National-Forest/i-Pm68s3d/0/f60a0297/O/MCJ05326-O.jpg
             // https://photos.smugmug.com/Portfolio/Seattle-Sights/West-Seattle/i-PXJzQVB/1/7e0dd2ae/XL/DSC01014-Edit-1-XL.jpg
             //   https://photos.smugmug.com/Portfolio/Seattle-Sights/West-Seattle/i-PXJzQVB/1/7e0dd2ae/O/DSC01014-Edit-1-O.jpg -- 5168x3448, doesn't get redirected after
+            //   https://photos.smugmug.com/Portfolio/Seattle-Sights/West-Seattle/i-PXJzQVB/1/7e0dd2ae/O/DSC01014-Edit-1-XL.jpg -- works too
+            // https://photos.smugmug.com/Travel/Jongno-2018/i-647W9cb/0/686f9fdc/S/20180504-DSC_7229-Edit.jpg
+            //   https://photos.smugmug.com/Travel/Jongno-2018/i-647W9cb/0/686f9fdc/O/20180504-DSC_7229-Edit.jpg
             //return src.replace(/^((?:https?:)\/\/photos\.smugmug\.com\.?\/.+?\/)[A-Z0-9]{1,2}(\/[^\/]+?-)[A-Z0-9]{1,2}\.jpg(?:$|\?|#)/i,'$1O$2O.jpg');
             return {
-                url: src.replace(/(\/i-[A-Za-z0-9]+\/[0-9]\/[a-f0-9]+\/)[A-Z0-9]+(\/[^/.]*-)[A-Z0-9]+(\.[^/.?]*)(?:\?.*)?$/, "$1O$2O$3"),
+                //url: src.replace(/(\/i-[A-Za-z0-9]+\/[0-9]\/[a-f0-9]+\/)[A-Z0-9]+(\/[^/.]*-)[A-Z0-9]+(\.[^/.?]*)(?:\?.*)?$/, "$1O$2O$3"),
+                url: src.replace(/(\/i-[A-Za-z0-9]+\/[0-9]\/[a-f0-9]+\/)[A-Z0-9]+(\/[^/]*)(?:\?.*)?$/, "$1O$2"),
                 redirects: true
             };
+        }
+
+        if (domain.indexOf(".i.lithium.com") >= 0) {
+            // https://spotify.i.lithium.com/t5/image/serverpage/image-id/84635i3C36019474421E94/image-size/large?v=1.0&px=999
+            //   https://spotify.i.lithium.com/t5/image/serverpage/image-id/84635i3C36019474421E94/image-size/original?v=1.0
+            var v = src.replace(/.*[?&](v=[^&]*).*/, "$1");
+            if (v === src)
+                v = "";
+            else
+                v = "?" + v;
+
+            return {
+                url: src.replace(/\/image-size\/[^/]*(?:\?.*)?$/, "/image-size/original" + v),
+                head_wrong_contentlength: true
+            };
+        }
+
+        if (domain === "www.favepeople.com") {
+            // https://www.favepeople.com/photos/h0/35/h035d7s238i5e5o5c97b.jpg
+            //   https://www.favepeople.com/photos/h0/35/h035d7s238i5e5o5c97b_b/Dove_Cameron_Red_Carpet_Style_3528.jpg
+            // https://www.favepeople.com/photos/66/fe/66fe7i5d284bb46hnc04_s.jpg
+            //   https://www.favepeople.com/photos/66/fe/66fe7i5d284bb46hnc04_b.jpg
+            // https://www.favepeople.com/photos/a9/21/a921h8naond6e6d46es0/Pom_Klementieff_Red_Carpet_Style_38325.jpg -- 650x1069
+            //   https://www.favepeople.com/photos/a9/21/a921h8naond6e6d46es0_b/Pom_Klementieff_Red_Carpet_Style_38325.jpg -- 2443x4020
+            return src.replace(/(\/photos\/[0-9a-z]+\/[0-9a-z]+\/[0-9a-z]+)(?:_[a-z]+)?(\/[^/]*)?(\.[^/.]*)$/, "$1_b$2$3");
+        }
+
+        if (domain === "img.anews.com") {
+            // https://img.anews.com/r/358x188/20161207/59703483.jpg
+            //   https://img.anews.com/media/posts/images/20161207/59703483.jpg
+            // https://img.anews.com/?url=https://img.anews.com/media/posts/images/20171210/81978684.jpg&w=358&h=188
+            newsrc = src.replace(/.*\?url=([^&]*).*?$/, "$1");
+            if (newsrc !== src)
+                return decodeURIComponent(newsrc);
+
+            return src.replace(/\/r\/[0-9]+x[0-9]+\//, "/media/posts/images/");
+        }
+
+        if (domain_nowww === "realitytvworld.com" ||
+            domain === "cdn.realitytvworld.com") {
+            // https://cdn.realitytvworld.com/images/heads/gen/embedded/1064843-s.jpg
+            //   https://cdn.realitytvworld.com/images/heads/gen/embedded/1064843-l.jpg
+            return src.replace(/(\/heads\/gen\/embedded\/[0-9]+)-[a-z](\.[^/.]*)$/, "$1-l$2");
+        }
+
+        if (domain === "video.newsserve.net") {
+            // https://video.newsserve.net/300/v/20170223/1487811916-Dove-Cameron-Shay-Mitchell-amp-amp-Ariel-Winter.jpg
+            //   https://video.newsserve.net/v/20170223/1487811916-Dove-Cameron-Shay-Mitchell-amp-amp-Ariel-Winter.jpg
+            return src.replace(/(:\/\/[^/]*\/)[0-9]+\//, "$1");
+        }
+
+        if (domain === "m.aceshowbiz.com" ||
+            domain === "www.aceshowbiz.com") {
+            // https://m.aceshowbiz.com/images/wennpic/preview/dove-cameron-2017-iheartradio-mmva-arrivals-01.jpg
+            //   https://www.aceshowbiz.com/images/wennpic/dove-cameron-2017-iheartradio-mmva-arrivals-01.jpg
+            //   https://m.aceshowbiz.com/images/wennpic/dove-cameron-2017-iheartradio-mmva-arrivals-01.jpg
+            return src.replace(/(\/images\/[^/]*\/)preview\//, "$1");
+        }
+
+        if (domain_nowww === "laughspark.info") {
+            // http://www.laughspark.info/thumbfiles/290X169/beautiful-dove-cameron-at-thirst-gala-20-635792432637591680-16984.jpg
+            //   http://laughspark.info/uploadfiles/beautiful-dove-cameron-at-thirst-gala-20-635792432637591680-16984.jpg
+            return src.replace(/\/thumbfiles\/[0-9]+X[0-9]+\//, "/uploadfiles/");
+        }
+
+        if (domain.match(/media[0-9]*.giphy.com/)) {
+            // https://media.giphy.com/media/3og0IRYXdt9tTE52nK/giphy.gif
+            // https://media.giphy.com/media/3og0IRYXdt9tTE52nK/giphy.mp4
+            // https://media1.giphy.com/media/l0Iy0lyLZnfdEBmMg/200w.webp
+            // https://media1.giphy.com/media/l0Iy0lyLZnfdEBmMg/200w.gif
+            return src.replace(/\/(?:giphy|[0-9]+[wh])\.(?:gif|webp|mp4)/, "/source.gif");
         }
 
 
@@ -9123,12 +9217,14 @@
             return src.replace(/(\/phpwas\/restmb_[a-z]*make\.php)\?.*(simg=[^&]*)/, "$1?idx=999&$2");
         }
 
-        if (src.match(/.*?\/timthumb\.php\?.*?src=(https?:\/\/)/)) {
+        if (src.match(/.*?\/timthumb\.php\?.*?src=(\/)/)) {
             // http://dublinfilms.fr/wp-content/themes/purity/includes/timthumb.php?src=http://dublinfilms.fr/wp-content/uploads/2014/06/Actu-bandeau-bis.jpg&h=260&w=662&zc=1
             //   http://dublinfilms.fr/wp-content/uploads/2014/06/Actu-bandeau-bis.jpg
             // http://www.hcwd.com.tw/template/corporate_site/fk1/timthumb.php?src=http://www.hcwd.com.tw/snlev801/product/bimg/_MG_8893(001).jpg&w=410&s=1
             //   http://www.hcwd.com.tw/snlev801/product/bimg/_MG_8893(001).jpg
-            return decodeURIComponent(src.replace(/.*\/timthumb\.php\?.*?src=([^&]*).*/, "$1"));
+            // http://www.moviehotties.com/timthumb.php?src=/moviehotties/images/news-gallery/orig/Em-Rat-Met-G_1.jpg&w=85&h=85&q=100
+            //   http://www.moviehotties.com/moviehotties/images/news-gallery/orig/Em-Rat-Met-G_1.jpg
+            return urljoin(src, decodeURIComponent(src.replace(/.*\/timthumb\.php\?.*?src=([^&]*).*/, "$1")));
         }
 
         if (src.match(/\/fotogallery\/[0-9]+X[0-9]+\//)) {
