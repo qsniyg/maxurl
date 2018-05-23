@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.3.14
+// @version      0.3.15
 // @description  Redirects to larger versions of images
 // @author       qsniyg
 // @include      *
@@ -1415,6 +1415,8 @@
             //   https://pbs.twimg.com/media/DWO61F5X4AISSsF?format=jpg&name=orig
             // https://pbs.twimg.com/media/Dbxmq4BV4AA2ozg.jpg:orig
             //   https://pbs.twimg.com/media/Dbxmq4BV4AA2ozg.jpg?name=orig
+            // https://pbs.twimg.com/media/DdxPc2eU0AAED8b.jpg:thumb
+            //   https://pbs.twimg.com/media/DdxPc2eU0AAED8b.jpg?name=orig
             return src
                 .replace(/(\/[^?&]*)([^/]*)[?&]format=([^&]*)/, "$1.$3$2")
                 .replace(/(\/[^?&]*)[?&][^/]*$/, "$1")
@@ -1488,7 +1490,17 @@
         }
 
         if (domain.indexOf("dynaimage.cdn.cnn.com") >= 0) {
+            // https://dynaimage.cdn.cnn.com/cnn/q_auto,w_672,c_fill/http%3A%2F%2Fcdn.cnn.com%2Fcnnnext%2Fdam%2Fassets%2F170428012205-28-met-gala-kurkova.jpg
+            //   http://cdn.cnn.com/cnnnext/dam/assets/170428012205-28-met-gala-kurkova.jpg
             return decodeURIComponent(src.replace(/.*\/cnn\/[^/]*\//, ""));
+        }
+
+        if (domain === "cdn.cnn.com") {
+            // http://cdn.cnn.com/cnnnext/dam/assets/170428012205-28-met-gala-kurkova.jpg
+            return {
+                url: src,
+                can_head: false
+            };
         }
 
         // http://wcmimages.ottawasun.com/images?url=http://storage.ottawasun.com/v1/dynamic_resize/sws_path/suns-prod-images/1297804218043_ORIGINAL.jpg%3Fsize=520x&w=840&h=630
@@ -1837,6 +1849,16 @@
             domain === "img.vidible.tv" ||
             // http://images.es.j-14.com/uploads/posts/image/67560/dove-cameron-new-music.jpg?crop=top&fit=clip&h=900&w=2000 -- upscaled
             domain.match(/images\.(?:[a-z]+\.)?j-14\.com/) ||
+            // https://cdn.abcotvs.com/dip/images/3174795_030418aposcarsredcarpetronan.jpg?w=120&r=16:9
+            domain === "cdn.abcotvs.com" ||
+            // http://www.tasteofcountry.com/files/2018/04/ACM-RC-Pictures.jpg?w=980&q=75
+            (domain_nowww === "tasteofcountry.com" && src.indexOf("/files/") >= 0) ||
+            // http://img.cdn2.vietnamnet.vn/Images/english/2018/05/23/09/20180523095208-3.jpg?w=80&h=45
+            domain.match(/img\.cdn[0-9]*\.vietnamnet\.vn/) ||
+            // https://images.thewest.com.au/publication/B88845233Z/1527064708921_GEP1KTC2C.2-2.jpg?imwidth=640&impolicy=.auto
+            domain === "images.thewest.com.au" ||
+            // https://cdn1.ntv.com.tr/gorsel/sanat/izlemeniz-gereken-100-anime/izlemeniz-gereken-100-anime,cZEsQuQhvUqIlKd_mSoGvw.jpg?w=960&mode=max&v=20100504143043000
+            domain.match(/cdn[0-9]*\.ntv\.com\.tr/) ||
             // http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
             // https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
             src.match(/\/demandware\.static\//) ||
@@ -2059,6 +2081,8 @@
             domain === "pics.prcm.jp" ||
             // http://s1.lprs1.fr/images/2017/08/17/7197618_sofia-solares-cover_940x500.PNG
             domain.match(/s[0-9]*\.lprs1\.fr/) ||
+            // http://m.wsj.net/video/20170227/022717oscarsfashion/022717oscarsfashion_1280x720.jpg
+            domain === "m.wsj.net" ||
             // http://images.cinefil.com/movies/1053952_1600x450.jpg
             //   http://images.cinefil.com/movies/1053952.jpg
             domain === "images.cinefil.com") {
@@ -2313,7 +2337,7 @@
             return src.replace(/\/img\/[^/]*=\/(?:[0-9]+x[0-9]+:[0-9]+x[0-9]+\/)?(?:[0-9]+x[0-9]+\/)?(.*)/, "/img/$1");
         }
 
-        if (domain.match(/wwwimage[0-9]*\.cbsstatic\.com/)) {
+        if (domain.match(/wwwimage[0-9]*(?:-secure)?\.cbsstatic\.com/)) {
             // http://wwwimage2.cbsstatic.com/thumbnails/photos/w370/blog/abd70cf777ca6a77_marissa_golds_guide_1920.jpg
             //   http://wwwimage2.cbsstatic.com/base/files/blog/abd70cf777ca6a77_marissa_golds_guide_1920.jpg
             // http://wwwimage.cbsstatic.com/thumbnails/photos/files/asset/10/00/56/47/927857742dd31df2_dianes_world.jpg
@@ -2322,6 +2346,7 @@
             //   http://wwwimage4.cbsstatic.com/thumbnails/videos/files/CBS_Production_Entertainment_VMS/761/811/2018/02/06/1145406531709/CBS_SCORPION_416_IMAGE_NO_LOGO_thumb_Master.jpg
             // http://wwwimage2.cbsstatic.com/thumbnails/photos/770xh/danielle_big_brother_over_the_top.jpg
             // http://wwwimage2.cbsstatic.com/thumbnails/photos/100q/danielle_big_brother_over_the_top.jpg
+            // https://wwwimage-secure.cbsstatic.com/thumbnails/photos/770xh/610a45ac16030991_lady-gaga-2-red-carpet-2018-grammy-awards.jpg
             //
             // error:
             //Not enough parameters were given.
@@ -2889,10 +2914,13 @@
             //   http://images6.fanpop.com/image/photos/33100000/Zetsuen-No-Tempest-zetsuen-no-tempest-33126825.jpg
             // http://images1.fanpop.com/images/image_uploads/cf-calista-flockhart-912712_525_700.jpg
             // http://images.fanpop.com/images/image_uploads/Emma-Watson--emma-watson-95242_500_400.jpg
+            // http://images6.fanpop.com/image/answers/3197000/3197239_1364966408102.53res_426_300.jpg
             //
             // http://images6.fanpop.com/image/photos/38000000/Zayn-Malik-2015-one-direction-38049270-2121-2500.jpg
             //   http://images6.fanpop.com/image/photos/38000000/Zayn-Malik-2015-one-direction-38049270.jpg - doesn't work
-            return src.replace(/([0-9]+)-[0-9]+-[0-9]+(\.[^/.]*)$/, "$1$2").replace(/([0-9]+)_[0-9]+_[0-9]+(\.[^/.]*)$/, "$1$2");
+            return src
+                .replace(/([0-9]+)-[0-9]+-[0-9]+(\.[^/.]*)$/, "$1$2")
+                .replace(/([0-9]+)_[0-9]+_[0-9]+(\.[^/.]*)$/, "$1$2");
         }
 
         // https://image.jimcdn.com/app/cms/image/transf/dimension=299x10000:format=png/path/s07f3459425dd27f2/image/i23aaf7ddb2a0e16d/version/1471508912/image.png
@@ -3646,8 +3674,19 @@
             //   https://ssli.ebayimg.com/images/g/nqQAAOSwh2RZ6b1q/s-l9999.jpg
             // http://i.ebayimg.com/00/s/NjAwWDQ1MA==/z/mEAAAOSwKIpWBa25/$_23.JPG
             //   http://i.ebayimg.com/images/g/mEAAAOSwKIpWBa25/s-l9999.jpg
+            // http://i.ebayimg.com/t/Trashy-Red-Riding-Hood-Gingham-Cute-Dress-Up-Halloween-Sexy-Teen-Adult-Costume-/00/s/MzUwWDM1MA==/z/be8AAMXQxVZRCdlO/$T2eC16VHJHgE9n0yFji(BRCdlO!Zpg~~60_35.JPG
+            //   http://i.ebayimg.com/00/s/MzUwWDM1MA==/z/be8AAMXQxVZRCdlO/$T2eC16VHJHgE9n0yFji(BRCdlO!Zpg~~60_35.JPG
+            //   http://i.ebayimg.com/images/g/be8AAMXQxVZRCdlO/s-l9999.jpg
+            // http://i.ebayimg.com/images/i/121630247122-0-1/s-l1000.jpg -- 9999 doesn't work
+            // http://i.ebayimg.com/images/i/262923537353-0-1/s-l1000.jpg -- 9999
+            //   https://i.ebayimg.com/images/g/6OoAAOSw3gJZHI1d/s-l1000.jpg
             // https://i.ebayimg.com/thumbs/images/g/2FMAAOSw4A5Y0l-Z/s-l200.jpg
             //   https://i.ebayimg.com/images/g/2FMAAOSw4A5Y0l-Z/s-l9999.jpg
+            newsrc = src.replace(/\/t\/.*?(\/[0-9]+\/s\/)/, "$1");
+            if (newsrc !== src) {
+                return newsrc;
+            }
+
             newsrc = src.replace(/\/[0-9]+\/[a-z]+\/[^/]*\/[a-z]+\/([^/]+)\/[^/.]*(\.[^/.]*)$/, "/images/g/$1/s-l9999$2");
             if (newsrc !== src) {
                 newsrc = newsrc.replace(/(.*\.)[^/.]*$/, "$1") + newsrc.replace(/.*\.([^/.]*)$/, "$1").toLowerCase();
@@ -5261,10 +5300,13 @@
         if (domain.match(/data[0-9]*\.ibtimes\.(?:co\.in|sg)/)) {
             // http://data1.ibtimes.co.in/cache-img-0-450/en/full/554638/1420537417_beant-singh.jpg
             //   http://data1.ibtimes.co.in/en/full/554638/1420537417_beant-singh.jpg
+            // https://data1.ibtimes.co.in/cache-img-900-0-photo/en/full/66506/-62170003800_cannes-2017-aishwarya-rai-bachchan-looks-stunning-she-walks-red-carpet.jpg
+            //   https://data1.ibtimes.co.in/en/full/66506/-62170003800_cannes-2017-aishwarya-rai-bachchan-looks-stunning-she-walks-red-carpet.jpg -- doesn't work
+            //   The requested URL /en/full/6/65/66506.jpg was not found on this server.
             // https://data.ibtimes.sg/en/full/16882/changi-airport.jpg?w=564&h=340&l=50&t=40
             // https://data.ibtimes.sg/en/thumb/21008/finance-minister-heng-swee-keat.jpg
             return src
-                .replace(/(:\/\/[^/]*\/)cache-img-[0-9]*-[0-9]*\//, "$1")
+                .replace(/(:\/\/[^/]*\/)cache-img-[0-9]*-[0-9]*(?:-photo)?\//, "$1")
                 .replace(/\/[a-z]*(\/[0-9]+\/[^/]*)$/, "/full$1")
                 .replace(/\?.*$/, "");
         }
@@ -8737,6 +8779,8 @@
             //   https://image.afcdn.com/story/20170706/selena-gomez-1102651.jpg
             // https://image.afcdn.com/story/20130911/cara-delevingne-98052_w767h767c1cx345cy200.jpg
             //   https://image.afcdn.com/story/20130911/cara-delevingne-98052.jpg
+            // https://image.afcdn.com/album/D20180221/allison-janney-phalbm25328123_w660.jpg
+            //   https://image.afcdn.com/album/D20180221/allison-janney-phalbm25328123.jpg
             // doesn't work: (redirects to blank image, no content-length header, can't find differences in headers)
             // https://image.afcdn.com/story/20170706/selena-gomez-1102505_w670.jpg
             // https://image.afcdn.com/story/20170706/selena-gomez-1102441_w670.jpg
@@ -9454,6 +9498,67 @@
             // https://alchetron.com/cdn/dove-cameron-b073b951-002f-4a02-b6ee-947523dfd11-resize-750.jpeg
             //   https://alchetron.com/cdn/dove-cameron-b073b951-002f-4a02-b6ee-947523dfd11.jpeg
             return src.replace(/-resize-[0-9]+(\.[^/.]*)$/, "$1");
+        }
+
+        if (domain === "img.ltn.com.tw") {
+            // thanks to @rEnr3n on github
+            // http://img.ltn.com.tw/Upload/ent/page/800/2018/05/10/2422261_2.jpg -- 800x800
+            //   http://img.ltn.com.tw/Upload/ent/page/orig/2018/05/10/2422261_2.jpg -- 2000x2000
+            // http://img.ltn.com.tw/Upload/ent/page/400S/2018/05/22/phpsyErCP.jpg -- 400x533
+            //   http://img.ltn.com.tw/Upload/ent/page/orig/2018/05/22/phpsyErCP.jpg -- 720x960
+            // other:
+            // http://img.ltn.com.tw/Upload/Module/2/497/1496422.jpg -- 650x400
+            // http://img.ltn.com.tw/Upload/liveNews/BigPic/600_phpbfGlgC.jpg -- 600x402
+            // http://img.ltn.com.tw/Upload/liveNews/BigPic/600_phpmMJrzu.jpg -- 2500x1268
+            // http://img.ltn.com.tw/2013/new/oct/4/images/bigPic/600_43.jpg -- 1627x1627
+            // http://img.ltn.com.tw/Upload/3c/page/2017/12/30/171230-32502-1.jpg -- 3801x2534
+            return src.replace(/\/Upload\/ent\/page\/[^/]+\//, "/Upload/ent/page/orig/");
+        }
+
+        if (domain.match(/cdn[a-z]?\.lystit\.com/)) {
+            // https://cdnc.lystit.com/520/650/n/photos/missguided/549604c4/missguided-designer-mustard-Mustard-Yellow-Satin-Asymmetric-Twist-Front-Maxi-Dress.jpeg
+            //   https://cdnc.lystit.com/photos/missguided/549604c4/missguided-designer-mustard-Mustard-Yellow-Satin-Asymmetric-Twist-Front-Maxi-Dress.jpeg
+            // https://cdnb.lystit.com/200/250/tr/photos/nordstrom/3c5054da/mulberry-Clay-Small-Zip-Bayswater-Classic-Leather-Tote.jpeg
+            //   https://cdnb.lystit.com/photos/nordstrom/3c5054da/mulberry-Clay-Small-Zip-Bayswater-Classic-Leather-Tote.jpeg
+            return src.replace(/(:\/\/[^/]*\/)[0-9]+\/[0-9]+\/[0-9a-z]+\/photos\//, "$1photos/");
+        }
+
+        if (domain === "www.newshub.co.nz") {
+            // http://www.newshub.co.nz/home/entertainment/2018/01/golden-globes-2018-red-carpet-highlights-a-red-carpet-flooded-in-black/_jcr_content/par/image_1284270800.dynimg.1200.q75.jpg/v1515372069805/GettyImages-902328010.jpg
+            //   http://www.newshub.co.nz/home/entertainment/2018/01/golden-globes-2018-red-carpet-highlights-a-red-carpet-flooded-in-black/_jcr_content/par/image_1284270800.dynimg.full.q75.jpg/v1515372069805/GettyImages-902328010.jpg
+            return src.replace(/(\/image_[0-9]+\.dynimg\.)[^/]*(\.q[0-9]+\.[^/.]*)(\/.*)?$/, "$1full$2$3");
+        }
+
+        if (domain === "mediaassets.wxyz.com") {
+            // https://mediaassets.wxyz.com/photo/2018/05/22/poster_22074aded9dd4214ae42eb62a4404769_87749608_ver1.0_320_240.jpg
+            //   https://mediaassets.wxyz.com/photo/2018/05/22/poster_22074aded9dd4214ae42eb62a4404769_87749608_ver1.0.jpg
+            return src.replace(/_[0-9]+_[0-9]+(\.[^/.]*)$/, "$1");
+        }
+
+        if (amazon_container === "s3.931wolfcountry.com") {
+            // http://s3.amazonaws.com/s3.931wolfcountry.com/styles/full_content_width__775px_max_/s3/USATSI_10787675.jpg?itok=o8qUHpri
+            //   http://s3.amazonaws.com/s3.931wolfcountry.com/USATSI_10787675.jpg?itok=o8qUHpri
+            return src.replace(/\/styles\/[^/]*\/s3\//, "/");
+        }
+
+        if (domain.match(/media[0-9]*\.s-nbcnews\.com/)) {
+            // https://media3.s-nbcnews.com/i/newscms/2017_24/1221281/headshot_nbc_b0b4262799627ca0e2e9fffd7b72458c.jpg -- 2832x4256
+            // https://media4.s-nbcnews.com/i/newscms/2017_41/1289217/nialhoran-171016-today-tease_7e3030f1a03215e26135bb6d77ced11c.jpg -- 10721x6031
+            // https://media3.s-nbcnews.com/j/newscms/2018_21/1340735/billboard-awards-jenna-dewan-today-180521_64d305c86902f706a7b4dc0667946774.760;1811;7;70;3.jpg -- 760x1811
+            //   https://media3.s-nbcnews.com/i/newscms/2018_21/1340735/billboard-awards-jenna-dewan-today-180521_64d305c86902f706a7b4dc0667946774.jpg -- 1049x2500
+            // https://media2.s-nbcnews.com/j/newscms/2018_21/1340737/billboard-awards-jlo-today-180521-main-art_aa1d851db712d9a513b768ee4646e442.focal-1000x500.jpg -- 1000x500
+            //   https://media2.s-nbcnews.com/i/newscms/2018_21/1340737/billboard-awards-jlo-today-180521-main-art_aa1d851db712d9a513b768ee4646e442.jpg -- 2400x1200
+            return src.replace(/(:\/\/[^/]*\/)j(\/.*\/[^/.]*)[^/]*(\.[^/.]*)$/, "$1i$2$3");
+        }
+
+        if (domain === "imgcp.aacdn.jp") {
+            // https://imgcp.aacdn.jp/img-a/488/auto/global-aaj-front/article/2017/10/59d2800498c16_59d27ee42664e_1369399827.JPG
+            //   https://imgcp.aacdn.jp/img-a/auto/auto/global-aaj-front/article/2017/10/59d2800498c16_59d27ee42664e_1369399827.JPG
+            // https://imgcp.aacdn.jp/img-a/488/auto/global-aaj-front/article/2017/04/58dfa1fb6bf8b_58df9dd195c06_277476442.JPG
+            //   https://imgcp.aacdn.jp/img-a/auto/auto/global-aaj-front/article/2017/04/58dfa1fb6bf8b_58df9dd195c06_277476442.JPG
+            // https://imgcp.aacdn.jp/img-a/1720/auto/global-aaj-front/article/2017/02/589a9891100fd_589a94dd4439c_950604468.jpg
+            //   https://imgcp.aacdn.jp/img-a/auto/auto/global-aaj-front/article/2017/02/589a9891100fd_589a94dd4439c_950604468.jpg
+            return src.replace(/\/img-a\/[0-9a-z]+\/[0-9a-z]+\//, "/img-a/auto/auto/");
         }
 
 
