@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.3.15
+// @version      0.3.16
 // @description  Redirects to larger versions of images
 // @author       qsniyg
 // @include      *
@@ -2034,8 +2034,8 @@
             domain === "media.comicbook.com" ||
             // https://www.grazia.it/content/uploads/2018/01/Dove-Cameron-800x599.jpg
             domain === "www.grazia.it" ||
-            // http://www.randomnude.com/wp-content/uploads/sites/39/2017/06/gomez__7__1-333x500.jpg
-            //   http://www.randomnude.com/wp-content/uploads/sites/39/2017/06/gomez__7__1.jpg
+            // https://img.kpopmap.com/2018/05/loco-445x262.jpg
+            domain === "img.kpopmap.com" ||
             // https://cdn.gamerant.com/wp-content/uploads/resident-evil-2-director-remake-faith-738x410.jpg.webp
             //   https://cdn.gamerant.com/wp-content/uploads/resident-evil-2-director-remake-faith.jpg.webp
             src.indexOf("/wp-content/uploads/") >= 0 ||
@@ -3698,6 +3698,12 @@
                 .replace(/-l[0-9]+(\.[^/.]*)$/, "-l9999$1");
         }
 
+        if (domain.match(/thumbs[0-9]*\.ebaystatic\.com/)) {
+            // https://thumbs2.ebaystatic.com/m/mKuDpR7Z1yrk82zzlihfOCw/140.jpg
+            //   https://ssli.ebayimg.com/images/m/mKuDpR7Z1yrk82zzlihfOCw/s-l9999.jpg
+            return src.replace(/^[a-z]*:\/\/[^/]*\/(.*?)\/[0-9]+(\.[^/.]*)$/, "https://ssli.ebayimg.com/images/$1/s-l9999$2");
+        }
+
         if (domain === "www.picclickimg.com") {
             // https://www.picclickimg.com/d/l400/pict/232427221641_/Dove-Cameron-Delicate-8x10-Photo-Picture-Celebrity-Print.jpg
             //   https://www.picclickimg.com/d/l9999/pict/232427221641_/Dove-Cameron-Delicate-8x10-Photo-Picture-Celebrity-Print.jpg
@@ -4384,11 +4390,13 @@
             return src.replace(/(\/data\/[a-f0-9]*\/[a-f0-9]*\/[^./]*\.[^/.]*)[./].*$/, "$1");
         }
 
-        if (domain.match(/assets[0-9]*\.ignimgs\.com/)) {
+        if (domain.match(/assets[0-9]*\.ignimgs\.com/) ||
+            domain.match(/assets[0-9]*\.ign\.com/)) {
             // http://assets1.ignimgs.com/2018/02/02/ac-origins-the-hidden-ones---button-1517533272073_180h.jpg
             // http://assets1.ignimgs.com/2018/02/06/nightinthewoods-deck-ff6c25-1517944777381_358w.jpg
             // http://assets1.ignimgs.com/2017/05/09/1-1-1494366320371_grande.jpg
             //   http://assets1.ignimgs.com/2017/05/09/1-1-1494366320371.jpg
+            // https://assets.ign.com/thumbs/userUploaded/2014/9/19/20823568_fatalframewiiu_tgs2014trailer_ign-1411150047803_medium.jpg
             //return src.replace(/_[0-9]*[wh](\.[^/.]*)$/, "$1");
             return src.replace(/_[^-_/.]*(\.[^/.]*)$/, "$1");
         }
@@ -4859,6 +4867,12 @@
             // https://a.ksd-i.com/s/160l_86400_aaf286b862dc657320f390e272bd7cb8/static.koreastardaily.com/2017-06-26/95799-521086.jpg
             // https://a.ksd-i.com/s/480x_86400_63072b0849030d169deca9872c37d761/static.koreastardaily.com/2017-10-24/99264-550364.jpg
             return src.replace(/.*:\/\/[^/]*\/s\/[^/]*\//, "http://");
+        }
+
+        if (domain === "static.koreastardaily.com") {
+            // http://static.koreastardaily.com/2017-04-13/93388-506687.jpg
+            //   https://a.ksd-i.com/a/2017-04-13/93388-506687.jpg -- same (but HTTPS)
+            return src.replace(/.*:\/\/[^/]*\/([0-9]+-[0-9]+-[0-9]+\/[0-9]+-[0-9]+\.[^/.]*)$/, "https://a.ksd-i.com/a/$1");
         }
 
         if (domain === "pic.pimg.tw") {
@@ -5956,9 +5970,12 @@
             return src.replace(/\/i\/hdn\/[0-9]+\/[0-9]+x[0-9]+\//, "/i/hdn/100/0x0/");
         }
 
-        if (domain === "www.kurtkomaromi.com") {
+        if (domain === "www.kurtkomaromi.com" ||
+            domain === "www.weeklystorybook.com") {
             // http://www.kurtkomaromi.com/.a/6a00d8341c764653ef01b8d144082f970c-500wi
             //   http://www.kurtkomaromi.com/.a/6a00d8341c764653ef01b8d144082f970c
+            // http://www.weeklystorybook.com/.a/6a0105369e6edf970b01b8d0ebd465970c-400wi
+            //   http://www.weeklystorybook.com/.a/6a0105369e6edf970b01b8d0ebd465970c
             return src.replace(/(\/\.a\/[^-/]*)-[^/]*$/, "$1");
         }
 
@@ -6019,6 +6036,7 @@
             // https://s.hdnux.com/photos/71/36/40/15067141/3/1024x1024.jpg
             //   https://s.hdnux.com/photos/71/36/40/15067141/3/rawImage.jpg
             // http://ww2.hdnux.com/photos/70/63/07/14889457/3/1024x1024.jpg
+            //   https://s.hdnux.com/photos/70/63/07/14889457/3/rawImage.jpg
             // https://s.hdnux.com/photos/70/63/07/14889457/3/1024x1024.jpg
             return src.replace(/\/[0-9]+x[0-9]+(\.[^/.]*)$/, "/rawImage$1");
         }
@@ -9535,7 +9553,10 @@
             return src.replace(/_[0-9]+_[0-9]+(\.[^/.]*)$/, "$1");
         }
 
-        if (amazon_container === "s3.931wolfcountry.com") {
+        if (amazon_container === "s3.931wolfcountry.com" ||
+            // https://kpopimg.s3.amazonaws.com/styles/article_image/s3/eunice-dia.jpg?itok=5JoH8xh6
+            //   https://kpopimg.s3.amazonaws.com/eunice-dia.jpg?itok=5JoH8xh6
+            domain === "kpopimg.s3.amazonaws.com") {
             // http://s3.amazonaws.com/s3.931wolfcountry.com/styles/full_content_width__775px_max_/s3/USATSI_10787675.jpg?itok=o8qUHpri
             //   http://s3.amazonaws.com/s3.931wolfcountry.com/USATSI_10787675.jpg?itok=o8qUHpri
             return src.replace(/\/styles\/[^/]*\/s3\//, "/");
@@ -9560,6 +9581,137 @@
             //   https://imgcp.aacdn.jp/img-a/auto/auto/global-aaj-front/article/2017/02/589a9891100fd_589a94dd4439c_950604468.jpg
             return src.replace(/\/img-a\/[0-9a-z]+\/[0-9a-z]+\//, "/img-a/auto/auto/");
         }
+
+        if (domain === "kpopselca.com") {
+            // http://kpopselca.com/selca/thumb/49457_i-cant-breathe.jpg
+            return src.replace(/\/selca\/thumb\//, "/selca/");
+        }
+
+        if (domain === "www.koogle.tv") {
+            // http://www.koogle.tv/static/media/uploads/newest-news-2/.thumbnails/052418_blackpink_jennie_01-120x120.jpg
+            //   http://www.koogle.tv/static/media/uploads/newest-news-2/052418_blackpink_jennie_01.jpg
+            return src.replace(/\/\.thumbnails\/([^/]*)-[0-9]+x[0-9]+(\.[^/.]*)$/, "/$1$2");
+        }
+
+        if (domain === "fanaru.com") {
+            // http://fanaru.com/waup/image/thumb/188305-waup-wassup.jpg -- 280x210
+            //   http://fanaru.com/waup/image/188305-waup-wassup.jpg -- 3888x2592
+            return src.replace(/\/image\/thumb\//, "/image/");
+        }
+
+        if (domain === "d9nvuahg4xykp.cloudfront.net") {
+            // https://d9nvuahg4xykp.cloudfront.net/-9212700925596145478/-1193646998958160813_thumbnail.jpg
+            //   https://d9nvuahg4xykp.cloudfront.net/-9212700925596145478/-1193646998958160813.jpg
+            return src.replace(/_thumbnail(\.[^/.]*)$/, "$1");
+        }
+
+        if (domain === "i.lihkg.com") {
+            // https://i.lihkg.com/540/http://gifyu.com/images/cc018d69be4eb6e68887da85d6dd83b9.jpg
+            //   https://gifyu.com/images/cc018d69be4eb6e68887da85d6dd83b9.jpg
+            return src.replace(/^[a-z]+:\/\/[^/]*\/[0-9]+\//, "");
+        }
+
+        if (domain === "www.nintendoworldreport.com" &&
+            src.indexOf("/media/") >= 0) {
+            // http://www.nintendoworldreport.com/media/37218/1/gallery/12.jpg
+            //   http://www.nintendoworldreport.com/media/37218/1/12.jpg
+            return src.replace(/\/gallery\/([0-9]+\.[^/.]*)$/, "/$1");
+        }
+
+        if (domain_nowww === "nintendoeverything.com" &&
+            src.indexOf("/gallery/") >= 0) {
+            // https://www.nintendoeverything.com/wp-content/gallery/fatal-frame-maiden-of-black-water-8515/thumbs/thumbs_fatal-frame-18.jpg
+            //   https://nintendoeverything.com/wp-content/gallery/fatal-frame-maiden-of-black-water-8515/fatal-frame-18.jpg
+            return src.replace(/\/thumbs\/thumbs_([^/]*)$/, "/$1");
+        }
+
+        if (domain === "images.nintendolife.com") {
+            // http://images.nintendolife.com/news/2015/09/first_impressions_taking_a_shot_at_fatal_frame_maiden_of_black_water/attachment/0/900x.jpg
+            //   http://images.nintendolife.com/news/2015/09/first_impressions_taking_a_shot_at_fatal_frame_maiden_of_black_water/attachment/0/original.jpg
+            return src.replace(/(\/attachment\/[^/]*\/)[^/]+(\.[^/.]*)$/, "$1original$2");
+        }
+
+        if (domain === "cdn.igromania.ru") {
+            // https://cdn.igromania.ru/mnt/articles/4/b/7/9/4/d/30165/preview/e4c138a20130c713_336x189.jpg
+            //   https://cdn.igromania.ru/mnt/articles/4/b/7/9/4/d/30165/preview/e4c138a20130c713_original.jpg
+            // https://cdn.igromania.ru/mnt/articles/b/0/8/f/d/3/27221/70b17403b362d9c9_1200xH.jpg
+            //   https://cdn.igromania.ru/mnt/articles/b/0/8/f/d/3/27221/70b17403b362d9c9.jpg
+            // doesn't work for all:
+            // https://cdn.igromania.ru/mnt/articles/b/0/8/f/d/3/27221/html/img/ca7afa51a9675c1d.jpg
+            //   https://cdn.igromania.ru/mnt/articles/b/0/8/f/d/3/27221/html/img/ca7afa51a9675c1d_original.jpg -- 404
+            // https://www.igromania.ru/mnt/news/9/4/4/8/4/1/74580/html/more/d97ea5df6c0eddf6_original.jpg -- but this works
+            return src.replace(/(\/[0-9a-f]+)(?:_[^-_/.]*)?(\.[^/.]*)$/, "$1_original$2");
+        }
+
+        if (domain === "i.blogs.es") {
+            // https://i.blogs.es/824e4f/bayonetta/150_150.jpg
+            //   https://i.blogs.es/824e4f/bayonetta/original.jpg
+            return src.replace(/\/[0-9]+_[0-9]+(\.[^/.]*)$/, "/original$1");
+        }
+
+        if (domain === "resize.rbl.ms") {
+            // https://resize.rbl.ms/image?source=https%3A%2F%2Fassets.rbl.ms%2F3689460%2F1216x700.jpg&size=2000%2C2000&c=qkxiCnuqMLv4GT53
+            //   https://assets.rbl.ms/3689460/origin.jpg
+            return decodeURIComponent(src.replace(/.*\/image.*?[?&]source=([^&]*).*/, "$1"));
+        }
+
+        if (domain === "i.paigeeworld.com") {
+            // https://i.paigeeworld.com/user-media/1452729600000/5350f6d7ad9e9cec0bb7e1be_56978883e1cf0a1d06737577_320.jpg -- 320x226
+            //   https://i.paigeeworld.com/user-media/1452729600000/5350f6d7ad9e9cec0bb7e1be_56978883e1cf0a1d06737577_rz.jpg -- 5787x4093
+            return src.replace(/(\/user-media\/[0-9]+\/[0-9a-f]+_[0-9a-f]+_)[^/.]*(\.[^/.]*)$/, "$1rz$2");
+        }
+
+        if (domain === "1d31c772ec21a65b0a71-0707aae3004193da193e1ad4a942592d.ssl.cf2.rackcdn.com") {
+            // https://1d31c772ec21a65b0a71-0707aae3004193da193e1ad4a942592d.ssl.cf2.rackcdn.com/24688/fatal_frame_treehouse__default-news-image.png
+            //   https://1d31c772ec21a65b0a71-0707aae3004193da193e1ad4a942592d.ssl.cf2.rackcdn.com/24688/fatal_frame_treehouse.png
+            // https://1d31c772ec21a65b0a71-0707aae3004193da193e1ad4a942592d.ssl.cf2.rackcdn.com/24680/fatalframelooksbrettygoodguizee32015__medium.png
+            //   https://1d31c772ec21a65b0a71-0707aae3004193da193e1ad4a942592d.ssl.cf2.rackcdn.com/24680/fatalframelooksbrettygoodguizee32015.png
+            return src.replace(/(:\/\/[^/]*\/[0-9]+\/[^/.]*)__[^_/.]*(\.[^/.]*)$/, "$1$2");
+        }
+
+        if (domain === "i.nextmedia.com.au") {
+            // https://i.nextmedia.com.au/Utils/ImageResizer.ashx?n=https%3A%2F%2Fi.nextmedia.com.au%2FFeatures%2Fvampyr3.jpg&w=820&c=0&s=1
+            //   https://i.nextmedia.com.au/Features/vampyr3.jpg
+            return decodeURIComponent(src.replace(/.*\/Utils\/ImageResizer\.ashx.*?[?&]n=([^&]*).*?$/, "$1"));
+        }
+
+        if (domain.match(/dyn[0-9]*\.heritagestatic\.com/)) {
+            // https://dyn1.heritagestatic.com/lf?set=path%5B1%2F5%2F3%2F6%2F2%2F15362544%5D%2Csizedata%5B850x600%5D&call=url%5Bfile%3Aproduct.chain%5D
+            //   ?set=path[1/5/3/6/2/15362544],sizedata[850x600]&call=url[file:product.chain]
+            //
+            //   https://dyn1.heritagestatic.com/lf?set=path%5B1%2F5%2F3%2F6%2F2%2F15362544%5D&call=url%5Bfile%3Aproduct.chain%5D
+            // https://dyn1.heritagestatic.com/lf?set=path%5B1%2F5%2F3%2F6%2F2%2F15362543%5D&call=url%5Bfile%3Aproduct.chain%5D
+            //   ?set=path[1/5/3/6/2/15362543]&call=url[file:product.chain]
+            var set = url.searchParams.get("set");
+            if (!set)
+                return src;
+
+            set = decodeURIComponent(set)
+                .replace(/,sizedata\[[^,]*\]/, "")
+                .replace(/,$/, "");
+
+            return src.replace(/(.*[?&]set=)[^&]*(.*?)$/, "$1" + encodeURIComponent(set) + "$2");
+        }
+
+        if (domain === "natedsanders.com" &&
+            src.indexOf("/ItemImages/") >= 0) {
+            // https://natedsanders.com/ItemImages/000008/8339a_med.jpeg -- 600x163
+            //   https://natedsanders.com/ItemImages/000008/8339a_lg.jpeg -- 4500x1224
+            return src.replace(/(\/[0-9a-z]+)_[a-z]+(\.[^/.]*)$/, "$1_lg$2");
+        }
+
+        if (domain === "d1x0dndjbjw02n.cloudfront.net") {
+            // https://d1x0dndjbjw02n.cloudfront.net/production/posts/eyecatches/000/001/438/thumb.jpg?1496817733
+            //   https://d1x0dndjbjw02n.cloudfront.net/production/posts/eyecatches/000/001/438/original.jpg?1496817733
+            return src.replace(/\/thumb(\.[^/.]*)$/, "/original$1");
+        }
+
+        if (domain === "summary-sv.fc2.com") {
+            // https://summary-sv.fc2.com/api/resize_img.php?src=https%3A%2F%2Fsummary-img-sv.fc2.com%2Fsummaryfc2%2Fimg%2Fsummary%2Fwidget%2F100053655.jpeg&width=300&height=600&upd_date=2017-01-11%2008:28:37 -- upscaled
+            //   https://summary-img-sv.fc2.com/summaryfc2/img/summary/widget/100053655.jpeg
+            return decodeURIComponent(src.replace(/.*?\/api\/resize_img\.php.*?[?&]src=([^&]*).*?$/, "$1"));
+        }
+
 
 
 
@@ -9768,6 +9920,11 @@
             domain === "cdnrockol-rockolcomsrl.netdna-ssl.com" ||
             // https://www.infobae.com/new-resizer/jfCQ7-AjnQyNdmWHdFGYvzYmVx4=/600x0/filters:quality(100)/arc-anglerfish-arc2-prod-infobae.s3.amazonaws.com/public/4IOFEV5GJVES3DVJ2XHDFXA2TE
             domain === "www.infobae.com" ||
+            // http://s2.glbimg.com/i7GBoDhq8XYOfFinAMZv0YYZdPY=/e.glbimg.com/og/ed/f/original/2016/12/26/eb8.jpg
+            //   http://e.glbimg.com/og/ed/f/original/2016/12/26/eb8.jpg
+            // https://s2.glbimg.com/guJ0REQ3RhF8RtD-dacV89xdGQI=/140x111/e.glbimg.com/og/ed/f/original/2015/02/12/nicole_scherzinger.jpg
+            //   http://e.glbimg.com/og/ed/f/original/2015/02/12/nicole_scherzinger.jpg
+            domain.match(/s[0-9]*\.glbimg\.com/) ||
             src.match(/:\/\/[^/]*\/thumbor\/[^/]*=\//) ||
             src.match(/:\/\/[^/]*\/resizer\/[^/]*=\/[0-9]+x[0-9]+(?::[^/]*\/[0-9]+x[0-9]+)?\/(?:filters:[^/]*\/)?/)) {
             // https://cdn.vox-cdn.com/thumbor/ta2xdyUViVrBXCLGapdwLY7is_s=/0x0:3000x2355/1200x800/filters:focal(1116x773:1596x1253)/cdn.vox-cdn.com/uploads/chorus_image/image/55856727/815434448.0.jpg
