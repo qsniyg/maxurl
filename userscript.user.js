@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.3.17
+// @version      0.3.18
 // @description  Redirects to larger versions of images
 // @author       qsniyg
 // @include      *
@@ -107,7 +107,19 @@
             return protocol + ":" + b;
         if (b.length >= 1 && b.slice(0, 1) === "/")
             return start + b;
-        return a + "/" + b;
+
+        if (true) {
+            // simple path join
+            // urljoin("http://site.com/index.html", "file.png") = "http://site.com/index.html/file.png"
+            return a + "/" + b;
+        } else {
+            // to emulate the browser's behavior instead
+            // urljoin("http://site.com/index.html", "file.png") = "http://site.com/file.png"
+            if (a.match(/\/$/))
+                return a + b.replace(/^\/*/, "");
+            else
+                return a.replace(/\/[^/]*$/, "/") + b.replace(/^\/*/, "");
+        }
     }
 
     var fullurl = function(url, x) {
@@ -119,7 +131,10 @@
         return a.href;
     };
 
-    if (is_node) {
+    // bug in chrome, see
+    // https://github.com/qsniyg/maxurl/issues/7
+    // https://our.umbraco.org/forum/using-umbraco-and-getting-started/91715-js-error-when-aligning-content-left-center-right-justify-in-richtext-editor
+    if (is_node || true) {
         fullurl = function(url, x) {
             return urljoin(url, x);
         };
@@ -230,7 +245,7 @@
             }
         }
 
-        if (domain.indexOf("img.tenasia.hankyung.com") >= 0) {
+        if (domain.indexOf("img.tenasia.hankyung.com") >= 0 && false) {
             // http://img.hankyung.com/photo/201612/AA.12967766.4.jpg -- larger than .1.
             //   http://img.hankyung.com/photo/201612/AA.12967766.1.jpg
             return src.replace(/-[0-9]+x[0-9]+\.([^/.]*)$/, ".$1");
@@ -7411,7 +7426,7 @@
             // https://s1.twnmm.com/thumb?src=http://pelmorexpd-a.akamaihd.net/img/1942203455001/201804/1942203455001_5769239466001_5769162032001-vs.jpg?pubId=1942203455001&videoId=5769162032001&w=268&h=151&scale=1&crop=1
             //   http://pelmorexpd-a.akamaihd.net/img/1942203455001/201804/1942203455001_5769239466001_5769162032001-vs.jpg
             // https://s1.twnmm.com/thumb?src=//s1.twnmm.com/images/en_ca/12/GETTY%20-%20Snow%20and%20freezing%20rain-99295.jpg&w=145&h=80&scale=1&crop=1
-            //   https://s1.twnmm.com/images/en_ca/12/GETTY%20-%20Snow%20and%20freezing%20rain-99295.jpg
+            //   https://s1.twnmm.com/images/en_ca/12/GETTY%20-%20Snow%20and%20freezing%20rain-99295.jpg -- zero length image?
             return urljoin(src, src.replace(/^[a-z]+:\/\/[^/]*\/thumb.*?[?&]src=([^?&]*).*/, "$1"));
         }
 
