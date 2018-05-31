@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.3.18
+// @version      0.3.19
 // @description  Redirects to larger versions of images
 // @author       qsniyg
 // @include      *
@@ -9210,10 +9210,12 @@
             //   https://photos.smugmug.com/Portfolio/Seattle-Sights/West-Seattle/i-PXJzQVB/1/7e0dd2ae/O/DSC01014-Edit-1-XL.jpg -- works too
             // https://photos.smugmug.com/Travel/Jongno-2018/i-647W9cb/0/686f9fdc/S/20180504-DSC_7229-Edit.jpg
             //   https://photos.smugmug.com/Travel/Jongno-2018/i-647W9cb/0/686f9fdc/O/20180504-DSC_7229-Edit.jpg
+            // https://photos.smugmug.com/GWDC/2016/i-4WJhmJM/15/1b532670/X3/ATW06318-X3.jpg
+            //   https://photos.smugmug.com/GWDC/2016/i-4WJhmJM/15/1b532670/4K/ATW06318-4K.jpg
             //return src.replace(/^((?:https?:)\/\/photos\.smugmug\.com\.?\/.+?\/)[A-Z0-9]{1,2}(\/[^\/]+?-)[A-Z0-9]{1,2}\.jpg(?:$|\?|#)/i,'$1O$2O.jpg');
             return {
                 //url: src.replace(/(\/i-[A-Za-z0-9]+\/[0-9]\/[a-f0-9]+\/)[A-Z0-9]+(\/[^/.]*-)[A-Z0-9]+(\.[^/.?]*)(?:\?.*)?$/, "$1O$2O$3"),
-                url: src.replace(/(\/i-[A-Za-z0-9]+\/[0-9]\/[a-f0-9]+\/)[A-Z0-9]+(\/[^/]*)(?:\?.*)?$/, "$1O$2"),
+                url: src.replace(/(\/i-[A-Za-z0-9]+\/[0-9]+\/[a-f0-9]+\/)[A-Z0-9]+(\/[^/]*)(?:\?.*)?$/, "$1O$2"),
                 redirects: true
             };
         }
