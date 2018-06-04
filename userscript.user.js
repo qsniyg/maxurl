@@ -420,10 +420,10 @@
         }
 
         if (domain.match(/t[0-9]*\.daumcdn\.net/)) {
-            // credit to 灰原米兰  on greasyfork:
+            // credit to 灰原米兰  on greasyfork for finding this pattern:
             // https://t1.daumcdn.net/cfile/tistory/99DECC4B5B1150482D
             //   https://t1.daumcdn.net/cfile/tistory/99DECC4B5B1150482D?original
-            // credit again to severus:
+            // credit again to severus for the link:
             // https://t1.daumcdn.net/cfile/tistory/9921ED405B0FCEDB17 -- 1600x2036
             //   https://t1.daumcdn.net/cfile/tistory/9921ED405B0FCEDB17?original -- 2200x2800
             return src.replace(/(\/cfile\/tistory\/[0-9A-F]+)(?:\\?.*)$/, "$1?original");
