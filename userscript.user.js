@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.3.19
+// @version      0.3.20
 // @description  Redirects to larger versions of images
 // @author       qsniyg
 // @include      *
@@ -402,7 +402,31 @@
             // unhandled:
             // https://tistory4.daumcdn.net/tistory/458362/attach/3a4fa78bca8649b6a44bf4627075837e
             // http://t1.daumcdn.net/tvpot/thumb/s07a6T8ejtee6OXNNXjQtVE/thumb.png?ts=1523956270
+            //
+            // https://t1.daumcdn.net/cfile/tistory/996D34465B12921B1A
+            //   http://cfile2.uf.tistory.com/original/996D34465B12921B1AE97C
+            //   996D34465B12921B1A
+            //   996D34465B12921B1AE97C
+            // https://t1.daumcdn.net/cfile/tistory/996A16355B12784D0B
+            //   http://cfile5.uf.tistory.com/original/996A16355B12784D0B9CF8
+            //   996A16355B12784D0B
+            //   996A16355B12784D0B9CF8
+            // credit to severus on greasyfork:
+            // https://t1.daumcdn.net/cfile/tistory/9921ED405B0FCEDB17 -- 1600x2036
+            //   http://cfile25.uf.tistory.com/original/9921ED405B0FCEDB17DF05 -- 2200x2800
+            //   9921ED405B0FCEDB17
+            //   9921ED405B0FCEDB17DF05
             return src.replace("/attach/", "/original/").replace("/image/", "/original/").replace(/\/[RTC][0-9]*x[0-9]*\//, "/original/");
+        }
+
+        if (domain.match(/t[0-9]*\.daumcdn\.net/)) {
+            // credit to 灰原米兰  on greasyfork:
+            // https://t1.daumcdn.net/cfile/tistory/99DECC4B5B1150482D
+            //   https://t1.daumcdn.net/cfile/tistory/99DECC4B5B1150482D?original
+            // credit again to severus:
+            // https://t1.daumcdn.net/cfile/tistory/9921ED405B0FCEDB17 -- 1600x2036
+            //   https://t1.daumcdn.net/cfile/tistory/9921ED405B0FCEDB17?original -- 2200x2800
+            return src.replace(/(\/cfile\/tistory\/[0-9A-F]+)(?:\\?.*)$/, "$1?original");
         }
 
         if (domain.match(/i[0-9]*\.daumcdn\.net/)) {
@@ -931,7 +955,8 @@
             // https://media.cntraveler.com/photos/59bb6a56e35d8f08044a32cf/16:9/pass/Rakotzbrucke-GettyImages-538162756.jpg
             // http://media.cntraveler.com/photos/59305e5611e6e853c33e7587/master/w_1440,c_limit/car-free-halibut-cove-alaska-GettyImages-496660709.jpg
             domain === "media.cntraveler.com" ||
-            domain.indexOf("media.allure.com") >= 0 ||
+            // https://media.allure.com/photos/5771af392554df47220a75cb/3:4/w_767/beauty-trends-blogs-daily-beauty-reporter-2016-05-19-selena-gomez-hair.jpg
+            domain === "media.allure.com" ||
             src.match(/:\/\/[^/]*\/photos\/[0-9a-f]{24}\/[^/]*\/[^/]*\/[^/]*$/)) {
             return src.replace(/\/[^/]*\/[^/]*\/([^/]*)$/, "/original/original/$1");
         }
@@ -1102,7 +1127,9 @@
             // https://media1.popsugar-assets.com/files/2015/09/02/221/n/37139775/d391fe8f30364ef0_15._2007_GettyImages-81449203/i/Selena-Gomez.jpg
             // http://media4.onsugar.com/files/2013/12/16/757/n/1922398/1f2e71247e26b096_Twoimageskinnyheadshot_R.jpg.xlarge/i/Gisele-Bundchen-Wearing-Bikini-Miami.jpg
             //   http://media4.onsugar.com/files/2013/12/16/757/n/1922398/1f2e71247e26b096_Twoimageskinnyheadshot_R/i/Gisele-Bundchen-Wearing-Bikini-Miami.jpg
-            return src.replace(/\.[a-z]*(\/i\/[^/]*)$/, "$1");
+            // http://media1.popsugar-assets.com/files/2014/04/09/009/n/1922441/9933a3baeee323df_141827630.xxxlarge_2x/i/Dog-Thinks-Parade-All-Him.jpg
+            //   http://media1.popsugar-assets.com/files/2014/04/09/009/n/1922441/9933a3baeee323df_141827630/i/Dog-Thinks-Parade-All-Him.jpg
+            return src.replace(/\.[a-z]*(?:_[0-9x]+)(\/i\/[^/]*)$/, "$1");
         }
 
         if (domain === "elleuk.cdnds.net") {
@@ -1427,6 +1454,15 @@
             return urlstart;
         }
 
+        if (domain.match(/^(?:.*\.)?instagram\.com$/)) {
+            return {
+                url: src,
+                headers: {
+                    "Referer": "https://www.instagram.com"
+                }
+            };
+        }
+
         if (domain === "pbs.twimg.com" &&
             src.indexOf("pbs.twimg.com/media/") >= 0) {
             // use ?name=orig instead of :orig, see:
@@ -1519,14 +1555,6 @@
             // https://dynaimage.cdn.cnn.com/cnn/q_auto,w_672,c_fill/http%3A%2F%2Fcdn.cnn.com%2Fcnnnext%2Fdam%2Fassets%2F170428012205-28-met-gala-kurkova.jpg
             //   http://cdn.cnn.com/cnnnext/dam/assets/170428012205-28-met-gala-kurkova.jpg
             return decodeURIComponent(src.replace(/.*\/cnn\/[^/]*\//, ""));
-        }
-
-        if (domain === "cdn.cnn.com") {
-            // http://cdn.cnn.com/cnnnext/dam/assets/170428012205-28-met-gala-kurkova.jpg
-            return {
-                url: src,
-                can_head: false
-            };
         }
 
         // http://wcmimages.ottawasun.com/images?url=http://storage.ottawasun.com/v1/dynamic_resize/sws_path/suns-prod-images/1297804218043_ORIGINAL.jpg%3Fsize=520x&w=840&h=630
@@ -3318,7 +3346,9 @@
             //   https://cdn.shopify.com/s/files/1/0683/4117/products/IMG_6727.jpg?v=1514569448
             // https://cdn.shopify.com/s/files/1/1581/4309/articles/stealherstyle-emmawatsonmetgala-tutorial02_1400x.progressive.jpg?v=1490365007
             //   https://cdn.shopify.com/s/files/1/1581/4309/articles/stealherstyle-emmawatsonmetgala-tutorial02.jpg?v=1490365007
-            return src.replace(/_(?:large|medium|small|grande|[0-9]+x(?:[0-9]+)?)(?:\.progressive)?(\.[^/.]*)$/, "$1");
+            // https://cdn.shopify.com/s/files/1/2684/7106/products/LKE600_720x@2x.jpg?v=1514632635
+            //   https://cdn.shopify.com/s/files/1/2684/7106/products/LKE600.jpg?v=1514632635
+            return src.replace(/_(?:large|medium|small|grande|[0-9]+x(?:[0-9]+)?)(?:@[0-9]+x)?(?:\.progressive)?(\.[^/.]*)$/, "$1");
         }
 
         if (domain === "cdn.itv.com") {
@@ -3610,13 +3640,19 @@
             //   https://cdn.cnn.com/cnnnext/dam/assets/180208122950-palestinian-deportee-6.jpg
             // http://i2.cdn.turner.com/cnn/dam/assets/130318122753-emma-watson-january-2013-story-top.jpg
             //   http://i2.cdn.turner.com/cnn/dam/assets/130318122753-emma-watson-january-2013.jpg
+            // http://cdn.cnn.com/cnnnext/dam/assets/170428012205-28-met-gala-kurkova.jpg
+            // https://cdn.cnn.com/cnnnext/dam/assets/180405060923-plastic-bags-edinburgh-beach-file-restricted-exlarge-169.jpg
+            //   https://cdn.cnn.com/cnnnext/dam/assets/180405060923-plastic-bags-edinburgh-beach-file-restricted.jpg
             // doesn't work:
             // http://cdn.cnn.com/cnnnext/dam/assets/140630134917-12-canada-most-beautiful-places-super-169.jpg
             // http://cdn.cnn.com/cnnnext/dam/assets/140630134917-12-canada-most-beautiful-places-large-169.jpg
             // http://cdn.cnn.com/cnnnext/dam/assets/140630134917-12-canada-most-beautiful-places-exlarge-169.jpg
             // http://cdn.cnn.com/cnnnext/dam/assets/140630134917-12-canada-most-beautiful-places-full-169.jpg
             //return src.replace(/-(?:small|medium|large|exlarge|super|full|overlay)-[0-9]*(\.[^/.]*)$/, "$1");
-            return src.replace(/-(?:small|medium|large|exlarge|super|full|overlay|alt|tease|story-top)(?:-(?:small|medium|large|exlarge|super|full|overlay|alt|tease))?(?:-[0-9]*)?(\.[^/.]*)$/, "$1");
+            return {
+                url: src.replace(/-(?:small|medium|large|exlarge|super|full|overlay|alt|tease|story-top)(?:-(?:small|medium|large|exlarge|super|full|overlay|alt|tease))?(?:-[0-9]*)?(\.[^/.]*)$/, "$1"),
+                can_head: false
+            };
             //return src.replace(/-[a-z]*-(?:169|tease)(\.[^/.]*)$/, "$1");
         }
 
@@ -3909,6 +3945,9 @@
         }
 
         if (domain === "www.traveller.com.au" ||
+            // https://resources.stuff.co.nz/content/dam/images/1/3/q/g/e/a/image.related.StuffLandscapeSixteenByNine.620x349.1inizt.png/1492742323724.jpg
+            //   https://resources.stuff.co.nz/content/dam/images/1/3/q/g/e/a/image.
+            domain === "resources.stuff.co.nz" ||
             // http://www.essentialbaby.com.au/content/dam/images/4/6/9/8/d/image.gallery.articleLeadwide.620x349.23z5t.png
             //   http://www.essentialbaby.com.au/content/dam/images/4/6/9/8/d/image.
             domain === "www.essentialbaby.com.au") {
@@ -9584,7 +9623,9 @@
         if (domain === "www.newshub.co.nz") {
             // http://www.newshub.co.nz/home/entertainment/2018/01/golden-globes-2018-red-carpet-highlights-a-red-carpet-flooded-in-black/_jcr_content/par/image_1284270800.dynimg.1200.q75.jpg/v1515372069805/GettyImages-902328010.jpg
             //   http://www.newshub.co.nz/home/entertainment/2018/01/golden-globes-2018-red-carpet-highlights-a-red-carpet-flooded-in-black/_jcr_content/par/image_1284270800.dynimg.full.q75.jpg/v1515372069805/GettyImages-902328010.jpg
-            return src.replace(/(\/image_[0-9]+\.dynimg\.)[^/]*(\.q[0-9]+\.[^/.]*)(\/.*)?$/, "$1full$2$3");
+            // https://www.newshub.co.nz/home/world/2017/12/how-one-plastic-bag-can-harm-millions-of-creatures/_jcr_content/par/image.dynimg.1280.q75.jpg/v1512865401357/GettyImages-612269120-plastic-bag-pollution-ocean-environment-1120.jpg
+            //   https://www.newshub.co.nz/home/world/2017/12/how-one-plastic-bag-can-harm-millions-of-creatures/_jcr_content/par/image.dynimg.full.q75.jpg/v1512865401357/GettyImages-612269120-plastic-bag-pollution-ocean-environment-1120.jpg
+            return src.replace(/(\/image(?:[_.][0-9]+)?\.dynimg\.)[^/]*(\.q[0-9]+\.[^/.]*)(\/.*)?$/, "$1full$2$3");
         }
 
         if (domain === "mediaassets.wxyz.com") {
@@ -9756,6 +9797,65 @@
             // https://image.tmdb.org/t/p/w500/76gfJrmdBADyJJXqI0GRgj01yUo.jpg -- 500x750
             //   https://image.tmdb.org/t/p/original/76gfJrmdBADyJJXqI0GRgj01yUo.jpg -- 2000x3000
             return src.replace(/\/[wh][0-9]+\/([0-9a-zA-Z]+\.[^/.]*)$/, "/original/$1");
+        }
+
+        if (domain.indexOf(".nbcuni.com") >= 0 &&
+            src.indexOf("/prod/image/") >= 0) {
+            // http://tve-static-eonline.nbcuni.com/prod/image/698/238/TotalBellas_S3_Desktop_FeaturedMain_3000x1688_1500x844_1239294019624.jpg
+            //   http://tve-static-eonline.nbcuni.com/prod/image/698/238/TotalBellas_S3_Desktop_FeaturedMain_3000x1688.jpg
+            return src.replace(/_[0-9]+x[0-9]+_[0-9]{8,}(\.[^/.]*)$/, "$1");
+        }
+
+        if (domain === "embedly.massrelevance.com") {
+            // https://embedly.massrelevance.com/1/image?key=fd577f7497bf11e0b95d4040d3dc5c07&url=https%3A%2F%2Finstagram.com%2Fp%2FBiPaOWNFUvm%2Fmedia%2F%3Fsize%3Dl
+            //   https://instagram.com/p/BiPaOWNFUvm/media/?size=l
+            return decodeURIComponent(src.replace(/.*\/image.*?[?&]url=([^&]*).*?$/, "$1"));
+        }
+
+        if (domain === "img.day.az") {
+            // https://img.day.az/2018/02/10/250x250f/sexiest-women-selena-gomez.jpg
+            //   https://img.day.az/2018/02/10/sexiest-women-selena-gomez.jpg
+            // https://img.day.az/2018/03/07/thumb/ali_kerimli.jpg
+            //   https://img.day.az/2018/03/07/ali_kerimli.jpg
+            return src.replace(/\/(?:(?:[0-9]+x[0-9]+[a-z]?)|thumb)(\/[^/]*)$/, "$1");
+        }
+
+        if (domain === "fotos.caras.uol.com.br") {
+            // http://fotos.caras.uol.com.br/media/images/thumb/2017/05/08/img-767195-os-looks-dos-famosos-no-mtv-movie-tv-awards-201720170508101494249579.jpg
+            //   http://fotos.caras.uol.com.br/media/images/large/2017/05/08/img-767195-os-looks-dos-famosos-no-mtv-movie-tv-awards-201720170508101494249579.jpg
+            //   http://fotos.caras.uol.com.br/media/images/original/2017/05/08/img-767195-os-looks-dos-famosos-no-mtv-movie-tv-awards-201720170508101494249579.jpg
+            return src.replace(/\/media\/images\/[^/]*\//, "/media/images/original/");
+        }
+
+        if (domain === "www.wmj.ru") {
+            // https://www.wmj.ru/thumb/399x0/filters:quality(75)//imgs/2017/05/08/08/1061619/2968fac7cdf1514616b70339f0bd0a3b43c64341.jpg
+            //   https://www.wmj.ru//imgs/2017/05/08/08/1061619/2968fac7cdf1514616b70339f0bd0a3b43c64341.jpg
+            return src.replace(/\/thumb\/[0-9]+x[0-9]+\/filters:[^/]*\//, "/");
+        }
+
+        if (domain.indexOf("pic.centerblog.net") >= 0) {
+            // http://thebootyhunter.t.h.pic.centerblog.net/de34e5dd.jpg
+            //   http://thebootyhunter.t.h.pic.centerblog.net/o/de34e5dd.jpg
+            // http://www.centerblog.net/ca/1e5f476d-s.jpg
+            //   http://marilynjohn.m.a.pic.centerblog.net/1e5f476d-s.jpg
+            //   http://marilynjohn.m.a.pic.centerblog.net/1e5f476d-m.jpg
+            // http://marilynjohn.m.a.pic.centerblog.net/tumblr_p1edlhuTny1rxzh05o2_502.jpg
+            //   http://marilynjohn.m.a.pic.centerblog.net/o/tumblr_p1edlhuTny1rxzh05o2_502.jpg
+            // http://nounousylvie51.n.o.pic.centerblog.net/m/13174182_495970667254617_2594346124069563626_n_1.jpg
+            //   http://nounousylvie51.n.o.pic.centerblog.net/o/13174182_495970667254617_2594346124069563626_n_1.jpg
+            return src.replace(/(:\/\/[^/]*\/)(?:[a-z]\/)?([^/]*)$/, "$1o/$2");
+        }
+
+        if (domain === "d2n4wb9orp1vta.cloudfront.net") {
+            // https://d2n4wb9orp1vta.cloudfront.net/cms/brand/PT/2017-PT/plastic-bag_bpf_2.jpeg;width=560
+            //   https://d2n4wb9orp1vta.cloudfront.net/cms/brand/PT/2017-PT/plastic-bag_bpf_2.jpeg
+            return src.replace(/;.*/, "");
+        }
+
+        if (domain === "gd.image-gmkt.com") {
+            // https://gd.image-gmkt.com/li/353/589/801589353.g_400-w_g.jpg
+            //   https://gd.image-gmkt.com/li/353/589/801589353.jpg
+            return src.replace(/\.[^/.]*(\.[^/.]*)$/, "$1");
         }
 
 
@@ -9990,11 +10090,11 @@
             // https://thumbor-static.factorymedia.com/qBeNkBSFgEWpq0AbpElby6YyNTs=/1920x1080/smart/http%3A%2F%2Fcoresites-cdn.factorymedia.com%2Fmpora_new%2Fwp-content%2Fuploads%2F2015%2F12%2FSea-Life-Aquariums-Animal-Captivity-Beluga-Whale.jpg
             //   http://coresites-cdn.factorymedia.com/mpora_new/wp-content/uploads/2015/12/Sea-Life-Aquariums-Animal-Captivity-Beluga-Whale.jpg
             //return src.replace(/.*\/thumbor\/.*?\/([^/]*\..*)/, "http://$1");
-            newsrc = src.replace(/.*\/(?:thumbor|(?:new-)?resizer)\/.*?\/(?:filters:[^/]*\/)?([a-z]*:\/\/.*)/, "$1");
+            newsrc = src.replace(/.*\/(?:thumb(?:or)?|(?:new-)?resizer)\/.*?\/(?:filters:[^/]*\/)?([a-z]*:\/\/.*)/, "$1");
             if (newsrc !== src)
                 return newsrc;
 
-            newsrc = src.replace(/.*\/(?:thumbor|(?:new-)?resizer)\/.*?\/(?:filters:[^/]*\/)?([^/]*\..*)/, "http://$1");
+            newsrc = src.replace(/.*\/(?:thumb(?:or)?|(?:new-)?resizer)\/.*?\/(?:filters:[^/]*\/)?([^/]*\..*)/, "http://$1");
             if (newsrc !== src)
                 return newsrc;
 
@@ -10301,6 +10401,9 @@
                     console.log("Custom headers needed, currently unhandled");
                     return;
                 }
+
+                if (_nir_debug_)
+                    console.dir(headers);
 
                 //var http = new GM_xmlhttpRequest({
                 do_request({
