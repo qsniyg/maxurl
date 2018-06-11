@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.3.23
+// @version      0.3.24
 // @description  Redirects to larger versions of images
 // @author       qsniyg
 // @include      *
@@ -20,6 +20,7 @@
 (function() {
     'use strict';
 
+
     var _nir_debug_ = false;
 
     if (_nir_debug_) {
@@ -28,9 +29,18 @@
         };
     }
 
+
+    var do_request = null;
+    if (typeof(GM_xmlhttpRequest) !== "undefined")
+        do_request = GM_xmlhttpRequest;
+    else if (typeof(GM) !== "undefined" && typeof(GM.xmlHttpRequest) !== "undefined")
+        do_request = GM.xmlHttpRequest;
+
+
     var default_options = {
-        fill_object: false,
+        fill_object: true,
         iterations: 200,
+        do_request: do_request,
         cb: null
     };
 
@@ -44,6 +54,7 @@
         redirects: false,
         headers: {}
     };
+
 
     var is_node = false;
     if ((typeof module !== 'undefined' && module.exports) &&
@@ -140,13 +151,8 @@
         };
     }
 
-    var do_request = null;
-    if (typeof(GM_xmlhttpRequest) !== "undefined")
-        do_request = GM_xmlhttpRequest;
-    else if (typeof(GM) !== "undefined" && typeof(GM.xmlHttpRequest) !== "undefined")
-        do_request = GM.xmlHttpRequest;
 
-    function bigimage(src, cb) {
+    function bigimage(src, options) {
         if (!src)
             return src;
 
@@ -8185,7 +8191,7 @@
         if ((domain.indexOf(".staticflickr.com") >= 0 ||
              domain.indexOf(".static.flickr.com") >= 0) &&
             !src.match(/\/[0-9]+_[0-9a-f]+_o\.[^/.]*$/) &&
-            do_request && cb) {
+            options && options.do_request && options.cb) {
             // https://c1.staticflickr.com/5/4190/34341416210_29e6098b30.jpg
             //   https://farm5.staticflickr.com/4190/34341416210_9f14cc1576_o.jpg
             // https://farm5.static.flickr.com/4157/34467046051_631ea7efa7_b.jpg
@@ -8193,7 +8199,7 @@
             // http://farm8.staticflickr.com/7034/6693295971_22e55a1b42_z.jpg%3C/br%3E
             //   https://farm8.staticflickr.com/7034/6693295971_36acecc53b_o.jpg
             src = src.replace(/(:\/\/[^/]*\/(?:[0-9]+\/)?[0-9]+\/[0-9]+_[0-9a-f]+(?:_[a-z])?\.[a-zA-Z0-9]*).*$/, "$1");
-            do_request({
+            options.do_request({
                 url: "https://www.flickr.com/",
                 method: "GET",
                 headers: {
@@ -8213,7 +8219,7 @@
                         var key = matchobj[1];
                         var photoid = src.replace(/.*\/([0-9]+)_[^/]*$/, "$1");
                         var nexturl = "https://api.flickr.com/services/rest?csrf=&api_key=" + key + "&format=json&nojsoncallback=1&method=flickr.photos.getSizes&photo_id=" + photoid;
-                        do_request({
+                        options.do_request({
                             url: nexturl,
                             method: "GET",
                             headers: {
@@ -8233,10 +8239,10 @@
                                             largesturl = size.source;
                                         }
                                     });
-                                    cb(largesturl);
+                                    options.cb(largesturl);
                                     return;
                                 } catch (e) {
-                                    cb(null);
+                                    options.cb(null);
                                     return;
                                 }
                             }
@@ -10604,7 +10610,7 @@
             return {
                 url: src.replace(/\/thumbnail\/(.*)(?:-preview)?(-[0-9]+)(?:\.t)?(\.[^/.]*)$/, "/$1$2$3"),
                 headers: {
-                    Referer: ""
+                    Referer: null
                 }
             };
         }
@@ -11304,8 +11310,9 @@
 
         var cb = null;
         if (options.cb) {
-            cb = function(x) {
-                options.cb(fillobj(x));
+            var orig_cb = options.cb;
+            options.cb = function(x) {
+                orig_cb(fillobj(x));
             };
         }
 
@@ -11319,7 +11326,7 @@
             /*if (newhref instanceof Array)
                 currenthref = newhref[0];*/
 
-            var big = bigimage(currenthref, cb);
+            var big = bigimage(currenthref, options);
             var newhref1 = fullurl_obj(currenthref, big);
             if (!newhref1) {
                 break;
