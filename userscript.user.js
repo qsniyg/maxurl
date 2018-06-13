@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.3.24
+// @version      0.3.25
 // @description  Redirects to larger versions of images
 // @author       qsniyg
 // @include      *
@@ -16,6 +16,9 @@
 //   it's either used to detect whether or not the destination URL exists before redirecting (near the end of the script),
 //   or used to query flickr's API to get larger images.
 // Search for GM_xmlhttpRequest and do_request if you want to see what the code does exactly.
+
+
+var $$IMU_EXPORT$$;
 
 (function() {
     'use strict';
@@ -444,8 +447,11 @@
         if (domain.indexOf("image.news1.kr") >= 0) {
             // http://image.news1.kr/system/thumbnails/photos/2018/2/19/2973418/thumb_336x230.jpg
             //   http://image.news1.kr/system/photos/2018/2/19/2973418/original.jpg
+            // http://image.news1.kr/system/photos/2014/8/22/985836/main_thumb.jpg
+            //   http://image.news1.kr/system/photos/2014/8/22/985836/original.jpg
             return src
                 .replace(/\/thumbnails\/(.*)\/thumb_[0-9]+x(?:[0-9]+)?(\.[^/.]*)$/, "/$1/original$2")
+                .replace(/main_thumb\.jpg/, "original.jpg")
                 .replace(/article.jpg/, "original.jpg")
                 .replace(/no_water.jpg/, "original.jpg")
                 .replace(/photo_sub_thumb.jpg/, "original.jpg")
@@ -1228,8 +1234,25 @@
             return decodeURIComponent(src.replace(/.*image\/?\?.*url=([^&]*).*/, "$1"));
         }
 
-        if (domain.indexOf(".photoshelter.com") >= 0) {
+        /*if (domain.indexOf(".photoshelter.com") >= 0) {
             return src.replace(/\/s\/[0-9]*\/[0-9]*\//, "/");
+        }*/
+
+        if (domain.indexOf(".photoshelter.com") >= 0) {
+            // http://c.photoshelter.com/img-get/I00002_.IhMQAZEg/t/200/I00002_.IhMQAZEg.jpg
+            //   https://ssl.c.photoshelter.com/img-get/I00002_.IhMQAZEg/s/700/SHM-Spider-Man-Homecoming-Prem-28062017-001.jpg
+            //   https://ssl.c.photoshelter.com/img-get2/I00002_.IhMQAZEg/fit=4000x4000/SHM-Spider-Man-Homecoming-Prem-28062017-001.jpg
+            //   https://ssl.c.photoshelter.com/img-get2/I00002_.IhMQAZEg/fit=99999999999/SHM-Spider-Man-Homecoming-Prem-28062017-001.jpg
+            // https://ssl.c.photoshelter.com/img-get2/I00007dPXW9BAIiU/sec=wd0sd0oe0lwe0ms1000ed20170311lyHGYvV7mWMka15/fit=2040x2040/Rutgers-womens-rowing-team-works-out-on-the-Raritan-River.jpg -- 2040x1357
+            //   https://ssl.c.photoshelter.com/img-get2/I00007dPXW9BAIiU/fit=4000x4000/Rutgers-womens-rowing-team-works-out-on-the-Raritan-River.jpg
+            // https://culver.photoshelter.com/asset-get/A0000N3HQ83lQtzA/20160913_325_RS-0.jpg -- 5000x3333
+            // https://ssl.c.photoshelter.com/img-get/I0000sljp0JcarNs/pak05lhecop-57.jpg -- 500x332
+            // https://ssl.c.photoshelter.com/img-get/I0000x_JQ_qY2rhs/s/750/750/1678-James-Brown-11-and-Tomi-Rae-Hynie-Brown-and-Martha-Stewart.jpg
+            //   https://ssl.c.photoshelter.com/img-get2/I0000x_JQ_qY2rhs/fit=99999999999/1678-James-Brown-11-and-Tomi-Rae-Hynie-Brown-and-Martha-Stewart.jpg
+            return src
+                .replace(/\/img-get2\/([^/]*)\/(?:[a-z]+=[^/]*\/)*([^/]*)$/, "/img-get2/$1/fit=99999999999/$2")
+                .replace(/\/img-get\/([^/]*)(?:\/[ts]\/[0-9]+\/(?:[0-9]+\/)?)?([^/]*)$/, "/img-get2/$1/fit=99999999999/$2");
+            //return src.replace
         }
 
         if (domain.indexOf("www.celebzz.com") >= 0 && src.indexOf("/wp-content/uploads/") >= 0) {
@@ -1311,12 +1334,13 @@
             // http://mobile.dlisted.com/files/imagecache/photo-preview-mobile/files/hotslutweeknorwoodyoung.jpg
             //   http://i.dlisted.com/files/hotslutweeknorwoodyoung.jpg
             src.match(/(?:\/sites\/[^/]*)?\/files\/imagecache\/[^/]*/) ||
-            src.search(/\/files\/styles\/[^/]*\/public\//) >= 0 ||
+            // http://shakespearestaging.berkeley.edu/system/files/styles/large/private/images/titus-andronicus-the-old-globe-2006-2109.jpg?itok=zmPfmjYs
+            src.search(/\/files\/styles\/[^/]*\/(?:public|private)\//) >= 0 ||
             // https://www.straight.com/files/v3/styles/gs_large/public/2013/09/MUS_Nostalghia_2386.jpg
             //   https://www.straight.com/files/v3/2013/09/MUS_Nostalghia_2386.jpg
-            src.search(/\/files\/[^/]*\/styles\/[^/]*\/public\//) >= 0) {
+            src.search(/\/files\/[^/]*\/styles\/[^/]*\/(?:public|private)\//) >= 0) {
 
-            newsrc = src.replace(/\/styles\/.*?\/public\//, "/").replace(/\/imagecache\/[^/]*\/(?:files\/)?/, "/").replace(/\?.*$/, "");
+            newsrc = src.replace(/\/styles\/.*?\/(?:public|private)\//, "/").replace(/\/imagecache\/[^/]*\/(?:files\/)?/, "/").replace(/\?.*$/, "");
             if (newsrc !== src)
                 return newsrc;
         }
@@ -1963,6 +1987,8 @@
             domain === "img.reblog.hu" ||
             // http://www.thefw.com/files/2012/11/tumblr_ls6ujhB6wV1qfq9oxo1_5001.jpg?w=980&q=75 -- stretched
             (domain_nowww === "thefw.com" && src.indexOf("/files/") >= 0) ||
+            // https://img.csfd.cz/files/images/creator/photos/160/654/160654750_730831.jpg?w100h132crop
+            domain === "img.csfd.cz" ||
             // http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
             // https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
             src.match(/\/demandware\.static\//) ||
@@ -2172,6 +2198,8 @@
             (domain_nowww === "behindzscene.net" && src.indexOf("/file/") >= 0) ||
             // https://www.hipertextual.com/files/2014/12/christopher-nolan-670x410.jpg
             (domain_nowww === "hipertextual.com" && src.indexOf("/files/") >= 0) ||
+            // https://geeksofdoom.com/GoD/img/2015/11/the-bastard-executioner-110-03-530x353.jpg
+            (domain_nowww === "geeksofdoom.com" && src.indexOf("/img/") >= 0) ||
             // https://cdn.gamerant.com/wp-content/uploads/resident-evil-2-director-remake-faith-738x410.jpg.webp
             //   https://cdn.gamerant.com/wp-content/uploads/resident-evil-2-director-remake-faith.jpg.webp
             src.indexOf("/wp-content/uploads/") >= 0 ||
@@ -2350,6 +2378,8 @@
             domain === "images.glaciermedia.ca" ||
             // https://static.gulfnews.com/polopoly_fs/1.2168576!/image/3397099558.jpg_gen/derivatives/box_460346/3397099558.jpg
             domain === "static.gulfnews.com" ||
+            // http://www.islingtongazette.co.uk/polopoly_fs/1.957786!/image/89195513.jpg_gen/derivatives/landscape_490/89195513.jpg
+            domain === "www.islingtongazette.co.uk" ||
             domain.indexOf("www.edp24.co.uk") >= 0) {
             newsrc = src
                 .replace(/\/image\.[^_/]*_gen\/derivatives\/[^/]*\//, "/")
@@ -3409,7 +3439,10 @@
             }*/
         }
 
-        if (domain === "50.7.164.242:8182") {
+        if (domain === "50.7.164.242:8182" ||
+            // http://img150.pixroute.com/i/01807/71x1h0plzn0d_t.jpg
+            //   http://img150.pixroute.com/i/01807/71x1h0plzn0d.jpg
+            domain.match(/img[0-9]*\.pixroute\.com/)) {
             // http://50.7.164.242:8182/i/05/00355/qpjey5skv52d_t.jpg
             //   http://50.7.164.242:8182/i/05/00355/qpjey5skv52d.jpg
             return src.replace(/(\/i\/.*\/[^/.]*)_t(\.[^/.]*)$/, "$1$2");
@@ -7967,11 +8000,13 @@
         }
 
         if (domain.match(/images[0-9]*\.alphacoders\.com/) ||
-            domain === "artfiles.alphacoders.com") {
+            domain === "artfiles.alphacoders.com" ||
+            domain === "picfiles.alphacoders.com") {
             // https://images2.alphacoders.com/728/thumb-350-728780.jpg
             //   https://images2.alphacoders.com/728/728780.jpg
             // https://artfiles.alphacoders.com/741/thumb-74141.jpg
             //   https://artfiles.alphacoders.com/741/74141.jpg
+            // https://picfiles.alphacoders.com/172/thumb-172338.jpg
             return src.replace(/\/thumb(?:-[0-9]*)?-([0-9]*\.[^/.]*)$/, "/$1");
         }
 
@@ -8067,10 +8102,12 @@
             return src.replace(/_[^-/._]*(\.[^/.]*)?$/, "_orig$1");
         }
 
-        if (domain === "steemitimages.com") {
+        if (domain_nosub === "steemitimages.com") {
             // deprecated, it's returning hashed urls now
             // https://steemitimages.com/0x0/https://steemitimages.com/DQmUXTDZ82P2K8iK1naLZETucmAcz7W9vvReEbTi5osSh4U/quantstamp_network-1.png
             //   https://steemitimages.com/DQmUXTDZ82P2K8iK1naLZETucmAcz7W9vvReEbTi5osSh4U/quantstamp_network-1.png
+            // https://cdn.steemitimages.com/0x0/https://i.redd.it/satbsuymrzwz.jpg
+            //   https://i.redd.it/satbsuymrzwz.jpg
             return src.replace(/^[a-z]+:\/\/[^/]*\/[0-9]+x[0-9]+\//, "");
         }
 
@@ -9385,9 +9422,12 @@
             };
         }
 
-        if (domain === "cdn.teenidols4you.com") {
+        if (domain === "cdn.teenidols4you.com" ||
+            domain === "www.teenidols4you.com") {
             // http://cdn.teenidols4you.com/thumb/Actors/katyperry/88katy-perry-1379801521.jpg
-            return src.replace(/:\/\/[^/]*\/thumb\/(.*?)\/[0-9]+([^/]*)$/, "://www.teenidols4you.com/blink/$1/$2");
+            //   http://www.teenidols4you.com/thumb/Actors/katyperry/katy-perry-1379801521.jpg
+            //   http://www.teenidols4you.com/blink/Actors/katyperry/katy-perry-1379801521.jpg
+            return src.replace(/:\/\/[^/]*\/thumb\/(.*?)\/(?:[0-9]+)?([^/]*)$/, "://www.teenidols4you.com/blink/$1/$2");
         }
 
         if (domain === "cdn.pixabay.com") {
@@ -9646,7 +9686,8 @@
             // https://media.giphy.com/media/3og0IRYXdt9tTE52nK/giphy.mp4
             // https://media1.giphy.com/media/l0Iy0lyLZnfdEBmMg/200w.webp
             // https://media1.giphy.com/media/l0Iy0lyLZnfdEBmMg/200w.gif
-            return src.replace(/\/(?:giphy|[0-9]+[wh])\.(?:gif|webp|mp4)/, "/source.gif");
+            // https://media2.giphy.com/media/ZBg5XWrvDVzNe/200_s.gif
+            return src.replace(/\/(?:giphy|[0-9]+[whs_]*)\.(?:gif|webp|mp4)/, "/source.gif");
         }
 
         if (domain === "pics.dmm.com" ||
@@ -10863,6 +10904,84 @@
             return src.replace(/.*(\/[0-9a-f]+-[0-9]+\.[^/.]*)$/, "https://coconala.akamaized.net/coconala-public-files/service_images/original$1");
         }
 
+        if (domain === "img.milli.az") {
+            // https://img.milli.az/2017/07/01/250x250f/558980_30.jpg
+            //   https://img.milli.az/2017/07/01/558980_30.jpg
+            return src.replace(/\/[0-9]+x[0-9]+[a-z]*\/([^/]*)$/, "/$1");
+        }
+
+        if (domain === "www.ysbnow.com") {
+            // http://www.ysbnow.com/dam?media-id=599db1edd74440326c7d50ce&width=800
+            //   http://www.ysbnow.com/dam?media-id=599db1edd74440326c7d50ce -- 4608x2592
+            return src.replace(/(:\/\/[^/]*\/dam).*?[?&](media-id=[^&]*).*?$/, "$1?$2");
+        }
+
+        if (domain === "www.quizz.biz" &&
+            src.indexOf("/uploads/") >= 0) {
+            // https://www.quizz.biz/uploads/quizz/962477/mini/1_1.jpg?1479738849
+            //   https://www.quizz.biz/uploads/quizz/962477/orig/1.jpg?1479738849
+            return src.replace(/(\/[0-9]+\/)[a-z]+(\/[0-9]+)(?:_[0-9]+)?(\.[^/.]*)$/,"$1orig$2$3");
+        }
+
+        if (domain.match(/c[0-9]*\.flipagramcdn\.com/)) {
+            // https://c1.flipagramcdn.com/d30faeccb979f31d8eea6dd8ad649ddf691b6662_1865984247_1426694464742-small
+            //   https://c1.flipagramcdn.com/d30faeccb979f31d8eea6dd8ad649ddf691b6662_1865984247_1426694464742-large?
+            //   https://c1.flipagramcdn.com/d30faeccb979f31d8eea6dd8ad649ddf691b6662_1865984247_1426694464742
+            return src.replace(/-[a-z]+(?:\?.*)?$/, "");
+        }
+
+        if (domain === "images-cdn.9gag.com" ||
+            domain === "img-9gag-fun.9cache.com" ||
+            domain === "miscmedia-9gag-fun.9cache.com") {
+            // https://images-cdn.9gag.com/photo/aL2j4BM_460s_v1.jpg
+            //   https://images-cdn.9gag.com/photo/aL2j4BM_700b_v1.jpg
+            // https://images-cdn.9gag.com/photo/aVXP7Yy_460s.jpg
+            //   https://images-cdn.9gag.com/photo/aVXP7Yy_700b.jpg
+            // https://images-cdn.9gag.com/photo/a0br3MZ_460s.jpg
+            //   https://images-cdn.9gag.com/photo/a0br3MZ_700b.jpg
+            // https://img-9gag-fun.9cache.com/photo/a3KW8w7_460swp.webp
+            //   https://img-9gag-fun.9cache.com/photo/a3KW8w7_700bwp.webp
+            // https://miscmedia-9gag-fun.9cache.com/images/thumbnail-facebook/1482203076.0883_u8yQU9_100x100.jpg
+            //   https://miscmedia-9gag-fun.9cache.com/images/thumbnail-facebook/1482203076.0883_u8yQU9_n.jpg
+            return src
+                .replace(/\/thumbnail-facebook\/([^/]*)_[0-9]+x[0-9]+(\.[^/.]*)$/, "/thumbnail-facebook/$1_n$2")
+                .replace(/_460swp(\.[^/.]*)$/, "_700bwp$1")
+                .replace(/_460s(_v1)?(\.[^/.]*)$/, "_700b$1$2");
+        }
+
+        if (domain_nowww === "samironsheadshots.com" &&
+            src.indexOf("/images/") >= 0) {
+            // http://samironsheadshots.com/images/pages/small/1510138983.jpg
+            //   http://samironsheadshots.com/images/pages/large/1510138983.jpg
+            return src.replace(/\/small\/([^/]*)$/, "/large/$1");
+        }
+
+        if (domain === "cps-static.rovicorp.com") {
+            // https://cps-static.rovicorp.com/2/Open/20th_Century_Fox_39/Program/22067798/_derived_jpg_q90_250x0_m0/walking%20with%20the%20enemy_PA.jpg?partner=allrovi.com
+            //   https://cps-static.rovicorp.com/2/Open/20th_Century_Fox_39/Program/22067798/walking%20with%20the%20enemy_PA.jpg?partner=allrovi.com
+            return src.replace(/\/_derived_[^/]*(\/[^/]*)$/, "$1");
+        }
+
+        if (domain.match(/i[0-9]*\.netflixmovies\.com/)) {
+            // https://i1.netflixmovies.com/dibsl9ebc/image/upload/w_1024/mijahb8dbg5qdkxurlwh.jpg
+            //   https://i1.netflixmovies.com/dibsl9ebc/image/upload/mijahb8dbg5qdkxurlwh.jpg
+            return src.replace(/\/image\/upload\/[wh]_[0-9]+\//, "/image/upload/");
+        }
+
+        if (domain === "www.shakespearesglobe.com") {
+            // http://www.shakespearesglobe.com/images/8610/normal
+            //   http://www.shakespearesglobe.com/images/8610
+            return src.replace(/(\/images\/[0-9]+)\/[a-z]+(?:\?.*)?$/, "$1");
+        }
+
+        if (domain.match(/cdn[0-9]*\.rsc\.org\.uk/)) {
+            // https://cdn2.rsc.org.uk/sitefinity/images/productions/2017-shows/Titus-Andronicus/b7452-titus_review_web-amp-social_images_social-amp-hub.tmb-img-820.jpg?sfvrsn=1
+            //   https://cdn2.rsc.org.uk/sitefinity/images/productions/2017-shows/Titus-Andronicus/b7452-titus_review_web-amp-social_images_social-amp-hub.jpg?sfvrsn=1
+            return src.replace(/\.tmb-img-[0-9]*\./, ".");
+        }
+
+
+
 
 
 
@@ -11525,6 +11644,8 @@
             }
         }
     };
+
+    $$IMU_EXPORT$$ = bigimage_recursive;
 
     if (is_node) {
         module.exports = bigimage_recursive;
