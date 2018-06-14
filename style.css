@@ -213,27 +213,43 @@ hr {
   font-weight: 100;
 }
 
-#footer a, #footer span {
+#footer a, #footer span.current {
   font-weight: 400;
 }
 
-#footer a, #footer span {
+#footer a, #footer span.current {
   margin-left: 1em;
   margin-right: 1em;
 }
 
+#footer .section {
+  display: inline;
+}
+
 @media (max-width:700px) {
-  #footer a, #footer span {
-    margin-left: .5em;
-    margin-right: .5em;
+  #footer a, #footer span.current {
+    font-size: .9em;
+    margin-left: .4em;
+    margin-right: .4em;
   }
 }
 
 @media (max-width:400px) {
-  #footer a, #footer span {
-    font-size: .8em;
+  #footer a, #footer span.current {
+    /*font-size: .9em;*/
     margin-left: .5em;
     margin-right: .5em;
+  }
+
+  #footer .section {
+    display: block;
+    text-align: center;
+    margin-top: .5em;
+    margin-bottom: .5em;
+  }
+
+  #footer .line.last {
+    display: none;
   }
 }
 
@@ -249,9 +265,62 @@ div.big_break {
   height: 2em;
 }
 
-em {
+em, i {
   font-style: italic;
 }
+
+b, strong {
+  font-weight: 700;
+}
+
+
+input[type="radio"] {
+  position: absolute !important;
+  clip: rect(0,0,0,0);
+  visibility: hidden;
+  height: 1px;
+  width: 1px;
+  border: 0;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+label {
+  display: inline-block;
+  padding: 6px 14px;
+  margin: 0em .3em;
+  border: 1px solid #0af;
+  cursor: pointer;
+}
+
+input[type="radio"]:checked + label {
+  background: #0af;
+  color: #fff;
+}
+
+.option {
+  padding: .8em;
+}
+.option strong {
+  width: 17em;
+  font-weight: 400;
+  display: inline-block;
+}
+
+@media (max-width:700px) {
+  .option strong {
+    width: auto;
+    display: block;
+    padding: .5em;
+  }
+}
+
+#options h3 {
+  font-size: 1.3em;
+  font-weight: 400;
+}
+
 
 
 

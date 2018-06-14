@@ -127,3 +127,11 @@ function set_max(urls) {
   }
   //maximgel.style.backgroundImage = "url('" + proxyurl + "')";
 }
+
+if (document.location.origin === "file://") {
+  console.log("Local installation detected, using local script instead");
+  var script = document.createElement("script");
+  var loc = document.location.href;
+  script.src = loc.replace(/\/[^/]*\/[^/]*$/, "/userscript.user.js");
+  document.body.appendChild(script);
+}
