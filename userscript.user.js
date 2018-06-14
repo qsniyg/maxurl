@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.4.0
+// @version      0.4.1
 // @description  Finds larger versions of images
 // @author       qsniyg
 // @include      *
@@ -12075,7 +12075,7 @@ var $$IMU_EXPORT$$;
     function get_value(key, cb) {
         if (typeof GM_getValue !== "undefined") {
             return cb(GM_getValue(key, undefined));
-        } else {
+        } else if (typeof GM !== "undefined" && GM.getValue) {
             GM.getValue(key, undefined).then(cb);
         }
     }
@@ -12084,23 +12084,27 @@ var $$IMU_EXPORT$$;
         console.log("Setting " + key + " = " + value);
         if (typeof GM_setValue !== "undefined") {
             return GM_setValue(key, value);
-        } else {
+        } else if (typeof GM !== "undefined" && GM.getValue) {
             return GM.setValue(key, value);
         }
     }
 
     function do_config() {
-        var settings_done = 0;
-        for (var setting in settings) {
-            (function(setting) {
-                get_value(setting, function(value) {
-                    settings_done++;
-                    if (value !== undefined)
-                        settings[setting] = value;
-                    if (settings_done >= Object.keys(settings).length)
-                        start();
-                });
-            })(setting);
+        if (is_userscript) {
+            var settings_done = 0;
+            for (var setting in settings) {
+                (function(setting) {
+                    get_value(setting, function(value) {
+                        settings_done++;
+                        if (value !== undefined)
+                            settings[setting] = value;
+                        if (settings_done >= Object.keys(settings).length)
+                            start();
+                    });
+                })(setting);
+            }
+        } else {
+            start();
         }
     }
 
