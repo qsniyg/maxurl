@@ -1,12 +1,16 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.3.25
-// @description  Redirects to larger versions of images
+// @version      0.4.0
+// @description  Finds larger versions of images
 // @author       qsniyg
 // @include      *
 // @grant        GM.xmlHttpRequest
 // @grant        GM_xmlhttpRequest
+// @grant        GM.setValue
+// @grant        GM_setValue
+// @grant        GM.getValue
+// @grant        GM_getValue
 // @connect      *
 // @run-at       document-start
 // @license      Apache 2.0
@@ -42,8 +46,15 @@ var $$IMU_EXPORT$$;
 
     var default_options = {
         fill_object: true,
+        null_if_no_change: false,
         iterations: 200,
+
         do_request: do_request,
+        host_url: null,
+        document: null,
+        window: null,
+        element: null,
+
         cb: null
     };
 
@@ -56,6 +67,39 @@ var $$IMU_EXPORT$$;
         waiting: false,
         redirects: false,
         headers: {}
+    };
+
+
+    var settings = {
+        redirect: true,
+        mouseover: true,
+        mouseover_trigger: "ctrl"
+    };
+
+    var settings_meta = {
+        redirect: {
+            name: "Enable redirection",
+            description: "Redirect images opened in their own tab"
+        },
+        mouseover: {
+            name: "Enable mouseover popup",
+            description: "Show a popup with the larger image when you mouseover an image with the trigger key held"
+        },
+        mouseover_trigger: {
+            name: "Mouseover popup trigger",
+            description: "Trigger key that, when held, will show the popup",
+            options: {
+                ctrl: {
+                    name: "Ctrl"
+                },
+                shift: {
+                    name: "Shift"
+                },
+                alt: {
+                    name: "Alt"
+                }
+            }
+        }
     };
 
 
@@ -88,6 +132,10 @@ var $$IMU_EXPORT$$;
     if (typeof imu_variable !== 'undefined')
         is_scripttag = true;
 
+    var is_userscript = false;
+    if (!is_node && !is_scripttag)
+        is_userscript = true;
+
     // https://stackoverflow.com/a/17323608
     function mod(n, m) {
         return ((n % m) + m) % m;
@@ -106,7 +154,7 @@ var $$IMU_EXPORT$$;
         };
     }
 
-    function urljoin(a, b) {
+    function urljoin(a, b, browser) {
         var protocol_split = a.split("://");
         var protocol = protocol_split[0];
         var splitted = protocol_split[1].split("/");
@@ -122,7 +170,7 @@ var $$IMU_EXPORT$$;
         if (b.length >= 1 && b.slice(0, 1) === "/")
             return start + b;
 
-        if (true) {
+        if (!browser) {
             // simple path join
             // urljoin("http://site.com/index.html", "file.png") = "http://site.com/index.html/file.png"
             return a + "/" + b;
@@ -159,6 +207,8 @@ var $$IMU_EXPORT$$;
         if (!src)
             return src;
 
+        var origsrc = src;
+
         var url = urlparse(src);
         var protocol_split = src.split("://");
         var protocol = protocol_split[0];
@@ -173,6 +223,19 @@ var $$IMU_EXPORT$$;
         var amazon_container = null;
         if (domain.indexOf(".amazonaws.com") >= 0)
             amazon_container = src.replace(/^[a-z]*:\/\/[^/]*\/([^/]*)\/.*/, "$1");
+
+        var host_domain = null;
+        var host_domain_nowww = null;
+        var host_domain_nosub = null;
+        if (options.host_url) {
+            host_domain = options.host_url.replace(/^[a-z]+:\/\/([^/]*)(?:\/.*)?$/,"$1");
+
+            host_domain_nowww = host_domain.replace(/^www\./, "");
+            host_domain_nosub = host_domain.replace(/^.*\.([^.]*\.[^.]*)$/, "$1");
+            if (host_domain_nosub.match(/^co\.[a-z]{2}$/)) {
+                host_domain_nosub = host_domain.replace(/^.*\.([^.]*\.[^.]*\.[^.]*)$/, "$1");
+            }
+        }
 
         var newsrc, i, size, origsize, regex;
 
@@ -641,6 +704,11 @@ var $$IMU_EXPORT$$;
             domain === "www.staraz.co.kr" ||
             // http://www.wonnews.co.kr/news/thumbnail/201805/201275_36498_2029_v150.jpg
             domain === "www.wonnews.co.kr" ||
+            // http://www.gukjenews.com/news/thumbnail/201806/938035_714703_1521_v150.jpg
+            // http://cdn.gukjenews.com/news/thumbnail/201806/938035_714703_1521_v150.jpg
+            domain_nosub === "gukjenews.com" ||
+            // http://www.lunarglobalstar.com/news/thumbnail/201806/19254_15963_1148_v150.jpg
+            domain === "www.lunarglobalstar.com" ||
             // http://www.newstown.co.kr/news/thumbnail/201801/311251_198441_4816_v150.jpg
             domain.indexOf("www.newstown.co.kr") >= 0) {
             return src
@@ -776,18 +844,23 @@ var $$IMU_EXPORT$$;
         }
 
         if (domain.indexOf(".wowkorea.jp") >= 0 &&
-            src.indexOf(".wowkorea.jp/img") >= 0) {
+            (src.indexOf(".wowkorea.jp/img") >= 0 ||
+             src.indexOf(".wowkorea.jp/upload") >= 0)) {
             // works:
             // http://kt.wowkorea.jp/img/album/10/54888/94580_l.jpg
             //   http://kt.wowkorea.jp/img/album/10/54888/94580.jpg
+            // http://image.wowkorea.jp/upload/news/214660/20180612_cosm_n.jpg
+            //   http://image.wowkorea.jp/upload/news/214660/20180612_cosm.jpg
             // doesn't work:
             // http://kt.wowkorea.jp/img/news/3/19899/53692_s.jpg
             //   http://kt.wowkorea.jp/img/news/3/19899/53692_l.jpg - works
             //   http://kt.wowkorea.jp/img/news/3/19899/53692.jpg - 404
             // http://kt.wowkorea.jp/img/news/3/19961/53856_160.jpg
-            if (src.indexOf("/img/album/") < 0)
+            if (src.indexOf("/img/album/") < 0 &&
+                !src.match(/\/upload\/news\/+[0-9]+\//)) {
                 return src.replace(/([^/]*_)[a-z0-9]*(\.[^/.]*)$/, "$1l$2");
-            return src.replace(/([^/]*)_[a-z0-9]*(\.[^/.]*)$/, "$1$2");
+            }
+            return src.replace(/_[a-z0-9](\.[^/.]*)$/, "$1");
         }
 
         if (domain.match(/img[0-9]*.saostar.vn/)) {
@@ -1989,6 +2062,8 @@ var $$IMU_EXPORT$$;
             (domain_nowww === "thefw.com" && src.indexOf("/files/") >= 0) ||
             // https://img.csfd.cz/files/images/creator/photos/160/654/160654750_730831.jpg?w100h132crop
             domain === "img.csfd.cz" ||
+            // http://img.timesnownews.com/2_1518716279__rend_1_1.jpg?d=300x225
+            domain === "img.timesnownews.com" ||
             // http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
             // https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
             src.match(/\/demandware\.static\//) ||
@@ -2200,6 +2275,8 @@ var $$IMU_EXPORT$$;
             (domain_nowww === "hipertextual.com" && src.indexOf("/files/") >= 0) ||
             // https://geeksofdoom.com/GoD/img/2015/11/the-bastard-executioner-110-03-530x353.jpg
             (domain_nowww === "geeksofdoom.com" && src.indexOf("/img/") >= 0) ||
+            // http://newsimages.fashionmodeldirectory.com/content/2018/06/july-cover2-392x400.jpg
+            domain === "newsimages.fashionmodeldirectory.com" ||
             // https://cdn.gamerant.com/wp-content/uploads/resident-evil-2-director-remake-faith-738x410.jpg.webp
             //   https://cdn.gamerant.com/wp-content/uploads/resident-evil-2-director-remake-faith.jpg.webp
             src.indexOf("/wp-content/uploads/") >= 0 ||
@@ -4144,7 +4221,8 @@ var $$IMU_EXPORT$$;
             return src.replace(/([/=]media\/images\/[0-9]*\/[0-9]*\/)(?:r-)?[^-/.]*-[^-/.]*/, "$1orig-orig");
         }
 
-        if (domain === "i.imgur.com") {
+        if (domain === "i.imgur.com" &&
+            !src.match(/\.gifv(?:\?.*)?$/)) {
             // https://i.imgur.com/ajsLfCab.jpg
             // https://i.imgur.com/ajsLfCam.jpg
             // https://i.imgur.com/ajsLfCal.jpg
@@ -8227,6 +8305,7 @@ var $$IMU_EXPORT$$;
 
         if ((domain.indexOf(".staticflickr.com") >= 0 ||
              domain.indexOf(".static.flickr.com") >= 0) &&
+            src.match(/\/[0-9]+_[0-9a-f]+(?:_[a-z]*)?\.[^/.]*$/) &&
             !src.match(/\/[0-9]+_[0-9a-f]+_o\.[^/.]*$/) &&
             options && options.do_request && options.cb) {
             // https://c1.staticflickr.com/5/4190/34341416210_29e6098b30.jpg
@@ -10980,6 +11059,169 @@ var $$IMU_EXPORT$$;
             return src.replace(/\.tmb-img-[0-9]*\./, ".");
         }
 
+        if (domain === "images.fashionmodeldirectory.com") {
+            // http://images.fashionmodeldirectory.com/model/000000592070-hanne_linhares-squaresmall.jpg
+            //   http://images.fashionmodeldirectory.com/model/000000592070-hanne_linhares-fullsize.jpg
+            return src.replace(/(\/[0-9]+-[^/]*-)[a-z]+(\.[^/.]*)$/, "$1fullsize$2");
+        }
+
+        if (domain === "crystal.cafe") {
+            // https://crystal.cafe/hb/thumb/1497657761080.jpeg
+            //   https://crystal.cafe/hb/src/1497657761080.jpeg
+            return src.replace(/\/thumb\//, "/src/");
+        }
+
+        if (domain === "www.skinnygossip.com" &&
+            src.indexOf("/community/proxy.php?") >= 0) {
+            // https://www.skinnygossip.com/community/proxy.php?image=https%3A%2F%2Fwww.bellazon.com%2Fmain%2Fuploads%2Fmonthly_2017_11%2FGettyImages-876162714.jpg.6f0a67f5cb65d76069675b15e20ec73d.jpg&hash=087ffa4418cc3312b384c32dc19b765a
+            //   https://www.bellazon.com/main/uploads/monthly_2017_11/GettyImages-876162714.jpg.6f0a67f5cb65d76069675b15e20ec73d.jpg
+            return decodeURIComponent(src.replace(/.*?\/proxy\.php.*?[?&]image=([^&]*).*?$/, "$1"));
+        }
+
+        if (domain === "usa-grlk5lagedl.stackpathdns.com") {
+            // http://usa-grlk5lagedl.stackpathdns.com/production/usa/images/1514913960191591-Rihanna.tif?w=1920&amp;h=800&amp;fit=crop&amp;crop=faces&amp;fm=pjpg&amp;auto=compress
+            return src.replace(/(\/images\/[^/]*)\?.*$/, "$1?fm=pjpg");
+        }
+
+        if (domain === "static.sify.com") {
+            // http://static.sify.com/cms/image/rh1m7Deiccjhi_thumb.jpg
+            //   http://static.sify.com/cms/image/rh1m7Deiccjhi_small.jpg
+            //   http://static.sify.com/cms/image/rh1m7Deiccjhi_medium.jpg
+            //   http://static.sify.com/cms/image/rh1m7Deiccjhi_big.jpg
+            //   http://static.sify.com/cms/image/rh1m7Deiccjhi.jpg
+            return src.replace(/(\/cms\/image\/[^/]*)_[a-z]+(\.[^/.]*)$/, "$1$2");
+        }
+
+        if (domain === "thumbs.wikifeet.com") {
+            // https://thumbs.wikifeet.com/3398643.jpg
+            //   https://pics.wikifeet.com/3398643.jpg
+            return src.replace(/:\/\/[^/]*\//, "://pics.wikifeet.com/");
+        }
+
+        if (domain === "static.spotboye.com") {
+            // http://static.spotboye.com/uploads/disha-patani-at-femina-awards_08cb1fd04740a924b584520c6087bc78_small.jpg
+            //   http://static.spotboye.com/uploads/disha-patani-at-femina-awards_08cb1fd04740a924b584520c6087bc78_original.jpg
+            return src.replace(/(_[0-9a-f]+)(?:_[a-z]+)?(\.[^/.]*)$/, "$1_original$2");
+        }
+
+        if (domain === "img.news.goo.ne.jp") {
+            // https://img.news.goo.ne.jp/cpimg/wedge.ismedia.jp/mwimgs/c/a/-/img_ca529af8c945704fb5432aceff2d60f2795379.jpg
+            //   http://wedge.ismedia.jp/mwimgs/c/a/-/img_ca529af8c945704fb5432aceff2d60f2795379.jpg
+            return src.replace(/^[a-z]+:\/\/[^/]*\/cpimg\/([^/]*\.[^/]*)/, "http://$1");
+        }
+
+        if (host_domain_nosub === "reddit.com" && options.element) {
+            newsrc = (function() {
+                function checkimage(url) {
+                    if (bigimage_recursive(url, {
+                        fill_object: false,
+                        iterations: 3,
+                        null_if_no_change: true,
+                        do_request: false
+                    }) !== null) {
+                        return url;
+                    }
+                }
+
+                function request(url) {
+                    var id = url.replace(/.*\/comments\/([^/]*)\/[^/]*(?:\/(?:\?.*)?)?$/, "$1");
+                    if (id !== url) {
+                        do_request({
+                            method: "GET",
+                            url: "https://www.reddit.com/api/info.json?id=t3_" + id,
+                            onload: function(result) {
+                                try {
+                                    var json = JSON.parse(result.responseText);
+                                    var item = json.data.children[0].data;
+                                    //var image = item.preview.images[0].source.url;
+                                    var image = item.url;
+
+                                    if (checkimage(image))
+                                        return options.cb(image);
+                                } catch (e) {
+                                    console.error(e);
+                                }
+
+                                options.cb(null);
+                            }
+                        });
+
+                        return {
+                            waiting: true
+                        };
+                    }
+                }
+
+                if (options.element.parentElement && options.element.parentElement.parentElement) {
+                    // classic reddit
+                    var doubleparent = options.element.parentElement.parentElement;
+                    newsrc = doubleparent.getAttribute("data-url");
+
+                    if (newsrc) {
+                        if (checkimage(newsrc))
+                            return newsrc;
+                        else
+                            return;
+                    } else if (doubleparent.parentElement) {
+                        if (doubleparent.parentElement.tagName === "A" && options.do_request && options.cb) {
+                            // card
+                            newsrc = request(doubleparent.parentElement.href);
+                            if (newsrc)
+                                return newsrc;
+                            else
+                                return;
+                        }
+
+                        if (options.element.parentElement.tagName === "A" &&
+                            // new classic with external url
+                            (options.element.parentElement.getAttribute("target") === "_blank" ||
+                             // new user page
+                             options.element.parentElement.classList.contains("PostThumbnail"))) {
+
+                            newsrc = options.element.parentElement.href;
+
+                            if (checkimage(newsrc))
+                                return newsrc;
+                            else
+                                return;
+                        }
+
+                        // new classic
+                        var current = options.element;
+                        var found = false;
+                        while (current = current.parentElement) {
+                            if (current.classList.contains("scrollerItem")) {
+                                found = true;
+                                break;
+                            }
+                        }
+
+                        if (found) {
+                            var elements = current.getElementsByTagName("a");
+                            for (var i = 0; i < elements.length; i++) {
+                                var element = elements[i];
+                                if (element.getAttribute("data-click-id") === "body") {
+                                    newsrc = request(element.href);
+                                    if (newsrc)
+                                        return newsrc;
+                                    else
+                                        return;
+                                }
+                            }
+                        }
+                    }
+                }
+            })();
+            if (newsrc !== undefined)
+                return newsrc;
+        }
+
+        if (domain === "i.redd.it" || domain === "i.redditmedia.com") {
+            return src;
+        }
+
+
+
 
 
 
@@ -11343,6 +11585,18 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/\.evocache\/([^/]*\.[^/]*)\/[^/]*$/, "/$1");
         }
 
+        if (src.match(/:\/\/[^/]*\/yahoo_site_admin[0-9]*\/assets\/images\//)) {
+            // http://www.asthedj.com/yahoo_site_admin2/assets/images/IMG_5618.13210131_large.JPG
+            //   http://www.asthedj.com/yahoo_site_admin2/assets/images/IMG_5618.13210131.JPG
+            // http://gio-ott.com/yahoo_site_admin2/assets/images/_MG_9380.20591513_large.jpg
+            //   http://gio-ott.com/yahoo_site_admin2/assets/images/_MG_9380.20591513.jpg
+            // http://www.spiritwalkministry.com/yahoo_site_admin2/assets/images/stonehenge-full-moon-night.27260345_std.jpg
+            //   http://www.spiritwalkministry.com/yahoo_site_admin2/assets/images/stonehenge-full-moon-night.27260345.jpg
+            // http://www.merrickartgallery.org/yahoo_site_admin2/assets/images/Merrick_Masters_Cover.12375349_std.jpg
+            //   http://www.merrickartgallery.org/yahoo_site_admin2/assets/images/Merrick_Masters_Cover.12375349.jpg
+            return src.replace(/(\.[0-9]+)_[a-z]+(\.[^/.]*)$/, "$1$2");
+        }
+
 
 
 
@@ -11366,10 +11620,20 @@ var $$IMU_EXPORT$$;
             src = src.replace(/-[0-9]+x[0-9]+\.([^/.]*)/, ".$1");
         }
 
+        if (options.null_if_no_change) {
+            if (src !== origsrc)
+                return src;
+            return null;
+        }
+
         return src;
     }
+    // -- end bigimage --
 
     var fullurl_obj = function(currenturl, obj) {
+        if (!obj)
+            return obj;
+
         if (obj instanceof Array) {
             var newobj = [];
             obj.forEach((url) => {
@@ -11446,6 +11710,12 @@ var $$IMU_EXPORT$$;
                 currenthref = newhref[0];*/
 
             var big = bigimage(currenthref, options);
+            if (!big && options.null_if_no_change) {
+                if (newhref === url)
+                    newhref = big;
+                break;
+            }
+
             var newhref1 = fullurl_obj(currenthref, big);
             if (!newhref1) {
                 break;
@@ -11455,8 +11725,13 @@ var $$IMU_EXPORT$$;
 
             if (typeof(newhref1) === "object") {
                 currentobj = newhref1;
-                if (newhref1.waiting)
+                if (newhref1.waiting) {
                     waiting = true;
+                    if (!newhref1.url) {
+                        newhref = newhref1;
+                        break;
+                    }
+                }
             } else {
                 currentobj = null;
             }
@@ -11645,13 +11920,17 @@ var $$IMU_EXPORT$$;
         }
     };
 
-    $$IMU_EXPORT$$ = bigimage_recursive;
+    function do_export() {
+        $$IMU_EXPORT$$ = bigimage_recursive;
 
-    if (is_node) {
-        module.exports = bigimage_recursive;
-    } else if (is_scripttag) {
-        imu_variable = bigimage_recursive;
-    } else {
+        if (is_node) {
+            module.exports = bigimage_recursive;
+        } else if (is_scripttag) {
+            imu_variable = bigimage_recursive;
+        }
+    }
+
+    function do_redirect() {
         if (document.contentType.match(/^text\//)) {
             return;
         }
@@ -11698,4 +11977,769 @@ var $$IMU_EXPORT$$;
             }
         });
     }
+
+    function onload(cb) {
+        if (document.readyState === "complete" ||
+            document.readyState === "interactive") {
+            cb();
+        } else {
+            var state_cb = function() {
+                if (document.readyState === "complete" ||
+                    document.readyState === "interactive") {
+                    cb();
+
+                    document.removeEventListener("readystatechange", state_cb);
+                }
+            };
+
+            document.addEventListener("readystatechange", state_cb);
+        }
+    }
+
+    function do_options() {
+        var options_el = document.getElementById("options");
+        options_el.innerHTML = "<h1>Options</h1>";
+
+        for (var setting in settings) {
+            (function(setting) {
+                var meta = settings_meta[setting];
+                var value = settings[setting];
+
+                var option = document.createElement("div");
+                option.classList.add("option");
+
+                var name = document.createElement("strong");
+                name.innerHTML = meta.name;
+                name.title = meta.description;
+                option.appendChild(name);
+
+                var type = "options";
+                var option_list = {};
+
+                if (typeof value === "boolean") {
+                    type = "options";
+                    option_list["true"] = {name: "Yes"};
+                    option_list["false"] = {name: "No"};
+                    if (value)
+                        option_list["true"].checked = true;
+                    else
+                        option_list["false"].checked = true;
+                } else if (meta.options) {
+                    type = "options";
+                    option_list = JSON.parse(JSON.stringify(meta.options));
+                    if (value in option_list)
+                        option_list[value].checked = true;
+                }
+
+                if (type === "options") {
+                    for (var op in option_list) {
+                        var id = "input_" + setting + "_" + op;
+                        var input = document.createElement("input");
+                        input.setAttribute("type", "radio");
+                        input.name = setting;
+                        input.value = op;
+                        input.id = id;
+                        if (option_list[op].checked)
+                            input.setAttribute("checked", "true");
+
+                        input.addEventListener("change", function(event) {
+                            var value = this.value;
+
+                            if (value === "true")
+                                value = true;
+
+                            if (value === "false")
+                                value = false;
+
+                            set_value(setting, value);
+                        });
+
+                        option.appendChild(input);
+
+                        var label = document.createElement("label");
+                        label.setAttribute("for", id);
+                        label.innerHTML = option_list[op].name;
+
+                        if (option_list[op].description)
+                            label.title = option_list[op].description;
+
+                        option.appendChild(label);
+                    }
+                }
+
+                options_el.appendChild(option);
+            })(setting);
+        }
+    }
+
+    function get_value(key, cb) {
+        if (typeof GM_getValue !== "undefined") {
+            return cb(GM_getValue(key, undefined));
+        } else {
+            GM.getValue(key, undefined).then(cb);
+        }
+    }
+
+    function set_value(key, value) {
+        console.log("Setting " + key + " = " + value);
+        if (typeof GM_setValue !== "undefined") {
+            return GM_setValue(key, value);
+        } else {
+            return GM.setValue(key, value);
+        }
+    }
+
+    function do_config() {
+        var settings_done = 0;
+        for (var setting in settings) {
+            (function(setting) {
+                get_value(setting, function(value) {
+                    settings_done++;
+                    if (value !== undefined)
+                        settings[setting] = value;
+                    if (settings_done >= Object.keys(settings).length)
+                        start();
+                });
+            })(setting);
+        }
+    }
+
+    function do_mouseover() {
+        var mouseX = 0;
+        var mouseY = 0;
+
+        var mouseAbsX = 0;
+        var mouseAbsY = 0;
+
+        var popups = [];
+        var controlPressed = false;
+        var waiting = false;
+
+        var waitingel = null;
+        var waitingsize = 200;
+
+        var keycode;
+        if (settings.mouseover_trigger === "ctrl") {
+            keycode = 17;
+        } else if (settings.mouseover_trigger === "shift") {
+            keycode = 16;
+        } else if (settings.mouseover_trigger === "alt") {
+            keycode = 18;
+        }
+
+        function update_waiting() {
+            waitingel.style.left = (mouseAbsX - (waitingsize / 2)) + "px";
+            waitingel.style.top = (mouseAbsY - (waitingsize / 2)) + "px";
+        }
+
+        function start_waiting() {
+            if (!waitingel) {
+                waitingel = document.createElement("div");
+                waitingel.style.zIndex = Number.MAX_SAFE_INTEGER;
+                waitingel.style.cursor = "wait";
+                waitingel.style.width = waitingsize + "px";
+                waitingel.style.height = waitingsize + "px";
+                waitingel.style.position = "absolute";
+                document.body.appendChild(waitingel);
+            }
+
+            waiting = true;
+            waitingel.style.display = "block";
+
+            update_waiting();
+        }
+
+        function stop_waiting() {
+            waitingel.style.display = "none";
+            waiting = false;
+        }
+
+        function resetpopups() {
+            popups.forEach(function (popup) {
+                if (popup.parentNode)
+                    popup.parentNode.removeChild(popup);
+
+                var index = popups.indexOf(popup);
+                if (index > -1) {
+                    popups.splice(index, 1);
+                }
+            });
+        }
+
+        function check_image_get(images, obj, cb) {
+            if (images.length === 0) {
+                return cb(null);
+            }
+
+            function err_cb() {
+                images.shift();
+                return check_image_get(images, obj, cb);
+            }
+
+            //console.log(images);
+            var url = images[0];
+
+            var url_domain = url.replace(/^([a-z]+:\/\/[^/]*).*?$/, "$1");
+
+            var headers = obj.headers;
+
+            if (!headers || Object.keys(headers).length === 0) {
+                headers = {
+                    "Origin": url_domain,
+                    "Referer": document.location.href
+                };
+            } else if (!headers.Origin && !headers.origin) {
+                headers.Origin = url_domain;
+            }
+
+            do_request({
+                method: 'GET',
+                url: images[0],
+                responseType: 'blob',
+                headers: headers,
+                onload: function(resp) {
+                    if (resp.readyState == 4) {
+                        var digit = resp.status.toString()[0];
+
+                        if (((digit === "4" || digit === "5") &&
+                             resp.status !== 405)) {
+                            if (err_cb) {
+                                err_cb();
+                            } else {
+                                console.error("Error: " + this.status);
+                            }
+
+                            return;
+                        }
+
+                        var a = new FileReader();
+                        a.onload = function(e) {
+                            var img = document.createElement("img");
+                            img.src = e.target.result;
+                            img.onload = function() {
+                                cb(img, resp.finalUrl);
+                            };
+                        };
+                        a.readAsDataURL(resp.response);
+                    }
+                }
+            });
+        }
+
+        function makePopup(obj) {
+            var x = mouseAbsX;
+            var y = mouseAbsY;
+
+            function cb(img, url) {
+                if (!controlPressed && false) {
+                    stop_waiting();
+                    return;
+                }
+
+                if (!img) {
+                    stop_waiting();
+                    return;
+                }
+
+                var div = document.createElement("div");
+                div.style.position = "absolute";
+                div.style.zIndex = Number.MAX_SAFE_INTEGER;
+                div.style.boxShadow = "0 0 15px rgba(0,0,0,.5)";
+
+                var vw = window.visualViewport.width - 10;
+                var vh = window.visualViewport.height - 10;
+                img.style.maxWidth = vw + "px";
+                img.style.maxHeight = vh + "px";
+
+                var imgh = img.naturalHeight;
+                var imgw = img.naturalWidth;
+
+                if (imgh > vh ||
+                    imgw > vw) {
+                    var ratio;
+                    if (imgh / vh >
+                        imgw / vw) {
+                        ratio = imgh / vh;
+                    } else {
+                        ratio = imgw / vw;
+                    }
+
+                    imgh /= ratio;
+                    imgw /= ratio;
+                }
+
+                div.style.top = (scrollTop() + Math.min(Math.max((y - scrollTop()) - (imgh / 2), 5), Math.max(vh - imgh, 5))) + "px";
+                div.style.left = (scrollLeft() + Math.min(Math.max((x - scrollLeft()) - (imgw / 2), 5), Math.max(vw - imgw, 5))) + "px";
+                /*console.log(x - (imgw / 2));
+                console.log(vw);
+                console.log(imgw);
+                console.log(vw - imgw);*/
+
+
+                var a = document.createElement("a");
+                a.href = url;
+                a.target = "_blank";
+                a.onclick = resetpopups;
+                a.appendChild(img);
+                div.appendChild(a);
+                document.body.appendChild(div);
+                popups.push(div);
+
+                stop_waiting();
+                //console.log(div);
+            }
+
+            if (obj.src instanceof Array) {
+                check_image_get(obj.url, obj, cb);
+            } else {
+                check_image_get([obj.url], obj, cb);
+            }
+        }
+
+        function getUnit(unit) {
+            if (unit.match(/^ *([0-9]+)px *$/)) {
+                return unit.replace(/^ *([0-9]+)px *$/, "$1");
+            }
+
+            // https://github.com/tysonmatanich/getEmPixels/blob/master/getEmPixels.js
+            var important = "!important;";
+            var style = "position:absolute!important;visibility:hidden!important;width:" + unit + "!important;font-size:" + unit + "!important;padding:0!important";
+
+            var extraBody;
+
+            var unitel;
+            if (!unitel) {
+                // Emulate the documentElement to get rem value (documentElement does not work in IE6-7)
+                unitel = extraBody = document.createElement("body");
+                extraBody.style.cssText = "font-size:" + unit + "!important;";
+                document.documentElement.insertBefore(extraBody, document.body);
+            }
+
+            // Create and style a test element
+            var testElement = document.createElement("i");
+            testElement.style.cssText = style;
+            unitel.appendChild(testElement);
+
+            // Get the client width of the test element
+            var value = testElement.clientWidth;
+
+            if (extraBody) {
+                // Remove the extra body element
+                document.documentElement.removeChild(extraBody);
+            }
+            else {
+                // Remove the test element
+                unitel.removeChild(testElement);
+            }
+
+            // Return the em value in pixels
+            return value;
+        }
+
+        function find_source(els) {
+            if (popups.length >= 1)
+                return;
+
+            //console.log(els);
+
+            var sources = {};
+            var picture_sources = {};
+            var picture_minw = false;
+            var picture_maxw = false;
+            var picture_minh = false;
+            var picture_maxh = false;
+
+            var id = 0;
+            var minW = 0;
+            var minH = 0;
+            var minMinW = 0;
+            var minMinH = 0;
+            var minMaxW = 0;
+            var minMaxH = 0;
+            var minX = 0;
+
+            var source;
+
+            function getsource() {
+                var thesource = null;
+                var first = false;
+                for (var source in sources) {
+                    if (first)
+                        return;
+                    first = true;
+                    thesource = sources[source];
+                }
+                return thesource;
+            }
+
+            function getfirstsource(sources) {
+                var smallestid = Number.MAX_SAFE_INTEGER;
+                var thesource = null;
+                for (var source_url in sources) {
+                    var source = sources[source_url];
+                    if (source.id < smallestid) {
+                        smallestid = source.id;
+                        thesource = sources[source_url];
+                    }
+                }
+
+                return thesource;
+            }
+
+            function norm(src) {
+                return urljoin(document.location.href, src);
+            }
+
+            function addImage(src, el) {
+                // blank images
+                // https://www.harpersbazaar.com/celebrity/red-carpet-dresses/g7565/selena-gomez-style-transformation/?slide=2
+                if (src.match(/^data:/) && src.length <= 500)
+                    return false;
+
+                if (!(src in sources)) {
+                    sources[src] = {
+                        count: 1,
+                        src: src,
+                        el: el,
+                        id: id++
+                    };
+                } else {
+                    sources[src].count++;
+                }
+
+                return true;
+            }
+
+            function addElement(el) {
+                if (el.tagName === "IMG") {
+                    var src = norm(el.src);
+                    if (!addImage(src, el))
+                        return;
+
+                    sources[src].width = el.naturalWidth;
+                    sources[src].height = el.naturalHeight;
+                } else if (el.tagName === "PICTURE") {
+                    for (var i = 0; i < el.children.length; i++) {
+                        addElement(el.children[i]);
+                    }
+                } else if (el.tagName === "SOURCE") {
+                    if (!el.srcset)
+                        return;
+
+                    var ssources = el.srcset.split(/ +[^ ,/],/);
+
+                    var sizes = [];
+                    if (el.sizes) {
+                        sizes = el.sizes.split(",");
+                    }
+
+                    for (var i = 0; i < ssources.length; i++) {
+                        var src = norm(ssources[i].replace(/ .*/, ""));
+                        var desc = ssources[i].replace(/.* /, "");
+
+                        if (!addImage(src, el))
+                            continue;
+
+                        picture_sources[src] = sources[src];
+
+                        sources[src].picture = el.parentElement;
+
+                        if (desc) {
+                            sources[src].desc = desc;
+
+                            if (desc.match(/^ *[0-9]*x *$/)) {
+                                var desc_x = parseInt(desc.replace(/^ *([0-9]*)x *$/, "$1"));
+                                if (!sources[src].desc_x || sources[src].desc_x > desc_x) {
+                                    sources[src].desc_x = desc_x;
+                                }
+                            }
+                        }
+
+                        if (el.media) {
+                            sources[src].media = el.media;
+                            if (el.media.match(/min-width: *([0-9]+)/)) {
+                                picture_minw = true;
+                                var minWidth = getUnit(el.media.replace(/.*min-width: *([0-9.a-z]+).*/, "$1"));
+                                if (!sources[src].minWidth || sources[src].minWidth > minWidth)
+                                    sources[src].minWidth = minWidth;
+                            }
+
+                            if (el.media.match(/max-width: *([0-9]+)/)) {
+                                picture_maxw = true;
+                                var maxWidth = getUnit(el.media.replace(/.*max-width: *([0-9.a-z]+).*/, "$1"));
+                                if (!sources[src].maxWidth || sources[src].maxWidth > maxWidth)
+                                    sources[src].maxWidth = maxWidth;
+                            }
+
+                            if (el.media.match(/min-height: *([0-9]+)/)) {
+                                picture_minh = true;
+                                var minHeight = getUnit(el.media.replace(/.*min-height: *([0-9.a-z]+).*/, "$1"));
+                                if (!sources[src].minHeight || sources[src].minHeight > minHeight)
+                                    sources[src].minHeight = minHeight;
+                            }
+
+                            if (el.media.match(/max-height: *([0-9]+)/)) {
+                                picture_maxh = true;
+                                var maxHeight = getUnit(el.media.replace(/.*max-height: *([0-9.a-z]+).*/, "$1"));
+                                if (!sources[src].maxHeight || sources[src].maxHeight > maxHeight)
+                                    sources[src].maxHeight = maxHeight;
+                            }
+                        }
+                    }
+                }
+
+                var style = window.getComputedStyle(el);
+                if (style.backgroundImage) {
+                    var bgimg = style.backgroundImage;
+                    if (bgimg.match(/^ *url[(]/)) {
+                        var src = norm(bgimg.replace(/^ *url[(]["']?(.*?)["']?[)] *$/, "$1"));
+                        addImage(src, el);
+                    }
+                }
+            }
+
+            for (var i = 0; i < els.length; i++) {
+                var el = els[i];
+                addElement(el);
+            }
+
+            //console.log(sources);
+
+            if ((source = getsource()) !== undefined)
+                return source;
+
+            for (var source_url in sources) {
+                var source = sources[source_url];
+
+                if (source.width && source.width > minW)
+                    minW = source.width;
+                if (source.height && source.height > minH)
+                    minH = source.height;
+
+                if (source.minWidth && source.minWidth > minMinW)
+                    minMinW = source.minWidth;
+                if (source.minHeight && source.minHeight > minMinH)
+                    minMinH = source.minHeight;
+
+                if (source.maxWidth && source.maxWidth > minMaxW)
+                    minMaxW = source.maxWidth;
+                if (source.maxHeight && source.maxHeight > minMaxH)
+                    minMaxH = source.maxHeight;
+
+                if (source.desc_x && source.desc_x > minX)
+                    minX = source.desc_x;
+            }
+
+            var newsources = {};
+
+            /*console.log(minW);
+              console.log(minH);
+              console.log(minMinW);
+              console.log(minMinH);
+              console.log(minMaxW);
+              console.log(minMaxH);
+              console.log(minX);*/
+
+            if (minW !== 0 ||
+                minH !== 0 ||
+                minMinW !== 0 ||
+                minMinH !== 0 ||
+                minMaxW !== 0 ||
+                minMaxH !== 0 ||
+                minX !== 0) {
+                for (var source_url in sources) {
+                    var source = sources[source_url];
+
+                    if ((source.width && source.width >= minW) || (source.height && source.height >= minH))
+                        newsources[source_url] = source;
+
+                    if ((source.minWidth && source.minWidth >= minMinW) || (source.minHeight && source.minHeight >= minMinH))
+                        newsources[source_url] = source;
+
+                    if ((source.maxWidth && source.maxWidth >= minMaxW) || (source.maxHeight && source.maxHeight >= minMaxH))
+                        newsources[source_url] = source;
+
+                    if (source.desc_x && source.desc_x >= minX)
+                        newsources[source_url] = source;
+                }
+
+                //console.log(newsources);
+
+                sources = newsources;
+                newsources = {};
+
+                if ((source = getsource()) !== undefined)
+                    return source;
+
+                for (var source_url in sources) {
+                    var source = sources[source_url];
+
+                    if (!source.picture) {
+                        newsources[source_url] = source;
+                        continue;
+                    }
+
+                    if (picture_minw && (!source.minWidth || source.minWidth < minMinW))
+                        continue;
+
+                    if (picture_minh && (!source.minHeight || source.minHeight < minMinW))
+                        continue;
+
+                    if (picture_maxw && (!source.maxWidth || source.maxWidth < minMaxW))
+                        continue;
+
+                    if (picture_maxh && (!source.maxHeight || source.maxHeight < minMaxW))
+                        continue;
+
+                    if (source.desc_x && source.desc_x < minX)
+                        continue;
+
+                    newsources[source_url] = source;
+                }
+
+                //console.log(newsources);
+
+                sources = newsources;
+                newsources = {};
+
+                if ((source = getsource()) !== undefined)
+                    return source;
+            }
+
+            for (var source_url in sources) {
+                var source = sources[source_url];
+
+                if (source_url.match(/^data:/))
+                    continue;
+
+                newsources[source_url] = source;
+            }
+
+            var orig_sources = sources;
+            sources = newsources;
+            newsources = {};
+
+            //console.log(sources);
+
+            if (source = getsource())
+                return source;
+            else if (source === null)
+                return getfirstsource(orig_sources);
+
+
+            for (var source_url in sources) {
+                var source = sources[source_url];
+
+                var source_url_imu = bigimage_recursive(source_url, {
+                    fill_object: false,
+                    do_request: null
+                });
+                if (source_url_imu !== source_url)
+                    newsources[source_url] = source;
+            }
+
+            var orig_sources = sources;
+            sources = newsources;
+
+            //console.log(sources);
+
+            if (source = getsource())
+                return source;
+            else if (source === null)
+                return getfirstsource(orig_sources);
+            else
+                return getfirstsource(sources);
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.which === keycode) {
+                controlPressed = true;
+                var els = document.elementsFromPoint(mouseX, mouseY);
+
+                var source = find_source(els);
+                if (source) {
+                    console.log(source);
+                    start_waiting();
+                    bigimage_recursive(source.src, {
+                        fill_object: true,
+                        host_url: document.location.href,
+                        document: document,
+                        window: unsafeWindow,
+                        element: source.el,
+                        cb: function(source_imu) {
+                            console.log(source_imu);
+                            makePopup(source_imu);
+                        }
+                    });
+                }
+            }
+        });
+
+        document.addEventListener('keyup', function(event) {
+            if (event.which === keycode) {
+                controlPressed = false;
+                stop_waiting();
+
+                resetpopups();
+            }
+        });
+
+        function scrollLeft() {
+            var doc = document.documentElement;
+            var body = document.body;
+            return (doc && doc.scrollLeft || body && body.scrollLeft || 0) -
+                (doc && doc.clientLeft || body && body.clientLeft || 0);
+        }
+
+        function scrollTop() {
+            var doc = document.documentElement;
+            var body = document.body;
+            return (doc && doc.scrollTop || body && body.scrollTop || 0) -
+                (doc && doc.clientTop || body && body.clientTop || 0);
+        }
+
+        document.addEventListener('mousemove', function(event) {
+            // https://stackoverflow.com/a/7790764
+            event = event || window.event;
+
+            if (event.pageX === null && event.clientX !== null) {
+                eventDoc = (event.target && event.target.ownerDocument) || document;
+                doc = eventDoc.documentElement;
+                body = eventDoc.body;
+
+                event.pageX = event.clientX + scrollLeft();
+                event.pageY = event.clientY + scrollTop();
+            }
+
+            mouseX = event.clientX;
+            mouseY = event.clientY;
+
+            mouseAbsX = event.pageX;
+            mouseAbsY = event.pageY;
+
+            if (waiting) {
+                update_waiting();
+            }
+        });
+    }
+
+    function start() {
+        do_export();
+
+        if (is_userscript) {
+            if (settings.redirect)
+                do_redirect();
+
+            if (document.location.href.match(/^https?:\/\/qsniyg\.github\.io\/maxurl\/options\.html/)) {
+                onload(function() {
+                    do_options();
+                });
+            }
+
+            if (settings.mouseover)
+                do_mouseover();
+        }
+    }
+
+    do_config();
 })();
