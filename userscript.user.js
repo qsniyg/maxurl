@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.4.1
+// @version      0.4.2
 // @description  Finds larger versions of images
 // @author       qsniyg
 // @include      *
@@ -73,8 +73,9 @@ var $$IMU_EXPORT$$;
     var settings = {
         redirect: true,
         mouseover: true,
-        mouseover_trigger: "ctrl"
+        mouseover_trigger: ["ctrl"]
     };
+    var orig_settings = JSON.parse(JSON.stringify(settings));
 
     var settings_meta = {
         redirect: {
@@ -89,14 +90,26 @@ var $$IMU_EXPORT$$;
             name: "Mouseover popup trigger",
             description: "Trigger key that, when held, will show the popup",
             options: {
-                ctrl: {
-                    name: "Ctrl"
+                _group1: {
+                    _type: "and",
+                    ctrl: {
+                        name: "Ctrl"
+                    },
+                    shift: {
+                        name: "Shift"
+                    },
+                    alt: {
+                        name: "Alt"
+                    }
                 },
-                shift: {
-                    name: "Shift"
-                },
-                alt: {
-                    name: "Alt"
+                _group2: {
+                    _type: "or",
+                    delay_1: {
+                        name: "Delay 1s"
+                    },
+                    delay_3: {
+                        name: "Delay 3s"
+                    }
                 }
             }
         }
@@ -155,16 +168,17 @@ var $$IMU_EXPORT$$;
     }
 
     function urljoin(a, b, browser) {
+        if (b.length === 0)
+            return a;
+        if (b.match(/[a-z]*:\/\//) || b.match(/^data:/))
+            return b;
+
         var protocol_split = a.split("://");
         var protocol = protocol_split[0];
         var splitted = protocol_split[1].split("/");
         var domain = splitted[0];
         var start = protocol + "://" + domain;
 
-        if (b.length === 0)
-            return a;
-        if (b.match(/[a-z]*:\/\//))
-            return b;
         if (b.length >= 2 && b.slice(0, 2) === "//")
             return protocol + ":" + b;
         if (b.length >= 1 && b.slice(0, 1) === "/")
@@ -210,10 +224,20 @@ var $$IMU_EXPORT$$;
         var origsrc = src;
 
         var url = urlparse(src);
-        var protocol_split = src.split("://");
-        var protocol = protocol_split[0];
-        var splitted = protocol_split[1].split("/");
-        var domain = splitted[0];
+
+        var protocol;
+        var domain;
+
+        if (!src.match(/^data:/)) {
+            var protocol_split = src.split("://");
+            protocol = protocol_split[0];
+            var splitted = protocol_split[1].split("/");
+            domain = splitted[0];
+        } else {
+            protocol = "data";
+            domain = "";
+        }
+
         var domain_nowww = domain.replace(/^www\./, "");
         var domain_nosub = domain.replace(/^.*\.([^.]*\.[^.]*)$/, "$1");
         if (domain_nosub.match(/^co\.[a-z]{2}$/)) {
@@ -874,7 +898,7 @@ var $$IMU_EXPORT$$;
         }
 
         if (domain.match(/\.google\./) &&
-            src.match(/\/www.google.[a-z]*\/url\?/)) {
+            src.match(/\/www.google.(?:[a-z]+\.)?[a-z]*\/url\?/)) {
             return decodeURIComponent(src.replace(/.*url=([^&]*).*/, "$1"));
         }
 
@@ -1573,7 +1597,10 @@ var $$IMU_EXPORT$$;
             return urlstart;
         }
 
-        if (domain.match(/^(?:.*\.)?instagram\.com$/)) {
+        if (domain.match(/^(?:.*\.)?instagram\.com$/) &&
+            !(domain_nowww === "instagram.com" &&
+              (src.match(/:\/\/[^/]*\/p\/[^/]*/) ||
+               src.match(/:\/\/[^/]*\/[-a-zA-Z0-9_.]+(?:\?.*)?$/)))) {
             return {
                 url: src,
                 headers: {
@@ -2277,6 +2304,8 @@ var $$IMU_EXPORT$$;
             (domain_nowww === "geeksofdoom.com" && src.indexOf("/img/") >= 0) ||
             // http://newsimages.fashionmodeldirectory.com/content/2018/06/july-cover2-392x400.jpg
             domain === "newsimages.fashionmodeldirectory.com" ||
+            // https://akm-img-a-in.tosshub.com/indiatoday/images/story/201804/fLIPKART_FB-88x50.jpeg?7aUorT.AyYkITen3_QwmsIcFMHwg032p
+            domain === "akm-img-a-in.tosshub.com" ||
             // https://cdn.gamerant.com/wp-content/uploads/resident-evil-2-director-remake-faith-738x410.jpg.webp
             //   https://cdn.gamerant.com/wp-content/uploads/resident-evil-2-director-remake-faith.jpg.webp
             src.indexOf("/wp-content/uploads/") >= 0 ||
@@ -6534,7 +6563,7 @@ var $$IMU_EXPORT$$;
             return src.replace(/(\/mobile\/.*\/[0-9]+_)[0-9]+(-[0-9]*\.[^/]*)$/, "$10$2");
         }
 
-        if (domain === "i.pximg.net" && false) {
+        if (domain === "i.pximg.net") {
             // only works if the referrer is correct
             // https://i.pximg.net/c/600x600/img-master/img/2017/06/25/17/53/43/63558968_p0_master1200.jpg
             //   https://i.pximg.net/img-original/img/2017/06/25/17/53/43/63558968_p0.jpg
@@ -6544,6 +6573,27 @@ var $$IMU_EXPORT$$;
             //   https://i.pximg.net/img-original/img/2017/06/10/23/13/15/63320604_p0.jpg
             //   https://i.pximg.net/img-original/img/2017/06/10/23/13/15/63320604_p0.jpg
             //   referer: https://www.pixiv.net/member_illust.php?mode=medium&illust_id=63320604
+            // https://i.pximg.net/c/600x1200_90/img-master/img/2017/12/26/20/00/02/66469686_p0_master1200.jpg
+            //   https://i.pximg.net/img-master/img/2017/12/26/20/00/02/66469686_p0_master1200.jpg
+            //   https://i.pximg.net/img-original/img/2017/12/26/20/00/02/66469686_p0.jpg
+            //   https://www.pixiv.net/member_illust.php?mode=manga&illust_id=66469686
+            // https://i.pximg.net/c/128x128/img-master/img/2017/07/15/21/52/41/63880467_p0_square1200.jpg
+            //   https://i.pximg.net/img-original/img/2017/07/15/21/52/41/63880467_p0.jpg
+            // https://i.pximg.net/c/128x128/img-master/img/2016/04/20/21/54/33/56447170_p0_square1200.jpg
+            //   https://i.pximg.net/img-original/img/2016/04/20/21/54/33/56447170_p0.png
+            var newsrc = src
+                .replace(/\/c\/[0-9]+x[0-9]+(?:_[0-9]+)?\//, "/")
+                .replace(/\/img-master\//, "/img-original/")
+                .replace(/(\/[0-9]+_p[0-9]+)_[^/]*(\.[^/.]*)$/, "$1$2");
+            if (!newsrc.match(/\.png(\?.*)?$/))
+                newsrc = [newsrc, newsrc.replace(/(\.[^/.]*)$/, ".png")];
+
+            return {
+                url: newsrc,
+                headers: {
+                    Referer: "https://www.pixiv.net/member_illust.php?mode=manga&illust_id=" + src.replace(/.*\/([0-9]+)_[^/]*$/, "$1")
+                }
+            };
         }
 
         if (domain === "cache-graphicslib.viator.com") {
@@ -7762,6 +7812,9 @@ var $$IMU_EXPORT$$;
             //   https://pm1.narvii.com/6144/3af419d28deec398f490c7b1e0106d41165f84e0_hq.jpg
             // https://pm1.narvii.com/6795/59948b2d6d93878fcfbcbf091d9edfa9399b93c4v2_00.jpg
             //   https://pm1.narvii.com/6795/59948b2d6d93878fcfbcbf091d9edfa9399b93c4v2_hq.jpg
+            // doesn't work for all:
+            // https://pm1.narvii.com/6516/5a012772e565ae7b0e6cd1f9ecae669afea0d0a2_00.jpg -- bg
+            //   https://pm1.narvii.com/6516/5a012772e565ae7b0e6cd1f9ecae669afea0d0a2_hq.jpg -- doesn't work
             return src.replace(/(\/[0-9a-fv]+_)[^/.]*(\.[^/.]*)/, "$1hq$2");
         }
 
@@ -11113,6 +11166,10 @@ var $$IMU_EXPORT$$;
         if (host_domain_nosub === "reddit.com" && options.element) {
             newsrc = (function() {
                 function checkimage(url) {
+                    if (url.match(/^[a-z]+:\/\/i\.redditmedia\.com\//) ||
+                        url.match(/^[a-z]+:\/\/i\.redd\.it\//))
+                        return url;
+
                     if (bigimage_recursive(url, {
                         fill_object: false,
                         iterations: 3,
@@ -11124,32 +11181,49 @@ var $$IMU_EXPORT$$;
                 }
 
                 function request(url) {
-                    var id = url.replace(/.*\/comments\/([^/]*)\/[^/]*(?:\/(?:\?.*)?)?$/, "$1");
-                    if (id !== url) {
-                        do_request({
-                            method: "GET",
-                            url: "https://www.reddit.com/api/info.json?id=t3_" + id,
-                            onload: function(result) {
-                                try {
-                                    var json = JSON.parse(result.responseText);
-                                    var item = json.data.children[0].data;
-                                    //var image = item.preview.images[0].source.url;
-                                    var image = item.url;
+                    var id;
 
-                                    if (checkimage(image))
-                                        return options.cb(image);
-                                } catch (e) {
-                                    console.error(e);
+                    if (url.match(/^t3_/))
+                        id = url;
+                    else {
+                        id = url.replace(/.*\/comments\/([^/]*)\/[^/]*(?:\/(?:\?.*)?)?$/, "$1");
+                        if (id === url) {
+                            return;
+                        }
+
+                        id = "t3_" + id;
+                    }
+
+                    do_request({
+                        method: "GET",
+                        url: "https://www.reddit.com/api/info.json?id=" + id,
+                        onload: function(result) {
+                            try {
+                                var json = JSON.parse(result.responseText);
+                                var item = json.data.children[0].data;
+                                var image = item.url;
+
+                                if (!checkimage(image)) {
+                                    if (item.preview.images[0].variants.gif)
+                                        image = item.preview.images[0].variants.gif.source.url;
+                                    else
+                                        image = item.preview.images[0].source.url;
                                 }
 
-                                options.cb(null);
+                                return options.cb(image);
+                            } catch (e) {
+                                console.log(id);
+                                console.log(result);
+                                console.error(e);
                             }
-                        });
 
-                        return {
-                            waiting: true
-                        };
-                    }
+                            options.cb(null);
+                        }
+                    });
+
+                    return {
+                        waiting: true
+                    };
                 }
 
                 if (options.element.parentElement && options.element.parentElement.parentElement) {
@@ -11160,16 +11234,22 @@ var $$IMU_EXPORT$$;
                     if (newsrc) {
                         if (checkimage(newsrc))
                             return newsrc;
-                        else
-                            return;
-                    } else if (doubleparent.parentElement) {
+                        else {
+                            var id = doubleparent.getAttribute("data-fullname");
+                            if (id) {
+                                newsrc = request(id);
+                                if (newsrc)
+                                    return newsrc;
+                            }
+                        }
+                    }
+
+                    if (doubleparent.parentElement) {
                         if (doubleparent.parentElement.tagName === "A" && options.do_request && options.cb) {
                             // card
                             newsrc = request(doubleparent.parentElement.href);
                             if (newsrc)
                                 return newsrc;
-                            else
-                                return;
                         }
 
                         if (options.element.parentElement.tagName === "A" &&
@@ -11182,8 +11262,6 @@ var $$IMU_EXPORT$$;
 
                             if (checkimage(newsrc))
                                 return newsrc;
-                            else
-                                return;
                         }
 
                         // new classic
@@ -11216,8 +11294,78 @@ var $$IMU_EXPORT$$;
                 return newsrc;
         }
 
-        if (domain === "i.redd.it" || domain === "i.redditmedia.com") {
-            return src;
+        if (host_domain_nosub.match(/^google\./) && options.element) {
+            newsrc = (function() {
+                // image search
+                var current = options.element;
+                while (current = current.parentElement) {
+                    if (current.tagName !== "A")
+                        continue;
+
+                    if (!current.href.match(/\/imgres\?/))
+                        continue;
+
+                    return decodeURIComponent(current.href.replace(/.*?\/imgres.*?[?&]imgurl=([^&]*).*?$/, "$1"));
+                }
+
+                // small previews
+                current = options.element;
+                while (current = current.parentElement) {
+                    if (current.tagName !== "A")
+                        continue;
+
+                    if (!current.href.match(/\/search\?/))
+                        continue;
+
+                    // related images
+                    var parent = current.parentElement;
+                    if (parent.tagName !== "DIV")
+                        continue;
+
+                    var notranslate = parent.getElementsByClassName("notranslate");
+                    if (!notranslate.length) {
+                        // all search results
+                        parent = parent.parentElement;
+                        if (!parent || parent.tagName !== "DIV")
+                            break;
+
+                        notranslate = parent.getElementsByClassName("notranslate");
+                        if (!notranslate.length)
+                            continue;
+                    }
+
+                    for (var i = 0; i < notranslate.length; i++) {
+                        var el = notranslate[i];
+                        if (!el.innerHTML.match(/^ *{/))
+                            continue;
+
+                        var json = JSON.parse(el.innerHTML);
+                        // properties:
+                        // oh = original height
+                        // ow = original width
+                        // ou = original url (of image)
+                        // pt = original url minus protocol
+                        // rh = host url hostname
+                        // ru = host url
+                        // th = thumbnail height
+                        // tw = thumbnail width
+                        // tu = thumbnail url
+
+                        if (json.ou.match(/^[a-z]+:/))
+                            return json.ou;
+
+                        break;
+                    }
+                }
+            })();
+            if (newsrc !== undefined)
+                return newsrc;
+        }
+
+        if (domain === "thumbnail.named.com") {
+            // http://thumbnail.named.com/normal/croptop/206x150/file/photo/977034
+            //   http://data.named.com/data/file/photo/977034 -- forces download
+            return src.replace(/:\/\/[^/]*\/.*?(\/file\/photo\/[0-9]+)/, "://data.named.com/data$1");
         }
 
 
@@ -11877,7 +12025,7 @@ var $$IMU_EXPORT$$;
                                 if (err_cb) {
                                     err_cb();
                                 } else {
-                                    console.error("Error: " + this.status);
+                                    console.error("Error: " + resp.status);
                                 }
 
                                 return;
@@ -12004,19 +12152,32 @@ var $$IMU_EXPORT$$;
             (function(setting) {
                 var meta = settings_meta[setting];
                 var value = settings[setting];
+                var orig_value = orig_settings[setting];
 
                 var option = document.createElement("div");
                 option.classList.add("option");
 
+                var table = document.createElement("table");
+                table.style.border = "0";
+
+                var tr = document.createElement("tr");
+                table.appendChild(tr);
+
                 var name = document.createElement("strong");
                 name.innerHTML = meta.name;
                 name.title = meta.description;
-                option.appendChild(name);
+
+                var name_td = document.createElement("td");
+                name_td.style.verticalAlign = "middle";
+                name_td.appendChild(name);
+                tr.appendChild(name_td);
+
+                var value_td = document.createElement("td");
 
                 var type = "options";
                 var option_list = {};
 
-                if (typeof value === "boolean") {
+                if (typeof orig_value === "boolean") {
                     type = "options";
                     option_list["true"] = {name: "Yes"};
                     option_list["false"] = {name: "No"};
@@ -12027,60 +12188,147 @@ var $$IMU_EXPORT$$;
                 } else if (meta.options) {
                     type = "options";
                     option_list = JSON.parse(JSON.stringify(meta.options));
-                    if (value in option_list)
-                        option_list[value].checked = true;
+
+                    if (value instanceof Array) {
+                        value.forEach(function (val) {
+                            if (val in option_list)
+                                option_list[val].checked = true;
+                        });
+                    } else {
+                        if (value in option_list)
+                            option_list[value].checked = true;
+                    }
                 }
 
                 if (type === "options") {
-                    for (var op in option_list) {
+                    var option_type = option_list._type;
+                    if (!option_type)
+                        option_type = "or";
+
+                    function add_setting(parent, op, val, option_type, group, group_type) {
                         var id = "input_" + setting + "_" + op;
+                        var name = setting;
+                        if (group && group_type === "and")
+                            name += "_" + group;
+
                         var input = document.createElement("input");
-                        input.setAttribute("type", "radio");
-                        input.name = setting;
+                        if (option_type === "or")
+                            input.setAttribute("type", "radio");
+                        else if (option_type === "and")
+                            input.setAttribute("type", "checkbox");
+                        input.name = name;
                         input.value = op;
                         input.id = id;
-                        if (option_list[op].checked)
+                        if (val.checked)
                             input.setAttribute("checked", "true");
 
                         input.addEventListener("change", function(event) {
                             var value = this.value;
 
-                            if (value === "true")
+                            if (value === "true") {
                                 value = true;
+                            }
 
                             if (value === "false")
                                 value = false;
 
-                            set_value(setting, value);
+                            if (this.checked) {
+                                if (group && group_type === "or") {
+                                    for (var child_i = 0; child_i < value_td.children.length; child_i++) {
+                                        var child = value_td.children[child_i];
+                                        if (child.id !== (setting + group)) {
+                                            for (var subchild_i = 0; subchild_i < child.children.length; subchild_i++) {
+                                                var subchild = child.children[subchild_i];
+                                                if (subchild.tagName === "INPUT") {
+                                                    subchild.checked = false;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (group || option_type !== "or") {
+                                var out_value = [];
+
+                                var inputs = value_td.getElementsByTagName("input");
+                                for (var child_i = 0; child_i < inputs.length; child_i++) {
+                                    var child = inputs[child_i];
+                                    if (child.checked) {
+                                        out_value.push(child.value);
+                                    }
+                                }
+
+                                set_value(setting, out_value);
+                            } else {
+                                set_value(setting, value);
+                            }
                         });
 
-                        option.appendChild(input);
+                        parent.appendChild(input);
 
                         var label = document.createElement("label");
                         label.setAttribute("for", id);
-                        label.innerHTML = option_list[op].name;
+                        label.innerHTML = val.name;
 
-                        if (option_list[op].description)
-                            label.title = option_list[op].description;
+                        if (val.description)
+                            label.title = val.description;
 
-                        option.appendChild(label);
+                        parent.appendChild(label);
+                    }
+
+                    for (var op in option_list) {
+                        if (op.match(/^_group/)) {
+                            var option_type1 = option_list[op]._type;
+                            if (!option_type1)
+                                option_type1 = "or";
+
+                            var sub = document.createElement("div");
+                            sub.classList.add("group");
+                            sub.id = setting + op;
+                            for (var op1 in option_list[op]) {
+                                if (!op1.match(/^_/))
+                                    add_setting(sub, op1, option_list[op][op1], option_type1, op, option_type);
+                            }
+                            value_td.appendChild(sub);
+                        } else if (!op.match(/^_/)) {
+                            add_setting(value_td, op, option_list[op], option_type);
+                        }
                     }
                 }
 
+                tr.appendChild(value_td);
+
+                option.appendChild(table);
                 options_el.appendChild(option);
             })(setting);
         }
     }
 
+    function parse_value(value) {
+        try {
+            return JSON.parse(value);
+        } catch (e) {
+            return value;
+        }
+    }
+
+    function serialize_value(value) {
+        return JSON.stringify(value);
+    }
+
     function get_value(key, cb) {
         if (typeof GM_getValue !== "undefined") {
-            return cb(GM_getValue(key, undefined));
+            return cb(parse_value(GM_getValue(key, undefined)));
         } else if (typeof GM !== "undefined" && GM.getValue) {
-            GM.getValue(key, undefined).then(cb);
+            GM.getValue(key, undefined).then(function (value) {
+                cb(parse_value(value));
+            });
         }
     }
 
     function set_value(key, value) {
+        value = serialize_value(value);
         console.log("Setting " + key + " = " + value);
         if (typeof GM_setValue !== "undefined") {
             return GM_setValue(key, value);
@@ -12115,6 +12363,9 @@ var $$IMU_EXPORT$$;
         var mouseAbsX = 0;
         var mouseAbsY = 0;
 
+        var mouseDelayX = 0;
+        var mouseDelayY = 0;
+
         var popups = [];
         var controlPressed = false;
         var waiting = false;
@@ -12122,14 +12373,22 @@ var $$IMU_EXPORT$$;
         var waitingel = null;
         var waitingsize = 200;
 
-        var keycode;
-        if (settings.mouseover_trigger === "ctrl") {
-            keycode = 17;
-        } else if (settings.mouseover_trigger === "shift") {
-            keycode = 16;
-        } else if (settings.mouseover_trigger === "alt") {
-            keycode = 18;
-        }
+        var str_to_keycode = {
+            shift: 16,
+            ctrl: 17,
+            alt: 19
+        };
+
+        var keycode_to_str = {
+            16: "shift",
+            17: "ctrl",
+            18: "alt"
+        };
+
+        var current_chord = [];
+
+        var delay = false;
+        var delay_handle = null;
 
         function update_waiting() {
             waitingel.style.left = (mouseAbsX - (waitingsize / 2)) + "px";
@@ -12154,7 +12413,9 @@ var $$IMU_EXPORT$$;
         }
 
         function stop_waiting() {
-            waitingel.style.display = "none";
+            if (waitingel)
+                waitingel.style.display = "none";
+
             waiting = false;
         }
 
@@ -12175,12 +12436,20 @@ var $$IMU_EXPORT$$;
                 return cb(null);
             }
 
+            if (images[0].match(/^data:/)) {
+                var img = document.createElement("img");
+                img.src = images[0];
+                img.onload = function() {
+                    cb(img, images[0]);
+                };
+                return;
+            }
+
             function err_cb() {
                 images.shift();
                 return check_image_get(images, obj, cb);
             }
 
-            //console.log(images);
             var url = images[0];
 
             var url_domain = url.replace(/^([a-z]+:\/\/[^/]*).*?$/, "$1");
@@ -12208,9 +12477,10 @@ var $$IMU_EXPORT$$;
                         if (((digit === "4" || digit === "5") &&
                              resp.status !== 405)) {
                             if (err_cb) {
+                                console.log("Bad status: " + resp.status + " ( " + images[0] + " )");
                                 err_cb();
                             } else {
-                                console.error("Error: " + this.status);
+                                console.error("Error: " + resp.status);
                             }
 
                             return;
@@ -12230,7 +12500,7 @@ var $$IMU_EXPORT$$;
             });
         }
 
-        function makePopup(obj) {
+        function makePopup(obj, orig_url) {
             var x = mouseAbsX;
             var y = mouseAbsY;
 
@@ -12257,6 +12527,12 @@ var $$IMU_EXPORT$$;
 
                 var imgh = img.naturalHeight;
                 var imgw = img.naturalWidth;
+
+                if (imgh < 20 ||
+                    imgw < 20) {
+                    stop_waiting();
+                    return;
+                }
 
                 if (imgh > vh ||
                     imgw > vw) {
@@ -12293,11 +12569,14 @@ var $$IMU_EXPORT$$;
                 //console.log(div);
             }
 
-            if (obj.src instanceof Array) {
-                check_image_get(obj.url, obj, cb);
-            } else {
-                check_image_get([obj.url], obj, cb);
-            }
+            var sources = obj.url;
+            if (!(sources instanceof Array))
+                sources = [obj.url];
+
+            if (orig_url && sources.indexOf(orig_url) < 0)
+                sources.push(orig_url);
+
+            check_image_get(sources, obj, cb);
         }
 
         function getUnit(unit) {
@@ -12391,7 +12670,7 @@ var $$IMU_EXPORT$$;
             }
 
             function norm(src) {
-                return urljoin(document.location.href, src);
+                return urljoin(document.location.href, src, true);
             }
 
             function addImage(src, el) {
@@ -12496,11 +12775,15 @@ var $$IMU_EXPORT$$;
                 if (style.backgroundImage) {
                     var bgimg = style.backgroundImage;
                     if (bgimg.match(/^ *url[(]/)) {
-                        var src = norm(bgimg.replace(/^ *url[(]["']?(.*?)["']?[)] *$/, "$1"));
-                        addImage(src, el);
+                        var src = norm(bgimg.replace(/^ *url[(]["']?(.*?)["']?[)].*?/, "$1"));
+                        if (src !== bgimg)
+                            addImage(src, el);
                     }
                 }
             }
+
+            // todo: do multiple passes, one per layer
+            // would fix google+, with large backgrounds and small profile images
 
             for (var i = 0; i < els.length; i++) {
                 var el = els[i];
@@ -12655,15 +12938,64 @@ var $$IMU_EXPORT$$;
                 return getfirstsource(sources);
         }
 
-        document.addEventListener('keydown', function(event) {
-            if (event.which === keycode) {
-                controlPressed = true;
-                var els = document.elementsFromPoint(mouseX, mouseY);
+        function normalize_trigger() {
+            if (!(settings.mouseover_trigger instanceof Array)) {
+                settings.mouseover_trigger = [settings.mouseover_trigger];
+            }
+        }
 
-                var source = find_source(els);
-                if (source) {
-                    console.log(source);
-                    start_waiting();
+        normalize_trigger();
+
+        if (settings.mouseover_trigger[0] &&
+            settings.mouseover_trigger[0].match(/^delay_[0-9]*/)) {
+            delay = parseInt(settings.mouseover_trigger[0].replace(/^delay_([0-9]*)/, "$1"));
+        }
+
+        function key_in_trigger(key) {
+            if (!(key in keycode_to_str))
+                return false;
+
+            return settings.mouseover_trigger.indexOf(keycode_to_str[key]) >= 0;
+        }
+
+        function set_chord(key, value) {
+            if (!key_in_trigger(key))
+                return false;
+
+            var str = keycode_to_str[key];
+
+            if (value) {
+                if (current_chord.indexOf(str) < 0) {
+                    current_chord.push(str);
+                }
+            } else {
+                if (current_chord.indexOf(str) >= 0) {
+                    current_chord.splice(current_chord.indexOf(str), 1);
+                }
+            }
+
+            return true;
+        }
+
+        function trigger_complete() {
+            for (var i = 0; i < settings.mouseover_trigger.length; i++) {
+                if (current_chord.indexOf(settings.mouseover_trigger[i]) < 0)
+                    return false;
+            }
+
+            return true;
+        }
+
+        function trigger_popup() {
+            controlPressed = true;
+            var els = document.elementsFromPoint(mouseX, mouseY);
+
+            var source = find_source(els);
+            if (source) {
+                resetpopups();
+                //console.log(source);
+                start_waiting();
+                try {
                     bigimage_recursive(source.src, {
                         fill_object: true,
                         host_url: document.location.href,
@@ -12671,21 +13003,36 @@ var $$IMU_EXPORT$$;
                         window: unsafeWindow,
                         element: source.el,
                         cb: function(source_imu) {
-                            console.log(source_imu);
-                            makePopup(source_imu);
+                            //console.log(source_imu);
+                            makePopup(source_imu, source.src);
                         }
                     });
+                } catch (e) {
+                    console.error(e);
+                    makePopup(source.src);
+                }
+            }
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (set_chord(event.which, true)) {
+                if (trigger_complete()) {
+                    trigger_popup();
                 }
             }
         });
 
         document.addEventListener('keyup', function(event) {
-            if (event.which === keycode) {
+            if (set_chord(event.which)) {
                 controlPressed = false;
                 stop_waiting();
 
                 resetpopups();
             }
+
+            // esc
+            if (event.which === 27)
+                resetpopups();
         });
 
         function scrollLeft() {
@@ -12724,6 +13071,41 @@ var $$IMU_EXPORT$$;
             if (waiting) {
                 update_waiting();
             }
+
+            if (delay !== false && typeof delay === "number") {
+                if (delay_handle) {
+                    clearTimeout(delay_handle);
+
+                    if (waiting)
+                        stop_waiting();
+
+                    if (popups.length > 0) {
+                        var jitter_threshx = 40;
+                        var jitter_threshy = jitter_threshx;
+
+                        var img = popups[0].getElementsByTagName("img")[0];
+                        if (img) {
+                            var w = Math.min(parseInt(img.style.maxWidth), img.naturalWidth);
+                            var h = Math.min(parseInt(img.style.maxHeight), img.naturalHeight);
+
+                            jitter_threshx = Math.min(Math.max(jitter_threshx, w / 3), img.naturalWidth);
+                            jitter_threshy = Math.min(Math.max(jitter_threshy, h / 3), img.naturalHeight);
+                        }
+
+                        if (Math.abs(mouseX - mouseDelayX) > jitter_threshx ||
+                            Math.abs(mouseY - mouseDelayY) > jitter_threshy) {
+                            resetpopups();
+                        }
+                    }
+                }
+
+                if (popups.length === 0) {
+                    mouseDelayX = mouseX;
+                    mouseDelayY = mouseY;
+
+                    delay_handle = setTimeout(trigger_popup, delay * 1000);
+                }
+            }
         });
     }
 
@@ -12734,7 +13116,8 @@ var $$IMU_EXPORT$$;
             if (settings.redirect)
                 do_redirect();
 
-            if (document.location.href.match(/^https?:\/\/qsniyg\.github\.io\/maxurl\/options\.html/)) {
+            if (document.location.href.match(/^https?:\/\/qsniyg\.github\.io\/maxurl\/options\.html/) ||
+                document.location.href.match(/^file:\/\/.*\/maxurl\/site\/options\.html/)) {
                 onload(function() {
                     do_options();
                 });
