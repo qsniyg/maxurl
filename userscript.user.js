@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.4.2
+// @version      0.4.3
 // @description  Finds larger versions of images
 // @author       qsniyg
 // @include      *
@@ -248,9 +248,9 @@ var $$IMU_EXPORT$$;
         if (domain.indexOf(".amazonaws.com") >= 0)
             amazon_container = src.replace(/^[a-z]*:\/\/[^/]*\/([^/]*)\/.*/, "$1");
 
-        var host_domain = null;
-        var host_domain_nowww = null;
-        var host_domain_nosub = null;
+        var host_domain = "";
+        var host_domain_nowww = "";
+        var host_domain_nosub = "";
         if (options.host_url) {
             host_domain = options.host_url.replace(/^[a-z]+:\/\/([^/]*)(?:\/.*)?$/,"$1");
 
@@ -1742,8 +1742,10 @@ var $$IMU_EXPORT$$;
             //   https://s.yimg.com/cd/resizer/2.0/FIT_TO_WIDTH-w1330/a8b0bce04276cee4a1a80ea615a18c6e087e3b28.jpg
             // https://s.yimg.com/ny/api/res/1.2/guu198chJ6n8wlBLHhuLtg--/YXBwaWQ9aGlnaGxhbmRlcjtzbT0xO3c9NDUwO2g9MzAwO2lsPXBsYW5l/http://media.zenfs.com/en_us/News/Reuters/2017-03-17T012117Z_1_LYNXMPED2G03G_RTROPTP_2_PEOPLE-EMMAWATSON.JPG.cf.jpg
             //   http://media.zenfs.com/en_us/News/Reuters/2017-03-17T012117Z_1_LYNXMPED2G03G_RTROPTP_2_PEOPLE-EMMAWATSON.JPG
+            // https://s.yimg.com/uu/api/res/1.2/1aGXhnnFE3EBXf7EvkNT6w--~B/Zmk9c3RyaW07aD0xNjA7cHlvZmY9MDtxPTgwO3c9MzQwO3NtPTE7YXBwaWQ9eXRhY2h5b24-/https://media.zenfs.com/creatr-images/GLB/2018-06-15/acf56170-70a4-11e8-ad9e-1f5591b0f4d1_trump-kim-new.jpg.cf.webp
+            //   https://media.zenfs.com/creatr-images/GLB/2018-06-15/acf56170-70a4-11e8-ad9e-1f5591b0f4d1_trump-kim-new.jpg
             return src
-                .replace(/.*\/[^/]*\/api\/[^/]*\/[^/]*\/[^/]*\/[^/]*\/(.*?)(?:\.cf\.jpg)?$/, "$1")
+                .replace(/.*\/[^/]*\/api\/[^/]*\/[^/]*\/[^/]*\/[^/]*\/(.*?)(?:\.cf\.(?:jpg|webp))?$/, "$1")
                 .replace(/^([a-z]*:\/)([^/])/, "$1/$2");
         }
 
@@ -4576,7 +4578,9 @@ var $$IMU_EXPORT$$;
             domain.indexOf(".bing.com") >= 0) {
             // https://tse1.mm.bing.net/th?id=Ad9e81485410912702a018d5f48ec0f5c&w=136&h=183&c=8&rs=1&qlt=90&pid=3.1&rm=2
             // https://www.bing.com/th?id=OPN.RTNews_jJZmvGD6PzvUt22LbHHUUg&w=186&h=88&c=7&rs=2&qlt=80&cdv=1&pid=News
-            return src.replace(/(:\/\/[^/]*)\/th[^/]*[?&]id=([^&]*)&[^/]*$/, "$1/th?id=$2");
+            newsrc = src.replace(/(:\/\/[^/]*)\/th[^/]*[?&]id=([^&]*)&[^/]*$/, "$1/th?id=$2");
+            if (newsrc !== src)
+                return newsrc;
         }
 
         if (domain === "cdn.4archive.org") {
@@ -11368,6 +11372,20 @@ var $$IMU_EXPORT$$;
             return src.replace(/:\/\/[^/]*\/.*?(\/file\/photo\/[0-9]+)/, "://data.named.com/data$1");
         }
 
+        if (host_domain_nosub === "bing.com" && options.element) {
+            var current = options.element;
+            while (current = current.parentElement) {
+                if (current.tagName !== "A")
+                    continue;
+
+                console.log(current.href);
+                if (!current.href.match(/\/images\/search\?.*mediaurl=/))
+                    continue;
+
+                return decodeURIComponent(current.href.replace(/.*?\/search.*?[?&]mediaurl=([^&]*).*?$/, "$1"));
+            }
+        }
+
 
 
 
@@ -11858,8 +11876,8 @@ var $$IMU_EXPORT$$;
                 currenthref = newhref[0];*/
 
             var big = bigimage(currenthref, options);
-            if (!big && options.null_if_no_change) {
-                if (newhref === url)
+            if (!big) {
+                if (newhref === url && options.null_if_no_change)
                     newhref = big;
                 break;
             }
