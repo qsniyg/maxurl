@@ -274,7 +274,7 @@ b, strong {
 }
 
 
-input[type="radio"] {
+.option input {
   position: absolute !important;
   clip: rect(0,0,0,0);
   visibility: hidden;
@@ -292,9 +292,15 @@ label {
   margin: 0em .3em;
   border: 1px solid #0af;
   cursor: pointer;
+
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
-input[type="radio"]:checked + label {
+input:checked + label {
   background: #0af;
   color: #fff;
 }
@@ -306,6 +312,11 @@ input[type="radio"]:checked + label {
   width: 17em;
   font-weight: 400;
   display: inline-block;
+}
+
+.option .group {
+  padding-bottom: .3em;
+  padding-top: .3em;
 }
 
 @media (max-width:700px) {
