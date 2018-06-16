@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.4.4
+// @version      0.4.5
 // @description  Finds larger versions of images
 // @author       qsniyg
 // @include      *
@@ -47,8 +47,8 @@ var $$IMU_EXPORT$$;
     var default_options = {
         fill_object: true,
         null_if_no_change: false,
-        use_cache: true,
-        iterations: 200,
+        use_cache: false,
+        iterations: 20,
 
         do_request: do_request,
         host_url: null,
@@ -11174,16 +11174,19 @@ var $$IMU_EXPORT$$;
             return src.replace(/^[a-z]+:\/\/[^/]*\/cpimg\/([^/]*\.[^/]*)/, "http://$1");
         }
 
-        if (host_domain_nosub === "reddit.com" && options.element) {
+        if ((domain_nosub === "redditmedia.com" ||
+             domain_nosub === "redd.it") &&
+            host_domain_nosub === "reddit.com" && options.element) {
             newsrc = (function() {
                 function checkimage(url) {
-                    if (url.match(/^[a-z]+:\/\/i\.redditmedia\.com\//) ||
-                        url.match(/^[a-z]+:\/\/i\.redd\.it\//))
+                    if (url.match(/^[a-z]+:\/\/[^/]*\.redditmedia\.com\//) ||
+                        url.match(/^[a-z]+:\/\/[^/]*\.redd\.it\//))
                         return url;
 
                     if (bigimage_recursive(url, {
                         fill_object: false,
                         iterations: 3,
+                        use_cache: false,
                         null_if_no_change: true,
                         do_request: false
                     }) !== null) {
@@ -11310,7 +11313,9 @@ var $$IMU_EXPORT$$;
                 return newsrc;
         }
 
-        if (host_domain_nosub.match(/^google\./) && options.element) {
+        if ((domain_nosub === "gstatic.com" ||
+             domain === "") &&
+            host_domain_nosub.match(/^google\./) && options.element) {
             newsrc = (function() {
                 // image search
                 var current = options.element;
@@ -11384,7 +11389,8 @@ var $$IMU_EXPORT$$;
             return src.replace(/:\/\/[^/]*\/.*?(\/file\/photo\/[0-9]+)/, "://data.named.com/data$1");
         }
 
-        if (host_domain_nosub === "bing.com" && options.element) {
+        if (domain_nosub === "bing.com" &&
+            host_domain_nosub === "bing.com" && options.element) {
             var current = options.element;
             while (current = current.parentElement) {
                 if (current.tagName !== "A")
@@ -11957,12 +11963,14 @@ var $$IMU_EXPORT$$;
 
         var newhref = url;
         var currenthref = url;
-        var pasthrefs = [];
+        var pasthrefs = [url];
         var lastobj = fillobj(newhref);
         var currentobj = null;
         var used_cache = false;
+        var i = 0;
 
         var do_cache = function() {
+            currenthref = get_currenthref(fillobj(newhref, currentobj));
             if (!used_cache && options.use_cache && !waiting) {
                 for (var i = 0; i < pasthrefs.length; i++) {
                     var href = pasthrefs[i];
@@ -11981,10 +11989,94 @@ var $$IMU_EXPORT$$;
             return currenthref;
         };
 
+        var parse_bigimage = function(big) {
+            if (!big) {
+                if (newhref === url && options.null_if_no_change)
+                    newhref = big;
+                return false;
+            }
+
+            var newhref1 = fullurl_obj(currenthref, big);
+            if (!newhref1) {
+                return false;
+            }
+
+            var objified = fillobj(newhref1);
+
+            waiting = false;
+            if (typeof(newhref1) === "object") {
+                currentobj = newhref1;
+                if (newhref1.waiting) {
+                    waiting = true;
+                    if (!newhref1.url) {
+                        newhref = newhref1;
+                        return false;
+                    }
+                }
+            } else {
+                currentobj = null;
+            }
+
+            if (same_url(currenthref, objified)) {
+                return false;
+            } else {
+                currenthref = get_currenthref(objified);
+                newhref = newhref1;
+            }
+
+            pasthrefs.push(currenthref);
+
+            if (!newhref.waiting)
+                lastobj = newhref;
+
+            if (_nir_debug_) {
+                return false;
+            }
+
+            return true;
+        };
+
+        var do_bigimage = function() {
+            if (options.use_cache && (currenthref in url_cache)) {
+                newhref = url_cache[currenthref];
+                used_cache = true;
+                return false;
+            }
+
+            var big = bigimage(currenthref, options);
+
+            return parse_bigimage(big);
+        };
+
         var cb = null;
         if (options.cb) {
             var orig_cb = options.cb;
             options.cb = function(x) {
+                var do_end = function() {
+                    do_cache();
+
+                    if (options.fill_object) {
+                        newhref = fillobj(newhref, currentobj);
+                    }
+
+                    orig_cb(newhref);
+                };
+
+                if (!parse_bigimage(x) || (i + 1) >= options.iterations) {
+                    do_end();
+                } else {
+                    for (; i < options.iterations; i++) {
+                        if (!do_bigimage()) {
+                            break;
+                        }
+                    }
+
+                    if (!waiting) {
+                        do_end();
+                    }
+                }
+
+                return;
                 waiting = false;
 
                 if (x === null) {
@@ -12000,7 +12092,12 @@ var $$IMU_EXPORT$$;
             };
         }
 
-        for (var i = 0; i < options.iterations; i++) {
+        for (i = 0; i < options.iterations; i++) {
+            if (!do_bigimage())
+                break;
+
+            continue;
+
             waiting = false;
             /*if (newhref instanceof Array)
               currenthref = newhref[0];*/
@@ -12049,33 +12146,6 @@ var $$IMU_EXPORT$$;
 
             if (!newhref.waiting)
                 lastobj = newhref;
-            /*if (newhref1 !== currenthref) {
-                if (newhref1 instanceof Array) {
-                    if (newhref1.indexOf(currenthref) >= 0)
-                        break;
-                    currenthref = newhref1[0];
-                } else if (typeof(newhref1) === "object") {
-                    if (newhref1.waiting)
-                        waiting = true;
-                    if (newhref1.url instanceof Array) {
-                        if (newhref1.url.indexOf(currenthref) >= 0)
-                            break;
-                        currenthref = newhref1.url[0];
-                    } else if (!newhref1.url) {
-                        newhref = newhref1;
-                        break;
-                    } else {
-                        if (newhref1.url === currenthref)
-                            break;
-                        currenthref = newhref1.url;
-                    }
-                } else {
-                    currenthref = newhref1;
-                }
-                newhref = newhref1;
-            } else {
-                break;
-            }*/
 
             if (_nir_debug_) {
                 break;
