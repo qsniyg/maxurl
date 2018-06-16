@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.4.3
+// @version      0.4.4
 // @description  Finds larger versions of images
 // @author       qsniyg
 // @include      *
@@ -47,6 +47,7 @@ var $$IMU_EXPORT$$;
     var default_options = {
         fill_object: true,
         null_if_no_change: false,
+        use_cache: true,
         iterations: 200,
 
         do_request: do_request,
@@ -114,6 +115,9 @@ var $$IMU_EXPORT$$;
             }
         }
     };
+
+
+    var url_cache = {};
 
 
     var is_node = false;
@@ -6972,7 +6976,10 @@ var $$IMU_EXPORT$$;
             return src.replace(/_s[0-9]*(\.[^/.]*)$/, "$1");
         }
 
-        if (domain === "img.laonanren.com") {
+        if (domain === "img.laonanren.com" ||
+            // http://cf.whl4u.jp/wh27/images/gallery/products/415t.jpg
+            //   http://cf.whl4u.jp/wh27/images/gallery/products/415.jpg
+            domain === "cf.whl4u.jp") {
             // https://img.laonanren.com/upload2/2015-02/15020914251864t.jpg
             //   https://img.laonanren.com/upload2/2015-02/15020914251864.jpg
             return src.replace(/t(\.[^/.]*)$/, "$1");
@@ -11263,7 +11270,6 @@ var $$IMU_EXPORT$$;
                              options.element.parentElement.classList.contains("PostThumbnail"))) {
 
                             newsrc = options.element.parentElement.href;
-
                             if (checkimage(newsrc))
                                 return newsrc;
                         }
@@ -11272,7 +11278,10 @@ var $$IMU_EXPORT$$;
                         var current = options.element;
                         var found = false;
                         while (current = current.parentElement) {
-                            if (current.classList.contains("scrollerItem")) {
+                            // new classic
+                            if (current.classList.contains("scrollerItem") ||
+                                // new user page
+                                current.classList.contains("Post__top")) {
                                 found = true;
                                 break;
                             }
@@ -11282,7 +11291,10 @@ var $$IMU_EXPORT$$;
                             var elements = current.getElementsByTagName("a");
                             for (var i = 0; i < elements.length; i++) {
                                 var element = elements[i];
-                                if (element.getAttribute("data-click-id") === "body") {
+                                // new classic
+                                if (element.getAttribute("data-click-id") === "body" ||
+                                    // new user page
+                                    element.classList.contains("Post__absoluteLink")) {
                                     newsrc = request(element.href);
                                     if (newsrc)
                                         return newsrc;
@@ -11385,6 +11397,90 @@ var $$IMU_EXPORT$$;
                 return decodeURIComponent(current.href.replace(/.*?\/search.*?[?&]mediaurl=([^&]*).*?$/, "$1"));
             }
         }
+
+        if (domain_nosub === "deviantart.net" &&
+            (domain.match(/^pre[0-9]*\.deviantart\.net/) ||
+             domain.match(/^img[0-9]*\.deviantart\.net/)) &&
+            src.match(/\/[a-z0-9]\/[0-9]+\/[0-9a-z]+\/[0-9a-z]+\/[0-9a-z]+\/[^/]*-[0-9a-z]+\.[^/.]*$/) &&
+            options.do_request && options.cb) {
+            // https://github.com/DeviantArt/DeviantArt-API/issues/100#issuecomment-219092634
+            //   ids are base36 encoded
+            // https://aikiyun.deviantart.com/art/BRS-Strength-619670254
+            // https://img00.deviantart.net/f4a7/i/2016/187/9/8/_brs__strength_by_aikiyun-da8xomm.jpg
+            //   https://orig00.deviantart.net/af7a/f/2016/187/6/d/_brs__strength_by_aikiyun-da8xomm.jpg
+            //
+            // https://pre00.deviantart.net/cc1d/th/pre/i/2015/027/3/7/_brs__nana_gray_by_aikiyun-d8flbyx.png
+            //   https://orig00.deviantart.net/5455/f/2015/027/f/c/_brs__nana_gray_by_aikiyun-d8flbyx.png
+            //
+            // https://darkblueandy.deviantart.com/art/Black-Rock-Shooter-10th-Anniversary-Tribute-749686444 -- no download
+            //   https://pre00.deviantart.net/8fe7/th/pre/i/2018/164/6/3/black_rock_shooter_10th_anniversary_tribute_by_darkblueandy-dcecdrg.jpg
+            //
+            // older links don't work:
+            //
+            // https://daniwae.deviantart.com/art/Vocaloid-Black-Rock-Shooter-126624173
+            //   https://pre00.deviantart.net/1fa8/th/pre/f/2009/171/d/3/vocaloid__black_rock_shooter_by_danny07312017.png
+            //   https://orig00.deviantart.net/1d55/f/2009/171/d/3/vocaloid__black_rock_shooter_by_danny07312017.png
+            // parseInt("da8xomm", 36) = 28917840622
+            //   28917840622 - 619670254 = 28298170368
+
+            var newsrc = (function() {
+                var id = src.replace(/.*-([0-9a-z]+)\.[^/.]*$/, "$1");
+                //id = parseInt(id, 36) - 28298170368;
+
+                options.do_request({
+                    method: "GET",
+                    url: "http://fav.me/" + id,
+                    onload: function(result) {
+                        if (result.status === 200) {
+                            var deviant_url = result.finalUrl;
+                            options.do_request({
+                                method: "GET",
+                                url: deviant_url,
+                                onload: function(result) {
+                                    if (result.status !== 200) {
+                                        console.log(result);
+                                        options.cb(null);
+                                        return;
+                                    }
+
+                                    try {
+                                        var hrefre = /href=["'](https?:\/\/www\.deviantart\.com\/download\/[0-9]+\/[^/]*?)["']/;
+                                        var match = result.responseText.match(hrefre);
+                                        var href = match[1].replace("&amp;", "&");
+                                        //console.log(href);
+
+                                        options.do_request({
+                                            method: "GET",
+                                            url: href,
+                                            onload: function(result) {
+                                                if (result.status !== 200) {
+                                                    console.log(result);
+                                                    options.cb(null);
+                                                    return;
+                                                }
+
+                                                options.cb(result.finalUrl);
+                                            }
+                                        });
+                                    } catch (e) {
+                                        console.error(e);
+                                        options.cb(null);
+                                    }
+                                }
+                            });
+                        } else {
+                            console.log(result);
+                            options.cb(null);
+                        }
+                    }
+                });
+            })();
+
+            return {
+                "waiting": true
+            };
+        }
+
 
 
 
@@ -11857,23 +11953,63 @@ var $$IMU_EXPORT$$;
             }
         }
 
+        var waiting = false;
+
+        var newhref = url;
+        var currenthref = url;
+        var pasthrefs = [];
+        var lastobj = fillobj(newhref);
+        var currentobj = null;
+        var used_cache = false;
+
+        var do_cache = function() {
+            if (!used_cache && options.use_cache && !waiting) {
+                for (var i = 0; i < pasthrefs.length; i++) {
+                    var href = pasthrefs[i];
+
+                    if (href !== currenthref || true)
+                        url_cache[href] = currenthref;
+                }
+            }
+        };
+
+        var get_currenthref = function(objified) {
+            if (objified.url instanceof Array)
+                currenthref = objified.url[0];
+            else
+                currenthref = objified.url;
+            return currenthref;
+        };
+
         var cb = null;
         if (options.cb) {
             var orig_cb = options.cb;
             options.cb = function(x) {
-                orig_cb(fillobj(x));
+                waiting = false;
+
+                if (x === null) {
+                    x = lastobj;
+                }
+
+                x = fillobj(x);
+                currenthref = get_currenthref(x);
+
+                do_cache();
+
+                orig_cb(x);
             };
         }
 
-        var waiting = false;
-
-        var newhref = url;
-        var currenthref = newhref;
-        var currentobj = null;
         for (var i = 0; i < options.iterations; i++) {
             waiting = false;
             /*if (newhref instanceof Array)
-                currenthref = newhref[0];*/
+              currenthref = newhref[0];*/
+
+            if (options.use_cache && (currenthref in url_cache)) {
+                newhref = url_cache[currenthref];
+                used_cache = true;
+                break;
+            }
 
             var big = bigimage(currenthref, options);
             if (!big) {
@@ -11905,12 +12041,14 @@ var $$IMU_EXPORT$$;
             if (same_url(currenthref, objified)) {
                 break;
             } else {
-                if (objified.url instanceof Array)
-                    currenthref = objified.url[0];
-                else
-                    currenthref = objified.url;
+                currenthref = get_currenthref(objified);
                 newhref = newhref1;
             }
+
+            pasthrefs.push(currenthref);
+
+            if (!newhref.waiting)
+                lastobj = newhref;
             /*if (newhref1 !== currenthref) {
                 if (newhref1 instanceof Array) {
                     if (newhref1.indexOf(currenthref) >= 0)
@@ -11948,6 +12086,8 @@ var $$IMU_EXPORT$$;
             newhref = fillobj(newhref, currentobj);
         }
 
+        do_cache();
+
         if (options.cb && !waiting) {
             options.cb(newhref);
         }
@@ -11971,12 +12111,21 @@ var $$IMU_EXPORT$$;
         document.location = url;
     };
 
+    var cursor_wait = function() {
+        document.documentElement.style.cursor = "wait";
+    };
+
+    var cursor_default = function() {
+        document.documentElement.style.cursor = "default";
+    }
+
+
     var check_image = function(url, obj, err_cb) {
         if (url !== document.location.href) {
             var headers = obj.headers;
             console.log(url);
             if (!_nir_debug_ || !_nir_debug_.no_request) {
-                document.documentElement.style.cursor = "wait";
+                cursor_wait();
 
                 var url_domain = url.replace(/^([a-z]+:\/\/[^/]*).*?$/, "$1");
 
@@ -12013,7 +12162,7 @@ var $$IMU_EXPORT$$;
 
                         // nano defender removes this.DONE
                         if (resp.readyState == 4) {
-                            document.documentElement.style.cursor = "default";
+                            cursor_default();
 
                             if (resp.finalUrl === document.location.href) {
                                 console.log(resp.finalUrl);
@@ -12101,11 +12250,16 @@ var $$IMU_EXPORT$$;
             return;
         }
 
+        cursor_wait();
+
         bigimage_recursive(document.location.href, {
             fill_object: true,
             cb: function(newhref) {
-                if (!newhref)
+                cursor_default();
+
+                if (!newhref) {
                     return;
+                }
 
                 if (_nir_debug_)
                     console.dir(newhref);
@@ -12132,8 +12286,9 @@ var $$IMU_EXPORT$$;
                     var index = 0;
                     var cb = function() {
                         index++;
-                        if (index >= newhref.url.length)
+                        if (index >= newhref.url.length) {
                             return;
+                        }
                         check_image(newhref.url[index], newhref, cb);
                     };
                     check_image(newhref.url[0], newhref, cb);
@@ -12712,18 +12867,20 @@ var $$IMU_EXPORT$$;
             }
 
             function addElement(el) {
-                if (el.tagName === "IMG") {
-                    var src = norm(el.src);
-                    if (!addImage(src, el))
-                        return;
-
-                    sources[src].width = el.naturalWidth;
-                    sources[src].height = el.naturalHeight;
-                } else if (el.tagName === "PICTURE") {
+                if (el.tagName === "PICTURE") {
                     for (var i = 0; i < el.children.length; i++) {
                         addElement(el.children[i]);
                     }
-                } else if (el.tagName === "SOURCE") {
+                } else if (el.tagName === "SOURCE" || el.tagName === "IMG") {
+                    if (el.src) {
+                        var src = norm(el.src);
+                        if (!addImage(src, el))
+                            return;
+
+                        sources[src].width = el.naturalWidth;
+                        sources[src].height = el.naturalHeight;
+                    }
+
                     if (!el.srcset)
                         return;
 
@@ -12793,7 +12950,8 @@ var $$IMU_EXPORT$$;
                 if (style.backgroundImage) {
                     var bgimg = style.backgroundImage;
                     if (bgimg.match(/^ *url[(]/)) {
-                        var src = norm(bgimg.replace(/^ *url[(]["']?(.*?)["']?[)].*?/, "$1"));
+                        // url('https://t00.deviantart.net/I94eYVLky718W9_zFjV-SJ-_qm8=/300x200/filters:fixed_height(100,100):origin()/pre00/abda/th/pre/i/2013/069/9/0/black_rock_shooter_by_mrtviolet-d5xktg7.jpg');
+                        var src = norm(bgimg.replace(/^ *url[(](?:(?:'(.*?)')|(?:"(.*?)")|(?:([^)]*)))[)].*$/, "$1$2$3"));
                         if (src !== bgimg)
                             addImage(src, el);
                     }
