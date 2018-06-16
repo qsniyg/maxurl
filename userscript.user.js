@@ -47,8 +47,8 @@ var $$IMU_EXPORT$$;
     var default_options = {
         fill_object: true,
         null_if_no_change: false,
-        use_cache: false,
-        iterations: 20,
+        use_cache: true,
+        iterations: 200,
 
         do_request: do_request,
         host_url: null,
