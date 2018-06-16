@@ -11437,11 +11437,27 @@ var $$IMU_EXPORT$$;
                     method: "GET",
                     url: "http://fav.me/" + id,
                     onload: function(result) {
-                        if (result.status === 200) {
-                            var deviant_url = result.finalUrl;
+                        if (result.status !== 200) {
+                            console.log(result);
+                            options.cb(null);
+                            return;
+                        }
+
+                        try {
+                            var hrefre = /href=["'](https?:\/\/www\.deviantart\.com\/download\/[0-9]+\/[^/]*?)["']/;
+                            var match = result.responseText.match(hrefre);
+                            if (!match) {
+                                console.error("No public download for " + src);
+                                options.cb(null);
+                                return;
+                            }
+
+                            var href = match[1].replace("&amp;", "&");
+                            //console.log(href);
+
                             options.do_request({
                                 method: "GET",
-                                url: deviant_url,
+                                url: href,
                                 onload: function(result) {
                                     if (result.status !== 200) {
                                         console.log(result);
@@ -11449,33 +11465,11 @@ var $$IMU_EXPORT$$;
                                         return;
                                     }
 
-                                    try {
-                                        var hrefre = /href=["'](https?:\/\/www\.deviantart\.com\/download\/[0-9]+\/[^/]*?)["']/;
-                                        var match = result.responseText.match(hrefre);
-                                        var href = match[1].replace("&amp;", "&");
-                                        //console.log(href);
-
-                                        options.do_request({
-                                            method: "GET",
-                                            url: href,
-                                            onload: function(result) {
-                                                if (result.status !== 200) {
-                                                    console.log(result);
-                                                    options.cb(null);
-                                                    return;
-                                                }
-
-                                                options.cb(result.finalUrl);
-                                            }
-                                        });
-                                    } catch (e) {
-                                        console.error(e);
-                                        options.cb(null);
-                                    }
+                                    options.cb(result.finalUrl);
                                 }
                             });
-                        } else {
-                            console.log(result);
+                        } catch (e) {
+                            console.error(e);
                             options.cb(null);
                         }
                     }
@@ -12057,6 +12051,14 @@ var $$IMU_EXPORT$$;
 
                     if (options.fill_object) {
                         newhref = fillobj(newhref, currentobj);
+                    }
+
+                    if (!newhref.url) {
+                        if (options.null_if_no_change) {
+                            newhref.url = null;
+                        } else {
+                            newhref.url = pasthrefs[pasthrefs.length - 1];
+                        }
                     }
 
                     orig_cb(newhref);

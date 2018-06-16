@@ -6,6 +6,7 @@ var https = require('https');
 var url = require('url');
 const NodeCache = require( "node-cache" );
 var fs = require("fs");
+var request = require("request");
 
 var blacklist_json = JSON.parse(fs.readFileSync("./blacklist.json"));
 //var env_json = JSON.parse(fs.readFileSync("./.env.json"));
@@ -128,9 +129,23 @@ function inblacklist(x) {
   });
   }*/
 
+var base_headers = {
+  "User-Agent": 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.106 Safari/537.36',
+  "Pragma": 'no-cache',
+  "Cache-Control": 'max-age=0',
+  "Accept": 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+  "Accept-Encoding": "gzip, deflate, br",
+  "Accept-Language": "en-US,en;q=0.9"
+};
+
 function getimagesize(url) {
   if (typeof(url) === "string") {
-    return probe(url);
+    var headers = JSON.parse(JSON.stringify(base_headers));
+    headers.Referer = "https://www.reddit.com/r/all/";
+    return probe(url, {
+      // mimic the browser to avoid problems with photobucket or wikia urls
+      headers: headers
+    });
   }
 
   if (typeof(url.url) === "string") {
@@ -158,9 +173,7 @@ function getimagesize(url) {
   });
 }
 
-function dourl(url, post) {
-  var big = bigimage(url, {fill_object:true});
-
+function dourl_inner(big, url, post) {
   if (big.url instanceof Array) {
     if (big.url.indexOf(url) >= 0) {
       return;
@@ -186,6 +199,25 @@ function dourl(url, post) {
     (data) => {
       getimagesize(big).then(
         (newdata) => {
+          if (newdata.headers) {
+            if (newdata.headers["content-type"]) {
+              var ctype = newdata.headers["content-type"];
+              if (ctype.match(/^ *text\//) /*&& !big.head_wrong_contenttype*/) {
+                console.log("Content-Type = " + ctype);
+                return;
+              }
+
+              if (ctype.match(/binary\//) ||
+                  ctype.match(/application\//)) {
+                console.log("Content-Type = " + ctype + " (forces download)");
+                return;
+              }
+            }
+          }
+
+          var orig_domain = url.replace(/^[a-z]+:\/\/([^/]*)\/.*/, "$1");
+          var new_domain = newdata.url.replace(/^[a-z]+:\/\/([^/]*)\/.*/, "$1");
+
           var wr = newdata.width / data.width;
           var hr = newdata.height / data.height;
           var r = (wr + hr) / 2;
@@ -204,6 +236,13 @@ function dourl(url, post) {
               filesize_text = ", " + mbs.toFixed(1) + "MB";
             }
             var comment = times + " larger (" + parseInt(newdata.width) + "x" + parseInt(newdata.height) + filesize_text + ") version of linked image:\n\n" + newdata.url + "\n\n";
+
+            // explain imgur, as the urls often confuse people
+            if (orig_domain === "i.imgur.com" &&
+                new_domain === "i.imgur.com") {
+              comment += "*This is the original size uploaded to imgur*\n\n";
+            }
+
             comment += "*****\n\n";
             comment += "^[source&nbsp;code](https://github.com/qsniyg/maxurl)&nbsp;|&nbsp;[website](https://qsniyg.github.io/maxurl/)&nbsp;/&nbsp;[userscript](https://greasyfork.org/en/scripts/36662-image-max-url)&nbsp;(finds&nbsp;larger&nbsp;images)";
             console.log(comment);
@@ -232,17 +271,66 @@ function dourl(url, post) {
   );
 }
 
+function dourl(url, post) {
+  var jar = request.jar();
+
+  bigimage(url, {
+    fill_object: true,
+    do_request: function(options) {
+      var headers = JSON.parse(JSON.stringify(base_headers));
+      if (options.headers) {
+        for (var header in options.headers) {
+          var value = options.headers[header];
+          if (value)
+            headers[header] = value;
+          else
+            delete headers[header];
+        }
+      }
+
+      request({
+        method: options.method,
+        uri: options.url,
+        jar: jar,
+        headers: headers,
+        followRedirect: true,
+        gzip: true
+      }, function(error, response, body) {
+        var loc = response.caseless.get('location');
+        if (!loc)
+          loc = response.request.href;
+
+        var resp = {
+          readyState: 4,
+          finalUrl: loc,
+          responseText: body,
+          status: response.statusCode,
+          statusText: response.statusMessage
+        };
+
+        options.onload(resp);
+      });
+    },
+    cb: function(big) {
+      dourl_inner(big, url, post);
+    }
+  });
+}
+
 const links = new NodeCache({ stdTTL: 600, checkperiod: 1000 });
 
 
 // large image
 //dourl("https://i.guim.co.uk/img/media/856021cc9b024ee18480297110f6a9f38923b4ee/0_0_15637_9599/master/15637.jpg?w=1920&q=55&auto=format&usm=12&fit=max&s=774b471892a2a1870261227f29e9d77a");
+// returns text/html if browser
+//dourl("https://vignette.wikia.nocookie.net/arresteddevelopment/images/0/03/2x12_Hand_to_God_%2856%29.png/revision/latest/scale-to-width-down/670?cb=20130123233849");
 
 //console.dir(blacklist_json.disallowed);
 if (true) {
   var submissionStream = client.SubmissionStream({
     "subreddit": "all",
     "results": 100,
+    // using a polltime of 1010 results in ratelimits
     "pollTime": 2000
   });
 

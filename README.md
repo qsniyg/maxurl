@@ -29,11 +29,10 @@ The userscript also functions as a node module:
         //   headers: {}, // If a header is null or "", don't include that header
         //   onload: function(resp) {
         //     // resp is expected to be XMLHttpRequest-like object, implementing these fields:
+        //     //   finalUrl
         //     //   readyState
         //     //   responseText
-        //     //   responseURL
         //     //   status
-        //     //   statusText
         //   }
         // }
       },
@@ -86,4 +85,4 @@ The result object will return a set of properties that may be useful in using th
       // Headers required to view the returned URL
       //  If a header is null, don't include that header.
       headers: {}
-  }
+    }
