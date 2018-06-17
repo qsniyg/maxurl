@@ -16,8 +16,12 @@ function fuzzify(num) {
 }
 
 function reqListener () {
-  document.getElementById("rules").innerHTML = fuzzify(this.responseText.match(/if /g).length);
-  document.getElementById("sites").innerHTML = fuzzify(this.responseText.match(/domain/g).length);
+  var response = this.responseText;
+  response = response
+    .replace(/^[\s\S]*function bigimage/, "")
+    .replace(/\/\/ *-- *end *bigimage *--[\s\S]*$/, "");
+  document.getElementById("rules").innerHTML = fuzzify(response.match(/if /g).length);
+  document.getElementById("sites").innerHTML = fuzzify(response.match(/domain/g).length);
 }
 
 var oReq = new XMLHttpRequest();
