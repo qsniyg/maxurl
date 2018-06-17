@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.4.5
+// @version      0.4.6
 // @description  Finds larger versions of images
 // @author       qsniyg
 // @include      *
@@ -1464,9 +1464,11 @@ var $$IMU_EXPORT$$;
                 .replace(/(=[^/]*)?$/, "=s0?imgmax=0");
         }
 
-        if (domain === "images-blogger-opensocial.googleusercontent.com") {
+        if (domain.indexOf("opensocial.googleusercontent.com") >= 0) {
             // https://images-blogger-opensocial.googleusercontent.com/gadgets/proxy?url=http%3A%2F%2F1.bp.blogspot.com%2F-jdpU1PhmEgg%2FU2lBLnp50QI%2FAAAAAAAAChs%2FUu01Lvq-2xc%2Fs1600%2Frihanna%2Bmccartney.jpg&container=blogger&gadget=a&rewriteMime=image%2F*
             //   http://1.bp.blogspot.com/-jdpU1PhmEgg/U2lBLnp50QI/AAAAAAAAChs/Uu01Lvq-2xc/s1600/rihanna+mccartney.jpg
+            // http://images1-focus-opensocial.googleusercontent.com/gadgets/proxy?container=focus&gadget=a&no_expand=1&resize_w=0&rewriteMime=image/*&url=http%3A%2F%2Fs5.mgimgcdn.com%2Fmangakakalot%2Fb1%2Fblack_rock_shooter_innocent_soul%2Fchapter_1%2F49.jpg
+            //   http://s5.mgimgcdn.com/mangakakalot/b1/black_rock_shooter_innocent_soul/chapter_1/49.jpg
             return decodeURIComponent(src.replace(/^[a-z]+:\/\/[^/]*\/gadgets\/proxy.*?[?&]url=([^&]*).*?$/, "$1"));
         }
 
@@ -11481,6 +11483,15 @@ var $$IMU_EXPORT$$;
             };
         }
 
+        if (domain_nowww === "af-hobby.com" ||
+            // http://sky-seller.com/image/cache/data/Game_Jackets/Assassins_Creed_Syndicate_Jack_Ripper_Black_Game_Coat-800x800.jpg
+            //   http://sky-seller.com/image/data/Game_Jackets/Assassins_Creed_Syndicate_Jack_Ripper_Black_Game_Coat.jpg
+            domain === "sky-seller.com") {
+            // https://www.af-hobby.com/image/cache/catalog/Figure/Prize%20Figure/Fate/Taito/Jack%20The%20Ripper/s-l1600%20(1)-228x228.jpg
+            //   https://www.af-hobby.com/image/catalog/Figure/Prize%20Figure/Fate/Taito/Jack%20The%20Ripper/s-l1600%20(1).jpg
+            return src.replace(/\/image\/cache\/(.*)-[0-9]+x[0-9]+(\.[^/.]*)$/, "/image/$1$2");
+        }
+
 
 
 
@@ -12434,14 +12445,24 @@ var $$IMU_EXPORT$$;
                     type = "options";
                     option_list = JSON.parse(JSON.stringify(meta.options));
 
+                    function check_optionlist(val, list) {
+                        if (val in list) {
+                            list[val].checked = true;
+                        } else {
+                            for (var item in list) {
+                                if (item.match(/^_group/)) {
+                                    check_optionlist(val, list[item]);
+                                }
+                            }
+                        }
+                    }
+
                     if (value instanceof Array) {
                         value.forEach(function (val) {
-                            if (val in option_list)
-                                option_list[val].checked = true;
+                            check_optionlist(val, option_list);
                         });
                     } else {
-                        if (value in option_list)
-                            option_list[value].checked = true;
+                        check_optionlist(value, option_list);
                     }
                 }
 
