@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.4.7
+// @version      0.4.8
 // @description  Finds larger versions of images
 // @author       qsniyg
 // @include      *
@@ -737,6 +737,12 @@ var $$IMU_EXPORT$$;
             domain_nosub === "gukjenews.com" ||
             // http://www.lunarglobalstar.com/news/thumbnail/201806/19254_15963_1148_v150.jpg
             domain === "www.lunarglobalstar.com" ||
+            // http://www.sundayjournal.kr/news/thumbnail/201806/15914_26675_3235_v150.jpg
+            domain === "www.sundayjournal.kr" ||
+            // http://www.stnsports.co.kr/news/thumbnail/201806/78500_39611_034_v150.jpg
+            domain === "www.stnsports.co.kr" ||
+            // http://www.thekpm.com/news/thumbnail/201806/21213_21127_1440_v150.jpg
+            domain === "www.thekpm.com" ||
             // http://www.newstown.co.kr/news/thumbnail/201801/311251_198441_4816_v150.jpg
             domain.indexOf("www.newstown.co.kr") >= 0) {
             return src
@@ -2040,6 +2046,10 @@ var $$IMU_EXPORT$$;
             (domain === "drop.ndtv.com" && src.indexOf("/albums/") >= 0) ||
             // http://kr.images.christianitydaily.com/data/images/full/107742/97.jpg?w=304&h=152&l=50&t=40
             domain.indexOf("images.christianitydaily.com") >= 0 ||
+            // http://images.christiandaily.co.kr/data/images/full/50674/image.jpg?w=600
+            domain.indexOf("images.christiandaily.co.kr") >= 0 ||
+            // http://images.christiantoday.co.kr/data/images/full/292467/image.png?w=600
+            domain === "images.christiantoday.co.kr" ||
             // https://blogimg.goo.ne.jp/cnv/v1/user_image/5d/9d/e2b49057338c93324e0f70dd6fc4be03.jpg?dw=110,dh=110,cw=110,ch=110,q=90,da=s,ds=s
             domain === "blogimg.goo.ne.jp" ||
             // https://cdn.clien.net/web/api/file/F01/6848785/5a32dafe05c22a.jpg?w=780&h=30000
@@ -2049,8 +2059,6 @@ var $$IMU_EXPORT$$;
             // https://ssl-stat.amebame.com/pub/content/8265872137/user/article/unknown/unknown/376668982082606877/6af49eccc7dd77e2b3bde8002f6be55c/uploaded.png?width=546
             // https://stat.amebame.com/pub/content/8265872137/user/article/unknown/unknown/376668982082606877/6af49eccc7dd77e2b3bde8002f6be55c/uploaded.png?width=546
             domain.indexOf("stat.amebame.com") >= 0 ||
-            // http://images.christiantoday.co.kr/data/images/full/292467/image.png?w=600
-            domain === "images.christiantoday.co.kr" ||
             // https://i.iheart.com/v3/re/new_assets/5a91863a79b810a683361620?ops=fit(770%2C385)
             domain === "i.iheart.com" ||
             // https://cdn-hit.scadigital.io/media/10650/justin-bieber-selena-gomez.jpg?preset=MainImage
@@ -3750,9 +3758,12 @@ var $$IMU_EXPORT$$;
                                       .replace(/.*\/unsafe\/(?:[0-9]*x[0-9]*\/)?/, ""));
         }
 
-        if (domain === "external.xx.fbcdn.net" && src.indexOf("safe_image.php") >= 0) {
+        if (domain_nosub === "fbcdn.net" &&
+            domain.match(/^external\..*\.fbcdn\.net/) && src.indexOf("safe_image.php") >= 0) {
             // https://external.xx.fbcdn.net/safe_image.php?d=AQAWoxh_q3ft0f3S&w=130&h=130&url=https%3A%2F%2Fi2.wp.com%2Fblog.native-instruments.com%2Fwp-content%2Fuploads%2F2018%2F01%2Fnative-summit-at-namm-collaborating-on-the-future-of-sound-hero.jpg%3Ffit%3D1920%252C880%26ssl%3D1&cfs=1&sx=257&sy=0&sw=880&sh=880&_nc_hash=AQCDl7GN-wkuS3BX
             //   http://blog.native-instruments.com/wp-content/uploads/2018/01/native-summit-at-namm-collaborating-on-the-future-of-sound-hero.jpg
+            // https://external.fyvr3-1.fna.fbcdn.net/safe_image.php?d=AQAReTYxnQTQOpsB&w=147&h=147&url=https%3A%2F%2Fi.ytimg.com%2Fvi%2FxTo02rvrMXE%2Fhqdefault.jpg&cfs=1&upscale=1&fallback=news_d_placeholder_publisher&sx=120&sy=0&sw=360&sh=360&_nc_eui2=AeGEb7UCGGY2knZiITvwfUugt_JGWM192SmN_z8mNrwGcVY5H1PaPbuXuA21koF5ehdVgERy7WFFxu1GcWy4TKrhpVjj9d-tyHC8Jv-Qn3GT9A&_nc_hash=AQDxVA0hfYftm3Fv
+            //   https://i.ytimg.com/vi/xTo02rvrMXE/hqdefault.jpg
             return decodeURIComponent(src.replace(/.*safe_image\.php.*?[?&]url=([^&]*).*/, "$1"));
         }
 
@@ -4532,10 +4543,15 @@ var $$IMU_EXPORT$$;
             return src.replace(/\?[^/]*$/, "?w=o&h=o");
         }
 
-        if (domain === "nimage.newsway.kr" && false) {
+        if (domain === "nimage.newsway.kr") {
             // http://nimage.newsway.kr/phpwas/restmb_idxmake.php?idx=6&simg=20180116000099_0640.jpg
             // http://nimage.newsway.kr/phpwas/restmb_idxmake.php?idx=200&simg=20180202000058_1024.jpg
-            return src.replace(/\/phpwas\/restmb_idxmake\.php.*?simg=([0-9]{4})([0-9]{2})([0-9]{2})([^&]*).*?$/, "/photo/$1/$2/$3/$1$2$3$4");
+            // http://nimage.newsway.kr/phpwas/restmb_idxmake.php?idx=138&simg=%2Fphoto%2F2016%2F06%2F02%2F20160602000250_0640.jpg
+            //   http://nimage.newsway.kr/photo/2016/06/02/20160602000250_0640.jpg
+            if (src.match(/[?&]simg=[%/]/)) {
+                return decodeURIComponent(src.replace(/\/phpwas\/restmb_idxmake\.php.*?simg=([^&]*).*?$/, "$1"));
+            }
+            //return src.replace(/\/phpwas\/restmb_idxmake\.php.*?simg=([0-9]{4})([0-9]{2})([0-9]{2})([^&]*).*?$/, "/photo/$1/$2/$3/$1$2$3$4");
 
             // http://nimage.newsway.kr/photo/2018/02/01/20180201000273_0480.jpg
             // doesn't work for all:
@@ -10835,8 +10851,10 @@ var $$IMU_EXPORT$$;
             };
         }
 
-        if (domain === "www.altcine.com" &&
-            src.indexOf("/photo/") >= 0) {
+        if ((domain === "www.altcine.com" && src.indexOf("/photo/") >= 0) ||
+            // http://dspdaily.com/data/news/1703/284x189/1994203259_5NO7uXb0_ECBAA1ECB2981.JPG
+            //   http://dspdaily.com/data/news/1703/1994203259_5NO7uXb0_ECBAA1ECB2981.JPG
+            (domain_nowww === "dspdaily.com" && src.indexOf("/data/") >= 0)) {
             // http://www.altcine.com/personsphoto/photo/205x205/Miljenovic_Dorde%20%20(Wikluh%20Sky).jpg
             //   http://www.altcine.com/personsphoto/photo/Miljenovic_Dorde%20%20(Wikluh%20Sky).jpg
             return src.replace(/\/[0-9]+x[0-9]+\/([^/]*)$/, "/$1");
@@ -11583,6 +11601,266 @@ var $$IMU_EXPORT$$;
             // https://thai.ac/news/tn/?fn=https://obs.line-scdn.net/0m01a167cc1b700d30606e7a412827332a6c6f64602f417c46137b3d397c2b3f316a333c6573303c0c342b623b3b/w580
             //   https://obs.line-scdn.net/0m01a167cc1b700d30606e7a412827332a6c6f64602f417c46137b3d397c2b3f316a333c6573303c0c342b623b3b/w580
             return decodeURIComponent(src.replace(/^[a-z]+:\/\/[^/]*\/news\/tn\/.*?[?&]fn=([^&]*).*?/, "$1"));
+        }
+
+        if (domain_nosub === "styleshare.kr" &&
+            domain.match(/usercontents(?:-[a-z])?\.styleshare\.kr/)) {
+            // https://usercontents-c.styleshare.kr/images/14247471/640x640
+            //   https://usercontents-c.styleshare.kr/images/14247471/original
+            return src.replace(/(\/images\/[0-9]+\/)[0-9]+x[0-9]+(?:\?.*)?$/, "$1original");
+        }
+
+        if (domain === "images.vingle.net") {
+            // https://images.vingle.net/upload/t_us_l/vrcdqlkhhzniaubre2pr.jpg
+            //   https://images.vingle.net/upload/vrcdqlkhhzniaubre2pr.jpg
+            return src.replace(/(:\/\/[^/]*\/upload\/)t_[^/]*\/([^/]*)$/, "$1$2");
+        }
+
+        if (domain === "www.anewsa.com") {
+            // http://www.anewsa.com/news_images/2016/07/14/mark/20160714163711-1.jpg
+            //   http://www.anewsa.com/news_images/2016/07/14/original/20160714163711-1.jpg
+            return src.replace(/(_images\/[0-9]+\/[0-9]+\/[0-9]+\/)mark(\/[^/]*)$/, "$1original$2");
+        }
+
+        if (domain === "img.newspim.com") {
+            // http://img.newspim.com/news/2018/06/12/1806121533058220_tc.jpg
+            //   http://img.newspim.com/news/2018/06/12/1806121533058220.jpg
+            return src.replace(/(\/[0-9]+)_[a-z]+(\.[^/.]*)$/, "$1$2");
+        }
+
+        if (domain === "www.insectidentification.org") {
+            // https://www.insectidentification.org/imgs/insects/thumbnails/eastern-hercules-beetle_19.jpg
+            //   https://www.insectidentification.org/imgs/insects/eastern-hercules-beetle_19.jpg
+            return src.replace(/(\/imgs\/[a-z]+\/)thumbnails\//, "$1")
+        }
+
+        if (domain_nowww === "a-z-animals.com") {
+            // https://a-z-animals.com/media/animals/images/100x100/japanese_macaque6.jpg
+            //   https://www.a-z-animals.com/media/animals/images/original/japanese_macaque6.jpg
+            return src.replace(/\/images\/[0-9]+x[0-9]+\//, "/images/original/");
+        }
+
+        if (domain_nosub === "nicematin.com" &&
+            domain.match(/cdn\.static[0-9]*\.nicematin\.com/)) {
+            // https://cdn.static01.nicematin.com/media/npo/mobile_1440w/2017/04/a1-8874302.jpg
+            //   https://cdn.static01.nicematin.com/media/npo/original/2017/04/a1-8874302.jpg
+            // https://cdn.static03.nicematin.com/media/npo/square/2018/06/rca12q100_fv_lunallena.jpg
+            //   https://cdn.static03.nicematin.com/media/npo/original/2018/06/rca12q100_fv_lunallena.jpg
+            //return src.replace(/\/mobile_[0-9]+[whx](?:[0-9]+)?\//, "/original/");
+            return src.replace(/(:\/\/[^/]*\/media\/[^/]*\/)[^/]*(\/[0-9]+\/[0-9]+\/[^/]*)$/, "$1original$2");
+        }
+
+        if (((domain_nosub === "fbcdn.net" && domain.match(/^instagram\./)) ||
+             domain_nosub === "cdninstagram.com") &&
+            host_domain_nosub === "instagram.com" && options.element &&
+            options.do_request && options.cb) {
+            newsrc = (function() {
+                var query_ig = function(url, cb) {
+                    options.do_request({
+                        method: "GET",
+                        url: url,
+                        onload: function(result) {
+                            if (result.readyState !== 4)
+                                return;
+
+                            try {
+                                var text = result.responseText;
+
+                                var regex1 = /window\._sharedData = *(.*?);?<\/script>/;
+                                var regex2 = /window\._sharedData *= *(.*?}) *;[\s]*window\.__initialDataLoaded/;
+
+                                var match = text.match(regex1);
+                                if (!match) {
+                                    match = text.match(regex2);
+                                }
+
+                                cb(JSON.parse(match[1]));
+                            } catch (e) {
+                                console.log(result);
+                                console.error(e);
+                                cb(null);
+                            }
+                        }
+                    });
+                };
+
+                var uid_from_sharedData = function(json) {
+                    if (json.id)
+                        return json.id;
+                    else {
+                        return json.entry_data.ProfilePage[0].graphql.user.id;
+                    }
+                }
+
+                var username_to_uid = function(username, cb) {
+                    if (username.match(/^http/)) {
+                        username = username.replace(/^[a-z]+:\/\/[^/]*\/([^/]*)(?:\/.*)?$/, "$1");
+                    }
+
+                    query_ig("https://www.instagram.com/" + username + "/", function(json) {
+                        try {
+                            cb(uid_from_sharedData(json));
+                        } catch (e) {
+                            console.error(e);
+                            cb(null);
+                        }
+                    });
+                };
+
+                var uid_to_profile = function(uid, cb) {
+                    var url = "https://i.instagram.com/api/v1/users/" + uid + "/info/";
+                    options.do_request({
+                        method: "GET",
+                        url: url,
+                        onload: function(result) {
+                            if (result.readyState !== 4)
+                                return;
+
+                            try {
+                                cb(JSON.parse(result.responseText).user);
+                            } catch (e) {
+                                console.log(result);
+                                console.error(e);
+                                cb(null);
+                            }
+                        }
+                    });
+                };
+
+                var profile_to_url = function(profile) {
+                    return profile.hd_profile_pic_url_info.url;
+                };
+
+                var request_profile = function(username) {
+                    username_to_uid(username, function(uid) {
+                        if (!uid) {
+                            options.cb(null);
+                            return;
+                        }
+
+                        uid_to_profile(uid, function(profile) {
+                            if (!profile) {
+                                options.cb(null);
+                                return;
+                            }
+
+                            options.cb(profile_to_url(profile));
+                        });
+                    });
+
+                    return {
+                        waiting: true
+                    };
+                };
+
+                var request_post_inner = function(post_url, image_url, cb) {
+                    query_ig(post_url, function(json) {
+                        if (!json) {
+                            cb(null);
+                            return;
+                        }
+
+                        try {
+                            var media = json.entry_data.PostPage[0].graphql.shortcode_media;
+
+                            var images = [];
+                            var parse_image = function(node) {
+                                var image = node.display_src;
+                                if (!image)
+                                    image = node.display_url;
+
+                                if (image && images.indexOf(image) < 0) {
+                                    images.push(image);
+                                }
+                            }
+
+                            parse_image(media);
+
+                            if (media.edge_sidecar_to_children) {
+                                var edges = media.edge_sidecar_to_children.edges;
+                                for (var i = 0; i < edges.length; i++) {
+                                    var edge = edges[i];
+                                    if (edge.node)
+                                        edge = edge.node;
+
+                                    parse_image(edge);
+                                }
+                            }
+
+                            var image_id = image_url.replace(/.*\/([^/.]*)\.[^/.]*$/, "$1");
+                            for (var i = 0; i < images.length; i++) {
+                                if (images[i].indexOf(image_id) > 0) {
+                                    cb(images[i]);
+                                    return;
+                                }
+                            }
+
+                            cb(null);
+                        } catch (e) {
+                            console.error(e);
+                            cb(null);
+                        }
+                    });
+
+                    return {
+                        waiting: true
+                    };
+                };
+
+                var request_post = function(post_url, image_url) {
+                    return request_post_inner(post_url, image_url, options.cb);
+                };
+
+                // check for links first
+                var current = options.element;
+                while (current = current.parentElement) {
+                    if (current.tagName !== "A")
+                        continue;
+
+                    if (current.href.match(/:\/\/[^/]*\/p\//)) {
+                        // post
+                        newsrc = request_post(current.href, options.element.src);
+                        if (newsrc)
+                            return newsrc;
+                    } else if (current.href.match(/:\/\/[^/]*\/[^/]*(?:\/(?:\?.*)?)?$/)) {
+                        // user
+                        newsrc = request_profile(current.href);
+                        if (newsrc)
+                            return newsrc;
+                    }
+                }
+
+                var current = options.element;
+                while (current = current.parentElement) {
+                    // profile image
+                    if (current.tagName === "HEADER") {
+                        uid_to_profile(uid_from_sharedData(options.window._sharedData), function(profile) {
+                            if (!profile) {
+                                options.cb(null);
+                                return;
+                            }
+
+                            options.cb(profile_to_url(profile));
+                        });
+
+                        return {
+                            waiting: true
+                        };
+                    }
+
+                    // popup
+                    if (current.tagName === "DIV" && current.getAttribute("role") === "dialog") {
+                        newsrc = request_post(document.location.href, options.element.src);
+                        if (newsrc)
+                            return newsrc;
+                    }
+
+                    // header
+                    // also post, as sometimes posts will be scaled
+                }
+            })();
+            if (newsrc !== undefined)
+                return newsrc;
         }
 
 
@@ -12753,12 +13031,23 @@ var $$IMU_EXPORT$$;
 
         var current_chord = [];
 
+        var disable_click = false;
+        document.addEventListener("click", function(e) {
+            if (disable_click) {
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                return true;
+            }
+        }, true);
+
         var delay = false;
         var delay_handle = null;
 
         function update_waiting() {
-            waitingel.style.left = (mouseAbsX - (waitingsize / 2)) + "px";
-            waitingel.style.top = (mouseAbsY - (waitingsize / 2)) + "px";
+            var x = mouseX;//mouseAbsX;
+            var y = mouseY;//mouseAbsY;
+            waitingel.style.left = (x - (waitingsize / 2)) + "px";
+            waitingel.style.top = (y - (waitingsize / 2)) + "px";
         }
 
         function start_waiting() {
@@ -12768,7 +13057,7 @@ var $$IMU_EXPORT$$;
                 waitingel.style.cursor = "wait";
                 waitingel.style.width = waitingsize + "px";
                 waitingel.style.height = waitingsize + "px";
-                waitingel.style.position = "absolute";
+                waitingel.style.position = "fixed";//"absolute";
                 document.body.appendChild(waitingel);
             }
 
@@ -12795,6 +13084,8 @@ var $$IMU_EXPORT$$;
                     popups.splice(index, 1);
                 }
             });
+
+            disable_click = false;
         }
 
         function check_image_get(images, obj, cb) {
@@ -12852,12 +13143,20 @@ var $$IMU_EXPORT$$;
                             return;
                         }
 
+                        if (!resp.response) {
+                            err_cb();
+                            return;
+                        }
+
                         var a = new FileReader();
                         a.onload = function(e) {
                             var img = document.createElement("img");
                             img.src = e.target.result;
                             img.onload = function() {
                                 cb(img, resp.finalUrl);
+                            };
+                            img.onerror = function() {
+                                err_cb();
                             };
                         };
                         a.readAsDataURL(resp.response);
@@ -12867,8 +13166,8 @@ var $$IMU_EXPORT$$;
         }
 
         function makePopup(obj, orig_url) {
-            var x = mouseAbsX;
-            var y = mouseAbsY;
+            var x = mouseX;//mouseAbsX;
+            var y = mouseY;//mouseAbsY;
 
             function cb(img, url) {
                 if (!controlPressed && false) {
@@ -12881,13 +13180,30 @@ var $$IMU_EXPORT$$;
                     return;
                 }
 
+                var estop = function(e) {
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    return true;
+                };
+
+                img.onclick = estop;
+                img.onmousedown = estop;
+
                 var div = document.createElement("div");
-                div.style.position = "absolute";
+                //div.style.all = "initial";
+                div.style.position = "fixed"; // instagram has top: -...px
                 div.style.zIndex = Number.MAX_SAFE_INTEGER;
                 div.style.boxShadow = "0 0 15px rgba(0,0,0,.5)";
 
+                div.onclick = estop;
+                div.onmousedown = estop;
+                disable_click = true;
+
+
                 var vw = window.visualViewport.width - 10;
                 var vh = window.visualViewport.height - 10;
+                img.style.all = "initial";
+                img.style.cursor = "pointer";
                 img.style.maxWidth = vw + "px";
                 img.style.maxHeight = vh + "px";
 
@@ -12914,8 +13230,11 @@ var $$IMU_EXPORT$$;
                     imgw /= ratio;
                 }
 
-                div.style.top = (scrollTop() + Math.min(Math.max((y - scrollTop()) - (imgh / 2), 5), Math.max(vh - imgh, 5))) + "px";
-                div.style.left = (scrollLeft() + Math.min(Math.max((x - scrollLeft()) - (imgw / 2), 5), Math.max(vw - imgw, 5))) + "px";
+                var sct = scrollTop();
+                var scl = scrollLeft();
+                sct = scl = 0;
+                div.style.top = (sct + Math.min(Math.max((y - sct) - (imgh / 2), 5), Math.max(vh - imgh, 5))) + "px";
+                div.style.left = (scl + Math.min(Math.max((x - scl) - (imgw / 2), 5), Math.max(vw - imgw, 5))) + "px";
                 /*console.log(x - (imgw / 2));
                 console.log(vw);
                 console.log(imgw);
@@ -12923,9 +13242,15 @@ var $$IMU_EXPORT$$;
 
 
                 var a = document.createElement("a");
+                a.addEventListener("click", function(e) {
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    return true;
+                }, true);
+                a.style.all = "initial";
+                a.style.cursor = "pointer";
                 a.href = url;
                 a.target = "_blank";
-                a.onclick = resetpopups;
                 a.appendChild(img);
                 div.appendChild(a);
                 document.body.appendChild(div);
@@ -13006,6 +13331,8 @@ var $$IMU_EXPORT$$;
             var minMaxW = 0;
             var minMaxH = 0;
             var minX = 0;
+
+            var thresh = 20;
 
             var source;
 
@@ -13163,7 +13490,8 @@ var $$IMU_EXPORT$$;
                 addElement(el);
             }
 
-            //console.log(sources);
+            /*console.log(els);
+            console.log(sources);*/
 
             if ((source = getsource()) !== undefined)
                 return source;
@@ -13200,6 +13528,24 @@ var $$IMU_EXPORT$$;
               console.log(minMaxH);
               console.log(minX);*/
 
+            /*if (minW <= thresh)
+                minW = 0;
+
+            if (minH <= thresh)
+                minH = 0;
+
+            if (minMinW <= thresh)
+                minMinW = 0;
+
+            if (minMinH <= thresh)
+                minMinH = 0;
+
+            if (minMaxW <= thresh)
+                minMaxW = 0;
+
+            if (minMaxH <= thresh)
+                minMaxH = 0;*/
+
             if (minW !== 0 ||
                 minH !== 0 ||
                 minMinW !== 0 ||
@@ -13210,17 +13556,26 @@ var $$IMU_EXPORT$$;
                 for (var source_url in sources) {
                     var source = sources[source_url];
 
-                    if ((source.width && source.width >= minW) || (source.height && source.height >= minH))
+                    if ((source.width && source.width > thresh && source.width >= minW) || (source.height && source.height > thresh && source.height >= minH))
                         newsources[source_url] = source;
 
-                    if ((source.minWidth && source.minWidth >= minMinW) || (source.minHeight && source.minHeight >= minMinH))
+                    if ((source.minWidth && source.minWidth > thresh && source.minWidth >= minMinW) || (source.minHeight && source.minHeight > thresh && source.minHeight >= minMinH))
                         newsources[source_url] = source;
 
-                    if ((source.maxWidth && source.maxWidth >= minMaxW) || (source.maxHeight && source.maxHeight >= minMaxH))
+                    if ((source.maxWidth && source.maxWidth > thresh && source.maxWidth >= minMaxW) || (source.maxHeight && source.maxHeight > thresh && source.maxHeight >= minMaxH))
                         newsources[source_url] = source;
 
                     if (source.desc_x && source.desc_x >= minX)
                         newsources[source_url] = source;
+
+                    if (source.width === undefined &&
+                        source.height === undefined &&
+                        source.minWidth === undefined &&
+                        source.minHeight === undefined &&
+                        source.maxWidth === undefined &&
+                        source.maxHeight === undefined)
+                        newsources[source_url] = source;
+
                 }
 
                 //console.log(newsources);
@@ -13362,6 +13717,7 @@ var $$IMU_EXPORT$$;
 
         function trigger_popup() {
             controlPressed = true;
+            // todo: rewrite to use a manual method, in order to find pointer-events: none too
             var els = document.elementsFromPoint(mouseX, mouseY);
 
             var source = find_source(els);
