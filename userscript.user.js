@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.4.8
+// @version      0.4.9
 // @description  Finds larger versions of images
 // @author       qsniyg
 // @include      *
@@ -11854,9 +11854,6 @@ var $$IMU_EXPORT$$;
                         if (newsrc)
                             return newsrc;
                     }
-
-                    // header
-                    // also post, as sometimes posts will be scaled
                 }
             })();
             if (newsrc !== undefined)
@@ -13031,6 +13028,16 @@ var $$IMU_EXPORT$$;
 
         var current_chord = [];
 
+        function resetall() {
+            current_chord = [];
+            resetpopups();
+        }
+
+        document.addEventListener("focusout", resetall);
+        document.addEventListener("blur", resetall);
+        unsafeWindow.addEventListener("focusout", resetall);
+        unsafeWindow.addEventListener("blur", resetall);
+
         var disable_click = false;
         document.addEventListener("click", function(e) {
             if (disable_click) {
@@ -13311,8 +13318,9 @@ var $$IMU_EXPORT$$;
         }
 
         function find_source(els) {
-            if (popups.length >= 1)
-                return;
+            // resetpopups() is already called in trigger_popup()
+            /*if (popups.length >= 1)
+                return;*/
 
             //console.log(els);
 
@@ -13706,9 +13714,20 @@ var $$IMU_EXPORT$$;
             return true;
         }
 
-        function trigger_complete() {
+        function trigger_complete(e) {
             for (var i = 0; i < settings.mouseover_trigger.length; i++) {
-                if (current_chord.indexOf(settings.mouseover_trigger[i]) < 0)
+                var key = settings.mouseover_trigger[i];
+
+                /*if (current_chord.indexOf(key) < 0)
+                    return false;*/
+
+                if (key === "ctrl" && !e.ctrlKey)
+                    return false;
+
+                if (key === "shift" && !e.shiftKey)
+                    return false;
+
+                if (key === "alt" && !e.altKey)
                     return false;
             }
 
@@ -13746,7 +13765,7 @@ var $$IMU_EXPORT$$;
 
         document.addEventListener('keydown', function(event) {
             if (set_chord(event.which, true)) {
-                if (trigger_complete()) {
+                if (trigger_complete(event)) {
                     trigger_popup();
                 }
             }
