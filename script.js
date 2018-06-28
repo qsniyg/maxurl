@@ -3,7 +3,10 @@ var maxael = document.getElementById("max_a");
 var maxspanel = document.getElementById("max_span");
 var maximgel = document.getElementById("max_img");
 var currenturl = null;
-inputel.oninput = function() {
+
+// thanks to /u/GarlicoinAccount for noticing the need to run this
+// separately, as input can be sent before the page is fully loaded
+function process_input() {
   var text = inputel.value;
   if (text.match(/^https?:\/\//)) {
     var newurl = imu_variable(text, {fill_object:true});
@@ -23,7 +26,13 @@ inputel.oninput = function() {
   } else {
     set_max();
   }
-};
+}
+
+if (inputel.value !== "") {
+  process_input();
+}
+
+inputel.oninput = process_input;
 
 // https://stackoverflow.com/a/987376
 function SelectText(element) {
