@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.4.14
+// @version      0.4.15
 // @description  Finds larger versions of images
 // @author       qsniyg
 // @include      *
@@ -13066,7 +13066,7 @@ var $$IMU_EXPORT$$;
         if (domain_nosub === "cdn-expressen.se") {
             // https://c.cdn-expressen.se/images/4b/d3/4bd315bf3bb14ac48b8f73c7fbb812f1/16x9/1000@60.jpg
             //   https://c.cdn-expressen.se/images/4b/d3/4bd315bf3bb14ac48b8f73c7fbb812f1/16x9/original.jpg
-            //   https://c.cdn-expressen.se/images/4b/d3/4bd315bf3bb14ac48b8f73c7fbb812f1/original.jpg
+            //   https://c.cdn-expressen.se/images/4b/d3/4bd315bf3bb14ac48b8f73c7fbb812f1/original.jpg -- doesn't work
             // https://y.cdn-expressen.se/images/d9/7a/d97a1ccee600422ea37a35eb58e74763/original.jpg
             //   https://c.cdn-expressen.se/images/d9/7a/d97a1ccee600422ea37a35eb58e74763/original.jpg -- same
             return src.replace(/\/[0-9]+(?:@[0-9]+)?(\.[^/.]*)$/, "/original$1");
@@ -14027,6 +14027,16 @@ var $$IMU_EXPORT$$;
         var options_el = document.getElementById("options");
         options_el.innerHTML = "<h1>Options</h1>";
 
+        var saved_el = document.createElement("p");
+        saved_el.innerHTML = "Saved!<br />Refresh the target page for changes to take effect";
+        saved_el.id = "saved";
+        saved_el.style.visibility = "hidden";
+        saved_el.style.textAlign = "center";
+        saved_el.style.paddingTop = "1em";
+        saved_el.style.fontStyle = "italic";
+        saved_el.style.color = "#0af";
+        var saved_timeout = null;
+
         for (var setting in settings) {
             (function(setting) {
                 var meta = settings_meta[setting];
@@ -14152,6 +14162,15 @@ var $$IMU_EXPORT$$;
                             } else {
                                 set_value(setting, value);
                             }
+
+                            saved_el.style.visibility = "visible";
+
+                            if (saved_timeout)
+                                clearTimeout(saved_timeout);
+
+                            saved_timeout = setTimeout(function() {
+                                saved_el.style.visibility = "hidden";
+                            }, 5000);
                         });
 
                         parent.appendChild(input);
@@ -14192,6 +14211,8 @@ var $$IMU_EXPORT$$;
                 options_el.appendChild(option);
             })(setting);
         }
+
+        options_el.appendChild(saved_el);
     }
 
     function parse_value(value) {
@@ -14473,8 +14494,19 @@ var $$IMU_EXPORT$$;
                 disable_click = true;
 
 
-                var vw = window.visualViewport.width - 10;
-                var vh = window.visualViewport.height - 10;
+                var vw;
+                var vh;
+
+                if (window.visualViewport) {
+                    vw = window.visualViewport.width;
+                    vh = window.visualViewport.height;
+                } else {
+                    vw = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+                    vh = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+                }
+
+                vw -= 10;
+                vh -= 10;
                 img.style.all = "initial";
                 img.style.cursor = "pointer";
                 img.style.maxWidth = vw + "px";
