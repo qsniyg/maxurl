@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.4.16
+// @version      0.5.0
 // @description  Finds larger versions of images
 // @author       qsniyg
 // @include      *
@@ -43,7 +43,6 @@ var $$IMU_EXPORT$$;
     else if (typeof(GM) !== "undefined" && typeof(GM.xmlHttpRequest) !== "undefined")
         do_request = GM.xmlHttpRequest;
 
-
     var default_options = {
         fill_object: true,
         null_if_no_change: false,
@@ -70,11 +69,21 @@ var $$IMU_EXPORT$$;
         headers: {}
     };
 
+    // restore console.log for websites that remove it (twitter)
+    // https://gist.github.com/Ivanca/4586071
+    //var console_log = function(){ return window.console.__proto__.log.apply(console, arguments) } ;
+    //var console_error = function(){ return window.console.__proto__.error.apply(console, arguments) } ;
+
+    // since the userscript is run first, this generally shouldn't be a problem
+    var console_log = console.log;
+    var console_error = console.error;
+
 
     var settings = {
         redirect: true,
         mouseover: true,
-        mouseover_trigger: ["ctrl", "shift"]
+        mouseover_trigger: ["ctrl", "shift"],
+        website_image: true
     };
     var orig_settings = JSON.parse(JSON.stringify(settings));
 
@@ -91,6 +100,7 @@ var $$IMU_EXPORT$$;
             name: "Mouseover popup trigger",
             description: "Trigger key that, when held, will show the popup",
             options: {
+                _type: "and",
                 _group1: {
                     _type: "and",
                     ctrl: {
@@ -113,6 +123,10 @@ var $$IMU_EXPORT$$;
                     }
                 }
             }
+        },
+        website_image: {
+            name: "Image preview",
+            description: "Enables a preview of the image on the website"
         }
     };
 
@@ -146,7 +160,8 @@ var $$IMU_EXPORT$$;
     }
 
     var is_scripttag = false;
-    if (typeof imu_variable !== 'undefined')
+    if (typeof imu_variable !== 'undefined' && (typeof(GM_xmlhttpRequest) === 'undefined' &&
+                                                typeof(GM) === 'undefined'))
         is_scripttag = true;
 
     var is_userscript = false;
@@ -364,7 +379,7 @@ var $$IMU_EXPORT$$;
                         }
                     }
                 } else {
-                    console.log(urlparts);
+                    console_log(urlparts);
                 }
             }
         }
@@ -657,7 +672,7 @@ var $$IMU_EXPORT$$;
             if (obj && obj[1] !== "00") {
                 var obj1_str = src.replace(/.*\/thumb\/([0-9]+\/[0-9]+\/[0-9]+\/).*/, "$1").replace(/\//g, "");
                 var obj1 = parseInt(obj1_str);
-                //console.log(obj1_str);
+                //console_log(obj1_str);
                 if (obj1 >= 20170526)
                     src = src.replace(/(\/thumb\/(?:[0-9]+\/){3})[0-9]+\//, "$100/");
                 else
@@ -802,12 +817,18 @@ var $$IMU_EXPORT$$;
             return src.replace(/\.[0-9]\.([a-zA-Z0-9]*)$/, ".1.$1");
         }
 
-        if (domain.indexOf("cdn.newsen.com") >= 0) {
+        if (domain === "cdn.newsen.com" ||
+            domain === "photo.newsen.com") {
+            // http://photo.newsen.com/news_photo/2011/04/28/201104281531181001_1.jpg -- 2880x4320
+            // http://cdn.newsen.com/newsen/news_photo/2011/04/28/201104281531181001_1.jpg -- same
             src = src.replace(/_ts\.[^/._]*$/, ".jpg").replace("/mphoto/", "/news_photo/");
             if (src.indexOf("/main_photo/") >= 0) {
                 // http://cdn.newsen.com/newsen/main_photo/index_a2_201801030825321910_1.jpg
-                // http://cdn.newsen.com/newsen/news_photo/2018/01/03/201801030825321910_1.jpg
-                src = src.replace(/\/main_photo\/[^/]*_([0-9][0-9][0-9][0-9])([0-9][0-9])([0-9][0-9])([^/]*)$/, "/news_photo/$1/$2/$3/$1$2$3$4");
+                //   http://cdn.newsen.com/newsen/news_photo/2018/01/03/201801030825321910_1.jpg
+                // http://cdn.newsen.com/newsen/main_photo/mobile/favphoto_201807131531391510_1.jpg
+                //   http://cdn.newsen.com/newsen/news_photo/2018/07/13/201807131531391510_1.jpg
+                //   http://photo.newsen.com/news_photo/2018/07/13/201807131531391510_1.jpg
+                src = src.replace(/\/main_photo\/(?:mobile\/)?[^/]*_([0-9][0-9][0-9][0-9])([0-9][0-9])([0-9][0-9])([^/]*)$/, "/news_photo/$1/$2/$3/$1$2$3$4");
             }
 
             return src;
@@ -958,7 +979,7 @@ var $$IMU_EXPORT$$;
         }
 
         if (domain.match(/\.google\./) &&
-            src.match(/\/www.google.(?:[a-z]+\.)?[a-z]*\/url\?/)) {
+            src.match(/\/www\.google\.(?:[a-z]+\.)?[a-z]*\/url\?/)) {
             return decodeURIComponent(src.replace(/.*url=([^&]*).*/, "$1"));
         }
 
@@ -1004,7 +1025,10 @@ var $$IMU_EXPORT$$;
                 .replace(/\/i\/[0-9]+\/[0-9]+\/[0-9]+\//, "/");
         }
 
-        if (domain.match(/s[0-9]\.marishe\.com/)) {
+        if (domain.match(/s[0-9]\.marishe\.com/) ||
+            // http://resource.breakingnews.mn/image/2015/09/30/0p23eruc8h4gu2mi/articleemmawatson167901856201509301039_400.jpg
+            //   http://resource.breakingnews.mn/image/2015/09/30/0p23eruc8h4gu2mi/articleemmawatson167901856201509301039.jpg
+            domain === "resource.breakingnews.mn") {
             return src.replace(/(\/[^/]*)_[0-9]+(\.[^/.]*)$/, "$1$2");
         }
 
@@ -1325,7 +1349,9 @@ var $$IMU_EXPORT$$;
             //   http://media4.onsugar.com/files/2013/12/16/757/n/1922398/1f2e71247e26b096_Twoimageskinnyheadshot_R/i/Gisele-Bundchen-Wearing-Bikini-Miami.jpg
             // http://media1.popsugar-assets.com/files/2014/04/09/009/n/1922441/9933a3baeee323df_141827630.xxxlarge_2x/i/Dog-Thinks-Parade-All-Him.jpg
             //   http://media1.popsugar-assets.com/files/2014/04/09/009/n/1922441/9933a3baeee323df_141827630/i/Dog-Thinks-Parade-All-Him.jpg
-            return src.replace(/\.[a-z]*(?:_[0-9x]+)(\/i\/[^/]*)$/, "$1");
+            // http://media1.popsugar-assets.com/files/2011/01/02/4/192/1922564/bacd60f46322150a_105266939.xxxlarge/i/Scarlett-Johansson-2004.jpg
+            //   http://media1.popsugar-assets.com/files/2011/01/02/4/192/1922564/bacd60f46322150a_105266939/i/Scarlett-Johansson-2004.jpg
+            return src.replace(/\.[a-z]*(?:_[0-9x]+)?(\/i\/[^/]*)$/, "$1");
         }
 
         if (domain === "elleuk.cdnds.net") {
@@ -1407,6 +1433,9 @@ var $$IMU_EXPORT$$;
 
             if (src.match(regex1)) {
                 // https://o.aolcdn.com/images/dims?thumbnail=640%2C420&quality=75&format=jpg&image_uri=https%3A%2F%2Faol-releases-assets-production.s3.amazonaws.com%2Fgenerator%2F07A13DEB.jpg&client=cbc79c14efcebee57402&signature=09ed437d01bfde0d182a609c759f58006578aa3a
+                //   https://aol-releases-assets-production.s3.amazonaws.com/generator/07A13DEB.jpg
+                // https://o.aolcdn.com/images/dims?resize=1200%2C630&amp;crop=1200%2C630%2C0%2C0&amp;quality=80&amp;image_uri=https%3A%2F%2Fimg.vidible.tv%2Fprod%2F2018-07%2F03%2F5b3bcb63158f855373e8f026%2F5b3bcc4d802b9473f9df3077_o_U_v1.jpg&amp;client=cbc79c14efcebee57402&amp;signature=358c49852d6c8cdd678cc7dea0ad0995c5f7d224
+                //   https://img.vidible.tv/prod/2018-07/03/5b3bcb63158f855373e8f026/5b3bcc4d802b9473f9df3077_o_U_v1.jpg
                 newsrc = decodeURIComponent(src.replace(/.*image_uri=([^&]*).*/, "$1"));
             } else if (src.match(/.*o\.aolcdn\.com\/images\//)) {
                 // https://o.aolcdn.com/images/dims3/GLOB/legacy_thumbnail/1028x675/format/jpg/quality/85/http%3A%2F%2Fo.aolcdn.com%2Fhss%2Fstorage%2Fmidas%2F652aa88cb26c6aafe4dca4eef405c15%2F205409332%2FScreen%2BShot%2B2017-06-23%2Bat%2B2.36.37%2BPM.png
@@ -1542,7 +1571,10 @@ var $$IMU_EXPORT$$;
             //   https://www.straight.com/files/v3/2013/09/MUS_Nostalghia_2386.jpg
             src.search(/\/files\/[^/]*\/styles\/[^/]*\/(?:public|private)\//) >= 0) {
 
-            newsrc = src.replace(/\/styles\/.*?\/(?:public|private)\//, "/").replace(/\/imagecache\/[^/]*\/(?:files\/)?/, "/").replace(/\?.*$/, "");
+            newsrc = src
+                .replace(/\/styles\/.*?\/(?:public|private)\//, "/")
+                .replace(/\/imagecache\/[^/]*\/(?:files\/)?/, "/")
+                .replace(/\?.*$/, "");
             if (newsrc !== src)
                 return newsrc;
         }
@@ -1599,8 +1631,10 @@ var $$IMU_EXPORT$$;
             // https://s1.r29static.com//bin/public/e32/0,0,2000,2400/720x864,80/1573061/image.jpg
             //   https://s1.r29static.com//bin/entry/e32/x,100/1573061/image.jpg
             //   https://s1.r29static.com//bin/public/e32/x,100/1573061/image.jpg
+            // https://s1.r29static.com//bin/entry/a34/340x408,80/1970977/image.jpg
+            //   https://s1.r29static.com//bin/entry/a34/x,100/1970977/image.jpg
             // 0x0,100 and x,100 both work
-            return src.replace(/(\/bin\/(?:entry|public\/)[^/]*)\/(?:[0-9]+,[0-9]+,[0-9]+,[0-9]+\/)?[^/]*(?:,[^/]*)?\/([^,]*)$/, "$1/x,100/$2");
+            return src.replace(/(\/bin\/(?:entry|public)\/[^/]*)\/(?:[0-9]+,[0-9]+,[0-9]+,[0-9]+\/)?[^/]*(?:,[^/]*)?\/([^,]*)$/, "$1/x,100/$2");
         }
 
         if (domain.indexOf("img.huffingtonpost.com") >= 0) {
@@ -1609,7 +1643,10 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/asset\/[^/]*\/([^/.]*\.[^/.]*)$/, "/asset/$1").replace(/\?[^/]*$/, "");
         }
 
-        if (domain === "images.huffingtonpost.com") {
+        if (domain === "images.huffingtonpost.com" ||
+            // http://www.womansdiary.gr/articles/1686/774bb14b-4d63-4969-adc4-06322e6b852f-thumb.jpg
+            //   http://www.womansdiary.gr/articles/1686/774bb14b-4d63-4969-adc4-06322e6b852f.jpg
+            (domain === "www.womansdiary.gr" && src.match(/\/articles\/[0-9]+\/[-0-9a-f]+-thumb/))) {
             // https://images.huffingtonpost.com/2015-12-15-1450212883-2879887-356670f8740946d741c648b23_villarufologardensravellocampaniaitalycrgetty-thumb.jpg
             //   https://images.huffingtonpost.com/2015-12-15-1450212883-2879887-356670f8740946d741c648b23_villarufologardensravellocampaniaitalycrgetty.jpg
             return src.replace(/-thumb(\.[^/.]*)$/, "$1");
@@ -1680,7 +1717,7 @@ var $$IMU_EXPORT$$;
         if (domain.match(/^a[0-9]*\.foxnews\.com/)) {
             // http://a57.foxnews.com/images.foxnews.com/content/fox-news/world/2017/11/15/firefighters-in-thailands-capital-on-front-line-citys-fight-against-snakes/_jcr_content/par/featured_image/media-0.img.jpg/931/524/1510749948281.jpg?ve=1&tl=1
             // down for now?
-            //console.log(src.replace(/.*\/a[0-9]*\.foxnews\.com\/(.*).*/, "$1"));
+            //console_log(src.replace(/.*\/a[0-9]*\.foxnews\.com\/(.*).*/, "$1"));
             if (src.replace(/.*\/a[0-9]*\.foxnews\.com\/([^/]*).*/, "$1") !== "images.foxnews.com") {
                 return src.replace(/.*\/a[0-9]*\.foxnews\.com\/(.*)\/[0-9]+\/[0-9]+\/([^/]*)$/, "http://$1/$2");
             }
@@ -1730,8 +1767,10 @@ var $$IMU_EXPORT$$;
             };
         }
 
-        if (domain === "pbs.twimg.com" &&
-            src.indexOf("pbs.twimg.com/media/") >= 0) {
+        if ((domain === "pbs.twimg.com" &&
+             src.indexOf("pbs.twimg.com/media/") >= 0) ||
+            (domain === "ton.twitter.com" &&
+             src.indexOf("/ton/data/dm/") >= 0)) {
             // use ?name=orig instead of :orig, see:
             //   https://github.com/qsniyg/maxurl/issues/2
 
@@ -2534,6 +2573,12 @@ var $$IMU_EXPORT$$;
             (domain === "www.electronicbeats.net" && src.indexOf("/uploads/") >= 0) ||
             // https://media.iconsingapore.com/2018/05/Julianne-Moore-in-Givenchy-750x1125.jpg
             domain === "media.iconsingapore.com" ||
+            // http://p.cosmopolitan.bg/g/e/gettyimages-699742676-74636-636x0.jpg?1504777991774
+            domain === "p.cosmopolitan.bg" ||
+            // https://cache.pakistantoday.com.pk/447464_24204507-230x130.jpg
+            domain === "cache.pakistantoday.com.pk" ||
+            // https://media.breitbart.com/media/2017/06/EmiliaClarkeSexismGameOfThrones-640x480.jpg
+            domain === "media.breitbart.com" ||
             // https://cdn.gamerant.com/wp-content/uploads/resident-evil-2-director-remake-faith-738x410.jpg.webp
             //   https://cdn.gamerant.com/wp-content/uploads/resident-evil-2-director-remake-faith.jpg.webp
             // https://d13ezvd6yrslxm.cloudfront.net/wp/wp-content/images/x-men-apocalypse-700x300.jpg
@@ -2544,7 +2589,9 @@ var $$IMU_EXPORT$$;
             src = src.replace(/-[0-9]*x[0-9]*\.([^/]*)$/, ".$1");
         }
 
-        if ((domain === "store.pinseyun.com" && src.indexOf("/uploads/") >= 0)) {
+        if ((domain === "store.pinseyun.com" && src.indexOf("/uploads/") >= 0) ||
+            // https://media.coindesk.com/uploads/2018/07/shutterstock_703755544-860x430.jpg
+            (domain === "media.coindesk.com" && src.indexOf("/uploads/") >= 0)) {
             // http://store.pinseyun.com/uploads/2016/10/20161021222440-150x150.jpg
             // http://store.pinseyun.com/uploads/2016/06/201605work-94-150x150.jpg
             return {
@@ -3209,6 +3256,9 @@ var $$IMU_EXPORT$$;
         }
 
         if ((domain_nosub === "bdimg.com" || domain_nosub === "baidu.com") &&
+            // http://c.hiphotos.baidu.com/forum/w%3D272%3Bq%3D80%3Bg%3D0/sign=9a65dccd7f8da9774e2f812c826a8924/bf848226cffc1e175a7793cf4690f603728de936.jpg?&src=http%3A%2F%2Fimgsrc.baidu.com%2Fforum%2Fpic%2Fitem%2Fbf848226cffc1e175a7793cf4690f603728de936.jpg
+            //   http://imgsrc.baidu.com/forum/pic/item/bf848226cffc1e175a7793cf4690f603728de936.jpg
+            domain.match(/[a-z]\.hiphotos\.baidu\.com/) ||
             // https://timg04.bdimg.com/timg?wapbaike&quality=60&size=b396_593&sec=1349839550&di=55fd97fcbc1e84aca81eda03ac89fa53&src=http://imgsrc.baidu.com/baike/pic/item/a1ec08fa513d2697a2dc0cf653fbb2fb4316d80a.jpg
             //   http://imgsrc.baidu.com/baike/pic/item/a1ec08fa513d2697a2dc0cf653fbb2fb4316d80a.jpg
             (domain.match(/timg.*?\.bdimg\.com/) ||
@@ -3474,7 +3524,7 @@ var $$IMU_EXPORT$$;
             if (newsrc !== src)
                 return newsrc;
 
-            if (src.match(/:\/\/[^/]*\/[0-9a-f]*\/tumblr_[0-9a-zA-Z]+_[0-9]+\.[^/]*$/)) {
+            if (src.match(/:\/\/[^/]*\/[0-9a-f]*\/tumblr_[0-9a-zA-Z]+(?:_r[0-9]+)?_[0-9]+\.[^/]*$/)) {
                 // https://78.media.tumblr.com/3ebf4c3e175553194b3c9a0867a47719/tumblr_nugefiK7yj1u0c780o1_500.jpg
                 //   http://data.tumblr.com/3ebf4c3e175553194b3c9a0867a47719/tumblr_nugefiK7yj1u0c780o1_raw.jpg
                 // https://78.media.tumblr.com/96a4d0ab5a1e05ecc6f3eb638a5504a5/tumblr_oxin3qLmFS1spqhdqo7_500.jpg
@@ -3595,7 +3645,13 @@ var $$IMU_EXPORT$$;
             // http://resize1-doctissimo.ladmedia.fr/r/1010,,forcex/img/var/doctissimo/storage/images/fr/www/beaute/diaporamas/coiffure-de-star-coiffures-de-stars/coiffure-ciara/2440196-1-fre-FR/Le-Tie-Dye-rate-de-Ciara.jpg
             // https://resize-public.ladmedia.fr/rcrop/140,104/img/var/public/storage/images/toutes-les-photos/photos-emilie-nef-naf-torride-en-tout-petit-bikini-wahiba-ribery-sous-le-choc-1469251/38549175-1-fre-FR/Photos-Emilie-Nef-Naf-torride-en-tout-petit-bikini-Wahiba-Ribery-sous-le-choc-!.jpg
             //   https://resize-public.ladmedia.fr/img/var/public/storage/images/toutes-les-photos/photos-emilie-nef-naf-torride-en-tout-petit-bikini-wahiba-ribery-sous-le-choc-1469251/38549175-1-fre-FR/Photos-Emilie-Nef-Naf-torride-en-tout-petit-bikini-Wahiba-Ribery-sous-le-choc-!.jpg
-            return src.replace(/\/r(?:crop)?\/[^/]*\//, "/");
+            // https://resize-elle.ladmedia.fr/r/625,,forcex/crop/625,625,center-middle,forcex,ffffff/img/var/plain_site/storage/images/loisirs/musique/news/selena-gomez-pourquoi-pose-t-elle-presque-nue-2982877/56148853-1-fre-FR/Selena-Gomez-pourquoi-pose-t-elle-presque-nue.png
+            //   https://resize-elle.ladmedia.fr/crop/625,625,center-middle,forcex,ffffff/img/var/plain_site/storage/images/loisirs/musique/news/selena-gomez-pourquoi-pose-t-elle-presque-nue-2982877/56148853-1-fre-FR/Selena-Gomez-pourquoi-pose-t-elle-presque-nue.png
+            //   https://resize-elle.ladmedia.fr/img/var/plain_site/storage/images/loisirs/musique/news/selena-gomez-pourquoi-pose-t-elle-presque-nue-2982877/56148853-1-fre-FR/Selena-Gomez-pourquoi-pose-t-elle-presque-nue.png
+            return {
+                url: src.replace(/\/(?:r|crop|rcrop)\/[^/]*\//, "/"),
+                can_head: false
+            };
         }
 
         if (domain.match(/thumbs[0-9]*\.imgbox\.com/) ||
@@ -3944,6 +4000,7 @@ var $$IMU_EXPORT$$;
             //   https://img.buzzfeed.com/buzzfeed-static/static/2018-01/25/22/asset/buzzfeed-prod-fastlane-02/sub-buzz-5552-1516935824-2.jpg -- unrelated?
             // https://img.buzzfeed.com/buzzfeed-static/static/2016-05/12/16/enhanced/webdr08/original-6479-1463084088-1.jpg
             // https://img.buzzfeed.com/buzzfeed-static/static/2017-08/22/15/enhanced/buzzfeed-prod-fastlane-01/original-18338-1503431220-9.png
+            // https://img.buzzfeed.com/buzzfeed-static/static/2018-04/11/8/enhanced/buzzfeed-prod-web-03/original-16715-1523449517-2.jpg
             return src
                 .replace(/_big(\.[^/.]*)$/, "_dblbig$1")
                 .replace(/_wide(\.[^/.]*)$/, "_dblbig$1")
@@ -4385,21 +4442,22 @@ var $$IMU_EXPORT$$;
             //   https://i.ebayimg.com/images/g/2lIAAOSwsS1Zkh1k/s-l9999.jpg
             // https://ssli.ebayimg.com/images/g/nqQAAOSwh2RZ6b1q/s-l500.jpg
             //   https://ssli.ebayimg.com/images/g/nqQAAOSwh2RZ6b1q/s-l9999.jpg
-            // http://i.ebayimg.com/00/s/NjAwWDQ1MA==/z/mEAAAOSwKIpWBa25/$_23.JPG
-            //   http://i.ebayimg.com/images/g/mEAAAOSwKIpWBa25/s-l9999.jpg
-            // http://i.ebayimg.com/t/Trashy-Red-Riding-Hood-Gingham-Cute-Dress-Up-Halloween-Sexy-Teen-Adult-Costume-/00/s/MzUwWDM1MA==/z/be8AAMXQxVZRCdlO/$T2eC16VHJHgE9n0yFji(BRCdlO!Zpg~~60_35.JPG
-            //   http://i.ebayimg.com/00/s/MzUwWDM1MA==/z/be8AAMXQxVZRCdlO/$T2eC16VHJHgE9n0yFji(BRCdlO!Zpg~~60_35.JPG
-            //   http://i.ebayimg.com/images/g/be8AAMXQxVZRCdlO/s-l9999.jpg
             // http://i.ebayimg.com/images/i/121630247122-0-1/s-l1000.jpg -- 9999 doesn't work
             // http://i.ebayimg.com/images/i/262923537353-0-1/s-l1000.jpg -- 9999
             //   https://i.ebayimg.com/images/g/6OoAAOSw3gJZHI1d/s-l1000.jpg
             // https://i.ebayimg.com/thumbs/images/g/2FMAAOSw4A5Y0l-Z/s-l200.jpg
             //   https://i.ebayimg.com/images/g/2FMAAOSw4A5Y0l-Z/s-l9999.jpg
+
+            // http://i.ebayimg.com/t/Trashy-Red-Riding-Hood-Gingham-Cute-Dress-Up-Halloween-Sexy-Teen-Adult-Costume-/00/s/MzUwWDM1MA==/z/be8AAMXQxVZRCdlO/$T2eC16VHJHgE9n0yFji(BRCdlO!Zpg~~60_35.JPG
+            //   http://i.ebayimg.com/00/s/MzUwWDM1MA==/z/be8AAMXQxVZRCdlO/$T2eC16VHJHgE9n0yFji(BRCdlO!Zpg~~60_35.JPG
+            //   http://i.ebayimg.com/images/g/be8AAMXQxVZRCdlO/s-l9999.jpg
             newsrc = src.replace(/\/t\/.*?(\/[0-9]+\/s\/)/, "$1");
             if (newsrc !== src) {
                 return newsrc;
             }
 
+            // http://i.ebayimg.com/00/s/NjAwWDQ1MA==/z/mEAAAOSwKIpWBa25/$_23.JPG
+            //   http://i.ebayimg.com/images/g/mEAAAOSwKIpWBa25/s-l9999.jpg
             newsrc = src.replace(/\/[0-9]+\/[a-z]+\/[^/]*\/[a-z]+\/([^/]+)\/[^/.]*(\.[^/.]*)$/, "/images/g/$1/s-l9999$2");
             if (newsrc !== src) {
                 newsrc = newsrc.replace(/(.*\.)[^/.]*$/, "$1") + newsrc.replace(/.*\.([^/.]*)$/, "$1").toLowerCase();
@@ -4482,11 +4540,13 @@ var $$IMU_EXPORT$$;
         }
 
         if (domain.match(/bloximages\..*vip\.townnews\.com/) ||
-            domain === "s3-ap-southeast-2.amazonaws.com") {
+            //domain === "s3-ap-southeast-2.amazonaws.com"
+            amazon_container === "syd.cdn.coreweb.com.au") {
             // https://bloximages.chicago2.vip.townnews.com/tucson.com/content/tncms/assets/v3/editorial/9/e1/9e16bd10-2343-5819-a7c7-89a7d520c38e/5a653cb109be0.image.jpg?resize=750%2C1067
             // https://bloximages.newyork1.vip.townnews.com/roanoke.com/content/tncms/assets/v3/editorial/5/fd/5fd9841d-3b33-5f9a-b8e7-efb5a1730a65/5408aee812bf4.image.jpg
             // https://bloximages.newyork1.vip.townnews.com/heraldmailmedia.com/content/tncms/assets/v3/editorial/1/9a/19a45cfe-354a-11e3-939d-001a4bcf6878/5800f2836b369.image.jpg?resize=1200%2C675
             // https://s3-ap-southeast-2.amazonaws.com/syd.cdn.coreweb.com.au/136/1734561-our-neighbourhood-650x360.jpg
+            //   http://syd.cdn.coreweb.com.au/136/1734561-our-neighbourhood-650x360.jpg
             return src.replace(/^(.*?:\/\/)[^/]*\//, "http://");
         }
 
@@ -4772,6 +4832,7 @@ var $$IMU_EXPORT$$;
             // http://mnetimg.mnet.com/tvmnetimg/admin/poll/2014/10/1_1413538495789.jpg
             // http://cmsimg.mwave.me/pgmVideo/contentImgUrl/201711/10/0b694d59-29d6-4d36-8470-0e2db3a32e8f.jpg
             // https://cjmwave-prd.s3.ap-northeast-2.amazonaws.com/ion/front/editor/201801/10/e6d980fe-53c3-4604-bce7-08d98c7f2d99.jpg
+            // http://mnetimg.mnet.com/L_uimg/adupload/special/2017/08/22/1401090000.jpg
             //return src.replace(/(\/clipimage\/[^/]*)\/[0-9]*\//, "$1/1024/");
             var regex = /(\/clipimage\/.*?[^0-9]\/)[0-9]+\/([0-9]+\/[0-9]+\/[0-9]+\.[^/.]*)$/;
             return [
@@ -4896,6 +4957,12 @@ var $$IMU_EXPORT$$;
 
         if (domain.match(/tse[0-9]*\.mm\.bing\.net/) ||
             domain.indexOf(".bing.com") >= 0) {
+            // http://tse4.mm.bing.net/th?id=OGC.aea12e4c5efc00f2b1e95e6cf2a165e1&pid=1.7&rurl=https%3A%2F%2Fthumbs.gfycat.com%2FYellowTornCockatiel-size_restricted.gif&ehk=YrV%2F46NR4yeQKcnktlbKNA
+            //   https://thumbs.gfycat.com/YellowTornCockatiel-size_restricted.gif
+            newsrc = decodeURIComponent(src.replace(/^[a-z]+:\/\/[^/]*\/th[^/]*[?&]rurl=([^&]*)&[^/]*$/, "$1"));
+            if (newsrc !== src)
+                return newsrc;
+
             // https://tse1.mm.bing.net/th?id=Ad9e81485410912702a018d5f48ec0f5c&w=136&h=183&c=8&rs=1&qlt=90&pid=3.1&rm=2
             // https://www.bing.com/th?id=OPN.RTNews_jJZmvGD6PzvUt22LbHHUUg&w=186&h=88&c=7&rs=2&qlt=80&cdv=1&pid=News
             newsrc = src.replace(/(:\/\/[^/]*)\/th[^/]*[?&]id=([^&]*)&[^/]*$/, "$1/th?id=$2");
@@ -4920,7 +4987,9 @@ var $$IMU_EXPORT$$;
 
         if (domain === "file.tinnhac.com" ||
             domain === "file.tintuckpop.net" ||
-            // different though? - and crop don't work
+            // http://media.bongda.com.vn/resize/455x300/files/hai.phan/2017/03/08/er10-1546.jpg
+            domain === "media.bongda.com.vn" ||
+            // different though? - and crop doesn't work
             // https://image.vtc.vn/resize/80x60/files/news/2018/02/21/-210540.jpg
             domain === "image.vtc.vn") {
             // https://file.tinnhac.com/crop/97x74/music/2018/02/03/3-e875.jpg
@@ -5037,9 +5106,14 @@ var $$IMU_EXPORT$$;
             return src.replace(/.*?\/api[0-9]+x[0-9]+\/res\/ext\/[0-9]+x[0-9]+\/[^/]*\//, "http://");
         }
 
-        if (domain.match(/.*media[0-9]*\.nguoiduatin\.vn/)) {
+        if ((domain_nosub === "nguoiduatin.vn" && domain.match(/.*media[0-9]*\.nguoiduatin\.vn/)) ||
+            // http://media.hotbirthdays.com/thumb_x200x204/upload/2015/10/27/emilia-clarke.jpg
+            //   http://media.hotbirthdays.com/upload/2015/10/27/emilia-clarke.jpg
+            domain === "media.hotbirthdays.com") {
             // http://xmedia.nguoiduatin.vn/amp_thumb_x1120x832/ndt/16/03/12/202/18865226/8_288040.jpg
+            //   http://xmedia.nguoiduatin.vn/ndt/16/03/12/202/18865226/8_288040.jpg
             // http://media1.nguoiduatin.vn/thumb_x680x354/media/le-nham-than/2018/02/04/hoa.png
+            //   http://media1.nguoiduatin.vn/media/le-nham-than/2018/02/04/hoa.png
             return src.replace(/(:\/\/[^/]*)\/[^/]*x[0-9]+x[0-9]+\//, "$1/");
         }
 
@@ -5232,7 +5306,9 @@ var $$IMU_EXPORT$$;
 
         if (domain === "gaia.adage.com") {
             // http://gaia.adage.com/images/bin/image/x-large/GettyImages90319988832.jpg?1515686676
+            //   http://gaia.adage.com/images/bin/image/GettyImages90319988832.jpg?1515686676
             // http://gaia.adage.com/images/bin/image/medium/Bud-Light-Super-Bowl-2018---Bud-Knight.jpg?1517433099
+            //   http://gaia.adage.com/images/bin/image/Bud-Light-Super-Bowl-2018---Bud-Knight.jpg?1517433099
             return src.replace(/\/images\/bin\/image\/[^/]*\//, "/images/bin/image/");
         }
 
@@ -5259,7 +5335,8 @@ var $$IMU_EXPORT$$;
             // https://sonarreykjavik.com/system/attached_images/19379/medium/BadGyal_AlexisG%C3%B3mez.jpg?1513685256
             //   https://sonarreykjavik.com/system/attached_images/19379/large/BadGyal_AlexisG%C3%B3mez.jpg?1513685256
             //   https://sonarreykjavik.com/system/attached_images/19379/original/BadGyal_AlexisG%C3%B3mez.jpg?1513685256
-            // https://sonar.es/system/attached_images/18702/medium/badgyal_xs_sonar2017_fernandoschlaepfer_004.jpg?1497713257
+            // https://sonar.es/system/attached_images/18702/medium/badgyal_xs_sonar2017_fernandoschlaepfer_004.jpg?1497713257 -- stretched?
+            //   https://sonar.es/system/attached_images/18702/original/badgyal_xs_sonar2017_fernandoschlaepfer_004.jpg?1497713257
             return src.replace(/(\/attached_images\/[0-9]*\/)[^/]*\//, "$1original/");
         }
 
@@ -5575,8 +5652,12 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/image[0-9]*[wh]\//, "/original/");
         }
 
-        if (domain === "img.mp.itc.cn") {
+        if (domain === "img.mp.itc.cn" ||
+            // http://img.mp.sohu.com/upload/20170512/af6d692d7b6b493b9c3e002db2feebd1_th.png
+            //   http://img.mp.sohu.com/upload/20170512/af6d692d7b6b493b9c3e002db2feebd1.png
+            domain === "img.mp.sohu.com") {
             // http://img.mp.itc.cn/upload/20170227/aa7bad178ad94c1e94428c87b6227fc7_th.jpeg
+            //   http://img.mp.itc.cn/upload/20170227/aa7bad178ad94c1e94428c87b6227fc7.jpeg
             return src.replace(/_th(\.[^/.]*)$/, "$1");
         }
 
@@ -6750,16 +6831,19 @@ var $$IMU_EXPORT$$;
 
         if (domain === "vogue.gjstatic.nl") {
             // https://vogue.gjstatic.nl/thumbnails/GenjArticleBundle/Article/fileUpload/medium/00/58/12/dit-heeft-gigi-hadid-te-zeggen-tegen-al-haar-body-shamers-5812.jpg
-            // https://vogue.gjstatic.nl/thumbnails/GenjArticleBundle/Article/fileUpload/detail/01/06/15/glitter-sparkle-shine-alexa-chung-staat-op-de-cover-van-vogue-december-2017-10615.jpg
+            //   https://vogue.gjstatic.nl/thumbnails/GenjArticleBundle/Article/fileUpload/big/00/58/12/dit-heeft-gigi-hadid-te-zeggen-tegen-al-haar-body-shamers-5812.jpg
+            // https://vogue.gjstatic.nl/thumbnails/GenjArticleBundle/Article/fileUpload/detail/01/06/15/glitter-sparkle-shine-alexa-chung-staat-op-de-cover-van-vogue-december-2017-10615.jpg -- 1000x1295
+            //   https://vogue.gjstatic.nl/thumbnails/GenjArticleBundle/Article/fileUpload/big/01/06/15/glitter-sparkle-shine-alexa-chung-staat-op-de-cover-van-vogue-december-2017-10615.jpg -- 1600x2072
             // https://vogue.gjstatic.nl/uploads/media/image/dolce-gabbana-make-capri-a-paparazzi-free-zone_9.jpg
             // https://vogue.gjstatic.nl/uploads/media/image/singer-songwriter-angela-vertelt-de-californie-hea-1.jpg
             // https://vogue.gjstatic.nl/thumbnails/GenjArticleBundle/Article/teaserFileUpload/teaser/00/84/17/tommy-x-gigi-has-landed-dit-zijn-vogue-s-favorieten-uit-de-ultieme-cali-girl-collectie-8417.jpg
             //   https://vogue.gjstatic.nl/thumbnails/GenjArticleBundle/Article/fileUpload/detail/00/84/17/tommy-x-gigi-has-landed-dit-zijn-vogue-s-favorieten-uit-de-ultieme-cali-girl-collectie-8417.jpg
             // https://vogue.gjstatic.nl/thumbnails/GenjArticleBundle/Article/fileUpload/detail/00/89/30/gigi-hadid-verlengt-samenwerking-met-tommy-hilfiger-8930.jpg
             //   https://vogue.gjstatic.nl/thumbnails/GenjArticleBundle/Article/fileUpload/big/00/89/30/gigi-hadid-verlengt-samenwerking-met-tommy-hilfiger-8930.jpg
+            // https://designer-vintage.gjstatic.nl/thumbnails/GenjArticleBundle/Article/fileUpload/detail/00/13/27/the-exclusive-designer-vintage-summer-sale-1327.jpg -- 1000x1249
+            //   https://designer-vintage.gjstatic.nl/uploads/media/image/the-exclusive-designer-vintage-summer-sale.jpg -- 4048x5059
             // https://designer-vintage.gjstatic.nl/thumbnails/GenjArticleBundle/Article/fileUpload/detail/00/19/42/the-top-5-best-snow-white-winter-bags-1942.jpg
-            // https://designer-vintage.gjstatic.nl/uploads/media/image/the-exclusive-designer-vintage-summer-sale.jpg
-            // https://designer-vintage.gjstatic.nl/thumbnails/GenjArticleBundle/Article/fileUpload/detail/00/13/27/the-exclusive-designer-vintage-summer-sale-1327.jpg
+            //   https://designer-vintage.gjstatic.nl/uploads/medi/image/the-top-5-best-snow-white-winter-bags.jpg -- doesn't work, error 500
             return src
                 .replace(/\/teaserFileUpload\//, "/fileUpload/") // doesn't work on all
                 .replace(/\/fileUpload\/[^/]*\//, "/fileUpload/big/");
@@ -6775,8 +6859,11 @@ var $$IMU_EXPORT$$;
 
         if (domain === "derpicdn.net") {
             // https://derpicdn.net/img/2018/2/24/1664344/thumb.png
+            //   https://derpicdn.net/img/2018/2/24/1664344/large.png
             //   https://derpicdn.net/img/2018/2/24/1664344/full.png
-            return src.replace(/\/thumb(\.[^/.]*)$/, "/full$1");
+            // https://derpicdn.net/img/2016/10/9/1268708/large.png -- 1280x973
+            //   https://derpicdn.net/img/2016/10/9/1268708/full.png -- 4603x3500
+            return src.replace(/\/(?:thumb|large)(\.[^/.]*)$/, "/full$1");
         }
 
         if (domain.indexOf(".iimg.me") >= 0) {
@@ -7022,6 +7109,9 @@ var $$IMU_EXPORT$$;
             //   https://pro2-bar.myportfolio.com/v1/assets/fc87a328b5563b3948ee90b56bb47c80/df42aa71-c29a-4ccb-b40d-70e9f87872bf_car_202x158.jpg -- hash is required
             //   https://pro2-bar-s3-cdn-cf2.myportfolio.com/fc87a328b5563b3948ee90b56bb47c80/df42aa71-c29a-4ccb-b40d-70e9f87872bf.jpg:
             //     https://pro2-bar.myportfolio.com/v1/assets/fc87a328b5563b3948ee90b56bb47c80/df42aa71-c29a-4ccb-b40d-70e9f87872bf.jpg -- hash is required
+            // https://pro2-bar-s3-cdn-cf2.myportfolio.com/fc703cfcf746a4d9e06fa9a2d703067c/d454466e-51ca-4b6e-8714-04bcec8991e5_rw_1200.jpg
+            //   https://pro2-bar-s3-cdn-cf2.myportfolio.com/fc703cfcf746a4d9e06fa9a2d703067c/d454466e-51ca-4b6e-8714-04bcec8991e5.jpg -- redirects to:
+            //   https://pro2-bar.myportfolio.com/v1/assets/fc703cfcf746a4d9e06fa9a2d703067c/d454466e-51ca-4b6e-8714-04bcec8991e5.jpg -- hash is required
             return src.replace(/_rw_[0-9]+(\.[^/.?]*)(?:\?.*)?$/, "$1");
         }
 
@@ -7094,7 +7184,7 @@ var $$IMU_EXPORT$$;
         if (domain.indexOf(".phncdn.com") >= 0) {
             // https://ci.phncdn.com/pics/albums/000/430/541/4503569/(m=eiJ_8b)(mh=EvXtHOjNcliZ7ja0)original_4503569.jpg
             //   https://ci.phncdn.com/pics/albums/000/430/541/4503569/original_4503569.jpg
-            return src.replace(/\/(?:\([a-z]+=[^/)]*\))*([^/]*)$/, "/$1");
+            return add_extensions_gif(src.replace(/\/(?:\([a-z]+=[^/)]*\))*([^/]*)$/, "/$1"));
         }
 
         if (domain === "img.fril.jp") {
@@ -7207,6 +7297,8 @@ var $$IMU_EXPORT$$;
             domain_nowww === "404store.com" ||
             // https://www.imgpost.co.uk/images/2018/01/07/HagpiwP.md.jpg
             domain_nowww === "imgpost.co.uk" ||
+            // http://ap.imagensbrasil.org/images/2017/07/26/3855442_orig.md.jpg
+            domain === "ap.imagensbrasil.org" ||
             // http://image-bugs.com/images/2017/09/09/CelebsFlash.com_NP_Harpers_Bazaar_090817__3_.md.jpg
             domain_nowww === "image-bugs.com") {
             // http://imgmax.com/images/2017/03/20/0OQhE.th.jpg
@@ -7278,6 +7370,9 @@ var $$IMU_EXPORT$$;
             // http://gongl8.com/uploadfile/2018/0228/thumb_0_300_20180228054831686.jpg
             //   http://gongl8.com/uploadfile/2018/0228/20180228054831686.jpg
             domain_nowww === "gongl8.com" ||
+            // http://upload.mcchina.com/2014/0908/thumb_600_800_1410147115827.jpg
+            //   http://upload.mcchina.com/2014/0908/1410147115827.jpg
+            domain === "upload.mcchina.com" ||
             domain.match(/m[0-9]*\.ablwang\.com/)) {
             // http://imgsh.jpnxcn.com/pics/star/pic/thumb_180_0_5de4fc683a33a8e1731ecc044918e3b3.jpg
             //   http://imgsh.jpnxcn.com/pics/star/pic/5de4fc683a33a8e1731ecc044918e3b3.jpg
@@ -7820,25 +7915,6 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/pictures\/[a-z]*\//, "/pictures/originali/");
         }
 
-        if (domain === "popdustroar-img.rbl.ms" ||
-            // https://papermag-img.rbl.ms/simage/https%3A%2F%2Fassets.rbl.ms%2F3967597%2F1200x600.jpg/2000%2C2000/3Bthb8U2RPWmDNU8/img.jpg
-            //   https://assets.rbl.ms/3967597/1200x600.jpg
-            //   https://assets.rbl.ms/3967597/980x.jpg
-            // https://assets.rbl.ms/17099886/210x.jpg
-            // https://assets.rbl.ms/1361449/origin.jpg
-            (domain.indexOf(".rbl.ms") >= 0 && src.indexOf("/simage/") >= 0)) {
-            // https://popdustroar-img.rbl.ms/simage/https%3A%2F%2Fassets.rbl.ms%2F6588627%2F980x.jpg/2000%2C2000/FSxn6Qs9PAa0aHKs/img.jpg
-            //   https://assets.rbl.ms/6588627/980x.jpg
-            return decodeURIComponent(src.replace(/.*?\/simage\/([^/]*)\/.*/, "$1"));
-        }
-
-        if (domain === "assets.rbl.ms") {
-            // https://odysseyonline-img.rbl.ms/simage/https%3A%2F%2Fassets.rbl.ms%2F10613549%2F980x.jpg/2000%2C2000/CUjBUrbDC4rUON8Q/img.jpg
-            //   https://assets.rbl.ms/10613549/origin.jpg
-            // https://assets.rbl.ms/17487152/origin.jpg - 3600x2400
-            return src.replace(/(:\/\/[^/]*\/[0-9]+\/)[^/.]*(\.[^/.]*)$/, "$1origin$2");
-        }
-
         if (domain.match(/media[0-9]*\.santabanta\.com/)) {
             // http://media1.santabanta.com/full1/Music%20Bands/The%20Pussycat%20Dolls/the-pussycat-dolls-33a.jpg
             //   http://media1.santabanta.com/full8/Music%20Bands/The%20Pussycat%20Dolls/the-pussycat-dolls-33a.jpg
@@ -7884,6 +7960,9 @@ var $$IMU_EXPORT$$;
 
         if (domain === "static.ok.co.uk" ||
             domain === "static.ok.co.uk.s3.amazonaws.com" ||
+            // https://images.24ur.com/media/images/884xX/Mar2017/57e99fb58d_61899670.jpg?v=2316 -- stretched
+            //   https://images.24ur.com/media/images/original/Mar2017/57e99fb58d_61899670.jpg?v=2316
+            domain === "images.24ur.com" ||
             domain === "ns.hitcreative.com.s3.amazonaws.com") {
             // https://static.ok.co.uk/media/images/625x938_ct/1060392_GettyImages_488606950_ddcc7556b12de0d94bf5118cda2310d2.jpg
             //   https://static.ok.co.uk/media/images/original/1060392_GettyImages_488606950_ddcc7556b12de0d94bf5118cda2310d2.jpg
@@ -8803,14 +8882,16 @@ var $$IMU_EXPORT$$;
 
         if ((domain.indexOf(".staticflickr.com") >= 0 ||
              domain.indexOf(".static.flickr.com") >= 0) &&
-            src.match(/\/[0-9]+_[0-9a-f]+(?:_[a-z]*)?\.[^/.]*$/) &&
-            !src.match(/\/[0-9]+_[0-9a-f]+_o\.[^/.]*$/) &&
+            src.match(/\/[0-9]+_[0-9a-f]+(?:_[a-z]*)?\.[a-z]+.*$/) &&
+            !src.match(/\/[0-9]+_[0-9a-f]+_o\.[a-z]+.*$/) &&
             options && options.do_request && options.cb) {
             // https://c1.staticflickr.com/5/4190/34341416210_29e6098b30.jpg
             //   https://farm5.staticflickr.com/4190/34341416210_9f14cc1576_o.jpg
             // https://farm5.static.flickr.com/4157/34467046051_631ea7efa7_b.jpg
             //   https://farm5.staticflickr.com/4157/34467046051_9b6f0e9a7c_o.jpg
             // http://farm8.staticflickr.com/7034/6693295971_22e55a1b42_z.jpg%3C/br%3E
+            // http://farm8.staticflickr.com/7034/6693295971_22e55a1b42_z.jpg</undefined
+            // http://farm8.staticflickr.com/7034/6693295971_22e55a1b42_z.jpg%3C/undefined.
             //   https://farm8.staticflickr.com/7034/6693295971_36acecc53b_o.jpg
             src = src.replace(/(:\/\/[^/]*\/(?:[0-9]+\/)?[0-9]+\/[0-9]+_[0-9a-f]+(?:_[a-z])?\.[a-zA-Z0-9]*).*$/, "$1");
             options.do_request({
@@ -8937,7 +9018,10 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/thumbs[a-z]?\//, "/og/");
         }
 
-        if (domain === "wallpapers.wallhaven.cc") {
+        if (domain === "wallpapers.wallhaven.cc" ||
+            // https://alpha.wallhaven.cc/wallpapers/thumb/small/th-527922.jpg
+            //   https://alpha.wallhaven.cc/wallpapers/full/wallhaven-527922.jpg
+            domain === "alpha.wallhaven.cc") {
             // https://wallpapers.wallhaven.cc/wallpapers/thumb/small/th-68352.jpg
             //   https://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-68352.jpg
             return src.replace(/\/thumb\/[^/]*\/th-/, "/full/wallhaven-");
@@ -9145,7 +9229,10 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/files\/responsive\/[^/]*\/[^/]*\/[^/]*\//, "/files/");
         }
 
-        if (domain.match(/img[0-9]*\.dreamwiz\.net/)) {
+        if (domain.match(/img[0-9]*\.dreamwiz\.net/) ||
+            // https://kep.cdn.indexvas.hu/1/0/1390/13903/139030/13903056_a12075627654662f42ea3dbf77b8e0bf_s.jpg
+            //   https://kep.cdn.indexvas.hu/1/0/1390/13903/139030/13903056_a12075627654662f42ea3dbf77b8e0bf_o.jpg
+            domain === "kep.cdn.indexvas.hu") {
             // http://img77.dreamwiz.net/E/Z/T/EZTk3KA_m.jpg
             //   http://img77.dreamwiz.net/E/Z/T/EZTk3KA_l.jpg
             //   http://img77.dreamwiz.net/E/Z/T/EZTk3KA_o.jpg
@@ -9229,10 +9316,14 @@ var $$IMU_EXPORT$$;
                 .replace(/(\/images\/.*)\/[a-z]?[0-9]+x(?:[0-9]+)?\/([^/]*)$/, "$1/$2");
         }
 
-        if (domain === "cdn.fortune-girl.com") {
+        if (domain === "cdn.fortune-girl.com" ||
+            // http://joah-girls.com/system/item_images/images/000/112/476/medium/a9faac95-20df-48f5-a855-0c9791e1ec11.jpg?1513993165
+            //   http://joah-girls.com/system/item_images/images/000/112/476/original/a9faac95-20df-48f5-a855-0c9791e1ec11.jpg?1513993165
+            domain === "joah-girls.com") {
             // https://cdn.fortune-girl.com/medium/513f7c8a-e8a1-44e8-9eec-76b37b4e7e42.jpg?1496131561
             //   https://cdn.fortune-girl.com/original/513f7c8a-e8a1-44e8-9eec-76b37b4e7e42.jpg?1496131561
-            return src.replace(/(:\/\/[^/]*\/)[a-z]*\/([-0-9a-f]*\.[^/.]*)$/, "$1original/$2");
+            //return src.replace(/(:\/\/[^/]*\/)[a-z]*\/([-0-9a-f]*\.[^/.]*)$/, "$1original/$2");
+            return src.replace(/\/[a-z]*\/([-0-9a-f]*\.[^/.]*)$/, "/original/$1");
         }
 
         if (domain === "storage.withnews.jp" ||
@@ -9446,7 +9537,9 @@ var $$IMU_EXPORT$$;
         if (domain === "cdn.gamer-network.net") {
             // https://cdn.gamer-network.net/2018/articles/2018-04-25-13-25/fifa.png/EG11/resize/690x-1/quality/75/format/jpg
             //   https://cdn.gamer-network.net/2018/articles/2018-04-25-13-25/fifa.png
-            return src.replace(/(\/[^/.]*\.[^/.]*)\/EG[0-9]+\/.*/, "$1");
+            // https://cdn.gamer-network.net/2013/articles//a/1/5/9/9/9/4/8/The_Crew_002.jpg.jpg/EG11/thumbnail/115x64/quality/60
+            //   https://cdn.gamer-network.net/2013/articles//a/1/5/9/9/9/4/8/The_Crew_002.jpg.jpg
+            return src.replace(/(\.[^/.]*)\/EG[0-9]+\/.*/, "$1");
         }
 
         if (domain.match(/uploads[0-9]*\.wikiart\.org/)) {
@@ -9819,6 +9912,8 @@ var $$IMU_EXPORT$$;
             //   https://image.afcdn.com/story/20130911/cara-delevingne-98052.jpg
             // https://image.afcdn.com/album/D20180221/allison-janney-phalbm25328123_w660.jpg
             //   https://image.afcdn.com/album/D20180221/allison-janney-phalbm25328123.jpg
+            // https://image.afcdn.com/story/20141004/rihanna-507111_w670.jpg
+            //   https://image.afcdn.com/story/20141004/rihanna-507111.jpg
             // doesn't work: (redirects to blank image, no content-length header, can't find differences in headers)
             // https://image.afcdn.com/story/20170706/selena-gomez-1102505_w670.jpg
             // https://image.afcdn.com/story/20170706/selena-gomez-1102441_w670.jpg
@@ -10708,10 +10803,51 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/[0-9]+_[0-9]+(\.[^/.]*)$/, "/original$1");
         }
 
-        if (domain === "resize.rbl.ms") {
+        /*if (domain === "popdustroar-img.rbl.ms" ||
+            // https://papermag-img.rbl.ms/simage/https%3A%2F%2Fassets.rbl.ms%2F3967597%2F1200x600.jpg/2000%2C2000/3Bthb8U2RPWmDNU8/img.jpg
+            //   https://assets.rbl.ms/3967597/1200x600.jpg
+            //   https://assets.rbl.ms/3967597/980x.jpg
+            // https://assets.rbl.ms/17099886/210x.jpg
+            // https://assets.rbl.ms/1361449/origin.jpg
+            (domain.indexOf(".rbl.ms") >= 0 && src.indexOf("/simage/") >= 0)) {
+            // https://popdustroar-img.rbl.ms/simage/https%3A%2F%2Fassets.rbl.ms%2F6588627%2F980x.jpg/2000%2C2000/FSxn6Qs9PAa0aHKs/img.jpg
+            //   https://assets.rbl.ms/6588627/980x.jpg
+            return decodeURIComponent(src.replace(/.*?\/simage\/([^/]*)\/.*\/, "$1")); // fix
+        }*/
+
+        if (domain_nosub === "rbl.ms") {
             // https://resize.rbl.ms/image?source=https%3A%2F%2Fassets.rbl.ms%2F3689460%2F1216x700.jpg&size=2000%2C2000&c=qkxiCnuqMLv4GT53
             //   https://assets.rbl.ms/3689460/origin.jpg
-            return decodeURIComponent(src.replace(/.*\/image.*?[?&]source=([^&]*).*/, "$1"));
+
+            newsrc = src.replace(/.*\/image.*?[?&]source=([^&]*).*/, "$1");
+            if (newsrc !== src) {
+                return decodeURIComponent(newsrc);
+            }
+
+            // http://resize.rbl.ms/simage/https%3A%2F%2Fassets.rbl.ms%2F10514873%2F980x.gif/500%2C230/pC%2BRJHWs2YBGt8at/img.gif
+            //   https://assets.rbl.ms/10514873/980x.gif
+            // https://papermag-img.rbl.ms/simage/https%3A%2F%2Fassets.rbl.ms%2F3967597%2F1200x600.jpg/2000%2C2000/3Bthb8U2RPWmDNU8/img.jpg -- stretched
+            //   https://assets.rbl.ms/3967597/1200x600.jpg
+            //   https://assets.rbl.ms/3967597/980x.jpg
+            // https://popdustroar-img.rbl.ms/simage/https%3A%2F%2Fassets.rbl.ms%2F6588627%2F980x.jpg/2000%2C2000/FSxn6Qs9PAa0aHKs/img.jpg
+            //   https://assets.rbl.ms/6588627/980x.jpg
+            newsrc = src.replace(/.*?\/simage\/([^/]*)\/.*/, "$1");
+            if (newsrc !== src) {
+                return decodeURIComponent(newsrc);
+            }
+        }
+
+        if (domain === "resize-rbl-ms.cdn.ampproject.org") {
+            // https://resize-rbl-ms.cdn.ampproject.org/ii/w1000/s/resize.rbl.ms/simage/https%3A%2F%2Fassets.rbl.ms%2F10514873%2F980x.gif/500%2C230/pC%2BRJHWs2YBGt8at/img.gif
+            //   http://resize.rbl.ms/simage/https%3A%2F%2Fassets.rbl.ms%2F10514873%2F980x.gif/500%2C230/pC%2BRJHWs2YBGt8at/img.gif
+            return src.replace(/^[a-z]+:\/\/[^/]*\/ii\/[wh][0-9]+\/s\//, "http://");
+        }
+
+        if (domain === "assets.rbl.ms") {
+            // https://odysseyonline-img.rbl.ms/simage/https%3A%2F%2Fassets.rbl.ms%2F10613549%2F980x.jpg/2000%2C2000/CUjBUrbDC4rUON8Q/img.jpg
+            //   https://assets.rbl.ms/10613549/origin.jpg
+            // https://assets.rbl.ms/17487152/origin.jpg - 3600x2400
+            return src.replace(/(:\/\/[^/]*\/[0-9]+\/)[^/.]*(\.[^/.]*)$/, "$1origin$2");
         }
 
         if (domain === "i.paigeeworld.com") {
@@ -10815,12 +10951,15 @@ var $$IMU_EXPORT$$;
             // http://thebootyhunter.t.h.pic.centerblog.net/de34e5dd.jpg
             //   http://thebootyhunter.t.h.pic.centerblog.net/o/de34e5dd.jpg
             // http://www.centerblog.net/ca/1e5f476d-s.jpg
+            //   http://www.centerblog.net/imgs/img/1e5f476d-s.jpg
             //   http://marilynjohn.m.a.pic.centerblog.net/1e5f476d-s.jpg
             //   http://marilynjohn.m.a.pic.centerblog.net/1e5f476d-m.jpg
             // http://marilynjohn.m.a.pic.centerblog.net/tumblr_p1edlhuTny1rxzh05o2_502.jpg
             //   http://marilynjohn.m.a.pic.centerblog.net/o/tumblr_p1edlhuTny1rxzh05o2_502.jpg
             // http://nounousylvie51.n.o.pic.centerblog.net/m/13174182_495970667254617_2594346124069563626_n_1.jpg
             //   http://nounousylvie51.n.o.pic.centerblog.net/o/13174182_495970667254617_2594346124069563626_n_1.jpg
+            // http://bionicle.b.i.pic.centerblog.net/55dlahan.jpg
+            //   http://bionicle.b.i.pic.centerblog.net/o/55dlahan.jpg -- doesn't work
             return src.replace(/(:\/\/[^/]*\/)(?:[a-z]\/)?([^/]*)$/, "$1o/$2");
         }
 
@@ -10916,7 +11055,10 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/media\/cache\/[0-9]+x[0-9]+\//, "/media/cache/original/");
         }
 
-        if (domain === "ellearabia.com") {
+        if (domain === "ellearabia.com" ||
+            // https://estaticos.marie-claire.es/media/cache/706x530_thumb/uploads/images/gallery/57d7bfe55cafe82abf1dd4a6/scarlett-johansson.jpg
+            //   https://estaticos.marie-claire.es/uploads/images/gallery/57d7bfe55cafe82abf1dd4a6/scarlett-johansson.jpg
+            domain === "estaticos.marie-claire.es") {
             // https://ellearabia.com/media/cache/photogallery_entry/uploads/cms/photo-gallery/entries/59b64fb94ef7b.jpg
             //   https://ellearabia.com/uploads/cms/photo-gallery/entries/59b64fb94ef7b.jpg
             return src.replace(/\/media\/cache\/[^/]*\//, "/");
@@ -10966,7 +11108,11 @@ var $$IMU_EXPORT$$;
             domain === "cdn.revistavanityfair.es") {
             // http://cdn.glamour.es/uploads/images/thumbs/201419/gala_met_2014_todos_los_vestidos_de_la_alfombra_roja_343183988_667x1000.jpg
             //   http://cdn.glamour.es/uploads/images/201419/gala_met_2014_todos_los_vestidos_de_la_alfombra_roja_343183988.jpg
-            return src.replace(/\/thumbs\/([0-9]+\/[^/.]*)_[0-9]+x[0-9]+(\.[^/.]*)$/, "/$1$2");
+            //return src.replace(/\/thumbs\/([0-9]+\/[^/.]*)_[0-9]+x[0-9]+(\.[^/.]*)$/, "/$1$2");
+
+            // https://cdn.revistavanityfair.es/uploads/images/thumbs/es/vf/2/s/2018/07/karen_gillan_1730_1199x1800.jpg
+            //   http://cdn.revistavanityfair.es/uploads/images/es/vf/s/2018/07/karen_gillan_1730.jpg
+            return src.replace(/(\/uploads\/images)\/thumbs(?:(\/[a-z]+\/vf)\/[0-9]+)?(\/.*)_[0-9]+x[0-9]+(\.[^/.]*)$/, "$1$2$3$4");
         }
 
         if (domain.match(/i[0-9]*-cdn\.woman\.ru/)) {
@@ -11054,6 +11200,8 @@ var $$IMU_EXPORT$$;
             // https://a.ltrbxd.com/resized/sm/upload/l1/y0/02/4c/anohana-1200-1200-675-675-crop-000000.jpg?k=dec61b1bd7
             //   https://a.ltrbxd.com/sm/upload/l1/y0/02/4c/anohana.jpg
             // https://a.ltrbxd.com/resized/film-poster/1/7/9/2/3/0/179230-anohana-the-flower-we-saw-that-day-the-movie-0-230-0-345-crop.jpg?k=00177b15f7
+            // https://a.ltrbxd.com/resized/film-poster/2/5/8/3/7/25837-rampage-0-230-0-345-crop.jpg?k=f906f9c4ed
+            //   https://a.ltrbxd.com/film-poster/2/5/8/3/7/25837-rampage.jpg?k=f906f9c4ed -- broken
             return src.replace(/\/resized\/(.*)-(?:[0-9]+-){4}crop(?:-[0-9]+)?(\.[^/.]*)$/, "/$1$2");
         }
 
@@ -11670,8 +11818,9 @@ var $$IMU_EXPORT$$;
             options.element && options.do_request && options.cb) {
             newsrc = (function() {
                 function checkimage(url) {
-                    if (url.match(/^[a-z]+:\/\/[^/]*\.redditmedia\.com\//) ||
-                        url.match(/^[a-z]+:\/\/[^/]*\.redd\.it\//))
+                    url = urljoin(options.host_url, url, true);
+                    if (url.match(/^(?:[a-z]+)?:\/\/[^/]*\.redditmedia\.com\//) ||
+                        url.match(/^(?:[a-z]+)?:\/\/[^/]*\.redd\.it\//))
                         return url;
 
                     if (bigimage_recursive(url, {
@@ -11718,9 +11867,9 @@ var $$IMU_EXPORT$$;
 
                                 return options.cb(image);
                             } catch (e) {
-                                console.log(id);
-                                console.log(result);
-                                console.error(e);
+                                console_log(id);
+                                console_log(result);
+                                console_error(e);
                             }
 
                             options.cb(null);
@@ -11888,7 +12037,7 @@ var $$IMU_EXPORT$$;
                 if (current.tagName !== "A")
                     continue;
 
-                console.log(current.href);
+                console_log(current.href);
                 if (!current.href.match(/\/images\/search\?.*mediaurl=/))
                     continue;
 
@@ -11930,7 +12079,7 @@ var $$IMU_EXPORT$$;
                     url: "http://fav.me/" + id,
                     onload: function(result) {
                         if (result.status !== 200) {
-                            console.log(result);
+                            console_log(result);
                             options.cb(null);
                             return;
                         }
@@ -11939,20 +12088,20 @@ var $$IMU_EXPORT$$;
                             var hrefre = /href=["'](https?:\/\/www\.deviantart\.com\/download\/[0-9]+\/[^/]*?)["']/;
                             var match = result.responseText.match(hrefre);
                             if (!match) {
-                                console.error("No public download for " + src);
+                                console_error("No public download for " + src);
                                 options.cb(null);
                                 return;
                             }
 
                             var href = match[1].replace("&amp;", "&");
-                            //console.log(href);
+                            //console_log(href);
 
                             options.do_request({
                                 method: "GET",
                                 url: href,
                                 onload: function(result) {
                                     if (result.status !== 200) {
-                                        console.log(result);
+                                        console_log(result);
                                         options.cb(null);
                                         return;
                                     }
@@ -11961,7 +12110,7 @@ var $$IMU_EXPORT$$;
                                 }
                             });
                         } catch (e) {
-                            console.error(e);
+                            console_error(e);
                             options.cb(null);
                         }
                     }
@@ -12113,8 +12262,8 @@ var $$IMU_EXPORT$$;
 
                                 cb(JSON.parse(match[1]));
                             } catch (e) {
-                                console.log(result);
-                                console.error(e);
+                                console_log(result);
+                                console_error(e);
                                 cb(null);
                             }
                         }
@@ -12138,7 +12287,7 @@ var $$IMU_EXPORT$$;
                         try {
                             cb(uid_from_sharedData(json));
                         } catch (e) {
-                            console.error(e);
+                            console_error(e);
                             cb(null);
                         }
                     });
@@ -12156,8 +12305,8 @@ var $$IMU_EXPORT$$;
                             try {
                                 cb(JSON.parse(result.responseText).user);
                             } catch (e) {
-                                console.log(result);
-                                console.error(e);
+                                console_log(result);
+                                console_error(e);
                                 cb(null);
                             }
                         }
@@ -12234,7 +12383,7 @@ var $$IMU_EXPORT$$;
 
                             cb(null);
                         } catch (e) {
-                            console.error(e);
+                            console_error(e);
                             cb(null);
                         }
                     });
@@ -12478,13 +12627,19 @@ var $$IMU_EXPORT$$;
 
         if (domain === "preview.ibb.co") {
             // https://preview.ibb.co/gfffEy/russia_players_celebrate_following_their_sides_victory_in_a_penalty_picture_id988998656_story_large_9c8c1668_4d53_4b55_ac5c_f7bd71b7f407.jpg
-            //   https://image.ibb.co/gfffEy/russia_players_celebrate_following_their_sides_victory_in_a_penalty_picture_id988998656_story_large_9c8c1668_4d53_4b55_ac5c_f7bd71b7f407.jpg
-            return src.replace(/:\/\/[^/]*\//, "://image.ibb.co/");
+            //   https://image.ibb.co/gfffEy/russia_players_celebrate_following_their_sides_victory_in_a_penalty_picture_id988998656_story_large_9c8c1668_4d53_4b55_ac5c_f7bd71b7f407.jpg -- doesn't work
+            // https://preview.ibb.co/gfffEy/russia_players_celebrate_following_their_sides_victory_in_a_penalty_picture.jpg
+            //   https://image.ibb.co/gfffEy/russia_players_celebrate_following_their_sides_victory_in_a_penalty_picture.jpg -- doesn't work
+            //return src.replace(/:\/\/[^/]*\/([0-9a-zA-Z]+\/[^/]*_id[0-9]{5,}[_.])/, "://image.ibb.co/$1");
         }
 
-        if (domain === "image.ibb.co") {
+        if (domain === "image.ibb.co" ||
+            domain === "preview.ibb.co") {
             // https://image.ibb.co/gfffEy/russia_players_celebrate_following_their_sides_victory_in_a_penalty_picture_id988998656_story_large_9c8c1668_4d53_4b55_ac5c_f7bd71b7f407.jpg
             //   https://image.ibb.co/gfffEy/russia_players_celebrate_following_their_sides_victory_in_a_penalty_picture_id988998656.jpg
+            // https://preview.ibb.co/gfffEy/russia_players_celebrate_following_their_sides_victory_in_a_penalty_picture_id988998656_story_large_9c8c1668_4d53_4b55_ac5c_f7bd71b7f407.jpg
+            //   https://preview.ibb.co/gfffEy/russia_players_celebrate_following_their_sides_victory_in_a_penalty_picture_id988998656.jpg
+            // https://preview.ibb.co/jYsMbo/Screenshot_2018_07_12_15_56_41.png
             return src.replace(/(_id[0-9]{5,})_[0-9a-z_]+(\.[^/.]*)$/, "$1$2");
         }
 
@@ -12544,8 +12699,8 @@ var $$IMU_EXPORT$$;
         if (domain_nosub === "gelbooru.com" &&
             domain.match(/simg[0-9]*\.gelbooru\.com/)) {
             // https://simg3.gelbooru.com/thumbnails/ce/b8/thumbnail_ceb852df49b45c7c595eea61951b9ffb.jpg
-            //   https://simg3.gelbooru.com/images//ce/b8/ceb852df49b45c7c595eea61951b9ffb.jpg
-            return src.replace(/\/thumbnails(\/[0-9a-f]+\/[0-9a-f]+\/)thumbnail_/, "/images/$1");
+            //   https://simg3.gelbooru.com/images/ce/b8/ceb852df49b45c7c595eea61951b9ffb.jpg
+            return src.replace(/\/thumbnails\/([0-9a-f]+\/[0-9a-f]+\/)thumbnail_/, "/images/$1");
         }
 
         if (domain_nosub === "e621.net" &&
@@ -13152,6 +13307,212 @@ var $$IMU_EXPORT$$;
             return src.replace(/^[a-z]+:\/\/[^/]*\/[0-9]+x[0-9]+\//, "http://");
         }
 
+        if (domain === "static.keptelenseg.hu") {
+            // https://static.keptelenseg.hu/thumbs/thumb/p/16fe9d08d860f9ce6b525da7554ea66e.jpg
+            //   https://static.keptelenseg.hu/p/16fe9d08d860f9ce6b525da7554ea66e.jpg
+            return src.replace(/\/thumbs\/thumb\/p\//, "/p/");
+        }
+
+        if (domain_nosub === "wdfiles.com") {
+            // http://daeren.wdfiles.com/local--resized-images/brendolyn/bren6.jpg/medium.jpg
+            //   http://daeren.wdfiles.com/local--files/brendolyn/bren6.jpg
+            return src.replace(/\/local--resized-images\/(.*\.[^/.]*)\/[a-z]+\.[^/.]*$/, "/local--files/$1");
+        }
+
+        if (domain_nowww === "astrofactor.com") {
+            // https://astrofactor.com/imgs/celeb/120/9791-0.jpg
+            //   https://astrofactor.com/imgs/celeb/full/9791-0.jpg
+            return src.replace(/(\/imgs\/[^/]*\/)[0-9]+(\/[^/]*)$/, "$1full$2");
+        }
+
+        if (domain === "makeup.nuovogennarino.org") {
+            // http://makeup.nuovogennarino.org/static/250/img/ksassets.timeincuk.net/wp/uploads/sites/46/2016/08/Emma-Watson-THUMB.jpg
+            //   https://ksassets.timeincuk.net/wp/uploads/sites/46/2016/08/Emma-Watson-THUMB.jpg
+            return src.replace(/^[a-z]+:\/\/[^/]*\/static\/[0-9]+\/img\/([^/.]+\.[^/]+)/, "http://$1");
+        }
+
+        if (domain === "img.newsdog.today" ||
+            amazon_container === "img.newsdog.today") {
+            // http://img.newsdog.today/thumb_abb85c7b6d6e536b0cd70bc5a2d6227b
+            //   http://img.newsdog.today/origin_abb85c7b6d6e536b0cd70bc5a2d6227b
+            // https://s3.ap-south-1.amazonaws.com/img.newsdog.today/thumb_preview_3ddcb3d8e1cd57ce6b14ac92fd6cb866
+            //   https://s3.ap-south-1.amazonaws.com/img.newsdog.today/origin_3ddcb3d8e1cd57ce6b14ac92fd6cb866
+            return src.replace(/(img\.newsdog\.today\/)[a-z_]+_([a-f0-9]+)$/, "$1origin_$2");
+        }
+
+        if (domain === "d1qikntta4cp8k.cloudfront.net") {
+            // https://d1qikntta4cp8k.cloudfront.net/?q=85&w=772&url=http://ksassets.timeincuk.net/wp/uploads/sites/46/2016/08/Emma-Watson-THUMB.jpg
+            //   https://ksassets.timeincuk.net/wp/uploads/sites/46/2016/08/Emma-Watson-THUMB.jpg
+            return decodeURIComponent(src.replace(/^[a-z]+:\/\/[^/]*\/.*?[?&]url=([^&]*)$/, "$1"));
+        }
+
+        if (domain === "v.img.com.ua") {
+            // http://v.img.com.ua/b/1100x999999/f/ec/257f1798ba3954d99cb502145ec15ecf.jpg -- stretched
+            //   http://v.img.com.ua/b/orig/f/ec/257f1798ba3954d99cb502145ec15ecf.jpg
+            return src.replace(/(:\/\/[^/]*\/[a-z]\/)[0-9]+x[0-9]+\//, "$1orig/");
+        }
+
+        if (domain === "img-hw.xvideos.com") {
+            // https://img-hw.xvideos.com/videos/profiles/galleries/c5/94/00/mbrisebois1963/gal1148191/pic_3_thumbl.jpg
+            //   https://img-hw.xvideos.com/videos/profiles/galleries/c5/94/00/mbrisebois1963/gal1148191/pic_3_big.jpg
+            return src.replace(/(\/pic_[0-9]+)_[a-z]+(\.[^/.]*)$/, "$1_big$2");
+        }
+
+        if (domain === "camo.derpicdn.net") {
+            // https://camo.derpicdn.net/08a79af4e43715ab9e20f943e912ded3c911b6e3?url=http%3A%2F%2Fi43.tinypic.com%2F2eusocg.png
+            //   http://i43.tinypic.com/2eusocg.png
+            return decodeURIComponent(src.replace(/^[a-z]+:\/\/[^/]*\/[0-9a-f]+\?url=([^&]*).*?$/, "$1"));
+        }
+
+        if (domain === "live.store.cmcm.com") {
+            // http://live.store.cmcm.com/small/liveme/poster/a34c5fefc0d9ba2cae7dd989a1bfdefc_icon.jpeg
+            //   http://live.store.cmcm.com/liveme/poster/a34c5fefc0d9ba2cae7dd989a1bfdefc_icon.jpeg
+            return src.replace(/(:\/\/[^/]*\/)[a-z]+\/(liveme\/)/, "$1$2");
+        }
+
+        if (domain === "media.timeout.com") {
+            // https://media.timeout.com/images/103349268/640/480/image.jpg
+            //   https://media.timeout.com/images/103349268/image.jpg
+            return src.replace(/(\/images\/[0-9]+\/)[0-9]+\/[0-9]+\/([^/]*)$/, "$1$2");
+        }
+
+        if (domain_nowww === "tokkoro.com") {
+            // http://www.tokkoro.com/thumbs/2613254-emilia-clarke-computer-desktop-backgrounds.jpg
+            //   http://tokkoro.com/picsup/2613254-emilia-clarke-computer-desktop-backgrounds.jpg
+            return src.replace(/\/thumbs\//, "/picsup/");
+        }
+
+        if (domain === "picstatio.com") {
+            // https://picstatio.com/thumb/kmuj1w/beautiful-actress-model-Margot-Robbie.jpg
+            //   https://picstatio.com/large/kmuj1w/beautiful-actress-model-Margot-Robbie.jpg
+            //   https://picstatio.com/u/kmuj1w/beautiful-actress-model-Margot-Robbie.jpg
+            return src.replace(/(:\/\/[^/]*\/)(?:thumb|large)\//, "$1u/");
+        }
+
+        if (domain === "www.wallpapermaiden.com") {
+            // http://www.wallpapermaiden.com/image/2017/06/17/model-brown-eyes-short-hair-earring-face-portrait-girls-16379-resized.jpg
+            //   http://www.wallpapermaiden.com/image/2017/06/17/model-brown-eyes-short-hair-earring-face-portrait-girls-16379.jpg
+            return src.replace(/-resized(\.[^/.]*)$/, "$1");
+        }
+
+        if (domain === "2ch.hk") {
+            // https://2ch.hk/mov/arch/2018-01-11/thumb/1715093/15144001211300s.jpg
+            //   https://2ch.hk/mov/arch/2018-01-11/src/1715093/15144001211300.jpg
+            return src.replace(/\/thumb\/([0-9]+\/[0-9]+)s(\.[^/.]*)$/, "/src/$1$2");
+        }
+
+        if (domain === "s.heavenlynudes.net") {
+            // http://s.heavenlynudes.net/085/279/085279556b1e0a7f645/thumbs/1620146556b1e0aa118c.jpg
+            //   http://s.heavenlynudes.net/085/279/085279556b1e0a7f645/1620146556b1e0aa118c.jpg
+            return src.replace(/\/thumbs\/([0-9a-f]+\.[^/.]*)$/, "/$1");
+        }
+
+        if (domain_nosub === "bbend.net" &&
+            domain.match(/cdn[0-9]*\.bbend\.net/)) {
+            // https://cdn6.bbend.net/media/com_news/galleries/2014/09/08/57412/photos/thumb/rihanna-5_0.jpg
+            //   https://cdn6.bbend.net/media/com_news/galleries/2014/09/08/57412/photos/full/rihanna-5_0.jpg
+            return src.replace(/\/photos\/thumb\/([^/]*)$/, "/photos/full/$1");
+        }
+
+        if (domain === "static.fustany.com") {
+            // https://static.fustany.com/images/en/photo/large_thumb_Fustany-Celebrity_Style-Celebrities_on_the_Front_Row_at_New_York_Fashion_Week_Spring_2015-Rihanna-Altuzarra.jpg
+            //   https://static.fustany.com/images/en/photo/small_Fustany-Celebrity_Style-Celebrities_on_the_Front_Row_at_New_York_Fashion_Week_Spring_2015-Rihanna-Altuzarra.jpg
+            //   https://static.fustany.com/images/en/photo/large_Fustany-Celebrity_Style-Celebrities_on_the_Front_Row_at_New_York_Fashion_Week_Spring_2015-Rihanna-Altuzarra.jpg
+            //   https://static.fustany.com/images/en/photo/Fustany-Celebrity_Style-Celebrities_on_the_Front_Row_at_New_York_Fashion_Week_Spring_2015-Rihanna-Altuzarra.jpg -- 2001x3000
+            return {
+                url: src.replace(/\/photo\/[a-z]+_([^/]*)$/, "/photo/$1"),
+                headers: {
+                    Referer: "http://fustany.com/en/fashion/celebrity-style/front-row-celebrities-at-new-york-fashion-week-spring-2015"
+                }
+            };
+        }
+
+        if (domain === "assets.protv.md") {
+            // http://assets.protv.md/articles/files/thumbs/650x/1424531.jpg
+            //   http://retete.perfecte.md/assets/articles/images/original/1424531.jpg
+            return src.replace(/:\/\/[^/]*\/articles\/files\/thumbs\/[0-9]+x(?:[0-9]+)?(\/[0-9]+\.[^/.]*)$/,
+                               "://retete.perfecte.md/assets/articles/images/original$1");
+        }
+
+        if (domain_nowww === "bgol.us") {
+            // https://www.bgol.us/forum/proxy.php?image=http%3A%2F%2Fmedia.philstar.com%2Fimages%2Fthe-philippine-star%2Fsports%2F20150414%2Fpacquiao-rousey-2.jpg&hash=846f88cc38c91693da5f567184ee6d2f
+            //   http://media.philstar.com/images/the-philippine-star/sports/20150414/pacquiao-rousey-2.jpg
+            return decodeURIComponent(src.replace(/.*?\/forum\/proxy\.php.*?[?&]image=([^&]*).*?$/, "$1"));
+        }
+
+        if (domain === "resources.tidal.com") {
+            // https://resources.tidal.com/images/30503edc/04d2/46d9/88dd/f3274fce9324/320x320.jpg
+            //   https://resources.tidal.com/images/30503edc/04d2/46d9/88dd/f3274fce9324/origin.jpg
+            return src.replace(/\/[0-9]+x[0-9]+(\.[^/.]*)$/, "/origin$1");
+        }
+
+        if (domain === "i.kfs.io") {
+            // https://i.kfs.io/album/global/9442692,0v1/fit/500x500.jpg
+            //   https://i.kfs.io/album/global/9442692,0v1/original.jpg
+            return src.replace(/\/fit\/[0-9]+x[0-9]+(\.[^/.]*)$/, "/original$1");
+        }
+
+        if (domain_nosub === "fuskator.com") {
+            // https://fuskator.com/small/iA3vsUWvpqT/thumb-1.jpg
+            //   https://i9.fuskator.com/large/iA3vsUWvpqT/image-1.jpg
+            return {
+                url: src
+                //.replace(/\/thumb-([0-9]*\.[^/.]*)$/, "/image-$1")
+                    .replace(/(:\/\/[^/]*\/)small\//, "$1large/"),
+                //.replace(/:\/\/fuskator\.com\//, "://i9.fuskator.com/");
+                can_head: false
+            };
+        }
+
+        if (domain === "ssref.net") {
+            // http://ssref.net/scripts/image_resize.cgi?min=200&url=https://d3k2oh6evki4b7.cloudfront.net/req/201806211/images/headshots/e/e083ea50_davis.jpg
+            //   https://d3k2oh6evki4b7.cloudfront.net/req/201806211/images/headshots/e/e083ea50_davis.jpg
+            return decodeURIComponent(src.replace(/.*?\/image_resize\.cgi.*?[?&]url=([^&]*).*?$/, "$1"));
+        }
+
+        if (domain_nosub === "m1905.cn" &&
+            domain.match(/image[0-9]*\.m1905\.cn/)) {
+            // http://image14.m1905.cn/uploadfile/2016/0802/thumb_0_647_500_20160802095117440123_watermark.jpg
+            //   http://image14.m1905.cn/uploadfile/2016/0802/20160802095117440123.jpg
+            return src.replace(/\/(?:thumb_[0-9]+_[0-9]+_[0-9]+_)?([0-9]+)(?:_watermark)?(\.[^/.]*)$/, "/$1$2");
+        }
+
+        if (domain_nosub === "intermedia.ge" &&
+            domain.match(/server[0-9]*\.intermedia\.ge/)) {
+            // http://server4.intermedia.ge/article_images/small/201401/2014012814022421579.jpg
+            //   http://server4.intermedia.ge/article_images/large/201401/2014012814022421579.jpg
+            // http://server1.intermedia.ge/pictures/small/180/180494.jpg?/prezidentis-sasaxle.jpg
+            //   http://server1.intermedia.ge/pictures/original/180/180494.jpg?/prezidentis-sasaxle.jpg -- has watermark
+            // http://server1.intermedia.ge/pictures/original/187/187829.jpg?/qarTuli-silamaze.jpg -- no watermark
+            return src
+                .replace(/\/article_images\/[a-z]+\//, "/article_images/large/")
+                .replace(/\/pictures\/[a-z]+\//, "/pictures/original/");
+        }
+
+        if (domain === "www.sqshi.com") {
+            // http://www.sqshi.com/img.php?imgurl=http://mmbiz.qpic.cn/mmbiz/tjGXef7Wic6vJYcWwicP133lkTsaxoxFEzZX9MYBhUc3puACLiaWesCjqYXjvyt3cYKV0EeQgvEjYQgaGdRAe4FSw/0?wx_fmt=jpeg
+            //   http://mmbiz.qpic.cn/mmbiz/tjGXef7Wic6vJYcWwicP133lkTsaxoxFEzZX9MYBhUc3puACLiaWesCjqYXjvyt3cYKV0EeQgvEjYQgaGdRAe4FSw/0?wx_fmt=jpeg
+            return decodeURIComponent(src.replace(/^[a-z]+:\/\/[^/]*\/img\.php.*?[?&]imgurl=([^&]*).*?$/, "$1"));
+        }
+
+        if (domain === "i.annihil.us") {
+            // http://i.annihil.us/u/prod/marvel/i/mg/5/b0/4f872edbcddde/detail.jpg -- 550x853
+            //   http://i.annihil.us/u/prod/marvel/i/mg/5/b0/4f872edbcddde/clean.jpg -- 1816x2816
+            return src.replace(/(\/[0-9a-f]+\/)detail(\.[^/.]*)$/, "$1clean$2");
+        }
+
+        if (domain === "pimg.mycdn.me") {
+            // https://pimg.mycdn.me/getImage?url=http%3A%2F%2Fcdn.ok-magazine.ru%2Fcdn%2Ffarfuture%2FTNYbFLIgxMSinQm9JCDwPwuBARaukO40WV04KXprx8A%2Fmtime%3A1474324275%2Fsites%2Fdefault%2Ffiles%2Fstyles%2F620_620_2014%2Fpublic%2Flll_d34_05759_r.jpg%3Fitok%3DwFNbCbKo&type=WIDE_FEED_PANORAMA&signatureToken=2DySh4jD-d-_4Gmusanj_Q
+            //   http://cdn.ok-magazine.ru/cdn/farfuture/TNYbFLIgxMSinQm9JCDwPwuBARaukO40WV04KXprx8A/mtime:1474324275/sites/default/files/styles/620_620_2014/public/lll_d34_05759_r.jpg?itok=wFNbCbKo
+            return decodeURIComponent(src.replace(/^[a-z]+:\/\/[^/]*\/getImage.*?[?&]url=([^&]*).*?$/, "$1"));
+        }
+
+
+
+
+
+
+
 
 
 
@@ -13252,11 +13613,13 @@ var $$IMU_EXPORT$$;
         }
 
         // coppermine
-        if (src.search(/\/(gallery|photos)\/albums\/[^/]*\/[^/]*\/(normal)|(thumb)_[^/.]*\.[^/.]*$/) >= 0 ||
-            src.search(/\/(gallery|photos)\/albums\/[^/]*\/[^/]*\/[^/]*\/(normal)|(thumb)_[^/.]*\.[^/.]*$/) >= 0) {
+        if (src.search(/:\/\/[^/]*\/(gallery|photos)\/albums\/[^/]*\/.*\/(normal|thumb|userpics)_[^/.]*\.[^/.]*$/) >= 0) {
             // http://emma-w.net/photos/albums/Events/2017/MARCH13/001/thumb_001.jpg
             //   http://emma-w.net/photos/albums/Events/2017/MARCH13/001/001.jpg
             // http://emilia-clarke.net/gallery/albums/Photoshoots/Session031/thumb_2013_10_12.jpg
+            //   http://emilia-clarke.net/gallery/albums/Photoshoots/Session031/2013_10_12.jpg
+            // http://emilia-clarke.com/gallery/albums/ModelingPromos/DolceGabbana/2018-Campaign/20180204-Dolce%20and%20Gabbana%20Set%20in%20Rome%20Italy/normal_012.jpg
+            //   http://emilia-clarke.com/gallery/albums/ModelingPromos/DolceGabbana/2018-Campaign/20180204-Dolce%20and%20Gabbana%20Set%20in%20Rome%20Italy/012.jpg
             newsrc = src.replace(/(\/(?:gallery|photos)\/albums\/.*\/)[a-z]*_([^/.]*\.[^/.]*)$/, "$1$2");
             if (newsrc !== src)
                 return newsrc;
@@ -13397,6 +13760,9 @@ var $$IMU_EXPORT$$;
             // https://cdnrockol-rockolcomsrl.netdna-ssl.com/Q3UJZHxl455fWTe78h_5zbtv-WY=/700x0/smart/http%3A%2F%2Fs.mxmcdn.net%2Fimages-storage%2Falbums%2F4%2F5%2F4%2F7%2F6%2F0%2F12067454_800_800.jpg
             //   http://s.mxmcdn.net/images-storage/albums/4/5/4/7/6/0/12067454_800_800.jpg
             domain === "cdnrockol-rockolcomsrl.netdna-ssl.com" ||
+            // https://thumbor-titelmediaug.netdna-ssl.com/kY004Q5cCawBfZZWcm4g9MjPrtw=/480x320/filters:strip_icc()/http%3A%2F%2Fwhatdropsnow.s3.amazonaws.com%2Fproduct_images%2Fimages%2F46237%2Fe22a12e352862c818b75c15d150ef49f3458aaac.jpeg
+            //   http://whatdropsnow.s3.amazonaws.com/product_images/images/46237/e22a12e352862c818b75c15d150ef49f3458aaac.jpeg
+            domain === "thumbor-titelmediaug.netdna-ssl.com" ||
             // https://www.infobae.com/new-resizer/jfCQ7-AjnQyNdmWHdFGYvzYmVx4=/600x0/filters:quality(100)/arc-anglerfish-arc2-prod-infobae.s3.amazonaws.com/public/4IOFEV5GJVES3DVJ2XHDFXA2TE
             domain === "www.infobae.com" ||
             // http://s2.glbimg.com/i7GBoDhq8XYOfFinAMZv0YYZdPY=/e.glbimg.com/og/ed/f/original/2016/12/26/eb8.jpg
@@ -13840,7 +14206,7 @@ var $$IMU_EXPORT$$;
     var check_image = function(url, obj, err_cb) {
         if (url !== document.location.href) {
             var headers = obj.headers;
-            console.log(url);
+            console_log(url);
             if (!_nir_debug_ || !_nir_debug_.no_request) {
                 cursor_wait();
 
@@ -13861,7 +14227,7 @@ var $$IMU_EXPORT$$;
 
                 if (customheaders) {
                     document.documentElement.style.cursor = "default";
-                    console.log("Custom headers needed, currently unhandled");
+                    console_log("Custom headers needed, currently unhandled");
                     return;
                 }
 
@@ -13882,8 +14248,8 @@ var $$IMU_EXPORT$$;
                             cursor_default();
 
                             if (resp.finalUrl === document.location.href) {
-                                console.log(resp.finalUrl);
-                                console.log("Same URL");
+                                console_log(resp.finalUrl);
+                                console_log("Same URL");
                                 return;
                             }
 
@@ -13909,7 +14275,7 @@ var $$IMU_EXPORT$$;
                                 if (err_cb) {
                                     err_cb();
                                 } else {
-                                    console.error("Error: " + resp.status);
+                                    console_error("Error: " + resp.status);
                                 }
 
                                 return;
@@ -13924,7 +14290,7 @@ var $$IMU_EXPORT$$;
                                 if (err_cb) {
                                     err_cb();
                                 } else {
-                                    console.error("Error: Not an image: " + content_type);
+                                    console_error("Error: Not an image: " + content_type);
                                 }
 
                                 return;
@@ -13932,19 +14298,19 @@ var $$IMU_EXPORT$$;
 
                             if ((content_type.match(/binary\//) ||
                                  content_type.match(/application\//)) && !obj.head_wrong_contenttype) {
-                                console.error("Forces download");
+                                console_error("Forces download");
                                 return;
                             }
 
                             if (headers["content-length"] && headers["content-length"] == "0" && !obj.head_wrong_contentlength) {
-                                console.error("Zero-length image");
+                                console_error("Zero-length image");
                                 return;
                             }
 
                             if (!customheaders)
                                 redirect(url);
                             else
-                                console.log("Custom headers needed, currently unhandled");
+                                console_log("Custom headers needed, currently unhandled");
                         }
                     }
                 });
@@ -13992,7 +14358,7 @@ var $$IMU_EXPORT$$;
                     }
 
                     if (_nir_debug_) {
-                        console.log("Not checking due to can_head == false || always_ok == true");
+                        console_log("Not checking due to can_head == false || always_ok == true");
                     }
 
                     redirect(newhref.url);
@@ -14122,9 +14488,9 @@ var $$IMU_EXPORT$$;
                             name += "_" + group;
 
                         var input = document.createElement("input");
-                        if (option_type === "or")
+                        if (option_type === "or" && false)
                             input.setAttribute("type", "radio");
-                        else if (option_type === "and")
+                        else if (option_type === "and" || true)
                             input.setAttribute("type", "checkbox");
                         input.name = name;
                         input.value = op;
@@ -14155,6 +14521,35 @@ var $$IMU_EXPORT$$;
                                             }
                                         }
                                     }
+                                }
+
+                                if (option_type === "or") {
+                                    for (var child_i = 0; child_i < parent.children.length; child_i++) {
+                                        var child = parent.children[child_i];
+                                        if (child.tagName === "INPUT" && child.id != input.id) {
+                                            child.checked = false;
+                                        }
+                                    }
+                                }
+                            } else {
+                                var onechecked = false;
+                                for (var child_i = 0; child_i < value_td.children.length; child_i++) {
+                                    var child = value_td.children[child_i];
+                                    for (var subchild_i = 0; subchild_i < child.children.length; subchild_i++) {
+                                        var subchild = child.children[subchild_i];
+                                        if (subchild.tagName === "INPUT") {
+                                            if (subchild.checked) {
+                                                onechecked = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    if (onechecked)
+                                        break;
+                                }
+
+                                if (!onechecked) {
+                                    this.checked = true;
                                 }
                             }
 
@@ -14250,7 +14645,7 @@ var $$IMU_EXPORT$$;
 
     function set_value(key, value) {
         value = serialize_value(value);
-        console.log("Setting " + key + " = " + value);
+        console_log("Setting " + key + " = " + value);
         if (typeof GM_setValue !== "undefined") {
             return GM_setValue(key, value);
         } else if (typeof GM !== "undefined" && GM.getValue) {
@@ -14275,6 +14670,106 @@ var $$IMU_EXPORT$$;
         } else {
             start();
         }
+    }
+
+    function check_image_get(images, obj, cb, processing) {
+        if (images.length === 0) {
+            return cb(null);
+        }
+
+        if (!processing.running) {
+            return cb(null);
+        }
+
+        var method = "GET";
+        var responseType = "blob";
+
+        if (processing.head) {
+            method = "HEAD";
+            responseType = undefined;
+        }
+
+        if (images[0].match(/^data:/)) {
+            var img = document.createElement("img");
+            img.src = images[0];
+            img.onload = function() {
+                cb(img, images[0]);
+            };
+            return;
+        }
+
+        function err_cb() {
+            images.shift();
+            return check_image_get(images, obj, cb, processing);
+        }
+
+        var url = images[0];
+
+        console_log("Trying " + url);
+
+        var url_domain = url.replace(/^([a-z]+:\/\/[^/]*).*?$/, "$1");
+
+        var headers = obj.headers;
+
+        if (!headers || Object.keys(headers).length === 0) {
+            headers = {
+                "Origin": url_domain,
+                "Referer": document.location.href
+            };
+        } else if (!headers.Origin && !headers.origin) {
+            headers.Origin = url_domain;
+        }
+
+        do_request({
+            method: method,
+            url: images[0],
+            responseType: responseType,
+            headers: headers,
+            onload: function(resp) {
+                if (!processing.running) {
+                    return cb(null);
+                }
+
+                if (resp.readyState == 4) {
+                    var digit = resp.status.toString()[0];
+
+                    if (((digit === "4" || digit === "5") &&
+                         resp.status !== 405)) {
+                        if (err_cb) {
+                            console_log("Bad status: " + resp.status + " ( " + images[0] + " )");
+                            err_cb();
+                        } else {
+                            console_error("Error: " + resp.status);
+                        }
+
+                        return;
+                    }
+
+                    if (processing.head) {
+                        cb(resp);
+                        return;
+                    }
+
+                    if (!resp.response) {
+                        err_cb();
+                        return;
+                    }
+
+                    var a = new FileReader();
+                    a.onload = function(e) {
+                        var img = document.createElement("img");
+                        img.src = e.target.result;
+                        img.onload = function() {
+                            cb(img, resp.finalUrl);
+                        };
+                        img.onerror = function() {
+                            err_cb();
+                        };
+                    };
+                    a.readAsDataURL(resp.response);
+                }
+            }
+        });
     }
 
     function do_mouseover() {
@@ -14335,6 +14830,7 @@ var $$IMU_EXPORT$$;
 
         var delay = false;
         var delay_handle = null;
+        var delay_mouseonly = true;
 
         function update_waiting() {
             var x = mouseX;//mouseAbsX;
@@ -14355,9 +14851,15 @@ var $$IMU_EXPORT$$;
             }
 
             waiting = true;
+            waitingel.style.cursor = "wait";
             waitingel.style.display = "block";
 
             update_waiting();
+        }
+
+        function start_progress() {
+            start_waiting();
+            waitingel.style.cursor = "progress";
         }
 
         function stop_waiting() {
@@ -14379,93 +14881,11 @@ var $$IMU_EXPORT$$;
             });
 
             disable_click = false;
-        }
 
-        function check_image_get(images, obj, cb, processing) {
-            if (images.length === 0) {
-                return cb(null);
+            if (!delay_mouseonly && delay_handle) {
+                clearTimeout(delay_handle);
+                delay_handle = null;
             }
-
-            if (!processing.running) {
-                return cb(null);
-            }
-
-            if (images[0].match(/^data:/)) {
-                var img = document.createElement("img");
-                img.src = images[0];
-                img.onload = function() {
-                    cb(img, images[0]);
-                };
-                return;
-            }
-
-            function err_cb() {
-                images.shift();
-                return check_image_get(images, obj, cb, processing);
-            }
-
-            var url = images[0];
-
-            console.log("Trying " + url);
-
-            var url_domain = url.replace(/^([a-z]+:\/\/[^/]*).*?$/, "$1");
-
-            var headers = obj.headers;
-
-            if (!headers || Object.keys(headers).length === 0) {
-                headers = {
-                    "Origin": url_domain,
-                    "Referer": document.location.href
-                };
-            } else if (!headers.Origin && !headers.origin) {
-                headers.Origin = url_domain;
-            }
-
-            do_request({
-                method: 'GET',
-                url: images[0],
-                responseType: 'blob',
-                headers: headers,
-                onload: function(resp) {
-                    if (!processing.running) {
-                        return cb(null);
-                    }
-
-                    if (resp.readyState == 4) {
-                        var digit = resp.status.toString()[0];
-
-                        if (((digit === "4" || digit === "5") &&
-                             resp.status !== 405)) {
-                            if (err_cb) {
-                                console.log("Bad status: " + resp.status + " ( " + images[0] + " )");
-                                err_cb();
-                            } else {
-                                console.error("Error: " + resp.status);
-                            }
-
-                            return;
-                        }
-
-                        if (!resp.response) {
-                            err_cb();
-                            return;
-                        }
-
-                        var a = new FileReader();
-                        a.onload = function(e) {
-                            var img = document.createElement("img");
-                            img.src = e.target.result;
-                            img.onload = function() {
-                                cb(img, resp.finalUrl);
-                            };
-                            img.onerror = function() {
-                                err_cb();
-                            };
-                        };
-                        a.readAsDataURL(resp.response);
-                    }
-                }
-            });
         }
 
         function makePopup(obj, orig_url, processing) {
@@ -14551,10 +14971,10 @@ var $$IMU_EXPORT$$;
                 sct = scl = 0;
                 div.style.top = (sct + Math.min(Math.max((y - sct) - (imgh / 2), 5), Math.max(vh - imgh, 5))) + "px";
                 div.style.left = (scl + Math.min(Math.max((x - scl) - (imgw / 2), 5), Math.max(vw - imgw, 5))) + "px";
-                /*console.log(x - (imgw / 2));
-                  console.log(vw);
-                  console.log(imgw);
-                  console.log(vw - imgw);*/
+                /*console_log(x - (imgw / 2));
+                  console_log(vw);
+                  console_log(imgw);
+                  console_log(vw - imgw);*/
 
 
                 var a = document.createElement("a");
@@ -14573,7 +14993,7 @@ var $$IMU_EXPORT$$;
                 popups.push(div);
 
                 stop_waiting();
-                //console.log(div);
+                //console_log(div);
             }
 
             var sources = obj.url;
@@ -14631,7 +15051,7 @@ var $$IMU_EXPORT$$;
             /*if (popups.length >= 1)
                 return;*/
 
-            //console.log(els);
+            //console_log(els);
 
             var sources = {};
             var picture_sources = {};
@@ -14816,43 +15236,46 @@ var $$IMU_EXPORT$$;
                 addElement(el);
             }
 
-            /*console.log(els);
-              console.log(sources);*/
+            /*console_log(els);
+            console_log(sources);*/
 
             if ((source = getsource()) !== undefined)
                 return source;
 
-            for (var source_url in sources) {
-                var source = sources[source_url];
+            // disable for now, fix later, for websites that don't work with imu
+            if (false) {
+                for (var source_url in sources) {
+                    var source = sources[source_url];
 
-                if (source.width && source.width > minW)
-                    minW = source.width;
-                if (source.height && source.height > minH)
-                    minH = source.height;
+                    if (source.width && source.width > minW)
+                        minW = source.width;
+                    if (source.height && source.height > minH)
+                        minH = source.height;
 
-                if (source.minWidth && source.minWidth > minMinW)
-                    minMinW = source.minWidth;
-                if (source.minHeight && source.minHeight > minMinH)
-                    minMinH = source.minHeight;
+                    if (source.minWidth && source.minWidth > minMinW)
+                        minMinW = source.minWidth;
+                    if (source.minHeight && source.minHeight > minMinH)
+                        minMinH = source.minHeight;
 
-                if (source.maxWidth && source.maxWidth > minMaxW)
-                    minMaxW = source.maxWidth;
-                if (source.maxHeight && source.maxHeight > minMaxH)
-                    minMaxH = source.maxHeight;
+                    if (source.maxWidth && source.maxWidth > minMaxW)
+                        minMaxW = source.maxWidth;
+                    if (source.maxHeight && source.maxHeight > minMaxH)
+                        minMaxH = source.maxHeight;
 
-                if (source.desc_x && source.desc_x > minX)
-                    minX = source.desc_x;
+                    if (source.desc_x && source.desc_x > minX)
+                        minX = source.desc_x;
+                }
             }
 
             var newsources = {};
 
-            /*console.log(minW);
-              console.log(minH);
-              console.log(minMinW);
-              console.log(minMinH);
-              console.log(minMaxW);
-              console.log(minMaxH);
-              console.log(minX);*/
+            /*console_log(minW);
+              console_log(minH);
+              console_log(minMinW);
+              console_log(minMinH);
+              console_log(minMaxW);
+              console_log(minMaxH);
+              console_log(minX);*/
 
             /*if (minW <= thresh)
                 minW = 0;
@@ -14872,13 +15295,13 @@ var $$IMU_EXPORT$$;
             if (minMaxH <= thresh)
                 minMaxH = 0;*/
 
-            if (minW !== 0 ||
-                minH !== 0 ||
-                minMinW !== 0 ||
-                minMinH !== 0 ||
-                minMaxW !== 0 ||
-                minMaxH !== 0 ||
-                minX !== 0) {
+            if ((minW !== 0 ||
+                 minH !== 0 ||
+                 minMinW !== 0 ||
+                 minMinH !== 0 ||
+                 minMaxW !== 0 ||
+                 minMaxH !== 0 ||
+                 minX !== 0) && false) {
                 for (var source_url in sources) {
                     var source = sources[source_url];
 
@@ -14904,7 +15327,7 @@ var $$IMU_EXPORT$$;
 
                 }
 
-                //console.log(newsources);
+                //console_log(newsources);
 
                 sources = newsources;
                 newsources = {};
@@ -14938,7 +15361,7 @@ var $$IMU_EXPORT$$;
                     newsources[source_url] = source;
                 }
 
-                //console.log(newsources);
+                //console_log(newsources);
 
                 sources = newsources;
                 newsources = {};
@@ -14960,7 +15383,7 @@ var $$IMU_EXPORT$$;
             sources = newsources;
             newsources = {};
 
-            //console.log(sources);
+            //console_log(sources);
 
             if (source = getsource())
                 return source;
@@ -14992,7 +15415,7 @@ var $$IMU_EXPORT$$;
             var orig_sources = sources;
             sources = newsources;
 
-            //console.log(sources);
+            //console_log(sources);
 
             if (source = getsource())
                 return source;
@@ -15010,9 +15433,13 @@ var $$IMU_EXPORT$$;
 
         normalize_trigger();
 
-        if (settings.mouseover_trigger[0] &&
-            settings.mouseover_trigger[0].match(/^delay_[0-9]*/)) {
-            delay = parseInt(settings.mouseover_trigger[0].replace(/^delay_([0-9]*)/, "$1"));
+        for (var i = 0; i < settings.mouseover_trigger.length; i++) {
+            if (settings.mouseover_trigger[i].match(/^delay_[0-9]*/)) {
+                delay = parseInt(settings.mouseover_trigger[i].replace(/^delay_([0-9]*)/, "$1"));
+                break;
+            } else {
+                delay_mouseonly = false;
+            }
         }
 
         function key_in_trigger(key) {
@@ -15075,23 +15502,36 @@ var $$IMU_EXPORT$$;
             var source = find_source(els);
             if (source) {
                 resetpopups();
-                //console.log(source);
-                start_waiting();
-                try {
-                    bigimage_recursive(source.src, {
-                        fill_object: true,
-                        host_url: document.location.href,
-                        document: document,
-                        window: unsafeWindow,
-                        element: source.el,
-                        cb: function(source_imu) {
-                            //console.log(source_imu);
-                            makePopup(source_imu, source.src, processing);
-                        }
-                    });
-                } catch (e) {
-                    console.error(e);
-                    makePopup(source.src);
+                //console_log(source);
+
+                function do_popup() {
+                    start_waiting();
+                    try {
+                        bigimage_recursive(source.src, {
+                            fill_object: true,
+                            host_url: document.location.href,
+                            document: document,
+                            window: unsafeWindow,
+                            element: source.el,
+                            cb: function(source_imu) {
+                                //console_log(source_imu);
+                                makePopup(source_imu, source.src, processing);
+                            }
+                        });
+                    } catch (e) {
+                        console_error(e);
+                        makePopup(source.src);
+                    }
+                }
+
+                if (delay && !delay_mouseonly) {
+                    start_progress();
+                    delay_handle = setTimeout(function() {
+                        delay_handle = null;
+                        do_popup();
+                    }, delay * 1000);
+                } else {
+                    do_popup();
                 }
             }
         }
@@ -15099,7 +15539,8 @@ var $$IMU_EXPORT$$;
         document.addEventListener('keydown', function(event) {
             if (set_chord(event.which, true)) {
                 if (trigger_complete(event)) {
-                    trigger_popup();
+                    if (!delay_handle)
+                        trigger_popup();
                 }
             }
         });
@@ -15154,7 +15595,7 @@ var $$IMU_EXPORT$$;
                 update_waiting();
             }
 
-            if (delay !== false && typeof delay === "number") {
+            if (delay !== false && typeof delay === "number" && delay_mouseonly) {
                 if (delay_handle) {
                     clearTimeout(delay_handle);
 
@@ -15191,6 +15632,51 @@ var $$IMU_EXPORT$$;
         });
     }
 
+    function do_websitehome() {
+        unsafeWindow.imu_variable = bigimage_recursive;
+        unsafeWindow.do_imu = function(url, cb) {
+            return unsafeWindow.imu_variable(url, {
+                fill_object: true,
+                do_request: do_request,
+                cb: cb
+            });
+        };
+
+        var orig_set_max = unsafeWindow.set_max;
+        unsafeWindow.set_max = function(obj) {
+            if (!obj || !obj.url) {
+                orig_set_max(obj);
+                return;
+            }
+
+            var images = obj.url;
+            if (!(images instanceof Array)) {
+                images = [images];
+            }
+
+            if (settings.website_image) {
+                check_image_get(images, obj, function(img, url) {
+                    if (!img) {
+                        orig_set_max("broken");
+                    } else {
+                        orig_set_max({url: url});
+                        maximgel.src = img.src;
+                    }
+                }, {running: true});
+            } else if (obj.can_head) {
+                check_image_get(images, obj, function(resp) {
+                    if (!resp) {
+                        orig_set_max("broken");
+                    } else {
+                        orig_set_max({url: resp.finalUrl});
+                    }
+                }, {running: true, head: true});
+            } else {
+                orig_set_max(obj);
+            }
+        };
+    }
+
     function start() {
         do_export();
 
@@ -15202,6 +15688,13 @@ var $$IMU_EXPORT$$;
                 document.location.href.match(/^file:\/\/.*\/maxurl\/site\/options\.html/)) {
                 onload(function() {
                     do_options();
+                });
+            }
+
+            if (document.location.href.match(/^https?:\/\/qsniyg\.github\.io\/maxurl(\/|\/index\.html(?:[?#].*)?)?$/) ||
+                document.location.href.match(/^file:\/\/.*\/maxurl\/site\/index\.html/)) {
+                onload(function() {
+                    do_websitehome();
                 });
             }
 
