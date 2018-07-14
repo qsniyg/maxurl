@@ -4,23 +4,53 @@ var maxspanel = document.getElementById("max_span");
 var maximgel = document.getElementById("max_img");
 var currenturl = null;
 
+function do_imu(url, cb) {
+  var retval = window.imu_variable(url, {
+    fill_object: true,
+    do_request: function() {},
+    cb: cb
+  });
+
+  if (retval && retval.waiting) {
+    cb(retval);
+  }
+
+  return retval;
+}
+
 // thanks to /u/GarlicoinAccount for noticing the need to run this
 // separately, as input can be sent before the page is fully loaded
 function process_input() {
   var text = inputel.value;
+  if (text.match(/^ +https?:\/\//)) {
+    inputel.value = text.replace(/^ */, "");
+    text = inputel.value;
+  }
+
   if (text.match(/^https?:\/\//)) {
-    var newurl = imu_variable(text, {fill_object:true});
-    if (newurl.url instanceof Array) {
-      if (newurl.url.indexOf(text) >= 0) {
-        set_max(false);
-      } else {
-        set_max(newurl.url);
-      }
-    } else if (newurl.url !== text) {
-      set_max(newurl.url);
-    } else {
-      set_max(false);
+    set_max("loading");
+    try {
+      window.do_imu(text, function(newurl) {
+        set_max(newurl);
+        return;
+        if (newurl.url instanceof Array) {
+          set_max(newurl);
+          /*if (newurl.url.indexOf(text) >= 0) {
+            set_max(false);
+            } else {
+            set_max(newurl.url);
+            }*/
+        } else if (newurl.url !== text) {
+          set_max(newurl);
+        } else {
+          set_max(false);
+        }
+      });
+    } catch (e) {
+      console.error(e);
+      set_max("error");
     }
+
   } else if (text === "") {
     set_max(null);
   } else {
@@ -79,25 +109,57 @@ function proxify(url) {
   //return "https://imagesvc.timeincapp.com/v3/foundry/image/?url=" + encodeURIComponent(url);
 }
 
-function set_max(urls) {
-  if (!urls) {
-    if (urls === false)
-      maxspanel.innerHTML = "No larger image found";
-    else if (urls === undefined)
-      maxspanel.innerHTML = "Invalid URL";
-    else if (urls === null)
-      maxspanel.innerHTML = "";
+// https://stackoverflow.com/a/7124052
+function sanitize_url(url) {
+  return url
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
 
-    maxael.innerHTML = "";
-    maximgel.style.backgroundImage = "";
+function resetels() {
+  maxael.innerHTML = "";
+  maximgel.style.backgroundImage = "";
+}
+
+function set_max(obj) {
+  if (obj === "loading") {
+    maxspanel.innerHTML = "Loading...";
+    resetels();
+    return;
+  } else if (obj === "error") {
+    maxspanel.innerHTML = "Unknown error";
+    resetels();
+    return;
+  } else if (obj === "broken") {
+    obj = false;
+  }
+
+  if (!obj || !obj.url) {
+    if (obj === undefined)
+      maxspanel.innerHTML = "Invalid URL";
+    else if (obj === null)
+      maxspanel.innerHTML = "";
+    else if (obj === false || !obj.url) {
+      if (obj.waiting) {
+        maxspanel.innerHTML = "The <a href='https://greasyfork.org/en/scripts/36662-image-max-url'>userscript</a> is needed for this URL to perform a cross-origin request to find the original size";
+      } else {
+        maxspanel.innerHTML = "No larger image found";
+      }
+    }
+
+    resetels();
 
     return;
   }
 
+  var urls = obj.url;
+
   if (JSON.stringify(urls) === JSON.stringify(currenturl))
     return;
 
-  console.log(urls);
   //var proxyurl = proxify(url);
 
   maxael.innerHTML = "";
@@ -113,7 +175,7 @@ function set_max(urls) {
     var suba = document.createElement("a");
     suba.setAttribute("rel", "noreferrer");
     suba.href = url;
-    suba.innerHTML = url;
+    suba.innerHTML = sanitize_url(url);
     var subp = document.createElement("p");
     subp.innerHTML = "OR";
     maxael.appendChild(suba);
@@ -132,6 +194,8 @@ function set_max(urls) {
     unselect();
     if (successful === true) {
       maxspanel.innerHTML = "Copied to clipboard!";
+    } else {
+      maxspanel.innerHTML = "Failed to copy to clipboard";
     }
   }
   //maximgel.style.backgroundImage = "url('" + proxyurl + "')";

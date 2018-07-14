@@ -162,14 +162,14 @@ html, body {
 }
 
 body.main {
-  overflow: hidden;
+  /*overflow: hidden;*/
 }
 
 /*#max_container {
   max-height: 70vh;
 }*/
 
-#max_container {
+/*#max_container {
   height: 100%;
   display: table-row;
 }
@@ -182,6 +182,17 @@ body.main {
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center;
+}*/
+
+#max_img {
+  max-width: 80vw;
+  max-height: 50vh;
+}
+
+@media (max-height:700px) {
+  #max_img {
+    max-height: 30vh;
+  }
 }
 
 #max_span {
@@ -196,6 +207,10 @@ a {
 
 #max_a_container {
   padding:1em;
+}
+
+#max_a {
+  padding-bottom:1em;
 }
 
 hr {
@@ -340,9 +355,9 @@ input:checked + label {
 
 
 /* Disable image preview */
-#max_container {
+/*#max_container {
   display: none
-}
+}*/
 
 #outer-container {
   height: 100%;
