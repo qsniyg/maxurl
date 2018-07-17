@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.5.1
+// @version      0.5.2
 // @description  Finds larger versions of images
 // @author       qsniyg
 // @include      *
@@ -1288,6 +1288,17 @@ var $$IMU_EXPORT$$;
             // https://img.wcdn.co.il/f_auto,w_100/2/0/4/7/2047784-46.jpg
             //   https://img.wcdn.co.il/2/0/4/7/2047784-46.jpg
             domain === "img.wcdn.co.il" ||
+            // https://images.haarets.co.il/image/upload/w_2178,h_1267,x_22,y_99,c_crop,g_north_west/w_468,h_272,q_auto,c_fill,f_auto/fl_any_format.preserve_transparency.progressive:none/v1531586984/1.6270687.637195137.jpg
+            //   https://images.haarets.co.il/image/upload/fl_any_format.preserve_transparency.progressive:none/1.6270687.637195137.jpg
+            //   https://images.haarets.co.il/image/upload/1.6270687.637195137.jpg
+            domain === "images.haarets.co.il" ||
+            // https://images.cdn.yle.fi/image/upload/fl_keep_iptc,f_auto,fl_progressive/q_88/w_1600,h_900,c_fill,g_faces/w_500/v1531638823/13-1-50005334-1531638819357.jpg
+            //   https://images.cdn.yle.fi/image/upload/fl_keep_iptc,f_auto,fl_progressive/13-1-50005334-1531638819357.jpg
+            //   https://images.cdn.yle.fi/image/upload/13-1-50005334-1531638819357.jpg
+            domain === "images.cdn.yle.fi" ||
+            // https://sol.no/s/img/t_sol-forty-v2,w_490/solmediaCloudify/giwkcu7lqlluohdmbfcn.jpg
+            //   https://sol.no/s/img/solmediaCloudify/giwkcu7lqlluohdmbfcn.jpg
+            (domain_nowww === "sol.no" && src.indexOf("/img/") >= 0)||
             // https://planet-sports-res.cloudinary.com/images/q_80,f_auto,dpr_2.0,d_planetsports:products:nopic.jpg/planetsports/products/46867500_00/rip-curl-fiesta-bandeau-bikini-set-women-black.jpg
             //   https://planet-sports-res.cloudinary.com/images/planetsports/products/46867500_00/rip-curl-fiesta-bandeau-bikini-set-women-black.jpg
             (domain.indexOf("res.cloudinary.com") >= 0 && src.indexOf("/images/") >= 0) ||
@@ -1297,6 +1308,8 @@ var $$IMU_EXPORT$$;
             return src
                 .replace(/%2C/g, ",")
                 .replace(/\/[a-z]+_[^/_,]+(?:,[^/]*)?\//, "/")
+                .replace(/\/fl_any_format\.[^/]*\//, "/")
+                .replace(/\/fl_keep_iptc[^/]*\//, "/")
                 .replace("/t_mp_quality/", "/")
                 .replace(/\/v[0-9]+\//, "/");
         }
@@ -1597,6 +1610,12 @@ var $$IMU_EXPORT$$;
             // https://cdn.okmag.de/s/article_main/public/media/gallery/2015/08/19/emily-ratajkowski-promotour_good_morning_america.jpg
             //   https://cdn.okmag.de/media/gallery/2015/08/19/emily-ratajkowski-promotour_good_morning_america.jpg
             return src.replace(/(:\/\/[^/]*\/)s\/[^/]*\/public\/(media\/)/, "$1$2");
+        }
+
+        if (domain === "img.elcomercio.pe") {
+            // https://img.elcomercio.pe/files/article_main/uploads/2018/07/13/5b48b97d53da2.jpeg
+            //   https://img.elcomercio.pe/uploads/2018/07/13/5b48b97d53da2.jpeg
+            return src.replace(/\/files\/[^/]*\/uploads\//, "/uploads/");
         }
 
         if (domain.indexOf("www.trbimg.com") >= 0) {
@@ -1963,6 +1982,8 @@ var $$IMU_EXPORT$$;
             ((domain.indexOf(".imgix.net") >= 0 ||
               // https://imgix.bustle.com/uploads/getty/2018/3/14/a38ca3e6-056e-4aef-9c2b-1b00a134d7be-getty-917851058.jpg?w=970&h=582&fit=crop&crop=faces&auto=format&q=70
               domain === "imgix.bustle.com" ||
+              // https://imgix.ovp.tv2.dk/s/73/45137373-da3fa00af722541b2a7b64cdb7847f0c.jpeg?auto=format%2Ccompress&fit=min&crop=top&w=200
+              domain === "imgix.ovp.tv2.dk" ||
               // https://imgix.romper.com/2016/8/22/584902004.jpg?w=640&fit=max&auto=format&q=70
               domain === "imgix.romper.com")
              && !src.match(/[?&]s=[^/]*$/)) ||
@@ -2340,6 +2361,16 @@ var $$IMU_EXPORT$$;
             (domain === "www.hola.com" && src.indexOf("/imagenes/") >= 0) ||
             // http://vh1.mtvnimages.com/uri/mgid:file:http:shared:vh1.com/news/uploads/sites/2/2018/03/GettyImages-873076880-1522090083.jpg?quality=0.85&format=jpg&width=480
             domain_nosub === "mtvnimages.com" ||
+            // https://dsx.weather.com/util/image/w/greenaldnberg.jpg?v=at&w=320&h=180&api=7db9fe61-7414-47b5-9871-e17d87b8b6a0
+            (domain === "dsx.weather.com" && src.indexOf("/util/image/") >= 0) ||
+            // https://img.r7.com/images/iceberg-gigante-14072018102456056?dimensions=600x315
+            domain === "img.r7.com" ||
+            // https://cdn-images.rtp.pt/icm/images/e1/e12cf8ca828c5079d156e5e1f4903c1a?1200&rect=0,17,700,384&q=100&w=620&q=75
+            domain === "cdn-images.rtp.pt" ||
+            // https://media.ouest-france.fr/v1/pictures/f34478ee116ed1a208792e10a772aa78-banquise-glacier-iceberg-tout-fond-sur-terre.jpg?width=940&height=531&fill=0&focuspoint=49%2C25&cropresize=1
+            domain === "media.ouest-france.fr" ||
+            // https://www.rbsdirect.com.br/imagesrc/24569629.jpg?w=1024&h=512&a=c
+            (domain_nowww === "rbsdirect.com.br" && src.indexOf("/imagesrc/") >= 0) ||
             // http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
             // https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
             src.match(/\/demandware\.static\//) ||
@@ -2368,6 +2399,8 @@ var $$IMU_EXPORT$$;
             domain === "imgs.aixifan.com" ||
             // https://img5.ofashion.com.cn/goods_collection/20160512/193454_1114125733f50485293.jpg?x-oss-process=image/resize,w_640
             (domain_nosub === "ofashion.com.cn" && domain.match(/^img[0-9]*\.ofashion.com.cn/)) ||
+            // https://kanfaimage.oss-cn-beijing.aliyuncs.com/20180715/focus_153163480295909.jpg?x-oss-process=image/resize,m_fill,w_600,h_300
+            domain === "kanfaimage.oss-cn-beijing.aliyuncs.com" ||
             // http://upload-images.jianshu.io/upload_images/1685198-ebfc2a22664f623c?imageMogr2/auto-orient/strip%7CimageView2/2/w/300
             domain === "upload-images.jianshu.io") {
             src = src.replace(/\?.*$/, "");
@@ -2616,6 +2649,8 @@ var $$IMU_EXPORT$$;
             (domain === "ticket.heraldtribune.com" && src.indexOf("/files/") >= 0) ||
             // https://blog.hola.com/estilistademodacristinareyes/files/2014/09/elle-08-birthdays-beyonce-xln-xln-200x300.jpg
             domain === "blog.hola.com" ||
+            // http://www.therussiantimes.com/upkeep/uploads/2018/07/00103c8b-800-650x366.jpg
+            (domain_nowww === "therussiantimes.com" && src.indexOf("/uploads/") >= 0) ||
             // https://cdn.gamerant.com/wp-content/uploads/resident-evil-2-director-remake-faith-738x410.jpg.webp
             //   https://cdn.gamerant.com/wp-content/uploads/resident-evil-2-director-remake-faith.jpg.webp
             // https://d13ezvd6yrslxm.cloudfront.net/wp/wp-content/images/x-men-apocalypse-700x300.jpg
@@ -2816,6 +2851,9 @@ var $$IMU_EXPORT$$;
             domain === "static.gulfnews.com" ||
             // https://www.cp24.com/polopoly_fs/1.3742970.1514935441!/httpImage/image.jpg_gen/derivatives/landscape_150/image.jpg
             domain === "www.cp24.com" ||
+            // https://images.anandabazar.com/polopoly_fs/1.832890.1531660919!/image/image.jpg_gen/derivatives/box_375_281/image.jpg
+            // https://www.anandabazar.com/polopoly_fs/1.832890!/image/image.jpg_gen/derivatives/landscape_390/image.jpg
+            domain_nosub === "anandabazar.com" ||
             // http://www.islingtongazette.co.uk/polopoly_fs/1.957786!/image/89195513.jpg_gen/derivatives/landscape_490/89195513.jpg
             domain === "www.islingtongazette.co.uk" ||
             domain.indexOf("www.edp24.co.uk") >= 0) {
@@ -2942,7 +2980,15 @@ var $$IMU_EXPORT$$;
             if (newsrc !== src)
                 return newsrc;
 
-            return src.replace(/.*\/cpsprodpb\//, "https://c.files.bbci.co.uk/");
+            newsrc = src.replace(/.*\/cpsprodpb\//, "https://c.files.bbci.co.uk/");
+            if (newsrc !== src)
+                return newsrc;
+
+            // https://ichef.bbci.co.uk/news/1024/branded_portuguese/D518/production/_102525545_mediaitem102524830.jpg
+            //   https://c.files.bbci.co.uk/D518/production/_102525545_mediaitem102524830.jpg
+            newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/news\/[0-9]+\/[^/]*\//, "https://c.files.bbci.co.uk/");
+            if (newsrc !== src)
+                return newsrc;
 
             /*var origsize = src.match(/\.bbci\.co\.uk\/[^/]*\/([0-9]*)\//);
             if (origsize && false) { // scales up
@@ -3689,18 +3735,31 @@ var $$IMU_EXPORT$$;
             return src.replace(/(\/app\/cms\/image\/transf\/)[^/]*\//, "$1none/");
         }
 
-        if (domain.match(/resize[0-9]*-[a-z]*\.ladmedia\.fr/)) {
+        if (domain_nosub === "ladmedia.fr" &&
+            (domain.match(/resize[0-9]*-[a-z]*\.ladmedia\.fr/) ||
+             domain.match(/cdn[0-9]*-[a-z]*\.ladmedia\.fr/))) {
             // http://resize-parismatch.ladmedia.fr/r/625,417,center-middle,ffffff/img/var/news/storage/images/paris-match/people/meurtre-du-cousin-de-rihanna-un-suspect-en-detention-provisoire-1432127/23594795-1-fre-FR/Meurtre-du-cousin-de-Rihanna-un-suspect-en-detention-provisoire.jpg
+            //   http://cdn-parismatch.ladmedia.fr/var/news/storage/images/paris-match/people/meurtre-du-cousin-de-rihanna-un-suspect-en-detention-provisoire-1432127/23594795-1-fre-FR/Meurtre-du-cousin-de-Rihanna-un-suspect-en-detention-provisoire.jpg
             // http://resize1-parismatch.ladmedia.fr/r/300,300,center-middle,ffffff/img/var/news/storage/images/paris-match/people-a-z/rihanna/5971706-8-fre-FR/Rihanna.jpg
+            //   http://cdn-parismatch.ladmedia.fr/var/news/storage/images/paris-match/people-a-z/rihanna/5971706-8-fre-FR/Rihanna.jpg
             // http://resize1-doctissimo.ladmedia.fr/r/1010,,forcex/img/var/doctissimo/storage/images/fr/www/beaute/diaporamas/coiffure-de-star-coiffures-de-stars/coiffure-ciara/2440196-1-fre-FR/Le-Tie-Dye-rate-de-Ciara.jpg
+            //   http://cdn-doctissimo.ladmedia.fr/var/doctissimo/storage/images/fr/www/beaute/diaporamas/coiffure-de-star-coiffures-de-stars/coiffure-ciara/2440196-1-fre-FR/Le-Tie-Dye-rate-de-Ciara.jpg
             // https://resize-public.ladmedia.fr/rcrop/140,104/img/var/public/storage/images/toutes-les-photos/photos-emilie-nef-naf-torride-en-tout-petit-bikini-wahiba-ribery-sous-le-choc-1469251/38549175-1-fre-FR/Photos-Emilie-Nef-Naf-torride-en-tout-petit-bikini-Wahiba-Ribery-sous-le-choc-!.jpg
             //   https://resize-public.ladmedia.fr/img/var/public/storage/images/toutes-les-photos/photos-emilie-nef-naf-torride-en-tout-petit-bikini-wahiba-ribery-sous-le-choc-1469251/38549175-1-fre-FR/Photos-Emilie-Nef-Naf-torride-en-tout-petit-bikini-Wahiba-Ribery-sous-le-choc-!.jpg
+            //   https://cdn-public.ladmedia.fr/var/public/storage/images/toutes-les-photos/photos-emilie-nef-naf-torride-en-tout-petit-bikini-wahiba-ribery-sous-le-choc-1469251/38549175-1-fre-FR/Photos-Emilie-Nef-Naf-torride-en-tout-petit-bikini-Wahiba-Ribery-sous-le-choc-!.jpg
             // https://resize-elle.ladmedia.fr/r/625,,forcex/crop/625,625,center-middle,forcex,ffffff/img/var/plain_site/storage/images/loisirs/musique/news/selena-gomez-pourquoi-pose-t-elle-presque-nue-2982877/56148853-1-fre-FR/Selena-Gomez-pourquoi-pose-t-elle-presque-nue.png
             //   https://resize-elle.ladmedia.fr/crop/625,625,center-middle,forcex,ffffff/img/var/plain_site/storage/images/loisirs/musique/news/selena-gomez-pourquoi-pose-t-elle-presque-nue-2982877/56148853-1-fre-FR/Selena-Gomez-pourquoi-pose-t-elle-presque-nue.png
             //   https://resize-elle.ladmedia.fr/img/var/plain_site/storage/images/loisirs/musique/news/selena-gomez-pourquoi-pose-t-elle-presque-nue-2982877/56148853-1-fre-FR/Selena-Gomez-pourquoi-pose-t-elle-presque-nue.png
+            //   https://cdn-elle.ladmedia.fr/var/plain_site/storage/images/loisirs/musique/news/selena-gomez-pourquoi-pose-t-elle-presque-nue-2982877/56148853-1-fre-FR/Selena-Gomez-pourquoi-pose-t-elle-presque-nue.png
+            //
+            // https://cdn2-public.ladmedia.fr/var/public/storage/images/news/photos/photos-rihanna-elle-nous-refait-le-coup-de-la-robe-fendue-et-ultra-decolletee-197341/rihanna-a-la-soiree-stella-mccartney-hier-soir-a-londres-197343/1701021-1-fre-FR/Rihanna-a-la-soiree-Stella-McCartney-hier-soir-a-Londres_portrait_w674.jpg
+            //   https://cdn2-public.ladmedia.fr/var/public/storage/images/news/photos/photos-rihanna-elle-nous-refait-le-coup-de-la-robe-fendue-et-ultra-decolletee-197341/rihanna-a-la-soiree-stella-mccartney-hier-soir-a-londres-197343/1701021-1-fre-FR/Rihanna-a-la-soiree-Stella-McCartney-hier-soir-a-Londres.jpg
             return {
-                url: src.replace(/\/(?:r|crop|rcrop)\/[^/]*\//, "/"),
-                can_head: false
+                url: src
+                    .replace(/\/(?:r|crop|rcrop)\/[^/]*\//, "/")
+                    .replace(/:\/\/resize[0-9]*-([a-z]+)[^/]*?\/img\/var\//, "://cdn-$1.ladmedia.fr/var/")
+                    .replace(/_[a-z0-9_]+(\.[^/.]*)$/, "$1"),
+                can_head: true
             };
         }
 
@@ -3990,6 +4049,9 @@ var $$IMU_EXPORT$$;
             // https://www.breakingnews.ie/remote/media.central.ie/media/images/r/roryBestShaneRoss6NationsTrophy_large.jpg?width=600&s=bn-833165
             //   http://media.central.ie/media/images/r/roryBestShaneRoss6NationsTrophy_large.jpg
             domain === "www.breakingnews.ie" ||
+            // https://ip.index.hr/remote/indexnew.s3.index.hr/rethatrhtsrhgertr.jpg?width=765&height=440
+            //   http://indexnew.s3.index.hr/rethatrhtsrhgertr.jpg
+            domain === "ip.index.hr" ||
             domain === "ip.trueachievements.com") {
             // removing ?.* entirely returns 500
             // https://www.irishexaminer.com/remote/image.assets.pressassociation.io/v2/image/production/144492a205ad478ef0233c59e6617054Y29udGVudHNlYXJjaCwxNTEzMDczMTc2/2.30748323.jpg?crop=0,102,3712,2190&ext=.jpg&width=600
@@ -5097,9 +5159,11 @@ var $$IMU_EXPORT$$;
             //   https://baomoi-photo-2-td.zadn.vn/16/03/13/105/18868393/9_65381.jpg
             // https://baomoi-photo-3.zadn.vn/w460x/17/10/23/94/23663774/11_117795.jpg
             //   https://baomoi-photo-3.zadn.vn/17/10/23/94/23663774/11_117795.jpg
+            // https://baomoi-photo-3-td.zadn.vn/w720x480/18/07/13/100/26873675/2_45090.jpeg
+            //   https://baomoi-photo-3-td.zadn.vn/18/07/13/100/26873675/2_45090.jpeg
             // https://media.laodong.vn/Uploaded/thuctapsinh/2016_03_13/6_QVZZ.jpg?w=629&h=419&crop=auto&scale=both
             return src
-                .replace(/(:\/\/[^/]*)\/[wh][0-9]+x?(?:_[^/]*)?\//, "$1/")
+                .replace(/(:\/\/[^/]*)\/[wh][0-9]+x?(?:_[^/]*)?(?:[0-9]+)?\//, "$1/")
                 .replace(/(:\/\/[^/]*)\/[0-9]+x[0-9]+\//, "$1/")
                 .replace(/\?.*$/, "");
         }
@@ -5167,6 +5231,9 @@ var $$IMU_EXPORT$$;
             // https://myzutv.ro/uploads/modules/news/0/2018/3/9/37130/560x400_15205880152019549a.jpg
             //   https://myzutv.ro/uploads/modules/news/0/2018/3/9/37130/15205880152019549a.jpg
             (domain === "myzutv.ro" && src.indexOf("/uploads/") >= 0) ||
+            // http://www.rainews.it/dl/img/2018/07/640x360_1531473973863.rainews_20180713112334780.jpg
+            //   http://www.rainews.it/dl/img/2018/07/1531473973863.rainews_20180713112334780.jpg
+            (domain_nowww === "rainews.it" && src.indexOf("/img/") >= 0) ||
             // https://www.mjuznews.com/public/photos/1000/236/604x320_236-Wikluh_Sky.jpg
             //   https://www.mjuznews.com/public/photos/1000/236/236-Wikluh_Sky.jpg
             (domain === "www.mjuznews.com" && src.indexOf("/photos/") >= 0)) {
@@ -5653,8 +5720,23 @@ var $$IMU_EXPORT$$;
             // http://www.ladylike.gr/articles/galleries/photostories/article2773872.ece/BINARY/original/Rihanna.jpg
             //   http://www.ladylike.gr/articles/galleries/photostories/article2773872.ece/BINARY/Rihanna.jpg -- same
             domain === "www.ladylike.gr" ||
-            src.match(/:\/\/i[0-9]*(?:-prod)?\..*\/article[^/]*\.ece\//) ||
-            domain.match(/cdn-[0-9]*\.independent\.ie/)) {
+            // http://www.24horas.cl/incoming/iceberg-en-groenlandia-2764254/ALTERNATES/w620h350/iceberg%20en%20Groenlandia
+            //   http://www.24horas.cl/incoming/iceberg-en-groenlandia-2764254/BINARY/iceberg%20en%20Groenlandia
+            domain_nowww === "24horas.cl" ||
+            // https://www.jyllands-posten.dk/pictures/image/10752571/qz36h4/ALTERNATES/g-5_3/innarsuit
+            domain_nowww === "jyllands-posten.dk" ||
+            // https://www.svtstatic.se/image-cms/svtse/1531589739/nyheter/article18662486.svt/alternates/large/180714-gronlandisberg-715344-a001nh-jpg
+            //   https://www.svtstatic.se/image-cms/svtse/1531589739/nyheter/article18662486.svt/BINARY/180714-gronlandisberg-715344-a001nh-jpg
+            domain === "www.svtstatic.se" ||
+            // https://www.adressa.no/incoming/article17124160.ece/9r0lq0/ALTERNATES/w980-default/td0459ed.jpg
+            domain_nowww === "adressa.no" ||
+            src.match(/\/incoming\/article[^/]*\.(?:ece|svt)\/(?:[^/]*\/)?(?:alternates|ALTERNATES)\//) ||
+            src.match(/:\/\/i[0-9]*(?:-prod)?\..*\/article[^/]*\.(?:ece|svt)\//) ||
+            // https://www.independent.ie/world-news/article37114917.ece/ALTERNATES/h342/ipanews_2350b658-06c1-4a29-b747-cbfdcd1b624c_1
+            //   https://www.independent.ie/world-news/article37114917.ece/BINARY/ipanews_2350b658-06c1-4a29-b747-cbfdcd1b624c_1
+            // https://cdn-01.independent.ie/incoming/article35675982.ece/70a4f/AUTOCROP/w940/675787992.jpg
+            //   https://cdn-01.independent.ie/incoming/article35675982.ece/70a4f/BINARY/675787992.jpg
+            domain_nosub === "independent.ie") {
             // wip
             // http://www.thehindu.com/migration_catalog/article14926809.ece/alternates/FREE_660/30MPSQUIRREL
             // http://www.thehindu.com/migration_catalog/article14926809.ece/alternates/FREE_960/30MPSQUIRREL
@@ -5681,7 +5763,6 @@ var $$IMU_EXPORT$$;
             //   http://static.dailymirror.lk/media/images/image_1491276569-ba3932b3dc.jpg
             //   http://static.dailymirror.lk/media/images/image_1491276584-77a6a42e37.jpg
             //   http://static.dailymirror.lk/media/images/image_1491276594-bc6ed40255.jpg
-            // https://cdn-01.independent.ie/incoming/article35675982.ece/70a4f/AUTOCROP/w940/675787992.jpg
             // https://i2-prod.birminghammail.co.uk/news/midlands-news/article8438687.ece/ALTERNATES/s615b/Felicity-Jones-The-Worst-Witch.jpg
             //   https://i2-prod.birminghammail.co.uk/news/midlands-news/article8438687.ece/BINARY/Felicity-Jones-The-Worst-Witch.jpg
             // https://i2-prod.mirror.co.uk/incoming/article9801836.ece/ALTERNATES/s810/SUNDAYPEOPLE-PROD-Tara-Palmer-Tomkinson.jpg
@@ -7345,6 +7426,15 @@ var $$IMU_EXPORT$$;
         }
 
         if ((domain === "www.eleconomista.com.mx" && src.indexOf("/img/") >= 0) ||
+            // https://www.informador.mx/__export/1531502739399/sites/elinformador/img/2018/07/13/iceberg_en_groenlandia_efe_k__petersen_crop1531502120593.jpg_195882809.jpg
+            //   https://www.informador.mx/__export/1531502739399/sites/elinformador/img/2018/07/13/iceberg_en_groenlandia_efe_k__petersen_crop1531502120593.jpg
+            (domain_nowww === "informador.mx" && src.indexOf("/img/") >= 0) ||
+            // https://www.eldeber.com.bo/__export/1531611838470/sites/eldeber/img/2018/07/14/_102530719_mediaitem102524830.jpg_1739845681.jpg
+            //   https://www.eldeber.com.bo/__export/1531611838470/sites/eldeber/img/2018/07/14/_102530719_mediaitem102524830.jpg
+            (domain_nowww === "eldeber.com.bo" && src.indexOf("/img/") >= 0) ||
+            // https://www.chispa.tv/__export/1531501223040/sites/debate/img/2018/07/13/el-iceberg-puede-generar-un_0_64_1259_784.jpg_497593902.jpg
+            //   https://www.chispa.tv/__export/1531501223040/sites/debate/img/2018/07/13/el-iceberg-puede-generar-un_0_64_1259_784.jpg
+            (domain_nowww === "chispa.tv" && src.indexOf("/img/") >= 0) ||
             // https://laverdadnoticias.com/__export/1514576574761/sites/laverdad/img/2017/12/29/camila_cabello.jpg_2024461655.jpg
             //   https://laverdadnoticias.com/__export/1514576574761/sites/laverdad/img/2017/12/29/camila_cabello.jpg
             (domain === "laverdadnoticias.com" && src.indexOf("/img/") >= 0)) {
@@ -10828,7 +10918,10 @@ var $$IMU_EXPORT$$;
             //   http://www.newshub.co.nz/home/entertainment/2018/01/golden-globes-2018-red-carpet-highlights-a-red-carpet-flooded-in-black/_jcr_content/par/image_1284270800.dynimg.full.q75.jpg/v1515372069805/GettyImages-902328010.jpg
             // https://www.newshub.co.nz/home/world/2017/12/how-one-plastic-bag-can-harm-millions-of-creatures/_jcr_content/par/image.dynimg.1280.q75.jpg/v1512865401357/GettyImages-612269120-plastic-bag-pollution-ocean-environment-1120.jpg
             //   https://www.newshub.co.nz/home/world/2017/12/how-one-plastic-bag-can-harm-millions-of-creatures/_jcr_content/par/image.dynimg.full.q75.jpg/v1512865401357/GettyImages-612269120-plastic-bag-pollution-ocean-environment-1120.jpg
-            return src.replace(/(\/image(?:[_.][0-9]+)?\.dynimg\.)[^/]*(\.q[0-9]+\.[^/.]*)(\/.*)?$/, "$1full$2$3");
+            return {
+                url: src.replace(/(\/image(?:[_.][0-9]+)?\.dynimg\.)[^/]*(\.q[0-9]+\.[^/.]*)(\/.*)?$/, "$1full$2$3"),
+                can_head: false
+            };
         }
 
         if (amazon_container === "s3.931wolfcountry.com" ||
@@ -11766,7 +11859,9 @@ var $$IMU_EXPORT$$;
         if (domain === "bt.bmcdn.dk") {
             // https://bt.bmcdn.dk/media/cache/resolve/image_420/image/103/1032257/17913568-.jpg
             //   https://bt.bmcdn.dk/media/cache/resolve/image/image/103/1032257/17913568-.jpg
-            return src.replace(/\/image_[0-9]+\/image\//, "/image/image/");
+            // doesn't work:
+            // https://bdk.bmcdn.dk/media/cache/resolve/image_910x511/image/97/976522/21478831-isfjeld-grundstdt-lige-uden-f.jpeg
+            return src.replace(/\/image_[0-9]+(?:x[0-9]+)?\/image\//, "/image/image/");
         }
 
         if (domain_nowww === "sonara.net") {
@@ -12994,7 +13089,10 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/m\/([^/]*)$/, "/p/$1");
         }
 
-        if (domain === "welovesexyfeet.com") {
+        if (domain === "welovesexyfeet.com" ||
+            // http://img.ibxk.com.br/2018/07/16/16162511563028-t474x237.jpg
+            //   http://img.ibxk.com.br/2018/07/16/16162511563028.jpg
+            domain === "img.ibxk.com.br") {
             // http://welovesexyfeet.com/cdn/upload/record/nlmtlomqmplo/rachel-riley-feet-t270x450.jpg
             //   http://welovesexyfeet.com/cdn/upload/record/nlmtlomqmplo/rachel-riley-feet.jpg
             return src.replace(/-t[0-9]+x[0-9]+(\.[^/.]*)$/, "$1");
@@ -13412,7 +13510,10 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/slir\/[wh][0-9]*\/wp-content\//, "/slir/orig/wp-content/");
         }
 
-        if (domain_nowww === "photorator.com") {
+        if (domain_nowww === "photorator.com" ||
+            // https://pornopics.co/photos/thumbs/mckayla-maroney-turns-today-1476244.jpg
+            //   https://pornopics.co/photos/images/mckayla-maroney-turns-today-1476244.jpg
+            domain_nowww === "pornopics.co") {
             // https://photorator.com/photos/thumbs/a-cozy-toucan--69045.jpg
             //   https://www.photorator.com/photos/images/a-cozy-toucan--69045.jpg
             return src.replace(/\/photos\/thumbs\//, "/photos/images/");
@@ -13433,7 +13534,10 @@ var $$IMU_EXPORT$$;
             return src.replace(/(?:\?.*)?$/, "?alias=original");
         }
 
-        if (domain === "www.incimages.com") {
+        if (domain === "www.incimages.com" ||
+            // https://firenewsfeed.com/image/728x410/aHR0cHM6Ly9pbWFnZXMuYXhpb3MuY29tL2NJQm1aS2xyZ0hiRFhpZDNsQklEdkcyUXdZOD0vMHgwOjE5MjB4MTA4MC8xOTIweDEwODAvMjAxOC8wNy8xNS8xNTMxNjg4MTkyMjg3LmpwZw==
+            //   https://firenewsfeed.com/image/aHR0cHM6Ly9pbWFnZXMuYXhpb3MuY29tL2NJQm1aS2xyZ0hiRFhpZDNsQklEdkcyUXdZOD0vMHgwOjE5MjB4MTA4MC8xOTIweDEwODAvMjAxOC8wNy8xNS8xNTMxNjg4MTkyMjg3LmpwZw==
+            domain_nowww === "firenewsfeed.com") {
             // https://www.incimages.com/uploaded_files/image/300x200/getty_930534182_200014312000928078_362581.jpg
             //   https://www.incimages.com/uploaded_files/image/getty_930534182_200014312000928078_362581.jpg
             return src.replace(/\/image\/[0-9]+x[0-9]+\//, "/image/");
@@ -13919,6 +14023,293 @@ var $$IMU_EXPORT$$;
             return src.replace(/(\/files\/photos\/imgs\/[0-9]+\/[0-9]+\/)[a-z]+_/, "$1original_");
         }
 
+        if (domain_nowww === "zdf.de" &&
+            src.indexOf("/assets/") >= 0) {
+            // https://www.zdf.de/assets/teletext-dpa-image-der-eisberg-vor-der-groenlaendischen-kueste-am-dorf-innaarsuit-100~2400x1350?cb=1531503697356
+            //   https://www.zdf.de/assets/teletext-dpa-image-der-eisberg-vor-der-groenlaendischen-kueste-am-dorf-innaarsuit-100~original?cb=1531503697356
+            return src.replace(/~[0-9]+x[0-9]+([?#].*)?$/, "~original$1");
+        }
+
+        if (domain_nowww === "arcinfo.ch" ||
+            // https://www.lacote.ch/media/image/71/normal_16_9/348625165-1.jpg
+            //   https://www.lacote.ch/media/image/71/348625165-1.jpg
+            domain_nowww === "lacote.ch") {
+            // https://www.arcinfo.ch/media/image/71/small_16_9/348625165-1.jpg
+            //   https://www.arcinfo.ch/media/image/71/348625165-1.jpg
+            return src.replace(/(\/media\/image\/[0-9]*\/)[^/]*\/([0-9]+-[0-9]+\.[^/.]*)$/, "$1$2");
+        }
+
+        if (domain_nowww === "gulf365.co" ||
+            // https://www.alsharqtimes.com/temp/resized/medium_2018-07-14-12a167f5c5.jpg -- stretched
+            //   https://www.alsharqtimes.com/content/uploads/2018/07/14/12a167f5c5.jpg
+            domain_nowww === "alsharqtimes.com") {
+            // http://www.gulf365.co/temp/thumb/320x190_uploads,2018,07,15,bdc0651fec.jpg
+            //   http://www.gulf365.co/content/uploads/2018/07/15/bdc0651fec.jpg
+            // http://www.gulf365.co/temp/resized/medium_2017-08-19-bbb37bcbc2.jpg
+            //   http://www.gulf365.co/content/uploads/2017/08/19/bbb37bcbc2.jpg
+            return src
+                .replace(/(:\/\/[^/]*\/)temp\/(?:thumb|resized)\/[^-/_.]+_uploads,([0-9]+),([0-9]+),([0-9]+),([0-9a-f]+\.[^/.]*)$/,
+                         "$1content/uploads/$2/$3/$4/$5")
+                .replace(/(:\/\/[^/]*\/)temp\/(?:thumb|resized)\/[a-z]+_([0-9]+)-([0-9]+)-([0-9]+)-([0-9a-f]+\.[^/.]*)$/,
+                         "$1content/uploads/$2/$3/$4/$5")
+        }
+
+        if (domain_nowww === "aljazeera.com") {
+            // https://www.aljazeera.com/mritems/imagecache/mbdresplarge/mritems/Images/2018/7/15/6e6bcf4305f34f38831be340b4912535_18.jpg
+            //   https://www.aljazeera.com/mritems/Images/2018/7/15/6e6bcf4305f34f38831be340b4912535_18.jpg
+            return src.replace(/\/mritems\/imagecache\/[^/]*\/mritems\//, "/mritems/");
+        }
+
+        if (domain === "media.publika.md") {
+            // https://media.publika.md/md/image/201807/w400/aisberg-groelanda_99594600.jpg
+            //   https://media.publika.md/md/image/201807/full/aisberg-groelanda_99594600.jpg
+            return src.replace(/\/[wh][0-9]+\/([^/]+_[0-9]+\.[^/.]*)$/, "/full/$1");
+        }
+
+        if (domain === "www1.wdr.de") {
+            // https://www1.wdr.de/kinder/radio/kiraka/nachrichten/klicker/eisberg-bedroht-dorf-in-groenland100~_v-gseaclassicxl.jpg
+            //   https://www1.wdr.de/kinder/radio/kiraka/nachrichten/klicker/eisberg-bedroht-dorf-in-groenland100~_v-original.jpg
+            return src.replace(/~_v-[a-z0-9]+(\.[^/.]*)$/, "~_v-original$1");
+        }
+
+        if (domain_nowww === "xrimaonline.gr") {
+            // https://www.xrimaonline.gr/photos/c_450px_255px/articles/201807/groilandia_pagobouno.jpg
+            //   https://www.xrimaonline.gr/photos/w_999999999999px/articles/201807/groilandia_pagobouno.jpg
+            // uses gdthumb to resize:
+            // https://github.com/mewebstudio/Phpthumb/blob/master/src/Mews/Phpthumb/lib/GdThumb.inc.php
+            return src.replace(/\/photos\/[a-z]_[0-9]+px[^/]*\/articles\//, "/photos/w_999999999999px/articles/");
+        }
+
+        if (domain_nosub === "avisen.dk" &&
+            domain.match(/^media[0-9]*\.avisen\.dk/)) {
+            // https://media2.avisen.dk/GetImage.ashx?imageid=10902044&sizeid=37
+            //   https://media2.avisen.dk/GetImage.ashx?imageid=10902044&sizeid=255
+            // https://media2.avisen.dk/GetImage.ashx?imageid=9837228&sizeid=255 -- 4928x3280
+            // 255, {52,27}, 30, 36, 49, 25, 26, {4, 33, 34, 32, 28, 10}, {51, 37}, 31, 23, 8, 14, 29, 50, 16, 46, 44, {45, 41}, 3, {20, 15}, 19, 47, 7, 18, {5, 40, 35, 2}, 39, 43, 22, 11, {24, 9, 42, 38}, 13, 21, 17, 6, {48, 0}
+            return src.replace(/([?&]sizeid=)[0-9]+/, "$1255");
+        }
+
+        if (domain_nowww === "elimparcial.es" &&
+            src.indexOf("/fotos/") >= 0) {
+            // https://www.elimparcial.es/fotos/1/53175_636670785479221072w_thumb_570.jpg
+            //   https://www.elimparcial.es/fotos/1/53175_636670785479221072w.jpg
+            return src.replace(/_thumb_[0-9]+(\.[^/.]*)$/, "$1");
+        }
+
+        if (domain_nosub === "agora.md" &&
+            domain.match(/^st[0-9]*\.agora\.md/)) {
+            // http://st2.agora.md/news/medium/video--un-sat-din-groenlanda--amenintat-de-un-ghetar-urias--ce-risca-localnicii-47637.jpg
+            //   http://st2.agora.md/news/big/video--un-sat-din-groenlanda--amenintat-de-un-ghetar-urias--ce-risca-localnicii-47637.jpg
+            return src.replace(/(:\/\/[^/]*\/news\/)[a-z]+\//, "$1big/");
+        }
+
+        if (domain_nowww === "demokrathaber.org") {
+            // https://www.demokrathaber.org/images/resize/100/600x315/haberler/2018/07/gronland_da_bir_koy_devasa_buzdaginin_tehdidi_altinda_h104638_1e4e3.jpg
+            //   https://demokrathaber.org/images/haberler/2018/07/gronland_da_bir_koy_devasa_buzdaginin_tehdidi_altinda_h104638_1e4e3.jpg
+            return src.replace(/\/images\/resize\/[0-9]+\/[0-9]+x[0-9]+\//, "/images/");
+        }
+
+        if (domain === "imgl.krone.at") {
+            // https://imgl.krone.at/scaled/1739548/v435e9c/630x356
+            //   https://imgl.krone.at/scaled/1739548/v435e9c/full
+            return src.replace(/(\/scaled\/[0-9]+\/[0-9a-z]+\/)[0-9]+x[0-9]+([?#].*)?$/, "$1full$2");
+        }
+
+        if (domain_nowww === "elfinanciero.com.mx" &&
+            src.indexOf("/uploads/") >= 0) {
+            // http://www.elfinanciero.com.mx/uploads/2018/07/13/a4666cd9e11531496851_standard_desktop_medium.jpeg
+            //   http://www.elfinanciero.com.mx/uploads/2018/07/13/a4666cd9e11531496851.jpeg
+            return src.replace(/(\/[0-9a-f]+)_[a-z_]+(\.[^/.]*)$/, "$1$2");
+        }
+
+        if (domain_nosub === "redcdn.pl" &&
+            domain.indexOf("dcs.redcdn.pl") >= 0) {
+            // https://r-scale-00.dcs.redcdn.pl/scale/o2/tvn/web-content/m/p5/i/4496bf24afe7fab6f046bf4923da8de6/5ee170e0-0086-4902-bd53-3ecc7126f4de.jpg?type=1&srcmode=3&srcx=0/1&srcy=0/1&srcw=640&srch=360&dstw=640&dsth=360&quality=80
+            //   https://r-scale-00.dcs.redcdn.pl/dcs//o2/tvn/web-content/m/p5/i/4496bf24afe7fab6f046bf4923da8de6/5ee170e0-0086-4902-bd53-3ecc7126f4de.jpg
+            // https://n-4-1.dcs.redcdn.pl/dcs/o2/tvn/web-content/m/p1/f/97d0145823aeb8ed80617be62e08bdcc/3d46f316-f013-4b95-9e6e-83a493d21906.jpg -- 7874x5512
+            return src.replace(/(:\/\/[^/]*\/)scale(\/.*?)(?:[?#].*)?$/, "$1dcs/$2");
+        }
+
+        if (domain === "media.nu.nl") {
+            // https://media.nu.nl/m/xc3x2ajaw2pt_wd640.jpeg
+            //   https://media.nu.nl/m/xc3x2ajaw2pt.jpeg
+            // https://media.nu.nl/m/xc3x2ajaw2pt_wd1280.jpg/groenland-vreest-tsunami-afgebroken-ijsberg-bij-kustplaats.jpg
+            //   https://media.nu.nl/m/xc3x2ajaw2pt.jpg
+            return src.replace(/(:\/\/[^/]*\/[a-z]\/[0-9a-z]+)_[0-9a-z]+(\.[^/.]*)(?:\/[^/]*\.[^/.]*)?$/, "$1$2");
+        }
+
+        if (domain === "cloudia.hnonline.sk") {
+            // https://cloudia.hnonline.sk/r740x415n/f46d9eecfa7bc72be2d58a1db131b148.jpg?default=article
+            //   https://cloudia.hnonline.sk/f46d9eecfa7bc72be2d58a1db131b148.jpg
+            return src.replace(/(:\/\/[^/]*\/)[a-z]?[0-9]+x[0-9]+[a-z]?\/([0-9a-f]+\.[^/.]*?)(?:\?.*)?$/, "$1$2");
+        }
+
+        if (googleapis_container === "nana10img") {
+            // https://storage.googleapis.com/nana10img/crop/_w-743_h-418_c-1/images/news/2018-07-13T115944Z_222051012_RC17A823B160_RTRMADP_3_GREENLAND-ICEBERG.JPG
+            //   https://storage.googleapis.com/nana10img/images/news/2018-07-13T115944Z_222051012_RC17A823B160_RTRMADP_3_GREENLAND-ICEBERG.JPG
+            return src.replace(/\/crop\/(?:_[a-z]-[0-9]+){1,}\/images\//, "/images/");
+        }
+
+        if (domain_nowww === "webnews.bg" &&
+            src.indexOf("/uploads/images/") >= 0) {
+            // https://www.webnews.bg/uploads/images/70/8070/368070/768x432.jpg
+            //   https://www.webnews.bg/uploads/images/70/8070/368070/orig.jpg
+            return src.replace(/\/[0-9]+x[0-9]+(\.[^/.]*)$/, "/orig$1");
+        }
+
+        if (domain === "static.ffx.io") {
+            // technically this looks like cloudinary, but possibly a variant?
+            // https://static.ffx.io/images/$zoom_0.841%2C$multiply_0.7252124645892352%2C$ratio_1.776846%2C$width_1059%2C$x_0%2C$y_0/t_crop_custom/t_sharpen%2Cq_auto%2Cf_auto/edf6feebc2488f212b2ac65be557a89edda359e6
+            //   https://static.ffx.io/images/edf6feebc2488f212b2ac65be557a89edda359e6
+            return src.replace(/\/images\/\$[^/]*\/.*\/([0-9a-f]+)([?#].*)?$/, "/images/$1$2");
+        }
+
+        if (domain === "images.stv.tv") {
+            // https://images.stv.tv/articles/w768/598476-the-iceberg-is-said-to-be-grounded-on-the-sea-floor.jpg -- stretched?
+            //    https://images.stv.tv/articles/master/598476-the-iceberg-is-said-to-be-grounded-on-the-sea-floor.jpg
+            // https://images.stv.tv/articles/w1280xh720xmFit/598472-four-mile-long-iceberg-breaks-off-from-greenland-glacier.jpg -- stretched
+            //    https://images.stv.tv/articles/master/598472-four-mile-long-iceberg-breaks-off-from-greenland-glacier.jpg
+            return src.replace(/\/articles\/[wh][0-9]+(?:xh[0-9]+)?(?:xm[^/]*)?\/([^/]*)$/, "/articles/master/$1");
+        }
+
+        if (domain === "cdn.cretalive.gr") {
+            // https://cdn.cretalive.gr/_largeImage/groilandia-pagobouno.jpg?mtime=20180713135637 -- stretched?
+            //   https://cdn.cretalive.gr/groilandia-pagobouno.jpg?mtime=20180713135637
+            return src.replace(/(:\/\/[^/]*\/)_[a-z]+Image\//, "$1");
+        }
+
+        if ((domain_nosub === "ellingtoncms.com" &&
+             domain.match(/\.media\.clients\.ellingtoncms\.com$/)) ||
+            // https://media.spokesman.com/photos/2018/07/13/Greenland_Iceberg.JPG_MYCrmE3_t1200.jpg?298603a24e8d51915fce203907ff2746e482a5a6
+            //   https://media.spokesman.com/photos/2018/07/13/Greenland_Iceberg.JPG_MYCrmE3.jpg?298603a24e8d51915fce203907ff2746e482a5a6
+            domain === "media.spokesman.com") {
+            // https://kpbs.media.clients.ellingtoncms.com/assets/img/2018/07/14/gettyimages-997468440_wide-a78798da0e97d7deb7aa537c32ca8d2ee11d840d_t800.jpg?90232451fbcadccc64a17de7521d859a8f88077d
+            //   https://kpbs.media.clients.ellingtoncms.com/assets/img/2018/07/14/gettyimages-997468440_wide-a78798da0e97d7deb7aa537c32ca8d2ee11d840d.jpg?90232451fbcadccc64a17de7521d859a8f88077d
+            // http://thetribune.media.clients.ellingtoncms.com/img/photos/2016/07/07/Moodys_t670.jpg?b3f6a5d7692ccc373d56e40cf708e3fa67d9af9d
+            //   http://thetribune.media.clients.ellingtoncms.com/img/photos/2016/07/07/Moodys.jpg?b3f6a5d7692ccc373d56e40cf708e3fa67d9af9d
+            return src.replace(/_t[0-9]*(\.[^/.]*)$/, "$1");
+        }
+
+        if (domain === "ajo.prod.reuters.tv") {
+            // https://ajo.prod.reuters.tv/api/v2/img/5b4a4a4ae4b01cce9ac71a1c-1531595338794?location=LANDSCAPE&width=800&height=450
+            //   https://ajo.prod.reuters.tv/api/v2/img/5b4a4a4ae4b01cce9ac71a1c-1531595338794?location=LANDSCAPE
+            return src.replace(/(\/img\/[0-9a-f]+-[0-9]+).*?[?&](location=[^&]*).*?$/, "$1?$2");
+        }
+
+        if (domain_nowww === "nos.nl") {
+            // https://nos.nl/data/image/2018/07/13/486455/xxl.jpg
+            //   https://nos.nl/data/image/2018/07/13/486455/original.jpg
+            return src.replace(/(\/data\/image\/[0-9]+\/[0-9]+\/[0-9]+\/[0-9]+\/)[a-z]+(\.[^/.]*)$/, "$1original$2");
+        }
+
+        if (domain_nowww === "braunschweiger-zeitung.de" ||
+            // https://img.derwesten.de/img/panorama/crop214844835/8353229184-w960-cv16_9/doc70zrsr66hr6mvzbm8l1-MASTER.jpg
+            //   https://img.derwesten.de/bin/src-214844835.jpg
+            domain === "img.derwesten.de" ||
+            // https://www.thueringen24.de/img/welt/crop214844835/5233837185-w960-cv16_9-q85/doc70zrsr66hr6mvzbm8l1-MASTER.jpg
+            //   https://www.thueringen24.de/bin/src-214844835.jpg
+            domain_nowww === "thueringen24.de" ||
+            // https://www.helmstedter-nachrichten.de/img/panorama/crop214844835/2972606866-w820-cv16_9-q85/doc70zrsr66hr6mvzbm8l1-MASTER.jpg
+            //   https://www.helmstedter-nachrichten.de/bin/src-214844835.jpg
+            domain_nowww === "helmstedter-nachrichten.de") {
+            // https://www.braunschweiger-zeitung.de/img/panorama/crop214844835/9502969114-w820-cv16_9-q70/doc70zrsr66hr6mvzbm8l1-MASTER.jpg
+            //   https://www.braunschweiger-zeitung.de/bin/src-214844835.jpg
+            return src.replace(/\/img\/(?:panorama|welt)\/crop([0-9]+)\/.*(\.[^/.]*)$/, "/bin/src-$1$2");
+        }
+
+        if (domain === "iprx.ten.com.au") {
+            // https://iprx.ten.com.au/ImageHandler.ashx?f=jpg&u=https%3A%2F%2Fimages.tenplay.com.au%2F~%2Fmedia%2FGreenland900W.jpg
+            //   https://images.tenplay.com.au/~/media/Greenland900W.jpg
+            return decodeURIComponent(src.replace(/^[a-z]+:\/\/[^/]*\/ImageHandler\.ashx.*?[?&]u=([^&]*).*?$/, "$1"));
+        }
+
+        if (domain === "images.sudouest.fr") {
+            // https://images.sudouest.fr/2018/07/13/5b48afab66a4bd5f4db04b7a/widescreen/1000x500/une-evacuation-a-ete-faite-au-cas-ou-le-bloc-venait-a-rompre.jpg?v1
+            //   https://images.sudouest.fr/2018/07/13/5b48afab66a4bd5f4db04b7a/une-evacuation-a-ete-faite-au-cas-ou-le-bloc-venait-a-rompre.jpg?v1
+            return src.replace(/(\/[0-9a-f]+\/)[a-z]+\/[0-9]+x[0-9]+\/([^/]*)$/, "$1$2");
+        }
+
+        if (domain === "gdb.rferl.org") {
+            // https://gdb.rferl.org/A8AAF0A8-851A-4A70-8803-05E5409C6A19_w1200_r1_s.jpg
+            //   https://gdb.rferl.org/A8AAF0A8-851A-4A70-8803-05E5409C6A19.jpg
+            return src.replace(/(:\/\/[^/]*\/[-0-9A-F]+)(?:_[a-z][0-9]*){1,}(\.[^/.]*)$/, "$1$2");
+        }
+
+        if (domain === "img.nzz.ch") {
+            // https://img.nzz.ch/C=W3500,H1969,X0,Y0/S=W1200/O=75/https://nzz-img.s3.amazonaws.com/2018/7/13/39384ab7-1119-4465-a5c2-12987ed85ec1.jpeg
+            //   https://nzz-img.s3.amazonaws.com/2018/7/13/39384ab7-1119-4465-a5c2-12987ed85ec1.jpeg
+            return src.replace(/^[a-z]+:\/\/[^/]*\/(?:[A-Z]=[^/]+\/){1,}(https?:\/\/)/, "$1");
+        }
+
+        if (domain === "images-cdn.impresa.pt") {
+            // http://images-cdn.impresa.pt/sicnot/2018-07-14-DOC.20180713.24512537.06885114.jpg-1/16x9/mw-1240
+            //   http://images-cdn.impresa.pt/sicnot/2018-07-14-DOC.20180713.24512537.06885114.jpg-1/original
+            return src.replace(/\/[0-9]+x[0-9]+\/m[wh]-[0-9]+(?:\?.*)?$/, "/original");
+        }
+
+        if (domain === "awsimages.detik.net.id") {
+            // https://awsimages.detik.net.id/visual/2018/02/21/29c13f53-a628-460a-bdf6-da19a9d8c514.jpeg?w=420&q=90 -- 420x639
+            //   https://awsimages.detik.net.id/visual/2018/02/21/29c13f53-a628-460a-bdf6-da19a9d8c514.jpeg?a=1 -- 1973x3000
+            return src.replace(/\?.*/, "?a=1");
+        }
+
+        if (domain_nowww === "sexhd.pics" ||
+            // https://sexphotos.pw/image/celebmatrix/rihanna/bbwhoneygallery-celebrities-jimslip/hd-rihanna-4.jpg
+            //   https://sexphotos.pw/xxx/celebmatrix/rihanna/bbwhoneygallery-celebrities-jimslip/rihanna-4.jpg
+            domain_nowww === "sexphotos.pw" ||
+            // https://yespornpics.com/thumb/celebmatrix/rihanna/my-favorite-celebs-mobi-sex/hd-rihanna-10.jpg
+            //   https://vip.yespornpics.com/media/celebmatrix/rihanna/my-favorite-celebs-mobi-sex/rihanna-10.jpg
+            domain_nosub === "yespornpics.com" ||
+            // https://pics.jjgirls.com/thumbs/celebsonly/rihanna/april-celebrities-sweety/hd-rihanna-5.jpg
+            //   https://pics.jjgirls.com/pictures/celebsonly/rihanna/april-celebrities-sweety/rihanna-5.jpg
+            domain_nosub === "jjgirls.com") {
+            // https://sexhd.pics/photo/celebsonly/rihanna/monday-celebrities-trainer/hd-rihanna-5.jpg
+            //   https://sexhd.pics/gallery/celebsonly/rihanna/monday-celebrities-trainer/rihanna-5.jpg
+            return src
+                .replace(/(:\/\/[^/]*\/)photo(\/.*\/)hd-([^/]*)$/, "$1gallery$2$3")
+                .replace(/(:\/\/[^/]*\/)image(\/.*\/)hd-([^/]*)$/, "$1xxx$2$3")
+                .replace(/(:\/\/[^/]*\/)thumbs(\/.*\/)hd-([^/]*)$/, "$1pictures$2$3")
+                .replace(/(:\/\/[^/]*\/)thumb(\/.*\/)hd-([^/]*)$/, "$1media$2$3");
+        }
+
+        if (domain_nowww === "nuceleb.ru") {
+            // https://www.nuceleb.ru/assets/images/resources/183/144x180/rihanna-golaya-162.jpg
+            //   https://www.nuceleb.ru/assets/images/resources/183/rihanna-golaya-162.jpg
+            return src.replace(/(\/assets\/images\/resources\/[0-9]+\/)[0-9]+x[0-9]+\/([^/]*)$/, "$1$2");
+        }
+
+        if (domain_nosub === "imgserve.net") {
+            // http://s12.imgserve.net/images/small/2015/03/26/551470ce6adbe.jpg
+            return {
+                url: src.replace(/(:\/\/[^/]*\/)images\/[a-z]+\//, "$1images/big/"),
+                headers: {
+                    Referer: src
+                }
+            };
+        }
+
+        if (domain === "image.celebrityrave.com") {
+            // http://image.celebrityrave.com/20160815075823/0000/0000/0145/9045/ea0cea8ab4c76e34a438d3b710dc67ba-m2.jpg
+            //   http://image.celebrityrave.com/20160815075823/0000/0000/0145/9045/ea0cea8ab4c76e34a438d3b710dc67ba.jpg
+            return src.replace(/(\/[0-9a-f]*)-[0-9a-z]+(\.[^/.]*)$/, "$1$2");
+        }
+
+        if (domain_nowww === "zceleb.com") {
+            // https://www.zceleb.com/contents/albums/main/235x350/0/73/4807.jpg
+            //   https://zceleb.com/contents/albums/main/5000x5000/0/73/4807.jpg
+            //   https://www.zceleb.com/contents/albums/sources/0/73/4807.jpg
+            return src.replace(/\/albums\/main\/[0-9]+x[0-9]+\//, "/albums/sources/");
+        }
+
+        if (domain_nowww === "celebcafe.net") {
+            // http://www.celebcafe.net/blog/thumbs/aSelena%20Gomez%20%20At%20swimming%20pool%20in%20Miami%20-%20Oct%2028%2C%202013%20%2844%29.jpg
+            //   http://www.celebcafe.net/blog/pics/aSelena%20Gomez%20%20At%20swimming%20pool%20in%20Miami%20-%20Oct%2028%2C%202013%20%2844%29.jpg
+            return src.replace(/\/blog\/thumbs\//, "/blog/pics/");
+        }
+
+
+
+
 
 
 
@@ -14204,6 +14595,9 @@ var $$IMU_EXPORT$$;
             (domain_nosub === "holidaypirates.com" && domain.match(/thumb[0-9]*\.holidaypirates\.com/)) ||
             // https://img.yasmina.com/UoZCII39qwhfihSDsCZ845tCp_Y=/0x0/smart/http://harmony-assets-live.s3.amazonaws.com/image_source/7d/5f/7d5fc9007db632d8ce71fe01f00429732b3dad80.jpg
             domain === "img.yasmina.com" ||
+            // https://s2.glbimg.com/OHrR1QoyTUJ2TZmqGkRumRkr0lQ=/540x304/top/smart/https://i.s3.glbimg.com/v1/AUTH_59edd422c0c84a879bd37670ae4f538a/internal_photos/bs/2018/T/0/N2V0VIRCKjVb81zquEMA/iceberg.jpg
+            //   https://i.s3.glbimg.com/v1/AUTH_59edd422c0c84a879bd37670ae4f538a/internal_photos/bs/2018/T/0/N2V0VIRCKjVb81zquEMA/iceberg.jpg -- keeps loading
+            //domain_nosub === "glbimg.com" ||
             src.match(/:\/\/[^/]*\/thumbor\/[^/]*=\//) ||
             src.match(/:\/\/[^/]*\/resizer\/[^/]*=\/[0-9]+x[0-9]+(?::[^/]*\/[0-9]+x[0-9]+)?\/(?:filters:[^/]*\/)?/)) {
             // https://cdn.vox-cdn.com/thumbor/ta2xdyUViVrBXCLGapdwLY7is_s=/0x0:3000x2355/1200x800/filters:focal(1116x773:1596x1253)/cdn.vox-cdn.com/uploads/chorus_image/image/55856727/815434448.0.jpg
@@ -14231,7 +14625,7 @@ var $$IMU_EXPORT$$;
             if (newsrc !== src)
                 return newsrc;
 
-            newsrc = src.replace(/.*\/[-_A-Za-z0-9]+=\/(?:(?:full-)?fit-in\/)?(?:[0-9x:]+\/)?(?:[0-9x:]+\/)?(?:smart\/)?(?:filters:[^/]*\/)?((?:https?:\/\/)?[^/]*\..*)/, "$1");
+            newsrc = src.replace(/.*\/[-_A-Za-z0-9]+=\/(?:(?:full-)?fit-in\/)?(?:[0-9x:]+\/)?(?:[0-9x:]+\/)?(?:top\/)?(?:smart\/)?(?:filters:[^/]*\/)?((?:https?:\/\/)?[^/]*\..*)/, "$1");
             if (newsrc.indexOf("http") !== 0) {
                 newsrc = "http://" + newsrc;
             }
