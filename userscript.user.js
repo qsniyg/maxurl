@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.5.7
+// @version      0.5.8
 // @description  Finds larger or original versions of images
 // @author       qsniyg
 // @include      *
@@ -68,6 +68,8 @@ var $$IMU_EXPORT$$;
         headers: {},
         extra: {}
     };
+
+    var options_page = "https://qsniyg.github.io/maxurl/options.html";
 
     // restore console.log for websites that remove it (twitter)
     // https://gist.github.com/Ivanca/4586071
@@ -10526,7 +10528,8 @@ var $$IMU_EXPORT$$;
             return {
                 url: src.replace(/\/newsapp_[a-z]+\/([0-9]+\/[0-9]+\/)[0-9]+$/, "/newsapp_match/$10"),
                 headers: {
-                    "Referer": null
+                    "Origin": "",
+                    "Referer": ""
                 }
             };
         }
@@ -10654,7 +10657,7 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/cache\/[0-9a-zA-Z]+\/[0-9a-z]+-[0-9]+\//, "/");
         }
 
-        if (domain === "image.afcdn.com" && false) {
+        if (domain === "image.afcdn.com") {
             // https://image.afcdn.com/story/20170706/selena-gomez-1102651_w767h767c1cx1816cy877.jpg
             //   https://image.afcdn.com/story/20170706/selena-gomez-1102651.jpg
             // https://image.afcdn.com/story/20130911/cara-delevingne-98052_w767h767c1cx345cy200.jpg
@@ -10663,10 +10666,24 @@ var $$IMU_EXPORT$$;
             //   https://image.afcdn.com/album/D20180221/allison-janney-phalbm25328123.jpg
             // https://image.afcdn.com/story/20141004/rihanna-507111_w670.jpg
             //   https://image.afcdn.com/story/20141004/rihanna-507111.jpg
-            // doesn't work: (redirects to blank image, no content-length header, can't find differences in headers)
             // https://image.afcdn.com/story/20170706/selena-gomez-1102505_w670.jpg
+            //   https://image.afcdn.com/story/20170706/selena-gomez-1102505.jpg -- still works
             // https://image.afcdn.com/story/20170706/selena-gomez-1102441_w670.jpg
-            return src.replace(/(-[0-9]+)_[a-z0-9]+(\.[^/.]*)/, "$1$2");
+            //   https://image.afcdn.com/story/20170706/selena-gomez-1102441.jpg -- still works
+            // https://image.afcdn.com/story/20140722/emma-watson-shakes-off-good-girl-image-with-sexy-new-role-in-the-bling-ring-312896_w767h767c1.jpg
+            //   https://image.afcdn.com/story/20140722/emma-watson-shakes-off-good-girl-image-with-sexy-new-role-in-the-bling-ring-312896.jpg
+            // https://image.afcdn.com/stars/people/1001-1_s96cx1221cy1290cxt530cyt340cxb1961cyb1770.jpg
+            //   https://image.afcdn.com/stars/people/1001-1.jpg
+            // theory: if referer != null (last image), redirects to blank image, no content-length header, can't find differences in headers
+            // doesn't seem to be true. trying an image under another browser doesn't work either. could be a cache server problem
+            // using referer headers seems to work
+            return {
+                url: src.replace(/(-[0-9]+)_[a-z0-9]+(\.[^/.]*)/, "$1$2"),
+                headers: {
+                    Origin: "https://www.sofeminine.co.uk/",
+                    Referer: "https://www.sofeminine.co.uk/"
+                }
+            };
         }
 
         if (domain.match(/static[0-9]*\.greatsong\.net/) ||
@@ -16727,7 +16744,7 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/thumbs\/phoca_thumb_[^/._]*_/, "/");
         }
 
-        if (src.match(/\/sfc\/servlet\.shepherd\/version\/renditionDownload/) && false) {
+        if (src.match(/\/sfc\/servlet\.shepherd\/version\/renditionDownload/)) {
             // wip, need way to disable downloading?
             // sources:
             // https://salesforce.stackexchange.com/questions/171149/lightning-component-using-renditiondownload-to-view-files-img-doc-xlxs-etc
@@ -16744,6 +16761,7 @@ var $$IMU_EXPORT$$;
             // https://forum.bigcommerce.com/sfc/servlet.shepherd/version/renditionDownload?rendition=THUMB720BY480&versionId=06813000005iizB&operationContext=CHATTER&contentId=05T1300000FCL6J
             //   https://forum.bigcommerce.com/sfc/servlet.shepherd/version/renditionDownload?rendition=ORIGINAL_Jpg&versionId=06813000005iizB&operationContext=CHATTER&contentId=05T1300000FCL6J -- works
             //return src.replace(/(\/renditionDownload.*?[?&]rendition=)[^&]*/, "$1ORIGINAL_Png");
+            return src.replace(/\/renditionDownload.*?[?&]versionId=([^&]*).*/, "/download/$1");
         }
 
         if (domain === "cdn.ome.lt") {
@@ -17258,8 +17276,56 @@ var $$IMU_EXPORT$$;
 
     var cursor_default = function() {
         document.documentElement.style.cursor = "default";
-    }
+    };
 
+
+    var infobox_timer = null;
+    var show_image_infobox = function(text) {
+        var div = document.createElement("div");
+        div.style.backgroundColor = "#fffabb";
+        div.style.position = "absolute";
+        div.style.top = "0px";
+        div.style.left = "0px";
+        div.style.padding = ".4em .8em";
+        div.style.boxShadow = "0px 0px 20px rgba(0,0,0,.6)";
+        div.style.margin = ".8em";
+
+        div.innerHTML = text;
+
+        div.onclick = function() {
+            document.body.removeChild(div);
+
+            if (infobox_timer) {
+                clearTimeout(infobox_timer);
+                infobox_timer = null;
+            }
+        };
+
+        document.body.appendChild(div);
+
+        var do_timeout = function() {
+            if (infobox_timer)
+                return;
+
+            infobox_timer = setTimeout(function() {
+                document.body.removeChild(div);
+            }, 6000);
+        };
+
+        if (document.hasFocus()) {
+            do_timeout();
+        } else {
+            document.onfocus = function() {
+                do_timeout();
+                document.onfocus = null;
+            };
+
+            window.onfocus = function() {
+                do_timeout();
+                window.onfocus = null;
+            };
+        }
+    };
 
     var check_image = function(url, obj, err_cb, ok_cb) {
         if (url === document.location.href) {
@@ -17267,6 +17333,15 @@ var $$IMU_EXPORT$$;
         } else  {
             var headers = obj.headers;
             console_log(url);
+
+            var mouseover_text = function(reason) {
+                var mouseover = settings.mouseover_trigger.join(", ");
+                if (!settings.mouseover)
+                    mouseover = "disabled";
+
+                show_image_infobox("Mouseover (<a style='color:blue; font-weight:bold' href='" + options_page + "' target='_blank'>" + mouseover + "</a>) is needed to display the original version (" + reason + ")");
+            };
+
             if (!_nir_debug_ || !_nir_debug_.no_request) {
                 cursor_wait();
 
@@ -17288,6 +17363,8 @@ var $$IMU_EXPORT$$;
                 if (customheaders) {
                     document.documentElement.style.cursor = "default";
                     console_log("Custom headers needed, currently unhandled");
+
+                    mouseover_text("custom headers");
                     return;
                 }
 
@@ -17361,6 +17438,7 @@ var $$IMU_EXPORT$$;
                                 (headers["content-disposition"] &&
                                  headers["content-disposition"].toLowerCase().match(/^ *attachment/))) {
                                 console_error("Forces download");
+                                mouseover_text("forces download");
                                 return;
                             }
 
