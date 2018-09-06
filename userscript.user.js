@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.5.13
+// @version      0.5.14
 // @description  Finds larger or original versions of images
 // @author       qsniyg
 // @include      *
@@ -265,6 +265,14 @@ var $$IMU_EXPORT$$;
             return [url, url.replace(/\.jpeg(\?.*)?$/, ".png$1")];
         } else {
             return [url, url.replace(/\.png(\?.*)?$/, ".jpeg$1")];
+        }
+    };
+
+    var add_extensions_with_jpeg = function(url) {
+        if (url.match(/\.jpg(?:\?.*)?$/)) {
+            return [url, url.replace(/\.jpg(\?.*)?$/, ".png$1"), , url.replace(/\.jpg(\?.*)?$/, ".jpeg$1")];
+        } else {
+            return [url, url.replace(/\.png(\?.*)?$/, ".jpg$1"), url.replace(/\.png(\?.*)?$/, ".jpeg$1")];
         }
     };
 
@@ -2801,6 +2809,8 @@ var $$IMU_EXPORT$$;
                     src.indexOf("/galleryimage/") >= 0)) ||
             // https://static.fthis.gr/userfiles/articles/legacy/badb6201-6565-4904-bcdd-3494b9ddea15.jpg?h=573&scale=both&bgcolor=151515&mode=pad
             domain === "static.fthis.gr" ||
+            // https://img.pixelz.com/blog/how-to-shoot-a-lookbook/photo-bohemian-model-rocks-and-sand.jpg?w=1000
+            (domain === "img.pixelz.com" && src.indexOf("/blog/") >= 0) ||
             // http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
             // https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
             src.match(/\/demandware\.static\//) ||
@@ -3172,6 +3182,8 @@ var $$IMU_EXPORT$$;
             (domain_nowww === "ntdtv.kr" && src.indexOf("/assets/") >= 0) ||
             // http://xdn.tf.rs/2015/05/18/Dzenifer-Lopez-1-670x984.jpg
             domain === "xdn.tf.rs" ||
+            // https://static.acg12.com/uploads/2015/07/7cedbaa31f53feaa86fed37fd9fe9da6-320x200.jpg
+            domain === "static.acg12.com" ||
             // https://cdn.gamerant.com/wp-content/uploads/resident-evil-2-director-remake-faith-738x410.jpg.webp
             //   https://cdn.gamerant.com/wp-content/uploads/resident-evil-2-director-remake-faith.jpg.webp
             // https://d13ezvd6yrslxm.cloudfront.net/wp/wp-content/images/x-men-apocalypse-700x300.jpg
@@ -6268,6 +6280,8 @@ var $$IMU_EXPORT$$;
             domain === "images.meredith.com" ||
             // http://img-cdn.jg.jugem.jp/584/719314/20131206_802590.jpg.thumb.jpg
             domain === "img-cdn.jg.jugem.jp" ||
+            // http://anime-thai.net/bbs/data/attachment/album/201405/22/171403xnhmbbh70bx5kp47.jpg.thumb.jpg
+            domain_nowww === "anime-thai.net" ||
             // http://styleyen.com/galleries/6/image_slide/2/taylor-swift-bangs.jpg.thumb_200_width.jpg
             domain_nowww === "styleyen.com" ||
             // http://www.nbstr.org/sitebuildercontent/sitebuilderpictures/webassets/hercules.jpg.w300h300.jpg
@@ -6739,7 +6753,14 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/v[0-9]+\/[^/]*$/, "");
         }
 
-        if (domain.match(/img[0-9]*\.goodfon\.com/)) {
+        if ((domain_nosub === "goodfon.com" ||
+             // https://img1.goodfon.ru/original/2560x1440/8/18/devochka-povyazka-kniga-bluzka.jpg
+             //   https://img1.goodfon.ru/wallpaper/original/8/18/devochka-povyazka-kniga-bluzka.jpg
+             domain_nosub === "goodfon.ru" ||
+             // https://img3.badfon.ru/wallpaper/big/c/b0/devushka-nagota-dlinnye-volosy.jpg
+             //   https://img3.badfon.ru/wallpaper/original/c/b0/devushka-nagota-dlinnye-volosy.jpg
+            domain_nosub === "badfon.ru") &&
+            domain.match(/^img[0-9]*\./)) {
             // https://img4.goodfon.com/wallpaper/middle/2/86/brevno-sova-ptitsa.jpg
             //   https://img4.goodfon.com/wallpaper/original/2/86/brevno-sova-ptitsa.jpg
             // https://img2.goodfon.com/original/1280x720/0/e6/venera-ray-devushka-krasivaya.jpg
@@ -8368,6 +8389,8 @@ var $$IMU_EXPORT$$;
             domain === "i.img.ie" ||
             // https://i.lensdump.com/i/8UiN2c.md.jpg
             domain === "i.lensdump.com" ||
+            // https://img.faploads.com/2018/06/21/Mandy-Moore-223.md.jpg
+            domain === "img.faploads.com" ||
             // http://image-bugs.com/images/2017/09/09/CelebsFlash.com_NP_Harpers_Bazaar_090817__3_.md.jpg
             domain_nowww === "image-bugs.com") {
             // http://imgmax.com/images/2017/03/20/0OQhE.th.jpg
@@ -8538,6 +8561,12 @@ var $$IMU_EXPORT$$;
             // http://www.renwenjun.com/uploads/allimg/170929/12012X635_lit.jpg
             //   http://www.renwenjun.com/uploads/allimg/170929/12012X635_0.jpg
             return src.replace(/_lit(\.[^/.]*)$/, "_0$1");
+        }
+
+        if (domain_nowww === "lrfczp.com") {
+            // http://lrfczp.com/uploads/allimg/17090908/co1FZ9201H5-0_160_220.jpg
+            //   http://lrfczp.com/uploads/allimg/17090908/co1FZ9201H5-0.jpg
+            return src.replace(/_[0-9]+_[0-9]+(\.[^/.]*)$/, "$1");
         }
 
         if (domain === "img-toutiao.mia.com") {
@@ -9716,6 +9745,24 @@ var $$IMU_EXPORT$$;
                 .replace(/\/pic\/[0-9]+x[0-9]+\/([0-9]+)\/([^/]*)$/, "/images/$1/" + prefix + "_$2");
         }
 
+        if (domain_nowww === "artleo.com") {
+            // https://www.artleo.com/mini/201608/322769.jpg
+            //   https://www.artleo.com/images/201608/artleo.com_322769.jpg
+            var prefix = "artleo.com";
+            return src
+                .replace(/\/(?:mini|large)\/([0-9]+)\/([^/]*)$/, "/images/$1/" + prefix + "_$2")
+                .replace(/\/pic\/[0-9]+x[0-9]+\/([0-9]+)\/([^/]*)$/, "/images/$1/" + prefix + "_$2");
+        }
+
+        if (domain_nowww === "goodwp.com") {
+            // http://www.goodwp.com/large/201410/31901.jpg
+            //   http://www.goodwp.com/images/201410/goodwp.com_31901.jpg
+            var prefix = "goodwp.com";
+            return src
+                .replace(/\/(?:mini|large)\/([0-9]+)\/([^/]*)$/, "/images/$1/" + prefix + "_$2")
+                .replace(/\/pic\/[0-9]+x[0-9]+\/([0-9]+)\/([^/]*)$/, "/images/$1/" + prefix + "_$2");
+        }
+
         if (domain_nowww === "wykop.pl" && src.indexOf("/cdn/") >= 0) {
             // https://www.wykop.pl/cdn/c3201142/comment_N6Pmm34BPk025H5hqkRnulsYFT9SvVHc,w400.jpg
             //   https://www.wykop.pl/cdn/c3201142/comment_N6Pmm34BPk025H5hqkRnulsYFT9SvVHc.jpg
@@ -9805,6 +9852,47 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/thumb(?:-[0-9]*)?-([0-9]*\.[^/.]*)$/, "/$1");
         }
 
+        if (domain === "mfiles.alphacoders.com" &&
+            options && options.cb && options.do_request) {
+            // https://mfiles.alphacoders.com/184/18416.jpg
+            //   https://images5.alphacoders.com/414/414660.jpg
+            // https://mobile.alphacoders.com/wallpapers/view/18416/
+            var id = src.replace(/.*\/([0-9]+)\.[^/.]*$/, "$1");
+            if (id !== src) {
+                options.do_request({
+                    url: "https://mobile.alphacoders.com/wallpapers/view/" + id + "/",
+                    method: "GET",
+                    onload: function(resp) {
+                        if (resp.readyState === 4) {
+                            var match = resp.responseText.match(/"([a-z]+:\/\/wall\.alphacoders\.com\/big\.php\?i=[0-9]+)"/);
+                            if (match) {
+                                options.do_request({
+                                    url: match[1],
+                                    method: "GET",
+                                    onload: function(resp) {
+                                        if (resp.readyState === 4) {
+                                            var match = resp.responseText.match(/<meta *property="og:image" *content="([^"]*)"/);
+                                            if (match) {
+                                                options.cb(match[1]);
+                                            } else {
+                                                options.cb(null);
+                                            }
+                                        }
+                                    }
+                                });
+                            } else {
+                                options.cb(null);
+                            }
+                        }
+                    }
+                });
+
+                return {
+                    waiting: true
+                };
+            }
+        }
+
         if (domain_nowww === "gpstatic.com") {
             // https://gpstatic.com/acache/11/67/1/uk/s2_thumb-c5e9b414fd43a81842692da09938a394.jpg
             //   https://gpstatic.com/acache/11/67/1/uk/s2-c5e9b414fd43a81842692da09938a394.jpg
@@ -9868,12 +9956,46 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/imagecache\/[0-9]+x[0-9]+\//, "/");
         }
 
-        if (domain === "www.desktopimages.org" &&
-            src.indexOf("/pictures/") >= 0) {
+        if ((domain === "www.desktopimages.org" ||
+             // http://www.hdbilder.eu//pictures/2012/1002/1/th1_214136.jpg
+             //   http://www.hdbilder.eu//pictures/2012/1002/1/orig_214136.jpg
+             // http://www.hdbilder.eu/p/get_photo/214136/960/600
+             domain_nowww === "hdbilder.eu" ||
+             // http://www.fondsecran.eu//pictures/2015/1106/1/th1_637032.jpg
+             //   http://www.fondsecran.eu//pictures/2015/1106/1/orig_637032.jpg
+             domain_nowww === "fondsecran.eu")) {
             // http://www.desktopimages.org/pictures/2015/0713/1/th1_144184.jpg
             //   http://www.desktopimages.org/pictures/2015/0713/1/apple-os-x-el-capitans-wallpaper-144184.jpg
             //   http://www.desktopimages.org/pictures/2015/0713/1/orig_144184.jpg
-            return src.replace(/\/[^/]*[-_]([0-9]+\.[^/.]*)$/, "/orig_$1");
+            if (src.indexOf("/pictures/") >= 0) {
+                newsrc = src.replace(/\/[^/]*[-_]([0-9]+\.[^/.]*)$/, "/orig_$1");
+                if (newsrc !== src)
+                    return newsrc;
+            }
+
+            if (options && options.cb && options.do_request &&
+                src.match(/\/p\/get_photo\/[0-9]+\/[0-9]+/)) {
+                var querysrc = src.replace(/\/p\/get_photo\/([0-9]+\/[0-9]+)(?:\/.*)?$/, "/p/$1/0/o");
+                console.log(querysrc);
+                options.do_request({
+                    url: querysrc,
+                    method: "GET",
+                    onload: function(resp) {
+                        if (resp.readyState === 4) {
+                            var match = resp.responseText.match(/<img *src="([^">]*\/orig_[^/">]*)"/);
+                            if (match) {
+                                options.cb(match[1]);
+                            } else {
+                                options.cb(null);
+                            }
+                        }
+                    }
+                });
+
+                return {
+                    waiting: true
+                };
+            }
         }
 
         if (domain === "www.bikerpunks.com" &&
@@ -10021,7 +10143,10 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/thumb[0-9]+\//, "/");
         }
 
-        if (domain === "www.celebjihad.com") {
+        if (domain === "www.celebjihad.com" ||
+            // https://image.dek-d.com/27/0327/3957/t_126536551
+            //   https://image.dek-d.com/27/0327/3957/126536551
+            domain === "image.dek-d.com") {
             // https://www.celebjihad.com/celeb-jihad/harlots/victoria_justice38/t_victoria_justice1.jpg
             //   https://www.celebjihad.com/celeb-jihad/harlots/victoria_justice38/victoria_justice1.jpg
             return src.replace(/\/t_([^/]*)$/, "/$1");
@@ -11745,8 +11870,10 @@ var $$IMU_EXPORT$$;
             return src.replace(/s(\.[^/.]*)$/, "l$1");
         }
 
-        if (domain === "www.showgle.co.kr" &&
-            src.indexOf("/uploads/") >= 0) {
+        if ((domain === "www.showgle.co.kr" && src.indexOf("/uploads/") >= 0) ||
+            // https://photos.modelmayhem.com/photos/111017/06/4e9c2f9a9c118_m.jpg
+            //   https://photos.modelmayhem.com/photos/111017/06/4e9c2f9a9c118.jpg
+            (domain === "photos.modelmayhem.com" && src.indexOf("/photos/") >= 0)) {
             // http://www.showgle.co.kr/uploads/data/team_info_new/photos/201803/7ede4d9a797f3899dcdc547f0fd673b2_m.jpg
             //   http://www.showgle.co.kr/uploads/data/team_info_new/photos/201803/7ede4d9a797f3899dcdc547f0fd673b2.jpg
             return src.replace(/(\/[0-9a-f]+)_[a-z](\.[^/.]*)$/, "$1$2");
@@ -12013,10 +12140,24 @@ var $$IMU_EXPORT$$;
               // http://modnaya.org/uploads/posts/2016-10/thumbs/1475685280_a4.jpg
               //   http://modnaya.org/uploads/posts/2016-10/1475685280_a4.jpg
               domain_nowww === "modnaya.org" ||
+              // https://negani.com/uploads/posts/2012-06/thumbs/1340164617_cosplay_girls_27.jpg
+              //   https://negani.com/uploads/posts/2012-06/1340164617_cosplay_girls_27.jpg
+              domain_nowww === "negani.com" ||
+              // http://chukcha.net/uploads/posts/2012-06/thumbs/1340116521_girls_cosplay_01077_019.jpg
+              //   http://chukcha.net/uploads/posts/2012-06/1340116521_girls_cosplay_01077_019.jpg
+              domain_nowww === "chukcha.net" ||
+              // http://opa.kg/uploads/posts/2013-04/thumbs/1365978252_1365942089_Nemnogo_kospleya_8.jpg
+              //   http://opa.kg/uploads/posts/2013-04/1365978252_1365942089_Nemnogo_kospleya_8.jpg
+              domain_nowww === "opa.kg" ||
+              // http://pirojok.net/uploads/posts/2018-03/thumbs/1522295041_metart_tienta_lilit-a_high_0003.jpg
+              //   http://pirojok.net/uploads/posts/2018-03/1522295041_metart_tienta_lilit-a_high_0003.jpg
+              domain_nowww === "pirojok.net" ||
               // https://bugaga.ru/uploads/posts/2015-08/thumbs/1439815321_kartinki-27.jpg
               //   https://bugaga.ru/uploads/posts/2015-08/1439815321_kartinki-27.jpg
               domain === "bugaga.ru") &&
-             src.indexOf("/uploads/") >= 0)) {
+             src.indexOf("/uploads/") >= 0) ||
+            src.match(/^[a-z]+:\/\/[^/]*\/uploads\/posts\/[0-9]{4}-[0-9]{2}\/thumbs\/[0-9]+_[^/]*$/) ||
+            src.match(/^[a-z]+:\/\/[^/]*\/uploads\/[a-z]+\/(?:[0-9]+x[0-9]+\/)?[0-9]{4}-[0-9]{2}\/thumbs\/[0-9]+x[0-9]+_crop_[0-9]+_[^/]*$/)) {
             // http://www.doodoo.ru/uploads/posts/2015-08/thumbs/zverey-foto-40.jpg
             //   http://www.doodoo.ru/uploads/posts/2015-08/zverey-foto-40.jpg
             //return src.replace(/\/thumbs\//, "/");
@@ -12141,7 +12282,10 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/\.thumbnails\/([^/]*)-[0-9]+x[0-9]+(\.[^/.]*)$/, "/$1$2");
         }
 
-        if (domain === "fanaru.com") {
+        if (domain_nowww === "fanaru.com" ||
+            // http://stuffpoint.com/anime-and-manga/image/thumb/404463-anime-and-manga-snow-queen.jpg
+            //   http://stuffpoint.com/anime-and-manga/image/404463-anime-and-manga-snow-queen.jpg
+            domain_nowww === "stuffpoint.com") {
             // http://fanaru.com/waup/image/thumb/188305-waup-wassup.jpg -- 280x210
             //   http://fanaru.com/waup/image/188305-waup-wassup.jpg -- 3888x2592
             return src.replace(/\/image\/thumb\//, "/image/");
@@ -12837,7 +12981,10 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/thumb(\/.*?)s(\.[^/.]*)$/, "/image$1$2");
         }
 
-        if (domain === "www.consolefun.fr") {
+        if (domain === "www.consolefun.fr" ||
+            // https://nude-gals.com/galleries/karmen%20bella/0001/thumbs/th_karmen-bella-is-a-treat-to-behold-by-digital-desire-01.jpg
+            //   https://nude-gals.com/galleries/karmen%20bella/0001/karmen-bella-is-a-treat-to-behold-by-digital-desire-01.jpg
+            domain_nowww === "nude-gals.com") {
             // http://www.consolefun.fr/fiche/ps4/thumbs/th_1523541277uwo0iwsr40b1rg0p3fq6.jpg
             //   http://www.consolefun.fr/fiche/ps4/1523541277uwo0iwsr40b1rg0p3fq6.jpg
             return src.replace(/\/thumbs\/th_/, "/");
@@ -14899,7 +15046,18 @@ var $$IMU_EXPORT$$;
             // http://bm.img.com.ua/berlin/storage/afisha/600x500/c/32/e2bca5867c6ef06310bf4d8210bda32c.jpg
             //   http://bm.img.com.ua/berlin/storage/afisha/orig/c/32/e2bca5867c6ef06310bf4d8210bda32c.jpg
             //return src.replace(/(:\/\/[^/]*\/[a-z]\/)[0-9]+x[0-9]+\//, "$1orig/");
-            return src.replace(/\/[0-9]+x[0-9]+(\/[0-9a-f]\/[0-9a-f]{2}\/[0-9a-f]+\.[^/.]*)$/, "/orig$1");
+            newsrc = src.replace(/\/[0-9]+x[0-9]+(\/[0-9a-f]\/[0-9a-f]{2}\/[0-9a-f]+\.[^/.]*)$/, "/orig$1");
+            if (newsrc !== src)
+                return newsrc;
+        }
+
+        if (domain === "rs.img.com.ua") {
+            // http://rs.img.com.ua/crop?v2=1&w=600&h=0&url=%2F%2Fv.img.com.ua%2Fb%2Forig%2F4%2Fdf%2F326931add26ff5064449f5b923643df4.jpg
+            //   http://v.img.com.ua/b/orig/4/df/326931add26ff5064449f5b923643df4.jpg
+            newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/crop.*?[?&]url=([^&]*).*?$/, "$1");
+            if (newsrc !== src) {
+                return urljoin(src, decodeURIComponent(newsrc));
+            }
         }
 
         if (domain === "img-hw.xvideos.com") {
@@ -14951,7 +15109,9 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/thumb\/([0-9]+\/[0-9]+)s(\.[^/.]*)$/, "/src/$1$2");
         }
 
-        if (domain === "s.heavenlynudes.net") {
+        if (domain === "s.heavenlynudes.net" ||
+            // http://s.papajizz.com/227/096/22709658c972619c356/thumbs/353469058c972619efaa.jpg
+            domain === "s.papajizz.com") {
             // http://s.heavenlynudes.net/085/279/085279556b1e0a7f645/thumbs/1620146556b1e0aa118c.jpg
             //   http://s.heavenlynudes.net/085/279/085279556b1e0a7f645/1620146556b1e0aa118c.jpg
             return src.replace(/\/thumbs\/([0-9a-f]+\.[^/.]*)$/, "/$1");
@@ -15601,6 +15761,9 @@ var $$IMU_EXPORT$$;
             // https://babe.today/pics/amourangels/nelly/land-skinny-babes-desnudas/nelly-11.jpg
             //   https://babe.today/pics/amourangels/nelly/land-skinny-babes-desnudas/nelly-11.jpg
             domain_nowww === "babe.today" ||
+            // https://xxxporn.pics/thumb/digitaldesire/bree-daniels/gorgeous-softcore-hotel/hd-bree-daniels-15.jpg
+            //   https://xxxporn.pics/media/digitaldesire/bree-daniels/gorgeous-softcore-hotel/bree-daniels-15.jpg
+            domain_nowww === "xxxporn.pics" ||
             // https://pics.jjgirls.com/thumbs/celebsonly/rihanna/april-celebrities-sweety/hd-rihanna-5.jpg
             //   https://pics.jjgirls.com/pictures/celebsonly/rihanna/april-celebrities-sweety/rihanna-5.jpg
             domain_nosub === "jjgirls.com") {
@@ -15853,7 +16016,10 @@ var $$IMU_EXPORT$$;
             return add_extensions(src.replace(/(?:\/data\/preview\/[0-9a-f]+\/[0-9a-f]+\/|\/sample\/)([0-9a-f]+)(\/[^/]*)?(\.[^/.?]*)(?:[?#]*)?$/, "/image/$1$2$3"));
         }
 
-        if (domain === "cdn.anime-pictures.net") {
+        if (domain === "cdn.anime-pictures.net" ||
+            // http://ip1.anime-pictures.net/jvwall_images/c40/c40921ef095eaadb0bb668a193b1da3b_bp.jpg
+            //   http://ip1.anime-pictures.net/jvwall_images/c40/c40921ef095eaadb0bb668a193b1da3b.jpg
+            domain_nosub === "anime-pictures.net") {
             // https://cdn.anime-pictures.net/jvwall_images/5c1/5c1600107b0c809aa60ba085003cbb03_sp.png -- 111x150
             //   https://cdn.anime-pictures.net/jvwall_images/5c1/5c1600107b0c809aa60ba085003cbb03_bp.png.webp -- 447x600
             //   https://cdn.anime-pictures.net/jvwall_images/5c1/5c1600107b0c809aa60ba085003cbb03.png -- 750x1006
@@ -16357,10 +16523,16 @@ var $$IMU_EXPORT$$;
             return src.replace(/(\/pictures\/[0-9]+)_[0-9]+_(\.[^/.]*)$/, "$1$2");
         }
 
-        if (domain === "cdn.hqsluts.com") {
+        if (domain === "cdn.hqsluts.com" ||
+            // https://www.hqbabes.com/t/3p159968
+            //   https://www.hqbabes.com/t/3c159968
+            domain_nowww === "hqbabes.com" ||
+            // https://c.xme.net/3p159968
+            //   https://c.xme.net/3c159968
+            domain === "c.xme.net") {
             // http://cdn.hqsluts.com/0p313268
             //   http://cdn.hqsluts.com/0c313268
-            return src.replace(/(:\/\/[^/]*\/[0-9]+)[a-z]([0-9]+(?:\.[^/.]*)?)$/, "$1c$2");
+            return src.replace(/(:\/\/[^/]*\/(?:t\/)?[0-9]+)[a-z]([0-9]+(?:\.[^/.]*)?)$/, "$1c$2");
         }
 
         if (domain_nowww === "sensualgirls.org" &&
@@ -16377,6 +16549,13 @@ var $$IMU_EXPORT$$;
         }
 
         if ((domain_nosub === "mainbabes.com" && domain.match(/^content[0-9]*\./)) ||
+            // https://content4.livejasminbabes.net/zishy.com/0070/tn_01.jpg
+            (domain_nosub === "livejasminbabes.net" && domain.match(/^content[0-9]*\./)) ||
+            // https://content8.babesandgirls.com/met-art/1073/tn_01.jpg
+            (domain_nosub === "babesandgirls.com" && domain.match(/^content[0-9]*\./)) ||
+            // https://content6.exgirlfriendmarket.com/digitaldesire.com/1157/tn_02.jpg
+            // https://contenta.exgirlfriendmarket.com/digitaldesire.com/1157/tn_01.jpg
+            (domain_nosub === "exgirlfriendmarket.com" && domain.match(/^content[0-9a-z]*\./)) ||
             // http://pornodontstop.com/gallery/fucasvz/7980/tn_002.jpg
             domain_nosub === "pornodontstop.com") {
             // https://content8.mainbabes.com/amourangels.com/1122/tn_00.jpg
@@ -16384,6 +16563,12 @@ var $$IMU_EXPORT$$;
             newsrc = src.replace(/\/tn_([0-9]+\.[^/.]*)$/, "/$1");
             if (newsrc !== src)
                 return newsrc;
+        }
+
+        if (domain_nosub === "livejasminbabes.net" && domain.match(/^content[0-9]*\./)) {
+            // https://content6.livejasminbabes.net/upload/main/tn/8/3603785.jpg
+            //   https://content6.livejasminbabes.net/upload/main/8/3603785.jpg
+            return src.replace(/\/upload\/main\/tn\//, "/upload/main/");
         }
 
         if (domain_nowww === "captaingoodlink.com" &&
@@ -16618,7 +16803,12 @@ var $$IMU_EXPORT$$;
             src.match(/\/upload[0-9]*\/articles\//)) {
             // https://spi3uk.itvnet.lv/upload2/articles/71/715723/thumbs/500Vai-zinaji-ka-sis-7-1.jpg
             //   https://spi3uk.itvnet.lv/upload2/articles/71/715723/images/Vai-zinaji-ka-sis-7-1.jpg
-            return src.replace(/\/thumbs\/[0-9]+([^/]*)$/, "/images/$1");
+            //   https://spi3uk.itvnet.lv/upload2/articles/71/715723/images/_origin_Vai-zinaji-ka-sis-7-1.jpg
+            // https://spi4uk.itvnet.lv/upload/articles/30/304098/images/T-257.jpg -- 830x518
+            //   https://spi4uk.itvnet.lv/upload/articles/30/304098/images/_origin_T-257.jpg -- 1680x1050
+            return src
+                .replace(/\/thumbs\/[0-9]+([^/]*)$/, "/images/$1")
+                .replace(/\/images\/([^_][^/]*)$/, "/images/_origin_$1")
         }
 
         if (domain_nowww === "connectgalaxy.com") {
@@ -17114,11 +17304,48 @@ var $$IMU_EXPORT$$;
                                "/blob$1$2$3-data$4");
         }
 
-        if (domain_nowww === "imageweb.ws") {
+        if (domain_nowww === "imageweb.ws" ||
+            domain_nowww === "pussyspot.net") {
             // https://t.imageweb.ws/media/thumbs_200/13/12813/1435652.jpg
             // https://www.imageweb.ws/media/images_640/13/lydia-reed/lydia-reed-1435652.jpg
             //   https://www.imageweb.ws/media/images/13/lydia-reed/lydia-reed-1435652.jpg
+            // http://www.pussyspot.net/media/images_640/1/mandy-tyler/mandy-tyler-317777.jpg
+            //   http://www.pussyspot.net/media/images/1/mandy-tyler/mandy-tyler-317777.jpg
             return src.replace(/\/media\/images_[0-9]+\//, "/media/images/");
+        }
+
+        if ((domain === "t.imageweb.ws" ||
+             // http://cdn1.pussyspot.net/media/thumbs_200/1/526/317777.jpg
+             //   http://www.pussyspot.net/media/images/1/mandy-tyler/mandy-tyler-317777.jpg
+             (domain_nosub === "pussyspot.net" && domain.match(/^cdn[0-9]*\./))
+            ) &&
+            src.indexOf("/media/") && options && options.cb && options.do_request) {
+            // https://t.imageweb.ws/media/thumbs_200/12/11108/1181579.jpg
+            //   https://www.imageweb.ws/media/images/12/bree-daniels/bree-daniels-1181579.jpg
+            var match = src.match(/\/media\/[^/]*\/[0-9]+\/[0-9]+\/([0-9]+)\.[^/.]*/);
+            if (match) {
+                var id = match[1];
+
+                var queryurl = "http://www." + domain_nosub + "/a/" + id + ".html";
+                options.do_request({
+                    url: queryurl,
+                    method: "GET",
+                    onload: function(resp) {
+                        if (resp.readyState === 4) {
+                            var match = resp.responseText.match(/href="(\/media\/images\/[^"]*)"/);
+                            if (match) {
+                                options.cb(urljoin("http://www." + domain_nosub + "/", match[1]).replace(/\?.*/, ""));
+                            } else {
+                                options.cb(null);
+                            }
+                        }
+                    }
+                });
+            }
+
+            return {
+                waiting: true
+            };
         }
 
         if (domain_nosub === "pictoa.com" &&
@@ -17307,7 +17534,10 @@ var $$IMU_EXPORT$$;
             return src.replace(/(\/storage[0-9]*\/)t\/([0-9a-f])([0-9a-f]{2})([0-9a-f]+\.[^/.]*)$/, "$1$2/$3/$2$3$4");
         }
 
-        if (domain === "content.wafflegirl.com") {
+        if (domain === "content.wafflegirl.com" ||
+            // https://cdn.pornpictureshq.com/galleries/gthumb/5/608/5608634_a66a64b_2400x_.jpg -- stretched
+            //   https://cdn.pornpictureshq.com/galleries/content/5/608/5608634_a66a64b.jpg
+            domain === "cdn.pornpictureshq.com") {
             // https://content.wafflegirl.com/galleries/gthumb/4/372/4372786_feeb209__x180.jpg
             //   https://content.wafflegirl.com/galleries/content/4/372/4372786_feeb209.jpg
             return src.replace(/\/galleries\/gthumb\/(.*)(?:__x[0-9]+|_[0-9]+x_)(\.[^/.]*)$/, "/galleries/content/$1$2");
@@ -17500,12 +17730,15 @@ var $$IMU_EXPORT$$;
             return src.replace(/(:\/\/[^/]*\/)thumbs\/([0-9]+-[^/]*)$/, "$1uploads/posts/$2");
         }
 
-        if (domain_nowww === "safebooru.org") {
+        if (domain_nowww === "safebooru.org" ||
+            // https://realbooru.com/thumbnails/512/thumbnail_73f1ecc9ae212fa6be7e45d30aae769bfa5376c0.jpg?513812
+            //   https://realbooru.com/images/512/73f1ecc9ae212fa6be7e45d30aae769bfa5376c0.jpg?513812
+            domain_nowww === "realbooru.com") {
             // http://safebooru.org/thumbnails/2473/thumbnail_6cf1f0d716b67c369ffe6310219a595f.jpeg?2574463
             //   http://safebooru.org//images/2473/6cf1f0d716b67c369ffe6310219a595f.jpeg?2574463
             // http://safebooru.org//samples/1293/sample_661a213e5b86a59e86ebfb58ab60b137d4518731.png?1346716
             //   http://safebooru.org//images/1293/661a213e5b86a59e86ebfb58ab60b137d4518731.png?1346716
-            return src.replace(/\/(?:thumbnails|samples)(\/[0-9]+\/)(?:thumbnail|sample)_([0-9a-f]+\.[^/.]*)$/, "/images$1$2");
+            return add_extensions_with_jpeg(src.replace(/\/(?:thumbnails|samples)(\/[0-9]+\/)(?:thumbnail|sample)_([0-9a-f]+\.[^/.]*)$/, "/images$1$2"));
         }
 
         if (domain_nowww === "anime-zone.ru") {
@@ -17553,7 +17786,9 @@ var $$IMU_EXPORT$$;
             //   https://img.getbg.net/upload/full/8/373017_devushka_krasnye_1680x1050_(www.GetBg.net).jpg
             // https://img.getbg.net/upload/small/8/373053_devochka_kukla_nakidka_povyazka_forma_1680x1050_(www.GetBg.net).jpg
             //   https://img.getbg.net/upload/full/8/373053_devochka_kukla_nakidka_povyazka_forma_1680x1050_(www.GetBg.net).jpg
-            return src.replace(/\/upload\/[a-z]+\/([0-9]*\/)(?:thumbnail_)?([0-9]+_[^/]*)$/,
+            // https://img.getbg.net/upload/thumbnail/14/thumbnail_www.GetBg.net_Girls_Models_Models_M_Mandy_Moore_033567_.jpg
+            //   https://img.getbg.net/upload/full/14/www.GetBg.net_Girls_Models_Models_M_Mandy_Moore_033567_.jpg
+            return src.replace(/\/upload\/[a-z]+\/([0-9]*\/)(?:thumbnail_)?([^/]*)$/,
                                "/upload/full/$1$2");
         }
 
@@ -17960,6 +18195,9 @@ var $$IMU_EXPORT$$;
         }
 
         if (domain_nowww === "imgstudio.org" ||
+            // https://imgadult.com/upload/small/2017/10/26/59f205b06c988.jpg
+            //   https://imgadult.com/upload/big/2017/10/26/59f205b06c988.jpg
+            domain_nowww === "imgadult.com" ||
             // http://imgcredit.xyz/upload/small/2017/07/25/5976cb96e01db.jpg
             //   http://imgcredit.xyz/upload/big/2017/07/25/5976cb96e01db.jpg
             // http://sr85.imgcredit.xyz/upload/small/2017/07/26/5978364c3cade.jpg
@@ -18144,6 +18382,329 @@ var $$IMU_EXPORT$$;
             //   https://m.smedata.sk/api-media/media/image/sme/3/15/153563/153563.jpg?rev=1
             return src.replace(/(\/api-media\/media\/image\/.*)_[0-9]+x(\.[^/.]*)$/, "$1$2");
         }
+
+        if (domain_nosub === "diariolibre.com" &&
+            domain.match(/estatico[0-9]*\.diariolibre\.com/)) {
+            // https://estatico2.diariolibre.com/binrepository/400x300/0c0/0d0/none/10904/QQUT/image_content_10068843_20180531145201.jpg
+            //   https://estatico2.diariolibre.com/binrepository//image_content_10068843_20180531145201.jpg
+            return src.replace(/\/binrepository\/[0-9]+x[0-9]+\/.*(\/[^/]*)(?:[?#].*)?$/, "/binrepository/$1");
+        }
+
+        if (domain_nowww === "modelisto.com") {
+            // https://modelisto.com/photoshoot/enji-night-model-75610@180.jpg
+            //   https://modelisto.com/photoshoot/enji-night-model-75610.jpg
+            return src.replace(/(-[0-9]+)@[0-9]+(\.[^/.]*)$/, "$1$2");
+        }
+
+        if (domain === "media.kg-portal.ru") {
+            // https://media.kg-portal.ru/games/s/supermariobros/cosplay/supermariobros_3t.jpg
+            //   https://media.kg-portal.ru/games/s/supermariobros/cosplay/supermariobros_3.jpg
+            return src.replace(/t(\.[^/.]*)$/, "$1");
+        }
+
+        if (domain_nowww === "desktopwallpaperhd.net") {
+            // http://www.desktopwallpaperhd.net/thumbs/1/a/anime-wallpaper-17258.jpg
+            //   http://www.desktopwallpaperhd.net/wallpapers/1/a/anime-wallpaper-17258.jpg
+            return src.replace(/(:\/\/[^/]*\/)thumbs\//, "$1wallpapers/");
+        }
+
+        if (domain_nowww === "wallpaperplay.com") {
+            // https://wallpaperplay.com/walls/small-retina/b/5/f/43064.jpg
+            //   https://wallpaperplay.com/walls/full/b/5/f/43064.jpg
+            return src.replace(/\/walls\/[^/]*\//, "/walls/full/");
+        }
+
+        if (domain_nowww === "otherstars.ru") {
+            // http://otherstars.ru/thumbs/2018-07/04/i4t4of06zdfa1un0t7vqsukf2.jpg
+            //   http://otherstars.ru/img/2018-07/04/i4t4of06zdfa1un0t7vqsukf2.jpg
+            return src.replace(/(:\/\/[^/]*\/)thumbs\//, "$1img/");
+        }
+
+        if (domain_nosub === "pics.vc" &&
+            domain.match(/^s[0-9]*\./)) {
+            // http://s4.pics.vc/pics/s/369/7ed/eb1/39d/3697edeb139df8076edb3390ad8f91c4.jpg -- 300x449
+            //   http://s4.pics.vc/pics/n/369/7ed/eb1/39d/3697edeb139df8076edb3390ad8f91c4.jpg -- 800x1199
+            //   http://s4.pics.vc/pics/o/369/7ed/eb1/39d/3697edeb139df8076edb3390ad8f91c4.jpg -- 2815x4220
+            return src.replace(/(:\/\/[^/]*\/pics\/)[a-z]\//, "$1o/");
+        }
+
+        if ((domain_nosub === "imageshack.us" ||
+             domain_nosub === "imageshack.com") &&
+            domain.match(/^imagizer/)) {
+            // http://imagizer-cv.imageshack.us/v2/0x500q90/922/2inlKT.jpg
+            //   http://imagizer-cv.imageshack.us/v2/x/922/2inlKT.jpg
+            // https://imagizer.imageshack.com/v2/1280x0q90/922/2inlKT.jpg
+            //   https://imagizer.imageshack.com/v2/x/922/2inlKT.jpg
+            return src.replace(/(:\/\/[^/]*\/v2\/)[^/]*\//, "$1x/");
+        }
+
+        if (domain_nowww === "girlofthehour.com") {
+            // http://girlofthehour.com/IMG/poster_resized/AJE004x005.jpg
+            //   http://girlofthehour.com/IMG/poster/AJE004x005.jpg
+            return src.replace(/\/IMG\/poster_resized\//, "/IMG/poster/");
+        }
+
+        if (domain === "hwcdn.ddstatic.com") {
+            // http://hwcdn.ddstatic.com/bp-content/tour/tour_photos/2013_04_30/11481/bree_daniels_11481_13-gal-150-jpg/0008.jpg
+            //   http://hwcdn.ddstatic.com/bp-content/tour/tour_photos/2013_04_30/11481/bree_daniels_11481_13-gal-1600-jpg/0008.jpg
+            // http://hwcdn.ddstatic.com/bp-content/fhg/fhg_desktops/2010_11_desk/gal-1680-jpg/0005.jpg
+            regex = /(-gal-)[0-9]+(-[a-z]+\/[^/]*)$/;
+            return [
+                src.replace(regex, "$11600$2"),
+                src.replace(regex, "$11024$2")
+            ];
+        }
+
+        if (domain === "img.sexpornpages.com") {
+            // https://img.sexpornpages.com/converted/th/images01/image-169705.jpg
+            //   https://img.sexpornpages.com/images01/image-169705.jpg
+            return src.replace(/\/converted\/[a-z]+\/(images[0-9]*\/image-[0-9]+\.[^/.]*)$/, "/$1");
+        }
+
+        if (domain_nosub === "taopic.com" &&
+            domain.match(/^pic[0-9]*\./)) {
+            // http://pic01.taopic.com/180402/235105-1P4020Q04920-lp.jpg
+            //   http://img01.taopic.com/180402/235105-1P4020Q04920.jpg
+            return src.replace(/:\/\/pic([0-9]*\.[^/]*\/[0-9]+\/[0-9]+-[A-Z0-9]+)-[a-z]+(\.[^/.]*)$/,
+                               "://img$1$2");
+        }
+
+        if (domain === "static.hdw.eweb4.com" &&
+            options && options.cb && options.do_request) {
+            // http://static.hdw.eweb4.com/media/thumbs/1/111/1104264.jpg
+            //   http://hdw.eweb4.com/out/1104264.html
+            //   http://static.hdw.eweb4.com/media/wallpapers_dl/1/111/1104264-mandy-moore.jpg
+            //return src.replace(/\/media\/[^/]*\//, "/media/wallpapers_dl/");
+            var id = src.replace(/.*\/media\/thumbs\/.*\/([0-9]+)\.[^/.]*$/, "$1");
+            if (id !== src) {
+                options.do_request({
+                    url: "http://hdw.eweb4.com/out/" + id + ".html",
+                    method: "GET",
+                    onload: function(resp) {
+                        if (resp.readyState === 4) {
+                            var match = resp.responseText.match(/<meta *property="og:image" *content="([^"]*)"/);
+                            if (match) {
+                                options.cb(match[1]);
+                            } else {
+                                options.cb(null);
+                            }
+                        }
+                    }
+                });
+
+                return {
+                    waiting: true
+                };
+            }
+        }
+
+        if (domain_nowww === "wallpaperbackgrounds.com") {
+            // http://wallpaperbackgrounds.com/Content/wallpapers/celebrity/mandy%20moore/thumb-108169-16695.jpg
+            //   http://wallpaperbackgrounds.com/Content/wallpapers/celebrity/mandy%20moore/108169-16695.jpg
+            return src.replace(/(\/Content\/wallpapers\/.*\/)thumb-([0-9]+-[0-9]+\.[^/.]*)$/, "$1$2");
+        }
+
+        if (domain === "img.barelist.com") {
+            // http://img.barelist.com/images/hosted/tgp/halle-von-051415/thumbs/Halle-Von-gives-a-sloppy-blowjob-in-the-kitchen-1.jpg
+            //   http://img.barelist.com/images/hosted/tgp/halle-von-051415/pics/halle-von-gives-a-sloppy-blowjob-in-the-kitchen-1.jpg
+            return src.replace(/(\/images\/hosted\/[^/]*\/[^/]*\/)thumbs\//, "$1pics/");
+        }
+
+        if (domain === "proxy.imgsmail.ru") {
+            // https://proxy.imgsmail.ru/?h=muij44Zj9u9YAKrdkDnkBQ&e=1358400352&url717=s018.radikal.ru/i521/1301/32/a24fb200297f.jpg
+            //   http://s018.radikal.ru/i521/1301/32/a24fb200297f.jpg
+            return add_http(decodeURIComponent(src.replace(/^[a-z]+:\/\/[^/]*\/.*?[?&]url[0-9]*=([^&]*).*?$/, "$1")));
+        }
+
+        if (domain_nowww === "pornoonline.com.pl") {
+            // http://www.pornoonline.com.pl/images/galerie/1849/small/small_4fdccc9ca7074.jpg
+            //   http://www.pornoonline.com.pl/images/galerie/1849/4fdccc9ca7074.jpg
+            return src.replace(/(\/images\/galerie\/[0-9]+\/)[a-z]+\/[a-z]+_([0-9a-f]+\.[^/.]*)$/, "$1$2");
+        }
+
+        if (domain_nowww === "photo-erotique.org") {
+            // http://photo-erotique.org/girls/1378403247/thumb_3.jpg
+            //   http://photo-erotique.org/girls/1378403247/3.jpg
+            return src.replace(/(\/girls\/[0-9]+\/)thumb_([0-9]+\.[^/.]*)$/, "$1$2");
+        }
+
+        if (domain === "s.mediasole.ru") {
+            // https://s.mediasole.ru/cache/preview/data/images/90/90939/237305_1000.jpg
+            //   https://mediasole.ru/data/images/90/90939/237305_1000.jpg
+            return src.replace(/:\/\/[^/]*\/cache\/preview\/data\//, "://mediasole.ru/data/");
+        }
+
+        if (domain_nosub === "godsartnudes.com" &&
+            domain.match(/^pics[0-9]*\./)) {
+            // http://pics16.godsartnudes.com/4/3/2/3/bree-daniels-spreads-her-thighs-show-you-where-she-needs-attention--desire-digital-33091_4.jpg -- 110x150
+            //   http://pics16.godsartnudes.com/4/3/2/3/bree-daniels-spreads-her-thighs-show-you-where-she-needs-attention--desire-digital-33091_4_thumb.jpg -- 198x281
+            //   http://pics16.godsartnudes.com/4/3/2/3/bree-daniels-spreads-her-thighs-show-you-where-she-needs-attention--desire-digital-33091_4_big.jpg -- 638x1024
+            return src.replace(/(-[0-9]+_[0-9]+)(?:_[a-z]+)?(\.[^/.]*)$/, "$1_big$2");
+        }
+
+        if (domain_nowww === "gotgalleries.com") {
+            // http://www.gotgalleries.com/pics/digitaldesire/61/bree-daniels-sexy-lith13.jpg
+            //   http://www.gotgalleries.com/pics/digitaldesire/61/bree-daniels-sexy-li13.jpg
+            return src.replace(/th([0-9]*\.[^/.]*)$/, "$1");
+        }
+
+        if (domain_nowww === "perfectnaked.com" && src.indexOf("/galleries/") >= 0) {
+            // http://www.perfectnaked.com/galleries/bree-daniels-teasing-in-her-cute-pink-panties/3_tn.jpg
+            //   http://www.perfectnaked.com/galleries/bree-daniels-teasing-in-her-cute-pink-panties/3_big.jpg
+            return src.replace(/(\/[0-9]+)_[a-z]+(\.[^/.]*)$/, "$1_big$2");
+        }
+
+        if (domain === "cdn.eroticbeauties.net") {
+            // https://cdn.eroticbeauties.net/content/digital-desire-bree-daniels-11136-1/auto/3/tn@1x/04.jpg
+            //   https://cdn.eroticbeauties.net/content/digital-desire-bree-daniels-11136-1/full/04.jpg
+            return src.replace(/(\/content\/[^/]*\/)[^/]*\/[^/]*\/tn@[^/]*\/([0-9]+\.[^/.]*)$/, "$1full/$2");
+        }
+
+        if (domain_nowww === "barahla.net") {
+            // https://www.barahla.net/images/photo/2/20141209/5780838/141812085383385200.jpg
+            //   https://www.barahla.net/images/photo/2/20141209/5780838/big/141812085383385200_big.jpg
+            return src.replace(/(\/images\/photo\/[0-9]+\/[0-9]+\/[0-9]+\/)(?:[a-z]+\/)?([0-9]+)(?:_[a-z]+)?(\.[^/.]*)$/, "$1big/$2_big$3");
+        }
+
+        if (domain === "i.pipec.info") {
+            // http://i.pipec.info/20180906/600px/53776596847438_mos_02.jpg
+            //   http://i.pipec.info/20180906/600px/53776596847438_mos_02.jpg
+            return src.replace(/\/[0-9]+px\/([^/]*)$/, "/$1");
+        }
+
+        if (domain_nosub === "hothag.com" && domain.match(/^cdn[0-9]*\./)) {
+            // https://cdn1.hothag.com/media/galleries_160/1/1/755/24856.jpg
+            //   https://cdn1.hothag.com/media/galleries/1/1/755/24856.jpg
+            return src.replace(/\/media\/galleries_[0-9]+\//, "/media/galleries/");
+        }
+
+        if ((domain_nosub === "1zoom.ru" ||
+             // http://s1.1zoom.me/big0/733/363283-sepik.jpg
+             //   http://s1.1zoom.me/big3/733/363283-sepik.jpg
+             domain_nosub === "1zoom.me") &&
+            domain.match(/^s[0-9]*\./)) {
+            // https://s1.1zoom.ru/big0/639/363168-commander06.jpg -- 1280x800
+            //   https://s1.1zoom.ru/big3/639/363168-commander06.jpg -- 3000x1875
+            // https://s1.1zoom.ru/b5050/363168-commander06_300x188.jpg -- 300x188
+            return src.replace(/(:\/\/[^/]*\/)big[0-9]*\//, "$1big3/");
+        }
+
+        if (domain === "st-gdefon.gallery.world" ||
+            // http://st.gde-fon.com/wallpapers_medium/413849_devushka_nagota_dlinnye-volosy_cvety_1680x1050_www.Gde-Fon.com.jpg
+            //   http://st.gde-fon.com/wallpapers_original/413849_devushka_nagota_dlinnye-volosy_cvety_1680x1050_www.Gde-Fon.com.jpg
+            domain === "st.gde-fon.com") {
+            // http://st-gdefon.gallery.world/wallpapers_medium/780527_gallery.world.jpg
+            //   http://st-gdefon.gallery.world/wallpapers_original/780527_gallery.world.jpg
+            return src.replace(/\/wallpapers_[a-z]+(\/[0-9]+_[^/]*)$/, "/wallpapers_original$1");
+        }
+
+        if (domain_nowww === "boorp.com") {
+            // https://www.boorp.com/sfondi_gratis_desktop_pc/sfondi_gratis/sfondi_anime_manga/miniature/anime_manga_libro_dei_sogni.jpg
+            //   https://www.boorp.com/sfondi_gratis_desktop_pc/sfondi_gratis/sfondi_anime_manga/anime_manga_libro_dei_sogni.jpg
+            return src.replace(/\/miniature(\/[^/]*)$/, "$1");
+        }
+
+        if (domain === "d2pptc4exyus09.cloudfront.net") {
+            // https://d2pptc4exyus09.cloudfront.net/puzzle/128/127/thumb.jpg
+            //   https://d2pptc4exyus09.cloudfront.net/puzzle/128/127/original.jpg
+            return src.replace(/(\/puzzle\/[0-9]+\/[0-9]+\/)[a-z]+(\.[^/.]*)$/, "$1original$2");
+        }
+
+        if (domain_nowww === "sfondo.info") {
+            // https://sfondo.info/i/small/4/c/1/13408.jpg
+            //   https://sfondo.info/i/original/4/c/1/13408.jpg
+            return src.replace(/\/i\/[a-z]+\//, "/i/original/");
+        }
+
+        if (domain_nosub === "yiihuu.com" &&
+            domain.match(/^img[0-9]*\./)) {
+            // http://img4.yiihuu.com/130X130/upimg/courses/2016/04/19/1-1461055933-335054.jpg?auto=h
+            //   http://img4.yiihuu.com/upimg/courses/2016/04/19/1-1461055933-335054.jpg
+            return src
+                .replace(/\/[0-9]+X[0-9]+\/upimg\//, "/upimg/")
+                .replace(/\?.*/, "");
+        }
+
+        if (domain_nowww === "superwall.us") {
+            // https://superwall.us/thumbnail/redjuice_pointy_ears_girl_blue_eyes_male-rABC.jpg
+            //   https://superwall.us/wallpaper/redjuice_pointy_ears_girl_blue_eyes_male-rABC.jpg
+            return src.replace(/(:\/\/[^/]*\/)thumbnail\//, "$1wallpaper/");
+        }
+
+        if (domain_nosub === "mangadrawing.net") {
+            // http://mangadrawing.net/users/imagecache/display/image/19418-belt-black-hair-blonde-hair-blue-eyes-gloves.c40921ef095eaadb0bb668a193b1da3b.jpg
+            //   http://mangadrawing.net/users/image/19418-belt-black-hair-blonde-hair-blue-eyes-gloves.c40921ef095eaadb0bb668a193b1da3b.jpg
+            // http://static.mangadrawing.net/users/imagecache/display/image/19418-belt-black-hair-blonde-hair-blue-eyes-gloves.c40921ef095eaadb0bb668a193b1da3b.jpg
+            //   http://static.mangadrawing.net/users/image/19418-belt-black-hair-blonde-hair-blue-eyes-gloves.c40921ef095eaadb0bb668a193b1da3b.jpg
+            return src.replace(/\/imagecache\/display\/image\//, "/image/");
+        }
+
+        if (domain_nosub === "ucoz.ru") {
+            // http://nadinaderose.ucoz.ru/_ph/37/1/660567815.jpg?1535302566
+            //   http://nadinaderose.ucoz.ru/_ph/37/660567815.jpg?1535302566
+            return src.replace(/(\/_ph\/[0-9]+\/)[0-9]+\/([0-9]+\.[^/.]*)$/, "$1$2");
+        }
+
+        if (domain_nowww === "wallpapersdig.com") {
+            // http://wallpapersdig.com/images/thumb/category/100x100/wolf-wallpaper-white-girl-soldier-anime-images-4k-full-hd-iphone-143018.jpg
+            //    http://wallpapersdig.com/images/original/wolf-wallpaper-white-girl-soldier-anime-images-4k-full-hd-iphone-143018.jpg
+            return src.replace(/\/images\/[a-z]+(?:\/.*)?(\/[^/]*-[0-9]+\.[^/.]*)$/, "/images/original$1");
+        }
+
+        if (domain === "img.hebus.com") {
+            // https://img.hebus.com/hebus_2011/11/21/preview/111121161002_92.jpg
+            //   https://img.hebus.com/hebus_2011/11/21/111121161002_92.jpg
+            // https://img.hebus.com/hebus_2013/09/26/tn/b1380199789_87580.jpg
+            //   https://img.hebus.com/hebus_2013/09/26/1380199789_87580.jpg
+            return src.replace(/\/[a-z]+\/[a-z]?([0-9]+_[0-9]+\.[^/.]*)$/, "/$1");
+        }
+
+        if (domain === "content.eroo.pl") {
+            // http://content.eroo.pl/87HpR8ufu8RBvC69xz15QM7885u4yUkG/2_mini.jpg
+            //   http://content.eroo.pl/87HpR8ufu8RBvC69xz15QM7885u4yUkG/2.jpg
+            return src.replace(/(\/[0-9]+)_[a-z]+(\.[^/.]*)$/, "$1$2");
+        }
+
+        if (domain_nowww === "timdir.com") {
+            // http://timdir.com/ws/bree_daniels_babe_purple_top/bree_daniels_07.tn.jpg
+            //   http://timdir.com/ws/bree_daniels_babe_purple_top/bree_daniels_07.jpg
+            return src.replace(/\.tn(\.[^/.]*)$/, "$1");
+        }
+
+        if (domain_nowww === "live-stats.me") {
+            // https://live-stats.me/pics/thumbs/104/372/12.jpg
+            //   https://live-stats.me/pics/images/104/372/12.jpg
+            return src.replace(/\/pics\/thumbs\//, "/pics/images/");
+        }
+
+        if (domain === "cdn.xpics.me" ||
+            // http://cdn.pussy-porn-pics.com/2/231/115601/5.jpg
+            //   http://cdn.pussy-porn-pics.com/0/231/115601/5.jpg
+            domain === "cdn.pussy-porn-pics.com") {
+            // https://cdn.xpics.me/2/231/115601/8.jpg
+            //   https://cdn.xpics.me/0/231/115601/8.jpg
+            return src.replace(/(:\/\/[^/]*\/)[0-9]\//, "$10/");
+        }
+
+        if (domain_nowww === "nehuha.net" && src.indexOf("/data/photo/") >= 0) {
+            // http://nehuha.net/data/photo/photo_0/bree_daniels_krasivaya_erotika_736/thumb.photo_1.jpg -- stretched
+            //   http://nehuha.net/data/photo/photo_0/bree_daniels_krasivaya_erotika_736/photo_1.jpg
+            return src.replace(/\/thumb\.([^/]*)$/, "/$1")
+        }
+
+        if (domain_nowww === "pornrice.com") {
+            // https://pornrice.com/media/thumbs/5/6/3/c/a/563ca27211a80/236x355/10236.jpg
+            //   https://pornrice.com/media/galleries/5/6/3/c/a/563ca27211a80/10236.jpg
+            return src.replace(/\/media\/thumbs\/((?:[0-9a-f]\/){5}[0-9a-f]+\/)[0-9]+x[0-9]+\//, "/media/galleries/$1");
+        }
+
+        if (domain === "wallpapers.jami.lt") {
+            // http://wallpapers.jami.lt/wallpapers/Celebrities/Mandy-Moore/Mandy-Moore-37_big.jpg
+            //   http://wallpapers.jami.lt/wallpapers/Celebrities/Mandy-Moore/Mandy-Moore-37.jpg
+            return src.replace(/_big(\.[^/.]*)$/, "$1");
+        }
+
+
 
 
 
@@ -18718,6 +19279,17 @@ var $$IMU_EXPORT$$;
             return {
                 url: src,
                 can_head: false
+            };
+        }
+
+        if (domain_nosub === "radikal.ru" &&
+            domain.match(/^s[0-9]*\./)) {
+            // http://s018.radikal.ru/i521/1301/32/a24fb200297f.jpg
+            return {
+                url: src,
+                headers: {
+                    Referer: ""
+                }
             };
         }
 
