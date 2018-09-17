@@ -21,7 +21,8 @@ function reqListener () {
     .replace(/^[\s\S]*function bigimage/, "")
     .replace(/\/\/ *-- *end *bigimage *--[\s\S]*$/, "");
   document.getElementById("rules").innerHTML = fuzzify(response.match(/\n        if /g).length);
-  document.getElementById("sites").innerHTML = fuzzify(response.match(/domain/g).length);
+  //document.getElementById("sites").innerHTML = fuzzify(response.match(/(?:domain[_ ]|[^(]domain\.)/g).length);
+  document.getElementById("sites").innerHTML = fuzzify(response.match(/domain[_ ]/g).length);
 }
 
 var userscript_location = "https://rawgit.com/qsniyg/maxurl/master/userscript.user.js";

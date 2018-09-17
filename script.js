@@ -11,7 +11,7 @@ function do_imu(url, cb) {
     cb: cb
   });
 
-  if (retval && retval.waiting) {
+  if (retval && retval[0] && retval[0].waiting) {
     cb(retval);
   }
 
@@ -121,7 +121,7 @@ function sanitize_url(url) {
 
 function resetels() {
   maxael.innerHTML = "";
-  maximgel.style.backgroundImage = "";
+  maximgel.src = "";
 }
 
 function set_max(obj) {
@@ -137,37 +137,57 @@ function set_max(obj) {
     obj = false;
   }
 
-  if (!obj || !obj.url) {
+  if (!obj) {
     if (obj === undefined)
       maxspanel.innerHTML = "Invalid URL";
     else if (obj === null)
       maxspanel.innerHTML = "";
-    else if (obj === false || !obj.url) {
-      if (obj.waiting) {
-        maxspanel.innerHTML = "The <a href='https://greasyfork.org/en/scripts/36662-image-max-url'>userscript</a> is needed for this URL to perform a cross-origin request to find the original size";
-      } else {
-        maxspanel.innerHTML = "No larger image found";
-      }
-    }
+    else if (obj === false)
+      maxspanel.innerHTML = "No larger image found";
 
     resetels();
-
     return;
   }
 
-  var urls = obj.url;
+  var urls = [];
+  var waiting = false;
 
-  if (JSON.stringify(urls) === JSON.stringify(currenturl))
+  if (obj instanceof Array) {
+    for (var i = 0; i < obj.length; i++) {
+      if (obj[i].url)
+        urls.push(obj[i].url);
+    }
+
+    if (obj.length > 0)
+      waiting = obj[0].waiting;
+  } else {
+    if (obj.url instanceof Array) {
+      urls = obj.url;
+    } else {
+      urls = [obj.url];
+    }
+
+    waiting = obj.waiting;
+  }
+
+  if (urls.length === 0 || (urls.length === 1 && !urls[0])) {
+    if (waiting) {
+      maxspanel.innerHTML = "<p>The <a href='https://greasyfork.org/en/scripts/36662-image-max-url'>userscript</a> is needed for this URL.</p><p>It requires a cross-origin request to find the original size</p>";
+    } else {
+      maxspanel.innerHTML = "No larger image found";
+    }
+
+    resetels();
+    return;
+  }
+
+  if (urls.indexOf(currenturl) >= 0)
     return;
 
   //var proxyurl = proxify(url);
 
   maxael.innerHTML = "";
   maxspanel.innerHTML = "";
-
-  if (!(urls instanceof Array)) {
-    urls = [urls];
-  }
 
   for (var i = 0; i < urls.length; i++) {
     var url = urls[i];
