@@ -8,7 +8,7 @@ Either use the website or install the userscript, which redirects to larger/orig
 
 ### For developers
 
-The userscript also functions as a node module:
+The userscript also functions as a node module.
 
     var maximage = require('./userscript.user.js');
 
@@ -18,7 +18,10 @@ The userscript also functions as a node module:
 
       // Maximum amount of times it should be run.
       //  Recommended to be at least 5
-      iterations: 100,
+      iterations: 200,
+
+      // Whether or not to store to, and use an internal cache
+      use_cache: true,
 
       // Helper function to perform HTTP requests, used for sites like Flickr
       //  The API is expected to be like GM_xmlHTTPRequest's API.
@@ -42,20 +45,18 @@ The userscript also functions as a node module:
         if (!result)
           return;
 
-        if (result.url instanceof Array) {
-          // If the result is a list, check each URL.
-          // It's ordered from most to least likely to work.
-        } else {
-          if (result.url === smallimage) {
-            return;
-          }
+        if (result.length === 1 && result[0].url === smallimage) {
+           // No larger image was found
+           return;
+        }
 
-          // The returned image might not work, you will need to check it.
+        for (var i = 0; i < result.length; i++) {
+          // Do something with the object
         }
       }
     });
 
-The result object will return a set of properties that may be useful in using the returned image:
+The result is a list of objects that contain properties that may be useful in using the returned image(s):
 
     {
       // Array or String, see code example above
@@ -65,7 +66,7 @@ The result object will return a set of properties that may be useful in using th
       //  Don't rely on this value if you don't have to
       always_ok: false,
 
-      // Whether or not the server supports a HEAD request
+      // Whether or not the server supports a HEAD request.
       can_head: true,
 
       // Whether or not the server might return the wrong Content-Type header in the HEAD request
@@ -81,6 +82,9 @@ The result object will return a set of properties that may be useful in using th
 
       // Whether or not the returned URL is expected to redirect to another URL
       redirects: false,
+
+      // Whether or not this URL should be used
+      bad: false,
 
       // Headers required to view the returned URL
       //  If a header is null, don't include that header.
