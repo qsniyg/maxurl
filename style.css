@@ -324,9 +324,15 @@ input:checked + label {
   padding: .8em;
 }
 .option strong {
-  width: 17em;
   font-weight: 400;
   display: inline-block;
+
+  text-decoration: none;
+  border-bottom: 1px dashed #999;
+}
+
+.option .name_td {
+  width: 19em;
 }
 
 .option .group {
