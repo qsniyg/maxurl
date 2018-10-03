@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.6.1
+// @version      0.6.2
 // @description  Finds larger or original versions of images
 // @author       qsniyg
 // @include      *
@@ -5584,14 +5584,17 @@ var $$IMU_EXPORT$$;
                 .replace(/-l[0-9]+(\.[^/.]*)$/, "-l9999$1");
         }
 
-        if (domain_nosub === "ebaystatic.com" && domain.match(/thumbs[0-9]*\.ebaystatic\.com/)) {
+        if ((domain_nosub === "ebaystatic.com" && domain.match(/thumbs[0-9]*\.ebaystatic\.com/)) ||
+            // https://securethumbs.ebay.com/d/l140/m/mk1ADy4oa1rnraV-rOti0YQ.jpg
+            //   https://ssli.ebayimg.com/images/m/mk1ADy4oa1rnraV-rOti0YQ/s-l9999.jpg
+            domain === "securethumbs.ebay.com") {
             // https://thumbs2.ebaystatic.com/m/mKuDpR7Z1yrk82zzlihfOCw/140.jpg
             //   https://ssli.ebayimg.com/images/m/mKuDpR7Z1yrk82zzlihfOCw/s-l9999.jpg
             // https://thumbs2.ebaystatic.com/d/l225/m/mjVOwmkHHi8X0sPdlQhUV7Q.jpg
             //   https://ssli.ebayimg.com/images/m/mjVOwmkHHi8X0sPdlQhUV7Q/s-l9999.jpg
             // https://thumbs.ebaystatic.com/d/l225/pict/400793189705_4.jpg
             //   https://i.ebayimg.com/images/g/X20AAOSwgN9bTFxs/s-l9999.jpg
-            //   https://thumbs.ebaystatic.com/d/l9999/pict/400793189705_4.jpg
+            //   https://thumbs.ebaystatic.com/d/l9999/pict/400793189705_4.1jpg
             // http://thumbs4.ebaystatic.com/pict/1723764064234040_2.jpg
             newsrc = src
                 .replace(/^[a-z]*:\/\/[^/]*\/(.*?)\/[0-9]+(\.[^/.]*)$/, "https://ssli.ebayimg.com/images/$1/s-l9999$2")
@@ -5619,6 +5622,20 @@ var $$IMU_EXPORT$$;
             return src
                 .replace(/:\/\/www.picclickimg.com\/d\//, "://thumbs.ebaystatic.com/d/")
                 .replace(/:\/\/www.picclickimg.com(\/[0-9]+\/s\/)/, "://i.ebayimg.com$1");
+        }
+
+        if (domain_nowww === "ezcorporateembroidery.com") {
+            // http://www.ezcorporateembroidery.com/images/scale/l200/pict/323407082997_1.jpg
+            //   http://thumbs4.ebaystatic.com/d/l200/pict/323407082997_1.jpg
+            //   https://securethumbs.ebay.com/d/l200/pict/323407082997_1.jpg
+            //   https://securethumbs.ebay.com/d/l9999/pict/323407082997_1.jpg
+            // http://www.ezcorporateembroidery.com/packs/imageslarge/http://www.ezcorporateembroidery.com/images/scale/l400/pict/323407082997_1.jpg
+            //   http://www.ezcorporateembroidery.com/images/scale/l400/pict/323407082997_1.jpg
+            //   https://securethumbs.ebay.com/d/l9999/pict/323407082997_1.jpg
+            newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/packs\/images[a-z]+\/(https?:\/\/)/, "$1");
+            if (newsrc !== src)
+                return newsrc;
+            return src.replace(/^[a-z]+:\/\/[^/]*\/images\/scale\/([a-z][0-9]+\/)/, "https://securethumbs.ebay.com/d/$1");
         }
 
         if (domain === "i.slkimg.com") {
@@ -20372,6 +20389,12 @@ var $$IMU_EXPORT$$;
             return src.replace(/_[0-9auto]+x[0-9auto]+(\.[^/.]*)$/, "$1");
         }
 
+        if (domain_nowww === "comicsblog.fr") {
+            // http://www.comicsblog.fr//images/galerie/smallimage/small_the-laughing-fish-batman-tas.jpg
+            //   http://www.comicsblog.fr//images/galerie/bigimage/the-laughing-fish-batman-tas.jpg
+            return src.replace(/\/images\/galerie\/[a-z]+image\/(?:small_)?/, "/images/galerie/bigimage/");
+        }
+
 
 
 
@@ -21086,8 +21109,6 @@ var $$IMU_EXPORT$$;
 
         if (!options)
             options = {};
-        else
-            options = deepcopy(options);
 
         for (var option in default_options) {
             if (!(option in options)) {
