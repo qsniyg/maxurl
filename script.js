@@ -31,6 +31,7 @@ function process_input() {
   if (text.match(/^https?:\/\//)) {
     set_max("loading");
     try {
+      currenturl = text;
       window.do_imu(text, function(newurl) {
         set_max(newurl);
       });
@@ -169,8 +170,13 @@ function set_max(obj) {
     return;
   }
 
-  if (urls.indexOf(currenturl) >= 0)
+  if (urls.length === 1 && urls[0] === currenturl) {
+    maxspanel.innerHTML = "No larger image found";
+    //track_ga("no_larger_image");
+
+    resetels();
     return;
+  }
 
   track_ga("found");
 
@@ -192,7 +198,7 @@ function set_max(obj) {
       maxael.appendChild(subp);
   }
 
-  currenturl = urls;
+  //currenturl = urls;
 
   if (urls.length === 1) {
     SelectText("max_a");
