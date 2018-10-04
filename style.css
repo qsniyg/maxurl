@@ -110,9 +110,12 @@ div.question > span {
   display:block;
 }
 
+p, span, a, li {
+  line-height: 1.4em;
+}
+
 p {
   margin: .4em .1em;
-  line-height: 1.2em;
 }
 
 ul {
@@ -286,6 +289,12 @@ em, i {
 
 b, strong {
   font-weight: 700;
+}
+
+code {
+  font-family: monospace;
+  background: #eee;
+  padding: 0.05em 0.3em;
 }
 
 

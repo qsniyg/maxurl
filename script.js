@@ -4,6 +4,7 @@ var maxspanel = document.getElementById("max_span");
 var maximgel = document.getElementById("max_img");
 var currenturl = null;
 
+// Wrapper for Image Max URL, overwritten by the userscript
 function do_imu(url, cb) {
   var retval = window.imu_variable(url, {
     fill_object: true,
@@ -18,7 +19,7 @@ function do_imu(url, cb) {
   return retval;
 }
 
-// thanks to /u/GarlicoinAccount for noticing the need to run this
+// Thanks to /u/GarlicoinAccount for noticing the need to run this
 // separately, as input can be sent before the page is fully loaded
 function process_input() {
   var text = inputel.value;
@@ -32,19 +33,6 @@ function process_input() {
     try {
       window.do_imu(text, function(newurl) {
         set_max(newurl);
-        return;
-        if (newurl.url instanceof Array) {
-          set_max(newurl);
-          /*if (newurl.url.indexOf(text) >= 0) {
-            set_max(false);
-            } else {
-            set_max(newurl.url);
-            }*/
-        } else if (newurl.url !== text) {
-          set_max(newurl);
-        } else {
-          set_max(false);
-        }
       });
     } catch (e) {
       console.error(e);
@@ -92,23 +80,6 @@ function unselect() {
 }
 
 
-function proxify(url) {
-  // doesn't get rid of referrers
-  //return "https://proxy.duckduckgo.com/iu/?u=" + encodeURIComponent(url);
-
-  // doesn't work with ?
-  //return "https://i0.wp.com/" + url.replace(/^[a-z]+:\/\//, "");
-
-  // works
-  //return "https://img.blvds.com/unsafe/smart/filters:format(jpeg)/" + encodeURIComponent(url);
-
-  // works
-  return "https://imageproxy.themaven.net/" + encodeURIComponent(url);
-
-  // sort of works
-  //return "https://imagesvc.timeincapp.com/v3/foundry/image/?url=" + encodeURIComponent(url);
-}
-
 // https://stackoverflow.com/a/7124052
 function sanitize_url(url) {
   return url
@@ -124,6 +95,18 @@ function resetels() {
   maximgel.src = "";
 }
 
+// Google Analytics statistics
+function track_ga(value) {
+  try {
+    gtag('event', 'imu', {
+      'event_category': 'engagement',
+      'event_label': value
+    });
+  } catch (e) {
+    console.error(e);
+  }
+}
+
 function set_max(obj) {
   if (obj === "loading") {
     maxspanel.innerHTML = "Loading...";
@@ -132,6 +115,7 @@ function set_max(obj) {
   } else if (obj === "error") {
     maxspanel.innerHTML = "Unknown error";
     resetels();
+    track_ga("error");
     return;
   } else if (obj === "broken") {
     obj = false;
@@ -142,8 +126,10 @@ function set_max(obj) {
       maxspanel.innerHTML = "Invalid URL";
     else if (obj === null)
       maxspanel.innerHTML = "";
-    else if (obj === false)
+    else if (obj === false) {
       maxspanel.innerHTML = "No larger image found";
+      //track_ga("no_larger_image");
+    }
 
     resetels();
     return;
@@ -173,8 +159,10 @@ function set_max(obj) {
   if (urls.length === 0 || (urls.length === 1 && !urls[0])) {
     if (waiting) {
       maxspanel.innerHTML = "<p>The <a href='https://greasyfork.org/en/scripts/36662-image-max-url'>userscript</a> is needed for this URL.</p><p>It requires a cross-origin request to find the original size</p>";
+      track_ga("userscript_needed");
     } else {
       maxspanel.innerHTML = "No larger image found";
+      track_ga("no_larger_image");
     }
 
     resetels();
@@ -184,7 +172,7 @@ function set_max(obj) {
   if (urls.indexOf(currenturl) >= 0)
     return;
 
-  //var proxyurl = proxify(url);
+  track_ga("found");
 
   maxael.innerHTML = "";
   maxspanel.innerHTML = "";
@@ -203,8 +191,6 @@ function set_max(obj) {
     if ((i + 1) < urls.length)
       maxael.appendChild(subp);
   }
-  /*maxael.innerHTML = url;
-  maxael.href = url;*/
 
   currenturl = urls;
 
@@ -218,7 +204,6 @@ function set_max(obj) {
       maxspanel.innerHTML = "Failed to copy to clipboard";
     }
   }
-  //maximgel.style.backgroundImage = "url('" + proxyurl + "')";
 }
 
 if (document.location.origin === "file://") {

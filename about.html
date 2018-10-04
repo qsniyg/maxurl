@@ -32,11 +32,11 @@
                     <p>A. It tries to return original versions of images by modifying the URL.</p>
                     <p>For example, if you have this image:</p>
                     <ul>
-                      <li><a href="https://pbs.twimg.com/media/DSSzBa3VwAEiXtX.jpg" target="_blank">https://pbs.twimg.com/media/DSSzBa3VwAEiXtX.jpg</a> (1200x800)</li>
+                      <li><a href="https://pbs.twimg.com/media/DlOC3mOWsAEi1ld.jpg" target="_blank">https://pbs.twimg.com/media/DlOC3mOWsAEi1ld.jpg</a> (1200x800)</li>
                     </ul>
-                    <p>By adding :orig, you will get a much larger image:</p>
+                    <p>By adding <code>?name=orig</code> to the end, you will get a much larger image:</p>
                     <ul>
-                      <li><a href="https://pbs.twimg.com/media/DSSzBa3VwAEiXtX.jpg:orig" target="_blank">https://pbs.twimg.com/media/DSSzBa3VwAEiXtX.jpg:orig</a> (3240x2160)</li>
+                      <li><a href="https://pbs.twimg.com/media/DlOC3mOWsAEi1ld.jpg?name=orig" target="_blank">https://pbs.twimg.com/media/DlOC3mOWsAEi1ld.jpg?name=orig</a> (4096x2730)</li>
                     </ul>
                   </div>
                 </div>
@@ -44,7 +44,7 @@
                 <div class="question">
                   <span>Q. How many sites are supported?</span>
                   <div>
-                    <p>A. Currently ~<span id="sites">2000</span> hardcoded websites (~<span id="rules">1200</span> rules).</p>
+                    <p>A. Currently ~<span id="sites">3000</span> hardcoded websites (~<span id="rules">1800</span> rules).</p>
                     <p>But since it supports many generic engines (e.g. WordPress, Drupal, etc.), it can support millions of websites.</p>
                   </div>
                 </div>
@@ -52,8 +52,9 @@
                 <div class="question">
                   <span>Q. Why is the returned image broken?</span>
                   <div>
-                    <p>A. Since the rules simply modify URLs, there's a number of reasons why this could happen.</p>
-                    <p>Although <a href="https://greasyfork.org/en/scripts/36662-image-max-url">the userscript</a> will check to make sure the resulting URL is valid (because userscripts have extra privileges), this website can't, because of cross-origin problems.</p>
+                    <p>A. The rules simply modify URLs, so there's a number of reasons why this could happen.</p>
+                    <p>Since userscripts have extra privileges, <a href="https://greasyfork.org/en/scripts/36662-image-max-url">the userscript</a> will check to make sure the resulting URL is valid, but this website can't, because of cross-origin problems.</p>
+                    <p>If you encounter a broken image, feel free to <a href="https://github.com/qsniyg/maxurl/issues">file an issue on Github</a>, and I'll take a look at it. If it's the script's fault, I will try to fix it ASAP.</p>
                   </div>
                 </div>
 
@@ -61,7 +62,7 @@
                   <span>Q. Why is the returned image smaller?</span>
                   <div>
                     <p>A. Websites will sometimes scale images higher than their original resolution. This script's purpose is to return the original unscaled image, which is sometimes smaller.</p>
-                    <p>But if the first image is larger and not scaled up, please <a href="https://github.com/qsniyg/maxurl/issues">file an issue on Github</a>, and I will fix it ASAP.</p>
+                    <p>But if the first image is larger and not scaled up, please <a href="https://github.com/qsniyg/maxurl/issues">file an issue on Github</a>, and I will try to fix it ASAP.</p>
                   </div>
                 </div>
 
@@ -83,7 +84,7 @@
                   <span>Q. Does this website track the images I send?</span>
                   <div>
                     <p>A. No, everything is done entirely within your browser.</p>
-                    <p>This website uses Google Analytics, <span id="analytics-blocked">but you can use an adblocker with a tracking filter list enabled to block it.</span></p>
+                    <p>The website does use Google Analytics, which tracks page views and general events (<a href="https://github.com/qsniyg/maxurl/blob/gh-pages/script.js" target="_blank">check the source here for details</a>), <span id="analytics-blocked">but you can use an adblocker with a tracking filter list enabled to block it.</span></p>
                   </div>
                 </div>
 
@@ -91,7 +92,6 @@
                   <span>Q. Can another website be supported?</span>
                   <div>
                     <p>A. Yes, please send the website and some test URLs (preferrably pairs of thumbnail and original links) <a href="https://github.com/qsniyg/maxurl/issues">to Github</a> and I'll take a look at it.</p>
-                    <p>Please don't send links containing NSFW content.</p>
                   </div>
                 </div>
               </div>
