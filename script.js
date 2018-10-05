@@ -97,7 +97,17 @@ function resetels() {
 }
 
 // Google Analytics statistics
+var last_ga = {};
+var ga_thresh = 1000;
 function track_ga(value) {
+  var now = Date.now();
+
+  if (last_ga[value] && (now - last_ga[value]) < ga_thresh) {
+    return;
+  }
+
+  last_ga[value] = now;
+
   try {
     gtag('event', 'imu', {
       'event_category': 'engagement',
@@ -123,13 +133,14 @@ function set_max(obj) {
   }
 
   if (!obj) {
-    if (obj === undefined)
+    if (obj === undefined) {
       maxspanel.innerHTML = "Invalid URL";
-    else if (obj === null)
+      track_ga("invalid_url");
+    } else if (obj === null) {
       maxspanel.innerHTML = "";
-    else if (obj === false) {
+    } else if (obj === false) {
       maxspanel.innerHTML = "No larger image found";
-      //track_ga("no_larger_image");
+      track_ga("no_larger_image");
     }
 
     resetels();
@@ -159,7 +170,7 @@ function set_max(obj) {
 
   if (urls.length === 0 || (urls.length === 1 && !urls[0])) {
     if (waiting) {
-      maxspanel.innerHTML = "<p>The <a href='https://greasyfork.org/en/scripts/36662-image-max-url'>userscript</a> is needed for this URL.</p><p>It requires a cross-origin request to find the original size</p>";
+      maxspanel.innerHTML = "<p>The <a href='https://greasyfork.org/en/scripts/36662-image-max-url'>userscript</a> is needed for this URL.</p><p>It requires a cross-origin request to find the original size.</p>";
       track_ga("userscript_needed");
     } else {
       maxspanel.innerHTML = "No larger image found";
@@ -172,7 +183,7 @@ function set_max(obj) {
 
   if (urls.length === 1 && urls[0] === currenturl) {
     maxspanel.innerHTML = "No larger image found";
-    //track_ga("no_larger_image");
+    track_ga("no_larger_image");
 
     resetels();
     return;
