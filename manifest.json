@@ -1,0 +1,39 @@
+{
+  "manifest_version": 2,
+  "name": "Image Max URL",
+  "version": "0.7.0",
+
+  "description": "Finds larger or original versions of images",
+
+  "background": {
+    "scripts": [
+      "extension/background.js"
+    ],
+    "persistent": true
+  },
+
+  "applications": {
+    "gecko": {
+      "id": "maxurl@qsniyg"
+    }
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["*://*/*"],
+      "js": ["userscript.user.js"]
+    }
+  ],
+
+  "options_ui": {
+    "page": "extension/options.html"
+  },
+
+  "permissions": [
+    "storage",
+    "webRequest",
+    "webRequestBlocking",
+
+    "<all_urls>"
+  ]
+}
