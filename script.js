@@ -170,7 +170,7 @@ function set_max(obj) {
 
   if (urls.length === 0 || (urls.length === 1 && !urls[0])) {
     if (waiting) {
-      maxspanel.innerHTML = "<p>The <a href='https://greasyfork.org/en/scripts/36662-image-max-url'>userscript</a> is needed for this URL.</p><p>It requires a cross-origin request to find the original size.</p>";
+      maxspanel.innerHTML = "<p>The <a href='https://greasyfork.org/en/scripts/36662-image-max-url'>userscript</a> or <a href='https://addons.mozilla.org/en-US/firefox/addon/image-max-url/'>firefox add-on</a> is needed for this URL.</p><p>It requires a cross-origin request to find the original size.</p>";
       track_ga("userscript_needed");
     } else {
       maxspanel.innerHTML = "No larger image found";

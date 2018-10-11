@@ -353,7 +353,7 @@ input:checked + label {
   .option strong {
     width: auto;
     display: block;
-    padding: .5em;
+    margin: .5em;
   }
 }
 
