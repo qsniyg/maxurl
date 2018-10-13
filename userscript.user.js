@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.7.0
+// @version      0.7.1
 // @description  Finds larger or original versions of images
 // @author       qsniyg
 // @include      *
@@ -170,6 +170,7 @@ var $$IMU_EXPORT$$;
         redirect: true,
         mouseover: true,
         mouseover_trigger: ["ctrl", "shift"],
+        mouseover_close_behavior: "any",
         website_image: true,
         allow_watermark: false,
         allow_smaller: false
@@ -209,6 +210,23 @@ var $$IMU_EXPORT$$;
                     },
                     delay_3: {
                         name: "Delay 3s"
+                    }
+                }
+            }
+        },
+        mouseover_close_behavior: {
+            name: "Keep popup open until:",
+            description: "Closes the popup when the selected condition is met",
+            options: {
+                _type: "or",
+                _group1: {
+                    any: {
+                        name: "Any trigger is released"
+                    }
+                },
+                _group2: {
+                    all: {
+                        name: "All triggers are released"
                     }
                 }
             }
@@ -3475,6 +3493,8 @@ var $$IMU_EXPORT$$;
             domain === "resource.info.mn" ||
             // http://image1.thegioitre.vn/2018/08/16/neu-khong-muon-vai-u-thit-bap-chi-em-dung-tap-6-bai-the-duc-nay-thumb_160x106.jpg
             (domain_nosub === "thegioitre.vn" && domain.match(/^image[0-9]*\./)) ||
+            // https://vcdn-giaitri.vnecdn.net/2018/10/11/tiffany-young-tren-tham-do-american-music-awards-1539224433_1539233031_140x84.jpg
+            domain === "vcdn-giaitri.vnecdn.net" ||
             // http://images.cinefil.com/movies/1053952_1600x450.jpg
             //   http://images.cinefil.com/movies/1053952.jpg
             domain === "images.cinefil.com") {
@@ -14919,14 +14939,18 @@ var $$IMU_EXPORT$$;
             };
         }
 
-        if (domain === "cdns.klimg.com") {
+        if (domain === "cdns.klimg.com" ||
+            domain === "cdn.klimg.com") {
             // https://cdns.klimg.com/resized/300x150/p/photonews/foto-pesona-cantik-krystal-kenakan-suit-0ef272.jpg
             //   https://cdns.klimg.com/kapanlagi.com/p/photonews/foto-pesona-cantik-krystal-kenakan-suit-0ef272.jpg
             // https://cdns.klimg.com/kapanlagi.com/p/headline/476x238/usai-avicii-meninggal-komunitas-dance-m-1ec3b8.jpg
             // https://cdns.klimg.com/resized/476x/p/camila-cabello-camilacabello-com.jpg
             //   https://cdns.klimg.com/kapanlagi.com/p/camila-cabello-camilacabello-com.jpg
+            // http://cdn.klimg.com/kapanlagi.com/g/t/i/tiffany_dan_kris_wu_di_red_carpet_2018_amas_para_alumni_sm_ent/t/tiffany-20181010-001-rita.jpg
+            //   http://cdn.klimg.com/kapanlagi.com/g/t/i/tiffany_dan_kris_wu_di_red_carpet_2018_amas_para_alumni_sm_ent/tiffany-20181010-001-rita.jpg
             return src
                 .replace(/\/resized\/[0-9]+x(?:[0-9]+)?\//, "/kapanlagi.com/")
+                .replace(/(\/g\/.\/.\/[^/]*\/)t\/([^/]*)$/, "$1$2")
                 .replace(/\/[0-9]+x[0-9]+(\/[^/]*$)/, "$1");
         }
 
@@ -23333,6 +23357,32 @@ var $$IMU_EXPORT$$;
             return true;
         }
 
+        function trigger_partially_complete(e) {
+            for (var i = 0; i < settings.mouseover_trigger.length; i++) {
+                var key = settings.mouseover_trigger[i];
+
+                /*if (current_chord.indexOf(key) < 0)
+                    return false;*/
+
+                if (key === "ctrl" && e.ctrlKey)
+                    return true;
+
+                if (key === "shift" && e.shiftKey)
+                    return true;
+
+                if (key === "alt" && e.altKey)
+                    return true;
+            }
+
+            return false;
+        }
+
+        function get_close_behavior() {
+            if (settings.mouseover_close_behavior instanceof Array)
+                return settings.mouseover_close_behavior[0];
+            return settings.mouseover_close_behavior;
+        }
+
         function trigger_popup() {
             controlPressed = true;
             // todo: rewrite to use a manual method, in order to find pointer-events: none too
@@ -23420,7 +23470,13 @@ var $$IMU_EXPORT$$;
         });
 
         document.addEventListener('keyup', function(event) {
-            if (set_chord(event.which)) {
+            var condition = set_chord(event.which);
+
+            if (condition && get_close_behavior() === "all") {
+                condition = !trigger_partially_complete(event);
+            }
+
+            if (condition) {
                 controlPressed = false;
                 stop_waiting();
 
