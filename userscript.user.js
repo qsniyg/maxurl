@@ -170,6 +170,9 @@ var $$IMU_EXPORT$$;
         redirect: true,
         mouseover: true,
         mouseover_trigger: ["ctrl", "shift"],
+        // thanks to blue-lightning on github for the idea
+        mouseover_open_behavior: "popup",
+        // also thanks to blue-lightning
         mouseover_close_behavior: "any",
         website_image: true,
         allow_watermark: false,
@@ -211,6 +214,20 @@ var $$IMU_EXPORT$$;
                     delay_3: {
                         name: "Delay 3s"
                     }
+                }
+            }
+        },
+        mouseover_open_behavior: {
+            name: "Mouseover popup action",
+            description: "Determines how the mouseover popup will open",
+            extension_only: true,
+            options: {
+                _type: "or",
+                popup: {
+                    name: "Popup"
+                },
+                newtab: {
+                    name: "New tab"
                 }
             }
         },
@@ -4612,12 +4629,16 @@ var $$IMU_EXPORT$$;
             if (src.indexOf("/max-1200/") >= 0) {
                 // https://wc-ahba9see.c.sakurastorage.jp/max-1200/59530/e929c45f84ace23cf416c2b6fc1c1eacb34f20bf-350x600.jpg
                 //   https://wc-ahba9see.c.sakurastorage.jp/max-1200/59530/e929c45f84ace23cf416c2b6fc1c1eacb34f20bf-1200.jpg
-                return src.replace(/-[0-9a-z]+(\.[^/.]*)$/, "-1200$1");
+                return {
+                    url: src.replace(/-[0-9a-z]+(\.[^/.]*)$/, "-1200$1"),
+                    can_head: false // 400
+                };
             } else {
                 // https://wc-ahba9see.c.sakurastorage.jp/533191/ebqzwxdflpsovyghbvfmpvzowripdfdorrlkwogi-350x600.jpg
                 //   https://wc-ahba9see.c.sakurastorage.jp/533191/ebqzwxdflpsovyghbvfmpvzowripdfdorrlkwogi-3000.jpg
                 return {
                     url: src.replace(/-[0-9a-z]+(\.[^/.]*)$/, "-3000$1"),
+                    can_head: false, // 400
                     headers: {
                         Referer: ""
                     }
@@ -5029,8 +5050,13 @@ var $$IMU_EXPORT$$;
             return src.replace(/(\/i\/.*\/[^/.]*)_t(\.[^/.]*)$/, "$1$2");
         }
 
-        if (domain_nosub === "imagetwist.com" &&
-            domain.match(/i(?:mg)?[0-9]*\.imagetwist\.com/)) {
+        if ((domain_nosub === "imagetwist.com" ||
+             // http://img26.picshick.com/th/13110/2ab7lhypu3l2.jpg
+             //   http://img26.picshick.com/i/13110/2ab7lhypu3l2.jpg -- forces download
+             // some images return an error image with 200
+             // there are many headers that could help identify (last-modified, content-length)
+             domain_nosub === "picshick.com") &&
+            domain.match(/i(?:mg)?[0-9]*\./)) {
             // https://i2.imagetwist.com/th/23629/qxpfyyv61890.jpg
             //   https://i2.imagetwist.com/i/23629/qxpfyyv61890.jpg
             // http://img64.imagetwist.com/th/20956/qfucojvzag41.jpg
@@ -7676,6 +7702,9 @@ var $$IMU_EXPORT$$;
             // https://img.etimg.com/thumb/msid-63592870,width-643,imgsize-125649,resizemode-4/how-rihannas-song-became-howard-universitys-protest-anthem.jpg
             //   https://img.etimg.com/photo/63592870.cms
             domain === "img.etimg.com" ||
+            // https://etimg.etb2bimg.com/thumb/msid-62837430,imgsize-,width-800,height-434,overlay-etenergyworld/canada-s-meg-energy-to-sell-pipeline-storage-assets-for-c-1-61-bln.jpg
+            //   https://etimg.etb2bimg.com/photo/62837430.cms
+            domain === "etimg.etb2bimg.com" ||
             domain === "static.toiimg.com") {
             // https://timesofindia.indiatimes.com/thumb/msid-62829284,width-400,resizemode-4/62829284.jpg
             //   https://timesofindia.indiatimes.com/photo/62829284.cms
@@ -9017,6 +9046,8 @@ var $$IMU_EXPORT$$;
             (domain_nowww === "celebact.org" && src.indexOf("/images/") >= 0) ||
             // https://imghost.io/images/2018/06/15/11.md.jpg
             domain_nosub === "imghost.io" ||
+            // http://s18.img26.com/2018/04/22/127_Page_15.md.jpg
+            domain_nosub === "img26.com" ||
             // http://image-bugs.com/images/2017/09/09/CelebsFlash.com_NP_Harpers_Bazaar_090817__3_.md.jpg
             domain_nowww === "image-bugs.com") {
             // http://imgmax.com/images/2017/03/20/0OQhE.th.jpg
@@ -20914,6 +20945,33 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/media\/thumbnails\/([^/?]*)\?.*$/, "/media/files/$1");
         }
 
+        if (domain_nowww === "pronto.com.ar") {
+            // https://www.pronto.com.ar/asset/thumbnail%252C998%252C540%252Ccenter%252Ccenter/media/prontoar/images/2018/09/18/2018091813104610387.png -- 333x540
+            //   https://www.pronto.com.ar/media/prontoar/images/2018/09/18/2018091813104610387.png -- 882x1430
+            return src.replace(/\/asset\/thumbnail[,%][^/]*\/media\//, "/media/");
+        }
+
+        if (domain === "cdn.thebest.gr") {
+            // http://cdn.thebest.gr/media/images/thumbnail/wekkstmsor5bc22ca4898b6.jpg --140x105
+            //   http://cdn.thebest.gr/media/images/original/wekkstmsor5bc22ca4898b6.jpg -- 960x655
+            return src.replace(/\/media\/images\/[^/]*\//, "/media/images/original/");
+        }
+
+        if (domain_nowww === "glow.gr") {
+            // https://glow.gr/portal-img/featured-full/23/vraveia-emmy-2.jpg?crop=1280,647,0,37
+            //   https://glow.gr/image/original/23/vraveia-emmy-2.jpg
+            // https://glow.gr/portal-img/sq-list/25/vivian-van-singer-3fKcf.jpg
+            //   https://glow.gr/image/original/25/vivian-van-singer-3fKcf.jpg
+            return src.replace(/(:\/\/[^/]*\/)(?:image|[a-z]+-img)\/[^/]*(\/[0-9]+\/[^/]*\.[^/.?#]*)(?:[?#].*)?$/,
+                               "$1image/original$2");
+        }
+
+        if (domain_nowww === "scifi-forum.de") {
+            // https://www.scifi-forum.de/filedata/fetch?id=4498608&d=1527659360&type=medium -- 216x330
+            //   https://www.scifi-forum.de/filedata/fetch?id=4498608 -- 775x1186
+            return src.replace(/\/filedata\/fetch.*?[?&](id=[0-9]+).*?$/, "/filedata/fetch?$1");
+        }
+
 
 
 
@@ -21511,6 +21569,8 @@ var $$IMU_EXPORT$$;
             domain === "images-origin.playboy.com" ||
             // http://images.kpopstarz.com/data/images/full/87676/roy-kim-says-he-is-sorry-that-his-song-spring-spring-spring-bom-bom-bom-has-drawn-plagiarism-accusations.jpg
             domain === "images.kpopstarz.com" ||
+            // https://etimg.etb2bimg.com/photo/62837430.cms
+            domain === "etimg.etb2bimg.com" ||
             // http://images.contentful.com/l7es9q9kzr9z/KVC2bUAzyUkW6KaMgGkeA/2f45f07b331a60fc360ff8d641a29d7a/778_KimberlyMcArthur_15.jpg
             domain === "images.contentful.com") {
             return {
@@ -22246,6 +22306,9 @@ var $$IMU_EXPORT$$;
                 if (meta.userscript_only && !is_userscript)
                     return;
 
+                if (meta.extension_only && !is_extension)
+                    return;
+
                 var option = document.createElement("div");
                 option.classList.add("option");
 
@@ -22575,7 +22638,7 @@ var $$IMU_EXPORT$$;
                     var digit = resp.status.toString()[0];
 
                     if (((digit === "4" || digit === "5") &&
-                         resp.status !== 405)) {
+                         resp.status !== 405) && obj[0].can_head) {
                         if (err_cb) {
                             console_log("Bad status: " + resp.status + " ( " + url + " )");
                             err_cb();
@@ -22587,7 +22650,7 @@ var $$IMU_EXPORT$$;
                     }
 
                     if (processing.head) {
-                        cb(resp);
+                        cb(resp, obj[0]);
                         return;
                     }
 
@@ -22601,7 +22664,7 @@ var $$IMU_EXPORT$$;
                         var img = document.createElement("img");
                         img.src = e.target.result;
                         img.onload = function() {
-                            cb(img, resp.finalUrl);
+                            cb(img, resp.finalUrl, obj[0]);
                         };
                         img.onerror = function() {
                             err_cb();
@@ -22730,6 +22793,23 @@ var $$IMU_EXPORT$$;
         }
 
         function makePopup(obj, orig_url, processing, data) {
+            var openb = get_single_setting("mouseover_open_behavior");
+            if (openb === "newtab") {
+                stop_waiting();
+
+                var theobj = data.data.obj;
+                theobj.url = data.data.resp.finalUrl;
+
+                extension_send_message({
+                    type: "newtab",
+                    data: {
+                        imu: theobj
+                    }
+                }, function() {
+                });
+                return;
+            }
+
             //var x = mouseX;//mouseAbsX;
             //var y = mouseY;//mouseAbsY;
             var x = data.x;
@@ -23377,10 +23457,14 @@ var $$IMU_EXPORT$$;
             return false;
         }
 
+        function get_single_setting(setting) {
+            if (settings[setting] instanceof Array)
+                return settings[setting][0];
+            return settings[setting];
+        }
+
         function get_close_behavior() {
-            if (settings.mouseover_close_behavior instanceof Array)
-                return settings.mouseover_close_behavior[0];
-            return settings.mouseover_close_behavior;
+            return get_single_setting("mouseover_close_behavior");
         }
 
         function trigger_popup() {
@@ -23428,10 +23512,22 @@ var $$IMU_EXPORT$$;
                             if (source.src && obj_indexOf(newobj, source.src) < 0)
                                 newobj.push(fillobj(source.src)[0]);
 
+                            var openb = get_single_setting("mouseover_open_behavior");
+
+                            if (openb === "newtab") {
+                                processing.head = true;
+                            }
+
                             check_image_get(newobj, function(img, newurl) {
                                 var data = {img: img, newurl: newurl};
+                                var newurl1 = newurl;
 
-                                finalcb(newurl, data);
+                                if (openb === "newtab") {
+                                    data = {resp: img, obj: newurl};
+                                    newurl1 = data.resp.finalUrl;
+                                }
+
+                                finalcb(newurl1, data);
                                 return;
                                 // why?
                                 if (newurl == source.src) {

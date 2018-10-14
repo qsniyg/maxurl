@@ -120,6 +120,9 @@ chrome.webRequest.onBeforeSendHeaders.addListener(function(details) {
     var redirect = redirects[details.tabId];
     delete redirects[details.tabId];
 
+    if (!(redirect instanceof Array))
+      redirect = [redirect];
+
     debug("Redirect", details.tabId);
 
     loading_urls[details.tabId] = details.url;
@@ -270,5 +273,18 @@ chrome.runtime.onMessage.addListener((message, sender, respond) => {
     return true;
   } else if (message.type === "redirect") {
     redirects[sender.tab.id] = message.data;
+  } else if (message.type === "newtab") {
+    chrome.tabs.create({
+      url: message.data.imu.url,
+      openerTabId: sender.tab.id
+    }, function (tab) {
+      debug("newTab", tab);
+      redirects[tab.id] = message.data.imu;
+      respond({
+        type: "newtab"
+      });
+    });
+
+    return true;
   }
 });
