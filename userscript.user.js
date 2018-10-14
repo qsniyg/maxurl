@@ -22688,6 +22688,7 @@ var $$IMU_EXPORT$$;
 
         var processing_list = [];
         var popups = [];
+        var popups_active = false;
         var controlPressed = false;
         var waiting = false;
 
@@ -22785,6 +22786,7 @@ var $$IMU_EXPORT$$;
             });
 
             disable_click = false;
+            popups_active = false;
 
             if (!delay_mouseonly && delay_handle) {
                 clearTimeout(delay_handle);
@@ -22806,6 +22808,7 @@ var $$IMU_EXPORT$$;
                         imu: theobj
                     }
                 }, function() {
+                    popups_active = true;
                 });
                 return;
             }
@@ -22916,6 +22919,7 @@ var $$IMU_EXPORT$$;
                 popups.push(div);
 
                 stop_waiting();
+                popups_active = true;
                 //console_log(div);
             }
 
@@ -23558,7 +23562,7 @@ var $$IMU_EXPORT$$;
 
         document.addEventListener('keydown', function(event) {
             if (set_chord(event.which, true)) {
-                if (trigger_complete(event)) {
+                if (trigger_complete(event) && !popups_active) {
                     if (!delay_handle)
                         trigger_popup();
                 }
