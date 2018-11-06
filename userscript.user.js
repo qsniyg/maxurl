@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.7.5
+// @version      0.7.6
 // @description  Finds larger or original versions of images
 // @author       qsniyg
 // @include      *
@@ -206,7 +206,10 @@ var $$IMU_EXPORT$$;
         },
         redirect_history: {
             name: "Add to history",
-            description: "Redirection will add a new entry to the browser's history"
+            description: "Redirection will add a new entry to the browser's history",
+            requires: {
+                redirect: true
+            }
         },
         mouseover: {
             name: "Enable mouseover popup",
@@ -238,6 +241,9 @@ var $$IMU_EXPORT$$;
                         name: "Delay 3s"
                     }
                 }
+            },
+            requires: {
+                mouseover: true
             }
         },
         mouseover_open_behavior: {
@@ -252,6 +258,9 @@ var $$IMU_EXPORT$$;
                 newtab: {
                     name: "New tab"
                 }
+            },
+            requires: {
+                mouseover: true
             }
         },
         mouseover_close_behavior: {
@@ -269,6 +278,9 @@ var $$IMU_EXPORT$$;
                         name: "All triggers are released"
                     }
                 }
+            },
+            requires: {
+                mouseover: true
             }
         },
         website_image: {
@@ -3709,6 +3721,9 @@ var $$IMU_EXPORT$$;
         }*/
 
         if (domain === "pictures.ozy.com" ||
+            // http://www.retail-jeweller.com/pictures/2000x2000fit/4/2/6/3007426_Pandora-ambassador-Tess-Daly-UK.jpg
+            //   http://www.retail-jeweller.com/pictures/99999999x99999999/4/2/6/3007426_Pandora-ambassador-Tess-Daly-UK.jpg
+            domain_nowww === "retail-jeweller.com" ||
             // https://d1nslcd7m2225b.cloudfront.net/Pictures/2000x2000fit/1/7/5/1281175_lily_collins_wondercon_2013_555557.jpg
             //   https://d1nslcd7m2225b.cloudfront.net/Pictures/99999999x99999999/1/7/5/1281175_lily_collins_wondercon_2013_555557.jpg
             domain === "d1nslcd7m2225b.cloudfront.net") {
@@ -4988,7 +5003,10 @@ var $$IMU_EXPORT$$;
             domain_nowww === "theplace.ru") {
             // https://www.theplace2.ru/cache/archive/rihanna/img/488408753_10-gthumb-gwdata1200-ghdata1200-gfitdatamax.jpg
             //   https://www.theplace2.ru/archive/rihanna/img/488408753_10.jpg
-            return src.replace(/(:\/\/[^/]*\/)cache\/(.*?)-[^/.]*(\.[^/.]*)/, "$1$2$3");
+            // https://www.theplace2.ru/cache/archive/jessica_stroup/img/Jessica_Stroup_dress-1-gthumb-gwdata1200-ghdata1200-gfitdatamax.jpg
+            //   https://www.theplace2.ru/archive/jessica_stroup/img/Jessica_Stroup_dress.jpg -- different image
+            //   https://www.theplace2.ru/archive/jessica_stroup/img/Jessica_Stroup_dress-1.jpg -- correct image
+            return src.replace(/(:\/\/[^/]*\/)cache\/(.*?)-g[^/.]*(\.[^/.]*)/, "$1$2$3");
         }
 
         if ((domain_nosub === "craveonline.com" && domain.match(/cdn[0-9]*-www\.craveonline\.com/)) ||
@@ -5228,11 +5246,14 @@ var $$IMU_EXPORT$$;
                 return "http://" + decodeURIComponent(newsrc);
         }
 
-        if (domain === "tellymix-spykawebgroup.netdna-ssl.com" &&
-            src.indexOf("tellymix-spykawebgroup.netdna-ssl.com/ts/") >= 0) {
+        if ((domain === "tellymix-spykawebgroup.netdna-ssl.com" ||
+             // http://static6.tellymixcdn.com/ts/800/450/www.tellymix.co.uk/files/2013/06/Tess-Daly.jpg
+             //   https://tellymix.co.uk/wp-content/uploads/2013/06/Tess-Daly.jpg
+             domain_nosub === "tellymixcdn.com") &&
+            src.match(/:\/\/[^/]*\/+ts\//)) {
             // https://tellymix-spykawebgroup.netdna-ssl.com/ts/800/450/tellymix-spykawebgroup.netdna-ssl.com/wp-content/uploads/2016/10/the-apprentice-2016-sugar.jpg
             //   http://tellymix-spykawebgroup.netdna-ssl.com/wp-content/uploads/2016/10/the-apprentice-2016-sugar.jpg
-            return src.replace(/.*tellymix-spykawebgroup\.netdna-ssl\.com\/ts\/[0-9]*\/[0-9]*\//, "http://");
+            return src.replace(/^[a-z]+:\/\/[^/]*\/+ts\/+[0-9]*\/+[0-9]*\/+/, "http://");
         }
 
         if (domain === "assets.goodhousekeeping.co.uk") {
@@ -6664,6 +6685,8 @@ var $$IMU_EXPORT$$;
             // https://image-us.24h.com.vn/upload/1-2018/images/2018-02-09/1518170617-487-sao--8--1518169128-width650height482_97_125.jpg
             //   https://image-us.24h.com.vn/upload/1-2018/images/2018-02-09/1518170617-487-sao--8--1518169128-width650height482.jpg
             domain_nosub === "24h.com.vn" ||
+            // http://streaming1.danviet.vn/upload/1-2018/images/2018-03-12/miko-matsuda-01-1520847171-width650height650-1520848378-width650height650.jpg
+            (domain_nosub === "danviet.vn" && domain.match(/^streaming[0-9]*\./)) ||
             // http://anh.24h.com.vn//upload/4-2017/images/2017-11-08/medium/1510125598-629-151011694144796-chi-pu-5.jpg
             domain === "anh.eva.vn") {
             // https://eva-img.24hstatic.com/upload/1-2017/images/2017-01-18/large/1484712995-1ava.jpg
@@ -7235,7 +7258,7 @@ var $$IMU_EXPORT$$;
             domain_nowww === "jyllands-posten.dk" ||
             // https://www.svtstatic.se/image-cms/svtse/1531589739/nyheter/article18662486.svt/alternates/large/180714-gronlandisberg-715344-a001nh-jpg
             //   https://www.svtstatic.se/image-cms/svtse/1531589739/nyheter/article18662486.svt/BINARY/180714-gronlandisberg-715344-a001nh-jpg
-            domain === "www.svtstatic.se" ||
+            domain_nowww === "svtstatic.se" ||
             // https://www.adressa.no/incoming/article17124160.ece/9r0lq0/ALTERNATES/w980-default/td0459ed.jpg
             domain_nowww === "adressa.no" ||
             // https://www.belfasttelegraph.co.uk/migration_catalog/article25788206.ece/ALTERNATES/h342/SamanthaMumba
@@ -7284,7 +7307,9 @@ var $$IMU_EXPORT$$;
             // https://i2-prod.bristolpost.co.uk/incoming/article1143957.ece/BINARY/Elise-Britten-profile-pic-square.jpg
             // https://www.gloria.hr/moda/novosti/naomicampbell01jpg/6949668/alternates/FREE_580/NaomiCampbell01.jpg
             //return src.replace(/(\/article[0-9]*\.ece\/.*?)(?:alternates|ALTERNATES|AUTOCROP|autocrop)\/[^/]*\//, "$1BINARY/");
-            return src.replace(/(?:alternates|ALTERNATES|AUTOCROP|autocrop|binary|BINARY)\/[^/]*\/([^/]*)$/, "BINARY/$1");
+            newsrc = src.replace(/(?:alternates|ALTERNATES|AUTOCROP|autocrop|binary|BINARY)\/[^/]*\/([^/]*)$/, "BINARY/$1");
+            if (newsrc !== src)
+                return newsrc;
         }
 
         if (domain === "images.fandango.com" ||
@@ -13762,12 +13787,15 @@ var $$IMU_EXPORT$$;
             // http://www.national-geographic.pl/media/cache/default_view/uploads/media/default/0008/46/1fba76fdab7bfa75738a5216b908c39a3e9128d6.jpeg
             //   http://www.national-geographic.pl/uploads/media/default/0008/46/1fba76fdab7bfa75738a5216b908c39a3e9128d6.jpeg
             domain_nowww === "national-geographic.pl" ||
+            // https://www.ecranlarge.com/media/cache/160x213/uploads/image/001/031/l1uabslmgse4qwthefxzsm82axp-582.jpg
+            //   https://www.ecranlarge.com/uploads/image/001/031/l1uabslmgse4qwthefxzsm82axp-582.jpg
+            domain_nowww === "ecranlarge.com" ||
             // https://estaticos.marie-claire.es/media/cache/706x530_thumb/uploads/images/gallery/57d7bfe55cafe82abf1dd4a6/scarlett-johansson.jpg
             //   https://estaticos.marie-claire.es/uploads/images/gallery/57d7bfe55cafe82abf1dd4a6/scarlett-johansson.jpg
             domain === "estaticos.marie-claire.es") {
             // https://ellearabia.com/media/cache/photogallery_entry/uploads/cms/photo-gallery/entries/59b64fb94ef7b.jpg
             //   https://ellearabia.com/uploads/cms/photo-gallery/entries/59b64fb94ef7b.jpg
-            return src.replace(/\/media\/cache\/[^/]*\//, "/");
+            return src.replace(/\/+media\/+cache\/+[^/]*\/+/, "/");
         }
 
         if (domain === "static.t13.cl") {
@@ -21918,6 +21946,38 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/thnb_([^/]*\.[^/.]*)(?:[?#].*)?$/, "/$1");
         }
 
+        if (domain_nowww === "hdwall.us") {
+            // http://hdwall.us/thumbnail-small/jessica_stroup_desktop_1067x1600_hd-wallpaper-997205.jpg
+            //   http://hdwall.us/wallpaper/jessica_stroup_desktop_1067x1600_hd-wallpaper-997205.jpg
+            // works, but adds watermark, needs a correct cookie to bypass
+            return {
+                url: src.replace(/(:\/\/[^/]*\/+)(?:wallpaper|thumbnail)[^/]*\/+([^/]*\.[^/.]*)(?:[?#].*)?$/, "$1wallpaper/$2"),
+                problems: {
+                    watermark: true
+                }
+            };
+        }
+
+        if (domain === "thmbs.baklol.com") {
+            // https://thmbs.baklol.com/Tori-Black0842210141469530776.jpg
+            //   https://images.baklol.com/Tori-Black0842210141469530776.jpg
+            return src.replace(/:\/\/thmbs\./, "://images.");
+        }
+
+        if (domain_nowww === "svtstatic.se") {
+            // issue page: (thanks to TheLovinator1 on github)
+            // https://github.com/qsniyg/maxurl/issues/18
+            // https://www.svtstatic.se/image/cinema/760/19912234/1541383772?quality=70&format=auto
+            //   https://www.svtstatic.se/image/original/unscaled/19912234/1541383772.jpg?quality=10
+            //   https://www.svtstatic.se/image/original/unscaled/19912234/1541383772.png
+            return {
+                url: src.replace(/\/image\/+[^/]*\/+[^/]*\/+([0-9]+\/+[0-9]+)(?:\.[^/?#]*)?(?:[?#].*)?$/,
+                                 "/image/original/unscaled/$1.png"),
+                                 //"/image/original/unscaled/$1?quality=100"),
+                head_wrong_contentlength: true
+            };
+        }
+
 
 
 
@@ -23343,6 +23403,36 @@ var $$IMU_EXPORT$$;
         saved_el.style.color = "#0af";
         var saved_timeout = null;
 
+        function check_disabled_options() {
+            var options = options_el.querySelectorAll("div.option");
+
+            for (var i = 0; i < options.length; i++) {
+                var setting = options[i].id.replace(/^option_/, "");
+
+                var meta = settings_meta[setting];
+                if (meta.requires) {
+                    // fixme: this only works for one option in meta.requires
+                    for (var required_setting in meta.requires) {
+                        var value = settings[required_setting];
+
+                        if (value === meta.requires[required_setting]) {
+                            options[i].classList.remove("disabled");
+
+                            options[i].querySelectorAll("input").forEach((input) => {
+                                input.disabled = false;
+                            });
+                        } else {
+                            options[i].classList.add("disabled");
+
+                            options[i].querySelectorAll("input").forEach((input) => {
+                                input.disabled = true;
+                            });
+                        }
+                    }
+                }
+            }
+        }
+
         for (var setting in settings) {
             (function(setting) {
                 var meta = settings_meta[setting];
@@ -23357,6 +23447,7 @@ var $$IMU_EXPORT$$;
 
                 var option = document.createElement("div");
                 option.classList.add("option");
+                option.id = "option_" + setting;
 
                 var table = document.createElement("table");
                 table.style.border = "0";
@@ -23490,6 +23581,7 @@ var $$IMU_EXPORT$$;
                                 }
                             }
 
+                            var new_value = value;
                             if (group || option_type !== "or") {
                                 var out_value = [];
 
@@ -23501,10 +23593,14 @@ var $$IMU_EXPORT$$;
                                     }
                                 }
 
-                                set_value(setting, out_value);
+                                new_value = out_value;
+                                set_value(setting, new_value);
                             } else {
                                 set_value(setting, value);
                             }
+
+                            settings[setting] = new_value;
+                            check_disabled_options();
 
                             saved_el.style.visibility = "visible";
 
@@ -23554,6 +23650,8 @@ var $$IMU_EXPORT$$;
                 options_el.appendChild(option);
             })(setting);
         }
+
+        check_disabled_options();
 
         options_el.appendChild(saved_el);
     }
