@@ -193,6 +193,8 @@ var $$IMU_EXPORT$$;
         mouseover_open_behavior: "popup",
         // also thanks to blue-lightning
         mouseover_close_behavior: "any",
+        // thanks to acid-crash on github for the idea
+        mouseover_styles: "",
         website_image: true,
         allow_watermark: false,
         allow_smaller: false
@@ -264,7 +266,7 @@ var $$IMU_EXPORT$$;
             }
         },
         mouseover_close_behavior: {
-            name: "Keep popup open until:",
+            name: "Keep popup open until",
             description: "Closes the popup when the selected condition is met",
             options: {
                 _type: "or",
@@ -282,6 +284,11 @@ var $$IMU_EXPORT$$;
             requires: {
                 mouseover: true
             }
+        },
+        mouseover_styles: {
+            name: "Popup CSS style",
+            description: "CSS style rules for the mouseover popup",
+            type: "textarea"
         },
         website_image: {
             name: "Website image preview",
@@ -23502,6 +23509,9 @@ var $$IMU_EXPORT$$;
                     } else {
                         check_optionlist(value, option_list);
                     }
+                } else if (meta.type) {
+                    if (meta.type === "textarea")
+                        type = "textarea";
                 }
 
                 if (type === "options") {
@@ -23642,7 +23652,33 @@ var $$IMU_EXPORT$$;
                             add_setting(value_td, op, option_list[op], option_type);
                         }
                     }
-                };
+                } else if (type === "textarea") {
+                    var sub = document.createElement("table");
+                    var sub_tr = document.createElement("tr");
+                    var sub_ta_td = document.createElement("td");
+                    sub_ta_td.style.verticalAlign = "middle";
+                    sub_ta_td.style.height = "1px";
+                    var sub_button_td = document.createElement("td");
+                    sub_button_td.style.verticalAlign = "middle";
+                    sub_button_td.style.height = "1px";
+                    var textarea = document.createElement("textarea");
+                    textarea.style.height = "5em";
+                    textarea.style.width = "20em";
+                    var savebutton = document.createElement("button");
+                    savebutton.innerHTML = "Save";
+                    savebutton.onclick = function() {
+                        set_value(setting, textarea.value);
+                        settings[setting] = textarea.value;
+                    };
+
+                    sub_ta_td.appendChild(textarea);
+                    sub_button_td.appendChild(savebutton);
+                    sub_tr.appendChild(sub_ta_td);
+                    sub_tr.appendChild(sub_button_td);
+                    sub.appendChild(sub_tr);
+
+                    value_td.appendChild(sub);
+                }
 
                 tr.appendChild(value_td);
 
@@ -23989,9 +24025,16 @@ var $$IMU_EXPORT$$;
 
                 var div = document.createElement("div");
                 //div.style.all = "initial";
+                var styles = settings.mouseover_styles.replace("\n", ";");
+                div.setAttribute("style", styles);
+                if (!styles.match(/^\s*box-shadow\s*:/) &&
+                    !styles.match(/;\s*box-shadow\s*:/)) {
+                    div.style.boxShadow = "0 0 15px rgba(0,0,0,.5)";
+                }
+
                 div.style.position = "fixed"; // instagram has top: -...px
                 div.style.zIndex = Number.MAX_SAFE_INTEGER;
-                div.style.boxShadow = "0 0 15px rgba(0,0,0,.5)";
+
 
                 div.onclick = estop;
                 div.onmousedown = estop;
