@@ -17,7 +17,7 @@ table, caption, tbody, tfoot, thead, tr, th, td,
 article, aside, canvas, details, embed,
 figure, figcaption, footer, header, hgroup,
 menu, nav, output, ruby, section, summary,
-time, mark, audio, video {
+time, mark, audio, video, button {
 	margin: 0;
 	padding: 0;
 	border: 0;
@@ -310,12 +310,13 @@ code {
   padding: 0;
 }
 
-label {
+label, button {
   display: inline-block;
   padding: 6px 14px;
   margin: 0em .3em;
   border: 1px solid #0af;
   cursor: pointer;
+  background: none;
 
   -moz-user-select: none;
   -khtml-user-select: none;
@@ -324,8 +325,27 @@ label {
   user-select: none;
 }
 
-input:checked + label {
+button:active {
+  background: #08c;
+  border-color: #08c;
+}
+
+.disabled {
+  color: #aaa;
+}
+
+.disabled label {
+  cursor: default;
+  border: 1px solid #aaa;
+}
+
+input:checked + label, button {
   background: #0af;
+  color: #fff;
+}
+
+.disabled input:checked + label {
+  background: #aaa;
   color: #fff;
 }
 
@@ -350,6 +370,15 @@ input:checked + label {
 }
 
 @media (max-width:700px) {
+  .option td {
+    display: block;
+  }
+
+  .option .name_td {
+    width: auto;
+    display: block;
+  }
+
   .option strong {
     width: auto;
     display: block;
