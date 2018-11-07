@@ -24056,6 +24056,7 @@ var $$IMU_EXPORT$$;
                 vh -= 10;
                 img.style.all = "initial";
                 img.style.cursor = "pointer";
+                img.style.display = "block";
                 img.style.maxWidth = vw + "px";
                 img.style.maxHeight = vh + "px";
 
