@@ -13109,6 +13109,7 @@ var $$IMU_EXPORT$$;
             // https://grpl.contentdm.oclc.org/digital/download/collection/p15416coll4/id/541/size/large
             //   https://grpl.contentdm.oclc.org/digital/api/singleitem/image/p15416coll4/541/default.jpg
             //   https://grpl.contentdm.oclc.org/digital/iiif/p15416coll4/541/full/full/0/default.jpg
+            // thanks to rahidz on github: https://github.com/qsniyg/maxurl/issues/21
             // http://cdm16622.contentdm.oclc.org/utils/ajaxhelper/?CISOROOT=gokfa&CISOPTR=973&action=2&DMSCALE=20&DMWIDTH=213&DMHEIGHT=400&DMX=0&DMY=0&DMTEXT=&DMROTATE=0
             //   https://cdm16622.contentdm.oclc.org/digital/api/singleitem/image/gokfa/973/default.jpg
             //   https://cdm16622.contentdm.oclc.org/digital/iiif/gokfa/973/full/full/0/default.jpg
@@ -22131,6 +22132,7 @@ var $$IMU_EXPORT$$;
 
         if (domain_nosub === "wsimg.com" &&
             domain.match(/^img[0-9]*\.wsimg\.com/)) {
+            // thanks to rahidz on github: https://github.com/qsniyg/maxurl/issues/21
             // https://img1.wsimg.com/isteam/ip/84d1b722-4195-4c8a-993f-be0ddc84a927/4b9436b1-b3d3-4e13-9fba-533e632780d2.jpg/:/rs=w:400,h:500,cg:true,m/cr=w:800,h:500,a:cc
             //   https://img1.wsimg.com/isteam/ip/84d1b722-4195-4c8a-993f-be0ddc84a927/4b9436b1-b3d3-4e13-9fba-533e632780d2.jpg
             // https://img1.wsimg.com/isteam/ip/6094a1a0-2862-477f-b6f6-e2fafdfc712b/1f5bbd28-abc4-46ab-a7e1-76c7f5f34b1e.jpg/:/rs=w:400,h:500,cg:true,m/cr=w:800,h:500,a:cc
