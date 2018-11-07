@@ -334,7 +334,7 @@ button:active {
   color: #aaa;
 }
 
-.disabled label {
+.disabled label, .disabled button {
   cursor: default;
   border: 1px solid #aaa;
 }
@@ -344,7 +344,8 @@ input:checked + label, button {
   color: #fff;
 }
 
-.disabled input:checked + label {
+.disabled input:checked + label, .disabled button, .disabled button:active {
+  border-color: #aaa;
   background: #aaa;
   color: #fff;
 }

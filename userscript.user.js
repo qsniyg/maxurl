@@ -288,7 +288,10 @@ var $$IMU_EXPORT$$;
         mouseover_styles: {
             name: "Popup CSS style",
             description: "CSS style rules for the mouseover popup",
-            type: "textarea"
+            type: "textarea",
+            requires: {
+                mouseover: true
+            }
         },
         website_image: {
             name: "Website image preview",
@@ -23425,19 +23428,30 @@ var $$IMU_EXPORT$$;
                         if (value === meta.requires[required_setting]) {
                             options[i].classList.remove("disabled");
 
-                            options[i].querySelectorAll("input").forEach((input) => {
+                            options[i].querySelectorAll("input, textarea, button").forEach((input) => {
                                 input.disabled = false;
                             });
                         } else {
                             options[i].classList.add("disabled");
 
-                            options[i].querySelectorAll("input").forEach((input) => {
+                            options[i].querySelectorAll("input, textarea, button").forEach((input) => {
                                 input.disabled = true;
                             });
                         }
                     }
                 }
             }
+        }
+
+        function show_saved_message() {
+            saved_el.style.visibility = "visible";
+
+            if (saved_timeout)
+                clearTimeout(saved_timeout);
+
+            saved_timeout = setTimeout(function() {
+                saved_el.style.visibility = "hidden";
+            }, 5000);
         }
 
         for (var setting in settings) {
@@ -23612,14 +23626,7 @@ var $$IMU_EXPORT$$;
                             settings[setting] = new_value;
                             check_disabled_options();
 
-                            saved_el.style.visibility = "visible";
-
-                            if (saved_timeout)
-                                clearTimeout(saved_timeout);
-
-                            saved_timeout = setTimeout(function() {
-                                saved_el.style.visibility = "hidden";
-                            }, 5000);
+                            show_saved_message();
                         });
 
                         parent.appendChild(input);
@@ -23657,25 +23664,32 @@ var $$IMU_EXPORT$$;
                     var sub_tr = document.createElement("tr");
                     var sub_ta_td = document.createElement("td");
                     sub_ta_td.style.verticalAlign = "middle";
-                    sub_ta_td.style.height = "1px";
+                    //sub_ta_td.style.height = "1px";
+                    var sub_button_tr = document.createElement("tr");
                     var sub_button_td = document.createElement("td");
-                    sub_button_td.style.verticalAlign = "middle";
-                    sub_button_td.style.height = "1px";
+                    sub_button_td.style.textAlign = "center";
+                    //sub_button_td.style.verticalAlign = "middle";
+                    //sub_button_td.style.height = "1px";
                     var textarea = document.createElement("textarea");
                     textarea.style.height = "5em";
                     textarea.style.width = "20em";
+                    if (value)
+                        textarea.value = value;
                     var savebutton = document.createElement("button");
                     savebutton.innerHTML = "Save";
                     savebutton.onclick = function() {
                         set_value(setting, textarea.value);
                         settings[setting] = textarea.value;
+
+                        show_saved_message();
                     };
 
                     sub_ta_td.appendChild(textarea);
                     sub_button_td.appendChild(savebutton);
+                    sub_button_tr.appendChild(sub_button_td);
                     sub_tr.appendChild(sub_ta_td);
-                    sub_tr.appendChild(sub_button_td);
                     sub.appendChild(sub_tr);
+                    sub.appendChild(sub_button_tr);
 
                     value_td.appendChild(sub);
                 }
