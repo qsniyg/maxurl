@@ -3100,6 +3100,8 @@ var $$IMU_EXPORT$$;
             (domain === "image.lag.vn" && src.indexOf("/upload/") >= 0) ||
             // https://www.booktrust.org.uk/globalassets/images/news-and-blogs/blogs-2017/03.-march/dr-seuss/dr-seuss-16x9.jpg?w=200&h=675&quality=70&anchor=middlecenter
             (domain_nowww === "booktrust.org.uk" && src.indexOf("/globalassets/images/") >= 0) ||
+            // https://ind5.ccio.co/lF/9B/u6/7b47872636fed37e01f8124ee07e6e66.jpg?iw=300
+            (domain_nosub === "ccio.co" && domain.match(/^ind[0-9]*\./)) ||
             // http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
             // https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
             src.match(/\/demandware\.static\//) ||
@@ -4274,12 +4276,6 @@ var $$IMU_EXPORT$$;
             // https://images.bwwstatic.com/upload/44785/tn-500_(23).jpg
             //   https://images.bwwstatic.com/upload/44785/(23).jpg
             return src.replace(/\/tn-[0-9]+_([^/]*)$/, "/$1");
-        }
-
-        if (domain_nosub === "houstonpress.com" && domain.match(/images[0-9]*\.houstonpress\.com/)) {
-            // https://images1.houstonpress.com/imager/u/745x420/9795106/10-19_745x420.jpg
-            //   https://images1.houstonpress.com/imager/u/original/9795106/10-19_745x420.jpg
-            return src.replace(/(\/imager\/[^/]*\/)[^/]*\//, "$1original/");
         }
 
         if (domain.indexOf("img.rasset.ie") >= 0 && false) {
@@ -7473,7 +7469,11 @@ var $$IMU_EXPORT$$;
             }
         }
 
-        if (domain === "imgsrc.baidu.com") {
+        if (domain === "imgsrc.baidu.com" ||
+            // thanks to fireattack on github: https://github.com/qsniyg/maxurl/issues/22
+            // https://imgsa.baidu.com/forum/w%3D580/sign=b48af07db34543a9f51bfac42e168a7b/2b3e91160924ab1890b8cfbe31fae6cd7a890b60.jpg
+            //   https://imgsa.baidu.com/forum/pic/item/2b3e91160924ab1890b8cfbe31fae6cd7a890b60.jpg
+            domain === "imgsa.baidu.com") {
             // http://imgsrc.baidu.com/forum/wh%3D200%2C90%3B/sign=a5aa97f7bb7eca80125031e5a113bbe4/f7582e381f30e924af22ade547086e061c95f734.jpg
             // http://imgsrc.baidu.com/forum/wh=200,90;/sign=a5aa97f7bb7eca80125031e5a113bbe4/f7582e381f30e924af22ade547086e061c95f734.jpg
             //   http://imgsrc.baidu.com/forum/w%3D580%3B/sign=fc7fb3a148a98226b8c12b2fbab9bb01/7af40ad162d9f2d34097153ba2ec8a136227cc5b.jpg - slightly larger
@@ -12033,6 +12033,12 @@ var $$IMU_EXPORT$$;
              // improper, but still works
              // https://images1.miaminewtimes.com/imager/u/original/10228444/https_3a_2f_2fcdn.evbuc.com_2fimages_2f42846199_2f213046196680_2f1_2foriginal.jpg_h_200_w_450_rect_0_2c50_2c1542_2c771_s_5cbbeb572f467a67fed17f3f68594108/https:_2f_2fcdn.evbuc.com_2fimages_2f42846199_2f213046196680_2f1_2foriginal.jpg_h_200_w_450_rect_0_2c50_2c1542_2c771_s_5cbbeb572f467a67fed17f3f68594108
              domain_nosub === "miaminewtimes.com" ||
+             // https://images1.houstonpress.com/imager/u/745x420/9795106/10-19_745x420.jpg
+             //   https://images1.houstonpress.com/imager/u/original/9795106/10-19_745x420.jpg
+             domain_nosub === "houstonpress.com" ||
+             // https://images1.laweekly.com/imager/u/745xauto/7348078/nocturnal-wonderland-2016-arrests.jpg
+             //   https://images1.laweekly.com/imager/u/original/7348078/nocturnal-wonderland-2016-arrests.jpg
+             domain_nosub === "laweekly.com" ||
              // https://images1.phoenixnewtimes.com/imager/u/745x420/10442190/hidden_gems.jpg
              //   https://images1.phoenixnewtimes.com/imager/u/original/10442190/hidden_gems.jpg
              domain_nosub === "phoenixnewtimes.com") &&
@@ -12040,6 +12046,7 @@ var $$IMU_EXPORT$$;
             // https://media2.fdncms.com/stranger/imager/u/small/26096836/1524685866-nether_render_2.jpg
             //   https://media2.fdncms.com/stranger/imager/u/original/26096836/1524685866-nether_render_2.jpg
             //return src.replace(/\/imager\/u\/[a-z]+\//, "/imager/u/original/");
+            //return src.replace(/(\/imager\/[^/]*\/)[^/]*\//, "$1original/");
             newsrc = src.replace(/\/imager\/u\/[^/]*\/([0-9]+\/[^/]*)(?:\/.*)?/, "/imager/u/original/$1");
             if (newsrc !== src)
                 return newsrc;
@@ -15722,8 +15729,10 @@ var $$IMU_EXPORT$$;
             }
         }
 
-        if (amazon_container &&
-            amazon_container.match(/^customink-iotw/)) {
+        if ((amazon_container && amazon_container.match(/^customink-iotw/)) ||
+            // https://d2fzf9bbqh0om5.cloudfront.net/images/5810/main/rave_on_what_to_wear_to_an_edm_concert.jpg?1458661880
+            //   https://d2fzf9bbqh0om5.cloudfront.net/images/5810/original/rave_on_what_to_wear_to_an_edm_concert.jpg?1458661880
+            domain === "d2fzf9bbqh0om5.cloudfront.net") {
             // https://s3.amazonaws.com/customink-iotw-east-prod/images/87525/large/3FFB96AD-5057-48B2-B198-59C9FEE377D1.jpeg?1529842961
             //   https://s3.amazonaws.com/customink-iotw-east-prod/images/87525/original/3FFB96AD-5057-48B2-B198-59C9FEE377D1.jpeg?1529842961
             return src.replace(/(\/images\/[0-9]+\/)[^/]*\//, "$1original/");
@@ -21628,7 +21637,9 @@ var $$IMU_EXPORT$$;
             //   https://images.sex.com/images/pinporn/2017/05/03/620/17715654.jpg -- no watermark
             // https://images.sex.com/images/pinporn/2017/11/03/300/18602164.jpg -- no watermark
             //   https://images.sex.com/images/pinporn/2017/11/03/620/18602164.jpg -- watermark
-            return src.replace(/(\/images\/pinporn\/[0-9]{4}\/[0-9]{2}\/[0-9]{2}\/)300\//, "$1620/");
+            // https://images.sex.com/images/pinporn/2014/10/03/460/8333897.jpg -- no watermark
+            //   https://images.sex.com/images/pinporn/2014/10/03/620/8333897.jpg -- watermark
+            return src.replace(/(\/images\/pinporn\/[0-9]{4}\/[0-9]{2}\/[0-9]{2}\/)(?:300|460)\//, "$1620/");
         }
 
         if (domain === "fotografias.antena3.com" ||
@@ -22139,6 +22150,24 @@ var $$IMU_EXPORT$$;
             //   https://img1.wsimg.com/isteam/ip/6094a1a0-2862-477f-b6f6-e2fafdfc712b/1f5bbd28-abc4-46ab-a7e1-76c7f5f34b1e.jpg
             //   https://img1.wsimg.com/isteam/ip/6094a1a0-2862-477f-b6f6-e2fafdfc712b/1f5bbd28-abc4-46ab-a7e1-76c7f5f34b1e.jpg/:/rs=w:9999,h:9999,cg:true,m/cr=w:9999,h:9999,a:cc -- stretched
             return src.replace(/(\/+isteam\/+ip\/+[-0-9a-f]+\/+[^/]*\.[^/.]*)(?:\/+:\/+.*)?(?:[?#].*)?$/, "$1");
+        }
+
+        if (domain === "img.lovpho.com") {
+            // http://img.lovpho.com/anh/width248/2015/22-12/wallets-in-check-embossed-leather-autumn-winter-2014-accessories-accessories-womenfashion-women-s-handbags-burberry-wallets-2014-accessories-check-embossed-leather-haute-handbags-wallets-autumn-winter.jpg
+            //   http://img.lovpho.com/anh/2015/22-12/wallets-in-check-embossed-leather-autumn-winter-2014-accessories-accessories-womenfashion-women-s-handbags-burberry-wallets-2014-accessories-check-embossed-leather-haute-handbags-wallets-autumn-winter.jpg
+            return src.replace(/\/+anh\/+(?:width|height)[0-9]+\//, "/anh/");
+        }
+
+        if (domain_nowww === "divnil.com") {
+            // https://divnil.com/wallpaper/iphone/img/app/m/o/mona-lisa-iphone-wallpaper_051a713a4196a915fe1c35aeaa7385ba_s.jpg
+            //   https://divnil.com/wallpaper/iphone/img/app/m/o/mona-lisa-iphone-wallpaper_051a713a4196a915fe1c35aeaa7385ba_raw.jpg
+            return src.replace(/(\/wallpaper\/.*_[0-9a-f]+_)[a-z]+(\.[^/.]*)$/, "$1raw$2");
+        }
+
+        if (domain === "images.dbnaked.com") {
+            // http://images.dbnaked.com/general/zebragirls/123595_zebra-girls-free-porn-gallery-set-102/thumb_1.jpg
+            //   http://images.dbnaked.com/general/zebragirls/123595_zebra-girls-free-porn-gallery-set-102/1.jpg
+            return src.replace(/\/thumb_(?:[0-9]+x[0-9]+_)?([0-9]+\.[^/.]*)$/, "/$1");
         }
 
 
