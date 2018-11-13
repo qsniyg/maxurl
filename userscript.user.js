@@ -193,6 +193,7 @@ var $$IMU_EXPORT$$;
         mouseover_open_behavior: "popup",
         // also thanks to blue-lightning
         mouseover_close_behavior: "any",
+        mouseover_zoom_behavior: "fit",
         // thanks to acid-crash on github for the idea
         mouseover_styles: "",
         website_image: true,
@@ -283,6 +284,26 @@ var $$IMU_EXPORT$$;
                 _group3: {
                     esc: {
                         name: "ESC is pressed"
+                    }
+                }
+            },
+            requires: {
+                mouseover: true
+            }
+        },
+        mouseover_zoom_behavior: {
+            name: "Popup image zoom",
+            description: "How the popup should be sized",
+            options: {
+                _type: "or",
+                _group1: {
+                    fit: {
+                        name: "Fit to screen"
+                    }
+                },
+                _group2: {
+                    full: {
+                        name: "Full size"
                     }
                 }
             },
@@ -24497,6 +24518,8 @@ var $$IMU_EXPORT$$;
                     return true;
                 };
 
+                var zoom_behavior = get_single_setting("mouseover_zoom_behavior");
+
                 img.onclick = estop;
                 img.onmousedown = estop;
 
@@ -24534,8 +24557,11 @@ var $$IMU_EXPORT$$;
                 img.style.all = "initial";
                 img.style.cursor = "pointer";
                 img.style.display = "block";
-                img.style.maxWidth = vw + "px";
-                img.style.maxHeight = vh + "px";
+
+                if (zoom_behavior === "fit") {
+                    img.style.maxWidth = vw + "px";
+                    img.style.maxHeight = vh + "px";
+                }
 
                 var imgh = img.naturalHeight;
                 var imgw = img.naturalWidth;
