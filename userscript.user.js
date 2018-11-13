@@ -194,6 +194,7 @@ var $$IMU_EXPORT$$;
         // also thanks to blue-lightning
         mouseover_close_behavior: "any",
         mouseover_zoom_behavior: "fit",
+        mouseover_pan_behavior: "drag",
         // thanks to acid-crash on github for the idea
         mouseover_styles: "",
         website_image: true,
@@ -305,6 +306,22 @@ var $$IMU_EXPORT$$;
                     full: {
                         name: "Full size"
                     }
+                }
+            },
+            requires: {
+                mouseover: true
+            }
+        },
+        mouseover_pan_behavior: {
+            name: "Popup panning method",
+            description: "How the popup should be panned when larger than the screen",
+            options: {
+                _type: "or",
+                movement: {
+                    name: "Movement"
+                },
+                drag: {
+                    name: "Drag"
                 }
             },
             requires: {
@@ -24370,6 +24387,7 @@ var $$IMU_EXPORT$$;
         var processing_list = [];
         var popups = [];
         var popups_active = false;
+        var dragstart = false;
         var controlPressed = false;
         var waiting = false;
 
@@ -24589,8 +24607,8 @@ var $$IMU_EXPORT$$;
                     return;
                 }
 
-                if (imgh > vh ||
-                    imgw > vw) {
+                if (zoom_behavior === "fit" && (imgh > vh ||
+                                                imgw > vw)) {
                     var ratio;
                     if (imgh / vh >
                         imgw / vw) {
@@ -24626,6 +24644,28 @@ var $$IMU_EXPORT$$;
                 a.target = "_blank";
                 a.appendChild(img);
                 div.appendChild(a);
+
+                if (get_single_setting("mouseover_pan_behavior") === "drag") {
+                    div.ondragstart = function(e) {
+                        e.stopPropagation();
+                        dragstart = true;
+                        return false;
+                    };
+
+                    div.ondrop = function(e) {
+                        e.stopPropagation();
+                        return false;
+                    };
+
+                    div.onmousedown = function(e) {
+                        dragstart = true;
+                    };
+
+                    div.onmouseup = function(e) {
+                        dragstart = false;
+                    };
+                }
+
                 document.body.appendChild(div);
                 popups.push(div);
 
@@ -25314,6 +25354,35 @@ var $$IMU_EXPORT$$;
                 (doc && doc.clientTop || body && body.clientTop || 0);
         }
 
+        function do_popup_pan(popup, event, mouseX, mouseY) {
+            var pan_behavior = get_single_setting("mouseover_pan_behavior");
+            if (pan_behavior === "drag" && (event.buttons === 0 || !dragstart))
+                return;
+
+            var viewport = get_viewport();
+            var edge_buffer = 40;
+
+            if (pan_behavior === "drag" && dragstart) {
+                var left = parseInt(popup.style.left);
+                left += event.movementX;
+                popup.style.left = left + "px";
+            } else if (pan_behavior === "movement" && popup.offsetWidth > viewport[0]) {
+                var mouse_edge = Math.min(Math.max((mouseX - edge_buffer), 0), viewport[0] - edge_buffer * 2);
+                var percent = mouse_edge / (viewport[0] - (edge_buffer * 2));
+                popup.style.left = percent * (viewport[0] - popup.offsetWidth) + "px";
+            }
+
+            if (pan_behavior === "drag" && dragstart) {
+                var top = parseInt(popup.style.top);
+                top += event.movementY;
+                popup.style.top = top + "px";
+            } else if (pan_behavior === "movement" && popup.offsetHeight > viewport[1]) {
+                var mouse_edge = Math.min(Math.max((mouseY - edge_buffer), 0), viewport[1] - edge_buffer * 2);
+                var percent = mouse_edge / (viewport[1] - (edge_buffer * 2));
+                popup.style.top = percent * (viewport[1] - popup.offsetHeight) + "px";
+            }
+        }
+
         document.addEventListener('mousemove', function(event) {
             // https://stackoverflow.com/a/7790764
             event = event || window.event;
@@ -25338,21 +25407,7 @@ var $$IMU_EXPORT$$;
             }
 
             if (popups.length > 0) {
-                var popup = popups[0];
-                var viewport = get_viewport();
-                var edge_buffer = 40;
-
-                if (popup.offsetWidth > viewport[0]) {
-                    var mouse_edge = Math.min(Math.max((mouseX - edge_buffer), 0), viewport[0] - edge_buffer * 2);
-                    var percent = mouse_edge / (viewport[0] - (edge_buffer * 2));
-                    popup.style.left = percent * (viewport[0] - popup.offsetWidth) + "px";
-                }
-
-                if (popup.offsetHeight > viewport[1]) {
-                    var mouse_edge = Math.min(Math.max((mouseY - edge_buffer), 0), viewport[1] - edge_buffer * 2);
-                    var percent = mouse_edge / (viewport[1] - (edge_buffer * 2));
-                    popup.style.top = percent * (viewport[1] - popup.offsetHeight) + "px";
-                }
+                do_popup_pan(popups[0], event, mouseX, mouseY);
             }
 
             if (delay !== false && typeof delay === "number" && delay_mouseonly) {
