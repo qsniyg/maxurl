@@ -279,6 +279,11 @@ var $$IMU_EXPORT$$;
                     all: {
                         name: "All triggers are released"
                     }
+                },
+                _group3: {
+                    esc: {
+                        name: "ESC is pressed"
+                    }
                 }
             },
             requires: {
@@ -25235,11 +25240,12 @@ var $$IMU_EXPORT$$;
         document.addEventListener('keyup', function(event) {
             var condition = set_chord(event.which);
 
-            if (condition && get_close_behavior() === "all") {
+            var close_behavior = get_close_behavior();
+            if (condition && close_behavior === "all") {
                 condition = !trigger_partially_complete(event);
             }
 
-            if (condition) {
+            if (condition && close_behavior !== "esc") {
                 controlPressed = false;
                 stop_waiting();
 
