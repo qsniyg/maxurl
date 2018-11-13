@@ -24475,6 +24475,20 @@ var $$IMU_EXPORT$$;
             }
         }
 
+        function get_viewport() {
+            if (window.visualViewport) {
+                return [
+                    window.visualViewport.width,
+                    window.visualViewport.height
+                ];
+            } else {
+                return [
+                    window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,
+                    window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
+                ];
+            }
+        }
+
         function makePopup(obj, orig_url, processing, data) {
             var openb = get_single_setting("mouseover_open_behavior");
             if (openb === "newtab") {
@@ -24544,13 +24558,16 @@ var $$IMU_EXPORT$$;
                 var vw;
                 var vh;
 
-                if (window.visualViewport) {
+                /*if (window.visualViewport) {
                     vw = window.visualViewport.width;
                     vh = window.visualViewport.height;
                 } else {
                     vw = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
                     vh = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-                }
+                    }*/
+                var viewport = get_viewport();
+                vw = viewport[0];
+                vh = viewport[1];
 
                 vw -= 10;
                 vh -= 10;
@@ -25318,6 +25335,24 @@ var $$IMU_EXPORT$$;
 
             if (waiting) {
                 update_waiting();
+            }
+
+            if (popups.length > 0) {
+                var popup = popups[0];
+                var viewport = get_viewport();
+                var edge_buffer = 40;
+
+                if (popup.offsetWidth > viewport[0]) {
+                    var mouse_edge = Math.min(Math.max((mouseX - edge_buffer), 0), viewport[0] - edge_buffer * 2);
+                    var percent = mouse_edge / (viewport[0] - (edge_buffer * 2));
+                    popup.style.left = percent * (viewport[0] - popup.offsetWidth) + "px";
+                }
+
+                if (popup.offsetHeight > viewport[1]) {
+                    var mouse_edge = Math.min(Math.max((mouseY - edge_buffer), 0), viewport[1] - edge_buffer * 2);
+                    var percent = mouse_edge / (viewport[1] - (edge_buffer * 2));
+                    popup.style.top = percent * (viewport[1] - popup.offsetHeight) + "px";
+                }
             }
 
             if (delay !== false && typeof delay === "number" && delay_mouseonly) {
