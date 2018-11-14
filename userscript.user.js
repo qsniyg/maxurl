@@ -24666,6 +24666,53 @@ var $$IMU_EXPORT$$;
                     };
                 }
 
+                var currentmode = zoom_behavior;
+
+                div.onwheel = function(e) {
+                    var changed = false;
+
+                    var percentX = e.offsetX / div.clientWidth;
+                    var percentY = e.offsetY / div.clientHeight;
+
+                    if (e.deltaY > 0 && currentmode !== "fit") {
+                        img.style.maxWidth = vw + "px";
+                        img.style.maxHeight = vh + "px";
+
+                        currentmode = "fit";
+                        changed = true;
+                    } else if (e.deltaY < 0 && currentmode !== "full") {
+                        img.style.maxWidth = "initial";
+                        img.style.maxHeight = "initial";
+
+                        currentmode = "full";
+                        changed = true;
+                    }
+
+                    if (!changed)
+                        return;
+
+                    var imgwidth = div.clientWidth;
+                    var imgheight = div.clientHeight;
+
+                    var newx = (e.clientX - percentX * imgwidth);
+                    var newy = (e.clientY - percentY * imgheight);
+
+                    if (currentmode === "fit") {
+                        newx = Math.max(newx, 5);
+                        if (newx + imgwidth > vw) {
+                            newx = vw - imgwidth;
+                        }
+
+                        newy = Math.max(newy, 5);
+                        if (newy + imgheight > vh) {
+                            newy = vh - imgheight;
+                        }
+                    }
+
+                    div.style.left = newx + "px";
+                    div.style.top = newy + "px";
+                };
+
                 document.body.appendChild(div);
                 popups.push(div);
 
