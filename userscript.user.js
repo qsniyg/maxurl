@@ -24386,6 +24386,7 @@ var $$IMU_EXPORT$$;
 
         var processing_list = [];
         var popups = [];
+        var popup_el = null;
         var popups_active = false;
         var dragstart = false;
         var controlPressed = false;
@@ -24451,7 +24452,7 @@ var $$IMU_EXPORT$$;
                 waitingel.style.width = waitingsize + "px";
                 waitingel.style.height = waitingsize + "px";
                 waitingel.style.position = "fixed";//"absolute";
-                document.body.appendChild(waitingel);
+                document.documentElement.appendChild(waitingel);
             }
 
             waiting = true;
@@ -24486,6 +24487,7 @@ var $$IMU_EXPORT$$;
 
             disable_click = false;
             popups_active = false;
+            popup_el = null;
 
             if (!delay_mouseonly && delay_handle) {
                 clearTimeout(delay_handle);
@@ -24565,7 +24567,7 @@ var $$IMU_EXPORT$$;
                 }
 
                 div.style.position = "fixed"; // instagram has top: -...px
-                div.style.zIndex = Number.MAX_SAFE_INTEGER;
+                div.style.zIndex = 2147483646;
 
 
                 div.onclick = estop;
@@ -24647,28 +24649,30 @@ var $$IMU_EXPORT$$;
 
                 if (get_single_setting("mouseover_pan_behavior") === "drag") {
                     div.ondragstart = function(e) {
-                        e.stopPropagation();
                         dragstart = true;
+                        //e.stopPropagation();
+                        estop(e);
                         return false;
                     };
 
-                    div.ondrop = function(e) {
-                        e.stopPropagation();
-                        return false;
-                    };
+                    div.ondrop = estop;
 
                     div.onmousedown = function(e) {
                         dragstart = true;
+                        return false;
                     };
 
                     div.onmouseup = function(e) {
                         dragstart = false;
+                        return false;
                     };
                 }
 
                 var currentmode = zoom_behavior;
 
                 div.onwheel = function(e) {
+                    estop(e);
+
                     var changed = false;
 
                     var percentX = e.offsetX / div.clientWidth;
@@ -24689,7 +24693,7 @@ var $$IMU_EXPORT$$;
                     }
 
                     if (!changed)
-                        return;
+                        return false;
 
                     var imgwidth = div.clientWidth;
                     var imgheight = div.clientHeight;
@@ -24711,9 +24715,11 @@ var $$IMU_EXPORT$$;
 
                     div.style.left = newx + "px";
                     div.style.top = newy + "px";
+
+                    return false;
                 };
 
-                document.body.appendChild(div);
+                document.documentElement.appendChild(div);
                 popups.push(div);
 
                 stop_waiting();
@@ -24770,6 +24776,13 @@ var $$IMU_EXPORT$$;
 
             // Return the em value in pixels
             return value;
+        }
+
+        function valid_source(source) {
+            var thresh = 20;
+
+            return !(source.width && source.width < thresh ||
+                     source.height && source.height < thresh);
         }
 
         function find_source(els) {
@@ -25176,6 +25189,66 @@ var $$IMU_EXPORT$$;
                 return getfirstsource(sources);
         }
 
+        function get_next_in_gallery(el, nextprev) {
+            if (!el)
+                return null;
+
+            var stack = [el.tagName];
+            var current_el = el;
+            var firstchild = false;
+
+            while (true) {
+                if (!firstchild) {
+                    var next = current_el.nextElementSibling;
+                    if (!nextprev)
+                        next = current_el.previousElementSibling;
+
+                    if (!next) {
+                        current_el = current_el.parentElement;
+                        if (!current_el)
+                            break;
+
+                        stack.unshift(current_el.tagName);
+                        continue;
+                    }
+
+                    current_el = next;
+                } else {
+                    firstchild = false;
+                }
+
+                if (current_el.tagName === stack[0]) {
+                    if (stack.length === 1) {
+                        if (valid_source(current_el))
+                            return current_el;
+                        continue;
+                    }
+
+                    if (nextprev) {
+                        for (var i = 0; i < current_el.children.length; i++) {
+                            if (current_el.children[i].tagName === stack[1]) {
+                                current_el = current_el.children[i];
+                                stack.shift();
+                                firstchild = true;
+                                break;
+                            }
+                        }
+                    } else {
+                        for (var i = current_el.children.length - 1; i >= 0; i--) {
+                            if (current_el.children[i].tagName === stack[1]) {
+                                current_el = current_el.children[i];
+                                stack.shift();
+                                firstchild = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
         function normalize_trigger() {
             if (!(settings.mouseover_trigger instanceof Array)) {
                 settings.mouseover_trigger = [settings.mouseover_trigger];
@@ -25274,87 +25347,93 @@ var $$IMU_EXPORT$$;
             // todo: rewrite to use a manual method, in order to find pointer-events: none too
             var els = document.elementsFromPoint(mouseX, mouseY);
 
+            var source = find_source(els);
+            if (source) {
+                trigger_popup_with_source(source);
+            }
+        }
+
+        function trigger_popup_with_source(source) {
             var processing = {running: true};
             for (var i = 0; i < processing_list.length; i++) {
                 processing_list[i].running = false;
             }
             processing_list = [processing];
 
-            var source = find_source(els);
-            if (source) {
-                resetpopups();
-                //console_log(source);
+            //console_log(source);
 
-                var do_popup = function() {
-                    start_waiting();
+            var do_popup = function() {
+                start_waiting();
 
-                    var x = mouseX;
-                    var y = mouseY;
+                var x = mouseX;
+                var y = mouseY;
 
-                    var realcb = function(source_imu, data) {
-                        //console_log(source_imu);
-                        makePopup(source_imu, source.src, processing, {
-                            data: data,
-                            x: x,
-                            y: y
-                        });
-                    };
+                var realcb = function(source_imu, data) {
+                    //console_log(source_imu);
+                    resetpopups();
 
-                    try {
-                        bigimage_recursive_loop(source.src, {
-                            fill_object: true,
-                            host_url: document.location.href,
-                            document: document,
-                            window: window,
-                            element: source.el,
-                            cb: realcb
-                        }, function(obj, finalcb) {
-                            var newobj = deepcopy(obj);
-
-                            if (source.src && obj_indexOf(newobj, source.src) < 0)
-                                newobj.push(fillobj(source.src)[0]);
-
-                            var openb = get_single_setting("mouseover_open_behavior");
-
-                            if (openb === "newtab") {
-                                processing.head = true;
-                            }
-
-                            check_image_get(newobj, function(img, newurl) {
-                                var data = {img: img, newurl: newurl};
-                                var newurl1 = newurl;
-
-                                if (openb === "newtab") {
-                                    data = {resp: img, obj: newurl};
-                                    newurl1 = data.resp.finalUrl;
-                                }
-
-                                finalcb(newurl1, data);
-                                return;
-                                // why?
-                                if (newurl == source.src) {
-                                    realcb(obj, data);
-                                } else {
-                                    finalcb(newurl, data);
-                                }
-                            }, processing);
-                        });
-                    } catch (e) {
-                        console_error(e);
-                        // this doesn't work
-                        makePopup(source.src);
-                    }
+                    popup_el = source.el;
+                    makePopup(source_imu, source.src, processing, {
+                        data: data,
+                        x: x,
+                        y: y
+                    });
                 };
 
-                if (delay && !delay_mouseonly) {
-                    start_progress();
-                    delay_handle = setTimeout(function() {
-                        delay_handle = null;
-                        do_popup();
-                    }, delay * 1000);
-                } else {
-                    do_popup();
+                try {
+                    bigimage_recursive_loop(source.src, {
+                        fill_object: true,
+                        host_url: document.location.href,
+                        document: document,
+                        window: window,
+                        element: source.el,
+                        cb: realcb
+                    }, function(obj, finalcb) {
+                        var newobj = deepcopy(obj);
+
+                        if (source.src && obj_indexOf(newobj, source.src) < 0)
+                            newobj.push(fillobj(source.src)[0]);
+
+                        var openb = get_single_setting("mouseover_open_behavior");
+
+                        if (openb === "newtab") {
+                            processing.head = true;
+                        }
+
+                        check_image_get(newobj, function(img, newurl) {
+                            var data = {img: img, newurl: newurl};
+                            var newurl1 = newurl;
+
+                            if (openb === "newtab") {
+                                data = {resp: img, obj: newurl};
+                                newurl1 = data.resp.finalUrl;
+                            }
+
+                            finalcb(newurl1, data);
+                            return;
+                            // why?
+                            if (newurl == source.src) {
+                                realcb(obj, data);
+                            } else {
+                                finalcb(newurl, data);
+                            }
+                        }, processing);
+                    });
+                } catch (e) {
+                    console_error(e);
+                    // this doesn't work
+                    makePopup(source.src);
                 }
+            };
+
+            if (delay && !delay_mouseonly) {
+                start_progress();
+                delay_handle = setTimeout(function() {
+                    delay_handle = null;
+                    do_popup();
+                }, delay * 1000);
+            } else {
+                do_popup();
             }
         }
 
@@ -25364,6 +25443,31 @@ var $$IMU_EXPORT$$;
                     if (!delay_handle)
                         trigger_popup();
                 }
+            }
+
+            if (popups.length > 0 && popup_el) {
+                var newel = null;
+                var ret = undefined;
+                if (event.which === 37) { // left
+                    newel = get_next_in_gallery(popup_el, false);
+                    ret = false;
+                } else if (event.which === 39) { // right
+                    newel = get_next_in_gallery(popup_el, true);
+                    ret = false;
+                }
+
+                if (newel) {
+                    var source = find_source([newel]);
+                    if (source) {
+                        trigger_popup_with_source(source);
+                    }
+                }
+
+                if (ret === false) {
+                    event.preventDefault();
+                }
+
+                return ret;
             }
         });
 
