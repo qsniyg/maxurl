@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.7.7
+// @version      0.8.0
 // @description  Finds larger or original versions of images
 // @author       qsniyg
 // @include      *
