@@ -24701,30 +24701,30 @@ var $$IMU_EXPORT$$;
 
                     var newx, newy;
 
-                    if (currentmode === "fit") {
+                    if (imgwidth <= vw && imgheight <= vh) {
                         // centers wanted region to pointer
                         newx = (e.clientX - percentX * imgwidth);
                         newy = (e.clientY - percentY * imgheight);
-                    } else if (currentmode === "full") {
+                    } else if (imgwidth > vw || imgheight > vh) {
                         // centers wanted region to center of screen
                         newx = (vw / 2) - percentX * imgwidth;
                         var endx = newx + imgwidth;
                         if (newx > border_thresh && endx > (vw - border_thresh))
-                            newx = border_thresh;
+                            newx = Math.max(border_thresh, (vw + border_thresh) - imgwidth);
 
                         if (newx < border_thresh && endx < (vw - border_thresh))
-                            newx = (vw + border_thresh) - imgwidth;
+                            newx = Math.min(border_thresh, (vw + border_thresh) - imgwidth);
 
                         newy = (vh / 2) - percentY * imgheight;
                         var endy = newy + imgheight;
                         if (newy > border_thresh && endy > (vh - border_thresh))
-                            newy = border_thresh;
+                            newy = Math.max(border_thresh, (vh + border_thresh) - imgheight);
 
                         if (newy < border_thresh && endy < (vh - border_thresh))
-                            newy = (vh + border_thresh) - imgheight;
+                            newy = Math.min(border_thresh, (vh + border_thresh) - imgheight);
                     }
 
-                    if (currentmode === "fit") {
+                    if (imgwidth <= vw && imgheight <= vh) {
                         newx = Math.max(newx, border_thresh);
                         if (newx + imgwidth > (vw - border_thresh)) {
                             newx = (vw + border_thresh) - imgwidth;
