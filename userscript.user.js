@@ -24409,6 +24409,7 @@ var $$IMU_EXPORT$$;
         var popup_el = null;
         var popups_active = false;
         var dragstart = false;
+        var dragged = false;
         var controlPressed = false;
         var waiting = false;
 
@@ -24592,7 +24593,7 @@ var $$IMU_EXPORT$$;
 
                 div.onclick = estop;
                 div.onmousedown = estop;
-                disable_click = true;
+                //disable_click = true;
 
 
                 var vw;
@@ -24656,11 +24657,12 @@ var $$IMU_EXPORT$$;
 
 
                 var a = document.createElement("a");
-                a.addEventListener("click", function(e) {
+                //a.addEventListener("click", function(e) {
+                a.onclick = function(e) {
                     e.stopPropagation();
                     e.stopImmediatePropagation();
                     return true;
-                }, true);
+                };
                 a.style.all = "initial";
                 a.style.cursor = "pointer";
                 a.href = url;
@@ -24671,21 +24673,45 @@ var $$IMU_EXPORT$$;
                 if (get_single_setting("mouseover_pan_behavior") === "drag") {
                     div.ondragstart = function(e) {
                         dragstart = true;
+                        dragged = false;
                         //e.stopPropagation();
                         estop(e);
                         return false;
                     };
 
-                    div.ondrop = estop;
+                    //div.ondrop = estop;
 
-                    div.onmousedown = function(e) {
+                    div.onmousedown = a.onmousedown = function(e) {
                         dragstart = true;
+                        dragged = false;
+
+                        e.preventDefault();
+                        estop(e);
                         return false;
                     };
 
-                    div.onmouseup = function(e) {
+                    img.onmousedown = function(e) {
+                        dragstart = true;
+                        dragged = false;
+
+                        estop(e);
+                        return true;
+                    };
+
+                    div.onmouseup = div.onclick = a.onmouseup = a.onclick = function(e) {
                         dragstart = false;
-                        return false;
+
+                        if (dragged) {
+                            //estop(e);
+                            return false;
+                        }
+                        return;
+                    };
+
+                    img.onmouseup = img.onclick = function(e) {
+                        dragstart = false;
+                        //estop(e);
+                        return true;
                     };
                 }
 
@@ -25568,9 +25594,13 @@ var $$IMU_EXPORT$$;
             var edge_buffer = 40;
 
             if (pan_behavior === "drag" && dragstart) {
-                var left = parseInt(popup.style.left);
-                left += event.movementX;
-                popup.style.left = left + "px";
+                var origleft = parseInt(popup.style.left);
+                var left = origleft + event.movementX;
+
+                if (left !== origleft) {
+                    popup.style.left = left + "px";
+                    dragged = true;
+                }
             } else if (pan_behavior === "movement" && popup.offsetWidth > viewport[0]) {
                 var mouse_edge = Math.min(Math.max((mouseX - edge_buffer), 0), viewport[0] - edge_buffer * 2);
                 var percent = mouse_edge / (viewport[0] - (edge_buffer * 2));
@@ -25578,9 +25608,13 @@ var $$IMU_EXPORT$$;
             }
 
             if (pan_behavior === "drag" && dragstart) {
-                var top = parseInt(popup.style.top);
-                top += event.movementY;
-                popup.style.top = top + "px";
+                var origtop = parseInt(popup.style.top);
+                var top = origtop + event.movementY;
+
+                if (top !== origtop) {
+                    popup.style.top = top + "px";
+                    dragged = true;
+                }
             } else if (pan_behavior === "movement" && popup.offsetHeight > viewport[1]) {
                 var mouse_edge = Math.min(Math.max((mouseY - edge_buffer), 0), viewport[1] - edge_buffer * 2);
                 var percent = mouse_edge / (viewport[1] - (edge_buffer * 2));
