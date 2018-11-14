@@ -24544,7 +24544,7 @@ var $$IMU_EXPORT$$;
                         imu: theobj
                     }
                 }, function() {
-                    popups_active = true;
+                    //popups_active = true;
                 });
                 return;
             }
@@ -25545,6 +25545,8 @@ var $$IMU_EXPORT$$;
 
                 if (ret === false) {
                     event.preventDefault();
+                    event.stopImmediatePropagation();
+                    event.stopPropagation();
                 }
 
                 return ret;
