@@ -24626,8 +24626,9 @@ var $$IMU_EXPORT$$;
                 var sct = scrollTop();
                 var scl = scrollLeft();
                 sct = scl = 0;
-                div.style.top = (sct + Math.min(Math.max((y - sct) - (imgh / 2), 5), Math.max(vh - imgh, 5))) + "px";
-                div.style.left = (scl + Math.min(Math.max((x - scl) - (imgw / 2), 5), Math.max(vw - imgw, 5))) + "px";
+                var border_thresh = 5;
+                div.style.top = (sct + Math.min(Math.max((y - sct) - (imgh / 2), border_thresh), Math.max(vh - imgh, border_thresh))) + "px";
+                div.style.left = (scl + Math.min(Math.max((x - scl) - (imgw / 2), border_thresh), Math.max(vw - imgw, border_thresh))) + "px";
                 /*console_log(x - (imgw / 2));
                   console_log(vw);
                   console_log(imgw);
@@ -24698,18 +24699,40 @@ var $$IMU_EXPORT$$;
                     var imgwidth = div.clientWidth;
                     var imgheight = div.clientHeight;
 
-                    var newx = (e.clientX - percentX * imgwidth);
-                    var newy = (e.clientY - percentY * imgheight);
+                    var newx, newy;
 
                     if (currentmode === "fit") {
-                        newx = Math.max(newx, 5);
-                        if (newx + imgwidth > vw) {
-                            newx = vw - imgwidth;
+                        // centers wanted region to pointer
+                        newx = (e.clientX - percentX * imgwidth);
+                        newy = (e.clientY - percentY * imgheight);
+                    } else if (currentmode === "full") {
+                        // centers wanted region to center of screen
+                        newx = (vw / 2) - percentX * imgwidth;
+                        var endx = newx + imgwidth;
+                        if (newx > border_thresh && endx > (vw - border_thresh))
+                            newx = border_thresh;
+
+                        if (newx < border_thresh && endx < (vw - border_thresh))
+                            newx = (vw + border_thresh) - imgwidth;
+
+                        newy = (vh / 2) - percentY * imgheight;
+                        var endy = newy + imgheight;
+                        if (newy > border_thresh && endy > (vh - border_thresh))
+                            newy = border_thresh;
+
+                        if (newy < border_thresh && endy < (vh - border_thresh))
+                            newy = (vh + border_thresh) - imgheight;
+                    }
+
+                    if (currentmode === "fit") {
+                        newx = Math.max(newx, border_thresh);
+                        if (newx + imgwidth > (vw - border_thresh)) {
+                            newx = (vw + border_thresh) - imgwidth;
                         }
 
-                        newy = Math.max(newy, 5);
-                        if (newy + imgheight > vh) {
-                            newy = vh - imgheight;
+                        newy = Math.max(newy, border_thresh);
+                        if (newy + imgheight > (vh - border_thresh)) {
+                            newy = (vh + border_thresh) - imgheight;
                         }
                     }
 
