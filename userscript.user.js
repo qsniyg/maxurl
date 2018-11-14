@@ -195,6 +195,7 @@ var $$IMU_EXPORT$$;
         mouseover_close_behavior: "any",
         mouseover_zoom_behavior: "fit",
         mouseover_pan_behavior: "drag",
+        mouseover_scroll_behavior: "zoom",
         // thanks to acid-crash on github for the idea
         mouseover_styles: "",
         website_image: true,
@@ -322,6 +323,25 @@ var $$IMU_EXPORT$$;
                 },
                 drag: {
                     name: "Drag"
+                }
+            },
+            requires: {
+                mouseover: true
+            }
+        },
+        mouseover_scroll_behavior: {
+            name: "Popup scroll action",
+            description: "How the popup reacts to a scroll/mouse wheel event",
+            options: {
+                _type: "or",
+                zoom: {
+                    name: "Zoom"
+                },
+                pan: {
+                    name: "Pan"
+                },
+                nothing: {
+                    name: "None"
                 }
             },
             requires: {
@@ -24672,6 +24692,17 @@ var $$IMU_EXPORT$$;
                 var currentmode = zoom_behavior;
 
                 div.onwheel = function(e) {
+                    if (get_single_setting("mouseover_scroll_behavior") === "pan") {
+                        estop(e);
+                        div.style.left = (parseInt(div.style.left) + e.deltaX) + "px";
+                        div.style.top = (parseInt(div.style.top) + e.deltaY) + "px";
+                        return false;
+                    }
+
+                    if (get_single_setting("mouseover_scroll_behavior") !== "zoom") {
+                        return;
+                    }
+
                     estop(e);
 
                     var changed = false;
