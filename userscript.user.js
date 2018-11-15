@@ -4905,6 +4905,8 @@ var $$IMU_EXPORT$$;
             //   https://s3.amazonaws.com/data.tumblr.com/2d799573226814e336e0984263269507/tumblr_nwe2hfH0dX1u9vqklo1_raw.gif
             // https://78.media.tumblr.com/tumblr_lyqq4hsfo01qdphnvo1_500.gif
             //   https://78.media.tumblr.com/tumblr_lyqq4hsfo01qdphnvo1_1280.gif
+            // https://66.media.tumblr.com/cdcb216eb8e7af14c2e2d8e6d0aa0436/tumblr_nkopbvn3U81qaysjmo1_r2_500.jpg
+            //   https://66.media.tumblr.com/cdcb216eb8e7af14c2e2d8e6d0aa0436/tumblr_nkopbvn3U81qaysjmo1_r2_1280.jpg
             //
             // semi-working gifs: (thanks to rEnr3n on github)
             // https://78.media.tumblr.com/b6a2ed8abae3e9f0a64ccc5bd14b5bbf/tumblr_n8w8k50vpR1r3kk98o1_250.gif -- works
@@ -4939,7 +4941,7 @@ var $$IMU_EXPORT$$;
 
             // due to recent updates disabling _raw, until something is found, _1280 will have to suffice
             if (!src.match(/_[0-9]*\.gif$/))
-                return src.replace(/(\/tumblr_[0-9a-zA-Z]+)_[0-9]*(\.[^/.]*)$/, "$1_1280$2");
+                return src.replace(/(\/tumblr_[0-9a-zA-Z]+(?:_r[0-9]*)?)_[0-9]*(\.[^/.]*)$/, "$1_1280$2");
 
             // disable _raw for now, unless something is found
             if (src.match(/:\/\/[^/]*\/[0-9a-f]*\/tumblr_[0-9a-zA-Z]+(?:_r[0-9]+)?_[0-9]+\.[^/]*$/) && false) {
@@ -10147,7 +10149,11 @@ var $$IMU_EXPORT$$;
         if (domain === "proxy.duckduckgo.com") {
             // https://proxy.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.-fIJ70TgJpidmW2R6qcp3QHaE1%26pid%3D15.1&f=1
             //   https://tse1.mm.bing.net/th?id=OIP.-fIJ70TgJpidmW2R6qcp3QHaE1
-            return decodeURIComponent(src.replace(/.*\/iu\/.*?[?&]u=([^&]*).*/, "$1"));
+            // https://proxy.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.billboard.com%2Ffiles%2Fmedia%2FGrabbitz-mic-press-photo-2016-billboard-1548.jpg&f=1
+            //   https://www.billboard.com/files/media/Grabbitz-mic-press-photo-2016-billboard-1548.jpg
+            // https://proxy.duckduckgo.com/iur/?f=1&image_host=http://www.billboard.com/files/media/Grabbitz-mic-press-photo-2016-billboard-1548.jpg&u=https://www.billboard.com/files/media/Grabbitz-mic-press-photo-2016-billboard-1548.jpg
+            //   https://www.billboard.com/files/media/Grabbitz-mic-press-photo-2016-billboard-1548.jpg
+            return decodeURIComponent(src.replace(/.*\/iur?\/.*?[?&]u=([^&]*).*/, "$1"));
         }
 
         // Mura CMS (http://www.getmura.com/)
