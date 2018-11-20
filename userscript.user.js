@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.8.1
+// @version      0.8.2
 // @description  Finds larger or original versions of images
 // @author       qsniyg
 // @include      *
@@ -56,9 +56,9 @@ var $$IMU_EXPORT$$;
     } catch (e) {
     }
 
-    var do_request = null;
+    var do_request_raw = null;
     if (is_extension) {
-        do_request = function(data) {
+        do_request_raw = function(data) {
             var onload = data.onload;
             var onerror = data.onerror;
 
@@ -68,23 +68,39 @@ var $$IMU_EXPORT$$;
             }, function (response) {
                 if (response.data.responseType === "blob") {
                     var enc = response.data._responseEncoded;
-                    var array = new Uint8Array(enc.value.length);
-                    for (var i = 0; i < enc.value.length; i++) {
-                        array[i] = enc.value.charCodeAt(i);
+
+                    if (enc) {
+                        var array = new Uint8Array(enc.value.length);
+                        for (var i = 0; i < enc.value.length; i++) {
+                            array[i] = enc.value.charCodeAt(i);
+                        }
+                        response.data.response = new Blob([array.buffer], { type: enc.type });
+                    } else {
+                        response.data.response = null;
                     }
-                    response.data.response = new Blob([array.buffer], { type: enc.type });
                 }
 
-                if (response.type === "onload")
+                if (response.type === "onload") {
                     onload(response.data);
-                else if (response.type === "onerror" && response.onerror)
+                } else if (response.type === "onerror" && onerror) {
                     onerror(response.data);
+                }
             });
         };
     } else if (typeof(GM_xmlhttpRequest) !== "undefined") {
-        do_request = GM_xmlhttpRequest;
+        do_request_raw = GM_xmlhttpRequest;
     } else if (typeof(GM) !== "undefined" && typeof(GM.xmlHttpRequest) !== "undefined") {
-        do_request = GM.xmlHttpRequest;
+        do_request_raw = GM.xmlHttpRequest;
+    }
+
+    var do_request = null;
+    if (do_request_raw) {
+        do_request = function(data) {
+            if (!data.onerror)
+                data.onerror = data.onload;
+
+            return do_request_raw(data);
+        };
     }
 
     var default_options = {
@@ -4459,13 +4475,18 @@ var $$IMU_EXPORT$$;
             });
         }
 
-        if (domain === "vignette.wikia.nocookie.net") {
+        if (domain_nosub === "nocookie.net" &&
+            domain.match(/^vignette[0-9]*\.wikia\./)) {
             // https://vignette.wikia.nocookie.net/arresteddevelopment/images/2/2a/2015_MM_and_A_TGIT_Party_-_Portia_de_Rossi.jpg/revision/latest/top-crop/width/320/height/320?cb=20151215213157
             //   https://vignette.wikia.nocookie.net/arresteddevelopment/images/2/2a/2015_MM_and_A_TGIT_Party_-_Portia_de_Rossi.jpg/revision/latest/?cb=20151215213157
             // https://vignette.wikia.nocookie.net/kpop/images/9/95/Various_Seulki_I_Only_Want_You_photo.png/revision/latest/scale-to-width-down/350
             //   https://vignette.wikia.nocookie.net/kpop/images/9/95/Various_Seulki_I_Only_Want_You_photo.png/revision/latest/
+            // http://vignette3.wikia.nocookie.net/kpop/images/d/da/Gugudan_debut_group_photo.png/revision/latest?cb=20160617225600 -- 200x133
+            //   https://vignette3.wikia.nocookie.net/kpop/images/d/da/Gugudan_debut_group_photo.png/revision/latest?cb=20160617225600 -- 1620x1080
             //return src.replace(/(\/images\/[^/]*\/.*)\/scale-to-width-down\/[0-9]*/, "$1");
-            return src.replace(/\/revision\/([^/]*)\/.*?(\?.*)?$/, "/revision/$1/$2");
+            return src
+                .replace(/\/revision\/([^/]*)\/.*?(\?.*)?$/, "/revision/$1/$2")
+                .replace(/^http:\/\//, "https://");
         }
 
         if (domain === "static.asiachan.com") {
@@ -16886,12 +16907,20 @@ var $$IMU_EXPORT$$;
         }
 
         if ((domain_nosub === "m1905.cn" && domain.match(/image[0-9]*\.m1905\.cn/)) ||
+            // http://www.ozanyerli.com/uploadfile/2016/0411/thumb_240_0_20160411034324215.jpg
+            //   http://www.ozanyerli.com/uploadfile/2016/0411/20160411034324215.jpg
+            domain_nowww === "ozanyerli.com" ||
+            // http://www.entline.cn/uploadfile/2016/0411/thumb_260_0_20160411034315914.jpg
+            //   http://www.entline.cn/uploadfile/2016/0411/20160411034315914.jpg
+            domain_nowww === "entline.cn" ||
             // http://www.69876.com/uploadfile/2017/0524/thumb_100_137_20170524125326237.jpg
             //   http://www.69876.com/uploadfile/2017/0524/20170524125326237.jpg
             domain_nowww === "69876.com") {
             // http://image14.m1905.cn/uploadfile/2016/0802/thumb_0_647_500_20160802095117440123_watermark.jpg
             //   http://image14.m1905.cn/uploadfile/2016/0802/20160802095117440123.jpg
-            return src.replace(/\/(?:thumb_[0-9]+_[0-9]+_(?:[0-9]+_)?)?([0-9]+)(?:_watermark)?(\.[^/.]*)$/, "/$1$2");
+            newsrc = src.replace(/\/(?:thumb_[0-9]+_[0-9]+_(?:[0-9]+_)?)?([0-9]+)(?:_watermark)?(\.[^/.]*)$/, "/$1$2");
+            if (newsrc !== src)
+                return newsrc;
         }
 
         if (domain_nosub === "intermedia.ge"/* &&
@@ -22871,6 +22900,24 @@ var $$IMU_EXPORT$$;
             return src.replace(/^[a-z]+:\/\/[^/]*\/+img\.php\?(http.*)$/, "$1");
         }
 
+        if (domain === "cdn.blogimage2.crooz.jp") {
+            // http://cdn.blogimage2.crooz.jp/usr/2016/06/01/pubupu/ototkkk/resource/smp_thum_5093ccf417995424f44b4d3580e97a997186b134.jpg
+            //   http://cdn.blogimage2.crooz.jp/usr/2016/06/01/pubupu/ototkkk/resource/5093ccf417995424f44b4d3580e97a997186b134.jpg
+            return src.replace(/\/smp_thum_([0-9a-f]+\.[^/.]*)(?:[?#].*)?$/, "/$1");
+        }
+
+        if (domain_nosub === "lockerdome.com" && domain.match(/^cdn[0-9]*\./)) {
+            // https://cdn1.lockerdome.com/uploads/251ed7f5f2b318e7d05e3a8076e4da12075dc985f5018ad56f41de48efbd04af_small -- 415x623
+            //   https://cdn1.lockerdome.com/uploads/251ed7f5f2b318e7d05e3a8076e4da12075dc985f5018ad56f41de48efbd04af_facebook -- 600x901
+            return src.replace(/(\/+uploads\/+[0-9a-f]+)_[a-z]+(?:[?#].*)?$/, "$1_facebook");
+        }
+
+        if (domain === "images.headlines.pw") {
+            // https://images.headlines.pw/topnews-2017/imgs/1b/83/1b834a14603c814888a0283b92aeeed0194e4baf_640_960.jpg
+            //   https://images.headlines.pw/topnews-2017/imgs/1b/83/1b834a14603c814888a0283b92aeeed0194e4baf.jpg
+            return src.replace(/(\/[0-9a-f]+)_[0-9]+_[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
 
 
 
@@ -23564,6 +23611,14 @@ var $$IMU_EXPORT$$;
             };
         }
 
+        if (domain_nowww === "ozanyerli.com") {
+            // http://www.ozanyerli.com/uploadfile/2016/0411/thumb_240_0_20160411034324215.jpg
+            return {
+                url: src,
+                head_wrong_contenttype: true
+            };
+        }
+
         if (domain === "images.thestar.com" && src.indexOf("/content/dam/") >= 0) {
             return {
                 url: src,
@@ -23936,6 +23991,10 @@ var $$IMU_EXPORT$$;
                     var images = obj_to_simplelist(obj);
 
                     query(obj, function(newurl, data) {
+                        if (!newurl) {
+                            return options.cb(null, data);
+                        }
+
                         if (images.indexOf(newurl) < 0 && newurl !== url) {
                             bigimage_recursive_loop(newurl, options, query);
                         } else {
@@ -25840,6 +25899,11 @@ var $$IMU_EXPORT$$;
                 var y = mouseY;
 
                 var realcb = function(source_imu, data) {
+                    if (!source_imu || !data) {
+                        stop_waiting();
+                        return;
+                    }
+
                     //console_log(source_imu);
                     resetpopups();
 
@@ -25872,6 +25936,10 @@ var $$IMU_EXPORT$$;
                         }
 
                         check_image_get(newobj, function(img, newurl) {
+                            if (!img) {
+                                return finalcb(null);
+                            }
+
                             var data = {img: img, newurl: newurl};
                             var newurl1 = newurl;
 

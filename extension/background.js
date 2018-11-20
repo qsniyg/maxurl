@@ -47,7 +47,7 @@ var do_request = function(request) {
       finalUrl: xhr.responseURL,
       responseHeaders: xhr.getAllResponseHeaders(),
       responseType: xhr.responseType,
-      status: xhr.status || 200, // file:// returns 0
+      status: xhr.status || 200, // file:// returns 0, tracking protection also returns 0
       statusText: xhr.statusText
     };
 
@@ -59,6 +59,12 @@ var do_request = function(request) {
 
       if (resp.responseType === "blob") {
         var body = xhr.response;
+        if (!body) {
+          resp.status = xhr.status;
+          cb(resp);
+          return;
+        }
+
         var reader = new FileReader();
         reader.onload = function() {
           var array = new Uint8Array(reader.result);
