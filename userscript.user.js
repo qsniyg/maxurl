@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.8.3
+// @version      0.8.4
 // @description  Finds larger or original versions of images
 // @author       qsniyg
 // @include      *
@@ -15715,7 +15715,7 @@ var $$IMU_EXPORT$$;
                                 }
                             }
 
-                            var image_id = image_url.replace(/.*\/([^/.]*)\.[^/.]*$/, "$1");
+                            var image_id = image_url.replace(/.*\/([^/.]*)\.[^/.]*(?:[?#].*)?$/, "$1");
                             for (var i = 0; i < images.length; i++) {
                                 if (images[i].indexOf(image_id) > 0) {
                                     cb(images[i]);
@@ -23047,6 +23047,31 @@ var $$IMU_EXPORT$$;
             // https://images.gog.com/93bc827005313cfb4cd9194f05f09fdc4d91e93d7730bda0ed9565c9b7361594_product_card_v2_thumbnail_271.jpg
             //   https://images.gog.com/93bc827005313cfb4cd9194f05f09fdc4d91e93d7730bda0ed9565c9b7361594.jpg
             return src.replace(/(:\/\/[^/]*\/+[0-9a-f]+)_[^/]*(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain === "imx.to") {
+            // https://imx.to/u/t/2018/12/06/1whoss.jpg
+            //   https://t.imx.to/t/2018/12/06/1whoss.jpg
+            return src.replace(/:\/\/[^/]*\/u\/t\//, "://t.imx.to/t/");
+        }
+
+        if (domain === "t.imx.to") {
+            // https://t.imx.to/t/2018/12/06/1whoss.jpg
+            //   https://i.imx.to/i/2018/12/06/1whoss.jpg
+            return src.replace(/:\/\/[^/]*\/t\//, "://i.imx.to/i/");
+        }
+
+        if (domain_nowww === "sisajb.com") {
+            // http://www.sisajb.com/data/newsThumb/1526600214&&ADD.thumb580
+            //    http://www.sisajb.com/data/newsData/1526600214&&.JPG
+            // http://www.sisajb.com/data/newsThumb/1526600266&&ADD.thumb580
+            //    http://www.sisajb.com/data/newsData/1526600266&&.jpg
+            // http://www.sisajb.com/data/newsThumb/1353034731&&TITLE_IMG_.thumb90
+            //   http://www.sisajb.com/data/newsThumb/1353034716&&ADD.thumb580
+            //   http://www.sisajb.com/data/newsData/1353034716&&.jpg
+            newsrc = src.replace(/\/data\/newsThumb\/([0-9]+&&).*/, "/data/newsData/$1.jpg");
+            if (newsrc !== src)
+                return add_extensions_upper(newsrc);
         }
 
 
