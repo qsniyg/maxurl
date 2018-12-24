@@ -214,6 +214,8 @@ var $$IMU_EXPORT$$;
         mouseover_scroll_behavior: "zoom",
         // thanks to 07416 on github for the idea
         mouseover_position: "cursor",
+        // also thanks to 07416
+        mouseover_links: false,
         // thanks to acid-crash on github for the idea
         mouseover_styles: "",
         website_image: true,
@@ -378,6 +380,10 @@ var $$IMU_EXPORT$$;
                     name: "Page middle"
                 }
             }
+        },
+        mouseover_links: {
+            name: "Popup for plain hyperlinks",
+            description: "Whether or not the popup should also open for plain hyperlinks"
         },
         mouseover_styles: {
             name: "Popup CSS style",
@@ -25571,6 +25577,7 @@ var $$IMU_EXPORT$$;
 
             var sources = {};
             var picture_sources = {};
+            var links = {};
             var picture_minw = false;
             var picture_maxw = false;
             var picture_minh = false;
@@ -25732,6 +25739,14 @@ var $$IMU_EXPORT$$;
                             }
                         }
                     }
+                } else if (el.tagName === "A") {
+                    var src = el.href;
+                    links[src] = {
+                        count: 1,
+                        src: src,
+                        el: el,
+                        id: id++
+                    };
                 }
             }
 
@@ -25763,8 +25778,15 @@ var $$IMU_EXPORT$$;
             /*console_log(els);
             console_log(sources);*/
 
-            if ((source = getsource()) !== undefined)
+            if ((source = getsource()) !== undefined) {
+                if (source === null && get_single_setting("mouseover_links")) {
+                    if (Object.keys(links).length > 0) {
+                        return links[Object.keys(links)[0]];
+                    }
+                }
+
                 return source;
+            }
 
             // disable for now, fix later, for websites that don't work with imu
             if (false) {
