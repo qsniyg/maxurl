@@ -212,6 +212,8 @@ var $$IMU_EXPORT$$;
         mouseover_zoom_behavior: "fit",
         mouseover_pan_behavior: "drag",
         mouseover_scroll_behavior: "zoom",
+        // thanks to 07416 on github for the idea
+        mouseover_position: "cursor",
         // thanks to acid-crash on github for the idea
         mouseover_styles: "",
         website_image: true,
@@ -362,6 +364,19 @@ var $$IMU_EXPORT$$;
             },
             requires: {
                 mouseover: true
+            }
+        },
+        mouseover_position: {
+            name: "Popup position",
+            description: "Where the popup will appear",
+            options: {
+                _type: "or",
+                cursor: {
+                    name: "Mouse cursor"
+                },
+                center: {
+                    name: "Page middle"
+                }
             }
         },
         mouseover_styles: {
@@ -540,6 +555,22 @@ var $$IMU_EXPORT$$;
         if (url.toLowerCase().match(/\.jpg(?:\?.*)?$/)) {
             if (url.match(/\.jpg(?:\?.*)?$/)) {
                 return [url, url.replace(/\.jpg(\?.*)?$/, ".JPG$1"), url.replace(/\.jpg(\?.*)?$/, ".png$1"), url.replace(/\.jpg(\?.*)?$/, ".PNG$1")];
+            } else {
+                return [url, url.replace(/\.JPG(\?.*)?$/, ".jpg$1"), url.replace(/\.JPG(\?.*)?$/, ".png$1"), url.replace(/\.JPG(\?.*)?$/, ".PNG$1")];
+            }
+        } else {
+            if (url.match(/\.png(?:\?.*)?$/)) {
+                return [url, url.replace(/\.png(\?.*)?$/, ".PNG$1"), url.replace(/\.png(\?.*)?$/, ".jpg$1"), url.replace(/\.png(\?.*)?$/, ".JPG$1")];
+            } else {
+                return [url, url.replace(/\.PNG(\?.*)?$/, ".png$1"), url.replace(/\.PNG(\?.*)?$/, ".jpg$1"), url.replace(/\.PNG(\?.*)?$/, ".JPG$1")];
+            }
+        }
+    };
+
+    var add_extensions_upper_jpeg = function(url) {
+        if (url.toLowerCase().match(/\.jpg(?:\?.*)?$/)) {
+            if (url.match(/\.jpg(?:\?.*)?$/)) {
+                return [url, url.replace(/\.jpg(\?.*)?$/, ".jpeg$1"), url.replace(/\.jpg(\?.*)?$/, ".JPEG$1"), url.replace(/\.jpg(\?.*)?$/, ".JPG$1"), url.replace(/\.jpg(\?.*)?$/, ".png$1"), url.replace(/\.jpg(\?.*)?$/, ".PNG$1")];
             } else {
                 return [url, url.replace(/\.JPG(\?.*)?$/, ".jpg$1"), url.replace(/\.JPG(\?.*)?$/, ".png$1"), url.replace(/\.JPG(\?.*)?$/, ".PNG$1")];
             }
@@ -1228,9 +1259,12 @@ var $$IMU_EXPORT$$;
             // http://www.4th.kr/news/thumbnail/201611/28739_3653_4123_150.jpg
             //   http://www.4th.kr/news/photo/201611/28739_3653_4123.png
             domain_nowww === "4th.kr" ||
+            // http://cds.topdaily.kr/news/thumbnail/201812/56185_20164_437_v150.jpg
+            //   http://cds.topdaily.kr/news/photo/201812/56185_20164_437.jpeg
+            domain === "cds.topdaily.kr" ||
             // http://www.newstown.co.kr/news/thumbnail/201801/311251_198441_4816_v150.jpg
             domain_nowww === "newstown.co.kr") {
-            return add_extensions_upper(src
+            return add_extensions_upper_jpeg(src
                                         .replace("/thumbnail/", "/photo/")
                                         .replace(/_v[0-9]*\.([^/]*)$/, ".$1")
                                         .replace(/(\/[0-9]+_[0-9]+_[0-9]+)_150(\.[^/.]*)$/, "$1$2"));
@@ -1393,15 +1427,25 @@ var $$IMU_EXPORT$$;
             //
             // http://www.wowkorea.jp/upload/news/153102/450_teyon1003.jpg
             //   http://www.wowkorea.jp/upload/news/153102/teyon1003.jpg -- not sure how to make a rule for this
+            //
             // doesn't work:
             // http://kt.wowkorea.jp/img/news/3/19899/53692_s.jpg
             //   http://kt.wowkorea.jp/img/news/3/19899/53692_l.jpg - works
             //   http://kt.wowkorea.jp/img/news/3/19899/53692.jpg - 404
             // http://kt.wowkorea.jp/img/news/3/19961/53856_160.jpg
+
+            // thanks to Gyuri on discord
+            // http://www.wowkorea.jp/upload/photoSpecial/731/re_1-1.jpg -- 80x60
+            //   http://www.wowkorea.jp/upload/photoSpecial/731/1-1.jpg -- 600x450
+            newsrc = src.replace(/(\/upload\/+photoSpecial\/+[0-9]+\/+)re_([^/]*\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+            if (newsrc !== src)
+                return newsrc;
+
             if (src.indexOf("/img/album/") < 0 &&
                 !src.match(/\/upload\/news\/+[0-9]+\//)) {
                 return src.replace(/([^/]*_)[a-z0-9]*(\.[^/.]*)$/, "$1l$2");
             }
+
             newsrc = src.replace(/_(?:[a-z0-9]|ss)(\.[^/.]*)$/, "$1");
             if (newsrc !== src)
                 return newsrc;
@@ -2572,6 +2616,9 @@ var $$IMU_EXPORT$$;
             src.indexOf("pbs.twimg.com/profile_banners/") >= 0) {
             // https://pbs.twimg.com/profile_banners/811769379020947458/1503413326/1500x500 -- stretched
             //   https://pbs.twimg.com/profile_banners/811769379020947458/1503413326
+            // thanks to Gyuri on discord:
+            // https://pbs.twimg.com/profile_banners/4746636714/1520928319/1500x500 -- possibly not stretched?
+            //   https://pbs.twimg.com/profile_banners/4746636714/1520928319
             return src.replace(/\/[0-9]+x[0-9]+$/, "");
         }
 
@@ -3682,6 +3729,8 @@ var $$IMU_EXPORT$$;
             (domain === "static.soltana.ma" && src.indexOf("/uploads/") >= 0) ||
             // https://cdn1-www.playstationlifestyle.net/assets/uploads/2018/07/gta6hack-555x423.jpg
             (domain_nosub === "playstationlifestyle.net" && domain.match(/^cdn[0-9]*-www\./) && src.indexOf("/assets/uploads/") >= 0) ||
+            // https://assets.cdn.moviepilot.de/files/0cb261dba5f21fe5e69afaaa61896d3d81ec1f9b24b173f3f504d0bf068c/IronThroneReal-610x885.jpg
+            domain === "assets.cdn.moviepilot.de" ||
             // https://1.soompi.io/wp-content/blogs.dir/8/files/2015/09/HA-TFELT-Wonder-Girls-590x730.jpg -- doesn't work
             // https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2018/01/GTA-6-Female-Protag-796x417.jpg -- does work
             src.indexOf("/wp-content/blogs.dir/") >= 0 ||
@@ -15171,6 +15220,8 @@ var $$IMU_EXPORT$$;
                                         image = item.preview.images[0].variants.gif.source.url;
                                     else
                                         image = item.preview.images[0].source.url;
+
+                                    image = image.replace(/&amp;/g, "&");
                                 }
 
                                 return options.cb(image);
@@ -17139,6 +17190,9 @@ var $$IMU_EXPORT$$;
             // http://prikolno.cc/uploads/tumb/img/201609/4eec60a6f7b93d8ec969fe7708b209d6_tumb_660.jpg -- stretched
             //   http://prikolno.cc/uploads/img/201609/4eec60a6f7b93d8ec969fe7708b209d6.jpg
             domain_nowww === "prikolno.cc" ||
+            // http://interesno.cc/uploads/tumb/title/201703/368b6bf853582f9fcd59ba9c63f397b1_tumb_660.jpg
+            //   http://interesno.cc/uploads/title/201703/368b6bf853582f9fcd59ba9c63f397b1.jpg
+            domain_nowww === "interesno.cc" ||
             // http://obaldenno.com/uploads/tumb/title/201706/all-inclusive-buffet-breakfast_tumb_340.jpg
             //   http://obaldenno.com/uploads/title/201706/all-inclusive-buffet-breakfast.jpg
             // http://obaldenno.com/uploads/tumb/img/201703/dehjjzi-ridli-foto-daisy-ridley-photo-4_1490809870_tumb_660.jpg
@@ -23074,6 +23128,31 @@ var $$IMU_EXPORT$$;
                 return add_extensions_upper(newsrc);
         }
 
+        if (domain === "assets.cdn.moviepilot.de") {
+            // https://assets.cdn.moviepilot.de/files/0cb261dba5f21fe5e69afaaa61896d3d81ec1f9b24b173f3f504d0bf068c/limit/400/170/IronThroneReal-610x885.jpg
+            //   https://assets.cdn.moviepilot.de/files/0cb261dba5f21fe5e69afaaa61896d3d81ec1f9b24b173f3f504d0bf068c/IronThroneReal-610x885.jpg
+            return src.replace(/(\/+files\/+[0-9a-f]+)\/+limit\/+[0-9]+\/+[0-9]+\/+/, "$1/");
+        }
+
+        if (domain === "img.xuehi.cn") {
+            // http://img.xuehi.cn/1/0/1/www.weituzhai.com%2Fuploads%2Fallimg%2F150320%2F00040233N-0.jpg!600.220x150.auto.jpg
+            //   http://www.52rkl.cn/uploads/allimg/150320/00040233N-0.jpg
+            newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+(?:[^/]*\/+){3}([^/]*%2F.*?)![0-9]+[^/]*(?:[?#].*)?$/, "$1");
+            if (newsrc !== src)
+                return add_http(decodeURIComponent(newsrc));
+        }
+
+        if (domain_nowww === "infectedbyart.com" && src.indexOf("/Images/") >= 0) {
+            // http://www.infectedbyart.com/Images/Category_39/subcat_43/thumbs/0904160023061.jpg
+            //   http://www.infectedbyart.com/Images/Category_39/subcat_43/0904160023061.jpg
+            return {
+                url: src.replace(/\/+thumbs\/+/, "/"),
+                problems: {
+                    watermark: true
+                }
+            };
+        }
+
 
 
 
@@ -25258,8 +25337,16 @@ var $$IMU_EXPORT$$;
                 var scl = scrollLeft();
                 sct = scl = 0;
                 var border_thresh = 5;
-                div.style.top = (sct + Math.min(Math.max((y - sct) - (imgh / 2), border_thresh), Math.max(vh - imgh, border_thresh))) + "px";
-                div.style.left = (scl + Math.min(Math.max((x - scl) - (imgw / 2), border_thresh), Math.max(vw - imgw, border_thresh))) + "px";
+
+                var mouseover_position = get_single_setting("mouseover_position");
+
+                if (mouseover_position === "cursor") {
+                    div.style.top = (sct + Math.min(Math.max((y - sct) - (imgh / 2), border_thresh), Math.max(vh - imgh, border_thresh))) + "px";
+                    div.style.left = (scl + Math.min(Math.max((x - scl) - (imgw / 2), border_thresh), Math.max(vw - imgw, border_thresh))) + "px";
+                } else if (mouseover_position === "center") {
+                    div.style.top = (sct + Math.min(Math.max(((vh / 2) - sct) - (imgh / 2), border_thresh), Math.max(vh - imgh, border_thresh))) + "px";
+                    div.style.left = (scl + Math.min(Math.max(((vw / 2) - scl) - (imgw / 2), border_thresh), Math.max(vw - imgw, border_thresh))) + "px";
+                }
                 /*console_log(x - (imgw / 2));
                   console_log(vw);
                   console_log(imgw);
