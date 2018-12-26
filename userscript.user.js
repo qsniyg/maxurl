@@ -26069,8 +26069,10 @@ var $$IMU_EXPORT$$;
         normalize_trigger();
 
         for (var i = 0; i < settings.mouseover_trigger.length; i++) {
-            if (settings.mouseover_trigger[i].match(/^delay_[0-9]*/)) {
-                delay = parseInt(settings.mouseover_trigger[i].replace(/^delay_([0-9]*)/, "$1"));
+            if (settings.mouseover_trigger[i].match(/^delay_[0-9]+/)) {
+                delay = parseInt(settings.mouseover_trigger[i].replace(/^delay_([0-9]+).*?$/, "$1"));
+                if (delay <= 0 || isNaN(delay))
+                    delay = false;
                 break;
             } else {
                 delay_mouseonly = false;
