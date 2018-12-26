@@ -3737,6 +3737,8 @@ var $$IMU_EXPORT$$;
             (domain_nosub === "playstationlifestyle.net" && domain.match(/^cdn[0-9]*-www\./) && src.indexOf("/assets/uploads/") >= 0) ||
             // https://assets.cdn.moviepilot.de/files/0cb261dba5f21fe5e69afaaa61896d3d81ec1f9b24b173f3f504d0bf068c/IronThroneReal-610x885.jpg
             domain === "assets.cdn.moviepilot.de" ||
+            // http://image2.aving.net/2018/12/26/201812261637237790-120x80.jpg
+            (domain_nosub === "aving.net" && domain.match(/^image[0-9]*\./)) ||
             // https://1.soompi.io/wp-content/blogs.dir/8/files/2015/09/HA-TFELT-Wonder-Girls-590x730.jpg -- doesn't work
             // https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2018/01/GTA-6-Female-Protag-796x417.jpg -- does work
             src.indexOf("/wp-content/blogs.dir/") >= 0 ||
@@ -22491,11 +22493,15 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/thumb_[0-9]+__([^/]*)(?:[?#]*.*)?$/, "/$1");
         }
 
-        if (domain_nowww === "best-wallpaper.net" && src.indexOf("/wallpaper/") >= 0 &&
+        if (domain_nosub === "best-wallpaper.net" && src.indexOf("/wallpaper/") >= 0 &&
             options && options.do_request && options.cb) {
             // https://best-wallpaper.net/Barbara-Palvin-01_wallpapers.html
             // https://best-wallpaper.net/wallpaper/m/1205/Barbara-Palvin-01_m.jpg
             //   https://best-wallpaper.net/wallpaper/1920x1200/1205/Barbara-Palvin-01_1920x1200.jpg
+            // https://kr.best-wallpaper.net/wallpaper/m/1301/Girls-Generation-Taeyeon_m.jpg
+            //   https://kr.best-wallpaper.net/wallpaper/1920x1200/1301/Girls-Generation-Taeyeon_1920x1200.jpg
+            // https://kr.best-wallpaper.net/wallpaper/s/1301/The-forest-anime-girl-sitting-on-the-green-grass-red-dress_s.jpg
+            //   https://kr.best-wallpaper.net/wallpaper/1920x1080/1301/The-forest-anime-girl-sitting-on-the-green-grass-red-dress_1920x1080.jpg
             match = src.match(/\/wallpaper\/+[^/]+\/[0-9]+\/([^/]*)_[^-_/.]+\.[^/.]*$/);
             if (match) {
                 options.do_request({
@@ -26158,7 +26164,7 @@ var $$IMU_EXPORT$$;
             }
         }
 
-        function trigger_popup_with_source(source) {
+        function trigger_popup_with_source(source, automatic) {
             var processing = {running: true};
             for (var i = 0; i < processing_list.length; i++) {
                 processing_list[i].running = false;
@@ -26240,7 +26246,7 @@ var $$IMU_EXPORT$$;
                 }
             };
 
-            if (delay && !delay_mouseonly) {
+            if (delay && !delay_mouseonly && !automatic) {
                 start_progress();
                 delay_handle = setTimeout(function() {
                     delay_handle = null;
@@ -26273,7 +26279,7 @@ var $$IMU_EXPORT$$;
                 if (newel) {
                     var source = find_source([newel]);
                     if (source) {
-                        trigger_popup_with_source(source);
+                        trigger_popup_with_source(source, true);
                     }
                 }
 
