@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.8.4
+// @version      0.8.5
 // @description  Finds larger or original versions of images
 // @author       qsniyg
 // @include      *
@@ -2628,14 +2628,22 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/[0-9]+x[0-9]+$/, "");
         }
 
-        // disabling because too many urls are broken
-        /*if (domain.indexOf("ytimg.googleusercontent.com") >= 0 ||
-            domain.indexOf("i.ytimg.com") >= 0 ||
-            domain.indexOf("img.youtube.com") >= 0) {
+        // disabling because some images are changed
+        if ((domain === "ytimg.googleusercontent.com" ||
+            // https://i.ytimg.com/vi/WLUWOwO2U8c/hqdefault.jpg?sqp=-oaymwEZCPYBEIoBSFXyq4qpAwsIARUAAIhCGAFwAQ==&rs=AOn4CLApoW235ABiHOfyJan0ArZIRsbUOA
+             domain === "i.ytimg.com" ||
+             domain === "img.youtube.com") && false) {
             // doesn't work for some urls:
             // https://i.ytimg.com/vi/o-gVbQHG0Ck/hqdefault.jpg
-            return src.replace(/\/[^/]*$/, "/maxresdefault.jpg");
-        }*/
+            //   https://i.ytimg.com/vi/o-gVbQHG0Ck/sddefault.jpg -- different image
+            var regex = /(\/+vi\/+[^/]*\/+)[a-z]+(\.[^/.?#]*)(?:[?#].*)?$/;
+            return [
+                src.replace(regex, "$1maxresdefault$2"),
+                src.replace(regex, "$1sddefault$2"),
+                src.replace(regex, "$1hqdefault$2"),
+                src.replace(regex, "$1mqdefault$2")
+            ];
+        }
 
         if (domain === "image.bugsm.co.kr") {
             // blank image: (?version= doesn't impact)
@@ -12351,10 +12359,13 @@ var $$IMU_EXPORT$$;
             return src.replace(/^.*?\/forum\/outImage\/(http.*)$/, "$1");
         }
 
-        if (domain === "ssproxy.ucloudbiz.olleh.com") {
+        if (domain === "ssproxy.ucloudbiz.olleh.com" ||
+            // https://s.gae9.com/trend/1e2099297cf9c17e.small
+            //   https://s.gae9.com/trend/1e2099297cf9c17e.orig
+            domain === "s.gae9.com") {
             // http://ssproxy.ucloudbiz.olleh.com/v1/AUTH_6a92e249-183a-47ef-870b-b6f2fb771cfa/gae9/trend/f4867c07f1d60768.small
             //   http://ssproxy.ucloudbiz.olleh.com/v1/AUTH_6a92e249-183a-47ef-870b-b6f2fb771cfa/gae9/trend/f4867c07f1d60768.orig
-            return src.replace(/\.[a-z]*$/, ".orig");
+            return src.replace(/\.[a-z]*(?:[?#].*)?$/, ".orig");
         }
 
         if (domain_nosub === "artstation.com" && domain.match(/cdn[a-z]*\.artstation\.com/)) {
@@ -13084,6 +13095,9 @@ var $$IMU_EXPORT$$;
             // http://images.kpopstarz.com/data/thumbs/full/87676/225/149/50/20/roy-kim-says-he-is-sorry-that-his-song-spring-spring-spring-bom-bom-bom-has-drawn-plagiarism-accusations.jpg
             //   http://images.kpopstarz.com/data/images/full/87676/roy-kim-says-he-is-sorry-that-his-song-spring-spring-spring-bom-bom-bom-has-drawn-plagiarism-accusations.jpg
             domain === "images.kpopstarz.com" ||
+            // http://images.kstars.kr/data/images/full/31493/0003803688_001_20180615082716162-jpg.jpg?w=200
+            //   http://images.kstars.kr/data/images/full/31493/0003803688_001_20180615082716162-jpg.jpg
+            domain === "images.kstars.kr" ||
             // https://kdrimages-1tmxd3aba43noa.stackpathdns.com/data/thumbs/full/229217/120/100/50/40/mystery-queen.jpg
             //   https://kdrimages-1tmxd3aba43noa.stackpathdns.com/data/images/full/229217/mystery-queen.jpg
             domain === "kdrimages-1tmxd3aba43noa.stackpathdns.com") {
@@ -23169,6 +23183,14 @@ var $$IMU_EXPORT$$;
             // http://static.doramatv.me/uploads/pics/02/53/632.jpg
             //   http://static.doramatv.me/uploads/pics/02/53/632_o.jpg
             return src.replace(/(\/uploads\/+pics\/+.*\/[0-9]+)(\.[^/.]*)(?:[?#].*)?$/, "$1_o$2");
+        }
+
+        if (domain === "chi.gomtv.com") {
+            // https://chi.gomtv.com/cgi-bin/imgview.cgi?nid=12740788&type=11 -- 853x480
+            //   https://chi.gomtv.com/cgi-bin/imgview.cgi?nid=12740788&type=11 -- 1280x720
+            // http://chi.gomtv.com/cgi-bin/imgview.cgi?nid=12211347&type=11 -- 857x480, looks stretched
+            //   http://chi.gomtv.com/cgi-bin/imgview.cgi?nid=12211347&type=0 -- 720x403
+            return src.replace(/\/imgview\.cgi.*?[?&]nid=([0-9]+).*?$/, "/imgview.cgi?nid=$1&type=0");
         }
 
 
