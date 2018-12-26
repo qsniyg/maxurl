@@ -26073,6 +26073,8 @@ var $$IMU_EXPORT$$;
                 delay = parseInt(settings.mouseover_trigger[i].replace(/^delay_([0-9]+).*?$/, "$1"));
                 if (delay <= 0 || isNaN(delay))
                     delay = false;
+                if (typeof delay === "number" && delay >= 10)
+                    delay = 10;
                 break;
             } else {
                 delay_mouseonly = false;
