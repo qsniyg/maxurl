@@ -23159,6 +23159,12 @@ var $$IMU_EXPORT$$;
             };
         }
 
+        if (domain === "static.doramatv.me") {
+            // http://static.doramatv.me/uploads/pics/02/53/632.jpg
+            //   http://static.doramatv.me/uploads/pics/02/53/632_o.jpg
+            return src.replace(/(\/uploads\/+pics\/+.*\/[0-9]+)(\.[^/.]*)(?:[?#].*)?$/, "$1_o$2");
+        }
+
 
 
 
@@ -26294,11 +26300,16 @@ var $$IMU_EXPORT$$;
                 stop_waiting();
 
                 resetpopups();
+
+                return;
             }
 
             // esc
-            if (event.which === 27)
+            if (event.which === 27 ||
+                delay_handle) {
+                stop_waiting();
                 resetpopups();
+            }
         });
 
         function scrollLeft() {
