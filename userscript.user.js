@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.8.7
+// @version      0.8.8
 // @description  Finds larger or original versions of images
 // @author       qsniyg
 // @include      *
@@ -5426,6 +5426,10 @@ var $$IMU_EXPORT$$;
             // http://www.telegraph.co.uk/content/dam/fashion/2016/10/11/110910109_ONLINE_USE_ONLY_ONE_USE_ONLY_MUST_CREDIT_Alexi_Lubomirski_-_Harpers__Bazaar_US__MUST_HOTLI_trans_NvBQzQNjv4BqqVzuuqpFlyLIwiB6NTmJwfSVWeZ_vEN7c6bHu2jJnT8.jpg
             // http://www.telegraph.co.uk/content/dam/Travel/Cruise/titanic-1997-film-still-ship-xlarge.jpg
             //        http://www.telegraph.co.uk/content/dam/Travel/Cruise/titanic-1997-film-still-ship.jpg
+            // doesn't work:
+            // https://www.telegraph.co.uk/content/dam/fashion/2015/12/17/victoria-beckham-9-large_trans_NvBQzQNjv4Bq2oUEflmHZZHjcYuvN_Gr-bVmXC2g6irFbtWDjolSHWg.jpg?imwidth=480
+            //   https://www.telegraph.co.uk/content/dam/fashion/2015/12/17/victoria-beckham-9_trans_NvBQzQNjv4Bq2oUEflmHZZHjcYuvN_Gr-bVmXC2g6irFbtWDjolSHWg.jpg -- doesn't work
+            //   https://www.telegraph.co.uk/content/dam/fashion/2015/12/17/victoria-beckham-9-large_trans_NvBQzQNjv4Bq2oUEflmHZZHjcYuvN_Gr-bVmXC2g6irFbtWDjolSHWg.jpg -- works
             //return src.replace(/(\/[^/-]*[^-_])-(?:x*(?:large|medium|small))(_[^/]*)?(\.[^/.]*$)$/, "$1$2$3");
             return src.replace(/-(?:x*(?:large|medium|small))(_[^/]*)?(\.[^/.]*$)$/, "$1$2");
         }
@@ -6215,6 +6219,8 @@ var $$IMU_EXPORT$$;
             // http://cdn.cnn.com/cnnnext/dam/assets/170428012205-28-met-gala-kurkova.jpg
             // https://cdn.cnn.com/cnnnext/dam/assets/180405060923-plastic-bags-edinburgh-beach-file-restricted-exlarge-169.jpg
             //   https://cdn.cnn.com/cnnnext/dam/assets/180405060923-plastic-bags-edinburgh-beach-file-restricted.jpg
+            // https://cdn.cnn.com/cnnnext/dam/assets/141027170602-victoria-beckham-fashion-horizontal-large-gallery.jpg
+            //   https://cdn.cnn.com/cnnnext/dam/assets/141027170602-victoria-beckham-fashion.jpg
             // doesn't work:
             // http://cdn.cnn.com/cnnnext/dam/assets/140630134917-12-canada-most-beautiful-places-super-169.jpg
             // http://cdn.cnn.com/cnnnext/dam/assets/140630134917-12-canada-most-beautiful-places-large-169.jpg
@@ -6222,7 +6228,7 @@ var $$IMU_EXPORT$$;
             // http://cdn.cnn.com/cnnnext/dam/assets/140630134917-12-canada-most-beautiful-places-full-169.jpg
             //return src.replace(/-(?:small|medium|large|exlarge|super|full|overlay)-[0-9]*(\.[^/.]*)$/, "$1");
             return {
-                url: src.replace(/-(?:small|medium|large|exlarge|super|full|overlay|alt|tease|story-top)(?:-(?:small|medium|large|exlarge|super|full|overlay|alt|tease))?(?:-[0-9]*)?(\.[^/.]*)$/, "$1"),
+                url: src.replace(/-(?:small|medium|large|exlarge|super|full|overlay|alt|tease|story-top|horizontal)(?:-(?:small|medium|large|exlarge|super|full|overlay|alt|tease))?(?:-(?:[0-9]+|gallery))?(\.[^/.]*)$/, "$1"),
                 can_head: false
             };
             //return src.replace(/-[a-z]*-(?:169|tease)(\.[^/.]*)$/, "$1");
@@ -10495,6 +10501,8 @@ var $$IMU_EXPORT$$;
             src.indexOf("/img/") >= 0) {
             // https://f4.bcbits.com/img/0012903078_36.jpg
             //   https://f4.bcbits.com/img/0012903078_0.jpg
+            // https://f4.bcbits.com/img/a0452005993_10.jpg -- desaturated slightly
+            //   https://f4.bcbits.com/img/a0452005993_0.jpg -- more saturated
             return src.replace(/_[0-9]+(\.[^/.]*)$/, "_0$1");
         }
 
@@ -15504,6 +15512,21 @@ var $$IMU_EXPORT$$;
             })();
             if (newsrc !== undefined)
                 return newsrc;
+        }
+
+        if (domain_nosub === "fbcdn.net" &&
+            host_domain_nosub === "facebook.com" && options.element) {
+            var element = options.element;
+
+            if (element.tagName === "IMG") {
+                while (element = element.parentElement) {
+                    if (element.tagName === "A") {
+                        var ploi = element.getAttribute("data-ploi");
+                        if (ploi && ploi.match(/^https?:\/\/[^/]*fbcdn\.net\//))
+                            return ploi;
+                    }
+                }
+            }
         }
 
         if (domain === "thumbnail.named.com") {
@@ -24531,10 +24554,15 @@ var $$IMU_EXPORT$$;
         return obj_to_simplelist(obj).indexOf(url);
     };
 
-    var bigimage_recursive_loop = function(url, options, query, fine_urls) {
+    var bigimage_recursive_loop = function(url, options, query, fine_urls, tried_urls) {
         var newoptions = {};
-        if (!fine_urls)
+        if (!fine_urls) {
             fine_urls = [];
+        }
+
+        if (!tried_urls) {
+            tried_urls = [];
+        }
 
         for (var option in options) {
             if (option === "cb") {
@@ -24549,15 +24577,28 @@ var $$IMU_EXPORT$$;
                         }
                     }
 
+                    for (var i = 0; i < tried_urls.length; i++) {
+                        if (tried_urls[i][0] === url) {
+                            var index = images.indexOf(tried_urls[i][2]);
+                            if (index >= 0) {
+                                obj = [obj[index]];
+                                return options.cb(obj, tried_urls[i][1]);
+                            } else {
+                                return options.cb(null, tried_urls[i][1]);
+                            }
+                        }
+                    }
+
                     query(obj, function(newurl, data) {
                         if (!newurl) {
                             return options.cb(null, data);
                         }
 
                         fine_urls.push([newurl, data]);
+                        tried_urls.push([url, data, newurl]);
 
                         if (images.indexOf(newurl) < 0 && newurl !== url || true) {
-                            bigimage_recursive_loop(newurl, options, query, fine_urls);
+                            bigimage_recursive_loop(newurl, options, query, fine_urls, tried_urls);
                         } else {
                             obj = [obj[images.indexOf(newurl)]];
                             options.cb(obj, data);
@@ -26463,10 +26504,51 @@ var $$IMU_EXPORT$$;
             return get_single_setting("mouseover_close_behavior");
         }
 
+        function find_els_at_point(xy, els, prev) {
+            if (!prev) {
+                prev = [];
+            }
+
+            var ret = [];
+
+            if (!els) {
+                els = document.elementsFromPoint(xy[0], xy[1]);
+                ret = els;
+            }
+
+            for (var i = 0; i < els.length; i++) {
+                var el = els[i];
+
+                if (prev.indexOf(el) >= 0)
+                    continue;
+
+                prev.push(el);
+
+                var rect = el.getBoundingClientRect();
+                if (rect.left <= xy[0] && rect.right >= xy[0] &&
+                    rect.top <= xy[1] && rect.bottom >= xy[1] &&
+                    ret.indexOf(el) < 0) {
+                    ret.push(el);
+                }
+
+                if (el.children && el.children.length > 0) {
+                    var newels = find_els_at_point(xy, el.children, prev);
+                    for (var j = 0; j < newels.length; j++) {
+                        var newel = newels[j];
+                        if (ret.indexOf(newel) < 0)
+                            ret.push(newel);
+                    }
+                }
+            }
+
+            return ret;
+        }
+
         function trigger_popup() {
             controlPressed = true;
-            // todo: rewrite to use a manual method, in order to find pointer-events: none too
-            var els = document.elementsFromPoint(mouseX, mouseY);
+            //var els = document.elementsFromPoint(mouseX, mouseY);
+            var els = find_els_at_point([mouseX, mouseY]);
+            //console_log(els);
 
             var source = find_source(els);
             if (source) {
