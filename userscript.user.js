@@ -213,6 +213,7 @@ var $$IMU_EXPORT$$;
         mouseover_zoom_behavior: "fit",
         mouseover_pan_behavior: "drag",
         mouseover_scroll_behavior: "zoom",
+        scroll_zoom_behavior: "fitfull",
         // thanks to 07416 on github for the idea
         mouseover_position: "cursor",
         // also thanks to 07416
@@ -316,7 +317,7 @@ var $$IMU_EXPORT$$;
         },
         mouseover_zoom_behavior: {
             name: "Popup image zoom",
-            description: "How the popup should be sized",
+            description: "How the popup should be initially sized",
             options: {
                 _type: "or",
                 _group1: {
@@ -367,6 +368,24 @@ var $$IMU_EXPORT$$;
             },
             requires: {
                 mouseover: true
+            }
+        },
+        scroll_zoom_behavior: {
+            name: "Zoom behavior",
+            description: "How zooming should work",
+            options: {
+                _type: "or",
+                fitfull: {
+                    name: "Fit/Full",
+                    description: "Toggles between the full size, and fit-to-screen"
+                },
+                incremental: {
+                    name: "Incremental"
+                }
+            },
+            requires: {
+                mouseover: true,
+                mouseover_scroll_behavior: "zoom"
             }
         },
         mouseover_position: {
@@ -23476,6 +23495,17 @@ var $$IMU_EXPORT$$;
             }
         }
 
+        if (domain === "img.insight.co.kr") {
+            // https://img.insight.co.kr/static/2018/12/29/300/6mbhe23vanmj1sz071d5.jpg
+            //   https://img.insight.co.kr/static/2018/12/29/6mbhe23vanmj1sz071d5.jpg
+            // https://img.insight.co.kr/static/2018/02/21/2000/dnh61047m543610j6zf2.jpg -- upscaled
+            //   https://img.insight.co.kr/static/2018/02/21/dnh61047m543610j6zf2.jpg -- 700x450
+            // doesn't work:
+            // https://img.insight.co.kr/static/2018/12/29/700/edv548sos42ue7wp6u08.jpg
+            //   https://img.insight.co.kr/static/2018/12/29/edv548sos42ue7wp6u08.jpg -- doesn't work
+            return src.replace(/(\/static\/+[0-9]{4}\/+[0-9]{2}\/+[0-9]{2}\/+)[0-9]+\/+([0-9a-z]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
 
 
 
@@ -24190,6 +24220,8 @@ var $$IMU_EXPORT$$;
         if ((domain === "images.thestar.com" && src.indexOf("/content/dam/") >= 0) ||
             // https://www.thestar.com/content/dam/thestar/news/world/2018/12/27/new-york-transformer-explosion-lights-sky-knocks-power/ny_plant_explosion_1.jpg -- 403 on head
             (domain_nowww === "thestar.com" && src.indexOf("/content/dam/") >= 0) ||
+            // https://steamuserimages-a.akamaihd.net/ugc/957477541351011744/4E72325356B57289FA6632774F1A3E4DEB324F6B/?imw=2048&imh=1152&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true
+            (domain_nosub === "akamaihd.net" && domain.match(/^steamuserimages-[a-z]\./)) ||
             (domain_nosub === "irishmirror.ie" && domain.match(/i[0-9]*(?:-prod)?\./))) {
             return {
                 url: src,
@@ -25625,7 +25657,7 @@ var $$IMU_EXPORT$$;
                     return true;
                 };
 
-                var zoom_behavior = get_single_setting("mouseover_zoom_behavior");
+                var initial_zoom_behavior = get_single_setting("mouseover_zoom_behavior");
 
                 img.onclick = estop;
                 img.onmousedown = estop;
@@ -25670,7 +25702,7 @@ var $$IMU_EXPORT$$;
                 //img.style.display = "block";
                 img.style.setProperty("display", "block", "important");
 
-                if (zoom_behavior === "fit") {
+                if (initial_zoom_behavior === "fit") {
                     img.style.maxWidth = vw + "px";
                     img.style.maxHeight = vh + "px";
                 }
@@ -25684,8 +25716,8 @@ var $$IMU_EXPORT$$;
                     return;
                 }
 
-                if (zoom_behavior === "fit" && (imgh > vh ||
-                                                imgw > vw)) {
+                if (initial_zoom_behavior === "fit" && (imgh > vh ||
+                                                        imgw > vw)) {
                     var ratio;
                     if (imgh / vh >
                         imgw / vw) {
@@ -25777,7 +25809,7 @@ var $$IMU_EXPORT$$;
                     };
                 }
 
-                var currentmode = zoom_behavior;
+                var currentmode = initial_zoom_behavior;
 
                 div.onwheel = function(e) {
                     if (get_single_setting("mouseover_scroll_behavior") === "pan") {
@@ -25798,17 +25830,58 @@ var $$IMU_EXPORT$$;
                     var percentX = e.offsetX / div.clientWidth;
                     var percentY = e.offsetY / div.clientHeight;
 
-                    if (e.deltaY > 0 && currentmode !== "fit") {
-                        img.style.maxWidth = vw + "px";
-                        img.style.maxHeight = vh + "px";
+                    var scroll_zoom = get_single_setting("scroll_zoom_behavior");
 
-                        currentmode = "fit";
-                        changed = true;
-                    } else if (e.deltaY < 0 && currentmode !== "full") {
-                        img.style.maxWidth = "initial";
-                        img.style.maxHeight = "initial";
+                    if (scroll_zoom === "fitfull") {
+                        if (e.deltaY > 0 && currentmode !== "fit") {
+                            img.style.maxWidth = vw + "px";
+                            img.style.maxHeight = vh + "px";
 
-                        currentmode = "full";
+                            currentmode = "fit";
+                            changed = true;
+                        } else if (e.deltaY < 0 && currentmode !== "full") {
+                            img.style.maxWidth = "initial";
+                            img.style.maxHeight = "initial";
+
+                            currentmode = "full";
+                            changed = true;
+                        }
+                    } else if (scroll_zoom === "incremental") {
+                        var imgwidth = img.clientWidth;
+                        var imgheight = img.clientHeight;
+
+                        var mult = 1;
+                        if (imgwidth < img.naturalWidth) {
+                            mult = img.naturalWidth / imgwidth;
+                        } else {
+                            mult = imgwidth / img.naturalWidth;
+                        }
+
+                        mult = Math.round(mult);
+
+                        if (imgwidth < img.naturalWidth) {
+                            mult = 1 / mult;
+                        }
+
+                        if (e.deltaY > 0) {
+                            mult /= 2;
+                        } else {
+                            mult *= 2;
+                        }
+
+                        imgwidth = img.naturalWidth * mult;
+                        imgheight = img.naturalHeight * mult;
+
+                        if (imgwidth < 64 || imgheight < 64 ||
+                            imgwidth > img.naturalWidth * 16 ||
+                            imgheight > img.naturalHeight * 16) {
+                            return false;
+                        }
+
+                        img.style.maxWidth = imgwidth + "px";
+                        img.style.maxHeight = imgheight + "px";
+                        img.style.width = imgwidth + "px";
+                        img.style.height = imgheight + "px";
                         changed = true;
                     }
 
@@ -25820,7 +25893,7 @@ var $$IMU_EXPORT$$;
 
                     var newx, newy;
 
-                    if (imgwidth <= vw && imgheight <= vh) {
+                    if ((imgwidth <= vw && imgheight <= vh) || scroll_zoom === "incremental") {
                         // centers wanted region to pointer
                         newx = (e.clientX - percentX * imgwidth);
                         newy = (e.clientY - percentY * imgheight);
