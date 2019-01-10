@@ -24259,6 +24259,57 @@ var $$IMU_EXPORT$$;
     }
     // -- end bigimage --
 
+    function get_helpers(options) {
+        var host_domain = "";
+        var host_domain_nowww = "";
+        var host_domain_nosub = "";
+        if (options.host_url) {
+            host_domain = options.host_url.replace(/^[a-z]+:\/\/([^/]*)(?:\/.*)?$/,"$1");
+
+            host_domain_nowww = host_domain.replace(/^www\./, "");
+            host_domain_nosub = host_domain.replace(/^.*\.([^.]*\.[^.]*)$/, "$1");
+            if (host_domain_nosub.match(/^co\.[a-z]{2}$/)) {
+                host_domain_nosub = host_domain.replace(/^.*\.([^.]*\.[^.]*\.[^.]*)$/, "$1");
+            }
+        }
+
+
+
+        if (host_domain_nosub === "imgur.com") {
+            return {
+                gallery: function(el, nextprev) {
+                    if (!el)
+                        return null;
+
+                    var current = el;
+                    while (current = current.parentElement) {
+                        if (current.tagName === "DIV" &&
+                            current.classList && current.classList.contains("post-image-container")) {
+                            while (current) {
+                                var next = current.nextElementSibling;
+                                if (!nextprev)
+                                    next = current.previousElementSibling;
+
+                                current = next;
+                                if (!current)
+                                    return null;
+
+                                var img = current.querySelector("img");
+                                if (img) {
+                                    return img;
+                                }
+                            }
+                        }
+                    }
+
+                    return null;
+                }
+            }
+        }
+
+        return null;
+    }
+
     var fullurl_obj = function(currenturl, obj) {
         if (!obj)
             return obj;
@@ -26733,11 +26784,30 @@ var $$IMU_EXPORT$$;
             if (popups.length > 0 && popup_el) {
                 var newel = null;
                 var ret = undefined;
+
+                var options = {
+                    element: popup_el,
+                    host_url: document.location.href
+                };
+
+                var helpers = get_helpers(options);
+                var gallery = get_next_in_gallery;
+
+                if (helpers && helpers.gallery) {
+                    gallery = function(el, nextprev) {
+                        var value = helpers.gallery(el, nextprev);
+                        if (value)
+                            return value;
+
+                        return get_next_in_gallery(el, nextprev);
+                    };
+                }
+
                 if (event.which === 37) { // left
-                    newel = get_next_in_gallery(popup_el, false);
+                    newel = gallery(popup_el, false);
                     ret = false;
                 } else if (event.which === 39) { // right
-                    newel = get_next_in_gallery(popup_el, true);
+                    newel = gallery(popup_el, true);
                     ret = false;
                 }
 
