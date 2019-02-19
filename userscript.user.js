@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.8.10
+// @version      0.8.11
 // @description  Finds larger or original versions of images
 // @author       qsniyg
 // @include      *
@@ -12128,13 +12128,19 @@ var $$IMU_EXPORT$$;
         if (domain === "files.yande.re") {
             // https://files.yande.re/sample/c3e3fd1d97b4e237e996e6b1bfafa4e6/yande.re%20190111%20sample%20anime_tenchou%20anizawa_meito%20cosplay%20hiiragi_kagami%20izumi_konata%20kusakabe_misao%20lucky_star%20seifuku%20sword%20takara_miyuki%20thighhighs%20vocaloid.jpg
             //   https://files.yande.re/image/c3e3fd1d97b4e237e996e6b1bfafa4e6/yande.re%20190111%20anime_tenchou%20anizawa_meito%20cosplay%20hiiragi_kagami%20izumi_konata%20kusakabe_misao%20lucky_star%20seifuku%20sword%20takara_miyuki%20thighhighs%20vocaloid.jpg
-            return add_extensions(src.replace(/\/sample\//, "/image/"));
+            // thanks to Logidy on greasyfork for reporting the issue below: https://greasyfork.org/en/forum/discussion/53007/x?locale=en
+            // https://files.yande.re/jpeg/fe3070fd3aa5a017397cd0d3b2163448/yande.re%20519701%20cleavage%20clyde_s%20girls_frontline%20kalina_%28girls_frontline%29%20megane%20no_bra%20open_shirt%20seifuku%20thighhighs%20weapon.jpg
+            //   https://files.yande.re/image/fe3070fd3aa5a017397cd0d3b2163448/yande.re%20519701%20cleavage%20clyde_s%20girls_frontline%20kalina_%28girls_frontline%29%20megane%20no_bra%20open_shirt%20seifuku%20thighhighs%20weapon.png
+            return add_extensions(src
+                                  .replace(/\/(?:sample|jpeg)\/+([0-9a-f]+\/)/, "/image/$1"));
         }
 
         if (domain === "assets.yande.re") {
             // https://assets.yande.re/data/preview/5c/0d/5c0dce008b820e531309e54a17c83f3a.jpg
             //   https://files.yande.re/image/5c0dce008b820e531309e54a17c83f3a.jpg
-            return src.replace(/:\/\/assets.yande.re\/data\/preview\/[0-9a-f]+\/[0-9a-f]+\//, "://files.yande.re/image/");
+            // https://assets.yande.re/data/preview/1f/c5/1fc58ed6d37b0392b8881de9507d0a65.jpg
+            //   https://files.yande.re/image/1fc58ed6d37b0392b8881de9507d0a65.png
+            return add_extensions(src.replace(/:\/\/assets.yande.re\/data\/preview\/[0-9a-f]+\/[0-9a-f]+\//, "://files.yande.re/image/"));
         }
 
         if (domain_nowww === "konachan.net" && false) {
