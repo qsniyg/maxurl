@@ -18,7 +18,7 @@
 
 // If you see "A userscript wants to access a cross-origin resource.",
 //   it's either used to detect whether or not the destination URL exists before redirecting (near the end of the script),
-//   or used to query flickr's API to get larger images.
+//   or used to query various websites' API to get larger images.
 // Search for GM_xmlhttpRequest and do_request if you want to see what the code does exactly.
 
 
@@ -9640,11 +9640,14 @@ var $$IMU_EXPORT$$;
             // https://booth.pximg.net/c/150x150/3c32475d-0f04-4157-b5bb-6a56cd5d633f/i/178794/1174b9d1-9f8a-4525-88e8-77c7fc7cf858_base_resized.jpg -- works
             //   https://booth.pximg.net/3c32475d-0f04-4157-b5bb-6a56cd5d633f/i/178794/1174b9d1-9f8a-4525-88e8-77c7fc7cf858_base_resized.jpg -- works
             //   https://booth.pximg.net/3c32475d-0f04-4157-b5bb-6a56cd5d633f/i/178794/1174b9d1-9f8a-4525-88e8-77c7fc7cf858.jpg -- 404
+            // thanks to fireattack on github for reporting this issue: https://github.com/qsniyg/maxurl/issues/33
+            // https://booth.pximg.net/30cd84bf-4155-491d-abee-5770b2947e00/i/1236274/0df91fe3-7ce5-41ad-89f8-a6a52625e752_base_resized.jpg
+            //   https://booth.pximg.net/30cd84bf-4155-491d-abee-5770b2947e00/i/1236274/0df91fe3-7ce5-41ad-89f8-a6a52625e752.png
             newsrc = src.replace(/(:\/\/[^/]*\/)c\/[0-9]+x[0-9]+(?:_[^/]*)?\//, "$1");
             if (newsrc !== src)
-                return newsrc;
+                return add_extensions(newsrc);
 
-            return src.replace(/(\/[-0-9a-f]+)_[^/.]*(\.[^/.]*)$/, "$1$2");
+            return add_extensions(src.replace(/(\/[-0-9a-f]+)_[^/.]*(\.[^/.]*)$/, "$1$2"));
         }
 
         if (domain === "cache-graphicslib.viator.com") {
@@ -18485,10 +18488,16 @@ var $$IMU_EXPORT$$;
         }
 
         if ((domain_nosub === "hentai-cosplay.com" ||
+             // https://static.hentai-image.com/upload/20150308/25/25444/p=700/3.jpg
+             //   https://static.hentai-image.com/upload/20150308/25/25444/3.jpg
              domain_nosub === "hentai-image.com" ||
              domain_nosub === "porn-image-xxx.com" ||
-             domain_nosub === "porn-movie-xxx.com") &&
-            domain.match(/^static[0-9]*\./)) {
+             domain_nosub === "porn-movie-xxx.com" ||
+             // https://static2.aniimg.com/upload/20170517/473/R/M/N/p=700/RMNFEF.jpg -- 700x393
+            //   https://static2.aniimg.com/upload/20170517/473/R/M/N/RMNFEF.jpg -- 1920x1080
+             domain_nosub === "aniimg.com") &&
+            domain.match(/^static[0-9]*\./) &&
+            src.indexOf("/upload/") >= 0) {
             // https://static.hentai-cosplay.com/upload/20170918/67/68234/p=160x200/1.jpg -- 160x106
             //   https://static.hentai-cosplay.com/upload/20170918/67/68234/p=160x200/1.jpg -- 5472x3648
             newsrc = src
@@ -18497,7 +18506,9 @@ var $$IMU_EXPORT$$;
                 return newsrc;
             }
 
-            return src.replace(/(\/+[0-9]+\/+)(?:[a-z]+=[^/]*\/+){1,}([0-9]+\.[^/.]*)$/, "$1$2");
+            return src
+                .replace(/(\/+[0-9]+\/+)(?:[a-z]+=[^/]*\/+){1,}([0-9]+\.[^/.]*)$/, "$1$2")
+                .replace(/(\/+[0-9A-Z]+\/+)(?:[a-z]+=[^/]*\/+){1,}([0-9A-Z]+\.[^/.]*)$/, "$1$2");
         }
 
         if (domain === "d1in1v57myx5v.cloudfront.net") {
@@ -18545,7 +18556,7 @@ var $$IMU_EXPORT$$;
 
         if (domain === "pat.primecdn.net") {
             // https://pat.primecdn.net/pics/hugethumbs/b9/b9be5e48.jpg
-            //   https://pat.primecdn.net/pics/original/b9/b9be5e48.jpg
+            //   https://pat.primecdn.net/pics/original/b9/b9be5e48.jpg -- upscaled
             return src.replace(/\/pics\/[a-z]+(\/[0-9a-f]+\/[0-9a-f]+\.[^/.]*)$/, "/pics/original$1");
         }
 
@@ -18555,7 +18566,10 @@ var $$IMU_EXPORT$$;
             return src.replace(/(:\/\/[^/]*\/)([0-9]+\/[0-9]+\.[^/.]*)$/, "$1imags/$2");
         }
 
-        if (domain === "img.static-smb.be") {
+        if (domain === "img.static-smb.be" ||
+            // https://img.static-rmg.be/a/view/q75/w/h450/742525/natalie-portman.jpg
+            //   https://img.static-rmg.be/a/view/q100/w/h/742525/natalie-portman.jpg
+            domain === "img.static-rmg.be") {
             // https://img.static-smb.be/a/view/q75/w/h450/742525/natalie-portman.jpg
             //   https://img.static-smb.be/a/view/q100/w/h/742525/natalie-portman.jpg
             return src.replace(/\/view\/q[0-9]*\/w[0-9]*\/h[0-9]*\//, "/view/q100/w/h/");
@@ -20278,14 +20292,6 @@ var $$IMU_EXPORT$$;
                     Referer: ""
                 }
             };
-        }
-
-        if (domain_nosub === "aniimg.com" &&
-            domain.match(/^static[0-9]*\./) &&
-            src.indexOf("/upload/") >= 0) {
-            // https://static2.aniimg.com/upload/20170517/473/R/M/N/p=700/RMNFEF.jpg -- 700x393
-            //   https://static2.aniimg.com/upload/20170517/473/R/M/N/RMNFEF.jpg -- 1920x1080
-            return src.replace(/\/[a-z]=[0-9]+\/([^/]*)$/, "/$1");
         }
 
         if (domain_nosub === "pocoimg.cn" &&
