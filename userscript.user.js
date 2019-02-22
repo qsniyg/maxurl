@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.8.11
+// @version      0.8.12
 // @description  Finds larger or original versions of images
 // @author       qsniyg
 // @include      *
@@ -4938,7 +4938,14 @@ var $$IMU_EXPORT$$;
         if (domain === "file.osen.co.kr") {
             // http://file.osen.co.kr/article_thumb/2018/01/25/201801251451774572_5a6975efc76bc_120x68.jpg
             //   http://file.osen.co.kr/article/2018/01/25/201801251451774572_5a6975efc76bc.jpg
-            return src.replace("/article_thumb/", "/article/").replace(/_[0-9]+x(?:[0-9]+)?(\.[^/.]*)$/, "$1");
+            //   http://file.osen.co.kr/article/original/2018/01/25/201801251451774572_5a6975efc76bc.jpg
+            // http://file.osen.co.kr/article/2019/02/21/201902211510774248_5c6e40fd4a1e8_1024x.jpg -- 1024x657 (proper)
+            //   http://file.osen.co.kr/article/2019/02/21/201902211510774248_5c6e40fd4a1e8.jpg -- 650x417 (downscaled)
+            //   http://file.osen.co.kr/article/original/2019/02/21/201902211510774248_5c6e40fd4a1e8.jpg -- 4731x3039
+            return src
+                .replace("/article_thumb/", "/article/")
+                .replace(/\/article\/+([0-9]{4})\//, "/article/original/$1/")
+                .replace(/_[0-9]+x(?:[0-9]+)?(\.[^/.]*)$/, "$1");
         }
 
         if (domain === "thumbnews.nateimg.co.kr") {
