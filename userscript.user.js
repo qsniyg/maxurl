@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.8.13
+// @version      0.8.14
 // @description  Finds larger or original versions of images
 // @author       qsniyg
 // @homepageURL  https://qsniyg.github.io/maxurl/options.html
@@ -798,7 +798,32 @@ var $$IMU_EXPORT$$;
             // http://img.hankyung.com/photo/201612/AA.12967766.4.jpg -- larger than .1.
             //   http://img.hankyung.com/photo/201612/AA.12967766.1.jpg
             return src.replace(/-[0-9]+x[0-9]+\.([^/.]*)$/, ".$1");
-        }*/
+            }*/
+
+        if (domain === "img.hankyung.com" ||
+            // http://img.hankyung.com/photo/201612/AA.12967766.4.jpg -- larger than .1.
+            //   http://img.hankyung.com/photo/201612/AA.12967766.1.jpg
+            domain === "img.tenasia.hankyung.com") {
+            // http://img.hankyung.com/photo/201808/ZK.17491055.3.jpg
+            //   http://img.hankyung.com/photo/201808/ZK.17491055.1.jpg -- watermark
+            // http://img.hankyung.com/photo/201902/01.19032633.3.jpg
+            //   http://img.hankyung.com/photo/201902/01.19032633.1.jpg -- no watermark
+            // http://img.hankyung.com/photo/201802/ZA.16036542.1.jpg -- 3696x2778 (4 is not available)
+            //
+            // thanks to Bobfrnw on greasyfork for reporting this:
+            // http://img.hankyung.com/photo/201903/03.19066867.4.jpg -- no watermark, larger (1800x1200)
+            //   http://img.hankyung.com/photo/201903/03.19066867.1.jpg -- watermark, smaller (620x420)
+            if (src.match(/\.[0-9](\.[^/.]*)(?:[?#].*)?$/)) {
+                newsrc = src.replace(/[?#].*$/, "");
+                if (newsrc !== src)
+                    return newsrc;
+
+                return [
+                    src.replace(/\.[0-9](\.[^/.]*)$/, ".4$1"),
+                    src.replace(/\.[0-9](\.[^/.]*)$/, ".1$1")
+                ];
+            }
+        }
 
         if (domain_nosub === "naver.net" ||
             domain_nosub === "pstatic.net") {
@@ -1305,12 +1330,6 @@ var $$IMU_EXPORT$$;
                                         .replace("/thumbnail/", "/photo/")
                                         .replace(/_v[0-9]*\.([^/]*)$/, ".$1")
                                         .replace(/(\/[0-9]+_[0-9]+_[0-9]+)_150(\.[^/.]*)$/, "$1$2"));
-        }
-
-        if (domain === "img.hankyung.com") {
-            // http://img.hankyung.com/photo/201808/ZK.17491055.3.jpg
-            //   http://img.hankyung.com/photo/201808/ZK.17491055.1.jpg
-            return src.replace(/\.[0-9]\.([a-zA-Z0-9]*)$/, ".1.$1");
         }
 
         if (domain === "cdn.newsen.com" ||
@@ -5003,6 +5022,8 @@ var $$IMU_EXPORT$$;
             //   http://newsimg.sedaily.com/2018/05/20/1RZLV7PG9Q_2.jpg -- works
             // http://newsimg.sedaily.com/2018/06/15/1S0TG51GGK_1_m.jpg
             //   http://newsimg.sedaily.com/2018/06/15/1S0TG51GGK_1.jpg -- works
+            // https://newsimg.sedaily.com/2018/07/15/1S23EZEURP_1_m.jpg
+            //   https://newsimg.sedaily.com/2018/07/15/1S23EZEURP_1.jpg -- works
             return src.replace(/(\/[0-9]*)_[^/.]*(\.[^/.]*)$/, "$1$2");
         }
 
@@ -5037,6 +5058,9 @@ var $$IMU_EXPORT$$;
         }
 
         if (domain === "cdnimg.melon.co.kr" ||
+            // http://image.melon.co.kr/cm/album/images/022/91/986/2291986_500.jpg
+            //   http://image.melon.co.kr/cm/album/images/022/91/986/2291986_org.jpg
+            domain === "image.melon.co.kr" ||
             domain === "cmtimg.melon.co.kr"/* &&
             (src.indexOf("/images/") >= 0 ||
              src.indexOf("/image/") >= 0 ||
@@ -12430,16 +12454,21 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/thumb\/(.*?\.[^/.]*)(?:\/.*)/, "/$1");
         }
 
-        if (false && (domain_nosub === "kakaocdn.net" ||
-                      domain_nosub === "kakao.co.kr")) {
+        if (domain_nosub === "kakaocdn.net" ||
+            domain_nosub === "kakao.co.kr") {
             // https://dn-s-story.kakaocdn.net/dn/Qqfey/hytef1ArTx/qZmOLz8iP9oj5eZDEQEbDk/img_m.jpg?width=650&height=975&avg=%2523817f77&v=2
             //   http://dn-s-story.kakao.co.kr/dn/Qqfey/hytef1ArTx/qZmOLz8iP9oj5eZDEQEbDk/img_m.jpg
             //   https://dn-xl0-story.kakaocdn.net/dn/Qqfey/hytef1ArTx/qZmOLz8iP9oj5eZDEQEbDk/img_xl.jpg?width=650&height=975&avg=%2523817f77&v=2
             //   http://dn-s-story.kakao.co.kr/dn/Qqfey/hytef1ArTx/qZmOLz8iP9oj5eZDEQEbDk/img.jpg
+            // https://story-img.kakaocdn.net/dn/Qqfey/hytef1ArTx/qZmOLz8iP9oj5eZDEQEbDk/img_m.jpg?width=650&height=975&avg=%2523817f77&v=2
+            //   https://story-img.kakaocdn.net/dn/Qqfey/hytef1ArTx/qZmOLz8iP9oj5eZDEQEbDk/img.jpg
             // http://dn-l1-story.kakao.co.kr/dn/bpU40i/hyglUiBxbK/TgKflthO9wKjHf1TemKnx0/img_l.jpg?width=1446&height=1920
             //   http://dn-l1-story.kakao.co.kr/dn/bpU40i/hyglUiBxbK/TgKflthO9wKjHf1TemKnx0/img_l.jpg
             //   http://dn-l1-story.kakao.co.kr/dn/bpU40i/hyglUiBxbK/TgKflthO9wKjHf1TemKnx0/img_xl.jpg -- stretched?
             //   http://dn-l1-story.kakao.co.kr/dn/bpU40i/hyglUiBxbK/TgKflthO9wKjHf1TemKnx0/img.jpg -- 404
+            return src
+                .replace(/(\/img(?:_[a-z]+)?\.[^/.?#]*)(?:[?#].*)?$/, "$1")
+                .replace(/\/img_[a-z]+(\.[^/.]*)$/, "/img$1");
         }
 
         if (domain === "obs.line-scdn.net") {
@@ -24759,6 +24788,42 @@ var $$IMU_EXPORT$$;
                 url: src.replace(/\/image\/+thumb\/+([0-9a-f]+\.[^/.]*)(?:[?#].*)?$/, "/image/large/$1"),
                 can_head: false
             };
+        }
+
+        if (domain_nosub === "mgstage.com" &&
+            domain.match(/^(?:spimg[0-9]*|image)\./)) {
+            // https://spimg2.mgstage.com/images/shirouto/SIRO/3723/pb_t1_SIRO-3723.jpg
+            //   https://image.mgstage.com/images/shirouto/siro/3723/pb_p_siro-3723.jpg
+            //   https://image.mgstage.com/images/shirouto/siro/3723/pb_e_siro-3723.jpg
+            // https://image.mgstage.com/images/shirouto/siro/3723/cap_t1_0_siro-3723.jpg
+            //   https://image.mgstage.com/images/shirouto/siro/3723/cap_e_0_siro-3723.jpg
+            return src.replace(/(\/[^/_]*_)[^/_]*(_[^/]*)(?:[?#].*)?$/, "$1e$2");
+        }
+
+        if (domain_nosub === "gettextbooks.com" &&
+            domain.match(/^img[0-9]*\./)) {
+            // https://img2.gettextbooks.com/pi/4921218943/150/400
+            //   https://img2.gettextbooks.com/pi/4921218943/999999999/999999999
+            return src.replace(/(\/pi\/+[0-9]+\/+)[-0-9]+\/+[-0-9]+(?:\/+)?(?:[?#].*)?$/, "$1999999999/999999999");
+        }
+
+        if (domain_nosub === "y3600.cn" &&
+            domain.match(/^img[0-9]*\./)) {
+            // https://img1.y3600.cn/zcrop/160/160/d/file/p/2016/07/16/ffb67ed79a0f323baef2c02e193a384c.jpg
+            //   https://img1.y3600.cn/zresize/999999999999/999999999999/d/file/p/2016/07/16/ffb67ed79a0f323baef2c02e193a384c.jpg
+            return src.replace(/\/z(?:resize|crop)?\/+[0-9]+\/+[0-9]+\//, "/zresize/999999999999/999999999999/");
+        }
+
+        if (domain_nowww === "life.tw" ||
+            // https://amazon.life.com.tw/proxy.php?url=https%3A%2F%2Fwww.beauty321.com%2Falbums_photo%2F8101-201812151852475670.jpg
+            //   https://www.beauty321.com/albums_photo/8101-201812151852475670.jpg
+            domain === "amazon.life.com.tw") {
+            // https://life.tw/proxy.php?url=https%3A%2F%2Fwww.beauty321.com%2Falbums_photo%2F8101-201812151852475670.jpg
+            //   https://www.beauty321.com/albums_photo/8101-201812151852475670.jpg
+            newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/proxy\.php\?url=([^&]*).*?$/, "$1");
+            if (newsrc !== src) {
+                return decodeURIComponent(newsrc);
+            }
         }
 
 
