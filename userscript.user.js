@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.8.14
+// @version      0.8.15
 // @description  Finds larger or original versions of images
 // @author       qsniyg
 // @homepageURL  https://qsniyg.github.io/maxurl/options.html
@@ -5603,6 +5603,11 @@ var $$IMU_EXPORT$$;
         if (domain === "static.wixstatic.com" ||
             // https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/intermediary/f/bc11a5bd-c85a-4e07-a890-a83ce286cfee/dcqjbom-5b42308b-181c-4bb6-9108-5ce3508986e4.jpg/v1/fill/w_730,h_1095,q_70,strp/mileena_by_motesoegyi_dcqjbom-pre.jpg
             //   https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/intermediary/f/bc11a5bd-c85a-4e07-a890-a83ce286cfee/dcqjbom-5b42308b-181c-4bb6-9108-5ce3508986e4.jpg
+            // doesn't work with new pattern:
+            // https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/5a49de59-57c5-45c7-a6fb-13cf111210fb/dd0k87w-e519b8c0-7eb7-4650-82e2-4c130db1f483.jpg/v1/fill/w_1055,h_757,q_70,strp/spider_gwen_by_geofffffff_dd0k87w-pre.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9OTE5IiwicGF0aCI6IlwvZlwvNWE0OWRlNTktNTdjNS00NWM3LWE2ZmItMTNjZjExMTIxMGZiXC9kZDBrODd3LWU1MTliOGMwLTdlYjctNDY1MC04MmUyLTRjMTMwZGIxZjQ4My5qcGciLCJ3aWR0aCI6Ijw9MTI4MCJ9XV0sImF1ZCI6WyJ1cm46c2VydmljZTppbWFnZS5vcGVyYXRpb25zIl19.zs91pq07IIAEgdwq2HSOfdOYkd6BNaYM6IziFXRjn2M
+            // however, adding intermediary does work:
+            // https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/intermediary/f/5a49de59-57c5-45c7-a6fb-13cf111210fb/dd0k87w-e519b8c0-7eb7-4650-82e2-4c130db1f483.jpg/v1/fill/w_1055,h_757,q_70,strp/spider_gwen_by_geofffffff_dd0k87w-pre.jpg
+            //   https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/intermediary/f/5a49de59-57c5-45c7-a6fb-13cf111210fb/dd0k87w-e519b8c0-7eb7-4650-82e2-4c130db1f483.jpg
             domain_nosub === "wixmp.com") {
             // https://static.wixstatic.com/media/c30de2_5bb577f8c9f949178994f77b47f5eb27~mv2_d_1500_2250_s_2.jpg/v1/fill/w_241,h_378,al_c,q_80,usm_0.66_1.00_0.01/c30de2_5bb577f8c9f949178994f77b47f5eb27~mv2_d_1500_2250_s_2.webp
             //   https://static.wixstatic.com/media/c30de2_5bb577f8c9f949178994f77b47f5eb27~mv2_d_1500_2250_s_2.jpg
@@ -5612,12 +5617,18 @@ var $$IMU_EXPORT$$;
             //   http://static.wixstatic.com/media/4bd5ee_8328e23583d647c8bbc36a50b9bdaa77.jpg
             // https://static.wixstatic.com/media/964c6e_5f9921a4f67248ba807c0a69416a7ec4~mv2_d_3550_5325_s_4_2.jpg/v1/fill/w_183,h_274,al_c,q_80,usm_0.66_1.00_0.01/964c6e_5f9921a4f67248ba807c0a69416a7ec4~mv2_d_3550_5325_s_4_2.jpg
             //   https://static.wixstatic.com/media/964c6e_5f9921a4f67248ba807c0a69416a7ec4~mv2_d_3550_5325_s_4_2.jpg
-            newsrc = src
-                .replace(/(\.[^/.]*)\/v1\/.*/, "$1")
-                .replace(/(\/[^/.]*\.[^/.]*?)_[_0-9.a-z]*$/, "$1");
-
+            newsrc = src.replace(/(:\/\/[^/]*\/)(f\/+[-0-9a-f]{36}\/+.*?)[?&]token=.*$/, "$1intermediary/$2");
             if (newsrc !== src)
                 return newsrc;
+
+            if (!src.match(/[?&]token=.{30,}/)) {
+                newsrc = src
+                    .replace(/(\.[^/.]*)\/v1\/.*/, "$1")
+                    .replace(/(\/[^/.]*\.[^/.]*?)_[_0-9.a-z]*$/, "$1");
+
+                if (newsrc !== src)
+                    return newsrc;
+            }
         }
 
         if (domain_nosub === "wixmp.com" &&
