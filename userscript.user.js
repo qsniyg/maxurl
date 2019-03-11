@@ -24837,6 +24837,39 @@ var $$IMU_EXPORT$$;
             }
         }
 
+        if (domain_nowww === "onlyfans.com" ||
+            domain === "media.onlyfans.com" ||
+            amazon_container === "of2media") {
+            // https://onlyfans.com/files/thumbs/w760/1/15/154/154381d588ce8b86f8fa86325ef17efa/header.jpg
+            //   https://s3.amazonaws.com/of2media/files/1/15/154/154381d588ce8b86f8fa86325ef17efa/header.jpg
+            return src.replace(/:\/\/[^/]*\/(?:of2media\/+)?files\/+thumbs\/+[wh][0-9]+\/+/, "://media.onlyfans.com/files/");
+        }
+
+        if (domain === "img.mfcimg.com") {
+            // https://img.mfcimg.com/photos2/196/19697097/553-495-541-526-10955468.80x80.jpg
+            //   https://img.mfcimg.com/photos2/196/19697097/553-495-541-526-10955468.250.jpg
+            //   https://img.mfcimg.com/photos2/196/19697097/553-495-541-526-10955468.jpg
+            return src.replace(/(\/photos2\/+[0-9]+\/+[0-9]+\/+[-0-9]+)\.[0-9x]+(\.[^/.]*)$/, "$1$2");
+        }
+
+        if (domain_nowww === "webnewtype.com") {
+            // thanks to fireattack on github (https://github.com/qsniyg/maxurl/issues/34)
+            // https://webnewtype.com/rsz/S1/182540/1085543.jpg/w600h450
+            //   https://webnewtype.com/rsz/S1/182540/1085543.jpg/w600h450/
+            //   https://webnewtype.com/rsz/S1/182540/1085543.jpg
+            // https://webnewtype.com/rsz/S1/182559/1085722.jpg/w600h450/
+            //   https://webnewtype.com/rsz/S1/182559/1085722.jpg
+            // https://webnewtype.com/rsz/S1/181785/1080355.jpg/h100/
+            //   https://webnewtype.com/rsz/S1/181785/1080355.jpg
+            // https://webnewtype.com/rsz/S1/182524/thumbnail.jpg/w120h120/
+            //   https://webnewtype.com/rsz/S1/182524/thumbnail.jpg
+            return {
+                url: src.replace(/(\/rsz\/+S[0-9]*\/+[0-9]+\/+[^/.]*\.[^/.?#]*)(?:\/[wh][0-9]+.*)?(?:[?#].*)?$/,
+                                 "$1"),
+                can_head: false // returns 404
+            };
+        }
+
 
 
 
