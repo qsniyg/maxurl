@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.8.15
+// @version      0.8.16
 // @description  Finds larger or original versions of images
 // @author       qsniyg
 // @homepageURL  https://qsniyg.github.io/maxurl/options.html
@@ -3846,6 +3846,8 @@ var $$IMU_EXPORT$$;
             domain === "imagebox.cz.osobnosti.cz" ||
             // https://media3.paperblog.fr/i/582/5820009/critique-colombiana-L-WlVd2S-175x130.jpeg
             (domain_nosub === "paperblog.fr" && domain.match(/^media[0-9]*\./)) ||
+            // http://bikini.sbgefree.org/files/2018/11/sexy-bikini-models-image328-150x150.jpg
+            (domain === "bikini.sbgefree.org" && src.indexOf("/files/") >= 0) ||
             // https://1.soompi.io/wp-content/blogs.dir/8/files/2015/09/HA-TFELT-Wonder-Girls-590x730.jpg -- doesn't work
             // https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2018/01/GTA-6-Female-Protag-796x417.jpg -- does work
             src.indexOf("/wp-content/blogs.dir/") >= 0 ||
@@ -4983,6 +4985,15 @@ var $$IMU_EXPORT$$;
             // doesn't work for gifs?
             // http://file.osen.co.kr/article/2017/05/16/201705162046770073_591ae7395381a.gif
             //   http://file.osen.co.kr/article/original/2017/05/16/201705162046770073_591ae7395381a.gif -- doesn't work
+            // doesn't work for older files? later 20120916 works, earlier 20120916 doesn't
+            // http://file.osen.co.kr/article_thumb/2012/08/22/201208221430778898_1_80x.jpg
+            //   http://file.osen.co.kr/article/2012/08/22/201208221430778898_1.jpg
+            //   http://file.osen.co.kr/article/original/2012/08/22/201208221430778898_1.jpg -- doesn't work
+            newsrc = src.replace(/\/article_thumb\/+([0-9]{4}\/+[0-9]{2}\/+[0-9]{2}\/+[0-9]+(?:_[^/._]*)?)_[0-9]+x(?:[0-9]+)?(\.[^/.]*)(?:[?#].*)?$/,
+                                 "/article/$1$2");
+            if (newsrc !== src)
+                return newsrc;
+
             return src
                 .replace("/article_thumb/", "/article/")
                 .replace(/\/article\/+([0-9]{4})\//, "/article/original/$1/")
@@ -17102,7 +17113,10 @@ var $$IMU_EXPORT$$;
             // http://img2250.imagevenue.com/img.php?image=613512642_0_00_0_0sexyhot0___0_123_257lo.jpg
             // http://img250.imagevenue.com/loc257/th_613512642_0_00_0_0sexyhot0___0_123_257lo.jpg
             //   http://img2250.imagevenue.com/aAfkjfp01fo1i-3407/loc257/613512642_0_00_0_0sexyhot0___0_123_257lo.jpg
-            id = src.replace(/.*\/th_([^/]*)$/, "$1");
+            // http://img287.imagevenue.com/loc376/th_645746424_XI5EBS1_122_376lo.JPG
+            //   http://img287.imagevenue.com/img.php?image=645746424_XI5EBS1_122_376lo.JPG
+            //   http://img287.imagevenue.com/aAfkjfp01fo1i-27405/loc376/645746424_XI5EBS1_122_376lo.JPG
+            id = src.replace(/.*\/th_([^/]*?)(?:[?#].*)?$/, "$1");
             if (id !== src) {
                 var requrl = src.replace(/(:\/\/[^/]*\/).*/, "$1img.php?image=" + id);
                 options.do_request({
@@ -17110,7 +17124,7 @@ var $$IMU_EXPORT$$;
                     method: "GET",
                     onload: function(resp) {
                         if (resp.readyState === 4) {
-                            var match = resp.responseText.match(/<img *id="thepic"[^>]* (?:src|SRC)="([^"]*)"/);
+                            var match = resp.responseText.match(/<img *id=['"]thepic['"][^>]* (?:src|SRC)=['"]([^"']*)['"]/);
                             if (match) {
                                 options.cb(urljoin(requrl, match[1], true));
                             } else {
@@ -24870,6 +24884,13 @@ var $$IMU_EXPORT$$;
             };
         }
 
+        if (domain === "cdn.themis-media.com") {
+            // http://cdn.themis-media.com/media/global/images/galleries/display/58/58351.jpg
+            //   http://cdn.themis-media.com/media/global/images/galleries/full/58/58351.jpg
+            return src.replace(/\/media\/+global\/+images\/+galleries\/+[a-z]+\/+/,
+                               "/media/global/images/galleries/full/");
+        }
+
 
 
 
@@ -27361,7 +27382,7 @@ var $$IMU_EXPORT$$;
 
                     var newx, newy;
 
-                    if ((imgwidth <= vw && imgheight <= vh) || scroll_zoom === "incremental") {
+                    if ((imgwidth <= vw && imgheight <= vh) || scroll_zoom === "incremental" || true) {
                         // centers wanted region to pointer
                         newx = (e.clientX - percentX * imgwidth);
                         newy = (e.clientY - percentY * imgheight);
