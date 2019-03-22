@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.8.16
+// @version      0.8.17
 // @description  Finds larger or original versions of images
 // @author       qsniyg
 // @homepageURL  https://qsniyg.github.io/maxurl/options.html
@@ -12291,7 +12291,18 @@ var $$IMU_EXPORT$$;
             // https://konachan.net/data/preview/98/6d/986d22d11cb6963ab1fc0dbcda942ea7.jpg
             //   https://konachan.net/image/986d22d11cb6963ab1fc0dbcda942ea7.jpg
             //   https://konachan.net/image/986d22d11cb6963ab1fc0dbcda942ea7.jpg
-            return add_extensions(src.replace(/(?:\/data\/preview\/[0-9a-f]+\/[0-9a-f]+\/|\/sample\/)([0-9a-f]+)(\/[^/]*)?(\.[^/.?]*)(?:[?#]*)?$/, "/image/$1$2$3"));
+            // https://konachan.com/sample/839253fb3f1f63f92cb768b2a6672b48/Konachan.com%20-%20255145%20sample.jpg
+            //   https://konachan.com/image/839253fb3f1f63f92cb768b2a6672b48.png
+            newsrc = src.replace(/(?:\/data\/preview\/[0-9a-f]+\/[0-9a-f]+\/|\/sample\/)([0-9a-f]+)(\/[^/]*)?(\.[^/.?]*)(?:[?#]*)?$/, "/image/$1$3");
+            if (newsrc !== src)
+                return add_extensions(newsrc);
+
+            return {
+                url: src,
+                headers: {
+                    Referer: "https://konachan.com/post"
+                }
+            };
         }
 
         if (domain_nowww === "gelbooru.com") {
