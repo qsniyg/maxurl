@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.8.17
+// @version      0.8.18
 // @description  Finds larger or original versions of images
 // @author       qsniyg
 // @homepageURL  https://qsniyg.github.io/maxurl/options.html
@@ -4657,6 +4657,9 @@ var $$IMU_EXPORT$$;
             // http://gretschpages.com/media/img/fretboard/2014/8/snake.jpg.540x540_q85_autocrop.jpg
             //   http://gretschpages.com/media/img/fretboard/2014/8/snake.jpg
             (domain_nowww === "gretschpages.com" && src.indexOf("/media/img/") >= 0) ||
+            // https://pornstars.me/media/pornstars/naomi-woods.jpg.960x0_q85.jpg
+            //   https://pornstars.me/media/pornstars/naomi-woods.jpg
+            (domain_nowww === "pornstars.me" && src.indexOf("/media/") >= 0) ||
             // https://www.mediavillage.com/media/articles/alex-wong-17993-unsplash.jpg.1440x1000_q85_box-19%2C0%2C634%2C427_crop_detail.jpg
             //   https://www.mediavillage.com/media/articles/alex-wong-17993-unsplash.jpg
             domain_nowww === "mediavillage.com") {
@@ -6996,7 +6999,7 @@ var $$IMU_EXPORT$$;
             // http://ojsfile.ohmynews.com/STD_IMG_FILE/2013/0705/IE001596678_STD.jpg
             //   http://ojsfile.ohmynews.com/ORG_IMG_FILE/2013/0705/IE001596678_ORG.jpg
             return src
-                .replace(/\/CT_T_IMG\/(.*?)\/([^/]*)_APP(\.[^/.]*?)(?:\?.*)?$/, "/ORG_IMG_FILE/$1/$2_ORG$3")
+                .replace(/\/CT_T_IMG\/(.*?)\/([^/]*)_[A-Z]+(\.[^/.]*?)(?:\?.*)?$/, "/ORG_IMG_FILE/$1/$2_ORG$3")
                 .replace(/\/[A-Z]*_IMG_FILE\/(.*?)\/([^/]*)_[A-Z]*(\.[^/.]*)(?:\?.*)?$/, "/ORG_IMG_FILE/$1/$2_ORG$3");
         }
 
@@ -11107,8 +11110,13 @@ var $$IMU_EXPORT$$;
             // http://image.ytn.co.kr/general/jpg/2018/0402/201804022235469141_h.jpg -- doesn't work:
             //   http://image.ytn.co.kr/general/jpg/2018/0402/201804022235469141_t.jpg -- works
             //   http://www.ytn.co.kr/_ln/0102_201804022235469141_002 -- is video thumbnail
+            // https://image.ytn.co.kr/osen/2015/04/201504021535773633_551ce374d4e52.jpg
+            //   http://file.osen.co.kr/article/original/2015/04/02/201504021535773633_551ce374d4e52.jpg
             // d, t, h, k, j
-            return src.replace(/(:\/\/[^/]*\/[^/]*\/jpg\/[^/]*\/[^/]*\/[0-9]+_)[a-z](\.[^/.]*)$/, "$1d$2");
+            return src
+                .replace(/(:\/\/[^/]*\/[^/]*\/jpg\/[^/]*\/[^/]*\/[0-9]+_)[a-z](\.[^/.]*)$/, "$1d$2")
+                .replace(/^[a-z]+:\/\/[^/]*\/osen\/+([0-9]{4}\/+[0-9]{2}\/+)([0-9]{6})([0-9]{2})([^/]*)(?:[?#].*)?$/,
+                         "http://file.osen.co.kr/article/$1$3/$2$3$4");
         }
 
         if (domain === "photo.kmib.co.kr") {
@@ -12293,7 +12301,7 @@ var $$IMU_EXPORT$$;
             //   https://konachan.net/image/986d22d11cb6963ab1fc0dbcda942ea7.jpg
             // https://konachan.com/sample/839253fb3f1f63f92cb768b2a6672b48/Konachan.com%20-%20255145%20sample.jpg
             //   https://konachan.com/image/839253fb3f1f63f92cb768b2a6672b48.png
-            newsrc = src.replace(/(?:\/data\/preview\/[0-9a-f]+\/[0-9a-f]+\/|\/sample\/)([0-9a-f]+)(\/[^/]*)?(\.[^/.?]*)(?:[?#]*)?$/, "/image/$1$3");
+            newsrc = src.replace(/(?:\/data\/preview\/[0-9a-f]+\/[0-9a-f]+\/|\/(?:sample|jpeg)\/)([0-9a-f]+)(\/[^/]*)?(\.[^/.?]*)(?:[?#]*)?$/, "/image/$1$3");
             if (newsrc !== src)
                 return add_extensions(newsrc);
 
@@ -12886,9 +12894,16 @@ var $$IMU_EXPORT$$;
             //   https://cdnb.artstation.com/p/assets/images/images/001/982/361/large/kevin-lourdel-2012-06-12-09-53-11.jpg?1455539239
             // there's also /original/, but it's forbidden for some?
             // https://cdnb.artstation.com/p/assets/images/images/011/367/353/original/alexandra-lavrentive-cold-winter-gif.gif -- works
+            // https://cdna.artstation.com/p/assets/images/images/013/337/602/20181009231052/small_square/ruan-jia-2018-09-21-2-34-08.jpg?1539144652
+            //   https://cdna.artstation.com/p/assets/images/images/013/337/602/large/ruan-jia-2018-09-21-2-34-08.jpg?1539144652
+            // https://cdna.artstation.com/p/assets/images/images/016/493/858/20190312025510/smaller_square/thales-simonato-francois-boquet-leopard-sx-hdrib.jpg?1552377310
+            //   https://cdna.artstation.com/p/assets/images/images/016/493/858/large/thales-simonato-francois-boquet-leopard-sx-hdrib.jpg?1552377310
+            // https://cdna.artstation.com/p/assets/images/images/016/242/734/20190301045023/micro_square/zephyr-zheng-terra2.jpg?1551437424
+            //   https://cdna.artstation.com/p/assets/images/images/016/242/734/large/zephyr-zheng-terra2.jpg?1551437424
+            regex = /(\/assets\/+images\/+images\/+[0-9]{3}\/+[0-9]{3}\/+[0-9]{3}\/+)(?:[0-9]+\/+)?(?:small(?:er)?|micro|medium)(?:_square)?\/([^/]*)$/;
             return [
-                src.replace(/\/(?:small|medium)\/([^/]*)$/, "/original/$1"),
-                src.replace(/\/(?:small|medium)\/([^/]*)$/, "/large/$1")
+                src.replace(regex, "$1original/$2"),
+                src.replace(regex, "$1large/$2")
             ];
         }
 
@@ -15971,10 +15986,18 @@ var $$IMU_EXPORT$$;
             }
         }
 
-        if (domain === "thumbnail.named.com") {
+        if (domain === "thumbnail.named.com" ||
+            // https://thumb.named.com/normal/croptop/206x150/file/photo/1019940 -- not gif
+            //   https://thumb.named.com/normal/resize/origin/file/photo/1019940 -- gif
+            // http://thumb.named.com/normal/croptop/206x150/file/photo/editor/1805/6ab94eb5c32a804217f93133c33782eb_Cq1PC1WPl6bggYURN2BIWdXcFj8b4.jpg
+            //   http://thumb.named.com/normal/resize/origin/file/photo/editor/1805/6ab94eb5c32a804217f93133c33782eb_Cq1PC1WPl6bggYURN2BIWdXcFj8b4.jpg
+            domain === "thumb.named.com") {
             // http://thumbnail.named.com/normal/croptop/206x150/file/photo/977034
             //   http://data.named.com/data/file/photo/977034 -- forces download
-            return src.replace(/:\/\/[^/]*\/.*?(\/file\/photo\/[0-9]+)/, "://data.named.com/data$1");
+            return [
+                src.replace(/:\/\/[^/]*\/.*?(\/+file\/+photo\/+.*)/, "://data.named.com/data$1"),
+                src.replace(/:\/\/[^/]*\/.*?(\/+file\/+photo\/+.*)/, "://thumb.named.com/normal/resize/origin$1")
+            ];
         }
 
         if (domain_nosub === "bing.com" &&
@@ -16032,33 +16055,31 @@ var $$IMU_EXPORT$$;
                         }
 
                         var obj = {
-                            url: null,
+                            url: src,
                             extra: {
                                 page: result.finalUrl
                             }
                         };
-
-                        if (true) {
-                            try {
-                                var hrefre = /<div *class="dev-view-deviation">\s*?<img[^>]*?src=["'](https?:\/\/images-wixmp[^>'"]*?)["']/;
-                                var match = result.responseText.match(hrefre);
-                                if (match) {
-                                    obj.url = match[1];
-                                    options.cb(obj);
-                                    return;
-                                }
-                            } catch (e) {
-                                console_error(e);
-                            }
-                        }
-                        return;
 
                         try {
                             var hrefre = /href=["'](https?:\/\/www\.deviantart\.com\/download\/[0-9]+\/[^/>'"]*?)["']/;
                             var match = result.responseText.match(hrefre);
                             if (!match) {
                                 console_error("No public download for " + src);
-                                options.cb(obj);
+
+                                if (true) {
+                                    try {
+                                        var hrefre = /<div *class="dev-view-deviation">\s*?<img[^>]*?src=["'](https?:\/\/(?:images-wixmp)[^>'"]*?)["']/;
+                                        var match = result.responseText.match(hrefre);
+                                        if (match) {
+                                            obj.url = match[1];
+                                            options.cb(obj);
+                                            return;
+                                        }
+                                    } catch (e) {
+                                        console_error(e);
+                                    }
+                                }
                                 return;
                             }
 
@@ -18232,7 +18253,10 @@ var $$IMU_EXPORT$$;
                 return newsrc;
         }
 
-        if (domain_nowww === "javhd.pics") {
+        if (domain_nowww === "javhd.pics" ||
+            // https://javpornpics.com/media/japanese/momo-yurino/13/uhd-momo-yurino-1.jpg
+            //   https://javpornpics.com/photos/japanese/momo-yurino/13/momo-yurino-1.jpg
+            domain_nowww === "javpornpics.com") {
             // https://javhd.pics/media/caribbeancom/nao-kojima/031811-647/hd-nao-kojima-2.jpg
             //   https://javhd.pics/media/caribbeancom/nao-kojima/031811-647/uhd-nao-kojima-2.jpg
             //   https://javhd.pics/photos/caribbeancom/nao-kojima/031811-647/nao-kojima-2.jpg
@@ -18248,19 +18272,46 @@ var $$IMU_EXPORT$$;
         if (domain_nowww === "purejapanese.com" ||
             // http://www.jjgirls.com/uncensored/caribbeancompr/nao-kojima/042514_828/cute-nao-kojima-4.jpg
             //   http://www.jjgirls.com/uncensored/caribbeancompr/nao-kojima/042514_828/nao-kojima-4.jpg
+            // http://www.jjgirls.com/japanese/momo-yurino/6/cute-momo-yurino-3.jpg
+            //   http://www.jjgirls.com/japanese/momo-yurino/6/momo-yurino-3.jpg
             domain_nowww === "jjgirls.com" ||
+            // https://1pondo.com/japanesegirl/yurino-sakurai/1/cute-yurino-sakurai-10.jpg
+            //   https://1pondo.com/japanesegirl/yurino-sakurai/1/yurino-sakurai-10.jpg
+            // https://1pondo.com/heydouga/caribbeancompr/nao-kojima/042514_828/cute-nao-kojima-3.jpg
+            //   https://1pondo.com/heydouga/caribbeancompr/nao-kojima/042514_828/nao-kojima-3.jpg
+            domain_nowww === "1pondo.com" ||
+            // https://asiauncensored.com/japansex/yurino-sato/5/cute-yurino-sato-8.jpg
+            //   https://asiauncensored.com/japansex/yurino-sato/5/yurino-sato-8.jpg
+            domain_nowww === "asiauncensored.com" ||
+            // https://69dv.com/javmodel/momo-yurino/30/cute-momo-yurino-5.jpg
+            //   https://69dv.com/javmodel/momo-yurino/30/momo-yurino-5.jpg
+            domain_nowww === "69dv.com" ||
             // http://www.javtube.com/tokyopic/caribbeancom/nao-kojima/062511-734/cute-nao-kojima-2.jpg
             //   http://www.javtube.com/tokyopic/caribbeancom/nao-kojima/062511-734/nao-kojima-2.jpg
             domain_nowww === "javtube.com") {
             // http://www.purejapanese.com/pic/nao-kojima/13/cute-nao-kojima-1.jpg
             //   http://www.purejapanese.com/pic/nao-kojima/13/nao-kojima-1.jpg
-            return src.replace(/(:\/\/[^/]*\/)(pic|tokyopic|uncensored)(\/.*\/)cute-([^/]*)$/, "$1$2$3$4");
+            newsrc = src.replace(/(:\/\/[^/]*\/)(pic|tokyopic|uncensored|javmodel|japansex|heydouga|japanese(?:girl)?)(\/.*\/)cute-([^/]*)$/, "$1$2$3$4");
+            if (newsrc !== src)
+                return newsrc;
+        }
+
+        if (domain_nowww === "jjgirls.com") {
+            // http://www.jjgirls.com/photo/javhd/nao-kojima/nao-kojima-asian-house-keeper-has-cunt-licked-after-showing-it/1t.jpg
+            //   http://www.jjgirls.com/photo/javhd/nao-kojima/nao-kojima-asian-house-keeper-has-cunt-licked-after-showing-it/1.jpg
+            return src.replace(/(\/photo\/+[^/]*\/+[^/]*\/+[^/]*\/+[0-9]+)t(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
         }
 
         if (domain_nowww === "javbtc.com") {
             // https://javbtc.com/media/caribbeancom/nao-kojima/031811-647/hd-nao-kojima-1.jpg
             //   https://javbtc.com/photos/caribbeancom/nao-kojima/031811-647/nao-kojima-1.jpg
             return src.replace(/(:\/\/[^/]*\/)media(\/.*\/)hd-([^/]*)$/, "$1photos$2$3");
+        }
+
+        if (domain_nowww === "japanesebeauties.net") {
+            // https://www.japanesebeauties.net/media/japanese/yurino-sato/5/hd-yurino-sato-8.jpg
+            //   https://www.japanesebeauties.net/japanese/yurino-sato/5/yurino-sato-8.jpg
+            return src.replace(/\/media\/+(.*\/)hd-([^/]*)(?:[?#].*)?$/, "/$1$2");
         }
 
         if (domain_nowww === "tubetubetube.com") {
@@ -24900,6 +24951,89 @@ var $$IMU_EXPORT$$;
             //   http://cdn.themis-media.com/media/global/images/galleries/full/58/58351.jpg
             return src.replace(/\/media\/+global\/+images\/+galleries\/+[a-z]+\/+/,
                                "/media/global/images/galleries/full/");
+        }
+
+        if (domain === "tn.nozomi.la") {
+            // https://tn.nozomi.la/2/1e/c39b7b671ca03755ca5277a8fdef68187ca3df4b6392eb22cf4201925e0a11e2.png.jpg
+            //   https://i.nozomi.la/2/1e/c39b7b671ca03755ca5277a8fdef68187ca3df4b6392eb22cf4201925e0a11e2.png
+            newsrc = src.replace(/:\/\/tn\.([^/]*\/[0-9a-f]+\/+[0-9a-f]+\/+[0-9a-f]+)(\.[^/.]*)(?:\.[^/.]*)(?:[?#].*)?$/,
+                                 "://i.$1$2");
+            if (newsrc !== src) {
+                return {
+                    url: newsrc,
+                    headers: {
+                        Referer: "https://nozomi.la/"
+                    }
+                };
+            }
+        }
+
+        if (domain === "pic.baike.soso.com") {
+            // https://pic.baike.soso.com/ugc/baikepic2/0/20181010142648-1675350549_jpeg_520_697_62443.jpg/300
+            //   https://pic.baike.soso.com/ugc/baikepic2/0/20181010142648-1675350549_jpeg_520_697_62443.jpg/0
+            return src.replace(/(\/baikepic[0-9]*\/+[^/]*\/+[^/]*\/+)[0-9]+(?:[?#].*)?$/, "$10");
+        }
+
+        if (domain_nosub === "jpopasia.com" && domain.match(/^i[0-9]*\./)) {
+            // https://i1.jpopasia.com/assets/1/30523-kaede-ghig-t.jpg
+            //   https://i1.jpopasia.com/assets/1/30523-kaede-ghig.png
+            return add_extensions(src.replace(/(\/assets\/+[0-9]+\/+[^/]*)-t(\.[^/.]*)(?:[?#].*)?$/, "$1$2"));
+        }
+
+        if (domain_nowww === "jpgravure.com") {
+            // http://jpgravure.com/galleries/all-jp-model/yumiko-shaku-asian-in-cute-dress-learns-to-ride-the-new-bike/tn14.jpg
+            //   http://jpgravure.com/galleries/all-jp-model/yumiko-shaku-asian-in-cute-dress-learns-to-ride-the-new-bike/14.jpg
+            return src.replace(/(\/galleries\/.*\/)tn([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain_nowww === "1pondo.tv") {
+            // https://www.1pondo.tv/assets/sample/032819_827/str_s.jpg
+            //   https://www.1pondo.tv/assets/sample/032819_827/str.jpg
+            // https://www.1pondo.tv/assets/sample/032819_827/thum_106/1.jpg
+            //   https://www.1pondo.tv/assets/sample/032819_827/popu/1.jpg
+            return src
+                .replace(/(\/assets\/+sample\/+[0-9]+_[0-9]+\/+[^/]*)_s(\.[^/.]*)(?:[?#].*)?$/, "$1$2")
+                .replace(/(\/assets\/+sample\/+[0-9]+_[0-9]+\/+)thum_[0-9]+(\/+[0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1popu$2");
+        }
+
+        if (domain === "cdn.pics.fhg.javhd.com") {
+            // http://cdn.pics.fhg.javhd.com/5672/1t.jpg
+            //   http://cdn.pics.fhg.javhd.com/5672/1.jpg
+            return src.replace(/(\/[0-9]+\/+[0-9]+)t(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain_nowww === "japanesepussyclub.com" ||
+            // https://www.kabukicho-girls.com/fumino-mizutori/103018-782/thumbnails/Fumino-Mizutori_001_tn.jpg
+            //   https://www.kabukicho-girls.com/fumino-mizutori/103018-782/images/Fumino-Mizutori_001.jpg
+            domain_nowww === "kabukicho-girls.com") {
+            // http://www.japanesepussyclub.com/gal/SKY-254_maki-hojo/thumbnails/IMG_8770_tn.JPG
+            //   http://www.japanesepussyclub.com/gal/SKY-254_maki-hojo/images/IMG_8770.JPG
+            return {
+                url: src.replace(/(\/+[^/]*\/+)thumbnails\/+([^/]*)_tn(\.[^/.]*)(?:[?#].*)?$/, "$1images/$2$3"),
+                headers: {
+                    Referer: "http://" + domain
+                }
+            };
+        }
+
+        if (domain_nowww === "asianthumbs.org") {
+            // http://asianthumbs.org/gallery/heyzo/1641/tn/001.jpg
+            //   http://asianthumbs.org/gallery/heyzo/1641/001.jpg
+            // http://asianthumbs.org/gallery/r18/pppd00722/tn/pppd00722jp-10.jpg
+            //   http://asianthumbs.org/gallery/r18/pppd00722/pppd00722jp-10.jpg
+            return src.replace(/(\/gallery\/+.*\/+)tn\/+([^/]*\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain === "cdn.handjobjapan.com") {
+            // https://cdn.handjobjapan.com/preview/219wedt7/1s.jpg
+            //   https://cdn.handjobjapan.com/preview/219wedt7/1.jpg
+            return src.replace(/(\/preview\/+[0-9a-z]+\/+[0-9]+)s(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain_nosub === "cre.ma" && domain.match(/^assets[0-9]*\./)) {
+            // http://assets3.cre.ma/p/shebeach-co-kr/reviews/00/00/02/20/96/image1/thumbnail_8ac4a8f36768aff0.jpg
+            //   http://assets3.cre.ma/p/shebeach-co-kr/reviews/00/00/02/20/96/image1/8ac4a8f36768aff0.jpg
+            return src.replace(/(\/image[0-9]*\/+)thumbnail_([0-9a-f]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
         }
 
 
