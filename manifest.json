@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Image Max URL",
-  "version": "0.8.18",
+  "version": "0.8.19",
 
   "description": "Finds larger or original versions of images",
 
