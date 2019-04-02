@@ -8,6 +8,27 @@ const NodeCache = require( "node-cache" );
 var fs = require("fs");
 var request = require("request");
 
+/*const monk = require("monk");
+var db = monk("localhost/maximage");
+var db_content = db.get("content");*/
+
+var MongoClient = require('mongodb').MongoClient;
+var url = "mongodb://localhost:27017/";
+
+var db = null;
+var db_content = null;
+MongoClient.connect(url, (err, client) => {
+  if (err) {
+    console.dir(err);
+    return;
+  }
+
+  console.log("Connected to MongoDB");
+
+  db = client.db("maximage");
+  db_content = db.collection("content");
+});
+
 var blacklist_json = JSON.parse(fs.readFileSync("./blacklist.json"));
 //var env_json = JSON.parse(fs.readFileSync("./.env.json"));
 var env_json = {};
@@ -24,6 +45,7 @@ env_json.access_token = process.env.ACCESS_TOKEN;
 //console.dir(env_json);
 
 var thresh_px = 200;
+var disable_nsfw = false;
 
 const Snoowrap = require('snoowrap');
 const Snoostorm = require('snoostorm');
@@ -40,6 +62,28 @@ var blacklist = [
   "death",
   "murdered",
   "murder",
+  "martyr",
+  "martyred",
+  "nazi",
+  "nazis",
+  "rape",
+  "rapes",
+  "raped",
+  "raping",
+  "molest",
+  "molested",
+  "molesting",
+  "traffick",
+  "trafficking",
+  "trafick",
+  "traficking",
+  "misconduct",
+  "allegation",
+  "alegation",
+  "allegations",
+  "alegations",
+  "supremacist",
+  "kkk",
 
   // Posts in-between the first and second category
   "embarrassed",
@@ -48,11 +92,10 @@ var blacklist = [
   "cringiest",
   "cringefest",
   "shame",
+  "shames",
   "shaming",
 
   // Posts that people commonly dislike the bot commenting on
-  "trump",
-  "hillary",
   "punch",
   "punchable",
   "ugly",
@@ -61,7 +104,7 @@ var blacklist = [
 
 function inblacklist(x) {
   var black = false;
-  x.toLowerCase().split(" ").forEach((word) => {
+  x.toLowerCase().replace(/[-.,]/g, " ").split(" ").forEach((word) => {
     word = word
       .replace(/^[^a-z]*/, "")
       .replace(/[^a-z]*$/, "");
@@ -73,61 +116,6 @@ function inblacklist(x) {
 
   return black;
 }
-
-
-/*function getimagesize(imgUrl, olddata) {
-  var options = url.parse(imgUrl);
-  return new Promise((resolve, reject) => {
-    var getter = http;
-    if (options.protocol === "https:")
-      getter = https;
-    getter.get(options, function(response) {
-      if (response.statusCode !== 200) {
-        reject({
-          "status": response.statusCode
-        });
-        return;
-      }
-
-      var finish = function() {
-        var buffer = Buffer.concat(chunks);
-        response.destroy();
-        try {
-          var dimensions = sizeOf(buffer);
-          resolve({
-            length: length,
-            width: dimensions.width,
-            height: dimensions.height
-          });
-          return;
-        } catch (e) {
-          reject(e);
-          return;
-        }
-      };
-
-      var length = response.getHeader('content-length');
-      if (length === olddata.length) {
-        reject({
-          "identical_length": length
-        });
-        return;
-      }
-
-      var chunks = [];
-      var size = 0;
-      response.on('data', function (chunk) {
-        chunks.push(chunk);
-        size += chunk.length;
-        if (size > 2048) {
-          finish();
-        }
-      }).on('end',function() {
-        finish();
-      });
-    });
-  });
-  }*/
 
 var base_headers = {
   "User-Agent": 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.106 Safari/537.36',
@@ -148,9 +136,9 @@ function getimagesize(url) {
     });
   }
 
-  if (typeof(url.url) === "string") {
+  /*if (typeof(url.url) === "string") {
     return getimagesize(url.url);
-  }
+  }*/
 
   return new Promise((resolve, reject) => {
     var do_getimage = function(urls, err) {
@@ -159,9 +147,12 @@ function getimagesize(url) {
         return;
       }
 
-      getimagesize(urls[0]).then(
+      getimagesize(urls[0].url).then(
         (data) => {
-          resolve(data);
+          resolve({
+            newdata: data,
+            big: urls[0]
+          });
         },
         (err) => {
           do_getimage(urls.slice(1), err);
@@ -169,18 +160,95 @@ function getimagesize(url) {
       );
     };
 
-    do_getimage(url.url);
+    do_getimage(url);
   });
 }
 
+function log(log_entry) {
+  //console.dir(log_entry);
+
+  if (db_content) {
+    db_content.insert(log_entry, (err, result) => {
+      if (err) {
+        console.dir(err);
+        return;
+      }
+    });
+  }
+}
+
+function log_if_image(log_entry, post) {
+  return;
+
+  if (!post)
+    return;
+
+  var url = log_entry.reddit.url;
+  if ((post.post_hint === "image" ||
+       url.match(/\.(?:jpg|JPG|jpeg|JPEG|png|PNG|gif|GIF|tif|TIF|tiff|TIFF|svg|SVG|webp|WEBP)(?:[.?/].*)?$/)) &&
+      // don't include these because of disk constraints
+      post.domain !== "i.redd.it" &&
+      !post.domain.match(/\.redditmedia\.com$/) &&
+      post.domain !== "imgur.com" &&
+      post.domain !== "i.imgur.com") {
+    log(log_entry);
+  }
+}
+
+function is_googlephotos(domain, url) {
+  // example URL:
+  // https://lh3.googleusercontent.com/d0S766DSecCcu1Q544n3s46uWD5oe7YpSZUqTyZlSTpNP2SF7-RSWuw3XXZ3iGddkYHzrNnopdxxwGPWVWvAwDQBl8We-b6cij1icKXgnl--E3VA9RWLQb4jFSOLq8Oicrpr7J89B2irwIIRfni5j91my2_V61LT3XmhORrWABfA5PIj_r2tsJwU7Oj8f3o0cnmjCZcea7UauXwlckPPi16cPmc3w5kRBGCbsnBlDpLLUlYgJIVJM0_usk83WwCL4XQmP6sK4NFR3m3jMgi6gV0Ocq3PsRXcL9ansYTzfFxaaYow_ugCJWX4cW_GP9cGLEs4nYAOJxCZaYJU5dwnaCbItXYXXRtDaOiTz69ZW0LvVZhBxrH9FDXKVACPa7IJoSrAJXSIBX59SzwxWC50qPyVdSS70PXdj2B1VWXRaduUYmpoaspVsW4IptE18vn2m6tWMT-OFRLdRaF3Vd6VplmCnnr9bdl0LOiLUChctwscQE9Lp4N3mwt2l65HXpB6wMo11HSDG1ARcLyUecFWiNzyUoimwGdX0P4X02at54cOeqCeIoqEP14uvLo=s0?imgmax=0
+  // still working:
+  // https://lh3.googleusercontent.com/ET-I3WGzylf5h2QIpdyuRrWGoTb3C3DVRow4oAOpt7VuOccWLjyUoWb2iW0kmgle-mN8yTYCZkYJvM6w-FLDuo7Yp7TpTi1YzldjX1Y2qzAfWQ_0Yd0LlGwS18gpYUpROhnmEBO6CeqjuTvBPZTtrf-eTnqCgTaOLNL0ENOgW0EUS1ZxJsdZ_TYHznqUveHD8hcko93CETrh2IeGXKYDGzM0wDmfD836jgroWJTHOXKUr7wFbKghZmmudMfsU4EEn8WrkU_8GJYaDCRnxj_aGtIWBXn1wh4gqOY7OnTR7BQXp7I0eH06B6Cy3C9sTFWuJU5NBoZORLlSs5zCJ-b3Bbc_BEB0xbsHJ_mAziE6bsHCcniOdJ8SNqNQgW9uoW38tY5MKFg-knhfSNxAk2sGBTQ2wczQV6uTUll5ZVOWAPVkwYCX9Ky6gjd-s9ymx-pR7Ray10mDv1KZ1NeqAXdbVAV30tPYv6HnCe1n4C9y_PnuBI688t9k0NNqBjDj-h8pEVdmCjUx2ZEFp5mTBxJCau2sgI59HGrE_6D7XaUWm294kWlOfGrkPeTE_S8ssaCE7DV-CBmtRoWQFHXlZOa9AL750j9dgMurdn4PjpROUALhl7bHpim9o8jc_vOrAc_ZJdAVmcXigFx8KD_ltLq8MbwNpCoMKZr-uQ=w958-h719-no
+  //   https://lh3.googleusercontent.com/ET-I3WGzylf5h2QIpdyuRrWGoTb3C3DVRow4oAOpt7VuOccWLjyUoWb2iW0kmgle-mN8yTYCZkYJvM6w-FLDuo7Yp7TpTi1YzldjX1Y2qzAfWQ_0Yd0LlGwS18gpYUpROhnmEBO6CeqjuTvBPZTtrf-eTnqCgTaOLNL0ENOgW0EUS1ZxJsdZ_TYHznqUveHD8hcko93CETrh2IeGXKYDGzM0wDmfD836jgroWJTHOXKUr7wFbKghZmmudMfsU4EEn8WrkU_8GJYaDCRnxj_aGtIWBXn1wh4gqOY7OnTR7BQXp7I0eH06B6Cy3C9sTFWuJU5NBoZORLlSs5zCJ-b3Bbc_BEB0xbsHJ_mAziE6bsHCcniOdJ8SNqNQgW9uoW38tY5MKFg-knhfSNxAk2sGBTQ2wczQV6uTUll5ZVOWAPVkwYCX9Ky6gjd-s9ymx-pR7Ray10mDv1KZ1NeqAXdbVAV30tPYv6HnCe1n4C9y_PnuBI688t9k0NNqBjDj-h8pEVdmCjUx2ZEFp5mTBxJCau2sgI59HGrE_6D7XaUWm294kWlOfGrkPeTE_S8ssaCE7DV-CBmtRoWQFHXlZOa9AL750j9dgMurdn4PjpROUALhl7bHpim9o8jc_vOrAc_ZJdAVmcXigFx8KD_ltLq8MbwNpCoMKZr-uQ=s0?imgmax=0
+  if (domain.match(/\.googleusercontent\.com$/) ||
+      domain.match(/\.ggpht\.com$/)) {
+    var p1 = url.replace(/^[a-z]+:\/\/[^/]*\/([^/]*).*?$/, "$1");
+    console.log(p1.length);
+    return p1.length > 450;
+  }
+
+  return false;
+}
+
 function dourl_inner(big, url, post) {
-  if (big.url instanceof Array) {
-    if (big.url.indexOf(url) >= 0) {
-      return;
-    }
-  } else if (big.url === url) {
+  //console.dir(JSON.parse(JSON.stringify(post)));
+
+  var log_entry = {
+    reddit: {},
+    blacklisted: false,
+    posted: false,
+    nsfw: !disable_nsfw
+  };
+
+  var savefields = [
+    "subreddit_name_prefixed",
+    "title",
+    "name",
+    "domain",
+    "created_utc",
+    "over_18",
+    "author",
+    "permalink",
+    "url"
+  ];
+
+  var json_post;
+  if (post) {
+    json_post = JSON.parse(JSON.stringify(post));
+
+    savefields.forEach((field) => {
+      log_entry.reddit[field] = json_post[field];
+    });
+  }
+
+  if (big.length === 1 && big[0].url === url) {
+    log_if_image(log_entry, post);
     return;
   }
+
+  if (post && post.over_18 && disable_nsfw)
+    return;
 
   /*if (big === url) {
     return;
@@ -188,6 +256,8 @@ function dourl_inner(big, url, post) {
 
   if (post && inblacklist(post.title)) {
     console.log("Post blacklisted:\n" + post.title + "\n" + post.permalink + "\n" + post.url + "\n=====\n\n");
+    log_entry.blacklisted = true;
+    log(log_entry);
     return;
   }
 
@@ -197,19 +267,37 @@ function dourl_inner(big, url, post) {
 
   getimagesize(url).then(
     (data) => {
+      log_entry.orig_probe = data;
+      if ("headers" in log_entry.orig_probe)
+        delete log_entry.orig_probe.headers;
+
       getimagesize(big).then(
-        (newdata) => {
+        (obj) => {
+          var newdata = obj.newdata;
+          big = obj.big;
+
+          log_entry.new_probe = JSON.parse(JSON.stringify(newdata));
+          if ("headers" in log_entry.new_probe)
+            delete log_entry.new_probe.headers;
+
           if (newdata.headers) {
             if (newdata.headers["content-type"]) {
+              log_entry.new_probe.headers = {
+                "content-type": newdata.headers["content-type"]
+              };
+
               var ctype = newdata.headers["content-type"];
-              if (ctype.match(/^ *text\//) /*&& !big.head_wrong_contenttype*/) {
+              if (ctype.match(/^ *text\//) /*&& !big.head_wrong_contenttype*/ ||
+                  ctype.match(/^ *image\/tiff *$/)) {
                 console.log("Content-Type = " + ctype);
+                log(log_entry);
                 return;
               }
 
               if (ctype.match(/binary\//) ||
                   ctype.match(/application\//)) {
                 console.log("Content-Type = " + ctype + " (forces download)");
+                log(log_entry);
                 return;
               }
             }
@@ -220,52 +308,124 @@ function dourl_inner(big, url, post) {
 
           var wr = newdata.width / data.width;
           var hr = newdata.height / data.height;
-          var r = (wr + hr) / 2;
-          if (r >= 1.1 && (((newdata.width - data.width) > thresh_px &&
+
+          var r;
+
+          if (true) {
+            r = (wr + hr) / 2;
+          } else {
+            r = (newdata.width * newdata.height) / (data.width * data.height);
+          }
+
+          if (r >= 1.3 && (((newdata.width - data.width) > thresh_px &&
                             newdata.height > data.height) ||
                            ((newdata.height - data.height) > thresh_px &&
                             newdata.width > data.width))) {
             var times = "" + r.toFixed(1) + "x";
+
             if (r < 1.995) {
               times = "" + ((r-1) * 100).toFixed(0) + "%";
             }
+
+            times += " larger";
 
             var filesize_text = "";
             var mbs = newdata.length / 1024 / 1024;
             if (mbs > 5) {
               filesize_text = ", " + mbs.toFixed(1) + "MB";
             }
-            var comment = times + " larger (" + parseInt(newdata.width) + "x" + parseInt(newdata.height) + filesize_text + ") version of linked image:\n\n" + newdata.url + "\n\n";
+            var comment = times + " (" + parseInt(newdata.width) + "x" + parseInt(newdata.height) + filesize_text + ") version of linked image:\n\n";
+            comment += "[" + newdata.url
+              .replace(/\\/g, "\\\\")
+              .replace(/_/g, "\\_")
+              .replace(/\*/g, "\\*")
+              .replace(/]/g, "\\]") + "](" + newdata.url.replace(/[)]/g, "\\)") + ")\n\n";
 
             // explain imgur, as the urls often confuse people
             if (orig_domain === "i.imgur.com" &&
                 new_domain === "i.imgur.com") {
-              comment += "*This is the original size uploaded to imgur*\n\n";
+              comment += "*This is the original size uploaded to imgur";
+
+              if (url.length - 1 === newdata.url.length) {
+                var id1_regex = /^[a-z]+:\/\/[^/]*\/([^/.]*)(.)\.[^/.]*(?:[?#].*)?$/;
+                var id2_regex = /^[a-z]+:\/\/[^/]*\/([^/.]*)\.[^/.]*(?:[?#].*)?$/;
+                var imgur_id_1 = url.replace(id1_regex, "$1");
+                var imgur_id_2 = newdata.url.replace(id2_regex, "$1");
+                if (imgur_id_2 === imgur_id_1) {
+                  comment += " (`" + url.replace(id1_regex, "$2") + "` was removed from the end of the filename)";
+                }
+              }
+              comment += "*\n\n";
+            }
+
+            if (is_googlephotos(orig_domain, url) &&
+                is_googlephotos(new_domain, newdata.url)) {
+              // Google Photos sometimes works, sometimes expire.
+              console.log("Google photos, ignoring");
+              return;
+              comment += "*****\n\n**Note to OP:** Your linked image (as well as the image linked by this bot) could expire within a few hours, as it looks like a temporary image link from Google. Consider reuploading this image to a different host.\n\n";
+            }
+
+            if (big.extra && big.extra.page) {
+              comment += "*****\n\nOriginal page: " + big.extra.page + "\n\n";
             }
 
             comment += "*****\n\n";
             comment += "^[source&nbsp;code](https://github.com/qsniyg/maxurl)&nbsp;|&nbsp;[website](https://qsniyg.github.io/maxurl/)&nbsp;/&nbsp;[userscript](https://greasyfork.org/en/scripts/36662-image-max-url)&nbsp;(finds&nbsp;larger&nbsp;images)";
             console.log(comment);
             if (post) {
-              post.reply(comment).then((comment_data) => {
-                comment_data.edit(
-                  comment + "&nbsp;|&nbsp;[remove](https://www.reddit.com/message/compose/?to=MaxImageBot&subject=delete:+" + comment_data.id + "&message=delete)"
-                );
-              });
+              var logged = false;
+              try {
+                post.reply(comment).then((comment_data) => {
+                  log_entry.posted = comment_data.id;
+
+                  log_entry.error = null;
+
+                  if (!logged) {
+                    log(log_entry);
+                    logged = true;
+                  }
+
+                  // np.reddit.com to avoid the "no participation" warning
+                  comment_data.edit(
+                    comment + "&nbsp;|&nbsp;[remove](https://np.reddit.com/message/compose/?to=MaxImageBot&subject=delete:+" + comment_data.id + "&message=If%20you%20are%20the%20one%20who%20submitted%20the%20post%2C%20it%20should%20be%20deleted%20within%2020%20seconds.%20If%20it%20isn%27t%2C%20please%20check%20the%20FAQ%3A%20https%3A%2F%2Fnp.reddit.com%2Fr%2FMaxImage%2Fcomments%2F8znfgw%2Ffaq%2F)"
+                  );
+                });
+              } catch (e) {
+                console.error(e);
+
+                log_entry.error = e.toString();
+
+                if (!logged) {
+                  log(log_entry);
+                  logged = true;
+                }
+              }
             }
           } else {
-            console.log("Ratio too small: " + wr + ", " + hr);
+            if (wr != 1 || hr != 1)
+              console.log("Ratio too small: " + wr + ", " + hr);
+            if (post)
+              log(log_entry);
           }
           console.log("========");
         },
         (err) => {
           console.dir(err);
+          if (post) {
+            log_entry.err = JSON.parse(JSON.stringify(err));
+            log(log_entry);
+          }
           return;
         }
       );
     },
     (err) => {
       console.dir(err);
+      if (post) {
+        log_entry.err = JSON.parse(JSON.stringify(err));
+        log(log_entry);
+      }
       return;
     }
   );
@@ -276,6 +436,7 @@ function dourl(url, post) {
 
   bigimage(url, {
     fill_object: true,
+    force_page: true,
     do_request: function(options) {
       var headers = JSON.parse(JSON.stringify(base_headers));
       if (options.headers) {
@@ -317,13 +478,27 @@ function dourl(url, post) {
   });
 }
 
-const links = new NodeCache({ stdTTL: 600, checkperiod: 1000 });
+const links = new NodeCache({ stdTTL: 600, checkperiod: 100 });
 
 
 // large image
 //dourl("https://i.guim.co.uk/img/media/856021cc9b024ee18480297110f6a9f38923b4ee/0_0_15637_9599/master/15637.jpg?w=1920&q=55&auto=format&usm=12&fit=max&s=774b471892a2a1870261227f29e9d77a");
 // returns text/html if browser
 //dourl("https://vignette.wikia.nocookie.net/arresteddevelopment/images/0/03/2x12_Hand_to_God_%2856%29.png/revision/latest/scale-to-width-down/670?cb=20130123233849");
+// has an original page
+//dourl("https://img00.deviantart.net/f4a7/i/2016/187/9/8/_brs__strength_by_aikiyun-da8xomm.jpg");
+// non-previewable format
+//dourl("https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/President_Roosevelt_-_Pach_Bros.tif/lossy-page1-800px-President_Roosevelt_-_Pach_Bros.tif.jpg");
+// one letter difference in Imgur
+//dourl("https://i.imgur.com/jrT3cjuh.png");
+// originally had an odd image size, now fixed?
+//dourl("https://i.cbc.ca/1.4883897.1540910176!/cpImage/httpImage/image.jpg_gen/derivatives/16x9_780/yosemite-deaths.jpg");
+// deviantart page with a non-deviantart url
+// https://www.deviantart.com/motesoegyi/art/Mileena-770165734
+// https://wixmp-ed30a86b8c4ca887773594c2.appspot.com/_api/download/file?downloadToken=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsImV4cCI6MTU0MDk0ODQ4NCwiaWF0IjoxNTQwOTQ3ODc0LCJqdGkiOiI1YmQ4ZmZhYzFhZTgzIiwib2JqIjpudWxsLCJhdWQiOlsidXJuOnNlcnZpY2U6ZmlsZS5kb3dubG9hZCJdLCJwYXlsb2FkIjp7InBhdGgiOiJcL2ZcL2JjMTFhNWJkLWM4NWEtNGUwNy1hODkwLWE4M2NlMjg2Y2ZlZVwvZGNxamJvbS01YjQyMzA4Yi0xODFjLTRiYjYtOTEwOC01Y2UzNTA4OTg2ZTQuanBnIn19.dDWxHmko8CQMMz--4byYPJYSKxrEGxg7VYut2x0wCl0
+// https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/intermediary/f/bc11a5bd-c85a-4e07-a890-a83ce286cfee/dcqjbom-5b42308b-181c-4bb6-9108-5ce3508986e4.jpg
+// https://orig00.deviantart.net/49c2/f/2018/301/0/2/mileena_by_motesoegyi-dcqjbom.jpg
+//dourl("https://pre00.deviantart.net/d54e/th/pre/i/2018/301/6/4/mileena_by_motesoegyi-dcqjbom.jpg");
 
 //console.dir(blacklist_json.disallowed);
 if (true) {
@@ -349,11 +524,18 @@ if (true) {
         console.log(comment);
 
         r.getComment(comment).fetch().then((comment_data) => {
+          if (comment_data.author.name === "[deleted]") {
+            console.log("Removing message for " + comment);
+            message_data.deleteFromInbox();
+            //return;
+          }
+
           if (comment_data.author.name.toLowerCase() !== "maximagebot")
             return;
 
           r.getComment(comment_data.parent_id).fetch().then((post_data) => {
-            if (post_data.author.name.toLowerCase() !== message_data.author.name.toLowerCase()) {
+            if (post_data.author.name !== "[deleted]" &&
+                post_data.author.name.toLowerCase() !== message_data.author.name.toLowerCase()) {
               return;
             }
 
@@ -367,7 +549,7 @@ if (true) {
   }, 10*1000);
 
   submissionStream.on("submission", function(post) {
-    if (post.domain.startsWith("self.") || (post.over_18)) {
+    if (post.domain.startsWith("self.")) {
       return;
     }
 
@@ -385,6 +567,12 @@ if (true) {
     }
 
     links.set(post.permalink, true);
+
+    if (!post.url.match(/^https?:\/\//) ||
+        post.url.match(/^https?:\/\/(127\.0\.0\.1|192\.168\.|10\.[0-9]+\.|localhost)/)) {
+      console.log("Invalid URL: " + post.url);
+      return;
+    }
 
     var url = post.url;
     dourl(url, post);

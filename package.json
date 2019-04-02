@@ -5,6 +5,7 @@
   "dependencies": {
     "dotenv": "^5.0.1",
     "image-size": "^0.6.2",
+    "monk": "^6.0.6",
     "node-cache": "^4.2.0",
     "probe-image-size": "^4.0.0",
     "reddit-oauth-helper": "^0.3.0",
