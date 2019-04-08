@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.8.20
+// @version      0.8.21
 // @description  Finds larger or original versions of images
 // @author       qsniyg
 // @homepageURL  https://qsniyg.github.io/maxurl/options.html
@@ -502,7 +502,7 @@ var $$IMU_EXPORT$$;
     function urljoin(a, b, browser) {
         if (b.length === 0)
             return a;
-        if (b.match(/[a-z]*:\/\//) || b.match(/^data:/))
+        if (b.match(/^[a-z]*:\/\//) || b.match(/^data:/))
             return b;
 
         var protocol_split = a.split("://");
@@ -23491,6 +23491,12 @@ var $$IMU_EXPORT$$;
                     method: "GET",
                     onload: function(resp) {
                         if (resp.readyState === 4) {
+                            if (resp.status !== 200) {
+                                console_log(result);
+                                options.cb(null);
+                                return;
+                            }
+
                             var match = resp.responseText.match(/<img ID="viewImg"[^>]*data-src="([^">]*)"/);
                             if (match) {
                                 options.cb(urljoin(src, match[1], true));
@@ -25932,6 +25938,49 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/uploaded_images\/+thumbs\/+/, "/uploaded_images/");
         }
 
+        if (domain_nowww === "zwz.cz" &&
+            options && options.do_request && options.cb) {
+            // http://zwz.cz/obrmy.zwz/X1LPM3ND.jpg
+            //   http://zwz.cz/Obrazky/Manga/(ZWZ)/Dejiko%20And%20Puchiko%20On%20A%20Stroll%20(ZWZ).jpg
+            id = src.replace(/^[a-z]+:\/\/[^/]*\/o[^/]*\.zwz\/+([A-Z0-9]+)\.[^/.]*(?:[?#].*)?$/, "$1");
+            if (id !== src) {
+                options.do_request({
+                    url: "http://zwz.cz/f/" + id,
+                    method: "GET",
+                    headers: {
+                        Cookie: "agree=yes"
+                    },
+                    onload: function(result) {
+                        if (result.readyState === 4) {
+                            if (result.status !== 200) {
+                                console_log(result);
+                                options.cb(null);
+                                return;
+                            }
+
+                            var match = result.responseText.match(/<img *id=['"]?pic["']? *class[^>]*?src=["']([^'"]*)['"]/);
+                            if (match) {
+                                options.cb(urljoin(src, match[1]));
+                            } else {
+                                options.cb(null);
+                            }
+                        }
+                    }
+                });
+
+                return {
+                    waiting: true
+                };
+            }
+        }
+
+        if (domain_nowww === "hockeygods.com") {
+            // http://hockeygods.com/system/gallery_images/6819/normal.jpg?1309065354
+            //   http://hockeygods.com/system/gallery_images/6819/original.jpg?1309065354
+            return src.replace(/(\/system\/+gallery_images\/+[0-9]+\/+)[a-z]+(\.[^/.]*)(?:[?#].*)?$/,
+                               "$1original$2");
+        }
+
 
 
 
@@ -26967,7 +27016,7 @@ var $$IMU_EXPORT$$;
             for (var i = 0; i < objified.length; i++) {
                 var obj = objified[i];
 
-                if (obj.url === null) {
+                if (obj.url === null && !obj.waiting) {
                     objified.splice(i, 1);
                     if (newhref1 instanceof Array) {
                         newhref1.splice(i, 1);
