@@ -147,6 +147,11 @@ function getimagesize(url) {
         return;
       }
 
+      if (urls[0].is_private) {
+        console.log("Private URL: ", options);
+        return do_getimage(urls.slice(1), "private");
+      }
+
       getimagesize(urls[0].url).then(
         (data) => {
           resolve({
