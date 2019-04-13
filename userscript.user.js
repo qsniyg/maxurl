@@ -26904,6 +26904,35 @@ var $$IMU_EXPORT$$;
                     if (!el)
                         return null;
 
+                    try {
+                        var images = unsafeWindow.runSlots.item.album_images.images;
+                        var current_hash = bigimage_recursive(el.src, {fill_object: true})[0].url.replace(/.*\/([^/._]*?)\.[^/.]*(?:[?#].*)?$/, "$1");
+                        if (current_hash !== el.src) {
+                            for (var i = 0; i < images.length; i++) {
+                                if (images[i].hash === current_hash) {
+                                    var image_id;
+                                    if (nextprev) {
+                                        if (i + 1 >= images.length)
+                                            return null;
+
+                                        image_id = i + 1;
+                                    } else {
+                                        if (i - 1 < 0)
+                                            return null;
+
+                                        image_id = i - 1;
+                                    }
+
+                                    var newel = document.createElement("img");
+                                    newel.src = "https://i.imgur.com/" + images[image_id].hash + images[image_id].ext;
+                                    return newel;
+                                }
+                            }
+                        }
+                    } catch (e) {
+                        console.error(e);
+                    }
+
                     var current = el;
                     while ((current = current.parentElement)) {
                         if (current.tagName === "DIV" &&
