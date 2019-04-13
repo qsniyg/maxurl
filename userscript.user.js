@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.8.22
+// @version      0.8.23
 // @description  Finds larger or original versions of images for 3800+ websites
 // @author       qsniyg
 // @homepageURL  https://qsniyg.github.io/maxurl/options.html
@@ -216,6 +216,7 @@ var $$IMU_EXPORT$$;
         redirect_history: true,
         mouseover: true,
         mouseover_trigger: ["ctrl", "shift"],
+        //mouseover_trigger_behavior: "keyboard",
         // thanks to blue-lightning on github for the idea
         mouseover_open_behavior: "popup",
         // also thanks to blue-lightning
@@ -282,6 +283,25 @@ var $$IMU_EXPORT$$;
             requires: {
                 mouseover: true
             }
+        },
+        mouseover_trigger_behavior: {
+            name: "Mouseover popup trigger",
+            description: "How the popup will get triggered",
+            options: {
+                mouse: {
+                    name: "Mouseover",
+                    description: "Triggers when your mouse is over the image"
+                },
+                keyboard: {
+                    name: "Key trigger",
+                    description: "Triggers when you press a key sequence when your mouse is over an image"
+                }
+            }
+        },
+        mouseover_trigger_key: {
+            name: "Mouseover trigger key",
+            description: "Key sequence to trigger the popup",
+            type: "keysequence"
         },
         mouseover_open_behavior: {
             name: "Mouseover popup action",
@@ -16261,15 +16281,40 @@ var $$IMU_EXPORT$$;
 
                                 if (true) {
                                     try {
-                                        var hrefre = /<div *class="dev-view-deviation">\s*?<img[^>]*?src=["'](https?:\/\/(?:images-wixmp)[^>'"]*?)["']/;
+                                        var hrefre = /<img[^>]*?src=["'](https?:\/\/(?:images-wixmp)[^>'"]*?)["'][^>]*class=["']dev-content-/g;
                                         var match = result.responseText.match(hrefre);
                                         if (match) {
-                                            obj.url = match[1];
-                                            options.cb(obj);
-                                            return;
-                                        } else {
-                                            return options.cb(obj);
+                                            var maxres = 0;
+                                            var maxurl = null;
+                                            for (var i = 0; i < match.length; i++) {
+                                                var whmatch = match[i].match(/width=["']?([0-9]+)/);
+                                                var oururl = match[i].match(/\ssrc=['"](http[^'"]*)/);
+                                                if (!oururl)
+                                                    continue;
+                                                oururl = oururl[1];
+                                                var base = 0;
+                                                if (!whmatch)
+                                                    continue;
+                                                base = parseInt(whmatch[1]);
+                                                whmatch = match[i].match(/height=["']?([0-9]+)/);
+                                                if (!whmatch)
+                                                    continue;
+                                                base *= parseInt(whmatch[1]);
+
+                                                if (base > maxres) {
+                                                    maxres = maxres;
+                                                    maxurl = oururl;
+                                                }
+                                            }
+
+                                            if (maxurl &&
+                                                maxurl.replace(/\?.*/) !== src.replace(/\?.*/)) {
+                                                obj.url = maxurl;
+                                                options.cb(obj);
+                                                return;
+                                            }
                                         }
+                                        return options.cb(obj);
                                     } catch (e) {
                                         console_error(e);
                                     }
