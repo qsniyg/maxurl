@@ -23,8 +23,8 @@ function do_imu(url, cb) {
 // separately, as input can be sent before the page is fully loaded
 function process_input() {
   var text = inputel.value;
-  if (text.match(/^ +https?:\/\//)) {
-    inputel.value = text.replace(/^ */, "");
+  if (text.match(/^\s+https?:\/\//)) {
+    inputel.value = text.replace(/^\s*/, "");
     text = inputel.value;
   }
 
@@ -40,10 +40,10 @@ function process_input() {
       set_max("error");
     }
 
-  } else if (text === "") {
-    set_max(null);
+  } else if (text === "" || (typeof text === "string" && text.match(/^\s*$/))) {
+    set_max("blank");
   } else {
-    set_max();
+    set_max("invalid");
   }
 }
 
@@ -119,30 +119,29 @@ function track_ga(value) {
 }
 
 function set_max(obj) {
+  var error = true;
+
   if (obj === "loading") {
     maxspanel.innerHTML = "Loading...";
-    resetels();
-    return;
   } else if (obj === "error") {
     maxspanel.innerHTML = "Unknown error";
-    resetels();
     track_ga("error");
-    return;
   } else if (obj === "broken") {
+    maxspanel.innerHTML = "Broken image";
     obj = false;
+  } else if (obj === "invalid") {
+    maxspanel.innerHTML = "Invalid URL";
+    track_ga("invalid_url");
+  } else if (obj === "blank") {
+    maxspanel.innerHTML = "";
+  } else if (!obj || (typeof obj === "string" && !obj.match(/^https?:\/\//))) {
+    maxspanel.innerHTML = "Unknown error";
+    track_ga("unknown_error");
+  } else {
+    error = false;
   }
 
-  if (!obj) {
-    if (obj === undefined) {
-      maxspanel.innerHTML = "Invalid URL";
-      track_ga("invalid_url");
-    } else if (obj === null) {
-      maxspanel.innerHTML = "";
-    } else if (obj === false) {
-      maxspanel.innerHTML = "No larger image found";
-      track_ga("no_larger_image");
-    }
-
+  if (error) {
     resetels();
     return;
   }
