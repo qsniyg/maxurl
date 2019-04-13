@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.8.21
-// @description  Finds larger or original versions of images
+// @version      0.8.22
+// @description  Finds larger or original versions of images for 3800+ websites
 // @author       qsniyg
 // @homepageURL  https://qsniyg.github.io/maxurl/options.html
 // @supportURL   https://github.com/qsniyg/maxurl/issues
@@ -5735,7 +5735,10 @@ var $$IMU_EXPORT$$;
                     method: "GET",
                     onload: function(result) {
                         if (result.status !== 200) {
-                            options.cb(null);
+                            options.cb({
+                                url: null,
+                                waiting: false
+                            });
                             return;
                         }
 
@@ -8116,6 +8119,12 @@ var $$IMU_EXPORT$$;
             newsrc = src.replace(/(?:alternates|ALTERNATES|AUTOCROP|autocrop|binary|BINARY)\/[^/]*\/([^/]*)$/, "BINARY/$1");
             if (newsrc !== src)
                 return newsrc;
+        }
+
+        if (domain_nowww === "ekstrabladet.dk") {
+            // https://ekstrabladet.dk/incoming/urkamg/6524751/IMAGE_ALTERNATES/relationSmall_150/reality-awards
+            //   https://ekstrabladet.dk/incoming/urkamg/6524751/IMAGE_BINARY/original/reality-awards
+            return src.replace(/\/IMAGE_ALTERNATES\/+[^/]*\/+/, "/IMAGE_BINARY/original/");
         }
 
         if (domain === "images.fandango.com" ||
@@ -12757,8 +12766,8 @@ var $$IMU_EXPORT$$;
             return src.replace(/_(?:[a-z]|wm)(\.[^/.]*)$/, "_o$1");
         }
 
-        if (false && (domain_nosub === "sportsworldi.com" ||
-                      domain_nosub === "segye.com") &&
+        if ((domain_nosub === "sportsworldi.com" ||
+             domain_nosub === "segye.com") &&
             src.indexOf("/content/image/") >= 0) {
             // http://img.sportsworldi.com/content/image/2018/04/23/20180423000784_t.jpg
             //   http://img.sportsworldi.com/content/image/2018/04/23/20180423000784_0.jpg -- not larger
@@ -12778,7 +12787,12 @@ var $$IMU_EXPORT$$;
             //   http://img.sportsworldi.com/content/image/2017/12/23/20171223000846_0.jpg -- smaller
             // http://img.sportsworldi.com/content/image/2017/12/12/20171212001686_t.jpg -- 5208x3858
             //   http://img.sportsworldi.com/content/image/2017/12/12/20171212001686_0.jpg -- 500x370
-            return src.replace(/_[a-z](\.[^/.]*)$/, "_0$1");
+            //return src.replace(/_[a-z](\.[^/.]*)$/, "_0$1");
+
+            // http://img.sportsworldi.com/content/image/2019/02/26/128/20190226550905.jpg
+            //   http://img.sportsworldi.com/content/image/2019/02/26/20190226550905.jpg
+            return src.replace(/(\/content\/+image\/+[0-9]{4}\/+[0-9]{2}\/+[0-9]{2}\/+)[0-9]+\/+([0-9]+(?:_[^/.]*)?\.[^/.]*)(?:[?#].*)?$/,
+                               "$1$2");
         }
 
         if (domain_nowww === "maximkorea.net" &&
@@ -16230,6 +16244,7 @@ var $$IMU_EXPORT$$;
 
                         var obj = {
                             url: null,
+                            waiting: false,
                             extra: {
                                 page: result.finalUrl
                             }
@@ -25981,6 +25996,19 @@ var $$IMU_EXPORT$$;
                                "$1original$2");
         }
 
+        if (domain === "galleries.cosmid.net") {
+            // http://galleries.cosmid.net/2903//thumbs/01.jpg
+            //   http://galleries.cosmid.net/2903/01.jpg
+            return src.replace(/(:\/\/[^/]*\/[0-9]+)\/+thumbs\/+/, "$1/");
+        }
+
+        if (domain_nosub === "fantasti.cc" &&
+            domain.match(/^cdn(?:-[a-z]+)?\./)) {
+            // https://cdn-so.fantasti.cc/big/q/u/e/queenofkink/thumb/queenofkink_431876.jpg
+            //   https://cdn-so.fantasti.cc/big/q/u/e/queenofkink/queenofkink_431876.jpg
+            return src.replace(/\/thumb\/+([^/]*)(?:[?#].*)?$/, "/$1");
+        }
+
 
 
 
@@ -27063,6 +27091,11 @@ var $$IMU_EXPORT$$;
             if (same_url(currenthref, objified)) {
                 return false;
             } else {
+                for (var i = 0; i < pasthrefs.length; i++) {
+                    if (same_url(pasthrefs[i], objified)) {
+                        return false;
+                    }
+                }
                 currenthref = get_currenthref(objified);
                 newhref = newhref1;
             }
