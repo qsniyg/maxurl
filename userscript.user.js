@@ -28145,7 +28145,7 @@ var $$IMU_EXPORT$$;
                     }
                     var sub_units_td = document.createElement("td");
                     sub_units_td.style = "display:inline";
-                    sub_units_td.innerHTML = meta.number_unit;
+                    sub_units_td.innerText = meta.number_unit;
 
                     sub_tr.appendChild(input);
                     sub_tr.appendChild(sub_units_td);
@@ -28157,20 +28157,20 @@ var $$IMU_EXPORT$$;
                     var sub_key_td = document.createElement("td");
                     sub_key_td.style = "display:inline;font-family:monospace;font-size:1.1em";
                     if (value) {
-                        sub_key_td.innerHTML = get_trigger_key_text(value);
+                        sub_key_td.innerText = get_trigger_key_text(value);
                     }
                     var sub_record_td = document.createElement("td");
                     sub_record_td.style = "display:inline";
                     var sub_record_btn = document.createElement("button");
-                    sub_record_btn.innerHTML = "Record";
+                    sub_record_btn.innerText = "Record";
                     var sub_cancel_btn = document.createElement("button");
-                    sub_cancel_btn.innerHTML = "Cancel";
+                    sub_cancel_btn.innerText = "Cancel";
                     sub_cancel_btn.style = "display:none";
                     var do_cancel = function() {
                         recording_keys = false;
-                        sub_record_btn.innerHTML = "Record";
+                        sub_record_btn.innerText = "Record";
                         sub_cancel_btn.style = "display:none";
-                        sub_key_td.innerHTML = get_trigger_key_text(settings[setting]);
+                        sub_key_td.innerText = get_trigger_key_text(settings[setting]);
                     };
                     sub_cancel_btn.onclick = do_cancel;
                     sub_record_btn.onclick = function() {
@@ -28184,9 +28184,9 @@ var $$IMU_EXPORT$$;
                             options_chord = [];
                             current_options_chord = [];
                             recording_keys = function() {
-                                sub_key_td.innerHTML = get_trigger_key_text(options_chord);
+                                sub_key_td.innerText = get_trigger_key_text(options_chord);
                             };
-                            sub_record_btn.innerHTML = "Save";
+                            sub_record_btn.innerText = "Save";
                             sub_cancel_btn.style = "display:inline-block";
                         }
                     };
