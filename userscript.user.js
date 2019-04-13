@@ -28126,6 +28126,7 @@ var $$IMU_EXPORT$$;
                     var sub = document.createElement("table");
                     var sub_tr = document.createElement("tr");
                     var sub_in_td = document.createElement("td");
+                    sub_in_td.style = "display:inline";
                     var input = document.createElement("input");
                     input.type = "number";
                     input.style = "text-align:right";
@@ -28143,6 +28144,7 @@ var $$IMU_EXPORT$$;
                         show_saved_message();
                     }
                     var sub_units_td = document.createElement("td");
+                    sub_units_td.style = "display:inline";
                     sub_units_td.innerHTML = meta.number_unit;
 
                     sub_tr.appendChild(input);
@@ -28153,10 +28155,12 @@ var $$IMU_EXPORT$$;
                     var sub = document.createElement("table");
                     var sub_tr = document.createElement("tr");
                     var sub_key_td = document.createElement("td");
+                    sub_key_td.style = "display:inline;font-family:monospace;font-size:1.1em";
                     if (value) {
                         sub_key_td.innerHTML = get_trigger_key_text(value);
                     }
                     var sub_record_td = document.createElement("td");
+                    sub_record_td.style = "display:inline";
                     var sub_record_btn = document.createElement("button");
                     sub_record_btn.innerHTML = "Record";
                     var sub_cancel_btn = document.createElement("button");
