@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.8.24
+// @version      0.8.25
 // @description  Finds larger or original versions of images for 3800+ websites
 // @author       qsniyg
 // @homepageURL  https://qsniyg.github.io/maxurl/options.html
@@ -27746,11 +27746,11 @@ var $$IMU_EXPORT$$;
             keys.ctrl = false;
         }
 
-        if (event.metaKey) {
+        /*if (event.metaKey) {
             keys["super"] = true;
         } else {
             keys["super"] = false;
-        }
+        }*/
 
         if (event.altKey) {
             keys.alt = true;
@@ -28446,7 +28446,7 @@ var $$IMU_EXPORT$$;
         up: 38,
         right: 39,
         down: 40,
-        "super": 91,
+        //"super": 91,
         ";": 186,
         "=": 187,
         ",": 188,
@@ -28473,7 +28473,7 @@ var $$IMU_EXPORT$$;
         39: "right",
         40: "down",
 
-        91: "super",
+        //91: "super",
 
         // numpad
         111: "/",
