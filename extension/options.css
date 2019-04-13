@@ -144,6 +144,21 @@ ul li {
   margin-right: auto;
 }
 
+.option input[type="number"],
+.option input[type="text"] {
+  border: 1px solid #0af;
+  font-family: sans-serif;
+  padding: 6px;
+  margin: 0em .3em;
+  -moz-appearance: textfield;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 #input::placeholder {
   text-align: center;
   font-style: italic;
@@ -298,7 +313,7 @@ code {
 }
 
 
-.option input {
+.option input[type="checkbox"] {
   position: absolute !important;
   clip: rect(0,0,0,0);
   visibility: hidden;
@@ -334,9 +349,9 @@ button:active {
   color: #aaa;
 }
 
-.disabled label, .disabled button {
+.disabled label, .disabled button, .disabled input {
   cursor: default;
-  border: 1px solid #aaa;
+  border: 1px solid #aaa !important;
 }
 
 input:checked + label, button {

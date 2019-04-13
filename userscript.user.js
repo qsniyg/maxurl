@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.8.23
+// @version      0.8.24
 // @description  Finds larger or original versions of images for 3800+ websites
 // @author       qsniyg
 // @homepageURL  https://qsniyg.github.io/maxurl/options.html
@@ -215,8 +215,11 @@ var $$IMU_EXPORT$$;
         redirect: true,
         redirect_history: true,
         mouseover: true,
-        mouseover_trigger: ["ctrl", "shift"],
-        //mouseover_trigger_behavior: "keyboard",
+        //mouseover_trigger: ["ctrl", "shift"],
+        mouseover_trigger_behavior: "keyboard",
+        // thanks to 894-572 on github for the idea
+        mouseover_trigger_key: ["ctrl", "shift"],
+        mouseover_trigger_delay: 1,
         // thanks to blue-lightning on github for the idea
         mouseover_open_behavior: "popup",
         // also thanks to blue-lightning
@@ -301,7 +304,19 @@ var $$IMU_EXPORT$$;
         mouseover_trigger_key: {
             name: "Mouseover trigger key",
             description: "Key sequence to trigger the popup",
-            type: "keysequence"
+            type: "keysequence",
+            requires: {
+                mouseover_trigger_behavior: "keyboard"
+            }
+        },
+        mouseover_trigger_delay: {
+            name: "Mouseover trigger delay",
+            description: "Delay (in seconds) before the popup shows",
+            requires: {
+                mouseover_trigger_behavior: "mouse"
+            },
+            type: "number",
+            number_unit: "seconds"
         },
         mouseover_open_behavior: {
             name: "Mouseover popup action",
@@ -27397,7 +27412,7 @@ var $$IMU_EXPORT$$;
 
             infobox_timer = setTimeout(function() {
                 document.body.removeChild(div);
-            }, 6000);
+            }, 7000);
         };
 
         if (document.hasFocus()) {
@@ -27427,6 +27442,41 @@ var $$IMU_EXPORT$$;
         }
 
         return null;
+    };
+
+    var get_trigger_key_text = function(list) {
+        list = list.sort(function(a, b) {
+            if (a === b)
+                return 0;
+
+            if (a === "ctrl")
+                return -1;
+            if (b === "ctrl")
+                return 1;
+            if (a === "shift")
+                return -1;
+            if (b === "shift")
+                return 1;
+            if (a === "super")
+                return -1;
+            if (b === "super")
+                return 1;
+            if (a === "alt")
+                return -1;
+            if (b === "alt")
+                return 1;
+            if (a < b)
+                return -1;
+            if (b > a)
+                return 1;
+        });
+
+        var newlist = [];
+        for (var i = 0; i < list.length; i++) {
+            newlist.push(list[i].charAt(0).toUpperCase() + list[i].slice(1));
+        }
+
+        return newlist.join("+");
     };
 
     var check_image = function(obj, err_cb, ok_cb) {
@@ -27459,11 +27509,16 @@ var $$IMU_EXPORT$$;
             }
 
             var mouseover_text = function(reason) {
-                var mouseover = settings.mouseover_trigger.join(", ");
-                if (!settings.mouseover)
+                var mouseover;
+                if (!settings.mouseover) {
                     mouseover = "disabled";
+                } else if (settings.mouseover_trigger_behavior === "keyboard") {
+                    mouseover = get_trigger_key_text(settings.mouseover_trigger_key);
+                } else if (settings.mouseover_trigger_behavior === "mouse") {
+                    mouseover = "delay " + settings.mouseover_trigger_delay + "s";
+                }
 
-                show_image_infobox("Mouseover (<a style='color:blue; font-weight:bold' href='" + options_page + "' target='_blank'>" + mouseover + "</a>) is needed to display the original version (" + reason + ")");
+                show_image_infobox("Mouseover popup (<a style='color:blue; font-weight:bold' href='" + options_page + "' target='_blank'>" + mouseover + "</a>) is needed to display the original version (" + reason + ")");
             };
 
             if (!_nir_debug_ || !_nir_debug_.no_request) {
@@ -27682,7 +27737,89 @@ var $$IMU_EXPORT$$;
         }
     }
 
+    function get_keystrs_map(event, value) {
+        var keys = {};
+
+        if (event.ctrlKey) {
+            keys.ctrl = true;
+        } else {
+            keys.ctrl = false;
+        }
+
+        if (event.metaKey) {
+            keys["super"] = true;
+        } else {
+            keys["super"] = false;
+        }
+
+        if (event.altKey) {
+            keys.alt = true;
+        } else {
+            keys.alt = false;
+        }
+
+        if (event.shiftKey) {
+            keys.shift = true;
+        } else {
+            keys.shift = false;
+        }
+
+        var str = keycode_to_str(event.which);
+        if (str === undefined) {
+            return keys;
+        }
+
+        keys[str] = value;
+        return keys;
+    }
+
     function do_options() {
+        var recording_keys = false;
+        var options_chord = [];
+        var current_options_chord = [];
+
+        function update_options_chord(event, value) {
+            if (!recording_keys)
+                return;
+
+            var map = get_keystrs_map(event, value);
+
+            if (keycode_to_str(event.which) &&
+                current_options_chord.length === 0) {
+                options_chord = [];
+            }
+
+            for (var key in map) {
+                update_options_chord_sub(key, map[key]);
+            }
+
+            recording_keys();
+        }
+
+        function update_options_chord_sub(str, value) {
+            if (value) {
+                if (options_chord.indexOf(str) < 0) {
+                    options_chord.push(str);
+                }
+
+                if (current_options_chord.indexOf(str) < 0) {
+                    current_options_chord.push(str);
+                }
+            } else {
+                if (current_options_chord.indexOf(str) >= 0) {
+                    current_options_chord.splice(current_options_chord.indexOf(str), 1);
+                }
+            }
+        }
+
+        document.addEventListener('keydown', function(event) {
+            update_options_chord(event, true);
+        });
+
+        document.addEventListener('keyup', function(event) {
+            update_options_chord(event, false);
+        });
+
         var options_el = document.getElementById("options");
 
         if (!is_extension_options_page)
@@ -27744,6 +27881,10 @@ var $$IMU_EXPORT$$;
         for (var setting in settings) {
             (function(setting) {
                 var meta = settings_meta[setting];
+                if (!meta) {
+                    return;
+                }
+
                 var value = settings[setting];
                 var orig_value = orig_settings[setting];
 
@@ -27811,8 +27952,10 @@ var $$IMU_EXPORT$$;
                         check_optionlist(value, option_list);
                     }
                 } else if (meta.type) {
-                    if (meta.type === "textarea")
-                        type = "textarea";
+                    if (meta.type === "textarea" ||
+                        meta.type === "keysequence" ||
+                        meta.type === "number")
+                        type = meta.type
                 }
 
                 if (type === "options") {
@@ -27979,6 +28122,77 @@ var $$IMU_EXPORT$$;
                     sub.appendChild(sub_button_tr);
 
                     value_td.appendChild(sub);
+                } else if (type === "number") {
+                    var sub = document.createElement("table");
+                    var sub_tr = document.createElement("tr");
+                    var sub_in_td = document.createElement("td");
+                    var input = document.createElement("input");
+                    input.type = "number";
+                    input.style = "text-align:right";
+                    if (value)
+                        input.value = value;
+                    input.oninput = function(x) {
+                        var value = parseFloat(input.value);
+
+                        if (isNaN(value))
+                            return;
+
+                        set_value(setting, value);
+                        settings[setting] = value;
+
+                        show_saved_message();
+                    }
+                    var sub_units_td = document.createElement("td");
+                    sub_units_td.innerHTML = meta.number_unit;
+
+                    sub_tr.appendChild(input);
+                    sub_tr.appendChild(sub_units_td);
+                    sub.appendChild(sub_tr);
+                    value_td.appendChild(sub);
+                } else if (type === "keysequence") {
+                    var sub = document.createElement("table");
+                    var sub_tr = document.createElement("tr");
+                    var sub_key_td = document.createElement("td");
+                    if (value) {
+                        sub_key_td.innerHTML = get_trigger_key_text(value);
+                    }
+                    var sub_record_td = document.createElement("td");
+                    var sub_record_btn = document.createElement("button");
+                    sub_record_btn.innerHTML = "Record";
+                    var sub_cancel_btn = document.createElement("button");
+                    sub_cancel_btn.innerHTML = "Cancel";
+                    sub_cancel_btn.style = "display:none";
+                    var do_cancel = function() {
+                        recording_keys = false;
+                        sub_record_btn.innerHTML = "Record";
+                        sub_cancel_btn.style = "display:none";
+                        sub_key_td.innerHTML = get_trigger_key_text(settings[setting]);
+                    };
+                    sub_cancel_btn.onclick = do_cancel;
+                    sub_record_btn.onclick = function() {
+                        if (recording_keys) {
+                            set_value(setting, options_chord);
+                            settings[setting] = options_chord;
+
+                            show_saved_message();
+                            do_cancel();
+                        } else {
+                            options_chord = [];
+                            current_options_chord = [];
+                            recording_keys = function() {
+                                sub_key_td.innerHTML = get_trigger_key_text(options_chord);
+                            };
+                            sub_record_btn.innerHTML = "Save";
+                            sub_cancel_btn.style = "display:inline-block";
+                        }
+                    };
+
+                    sub_tr.appendChild(sub_key_td);
+                    sub_record_td.appendChild(sub_record_btn);
+                    sub_record_td.appendChild(sub_cancel_btn);
+                    sub_tr.appendChild(sub_record_td);
+                    sub.appendChild(sub_tr);
+                    value_td.appendChild(sub);
                 }
 
                 tr.appendChild(value_td);
@@ -28034,6 +28248,58 @@ var $$IMU_EXPORT$$;
         }
     }
 
+    function update_setting(key, value) {
+        settings[key] = value;
+        set_value(key, value);
+    }
+
+    function upgrade_settings(cb) {
+        // TODO: merge this get_value in do_config for performance
+        get_value("settings_version", function(version) {
+            if (!version) {
+                version = 0;
+            } else if (typeof version !== "number") {
+                version = parseInt(version);
+                if (isNaN(version))
+                    version = 0;
+            }
+
+            if (version === 0) {
+                if (settings.mouseover_trigger) {
+                    var trigger_keys = [];
+                    for (var i = 0; i < settings.mouseover_trigger.length; i++) {
+                        var trigger = settings.mouseover_trigger[i];
+                        if (trigger.match(/^delay_[0-9]+/)) {
+                            var delay = parseInt(settings.mouseover_trigger[i].replace(/^delay_([0-9]+).*?$/, "$1"));
+                            if (delay <= 0 || isNaN(delay))
+                                delay = false;
+                            if (typeof delay === "number" && delay >= 10)
+                                delay = 10;
+                            update_setting("mouseover_trigger_delay", delay);
+                            continue;
+                        }
+
+                        trigger_keys.push(trigger);
+                    }
+
+
+
+                    if (trigger_keys.length === 0) {
+                        update_setting("mouseover_trigger_key", orig_settings["mouseover_trigger_key"]);
+                        update_setting("mouseover_trigger_behavior", "mouse");
+                    } else {
+                        update_setting("mouseover_trigger_key", trigger_keys);
+                        update_setting("mouseover_trigger_behavior", "keyboard");
+                    }
+                }
+
+                update_setting("settings_version", 1);
+            }
+
+            cb();
+        });
+    }
+
     function do_config() {
         if (is_userscript || is_extension) {
             var settings_done = 0;
@@ -28041,10 +28307,14 @@ var $$IMU_EXPORT$$;
                 (function(setting) {
                     get_value(setting, function(value) {
                         settings_done++;
-                        if (value !== undefined)
+                        if (value !== undefined) {
+                            if (typeof settings[setting] === "number") {
+                                value = parseFloat(value);
+                            }
                             settings[setting] = value;
+                        }
                         if (settings_done >= Object.keys(settings).length)
-                            start();
+                            upgrade_settings(start);
                     });
                 })(setting);
             }
@@ -28161,6 +28431,91 @@ var $$IMU_EXPORT$$;
         });
     }
 
+    var str_to_keycode_table = {
+        backspace: 8,
+        enter: 13,
+        shift: 16,
+        ctrl: 17,
+        alt: 19,
+        space: 32,
+        left: 37,
+        up: 38,
+        right: 39,
+        down: 40,
+        "super": 91,
+        ";": 186,
+        "=": 187,
+        ",": 188,
+        "-": 189,
+        ".": 190,
+        "/": 191,
+        "`": 192,
+        "[": 219,
+        "\\": 220,
+        "]": 221,
+        "'": 222
+    };
+
+    var keycode_to_str_table = {
+        8: "backspace",
+        13: "enter",
+        16: "shift",
+        17: "ctrl",
+        18: "alt",
+        32: "space",
+
+        37: "left",
+        38: "up",
+        39: "right",
+        40: "down",
+
+        91: "super",
+
+        // numpad
+        111: "/",
+        106: "*",
+        107: "+",
+        109: "-",
+        110: ".",
+
+        186: ";",
+        187: "=",
+        188: ",",
+        189: "-",
+        190: ".",
+        191: "/",
+        192: "`",
+        219: "[",
+        220: "\\",
+        221: "]",
+        222: "'"
+    };
+
+    function keycode_to_str(x) {
+        if (x in keycode_to_str_table) {
+            return keycode_to_str_table[x];
+        }
+
+        // lowercase
+        if (x >= 96 && x <= 105) {
+            x -= 45;
+        }
+        if (!(x >= 65 && x <= 90 ||
+              // numbers
+              x >= 48 && x <= 57)) {
+            return;
+        }
+
+        return String.fromCharCode(x).toLowerCase();
+    }
+
+    function str_to_keycode(x) {
+        if (x in str_to_keycode_table) {
+            return str_to_keycode_table[x];
+        }
+        return x.toUpperCase().charCodeAt(0);
+    }
+
     function do_mouseover() {
         var mouseX = 0;
         var mouseY = 0;
@@ -28182,18 +28537,6 @@ var $$IMU_EXPORT$$;
 
         var waitingel = null;
         var waitingsize = 200;
-
-        var str_to_keycode = {
-            shift: 16,
-            ctrl: 17,
-            alt: 19
-        };
-
-        var keycode_to_str = {
-            16: "shift",
-            17: "ctrl",
-            18: "alt"
-        };
 
         var current_chord = [];
 
@@ -29163,67 +29506,77 @@ var $$IMU_EXPORT$$;
             return null;
         }
 
-        function normalize_trigger() {
+        /*function normalize_trigger() {
             if (!(settings.mouseover_trigger instanceof Array)) {
                 settings.mouseover_trigger = [settings.mouseover_trigger];
             }
         }
 
-        normalize_trigger();
+        normalize_trigger();*/
 
-        for (var i = 0; i < settings.mouseover_trigger.length; i++) {
-            if (settings.mouseover_trigger[i].match(/^delay_[0-9]+/)) {
-                delay = parseInt(settings.mouseover_trigger[i].replace(/^delay_([0-9]+).*?$/, "$1"));
-                if (delay <= 0 || isNaN(delay))
-                    delay = false;
-                if (typeof delay === "number" && delay >= 10)
-                    delay = 10;
-                break;
-            } else {
-                delay_mouseonly = false;
-            }
+        delay = settings.mouseover_trigger_delay;
+        if (delay <= 0 || isNaN(delay))
+            delay = false;
+        if (typeof delay === "number" && delay >= 10)
+            delay = 10;
+
+        if (settings.mouseover_trigger_behavior === "mouse") {
+            delay_mouseonly = true;
+        } else {
+            delay = false;
+            delay_mouseonly = false;
+        }
+
+        function keystr_in_trigger(str) {
+            return settings.mouseover_trigger_key.indexOf(str) >= 0;
         }
 
         function key_in_trigger(key) {
-            if (!(key in keycode_to_str))
+            var str = keycode_to_str(key);
+            if (str === undefined)
                 return false;
 
-            return settings.mouseover_trigger.indexOf(keycode_to_str[key]) >= 0;
+            return keystr_in_trigger(str);
         }
 
-        function set_chord(key, value) {
-            if (!key_in_trigger(key))
-                return false;
-
-            var str = keycode_to_str[key];
-
+        function set_chord_sub(str, value) {
             if (value) {
                 if (current_chord.indexOf(str) < 0) {
                     current_chord.push(str);
+                    //console_log("+" + str);
+                    return true;
                 }
             } else {
                 if (current_chord.indexOf(str) >= 0) {
                     current_chord.splice(current_chord.indexOf(str), 1);
+                    //console_log("-" + str);
+                    return true;
                 }
             }
 
-            return true;
+            return false;
+        }
+
+        function set_chord(e, value) {
+            var map = get_keystrs_map(e, value)
+
+            var changed = false;
+            for (var key in map) {
+                if (!keystr_in_trigger(key))
+                    continue;
+
+                if (set_chord_sub(key, map[key]))
+                    changed = true;
+            }
+
+            return changed;
         }
 
         function trigger_complete(e) {
-            for (var i = 0; i < settings.mouseover_trigger.length; i++) {
-                var key = settings.mouseover_trigger[i];
+            for (var i = 0; i < settings.mouseover_trigger_key.length; i++) {
+                var key = settings.mouseover_trigger_key[i];
 
-                /*if (current_chord.indexOf(key) < 0)
-                    return false;*/
-
-                if (key === "ctrl" && !e.ctrlKey)
-                    return false;
-
-                if (key === "shift" && !e.shiftKey)
-                    return false;
-
-                if (key === "alt" && !e.altKey)
+                if (current_chord.indexOf(key) < 0)
                     return false;
             }
 
@@ -29231,19 +29584,10 @@ var $$IMU_EXPORT$$;
         }
 
         function trigger_partially_complete(e) {
-            for (var i = 0; i < settings.mouseover_trigger.length; i++) {
-                var key = settings.mouseover_trigger[i];
+            for (var i = 0; i < settings.mouseover_trigger_key.length; i++) {
+                var key = settings.mouseover_trigger_key[i];
 
-                /*if (current_chord.indexOf(key) < 0)
-                    return false;*/
-
-                if (key === "ctrl" && e.ctrlKey)
-                    return true;
-
-                if (key === "shift" && e.shiftKey)
-                    return true;
-
-                if (key === "alt" && e.altKey)
+                if (current_chord.indexOf(key) >= 0)
                     return true;
             }
 
@@ -29406,7 +29750,7 @@ var $$IMU_EXPORT$$;
         }
 
         document.addEventListener('keydown', function(event) {
-            if (set_chord(event.which, true)) {
+            if (set_chord(event, true)) {
                 if (trigger_complete(event) && !popups_active) {
                     if (!delay_handle)
                         trigger_popup();
@@ -29461,7 +29805,7 @@ var $$IMU_EXPORT$$;
         });
 
         document.addEventListener('keyup', function(event) {
-            var condition = set_chord(event.which);
+            var condition = set_chord(event, false);
 
             var close_behavior = get_close_behavior();
             if (condition && close_behavior === "all") {

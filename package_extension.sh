@@ -15,6 +15,8 @@ if [ "$USERVERSION" != "$MANIFESTVERSION" ]; then
     exit 1
 fi
 
+cp site/style.css extension/options.css
+
 rm extension.xpi
 zip -r extension.xpi manifest.json userscript.user.js extension -x "*~"
 
