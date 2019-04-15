@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.8.25
+// @version      0.8.26
 // @description  Finds larger or original versions of images for 3800+ websites
 // @author       qsniyg
 // @homepageURL  https://qsniyg.github.io/maxurl/options.html
@@ -2909,12 +2909,47 @@ var $$IMU_EXPORT$$;
             domain.match(/^static[0-9]*\.squarespace\.com/)) {
             // https://static1.squarespace.com/static/56e08f834c2f850f604de326/5aa3c6d141920255c00dfa67/5aa3c705652dea7e55277e8f/1520682759079/POR_Stylist_Letitia+Wright_1.jpg?format=500w
             //   https://static1.squarespace.com/static/56e08f834c2f850f604de326/5aa3c6d141920255c00dfa67/5aa3c705652dea7e55277e8f/1520682759079/POR_Stylist_Letitia+Wright_1.jpg?format=original
-            newsrc = src.replace(/(\?[^/]*)?$/, "?format=original");
+            newsrc = src.replace(/(?:\?.*)?$/, "?format=original");
             if (newsrc !== src)
                 return {
                     url: newsrc,
                     head_wrong_contentlength: true
                 };
+        }
+
+        if (domain === "images.squarespace-cdn.com") {
+            // thanks to Lerortle on greasyfork
+            // original & 2500w don't work
+            // https://images.squarespace-cdn.com/content/5af7497355b02c256beb398f/1554588539422-SOGLCVARD0WFVBETEVV2/JM2_0214.jpg?format=500w&content-type=image%2Fjpeg
+            //   https://images.squarespace-cdn.com/content/5af7497355b02c256beb398f/1554588539422-SOGLCVARD0WFVBETEVV2/JM2_0214.jpg?content-type=image%2Fjpeg
+            //
+            // no format doesn't work
+            // https://images.squarespace-cdn.com/content/5af7497355b02c256beb398f/1554588547904-N1RMALTJ0CDMXDDMEZL6/CF039538+v2+CU+copy.jpg?format=1000w&content-type=image%2Fjpeg
+            //   https://images.squarespace-cdn.com/content/5af7497355b02c256beb398f/1554588547904-N1RMALTJ0CDMXDDMEZL6/CF039538+v2+CU+copy.jpg?format=2500w&content-type=image%2Fjpeg
+            //
+            // https://images.squarespace-cdn.com/content/5ad803f6f8370ac56e54a302/1554142468529-R05GL9RO9KSTOOTTT21Y/500w?content-type=image%2Fjpeg
+            //   https://images.squarespace-cdn.com/content/5ad803f6f8370ac56e54a302/1554142468529-R05GL9RO9KSTOOTTT21Y?content-type=image%2Fjpeg
+
+            var contenttype = url.searchParams.get("content-type");
+            var append = "";
+            if (contenttype) {
+                append = "content-type=" + encodeURIComponent(decodeURIComponent(contenttype));
+            } else {
+                append = "";
+            }
+
+            var aappend = append ? "&" + append : "";
+            var qappend = append ? "?" + append : "";
+
+            newsrc = src
+                .replace(/\?.*/, "")
+                .replace(/\/+[0-9]+w$/, "");
+
+            return [
+                newsrc + "?format=original" + aappend,
+                newsrc + "?format=2500w" + aappend,
+                newsrc + qappend
+            ];
         }
 
         // /wp/uploads:
@@ -4718,7 +4753,13 @@ var $$IMU_EXPORT$$;
         if (domain === "images.bwwstatic.com") {
             // https://images.bwwstatic.com/upload/44785/tn-500_(23).jpg
             //   https://images.bwwstatic.com/upload/44785/(23).jpg
-            return src.replace(/\/tn-[0-9]+_([^/]*)$/, "/$1");
+            // https://images.bwwstatic.com/columnpic10/x170BDEF933D-7AF0-441D-B4212BE606623B0E.jpg.pagespeed.ic.fsaymxZU7N.jpg
+            //   https://images.bwwstatic.com/columnpic10/BDEF933D-7AF0-441D-B4212BE606623B0E.jpg
+            // https://images.bwwstatic.com/columnpic10/155x64x170ACAF3A86-10F8-4C49-A5A20BCB3E5870DD.jpg.pagespeed.ic.XjIWMZEHy2.jpg
+            //   https://images.bwwstatic.com/columnpic10/ACAF3A86-10F8-4C49-A5A20BCB3E5870DD.jpg
+            return src
+                .replace(/\/tn-[0-9]+_([^/]*)$/, "/$1")
+                .replace(/\/(?:[0-9]+)?x(?:[0-9]*)(?:x[0-9]+)?([^/]*)\.pagespeed\.[^/]*(?:[?#].*)?$/, "/$1");
         }
 
         if (domain.indexOf("img.rasset.ie") >= 0 && false) {
