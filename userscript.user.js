@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.8.27
+// @version      0.8.28
 // @description  Finds larger or original versions of images for 3900+ websites
 // @author       qsniyg
 // @homepageURL  https://qsniyg.github.io/maxurl/options.html
@@ -1402,6 +1402,16 @@ var $$IMU_EXPORT$$;
             domain_nowww === "kntimes.co.kr" ||
             // http://www.senmedia.kr/news/thumbnail/201709/2842_2729_2543_v150.jpg
             domain_nowww === "senmedia.kr" ||
+            // http://www.siminilbo.co.kr/news/thumbnail/201904/617941_158117_436_v150.jpg
+            domain_nowww === "siminilbo.co.kr" ||
+            // http://www.sisafocus.co.kr/news/thumbnail/201904/207963_245791_2137_v150.jpg
+            domain_nowww === "sisafocus.co.kr" ||
+            // http://www.futurekorea.co.kr/news/thumbnail/201904/116934_117354_5130_v150.jpg
+            domain_nowww === "futurekorea.co.kr" ||
+            // http://www.dailygrid.net/news/thumbnail/201904/216463_115815_96_v150.jpg
+            domain_nowww === "dailygrid.net" ||
+            // http://www.datanet.co.kr/news/thumbnail/201904/133154_58977_577_v150.jpg
+            domain_nowww === "datanet.co.kr" ||
             // http://www.newstown.co.kr/news/thumbnail/201801/311251_198441_4816_v150.jpg
             domain_nowww === "newstown.co.kr") {
             return add_extensions_upper_jpeg(src
@@ -1544,6 +1554,14 @@ var $$IMU_EXPORT$$;
             (domain_nosub === "iwinv.net" &&
              domain.match(/inews24\.(?:ext[0-9]+\.)?cache\.iwinv\.net/))) {
             return src.replace("/thumbnail/", "/");
+        }
+
+        if (domain === "img.xml.inews24.com") {
+            // http://img.xml.inews24.com/x289/image_joy/201904/155576283786_1_212113.jpg
+            //   http://image.inews24.com/image_joy/201904/155576283786_1_212113.jpg
+            // http://img.xml.inews24.com/200x200/image_joy/thumbnail/201904/1554893184953_2_203020.jpg
+            //   http://image.inews24.com/image_joy/201904/1554893184953_2_203020.jpg
+            return src.replace(/:\/\/[^/]*\/(?:[0-9]+)?x[0-9]+\/+/, "://image.inews24.com/");
         }
 
         if (domain === "image-gd.inews24.com") {
@@ -1835,7 +1853,9 @@ var $$IMU_EXPORT$$;
             domain.match(/^img[0-9]*\.sbs\.co\.kr/)) {
             // http://img.sbs.co.kr/sbscnbc/upload/2017/11/06/10000590366_700.jpg
             //   http://img.sbs.co.kr/sbscnbc/upload/2017/11/06/10000590366.jpg
-            newsrc = src.replace(/(\/[0-9]+)_[0-9]+\.([a-z0-9A-Z]*)$/, "$1.$2");
+            // https://img.sbs.co.kr/newsnet/etv/upload/2019/04/21/30000626551_16v9.jpg
+            //   https://img.sbs.co.kr/newsnet/etv/upload/2019/04/21/30000626551.jpg
+            newsrc = src.replace(/(\/[0-9]+)_[0-9v]+\.([a-z0-9A-Z]*)$/, "$1.$2");
             if (newsrc !== src)
                 return newsrc;
 
@@ -4022,6 +4042,10 @@ var $$IMU_EXPORT$$;
             amazon_container === "assets.whatson.cityofsydney.nsw.gov.au" ||
             // http://static.hasselblad.com/2017/04/HH_7-792x1000.jpg
             domain === "static.hasselblad.com" ||
+            // https://saywho.fr/app/uploads/2018/06/NinaRicci00880-768x1151.jpg
+            (domain_nowww === "saywho.fr" && src.indexOf("/app/uploads/") >= 0) ||
+            // https://talentandpartner.com/data/uploads/2016/12/1216-MX-FT_CoverStoryBarbaraPalvin-2-497x600.jpg
+            (domain_nowww === "talentandpartner.com" && src.indexOf("/data/uploads/") >= 0) ||
             // https://1.soompi.io/wp-content/blogs.dir/8/files/2015/09/HA-TFELT-Wonder-Girls-590x730.jpg -- doesn't work
             // https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2018/01/GTA-6-Female-Protag-796x417.jpg -- does work
             src.indexOf("/wp-content/blogs.dir/") >= 0 ||
@@ -7632,7 +7656,12 @@ var $$IMU_EXPORT$$;
             return src.replace(/_[A-Z](?:[0-9]){0,2}(\.[^/.]*)$/, "$1");
         }
 
-        if (domain === "img.yonhapnews.co.kr") {
+        if (domain === "img.yonhapnews.co.kr" ||
+            // http://vmg.yonhapnews.co.kr/etc/inner/KR/2015/08/20/AKR20150820090700005_01_i_P4.jpg
+            domain === "vmg.yonhapnews.co.kr" ||
+            // https://img2.yna.co.kr/etc/inner/KR/2018/12/07/AKR20181207074000005_01_i_P2.jpg
+            //   https://img2.yna.co.kr/etc/inner/KR/2018/12/07/AKR20181207074000005_01_i.jpg -- no difference
+            (domain_nosub === "yna.co.kr" && domain.match(/^img[0-9]*\./))) {
             // http://img.yonhapnews.co.kr/photo/yna/YH/2017/12/30/PYH2017123017200001300_P1.jpg
             //   http://img.yonhapnews.co.kr/photo/yna/YH/2017/12/30/PYH2017123017200001300_P4.jpg
             // http://img.yonhapnews.co.kr/etc/graphic/YH/2017/10/25/GYH2017102500160004400.jpg
@@ -7641,7 +7670,10 @@ var $$IMU_EXPORT$$;
             // http://img.yonhapnews.co.kr/etc/inner/KR/2017/04/28/AKR20170428061900017_01_i.jpg
             // http://img.yonhapnews.co.kr/mpic/YH/2018/02/23/MYH20180223017200038.jpg (1920x1080)
             // http://img.yonhapnews.co.kr/etc/inner/KR/2016/11/03/AKR20161103119100061_01_i.jpg (3810x2704)
-            return src.replace(/(\/PYH[^/_.]*)_[^/.]*(\.[^/.]*)$/, "$1_P4$2");
+            // returns 400 even if it exists
+            return src
+                .replace(/(\/PYH[^/_.]*)_[^/.]*(\.[^/.]*)$/, "$1_P4$2")
+                .replace(/(\/AKR[^/_.]*_[0-9]+_i)_[^/.]*(\.[^/.]*)$/, "$1$2");
         }
 
         if (domain_nosub === "yonhapnews.co.kr" && domain.match(/big[0-9]*\.yonhapnews\.co\.kr/)) {
@@ -10307,6 +10339,8 @@ var $$IMU_EXPORT$$;
             domain === "images.superimg.com" ||
             // https://ultraimg.com/images/insta0209c2fd.md.gif
             (domain_nowww === "ultraimg.com" && src.indexOf("/images/") >= 0) ||
+            // https://celebfeetpics.com/images/Barbara-Palvins-Feet-474354c407ad489c4.md.jpg
+            (domain_nowww === "celebfeetpics.com" && src.indexOf("/images/") >= 0) ||
             // http://image-bugs.com/images/2017/09/09/CelebsFlash.com_NP_Harpers_Bazaar_090817__3_.md.jpg
             domain_nowww === "image-bugs.com") {
             // http://imgmax.com/images/2017/03/20/0OQhE.th.jpg
@@ -14274,7 +14308,15 @@ var $$IMU_EXPORT$$;
             domain === "cdn.realitytvworld.com") {
             // https://cdn.realitytvworld.com/images/heads/gen/embedded/1064843-s.jpg
             //   https://cdn.realitytvworld.com/images/heads/gen/embedded/1064843-l.jpg
-            return src.replace(/(\/heads\/gen\/embedded\/[0-9]+)-[a-z](\.[^/.]*)$/, "$1-l$2");
+            // https://cdn.realitytvworld.com/images/heads/gen/embedded/1053738-l.jpg -- 1200x1800, slightly desaturated
+            //   https://cdn.realitytvworld.com/images/heads/gen/embedded/1053738-a.jpg -- 2000x3000
+            // https://cdn.realitytvworld.com/images/heads/gen/embedded/1070430-a.jpg -- 1080x1350
+            //   https://cdn.realitytvworld.com/images/heads/gen/embedded/1070430-l.jpg -- 1200x1500, looks upscaled
+            var regex = /(\/heads\/gen\/embedded\/[0-9]+)-[a-z](\.[^/.]*)$/;
+            return [
+                src.replace(regex, "$1-a$2"),
+                src.replace(regex, "$1-l$2")
+            ];
         }
 
         if (domain === "video.newsserve.net" ||
@@ -17855,13 +17897,6 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/thumbs\//, "/picsup/");
         }
 
-        if (domain === "picstatio.com") {
-            // https://picstatio.com/thumb/kmuj1w/beautiful-actress-model-Margot-Robbie.jpg
-            //   https://picstatio.com/large/kmuj1w/beautiful-actress-model-Margot-Robbie.jpg
-            //   https://picstatio.com/u/kmuj1w/beautiful-actress-model-Margot-Robbie.jpg
-            return src.replace(/(:\/\/[^/]*\/)(?:thumb|large)\//, "$1u/");
-        }
-
         if (domain === "www.wallpapermaiden.com") {
             // http://www.wallpapermaiden.com/image/2017/06/17/model-brown-eyes-short-hair-earring-face-portrait-girls-16379-resized.jpg
             //   http://www.wallpapermaiden.com/image/2017/06/17/model-brown-eyes-short-hair-earring-face-portrait-girls-16379.jpg
@@ -19292,9 +19327,12 @@ var $$IMU_EXPORT$$;
             return src.replace(/(\/photos\/[^/]+\/)thumb\//, "$1");
         }
 
-        if (domain === "media.fashionnetwork.com") {
+        if (domain_nosub === "fashionnetwork.com" &&
+            domain.match(/^(?:[a-z]+\.)?media\./)) {
             // http://media.fashionnetwork.com/m/2884/966d/1620/d702/c1de/b152/ad09/33fa/3832/bc32/487x272.72/bc32.jpg
             //   http://media.fashionnetwork.com/m/2884/966d/1620/d702/c1de/b152/ad09/33fa/3832/bc32/bc32.jpg
+            // https://us.media.fashionnetwork.com/m/a9de/9ded/bf23/9609/2056/ccb9/3cc4/9940/cd0e/6956/650x1019.60/6956.jpg
+            //   https://us.media.fashionnetwork.com/m/a9de/9ded/bf23/9609/2056/ccb9/3cc4/9940/cd0e/6956/6956.jpg
             return src.replace(/(\/[a-f0-9]+\/)[0-9]+x[0-9]+\.[0-9]+\/([a-f0-9]+\.[^/.]*)$/, "$1$2");
         }
 
@@ -23484,14 +23522,22 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/[a-z]+_([0-9]+_image\.[^/.]*)$/, "/$1");
         }
 
-        if (domain_nowww === "wallpapersmug.com") {
+        if (domain_nowww === "wallpapersmug.com" ||
+            // https://picstatio.com/wallpaper/download/1600x900/barbara-palvin-cute-face--m3kz3
+            // https://picstatio.com/download/1600x900/-m3kz3/barbara-palvin-cute-face.jpg
+            //   https://picstatio.com/u/-m3kz3/barbara-palvin-cute-face.jpg
+            // https://picstatio.com/thumb/kmuj1w/beautiful-actress-model-Margot-Robbie.jpg
+            //   https://picstatio.com/large/kmuj1w/beautiful-actress-model-Margot-Robbie.jpg
+            //   https://picstatio.com/u/kmuj1w/beautiful-actress-model-Margot-Robbie.jpg
+            domain_nowww === "picstatio.com") {
             // https://wallpapersmug.com/download/1224x1224/78d9e0/alejandra-guilmant-5k.jpg
             //   https://wallpapersmug.com/u/78d9e0/alejandra-guilmant-5k.jpg
             // https://wallpapersmug.com/thumb/b56a09/camila-queiroz-beautiful-celebrity.jpg
             //   https://wallpapersmug.com/u/b56a09/camila-queiroz-beautiful-celebrity.jpg
             // https://wallpapersmug.com/large/912787/barbara-palvin-cute-smiling.jpg
             //   https://wallpapersmug.com/u/912787/barbara-palvin-cute-smiling.jpg
-            return src.replace(/(?:\/download\/[0-9]+x[0-9]+\/|\/(?:thumb|large)\/)([0-9a-f]+\/[^/]*)$/, "/u/$1");
+            return src.replace(/\/(?:download\/+[0-9]+x[0-9]+|(?:thumb|large))\/+([-0-9a-z]+\/+[^/]*)(?:[?#].*)?$/, "/u/$1");
+            //return src.replace(/(:\/\/[^/]*\/)(?:thumb|large)\//, "$1u/");
         }
 
         if (domain === "cp12.nevsepic.com.ua") {
@@ -25175,6 +25221,8 @@ var $$IMU_EXPORT$$;
             //   https://i.photographers.ua/images/pictures/16586/627341rab.jpg
             // https://i.photographers.ua/thumbnails/users/16586/75xya_kvadrat_mal.jpg
             //   https://i.photographers.ua/images/users/16586/ya_kvadrat_mal.jpg
+            // doesn't work for lenta:
+            // https://i.photographers.ua/thumbnails/lenta/214/640x68214.jpg
             return src.replace(/\/thumbnails\/+((?:pictures|users)\/+[0-9]+)\/+[0-9]+x([^/.]*\.[^/.]*)(?:[?#].*)?$/,
                                "/images/$1/$2");
         }
@@ -25182,6 +25230,7 @@ var $$IMU_EXPORT$$;
         if (domain_nowww === "copia-di-arte.com" &&
             src.indexOf("/kunst/") >= 0) {
             // https://www.copia-di-arte.com/kunst/david_dubnitskiy/untitled-8_lo.jpg
+            //   https://www.copia-di-arte.com/kunst/david_dubnitskiy/untitled-8.jpg
             return src.replace(/_lo(\.[^/.]*)(?:[?#].*)?$/, "$1");
         }
 
@@ -26337,6 +26386,33 @@ var $$IMU_EXPORT$$;
             // http://www.themanwiththehat.de/files/attachments/200/k82TZ1l5.jpg
             //   http://www.themanwiththehat.de/files/attachments/k82TZ1l5.jpg
             return src.replace(/\/files\/+attachments\/+[0-9]+\/+/, "/files/attachments/");
+        }
+
+        if (domain_nosub === "motorsport.com" &&
+            domain.match(/^cdn(?:-[0-9]*)?\./)) {
+            // https://cdn-1.motorsport.com/images/mgl/6zlWZOe2/s5/f1-hungarian-gp-2018-barbara-palvin-on-the-grid.jpg
+            //   https://cdn-1.motorsport.com/images/mgl/6zlWZOe2/s9/f1-hungarian-gp-2018-barbara-palvin-on-the-grid.jpg
+            //   https://cdn-1.motorsport.com/images/mgl/6zlWZOe2/s8/f1-hungarian-gp-2018-barbara-palvin-on-the-grid.jpg
+            //   https://cdn-1.motorsport.com/images/mgl/6zlWZOe2/s7/f1-hungarian-gp-2018-barbara-palvin-on-the-grid.jpg -- 960x1440, watermark
+            //   https://cdn-1.motorsport.com/images/mgl/6zlWZOe2/s10/f1-hungarian-gp-2018-barbara-palvin-on-the-grid.jpg -- 960x1440, no watermark
+            return src.replace(/(\/images\/+[^/]*\/+[^/]*\/+)s[5897]\/+/, "$1s10/");
+        }
+
+        if (domain_nowww === "epicwallpapers.com") {
+            // https://epicwallpapers.com/imagecache/thumbnails/48/1080x338.png
+            //   https://epicwallpapers.com/file/48/0x0/crop/
+            // https://epicwallpapers.com/file/48/1920x1080/crop/barbara-palvin-tucking-back-her-hair-with-a-cute-smile.jpg
+            //   https://epicwallpapers.com/file/48/0x0/crop/barbara-palvin-tucking-back-her-hair-with-a-cute-smile.jpg
+            return src
+                .replace(/\/imagecache\/+thumbnails\/+([0-9]+)\/+[0-9]+x[0-9]+\.[^/.]*(?:[?#].*)?$/,
+                         "/file/$1/0x0/crop/")
+                .replace(/(\/file\/+[0-9]+)\/+[0-9]+x[0-9]+\/+crop\/+/, "$1/0x0/crop/");
+        }
+
+        if (domain === "kookbang.dema.mil.kr") {
+            // http://kookbang.dema.mil.kr/newspaper/tmplat/upload/20190419/thumb1/2019041801000427600016221.jpg
+            //   http://kookbang.dema.mil.kr/newspaper/tmplat/upload/20190419/2019041801000427600016221.jpg
+            return src.replace(/(\/upload\/+[0-9]{8}\/+)thumb[0-9]*\/+/, "$1");
         }
 
 
