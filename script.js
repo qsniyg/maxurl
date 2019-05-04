@@ -148,15 +148,24 @@ function set_max(obj) {
 
   var urls = [];
   var waiting = false;
+  var likely_broken = false;
 
   if (obj instanceof Array) {
+    var first_obj = true;
     for (var i = 0; i < obj.length; i++) {
-      if (obj[i].url)
+      if (obj[i].url) {
+        if (first_obj) {
+          likely_broken = obj[i].likely_broken;
+          first_obj = false;
+        }
+
         urls.push(obj[i].url);
+      }
     }
 
-    if (obj.length > 0)
+    if (obj.length > 0) {
       waiting = obj[0].waiting;
+    }
   } else {
     if (obj.url instanceof Array) {
       urls = obj.url;
@@ -167,8 +176,8 @@ function set_max(obj) {
     waiting = obj.waiting;
   }
 
-  if (urls.length === 0 || (urls.length === 1 && !urls[0])) {
-    if (waiting) {
+  if (urls.length === 0 || (urls.length === 1 && !urls[0]) || (waiting && likely_broken)) {
+    if (waiting || likely_broken) {
       maxspanel.innerHTML = "<p>The <a href='https://greasyfork.org/en/scripts/36662-image-max-url'>userscript</a> or <a href='https://addons.mozilla.org/en-US/firefox/addon/image-max-url/'>firefox add-on</a> is needed for this URL.</p><p>It requires a cross-origin request to find the original size.</p>";
       track_ga("userscript_needed");
     } else {
