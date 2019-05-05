@@ -15,15 +15,24 @@ function fuzzify(num) {
   return baseh * 100;
 }
 
-function reqListener () {
-  var response = this.responseText;
+function get_userscript_stats(response) {
   userscript_contents = response;
   response = response
     .replace(/^[\s\S]*function bigimage/, "")
     .replace(/\/\/ *-- *end *bigimage *--[\s\S]*$/, "");
-  document.getElementById("rules").innerHTML = fuzzify(response.match(/\n        if /g).length);
-  //document.getElementById("sites").innerHTML = fuzzify(response.match(/(?:domain[_ ]|[^(]domain\.)/g).length);
-  document.getElementById("sites").innerHTML = fuzzify(response.match(/(?:domain[_ ]|amazon_container|googlestorage_container)/g).length);
+  return [
+    // rules
+    response.match(/\n        if /g).length,
+    // sites
+    response.match(/(?:domain[_ ]|amazon_container|googlestorage_container)/g).length
+  ];
+}
+
+function reqListener() {
+  var response = this.responseText;
+  var stats = get_userscript_stats(response);
+  document.getElementById("rules").innerHTML = fuzzify(stats[0]);
+  document.getElementById("sites").innerHTML = fuzzify(stats[1]);
 }
 
 function get_sites() {
@@ -43,18 +52,29 @@ function get_sites() {
   return siteslist;
 }
 
-var userscript_location = "https://rawgit.com/qsniyg/maxurl/master/userscript.user.js";
 var userscript_contents = null;
+if (typeof document !== "undefined") {
+  var userscript_location = "https://gitcdn.xyz/repo/qsniyg/maxurl/master/userscript.user.js";
 
-var oReq = new XMLHttpRequest();
-oReq.addEventListener("load", reqListener);
-oReq.open("GET", userscript_location);
-oReq.send();
+  var oReq = new XMLHttpRequest();
+  oReq.addEventListener("load", reqListener);
+  oReq.open("GET", userscript_location);
+  oReq.send();
 
-document.onreadystatechange = function() {
-  if (document.readyState !== "complete")
-    return;
+  document.onreadystatechange = function() {
+    if (document.readyState !== "complete")
+      return;
 
-  if (!("google_tag_manager" in window))
-    document.getElementById("analytics-blocked").innerHTML = " but your browser has blocked it.";
-};
+    if (!("google_tag_manager" in window))
+      document.getElementById("analytics-blocked").innerHTML = " but your browser has blocked it.";
+  };
+} else if (typeof require !== undefined) {
+  var fs = require("fs");
+  var data = fs.readFileSync(process.argv[2], {
+    encoding: "utf8"
+  });
+  userscript_contents = data;
+  var stats = get_userscript_stats(data);
+  console.log("Rules: " + stats[0]);
+  console.log("Sites: " + stats[1]);
+}
