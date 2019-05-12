@@ -113,7 +113,8 @@ var $$IMU_EXPORT$$;
         iterations: 200,
         exclude_problems: [
             "watermark",
-            "smaller"
+            "smaller",
+            "possibly_different"
         ],
         include_pastobjs: true,
         force_page: false,
@@ -239,7 +240,8 @@ var $$IMU_EXPORT$$;
         mouseover_styles: "",
         website_image: true,
         allow_watermark: false,
-        allow_smaller: false
+        allow_smaller: false,
+        allow_possibly_different: false
     };
     var orig_settings = deepcopy(settings);
 
@@ -480,12 +482,17 @@ var $$IMU_EXPORT$$;
         allow_smaller: {
             name: "Smaller non-watermarked images",
             description: "Enables rules that return smaller images without watermarks"
+        },
+        allow_possibly_different: {
+            name: "Possibly different images",
+            description: "Enables rules that return images that possibly differ (such as Youtube)"
         }
     };
 
     var option_to_problems = {
         allow_watermark: "watermark",
-        allow_smaller: "smaller"
+        allow_smaller: "smaller",
+        allow_possibly_different: "possibly_different"
     };
 
 
@@ -2873,21 +2880,24 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/[0-9]+x[0-9]+$/, "");
         }
 
-        // disabling because some images are changed
-        if ((domain === "ytimg.googleusercontent.com" ||
+        if (domain === "ytimg.googleusercontent.com" ||
             // https://i.ytimg.com/vi/WLUWOwO2U8c/hqdefault.jpg?sqp=-oaymwEZCPYBEIoBSFXyq4qpAwsIARUAAIhCGAFwAQ==&rs=AOn4CLApoW235ABiHOfyJan0ArZIRsbUOA
              domain === "i.ytimg.com" ||
-             domain === "img.youtube.com") && false) {
+             domain === "img.youtube.com") {
             // doesn't work for some urls:
             // https://i.ytimg.com/vi/o-gVbQHG0Ck/hqdefault.jpg
             //   https://i.ytimg.com/vi/o-gVbQHG0Ck/sddefault.jpg -- different image
             regex = /(\/+vi\/+[^/]*\/+)[a-z]+(\.[^/.?#]*)(?:[?#].*)?$/;
-            return [
+            return fillobj_urls([
                 src.replace(regex, "$1maxresdefault$2"),
                 src.replace(regex, "$1sddefault$2"),
                 src.replace(regex, "$1hqdefault$2"),
                 src.replace(regex, "$1mqdefault$2")
-            ];
+            ], {
+                problems: {
+                    possibly_different: true
+                }
+            });
         }
 
         if (domain === "image.bugsm.co.kr") {
