@@ -222,10 +222,11 @@ var $$IMU_EXPORT$$;
         // thanks to 894-572 on github for the idea
         mouseover_trigger_key: ["shift", "alt", "i"],
         mouseover_trigger_delay: 1,
+        mouseover_ui: true,
         // thanks to blue-lightning on github for the idea
         mouseover_open_behavior: "popup",
         // also thanks to blue-lightning
-        mouseover_close_behavior: "any",
+        mouseover_close_behavior: "esc",
         mouseover_zoom_behavior: "fit",
         mouseover_pan_behavior: "drag",
         mouseover_scroll_behavior: "zoom",
@@ -319,6 +320,10 @@ var $$IMU_EXPORT$$;
             },
             type: "number",
             number_unit: "seconds"
+        },
+        mouseover_ui: {
+            name: "Popup UI",
+            description: "Enables a UI on top of the popup"
         },
         mouseover_open_behavior: {
             name: "Mouseover popup action",
@@ -30308,11 +30313,12 @@ var $$IMU_EXPORT$$;
                     vh = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
                     }*/
                 var viewport = get_viewport();
+                var border_thresh = 15;
                 vw = viewport[0];
                 vh = viewport[1];
 
-                vw -= 10;
-                vh -= 10;
+                vw -= border_thresh * 2;
+                vh -= border_thresh * 2;
                 img.style.all = "initial";
                 img.style.cursor = "pointer";
                 //img.style.display = "block";
@@ -30349,7 +30355,6 @@ var $$IMU_EXPORT$$;
                 var sct = scrollTop();
                 var scl = scrollLeft();
                 sct = scl = 0;
-                var border_thresh = 5;
 
                 var mouseover_position = get_single_setting("mouseover_position");
 
@@ -30365,6 +30370,71 @@ var $$IMU_EXPORT$$;
                   console_log(imgw);
                   console_log(vw - imgw);*/
 
+                var btndown = false;
+                function addbtn(text, title, action) {
+                    var defaultopacity = "0.2";
+
+                    var btn = document.createElement("span");
+                    btn.onclick = function(e) {
+                        e.stopPropagation();
+                        e.stopImmediatePropagation();
+                        action();
+                        return false;
+                    };
+                    btn.onmousedown = function(e) {
+                        btndown = true;
+                    };
+                    btn.onmouseup = function(e) {
+                        btndown = false;
+                    };
+                    btn.onmouseover = function(e) {
+                        btn.style.opacity = "1.0";
+                    };
+                    btn.onmouseout = function(e) {
+                        btn.style.opacity = defaultopacity;
+                    };
+                    btn.style.all = "initial";
+                    btn.style.cursor = "pointer";
+                    btn.style.background = "#333";
+                    btn.style.border = "3px solid white";
+                    btn.style.borderRadius = "10px";
+                    btn.style.color = "white";
+                    btn.style.padding = "4px";
+                    btn.style.lineHeight = "1em";
+                    btn.style.position = "absolute";
+                    btn.style.userSelect = "none";
+                    btn.style.left = "-1em";
+                    btn.style.top = "-1em";
+                    btn.style.opacity = defaultopacity;
+                    btn.innerHTML = text;
+                    btn.title = title;
+                    return btn;
+                }
+
+                if (settings["mouseover_ui"]) {
+                    var closebtn = addbtn("×", "Close (ESC)", function() {
+                        resetpopups();
+                    });
+                    div.appendChild(closebtn);
+
+                    if (wrap_gallery_func(false)) {
+                        var leftbtn = addbtn("←", "Previous (Left Arrow)", function() {
+                            trigger_gallery(false);
+                        });
+                        leftbtn.style.top = "calc(50% - 7px - .5em)";
+                        div.appendChild(leftbtn);
+                    }
+
+                    if (wrap_gallery_func(true)) {
+                        var rightbtn = addbtn("→", "Next (Right Arrow)", function() {
+                            trigger_gallery(true);
+                        });
+                        rightbtn.style.top = "calc(50% - 7px - .5em)";
+                        rightbtn.style.left = "initial";
+                        rightbtn.style.right = "-1em";
+                        div.appendChild(rightbtn);
+                    }
+                }
 
                 var a = document.createElement("a");
                 //a.addEventListener("click", function(e) {
@@ -30392,6 +30462,9 @@ var $$IMU_EXPORT$$;
                     //div.ondrop = estop;
 
                     div.onmousedown = a.onmousedown = function(e) {
+                        if (btndown)
+                            return;
+
                         dragstart = true;
                         dragged = false;
 
@@ -30401,6 +30474,9 @@ var $$IMU_EXPORT$$;
                     };
 
                     img.onmousedown = function(e) {
+                        if (btndown)
+                            return;
+
                         dragstart = true;
                         dragged = false;
 
@@ -31369,6 +31445,46 @@ var $$IMU_EXPORT$$;
             }
         }
 
+        function wrap_gallery_func(nextprev, el) {
+            if (!el)
+                el = popup_el;
+
+            var options = {
+                element: popup_el,
+                host_url: document.location.href
+            };
+
+            var helpers = get_helpers(options);
+            var gallery = get_next_in_gallery;
+
+            if (helpers && helpers.gallery) {
+                gallery = function(el, nextprev) {
+                    var value = helpers.gallery(el, nextprev);
+                    if (value)
+                        return value;
+
+                    return get_next_in_gallery(el, nextprev);
+                };
+            }
+
+            return gallery(el, nextprev);
+        }
+
+        function trigger_gallery(nextprev) {
+            var newel = wrap_gallery_func(nextprev);
+
+            if (newel) {
+                var source = find_source([newel]);
+                if (source) {
+                    trigger_popup_with_source(source, true);
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
         document.addEventListener('keydown', function(event) {
             if (set_chord(event, true)) {
                 if (trigger_complete(event) && !popups_active) {
@@ -31378,40 +31494,14 @@ var $$IMU_EXPORT$$;
             }
 
             if (popups.length > 0 && popup_el) {
-                var newel = null;
                 var ret = undefined;
 
-                var options = {
-                    element: popup_el,
-                    host_url: document.location.href
-                };
-
-                var helpers = get_helpers(options);
-                var gallery = get_next_in_gallery;
-
-                if (helpers && helpers.gallery) {
-                    gallery = function(el, nextprev) {
-                        var value = helpers.gallery(el, nextprev);
-                        if (value)
-                            return value;
-
-                        return get_next_in_gallery(el, nextprev);
-                    };
-                }
-
                 if (event.which === 37) { // left
-                    newel = gallery(popup_el, false);
+                    trigger_gallery(false);
                     ret = false;
                 } else if (event.which === 39) { // right
-                    newel = gallery(popup_el, true);
+                    trigger_gallery(true);
                     ret = false;
-                }
-
-                if (newel) {
-                    var source = find_source([newel]);
-                    if (source) {
-                        trigger_popup_with_source(source, true);
-                    }
                 }
 
                 if (ret === false) {
