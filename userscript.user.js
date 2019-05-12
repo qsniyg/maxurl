@@ -2882,12 +2882,15 @@ var $$IMU_EXPORT$$;
 
         if (domain === "ytimg.googleusercontent.com" ||
             // https://i.ytimg.com/vi/WLUWOwO2U8c/hqdefault.jpg?sqp=-oaymwEZCPYBEIoBSFXyq4qpAwsIARUAAIhCGAFwAQ==&rs=AOn4CLApoW235ABiHOfyJan0ArZIRsbUOA
-             domain === "i.ytimg.com" ||
-             domain === "img.youtube.com") {
+            (domain_nosub === "ytimg.com" && domain.match(/^i[0-9]*\./)) ||
+            domain === "img.youtube.com") {
+            // thanks to speedymaan on github
+            // https://i.ytimg.com/vi/sxItyrp55g8/0.jpg
+            //   https://i.ytimg.com/vi/sxItyrp55g8/maxresdefault.jpg
             // doesn't work for some urls:
             // https://i.ytimg.com/vi/o-gVbQHG0Ck/hqdefault.jpg
             //   https://i.ytimg.com/vi/o-gVbQHG0Ck/sddefault.jpg -- different image
-            regex = /(\/+vi\/+[^/]*\/+)[a-z]+(\.[^/.?#]*)(?:[?#].*)?$/;
+            regex = /(\/+vi\/+[^/]*\/+)(?:[a-z]+|0)(\.[^/.?#]*)(?:[?#].*)?$/;
             return fillobj_urls([
                 src.replace(regex, "$1maxresdefault$2"),
                 src.replace(regex, "$1sddefault$2"),
