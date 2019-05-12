@@ -248,21 +248,24 @@ var $$IMU_EXPORT$$;
     var settings_meta = {
         redirect: {
             name: "Enable redirection",
-            description: "Redirect images opened in their own tab"
+            description: "Redirect images opened in their own tab",
+            category: "redirection"
         },
         redirect_history: {
             name: "Add to history",
             description: "Redirection will add a new entry to the browser's history",
             requires: {
                 redirect: true
-            }
+            },
+            category: "redirection"
         },
         mouseover: {
             name: "Enable mouseover popup",
-            description: "Show a popup with the larger image when you mouseover an image with the trigger key held"
+            description: "Show a popup with the larger image when you mouseover an image with the trigger key held",
+            category: "popup"
         },
         mouseover_trigger: {
-            name: "Mouseover popup trigger",
+            name: "Popup trigger",
             description: "Trigger key that, when held, will show the popup",
             options: {
                 _type: "and",
@@ -290,7 +293,8 @@ var $$IMU_EXPORT$$;
             },
             requires: {
                 mouseover: true
-            }
+            },
+            category: "popup"
         },
         mouseover_trigger_behavior: {
             name: "Mouseover popup trigger",
@@ -304,28 +308,40 @@ var $$IMU_EXPORT$$;
                     name: "Key trigger",
                     description: "Triggers when you press a key sequence when your mouse is over an image"
                 }
-            }
+            },
+            requires: {
+                mouseover: true
+            },
+            category: "popup"
         },
         mouseover_trigger_key: {
             name: "Popup trigger key",
             description: "Key sequence to trigger the popup",
             type: "keysequence",
             requires: {
+                mouseover: true,
                 mouseover_trigger_behavior: "keyboard"
-            }
+            },
+            category: "popup"
         },
         mouseover_trigger_delay: {
             name: "Popup trigger delay",
             description: "Delay (in seconds) before the popup shows",
             requires: {
+                mouseover: true,
                 mouseover_trigger_behavior: "mouse"
             },
             type: "number",
-            number_unit: "seconds"
+            number_unit: "seconds",
+            category: "popup"
         },
         mouseover_ui: {
             name: "Popup UI",
-            description: "Enables a UI on top of the popup"
+            description: "Enables a UI on top of the popup",
+            requires: {
+                mouseover: true
+            },
+            category: "popup"
         },
         mouseover_open_behavior: {
             name: "Mouseover popup action",
@@ -342,7 +358,8 @@ var $$IMU_EXPORT$$;
             },
             requires: {
                 mouseover: true
-            }
+            },
+            category: "popup"
         },
         mouseover_close_behavior: {
             name: "Keep popup open until",
@@ -361,16 +378,17 @@ var $$IMU_EXPORT$$;
                 },
                 _group3: {
                     esc: {
-                        name: "ESC is pressed"
+                        name: "ESC/Close is pressed"
                     }
                 }
             },
             requires: {
                 mouseover: true
-            }
+            },
+            category: "popup"
         },
         mouseover_zoom_behavior: {
-            name: "Popup image zoom",
+            name: "Popup default zoom",
             description: "How the popup should be initially sized",
             options: {
                 _type: "or",
@@ -387,7 +405,8 @@ var $$IMU_EXPORT$$;
             },
             requires: {
                 mouseover: true
-            }
+            },
+            category: "popup"
         },
         mouseover_pan_behavior: {
             name: "Popup panning method",
@@ -405,7 +424,8 @@ var $$IMU_EXPORT$$;
             },
             requires: {
                 mouseover: true
-            }
+            },
+            category: "popup"
         },
         mouseover_scroll_behavior: {
             name: "Popup scroll action",
@@ -424,7 +444,8 @@ var $$IMU_EXPORT$$;
             },
             requires: {
                 mouseover: true
-            }
+            },
+            category: "popup"
         },
         scroll_zoom_behavior: {
             name: "Zoom behavior",
@@ -442,7 +463,8 @@ var $$IMU_EXPORT$$;
             requires: {
                 mouseover: true,
                 mouseover_scroll_behavior: "zoom"
-            }
+            },
+            category: "popup"
         },
         mouseover_position: {
             name: "Popup position",
@@ -456,11 +478,19 @@ var $$IMU_EXPORT$$;
                 center: {
                     name: "Page middle"
                 }
-            }
+            },
+            requires: {
+                mouseover: true
+            },
+            category: "popup"
         },
         mouseover_links: {
             name: "Popup for plain hyperlinks",
-            description: "Whether or not the popup should also open for plain hyperlinks"
+            description: "Whether or not the popup should also open for plain hyperlinks",
+            requires: {
+                mouseover: true
+            },
+            category: "popup"
         },
         mouseover_styles: {
             name: "Popup CSS style",
@@ -468,24 +498,29 @@ var $$IMU_EXPORT$$;
             type: "textarea",
             requires: {
                 mouseover: true
-            }
+            },
+            category: "popup"
         },
         website_image: {
             name: "Website image preview",
             description: "Enables a preview of the image on the Image Max URL website",
-            userscript_only: true
+            userscript_only: true,
+            category: "website"
         },
         allow_watermark: {
             name: "Larger watermarked images",
-            description: "Enables rules that return larger images that include watermarks"
+            description: "Enables rules that return larger images that include watermarks",
+            category: "rules"
         },
         allow_smaller: {
             name: "Smaller non-watermarked images",
-            description: "Enables rules that return smaller images without watermarks"
+            description: "Enables rules that return smaller images without watermarks",
+            category: "rules"
         },
         allow_possibly_different: {
             name: "Possibly different images",
-            description: "Enables rules that return images that possibly differ (such as Youtube)"
+            description: "Enables rules that return images that possibly differ (such as Youtube)",
+            category: "rules"
         }
     };
 
@@ -493,6 +528,13 @@ var $$IMU_EXPORT$$;
         allow_watermark: "watermark",
         allow_smaller: "smaller",
         allow_possibly_different: "possibly_different"
+    };
+
+    var categories = {
+        "redirection": "Redirection",
+        "popup": "Popup",
+        "rules": "Rules",
+        "website": "Website"
     };
 
 
@@ -29448,25 +29490,33 @@ var $$IMU_EXPORT$$;
                 var setting = options[i].id.replace(/^option_/, "");
 
                 var meta = settings_meta[setting];
+                var enabled = true;
                 if (meta.requires) {
                     // fixme: this only works for one option in meta.requires
                     for (var required_setting in meta.requires) {
                         var value = settings[required_setting];
 
                         if (value === meta.requires[required_setting]) {
-                            options[i].classList.remove("disabled");
-
-                            options[i].querySelectorAll("input, textarea, button").forEach((input) => {
-                                input.disabled = false;
-                            });
+                            enabled = true;
                         } else {
-                            options[i].classList.add("disabled");
-
-                            options[i].querySelectorAll("input, textarea, button").forEach((input) => {
-                                input.disabled = true;
-                            });
+                            enabled = false;
+                            break;
                         }
                     }
+                }
+
+                if (enabled) {
+                    options[i].classList.remove("disabled");
+
+                    options[i].querySelectorAll("input, textarea, button").forEach((input) => {
+                        input.disabled = false;
+                    });
+                } else {
+                    options[i].classList.add("disabled");
+
+                    options[i].querySelectorAll("input, textarea, button").forEach((input) => {
+                        input.disabled = true;
+                    });
                 }
             }
         }
