@@ -30889,6 +30889,35 @@ var $$IMU_EXPORT$$;
             if (minMaxH <= thresh)
             minMaxH = 0;*/
 
+            // Remove hidden elements
+            // Test: https://www.vogue.com/article/lady-gaga-met-gala-2019-entrance-behind-the-scenes-video
+            for (var source_url in sources) {
+                var source = sources[source_url];
+
+                var visible = true;
+                var el = source.el;
+                do {
+                    if (!el || !el.style)
+                        break;
+
+                    if (el.style.opacity.toString().match(/^0(?:\.0*)?$/)) {
+                        visible = false;
+                        break;
+                    }
+                } while (el = el.parentElement);
+
+                if (!visible)
+                    continue;
+
+                newsources[source_url] = source;
+            }
+
+            sources = newsources;
+            newsources = {};
+
+            if ((source = getsource()) !== undefined)
+                return source;
+
             for (var source_url in sources) {
                 var source = sources[source_url];
 
