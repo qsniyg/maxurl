@@ -305,7 +305,7 @@ var $$IMU_EXPORT$$;
             }
         },
         mouseover_trigger_key: {
-            name: "Mouseover trigger key",
+            name: "Popup trigger key",
             description: "Key sequence to trigger the popup",
             type: "keysequence",
             requires: {
@@ -313,7 +313,7 @@ var $$IMU_EXPORT$$;
             }
         },
         mouseover_trigger_delay: {
-            name: "Mouseover trigger delay",
+            name: "Popup trigger delay",
             description: "Delay (in seconds) before the popup shows",
             requires: {
                 mouseover_trigger_behavior: "mouse"
