@@ -6,6 +6,7 @@
 // @author       qsniyg
 // @homepageURL  https://qsniyg.github.io/maxurl/options.html
 // @supportURL   https://github.com/qsniyg/maxurl/issues
+// @icon         https://raw.githubusercontent.com/qsniyg/maxurl/master/resources/logo.png
 // @include      *
 // @grant        GM.xmlHttpRequest
 // @grant        GM_xmlhttpRequest

@@ -25,6 +25,11 @@
     }
   ],
 
+  "icons": {
+    "48": "resources/logo_48.png",
+    "96": "resources/logo_96.png"
+  },
+
   "options_ui": {
     "page": "extension/options.html"
   },
