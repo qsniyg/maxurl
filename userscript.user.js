@@ -29532,6 +29532,19 @@ var $$IMU_EXPORT$$;
             }, 5000);
         }
 
+        var category_els = [];
+
+        for (var category in categories) {
+            var div = document.createElement("div");
+            div.id = "cat_" + category;
+            div.classList.add("category");
+            var h2 = document.createElement("h2");
+            h2.innerText = categories[category];
+            div.appendChild(h2);
+            category_els[category] = div;
+            options_el.appendChild(div);
+        }
+
         for (var setting in settings) {
             (function(setting) {
                 var meta = settings_meta[setting];
@@ -29856,7 +29869,11 @@ var $$IMU_EXPORT$$;
                 tr.appendChild(value_td);
 
                 option.appendChild(table);
-                options_el.appendChild(option);
+
+                if (meta.category)
+                    category_els[meta.category].appendChild(option);
+                else
+                    options_el.appendChild(option);
             })(setting);
         }
 
