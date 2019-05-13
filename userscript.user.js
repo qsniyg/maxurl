@@ -3663,6 +3663,8 @@ var $$IMU_EXPORT$$;
             (domain === "cdn.indicium.nu" && src.indexOf("/source/grazia/") >= 0) ||
             // https://news-img.51y5.net/91849b1acbfae70c2995b276557582c5_3?w=640&h=400
             domain === "news-img.51y5.net" ||
+            // https://st.automobilemag.com/uploads/sites/11/2019/04/wm-2019-techno-classica-43.jpg?interpolation=lanczos-none&fit=around%7C660%3A440&fit=around%7C680%3A453
+            (domain === "st.automobilemag.com" && src.indexOf("/uploads/sites/") >= 0) ||
             // http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
             // https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
             src.match(/\/demandware\.static\//) ||
@@ -27547,6 +27549,13 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/upload\/+[a-z]+\/+/, "/upload/images/");
         }
 
+        if (domain === "smlycdn.akamaized.net") {
+            // https://smlycdn.akamaized.net/products/270x270-fill/11ed80e2b3/3575561644dec31b07633edf26ffbd414af2a2b5.jpg
+            //   https://smlycdn.akamaized.net/data/product2/2/3575561644dec31b07633edf26ffbd414af2a2b5_l.jpg
+            return src.replace(/\/products\/+[^/]*\/+[0-9a-f]+\/+([0-9a-f]+)(\.[^/.]*)(?:[?#].*)?$/,
+                               "/data/product2/2/$1_l$2");
+        }
+
 
 
 
@@ -30202,6 +30211,9 @@ var $$IMU_EXPORT$$;
         var mouseDelayX = 0;
         var mouseDelayY = 0;
 
+        var lastX = 0;
+        var lastY = 0;
+
         var processing_list = [];
         var popups = [];
         var popup_el = null;
@@ -30358,6 +30370,9 @@ var $$IMU_EXPORT$$;
                     e.stopImmediatePropagation();
                     return true;
                 };
+
+                lastX = x;
+                lastY = y;
 
                 var initial_zoom_behavior = get_single_setting("mouseover_zoom_behavior");
 
@@ -31433,7 +31448,7 @@ var $$IMU_EXPORT$$;
             }
         }
 
-        function trigger_popup_with_source(source, automatic) {
+        function trigger_popup_with_source(source, automatic, use_last_pos) {
             var processing = {running: true};
             for (var i = 0; i < processing_list.length; i++) {
                 processing_list[i].running = false;
@@ -31447,6 +31462,11 @@ var $$IMU_EXPORT$$;
 
                 var x = mouseX;
                 var y = mouseY;
+
+                if (use_last_pos) {
+                    x = lastX;
+                    y = lastY;
+                }
 
                 var realcb = function(source_imu, data) {
                     if (!source_imu || !data) {
@@ -31557,7 +31577,7 @@ var $$IMU_EXPORT$$;
             if (newel) {
                 var source = find_source([newel]);
                 if (source) {
-                    trigger_popup_with_source(source, true);
+                    trigger_popup_with_source(source, true, true);
                 }
 
                 return true;
