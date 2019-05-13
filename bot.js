@@ -148,7 +148,8 @@ function getimagesize(url) {
       }
 
       if (urls[0].is_private) {
-        console.log("Private URL: ", options);
+        console.log("Private URL: ", urls);
+        return;
         return do_getimage(urls.slice(1), "private");
       }
 
@@ -361,6 +362,8 @@ function dourl_inner(big, url, post) {
                 }
               }
               comment += "*\n\n";
+            } else if (big.is_original) {
+              comment += "*This is the original size of the image stored on the site. If the image looks upscaled, it's likely because the image stored on the site is itself upscaled.*\n\n";
             }
 
             if (is_googlephotos(orig_domain, url) &&
@@ -376,7 +379,7 @@ function dourl_inner(big, url, post) {
             }
 
             comment += "*****\n\n";
-            comment += "^[source&nbsp;code](https://github.com/qsniyg/maxurl)&nbsp;|&nbsp;[website](https://qsniyg.github.io/maxurl/)&nbsp;/&nbsp;[userscript](https://greasyfork.org/en/scripts/36662-image-max-url)&nbsp;(finds&nbsp;larger&nbsp;images)";
+            comment += "^[source&nbsp;code](https://github.com/qsniyg/maxurl)&nbsp;|&nbsp;to&nbsp;find&nbsp;larger&nbsp;images:&nbsp;[website](https://qsniyg.github.io/maxurl/)&nbsp;/&nbsp;[userscript](https://greasyfork.org/en/scripts/36662-image-max-url)";
             console.log(comment);
             if (post) {
               var logged = false;
@@ -393,7 +396,7 @@ function dourl_inner(big, url, post) {
 
                   // np.reddit.com to avoid the "no participation" warning
                   comment_data.edit(
-                    comment + "&nbsp;|&nbsp;[remove](https://np.reddit.com/message/compose/?to=MaxImageBot&subject=delete:+" + comment_data.id + "&message=If%20you%20are%20the%20one%20who%20submitted%20the%20post%2C%20it%20should%20be%20deleted%20within%2020%20seconds.%20If%20it%20isn%27t%2C%20please%20check%20the%20FAQ%3A%20https%3A%2F%2Fnp.reddit.com%2Fr%2FMaxImage%2Fcomments%2F8znfgw%2Ffaq%2F)"
+                    comment + "&nbsp;|&nbsp;[remove](https://np.reddit.com/message/compose/?to=MaxImageBot&subject=delete:+" + comment_data.id + "&message=If%20you%20are%20the%20one%20who%20submitted%20the%20post%2C%20it%20should%20be%20deleted%20within%20~20%20seconds.%20If%20it%20isn%27t%2C%20please%20check%20the%20FAQ%3A%20https%3A%2F%2Fnp.reddit.com%2Fr%2FMaxImage%2Fcomments%2F8znfgw%2Ffaq%2F)"
                   );
                 });
               } catch (e) {
@@ -504,6 +507,8 @@ const links = new NodeCache({ stdTTL: 600, checkperiod: 100 });
 // https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/intermediary/f/bc11a5bd-c85a-4e07-a890-a83ce286cfee/dcqjbom-5b42308b-181c-4bb6-9108-5ce3508986e4.jpg
 // https://orig00.deviantart.net/49c2/f/2018/301/0/2/mileena_by_motesoegyi-dcqjbom.jpg
 //dourl("https://pre00.deviantart.net/d54e/th/pre/i/2018/301/6/4/mileena_by_motesoegyi-dcqjbom.jpg");
+// original image:
+//dourl("http://i0.kym-cdn.com/photos/images/newsfeed/001/318/958/c7d.png");
 
 //console.dir(blacklist_json.disallowed);
 if (true) {
