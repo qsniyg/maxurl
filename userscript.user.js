@@ -30558,7 +30558,7 @@ var $$IMU_EXPORT$$;
                     //div.ondrop = estop;
 
                     div.onmousedown = a.onmousedown = function(e) {
-                        if (btndown)
+                        if (btndown || e.button !== 0)
                             return;
 
                         dragstart = true;
@@ -30570,7 +30570,7 @@ var $$IMU_EXPORT$$;
                     };
 
                     img.onmousedown = function(e) {
-                        if (btndown)
+                        if (btndown || e.button !== 0)
                             return;
 
                         dragstart = true;
