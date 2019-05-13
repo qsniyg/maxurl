@@ -30387,6 +30387,10 @@ var $$IMU_EXPORT$$;
                     !styles.match(/;\s*box-shadow\s*:/)) {
                     div.style.boxShadow = "0 0 15px rgba(0,0,0,.5)";
                 }
+                if (!styles.match(/^\s*border(?:-[a-z]+)?\s*:/) &&
+                    !styles.match(/;\s*border(?:-[a-z]+)?\s*:/)) {
+                    div.style.border = "3px solid white";
+                }
 
                 div.style.position = "fixed"; // instagram has top: -...px
                 div.style.zIndex = 2147483646;
