@@ -30634,6 +30634,7 @@ var $$IMU_EXPORT$$;
                     btn.style.color = "white";
                     btn.style.padding = "4px";
                     btn.style.lineHeight = "1em";
+                    btn.style.whiteSpace = "nowrap";
                     if (!istop) {
                         btn.style.position = "absolute";
                         btn.style.opacity = defaultopacity;
