@@ -225,6 +225,8 @@ var $$IMU_EXPORT$$;
         mouseover_trigger_key: ["shift", "alt", "i"],
         mouseover_trigger_delay: 1,
         mouseover_ui: true,
+        mouseover_ui_gallerycounter: true,
+        mouseover_ui_gallerymax: 50,
         // thanks to blue-lightning on github for the idea
         mouseover_open_behavior: "popup",
         // also thanks to blue-lightning
@@ -342,6 +344,27 @@ var $$IMU_EXPORT$$;
             requires: {
                 mouseover: true
             },
+            category: "popup"
+        },
+        mouseover_ui_gallerycounter: {
+            name: "Popup UI gallery counter",
+            description: "Enables a gallery counter on top of the UI",
+            requires: {
+                mouseover: true,
+                mouseover_ui: true
+            },
+            category: "popup"
+        },
+        mouseover_ui_gallerymax: {
+            name: "Gallery counter max",
+            description: "Maximum amount of images to check in the counter",
+            requires: {
+                mouseover: true,
+                mouseover_ui: true,
+                mouseover_ui_gallerycounter: true
+            },
+            type: "number",
+            number_unit: "images",
             category: "popup"
         },
         mouseover_open_behavior: {
@@ -4218,6 +4241,8 @@ var $$IMU_EXPORT$$;
             (domain === "static.infomusic.ro" && src.indexOf("/media/") >= 0) ||
             // https://www.csiete.net/contenido/imagenes/2018/07/Selena-Gomez-2016-237x143.jpg
             (domain_nowww === "csiete.net" && src.indexOf("/contenido/imagenes/") >= 0) ||
+            // https://wallpaper4rest.com/water/wallpaper/amazing-photography-arts-style-yellow-leaf-rain_1-1-237x134.jpg
+            (domain_nowww === "wallpaper4rest.com" && src.indexOf("/wallpaper/") >= 0) ||
             // https://1.soompi.io/wp-content/blogs.dir/8/files/2015/09/HA-TFELT-Wonder-Girls-590x730.jpg -- doesn't work
             // https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2018/01/GTA-6-Female-Protag-796x417.jpg -- does work
             src.indexOf("/wp-content/blogs.dir/") >= 0 ||
@@ -29858,9 +29883,11 @@ var $$IMU_EXPORT$$;
 
                         show_saved_message();
                     }
+
                     var sub_units_td = document.createElement("td");
                     sub_units_td.style = "display:inline";
-                    sub_units_td.innerText = meta.number_unit;
+                    if (meta.number_unit)
+                        sub_units_td.innerText = meta.number_unit;
 
                     sub_tr.appendChild(input);
                     sub_tr.appendChild(sub_units_td);
@@ -30508,59 +30535,92 @@ var $$IMU_EXPORT$$;
                   console_log(imgw);
                   console_log(vw - imgw);*/
 
-                var btndown = false;
-                function addbtn(text, title, action) {
-                    var defaultopacity = "0.2";
-
-                    var btn = document.createElement("span");
-                    btn.onclick = function(e) {
-                        e.stopPropagation();
-                        e.stopImmediatePropagation();
-                        action();
-                        return false;
+                var defaultopacity = "0.3";
+                function opacity_hover(el) {
+                    el.onmouseover = function(e) {
+                        el.style.opacity = "1.0";
                     };
+                    el.onmouseout = function(e) {
+                        el.style.opacity = defaultopacity;
+                    };
+                }
+
+                var btndown = false;
+                function addbtn(text, title, action, istop) {
+                    var btn = document.createElement("span");
+
+                    if (action) {
+                        btn.onclick = function(e) {
+                            e.stopPropagation();
+                            e.stopImmediatePropagation();
+                            action();
+                            return false;
+                        };
+                    }
+
                     btn.onmousedown = function(e) {
                         btndown = true;
                     };
                     btn.onmouseup = function(e) {
                         btndown = false;
                     };
-                    btn.onmouseover = function(e) {
-                        btn.style.opacity = "1.0";
-                    };
-                    btn.onmouseout = function(e) {
-                        btn.style.opacity = defaultopacity;
-                    };
+                    if (!istop) {
+                        opacity_hover(btn);
+                    }
                     btn.style.all = "initial";
-                    btn.style.cursor = "pointer";
+                    if (action)
+                        btn.style.cursor = "pointer";
                     btn.style.background = "#333";
                     btn.style.border = "3px solid white";
                     btn.style.borderRadius = "10px";
                     btn.style.color = "white";
                     btn.style.padding = "4px";
                     btn.style.lineHeight = "1em";
-                    btn.style.position = "absolute";
-                    btn.style.userSelect = "none";
-                    btn.style.left = "-1em";
-                    btn.style.top = "-1em";
-                    btn.style.opacity = defaultopacity;
+                    if (!istop) {
+                        btn.style.position = "absolute";
+                        btn.style.opacity = defaultopacity;
+                    } else {
+                        btn.style.position = "relative";
+                        btn.style.marginRight = ".5em";
+                    }
+                    if (action)
+                        btn.style.userSelect = "none";
                     btn.innerHTML = text;
-                    btn.title = title;
+                    if (title)
+                        btn.title = title;
                     return btn;
                 }
 
                 if (settings["mouseover_ui"]) {
+                    var topbarel = document.createElement("div");
+                    topbarel.style.all = "initial";
+                    topbarel.style.position = "absolute";
+                    topbarel.style.left = "-1em";
+                    topbarel.style.top = "-1em";
+                    topbarel.style.opacity = defaultopacity;
+
+                    opacity_hover(topbarel);
+
                     var closebtn = addbtn("×", "Close (ESC)", function() {
                         resetpopups();
-                    });
-                    div.appendChild(closebtn);
+                    }, true);
+                    topbarel.appendChild(closebtn);
+                    div.appendChild(topbarel);
+
+
+                    var prev_images = 0;
+                    var next_images = 0;
 
                     if (wrap_gallery_func(false)) {
                         var leftbtn = addbtn("←", "Previous (Left Arrow)", function() {
                             trigger_gallery(false);
                         });
                         leftbtn.style.top = "calc(50% - 7px - .5em)";
+                        leftbtn.style.left = "-1em";
                         div.appendChild(leftbtn);
+
+                        if (settings.mouseover_ui_gallerycounter)
+                            prev_images = count_gallery(false);
                     }
 
                     if (wrap_gallery_func(true)) {
@@ -30571,6 +30631,20 @@ var $$IMU_EXPORT$$;
                         rightbtn.style.left = "initial";
                         rightbtn.style.right = "-1em";
                         div.appendChild(rightbtn);
+
+                        if (settings.mouseover_ui_gallerycounter)
+                            next_images = count_gallery(true);
+                    }
+
+                    if (prev_images + next_images > 0) {
+                        var text;
+                        if (prev_images + next_images > settings.mouseover_ui_gallerymax) {
+                            text = settings.mouseover_ui_gallerymax + "+";
+                        } else {
+                            text = (prev_images + 1) + " / " + (prev_images + next_images + 1);
+                        }
+                        var images_total = addbtn(text, "", null, true);
+                        topbarel.appendChild(images_total);
                     }
                 }
 
@@ -31611,6 +31685,18 @@ var $$IMU_EXPORT$$;
             }
 
             return gallery(el, nextprev);
+        }
+
+        function count_gallery(nextprev, el) {
+            var count = 0;
+            while ((el = wrap_gallery_func(nextprev, el))) {
+                count++;
+
+                if (count >= settings.mouseover_ui_gallerymax)
+                    break;
+            }
+
+            return count;
         }
 
         function trigger_gallery(nextprev) {
