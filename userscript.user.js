@@ -30649,7 +30649,16 @@ var $$IMU_EXPORT$$;
                     return btn;
                 }
 
-                if (settings["mouseover_ui"]) {
+                var ui_els = [];
+
+                function create_ui() {
+                    for (var el_i = 0; el_i < ui_els.length; el_i++) {
+                        var ui_el = ui_els[el_i];
+                        ui_el.parentNode.removeChild(ui_el);
+                    }
+
+                    ui_els = [];
+
                     var topbarel = document.createElement("div");
                     topbarel.style.all = "initial";
                     topbarel.style.position = "absolute";
@@ -30664,31 +30673,38 @@ var $$IMU_EXPORT$$;
                     }, true);
                     topbarel.appendChild(closebtn);
                     div.appendChild(topbarel);
+                    ui_els.push(topbarel);
 
 
                     var prev_images = 0;
                     var next_images = 0;
 
-                    if (wrap_gallery_func(false)) {
+                    if (is_valid_el(wrap_gallery_func(false))) {
                         var leftbtn = addbtn("←", "Previous (Left Arrow)", function() {
-                            trigger_gallery(false);
+                            if (!trigger_gallery(false)) {
+                                create_ui();
+                            }
                         });
                         leftbtn.style.top = "calc(50% - 7px - .5em)";
                         leftbtn.style.left = "-1em";
                         div.appendChild(leftbtn);
+                        ui_els.push(leftbtn);
 
                         if (settings.mouseover_ui_gallerycounter)
                             prev_images = count_gallery(false);
                     }
 
-                    if (wrap_gallery_func(true)) {
+                    if (is_valid_el(wrap_gallery_func(true))) {
                         var rightbtn = addbtn("→", "Next (Right Arrow)", function() {
-                            trigger_gallery(true);
+                            if (!trigger_gallery(true)) {
+                                create_ui();
+                            }
                         });
                         rightbtn.style.top = "calc(50% - 7px - .5em)";
                         rightbtn.style.left = "initial";
                         rightbtn.style.right = "-1em";
                         div.appendChild(rightbtn);
+                        ui_els.push(rightbtn);
 
                         if (settings.mouseover_ui_gallerycounter)
                             next_images = count_gallery(true);
@@ -30705,6 +30721,9 @@ var $$IMU_EXPORT$$;
                         topbarel.appendChild(images_total);
                     }
                 }
+
+                if (settings.mouseover_ui)
+                    create_ui();
 
                 var a = document.createElement("a");
                 //a.addEventListener("click", function(e) {
@@ -31748,9 +31767,19 @@ var $$IMU_EXPORT$$;
             return gallery(el, nextprev);
         }
 
+        function is_valid_el(el) {
+            if (!el)
+                return false;
+
+            return !!find_source([el]);
+        }
+
         function count_gallery(nextprev, el) {
             var count = 0;
             while ((el = wrap_gallery_func(nextprev, el))) {
+                if (!is_valid_el(el))
+                    break;
+
                 count++;
 
                 if (count >= settings.mouseover_ui_gallerymax)
@@ -31767,9 +31796,8 @@ var $$IMU_EXPORT$$;
                 var source = find_source([newel]);
                 if (source) {
                     trigger_popup_with_source(source, true, true);
+                    return true;
                 }
-
-                return true;
             }
 
             return false;
