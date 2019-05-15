@@ -30639,7 +30639,7 @@ var $$IMU_EXPORT$$;
                         btn.style.opacity = defaultopacity;
                     } else {
                         btn.style.position = "relative";
-                        btn.style.marginRight = ".5em";
+                        btn.style.marginRight = ".3em";
                     }
                     if (action)
                         btn.style.userSelect = "none";
@@ -30717,7 +30717,9 @@ var $$IMU_EXPORT$$;
                         } else {
                             text = (prev_images + 1) + " / " + (prev_images + next_images + 1);
                         }
+
                         var images_total = addbtn(text, "", null, true);
+                        images_total.style.fontSize = ".8em";
                         topbarel.appendChild(images_total);
                     }
                 }
