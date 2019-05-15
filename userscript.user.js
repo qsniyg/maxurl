@@ -225,6 +225,7 @@ var $$IMU_EXPORT$$;
         mouseover_trigger_key: ["shift", "alt", "i"],
         mouseover_trigger_delay: 1,
         mouseover_ui: true,
+        mouseover_ui_opacity: 30,
         mouseover_ui_gallerycounter: true,
         mouseover_ui_gallerymax: 50,
         // thanks to blue-lightning on github for the idea
@@ -344,6 +345,20 @@ var $$IMU_EXPORT$$;
             requires: {
                 mouseover: true
             },
+            category: "popup"
+        },
+        mouseover_ui_opacity: {
+            name: "Popup UI opacity",
+            description: "Opacity of the UI on top of the popup",
+            requires: {
+                mouseover: true,
+                mouseover_ui: true
+            },
+            type: "number",
+            number_unit: "%",
+            number_max: 100,
+            number_min: 0,
+            number_int: true,
             category: "popup"
         },
         mouseover_ui_gallerycounter: {
@@ -29870,13 +29885,40 @@ var $$IMU_EXPORT$$;
                     var input = document.createElement("input");
                     input.type = "number";
                     input.style = "text-align:right";
-                    if (value)
+                    if (meta.number_max !== undefined)
+                        input.setAttribute("max", meta.number_max.toString());
+                    if (meta.number_min !== undefined)
+                        input.setAttribute("min", meta.number_min.toString());
+                    if (meta.number_int)
+                        input.setAttribute("step", "1");
+                    if (value !== undefined)
                         input.value = value;
                     input.oninput = function(x) {
-                        var value = parseFloat(input.value);
+                        var value = input.value.toString();
 
-                        if (isNaN(value))
+                        var value = parseFloat(value);
+                        var orig_value = value;
+
+                        if (isNaN(value)) {
                             return;
+                        }
+
+                        if (meta.number_int) {
+                            value = parseInt(value);
+                        }
+
+                        if (meta.number_max !== undefined)
+                            value = Math.min(value, meta.number_max);
+                        if (meta.number_min !== undefined)
+                            value = Math.max(value, meta.number_min);
+
+                        if (isNaN(value)) {
+                            console_error("Error: number is NaN after min/max");
+                            return;
+                        }
+
+                        if (meta.number_int || value !== orig_value)
+                            input.value = value;
 
                         set_value(setting, value);
                         settings[setting] = value;
@@ -30535,7 +30577,11 @@ var $$IMU_EXPORT$$;
                   console_log(imgw);
                   console_log(vw - imgw);*/
 
-                var defaultopacity = "0.3";
+                var defaultopacity = (settings.mouseover_ui_opacity / 100);
+                if (defaultopacity > 1)
+                    defaultopacity = 1;
+                if (defaultopacity < 0)
+                    defaultopacity = 0;
                 function opacity_hover(el) {
                     el.onmouseover = function(e) {
                         el.style.opacity = "1.0";
