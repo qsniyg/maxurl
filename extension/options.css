@@ -386,6 +386,10 @@ input:checked + label, button {
 }
 
 @media (max-width:700px) {
+  .option table {
+    margin-left: .5em;
+  }
+
   .option td {
     display: block;
   }
@@ -398,7 +402,8 @@ input:checked + label, button {
   .option strong {
     width: auto;
     display: block;
-    margin: .5em;
+    margin-top: .9em;
+    margin-bottom: .7em;
   }
 }
 
@@ -420,6 +425,12 @@ input:checked + label, button {
   font-size: 1.5em;
   font-weight: 100;
   margin-bottom: 1em;
+}
+
+@media (max-width:700px) {
+  #options .category > h2 {
+    text-align: center;
+  }
 }
 
 

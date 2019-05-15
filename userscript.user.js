@@ -29820,8 +29820,9 @@ var $$IMU_EXPORT$$;
                         label.setAttribute("for", id);
                         label.innerText = val.name;
 
-                        if (val.description)
+                        if (val.description) {
                             label.title = val.description;
+                        }
 
                         parent.appendChild(label);
                     };
@@ -29995,6 +29996,13 @@ var $$IMU_EXPORT$$;
         }
 
         check_disabled_options();
+
+        for (var category in category_els) {
+            var category_el = category_els[category]
+            if (category_el.querySelectorAll(".option").length === 0) {
+                category_el.parentNode.removeChild(category_el);
+            }
+        }
 
         options_el.appendChild(saved_el);
     }
