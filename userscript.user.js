@@ -30319,9 +30319,13 @@ var $$IMU_EXPORT$$;
     function do_mouseover() {
         var mouseX = 0;
         var mouseY = 0;
-
         var mouseAbsX = 0;
         var mouseAbsY = 0;
+
+        var mouseContextX = 0;
+        var mouseContextY = 0;
+        var mouseAbsContextX = 0;
+        var mouseAbsContextY = 0;
 
         var mouseDelayX = 0;
         var mouseDelayY = 0;
@@ -31606,10 +31610,13 @@ var $$IMU_EXPORT$$;
             return ret;
         }
 
-        function trigger_popup() {
+        function trigger_popup(is_contextmenu) {
             controlPressed = true;
             //var els = document.elementsFromPoint(mouseX, mouseY);
-            var els = find_els_at_point([mouseX, mouseY]);
+            var point = [mouseX, mouseY];
+            if (is_contextmenu)
+                point = [mouseContextX, mouseContextY];
+            var els = find_els_at_point(point);
             //console_log(els);
 
             var source = find_source(els);
@@ -31874,6 +31881,23 @@ var $$IMU_EXPORT$$;
                 popup.style.top = percent * (viewport[1] - popup.offsetHeight) + "px";
             }
         }
+
+        if (is_extension) {
+            chrome.runtime.onMessage.addListener(function(message, sender, respond) {
+                //console_log("ON_MESSAGE", message);
+                if (message.type === "context_imu") {
+                    trigger_popup(true);
+                }
+            });
+        }
+
+        document.addEventListener('contextmenu', function(event) {
+            mouseContextX = event.clientX;
+            mouseContextY = event.clientY;
+
+            mouseAbsContextX = event.pageX;
+            mouseAbsContextY = event.pageY;
+        });
 
         document.addEventListener('mousemove', function(event) {
             // https://stackoverflow.com/a/7790764

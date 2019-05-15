@@ -294,3 +294,16 @@ chrome.runtime.onMessage.addListener((message, sender, respond) => {
     return true;
   }
 });
+
+function contextmenu_imu(data, tab) {
+  debug("contextMenu", data);
+  chrome.tabs.sendMessage(tab.id, {
+    "type": "context_imu"
+  });
+}
+
+chrome.contextMenus.create({
+  title: "Try to find larger image (IMU)",
+  contexts: ["page", "link", "image"],
+  onclick: contextmenu_imu
+});
