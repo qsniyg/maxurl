@@ -28616,7 +28616,7 @@ var $$IMU_EXPORT$$;
 
                     try {
                         var images = unsafeWindow.runSlots.item.album_images.images;
-                        var current_hash = bigimage_recursive(el.src, {fill_object: true})[0].url.replace(/.*\/([^/._]*?)\.[^/.]*(?:[?#].*)?$/, "$1");
+                        var current_hash = bigimage_recursive(el.src, {fill_object: true})[0].url.replace(/.*\/([^/._]*?)\.[^/.]*?(?:[?#].*)?$/, "$1");
                         if (current_hash !== el.src) {
                             for (var i = 0; i < images.length; i++) {
                                 if (images[i].hash === current_hash) {
@@ -28633,8 +28633,14 @@ var $$IMU_EXPORT$$;
                                         image_id = i - 1;
                                     }
 
+                                    // Convert videos to images for now, until video support is properly added
+                                    // for the popup
+                                    var ext = images[image_id].ext;
+                                    if (ext === ".mp4" || ext === ".webm")
+                                        ext = ".jpg";
+
                                     var newel = document.createElement("img");
-                                    newel.src = "https://i.imgur.com/" + images[image_id].hash + images[image_id].ext;
+                                    newel.src = "https://i.imgur.com/" + images[image_id].hash + ext;
                                     return newel;
                                 }
                             }
