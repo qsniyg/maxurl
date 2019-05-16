@@ -30459,6 +30459,49 @@ var $$IMU_EXPORT$$;
             }
         }
 
+        function strip_whitespace(str) {
+            if (!str || typeof str !== "string")
+                return str;
+
+            return str
+                .replace(/^\s+/, "")
+                .replace(/\s+$/, "");
+        }
+
+        function apply_styles(el, str) {
+            if (!str || typeof str !== "string" || !strip_whitespace(str))
+                return;
+
+            var splitted = str.split(/[;\n]/);
+            for (var i = 0; i < splitted.length; i++) {
+                var current = strip_whitespace(splitted[i]);
+                if (!current)
+                    continue;
+
+                if (current.indexOf(":") < 0)
+                    continue;
+
+                var property = strip_whitespace(current.replace(/^(.*?)\s*:.*/, "$1"));
+                var value = strip_whitespace(current.replace(/^.*?:\s*(.*)$/, "$1"));
+
+                var important = false;
+                if (value.match(/!important$/)) {
+                    important = true;
+                    value = strip_whitespace(value.replace(/!important$/, ""));
+                }
+
+                if (value.match(/^['"].*['"]$/)) {
+                    value = value.replace(/^["'](.*)["']$/, "$1");
+                }
+
+                if (important) {
+                    el.style.setProperty(property, value, "important");
+                } else {
+                    el.style.setProperty(property, value);
+                }
+            }
+        }
+
         function makePopup(obj, orig_url, processing, data) {
             var openb = get_single_setting("mouseover_open_behavior");
             if (openb === "newtab") {
@@ -30511,8 +30554,11 @@ var $$IMU_EXPORT$$;
                 img.onmousedown = estop;
 
                 var div = document.createElement("div");
-                //div.style.all = "initial";
-                var styles = settings.mouseover_styles.replace("\n", ";");
+                div.style.all = "initial";
+                div.style.boxShadow = "0 0 15px rgba(0,0,0,.5)";
+                div.style.border = "3px solid white";
+
+                /*var styles = settings.mouseover_styles.replace("\n", ";");
                 div.setAttribute("style", styles);
                 if (!styles.match(/^\s*box-shadow\s*:/) &&
                     !styles.match(/;\s*box-shadow\s*:/)) {
@@ -30521,7 +30567,9 @@ var $$IMU_EXPORT$$;
                 if (!styles.match(/^\s*border(?:-[a-z]+)?\s*:/) &&
                     !styles.match(/;\s*border(?:-[a-z]+)?\s*:/)) {
                     div.style.border = "3px solid white";
-                }
+                    }*/
+
+                apply_styles(div, settings.mouseover_styles);
 
                 div.style.position = "fixed"; // instagram has top: -...px
                 div.style.zIndex = maxzindex;
@@ -30552,7 +30600,8 @@ var $$IMU_EXPORT$$;
                 vh -= border_thresh * 2;
                 img.style.all = "initial";
                 img.style.cursor = "pointer";
-                //img.style.display = "block";
+                // https://stackoverflow.com/questions/7774814/remove-white-space-below-image
+                img.style.verticalAlign = "bottom";
                 img.style.setProperty("display", "block", "important");
 
                 if (initial_zoom_behavior === "fit") {
@@ -30751,6 +30800,8 @@ var $$IMU_EXPORT$$;
                 };
                 a.style.all = "initial";
                 a.style.cursor = "pointer";
+                a.style.setProperty("vertical-align", "bottom", "important");
+                a.style.setProperty("display", "block", "important");
                 a.href = url;
                 a.target = "_blank";
                 a.appendChild(img);
