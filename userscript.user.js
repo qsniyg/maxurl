@@ -30382,10 +30382,12 @@ var $$IMU_EXPORT$$;
 
         var disable_click = false;
         document.addEventListener("click", function(e) {
-            if (disable_click) {
+            if (disable_click && popups.length > 0 && false) {
                 e.stopPropagation();
                 e.stopImmediatePropagation();
+
                 return true;
+                //return false;
             }
         }, true);
 
@@ -30556,8 +30558,10 @@ var $$IMU_EXPORT$$;
 
                 var initial_zoom_behavior = get_single_setting("mouseover_zoom_behavior");
 
-                img.onclick = estop;
-                img.onmousedown = estop;
+                //img.onclick = estop;
+                //img.onmousedown = estop;
+                //img.addEventListener("click", estop, true);
+                //img.addEventListener("mousedown", estop, true);
 
                 var div = document.createElement("div");
                 div.style.all = "initial";
@@ -30581,8 +30585,10 @@ var $$IMU_EXPORT$$;
                 div.style.zIndex = maxzindex;
 
 
-                div.onclick = estop;
-                div.onmousedown = estop;
+                //div.onclick = estop;
+                //div.onmousedown = estop;
+                //div.addEventListener("click", estop, true);
+                //div.addEventListener("mousedown", estop, true);
                 // useful for instagram
                 //disable_click = true;
 
@@ -30675,12 +30681,13 @@ var $$IMU_EXPORT$$;
                     var btn = document.createElement("span");
 
                     if (action) {
-                        btn.onclick = function(e) {
+                        btn.addEventListener("click", function(e) {
                             e.stopPropagation();
                             e.stopImmediatePropagation();
+                            e.preventDefault();
                             action();
                             return false;
-                        };
+                        }, true);
                     }
 
                     btn.onmousedown = function(e) {
@@ -30854,8 +30861,15 @@ var $$IMU_EXPORT$$;
                             //estop(e);
                             return false;
                         }
-                        return;
+
+                        e.stopPropagation();
+                        e.stopImmediatePropagation();
+                        return true;
                     };
+
+                    // Enabling this makes buttons not work after clicking the link
+                    //div.addEventListener("click", div.onclick, true);
+                    //a.addEventListener("click", a.onclick, true);
 
                     img.onmouseup = img.onclick = function(e) {
                         dragstart = false;
@@ -31904,7 +31918,7 @@ var $$IMU_EXPORT$$;
 
                 return ret;
             }
-        });
+        }, true);
 
         document.addEventListener('keyup', function(event) {
             var condition = set_chord(event, false);
@@ -31929,7 +31943,7 @@ var $$IMU_EXPORT$$;
                 stop_waiting();
                 resetpopups();
             }
-        });
+        }, true);
 
         function scrollLeft() {
             var doc = document.documentElement;
