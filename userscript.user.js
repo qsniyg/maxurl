@@ -27634,6 +27634,16 @@ var $$IMU_EXPORT$$;
             return src.replace(/(\/userfiles\/+[^/]*\/+[0-9]+\/+[0-9]+-)[0-9]+x[0-9]+\./, "$1full_size.");
         }
 
+        if (domain === "cn.opendesktop.org") {
+            // https://cn.opendesktop.org/cache/85x85-crop/img/a/9/8/d/3cfd377ef98337a694c5bf79dc93d6524005.png
+            //   https://cn.opendesktop.org/img/a/9/8/d/3cfd377ef98337a694c5bf79dc93d6524005.png
+            // https://cn.opendesktop.org/cache/200x200/img/7/9/5/f/a99d0af9e85271c8631c558eb56b3aa93991.png -- upscaled
+            //   https://cn.opendesktop.org/img/7/9/5/f/a99d0af9e85271c8631c558eb56b3aa93991.png
+            // https://cn.opendesktop.org/cache/167x167-0/img/2/b/f/9/d9ef08259a5aadd16e7cb7bfd828bc4c57ed.png
+            //   https://cn.opendesktop.org/img/2/b/f/9/d9ef08259a5aadd16e7cb7bfd828bc4c57ed.png
+            return src.replace(/\/cache\/+[0-9]+x[0-9]+(?:-[a-z0-9]+)?\/+img\/+/, "/img/");
+        }
+
 
 
 
@@ -30291,6 +30301,8 @@ var $$IMU_EXPORT$$;
         222: "'"
     };
 
+    var maxzindex = 2147483647;
+
     function keycode_to_str(x) {
         if (x in keycode_to_str_table) {
             return keycode_to_str_table[x];
@@ -30385,7 +30397,7 @@ var $$IMU_EXPORT$$;
         function start_waiting() {
             if (!waitingel) {
                 waitingel = document.createElement("div");
-                waitingel.style.zIndex = Number.MAX_SAFE_INTEGER;
+                waitingel.style.zIndex = maxzindex;
                 waitingel.style.cursor = "wait";
                 waitingel.style.width = waitingsize + "px";
                 waitingel.style.height = waitingsize + "px";
@@ -30512,7 +30524,7 @@ var $$IMU_EXPORT$$;
                 }
 
                 div.style.position = "fixed"; // instagram has top: -...px
-                div.style.zIndex = 2147483646;
+                div.style.zIndex = maxzindex;
 
 
                 div.onclick = estop;
@@ -30635,6 +30647,7 @@ var $$IMU_EXPORT$$;
                     btn.style.padding = "4px";
                     btn.style.lineHeight = "1em";
                     btn.style.whiteSpace = "nowrap";
+                    btn.style.zIndex = maxzindex;
                     if (!istop) {
                         btn.style.position = "absolute";
                         btn.style.opacity = defaultopacity;
@@ -30666,6 +30679,7 @@ var $$IMU_EXPORT$$;
                     topbarel.style.left = "-1em";
                     topbarel.style.top = "-1em";
                     topbarel.style.opacity = defaultopacity;
+                    topbarel.style.zIndex = maxzindex;
 
                     opacity_hover(topbarel);
 
