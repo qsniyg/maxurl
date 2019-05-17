@@ -2971,6 +2971,19 @@ var $$IMU_EXPORT$$;
             // doesn't work for some urls:
             // https://i.ytimg.com/vi/o-gVbQHG0Ck/hqdefault.jpg
             //   https://i.ytimg.com/vi/o-gVbQHG0Ck/sddefault.jpg -- different image
+
+            // Transforms private signed URLs into public ones. Only works for public videos.
+            // Signed URLs can't be changed, so this step is needed.
+            newsrc = src.replace(/^([a-z]+:\/\/)i[0-9]+(\.ytimg\.com\/vi\/+[^/]+\/+[a-z]+\.)/, "$1i$2");
+            if (newsrc !== src)
+                return {
+                    url: newsrc,
+                    problems: {
+                        // FIXME: Is it?
+                        possibly_different: true
+                    }
+                };
+
             regex = /(\/+vi\/+[^/]*\/+)(?:[a-z]+|0)(\.[^/.?#]*)(?:[?#].*)?$/;
             return fillobj_urls([
                 src.replace(regex, "$1maxresdefault$2"),
@@ -13205,11 +13218,14 @@ var $$IMU_EXPORT$$;
                                "$1$2");
         }
 
-        if (domain_nowww === "maximkorea.net" &&
-            src.indexOf("/magdb/file/") >= 0) {
+        if (domain_nowww === "maximkorea.net") {
             // http://www.maximkorea.net/magdb/file/138/138_3289240590_img_400.jpg
             //   http://www.maximkorea.net/magdb/file/138/138_3289240590_img.jpg
-            return src.replace(/_img_[0-9]+(\.[^/.]*)$/, "_img$1");
+            // thanks to rEnr3n on github:
+            // http://www.maximkorea.net/missmaxim/m2girl_view.php?m2girl_uid=151
+            // http://www.maximkorea.net/missmaxim/m2girl/20145/73_2014502_133127_img_300.jpg
+            //   http://www.maximkorea.net/missmaxim/m2girl/20145/73_2014502_133127_img.jpg -- upscaled?
+            return src.replace(/(\/[0-9]+_[0-9]+(?:_[0-9]+)?_img)_[0-9]+(\.[^/.]*)$/, "$1$2");
         }
 
         if (domain === "blogimgc.eximg.jp") {
