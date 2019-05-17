@@ -30609,6 +30609,8 @@ var $$IMU_EXPORT$$;
                 //disable_click = true;
 
 
+                var border_thresh = 15;
+                var viewport;
                 var vw;
                 var vh;
 
@@ -30619,13 +30621,18 @@ var $$IMU_EXPORT$$;
                     vw = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
                     vh = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
                     }*/
-                var viewport = get_viewport();
-                var border_thresh = 15;
-                vw = viewport[0];
-                vh = viewport[1];
 
-                vw -= border_thresh * 2;
-                vh -= border_thresh * 2;
+                function update_vwh() {
+                    viewport = get_viewport();
+                    vw = viewport[0];
+                    vh = viewport[1];
+
+                    vw -= border_thresh * 2;
+                    vh -= border_thresh * 2;
+                }
+
+                update_vwh();
+
                 img.style.all = "initial";
                 img.style.cursor = "pointer";
                 // https://stackoverflow.com/questions/7774814/remove-white-space-below-image
@@ -30919,6 +30926,7 @@ var $$IMU_EXPORT$$;
 
                     if (scroll_zoom === "fitfull") {
                         if (e.deltaY > 0 && currentmode !== "fit") {
+                            update_vwh();
                             img.style.maxWidth = vw + "px";
                             img.style.maxHeight = vh + "px";
 
