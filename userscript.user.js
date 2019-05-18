@@ -30425,7 +30425,23 @@ var $$IMU_EXPORT$$;
                 waitingel.style.cursor = "wait";
                 waitingel.style.width = waitingsize + "px";
                 waitingel.style.height = waitingsize + "px";
+                //waitingel.style.pointerEvents = "none"; // works, but defeats the purpose, because the cursor isn't changed
                 waitingel.style.position = "fixed";//"absolute";
+
+                var simevent = function(e, eventtype) {
+                    waitingel.style.display = "none";
+                    document.elementFromPoint(e.clientX, e.clientY).dispatchEvent(new MouseEvent(eventtype, e));
+                    waitingel.style.display = "block";
+                };
+
+                waitingel.addEventListener("click", function(e) {
+                    return simevent(e, "click");
+                });
+
+                waitingel.addEventListener("contextmenu", function(e) {
+                    return simevent(e, "contextmenu");
+                });
+
                 document.documentElement.appendChild(waitingel);
             }
 
