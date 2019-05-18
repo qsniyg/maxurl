@@ -30598,7 +30598,7 @@ var $$IMU_EXPORT$$;
                 apply_styles(div, settings.mouseover_styles);
 
                 div.style.position = "fixed"; // instagram has top: -...px
-                div.style.zIndex = maxzindex;
+                div.style.zIndex = maxzindex - 1;
 
 
                 //div.onclick = estop;
@@ -30732,7 +30732,7 @@ var $$IMU_EXPORT$$;
                     btn.style.padding = "4px";
                     btn.style.lineHeight = "1em";
                     btn.style.whiteSpace = "nowrap";
-                    btn.style.zIndex = maxzindex;
+                    btn.style.zIndex = maxzindex - 1;
                     if (!istop) {
                         btn.style.position = "absolute";
                         btn.style.opacity = defaultopacity;
@@ -30764,7 +30764,7 @@ var $$IMU_EXPORT$$;
                     topbarel.style.left = "-1em";
                     topbarel.style.top = "-1em";
                     topbarel.style.opacity = defaultopacity;
-                    topbarel.style.zIndex = maxzindex;
+                    topbarel.style.zIndex = maxzindex - 1;
 
                     opacity_hover(topbarel);
 
