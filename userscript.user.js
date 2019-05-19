@@ -8866,12 +8866,21 @@ var $$IMU_EXPORT$$;
             // https://mir-s3-cdn-cf.behance.net/project_modules/hd/ad62c919260569.562e23ee8f6be.jpg
             // https://mir-s3-cdn-cf.behance.net/project_modules/fs/ad62c919260569.562e23ee8f6be.jpg
             //
+            // thanks to rahidz on github:
+            // https://mir-s3-cdn-cf.behance.net/project_modules/max_1200/27452674022631.5c1db814e8a02.jpg
+            //   https://mir-s3-cdn-cf.behance.net/project_modules/source/27452674022631.5c1db814e8a02.jpg
+            //
             // doesn't work for all:
             // https://mir-s3-cdn-cf.behance.net/project_modules/max_1200/1cd9f445156279.58286c59a16f6.jpg
             //   https://mir-s3-cdn-cf.behance.net/project_modules/fs/1cd9f445156279.58286c59a16f6.jpg -- doesn't work
+            //   https://mir-s3-cdn-cf.behance.net/project_modules/source/1cd9f445156279.58286c59a16f6.jpg -- works
             // https://mir-s3-cdn-cf.behance.net/project_modules/disp/568ec59308969.560cc39b2569a.jpg
             //   https://mir-cdn.behance.net/v1/rendition/project_modules/fs/568ec59308969.560cc39b2569a.jpg -- 404
-            return src.replace(/\/project_modules\/[^/]*\//, "/project_modules/fs/");
+            //   https://mir-s3-cdn-cf.behance.net/project_modules/source/568ec59308969.560cc39b2569a.jpg -- works
+            return [
+                src.replace(/\/project_modules\/+[^/]*\//, "/project_modules/source/"),
+                src.replace(/\/project_modules\/+[^/]*\//, "/project_modules/fs/")
+            ];
         }
 
         if (domain === "www.worldatlas.com") {
@@ -11158,7 +11167,22 @@ var $$IMU_EXPORT$$;
         if (domain === "wallpaperclicker.com") {
             // http://wallpaperclicker.com/storage/Thumb/Emma-Watson-Hot-Photos-65420656.jpg
             //   https://wallpaperclicker.com/storage/wallpaper/Emma-Watson-Hot-Photos-65420656.jpg
-            return src.replace(/\/storage\/Thumb\//, "/storage/wallpaper/");
+            // https://wallpaperclicker.com/storage/Thumb/harry-potter-and-the-chamber-of-secrets-wallpapers-picture-10025771.jpg
+            //   https://wallpaperclicker.com/storage/image/harry-potter-and-the-chamber-of-secrets-wallpapers-picture-10025771.jpg
+            if (src.match(/\/storage\/+Thumb\/+/)) {
+                return [
+                    src.replace(/\/storage\/+Thumb\/+/, "/storage/wallpaper/"),
+                    src.replace(/\/storage\/+Thumb\/+/, "/storage/image/")
+                ];
+            }
+
+            // https://wallpaperclicker.com/download/Image.aspx?Imagefilename=harry-potter-and-the-chamber-of-secrets-wallpapers-picture-10025771.jpg&resolution=1280x1024
+            //   https://wallpaperclicker.com/storage/image/harry-potter-and-the-chamber-of-secrets-wallpapers-picture-10025771.jpg
+            // https://wallpaperclicker.com/wallpaper/Download.aspx?wallfilename=selena-gomez-wallpapers-hd-26262968.jpg&resolution=640x360
+            //   https://wallpaperclicker.com/storage/image/selena-gomez-wallpapers-hd-26262968.jpg
+            return src
+                .replace(/\/download\/+Image\.aspx.*?[?&]Imagefilename=([^&]*).*?$/, "/storage/Thumb/$1")
+                .replace(/\/wallpaper\/+Download\.aspx.*?[?&]wallfilename=([^&]*).*?$/, "/storage/Thumb/$1");
         }
 
         if (domain_nosub === "prothomalo.com") {
@@ -26859,7 +26883,12 @@ var $$IMU_EXPORT$$;
             return src.replace(/(\/images\/+[^/]*\/+[^/]*\/+)s[5897]\/+/, "$1s10/");
         }
 
-        if (domain_nowww === "epicwallpapers.com") {
+        if (domain_nowww === "epicwallpapers.com" ||
+            // http://alliswall.com/file/7893/2560x1600/crop/selena_gomez_on_green_field.jpg
+            //   http://alliswall.com/file/7893/0x0/crop/selena_gomez_on_green_field.jpg
+            // http://alliswall.com/file/7893/1920x1200/16:9/selena_gomez_on_green_field.jpg
+            //   http://alliswall.com/file/7893/0x0/crop/selena_gomez_on_green_field.jpg
+            domain_nowww === "alliswall.com") {
             // https://epicwallpapers.com/imagecache/thumbnails/48/1080x338.png
             //   https://epicwallpapers.com/file/48/0x0/crop/
             // https://epicwallpapers.com/file/48/1920x1080/crop/barbara-palvin-tucking-back-her-hair-with-a-cute-smile.jpg
@@ -26867,7 +26896,7 @@ var $$IMU_EXPORT$$;
             return src
                 .replace(/\/imagecache\/+thumbnails\/+([0-9]+)\/+[0-9]+x[0-9]+\.[^/.]*(?:[?#].*)?$/,
                          "/file/$1/0x0/crop/")
-                .replace(/(\/file\/+[0-9]+)\/+[0-9]+x[0-9]+\/+crop\/+/, "$1/0x0/crop/");
+                .replace(/(\/file\/+[0-9]+)\/+[0-9]+x[0-9]+\/+(?:crop|[0-9]+:[0-9]+)\/+/, "$1/0x0/crop/");
         }
 
         if (domain === "kookbang.dema.mil.kr") {
@@ -27796,6 +27825,35 @@ var $$IMU_EXPORT$$;
             // https://screenbeauty.com/image/compress/selena-gomez-actress-singer-123164.jpg
             return src.replace(/\/image\/+compress\/+/, "/image/wallpapers/");
         }
+
+        if (domain === "e.radio-studio92.io") {
+            // https://e.radio-studio92.io/large/2018/09/04/030603_672758.jpg
+            //   https://e.radio-studio92.io/xlarge/2018/09/04/030603_672758.jpg -- upscaled?
+            // https://e.radio-studio92.io/medium/2014/09/09/1435649.jpg
+            //   https://e.radio-studio92.io/xlarge/2014/09/09/1435649.jpg
+            return src.replace(/(:\/\/[^/]*\/)[a-z]+\/+([0-9]{4}\/+[0-9]{2}\/+[0-9]{2}\/+[0-9]+(?:_[0-9]+)?\.[^/.]*)(?:[?#].*)?$/,
+                               "$1xlarge/$2");
+        }
+
+        if (amazon_container === "topdesk") {
+            // https://s3.amazonaws.com/topdesk/users/profile_photos/000/116/327/thumbnail/20185779926_6151dcf983_k.jpg?1438676831
+            //   https://s3.amazonaws.com/topdesk/users/profile_photos/000/116/327/original/20185779926_6151dcf983_k.jpg?1438676831
+            return src.replace(/\/((?:[0-9]{3}\/+){3})[a-z]+\/+([^/]*)(?:[?#].*)?$/, "/$1original/$2");
+        }
+
+        if (domain === "static.hdw.eweb4.com") {
+            // http://static.hdw.eweb4.com/media/wp_400/1/2/10119.jpg
+            //   http://static.hdw.eweb4.com/media/wallpapers/1/2/10119.jpg
+            return src.replace(/\/media\/+wp_[0-9]+\/+/, "/media/wallpapers/");
+        }
+
+        if (domain_nowww === "sitioandino.com.ar") {
+            // http://www.sitioandino.com.ar/files/image/124/124913/52a5c4da966ba_896_607!.jpg?s=4b20217a178de01dd773d7926817e735&d=1536027357
+            //   http://www.sitioandino.com.ar/files/image/124/124913/52a5c4da966ba.jpg?s=4b20217a178de01dd773d7926817e735&d=1536027357
+            return src.replace(/(\/files\/+image\/+[0-9]+\/+[0-9]+\/+[0-9a-f]+)_[0-9]+_[0-9]+!(\.[^/.]*)(?:[?#].*)?$/,
+                               "$1$2");
+        }
+
 
 
 
