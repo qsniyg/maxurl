@@ -244,6 +244,7 @@ var $$IMU_EXPORT$$;
         // thanks to acid-crash on github for the idea
         mouseover_styles: "",
         website_image: true,
+        extension_contextmenu: true,
         allow_watermark: false,
         allow_smaller: false,
         allow_possibly_different: false
@@ -547,6 +548,12 @@ var $$IMU_EXPORT$$;
             userscript_only: true,
             category: "website"
         },
+        extension_contextmenu: {
+            name: "IMU entry in context menu",
+            description: "Enables a custom IMU entry in the right click/context menu",
+            extension_only: true,
+            category: "extension"
+        },
         allow_watermark: {
             name: "Larger watermarked images",
             description: "Enables rules that return larger images that include watermarks",
@@ -574,7 +581,8 @@ var $$IMU_EXPORT$$;
         "redirection": "Redirection",
         "popup": "Popup",
         "rules": "Rules",
-        "website": "Website"
+        "website": "Website",
+        "extension": "Extension"
     };
 
 
@@ -4274,6 +4282,14 @@ var $$IMU_EXPORT$$;
             (domain_nowww === "wallpaper4rest.com" && src.indexOf("/wallpaper/") >= 0) ||
             // https://ichip.ru/blobimgs/uploads/2018/10/IMG_7900-696x464.jpg
             (domain_nowww === "ichip.ru" && src.indexOf("/blobimgs/uploads/") >= 0) ||
+            // http://pophaircuts.com/images/2013/11/Selena-Gomez-Hairstyles-Blond-Highlights-138x180.jpg
+            (domain_nowww === "pophaircuts.com" && src.indexOf("/images/") >= 0) ||
+            // http://she12.com/uploads/2012/07/Emma-Stone-Cover-Shoots-For-VOGUE-Mag-9-150x150.jpg
+            (domain_nowww === "she12.com" && src.indexOf("/uploads/") >= 0) ||
+            // http://cdn.stylefrizz.com/img/Emma-Stone-2012-SAG-Awards-black-dress-150x150.jpg
+            (domain === "cdn.stylefrizz.com" && src.indexOf("/img/") >= 0) ||
+            // http://cdn5.windows7themes.net/wp-content/files/rachel-mcadams-1-150x150.jpg
+            (domain_nosub === "windows7themes.net" && src.indexOf("/wp-content/files/") >= 0) ||
             // https://1.soompi.io/wp-content/blogs.dir/8/files/2015/09/HA-TFELT-Wonder-Girls-590x730.jpg -- doesn't work
             // https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2018/01/GTA-6-Female-Protag-796x417.jpg -- does work
             src.indexOf("/wp-content/blogs.dir/") >= 0 ||
@@ -4961,10 +4977,14 @@ var $$IMU_EXPORT$$;
 
         if ((domain_nosub === "pixhost.org" ||
              domain_nosub === "pixhost.to") &&
-            domain.match(/[a-z]*[0-9]*\./)) {
+            domain.match(/^[a-z]*[0-9]*\./)) {
             // https://t17.pixhost.to/thumbs/469/66269400_ns4w-org-2.jpg
             //   https://img17.pixhost.to/images/469/66269400_ns4w-org-2.jpg
-            return src.replace(/\/t([0-9]*\.pixhost\.[a-z]*)\/thumbs\//, "/img$1/images/");
+            // https://t16.pixhost.org/thumbs/419/63150269_dsera-023.jpg
+            //   https://img16.pixhost.to/images/419/63150269_dsera-023.jpg
+            return src
+                .replace(/(:\/\/[^/]*\.)pixhost\.org\//, "$1pixhost.to/")
+                .replace(/\/t([0-9]*\.pixhost\.[a-z]*)\/thumbs\//, "/img$1/images/");
         }
 
         /*if (domain.indexOf("ssli.ulximg.com") >= 0) {
@@ -5912,6 +5932,9 @@ var $$IMU_EXPORT$$;
             // http://www.allwomensites.com/news/gallery/five-ways-of-making-a-woman-feel-loved-and-appreciated-picture/thumbs/thumbs_Five-ways-of-making-a-woman-feel-loved-and-appreciated.jpg
             //   http://www.allwomensites.com/news/gallery/five-ways-of-making-a-woman-feel-loved-and-appreciated-picture/Five-ways-of-making-a-woman-feel-loved-and-appreciated.jpg
             (domain_nowww === "allwomensites.com" && src.indexOf("/gallery/") >= 0) ||
+            // https://zemanceleblegs.com/wp-content/gallery/r/rachel-mcadams/thumbs/thumbs_Rachel-McAdams-Legs-Sexy-Celebrity-Picture-Zeman-Celebrity-Legs-00002.jpg
+            //   https://zemanceleblegs.com/wp-content/gallery/r/rachel-mcadams/Rachel-McAdams-Legs-Sexy-Celebrity-Picture-Zeman-Celebrity-Legs-00002.jpg
+            domain_nowww === "zemanceleblegs.com" ||
             // http://cdn2-www.dogtime.com/assets/uploads/gallery/shih-tzu-dog-breed-pictures/thumbs/thumbs_shih-tzu-breed-picture-6.jpg
             //   http://cdn2-www.dogtime.com/assets/uploads/gallery/shih-tzu-dog-breed-pictures/shih-tzu-breed-picture-6.jpg
             (domain_nosub === "dogtime.com" && domain.match(/cdn[0-9]*-www\.dogtime\.com/))) {
@@ -6986,6 +7009,8 @@ var $$IMU_EXPORT$$;
 
             // http://i.ebayimg.com/00/s/NjAwWDQ1MA==/z/mEAAAOSwKIpWBa25/$_23.JPG
             //   http://i.ebayimg.com/images/g/mEAAAOSwKIpWBa25/s-l9999.jpg
+            // doesn't work for all:
+            // https://i.ebayimg.com/00/s/MTAyNVg4Mjc=/$(KGrHqR,!rYE-VkK4Bl!BQHN8IC(F!~~60_35.JPG?set_id=880000500F
             newsrc = src.replace(/\/[0-9]+\/[a-z]+\/[^/]*\/[a-z]+\/([^/]+)\/[^/.]*(\.[^/.]*)$/, "/images/g/$1/s-l9999$2");
             if (newsrc !== src) {
                 newsrc = newsrc.replace(/(.*\.)[^/.]*$/, "$1") + newsrc.replace(/.*\.([^/.]*)$/, "$1").toLowerCase();
@@ -7540,6 +7565,10 @@ var $$IMU_EXPORT$$;
         }
 
         if (((domain_nosub === "abcimg.es" && domain.match(/r[0-9]*\.abcimg\.es/)) ||
+             // https://resizer.larioja.com/resizer/resizer.php?imagen=/deliverty/demo/resources/jpg/5/2/1281441365725.jpg&nuevoancho=950&nuevoalto=570&copyright=conCopyright&encrypt=false
+             //   https://resizer.larioja.com/deliverty/demo/resources/jpg/5/2/1281441365725.jpg -- not found
+             //   tried with main domain as well, no luck
+             //domain === "resizer.larioja.com" ||
              // https://resizer.elcorreo.com/resizer/resizer.php?imagen=http://www.elcorreo.com/multimedia/201408/30/media/06-modelos-halle-berry.jpg&nuevoalto=480
              //   https://www.elcorreo.com/multimedia/201408/30/media/06-modelos-halle-berry.jpg
              domain === "resizer.elcorreo.com") &&
@@ -9184,12 +9213,21 @@ var $$IMU_EXPORT$$;
             // https://media.fox29.com/media.fox29.com/photo/2018/07/09/GETTY_thai_cave_rescue_ambulance_070918%20_OP_2_CP__1531142830871.jpg_5770639_ver1.0_640_360.jpg
             //   https://media.fox29.com/media.fox29.com/photo/2018/07/09/GETTY_thai_cave_rescue_ambulance_070918%20_OP_2_CP__1531142830871.jpg_5770639_ver1.0.jpg
             domain === "media.fox29.com" ||
+            // https://sharedmedia.grahamdigital.com/photo/2016/04/06/Rachel+McAdams_19105756_10868403_ver1.0_160_90.jpg
+            //   https://sharedmedia.grahamdigital.com/photo/2016/04/06/Rachel+McAdams_19105756_10868403_ver1.0.jpg
+            domain === "sharedmedia.grahamdigital.com" ||
             // https://mediaassets.wxyz.com/photo/2018/05/22/poster_22074aded9dd4214ae42eb62a4404769_87749608_ver1.0_320_240.jpg
             //   https://mediaassets.wxyz.com/photo/2018/05/22/poster_22074aded9dd4214ae42eb62a4404769_87749608_ver1.0.jpg
             domain === "mediaassets.wxyz.com") {
             // http://s3.amazonaws.com/nxs-wkrgtv-media-us-east-1/photo/2018/02/17/Bail_Bonds_0_34542427_ver1.0_320_180.jpg
             //   http://s3.amazonaws.com/nxs-wkrgtv-media-us-east-1/photo/2018/02/17/Bail_Bonds_0_34542427_ver1.0.jpg
             return src.replace(/_[0-9]+_[0-9]+(\.[^/.]*)$/, "$1");
+        }
+
+        if (domain === "bobcat.grahamdigital.com") {
+            // https://bobcat.grahamdigital.com/image/upload/view?width=320&height=180&method=crop&url=https://sharedmedia.grahamdigital.com/photo/2019/05/19/1140268550_1558269024435_21870279_ver1.0_1280_720.jpg
+            //   https://sharedmedia.grahamdigital.com/photo/2019/05/19/1140268550_1558269024435_21870279_ver1.0_1280_720.jpg
+            return src.replace(/^[a-z]+:\/\/[^/]*\/image\/+upload\/+view.*?[?&]url=([^&]*).*?$/, "$1");
         }
 
         if ((domain === "image.photohito.k-img.com" ||
@@ -9439,7 +9477,9 @@ var $$IMU_EXPORT$$;
         if (domain_nosub === "lst.fm" && domain.match(/img[0-9]*[^.]*\.lst\.fm/)) {
             // http://img2-ak.lst.fm/i/u/174s/ac79a7aa21de5694760ad9228e15c6a5.png
             //   http://img2-ak.lst.fm/i/u/ac79a7aa21de5694760ad9228e15c6a5.png
-            return src.replace(/(\/i\/[a-z]\/)[0-9]+s\//, "$1");
+            // http://img2-ak.lst.fm/i/u/avatar170s/42333f92bcb14d3e89e3ad2d5e800977.jpg
+            //   http://img2-ak.lst.fm/i/u/42333f92bcb14d3e89e3ad2d5e800977.jpg
+            return src.replace(/(\/i\/[a-z]\/)(?:avatar)?[0-9]+s\//, "$1");
         }
 
         if (domain === "www.hdwallpapers.in" ||
@@ -10971,6 +11011,7 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/photos\/[a-z]*(photo[0-9]*\.[^/.]*)$/, "/photos/fullsize$1");
         }
 
+        // OpenCart
         if (domain === "inimura.com" ||
             // https://www.celebritydresses.shop/image/cache/data/category_59/1133Lisa%20Rinna%20Red%20Sexy%20Prom%20Dress%20For%20Women%202009%20SAG%20Awards%20Red%20Carpet-800x800.jpg
             //   https://www.celebritydresses.shop/image/data/category_59/1133Lisa%20Rinna%20Red%20Sexy%20Prom%20Dress%20For%20Women%202009%20SAG%20Awards%20Red%20Carpet.jpg
@@ -11001,6 +11042,9 @@ var $$IMU_EXPORT$$;
             // https://www.myhaircare.com.au/image/cache/data/tigi-catwalk-sleek-mystique-calming-conditioner-470x470.jpg
             //   https://www.myhaircare.com.au/image/data/tigi-catwalk-sleek-mystique-calming-conditioner.jpg
             domain_nowww === "myhaircare.com.au" ||
+            // http://ultimateapparels.com/image/cache/data/2015/Oct15/%20NOVEMBER%201/New-Peyton-List-Black-Bomber-Ladies-Biker-Jacket-450x450.jpg
+            //   http://ultimateapparels.com/image/data/2015/Oct15/%20NOVEMBER%201/New-Peyton-List-Black-Bomber-Ladies-Biker-Jacket.jpg
+            domain_nowww === "ultimateapparels.com" ||
             // https://www.cajalwinterconference.es/image/cache/data/category_3/forever-new-embroidered-dress-vestido-informal-negro-fod21c00m-q11-lclqqfz-ropa--2322-600x600_0.jpg
             //   https://www.cajalwinterconference.es/image/data/category_3/forever-new-embroidered-dress-vestido-informal-negro-fod21c00m-q11-lclqqfz-ropa--2322.jpg
             domain_nowww === "cajalwinterconference.es" ||
@@ -11010,6 +11054,31 @@ var $$IMU_EXPORT$$;
             // https://inimura.com/image/cache/catalog/product/lingerie/0068-01-270x360.jpg
             //   https://inimura.com/image/catalog/product/lingerie/0068-01.jpg
             return src.replace(/\/cache\/(.*)-[0-9]+x[0-9]*(?:-[a-z_]+)?(?:_[0-9]+)?(\.[^/.]*)$/, "/$1$2");
+        }
+
+        // OpenCart (todo merge with above)
+        if (domain_nowww === "i-aurai.com" ||
+            // http://www.onesieponatime.com/image/cache/data/NHL%20Edmongton%20Oilers%20Onesie-500x500.jpg
+            //   http://www.onesieponatime.com/image/data/NHL%20Edmongton%20Oilers%20Onesie.jpg
+            domain_nowww === "onesieponatime.com" ||
+            // http://ucanstarjob.com/image/cache/catalog/651525photo_1478496700262_m-600x600.product_main.jpg
+            //   http://ucanstarjob.com/image/catalog/651525photo_1478496700262_m.jpg
+            domain_nowww === "ucanstarjob.com" ||
+            // http://beniko.ninethemes.net/opencart/image/cache/data/photodune-523529-glamorous-m-250x150w.jpg
+            //   http://beniko.ninethemes.net/opencart/image/data/photodune-523529-glamorous-m.jpg
+            domain === "beniko.ninethemes.net" ||
+            // https://duvardamoda.com/image/cache/data/poster/kpkm-moda-kozmetik/aksesuar/kpkm-041-aksesuarli-manken-3d-duvar-kagidi-poster-300x200.jpg
+            //   https://duvardamoda.com/image/data/poster/kpkm-moda-kozmetik/aksesuar/kpkm-041-aksesuarli-manken-3d-duvar-kagidi-poster.jpg
+            domain_nowww === "duvardamoda.com" ||
+            // http://fresh38.ru/image/cache/data/gifts/hobbi/master-klass-po-izgotovleniyu-bizhuterii/master-klass-po-izgotovleniyu-bizhuterii-1-600x400.jpg
+            //   http://fresh38.ru/image/data/gifts/hobbi/master-klass-po-izgotovleniyu-bizhuterii/master-klass-po-izgotovleniyu-bizhuterii-1.jpg
+            domain_nowww === "fresh38.ru" ||
+            // https://www.malaysiadropship.com/image/creativeffects/image/cache/data/all_product_images/product-1707/1sexy-bikini-babydoll-yw672-536-850x1000-700x700.jpg
+            //   https://www.malaysiadropship.com/image/creativeffects/image/data/all_product_images/product-1707/1sexy-bikini-babydoll-yw672-536-850x1000.jpg
+            domain_nowww === "malaysiadropship.com") {
+            // http://www.i-aurai.com/OpenCart/image/cache/data/demo/apple_cinema_30-80x80.jpg
+            //   http://www.i-aurai.com/OpenCart/image/data/demo/apple_cinema_30.jpg
+            return src.replace(/\/image\/cache\/([a-z]+)\/(.*)-[0-9]+x(?:[0-9]+(?:[wh])?)?(?:\.[a-z_]+)?(\.[^/.]*)$/, "/image/$1/$2$3");
         }
 
         if (domain === "www.outlookweekly.net" &&
@@ -11248,31 +11317,6 @@ var $$IMU_EXPORT$$;
             // https://img.shopperboard.com/1184938/5a20a29ecfdea-small.jpg
             //   https://img.shopperboard.com/1184938/5a20a29ecfdea.jpg
             return src.replace(/-[a-z]+(\.[^/.]*)$/, "$1");
-        }
-
-        // OpenCart
-        if (domain_nowww === "i-aurai.com" ||
-            // http://www.onesieponatime.com/image/cache/data/NHL%20Edmongton%20Oilers%20Onesie-500x500.jpg
-            //   http://www.onesieponatime.com/image/data/NHL%20Edmongton%20Oilers%20Onesie.jpg
-            domain_nowww === "onesieponatime.com" ||
-            // http://ucanstarjob.com/image/cache/catalog/651525photo_1478496700262_m-600x600.product_main.jpg
-            //   http://ucanstarjob.com/image/catalog/651525photo_1478496700262_m.jpg
-            domain_nowww === "ucanstarjob.com" ||
-            // http://beniko.ninethemes.net/opencart/image/cache/data/photodune-523529-glamorous-m-250x150w.jpg
-            //   http://beniko.ninethemes.net/opencart/image/data/photodune-523529-glamorous-m.jpg
-            domain === "beniko.ninethemes.net" ||
-            // https://duvardamoda.com/image/cache/data/poster/kpkm-moda-kozmetik/aksesuar/kpkm-041-aksesuarli-manken-3d-duvar-kagidi-poster-300x200.jpg
-            //   https://duvardamoda.com/image/data/poster/kpkm-moda-kozmetik/aksesuar/kpkm-041-aksesuarli-manken-3d-duvar-kagidi-poster.jpg
-            domain_nowww === "duvardamoda.com" ||
-            // http://fresh38.ru/image/cache/data/gifts/hobbi/master-klass-po-izgotovleniyu-bizhuterii/master-klass-po-izgotovleniyu-bizhuterii-1-600x400.jpg
-            //   http://fresh38.ru/image/data/gifts/hobbi/master-klass-po-izgotovleniyu-bizhuterii/master-klass-po-izgotovleniyu-bizhuterii-1.jpg
-            domain_nowww === "fresh38.ru" ||
-            // https://www.malaysiadropship.com/image/creativeffects/image/cache/data/all_product_images/product-1707/1sexy-bikini-babydoll-yw672-536-850x1000-700x700.jpg
-            //   https://www.malaysiadropship.com/image/creativeffects/image/data/all_product_images/product-1707/1sexy-bikini-babydoll-yw672-536-850x1000.jpg
-            domain_nowww === "malaysiadropship.com") {
-            // http://www.i-aurai.com/OpenCart/image/cache/data/demo/apple_cinema_30-80x80.jpg
-            //   http://www.i-aurai.com/OpenCart/image/data/demo/apple_cinema_30.jpg
-            return src.replace(/\/image\/cache\/([a-z]+)\/(.*)-[0-9]+x(?:[0-9]+(?:[wh])?)?(?:\.[a-z_]+)?(\.[^/.]*)$/, "/image/$1/$2$3");
         }
 
         if (domain_nosub === "gog.com" && domain.match(/images.*\.gog\.com/)) {
@@ -11595,7 +11639,10 @@ var $$IMU_EXPORT$$;
             return src.replace(/(\/[0-9a-f]*)(?:_[a-z]*)?(\.[^/.]*)$/, "$1_full$2");
         }
 
-        if (domain === "www.desktopbackground.org") {
+        if (domain_nowww === "desktopbackground.org" ||
+            // https://www.desktop-background.com/download/720x1280/2013/10/17/655520_kristen-stewart-sexy-wallpapers-hd-1600x1200-pictures-collection_1920x1440_h.jpg
+            //   https://www.desktop-background.com/download/o/2013/10/17/655520_kristen-stewart-sexy-wallpapers-hd-1600x1200-pictures-collection_1920x1440_h.jpg
+            domain_nowww === "desktop-background.com") {
             // https://www.desktopbackground.org/download/800x600/2014/11/15/856176_hd-wallpapers-4users-rachel-riley-hd-wallpapers-1080p_1600x1000_h.jpg
             //   https://www.desktopbackground.org/p/2014/11/15/856176_hd-wallpapers-4users-rachel-riley-hd-wallpapers-1080p_1600x1000_h.jpg
             //   https://www.desktopbackground.org/download/o/2014/11/15/856176_hd-wallpapers-4users-rachel-riley-hd-wallpapers-1080p_1600x1000_h.jpg
@@ -19653,6 +19700,7 @@ var $$IMU_EXPORT$$;
         if (domain === "images.vogue.it") {
             // https://images.vogue.it/gallery/38166/Big/10c148fb-73cb-49d7-b2fe-4a30926462bd.jpg
             //   https://images.vogue.it/gallery/38166/Original/10c148fb-73cb-49d7-b2fe-4a30926462bd.jpg
+            // http://images.vogue.it/imgs/galleries/bellezza/idea-del-giorno/018811/selena-gomez-168691_201x113.jpg
             return src.replace(/(\/gallery\/[0-9]+\/)[A-Za-z]+(\/[-0-9a-f]+\.[^/.]*)$/, "$1Original$2");
         }
 
@@ -27854,6 +27902,81 @@ var $$IMU_EXPORT$$;
                                "$1$2");
         }
 
+        if (domain === "demo.brainymore.com") {
+            // http://demo.brainymore.com/joomla-extensions/images/entertaiment/thumbs/6_270x150.jpg
+            //   http://demo.brainymore.com/joomla-extensions/images/entertaiment/6.jpg
+            return src.replace(/\/thumbs\/+([0-9]+)_[0-9]+x[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "/$1$2");
+        }
+
+        if (domain_nosub === "1freewallpapers.com" && domain.match(/^data[0-9]*\./)) {
+            // https://data2.1freewallpapers.com/thumb/selena-gomez-dress-celebrity.jpg
+            //   https://data2.1freewallpapers.com/original/selena-gomez-dress-celebrity.jpg
+            // https://data2.1freewallpapers.com/download/selena-gomez-dress-celebrity-960x540.jpg
+            //   https://data2.1freewallpapers.com/original/selena-gomez-dress-celebrity.jpg
+            return src
+                .replace(/(:\/\/[^/]*\/)download\/+([^/]+)-[0-9]+x[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1original/$2$3")
+                .replace(/(:\/\/[^/]*\/)[a-z]+\/+([^/]*\.[^/.]*)(?:[?#].*)?$/, "$1original/$2");
+        }
+
+        if (domain_nowww === "downloadwallpapers.info") {
+            // https://www.downloadwallpapers.info/thumbs/2015/07/20/719020_selena-gomez_1920x1440_h.jpg
+            //   https://www.downloadwallpapers.info/dl/o/2015/07/20/719020_selena-gomez_1920x1440_h.jpg
+            // https://www.downloadwallpapers.info/dl/1400x1050//2015/09/11/761963_selena-gomez_1920x1440_h.jpg
+            //   https://www.downloadwallpapers.info/dl/o/2015/09/11/761963_selena-gomez_1920x1440_h.jpg
+            // https://www.downloadwallpapers.info/preview/2015/09/11/761963_selena-gomez_1920x1440_h.jpg
+            //   https://www.downloadwallpapers.info/dl/o/2015/09/11/761963_selena-gomez_1920x1440_h.jpg
+            return src.replace(/(:\/\/[^/]*\/)(?:thumbs|preview|dl\/+[^/]*)\/+([0-9]{4})\/+/, "$1dl/o/$2/");
+        }
+
+        if (domain_nowww === "miyanali.com") {
+            // https://miyanali.com/patch2image.php?w=100&h=auto&patch=usr/farshid73/gal7.jpg&852180858
+            //   https://miyanali.com/patch2image.php?patch=usr/farshid73/gal7.jpg&852180858
+            //   https://miyanali.com/usr/farshid73/gal7.jpg
+            return src.replace(/(:\/\/[^/]*\/)patch2image\.php.*?[?&]patch=(usr\/[^&]*).*?$/, "$1$2");
+        }
+
+        if (domain_nowww === "all4desktop.com") {
+            // http://all4desktop.com/data_images/1024%20x%20768/4215851-selena-gomez-24-normal.jpg
+            //   http://all4desktop.com/data_images/original/4215851-selena-gomez-24-normal.jpg
+            return src.replace(/\/data_images\/+[0-9]+(?:%20|\s)*x(?:%20|\s)*[0-9]+\/+/, "/data_images/original/");
+        }
+
+        if (amazon_container === "hsdreams1") {
+            // https://s3.ap-south-1.amazonaws.com/hsdreams1/pins/2019/05/medium/a1ef7be28cdfb28bf5e194fc6c6e263c.jpeg
+            //   https://s3.ap-south-1.amazonaws.com/hsdreams1/pins/2019/05/big/a1ef7be28cdfb28bf5e194fc6c6e263c.jpeg -- upscaled?
+            return src.replace(/(\/[0-9]{4}\/+[0-9]{2}\/+)[a-z]+(\/+[0-9a-f]+\.[^/.]*)(?:[?#].*)?$/, "$1big$2");
+        }
+
+        if (domain === "cdn.quotesgram.com") {
+            // https://cdn.quotesgram.com/small/6/32/484504371-158059707_peyton-list-disneys-jessie-signed-8x10-photo-not-a-.jpg
+            //   https://cdn.quotesgram.com/img/6/32/484504371-158059707_peyton-list-disneys-jessie-signed-8x10-photo-not-a-.jpg
+            return src.replace(/(:\/\/[^/]*\/)[a-z]+\/+/, "$1img/");
+        }
+
+        if (domain_nowww === "razdachi.net") {
+            // http://www.razdachi.net/thumbnail/emma-stone/emma-stone-57485.jpg
+            //   http://www.razdachi.net/wallpaper/emma-stone/emma-stone-57485.jpg
+            return src.replace(/(:\/\/[^/]*\/)thumbnail\/+/, "$1wallpaper/");
+        }
+
+        if (domain_nowww === "zazzybabes.com") {
+            // https://zazzybabes.com/girls/emma-stone/thumb-emma-stone-red-head-24145.jpg
+            //   https://zazzybabes.com/girls/emma-stone/emma-stone-red-head-24145.jpg
+            return src.replace(/\/(girls)\/+([^/]*\/+)thumb-([^/]*\.[^/.]*)(?:[?#].*)?$/, "/$1/$2$3");
+        }
+
+        if (domain_nosub === "mtime.cn" && domain.match(/^img[0-9]*\./)) {
+            // http://img21.mtime.cn/pi/2010/05/04/132834.62396121_220X220.jpg
+            //   http://img21.mtime.cn/pi/2010/05/04/132834.62396121.jpg
+            return src.replace(/_[0-9]+X[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1");
+        }
+
+        if (domain === "images.gutefrage.net") {
+            // https://images.gutefrage.net/media/fragen/bilder/welche-lieblings-schauspielerin-habt-ihr/0_big.jpg?v=1488126630000
+            //   https://images.gutefrage.net/media/fragen/bilder/welche-lieblings-schauspielerin-habt-ihr/0_original.jpg?v=1488126630000
+            return src.replace(/(\/bilder\/+[^/]*\/+[0-9]+_)[a-z]+(\.[^/.]*)(?:[?#].*)?$/, "$1original$2");
+        }
+
 
 
 
@@ -30277,8 +30400,11 @@ var $$IMU_EXPORT$$;
         if (is_extension) {
             var kv = {};
             kv[key] = value;
-            chrome.storage.sync.set(kv, function() {
-            });
+            //chrome.storage.sync.set(kv, function() {});
+            extension_send_message({
+                type: "setvalue",
+                data: kv
+            }, function() {});
         } else if (typeof GM_setValue !== "undefined") {
             return GM_setValue(key, value);
         } else if (typeof GM !== "undefined" && GM.getValue) {

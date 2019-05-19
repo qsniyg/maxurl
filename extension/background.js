@@ -292,6 +292,16 @@ chrome.runtime.onMessage.addListener((message, sender, respond) => {
     });
 
     return true;
+  } else if (message.type === "setvalue") {
+    chrome.storage.sync.set(message.data, function() {
+      if ("extension_contextmenu" in message.data) {
+        if (JSON.parse(message.data.extension_contextmenu)) {
+          create_contextmenu();
+        } else {
+          destroy_contextmenu();
+        }
+      }
+    });
   }
 });
 
@@ -302,8 +312,31 @@ function contextmenu_imu(data, tab) {
   });
 }
 
-chrome.contextMenus.create({
-  title: "Try to find larger image (IMU)",
-  contexts: ["page", "link", "image"],
-  onclick: contextmenu_imu
+var contextmenu = null;
+function create_contextmenu() {
+  if (contextmenu)
+    return;
+
+  contextmenu = chrome.contextMenus.create({
+    title: "Try to find larger image (IMU)",
+    contexts: ["page", "link", "image"],
+    onclick: contextmenu_imu
+  });
+}
+
+function destroy_contextmenu() {
+  chrome.contextMenus.removeAll();
+  contextmenu = null;
+}
+
+chrome.storage.sync.get(["extension_contextmenu"], function(response) {
+  var value = true;
+
+  if (Object.keys(response).length > 0 && response.extension_contextmenu !== undefined) {
+    value = JSON.parse(response.extension_contextmenu);
+  }
+
+  if (value) {
+    create_contextmenu();
+  }
 });
