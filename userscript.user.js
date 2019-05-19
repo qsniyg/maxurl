@@ -30778,6 +30778,13 @@ var $$IMU_EXPORT$$;
                     vh -= border_thresh * 2;
                 }
 
+                // https://stackoverflow.com/a/23270007
+                function get_lefttopouter() {
+                    var style = div.currentStyle || window.getComputedStyle(div);
+                    return [style.marginLeft + style.borderLeftWidth,
+                            style.marginTop + style.borderTopWidth];
+                }
+
                 update_vwh();
 
                 img.style.all = "initial";
@@ -31222,8 +31229,9 @@ var $$IMU_EXPORT$$;
                         }
                     }
 
-                    div.style.left = newx + "px";
-                    div.style.top = newy + "px";
+                    var lefttop = get_lefttopouter();
+                    div.style.left = (newx - lefttop[0]) + "px";
+                    div.style.top = (newy - lefttop[0]) + "px";
 
                     create_ui(true);
 
