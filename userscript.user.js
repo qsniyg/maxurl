@@ -30726,6 +30726,7 @@ var $$IMU_EXPORT$$;
                 //img.addEventListener("mousedown", estop, true);
 
                 var div = document.createElement("div");
+                var popupshown = false;
                 div.style.all = "initial";
                 div.style.boxShadow = "0 0 15px rgba(0,0,0,.5)";
                 div.style.border = "3px solid white";
@@ -30744,7 +30745,7 @@ var $$IMU_EXPORT$$;
                 apply_styles(div, settings.mouseover_styles);
 
                 div.style.position = "fixed"; // instagram has top: -...px
-                div.style.zIndex = maxzindex - 1;
+                div.style.zIndex = maxzindex - 2;
 
 
                 //div.onclick = estop;
@@ -30896,7 +30897,10 @@ var $$IMU_EXPORT$$;
 
                 var ui_els = [];
 
-                function create_ui() {
+                var cached_previmages = 0;
+                var cached_nextimages = 0;
+
+                function create_ui(use_cached_gallery) {
                     for (var el_i = 0; el_i < ui_els.length; el_i++) {
                         var ui_el = ui_els[el_i];
                         ui_el.parentNode.removeChild(ui_el);
@@ -30925,6 +30929,41 @@ var $$IMU_EXPORT$$;
                     var prev_images = 0;
                     var next_images = 0;
 
+                    var add_lrhover = function(isleft, btnel) {
+                        if ((popupshown && div.clientWidth < 200) ||
+                            imgw < 200)
+                            return;
+
+                        var lrhover = document.createElement("div");
+                        lrhover.style.all = "initial";
+                        if (isleft) {
+                            lrhover.style.left = "0em";
+                        } else {
+                            lrhover.style.right = "0em";
+                        }
+                        lrhover.style.top = "0em";
+                        lrhover.style.position = "absolute";
+                        lrhover.style.width = "15%";
+                        lrhover.style.height = "100%";
+                        lrhover.style.zIndex = maxzindex - 2;
+                        lrhover.style.cursor = "pointer";
+                        var forwardevent = function(e) {
+                            btnel.dispatchEvent(new MouseEvent(e.type, e));
+                        };
+                        lrhover.addEventListener("mouseover", forwardevent, true);
+                        lrhover.addEventListener("mouseout", forwardevent, true);
+                        lrhover.addEventListener("click", function(e) {
+                            if (dragged) {
+                                return false;
+                            }
+
+                            forwardevent(e);
+                        }, true);
+                        div.appendChild(lrhover);
+                        ui_els.push(lrhover);
+                        return lrhover;
+                    };
+
                     if (is_valid_el(wrap_gallery_func(false))) {
                         var leftbtn = addbtn("←", "Previous (Left Arrow)", function() {
                             if (!trigger_gallery(false)) {
@@ -30936,8 +30975,16 @@ var $$IMU_EXPORT$$;
                         div.appendChild(leftbtn);
                         ui_els.push(leftbtn);
 
-                        if (settings.mouseover_ui_gallerycounter)
-                            prev_images = count_gallery(false);
+                        add_lrhover(true, leftbtn);
+
+                        if (settings.mouseover_ui_gallerycounter) {
+                            if (use_cached_gallery) {
+                                prev_images = cached_previmages;
+                            } else {
+                                prev_images = count_gallery(false);
+                                cached_previmages = prev_images;
+                            }
+                        }
                     }
 
                     if (is_valid_el(wrap_gallery_func(true))) {
@@ -30952,8 +30999,16 @@ var $$IMU_EXPORT$$;
                         div.appendChild(rightbtn);
                         ui_els.push(rightbtn);
 
-                        if (settings.mouseover_ui_gallerycounter)
-                            next_images = count_gallery(true);
+                        add_lrhover(false, rightbtn);
+
+                        if (settings.mouseover_ui_gallerycounter) {
+                            if (use_cached_gallery) {
+                                next_images = cached_nextimages;
+                            } else {
+                                next_images = count_gallery(true);
+                                cached_nextimages = next_images;
+                            }
+                        }
                     }
 
                     if (prev_images + next_images > 0) {
@@ -31170,11 +31225,14 @@ var $$IMU_EXPORT$$;
                     div.style.left = newx + "px";
                     div.style.top = newy + "px";
 
+                    create_ui(true);
+
                     return false;
                 };
 
                 document.documentElement.appendChild(div);
                 popups.push(div);
+                popupshown = true;
 
                 stop_waiting();
                 popups_active = true;
