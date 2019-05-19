@@ -17400,7 +17400,10 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/uploads\/profile\/photo-thumb-([0-9]+)/, "/uploads/profile/photo-$1");
         }
 
-        if (domain === "kb4images.com" &&
+        if ((domain_nowww === "kb4images.com" ||
+             // https://99desktopwallpapers.com/images/selena-gomez-wallpapers/14_Selena-Gomez-small.jpg
+             //   https://99desktopwallpapers.com/images/selena-gomez-wallpapers/14_Selena-Gomez.jpg
+             domain_nowww === "99desktopwallpapers.com") &&
             src.indexOf("/images/") >= 0) {
             // http://kb4images.com/images/cute-anime-girl-wallpaper/36611827-cute-anime-girl-wallpaper-small.jpg
             //   http://kb4images.com/images/cute-anime-girl-wallpaper/36611827-cute-anime-girl-wallpaper.jpg
@@ -21746,7 +21749,10 @@ var $$IMU_EXPORT$$;
             return src.replace(/(:\/\/[^/]*\/)[0-9X]+x[0-9X]+\//, "$1original/");
         }
 
-        if (domain_nowww === "elfagr.com" &&
+        if ((domain_nowww === "elfagr.com" ||
+             // https://www.albawabhnews.com/upload/photo/news/261/9/600x338o/986.jpg?q=1
+             //   https://www.albawabhnews.com/upload/photo/news/261/9/986.jpg?q=1
+             domain_nowww === "albawabhnews.com") &&
             src.indexOf("/upload/photo/") >= 0) {
             // http://www.elfagr.com/upload/photo/news/312/4/100x56o/85.jpg?q=2
             //   http://www.elfagr.com/upload/photo/news/312/4/200x113o/85.jpg?q=2
@@ -27517,6 +27523,9 @@ var $$IMU_EXPORT$$;
             // https://prod.media.wapa.pe/670x376/wapa/imagen/2016/09/05/Nota-12866-selena_en_rehabilitacion_por_depresion_y_uso_de_farmacos.jpg
             // doesn't work. x0 also just returns a blank image
             //domain === "prod.media.wapa.pe" ||
+            // https://prod.media.larepublica.pe/337x190/larepublica/imagen/2017/11/02/noticia-selena.jpg
+            //   https://prod.media.larepublica.pe/x/larepublica/imagen/2017/11/02/noticia-selena.jpg
+            domain === "prod.media.larepublica.pe" ||
             // https://prod.presets.larepublica.pe/200x0/larepublica/imagen/2018/08/20/noticia-selena-gomez-instagram-tatuajes-significado-justin-bieber0011capa-1.png
             //   https://prod.presets.larepublica.pe/x/larepublica/imagen/2018/08/20/noticia-selena-gomez-instagram-tatuajes-significado-justin-bieber0011capa-1.png
             domain === "prod.presets.larepublica.pe") {
@@ -27778,6 +27787,14 @@ var $$IMU_EXPORT$$;
             //   https://image-aws-us-west-2.vsco.co/00b02e/28967640/5cdace744c51282134f55d8c/vsco5cdace96a2daa.jpg
             return src.replace(/(\/[0-9a-f]{20,}\/+)[0-9]+x[0-9]+\/+(vsco[0-9a-f]+\.[^/.]*)(?:[?#].*)?$/,
                                "$1$2");
+        }
+
+        if (domain_nowww === "screenbeauty.com") {
+            // https://screenbeauty.com/image/compress/selena-gomez-actress-celebrity-118789.jpg
+            //   https://screenbeauty.com/image/wallpapers/selena-gomez-actress-celebrity-118789.jpg -- mildly upscaled?
+            // doesn't work for all:
+            // https://screenbeauty.com/image/compress/selena-gomez-actress-singer-123164.jpg
+            return src.replace(/\/image\/+compress\/+/, "/image/wallpapers/");
         }
 
 
@@ -29221,6 +29238,7 @@ var $$IMU_EXPORT$$;
                         if (images.indexOf(newurl) < 0 || !obj[images.indexOf(newurl)].norecurse) {
                             bigimage_recursive_loop(newurl, options, query, fine_urls, tried_urls);
                         } else {
+                            //obj = obj.slice(images.indexOf(newurl));
                             obj = [obj[images.indexOf(newurl)]];
                             options.cb(obj, data);
                         }
@@ -30378,14 +30396,20 @@ var $$IMU_EXPORT$$;
 
                     var a = new FileReader();
                     a.onload = function(e) {
-                        var img = document.createElement("img");
-                        img.src = e.target.result;
-                        img.onload = function() {
-                            cb(img, resp.finalUrl, obj[0]);
-                        };
-                        img.onerror = function() {
+                        try {
+                            var img = document.createElement("img");
+                            img.src = e.target.result;
+                            img.onload = function() {
+                                cb(img, resp.finalUrl, obj[0]);
+                            };
+                            img.onerror = function() {
+                                err_cb();
+                            };
+                        } catch (e) {
+                            console_error(e);
+                            console_error(e.stack);
                             err_cb();
-                        };
+                        }
                     };
                     a.readAsDataURL(resp.response);
                 }
@@ -31989,7 +32013,9 @@ var $$IMU_EXPORT$$;
                 }
 
                 var realcb = function(source_imu, data) {
-                    if (!source_imu || !data) {
+                    //console_log(source_imu);
+                    //console_log(data);
+                    if ((!source_imu && false) || !data) {
                         stop_waiting();
                         return;
                     }
