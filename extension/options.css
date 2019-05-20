@@ -434,6 +434,37 @@ input:checked + label, button {
 }
 
 
+.topsaved {
+  visibility: visible;
+  opacity: 1;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  pointer-events: none;
+  text-align: center;
+  width: 100%;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  line-height: 100%;
+  margin: 0;
+  /*font-size: 0.7em;*/
+  color: #0af;
+  background-color: rgba(255, 255, 255, 90%);
+}
+
+.topsaved > p {
+  margin: 0;
+  margin-left: 2em;
+  margin-right: 2em;
+}
+
+.fadeout {
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s 0.5s, opacity 0.5s linear;
+}
+
+
 
 
 

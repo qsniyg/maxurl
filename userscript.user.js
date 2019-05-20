@@ -30003,14 +30003,16 @@ var $$IMU_EXPORT$$;
         else
             options_el.innerHTML = "";
 
-        var saved_el = document.createElement("p");
-        saved_el.innerHTML = "Saved!<br />Refresh the target page for changes to take effect";
+        var saved_el = document.createElement("div");
+        saved_el.innerHTML = "<p>Saved! Refresh the target page for changes to take effect</p>";
         saved_el.id = "saved";
+        saved_el.classList.add("topsaved");
+        //saved_el.style.pointer_events = "none";
         saved_el.style.visibility = "hidden";
-        saved_el.style.textAlign = "center";
-        saved_el.style.paddingTop = "1em";
-        saved_el.style.fontStyle = "italic";
-        saved_el.style.color = "#0af";
+        //saved_el.style.textAlign = "center";
+        //saved_el.style.paddingTop = "1em";
+        //saved_el.style.fontStyle = "italic";
+        //saved_el.style.color = "#0af";
         var saved_timeout = null;
 
         function check_disabled_options() {
@@ -30052,14 +30054,15 @@ var $$IMU_EXPORT$$;
         }
 
         function show_saved_message() {
-            saved_el.style.visibility = "visible";
+            saved_el.setAttribute("style", "");
+            saved_el.classList.remove("fadeout");
 
             if (saved_timeout)
                 clearTimeout(saved_timeout);
 
             saved_timeout = setTimeout(function() {
-                saved_el.style.visibility = "hidden";
-            }, 5000);
+                saved_el.classList.add("fadeout");
+            }, 2000);
         }
 
         var category_els = [];
