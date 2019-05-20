@@ -44,12 +44,25 @@ var $$IMU_EXPORT$$;
     var extension_send_message = null;
     var extension_options_page = null;
     var is_extension_options_page = false;
+    var is_options_page = false;
+    var options_page = "https://qsniyg.github.io/maxurl/options.html";
+
+    try {
+        if (document.location.href.match(/^https?:\/\/qsniyg\.github\.io\/maxurl\/options\.html/) ||
+            document.location.href.match(/^file:\/\/.*\/maxurl\/site\/options\.html/)) {
+            is_options_page = true;
+        }
+    } catch(e) {
+    }
+
     try {
         var extension_manifest = chrome.runtime.getManifest();
         is_extension = extension_manifest.name === "Image Max URL";
 
         extension_options_page = chrome.runtime.getURL("extension/options.html");
         is_extension_options_page = document.location.href.replace(/[?#].*$/, "") === extension_options_page;
+        is_options_page = is_options_page || is_extension_options_page;
+        //options_page = extension_options_page; // can't load from website
 
         if (is_extension) {
             extension_send_message = function(message, respond) {
@@ -59,6 +72,21 @@ var $$IMU_EXPORT$$;
         }
     } catch (e) {
     }
+
+    var is_node = false;
+    if ((typeof module !== 'undefined' && module.exports) &&
+        typeof window === 'undefined' && typeof document === 'undefined') {
+        is_node = true;
+    }
+
+    var is_scripttag = false;
+    if (typeof imu_variable !== 'undefined' && (typeof(GM_xmlhttpRequest) === 'undefined' &&
+                                                typeof(GM) === 'undefined'))
+        is_scripttag = true;
+
+    var is_userscript = false;
+    if (!is_node && !is_scripttag && !is_extension)
+        is_userscript = true;
 
     var do_request_raw = null;
     if (is_extension) {
@@ -153,7 +181,7 @@ var $$IMU_EXPORT$$;
         }
     };
 
-    var options_page = "https://qsniyg.github.io/maxurl/options.html";
+    //var options_page = "https://qsniyg.github.io/maxurl/options.html";
 
     // restore console.log for websites that remove it (twitter)
     // https://gist.github.com/Ivanca/4586071
@@ -229,6 +257,7 @@ var $$IMU_EXPORT$$;
         mouseover_ui_opacity: 30,
         mouseover_ui_gallerycounter: true,
         mouseover_ui_gallerymax: 50,
+        mouseover_ui_optionsbtn: is_userscript ? true : false,
         // thanks to blue-lightning on github for the idea
         mouseover_open_behavior: "popup",
         // also thanks to blue-lightning
@@ -382,6 +411,15 @@ var $$IMU_EXPORT$$;
             },
             type: "number",
             number_unit: "images",
+            category: "popup"
+        },
+        mouseover_ui_optionsbtn: {
+            name: "Popop UI Options Button",
+            description: "Enables a button to go to the options screen for IMU",
+            requires: {
+                mouseover: true,
+                mouseover_ui: true
+            },
             category: "popup"
         },
         mouseover_open_behavior: {
@@ -550,7 +588,7 @@ var $$IMU_EXPORT$$;
         },
         extension_contextmenu: {
             name: "IMU entry in context menu",
-            description: "Enables a custom IMU entry in the right click/context menu",
+            description: "Enables a custom entry for this extension in the right click/context menu",
             extension_only: true,
             category: "extension"
         },
@@ -589,12 +627,6 @@ var $$IMU_EXPORT$$;
     var url_cache = {};
 
 
-    var is_node = false;
-    if ((typeof module !== 'undefined' && module.exports) &&
-        typeof window === 'undefined' && typeof document === 'undefined') {
-        is_node = true;
-    }
-
     var urlparse = function(x) {
         return new URL(x);
     };
@@ -613,15 +645,6 @@ var $$IMU_EXPORT$$;
             return parsed;
         };
     }
-
-    var is_scripttag = false;
-    if (typeof imu_variable !== 'undefined' && (typeof(GM_xmlhttpRequest) === 'undefined' &&
-                                                typeof(GM) === 'undefined'))
-        is_scripttag = true;
-
-    var is_userscript = false;
-    if (!is_node && !is_scripttag && !is_extension)
-        is_userscript = true;
 
     // https://stackoverflow.com/a/17323608
     function mod(n, m) {
@@ -22331,12 +22354,23 @@ var $$IMU_EXPORT$$;
             // https://media.jpegworld.com/thumbs/5/8/a/0/d/58a0d8ef22c9a/300x400/3640-01.jpg
             //   https://media.jpegworld.com/galleries/5/8/a/0/d/58a0d8ef22c9a/3640-01.jpg
             domain === "media.jpegworld.com" ||
+            // http://www.tokyoteenies.com/media/thumbs/5/9/c/a/3/59ca3d04d54c4/117x117/0.jpg
+            //   http://www.tokyoteenies.com/media/galleries/5/9/c/a/3/59ca3d04d54c4/0.jpg
+            domain_nowww === "tokyoteenies.com" ||
             // http://www.galleryportal.com/media/thumbs/5/7/d/5/2/57d5291f6faa3/117x117/47.jpg
             //   http://www.galleryportal.com/media/galleries/5/7/d/5/2/57d5291f6faa3/47.jpg
             domain_nowww === "galleryportal.com") {
             // https://pornrice.com/media/thumbs/5/6/3/c/a/563ca27211a80/236x355/10236.jpg
             //   https://pornrice.com/media/galleries/5/6/3/c/a/563ca27211a80/10236.jpg
-            return src.replace(/(:\/\/[^/]*|\/media)\/+thumbs\/+((?:[0-9a-f]\/){5}[0-9a-f]+\/)[0-9]+x[0-9]+\//, "$1/galleries/$2");
+            newsrc = src.replace(/(:\/\/[^/]*|\/media)\/+thumbs\/+((?:[0-9a-f]\/){5}[0-9a-f]+\/)[0-9]+x[0-9]+\//, "$1/galleries/$2");
+            if (newsrc !== src)
+                return newsrc;
+        }
+
+        if (domain_nowww === "tokyoteenies.com") {
+            // http://www.tokyoteenies.com/content/honoka-maki-is-bending-over-giving-a-little-japanese-upskirts-action/thumbs_01.jpg
+            //   http://www.tokyoteenies.com/content/honoka-maki-is-bending-over-giving-a-little-japanese-upskirts-action/image_01.jpg
+            return src.replace(/(\/content\/+[^/]*\/+)thumbs_([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1image_$2");
         }
 
         if (domain === "wallpapers.jami.lt") {
@@ -25575,7 +25609,10 @@ var $$IMU_EXPORT$$;
             return src.replace(/(:\/\/[^/]*\/)[^/]*\/+[0-9]+\/+content\//, "$1content/");
         }
 
-        if (domain_nowww === "freexcafe.com") {
+        if (domain_nowww === "freexcafe.com" ||
+            // http://www.foxyporn.com/galleries/babes/a13bdtv7/img/3.jpg
+            //   http://www.foxyporn.com/galleries/babes/a13bdtv7/pics/pics3.jpg
+            domain_nowww === "foxyporn.com") {
             // https://www.freexcafe.com/erotica/metart/excl378q39/img/1.jpg
             //   https://www.freexcafe.com/erotica/metart/excl378q39/pics/pics1.jpg
             // https://www.freexcafe.com/erotica/anew-metart/16ag32fn2y3k/img/bdf266daa315f64275517f9d143d26c2-thumb160x220.jpg
@@ -26126,6 +26163,12 @@ var $$IMU_EXPORT$$;
             return src.replace(/(\/[0-9]+\/+[^/]*\/+[0-9]+)t(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
         }
 
+        if (domain_nowww === "bravoerotica.com") {
+            // http://www.bravoerotica.com/all-gravure/shoko-hamada/tiny-shorts/01t.jpg
+            //   http://www.bravoerotica.com/all-gravure/shoko-hamada/tiny-shorts/01.jpg
+            return src.replace(/(\/[0-9]+)t(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
         if (domain_nowww === "japanesepussyclub.com" ||
             // https://www.kabukicho-girls.com/fumino-mizutori/103018-782/thumbnails/Fumino-Mizutori_001_tn.jpg
             //   https://www.kabukicho-girls.com/fumino-mizutori/103018-782/images/Fumino-Mizutori_001.jpg
@@ -26530,7 +26573,10 @@ var $$IMU_EXPORT$$;
             return src.replace(/(\/pictures\/+[^/]*\/+)t([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
         }
 
-        if (domain === "fhg.mycuteasian.com") {
+        if (domain === "fhg.mycuteasian.com" ||
+            // http://fhg.avidolz.com/pics/051cv/picture/avidolz_t01.jpg
+            //   http://fhg.avidolz.com/pics/051cv/picture/avidolz_01.jpg
+            domain === "fhg.avidolz.com") {
             // https://fhg.mycuteasian.com/mixp/074um/picture/mycuteasian_t09.jpg
             //   https://fhg.mycuteasian.com/mixp/074um/picture/mycuteasian_09.jpg
             return src.replace(/(\/picture\/+[^/._]*_)t([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
@@ -26560,7 +26606,10 @@ var $$IMU_EXPORT$$;
                                "/download/media/$1/$2");
         }
 
-        if (domain === "s.fap5.com") {
+        if (domain === "s.fap5.com" ||
+            // https://s.mycosplayclub.com/036/546/03654654adf8d7903e5/thumbs/66907354adf8d988b1b.jpg
+            //   https://s.mycosplayclub.com/036/546/03654654adf8d7903e5/66907354adf8d988b1b.jpg
+            domain === "s.mycosplayclub.com") {
             // http://s.fap5.com/020/223/02022354b7a5e964786/thumbs/97401454b7a5ea273a1.jpg
             //   http://s.fap5.com/020/223/02022354b7a5e964786/97401454b7a5ea273a1.jpg
             return src.replace(/(\/[0-9a-f]{15,}\/+)thumbs\/+([0-9a-f]+\.[^/.]*)(?:[?#].*)?$/,
@@ -27976,6 +28025,38 @@ var $$IMU_EXPORT$$;
             //   https://images.gutefrage.net/media/fragen/bilder/welche-lieblings-schauspielerin-habt-ihr/0_original.jpg?v=1488126630000
             return src.replace(/(\/bilder\/+[^/]*\/+[0-9]+_)[a-z]+(\.[^/.]*)(?:[?#].*)?$/, "$1original$2");
         }
+
+        if (domain === "v.angel-porns.com") {
+            // http://v.angel-porns.com/pics/asians/pacificgirls/0559-rm/tnsn002.jpg
+            //   http://v.angel-porns.com/pics/asians/pacificgirls/0559-rm/sn002.jpg
+            return src.replace(/\/tn(sn[0-9]+\.[^/.]*)(?:[?#].*)?$/, "/$1");
+        }
+
+        if (domain === "cdn15764270.ahacdn.me") {
+            // https://cdn15764270.ahacdn.me/galleries/idols69.com/4f2d07becc91a9d0be33a26cd35da531d7ad7f7e/300x400/002.jpg
+            //   https://cdn15764270.ahacdn.me/galleries/idols69.com/4f2d07becc91a9d0be33a26cd35da531d7ad7f7e/origin/002.jpg
+            return src.replace(/(\/galleries\/+[^/]*\/+[0-9a-f]+\/+)[0-9]+x[0-9]+(\/+[^/]*\.[^/.]*)(?:[?#].*)?$/,
+                               "$1origin$2");
+        }
+
+        if (domain === "images.nubilefilms.com") {
+            // https://images.nubilefilms.com/films/anything_for_her_with_kate_rich/photos/tn/1.jpg
+            //   https://images.nubilefilms.com/films/anything_for_her_with_kate_rich/photos/1.jpg
+            return src.replace(/\/photos\/+tn\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/photos/$1");
+        }
+
+        if (domain === "g.bnrslks.com") {
+            // http://g.bnrslks.com/e0885/tn/VGI1190P04006.jpg
+            //   http://g.bnrslks.com/e0885/full/VGI1190P04006.jpg
+            return src.replace(/\/tn\/+([^/]*\.[^/.]*)(?:[?#].*)?$/, "/full/$1");
+        }
+
+        if (domain_nosub === "joymii.com" && domain.match(/^n[0-9]*\./)) {
+            // http://n6.joymii.com/sets/8257904_xow484_skt448/thumbs-215x215/r_8929627.jpg
+            //   http://n6.joymii.com/sets/8257904_xow484_skt448/fhg/r_8929627.jpg
+            return src.replace(/\/thumbs-[0-9]+x[0-9]+\//, "/fhg/");
+        }
+
 
 
 
@@ -30933,11 +31014,20 @@ var $$IMU_EXPORT$$;
                 //img.addEventListener("click", estop, true);
                 //img.addEventListener("mousedown", estop, true);
 
+                var outerdiv = document.createElement("div");
+                outerdiv.style.all = "initial";
+                outerdiv.style.position = "fixed";
+                outerdiv.style.zIndex = maxzindex - 2;
+
                 var div = document.createElement("div");
                 var popupshown = false;
                 div.style.all = "initial";
                 div.style.boxShadow = "0 0 15px rgba(0,0,0,.5)";
                 div.style.border = "3px solid white";
+                div.style.position = "relative";
+                div.style.top = "0px";
+                div.style.left = "0px";
+                div.style.display = "block";
 
                 /*var styles = settings.mouseover_styles.replace("\n", ";");
                 div.setAttribute("style", styles);
@@ -30951,9 +31041,10 @@ var $$IMU_EXPORT$$;
                     }*/
 
                 apply_styles(div, settings.mouseover_styles);
+                outerdiv.appendChild(div);
 
-                div.style.position = "fixed"; // instagram has top: -...px
-                div.style.zIndex = maxzindex - 2;
+                //div.style.position = "fixed"; // instagram has top: -...px
+                //div.style.zIndex = maxzindex - 2;
 
 
                 //div.onclick = estop;
@@ -30988,7 +31079,7 @@ var $$IMU_EXPORT$$;
 
                 // https://stackoverflow.com/a/23270007
                 function get_lefttopouter() {
-                    var style = div.currentStyle || window.getComputedStyle(div);
+                    var style = outerdiv.currentStyle || window.getComputedStyle(outerdiv);
                     return [style.marginLeft + style.borderLeftWidth,
                             style.marginTop + style.borderTopWidth];
                 }
@@ -31036,11 +31127,11 @@ var $$IMU_EXPORT$$;
                 var mouseover_position = get_single_setting("mouseover_position");
 
                 if (mouseover_position === "cursor") {
-                    div.style.top = (sct + Math.min(Math.max((y - sct) - (imgh / 2), border_thresh), Math.max(vh - imgh, border_thresh))) + "px";
-                    div.style.left = (scl + Math.min(Math.max((x - scl) - (imgw / 2), border_thresh), Math.max(vw - imgw, border_thresh))) + "px";
+                    outerdiv.style.top = (sct + Math.min(Math.max((y - sct) - (imgh / 2), border_thresh), Math.max(vh - imgh, border_thresh))) + "px";
+                    outerdiv.style.left = (scl + Math.min(Math.max((x - scl) - (imgw / 2), border_thresh), Math.max(vw - imgw, border_thresh))) + "px";
                 } else if (mouseover_position === "center") {
-                    div.style.top = (sct + Math.min(Math.max(((vh / 2) - sct) - (imgh / 2), border_thresh), Math.max(vh - imgh, border_thresh))) + "px";
-                    div.style.left = (scl + Math.min(Math.max(((vw / 2) - scl) - (imgw / 2), border_thresh), Math.max(vw - imgw, border_thresh))) + "px";
+                    outerdiv.style.top = (sct + Math.min(Math.max(((vh / 2) - sct) - (imgh / 2), border_thresh), Math.max(vh - imgh, border_thresh))) + "px";
+                    outerdiv.style.left = (scl + Math.min(Math.max(((vw / 2) - scl) - (imgw / 2), border_thresh), Math.max(vw - imgw, border_thresh))) + "px";
                 }
                 /*console_log(x - (imgw / 2));
                   console_log(vw);
@@ -31063,30 +31154,45 @@ var $$IMU_EXPORT$$;
 
                 var btndown = false;
                 function addbtn(text, title, action, istop) {
-                    var btn = document.createElement("span");
+                    var tagname = "span";
+                    if (typeof action === "string")
+                        tagname = "a";
+
+                    var btn = document.createElement(tagname);
 
                     if (action) {
-                        btn.addEventListener("click", function(e) {
-                            e.stopPropagation();
-                            e.stopImmediatePropagation();
-                            e.preventDefault();
-                            action();
-                            return false;
-                        }, true);
+                        if (typeof action === "function") {
+                            btn.addEventListener("click", function(e) {
+                                e.stopPropagation();
+                                e.stopImmediatePropagation();
+                                e.preventDefault();
+                                action();
+                                return false;
+                            }, true);
+                        } else if (typeof action === "string") {
+                            btn.href = action;
+                            btn.target = "_blank";
+
+                            btn.addEventListener("click", function(e) {
+                                e.stopPropagation();
+                                e.stopImmediatePropagation();
+                            }, true);
+                        }
                     }
 
-                    btn.onmousedown = function(e) {
+                    btn.addEventListener("mousedown", function(e) {
                         btndown = true;
-                    };
-                    btn.onmouseup = function(e) {
+                    }, true);
+                    btn.addEventListener("mouseup", function(e) {
                         btndown = false;
-                    };
+                    }, true);
                     if (!istop) {
                         opacity_hover(btn);
                     }
                     btn.style.all = "initial";
-                    if (action)
+                    if (action) {
                         btn.style.cursor = "pointer";
+                    }
                     btn.style.background = "#333";
                     btn.style.border = "3px solid white";
                     btn.style.borderRadius = "10px";
@@ -31104,7 +31210,7 @@ var $$IMU_EXPORT$$;
                     }
                     if (action)
                         btn.style.userSelect = "none";
-                    btn.innerHTML = text;
+                    btn.innerText = text;
                     if (title)
                         btn.title = title;
                     return btn;
@@ -31137,7 +31243,7 @@ var $$IMU_EXPORT$$;
                         resetpopups();
                     }, true);
                     topbarel.appendChild(closebtn);
-                    div.appendChild(topbarel);
+                    outerdiv.appendChild(topbarel);
                     ui_els.push(topbarel);
 
 
@@ -31145,7 +31251,7 @@ var $$IMU_EXPORT$$;
                     var next_images = 0;
 
                     var add_lrhover = function(isleft, btnel) {
-                        if ((popupshown && div.clientWidth < 200) ||
+                        if ((popupshown && outerdiv.clientWidth < 200) ||
                             imgw < 200)
                             return;
 
@@ -31174,7 +31280,7 @@ var $$IMU_EXPORT$$;
 
                             forwardevent(e);
                         }, true);
-                        div.appendChild(lrhover);
+                        outerdiv.appendChild(lrhover);
                         ui_els.push(lrhover);
                         return lrhover;
                     };
@@ -31187,7 +31293,7 @@ var $$IMU_EXPORT$$;
                         });
                         leftbtn.style.top = "calc(50% - 7px - .5em)";
                         leftbtn.style.left = "-1em";
-                        div.appendChild(leftbtn);
+                        outerdiv.appendChild(leftbtn);
                         ui_els.push(leftbtn);
 
                         add_lrhover(true, leftbtn);
@@ -31211,7 +31317,7 @@ var $$IMU_EXPORT$$;
                         rightbtn.style.top = "calc(50% - 7px - .5em)";
                         rightbtn.style.left = "initial";
                         rightbtn.style.right = "-1em";
-                        div.appendChild(rightbtn);
+                        outerdiv.appendChild(rightbtn);
                         ui_els.push(rightbtn);
 
                         add_lrhover(false, rightbtn);
@@ -31238,6 +31344,12 @@ var $$IMU_EXPORT$$;
                         images_total.style.fontSize = ".8em";
                         topbarel.appendChild(images_total);
                     }
+
+                    if (settings.mouseover_ui_optionsbtn) {
+                        var optionsurl = options_page;
+                        var optionsbtn = addbtn("⚙", "Options", options_page, true);
+                        topbarel.appendChild(optionsbtn);
+                    }
                 }
 
                 if (settings.mouseover_ui)
@@ -31260,7 +31372,7 @@ var $$IMU_EXPORT$$;
                 div.appendChild(a);
 
                 if (get_single_setting("mouseover_pan_behavior") === "drag") {
-                    div.ondragstart = function(e) {
+                    div.ondragstart = a.ondragstart = img.ondragstart = function(e) {
                         dragstart = true;
                         dragged = false;
                         //e.stopPropagation();
@@ -31322,8 +31434,8 @@ var $$IMU_EXPORT$$;
                 div.onwheel = function(e) {
                     if (get_single_setting("mouseover_scroll_behavior") === "pan") {
                         estop(e);
-                        div.style.left = (parseInt(div.style.left) + e.deltaX) + "px";
-                        div.style.top = (parseInt(div.style.top) + e.deltaY) + "px";
+                        outerdiv.style.left = (parseInt(outerdiv.style.left) + e.deltaX) + "px";
+                        outerdiv.style.top = (parseInt(outerdiv.style.top) + e.deltaY) + "px";
                         return false;
                     }
 
@@ -31335,8 +31447,8 @@ var $$IMU_EXPORT$$;
 
                     var changed = false;
 
-                    var percentX = e.offsetX / div.clientWidth;
-                    var percentY = e.offsetY / div.clientHeight;
+                    var percentX = e.offsetX / outerdiv.clientWidth;
+                    var percentY = e.offsetY / outerdiv.clientHeight;
 
                     var scroll_zoom = get_single_setting("scroll_zoom_behavior");
 
@@ -31397,8 +31509,8 @@ var $$IMU_EXPORT$$;
                     if (!changed)
                         return false;
 
-                    var imgwidth = div.clientWidth;
-                    var imgheight = div.clientHeight;
+                    var imgwidth = outerdiv.clientWidth;
+                    var imgheight = outerdiv.clientHeight;
 
                     var newx, newy;
 
@@ -31438,16 +31550,16 @@ var $$IMU_EXPORT$$;
                     }
 
                     var lefttop = get_lefttopouter();
-                    div.style.left = (newx - lefttop[0]) + "px";
-                    div.style.top = (newy - lefttop[0]) + "px";
+                    outerdiv.style.left = (newx - lefttop[0]) + "px";
+                    outerdiv.style.top = (newy - lefttop[0]) + "px";
 
                     create_ui(true);
 
                     return false;
                 };
 
-                document.documentElement.appendChild(div);
-                popups.push(div);
+                document.documentElement.appendChild(outerdiv);
+                popups.push(outerdiv);
                 popupshown = true;
 
                 stop_waiting();
