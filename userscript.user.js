@@ -374,7 +374,7 @@ var $$IMU_EXPORT$$;
             name: "Popup UI",
             description: "Enables a UI on top of the popup",
             requires: {
-                mouseover: true
+                mouseover_open_behavior: "popup"
             },
             category: "popup"
         },
@@ -382,7 +382,6 @@ var $$IMU_EXPORT$$;
             name: "Popup UI opacity",
             description: "Opacity of the UI on top of the popup",
             requires: {
-                mouseover: true,
                 mouseover_ui: true
             },
             type: "number",
@@ -396,7 +395,6 @@ var $$IMU_EXPORT$$;
             name: "Popup UI gallery counter",
             description: "Enables a gallery counter on top of the UI",
             requires: {
-                mouseover: true,
                 mouseover_ui: true
             },
             category: "popup"
@@ -405,8 +403,6 @@ var $$IMU_EXPORT$$;
             name: "Gallery counter max",
             description: "Maximum amount of images to check in the counter",
             requires: {
-                mouseover: true,
-                mouseover_ui: true,
                 mouseover_ui_gallerycounter: true
             },
             type: "number",
@@ -417,9 +413,10 @@ var $$IMU_EXPORT$$;
             name: "Popop UI Options Button",
             description: "Enables a button to go to the options screen for IMU",
             requires: {
-                mouseover: true,
                 mouseover_ui: true
             },
+            // While it works for the extension, it's more or less useless
+            userscript_only: true,
             category: "popup"
         },
         mouseover_open_behavior: {
@@ -462,7 +459,7 @@ var $$IMU_EXPORT$$;
                 }
             },
             requires: {
-                mouseover: true
+                mouseover_open_behavior: "popup"
             },
             category: "popup"
         },
@@ -483,7 +480,7 @@ var $$IMU_EXPORT$$;
                 }
             },
             requires: {
-                mouseover: true
+                mouseover_open_behavior: "popup"
             },
             category: "popup"
         },
@@ -502,7 +499,7 @@ var $$IMU_EXPORT$$;
                 }
             },
             requires: {
-                mouseover: true
+                mouseover_open_behavior: "popup"
             },
             category: "popup"
         },
@@ -522,7 +519,7 @@ var $$IMU_EXPORT$$;
                 }
             },
             requires: {
-                mouseover: true
+                mouseover_open_behavior: "popup"
             },
             category: "popup"
         },
@@ -540,7 +537,6 @@ var $$IMU_EXPORT$$;
                 }
             },
             requires: {
-                mouseover: true,
                 mouseover_scroll_behavior: "zoom"
             },
             category: "popup"
@@ -559,7 +555,7 @@ var $$IMU_EXPORT$$;
                 }
             },
             requires: {
-                mouseover: true
+                mouseover_open_behavior: "popup"
             },
             category: "popup"
         },
@@ -576,7 +572,7 @@ var $$IMU_EXPORT$$;
             description: "CSS style rules for the mouseover popup",
             type: "textarea",
             requires: {
-                mouseover: true
+                mouseover_open_behavior: "popup"
             },
             category: "popup"
         },
@@ -28209,6 +28205,13 @@ var $$IMU_EXPORT$$;
             return src.replace(/(\/[0-9]+_[0-9]+_)[sr](\.[^/.]*)(?:[?#].*)?$/, "$1o$2");
         }
 
+        if (domain === "cdn.lengmenjun.com") {
+            // http://cdn.lengmenjun.com/post/5ce0041b0425de5bcd4c3d95.jpg!lengmenjun-640
+            //   http://cdn.lengmenjun.com/post/5ce0041b0425de5bcd4c3d95.jpg!lengmenjun
+            //   removing ! altogether returns an error: "Forbidden access to the original image."
+            return src.replace(/!lengmenjun-[0-9]+(?:[?#].*)?$/, "!lengmenjun");
+        }
+
 
 
 
@@ -30170,15 +30173,52 @@ var $$IMU_EXPORT$$;
         function check_disabled_options() {
             var options = options_el.querySelectorAll("div.option");
 
-            for (var i = 0; i < options.length; i++) {
-                var setting = options[i].id.replace(/^option_/, "");
+            var enabled_map = {};
 
+            function check_option(setting) {
                 var meta = settings_meta[setting];
                 var enabled = true;
+
+                enabled_map[setting] = "processing";
+
                 if (meta.requires) {
                     // fixme: this only works for one option in meta.requires
                     for (var required_setting in meta.requires) {
                         var value = settings[required_setting];
+
+                        if (!(required_setting in enabled_map)) {
+                            check_option(required_setting);
+                        }
+
+                        if (enabled_map[required_setting] === "processing") {
+                            console_error("Dependency cycle detected for: " + setting + ", " + required_setting);
+                            return;
+                        }
+
+                        if (enabled_map[required_setting] && value === meta.requires[required_setting]) {
+                            enabled = true;
+                        } else {
+                            enabled = false;
+                            break;
+                        }
+                    }
+                }
+
+                enabled_map[setting] = enabled;
+
+                return enabled;
+            }
+
+            for (var i = 0; i < options.length; i++) {
+                var setting = options[i].id.replace(/^option_/, "");
+
+                //var meta = settings_meta[setting];
+                /*var enabled = true;
+                if (meta.requires) {
+                    // fixme: this only works for one option in meta.requires
+                    for (var required_setting in meta.requires) {
+                        var value = settings[required_setting];
+
 
                         if (value === meta.requires[required_setting]) {
                             enabled = true;
@@ -30187,7 +30227,8 @@ var $$IMU_EXPORT$$;
                             break;
                         }
                     }
-                }
+                    }*/
+                var enabled = check_option(setting);
 
                 if (enabled) {
                     options[i].classList.remove("disabled");
