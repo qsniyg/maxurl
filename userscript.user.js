@@ -248,6 +248,8 @@ var $$IMU_EXPORT$$;
         redirect: true,
         redirect_history: true,
         mouseover: true,
+        // thanks to blue-lightning on github for the idea
+        mouseover_open_behavior: "popup",
         //mouseover_trigger: ["ctrl", "shift"],
         mouseover_trigger_behavior: "keyboard",
         // thanks to 894-572 on github for the idea
@@ -258,8 +260,6 @@ var $$IMU_EXPORT$$;
         mouseover_ui_gallerycounter: true,
         mouseover_ui_gallerymax: 50,
         mouseover_ui_optionsbtn: is_userscript ? true : false,
-        // thanks to blue-lightning on github for the idea
-        mouseover_open_behavior: "popup",
         // also thanks to blue-lightning
         mouseover_close_behavior: "esc",
         mouseover_zoom_behavior: "fit",
@@ -297,6 +297,24 @@ var $$IMU_EXPORT$$;
         mouseover: {
             name: "Enable mouseover popup",
             description: "Show a popup with the larger image when you mouseover an image with the trigger key held",
+            category: "popup"
+        },
+        mouseover_open_behavior: {
+            name: "Mouseover popup action",
+            description: "Determines how the mouseover popup will open",
+            extension_only: true,
+            options: {
+                _type: "or",
+                popup: {
+                    name: "Popup"
+                },
+                newtab: {
+                    name: "New tab"
+                }
+            },
+            requires: {
+                mouseover: true
+            },
             category: "popup"
         },
         mouseover_trigger: {
@@ -417,24 +435,6 @@ var $$IMU_EXPORT$$;
             },
             // While it works for the extension, it's more or less useless
             userscript_only: true,
-            category: "popup"
-        },
-        mouseover_open_behavior: {
-            name: "Mouseover popup action",
-            description: "Determines how the mouseover popup will open",
-            extension_only: true,
-            options: {
-                _type: "or",
-                popup: {
-                    name: "Popup"
-                },
-                newtab: {
-                    name: "New tab"
-                }
-            },
-            requires: {
-                mouseover: true
-            },
             category: "popup"
         },
         mouseover_close_behavior: {
@@ -2137,6 +2137,12 @@ var $$IMU_EXPORT$$;
                 return newsrc;
         }
 
+        if (domain_nosub === "jpimedia.uk" && domain.match(/^images(?:-[a-z])?\./)) {
+            // https://images-a.jpimedia.uk/imagefetch/w_700,f_auto,ar_3:2,q_auto:low,c_fill/if_h_lte_200,c_mfit,h_201/https://www.lep.co.uk/webimage/1.9676998.1553766389!/image/image.jpg
+            //   https://www.lep.co.uk/webimage/1.9676998.1553766389!/image/image.jpg
+            return src.replace(/^[a-z]+:\/\/[^/]*\/+imagefetch\/+.*?\/(https?:\/\/)/, "$1");
+        }
+
         // https://res.cloudinary.com/beamly/image/upload/s--Ayyiome3--/c_fill,g_face,q_70,w_479/f_jpg/v1/news/sites/6/2014/11/Nick-Hewer-The-Apprentice.jpg
         //   https://res.cloudinary.com/beamly/image/upload/v1/news/sites/6/2014/11/Nick-Hewer-The-Apprentice.jpg
         //   https://res.cloudinary.com/beamly/image/upload/news/sites/6/2014/11/Nick-Hewer-The-Apprentice.jpg
@@ -3752,6 +3758,8 @@ var $$IMU_EXPORT$$;
             (domain === "styles.redditmedia.com" && src.indexOf("/styles/") >= 0) ||
             // https://img.webmd.com/dtmcms/live/webmd/consumer_assets/site_images/article_thumbnails/other/zoe_saldana_2017_other/375x321_zoe_saldana_2017_other.jpg?resize=*:85px
             domain === "img.webmd.com" ||
+            // https://embedwistia-a.akamaihd.net/deliveries/156d4cda7d1fd80c4d334b35f3f033b9.jpg?image_crop_resized=1280x720
+            domain === "embedwistia-a.akamaihd.net" ||
             // http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
             // https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
             src.match(/\/demandware\.static\//) ||
@@ -3793,6 +3801,8 @@ var $$IMU_EXPORT$$;
             domain === "img.shelive.net" ||
             // http://img.qdaily.com/article/article_show/201801221803061ecNiBfxSIF2pzrU.jpg?imageMogr2/auto-orient/thumbnail/!245x185r/gravity/Center/crop/245x185/quality/85/format/webp/ignore-error/1
             domain === "img.qdaily.com" ||
+            // https://qimage.owhat.cn/prod/shop/cover/1557915266300.jpg?imageMogr2/auto-orient/thumbnail/!750x480r/gravity/Center/quality/80/crop/750x480
+            domain === "qimage.owhat.cn" ||
             // https://img.ksl.com/slc/2657/265775/26577563.jpg?filter=ksl/img143
             domain === "img.ksl.com" ||
             // http://s1.mioreport.com/file/fushi/xiuchang/2017-06-02/98c2cd2e90cf206b5bcf3490e3a56d0e.jpg?x-oss-process=style/sty1
@@ -11857,7 +11867,10 @@ var $$IMU_EXPORT$$;
         }
 
         // nopCommerce
-        if (domain === "shop.unitedcycle.com" &&
+        if ((domain === "shop.unitedcycle.com" ||
+             // https://4my3boyz.com/content/images/thumbs/0015622_beautiful-birds-housing-boom-songbirds-song-bird-cream-cotton-fabric_500.jpeg
+             //   https://4my3boyz.com/content/images/thumbs/0015622_beautiful-birds-housing-boom-songbirds-song-bird-cream-cotton-fabric.jpeg
+             domain_nowww === "4my3boyz.com") &&
             src.indexOf("/images/thumbs/") >= 0) {
             // https://shop.unitedcycle.com/content/images/thumbs/0277134_mens-nhl-edmonton-oilers-connor-mcdavid-authentic-home-jersey_276.jpeg
             //   https://shop.unitedcycle.com/content/images/thumbs/0277134_mens-nhl-edmonton-oilers-connor-mcdavid-authentic-home-jersey.jpeg
@@ -22684,6 +22697,9 @@ var $$IMU_EXPORT$$;
             // https://img.liberoquotidiano.it/resizer/-1/-1/true/1482833567358.JPG--.JPG?1482833575000
             //   https://img.liberoquotidiano.it/upload/1482833567358.JPG -- works, but displays as text
             domain === "img.liberoquotidiano.it" ||
+            // https://www.dundalkdemocrat.ie/resizer/750/563/true/1515682498754.jpg--have_you_seen_this_beautiful_bird_of_prey_in_the_skies_above_dundalk_and_louth_.jpg?1515682499000
+            //   https://www.dundalkdemocrat.ie/upload/1515682498754.jpg
+            domain_nowww === "dundalkdemocrat.ie" ||
             // https://www.liberoquotidiano.it/resizer/610/-1/false/1472720861989.jpg--.jpg?1472720874000
             //   https://www.liberoquotidiano.it/resizer/-1/-1/false/1472720861989.jpg--.jpg?1472720874000
             //   https://www.liberoquotidiano.it/upload/1472720861989.jpg
@@ -24895,7 +24911,9 @@ var $$IMU_EXPORT$$;
         if (domain_nosub === "flixcart.com") {
             // https://rukminim1.flixcart.com/image/612/612/jiyvvrk0/physical-game/v/t/d/grand-theft-auto-grand-theft-auto-san-andreas-and-vice-city-pack-original-imaf6ncepvvb3gzh.jpeg?q=1
             //   https://rukminim1.flixcart.com/image/jiyvvrk0/physical-game/v/t/d/grand-theft-auto-grand-theft-auto-san-andreas-and-vice-city-pack-original-imaf6ncepvvb3gzh.jpeg
-            return src.replace(/(:\/\/[^/]*\/+image)\/+[0-9]+\/+[0-9]+\/+([0-9a-z]+\/+[^/]*\/+.\/+.\/+.\/+[^/]*\.[^/.?]*)(?:[?#].*)?$/, "$1/$2");
+            // https://rukminim1.flixcart.com/image/832/832/poster/9/q/p/beautiful-birds-parrots-psu360000102-small-original-imaegcsejqkfdg3g.jpeg?q=70 -- upscaled?
+            //   https://rukminim1.flixcart.com/image/poster/9/q/p/beautiful-birds-parrots-psu360000102-small-original-imaegcsejqkfdg3g.jpeg
+            return src.replace(/(:\/\/[^/]*\/+image)\/+[0-9]+\/+[0-9]+\/+([0-9a-z]+\/+(?:[^/]*\/+)?.\/+.\/+.\/+[^/]*\.[^/.?]*)(?:[?#].*)?$/, "$1/$2");
         }
 
         if (domain === "conteudo.imguol.com.br") {
@@ -28212,6 +28230,44 @@ var $$IMU_EXPORT$$;
             return src.replace(/!lengmenjun-[0-9]+(?:[?#].*)?$/, "!lengmenjun");
         }
 
+        if (amazon_container === "gallerist") {
+            // https://s3.amazonaws.com/gallerist/products/21820/large/beautiful-birds-2.jpg?1550739385
+            //   https://s3.amazonaws.com/gallerist/products/21820/original/beautiful-birds-2.jpg?1550739385
+            return src.replace(/(\/products\/+[0-9]+\/+)[a-z]+\/+([^/]*)(?:[?#].*)?$/, "$1original/$2");
+        }
+
+        if (domain === "dingo.care2.com") {
+            // https://dingo.care2.com/pictures/petition_images/petition/475/963911-1554925586-wide.jpg
+            //   https://dingo.care2.com/pictures/petition_images/petition/475/963911-1554925586-orig.jpg
+            return src.replace(/(\/pictures\/+.*\/[0-9]+-[0-9]+-)[a-z]+(\.[^/.]*)(?:[?#].*)?$/, "$1orig$2");
+        }
+
+        if (domain === "newsinteractives.cbc.ca") {
+            // https://newsinteractives.cbc.ca/craft-assets/images/lead/_medium/Northern-Parula_-copy.jpg
+            //   https://newsinteractives.cbc.ca/craft-assets/images/lead/Northern-Parula_-copy.jpg
+            return src.replace(/(\/images\/+[^/]*\/+)_[a-z]+\/+/, "$1");
+        }
+
+        if (domain_nowww === "clipartmax.com") {
+            // https://www.clipartmax.com/png/middle/24-244947_tubes-oiseaux-birds-png-beautiful-birds-of-the-world.png
+            //   https://www.clipartmax.com/png/full/24-244947_tubes-oiseaux-birds-png-beautiful-birds-of-the-world.png
+            return src.replace(/(:\/\/[^/]*\/(?:png|jpg|jpeg|gif)\/+)[a-z]+\/+/, "$1full/");
+        }
+
+        if (domain_nowww === "createphotocalendars.com") {
+            // https://www.createphotocalendars.com/studio/generatedjpgs/donnald73/thumbs/1611324236.jpg
+            //   https://www.createphotocalendars.com/studio/generatedjpgs/donnald73//1611324236.jpg
+            // https://www.createphotocalendars.com/Studio/GeneratedJpgs/donnald73/thumbs/1611324236.jpg
+            //   https://www.createphotocalendars.com/Studio/GeneratedJpgs/donnald73//1611324236.jpg
+            return src.replace(/(\/studio\/+generated[a-zA-Z]+\/+[^/]*\/+)thumbs\/+/i, "$1/");
+        }
+
+        if (domain_nowww === "larutadelsorigens.cat") {
+            // http://www.larutadelsorigens.cat/filelook/small/75/752334/beautiful-birds-hd-wallpapers.jpg
+            //   http://www.larutadelsorigens.cat/filelook/full/75/752334/beautiful-birds-hd-wallpapers.jpg
+            return src.replace(/\/filelook\/+[a-z]+\/+/, "/filelook/full/");
+        }
+
 
 
 
@@ -30987,6 +31043,10 @@ var $$IMU_EXPORT$$;
         var popup_el = null;
         var popups_active = false;
         var dragstart = false;
+        var dragstartX = null;
+        var dragstartY = null;
+        var dragoffsetX = null;
+        var dragoffsetY = null;
         var dragged = false;
         var controlPressed = false;
         var waiting = false;
@@ -31567,10 +31627,20 @@ var $$IMU_EXPORT$$;
                 a.appendChild(img);
                 div.appendChild(a);
 
+                function startdrag(e) {
+                    dragstart = true;
+                    dragged = false;
+                    dragstartX = e.clientX;
+                    dragstartY = e.clientY;
+                    dragoffsetX = dragstartX - parseFloat(outerdiv.style.left);
+                    dragoffsetY = dragstartY - parseFloat(outerdiv.style.top);
+                }
+
                 if (get_single_setting("mouseover_pan_behavior") === "drag") {
                     div.ondragstart = a.ondragstart = img.ondragstart = function(e) {
-                        dragstart = true;
-                        dragged = false;
+                        //dragstart = true;
+                        //dragged = false;
+                        startdrag(e);
                         //e.stopPropagation();
                         estop(e);
                         return false;
@@ -31582,8 +31652,9 @@ var $$IMU_EXPORT$$;
                         if (btndown || e.button !== 0)
                             return;
 
-                        dragstart = true;
-                        dragged = false;
+                        //dragstart = true;
+                        //dragged = false;
+                        startdrag(e);
 
                         e.preventDefault();
                         estop(e);
@@ -31594,8 +31665,9 @@ var $$IMU_EXPORT$$;
                         if (btndown || e.button !== 0)
                             return;
 
-                        dragstart = true;
-                        dragged = false;
+                        //dragstart = true;
+                        //dragged = false;
+                        startdrag(e);
 
                         estop(e);
                         return true;
@@ -32742,15 +32814,19 @@ var $$IMU_EXPORT$$;
 
             var viewport = get_viewport();
             var edge_buffer = 40;
+            var min_move_amt = 5;
 
             if (pan_behavior === "drag" && dragstart) {
                 var origleft = parseInt(popup.style.left);
-                var left = origleft + event.movementX;
+                //var left = origleft + event.movementX;
+                var left = mouseX - dragoffsetX;
 
                 if (left !== origleft) {
-                    lastX = left - (origleft - lastX);
-                    popup.style.left = left + "px";
-                    dragged = true;
+                    if (dragged || Math.abs(left - origleft) >= min_move_amt) {
+                        lastX = left - (origleft - lastX);
+                        popup.style.left = left + "px";
+                        dragged = true;
+                    }
                 }
             } else if (pan_behavior === "movement" && popup.offsetWidth > viewport[0]) {
                 var mouse_edge = Math.min(Math.max((mouseX - edge_buffer), 0), viewport[0] - edge_buffer * 2);
@@ -32760,12 +32836,15 @@ var $$IMU_EXPORT$$;
 
             if (pan_behavior === "drag" && dragstart) {
                 var origtop = parseInt(popup.style.top);
-                var top = origtop + event.movementY;
+                //var top = origtop + event.movementY;
+                var top = mouseY - dragoffsetY;
 
                 if (top !== origtop) {
-                    lastY = top - (origtop - lastY);
-                    popup.style.top = top + "px";
-                    dragged = true;
+                    if (dragged || Math.abs(top - origtop) >= min_move_amt) {
+                        lastY = top - (origtop - lastY);
+                        popup.style.top = top + "px";
+                        dragged = true;
+                    }
                 }
             } else if (pan_behavior === "movement" && popup.offsetHeight > viewport[1]) {
                 var mouse_edge = Math.min(Math.max((mouseY - edge_buffer), 0), viewport[1] - edge_buffer * 2);
