@@ -4321,6 +4321,8 @@ var $$IMU_EXPORT$$;
             (domain_nosub === "windows7themes.net" && src.indexOf("/wp-content/files/") >= 0) ||
             // http://quotes.whyfame.com/files/2010/01/zoe_saldana-150x150.jpg
             (domain === "quotes.whyfame.com" && src.indexOf("/files/") >= 0) ||
+            // https://hacks.mozilla.org/files/2019/05/Worker-Threads-Panel-500x301.png
+            (domain_nosub === "mozilla.org" && src.match(/:\/\/[^/]*\/files\/+[0-9]{4}\/+[0-9]{2}\/+/)) ||
             // https://1.soompi.io/wp-content/blogs.dir/8/files/2015/09/HA-TFELT-Wonder-Girls-590x730.jpg -- doesn't work
             // https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2018/01/GTA-6-Female-Protag-796x417.jpg -- does work
             src.indexOf("/wp-content/blogs.dir/") >= 0 ||
@@ -4967,7 +4969,10 @@ var $$IMU_EXPORT$$;
             //   http://img1.rnkr-static.com/user_node_img/3369/67378502/full/bree-daniels-people-in-film-photo-u1.jpg -- has artifacts
             //   http://img1.rnkr-static.com/user_node_img/3369/67378502/full/bree-daniels-people-in-film-photo-u1.png -- 404
             //   http://imgix.ranker.com/user_node_img/3369/67378502/original/bree-daniels-people-in-film-photo-u1?fm=png
-            return src.replace(/^[a-z]+:\/\/[^/]*\/+(user_node_img\/+[0-9]+\/+[0-9]+)\/+[^/]*\/+([^/]*)\.[^/.]*(?:[?#].*)?$/,
+            // http://img1.rnkr-static.com/node_img/83/1644505/C100/namie-amuro-recording-artists-and-groups-photo-1.jpg
+            //   https://imgix.ranker.com/node_img/83/1644505/original/namie-amuro-recording-artists-and-groups-photo-1?fm=png -- looks better, maybe original?
+            //   http://img1.rnkr-static.com/node_img/83/1644505/full/namie-amuro-recording-artists-and-groups-photo-1.jpg -- edges are less blurry, but has artifacts
+            return src.replace(/^[a-z]+:\/\/[^/]*\/+((?:user_)?node_img\/+[0-9]+\/+[0-9]+)\/+[^/]*\/+([^/]*)\.[^/.]*(?:[?#].*)?$/,
                                "https://imgix.ranker.com/$1/original/$2?fm=png");
         }
 
@@ -10606,10 +10611,13 @@ var $$IMU_EXPORT$$;
                 .replace(/\/_size_[^/]*\//, "/");
         }
 
-        if (domain_nosub === "seesaa.net") {
+        if (domain_nosub === "seesaa.net" ||
+            // http://fanblogs.jp/yokozuna0079/file/E38182E38280E3828D-thumbnail2.jpg
+            //   http://fanblogs.jp/yokozuna0079/file/E38182E38280E3828D.jpg
+            (domain_nowww === "fanblogs.jp" && src.indexOf("/file/") >= 0)) {
             // http://flamant.up.seesaa.net/image/1981AAA9-2780-4445-8DF7-C72FA57A6738-thumbnail2.jpg
             //   http://flamant.up.seesaa.net/image/1981AAA9-2780-4445-8DF7-C72FA57A6738.jpg
-            return src.replace(/-thumbnail[0-9]*(\.[^/.]*)$/, "$1");
+            return src.replace(/-thumbnail[0-9]*(\.[^/.]*)(?:[?#].*)?$/, "$1");
         }
 
         if (false && domain_nosub === "biglobe.ne.jp") {
@@ -26174,7 +26182,10 @@ var $$IMU_EXPORT$$;
         if (domain_nosub === "jpopasia.com" && domain.match(/^i[0-9]*\./)) {
             // https://i1.jpopasia.com/assets/1/30523-kaede-ghig-t.jpg
             //   https://i1.jpopasia.com/assets/1/30523-kaede-ghig.png
-            return add_extensions(src.replace(/(\/assets\/+[0-9]+\/+[^/]*)-t(\.[^/.]*)(?:[?#].*)?$/, "$1$2"));
+            // http://i1.jpopasia.com/news/4/11835-im97idtonw-t.jpg
+            //   http://i1.jpopasia.com/news/4/11835-im97idtonw.jpg
+            return add_extensions(src.replace(/(\/(?:assets|news)\/+[0-9]+\/+[^/]*)-t(\.[^/.]*)(?:[?#].*)?$/, "$1$2"));
+            //return src.replace(/(\/news\/+[0-9]+\/+[0-9]+-[0-9a-z]+)-t(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
         }
 
         if (domain_nowww === "jpgravure.com" ||
@@ -28057,7 +28068,10 @@ var $$IMU_EXPORT$$;
             return src.replace(/(:\/\/[^/]*\/)[a-z]+\/+/, "$1img/");
         }
 
-        if (domain_nowww === "razdachi.net") {
+        if (domain_nowww === "razdachi.net" ||
+            // http://www.wallpaperfuel.com/thumbnail/namie-amuro/namie-amuro-105017.jpg
+            //   http://www.wallpaperfuel.com/wallpaper/namie-amuro/namie-amuro-105017.jpg
+            domain_nowww === "wallpaperfuel.com") {
             // http://www.razdachi.net/thumbnail/emma-stone/emma-stone-57485.jpg
             //   http://www.razdachi.net/wallpaper/emma-stone/emma-stone-57485.jpg
             return src.replace(/(:\/\/[^/]*\/)thumbnail\/+/, "$1wallpaper/");
@@ -28267,6 +28281,52 @@ var $$IMU_EXPORT$$;
             //   http://www.larutadelsorigens.cat/filelook/full/75/752334/beautiful-birds-hd-wallpapers.jpg
             return src.replace(/\/filelook\/+[a-z]+\/+/, "/filelook/full/");
         }
+
+        if (domain === "wwcdn.weddingwire.com") {
+            // https://wwcdn.weddingwire.com/wedding/7465001_7470000/7466543/thumbnails/1200x1200_1518281784-b4f79304f79420bd-FB9A7785.jpg
+            //   https://wwcdn.weddingwire.com/wedding/7465001_7470000/7466543/1518281784-b4f79304f79420bd-FB9A7785.jpg
+            // https://wwcdn.weddingwire.com/vendor/65001_70000/66649/thumbnails/600x600_1277388582247-LoveIceSculpture.jpg -- doesn't work for /vendor/
+            //   (seems like it used to work though)
+            return src.replace(/(\/wedding\/+[0-9]+_[0-9]+\/+[0-9]+\/+)thumbnails\/+[0-9]+x[0-9]+_/, "$1");
+        }
+
+        if (domain_nowww === "weddingandpartynetwork.com") {
+            // http://www.weddingandpartynetwork.com/gallery/photos/thumb/6530
+            //   http://www.weddingandpartynetwork.com/gallery/photos/6530
+            return src.replace(/\/gallery\/+photos\/+thumb\/+([0-9]+)(?:[?#].*)?$/, "/gallery/photos/$1");
+        }
+
+        if (domain_nowww === "sandinyoureye.co.uk") {
+            // https://www.sandinyoureye.co.uk/files/gallery/_306x306_crop_Center-Center_80/professional-ice-sculpture_ice-carving_Bradford.jpg
+            //   https://www.sandinyoureye.co.uk/files/gallery/professional-ice-sculpture_ice-carving_Bradford.jpg
+            return src.replace(/\/files\/+gallery\/+_[0-9]+x[0-9]+_[^/]*\/+/, "/files/gallery/");
+        }
+
+        if (amazon_container === "static.lovely-media.jp") {
+            // https://s3-ap-northeast-1.amazonaws.com/static.lovely-media.jp/production/posts/eyecatches/000/006/246/medium.JPG?1516345778
+            //   https://s3-ap-northeast-1.amazonaws.com/static.lovely-media.jp/production/posts/eyecatches/000/006/246/original.JPG?1516345778
+            return src.replace(/(\/(?:[0-9]{3}\/+){3})[a-z]+(\.[^/.]*)(?:[?#].*)?$/, "$1original$2");
+        }
+
+        if (domain_nowww === "foto4ka.com") {
+            // http://www.foto4ka.com/thumbnails/4/namie-amuro-photoshoot.jpg
+            //   http://www.foto4ka.com/wallpapers/4/namie-amuro-photoshoot.jpg
+            return src.replace(/(:\/\/[^/]*\/)thumbnails\/+([0-9]+\/+)/, "$1wallpapers/$2");
+        }
+
+        if (domain_nowww === "showwallpaper.com") {
+            // http://www.showwallpaper.com/wallpaper/0912/tn_038735.jpg
+            //   http://www.showwallpaper.com/wallpaper/0912/038735.jpg
+            return src.replace(/(\/wallpaper\/+[0-9]+\/+)tn_([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain_nosub === "cduniverse.ws" && domain.match(/^c[0-9]*\./)) {
+            // https://c9.cduniverse.ws/resized/144x205/music/108/7380108.jpg
+            //   https://c9.cduniverse.ws/resized/9000x9000/music/108/7380108.jpg
+            // https://c9.cduniverse.ws/resizedb/9000x9000/movie/692/9464692.jpg -- b is different than without (back cover)
+            return src.replace(/(\/resized[a-z]*\/+)[0-9]+x[0-9]+\/+/, "$19000x9000/");
+        }
+
 
 
 
@@ -31456,6 +31516,8 @@ var $$IMU_EXPORT$$;
                     btn.style.padding = "4px";
                     btn.style.lineHeight = "1em";
                     btn.style.whiteSpace = "nowrap";
+                    btn.style.fontSize = "14px";
+                    btn.style.fontFamily = "sans-serif";
                     btn.style.zIndex = maxzindex - 1;
                     if (!istop) {
                         btn.style.position = "absolute";
@@ -31485,11 +31547,16 @@ var $$IMU_EXPORT$$;
 
                     ui_els = [];
 
+                    var emi = 14;
+                    var em1 = emi + "px"
+                    var emhalf = (emi / 2) + "px";
+                    var gallerycount_fontsize = "13px";
+
                     var topbarel = document.createElement("div");
                     topbarel.style.all = "initial";
                     topbarel.style.position = "absolute";
-                    topbarel.style.left = "-1em";
-                    topbarel.style.top = "-1em";
+                    topbarel.style.left = "-" + em1;
+                    topbarel.style.top = "-" + em1;
                     topbarel.style.opacity = defaultopacity;
                     topbarel.style.zIndex = maxzindex - 1;
 
@@ -31547,8 +31614,8 @@ var $$IMU_EXPORT$$;
                                 create_ui();
                             }
                         });
-                        leftbtn.style.top = "calc(50% - 7px - .5em)";
-                        leftbtn.style.left = "-1em";
+                        leftbtn.style.top = "calc(50% - 7px - " + emhalf + ")";
+                        leftbtn.style.left = "-" + em1;
                         outerdiv.appendChild(leftbtn);
                         ui_els.push(leftbtn);
 
@@ -31570,9 +31637,9 @@ var $$IMU_EXPORT$$;
                                 create_ui();
                             }
                         });
-                        rightbtn.style.top = "calc(50% - 7px - .5em)";
+                        rightbtn.style.top = "calc(50% - 7px - " + emhalf + ")";
                         rightbtn.style.left = "initial";
-                        rightbtn.style.right = "-1em";
+                        rightbtn.style.right = "-" + em1;
                         outerdiv.appendChild(rightbtn);
                         ui_els.push(rightbtn);
 
@@ -31597,7 +31664,7 @@ var $$IMU_EXPORT$$;
                         }
 
                         var images_total = addbtn(text, "", null, true);
-                        images_total.style.fontSize = ".8em";
+                        images_total.style.fontSize = gallerycount_fontsize;
                         topbarel.appendChild(images_total);
                     }
 
