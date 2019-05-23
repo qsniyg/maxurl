@@ -31573,7 +31573,7 @@ var $$IMU_EXPORT$$;
                     var prev_images = 0;
                     var next_images = 0;
 
-                    var add_lrhover = function(isleft, btnel) {
+                    var add_lrhover = function(isleft, btnel, action) {
                         if ((popupshown && outerdiv.clientWidth < 200) ||
                             imgw < 200)
                             return;
@@ -31601,25 +31601,34 @@ var $$IMU_EXPORT$$;
                                 return false;
                             }
 
-                            forwardevent(e);
+                            //forwardevent(e);
+                            estop(e);
+                            action(e);
+                            return false;
                         }, true);
                         outerdiv.appendChild(lrhover);
                         ui_els.push(lrhover);
                         return lrhover;
                     };
 
+                    function lraction(isright) {
+                        if (!trigger_gallery(isright)) {
+                            create_ui();
+                        }
+                    }
+
                     if (is_valid_el(wrap_gallery_func(false))) {
-                        var leftbtn = addbtn("←", "Previous (Left Arrow)", function() {
-                            if (!trigger_gallery(false)) {
-                                create_ui();
-                            }
-                        });
+                        var leftaction = function() {
+                            return lraction(false);
+                        };
+
+                        var leftbtn = addbtn("←", "Previous (Left Arrow)", leftaction);
                         leftbtn.style.top = "calc(50% - 7px - " + emhalf + ")";
                         leftbtn.style.left = "-" + em1;
                         outerdiv.appendChild(leftbtn);
                         ui_els.push(leftbtn);
 
-                        add_lrhover(true, leftbtn);
+                        add_lrhover(true, leftbtn, leftaction);
 
                         if (settings.mouseover_ui_gallerycounter) {
                             if (use_cached_gallery) {
@@ -31632,18 +31641,18 @@ var $$IMU_EXPORT$$;
                     }
 
                     if (is_valid_el(wrap_gallery_func(true))) {
-                        var rightbtn = addbtn("→", "Next (Right Arrow)", function() {
-                            if (!trigger_gallery(true)) {
-                                create_ui();
-                            }
-                        });
+                        var rightaction = function() {
+                            return lraction(true);
+                        };
+
+                        var rightbtn = addbtn("→", "Next (Right Arrow)", rightaction);
                         rightbtn.style.top = "calc(50% - 7px - " + emhalf + ")";
                         rightbtn.style.left = "initial";
                         rightbtn.style.right = "-" + em1;
                         outerdiv.appendChild(rightbtn);
                         ui_els.push(rightbtn);
 
-                        add_lrhover(false, rightbtn);
+                        add_lrhover(false, rightbtn, rightaction);
 
                         if (settings.mouseover_ui_gallerycounter) {
                             if (use_cached_gallery) {
