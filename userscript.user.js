@@ -2969,11 +2969,15 @@ var $$IMU_EXPORT$$;
             src.indexOf("pbs.twimg.com/profile_images/") >= 0) {
             // https://pbs.twimg.com/profile_images/539057632435122178/1_MUcoAZ_bigger.jpeg
             // https://pbs.twimg.com/profile_images/642139282325417984/uXOHdmTV_mini.png
+            // https://pbs.twimg.com/profile_images/1079712585186852864/l9IiWuzk_reasonably_small.jpg
+            //   https://pbs.twimg.com/profile_images/1079712585186852864/l9IiWuzk.jpg
             //return src.replace(/_[a-zA-Z0-9]+\.([^/_]*)$/, "\.$1");
             return src
+                .replace(/[?#].*$/, "")
                 .replace(/_bigger\.([^/_]*)$/, "\.$1")
                 .replace(/_normal\.([^/_]*)$/, "\.$1")
                 .replace(/_mini\.([^/_]*)$/, "\.$1")
+                .replace(/_reasonably_small\.([^/_]*)$/, "\.$1")
                 .replace(/_[0-9]+x[0-9]+\.([^/_]*)$/, "\.$1");
         }
 
@@ -6246,7 +6250,7 @@ var $$IMU_EXPORT$$;
 
             id = src.replace(/^([a-z]+:\/\/)(?:[^/.]*\.)?([^/.]+\.[^/.]+\/)th\/+[0-9]+\/+([0-9a-z]+)(?:\.[^/.].*)?$/,
                              "$1$2$3");
-            console_log(id);
+            //console_log(id);
             if (id !== src && options && options.cb && options.do_request) {
                 options.do_request({
                     method: "GET",
@@ -8356,6 +8360,8 @@ var $$IMU_EXPORT$$;
             // http://www.peoplite.com/public/album_photo/e7/23/02/71fbf88a7a3d6ee2d1ff7cca9a1fd736.jpg.pagespeed.ce.SiSZg6-g3I.jpg
             //   http://www.peoplite.com/public/album_photo/e7/23/02/71fbf88a7a3d6ee2d1ff7cca9a1fd736.jpg
             (domain_nowww === "peoplite.com" && src.indexOf("/public/album_photo/") >= 0) ||
+            // https://cdn.admireme.vip/media/cdeecc80-7cf7-4083-9e2e-9690ad143432.jpg.288x288_q85_crop_upscale.jpg
+            (domain === "cdn.admireme.vip" && src.indexOf("/media/") >= 0) ||
             domain === "d26oc3sg82pgk3.cloudfront.net" ||
             domain === "d53l9d6fqlxs2.cloudfront.net") {
             // https://media.mnn.com/assets/images/2017/03/cyclops-2-titanic-wreck.jpg.653x0_q80_crop-smart.jpg
@@ -28325,6 +28331,16 @@ var $$IMU_EXPORT$$;
             //   https://c9.cduniverse.ws/resized/9000x9000/music/108/7380108.jpg
             // https://c9.cduniverse.ws/resizedb/9000x9000/movie/692/9464692.jpg -- b is different than without (back cover)
             return src.replace(/(\/resized[a-z]*\/+)[0-9]+x[0-9]+\/+/, "$19000x9000/");
+        }
+
+        if (domain === "img.mandarake.co.jp") {
+            // thanks to fireattack on github: https://github.com/qsniyg/maxurl/issues/70
+            // https://img.mandarake.co.jp/webshopimg/03/30/430/0330290430/s_03302904302.jpg
+            //   https://img.mandarake.co.jp/webshopimg/03/30/430/0330290430/03302904302.jpg
+            // https://img.mandarake.co.jp/webshopimg/01/00/142/0100518142/s_01005181425.jpg
+            //   https://img.mandarake.co.jp/webshopimg/01/00/142/0100518142/01005181425.jpg -- 2130x2999
+            return src.replace(/(\/webshopimg\/+[0-9]+\/+[0-9]+\/+[0-9]+\/+[0-9]+\/+)[a-z]_([0-9]+\.[^/.]*)(?:[?#].*)?$/,
+                               "$1$2");
         }
 
 
