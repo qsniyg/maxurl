@@ -210,7 +210,7 @@ var $$IMU_EXPORT$$;
 
         var result;
 
-        if (typeof x === "string") {
+        if (typeof x === "string" || x === null) {
             return x;
         } else if ((typeof Element !== "undefined" && x instanceof Element) ||
                    (x && typeof x === "object" && (("namespaceURI" in x) && ("ariaSort" in x)))) {
@@ -6123,6 +6123,8 @@ var $$IMU_EXPORT$$;
             options && options.do_request && options.cb) {
             // https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/intermediary/f/bc11a5bd-c85a-4e07-a890-a83ce286cfee/dcqjbom-5b42308b-181c-4bb6-9108-5ce3508986e4.jpg
             // https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/922c6655-afbf-45cb-929f-b971943216f4/d906aqf-b0e71f31-20c2-45f4-831f-2442087fbbad.jpg/v1/fill/w_1024,h_640,q_75,strp/goblin_naturists_by_warmics_d906aqf-fullview.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9NjQwIiwicGF0aCI6IlwvZlwvOTIyYzY2NTUtYWZiZi00NWNiLTkyOWYtYjk3MTk0MzIxNmY0XC9kOTA2YXFmLWIwZTcxZjMxLTIwYzItNDVmNC04MzFmLTI0NDIwODdmYmJhZC5qcGciLCJ3aWR0aCI6Ijw9MTAyNCJ9XV0sImF1ZCI6WyJ1cm46c2VydmljZTppbWFnZS5vcGVyYXRpb25zIl19.FTWlO6H5303XfAWoFjliFO73UtCmv0WvMNxADrjNBGs
+            // https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/3953b6c9-6b84-493b-9832-cc14ba59fa07/d1fl69c-907907a6-ce19-48b2-b915-f823507cbbc4.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzM5NTNiNmM5LTZiODQtNDkzYi05ODMyLWNjMTRiYTU5ZmEwN1wvZDFmbDY5Yy05MDc5MDdhNi1jZTE5LTQ4YjItYjkxNS1mODIzNTA3Y2JiYzQuanBnIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.5IJp0mWnHzp_yKTxTaoNvw5c1r_1-PhUvzcvVdt_8Vk
+            //   https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/intermediary/f/3953b6c9-6b84-493b-9832-cc14ba59fa07/d1fl69c-907907a6-ce19-48b2-b915-f823507cbbc4.jpg
             match = src.match(/^[a-z]+:\/\/(?:images-)?wixmp-[0-9a-f]+\.wixmp\.com\/+(?:intermediary\/+)?[^/]*\/+[-0-9a-f]+\/+([0-9a-z]+)-[-0-9a-f]+\.[^/.]+(?:\/+v[0-9]*\/.*?)?(?:[?#].*)?$/);
             if (match) {
                 id = match[1];
@@ -16974,6 +16976,7 @@ var $$IMU_EXPORT$$;
                                         return options.cb(obj);
                                     } catch (e) {
                                         console_error(e);
+                                        return options.cb(obj);
                                     }
                                 }
                                 return;
@@ -29649,11 +29652,15 @@ var $$IMU_EXPORT$$;
 
             var big;
 
-            try {
+            if (true) {
+                try {
+                    big = bigimage(currenthref, options);
+                } catch(e) {
+                    console_error(e);
+                    console_error(e.stack);
+                }
+            } else {
                 big = bigimage(currenthref, options);
-            } catch(e) {
-                console_error(e);
-                console_error(e.stack);
             }
 
             return parse_bigimage(big);
