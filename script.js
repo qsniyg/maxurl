@@ -102,6 +102,10 @@ var ga_thresh = 1000;
 function track_ga(value) {
   var now = Date.now();
 
+  // FIXME: why does this happen?
+  if (last_ga === undefined || typeof last_ga !== "object")
+    return;
+
   if (last_ga[value] && (now - last_ga[value]) < ga_thresh) {
     return;
   }
