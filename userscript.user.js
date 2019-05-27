@@ -243,6 +243,242 @@ var $$IMU_EXPORT$$;
         }
     }
 
+    // https://stackoverflow.com/a/25603630
+    function get_language() {
+        if (navigator.languages)
+            return navigator.languages[0];
+
+        return navigator.language || navigator.userLanguage;
+    }
+
+    var supported_languages = ["en", "ko"];
+
+    var browser_language = "en";
+    try {
+        browser_language = get_language().replace(/-.*/, "").toLowerCase();
+        if (supported_languages.indexOf(browser_language) < 0)
+            browser_language = "en";
+    } catch (e) {
+        console.error(e);
+    }
+
+    var strings = {
+        "Options": {
+            "ko": "설정"
+        },
+        "Yes": {
+            "ko": "예"
+        },
+        "No": {
+            "ko": "아니오"
+        },
+        "Redirection": {
+            "ko": "리디렉션"
+        },
+        "Enable redirection": {
+            "ko": "리디렉션 사용"
+        },
+        "Add to history": {
+            "ko": "브라우저 기록에 추가"
+        },
+        "Enable mouseover popup": {
+            "ko": "이미지 팝업 사용"
+        },
+        "Mouseover popup action": {
+            "ko": "이미지 팝업 작업"
+        },
+        "Popup": {
+            "ko": "팝업"
+        },
+        "New tab": {
+            "ko": "새 탭"
+        },
+        "Mouseover popup trigger": {
+            // FIXME is 트리거 correct?
+            "ko": "팝업 트리거"
+        },
+        "Mouseover": {
+            // FIXME
+            "ko": "마우스"
+        },
+        "Key trigger": {
+            "ko": "키 바인딩"
+        },
+        "Popup trigger key": {
+            "ko": "팝업 키 바인딩"
+        },
+        "Popup trigger delay": {
+            // FIXME?
+            "ko": "팝업 작업 지연 시간"
+        },
+        "seconds": {
+            "ko": "초"
+        },
+        "Popup UI": {
+            "ko": "팝업 UI"
+        },
+        "Popup UI opacity": {
+            "ko": "팝업 UI 불투명"
+        },
+        "Popup UI gallery counter": {
+            "ko": "갤러리 이미지 수"
+        },
+        "Gallery counter max": {
+            "ko": "갤러리 이미지 수의 최대값"
+        },
+        "images": {
+            "ko": "이미지"
+        },
+        "Popup UI Options Button": {
+            "ko": "팝업 UI에 설정 링크"
+        },
+        "Keep popup open until": {
+            "ko": "팝업 닫으려면"
+        },
+        "Any trigger is released": {
+            "ko": "아무 키 놓습니다"
+        },
+        "All triggers are released": {
+            "ko": "키 다 놓습니다"
+        },
+        "ESC/Close is pressed": {
+            "ko": "ESC/닫기 누릅니다"
+        },
+        "Popup default zoom": {
+            "ko": "확대/축소 기본값"
+        },
+        "Fit to screen": {
+            "ko": "화면 크기에 맞춤"
+        },
+        "Full size": {
+            "ko": "전체 크기"
+        },
+        "Popup panning method": {
+            "ko": "이미지 이동하려면"
+        },
+        "Movement": {
+            "ko": "마우스 움직입니다"
+        },
+        "Drag": {
+            "ko": "끕니다"
+        },
+        "Popup scroll action": {
+            "ko": "마우스 휠 작업"
+        },
+        "Zoom": {
+            "ko": "줌"
+        },
+        "Pan": {
+            "ko": "이동"
+        },
+        "None": {
+            "ko": "없다"
+        },
+        "Zoom behavior": {
+            // FIXME?
+            "ko": "줌 동작"
+        },
+        "Fit/Full": {
+            "ko": "화면맞춤/전체"
+        },
+        "Incremental": {
+            "ko": "증분"
+        },
+        "Popup position": {
+            "ko": "팝업 위치"
+        },
+        "Mouse cursor": {
+            "ko": "마우스 커서"
+        },
+        "Page middle": {
+            "ko": "페이지 중간"
+        },
+        "Popup for plain hyperlinks": {
+            "ko": "일반적인 링크에도 팝업"
+        },
+        "Popup CSS style": {
+            "ko": "팝업 CSS"
+        },
+        "Rules": {
+            "ko": "규칙"
+        },
+        "Larger watermarked images": {
+            "ko": "더 크지만 워터마크 있는 이미지"
+        },
+        "Smaller non-watermarked images": {
+            "ko": "더 작지만 워터마크 없는 이미지"
+        },
+        "Possibly different images": {
+            "ko": "다를 수 있는 이미지"
+        },
+        "Website": {
+            "ko": "웹사이트"
+        },
+        "Website image preview": {
+            "ko": "링크 붙인 후 이미지 미리보기"
+        },
+        "Saved! Refresh the target page for changes to take effect": {
+            "ko": "저장됩니다. 번경사항 적용하려면 대상 웹페이지 다시 로드하십시오"
+        },
+        "Save": {
+            "ko": "저장"
+        },
+        "Mouseover popup (%%1) is needed to display the original version": {
+            "ko": "원본 이미지 보려면 팝업 (%%1) 필요합니다"
+        },
+        "custom headers": {
+            "ko": "특정 헤더"
+        },
+        "forces download": {}, // TODO
+        "Close": {
+            "ko": "닫기"
+        },
+        "Previous": {
+            "ko": "이전"
+        },
+        "Next": {
+            "ko": "다음"
+        },
+        "Left Arrow": {
+            "ko": "왼쪽 화살표"
+        },
+        "Right Arrow": {
+            "ko": "오른쪽 화살표"
+        }
+    };
+
+    function _(str) {
+        if (str in strings) {
+            if (browser_language in strings[str]) {
+                str = strings[str][browser_language];
+            }
+        }
+
+        var parts = [];
+        var currentpart = "";
+        for (var i = 0; i < str.length; i++) {
+            if (str[i] == '%') {
+                if ((i + 2) < str.length) {
+                    if (str[i + 1] == '%') {
+                        var num = parseInt(str[i + 2]);
+                        if (!isNaN(num)) {
+                            parts.push(currentpart);
+                            currentpart = "";
+                            parts.push(arguments[num]);
+                            i += 2;
+                            continue;
+                        }
+                    }
+                }
+            }
+
+            currentpart += str[i];
+        }
+
+        parts.push(currentpart);
+        return parts.join("");
+    }
+
 
     var settings = {
         redirect: true,
@@ -428,7 +664,7 @@ var $$IMU_EXPORT$$;
             category: "popup"
         },
         mouseover_ui_optionsbtn: {
-            name: "Popop UI Options Button",
+            name: "Popup UI Options Button",
             description: "Enables a button to go to the options screen for IMU",
             requires: {
                 mouseover_ui: true
@@ -2775,7 +3011,10 @@ var $$IMU_EXPORT$$;
             return src.replace(/(\/gallery\/[0-9]*\/)[^/]*\//, "$1Original/");
         }
 
-        if (domain_nosub === "r29static.com") {
+        if (domain_nosub === "r29static.com" ||
+            // https://static2.refinery29.com/bin/entry/253/x,80/1173580/1janmain.jpg
+            //   https://static2.refinery29.com/bin/entry/253/x,100/1173580/1janmain.jpg
+            (domain_nosub === "refinery29.com" && domain.match(/^static[0-9]*\./))) {
             // http://s1.r29static.com//bin/entry/812/0,12,460,552/0x864,80/1207816/image.jpg -- stretched
             //   https://s1.r29static.com//bin/entry/812/x,100/1207816/image.jpg
             // https://s1.r29static.com//bin/public/e32/0,0,2000,2400/720x864,80/1573061/image.jpg
@@ -2783,8 +3022,10 @@ var $$IMU_EXPORT$$;
             //   https://s1.r29static.com//bin/public/e32/x,100/1573061/image.jpg
             // https://s1.r29static.com//bin/entry/a34/340x408,80/1970977/image.jpg
             //   https://s1.r29static.com//bin/entry/a34/x,100/1970977/image.jpg
+            // https://s2.r29static.com//bin/author/f58/75x75,85/1320357/image.webp
+            //   https://s2.r29static.com//bin/author/f58/x,100/1320357/image.webp
             // 0x0,100 and x,100 both work
-            return src.replace(/(\/bin\/(?:entry|public)\/[^/]*)\/(?:[0-9]+,[0-9]+,[0-9]+,[0-9]+\/)?[^/]*(?:,[^/]*)?\/([^,]*)$/, "$1/x,100/$2");
+            return src.replace(/(\/bin\/(?:entry|public|author)\/[^/]*)\/(?:[0-9]+,[0-9]+,[0-9]+,[0-9]+\/)?[^/]*(?:,[^/]*)?\/([^,]*)$/, "$1/x,100/$2");
         }
 
         if (domain === "img.huffingtonpost.com") {
@@ -3764,6 +4005,8 @@ var $$IMU_EXPORT$$;
             domain === "img.webmd.com" ||
             // https://embedwistia-a.akamaihd.net/deliveries/156d4cda7d1fd80c4d334b35f3f033b9.jpg?image_crop_resized=1280x720
             domain === "embedwistia-a.akamaihd.net" ||
+            // http://ame-prod-redonline-assets.s3.amazonaws.com/main/thumbs/25292/january_jones_3_redonline.jpg?resize=480:*
+            amazon_container === "ame-prod-redonline-assets" ||
             // http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
             // https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
             src.match(/\/demandware\.static\//) ||
@@ -5646,6 +5889,7 @@ var $$IMU_EXPORT$$;
             // https://66.media.tumblr.com/76597bb3640f73e6af0f5cff3430f6e1/tumblr_inline_pa5nk1DnJW1twvjda_540.jpg
             //   https://66.media.tumblr.com/76597bb3640f73e6af0f5cff3430f6e1/tumblr_inline_pa5nk1DnJW1twvjda_1280.jpg
             // http://static.tumblr.com/db01df3dee618afdc00cc6e886ed1591/xjv1zxw/8G6myp4yn/tumblr_static_kirigiri.kyouko.full.1546231.jpg
+            // http://media.tumblr.com/tumblr_mdsw17461H1qeaqka.jpg -- 2575x3500
             //
             // working gifs:
             // https://78.media.tumblr.com/4b9573a2fdd97a6e6cac771d4a0c0edd/tumblr_ntg9jreu9X1s5q5l6o4_400.gif
@@ -15466,7 +15710,11 @@ var $$IMU_EXPORT$$;
             }
         }
 
-        if (domain === "resize-rbl-ms.cdn.ampproject.org") {
+        if (domain === "resize-rbl-ms.cdn.ampproject.org" ||
+            // https://www-windowscentral-com.cdn.ampproject.org/ii/w1200/s/www.windowscentral.com/sites/wpcentral.com/files/field/image/2013/10/Halo_3_Xbox_360_multiplayer_0.jpg
+            //   https://www.windowscentral.com/sites/wpcentral.com/files/field/image/2013/10/Halo_3_Xbox_360_multiplayer_0.jpg
+            //domain === "www-windowscentral-com.cdn.ampproject.org" ||
+            (domain_nosub === "ampproject.org" && domain.match(/\.cdn\.ampproject/))) {
             // https://resize-rbl-ms.cdn.ampproject.org/ii/w1000/s/resize.rbl.ms/simage/https%3A%2F%2Fassets.rbl.ms%2F10514873%2F980x.gif/500%2C230/pC%2BRJHWs2YBGt8at/img.gif
             //   http://resize.rbl.ms/simage/https%3A%2F%2Fassets.rbl.ms%2F10514873%2F980x.gif/500%2C230/pC%2BRJHWs2YBGt8at/img.gif
             return src.replace(/^[a-z]+:\/\/[^/]*\/ii\/[wh][0-9]+\/s\//, "http://");
@@ -28346,6 +28594,12 @@ var $$IMU_EXPORT$$;
                                "$1$2");
         }
 
+        if (domain === "d2adpaynhf6x63.cloudfront.net") {
+            // https://d2adpaynhf6x63.cloudfront.net/php_uploads/profile/NatalieBrooksxxx/image/thumbs/thumb150_thumbnail_1536097986.jpg
+            //   https://d2adpaynhf6x63.cloudfront.net/php_uploads/profile/NatalieBrooksxxx/image/thumbnail_1536097986.jpg
+            return src.replace(/\/image\/+thumbs\/+thumb[0-9]+_/, "/image/");
+        }
+
 
 
 
@@ -29988,7 +30242,8 @@ var $$IMU_EXPORT$$;
                     mouseover = "delay " + settings.mouseover_trigger_delay + "s";
                 }
 
-                show_image_infobox("Mouseover popup (<a style='color:blue; font-weight:bold' href='" + options_page + "' target='_blank'>" + mouseover + "</a>) is needed to display the original version (" + reason + ")");
+                var trigger_options_link = "<a style='color:blue; font-weight:bold' href='" + options_page + "' target='_blank'>" + mouseover + "</a>";
+                show_image_infobox(_("Mouseover popup (%%1) is needed to display the original version", trigger_options_link) + " (" + _(reason) + ")");
             };
 
             if (!_nir_debug_ || !_nir_debug_.no_request) {
@@ -30293,12 +30548,12 @@ var $$IMU_EXPORT$$;
         var options_el = document.getElementById("options");
 
         if (!is_extension_options_page)
-            options_el.innerHTML = "<h1>Options</h1>";
+            options_el.innerHTML = "<h1>" + _("Options") + "</h1>";
         else
             options_el.innerHTML = "";
 
         var saved_el = document.createElement("div");
-        saved_el.innerHTML = "<p>Saved! Refresh the target page for changes to take effect</p>";
+        saved_el.innerHTML = "<p>" + _("Saved! Refresh the target page for changes to take effect") + "</p>";
         saved_el.id = "saved";
         saved_el.classList.add("topsaved");
         //saved_el.style.pointer_events = "none";
@@ -30404,7 +30659,7 @@ var $$IMU_EXPORT$$;
             div.id = "cat_" + category;
             div.classList.add("category");
             var h2 = document.createElement("h2");
-            h2.innerText = categories[category];
+            h2.innerText = _(categories[category]);
             div.appendChild(h2);
             category_els[category] = div;
             options_el.appendChild(div);
@@ -30437,8 +30692,8 @@ var $$IMU_EXPORT$$;
                 table.appendChild(tr);
 
                 var name = document.createElement("strong");
-                name.innerText = meta.name;
-                name.title = meta.description;
+                name.innerText = _(meta.name);
+                name.title = _(meta.description);
 
                 var name_td = document.createElement("td");
                 name_td.style.verticalAlign = "middle";
@@ -30454,8 +30709,8 @@ var $$IMU_EXPORT$$;
 
                 if (typeof orig_value === "boolean") {
                     type = "options";
-                    option_list["true"] = {name: "Yes"};
-                    option_list["false"] = {name: "No"};
+                    option_list["true"] = {name: _("Yes")};
+                    option_list["false"] = {name: _("No")};
                     if (value)
                         option_list["true"].checked = true;
                     else
@@ -30595,10 +30850,10 @@ var $$IMU_EXPORT$$;
 
                         var label = document.createElement("label");
                         label.setAttribute("for", id);
-                        label.innerText = val.name;
+                        label.innerText = _(val.name);
 
                         if (val.description) {
-                            label.title = val.description;
+                            label.title = _(val.description);
                         }
 
                         parent.appendChild(label);
@@ -30639,7 +30894,7 @@ var $$IMU_EXPORT$$;
                     if (value)
                         textarea.value = value;
                     var savebutton = document.createElement("button");
-                    savebutton.innerHTML = "Save";
+                    savebutton.innerText = _("Save");
                     savebutton.onclick = function() {
                         set_value(setting, textarea.value);
                         settings[setting] = textarea.value;
@@ -30707,7 +30962,7 @@ var $$IMU_EXPORT$$;
                     var sub_units_td = document.createElement("td");
                     sub_units_td.style = "display:inline";
                     if (meta.number_unit)
-                        sub_units_td.innerText = meta.number_unit;
+                        sub_units_td.innerText = _(meta.number_unit);
 
                     sub_tr.appendChild(input);
                     sub_tr.appendChild(sub_units_td);
@@ -30724,13 +30979,13 @@ var $$IMU_EXPORT$$;
                     var sub_record_td = document.createElement("td");
                     sub_record_td.style = "display:inline";
                     var sub_record_btn = document.createElement("button");
-                    sub_record_btn.innerText = "Record";
+                    sub_record_btn.innerText = _("Record");
                     var sub_cancel_btn = document.createElement("button");
-                    sub_cancel_btn.innerText = "Cancel";
+                    sub_cancel_btn.innerText = _("Cancel");
                     sub_cancel_btn.style = "display:none";
                     var do_cancel = function() {
                         recording_keys = false;
-                        sub_record_btn.innerText = "Record";
+                        sub_record_btn.innerText = _("Record");
                         sub_cancel_btn.style = "display:none";
                         sub_key_td.innerText = get_trigger_key_text(settings[setting]);
                     };
@@ -30748,7 +31003,7 @@ var $$IMU_EXPORT$$;
                             recording_keys = function() {
                                 sub_key_td.innerText = get_trigger_key_text(options_chord);
                             };
-                            sub_record_btn.innerText = "Save";
+                            sub_record_btn.innerText = _("Save");
                             sub_cancel_btn.style = "display:inline-block";
                         }
                     };
@@ -31585,7 +31840,7 @@ var $$IMU_EXPORT$$;
 
                     opacity_hover(topbarel);
 
-                    var closebtn = addbtn("×", "Close (ESC)", function() {
+                    var closebtn = addbtn("×", _("Close") + " (" + _("ESC") + ")", function() {
                         resetpopups();
                     }, true);
                     topbarel.appendChild(closebtn);
@@ -31645,7 +31900,7 @@ var $$IMU_EXPORT$$;
                             return lraction(false);
                         };
 
-                        var leftbtn = addbtn("←", "Previous (Left Arrow)", leftaction);
+                        var leftbtn = addbtn("←", _("Previous") + " (" + _("Left Arrow") + ")", leftaction);
                         leftbtn.style.top = "calc(50% - 7px - " + emhalf + ")";
                         leftbtn.style.left = "-" + em1;
                         outerdiv.appendChild(leftbtn);
@@ -31668,7 +31923,7 @@ var $$IMU_EXPORT$$;
                             return lraction(true);
                         };
 
-                        var rightbtn = addbtn("→", "Next (Right Arrow)", rightaction);
+                        var rightbtn = addbtn("→", _("Next") + " (" + _("Right Arrow") + ")", rightaction);
                         rightbtn.style.top = "calc(50% - 7px - " + emhalf + ")";
                         rightbtn.style.left = "initial";
                         rightbtn.style.right = "-" + em1;
@@ -31702,7 +31957,7 @@ var $$IMU_EXPORT$$;
 
                     if (settings.mouseover_ui_optionsbtn) {
                         var optionsurl = options_page;
-                        var optionsbtn = addbtn("⚙", "Options", options_page, true);
+                        var optionsbtn = addbtn("⚙", _("Options"), options_page, true);
                         topbarel.appendChild(optionsbtn);
                     }
                 }
