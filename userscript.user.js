@@ -31579,6 +31579,9 @@ var $$IMU_EXPORT$$;
             var x = data.x;
             var y = data.y;
 
+            dragged = false;
+            dragstart = false;
+
             function cb(img, url) {
                 if (!controlPressed && false) {
                     if (processing.running)
@@ -31737,13 +31740,16 @@ var $$IMU_EXPORT$$;
                     defaultopacity = 1;
                 if (defaultopacity < 0)
                     defaultopacity = 0;
-                function opacity_hover(el) {
-                    el.onmouseover = function(e) {
-                        el.style.opacity = "1.0";
-                    };
-                    el.onmouseout = function(e) {
-                        el.style.opacity = defaultopacity;
-                    };
+                function opacity_hover(el, targetel) {
+                    if (!targetel)
+                        targetel = el;
+
+                    el.addEventListener("mouseover", function(e) {
+                        targetel.style.opacity = "1.0";
+                    }, true);
+                    el.addEventListener("mouseout", function(e) {
+                        targetel.style.opacity = defaultopacity;
+                    }, true);
                 }
 
                 var btndown = false;
@@ -31757,6 +31763,7 @@ var $$IMU_EXPORT$$;
                     if (action) {
                         if (typeof action === "function") {
                             btn.addEventListener("click", function(e) {
+                                //console_log(e);
                                 e.stopPropagation();
                                 e.stopImmediatePropagation();
                                 e.preventDefault();
@@ -31870,10 +31877,27 @@ var $$IMU_EXPORT$$;
                         lrhover.style.zIndex = maxzindex - 2;
                         lrhover.style.cursor = "pointer";
                         var forwardevent = function(e) {
-                            btnel.dispatchEvent(new MouseEvent(e.type, e));
+                            var type = e.type;
+                            //console_log(type);
+                            /*btnel.dispatchEvent(new MouseEvent(e.type, {
+                                clientX: e.clientX,
+                                clientY: e.clientY,
+                                movementX: e.movementX,
+                                movementY: e.movementY,
+                                offsetX: e.offsetX,
+                                offsetY: e.offsetY,
+                                pageX: e.pageX,
+                                pageY: e.pageY,
+                                x: e.x,
+                                y: e.y
+                                }));*/
+                            btnel.dispatchEvent(new MouseEvent(type));
+                            estop(e);
+                            return false;
                         };
-                        lrhover.addEventListener("mouseover", forwardevent, true);
-                        lrhover.addEventListener("mouseout", forwardevent, true);
+                        //lrhover.addEventListener("mouseover", forwardevent, true);
+                        //lrhover.addEventListener("mouseout", forwardevent, true);
+                        opacity_hover(lrhover, btnel);
                         lrhover.addEventListener("click", function(e) {
                             if (dragged) {
                                 return false;
@@ -32027,7 +32051,21 @@ var $$IMU_EXPORT$$;
                         return true;
                     };
 
-                    div.onmouseup = div.onclick = a.onmouseup = a.onclick = function(e) {
+                    a.onclick = function(e) {
+                        dragstart = false;
+
+                        if (dragged) {
+                            estop(e);
+                            dragged = false;
+                            return false;
+                        }
+
+                        e.stopPropagation();
+                        e.stopImmediatePropagation();
+                        return true;
+                    };
+
+                    div.onmouseup = div.onclick = a.onmouseup = /*a.onclick =*/ function(e) {
                         dragstart = false;
 
                         if (dragged) {
