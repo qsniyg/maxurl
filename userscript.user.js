@@ -143,7 +143,8 @@ var $$IMU_EXPORT$$;
         exclude_problems: [
             "watermark",
             "smaller",
-            "possibly_different"
+            "possibly_different",
+            "possibly_broken"
         ],
         include_pastobjs: true,
         force_page: false,
@@ -411,6 +412,9 @@ var $$IMU_EXPORT$$;
         "Possibly different images": {
             "ko": "다를 수 있는 이미지"
         },
+        "Possibly broken images": {
+            "ko": "손상될 수 있는 이미지"
+        },
         "Website": {
             "ko": "웹사이트"
         },
@@ -512,7 +516,8 @@ var $$IMU_EXPORT$$;
         extension_contextmenu: true,
         allow_watermark: false,
         allow_smaller: false,
-        allow_possibly_different: false
+        allow_possibly_different: false,
+        allow_possibly_broken: false
     };
     var orig_settings = deepcopy(settings);
 
@@ -838,13 +843,19 @@ var $$IMU_EXPORT$$;
             name: "Possibly different images",
             description: "Enables rules that return images that possibly differ (such as YouTube)",
             category: "rules"
+        },
+        allow_possibly_broken: {
+            name: "Possibly broken images",
+            description: "Enables that return images that are possibly broken (such as Tumblr GIFs)",
+            category: "rules"
         }
     };
 
     var option_to_problems = {
         allow_watermark: "watermark",
         allow_smaller: "smaller",
-        allow_possibly_different: "possibly_different"
+        allow_possibly_different: "possibly_different",
+        allow_possibly_broken: "possibly_broken"
     };
 
     var categories = {
@@ -5894,6 +5905,7 @@ var $$IMU_EXPORT$$;
             // working gifs:
             // https://78.media.tumblr.com/4b9573a2fdd97a6e6cac771d4a0c0edd/tumblr_ntg9jreu9X1s5q5l6o4_400.gif
             //   http://data.tumblr.com/4b9573a2fdd97a6e6cac771d4a0c0edd/tumblr_ntg9jreu9X1s5q5l6o4_raw.gif
+            //   https://78.media.tumblr.com/4b9573a2fdd97a6e6cac771d4a0c0edd/tumblr_ntg9jreu9X1s5q5l6o4_1280.gif -- works
             // https://78.media.tumblr.com/e7976904bb598ed701324ee471056156/tumblr_ntg9jreu9X1s5q5l6o3_400.gif
             //   http://data.tumblr.com/e7976904bb598ed701324ee471056156/tumblr_ntg9jreu9X1s5q5l6o3_raw.gif
             // https://78.media.tumblr.com/2d799573226814e336e0984263269507/tumblr_nwe2hfH0dX1u9vqklo1_250.gif
@@ -5905,6 +5917,7 @@ var $$IMU_EXPORT$$;
             //
             // semi-working gifs: (thanks to rEnr3n on github)
             // https://78.media.tumblr.com/b6a2ed8abae3e9f0a64ccc5bd14b5bbf/tumblr_n8w8k50vpR1r3kk98o1_250.gif -- works
+            //   https://78.media.tumblr.com/b6a2ed8abae3e9f0a64ccc5bd14b5bbf/tumblr_n8w8k50vpR1r3kk98o1_1280.gif -- doesn't work
             //
             // https://78.media.tumblr.com/a1dfad9537af0e38063ec186e2ff392e/tumblr_n87ft44o4Y1r3kk98o1_250.gif -- works
             //   https://78.media.tumblr.com/a1dfad9537af0e38063ec186e2ff392e/tumblr_n87ft44o4Y1r3kk98o1_500.gif -- doesn't work
@@ -5935,8 +5948,19 @@ var $$IMU_EXPORT$$;
                 return newsrc;
 
             // due to recent updates disabling _raw, until something is found, _1280 will have to suffice
-            if (!src.match(/_[0-9]*\.gif$/))
-                return src.replace(/(\/tumblr(?:_(?:static|inline))?_[0-9a-zA-Z]+(?:_r[0-9]*)?)_[0-9]*(\.[^/.]*)$/, "$1_1280$2");
+            var obj = {
+                problems: {
+                    possibly_broken: false
+                }
+            };
+
+            if (src.match(/_[0-9]*\.gif$/))
+                obj.problems.possibly_broken = true;
+
+            if (true || !src.match(/_[0-9]*\.gif$/)) {
+                obj.url = src.replace(/(\/tumblr(?:_(?:static|inline))?_[0-9a-zA-Z]+(?:_r[0-9]*)?)_[0-9]*(\.[^/.]*)$/, "$1_1280$2");
+                return obj;
+            }
 
             // disable _raw for now, unless something is found
             if (src.match(/:\/\/[^/]*\/[0-9a-f]*\/tumblr_[0-9a-zA-Z]+(?:_r[0-9]+)?_[0-9]+\.[^/]*$/) && false) {
