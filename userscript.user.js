@@ -28638,7 +28638,7 @@ var $$IMU_EXPORT$$;
             //
             // https://static-cdn.jtvnw.net/emoticons/v1/79710/1.0 -- 28x28
             //   https://static-cdn.jtvnw.net/emoticons/v1/79710/3.0 -- 1000x1000
-            return src.replace(/(\/emoticons\/+v1\/+[0-9]+\/+)[0-9.]+(?:[?#].*)?$/, "$13.0");
+            return src.replace(/(\/emoticons\/+v1\/+[0-9]+\/+)[012][0-9.]*(?:[?#].*)?$/, "$13.0");
         }
 
 
