@@ -841,13 +841,19 @@ var $$IMU_EXPORT$$;
         },
         allow_possibly_different: {
             name: "Possibly different images",
-            description: "Enables rules that return images that possibly differ (such as YouTube)",
-            category: "rules"
+            description: "Enables rules that return images that possibly differ",
+            category: "rules",
+            example_websites: [
+                "YouTube video thumbnails"
+            ]
         },
         allow_possibly_broken: {
             name: "Possibly broken images",
-            description: "Enables that return images that are possibly broken (such as Tumblr GIFs)",
-            category: "rules"
+            description: "Enables rules that return images that are possibly broken",
+            category: "rules",
+            example_websites: [
+                "Tumblr GIFs"
+            ]
         }
     };
 
@@ -28771,8 +28777,8 @@ var $$IMU_EXPORT$$;
             //   https://media.planetradio.co.uk/one/radio-legacy/52/fd06b/a5054/18c3c/83efe/bd389/d74d2/nickhewer.png?resize=atrophy
             domain === "media.planetradio.co.uk" ||
             // https://cdn.graziadaily.co.uk/one/lifestyle-images/celebrity/58bbdf7709f46d350a06910e/GettyImages-647330302.jpg?quality=50&width=960&ratio=16-9&resizeStyle=aspectfill&format=jpg
-            //  https://cdn.graziadaily.co.uk/one/lifestyle-images/celebrity/58bbdf7709f46d350a06910e/GettyImages-647330302.jpg -- 1525x1024
-            //  https://cdn.graziadaily.co.uk/one/lifestyle-images/celebrity/58bbdf7709f46d350a06910e/GettyImages-647330302.jpg?resize=atrophy -- 4343x2916
+            //   https://cdn.graziadaily.co.uk/one/lifestyle-images/celebrity/58bbdf7709f46d350a06910e/GettyImages-647330302.jpg -- 1525x1024
+            //   https://cdn.graziadaily.co.uk/one/lifestyle-images/celebrity/58bbdf7709f46d350a06910e/GettyImages-647330302.jpg?resize=atrophy -- 4343x2916
             domain === "cdn.graziadaily.co.uk" ||
             // https://cdn.closeronline.co.uk/one/lifestyle-images/celebrity/57ea61548ec529f923122d89/holly-willoughby-this-morning-style.jpg.jpg?quality=10&amp;format=jpg
             //   https://cdn.closeronline.co.uk/one/lifestyle-images/celebrity/57ea61548ec529f923122d89/holly-willoughby-this-morning-style.jpg.jpg?resize=atrophy
@@ -28812,6 +28818,24 @@ var $$IMU_EXPORT$$;
             //   https://www.stuttgarter-nachrichten.de/media.media.bb463579-2879-4eba-a8d8-2f6d135dcaed.original.jpg
             return src.replace(/(:\/\/[^/]*\/media\.media\.[-0-9a-f]+\.)(?:[^/]*\.)?([^/.]*)(?:[?#].*)?$/,
                                "$1original.$2");
+        }
+
+        if (domain_nosub === "360buyimg.com" &&
+            domain.match(/^(?:img[0-9]*|m)\./)) {
+            // https://img20.360buyimg.com/babel/s590x470_jfs/t1/36565/1/10948/90118/5ced0965E13f170b4/4be2c2283874a108.jpg!q90!cc_590x470.webp
+            //   https://img20.360buyimg.com/imgzone/jfs/t1/36565/1/10948/90118/5ced0965E13f170b4/4be2c2283874a108.jpg!q90!cc_590x470.webp
+            //   https://img20.360buyimg.com/imgzone/jfs/t1/36565/1/10948/90118/5ced0965E13f170b4/4be2c2283874a108.jpg
+            // http://img30.360buyimg.com/popWaterMark/jfs/t5791/116/8235632084/119621/34e9fb80/5978a009Ndc433ffe.jpg
+            //   http://img30.360buyimg.com/imgzone/jfs/t5791/116/8235632084/119621/34e9fb80/5978a009Ndc433ffe.jpg
+            // https://img10.360buyimg.com/n1/s520x520_jfs/t19831/306/1199093063/189548/eda46c/5b187d69N5b1335e2.jpg
+            //   https://img10.360buyimg.com/imgzone/jfs/t19831/306/1199093063/189548/eda46c/5b187d69N5b1335e2.jpg
+            // https://m.360buyimg.com/mobilecms/s750x750_jfs/t1/20657/6/14969/117054/5cac07b6E53926c38/f82ccaa652efce7d.jpg!q80.dpg
+            //   https://m.360buyimg.com/imgzone/jfs/t1/20657/6/14969/117054/5cac07b6E53926c38/f82ccaa652efce7d.jpg
+            // https://img10.360buyimg.com/mobilecms/s250x250_jfs/t28123/117/1600781998/77752/7017a358/5ce5ff01N1926170e.jpg
+            //   https://img10.360buyimg.com/imgzone/jfs/t28123/117/1600781998/77752/7017a358/5ce5ff01N1926170e.jpg
+            return src
+                .replace(/(:\/\/[^/]*\/)(?:[a-z0-9]+\/+s[0-9]+x[0-9]+_jfs|popWaterMark\/+jfs)\//, "$1imgzone/jfs/")
+                .replace(/![^/]*(?:[?#].*)?$/, "");
         }
 
 
@@ -31235,6 +31259,19 @@ var $$IMU_EXPORT$$;
                 tr.appendChild(value_td);
 
                 option.appendChild(table);
+
+                if (meta.example_websites) {
+                    var examples = document.createElement("ul");
+                    examples.classList.add("examples");
+                    for (var example_i = 0; example_i < meta.example_websites.length; example_i++) {
+                        var example_text = meta.example_websites[example_i];
+                        var example_el = document.createElement("li");
+                        example_el.innerText = _(example_text);
+                        examples.appendChild(example_el);
+                    }
+
+                    option.appendChild(examples);
+                }
 
                 if (meta.category)
                     category_els[meta.category].appendChild(option);
