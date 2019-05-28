@@ -5483,9 +5483,16 @@ var $$IMU_EXPORT$$;
             domain.match(/pic[0-9]\.zhimg\.com/)) {
             // https://pic1.zhimg.com/74c63994d55e7307d41d39066d53eb72_1200x500.jpg
             //   https://pic1.zhimg.com/74c63994d55e7307d41d39066d53eb72.jpg
+            //   https://pic1.zhimg.com/74c63994d55e7307d41d39066d53eb72_r.jpg
             // https://pic1.zhimg.com/80/4ae63ae895f29a18e035d78aad1804d8_hd.png
             //   https://pic1.zhimg.com/80/4ae63ae895f29a18e035d78aad1804d8.png
-            return src.replace(/_[^/._]*(\.[^/.]*)$/, "$1");
+            //   https://pic1.zhimg.com/80/4ae63ae895f29a18e035d78aad1804d8_r.png
+            // https://pic3.zhimg.com/90/v2-d9e93a3b23f6fe8ff5bfbb07317dce9f_250x0.jpg
+            //   https://pic3.zhimg.com/90/v2-d9e93a3b23f6fe8ff5bfbb07317dce9f_r.jpg
+            // https://pic1.zhimg.com/v2-6349cfe0f38eab94c9fc41a919c526c4_540x450.jpeg -- 540x540
+            //   https://pic1.zhimg.com/v2-6349cfe0f38eab94c9fc41a919c526c4_r.jpeg -- 540x540
+            // doesn't work with google's referer
+            return src.replace(/\/((?:v[0-9]*-)?[0-9a-f]+)(?:_[^/._]*)?(\.[^/.]*)$/, "/$1_r$2");
         }
 
         // seems to returns 403 if 'referer' header is set:
