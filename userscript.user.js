@@ -28631,6 +28631,16 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/image\/+thumbs\/+thumb[0-9]+_/, "/image/");
         }
 
+        if (domain === "static-cdn.jtvnw.net") {
+            // thanks to Finbae on github: https://github.com/qsniyg/maxurl/issues/73
+            // https://static-cdn.jtvnw.net/emoticons/v1/414579/1.0
+            //   https://static-cdn.jtvnw.net/emoticons/v1/414579/3.0
+            //
+            // https://static-cdn.jtvnw.net/emoticons/v1/79710/1.0 -- 28x28
+            //   https://static-cdn.jtvnw.net/emoticons/v1/79710/3.0 -- 1000x1000
+            return src.replace(/(\/emoticons\/+v1\/+[0-9]+\/+)[0-9.]+(?:[?#].*)?$/, "$13.0");
+        }
+
 
 
 
