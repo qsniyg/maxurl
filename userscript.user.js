@@ -88,6 +88,8 @@ var $$IMU_EXPORT$$;
     if (!is_node && !is_scripttag && !is_extension)
         is_userscript = true;
 
+    var is_interactive = is_extension || is_userscript;
+
     var do_request_raw = null;
     if (is_extension) {
         do_request_raw = function(data) {
@@ -135,6 +137,21 @@ var $$IMU_EXPORT$$;
         };
     }
 
+    var bigimage_filter = function() {
+        return true;
+    };
+
+    if (is_interactive) {
+        bigimage_filter = function(url) {
+            for (var i = 0; i < blacklist_regexes.length; i++) {
+                if (url.match(blacklist_regexes[i]))
+                    return false;
+            }
+
+            return true;
+        }
+    }
+
     var default_options = {
         fill_object: true,
         null_if_no_change: false,
@@ -149,6 +166,7 @@ var $$IMU_EXPORT$$;
         include_pastobjs: true,
         force_page: false,
         fake: false,
+        filter: bigimage_filter,
 
         do_request: do_request,
         host_url: null,
@@ -517,7 +535,10 @@ var $$IMU_EXPORT$$;
         allow_watermark: false,
         allow_smaller: false,
         allow_possibly_different: false,
-        allow_possibly_broken: false
+        allow_possibly_broken: false,
+        // thanks to LukasThyWalls on github for the idea
+        bigimage_blacklist: "",
+        bigimage_blacklist_engine: "glob"
     };
     var orig_settings = deepcopy(settings);
 
@@ -854,6 +875,25 @@ var $$IMU_EXPORT$$;
             example_websites: [
                 "Tumblr GIFs"
             ]
+        },
+        bigimage_blacklist: {
+            name: "Blacklist",
+            description: "A list of URLs that are blacklisted from being processed (supports basic globbing)",
+            category: "rules",
+            type: "textarea"
+        },
+        bigimage_blacklist_engine: {
+            name: "Blacklist engine",
+            description: "How the blacklist should be processed",
+            category: "rules",
+            options: {
+                glob: {
+                    name: "Adblock-like"
+                },
+                regex: {
+                    name: "Regex"
+                }
+            }
         }
     };
 
@@ -1119,6 +1159,69 @@ var $$IMU_EXPORT$$;
         fullurl = function(url, x) {
             return urljoin(url, x);
         };
+    }
+
+    var blacklist_regexes = [];
+
+    function create_blacklist_regexes() {
+        blacklist_regexes = [];
+        var blacklist = settings.bigimage_blacklist || "";
+        if (typeof blacklist !== "string")
+            return;
+
+        blacklist = blacklist.split("\n");
+
+        for (var i = 0; i < blacklist.length; i++) {
+            var current = blacklist[i].replace(/^\s+|\s+$/, "");
+            if (current.length === 0)
+                continue;
+
+            if (settings.bigimage_blacklist_engine === "regex") {
+                blacklist_regexes.push(new RegExp(current));
+            } else if (settings.bigimage_blacklist_engine === "glob") {
+                var newcurrent = "";
+                for (var j = 0; j < current.length; j++) {
+                    if (current[j] !== "*") {
+                        if (current[j] === ".") {
+                            newcurrent += "\\.";
+                        } else {
+                            newcurrent += current[j];
+                        }
+                        continue;
+                    }
+
+                    var doublestar = false;
+                    if ((j + 1) < current.length) {
+                        if (current[j+1] === "*") {
+                            doublestar = true;
+                            j++;
+                        }
+                    }
+
+                    if (doublestar)
+                        newcurrent += ".*";
+                    else
+                        newcurrent += "[^/]*";
+                }
+
+                current = newcurrent;
+
+                if (current[0] !== "*") {
+                    newcurrent = current.replace(/^[a-z]*:\/\//, "[a-z]+://");
+                    if (newcurrent !== current) {
+                        current = newcurrent;
+                    } else {
+                        current = "[a-z]+://[^/]*" + current;
+                    }
+                }
+
+                current = "^" + current;
+
+                blacklist_regexes.push(new RegExp(current));
+            }
+        }
+
+        //console_log(blacklist_regexes);
     }
 
 
@@ -30144,6 +30247,11 @@ var $$IMU_EXPORT$$;
                 return false;
             }
 
+            if (options.filter) {
+                if (!options.filter(currenthref))
+                    return false;
+            }
+
             var big;
 
             if (true) {
@@ -31342,6 +31450,8 @@ var $$IMU_EXPORT$$;
     }
 
     function upgrade_settings(cb) {
+        create_blacklist_regexes();
+
         // TODO: merge this get_value in do_config for performance
         get_value("settings_version", function(version) {
             if (!version) {
@@ -31399,6 +31509,7 @@ var $$IMU_EXPORT$$;
                             if (typeof settings[setting] === "number") {
                                 value = parseFloat(value);
                             }
+
                             settings[setting] = value;
                         }
                         if (settings_done >= Object.keys(settings).length)
