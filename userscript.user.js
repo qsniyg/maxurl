@@ -888,7 +888,7 @@ var $$IMU_EXPORT$$;
             category: "rules",
             options: {
                 glob: {
-                    name: "Adblock-like"
+                    name: "Simple (glob)"
                 },
                 regex: {
                     name: "Regex"
@@ -1173,6 +1173,7 @@ var $$IMU_EXPORT$$;
 
         for (var i = 0; i < blacklist.length; i++) {
             var current = blacklist[i].replace(/^\s+|\s+$/, "");
+            //console_log(current);
             if (current.length === 0)
                 continue;
 
@@ -1180,9 +1181,40 @@ var $$IMU_EXPORT$$;
                 blacklist_regexes.push(new RegExp(current));
             } else if (settings.bigimage_blacklist_engine === "glob") {
                 var newcurrent = "";
+                var sbracket = -1;
+                var cbracket = -1;
                 for (var j = 0; j < current.length; j++) {
+                    if (sbracket >= 0) {
+                        if (current[j] === "]") {
+                            newcurrent += current.substr(sbracket, j - sbracket + 1);
+                            sbracket = -1;
+                        }
+                        continue;
+                    }
+
+                    if (cbracket >= 0) {
+                        if (current[j] === "}") {
+                            var options = current.substr(cbracket + 1, j - cbracket - 1).split(",");
+                            var newoptions = [];
+                            for (var k = 0; k < options.length; k++) {
+                                newoptions.push(options[k].replace(/(.)/g, "[$1]"));
+                            }
+                            if (newoptions.length > 0 && (newoptions.length > 1 || newoptions[0].length > 0))
+                                newcurrent += "(?:" + newoptions.join("|") + ")";
+                            cbracket = -1;
+                        }
+
+                        continue;
+                    }
+
                     if (current[j] !== "*") {
-                        if (current[j] === ".") {
+                        if (current[j] === "{") {
+                            cbracket = j;
+                        } else if (current[j] === "[") {
+                            sbracket = j;
+                        } else if (current[j] === "?") {
+                            newcurrent += "[^/]";
+                        } else if (current[j] === ".") {
                             newcurrent += "\\.";
                         } else {
                             newcurrent += current[j];
@@ -1199,9 +1231,9 @@ var $$IMU_EXPORT$$;
                     }
 
                     if (doublestar)
-                        newcurrent += ".*";
+                        newcurrent += ".+";
                     else
-                        newcurrent += "[^/]*";
+                        newcurrent += "[^/]+";
                 }
 
                 current = newcurrent;
@@ -31745,7 +31777,11 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
     }
 
     function upgrade_settings(cb) {
-        create_blacklist_regexes();
+        try {
+            create_blacklist_regexes();
+        } catch(e) {
+            console_error(e);
+        }
 
         // TODO: merge this get_value in do_config for performance
         get_value("settings_version", function(version) {
