@@ -2,7 +2,7 @@
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
 // @version      0.9.1
-// @description  Finds larger or original versions of images for 4200+ websites
+// @description  Finds larger or original versions of images for 4300+ websites
 // @author       qsniyg
 // @homepageURL  https://qsniyg.github.io/maxurl/options.html
 // @supportURL   https://github.com/qsniyg/maxurl/issues
@@ -1429,7 +1429,7 @@ var $$IMU_EXPORT$$;
             // http://img.hankyung.com/photo/201612/AA.12967766.4.jpg -- larger than .1.
             //   http://img.hankyung.com/photo/201612/AA.12967766.1.jpg
             return src.replace(/-[0-9]+x[0-9]+\.([^/.]*)$/, ".$1");
-            }*/
+        }*/
 
         if (domain === "img.hankyung.com" ||
             // http://img.hankyung.com/photo/201612/AA.12967766.4.jpg -- larger than .1.
@@ -2899,7 +2899,7 @@ var $$IMU_EXPORT$$;
 
         /*if (false && domain.indexOf(".photoshelter.com") >= 0) {
           return src.replace(/\/s\/[0-9]*\/[0-9]*\//, "/");
-          }*/
+        }*/
 
         if (domain_nosub === "photoshelter.com") {
             // http://c.photoshelter.com/img-get/I00002_.IhMQAZEg/t/200/I00002_.IhMQAZEg.jpg
@@ -2978,11 +2978,11 @@ var $$IMU_EXPORT$$;
 
         /*if (false && domain.indexOf("cdn-img.instyle.com") >= 0) {
           return src.replace(/(\/files\/styles\/)[^/]*(\/public)/, "$1original$2");
-          }
+        }
 
         if (false && domain.indexOf("static.independent.co.uk") >= 0) {
           return src.replace(/(\/styles\/)story_[^/]*(\/public)/, "$1story_large$2");
-          }*/
+        }*/
 
         // drupal
         // https://italyxp.com/sites/default/files/mediaitalyxp/vesuvius.jpg?width=820&height=620&iframe=true
@@ -3154,7 +3154,7 @@ var $$IMU_EXPORT$$;
             newsrc = src.replace(/(\/[^/.]*\.[^/.]*)\.[^/]*$/, "$1");
             if (newsrc !== src)
                 return newsrc;
-                }*/
+        }*/
 
         if (domain === "cdn.narcity.com" ||
             // https://www.narcity.com/u/2018/01/11/e4b085930cc3bcc2a07ebab04580eadd81a0c6e0.jpg_1200x630.jpg

@@ -42,7 +42,7 @@ function update() {
     }
 
     if (in_falserule) {
-      if (line.match(/^ {8}[}]$/))
+      if (line.match(/^ {8}[}](?:[*][/])?$/))
         in_falserule = false;
       continue;
     }
