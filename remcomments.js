@@ -2,11 +2,12 @@ const fs = require("fs");
 
 function update() {
   console.log("Updating...");
-  var userscript = fs.readFileSync("userscript.user.js").toString();
+  var userscript = fs.readFileSync(process.argv[2] || "userscript.user.js").toString();
   var lines = userscript.split("\n");
 
   var newlines = [];
   var in_bigimage = false;
+  var in_falserule = false;
 
   var firstcomment = true;
   var within_header = true;
@@ -40,8 +41,17 @@ function update() {
       continue;
     }
 
+    if (in_falserule) {
+      if (line.match(/^ {8}[}]$/))
+        in_falserule = false;
+      continue;
+    }
+
     if (!line.match(/^\s*\/\//)) {
-      newlines.push(line);
+      if (line.match(/^ {8}(?:[/][*])?if [(]false *&&/))
+        in_falserule = true;
+      else
+        newlines.push(line);
     } else {
       if (!line.match(/\/\/\s+https?:\/\//) && false)
         console.log(line);
