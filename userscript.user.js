@@ -264,6 +264,9 @@ var $$IMU_EXPORT$$;
 
     // https://stackoverflow.com/a/25603630
     function get_language() {
+        if (typeof navigator === "undefined")
+            return "en";
+
         if (navigator.languages)
             return navigator.languages[0];
 
