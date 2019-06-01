@@ -31277,8 +31277,10 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             }
 
             if (options.filter) {
-                if (!options.filter(currenthref))
+                if (!options.filter(currenthref)) {
+                    console_log("Blacklisted: " + currenthref);
                     return false;
+                }
             }
 
             var big;
