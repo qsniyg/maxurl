@@ -18,13 +18,14 @@ function fuzzify(num) {
 function get_userscript_stats(response) {
   userscript_contents = response;
   response = response
-    .replace(/^[\s\S]*function bigimage/, "")
+  //.replace(/^[\s\S]*function bigimage/, "")
+    .replace(/^[\s\S]*\/\/ *-- *start *bigimage *--/, "")
     .replace(/\/\/ *-- *end *bigimage *--[\s\S]*$/, "");
   return [
     // rules
-    response.match(/\n        if /g).length,
+    response.match(/\n {8}(?:[/][*])?if /g).length,
     // sites
-    response.match(/(?:domain[_ ]|amazon_container|googlestorage_container)/g).length
+    response.match(/(?:domain(?:_[a-z]+)?|amazon_container|googlestorage_container) /g).length
   ];
 }
 
