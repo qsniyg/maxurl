@@ -469,6 +469,18 @@ var $$IMU_EXPORT$$;
         },
         "Right Arrow": {
             "ko": "오른쪽 화살표"
+        },
+        "Blacklist": {
+            "ko": "블랙리스트"
+        },
+        "Blacklist engine": {
+            "ko": "블랙리스트 엔진"
+        },
+        "Simple (glob)": {
+            "ko": "단순 (glob)"
+        },
+        "Regex": {
+            "ko": "정규식"
         }
     };
 
@@ -881,7 +893,7 @@ var $$IMU_EXPORT$$;
         },
         bigimage_blacklist: {
             name: "Blacklist",
-            description: "A list of URLs that are blacklisted from being processed (supports basic globbing)",
+            description: "A list of URLs that are blacklisted from being processed",
             category: "rules",
             type: "textarea"
         },
