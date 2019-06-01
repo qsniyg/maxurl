@@ -17360,6 +17360,13 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/:\/\/preview\.redd\.it\/([^/.]*\.[^/.?]*)\?.*$/, "://i.redd.it/$1");
         }
 
+        if (domain === "i.redd.it" && src.match(/^[a-z]+:\/\/[^/]*\/[0-9a-z]+\.[^-/._?#]*$/)) {
+            return {
+                url: src,
+                is_original: true
+            };
+        }
+
         if (domain === "i.reddituploads.com") {
             // https://i.reddituploads.com/59933254fd6e44228dc5f0fef3d850af?fit=max&h=1536&w=1536&s=6db141a8ef89df0720e6666f3e7e26bf
             //   https://i.reddituploads.com/59933254fd6e44228dc5f0fef3d850af
