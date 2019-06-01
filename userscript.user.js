@@ -33151,6 +33151,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                         } else if (typeof action === "string") {
                             btn.href = action;
                             btn.target = "_blank";
+                            btn.setAttribute("rel", "noreferrer");
 
                             btn.addEventListener("click", function(e) {
                                 e.stopPropagation();
