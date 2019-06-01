@@ -433,6 +433,14 @@ input:checked + label, button {
   }
 }
 
+#options ul.examples {
+  margin-top: 0.5em;
+}
+
+#options ul.examples li {
+  font-size: 90%;
+}
+
 
 .topsaved {
   visibility: visible;

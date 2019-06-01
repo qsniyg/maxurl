@@ -48,10 +48,13 @@ function update() {
     }
 
     if (!line.match(/^\s*\/\//)) {
-      if (line.match(/^ {8}(?:[/][*])?if [(]false *&&/))
+      var exclude_false = true;
+      if (exclude_false && line.match(/^ {8}(?:[/][*])?if [(]false *&&/)) {
         in_falserule = true;
-      else
+        continue;
+      } else {
         newlines.push(line);
+      }
     } else {
       if (!line.match(/\/\/\s+https?:\/\//) && false)
         console.log(line);
