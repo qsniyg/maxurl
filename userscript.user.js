@@ -28964,13 +28964,15 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/(:\/\/[^/]*\/[a-z]\/+)[0-9]+x[0-9]+\/+/, "$10x0/");
         }
 
-        if (domain_nosub === "vsco.co" && domain.match(/^image-aws.*/)) {
+        if (domain_nosub === "vsco.co" && domain.match(/^image(?:-aws)?.*/)) {
             // https://im.vsco.co/aws-us-west-2/f7e1c6/20638915/5cc9a1ed32fea5392de5c0e7/vsco5cc9a1ee9e4b5.jpg?w=360 -- gets automatically redirected
             //   https://image-aws-us-west-2.vsco.co/f7e1c6/20638915/5cc9a1ed32fea5392de5c0e7/vsco5cc9a1ee9e4b5.jpg
-            // thanks to modelfe on github
+            // thanks to modelfe on github: https://github.com/qsniyg/maxurl/issues/57
             // https://image-aws-us-west-2.vsco.co/00b02e/28967640/5cdace744c51282134f55d8c/735x1024/vsco5cdace96a2daa.jpg
             //   https://image-aws-us-west-2.vsco.co/00b02e/28967640/5cdace744c51282134f55d8c/vsco5cdace96a2daa.jpg
-            return src.replace(/(\/[0-9a-f]{20,}\/+)[0-9]+x[0-9]+\/+(vsco[0-9a-f]+\.[^/.]*)(?:[?#].*)?$/,
+            // https://image.vsco.co/1/552f8734525d23396531/5603ae65d3dca50b0760e937/720x960/vsco_092415.jpg
+            //   https://image.vsco.co/1/552f8734525d23396531/5603ae65d3dca50b0760e937/vsco_092415.jpg
+            return src.replace(/(\/[0-9a-f]{20,}\/+)[0-9]+x[0-9]+\/+(vsco_?[0-9a-f]+\.[^/.]*)(?:[?#].*)?$/,
                                "$1$2");
         }
 
