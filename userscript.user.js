@@ -32558,7 +32558,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                     mouseover = "delay " + settings.mouseover_trigger_delay + "s";
                 }
 
-                var trigger_options_link = "<a style='color:blue; font-weight:bold' href='" + options_page + "' target='_blank'>" + mouseover + "</a>";
+                var trigger_options_link = "<a style='color:blue; font-weight:bold' href='" + options_page + "' target='_blank' rel='noreferrer'>" + mouseover + "</a>";
                 show_image_infobox(_("Mouseover popup (%%1) is needed to display the original version", trigger_options_link) + " (" + _(reason) + ")");
             };
 
