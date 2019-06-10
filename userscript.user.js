@@ -2,7 +2,7 @@
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
 // @version      0.9.2
-// @description  Finds larger or original versions of images for 4400+ websites
+// @description  Finds larger or original versions of images for 4500+ websites
 // @author       qsniyg
 // @homepageURL  https://qsniyg.github.io/maxurl/options.html
 // @supportURL   https://github.com/qsniyg/maxurl/issues
@@ -3105,6 +3105,9 @@ var $$IMU_EXPORT$$;
             // http://www.soganhaber.com/dosyalar/styles/kr_150x150/public/Kisi/K/nm1083271/nm1083271_0.jpg?itok=uYzb0OTH
             //   http://www.soganhaber.com/dosyalar/Kisi/K/nm1083271/nm1083271_0.jpg
             domain_nowww === "soganhaber.com" ||
+            // https://favera.ru/img/styles/pin_tmb_2/public/2016/09/11/1368071_1473572524.jpg
+            //   https://favera.ru/img/2016/09/11/1368071_1473572524.jpg
+            domain_nowww === "favera.ru" ||
             // http://cdn.whodoyouthinkyouaremagazine.com/sites/default/files/imagecache/623px_wide/episode/hewer500.jpg
             //   http://cdn.whodoyouthinkyouaremagazine.com/sites/default/files/episode/hewer500.jpg
             // https://www.telugucinema.com/sites/default/files2/styles/media_gallery_thumbnail/public/amy-jackson-instagram1.jpg?itok=nwFhV2Iy
@@ -4878,6 +4881,8 @@ var $$IMU_EXPORT$$;
             (domain_nowww === "wikiofthrones.com" && src.match(/\/static\/+uploads\//)) ||
             // https://files.theblemish.com/images/2014/06/kate-upton-body-paint-640x853.jpg
             (domain === "files.theblemish.com" && src.indexOf("/images/") >= 0) ||
+            // http://i2.esmas.com/galerias/fotos/2016/08/30/screams_960d5e11_acaf_b76f_82c9_a2e0d581e47b-468x624.jpg
+            (domain_nosub === "esmas.com" && domain.match(/^i[0-9]*\./) && src.indexOf("/galerias/") >= 0) ||
             // https://1.soompi.io/wp-content/blogs.dir/8/files/2015/09/HA-TFELT-Wonder-Girls-590x730.jpg -- doesn't work
             // https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2018/01/GTA-6-Female-Protag-796x417.jpg -- does work
             src.indexOf("/wp-content/blogs.dir/") >= 0 ||
@@ -19468,6 +19473,8 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             domain === "s.nufap.com" ||
             // https://s.fapsex.com/059/968/0599685567ec1e8bc31/thumbs/14936165567ec1f278d0.jpg
             domain === "s.fapsex.com" ||
+            // https://s.clickmyboobs.com/074/636/07463655752c4fa8e79/thumbs/172574455752c50169ea.jpg
+            domain === "s.clickmyboobs.com" ||
             // http://s.papajizz.com/227/096/22709658c972619c356/thumbs/353469058c972619efaa.jpg
             domain === "s.papajizz.com") {
             // http://s.heavenlynudes.net/085/279/085279556b1e0a7f645/thumbs/1620146556b1e0aa118c.jpg
@@ -21092,6 +21099,10 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             src.indexOf("/gallery/") >= 0) {
             // http://starbeat.ru/gallery/kristin-kreuk/kristin-kreuk-cw-network-2013-upfront-in-nyc/small/kristin-kreuk---cw-network-2013-upfront-in-nyc--10_Starbeat.ru.jpg
             //   http://starbeat.ru/gallery/kristin-kreuk/kristin-kreuk-cw-network-2013-upfront-in-nyc/kristin-kreuk---cw-network-2013-upfront-in-nyc--10_Starbeat.ru.jpg
+            // doesn't work for all:
+            // https://starbeat.ru/gallery/kate-upton/kate-upton-2014-sports-illustrated-swimsuit-issue-2014-02-18/small/kate-upton-si-2014-sports-illustrated-swimsuit-issue--11_Starbeat.ru.jpg
+            //   https://starbeat.ru/gallery/kate-upton/kate-upton-2014-sports-illustrated-swimsuit-issue-2014-02-18/kate-upton-si-2014-sports-illustrated-swimsuit-issue--11_Starbeat.ru.jpg
+            //   article is down: https://starbeat.ru/47541/
             return src.replace(/\/(?:small|medium)\/([^/]*)$/, "/$1");
         }
 
@@ -21922,6 +21933,12 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             // http://img.mach-shiko.net/images/21070418/08/s/025.jpg
             //   http://img.mach-shiko.net/images/21070418/08/025.jpg
             return src.replace(/(\/images\/[0-9]+\/[0-9]+\/)[a-z]\/([0-9]+\.[^/.]*)$/, "$1$2");
+        }
+
+        if (domain === "img.onvshen.com") {
+            // https://img.onvshen.com:85/gallery/23764/21580/s/006.jpg
+            //   https://img.onvshen.com:85/gallery/23764/21580/006.jpg
+            return src.replace(/(\/gallery\/+[0-9]+\/+[0-9]+\/+)[a-z]\/+([0-9]+\.[^/.]*)$/, "$1$2");
         }
 
         if (domain === "img.geinou-img.com") {
@@ -30802,6 +30819,34 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             // http://www.onlyasianpictures.com/galleries/2016/11/hot-asian-chick-yui-ayana-teasing-her-vagina/thumbs/hot-asian-chick-yui-ayana-teasing-her-vagina-1.jpg
             //   http://www.onlyasianpictures.com/galleries/2016/11/hot-asian-chick-yui-ayana-teasing-her-vagina/hot-asian-chick-yui-ayana-teasing-her-vagina-1.jpg
             return src.replace(/(\/galleries\/+[0-9]{4}\/+[0-9]{2}\/+[^/]*\/+)thumbs\/+/, "$1");
+        }
+
+        if (domain_nowww === "caribbeancompr.com") {
+            // https://www.caribbeancompr.com/moviepages/012619_002/images/s/001.jpg
+            //   https://www.caribbeancompr.com/moviepages/012619_002/images/l/001.jpg
+            return {
+                url: src.replace(/\/images\/+s\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/images/l/$1"),
+                headers: {
+                    Referer: "https://www.caribbeancompr.com/"
+                }
+            };
+        }
+
+        if (false && domain_nosub === "yupiii.gr" && domain.match(/^cdn[0-9]*\./)) {
+            // not sure if this works, all images seem to be resized to 690 width
+            // http://cdn.yupiii.gr/images/resized/3000_cb0bea989bcf2916c3327f2eeb67a627.jpg
+            //   http://cdn.yupiii.gr/images/resized/0_cb0bea989bcf2916c3327f2eeb67a627.jpg
+            // http://cdn.yupiii.gr/images/resized/fixed2_90x85_Keit___pton_for_Sports_Illustrated_Swimsuit_Edition_2014m__13_1_small.jpg
+            //   http://cdn.yupiii.gr/images/resized/0_Keit___pton_for_Sports_Illustrated_Swimsuit_Edition_2014m__13_1_small.jpg
+            // http://cdn2.yupiii.gr/images/resized/icemax_700_0a38a3276b31abc71644c6821da8b839.jpg?v=1
+            //   http://cdn2.yupiii.gr/images/resized/icemax_0_0a38a3276b31abc71644c6821da8b839.jpg?v=1
+            return src.replace(/\/images\/+resized\/+(?:fixed[0-9]*_)?(icemax_)?[0-9]+(?:x[0-9]+)?_/, "/images/resized/$10_");
+        }
+
+        if (domain_nowww === "ai-av.com") {
+            // http://www.ai-av.com/carib/2011/031811-647/02s.jpg
+            //   http://www.ai-av.com/carib/2011/031811-647/02.jpg
+            return src.replace(/(\/[0-9]{4}\/+[0-9]+-[0-9]+\/+[0-9]+)s(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
         }
 
 
