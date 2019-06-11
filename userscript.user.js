@@ -34206,6 +34206,15 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                 var cached_previmages = 0;
                 var cached_nextimages = 0;
 
+                function create_topbarel() {
+                    var topbarel = document.createElement("div");
+                    topbarel.style.all = "initial";
+                    topbarel.style.position = "absolute";
+                    topbarel.style.opacity = defaultopacity;
+                    topbarel.style.zIndex = maxzindex - 1;
+                    return topbarel;
+                }
+
                 function create_ui(use_cached_gallery) {
                     for (var el_i = 0; el_i < ui_els.length; el_i++) {
                         var ui_el = ui_els[el_i];
@@ -34219,13 +34228,9 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                     var emhalf = (emi / 2) + "px";
                     var gallerycount_fontsize = "13px";
 
-                    var topbarel = document.createElement("div");
-                    topbarel.style.all = "initial";
-                    topbarel.style.position = "absolute";
+                    var topbarel = create_topbarel();
                     topbarel.style.left = "-" + em1;
                     topbarel.style.top = "-" + em1;
-                    topbarel.style.opacity = defaultopacity;
-                    topbarel.style.zIndex = maxzindex - 1;
 
                     opacity_hover(topbarel);
 
@@ -34368,8 +34373,14 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                     }
                 }
 
-                if (settings.mouseover_ui)
+                if (settings.mouseover_ui) {
                     create_ui();
+                } else {
+                    // Not sure why this is needed, but without it,
+                    // clicking and dragging images doesn't work under Firefox (#78)
+                    var topbarel = create_topbarel();
+                    outerdiv.appendChild(topbarel);
+                }
 
                 var a = document.createElement("a");
                 //a.addEventListener("click", function(e) {
