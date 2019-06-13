@@ -31053,7 +31053,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
         }
 
         if (domain_nosub === "nijie.info" && domain.match(/^pic[0-9]*\./)) {
-            //thanks to Kattus on github: https://github.com/qsniyg/maxurl/issues/82
+            // thanks to Kattus on github: https://github.com/qsniyg/maxurl/issues/82
             // https://pic02.nijie.info/__rs_l30x30/nijie_picture/498_20120828123910.jpg
             //   https://pic02.nijie.info/__rs_l300x300/nijie_picture/498_20120828123910.jpg
             //   https://pic02.nijie.info/nijie_picture/498_20120828123910.jpg
@@ -33970,6 +33970,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
         var mouseAbsContextX = 0;
         var mouseAbsContextY = 0;
 
+        var mouse_in_image_yet = false;
         var mouseDelayX = 0;
         var mouseDelayY = 0;
 
@@ -35825,6 +35826,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             var viewport = get_viewport();
             var edge_buffer = 40;
             var min_move_amt = 5;
+            var moved = false;
 
             if (pan_behavior === "drag" && dragstart) {
                 var origleft = parseInt(popup.style.left);
@@ -35836,12 +35838,14 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                         lastX = left - (origleft - lastX);
                         popup.style.left = left + "px";
                         dragged = true;
+                        moved = true;
                     }
                 }
             } else if (pan_behavior === "movement" && popup.offsetWidth > viewport[0]) {
                 var mouse_edge = Math.min(Math.max((mouseX - edge_buffer), 0), viewport[0] - edge_buffer * 2);
                 var percent = mouse_edge / (viewport[0] - (edge_buffer * 2));
                 popup.style.left = percent * (viewport[0] - popup.offsetWidth) + "px";
+                moved = true;
             }
 
             if (pan_behavior === "drag" && dragstart) {
@@ -35854,12 +35858,18 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                         lastY = top - (origtop - lastY);
                         popup.style.top = top + "px";
                         dragged = true;
+                        moved = true;
                     }
                 }
             } else if (pan_behavior === "movement" && popup.offsetHeight > viewport[1]) {
                 var mouse_edge = Math.min(Math.max((mouseY - edge_buffer), 0), viewport[1] - edge_buffer * 2);
                 var percent = mouse_edge / (viewport[1] - (edge_buffer * 2));
                 popup.style.top = percent * (viewport[1] - popup.offsetHeight) + "px";
+                moved = true;
+            }
+
+            if (moved) {
+                mouse_in_image_yet = false;
             }
         }
 
@@ -35923,13 +35933,51 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                             var w = Math.min(parseInt(img.style.maxWidth), img.naturalWidth);
                             var h = Math.min(parseInt(img.style.maxHeight), img.naturalHeight);
 
-                            jitter_threshx = Math.min(Math.max(jitter_threshx, w / 3), img.naturalWidth);
-                            jitter_threshy = Math.min(Math.max(jitter_threshy, h / 3), img.naturalHeight);
+                            jitter_threshx = Math.min(Math.max(jitter_threshx, w / 2), img.naturalWidth);
+                            jitter_threshy = Math.min(Math.max(jitter_threshy, h / 2), img.naturalHeight);
+
+                            jitter_threshx += 30;
+                            jitter_threshy += 30;
+
+                            var rect = img.getBoundingClientRect();
+                            if (mouse_in_image_yet === false) {
+                                if (mouseX >= rect.left && mouseX <= rect.right &&
+                                    mouseY >= rect.top && mouseY <= rect.bottom) {
+                                    mouse_in_image_yet = true;
+                                    //mouseDelayX = mouseX;
+                                    //mouseDelayY = mouseY;
+
+                                    mouseDelayX = rect.x + rect.width / 2;
+                                    mouseDelayY = rect.y + rect.height / 2;
+
+                                    if (false) {
+                                        var viewport = get_viewport();
+                                        if ((mouseDelayX + jitter_threshx) > viewport[0]) {
+                                            mouseDelayX = viewport[0] - jitter_threshx;
+                                        }
+                                        if ((mouseDelayX - jitter_threshx) < 0) {
+                                            mouseDelayX = jitter_threshx;
+                                        }
+
+                                        if ((mouseDelayY + jitter_threshy) > viewport[1]) {
+                                            mouseDelayY = viewport[1] - jitter_threshy;
+                                        }
+                                        if ((mouseDelayY - jitter_threshy) < 0) {
+                                            mouseDelayY = jitter_threshy;
+                                        }
+                                    }
+                                }
+                            }
                         }
 
-                        if (Math.abs(mouseX - mouseDelayX) > jitter_threshx ||
-                            Math.abs(mouseY - mouseDelayY) > jitter_threshy) {
-                            resetpopups();
+                        if (mouse_in_image_yet) {
+                            if (Math.abs(mouseX - mouseDelayX) > jitter_threshx ||
+                                Math.abs(mouseY - mouseDelayY) > jitter_threshy) {
+                                console_log(mouseX);
+                                console_log(mouseDelayX);
+                                console_log(jitter_threshx);
+                                resetpopups();
+                            }
                         }
                     }
                 }
@@ -35937,6 +35985,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                 if (popups.length === 0) {
                     mouseDelayX = mouseX;
                     mouseDelayY = mouseY;
+                    mouse_in_image_yet = false;
 
                     delay_handle = setTimeout(trigger_popup, delay * 1000);
                 }
