@@ -31052,6 +31052,19 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/\/thum(?:_[a-z])?_([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/$1");
         }
 
+        if (domain_nosub === "nijie.info" && domain.match(/^pic[0-9]*\./)) {
+            //thanks to Kattus on github: https://github.com/qsniyg/maxurl/issues/82
+            // https://pic02.nijie.info/__rs_l30x30/nijie_picture/498_20120828123910.jpg
+            //   https://pic02.nijie.info/__rs_l300x300/nijie_picture/498_20120828123910.jpg
+            //   https://pic02.nijie.info/nijie_picture/498_20120828123910.jpg
+            //
+            // http://pic02.nijie.info/__rs_l30x30/hina/main/1081_20181221234339.jpg
+            //   http://pic02.nijie.info/hina/main/1081_20181221234339.jpg -- 2560x1920
+            // https://pic01.nijie.info/__rs_l30x30/nijie_picture/diff/main/218856_1_236014_20170620101330.png
+            //   https://pic01.nijie.info/nijie_picture/diff/main/218856_1_236014_20170620101330.png
+            return src.replace(/\/__rs_[a-z]?[0-9]+x[0-9]+\/+/, "/");
+        }
+
 
 
 
