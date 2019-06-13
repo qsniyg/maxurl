@@ -485,6 +485,10 @@ var $$IMU_EXPORT$$;
     };
 
     function _(str) {
+        if (typeof str !== "string") {
+            return str;
+        }
+
         if (str in strings) {
             if (browser_language in strings[str]) {
                 str = strings[str][browser_language];
@@ -637,6 +641,11 @@ var $$IMU_EXPORT$$;
                 keyboard: {
                     name: "Key trigger",
                     description: "Triggers when you press a key sequence when your mouse is over an image"
+                },
+                none: {
+                    name: "None",
+                    description: "Disables the popup from being triggered (useful if you only want to use the context menu item)",
+                    extension_only: true
                 }
             },
             requires: {
@@ -33415,6 +33424,9 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                     };
 
                     for (var op in option_list) {
+                        if (option_list[op].extension_only && !is_extension)
+                            continue;
+
                         if (op.match(/^_group/)) {
                             var option_type1 = option_list[op]._type;
                             if (!option_type1)
@@ -35719,6 +35731,9 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
         }
 
         document.addEventListener('keydown', function(event) {
+            if (settings.mouseover_trigger_behavior !== "keyboard")
+                return;
+
             if (set_chord(event, true)) {
                 if (trigger_complete(event) && !popups_active) {
                     if (!delay_handle)
@@ -35748,6 +35763,9 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
         }, true);
 
         document.addEventListener('keyup', function(event) {
+            if (settings.mouseover_trigger_behavior !== "keyboard")
+                return;
+
             var condition = set_chord(event, false);
 
             var close_behavior = get_close_behavior();
