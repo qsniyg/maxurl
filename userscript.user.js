@@ -31843,6 +31843,13 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/\/imgs\/+(?:sq_sl|ogp_f|p\/+(?:jtKDOVlKAvjRrNw8SXAVejagI61Nrq|rQC-FVStleeQ4uCDm4cdn6GgF60oy6)_oqaqr)\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/imgs/p/sQnw7oxGTTu4umdJ9vPIDqGgI6ytrq_oqaqr/$1");
         }
 
+        if (domain_nowww === "pixsell.hr") {
+            // thanks to heptal on github (#85)
+            // https://www.pixsell.hr/scripts/get_image.php?image_id=21859428&var_suff=640x640
+            //   https://www.pixsell.hr/scripts/get_image.php?image_id=21859428 -- 1600x1067
+            return src.replace(/\/scripts\/+get_image\.php.*?[?&](image_id=[0-9]+).*?$/, "/scripts/get_image.php?$1");
+        }
+
 
 
 
