@@ -1426,7 +1426,7 @@ var $$IMU_EXPORT$$;
                 var str1 = "";
                 for (i = 0; i < str.length; i++) {
                     var code = str.charCodeAt(i);
-                    if(code > 47 && code < 58) {
+                    if (code > 47 && code < 58) {
                         /* number */
                         code = (mod((code - 48 - diff), 10) + 48);
                     } else if (code > 64 && code < 91) {
@@ -4353,6 +4353,10 @@ var $$IMU_EXPORT$$;
             (domain === "d12swbtw719y4s.cloudfront.net" && src.indexOf("/images/") >= 0) ||
             // https://www.saplinghr.com/hs-fs/hubfs/Imported_Blog_Media/Adobe-1024x425.png?width=1024&name=Adobe-1024x425.png
             (domain_nowww === "saplinghr.com" && src.indexOf("/hubfs/") >= 0) ||
+            // https://telefe-static2.akamaized.net/media/172711/keanu.png?v=20190610125202000&format=main&width=640&height=360&mode=crop
+            (domain === "telefe-static2.akamaized.net" && src.indexOf("/media/") >= 0) ||
+            // https://10daily.com.au/ip/s3/2019/06/10/2463e4bc5827eeb7aec3ffee82d4126a-280668.jpg?image-profile=card_max&io=landscape
+            domain_nowww === "10daily.com.au" ||
             // http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
             // https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
             src.match(/\/demandware\.static\//) ||
@@ -4984,6 +4988,10 @@ var $$IMU_EXPORT$$;
             (domain_nowww === "unison.org.uk" && src.indexOf("/content/uploads/") >= 0) ||
             // https://www.businessinsider.fr/content/uploads/2016/11/icerberg-800x400.jpg
             (domain_nowww === "businessinsider.fr" && src.indexOf("/content/uploads/") >= 0) ||
+            // https://sfo2.digitaloceanspaces.com/btrtoday/uploads/20190611114017/ft.Cyberpunk2077-620x349.jpg
+            (domain === "sfo2.digitaloceanspaces.com" && src.indexOf("/uploads/") >= 0) ||
+            // https://m8q3v4v6.stackpathcdn.com/2019/06/cf579a94-keanurevees-e3-min-1260x709.jpg
+            domain === "m8q3v4v6.stackpathcdn.com" ||
             // https://1.soompi.io/wp-content/blogs.dir/8/files/2015/09/HA-TFELT-Wonder-Girls-590x730.jpg -- doesn't work
             // https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2018/01/GTA-6-Female-Protag-796x417.jpg -- does work
             src.indexOf("/wp-content/blogs.dir/") >= 0 ||
@@ -8977,8 +8985,12 @@ var $$IMU_EXPORT$$;
             // http://assets1.ignimgs.com/2017/05/09/1-1-1494366320371_grande.jpg
             //   http://assets1.ignimgs.com/2017/05/09/1-1-1494366320371.jpg
             // https://assets.ign.com/thumbs/userUploaded/2014/9/19/20823568_fatalframewiiu_tgs2014trailer_ign-1411150047803_medium.jpg
+            // https://assets1.ignimgs.com/thumbs/userUploaded/2019/6/9/ignnow060919-cyberpunkblogroll-1560126294042.jpg?fit=bounds&dpr=1&quality=75&crop=16%3A9&width=300&format=pjpg
+            //   https://assets1.ignimgs.com/thumbs/userUploaded/2019/6/9/ignnow060919-cyberpunkblogroll-1560126294042.jpg
             //return src.replace(/_[0-9]*[wh](\.[^/.]*)$/, "$1");
-            return src.replace(/_[^-_/.]*(\.[^/.]*)$/, "$1");
+            return src
+                .replace(/_[^-_/.]*(\.[^/.]*)$/, "$1")
+                .replace(/[?#].*/, "");
         }
 
         if (domain === "static.gamespot.com") {
@@ -10626,7 +10638,9 @@ var $$IMU_EXPORT$$;
             //   https://games.mail.ru/pic/pc/article/2018/1/f3d5c09.jpeg
             // https://games.mail.ru/pre_xl_resize/pic/pc/gallery/b6/63/ae529711.jpeg
             //   https://games.mail.ru/pic/pc/gallery/b6/63/ae529711.jpeg
-            return src.replace(/\/pre_(?:[0-9]+x[0-9]+|[a-z]+)_resize\/+pic\/+/, "/pic/");
+            // https://games.mail.ru/pre_700x393_resize/hotbox/content_files/article/2019/06/11/d2cf96b1bf514e9e8b9c641d76da8879.png
+            //   https://games.mail.ru/hotbox/content_files/article/2019/06/11/d2cf96b1bf514e9e8b9c641d76da8879.png
+            return src.replace(/\/pre_(?:[0-9]+x[0-9]+|[a-z]+)_resize\/+(pic|hotbox)\/+/, "/$1/");
         }
 
         if (domain === "mg.soupingguo.com") {
@@ -16670,7 +16684,17 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             domain_nowww === "f3img.gq") {
             // https://i.lihkg.com/540/http://gifyu.com/images/cc018d69be4eb6e68887da85d6dd83b9.jpg
             //   https://gifyu.com/images/cc018d69be4eb6e68887da85d6dd83b9.jpg
-            return src.replace(/^[a-z]+:\/\/[^/]*\/[0-9]+\//, "");
+            newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/[0-9]+\/http/, "http");
+            if (newsrc !== src)
+                return newsrc;
+        }
+
+        if (domain_nowww === "f3img.gq") {
+            // https://f3img.gq/400?u=https%3A%2F%2Fcdn.arstechnica.net%2Fwp-content%2Fuploads%2F2019%2F06%2FScreen-Shot-2019-06-09-at-1.23.17-PM-760x380.png
+            //   https://cdn.arstechnica.net/wp-content/uploads/2019/06/Screen-Shot-2019-06-09-at-1.23.17-PM.png
+            newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/[0-9]*.*?[?&]u=(http[^&]*).*?$/, "$1");
+            if (newsrc !== src)
+                return decodeuri_ifneeded(newsrc);
         }
 
         if (domain === "www.nintendoworldreport.com" &&
@@ -26932,6 +26956,21 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/(:\/\/[^/]*\/)[0-9]+px\//, "$1original/");
         }
 
+        if (domain === "gamesite.zoznam.sk") {
+            // https://gamesite.zoznam.sk/images/thumb.php?src=https://images.gamesite.sk/perex/201906/35853.jpg&w=159
+            //   https://images.gamesite.sk/perex/201906/35853.jpg
+            newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/images\/+thumb\.php.*?[?&]src=([^&]*).*?$/, "$1");
+            if (newsrc !== src)
+                return decodeuri_ifneeded(newsrc);
+
+            return {
+                url: src,
+                headers: {
+                    Referer: ""
+                }
+            };
+        }
+
         if (domain_nowww === "wallhalla.com" &&
             options && options.cb && options.do_request) {
             // https://wallhalla.com/wallpaper/BLyranBfQGP
@@ -31878,7 +31917,19 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             //   https://animeanime.jp/imgs/ogp_f/189666.jpg -- 600x900
             // https://s.animeanime.jp/imgs/p/sQnw7oxGTTu4umdJ9vPIDqGgI6ytrq_oqaqr/230649.jpg -- 2048x2048
             //   https://s.animeanime.jp/imgs/p/rQC-FVStleeQ4uCDm4cdn6GgF60oy6_oqaqr/230649.jpg -- 1024x1024
-            return src.replace(/\/imgs\/+(?:sq_sl|ogp_f|p\/+(?:jtKDOVlKAvjRrNw8SXAVejagI61Nrq|rQC-FVStleeQ4uCDm4cdn6GgF60oy6)_oqaqr)\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/imgs/p/sQnw7oxGTTu4umdJ9vPIDqGgI6ytrq_oqaqr/$1");
+            return src.replace(/\/imgs\/+(?:sq_sl|ogp_f|zoom|p\/+(?:jtKDOVlKAvjRrNw8SXAVejagI61Nrq|rQC-FVStleeQ4uCDm4cdn6GgF60oy6)_oqaqr)\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/imgs/p/sQnw7oxGTTu4umdJ9vPIDqGgI6ytrq_oqaqr/$1");
+        }
+
+        if (domain_nowww === "gamespark.jp") {
+            // https://www.gamespark.jp/imgs/ogp_f/307336.jpg
+            //   https://www.gamespark.jp/imgs/p/PseAHU_gq3GEwRLM5htwMwoLvAaDYAQDAgEA/307336.jpg -- 1024x576
+            // https://www.gamespark.jp/imgs/p/PseAHU_gq3GEwRLM5htwMwoLvAaDYAQDAgEA/83073.png -- 3050x2233
+            // https://www.gamespark.jp/imgs/p/YqPw1SnBMRmYIkmrbU1O_DkImAYqBQQDAgEA/308568.jpg
+            //   https://www.gamespark.jp/imgs/p/yFIzVel2FK9SeCSMtovYejkIJAfnBQQDAgEA/308568.jpg
+            //   https://www.gamespark.jp/imgs/p/PseAHU_gq3GEwRLM5htwMwoLvAaDYAQDAgEA/308568.jpg
+            // https://www.gamespark.jp/imgs/zoom/239382.png
+            //   https://www.gamespark.jp/imgs/p/PseAHU_gq3GEwRLM5htwMwoLvAaDYAQDAgEA/239382.png
+            return src.replace(/\/imgs\/+(?:sq_sl|ogp_f|zoom|p\/+(?:YqPw1SnBMRmYIkmrbU1O_DkImAYqBQQDAgEA|yFIzVel2FK9SeCSMtovYejkIJAfnBQQDAgEA))\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/imgs/p/PseAHU_gq3GEwRLM5htwMwoLvAaDYAQDAgEA/$1");
         }
 
         if (domain_nowww === "pixsell.hr") {
@@ -31950,6 +32001,48 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             //   https://www.spirig-schulungscenter.ch/uploads/JBro5WZT/Adobe.png
             return src.replace(/(\/uploads\/+[^/]*\/+)[0-9]+x[0-9]+_[0-9]+x[0-9]+\/+/, "$1");
         }
+
+        if (domain === "static.caravan.kz") {
+            // https://static.caravan.kz/image/320/200/523066.jpg
+            //   https://static.caravan.kz/image/523066.jpg
+            return src.replace(/\/image\/+[0-9]+\/+[0-9]+\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/image/$1");
+        }
+
+        if (domain_nosub === "crhoy.net" && domain.match(/^icdn[0-9]*\./)) {
+            // this rule might need to be improved, it's quite strict
+            // https://icdn2.crhoy.net/w/390/h/0/q/95/png/0/c/1/s/pull.crhoy.net/imagenes/2019/06/1-1-1.jpg
+            //   http://pull.crhoy.net/imagenes/2019/06/1-1-1.jpg
+            newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/(?:[whq]\/+[0-9]+\/+){1,}[a-z]+\/+[0-9]+\/+c\/+[0-9]+\/+s\/+([^/]*\.[^/]*\/+)/,
+                                 "$1");
+            if (newsrc !== src)
+                return add_http(newsrc);
+        }
+
+        if (domain_nosub === "ppstatic.pl") {
+            // https://d-pt.ppstatic.pl/kadry/k/r/1/ec/34/5cfe1c641cc1a_o,size,445x270,q,71,h,b9f944.jpg
+            //   https://d-pt.ppstatic.pl/kadry/k/r/1/ec/34/5cfe1c641cc1a_o.jpg -- 1920x1080
+            return src.replace(/(\/[^/.,]*)(?:,(?:size|[whq]),[^/,.]*){1,}(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain_nosub === "uzone.id" && domain.match(/^cdn[0-9]*\./)) {
+            // https://cdn4.uzone.id//assets/uploads/Uzone/Games/cyberpunk-2077-xbox-microsoft.png/600
+            //   https://cdn4.uzone.id//assets/uploads/Uzone/Games/cyberpunk-2077-xbox-microsoft.png -- 843x471
+            return src.replace(/(\/assets\/+uploads\/+.*?)\/+[0-9]+(?:[?#].*)?$/, "$1");
+        }
+
+        if (amazon_container === "fuckin.news") {
+            // https://s3-eu-west-1.amazonaws.com/fuckin.news/posts/images/000/101/639/large/open-uri20190610-1-qdzjat?1560155811.jpeg
+            //   https://s3-eu-west-1.amazonaws.com/fuckin.news/posts/images/000/101/639/original/open-uri20190610-1-qdzjat?1560155811.jpeg
+            return src.replace(/(\/posts\/+images\/+(?:[0-9]{3}\/+){3})[a-z]+\/+/, "$1original/");
+        }
+
+        if (domain_nowww === "dengekionline.com") {
+            // https://dengekionline.com/images/dVHE/A88R/u5xG/5Wdf/VIZPPG2bt6tsZSrVCbfZfqeDhnGXcfH8YvcDCWc2GTr9VjAzISio7lOfggYvNbQePJc8KUrumJRUg65e_main.jpg
+            //   https://dengekionline.com/images/dVHE/A88R/u5xG/5Wdf/VIZPPG2bt6tsZSrVCbfZfqeDhnGXcfH8YvcDCWc2GTr9VjAzISio7lOfggYvNbQePJc8KUrumJRUg65e.jpg
+            return src.replace(/(\/images\/+.*?)_main(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+
 
 
 
@@ -32438,6 +32531,9 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             // https://t.jwwb.nl/uSa9XgKrENybp74WbEYP6i64fMU=/0x100/f.jwwb.nl%2Fpublic%2Fu%2Fn%2Fy%2Ftemp-jkkktmxtzvbywrttecqp%2Flueb0z%2Fadobe-logo.png
             //   https://f.jwwb.nl/public/u/n/y/temp-jkkktmxtzvbywrttecqp/lueb0z/adobe-logo.png
             domain === "t.jwwb.nl" ||
+            // https://thumbs.videogamer.com/y5waciSTBpbBrgWPF0_LyiPtANs=/320x180/smart/filters:no_upscale()/https://s.videogamer.com/meta/1089/4aa1fb82-6f5c-4531-b178-6f0dbf7b1473_Keanu_Cyberpunk.PNG
+            //   https://s.videogamer.com/meta/1089/4aa1fb82-6f5c-4531-b178-6f0dbf7b1473_Keanu_Cyberpunk.PNG
+            domain === "thumbs.videogamer.com" ||
             src.match(/:\/\/[^/]*\/thumbor\/[^/]*=\//) ||
             // https://www.orlandosentinel.com/resizer/tREpzmUU7LJX1cbkAN-unm7wL0Y=/fit-in/800x600/top/filters:fill(black)/arc-anglerfish-arc2-prod-tronc.s3.amazonaws.com/public/XC6HBG2I4VHTJGGCOYVPLBGVSM.jpg
             //   http://arc-anglerfish-arc2-prod-tronc.s3.amazonaws.com/public/XC6HBG2I4VHTJGGCOYVPLBGVSM.jpg
@@ -32887,7 +32983,9 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             domain === "s.oneroof.co.nz" ||
             // https://c1.hoopchina.com.cn/uploads/star/event/images/180215/bmiddle-5e8c9e13a07a397579c89590685b479db07ff6b8.png?x-oss-process=image/resize,w_800/format,webp
             (domain_nosub === "hoopchina.com.cn" && domain.match(/[ci][0-9]*\.hoopchina\.com\.cn/)) ||
-            src.match(/[?&]x-oss-process=image\//)) {
+            // https://image.gcores.com/94817587-8003-4734-82d6-23c1a0b6894e.png?x-oss-process=style/original_hsat2x
+            //   https://image.gcores.com/94817587-8003-4734-82d6-23c1a0b6894e.png -- upscaled though?
+            src.match(/[?&]x-oss-process=(?:image|style)\//)) {
             // http://cdn.himalaya.com/4e4dfa0ab9de4312aeebc9b0bcf5adc1.png?x-oss-process=image/resize,w_300,h_300&auth_key=4102416000-1234-0-8214a290aa73676f01e3a4990ddfac32
             //   http://cdn.himalaya.com/4e4dfa0ab9de4312aeebc9b0bcf5adc1.png?auth_key=4102416000-1234-0-8214a290aa73676f01e3a4990ddfac32
             var authkey = src.replace(/.*[?&]auth_key=([-0-9a-f]+).*?$/, "$1");
