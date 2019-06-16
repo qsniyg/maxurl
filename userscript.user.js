@@ -4112,8 +4112,6 @@ var $$IMU_EXPORT$$;
             domain === "i.smalljoys.me" ||
             // https://t1.huanqiu.cn/98c0e4cbd2b91f316105adef408fb21b.jpg?w=150
             (domain_nosub === "huanqiu.cn" && domain.match(/t[0-9]*\.huanqiu.cn/)) ||
-            // https://www.radiotimes.com/uploads/images/original/140622.d01d7e34-379c-4bcd-9a84-4caea87320db.jpg?width=426&height=256&mode=crop&quality=60
-            (domain_nowww === "radiotimes.com" && src.indexOf("/uploads/") >= 0) ||
             // https://hypebeast.com/image/2018/07/kaws-companion-sculpture-gwanggyo-ipark-0.jpg?q=90
             (domain === "hypebeast.com" && src.indexOf("/image/") >= 0) ||
             // https://dramaguru.net/images/actors/amar_khan_645.jpeg?w=315&h=350&fit=crop-top
@@ -4340,6 +4338,8 @@ var $$IMU_EXPORT$$;
             (domain_nowww === "banana1015.com" && src.indexOf("/files/") >= 0) ||
             // https://mix106radio.com/files/2017/05/RS8710_177369626.jpg?w=630&h=420&zc=1&s=0&a=t&q=89
             (domain_nowww === "mix106radio.com" && src.indexOf("/files/") >= 0) ||
+            // https://static-cdn.sr.se/sida/images/3138/3464680_2048_1152.jpg?preset=768x432
+            (domain === "static-cdn.sr.se" && src.indexOf("/images/") >= 0) ||
             // http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
             // https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
             src.match(/\/demandware\.static\//) ||
@@ -4805,6 +4805,8 @@ var $$IMU_EXPORT$$;
             domain === "images.hamodia.com" ||
             // https://www.bz-berlin.de/data/uploads/multimedia/archive/00071/Megan_Fox2_71614a-450x432.jpg
             (domain_nowww === "bz-berlin.de" && src.indexOf("/data/uploads/multimedia/") >= 0) ||
+            // https://luxury-inside.vn/data/uploads/2019/05/Alan-Turing-3-1440x809.jpg
+            (domain_nowww === "luxury-inside.vn" && src.match(/\/data\/+uploads\//)) ||
             // http://worldcupgirls.net/girls-pics/hottest-girls-fans-world-cup-2014_41-korean-530x353.jpg
             domain_nowww === "worldcupgirls.net" ||
             // https://cdn1-www.playstationlifestyle.net/assets/uploads/2018/07/gta6hack-555x423.jpg
@@ -4955,6 +4957,8 @@ var $$IMU_EXPORT$$;
             (domain_nowww === "mortalfm.es" && src.indexOf("/archivos/") >= 0) ||
             // https://d2yoo3qu6vrk5d.cloudfront.net/images/20171115152738/nicki-minaj2-482x320.jpg?itok=1510782120
             (domain === "d2yoo3qu6vrk5d.cloudfront.net" && src.indexOf("/images/") >= 0) ||
+            // https://courrier.jp/media/2017/11/10041739/s_GettyImages-459754376-625x446.jpg
+            (domain_nowww === "courrier.jp" && src.indexOf("/media/") >= 0) ||
             // https://1.soompi.io/wp-content/blogs.dir/8/files/2015/09/HA-TFELT-Wonder-Girls-590x730.jpg -- doesn't work
             // https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2018/01/GTA-6-Female-Protag-796x417.jpg -- does work
             src.indexOf("/wp-content/blogs.dir/") >= 0 ||
@@ -6989,6 +6993,9 @@ var $$IMU_EXPORT$$;
             // https://ip.index.hr/remote/indexnew.s3.index.hr/rethatrhtsrhgertr.jpg?width=765&height=440
             //   http://indexnew.s3.index.hr/rethatrhtsrhgertr.jpg
             domain === "ip.index.hr" ||
+            // https://images.radiotimes.com/remote/images.atlas.metabroadcast.com/pressassociation.com/webANXloomintowerbbc.jpg?quality=60&mode=crop&width=700&height=422
+            //   http://images.atlas.metabroadcast.com/pressassociation.com/webANXloomintowerbbc.jpg
+            domain === "images.radiotimes.com" ||
             domain === "ip.trueachievements.com") {
             // removing ?.* entirely returns 500
             // https://www.irishexaminer.com/remote/image.assets.pressassociation.io/v2/image/production/144492a205ad478ef0233c59e6617054Y29udGVudHNlYXJjaCwxNTEzMDczMTc2/2.30748323.jpg?crop=0,102,3712,2190&ext=.jpg&width=600
@@ -7000,6 +7007,26 @@ var $$IMU_EXPORT$$;
             newsrc = src.replace(/.*:\/\/[^/]*\/remote\/([^?]*).*/, "$1");
             if (newsrc !== src)
                 return "http://" + decodeURIComponent(newsrc);
+        }
+
+        if (domain === "images.radiotimes.com") {
+            // https://images.radiotimes.com/namedimage/Benedict_Cumberbatch_has_the_best_nickname_for_Tom_Hiddleston.jpg?quality=85&mode=crop&width=620&height=374&404=tv&url=/uploads/images/original/113286.jpg
+            //   https://images.radiotimes.com/uploads/images/original/113286.jpg
+            newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/namedimage\/[^?]*.*?[?&]url=([^&]*).*?$/, "$1");
+            if (newsrc !== src)
+                return urljoin(src, newsrc, true);
+        }
+
+        if (domain === "images.radiotimes.com" ||
+            domain_nowww === "radiotimes.com") {
+            // https://images.radiotimes.com/uploads/images/Medium/24523.jpg?quality=60&mode=crop&404=tv
+            //   https://images.radiotimes.com/uploads/images/medium/24523.jpg?quality=60&mode=crop&404=tv
+            //   https://images.radiotimes.com/uploads/images/medium/24523.jpg
+            //   https://images.radiotimes.com/uploads/images/original/24523.jpg -- image not available, but 200
+            // https://www.radiotimes.com/uploads/images/original/140622.d01d7e34-379c-4bcd-9a84-4caea87320db.jpg?width=426&height=256&mode=crop&quality=60
+            //   https://www.radiotimes.com/uploads/images/original/140622.d01d7e34-379c-4bcd-9a84-4caea87320db.jpg
+            //   https://images.radiotimes.com/uploads/images/original/140622.d01d7e34-379c-4bcd-9a84-4caea87320db.jpg
+            return src.replace(/(\/uploads\/+images\/+[a-zA-Z]+\/+[0-9]+(?:\.[-0-9a-f]+)?\.[^/.?]*)(?:[?#].*)?$/, "$1");
         }
 
         if ((domain === "tellymix-spykawebgroup.netdna-ssl.com" ||
@@ -9371,6 +9398,13 @@ var $$IMU_EXPORT$$;
             // https://www.sanluisobispo.com/entertainment/movies-news-reviews/i9fla8/picture189785229/alternates/LANDSCAPE_160/COVER%201%20Zac%20Efron
             //   https://www.sanluisobispo.com/entertainment/movies-news-reviews/i9fla8/picture189785229/BINARY/COVER%201%20Zac%20Efron
             domain_nowww === "sanluisobispo.com" ||
+            // thanks to heptal on github (#83)
+            // https://sportske.jutarnji.hr/incoming/dalic_moskva_pletikosajpg/9013841/alternates/FREE_680/Dalic_Moskva_pletikosa.jpg
+            //   https://sportske.jutarnji.hr/incoming/dalic_moskva_pletikosajpg/9013841/alternates/BASE_FREE/Dalic_Moskva_pletikosa.jpg -- 1180x786
+            //   https://sportske.jutarnji.hr/incoming/dalic_moskva_pletikosajpg/9013841/BINARY/Dalic_Moskva_pletikosa.jpg -- 2048x1365
+            // https://www.jutarnji.hr/incoming/davorin_rudolf1-220316jpg/6319624/ALTERNATES/LANDSCAPE_380/davorin_rudolf1-220316.jpg
+            //   https://www.jutarnji.hr/incoming/davorin_rudolf1-220316jpg/6319624/BINARY/davorin_rudolf1-220316.jpg
+            domain_nosub === "jutarnji.hr" ||
             src.match(/\/incoming\/article[^/]*\.(?:ece|svt)\/(?:[^/]*\/)?(?:alternates|ALTERNATES)\//) ||
             src.match(/:\/\/i[0-9]*(?:-prod)?\..*\/article[^/]*\.(?:ece|svt)\//) ||
             // https://www.independent.ie/world-news/article37114917.ece/ALTERNATES/h342/ipanews_2350b658-06c1-4a29-b747-cbfdcd1b624c_1
@@ -10247,6 +10281,8 @@ var $$IMU_EXPORT$$;
             (domain_nowww === "imagecurl.com" && src.indexOf("/images/") >= 0) ||
             // https://www.mediavida.com/imagenes/2009/7/cine-musica-libros-y-comics/62369_harry_potter_misterio_principe_2009_0_thumb.jpg
             (domain_nowww === "mediavida.com" && src.indexOf("/imagenes/") >= 0) ||
+            // http://img.twitrer.com/upload/2/53/253ba5e34957482d46887976a716d5d3_thumb.jpg
+            (domain === "img.twitrer.com" && src.indexOf("/upload/") >= 0) ||
             // https://www.bellazon.com/main/uploads/monthly_01_2015/post-40923-0-58758100-1422215257_thumb.jpg
             domain_nowww === "bellazon.com") {
             // http://img.danawa.com/cms/img/2010/11/19/%C7%D6%C6%D1_thumb.png
@@ -21066,6 +21102,9 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             // http://www.buro247.com.au/thumb/640x960_0/thumb/512x760_8/512-GettyImages-151262923.jpg
             //   http://www.buro247.com.au/thumb/512x760_8/512-GettyImages-151262923.jpg
             domain_nosub === "buro247.com.au" ||
+            // https://www.buro247.ua/thumb/670x830_0/images/2018/05/900_benedict-cumberbatch-equal-pay.jpg
+            //   https://www.buro247.ua/images/2018/05/900_benedict-cumberbatch-equal-pay.jpg
+            domain_nosub === "buro247.ua" ||
             // https://www.buro247.ru/thumb/1000x700/local/images/buro/galleries/2018/01/Vuitton-m-RF18-0784.jpg
             //   https://www.buro247.ru/local/images/buro/galleries/2018/01/Vuitton-m-RF18-0784.jpg
             domain_nosub === "buro247.ru") {
@@ -31631,6 +31670,29 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             if (newsrc !== src)
                 return decodeuri_ifneeded(newsrc);
         }
+
+        if (domain_nosub === "publicbroadcasting.net") {
+            // http://mediad.publicbroadcasting.net/p/shared/npr/styles/x_large/nprshared/201501/378856306.jpg
+            //   http://mediad.publicbroadcasting.net/p/shared/npr/201501/378856306.jpg
+            return {
+                url: src.replace(/\/styles\/+[^/]*\/+[^/]*\/+([0-9]{6})\/+/, "/$1/"),
+                head_wrong_contentlength: true
+            };
+        }
+
+        if (domain_nowww === "rabstol.net") {
+            // http://www.rabstol.net/uploads/gallery/thumb/446/rabstol_net_the_imitation_game_04.jpg
+            //   http://www.rabstol.net/uploads/gallery/main/446/rabstol_net_the_imitation_game_04.jpg
+            return src.replace(/(\/uploads\/+gallery\/+)[a-z]+(\/+[0-9]+\/+)/, "$1main$2");
+        }
+
+        if (amazon_container === "reacho") {
+            // https://s3-ap-southeast-1.amazonaws.com/reacho/contentimage/httpimages/260318/690/img_201807030326305ab89b423b991.jpg
+            //   https://s3-ap-southeast-1.amazonaws.com/reacho/contentimage/httpimages/260318/img_201807030326305ab89b423b991.jpg
+            return src.replace(/(\/httpimages\/+[0-9]+\/+)[0-9]+\/+(img_[0-9]+[0-9a-f]+\.[^/.]*)(?:[?#].*)?$/,
+                               "$1$2");
+        }
+
 
 
 
