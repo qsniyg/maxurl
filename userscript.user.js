@@ -1732,10 +1732,15 @@ var $$IMU_EXPORT$$;
                 return newsrc;
         }
 
-        if (domain === "ir.joins.com") {
+        if (domain === "ir.joins.com" ||
+            // https://loki.zhibotie.net/?u=https%3A%2F%2Fimg3.doubanio.com%2Fview%2Fgroup_topic%2Flarge%2Fpublic%2Fp66834704.jpg
+            //   https://img3.doubanio.com/pview/group_topic/large/public/p66834704.jpg
+            domain === "loki.zhibotie.net") {
             // http://ir.joins.com/?u=http%3A%2F%2Fpds.joins.com%2F%2Fnews%2Fcomponent%2Fhtmlphoto_mmdata%2F201802%2F02%2Ff1272e1a-836b-4e54-be62-1ab42de3b53b.jpg
             //   http://pds.joins.com//news/component/htmlphoto_mmdata/201802/02/f1272e1a-836b-4e54-be62-1ab42de3b53b.jpg
-            return decodeURIComponent(src.replace(/.*\/\?.*?u=([^&]*).*$/, "$1"));
+            newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/.*?[?&]u=([^&]*).*$/, "$1");
+            if (newsrc !== src)
+                return decodeuri_ifneeded(newsrc);
         }
 
         if (domain_nosub === "koreadaily.com" &&
@@ -4266,8 +4271,6 @@ var $$IMU_EXPORT$$;
             (domain === "img.letgo.com" && src.indexOf("/images/") >= 0) ||
             // https://images.musement.com/cover/0001/58/thumb_57463_cover_header.jpeg?&q=60&fit=crop&lossless=true&auto=format&w=412&h=200
             (domain === "images.musement.com" && src.indexOf("/cover/") >= 0) ||
-            // https://media-manager.noticiasaominuto.com/naom_5b92574de01fd.jpg?&w=1920&t=gallery
-            domain === "media-manager.noticiasaominuto.com" ||
             // https://i.playground.ru/i/blog/344061/icon.jpg?600xauto
             domain === "i.playground.ru" ||
             // https://www.treeoftheyear.org/getmedia/ecd7b001-6c64-4279-9eee-32c76dedc3dc/117221b;.aspx?width=600
@@ -4340,6 +4343,10 @@ var $$IMU_EXPORT$$;
             (domain_nowww === "mix106radio.com" && src.indexOf("/files/") >= 0) ||
             // https://static-cdn.sr.se/sida/images/3138/3464680_2048_1152.jpg?preset=768x432
             (domain === "static-cdn.sr.se" && src.indexOf("/images/") >= 0) ||
+            // https://cdn.kaumo.jp/element/25beb439-c680-42cb-b4da-01082ffd495e.jpg?w=200&h=200&t=resize&q=90
+            (domain === "cdn.kaumo.jp" && src.indexOf("/element/") >= 0) ||
+            // https://d12swbtw719y4s.cloudfront.net/images/HAH4ZNFC/j8zc9QNLZWdMLRkJoJ10/13876272_154185325010658_4931241332073474710_n.jpeg?w=300
+            (domain === "d12swbtw719y4s.cloudfront.net" && src.indexOf("/images/") >= 0) ||
             // http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
             // https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
             src.match(/\/demandware\.static\//) ||
@@ -4959,6 +4966,10 @@ var $$IMU_EXPORT$$;
             (domain === "d2yoo3qu6vrk5d.cloudfront.net" && src.indexOf("/images/") >= 0) ||
             // https://courrier.jp/media/2017/11/10041739/s_GettyImages-459754376-625x446.jpg
             (domain_nowww === "courrier.jp" && src.indexOf("/media/") >= 0) ||
+            // https://dieta.pourfemme.it/img/2010/07/dieta-vegana-8-420x260.jpg
+            (domain === "dieta.pourfemme.it" && src.indexOf("/img/") >= 0) ||
+            // https://static.atmag.co.il/www/uploads/2017/02/GettyImages-634329518_h-2000x1125.jpg
+            (domain === "static.atmag.co.il" && src.indexOf("/uploads/") >= 0) ||
             // https://1.soompi.io/wp-content/blogs.dir/8/files/2015/09/HA-TFELT-Wonder-Girls-590x730.jpg -- doesn't work
             // https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2018/01/GTA-6-Female-Protag-796x417.jpg -- does work
             src.indexOf("/wp-content/blogs.dir/") >= 0 ||
@@ -7702,6 +7713,9 @@ var $$IMU_EXPORT$$;
             //   https://media.virginradio.fr/article-3545974-thumb-f8/selena-gomez-et-demi-lovato-s-apos-eclatent.jpg
             //   https://media.virginradio.fr/article-3545974-redim-f8/selena-gomez-et-demi-lovato-s-apos-eclatent.jpg -- different image!
             domain === "media.virginradio.fr" ||
+            // https://media.melty.mx/article-2260674-ajust_930-f1424195409/selena-gomez-en-v-magazine-marzo-2015.jpg -- upscaled
+            //   https://media.melty.mx/article-2260674-redim-f1424195409/selena-gomez-en-v-magazine-marzo-2015.jpg
+            domain === "media.melty.mx" ||
             // https://media.melty.fr/article-3657708-thumb-f8/quantico-saison-3-priyanka-chopra-alex-tease.jpg
             // https://media.melty.fr/article-3658090-head-f4/rihanna-anniversaire-pornhub-film-porno-pornographie.jpg
             // https://media.melty.fr/article-3658090-full/booba-veut-arreter-sa-carriere-fergie-en.jpg
@@ -8523,12 +8537,17 @@ var $$IMU_EXPORT$$;
         }
 
         if (domain === "ii.yakuji.moe" ||
+            // https://iichan.hk/c/thumb/1483306651580s.jpg
+            //   https://iichan.hk/c/src/1483306651580.jpg
+            domain_nowww === "iichan.hk" ||
             // http://aqua.komica.org/60/thumb/1509040275477s.jpg
             //   http://aqua.komica.org/60/src/1509040275477.jpg
             domain === "aqua.komica.org") {
             // http://ii.yakuji.moe/b/thumb/1534110350035s.jpg
             //   http://ii.yakuji.moe/b/src/1534110350035.jpg
-            return src.replace(/\/thumb\/([0-9]+)s(\.[^/.]*)$/, "/src/$1$2");
+            newsrc = src.replace(/\/thumb\/([0-9]+)s(\.[^/.]*)$/, "/src/$1$2");
+            if (newsrc !== src)
+                return newsrc;
         }
 
         if (domain === "file.tinnhac.com" ||
@@ -10970,6 +10989,26 @@ var $$IMU_EXPORT$$;
             // https://cdn.glamour.mx/uploads/images/thumbs/mx/glam/2/s/2018/20/looks_de_billboard_awards_2018_3250_413x620.jpg
             //   https://cdn.glamour.mx/uploads/images/mx/glam/s/2018/20/looks_de_billboard_awards_2018_3250.jpg
             domain_nosub === "glamour.mx" ||
+            // https://cdn.glamour.es/uploads/images/thumbs/es/glam/4/s/2017/35/gigi_hadid_bella_desfile_victorias_secret_china_2017_6551_2505x.jpg
+            //   https://cdn.glamour.es/uploads/images/es/glam/s/2017/35/gigi_hadid_bella_desfile_victorias_secret_china_2017_6551.jpg
+            // https://cdn2.glamour.es/uploads/images/thumbs/es/glam/4/s/2017/20/selena_gomez_met_5352_1200x630.jpg
+            //   https://cdn2.glamour.es/uploads/images/es/glam/s/2017/20/selena_gomez_met_5352.jpg
+            // http://cdn.glamour.es/uploads/images/thumbs/201419/gala_met_2014_todos_los_vestidos_de_la_alfombra_roja_343183988_667x1000.jpg
+            //   http://cdn.glamour.es/uploads/images/201419/gala_met_2014_todos_los_vestidos_de_la_alfombra_roja_343183988.jpg
+            // http://cdn.glamour.es/uploads/images/thumbs/201546/el_desfile_de_victorias_secret_la_alfombra_rosa_244031781_335x.jpg
+            //   http://cdn.glamour.es/uploads/images/201546/el_desfile_de_victorias_secret_la_alfombra_rosa_244031781.jpg
+            domain_nosub === "glamour.es" ||
+            // https://cdn.gq.com.mx/uploads/images/thumbs/201543/anna_sizykh__272304971_2954x1969.jpg
+            //   https://cdn.gq.com.mx/uploads/images/201543/anna_sizykh__272304971.jpg
+            // https://cdn.gq.com.mx/uploads/images/thumbs/mx/gq/2/s/2016/03/la_belleza_de_margot_robbie_956194671_977x1454.jpg
+            //   https://cdn.gq.com.mx/uploads/images/mx/gq/2/s/2016/03/la_belleza_de_margot_robbie_956194671.jpg -- doesn't work
+            //   https://cdn.gq.com.mx/uploads/images/mx/gq/s/2016/03/la_belleza_de_margot_robbie_956194671.jpg -- works
+            domain === "cdn.gq.com.mx" ||
+            // http://cdn.revistavanityfair.es/uploads/images/thumbs/201519/todos_los_looks_fabulosamente_indescriptibles_de_rihanna_38784214_93x125.jpg
+            //   http://cdn.revistavanityfair.es/uploads/images/201519/todos_los_looks_fabulosamente_indescriptibles_de_rihanna_38784214.jpg
+            // https://cdn.revistavanityfair.es/uploads/images/thumbs/es/vf/2/s/2018/07/karen_gillan_1730_1199x1800.jpg
+            //   http://cdn.revistavanityfair.es/uploads/images/es/vf/s/2018/07/karen_gillan_1730.jpg
+            domain === "cdn.revistavanityfair.es" ||
             // http://cdn.vogue.es/uploads/images/thumbs/201541/top_looks_las_mejor_vestidas_de_la_semana_del_2_al_9_de_octubre_de_2015_758656006_800x.jpg
             //   http://cdn.vogue.es/uploads/images/201541/top_looks_las_mejor_vestidas_de_la_semana_del_2_al_9_de_octubre_de_2015_758656006.jpg
             // https://cdn2.vogue.es/uploads/images/thumbs/201541/top_looks_las_mejor_vestidas_de_la_semana_del_2_al_9_de_octubre_de_2015_758656006_800x.jpg
@@ -10982,7 +11021,9 @@ var $$IMU_EXPORT$$;
             //   http://cdn.vogue.mx/uploads/images/mx/vog/c/2017/04/alexandre_vauthier_pasarela_170811342.jpg
             // http://cdn.vogue.mx/uploads/images/mx/vog/s/2016/10/familia_real_britanica_780685680.jpg
             return src
-                .replace(/\/uploads\/images\/thumbs(?:(\/mx\/(?:vog|glam)\/)[0-9]*)?\/(.*)_[0-9]+x(?:[0-9]+)?(\.[^/.]*)$/, "/uploads/images/$1$2$3");
+                .replace(/\/uploads\/+images\/+thumbs(?:(\/+(?:mx|es)\/+(?:vog|glam|gq|vf)\/+)[0-9]*\/+([a-z]))?(\/+(?:[0-9]{4}\/+[0-9]+|[0-9]{4,})\/+[^/]*)_[0-9]+x(?:[0-9]+)?(\.[^/.]*)(?:[?#].*)?$/, "/uploads/images$1$2$3$4");
+            //return src.replace(/\/thumbs\/([0-9]+\/[^/.]*)_[0-9]+x[0-9]+(\.[^/.]*)$/, "/$1$2");
+            //return src.replace(/(\/uploads\/images)\/thumbs(?:(\/[a-z]+\/(?:vf|gq))\/[0-9]+)?(\/.*)_[0-9]+x(?:[0-9]+)?(\.[^/.]*)$/, "$1$2$3$4");
         }
 
         if (domain_nosub === "ykt.ru" ||
@@ -11109,6 +11150,9 @@ var $$IMU_EXPORT$$;
             // https://assets.dogannet.tv/img/10/640x0/5ac6231aae298b8e01213bed
             //   https://assets.dogannet.tv/img/100/0x0/5ac6231aae298b8e01213bed
             domain === "assets.dogannet.tv" ||
+            // https://img2.fanatik.com.tr/img/78/364x364/5af541ee66a97c82afdd810f
+            //  https://img2.fanatik.com.tr/img/100/0x0/5af541ee66a97c82afdd810f
+            domain_nosub === "fanatik.com.tr" ||
             // https://i.cnnturk.com/ps/cnnturk/75/630x0/582064a15659341ab0aea248.jpg
             //   https://i.cnnturk.com/ps/cnnturk/75/0x0/582064a15659341ab0aea248.jpg
             //   https://i.cnnturk.com/ps/cnnturk/100/0x0/582064a15659341ab0aea248.jpg
@@ -11655,9 +11699,12 @@ var $$IMU_EXPORT$$;
             // https://www.rosario3.com/export/sites/rosario3/img/2018/05/08/met_4.jpg_753198914.jpg
             //   https://www.rosario3.com/export/sites/rosario3/img/2018/05/08/met_4.jpg
             (domain_nowww === "rosario3.com" && src.indexOf("/img/") >= 0) ||
+            // https://www.soycarmin.com/export/sites/debate/img/celebs/2015/07/22/sel3.jpg_128859593.jpg
+            //   https://www.soycarmin.com/export/sites/debate/img/celebs/2015/07/22/sel3.jpg
+            (domain_nowww === "soycarmin.com" && src.indexOf("/img/") >= 0) ||
             // https://www.am.com.mx/__export/1557176283396/sites/am/img/2019/05/06/socavon-se-traga-excavadora.jpg_524172160.jpg
             //   https://www.am.com.mx/__export/1557176283396/sites/am/img/2019/05/06/socavon-se-traga-excavadora.jpg
-            src.match(/^[a-z]+:\/\/[^/]*\/(?:__)?export\/+[0-9]{10,}\/+sites\/+[^/]+\/+img\/+[0-9]{4}\/+[0-9]{2}\/+[0-9]{2}\/+[^/]*\.[^/._]*_[0-9]{5,}\.[^/.]*(?:[?#].*)?$/)) {
+            src.match(/^[a-z]+:\/\/[^/]*\/(?:__)?export\/+[0-9]{10,}\/+sites\/+[^/]+\/+img\/+(?:[^/]*\/+)?[0-9]{4}\/+[0-9]{2}\/+[0-9]{2}\/+[^/]*\.[^/._]*_[0-9]{5,}\.[^/.]*(?:[?#].*)?$/)) {
             // https://www.eleconomista.com.mx/__export/1518538244604/sites/eleconomista/img/2018/02/13/mario_draghi.jpg_332989735.jpg
             //   https://www.eleconomista.com.mx/__export/1518538244604/sites/eleconomista/img/2018/02/13/mario_draghi.jpg
             return src.replace(/(\/[^/.]*\.[^/._]*)_[^/.]*\.[^/.]*$/, "$1");
@@ -12770,10 +12817,17 @@ var $$IMU_EXPORT$$;
             return src.replace(/:\/\/image\.([^/]*)\/home\/[a-z]+-media\/[^/]*\/img\//, "://media.$1/");
         }
 
-        if (domain_nosub === "hwcdn.net") {
+        if (domain === "s9v7j7a4.ssl.hwcdn.net") {
             // https://s9v7j7a4.ssl.hwcdn.net/galleries/new_big/58/df/5c/58df5c4f13e698517e6a9aa00e311f9a/3.jpg
             //   https://s9v7j7a4.ssl.hwcdn.net/galleries/full/58/df/5c/58df5c4f13e698517e6a9aa00e311f9a/3.jpg
             return src.replace(/\/galleries\/[^/]*\//, "/galleries/full/");
+        }
+
+        if (domain === "k5x5n5g8.ssl.hwcdn.net") {
+            // https://k5x5n5g8.ssl.hwcdn.net/content/181035/0013-03_w400.jpg
+            //   https://k5x5n5g8.ssl.hwcdn.net/content/181035/0013-03.jpg
+            return src.replace(/(\/content\/+[0-9]+\/+[0-9]+-[0-9]+)_[wh][0-9]+(\.[^/.]*)(?:[?#].*)?$/,
+                               "$1$2");
         }
 
         if (domain === "aws-foto.amateri.com") {
@@ -15745,6 +15799,9 @@ var $$IMU_EXPORT$$;
         }
 
         if ((domain_nosub === "bestie.vn" && domain.match(/^static[0-9]*\./)) ||
+            // https://img.highloadtest.com/390x0/1556109964_5cc05a8c3d8de.jpeg
+            //   https://img.highloadtest.com/1556109964_5cc05a8c3d8de.jpeg
+            domain === "img.highloadtest.com" ||
             // https://cdn.sinemia.com/64x88/artists/1470986296_57ad7838db0e7.jpg
             //   https://cdn.sinemia.com/artists/1470986296_57ad7838db0e7.jpg
             domain === "cdn.sinemia.com") {
@@ -16978,27 +17035,6 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             // http://mediacdn.grabone.co.nz/asset/poDaw53KPl/box=615x0
             //   http://mediacdn.grabone.co.nz/asset/poDaw53KPl
             return src.replace(/(\/asset\/[-_=a-zA-Z0-9]+)\/[a-z]+=.*/, "$1");
-        }
-
-        if (domain === "cdn.glamour.es" ||
-            // https://cdn.gq.com.mx/uploads/images/thumbs/201543/anna_sizykh__272304971_2954x1969.jpg
-            //   https://cdn.gq.com.mx/uploads/images/201543/anna_sizykh__272304971.jpg
-            // https://cdn.gq.com.mx/uploads/images/thumbs/mx/gq/2/s/2016/03/la_belleza_de_margot_robbie_956194671_977x1454.jpg
-            //   https://cdn.gq.com.mx/uploads/images/mx/gq/2/s/2016/03/la_belleza_de_margot_robbie_956194671.jpg -- doesn't work
-            //   https://cdn.gq.com.mx/uploads/images/mx/gq/s/2016/03/la_belleza_de_margot_robbie_956194671.jpg -- works
-            domain === "cdn.gq.com.mx" ||
-            // http://cdn.revistavanityfair.es/uploads/images/thumbs/201519/todos_los_looks_fabulosamente_indescriptibles_de_rihanna_38784214_93x125.jpg
-            //   http://cdn.revistavanityfair.es/uploads/images/201519/todos_los_looks_fabulosamente_indescriptibles_de_rihanna_38784214.jpg
-            domain === "cdn.revistavanityfair.es") {
-            // http://cdn.glamour.es/uploads/images/thumbs/201419/gala_met_2014_todos_los_vestidos_de_la_alfombra_roja_343183988_667x1000.jpg
-            //   http://cdn.glamour.es/uploads/images/201419/gala_met_2014_todos_los_vestidos_de_la_alfombra_roja_343183988.jpg
-            // http://cdn.glamour.es/uploads/images/thumbs/201546/el_desfile_de_victorias_secret_la_alfombra_rosa_244031781_335x.jpg
-            //   http://cdn.glamour.es/uploads/images/201546/el_desfile_de_victorias_secret_la_alfombra_rosa_244031781.jpg
-            //return src.replace(/\/thumbs\/([0-9]+\/[^/.]*)_[0-9]+x[0-9]+(\.[^/.]*)$/, "/$1$2");
-
-            // https://cdn.revistavanityfair.es/uploads/images/thumbs/es/vf/2/s/2018/07/karen_gillan_1730_1199x1800.jpg
-            //   http://cdn.revistavanityfair.es/uploads/images/es/vf/s/2018/07/karen_gillan_1730.jpg
-            return src.replace(/(\/uploads\/images)\/thumbs(?:(\/[a-z]+\/(?:vf|gq))\/[0-9]+)?(\/.*)_[0-9]+x(?:[0-9]+)?(\.[^/.]*)$/, "$1$2$3$4");
         }
 
         if (domain_nosub === "woman.ru" && domain.match(/i[0-9]*-cdn\.woman\.ru/)) {
@@ -21852,12 +21888,23 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
         if (domain === "static.noticiasaominuto.com" ||
             // https://static.noticiasaominuto.com.br/stockimages/gallery/1920/naom_5a9c9a20cc942.jpg -- 720x1080
             //   https://static.noticiasaominuto.com.br/stockimages/hires_original/naom_5a9c9a20cc942.jpg -- 3446x5168
+            //   https://media-manager.noticiasaominuto.com/naom_5a9c9a20cc942.jpg -- 3446x5168
             domain === "static.noticiasaominuto.com.br") {
             // https://static.noticiasaominuto.com/stockimages/gallery/1920/naom_590064d2d86e4.jpg -- stretched
             //   https://static.noticiasaominuto.com/stockimages/hires_original/naom_590064d2d86e4.jpg
             // https://static.noticiasaominuto.com/stockimages/1920/naom_5af00562d40f1.jpg -- 1920x1080
             //   https://static.noticiasaominuto.com/stockimages/hires_original/naom_5af00562d40f1.jpg -- 2800x1866
+            //   https://media-manager.noticiasaominuto.com/naom_5af00562d40f1.jpg -- 2800x1866
             return src.replace(/(\/stockimages\/)(?:gallery\/)?[^/]*(\/[^/]*)$/, "$1hires_original$2");
+        }
+
+        if (domain === "media-manager.noticiasaominuto.com") {
+            // https://media-manager.noticiasaominuto.com/naom_5b92574de01fd.jpg?&w=1920&t=gallery
+            //   https://media-manager.noticiasaominuto.com/640/1501786113/naom_590a5951e913a.jpg
+            //   https://media-manager.noticiasaominuto.com/naom_590a5951e913a.jpg
+            return src
+                .replace(/\?.*/, "")
+                .replace(/(:\/\/[^/]*\/)[0-9]+\/+[0-9]+\/+(naom_)/, "$1$2");
         }
 
         // PHP-Fusion
@@ -23645,6 +23692,9 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
         }
 
         if (domain === "cdn.eroticbeauties.net" ||
+            // http://cdn.hometownnudes.com/content/atk-galleria-ashley-stone-253374/auto/5/tn@1x/01.jpg
+            //   http://cdn.hometownnudes.com/content/atk-galleria-ashley-stone-253374/full/01.jpg
+            domain === "cdn.hometownnudes.com" ||
             // http://media.pinkworld.com/cms/content/povd_20151221130919_alex-grey-picnic-in-the-park/tn@1x/02.jpg
             //   http://media.pinkworld.com/cms/content/povd_20151221130919_alex-grey-picnic-in-the-park/full/02.jpg
             // http://media.pinkworld.com/cms/content/ftvgirls_20150908142022_alexia-a-fresh-nudist/1024/01.jpg
@@ -24070,6 +24120,12 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/(\/images\/[^/]*\/[0-9]+\/[0-9]+\/[^/]*)_t(\.[^/.]*)$/, "$1$2");
         }
 
+        if (domain_nowww === "egehaber.com") {
+            // https://www.egehaber.com/images/haberler/thumbs/2018/10/gigi-hadid-hamburgerle-kilo-almaya-calisiyor-gigi-hadid-kimdir_34fb1.jpg
+            //   https://www.egehaber.com/images/haberler/2018/10/gigi-hadid-hamburgerle-kilo-almaya-calisiyor-gigi-hadid-kimdir_34fb1.jpg
+            return src.replace(/\/images\/+haberler\/+thumbs\/+/, "/images/haberler/");
+        }
+
         if (domain_nowww === "dienvienvietnam.vn" &&
             src.indexOf("/assets/img/") >= 0) {
             // https://dienvienvietnam.vn/assets/img/tall-all-1_1530277982_large.jpg
@@ -24202,12 +24258,20 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/\.sized-[0-9t]+x[0-9t]+x[0-9t]+(\.[^/.]*)$/, "$1");
         }
 
-        if (domain === "file.nxing.cn") {
+        if (domain === "file.nxing.cn" ||
+            // http://upload.nxing.cn/uploads/uploads/2017/03/10/0000081/2017031015023731909f265-size2119x2991.jpeg
+            //   http://upload.nxing.cn/uploads/uploads/2017/03/10/0000081/2017031015023731909f265.jpeg
+            domain === "upload.nxing.cn") {
             // http://file.nxing.cn/uploads/uploads/2017/05/12/0000015/201705121104364104e5b14-size950x1330_thum_w260xh360xm0xf0xc1.jpeg
             //   http://file.nxing.cn/uploads/uploads/2017/05/12/0000015/201705121104364104e5b14.jpeg
             // http://file.nxing.cn/uploads/uploads/2016/10/17/0000000/20161017060127040585051-size666x1000.jpg
             //   http://file.nxing.cn/uploads/uploads/2016/10/17/0000000/20161017060127040585051.jpg
-            return src.replace(/(\/uploads\/uploads\/[0-9]+\/[0-9]+\/[0-9]+\/[0-9]+\/[0-9a-f]+)-size[0-9]+x[0-9]+(?:_[^/]*)?(\.[^/.]*)$/, "$1$2");
+            return {
+                url: src.replace(/(\/uploads\/uploads\/[0-9]+\/[0-9]+\/[0-9]+\/[0-9]+\/[0-9a-f]+)-size[0-9]+x[0-9]+(?:_[^/]*)?(\.[^/.]*)$/, "$1$2"),
+                headers: {
+                    Referer: ""
+                }
+            };
         }
 
         // LookBooks
@@ -25308,7 +25372,10 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             // Xx0 seems to return the last image done with the same name/tags, no matter X
         }
 
-        if (domain === "envivoblog.estrellatv.com") {
+        if (domain === "envivoblog.estrellatv.com" ||
+            // http://cdn.okjeok.hr/assets/Uploads/_resampled/SetWidth300-GettyImages-675604330.jpg
+            //   http://cdn.okjeok.hr/assets/Uploads/GettyImages-675604330.jpg
+            domain === "cdn.okjeok.hr") {
             // http://envivoblog.estrellatv.com/assets/envivoblog.estrellatv.com/articles/images/06-2018/_resampled/SetWidth360-1524696124-leslie-grace-colabora-con-super-junior.jpg
             //   http://envivoblog.estrellatv.com/assets/envivoblog.estrellatv.com/articles/images/06-2018/1524696124-leslie-grace-colabora-con-super-junior.jpg
             return src.replace(/\/_resampled\/Set(?:Width|Height)[0-9]+-([^/]*)$/, "/$1");
@@ -26469,9 +26536,12 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/\/tb\/+[a-z]+\/+storage\//, "/storage/");
         }
 
-        if (domain_nowww === "cumicumi.com") {
+        if (domain_nosub === "cumicumi.com") {
             // http://www.cumicumi.com/uploads/public/5c2/4f0/34b/th_125x75_5c24f034b41c1320409400.jpg
             //   http://www.cumicumi.com/uploads/public/5c2/4f0/34b/5c24f034b41c1320409400.jpg
+            // https://m.cumicumi.com/uploads/public/57b/593/5fe/th_350x200_57b5935fe1fae237927355.jpg
+            //   https://m.cumicumi.com/uploads/public/57b/593/5fe/57b5935fe1fae237927355.jpg -- redirects to:
+            //   https://www.cumicumi.com/uploads/public/57b/593/5fe/57b5935fe1fae237927355.jpg
             return src.replace(/(\/uploads\/+public\/+(?:[0-9a-f]+\/+){3})th_[0-9]+x[0-9]+_([0-9a-f]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
         }
 
@@ -28473,7 +28543,9 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
         if (domain === "media.milovana.com") {
             // https://media.milovana.com/timg/tb_s/5abeefba7314b21c56892cbf67ad390d260ab457.jpg
             //   https://media.milovana.com/timg/tb_l/5abeefba7314b21c56892cbf67ad390d260ab457.jpg
-            return src.replace(/\/timg\/+tb_[a-z]+\/+/, "/timg/tb_l/");
+            // https://media.milovana.com/timg/44608/31403/tb_s/1424205836-selena-gomez-v-magazine-zoom.jpg
+            //   https://media.milovana.com/timg/44608/31403/tb_l/1424205836-selena-gomez-v-magazine-zoom.jpg
+            return src.replace(/(\/timg\/+(?:[0-9]+\/+[0-9]+\/+)?)tb_[a-z]+\/+/, "$1tb_l/");
         }
 
         if (domain === "uploads.spiritfanfiction.com") {
@@ -29656,6 +29728,9 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             // http://static.soltana.ma/content/uploads/2017/01/south-korea-peace-sign-v-sign-e1484953950431-567x340.jpg
             //   http://static.soltana.ma/content/uploads/2017/01/south-korea-peace-sign-v-sign.jpg
             (domain === "static.soltana.ma" && src.indexOf("/uploads/") >= 0) ||
+            // https://cosmopolitan.hu/app/uploads/2017/05/selena-gomez-met-gala-2017-cosmopolitan-e1495089370492-468x234.jpg
+            //   https://cosmopolitan.hu/app/uploads/2017/05/selena-gomez-met-gala-2017-cosmopolitan.jpg
+            (domain_nowww === "cosmopolitan.hu" && src.match(/\/app\/+uploads\//)) ||
              // https://www.pedestrian.tv/content/uploads/2017/10/DNTXJ6jVwAAUNtC-e1509358138415-605x397.jpg
              //   https://www.pedestrian.tv/content/uploads/2017/10/DNTXJ6jVwAAUNtC-e1509358138415.jpg
              //   https://www.pedestrian.tv/content/uploads/2017/10/DNTXJ6jVwAAUNtC.jpg
@@ -31693,6 +31768,83 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                                "$1$2");
         }
 
+        if (domain_nowww === "famavip.com") {
+            // https://famavip.com/n/not_314170.jpg
+            //   https://famavip.com/lg/not_314170.jpg
+            //   https://famavip.com/xl/not_314170.jpg
+            return src.replace(/(:\/\/[^/]*\/)(?:n|lg)\/+/, "$1xl/");
+        }
+
+        if (domain_nowww === "notifeed.net") {
+            // https://notifeed.net/thumb?u=https://www.elintransigente.com/u/fotografias/m/2018/10/30/f800x450-484588_536034_0.jpg&s=3&w=800&h=480
+            //   https://www.elintransigente.com/u/fotografias/m/2018/10/30/f800x450-484588_536034_0.jpg
+            newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/thumb.*?[?&]u=(http[^&]*).*?$/, "$1");
+            if (newsrc !== src)
+                return decodeuri_ifneeded(newsrc);
+        }
+
+        if (domain === "atmag-static-timeout.netdna-ssl.com") {
+            // https://atmag-static-timeout.netdna-ssl.com/media/2017/12/sizes/GettyImages-629416190_wo_500_598.jpg
+            //   https://atmag-static-timeout.netdna-ssl.com/media/2017/12/GettyImages-629416190.jpg
+            return src.replace(/(\/media\/+[0-9]{4}\/+[0-9]{2}\/+)sizes\/+([^/]*?)_wo_[0-9]+_[0-9]+(\.[^/.]*)(?:[?#].*)?$/,
+                               "$1$2$3");
+        }
+
+        if (domain_nowww === "bliasak.bg") {
+            // http://www.bliasak.bg/public-p/g/e/gettyimages-629416190-73902-636x0-98873-810x0.jpg
+            //   http://www.bliasak.bg/public-p/g/e/gettyimages-629416190-73902-636x0-98873-original.jpg
+            return src.replace(/-[0-9]+x[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "-original$1");
+        }
+
+        if (domain === "news.data.bg") {
+            // http://news.data.bg/storage/news/2017-05-03/856380_300x0.jpg -- 300x404, upscaled?
+            //   http://news.data.bg/storage/news/2017-05-03/856380.jpg -- 290x391
+            return src.replace(/(\/storage\/+news\/+[0-9]{4}(?:-[0-9]{2}){2}\/+[0-9]+)_[0-9]+x[0-9]+(\.[^/.]*)(?:[?#].*)?$/,
+                               "$1$2");
+        }
+
+        if (false && domain_nosub === "blogcu.com" && domain.match(/^img[0-9]*\./)) {
+            // http://img04.blogcu.com/v2/images/big/l/i/f/lifedisney/lifedisney_1317543466.jpg
+            //   http://img04.blogcu.com/v2/images/orj/l/i/f/lifedisney/lifedisney_1317543466.jpg -- doesn't work
+            // http://img04.blogcu.com/v2/images/orj/m/i/l/millbeckylove2/millbeckylove2_132762362568.jpg
+            return src.replace(/\/v2\/+images\/+[a-z]+\/+/, "/v2/images/orj/");
+        }
+
+        if (domain === "img.a9vg.com") {
+            // http://img.a9vg.com//2017/03/10/1/s_f681d563783e5e7a15496654bfc10020.jpg
+            //   http://img.a9vg.com//2017/03/10/1/f681d563783e5e7a15496654bfc10020.jpg
+            return src.replace(/\/s_([0-9a-f]{20,}\.[^/.]*)(?:[?#].*)?$/, "/$1");
+        }
+
+        if (domain_nosub === "waikeung.info" && src.indexOf("id=ror_grab_ttkzm")) {
+            // https://waikeung.info/plugin.php?id=ror_grab_ttkzm&act=pic&url=http%3A%2F%2Fweeblyimg.com%2Fattachment%2Fforum%2F201709%2F17%2F193154oqpjhpaq5aovjoov.jpg
+            //   http://weeblyimg.com/attachment/forum/201709/17/193154oqpjhpaq5aovjoov.jpg
+            newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/.*?[?&]url=([^&]*).*?$/, "$1");
+            if (newsrc !== src)
+                return decodeuri_ifneeded(newsrc);
+        }
+
+        if (domain === "tn.pooh.pw") {
+            // http://tn.pooh.pw:81/?https://i.imgur.com/qy5Qrd6.jpg
+            //   https://i.imgur.com/qy5Qrd6.jpg
+            return src.replace(/^[a-z]+:\/\/[^/]*\/\?(http)/, "$1");
+        }
+
+        if (domain_nowww === "animeanime.jp") {
+            // https://animeanime.jp/imgs/sq_sl/157389.jpg
+            //   https://animeanime.jp/imgs/p/jtKDOVlKAvjRrNw8SXAVejagI61Nrq_oqaqr/157389.jpg -- 360x480
+            //   https://animeanime.jp/imgs/p/rQC-FVStleeQ4uCDm4cdn6GgF60oy6_oqaqr/157389.jpg -- 533x709
+            //   https://animeanime.jp/imgs/ogp_f/157389.jpg -- 600x798
+            //   https://animeanime.jp/imgs/p/sQnw7oxGTTu4umdJ9vPIDqGgI6ytrq_oqaqr/157389.jpg -- 533x709
+            // https://animeanime.jp/imgs/p/rQC-FVStleeQ4uCDm4cdn6GgF60oy6_oqaqr/189666.jpg -- 1333x2000
+            //   https://animeanime.jp/imgs/ogp_f/189666.jpg -- 600x900
+            // https://s.animeanime.jp/imgs/p/sQnw7oxGTTu4umdJ9vPIDqGgI6ytrq_oqaqr/230649.jpg -- 2048x2048
+            //   https://s.animeanime.jp/imgs/p/rQC-FVStleeQ4uCDm4cdn6GgF60oy6_oqaqr/230649.jpg -- 1024x1024
+            return src.replace(/\/imgs\/+(?:sq_sl|ogp_f|p\/+(?:jtKDOVlKAvjRrNw8SXAVejagI61Nrq|rQC-FVStleeQ4uCDm4cdn6GgF60oy6)_oqaqr)\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/imgs/p/sQnw7oxGTTu4umdJ9vPIDqGgI6ytrq_oqaqr/$1");
+        }
+
+
+
 
 
 
@@ -31921,7 +32073,8 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
         }
 
         // coppermine
-        if (src.search(/(?::\/\/[^/]*\/(gallery|photos|photogallery)|:\/\/gallery\.[^/]*)?\/albums\/+[^/]*(?:\/+.*)?\/+(normal|thumb|userpics)_[^/.]*\.[^/.]*$/) >= 0) {
+        if (domain === "i.pinger.pl" ||
+            src.search(/(?::\/\/[^/]*\/(gallery|photos|photogallery)|:\/\/gallery\.[^/]*)?\/albums\/+[^/]*(?:\/+.*)?\/+(normal|thumb|userpics)_[^/.]*\.[^/.]*$/) >= 0) {
             // http://emma-w.net/photos/albums/Events/2017/MARCH13/001/thumb_001.jpg
             //   http://emma-w.net/photos/albums/Events/2017/MARCH13/001/001.jpg
             // http://emilia-clarke.net/gallery/albums/Photoshoots/Session031/thumb_2013_10_12.jpg
@@ -31936,7 +32089,9 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             //   http://thewalking-dead.sosugary.com/albums/userpics/10001/danai4318_282329.jpg
             // https://sabrinacarpenter.org/gallery/albums/Instagram/thumb_SCORG00656.jpg
             //   https://sabrinacarpenter.org/gallery/albums/Instagram/SCORG00656.jpg
-            newsrc = src.replace(/(\/albums\/.*\/)[a-z]*_([^/.]*\.[^/.]*)$/, "$1$2");
+            // http://i.pinger.pl/pgr473/d1187d3e0009772553242703/normal_005~25.jpg
+            //   http://i.pinger.pl/pgr473/d1187d3e0009772553242703/005~25.jpg
+            newsrc = src.replace(/\/[a-z]*_([^/.]*\.[^/.]*)$/, "/$1");
             if (newsrc !== src)
                 return newsrc;
         }
@@ -32706,6 +32861,8 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
 
         if (domain_nowww === "ozanyerli.com" ||
             domain === "gallica.bnf.fr" ||
+            // https://dieta.pourfemme.it/img/2010/07/dieta-vegana-8-420x260.jpg
+            domain === "dieta.pourfemme.it" ||
             // https://cdn.akb48.co.jp/cache/image/?path=%2Fmembers%2Fprofile%2Fteam_8_png%2Foguri_yui.png
             domain === "cdn.akb48.co.jp") {
             // http://www.ozanyerli.com/uploadfile/2016/0411/thumb_240_0_20160411034324215.jpg
@@ -32724,6 +32881,8 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             domain_nowww === "kansascity.com" ||
             // https://www.sanluisobispo.com/entertainment/movies-news-reviews/i9fla8/picture189785229/BINARY/COVER%201%20Zac%20Efron
             domain_nowww === "sanluisobispo.com" ||
+            // https://iichan.hk/c/src/1483306651580.jpg
+            domain_nowww === "iichan.hk" || // 403
             (domain_nosub === "irishmirror.ie" && domain.match(/i[0-9]*(?:-prod)?\./))) {
             return {
                 url: src,
