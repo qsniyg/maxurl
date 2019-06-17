@@ -34883,7 +34883,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                             var img = document.createElement("img");
                             img.src = e.target.result;
                             img.onload = function() {
-                                cb(img, resp.finalUrl, obj[0]);
+                                cb(img, resp.finalUrl, obj[0], resp);
                             };
                             img.onerror = function() {
                                 err_cb();
@@ -35211,7 +35211,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             dragged = false;
             dragstart = false;
 
-            function cb(img, url, newobj) {
+            function cb(img, url) {
                 if (!controlPressed && false) {
                     if (processing.running)
                         stop_waiting();
@@ -35224,8 +35224,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                     return;
                 }
 
-                if (newobj instanceof Array)
-                    newobj = newobj[0];
+                var newobj = data.data.obj;
 
                 if (!newobj)
                     newobj = {};
@@ -35649,7 +35648,43 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                 a.style.setProperty("display", "block", "important");
                 a.href = url;
                 if (settings.mouseover_download) {
-                    if (newobj.filename) {
+                    a.href = img.src;
+
+                    if (typeof newobj.filename !== "string")
+                        newobj.filename = "";
+
+                    if (newobj.filename.length === 0) {
+                        try {
+                            var headers = data.data.respdata.responseHeaders.split("\n");
+                            for (var h_i = 0; h_i < headers.length; h_i++) {
+                                var header = headers[h_i].split(":");
+                                if (header[0].toLowerCase().replace(/\s/g, "") === "content-disposition") {
+                                    var value = headers[1].replace(/^\s*|\s*$/g, "").split(";");
+                                    for (var v_i = 0; v_i < value.length; v_i++) {
+                                        var v_k = value[v_i].replace(/^\s*|\s*$/g, "").split("=");
+                                        if (v_k[0] === "filename*") {
+                                            newobj.filename = v_k[1];
+                                        }
+
+                                        if (newobj.filename.length === 0 && v_k[0] === "filename") {
+                                            newobj.filename = v_k[1];
+                                        }
+                                    }
+                                }
+
+                                if (newobj.filename.length > 0)
+                                    break;
+                            }
+                        } catch (e) {
+                            console_error(e);
+                        }
+
+                        if (newobj.filename.length === 0) {
+                            newobj.filename = url.replace(/.*\/([^?#]*?)(?:\.[^/.]*)?(?:[?#].*)?$/, "$1");
+                        }
+                    }
+
+                    if (newobj.filename.length > 0) {
                         a.setAttribute("download", newobj.filename);
                     } else {
                         var attr = document.createAttribute("download");
@@ -36684,12 +36719,12 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                             processing.head = true;
                         }
 
-                        check_image_get(newobj, function(img, newurl) {
+                        check_image_get(newobj, function(img, newurl, obj, respdata) {
                             if (!img) {
                                 return finalcb(null);
                             }
 
-                            var data = {img: img, newurl: newurl};
+                            var data = {img: img, newurl: newurl, obj: obj, respdata: respdata};
                             var newurl1 = newurl;
 
                             if (openb === "newtab") {
