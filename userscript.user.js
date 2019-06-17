@@ -194,6 +194,7 @@ var $$IMU_EXPORT$$;
         bad: false,
         headers: {},
         extra: {},
+        filename: "",
         problems: {
             watermark: false,
             smaller: false
@@ -415,6 +416,9 @@ var $$IMU_EXPORT$$;
         "Page middle": {
             "ko": "페이지 중간"
         },
+        "Clicking image downloads": {
+            "ko": "이미지 클릭하면 다운로드"
+        },
         "Popup for plain hyperlinks": {
             "ko": "일반적인 링크에도 팝업"
         },
@@ -545,6 +549,7 @@ var $$IMU_EXPORT$$;
         scroll_zoom_behavior: "fitfull",
         // thanks to 07416 on github for the idea
         mouseover_position: "cursor",
+        mouseover_download: false,
         // also thanks to 07416
         mouseover_links: false,
         // thanks to acid-crash on github for the idea
@@ -842,6 +847,14 @@ var $$IMU_EXPORT$$;
             },
             requires: {
                 mouseover_open_behavior: "popup"
+            },
+            category: "popup"
+        },
+        mouseover_download: {
+            name: "Clicking image downloads",
+            description: "Instead of opening the link in a new tab, it will download the image instead",
+            requires: {
+                mouseover: true
             },
             category: "popup"
         },
@@ -31936,7 +31949,16 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             // thanks to heptal on github (#85)
             // https://www.pixsell.hr/scripts/get_image.php?image_id=21859428&var_suff=640x640
             //   https://www.pixsell.hr/scripts/get_image.php?image_id=21859428 -- 1600x1067
-            return src.replace(/\/scripts\/+get_image\.php.*?[?&](image_id=[0-9]+).*?$/, "/scripts/get_image.php?$1");
+            newsrc = src.replace(/\/scripts\/+get_image\.php.*?[?&](image_id=[0-9]+).*?$/, "/scripts/get_image.php?$1");
+            if (newsrc !== src)
+                return newsrc;
+
+            if (src.match(/\/scripts\/+get_image\.php\?image_id=[0-9]+$/)) {
+                return {
+                    url: src,
+                    filename: src.replace(/.*image_id=([0-9]+)$/, "$1")
+                };
+            }
         }
 
         if (domain_nowww === "softline.com.bd" ||
@@ -34785,7 +34807,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             var img = document.createElement("img");
             img.src = obj[0].url;
             img.onload = function() {
-                cb(img, obj[0].url);
+                cb(img, obj[0].url, obj[0]);
             };
             return;
         }
@@ -35189,7 +35211,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             dragged = false;
             dragstart = false;
 
-            function cb(img, url) {
+            function cb(img, url, newobj) {
                 if (!controlPressed && false) {
                     if (processing.running)
                         stop_waiting();
@@ -35201,6 +35223,12 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                         stop_waiting();
                     return;
                 }
+
+                if (newobj instanceof Array)
+                    newobj = newobj[0];
+
+                if (!newobj)
+                    newobj = {};
 
                 var estop = function(e) {
                     e.stopPropagation();
@@ -35620,6 +35648,15 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                 a.style.setProperty("vertical-align", "bottom", "important");
                 a.style.setProperty("display", "block", "important");
                 a.href = url;
+                if (settings.mouseover_download) {
+                    if (newobj.filename) {
+                        a.setAttribute("download", newobj.filename);
+                    } else {
+                        var attr = document.createAttribute("download");
+                        a.setAttributeNode(attr);
+                    }
+                }
+
                 a.target = "_blank";
                 a.appendChild(img);
                 div.appendChild(a);
@@ -35849,7 +35886,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                 //console_log(div);
             }
 
-            cb(data.data.img, data.data.newurl);
+            cb(data.data.img, data.data.newurl, obj);
             return;
 
             var newobj = deepcopy(obj);
