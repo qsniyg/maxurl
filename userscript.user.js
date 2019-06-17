@@ -2731,7 +2731,7 @@ var $$IMU_EXPORT$$;
         if (domain === "images.spot.im" ||
             // https://fashionista.com/.image/ar_16:9%2Cc_fill%2Ccs_srgb%2Cg_faces:center%2Cq_80%2Cw_620/MTQyNjI1MjYyNTc4NzA1NzM0/emma-watson-promojpg.jpg
             // https://fashionista.com/.image/t_share/MTQ2Njg0NzA2NzUzMDk1NTQ3/gettyimages-672499332.jpg
-            domain === "fashionista.com" ||
+            domain_nowww === "fashionista.com" ||
             // http://images.pigeonsandplanes.com/images/c_crop,h_2268,w_3024,x_0,y_330/c_limit,f_auto,fl_lossy,q_auto,w_1030/obk4degjo35h2jzuwyd7/opal-press-2017
             domain === "images.pigeonsandplanes.com" ||
             // https://images.sftcdn.net/images/t_optimized,f_auto/p/2fbcf826-96d0-11e6-ac58-00163ec9f5fa/62785002/gang-beasts-screenshot.jpg
@@ -3079,6 +3079,14 @@ var $$IMU_EXPORT$$;
             //   https://images-na.ssl-images-amazon.com/images/I/81yxJ9lr5vL.jpg
             // https://images-eu.ssl-images-amazon.com/images/I/41TMMGD0XZL._SL500_AC_SS350_.jpg
             //   https://images-eu.ssl-images-amazon.com/images/I/41TMMGD0XZL.jpg
+            // https://images-na.ssl-images-amazon.com/images/S/abs-image-upload-na/3/AmazonStores/ATVPDKIKX0DER/bd40c858f5fe4f2734eea3b15695e490.w10200.h25650._SL5000_AC_.png
+            //   https://images-na.ssl-images-amazon.com/images/S/abs-image-upload-na/3/AmazonStores/ATVPDKIKX0DER/bd40c858f5fe4f2734eea3b15695e490.w10200.h25650.png
+            //   https://images-na.ssl-images-amazon.com/images/S/abs-image-upload-na/3/AmazonStores/ATVPDKIKX0DER/bd40c858f5fe4f2734eea3b15695e490.png -- doesn't work (403)
+            // https://images-na.ssl-images-amazon.com/images/S/abs-image-upload-na/9/AmazonStores/ATVPDKIKX0DER/02918ee40d2ef3b6901d11895620f31b.w7402.h4915._SL5000_AC_.png -- 5000x3320
+            //   https://images-na.ssl-images-amazon.com/images/S/abs-image-upload-na/9/AmazonStores/ATVPDKIKX0DER/02918ee40d2ef3b6901d11895620f31b.w7402.h4915.png
+            // https://images-na.ssl-images-amazon.com/images/G/01/aplusautomation/vendorimages/73da407a-f7e0-4d9a-8943-178d8838be48.jpg._CB329731638_.jpg -- 3744x5616
+            //   https://images-na.ssl-images-amazon.com/images/G/01/aplusautomation/vendorimages/73da407a-f7e0-4d9a-8943-178d8838be48.jpg.jpg -- same size
+            //   https://images-na.ssl-images-amazon.com/images/G/01/aplusautomation/vendorimages/73da407a-f7e0-4d9a-8943-178d8838be48.jpg -- works too
             domain_nosub === "ssl-images-amazon.com" ||
             // https://m.media-amazon.com/images/I/61rtKO6VrUL._SL500_.jpg
             //   https://m.media-amazon.com/images/I/61rtKO6VrUL.jpg
@@ -3093,8 +3101,11 @@ var $$IMU_EXPORT$$;
             domain === "i.gr-assets.com") {
             return {
                 //url: src.replace(/\._[^/]*\.([^./]*)$/, "._.$1"),
-                url: src.replace(/\.[^/]*\.([^./]*)$/, ".$1"), // for now this seems to work for all images
-                always_ok: true,
+                url: src
+                    .replace(/(\.[^/.]*)(?:\.[^/.]*_){1,}\1(?:[?#].*)?$/, "$1") // is this needed?
+                    .replace(/\.[^/.]*_\.([^./]*)$/, ".$1"), // for now this seems to work for all images
+                //always_ok: true,
+                is_original: true,
                 can_head: false
             };
         }
@@ -3160,7 +3171,7 @@ var $$IMU_EXPORT$$;
             // http://www.standard.co.uk/s3/files/image/2014/11/18/15/nickhewer4.jpg
             // which is not found
             // but replacing /s3fs-public/ to /s3/files/ doesn't work
-            //domain === "www.standard.co.uk" ||
+            //domain_nowww === "standard.co.uk" ||
             // https://media.pri.org/s3fs-public/styles/story_main/public/story/images/coco-movie.jpg?itok=Uo82G_FI
             //   https://media.pri.org/s3fs-public/story/images/coco-movie.jpg
             src.match(/\/s3fs-public\/styles\/[^/]*\/public\//) ||
@@ -3654,7 +3665,14 @@ var $$IMU_EXPORT$$;
             // https://i1.wp.com/img-aws.ehowcdn.com/default/cme/cme_public_images/www_ehow_com/photos.demandstudios.com/getty/article/240/3/178773543_XS.jpg?resize=400%2C267
             //   http://photos.demandstudios.com/getty/article/240/3/178773543.jpg
             // http://i0.wp.com/mmsns.qpic.cn/mmsns/7KE858KbWtJWJFCnub4OrBAHial0SicILILia7G2I1h6VwXG5cWSWpnPQ/0 -- redirect error, but works
-            return src.replace(/.*\/i[0-9]\.wp\.com\/(.*?)(?:\?.*)?$/, "http://$1");
+            // https://i1.wp.com/images-na.ssl-images-amazon.com/images/G/01/aplusautomation/vendorimages/73da407a-f7e0-4d9a-8943-178d8838be48.jpg._CB329731638_.jpg?ssl=1
+            newsrc = src.replace(/^[a-z]+:\/\/i[0-9]*\.wp\.com\/(.*?)(?:\?.*)?$/, "$1");
+            if (newsrc !== src) {
+                if (src.match(/[?&]ssl=1(?:&.*)?$/))
+                    return "https://" + newsrc;
+                else
+                    return "http://" + newsrc;
+            }
         }
 
         /*if (false && domain === "imagesmtv-a.akamaihd.net") {
@@ -3917,7 +3935,7 @@ var $$IMU_EXPORT$$;
             // https://cms.algoafm.co.za/img/or_2018111575720.jpeg?mode=crop&w=320&h=240&anchor=topcenter&scale=both
             (domain === "cms.algoafm.co.za" && src.indexOf("/img/") >= 0) ||
             // http://www.gosoutheast.com/images/2015/9/29/Tony_Anderson-150917-JR.jpg?width=300
-            (domain === "www.gosoutheast.com" && src.indexOf("/images/") >= 0) ||
+            (domain_nowww === "gosoutheast.com" && src.indexOf("/images/") >= 0) ||
             // http://itpro.nikkeibp.co.jp/atcl/column/17/010900605/011000014/ph01.jpg?__scale=w:450,h:501&_sh=0e0c309803
             //(domain === "itpro.nikkeibp.co.jp" && src.toLowerCase().match(/\.(?:jpg|png)$/)) ||
             // http://trendy.nikkeibp.co.jp/atcl/column/17/011800066/020900003/01.jpg?__scale=w:400,h:267&_sh=08d0b10ff0
@@ -3944,7 +3962,7 @@ var $$IMU_EXPORT$$;
             // https://i-d-images.vice.com/images/2016/07/29/club-marab-cierra-su-temporada-con-bad-gyal-la-princesa-del-trap-cataln-body-image-1469779091.jpg?crop=1xw:0.5625xh;center,center&resize=0:*
             (domain_nosub === "vice.com" && domain.match(/-images\.vice\.com$/)) ||
             // https://i.imgur.com/ajsLfCa_d.jpg?maxwidth=520&shape=thumb&fidelity=high
-            domain === "i.imgur.com" ||
+            (domain === "i.imgur.com" && !src.match(/\?[0-9]+$/)) ||
             // https://media.discordapp.net/attachments/170399623859404800/411963827412795394/CdynalsW4AQYsgy.png?width=223&height=300
             domain === "media.discordapp.net" ||
             // https://images.discordapp.net/.eJwFwcsRgyAQANBeKIDltwIWkB48IjKgo4FhN6dMes97X_GZt1hFYx60Ahwn5T4PSdxnqkXW3utd0jhJ5v5AYk65PeXNBAaVDSF6ZVR0WitvwGrEBbVzyvsQ7eIMvPYWM27yGlX8_v3wIf4.2PoWG1MegEuQyuPigedqzEcwm7Y?width=462&height=600
@@ -3952,7 +3970,7 @@ var $$IMU_EXPORT$$;
             // https://images.theconversation.com/files/159874/original/image-20170308-14932-n1fsc6.jpg?ixlib=rb-1.1.0&q=45&auto=format&w=1000&fit=clip
             domain === "images.theconversation.com" ||
             // https://www.rspb.org.uk/globalassets/images/birds-and-wildlife/non-bird-species-illustrations/grey-squirrel_1200x675.jpg?preset=landscape_mobile
-            (domain === "www.rspb.org.uk" && src.indexOf("/globalassets/") >= 0) ||
+            (domain_nowww === "rspb.org.uk" && src.indexOf("/globalassets/") >= 0) ||
             // http://media.beliefnet.com/~/media/photos/inspiration/galleries/20-most-beautiful-places-in-the-world/tunnel_of_love_ukraine.jpg?as=1&w=400
             domain === "media.beliefnet.com" ||
             // https://www.ramblers.org.uk/~/media/Images/Walk%20magazine/Features/Winter%202013%20and%20past/12.jpg?h=394&amp;la=en&amp;w=200
@@ -4008,7 +4026,7 @@ var $$IMU_EXPORT$$;
             // http://images.en.koreaportal.com/data/images/full/14639/rita-ora.jpg?w=600
             (domain_nosub === "koreaportal.com" && domain.match(/images\.[^.]*\.koreaportal\.com/)) ||
             // http://www.officialcharts.com/media/653733/taylor-swift-press-image-1100.jpg?width=796&mode=stretch
-            (domain === "www.officialcharts.com" && src.indexOf("/media/") >= 0) ||
+            (domain_nowww === "officialcharts.com" && src.indexOf("/media/") >= 0) ||
             // https://citywonders.com/media/11395/mt-vesuvius-crater.jpg?anchor=center&mode=crop&quality=65&width=1200&height=900
             (domain === "citywonders.com" && src.indexOf("/media/") >= 0) ||
             // http://pix10.agoda.net/hotelImages/519/519394/519394_14031416100018704350.jpg?s=1024x768
@@ -4016,13 +4034,13 @@ var $$IMU_EXPORT$$;
             // https://images.pottermore.com/bxd3o8b291gf/1FC5pSmkSg44SMew0osm4Y/afb1fbf505eaf4c6a398b80ca075e014/DracoMalfoy_WB_F6_DracoMalfoyOnBathroomFloorHarryStanding_Still_080615_Land.jpg?w=1330&q=85
             domain === "images.pottermore.com" ||
             // https://www.google.com/s2/u/0/photos/public/AIbEiAIAAABECKjC6cfB5MXfkQEiC3ZjYXJkX3Bob3RvKig5NThhYjU1NjkzZGJkOTBmY2ZhZDAyYjE4NThjZjlmMzZmY2ZiZGY3MAHuuVSn2yIIP3390PZse6G3donZOg?sz=50
-            (domain === "www.google.com" && src.match(/\/photos\/public\/[^/]*$/)) ||
+            (domain_nowww === "google.com" && src.match(/\/photos\/public\/[^/]*$/)) ||
             // https://images.streamable.com/east/image/pqxns_first.jpg?height=100
             domain === "images.streamable.com" ||
             // https://cdn.amebaowndme.com/madrid-prd/madrid-web/images/sites/121508/7b13cca970a6eae1f46625638213900b_3a2cc2bd26844834e05b77f95b7500b7.jpg?width=724
             domain === "cdn.amebaowndme.com" ||
             // http://www.kaixian.tv/gd/d/file/201803/13/6b65c9bc4e0128a92a0e9fc0aa2d2d2d.jpg?imageView&thumbnail=100y75
-            (domain === "www.kaixian.tv" && src.indexOf("/file/") >= 0) ||
+            (domain_nowww === "kaixian.tv" && src.indexOf("/file/") >= 0) ||
             // http://pic-bucket.nosdn.127.net/photo/0001/2018-01-24/D8SM4CRK00AP0001NOS.jpg?imageView&amp;thumbnail=100y75
             // forbidden with referrer
             // http://imglf6.nosdn.127.net/img/NStLVUtLYlBtSm9PTWJqMmpEVXF5N2pSL1U1a2I5SjhTdG50QzNMRHljblFlV1VQeUtGVUJ3PT0.jpg?imageView&thumbnail=1680x0&quality=96&stripmeta=0&type=jpg
@@ -4036,7 +4054,7 @@ var $$IMU_EXPORT$$;
             // https://cdn-images.prettylittlething.com/c/4/f/f/c4ffac27c350089f9cb5214a68bad59c7a943bb5_CLW1289_1.JPG?imwidth=60
             domain === "cdn-images.prettylittlething.com" ||
             // http://www.oxfordmail.co.uk/resources/images/4817793.jpg?display=1&htype=0&type=responsive-gallery
-            (domain === "www.oxfordmail.co.uk" && src.indexOf("/resources/") >= 0) ||
+            (domain_nowww === "oxfordmail.co.uk" && src.indexOf("/resources/") >= 0) ||
             // http://popcrush.com/files/2014/07/EmmaWatson1.jpg?w=980&q=75
             (domain === "popcrush.com" && src.indexOf("/files/") >= 0) ||
             // http://screencrush.com/files/2013/03/50_shades_of_grey_emma_watson.jpg?w=980&q=75
@@ -4044,7 +4062,7 @@ var $$IMU_EXPORT$$;
             // http://assets.cougar.nineentertainment.com.au/assets/Dolly/2014/03/20/52622/3.jpg?mode=max&quality=80&width=1024
             (domain_nosub === "nineentertainment.com.au" && domain.match(/assets\.[^.]*\.nineentertainment\.com\.au/)) ||
             // https://www.thenational.ae/image/policy:1.479136:1499670177/image/jpeg.jpg?f=16x9&w=1024&$p$f$w=2589da4
-            (domain === "www.thenational.ae" && src.indexOf("/image/") >= 0) ||
+            (domain_nowww === "thenational.ae" && src.indexOf("/image/") >= 0) ||
             // https://s3.kh1.co/80e0569ad275cc700a5b9bee37447bd432a63ced.jpg?m=thumb&w=400&h=560
             (domain_nosub === "kh1.co" && domain.match(/s[0-9]*\.kh1\.co/)) ||
             // https://uploads.disquscdn.com/images/9b96ed95917fe3b747f0b441246985a838e3e0b370607817a540b4a40119b9a6.gif?w=800&h=253
@@ -4060,7 +4078,7 @@ var $$IMU_EXPORT$$;
             // https://toyo-arhxo0vh6d1oh9i0c.stackpathdns.com/media/1908/xl-pxr8r-hero-740x740.jpg?anchor=center&mode=crop&quality=90&width=470&rnd=131206940370000000
             domain === "toyo-arhxo0vh6d1oh9i0c.stackpathdns.com" ||
             // http://www.zmonline.com/media/17805975/pussycat.jpg?mode=crop&width=620&height=349&quality=60&scale=both
-            (domain === "www.zmonline.com" && src.indexOf("/media/") >= 0) ||
+            (domain_nowww === "zmonline.com" && src.indexOf("/media/") >= 0) ||
             // https://img-s-msn-com.akamaized.net/tenant/amp/entityid/AAtV5nt.img?h=328&w=270&m=6&q=60&o=f&l=f&x=277&y=235
             domain === "img-s-msn-com.akamaized.net" ||
             // http://www.heraldscotland.com/resources/images/5792318.jpg?display=1&htype=0&type=responsive-gallery
@@ -4077,7 +4095,7 @@ var $$IMU_EXPORT$$;
             // https://img.crocdn.co.uk/images/products2/pl/00/00/00/38/pl0000003849.jpg?width=940&height=940
             domain === "img.crocdn.co.uk" ||
             // http://www.calgaryherald.com/life/cms/binary/6748001.jpg?size=sw620x65
-            (domain === "www.calgaryherald.com" && src.indexOf("/cms/") >= 0) ||
+            (domain_nowww === "calgaryherald.com" && src.indexOf("/cms/") >= 0) ||
             // http://www.montrealgazette.com/cms/binary/8317804.jpg?size=640x420
             (domain_nowww === "montrealgazette.com" && src.indexOf("/cms/") >= 0) ||
             // https://m2.ikea.com/images/pokoj-dziecka-z-niebieskimi-scianami-i-monochromatyczna-posc-919afda5ac9e85ba681cd2e3e698e893.jpg?f=l
@@ -4128,7 +4146,7 @@ var $$IMU_EXPORT$$;
             // http://images.m-magazine.com/uploads/posts/image/62933/dove-cameron-descendants-doll.jpg?crop=top&fit=clip&h=500&w=698
             domain === "images.m-magazine.com" ||
             // https://www.zoom.co.uk/assets/images/0/0/2/4/4/mm00244615.jpg?width=208
-            domain === "www.zoom.co.uk" ||
+            (domain_nowww === "zoom.co.uk" && src.match(/\/assets\/+images\/+/)) ||
             // https://ctd-thechristianpost.netdna-ssl.com/en/full/21939/a-thief-in-the-night.jpg?w=400&h=608
             domain === "ctd-thechristianpost.netdna-ssl.com" ||
             // https://img.vidible.tv/prod/2017-06/19/59481cb6f3bdc95f62ebf5bf/59481cb56709846d28c25ea1_o_F_v0.jpg?w=1440&h=900 -- upscaled
@@ -4148,13 +4166,14 @@ var $$IMU_EXPORT$$;
             // http://www.starcrush.com/files/2012/11/AnnaSophia-Robb.jpg?w=980&q=75
             domain_nowww === "starcrush.com" ||
             // https://www.chrichri.dk/media/11430/11.jpeg?width=634&height=1004
-            (domain === "www.chrichri.dk" && src.indexOf("/media/") >= 0) ||
+            // https://www.chrichri.dk/media/30431/_k8t8450_kopi.jpg?width=264&height=176
+            (domain_nowww === "chrichri.dk" && src.indexOf("/media/") >= 0) ||
             // https://www.rightstufanime.com/images/productImages/816546020668_anime-anohana-the-flower-we-saw-that-day-tv-series-box-set-blu-ray-primary.jpg?resizeid=4&resizeh=100&resizew=60
-            (domain === "www.rightstufanime.com" && src.indexOf("/images/") >= 0) ||
+            (domain_nowww === "rightstufanime.com" && src.indexOf("/images/") >= 0) ||
             // https://assets.bigcartel.com/product_images/203868677/ANOHANA+SITE.jpg?auto=format&fit=max&w=1500
             domain === "assets.bigcartel.com" ||
             // http://www.thenorthernecho.co.uk/resources/images/7672541.jpg?display=1&htype=0&type=responsive-gallery
-            (domain === "www.thenorthernecho.co.uk" && src.indexOf("/resources/images/") >= 0) ||
+            (domain_nowww === "thenorthernecho.co.uk" && src.indexOf("/resources/images/") >= 0) ||
             // http://binaryapi.ap.org/2df5c8e3642d4183a08cf802c2dd50b1/preview/AP13344549840.jpg?wm=api&ver=0
             domain === "binaryapi.ap.org" ||
             // https://images.8tracks.com/cover/i/000/618/338/hive_mind_cover-4092.jpg?rect=0,0,500,500&q=98&fm=jpg&fit=max&w=320&h=320
@@ -4162,7 +4181,7 @@ var $$IMU_EXPORT$$;
             // http://cdn2.spoilercat.com/ac/a/christopher-nolan-53c9cd8d5bbe5d40048c7003.jpeg?s=640x0 -- upscaled
             (domain_nosub === "spoilercat.com" && domain.match(/cdn[0-9]*\.spoilercat\.com/)) ||
             // https://www.mumbailive.com/images/news/Christopher_1514973032318.jpg?w=205
-            (domain === "www.mumbailive.com" && src.indexOf("/images/") >= 0) ||
+            (domain_nowww === "mumbailive.com" && src.indexOf("/images/") >= 0) ||
             // https://static.juksy.com/files/articles/68423/59704be703149.png?m=widen&i=600&q=75
             domain === "static.juksy.com" ||
             // http://img.reblog.hu/blogs/28942/christophere8d6.jpg?w=640
@@ -4210,7 +4229,7 @@ var $$IMU_EXPORT$$;
             // https://russia-grlk5lagedl.stackpathdns.com/production/russia/images/1526119976681968-c0da67fdb8b-1524024352.jpg?w=450&h=800&fit=clip&crop=faces&fm=pjpg&auto=compress
             (domain_nosub === "stackpathdns.com" && domain.indexOf("-grlk5lagedl.stackpathdns.com") >= 0) ||
             // https://www.beautycrew.com.au/media/12866/jessica-alba-portrait.jpg?width=200
-            (domain === "www.beautycrew.com.au" && src.indexOf("/media/") >= 0) ||
+            (domain_nowww === "beautycrew.com.au" && src.indexOf("/media/") >= 0) ||
             // http://vh1.mtvnimages.com/uri/mgid:file:http:shared:vh1.com/news/uploads/sites/2/2018/03/GettyImages-873076880-1522090083.jpg?quality=0.85&format=jpg&width=480
             domain_nosub === "mtvnimages.com" ||
             // https://dsx.weather.com/util/image/w/greenaldnberg.jpg?v=at&w=320&h=180&api=7db9fe61-7414-47b5-9871-e17d87b8b6a0
@@ -4594,9 +4613,9 @@ var $$IMU_EXPORT$$;
             // http://bandt.com.au/information/uploads/2017/08/Screen-Shot-2017-08-01-at-10.58.17-am-420x280.png
             domain_nowww === "bandt.com.au" ||
             // https://www.theepochtimes.com/assets/uploads/2017/08/28/Agriculture-dependent-to-the-river-5-700x420.jpg
-            domain === "www.theepochtimes.com" ||
+            (domain_nosub === "theepochtimes.com" && src.match(/\/assets\/+uploads\/+/)) ||
             // https://m.theepochtimes.com/assets/uploads/2016/06/15/Argan_Tree_near_Tafraoute-550x330.jpg
-            domain === "m.theepochtimes.com" ||
+            //domain === "m.theepochtimes.com" ||
             // https://images.gamme.com.tw/news2/2018/82/30/pJySpaabj56WsKQ-300x250.jpg
             domain === "images.gamme.com.tw" ||
             // http://images.gamme.com.cn/news2/2017/97/14/pZeao56Yj6aZqA-380x300.jpg
@@ -4608,19 +4627,19 @@ var $$IMU_EXPORT$$;
             // https://static.vibe.com/files/archives/galleries/2005/01/23/ciara2-160x160.jpg
             domain === "static.vibe.com" ||
             // https://rightsinfo.org/app/uploads/2018/02/nathan-dumlao-378988-unsplash-1024x671.jpg
-            domain === "rightsinfo.org" ||
+            (domain_nowww === "rightsinfo.org" && src.indexOf("/uploads/") >= 0) ||
+            // http://spotted.tv/app/uploads/20131210-2339481-750x355.jpg
+            (domain_nowww === "spotted.tv" && src.indexOf("/uploads/") >= 0) ||
             // http://img.marieclairekorea.com/2018/03/mck_5a9de416ee7a4-570x381.jpg
             domain === "img.marieclairekorea.com" ||
             // http://tokyopopline.com/images/2013/01/130106kara6-515x341.jpg
-            domain === "tokyopopline.com" ||
+            (domain_nowww === "tokyopopline.com" && src.indexOf("/images/") >= 0) ||
             // http://px1img.getnews.jp/img/archives/2017/10/ba35fadf68725a24224b306250f20c2f-1024x761.jpg
             domain === "px1img.getnews.jp" ||
             // https://media.thetab.com/blogs.dir/279/files/2017/03/emma-1177x557.jpg
             domain === "media.thetab.com" ||
             // https://assets.rockpapershotgun.com/images//2018/02/survivingmars2-620x315.jpg
             domain === "assets.rockpapershotgun.com" ||
-            // http://spotted.tv/app/uploads/20131210-2339481-750x355.jpg
-            domain === "spotted.tv" ||
             // http://f.imgs.vietnamnet.vn/2017/11/05/09/t-ara-roi-nuoc-mat-vi-fan-viet-4-100x30.jpg
             (domain_nosub === "vietnamnet.vn" && domain.indexOf(".imgs.vietnamnet.vn") >= 0) ||
             // https://sloanreview.mit.edu/content/uploads/2018/04/GEN-Ross-Digital-Transformation-Speed-Long-Term-1200-300x300.jpg
@@ -5054,6 +5073,8 @@ var $$IMU_EXPORT$$;
             (domain === "sfo2.digitaloceanspaces.com" && src.indexOf("/uploads/") >= 0) ||
             // https://m8q3v4v6.stackpathcdn.com/2019/06/cf579a94-keanurevees-e3-min-1260x709.jpg
             domain === "m8q3v4v6.stackpathcdn.com" ||
+            // https://www.linda.nl/lindanl-assets/uploads/2018/10/19212659/Schermafbeelding-2015-02-23-om-10.55.31-600x803.png
+            (domain_nowww === "linda.nl" && src.indexOf("/uploads/") >= 0) ||
             // https://1.soompi.io/wp-content/blogs.dir/8/files/2015/09/HA-TFELT-Wonder-Girls-590x730.jpg -- doesn't work
             // https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2018/01/GTA-6-Female-Protag-796x417.jpg -- does work
             src.indexOf("/wp-content/blogs.dir/") >= 0 ||
@@ -14045,7 +14066,6 @@ var $$IMU_EXPORT$$;
         if ((domain_nosub === "staticflickr.com" ||
              (domain_nosub === "flickr.com" && domain.indexOf(".static.flickr.com") >= 0)) &&
             src.match(/\/[0-9]+_[0-9a-f]+(?:_[a-z]*)?\.[a-z]+.*$/) &&
-            !src.match(/\/[0-9]+_[0-9a-f]+_o\.[a-z]+.*$/) &&
             options && options.do_request && options.cb) {
             // https://c1.staticflickr.com/5/4190/34341416210_29e6098b30.jpg
             //   https://farm5.staticflickr.com/4190/34341416210_9f14cc1576_o.jpg
@@ -14057,6 +14077,13 @@ var $$IMU_EXPORT$$;
             //   https://farm8.staticflickr.com/7034/6693295971_36acecc53b_o.jpg
             // https://farm8.staticflickr.com/7002/6432649813_4fe18483a6.jpg
             //   https://farm8.staticflickr.com/7002/6432649813_21c9e80f43_o.jpg
+            if (src.match(/\/[0-9]+_[0-9a-f]+_o\.[a-z]+.*$/)) {
+                return {
+                    url: src,
+                    is_original: true
+                };
+            }
+
             src = src.replace(/(:\/\/[^/]*\/(?:[0-9]+\/)?[0-9]+\/[0-9]+_[0-9a-f]+(?:_[a-z])?\.[a-zA-Z0-9]*).*$/, "$1");
             options.do_request({
                 url: "https://www.flickr.com/",
@@ -25055,7 +25082,6 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             //   http://cdn-tehran.wisgoon.com/dlir-s3/1472821254218324.jpg -- 404
             // http://cdn-tehran.wisgoon.com/dlir-s3/236x335_1534720001305721.jpg
             //   http://cdn-tehran.wisgoon.com/dlir-s3/1534720001305721.jpg
-
             return src.replace(/\/dlir-s3\/([0-9]+)?[0-9]{3}x[0-9]{3}_([0-9]+\.[^/.]*)$/, "/dlir-s3/$1$2");
         }
 
