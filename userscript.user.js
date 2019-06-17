@@ -3380,30 +3380,79 @@ var $$IMU_EXPORT$$;
         }
 
         if ((domain_nosub === "washingtonpost.com" ||
-             // https://c.o0bg.com/rf/image_371w/Boston/2011-2020/2018/01/03/BostonGlobe.com/Arts/Images/AFP_V03Q8.jpg
-             domain === "c.o0bg.com" ||
              // https://www.statesman.com/rf/image_md/Pub/p9/AJC/Blog/Diehards/2018/04/05/Images/240866_GettyImages-872925824_sndecp.jpg
-             domain === "www.statesman.com" ||
+             domain_nowww === "statesman.com" ||
              // https://www.myajc.com/rf/image_lowres/Pub/p6/CmgSharedContent/2015/05/18/Images/photos.medleyphoto.7287170.jpg
-             domain === "www.myajc.com" ||
+             domain_nowww === "myajc.com" ||
+             // https://www.ajc.com/rf/image_lowres/Pub/p6/CmgSharedContent/2015/05/18/Images/photos.medleyphoto.7287170.jpg
+             domain_nowww === "ajc.com" ||
              // http://www.lastampa.it/rf/image_lowres/Pub/p4/2018/03/09/Tecnologia/Foto/RitagliWeb/Mario%20Day1-15627-U11012767847446UFI-U11012767847446WcE-1400x788%40LaStampa.it.jpg
-             domain === "www.lastampa.it" ||
+             domain_nowww === "lastampa.it" ||
              // https://www.whio.com/rf/image_md/Pub/p7/CmgSharedContent/2016/08/01/Images/photos.medleyphoto.10777077.jpg
-             domain === "www.whio.com" ||
+             domain_nowww === "whio.com" ||
              // https://www.daytondailynews.com/rf/image_lowres/Pub/p7/CmgSharedContent/2016/08/01/Images/photos.medleyphoto.10777077.jpg
-             domain === "www.daytondailynews.com" ||
+             domain_nowww === "daytondailynews.com" ||
              // https://www.livemint.com/rf/Image-621x414/LiveMint/Period1/2012/09/28/Photos/currency--621x414.jpg
              //   https://www.livemint.com/rw/LiveMint/Period1/2012/09/28/Photos/currency--621x414.jpg
              domain_nowww === "livemint.com" ||
+             // https://c.o0bg.com/rf/image_371w/Boston/2011-2020/2018/01/03/BostonGlobe.com/Arts/Images/AFP_V03Q8.jpg
+             domain === "c.o0bg.com" ||
              // https://www.bostonglobe.com/rf/image_r/Boston/2011-2020/2018/01/29/BostonGlobe.com/Metro/Images/Polkgetty.r.jpg
              //   https://www.bostonglobe.com/rw/Boston/2011-2020/2018/01/29/BostonGlobe.com/Metro/Images/Polkgetty.jpg
-             domain_nowww === "bostonglobe.com" ||
+             // https://www3.bostonglobe.com/rf/image_r/Boston/2011-2020/2018/01/29/BostonGlobe.com/Metro/Images/Polkgetty.r.jpg?arc404=true
+             //   https://www3.bostonglobe.com/rw/Boston/2011-2020/2018/01/29/BostonGlobe.com/Metro/Images/Polkgetty.jpg
+             domain_nosub === "bostonglobe.com" ||
+             // https://www.960theref.com/rf/image_lowres/Pub/p6/CmgSharedContent/2015/05/18/Images/photos.medleyphoto.7287170.jpg
+             //domain_nowww === "960theref.com" ||
+             // https://www.wgauradio.com/rf/image_lowres/Pub/p6/CmgSharedContent/2015/05/18/Images/photos.medleyphoto.7287170.jpg
+             //domain_nowww === "wgauradio.com" ||
+             // https://www.journal-news.com/rf/image_medium/Pub/p10/JournalNews/2019/06/17/Images/newsEngin.24329221_Hamilton-Pothole-1.jpg
+             //domain_nowww === "journal-news.com" ||
+             // https://www.wsbradio.com/rf/image_lowres/Pub/p9/CmgSharedContent/2018/08/14/Images/GettyImages-946417236.jpg
+             //domain_nowww === "wsbradio.com" ||
+             // https://www.springfieldnewssun.com/rf/image_lowres/Pub/p10/DaytonDailyNews/2019/04/29/Images/newsEngin.24132011_IMG_1550.jpg
+             //domain_nowww === "springfieldnewssun.com" ||
+             // https://www.dayton.com/rf/image_lowres/Pub/p10/DaytonDailyNews/2019/02/05/Images/newsEngin.23769425_Busy-Shopping-001--3-.jpg
+             //domain_nowww === "dayton.com" ||
+             // https://www.krmg.com/rf/image_lowres/Wires/w2/AP_Top_News/2019/06/15/Images/1919968b8f534f8895c03c5625535ed9.jpg
+             //domain_nowww === "krmg.com" ||
+             // https://www.news965.com/rf/image_lowres/Pub/p10/News965/2019/04/20/Images/lakeola.JPG
+             //domain_nowww === "news965.com" ||
+             // https://www.magic1053.com/rf/image_lowres/Pub/p10/Magic1053/2019/06/12/Images/Office-Crash-2019-0612.jpg
+             //domain_nowww === "magic1053.com" ||
+             // https://www.kissrocks.com/rf/image_lowres/Pub/p10/KissRocks/2019/02/21/Images/Alexa-Slider.jpg
+             //domain_nowww === "kissrocks.com" ||
+             // https://www.kiss104fm.com/rf/image_lowres/Pub/p10/Kiss104FM/2019/04/02/Videos/4625859.vpx
+             //domain_nowww === "kiss104fm.com" ||
+             // https://www.hot105fm.com/rf/image_lowres/Pub/p10/CmgSharedContent/2019/06/01/Images/juju%20smith%20schuster%20ketchup.jpg
+             //domain_nowww === "hot105fm.com" ||
+             // https://www.k99online.com/rf/image_lowres/Pub/p10/K99Online/2019/06/10/Images/cj.jpg
+             //domain_nowww === "k99online.com" ||
+             // https://www.news965.com/rf/image_lowres/Pub/p10/CmgSharedContent/2019/06/17/Images/gloria%20vanderbilt.jpg
+             //domain_nowww === "news965.com" ||
+             // https://www.hits973.com/rf/image_lowres/Pub/Web/Hits973/Special%20Contents/FlatPages/Images/AppPage-830x467_HITS_2019-01.jpg
+             //domain_nowww === "hits973.com" ||
+             // https://www.969theeagle.com/rf/image_lowres/Pub/p10/WAPE/2019/04/02/Images/IMG_7908.jpg
+             //domain_nowww === "969theeagle.com" ||
+             // https://www.971theriver.com/rf/image_lowres/Pub/Web/971TheRiver/Special%20Contents/Links/Images/theeaglesthridshow.jpg
+             //domain_nowww === "971theriver.com" ||
+             // https://www.thenew93q.com/rf/image_lowres/Pub/p10/TheNew93Q/2019/03/20/Images/MVIMG_20190304_160203.jpg
+             //domain_nowww === "thenew93q.com" ||
+             // https://www.power953.com/rf/image_lowres/Pub/p10/Power953/2019/06/10/Images/CB_Slider1.jpg
+             //domain_nowww === "power953.com" ||
+             // https://www.y100fm.com/rf/image_lowres/Pub/p10/Y100FM/2019/06/11/Images/Big-Reveal-2019-2.jpg
+             //domain_nowww === "y100fm.com" ||
+             // https://www.easy93.com/rf/image_lowres/Pub/p10/Easy93/2019/06/12/Images/Free%20Lunch%20Friday_REV.jpg
+             //domain_nowww === "easy93.com" ||
+             // https://www.1073theeagle.com/rf/image_lowres/Pub/Web/1073TheEagle/Special%20Contents/Links/Images/WXGL-Weather-RR-COLLEGE%20OF%20ROCK%20KNOWLEDGE.png
+             //domain_nowww === "1073theeagle.com" ||
              // https://www.hindustantimes.com/rf/image_size_640x362/HT/p2/2016/06/07/Pictures/_5e4299f2-2c82-11e6-85eb-521f5a9851b5.png
              //   https://www.hindustantimes.com/rw/HT/p2/2016/06/07/Pictures/_5e4299f2-2c82-11e6-85eb-521f5a9851b5.png
              // https://m.hindustantimes.com/rf/image_size_640x362/HT/p2/2016/06/07/Pictures/_5e4299f2-2c82-11e6-85eb-521f5a9851b5.png
              //   https://www.hindustantimes.com/rw/HT/p2/2016/06/07/Pictures/_5e4299f2-2c82-11e6-85eb-521f5a9851b5.png
              domain_nosub === "hindustantimes.com") &&
-            src.indexOf("/rf/") >= 0) {
+            src.indexOf("/rf/") >= 0 ||
+            src.match(/^[a-z]+:\/\/[^/]*\/rf\/+image_[^/]*\/+(?:[0-9]{4}-[0-9]{4}\/+)?(?:Pub|Wires|HT)\/+(?:[wp][0-9]+|Online|Web)\/+/)) {
             // test: https://img.washingtonpost.com/rf/image_1483w/2010-2019/Wires/Online/2017-11-21/AP/Images/Music_Taylor_Swift_36357.jpg
             // error: Query String : src=http://www.washingtonpost.com/rw/2010-2019/Wires/Online/2017-11-21/AP/Images/Music_Taylor_Swift_36357.jpg&w=1483
             // real: https://img.washingtonpost.com/rf/image_1484w/2010-2019/Wires/Online/2017-11-21/AP/Images/Music_Taylor_Swift_36357.jpg-ced9a.jpg?uuid=TiTSis5fEeeoe0fxS3MWKg
@@ -24986,10 +25035,18 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/\/uploads\/stock\/[a-z]+_([0-9]+\.[^/.]*)$/, "/uploads/stock/$1");
         }
 
-        if (domain === "img.cdn.cennoticias.com") {
+        if ((domain_nosub === "cennoticias.com" ||
+             // http://img.cdn.baca.co.id/c56c5357-aff8-4d14-b50a-28a79dc8f723_thumbnail
+             //   http://img.cdn.baca.co.id/c56c5357-aff8-4d14-b50a-28a79dc8f723
+             //   http://raw.cdn.baca.co.id/c56c5357-aff8-4d14-b50a-28a79dc8f723
+             domain_nosub === "baca.co.id") &&
+            domain.match(/^img\.cdn\./)) {
+            // https://img.cdn.cennoticias.com/bfc3eafa-9b40-4dc4-bfbe-499b13949b4d_thumbnail
+            //   https://raw.cdn.cennoticias.com/bfc3eafa-9b40-4dc4-bfbe-499b13949b4d
             // http://img.cdn.cennoticias.com/67569b0b-476c-4e06-bf37-2ad80d8f5936?allowRedirect=true
             //   http://raw.cdn.cennoticias.com/67569b0b-476c-4e06-bf37-2ad80d8f5936
-            return src.replace(/:\/\/[^/]*\/([-0-9a-f]+)(?:[?#].*)?$/, "://raw.cdn.cennoticias.com/$1");
+            return src.replace(/:\/\/img\.([^/]*)\/([-0-9a-f]+)(?:_thumbnail)?(?:[?#].*)?$/, "://raw.$1/$2");
+            //return src.replace(/(:\/\/[^/]*\/[-0-9a-f]+)_thumbnail(?:[?#].*)?$/, "$1");
         }
 
         if (domain === "cdn-tehran.wisgoon.com") {
@@ -27377,12 +27434,6 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             // http://www.xportsnews.com/contents/images/upload/article/2018/0410/thm_1523320335801841.jpg
             //   http://www.xportsnews.com/contents/images/upload/article/2018/0410/1523320335801841.jpg
             return src.replace(/(\/contents\/+images\/+upload\/+.*\/)thm_/, "$1");
-        }
-
-        if (domain === "img.cdn.baca.co.id") {
-            // http://img.cdn.baca.co.id/c56c5357-aff8-4d14-b50a-28a79dc8f723_thumbnail
-            //   http://img.cdn.baca.co.id/c56c5357-aff8-4d14-b50a-28a79dc8f723
-            return src.replace(/(:\/\/[^/]*\/[-0-9a-f]+)_thumbnail(?:[?#].*)?$/, "$1");
         }
 
         if (domain === "contents.innolife.net") {
