@@ -35672,9 +35672,11 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                                             break;
                                         }
                                         var a_value = a_match[0] + a_match[1];
-                                        if (attr === "filename*") {
+
+                                        // TODO: implement properly
+                                        /*if (attr === "filename*") {
                                             newobj.filename = a_value;
-                                        }
+                                        }*/
 
                                         if (newobj.filename.length === 0 && attr === "filename") {
                                             newobj.filename = a_value;
