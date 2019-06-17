@@ -35680,7 +35680,10 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                         }
 
                         if (newobj.filename.length === 0) {
-                            newobj.filename = url.replace(/.*\/([^?#]*?)(?:\.[^/.]*)?(?:[?#].*)?$/, "$1");
+                            newobj.filename = url.replace(/.*\/([^?#/]*)(?:[?#].*)?$/, "$1");
+                            if (newobj.filename.match(/\./g).length === 1) {
+                                newobj.filename = newobj.filename.replace(/(.*)\.[^.]*?$/, "$1");
+                            }
                         }
                     }
 
