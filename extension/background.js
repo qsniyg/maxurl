@@ -5,6 +5,7 @@
 var requests = {};
 var redirects = {};
 var loading_urls = {};
+var loading_redirects = {};
 
 var nir_debug = false;
 var debug = function() {
@@ -140,6 +141,7 @@ chrome.webRequest.onBeforeSendHeaders.addListener(function(details) {
     var rheaders = null;
     for (var i = 0; i < redirect.length; i++) {
       if (redirect[i].url === details.url) {
+        loading_redirects[details.tabId] = redirect[i];
         rheaders = redirect[i].headers;
         break;
       }
@@ -208,10 +210,95 @@ chrome.webRequest.onBeforeSendHeaders.addListener(function(details) {
   types: ['xmlhttprequest', 'main_frame', 'sub_frame']
 }, ['blocking', 'requestHeaders']);
 
+function parse_contentdisposition(cdp) {
+  var out = [];
+  var current_kv = [];
+  var current = "";
+  var in_quote = false;
+  for (var i = 0; i < cdp.length; i++) {
+    var c = cdp[i];
+
+    if (!in_quote && c == ";") {
+      if (current.length > 0) {
+        if (current_kv.length === 0)
+          current = current.toLowerCase();
+        current_kv.push(current);
+      }
+
+      out.push(current_kv);
+      current_kv = [];
+      current = "";
+      in_quote = false;
+    }
+
+    if (!in_quote && /\s/.test(c)) {
+      continue;
+    }
+
+    if (current_kv.length !== 0) {
+      if (in_quote && c === in_quote) {
+        in_quote = false;
+      } else if (!in_quote && (c === "'" || c === '"')) {
+        in_quote = c;
+      }
+    } else {
+      if (c === "=") {
+        current_kv.push(current.toLowerCase());
+        current = "";
+        in_quote = false;
+        continue;
+      }
+    }
+
+    current += c;
+  }
+
+  if (current.length > 0)
+    current_kv.push(current);
+
+  if (current_kv.length > 0)
+    out.push(current_kv);
+
+  return out;
+}
+
+function stringify_contentdisposition(cdp) {
+  var out_strings = [];
+  for (var i = 0; i < cdp.length; i++) {
+    var quotec = '"';
+
+    if (cdp[i].length > 1) {
+      if (cdp[i][1].indexOf('"') >= 0) {
+        quotec = "'";
+      }
+
+      if (!cdp[i][1].match(/\s/g)) {
+        quotec = "";
+      }
+
+      out_strings.push(cdp[i][0] + "=" + quotec + cdp[i][1] + quotec);
+    } else {
+      out_strings.push(cdp[i][0]);
+    }
+  }
+
+  return out_strings.join(";");
+}
+
 // Intercept response headers if needed
 chrome.webRequest.onHeadersReceived.addListener(function(details) {
   if (details.tabId in loading_urls) {
     var newheaders = [];
+
+    var imu = {};
+    if (details.tabId in loading_redirects)
+      imu = loading_redirects[details.tabId];
+
+    var filename = imu.filename;
+    if (typeof filename !== "string" || filename.length === 0)
+      filename = undefined;
+
+    var replaced_filename = false;
 
     details.responseHeaders.forEach((header) => {
       var name = header.name.toLowerCase();
@@ -223,13 +310,52 @@ chrome.webRequest.onHeadersReceived.addListener(function(details) {
           newheaders.push(header);
         }
       } else if (name === "content-disposition") {
-        if (!value.toLowerCase().match(/^ *attachment/)) {
+        try {
+          var parsed = parse_contentdisposition(value);
+
+          // Disable forced downloads
+          if (parsed.length > 0 && parsed[0].length === 1 && parsed[0][0].toLowerCase() === "attachment")
+            parsed[0][0] = "inline";
+
+          if (filename !== undefined) {
+            for (var i = 0; i < parsed.length; i++) {
+              // TODO: support filename*
+              if (parsed[i][0] === "filename") {
+                parsed[i][1] = filename;
+                replaced_filename = true;
+              }
+            }
+
+            if (!replaced_filename) {
+              parsed.push(["filename", filename]);
+              replaced_filename = true;
+            }
+          }
+
+          newheaders.push({
+            name: "content-disposition",
+            value: stringify_contentdisposition(parsed)
+          });
+        } catch (e) {
+          console.error(e);
           newheaders.push(header);
         }
       } else {
         newheaders.push(header);
       }
     });
+
+    if (!replaced_filename && filename !== undefined) {
+      var cdp = [
+        ["inline"],
+        ["filename", filename]
+      ];
+
+      newheaders.push({
+        name: "content-disposition",
+        value: stringify_contentdisposition(cdp)
+      });
+    }
 
     //debug(details);
     debug("Old headers", details.responseHeaders);
@@ -250,6 +376,10 @@ chrome.webRequest.onResponseStarted.addListener(function(details) {
 
   if (details.tabId in loading_urls) {
     delete loading_urls[details.tabId];
+  }
+
+  if (details.tabId in loading_redirects) {
+    delete loading_redirects[details.tabId];
   }
 }, {
   urls: ['<all_urls>'],
