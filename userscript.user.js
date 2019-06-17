@@ -35655,20 +35655,32 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
 
                     if (newobj.filename.length === 0) {
                         try {
-                            var headers = data.data.respdata.responseHeaders.split("\n");
+                            var headers = data.data.respdata.responseHeaders.split("\r\n");
                             for (var h_i = 0; h_i < headers.length; h_i++) {
-                                var header = headers[h_i].split(":");
-                                if (header[0].toLowerCase().replace(/\s/g, "") === "content-disposition") {
-                                    var value = headers[1].replace(/^\s*|\s*$/g, "").split(";");
-                                    for (var v_i = 0; v_i < value.length; v_i++) {
-                                        var v_k = value[v_i].replace(/^\s*|\s*$/g, "").split("=");
-                                        if (v_k[0] === "filename*") {
-                                            newobj.filename = v_k[1];
+                                var header_name = headers[h_i].replace(/^\s*([^:]*?)\s*:.*/, "$1").toLowerCase();
+                                var header_value = headers[h_i].replace(/^[^:]*?:\s*(.*?)\s*$/, "$1").toLowerCase();
+
+                                if (header_name === "content-disposition") {
+                                    while (typeof header_value === "string" && header_value.length > 0) {
+                                        var current_value = header_value.replace(/^\s*([^;]*?)\s*(?:;.*)?$/, "$1");
+                                        //header_value = header_value.replace(/^[^;]*(?:;\s*(.*))?$/, "$1");
+
+                                        var attr = current_value.replace(/^\s*([^=;]*?)\s*(?:[=;].*)?$/, "$1").toLowerCase();
+                                        var a_match = header_value.match(/^[^=;]*(?:(?:=\s*(?:(?:["']([^'"]*?)["'])|([^;]*?)\s*(;.*)?)\s*)|;\s*(.*))?$/);
+                                        if (!a_match) {
+                                            console_error("Header value does not match pattern:", header_value);
+                                            break;
+                                        }
+                                        var a_value = a_match[0] + a_match[1];
+                                        if (attr === "filename*") {
+                                            newobj.filename = a_value;
                                         }
 
-                                        if (newobj.filename.length === 0 && v_k[0] === "filename") {
-                                            newobj.filename = v_k[1];
+                                        if (newobj.filename.length === 0 && attr === "filename") {
+                                            newobj.filename = a_value;
                                         }
+
+                                        header_value = a_match[2] || a_match[3];
                                     }
                                 }
 
