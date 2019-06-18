@@ -5083,6 +5083,8 @@ var $$IMU_EXPORT$$;
             (domain_nowww === "journal-farandole.com" && src.match(/\/content\/+uploads\/+/)) ||
             // http://www.dpstreaming.live/upload/2018/07/0842353-752x1024.jpg
             (domain_nowww === "dpstreaming.live" && src.indexOf("/upload/") >= 0) ||
+            // http://cdn.videos.rollcall.com/hoh/Perabo-Getty-4912210451200x1700-238x330.jpg
+            domain === "cdn.videos.rollcall.com" ||
             // https://1.soompi.io/wp-content/blogs.dir/8/files/2015/09/HA-TFELT-Wonder-Girls-590x730.jpg -- doesn't work
             // https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2018/01/GTA-6-Female-Protag-796x417.jpg -- does work
             src.indexOf("/wp-content/blogs.dir/") >= 0 ||
@@ -19320,26 +19322,6 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/-t[0-9]+x[0-9]+(\.[^/.]*)$/, "$1");
         }
 
-        // Discourse
-        if (domain === "tfk.thefreekick.com" ||
-            // https://discourse-cdn-sjc1.com/helloforos/uploads/default/optimized/4X/5/7/a/57aa3f914365bb39e7db1e85a15f1e4a61e62edc_1_666x1000.jpg
-            //   https://discourse-cdn-sjc1.com/helloforos/uploads/default/original/4X/5/7/a/57aa3f914365bb39e7db1e85a15f1e4a61e62edc.jpg
-            domain_nowww === "discourse-cdn-sjc1.com" ||
-            // http://swagup.co.kr/uploads/default/optimized/2X/7/729996eeedbcc6eb835c108234590b94f3298f4a_1_375x500.jpg
-            //   http://www.swagup.co.kr/uploads/default/original/2X/7/729996eeedbcc6eb835c108234590b94f3298f4a.jpg
-            domain_nowww === "swagup.co.kr" ||
-            // https://pixls-discuss.s3.dualstack.us-east-1.amazonaws.com/optimized/3X/0/5/0530ef1424b7bace746cd10d2bc26b5cd58d5e27_2_690x388.png
-            //   https://pixls-discuss.s3.dualstack.us-east-1.amazonaws.com/original/3X/0/5/0530ef1424b7bace746cd10d2bc26b5cd58d5e27.png
-            amazon_container === "pixls-discuss" ||
-            // https://forum.combustionpunks.co.uk/uploads/default/optimized/2X/5/5d734122d237c0ac1a7961f8d536db660c891c77_1_690x413.jpg
-            //   https://forum.combustionpunks.co.uk/uploads/default/original/2X/5/5d734122d237c0ac1a7961f8d536db660c891c77.jpg
-            domain === "forum.combustionpunks.co.uk") {
-            // https://tfk.thefreekick.com/uploads/default/optimized/2X/9/9c9755f8dcbd5d1427c7e9f4ac86eee3383b7366_1_333x500.jpeg
-            //   https://tfk.thefreekick.com/uploads/default/original/2X/9/9c9755f8dcbd5d1427c7e9f4ac86eee3383b7366.jpeg
-            return src.replace(/(:\/\/[^/]*\/|\/uploads\/[a-z]+\/)?optimized(\/.*\/[0-9a-f]+)_[0-9]+_[0-9]+x[0-9]+(\.[^/.]*)$/,
-                               "$1original$2$3");
-        }
-
         if (domain_nowww === "hotflick.net" ||
             amazon_container === "hotflicknet") {
             // http://hotflick.net/u/n/Y2CdwHWG5q/tn/5hPrKMLsdZpFjpT.jpg
@@ -33397,6 +33379,44 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                     return newsrc;
             }
         }
+
+        // Discourse
+        if (domain === "tfk.thefreekick.com" ||
+            // https://discourse-cdn-sjc1.com/helloforos/uploads/default/optimized/4X/5/7/a/57aa3f914365bb39e7db1e85a15f1e4a61e62edc_1_666x1000.jpg
+            //   https://discourse-cdn-sjc1.com/helloforos/uploads/default/original/4X/5/7/a/57aa3f914365bb39e7db1e85a15f1e4a61e62edc.jpg
+            domain_nowww === "discourse-cdn-sjc1.com" ||
+            // http://swagup.co.kr/uploads/default/optimized/2X/7/729996eeedbcc6eb835c108234590b94f3298f4a_1_375x500.jpg
+            //   http://www.swagup.co.kr/uploads/default/original/2X/7/729996eeedbcc6eb835c108234590b94f3298f4a.jpg
+            domain_nowww === "swagup.co.kr" ||
+            // https://pixls-discuss.s3.dualstack.us-east-1.amazonaws.com/optimized/3X/0/5/0530ef1424b7bace746cd10d2bc26b5cd58d5e27_2_690x388.png
+            //   https://pixls-discuss.s3.dualstack.us-east-1.amazonaws.com/original/3X/0/5/0530ef1424b7bace746cd10d2bc26b5cd58d5e27.png
+            amazon_container === "pixls-discuss" ||
+            // https://forums.lutris.net/uploads/default/optimized/2X/6/65fe45ffb69a0382ec70b423d22fac4b9c31ce70_2_690x388.png
+            //   https://forums.lutris.net/uploads/default/original/2X/6/65fe45ffb69a0382ec70b423d22fac4b9c31ce70.png
+            domain === "forums.lutris.net" ||
+            // https://forum.combustionpunks.co.uk/uploads/default/optimized/2X/5/5d734122d237c0ac1a7961f8d536db660c891c77_1_690x413.jpg
+            //   https://forum.combustionpunks.co.uk/uploads/default/original/2X/5/5d734122d237c0ac1a7961f8d536db660c891c77.jpg
+            domain === "forum.combustionpunks.co.uk" ||
+            // https://discourse-cdn-aws1.com/mcneel/uploads/default/optimized/3X/0/7/0701fad93a0caef03b3052dccb6a9dd4fa69a707_2_690x357.jpeg
+            //   https://discourse-cdn-aws1.com/mcneel/uploads/default/original/3X/0/7/0701fad93a0caef03b3052dccb6a9dd4fa69a707.jpeg
+            domain_nowww === "discourse-cdn-aws1.com" ||
+            // https://sjc1.discourse-cdn.com/business6/uploads/nodered/optimized/2X/7/719d994618fbc893b598b29787eb173b8a76f815_2_690x389.png
+            //   https://sjc1.discourse-cdn.com/business6/uploads/nodered/original/2X/7/719d994618fbc893b598b29787eb173b8a76f815.png
+            domain_nosub === "discourse-cdn.com" ||
+            // https://www.simscale.com/forum/uploads/default/optimized/3X/0/0/009574ea5f0fd86a45f87905d18aa2cadad29935_1_690x381.jpg
+            //   https://www.simscale.com/forum/uploads/default/original/3X/0/0/009574ea5f0fd86a45f87905d18aa2cadad29935.jpg
+            // https://www.realmeye.com/forum/uploads/default/optimized/2X/9/91078197dc30b8b935ea418612aae8feca762cf2_1_281x500.png
+            //   https://www.realmeye.com/forum/uploads/default/original/2X/9/91078197dc30b8b935ea418612aae8feca762cf2.png
+            // http://controllerforum.elationlighting.com/uploads/default/optimized/1X/2f9351018d62a9e1226d166b8b0d22de48618e3b_1_574x500.png
+            //   http://controllerforum.elationlighting.com/uploads/default/original/1X/2f9351018d62a9e1226d166b8b0d22de48618e3b.png
+            src.match(/^[a-z]+:\/\/[^/]*\/(?:(?:forum\/+)?uploads\/+[a-z]+\/+)?(?:optimized|original)\/+[0-9]X\/+(?:[0-9a-f]\/+)*[0-9a-f]{10,}_[0-9]+_[0-9]+x[0-9]+\.[^/.]*(?:[?#].*)?$/)) {
+            // https://tfk.thefreekick.com/uploads/default/optimized/2X/9/9c9755f8dcbd5d1427c7e9f4ac86eee3383b7366_1_333x500.jpeg
+            //   https://tfk.thefreekick.com/uploads/default/original/2X/9/9c9755f8dcbd5d1427c7e9f4ac86eee3383b7366.jpeg
+            return src.replace(/(:\/\/[^/]*\/|\/uploads\/[a-z]+\/)?optimized(\/.*\/[0-9a-f]+)_[0-9]+_[0-9]+x[0-9]+(\.[^/.]*)$/,
+                               "$1original$2$3");
+        }
+
+
 
 
 
