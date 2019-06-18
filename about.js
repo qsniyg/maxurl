@@ -17,15 +17,16 @@ function fuzzify(num) {
 
 function get_userscript_stats(response) {
   userscript_contents = response;
-  response = response
+  userscript_rcontents = response
   //.replace(/^[\s\S]*function bigimage/, "")
     .replace(/^[\s\S]*\/\/ *-- *start *bigimage *--/, "")
     .replace(/\/\/ *-- *end *bigimage *--[\s\S]*$/, "");
   return [
     // rules
-    response.match(/\n {8}(?:[/][*])?if /g).length,
+    userscript_rcontents.match(/\n {8}(?:[/][*])?if /g).length,
     // sites
-    response.match(/(?:domain(?:_[a-z]+)?|amazon_container|googlestorage_container) /g).length
+    get_sites().length
+    //userscript_rcontents.match(/[^/](?:domain(?:_[a-z]+)?|amazon_container|googlestorage_container) *===/g).length
   ];
 }
 
@@ -37,16 +38,20 @@ function reqListener() {
 }
 
 function get_sites() {
-  var sites = userscript_contents.match(/(?:domain(?:_[a-z]+)?|amazon_container|googlestorage_container) *=== *["'](.*?)["']/g);
+  var sites = userscript_rcontents.match(/[^/](?:domain(?:_[a-z]+)?|amazon_container|googlestorage_container) *=== *["'](?:.*?)["']/g);
   var siteslist = [];
   for (var i = 0; i < sites.length; i++) {
+    sites[i] = sites[i].substr(1);
     var site = sites[i].match(/["'](.*?)["']$/)[1].replace(/^www\./, "");
     if (sites[i].match(/^amazon_/))
       site = site + ".s3.amazonaws.com";
     if (sites[i].match(/^googlestorage_/))
       site = site + ".storage.googleapis.com";
-    if (siteslist.indexOf(site) < 0)
+    if (siteslist.indexOf(site) < 0) {
       siteslist.push(site);
+    } else {
+      //console.log(site);
+    }
   }
   siteslist.sort();
 
@@ -54,6 +59,7 @@ function get_sites() {
 }
 
 var userscript_contents = null;
+var userscript_rcontents = null;
 if (typeof document !== "undefined") {
   var userscript_location = "https://gitcdn.xyz/repo/qsniyg/maxurl/master/userscript_smaller.user.js";
 
