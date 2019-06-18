@@ -16606,6 +16606,8 @@ var $$IMU_EXPORT$$;
               //https://ww22.zone-telechargement.lol/uploads/posts/2019-06/thumbs/ant-man-et-la-guepe5d04e7a58500f.jpg
               //   https://ww22.zone-telechargement.lol/uploads/posts/2019-06/ant-man-et-la-guepe5d04e7a58500f.jpg
               domain === "ww22.zone-telechargement.lol" ||
+              // http://hdxa.me/uploads/posts/2017-10/thumbs/1509453682-235651219-berdmen-2.jpg
+              domain_nowww === "hdxa.me" ||
               // https://bugaga.ru/uploads/posts/2015-08/thumbs/1439815321_kartinki-27.jpg
               //   https://bugaga.ru/uploads/posts/2015-08/1439815321_kartinki-27.jpg
               domain === "bugaga.ru") &&
@@ -31013,7 +31015,9 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
         if (domain === "media.outnow.ch") {
             // https://media.outnow.ch/Movies/Bilder/2016/EdgeOfSeventeen/015_small.jpg
             //   https://media.outnow.ch/Movies/Bilder/2016/EdgeOfSeventeen/015.jpg
-            return src.replace(/(\/Bilder\/+[0-9]{4}\/+[^/]*\/+[0-9]+)_[a-z]+(\.[^/.]*)(?:[?#].*)?$/,
+            // https://media.outnow.ch/Movies/Bilder/2012/Spider-Man4/movie.p/11_small.jpg
+            //   https://media.outnow.ch/Movies/Bilder/2012/Spider-Man4/movie.p/11.jpg
+            return src.replace(/(\/Bilder\/+[0-9]{4}\/+[^/]*\/+(?:[^/]*\/+)?[0-9]+)_[a-z]+(\.[^/.]*)(?:[?#].*)?$/,
                                "$1$2");
         }
 
@@ -32418,6 +32422,20 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                 url: src.replace(/\._sz(?:[wh][0-9]+){1,}_(\.[^/.]*)(?:[?#].*)?$/, "$1"),
                 can_head: false // 404
             }
+        }
+
+        if (domain_nowww === "inews.bg") {
+            // https://inews.bg/pictures/1496852__100.jpg -- 129x100
+            //   https://inews.bg/pictures/1496852.jpg -- 1034x800
+            // https://inews.bg/pictures/766448_630__1.jpg
+            //   https://inews.bg/pictures/766448___1.jpg -- 960x539
+            // https://inews.bg/pictures/2162855_375_282_4x3.jpg
+            //   https://inews.bg/pictures/2162855.jpg -- 773x580
+            // http://inews.bg/pictures/2106762_375_282_4x3.jpg
+            //   https://inews.bg/pictures/2106762.jpg -- 4209x3196
+            return src
+                .replace(/(\/pictures\/+[0-9]+)_[0-9]*_[0-9]*(?:_[0-9]+x[0-9]+)?(\.[^/.]*)(?:[?#].*)?$/, "$1$2")
+                .replace(/(\/pictures\/+[0-9]+)_[0-9]*_[0-9]*_([0-9]+)(\.[^/.]*)(?:[?#].*)?$/, "$1___$2$3");
         }
 
 
