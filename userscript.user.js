@@ -37561,9 +37561,9 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                         if (mouse_in_image_yet) {
                             if (Math.abs(mouseX - mouseDelayX) > jitter_threshx ||
                                 Math.abs(mouseY - mouseDelayY) > jitter_threshy) {
-                                console_log(mouseX);
-                                console_log(mouseDelayX);
-                                console_log(jitter_threshx);
+                                //console_log(mouseX);
+                                //console_log(mouseDelayX);
+                                //console_log(jitter_threshx);
                                 resetpopups();
                             }
                         }
