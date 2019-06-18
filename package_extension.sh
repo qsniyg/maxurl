@@ -18,7 +18,7 @@ fi
 cp site/style.css extension/options.css
 
 rm extension.xpi
-zip -r extension.xpi manifest.json userscript.user.js resources/logo_48.png resources/logo_96.png extension -x "*~"
+zip -r extension.xpi LICENSE.txt manifest.json userscript.user.js resources/logo_48.png resources/logo_96.png extension -x "*~"
 
 FILES=$(unzip -l extension.xpi | awk '{print $4}' | awk 'BEGIN{x=0;y=0} /^----$/{x=1} {if (x==1) {x=2} else if (x==2) {print}}' | sed '/^ *$/d' | sort)
 
@@ -28,6 +28,7 @@ extension/
 extension/background.js
 extension/options.css
 extension/options.html
+LICENSE.txt
 manifest.json
 resources/logo_48.png
 resources/logo_96.png
@@ -38,6 +39,7 @@ DIFF="$(cat files.txt | sort | uniq -u)"
 rm files.txt
 
 if [ ! -z "$DIFF" ]; then
+    echo
     echo Wrong files
     exit 1
 fi
