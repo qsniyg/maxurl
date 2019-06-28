@@ -4442,6 +4442,8 @@ var $$IMU_EXPORT$$;
             (domain === "spark.adobe.com" && src.indexOf("/page/") >= 0) ||
             // https://s.w-x.co/util/image/w/ap_19171124776280.jpg?v=at&w=485&h=273
             (domain === "s.w-x.co" && src.indexOf("/image/") >= 0) ||
+            // https://img.monocle.com/radio/episodes/untitled-1-55df1345e1fea.jpg?w=408&g=center&q=50
+            domain === "img.monocle.com" ||
             // http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
             // https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
             src.match(/\/demandware\.static\//) ||
@@ -5091,6 +5093,8 @@ var $$IMU_EXPORT$$;
             domain === "cdn.videos.rollcall.com" ||
             // https://www.rawkblog.com/content/uploads/2019/05/carly-rae-jepsen-768x512.jpg
             (domain_nowww === "rawkblog.com" && src.indexOf("/uploads/") >= 0) ||
+            // https://cdn.stereo.vn/uploads/2015/08/carly-rae-jepsen-press-2015-billboard-650-770x462.jpg
+            (domain === "cdn.stereo.vn" && src.indexOf("/uploads/") >= 0) ||
             // https://1.soompi.io/wp-content/blogs.dir/8/files/2015/09/HA-TFELT-Wonder-Girls-590x730.jpg -- doesn't work
             // https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2018/01/GTA-6-Female-Protag-796x417.jpg -- does work
             src.indexOf("/wp-content/blogs.dir/") >= 0 ||
@@ -15814,12 +15818,16 @@ var $$IMU_EXPORT$$;
         }
 
         if (domain_nowww === "besthqwallpapers.com" ||
+            // http://wallpapers4screen.com/Uploads/14-12-2018/38448/thumb-mariano-grunge-real-madrid-white-stone-dominican-footballers.jpg
+            //   http://wallpapers4screen.com/Uploads/14-12-2018/38448/mariano-grunge-real-madrid-white-stone-dominican-footballers.jpg
+            domain_nowww === "wallpapers4screen.com" ||
             // http://brightwallpapers.com.ua/Uploads/28-11-2013/d3e7782d-1d67-4812-b6d4-dcf1b4dd720f/thumb2-1f628c29280f859d65db85a5441d5e03.jpg
             //   http://brightwallpapers.com.ua/Uploads/28-11-2013/d3e7782d-1d67-4812-b6d4-dcf1b4dd720f/1f628c29280f859d65db85a5441d5e03.jpg
             domain_nowww === "brightwallpapers.com.ua") {
             // https://besthqwallpapers.com/Uploads/29-3-2018/46318/thumb2-vocaloid-kagamine-rin-kagamine-len-anime-characters-art.jpg
             //   https://besthqwallpapers.com/uploads/29-3-2018/46318/vocaloid-kagamine-rin-kagamine-len-anime-characters-art.jpg
-            return src.replace(/(\/[Uu]ploads\/+[0-9]+-[0-9]+-[0-9]{4}\/+(?:[0-9]+|[-0-9a-f]+)\/+)thumb[0-9]*-([^/]*)$/, "$1$2");
+            return src.replace(/(\/[Uu]ploads\/+(?:[0-9]{1,2}-){2}[0-9]{4}\/+(?:[0-9]+|[-0-9a-f]+)\/+)thumb[0-9]*-([^/]*)$/, "$1$2");
+            //return src.replace(/(\/Uploads\/+(?:[0-9]{2}-){2}[0-9]{4}\/+([0-9]+)\/+)thumb-([^/]*)(?:[?#].*)?$/, "$1$2");
         }
 
         if (domain === "avatanplus.com") {
@@ -30317,23 +30325,30 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                                "$1$2");
         }
 
-        if (domain === "cdn.onebauer.media" ||
-            // https://media.planetradio.co.uk/one/radio-legacy/52/fd06b/a5054/18c3c/83efe/bd389/d74d2/nickhewer.png?quality=80&width=960&ratio=16-9&resizeStyle=aspectfill&format=jpg
-            //   https://media.planetradio.co.uk/one/radio-legacy/52/fd06b/a5054/18c3c/83efe/bd389/d74d2/nickhewer.png?resize=atrophy
-            domain === "media.planetradio.co.uk" ||
-            // https://cdn.graziadaily.co.uk/one/lifestyle-images/celebrity/58bbdf7709f46d350a06910e/GettyImages-647330302.jpg?quality=50&width=960&ratio=16-9&resizeStyle=aspectfill&format=jpg
-            //   https://cdn.graziadaily.co.uk/one/lifestyle-images/celebrity/58bbdf7709f46d350a06910e/GettyImages-647330302.jpg -- 1525x1024
-            //   https://cdn.graziadaily.co.uk/one/lifestyle-images/celebrity/58bbdf7709f46d350a06910e/GettyImages-647330302.jpg?resize=atrophy -- 4343x2916
-            domain === "cdn.graziadaily.co.uk" ||
-            // https://cdn.closeronline.co.uk/one/lifestyle-images/celebrity/57ea61548ec529f923122d89/holly-willoughby-this-morning-style.jpg.jpg?quality=10&amp;format=jpg
-            //   https://cdn.closeronline.co.uk/one/lifestyle-images/celebrity/57ea61548ec529f923122d89/holly-willoughby-this-morning-style.jpg.jpg?resize=atrophy
-            domain === "cdn.closeronline.co.uk" ||
-            // https://cdn.heatworld.com/one/lifestyle-images/celebrity/58357d749f0e322331739515/Screen%20Shot%202016-10-06%20at%2014.43.52.png?quality=50&width=960&ratio=16-9&resizeStyle=aspectfill&format=jpg
-            //   https://cdn.heatworld.com/one/lifestyle-images/celebrity/58357d749f0e322331739515/Screen%20Shot%202016-10-06%20at%2014.43.52.png?resize=atrophy
-            domain === "cdn.heatworld.com") {
+        if ((domain === "cdn.onebauer.media" ||
+             // https://media.planetradio.co.uk/one/radio-legacy/52/fd06b/a5054/18c3c/83efe/bd389/d74d2/nickhewer.png?quality=80&width=960&ratio=16-9&resizeStyle=aspectfill&format=jpg
+             //   https://media.planetradio.co.uk/one/radio-legacy/52/fd06b/a5054/18c3c/83efe/bd389/d74d2/nickhewer.png?resize=atrophy
+             domain === "media.planetradio.co.uk" ||
+             // https://cdn.graziadaily.co.uk/one/lifestyle-images/celebrity/58bbdf7709f46d350a06910e/GettyImages-647330302.jpg?quality=50&width=960&ratio=16-9&resizeStyle=aspectfill&format=jpg
+             //   https://cdn.graziadaily.co.uk/one/lifestyle-images/celebrity/58bbdf7709f46d350a06910e/GettyImages-647330302.jpg -- 1525x1024
+             //   https://cdn.graziadaily.co.uk/one/lifestyle-images/celebrity/58bbdf7709f46d350a06910e/GettyImages-647330302.jpg?resize=atrophy -- 4343x2916
+             domain === "cdn.graziadaily.co.uk" ||
+             // https://cdn.closeronline.co.uk/one/lifestyle-images/celebrity/57ea61548ec529f923122d89/holly-willoughby-this-morning-style.jpg.jpg?quality=10&amp;format=jpg
+             //   https://cdn.closeronline.co.uk/one/lifestyle-images/celebrity/57ea61548ec529f923122d89/holly-willoughby-this-morning-style.jpg.jpg?resize=atrophy
+             domain === "cdn.closeronline.co.uk" ||
+             // https://cdn.heatworld.com/one/lifestyle-images/celebrity/58357d749f0e322331739515/Screen%20Shot%202016-10-06%20at%2014.43.52.png?quality=50&width=960&ratio=16-9&resizeStyle=aspectfill&format=jpg
+             //   https://cdn.heatworld.com/one/lifestyle-images/celebrity/58357d749f0e322331739515/Screen%20Shot%202016-10-06%20at%2014.43.52.png?resize=atrophy
+             domain === "cdn.heatworld.com") &&
+            src.match(/^[a-z]+:\/\/[^/]*\/one\//)) {
             // https://cdn.onebauer.media/one/lifestyle-images/celebrity/58bab090a8511c6f037af92b/GettyImages-645662194.jpg?quality=80&width=1800&ratio=16-9&resizeStyle=aspectfill&format=jpg
             //   https://cdn.onebauer.media/one/lifestyle-images/celebrity/58bab090a8511c6f037af92b/GettyImages-645662194.jpg?resize=atrophy -- 4818x3437
             return src.replace(/(\/[^/?]*)(?:\?.*)?$/, "$1?resize=atrophy");
+        }
+
+        if (domain === "assets.planetradio.co.uk") {
+            // https://assets.planetradio.co.uk/track/160x160/122961.jpg?ver=1541262115
+            //   https://assets.planetradio.co.uk/track/122961.jpg?ver=1541262115
+            return src.replace(/\/track\/+[0-9]+x[0-9]+\/+/, "/track/");
         }
 
         if (domain_nowww === "realestate.com.au") {
@@ -32717,6 +32732,45 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             //   https://www.cdjournal.com/image/jacket/large/411003/4110031771.jpg -- 300x300
             return src.replace(/\/image\/+jacket\/+[0-9]+\/+/, "/image/jacket/large/");
         }
+
+        if (domain_nowww === "redwallpapers.com") {
+            // https://www.redwallpapers.com/public/redwallpapers-large-thumb/carly-rae-jepsen-brunette-singer-free-stock-photos-images-hd-wallpaper.jpg
+            //   https://www.redwallpapers.com/download/original/carly-rae-jepsen-brunette-singer-free-stock-photos-images-hd-wallpaper.jpg
+            return src.replace(/\/public\/+redwallpapers-[^/]*\//, "/download/original/");
+        }
+
+        if (domain_nowww === "show-biz.by") {
+            // CRI: invalid image size - must be one of: xxsmall,xsmall,56,small,icon96,icon,medium,large,larger,xlarge,xxlarge,xxxlarge,1280,original
+            // http://show-biz.by/gallery/image/gallery_image/18574/xxsmall/_v=7c4781547384861
+            //   http://show-biz.by/gallery/image/gallery_image/18574/1280/_v=7c4781547384861 -- 1280x853, upscaled
+            //   http://show-biz.by/gallery/image/gallery_image/18574/original/_v=7c4781547384861 -- 1024x683
+            return src.replace(/(\/gallery_image\/[0-9]+\/+)[^/]*\/+/, "$1original/");
+        }
+
+        if (domain_nowww === "songtexte.co") {
+            // https://songtexte.co/Images/Albums/Thumbs/brett-young-ticket-to-la-album-4883e1.jpg
+            //   https://songtexte.co/Images/Albums/brett-young-ticket-to-la-album-4883e1.jpg
+            return src.replace(/(\/Images\/+[^/]+\/+)Thumbs\/+/, "$1");
+        }
+
+        if (domain === "d2h1pu99sxkfvn.cloudfront.net") {
+            // https://d2h1pu99sxkfvn.cloudfront.net/b0/6479437/503662872_4oRXGlUWQd/P4.jpg
+            //   https://d2h1pu99sxkfvn.cloudfront.net/b0/6479437/503662872_4oRXGlUWQd/P0.jpg
+            return src.replace(/\/P[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "/P0$1");
+        }
+
+        if (domain === "img.joomcdn.net") {
+            // https://img.joomcdn.net/eb06b367f4be245a90f16960fd79251f660f2de5_400_400.jpeg
+            //   https://img.joomcdn.net/eb06b367f4be245a90f16960fd79251f660f2de5_original.jpeg
+            return src.replace(/(\/[0-9a-f]{20,})_[0-9]+_[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1_original$2");
+        }
+
+        if (domain_nowww === "fashionbay.gr") {
+            // https://www.fashionbay.gr/thumber.php?img=Images/Products/119708.Color10.jpg&w=200&h=300
+            //   https://www.fashionbay.gr/Images/Products/119708.Color10.jpg
+            return src.replace(/\/thumber\.php\?(?:.*?&)?img=([^&]*).*?$/, "/$1");
+        }
+
 
 
 
