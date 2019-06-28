@@ -92,6 +92,10 @@ var blacklist = [
   "convicted",
   "abuse",
   "abuses",
+  "exploiting",
+  "exploits",
+  "minor",
+  "minors",
 
   // Posts in-between the first and second category
   "embarrassed",
