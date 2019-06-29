@@ -3198,6 +3198,9 @@ var $$IMU_EXPORT$$;
             // https://favera.ru/img/styles/pin_tmb_2/public/2016/09/11/1368071_1473572524.jpg
             //   https://favera.ru/img/2016/09/11/1368071_1473572524.jpg
             domain_nowww === "favera.ru" ||
+            // https://cdn.businessinsider.es/sites/navi.axelspringer.es/public/styles/480/public/media/image/2019/03/Kim%20Jong-Un%2C%20li%CC%81der%20de%20Corea%20del%20Norte.jpg?itok=_Cf23v2r
+            //   https://cdn.businessinsider.es/sites/navi.axelspringer.es/public/media/image/2019/03/Kim%20Jong-Un%2C%20li%CC%81der%20de%20Corea%20del%20Norte.jpg
+            domain === "cdn.businessinsider.es" ||
             // http://cdn.whodoyouthinkyouaremagazine.com/sites/default/files/imagecache/623px_wide/episode/hewer500.jpg
             //   http://cdn.whodoyouthinkyouaremagazine.com/sites/default/files/episode/hewer500.jpg
             // https://www.telugucinema.com/sites/default/files2/styles/media_gallery_thumbnail/public/amy-jackson-instagram1.jpg?itok=nwFhV2Iy
@@ -5409,6 +5412,9 @@ var $$IMU_EXPORT$$;
             // https://www.ltu.se/cms_fs/1.172775!/image/Iceberg_in_the_Arctic_with_its_underside_exposed.jpg_gen/derivatives/landscape_fullwidth/Iceberg_in_the_Arctic_with_its_underside_exposed.jpg
             //   https://www.ltu.se/cms_fs/1.172775!/image/Iceberg_in_the_Arctic_with_its_underside_exposed.jpg
             domain_nowww === "ltu.se" ||
+            // http://www.lanuovasardegna.it/polopoly_fs/1.17782426.1552123612!/httpImage/image.jpg_gen/derivatives/detail_558/image.jpg
+            //   http://www.lanuovasardegna.it/polopoly_fs/1.17782426.1552123612!/httpImage/image.jpg
+            domain_nowww === "lanuovasardegna.it" ||
             // http://p1014p.quotidiano.net/polopoly_fs/1.3245998.1499154460!/httpImage/image.JPG_gen/derivatives/gallery_800/image.JPG -- doesn't work
             //(domain_nosub === "quotidiano.net" && src.indexOf("/polopoly_fs/") >= 0) ||
             // http://www.edp24.co.uk/polopoly_fs/1.5540960!/image/image.jpg_gen/derivatives/landscape_630/image.jpg
@@ -6254,7 +6260,10 @@ var $$IMU_EXPORT$$;
         if (domain === "assets.bwbx.io") {
             // https://assets.bwbx.io/images/users/iqjWHBFdfxIU/iY0p6s6mL24Q/v3/800x-1.png
             //   https://assets.bwbx.io/images/users/iqjWHBFdfxIU/iY0p6s6mL24Q/v3/-1x-1.png
-            return src.replace(/\/[0-9]*x(-[0-9]*\.[^/]*)$/, "/-1x$1");
+            // https://assets.bwbx.io/images/users/iqjWHBFdfxIU/iulaO7VvcFII/v0/1200x1200.jpg
+            //   https://assets.bwbx.io/images/users/iqjWHBFdfxIU/iulaO7VvcFII/v0/-1x-1.jpg -- 800x533
+            //   https://assets.bwbx.io/images/users/iqjWHBFdfxIU/iulaO7VvcFII/v0/0x0.jpg -- 800x533
+            return src.replace(/\/[-0-9]*x[-0-9]*(\.[^/]*)$/, "/-1x-1$1");
         }
 
         if (domain === "file.osen.co.kr") {
@@ -16113,10 +16122,12 @@ var $$IMU_EXPORT$$;
         if (domain === "asset.kompas.com" ||
             // http://asset-a.grid.id/crop/0x0:0x0/700x0/photo/2018/08/07/1840019897.jpg
             //   http://asset-a.grid.id/photo/2018/08/07/1840019897.jpg
+            // https://asset-a.grid.id/crop/0x0:0x0/x/photo/2018/12/08/3295217691.jpg
+            //   https://asset-a.grid.id/photo/2018/12/08/3295217691.jpg
             (domain_nosub === "grid.id" && domain.match(/^asset(?:-[a-z]*)?\./))) {
             // https://asset.kompas.com/crop/113x0:787x449/185x124/data/photo/2018/05/14/4120396036.jpg
             //   https://asset.kompas.com/data/photo/2018/05/14/4120396036.jpg
-            return src.replace(/\/crop\/[0-9x:]+\/[0-9]+x[0-9]+\//, "/");
+            return src.replace(/\/crop\/[0-9x:]+\/[0-9]*x[0-9]*\//, "/");
         }
 
         if (domain === "img.4plebs.org") {
@@ -16447,6 +16458,12 @@ var $$IMU_EXPORT$$;
             if (newsrc !== src) {
                 return [newsrc.replace(/\.jpg$/, ".jpeg"), newsrc];
             }
+        }
+
+        if (domain === "ir.marieclaire.com.tw") {
+            // https://ir.marieclaire.com.tw/s800t533h100/assets/mc/201808/5B696A05BF13B1533635077.jpeg
+            //   https://i.marieclaire.com.tw/assets/mc/201808/5B696A05BF13B1533635077.jpeg
+            return src.replace(/:\/\/[^/]*\/(?:[a-z][0-9]+){1,}\/+assets\/+/, "://i.marieclaire.com.tw/assets/");
         }
 
         if (domain === "img.vogue.com.tw" ||
@@ -20068,8 +20085,12 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             //   http://retete.perfecte.md/assets/articles/images/original/1424531.jpg
             // http://assets1.protv.md/articles/files/thumbs/700x/3424711.jpg
             //   http://retete.perfecte.md/assets/articles/images/original/3424711.jpg
-            return src.replace(/:\/\/[^/]*\/articles\/files\/thumbs\/[0-9]+x(?:[0-9]+)?(\/[0-9]+\.[^/.]*)$/,
-                               "://retete.perfecte.md/assets/articles/images/original$1");
+            // http://assets.protv.md/articles/files/thumbs/700x/2019/04/24/20190423-kim-jong-un-15560968178ix2fj6.jpeg
+            //   http://assets.protv.md/articles/images/original/2019/04/24/20190423-kim-jong-un-15560968178ix2fj6.jpeg
+            return src
+                .replace(/:\/\/[^/]*\/articles\/files\/thumbs\/[0-9]+x(?:[0-9]+)?(\/[0-9]+\.[^/.]*)$/,
+                         "://retete.perfecte.md/assets/articles/images/original$1")
+                .replace(/\/articles\/+files\/+thumbs\/+[0-9]+x(?:[0-9]+)?\/+/, "/articles/images/original/");
         }
 
         if (domain_nowww === "bgol.us" ||
@@ -32771,6 +32792,40 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/\/thumber\.php\?(?:.*?&)?img=([^&]*).*?$/, "/$1");
         }
 
+        if (domain_nowww === "ft.com") {
+            // https://www.ft.com/__origami/service/image/v2/images/raw/https%3A%2F%2Fs3-ap-northeast-1.amazonaws.com%2Fpsh-ex-ftnikkei-3937bb4%2Fimages%2F9%2F7%2F1%2F4%2F16514179-1-eng-GB%2FIMG_2067.JPG?source=nar-cms
+            //   https://www.ft.com/__origami/service/image/v2/images/raw/https%3A//s3-ap-northeast-1.amazonaws.com/psh-ex-ftnikkei-3937bb4/images/9/7/1/4/16514179-1-eng-GB/IMG_2067.JPG?source=nar-cms
+            //   https://s3-ap-northeast-1.amazonaws.com/psh-ex-ftnikkei-3937bb4/images/9/7/1/4/16514179-1-eng-GB/IMG_2067.JPG
+            newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/__origami\/+service\/+image\/+v2\/+images\/+[^/]*\/+(https?.*?)(?:[?#].*)?$/, "$1");
+            if (newsrc !== src)
+                return decodeuri_ifneeded(newsrc);
+        }
+
+        if (domain === "cdnimg.rg.ru") {
+            // https://cdnimg.rg.ru/img/content/166/03/74/2019-03-02T052221Z_450178624_RC1C0EAD7E20_RTRMADP_3_VIETNAM-NORTHKOREA_t_200x134.jpg
+            //   https://cdnimg.rg.ru/img/content/166/03/74/2019-03-02T052221Z_450178624_RC1C0EAD7E20_RTRMADP_3_VIETNAM-NORTHKOREA.jpg
+            return src.replace(/(\/img\/+content\/+.*)_t_[0-9]+x[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain === "files.der-farang.com") {
+            // https://files.der-farang.com/cache/700x0/1/0/files/000/000/00/03/page/60/1a/20/nordkorea-schickt-wieder-beamte-zum-verbindungsbuero-mit-suedkorea-ab8e.jpg
+            //   https://files.der-farang.com/files/000/000/00/03/page/60/1a/20/nordkorea-schickt-wieder-beamte-zum-verbindungsbuero-mit-suedkorea-ab8e.jpg
+            return src.replace(/\/cache\/+[0-9]+x[0-9]+\/+[0-9]+\/+[0-9]+\/+files\/+/, "/files/");
+        }
+
+        if (domain_nosub === "cdnvideo.ru" && domain.match(/^phototass[0-9]*\./)) {
+            // https://phototass3.cdnvideo.ru/width/1020_b9261fa1/tass/m2/uploads/i/20190418/5020384.jpg
+            //   https://phototass3.cdnvideo.ru/tass/m2/uploads/i/20190418/5020384.jpg
+            return src.replace(/\/(?:width|height)\/+[0-9]+_[0-9a-f]+\/+tass\/+/, "/tass/");
+        }
+
+        if (domain_nowww === "duonao.tv") {
+            // http://www.duonao.tv/upload/adult/201705292015391522730s.jpg
+            //   http://www.duonao.tv/upload/adult/201705292015391522730.jpg
+            return src.replace(/(\/upload\/+[^/]*\/+[0-9]{8,})s(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+
 
 
 
@@ -33584,15 +33639,17 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             // http://super.ru/upload/iblock/4ca/4cad0d094ca6ff449fc32e0d63c1c97f_w749_h905_nocrp.jpg
             //   http://super.ru/upload/iblock/4ca/4cad0d094ca6ff449fc32e0d63c1c97f.jpg
             domain_nowww === "super.ru" ||
-            src.match(/:\/\/[^/]*\/upload\/+resize_cache\/+iblock\/+[0-9a-f]{3}\/+[0-9]+_[0-9]+_/) ||
+            // https://www.sb.by/upload/resize_cache/slam.image/iblock/2bb/855_2000_1/2bb028a9c7ce97a07fc667b3bd54f00c.JPG
+            //   https://www.sb.by/upload/iblock/2bb/2bb028a9c7ce97a07fc667b3bd54f00c.JPG
+            src.match(/:\/\/[^/]*\/upload\/+resize_cache\/+(?:[^/]*\/+)?iblock\/+[0-9a-f]{3}\/+[0-9]+_[0-9]+_/) ||
             // https://static.tatler.ru/resize_cache_imm/iblock/c30/ff92/326x489_Quality100_c30b71eb02b082af52e89d51d6146db8.jpg
             //   https://static.tatler.ru/iblock/c30/c30b71eb02b082af52e89d51d6146db8.jpg
             src.match(/:\/\/[^/]*\/(?:upload\/+)?resize_cache_imm\/+iblock\/+[0-9a-f]{3}\/+[0-9a-f]{4}\/+[0-9]+x[0-9]+_Quality[0-9]+_[0-9a-f]+\./)) {
             // http://krauzer.ru/upload/resize_cache/iblock/edf/600_600_1/edfdf59938b3ed07d5bad9c3da49e852.jpg
             //   http://krauzer.ru/upload/iblock/edf/edfdf59938b3ed07d5bad9c3da49e852.jpg
             newsrc = src
-                .replace(/\/resize_cache(\/.*\/)[0-9]+_[0-9]+_[0-9]+\/([0-9a-f]+(?:-[0-9]+x[0-9]+)?\.[^/.]*)$/, "$1$2")
-                .replace(/\/resize_cache(\/.*\/)[0-9]+_[0-9]+_[0-9a-f]+\/([^\.]+(?:-[0-9]+x[0-9]+)?\.[^/.]*)$/, "$1$2")
+                .replace(/\/resize_cache(?:\/+[^/]*)?(\/+[^/]*\/+...\/+)[0-9]+_[0-9]+_[0-9]+\/([0-9a-f]+(?:-[0-9]+x[0-9]+)?\.[^/.]*)$/, "$1$2")
+                .replace(/\/resize_cache(?:\/+[^/]*)?(\/+[^/]*\/+...\/+)[0-9]+_[0-9]+_[0-9a-f]+\/([^\.]+(?:-[0-9]+x[0-9]+)?\.[^/.]*)$/, "$1$2")
                 .replace(/\/resize_cache_imm\/+(iblock\/+[0-9a-f]{3}\/+)[0-9a-f]{4}\/+[0-9]+x[0-9]+_Quality[0-9]+_([0-9a-f]+\.[^/.]*)(?:[?#].*)?$/, "/$1$2");
             if (newsrc !== src)
                 return newsrc;
