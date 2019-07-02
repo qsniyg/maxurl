@@ -2073,6 +2073,8 @@ var $$IMU_EXPORT$$;
             domain_nowww === "newslock.co.kr" ||
             // http://www.news33.net/news/thumbnail/201809/31583_15312_1018_v150.jpg
             domain_nowww === "news33.net" ||
+            // http://www.mainnews.kr/news/thumbnail/201812/66967_53693_258_150.jpg
+            domain_nowww === "mainnews.kr" ||
             // http://www.newstown.co.kr/news/thumbnail/201801/311251_198441_4816_v150.jpg
             domain_nowww === "newstown.co.kr") {
             return add_extensions_upper_jpeg(src
@@ -2330,10 +2332,10 @@ var $$IMU_EXPORT$$;
             };
         }
 
-        if ((domain_nosub === "127.net" &&
-             domain.indexOf("nosdn.127.net") >= 0) &&
-            (true || src.indexOf("nosdn.127.net/img/") >= 0 ||
-             src.indexOf("nosdn.127.net/photo/") >= 0)) { //lofter
+        if ((domain_nosub === "127.net" && domain.indexOf("nosdn.127.net") >= 0) ||
+            // https://pic-bucket.ws.126.net/photo/0003/2018-12-03/E23MBHK63LF60003NOS.jpg?imageView&thumbnail=690x465&quality=85&type=webp&interlace=1
+            //   https://pic-bucket.ws.126.net/photo/0003/2018-12-03/E23MBHK63LF60003NOS.jpg
+            domain === "pic-bucket.ws.126.net") { //lofter
             // http://imglf1.nosdn.127.net/img/cVVvSm1kaHhURWlQcVkyQVBzZ2lMRExONjBVS1N1UnZUV3dvQ3BtaFVuYjFuUk9EUG5OcnFnPT0.jpg?imageView&thumbnail=1680x0&quality=96&stripmeta=0&type=jpg%7Cwatermark&type=2&text=wqkg5p6B5ZywIC8ga3lva3VjaGkubG9mdGVyLmNvbQ==&font=bXN5aA==&gravity=southwest&dissolve=30&fontsize=680&dx=32&dy=36&stripmeta=0
             //   http://imglf1.nosdn.127.net/img/cVVvSm1kaHhURWlQcVkyQVBzZ2lMRExONjBVS1N1UnZUV3dvQ3BtaFVuYjFuUk9EUG5OcnFnPT0.jpg
             // http://imglf0.nosdn.127.net/img/cytFZVcyeDNVU2pvR0l0QkdXM0FBUmJuU1paTnVDQnM1UmJ4T3BhNE94WW1BZlVOQ1dLSld3PT0.png?imageView&thumbnail=500x0&quality=96&stripmeta=0&type=jpg
@@ -2341,12 +2343,12 @@ var $$IMU_EXPORT$$;
             //   http://pic-bucket.nosdn.127.net/photo/0001/2018-01-24/D8SM4CRK00AP0001NOS.jpg
             // http://dingyue.nosdn.127.net/lJszRnDoqxNbRLPfYG2DackcH7WAEdAe=8SdmaEDOhxMz1542447679423compressflag.jpg?imageView&thumbnail=250x0&quality=85&type=jpg&interlace=1
             //   http://dingyue.nosdn.127.net/lJszRnDoqxNbRLPfYG2DackcH7WAEdAe=8SdmaEDOhxMz1542447679423compressflag.jpg
-                return {
-                    url: src.replace(/\?.*$/, ""),
-                    headers: {
-                        "Referer": "https://lofter.com"
-                    }
-                };
+            return {
+                url: src.replace(/\?.*$/, ""),
+                headers: {
+                    "Referer": "https://lofter.com"
+                }
+            };
         }
 
         if (domain === "board.makeshop.co.kr") {
@@ -3743,6 +3745,10 @@ var $$IMU_EXPORT$$;
         if ((domain_nosub === "yimg.com" && domain.match(/^(?:[sl]|ct)[0-9]*\.yimg\.com/)) ||
             // https://movies.yahoo.com.tw/y/r/w520/bt/api/res/1.2/7CVvg8ycHHyQQhIFbt0eFw--~A/YXBwaWQ9dHdhYnVuZXdzO2ZpPWZpbGw7dz0xMzY1O2g9MjA0ODs-/http://media.zenfs.com/en/homerun/feed_manager_auto_publish_494/a292a5af4b414a75fc4aa1d0762bc2f2
             //   http://media.zenfs.com/en/homerun/feed_manager_auto_publish_494/a292a5af4b414a75fc4aa1d0762bc2f2
+            // https://movies.yahoo.com.tw/x/r/w340/i/o/production/movie-photos/December2018/J2l1xQpwWxuv2BGAQk3D-5568x3712.jpg
+            //   https://movies.yahoo.com.tw/i/o/production/movie-photos/December2018/J2l1xQpwWxuv2BGAQk3D-5568x3712.jpg
+            // https://movies.yahoo.com.tw/x/r/h340/i/o/production/movie-photos/September2018/b3VeqXiLz0dWg7fRKSWf-533x800.jpg
+            //   https://movies.yahoo.com.tw/i/o/production/movie-photos/September2018/b3VeqXiLz0dWg7fRKSWf-533x800.jpg
            domain_nosub === "yahoo.com.tw") {
             // http://l.yimg.com/bt/api/res/1.2/YIgTLkK5SkGYHzqDt4_e8Q--/YXBwaWQ9eW5ld3M7cT04NQ--/http:/mit.zenfs.com/316/2011/11/T-ZUCKERBERG_AP.jpg
             //   http://mit.zenfs.com/316/2011/11/T-ZUCKERBERG_AP.jpg
@@ -3760,7 +3766,8 @@ var $$IMU_EXPORT$$;
             //   https://s.yimg.com/ob/image/4deef77a-5e3b-438b-8024-627e0eed0e72.jpg
             return src
                 .replace(/.*\/[^/]*\/api\/res\/[^/]*\/[^/]*\/[^/]*\/(.*?)(?:\.cf\.(?:jpg|webp))?$/, "$1")
-                .replace(/^([a-z]*:\/)([^/])/, "$1/$2");
+                .replace(/^([a-z]*:\/)([^/])/, "$1/$2")
+                .replace(/(:\/\/[^/]*\/)x\/+r\/+[wh][0-9]+\/+i\/+/, "$1i/");
         }
 
         if (false && domain === "media.zenfs.com") {
@@ -3982,9 +3989,14 @@ var $$IMU_EXPORT$$;
             // https://www.rspb.org.uk/globalassets/images/birds-and-wildlife/non-bird-species-illustrations/grey-squirrel_1200x675.jpg?preset=landscape_mobile
             (domain_nowww === "rspb.org.uk" && src.indexOf("/globalassets/") >= 0) ||
             // http://media.beliefnet.com/~/media/photos/inspiration/galleries/20-most-beautiful-places-in-the-world/tunnel_of_love_ukraine.jpg?as=1&w=400
-            domain === "media.beliefnet.com" ||
+            (domain === "media.beliefnet.com" && (/\/media\//i).test(src)) ||
             // https://www.ramblers.org.uk/~/media/Images/Walk%20magazine/Features/Winter%202013%20and%20past/12.jpg?h=394&amp;la=en&amp;w=200
-            domain_nowww === "ramblers.org.uk" ||
+            (domain_nowww === "ramblers.org.uk" && (/\/media\//i).test(src)) ||
+            // https://warnerbrosuk.azureedge.net/~/media/images/warner-bro/movies/aquaman/37.jpg?w=400
+            // https://warnerbrosuk.azureedge.net/~/Media/Images/warner-bro/movies/aquaman/37.jpg?w=400
+            (domain === "warnerbrosuk.azureedge.net" && (/\/media\//i).test(src)) |
+            // https://www.warnerbros.co.uk/~/media/images/warner%20bro/movies/aquaman/37.ashx?mw=1200
+            (domain_nowww === "warnerbros.co.uk" && (/\/media\//i).test(src)) |
             // http://img.cdn2.vietnamnet.vn/Images/english/2017/11/10/09/20171110093351-sez.jpg?w=80&h=45
             (domain_nosub === "vietnamnet.vn" && domain.match(/img\.cdn[0-9]*\.vietnamnet\.vn/)) ||
             // http://img.cdn2.vietnamnet.vn/Images/english/2018/05/23/09/20180523095208-3.jpg?w=80&h=45
@@ -4057,6 +4069,8 @@ var $$IMU_EXPORT$$;
             //(domain.indexOf("nosdn.127.net") >= 0 && src.indexOf("/photo/") >= 0) ||
             // https://sumo.cdn.tv2.no/imageapi/v2/img/58aff90284ae6c3cc0945755-1519386606657?width=1920&height=1080&location=list
             (domain === "sumo.cdn.tv2.no" && src.indexOf("/imageapi/") >= 0) ||
+            // http://www.bzqzsj.com/uploads/allimg/181203/1553324424-1.jpg?imageView&thumbnail=100y75
+            (domain_nowww === "bzqzsj.com" && src.indexOf("/uploads/") >= 0) ||
             // https://media.missguided.com/s/missguided/L4227488_set/1/brown-square-back-thong-swimsuit.jpg?$category-page__grid--1x$
             domain === "media.missguided.com" ||
             // https://photo.venus.com/im/V1092-COB_V2362-COB.0288.s.jpg?preset=product
@@ -4454,6 +4468,12 @@ var $$IMU_EXPORT$$;
             (domain === "s.w-x.co" && src.indexOf("/image/") >= 0) ||
             // https://img.monocle.com/radio/episodes/untitled-1-55df1345e1fea.jpg?w=408&g=center&q=50
             domain === "img.monocle.com" ||
+            // https://bildix.mmcloud.se/bildix/api/images/2ec6e4f9-0a6f-449b-9429-2e63ba616165.jpg?fit=crop&w=300
+            (domain === "bildix.mmcloud.se" && /\/bildix\/+api\/+images\/+/.test(src)) ||
+            // https://media.cinedb.com.tr/Upload/News/c9f58bdc-6f94-41d9-8e3e-90d5961cddfd.jpeg?h=320&crop=true
+            (domain === "media.cinedb.com.tr" && /\/Upload\//i.test(src)) ||
+            // https://www.newidea.com.au/media/41689/gettyimages-859537364.jpg?width=720&center=0.0,0.0
+            (domain_nowww === "newidea.com.au" && src.indexOf("/media/") >= 0) ||
             // http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
             // https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
             src.match(/\/demandware\.static\//) ||
@@ -4941,8 +4961,6 @@ var $$IMU_EXPORT$$;
             (domain_nosub === "musicfeeds.com.au" && domain.match(/^cdn[0-9]*/) && src.indexOf("/assets/uploads/")) ||
             // https://d13vpcwfpcq1p8.cloudfront.net/contents/official/sites/887/2019/02/x20190219000550684_20190219-000548-image-300x300.jpg
             (domain === "d13vpcwfpcq1p8.cloudfront.net" && src.indexOf("/contents/") >= 0) ||
-            // https://imagebox.cz.osobnosti.cz/tapety/elisha-cuthbert/O83829-1440x900.jpg
-            domain === "imagebox.cz.osobnosti.cz" ||
             // https://media3.paperblog.fr/i/582/5820009/critique-colombiana-L-WlVd2S-175x130.jpeg
             (domain_nosub === "paperblog.fr" && domain.match(/^media[0-9]*\./)) ||
             // http://bikini.sbgefree.org/files/2018/11/sexy-bikini-models-image328-150x150.jpg
@@ -5066,7 +5084,8 @@ var $$IMU_EXPORT$$;
             // https://files.theblemish.com/images/2014/06/kate-upton-body-paint-640x853.jpg
             (domain === "files.theblemish.com" && src.indexOf("/images/") >= 0) ||
             // http://i2.esmas.com/galerias/fotos/2016/08/30/screams_960d5e11_acaf_b76f_82c9_a2e0d581e47b-468x624.jpg
-            (domain_nosub === "esmas.com" && domain.match(/^i[0-9]*\./) && src.indexOf("/galerias/") >= 0) ||
+            // http://i2.esmas.com/editorial-televisa/2012/07/04/392000/vanessa-hudgens-290x474.jpg
+            (domain_nosub === "esmas.com" && domain.match(/^i[0-9]*\./)) ||
             // http://www.mortalfm.es/archivos/2015/04/artworks-000108247651-2kw5xk-t500x500-390x390.jpg
             (domain_nowww === "mortalfm.es" && src.indexOf("/archivos/") >= 0) ||
             // https://d2yoo3qu6vrk5d.cloudfront.net/images/20171115152738/nicki-minaj2-482x320.jpg?itok=1510782120
@@ -5105,6 +5124,8 @@ var $$IMU_EXPORT$$;
             (domain_nowww === "rawkblog.com" && src.indexOf("/uploads/") >= 0) ||
             // https://cdn.stereo.vn/uploads/2015/08/carly-rae-jepsen-press-2015-billboard-650-770x462.jpg
             (domain === "cdn.stereo.vn" && src.indexOf("/uploads/") >= 0) ||
+            // http://dailybruin.com/images/2019/01/DSC_2847a-300x200.jpg
+            (domain_nowww === "dailybruin.com" && src.indexOf("/images/") >= 0) ||
             // https://1.soompi.io/wp-content/blogs.dir/8/files/2015/09/HA-TFELT-Wonder-Girls-590x730.jpg -- doesn't work
             // https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2018/01/GTA-6-Female-Protag-796x417.jpg -- does work
             src.indexOf("/wp-content/blogs.dir/") >= 0 ||
@@ -7121,7 +7142,7 @@ var $$IMU_EXPORT$$;
             // https://img201.imagetwist.com/th/28668/v007u2hokmhj.jpg
             //   https://img201.imagetwist.com/i/28668/v007u2hokmhj.JPG
 
-            id = src.replace(/^([a-z]+:\/\/)(?:[^/.]*\.)?([^/.]+\.[^/.]+\/)th\/+[0-9]+\/+([0-9a-z]+)(?:\.[^/.].*)?$/,
+            id = src.replace(/^([a-z]+:\/\/)(?:[^/.]*\.)?([^/.]+\.[^/.]+\/)th\/+[0-9]+\/+([0-9a-z]+)(?:\.[^/.]*)?$/,
                              "$1$2$3");
             //console_log(id);
             if (id !== src && options && options.cb && options.do_request) {
@@ -7661,6 +7682,9 @@ var $$IMU_EXPORT$$;
             // http://www.ville-wasquehal.fr/var/ptic/storage/images/services-en-ligne/agenda/ant-man-et-la-guepe/406908-48-fre-FR/Ant-Man-et-la-guepe_zoom_colorbox.jpg
             //   http://www.ville-wasquehal.fr/var/ptic/storage/images/services-en-ligne/agenda/ant-man-et-la-guepe/406908-48-fre-FR/Ant-Man-et-la-guepe.jpg
             domain_nowww === "ville-wasquehal.fr" ||
+            // https://www.gq-magazin.de/var/gq/storage/images/media/images/artikelbilder/unterhaltung/aquaman-workout-quer/7121951-1-ger-DE/aquaman-workout-quer_article_landscape.jpg
+            //   https://www.gq-magazin.de/var/gq/storage/images/media/images/artikelbilder/unterhaltung/aquaman-workout-quer/7121951-1-ger-DE/aquaman-workout-quer.jpg
+            domain_nowww === "gq-magazin.de" ||
             // https://img3.closermag.fr/var/closermag/storage/images/bio-people/biographie-jose-garcia-112817/827937-1-fre-FR/Jose-Garcia_square500x500.jpg
             //   https://img3.closermag.fr/var/closermag/storage/images/bio-people/biographie-jose-garcia-112817/827937-1-fre-FR/Jose-Garcia.jpg
             // https://img1.closermag.fr/var/closermag/storage/images/media/images-des-contenus/actu-people/people-anglo-saxons/20151129-selena/selena-gomez-pose-pour-in-style/4987068-1-fre-FR/Selena-Gomez-pose-pour-In-Style.png?v1/focus=0x0/cover=626x768
@@ -17336,9 +17360,11 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/(\/asset\/[-_=a-zA-Z0-9]+)\/[a-z]+=.*/, "$1");
         }
 
-        if (domain_nosub === "woman.ru" && domain.match(/i[0-9]*-cdn\.woman\.ru/)) {
+        if (domain_nosub === "woman.ru" && domain.match(/i[0-9]*(?:-cdn)?\.woman\.ru/)) {
             // http://i41-cdn.woman.ru/images/gallery/0/2/g_02d506839a15d0488cc92c0c4d9f892f_standart_2_1400x1100.jpg?02 -- stretched
             //   http://i41-cdn.woman.ru/images/gallery/0/2/g_02d506839a15d0488cc92c0c4d9f892f_standart.jpg?02
+            // http://i41.woman.ru/womanru/images/article/0/5/img_056ceff32e6f0bcb7ffb957a56b5a670_2_700x600.jpg?02
+            //   http://i41.woman.ru/womanru/images/article/0/5/img_056ceff32e6f0bcb7ffb957a56b5a670.jpg?02
             return src.replace(/_[0-9]+_[0-9]+x[0-9]+(\.[^/.]*)$/, "$1");
         }
 
@@ -19858,6 +19884,9 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             // https://contrastspace.ru/photos/thumbs/hugging-a-tree-346725.jpg
             //   https://contrastspace.ru/photos/images/hugging-a-tree-346725.jpg
             domain_nowww === "contrastspace.ru" ||
+            // https://galleon-realty.ru/thisvid/photos/thumbs/rachel-mcadams-1471264.jpg
+            //   https://galleon-realty.ru/thisvid/photos/images/rachel-mcadams-1471264.jpg
+            domain_nowww === "galleon-realty.ru" ||
             // https://pornopics.co/photos/thumbs/mckayla-maroney-turns-today-1476244.jpg
             //   https://pornopics.co/photos/small/mckayla-maroney-turns-today-1476244.jpg
             //   https://pornopics.co/photos/images/mckayla-maroney-turns-today-1476244.jpg
@@ -20584,10 +20613,17 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/\/mritems\/imagecache\/[^/]*\/mritems\//, "/mritems/");
         }
 
-        if (domain === "media.publika.md") {
+        if (domain === "media.publika.md" ||
+            // https://media.dcbusiness.ro/image/201812/w670/aqaman_01347100.jpg
+            //   https://media.dcbusiness.ro/image/201812/full/aqaman_01347100.jpg
+            domain === "media.dcbusiness.ro" ||
+            // https://media.feminis.ro/media/image/201902/w650h280/jason_16618900.png
+            //   https://media.feminis.ro/media/image/201902/full/jason_16618900.png
+            domain === "media.feminis.ro") {
             // https://media.publika.md/md/image/201807/w400/aisberg-groelanda_99594600.jpg
             //   https://media.publika.md/md/image/201807/full/aisberg-groelanda_99594600.jpg
-            return src.replace(/\/[wh][0-9]+\/([^/]+_[0-9]+\.[^/.]*)$/, "/full/$1");
+            return src.replace(/(\/image\/+[0-9]{6}\/)+w[0-9]+(?:h[0-9]+)?\/+/, "$1full/");
+            //return src.replace(/\/[wh][0-9]+\/([^/]+_[0-9]+\.[^/.]*)$/, "/full/$1");
         }
 
         if (domain === "www1.wdr.de") {
@@ -22081,6 +22117,12 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/(\/images\/[0-9]+)[wh][0-9]+(\.[^/.]*)$/, "$1$2");
         }
 
+        if (domain_nosub === "glanacion.com" && domain.match(/^bucket[0-9]*\./)) {
+            // https://bucket1.glanacion.com/anexos/fotos/62/2834262w380.jpg
+            //   https://bucket1.glanacion.com/anexos/fotos/62/2834262.jpg
+            return src.replace(/(\/fotos\/+[0-9]+\/+[0-9]+)[wh][0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
         if (domain === "storage.gra1.cloud.ovh.net" &&
             src.match(/\/Futurenet[^/]*Images\//)) {
             // https://storage.gra1.cloud.ovh.net/v1/AUTH_b28011873a5246aa8e71be0a276335cc/Futurenet%20Images/2d10134db57f7b765011bbf4b3014a3b56fedadd8f75c5e308bdc8ff6c0c6e9f1737426abafe9fceedbb1a66e0126acc464ec8c731c18ccc81851b5804e9c208/8fb6fffcf916c06919436c6395413119328e6cce21e1947aef33498a1be545cc47efaf0010ebbecacabfc992af77044b682703261564da50d15dcca5ee6ab6f1/ce10e6bd025ad8fbe55adb7cafe41dcfaa0b2815b7637689dae71dada276e6919feea97a7291a5dab16e69c6d1cea6b6f0d90d766696086ef185a79cb56ecad8/c57528adb699c3718764a51d6fe8f19d93f175ef299ac2508b12781b169c3aa6e5a1d9561771f63e2debb0a12c4c7769642d3113b61ad072b6db1bde9542e93a_640x480
@@ -22488,12 +22530,18 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/\/blobs\/variants\/((?:[a-f0-9]\/){4}[-0-9a-f]+)_[a-z]+(\.[^/.]*)$/, "/blobs/full/$1$2");
         }
 
-        if (domain === "imagebox.cz.osobnosti.cz") {
+        if (domain === "imagebox.cz.osobnosti.cz" ||
+            // https://img.osobnosti.cz/film/1262095-aquaman/T889560-8d29d.jpg
+            domain === "img.osobnosti.cz") {
             // https://imagebox.cz.osobnosti.cz/foto/cara-delevingne/M746357-5736b.jpg -- 150x200
             //   https://imagebox.cz.osobnosti.cz/foto/cara-delevingne/O746357-5736b.jpg -- 2312x3080
             // https://imagebox.cz.osobnosti.cz/foto/rachel-mcadams/T52459-becc.jpg
             //   https://imagebox.cz.osobnosti.cz/foto/rachel-mcadams/O52459-becc.jpg
-            return src.replace(/\/[A-Z]([0-9]+-[0-9a-z]+\.[^/.]*)$/, "/O$1");
+            // https://img.osobnosti.cz/film/1262095-aquaman/T889560-8d29d.jpg
+            //   https://img.osobnosti.cz/film/1262095-aquaman/O889560-8d29d.jpg
+            // https://imagebox.cz.osobnosti.cz/tapety/elisha-cuthbert/O83829-1440x900.jpg
+            //   https://imagebox.cz.osobnosti.cz/tapety/elisha-cuthbert/O83829.jpg
+            return src.replace(/\/[A-Z]([0-9]+)(?:-[0-9]+x[0-9]+)?(-[0-9a-z]+)?(\.[^/.]*)(?:[?#].*)?$/, "/O$1$2$3");
         }
 
         if (domain === "spicy.southdreamz.com") {
@@ -22871,7 +22919,10 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
         if (domain_nowww === "backalleypics.net") {
             // http://backalleypics.net/asiaargento/images/5-19-2012/thumbs/asia-argento-5-19-2012-dracula-3d-photocall-cannes-film-festival-france-1.jpg
             //   http://backalleypics.net/asiaargento/images/5-19-2012/asia-argento-5-19-2012-dracula-3d-photocall-cannes-film-festival-france-1.jpg
-            return src.replace(/(\/images\/[0-9]+-[0-9]+-[0-9]+\/)thumbs\/([^/]*)$/, "$1$2");
+            // https://backalleypics.net/vanessahudgens/images/photoshoots/thumbs/vanessa-hudgens-high-quality-photoshoots_mag-scans-pic-photoshoots-addition-jan-30-2016-0030.jpg
+            //   https://backalleypics.net/vanessahudgens/images/photoshoots/vanessa-hudgens-high-quality-photoshoots_mag-scans-pic-photoshoots-addition-jan-30-2016-0030.jpg
+            // https://backalleypics.net/images/rotator/j/jennymccarthy/jenny-mccarthy-2008-mgm-grand-opening-party-ledyard-connecticut.jpg
+            return src.replace(/(\/images\/(?:[0-9]+-[0-9]+-[0-9]+|photoshoots)\/)thumbs\/([^/]*)$/, "$1$2");
         }
 
         if ((domain_nosub === "turboimg.net" ||
@@ -23684,12 +23735,17 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
         }
 
         if (domain_nowww === "mshreqnews.net" ||
+            // https://www.mykentfamily.co.uk/_media/img/750x0/Q6ATXFP2SELP8LXCIT2L.jpg
+            //   https://www.mykentfamily.co.uk/_media/img/Q6ATXFP2SELP8LXCIT2L.jpg
+            (domain_nowww === "mykentfamily.co.uk" && src.indexOf("/_media/") >= 0) ||
             // https://pdfkul.com/img/300x300/piper-perri-mofopdf_59c0cc2d1723dddc42c513a0.jpg
             //   https://pdfkul.com/img/piper-perri-mofopdf_59c0cc2d1723dddc42c513a0.jpg
             domain_nowww === "pdfkul.com") {
             // http://mshreqnews.net/img/2000x506/CsiPl.jpg -- stretched
             //   http://mshreqnews.net/img/CsiPl.jpg
-            return src.replace(/\/img\/[0-9]+x[0-9]+\/([^/]*)$/, "/img/$1");
+            newsrc = src.replace(/\/img\/+[0-9]+x[0-9]+\/+([^/]*)(?:[?#].*)?$/, "/img/$1");
+            if (newsrc !== src)
+                return newsrc;
         }
 
         if (domain_nowww === "choisirunfilm.fr") {
@@ -23847,6 +23903,12 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
         }
 
         if ((domain_nosub === "diariolibre.com" && domain.match(/estatico[0-9]*\.diariolibre\.com/)) ||
+            // https://www.expreso.ec/binrepository/618x412/0c0/0d0/none/12113/VMQD/image_content_26442762_20181215203655.jpg
+            //   https://www.expreso.ec/binrepository/image_content_26442762_20181215203655.jpg
+            domain_nowww === "expreso.ec" ||
+            // https://www.vanguardia.com/binrepository/716x477/0c0/0d0/none/12204/MUHT/web_vanessa_big_tp_VL301097_MG19836930.jpg
+            //   https://www.vanguardia.com/binrepository/web_vanessa_big_tp_VL301097_MG19836930.jpg
+            domain_nowww === "vanguardia.com" ||
             // https://www.canarias7.es/binrepository/300x169/0c0/0d0/none/11314/SDSB/1524696124-leslie-grace-colabora-con_4109175_20181011193330.jpg
             //   https://www.canarias7.es/binrepository/1524696124-leslie-grace-colabora-con_4109175_20181011193330.jpg
             domain_nowww === "canarias7.es") {
@@ -27868,10 +27930,15 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/(\/uploads\/+img\/+.*)_[a-z]+(\.[^/.]*)(?:[?#].*)?$/, "$1_full$2");
         }
 
-        if (domain === "e00-telva.uecdn.es") {
+        if (domain_nosub === "uecdn.es" &&
+            /^e00-[a-z]+\./.test(domain)) {
             // https://e00-telva.uecdn.es/albumes/2016/02/09/almuerzo-de-nominados-a-los-oscar-2016/1773429946_extras_albumes_0_inc.jpg
             //   https://e00-telva.uecdn.es/albumes/2016/02/09/almuerzo-de-nominados-a-los-oscar-2016/1773429946_extras_albumes_0.jpg
-            return src.replace(/_inc(\.[^/.]*)(?:[?#].*)?$/, "$1");
+            // https://e00-telva.uecdn.es/albumes/2016/02/09/almuerzo-de-nominados-a-los-oscar-2016/1773429946_extras_albumes_0_movil.jpg
+            //   https://e00-telva.uecdn.es/albumes/2016/02/09/almuerzo-de-nominados-a-los-oscar-2016/1773429946_extras_albumes_0.jpg
+            // https://e00-elmundo.uecdn.es/assets/multimedia/imagenes/2015/05/12/14314386920056_104x70.jpg
+            //   https://e00-elmundo.uecdn.es/assets/multimedia/imagenes/2015/05/12/14314386920056.jpg
+            return src.replace(/_(?:inc|movil|[0-9]+x[0-9]+)(\.[^/.]*)(?:[?#].*)?$/, "$1");
         }
 
         if (domain === "fs.kinomania.ru") {
@@ -28184,6 +28251,12 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             // https://www.nicsgalleries.com/g/20/54/04/bdbdc859/thumbs/thumb_als-scan-alexis-crystal-02.jpg
             //   https://www.nicsgalleries.com/g/20/54/04/bdbdc859/als-scan-alexis-crystal-02.jpg
             return src.replace(/(\/g\/.*\/[0-9a-f]+\/+)thumbs\/+thumb_([^/]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain_nowww === "classypussy.com") {
+            // http://classypussy.com/gallery/000173_whitney_conroy_a_glass_dick_container/thumbs/thumbs_957_002.jpg
+            //   http://classypussy.com/gallery/000173_whitney_conroy_a_glass_dick_container/957_002.jpg
+            return src.replace(/\/thumbs\/+thumbs_/, "/");
         }
 
         if (domain_nowww === "hiqqu.xxx") {
@@ -30646,7 +30719,10 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
         if (domain_nowww === "nudography.com") {
             // http://www.nudography.com/photos/news/2009_12/small/Zoe_Saldana_see-through-01.jpg
             //   http://www.nudography.com/photos/news/2009_12/original/Zoe_Saldana_see-through-01.jpg
-            return src.replace(/(\/photos\/+[^/]*\/+[0-9]{4}_[0-9]{2}\/+)[a-z]+\/+/, "$1original/");
+            // http://www.nudography.com/photos/news/2009_3/small/Katy_Mixon_Eastbound_and_Down_S01E06_-008.jpg
+            //   http://www.nudography.com/photos/news/2009_3/original/Katy_Mixon_Eastbound_and_Down_S01E06_-008.jpg
+            return src.replace(/(\/photos\/+[^/]*\/+[0-9]{4}_[0-9]{1,2}\/+)[a-z]+\/+/, "$1original/");
+            //return src.replace(/(\/news\/+[0-9]+_[0-9]+\/+)[a-z]+\/+/, "$1original/");
         }
 
         if (domain_nowww === "celebs-porno.com") {
@@ -32906,6 +32982,163 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/\/media\/+thumbnail\/+[0-9]+x[0-9]+\/+/, "/media/thumbnail/w1000/");
         }
 
+        if (domain_nowww === "nudecelebs.world" ||
+            // https://www.nudevideovixens.com/g/1508480364-natalie-jayne-roser-e-live-celebrity-beautiful-posing-hot-spa-winter-live-model/natalie-jayne-roser-e-live-celebrity-beautiful-posing-hot-spa-winter-live-model-2-640.jpg
+            //   https://www.nudevideovixens.com/g/1508480364-natalie-jayne-roser-e-live-celebrity-beautiful-posing-hot-spa-winter-live-model/natalie-jayne-roser-e-live-celebrity-beautiful-posing-hot-spa-winter-live-model-2.jpg
+            domain_nowww === "nudevideovixens.com" ||
+            // https://www.hollywoodnude.club/g/1512803865-natalie-jayne-roser-celebrity-winter-posing-hot-babe-bikini-beautiful-model/natalie-jayne-roser-celebrity-winter-posing-hot-babe-bikini-beautiful-model-6-tn.jpg
+            //   https://www.hollywoodnude.club/g/1512803865-natalie-jayne-roser-celebrity-winter-posing-hot-babe-bikini-beautiful-model/natalie-jayne-roser-celebrity-winter-posing-hot-babe-bikini-beautiful-model-6.jpg
+            domain_nowww === "hollywoodnude.club" ||
+            // https://www.nakedebonycelebs.com/g/1504678685-natalie-jayne-roser-celebrity-beautiful-hot-winter-babe-posing-hot-videos/natalie-jayne-roser-celebrity-beautiful-hot-winter-babe-posing-hot-videos-15-640.jpg
+            //   https://www.nakedebonycelebs.com/g/1504678685-natalie-jayne-roser-celebrity-beautiful-hot-winter-babe-posing-hot-videos/natalie-jayne-roser-celebrity-beautiful-hot-winter-babe-posing-hot-videos-15.jpg
+            domain_nowww === "nakedebonycelebs.com" ||
+            // https://www.famousandnude.com/g/1525932821-natalie-jayne-roser-celebrity-beautiful-toples-babe-topless-beach-bus/natalie-jayne-roser-celebrity-beautiful-toples-babe-topless-beach-bus-4-640.jpg
+            //   https://www.famousandnude.com/g/1525932821-natalie-jayne-roser-celebrity-beautiful-toples-babe-topless-beach-bus/natalie-jayne-roser-celebrity-beautiful-toples-babe-topless-beach-bus-4.jpg
+            domain_nowww === "famousandnude.com" ||
+            // https://www.famousandnude.net/g/1516434621-natalie-jayne-roser-celebrity-posing-hot-boobs-model-babe-beautiful-winter/natalie-jayne-roser-celebrity-posing-hot-boobs-model-babe-beautiful-winter-2-640.jpg
+            //   https://www.famousandnude.net/g/1516434621-natalie-jayne-roser-celebrity-posing-hot-boobs-model-babe-beautiful-winter/natalie-jayne-roser-celebrity-posing-hot-boobs-model-babe-beautiful-winter-2.jpg
+            domain_nowww === "famousandnude.net" ||
+            // https://www.selenagomeznude.club/g/1522822771-natalie-jayne-roser-celebrity-posing-hot-beautiful-babe-winter-model/natalie-jayne-roser-celebrity-posing-hot-beautiful-babe-winter-model-3-640.jpg
+            //   https://www.selenagomeznude.club/g/1522822771-natalie-jayne-roser-celebrity-posing-hot-beautiful-babe-winter-model/natalie-jayne-roser-celebrity-posing-hot-beautiful-babe-winter-model-3.jpg
+            domain_nowww === "selenagomeznude.club" ||
+            // https://www.nude-scene.net/g/1518247106-natalie-jayne-roser-american-crime-celebrity-babe-spa-model-daughter-slim-bus/natalie-jayne-roser-american-crime-celebrity-babe-spa-model-daughter-slim-bus-6-640.jpg
+            //   https://www.nude-scene.net/g/1518247106-natalie-jayne-roser-american-crime-celebrity-babe-spa-model-daughter-slim-bus/natalie-jayne-roser-american-crime-celebrity-babe-spa-model-daughter-slim-bus-6.jpg
+            domain_nowww === "nude-scene.net" ||
+            // https://www.nudecelebrities.mobi/g/1522217939-natalie-jayne-roser-celebrity-magazine-beautiful-posing-hot-model-bikini-bar/natalie-jayne-roser-celebrity-magazine-beautiful-posing-hot-model-bikini-bar-6-tn.jpg
+            //   https://www.nudecelebrities.mobi/g/1522217939-natalie-jayne-roser-celebrity-magazine-beautiful-posing-hot-model-bikini-bar/natalie-jayne-roser-celebrity-magazine-beautiful-posing-hot-model-bikini-bar-6.jpg
+            domain_nowww === "nudecelebrities.mobi" ||
+            // https://www.nudeasiancelebs.com/g/1527661018-natalie-jayne-roser-love-magazine-celebrity-summer-magazine-sex-posing-hot-barbados-rich/natalie-jayne-roser-love-magazine-celebrity-summer-magazine-sex-posing-hot-barbados-rich-2-640.jpg
+            //   https://www.nudeasiancelebs.com/g/1527661018-natalie-jayne-roser-love-magazine-celebrity-summer-magazine-sex-posing-hot-barbados-rich/natalie-jayne-roser-love-magazine-celebrity-summer-magazine-sex-posing-hot-barbados-rich-2.jpg
+            domain_nowww === "nudeasiancelebs.com" ||
+            // https://www.bigtitscelebrities.com/g/1483637858-jasmin-walia-celebrity-asian-posing-hot-beautiful-babe-paparazzi-awards/jasmin-walia-celebrity-asian-posing-hot-beautiful-babe-paparazzi-awards-9-640.jpg
+            //   https://www.bigtitscelebrities.com/g/1483637858-jasmin-walia-celebrity-asian-posing-hot-beautiful-babe-paparazzi-awards/jasmin-walia-celebrity-asian-posing-hot-beautiful-babe-paparazzi-awards-9.jpg
+            domain_nowww === "bigtitscelebrities.com" ||
+            // https://www.famousbombshells.com/g/1480045639-selena-gomez-celebrity-posing-hot-candids-babe-sexy-beautiful-swimsuit/selena-gomez-celebrity-posing-hot-candids-babe-sexy-beautiful-swimsuit-16-640.jpg
+            //   https://www.famousbombshells.com/g/1480045639-selena-gomez-celebrity-posing-hot-candids-babe-sexy-beautiful-swimsuit/selena-gomez-celebrity-posing-hot-candids-babe-sexy-beautiful-swimsuit-16.jpg
+            domain_nowww === "famousbombshells.com" ||
+            // https://www.latinacelebrities.com/xhc/1562071462-crystal-reed-celebrity-babe-beautiful-posing-hot/crystal-reed-celebrity-babe-beautiful-posing-hot-1-tn.jpg
+            //   https://www.latinacelebrities.com/xhc/1562071462-crystal-reed-celebrity-babe-beautiful-posing-hot/crystal-reed-celebrity-babe-beautiful-posing-hot-1.jpg
+            domain_nowww === "latinacelebrities.com" ||
+            // https://www.selenagomeznude.club/gals/1556902912-francia-raisa-almendarez-the-american-celebrity-posing-hot-cheerleader-beautiful-latina-latin-los-angeles/francia-raisa-almendarez-the-american-celebrity-posing-hot-cheerleader-beautiful-latina-latin-los-angeles-4-640.jpg
+            //   https://www.selenagomeznude.club/gals/1556902912-francia-raisa-almendarez-the-american-celebrity-posing-hot-cheerleader-beautiful-latina-latin-los-angeles/francia-raisa-almendarez-the-american-celebrity-posing-hot-cheerleader-beautiful-latina-latin-los-angeles-4.jpg
+            domain_nowww === "selenagomeznude.club" ||
+            // https://www.xxxcelebscenes.com/g/1541577892-reply-los-angeles-celebrity-beautiful-famous-plus-size-babe-sex-model/reply-los-angeles-celebrity-beautiful-famous-plus-size-babe-sex-model-12-640.jpg
+            //   https://www.xxxcelebscenes.com/g/1541577892-reply-los-angeles-celebrity-beautiful-famous-plus-size-babe-sex-model/reply-los-angeles-celebrity-beautiful-famous-plus-size-babe-sex-model-12.jpg
+            domain_nowww === "xxxcelebscenes.com" ||
+            // https://www.nicolekidmannudes.com/g/1530944167-natalie-jayne-roser-celebrity-bikini-babe-posing-hot-winter-beautiful/natalie-jayne-roser-celebrity-bikini-babe-posing-hot-winter-beautiful-9-640.jpg
+            //   https://www.nicolekidmannudes.com/g/1530944167-natalie-jayne-roser-celebrity-bikini-babe-posing-hot-winter-beautiful/natalie-jayne-roser-celebrity-bikini-babe-posing-hot-winter-beautiful-9.jpg
+            domain_nowww === "nicolekidmannudes.com") {
+            // https://www.nudecelebs.world/g/1535696274-natalie-jayne-roser-las-vegas-celebrity-bus-beautiful-babe-posing-hot-photoshoot-sex/natalie-jayne-roser-las-vegas-celebrity-bus-beautiful-babe-posing-hot-photoshoot-sex-8-640.jpg
+            //   https://www.nudecelebs.world/g/1535696274-natalie-jayne-roser-las-vegas-celebrity-bus-beautiful-babe-posing-hot-photoshoot-sex/natalie-jayne-roser-las-vegas-celebrity-bus-beautiful-babe-posing-hot-photoshoot-sex-8.jpg
+            return src.replace(/(\/(?:g|gals|xhc)\/[0-9]{5,}-[^/]*\/[^/]*-[0-9]+)-(?:[0-9][0-9]+|tn)(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain === "kino.search.ch") {
+            // https://kino.search.ch/movie/images/aq/aquaman_542_1_d24_m.jpg
+            //   https://kino.search.ch/movie/images/aq/aquaman_542_1_d24.jpg
+            return src.replace(/(\/images\/+..\/+[^/]*)_m(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain_nowww === "teluguone.com") {
+            // http://teluguone.com/photos/uploadsExt/uploads/Aquaman%20Movie/Aquaman%20Movie%20Stills/Aquaman_Movie_Stills3_small.jpg
+            //   http://teluguone.com/photos/uploadsExt/uploads/Aquaman%20Movie/Aquaman%20Movie%20Stills/Aquaman_Movie_Stills3.jpg
+            return src.replace(/(\/uploadsExt\/+uploads\/+.*)_small(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain_nowww === "blog-news.it") {
+            // https://www.blog-news.it/templates/onenews/images/news/tmb/2018/12/21/img-6019-1545360481.jpg
+            //   https://www.blog-news.it/templates/onenews/images/news/big/2018/12/21/img-6019-1545360481.jpg
+            return src.replace(/(\/images\/+[^/]*\/+)tmb\/+/, "$1big/");
+        }
+
+        if (domain_nowww === "polecamfilm.pl") {
+            // http://www.polecamfilm.pl/obrazy/film/min/103873_s17.jpg
+            //   http://www.polecamfilm.pl/obrazy/film/103873_s17.jpg
+            return src.replace(/\/min(\/+[0-9]+_[a-z][0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1");
+        }
+
+        if (domain_nosub === "ltmcdn.com" && domain.match(/^t[0-9]*\.salir\./)) {
+            // https://t2.salir.ltmcdn.com/es/movies/6/6/5/aquaman_2_250.jpg
+            //   https://t2.salir.ltmcdn.com/es/movies/6/6/5/aquaman_2_orig.jpg
+            return src.replace(/_[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "_orig$1");
+        }
+
+        if (domain === "images.curved.de") {
+            // https://images.curved.de/article_teaser_md/2018/12/Aquaman_17.jpg
+            //   https://images.curved.de/article_detail_xl/2018/12/Aquaman_17.jpg -- 1140x760
+            return src.replace(/\/article_teaser_md\/+/, "/article_detail_xl/");
+        }
+
+        if (domain === "ocio.diariodeibiza.es") {
+            // https://ocio.diariodeibiza.es/img_contenido/cine/17566/17566_frame_es_002__600x450.jpg
+            //   https://ocio.diariodeibiza.es/img_contenido/cine/17566/17566_frame_es_002.jpg
+            return src.replace(/__[0-9]+x[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1");
+        }
+
+        if (domain === "img.movist.com") {
+            // http://img.movist.com/?img=/x00/00/48/73_1s.jpg
+            //   http://img.movist.com/?img=/x00/00/48%2F73_1s.jpg
+            //   http://img.movist.com/data/imgroot/x00/00/48/73_1s.jpg
+            newsrc = src.replace(/(:\/\/[^/]*\/)\?(?:.*?&)?img=([^&]*).*?$/, "$1data/imgroot$2");
+            if (newsrc !== src)
+                return decodeURIComponent(newsrc);
+        }
+
+        if (domain_nosub === "c-ctrip.com" && domain.match(/^youimg[0-9]*\./)) {
+            // https://youimg1.c-ctrip.com/target/100412000000t4vx25142_R_1024_10000_Q90.jpg?proc=autoorient
+            //   https://youimg1.c-ctrip.com/target/100412000000t4vx25142.jpg
+            return src.replace(/(\/target\/+[0-9a-z]+)(?:_[A-Z0-9]+){1,}(\.[^/.?#]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain_nosub === "china.com.cn") {
+            // http://images8.m.china.com.cn/mchina/img50/2018_12_11/11/fd34c92b13c7cda6b47158b388f43379c36ac31f25ab08d2_600_9999.jpg
+            //   http://images8.m.china.com.cn/mchina/img50/2018_12_11/11/fd34c92b13c7cda6b47158b388f43379c36ac31f25ab08d2.jpg
+            // http://images10.m.china.com.cn/newschina/oss/nimg/20190421/08/img_967e226909cb747b6264ff7287a2a901_720_370.jpg
+            //   http://images10.m.china.com.cn/newschina/oss/nimg/20190421/08/img_967e226909cb747b6264ff7287a2a901.jpg
+            return src.replace(/((?:\/img[0-9]*\/+[0-9]{4}(?:_[0-9]{2}){2}|nimg\/+[0-9]{8})\/+[0-9]+\/+(?:img_)?[0-9a-f]{20,})(?:_[0-9]+){2}(\.[^/.]*)(?:[?#].*)?$/,
+                               "$1$2");
+        }
+
+        if (domain === "assets.jalantikus.com") {
+            // https://assets.jalantikus.com/assets/cache/650/433/userfiles/2018/12/12/Aquaman-Inside-9fc65.jpg
+            //   https://assets.jalantikus.com/assets/cache/0/0/userfiles/2018/12/12/Aquaman-Inside-9fc65.jpg
+            return src.replace(/\/assets\/+cache\/+[0-9]+\/+[0-9]+\/+userfiles\/+/, "/assets/cache/0/0/userfiles/");
+        }
+
+        if (domain === "res.idollook.cn") {
+            // https://res.idollook.cn/uploads/event/avatar/1490/thumb_0284dcc30b9a7a05f51f4bcb91701e91.jpg
+            //   https://res.idollook.cn/uploads/event/avatar/1490/0284dcc30b9a7a05f51f4bcb91701e91.jpg
+            // https://res.idollook.cn/uploads/event/avatar/1490/0284dcc30b9a7a05f51f4bcb91701e91.jpg!vmid
+            //   https://res.idollook.cn/uploads/event/avatar/1490/0284dcc30b9a7a05f51f4bcb91701e91.jpg
+            return src.replace(/(\/[0-9]+\/+)(?:thumb_)?([0-9a-f]{20,}\.[^/.!?#]*)(?:[?#!].*)?$/, "$1$2");
+        }
+
+        if (domain_nosub === "altervista.org") {
+            // http://selenagomezfeet.altervista.org/gallery/cache/selena-gomez-s-butt/Selena-Gomez-Feet-801231_595.jpg
+            //   http://selenagomezfeet.altervista.org/gallery/albums/selena-gomez-s-butt/Selena-Gomez-Feet-801231.jpg
+            // http://selenagomezfeet.altervista.org/gallery/cache/selena-gomez-feet/it.pinterest.com01_100_cw85_ch85_thumb.jpg
+            //   http://selenagomezfeet.altervista.org/gallery/albums/selena-gomez-feet/it.pinterest.com01.jpeg
+            // http://selenagomezfeet.altervista.org/gallery/cache/selena-gomez-s-armpits/selena-gomez-in-be-magazine-photoshoot-november-2015-24_100_cw85_ch85_thumb.jpg
+            //   http://selenagomezfeet.altervista.org/gallery/albums/selena-gomez-s-armpits/selena-gomez-in-be-magazine-photoshoot-november-2015-24.jpg
+            return add_full_extensions(src.replace(/\/gallery\/+cache\/+(.*?)_[0-9]+(?:_c[wh][0-9]+){0,}(?:_thumb)?(\.[^/.]*)(?:[?#].*)?$/, "/gallery/albums/$1$2"));
+        }
+
+        if (domain_nowww === "haberkonseyi.com") {
+            // http://www.haberkonseyi.com/d/news_t/81946.jpg
+            //   http://www.haberkonseyi.com/d/news/81946.jpg
+            return src.replace(/\/news_t\/+/, "/news/");
+        }
+
+        if (domain_nowww === "snimai.com") {
+            // https://snimai.com/images/media/photos/20150419/553335c1d2864/thumbs/553335c1d2864.jpg
+            //   https://snimai.com/images/media/photos/20150419/553335c1d2864/553335c1d2864.jpg
+            return src.replace(/(\/photos\/+[0-9]{8}\/+[0-9a-z]+\/+)thumbs\/+/, "$1");
+        }
+
+
+
+
+
 
 
 
@@ -34004,6 +34237,8 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             domain_nowww === "sanluisobispo.com" ||
             // https://iichan.hk/c/src/1483306651580.jpg
             domain_nowww === "iichan.hk" || // 403
+            // https://pdfkul.com/img/piper-perri-mofopdf_59c0cc2d1723dddc42c513a0.jpg
+            domain_nowww === "pdfkul.com" ||
             (domain_nosub === "irishmirror.ie" && domain.match(/i[0-9]*(?:-prod)?\./))) {
             return {
                 url: src,
