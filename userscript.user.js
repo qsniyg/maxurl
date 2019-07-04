@@ -304,6 +304,9 @@ var $$IMU_EXPORT$$;
         "Add to history": {
             "ko": "브라우저 기록에 추가"
         },
+        "Use GET if HEAD is unsupported": {
+            "ko": "HEAD 지원되지 않으면 GET 사용"
+        },
         "Enable mouseover popup": {
             "ko": "이미지 팝업 사용"
         },
