@@ -10698,7 +10698,7 @@ var $$IMU_EXPORT$$;
             //domain_nowww === "bramimi.com" ||
             domain === "www.lizandliz.com" ||
             // https://cdn-4.cdp.pl/media/catalog/product/cache/1/image/x100/17f82f742ffe127f42dca9de82fb58b1/7/3/7321930350823a_1_1.jpg
-            //   https://cdn-4.cdp.pl/media/catalog/product/7/3/7321930350823a_1_1.jpg -- maybe? 522
+            //   https://cdn-4.cdp.pl/media/catalog/product/7/3/7321930350823a_1_1.jpg
             (domain_nosub === "cdp.pl" && domain.match(/^cdn-[0-9]+\./)) ||
             src.match(/(?:\/media)?\/catalog\/product\/cache\/(?:[0-9]*\/[^/]*\/)?(?:[0-9]+x(?:[0-9]+)?\/)?[0-9a-f]{32}\//)) {
             // https://www.sonassi.com/blog/knowledge-base/deconstructing-the-cache-image-path-on-magento
@@ -19881,7 +19881,11 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             //   https://my.kapook.com/o/img-rambobar/img_rambobar_1_1530873150.jpg
             // https://simg.kapook.com/rf/145/145/photo/238/kapook_world-237259.jpg
             //   https://simg.kapook.com/o/photo/238/kapook_world-237259.jpg
-            return src.replace(/\/rf\/[0-9]+\/[0-9]+\//, "/o/");
+            // https://s359.kapook.com/rq/400/auto/50/pagebuilder/ba96f5d8-b76e-42df-aed8-53c4a7f38cfa.jpg -- 400x592
+            //   https://s359.kapook.com/pagebuilder/ba96f5d8-b76e-42df-aed8-53c4a7f38cfa.jpg -- 2764x4096
+            return src
+                .replace(/\/rf\/[0-9]+\/[0-9]+\//, "/o/")
+                .replace(/\/rq\/+[0-9]+\/+auto\/+[0-9]+\/+pagebuilder\/+/, "/pagebuilder/");
         }
 
         if (domain_nosub === "amcn.in" &&
@@ -26871,7 +26875,10 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/(:\/\/[^/]*\/)t\//, "$1i/");
         }
 
-        if (domain_nowww === "sisajb.com") {
+        if (domain_nowww === "sisajb.com" ||
+            // http://image.kbsm.net/data/newsThumb/1549957378ADD_thumb580.png
+            //   http://image.kbsm.net/data/newsData/1549957378.png
+            domain === "image.kbsm.net") {
             // http://www.sisajb.com/data/newsThumb/1526600214&&ADD.thumb580
             //    http://www.sisajb.com/data/newsData/1526600214&&.JPG
             // http://www.sisajb.com/data/newsThumb/1526600266&&ADD.thumb580
@@ -26879,7 +26886,8 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             // http://www.sisajb.com/data/newsThumb/1353034731&&TITLE_IMG_.thumb90
             //   http://www.sisajb.com/data/newsThumb/1353034716&&ADD.thumb580
             //   http://www.sisajb.com/data/newsData/1353034716&&.jpg
-            newsrc = src.replace(/\/data\/newsThumb\/([0-9]+&&).*/, "/data/newsData/$1.jpg");
+            // this could be optimized to check for the extension (as long as it's not .thumbs[0-9]+)
+            newsrc = src.replace(/\/data\/newsThumb\/([0-9]+(?:&&)?).*?$/, "/data/newsData/$1.jpg");
             if (newsrc !== src)
                 return add_extensions_upper(newsrc);
         }
@@ -31819,12 +31827,25 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
         }
 
         if (domain_nowww === "kpopdaily.co.kr" ||
+            // http://www.ujnews.co.kr/news/data/20190311/p1065591978055877_117_h.jpg?2032 -- 315x444
+            //   http://www.ujnews.co.kr/news/data/20190311/p1065591978055877_117_thum.jpg?2032 -- 700x987
+            //   http://www.ujnews.co.kr/news/data/20190311/p1065591978055877_117.jpg?2032 -- 1156x1631
+            domain_nowww === "ujnews.co.kr" ||
             // http://www.newswiz.kr/news/data/20190606/p1065589870763517_698_h.jpg -- 314x393
             //   http://www.newswiz.kr/news/data/20190606/p1065589870763517_698_thum.jpg -- 699x874
+            //   http://www.newswiz.kr/news/data/20190606/p1065589870763517_698.jpg -- 745x931
             domain_nowww === "newswiz.kr") {
             // http://kpopdaily.co.kr/news/data/20190319/p1065597075569557_714_h.jpg
             //   http://kpopdaily.co.kr/news/data/20190319/p1065597075569557_714_thum.jpg -- 499x750
-            return src.replace(/(\/news\/+data\/+[0-9]{8}\/+[a-z]*[0-9]+_[0-9]+)_h(\.[^/.]*)(?:[?#].*)?$/, "$1_thum$2");
+            //   http://kpopdaily.co.kr/news/data/20190319/p1065597075569557_714.jpg -- 499x750
+            regex = /(\/news\/+data\/+[0-9]{8}\/+[a-z]*[0-9]+_[0-9]+)_(?:h|thum)(\.[^/.]*)(?:[?#].*)?$/;
+
+            if (regex.test(src)) {
+                return [
+                    src.replace(regex, "$1$2"),
+                    src.replace(regex, "$1_thum$2")
+                ];
+            }
         }
 
         if (domain_nosub === "bytecdn.cn" ||
@@ -33247,6 +33268,49 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/pi\.php\?(?:.*?&)?img=([^&]*).*?$/, "$1");
             if (newsrc !== src)
                 return urljoin(urljoin(src, "/files", true), decodeURIComponent(newsrc));
+        }
+
+        if (domain === "s3.bukalapak.com") {
+            // https://s3.bukalapak.com/img/8136148674/w-300/terbaru_Poster_FIlm_AQUAMAN___original_Indonesian_one_sheet_.jpg
+            //   https://s3.bukalapak.com/img/8136148674/original/terbaru_Poster_FIlm_AQUAMAN___original_Indonesian_one_sheet_.jpg
+            return src.replace(/(\/img\/+[0-9]+\/+)[wh]-[0-9]+\/+/, "$1original/");
+        }
+
+        if (amazon_container === "mz-prod") {
+            // https://mz-prod.s3.amazonaws.com/uploads/photo/file/345260/small_6a0e229d58c688e6c7b5f6260c0b14dd-Aquaman.jpg
+            //   https://mz-prod.s3.amazonaws.com/uploads/photo/file/345260/6a0e229d58c688e6c7b5f6260c0b14dd-Aquaman.jpg
+            return src.replace(/(\/uploads\/+photo\/+file\/+[0-9]+\/+)[a-z]+_([0-9a-f]{20,}[^/]*\.[^/.]*)(?:{?#].*)?$/, "$1$2");
+        }
+
+        if (domain === "capebreton.lokol.me") {
+            // https://capebreton.lokol.me/remote.jpg.ashx?preset=article_full&urlb64=aHR0cHM6Ly9tZWRpYWZpbGVzLmNpbmVwbGV4LmNvbS9DZW50cmFsL0ZpbG0vUG9zdGVycy8yNDg5OV8zMjBfNDcwLmpwZw&hmac=-VMmCkf5j7Q
+            //   https://mediafiles.cineplex.com/Central/Film/Posters/24899_320_470.jpg
+            newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/remote\.jpg\.ashx\?(?:.*?&)?urlb64=([^&]*).*?$/, "$1");
+            if (newsrc !== src)
+                return atob(newsrc);
+        }
+
+        if (domain === "i.moveek.com") {
+            // https://i.moveek.com/media/resized/tall/5c0f47f158253520192716.jpg
+            //   https://i.moveek.com/media/5c0f47f158253520192716.jpg
+            return src.replace(/\/media\/+resized\/+[^/]*\/+/, "/media/");
+        }
+
+        if (domain === "i.ryt9.com") {
+            // https://i.ryt9.com/320x/https://img.ryt9.com/img/files/20181116/iq2b0a29fc8bdeac1c2d241f7fe2df8d62.jpg
+            //   https://img.ryt9.com/img/files/20181116/iq2b0a29fc8bdeac1c2d241f7fe2df8d62.jpg
+            return src.replace(/^[a-z]+:\/\/[^/]*\/[0-9]*x[0-9]*\/+http/, "http");
+        }
+
+        if (domain === "storage.face.ba") {
+            // https://storage.face.ba/article/4086/1200x628/B1_Aquaman_BIH_final.jpg
+            //   https://storage.face.ba/article/4086/original/B1_Aquaman_BIH_final.jpg
+            return {
+                url: src.replace(/(\/article\/+[0-9]+\/+)[0-9]+x[0-9]+\/+/, "$1original/"),
+                headers: {
+                    Referer: src
+                }
+            };
         }
 
 
@@ -35120,6 +35184,10 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                 if (_nir_debug_)
                     console.dir(headers);
 
+                if (obj.always_ok ||
+                    !obj.can_head)
+                    return ok_cb(url);
+
                 do_request({
                     method: 'HEAD',
                     url: url,
@@ -35259,7 +35327,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             if (_nir_debug_)
                 console.dir(newhref);
 
-            if (!newhref[0].can_head || newhref[0].always_ok) {
+            if (false && !newhref[0].can_head || newhref[0].always_ok) {
                 var newurl = newhref[0].url;
 
                 if (newurl === document.location.href) {
