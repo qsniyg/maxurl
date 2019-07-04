@@ -528,6 +528,7 @@ var $$IMU_EXPORT$$;
     var settings = {
         redirect: true,
         redirect_history: true,
+        canhead_get: true,
         mouseover: true,
         // thanks to blue-lightning on github for the idea
         mouseover_open_behavior: "popup",
@@ -575,6 +576,14 @@ var $$IMU_EXPORT$$;
         redirect_history: {
             name: "Add to history",
             description: "Redirection will add a new entry to the browser's history",
+            requires: {
+                redirect: true
+            },
+            category: "redirection"
+        },
+        canhead_get: {
+            name: "Use GET if HEAD is unsupported",
+            description: "Use a GET request to check an image's availability, if the server does not support HEAD requests",
             requires: {
                 redirect: true
             },
@@ -31934,7 +31943,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
 
             if (newsrc !== src) {
                 return add_extensions({
-                    url: src,
+                    url: newsrc,
                     can_head: false
                 });
             }
@@ -35185,11 +35194,15 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                     console.dir(headers);
 
                 if (obj.always_ok ||
-                    !obj.can_head)
+                    (!obj.can_head && !settings.canhead_get))
                     return ok_cb(url);
 
+                var method = "HEAD";
+                if (!obj.can_head && settings.canhead_get)
+                    method = "GET";
+
                 do_request({
-                    method: 'HEAD',
+                    method: method,
                     url: url,
                     headers: headers,
                     onload: function(resp) {
