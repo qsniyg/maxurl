@@ -4444,9 +4444,13 @@ var $$IMU_EXPORT$$;
             // http://cdn.marketplaceimages.windowsphone.com/v8/images/c8268cdc-ac27-4a03-bd9b-f2c3645e5387?imageType=ws_icon_large
             (domain === "cdn.marketplaceimages.windowsphone.com" && src.indexOf("/images/") >= 0) ||
             // https://dsocdn.akamaized.net/Assets/Images_Upload/2009/10/06/meganfoxtransformers.jpg?maxheight=550&maxwidth=550&scale=both
-            (domain === "dsocdn.akamaized.net" && src.indexOf("/Images_Upload/") >= 0) ||
-            // https://nbocdn.akamaized.net/Assets/Images_Upload/2011/06/20/megan_fox_transformers_movie_image.jpg?maxheight=460&maxwidth=638&scale=both
-            (domain === "nbocdn.akamaized.net" && src.indexOf("/Images_Upload/") >= 0) ||
+            ((domain === "dsocdn.akamaized.net" ||
+             // https://nbocdn.akamaized.net/Assets/Images_Upload/2011/06/20/megan_fox_transformers_movie_image.jpg?maxheight=460&maxwidth=638&scale=both
+             domain === "nbocdn.akamaized.net" ||
+             // https://avecdn.akamaized.net/Assets/Images_Upload/Actu24/2019/01/17/5db5bcce-1a52-11e9-8d8b-af38f65ef78d_web_.jpg?maxheight=1000&maxwidth=1000&scale=both
+             domain === "avecdn.akamaized.net" ||
+             // https://limnlcdn.akamaized.net/Assets/Images_Upload/2018/10/19/Rihanna.jpg?maxheight=460&maxwidth=629
+              domain === "limnlcdn.akamaized.net") && /\/Assets\/+Images_Upload\//i.test(src)) ||
             // https://img.s-msn.com/tenant/amp/entityid/AA1G0zk.img?h=416&w=624&m=6&q=60&u=t&o=f&l=f&x=292&y=145
             (domain === "img.s-msn.com" && src.indexOf("/entityid/") >= 0) ||
             // https://netstorage-nur.akamaized.net/images/pogudx820tio3bdte.jpg?imwidth=900
@@ -5159,6 +5163,8 @@ var $$IMU_EXPORT$$;
             (domain_nowww === "dailybruin.com" && src.indexOf("/images/") >= 0) ||
             // http://razorpics.net/rachel-mcadams/HollywoodAwards-07-[Ravens_Young_Stars]%20Rachel%20Mcadams%203-150x150.jpg
             domain_nowww === "razorpics.net" ||
+            // https://www.1in.am/assets/uploads/2019/01/02-56-540x360.jpg
+            (domain_nowww === "1in.am" && src.indexOf("/assets/") >= 0) ||
             // https://1.soompi.io/wp-content/blogs.dir/8/files/2015/09/HA-TFELT-Wonder-Girls-590x730.jpg -- doesn't work
             // https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2018/01/GTA-6-Female-Protag-796x417.jpg -- does work
             src.indexOf("/wp-content/blogs.dir/") >= 0 ||
@@ -5171,7 +5177,7 @@ var $$IMU_EXPORT$$;
             src.indexOf("/wp-content/uploads/") >= 0 ||
             src.indexOf("/wp/uploads/") >= 0) {
             // http://arissa-x.com/miss-x-channel/wp-content/uploads/2017/06/IMG_0005.jpg
-            src = src.replace(/-[0-9]*x[0-9]*\.([^/]*)$/, ".$1");
+            src = src.replace(/-[0-9]+x[0-9]+\.([^/]*(?:[?#].*)?)$/, ".$1");
         }
 
         if ((domain === "store.pinseyun.com" && src.indexOf("/uploads/") >= 0) ||
@@ -8864,6 +8870,9 @@ var $$IMU_EXPORT$$;
             // http://znews-photo.d.za.zdn.vn/w660/Uploaded/xbhunku/2017_01_08/batchston.jpg
             //   http://znews-photo.d.za.zdn.vn/Uploaded/xbhunku/2017_01_08/batchston.jpg
             domain_nosub === "zdn.vn" ||
+            // https://media.stylenews.vn/w660/2018/11/22/rihanna-barbados-ambassador-1542884388587820599121.jpg
+            //   https://media.stylenews.vn/2018/11/22/rihanna-barbados-ambassador-1542884388587820599121.jpg
+            domain === "media.stylenews.vn" ||
             // https://img.vietnamplus.vn/t660/Uploaded/ifysy/2015_02_10/grammy_10.jpg
             //   https://img.vietnamplus.vn/Uploaded/ifysy/2015_02_10/grammy_10.jpg
             domain === "img.vietnamplus.vn" ||
@@ -20355,6 +20364,9 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             // https://g3.delphi.lv/images/pix/659x380/gvIr4UDkqlE/d53385645abb20b67b-46714667.jpg
             //   https://g3.delphi.lv/images/pix/gvIr4UDkqlE/d53385645abb20b67b-46714667.jpg
             domain_nosub === "delphi.lv" ||
+            // https://g.delfi.ee/images/pix/240x184/sVfaNehgrRc/a5f375c3ebf474efc7-85036223.jpg
+            //   https://g.delfi.ee/images/pix/sVfaNehgrRc/a5f375c3ebf474efc7-85036223.jpg
+            domain_nosub === "delfi.ee" ||
             // https://g4.dcdn.lt/images/pix/205x124/BZqdAEgEM0k/moteris-61412415.jpg
             //   https://g4.dcdn.lt/images/pix/BZqdAEgEM0k/moteris-61412415.jpg
             domain_nosub === "dcdn.lt") {
@@ -20698,12 +20710,17 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/~_v-[a-z0-9]+(\.[^/.]*)$/, "~_v-original$1");
         }
 
-        if (domain_nowww === "xrimaonline.gr") {
+        if (domain_nowww === "xrimaonline.gr" ||
+            // https://www.youweekly.gr/photos/w_200px/articles/201901/riri4.jpg?0.6912698141813052
+            //   https://www.youweekly.gr/photos/master/articles/201901/riri4.jpg?0.6912698141813052
+            domain_nowww === "youweekly.gr") {
             // https://www.xrimaonline.gr/photos/c_450px_255px/articles/201807/groilandia_pagobouno.jpg
             //   https://www.xrimaonline.gr/photos/w_999999999999px/articles/201807/groilandia_pagobouno.jpg
+            //   https://www.xrimaonline.gr/photos/master/articles/201807/groilandia_pagobouno.jpg -- 1200x750
             // uses gdthumb to resize:
             // https://github.com/mewebstudio/Phpthumb/blob/master/src/Mews/Phpthumb/lib/GdThumb.inc.php
-            return src.replace(/\/photos\/[a-z]_[0-9]+px[^/]*\/articles\//, "/photos/w_999999999999px/articles/");
+            //return src.replace(/\/photos\/[a-z]_[0-9]+px[^/]*\/articles\//, "/photos/w_999999999999px/articles/");
+            return src.replace(/\/photos\/+[a-z]_[0-9]+px[^/]*\/+articles\//, "/photos/master/articles/");
         }
 
         if (domain_nosub === "avisen.dk" &&
@@ -22766,7 +22783,13 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             };
         }
 
-        if (domain === "im.mtv.fi") {
+        if (domain === "im.mtv.fi" ||
+            // https://www.mz-web.de/image/31466946/max/600/450/56357b58b3fcd8e27d7c441458db5878/yR/rihanna-afp-neu.jpg
+            //   https://www.mz-web.de/blob/31466946/81561d8dfe1cb59a89a6d2927b4faa43/rihanna-afp-neu-data.jpg
+            domain_nowww === "mz-web.de" ||
+            // https://www.swissinfo.ch/image/44463288/3x2/305/203/741d49c894cb22ca5949075eadcb2af7/jY/image_doc-19w5nz.jpg
+            //   https://www.swissinfo.ch/blob/44463288/a4e34c18602a9f8060fceff8fbeb3566/image_doc-19w5nz-data.jpg
+            domain_nowww === "swissinfo.ch") {
             // https://im.mtv.fi/image/5623620/portrait/141/235/40c589ceaaeaf970c4a391aaef56d4b3/tG/8-17547236.jpg
             //   https://im.mtv.fi/blob/5623620/fb93162a902c736ae29d0a8afa61c23e/8-17547236-data.jpg
             // https://im.mtv.fi/image/5167372/landscape16_9/1024/576/cb77a43764a29a905a138b1d305d6f69/re/29786617.jpg
@@ -22777,7 +22800,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             //   https://im.mtv.fi/blob/5670670/8fba0e97adbc51ef7f74a60f6ec8d04c/1004672-5869-data.jpg
             // https://im.mtv.fi/image/4837600/landscape1_1/1024/1024/3140f045618e82e77a6247073d04bda7/iH/frendit-yleiskuva.jpg
             //   https://im.mtv.fi/blob/4837600/3b711cb8aa2acf63fe0a60cffce964d0/frendit-yleiskuva-data.jpg
-            return src.replace(/\/image(\/[0-9]+\/)(?:(?:portrait|landscape[^/]*)\/[0-9]+\/[0-9]+\/)?([0-9a-f]+\/)[a-zA-Z0-9]{2}\/([^/.]+)(\.[^/.]*)$/,
+            return src.replace(/\/image(\/[0-9]+\/)(?:(?:portrait|landscape[^/]*|3x2|max)\/[0-9]+\/[0-9]+\/)?([0-9a-f]+\/)[a-zA-Z0-9]{2}\/([^/.]+)(\.[^/.]*)$/,
                                "/blob$1$2$3-data$4");
         }
 
@@ -33394,7 +33417,127 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                                "/attach/$1$2");
         }
 
+        if (domain === "cdnpuc.sinchew.com.my") {
+            // https://cdnpuc.sinchew.com.my/pic/2019-06/06/t1_(22X9X581X414)b23ee290-1c48-45da-b0a1-a27782dae60f98d2e13e-9e87-47d7-8c55-84486d6d2d41.jpg
+            //   https://cdnpuc.sinchew.com.my/pic/2019-06/06/b23ee290-1c48-45da-b0a1-a27782dae60f98d2e13e-9e87-47d7-8c55-84486d6d2d41.jpg
+            return src.replace(/\/t[0-9]*_[(][0-9X]+[)]([-0-9a-f]{30,}\.[^/.]*)(?:[?#].*)?$/,
+                               "/$1");
+        }
 
+        if (domain_nowww === "lebanonfiles.com") {
+            // http://www.lebanonfiles.com/files/thumbs/08-06-19-rihanaaaa.jpg
+            //   http://www.lebanonfiles.com/files/images/08-06-19-rihanaaaa.jpg
+            return src.replace(/\/files\/+thumbs\/+/, "/files/images/");
+        }
+
+        if (domain_nowww === "tahrirnews.com" ||
+            // https://img.eltahrer.com/Content/Upload/slider/11201871257237150056722.jpg
+            //   https://img.eltahrer.com/Content/Upload/large/11201871257237150056722.jpg
+            domain === "img.eltahrer.com") {
+            // https://www.tahrirnews.com/Content/Upload/med/11201871257237150056722.jpg
+            //   https://www.tahrirnews.com/Content/upload/large/11201871257237150056722.jpg
+            return src.replace(/(\/Content\/+Upload\/+)(?:med|slider)\/+/i, "$1large/");
+        }
+
+        if (domain === "images.f2fcdn.net") {
+            // https://images.f2fcdn.net/thumb/della/deldel/66028427-475307983241918-7158383069058056760-n.jpg?w=300&q=80
+            //   https://images.f2fcdn.net/files/della/deldel/66028427-475307983241918-7158383069058056760-n.jpg
+            return src.replace(/\/thumb\/+(.*?)(?:[?#].*)?$/, "/files/$1");
+        }
+
+        if (domain === "f.i.uol.com.br") {
+            // https://f.i.uol.com.br/fotografia/2019/04/05/15544810115ca77f73b654e_1554481011_3x2_xs.jpg
+            //   https://f.i.uol.com.br/fotografia/2019/04/05/15544810115ca77f73b654e_1554481011_3x2_rt.jpg -- 2400x1600
+            return src.replace(/(\/fotografia\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}[0-9a-f]+_[0-9]+_[0-9]+x[0-9]+)_xs(\.[^/.]*)(?:[?#].*)?$/,
+                               "$1_rt$2");
+        }
+
+        if (domain === "image.thmeythmey.com") {
+            // https://image.thmeythmey.com/pictures/2019/06/05/thumb1/000_1942gf_copy.jpg
+            //   https://image.thmeythmey.com/pictures/2019/06/05/000_1942gf_copy.jpg
+            return src.replace(/(\/pictures\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2})thumb[0-9]*\/+/, "$1");
+        }
+
+        if (domain === "drp-images.nettavisen.no") {
+            // https://drp-images.nettavisen.no/images/article/2019/06/11/3423696294/1/w400/7083280.jpg
+            //   https://drp-images.nettavisen.no/images/article/2019/06/11/3423696294/1//7083280.jpg -- 5200x2600, double slashes are intentional
+            return src.replace(/(\/images\/+article\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}[0-9]+\/+[0-9]+\/)[^/]*\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/,
+                               "$1/$2");
+        }
+
+        if (domain === "media.malaymail.com") {
+            // https://media.malaymail.com/resize_cache/uploads/articles/2018/2018-09/rihanna_22092018-small.jpg
+            //   https://media.malaymail.com/uploads/articles/2018/2018-09/rihanna_22092018.jpg
+            return src.replace(/\/resize_cache\/+(uploads\/+.*)-small(\.[^/.]*)(?:[?#].*)?$/, "/$1$2");
+        }
+
+        if (domain_nowww === "alaraby.co.uk") {
+            // https://www.alaraby.co.uk/File/GetImageCustom/06c9f6a7-1a59-4a2c-bb4b-139a1879180a/600/338
+            //   https://www.alaraby.co.uk/File/Get/06c9f6a7-1a59-4a2c-bb4b-139a1879180a
+            return {
+                url: src.replace(/\/File\/+GetImageCustom\/+([-0-9a-f]{20,})\/+[0-9]+(?:\/+[0-9]+)?(?:[?#].*)?$/i,
+                                 "/File/Get/$1"),
+                can_head: false // 403
+            };
+        }
+
+        if (domain === "media.doisonghonnhan.vn") {
+            // http://media.doisonghonnhan.vn/resize_x580x/files/nhung-cau-noi-tam-trang-cua-sao-hollywood-khi-tinh-yeu-tan-vo-dshn-14.jpg
+            //   http://media.doisonghonnhan.vn/files/nhung-cau-noi-tam-trang-cua-sao-hollywood-khi-tinh-yeu-tan-vo-dshn-14.jpg
+            return src.replace(/\/resize_[0-9]*x[0-9]*x[0-9]*\/+files\/+/, "/files/");
+        }
+
+        if (domain_nowww === "from-ua.com") {
+            // https://from-ua.com/upload/articles/2018/11/23/small/1542969011_5.jpeg
+            //   https://from-ua.com/upload/articles/2018/11/23/original/1542969011_5.jpeg
+            return src.replace(/(\/upload\/+articles\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2})[a-z]+\/+/, "$1original/");
+        }
+
+        if (domain_nosub === "onedio.com" && /^img/.test(domain)) {
+            // https://img-s2.onedio.com/id-5d1e55486f056f962495dfb7/rev-0/w-460/h-260/f-jpg/s-8115c26772278ea122c8f0a1f439b53df73896df.jpg
+            //   https://img-3.onedio.com/img/2r0/5d1e55486f056f962495dfb7.jpg
+            //   https://img-3.onedio.com/img/5d1e55486f056f962495dfb7.jpg
+            // https://img-3.onedio.com/img/200/bound/2r1/5d1e55486f056f962495dfb7.jpg
+            //   https://img-3.onedio.com/img/2r0/5d1e55486f056f962495dfb7.jpg
+            //   https://img-3.onedio.com/img/5d1e55486f056f962495dfb7.jpg
+            // doesn't work for all:
+            // https://img-s3.onedio.com/id-5bbd9ebdf526d1a1133f9132/rev-0/raw/s-30c00c91f2295a4c3a2047c0fb4ff312905aa11e.jpg
+            // https://img-s2.onedio.com/id-57347c8f555365205339b2b0/rev-0/w-635/f-jpg-gif-webp-webm-mp4/s-b82ef0d1ffaa9f45602df3969ab5bbabce0e2b6f.gif
+            return src
+                .replace(/:\/\/[^/]*\/id-([0-9a-f]+)\/.*?(\.[^/.]*)(?:[?#].*)?$/, "://img-3.onedio.com/img/$1$2")
+                .replace(/\/img\/+(?:[0-9]+\/+bound\/+)?[0-9]*r[0-9]\/+/, "/img/");
+        }
+
+        if (domain_nowww === "sn.at") {
+            // https://www.sn.at/rihanna-lehnte-offenbar-super-bowl-auftritt-ab-41-79411195.jpg/640x/49.371.649
+            //   https://www.sn.at/rihanna-lehnte-offenbar-super-bowl-auftritt-ab-41-79411195.jpg/49.371.649
+            return src.replace(/\/[0-9]*x[0-9]*(\/+[0-9]+\.[0-9]+\.[0-9]+)(?:[?#].*)?$/, "$1");
+        }
+
+        if (domain_nowww === "meninafm.com.br") {
+            // http://www.meninafm.com.br/thumb_indice_noticias.php?img=fotos/15476436895c3f2b29661cb815328889.jpg
+            //   http://www.meninafm.com.br/fotos/15476436895c3f2b29661cb815328889.jpg
+            return src.replace(/\/thumb_indice_noticias\.php\?(?:.*&)?img=([^&]*).*?$/, "/$1");
+        }
+
+        if (domain === "img.lemde.fr") {
+            // https://img.lemde.fr/2018/09/21/0/0/5203/3601/688/0/60/0/4fe60ea_5389858-01-06.jpg
+            //   https://img.lemde.fr/2018/09/21/0/0/0/0/0/0/0/0/4fe60ea_5389858-01-06.jpg
+            return src.replace(/(:\/\/[^/]*\/[0-9]{4}\/+(?:[0-9]{2}\/+){2})(?:[0-9]+\/+){8}([0-9a-f]+_[0-9]+-[0-9]+-[0-9]+\.[^/.]*)(?:[?#].*)?$/,
+                               "$10/0/0/0/0/0/0/0/$2");
+        }
+
+        if (domain_nowww === "christian-dogma.com") {
+            // https://www.christian-dogma.com/im0photos/20190604/43a5c628cb83d64c44daa92448fb5348.jpg&w=100&q=90&.jpg
+            //   https://www.christian-dogma.com/photos/20190604/43a5c628cb83d64c44daa92448fb5348.jpg
+            return src.replace(/\/im[0-9]+photos\/+([0-9]{8}\/+[0-9a-f]+\.[^/.?&#]*).*?$/, "/photos/$1");
+        }
+
+        if (domain_nosub === "feedme.id" && domain.match(/^cdn[0-9]*\./)) {
+            // https://cdn2.feedme.id/media/post/medium/54574-setelah-sekian-lama-akhirnya-rihanna-bakal-rilis-album-lagi-kapan-ya.jpg
+            //   https://cdn2.feedme.id/media/post/54574-setelah-sekian-lama-akhirnya-rihanna-bakal-rilis-album-lagi-kapan-ya.jpg
+            return src.replace(/\/media\/+post\/+[a-z]+\/+/, "/media/post/");
+        }
 
 
 
@@ -34512,13 +34655,22 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             };
         }
 
-        if (domain_nosub === "radikal.ru" &&
-            domain.match(/^s[0-9]*\./)) {
+        if ((domain_nosub === "radikal.ru" && domain.match(/^s[0-9]*\./))) {
             // http://s018.radikal.ru/i521/1301/32/a24fb200297f.jpg
             return {
                 url: src,
                 headers: {
                     Referer: ""
+                }
+            };
+        }
+
+        if (domain_nowww === "1in.am") {
+            // https://www.1in.am/assets/uploads/2019/01/02-56-540x360.jpg
+            return {
+                url: src,
+                headers: {
+                    Referer: src
                 }
             };
         }
