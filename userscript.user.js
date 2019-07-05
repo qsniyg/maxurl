@@ -2095,6 +2095,8 @@ var $$IMU_EXPORT$$;
             domain_nowww === "newsflix.co.kr" ||
             // http://www.gokorea.kr/news/thumbnail/201901/66876_104058_015_v150.jpg
             domain_nowww === "gokorea.kr" ||
+            // http://www.womaneconomy.kr/news/thumbnail/201701/43819_73700_258_v150.jpg
+            domain_nowww === "womaneconomy.kr" ||
             // http://www.newstown.co.kr/news/thumbnail/201801/311251_198441_4816_v150.jpg
             domain_nowww === "newstown.co.kr") {
             return add_extensions_upper_jpeg(src
@@ -6130,7 +6132,12 @@ var $$IMU_EXPORT$$;
             // https://pic1.zhimg.com/v2-6349cfe0f38eab94c9fc41a919c526c4_540x450.jpeg -- 540x540
             //   https://pic1.zhimg.com/v2-6349cfe0f38eab94c9fc41a919c526c4_r.jpeg -- 540x540
             // doesn't work with google's referer
-            return src.replace(/\/((?:v[0-9]*-)?[0-9a-f]+)(?:_[^/._]*)?(\.[^/.]*)$/, "/$1_r$2");
+            return {
+                url: src.replace(/\/((?:v[0-9]*-)?[0-9a-f]+)(?:_[^/._]*)?(\.[^/.]*)$/, "/$1_r$2"),
+                headers: {
+                    Referer: ""
+                }
+            };
         }
 
         // seems to returns 403 if 'referer' header is set:
@@ -9342,6 +9349,9 @@ var $$IMU_EXPORT$$;
             // https://li1613-47.members.linode.com/system/App/BlogBody/photos/000/225/791/medium/44a50f07b4bdc57740901280f9eddaf5.PNG
             //   https://li1613-47.members.linode.com/system/App/BlogBody/photos/000/225/791/original/44a50f07b4bdc57740901280f9eddaf5.PNG
             domain_nosub === "linode.com" ||
+            // http://img.noritter.com/system/App/BlogBody/photos/000/169/173/largethumb/44558aadbc23ffc36240198c7e47a0bb.jpg
+            //   http://img.noritter.com/system/App/BlogBody/photos/000/169/173/original/44558aadbc23ffc36240198c7e47a0bb.jpg
+            domain === "img.noritter.com" ||
             // https://esportivo.net/system/post_pictures/files/000/000/007/medium/Bez_tytu%C5%82u.jpg?1500980126
             //   https://esportivo.net/system/post_pictures/files/000/000/007/original/Bez_tytu%C5%82u.jpg?1500980126
             // https://esportivo.net/system/posts/posters/000/001/303/thumb/fortnite.jpg?1536761386
@@ -13539,7 +13549,11 @@ var $$IMU_EXPORT$$;
             // https://pm1.narvii.com/6516/5a012772e565ae7b0e6cd1f9ecae669afea0d0a2_00.jpg -- bg
             //   https://pm1.narvii.com/6516/5a012772e565ae7b0e6cd1f9ecae669afea0d0a2_hq.jpg -- doesn't work
             //return src.replace(/(\/[0-9a-frv]+(?:-[-0-9a-z]+)?_)[^/.]*(\.[^/.]*)/, "$1hq$2");
-            return src.replace(/(\/[0-9a-z]+(?:-[-0-9a-z]+)?_)[^/.]*(\.[^/.]*)/, "$1uhq$2");
+            regex = /(\/[0-9a-z]+(?:-[-0-9a-z]+)?_)[^/.]*(\.[^/.]*)/;
+            return [
+                src.replace(regex, "$1uhq$2"),
+                src.replace(regex, "$1hq$2")
+            ];
         }
 
         if (domain === "img.oastatic.com") {
@@ -16231,6 +16245,21 @@ var $$IMU_EXPORT$$;
                 .replace(/\/images\/events\/[^/]*\//, "/images/events/ori/");
         }
 
+        if (domain === "m.aceshowbiz.com" ||
+            domain_nowww === "aceshowbiz.com") {
+            // https://m.aceshowbiz.com/images/wennpic/preview/dove-cameron-2017-iheartradio-mmva-arrivals-01.jpg
+            //   https://www.aceshowbiz.com/images/wennpic/dove-cameron-2017-iheartradio-mmva-arrivals-01.jpg
+            //   https://m.aceshowbiz.com/images/wennpic/ori/dove-cameron-2017-iheartradio-mmva-arrivals-01.jpg -- doesn't work
+            // https://aceshowbiz.com/images/wennpic/preview/barbara-palvin-69th-cannes-film-festival-02.jpg
+            //   https://aceshowbiz.com/images/wennpic/barbara-palvin-69th-cannes-film-festival-02.jpg
+            //   https://m.aceshowbiz.com/images/wennpic/dove-cameron-2017-iheartradio-mmva-arrivals-01.jpg
+            // https://www.aceshowbiz.com/display/images/160x117/2018/05/18/00120311.jpg
+            //   https://www.aceshowbiz.com/display/images/photo/2018/05/18/00120311.jpg
+            return src
+                .replace(/(\/display\/images\/)[0-9]+x[0-9]+\//, "$1/photo/")
+                .replace(/(\/images\/[^/]*\/)preview\//, "$1");
+        }
+
         if (domain === "asset.kompas.com" ||
             // http://asset-a.grid.id/crop/0x0:0x0/700x0/photo/2018/08/07/1840019897.jpg
             //   http://asset-a.grid.id/photo/2018/08/07/1840019897.jpg
@@ -16392,20 +16421,6 @@ var $$IMU_EXPORT$$;
             // https://cdn.newsserve.net/700/i/20180821/1840-Asia-Argento-Scandal-Things-We-Still-Need.jpg -- stretched
             //   https://cdn.newsserve.net/i/20180821/1840-Asia-Argento-Scandal-Things-We-Still-Need.jpg
             return src.replace(/(:\/\/[^/]*\/)[0-9]+\//, "$1");
-        }
-
-        if (domain === "m.aceshowbiz.com" ||
-            domain_nowww === "aceshowbiz.com") {
-            // https://m.aceshowbiz.com/images/wennpic/preview/dove-cameron-2017-iheartradio-mmva-arrivals-01.jpg
-            //   https://www.aceshowbiz.com/images/wennpic/dove-cameron-2017-iheartradio-mmva-arrivals-01.jpg
-            // https://aceshowbiz.com/images/wennpic/preview/barbara-palvin-69th-cannes-film-festival-02.jpg
-            //   https://aceshowbiz.com/images/wennpic/barbara-palvin-69th-cannes-film-festival-02.jpg
-            //   https://m.aceshowbiz.com/images/wennpic/dove-cameron-2017-iheartradio-mmva-arrivals-01.jpg
-            // https://www.aceshowbiz.com/display/images/160x117/2018/05/18/00120311.jpg
-            //   https://www.aceshowbiz.com/display/images/photo/2018/05/18/00120311.jpg
-            return src
-                .replace(/(\/display\/images\/)[0-9]+x[0-9]+\//, "$1/photo/")
-                .replace(/(\/images\/[^/]*\/)preview\//, "$1");
         }
 
         if (domain_nowww === "laughspark.info") {
@@ -20916,7 +20931,10 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             //return src.replace(/(\/sicmul\/[^/]*\.[^/.]*)\/.*/, "$1/original");
         }
 
-        if (domain === "awsimages.detik.net.id") {
+        if (domain === "awsimages.detik.net.id" ||
+            // https://akcdn.detik.net.id/community/media/visual/2016/06/22/4dde9064-5fd0-47e7-82f5-d640d0cdaf3b.jpg?w=770
+            //   https://akcdn.detik.net.id/community/media/visual/2016/06/22/4dde9064-5fd0-47e7-82f5-d640d0cdaf3b.jpg?a=1
+            domain === "akcdn.detik.net.id") {
             // https://awsimages.detik.net.id/visual/2018/02/21/29c13f53-a628-460a-bdf6-da19a9d8c514.jpeg?w=420&q=90 -- 420x639
             //   https://awsimages.detik.net.id/visual/2018/02/21/29c13f53-a628-460a-bdf6-da19a9d8c514.jpeg?a=1 -- 1973x3000
             // https://awsimages.detik.net.id/customthumb/2015/11/11/431/2GettyImages-496556088d.jpg?w=900&q=60 -- 366x550
@@ -27673,7 +27691,10 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             //   https://img.okeinfo.net/content/2018/01/29/194/1851655/lady-gaga-hingga-camila-cabello-begini-para-seleb-menata-wajah-rambut-mereka-di-red-carpet-grammy-awards-2018-VKBiuESzS9.jpg
             // https://img-o.okeinfo.net/okz/500/content/2018/01/29/194/1851655/lady-gaga-hingga-camila-cabello-begini-para-seleb-menata-wajah-rambut-mereka-di-red-carpet-grammy-awards-2018-wn63KzS33f.jpg
             //   https://img-o.okeinfo.net/content/2018/01/29/194/1851655/lady-gaga-hingga-camila-cabello-begini-para-seleb-menata-wajah-rambut-mereka-di-red-carpet-grammy-awards-2018-wn63KzS33f.jpg
-            return src.replace(/(:\/\/[^/]*\/)[^/]*\/+[0-9]+\/+content\//, "$1content/");
+            // https://img-z.okeinfo.net/okz/500/library/images/2019/06/17/b5p02cc1e6voowlco7bt_14191.jpg
+            //   https://img-z.okeinfo.net/library/images/2019/06/17/b5p02cc1e6voowlco7bt_14191.jpg
+            return src.replace(/(:\/\/[^/]*\/)okz\/+[0-9]+\/+([a-z]+\/)/, "$1$2");
+            //return src.replace(/\/okz\/+[0-9]+\/+library\/+/, "/library/");
         }
 
         if (domain_nowww === "freexcafe.com" ||
@@ -33538,6 +33559,45 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             //   https://cdn2.feedme.id/media/post/54574-setelah-sekian-lama-akhirnya-rihanna-bakal-rilis-album-lagi-kapan-ya.jpg
             return src.replace(/\/media\/+post\/+[a-z]+\/+/, "/media/post/");
         }
+
+        if (domain_nowww === "businessinsider.in") {
+            // https://www.businessinsider.in/thumb/67800950/rosario-dawson-talks-about-her-upcoming-usa-series-from-the-creator-of-mr-robot-and-cory-bookers-2020-presidential-run.jpg?width=640&height=360&resizemode=4
+            //   https://www.businessinsider.in/photo/67800950/rosario-dawson-talks-about-her-upcoming-usa-series-from-the-creator-of-mr-robot-and-cory-bookers-2020-presidential-run.jpg
+            return src.replace(/\/thumb\/+([0-9]+\/+[^/?#]*)(?:[?#].*)?$/, "/photo/$1");
+        }
+
+        if (domain_nowww === "ucatx.cat") {
+            // http://www.ucatx.cat/wallpic/small/0/88/girls-wallpaper.jpg
+            //   http://www.ucatx.cat/wallpic/full/0/88/girls-wallpaper.jpg
+            return src.replace(/\/wallpic\/+[a-z]+\/+/, "/wallpic/full/");
+        }
+
+        if (domain === "img.sosanhgia.com") {
+            // https://img.sosanhgia.com/images/100x0/dcfb074cb9de4da3947cb407a90bdef3/combo-thuoc-nhuom-toc-cao-cap-mau-vang-anh-kim-cho-da-banh-mat-+-oxy-+-bot-tay.jpeg
+            //   https://img.sosanhgia.com/images/dcfb074cb9de4da3947cb407a90bdef3/combo-thuoc-nhuom-toc-cao-cap-mau-vang-anh-kim-cho-da-banh-mat-+-oxy-+-bot-tay.jpeg
+            return src.replace(/\/images\/+[0-9]+x[0-9]+\/+/, "/images/");
+        }
+
+        if (domain_nosub === "slatic.net") {
+            // https://vn-test-11.slatic.net/p/c169d8229689a1777d46b40e81154be2.jpg_340x340q80.jpg_.webp
+            //   https://vn-test-11.slatic.net/p/c169d8229689a1777d46b40e81154be2.jpg
+            return src.replace(/(\/p\/+[0-9a-f]+\.[^/._]*)_[^/]*(?:[?#].*)?$/, "$1");
+        }
+
+        if (domain === "nrt.ysc123.com.cn") {
+            // https://nrt.ysc123.com.cn/uploadImg//2018/1122/899154285415189951_490_0.jpg
+            //   https://nrt.ysc123.com.cn/uploadImg//2018/1122/899154285415189951.jpg
+            return src.replace(/(\/uploadImg\/+[0-9]{4}\/+[0-9]+\/+[0-9]+)_[0-9]+_[0-9]+(\.[^/.]*)(?:[?#].*)?$/,
+                               "$1$2");
+        }
+
+        if (domain_nowww === "kpopnews.vn") {
+            // https://www.kpopnews.vn/images/2019/4/2/5ca2c3469dc6d665a23ea997/494x300.jpg
+            //   https://www.kpopnews.vn/images/2019/4/2/5ca2c3469dc6d665a23ea997/default.jpg
+            return src.replace(/(\/images\/+[0-9]{4}\/+(?:[0-9]{1,2}\/+){2}[0-9a-f]{15,}\/+)[0-9]+x[0-9]+(\.[^/.]*)(?:[?#].*)?$/,
+                               "$1default$2");
+        }
+
 
 
 
