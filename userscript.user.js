@@ -10372,9 +10372,9 @@ var $$IMU_EXPORT$$;
             }
         }
 
-        if (domain === "s3.amazonaws.com" &&
-            src.indexOf("s3.amazonaws.com/cme_public_images/") >= 0) {
+        if (amazon_container === "cme_public_images") {
             // http://s3.amazonaws.com/cme_public_images/www_livestrong_com/photos.demandstudios.com/getty/article/142/9/78291574_XS.jpg
+            // http://cme_public_images.s3.amazonaws.com/www_livestrong_com/photos.demandstudios.com/getty/article/142/9/78291574_XS.jpg
             newsrc = src.replace(/.*?:\/\/[^/]*\/.*?\/(photos\.demandstudios\.com\/)/, "http://$1");
             if (newsrc !== src) {
                 return newsrc;
