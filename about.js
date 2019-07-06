@@ -1,5 +1,14 @@
 "use strict";
 
+var is_node = false;
+if (typeof module === undefined) {
+  var module = {exports: {}};
+} else {
+  if (typeof document === undefined) {
+    is_node = true;
+  }
+}
+
 function fuzzify(num) {
   console.log(num);
   var baseh = parseInt(num/100);
@@ -14,6 +23,7 @@ function fuzzify(num) {
 
   return baseh * 100;
 }
+module.exports.fuzzify = fuzzify;
 
 function get_userscript_stats(response) {
   userscript_contents = response;
@@ -29,6 +39,7 @@ function get_userscript_stats(response) {
     //userscript_rcontents.match(/[^/](?:domain(?:_[a-z]+)?|amazon_container|googlestorage_container) *===/g).length
   ];
 }
+module.exports.get_userscript_stats = get_userscript_stats;
 
 function reqListener() {
   var response = this.responseText;
@@ -38,9 +49,10 @@ function reqListener() {
 }
 
 function get_sites() {
-  var sites = userscript_rcontents.match(/[^/](?:domain(?:_[a-z]+)?|amazon_container|googlestorage_container) *=== *["'](?:.*?)["']/g);
+  var sites = userscript_rcontents.match(/[^/](?:(?:host_)?domain(?:_[a-z]+)?|amazon_container|googlestorage_container) *=== *["'](?:.*?)["']/g);
   var siteslist = [];
   for (var i = 0; i < sites.length; i++) {
+    var origsite = sites[i];
     sites[i] = sites[i].substr(1);
     var site = sites[i].match(/["'](.*?)["']$/)[1].replace(/^www\./, "");
     if (sites[i].match(/^amazon_/))
@@ -48,7 +60,8 @@ function get_sites() {
     if (sites[i].match(/^googlestorage_/))
       site = site + ".storage.googleapis.com";
     if (siteslist.indexOf(site) < 0) {
-      siteslist.push(site);
+      if (site.length > 0)
+        siteslist.push(site);
     } else {
       //console.log(site);
     }
@@ -57,6 +70,7 @@ function get_sites() {
 
   return siteslist;
 }
+module.exports.get_sites = get_sites;
 
 var userscript_contents = null;
 var userscript_rcontents = null;
@@ -75,13 +89,17 @@ if (typeof document !== "undefined") {
     if (!("google_tag_manager" in window))
       document.getElementById("analytics-blocked").innerHTML = " but your browser has blocked it.";
   };
-} else if (typeof require !== undefined) {
+} else if (typeof require !== undefined && require.main == module) {
   var fs = require("fs");
   var data = fs.readFileSync(process.argv[2], {
     encoding: "utf8"
   });
   userscript_contents = data;
   var stats = get_userscript_stats(data);
+
+  if (process.argv[3] === "sites") {
+    return console.log(get_sites().join("\n"));
+  }
   console.log("Rules: " + stats[0]);
   console.log("Sites: " + stats[1]);
 }
