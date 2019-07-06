@@ -4509,6 +4509,8 @@ var $$IMU_EXPORT$$;
             (domain_nowww === "newidea.com.au" && src.indexOf("/media/") >= 0) ||
             // https://www.essexstudent.com/asset/Event/6006/aquaman-original.jpg?thumbnail_width=595&thumbnail_height=883&resize_type=CropToFit
             (domain_nowww === "essexstudent.com" && /\/asset\//i.test(src)) ||
+            // https://d.newsweek.com/en/full/1505905/belle-delphine.png?w=1600&h=1600&l=50&t=40&q=88&f=14e520e290afd404d58c1386f9e4bd20
+            (domain === "d.newsweek.com" && src.indexOf("/full/") >= 0) ||
             // http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
             // https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
             src.match(/\/demandware\.static\//) ||
@@ -8796,7 +8798,7 @@ var $$IMU_EXPORT$$;
             domain === "i.4pcdn.org") {
             // http://i.4cdn.org/hr/1517608108705s.jpg
             //   http://i.4cdn.org/hr/1517608108705.jpg
-            return src.replace(/(\/[0-9]*)s(\.[^/.]*)$/, "$1$2");
+            return add_extensions(src.replace(/(\/[0-9]*)s(\.[^/.]*)$/, "$1$2"));
         }
 
         if (domain_nowww === "thebarchive.com" ||
@@ -11370,6 +11372,9 @@ var $$IMU_EXPORT$$;
         }
 
         if (domain_nowww === "myproana.com" ||
+            // https://static.nulled.to/uploads/profile/photo-thumb-2154301.jpg?_r=1562273198
+            //   https://static.nulled.to/uploads/profile/photo-2154301.jpg?_r=1562273198
+            domain === "static.nulled.to" ||
             // http://tesall.ru/uploads/gallery/category_82/sml_gallery_304485_82_403628.jpeg
             //   http://tesall.ru/uploads/gallery/category_82/gallery_304485_82_403628.jpeg
             // http://tesall.ru/uploads/profile/photo-thumb-304485.png?_r=1482876452
@@ -19066,7 +19071,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
         }
 
         if (domain_nosub === "instagram.com" &&
-            src.match(/:\/\/[^/]*\/p\/+[^/]*\/+media[?]size=[a-z](?:[&#].*)?$/)) {
+            src.match(/:\/\/[^/]*\/p\/+[^/]*\/+media\/*[?]size=[a-z](?:[&#].*)?$/)) {
             // https://www.instagram.com/p/BkArbRJBpNS/media?size=m
             //   https://www.instagram.com/p/BkArbRJBpNS/media?size=l
             //   https://instagram.fyvr2-1.fna.fbcdn.net/vp/6d735911bc97047c9b65a842b7cb3547/5D963B3E/t51.2885-15/e35/34777339_389407841565200_4095040588460589056_n.jpg?_nc_ht=instagram.fyvr2-1.fna.fbcdn.net
@@ -25897,7 +25902,9 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             //   https://images.sex.com/images/pinporn/2017/11/03/620/18602164.jpg -- watermark
             // https://images.sex.com/images/pinporn/2014/10/03/460/8333897.jpg -- no watermark
             //   https://images.sex.com/images/pinporn/2014/10/03/620/8333897.jpg -- watermark
-            return src.replace(/(\/images\/pinporn\/[0-9]{4}\/[0-9]{2}\/[0-9]{2}\/)(?:300|460)\//, "$1620/");
+            // https://images.sex.com/images/pinporn/2018/10/09/126x126/20066749.jpg -- no watermark
+            //   https://images.sex.com/images/pinporn/2018/10/09/620/20066749.jpg -- watermark
+            return src.replace(/(\/images\/pinporn\/[0-9]{4}\/[0-9]{2}\/[0-9]{2}\/)(?:300|460|126x126)\//, "$1620/");
         }
 
         if (domain === "fotografias.antena3.com" ||
@@ -31172,7 +31179,10 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                                "/images/$1$2");
         }
 
-        if (domain === "img.haihanxeng.com") {
+        if (domain === "img.haihanxeng.com" ||
+            // https://img.gurugamer.com/resize/740x-/2019/06/23/46252242-395546120985250-4065421605895718064-n-4790.jpg
+            //   https://img.gurugamer.com/2019/06/23/46252242-395546120985250-4065421605895718064-n-4790.jpg
+            domain === "img.gurugamer.com") {
             // https://img.haihanxeng.com/resize/800x-/2019/03/19/11/00/tinngan080648286247462.jpg
             //   https://img.haihanxeng.com/2019/03/19/11/00/tinngan080648286247462.jpg
             return src.replace(/(:\/\/[^/]*\/)resize\/+[-0-9]+x[-0-9]+\/+/, "$1");
@@ -33596,6 +33606,53 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             //   https://www.kpopnews.vn/images/2019/4/2/5ca2c3469dc6d665a23ea997/default.jpg
             return src.replace(/(\/images\/+[0-9]{4}\/+(?:[0-9]{1,2}\/+){2}[0-9a-f]{15,}\/+)[0-9]+x[0-9]+(\.[^/.]*)(?:[?#].*)?$/,
                                "$1default$2");
+        }
+
+        if (domain === "t.ylilauta.org") {
+            // https://t.ylilauta.org/f0/5f1c59de.jpg
+            //   https://i.ylilauta.org/f0/5f1c59de.jpg
+            return src.replace(/:\/\/t(\.[^/]*\/)/, "://i$1");
+        }
+
+        if (domain === "static.esea.net") {
+            // https://static.esea.net/global/images/users/1278607.1559599147_t.jpg
+            //   https://static.esea.net/global/images/users/1278607.1559599147.jpg
+            return src.replace(/(\/images\/+[^/]*\/+[0-9]+\.[0-9]+)_t(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain === "cdn.shazoo.ru") {
+            // https://cdn.shazoo.ru/c60x60/328664_Kvr7O1reMW_40264243_1819939121435646_171710.jpg
+            //   https://cdn.shazoo.ru/328664_Kvr7O1reMW_40264243_1819939121435646_171710.jpg
+            return src.replace(/(:\/\/[^/]*\/)c[0-9]+x[0-9]+\/+/, "$1");
+        }
+
+        if (domain_nowww === "adultnode.com") {
+            // https://adultnode.com/thumb.php?src=https://media.adultnode.com/uploads/photos/2019/03/adultnode_0ebe196fd61bc4d321b8ea51dd09528e.jpg&q=95&w=170&h=170
+            //   https://media.adultnode.com/uploads/photos/2019/03/adultnode_0ebe196fd61bc4d321b8ea51dd09528e.jpg
+            newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/thumb\.php\?(?:.*?&)?src=([^&]*).*?$/, "$1");
+            if (newsrc !== src)
+                return decodeuri_ifneeded(newsrc);
+        }
+
+        if (domain === "en.luxuretv.com") {
+            // https://en.luxuretv.com/media/misc/thumb-5c0d65ac83831.jpg
+            //   https://en.luxuretv.com/media/misc/5c0d65ac83831.jpg
+            return src.replace(/(\/media\/+[^/]*\/+)thumb-([0-9a-f]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain === "image.bada.tv") {
+            // https://image.bada.tv/files//crawling/2019/04/08/imgur/ah6EdI0.png
+            //   https://i.imgur.com/ah6EdI0.png
+            newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/files\/+crawling\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}imgur\/+([^/?#^]*)(?:[?#].*)?$/, "$1");
+            if (newsrc !== src)
+                return "https://i.imgur.com/" + newsrc;
+        }
+
+        if (domain_nowww === "fappenist.com") {
+            // https://www.fappenist.com/Uploads/Media/Jan19/Tue29/469/m_131d389c.jpg
+            //   https://www.fappenist.com/Uploads/Media/Jan19/Tue29/469/131d389c.jpg
+            return src.replace(/(\/Uploads\/+Media\/+[^/]*\/+[^/]*\/+[0-9]+\/+)[a-z]_([0-9a-f]+\.[^/.]*)(?:[?#].*)?$/,
+                               "$1$2");
         }
 
 
