@@ -1,10 +1,10 @@
 "use strict";
 
 var is_node = false;
-if (typeof module === undefined) {
+if (typeof module === "undefined") {
   var module = {exports: {}};
 } else {
-  if (typeof document === undefined) {
+  if (typeof document === "undefined") {
     is_node = true;
   }
 }
@@ -98,8 +98,9 @@ if (typeof document !== "undefined") {
   var stats = get_userscript_stats(data);
 
   if (process.argv[3] === "sites") {
-    return console.log(get_sites().join("\n"));
+    console.log(get_sites().join("\n"));
+  } else {
+    console.log("Rules: " + stats[0]);
+    console.log("Sites: " + stats[1]);
   }
-  console.log("Rules: " + stats[0]);
-  console.log("Sites: " + stats[1]);
 }
