@@ -1,9 +1,16 @@
 const fs = require("fs");
+// git clone the gh-pages branch into site
+const about = require("./site/about.js");
 
 function update() {
   console.log("Updating...");
   var userscript = fs.readFileSync(process.argv[2] || "userscript.user.js").toString();
   var lines = userscript.split("\n");
+
+  if (lines.length < 10000) {
+    console.log("Incomplete");
+    return;
+  }
 
   var newlines = [];
   var in_bigimage = false;
@@ -61,7 +68,34 @@ function update() {
     }
   }
 
-  fs.writeFileSync("userscript_smaller.user.js", newlines.join("\n"));
+  var newcontents = newlines.join("\n");
+  fs.writeFileSync("userscript_smaller.user.js", newcontents);
+
+  about.get_userscript_stats(newcontents);
+  var sites = about.get_sites();
+
+  var sites_header = [
+    "# This is an automatically generated list of every hardcoded website supported by the script.",
+    "# Hardcoded websites are (usually) websites that need custom logic that cannot be represented",
+    "#  in a generic rule.",
+    "#",
+    "# The script supports many generic rules (such as for Wordpress, MediaWiki, and Drupal),",
+    "#  which means that even if a website is not this list, the script may still support it.",
+    "#",
+    "# The script also (usually) only cares about the domain containing images, not the host website.",
+    "#  For example, 'pinterest.com' is not in this list, but 'pinimg.com' (where Pinterest's images are stored) is.",
+    "#",
+    "# I usually don't visit the host websites (only the image links themselves), so there are sometimes cases",
+    "#  where rules don't work for all images under the website.",
+    "#  If you spot any issues, please leave an issue on Github, and I will try to fix it as soon as I can.",
+    ""
+  ];
+
+  [].push.apply(sites_header, sites);
+  sites_header.push("");
+
+  fs.writeFileSync("sites.txt", sites_header.join("\n"));
+
   console.log("Done");
 }
 
