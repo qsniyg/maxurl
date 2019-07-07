@@ -20,8 +20,8 @@
 // ==/UserScript==
 
 // If you see "A userscript wants to access a cross-origin resource.",
-//   it's either used to detect whether or not the destination URL exists before redirecting (near the end of the script),
-//   or used to query various websites' API to get larger images.
+//   it's used to detect whether or not the destination URL exists before redirecting,
+//   downloading the image for the popup, and querying various websites' API to get larger images.
 // Search for do_request_raw if you want to see what the code does exactly.
 
 
@@ -3245,7 +3245,8 @@ var $$IMU_EXPORT$$;
             //   http://i.dlisted.com/files/hotslutweeknorwoodyoung.jpg
             // http://scd.en.rfi.fr/sites/english.filesrfi/imagecache/aef_ct_wire_image_620/images/afp/7270320fc21023b847f3f7755db401cc5de551bc.jpg
             //   http://scd.en.rfi.fr/sites/english.filesrfi/images/afp/7270320fc21023b847f3f7755db401cc5de551bc.jpg
-            src.match(/(?:(?:\/sites\/+[^/]*)?\/files\/+|\/sites\/+[^/]*\/+)imagecache\/+[^/]*/) ||
+            // https://cdn.hobbyconsolas.com/sites/navi.axelspringer.es/public/styles/480/public/media/image/2016/06/601572-analisis-mirrors-edge-catalyst-ps4-xbox-one-pc.jpg?itok=6-RQwgNm
+            src.match(/(?:(?:\/sites\/+[^/]*)?\/files\/+|\/sites\/+[^/]*\/+)imagecache\/+[^/]*|\/sites\/+[^/]*\/+public\/+styles\/+/) ||
             // http://shakespearestaging.berkeley.edu/system/files/styles/large/private/images/titus-andronicus-the-old-globe-2006-2109.jpg?itok=zmPfmjYs
             src.search(/\/files\/styles\/[^/]*\/(?:public|private)\//) >= 0 ||
             // https://www.straight.com/files/v3/styles/gs_large/public/2013/09/MUS_Nostalghia_2386.jpg
@@ -4511,6 +4512,10 @@ var $$IMU_EXPORT$$;
             (domain_nowww === "essexstudent.com" && /\/asset\//i.test(src)) ||
             // https://d.newsweek.com/en/full/1505905/belle-delphine.png?w=1600&h=1600&l=50&t=40&q=88&f=14e520e290afd404d58c1386f9e4bd20
             (domain === "d.newsweek.com" && src.indexOf("/full/") >= 0) ||
+            // https://images.techtimes.com/data/images/full/249878/mirrors-edge-catalyst.jpg?w=600&h=300
+            (domain === "images.techtimes.com" && /\/data\/+images\/+/.test(src)) ||
+            // https://oyster.ignimgs.com/mediawiki/apis.ign.com/mirrors-edge-2/7/7f/ME_Imprisoned2.jpg?width=640
+            domain === "oyster.ignimgs.com" ||
             // http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
             // https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
             src.match(/\/demandware\.static\//) ||
@@ -5169,6 +5174,10 @@ var $$IMU_EXPORT$$;
             domain_nowww === "razorpics.net" ||
             // https://www.1in.am/assets/uploads/2019/01/02-56-540x360.jpg
             (domain_nowww === "1in.am" && src.indexOf("/assets/") >= 0) ||
+            // https://cdn.entertainmentfuse.com/media/2016/06/funny-load-screen-MEC-800x450.png
+            (domain === "cdn.entertainmentfuse.com" && src.indexOf("/media/") >= 0) ||
+            // https://www.n3rdabl3.com/wp-content/images/uploads/2015/04/FPS_Enix_DeusEX-720x423-720x423.jpg
+            (domain_nowww === "n3rdabl3.com" && /\/wp-content\/+images\/+uploads\/+/.test(src)) ||
             // https://1.soompi.io/wp-content/blogs.dir/8/files/2015/09/HA-TFELT-Wonder-Girls-590x730.jpg -- doesn't work
             // https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2018/01/GTA-6-Female-Protag-796x417.jpg -- does work
             src.indexOf("/wp-content/blogs.dir/") >= 0 ||
@@ -9280,6 +9289,12 @@ var $$IMU_EXPORT$$;
         }
 
         if (domain === "www.primagames.com" ||
+            // https://www.rockpapershotgun.com/images/16/jun/mirrorsedgecatalyst3.jpg/RPSS/resize/760x-1/format/jpg/quality/90
+            //   https://www.rockpapershotgun.com/images/16/jun/mirrorsedgecatalyst3.jpg
+            domain_nowww === "rockpapershotgun.com" ||
+            // http://images.eurogamer.net/2015/articles//a/1/8/3/4/8/3/6/Fri_Jun_3_11_42_35_UTC2B0100_2016.png/EG11/resize/600x-1/quality/80/format/jpg
+            //   http://images.eurogamer.net/2015/articles//a/1/8/3/4/8/3/6/Fri_Jun_3_11_42_35_UTC2B0100_2016.png
+            domain === "images.eurogamer.net" ||
             // https://assets.rockpapershotgun.com/images/2018/09/acship.jpg/RPSS/resize/760x-1/format/jpg/quality/70
             //   https://assets.rockpapershotgun.com/images/2018/09/acship.jpg
             domain === "assets.rockpapershotgun.com") {
@@ -9287,7 +9302,7 @@ var $$IMU_EXPORT$$;
             // https://www.primagames.com/media/files/news/dragon-age-inquisition-landing-page/dragon-age-inquisition-cover-ce.png/PRIMAP/resize/618x/format/jpg/quality/80 -- scaled up
             //   https://www.primagames.com/media/files/news/dragon-age-inquisition-landing-page/dragon-age-inquisition-cover-ce.png
             //return src.replace(/\/PRIMAP?\/.*/, "");
-            return src.replace(/(\/[^/]*\.[^/.]*)\/[A-Z]+\/(?:resize|format|crop|quality)?\/.*$/, "$1");
+            return src.replace(/(\/[^/]*\.[^/.]*)\/[A-Z0-9]+\/(?:resize|format|crop|quality)?\/.*$/, "$1");
         }
 
         if ((domain_nosub === "ixquick.com" ||
@@ -9391,6 +9406,9 @@ var $$IMU_EXPORT$$;
             // https://greasyfork.org/system/screenshots/screenshots/000/010/208/thumb/Snipaste_2018-03-05_12-28-39.png?1520224343
             //   https://greasyfork.org/system/screenshots/screenshots/000/010/208/original/Snipaste_2018-03-05_12-28-39.png?1520224343
             domain_nowww === "greasyfork.org" ||
+            // https://static.themezy.com/system/resources/previews/000/000/244/non_2x/web-designer-portfolio-website-template.jpg
+            //   https://static.themezy.com/system/resources/previews/000/000/244/original/web-designer-portfolio-website-template.jpg
+            domain === "static.themezy.com" ||
             // https://sonar.es/system/attached_images/18702/medium/badgyal_xs_sonar2017_fernandoschlaepfer_004.jpg?1497713257 -- stretched?
             //   https://sonar.es/system/attached_images/18702/original/badgyal_xs_sonar2017_fernandoschlaepfer_004.jpg?1497713257
             domain_nowww === "sonar.es") {
@@ -9398,8 +9416,8 @@ var $$IMU_EXPORT$$;
             //   https://sonarreykjavik.com/system/attached_images/19379/large/BadGyal_AlexisG%C3%B3mez.jpg?1513685256
             //   https://sonarreykjavik.com/system/attached_images/19379/original/BadGyal_AlexisG%C3%B3mez.jpg?1513685256
             return src
-                .replace(/(\/attached_images\/+[0-9]*\/+)[a-z]+\/+/, "$1original/")
-                .replace(/(\/system\/+(?:(?:attached|item)_images|App\/+BlogBody|post_pictures|events|posts|items|file_uploads|screenshots)\/+(?:(?:images|photos|files|assets|pictures|posters|uploads|screenshots)\/+)?(?:[0-9]+\/+){3})[a-z]+\/+/, "$1original/");
+                .replace(/(\/attached_images\/+[0-9]+\/+)[a-z]+\/+/, "$1original/")
+                .replace(/(\/system\/+(?:(?:attached|item)_images|App\/+BlogBody|post_pictures|events|posts|items|file_uploads|screenshots|resources)\/+(?:(?:images|photos|files|assets|pictures|posters|uploads|screenshots|previews)\/+)?(?:[0-9]{3}\/+){3})[a-z_0-9]+\/+/, "$1original/");
             //return src.replace(/(\/system\/(?:post_pictures\/(?:files|assets|pictures)\/|posts\/posters\/|events\/images\/)(?:[0-9]+\/){3})[a-z]+(\/[^/]*)$/, "$1original$2");
             //return src.replace(/\/[a-z]*\/([-0-9a-f]*\.[^/.]*)$/, "/original/$1");
             //return src.replace(/(\/[0-9]+\/[0-9]+\/[0-9]+)\/[a-z]+\/([^/]*)$/, "$1/original/$2");
@@ -21173,16 +21191,18 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             //   http://images.pushsquare.com/games/ps4/hitman_episode_3_-_marrakesh/cover_original.jpg -- 255x300
             // http://images.pushsquare.com/news/2018/07/guide_the_best_ps4_rpgs/75x75.jpg
             //   http://images.pushsquare.com/news/2018/07/guide_the_best_ps4_rpgs/original.jpg
+            // http://images.pushsquare.com/reviews/ps4/mirrors_edge_catalyst/large.jpg
+            //   http://images.pushsquare.com/reviews/ps4/mirrors_edge_catalyst/original.jpg
             return src
-                .replace(/(\/screenshots\/[0-9]+\/)(?:[0-9]+x(?:[0-9]+)?|[a-z]+)(\.[^/.]*)$/, "$1original$2")
-                .replace(/(\/news\/[0-9]+\/[0-9]+\/[^/]+\/)(?:[0-9]+x(?:[0-9]+)?|[a-z]+)(\.[^/.]*)$/, "$1original$2")
+                .replace(/((?:\/news\/+[0-9]+\/+[0-9]+\/+[^/]+\/+)|(?:\/screenshots\/+[0-9]+\/+)|(?:\/reviews\/+[^/]*\/+[^/]*\/+))(?:[0-9]+x(?:[0-9]+)?|[a-z]+)(\.[^/.]*)$/, "$1original$2")
                 .replace(/(\/games\/.*\/cover)(?:_[a-z]+)?(\.[^/.]*)$/, "$1_original$2");
         }
 
         if (domain_nowww === "pcgames.de") {
             // http://www.pcgames.de/screenshots/110x83/2016/10/Hitman-4--pc-games_b2teaser_43.jpg
             //   http://www.pcgames.de/screenshots/original/2016/10/Hitman-4--pc-games_b2teaser_43.jpg
-            return src.replace(/\/screenshots\/[0-9]+x[0-9]+\//, "/screenshots/original/");
+            // https://www.pcgames.de/screenshots/1020x/2016/06/mirrors-edge-catalyst-test-0003-pc-games.png
+            return src.replace(/\/screenshots\/+[0-9]*x[0-9]*\//, "/screenshots/original/");
         }
 
         if (domain_nowww === "collinsdictionary.com") {
@@ -25887,12 +25907,15 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
         }
 
         if (domain === "envivoblog.estrellatv.com" ||
+            // https://www.gamegrin.com/assets/Uploads/_resampled/resizedimage640360-Deus-Ex-Mankind-Divided-20161016143151.jpg
+            //   https://www.gamegrin.com/assets/Uploads/Deus-Ex-Mankind-Divided-20161016143151.jpg
+            domain_nowww === "gamegrin.com" ||
             // http://cdn.okjeok.hr/assets/Uploads/_resampled/SetWidth300-GettyImages-675604330.jpg
             //   http://cdn.okjeok.hr/assets/Uploads/GettyImages-675604330.jpg
             domain === "cdn.okjeok.hr") {
             // http://envivoblog.estrellatv.com/assets/envivoblog.estrellatv.com/articles/images/06-2018/_resampled/SetWidth360-1524696124-leslie-grace-colabora-con-super-junior.jpg
             //   http://envivoblog.estrellatv.com/assets/envivoblog.estrellatv.com/articles/images/06-2018/1524696124-leslie-grace-colabora-con-super-junior.jpg
-            return src.replace(/\/_resampled\/Set(?:Width|Height)[0-9]+-([^/]*)$/, "/$1");
+            return src.replace(/\/_resampled\/(?:Set(?:Width|Height)|resizedimage)[0-9]+-([^/]*)$/, "/$1");
         }
 
         if (domain === "images.sex.com") {
@@ -33655,6 +33678,131 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                                "$1$2");
         }
 
+        if (domain_nowww === "hitek.fr") {
+            // https://hitek.fr/img/products/electronic-arts/electronic-arts-mirrors-edge/photos/w_thu-jun-9-12-33-16-utc-2b0200-2016.jpg
+            //   https://hitek.fr/img/products/electronic-arts/electronic-arts-mirrors-edge/photos/thu-jun-9-12-33-16-utc-2b0200-2016.jpg
+            return src.replace(/(\/img\/+products\/+.*?\/+photos\/+)w_([^/]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain === "cdn.dribbble.com") {
+            // https://cdn.dribbble.com/users/1253590/screenshots/6744282/lampshades_1x.jpg
+            //   https://cdn.dribbble.com/users/1253590/screenshots/6744282/lampshades.jpg
+            return src.replace(/(\/users\/+[0-9]+\/+screenshots\/+[0-9]+\/+[^/]*)_[0-9]+x(\.[^/.]*)(?:[?#].*)?$/,
+                               "$1$2");
+        }
+
+        if (domain === "s.tmimgcdn.com") {
+            // https://s.tmimgcdn.com/scr/52500/web-design-and-advertising-website-template_52537-big.jpg?width=768&height=859
+            //   https://s.tmimgcdn.com/scr/52500/web-design-and-advertising-website-template_52537-original.jpg
+            // https://s.tmimgcdn.com/scr/61200/61232-big.jpg
+            //   https://s.tmimgcdn.com/scr/61200/61232-original.jpg
+            // others:
+            // https://s.tmimgcdn.com/scr/58600/58663-1300_01.png -- different from:
+            //   https://s.tmimgcdn.com/scr/58600/58663-1300_02.png
+            // https://s.tmimgcdn.com/scr/54900/54971-origin.jpg -- 1903x4403
+            //   https://s.tmimgcdn.com/scr/54900/54971-original.jpg -- 1903x4403
+            newsrc = src.replace(/[?#].*/, "");
+            if (newsrc !== src)
+                return newsrc;
+
+            return src
+                .replace(/(\/scr\/+[0-9]+\/+(?:[^/]*_)?[0-9]+)-big(\.[^/.]*)$/, "$1-original$2")
+            // https://s.tmimgcdn.com/scr/67600/67674-1300_08.jpg
+            //   https://s.tmimgcdn.com/scr/67600/67674-2560_08.jpg
+                .replace(/(\/scr\/+[0-9]+\/+[0-9]+-)1300(_[0-9]+\.[^/.]*)(?:[?#].*)?$/, "$12560$2");
+        }
+
+        if (domain === "images.all-free-download.com") {
+            // https://images.all-free-download.com/images/templates_medium/business_template_2477.jpg
+            //   https://images.all-free-download.com/images/templates_large/best_webdesign_template_1920.jpg
+            //   https://images.all-free-download.com/images/templates_original/best_webdesign_template_1920.jpg
+            // https://images.all-free-download.com/images/graphicthumb/dark_flowers_608925.jpg
+            //   https://images.all-free-download.com/images/graphiclarge/dark_flowers_608925.jpg
+            //   https://images.all-free-download.com/images/graphicoriginal/dark_flowers_608925.jpg
+            // https://images.all-free-download.com/images/footage_medium/night_sky_stars_universe_motion_1108.jpg
+            //   https://images.all-free-download.com/images/footage_original/night_sky_stars_universe_motion_1108.jpg
+            // https://images.all-free-download.com/images/wallpapers_thum/recore_hd_xbox_one_17495.jpg
+            //   http://files.all-free-download.com//downloadfiles/wallpapers/1280_720/recore_hd_xbox_one_17495.jpg
+            //   http://files.all-free-download.com/downloadfiles/wallpapers/original/recore_hd_xbox_one_17495.jpg
+            newsrc = src.replace(/\/images\/+((?:templates|footage)_|graphic)(?:medium|large|thumb?)\/+/, "/images/$1original/");
+            if (newsrc !== src)
+                return newsrc;
+
+            newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/images\/+wallpapers_[a-z]+\/+/, "http://files.all-free-download.com/downloadfiles/wallpapers/original/");
+            if (newsrc !== src)
+                return newsrc;
+        }
+
+        if (domain === "files.all-free-download.com") {
+            // http://files.all-free-download.com//downloadfiles/wallpapers/1280_720/recore_hd_xbox_one_17495.jpg
+            //   http://files.all-free-download.com//downloadfiles/wallpapers/original/recore_hd_xbox_one_17495.jpg
+            return {
+                url: src.replace(/\/downloadfiles\/+wallpapers\/+[^/]*\/+/, "/downloadfiles/wallpapers/original/"),
+                headers: {
+                    Referer: "https://all-free-download.com/"
+                }
+            }
+        }
+
+        if (domain === "images.themevault.net") {
+            // https://images.themevault.net/images/featured-207.png
+            //   https://images.themevault.net/images/full-207.jpg
+            // https://images.themevault.net/images/thumb-200.jpg
+            //   https://images.themevault.net/images/full-200.jpg
+            return add_extensions(src.replace(/\/images\/+[a-z]+(-[0-9]+\.[^/.]*)(?:[?#].*)?$/, "/images/full$1"));
+        }
+
+        if (domain_nowww === "templatemo.com") {
+            // https://templatemo.com/thumbnails-360/tm-245-redox.jpg
+            //   https://templatemo.com/screenshots/templatemo_245_redox.jpg
+            // https://templatemo.com/thumbnails-360/tm-242-design-blog.jpg
+            //   https://templatemo.com/screenshots/templatemo_242_design_blog.jpg
+            newsrc = src.replace(/\/thumbnails-[0-9]+\/+tm-([0-9]+-[^/]*)(?:[?#].*)?$/, "/screenshots/templatemo_$1");
+            if (newsrc !== src)
+                return newsrc.replace(/-/g, "_");
+        }
+
+        if (domain === "cdn.pocket-lint.com") {
+            // https://cdn.pocket-lint.com/r/s/970x/assets/images/137868-games-review-mirror%E2%80%99s-edge-catalyst-review-image2-ZAWaydrRM1.jpg
+            //   https://cdn.pocket-lint.com/assets/images/137868-games-review-mirror%E2%80%99s-edge-catalyst-review-image2-ZAWaydrRM1.jpg
+            return src.replace(/\/r\/+s\/+[0-9]*x[0-9]*\/+assets\/+/, "/assets/");
+        }
+
+        if (domain === "image.isu.pub") {
+            // https://image.isu.pub/160928125247-06a09e58e22e37227bc6994a849e4183/jpg/page_1_thumb_large.jpg
+            //   https://image.isu.pub/160928125247-06a09e58e22e37227bc6994a849e4183/jpg/page_1.jpg
+            return src.replace(/(:\/\/[^/]*\/[0-9]+-[0-9a-f]{20,}\/+[^/]*\/+page_[0-9]+)_[_a-z]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain === "static.techspot.com") {
+            // https://static.techspot.com/articles-info/1234/images/T_2016-08-23-image-3.jpg
+            //   https://static.techspot.com/articles-info/1234/images/2016-08-23-image-3.jpg
+            return src.replace(/(\/articles-info\/+[0-9]+\/+images\/+)T_([^/]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain_nowww === "mweb.co.za") {
+            // https://www.mweb.co.za/DesktopModules/DigArticle/MediaHandler.ashx?portalid=20&moduleid=5259&mediaid=47052&width=800&height=600
+            //   https://www.mweb.co.za/DesktopModules/DigArticle/MediaHandler.ashx?portalid=20&moduleid=5259&mediaid=47052
+            if (/\/MediaHandler\.ashx\?/.test(src)) {
+                var portalid = url.searchParams.get("portalid");
+                var moduleid = url.searchParams.get("moduleid");
+                var mediaid = url.searchParams.get("mediaid");
+
+                if (portalid && moduleid && mediaid) {
+                    return src.replace(/\?.*/, "?portalid=" + portalid + "&moduleid=" + moduleid + "&mediaid=" + mediaid);
+                }
+            }
+        }
+
+        if (domain_nowww === "gaminglives.com") {
+            // https://wordpress.org/plugins/dynpicwatermark/
+            //
+            // http://www.gaminglives.com/wp-content/plugins/dynpicwatermark/DynPicWaterMark_ImageViewer.php?path=mankind_01_enlrg.jpg
+            //   http://www.gaminglives.com/wp-content/uploads/mankind_01_enlrg.jpg
+            return src.replace(/\/wp-content\/+plugins\/+dynpicwatermark\/+DynPicWaterMark_ImageViewer\.php\?(?:.*?&)?path=([^&]*).*?$/,
+                               "/wp-content/uploads/$1");
+        }
+
 
 
 
@@ -34772,7 +34920,9 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             };
         }
 
-        if ((domain_nosub === "radikal.ru" && domain.match(/^s[0-9]*\./))) {
+        if ((domain_nosub === "radikal.ru" && domain.match(/^s[0-9]*\./)) ||
+            // https://www.n3rdabl3.com/wp-content/images/uploads/2015/04/FPS_Enix_DeusEX-720x423-720x423.jpg
+            domain_nowww === "n3rdabl3.com") {
             // http://s018.radikal.ru/i521/1301/32/a24fb200297f.jpg
             return {
                 url: src,
