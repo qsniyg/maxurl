@@ -75,7 +75,7 @@ function update() {
   var sites = about.get_sites();
 
   var sites_header = [
-    "# This is an automatically generated list of every hardcoded website supported by the script.",
+    "# This is an automatically generated list of every hardcoded website currently supported by the script.",
     "# Hardcoded websites are (usually) websites that need custom logic that cannot be represented",
     "#  in a generic rule.",
     "#",
