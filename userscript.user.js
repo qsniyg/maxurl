@@ -33829,6 +33829,15 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/\/images[0-9]*_[0-9]*\/+/, "/images/");
         }
 
+        if (domain === "prt.iza.ne.jp") {
+            // thanks to Gyuri on discord
+            // https://prt.iza.ne.jp/kiji/entertainments/images/190124/ent19012407330001-q1.jpg
+            //   https://prt.iza.ne.jp/kiji/entertainments/images/190124/ent19012407330001-m1.jpg -- 519x720
+            // m, p, o, n, q
+            return src.replace(/(\/images\/+[0-9]{6}\/+ent[0-9]{10,}-)[a-z]([0-9]\.[^/.]*)(?:[?#].*)?$/,
+                               "$1m$2");
+        }
+
 
 
 
