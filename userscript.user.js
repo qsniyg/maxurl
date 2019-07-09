@@ -4563,6 +4563,8 @@ var $$IMU_EXPORT$$;
             (domain_nosub === "myqcloud.com" && domain.match(/image\.myqcloud\.com/)) ||
             // https://ci.xiaohongshu.com/751cccf1-a34a-57fd-ac5e-438265582359?imageMogr2/thumbnail/640x640/format/jpg/quality/92/auto-orient/strip
             domain === "ci.xiaohongshu.com" ||
+            // http://pic.qianye88.com/0c4b3bc07a69b2ed260d3b17e15ff4f2.jpeg?imageMogr2/thumbnail/x300/quality/90!
+            domain === "pic.qianye88.com" ||
             // http://imgboys1.yohobuy.com/spidercms/2018/01/27/01/0127fc0ca0f50496e5235ebc742ff0e056.jpeg?imageView2/2/w/240/q/75|imageslim
             (domain_nosub === "yohobuy.com" && domain.match(/^img[a-z]*[0-9]*\.yohobuy\.com$/)) ||
             // http://i-4-yxdown.715083.com/2018/3/30/a9be3ebb-50a7-4993-9cfb-c1a3ddc3ff61.png?imageView2/2/q/65/w/600
@@ -15568,6 +15570,9 @@ var $$IMU_EXPORT$$;
             // http://pic-cdn.35pic.com/58pic/25/63/84/25g58PIC5Jp.jpg!w290
             //   http://pic-cdn.35pic.com/58pic/25/63/84/25g58PIC5Jp.jpg
             domain === "pic-cdn.35pic.com" ||
+            // http://img.imogu.cn/pic/mgcpex/de/78/5f/bd/6a736d686aecb61a.jpeg!h300
+            //   http://img.imogu.cn/pic/mgcpex/de/78/5f/bd/6a736d686aecb61a.jpeg -- forbidden access to the original image
+            //(domain === "img.imogu.cn" && src.indexOf("/pic/") >= 0) ||
             // http://images.sharerails.com/sharerailsmall/rel/client1/products/retailer14/25913_636259140797926478.jpg!w~500!h~500!b~Contain -- upscaled
             //   http://images.sharerails.com/sharerailsmall/rel/client1/products/retailer14/25913_636259140797926478.jpg
             domain === "images.sharerails.com" ||
@@ -15592,6 +15597,9 @@ var $$IMU_EXPORT$$;
             // http://588ku.qiao88.com/element_origin_min_pic/16/09/01/0857c77a7da303e.jpg!/fw/285/clip/285x500a0a0
             //   http://588ku.qiao88.com/element_origin_min_pic/16/09/01/0857c77a7da303e.jpg
             domain === "588ku.qiao88.com" ||
+            // https://static.pptstore.net/picture/58/02/7792c001c1d89b75ffd0_s.jpg!/fh/300
+            //   https://static.pptstore.net/picture/58/02/7792c001c1d89b75ffd0_s.jpg
+            domain === "static.pptstore.net" ||
             // https://img.lovepik.com/desgin_photo/40121/5643_detail.jpg!/fw/336/clip/0x456a0a0/quality/90
             //   https://img.lovepik.com/desgin_photo/40121/5643_detail.jpg
             domain === "img.lovepik.com") {
@@ -33801,6 +33809,24 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             //   http://www.gaminglives.com/wp-content/uploads/mankind_01_enlrg.jpg
             return src.replace(/\/wp-content\/+plugins\/+dynpicwatermark\/+DynPicWaterMark_ImageViewer\.php\?(?:.*?&)?path=([^&]*).*?$/,
                                "/wp-content/uploads/$1");
+        }
+
+        if (domain === "addons.cdn.mozilla.net") {
+            // https://addons.cdn.mozilla.net/user-media/previews/thumbs/221/221934.png?modified=1562484071
+            //   https://addons.cdn.mozilla.net/user-media/previews/full/221/221934.png?modified=1562484071
+            return src.replace(/(\/user-media\/+previews\/+)[a-z]+\/+/, "$1full/");
+        }
+
+        if (domain_nosub === "zopix.net") {
+            // https://de.zopix.net/image_upload/thumb/200h_143000.jpg
+            //   https://de.zopix.net/image_upload/143000-landschaften-sunset-the-pacific.jpg
+            return src.replace(/\/image_upload\/+thumb\/+(?:[0-9]+[wh]_)?/, "/image_upload/");
+        }
+
+        if (domain_nowww === "jooinn.com") {
+            // https://jooinn.com/images350_/space-shuttle-endeavour-4.jpg
+            //   https://jooinn.com/images/space-shuttle-endeavour-4.jpg
+            return src.replace(/\/images[0-9]*_[0-9]*\/+/, "/images/");
         }
 
 
