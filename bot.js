@@ -362,6 +362,12 @@ function dourl_inner(big, url, post) {
               .replace(/\*/g, "\\*")
               .replace(/]/g, "\\]") + "](" + newdata.url.replace(/[)]/g, "\\)") + ")\n\n";
 
+            if (orig_domain === "pbs.twimg.com" &&
+                newdata.url.indexOf("?name=orig") >= 0 &&
+                newdata.width < 4096 && newdata.height < 4096) {
+              big.is_original = true;
+            }
+
             // explain imgur, as the urls often confuse people
             if (orig_domain === "i.imgur.com" &&
                 new_domain === "i.imgur.com") {
@@ -394,7 +400,7 @@ function dourl_inner(big, url, post) {
             }
 
             comment += "*****\n\n";
-            comment += "^[source&nbsp;code](https://github.com/qsniyg/maxurl)&nbsp;|&nbsp;to&nbsp;find&nbsp;larger&nbsp;images:&nbsp;[website](https://qsniyg.github.io/maxurl/)&nbsp;/&nbsp;[userscript](https://greasyfork.org/en/scripts/36662-image-max-url)";
+            comment += "^[why?](https://www.reddit.com/r/MaxImage/comments/8znfgw/faq/)&nbsp;|&nbsp;to&nbsp;find&nbsp;larger&nbsp;images:&nbsp;[website](https://qsniyg.github.io/maxurl/)&nbsp;/&nbsp;[userscript](https://greasyfork.org/en/scripts/36662-image-max-url)";
             console.log(comment);
             if (post) {
               var logged = false;
@@ -525,8 +531,12 @@ const links = new NodeCache({ stdTTL: 600, checkperiod: 100 });
 // original image:
 //dourl("http://i0.kym-cdn.com/photos/images/newsfeed/001/318/958/c7d.png");
 //dourl("https://preview.redd.it/vjf4vjav3j131.jpg?width=640&crop=smart&auto=webp&s=2ceddce951cfff3ec2c627fc6e16c9865f187f02");
+//dourl("https://pbs.twimg.com/media/D--plbeWkAEziX_.jpg");
+// not original:
+//dourl("https://pbs.twimg.com/media/DYlCdhxVMAAi8OM.jpg");
 // can return a wrong image:
 //dourl("https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/3953b6c9-6b84-493b-9832-cc14ba59fa07/d1fl69c-907907a6-ce19-48b2-b915-f823507cbbc4.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzM5NTNiNmM5LTZiODQtNDkzYi05ODMyLWNjMTRiYTU5ZmEwN1wvZDFmbDY5Yy05MDc5MDdhNi1jZTE5LTQ4YjItYjkxNS1mODIzNTA3Y2JiYzQuanBnIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.5IJp0mWnHzp_yKTxTaoNvw5c1r_1-PhUvzcvVdt_8Vk");
+
 
 //console.dir(blacklist_json.disallowed);
 if (true) {
