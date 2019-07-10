@@ -12546,6 +12546,9 @@ var $$IMU_EXPORT$$;
             // http://www.bdmaster.net/image/cache/data/posters/1477834-700x1037.jpg
             //   http://www.bdmaster.net/image/data/posters/1477834.jpg
             domain_nowww === "bdmaster.net" ||
+            // https://prettyzone.net/image/cache/catalog/category/manikyur-lak-90x90.jpg
+            //   https://prettyzone.net/image/catalog/category/manikyur-lak.jpg
+            domain_nowww === "prettyzone.net" ||
             // http://www.honeydear.my/image/cache/data/YW1031WH/213%20(4)-850x1300.jpg
             //   http://www.honeydear.my/image/data/YW1031WH/213%20(4).jpg
             domain_nowww === "honeydear.my") {
@@ -24649,6 +24652,12 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/(\/articles\/[0-9]+\/[^/.]*\.[^/.]*)\.ashx\?.*$/, "$1");
         }
 
+        if (domain_nosub === "spiiky.com" && domain.match(/^img[0-9]*\./)) {
+            // https://img1.spiiky.com/events/C/63798_0_0e50be763688487184865cb522ddd8ed.jpeg.ashx?format=jpg&quality=80&scale=both&crop=(0,286,1080,913)&width=270&height=159
+            //   https://img1.spiiky.com/events/C/63798_0_0e50be763688487184865cb522ddd8ed.jpeg
+            return src.replace(/\.ashx\?.*/, "");
+        }
+
         if (domain_nowww === "murekkephaber.com") {
             // https://www.murekkephaber.com/images/haberler/2018/09/emilia-clarke-rol-alacagim-yapimlari-ince-eleyip-sik-dokuyacagim_t.jpg
             //   https://www.murekkephaber.com/images/haberler/2018/09/emilia-clarke-rol-alacagim-yapimlari-ince-eleyip-sik-dokuyacagim.jpg
@@ -33833,9 +33842,61 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             // thanks to Gyuri on discord
             // https://prt.iza.ne.jp/kiji/entertainments/images/190124/ent19012407330001-q1.jpg
             //   https://prt.iza.ne.jp/kiji/entertainments/images/190124/ent19012407330001-m1.jpg -- 519x720
-            // m, p, o, n, q
+            // m, p, o, n, q, g, r, s
             return src.replace(/(\/images\/+[0-9]{6}\/+ent[0-9]{10,}-)[a-z]([0-9]\.[^/.]*)(?:[?#].*)?$/,
                                "$1m$2");
+        }
+
+        if (domain_nosub === "plus613.net") {
+            // http://www.plus613.net/images/thumbs/6/9/d/8/www_plus613_net_tmpTwisted.jpg
+            //   http://www.plus613.net/images/6/9/d/8/www_plus613_net_tmpTwisted.jpg
+            newsrc = src.replace(/\/images\/+thumbs\/+/, "/images/");
+            if (newsrc !== src)
+                return newsrc;
+
+            newsrc = src.replace(/\/page\/+hotlink\?(?:.*?&)?action=([^&]*).*?$/, "/images/$1");
+            if (newsrc !== src)
+                return newsrc;
+
+            return {
+                url: src,
+                headers: {
+                    Referer: "http://www.plus613.net/"
+                }
+            };
+        }
+
+        if (domain === "img.milanuncios.com") {
+            // https://img.milanuncios.com/fp/2972/08/297208063_1.jpg?VersionId=pd1FVuF.0QgBzaKIyQ1n0QQUZJ9Bhl8r
+            //   https://img.milanuncios.com/fg/2972/08/297208063_1.jpg?VersionId=pd1FVuF.0QgBzaKIyQ1n0QQUZJ9Bhl8r
+            return src.replace(/(:\/\/[^/]*\/)fp\/+/, "$1fg/");
+        }
+
+        if (domain === "ssmscdn.yp.ca") {
+            // https://ssmscdn.yp.ca/image/resize/781b4bfa-1bac-4d12-b6d6-0a91d5b90ced/ypui-d-mp-pic-gal-lg/ongles-regal-2.jpg -- upscaled
+            //   https://ssmscdn.yp.ca/image/original/781b4bfa-1bac-4d12-b6d6-0a91d5b90ced/ongles-regal-2.jpg
+            return src.replace(/\/image\/+resize\/+([-0-9a-f]{20,})\/+[^/]*\/+([^/]*)(?:[?#].*)?$/, "/image/original/$1/$2");
+        }
+
+        if (amazon_container === "oblok") {
+            // https://oblok.s3.amazonaws.com/gallery_items/55654/panoramic/779F1CF278474D18AAE1664425B69A96.png?1534303035
+            return src.replace(/(\/gallery_items\/+[0-9]+\/+)[^/]*\/+/, "$1original/");
+        }
+
+        if (domain_nowww === "salonfloris.ru") {
+            // http://salonfloris.ru/thumb/YjsJ-yRLRzPMogx9rXRDMw/360r300/1689227/uo7gqu268jg.jpg
+            //   http://salonfloris.ru/d/1689227/d/uo7gqu268jg.jpg
+            return src.replace(/\/thumb\/+[^/]*\/+[0-9]+r[0-9]+\/+([0-9]+\/+)/, "/d/$1d/");
+        }
+
+        if (domain_nowww === "kmarket43.ru") {
+            // http://kmarket43.ru/media/cache/160x180/offers/org-1313/c5/e9/c5e9fd4e-3692-11e9-b29e-d7e4bb69223d.jpg
+            //   http://kmarket43.ru/media/offers/org-1313/c5/e9/c5e9fd4e-3692-11e9-b29e-d7e4bb69223d.jpg
+            // http://kmarket43.ru/media/offers/org-1313/c5/e9/c5e9fd4e-3692-11e9-b29e-d7e4bb69223d.jpg.310x350_q85_upscale.jpg
+            //   http://kmarket43.ru/media/offers/org-1313/c5/e9/c5e9fd4e-3692-11e9-b29e-d7e4bb69223d.jpg
+            return src
+                .replace(/\/media\/+cache\/+[0-9]+x[0-9]+\/+offers\/+/, "/media/offers/")
+                .replace(/(\.[^/.]+)\.[^/.]+\.[^/.]+(?:[?#].*)?$/, "$1");
         }
 
 
@@ -35800,8 +35861,10 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                             }
 
                             if (!is_extension) {
-                                if (obj.forces_download || ((content_type.match(/binary\//) ||
-                                      content_type.match(/application\//)) && !obj.head_wrong_contenttype) ||
+                                if (obj.forces_download || (
+                                    (content_type.match(/(?:binary|application)\//) ||
+                                     // such as [image/png] (server bug)
+                                     content_type.match(/^ *\[/)) && !obj.head_wrong_contenttype) ||
                                     (headers["content-disposition"] &&
                                      headers["content-disposition"].toLowerCase().match(/^ *attachment/))) {
                                     console_error("Forces download");
