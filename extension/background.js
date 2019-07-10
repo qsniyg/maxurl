@@ -305,6 +305,9 @@ chrome.webRequest.onHeadersReceived.addListener(function(details) {
       var value = header.value;
 
       if (name === "content-type") {
+        // [image/png] -> image/png
+        value = value.replace(/^ *\[(.*?)\]/, "$1");
+        header.value = value;
         if (!value.match(/^ *binary\//) &&
             !value.match(/^ *application\//)) {
           newheaders.push(header);
