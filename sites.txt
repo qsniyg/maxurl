@@ -1,4 +1,5 @@
 # This is an automatically generated list of every hardcoded website currently supported by the script.
+#
 # Hardcoded websites are (usually) websites that need custom logic that cannot be represented
 #  in a generic rule.
 #
@@ -13,6 +14,7 @@
 #  If you spot any issues, please leave an issue on Github, and I will try to fix it as soon as I can.
 
 00news.co.kr
+100posto.hr
 1079ishot.com
 10daily.com.au
 10wallpaper.com
@@ -113,6 +115,7 @@ acidimg.cc
 acoop-onlineshop.jp
 acsta.net
 actualite.benchmark.fr
+addons.cdn.mozilla.net
 adevarul.ro
 adintime.com
 adis.ws
@@ -164,6 +167,7 @@ aljazeera.com
 all-stars.su
 all4desktop.com
 allbox.tv
+allcelebs.club
 allday2.com
 allegroimg.com
 alliswall.com
@@ -228,6 +232,7 @@ api.theweek.com
 appdata.hungryapp.co.kr
 appdb.winehq.org
 appspot.com
+apsk.co.kr
 aqua.komica.org
 aquarellefm.md
 arabmubasher.com
@@ -294,6 +299,7 @@ assets.mycast.io
 assets.nuuvem.com
 assets.nydailynews.com
 assets.pcmag.com
+assets.perfecte.ro
 assets.planetradio.co.uk
 assets.popbuzz.com
 assets.publishing.service.gov.uk
@@ -340,6 +346,7 @@ avisen.dk
 avsforum.com
 awanshop.co
 aws-foto.amateri.com
+aws.glamour.mx
 aws.revistavanityfair.es
 awsimages.detik.net.id
 axisanimation.com
@@ -387,6 +394,7 @@ bdimg.com
 bdmaster.net
 bdstatic.com
 be35832fa5168a30acd6-5c7e0f2623ae37b4a933167fe83d71b5.ssl.cf3.rackcdn.com
+beatsports.net
 beautifulmodels.xyz
 beauty-co.jp
 beautycrew.com.au
@@ -635,9 +643,11 @@ cdn.discordapp.com
 cdn.discuss.com.hk
 cdn.doctailieu.com
 cdn.downtoearth.org.in
+cdn.dribbble.com
 cdn.ebaumsworld.com
 cdn.emetro.co.kr
 cdn.empireonline.com
+cdn.entertainmentfuse.com
 cdn.eroticbeauties.net
 cdn.eso.org
 cdn.faponix.com
@@ -709,6 +719,7 @@ cdn.panda-gossips.com.s3.amazonaws.com
 cdn.pastemagazine.com
 cdn.pics.fhg.javhd.com
 cdn.pixabay.com
+cdn.pocket-lint.com
 cdn.popbela.com
 cdn.poplook.com
 cdn.pornpictureshq.com
@@ -786,8 +797,10 @@ cdp.pl
 cds.topdaily.kr
 cduniverse.ws
 ce8737e8c.cloudimg.io
+celeb-for-free.com
 celeb.gate.cc
 celeb6free.com
+celebact.com
 celebact.org
 celebcafe.net
 celebfeetpics.com
@@ -798,13 +811,16 @@ celebriot.com
 celebritiestown.com
 celebritydresses.shop
 celebritygalls.com
+celebritying.com
 celebritypictures.wiki
 celebritytalent.net
 celebritywc.com
 celebs-news.ru
 celebs-place.com
 celebs-porno.com
+celebsandstarsnude.com
 celebsdump.com
+celebsking.com
 celebsnetworth.org
 celebwallpaper.org
 celebzz.com
@@ -930,6 +946,7 @@ cosmopolitan.com.hk
 cosmopolitan.de
 cosmopolitan.hu
 cosmopolitan.nl
+cosmopolitan.rs
 cosp.jp
 cosplaytime.pl
 cosplaywon.com
@@ -961,6 +978,7 @@ ctd-thechristianpost.netdna-ssl.com
 ctvnews.ca
 cumicumi.com
 cumonprintedpics.com
+cuore.es
 customcelebritydresses.com
 customity.com
 cwcontent.asiae.co.kr
@@ -1013,6 +1031,7 @@ d2t7cq5f1ua57i.cloudfront.net
 d2u7zfhzkfu65k.cloudfront.net
 d2yal1mtmg1ts6.cloudfront.net
 d2yoo3qu6vrk5d.cloudfront.net
+d30fl32nd2baj9.cloudfront.net
 d32dm0rphc51dk.cloudfront.net
 d36tnp772eyphs.cloudfront.net
 d38c5dutwb1t0j.cloudfront.net
@@ -1041,6 +1060,7 @@ d9nvuahg4xykp.cloudfront.net
 da4pli3l5vc0d.cloudfront.net
 daejonilbo.com
 dagospia.com
+daily-celebvideos.com
 dailybruin.com
 dailygrid.net
 dailyherald.com
@@ -1377,6 +1397,7 @@ file.thisisgame.com
 file.tinnhac.com
 file.tintuckpop.net
 filepicker.io
+files.all-free-download.com
 files.d20.io.s3.amazonaws.com
 files.dals.media
 files.der-farang.com
@@ -1399,6 +1420,7 @@ filmweb.no
 filmz.dk
 filo.news
 fimgs.net
+findnudecelebs.com
 finds.ir
 findx.com
 firenewsfeed.com
@@ -1505,6 +1527,7 @@ gallica.bnf.fr
 game234.com
 game2day.ru
 game4v.com
+gamegrin.com
 gamer.ru
 gamers-onlineshop.jp
 gamersky.com
@@ -1512,6 +1535,7 @@ games.mail.ru
 gamesite.zoznam.sk
 gamespark.jp
 gameworld.gr
+gaminglives.com
 gannett-cdn.com
 ganref.jp
 gaobei.com
@@ -1693,6 +1717,7 @@ hipertextual.com
 hiphopdx-production.s3.amazonaws.com
 hips.hearstapps.com
 hiqqu.xxx
+hitek.fr
 hitomi.la
 hmg-prod.s3.amazonaws.com
 hmv.com.hk
@@ -1713,6 +1738,7 @@ horizont.net
 hornyteen.pro
 hostave2.net
 hosted.amourangels.com
+hot-celebs.co
 hot-korea.net
 hotel-aramis.com
 hoteljardinlebrea.com
@@ -1905,6 +1931,7 @@ image.hoopchina.com
 image.ibb.co
 image.iol.co.za
 image.istyle24.com
+image.isu.pub
 image.itmedia.co.jp
 image.jeuxvideo.com
 image.jimcdn.com
@@ -1920,6 +1947,7 @@ image.make-book.jp
 image.melon.co.kr
 image.mlive.com
 image.munhwa.com
+image.nanopress.it
 image.news.livedoor.com
 image.news1.kr
 image.newstomato.com
@@ -1973,6 +2001,7 @@ images-production.global.ssl.fastly.net
 images.24ur.com
 images.45cat.com
 images.8tracks.com
+images.all-free-download.com
 images.allocine.fr
 images.alwatanvoice.com
 images.anandtech.com
@@ -2011,6 +2040,7 @@ images.discordapp.net
 images.ebaumsworld.com
 images.enstarz.com
 images.estately.net
+images.eurogamer.net
 images.everyeye.it
 images.ezvid.com
 images.f2fcdn.net
@@ -2111,8 +2141,10 @@ images.sxx.com
 images.sysapi.mtg.now.com
 images.taboola.com
 images.techhive.com
+images.techtimes.com
 images.theconversation.com
 images.thehollywoodgossip.com
+images.themevault.net
 images.thestar.com
 images.thewest.com.au
 images.treccani.it
@@ -2189,6 +2221,7 @@ img.aws.livestrongcdn.com
 img.barelist.com
 img.beatles.ru
 img.benzspirit.com
+img.beritasatu.com
 img.bg.sof.cmestatic.com
 img.biggo.com.tw
 img.bisnis.com
@@ -2319,6 +2352,7 @@ img.mediacentrum.sk
 img.memecdn.com
 img.mfcimg.com
 img.mgpyh.com
+img.milanuncios.com
 img.milli.az
 img.minq.com
 img.miumag.pl
@@ -2590,6 +2624,7 @@ jk6.cc
 jkcdn.pajk.com.cn
 jmagazine.joins.com
 joah-girls.com
+jooinn.com
 joomag.com
 joongdo.co.kr
 joseilbo.com
@@ -2659,6 +2694,7 @@ kinoukr.com
 kisax.com
 kknews.cc
 klik.gr
+kmarket43.ru
 kms.yawmiyati.com
 kn3.net
 knihy.abz.cz
@@ -2840,6 +2876,7 @@ maminka.cz
 mandatory.com
 mangadrawing.net
 mariahsworld.com
+marieclaire.com.au
 marieclaire.hu
 marieclairebucket.s3.amazonaws.com
 marishe.com
@@ -2881,6 +2918,7 @@ media.blogto.com
 media.bongda.com.vn
 media.brandonsun.com
 media.breitbart.com
+media.cbs8.com
 media.celebmasta.com
 media.cinedb.com.tr
 media.cnnchile.com
@@ -2902,6 +2940,7 @@ media.feminis.ro
 media.filfan.com
 media.filmz.ru
 media.fox29.com
+media.foxla.com
 media.fromthegrapevine.com
 media.funradio.fr
 media.game8.vn
@@ -3008,6 +3047,7 @@ media.vietq.vn
 media.virbcdn.com
 media.virginradio.fr
 media.vogue.com
+media.voltron.voanews.com
 media.winnipegfreepress.com
 media.wired.com
 media.withtank.com
@@ -3038,6 +3078,7 @@ megamich.com
 meitudata.com
 melonbooks.akamaized.net
 melonbooks.co.jp
+memberme.net
 mengchongzhi.com
 meninafm.com.br
 menslife.com
@@ -3153,6 +3194,7 @@ music.fetnet.net
 musicfeeds.com.au
 musicimage.xboxlive.com
 musictory.com
+mweb.co.za
 my-hit.org
 my.cdn.tokyo-hot.com
 my.evilmilk.com
@@ -3185,12 +3227,16 @@ mz-prod.s3.amazonaws.com
 mz-web.de
 mzstatic.com
 n11scdn.akamaized.net
+n3rdabl3.com
 nacionrex.com
 naftemporiki.gr
+naharnet.com
 nails.newsela.com
+nakedcelebs.top
 nakedebonycelebs.com
 namooactors.com
 nana10img.storage.googleapis.com
+nanopress.it
 narcity.com
 narvii.com
 nastol.com.ua
@@ -3208,6 +3254,7 @@ nbstr.org
 ndsstatic.com
 negani.com
 nehuha.net
+neocelebs.com
 neochan.ru
 neosite.pl
 netease.com
@@ -3282,8 +3329,10 @@ nintendoeverything.com
 nintendoworldreport.com
 nisfeldunia.ahram.org.eg
 nishinippon.co.jp
+nitrovideo.com
 niuerdata.donews.com
 niuerdata.g.com.cn
+nnimgt-a.akamaihd.net
 nnmassets.cf
 nocookie.net
 nocutnews.co.kr
@@ -3313,7 +3362,9 @@ nude-gals.com
 nude-scene.net
 nudeasiancelebs.com
 nudecelebrities.mobi
+nudecelebs-a-z.com
 nudecelebs.world
+nudecelebspics.net
 nudemodelpics.com
 nudevideovixens.com
 nudiez-production.s3.amazonaws.com
@@ -3329,6 +3380,7 @@ nyt.com
 nytimes.com
 o.oystermag.com
 obaldenno.com
+oblok.s3.amazonaws.com
 oboi.cc
 oboi.ws
 oboik.ru
@@ -3378,6 +3430,7 @@ outlookweekly.net
 over-blog.com
 overcast.fm
 oxfordmail.co.uk
+oyster.ignimgs.com
 ozanyerli.com
 ozone.ru
 p.cosmopolitan.bg
@@ -3469,6 +3522,7 @@ pic.homepornbay.com
 pic.kuaizhan.com
 pic.pimg.tw
 pic.qiantucdn.com
+pic.qianye88.com
 pic.rutube.ru
 pic.sucaibar.com
 pic.xiami.net
@@ -3524,6 +3578,8 @@ pl.scdn.co
 plasticsurgerystar.com
 playground33.com
 playstationlifestyle.net
+plus613.net
+pluscelebs.com
 pluska.sk
 pmdstatic.net
 pnewsapp.tc.qq.com
@@ -3560,6 +3616,7 @@ prdelinky.cz
 pre.aichi.jp
 pressassociation.io
 pressreader.com
+prettyzone.net
 preview.ibb.co
 preview.redd.it
 previiew.com
@@ -3587,6 +3644,7 @@ protv.md
 proxy.duckduckgo.com
 proxy.imgsmail.ru
 prsize.allviki.com
+prt.iza.ne.jp
 prtimes.jp
 psbin.com
 psneurope.com
@@ -3740,6 +3798,7 @@ rnx.kr
 ro69-bucket.s3.amazonaws.com
 robertocavada.com
 rocklyric.jp
+rockpapershotgun.com
 ropose.com
 rosario3.com
 rosphoto.com
@@ -3790,6 +3849,7 @@ s.smutty.com
 s.starladder.com
 s.stylemode.com
 s.thestreet.com
+s.tmimgcdn.com
 s.tvp.pl
 s.w-x.co
 s12emagst.akamaized.net
@@ -3802,6 +3862,7 @@ s3bucketvn.s3.amazonaws.com
 s4tu.com
 s9v7j7a4.ssl.hwcdn.net
 safebooru.org
+salonfloris.ru
 samironsheadshots.com
 san.imatin.net
 sandinyoureye.co.uk
@@ -3827,6 +3888,7 @@ screenbeauty.com
 screencrush.com
 screensonic.net
 sdpnoticias.com
+searchcelebrityhd.com
 searx.info
 seatgeek.com
 secondmirror.co.kr
@@ -3958,6 +4020,7 @@ specialone.co.kr
 sphm-female-site-production.s3.amazonaws.com
 spice.eplus.jp
 spicy.southdreamz.com
+spiiky.com
 spirig-schulungscenter.ch
 spletnik.ru
 spoilercat.com
@@ -3976,6 +4039,7 @@ ss-images.catscdn.vn
 ss.metronews.ru
 ss.sport-express.ru
 ssl-images-amazon.com
+ssmscdn.yp.ca
 ssproxy.ucloudbiz.olleh.com
 ssref.net
 st-gdefon.gallery.world
@@ -3994,6 +4058,7 @@ stakimages.me
 stalkcelebs.com
 staples-3p.com
 star-magazine.co.uk.s3.amazonaws.com
+star-telegram.com
 staraz.co.kr
 starbeat.ru
 starcelebritydresses.com
@@ -4007,6 +4072,7 @@ starofservice.com
 stars-naked.ru
 stars-photos.com
 starsdaily.net
+starsmaster.com
 starspics.ru
 starsplanet.ru
 startfilm.ru
@@ -4103,6 +4169,7 @@ static.panoramio.com.storage.googleapis.com
 static.pinwallpapers.com
 static.pjmedia.com
 static.planetminecraft.com
+static.pptstore.net
 static.pulse.com.gh
 static.pulse.ng
 static.pulselive.co.ke
@@ -4123,7 +4190,9 @@ static.stereogum.com
 static.stylemagazin.hu
 static.stylosophy.it
 static.t13.cl
+static.techspot.com
 static.thefrisky.com
+static.themezy.com
 static.thesuperficial.com
 static.timesofisrael.com
 static.toiimg.com
@@ -4192,6 +4261,7 @@ styles.redditmedia.com
 styleshare.kr
 styleslum.com
 styleyen.com
+stylosophy.it
 stylowi.pl
 suanning.com
 subscriber.telegraph.co.uk
@@ -4261,6 +4331,7 @@ tellymix-spykawebgroup.netdna-ssl.com
 tellymixcdn.com
 telugu.samayam.com
 teluguone.com
+templatemo.com
 terrigen-cdn-dev.marvel.com
 tesall.ru
 textilwirtschaft.de
@@ -4271,10 +4342,12 @@ tgbusdata.cn
 th.blogosfere.it
 th.fashionblog.it
 th.pinkblog.it
+th.thgim.com
 thai.ac
 thairomances.com
 the-star.co.kr
 theactuary.com
+theargus.co.uk
 theasianpics.com
 theaudiodb.com
 thebarchive.com
@@ -4293,6 +4366,7 @@ thegenealogist.co.uk
 thegioitre.vn
 theheartysoul.com
 thehindu.com
+thehindubusinessline.com
 thehshq.com
 thehunt.com
 thejewelleryeditor.com
@@ -4304,6 +4378,7 @@ themebeta.com
 themepack.me
 thenational.ae
 thenorthernecho.co.uk
+thephuketnews.com
 theplace.ru
 theplace2.ru
 thequeenofstyle.com
@@ -4784,6 +4859,7 @@ zol-img.com.cn
 zonadelta.net
 zoom.co.uk
 zoomit.ir
+zopix.net
 zozchat.com
 zrockr.com
 zum.com
