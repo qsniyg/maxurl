@@ -35,7 +35,8 @@ var $$IMU_EXPORT$$;
 
     if (_nir_debug_) {
         _nir_debug_ = {
-            no_request: false
+            no_request: false,
+            no_recurse: false
         };
     }
 
@@ -3292,6 +3293,12 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/files\/[^/]*\/uploads\//, "/uploads/");
         }
 
+        if (domain === "media.voltron.voanews.com") {
+            // https://media.voltron.voanews.com/Drupal/01live-166/styles/sourced/s3/2019-04/E5076B31-4E4E-4435-AD6A-3784CE9C188D.jpg?itok=jV9YimuM
+            //   https://media.voltron.voanews.com/Drupal/01live-166/2019-04/E5076B31-4E4E-4435-AD6A-3784CE9C188D.jpg?itok=jV9YimuM
+            return src.replace(/\/styles\/+[^/]*\/+s3\/+/, "/");
+        }
+
         if (domain_nowww === "trbimg.com") {
             return src.replace(/\/[0-9]*\/[0-9]*x[0-9]*\/*$/, "/").replace(/\/[0-9]*\/*$/, "/");
         }
@@ -4520,6 +4527,8 @@ var $$IMU_EXPORT$$;
             domain === "oyster.ignimgs.com" ||
             // https://www.marieclaire.com.au/media/29220/gettyimages-873295564.jpg?width=640
             (domain_nowww === "marieclaire.com.au" && src.indexOf("/media/") >= 0) ||
+            // https://www.theargus.co.uk/resources/images/10117461.jpg?htype=0&type=mc2
+            (domain_nowww === "theargus.co.uk" && /\/resources\/+images\/+/.test(src)) ||
             // http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
             // https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
             src.match(/\/demandware\.static\//) ||
@@ -5318,6 +5327,8 @@ var $$IMU_EXPORT$$;
             (domain_nosub === "sornamag.com" && src.match(/\/files\/+images\//)) ||
             // http://arhiva.nacional.hr/img/5/e/0/5e0d49042d5cb85f05d03d2485e2ba1b_700x550.jpg
             (domain === "arhiva.nacional.hr" && src.indexOf("/img/") >= 0) ||
+            // https://media.cbs8.com/assets/KFMB/images/7989a21b-212b-4cf2-b5ae-0e1798977c39/7989a21b-212b-4cf2-b5ae-0e1798977c39_750x422.jpg
+            (domain === "media.cbs8.com" && src.indexOf("/assets/") >= 0) ||
             // http://images.cinefil.com/movies/1053952_1600x450.jpg
             //   http://images.cinefil.com/movies/1053952.jpg
             domain === "images.cinefil.com") {
@@ -9737,6 +9748,8 @@ var $$IMU_EXPORT$$;
             // https://www.sanluisobispo.com/entertainment/movies-news-reviews/i9fla8/picture189785229/alternates/LANDSCAPE_160/COVER%201%20Zac%20Efron
             //   https://www.sanluisobispo.com/entertainment/movies-news-reviews/i9fla8/picture189785229/BINARY/COVER%201%20Zac%20Efron
             domain_nowww === "sanluisobispo.com" ||
+            // https://www.star-telegram.com/living/home-garden/neil-sperry/bfdn9z/picture162479848/alternates/FREE_1140/Photo%202%20Arch%20adds%20more%20curves%20to%20Sperry%20landscape.%20Walk%20stones%20made%20at%20home
+            domain_nowww === "star-telegram.com" ||
             // thanks to heptal on github (#83)
             // https://sportske.jutarnji.hr/incoming/dalic_moskva_pletikosajpg/9013841/alternates/FREE_680/Dalic_Moskva_pletikosa.jpg
             //   https://sportske.jutarnji.hr/incoming/dalic_moskva_pletikosajpg/9013841/alternates/BASE_FREE/Dalic_Moskva_pletikosa.jpg -- 1180x786
@@ -9747,7 +9760,15 @@ var $$IMU_EXPORT$$;
             // https://www.oneman.gr/gynaikes/special_edition/article5512371.ece/ALTERNATES/w300/Eurovision1.jpg
             //   https://www.oneman.gr/gynaikes/special_edition/article5512371.ece/BINARY/Eurovision1.jpg
             domain_nowww === "oneman.gr" ||
-            src.match(/\/incoming\/article[^/]*\.(?:ece|svt)\/(?:[^/]*\/)?(?:alternates|ALTERNATES)\//) ||
+            // https://th.thgim.com/migration_catalog/article10518620.ece/alternates/FREE_660/15mar_TCJPPHI-k+MA16_KERALA.jpg.jpg
+            //   https://th.thgim.com/migration_catalog/article10518620.ece/BINARY/15mar_TCJPPHI-k+MA16_KERALA.jpg.jpg
+            domain_nowww === "th.thgim.com" ||
+            // https://www.thehindubusinessline.com/opinion/6hdv46/article27406353.ece/ALTERNATES/LANDSCAPE_1200/SMRITI
+            domain_nowww === "thehindubusinessline.com" ||
+            // https://d30fl32nd2baj9.cloudfront.net/media/2019/05/03/tundra-landscape.jpg/ALTERNATES/w640/tundra-landscape.jpg
+            //   https://d30fl32nd2baj9.cloudfront.net/media/2019/05/03/tundra-landscape.jpg/BINARY/tundra-landscape.jpg
+            domain === "d30fl32nd2baj9.cloudfront.net" ||
+            src.match(/\/(?:article[0-9]+\.(?:ece|svt)|[0-9a-z]+\/+picture[0-9]{4,})\/+(?:[^/]*\/)?(?:alternates|ALTERNATES)\//) ||
             src.match(/:\/\/i[0-9]*(?:-prod)?\..*\/article[^/]*\.(?:ece|svt)\//) ||
             // https://www.independent.ie/world-news/article37114917.ece/ALTERNATES/h342/ipanews_2350b658-06c1-4a29-b747-cbfdcd1b624c_1
             //   https://www.independent.ie/world-news/article37114917.ece/BINARY/ipanews_2350b658-06c1-4a29-b747-cbfdcd1b624c_1
@@ -9787,6 +9808,11 @@ var $$IMU_EXPORT$$;
             // https://i2-prod.dailypost.co.uk/incoming/article12849370.ece/binary/BigBubble.jpg
             // https://i2-prod.bristolpost.co.uk/incoming/article1143957.ece/BINARY/Elise-Britten-profile-pic-square.jpg
             // https://www.gloria.hr/moda/novosti/naomicampbell01jpg/6949668/alternates/FREE_580/NaomiCampbell01.jpg
+            // doesn't work for all:
+            // https://www.inforum.com/entertainment/article542555.ece/alternates/BASE_LANDSCAPE/Herbs%20like%20dill%20can%20make%20a%20nice%20addition%20to%20an%20edible%20landscape.%20%20Photo%20special%20to%20The%20Forum.%20
+            //   https://www.inforum.com/entertainment/article542555.ece/BINARY/Herbs%20like%20dill%20can%20make%20a%20nice%20addition%20to%20an%20edible%20landscape.%20%20Photo%20special%20to%20The%20Forum.%20 -- 404
+            // https://www.fccnn.com/incoming/886099-A-row-of-wind-turbines-towers-over-the-landscape-near-Edgeley-N.D.-in-this-file-photo.-Darren-Gibbins-Forum-News-Service/alternates/BASE_LANDSCAPE/A%20row%20of%20wind%20turbines%20towers%20over%20the%20landscape%20near%20Edgeley%2C%20N.D.%20Darren%20Gibbins%20%20Forum%20News%20Service
+            //   https://www.fccnn.com/incoming/886099-A-row-of-wind-turbines-towers-over-the-landscape-near-Edgeley-N.D.-in-this-file-photo.-Darren-Gibbins-Forum-News-Service/BINARY/A%20row%20of%20wind%20turbines%20towers%20over%20the%20landscape%20near%20Edgeley%2C%20N.D.%20Darren%20Gibbins%20%20Forum%20News%20Service -- 404, similar layout to above?
             //return src.replace(/(\/article[0-9]*\.ece\/.*?)(?:alternates|ALTERNATES|AUTOCROP|autocrop)\/[^/]*\//, "$1BINARY/");
             newsrc = src.replace(/(?:alternates|ALTERNATES|AUTOCROP|autocrop|binary|BINARY)\/+[^/]*\/+([^/]*)$/, "BINARY/$1");
             if (newsrc !== src)
@@ -10538,12 +10564,15 @@ var $$IMU_EXPORT$$;
             // https://media.fox29.com/media.fox29.com/photo/2018/07/09/GETTY_thai_cave_rescue_ambulance_070918%20_OP_2_CP__1531142830871.jpg_5770639_ver1.0_640_360.jpg
             //   https://media.fox29.com/media.fox29.com/photo/2018/07/09/GETTY_thai_cave_rescue_ambulance_070918%20_OP_2_CP__1531142830871.jpg_5770639_ver1.0.jpg
             domain === "media.fox29.com" ||
+            // https://media.foxla.com/media.foxla.com/photo/2018/06/11/Panga_boat_lands_on_Laguna_Beach_shore___0_5651395_ver1.0_640_360.jpg
+            //   https://media.foxla.com/media.foxla.com/photo/2018/06/11/Panga_boat_lands_on_Laguna_Beach_shore___0_5651395_ver1.0.jpg
+            domain === "media.foxla.com" ||
             // https://sharedmedia.grahamdigital.com/photo/2016/04/06/Rachel+McAdams_19105756_10868403_ver1.0_160_90.jpg
             //   https://sharedmedia.grahamdigital.com/photo/2016/04/06/Rachel+McAdams_19105756_10868403_ver1.0.jpg
             domain === "sharedmedia.grahamdigital.com" ||
             // http://pic.sucaibar.com/pic/201606/20/b79d344371_184_320.jpg
             //   http://pic.sucaibar.com/pic/201606/20/b79d344371.jpg
-            (domain === "pic.sucaibar.com" && src.match(/\/pic\/+[0-9]{6}\/+/))||
+            (domain === "pic.sucaibar.com" && src.match(/\/pic\/+[0-9]{6}\/+/)) ||
             // https://mediaassets.wxyz.com/photo/2018/05/22/poster_22074aded9dd4214ae42eb62a4404769_87749608_ver1.0_320_240.jpg
             //   https://mediaassets.wxyz.com/photo/2018/05/22/poster_22074aded9dd4214ae42eb62a4404769_87749608_ver1.0.jpg
             domain === "mediaassets.wxyz.com") {
@@ -34045,6 +34074,33 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/\/preview\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/$1");
         }
 
+        if (domain_nowww === "thephuketnews.com") {
+            // https://www.thephuketnews.com/image-1.4.1/image.php?width=250&cropratio=4:3&image=https://www.thephuketnews.com/photo/listing/2019/1562825660_1-org.jpg
+            //   https://www.thephuketnews.com/photo/listing/2019/1562825660_1-org.jpg
+            newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/image-[.0-9]+\/+image\.php\?(?:.*?&)?image=([^&]*).*?$/, "$1");
+            if (newsrc !== src)
+                return decodeuri_ifneeded(newsrc);
+        }
+
+        if (domain_nosub === "naharnet.com" && domain.match(/^images[0-9]*\./)) {
+            // http://images0.naharnet.com/images/217342/w460.jpg?1543904604
+            //   http://images0.naharnet.com/images/217342/original.jpg?1543904604
+            return src.replace(/(\/images\/+[0-9]+\/+)[wh][0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1original$2");
+        }
+
+        if (domain === "img.beritasatu.com") {
+            // https://img.beritasatu.com/cache/jakartaglobe/960x620-4/2018/12/2018-11-27T130739Z_1904968908_RC148064D8D0_RTRMADP_3_GLOBAL-POY.jpg
+            //   https://img.beritasatu.com/jakartaglobe/2018/12/2018-11-27T130739Z_1904968908_RC148064D8D0_RTRMADP_3_GLOBAL-POY.jpg
+            return src.replace(/\/cache\/+([^/]*)\/+[0-9]+x[0-9]+-[0-9]+\/+/, "/$1/");
+        }
+
+        if (domain === "nnimgt-a.akamaihd.net") {
+            // https://nnimgt-a.akamaihd.net/transform/v1/crop/frm/37uSWs3eyNM24fqefKJaatC/15f3290a-c825-48cd-a43d-8a924725bbb9.JPG/r7_0_3065_1728_w1200_h678_fmax.jpg
+            //   https://nnimgt-a.akamaihd.net/transform/v1/resize/frm/37uSWs3eyNM24fqefKJaatC/15f3290a-c825-48cd-a43d-8a924725bbb9.JPG/w0_h0_fscale.jpg
+            return src.replace(/\/transform\/+v1\/+[a-z]+\/+(frm\/+[^/]*\/+[^/]*\.[^/.]*)\/+[^/]*?(\.[^/.]*)?(?:[?#].*)?$/,
+                               "/transform/v1/resize/$1/w0_h0_fscale$2");
+        }
+
 
 
 
@@ -35103,6 +35159,8 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             domain === "photo.voici.fr" ||
             // https://www.essexstudent.com/asset/Event/6006/aquaman-original.jpg?thumbnail_width=595&thumbnail_height=883&resize_type=CropToFit
             domain_nowww === "essexstudent.com" ||
+            // https://th.thgim.com/life-and-style/htvob7/article27371367.ece/BINARY/Aakash-landscape-1
+            domain === "th.thgim.com" ||
             // http://images.contentful.com/l7es9q9kzr9z/KVC2bUAzyUkW6KaMgGkeA/2f45f07b331a60fc360ff8d641a29d7a/778_KimberlyMcArthur_15.jpg
             domain === "images.contentful.com") {
             return {
@@ -35543,7 +35601,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             if (objified[0].norecurse)
                 return false;
 
-            if (_nir_debug_) {
+            if (_nir_debug_ && _nir_debug_.no_recurse) {
                 return false;
             }
 
@@ -35917,11 +35975,12 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                 if (!headers || Object.keys(headers).length === 0) {
                     customheaders = false;
                     headers = {
-                        "Origin": url_domain,
+                        // Origin is not often added by the browser, and doesn't work for some sites
+                        //"Origin": url_domain,
                         "Referer": url
                     };
                 } else if (!headers.Origin && !headers.origin) {
-                    headers.Origin = url_domain;
+                    //headers.Origin = url_domain;
                 }
 
                 if (customheaders && !is_extension) {
@@ -35940,8 +35999,11 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                     return ok_cb(url);
 
                 var method = "HEAD";
-                if (!obj.can_head && settings.canhead_get)
+                if (!obj.can_head && settings.canhead_get) {
+                    if (_nir_debug_)
+                        console_log("Trying GET");
                     method = "GET";
+                }
 
                 do_request({
                     method: method,
