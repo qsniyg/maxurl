@@ -2097,6 +2097,8 @@ var $$IMU_EXPORT$$;
             domain_nowww === "gokorea.kr" ||
             // http://www.womaneconomy.kr/news/thumbnail/201701/43819_73700_258_v150.jpg
             domain_nowww === "womaneconomy.kr" ||
+            // http://www.apsk.co.kr/news/thumbnail/201907/4133_10362_2721_v150.jpg
+            domain_nowww === "apsk.co.kr" ||
             // http://www.newstown.co.kr/news/thumbnail/201801/311251_198441_4816_v150.jpg
             domain_nowww === "newstown.co.kr") {
             return add_extensions_upper_jpeg(src
@@ -4516,6 +4518,8 @@ var $$IMU_EXPORT$$;
             (domain === "images.techtimes.com" && /\/data\/+images\/+/.test(src)) ||
             // https://oyster.ignimgs.com/mediawiki/apis.ign.com/mirrors-edge-2/7/7f/ME_Imprisoned2.jpg?width=640
             domain === "oyster.ignimgs.com" ||
+            // https://www.marieclaire.com.au/media/29220/gettyimages-873295564.jpg?width=640
+            (domain_nowww === "marieclaire.com.au" && src.indexOf("/media/") >= 0) ||
             // http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
             // https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
             src.match(/\/demandware\.static\//) ||
@@ -9528,6 +9532,8 @@ var $$IMU_EXPORT$$;
             // https://d26oc3sg82pgk3.cloudfront.net/files/media/uploads/zinnia/2017/08/22/0824-felicity-jones_cred_shutterstock-featureflash-photo-agency.jpg.644x420_q100.jpg
             //   https://d26oc3sg82pgk3.cloudfront.net/files/media/uploads/zinnia/2017/08/22/0824-felicity-jones_cred_shutterstock-featureflash-photo-agency.jpg
             domain === "d26oc3sg82pgk3.cloudfront.net" ||
+            // https://memberme.net/media/creator/creators/d60239d1-4877-445c-913a-4cc837875214.jpg.300x300_q85_crop-50%2C%2050_detail_upscale.jpg
+            (domain_nowww === "memberme.net" && src.indexOf("/media/") >= 0) ||
             // https://d53l9d6fqlxs2.cloudfront.net/photos/41/41127-tokyos-tak.jpg.660x0_q80_crop-scale_upscale.jpg
             //   https://d53l9d6fqlxs2.cloudfront.net/photos/41/41127-tokyos-tak.jpg
             domain === "d53l9d6fqlxs2.cloudfront.net") {
@@ -11274,6 +11280,9 @@ var $$IMU_EXPORT$$;
             // http://www.alankabout.com/thumbnail.php?file=photo_galleries/celebrities/western_celebrities/milla_jovovich/Milla-Jovovich-37.JPG&size=article_medium
             //   http://www.alankabout.com/files/photo_galleries/celebrities/western_celebrities/milla_jovovich/Milla-Jovovich-37.JPG
             domain_nowww === "alankabout.com" ||
+            // https://www.cosmopolitan.rs/files.php?file=2017/11/ovo_nije_bio_crveni_tepih_na_kakav_smo_navikli_747279824.jpg
+            //   https://www.cosmopolitan.rs/files/2017/11/ovo_nije_bio_crveni_tepih_na_kakav_smo_navikli_747279824.jpg
+            domain_nowww === "cosmopolitan.rs" ||
             domain_nowww === "elle.rs") {
             // https://www.hairstyleinsider.com/thumbnail.php?file=2015/Emma_Watson_Bobby_Pinned_Updo_629726963.jpg&size=article_large
             //   https://www.hairstyleinsider.com/files/2015/Emma_Watson_Bobby_Pinned_Updo_629726963.jpg
@@ -11358,8 +11367,10 @@ var $$IMU_EXPORT$$;
             // http://cdn.vogue.mx/uploads/images/thumbs/mx/vog/2/c/2017/04/alexandre_vauthier_pasarela_170811342_185x278.jpg
             //   http://cdn.vogue.mx/uploads/images/mx/vog/c/2017/04/alexandre_vauthier_pasarela_170811342.jpg
             // http://cdn.vogue.mx/uploads/images/mx/vog/s/2016/10/familia_real_britanica_780685680.jpg
-            return src
+            newsrc = src
                 .replace(/\/uploads\/+images\/+thumbs(?:(\/+(?:mx|es)\/+(?:vog|glam|gq|vf)\/+)[0-9]*\/+([a-z]))?(\/+(?:[0-9]{4}\/+[0-9]+|[0-9]{4,})\/+[^/]*)_[0-9]+x(?:[0-9]+)?(\.[^/.]*)(?:[?#].*)?$/, "/uploads/images$1$2$3$4");
+            if (newsrc !== src)
+                return newsrc;
             //return src.replace(/\/thumbs\/([0-9]+\/[^/.]*)_[0-9]+x[0-9]+(\.[^/.]*)$/, "/$1$2");
             //return src.replace(/(\/uploads\/images)\/thumbs(?:(\/[a-z]+\/(?:vf|gq))\/[0-9]+)?(\/.*)_[0-9]+x(?:[0-9]+)?(\.[^/.]*)$/, "$1$2$3$4");
         }
@@ -11908,6 +11919,9 @@ var $$IMU_EXPORT$$;
         }
 
         if (domain_nowww === "ilyo.co.kr" ||
+            // https://beatsports.net/contents/article/images/2019/0626/thm300_1561478450595263.jpeg
+            //   https://beatsports.net/contents/article/images/2019/0626/1561478450595263.jpeg
+            domain_nowww === "beatsports.net" ||
             // http://www.ohfun.net/contents/article/images/2014/0925/thm200_1411630979197969.jpg
             //   http://www.ohfun.net/contents/article/images/2014/0925/1411630979197969.jpg
             domain_nowww === "ohfun.net") {
@@ -19205,14 +19219,28 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/\/cache\/([^/]*)_[0-9]+(\.[^/.]*)$/, "/$1$2");
         }
 
-        if (domain === "static.stylosophy.it") {
+        if (domain === "static.stylosophy.it" ||
+            // https://image.nanopress.it/r/845X0/donna.nanopress.it/img/Rita-Ora-agli-MTV-EMA-2017.jpg
+            //   https://image.nanopress.it/r/999999999999x0/donna.nanopress.it/img/Rita-Ora-agli-MTV-EMA-2017.jpg
+            //   https://donna.nanopress.it/img/Rita-Ora-agli-MTV-EMA-2017.jpg
+            domain === "image.nanopress.it") {
             // https://static.stylosophy.it/r/50x0/www.stylosophy.it/img/Trucco-rosso-occhi-verdi.jpg
             //   https://static.stylosophy.it/r/999999999999x0/www.stylosophy.it/img/Trucco-rosso-occhi-verdi.jpg
             // https://static.stylosophy.it/845X0/www/stylosophy/it/img/Keira-Knightley-in-Mary-Kontratzou.jpg
             //   https://static.stylosophy.it/999999999999x0/www/stylosophy/it/img/Keira-Knightley-in-Mary-Kontratzou.jpg -- doesn't work
-            newsrc = src.replace(/(:\/\/[^/]*\/)(r\/)[0-9]+[xX][0-9]+\//, "$1$2999999999999x0/");
+            newsrc = src.replace(/(:\/\/[^/]*\/)(r\/+)[0-9]+[xX][0-9]+\//, "$1$2999999999999x0/");
             if (newsrc !== src)
                 return newsrc;
+
+            newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/r\/+[0-9]+[xX][0-9]+\/+([^/]*\.[^/]*\/)/, "http://$1");
+            if (newsrc !== src)
+                return newsrc;
+        }
+
+        if (domain === "static.stylosophy.it") {
+            // http://static.stylosophy.it/625X0/www/stylosophy/it/img/Trucco-rosso-occhi-verdi.jpg
+            //   http://static.stylosophy.it/999999999999X0/www/stylosophy/it/img/Trucco-rosso-occhi-verdi.jpg
+            return src.replace(/(:\/\/[^/]*\/)[0-9]+X[0-9]+\/+www\/+/, "$1999999999999X0/www/");
         }
 
         if (amazon_container === "nikeinc" &&
@@ -21176,12 +21204,6 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                     Referer: "http://" + domain_nosub + "/"
                 }
             };
-        }
-
-        if (domain_nowww === "celebcafe.net") {
-            // http://www.celebcafe.net/blog/thumbs/aSelena%20Gomez%20%20At%20swimming%20pool%20in%20Miami%20-%20Oct%2028%2C%202013%20%2844%29.jpg
-            //   http://www.celebcafe.net/blog/pics/aSelena%20Gomez%20%20At%20swimming%20pool%20in%20Miami%20-%20Oct%2028%2C%202013%20%2844%29.jpg
-            return src.replace(/\/blog\/thumbs\//, "/blog/pics/");
         }
 
         if (domain === "image.jeuxvideo.com") {
@@ -23775,7 +23797,13 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                 .replace(/(\/uploads\/images\/[0-9]+\/[a-z]+\/[0-9]+\/[0-9]+\/[0-9]+\/)[a-z]+_([0-9]+\.[^/.]*)$/, "$1$2");
         }
 
-        if (domain_nowww === "pure-nude-celebs.com") {
+        if (domain_nowww === "pure-nude-celebs.com" ||
+            // http://www.celebsandstarsnude.com/celebbabes/rosie-huntington-whiteley1/pic-rosie-huntington-whiteley-015.jpg
+            //   http://www.celebsandstarsnude.com/celebbabes/rosie-huntington-whiteley1/rosie-huntington-whiteley-015.jpg
+            domain_nowww === "celebsandstarsnude.com" ||
+            // http://www.celebsking.com/bannedbabe/dakota-johnson/pic-dakota-johnson-011.jpg
+            //   http://www.celebsking.com/bannedbabe/dakota-johnson/dakota-johnson-011.jpg
+            domain_nowww === "celebsking.com") {
             // http://www.pure-nude-celebs.com/celebsextape/felicity-jones/pic-felicity-jones-011.jpg
             //   http://www.pure-nude-celebs.com/celebsextape/felicity-jones/felicity-jones-011.jpg
             return src.replace(/\/pic-([^/]*)$/, "/$1");
@@ -24360,7 +24388,23 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/\/pics\/thumbs\//, "/pics/images/");
         }
 
+        if (domain_nowww === "celebcafe.net") {
+            // http://www.celebcafe.net/blog/thumbs/aSelena%20Gomez%20%20At%20swimming%20pool%20in%20Miami%20-%20Oct%2028%2C%202013%20%2844%29.jpg
+            //   http://www.celebcafe.net/blog/pics/aSelena%20Gomez%20%20At%20swimming%20pool%20in%20Miami%20-%20Oct%2028%2C%202013%20%2844%29.jpg
+            newsrc = src.replace(/\/blog\/thumbs\//, "/blog/pics/");
+            if (newsrc !== src)
+                return newsrc;
+        }
+
         if (domain_nowww === "z-celebs.com" ||
+            // https://www.celebcafe.net/k/katharine_mcphee_08/pics/thumbs/katharine_mcphee_03.jpg
+            //   https://www.celebcafe.net/k/katharine_mcphee_08/pics/katharine_mcphee_03.jpg
+            domain_nowww === "celebcafe.net" ||
+            // http://www.neocelebs.com/fg/l/lena_gercke_03/pics/thumbs/lena_gercke_01.jpg
+            //   http://www.neocelebs.com/fg/l/lena_gercke_03/pics/lena_gercke_01.jpg
+            domain_nowww === "neocelebs.com" ||
+            // http://www.starsmaster.com/j/julia_kijowska_01/pics/thumbs/julia_kijowska_12.jpg
+            domain_nowww === "starsmaster.com" ||
             // http://www.easycelebritys.com/f/felicity_jones_02/pics/thumbs/felicity_jones_14.jpg
             //   http://www.easycelebritys.com/f/felicity_jones_02/pics/felicity_jones_14.jpg
             domain_nowww === "easycelebritys.com") {
@@ -27668,7 +27712,10 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                 return add_http(newsrc);
         }
 
-        if (domain_nowww === "celeb6free.com") {
+        if (domain_nowww === "celeb6free.com" ||
+            // https://www.celeb-for-free.com/pics/celeb2432/pics/tn_rachel_bilson_01.jpg
+            //   https://www.celeb-for-free.com/pics/celeb2432/pics/rachel_bilson_01.jpg
+            domain_nowww === "celeb-for-free.com") {
             // http://www.celeb6free.com/pics/celeb6157/pics/tn_margot_robbie_01.jpg
             //   http://www.celeb6free.com/pics/celeb6157/pics/margot_robbie_01.jpg
             newsrc = src.replace(/\/pics\/+tn_([^/]*)(?:[?#].*)?$/, "/pics/$1");
@@ -28635,11 +28682,18 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
         if (domain === "mondrian.mashable.com") {
             // https://mondrian.mashable.com/uploads%252Fcard%252Fimage%252F192862%252FGettyImages-597565772.jpg%252F950x534__filters%253Aquality%252890%2529.jpg?signature=V4SmwROVetBUOolqpaVOTbpBH7M=&source=https%3A%2F%2Fblueprint-api-production.s3.amazonaws.com
             //   https://mondrian.mashable.com/uploads/card/image/192862/GettyImages-597565772.jpg/950x534__filters:quality(90).jpg
+            //   https://admin.mashable.com/uploads/card/image/192862/GettyImages-597565772.jpg -- doesn't work
             // wip
             //   https://pgnpbhn8ce.execute-api.us-east-1.amazonaws.com/default/mondrianImages/create-image/uploads/card/image/192862/GettyImages-597565772.jpg
             newsrc = src.replace(/(:\/\/[^/]*\/[^/?]*%252F[^/?]*)\?.*$/, "$1");
             if (newsrc !== src)
                 return decodeURIComponent(decodeURIComponent(newsrc));
+
+            // https://mondrian.mashable.com/wp-content/gallery/2016-grammy-awards-red-carpet/GettyImages-510433316.jpg/fit-in__850x850.jpg
+            //   https://admin.mashable.com/wp-content/gallery/2016-grammy-awards-red-carpet/GettyImages-510433316.jpg
+            newsrc = src.replace(/:\/\/[^/]*\/(wp-content\/+.*?\/[^/]*\.[^/.]*)\/[^/]*\.[^/.]*(?:[?#].*)?$/, "://admin.mashable.com/$1");
+            if (newsrc !== src)
+                return newsrc;
         }
 
         if (domain === "image.wisetrail.com") {
@@ -28815,10 +28869,22 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/(\/files\/+photos\/+[0-9]+\/+[^/]*)-(?:small|large|medium|micro|popover)(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
         }
 
-        if (domain_nowww === "celebsdump.com") {
+        if (domain_nowww === "celebsdump.com" ||
+            // http://nakedcelebs.top/posts/2019/03/524/thumbs/madison-beer-legs-and-cleavage-at-2019-iheartradio-music-awards-33.jpg
+            //   http://nakedcelebs.top/posts/2019/03/524/images/madison-beer-legs-and-cleavage-at-2019-iheartradio-music-awards-33.jpg
+            // http://nakedcelebs.top/posts/2019/07/638/images/gemma-chan-for-allure-magazine-usa-april-2019-9.jpg
+            //   http://nakedcelebs.top/posts/2019/07/638/originals/gemma-chan-for-allure-magazine-usa-april-2019-9.jpg
+            domain_nowww === "nakedcelebs.top") {
             // https://celebsdump.com/posts/2019/04/5397/thumbs/lais-ribeiro-sexy-topless-and-naked-for-gq-magazine-mexico-august-2016-3.jpg
             //   https://celebsdump.com/posts/2019/04/5397/images/lais-ribeiro-sexy-topless-and-naked-for-gq-magazine-mexico-august-2016-3.jpg
-            return src.replace(/(\/posts\/+[0-9]{4}\/+[0-9]{2}\/+[0-9]+\/+)thumbs\/+/, "$1images/");
+            // https://celebsdump.com/posts/2019/07/7719/featured/maia-mitchell-at-disney-s-the-lion-king-premiere-in-hollywood-july-09-2019-26.jpg
+            //   https://celebsdump.com/posts/2019/07/7719/images/maia-mitchell-at-disney-s-the-lion-king-premiere-in-hollywood-july-09-2019-26.jpg
+            //   https://celebsdump.com/posts/2019/07/7719/originals/maia-mitchell-at-disney-s-the-lion-king-premiere-in-hollywood-july-09-2019-26.jpg
+            regex = /(\/posts\/+[0-9]{4}\/+[0-9]{2}\/+[0-9]+\/+)(?:thumbs|featured|images)\/+/;
+            return [
+                src.replace(regex, "$1originals/"),
+                src.replace(regex, "$1images/")
+            ];
         }
 
         if (domain === "photos.laineygossip.com") {
@@ -31540,7 +31606,10 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/\/download\/+file\.php.*?[?&](id=[0-9]+).*?$/, "/download/file.php?$1");
         }
 
-        if (domain === "aws.revistavanityfair.es") {
+        if (domain === "aws.revistavanityfair.es" ||
+            // https://aws.glamour.mx/prod/designs/v1/assets/666x1000/43238.jpg
+            //   https://aws.glamour.mx/prod/designs/v1/assets/original/43238.jpg
+            domain === "aws.glamour.mx") {
             // https://aws.revistavanityfair.es/prod/designs/v1/assets/290x240/156016.jpg
             //   https://aws.revistavanityfair.es/prod/designs/v1/assets/original/156016.jpg
             return src.replace(/\/assets\/+[0-9]+x[0-9]+\/+/, "/assets/original/");
@@ -33880,6 +33949,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
 
         if (amazon_container === "oblok") {
             // https://oblok.s3.amazonaws.com/gallery_items/55654/panoramic/779F1CF278474D18AAE1664425B69A96.png?1534303035
+            //   https://oblok.s3.amazonaws.com/gallery_items/55654/original/779F1CF278474D18AAE1664425B69A96.png?1534303035
             return src.replace(/(\/gallery_items\/+[0-9]+\/+)[^/]*\/+/, "$1original/");
         }
 
@@ -33897,6 +33967,82 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src
                 .replace(/\/media\/+cache\/+[0-9]+x[0-9]+\/+offers\/+/, "/media/offers/")
                 .replace(/(\.[^/.]+)\.[^/.]+\.[^/.]+(?:[?#].*)?$/, "$1");
+        }
+
+        if (domain === "assets.perfecte.ro") {
+            // https://assets.perfecte.ro/assets/perfecte/2019/07/10/image_galleries/52605/serena-williams-aparitie-indrazneata-pe-coperta-unei-reviste-imaginea-care-i-a-impartit-pe-fani-in-doua_size6.jpg
+            //   https://assets.perfecte.ro/assets/perfecte/2019/07/10/image_galleries/52605/serena-williams-aparitie-indrazneata-pe-coperta-unei-reviste-imaginea-care-i-a-impartit-pe-fani-in-doua.jpg
+            // https://assets.perfecte.ro/assets/perfecte/2019/07/10/image_galleries/52605/t_size2/thumb_serena-williams-aparitie-indrazneata-pe-coperta-unei-reviste-imaginea-care-i-a-impartit-pe-fani-in-doua.jpg
+            //   https://assets.perfecte.ro/assets/perfecte/2019/07/10/image_galleries/52605/serena-williams-aparitie-indrazneata-pe-coperta-unei-reviste-imaginea-care-i-a-impartit-pe-fani-in-doua.jpg
+            return src
+                .replace(/(\/image_galleries\/+[0-9]+\/+[^/]*)_size[0-9]*(\.[^/.]*)(?:[?#].*)?$/, "$1$2")
+                .replace(/(\/image_galleries\/+[0-9]+\/+)t_size[0-9]*\/+thumb_/, "$1");
+        }
+
+        if (domain_nosub === "cuore.es" && domain.match(/^img[0-9]*\./)) {
+            // https://img1.cuore.es/c9/c6/89/rita-ora-posa-alfombra-roja-mtv-ema-2017-600.jpg
+            //   https://img1.cuore.es/c9/c6/89/rita-ora-posa-alfombra-roja-mtv-ema-2017.jpg
+            // not sure how to improve?
+            return src.replace(/(\/(?:[0-9a-f]{2}\/+){3}[^/]*)-[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain_nowww === "100posto.hr") {
+            // https://100posto.hr/datastore/imagestore/1440x620/1440x620_1510578109RitaOraOgrtac888.jpg?v=1510578428
+            //   https://100posto.hr/datastore/imagestore/original/1510578109RitaOraOgrtac888.jpg?v=1510578428
+            return src.replace(/\/datastore\/+imagestore\/+[0-9]+x[0-9]+\/+[0-9]+x[0-9]+_/, "/datastore/imagestore/original/");
+        }
+
+        if (domain_nowww === "hot-celebs.co") {
+            // https://hot-celebs.co/image/200845/thumb
+            //   https://hot-celebs.co/image/200845
+            return src.replace(/(\/image\/+[0-9]+)\/+[^/]*(?:[?#].*)?$/, "$1");
+        }
+
+        if (domain_nowww === "findnudecelebs.com" ||
+            domain_nowww === "searchcelebrityhd.com" ||
+            domain_nowww === "pluscelebs.com" ||
+            domain_nowww === "allcelebs.club") {
+            // http://findnudecelebs.com/free/emelie-jonsson-aniara-2/small/small-emelie-jonsson-aniara-2-1.jpg
+            //   http://findnudecelebs.com/free/emelie-jonsson-aniara-2/emelie-jonsson-aniara-2-1.jpg
+            return src.replace(/\/(small)\/+\1-/, "/");
+        }
+
+        if (domain_nowww === "celebritying.com") {
+            // http://celebritying.com/pictures/jessica-alba-nude-body1/jessica-alba-tn-1.jpg
+            //   http://celebritying.com/pictures/jessica-alba-nude-body1/jessica-alba-1.jpg
+            return src.replace(/(\/pictures\/+[^/]*\/+[^/]*)-tn(-[0-9]+)?(\.[^/.]*)(?:[?#].*)?$/,
+                               "$1$2$3");
+        }
+
+        if (domain_nowww === "daily-celebvideos.com") {
+            // http://www.daily-celebvideos.com/nudecelebs/selena_gomez3/selena_gomez003.jpg
+            //   http://www.daily-celebvideos.com/nudecelebs/selena_gomez3/selena_gomez3.jpg
+            // todo: improve?
+            return src.replace(/00([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1");
+        }
+
+        if (domain_nowww === "nitrovideo.com") {
+            // http://www.nitrovideo.com/nude-celebrities/_pgalleries/Winona_Ryder_nude_Autumn_in_New_York/thumbs/tn_Winona_Ryder_nude_Autumn_in_New_York_01.jpg
+            //   http://www.nitrovideo.com/nude-celebrities/_pgalleries/Winona_Ryder_nude_Autumn_in_New_York/pictures/Winona_Ryder_nude_Autumn_in_New_York_01.jpg
+            return src.replace(/\/thumbs\/+tn_/, "/pictures/");
+        }
+
+        if (domain_nowww === "celebact.com") {
+            // http://www.celebact.com/bust/43/celebrity-thump-02.jpg
+            //   http://www.celebact.com/bust/43/naked-celebrity-02.jpg
+            return src.replace(/\/celebrity-thump-/, "/naked-celebrity-");
+        }
+
+        if (domain_nowww === "nudecelebs-a-z.com") {
+            // http://nudecelebs-a-z.com/pic/tn_KatyPerryIMG_8046.jpg
+            //   http://nudecelebs-a-z.com/pic/KatyPerryIMG_8046.jpg
+            return src.replace(/(:\/\/[^/]*\/[^/]*\/+)tn_/, "$1");
+        }
+
+        if (domain_nowww === "nudecelebspics.net") {
+            // https://www.nudecelebspics.net/tour/kendra-sunderland/preview/01.jpg
+            //   https://www.nudecelebspics.net/tour/kendra-sunderland/01.jpg
+            return src.replace(/\/preview\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/$1");
         }
 
 
@@ -34768,6 +34914,10 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             // http://storage-cube.quebecormedia.com/v1/dynamic_resize?quality=75&size=400x400&src=http%3A%2F%2Fstorage-cube.quebecormedia.com%2Fv1%2Fellequebec_prod%2Felle_quebec%2F2849ba1cbafd6e4f65f25dd54ea9466a3a4c95eb%2FCouples-MET-Gala-2017.jpg
             //   http://storage-cube.quebecormedia.com/v1/ellequebec_prod/elle_quebec/2849ba1cbafd6e4f65f25dd54ea9466a3a4c95eb/Couples-MET-Gala-2017.jpg
             domain === "storage-cube.quebecormedia.com" ||
+            // http://www.stylosophy.it/img/Trucco-rosso-occhi-verdi.jpg
+            domain_nowww === "stylosophy.it" ||
+            // http://donna.nanopress.it/img/Rita-Ora-agli-MTV-EMA-2017.jpg
+            domain_nosub === "nanopress.it" ||
             src.match(/^[a-z]+:\/\/storage\.[^/]*\/v[0-9]*\/dynamic_resize\/sws_path\//)) {
             //return src.replace(/(\/dynamic_resize\/.*)\?[^/]*$/, "$1?size=99999999");
             newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/v[0-9]*\/dynamic_resize\/*.*?[?&]src=([^&]*).*?$/, "$1");
