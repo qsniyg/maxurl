@@ -36,7 +36,8 @@ var $$IMU_EXPORT$$;
     if (_nir_debug_) {
         _nir_debug_ = {
             no_request: false,
-            no_recurse: false
+            no_recurse: false,
+            no_redirect: true
         };
     }
 
@@ -2100,6 +2101,8 @@ var $$IMU_EXPORT$$;
             domain_nowww === "womaneconomy.kr" ||
             // http://www.apsk.co.kr/news/thumbnail/201907/4133_10362_2721_v150.jpg
             domain_nowww === "apsk.co.kr" ||
+            // http://www.sporbiz.co.kr/news/thumbnail/201907/356684_265899_649_v150.jpg
+            domain_nowww === "sporbiz.co.kr" ||
             // http://www.newstown.co.kr/news/thumbnail/201801/311251_198441_4816_v150.jpg
             domain_nowww === "newstown.co.kr") {
             return add_extensions_upper_jpeg(src
@@ -7075,6 +7078,14 @@ var $$IMU_EXPORT$$;
             //   http://static.wixstatic.com/media/4bd5ee_8328e23583d647c8bbc36a50b9bdaa77.jpg
             // https://static.wixstatic.com/media/964c6e_5f9921a4f67248ba807c0a69416a7ec4~mv2_d_3550_5325_s_4_2.jpg/v1/fill/w_183,h_274,al_c,q_80,usm_0.66_1.00_0.01/964c6e_5f9921a4f67248ba807c0a69416a7ec4~mv2_d_3550_5325_s_4_2.jpg
             //   https://static.wixstatic.com/media/964c6e_5f9921a4f67248ba807c0a69416a7ec4~mv2_d_3550_5325_s_4_2.jpg
+
+            // thanks to nywilds on github: https://github.com/qsniyg/maxurl/issues/93
+            // https://www.deviantart.com/f1x-2/art/Nightfall-800934586
+            // https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/db0d85b1-b8b9-4790-bef0-121edb2dce7d/dd8ut2y-b61a578f-28be-496b-8044-559159433e36.jpg/v1/fill/w_1280,h_720,q_75,strp/nightfall_by_f1x_2_dd8ut2y-fullview.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9NzIwIiwicGF0aCI6IlwvZlwvZGIwZDg1YjEtYjhiOS00NzkwLWJlZjAtMTIxZWRiMmRjZTdkXC9kZDh1dDJ5LWI2MWE1NzhmLTI4YmUtNDk2Yi04MDQ0LTU1OTE1OTQzM2UzNi5qcGciLCJ3aWR0aCI6Ijw9MTI4MCJ9XV0sImF1ZCI6WyJ1cm46c2VydmljZTppbWFnZS5vcGVyYXRpb25zIl19.2ttX4dZcVj27yeTuh05fdJbZJSF2hj3pmgWaeCfh63Y
+            newsrc = src.replace(/(:\/\/[^/]*\/)(f\/+[-0-9a-f]{36}\/+[0-9a-z]+-[-0-9a-f]{20,}(?:\.[^/.]*)?\/+v1\/+fill\/+w_[0-9]+,h_[0-9]+)(?:,[^/]+)?(\/+.*[?&]token=.*)$/, "$1$2,q_100$3");
+            if (newsrc !== src)
+                return newsrc;
+
             newsrc = src.replace(/(:\/\/[^/]*\/)(f\/+[-0-9a-f]{36}\/+.*?)[?&]token=.*$/, "$1intermediary/$2");
             if (newsrc !== src)
                 return {
@@ -13403,6 +13414,8 @@ var $$IMU_EXPORT$$;
              //   https://s7g10.scene7.com/is/image/UrbanOutfittersEU/0119477794907_010_b?scl=1
              // https://iittala.scene7.com/is/image/iittala/?&src=is{iittala/iittala%2Dkastehelmi%2Dplate%2D170mm%2Dsea%5Fblue?size=3800,3800&wid=2000&hei=2000&scl=2.6}&extend=100,100,100,100
              //   https://iittala.scene7.com/is/image/iittala/iittala-kastehelmi-plate-170mm-sea_blue?scl=1&fmt=png-alpha
+             // https://s7d4.scene7.com/is/image/Belk?layer=0&src=9999999_1510MAID_A_000_T10L00&layer=comp&$P_PROD$
+             //   https://s7d4.scene7.com/is/image/Belk?src=9999999_1510MAID_A_000_T10L00&scl=1&fmt=png-alpha
              domain_nosub === "scene7.com") &&
             src.indexOf("/is/image/") >= 0) {
             // https://dyson-h.assetsadobe2.com/is/image//content/dam/dyson/products/hair-care/dyson-supersonic/customisation/personal-care-dyson-supersonic-customisation-homepage.jpg?scl=1
@@ -13412,15 +13425,24 @@ var $$IMU_EXPORT$$;
             // https://airbus-h.assetsadobe2.com/is/image/content/dam/products-and-solutions/commercial-aircraft/beluga/belugaxl/BelugaXL.jpg?wid=1920&fit=fit,1&qlt=85,0
             //   https://airbus-h.assetsadobe2.com/is/image/content/dam/products-and-solutions/commercial-aircraft/beluga/belugaxl/BelugaXL.jpg -- much smaller (300x203)
             //   https://airbus-h.assetsadobe2.com/is/image/content/dam/products-and-solutions/commercial-aircraft/beluga/belugaxl/BelugaXL.jpg?scl=1
-            match = src.match(/\/is\/image\/+.*\?.*?&src=is{(.*?)}/);
+            match = src.match(/\/is\/image\/+.*\?(?:.*?&)?src=is{(.*?)}/);
             if (match) {
                 return src.replace(/\/is\/image\/.*/, "/is/image/" + decodeURIComponent(match[1]));
             }
 
+            var srcadd = "";
+
             if (src.match(/\.(?:jpe?g|JPE?G)(?:\?.*)?$/))
-                return src.replace(/(?:\?.*)?$/, "?scl=1");
+                srcadd = "scl=1";
             else
-                return src.replace(/(?:\?.*)?$/, "?scl=1&fmt=png-alpha");
+                srcadd = "scl=1&fmt=png-alpha";
+
+            newsrc = src.replace(/(\/is\/+image\/+.*)\?(?:.*?&)?src=([^&]*).*?$/, "$1?src=$2&" + srcadd);
+            if (newsrc !== src)
+                return newsrc;
+
+            if (!/[?&]src=/.test(src))
+                return src.replace(/(?:\?.*)?$/, "?" + srcadd);
         }
 
         if (domain === "sm.ign.com") {
@@ -25744,7 +25766,10 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             };
         }
 
-        if (domain_nosub === "game234.com" && domain.match(/^webimg[0-9]*\./)) {
+        if (domain_nosub === "game234.com" && domain.match(/^webimg[0-9]*\./) ||
+            // https://reho.st/https://img.izismile.com/img/img12/20190705/640/fine_examples_when_a_picture_says_more_than_just_a_thousand_words_640_38.jpg
+            //   https://img.izismile.com/img/img12/20190705/640/fine_examples_when_a_picture_says_more_than_just_a_thousand_words_640_38.jpg
+            domain_nowww === "reho.st") {
             // http://webimg1.game234.com/http://i-4.yxdown.com/2018/3/30/KDYwMHgp/a9be3ebb-50a7-4993-9cfb-c1a3ddc3ff61.png
             //   http://i-4-yxdown.715083.com/2018/3/30/a9be3ebb-50a7-4993-9cfb-c1a3ddc3ff61.png?imageView2/2/q/65/w/600 -- broken with referrer
             return src.replace(/^[a-z]+:\/\/[^/]*\/([a-z]+:\/\/)/, "$1");
@@ -27923,18 +27948,37 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             // https://drscdn.500px.org/photo/110928613/w%3D70_h%3D70/v2?webp=true&v=5&sig=44ba66ac19d9f5852e30c17e59f45a48c3fd8a00661cc83486506469823d81ad
             //   https://drscdn.500px.org/photo/110928613/q%3D80_m%3D2000/v2?webp=true&sig=2f634d5fb1e3fbdf40c4e7b2e3aa112eba72b7c6c5476f07306c25ff1459cf24
             // https://drscdn.500px.org/photo/155707683/m%3D900/102599ba6f6b6143d74b1f9e593d7559 -- original photo deleted
+            // old rule made some smaller (fixed now):
+            // https://drscdn.500px.org/photo/176915829/m%3D2048/v2?webp=true&sig=8901652fb89d3d48171709f0656cbb9c06695375eb1149ba1281e5cba0dc4041 -- 2048x1489
+            //   https://drscdn.500px.org/photo/176915829/q%3D80_m%3D2000/v2?webp=true&sig=40351336025465fc6f8fd94d0ac6ae8f8672038a90e5b0c17f138c987f2a05ad -- 2000x1454
             id = src.replace(/^[a-z]+:\/\/[^/]*\/photo\/+([0-9]+)\/.*$/, "$1");
+            var page = "https://500px.com/photo/" + id + "/";
             if (id !== src) {
                 options.do_request({
-                    url: "https://500px.com/photo/" + id + "/",
+                    url: page,
                     method: "GET",
                     onload: function(resp) {
                         if (resp.readyState === 4) {
-                            var match = resp.responseText.match(/<meta *content='(https?:\/\/drscdn[^']*)' *property='og:image'/);
+                            var match = resp.responseText.match(/window\.PxPreloadedData *= *({.*?});\s*</);
                             if (match) {
-                                options.cb(match[1].replace("&amp;", "&"));
+                                var data = JSON.parse(match[1]).photo;
+                                options.cb({
+                                    url: data.images[data.images.length - 1].url,
+                                    extra: {
+                                        page: page
+                                    }
+                                });
                             } else {
                                 options.cb(null);
+                            }
+
+                            if (false) {
+                                var match = resp.responseText.match(/<meta *content='(https?:\/\/drscdn[^']*)' *property='og:image'/);
+                                if (match) {
+                                    options.cb(match[1].replace("&amp;", "&"));
+                                } else {
+                                    options.cb(null);
+                                }
                             }
                         }
                     }
@@ -28054,10 +28098,13 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             //   https://cdn.fishki.net/upload/post/201508/05/1618865/1396454981-559600-3500x2278.jpg
             // https://cdn.fishki.net/upload/post/2018/02/06/2504234/gallery/tn/mimoroli.jpg
             //   https://cdn.fishki.net/upload/post/2018/02/06/2504234/gallery/mimoroli.jpg
+            // https://cdn.fishki.net/upload/post/2016/11/22/2142867/tn/mdrum-frog-conga-1-0.jpg
+            //   https://cdn.fishki.net/upload/post/2016/11/22/2142867/mdrum-frog-conga-1-0.jpg
             return src
                 .replace(/(\/upload\/+post\/+[0-9]{6}\/+[0-9]{2}\/+[0-9]+\/+)tn\/+/, "$1")
-                .replace(/(\/upload\/+post\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}[0-9]+\/+gallery\/+)tn\/+/, "$1")
+                .replace(/(\/upload\/+post\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}[0-9]+\/+(?:gallery\/+)?)tn\/+/, "$1")
                 .replace(/:\/\/cdn-tn\.([^/]*\/)(?:[0-9]+\/+)?upload\//, "://cdn.$1upload/");
+            //return src.replace(/(\/upload\/+post\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}[0-9]+\/+)tn\/+/, "$1");
         }
 
         if (domain_nowww === "ravshaniya.com") {
@@ -32125,7 +32172,8 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/\/thum(?:_[a-z])?_([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/$1");
         }
 
-        if (domain_nosub === "nijie.info" && domain.match(/^pic[0-9]*\./)) {
+        if ((domain_nosub === "nijie.info" ||
+             domain_nosub === "nijie.net") && domain.match(/^pic[0-9]*\./)) {
             // thanks to Kattus on github: https://github.com/qsniyg/maxurl/issues/82
             // https://pic02.nijie.info/__rs_l30x30/nijie_picture/498_20120828123910.jpg
             //   https://pic02.nijie.info/__rs_l300x300/nijie_picture/498_20120828123910.jpg
@@ -32135,7 +32183,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             //   http://pic02.nijie.info/hina/main/1081_20181221234339.jpg -- 2560x1920
             // https://pic01.nijie.info/__rs_l30x30/nijie_picture/diff/main/218856_1_236014_20170620101330.png
             //   https://pic01.nijie.info/nijie_picture/diff/main/218856_1_236014_20170620101330.png
-            return src.replace(/\/__rs_[a-z]?[0-9]+x[0-9]+\/+/, "/");
+            return src.replace(/\/__rs_[a-z]*[0-9]+x[0-9]+\/+/, "/");
         }
 
         if (domain === "cdn-img.jamendo.com") {
@@ -34101,6 +34149,19 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                                "/transform/v1/resize/$1/w0_h0_fscale$2");
         }
 
+        if (domain_nosub === "productserve.com" && domain.match(/^images[0-9]*\./)) {
+            // https://images2.productserve.com/?w=200&h=200&bg=white&trim=5&t=letterbox&url=ssl%3Abonprix.scene7.com%2Fis%2Fimage%2FOttoUK%2F800h%2Fdippy-hem-blouse~979903FRSP.jpg&feedId=3128&k=3fbca2e9eca2569c312999c0d75f192ec3955c37
+            //   https://bonprix.scene7.com/is/image/OttoUK/800h/dippy-hem-blouse~979903FRSP.jpg
+            match = src.match(/^[a-z]+:\/\/[^/]*\/\?(?:.*?&)url=([^&]*).*?$/);
+            if (match) {
+                newsrc = match[1];
+                match = newsrc.match(/^ssl(?::|%3[Aa])(.*)/)
+                if (match) {
+                    return "https://" + decodeURIComponent(match[1]);
+                }
+            }
+        }
+
 
 
 
@@ -35793,7 +35854,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
     };
 
     var redirect = function(url, obj) {
-        if (_nir_debug_)
+        if (_nir_debug_ && _nir_debug_.no_redirect)
             return;
 
         if (url === document.location.href)
