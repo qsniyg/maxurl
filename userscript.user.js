@@ -3663,7 +3663,7 @@ var $$IMU_EXPORT$$;
             // https://i.ytimg.com/vi/WLUWOwO2U8c/hqdefault.jpg?sqp=-oaymwEZCPYBEIoBSFXyq4qpAwsIARUAAIhCGAFwAQ==&rs=AOn4CLApoW235ABiHOfyJan0ArZIRsbUOA
             (domain_nosub === "ytimg.com" && domain.match(/^i[0-9]*\./)) ||
             domain === "img.youtube.com") {
-            // thanks to speedymaan on github
+            // thanks to speedymaan on github: https://github.com/qsniyg/maxurl/issues/29
             // https://i.ytimg.com/vi/sxItyrp55g8/0.jpg
             //   https://i.ytimg.com/vi/sxItyrp55g8/maxresdefault.jpg
             // doesn't work for some urls:
@@ -4432,7 +4432,7 @@ var $$IMU_EXPORT$$;
             domain === "news-img.51y5.net" ||
             // https://st.automobilemag.com/uploads/sites/11/2019/04/wm-2019-techno-classica-43.jpg?interpolation=lanczos-none&fit=around%7C660%3A440&fit=around%7C680%3A453
             (domain === "st.automobilemag.com" && src.indexOf("/uploads/sites/") >= 0) ||
-            // thanks to PwnicornDev on github
+            // thanks to PwnicornDev on github: https://github.com/qsniyg/maxurl/issues/46
             // https://styles.redditmedia.com/t5_3pguo/styles/profileIcon_hdpofk4olag01.jpg?width=256&height=256&crop=256:256,smart&s=3df0ac6cd6b812fc38a249f3579e261d442424b3
             //   https://styles.redditmedia.com/t5_3pguo/styles/profileIcon_hdpofk4olag01.jpg
             (domain === "styles.redditmedia.com" && src.indexOf("/styles/") >= 0) ||
@@ -17003,7 +17003,7 @@ var $$IMU_EXPORT$$;
         }
 
         if (domain === "img.ltn.com.tw") {
-            // thanks to @rEnr3n on github
+            // thanks to rEnr3n on github: https://github.com/qsniyg/maxurl/issues/6
             // http://img.ltn.com.tw/Upload/ent/page/800/2018/05/10/2422261_2.jpg -- 800x800
             //   http://img.ltn.com.tw/Upload/ent/page/orig/2018/05/10/2422261_2.jpg -- 2000x2000
             // http://img.ltn.com.tw/Upload/ent/page/400S/2018/05/22/phpsyErCP.jpg -- 400x533
@@ -26528,8 +26528,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
         }
 
         if (domain_nowww === "svtstatic.se") {
-            // issue page: (thanks to TheLovinator1 on github)
-            // https://github.com/qsniyg/maxurl/issues/18
+            // thanks to TheLovinator1 on github: https://github.com/qsniyg/maxurl/issues/18
             // https://www.svtstatic.se/image/cinema/760/19912234/1541383772?quality=70&format=auto
             //   https://www.svtstatic.se/image/original/unscaled/19912234/1541383772.jpg?quality=10
             //   https://www.svtstatic.se/image/original/unscaled/19912234/1541383772.png
