@@ -8473,8 +8473,11 @@ var $$IMU_EXPORT$$;
         if (domain_nosub === "blastingcdn.com" && domain.match(/staticr[0-9]*\.blastingcdn\.com/)) {
             // http://staticr1.blastingcdn.com/media/photogallery/2017/10/14/660x290/b_586x276/a-family-was-rescued-by-the-harry-potter-hogwarts-express-in-the-scottish-highlands-image-credit-pixabaycc0_1631843.jpg
             //   http://static.blastingnews.com/media/photogallery/2017/10/14/main/a-family-was-rescued-by-the-harry-potter-hogwarts-express-in-the-scottish-highlands-image-credit-pixabaycc0_1631843.jpg
+            // https://staticr1.blastingcdn.com/media/listicle/2018/12/07/b_660xauto/3345b197-deb8-4f4c-8994-c68ae08e7e06.jpg
+            //   https://staticr1.blastingcdn.com/media/listicle/2018/12/07/3345b197-deb8-4f4c-8994-c68ae08e7e06.jpg
+            //return src.replace(/(\/media\/+listicle\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2})[a-z]_[auto0-9]+x[auto0-9]+\/+/, "$1");
             return src
-                .replace(/\/b_[0-9]+x[0-9]+\/([^/]*)$/, "/$1")
+                .replace(/\/b_[auto0-9]+x[auto0-9]+\/([^/]*)$/, "/$1")
                 .replace(/\/[0-9]+x[0-9]+\/([^/]*)$/, "/main/$1");
         }
 
@@ -10033,6 +10036,14 @@ var $$IMU_EXPORT$$;
                 .replace(/_[a-z](\.[^/]*)$/, "$1");
         }
 
+        if (domain === "imageproxy.pimg.tw") {
+            // https://imageproxy.pimg.tw/zoomcrop?url=http%3A%2F%2Fimage.newsis.com%2F2013%2F06%2F21%2FNISI20130621_0008354474_web.jpg&width=380&height=228
+            //   http://image.newsis.com/2013/06/21/NISI20130621_0008354474_web.jpg
+            newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/zoomcrop\?(?:.*?&)?url=([^&]*).*?$/, "$1");
+            if (newsrc !== src)
+                return decodeuri_ifneeded(newsrc);
+        }
+
         if (domain_nowww === "helloidol.com" &&
             src.indexOf("/script/get_pic.php") >= 0) {
             // http://www.helloidol.com/script/get_pic.php?src=https://1.bp.blogspot.com/-iblNAdULcFY/WnkEGyGjySI/AAAAAAAADHQ/pgVIIcLeHOo6IngbASGuakOIpxBwHr8dACLcBGAs/s1600/Eulachacha-Waikiki.jpg&h=256&w=400&zc=1
@@ -11202,18 +11213,21 @@ var $$IMU_EXPORT$$;
             // https://www.gala.pl/media/cache/default_view/uploads/media/default/0003/51/8a53ff2963b8374d1aeefc68d73069421ab0edb1.jpeg
             //   https://www.gala.pl/uploads/media/default/0003/51/8a53ff2963b8374d1aeefc68d73069421ab0edb1.jpeg
             domain_nowww === "gala.pl" ||
+            // https://i.moveek.com/media/cache/full_fixed/media/ee46a470620916e0524592d6859d54a467ad2fb6.jpg
+            //   https://i.moveek.com/media/ee46a470620916e0524592d6859d54a467ad2fb6.jpg
+            domain === "i.moveek.com" ||
             // http://longtake.it/media/cache/medium_poster/uploads/du/dunkirk/poster-dunkirk.jpeg
             //   http://longtake.it/uploads/du/dunkirk/poster-dunkirk.jpeg
             domain_nowww === "longtake.it") {
             // http://rez.cdn.kul.vn/media/cache/thumbnail_16x10_672x420/uploads/media/thumbnail/59db/29/thumbnail_16x9_t-ara4.jpg
             //   http://rez.cdn.kul.vn/uploads/media/kul/59db/28/kul_news_t-ara4.jpg
-            return src.replace(/\/media\/cache\/[^/]*\//, "/");
+            return src.replace(/\/media\/+cache\/+[^/]*\//, "/");
         }
 
         if (domain_nowww === "themebeta.com") {
             // https://www.themebeta.com/media/cache/400x225/files/windows/images/201701/19/c712fcf69f2a15163f1e9cfbdc62b5f8.jpeg
             //   https://www.themebeta.com/files/windows/images/201701/19/c712fcf69f2a15163f1e9cfbdc62b5f8.jpeg
-            return src.replace(/\/media\/cache\/[0-9]+x[0-9]+\/files\//, "/files/");
+            return src.replace(/\/media\/+cache\/+[0-9]+x[0-9]+\/+files\//, "/files/");
         }
 
         if (domain === "static.kstyle.com") {
@@ -20246,13 +20260,15 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/^[a-z]+:\/\/[^/]*\/static\/[0-9]+\/img\/([^/.]+\.[^/]+)/, "http://$1");
         }
 
-        if (domain === "img.newsdog.today" ||
+        if ((domain_nosub === "newsdog.today" && domain.match(/^img[0-9]*\./)) ||
             amazon_container === "img.newsdog.today") {
             // http://img.newsdog.today/thumb_abb85c7b6d6e536b0cd70bc5a2d6227b
             //   http://img.newsdog.today/origin_abb85c7b6d6e536b0cd70bc5a2d6227b
             // https://s3.ap-south-1.amazonaws.com/img.newsdog.today/thumb_preview_3ddcb3d8e1cd57ce6b14ac92fd6cb866
             //   https://s3.ap-south-1.amazonaws.com/img.newsdog.today/origin_3ddcb3d8e1cd57ce6b14ac92fd6cb866
-            return src.replace(/(img\.newsdog\.today\/)[a-z_]+_([a-f0-9]+)$/, "$1origin_$2");
+            // http://img1.newsdog.today/thumb_4e7b08f222f7a7ea369f407c0010a05a
+            //   http://img1.newsdog.today/origin_4e7b08f222f7a7ea369f407c0010a05a
+            return src.replace(/(\.newsdog\.today\/)[a-z_]+_([a-f0-9]+)$/, "$1origin_$2");
         }
 
         if (domain === "d1qikntta4cp8k.cloudfront.net") {
@@ -22950,7 +22966,13 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             //   https://media.beritagar.id/2015-02/3f1cec246337c8195f8c2e65408160fd.jpg
             // https://media.beritagar.id/2017-05/thumbnail_240/wd/adcf5a45398cd9e64a400482b078589b.jpg
             //   https://media.beritagar.id/2017-05/adcf5a45398cd9e64a400482b078589b.jpg
-            return src.replace(/\/(?:lme-)?([0-9]{4}-[0-9]{2}\/)(?:[a-z]+_[0-9]+\/)?(?:wd\/+)?([0-9a-f]+)(?:_imresized)?(\.[^/.]*)(?:[?#].*)?$/, "/$1$2$3");
+            // https://media.beritagar.id/2017-07/original_350/robert-downey-iron-man_1499411443.jpg
+            //   https://media.beritagar.id/2017-07/robert-downey-iron-man_1499411443.jpg
+            // other:
+            // https://media.beritagar.id/2015-08/0_0_1200_674_cc815c07bba94bd83840e2d8375a80d16fd04cd5.jpg -- removing prefix 404s
+            // https://media.beritagar.id/2019-02/1600x1119_a9ab424c585f05c027411f97bb4ca3fffeefc709.jpg -- same
+            return src.replace(/\/(?:lme-)?([0-9]{4}-[0-9]{2}\/)(?:[a-z]+_[0-9]+\/)?(?:wd\/+)?((?:[0-9a-f]+|[^/]*_[0-9]{5,}))(?:_imresized)?(\.[^/.]*)(?:[?#].*)?$/,
+                               "/$1$2$3");
             //return src.replace(/(:\/\/[^/]*\/[0-9]{4}-[0-9]{2}\/+)thumbnail_[0-9]+\/+wd\/+/, "$1");
         }
 
@@ -31686,12 +31708,15 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                                "$1.full$2");
         }
 
-        if (domain_nowww === "silenzioinsala.com") {
+        if (domain_nowww === "silenzioinsala.com" ||
+            // https://joinsmediacanada.com/plugin/phpThumb/phpThumb.php?src=http%3A%2F%2Fimage.newsis.com%2F2015%2F09%2F23%2FNISI20150923_0005935978_web.jpg&w=130&h=110&zc=1&hash=d6c980fa0aa014e6aa91199b3805b778
+            //   http://image.newsis.com/2015/09/23/NISI20150923_0005935978_web.jpg
+            domain_nowww === "joinsmediacanada.com") {
             // https://www.silenzioinsala.com/thumbs/phpThumb.php?src=..%2Fphotos%2F3951%2F3951_1.jpeg&w=500&hash=d203ab10298197885dad3ebc08e1418e
             //   https://www.silenzioinsala.com/photos/3951/3951_1.jpeg
-            newsrc = src.replace(/.*\/thumbs\/+phpThumb\.php.*?[?&]src=([^&]*).*?$/, "$1");
+            newsrc = src.replace(/.*\/+phpThumb\.php\?(?:.*?&)?src=([^&]*).*?$/, "$1");
             if (newsrc !== src)
-                return urljoin(src.replace(/\/thumbs\/+phpThumb\.php.*/, "/thumbs/"), decodeURIComponent(newsrc), true);
+                return urljoin(src.replace(/\/+phpThumb\.php.*/, "/"), decodeURIComponent(newsrc), true);
         }
 
         if (domain === "img.fdb.cz") {
@@ -32462,7 +32487,10 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
         if (domain === "i.inswave.net") {
             // http://i.inswave.net/img_s.php?u=http://www.yeowonnews.com/data/yeowonnews_com/facebook/8562_2018120235568505.png&w=600&h=398
             //   http://www.yeowonnews.com/data/yeowonnews_com/facebook/8562_2018120235568505.png
-            newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/img_s\.php.*?[?&]u=([^&]*).*?$/, "$1");
+            // http://i.inswave.net/f_img.php?p=http://image.newsis.com/2013/03/20/NISI20130320_0007905303_web.jpg
+            //   http://image.newsis.com/2013/03/20/NISI20130320_0007905303_web.jpg
+            newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/(?:img_s|f_img)\.php\?(?:.*?&)?[up]=([^&]*).*?$/, "$1");
+            //newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/f_img\.php\?(?:.*?&)?p=([^&]*).*?$/, "$1");
             if (newsrc !== src)
                 return decodeuri_ifneeded(newsrc);
         }
@@ -34398,6 +34426,87 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/(\/content\/+post\/+[0-9]+\/+)thumbs\/+/, "$1");
         }
 
+        if (domain_nosub === "xdn.vn" && /^[0-9]+\.mm\.baomoi\./.test(domain)) {
+            // http://3.mm.baomoi.xdn.vn/w500_r1/b835503d3c78d5268c69.jpg
+            //   http://3.mm.baomoi.xdn.vn/b835503d3c78d5268c69.jpg
+            return src.replace(/(:\/\/[^/]*\/)[wh][0-9]+_r[0-9]*\/+/, "$1");
+        }
+
+        if (domain_nosub === "meinbezirk.at" && /^media[0-9]*\./.test(domain)) {
+            // https://media04.meinbezirk.at/article/2017/03/21/0/10080290_S.jpg
+            //   https://media04.meinbezirk.at/article/2017/03/21/0/10080290_XXL.jpg -- stretched
+            //   https://media04.meinbezirk.at/article/2017/03/21/0/10080290_NATIVE.jpg -- 635x900
+            // other:
+            // https://media04.meinbezirk.at/article/2019/05/26/4/19401024_NATIVE.jpg?1562353331 -- 4360x3261
+            return src.replace(/(\/article\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}[0-9]+\/+[0-9]+)_[A-Z]+(\.[^/.]*)(?:[?#].*)?$/,
+                               "$1_NATIVE$2");
+        }
+
+        if (domain_nowww === "elporvenir.mx") {
+            // http://www.elporvenir.mx/imagenes/noticias/thumb/19/04/29/mini_190429_robert.jpg
+            //   http://www.elporvenir.mx/imagenes/noticias/portada/19/04/29/190429_robert.jpg
+            //   http://www.elporvenir.mx/imagenes/noticias/original/19/04/29/190429_robert.jpg
+            newsrc = src.replace(/(\/imagenes\/+noticias\/+)thumb\/+((?:[0-9]{2}\/+){3})[a-z]+_([0-9]{6}_)/,
+                                 "$1original/$2$3");
+            if (newsrc !== src)
+                return newsrc;
+
+            return src.replace(/\/imagenes\/+noticias\/+portada\/+/, "/imagenes/noticias/original/");
+        }
+
+        if (domain_nowww === "newsbeast.gr") {
+            // https://www.newsbeast.gr/resizeme.php?src=https://s.nbst.gr/files/1/2017/08/Robert-Downey-Jr.-353x221.jpg&w=158&h=99
+            //   https://s.nbst.gr/files/1/2017/08/Robert-Downey-Jr..jpg
+            newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/resizeme\.php\?(?:.*?&)?src=([^&]*).*?$/, "$1");
+            if (newsrc !== src)
+                return decodeuri_ifneeded(newsrc);
+        }
+
+        if (domain === "image.newsis.com") {
+            // http://image.newsis.com/2017/06/29/NISI20170629_0013153492_thm.jpg
+            //   http://image.newsis.com/2017/06/29/NISI20170629_0013153492_web.jpg
+            return src.replace(/(:\/\/[^/]*\/[0-9]{4}\/+(?:[0-9]{2}\/+){2}NISI[0-9]+_[0-9]+_)thm(\.[^/.]*)(?:[?#].*)?$/,
+                               "$1web$2");
+        }
+
+        if (domain === "plaza.jp.rakuten-static.com") {
+            // https://plaza.jp.rakuten-static.com/api/Proxy.php?a=http%3A%2F%2Fimage.newsis.com%2F2015%2F02%2F10%2FNISI20150210_0010612208_web.jpg&b=e35d2fdbdc32519e5d05e3f394efd6c8
+            //   http://image.newsis.com/2015/02/10/NISI20150210_0010612208_web.jpg
+            newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/api\/+Proxy\.php\?(?:.*?&)?a=([^&]*).*?$/, "$1");
+            if (newsrc !== src)
+                return decodeuri_ifneeded(newsrc);
+        }
+
+        if (domain_nowww === "5true.net") {
+            // https://5true.net/img-prx.php?u=aHR0cHM6Ly93d3cuZGtuLnR2L3dwLWNvbnRlbnQvdXBsb2Fkcy8yMDE4LzEwLzE1Mzk3NjU4NjA4MDYtMzAxNl9VbnRpdGxlZC5qcGc=
+            //   https://www.dkn.tv/wp-content/uploads/2018/10/1539765860806-3016_Untitled.jpg
+            newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/img-prx\.php\?(?:.*?&)?u=([^&]*).*?$/, "$1");
+            if (newsrc !== src)
+                return atob(newsrc);
+        }
+
+        if (domain === "imb.veooz.com") {
+            // https://imb.veooz.com/sO/~D/sOUkM~D-small.jpg
+            //   https://imb.veooz.com/sO/~D/sOUkM~D-large.jpg
+            return src.replace(/-small(\.[^/.]*)(?:[?#].*)?$/, "-large$1");
+        }
+
+        if (domain_nowww === "criturk.com") {
+            // http://www.criturk.com/image/upload/2019/07/03/news_a2a2ff33b02eb8438c2bac63b4b9d196-750X422.jpg
+            //   http://www.criturk.com/image/upload/2019/07/03/news_a2a2ff33b02eb8438c2bac63b4b9d196.jpg
+            return src.replace(/(\/image\/+upload\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}[a-z]+_[0-9a-f]{20,})-[0-9]+X[0-9]+(\.[^/.]*)(?:[?#].*)?$/,
+                               "$1$2");
+        }
+
+        if (domain === "cdn.20m.es") {
+            // https://cdn.20m.es/img2/recortes/2019/03/12/905165-943-646.jpg
+            //   https://cdn.20m.es/img2/2019/03/12/905165.jpg
+            return src.replace(/\/recortes\/+([0-9]{4}\/+(?:[0-9]{2}\/+){2}[0-9]+)(?:-[0-9]+){1,2}(\.[^/.]*)(?:[?#].*)?$/,
+                               "/$1$2");
+        }
+
+
+
 
 
 
@@ -35051,8 +35160,12 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
         }
 
         // xenforo
-        if (src.match(/:\/\/[^/]*\/proxy\.php.*?[?&]image=http/)) {
-            return decodeURIComponent(src.replace(/.*:\/\/[^/]*\/proxy\.php.*?[?&]image=(http[^&]*).*/, "$1"));
+        if (src.match(/:\/\/[^/]*\/(?:vb\/+)?proxy\.php\?(?:.*?&)?image=http/)) {
+            // https://defense-arab.com/vb/proxy.php?image=http%3A%2F%2Fimage.newsis.com%2F2016%2F07%2F28%2FNISI20160728_0011966708_web.jpg&hash=43eb7bb12419f7af61c1b6fd2d29232b
+            //   http://image.newsis.com/2016/07/28/NISI20160728_0011966708_web.jpg
+            newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/(?:vb\/+)?proxy\.php\?(?:.*?&)?image=(http[^&]*).*?$/, "$1")
+            if (newsrc !== src)
+                return decodeuri_ifneeded(newsrc);
         }
 
         // django-photologue
