@@ -2,7 +2,7 @@
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
 // @version      0.9.6
-// @description  Finds larger or original versions of images for 4800+ websites
+// @description  Finds larger or original versions of images for 4900+ websites
 // @author       qsniyg
 // @homepageURL  https://qsniyg.github.io/maxurl/options.html
 // @supportURL   https://github.com/qsniyg/maxurl/issues
@@ -167,7 +167,6 @@ var $$IMU_EXPORT$$;
         ],
         include_pastobjs: true,
         force_page: false,
-        fake: false,
         filter: bigimage_filter,
 
         do_request: do_request,
@@ -194,6 +193,7 @@ var $$IMU_EXPORT$$;
         is_original: false,
         norecurse: false,
         bad: false,
+        fake: false,
         headers: {},
         extra: {},
         filename: "",
@@ -7672,9 +7672,16 @@ var $$IMU_EXPORT$$;
             //   https://media.npr.org/assets/img/2018/04/13/gettyimages-111077711-7cec6f88bb5f86c005767e5866a00404396e869e.jpg
             // https://media.npr.org/assets/img/2018/01/27/rtx4ixrd_sq-744e57fe23b306ed1ccb050b38967d41b5a9c8bd-s400-c85.jpg
             //   https://media.npr.org/assets/img/2018/01/27/rtx4ixrd-744e57fe23b306ed1ccb050b38967d41b5a9c8bd.jpg
-            return src
-                .replace(/(\/[^/]*)-[sc][0-9]*(?:-[sc][0-9]*)?(\.[^/.]*)/, "$1$2")
-                .replace(/_[a-z]+-([a-f0-9]{30,})(\.[^/.]*)$/, "-$1$2");
+            // thanks to kuchenmitsahne on github: https://github.com/qsniyg/maxurl/issues/96
+            // https://media.npr.org/assets/img/2018/09/17/linnaeus_custom-e310e859d180def59eb94bbe2f4e5415271451ab-s600-c85.jpg
+            //   https://media.npr.org/assets/img/2018/09/17/linnaeus_custom-e310e859d180def59eb94bbe2f4e5415271451ab.jpg
+            //   removing _custom changes the crop
+            return {
+                url: src
+                    .replace(/(\/[^/]*)-[sc][0-9]*(?:-[sc][0-9]*)?(\.[^/.]*)/, "$1$2")
+                    .replace(/(_custom)?(?:_[a-z]+)?-([a-f0-9]{30,})(\.[^/.]*)$/, "$1-$2$3"),
+                head_wrong_contentlength: true
+            };
         }
 
         if (domain_nosub === "pbsrc.com" && domain.match(/rs[0-9]*\.pbsrc\.com/)) {
@@ -18799,7 +18806,8 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                             if (!match) {
                                 console_error("No public download for " + src);
 
-                                if (true) {
+                                // This will occasionally scale down the image
+                                if (false) {
                                     try {
                                         var hrefre = /<img[^>]*?src=["'](https?:\/\/(?:images-wixmp)[^>'"]*?)["'][^>]*class=["']dev-content-/g;
                                         var match = result.responseText.match(hrefre);
@@ -18840,6 +18848,8 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                                         console_error(e);
                                         return options.cb(obj);
                                     }
+                                } else {
+                                    return options.cb(obj);
                                 }
                                 return;
                             }
@@ -30621,7 +30631,10 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                                "$1$2");
         }
 
-        if (domain_nosub === "freeasianpics.net" && domain.match(/^cdn[0-9]*\./)) {
+        if ((domain_nosub === "freeasianpics.net" && domain.match(/^cdn[0-9]*\./)) ||
+            // http://th.sexhotpictures.net/vj/o5e/_s_1.jpg
+            //   http://th.sexhotpictures.net/vj/o5e/1.jpg
+            domain === "th.sexhotpictures.net") {
             // http://cdn01.freeasianpics.net/galleries/vn/sxj/_s_1.jpg
             //   http://cdn01.freeasianpics.net/galleries/vn/sxj/1.jpg
             //   http://cdn01.freeasianpics.net/galleries/vn/sxj/n1.jpg -- slightly darker
@@ -34505,6 +34518,31 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                                "/$1$2");
         }
 
+        if (domain === "tgp.inthecrack.com") {
+            // http://tgp.inthecrack.com/assets/images/hosted/galleries/be39c045-168a-47aa-bb85-41f609a4a7e2/1080_005.jpg
+            //   http://tgp.inthecrack.com/assets/images/hosted/galleries/full/be39c045-168a-47aa-bb85-41f609a4a7e2/1080_005.jpg
+            return src.replace(/\/assets\/+images\/+hosted\/+galleries\/+([-0-9a-f]{20,})/, "/assets/images/hosted/galleries/full/$1");
+        }
+
+        if (domain === "content.pornstarplatinum.com") {
+            // http://content.pornstarplatinum.com/fhg/grx/pic/13/images/thumb1.jpg
+            //   http://content.pornstarplatinum.com/fhg/grx/pic/13/images/pic1.jpg
+            return src.replace(/\/images\/+thumb([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/images/pic$1");
+        }
+
+        if (domain === "t.auntmia.com") {
+            // https://t.auntmia.com/nthumbs/2015-08-24/2827785/2827785_00.jpg
+            //   https://t.auntmia.com/nthumbs/2015-08-24/2827785/2827785_00b.jpg
+            return src.replace(/(\/[0-9]+_[0-9]+)(\.[^/.]*)(?:[?#].*)?$/, "$1b$2");
+        }
+
+        if (domain_nowww === "giveawayoftheday.com") {
+            // https://giveawayoftheday.com/wp-content/uploads/2019/07/198126d62f2f74cf818434bce5caee87_250.jpeg
+            //   https://giveawayoftheday.com/wp-content/uploads/2019/07/198126d62f2f74cf818434bce5caee87.jpeg
+            return src.replace(/(\/wp-content\/+uploads\/+[0-9]{4}\/+[0-9]{2}\/+[0-9a-f]{20,})_[0-9]+(\.[^/.]*)(?:[?#].*)?$/,
+                               "$1$2");
+        }
+
 
 
 
@@ -35928,8 +35966,11 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             }
 
             var important_properties = {};
-            if (pastobjs.length > 0 && pastobjs[0].likely_broken) {
-                important_properties.likely_broken = pastobjs[0].likely_broken;
+            if (pastobjs.length > 0) {
+                if (pastobjs[0].likely_broken)
+                    important_properties.likely_broken = pastobjs[0].likely_broken;
+                if (pastobjs[0].fake)
+                    important_properties.fake = pastobjs[0].fake;
             }
 
             var objified = fillobj(deepcopy(newhref1), important_properties);
@@ -36402,7 +36443,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                 }
 
                 if (_nir_debug_)
-                    console.dir(headers);
+                    console.log("(check_image) headers", headers);
 
                 if (obj.always_ok ||
                     (!obj.can_head && !settings.canhead_get))
@@ -36421,7 +36462,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                     headers: headers,
                     onload: function(resp) {
                         if (_nir_debug_)
-                            console.dir(resp);
+                            console.log("(check_image) resp", resp);
 
                         // nano defender removes this.DONE
                         if (resp.readyState == 4) {
@@ -36445,7 +36486,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                             });
 
                             if (_nir_debug_)
-                                console.dir(headers);
+                                console.log("(check_image) resp headers", headers);
 
 
                             var digit = resp.status.toString()[0];
@@ -36548,7 +36589,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                     return;
 
                 if (_nir_debug_)
-                    console.dir(newhref);
+                    console_log("redirect (recursive loop)", newhref);
 
                 redirect(newurl, newhref);
             }
