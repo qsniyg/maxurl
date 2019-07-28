@@ -7702,8 +7702,9 @@ var $$IMU_EXPORT$$;
             return src.replace(/-w[0-9]*(\/[^/]*)$/, "-w0$1");
         }
 
-        if (domain === "cdn.baeblemusic.com") {
+        if (domain === "cdn.baeblemusic.com" && src.indexOf("/images/") >= 0) {
             // https://cdn.baeblemusic.com/images/bblog/5-8-2017/keith-richards-almost-died-580.jpg
+            //   https://cdn.baeblemusic.com/images/bblog/5-8-2017/keith-richards-almost-died.jpg
             return src.replace(/-[0-9]*(\.[^/.]*)$/, "$1");
         }
 
@@ -7802,6 +7803,9 @@ var $$IMU_EXPORT$$;
             // https://www.gq-magazin.de/var/gq/storage/images/media/images/artikelbilder/unterhaltung/aquaman-workout-quer/7121951-1-ger-DE/aquaman-workout-quer_article_landscape.jpg
             //   https://www.gq-magazin.de/var/gq/storage/images/media/images/artikelbilder/unterhaltung/aquaman-workout-quer/7121951-1-ger-DE/aquaman-workout-quer.jpg
             domain_nowww === "gq-magazin.de" ||
+            // http://www.esa.int/var/esa/storage/images/esa_multimedia/images/2019/07/edrs-c_being_fuelled/19645582-1-eng-GB/EDRS-C_being_fuelled_latestnews.jpg
+            //   http://www.esa.int/var/esa/storage/images/esa_multimedia/images/2019/07/edrs-c_being_fuelled/19645582-1-eng-GB/EDRS-C_being_fuelled.jpg
+            domain_nowww === "esa.int" ||
             // https://img3.closermag.fr/var/closermag/storage/images/bio-people/biographie-jose-garcia-112817/827937-1-fre-FR/Jose-Garcia_square500x500.jpg
             //   https://img3.closermag.fr/var/closermag/storage/images/bio-people/biographie-jose-garcia-112817/827937-1-fre-FR/Jose-Garcia.jpg
             // https://img1.closermag.fr/var/closermag/storage/images/media/images-des-contenus/actu-people/people-anglo-saxons/20151129-selena/selena-gomez-pose-pour-in-style/4987068-1-fre-FR/Selena-Gomez-pose-pour-In-Style.png?v1/focus=0x0/cover=626x768
@@ -7812,7 +7816,7 @@ var $$IMU_EXPORT$$;
             // https://img3.grazia.fr/var/grazia/storage/images/article/cinema-solene-rigot-grande-petite-849768/13583494-1-fre-FR/Cinema-Solene-Rigot-grande-petite_exact1900x908_l.jpg
             //   https://img3.grazia.fr/var/grazia/storage/images/article/cinema-solene-rigot-grande-petite-849768/13583494-1-fre-FR/Cinema-Solene-Rigot-grande-petite.jpg
             return src
-                .replace(/(:\/\/[^/]*\/var\/+(?:[^/]*\/+)?storage\/+images\/+.*\/[^/]+?)(?:_[a-z][^-/.]*)?(\.[^/.?]*)(?:[?#].*)?$/, "$1$2")
+                .replace(/(:\/\/[^/]*\/var\/+(?:[^/]*\/+)?storage\/+images\/+.*\/[^/]+?)(?:_[a-z][^-/._]*)?(\.[^/.?]*)(?:[?#].*)?$/, "$1$2")
                 .replace(/\/storage\/+images\/+_aliases\/+[^/]*\/+/, "/storage/images/");
             //return src.replace(/_(?:article|large|medium|photo_galleries|more_in_thumbnail|square[0-9]*|cover_image)(?:_[a-z_]*)?(\.[^/.]*)$/, "$1");
             //return src.replace(/_image_size_[0-9]+_x(?:_[0-9]+)?(\.[^/.]*)$/, "$1");
@@ -34543,6 +34547,49 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                                "$1$2");
         }
 
+        if (domain_nowww === "nato.int") {
+            // https://www.nato.int/nato_static_fl2014/assets/pictures/2019_06_190612b-baltops19/20190617_190612b-001_rdax_200x133.jpg
+            //   https://www.nato.int/nato_static_fl2014/assets/pictures/2019_06_190612b-baltops19/20190617_190612b-001.jpg
+            return src.replace(/(\/assets\/+pictures\/+[^/]*\/+[^/]*)_rdax_[0-9]+x[0-9]+(\.[^/.]*)(?:[?#].*)?$/,
+                               "$1$2");
+        }
+
+        if (domain_nosub === "pbase.com" && /^a[0-9]*\./.test(domain) &&
+            options && options.cb && options.do_request) {
+            // https://a4.pbase.com/t1/69/28969/4/106869910.aZi0YI18.jpg
+            //   https://pbase.com/image/106869910/original
+            //   https://a4.pbase.com/o2/69/28969/1/106869910.fsqUf1Js.IMG_93344www.jpg
+            var id = src.replace(/^[a-z]+:\/\/[^/]*\/[a-np-z][0-9]+\/+.*\/+([0-9]+)\.[^/.]+\.(?:[^/.]*\.)?[^/.]*(?:[?#].*)?$/, "$1");
+            if (id !== src) {
+                options.do_request({
+                    method: "GET",
+                    url: "https://pbase.com/image/" + id + "/original",
+                    onload: function(resp) {
+                        if (resp.readyState === 4) {
+                            var match = resp.responseText.match(/<(?:img|IMG)\s+class=["']display\s*["']\s+src=["'](.*?)["']/)
+                            if (match) {
+                                options.cb(match[1]);
+                            } else {
+                                options.cb(null);
+                            }
+                        }
+                    }
+                });
+
+                return {
+                    waiting: true
+                };
+            }
+        }
+
+        if (amazon_container === "photo-net-production-images" ||
+            // https://d6d2h4gfvy8t8.cloudfront.net/18551694-orig.jpg
+            domain === "d6d2h4gfvy8t8.cloudfront.net") {
+            // https://photo-net-production-images.s3.amazonaws.com/18551694-lg.jpg -- upscaled?
+            //   https://photo-net-production-images.s3.amazonaws.com/18551694-orig.jpg -- 600x800
+            // https://d6d2h4gfvy8t8.cloudfront.net/18552096-orig.jpg -- 2816x2112
+            return src.replace(/(\/[0-9]+)-[a-z]+(\.[^/.]*)(?:[?#].*)?$/, "$1-orig$2");
+        }
 
 
 
@@ -38697,14 +38744,29 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                         if (!addImage(src, el))
                             return;
 
-                        sources[src].width = el.naturalWidth;
-                        sources[src].height = el.naturalHeight;
+                        if (!el.srcset) {
+                            sources[src].width = el.naturalWidth;
+                            sources[src].height = el.naturalHeight;
+                        }
                     }
 
                     if (!el.srcset)
                         return;
 
-                    var ssources = el.srcset.split(/ +[^ ,/],/);
+                    var ssources = [];
+                    var srcset = el.srcset;
+                    while (srcset.length > 0) {
+                        var old_srcset = srcset;
+                        srcset = srcset.replace(/^[, ]+/, "");
+                        var match = srcset.match(/^([^ ]* +[^,]+)/);
+                        if (match) {
+                            ssources.push(match[1]);
+                            srcset = srcset.substr(match[1].length);
+                        }
+                        if (srcset === old_srcset)
+                            break;
+                    }
+                    //var ssources = el.srcset.split(/ +[^ ,/],/);
 
                     var sizes = [];
                     if (el.sizes) {
@@ -38725,8 +38787,9 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                         if (desc) {
                             sources[src].desc = desc;
 
-                            if (desc.match(/^ *[0-9]*x *$/)) {
-                                var desc_x = parseInt(desc.replace(/^ *([0-9]*)x *$/, "$1"));
+                            // TODO: improve
+                            if (desc.match(/^ *[0-9]*[whx] *$/)) {
+                                var desc_x = parseInt(desc.replace(/^ *([0-9]*)[whx] *$/, "$1"));
                                 if (!sources[src].desc_x || sources[src].desc_x > desc_x) {
                                     sources[src].desc_x = desc_x;
                                 }
@@ -38800,8 +38863,10 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                 addElement(el);
             }
 
-            /*console_log(els);
-            console_log(sources);*/
+            if (false) {
+                console_log(els);
+                console_log(sources);
+            }
 
             if ((source = getsource()) !== undefined) {
                 if (source === null && get_single_setting("mouseover_links")) {
