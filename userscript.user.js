@@ -33140,7 +33140,16 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             // thanks to fireattack on github: https://github.com/qsniyg/maxurl/issues/98
             // https://hayabusa.io/abema/programs/386-48_s0_p25/thumb002.q85.w200.h114.v1534496588.webp
             //   https://hayabusa.io/abema/programs/386-48_s0_p25/thumb002.webp
-            return src.replace(/(\/(?:thumb)?[0-9]+)(?:\.[a-z]+[0-9]+)*(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+            // https://hayabusa.io/adcross/adx/abm/2b9ad238-8730-4909-a55a-ad82ed28490b.png?w=484&h=272
+            //   https://hayabusa.io/adcross/adx/abm/2b9ad238-8730-4909-a55a-ad82ed28490b.png
+            // https://hayabusa.io/abema/programs/12-20_s0_p25/thumb002.png?w=242&h=136
+            //   https://hayabusa.io/abema/programs/12-20_s0_p25/thumb002.png
+            return src
+                .replace(/(\/(?:thumb)?[0-9]+)(?:\.[a-z]+[0-9]+)*(\.[^/.]*)(?:[?#].*)?$/, "$1$2")
+            //.replace(/(\/adcross\/.*\/[-0-9a-f]{25,})(\.[^/.]*?)(?:[?#].*)?$/, "$1$2")
+                .replace(/\?[wh]=[0-9]+(?:&(.*))?$/, "?$1")
+                .replace(/&[wh]=[0-9]+(&.*)?$/, "$1")
+                .replace(/\?$/, "");
         }
 
         if (domain === "s.dou.ua") {
