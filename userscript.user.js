@@ -33134,10 +33134,13 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/(\/uploads\/+pj\/+)thumbs(?:-[a-z]+)?\/+/, "$1");
         }
 
-        if (domain_nowww === "hayabusa.io" && src.indexOf("/openrec-image/") >= 0) {
+        if (domain_nowww === "hayabusa.io") {
             // https://hayabusa.io/openrec-image/user/3322602/332260162.q95.w164.ttl604800.headercache0.v1540223173.png?format=png
             //   https://hayabusa.io/openrec-image/user/3322602/332260162.png?format=png
-            return src.replace(/(\/[0-9]+)(?:\.[a-z]+[0-9]+)*(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+            // thanks to fireattack on github: https://github.com/qsniyg/maxurl/issues/98
+            // https://hayabusa.io/abema/programs/386-48_s0_p25/thumb002.q85.w200.h114.v1534496588.webp
+            //   https://hayabusa.io/abema/programs/386-48_s0_p25/thumb002.webp
+            return src.replace(/(\/(?:thumb)?[0-9]+)(?:\.[a-z]+[0-9]+)*(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
         }
 
         if (domain === "s.dou.ua") {
