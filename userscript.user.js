@@ -33144,8 +33144,10 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             //   https://hayabusa.io/adcross/adx/abm/2b9ad238-8730-4909-a55a-ad82ed28490b.png
             // https://hayabusa.io/abema/programs/12-20_s0_p25/thumb002.png?w=242&h=136
             //   https://hayabusa.io/abema/programs/12-20_s0_p25/thumb002.png
+            // https://hayabusa.io/abema/series/26-24agzukmebpc/thumb.v1557970510.png
+            //   https://hayabusa.io/abema/series/26-24agzukmebpc/thumb.png
             return src
-                .replace(/(\/(?:thumb)?[0-9]+)(?:\.[a-z]+[0-9]+)*(\.[^/.]*)(?:[?#].*)?$/, "$1$2")
+                .replace(/(\/(?:thumb)?[0-9]*)(?:\.[a-z]+[0-9]+)*(\.[^/.]*)(?:[?#].*)?$/, "$1$2")
             //.replace(/(\/adcross\/.*\/[-0-9a-f]{25,})(\.[^/.]*?)(?:[?#].*)?$/, "$1$2")
                 .replace(/\?[wh]=[0-9]+(?:&(.*))?$/, "?$1")
                 .replace(/&[wh]=[0-9]+(&.*)?$/, "$1")
