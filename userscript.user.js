@@ -33146,12 +33146,17 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             //   https://hayabusa.io/abema/programs/12-20_s0_p25/thumb002.png
             // https://hayabusa.io/abema/series/26-24agzukmebpc/thumb.v1557970510.png
             //   https://hayabusa.io/abema/series/26-24agzukmebpc/thumb.png
+            // thanks again to fireattack:
+            // https://hayabusa.io/abema/programs/386-48_s0_p25/thumb001.webp
+            //   https://hayabusa.io/abema/programs/386-48_s0_p25/thumb001.q100.webp -- is the same as:
+            //   https://hayabusa.io/abema/programs/386-48_s0_p25/thumb001.webp?q=100
             return src
                 .replace(/(\/(?:thumb)?[0-9]*)(?:\.[a-z]+[0-9]+)*(\.[^/.]*)(?:[?#].*)?$/, "$1$2")
             //.replace(/(\/adcross\/.*\/[-0-9a-f]{25,})(\.[^/.]*?)(?:[?#].*)?$/, "$1$2")
-                .replace(/\?[wh]=[0-9]+(?:&(.*))?$/, "?$1")
-                .replace(/&[wh]=[0-9]+(&.*)?$/, "$1")
-                .replace(/\?$/, "");
+                .replace(/\?[whq]=[0-9]+(?:&(.*))?$/, "?$1")
+                .replace(/&[whq]=[0-9]+(&.*)?$/, "$1")
+                .replace(/\?$/, "")
+                .replace(/(\.(?:jpg|png|webp|gif))(?:\?.*)?/, "$1?q=100");
         }
 
         if (domain === "s.dou.ua") {
