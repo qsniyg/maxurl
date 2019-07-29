@@ -1218,6 +1218,13 @@ var $$IMU_EXPORT$$;
         return url;
     };
 
+    // https://stackoverflow.com/a/10073788
+    var zpadnum = function(n, width, z) {
+        z = z || '0';
+        n = n + '';
+        return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+    }
+
     // bug in chrome, see
     // https://github.com/qsniyg/maxurl/issues/7
     // https://our.umbraco.org/forum/using-umbraco-and-getting-started/91715-js-error-when-aligning-content-left-center-right-justify-in-richtext-editor
@@ -4949,8 +4956,6 @@ var $$IMU_EXPORT$$;
             domain === "xdn.tf.rs" ||
             // https://static.acg12.com/uploads/2015/07/7cedbaa31f53feaa86fed37fd9fe9da6-320x200.jpg
             domain === "static.acg12.com" ||
-            // https://www.delas.pt/files/2016/08/hd-aspect-1459874430-hbz-jennifer-lawrence-may-2016-09-150x84.jpg
-            (domain_nowww === "delas.pt" && src.indexOf("/files/") >= 0) ||
             // https://img.zone5.ru/50/1/0/zone5.ru-hermione-corfield-176882-145x200.jpg
             domain === "img.zone5.ru" ||
             // https://i2.bssl.es/lacosarosa/2017/12/emiliaclarke-880x495.jpg
@@ -5211,6 +5216,8 @@ var $$IMU_EXPORT$$;
             domain_nowww === "neskaties.lv" ||
             // https://img.eroero-gazou.net/images/2019/07/62471a0b7b42478eb16a1321e8799189-300x200.jpg
             domain === "img.eroero-gazou.net" ||
+            // https://media.sistemampa.com.br/2019/02/Camila-Cabello-Net-Worth-300x160.jpg
+            domain === "media.sistemampa.com.br" ||
             // https://1.soompi.io/wp-content/blogs.dir/8/files/2015/09/HA-TFELT-Wonder-Girls-590x730.jpg -- doesn't work
             // https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2018/01/GTA-6-Female-Protag-796x417.jpg -- does work
             src.indexOf("/wp-content/blogs.dir/") >= 0 ||
@@ -5358,6 +5365,11 @@ var $$IMU_EXPORT$$;
         // http://www.mediaonlinevn.com/wp-content/uploads/2016/03/160315-pantech-launch-hcm-41_resize-680x365_c.jpg
         // https://mediaonlinevn.com/wp-content/uploads/2016/03/160315-pantech-launch-hcm-41_resize-680x365_c.jpg
         if (domain_nowww === "mediaonlinevn.com" ||
+            // https://www.delas.pt/files/2017/07/Selena-Gomez-671x377_c.jpg
+            //   https://www.delas.pt/files/2017/07/Selena-Gomez.jpg
+            // https://www.delas.pt/files/2016/08/hd-aspect-1459874430-hbz-jennifer-lawrence-may-2016-09-150x84.jpg
+            //   https://www.delas.pt/files/2016/08/hd-aspect-1459874430-hbz-jennifer-lawrence-may-2016-09.jpg
+            (domain_nowww === "delas.pt" && src.indexOf("/files/") >= 0) ||
             // http://www.onthemoveworld.com/otm-fr/wp-content/uploads/2019/03/Carly-rae-jepsen-2018-cr-Natalie-OMoore-billboard-1548-347x246_c.jpg
             //   http://www.onthemoveworld.com/otm-fr/wp-content/uploads/2019/03/Carly-rae-jepsen-2018-cr-Natalie-OMoore-billboard-1548.jpg
             domain_nowww === "onthemoveworld.com") {
@@ -10730,10 +10742,15 @@ var $$IMU_EXPORT$$;
             (domain === "adobe-abid.waphall.com" && src.indexOf("/images/") >= 0) ||
             // https://cdn2.cdnme.se/cdn/9-2/631991/images/2011/emmood-3_143059858_thumb.jpg
             (domain_nosub === "cdnme.se" && src.indexOf("/images/") >= 0) ||
+            // https://znews-photo.zadn.vn/Uploaded/neg_yslewlx/2019_04_26/selenagomezwedayapril252019billboard1548_thumb.jpg
+            //   https://znews-photo.zadn.vn/uploaded/neg_yslewlx/2019_04_26/selenagomezwedayapril252019billboard1548.jpg
+            (domain_nosub === "zadn.vn" && src.match(/\/uploaded\//i)) ||
             // https://www.bellazon.com/main/uploads/monthly_01_2015/post-40923-0-58758100-1422215257_thumb.jpg
             domain_nowww === "bellazon.com") {
             // http://img.danawa.com/cms/img/2010/11/19/%C7%D6%C6%D1_thumb.png
-            return src.replace(/_thumb(\.[^/.]*)(?:[?#].*)?$/, "$1");
+            newsrc = src.replace(/_thumb(\.[^/.]*)(?:[?#].*)?$/, "$1");
+            if (newsrc !== src)
+                return newsrc;
         }
 
         if (domain_nosub === "pcgames.com.cn" && domain.match(/^img[0-9]*\./)) {
@@ -12267,6 +12284,8 @@ var $$IMU_EXPORT$$;
             (domain_nowww === "lolzilla.net" && src.indexOf("/images/") >= 0) ||
             // https://extraimage.net/images/2019/05/22/e481286736b43bfd6508de1fb55feef8.md.jpg
             (domain_nowww === "extraimage.net" && src.indexOf("/images/") >= 0) ||
+            // https://celebphotos.club/images/2019/07/23/selena-gomez-at-her-cousin-s-wedding-in-la-07-19-2019-2.md.jpg
+            (domain_nowww === "celebphotos.club" && src.indexOf("/images/") >= 0) ||
             // http://image-bugs.com/images/2017/09/09/CelebsFlash.com_NP_Harpers_Bazaar_090817__3_.md.jpg
             domain_nowww === "image-bugs.com") {
             // http://imgmax.com/images/2017/03/20/0OQhE.th.jpg
@@ -12936,7 +12955,10 @@ var $$IMU_EXPORT$$;
             //   https://www.wallpaperflare.com/static/691/945/100/leslie-grace-hot-5k-woman-wallpaper.jpg
             // https://www.wallpaperflare.com/static/532/54/508/rihanna-saturday-night-live-singer-face-wallpaper-thumb.jpg
             //   https://www.wallpaperflare.com/static/532/54/508/rihanna-saturday-night-live-singer-face-wallpaper.jpg
+            // https://www.wallpaperflare.com/static/786/500/37/girl-anime-automaton-guns-wallpaper-preview.jpg
+            //   https://www.wallpaperflare.com/static/786/500/37/girl-anime-automaton-guns-wallpaper.jpg
             return src.replace(/-(?:thumb|preview)(\.[^/.]*)$/, "$1");
+            //return src.replace(/-preview(\.[^/.]*)$/, "$1");
         }
 
         if (domain === "cdn.store-assets.com") {
@@ -14888,13 +14910,6 @@ var $$IMU_EXPORT$$;
             // http://w4.wallls.com/uploads/thumbnail/201711/21/157267.jpg
             //   http://w4.wallls.com/uploads/original/201711/21/wallls.com_157267.jpg
             return src.replace(/\/uploads\/[^/]*\/([0-9]*\/[0-9]*\/)([0-9]*\.[^/.]*)$/, "/uploads/original/$1wallls.com_$2");
-        }
-
-        if (domain === "www.wallpaperflare.com" &&
-            src.indexOf("/static/") >= 0) {
-            // https://www.wallpaperflare.com/static/786/500/37/girl-anime-automaton-guns-wallpaper-preview.jpg
-            //   https://www.wallpaperflare.com/static/786/500/37/girl-anime-automaton-guns-wallpaper.jpg
-            return src.replace(/-preview(\.[^/.]*)$/, "$1");
         }
 
         if (domain === "content.hardtunes.com") {
@@ -17573,6 +17588,14 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
         }
 
         if (domain === "static.t13.cl") {
+            // https://static.t13.cl/images/sizes/340x191/1560510004-107367977gettyimages-1155088278.jpg
+            //   https://static.t13.cl/images/original/2019/06/1560510004-107367977gettyimages-1155088278.jpg
+            match = src.match(/\/images\/+sizes\/+[^/]*\/+([0-9]{8,})-/);
+            if (match) {
+                var date = new Date(match[1] * 1000);
+                return src.replace(/\/images\/+sizes\/+[^/]*\/+/, "/images/original/" + date.getUTCFullYear() + "/" + zpadnum(date.getUTCMonth() + 1, 2) + "/");
+            }
+
             // http://static.t13.cl/ee_images/209706/063_488408753_(1)__360x.jpg
             //   http://static.t13.cl/ee_images/209706/063_488408753_(1).jpg
             return src.replace(/__[0-9]+x(?:[0-9]+)?(\.[^/.]*)$/, "$1");
@@ -20083,7 +20106,10 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/\/image\/otf\/[0-9]+x[0-9]+\//, "/image/");
         }
 
-        if (domain === "ia.tmgrup.com.tr") {
+        if (domain === "ia.tmgrup.com.tr" ||
+            // https://iaahbr.tmgrup.com.tr/0219d4/960/540/0/1/640/361?u=https://iahbr.tmgrup.com.tr/album/2018/12/28/1546006796151.jpg
+            //   https://iahbr.tmgrup.com.tr/album/2018/12/28/1546006796151.jpg
+            domain === "iaahbr.tmgrup.com.tr") {
             // http://ia.tmgrup.com.tr/ec4621/0/0/0/0/960/504?u=http://i.tmgrup.com.tr/es/2018/03/08/turkiyede-en-cok-hangi-kadin-sarkicilar-dinleniyor-1520499517892.jpg&mw=600
             //   http://i.tmgrup.com.tr/es/2018/03/08/turkiyede-en-cok-hangi-kadin-sarkicilar-dinleniyor-1520499517892.jpg
             return decodeURIComponent(src.replace(/^[a-z]+:\/\/[^/]*\/[^/]*\/(?:[0-9]+\/){5}[0-9]+\/?.*?[?&]u=([^&]*).*?$/, "$1"));
@@ -24214,10 +24240,13 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             //   https://m.novi.ba/storage/2018/09/11/5b97e11f-8b4c-4f41-b7c6-6a650a0a0a67-selena3.jpg
             // https://m.novi.ba/storage/2018/09/11/thumbs/5b97e111-ec40-41e3-a490-69eb0a0a0a67-selena-690x480.png
             //   https://m.novi.ba/storage/2018/09/11/5b97e111-ec40-41e3-a490-69eb0a0a0a67-selena.png
-            domain === "m.novi.ba") {
+            // https://novi.ba/storage/2019/04/30/thumbs/5cc813c3-e994-43b7-a16d-424b0a0a0a64-selena-gomez-we-day-april-25-2019-billboard-1548-preview.jpg
+            //   https://novi.ba/storage/2019/04/30/5cc813c3-e994-43b7-a16d-424b0a0a0a64-selena-gomez-we-day-april-25-2019-billboard-1548.jpg
+            domain_nosub === "novi.ba") {
             // https://vijesti.ba/storage/2016/03/12/thumbs/56e45307-12bc-497f-b9d9-21210a0a0a80-lopez-haljina-1-previewOrg.jpg
             //   https://vijesti.ba/storage/2016/03/12/56e45307-12bc-497f-b9d9-21210a0a0a80-lopez-haljina-1.jpg
-            return src.replace(/(\/storage\/[0-9]+\/[0-9]+\/[0-9]+\/)thumbs\/([^/]*)-(?:previewOrg|[0-9]+x[0-9]+)(\.[^/.]*)$/, "$1$2$3");
+            return src.replace(/(\/storage\/[0-9]+\/[0-9]+\/[0-9]+\/)thumbs\/([^/]*)-(?:preview(?:Org)?|[0-9]+x[0-9]+)(\.[^/.]*)$/, "$1$2$3");
+            //return src.replace(/(\/storage\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2})thumbs\/+([^/]*)-preview(\.[^/.]*)(?:[?#].*)?$/, "$1$2$3");
         }
 
         if (domain === "m.smedata.sk") {
@@ -34608,6 +34637,100 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             //   https://photo-net-production-images.s3.amazonaws.com/18551694-orig.jpg -- 600x800
             // https://d6d2h4gfvy8t8.cloudfront.net/18552096-orig.jpg -- 2816x2112
             return src.replace(/(\/[0-9]+)-[a-z]+(\.[^/.]*)(?:[?#].*)?$/, "$1-orig$2");
+        }
+
+        if (domain_nowww === "thoimoi.vn") {
+            // https://thoimoi.vn/stores/news_dataimages/thuhuong/072019/29/22/in_article/5109_1.jpg
+            //   https://thoimoi.vn/stores/news_dataimages/thuhuong/072019/29/22/5109_1.jpg
+            // https://thoimoi.vn/stores/news_dataimages/thuhuong/042019/26/09/thumbnail/1603_selenagomezwedayapril252019billboard1548_thumb.jpg
+            //   https://thoimoi.vn/stores/news_dataimages/thuhuong/042019/26/09/1603_selenagomezwedayapril252019billboard1548_thumb.jpg
+            return src.replace(/(\/thuhuong\/+[0-9]{6}\/+[0-9]+\/+[0-9]+\/+)[a-z_]+\/+/, "$1");
+        }
+
+        if (domain_nosub === "energyfm.ru" && domain.match(/^cdn[0-9]*\./)) {
+            // http://cdn0.energyfm.ru/proxy/vardata/modules/news/files/1/4136/news_file_4136_5cee57ea1309c.jpg?w=600&h=397&t=1559123946
+            //   http://cdn0.energyfm.ru/proxy/vardata/modules/news/files/1/4136/news_file_4136_5cee57ea1309c.jpg?w=-
+            //   http://www.energyfm.ru/vardata/modules/news/files/1/4136/news_file_4136_5cee57ea1309c.jpg
+            if (/\/proxy\/+vardata\//.test(src)) {
+                return src.replace(/:\/\/[^/]*\/proxy\/+vardata\/+(.*?)(?:[?#].*)?$/, "://www.energyfm.ru/vardata/$1");
+            }
+
+            return src.replace(/(\/files\/+[0-9]+\/+[0-9]+\/+[^/]*?)\?.*/, "$1?w=-");
+        }
+
+        if (domain_nowww === "chacuncherchesonfilm.fr") {
+            // https://www.chacuncherchesonfilm.fr/storage/personnes/5c/5cdd19803044d-_x185.png?token=dcce9646205dd65e76815fabb3053c36
+            //   https://www.chacuncherchesonfilm.fr/storage/personnes/5c/5cdd19803044d.png?token=dcce9646205dd65e76815fabb3053c36
+            return src.replace(/(\/storage\/+[^/]*\/+[0-9a-f]{2}\/+[0-9a-f]+)-[0-9_]+x[0-9_]+(\.[^/.]*(?:[?#].*)?)$/,
+                               "$1$2");
+        }
+
+        if (domain === "structurecms-staging-psyclone.netdna-ssl.com") {
+            // https://structurecms-staging-psyclone.netdna-ssl.com/client_assets/thehollywoodconservative_us/media/picture/5d1a/58ce/6970/2d06/be28/1700/thumb_Selena_Gomez_2016.png?1562007758
+            //   https://structurecms-staging-psyclone.netdna-ssl.com/client_assets/thehollywoodconservative_us/media/picture/5d1a/58ce/6970/2d06/be28/1700/content_Selena_Gomez_2016.png?1562007758
+            //   https://structurecms-staging-psyclone.netdna-ssl.com/client_assets/thehollywoodconservative_us/media/picture/5d1a/58ce/6970/2d06/be28/1700/original_Selena_Gomez_2016.png?1562007758
+            return src.replace(/(\/media\/+picture\/+(?:[0-9a-f]{4}\/+){6})[a-z]+_/, "$1original_");
+        }
+
+        if (domain_nowww === "reforma.com" ||
+            // https://www.elnorte.com/aplicacioneslibre/compartir/ImageTransformer.aspx?wm=1&img=https://img.gruporeforma.com/imagenes/960x640/4/685/3684095.jpg&ang=0
+            //   https://img.gruporeforma.com/imagenes/960x640/4/685/3684095.jpg
+            domain_nowww === "elnorte.com") {
+            // https://www.reforma.com/aplicacioneslibre/compartir/ImageTransformer.aspx?wm=1&img=https://img.gruporeforma.com/imagenes/960x640/4/685/3684095.jpg&ang=0
+            //   https://img.gruporeforma.com/imagenes/960x640/4/685/3684095.jpg
+            newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/aplicacioneslibre\/+compartir\/+ImageTransformer.aspx\?(?:.*?&)?img=(http[^&]*).*?$/, "$1");
+            if (newsrc !== src)
+                return decodeuri_ifneeded(newsrc);
+        }
+
+        if (domain_nowww === "madtv.com.cy") {
+            // https://www.madtv.com.cy/assets/modules/wnp/articles/201906/347/images/s_selena.jpg -- 400x260
+            //   https://www.madtv.com.cy/assets/modules/wnp/articles/201906/347/images/m_selena.jpg -- 900x500
+            //   https://www.madtv.com.cy/assets/modules/wnp/articles/201906/347/images/b_selena.jpg -- 900x600
+            return src.replace(/(\/assets\/+modules\/+wnp\/+articles\/+[0-9]{6}\/+[0-9]+\/+images\/+)[ms]_([^/]*)(?:[?#].*)?$/,
+                               "$1b_$2");
+        }
+
+        if (domain === "d15hng3vemx011.cloudfront.net") {
+            // https://d15hng3vemx011.cloudfront.net/attachment/0km4rjtlcgwoguyynaps.medium
+            //   https://d15hng3vemx011.cloudfront.net/attachment/0km4rjtlcgwoguyynaps
+            // https://d15hng3vemx011.cloudfront.net/attachment/02559523568084830002.medium
+            //   https://d15hng3vemx011.cloudfront.net/attachment/02559523568084830002.large
+            if (src.match(/\/attachment\/+[^/.]*\.[a-z]+/)) {
+                return [
+                    src.replace(/(\/attachment\/+[^/.]*)\.[a-z]+/, "$1"),
+                    src.replace(/(\/attachment\/+[^/.]*)\.[a-z]+/, "$1.large"),
+                ];
+            }
+        }
+
+        if (domain === "static.flaixfm.cat") {
+            // todo: improve?
+            // https://static.flaixfm.cat/camila-cabello-havana-2.pw-640.jpg
+            //   https://static.flaixfm.cat/camila-cabello-havana-2.pwh-2560-1440.jpg
+            // https://static.flaixfm.cat/pw-640/concurs-maxiflaix-ok-2.png
+            //   https://static.flaixfm.cat/pwh-2560-1440/concurs-maxiflaix-ok-2.png
+            // https://static.flaixfm.cat/cwh-320-320/daddy-yankee-con-calma-web-flaixfm.png
+            //   https://static.flaixfm.cat/pwh-2560-1440/daddy-yankee-con-calma-web-flaixfm.png
+            // https://static.flaixfm.cat/pw-480/facebook-og-2019.png
+            //   https://static.flaixfm.cat/pwh-2560-1440/facebook-og-2019.png
+            // https://static.flaixfm.cat/cwh-160-160/1cb53b5707d67cee4097e4f424b502f2-1000x1000x1.jpg
+            //   https://static.flaixfm.cat/pwh-2560-1440/1cb53b5707d67cee4097e4f424b502f2-1000x1000x1.jpg
+            // doesn't work for all:
+            // https://static.flaixfm.cat/top-10-2.pw-640-2.png -- same as:
+            //   https://static.flaixfm.cat/top-10-2.pw-640.png
+            //   https://static.flaixfm.cat/top-10-2.pwh-2560-1440.png -- doesn't work
+            //   https://static.flaixfm.cat/top-10-2.pwh-2560-1440-2.png -- doesn't work
+            // other:
+            // https://static.flaixfm.cat/file/ezgif-com-video-to-gif.gif -- other urls don't seem to work with /file/
+            return src.replace(/([./])(?:pw-(?:640|480)|cwh-(?:320-320|160-160))\1/, "$1pwh-2560-1440$1");
+        }
+
+        if (domain_nowww === "music.hu") {
+            // http://www.music.hu/pictures/46/resized/23270_zene_w800_h600.jpeg
+            //   http://www.music.hu/pictures/46/23270_zene.jpeg
+            return src.replace(/(\/pictures\/+[0-9]+\/+)resized\/+([^/]*?)(?:_[wh][0-9]+)+(\.[^/.]*)(?:[?#].*)?$/,
+                               "$1$2$3");
         }
 
 
