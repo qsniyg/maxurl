@@ -33175,17 +33175,25 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             //   https://hayabusa.io/abema/programs/12-20_s0_p25/thumb002.png
             // https://hayabusa.io/abema/series/26-24agzukmebpc/thumb.v1557970510.png
             //   https://hayabusa.io/abema/series/26-24agzukmebpc/thumb.png
+            // https://hayabusa.io/makuake/upload/temporary/2926/detail/detail_2926_1543415491.jpeg?width=640&quality=95&format=jpeg&ttl=31536000&force
+            //   https://hayabusa.io/makuake/upload/temporary/2926/detail/detail_2926_1543415491.jpeg?q=100&quality=100
+            // https://hayabusa.io/openrec-image/thumbnails/12009/1200829/origin/6/captured_5511.q95.w350.ttl604800.headercache300.jpeg?q=100&quality=100
+            //   https://hayabusa.io/openrec-image/thumbnails/12009/1200829/origin/6/captured_5511.jpeg?q=100&quality=100
+            // https://hayabusa.io/makuake/upload/project/4248/main_4248.fit-scale.jpeg?q=100&quality=100
+            //   https://hayabusa.io/makuake/upload/project/4248/main_4248.jpeg?q=100&quality=100
             // thanks again to fireattack:
             // https://hayabusa.io/abema/programs/386-48_s0_p25/thumb001.webp
             //   https://hayabusa.io/abema/programs/386-48_s0_p25/thumb001.q100.webp -- is the same as:
             //   https://hayabusa.io/abema/programs/386-48_s0_p25/thumb001.webp?q=100
             return src
-                .replace(/(\/(?:thumb)?[0-9]*)(?:\.[a-z]+[0-9]+)*(\.[^/.]*)(?:[?#].*)?$/, "$1$2")
+                .replace(/(\/[^/.]*)(?:\.[-a-z]+[0-9]*)*(\.[^/.]*)(?:[?#].*)?$/, "$1$2")
             //.replace(/(\/adcross\/.*\/[-0-9a-f]{25,})(\.[^/.]*?)(?:[?#].*)?$/, "$1$2")
                 .replace(/\?[whq]=[0-9]+(?:&(.*))?$/, "?$1")
                 .replace(/&[whq]=[0-9]+(&.*)?$/, "$1")
+                .replace(/\?(?:width|height|quality)=[0-9]+(?:&(.*))?$/, "?$1")
+                .replace(/&(?:width|height|quality)=[0-9]+(&.*)?$/, "$1")
                 .replace(/\?$/, "")
-                .replace(/(\.(?:jpg|png|webp|gif))(?:\?.*)?/, "$1?q=100");
+                .replace(/(\.(?:jpe?g|png|webp|gif))(?:\?.*)?/, "$1?q=100&quality=100");
         }
 
         if (domain === "s.dou.ua") {
@@ -34731,6 +34739,14 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             //   http://www.music.hu/pictures/46/23270_zene.jpeg
             return src.replace(/(\/pictures\/+[0-9]+\/+)resized\/+([^/]*?)(?:_[wh][0-9]+)+(\.[^/.]*)(?:[?#].*)?$/,
                                "$1$2$3");
+        }
+
+        if (domain === "dspvdh6gst59b.cloudfront.net") {
+            // https://dspvdh6gst59b.cloudfront.net/https%3A%2F%2Fhayabusa.io%2Fmakuake%2Fupload%2Fproject%2F3890%2Fdetail_3890_1519727224.png?w=630
+            //   https://hayabusa.io/makuake/upload/project/3890/detail_3890_1519727224.png?q=100&quality=100
+            newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/(http.*?)(?:[?#].*)?$/, "$1");
+            if (newsrc !== src)
+                return decodeuri_ifneeded(newsrc);
         }
 
 
