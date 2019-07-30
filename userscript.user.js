@@ -5218,6 +5218,8 @@ var $$IMU_EXPORT$$;
             domain === "img.eroero-gazou.net" ||
             // https://media.sistemampa.com.br/2019/02/Camila-Cabello-Net-Worth-300x160.jpg
             domain === "media.sistemampa.com.br" ||
+            // https://img1.looper.com/img/uploads/2017/04/why-hollywood-won_t-cast-jessica-alba-anymore-780x438.jpg
+            (domain_nosub === "looper.com" && /^img[0-9]*\./.test(domain) && src.indexOf("/uploads/") >= 0) ||
             // https://1.soompi.io/wp-content/blogs.dir/8/files/2015/09/HA-TFELT-Wonder-Girls-590x730.jpg -- doesn't work
             // https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2018/01/GTA-6-Female-Protag-796x417.jpg -- does work
             src.indexOf("/wp-content/blogs.dir/") >= 0 ||
@@ -8118,6 +8120,9 @@ var $$IMU_EXPORT$$;
         }
 
         if ((domain_nosub === "reveliststatic.com" ||
+             // http://cdn-ugc.cafemom.com/gen/min/200/200/85/2010/10/06/01/9n/1n/pobz17xl441b0sg.jpg?imageId=19848772
+             //   http://cdn-ugc.cafemom.com/gen/full/2010/10/06/01/9n/1n/pobz17xl441b0sg.jpg?imageId=19848772
+             domain_nosub === "cafemom.com" ||
              // https://ugc-01.cafemomstatic.com/gen/resize/256/386/80/2012/02/16/10/ci/6g/pofsu3tdkw.jpg
              //   https://ugc-01.cafemomstatic.com/gen/full/2012/02/16/10/ci/6g/pofsu3tdkw.jpg
              // https://ugc-01.cafemomstatic.com/gen/crop/9999/9999/0/2018/02/01/11/4g/tr/po8puaj0cg72.png
@@ -8126,13 +8131,13 @@ var $$IMU_EXPORT$$;
              //   http://ugc-01.cafemomstatic.com/gen/full/2018/01/25/11/44/8r/ph1gxpvbeo2qbwe.jpg
              // https://static-01.cafemomstatic.com/images/stir_2014/special/celebrate-dad/celebrate_dad_activities_header.jpg
              domain_nosub === "cafemomstatic.com") &&
-            domain.match(/^ugc(?:-[0-9]*)?\./)) {
+            domain.match(/^(?:cdn-)?ugc(?:-[0-9]*)?\./)) {
             // http://ugc.reveliststatic.com/gen/constrain/800/800/80/2017/05/09/10/6x/ix/phdkya0kkk2qbwe.jpg
             //   http://ugc.reveliststatic.com/gen/full/2017/05/09/10/6x/ix/phdkya0kkk2qbwe.jpg
 
             //return src.replace(/\/gen\/crop\/[0-9]*\/[0-9]*\/[0-9]*\//, "/gen/crop/9999/9999/0/");
             //return src.replace(/\/gen\/crop\/[0-9]+\/[0-9]+\/[0-9]+\//, "/gen/full/");
-            return src.replace(/\/gen\/(?:constrain|crop|resize)\/[0-9]*\/[0-9]*\/[0-9]*\//, "/gen/full/");
+            return src.replace(/\/gen\/(?:constrain|crop|resize|min)\/[0-9]*\/[0-9]*\/[0-9]*\//, "/gen/full/");
         }
 
         if (domain === "static.giantbomb.com") {
@@ -9989,6 +9994,9 @@ var $$IMU_EXPORT$$;
         }
 
         if ((domain_nosub === "49qmz.com" ||
+             // http://img1.ii77.com/mmbiz_jpg/OBQWTDeVLCNaib0HP024ucQ9A58IVjEes79snzkTRnI2nBpRYrkIRcKHveGb6XdKDtIrD8K8UtXBnNtibLOjPrCg/640?wx_fmt=jpeg
+             //   http://mmbiz.qpic.cn/mmbiz_jpg/OBQWTDeVLCNaib0HP024ucQ9A58IVjEes79snzkTRnI2nBpRYrkIRcKHveGb6XdKDtIrD8K8UtXBnNtibLOjPrCg/0
+             domain_nosub === "ii77.com" ||
              // http://img1.vhaor.com/mmbiz_jpg/Keiao0PZ6AuK6HmUvlxH25mwI1FQ1kbicMzSwX70C1KojImoefyiclDcWIcIO5oUfmicMRz1KpkMk9HjPIzciaBV3ow/0?wx_fmt=jpeg
              //   http://mmbiz.qpic.cn/mmbiz_jpg/Keiao0PZ6AuK6HmUvlxH25mwI1FQ1kbicMzSwX70C1KojImoefyiclDcWIcIO5oUfmicMRz1KpkMk9HjPIzciaBV3ow/0
              domain_nosub === "vhaor.com")
@@ -27379,7 +27387,9 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
         if (domain_nowww === "voice.fi") {
             // https://www.voice.fi/files/media/image/2017/24/2017_24_11_5a17d903efa2e_480.jpg
             //   https://www.voice.fi/files/media/image/2017/24/2017_24_11_5a17d903efa2e.jpg
-            return src.replace(/(\/+files\/+media\/+image\/+[0-9]{4}\/+[0-9]{2}\/+[0-9]{4}_[0-9]{2}_[0-9]{2}_[0-9a-f]+)_[0-9]+(\.[^/.]*)(?:[?#].*)?$/,
+            // https://www.voice.fi/files/media/image/p18v/at/p18v9at6s32ujg2b1ldqld4o4s5_480.jpg
+            //   https://www.voice.fi/files/media/image/p18v/at/p18v9at6s32ujg2b1ldqld4o4s5.jpg
+            return src.replace(/(\/+files\/+media\/+image\/+(?:[0-9]{4}\/+[0-9]{2}\/+[0-9]{4}_[0-9]{2}_[0-9]{2}_[0-9a-f]+|[0-9a-z]{4}\/+[0-9a-z]{2}\/+[0-9a-z]+))_[0-9]+(\.[^/.]*)(?:[?#].*)?$/,
                                "$1$2");
         }
 
@@ -28273,6 +28283,9 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
         }
 
         if (domain_nowww === "bestpornbabes.com" ||
+            // https://cdn.shesfreaky.com/galleries/9439556937e05b9d47/thumbs/56937e10983fd.jpg
+            //   https://cdn.shesfreaky.com/galleries/9439556937e05b9d47/56937e10983fd.jpg
+            domain === "cdn.shesfreaky.com" ||
             // https://media.babesource.com/galleries/5cf63225e8fbe/thumbs/101353_005.jpg
             //   https://media.babesource.com/galleries/5cf63225e8fbe/101353_005.jpg
             domain === "media.babesource.com") {
@@ -34749,6 +34762,72 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                 return decodeuri_ifneeded(newsrc);
         }
 
+        if (domain_nowww === "factnews.mn") {
+            // http://factnews.mn/images/news/crop300/old/blue-dragon-2007-kim-tae-hee-05(1).jpg
+            //   http://factnews.mn/images/news/old/blue-dragon-2007-kim-tae-hee-05(1).jpg -- smaller?
+            //   http://factnews.mn/images/news/gallery/old/blue-dragon-2007-kim-tae-hee-05.jpg -- full
+            return src.replace(/\/images\/+news\/+crop[0-9]+\/+/, "/images/news/");
+        }
+
+        if (domain_nowww === "videos-de-celebrites.com") {
+            // http://www.videos-de-celebrites.com/galeries/toni_braxton/1/tn/tn_pic13.jpg
+            //   http://www.videos-de-celebrites.com/galeries/toni_braxton/1/pic13.jpg
+            return src.replace(/\/tn\/+tn_/, "/");
+        }
+
+        if (domain_nowww === "friends.kz") {
+            // http://friends.kz/uploads/posts/thumbs/1150603550_the_van_01.jpg
+            //   http://friends.kz/uploads/posts/1150603550_the_van_01.jpg
+            return src.replace(/\/uploads\/+posts\/+thumbs\/+/, "/uploads/posts/");
+        }
+
+        if (domain_nowww === "sama-sama-sama.ru") {
+            // http://www.sama-sama-sama.ru/starimp/000zw011/ps14.jpg
+            //   http://www.sama-sama-sama.ru/starimp/000zw011/s14.jpg
+            return src.replace(/(\/starimp\/+[^/]*\/+)p(s[0-9]+\.[^/.]*)/, "$1$2");
+        }
+
+        if (domain === "img.index.hu") {
+            // https://img.index.hu/imgfrm/8/2/4/5/THM_0000938245.jpg
+            //   https://img.index.hu/imgfrm/8/2/4/5/BIG_0000938245.jpg
+            //   https://img.index.hu/imgfrm/8/2/4/5/IMG_0000938245.jpg
+            // https://img.index.hu/imgfrm/5/0/7/4/BIG_0003105074.jpg
+            //   https://img.index.hu/imgfrm/5/0/7/4/IMG_0003105074.jpg
+            return src.replace(/(\/imgfrm\/+(?:.\/+){4})(?:THM|BIG)_/, "$1IMG_");
+        }
+
+        if (domain_nowww === "eventpixx.org") {
+            // http://www.eventpixx.org/image/4b6a1a9073caa_x137.jpg
+            //   http://www.eventpixx.org/image/4b6a1a9073caa.jpg
+            return src.replace(/(\/image\/+[0-9a-f]+)_[0-9]*x[0-9]*(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain === "images.hgmsites.net") {
+            // https://images.hgmsites.net/sml/2018-toyota-camry_100650533_s.jpg
+            //   https://images.hgmsites.net/hug/2018-toyota-camry_100650533_h.jpg -- 2999x1999
+            // https://images.hgmsites.net/hug/tesla-ceo-elon-musk-introducing-model-y_100695335_h.jpg -- 3929x2211
+            // doesn't work for all:
+            // https://images.hgmsites.net/sml/jessica-alba_100319943_s.jpg
+            return src.replace(/\/sml\/+([^/]*)_s(\.[^/.]*)(?:[?#].*)?$/, "/hug/$1_h$2");
+        }
+
+        if (domain === "cdn.lifebuzz.com") {
+            // http://cdn.lifebuzz.com/images/254543/lifebuzz-f20592f8cd481b25fcfae047325d4a25-limit_2000.jpg
+            //   http://cdn.lifebuzz.com/images/254543/lifebuzz-f20592f8cd481b25fcfae047325d4a25-original.jpg
+            // http://cdn.lifebuzz.com/images/261979/lifebuzz-91133d1625e916bb93455e06d50ef296-thumb_800.jpg
+            //   http://cdn.lifebuzz.com/images/261979/lifebuzz-91133d1625e916bb93455e06d50ef296-original.jpg
+            // doesn't work for all:
+            // http://cdn.lifebuzz.com/images/59108/lifebuzz-e01e7be7d8bb4365404836c302a6d694-thumb_800.jpg
+            //   http://cdn.lifebuzz.com/images/59108/lifebuzz-e01e7be7d8bb4365404836c302a6d694-wide_1000.jpg
+            //   http://cdn.lifebuzz.com/images/59108/lifebuzz-e01e7be7d8bb4365404836c302a6d694-original.jpg
+            return src.replace(/(\/images\/+[0-9]+\/+lifebuzz-[0-9a-f]{20,})-[a-z]+_[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1-original$2");
+        }
+
+        if (domain === "jurnalul.antena3.ro") {
+            // https://jurnalul.antena3.ro/thumbs/article/2017/07/21/nutritionista-jessicai-alba-vorbeste-despre-dieta-acesteia-18582670.jpg
+            //   https://jurnalul.antena3.ro/pictures/2017/07/21/18582670.jpg
+            return src.replace(/\/thumbs\/+[^/]*\/+([0-9]{4}\/+(?:[0-9]{2}\/+){2})[^/]*-([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/pictures/$1$2");
+        }
 
 
 
