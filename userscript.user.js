@@ -4548,6 +4548,8 @@ var $$IMU_EXPORT$$;
             (domain_nowww === "stylist.co.uk" && /\/images\/+app\/+uploads\/+/.test(src)) ||
             // https://www.britishfashioncouncil.co.uk/uploads/collections/3162/70/original/282717.jpg?w=600&h=894&mode=crop
             (domain_nowww === "britishfashioncouncil.co.uk" && src.indexOf("/uploads/") >= 0) ||
+            // https://static.fptplay.net/static/img/share/video/09_05_2016/9794a73f2472ed913bf6f44718a1acaf1355153297_full09-05-2016_10g02-52.jpg?w=300&h=430&mode=scale
+            (domain === "static.fptplay.net" && src.indexOf("/img/") >= 0) ||
             // http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
             // https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
             src.match(/\/demandware\.static\//) ||
@@ -5356,6 +5358,8 @@ var $$IMU_EXPORT$$;
             (domain === "arhiva.nacional.hr" && src.indexOf("/img/") >= 0) ||
             // https://media.cbs8.com/assets/KFMB/images/7989a21b-212b-4cf2-b5ae-0e1798977c39/7989a21b-212b-4cf2-b5ae-0e1798977c39_750x422.jpg
             (domain === "media.cbs8.com" && src.indexOf("/assets/") >= 0) ||
+            // https://img.myvideo.net.tw/images/MUS030/0000/0254/201407071400064359_210x300.jpg
+            (domain === "img.myvideo.net.tw" && src.indexOf("/images/") >= 0) ||
             // http://images.cinefil.com/movies/1053952_1600x450.jpg
             //   http://images.cinefil.com/movies/1053952.jpg
             domain === "images.cinefil.com") {
@@ -10699,6 +10703,15 @@ var $$IMU_EXPORT$$;
                 .replace(/(\/images\/[a-z]+\/[0-9]+\/(?:[a-z]+\/)?[0-9a-f]+)\/[0-9]+(\.[^/.]*)$/, "$1$2");
         }
 
+        if (domain === "akiba-souken.k-img.com" ||
+            // http://image.akiba-souken.k-img.com/images/article/000/602/t640_602346.jpg
+            //   http://image.akiba-souken.k-img.com/images/article/000/602/602346.jpg
+            domain === "image.akiba-souken.k-img.com") {
+            // https://akiba-souken.k-img.com/assets/images/article/000/602/t640_602120.jpg
+            //   https://akiba-souken.k-img.com/assets/images/article/000/602/602120.jpg
+            return src.replace(/(\/images\/+[^/]*\/+(?:[0-9]{3}\/+){2})t[0-9]+_/, "$1");
+        }
+
         if (domain === "image.yes24.com") {
             // http://image.yes24.com/goods/24213246/S
             // http://image.yes24.com/goods/24213246
@@ -13585,6 +13598,9 @@ var $$IMU_EXPORT$$;
         }
 
         if (domain === "myanimelist.cdn-dena.com" ||
+            // https://cdn.myanimelist.net/r/96x136/images/anime/3/44724.jpg?s=f18de0aa37ccbe2b9ac76fb2158a1bfe
+            //   https://cdn.myanimelist.net/images/anime/3/44724.jpg?s=f18de0aa37ccbe2b9ac76fb2158a1bfe
+            domain === "cdn.myanimelist.net" ||
             // https://dizigol.net/r/100x0/upload/sanatciafis/alexz-johnson-57137-b.jpg
             //   https://dizigol.net/upload/sanatciafis/alexz-johnson-57137-b.jpg
             domain_nowww === "dizigol.net") {
@@ -15676,7 +15692,10 @@ var $$IMU_EXPORT$$;
                 .replace(/\/(?:article)?img\/+([0-9]+)(?:\/+[0-9]+)?(?:[?#].*)?$/, "/imgs/src/$1");
         }
 
-        if (domain_nosub === "shikimori.org" &&
+        if ((domain_nosub === "shikimori.org" ||
+            // https://moe.shikimori.one/system/animes/preview/14967.jpg?1561448019
+            //   https://moe.shikimori.one/system/animes/original/14967.jpg?1561448019
+            domain_nosub === "shikimori.one") &&
             src.indexOf("/system/") >= 0) {
             // https://shikimori.org/animes/1887-lucky-star/cosplay
             // https://dere.shikimori.org/system/cosplay_images/preview/24174.jpg?1305086273
@@ -34829,6 +34848,103 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/\/thumbs\/+[^/]*\/+([0-9]{4}\/+(?:[0-9]{2}\/+){2})[^/]*-([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/pictures/$1$2");
         }
 
+        if (domain_nowww === "anime1.com") {
+            // http://www.anime1.com/main/img/content/boku-wa-tomodachi-ga-sukunai-next/boku-wa-tomodachi-ga-sukunai-next-105.jpg
+            //   http://www.anime1.com/main/img/content/boku-wa-tomodachi-ga-sukunai-next/boku-wa-tomodachi-ga-sukunai-next.jpg
+            return src.replace(/(\/img\/+content\/+[^/]*\/+[^/]*)-[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain_nowww === "animetoon.org") {
+            // http://www.animetoon.org/images/series/small/2315.jpg
+            //   http://www.animetoon.org/images/series/big/2315.jpg
+            return src.replace(/(\/images\/+[^/]*\/+)small\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1big/$2");
+        }
+
+        if (domain_nowww === "anime-tourism.jp") {
+            // https://anime-tourism.jp/title_th/bokuhaganai.jpg
+            //   https://anime-tourism.jp/title_image/bokuhaganai.jpg
+            return src.replace(/\/title_th\/+/, "/title_image/");
+        }
+
+        if (domain === "ssl-gfx.filmweb.pl") {
+            // https://ssl-gfx.filmweb.pl/po/62/64/676264/7510826.1.jpg
+            //   https://ssl-gfx.filmweb.pl/po/62/64/676264/7510826.$.jpg -- 319x450
+            // others:
+            // http://gfx.filmweb.pl/an/1032473/5454.$.jpg -- 2400x3000
+            return src.replace(/(\/[0-9]+\.)[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1$$$2");
+        }
+
+        if (domain_nowww === "fantlab.ru") {
+            // https://fantlab.ru/blogfiles/b28337/img/5_sm
+            //   https://fantlab.ru/blogfiles/b28337/img/5
+            return src.replace(/(\/blogfiles\/+b[0-9]+\/+img\/+[0-9]+)_sm(?:[?#].*)?$/, "$1");
+        }
+
+        if (domain_nowww === "animeyt.org") {
+            // https://animeyt.org/uploads/animePicture/optimized/thumb/boku-wa-tomodachi-ga-sukunai-next.jpg
+            //   https://animeyt.org/uploads/animePicture/boku-wa-tomodachi-ga-sukunai-next.jpg
+            // https://animeyt.org/uploads/animePicture/optimized/boku-wa-tomodachi-ga-sukunai-next.jpg
+            //   https://animeyt.org/uploads/animePicture/boku-wa-tomodachi-ga-sukunai-next.jpg
+            return src.replace(/(\/uploads\/+[^/]*\/+)optimized\/+(?:thumb\/+)?/, "$1");
+        }
+
+        if (domain_nowww === "otakotaku.com") {
+            // https://otakotaku.com/asset/img/anime/thumb/157x213/2015/10/boku-wa-tomodachi-ga-sukunai-next.jpg
+            //   https://otakotaku.com/asset/img/anime/2015/10/boku-wa-tomodachi-ga-sukunai-next.jpg
+            return src.replace(/(\/asset\/+img\/+[^/]*\/+)thumb\/+[0-9]+x[0-9]+\/+/, "$1");
+        }
+
+        if (domain === "img.topddl.net") {
+            // https://img.topddl.net/images/d3a1ea8fe9ffb9b42ed4899e02e401ea.th.jpg
+            //   https://img.topddl.net/images/d3a1ea8fe9ffb9b42ed4899e02e401ea.jpg
+            return src.replace(/(\/images\/+[0-9a-f]{10,})\.th(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain_nowww === "monoschinos.com") {
+            // are there non /serie/ urls that use /image/imagen/?
+            // https://monoschinos.com/image/imagen/160/224/boku-wa-tomodachi-ga-sukunai-next.jpg
+            //   https://monoschinos.com/assets/img/serie/imagen/boku-wa-tomodachi-ga-sukunai-next.jpg
+            return src.replace(/\/image\/+imagen\/+[0-9]+\/+[0-9]+\/+/, "/assets/img/serie/imagen/");
+        }
+
+        if (domain === "a.atcdn.org") {
+            // https://a.atcdn.org/c/mid_MxYnwEQK0q9rMo38qp7V.jpg -- 151x238
+            //   https://a.atcdn.org/c/max_MxYnwEQK0q9rMo38qp7V.jpg -- 200x315
+            //   https://a.atcdn.org/c/MxYnwEQK0q9rMo38qp7V.jpg -- 317x500
+            return src.replace(/\/c\/+[a-z]+_([^/.]*\.[^/.]*)(?:[?#].*)?$/, "/c/$1");
+        }
+
+        if (domain_nowww === "you-anime.ru") {
+            // https://you-anime.ru/anime-images/posters/preview/6231.jpg
+            //   https://you-anime.ru/anime-images/posters/6231.jpg
+            return src.replace(/\/anime-images\/+posters\/+preview\/+/, "/anime-images/posters/");
+        }
+
+        if (domain_nowww === "tapcuoi.com") {
+            // http://tapcuoi.com/wp-content/anime/cover/tbn/0_2479_200x0.jpg
+            //   http://tapcuoi.com/wp-content/anime/cover/0_2479.jpg
+            return src.replace(/(\/wp-content\/+anime\/+cover\/+)tbn\/+([0-9]+_[0-9]+)_[0-9]+x[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2$3");
+        }
+
+        if (domain_nowww === "komyulife.com") {
+            // https://komyulife.com/media/anime/poster/315x210/7210.jpg
+            //   https://komyulife.com/media/anime/poster/7210.jpg
+            return src.replace(/(\/media\/+[^/]*\/+[^/]*\/+)[0-9]+x[0-9]+\/+/, "$1");
+        }
+
+        if (domain_nowww === "animeon.pl") {
+            // https://animeon.pl/img/series/795/thumbs/1529577220.jpg
+            //   https://animeon.pl/img/series/795/1529577220.jpg
+            return src.replace(/(\/img\/+[^/]*\/+[0-9]+\/+)thumbs\/+/, "$1");
+        }
+
+        if (domain_nowww === "4icdn.com") {
+            // https://4icdn.com/?src=img/animes/03Tf-large.jpg
+            //   https://4icdn.com/img/animes/03Tf-large.jpg
+            newsrc = src.replace(/^([a-z]+:\/\/[^/]*\/)\?(?:.*&)?src=([^&]*).*?$/, "$2");
+            if (newsrc !== src)
+                return urljoin(src, decodeuri_ifneeded(newsrc), true);
+        }
 
 
 
