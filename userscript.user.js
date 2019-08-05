@@ -2860,6 +2860,10 @@ var $$IMU_EXPORT$$;
             (domain_nosub === "answcdn.com" && domain.match(/^file[0-9]*\./)) ||
             // https://res.fashionsnap.com/image/upload/f_auto,q_auto/media2/2017/09/helpern-18ss_001.jpg?1563879770653
             domain === "res.fashionsnap.com" ||
+            // thanks to susanqt on github: https://github.com/qsniyg/maxurl/issues/100
+            // http://user-images.strikinglycdn.com/res/hrscywv4p/image/upload/c_limit,fl_lossy,h_9000,w_1200,f_auto,q_auto/1515559/534889_633117.jpg
+            //   http://user-images.strikinglycdn.com/res/hrscywv4p/image/upload/1515559/534889_633117.jpg
+            domain === "user-images.strikinglycdn.com" ||
             // https://images.moviepilot.com/images/c_limit,q_auto:good,w_600/uom2udz4ogmkncouu83q/beauty-and-the-beast-credit-disney.jpg
             // https://images.moviepilot.com/image/upload/c_fill,h_64,q_auto,w_64/lpgwdrrgc3m8duvg7zt2.jpg
             domain === "images.moviepilot.com") {
@@ -16555,10 +16559,12 @@ var $$IMU_EXPORT$$;
             // https://keinomiayma.smugmug.com/Autumn-color/i-qx3SKvD/0/f6f93242/600x400/DSC09816-600x400.jpg
             // https://photos.smugmug.com/World-AIDS-Day-Gala-UK/n-3hGNK3/Grassroot-Soccer-World-AIDS-Day-Gala-2017/i-dLbnDsd/0/4f8ff87f/Ti/World%20Aids%20Day%20Gala%20%2023-Ti.jpg
             //   https://photos.smugmug.com/World-AIDS-Day-Gala-UK/n-3hGNK3/Grassroot-Soccer-World-AIDS-Day-Gala-2017/i-dLbnDsd/0/4f8ff87f/X5/World%20Aids%20Day%20Gala%20%2023-X5.jpg
+            // https://stuckincustoms.smugmug.com/Portfolio/i-mhH9FzP/0/900x613/The%20Secret%20Lair%20of%20Hans%20Zimmer%2C%20where%20he%20inspires%20the%20world-900x613.jpg
+            //   https://stuckincustoms.smugmug.com/Portfolio/i-mhH9FzP/0/O/The%20Secret%20Lair%20of%20Hans%20Zimmer%2C%20where%20he%20inspires%20the%20world-900x613.jpg
             //return src.replace(/^((?:https?:)\/\/photos\.smugmug\.com\.?\/.+?\/)[A-Z0-9]{1,2}(\/[^\/]+?-)[A-Z0-9]{1,2}\.jpg(?:$|\?|#)/i,'$1O$2O.jpg');
             return {
                 //url: src.replace(/(\/i-[A-Za-z0-9]+\/[0-9]\/[a-f0-9]+\/)[A-Z0-9]+(\/[^/.]*-)[A-Z0-9]+(\.[^/.?]*)(?:\?.*)?$/, "$1O$2O$3"),
-                url: src.replace(/(\/i-[A-Za-z0-9]+\/[0-9]+\/[a-f0-9]+\/)(?:[A-Z0-9x]+|Ti)(\/[^/]*)(?:\?.*)?$/, "$1O$2"),
+                url: src.replace(/(\/i-[A-Za-z0-9]+\/+[0-9]+\/+(?:[a-f0-9]+\/+)?)(?:[A-Z0-9x]+|Ti)(\/+[^/]*)(?:\?.*)?$/, "$1O$2"),
                 redirects: true
             };
         }
@@ -21381,6 +21387,9 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             // https://anon-v.com/contents/albums/main/200x150/15000/15685/267726.jpg
             //   https://anon-v.com/contents/albums/sources/15000/15685/267726.jpg
             domain_nowww === "anon-v.com" ||
+            // https://cdn1.okporn.com/contents/albums//main/838x655/7000/7326/152282.jpg
+            //   https://cdn1.okporn.com/contents/albums//sources/7000/7326/152282.jpg
+            domain_nosub === "okporn.com" ||
             // https://cdn.pornstill.com/contents/albums/main/300x500/82000/82628/1298509.jpg
             //   https://cdn.pornstill.com/contents/albums/sources/82000/82628/1298509.jpg
             domain === "cdn.pornstill.com") {
@@ -22226,6 +22235,9 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             // https://content6.morazzia.com/ftv-girls/0536/tn_01.jpg
             //   https://content6.morazzia.com/ftv-girls/0536/01.jpg
             (domain_nosub === "morazzia.com" && domain.match(/^content[0-9a-z]*\./)) ||
+            // http://fhg.avidolz.com/Idol_Collection_Mio_Kanna/gravure/scene1a/avidolz_tn_01.jpg
+            //   http://fhg.avidolz.com/Idol_Collection_Mio_Kanna/gravure/scene1a/avidolz_01.jpg
+            domain_nosub === "avidolz.com" ||
             // http://pornodontstop.com/gallery/fucasvz/7980/tn_002.jpg
             //   http://pornodontstop.com/gallery/fucasvz/7980/002.jpg
             domain_nosub === "pornodontstop.com") {
@@ -28620,7 +28632,11 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                 .replace(/(\/assets\/+sample\/+[0-9]+_[0-9]+\/+)thum_[0-9]+(\/+[0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1popu$2");
         }
 
-        if (domain === "cdn.pics.fhg.javhd.com") {
+        if (domain_nosub === "javhd.com" ||
+            // http://cdn.pics.fhg.lingerieav.com/42336/1t.jpg
+            //   http://cdn.pics.fhg.lingerieav.com/42336/1.jpg
+            // http://fhg.lingerieav.com/42336/1t.jpg
+            domain_nosub === "lingerieav.com") {
             // http://cdn.pics.fhg.javhd.com/5672/1t.jpg
             //   http://cdn.pics.fhg.javhd.com/5672/1.jpg
             return src.replace(/(\/[0-9]+\/+[0-9]+)t(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
@@ -28713,7 +28729,10 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/\/thumbs\/+thumbs_/, "/");
         }
 
-        if (domain_nowww === "hiqqu.xxx") {
+        if (domain_nowww === "hiqqu.xxx" ||
+            // https://hiqqu.com/files/800x800/www.hiqqu.xxx-41cf2074e0b8855e8afe0af61993c4d418a35a7b.jpg
+            //   https://hiqqu.com/files/www.hiqqu.xxx-41cf2074e0b8855e8afe0af61993c4d418a35a7b.jpg
+            domain_nowww === "hiqqu.com") {
             // https://hiqqu.xxx/files/100x100/www.hiqqu.xxx-06c4b703d69d228092de100dd2d3a11e07821707.jpg
             //   https://hiqqu.xxx/files/www.hiqqu.xxx-06c4b703d69d228092de100dd2d3a11e07821707.jpg
             return src.replace(/\/files\/+[0-9]+x[0-9]+\/+/, "/files/");
@@ -32187,7 +32206,10 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                                "$1");
         }
 
-        if (domain_nowww === "onlyasianpictures.com") {
+        if (domain_nowww === "onlyasianpictures.com" ||
+            // http://www.avidolpics.com/galleries/2016/04/an-nanba/thumbs/an-nanba-9.jpg
+            //   http://www.avidolpics.com/galleries/2016/04/an-nanba/an-nanba-9.jpg
+            domain_nowww === "avidolpics.com") {
             // http://www.onlyasianpictures.com/galleries/2016/11/hot-asian-chick-yui-ayana-teasing-her-vagina/thumbs/hot-asian-chick-yui-ayana-teasing-her-vagina-1.jpg
             //   http://www.onlyasianpictures.com/galleries/2016/11/hot-asian-chick-yui-ayana-teasing-her-vagina/hot-asian-chick-yui-ayana-teasing-her-vagina-1.jpg
             return src.replace(/(\/galleries\/+[0-9]{4}\/+[0-9]{2}\/+[^/]*\/+)thumbs\/+/, "$1");
@@ -34946,6 +34968,38 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                 return urljoin(src, decodeuri_ifneeded(newsrc), true);
         }
 
+        if (domain === "cdn.legsjapan.com") {
+            // https://cdn.legsjapan.com/photo/data/126_KisakiAya_20B7/LegsJapan-AyaKisaki-126-01s.jpg
+            //   https://cdn.legsjapan.com/photo/data/126_KisakiAya_20B7/LegsJapan-AyaKisaki-126-01.jpg
+            return src.replace(/(\/photo\/+data\/+[^/]*\/+[^/]*-[0-9]+)s(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain_nosub === "explicithd.com" && /^static-cdn/.test(domain)) {
+            // https://static-cdn-perfectgonzo.explicithd.com/content/fhg/bfb87c5d9ed25b043794bf0735fab0ea/thumbs/1.jpg
+            //   https://static-cdn-perfectgonzo.explicithd.com/content/fhg/bfb87c5d9ed25b043794bf0735fab0ea/files/1.jpg
+            return src.replace(/(\/content\/+[^/]*\/+[0-9a-f]{20,}\/+)thumbs\/+/, "$1files/");
+        }
+
+        if (domain_nowww === "lbfmaddiction.com") {
+            // http://www.lbfmaddiction.com/fhg/lbfm/tgpdp52/tida_redlingerie01_small.jpg
+            //   http://www.lbfmaddiction.com/fhg/lbfm/tgpdp52/tida_redlingerie01.jpg
+            return src.replace(/(\/fhg\/+[^/]*\/+[^/]*\/+[^/]*)_small(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain_nowww === "thaicuties.net") {
+            // http://www.thaicuties.net/nats/090205_jupjang_bunrugsa_3/images/tn_thai_cuties_jupjang_bunrugsa_set3_02_jpg.jpg
+            //   http://www.thaicuties.net/nats/090205_jupjang_bunrugsa_3/images/thai_cuties_jupjang_bunrugsa_set3_02.jpg
+            return {
+                url: src.replace(/\/images\/+tn_([^/]*)_([a-zA-Z]+)\.[^/.]*(?:[?#].*)?$/, "/images/$1.$2"),
+                head_wrong_contenttype: true
+            };
+        }
+
+        if (domain === "fhg.propertysex.com") {
+            // http://fhg.propertysex.com/morgan-lee/t01.jpg
+            //   http://fhg.propertysex.com/morgan-lee/01.jpg
+            return src.replace(/(:\/\/[^/]*\/+[^/]*\/+)t([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
 
 
 
@@ -36065,6 +36119,8 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             domain_nowww === "iichan.hk" || // 403
             // https://pdfkul.com/img/piper-perri-mofopdf_59c0cc2d1723dddc42c513a0.jpg
             domain_nowww === "pdfkul.com" ||
+            // http://user-images.strikinglycdn.com/res/hrscywv4p/image/upload/1515559/534889_633117.jpg
+            domain_nosub === "strikinglycdn.com" || // 403
             (domain_nosub === "irishmirror.ie" && domain.match(/i[0-9]*(?:-prod)?\./))) {
             return {
                 url: src,
@@ -40160,7 +40216,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             if (settings.redirect)
                 do_redirect();
 
-            if (document.location.href.match(/^https?:\/\/qsniyg\.github\.io\/maxurl\/options\.html/) ||
+            if (document.location.href.match(/^https?:\/\/qsniyg\.github\.io\/+maxurl\/+options\.html/) ||
                 document.location.href.match(/^file:\/\/.*\/maxurl\/site\/options\.html/) ||
                 (is_extension && is_extension_options_page)) {
                 onload(function() {
@@ -40168,7 +40224,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                 });
             }
 
-            if (document.location.href.match(/^https?:\/\/qsniyg\.github\.io\/maxurl(\/|\/index\.html(?:[?#].*)?)?$/) ||
+            if (document.location.href.match(/^https?:\/\/qsniyg\.github\.io\/+maxurl(\/+|\/+index\.html)?(?:[?#].*)?$/) ||
                 document.location.href.match(/^file:\/\/.*\/maxurl\/site\/index\.html/)) {
                 if (typeof(unsafeWindow) !== "undefined") {
                     onload(function() {
