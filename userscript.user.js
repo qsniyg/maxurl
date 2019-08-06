@@ -1749,7 +1749,7 @@ var $$IMU_EXPORT$$;
             //   http://image.news1.kr/system/photos/2014/8/22/985836/original.jpg
             // http://image.news1.kr/system/photos/2018/6/15/3162887/high.jpg -- 1400x1867
             //   http://image.news1.kr/system/photos/2018/6/15/3162887/original.jpg -- 1500x2000
-            return src
+            newsrc = src
                 .replace(/\/thumbnails\/(.*)\/thumb_[0-9]+x(?:[0-9]+)?(\.[^/.]*)$/, "/$1/original$2")
                 .replace(/main_thumb\.jpg/, "original.jpg")
                 .replace(/article.jpg/, "original.jpg")
@@ -1757,6 +1757,16 @@ var $$IMU_EXPORT$$;
                 .replace(/photo_sub_thumb.jpg/, "original.jpg")
                 .replace(/section_top\.jpg/, "original.jpg")
                 .replace(/high\.jpg/, "original.jpg");
+
+            var filename = src.replace(/.*\/photos\/+[0-9]{4}\/+(?:[0-9]{1,2}\/+){2}([0-9]+)\/+.*$/, "$1");
+            if (filename !== src) {
+                return {
+                    url: newsrc,
+                    filename: filename
+                };
+            }
+
+            return newsrc;
         }
 
         if (domain.indexOf(".joins.com") >= 0) {
@@ -5311,7 +5321,7 @@ var $$IMU_EXPORT$$;
             // https://d2t7cq5f1ua57i.cloudfront.net/images/r_images/51261/54063/51261_54063_77_0_8968_20141223201250892_200x200.jpg
             domain === "d2t7cq5f1ua57i.cloudfront.net" ||
             // https://image.ibb.co/fmOKNJ/h_54456811_768x530.jpg
-            domain === "image.ibb.co" ||
+            //domain === "image.ibb.co" ||
             // http://socdn.smtown.com/upload/smtownnow/pictures/images/2018/06/15/o_1cg12bap41e5v3vh1iu2mhkjaj9_600x800.jpg
             domain === "socdn.smtown.com" ||
             // http://www.lecturas.com/medio/2018/03/14/andrea-duro-4_6a8880f6_800x1200.jpg
@@ -19572,8 +19582,43 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             //return src.replace(/:\/\/[^/]*\/([0-9a-zA-Z]+\/[^/]*_id[0-9]{5,}[_.])/, "://image.ibb.co/$1");
         }
 
-        if (domain === "image.ibb.co" ||
-            domain === "preview.ibb.co") {
+        if ((domain === "i.ibb.co" ||
+            // https://image.ibb.co/jYsMbo/Screenshot-2018-07-12-15-56-41.png
+            //   https://image.ibb.co/gp6Q2T/Screenshot-2018-07-12-15-56-41.png
+            domain === "image.ibb.co" ||
+            // https://preview.ibb.co/jYsMbo/Screenshot_2018_07_12_15_56_41.png
+            //   https://image.ibb.co/gp6Q2T/Screenshot-2018-07-12-15-56-41.png
+            domain === "preview.ibb.co") &&
+            options && options.cb && options.do_request) {
+            // https://i.ibb.co/7QrHRXp/tshd398yeae31-copy.jpg
+            //   https://i.ibb.co/8bPJd0x/image.jpg
+            //   https://i.ibb.co/FX890KY/tshd398yeae31-copy.jpg
+            match = src.match(/^[a-z]+:\/\/[^/]*\/+([-_A-Za-z0-9=]+)\/+([^?#]*?)(\.[^/.]*)?(?:[?#].*)?$/);
+            if (match) {
+                options.do_request({
+                    method: "GET",
+                    url: "https://ibb.co/" + match[1],
+                    onload: function(result) {
+                        if (result.readyState === 4) {
+                            var tmatch = result.responseText.match(/CHV\.obj\.image_viewer\.image\s*=\s*{.*?[^a-zA-Z0-9_]url:["'](.*?)["']/);
+                            if (tmatch) {
+                                // norecurse: true?
+                                return options.cb(tmatch[1]);
+                            }
+
+                            options.cb(null);
+                        }
+                    }
+                });
+
+                return {
+                    waiting: true
+                };
+            }
+        }
+
+        if (false && (domain === "image.ibb.co" ||
+                      domain === "preview.ibb.co")) {
             // https://image.ibb.co/gfffEy/russia_players_celebrate_following_their_sides_victory_in_a_penalty_picture_id988998656_story_large_9c8c1668_4d53_4b55_ac5c_f7bd71b7f407.jpg
             //   https://image.ibb.co/gfffEy/russia_players_celebrate_following_their_sides_victory_in_a_penalty_picture_id988998656.jpg
             // https://preview.ibb.co/gfffEy/russia_players_celebrate_following_their_sides_victory_in_a_penalty_picture_id988998656_story_large_9c8c1668_4d53_4b55_ac5c_f7bd71b7f407.jpg
@@ -36459,6 +36504,10 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
         };
 
         var parse_bigimage = function(big) {
+            if (_nir_debug_) {
+                console_log("parse_bigimage (big)", big);
+            }
+
             if (!big) {
                 if (newhref === url && options.null_if_no_change)
                     newhref = big;
@@ -36466,6 +36515,10 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             }
 
             var newhref1 = fullurl_obj(currenthref, big);
+            if (_nir_debug_) {
+                console_log("parse_bigimage (newhref1)", newhref1);
+            }
+
             if (!newhref1) {
                 return false;
             }
