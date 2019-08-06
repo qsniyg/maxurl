@@ -5226,6 +5226,8 @@ var $$IMU_EXPORT$$;
             domain === "media.sistemampa.com.br" ||
             // https://img1.looper.com/img/uploads/2017/04/why-hollywood-won_t-cast-jessica-alba-anymore-780x438.jpg
             (domain_nosub === "looper.com" && /^img[0-9]*\./.test(domain) && src.indexOf("/uploads/") >= 0) ||
+            // https://i0.dtslb.com//2019/02/m8sCa24YbFIatKlElTMdiH18A5N-185x278.jpg
+            (domain_nosub === "dtslb.com" && /^i[0-9]*\./.test(domain)) ||
             // https://1.soompi.io/wp-content/blogs.dir/8/files/2015/09/HA-TFELT-Wonder-Girls-590x730.jpg -- doesn't work
             // https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2018/01/GTA-6-Female-Protag-796x417.jpg -- does work
             src.indexOf("/wp-content/blogs.dir/") >= 0 ||
@@ -7828,6 +7830,9 @@ var $$IMU_EXPORT$$;
             // http://www.esa.int/var/esa/storage/images/esa_multimedia/images/2019/07/edrs-c_being_fuelled/19645582-1-eng-GB/EDRS-C_being_fuelled_latestnews.jpg
             //   http://www.esa.int/var/esa/storage/images/esa_multimedia/images/2019/07/edrs-c_being_fuelled/19645582-1-eng-GB/EDRS-C_being_fuelled.jpg
             domain_nowww === "esa.int" ||
+            // http://www.quejadore.com/var/quejadore_fr/storage/images/culture/cine-tv-series-dvd/autour-d-un-verre-avec-solene-rigot-a-l-affiche-de-les-revoltes-cette-semaine-56359-15-07-2015/986942-1-fre-MASTER/Autour-d-un-verre-avec-Solene-Rigot-a-l-affiche-de-Les-revoltes-cette-semaine_carrousel_quejadore.jpg
+            //   http://www.quejadore.com/var/quejadore_fr/storage/images/culture/cine-tv-series-dvd/autour-d-un-verre-avec-solene-rigot-a-l-affiche-de-les-revoltes-cette-semaine-56359-15-07-2015/986942-1-fre-MASTER/Autour-d-un-verre-avec-Solene-Rigot-a-l-affiche-de-Les-revoltes-cette-semaine.jpg
+            domain_nowww === "quejadore.com" ||
             // https://img3.closermag.fr/var/closermag/storage/images/bio-people/biographie-jose-garcia-112817/827937-1-fre-FR/Jose-Garcia_square500x500.jpg
             //   https://img3.closermag.fr/var/closermag/storage/images/bio-people/biographie-jose-garcia-112817/827937-1-fre-FR/Jose-Garcia.jpg
             // https://img1.closermag.fr/var/closermag/storage/images/media/images-des-contenus/actu-people/people-anglo-saxons/20151129-selena/selena-gomez-pose-pour-in-style/4987068-1-fre-FR/Selena-Gomez-pose-pour-In-Style.png?v1/focus=0x0/cover=626x768
@@ -7932,7 +7937,11 @@ var $$IMU_EXPORT$$;
             //   https://media.senscritique.com/media/000006647807/0_0/Solene_Rigot.png
             // https://media.senscritique.com/media/000017848056/130/Ant_Man_et_la_Guepe.jpg
             //   https://media.senscritique.com/media/000017848056/0/Ant_Man_et_la_Guepe.jpg
-            return src.replace(/(\/media\/+[0-9]{8,}\/+)[0-9]+(?:_[0-9]+)?\/+([^/]*\.[^/.]*)(?:[?#].*)?$/, "$10/$2");
+            // https://media.senscritique.com/media/000004655645/150x230/Sanja_Mikitisin.jpg
+            //   https://media.senscritique.com/media/000004655645/0/Sanja_Mikitisin.jpg
+            // https://media.senscritique.com/media/000017420993/source_big/Ano_hi_mita_hana_no_namae_o_bokutachi_wa_mada_shiranai.jpg -- 666x1000
+            //   https://media.senscritique.com/media/000017420993/0/Ano_hi_mita_hana_no_namae_o_bokutachi_wa_mada_shiranai.jpg -- 666x1000
+            return src.replace(/(\/media\/+[0-9]{8,}\/+)[0-9]+(?:[_x][0-9]+)?\/+([^/]*\.[^/.]*)(?:[?#].*)?$/, "$10/$2");
             //return src.replace(/\/[0-9]*_[0-9]*\/([^/]*)$/, "/0_0/$1");
         }
 
@@ -21960,7 +21969,9 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             //   http://media.filmz.ru/photos/full/filmz.ru_f_148528.jpg
             // http://media.filmz.ru/photos/medium/m_148528.jpg
             //   http://media.filmz.ru/photos/full/f_148528.jpg
-            return src.replace(/\/photos\/[a-z]+\/([^/_]*_)?[a-z](_[0-9]+\.[^/.]*)$/, "/photos/full/$1f$2");
+            // http://media.filmz.ru/photos/micro/177306.jpeg
+            //   http://media.filmz.ru/photos/full/f_177306.jpeg
+            return src.replace(/\/photos\/+[a-z]+\/+([^/_]{2,}_)?(?:[a-z]_)?([0-9]+\.[^/.]*)$/, "/photos/full/$1f_$2");
         }
 
         if (domain_nowww === "kinofilms.ua") {
@@ -30700,7 +30711,9 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
         if (domain_nowww === "anime-planet.com") {
             // https://www.anime-planet.com/images/characters/thumbs/izumi-marufuji-21323.jpg?t=1429317723
             //   https://www.anime-planet.com/images/characters/izumi-marufuji-21323.jpg?t=1429317723
-            return src.replace(/(\/images\/+[a-z]+\/+)thumbs\/+/, "$1");
+            // https://www.anime-planet.com/images/anime/covers/thumbs/anohana-the-flower-we-saw-that-day-movie-5206.jpg?t=1448521225
+            //   https://www.anime-planet.com/images/anime/covers/anohana-the-flower-we-saw-that-day-movie-5206.jpg?t=1448521225
+            return src.replace(/(\/images\/+[a-z]+\/+(?:[a-z]+\/+)?)thumbs\/+/, "$1");
         }
 
         if (domain === "di2ponv0v5otw.cloudfront.net" ||
@@ -35001,7 +35014,43 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/(:\/\/[^/]*\/+[^/]*\/+)t([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
         }
 
+        // project diaspora
+        if (domain_nowww === "diasp.org") {
+            // https://diasp.org/uploads/images/scaled_full_0aa2bc73c57545c2a222.jpg
+            //   https://diasp.org/uploads/images/0aa2bc73c57545c2a222.jpg
+            return src.replace(/\/uploads\/+images\/+[a-z_]+_([0-9a-f]{10,}\.[^/.]*)(?:[?#].*)?$/, "/uploads/images/$1");
+        }
 
+        if (domain_nowww === "manga-news.com") {
+            // https://www.manga-news.com/public/images/events/.anohana-grand-rex-mai-2016_m.jpg
+            //   https://www.manga-news.com/public/images/events/anohana-grand-rex-mai-2016.jpg
+            return src.replace(/(\/public\/+images\/+events\/+)\.([^/]*?)_[a-z](\.[^/.]*)(?:[?#].*)?$/, "$1$2$3");
+        }
+
+        if (domain_nowww === "filmsomniac.com") {
+            // https://www.filmsomniac.com/images/covers/films-new/100/9/42309.jpg
+            //   https://www.filmsomniac.com/images/covers/films-new/9/42309.jpg
+            return src.replace(/(\/images\/+covers\/+films-new\/+)[0-9]+\/+([0-9]+\/+[0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain_nowww === "film-download.club") {
+            // https://film-download.club/uploads/https-dk--sl--sl-image-kr-tmdb-kr-org-sl-t-sl-p-sl-w185_and_h278_bestv2-sl-m8sCa24YbFIatKlElTMdiH18A5N-kr-jpg.jpg
+            //   https://image.tmdb.org/t/p/original/m8sCa24YbFIatKlElTMdiH18A5N.jpg
+            newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+uploads\/+(https?-dk-.*?)\.[^/]*(?:[?#].*)?$/, "$1");
+            if (newsrc !== src) {
+                // TODO: handle other characters too?
+                return newsrc
+                    .replace(/-dk-/g, ":")
+                    .replace(/-sl-/g, "/")
+                    .replace(/-kr-/g, ".");
+            }
+        }
+
+        if (domain_nowww === "thaishop.in.th") {
+            // http://www.thaishop.in.th/thumb.php?id=73275889
+            //   http://www.thaishop.in.th/image.php?id=73275889
+            return src.replace(/(:\/\/[^/]*\/+)thumb\.php\?(?:.*?&)?(id=[0-9]+).*?$/, "$1image.php?$2");
+        }
 
 
 
