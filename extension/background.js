@@ -282,7 +282,7 @@ function stringify_contentdisposition(cdp) {
     }
   }
 
-  return out_strings.join(";");
+  return out_strings.join("; ");
 }
 
 // Intercept response headers if needed
@@ -312,6 +312,9 @@ chrome.webRequest.onHeadersReceived.addListener(function(details) {
             !value.match(/^ *application\//)) {
           newheaders.push(header);
         }
+      } else if (name === "x-content-type-options") {
+        // x-content-type-options: nosniff -- if content-type is removed, nosniff will display it as plain text
+        return;
       } else if (name === "content-disposition") {
         try {
           var parsed = parse_contentdisposition(value);
@@ -336,7 +339,7 @@ chrome.webRequest.onHeadersReceived.addListener(function(details) {
           }
 
           newheaders.push({
-            name: "content-disposition",
+            name: "Content-Disposition",
             value: stringify_contentdisposition(parsed)
           });
         } catch (e) {
@@ -355,7 +358,7 @@ chrome.webRequest.onHeadersReceived.addListener(function(details) {
       ];
 
       newheaders.push({
-        name: "content-disposition",
+        name: "Content-Disposition",
         value: stringify_contentdisposition(cdp)
       });
     }
@@ -375,7 +378,7 @@ chrome.webRequest.onHeadersReceived.addListener(function(details) {
 
 // Remove loading_urls once headers have finished loading
 chrome.webRequest.onResponseStarted.addListener(function(details) {
-  debug("ResponseStarted", details, loading_urls);
+  debug("onResponseStarted", details, loading_urls);
 
   if (details.tabId in loading_urls) {
     delete loading_urls[details.tabId];
