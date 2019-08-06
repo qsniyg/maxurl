@@ -23837,7 +23837,9 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
         if (domain_nosub === "blogspot.es") {
             // http://creaeventos.blogspot.es/cache/media/files/00/248/376/2014/05/lupita-nyongo-met-gala-2014.jpg -- 600x822
             //   http://creaeventos.blogspot.es/files/00/248/376/2014/05/lupita-nyongo-met-gala-2014.jpg -- 747x1024
-            return src.replace(/\/cache\/media\/files\//, "/files/");
+            // http://girlpotatolistas.blogspot.es/media/cache/resolve/media/files/01/140/838/2016/05/shingeki-no-kyojin-574-1365335049.jpg
+            //   http://girlpotatolistas.blogspot.es/files/01/140/838/2016/05/shingeki-no-kyojin-574-1365335049.jpg
+            return src.replace(/(?:\/media)?\/+cache\/+(?:resolve\/+)?media\/+files\//, "/files/");
         }
 
         if (domain === "data.kontrakty.ua") {
@@ -29495,13 +29497,19 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                                "/snimki/lstyle/");
         }
 
-        if (domain === "life.tert.am") {
+        if (domain === "life.tert.am" ||
+            // https://www.tert.am/cache_image/news_images/1022/3064817_3/f5d4825f2223b5_5d4825f222409-256x174.jpg
+            //   https://www.tert.am/news_images/1022/3064817_3/f5d4825f2223b5_5d4825f222409.jpg
+            domain_nowww === "tert.am" ||
+            // https://xochuanime.online/assets/cache_image/assets/img/ataka-titanov-1_0x350_62b.webp
+            //   https://xochuanime.online/assets/img/ataka-titanov-1.jpg
+            domain_nowww === "xochuanime.online") {
             // https://life.tert.am/youth/cache_image/youth/news_images/12/34334_1/20170401_amber_post-770x510.jpg -- upscaled?
             //   https://life.tert.am/youth/news_images/12/34334_1/20170401_amber_post.jpg
             // https://life.tert.am/youth/cache_image/youth/news_images/12/34329_1/f167c8d489ef76440ca5cfabd2664af9-190x128.jpg
             //   https://life.tert.am/youth/news_images/12/34329_1/f167c8d489ef76440ca5cfabd2664af9.jpg
-            return src.replace(/(:\/\/[^/]*\/)[^/]*\/+cache_image\/+(.*)-[0-9]+x[0-9]+(\.[^/.]*)(?:[?#].*)?$/,
-                               "$1$2$3");
+            return add_full_extensions(src.replace(/(:\/\/[^/]*\/)(?:[^/]*\/+)?cache_image\/+(.*)[-_][0-9]+x[0-9]+(?:_[0-9]+[a-z]*)?(\.[^/.]*)(?:[?#].*)?$/,
+                                       "$1$2$3"));
         }
 
         if (domain_nowww === "woman.at") {
@@ -31349,7 +31357,10 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
         }
 
         // vBulletin
-        if (domain_nowww === "forumkinopoisk.ru") {
+        if (domain_nowww === "forumkinopoisk.ru" ||
+            // http://www.mexat.com/vb/attachment.php?attachmentid=2097481&stc=1&thumb=1&d=1443663271
+            //   http://www.mexat.com/vb/attachment.php?attachmentid=2097481
+            domain_nowww === "mexat.com") {
             // https://forumkinopoisk.ru/attachment.php?s=4f9f7cbc1d1c5983a18d5d81582b2cb8&attachmentid=545745&stc=1&thumb=1&d=1520234070
             //   https://forumkinopoisk.ru/attachment.php?attachmentid=545745
             return src.replace(/\/attachment\.php.*?[?&](attachmentid=[0-9]+).*?$/, "/attachment.php?$1");
@@ -31522,6 +31533,15 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             // https://i0.web.de/image/624/32958624,pd=4,f=lead-xl/megan-fox-transformers.jpg
             //   https://i0.web.de/image/624/32958624,pd=4/megan-fox-transformers.jpg
             return src.replace(/(\/image\/+[0-9]+\/+[0-9]+)[^/]*?(,pd=[0-9]+)[^/]*\/+/, "$1$2/");
+        }
+
+        if (domain_nowww === "movierj.com") {
+            // https://www.movierj.com/cdn-cgi/image/q=75,f=auto/upmovies/upload/Shingeki_no_Kyojin-min.jpg
+            //   https://www.movierj.com/upmovies/upload/Shingeki_no_Kyojin-min.jpg
+            //   https://www.movierj.com/upmovies/upload/Shingeki_no_Kyojin.jpg
+            return src
+                .replace(/\/cdn-cgi\/+image\/+(?:.*?,)?f=[^/]*\/+(upmovies\/+[^,]*).*?$/, "/$1")
+                .replace(/(\/upmovies\/+upload\/+[^/]*)-min(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
         }
 
         if (domain_nowww === "wegotthiscovered.com") {
@@ -35097,6 +35117,19 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/(:\/\/[^/]*\/+)thumb\.php\?(?:.*?&)?(id=[0-9]+).*?$/, "$1image.php?$2");
         }
 
+        if (domain_nowww === "animes-portal.info") {
+            // https://animes-portal.info/thumbs/1/shingeki-no-kyojin-1556736539.jpg
+            //   https://animes-portal.info/resources/shingeki-no-kyojin-1556736539.jpg
+            return src.replace(/\/thumbs\/+[0-9]+\/+/, "/resources/");
+        }
+
+        if (domain === "cdn.staticaly.com") {
+            // https://cdn.staticaly.com/img/1.bp.blogspot.com/-fjaUW8C9yNg/XGBAGbWGTjI/AAAAAAAACPs/6PYlPPtSFVQi4geYCUp7ISSu7GI77-pJQCLcBGAs/s320/%255BLotvers%255D%255BCover%255D%2BShingeki%2Bno%2BKyojin%2B%2528Attack%2Bon%2BTitan%2529.jpg
+            //   http://1.bp.blogspot.com/-fjaUW8C9yNg/XGBAGbWGTjI/AAAAAAAACPs/6PYlPPtSFVQi4geYCUp7ISSu7GI77-pJQCLcBGAs/s0/%255BLotvers%255D%255BCover%255D%2BShingeki%2Bno%2BKyojin%2B%2528Attack%2Bon%2BTitan%2529.jpg=s0?imgmax=0
+            newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+img\/+([^/]*\.[^/]*\/+)/, "$1");
+            if (newsrc !== src)
+                return add_http(newsrc);
+        }
 
 
 
