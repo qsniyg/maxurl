@@ -4567,6 +4567,8 @@ var $$IMU_EXPORT$$;
             (domain === "static.fptplay.net" && src.indexOf("/img/") >= 0) ||
             // https://images-mega.mdstrm.com/2019/06/30/91551_1_5d19275c96931.jpg?d=300x200
             domain === "images-mega.mdstrm.com" ||
+            // https://www.girlfriend.com.au//media/13027/1000-selena-gomez-justin-bieber-hailey-baldwin.png?width=200&format=jpg
+            (domain_nowww === "girlfriend.com.au" && src.indexOf("/media/") >= 0) ||
             // http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
             // https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
             src.match(/\/demandware\.static\//) ||
@@ -10614,6 +10616,8 @@ var $$IMU_EXPORT$$;
             // https://telugu.samayam.com/thumb/msid-65304761,width-600,resizemode-4/photo-gallery/bollywood/amy-jackson-hot-pics.jpg
             //   https://telugu.samayam.com/photo/65304761.cms
             domain === "telugu.samayam.com" ||
+            // https://m.timesofindia.com/thumb/msid-69414219,imgsize-84774,width-800,height-600,resizemode-4/69414219.jpg
+            domain_nosub === "timesofindia.com" ||
             domain === "static.toiimg.com") {
             // https://timesofindia.indiatimes.com/thumb/msid-62829284,width-400,resizemode-4/62829284.jpg
             //   https://timesofindia.indiatimes.com/photo/62829284.cms
@@ -29638,7 +29642,9 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
         if (domain === "files.elfann.com") {
             // https://files.elfann.com/imagine/pictures_350/9494643_1537114793.jpg
             //   https://files.elfann.com/pictures/9494643_1537114793.jpg
-            return src.replace(/\/imagine\/+pictures_[0-9]+\/+/, "/pictures/");
+            // https://files.elfann.com/imagine/pictures_229_135/2551592_1521573506.jpg
+            //   https://files.elfann.com/pictures/2551592_1521573506.jpg
+            return src.replace(/\/imagine\/+pictures_[0-9]+(?:_[0-9]+)?\/+/, "/pictures/");
         }
 
         if (domain === "cdn.axar.az") {
@@ -35518,6 +35524,26 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/\/thumbnails\/+t([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/$1");
         }
 
+        if (domain === "img.maximummedia.ie") {
+            // https://img.maximummedia.ie/her_ie/eyJkYXRhIjoie1widXJsXCI6XCJodHRwOlxcXC9cXFwvbWVkaWEtaGVyLm1heGltdW1tZWRpYS5pZS5zMy5hbWF6b25hd3MuY29tXFxcL3dwLWNvbnRlbnRcXFwvdXBsb2Fkc1xcXC8yMDE3XFxcLzA5XFxcLzA3MTY0ODM0XFxcL2dvbWV6LWNvdmVyLmpwZ1wiLFwid2lkdGhcIjo3NjcsXCJoZWlnaHRcIjo0MzEsXCJkZWZhdWx0XCI6XCJodHRwczpcXFwvXFxcL3d3dy5oZXIuaWVcXFwvYXNzZXRzXFxcL2ltYWdlc1xcXC9oZXJcXFwvbm8taW1hZ2UucG5nP2lkPTBkMmQ2MjdjMDU5YjllZGNhYjBkXCIsXCJvcHRpb25zXCI6W119IiwiaGFzaCI6IjkyMjg4NTc5ZTNiMzU2MzhjZDlmZmExNjdhYzhlZDU5YzllYWFkOWIifQ==/gomez-cover.jpg
+            //   atob: {"data":"{\"url\":\"http:\\\/\\\/media-her.maximummedia.ie.s3.amazonaws.com\\\/wp-content\\\/uploads\\\/2017\\\/09\\\/07164834\\\/gomez-cover.jpg\",\"width\":767,\"height\":431,\"default\":\"https:\\\/\\\/www.her.ie\\\/assets\\\/images\\\/her\\\/no-image.png?id=0d2d627c059b9edcab0d\",\"options\":[]}","hash":"92288579e3b35638cd9ffa167ac8ed59c9eaad9b"}
+            //   http://media-her.maximummedia.ie.s3.amazonaws.com/wp-content/uploads/2017/09/07164834/gomez-cover.jpg
+            match = src.match(/^[a-z]+:\/\/[^/]*\/[^/]*\/+([^/]{50,})(?:\/+[^/]*)?(?:[?#].*)?$/);
+            if (match) {
+                var json = JSON.parse(atob(match[1]));
+                if (json.data) {
+                    var data = JSON.parse(json.data);
+                    if (data.url)
+                        return data.url;
+                }
+            }
+        }
+
+        if (domain === "imagevars.gulfnews.com") {
+            // https://imagevars.gulfnews.com/2019/05/16/190516-Selena-Gomez_16ac08ce9b9_large.jpg
+            //   https://imagevars.gulfnews.com/2019/05/16/190516-Selena-Gomez_16ac08ce9b9_original-ratio.jpg
+            return src.replace(/(_[0-9a-f]{6,})_[-a-z]+(\.[^/.]*)(?:[?#].*)?$/, "$1_original-ratio$2");
+        }
 
 
 
@@ -36568,6 +36594,8 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             domain_nowww === "essexstudent.com" ||
             // https://th.thgim.com/life-and-style/htvob7/article27371367.ece/BINARY/Aakash-landscape-1
             domain === "th.thgim.com" ||
+            // https://m.timesofindia.com/photo/69414219.cms
+            domain_nosub === "timesofindia.com" ||
             // http://images.contentful.com/l7es9q9kzr9z/KVC2bUAzyUkW6KaMgGkeA/2f45f07b331a60fc360ff8d641a29d7a/778_KimberlyMcArthur_15.jpg
             domain === "images.contentful.com") {
             return {
