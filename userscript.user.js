@@ -34793,7 +34793,12 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/\/images\/+thumb([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/images/pic$1");
         }
 
-        if (domain === "t.auntmia.com") {
+        if (domain === "t.auntmia.com" ||
+            // http://t.sexywhitepussy.com/nthumbs//2013-08-26/2083542/2083542_00.jpg
+            //   http://t.sexywhitepussy.com/nthumbs//2013-08-26/2083542/2083542_00b.jpg
+            // doesn't work for all:
+            // http://t.sexywhitepussy.com/thumbs/2017-06-08/446565_02.jpg
+            domain === "t.sexywhitepussy.com") {
             // https://t.auntmia.com/nthumbs/2015-08-24/2827785/2827785_00.jpg
             //   https://t.auntmia.com/nthumbs/2015-08-24/2827785/2827785_00b.jpg
             return src.replace(/(\/[0-9]+_[0-9]+)(\.[^/.]*)(?:[?#].*)?$/, "$1b$2");
@@ -35376,6 +35381,15 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             }
         }
 
+        if ((domain_nosub === "akamaized.net" && /^cache[0-9]*-ebookjapan\./.test(domain)) ||
+            // https://haishin.ebookjapan.jp/contents/thumb/m/SX277060.jpg
+            //   https://haishin.ebookjapan.jp/contents/thumb/l/SX277060.jpg
+            domain === "haishin.ebookjapan.jp") {
+            // thanks to synthtech on github: https://github.com/qsniyg/maxurl/issues/101
+            // https://cache2-ebookjapan.akamaized.net/contents/thumb/s/SX277060.jpg?1560846301000
+            //   https://cache2-ebookjapan.akamaized.net/contents/thumb/l/SX277060.jpg?1560846301000
+            return src.replace(/\/contents\/+thumb\/+[ms]\/+/, "/contents/thumb/l/");
+        }
 
 
 
