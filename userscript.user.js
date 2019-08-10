@@ -288,16 +288,20 @@ var $$IMU_EXPORT$$;
     }
 
     var strings = {
-        "Options": {
+        "options_header": {
+            "en": "Options",
             "ko": "설정"
         },
-        "Yes": {
+        "yes": {
+            "en": "Yes",
             "ko": "예"
         },
-        "No": {
+        "no": {
+            "en": "No",
             "ko": "아니오"
         },
-        "Redirection": {
+        "category_redirection": {
+            "en": "Redirection",
             "ko": "리디렉션"
         },
         "Enable redirection": {
@@ -315,7 +319,8 @@ var $$IMU_EXPORT$$;
         "Mouseover popup action": {
             "ko": "이미지 팝업 작업"
         },
-        "Popup": {
+        "category_popup": {
+            "en": "Popup",
             "ko": "팝업"
         },
         "New tab": {
@@ -430,7 +435,8 @@ var $$IMU_EXPORT$$;
         "Popup CSS style": {
             "ko": "팝업 CSS"
         },
-        "Rules": {
+        "category_rules": {
+            "en": "Rules",
             "ko": "규칙"
         },
         "Larger watermarked images": {
@@ -445,7 +451,8 @@ var $$IMU_EXPORT$$;
         "Possibly broken images": {
             "ko": "손상될 수 있는 이미지"
         },
-        "Website": {
+        "category_website": {
+            "en": "Website",
             "ko": "웹사이트"
         },
         "Website image preview": {
@@ -490,6 +497,9 @@ var $$IMU_EXPORT$$;
         },
         "Regex": {
             "ko": "정규식"
+        },
+        "category_extension": {
+            "en": "Extension"
         }
     };
 
@@ -501,6 +511,8 @@ var $$IMU_EXPORT$$;
         if (str in strings) {
             if (browser_language in strings[str]) {
                 str = strings[str][browser_language];
+            } else if ("en" in strings[str]) {
+                str = strings[str]["en"];
             }
         }
 
@@ -956,11 +968,11 @@ var $$IMU_EXPORT$$;
     };
 
     var categories = {
-        "redirection": "Redirection",
-        "popup": "Popup",
-        "rules": "Rules",
-        "website": "Website",
-        "extension": "Extension"
+        "redirection": "category_redirection",
+        "popup": "category_popup",
+        "rules": "category_rules",
+        "website": "category_website",
+        "extension": "category_extension"
     };
 
 
@@ -37739,7 +37751,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
         var options_el = document.getElementById("options");
 
         if (!is_extension_options_page)
-            options_el.innerHTML = "<h1>" + _("Options") + "</h1>";
+            options_el.innerHTML = "<h1>" + _("options_header") + "</h1>";
         else
             options_el.innerHTML = "";
 
@@ -37900,8 +37912,8 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
 
                 if (typeof orig_value === "boolean") {
                     type = "options";
-                    option_list["true"] = {name: _("Yes")};
-                    option_list["false"] = {name: _("No")};
+                    option_list["true"] = {name: _("yes")};
+                    option_list["false"] = {name: _("no")};
                     if (value)
                         option_list["true"].checked = true;
                     else
