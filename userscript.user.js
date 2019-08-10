@@ -4696,6 +4696,10 @@ var $$IMU_EXPORT$$;
             domain_nowww === "zrockr.com" ||
             // http://electricegg.co.uk/media/uploads/2017/08/nick-hewer-by-electric-egg-375x320.jpg
             domain_nowww === "electricegg.co.uk" ||
+            // https://iphone7wallpapers.co/media/uploads/2017/08/Josie-Lane-Model-Girl-Cute-300x533.jpg
+            (domain_nowww === "iphone7wallpapers.co" && /\/media\/+uploads\//.test(src)) ||
+            // https://androidhdwallpapers.com/media/uploads/2017/08/Josie-Lane-Model-Girl-Cute-640x960.jpg
+            (domain_nowww === "androidhdwallpapers.com" && /\/media\/+uploads\//.test(src)) ||
             // http://www.media2.hw-static.com/media/2018/01/wenn_kerrywashington_012618-442x216.jpg
             (domain_nosub === "hw-static.com" && domain.match(/www\.media[0-9]*\.hw-static\.com/)) ||
             // http://i2.cdn.turner.com/money/dam/assets/160511121527-emma-watson-780x439.jpg
@@ -4750,7 +4754,8 @@ var $$IMU_EXPORT$$;
             // https://m.theepochtimes.com/assets/uploads/2016/06/15/Argan_Tree_near_Tafraoute-550x330.jpg
             //domain === "m.theepochtimes.com" ||
             // https://images.gamme.com.tw/news2/2018/82/30/pJySpaabj56WsKQ-300x250.jpg
-            domain === "images.gamme.com.tw" ||
+            // https://images2.gamme.com.tw/news2/2016/48/54/q5iYop_Xk6CXqqQ-270x180.jpg
+            (domain_nosub === "gamme.com.tw" && /^images[0-9]*\./.test(domain)) ||
             // http://images.gamme.com.cn/news2/2017/97/14/pZeao56Yj6aZqA-380x300.jpg
             domain === "images.gamme.com.cn" ||
             // http://cdn.hoahoctro.vn/uploads/2018/02/5a87a07c09b7e-pagehihi-600x450.jpg
@@ -12338,6 +12343,8 @@ var $$IMU_EXPORT$$;
             (domain_nowww === "celebphotos.club" && src.indexOf("/images/") >= 0) ||
             // http://www.image.farm/images/2017/08/25/160ea9b2aca90d9a83a894b36e9dbef9.md.jpg
             (domain_nowww === "image.farm" && src.indexOf("/images/") >= 0) ||
+            // https://girlspic.net/images/2018/04/05/403215_01bige47b3488e70ef46a.md.jpg
+            (domain_nowww === "girlspic.net" && src.indexOf("/images/") >= 0) ||
             // http://image-bugs.com/images/2017/09/09/CelebsFlash.com_NP_Harpers_Bazaar_090817__3_.md.jpg
             domain_nowww === "image-bugs.com") {
             // http://imgmax.com/images/2017/03/20/0OQhE.th.jpg
@@ -17438,12 +17445,19 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
         }
 
         if (domain === "d1x0dndjbjw02n.cloudfront.net" ||
+            // https://s3-ap-northeast-1.amazonaws.com/static.lovely-media.jp/production/posts/eyecatches/000/006/246/medium.JPG?1516345778
+            //   https://s3-ap-northeast-1.amazonaws.com/static.lovely-media.jp/production/posts/eyecatches/000/006/246/original.JPG?1516345778
+            amazon_container === "static.lovely-media.jp" ||
+            // https://s3-ap-northeast-1.amazonaws.com/static.cdn.xtreeem.com/production/imgs/images/000/098/799/medium.png
+            //   https://s3-ap-northeast-1.amazonaws.com/static.cdn.xtreeem.com/production/imgs/images/000/098/799/original.png
+            amazon_container === "static.cdn.xtreeem.com" ||
             // https://s3-us-west-2.amazonaws.com/cdn.panda-gossips.com/production/posts/eyecatches/000/001/000/thumb.jpg?1511378312
             //   https://s3-us-west-2.amazonaws.com/cdn.panda-gossips.com/production/posts/eyecatches/000/001/000/original.jpg?1511378312
             amazon_container === "cdn.panda-gossips.com") {
             // https://d1x0dndjbjw02n.cloudfront.net/production/posts/eyecatches/000/001/438/thumb.jpg?1496817733
             //   https://d1x0dndjbjw02n.cloudfront.net/production/posts/eyecatches/000/001/438/original.jpg?1496817733
-            return src.replace(/\/thumb(\.[^/.]*)$/, "/original$1");
+            //return src.replace(/\/thumb(\.[^/.]*)$/, "/original$1");
+            return src.replace(/(\/(?:[0-9]{3}\/+){3})[a-z]+(\.[^/.]*)(?:[?#].*)?$/, "$1original$2");
         }
 
         if (domain === "summary-sv.fc2.com") {
@@ -21475,18 +21489,30 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             // https://cdn1.okporn.com/contents/albums//main/838x655/7000/7326/152282.jpg
             //   https://cdn1.okporn.com/contents/albums//sources/7000/7326/152282.jpg
             domain_nosub === "okporn.com" ||
+            // https://album2.cdntrex.com/main/200x150/2000/2431/94996.jpg
+            //   https://album2.cdntrex.com/sources/2000/2431/94996.jpg
+            (domain_nosub === "cdntrex.com" && /^album[0-9]*\./.test(domain)) ||
+            // https://cdn1-sex-hd-images.p7cdn.com/contents/albums/main/1600x220/5000/5327/103399.jpg
+            //   https://cdn1-sex-hd-images.p7cdn.com/contents/albums/sources/5000/5327/103399.jpg
+            domain_nosub === "p7cdn.com" ||
             // https://cdn.pornstill.com/contents/albums/main/300x500/82000/82628/1298509.jpg
             //   https://cdn.pornstill.com/contents/albums/sources/82000/82628/1298509.jpg
             domain === "cdn.pornstill.com") {
             // https://www.zceleb.com/contents/albums/main/235x350/0/73/4807.jpg
             //   https://zceleb.com/contents/albums/main/5000x5000/0/73/4807.jpg
             //   https://www.zceleb.com/contents/albums/sources/0/73/4807.jpg
+            newsrc = src.replace(/\/main\/+[0-9]+x[0-9]+\/+/, "/sources/");
+
+            var referer = "http://" + domain_nosub + "/";
+            if (domain_nosub === "p7cdn.com")
+                referer = "https://www.sex-hd.xxx/";
+
             return {
-                url: src.replace(/\/main\/+[0-9]+x[0-9]+\/+/, "/sources/"),
+                url: newsrc,
                 // a little overreaching, but easier than manually adding support for each of the sites
                 headers: {
-                    Origin: "http://" + domain_nosub,
-                    Referer: "http://" + domain_nosub + "/"
+                    //Origin: "http://" + domain_nosub,
+                    Referer: referer
                 }
             };
         }
@@ -21888,7 +21914,10 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/_tn(\.[^/.]*)$/, "$1");
         }
 
-        if (domain_nowww === "redcarpetnudes.com") {
+        if (domain_nowww === "redcarpetnudes.com" ||
+            // http://cdn.onedala.tv/uploads/article-image/201711/20171110071239W3npxg0y-tn.jpg -- upscaled?
+            //   http://cdn.onedala.tv/uploads/article-image/201711/20171110071239W3npxg0y.jpg
+            domain === "cdn.onedala.tv") {
             // https://www.redcarpetnudes.com/xhc/1460358606-selena-gomez-pictures-celebrity-teen-hot-tits-sexy/selena-gomez-pictures-celebrity-teen-hot-tits-sexy-11-tn.jpg
             //   https://www.redcarpetnudes.com/xhc/1460358606-selena-gomez-pictures-celebrity-teen-hot-tits-sexy/selena-gomez-pictures-celebrity-teen-hot-tits-sexy-11.jpg
             return src.replace(/-tn(\.[^/.]*)$/, "$1");
@@ -22366,6 +22395,9 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             // http://theasianpics.com/gallery/Mature_Korean_Lady/th_4.jpg
             //   http://theasianpics.com/gallery/Mature_Korean_Lady/4.jpg
             domain_nowww === "theasianpics.com" ||
+            // http://www.teenporngallery.net/playful-girlfriends/5047/th_001.jpg
+            //   http://www.teenporngallery.net/playful-girlfriends/5047/001.jpg
+            domain_nowww === "teenporngallery.net" ||
             // http://teengalleries.mobi/g/d55bf2/th_02.jpg
             //   http://teengalleries.mobi/g/d55bf2/02.jpg
             domain_nowww === "teengalleries.mobi") {
@@ -23974,6 +24006,9 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             // https://www.melonbooks.co.jp/resize_image.php?image=213001018798.jpg&width=320&height=320
             //   https://www.melonbooks.co.jp/upload/save_image/213001018798.jpg
             domain_nowww === "melonbooks.co.jp" ||
+            // https://jpstore.dwango.jp/resize_image.php?image=01311252_58900a1559f60.jpg&width=144&height=91
+            //   https://jpstore.dwango.jp/upload/save_image/01311252_58900a1559f60.jpg
+            domain === "jpstore.dwango.jp" ||
             // https://melonbooks.akamaized.net/user_data/packages/resize_image.php?image=216001013898.jpg&width=225&height=317&c=0&aa=0 -- 225x223
             //   https://melonbooks.akamaized.net/user_data/packages/resize_image.php?image=216001013898.jpg -- 700x694
             //   https://melonbooks.akamaized.net/upload/save_image/216001013898.jpg -- 700x694
@@ -27807,14 +27842,23 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/:\/\/[^/]*\/thumbs\/[0-9]+px\/content\//, "://content.pornpics.com/");
         }
 
-        if (domain === "content.pornpics.com") {
+        if (domain === "content.pornpics.com" ||
+            // https://img.pornpics.com/2016-04-23/348258_01.jpg
+            //   https://cdn.pornpics.com/pics1/2016-04-23/348258_01big.jpg
+            domain === "img.pornpics.com") {
             // https://content.pornpics.com/2013-07-12/108230_01.jpg
             //   https://cdn.pornpics.com/pics/2013-07-12/108230_01big.jpg
+            var folder = "pics";
+            if (domain === "img.pornpics.com")
+                folder = "pics1";
             return src.replace(/:\/\/[^/]*\/([0-9]{4}-[0-9]{2}-[0-9]{2}\/+[0-9]+_[0-9]+)(\.[^/.]*)(?:[?#].*)?$/,
-                               "://cdn.pornpics.com/pics/$1big$2");
+                               "://cdn.pornpics.com/" + folder + "/$1big$2");
         }
 
         if (domain_nowww === "vipissy.com" ||
+            // https://media.fistertwister.com/fhg/26289f49024be011b1b32fae4e825a84/thumbs/1.jpg
+            //   https://media.fistertwister.com/fhg/26289f49024be011b1b32fae4e825a84/files/1.jpg
+            domain === "media.fistertwister.com" ||
             // https://media.puffynetwork.com/fhg/5d5e24cd82224dff6987e152fe0e54db/thumbs/1.jpg
             //   https://media.puffynetwork.com/fhg/5d5e24cd82224dff6987e152fe0e54db/files/1.jpg
             domain === "media.puffynetwork.com") {
@@ -29007,7 +29051,11 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             //   https://static.ftvgirls.com/galleries/alex-and-nina-bi-kinis/15.jpg
             // https://promo.ftvgirls.com/galleries/alex-and-nina-bi-kinis/15-thumb.jpg
             //   https://promo.ftvgirls.com/galleries/alex-and-nina-bi-kinis/15.jpg
-            return src.replace(/(\/galleries\/.*\/[0-9]+)-thumb(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+            // https://static.ftvgirls.com/free/summer-all-dolled-up/8ad0f1cb/thumbnails/221x296_004.jpg
+            //   https://static.ftvgirls.com/free/summer-all-dolled-up/8ad0f1cb/pictures/content_004.jpg
+            return src
+                .replace(/(\/galleries\/.*\/[0-9]+)-thumb(\.[^/.]*)(?:[?#].*)?$/, "$1$2")
+                .replace(/\/thumbnails\/+[0-9]+x[0-9]+_/, "/pictures/content_");
         }
 
         if (domain === "image.istyle24.com") {
@@ -29725,10 +29773,13 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                                "/photos/$1$2");
         }
 
-        if (domain_nowww === "nicepornphotos.com") {
+        if (domain_nowww === "nicepornphotos.com" ||
+            // https://cdn1.images.asianpornmovies.com/galleries/0905/73447/2f9c15636603082eab5608da897d62ee-t.jpg
+            //   https://cdn1.images.asianpornmovies.com/galleries/0905/73447/2f9c15636603082eab5608da897d62ee.jpg
+            domain_nosub === "asianpornmovies.com") {
             // http://nicepornphotos.com/images/galleries/0074/13783/ac6386623d87014ab9cdf9374a86ed05-t.jpg
             //   http://nicepornphotos.com/images/galleries/0074/13783/ac6386623d87014ab9cdf9374a86ed05.jpg
-            return src.replace(/(\/images\/+galleries\/+[0-9]+\/+[0-9]+\/+[0-9a-f]+)-t(\.[^/.]*)(?:[?#].*)?$/,
+            return src.replace(/(\/galleries\/+[0-9]+\/+[0-9]+\/+[0-9a-f]{10,})-t(\.[^/.]*)(?:[?#].*)?$/,
                                "$1$2");
         }
 
@@ -29754,7 +29805,10 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                 .replace(/\/wallpapers\/+[a-z]+\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/wallpapers/original/$1");
         }
 
-        if (domain === "promo.mattsmodels.com") {
+        if (domain === "promo.mattsmodels.com" ||
+            // http://www.amateurindex.com/galleries/ftv-girls/high-heel-masturbation/thumbs/high-heel-masturbation-1.jpg
+            //   http://www.amateurindex.com/galleries/ftv-girls/high-heel-masturbation/high-heel-masturbation-1.jpg
+            domain_nowww === "amateurindex.com") {
             // http://promo.mattsmodels.com/galleries/Tyler-Stevenz/tyler-stevenz-b/thumbs/image-01.jpg
             //   http://promo.mattsmodels.com/galleries/Tyler-Stevenz/tyler-stevenz-b/image-01.jpg
             return src.replace(/(\/galleries\/+[^/]*\/+[^/]*\/+)thumbs\/+/, "$1");
@@ -29767,7 +29821,10 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                                "/$1");
         }
 
-        if (domain === "images.sxx.com") {
+        if (domain === "images.sxx.com" ||
+            // http://images.blazingmovies.com/pic_teasers/63412/5b107697dc/nude/01/thumbs/63412_01_tb.jpg
+            //   http://images.blazingmovies.com/pic_teasers/63412/5b107697dc/nude/01/63412_01.jpg
+            domain === "images.blazingmovies.com") {
             // http://images.sxx.com/pic_teasers/23105/5155f2f890/nude/01/thumbs/23105_01_tb.jpg
             //   http://images.sxx.com/pic_teasers/23105/5155f2f890/nude/01/23105_01.jpg
             return src.replace(/\/thumbs\/+([^/]*)_tb(\.[^/.]*)(?:[?#].*)?$/,
@@ -30866,11 +30923,24 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/(\/photos\/(?:[-0-9a-f]{3}\/+){3})[a-z]+\/+data(?:[?#].*)?$/, "$1original/data");
         }
 
+        if (domain_nosub === "avdbs.com" && /^i[0-9]*\./.test(domain)) {
+            // https://i2.avdbs.com/actor/a03/3675_001_s.jpg
+            //   https://s3.ap-northeast-2.amazonaws.com/img.avdbs.com/actor/a03/3675_001_o.jpg
+            return src.replace(/^[a-z]+:\/\/[^/]*\//, "https://s3.ap-northeast-2.amazonaws.com/img.avdbs.com/");
+        }
+
         if (amazon_container === "img.avdbs.com" ||
-            domain === "img.avdbs.com") {
+            domain === "img.avdbs.com" ||
+            (domain_nosub === "avdbs.com" && /^i[0-9]*\./.test(domain))) {
+            // https://i2.avdbs.com/actor/a03/3675_001_s.jpg
+            //   https://i2.avdbs.com/actor/a03/3675_001_r.jpg
             // https://s3.ap-northeast-2.amazonaws.com/img.avdbs.com/actor/a02/2309_008_r.jpg
             //   http://img.avdbs.com/actor/a02/2309_008_o.jpg
-            return src.replace(/(\/[0-9]+_[0-9]+_)[sr](\.[^/.]*)(?:[?#].*)?$/, "$1o$2");
+            regex = /(\/[0-9]+_[0-9]+_)[sr](\.[^/.]*)(?:[?#].*)?$/;
+            return [
+                src.replace(regex, "$1o$2"),
+                src.replace(regex, "$1r$2")
+            ];
         }
 
         if (domain === "cdn.lengmenjun.com") {
@@ -30936,12 +31006,6 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             // https://www.sandinyoureye.co.uk/files/gallery/_306x306_crop_Center-Center_80/professional-ice-sculpture_ice-carving_Bradford.jpg
             //   https://www.sandinyoureye.co.uk/files/gallery/professional-ice-sculpture_ice-carving_Bradford.jpg
             return src.replace(/\/files\/+gallery\/+_[0-9]+x[0-9]+_[^/]*\/+/, "/files/gallery/");
-        }
-
-        if (amazon_container === "static.lovely-media.jp") {
-            // https://s3-ap-northeast-1.amazonaws.com/static.lovely-media.jp/production/posts/eyecatches/000/006/246/medium.JPG?1516345778
-            //   https://s3-ap-northeast-1.amazonaws.com/static.lovely-media.jp/production/posts/eyecatches/000/006/246/original.JPG?1516345778
-            return src.replace(/(\/(?:[0-9]{3}\/+){3})[a-z]+(\.[^/.]*)(?:[?#].*)?$/, "$1original$2");
         }
 
         if (domain_nowww === "foto4ka.com") {
@@ -35391,12 +35455,68 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/\/contents\/+thumb\/+[ms]\/+/, "/contents/thumb/l/");
         }
 
+        if (domain === "aws-cf.imdoc.fr") {
+            // https://aws-cf.imdoc.fr/prod/photos/0/2/9/4511029/25763048/tns0-25763048b68.jpg?v=2
+            //   https://aws-cf.imdoc.fr/prod/photos/0/2/9/4511029/25763048/big-25763048b68.jpg?v=2
+            return src.replace(/(\/prod\/+photos\/+(?:[0-9]+\/+){5})tns[0-9]*-/, "$1big-");
+        }
 
+        if (domain === "asobokey.x.fc2.com") {
+            // https://asobokey.x.fc2.com/archive/today/201908/20190806/image/2019001_thumb.jpg
+            //   https://asobokey.x.fc2.com/archive/today/201908/20190806/image/2019001.jpg
+            return src.replace(/(\/image\/+[0-9]{4,})_thumb(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
 
+        if (domain_nowww === "hbox.jp") {
+            // https://hbox.jp/image3/content/233555/sp_thumbnail_cover.jpg
+            //   https://hbox.jp/image3/content/233555/cover.jpg
+            return src.replace(/(\/image[0-9]*\/+content\/+[0-9]+\/+)sp_thumbnail_/, "$1");
+        }
 
+        if (domain === "storage.ws.pho.to") {
+            // https://storage.ws.pho.to/s2/075c4132b93000455fbb9f5955d4ff08695edf80_m.jpeg
+            //   https://storage.ws.pho.to/s2/075c4132b93000455fbb9f5955d4ff08695edf80.jpeg
+            return src.replace(/(\/[0-9a-f]{20,})_[a-z](\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
 
+        if (domain_nowww === "freakolla.com") {
+            // http://freakolla.com/FTV/Amie_Naked_In_High_Heels/THG/02.jpg
+            //   http://freakolla.com/FTV/Amie_Naked_In_High_Heels/IMG/02.jpg
+            return src.replace(/\/THG\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/IMG/$1");
+        }
 
+        if (domain_nosub === "breath-takers.com" ||
+            // http://galleries.girlfolio.com/assets/images/affiliates/images/gallery/simone_simply_simone/small/simone_simply_simone_0015.jpg
+            //   http://galleries.girlfolio.com/assets/images/affiliates/images/gallery/simone_simply_simone/orig/simone_simply_simone_0015.jpg
+            domain_nosub === "girlfolio.com") {
+            // http://www.breath-takers.com/assets/images/category/gallery/pippa_doll_muse/small/PREVIEW_2.jpg
+            //   http://www.breath-takers.com/assets/images/category/gallery/pippa_doll_muse/orig/PREVIEW_2.jpg
+            return src.replace(/(\/assets\/+images\/+.*\/)(?:small|medium|large)\/+/, "$1orig/");
+        }
 
+        if (domain_nosub === "thepluginz.com" && /^img\./.test(domain)) {
+            // http://img.free4.thepluginz.com/999/photos/t8v6v1/tn_1100118131_1.jpg
+            //   http://img.free4.thepluginz.com/999/photos/t8v6v1/1100118131_1.jpg
+            return src.replace(/(\/photos\/+[^/]*\/+)tn_/, "$1");
+        }
+
+        if (domain === "galleries.gloryhole-initiations.com") {
+            // https://galleries.gloryhole-initiations.com/content/nia_nacci/pics/tn/01.jpg
+            //   https://galleries.gloryhole-initiations.com/content/nia_nacci/pics/pic/01.jpg
+            return src.replace(/\/pics\/+tn\/+/, "/pics/pic/");
+        }
+
+        if (domain === "g.misslk.com") {
+            // http://g.misslk.com/a0561/tn/VGI0551P020008.jpg
+            //   http://g.misslk.com/a0561/full/VGI0551P020008.jpg
+            return src.replace(/\/tn\/+/, "/full/");
+        }
+
+        if (domain_nosub === "radgalleries.com") {
+            // http://caliteens01.radgalleries.com/j132b/thumbnails/t01.jpg
+            //   http://caliteens01.radgalleries.com/j132b/01.jpg
+            return src.replace(/\/thumbnails\/+t([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/$1");
+        }
 
 
 
@@ -38278,6 +38398,10 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                 }
 
                 if (resp.readyState == 4) {
+                    if (_nir_debug_) {
+                        console_log("check_image_get(onload)", resp);
+                    }
+
                     var digit = resp.status.toString()[0];
 
                     var ok_error = check_ok_error(obj[0].head_ok_errors, resp.status);
