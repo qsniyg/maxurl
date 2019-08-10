@@ -35545,6 +35545,16 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/(_[0-9a-f]{6,})_[-a-z]+(\.[^/.]*)(?:[?#].*)?$/, "$1_original-ratio$2");
         }
 
+        if (domain === "az743702.vo.msecnd.net" ||
+            // https://cdn.ko-fi.com/cdn/useruploads/e53090ad-734d-4c1c-ab15-73215be79804_tiny.png
+            //   https://cdn.ko-fi.com/cdn/useruploads/e53090ad-734d-4c1c-ab15-73215be79804.png
+            domain === "cdn.ko-fi.com") {
+            // https://az743702.vo.msecnd.net/cdn/useruploads/tiny_dfc72789-50bf-486f-9a87-81d05ee09437.jpg
+            //   https://az743702.vo.msecnd.net/cdn/useruploads/dfc72789-50bf-486f-9a87-81d05ee09437.jpg
+            // doesn't work for all:
+            // https://az743702.vo.msecnd.net/cdn/useruploads/jpeg_577f9238-f040-4b13-8851-587909cbfb1ccover.jpeg?v=5e0bd932-2264-40a3-b2ce-8643b5b351a3
+            return src.replace(/(\/useruploads\/+)(?:[a-z]+_)?([-0-9a-f]{20,}(?:[a-z]+)?)(?:_[a-z]+)?(\.[^/.]*)(?:[?#].*)?$/, "$1$2$3");
+        }
 
 
 
