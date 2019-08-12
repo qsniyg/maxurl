@@ -5297,6 +5297,8 @@ var $$IMU_EXPORT$$;
             domain === "static.otvfoco.com.br" ||
             // https://static2.diariouno.com.ar/media/2019/03/1543247666-rihanna-hermosa-y-talentosa-estrella-mundial-del-pop-y-del-universo-entero-416x234.jpg
             (domain_nosub === "diariouno.com.ar" && /^static[0-9]*\./.test(domain) && src.indexOf("/media/") >= 0) ||
+            // https://static-cdn.jtvnw.net/s3_vods/leansquad_/140652046/c72d3b49-5401-4df4-b22b-c8798f9cd2fc/thumb/custom0c0a29f5448f07b3-320x180.jpeg
+            (domain === "static-cdn.jtvnw.net" && src.indexOf("/s3_vods/") >= 0) ||
             // https://1.soompi.io/wp-content/blogs.dir/8/files/2015/09/HA-TFELT-Wonder-Girls-590x730.jpg -- doesn't work
             // https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2018/01/GTA-6-Female-Protag-796x417.jpg -- does work
             src.indexOf("/wp-content/blogs.dir/") >= 0 ||
@@ -23491,14 +23493,19 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
         }
 
         if ((domain_nosub === "xuk.mobi" ||
+             // https://img5.xuk.one/images/photos/00/04/28/04/42804/big/835b4874507210df13d36a8b3e88e843.jpg
+             //   https://img5.xuk.one/images/photos/00/04/28/04/42804/origin/835b4874507210df13d36a8b3e88e843.jpg
+             domain_nosub === "xuk.one" ||
              // https://img2.xuk.ooo/images/photos/00/04/23/60/42360/thumb/601109edfaf6992955ddcb7416433d62.jpg
              //   https://img2.xuk.ooo/images/photos/00/04/23/60/42360/origin/601109edfaf6992955ddcb7416433d62.jpg
+             // https://img5.xuk.ooo/images/photos/00/04/28/04/42804/big/835b4874507210df13d36a8b3e88e843.jpg
+             //   https://img5.xuk.ooo/images/photos/00/04/28/04/42804/origin/835b4874507210df13d36a8b3e88e843.jpg
              domain_nosub === "xuk.ooo") &&
             domain.match(/^img[0-9]*\./) &&
             src.indexOf("/images/photos/") >= 0) {
             // https://img1.xuk.mobi/images/photos/00/01/93/25/19325/thumb/6de0aa33ad9e5d5dbcd78a1153d6bb26.jpg
             //   https://img1.xuk.mobi/images/photos/00/01/93/25/19325/origin/6de0aa33ad9e5d5dbcd78a1153d6bb26.jpg
-            return src.replace(/\/thumb\/([0-9a-f]+\.[^/.]*)$/, "/origin/$1");
+            return src.replace(/\/(?:thumb|big)\/+([0-9a-f]+\.[^/.]*)$/, "/origin/$1");
         }
 
         if (domain === "s.filmsextv.com") {
@@ -29011,12 +29018,14 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             };
         }
 
-        if (domain === "atkgalleria.ero.today" ||
+        if (domain_nosub === "ero.today" ||
             // http://1by-day.oldax.com/17600/p/0300x0400_03.jpg
             //   http://1by-day.oldax.com/17600/m03.jpg
             domain_nosub === "oldax.com") {
             // http://atkgalleria.ero.today/uniforms/325977/p/0360x0480_02.jpg
             //   http://atkgalleria.ero.today/uniforms/325977/m02.jpg
+            // http://atkexotics.ero.today/black-women/291542/p/0752x1004_01.jpg
+            //   http://atkexotics.ero.today/black-women/291542/m01.jpg
             newsrc = src.replace(/\/p\/+[0-9]+x[0-9]+_([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/m$1");
             if (newsrc !== src) {
                 return {
@@ -29250,7 +29259,10 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/\/tn-([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/$1");
         }
 
-        if (domain_nosub === "adult-empire.com" &&
+        if ((domain_nosub === "adult-empire.com" ||
+            // http://pbs.cozyxxx.com/95/9598/1455/pics/thumbs/p2.jpg
+            //   http://pbs.cozyxxx.com/95/9598/1455/pics/p2.jpg
+            domain_nosub === "cozyxxx.com") &&
             domain.match(/^pbs(?:-[0-9]+)?\./)) {
             // http://pbs-0.adult-empire.com/73/7356/a096/tns/tn4.jpg
             //   http://pbs-0.adult-empire.com/73/7356/a096/4.jpg
@@ -29290,6 +29302,8 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             //   http://pbs-1.adult-empire.com/114/11437/4762/9.jpg
             // http://pbs-0.adult-empire.com/53/5328/010/tn9.jpg
             //   http://pbs-0.adult-empire.com/53/5328/010/9.jpg
+            // http://pbs-2.adult-empire.com/88/8850/p499/tn_name3.jpg
+            //   http://pbs-2.adult-empire.com/88/8850/p499/name3.jpg
             newsrc = src
                 .replace(/\/tns\/+tn([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/$1")
                 .replace(/\/thumb\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/pics/$1")
@@ -29306,6 +29320,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                 .replace(/\/th([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/$1")
                 .replace(/(\/[0-9]+)a(\.[^/.]*)(?:[?#].*)?$/, "$1$2")
                 .replace(/\/thumbs\/+thumb([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/pics/pic$1")
+                .replace(/(\/[0-9]+\/+[0-9]+\/+p[0-9]+\/+)tn_([^/]*)(?:[?#].*)?$/, "$1$2")
                 .replace(/(:\/\/[^/]*\/[^/]*\/+[^/]*\/+[^/]*\/+)tn([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
             if (newsrc !== src)
                 return newsrc;
@@ -35704,8 +35719,31 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             //   https://img.popnroll.tv/uploads/news_item/image/3789/medium_Liyuu%E3%82%A2%E3%83%BC%E5%86%99.jpg
             //   https://img.popnroll.tv/uploads/news_item/image/3789/large_Liyuu%E3%82%A2%E3%83%BC%E5%86%99.jpg -- upscaled?
             //   https://img.popnroll.tv/uploads/news_item/image/3789/Liyuu%E3%82%A2%E3%83%BC%E5%86%99.jpg
-
             return src.replace(/(\/uploads\/+[^/]*\/+image\/+[0-9]+\/+)(?:thumb|medium|large)_/, "$1");
+        }
+
+        if (domain_nosub === "adulttrade.net") {
+            // http://ebony.adulttrade.net/ebony_pics_galleries/amateur-black-porn-fhg/499uf/tn_name5.jpg
+            //   http://ebony.adulttrade.net/ebony_pics_galleries/amateur-black-porn-fhg/499uf/tn_name5.jpg
+            return src.replace(/(_pics_galleries\/.*\/)tn_([^/]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain_nowww === "thepaysites.com") {
+            // http://www.thepaysites.com/showybeauty/175983/blonde-with-wistfully-look-nude-russian-woman/thumb_12.jpg
+            //   http://www.thepaysites.com/showybeauty/175983/blonde-with-wistfully-look-nude-russian-woman/12.jpg
+            return src.replace(/(\/[0-9]+\/+[^/]+\/+)thumb_([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain === "i.myass.ru") {
+            // http://i.myass.ru/201312/17/m/20131252af63a4680d8.jpg
+            //   http://i.myass.ru/201312/17/f/20131252af63a4680d8.jpg
+            return src.replace(/(\/[0-9]{6}\/+[0-9]+\/+)[a-z]\/+([0-9]+[0-9a-f]+\.[^/.]*)(?:[?#].*)?$/, "$1f/$2");
+        }
+
+        if (domain === "img.cactusboy.com") {
+            // http://img.cactusboy.com/3/3e/3ed1be6891233bdf909b1290a1550ba9/tn_1.jpg
+            //   http://img.cactusboy.com/3/3e/3ed1be6891233bdf909b1290a1550ba9/1.jpg
+            return src.replace(/(\/[0-9a-f]\/+[0-9a-f]{2}\/+[0-9a-f]{10,}\/+)tn_([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
         }
 
 
