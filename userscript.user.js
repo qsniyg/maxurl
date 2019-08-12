@@ -39762,7 +39762,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             //console_log(els);
 
             var sources = {};
-            var picture_sources = {};
+            //var picture_sources = {};
             var links = {};
             var picture_minw = false;
             var picture_maxw = false;
@@ -39781,6 +39781,25 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             var thresh = 20;
 
             var source;
+
+            function check_visible(el) {
+                do {
+                    if (!el)
+                        break;
+
+                    var style = window.getComputedStyle(el, null) || el.style;
+                    if (!style)
+                        break;
+
+                    if (style.opacity.toString().match(/^0(?:\.0*)?$/)) {
+                        return false;
+                    if (style.visibility === "hidden")
+                        return false;
+                    }
+                } while (el = el.parentElement);
+
+                return true;
+            }
 
             function getsource() {
                 var thesource = null;
@@ -39817,13 +39836,13 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                 // https://www.harpersbazaar.com/celebrity/red-carpet-dresses/g7565/selena-gomez-style-transformation/?slide=2
                 var el_style = null;
                 if (el) {
-                    el_style = window.getComputedStyle(el);
+                    el_style = window.getComputedStyle(el) || el.style;
                 }
 
-                if (src.match(/^data:/) && src.length <= 500 ||
+                if ((src.match(/^data:/) && src.length <= 500) ||
                     // https://www.smugmug.com/
-                    (el_style && (el_style.opacity === '0' ||
-                                  el_style.visibility === "hidden")))
+                    // https://www.vogue.com/article/lady-gaga-met-gala-2019-entrance-behind-the-scenes-video
+                    !check_visible(el))
                     return false;
 
                 if (!options) {
@@ -39894,7 +39913,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                         if (!addImage(src, el))
                             continue;
 
-                        picture_sources[src] = sources[src];
+                        //picture_sources[src] = sources[src];
 
                         sources[src].picture = el.parentElement;
 
@@ -40047,29 +40066,31 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
 
             // Remove hidden elements
             // Test: https://www.vogue.com/article/lady-gaga-met-gala-2019-entrance-behind-the-scenes-video
-            for (var source_url in sources) {
-                var source = sources[source_url];
+            if (false) {
+                for (var source_url in sources) {
+                    var source = sources[source_url];
 
-                var visible = true;
-                var el = source.el;
-                do {
-                    if (!el || !el.style)
-                        break;
+                    var visible = true;
+                    var el = source.el;
+                    do {
+                        if (!el || !el.style)
+                            break;
 
-                    if (el.style.opacity.toString().match(/^0(?:\.0*)?$/)) {
-                        visible = false;
-                        break;
-                    }
-                } while (el = el.parentElement);
+                        if (el.style.opacity.toString().match(/^0(?:\.0*)?$/)) {
+                            visible = false;
+                            break;
+                        }
+                    } while (el = el.parentElement);
 
-                if (!visible)
-                    continue;
+                    if (!visible)
+                        continue;
 
-                newsources[source_url] = source;
+                    newsources[source_url] = source;
+                }
+
+                sources = newsources;
+                newsources = {};
             }
-
-            sources = newsources;
-            newsources = {};
 
             if ((source = getsource()) !== undefined)
                 return source;
