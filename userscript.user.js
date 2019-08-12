@@ -11406,7 +11406,10 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/thumb\/([^/]*)$/, "/full/$1");
         }
 
-        if (domain === "cdn.apk-cloud.com") {
+        if (domain === "cdn.apk-cloud.com" ||
+            // https://apk-dl.com/detail/screenshot/Xg3DPZyvIegjKqZll4OzWpK41znXorY76j3MDa759ZNFkCv72CRkHI9yUcPx_Q1V2g=h300.png
+            //   https://apk-dl.com/detail/screenshot/Xg3DPZyvIegjKqZll4OzWpK41znXorY76j3MDa759ZNFkCv72CRkHI9yUcPx_Q1V2g=h0.png
+            domain_nowww === "apk-dl.com") {
             // http://cdn.apk-cloud.com/detail/screenshot/sYpEJNqANEbHAkHjLbYOOdRyn3sIhEtHgF8qSEpKXE38UR0RpI4X7b2eQfTQIiiljCrL.png
             // http://cdn.apk-cloud.com/detail/screenshot/sYpEJNqANEbHAkHjLbYOOdRyn3sIhEtHgF8qSEpKXE38UR0RpI4X7b2eQfTQIiiljCrL=h400.png
             return src
@@ -13581,14 +13584,17 @@ var $$IMU_EXPORT$$;
              //domain === "image.but.fr" ||
              // https://images.shaneco.com/is/image/ShaneCo/diamonds101-hero-Sept2017-lg?wid=1300&hei=1200
              //   https://images.shaneco.com/is/image/ShaneCo/diamonds101-hero-Sept2017-lg?scl=1&fmt=png-alpha
-             domain === "images.shaneco.com" ||
+             domain === "images.shaneco.com"// ||
              // https://s7g10.scene7.com/is/image/UrbanOutfittersEU/0119477794907_010_b?$xlarge$&hei=900&qlt=80&fit=constrain
              //   https://s7g10.scene7.com/is/image/UrbanOutfittersEU/0119477794907_010_b?scl=1
              // https://iittala.scene7.com/is/image/iittala/?&src=is{iittala/iittala%2Dkastehelmi%2Dplate%2D170mm%2Dsea%5Fblue?size=3800,3800&wid=2000&hei=2000&scl=2.6}&extend=100,100,100,100
              //   https://iittala.scene7.com/is/image/iittala/iittala-kastehelmi-plate-170mm-sea_blue?scl=1&fmt=png-alpha
              // https://s7d4.scene7.com/is/image/Belk?layer=0&src=9999999_1510MAID_A_000_T10L00&layer=comp&$P_PROD$
              //   https://s7d4.scene7.com/is/image/Belk?src=9999999_1510MAID_A_000_T10L00&scl=1&fmt=png-alpha
-             domain_nosub === "scene7.com") &&
+             // doesn't work for all:
+             // https://s7d9.scene7.com/is/image/zumiez/pdp_hero/adidas-Boys-Trefoil-Black-Hoodie-_289406.jpg
+             //   https://s7d9.scene7.com/is/image/zumiez/pdp_hero/adidas-Boys-Trefoil-Black-Hoodie-_289406.jpg?scl=1 -- image not found
+             /*domain_nosub === "scene7.com"*/) &&
             src.indexOf("/is/image/") >= 0) {
             // https://dyson-h.assetsadobe2.com/is/image//content/dam/dyson/products/hair-care/dyson-supersonic/customisation/personal-care-dyson-supersonic-customisation-homepage.jpg?scl=1
             // https://dyson-h.assetsadobe2.com/is/image//content/dam/dyson/icons/owner-footer/register-my-machine.png?scl=1&fmt=png-alpha
@@ -35609,11 +35615,34 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/(\/useruploads\/+)(?:[a-z]+_)?([-0-9a-f]{20,}(?:[a-z]+)?)(?:_[a-z]+)?(\.[^/.]*)(?:[?#].*)?$/, "$1$2$3");
         }
 
-        if (domain_nowww === "silviomessina.pw") {
+        if (domain_nowww === "silviomessina.pw" ||
+            // http://bevilacqua.me/images/491-best-anime-cosplay-images-on-pinterest-amazing__aHR0cHM6Ly9pLnBpbmltZy5jb20vNzM2eC9iMS9jZC83MC9iMWNkNzA0OTMzMWY1NWM1ODE5MTBmMTRhMmM0NjNiYS5qcGc=.jpg
+            //   https://i.pinimg.com/originals/b1/cd/70/b1cd7049331f55c581910f14a2c463ba.jpg
+            domain_nowww === "bevilacqua.me" ||
+            // http://www.geodomehome.org/images/780-best-images-about-cosplay-on-pinterest__aHR0cHM6Ly9zLW1lZGlhLWNhY2hlLWFrMC5waW5pbWcuY29tLzczNngvMDQvYzEvNzEvMDRjMTcxNjVhMzM2ZDE0MDY2OTlmODg3MzgyMGZiZjgtLWN1dGUtY29zcGxheS1hbmltZS1jb3NwbGF5LmpwZw==.jpg
+            //   https://i.pinimg.com/originals/04/c1/71/04c17165a336d1406699f8873820fbf8--cute-cosplay-anime-cosplay.jpg
+            domain_nowww === "geodomehome.org" ||
+            // http://www.edu.kustantiblogs.web.id/images/showing-porn-images-for-hisui-nightshade-porn-www__aHR0cHM6Ly9pLnBpbmltZy5jb20vb3JpZ2luYWxzL2M4LzI4L2QyL2M4MjhkMjBhODYwMjUyZjAwOGU3MjUyM2YwNGU2YWRiLmpwZw==.jpg
+            //   https://i.pinimg.com/originals/c8/28/d2/c828d20a860252f008e72523f04e6adb.jpg
+            domain === "www.edu.kustantiblogs.web.id") {
             // http://silviomessina.pw/images/best-25-lesley-ann-brandt-ideas-on-pinterest__aHR0cHM6Ly9zLW1lZGlhLWNhY2hlLWFrMC5waW5pbWcuY29tLzczNngvZDAvZTYvN2QvZDBlNjdkMTI2Mzg4NThkYmFkMTgwZWFhNmU5ZTQ0NjMtLWxlc2xleS1hbm4tYnJhbmR0LWdheS1jZWxlYnJpdGllcy5qcGc=.jpg
             //   https://s-media-cache-ak0.pinimg.com/736x/d0/e6/7d/d0e67d12638858dbad180eaa6e9e4463--lesley-ann-brandt-gay-celebrities.jpg
             //   https://i.pinimg.com/originals/d0/e6/7d/d0e67d12638858dbad180eaa6e9e4463.jpg
             newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+images\/+[^/]*__([^-/._]{30,})\.[^/.]*(?:[?#].*)?$/, "$1");
+            if (newsrc !== src)
+                return atob(newsrc);
+        }
+
+        if (domain_nowww === "soumeiwang.com" ||
+            // http://m.shianwang.com/img/aHR0cDovL2ltZzAuaW1ndG4uYmRpbWcuY29tL2l0L3U9NDMxODU4MDc4LDIwMjQ2NzA5NzAmZm09MTUmZ3A9MC5qcGc=.jpg
+            //   http://img0.imgtn.bdimg.com/it/u=431858078,2024670970&fm=15&gp=0.jpg
+            domain === "m.shianwang.com" ||
+            // https://m.dalangw.com/img/aHR0cDovL2ltZzQuaW1ndG4uYmRpbWcuY29tL2l0L3U9Mzk1ODY3NTA2NCwzMzA0NzAxMzMwJmZtPTI2JmdwPTAuanBn.jpg
+            //   http://img4.imgtn.bdimg.com/it/u=3958675064,3304701330&fm=26&gp=0.jpg
+            domain === "m.dalangw.com") {
+            // http://www.soumeiwang.com/img/aHR0cDovL2ltZzQuaW1ndG4uYmRpbWcuY29tL2l0L3U9OTUzMDIzNjAyLDM1ODIwMzU5MTgmZm09MTUmZ3A9MC5qcGc=.jpg
+            //   http://img4.imgtn.bdimg.com/it/u=953023602,3582035918&fm=15&gp=0.jpg
+            newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+img\/+([^-/._]{30,})\.[^/.]*(?:[?#].*)?$/, "$1");
             if (newsrc !== src)
                 return atob(newsrc);
         }
@@ -35625,6 +35654,28 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/(\/artists\/+[^/]*\/+[^/]*\/+size_)[sm]_/, "$1l_");
         }
 
+        if (domain_nosub === "baidu-img.cn" && /^cdn[0-9]*\./.test(domain)) {
+            // http://cdn01.baidu-img.cn/timg?image_search&quality=80&size=b230_225&sec=1439724140&di=f88c67231a39b5dd9d998668fd43b622&imgtype=jpg&src=http://img4.imgtn.bdimg.com/it/u=927383797,1588378365&fm=21&gp=0.jpg
+            //   http://img4.imgtn.bdimg.com/it/u=927383797,1588378365
+            newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/timg\?(?:.*?&)?src=(http[^&]*).*?$/, "$1");
+            if (newsrc !== src)
+                return decodeuri_ifneeded(newsrc);
+        }
+
+        if (domain === "pic.yupoo.com") {
+            // http://pic.yupoo.com/jpbeta/0284aba2/small.jpg
+            //   http://pic.yupoo.com/jpbeta/0284aba2/large.jpg
+            return src.replace(/(\/[0-9a-f]{6,}\/+)(?:small|medium)(\.[^/.]*)(?:[?#].*)?$/, "$1large$2");
+        }
+
+        if (domain === "img.popnroll.tv") {
+            // https://img.popnroll.tv/uploads/news_item/image/3789/thumb_Liyuu%E3%82%A2%E3%83%BC%E5%86%99.jpg
+            //   https://img.popnroll.tv/uploads/news_item/image/3789/medium_Liyuu%E3%82%A2%E3%83%BC%E5%86%99.jpg
+            //   https://img.popnroll.tv/uploads/news_item/image/3789/large_Liyuu%E3%82%A2%E3%83%BC%E5%86%99.jpg -- upscaled?
+            //   https://img.popnroll.tv/uploads/news_item/image/3789/Liyuu%E3%82%A2%E3%83%BC%E5%86%99.jpg
+
+            return src.replace(/(\/uploads\/+[^/]*\/+image\/+[0-9]+\/+)(?:thumb|medium|large)_/, "$1");
+        }
 
 
 
