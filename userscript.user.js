@@ -14,6 +14,9 @@
 // @grant        GM_setValue
 // @grant        GM.getValue
 // @grant        GM_getValue
+// @grant        GM_registerMenuCommand
+// @grant        GM_openInTab
+// @grant        GM.openInTab
 // @connect      *
 // @run-at       document-start
 // @license      Apache 2.0
@@ -28,6 +31,8 @@
 
 var $$IMU_EXPORT$$;
 
+// Disable linting because otherwise editing is incredibly slow
+// jshint ignore: start
 (function() {
     'use strict';
 
@@ -40,6 +45,8 @@ var $$IMU_EXPORT$$;
             no_redirect: true
         };
     }
+
+    var nullfunc = function(){};
 
     var is_extension = false;
     var is_webextension = false;
@@ -127,6 +134,30 @@ var $$IMU_EXPORT$$;
         do_request_raw = GM_xmlhttpRequest;
     } else if (typeof(GM) !== "undefined" && typeof(GM.xmlHttpRequest) !== "undefined") {
         do_request_raw = GM.xmlHttpRequest;
+    }
+
+    var register_menucommand = nullfunc;
+
+    if (is_userscript) {
+        if (typeof(GM_registerMenuCommand) !== "undefined") {
+            register_menucommand = GM_registerMenuCommand;
+        }
+    }
+
+    var open_in_tab = nullfunc;
+
+    if (is_userscript) {
+        if (typeof(GM_openInTab) !== "undefined") {
+            open_in_tab = GM_openInTab;
+        } else if (typeof(GM) !== "undefined" && typeof(GM.openInTab) !== "undefined") {
+            open_in_tab = GM.openInTab;
+        }
+
+        if (open_in_tab !== nullfunc) {
+            register_menucommand("Options", function() {
+                open_in_tab(options_page);
+            });
+        }
     }
 
     var do_request = null;
