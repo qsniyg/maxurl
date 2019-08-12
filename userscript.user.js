@@ -13627,7 +13627,8 @@ var $$IMU_EXPORT$$;
              // doesn't work for all:
              // https://s7d9.scene7.com/is/image/zumiez/pdp_hero/adidas-Boys-Trefoil-Black-Hoodie-_289406.jpg
              //   https://s7d9.scene7.com/is/image/zumiez/pdp_hero/adidas-Boys-Trefoil-Black-Hoodie-_289406.jpg?scl=1 -- image not found
-             /*domain_nosub === "scene7.com"*/) &&
+             /*domain_nosub === "scene7.com"*/
+             ) &&
             src.indexOf("/is/image/") >= 0) {
             // https://dyson-h.assetsadobe2.com/is/image//content/dam/dyson/products/hair-care/dyson-supersonic/customisation/personal-care-dyson-supersonic-customisation-homepage.jpg?scl=1
             // https://dyson-h.assetsadobe2.com/is/image//content/dam/dyson/icons/owner-footer/register-my-machine.png?scl=1&fmt=png-alpha
@@ -40656,6 +40657,21 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return false;
         }
 
+        function rotate_gallery(dir) {
+            if (popups.length === 0)
+                return;
+
+            var style = popups[0].querySelector("img").style;
+            var deg = 0;
+            if (style.transform) {
+                var match = style.transform.match(/^rotate\(([0-9]+)deg\)$/);
+                if (match) {
+                    deg = parseInt(match[1]);
+                }
+            }
+            style.transform = "rotate(" + (deg + dir) + "deg)";
+        }
+
         document.addEventListener('keydown', function(event) {
             if (settings.mouseover_trigger_behavior !== "keyboard")
                 return;
@@ -40676,6 +40692,17 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                 } else if (event.which === 39) { // right
                     trigger_gallery(true);
                     ret = false;
+                } else if (!event.shiftKey &&
+                           !event.ctrlKey &&
+                           !event.altKey &&
+                           !event.metaKey) {
+                    if (event.which === 82) { // r
+                        rotate_gallery(90);
+                        ret = false;
+                    } else if (event.which === 69) { // e
+                        rotate_gallery(-90);
+                        ret = false;
+                    }
                 }
 
                 if (ret === false) {
