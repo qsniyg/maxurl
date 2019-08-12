@@ -6796,7 +6796,7 @@ var $$IMU_EXPORT$$;
         }
 
         // many broken URLs, need to revamp can_head so it doesn't redirect
-        if (false && domain === "wc-ahba9see.c.sakurastorage.jp") {
+        if (domain === "wc-ahba9see.c.sakurastorage.jp") {
             if (src.indexOf("/max-1200/") >= 0) {
                 // https://wc-ahba9see.c.sakurastorage.jp/max-1200/59530/e929c45f84ace23cf416c2b6fc1c1eacb34f20bf-350x600.jpg
                 //   https://wc-ahba9see.c.sakurastorage.jp/max-1200/59530/e929c45f84ace23cf416c2b6fc1c1eacb34f20bf-1200.jpg
@@ -6807,6 +6807,8 @@ var $$IMU_EXPORT$$;
             } else {
                 // https://wc-ahba9see.c.sakurastorage.jp/533191/ebqzwxdflpsovyghbvfmpvzowripdfdorrlkwogi-350x600.jpg
                 //   https://wc-ahba9see.c.sakurastorage.jp/533191/ebqzwxdflpsovyghbvfmpvzowripdfdorrlkwogi-3000.jpg
+                // https://wc-ahba9see.c.sakurastorage.jp/424045/hmkianomuekqviktmyruykbxejilztchdqdwgsow-350x600.jpg
+                //   https://wc-ahba9see.c.sakurastorage.jp/424045/hmkianomuekqviktmyruykbxejilztchdqdwgsow-3000.jpg
                 // doesn't work:
                 // https://wc-ahba9see.c.sakurastorage.jp/40021/5a4bd340b2c95e674a1816f9adece947d06b1df2-100.jpg
                 //   https://wc-ahba9see.c.sakurastorage.jp/40021/5a4bd340b2c95e674a1816f9adece947d06b1df2-3000.jpg -- 404
@@ -7632,6 +7634,14 @@ var $$IMU_EXPORT$$;
                                                .replace(/.*\/unsafe\/smart\/(?:filters:[^/]*\/)?/, "")
                                                .replace(/.*\/unsafe\/fit-in\/smart\//, "")
                                                .replace(/.*\/unsafe\/(?:fit-in\/)?(?:[0-9]*x[0-9]*\/)?(?:center\/)?(?:smart\/)?/, "")));
+        }
+
+        if (domain === "cdn.uwants.com") {
+            // https://cdn.uwants.com/t/d72610/f/320x0/filters:extract_cover()/https://img.uwants.com/attachments/day_160614/20160614_9242d5cc975b38a704016qYhzjhCytoI.jpg
+            //   https://img.uwants.com/attachments/day_160614/20160614_9242d5cc975b38a704016qYhzjhCytoI.jpg
+            // https://cdn.uwants.com/t/03d004/f/800x0/https://img.uwants.com/attachments/day_160614/20160614_9242d5cc975b38a704016qYhzjhCytoI.jpg
+            //   https://img.uwants.com/attachments/day_160614/20160614_9242d5cc975b38a704016qYhzjhCytoI.jpg
+            return src.replace(/^[a-z]+:\/\/[^/]*\/+t\/+[0-9a-f]+\/+f\/+[0-9]+x[0-9]+\/+(?:filters:[^/]*\/+)?(https?:)/, "$1");
         }
 
         if (domain === "elsewhere.scdn3.secure.raxcdn.com") {
