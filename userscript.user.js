@@ -2917,6 +2917,9 @@ var $$IMU_EXPORT$$;
             // http://user-images.strikinglycdn.com/res/hrscywv4p/image/upload/c_limit,fl_lossy,h_9000,w_1200,f_auto,q_auto/1515559/534889_633117.jpg
             //   http://user-images.strikinglycdn.com/res/hrscywv4p/image/upload/1515559/534889_633117.jpg
             domain === "user-images.strikinglycdn.com" ||
+            // https://novel-img.prepics-cdn.com/image/upload/c_fill,w_156,h_222/p/c75f2ea15a148139b76ebdee2064737f8a4523c1/cover/ne7yeah9k1dsmwxmyuvn.jpg
+            //   https://novel-img.prepics-cdn.com/image/upload/p/c75f2ea15a148139b76ebdee2064737f8a4523c1/cover/ne7yeah9k1dsmwxmyuvn.jpg
+            domain === "novel-img.prepics-cdn.com" ||
             // https://images.moviepilot.com/images/c_limit,q_auto:good,w_600/uom2udz4ogmkncouu83q/beauty-and-the-beast-credit-disney.jpg
             // https://images.moviepilot.com/image/upload/c_fill,h_64,q_auto,w_64/lpgwdrrgc3m8duvg7zt2.jpg
             domain === "images.moviepilot.com") {
@@ -5301,6 +5304,10 @@ var $$IMU_EXPORT$$;
             (domain_nosub === "diariouno.com.ar" && /^static[0-9]*\./.test(domain) && src.indexOf("/media/") >= 0) ||
             // https://static-cdn.jtvnw.net/s3_vods/leansquad_/140652046/c72d3b49-5401-4df4-b22b-c8798f9cd2fc/thumb/custom0c0a29f5448f07b3-320x180.jpeg
             (domain === "static-cdn.jtvnw.net" && src.indexOf("/s3_vods/") >= 0) ||
+            // https://thugarmada.com/ta-files/2018/10/ayumi-hamasaki-japanese-trance-j-277x156.jpg
+            (domain_nowww === "thugarmada.com" && src.indexOf("/ta-files/") >= 0) ||
+            // https://flipwallpapers.com/wallpapers/cute-anime-hd-desktop-wallpaper-For-desktop-Wallpaper-200x113.jpg
+            (domain_nowww === "flipwallpapers.com" && src.indexOf("/wallpapers/") >= 0) ||
             // https://1.soompi.io/wp-content/blogs.dir/8/files/2015/09/HA-TFELT-Wonder-Girls-590x730.jpg -- doesn't work
             // https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2018/01/GTA-6-Female-Protag-796x417.jpg -- does work
             src.indexOf("/wp-content/blogs.dir/") >= 0 ||
@@ -6214,6 +6221,9 @@ var $$IMU_EXPORT$$;
             // http://p0.meituan.net/movie/86f093dd1c7dfb6306ab488c958be31d356758.png@200w_1l
             //   http://p0.meituan.net/movie/86f093dd1c7dfb6306ab488c958be31d356758.png
             domain === "p0.meituan.net" ||
+            // http://piccn.ihuaben.com/pic/mark/201903/1552277921814-Vi79361274_540-540.jpeg@200w
+            //   http://piccn.ihuaben.com/pic/mark/201903/1552277921814-Vi79361274_540-540.jpeg
+            (domain === "piccn.ihuaben.com" && src.indexOf("/pic/") >= 0) ||
             // http://img.sdxapp.com/say/source/12/d2/12d2bb054022c4fc1038f3e4d279353d.jpg@600w_400h
             //   http://img.sdxapp.com/say/source/12/d2/12d2bb054022c4fc1038f3e4d279353d.jpg
             domain === "img.sdxapp.com") {
@@ -6795,7 +6805,6 @@ var $$IMU_EXPORT$$;
             }
         }
 
-        // many broken URLs, need to revamp can_head so it doesn't redirect
         if (domain === "wc-ahba9see.c.sakurastorage.jp") {
             if (src.indexOf("/max-1200/") >= 0) {
                 // https://wc-ahba9see.c.sakurastorage.jp/max-1200/59530/e929c45f84ace23cf416c2b6fc1c1eacb34f20bf-350x600.jpg
@@ -15796,6 +15805,8 @@ var $$IMU_EXPORT$$;
         if ((domain_nosub === "shikimori.org" ||
             // https://moe.shikimori.one/system/animes/preview/14967.jpg?1561448019
             //   https://moe.shikimori.one/system/animes/original/14967.jpg?1561448019
+            // https://dere.shikimori.one/system/user_images/thumbnail/89335/336604.jpg
+            //   https://dere.shikimori.one/system/user_images/original/89335/336604.jpg
             domain_nosub === "shikimori.one") &&
             src.indexOf("/system/") >= 0) {
             // https://shikimori.org/animes/1887-lucky-star/cosplay
@@ -15805,7 +15816,7 @@ var $$IMU_EXPORT$$;
             // https://dere.shikimori.org/system/animes/preview/36949.jpg?1524536106
             //   https://dere.shikimori.org/system/animes/original/36949.jpg?1524536106
             // https://nyaa.shikimori.org/system/cosplay_images/original/26810.jpg?1306746150
-            return src.replace(/\/[a-z]*\/([0-9]+\.[^/.]*)$/, "/original/$1");
+            return src.replace(/\/[a-z]+\/+((?:[0-9]+\/+)?[0-9]+\.[^/.]*)$/, "/original/$1");
         }
 
         if (domain === "assets.survivalinternational.org") {
@@ -16668,7 +16679,10 @@ var $$IMU_EXPORT$$;
             };
         }
 
-        if (domain_nosub === "lithium.com" && domain.indexOf(".i.lithium.com") >= 0) {
+        if (domain_nosub === "lithium.com" && domain.indexOf(".i.lithium.com") >= 0 ||
+            // https://nasz.orange.pl/t5/image/serverpage/image-id/1694i6BBA12E8BB8E9254/image-size/small/is-moderation-mode/true?v=1.0&px=400
+            //   https://nasz.orange.pl/t5/image/serverpage/image-id/1694i6BBA12E8BB8E9254?v=1.0
+            domain === "nasz.orange.pl") {
             // https://spotify.i.lithium.com/t5/image/serverpage/image-id/84635i3C36019474421E94/image-size/large?v=1.0&px=999
             //   https://spotify.i.lithium.com/t5/image/serverpage/image-id/84635i3C36019474421E94/image-size/original?v=1.0
             var v = src.replace(/.*[?&](v=[^&]*).*/, "$1");
@@ -16678,7 +16692,7 @@ var $$IMU_EXPORT$$;
                 v = "?" + v;
 
             return {
-                url: src.replace(/\/image-size\/[^/]*(?:\?.*)?$/, "/image-size/original" + v),
+                url: src.replace(/(\/image-id\/+[0-9]+i[0-9A-F]+)\/+image-size\/.*(?:\?.*)?$/, "$1" + v),
                 head_wrong_contentlength: true
             };
         }
@@ -21928,6 +21942,8 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
              domain_nosub === "hentai-image.com" ||
              domain_nosub === "porn-image-xxx.com" ||
              domain_nosub === "porn-movie-xxx.com" ||
+             // https://static4.aniimg.com/upload/20181112/5777/m/Y/C/p=305/mYCmEF.jpg
+             //   https://static4.aniimg.com/upload/20181112/5777/m/Y/C/mYCmEF.jpg
              // https://static2.aniimg.com/upload/20170517/473/R/M/N/p=700/RMNFEF.jpg -- 700x393
             //   https://static2.aniimg.com/upload/20170517/473/R/M/N/RMNFEF.jpg -- 1920x1080
              domain_nosub === "aniimg.com") &&
@@ -21943,7 +21959,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
 
             return src
                 .replace(/(\/+[0-9]+\/+)(?:[a-z]+=[^/]*\/+){1,}([0-9]+\.[^/.]*)$/, "$1$2")
-                .replace(/(\/+[0-9A-Z]+\/+)(?:[a-z]+=[^/]*\/+){1,}([0-9A-Z]+\.[^/.]*)$/, "$1$2");
+                .replace(/(\/+[0-9A-Z]+\/+)(?:[a-z]+=[^/]*\/+){1,}([0-9A-Za-z]+\.[^/.]*)$/, "$1$2");
         }
 
         if (domain === "d1in1v57myx5v.cloudfront.net" ||
@@ -24737,7 +24753,13 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
         if (domain_nosub === "hothag.com" && domain.match(/^cdn[0-9]*\./)) {
             // https://cdn1.hothag.com/media/galleries_160/1/1/755/24856.jpg
             //   https://cdn1.hothag.com/media/galleries/1/1/755/24856.jpg
-            return src.replace(/\/media\/galleries_[0-9]+\//, "/media/galleries/");
+            // https://cdn1.hothag.com/media/gifs_160/1/1/774.jpg
+            //   https://cdn1.hothag.com/media/gifs//1/1/774.gif
+            newsrc = src.replace(/(\/media\/+(?:galleries|images))_[0-9]+\//, "$1/");
+            if (newsrc !== src)
+                return add_full_extensions(newsrc);
+
+            return src.replace(/(\/media\/+gifs)_[0-9]+(\/+[0-9/]+)\.[^/.]*(?:[?#].*)?$/, "$1/$2.gif");
         }
 
         if ((domain_nosub === "1zoom.ru" ||
@@ -24892,6 +24914,9 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             // http://www.tokyoteenies.com/media/thumbs/5/9/c/a/3/59ca3d04d54c4/117x117/0.jpg
             //   http://www.tokyoteenies.com/media/galleries/5/9/c/a/3/59ca3d04d54c4/0.jpg
             domain_nowww === "tokyoteenies.com" ||
+            // https://cdn.smutie.com/media/thumbs/5/8/1/8/8/58188eed70bea/1180x660/2706.jpg
+            //   https://cdn.smutie.com/media/galleries/5/8/1/8/8/58188eed70bea/2706.jpg
+            domain === "cdn.smutie.com" ||
             // http://www.galleryportal.com/media/thumbs/5/7/d/5/2/57d5291f6faa3/117x117/47.jpg
             //   http://www.galleryportal.com/media/galleries/5/7/d/5/2/57d5291f6faa3/47.jpg
             domain_nowww === "galleryportal.com") {
@@ -35835,6 +35860,57 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/\.md(\.[^/.]*)(?:[?#].*)?$/, "$1");
         }
 
+        if (domain_nowww === "rin-city.com") {
+            // https://rin-city.com/images/previews/Immortal/thumb_Immortal_37.jpg
+            //   https://rin-city.com/images/previews/Immortal/full_Immortal_37.jpg
+            return src.replace(/(\/images\/+previews\/+[^/]*\/+)thumb_/, "$1full_");
+        }
+
+        if (domain_nowww === "mypornstarbook.net") {
+            // https://www.mypornstarbook.net/pornstars/b/black_sonja/gallery07/thumbnails/tn01.jpg
+            //   https://www.mypornstarbook.net/pornstars/b/black_sonja/gallery07/images/01.jpg
+            return src.replace(/\/thumbnails\/+tn([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/images/$1");
+        }
+
+        if (domain_nowww === "picgym.net") {
+            // https://picgym.net/img/anime_lovers20056177077742.jpg?aHR0cHM6Ly9zY29udGVudC1mcnQzLTIuY2RuaW5zdGFncmFtLmNvbS92cC9iYzQwNzNhZjVlNmYyYTYzNGE2MTI4MjYyNWIwOWRkZi81RDlDNjU2OS90NTEuMjg4NS0xNS9lMzUvNDYxODI5MjZfMjUyNTMzMDM2NzUzOTYwNV8xODU0Mjg4ODQwNzQ0ODIwNDc2X24uanBnP19uY19odD1zY29udGVudC1mcnQzLTIuY2RuaW5zdGFncmFtLmNvbSZpZ19jYWNoZV9rZXk9TVRrek5qSXpOVGd5TXpVd05qazBNVEUxTkElM0QlM0QuMg==
+            //   https://scontent-frt3-2.cdninstagram.com/vp/bc4073af5e6f2a634a61282625b09ddf/5D9C6569/t51.2885-15/e35/46182926_2525330367539605_1854288840744820476_n.jpg?_nc_ht=scontent-frt3-2.cdninstagram.com&ig_cache_key=MTkzNjIzNTgyMzUwNjk0MTE1NA%3D%3D.2
+            match = src.match(/^[a-z]+:\/\/[^/]*\/+img\/+[^/?]*\?([^-/._]{30,})(?:#.*)?$/);
+            if (match) {
+                return atob(match[1]);
+            }
+        }
+
+        if (domain === "acgn-cdn.sunteorum.com") {
+            // http://acgn-cdn.sunteorum.com/pixiv-img/2018/57bacfda8dec2df21c42e6d34af2ca3b.jpg_800w.jpg -- upscaled?
+            //   http://acgn-cdn.sunteorum.com/pixiv-img/2018/57bacfda8dec2df21c42e6d34af2ca3b.jpg
+            return src.replace(/(\.[A-Za-z0-9]+)_[0-9]+[wh]\.[^/.]*(?:[?#].*)?$/, "$1");
+        }
+
+        if (domain === "pratilipi.s.llnwi.net" && /\/pratilipi\/+(?:content\/+image|cover)\?/.test(src)) {
+            // https://pratilipi.s.llnwi.net/pratilipi/content/image?pratilipiId=6755373519604062&name=26431a9c-70d2-4ff0-a492-508bc92fe6c4&width=720
+            //   https://pratilipi.s.llnwi.net/pratilipi/content/image?pratilipiId=6755373519604062&name=26431a9c-70d2-4ff0-a492-508bc92fe6c4
+            // https://pratilipi.s.llnwi.net/pratilipi/cover?pratilipiId=6755373519974408&version=aaae2367-de27-4ba9-a6c6-e2123fa615c6&width=620&enforceAspectRatio=false
+            //   https://pratilipi.s.llnwi.net/pratilipi/cover?pratilipiId=6755373519974408&version=aaae2367-de27-4ba9-a6c6-e2123fa615c6
+            id = url.searchParams.get("pratilipiId");
+            var name = url.searchParams.get("name");
+            var version = url.searchParams.get("version");
+            if (id) {
+                var newquery = src.replace(/\?.*/, "?pratilipiId=" + id + "&");
+
+                if (name) {
+                    return newquery + "name=" + name;
+                } else if (version) {
+                    return newquery + "version=" + version;
+                }
+            }
+        }
+
+        if (domain_nowww === "forumhentai.net") {
+            // http://forumhentai.net/imagehosting/thum_4442752bed1dcdb952.jpg
+            //   http://forumhentai.net/imagehosting/4442752bed1dcdb952.jpg
+            return src.replace(/\/imagehosting\/+thum_/, "/imagehosting/");
+        }
 
 
 
