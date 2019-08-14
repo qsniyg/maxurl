@@ -2,7 +2,7 @@
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
 // @version      0.9.7
-// @description  Finds larger or original versions of images for 5000+ websites
+// @description  Finds larger or original versions of images for 5100+ websites
 // @author       qsniyg
 // @homepageURL  https://qsniyg.github.io/maxurl/options.html
 // @supportURL   https://github.com/qsniyg/maxurl/issues
@@ -13452,10 +13452,19 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/galleries\/[^/]*\//, "/galleries/full/");
         }
 
-        if (domain === "k5x5n5g8.ssl.hwcdn.net") {
+        if (domain === "k5x5n5g8.ssl.hwcdn.net" ||
+            // https://k4b8k3x5.ssl.hwcdn.net/content/170846/cute-doll-hottie-higurashi-rin-shows-her-attractive-young-body-in-miracle-miko-1-01_w400.jpg
+            //   https://k4b8k3x5.ssl.hwcdn.net/content/170846/cute-doll-hottie-higurashi-rin-shows-her-attractive-young-body-in-miracle-miko-1-01.jpg
+            domain === "k4b8k3x5.ssl.hwcdn.net" ||
+            // https://f6j6u6m9.ssl.hwcdn.net/content/190631/mesmerizing-young-redhead-sensualy-presents-her-naked-petite-body-in-the-kitchen-01_w400.jpg
+            //   https://f6j6u6m9.ssl.hwcdn.net/content/190631/mesmerizing-young-redhead-sensualy-presents-her-naked-petite-body-in-the-kitchen-01.jpg
+            domain === "f6j6u6m9.ssl.hwcdn.net" ||
+            // https://c9w8v3m5.ssl.hwcdn.net/content/130305/bree-glamorous-01_w400.jpg
+            //   https://c9w8v3m5.ssl.hwcdn.net/content/130305/bree-glamorous-01.jpg
+            domain === "c9w8v3m5.ssl.hwcdn.net") {
             // https://k5x5n5g8.ssl.hwcdn.net/content/181035/0013-03_w400.jpg
             //   https://k5x5n5g8.ssl.hwcdn.net/content/181035/0013-03.jpg
-            return src.replace(/(\/content\/+[0-9]+\/+[0-9]+-[0-9]+)_[wh][0-9]+(\.[^/.]*)(?:[?#].*)?$/,
+            return src.replace(/(\/content\/+[0-9]+\/+[^/]+-[0-9]+)_[wh][0-9]+(\.[^/.]*)(?:[?#].*)?$/,
                                "$1$2");
         }
 
@@ -22448,6 +22457,9 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             // http://fhg.avidolz.com/Idol_Collection_Mio_Kanna/gravure/scene1a/avidolz_tn_01.jpg
             //   http://fhg.avidolz.com/Idol_Collection_Mio_Kanna/gravure/scene1a/avidolz_01.jpg
             domain_nosub === "avidolz.com" ||
+            // https://ca.pbabes.com/ftvgirls/0757/tn_01.jpg
+            //   https://ca.pbabes.com/ftvgirls/0757/01.jpg
+            domain_nosub === "pbabes.com" ||
             // http://pornodontstop.com/gallery/fucasvz/7980/tn_002.jpg
             //   http://pornodontstop.com/gallery/fucasvz/7980/002.jpg
             domain_nosub === "pornodontstop.com") {
@@ -23328,6 +23340,9 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
         }
 
         if (domain_nowww === "imageweb.ws" ||
+            // http://www.pezporn.com/media/thumbs_200/4/3644/171835.jpg
+            // http://www.pezporn.com/media/images_640/4/vintage-pantyhose-sex/vintage-pantyhose-sex-171835.jpg
+            domain_nowww === "pezporn.com" ||
             // http://www.hardcoreluv.com/media/images_640/2/pics-of-upskirt-sex/pics-of-upskirt-sex-119145.jpg
             //   http://www.hardcoreluv.com/media/images/2/pics-of-upskirt-sex/pics-of-upskirt-sex-119145.jpg
             domain_nowww === "hardcoreluv.com" ||
@@ -23337,7 +23352,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             //   https://www.imageweb.ws/media/images/13/lydia-reed/lydia-reed-1435652.jpg
             // http://www.pussyspot.net/media/images_640/1/mandy-tyler/mandy-tyler-317777.jpg
             //   http://www.pussyspot.net/media/images/1/mandy-tyler/mandy-tyler-317777.jpg
-            return src.replace(/\/media\/images_[0-9]+\//, "/media/images/");
+            return src.replace(/\/media\/+images_[0-9]+\//, "/media/images/");
         }
 
         if ((domain === "t.imageweb.ws" ||
@@ -23592,12 +23607,15 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             // https://cdnwg.youx.xxx/galleries/gthumb/3/918/3918216_20a9a01_320x_.jpg
             //   https://cdnwg.youx.xxx/galleries/content/3/918/3918216_20a9a01.jpg
             domain === "cdnwg.youx.xxx" ||
+            // https://cdncontent.xxxwaffle.com/gthumb/1/812/1812867_9141b65_300x_.jpg
+            //   https://cdncontent.xxxwaffle.com/content/1/812/1812867_9141b65.jpg
+            domain === "cdncontent.xxxwaffle.com" ||
             // https://cdn.pornpictureshq.com/galleries/gthumb/5/608/5608634_a66a64b_2400x_.jpg -- stretched
             //   https://cdn.pornpictureshq.com/galleries/content/5/608/5608634_a66a64b.jpg
             domain === "cdn.pornpictureshq.com") {
             // https://content.wafflegirl.com/galleries/gthumb/4/372/4372786_feeb209__x180.jpg
             //   https://content.wafflegirl.com/galleries/content/4/372/4372786_feeb209.jpg
-            return src.replace(/\/galleries\/gthumb\/(.*)(?:__x[0-9]+|_[0-9]+x(?:[0-9]+)?_?)(\.[^/.]*)$/, "/galleries/content/$1$2");
+            return src.replace(/\/gthumb\/(.*)(?:__x[0-9]+|_[0-9]+x(?:[0-9]+)?_?)(\.[^/.]*)$/, "/content/$1$2");
         }
 
         if (domain_nowww === "anawalls.com") {
@@ -25546,6 +25564,9 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             // https://upicsz.com/pics/665/_emma-watson-bling-ring.jpg
             //   https://upicsz.com/pics/665/emma-watson-bling-ring.jpg
             domain_nowww === "upicsz.com" ||
+            // http://xpicse.com/pics/3137/_hot-sexy-asian-cute-japanese-girl.jpg
+            //   http://xpicse.com/pics/3137/hot-sexy-asian-cute-japanese-girl.jpg
+            domain_nowww === "xpicse.com" ||
             // https://repicsx.com/pics/1342/_steampunk-girl.jpg
             //   https://repicsx.com/pics/1342/steampunk-girl.jpg
             domain_nowww === "repicsx.com") {
@@ -35700,6 +35721,9 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             // http://www.geodomehome.org/images/780-best-images-about-cosplay-on-pinterest__aHR0cHM6Ly9zLW1lZGlhLWNhY2hlLWFrMC5waW5pbWcuY29tLzczNngvMDQvYzEvNzEvMDRjMTcxNjVhMzM2ZDE0MDY2OTlmODg3MzgyMGZiZjgtLWN1dGUtY29zcGxheS1hbmltZS1jb3NwbGF5LmpwZw==.jpg
             //   https://i.pinimg.com/originals/04/c1/71/04c17165a336d1406699f8873820fbf8--cute-cosplay-anime-cosplay.jpg
             domain_nowww === "geodomehome.org" ||
+            // http://www.soamasterclass.com/images/rainbow-s-jisook-is-the-sexy-cover-model-for-maxim__aHR0cHM6Ly9jZG4xLmxvY2tlcmRvbWUuY29tL3VwbG9hZHMvYjE5Mzc5YTJiM2M5NTc4ZTI1Zjg0MTA0Y2YyNjE2NDE0ZmQ3N2M5ZDlmMDNlMTM5MmExMmM1ZGVjNDA1YTU1Yl9sYXJnZQ==.jpg
+            //   https://cdn1.lockerdome.com/uploads/b19379a2b3c9578e25f84104cf2616414fd77c9d9f03e1392a12c5dec405a55b_:original
+            domain_nowww === "soamasterclass.com" ||
             // http://www.edu.kustantiblogs.web.id/images/showing-porn-images-for-hisui-nightshade-porn-www__aHR0cHM6Ly9pLnBpbmltZy5jb20vb3JpZ2luYWxzL2M4LzI4L2QyL2M4MjhkMjBhODYwMjUyZjAwOGU3MjUyM2YwNGU2YWRiLmpwZw==.jpg
             //   https://i.pinimg.com/originals/c8/28/d2/c828d20a860252f008e72523f04e6adb.jpg
             domain === "www.edu.kustantiblogs.web.id") {
@@ -35724,6 +35748,14 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             // http://www.soumeiwang.com/img/aHR0cDovL2ltZzQuaW1ndG4uYmRpbWcuY29tL2l0L3U9OTUzMDIzNjAyLDM1ODIwMzU5MTgmZm09MTUmZ3A9MC5qcGc=.jpg
             //   http://img4.imgtn.bdimg.com/it/u=953023602,3582035918&fm=15&gp=0.jpg
             newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+img\/+([^-/._]{30,})\.[^/.]*(?:[?#].*)?$/, "$1");
+            if (newsrc !== src)
+                return atob(newsrc);
+        }
+
+        if (domain_nowww === "kabelversand.info") {
+            // https://kabelversand.info/pics/aHR0cHM6Ly90c2UyLm1tLmJpbmcubmV0L3RoP2lkPU9JUC5mX1BlNFo1aHBCTkF4V2tPckF3Q25BSGFGMyZycz0xJnBpZD0xNS4x
+            //   https://tse2.mm.bing.net/th?id=OIP.f_Pe4Z5hpBNAxWkOrAwCnAHaF3
+            newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+pics\/+([^-/._]{30,})(?:[?#].*)?$/, "$1");
             if (newsrc !== src)
                 return atob(newsrc);
         }
@@ -35912,6 +35944,29 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/\/imagehosting\/+thum_/, "/imagehosting/");
         }
 
+        if (domain_nowww === "mfqqx.com") {
+            // http://www.mfqqx.com/d/file/2015/03/smallc2f1e499db5e2ad389b113cbbb5532df1425434224.jpg
+            //   http://www.mfqqx.com/d/file/2015/03/c2f1e499db5e2ad389b113cbbb5532df.jpg
+            return src.replace(/(\/d\/+file\/+[0-9]{4}\/+[0-9]{2}\/+)small([0-9a-f]{32})[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2$3");
+        }
+
+        if (domain_nowww === "between-legs.com") {
+            // http://www.between-legs.com/content/galleries/53/3453/thumbs/002.jpg
+            //   http://www.between-legs.com/content/galleries/53/3453/full/002.jpg
+            return src.replace(/(\/content\/+galleries\/+[0-9]+\/+[0-9]+\/+)thumbs\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1full/$2")
+        }
+
+        if (domain_nowww === "babeunion.com") {
+            // http://www.babeunion.com/gallery/bree-daniels-on-x-art-looking-glamorous/thumbs/bree-daniels-on-x-art-looking-glamorous-001.jpg
+            //   http://www.babeunion.com/gallery/bree-daniels-on-x-art-looking-glamorous/bree-daniels-on-x-art-looking-glamorous-001.jpg
+            return src.replace(/(\/gallery\/+[^/]*\/+)thumbs\/+/, "$1");
+        }
+
+        if (domain_nowww === "bustyparade.com") {
+            // http://www.bustyparade.com/thumbs/galls/1687823/2.jpg
+            //   http://www.bustyparade.com/galls/1687823/2.jpg
+            return src.replace(/\/thumbs\/+galls\//, "/galls/");
+        }
 
 
 
