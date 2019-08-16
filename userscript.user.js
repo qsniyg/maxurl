@@ -2732,6 +2732,9 @@ var $$IMU_EXPORT$$;
             //   http://images.thehollywoodgossip.com/iu/s--09NH5dFF--/v1375379663/rihanna-natural-hair.jpg
             //   http://images.thehollywoodgossip.com/iu/v1375379663/rihanna-natural-hair.jpg -- also works
             domain === "images.thehollywoodgossip.com" ||
+            // https://cdn.apartmenttherapy.info/image/fetch/f_auto,q_auto:eco/https%3A%2F%2Fstorage.googleapis.com%2Fgen-atmedia%2F3%2F2018%2F03%2F43997be9fb4a1acca400bfea464fe31701f17157.jpeg
+            //   https://storage.googleapis.com/gen-atmedia/3/2018/03/43997be9fb4a1acca400bfea464fe31701f17157.jpeg
+            domain === "cdn.apartmenttherapy.info" ||
             domain === "images.taboola.com") {
             // https://res.cloudinary.com/emazecom/image/fetch/c_limit,a_ignore,w_320,h_200/https%3A%2F%2Fimg-aws.ehowcdn.com%2F877x500p%2Fs3.amazonaws.com%2Fcme_public_images%2Fwww_ehow_com%2Fi.ehow.com%2Fimages%2Fa04%2Fbd%2Fic%2Fchemical-energy-work-3.1-800x800.jpg
             // https://images.taboola.com/taboola/image/fetch/f_jpg%2Cq_auto%2Cc_fill%2Cg_faces:auto%2Ce_sharpen/https%3A%2F%2Fwww.gannett-cdn.com%2F-mm-%2F2e56892f6a349ad47192b530425d443fb365e5e9%2Fr%3Dx1803%26c%3D3200x1800%2Fhttps%2Fmedia.gannett-cdn.com%2F37861007001%2F37861007001_5735420050001_5735409691001-vs.jpg%3FpubId%3D37861007001
@@ -2920,6 +2923,9 @@ var $$IMU_EXPORT$$;
             // https://novel-img.prepics-cdn.com/image/upload/c_fill,w_156,h_222/p/c75f2ea15a148139b76ebdee2064737f8a4523c1/cover/ne7yeah9k1dsmwxmyuvn.jpg
             //   https://novel-img.prepics-cdn.com/image/upload/p/c75f2ea15a148139b76ebdee2064737f8a4523c1/cover/ne7yeah9k1dsmwxmyuvn.jpg
             domain === "novel-img.prepics-cdn.com" ||
+            // https://cdn.apartmenttherapy.info/image/upload/f_jpg,q_auto:eco,c_fill,g_auto,w_1500,ar_16:9/k/Photo/Recipes/2019-07-recipe-farmers-market-breakfast-bread/vegetable_quick_bread_4.12
+            //   https://cdn.apartmenttherapy.info/image/upload/k/Photo/Recipes/2019-07-recipe-farmers-market-breakfast-bread/vegetable_quick_bread_4.12
+            domain === "cdn.apartmenttherapy.info" ||
             // https://images.moviepilot.com/images/c_limit,q_auto:good,w_600/uom2udz4ogmkncouu83q/beauty-and-the-beast-credit-disney.jpg
             // https://images.moviepilot.com/image/upload/c_fill,h_64,q_auto,w_64/lpgwdrrgc3m8duvg7zt2.jpg
             domain === "images.moviepilot.com") {
@@ -5308,6 +5314,8 @@ var $$IMU_EXPORT$$;
             (domain_nowww === "thugarmada.com" && src.indexOf("/ta-files/") >= 0) ||
             // https://flipwallpapers.com/wallpapers/cute-anime-hd-desktop-wallpaper-For-desktop-Wallpaper-200x113.jpg
             (domain_nowww === "flipwallpapers.com" && src.indexOf("/wallpapers/") >= 0) ||
+            // http://hanamaru-photo.com/common/images/2019/08/EA62qgAU0AEXbDT-200x300.jpg
+            (domain_nowww === "hanamaru-photo.com" && /\/common\/+images\//.test(src)) ||
             // https://1.soompi.io/wp-content/blogs.dir/8/files/2015/09/HA-TFELT-Wonder-Girls-590x730.jpg -- doesn't work
             // https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2018/01/GTA-6-Female-Protag-796x417.jpg -- does work
             src.indexOf("/wp-content/blogs.dir/") >= 0 ||
@@ -35968,6 +35976,11 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/\/thumbs\/+galls\//, "/galls/");
         }
 
+        if (domain === "assets.marthastewart.com") {
+            // https://assets.marthastewart.com/styles/wmax-1500/d24/cheese-bread-222-d113085/cheese-bread-222-d113085_horiz.jpg?itok=6TbcHXdZ
+            //   https://assets.marthastewart.com/d24/cheese-bread-222-d113085/cheese-bread-222-d113085_horiz.jpg?itok=6TbcHXdZ
+            return src.replace(/(:\/\/[^/]*\/+)styles\/+[^/]*\/+/, "$1");
+        }
 
 
 
