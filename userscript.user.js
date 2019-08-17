@@ -5316,6 +5316,8 @@ var $$IMU_EXPORT$$;
             (domain_nowww === "flipwallpapers.com" && src.indexOf("/wallpapers/") >= 0) ||
             // http://hanamaru-photo.com/common/images/2019/08/EA62qgAU0AEXbDT-200x300.jpg
             (domain_nowww === "hanamaru-photo.com" && /\/common\/+images\//.test(src)) ||
+            // http://p.elle.bg/s/a/saweetie-and-quavo-of-migos-attend-the-2019-billboard-music-news-photo-1146346699-1556753469-123056-680x0.jpg
+            domain === "p.elle.bg" ||
             // https://1.soompi.io/wp-content/blogs.dir/8/files/2015/09/HA-TFELT-Wonder-Girls-590x730.jpg -- doesn't work
             // https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2018/01/GTA-6-Female-Protag-796x417.jpg -- does work
             src.indexOf("/wp-content/blogs.dir/") >= 0 ||
@@ -7907,6 +7909,8 @@ var $$IMU_EXPORT$$;
             domain_nowww === "cosmopolitan.com.hk" ||
             // https://www.elle.com.hk/var/ellehk/storage/images/fashion/style_insight/the-most-memorable-oscar-dresses-of-all-time/margot-robbie-2016/22000015-1-chi-HK/MARGOT-ROBBIE-2016_img_885_590.jpg
             //   https://www.elle.com.hk/var/ellehk/storage/images/fashion/style_insight/the-most-memorable-oscar-dresses-of-all-time/margot-robbie-2016/22000015-1-chi-HK/MARGOT-ROBBIE-2016.jpg
+            // https://www.elle.com.hk/var/ellehk/storage/images/fashion/celeb_style/billboard-music-awards-red-carpet-dresses-2019/node_1745454/29920879-1-chi-HK/Chantel-jeffries-attends-the-2019-billboard-music-awards-at-news-photo-1140612654-1556748941_img_885_590.jpg
+            //   https://www.elle.com.hk/var/ellehk/storage/images/fashion/celeb_style/billboard-music-awards-red-carpet-dresses-2019/node_1745454/29920879-1-chi-HK/Chantel-jeffries-attends-the-2019-billboard-music-awards-at-news-photo-1140612654-1556748941.jpg
             domain_nowww === "elle.com.hk" ||
             // http://m.vogue.de/var/vogue/storage/images/home/vogue/fashion-shows/kollektionen/fruehjahr-2017-hc/paris/alexandre-vauthier/runway/_arc0726/23291608-1-ger-DE/_arc0726_v540x910.jpg
             //   https://m.vogue.de/var/vogue/storage/images/home/vogue/fashion-shows/kollektionen/fruehjahr-2017-hc/paris/alexandre-vauthier/runway/_arc0726/23291608-1-ger-DE/_arc0726.jpg
@@ -7947,7 +7951,7 @@ var $$IMU_EXPORT$$;
             // https://img3.grazia.fr/var/grazia/storage/images/article/cinema-solene-rigot-grande-petite-849768/13583494-1-fre-FR/Cinema-Solene-Rigot-grande-petite_exact1900x908_l.jpg
             //   https://img3.grazia.fr/var/grazia/storage/images/article/cinema-solene-rigot-grande-petite-849768/13583494-1-fre-FR/Cinema-Solene-Rigot-grande-petite.jpg
             return src
-                .replace(/(:\/\/[^/]*\/var\/+(?:[^/]*\/+)?storage\/+images\/+.*\/[^/]+?)(?:_[a-z][^-/._]*)?(\.[^/.?]*)(?:[?#].*)?$/, "$1$2")
+                .replace(/(:\/\/[^/]*\/var\/+(?:[^/]*\/+)?storage\/+images\/+.*\/[^/]+?)(?:_[a-z][^-/._]*(?:_[0-9]+){0,})?(\.[^/.?]*)(?:[?#].*)?$/, "$1$2")
                 .replace(/\/storage\/+images\/+_aliases\/+[^/]*\/+/, "/storage/images/");
             //return src.replace(/_(?:article|large|medium|photo_galleries|more_in_thumbnail|square[0-9]*|cover_image)(?:_[a-z_]*)?(\.[^/.]*)$/, "$1");
             //return src.replace(/_image_size_[0-9]+_x(?:_[0-9]+)?(\.[^/.]*)$/, "$1");
@@ -11716,6 +11720,9 @@ var $$IMU_EXPORT$$;
         }
 
         if (domain === "pix.avaxnews.com" ||
+            // https://pix.avax.news/avaxnews/7d/39/0005397d_medium.jpeg
+            //   https://pix.avax.news/avaxnews/7d/39/0005397d.jpeg
+            domain === "pix.avax.news" ||
             // https://pxhst.co/avaxhome/90/ce/0029ce90_medium.jpeg
             //   https://pxhst.co/avaxhome/90/ce/0029ce90.jpeg
             domain_nowww === "pxhst.co") {
@@ -27523,6 +27530,9 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
         if (domain === "conteudo.imguol.com.br") {
             // https://conteudo.imguol.com.br/c/entretenimento/2e/2018/05/17/gta-v-1526592838928_v2_1170x540.jpgx -- low quality
             //   https://conteudo.imguol.com.br/c/entretenimento/2e/2018/05/17/gta-v-1526592838928_v2_1170x540.jpg
+            // some tests:
+            // 1x1 = square, "1" means the side will be automatically filled, max of 1500 on width (1920 on height), 16x9, 4x3, 0 doesn't work,
+            // omitting doesn't work, "x" doesn't work
             return src.replace(/(\/[^/]*\.[^/.?#]*)x(?:[?#].*)?$/, "$1");
         }
 
@@ -29561,8 +29571,11 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
         if (domain_nowww === "arasale.com") {
             // http://www.arasale.com/photo3/lily-collins/01_small.jpg
             //   http://www.arasale.com/photo3/lily-collins/01.jpg
-            return src.replace(/(\/photo[0-9]*\/+[^/]*\/+[0-9]+)_small(\.[^/.]*)(?:[?#].*)?$/,
-                               "$1$2");
+            // http://www.arasale.com/photo/red-carpet/billboard-music-awards2019/sabrina-carpenter_small.jpg
+            //   http://www.arasale.com/photo/red-carpet/billboard-music-awards2019/sabrina-carpenter.jpg
+            // http://www.arasale.com/photo/red-carpet/billboard-music-awards2019/taylor-swift_small1.jpg
+            //   http://www.arasale.com/photo/red-carpet/billboard-music-awards2019/taylor-swift.jpg
+            return src.replace(/(\/photo[0-9]*\/.*)_small[0-9]*(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
         }
 
         if (domain_nowww === "imgth.com") {
@@ -30483,6 +30496,9 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
         }
 
         if (domain_nowww === "zurnal.mk" ||
+            // http://www.harpersbazaar.rs/image.php/05.jpg?width=372&height=660&cropratio=372:660&image=http://www.harpersbazaar.rs/chest/gallery/billboard-music-awards-2019-stajlinzi-sa-crvenog-tepiha/05.jpg
+            //   http://www.harpersbazaar.rs/chest/gallery/billboard-music-awards-2019-stajlinzi-sa-crvenog-tepiha/05.jpg
+            domain_nowww === "harpersbazaar.rs" ||
             // https://www.moviegoers.me/images/thumbs/image.php/image_1a452d1bf7b49881837cf6524cde4173.jpg?width=526&height=773&image=/public/images/movie_images/aquaman-duo2018-11-24-12-14-02.jpg
             //   https://www.moviegoers.me/public/images/movie_images/aquaman-duo2018-11-24-12-14-02.jpg
             domain_nowww === "moviegoers.me") {
@@ -35982,6 +35998,40 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/(:\/\/[^/]*\/+)styles\/+[^/]*\/+/, "$1");
         }
 
+        if (domain === "images.plurk.com") {
+            // https://images.plurk.com/mx_2e87RAOHZGnf8AxYTECQ6o.jpg
+            //   https://images.plurk.com/2e87RAOHZGnf8AxYTECQ6o.jpg
+            return src.replace(/(^[a-z]+:\/\/[^/]*\/+)mx_([^/.]*\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain === "cdnph.upi.com") {
+            // https://cdnph.upi.com/topic/ph/9447/upi/5f28f5addc0bbe79fe39ee860993f933/Jennifer_Hudson_0.jpg
+            //   https://cdnph.upi.com/pv/upi/5f28f5addc0bbe79fe39ee860993f933/Jennifer_Hudson_0.jpg
+            // https://cdnph.upi.com/upi/e3fc292c31e799e184a8bc5f29d97d8a/Jennifer-Hudson-attends-Vanity-Fair-Oscar-Party-2019_14.jpg
+            //   https://cdnph.upi.com/pv/upi/e3fc292c31e799e184a8bc5f29d97d8a/Jennifer-Hudson-attends-Vanity-Fair-Oscar-Party-2019_14.jpg
+            return src.replace(/(:\/\/[^/]*\/+)(?:topic\/+ph\/+[0-9]+\/+upi\/+|upi\/+)/, "$1pv/upi/");
+        }
+
+        if (domain_nowww === "glamour.bg") {
+            // https://glamour.bg/pictures/pic_small/pi_files/2018/04/17/13/GettyImages-926320646.jpg
+            //   https://glamour.bg/pictures/pic_big/pi_files/2018/04/17/13/GettyImages-926320646.jpg
+            return src.replace(/\/pictures\/+pic_small\/+/, "/pictures/pic_big/");
+        }
+
+        if (domain === "adminhonna.elwatannews.com" ||
+            // https://honnaimg.elwatannews.com/image_archive/840x601/1628144221556819907.jpg
+            //   https://honnaimg.elwatannews.com/image_archive/original/1628144221556819907.jpg
+            domain === "honnaimg.elwatannews.com") {
+            // https://adminhonna.elwatannews.com/uploads/image_archive/original_lower_quality/17177940351556819897.jpg
+            //   https://adminhonna.elwatannews.com/uploads/image_archive/original/17177940351556819897.jpg
+            return src.replace(/\/image_archive\/+(?:original_lower_quality|[0-9]+x[0-9]+)\/+/, "/image_archive/original/");
+        }
+
+        if (domain_nowww === "yeswedding.com.br") {
+            // http://yeswedding.com.br/ctrl_public/arqs/2019/5/2/842453235_big.jpg
+            //   http://yeswedding.com.br/ctrl_public/arqs/2019/5/2/842453235.jpg
+            return src.replace(/(\/[0-9]+)_big(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
 
 
 
