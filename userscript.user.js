@@ -4623,6 +4623,10 @@ var $$IMU_EXPORT$$;
             (domain_nowww === "girlfriend.com.au" && src.indexOf("/media/") >= 0) ||
             // http://imgs.ngaotruyen.com//LibIma/TruyenChu/anh-yeu-em-co-be-ngoc-a.jpg?width=160&quality=95&v=41
             domain === "imgs.ngaotruyen.com" ||
+            // https://d1ywb8dvwodsnl.cloudfront.net/files.fuzoku.jp/img/shop/eroma/diary/57347859/thumbnail_57347859_1563667048_0.jpeg?width=160&height=240&type=resize&quality=80
+            (domain === "d1ywb8dvwodsnl.cloudfront.net" && /\/files\.fuzoku\.jp\/+img\//.test(src)) ||
+            // https://www.menshealth.com.au/media/10567/rihanna.jpg?width=606&mode=crop&center=0.0,0.0
+            (domain_nowww === "menshealth.com.au" && src.indexOf("/media/") >= 0) ||
             // http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
             // https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
             src.match(/\/demandware\.static\//) ||
@@ -34309,7 +34313,10 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/\/resize_cache\/+(uploads\/+.*)-(?:small|seo)(\.[^/.]*)(?:[?#].*)?$/, "/$1$2");
         }
 
-        if (domain_nowww === "alaraby.co.uk") {
+        if (domain_nowww === "alaraby.co.uk" ||
+            // https://www.almodon.com/File/GetImageCustom/b50e5858-0a48-4c50-9f5a-65226004a1d8/600/338
+            //   https://www.almodon.com/File/Get/b50e5858-0a48-4c50-9f5a-65226004a1d8
+            domain_nowww === "almodon.com") {
             // https://www.alaraby.co.uk/File/GetImageCustom/06c9f6a7-1a59-4a2c-bb4b-139a1879180a/600/338
             //   https://www.alaraby.co.uk/File/Get/06c9f6a7-1a59-4a2c-bb4b-139a1879180a
             return {
@@ -35770,6 +35777,9 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             // http://www.baobaoyuer.com/img/aHR0cDovL2ltZzMuaW1ndG4uYmRpbWcuY29tL2l0L3U9Mjk0NzkxNTEyNSwzMDc5NDIzNDg2JmZtPTI2JmdwPTAuanBn.jpg
             //   http://img3.imgtn.bdimg.com/it/u=2947915125,3079423486&fm=26&gp=0.jpg
             domain_nowww === "baobaoyuer.com" ||
+            // https://m.daguaw.com/img/aHR0cDovL2ltZzMuaW1ndG4uYmRpbWcuY29tL2l0L3U9OTQ2NDk4OTcyLDI3NjM4OTQ5NDEmZm09MjYmZ3A9MC5qcGc=.jpg
+            //   http://img3.imgtn.bdimg.com/it/u=946498972,2763894941&fm=26&gp=0.jpg
+            domain === "m.daguaw.com" ||
             // https://m.dalangw.com/img/aHR0cDovL2ltZzQuaW1ndG4uYmRpbWcuY29tL2l0L3U9Mzk1ODY3NTA2NCwzMzA0NzAxMzMwJmZtPTI2JmdwPTAuanBn.jpg
             //   http://img4.imgtn.bdimg.com/it/u=3958675064,3304701330&fm=26&gp=0.jpg
             domain === "m.dalangw.com") {
@@ -36052,6 +36062,37 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/(\/galleries\/+[0-9]+\/+[0-9]{5,})_[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1_9999$2");
         }
 
+        if (domain_nowww === "mixmag.com.tr") {
+            // https://mixmag.com.tr/assets/uploads/images/_facebook/rihanna-june-19-1.jpg -- upscaled+cropped
+            //   https://mixmag.com.tr/assets/uploads/images/rihanna-june-19-1.jpg
+            return src.replace(/(\/assets\/+uploads\/+images\/+)_facebook\/+/, "$1");
+        }
+
+        if (domain_nowww === "harpersbazaar.co.id") {
+            // https://www.harpersbazaar.co.id/lkgallery/teaser/resize/335x168/rihanna-concealer-1547802205_22_20190416155147WEO3mY.jpg
+            //   https://www.harpersbazaar.co.id/lkgallery/teaser/rihanna-concealer-1547802205_22_20190416155147WEO3mY.jpg
+            return src.replace(/(\/lkgallery\/+[^/]*\/+)resize\/+[0-9]+x[0-9]+\/+/, "$1");
+        }
+
+        if (domain_nosub === "mobify.com" && /^ir[0-9]*\./.test(domain)) {
+            // https://ir0.mobify.com/180/https://i.iplsc.com/rihanna-potwierdza-dziewiata-plyta-w-przygotowaniu-r9/00083PJSNT8LCVHS-C307.jpg
+            //   https://i.iplsc.com/rihanna-potwierdza-dziewiata-plyta-w-przygotowaniu-r9/00083PJSNT8LCVHS-C0.jpg
+            return src.replace(/^[a-z]+:\/\/[^/]*\/+[0-9]+\/+http/, "http");
+        }
+
+        if (domain_nowww === "kanal24.az") {
+            // https://kanal24.az/photo.php?w=300&h=200&zc=1&src=/upload//2018-03-16/1418017_s.jpg
+            //   https://kanal24.az/upload//2018-03-16/1418017_s.jpg
+            newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+photo\.php\?(?:.*&)?src=([^&]*).*?$/, "$1");
+            if (newsrc !== src)
+                return urljoin(src, decodeuri_ifneeded(newsrc), true);
+        }
+
+        if (domain_nowww === "aquarelle.md") {
+            // https://www.aquarelle.md/uploads/cache/news/80401/600X400/640_103.jpg
+            //   https://www.aquarelle.md/uploads/news/80401/640_103.jpg
+            return src.replace(/\/uploads\/+cache\/+(news\/+[0-9]+\/+)[0-9]+X[0-9]+\/+/, "/uploads/$1");
+        }
 
 
 
@@ -36902,18 +36943,22 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             domain_nowww === "stylosophy.it" ||
             // http://donna.nanopress.it/img/Rita-Ora-agli-MTV-EMA-2017.jpg
             domain_nosub === "nanopress.it" ||
-            src.match(/^[a-z]+:\/\/storage\.[^/]*\/v[0-9]*\/dynamic_resize\/sws_path\//)) {
+            // https://storage.quebecormedia.com/v1/dynamic_resize/sws_path/jdx-prod-images/9a148e1e-f868-4af7-a859-a15f58d10e62_ORIGINAL.jpg?quality=80&version=1&size=200
+            src.match(/^[a-z]+:\/\/storage\.[^/]*\/+v[0-9]*\/+dynamic_resize\/+sws_path\//)) {
             //return src.replace(/(\/dynamic_resize\/.*)\?[^/]*$/, "$1?size=99999999");
-            newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/v[0-9]*\/dynamic_resize\/*.*?[?&]src=([^&]*).*?$/, "$1");
+            newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+v[0-9]*\/+dynamic_resize\/*.*?[?&]src=([^&]*).*?$/, "$1");
             if (newsrc !== src)
                 return decodeURIComponent(newsrc);
 
             newsrc = src
-                .replace(/\/dynamic_resize\/sws_path\//, "/")
+                .replace(/\/dynamic_resize\/+sws_path\//, "/")
                 .replace(/_(?:JDX-[0-9]+x[0-9]+_[A-Z]+|LARGE_BOX)(\.[^/.]*)$/, "_ORIGINAL$1")
-                .replace(/\?[^/]*$/, "");
+                .replace(/\?.*$/, "");
             if (newsrc !== src)
-                return newsrc;
+                return {
+                    url: newsrc,
+                    head_wrong_contenttype: true
+                };
 
             return {
                 url: src,
