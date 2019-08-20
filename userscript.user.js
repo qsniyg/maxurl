@@ -41029,7 +41029,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             if (popups.length === 0)
                 return;
 
-            var style = popups[0].querySelector("img").style;
+            var style = popups[0].querySelector("img").parentElement.parentElement.style;
             var deg = 0;
             if (style.transform) {
                 var match = style.transform.match(/^rotate\(([0-9]+)deg\)$/);
