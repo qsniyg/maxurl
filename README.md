@@ -41,7 +41,7 @@ As mentioned above, userscript.user.js also functions as a node module.
       //exclude_problems: [],
 
       // This will include a "history" of objects found through iterations.
-      // Disabling this will only keep the objects found through the last iteration.
+      //   Disabling this will only keep the objects found through the last successful iteration.
       include_pastobjs: true,
 
       // This will try to find the original page for an image, even if it requires extra requests.
