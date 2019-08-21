@@ -995,12 +995,19 @@ var $$IMU_EXPORT$$;
             onedit: function() {
                 var errors = create_blacklist_regexes();
 
-                var errordiv = document.querySelector("#option_bigimage_blacklist .error");
-                errordiv.innerText = "";
+                var errordiv;
+
+                try {
+                    errordiv = document.querySelector("#option_bigimage_blacklist .error");
+                    errordiv.innerText = "";
+                } catch (e) {
+                }
 
                 if (errors) {
                     for (var i = 0; i < errors.length; i++) {
-                        errordiv.innerText += errors[i].message + "\n";
+                        if (errordiv)
+                            errordiv.innerText += errors[i].message + "\n";
+
                         console.error(errors[i]);
                     }
                 }
