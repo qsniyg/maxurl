@@ -439,6 +439,14 @@ input:checked + label, button {
   }
 }
 
+#options .option > .error {
+  margin-left: 2em;
+  margin-right: 2em;
+  margin-top: 1em;
+  color: #e32020;
+  font-family: monospace;
+}
+
 #options ul.examples {
   margin-top: 0.5em;
 }
