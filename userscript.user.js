@@ -19348,7 +19348,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
 
                 var username_to_uid = function(username, cb) {
                     if (username.match(/^http/)) {
-                        username = username.replace(/^[a-z]+:\/\/[^/]*\/([^/]*)(?:\/.*)?$/, "$1");
+                        username = username.replace(/^[a-z]+:\/\/[^/]*\/+([^/]*)(?:\/.*)?(?:[?#].*)?$/, "$1");
                     }
 
                     query_ig("https://www.instagram.com/" + username + "/", function(json) {
@@ -19377,6 +19377,32 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                                 console_error(e);
                                 cb(null);
                             }
+                        }
+                    });
+                };
+
+                var mediainfo_api = function(id, cb) {
+                    var url = "https://i.instagram.com/api/v1/media/" + id + "/info/";
+                    options.do_request({
+                        method: "GET",
+                        url: url,
+                        headers: {
+                            "User-Agent": "Instagram 10.26.0 (iPhone7,2; iOS 10_1_1; en_US; en-US; scale=2.00; gamut=normal; 750x1334) AppleWebKit/420+",
+                            "X-IG-Capabilities": "36oD",
+                            "Accept": "*/*",
+                            "Accept-Language": "en-US,en;q=0.8"
+                        },
+                        onload: function(result) {
+                            if (result.readyState !== 4)
+                                return;
+
+                            if (result.status === 200) {
+                                try {
+                                    return cb(JSON.parse(result.responseText));
+                                } catch (e) {}
+                            }
+
+                            cb(null);
                         }
                     });
                 };
@@ -19417,39 +19443,71 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                         try {
                             var media = json.entry_data.PostPage[0].graphql.shortcode_media;
 
-                            var images = [];
-                            var parse_image = function(node) {
-                                var image = node.display_src;
-                                if (!image)
-                                    image = node.display_url;
+                            mediainfo_api(media.id + "_" + media.owner.id, function(app_response) {
+                                var images = [];
 
-                                if (image && images.indexOf(image) < 0) {
-                                    images.push(image);
+                                if (app_response !== null) {
+                                    var item = app_response.items[0];
+
+                                    var parse_image = function(img) {
+                                        var candidates = img.image_versions2.candidates;
+                                        var maxsize = 0;
+                                        var maxobj = null;
+                                        for (var i = 0; i < candidates.length; i++) {
+                                            var size = candidates[i].width * candidates[i].height;
+                                            if (size > maxsize) {
+                                                maxsize = size;
+                                                maxobj = candidates[i];
+                                            }
+                                        }
+
+                                        if (maxobj !== null) {
+                                            images.push(maxobj.url);
+                                        }
+                                    };
+
+                                    if ("carousel_media" in item) {
+                                        for (var i = 0; i < item.carousel_media.length; i++) {
+                                            parse_image(item.carousel_media[i]);
+                                        }
+                                    } else {
+                                        parse_image(item);
+                                    }
+                                } else {
+                                    var parse_image = function(node) {
+                                        var image = node.display_src;
+                                        if (!image)
+                                            image = node.display_url;
+
+                                        if (image && images.indexOf(image) < 0) {
+                                            images.push(image);
+                                        }
+                                    };
+
+                                    parse_image(media);
+
+                                    if (media.edge_sidecar_to_children) {
+                                        var edges = media.edge_sidecar_to_children.edges;
+                                        for (var i = 0; i < edges.length; i++) {
+                                            var edge = edges[i];
+                                            if (edge.node)
+                                                edge = edge.node;
+
+                                            parse_image(edge);
+                                        }
+                                    }
                                 }
-                            };
 
-                            parse_image(media);
-
-                            if (media.edge_sidecar_to_children) {
-                                var edges = media.edge_sidecar_to_children.edges;
-                                for (var i = 0; i < edges.length; i++) {
-                                    var edge = edges[i];
-                                    if (edge.node)
-                                        edge = edge.node;
-
-                                    parse_image(edge);
+                                var image_id = image_url.replace(/.*\/([^/.]*)\.[^/.]*(?:[?#].*)?$/, "$1");
+                                for (var i = 0; i < images.length; i++) {
+                                    if (images[i].indexOf(image_id) > 0) {
+                                        cb(images[i]);
+                                        return;
+                                    }
                                 }
-                            }
 
-                            var image_id = image_url.replace(/.*\/([^/.]*)\.[^/.]*(?:[?#].*)?$/, "$1");
-                            for (var i = 0; i < images.length; i++) {
-                                if (images[i].indexOf(image_id) > 0) {
-                                    cb(images[i]);
-                                    return;
-                                }
-                            }
-
-                            cb(null);
+                                cb(null);
+                            });
                         } catch (e) {
                             console_error(e);
                             cb(null);
