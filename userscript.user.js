@@ -3361,6 +3361,9 @@ var $$IMU_EXPORT$$;
             // https://cdn.businessinsider.es/sites/navi.axelspringer.es/public/styles/480/public/media/image/2019/03/Kim%20Jong-Un%2C%20li%CC%81der%20de%20Corea%20del%20Norte.jpg?itok=_Cf23v2r
             //   https://cdn.businessinsider.es/sites/navi.axelspringer.es/public/media/image/2019/03/Kim%20Jong-Un%2C%20li%CC%81der%20de%20Corea%20del%20Norte.jpg
             domain === "cdn.businessinsider.es" ||
+            // https://ru-24.ru/_files/styles/origina/public/news/image/pic_5093dfd3fb1ea735b63380a78a3389be.jpg?itok=p5WOiINr
+            //   https://ru-24.ru/_files/news/image/pic_5093dfd3fb1ea735b63380a78a3389be.jpg
+            (domain_nowww === "ru-24.ru" && src.indexOf("/_files/") >= 0) ||
             // http://cdn.whodoyouthinkyouaremagazine.com/sites/default/files/imagecache/623px_wide/episode/hewer500.jpg
             //   http://cdn.whodoyouthinkyouaremagazine.com/sites/default/files/episode/hewer500.jpg
             // https://www.telugucinema.com/sites/default/files2/styles/media_gallery_thumbnail/public/amy-jackson-instagram1.jpg?itok=nwFhV2Iy
@@ -5506,6 +5509,8 @@ var $$IMU_EXPORT$$;
             (domain === "media.cbs8.com" && src.indexOf("/assets/") >= 0) ||
             // https://img.myvideo.net.tw/images/MUS030/0000/0254/201407071400064359_210x300.jpg
             (domain === "img.myvideo.net.tw" && src.indexOf("/images/") >= 0) ||
+            // https://image.apost.com/media/articletranslation/2019/05/21/15/c4ac945abf24c9a59a81cdc6130689b8_500x1.jpg
+            (domain === "image.apost.com" && src.indexOf("/media/") >= 0) ||
             // http://images.cinefil.com/movies/1053952_1600x450.jpg
             //   http://images.cinefil.com/movies/1053952.jpg
             domain === "images.cinefil.com") {
@@ -5849,6 +5854,9 @@ var $$IMU_EXPORT$$;
         }
 
         if (domain === "amp.thisisinsider.com" ||
+            // https://amp.insider.com/images/5c3e320e5241470201598c93-750-562.jpg
+            //   https://static2.insider.com/image/5c3e320e5241470201598c93/
+            domain === "amp.insider.com" ||
             domain === "amp.businessinsider.com") {
             // nano defender disables javascript on here, so redirect via userscript doesn't work
             // https://amp.thisisinsider.com/images/58c2c3d580c5ac1f008b47dc-960-1545.jpg
@@ -20114,10 +20122,13 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/\/s[0-9]+x[0-9]+\/([^/]*)$/, "/s/$1");
         }
 
-        if (domain === "programma.sorrisi.com") {
+        if (domain === "programma.sorrisi.com" ||
+            // https://shamra.sy/uploads/media/cache/news_article/uploads/news_thumbs/155991063352.jpg
+            //   https://shamra.sy/uploads/news_thumbs/155991063352.jpg
+            domain_nowww === "shamra.sy") {
             // https://programma.sorrisi.com/guidatv/uploads/media/cache/epg_program_large/uploads/epg/images/programseries/0/0/originale/272826.jpg
             //   https://programma.sorrisi.com/guidatv/uploads/epg/images/programseries/0/0/originale/272826.jpg
-            return src.replace(/\/uploads\/media\/cache\/.*?\/uploads\//, "/uploads/");
+            return src.replace(/\/uploads\/+media\/+cache\/+[^/]*\/+uploads\//, "/uploads/");
         }
 
         if (domain === "www.vidofa.com" &&
@@ -24427,11 +24438,14 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
              // https://www.elmwatin.com/upload/photo/news/54/4/200x112o/777.jpg?q=1
              //   https://www.elmwatin.com/upload/photo/news/54/4/777.jpg
              domain_nowww === "elmwatin.com" ||
+             // https://www.dostor.org/upload/photo/news/265/7/160x90o/295.jpg?q=2
+             //   https://www.dostor.org/upload/photo/news/265/7/295.jpg
+             domain_nowww === "dostor.org" ||
              // https://www.albawabhnews.com/upload/photo/news/261/9/600x338o/986.jpg?q=1
              //   https://www.albawabhnews.com/upload/photo/news/261/9/986.jpg?q=1
              //   https://www.albawabhnews.com/upload/photo/news/261/9/986.jpg
              domain_nowww === "albawabhnews.com") &&
-            src.indexOf("/upload/photo/") >= 0) {
+            /\/upload\/+photo\//.test(src)) {
             // http://www.elfagr.com/upload/photo/news/312/4/100x56o/85.jpg?q=2
             //   http://www.elfagr.com/upload/photo/news/312/4/200x113o/85.jpg?q=2
             //   http://www.elfagr.com/upload/photo/news/312/4/85.jpg?q=2
@@ -28809,10 +28823,12 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             // http://img2.selfimg.com.cn/gq800/2018/07/09/1531128764_oPMMng.jpg
             //   http://img2.selfimg.com.cn/uedgqcms/2018/07/09/1531128764_oPMMng.jpg -- 2000x1322
             //   http://img2.selfimg.com.cn/GQgalleryNoWatermark/2018/07/09/1531128764_oPMMng.jpg -- 2000x1322
+            // http://img3.selfimg.com.cn/VOGUEgalleryNoWatermark/2018/09/17/1537198642_L6cIOa.jpg
+            //   http://img3.selfimg.com.cn/uedvoguecms/2018/09/17/1537198642_L6cIOa.jpg
             return src
                 //.replace(/(:\/\/[^/]*\/)gq[0-9]+[^/]*\/+/, "$1GQgalleryNoWatermark/")
-                .replace(/(:\/\/[^/]*\/)gq[0-9]+[^/]*\/+/, "$1uedgqcms/")
-                .replace(/(:\/\/[^/]*\/)vogue[^/]*\//, "$1uedvoguecms/");
+                .replace(/(:\/\/[^/]*\/)gq[0-9]+[^/]*\/+/i, "$1uedgqcms/")
+                .replace(/(:\/\/[^/]*\/)vogue[^/]*\//i, "$1uedvoguecms/");
         }
 
         if (domain === "hp.funrahi.com") {
@@ -30818,10 +30834,24 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             domain.match(/^s[0-9]*\.stc\.all\./)) {
             // https://s9.stc.all.kpcdn.net/share/i/12/10613751/inx960x640.jpg
             //   https://s9.stc.all.kpcdn.net/share/i/12/10613751/original.jpg
+            //   https://kp.ru/share/i/12/10613751
             // https://s12.stc.all.kpcdn.net/share/i/4/1567725/wx1080.jpg
             //   https://s12.stc.all.kpcdn.net/share/i/4/1567725/original.jpg
-            return src.replace(/(\/share\/+i\/+[0-9]+\/+[0-9]+\/+)(?:inx[0-9]+|[a-z]+)x[0-9]+(\.[^/.]*)(?:[?#].*)?$/,
-                               "$1original$2");
+            // https://s11.stc.all.kpcdn.net/share/i/12/10927164/wr-720.sh-18.jpg
+            //   https://s11.stc.all.kpcdn.net/share/i/12/10927164/original.jpg
+            //   https://kp.ru/share/i/12/10927164/
+            //   https://kp.ru/share/i/12/10927164
+
+            //return src.replace(/(\/share\/+i\/+[0-9]+\/+[0-9]+\/+)(?:(?:inx[0-9]+|[a-z]+)x[0-9]+|(?:(?:[wh]r|sh)-[0-9]+\.?){1,})(\.[^/.]*)(?:[?#].*)?$/,
+            //                   "$1original$2");
+            // not only is this rule simpler, it also preserves the numbers in the filename (instead of saving it as "original")
+            return src.replace(/^[a-z]+:\/\/[^/]*\/(share\/+i\/+[0-9]+\/+[0-9]+)\/+(?:[^/]*\.[^/.]*)?(?:[?#].*)?$/, "https://kp.ru/$1");
+        }
+
+        if (domain_nowww === "kp.ru") {
+            // https://kp.ru/share/i/12/10927164/wr-1200.sh-18.jpg
+            //   https://kp.ru/share/i/12/10927164
+            return src.replace(/^[a-z]+:\/\/[^/]*\/(share\/+i\/+[0-9]+\/+[0-9]+)\/+(?:[^/]*\.[^/.]*)?(?:[?#].*)?$/, "https://kp.ru/$1");
         }
 
         if (domain_nowww === "oplace.ru") {
@@ -35202,6 +35232,12 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
         }
 
         if (domain_nowww === "reforma.com" ||
+            // https://www.mural.com/aplicacioneslibre/compartir/ImageTransformer.aspx?wm=1&img=https://img.gruporeforma.com/imagenes/960x640/5/476/4475398.jpg&ang=0
+            //  https://img.gruporeforma.com/imagenes/960x640/5/476/4475398.jpg
+            domain_nowww === "mural.com" ||
+            // https://www.cancha.com/aplicacioneslibre/compartir/ImageTransformer.aspx?img=https://img.gruporeforma.com/imagenes/960x640/5/500/4499049.jpg&wm=1&ang=0&tipo=video
+            //   https://img.gruporeforma.com/imagenes/960x640/5/500/4499049.jpg
+            domain_nowww === "cancha.com" ||
             // https://www.elnorte.com/aplicacioneslibre/compartir/ImageTransformer.aspx?wm=1&img=https://img.gruporeforma.com/imagenes/960x640/4/685/3684095.jpg&ang=0
             //   https://img.gruporeforma.com/imagenes/960x640/4/685/3684095.jpg
             domain_nowww === "elnorte.com") {
@@ -35593,10 +35629,15 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             }
         }
 
-        if (domain === "media.kleinezeitung.at") {
+        if (domain === "media.kleinezeitung.at" ||
+            // https://media.diepresse.com/images/uploads_320/d/5/0/5639504/Pop-superstar-Rihanna-poses-in-a-pop-up-store-to-present-her-first-collection-with-LVMH-for-the-new-label-Fenty-in-Paris_1559723756797921.jpg
+            //   https://media.diepresse.com/images/uploads/d/5/0/5639504/Pop-superstar-Rihanna-poses-in-a-pop-up-store-to-present-her-first-collection-with-LVMH-for-the-new-label-Fenty-in-Paris_1559723756797921.jpg
+            // https://media.diepresse.com/images/uploads_h425/d/5/0/5639504/Pop-superstar-Rihanna-poses-in-a-pop-up-store-to-present-her-first-collection-with-LVMH-for-the-new-label-Fenty-in-Paris_1559723756797921.jpg
+            //   https://media.diepresse.com/images/uploads/d/5/0/5639504/Pop-superstar-Rihanna-poses-in-a-pop-up-store-to-present-her-first-collection-with-LVMH-for-the-new-label-Fenty-in-Paris_1559723756797921.jpg
+            domain === "media.diepresse.com") {
             // https://media.kleinezeitung.at/images/uploads_300/c/8/7/5516423/FILES-ENTERTAINMENT-US-MUSIC-POLITICS-RIHANA_1539969550411986_v0_h.jpg
             //   https://media.kleinezeitung.at/images/uploads/c/8/7/5516423/FILES-ENTERTAINMENT-US-MUSIC-POLITICS-RIHANA_1539969550411986_v0_h.jpg
-            return src.replace(/\/images\/+uploads_[0-9]+\/+/, "/images/uploads/");
+            return src.replace(/\/images\/+uploads_[a-z]?[0-9]+\/+/, "/images/uploads/");
         }
 
         if (domain === "republic-imagekit.azureedge.net") {
@@ -36140,6 +36181,63 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/\/uploads\/+cache\/+(news\/+[0-9]+\/+)[0-9]+X[0-9]+\/+/, "/uploads/$1");
         }
 
+        if (domain === "img.meta.kz") {
+            // http://img.meta.kz/?250x20014837.jpg
+            //   http://img.meta.kz/?20014837.jpg
+            return src.replace(/(:\/\/[^/]*\/+\?)[0-9]+x/, "$1");
+        }
+
+        if (domain === "img.rtvslo.si") {
+            // https://img.rtvslo.si/_up/upload/2019/05/23/65587143_show.jpg
+            //   https://img.rtvslo.si/_up/upload/2019/05/23/65587143.jpg
+            return src.replace(/(\/upload\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}[0-9]+)_[a-z]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain === "i.stpl.gr") {
+            // http://i.stpl.gr/image.ashx?m=Fit&f=L2ZpbGVzLzEvbmV3X2ltYWdlcy8yMDE5LTA1LTI0LzU0LzU2MzU3MzE2LmpwZw%3D%3D&t=636942794840000000&w=300&h=204
+            //   atob: /files/1/new_images/2019-05-24/54/56357316.jpg
+            //   http://i.stpl.gr/files/1/new_images/2019-05-24/54/56357316.jpg
+            match = src.match(/^[a-z]+:\/\/[^/]*\/+image\.ashx\?(?:.*&)?f=([^&]*).*?$/);
+            if (match) {
+                return urljoin(src, atob(decodeURIComponent(match[1])), true);
+            }
+        }
+
+        if (domain === "cdn.akurat.co") {
+            // https://cdn.akurat.co/images/uploads/images/medium/akurat_20190523022230_2KW910.jpg
+            //   https://cdn.akurat.co/images/uploads/images/akurat_20190523022230_2KW910.jpg
+            return src.replace(/(\/images\/+uploads\/+images\/+)[a-z]+\/+([^/]*\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain === "static.vesti.rs") {
+            // http://static.vesti.rs/slike-4/tmb_Od-1-februara-nova-cena-kompleta-za-Nisville-2017.jpg
+            //   http://static.vesti.rs/slike-4/Od-1-februara-nova-cena-kompleta-za-Nisville-2017.jpg
+            return src.replace(/(\/slike-[0-9]+\/+)tmb_/, "$1");
+        }
+
+        if (domain_nowww === "al-mlab.com") {
+            // http://al-mlab.com/Thumbnails/1906/933901/500/_107287587_24c84e55-d1af-42dd-ab29-a313b61eb22a.jpg
+            //   http://al-mlab.com/ArticleImages/1906/933901/_107287587_24c84e55-d1af-42dd-ab29-a313b61eb22a.jpg
+            return src.replace(/\/Thumbnails\/+([0-9]+\/+[0-9]+\/+)[0-9]+\/+([^/]*\.[^/.]*)(?:[?#].*)?$/, "/ArticleImages/$1$2");
+        }
+
+        if (domain_nowww === "govastileto.gr") {
+            // https://www.govastileto.gr/assets/images/660x/331292.jpg
+            //   https://www.govastileto.gr/assets/images/331292.jpg
+            return src.replace(/\/assets\/+images\/+[0-9]*x[0-9]*\/+/, "/assets/images/");
+        }
+
+        if (amazon_container === "dotemirates-media") {
+            // https://dotemirates-media.s3-eu-west-1.amazonaws.com/2019/07/medium-750a61ed9a6b676108ef8d7dbed0b10f.jpg
+            //   https://dotemirates-media.s3-eu-west-1.amazonaws.com/2019/07/750a61ed9a6b676108ef8d7dbed0b10f.jpg
+            return src.replace(/(\/[0-9]{4}\/+[0-9]{2}\/+)[a-z]+-([0-9a-f]{20,}\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain_nowww === "grazia.rs") {
+            // https://www.grazia.rs/uploads/imagecache/400x533//storage/posts/cover/2018/Sep/2181/CTa2FKCIiyzUQvbH4Ir1CQdXIw0TcQyxDCBo0yq6.jpg
+            //   https://www.grazia.rs/storage/posts/cover/2018/Sep/2181/CTa2FKCIiyzUQvbH4Ir1CQdXIw0TcQyxDCBo0yq6.jpg
+            return src.replace(/\/uploads\/+imagecache\/+[0-9]+x[0-9]+\/+storage\/+/, "/storage/");
+        }
 
 
 
