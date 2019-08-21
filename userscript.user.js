@@ -38397,6 +38397,10 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
 
                 var newurl = newhref[0].url;
 
+                if (newhref[0].extra && newhref[0].extra.page) {
+                    console_log("Original page: " + newhref[0].extra.page);
+                }
+
                 if (newurl === document.location.href)
                     return;
 
