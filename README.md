@@ -1,4 +1,4 @@
-## Image Max URL
+# Image Max URL
 
 Image Max URL is a program that will try to find larger/original versions of images, usually by replacing URL patterns.
 It currently contains support for >5000 hardcoded websites (full list in [sites.txt](https://github.com/qsniyg/maxurl/blob/master/sites.txt)),
@@ -18,7 +18,7 @@ It is currently released as:
  * Reddit bot ([/u/MaxImageBot](https://www.reddit.com/user/MaxImageBot/))
    * Source code is in [bot.js](https://github.com/qsniyg/maxurl/blob/master/bot.js)
 
-### Integrating IMU in your program
+## Integrating IMU in your program
 
 As mentioned above, userscript.user.js also functions as a node module.
 
@@ -164,3 +164,17 @@ The result is a list of objects that contain properties that may be useful in us
         possibly_broken: false
       }
     }
+
+## Contributing
+
+Contributions are always greatly appreciated! If you have any bug reports, feature requests, or new websites you want supported,
+please file an issue here.
+
+### Translations
+
+Currently translations are stored inside the source code (userscript.user.js). I'm currently working on trying to separate this into a separate
+file in order to make this easier for translators, but for now:
+
+ * All message strings are stored as a JS object as `strings` (search for `var strings =` in the source code, it's near the top)
+ * Each translated language is specified under a message ID.
+ * Language subtags are currently ignored. For example, "en" is used instead of "en-US".
