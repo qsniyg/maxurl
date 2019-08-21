@@ -2221,6 +2221,11 @@ var $$IMU_EXPORT$$;
             domain === "photo.newsen.com") {
             // http://photo.newsen.com/news_photo/2011/04/28/201104281531181001_1.jpg -- 2880x4320
             // http://cdn.newsen.com/newsen/news_photo/2011/04/28/201104281531181001_1.jpg -- same
+
+            // http://www.newsen.com/news_view.php?uid=201903062017275510
+            //   http://cdn.newsen.com/newsen/news_photo/2019/03/06/201903062017275510_1.jpg -- 540x842
+            // https://entertain.v.daum.net/v/20190306201751601
+            //   https://t1.daumcdn.net/news/201903/06/newsen/20190306201751195iqvu.jpg -- 641x1000
             src = src.replace(/_ts\.[^/._]*$/, ".jpg").replace("/mphoto/", "/news_photo/");
             if (src.indexOf("/main_photo/") >= 0) {
                 // http://cdn.newsen.com/newsen/main_photo/index_a2_201801030825321910_1.jpg
@@ -2235,11 +2240,18 @@ var $$IMU_EXPORT$$;
             //   http://cdn.newsen.com/newsen/news_photo/2019/05/18/201905182149162610_1.jpg
             src = src.replace(/\/resize\/+[-0-9]+x[-0-9]+\/+/, "/news_photo/");
 
+            var extra = {};
+            match = src.match(/cdn\.newsen\.com\/+newsen\/+news_photo\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}([0-9]{10,})_[0-9]+\.[^/.]*(?:[?#].*)?$/);
+            if (match ||
+                (match = src.match(/photo\.newsen\.com\/+news_photo\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}([0-9]{10,})_[0-9]+\.[^/.]*(?:[?#].*)?$/)))
+                extra.page = "http://www.newsen.com/news_view.php?uid=" + match[1];
+
             return {
                 url: src,
                 headers: {
                     Referer: "http://www.newsen.com/"
-                }
+                },
+                extra: extra
             };
         }
 
