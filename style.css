@@ -425,6 +425,12 @@ input:checked + label, button {
   font-size: 1.5em;
   font-weight: 100;
   margin-bottom: 1em;
+  padding-bottom: 0.5em;
+
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  border-bottom-color: #aaa;
+  border-image-slice: 1;
 }
 
 @media (max-width:700px) {
