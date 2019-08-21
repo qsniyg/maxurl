@@ -9,7 +9,7 @@ It is currently released as:
  * [Userscript](https://greasyfork.org/en/scripts/36662-image-max-url) (most browsers)
    * [userscript.user.js](https://github.com/qsniyg/maxurl/blob/master/userscript.user.js) is also the base for everything listed below
    * It also serves as a node module (used by the reddit bot), and can be embedded in a website
- * [Firefox Addon](https://addons.mozilla.org/en-US/firefox/addon/image-max-url/) (Firefox Quantum-based browsers only, other browsers supporting WebExtensions can sideload this extension through this git repository)
+ * [Firefox Addon](https://addons.mozilla.org/en-US/firefox/addon/image-max-url/) (Firefox Quantum-based browsers only, other browsers supporting WebExtensions can sideload the extension through this git repository)
    * Since addons have more privileges than userscripts, it has a bit of extra functionality over the userscript
    * Source code is in [manifest.json](https://github.com/qsniyg/maxurl/blob/master/manifest.json) and the [extension](https://github.com/qsniyg/maxurl/tree/master/extension) folder
  * [Website](https://qsniyg.github.io/maxurl/)
@@ -18,9 +18,9 @@ It is currently released as:
  * Reddit bot ([/u/MaxImageBot](https://www.reddit.com/user/MaxImageBot/))
    * Source code is in [bot.js](https://github.com/qsniyg/maxurl/blob/master/bot.js)
 
-### For developers
+### Integrating IMU in your program
 
-The userscript also functions as a node module.
+As mentioned above, userscript.user.js also functions as a node module.
 
     var maximage = require('./userscript.user.js');
 
@@ -35,8 +35,28 @@ The userscript also functions as a node module.
       // Whether or not to store to, and use an internal cache
       use_cache: true,
 
+      // List of "problems" (such as watermarks or possibly broken image) to exclude.
+      //   By default, all problems are excluded.
+      //   By setting it to [], no problems will be excluded.
+      //exclude_problems: [],
+
+      // This will include a "history" of objects found through iterations.
+      // Disabling this will only keep the objects found through the last iteration.
+      include_pastobjs: true,
+
+      // This will try to find the original page for an image, even if it requires extra requests.
+      // Currently only applies to Flickr.
+      force_page: false,
+
+      // This is useful for implementing a blacklist or whitelist.
+      // If unspecified, it accepts all URLs.
+      filter: function(url) {
+        return true;
+      }
+
       // Helper function to perform HTTP requests, used for sites like Flickr
       //  The API is expected to be like GM_xmlHTTPRequest's API.
+      // An implementation using node's request module can be found in bot.js
       do_request: function(options) {
         // options = {
         //   url: "",
@@ -78,8 +98,14 @@ The result is a list of objects that contain properties that may be useful in us
       //  Don't rely on this value if you don't have to
       always_ok: false,
 
+      // Whether or not the URL is likely to work.
+      likely_broken: false,
+
       // Whether or not the server supports a HEAD request.
       can_head: true,
+
+      // HEAD errors that can be ignored
+      head_ok_errors: [],
 
       // Whether or not the server might return the wrong Content-Type header in the HEAD request
       head_wrong_contenttype: false,
@@ -95,10 +121,46 @@ The result is a list of objects that contain properties that may be useful in us
       // Whether or not the returned URL is expected to redirect to another URL
       redirects: false,
 
+      // Whether or not the URL is temporary/only works on the current IP (such as a generated download link)
+      is_private: false,
+
+      // Whether or not the URL is expected to be the original image stored on the website's servers.
+      is_original: false,
+
+      // If this is true, you shouldn't input this URL again into IMU.
+      norecurse: false,
+
       // Whether or not this URL should be used
       bad: false,
 
+      // Whether or not this URL is a "fake" URL that was used internally (i.e. if true, don't use this)
+      fake: false,
+
       // Headers required to view the returned URL
       //  If a header is null, don't include that header.
-      headers: {}
+      headers: {},
+
+      // Additional properties that could be useful
+      extra: {
+        // The original page where this image was hosted
+        page: null
+      },
+
+      // If set, this is a more descriptive filename for the image
+      filename: "",
+
+      // A list of problems with this image. Use exclude_problems to exclude images with specific problems
+      problems: {
+        // If true, the image is likely larger than the one inputted, but it also has a watermark
+        watermark: false,
+
+        // If true, the image is likely smaller than the one inputted, but it has no watermark
+        smaller: false,
+
+        // If true, the image might be entirely different from the one inputted
+        possibly_different: false,
+
+        // If true, the image might be broken (such as GIFs on Tumblr)
+        possibly_broken: false
+      }
     }
