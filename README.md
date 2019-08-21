@@ -1,10 +1,22 @@
 ## Image Max URL
 
-Website (https://qsniyg.github.io/maxurl/), userscript (https://greasyfork.org/en/scripts/36662-image-max-url) and reddit bot ([/u/MaxImageBot](https://www.reddit.com/user/MaxImageBot/)) to redirect images to larger/original versions.
+Image Max URL is a program that will try to find larger/original versions of images, usually by replacing URL patterns.
+It currently contains support for >5000 hardcoded websites (full list in [sites.txt](https://github.com/qsniyg/maxurl/blob/master/sites.txt)),
+but it also supports a number of generic engines (such as Wordpress and MediaWiki), which means it can work for many other websites as well.
 
-### For users
+It is currently released as:
 
-Either use the website or install the userscript, which redirects to larger/original versions of images when you open them in a new tab.
+ * [Userscript](https://greasyfork.org/en/scripts/36662-image-max-url) (most browsers)
+   * [userscript.user.js](https://github.com/qsniyg/maxurl/blob/master/userscript.user.js) is also the base for everything listed below
+   * It also serves as a node module (used by the reddit bot), and can be embedded in a website
+ * [Firefox Addon](https://addons.mozilla.org/en-US/firefox/addon/image-max-url/) (Firefox Quantum-based browsers only, other browsers supporting WebExtensions can sideload this extension through this git repository)
+   * Since addons have more privileges than userscripts, it has a bit of extra functionality over the userscript
+   * Source code is in [manifest.json](https://github.com/qsniyg/maxurl/blob/master/manifest.json) and the [extension](https://github.com/qsniyg/maxurl/tree/master/extension) folder
+ * [Website](https://qsniyg.github.io/maxurl/)
+   * Due to browser security constraints, some URLs (requiring cross-origin requests) can't be supported by the website
+   * Source code is in the [gh-pages](https://github.com/qsniyg/maxurl/tree/gh-pages) branch
+ * Reddit bot ([/u/MaxImageBot](https://www.reddit.com/user/MaxImageBot/))
+   * Source code is in [bot.js](https://github.com/qsniyg/maxurl/blob/master/bot.js)
 
 ### For developers
 
