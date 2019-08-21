@@ -2287,6 +2287,8 @@ var $$IMU_EXPORT$$;
             // doesn't work:
             // http://woman.chosun.com/up_fd/wc_news/2018-01/simg_org/1801_164s.jpg
             // http://ekr.chosunonline.com/site/data/img_dir/2015/07/16/2015071601601_thumb.jpg
+            // http://ekr.chosunonline.com/site/data/img_dir/2017/10/24/2017102400705_thumb.jpg
+            //   http://ekr.chosunonline.com/site/data/img_dir/2017/10/24/2017102400675_0.jpg
             // large:
             // http://sccdn.chosun.com/news/photobook/201710/23202_2017101301010007001.jpeg
             // http://sccdn.chosun.com/news/photobook/201412/11896_20141201010101000972.jpeg
@@ -8807,12 +8809,18 @@ var $$IMU_EXPORT$$;
             (domain === "www.urbanbug.net" && src.indexOf("/uploads/") >= 0) ||
             // http://celebs-news.ru/images/persons/natalie-portman/1611/thumb_natalie_portman_32.jpg
             //   http://celebs-news.ru/images/persons/natalie-portman/1611/natalie_portman_32.jpg
-            (domain_nowww === "celebs-news.ru" && src.indexOf("/images/") >= 0) ||
+            (domain_nowww === "celebs-news.ru" && src.indexOf("/images/") >= 0)) {
+            // https://jmagazine.joins.com/_data/photo/2018/01/thumb_237268740_ZeJ4MpkI_1.jpg
+            return src.replace(/\/thumb_([^/]*)$/, "/$1");
+        }
+
+        if (domain === "cdn.ppomppu.co.kr" ||
             // https://www.popco.net/zboard/data/sigma_forum/2018/04/25/thumb_53666d20e05f8691128b91b8456961a7.jpeg
             //   https://popco.net/zboard/data/sigma_forum/2018/04/25/53666d20e05f8691128b91b8456961a7.jpeg
             domain_nowww === "popco.net") {
-            // https://jmagazine.joins.com/_data/photo/2018/01/thumb_237268740_ZeJ4MpkI_1.jpg
-            return src.replace(/\/thumb_([^/]*)$/, "/$1");
+            // https://cdn.ppomppu.co.kr/zboard/data3/2017/0619/m_20170619132334_ibiwqsfv.jpg
+            //   https://cdn.ppomppu.co.kr/zboard/data3/2017/0619/20170619132334_ibiwqsfv.jpg
+            return src.replace(/(\/zboard\/+data[0-9]*\/+(?:[^/]*\/+)?[0-9]{4}\/+[0-9]{2}\/*[0-9]{2}\/+)(?:thumb|m)_/, "$1");
         }
 
         if (domain === "media.codeweavers.com") {
@@ -9200,6 +9208,9 @@ var $$IMU_EXPORT$$;
             // http://image.laodong.com.vn/Uploaded/phanthiphuongthuy/2014_06_22/ht4_HDEY.jpg.ashx?width=660
             //   http://image.laodong.com.vn/Uploaded/phanthiphuongthuy/2014_06_22/ht4_HDEY.jpg
             domain === "image.laodong.com.vn" ||
+            // https://cdn-images.saostar.vn/wp600/2017/04/10/1210695/exid-teaser2.jpg
+            //   https://cdn-images.saostar.vn/2017/04/10/1210695/exid-teaser2.jpg
+            domain === "cdn-images.saostar.vn" ||
             // https://image.tienphong.vn/w665/Uploaded/2018/pcgycivo/2016_08_25/5_pyxg.jpg -- stretched
             //   https://image.tienphong.vn/Uploaded/2018/pcgycivo/2016_08_25/5_pyxg.jpg
             // https://image3.tienphong.vn/w665/Uploaded/2018/khunflu/2016_07_03/jessica_alba_braun_beauty_campaign_2016_adds_04_redb.jpg
@@ -35916,10 +35927,11 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             domain_nowww === "baobaoyuer.com" ||
             // https://m.daguaw.com/img/aHR0cDovL2ltZzMuaW1ndG4uYmRpbWcuY29tL2l0L3U9OTQ2NDk4OTcyLDI3NjM4OTQ5NDEmZm09MjYmZ3A9MC5qcGc=.jpg
             //   http://img3.imgtn.bdimg.com/it/u=946498972,2763894941&fm=26&gp=0.jpg
-            domain === "m.daguaw.com" ||
+            // https://daguaw.com/img/aHR0cDovL2ltZzIuaW1ndG4uYmRpbWcuY29tL2l0L3U9Mjg4NDcyNTE3NywzMTQxOTEwOTgzJmZtPTI2JmdwPTAuanBn.jpg
+            domain_nosub === "daguaw.com" ||
             // https://m.dalangw.com/img/aHR0cDovL2ltZzQuaW1ndG4uYmRpbWcuY29tL2l0L3U9Mzk1ODY3NTA2NCwzMzA0NzAxMzMwJmZtPTI2JmdwPTAuanBn.jpg
             //   http://img4.imgtn.bdimg.com/it/u=3958675064,3304701330&fm=26&gp=0.jpg
-            domain === "m.dalangw.com") {
+            domain_nosub === "dalangw.com") {
             // http://www.soumeiwang.com/img/aHR0cDovL2ltZzQuaW1ndG4uYmRpbWcuY29tL2l0L3U9OTUzMDIzNjAyLDM1ODIwMzU5MTgmZm09MTUmZ3A9MC5qcGc=.jpg
             //   http://img4.imgtn.bdimg.com/it/u=953023602,3582035918&fm=15&gp=0.jpg
             newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+img\/+([^-/._]{30,})\.[^/.]*(?:[?#].*)?$/, "$1");
@@ -36316,6 +36328,25 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/(\/images\/+[0-9]{4}\.[0-9]{2}\/+)[a-z]+\/+/, "$1original/");
         }
 
+        if (domain_nowww === "tapchimypham.com.vn") {
+            // http://www.tapchimypham.com.vn/ImageHandler.ashx?ThumbnailID=617504&Width=600
+            //   http://www.tapchimypham.com.vn/ImageHandler.ashx?ThumbnailID=617504
+            //   http://www.tapchimypham.com.vn/Cache/504/617504_2147483647.jpg
+            return src.replace(/^([a-z]+:\/\/[^/]*\/+ImageHandler\.ashx\?)(?:.*?&)?(ThumbnailID=[0-9]+).*$/, "$1$2");
+        }
+
+        if (domain === "cdn.lipscosme.com") {
+            // https://cdn.lipscosme.com/user/user1539003038-32189-small.png
+            //   https://cdn.lipscosme.com/user/user1539003038-32189-thumb.png
+            //   https://cdn.lipscosme.com/user/user1539003038-32189.png
+            return src.replace(/(\/user\/+user[0-9]+-[0-9]+)-(?:small|thumb)(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain_nosub === "yesky.com" && /^[a-z]-pic-image\./.test(domain)) {
+            // http://d-pic-image.yesky.com/480x-/uploadImages/2017/207/21/2R81A5H1NR13.jpg
+            //   http://pic-image.yesky.com/uploadImages/2017/207/21/2R81A5H1NR13.jpg
+            return src.replace(/^([a-z]+:\/\/)[^/]*\/[-0-9]+x[-0-9]+\/+uploadImages\/+/, "$1pic-image.yesky.com/uploadImages/");
+        }
 
 
 
