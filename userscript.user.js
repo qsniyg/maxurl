@@ -19550,6 +19550,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                 current = options.element;
                 while ((current = current.parentElement)) {
                     // profile image
+                    // a better way would be to check the username from the h2 > a (title, href, innerText)
                     if (current.tagName === "HEADER") {
                         var sharedData = null;
 
@@ -19582,7 +19583,9 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                     }
 
                     // popup
-                    if (current.tagName === "DIV" && current.getAttribute("role") === "dialog") {
+                    if ((current.tagName === "DIV" && current.getAttribute("role") === "dialog") ||
+                        // post page
+                        (current.tagName === "MAIN" && document.location.href.match(/:\/\/[^/]*\/+p\//))) {
                         newsrc = request_post(document.location.href, options.element.src);
                         if (newsrc)
                             return newsrc;
