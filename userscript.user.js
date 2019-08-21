@@ -5878,6 +5878,9 @@ var $$IMU_EXPORT$$;
         }
 
         if ((domain_nosub === "businessinsider.com" ||
+             // https://static1.insider.com/image/5b52591b51dfbe21008b4592-400-300/gomez-was-all-smiles-at-the-premiere-of-hotel-transylvania-3-summer-vacation-in-june-2018.jpg
+             //   https://static1.insider.com/image/5b52591b51dfbe21008b4592/
+             domain_nosub === "insider.com" ||
              domain_nosub === "thisisinsider.com") &&
             domain.match(/^static[0-9]*\./)) {
             // http://static2.thisisinsider.com/image/58c2c3d580c5ac1f008b47dc-200/
@@ -12478,6 +12481,8 @@ var $$IMU_EXPORT$$;
             (domain_nowww === "image.farm" && src.indexOf("/images/") >= 0) ||
             // https://girlspic.net/images/2018/04/05/403215_01bige47b3488e70ef46a.md.jpg
             (domain_nowww === "girlspic.net" && src.indexOf("/images/") >= 0) ||
+            // https://s1.picho.st/2017/08/18/diwd.md.png
+            (domain_nosub === "picho.st" && /^s[0-9]*\./.test(domain)) ||
             // http://image-bugs.com/images/2017/09/09/CelebsFlash.com_NP_Harpers_Bazaar_090817__3_.md.jpg
             domain_nowww === "image-bugs.com") {
             // http://imgmax.com/images/2017/03/20/0OQhE.th.jpg
@@ -16005,8 +16010,10 @@ var $$IMU_EXPORT$$;
             //   http://inews.gtimg.com/newsapp_match/0/21184291/0
             // https://inews.gtimg.com/newsapp_bt/0/151988165/640?tp=webp
             //   https://inews.gtimg.com/newsapp_match/0/151988165/0
+            // http://inews.gtimg.com/newsapp_bt/0/4230564475/641/0
+            //   http://inews.gtimg.com/newsapp_match/0/4230564475/0
             return {
-                url: src.replace(/\/newsapp_[a-z]+\/([0-9]+\/[0-9]+\/)[0-9]+(?:[?#].*)?$/, "/newsapp_match/$10"),
+                url: src.replace(/\/newsapp_[a-z]+\/+([0-9]+\/+[0-9]+\/+)[0-9]+(?:\/+[0-9]+)?(?:[?#].*)?$/, "/newsapp_match/$10"),
                 headers: {
                     "Origin": "",
                     "Referer": ""
@@ -22567,6 +22574,18 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             // http://www.teenporngallery.net/playful-girlfriends/5047/th_001.jpg
             //   http://www.teenporngallery.net/playful-girlfriends/5047/001.jpg
             domain_nowww === "teenporngallery.net" ||
+            // http://asiangalleries.net/gallery/Korean_office_girl/th_12.jpg
+            //   http://asiangalleries.net/gallery/Korean_office_girl/12.jpg
+            domain_nowww === "asiangalleries.net" ||
+            // http://chinesepornpics.com/gallery/Favorite_fap_pics./th_1.jpg
+            //   http://chinesepornpics.com/gallery/Favorite_fap_pics./1.jpg
+            domain_nowww === "chinesepornpics.com" ||
+            // http://asianteenpictures.com/gallery/Sexy_Asian_Girls_2/th_31.jpg
+            //   http://asianteenpictures.com/gallery/Sexy_Asian_Girls_2/31.jpg
+            domain_nowww === "asianteenpictures.com" ||
+            // http://japanesegirlspictures.com/gallery/Asian_Sensations_6/th_44.jpg
+            //   http://japanesegirlspictures.com/gallery/Asian_Sensations_6/44.jpg
+            domain_nowww === "japanesegirlspictures.com" ||
             // http://teengalleries.mobi/g/d55bf2/th_02.jpg
             //   http://teengalleries.mobi/g/d55bf2/02.jpg
             domain_nowww === "teengalleries.mobi") {
@@ -24811,7 +24830,11 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/th([0-9]*\.[^/.]*)$/, "$1");
         }
 
-        if (domain_nowww === "perfectnaked.com" && src.indexOf("/galleries/") >= 0) {
+        if ((domain_nowww === "perfectnaked.com" ||
+             // https://cdn.erocurves.com/galleries/28083/0_tn.jpg
+             //   https://cdn.erocurves.com/galleries/28083/0_big.jpg
+             domain === "cdn.erocurves.com")
+            && src.indexOf("/galleries/") >= 0) {
             // http://www.perfectnaked.com/galleries/bree-daniels-teasing-in-her-cute-pink-panties/3_tn.jpg
             //   http://www.perfectnaked.com/galleries/bree-daniels-teasing-in-her-cute-pink-panties/3_big.jpg
             return src.replace(/(\/[0-9]+)_[a-z]+(\.[^/.]*)$/, "$1_big$2");
@@ -30011,6 +30034,12 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
         }
 
         if (domain_nowww === "nicepornphotos.com" ||
+            // https://www.suzisporn.com/images/galleries/0488/35530/2cbb24c2117518080632edc155162984-t.jpg
+            //   https://www.suzisporn.com/images/galleries/0488/35530/2cbb24c2117518080632edc155162984.jpg
+            domain_nowww === "suzisporn.com" ||
+            // https://www.youngporno.com/images/galleries/0786/56918/81c010fae412f7524b3cdd29e10052e3-t.jpg
+            //   https://www.youngporno.com/images/galleries/0786/56918/81c010fae412f7524b3cdd29e10052e3.jpg
+            domain_nowww === "youngporno.com" ||
             // https://cdn1.images.asianpornmovies.com/galleries/0905/73447/2f9c15636603082eab5608da897d62ee-t.jpg
             //   https://cdn1.images.asianpornmovies.com/galleries/0905/73447/2f9c15636603082eab5608da897d62ee.jpg
             domain_nosub === "asianpornmovies.com") {
@@ -34760,11 +34789,20 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                 .replace(/(\/image_galleries\/+[0-9]+\/+)t_size[0-9]*\/+thumb_/, "$1");
         }
 
-        if (domain_nosub === "cuore.es" && domain.match(/^img[0-9]*\./)) {
+        if ((domain_nosub === "cuore.es" ||
+            // https://img3.stilo.es/1f/4e/a0/selena-gomez-cantara-ozuna-640x388.jpg
+            //   https://img3.stilo.es/1f/4e/a0/selena-gomez-cantara-ozuna.jpg
+            domain_nosub === "stilo.es" ||
+            // https://img1.woman.es/9c/1e/1a/selena-gomez-meghan-makle-comun-600.jpg
+            //   https://img1.woman.es/9c/1e/1a/selena-gomez-meghan-makle-comun.jpg
+            // https://img3.woman.es/9c/1e/1a/selena-gomez-meghan-makle-comun-640.jpg
+            //   https://img3.woman.es/9c/1e/1a/selena-gomez-meghan-makle-comun.jpg
+            domain_nosub === "woman.es")
+            && domain.match(/^img[0-9]*\./)) {
             // https://img1.cuore.es/c9/c6/89/rita-ora-posa-alfombra-roja-mtv-ema-2017-600.jpg
             //   https://img1.cuore.es/c9/c6/89/rita-ora-posa-alfombra-roja-mtv-ema-2017.jpg
             // not sure how to improve?
-            return src.replace(/(\/(?:[0-9a-f]{2}\/+){3}[^/]*)-[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+            return src.replace(/(\/(?:[0-9a-f]{2}\/+){3}[^/]*)-[0-9]+(?:x[0-9]+)?(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
         }
 
         if (domain_nowww === "100posto.hr") {
@@ -36239,6 +36277,32 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/\/uploads\/+imagecache\/+[0-9]+x[0-9]+\/+storage\/+/, "/storage/");
         }
 
+        if (domain_nowww === "asian-amatuer.com") {
+            // http://www.asian-amatuer.com/wp-content/vms_cache/images/content/jade2/1.220x350.jpg
+            //   http://www.asian-amatuer.com/content/jade2/1.jpg
+            return src.replace(/\/wp-content\/+vms_cache\/+images\/+(content\/+[^/]*\/+[^/]*)\.[0-9]+x[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "/$1$2");
+        }
+
+        if (domain_nowww === "xxx69.net") {
+            // http://www.xxx69.net/rts/347/tn_180_240_001.jpg
+            //   http://www.xxx69.net/rts/347/001.jpg
+            return src.replace(/\/tn_[0-9]+_[0-9]+_([^/.]*\.[^/.]*)(?:[?#].*)?$/, "/$1");
+        }
+
+        if (domain === "cdn.milffox.com") {
+            // https://cdn.milffox.com/milffox/p/1/3/8721/thumb1.jpg
+            //   https://cdn.milffox.com/milffox/p/1/3/8721/pic1.jpg
+            return src.replace(/\/thumb([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/pic$1");
+        }
+
+        if ((domain_nosub === "footprint.net" && /^cdni-rt\./.test(domain)) ||
+            // https://cdni.rbth.com/rbthmedia/images/2017.10/article/59d77be115e9f921763d0fd0.jpg
+            //   https://cdni.rbth.com/rbthmedia/images/2017.10/original/59d77be115e9f921763d0fd0.jpg
+            domain === "cdni.rbth.com") {
+            // https://cdni-rt.secure2.footprint.net/rbthmedia/images/2017.10/article/59d77be115e9f921763d0fd0.jpg
+            //   https://cdni-rt.secure2.footprint.net/rbthmedia/images/2017.10/original/59d77be115e9f921763d0fd0.jpg
+            return src.replace(/(\/images\/+[0-9]{4}\.[0-9]{2}\/+)[a-z]+\/+/, "$1original/");
+        }
 
 
 
