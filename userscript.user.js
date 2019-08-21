@@ -1001,7 +1001,6 @@ var $$IMU_EXPORT$$;
                 if (errors) {
                     for (var i = 0; i < errors.length; i++) {
                         errordiv.innerText += errors[i].message + "\n";
-                        console.log(errors[i].message);
                         console.error(errors[i]);
                     }
                 }
