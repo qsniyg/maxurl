@@ -991,7 +991,21 @@ var $$IMU_EXPORT$$;
             name: "Blacklist",
             description: "A list of URLs that are blacklisted from being processed",
             category: "rules",
-            type: "textarea"
+            type: "textarea",
+            onedit: function() {
+                var errors = create_blacklist_regexes();
+
+                var errordiv = document.querySelector("#option_bigimage_blacklist .error");
+                errordiv.innerText = "";
+
+                if (errors) {
+                    for (var i = 0; i < errors.length; i++) {
+                        errordiv.innerText += errors[i].message + "\n";
+                        console.log(errors[i].message);
+                        console.error(errors[i]);
+                    }
+                }
+            }
         },
         bigimage_blacklist_engine: {
             name: "Blacklist engine",
@@ -1312,7 +1326,11 @@ var $$IMU_EXPORT$$;
                 continue;
 
             if (settings.bigimage_blacklist_engine === "regex") {
-                blacklist_regexes.push(new RegExp(current));
+                try {
+                    blacklist_regexes.push(new RegExp(current));
+                } catch (e) {
+                    return [e];
+                }
             } else if (settings.bigimage_blacklist_engine === "glob") {
                 var newcurrent = "";
                 var sbracket = -1;
@@ -1383,7 +1401,11 @@ var $$IMU_EXPORT$$;
 
                 current = "^" + current;
 
-                blacklist_regexes.push(new RegExp(current));
+                try {
+                    blacklist_regexes.push(new RegExp(current));
+                } catch (e) {
+                    return [e];
+                }
             }
         }
 
@@ -38601,9 +38623,9 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                                 }
 
                                 new_value = out_value;
-                                set_value(setting, new_value);
+                                update_setting(setting, new_value);
                             } else {
-                                set_value(setting, value);
+                                update_setting(setting, value);
                             }
 
                             settings[setting] = new_value;
@@ -38665,7 +38687,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                     var savebutton = document.createElement("button");
                     savebutton.innerText = _("save");
                     savebutton.onclick = function() {
-                        set_value(setting, textarea.value);
+                        update_setting(setting, textarea.value);
                         settings[setting] = textarea.value;
 
                         show_saved_message();
@@ -38722,7 +38744,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                         if (meta.number_int || value !== orig_value)
                             input.value = value;
 
-                        set_value(setting, value);
+                        update_setting(setting, value);
                         settings[setting] = value;
 
                         show_saved_message();
@@ -38761,7 +38783,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                     sub_cancel_btn.onclick = do_cancel;
                     sub_record_btn.onclick = function() {
                         if (recording_keys) {
-                            set_value(setting, options_chord);
+                            update_setting(setting, options_chord);
                             settings[setting] = options_chord;
 
                             show_saved_message();
@@ -38801,6 +38823,10 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
 
                     option.appendChild(examples);
                 }
+
+                var errordiv = document.createElement("div");
+                errordiv.classList.add("error");
+                option.appendChild(errordiv);
 
                 if (meta.category)
                     category_els[meta.category].appendChild(option);
@@ -38848,8 +38874,13 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
     }
 
     function set_value(key, value) {
+        if (key in settings_meta && settings_meta[key].onedit) {
+            settings_meta[key].onedit(value);
+        }
+
         value = serialize_value(value);
         console_log("Setting " + key + " = " + value);
+
         if (is_extension) {
             var kv = {};
             kv[key] = value;
