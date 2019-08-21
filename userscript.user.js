@@ -354,6 +354,9 @@ var $$IMU_EXPORT$$;
             "en": "Popup",
             "ko": "팝업"
         },
+        "subcategory_ui": {
+            "en": "UI"
+        },
         "New tab": {
             "ko": "새 탭"
         },
@@ -489,11 +492,20 @@ var $$IMU_EXPORT$$;
         "Website image preview": {
             "ko": "링크 붙인 후 이미지 미리보기"
         },
-        "Saved! Refresh the target page for changes to take effect": {
+        "saved_refresh_target": {
+            "en": "Saved! Refresh the target page for changes to take effect",
             "ko": "저장됩니다. 번경사항 적용하려면 대상 웹페이지 다시 로드하십시오"
         },
-        "Save": {
+        "save": {
+            "en": "Save",
             "ko": "저장"
+        },
+        "record": {
+            "en": "Record"
+        },
+        "cancel": {
+            "en": "Cancel",
+            "ko": "취소"
         },
         "Mouseover popup (%%1) is needed to display the original version": {
             "ko": "원본 이미지 보려면 팝업 (%%1) 필요합니다"
@@ -742,7 +754,8 @@ var $$IMU_EXPORT$$;
             requires: {
                 mouseover_open_behavior: "popup"
             },
-            category: "popup"
+            category: "popup",
+            subcategory: "ui"
         },
         mouseover_ui_opacity: {
             name: "Popup UI opacity",
@@ -755,7 +768,8 @@ var $$IMU_EXPORT$$;
             number_max: 100,
             number_min: 0,
             number_int: true,
-            category: "popup"
+            category: "popup",
+            subcategory: "ui"
         },
         mouseover_ui_gallerycounter: {
             name: "Popup UI gallery counter",
@@ -763,7 +777,8 @@ var $$IMU_EXPORT$$;
             requires: {
                 mouseover_ui: true
             },
-            category: "popup"
+            category: "popup",
+            subcategory: "ui"
         },
         mouseover_ui_gallerymax: {
             name: "Gallery counter max",
@@ -773,7 +788,8 @@ var $$IMU_EXPORT$$;
             },
             type: "number",
             number_unit: "images",
-            category: "popup"
+            category: "popup",
+            subcategory: "ui"
         },
         mouseover_ui_optionsbtn: {
             name: "Popup UI Options Button",
@@ -783,7 +799,8 @@ var $$IMU_EXPORT$$;
             },
             // While it works for the extension, it's more or less useless
             userscript_only: true,
-            category: "popup"
+            category: "popup",
+            subcategory: "ui"
         },
         mouseover_close_behavior: {
             name: "Keep popup open until",
@@ -1001,6 +1018,7 @@ var $$IMU_EXPORT$$;
     var categories = {
         "redirection": "category_redirection",
         "popup": "category_popup",
+        "ui": "subcategory_ui",
         "rules": "category_rules",
         "website": "category_website",
         "extension": "category_extension"
@@ -38301,7 +38319,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             options_el.innerHTML = "";
 
         var saved_el = document.createElement("div");
-        saved_el.innerHTML = "<p>" + _("Saved! Refresh the target page for changes to take effect") + "</p>";
+        saved_el.innerHTML = "<p>" + _("saved_refresh_target") + "</p>";
         saved_el.id = "saved";
         saved_el.classList.add("topsaved");
         //saved_el.style.pointer_events = "none";
@@ -38645,7 +38663,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                     if (value)
                         textarea.value = value;
                     var savebutton = document.createElement("button");
-                    savebutton.innerText = _("Save");
+                    savebutton.innerText = _("save");
                     savebutton.onclick = function() {
                         set_value(setting, textarea.value);
                         settings[setting] = textarea.value;
@@ -38730,9 +38748,9 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                     var sub_record_td = document.createElement("td");
                     sub_record_td.style = "display:inline";
                     var sub_record_btn = document.createElement("button");
-                    sub_record_btn.innerText = _("Record");
+                    sub_record_btn.innerText = _("record");
                     var sub_cancel_btn = document.createElement("button");
-                    sub_cancel_btn.innerText = _("Cancel");
+                    sub_cancel_btn.innerText = _("cancel");
                     sub_cancel_btn.style = "display:none";
                     var do_cancel = function() {
                         recording_keys = false;
@@ -38754,7 +38772,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                             recording_keys = function() {
                                 sub_key_td.innerText = get_trigger_key_text(options_chord);
                             };
-                            sub_record_btn.innerText = _("Save");
+                            sub_record_btn.innerText = _("save");
                             sub_cancel_btn.style = "display:inline-block";
                         }
                     };
