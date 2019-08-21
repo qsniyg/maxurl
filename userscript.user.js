@@ -19342,7 +19342,12 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                     if (json.id)
                         return json.id;
                     else {
-                        return json.entry_data.ProfilePage[0].graphql.user.id;
+                        var entrydata = json.entry_data;
+
+                        if (entrydata.ProfilePage)
+                            return entrydata.ProfilePage[0].graphql.user.id;
+                        else
+                            return entrydata.PostPage[0].graphql.shortcode_media.owner.id;
                     }
                 };
 
