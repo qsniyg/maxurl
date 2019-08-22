@@ -41735,6 +41735,10 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                 //console_log("ON_MESSAGE", message);
                 if (message.type === "context_imu") {
                     trigger_popup(true);
+                } else if (message.type === "popupaction") {
+                    if (message.data.action === "replace_images") {
+                        replace_images();
+                    }
                 }
             });
         }

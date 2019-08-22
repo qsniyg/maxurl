@@ -325,7 +325,7 @@ code {
   padding: 0;
 }
 
-label, button {
+label, button, .button {
   display: inline-block;
   padding: 6px 14px;
   margin: 0em .3em;
@@ -340,7 +340,7 @@ label, button {
   user-select: none;
 }
 
-button:active {
+button:active, .button:active {
   background: #08c;
   border-color: #08c;
 }
@@ -354,12 +354,12 @@ button:active {
   border: 1px solid #aaa !important;
 }
 
-input:checked + label, button {
+input:checked + label, button, .button {
   background: #0af;
   color: #fff;
 }
 
-.disabled input:checked + label, .disabled button, .disabled button:active {
+.disabled input:checked + label, .disabled button, .disabled button:active, .button.disabled {
   border-color: #aaa;
   background: #aaa;
   color: #fff;
@@ -493,7 +493,31 @@ input:checked + label, button {
 }
 
 
+/* Popup */
+#popup {
+  height: auto;
+  min-height: initial;
+}
 
+#popup #outer-container {
+  height: initial;
+}
+
+#popup #logo {
+  padding: 1em;
+  margin-bottom: .5em;
+}
+
+#popup #buttons {
+  margin: 0;
+  margin-bottom: 0.5em;
+}
+
+#popup #buttons li {
+  list-style: none;
+  padding: .5em;
+  margin: 0;
+}
 
 
 /* Disable image preview */
