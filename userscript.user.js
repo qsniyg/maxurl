@@ -41553,7 +41553,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
 
             var progressc_el = document.createElement("div");
             progressc_el.style.all = "initial";
-            progressc_el.style.position = "absolute";
+            progressc_el.style.position = "fixed";
             progressc_el.style.top = "0px";
             progressc_el.style.left = "0px";
             progressc_el.style.width = "80%";
