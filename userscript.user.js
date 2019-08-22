@@ -1068,12 +1068,19 @@ var $$IMU_EXPORT$$;
     var categories = {
         "redirection": "category_redirection",
         "popup": "category_popup",
-        "ui": "subcategory_ui",
         "rules": "category_rules",
         "website": "category_website",
         "extension": "category_extension",
-        "extra": "category_extra",
-        "replaceimages": "subcategory_replaceimages"
+        "extra": "category_extra"
+    };
+
+    var subcategories = {
+        "popup": {
+            "ui": "subcategory_ui"
+        },
+        "extra": {
+            "replaceimages": "subcategory_replaceimages"
+        }
     };
 
 
@@ -38809,7 +38816,8 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             }, 2000);
         }
 
-        var category_els = [];
+        var category_els = {};
+        var subcategory_els = {};
 
         for (var category in categories) {
             var div = document.createElement("div");
@@ -38818,6 +38826,28 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             var h2 = document.createElement("h2");
             h2.innerText = _(categories[category]);
             div.appendChild(h2);
+
+            var subdiv = document.createElement("div");
+            subdiv.id = "subcat_" + category;
+            subdiv.classList.add("subcat");
+            div.appendChild(subdiv);
+            subcategory_els[category] = subdiv;
+
+            if (category in subcategories) {
+                for (var subcat in subcategories[category]) {
+                    var newsubdiv = document.createElement("div");
+                    newsubdiv.id = "subcat_ " + subcat;
+                    newsubdiv.classList.add("subcat");
+
+                    var h3 = document.createElement("h3");
+                    h3.innerText = _(subcategories[category][subcat]);
+                    newsubdiv.appendChild(h3);
+
+                    div.appendChild(newsubdiv);
+                    subcategory_els[subcat] = newsubdiv;
+                }
+            }
+
             category_els[category] = div;
             options_el.appendChild(div);
         }
@@ -39197,10 +39227,15 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                 errordiv.classList.add("error");
                 option.appendChild(errordiv);
 
-                if (meta.category)
-                    category_els[meta.category].appendChild(option);
-                else
+                if (meta.category) {
+                    var subcat = meta.category;
+                    if (meta.subcategory)
+                        subcat = meta.subcategory;
+
+                    subcategory_els[subcat].appendChild(option);
+                } else {
                     options_el.appendChild(option);
+                }
             })(setting);
         }
 
