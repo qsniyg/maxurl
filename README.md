@@ -52,7 +52,7 @@ As mentioned above, userscript.user.js also functions as a node module.
       // If unspecified, it accepts all URLs.
       filter: function(url) {
         return true;
-      }
+      },
 
       // Helper function to perform HTTP requests, used for sites like Flickr
       //  The API is expected to be like GM_xmlHTTPRequest's API.
