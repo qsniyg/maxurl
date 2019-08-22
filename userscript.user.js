@@ -384,10 +384,10 @@ var $$IMU_EXPORT$$;
         "Popup UI": {
             "ko": "팝업 UI"
         },
-        "Popup UI opacity": {
-            "ko": "팝업 UI 불투명"
+        "Opacity": {
+            "ko": "불투명"
         },
-        "Popup UI gallery counter": {
+        "Gallery counter": {
             "ko": "갤러리 이미지 수"
         },
         "Gallery counter max": {
@@ -396,10 +396,10 @@ var $$IMU_EXPORT$$;
         "images": {
             "ko": "이미지"
         },
-        "Popup UI Options Button": {
-            "ko": "팝업 UI에 설정 링크"
+        "Options Button": {
+            "ko": "설정 링크"
         },
-        "Popup UI Rotation Buttons": {},
+        "Rotation Buttons": {},
         "Keep popup open until": {
             "ko": "팝업 닫으려면"
         },
@@ -773,7 +773,7 @@ var $$IMU_EXPORT$$;
             subcategory: "ui"
         },
         mouseover_ui_opacity: {
-            name: "Popup UI opacity",
+            name: "Opacity",
             description: "Opacity of the UI on top of the popup",
             requires: {
                 mouseover_ui: true
@@ -787,7 +787,7 @@ var $$IMU_EXPORT$$;
             subcategory: "ui"
         },
         mouseover_ui_gallerycounter: {
-            name: "Popup UI gallery counter",
+            name: "Gallery counter",
             description: "Enables a gallery counter on top of the UI",
             requires: {
                 mouseover_ui: true
@@ -807,8 +807,8 @@ var $$IMU_EXPORT$$;
             subcategory: "ui"
         },
         mouseover_ui_optionsbtn: {
-            name: "Popup UI Options Button",
-            description: "Enables a button to go to the options screen for IMU",
+            name: "Options Button",
+            description: "Enables a button to go to this page",
             requires: {
                 mouseover_ui: true
             },
@@ -818,8 +818,8 @@ var $$IMU_EXPORT$$;
             subcategory: "ui"
         },
         mouseover_ui_rotationbtns: {
-            name: "Popup UI Rotation Buttons",
-            description: "Enables buttons to rotate the image 90 degrees",
+            name: "Rotation Buttons",
+            description: "Enables buttons on the UI to rotate the image by 90 degrees",
             requires: {
                 mouseover_ui: true
             },
