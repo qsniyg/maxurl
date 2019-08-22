@@ -513,7 +513,7 @@ input:checked + label, button, .button {
 
 #popup #logo {
   padding: 1em;
-  margin-bottom: .5em;
+  /*margin-bottom: .5em;*/
 }
 
 #popup #buttons {

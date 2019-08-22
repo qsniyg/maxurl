@@ -1,13 +1,14 @@
 <!DOCTYPE html>
-<html style="min-height:initial;height:auto">
+<html style="min-height:initial;height:200px;max-height:initial">
     <head>
         <title>Popup</title>
+        <meta charset="utf-8" />
         <link rel="stylesheet" href="options.css" />
     </head>
     <body style="width:200px" id="popup">
         <div id="outer-container">
             <div id="container" style="height:100%;text-align:center">
-                <img id="logo" src="../resources/logo_48.png" />
+                <img id="logo" src="../resources/logo_48.png" title="Image Max URL" />
                 <ul id="buttons">
                     <li>
                         <a href="options.html" class="button" target="_blank">Options</a>
@@ -16,7 +17,7 @@
                     <li>
                         <button id="replaceimages">Replace images</button>
                     </li>
-                </li>
+                </ul>
             </div>
         </div>
         <script src="popup.js"></script>
