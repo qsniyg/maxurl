@@ -41562,6 +41562,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             progressc_el.style.backgroundColor = "rgba(0,0,0,0.7)";
             //progressc_el.style.padding = "1em";
             progressc_el.style.height = "2em";
+            progressc_el.style.zIndex = maxzindex - 2;
 
             var progressb_el = document.createElement("div");
             progressb_el.style.all = "initial";
@@ -41571,6 +41572,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             progressb_el.style.backgroundColor = "#00aa00";
             progressb_el.style.height = "100%";
             progressb_el.style.width = "0%";
+            progressb_el.style.zIndex = maxzindex - 1;
 
             progressc_el.appendChild(progressb_el);
             document.documentElement.appendChild(progressc_el);
