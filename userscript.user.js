@@ -2,7 +2,7 @@
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
 // @version      0.9.7
-// @description  Finds larger or original versions of images for 5100+ websites
+// @description  Finds larger or original versions of images for 5200+ websites
 // @author       qsniyg
 // @homepageURL  https://qsniyg.github.io/maxurl/options.html
 // @supportURL   https://github.com/qsniyg/maxurl/issues
@@ -1845,7 +1845,16 @@ var $$IMU_EXPORT$$;
             //   http://cfile37.uf.daum.net/C160x160/23138C47524BB2D42DD743
             // http://m1.daumcdn.net/cfile81/C41x41/150A68444FFA321A18F2DB
             //   http://cfile81.uf.daum.net/C41x41/150A68444FFA321A18F2DB
+
+            // unhandled:
+            // http://i2.daumcdn.net/thumb/S160x160/18287A354FA757530767B0 (https://warmpm.tistory.com/798)
             return src.replace(/:\/\/[^/]*\/(cfile[0-9]+)\//, "://$1.uf.daum.net/");
+        }
+
+        if (domain_nosub === "daumcdn.net" && /^i[0-9]*\.tvpot\./.test(domain)) {
+            // http://i1.tvpot.daumcdn.net/svc/image/U03/tvpot_thumb/7sbtgVQMZk8$/thumb.jpg.mini
+            //   http://i1.tvpot.daumcdn.net/svc/image/U03/tvpot_thumb/7sbtgVQMZk8$/thumb.jpg
+            return src.replace(/(\/thumb\.[a-z0-9]+)\.mini(?:[?#].*)?$/, "$1");
         }
 
         if (domain === "image.news1.kr") {
@@ -2226,6 +2235,10 @@ var $$IMU_EXPORT$$;
             domain_nowww === "apsk.co.kr" ||
             // http://www.sporbiz.co.kr/news/thumbnail/201907/356684_265899_649_v150.jpg
             domain_nowww === "sporbiz.co.kr" ||
+            // http://www.lovesbeauty.co.kr/news/thumbnail/201403/6451_10368_1200_v150.jpg
+            domain_nowww === "lovesbeauty.co.kr" ||
+            // http://www.ikoreadaily.co.kr/news/thumbnail/201506/200257_95468_3552_v150.jpg
+            domain_nowww === "ikoreadaily.co.kr" ||
             // http://www.newstown.co.kr/news/thumbnail/201801/311251_198441_4816_v150.jpg
             domain_nowww === "newstown.co.kr") {
             return add_extensions_upper_jpeg(src
@@ -4707,6 +4720,8 @@ var $$IMU_EXPORT$$;
             (domain === "d1ywb8dvwodsnl.cloudfront.net" && /\/files\.fuzoku\.jp\/+img\//.test(src)) ||
             // https://www.menshealth.com.au/media/10567/rihanna.jpg?width=606&mode=crop&center=0.0,0.0
             (domain_nowww === "menshealth.com.au" && src.indexOf("/media/") >= 0) ||
+            // https://2sao.vietnamnetjsc.vn/images/2019/05/28/11/04/hara-ava2.jpg?width=150
+            (domain === "2sao.vietnamnetjsc.vn" && src.indexOf("/images/") >= 0) ||
             // http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
             // https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
             src.match(/\/demandware\.static\//) ||
@@ -5402,6 +5417,8 @@ var $$IMU_EXPORT$$;
             (domain_nowww === "hanamaru-photo.com" && /\/common\/+images\//.test(src)) ||
             // http://p.elle.bg/s/a/saweetie-and-quavo-of-migos-attend-the-2019-billboard-music-news-photo-1146346699-1556753469-123056-680x0.jpg
             domain === "p.elle.bg" ||
+            // https://illustrationwest.org/53/files/2014/10/Mayer_Bill_A_1-180x180.jpg
+            (domain_nowww === "illustrationwest.org" && src.indexOf("/files/") >= 0) ||
             // https://1.soompi.io/wp-content/blogs.dir/8/files/2015/09/HA-TFELT-Wonder-Girls-590x730.jpg -- doesn't work
             // https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2018/01/GTA-6-Female-Protag-796x417.jpg -- does work
             src.indexOf("/wp-content/blogs.dir/") >= 0 ||
@@ -6884,6 +6901,11 @@ var $$IMU_EXPORT$$;
             if (src.match(/_[0-9]*\.gif$/))
                 obj.problems.possibly_broken = true;
 
+            // http://78.media.tumblr.com/avatar_43c10cb80f16_64.png
+            //   http://78.media.tumblr.com/avatar_43c10cb80f16_512.png -- upscaled?
+            if (src.match(/\/avatar_[0-9a-f]+_(?:64|128)\./))
+                return src.replace(/_[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "_512$1");
+
             if (true || !src.match(/_[0-9]*\.gif$/)) {
                 // https://66.media.tumblr.com/a304d969f5d0012df41d657d7e4f5c5e/tumblr_p5cne9vRBD1wsufgw_og_500.jpg
                 //   https://66.media.tumblr.com/a304d969f5d0012df41d657d7e4f5c5e/tumblr_p5cne9vRBD1wsufgw_og_1280.jpg
@@ -7388,6 +7410,9 @@ var $$IMU_EXPORT$$;
             // http://www.artkoreatv.com/data/cache/public/photos/20180311/art_15209739753682_ce7de1_260x364_c0.jpg
             //   http://www.artkoreatv.com/data/photos/20180311/art_15209739753682_ce7de1.jpg
             domain === "www.artkoreatv.com" ||
+            // http://www.cnbnews.com/data/cache/public/photos/cdn/20181251/art_1545381746_176x135.jpg
+            //   http://www.cnbnews.com/data/photos/cdn/20181251/art_1545381746.jpg
+            domain_nowww === "cnbnews.com" ||
             // http://www.ddaily.co.kr/data/cache/public/photos/cdn/20180205/art_1517533165_58x58.jpg
             domain === "www.ddaily.co.kr") {
             // http://cdn.kukinews.com/data/cache/public/photos/cdn/20180104/art_1516601165_300x190.jpg
@@ -7436,6 +7461,9 @@ var $$IMU_EXPORT$$;
         if (domain === "50.7.164.242:8182" ||
             // http://img80.imgspice.com/i/04137/o4sy99ejf4p1_t.jpg
             (domain_nosub === "imgspice.com" && domain.match(/^img[0-9]*\./)) ||
+            // http://img21.imageporter.com/i/01522/rcvaaktx2q05_t.jpg
+            //   http://img21.imageporter.com/i/01522/rcvaaktx2q05.jpg
+            (domain_nosub === "imageporter.com" && domain.match(/^img[0-9]*\./)) ||
             // http://img150.pixroute.com/i/01807/71x1h0plzn0d_t.jpg
             //   http://img150.pixroute.com/i/01807/71x1h0plzn0d.jpg
             (domain_nosub === "pixroute.com" && domain.match(/img[0-9]*\./))) {
@@ -8820,6 +8848,13 @@ var $$IMU_EXPORT$$;
             ];
         }
 
+        if (false && domain === "img.asiatoday.co.kr") {
+            // http://img.asiatoday.co.kr/thum/thumbnail/2012y/04m/25d/thumb631124(0)-100120_98432.jpg
+            //   http://img.asiatoday.co.kr/file/2012y/04m/25d/631124(0)-100120_98432.jpg -- doesn't work
+            //   http://img.asiatoday.co.kr/file/2012y/04m/25d/631124(0)-480640_98432.jpg -- actual full image
+            return src.replace(/\/thum\/+thumbnail\/+([0-9]+y\/+[0-9]+m\/+[0-9]+d\/+)thumb/, "/file/$1");
+        }
+
         if (domain === "jmagazine.joins.com" ||
             // http://www.urbanbug.net/uploads/gallery/photos/2083/thumb_31888-170-05-005.jpg
             //   http://www.urbanbug.net/uploads/gallery/photos/2083/31888-170-05-005.jpg
@@ -8930,7 +8965,9 @@ var $$IMU_EXPORT$$;
         if (domain_nosub === "st-hatena.com" && domain.match(/cdn(?:-[a-z]+)\.[a-z]\.st-hatena\.com/)) {
             // https://cdn-ak.f.st-hatena.com/images/fotolife/A/Amayadori-June/20180419/20180419183448_120.jpg
             //   https://cdn-ak.f.st-hatena.com/images/fotolife/A/Amayadori-June/20180419/20180419183448.jpg
-            return src.replace(/_[0-9]+(\.[^/.]*)$/, "$1");
+            // https://cdn-ak.f.st-hatena.com/images/fotolife/k/kara-hara_8825/20100909/20100909200143_m.jpg
+            //   https://cdn-ak.f.st-hatena.com/images/fotolife/k/kara-hara_8825/20100909/20100909200143.jpg
+            return src.replace(/_(?:[0-9]+|m)(\.[^/.]*)$/, "$1");
         }
 
         if (domain === "pimg.togetter.com") {
@@ -13034,6 +13071,9 @@ var $$IMU_EXPORT$$;
             // https://ticketshow.ma/124-home_default/le-pass-marvel-studios-festival-.jpg
             //   https://ticketshow.ma/124/le-pass-marvel-studios-festival-.jpg
             domain_nowww === "ticketshow.ma" ||
+            // https://www.asiaworldmusic.fr/64615-medium_default/taeyeon-s-taeyeon-concert-kihno-video-edition-coreenne.jpg
+            //   https://www.asiaworldmusic.fr/64615/taeyeon-s-taeyeon-concert-kihno-video-edition-coreenne.jpg
+            domain_nowww === "asiaworldmusic.fr" ||
             // http://flyhighstore.pl/2210-home_default/fh-cool-red-winter-jacket.jpg
             //   http://flyhighstore.pl/2210/fh-cool-red-winter-jacket.jpg
             domain === "flyhighstore.pl") {
@@ -15602,12 +15642,15 @@ var $$IMU_EXPORT$$;
             // https://abc.imgxyqpdrs.xyz/tokimeki/img/otakara/201709/amuro_namie/ha170922-amuro_namie-50s.jpg
             //   https://abc.imgxyqpdrs.xyz/tokimeki/img/otakara/201709/amuro_namie/ha170922-amuro_namie-50.jpg
             domain === "abc.imgxyqpdrs.xyz" ||
+            // http://www.koreanartist.jp/img/kasyu/000202s.jpg
+            //   http://www.koreanartist.jp/img/kasyu/000202.jpg
+            (domain_nowww === "koreanartist.jp" && src.indexOf("/img/") >= 0 && src.match(/\/[0-9]+s\./)) ||
             // http://image-bankingf25.com/tokimeki/img/otakara/201702/mikami_yua/ie17021605-mikami_yua-06s.jpg
             //   http://image-bankingf25.com/tokimeki/img/otakara/201702/mikami_yua/ie17021605-mikami_yua-06.jpg
             domain === "image-bankingf25.com") {
             // http://img.ruliweb.com/data/news18/06m/12/multi/mai01s.jpg
             //   http://img.ruliweb.com/data/news18/06m/12/multi/mai01.jpg
-            return src.replace(/s(\.[^/.]*)$/, "$1");
+            return src.replace(/s(\.[^/.]*)(?:[?#].*)?$/, "$1");
         }
 
         if (domain === "img2.ruliweb.com") {
@@ -36431,6 +36474,18 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             return src.replace(/^([a-z]+:\/\/)[^/]*\/[-0-9]+x[-0-9]+\/+uploadImages\/+/, "$1pic-image.yesky.com/uploadImages/");
         }
 
+        if (domain === "img.gifmagazine.net") {
+            // https://img.gifmagazine.net/gifmagazine/images/630393/180half_f.gif
+            //   https://img.gifmagazine.net/gifmagazine/images/630393/original.gif -- mp4 works too
+            return src.replace(/(\/images\/+[0-9]+\/+)[^/]*(\.gif)(?:[?#].*)?$/, "$1original$2");
+        }
+
+        if (domain === "mediaprocessor.websimages.com") {
+            // https://mediaprocessor.websimages.com/width/416/crop/114,82,190x139/debmwaveart.webs.com/logowork-FINAL-OUTLINES%20(1).jpg
+            //   https://mediaprocessor.websimages.com/debmwaveart.webs.com/logowork-FINAL-OUTLINES%20(1).jpg
+            //   https://debmwaveart.webs.com/logowork-FINAL-OUTLINES%20(1).jpg -- also works
+            return src.replace(/^([a-z]+:\/\/[^/]*\/+)(?:(?:width|height|crop)\/+[^/]*\/+){0,}([^/]*\.[^/]*\/+)/, "$1$2");
+        }
 
 
 
