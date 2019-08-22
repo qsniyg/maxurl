@@ -32,6 +32,7 @@
 
   "browser_action": {
     "default_popup": "extension/popup.html",
+    "default_title": "Image Max URL",
     "default_icon": {
       "48": "resources/logo_48.png",
       "96": "resources/logo_96.png"
