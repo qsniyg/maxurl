@@ -38182,6 +38182,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
         }
         return bigimage_recursive(url, newoptions);
     };
+    bigimage_recursive.loop = bigimage_recursive_loop;
 
     var send_redirect = function(obj, cb) {
         if (is_extension) {
@@ -41273,16 +41274,33 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
         }
 
         function trigger_popup_with_source(source, automatic, use_last_pos) {
+            return get_final_from_source(source, automatic, false, use_last_pos, function(source_imu, source, processing, data) {
+                if (!source_imu && !source && !processing && !data)
+                    return;
+
+                //console_log(source_imu);
+                resetpopups();
+
+                popup_el = source.el;
+                makePopup(source_imu, source.src, processing, data);
+            });
+        }
+
+        function get_final_from_source(source, automatic, multi, use_last_pos, cb) {
             var processing = {running: true};
-            for (var i = 0; i < processing_list.length; i++) {
-                processing_list[i].running = false;
+
+            if (!multi) {
+                for (var i = 0; i < processing_list.length; i++) {
+                    processing_list[i].running = false;
+                }
+                processing_list = [processing];
             }
-            processing_list = [processing];
 
             //console_log(source);
 
             var do_popup = function() {
-                start_waiting();
+                if (!multi)
+                    start_waiting();
 
                 var x = mouseX;
                 var y = mouseY;
@@ -41296,15 +41314,12 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                     //console_log(source_imu);
                     //console_log(data);
                     if ((!source_imu && false) || !data) {
-                        stop_waiting();
-                        return;
+                        if (!multi)
+                            stop_waiting();
+                        return cb();
                     }
 
-                    //console_log(source_imu);
-                    resetpopups();
-
-                    popup_el = source.el;
-                    makePopup(source_imu, source.src, processing, {
+                    cb(source_imu, source, processing, {
                         data: data,
                         x: x,
                         y: y
@@ -41358,7 +41373,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                     console_error(e);
                     //console.trace();
                     // this doesn't work
-                    makePopup(source.src);
+                    //makePopup(source.src);
                 }
             };
 
@@ -41448,6 +41463,36 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             }
             style.transform = "rotate(" + (deg + dir) + "deg)";
         }
+
+        function replace_images() {
+            var imgs = document.querySelectorAll("img");
+            console_log("Replacing images");
+
+            var finished = 0;
+
+            var finish_img = function() {
+                finished++;
+                console_log("Finished " + finished + "/" + imgs.length);
+            };
+
+            for (var i = 0; i < imgs.length; i++) {
+                var source = find_source([imgs[i]]);
+                if (source) {
+                    get_final_from_source(source, true, true, false, function (source_imu, source, processing, data) {
+                        if (data.data.img) {
+                            source.el.src = data.data.img.src;
+                        } else if (data.data.obj) {
+                            source.el.src = data.data.obj[0].url;
+                        }
+                        finish_img();
+                    });
+                } else {
+                    finish_img();
+                }
+            }
+        }
+
+        register_menucommand("Replace images", replace_images);
 
         document.addEventListener('keydown', function(event) {
             if (settings.mouseover_trigger_behavior !== "keyboard")
