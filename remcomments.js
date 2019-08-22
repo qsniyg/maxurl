@@ -60,6 +60,7 @@ function update() {
         in_falserule = true;
         continue;
       } else {
+        // TODO: If needed, /^ {8}/ can later be removed (about.js will have to be updated)
         newlines.push(line);
       }
     } else {
