@@ -41287,6 +41287,9 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
         }
 
         function get_final_from_source(source, automatic, multi, use_last_pos, cb) {
+            // FIXME: "multi" is used purely for replace_images,
+            //   so it's used as a check for many options that have nothing to do with multi
+
             var processing = {running: true};
 
             if (!multi) {
@@ -41335,6 +41338,10 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                         element: source.el,
                         cb: realcb
                     }, function(obj, finalcb) {
+                        if (multi && obj[0].url === source.src) {
+                            return finalcb(source.src, null);
+                        }
+
                         var newobj = deepcopy(obj);
 
                         if (source.src && obj_indexOf(newobj, source.src) < 0)
@@ -41479,6 +41486,10 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                 var source = find_source([imgs[i]]);
                 if (source) {
                     get_final_from_source(source, true, true, false, function (source_imu, source, processing, data) {
+                        if (!data) {
+                            return finish_img();
+                        }
+
                         if (data.data.img) {
                             source.el.src = data.data.img.src;
                         } else if (data.data.obj) {
