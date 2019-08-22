@@ -399,6 +399,7 @@ var $$IMU_EXPORT$$;
         "Popup UI Options Button": {
             "ko": "팝업 UI에 설정 링크"
         },
+        "Popup UI Rotation Buttons": {},
         "Keep popup open until": {
             "ko": "팝업 닫으려면"
         },
@@ -543,6 +544,12 @@ var $$IMU_EXPORT$$;
         },
         "category_extension": {
             "en": "Extension"
+        },
+        "rotate_left_btn": {
+            "en": "Rotate Left (E)"
+        },
+        "rotate_right_btn": {
+            "en": "Rotate Right (R)"
         }
     };
 
@@ -602,6 +609,7 @@ var $$IMU_EXPORT$$;
         mouseover_ui_gallerycounter: true,
         mouseover_ui_gallerymax: 50,
         mouseover_ui_optionsbtn: is_userscript ? true : false,
+        mouseover_ui_rotationbtns: false,
         // also thanks to blue-lightning
         mouseover_close_behavior: "esc",
         mouseover_zoom_behavior: "fit",
@@ -799,6 +807,15 @@ var $$IMU_EXPORT$$;
             },
             // While it works for the extension, it's more or less useless
             userscript_only: true,
+            category: "popup",
+            subcategory: "ui"
+        },
+        mouseover_ui_rotationbtns: {
+            name: "Popup UI Rotation Buttons",
+            description: "Enables buttons to rotate the image 90 degrees",
+            requires: {
+                mouseover_ui: true
+            },
             category: "popup",
             subcategory: "ui"
         },
@@ -40097,9 +40114,16 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                     }
 
                     if (settings.mouseover_ui_optionsbtn) {
-                        var optionsurl = options_page;
                         var optionsbtn = addbtn("⚙", _("Options"), options_page, true);
                         topbarel.appendChild(optionsbtn);
+                    }
+
+                    if (settings.mouseover_ui_rotationbtns) {
+                        var rotateleftbtn = addbtn("↶", _("rotate_left_btn"), function() {rotate_gallery(-90)}, true);
+                        var rotaterightbtn = addbtn("↷", _("rotate_right_btn"), function() {rotate_gallery(90)}, true);
+
+                        topbarel.appendChild(rotateleftbtn);
+                        topbarel.appendChild(rotaterightbtn);
                     }
                 }
 
@@ -41362,7 +41386,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             var style = popups[0].querySelector("img").parentElement.parentElement.style;
             var deg = 0;
             if (style.transform) {
-                var match = style.transform.match(/^rotate\(([0-9]+)deg\)$/);
+                var match = style.transform.match(/^rotate\(([-0-9]+)deg\)$/);
                 if (match) {
                     deg = parseInt(match[1]);
                 }
