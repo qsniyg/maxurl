@@ -41527,8 +41527,15 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             style.transform = "rotate(" + (deg + dir) + "deg)";
         }
 
+        var replacing_imgs = false;
         function replace_images() {
+            if (replacing_imgs)
+                return;
+
             var imgs = document.querySelectorAll("img");
+            if (imgs.length === 0)
+                return;
+
             console_log("Replacing images");
 
             var finished = 0;
@@ -41540,6 +41547,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
 
                 if (finished >= imgs.length) {
                     progressc_el.parentElement.removeChild(progressc_el);
+                    replacing_imgs = false;
                 }
             };
 
@@ -41567,6 +41575,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
             progressc_el.appendChild(progressb_el);
             document.documentElement.appendChild(progressc_el);
 
+            replacing_imgs = true;
             for (var i = 0; i < imgs.length; i++) {
                 var source = find_source([imgs[i]]);
                 if (source) {
