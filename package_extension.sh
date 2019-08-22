@@ -28,6 +28,8 @@ extension/
 extension/background.js
 extension/options.css
 extension/options.html
+extension/popup.html
+extension/popup.js
 LICENSE.txt
 manifest.json
 resources/logo_48.png
