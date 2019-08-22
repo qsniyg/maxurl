@@ -550,6 +550,12 @@ var $$IMU_EXPORT$$;
         },
         "rotate_right_btn": {
             "en": "Rotate Right (R)"
+        },
+        "category_extra": {
+            "en": "Extra"
+        },
+        "subcategory_replaceimages": {
+            "en": "Replace Images"
         }
     };
 
@@ -631,7 +637,8 @@ var $$IMU_EXPORT$$;
         allow_possibly_broken: false,
         // thanks to LukasThyWalls on github for the idea
         bigimage_blacklist: "",
-        bigimage_blacklist_engine: "glob"
+        bigimage_blacklist_engine: "glob",
+        replaceimgs_usedata: true
     };
     var orig_settings = deepcopy(settings);
 
@@ -1042,6 +1049,12 @@ var $$IMU_EXPORT$$;
                     name: "Regex"
                 }
             }
+        },
+        replaceimgs_usedata: {
+            name: "Use data URLs",
+            description: "Uses data:// URLs instead of image links",
+            category: "extra",
+            subcategory: "replaceimages"
         }
     };
 
@@ -1058,7 +1071,9 @@ var $$IMU_EXPORT$$;
         "ui": "subcategory_ui",
         "rules": "category_rules",
         "website": "category_website",
-        "extension": "category_extension"
+        "extension": "category_extension",
+        "extra": "category_extra",
+        "replaceimages": "subcategory_replaceimages"
     };
 
 
@@ -41347,9 +41362,15 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                         if (source.src && obj_indexOf(newobj, source.src) < 0)
                             newobj.push(fillobj(source.src)[0]);
 
-                        var openb = get_single_setting("mouseover_open_behavior");
+                        var usehead = false;
 
-                        if (openb === "newtab") {
+                        if (!multi && get_single_setting("mouseover_open_behavior") === "newtab") {
+                            usehead = true;
+                        } else if (multi && !get_single_setting("replaceimgs_usedata")) {
+                            usehead = true;
+                        }
+
+                        if (usehead) {
                             processing.head = true;
                         }
 
@@ -41361,7 +41382,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                             var data = {img: img, newurl: newurl, obj: obj, respdata: respdata};
                             var newurl1 = newurl;
 
-                            if (openb === "newtab") {
+                            if (usehead) {
                                 data = {resp: img, obj: newurl};
                                 newurl1 = data.resp.finalUrl;
                             }
@@ -41522,7 +41543,7 @@ if (domain_nosub === "lystit.com" && domain.match(/cdn[a-z]?\.lystit\.com/)) {
                         if (data.data.img) {
                             source.el.src = data.data.img.src;
                         } else if (data.data.obj) {
-                            source.el.src = data.data.obj[0].url;
+                            source.el.src = data.data.obj.url;
                         }
                         finish_img();
                     });
