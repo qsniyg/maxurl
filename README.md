@@ -151,7 +151,7 @@ The result is a list of objects that contain properties that may be useful in us
 
       // A list of problems with this image. Use exclude_problems to exclude images with specific problems
       problems: {
-        // If true, the image is likely larger than the one inputted, but it also has a watermark
+        // If true, the image is likely larger than the one inputted, but it also has a watermark (when the inputted one doesn't)
         watermark: false,
 
         // If true, the image is likely smaller than the one inputted, but it has no watermark
