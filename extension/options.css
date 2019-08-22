@@ -425,12 +425,32 @@ input:checked + label, button {
   font-size: 1.5em;
   font-weight: 100;
   margin-bottom: 1em;
+  padding-bottom: 0.5em;
+
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  border-bottom-color: #aaa;
+  border-image-slice: 1;
+}
+
+#options .subcat > h3 {
+  font-size: 1.2em;
+  font-weight: 100;
+  margin-bottom: 0.5em;
 }
 
 @media (max-width:700px) {
   #options .category > h2 {
     text-align: center;
   }
+}
+
+#options .option > .error {
+  margin-left: 2em;
+  margin-right: 2em;
+  margin-top: 1em;
+  color: #e32020;
+  font-family: monospace;
 }
 
 #options ul.examples {
