@@ -4,3 +4,8 @@ node_modules
 *~
 site/
 extension.xpi
+*.pem
+*.crx
+maxurl.zip
+*.pub
+*.sig

@@ -43,6 +43,8 @@
     "page": "extension/options.html"
   },
 
+  "options_page": "extension/options.html",
+
   "permissions": [
     "storage",
     "webRequest",
