@@ -407,6 +407,16 @@ input:checked + label, button, .button {
   }
 }
 
+@media (max-width:500px) {
+  #options {
+    font-size: 0.95em;
+  }
+
+  label, button, .button {
+    padding: 5px 10px;
+  }
+}
+
 #options h1 {
   margin-bottom: 1.5em;
 }
