@@ -75,7 +75,8 @@ module.exports.get_sites = get_sites;
 var userscript_contents = null;
 var userscript_rcontents = null;
 if (typeof document !== "undefined") {
-  var userscript_location = "https://gitcdn.xyz/repo/qsniyg/maxurl/master/userscript_smaller.user.js";
+  //var userscript_location = "https://gitcdn.xyz/repo/qsniyg/maxurl/master/userscript_smaller.user.js";
+  var userscript_location = "userscript_smaller.user.js";
 
   var oReq = new XMLHttpRequest();
   oReq.addEventListener("load", reqListener);
