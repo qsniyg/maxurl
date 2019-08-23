@@ -4993,7 +4993,7 @@ var $$IMU_EXPORT$$;
             domain === "assets.wonderlandmagazine.com" ||
             // https://am24.akamaized.net/tms/cnt/uploads/2017/04/taylor-swift-650x372.jpg
             // https://am21.akamaized.net/tms/cnt/uploads/2019/01/CardiB-1200x831.jpg
-            (domain_nosub === "akamaized.net" && domain.match(/^am[0-9]*\./) && src.indexOf("/tms/cnt/uploads/") >= 0) ||
+            (domain_nosub === "akamaized.net" && domain.match(/^am[0-9]*\./) && /\/tms\/+cnt\/+uploads\//.test(src)) ||
             // http://snappa.static.pressassociation.io/assets/2016/04/08154418/1460126656-210b91ce6f5398e743add7f71b3e9b72-600x986.jpg
             (domain_nosub === "pressassociation.io" && domain.indexOf("static.pressassociation.io") >= 0) ||
             // https://assets.vg247.com/current/2014/09/sep_23_-_keyart_inquisitormf_v3-156x108.jpg
@@ -5001,13 +5001,13 @@ var $$IMU_EXPORT$$;
             // https://www.theblemish.com/images/2015/02/taylor-swift-stops-by-kelsey-edwards-studio-17-640x881.jpg
             (domain_nowww === "theblemish.com" && src.indexOf("/images/") >= 0) ||
             // https://www.dailyxtra.com/content/uploads/2017/06/billc36-479x270.jpg
-            (domain === "www.dailyxtra.com" && src.indexOf("/content/uploads/") >= 0) ||
+            (domain_nowww === "dailyxtra.com" && /\/content\/+uploads\//.test(src)) ||
             // https://media.metrolatam.com/2018/05/12/neymarseponecamistapsg2018-09b3bddb47d54ac1e4d12b24697bc2e8-300x200.jpg
             domain === "media.metrolatam.com" ||
             // http://media.comicbook.com/2018/01/dove-cameron-ruby-agents-of-shield-1079103-1280x0.jpeg
             domain === "media.comicbook.com" ||
             // https://www.grazia.it/content/uploads/2018/01/Dove-Cameron-800x599.jpg
-            domain === "www.grazia.it" ||
+            domain_nowww === "grazia.it" ||
             // https://img.kpopmap.com/2018/05/loco-445x262.jpg
             domain === "img.kpopmap.com" ||
             // https://s.nbst.gr/files/1/2018/03/AP_18064008875527-353x221.jpg
@@ -5062,7 +5062,7 @@ var $$IMU_EXPORT$$;
             // http://gceleb.com/photo/2016/06/Mathematician-Rachel-Riley-768x1152.jpg
             (domain_nowww === "gceleb.com" && src.indexOf("/photo/") >= 0) ||
             // https://www.seriouseats.com/recipes/images/2015/02/20150216-grilled-tofu-banh-mi-recipe-vegan-12-1500x1125.jpg
-            (domain === "www.seriouseats.com" && src.indexOf("/images/") >= 0) ||
+            (domain_nowww === "seriouseats.com" && src.indexOf("/images/") >= 0) ||
             // http://i.epochtimes.com/assets/uploads/2016/11/yangmi-600x400.jpg
             domain === "i.epochtimes.com" ||
             // https://cdn.thammysen.vn//2017/04/tam-trang-toan-than-bang-sua-chua-va-mat-ong3-300x200.jpg
@@ -5076,7 +5076,7 @@ var $$IMU_EXPORT$$;
             // https://cdn3.whatculture.com/images/2015/04/avengers-end-scene-600x400.jpg
             (domain_nosub === "whatculture.com" && domain.match(/^cdn[0-9]*\.whatculture\.com/) && src.indexOf("/images/") >= 0) ||
             // http://www.electronicbeats.net/app/uploads/2013/11/baxxter-oehlen-electronic-beats-luci-lux-1240x710.jpg
-            (domain === "www.electronicbeats.net" && src.indexOf("/uploads/") >= 0) ||
+            (domain_nowww === "electronicbeats.net" && src.indexOf("/uploads/") >= 0) ||
             // https://media.iconsingapore.com/2018/05/Julianne-Moore-in-Givenchy-750x1125.jpg
             domain === "media.iconsingapore.com" ||
             // http://p.cosmopolitan.bg/g/e/gettyimages-699742676-74636-636x0.jpg?1504777991774
@@ -5481,7 +5481,7 @@ var $$IMU_EXPORT$$;
         if (domain === "cdn.heatworld.com" ||
             // http://www.sohobluesgallery.com/mm5/graphics/00000001/Rolling_Stones_Keith_Richards_Guitar_God_475x705.jpg
             //   http://www.sohobluesgallery.com/mm5/graphics/00000001/Rolling_Stones_Keith_Richards_Guitar_God.jpg
-            domain === "www.sohobluesgallery.com" ||
+            domain_nowww === "sohobluesgallery.com" ||
             // https://i.vimeocdn.com/video/530332183_780x439.jpg
             domain === "i.vimeocdn.com" ||
             // https://media.indiatimes.in/media/content/2018/Feb/arun_jaitley_allocates_rs_1200_crore_to_promote_bamboo_cultivation_1517487222_100x150.jpg
@@ -5531,7 +5531,7 @@ var $$IMU_EXPORT$$;
             // http://socdn.smtown.com/upload/smtownnow/pictures/images/2018/06/15/o_1cg12bap41e5v3vh1iu2mhkjaj9_600x800.jpg
             domain === "socdn.smtown.com" ||
             // http://www.lecturas.com/medio/2018/03/14/andrea-duro-4_6a8880f6_800x1200.jpg
-            (domain === "www.lecturas.com" && src.indexOf("/medio/") >= 0) ||
+            (domain_nowww === "lecturas.com" && src.indexOf("/medio/") >= 0) ||
             // https://www.clara.es/medio/2018/02/26/margot-robbie-oscars-2017_f0ed3ed6_600x900.jpg
             (domain_nowww === "clara.es" && src.indexOf("/medio/") >= 0) ||
             // https://images.anandtech.com/doci/12326/2018-01-09_14.26.05_678x452.jpg
@@ -19704,7 +19704,7 @@ var $$IMU_EXPORT$$;
                     // popup
                     if ((current.tagName === "DIV" && current.getAttribute("role") === "dialog") ||
                         // post page
-                        (current.tagName === "MAIN" && document.location.href.match(/:\/\/[^/]*\/+p\//))) {
+                        (current.tagName === "MAIN" && document.location.href.match(/:\/\/[^/]*\/+(?:[^/]*\/+)?p\//))) {
                         newsrc = request_post(document.location.href, options.element.src);
                         if (newsrc)
                             return newsrc;
