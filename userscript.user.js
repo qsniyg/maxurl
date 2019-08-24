@@ -1984,10 +1984,19 @@ var $$IMU_EXPORT$$;
             // http://thumb.mtstarnews.com/06/2018/04/2018040415075698337_1.jpg
             //   http://thumb.mtstarnews.com/07/2018/04/2018040415075698337_1.jpg -- much smaller
             //   http://image.mtstarnews.com/2018/04/2018040415075698337_1.jpg
+
+            // https://thumb.mt.co.kr/11/2019/08/2019082308100726893_1.jpg/dims/resize/100x/optimize/
+            //   http://image.mt.co.kr/2019/08/2019082308100726893_1.jpg
+            newsrc = src.replace(/\/+dims\/.*/, "");
+            if (newsrc !== src)
+                return newsrc;
+
             // 06 and 21 seem to be identical
             // after that, in order of size: 05, 07, 17, 11, 16, 10, 20, 04, 15, 03, 14, 19
             //src = src.replace(/(thumb\.[^/]*)\/[0-9]+(\/[0-9]*\/[0-9]*\/[^/]*).*/, "$1/06$2");
-            src = src.replace(/:\/\/thumb\.([^/]*)\/[0-9]+\//, "://image.$1/");
+            newsrc = src.replace(/^[a-z]+:\/\/thumb\.([^/]*)\/[0-9]+\//, "http://image.$1/");
+            if (newsrc !== src)
+                return newsrc;
         }
 
         if (domain === "menu.mt.co.kr" ||
@@ -4802,6 +4811,8 @@ var $$IMU_EXPORT$$;
             (domain_nowww === "menshealth.com.au" && src.indexOf("/media/") >= 0) ||
             // https://2sao.vietnamnetjsc.vn/images/2019/05/28/11/04/hara-ava2.jpg?width=150
             (domain === "2sao.vietnamnetjsc.vn" && src.indexOf("/images/") >= 0) ||
+            // http://images.jkn.co.kr/data/images/full/939969/image.jpg?w=64&h=64&l=50&t=40
+            (domain === "images.jkn.co.kr" && src.indexOf("/images/") >= 0) ||
             // http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
             // https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
             src.match(/\/demandware\.static\//) ||
@@ -36225,6 +36236,8 @@ var $$IMU_EXPORT$$;
             // http://www.soamasterclass.com/images/rainbow-s-jisook-is-the-sexy-cover-model-for-maxim__aHR0cHM6Ly9jZG4xLmxvY2tlcmRvbWUuY29tL3VwbG9hZHMvYjE5Mzc5YTJiM2M5NTc4ZTI1Zjg0MTA0Y2YyNjE2NDE0ZmQ3N2M5ZDlmMDNlMTM5MmExMmM1ZGVjNDA1YTU1Yl9sYXJnZQ==.jpg
             //   https://cdn1.lockerdome.com/uploads/b19379a2b3c9578e25f84104cf2616414fd77c9d9f03e1392a12c5dec405a55b_:original
             domain_nowww === "soamasterclass.com" ||
+            // https://www.royal-city.com/images/miley-cyrus-short-hair__aHR0cDovLzEuYnAuYmxvZ3Nwb3QuY29tLy1yZHNZWVhaS3RDTS9VUVdGU0ppNW5QSS9BQUFBQUFBQUJKUS9fS2o0aHd1Tnpkdy9zNjQwL01pbGV5LUN5cnVzLUZlZXQtODk5NTg1LmpwZw==.jpg
+            domain_nowww === "royal-city.com" ||
             // http://www.edu.kustantiblogs.web.id/images/showing-porn-images-for-hisui-nightshade-porn-www__aHR0cHM6Ly9pLnBpbmltZy5jb20vb3JpZ2luYWxzL2M4LzI4L2QyL2M4MjhkMjBhODYwMjUyZjAwOGU3MjUyM2YwNGU2YWRiLmpwZw==.jpg
             //   https://i.pinimg.com/originals/c8/28/d2/c828d20a860252f008e72523f04e6adb.jpg
             domain === "www.edu.kustantiblogs.web.id") {
