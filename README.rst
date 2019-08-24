@@ -9,24 +9,24 @@ but it also supports a number of generic engines (such as Wordpress and MediaWik
 
 It is currently released as:
 
- - `Userscript <https://greasyfork.org/en/scripts/36662-image-max-url>`__ (most browsers)
+- `Userscript <https://greasyfork.org/en/scripts/36662-image-max-url>`__ (most browsers)
 
-   - `userscript.user.js <https://github.com/qsniyg/maxurl/blob/master/userscript.user.js>`__ is also the base for everything listed below
-   - It also serves as a node module (used by the reddit bot), and can be embedded in a website
+  - `userscript.user.js <https://github.com/qsniyg/maxurl/blob/master/userscript.user.js>`__ is also the base for everything listed below
+  - It also serves as a node module (used by the reddit bot), and can be embedded in a website
 
- - `Firefox Addon <https://addons.mozilla.org/en-US/firefox/addon/image-max-url/>`__ (Firefox Quantum-based browsers only, other browsers supporting WebExtensions can sideload the extension through this git repository)
+- `Firefox Addon <https://addons.mozilla.org/en-US/firefox/addon/image-max-url/>`__ (Firefox Quantum-based browsers only, other browsers supporting WebExtensions can sideload the extension through this git repository)
 
-   - Since addons have more privileges than userscripts, it has a bit of extra functionality over the userscript
-   - Source code is in `manifest.json <https://github.com/qsniyg/maxurl/blob/master/manifest.json>`__ and the `extension <https://github.com/qsniyg/maxurl/tree/master/extension>`__ folder
+  - Since addons have more privileges than userscripts, it has a bit of extra functionality over the userscript
+  - Source code is in `manifest.json <https://github.com/qsniyg/maxurl/blob/master/manifest.json>`__ and the `extension <https://github.com/qsniyg/maxurl/tree/master/extension>`__ folder
 
- - `Website <https://qsniyg.github.io/maxurl/>`__
+- `Website <https://qsniyg.github.io/maxurl/>`__
 
-   - Due to browser security constraints, some URLs (requiring cross-origin requests) can't be supported by the website
-   - Source code is in the `gh-pages <https://github.com/qsniyg/maxurl/tree/gh-pages>`__ branch
+  - Due to browser security constraints, some URLs (requiring cross-origin requests) can't be supported by the website
+  - Source code is in the `gh-pages <https://github.com/qsniyg/maxurl/tree/gh-pages>`__ branch
 
- - Reddit bot (`/u/MaxImageBot <https://www.reddit.com/user/MaxImageBot/>`__)
+- Reddit bot (`/u/MaxImageBot <https://www.reddit.com/user/MaxImageBot/>`__)
 
-   - Source code is in `bot.js <https://github.com/qsniyg/maxurl/blob/master/bot.js>`__
+  - Source code is in `bot.js <https://github.com/qsniyg/maxurl/blob/master/bot.js>`__
 
 *******************************
 Integrating IMU in your program
