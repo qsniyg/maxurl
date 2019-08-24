@@ -2,6 +2,7 @@ var inputel = document.getElementById("input");
 var maxael = document.getElementById("max_a");
 var maxspanel = document.getElementById("max_span");
 var maximgel = document.getElementById("max_img");
+var origpageel = document.getElementById("original_page");
 var currenturl = null;
 
 // Wrapper for Image Max URL, overwritten by the userscript
@@ -94,6 +95,7 @@ function sanitize_url(url) {
 function resetels() {
   maxael.innerHTML = "";
   maximgel.src = "";
+  origpageel.innerHTML = "";
 }
 
 // Google Analytics statistics
@@ -193,11 +195,31 @@ function set_max(obj) {
     return;
   }
 
+  var origpage = null;
+  for (var i = 0; i < obj.length; i++) {
+    if (obj[i] && obj[i].extra && obj[i].extra.page) {
+      origpage = obj[i].extra.page;
+      break;
+    }
+  }
+
+  function set_orig_page() {
+    if (origpage) {
+      var origpagea = document.createElement("a");
+      origpageel.innerText = "Original page: ";
+      origpagea.setAttribute("rel", "noreferrer");
+      origpagea.href = origpage;
+      origpagea.innerText = origpage;
+      origpageel.appendChild(origpagea);
+    }
+  }
+
   if (urls.length === 1 && urls[0] === currenturl) {
     maxspanel.innerHTML = "No larger image found";
     track_ga("no_larger_image");
 
     resetels();
+    set_orig_page();
     return;
   }
 
@@ -220,6 +242,8 @@ function set_max(obj) {
     if ((i + 1) < urls.length)
       maxael.appendChild(subp);
   }
+
+  set_orig_page();
 
   //currenturl = urls;
 
