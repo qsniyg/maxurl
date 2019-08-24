@@ -42,22 +42,33 @@ As mentioned above, userscript.user.js also functions as a node module.
 
     maximage(smallimage, {
       // If set to false, it will return only the URL if there aren't any special properties
+      // Recommended to keep true.
+      //
+      // The only reason this option exists is as a small hack for a helper userscript used to find new rules,
+      //  to check if IMU already supports a rule.
       fill_object: true,
 
       // Maximum amount of times it should be run.
-      //  Recommended to be at least 5
+      // Recommended to be at least 5.
       iterations: 200,
 
-      // Whether or not to store to, and use an internal cache
+      // Whether or not to store to, and use an internal cache for URLs.
+      // Currently there is no option to clear it, meaning memory usage will very slowly increase.
+      //   At ~20 URLs per second, MaxImageBot uses ~1GB of RAM after a few days of running due to this option.
+      // Implementing an auto-clearing cache is tracked at https://github.com/qsniyg/maxurl/issues/109
       use_cache: true,
 
       // List of "problems" (such as watermarks or possibly broken image) to exclude.
-      //  By default, all problems are excluded.
-      //  By setting it to [], no problems will be excluded.
+      //
+      // By default, all problems are excluded.
+      // Currently there is no way to automatically find all problems excluded, but once https://github.com/qsniyg/maxurl/issues/110
+      // is implemented, it will be possible to do so by looking at the default value for exclude_problems.
+      //
+      // By setting it to [], no problems will be excluded.
       //exclude_problems: [],
 
       // This will include a "history" of objects found through iterations.
-      //  Disabling this will only keep the objects found through the last successful iteration.
+      // Disabling this will only keep the objects found through the last successful iteration.
       include_pastobjs: true,
 
       // This will try to find the original page for an image, even if it requires extra requests.
