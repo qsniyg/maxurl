@@ -2281,6 +2281,12 @@ var $$IMU_EXPORT$$;
                                         .replace(/(\/[0-9]+_[0-9]+_[0-9]+)_150(\.[^/.]*)$/, "$1$2"));
         }
 
+        if (domain === "shop.newsen.com") {
+            // http://shop.newsen.com/data/thumb/200_142_201808171221570910_1.jpg
+            //   http://photo.newsen.com/news_photo/2018/08/17/201808171221570910_1.jpg
+            return src.replace(/:\/\/[^/]*\/+data\/+thumb\/+[0-9]+_[0-9]+_([0-9][0-9][0-9][0-9])([0-9][0-9])([0-9][0-9])([^/]*)$/, "://photo.newsen.com/news_photo/$1/$2/$3/$1$2$3$4");
+        }
+
         if (domain === "cdn.newsen.com" ||
             domain === "photo.newsen.com") {
             // http://photo.newsen.com/news_photo/2011/04/28/201104281531181001_1.jpg -- 2880x4320
@@ -2290,14 +2296,17 @@ var $$IMU_EXPORT$$;
             //   http://cdn.newsen.com/newsen/news_photo/2019/03/06/201903062017275510_1.jpg -- 540x842
             // https://entertain.v.daum.net/v/20190306201751601
             //   https://t1.daumcdn.net/news/201903/06/newsen/20190306201751195iqvu.jpg -- 641x1000
+            // other:
+            // http://photo.newsen.com/photo/2006/05/15/200605151650091006_1.jpg
             src = src.replace(/_ts\.[^/._]*$/, ".jpg").replace("/mphoto/", "/news_photo/");
+
             if (src.indexOf("/main_photo/") >= 0) {
                 // http://cdn.newsen.com/newsen/main_photo/index_a2_201801030825321910_1.jpg
                 //   http://cdn.newsen.com/newsen/news_photo/2018/01/03/201801030825321910_1.jpg
                 // http://cdn.newsen.com/newsen/main_photo/mobile/favphoto_201807131531391510_1.jpg
                 //   http://cdn.newsen.com/newsen/news_photo/2018/07/13/201807131531391510_1.jpg
                 //   http://photo.newsen.com/news_photo/2018/07/13/201807131531391510_1.jpg
-                src = src.replace(/\/main_photo\/(?:mobile\/)?[^/]*_([0-9][0-9][0-9][0-9])([0-9][0-9])([0-9][0-9])([^/]*)$/, "/news_photo/$1/$2/$3/$1$2$3$4");
+                src = src.replace(/\/main_photo\/+(?:mobile\/+)?[^/]*_([0-9][0-9][0-9][0-9])([0-9][0-9])([0-9][0-9])([^/]*)$/, "/news_photo/$1/$2/$3/$1$2$3$4");
             }
 
             // http://cdn.newsen.com/newsen/resize/235x-/2019/05/18/201905182149162610_1.jpg
@@ -38111,7 +38120,8 @@ var $$IMU_EXPORT$$;
             if (_nir_debug_)
                 console_log("do_cache (newhref, currentobj):", deepcopy(newhref), deepcopy(currentobj));
 
-            currenthref = get_currenthref(fillobj(newhref, currentobj));
+            var cache_endhref = fillobj(newhref, currentobj);
+            currenthref = get_currenthref(cache_endhref);
             if (!currenthref)
                 return;
 
@@ -38120,7 +38130,7 @@ var $$IMU_EXPORT$$;
                     var href = pasthrefs[i];
 
                     if (href !== currenthref || true)
-                        url_cache[href] = newhref;
+                        url_cache[href] = deepcopy(cache_endhref);
                 }
             }
         };
