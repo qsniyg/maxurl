@@ -1,6 +1,8 @@
-.. image:: https://raw.githubusercontent.com/qsniyg/maxurl/master/resources/imu_opera_banner_transparent.png
-   :alt: Image Max URL
-   :align: center
+.. raw:: html
+
+   <p align="center">
+     <img src="https://raw.githubusercontent.com/qsniyg/maxurl/master/resources/imu_opera_banner_transparent.png" alt="Image Max URL" title="Image Max URL" />
+   </p>
 
 Image Max URL is a program that will try to find larger/original versions of images, usually by replacing URL patterns.
 
