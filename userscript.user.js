@@ -602,6 +602,7 @@ var $$IMU_EXPORT$$;
         redirect: true,
         redirect_history: true,
         canhead_get: true,
+        redirect_force_page: false,
         mouseover: true,
         // thanks to blue-lightning on github for the idea
         mouseover_open_behavior: "popup",
@@ -659,6 +660,14 @@ var $$IMU_EXPORT$$;
         canhead_get: {
             name: "Use GET if HEAD is unsupported",
             description: "Use a GET request to check an image's availability, if the server does not support HEAD requests",
+            requires: {
+                redirect: true
+            },
+            category: "redirection"
+        },
+        redirect_force_page: {
+            name: "Try finding original page",
+            description: "Enables more time-intensive methods for finding the original page, currently only applies to Flickr",
             requires: {
                 redirect: true
             },
@@ -1899,7 +1908,10 @@ var $$IMU_EXPORT$$;
             if (filename !== src) {
                 return {
                     url: newsrc,
-                    filename: filename
+                    filename: filename,
+                    extra: {
+                        page: "http://news1.kr/photos/view/?" + filename
+                    }
                 };
             }
 
@@ -14913,95 +14925,138 @@ var $$IMU_EXPORT$$;
             //   https://farm8.staticflickr.com/7034/6693295971_36acecc53b_o.jpg
             // https://farm8.staticflickr.com/7002/6432649813_4fe18483a6.jpg
             //   https://farm8.staticflickr.com/7002/6432649813_21c9e80f43_o.jpg
-            if (src.match(/\/[0-9]+_[0-9a-f]+_o\.[a-z]+.*$/)) {
-                return {
+
+            function find_api_key(cb) {
+                options.do_request({
+                    url: "https://www.flickr.com/",
+                    method: "GET",
+                    headers: {
+                        "Origin": "",
+                        "Referer": "",
+                        "Cookie": ""
+                    },
+                    onload: function(resp) {
+                        if (resp.readyState === 4) {
+                            var regex = /root\.YUI_config\.flickr\.api\.site_key *= *['"]([^'"]*)['"] *; */;
+                            var matchobj = resp.responseText.match(regex);
+                            if (!matchobj) {
+                                cb(null);
+                                return;
+                            }
+
+                            var key = matchobj[1];
+                            cb(key);
+                        }
+                    }
+                });
+            }
+
+            function find_original_page(key, src, cb) {
+                var photoid = src.replace(/.*\/([0-9]+)_[^/]*$/, "$1");
+                var photosecret = src.replace(/.*\/[0-9]+_([0-9a-z]+)_[^/]*$/, "$1");
+                var nexturl = "https://api.flickr.com/services/rest?csrf=&api_key=" + key + "&format=json&nojsoncallback=1&method=flickr.photos.getInfo&photo_id=" + photoid + "&secret=" + photosecret;
+                options.do_request({
+                    url: nexturl,
+                    method: "GET",
+                    headers: {
+                        "Origin": "",
+                        "Referer": "",
+                        "Cookie": ""
+                    },
+                    onload: function (resp) {
+                        try {
+                            var out = JSON_parse(resp.responseText);
+                            cb(out.photo.urls.url[0]._content);
+                        } catch (e) {
+                            cb(null);
+                        }
+                    }
+                });
+            }
+
+            newsrc = src.replace(/(:\/\/[^/]*\/(?:[0-9]+\/)?[0-9]+\/[0-9]+_[0-9a-f]+(?:_[a-z])?\.[a-zA-Z0-9]*).*$/, "$1");
+            if (newsrc.match(/\/[0-9]+_[0-9a-f]+_o\.[a-z]+.*$/)) {
+                var obj = {
                     url: src,
                     is_original: true
                 };
-            }
 
-            src = src.replace(/(:\/\/[^/]*\/(?:[0-9]+\/)?[0-9]+\/[0-9]+_[0-9a-f]+(?:_[a-z])?\.[a-zA-Z0-9]*).*$/, "$1");
-            options.do_request({
-                url: "https://www.flickr.com/",
-                method: "GET",
-                headers: {
-                    "Origin": "",
-                    "Referer": "",
-                    "Cookie": ""
-                },
-                onload: function(resp) {
-                    if (resp.readyState === 4) {
-                        var regex = /root\.YUI_config\.flickr\.api\.site_key *= *['"]([^'"]*)['"] *; */;
-                        var matchobj = resp.responseText.match(regex);
-                        if (!matchobj) {
-                            cb(null);
-                            return;
+                if (options.force_page) {
+                    find_api_key(function(key) {
+                        if (!key) {
+                            return options.cb(obj);
                         }
 
-                        var key = matchobj[1];
-                        var photoid = src.replace(/.*\/([0-9]+)_[^/]*$/, "$1");
-                        var nexturl = "https://api.flickr.com/services/rest?csrf=&api_key=" + key + "&format=json&nojsoncallback=1&method=flickr.photos.getSizes&photo_id=" + photoid;
-                        options.do_request({
-                            url: nexturl,
-                            method: "GET",
-                            headers: {
-                                "Origin": "",
-                                "Referer": "",
-                                "Cookie": ""
-                            },
-                            onload: function(resp) {
-                                try {
-                                    var out = JSON_parse(resp.responseText);
-                                    var largesturl = null;
-                                    var largestsize = 0;
-                                    out.sizes.size.forEach(function (size) {
-                                        var currentsize = parseInt(size.width) * parseInt(size.height);
-                                        if (currentsize > largestsize || size.label === "Original") {
-                                            largestsize = currentsize;
-                                            largesturl = size.source;
-                                        }
-                                    });
+                        find_original_page(key, newsrc, function(page) {
+                            if (page) {
+                                obj.extra = {page: page};
+                            }
 
-                                    if (options.force_page) {
-                                        var photoid = src.replace(/.*\/([0-9]+)_[^/]*$/, "$1");
-                                        var photosecret = src.replace(/.*\/[0-9]+_([0-9a-z]+)_[^/]*$/, "$1");
-                                        var nexturl = "https://api.flickr.com/services/rest?csrf=&api_key=" + key + "&format=json&nojsoncallback=1&method=flickr.photos.getInfo&photo_id=" + photoid + "&secret=" + photosecret;
-                                        options.do_request({
-                                            url: nexturl,
-                                            method: "GET",
-                                            headers: {
-                                                "Origin": "",
-                                                "Referer": "",
-                                                "Cookie": ""
-                                            },
-                                            onload: function(resp) {
-                                                try {
-                                                    var out = JSON_parse(resp.responseText);
-                                                    var obj = {
-                                                        url: largesturl,
-                                                        extra: {
-                                                            page: out.photo.urls.url[0]._content
-                                                        }
-                                                    };
+                            options.cb(obj);
+                        });
+                    });
 
-                                                    options.cb(obj);
-                                                } catch (e) {
-                                                    options.cb(largesturl);
-                                                }
+                    return {
+                        waiting: true
+                    };
+                } else {
+                    return obj;
+                }
+            }
+
+            find_api_key(function(key) {
+                if (!key) {
+                    return options.cb(null);
+                }
+
+                var photoid = newsrc.replace(/.*\/([0-9]+)_[^/]*$/, "$1");
+                var nexturl = "https://api.flickr.com/services/rest?csrf=&api_key=" + key + "&format=json&nojsoncallback=1&method=flickr.photos.getSizes&photo_id=" + photoid;
+                options.do_request({
+                    url: nexturl,
+                    method: "GET",
+                    headers: {
+                        "Origin": "",
+                        "Referer": "",
+                        "Cookie": ""
+                    },
+                    onload: function (resp) {
+                        try {
+                            var out = JSON_parse(resp.responseText);
+                            var largesturl = null;
+                            var largestsize = 0;
+                            out.sizes.size.forEach(function (size) {
+                                var currentsize = parseInt(size.width) * parseInt(size.height);
+                                if (currentsize > largestsize || size.label === "Original") {
+                                    largestsize = currentsize;
+                                    largesturl = size.source;
+                                }
+                            });
+
+                            if (options.force_page) {
+                                find_original_page(key, newsrc, function(page) {
+                                    if (page) {
+                                        var obj = {
+                                            url: largesturl,
+                                            extra: {
+                                                page: page
                                             }
-                                        });
+                                        };
+
+                                        options.cb(obj);
                                     } else {
                                         options.cb(largesturl);
                                     }
-                                    return;
-                                } catch (e) {
-                                    options.cb(null);
-                                    return;
-                                }
+                                });
+                            } else {
+                                options.cb(largesturl);
                             }
-                        });
+                            return;
+                        } catch (e) {
+                            options.cb(null);
+                            return;
+                        }
                     }
-                }
+                });
             });
 
             return {
@@ -38704,8 +38759,13 @@ var $$IMU_EXPORT$$;
 
         cursor_wait();
 
+        var force_page = false;
+        if ((settings["redirect_force_page"] + "") === "true")
+            force_page = true;
+
         bigimage_recursive_loop(document.location.href, {
             fill_object: true,
+            force_page: force_page,
             document: document,
             window: window,
             cb: function(newhref) {
