@@ -62,7 +62,7 @@ As mentioned above, userscript.user.js also functions as a node module.
       //
       // By default, all problems are excluded.
       // Currently there is no way to automatically find all problems excluded, but once https://github.com/qsniyg/maxurl/issues/110
-      // is implemented, it will be possible to do so by looking at the default value for exclude_problems.
+      //  is implemented, it will be possible to do so by looking at the default value for exclude_problems.
       //
       // By setting it to [], no problems will be excluded.
       //exclude_problems: [],
@@ -119,8 +119,8 @@ The result is a list of objects that contain properties that may be useful in us
 
 .. code-block:: javascript
 
-    {
-      // Array or String, see code example above
+    [{
+      // The URL of the image
       url: null,
 
       // Whether it's expected that it will always work or not.
@@ -192,7 +192,7 @@ The result is a list of objects that contain properties that may be useful in us
         // If true, the image might be broken (such as GIFs on Tumblr)
         possibly_broken: false
       }
-    }
+    }]
 
 ************
 Contributing
