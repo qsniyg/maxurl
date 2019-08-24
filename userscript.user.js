@@ -38424,7 +38424,19 @@ var $$IMU_EXPORT$$;
         return obj_to_simplelist(obj).indexOf(url);
     };
 
-    var bigimage_recursive_loop = function(url, options, query, fine_urls, tried_urls) {
+    var obj_merge = function(newobj, oldobj) {
+        var newobj_simple = obj_to_simplelist(newobj);
+
+        for (var i = 0; i < oldobj.length; i++) {
+            if (newobj_simple.indexOf(oldobj[i].url) >= 0)
+                continue;
+            newobj.push(oldobj[i]);
+        }
+
+        return newobj;
+    }
+
+    var bigimage_recursive_loop = function(url, options, query, fine_urls, tried_urls, oldobj) {
         var newoptions = {};
         if (!fine_urls) {
             fine_urls = [];
@@ -38434,9 +38446,14 @@ var $$IMU_EXPORT$$;
             tried_urls = [];
         }
 
+        if (!oldobj) {
+            oldobj = [];
+        }
+
         for (var option in options) {
             if (option === "cb") {
                 newoptions.cb = function(obj) {
+                    obj = obj_merge(obj, oldobj);
                     var images = obj_to_simplelist(obj);
 
                     for (var i = 0; i < fine_urls.length; i++) {
@@ -38469,7 +38486,7 @@ var $$IMU_EXPORT$$;
 
                         //if (images.indexOf(newurl) < 0 && newurl !== url || true) {
                         if (images.indexOf(newurl) < 0 || !obj[images.indexOf(newurl)].norecurse) {
-                            bigimage_recursive_loop(newurl, options, query, fine_urls, tried_urls);
+                            bigimage_recursive_loop(newurl, options, query, fine_urls, tried_urls, obj);
                         } else {
                             //obj = obj.slice(images.indexOf(newurl));
                             obj = [obj[images.indexOf(newurl)]];
