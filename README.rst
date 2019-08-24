@@ -133,7 +133,7 @@ The result is a list of objects that contain properties that may be useful in us
 
       // This is used in the return value of the exported function.
       //  If you're using a callback (as shown in the code example above),
-      /   this value will always be false
+      //  this value will always be false
       waiting: false,
 
       // Whether or not the returned URL is expected to redirect to another URL
