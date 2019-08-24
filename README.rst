@@ -1,26 +1,40 @@
-# Image Max URL
+.. image:: https://raw.githubusercontent.com/qsniyg/maxurl/master/resources/imu_opera_banner_transparent.png
+   :alt: Image Max URL
+   :align: center
 
 Image Max URL is a program that will try to find larger/original versions of images, usually by replacing URL patterns.
-It currently contains support for >5000 hardcoded websites (full list in [sites.txt](https://github.com/qsniyg/maxurl/blob/master/sites.txt)),
+
+It currently contains support for >5000 hardcoded websites (full list in `sites.txt <https://github.com/qsniyg/maxurl/blob/master/sites.txt>`__),
 but it also supports a number of generic engines (such as Wordpress and MediaWiki), which means it can work for many other websites as well.
 
 It is currently released as:
 
- * [Userscript](https://greasyfork.org/en/scripts/36662-image-max-url) (most browsers)
-   * [userscript.user.js](https://github.com/qsniyg/maxurl/blob/master/userscript.user.js) is also the base for everything listed below
-   * It also serves as a node module (used by the reddit bot), and can be embedded in a website
- * [Firefox Addon](https://addons.mozilla.org/en-US/firefox/addon/image-max-url/) (Firefox Quantum-based browsers only, other browsers supporting WebExtensions can sideload the extension through this git repository)
-   * Since addons have more privileges than userscripts, it has a bit of extra functionality over the userscript
-   * Source code is in [manifest.json](https://github.com/qsniyg/maxurl/blob/master/manifest.json) and the [extension](https://github.com/qsniyg/maxurl/tree/master/extension) folder
- * [Website](https://qsniyg.github.io/maxurl/)
-   * Due to browser security constraints, some URLs (requiring cross-origin requests) can't be supported by the website
-   * Source code is in the [gh-pages](https://github.com/qsniyg/maxurl/tree/gh-pages) branch
- * Reddit bot ([/u/MaxImageBot](https://www.reddit.com/user/MaxImageBot/))
-   * Source code is in [bot.js](https://github.com/qsniyg/maxurl/blob/master/bot.js)
+ - `Userscript <https://greasyfork.org/en/scripts/36662-image-max-url>`__ (most browsers)
 
-## Integrating IMU in your program
+   - `userscript.user.js <https://github.com/qsniyg/maxurl/blob/master/userscript.user.js>`__ is also the base for everything listed below
+   - It also serves as a node module (used by the reddit bot), and can be embedded in a website
+
+ - `Firefox Addon <https://addons.mozilla.org/en-US/firefox/addon/image-max-url/>`__ (Firefox Quantum-based browsers only, other browsers supporting WebExtensions can sideload the extension through this git repository)
+
+   - Since addons have more privileges than userscripts, it has a bit of extra functionality over the userscript
+   - Source code is in `manifest.json <https://github.com/qsniyg/maxurl/blob/master/manifest.json>`__ and the `extension <https://github.com/qsniyg/maxurl/tree/master/extension>`__ folder
+
+ - `Website <https://qsniyg.github.io/maxurl/>`__
+
+   - Due to browser security constraints, some URLs (requiring cross-origin requests) can't be supported by the website
+   - Source code is in the `gh-pages <https://github.com/qsniyg/maxurl/tree/gh-pages>`__ branch
+
+ - Reddit bot (`/u/MaxImageBot <https://www.reddit.com/user/MaxImageBot/>`__)
+
+   - Source code is in `bot.js <https://github.com/qsniyg/maxurl/blob/master/bot.js>`__
+
+*******************************
+Integrating IMU in your program
+*******************************
 
 As mentioned above, userscript.user.js also functions as a node module.
+
+.. code-block:: javascript
 
     var maximage = require('./userscript.user.js');
 
@@ -36,20 +50,20 @@ As mentioned above, userscript.user.js also functions as a node module.
       use_cache: true,
 
       // List of "problems" (such as watermarks or possibly broken image) to exclude.
-      //   By default, all problems are excluded.
-      //   By setting it to [], no problems will be excluded.
+      //  By default, all problems are excluded.
+      //  By setting it to [], no problems will be excluded.
       //exclude_problems: [],
 
       // This will include a "history" of objects found through iterations.
-      //   Disabling this will only keep the objects found through the last successful iteration.
+      //  Disabling this will only keep the objects found through the last successful iteration.
       include_pastobjs: true,
 
       // This will try to find the original page for an image, even if it requires extra requests.
-      // Currently only applies to Flickr.
+      //  Currently only applies to Flickr.
       force_page: false,
 
       // This is useful for implementing a blacklist or whitelist.
-      // If unspecified, it accepts all URLs.
+      //  If unspecified, it accepts all URLs.
       filter: function(url) {
         return true;
       },
@@ -89,6 +103,8 @@ As mentioned above, userscript.user.js also functions as a node module.
     });
 
 The result is a list of objects that contain properties that may be useful in using the returned image(s):
+
+.. code-block:: javascript
 
     {
       // Array or String, see code example above
@@ -165,16 +181,19 @@ The result is a list of objects that contain properties that may be useful in us
       }
     }
 
-## Contributing
+************
+Contributing
+************
 
 Contributions are always greatly appreciated! If you have any bug reports, feature requests, or new websites you want supported,
 please file an issue here.
 
-### Translations
+Translations
+============
 
 Currently translations are stored inside the source code (userscript.user.js). I'm currently working on trying to separate this into a separate
 file in order to make this easier for translators, but for now:
 
- * All message strings are stored as a JS object as `strings` (search for `var strings =` in the source code, it's near the top)
+ * All message strings are stored as a JS object as ``strings`` (search for ``var strings =`` in the source code, it's near the top)
  * Each translated language is specified under a message ID.
  * Language subtags are currently ignored. For example, "en" is used instead of "en-US".
