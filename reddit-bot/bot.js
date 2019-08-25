@@ -1,8 +1,5 @@
 var bigimage = require('../userscript.user.js');
-var sizeOf = require('image-size');
 var probe = require('probe-image-size');
-var http = require('http');
-var https = require('https');
 var url = require('url');
 const NodeCache = require( "node-cache" );
 var fs = require("fs");
