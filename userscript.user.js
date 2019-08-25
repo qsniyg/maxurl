@@ -2146,7 +2146,11 @@ var $$IMU_EXPORT$$;
             //   http://www.newscj.com/news/photo/201803/newscj_%EC%B2%9C%EC%A7%80%EC%9D%BC%EB%B3%B4_505243_487804_229.jpg
             // http://www.newscj.com/news/thumbnail/201809/newscj_천지일보_552148_548008_98_v150.jpg
             //   http://www.newscj.com/news/photo/201809/newscj_%EC%B2%9C%EC%A7%80%EC%9D%BC%EB%B3%B4_552148_548008_98.jpg
-            domain_nowww === "newscj.com" ||
+            // http://cds.newscj.com/news/thumbnail/201809/newscj_천지일보_552148_548008_98_v150.jpg
+            //   http://cds.newscj.com/news/photo/201809/newscj_%EC%B2%9C%EC%A7%80%EC%9D%BC%EB%B3%B4_552148_548008_98.jpg
+            // http://www.newscj.com/news/thumbnail/201908/newscj_%EC%B2%9C%EC%A7%80%EC%9D%BC%EB%B3%B4_661837_676135_413_orgBig_v150.jpg
+            //   http://www.newscj.com/news/photo/201908/newscj_%EC%B2%9C%EC%A7%80%EC%9D%BC%EB%B3%B4_661837_676135_413.jpg
+            domain_nosub === "newscj.com" ||
             // http://www.ggilbo.com/news/thumbnail/201802/444114_351433_497_v150.jpg
             domain_nowww === "ggilbo.com" ||
             // http://www.bstoday.kr/news/thumbnail/201804/200376_125982_145_v150.jpg
@@ -2281,12 +2285,19 @@ var $$IMU_EXPORT$$;
             domain_nowww === "lovesbeauty.co.kr" ||
             // http://www.ikoreadaily.co.kr/news/thumbnail/201506/200257_95468_3552_v150.jpg
             domain_nowww === "ikoreadaily.co.kr" ||
+            // http://www.interview365.com/news/thumbnail/201908/88350_115004_3128_v150.jpg
+            domain_nowww === "interview365.com" ||
+            // http://www.newsa.co.kr/news/thumbnail/201908/229705_168792_3246_v150.jpg
+            domain_nowww === "newsa.co.kr" ||
             // http://www.newstown.co.kr/news/thumbnail/201801/311251_198441_4816_v150.jpg
             domain_nowww === "newstown.co.kr") {
-            return add_extensions_upper_jpeg(src
-                                        .replace("/thumbnail/", "/photo/")
-                                        .replace(/_v[0-9]*\.([^/]*)$/, ".$1")
-                                        .replace(/(\/[0-9]+_[0-9]+_[0-9]+)_150(\.[^/.]*)$/, "$1$2"));
+            newsrc = src.replace(/\/thumbnail\/+([0-9]{6}\/+(?:[^/.]*_)?[0-9]+_[0-9]+_[0-9]+)(?:_orgBig)?_v?150(\.[^/.]*)(?:[?#].*)?$/, "/photo/$1$2");
+            if (newsrc !== src)
+                return add_extensions_upper_jpeg(newsrc);
+            //return add_extensions_upper_jpeg(src
+            //                            .replace("/thumbnail/", "/photo/")
+            //                            //.replace(/_v[0-9]*\.([^/]*)$/, ".$1")
+            //                            .replace(/(\/[0-9]+_[0-9]+_[0-9]+)_(?:orgBig_)?v?150(\.[^/.]*)$/, "$1$2"));
         }
 
         if (domain === "shop.newsen.com") {
@@ -8984,7 +8995,11 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/thumb_([0-9a-f]+\.[^/.]*)(?:[?#].*)?$/, "/$1");
         }
 
-        if (domain === "img.tvreport.co.kr") {
+        if (domain === "img.tvreport.co.kr" ||
+            // http://img.tvreportcdn.de/images/20150612/20150612_1434098756_42297100_1.jpg?1434125364
+            // other:
+            // https://img.tvreportcdn.de/cms-content/uploads/2019/08/23/312163f3-8749-409c-96b9-d6f4b519ff69.jpg
+            domain === "img.tvreportcdn.de") {
             // http://img.tvreport.co.kr/images/20171017/20171017_1508207555_22483100_4.jpg?1512513157
             //   http://img.tvreport.co.kr/images/20171017/20171017_1508207555_22483100_0.jpg?1512513157
             // http://img.tvreport.co.kr/images/20171211/20171211_1512955026_44177100_1.jpg (stretched)
@@ -23657,6 +23672,12 @@ var $$IMU_EXPORT$$;
             //   http://tvdaily.asiae.co.kr/upimages/gisaimg/201501/1420040978_828039.jpg
             // doesn't work with all:
             // http://tvdaily.asiae.co.kr/upimages/photoda/201508/955495.jpg
+            // other:
+            // http://tvdaily.asiae.co.kr/read.php3?aid=15616710001467999017
+            // http://image.tvdaily.co.kr/upimages/files/201906/1467999-0.jpg
+            // http://image.tvdaily.co.kr/upimages/files/201906/1467999-1.jpg
+            // http://tvdaily.asiae.co.kr/upimages/thumb/sl1467999.png
+            //   http://image.tvdaily.co.kr/upimages/gisaimg/201906/1561649680_1467999.jpg
             return src.replace(/\/upimages\/photoda\//, "/upimages/gisaimg/");
         }
 
@@ -36749,6 +36770,32 @@ var $$IMU_EXPORT$$;
             }
         }
 
+        if (domain_nowww === "issuedaily.com" ||
+            // http://img.issuedaily.com/2017/thumb_image/new_main_water201710271509564056.jpg
+            //   http://img.issuedaily.com/2017/thumb_image/main_water201710271509564056.jpg
+            //   http://img.issuedaily.com/2017/thumb_image/thumb_water201710271509564056.jpg
+            //   http://img.issuedaily.com/2017/news_image/water201710271509564056.jpg
+            //   http://img.issuedaily.com/2017/news_image/201710271509564056.jpg -- doesn't work
+            domain === "img.issuedaily.com") {
+            // http://www.issuedaily.com/thumb_image/thumb_bl90k201207251745082217.jpg
+            //   http://www.issuedaily.com/news_image/bl90k201207251745082217.jpg
+            // other:
+            // http://img.issuedaily.com/2016/news_gif_image/water201601211936196382.jpg
+            return src.replace(/\/thumb_image\/+(?:(?:new_)?main|thumb)_/, "/news_image/");
+        }
+
+        if (false && domain_nowww === "frontiertimes.co.kr") {
+            // doesn't work, different ID
+            // http://www.frontiertimes.co.kr/upload/thumbnail/2018/01/style_20180116092727_8970.jpg
+            //   http://www.frontiertimes.co.kr/upload/image/2018/01/20180116092436.jpg
+            return src.replace(/\/upload\/+thumbnail\/+([0-9]{4}\/+[0-9]{2}\/+)[a-z]+_([0-9]{8,})_[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "/upload/image/$1$2$3");
+        }
+
+        if (domain_nowww === "newsshare.co.kr") {
+            // http://www.newsshare.co.kr/data/newsshare_co_kr/mainimages/201906/170924_2019060608469772.jpg
+            //   http://www.newsshare.co.kr/imgdata/newsshare_co_kr/201906/2019060608469772.jpg
+            return src.replace(/\/data\/+([^/]+)\/+mainimages\/+([0-9]{6})\/+[0-9]{6}_/, "/imgdata/$1/$2/");
+        }
 
 
 
