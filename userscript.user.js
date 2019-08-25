@@ -38148,9 +38148,9 @@ var $$IMU_EXPORT$$;
         if (!options)
             options = {};
 
-        for (var option in default_options) {
+        for (var option in bigimage_recursive.default_options) {
             if (!(option in options)) {
-                options[option] = default_options[option];
+                options[option] = bigimage_recursive.default_options[option];
             }
         }
 
@@ -38463,6 +38463,7 @@ var $$IMU_EXPORT$$;
 
         return deepcopy(endhref);
     };
+    bigimage_recursive.default_options = default_options;
 
     function is_internet_url(url) {
         if (!url || typeof url !== "string")
