@@ -61,9 +61,7 @@ As mentioned above, userscript.user.js also functions as a node module.
       // List of "problems" (such as watermarks or possibly broken image) to exclude.
       //
       // By default, all problems are excluded.
-      // Currently there is no way to automatically find all problems excluded, but once https://github.com/qsniyg/maxurl/issues/110
-      //  is implemented, it will be possible to do so by looking at the default value for exclude_problems.
-      //
+      // You can access the excluded problems through maximage.default_options.exclude_problems
       // By setting it to [], no problems will be excluded.
       //exclude_problems: [],
 
