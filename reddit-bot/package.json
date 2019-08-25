@@ -4,7 +4,6 @@
   "main": "bot.js",
   "dependencies": {
     "dotenv": "^5.0.1",
-    "image-size": "^0.6.2",
     "monk": "^6.0.6",
     "node-cache": "^4.2.0",
     "probe-image-size": "git+https://github.com/qsniyg/probe-image-size.git",
