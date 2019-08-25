@@ -1,4 +1,4 @@
-var bigimage = require('./userscript.user.js');
+var bigimage = require('../userscript.user.js');
 var sizeOf = require('image-size');
 var probe = require('probe-image-size');
 var http = require('http');
