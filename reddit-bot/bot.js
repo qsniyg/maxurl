@@ -468,6 +468,11 @@ function dourl(url, post) {
   bigimage(url, {
     fill_object: true,
     force_page: true,
+    filter: function(url) {
+      if (!bigimage.is_internet_url(url))
+        return false;
+      return true;
+    },
     do_request: function(options) {
       var headers = JSON.parse(JSON.stringify(base_headers));
       if (options.headers) {

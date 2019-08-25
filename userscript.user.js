@@ -1466,7 +1466,6 @@ var $$IMU_EXPORT$$;
         //console_log(blacklist_regexes);
     }
 
-
     function bigimage(src, options) {
         if (!src)
             return src;
@@ -6675,8 +6674,14 @@ var $$IMU_EXPORT$$;
             // http://img.idol001.com/origin/2017/07/12/a4b9f31547c1a41a36606d1f6d94ceff1499865415_watermark.jpg
             //   http://img.idol001.com/origin/2017/07/12/a4b9f31547c1a41a36606d1f6d94ceff1499865415.jpg
             return src
-                .replace(/^(.*?idol001\.com\/)[^/]*\//, "$1origin/")
+                .replace(/(:\/\/[^/]*\/+)thumbnail\/+/, "$1origin/")
                 .replace(/(\/[0-9a-f]+)_watermark(\.[^/.]*)$/, "$1$2");
+        }
+
+        if (domain === "star-img.idol001.com") {
+            // https://star-img.idol001.com/atlas/7179/images/2019/8/23/kCfYaPyRaS1566559898247.jpg/default-w720
+            //   https://star-img.idol001.com/atlas/7179/images/2019/8/23/kCfYaPyRaS1566559898247.jpg
+            return src.replace(/(\/images\/+[0-9]{4}\/+(?:[0-9]{1,2}\/+){2}[^/]+\.[^/.]+)\/+[^/]*(?:[?#].*)?$/, "$1");
         }
 
         // for media.nrj.fr
@@ -38411,6 +38416,25 @@ var $$IMU_EXPORT$$;
 
         return deepcopy(endhref);
     };
+
+    function is_internet_url(url) {
+        if (!url || typeof url !== "string")
+            return false;
+
+        if (!/^https?:\/\//.test(url))
+            return false;
+
+        // local addresses (IPv4)
+        if (/^[a-z]+:\/\/(127\.0\.0\.1|192\.168\.[0-9]+\.[0-9]+|10\.[0-9]+\.[0-9]+\.[0-9]+|172\.(?:1[6-9]|2[0-9]|3[01])\.[0-9]+\.[0-9]+|localhost|[^/.]+)\//.test(url))
+            return false;
+
+        // IPv6 (TODO: implement)
+        if (/^[a-z]+:\/\/(?:[0-9a-f]*\:){1,}\//.test(url))
+            return false;
+
+        return true;
+    }
+    bigimage_recursive.is_internet_url = is_internet_url;
 
     var obj_to_simplelist = function(obj) {
         var out = [];
