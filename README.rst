@@ -28,7 +28,7 @@ It is currently released as:
 
 - Reddit bot (`/u/MaxImageBot <https://www.reddit.com/user/MaxImageBot/>`__)
 
-  - Source code is in `bot.js <https://github.com/qsniyg/maxurl/blob/master/bot.js>`__
+  - Source code is in `bot.js <https://github.com/qsniyg/maxurl/blob/master/reddit-bot/bot.js>`__
 
 *******************************
 Integrating IMU in your program
