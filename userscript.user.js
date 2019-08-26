@@ -26970,7 +26970,12 @@ var $$IMU_EXPORT$$;
             //   https://images.sex.com/images/pinporn/2014/10/03/620/8333897.jpg -- watermark
             // https://images.sex.com/images/pinporn/2018/10/09/126x126/20066749.jpg -- no watermark
             //   https://images.sex.com/images/pinporn/2018/10/09/620/20066749.jpg -- watermark
-            return src.replace(/(\/images\/pinporn\/[0-9]{4}\/[0-9]{2}\/[0-9]{2}\/)(?:300|460|126x126)\//, "$1620/");
+            return {
+                url: src.replace(/(\/images\/pinporn\/[0-9]{4}\/[0-9]{2}\/[0-9]{2}\/)(?:300|460|126x126)\//, "$1620/"),
+                headers: {
+                    Referer: "https://www.sex.com/"
+                }
+            };
         }
 
         if (domain === "fotografias.antena3.com" ||
@@ -36817,6 +36822,44 @@ var $$IMU_EXPORT$$;
                     watermark: true
                 }
             };
+        }
+
+        if (domain === "img.vphotos.cn") {
+            // https://img.vphotos.cn/download/460A0A8A81E07B7385EDAFABFDF5F1F4/postp/logosmall/vbox4180_IMG_9411_171919_small_v1.JPG
+            //   https://img.vphotos.cn/460A0A8A81E07B7385EDAFABFDF5F1F4/postp/logosmall/vbox4180_IMG_9411_171919_small_v1.JPG
+            newsrc = src.replace(/(:\/\/[^/]*\/+)download\/+([0-9A-F]{20,}\/+)/, "$1$2");
+            if (newsrc !== src)
+                return newsrc;
+
+            // https://img.vphotos.cn/5529E4AD285919FB1E40ED935D000C28/postp/logolarge/vbox4017_1W0A0074_102800_small.JPG
+            //   https://img.vphotos.cn/5529E4AD285919FB1E40ED935D000C28/postp/large/vbox4017_1W0A0074_102800_small.JPG
+            // http://img.vphotos.cn/961D4CED4CA395B0C0D0407B4ADDF938/postp/logodouble/vbox4017__G5I5014_164919_small.JPG
+            //   http://img.vphotos.cn/961D4CED4CA395B0C0D0407B4ADDF938/postp/double/vbox4017__G5I5014_164919_small.JPG
+            // https://img.vphotos.cn/download/460A0A8A81E07B7385EDAFABFDF5F1F4/postp/logosmall/vbox4180_IMG_9411_171919_small_v1.JPG
+            //   https://img.vphotos.cn/460A0A8A81E07B7385EDAFABFDF5F1F4/postp/small/vbox4180_IMG_9411_171919_small_v1.JPG
+            // https://img.vphotos.cn/460A0A8A81E07B7385EDAFABFDF5F1F4/postp/logothumb/vbox4018_Y95B8146_170445_small.JPG
+            //   https://img.vphotos.cn/460A0A8A81E07B7385EDAFABFDF5F1F4/postp/thumb/vbox4018_Y95B8146_170445_small.JPG
+            newsrc = src.replace(/\/(postp|selected)\/+logo(large|double|small|1920|thumb)\/+/, "/$1/$2/");
+            if (newsrc !== src)
+                return newsrc;
+
+            // thanks to @rEnr3n on github
+            // https://img.vphotos.cn/79EC756DCFC5B72D354DC93D86D7B409/postp/thumbs/vbox3584_BS8A1492_184055_thumb.JPG
+            //   https://img.vphotos.cn/79EC756DCFC5B72D354DC93D86D7B409/postp/logo1920/vbox3584_BS8A1492_184055_small.JPG -- watermark
+            //   https://img.vphotos.cn/79EC756DCFC5B72D354DC93D86D7B409/postp/1920/vbox3584_BS8A1492_184055_small.JPG
+            newsrc = src.replace(/\/(postp|selected)\/+thumbs\/+([^/]*)_thumb(\.[^/.]+)(?:[?#].*)?$/, "/$1/1920/$2_small$3");
+            if (newsrc !== src)
+                return newsrc;
+
+            newsrc = src.replace(/\/(postp|selected)\/+(?:logo)?(?:large|double|small|1920|thumb)\/+/, "/$1/large/");
+            if (newsrc !== src)
+                return newsrc;
+
+            // https://img.vphotos.cn/431F2F3E3C1ACA509AD1E1C7FD9F9164/selected/large/vbox7177__P0A1429_142922_small.JPG -- desaturated
+            //   https://img.vphotos.cn/431F2F3E3C1ACA509AD1E1C7FD9F9164/postp/large/vbox7177__P0A1429_142922_small.JPG
+            newsrc = src.replace(/(\/[0-9A-F]{20,}\/+)selected\/+/, "$1postp/");
+            if (newsrc !== src)
+                return newsrc;
         }
 
 
