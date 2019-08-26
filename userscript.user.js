@@ -9111,8 +9111,24 @@ var $$IMU_EXPORT$$;
         }
 
         if (domain === "imgsrv.piclick.me") {
+            // http://imgsrv.piclick.me/publish.php?pid=1319
+            //   https://imgsrv.piclick.me/cimg/1319.jpg
+            newsrc = src.replace(/\/publish\.php\?(?:.*&)?pid=([0-9]+)(?:[?#].*)?$/, "/cimg/$1.jpg");
+            if (newsrc !== src)
+                return newsrc;
+
             // http://imgsrv.piclick.me/cimg/163x220xN_477539.jpg
-            return src.replace(/\/cimg\/[0-9]+x[0-9]+x/, "/cimg/");
+            //   https://imgsrv.piclick.me/cimg/N_477539.jpg
+            //   https://imgsrv.piclick.me/cimg/477539.jpg -- same
+            newsrc = src.replace(/\/cimg\/+[0-9]+x[0-9]+x/, "/cimg/");
+            if (newsrc !== src)
+                return newsrc;
+
+            // https://imgsrv.piclick.me/cimg/N_477539.jpg
+            //   https://imgsrv.piclick.me/cimg/477539.jpg
+            newsrc = src.replace(/\/cimg\/+N_/, "/cimg/");
+            if (newsrc !== src)
+                return newsrc;
         }
 
         if (domain_nowww === "slate.com") {
