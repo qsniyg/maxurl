@@ -1,6 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Image Max URL",
+  "author": "qsniyg",
   "version": "0.10.0",
 
   "description": "Finds larger or original versions of images",
@@ -34,6 +35,7 @@
     "default_popup": "extension/popup.html",
     "default_title": "Image Max URL",
     "default_icon": {
+      "40": "resources/logo_40.png",
       "48": "resources/logo_48.png",
       "96": "resources/logo_96.png"
     }
