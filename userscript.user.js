@@ -4823,6 +4823,8 @@ var $$IMU_EXPORT$$;
             (domain === "2sao.vietnamnetjsc.vn" && src.indexOf("/images/") >= 0) ||
             // http://images.jkn.co.kr/data/images/full/939969/image.jpg?w=64&h=64&l=50&t=40
             (domain === "images.jkn.co.kr" && src.indexOf("/images/") >= 0) ||
+            // https://www.instylemag.com.au/media/19665/anne-hathaway.jpg?width=640
+            (domain_nowww === "instylemag.com.au" && src.indexOf("/media/") >= 0) ||
             // http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
             // https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
             src.match(/\/demandware\.static\//) ||
@@ -5521,6 +5523,8 @@ var $$IMU_EXPORT$$;
             domain === "p.elle.bg" ||
             // https://illustrationwest.org/53/files/2014/10/Mayer_Bill_A_1-180x180.jpg
             (domain_nowww === "illustrationwest.org" && src.indexOf("/files/") >= 0) ||
+            // https://www.myjane.ru/data/cache/2018feb/14/28/773144_49860-250x0.jpg
+            (domain_nowww === "myjane.ru" && /\/data\/+cache\//.test(src)) ||
             // https://1.soompi.io/wp-content/blogs.dir/8/files/2015/09/HA-TFELT-Wonder-Girls-590x730.jpg -- doesn't work
             // https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2018/01/GTA-6-Female-Protag-796x417.jpg -- does work
             /^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|images|photos|blogs.dir)|\/+uploads)\//.test(src)
@@ -6077,6 +6081,8 @@ var $$IMU_EXPORT$$;
             domain === "media.winnipegfreepress.com" ||
             // https://media.brandonsun.com/images/648*432/AVE201345020_high.jpg
             domain === "media.brandonsun.com" ||
+            // https://media.necn.com/images/652*367/Anne4.jpg
+            domain === "media.necn.com" ||
             // https://media.nbcchicago.com/images/652*367/t-swift-cover.jpg
             domain === "media.nbcchicago.com") {
             return src.replace(/\/images\/+[0-9]+\*[0-9]+\//, "/images/");
@@ -14459,9 +14465,13 @@ var $$IMU_EXPORT$$;
         if (domain_nosub === "pikabu.ru") {
             // https://cs7.pikabu.ru/post_img/2018/04/17/4/1523941253189748852.jpg
             //   https://cs7.pikabu.ru/post_img/big/2018/04/17/4/1523941253189748852.jpg
+            // https://cs10.pikabu.ru/images/previews_comm/2018-04_6/1524835822161164251.jpg
+            //   https://cs10.pikabu.ru/images/big_size_comm/2018-04_6/1524835822161164251.jpg
             // doesn't work for all:
             // https://cs8.pikabu.ru/post_img/big/2016/10/28/8/147765812818422511.jpg
-            return src.replace(/\/post_img\/([0-9]+)\//, "/post_img/big/$1/");
+            return src
+                .replace(/\/post_img\/([0-9]+)\//, "/post_img/big/$1/")
+                .replace(/\/images\/+previews_comm\/+/, "/images/big_size_comm/");
         }
 
         if (domain_nosub === "podium.life") {
@@ -22860,10 +22870,13 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/photo\/t\/(.*?)(?:_t)?(\.[^/.]*)$/, "/photo/i/$1$2");
         }
 
-        if (domain_nowww === "div.bg") {
+        if (domain_nowww === "div.bg" ||
+            // https://jenite.bg/pictures/1377128_169_113.jpg
+            //   https://jenite.bg/pictures/1377128.jpg
+            domain_nowww === "jenite.bg") {
             // http://div.bg/pictures/1638721_886_.jpg
             //   http://div.bg/pictures/1638721.jpg
-            return src.replace(/(\/pictures\/[0-9]+)_[0-9]+_(\.[^/.]*)$/, "$1$2");
+            return src.replace(/(\/pictures\/[0-9]+)_[0-9]*(?:_[0-9]*)?(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
         }
 
         if (domain === "cdn.hqsluts.com" ||
@@ -27148,7 +27161,7 @@ var $$IMU_EXPORT$$;
             domain.match(/^content[0-9]*\./)) {
             // https://content5.promiflash.de/article-images/gallery1024/charlie-sheen-und-lindsay-lohan-posieren.jpg
             //   https://content5.promiflash.de/article-images/gallery2048/charlie-sheen-und-lindsay-lohan-posieren.jpg
-            return src.replace(/\/article-images\/gallery1024\//, "/article-images/gallery2048/");
+            return src.replace(/\/article-images\/+gallery1024\//, "/article-images/gallery2048/");
         }
 
         if (domain_nowww === "mycharm.ru") {
@@ -27302,7 +27315,16 @@ var $$IMU_EXPORT$$;
         if (domain === "image.gala.de") {
             // https://image.gala.de/v1/cms/zU/helene-kathrin-ge_7589848-portrait-article_4col_fix_width.jpg?v=9918049
             //   https://image.gala.de/v1/cms/zU/helene-kathrin-ge_7589848-original-lightbox.jpg?v=9918049
-            return src.replace(/(:\/\/[^/]*\/v[0-9]*\/cms\/[^/]*\/[^/]*_[0-9]+-)[a-z]+[-_][^/]*(\.[^/.]*)$/, "$1original-lightbox$2");
+            // https://image.gala.de/21569996/uncropped-620-902/a8b54e6d93eca3571be4fb63ce5d2672/yU/margot-robbie-914624434.jpg
+            //   https://www.gala.de/resource/blob/21569996/a8b54e6d93eca3571be4fb63ce5d2672/margot-robbie-914624434-data.jpg
+            // https://image.gala.de/22036708/2x3-300-450/662fce616873c97e64415a69eeaa7604/XL/a91z4760-20190331121737047.jpg
+            //   https://www.gala.de/resource/blob/22036708/662fce616873c97e64415a69eeaa7604/a91z4760-20190331121737047-data.jpg
+            // https://image.gala.de/21968034/large1x1-300-300/9eaf47021176b4bb141998386e94146f/yV/nelly-furtado-teaser.jpg
+            //   https://www.gala.de/resource/blob/21968034/9eaf47021176b4bb141998386e94146f/nelly-furtado-teaser-data.jpg
+            return src
+                .replace(/(:\/\/[^/]*\/v[0-9]*\/cms\/[^/]*\/[^/]*_[0-9]+-)[a-z]+[-_][^/]*(\.[^/.]*)$/, "$1original-lightbox$2")
+                .replace(/:\/\/[^/]*\/+([0-9]+)\/+(?:[a-z]+)?(?:uncropped|[0-9]+x[0-9]+)-[0-9]+-[0-9]+\/([0-9a-f]{20,})\/+[^/]*\/+([^/]*)(\.[^/.]*)(?:[?#].*)?$/,
+                         "://www.gala.de/resource/blob/$1/$2/$3-data$4");
         }
 
         if (domain_nosub === "fashionwelike.com" &&
@@ -28206,12 +28228,17 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/+(?:thumbnails\/+)?([^/]*-[0-9]+)-[a-z]+(\.[^/.]*)(?:[?#].*)?$/, "/$1$2");
         }
 
-        if (domain_nowww === "voice.fi") {
+        if (domain_nowww === "voice.fi" ||
+            // https://www.radionova.fi/files/media/image/5981/_r/59816_retinaarticle_1120.jpg
+            //   https://www.radionova.fi/files/media/image/5981/_r/59816_retinaarticle.jpg
+            // https://www.radionova.fi/files/media/image/2019/08/2019_08_02_5c5d865aaf9a9_1120.jpg
+            //   https://www.radionova.fi/files/media/image/2019/08/2019_08_02_5c5d865aaf9a9.jpg
+            domain_nowww === "radionova.fi") {
             // https://www.voice.fi/files/media/image/2017/24/2017_24_11_5a17d903efa2e_480.jpg
             //   https://www.voice.fi/files/media/image/2017/24/2017_24_11_5a17d903efa2e.jpg
             // https://www.voice.fi/files/media/image/p18v/at/p18v9at6s32ujg2b1ldqld4o4s5_480.jpg
             //   https://www.voice.fi/files/media/image/p18v/at/p18v9at6s32ujg2b1ldqld4o4s5.jpg
-            return src.replace(/(\/+files\/+media\/+image\/+(?:[0-9]{4}\/+[0-9]{2}\/+[0-9]{4}_[0-9]{2}_[0-9]{2}_[0-9a-f]+|[0-9a-z]{4}\/+[0-9a-z]{2}\/+[0-9a-z]+))_[0-9]+(\.[^/.]*)(?:[?#].*)?$/,
+            return src.replace(/(\/+files\/+media\/+image\/+(?:[0-9]{4}\/+[0-9]{2}\/+[0-9]{4}_[0-9]{2}_[0-9]{2}_[0-9a-f]+|[0-9a-z]{4}\/+[0-9a-z]{2}\/+[0-9a-z]+|[0-9]+\/+_r\/+[0-9]+_retinaarticle))_[0-9]+(\.[^/.]*)(?:[?#].*)?$/,
                                "$1$2");
         }
 
@@ -32484,10 +32511,14 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/rimg\/+[0-9]+-[0-9]+(?:-[a-z])?\/+images\/+/, "/images/");
         }
 
-        if (domain_nosub === "popmeh.ru" && domain.match(/^images[0-9]*\./)) {
+        if ((domain_nosub === "popmeh.ru"/* ||
+             // https://images11.bazaar.ru/upload/img_cache/b26/b267b8cc2b5cb3e0f3f19440fb59235e_fitted_1110x1800.jpg
+             // doesn't work
+             domain_nosub === "bazaar.ru"*/)
+            && domain.match(/^images[0-9]+\./)) {
             // https://images11.popmeh.ru/upload/img_cache/41f/41f8c3afe0a2611926c8682b7bf6e0a9_ce_1440x768x0x19_cropped_800x427.jpg
             //   https://images11.popmeh.ru/upload/img_cache/41f/41f8c3afe0a2611926c8682b7bf6e0a9_ce_1440x768x0x19.jpg
-            return src.replace(/(\/upload\/+img_cache\/+[0-9a-f]{3}\/+[0-9a-f]+_[^/_]+_[0-9]+x[0-9]+x[0-9]+x[0-9]+)_(?:cropped|fitted)_[0-9]+x[0-9]+(\.[^/.]*)(?:[?#].*)?$/,
+            return src.replace(/(\/upload\/+img_cache\/+[0-9a-f]{3}\/+[0-9a-f]+(?:_[^/_]+_[0-9]+x[0-9]+x[0-9]+x[0-9]+)?)_(?:cropped|fitted)_[0-9]+x[0-9]+(\.[^/.]*)(?:[?#].*)?$/,
                                "$1$2");
         }
 
@@ -33657,7 +33688,10 @@ var $$IMU_EXPORT$$;
             };
         }
 
-        if (domain_nowww === "rabstol.net") {
+        if (domain_nowww === "rabstol.net" ||
+            // http://www.youloveit.ru/uploads/gallery/thumb/549/youloveit_ru_selena_gomez_new_foto06.jpg
+            //   http://www.youloveit.ru/uploads/gallery/main/549/youloveit_ru_selena_gomez_new_foto06.jpg
+            domain_nowww === "youloveit.ru") {
             // http://www.rabstol.net/uploads/gallery/thumb/446/rabstol_net_the_imitation_game_04.jpg
             //   http://www.rabstol.net/uploads/gallery/main/446/rabstol_net_the_imitation_game_04.jpg
             return src.replace(/(\/uploads\/+gallery\/+)[a-z]+(\/+[0-9]+\/+)/, "$1main$2");
@@ -36878,6 +36912,31 @@ var $$IMU_EXPORT$$;
                 return newsrc;
         }
 
+        if (domain_nowww === "pauza.sk") {
+            // http://www.pauza.sk/web_object/18202_s.jpg
+            //   http://www.pauza.sk/web_object/18202_b.jpg
+            return src.replace(/(\/web_object\/+[0-9]+)_[a-z](\.[^/.]*)(?:[?#].*)?$/, "$1_b$2");
+        }
+
+        if (domain === "d26672rfe314dk.cloudfront.net") {
+            // https://d26672rfe314dk.cloudfront.net/73192/400/Margot-Robbie-H-Pie.jpeg
+            //   https://d26672rfe314dk.cloudfront.net/73192/Margot-Robbie-H-Pie.jpeg
+            return src.replace(/(:\/\/[^/]*\/+[0-9]+\/+)[0-9]+\/+([^/]*\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain_nowww === "roleplayhaven.net") {
+            // http://www.roleplayhaven.net/gallery/thumb_1172416097490998.jpg
+            //   http://www.roleplayhaven.net/gallery/1172416097490998.jpg
+            return src.replace(/\/gallery\/+thumb_([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/gallery/$1");
+        }
+
+        if (domain === "images.ladbible.com") {
+            // https://images.ladbible.com/thumbnail?type=jpeg&url=http://beta.ems.ladbiblegroup.com/s3/content/349dd1e35a56f90a693f029f8ffaa718.png&quality=70&width=648
+            //   http://beta.ems.ladbiblegroup.com/s3/content/349dd1e35a56f90a693f029f8ffaa718.png
+            newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+thumbnail\?(?:.*&)?url=([^&]*).*?$/, "$1");
+            if (newsrc !== src)
+                return decodeuri_ifneeded(newsrc);
+        }
 
 
 
