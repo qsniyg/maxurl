@@ -30,6 +30,12 @@ It is currently released as:
 
   - Source code is in `reddit-bot/bot.js <https://github.com/qsniyg/maxurl/blob/master/reddit-bot/bot.js>`__
 
+Community:
+
+- `Discord Server <https://discord.gg/fH9Pf54>`__
+
+- `Subreddit <http://reddit.com/r/MaxImage>`__
+
 *******************************
 Integrating IMU in your program
 *******************************
