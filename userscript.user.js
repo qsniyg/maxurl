@@ -21693,10 +21693,14 @@ var $$IMU_EXPORT$$;
         if (domain === "cloudia.hnonline.sk" ||
             // https://img.joj.sk/r1200x/594a7d0a26a9be62ac0a9d84f1c32ded.jpg -- upscaled
             //   https://img.joj.sk/594a7d0a26a9be62ac0a9d84f1c32ded.jpg
+            // https://img.joj.sk/r960x/0af19800d00341c4366ce000de3d89cd
+            //   https://img.joj.sk/0af19800d00341c4366ce000de3d89cd
+            // https://img.joj.sk/rx115/a8821f0c5f162a4a843c0b6e5982fcd6
+            //   https://img.joj.sk/a8821f0c5f162a4a843c0b6e5982fcd6
             domain === "img.joj.sk") {
             // https://cloudia.hnonline.sk/r740x415n/f46d9eecfa7bc72be2d58a1db131b148.jpg?default=article
             //   https://cloudia.hnonline.sk/f46d9eecfa7bc72be2d58a1db131b148.jpg
-            return src.replace(/(:\/\/[^/]*\/)[a-z]?[0-9]+x(?:[0-9]+)?[a-z]?\/([0-9a-f]+\.[^/.]*?)(?:\?.*)?$/, "$1$2");
+            return src.replace(/(:\/\/[^/]*\/)[a-z]?[0-9]*x[0-9]*[a-z]?\/([0-9a-f]+(?:\.[^/.]*?)?)(?:\?.*)?$/, "$1$2");
         }
 
         if (googlestorage_container === "nana10img") {
@@ -36797,6 +36801,23 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/data\/+([^/]+)\/+mainimages\/+([0-9]{6})\/+[0-9]{6}_/, "/imgdata/$1/$2/");
         }
 
+        if (domain_nowww === "dosugbook.nl") {
+            // https://dosugbook.nl/upfiles/photos/persons/2512/thumbs250/04.jpg
+            //   https://dosugbook.nl/upfiles/photos/persons/2512/04.jpg
+            return src.replace(/(\/upfiles\/+photos\/+persons\/+[0-9]+\/+)thumbs[0-9]+\/+/, "$1");
+        }
+
+        if (domain_nowww === "sexbahrain.club") {
+            // https://sexbahrain.club/photos/600_0/callgirl_217_584556c930585_r.jpg -- upscaled, no watermark
+            //   https://sexbahrain.club/photos/callgirl_217_584556c930585_r.jpg -- watermark
+            // https://sexbahrain.club/photos/callgirl_146176_5a55b1728b5e4_r.jpg -- 1201x800
+            return {
+                url: src.replace(/\/photos\/+[0-9]+_[0-9]+\/+/, "/photos/"),
+                problems: {
+                    watermark: true
+                }
+            };
+        }
 
 
 
