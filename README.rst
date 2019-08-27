@@ -64,6 +64,9 @@ As mentioned above, userscript.user.js also functions as a node module.
       // Implementing an auto-clearing cache is tracked at https://github.com/qsniyg/maxurl/issues/109
       use_cache: true,
 
+      // Timeout (in seconds) for cache entries in the URL cache
+      urlcache_time: 60*60,
+
       // List of "problems" (such as watermarks or possibly broken image) to exclude.
       //
       // By default, all problems are excluded.
