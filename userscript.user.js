@@ -630,6 +630,7 @@ var $$IMU_EXPORT$$;
         mouseover_links: false,
         // thanks to acid-crash on github for the idea
         mouseover_styles: "",
+        website_inject_imu: true,
         website_image: true,
         extension_contextmenu: true,
         allow_watermark: false,
@@ -982,10 +983,19 @@ var $$IMU_EXPORT$$;
             },
             category: "popup"
         },
+        website_inject_imu: {
+            name: "Use userscript",
+            description: "Replaces the website's IMU instance with the userscript",
+            userscript_only: true,
+            category: "website"
+        },
         website_image: {
             name: "Website image preview",
             description: "Enables a preview of the image on the Image Max URL website",
             userscript_only: true,
+            requires: {
+                website_inject_imu: true
+            },
             category: "website"
         },
         extension_contextmenu: {
@@ -42632,8 +42642,9 @@ var $$IMU_EXPORT$$;
                 });
             }
 
-            if (document.location.href.match(/^https?:\/\/qsniyg\.github\.io\/+maxurl(\/+|\/+index\.html)?(?:[?#].*)?$/) ||
-                document.location.href.match(/^file:\/\/.*\/maxurl\/site\/index\.html/)) {
+            if (settings.website_inject_imu &&
+                (document.location.href.match(/^https?:\/\/qsniyg\.github\.io\/+maxurl(\/+|\/+index\.html)?(?:[?#].*)?$/) ||
+                 document.location.href.match(/^file:\/\/.*\/maxurl\/site\/index\.html/))) {
                 if (typeof(unsafeWindow) !== "undefined") {
                     onload(function() {
                         do_websitehome();
