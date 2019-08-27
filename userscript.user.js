@@ -2630,6 +2630,9 @@ var $$IMU_EXPORT$$;
             //   http://dimg.donga.com/wps/NEWS/IMAGE/2018/04/04/89455472.2.jpg
             // http://dimg.donga.com/a/280/60/90/2/wps/NEWS/FEED/Top_Main_Top_2013/89467049.1.thumb.jpg
             //   http://dimg.donga.com/wps/NEWS/FEED/Top_Main_Top_2013/89467049.1.thumb.jpg
+            // 3, 4, 5, and 6 seem to be the same
+            // other:
+            // http://dimg.donga.com/egc/PHOTO/udata/photonews/image/201506/04/201506040012/A84P4320.jpg
             return src
                 .replace(/\/[ca]\/(?:[0-9]+\/){4}/, "/")
                 .replace(/\/i\/[0-9]+\/[0-9]+\/[0-9]+\//, "/");
@@ -33520,7 +33523,10 @@ var $$IMU_EXPORT$$;
             return src.replace(/(?:\/(?:[wh]\/+[0-9]+|t\/+[a-z]+))?\/+i\/+/, "/t/original/i/");
         }
 
-        if (domain === "i.inswave.net") {
+        if (domain === "i.inswave.net" ||
+            // http://f.xza.co.kr/f_img.php?p=http://www.starjn.com/data/starjn_com/mainimages/201611/2016110547552954.jpg?wdate=1566871068
+            //   http://www.starjn.com/data/starjn_com/mainimages/201611/2016110547552954.jpg?wdate=1566871068
+            domain === "f.xza.co.kr") {
             // http://i.inswave.net/img_s.php?u=http://www.yeowonnews.com/data/yeowonnews_com/facebook/8562_2018120235568505.png&w=600&h=398
             //   http://www.yeowonnews.com/data/yeowonnews_com/facebook/8562_2018120235568505.png
             // http://i.inswave.net/f_img.php?p=http://image.newsis.com/2013/03/20/NISI20130320_0007905303_web.jpg
@@ -36900,7 +36906,8 @@ var $$IMU_EXPORT$$;
             if (newsrc !== src)
                 return newsrc;
 
-            // thanks to @rEnr3n on github
+            // thanks to @rEnr3n on github (https://github.com/qsniyg/maxurl/issues/112)
+            // https://gallery.vphotos.cn/vphotosgallery/index.html?vphotowechatid=F4295EFD2FCAA1C66600D8C34D8AFEA7
             // https://img.vphotos.cn/79EC756DCFC5B72D354DC93D86D7B409/postp/thumbs/vbox3584_BS8A1492_184055_thumb.JPG
             //   https://img.vphotos.cn/79EC756DCFC5B72D354DC93D86D7B409/postp/logo1920/vbox3584_BS8A1492_184055_small.JPG -- watermark
             //   https://img.vphotos.cn/79EC756DCFC5B72D354DC93D86D7B409/postp/1920/vbox3584_BS8A1492_184055_small.JPG
@@ -36960,6 +36967,23 @@ var $$IMU_EXPORT$$;
                 ];
         }
 
+        if (domain_nowww === "starjn.com") {
+            // http://www.starjn.com/data/starjn_com/mainimages/201908/2019082638243858.jpg
+            //   http://www.starjn.com/imgdata/starjn_com/201908/2019082638243858.jpg
+            // doesn't work for all:
+            // http://www.starjn.com/data/starjn_com/mainimages/201812/2018122025157897.jpg
+            // http://www.starjn.com/data/starjn_com/mainimages/201908/2019082246537169.jpg
+            //   http://www.starjn.com/imgdata/starjn_com/201908/2019082243424249.jpg
+            // other:
+            // http://www.starjn.com/data/starjn_com/facebook/83172_2016110547552954.jpg -- all "facebook" links are dead
+            //   http://www.starjn.com/data/starjn_com/mainimages/201611/2016110547552954.jpg?wdate=1566871068 -- works
+            //   http://www.starjn.com/imgdata/starjn_com/201611/2016110547151247.jpg -- works
+            newsrc = src.replace(/\/data\/+starjn_com\/+facebook\/+[0-9]+_([0-9]{6})([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/data/starjn_com/mainimages/$1/$1$2");
+            if (newsrc !== src)
+                return newsrc;
+
+            return src.replace(/\/data\/+starjn_com\/+mainimages\/+/, "/imgdata/starjn_com/");
+        }
 
 
 
