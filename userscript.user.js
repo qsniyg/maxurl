@@ -11727,6 +11727,7 @@ var $$IMU_EXPORT$$;
             // http://x.fap.to/h60q90c35.444444x10.666667x57.555556x25.407407/images/full/57/401/401519803.jpg
             //   http://x.fap.to/images/full/57/401/401519803.jpg
             return src
+                .replace(/:\/\/x[0-9]*\./, "://x.") // temporary error?
                 .replace(/(:\/\/[^/]*\/)[a-z0-9.]+\/images\//, "$1images/")
                 .replace(/\/images\/[a-z]*\//, "/images/full/");
         }
@@ -29879,6 +29880,10 @@ var $$IMU_EXPORT$$;
             //   http://pbs-0.adult-empire.com/53/5328/010/9.jpg
             // http://pbs-2.adult-empire.com/88/8850/p499/tn_name3.jpg
             //   http://pbs-2.adult-empire.com/88/8850/p499/name3.jpg
+            // http://pbs-2.adult-empire.com/95/9504/thumbnails/tn0330.JPG
+            //   http://pbs-2.adult-empire.com/95/9504/images/0330.JPG
+            // http://pbs-0.adult-empire.com/61/6147/cg_08_009/thumbs/tn_004.jpg
+            //   http://pbs-0.adult-empire.com/61/6147/cg_08_009/004.jpg
             newsrc = src
                 .replace(/\/tns\/+tn([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/$1")
                 .replace(/\/thumb\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/pics/$1")
@@ -29896,6 +29901,8 @@ var $$IMU_EXPORT$$;
                 .replace(/(\/[0-9]+)a(\.[^/.]*)(?:[?#].*)?$/, "$1$2")
                 .replace(/\/thumbs\/+thumb([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/pics/pic$1")
                 .replace(/(\/[0-9]+\/+[0-9]+\/+p[0-9]+\/+)tn_([^/]*)(?:[?#].*)?$/, "$1$2")
+                .replace(/(\/[0-9]+\/+[0-9]+\/+)thumbnails\/+tn([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1images/$2")
+                .replace(/(\/[0-9]+\/+[0-9]+\/+cg_[0-9]+_[0-9]+\/+)thumbs\/+tn_([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2")
                 .replace(/(:\/\/[^/]*\/[^/]*\/+[^/]*\/+[^/]*\/+)tn([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
             if (newsrc !== src)
                 return newsrc;
@@ -36938,6 +36945,20 @@ var $$IMU_EXPORT$$;
                 return decodeuri_ifneeded(newsrc);
         }
 
+        if (domain === "file.starnnews.com") {
+            // http://file.starnnews.com/news/fnstar/2019/0819/20190819232629_5d5ab195bc932_10.jpg
+            //   http://file.starnnews.com/news/fnstar/2019/0819/20190819232629_5d5ab195bc932_1.jpg
+            // http://file.starnnews.com/news/fnstar/2013/0619/20130619163423_51c15eff5d6b4_1.jpg -- 580x870, watermark
+            //   http://file.starnnews.com/news/fnstar/2013/0619/20130619163423_51c15eff5d6b4_2.jpg -- 1200x1800, no watermark
+            //   http://file.starnnews.com/news/fnstar/2013/0619/20130619163423_51c15eff5d6b4_10.jpg -- doesn't work
+            // http://file.starnnews.com/news/fnstar/2019/0710/20190710181850_5d25ad79a1a57_2.jpg
+            regex = /(\/[0-9]{8,}_[0-9a-f]+_)(?:10|1)(\.[^/.]*)(?:[?#].*)?$/;
+            if (regex.test(src))
+                return [
+                    src.replace(regex, "$12$2"),
+                    src.replace(regex, "$11$2")
+                ];
+        }
 
 
 
