@@ -28028,10 +28028,28 @@ var $$IMU_EXPORT$$;
                 return decodeURIComponent(newsrc);
         }
 
-        if (domain_nosub === "nocutnews.co.kr" &&
-            domain.match(/^file[0-9]*\./)) {
+        if (domain_nosub === "nocutnews.co.kr" && domain.match(/^file[0-9]*\./)) {
             // http://file2.nocutnews.co.kr/newsroom/image/2017/08/31/20170831120117486976_preview.jpg
             //   http://file2.nocutnews.co.kr/newsroom/image/2017/08/31/20170831120117486976.jpg
+            // other:
+            // https://www.nocutnews.co.kr/news/4979003
+            //   https://file2.nocutnews.co.kr/newsroom/upload/image/2018/06/01/201806011636285046.jpg -- 3680x2456
+            // http://file2.nocutnews.co.kr/news/reporter/2019/08/20/20190820140816533.jpg -- 2826x4238
+            // https://file2.nocutnews.co.kr/nocut/news/meta/20190426193614.jpg -- 2850x1953
+            // http://file2.nocutnews.co.kr/nocut/news/top1/headline/20190701060526.jpg -- 3833x2667
+            // https://file2.nocutnews.co.kr/newsroom/image/2003/09/02092232000_60100020.jpg -- 3066x1402
+            // https://file2.nocutnews.co.kr/newsroom/image/2003/12/06033629000_60500060.bmp -- 2288x1712
+            // https://www.nocutnews.co.kr/common/popprint.aspx?index=4761310 (news id, but using this doesn't help)
+            // https://www.nocutnews.co.kr/news/4761310
+            //   https://file2.nocutnews.co.kr/newsroom/image/2017/04/03/201704031737527882.jpg -- 5184x3456
+            // http://img.nocutnews.co.kr/mnocut/v3/story/disabled/img5_1_2.jpg -- 4030x2330
+            // http://img.nocutnews.co.kr/mnocut/v2/story/img_160502.jpg -- 4999x3227
+            // http://file2.nocutnews.co.kr/bsnocut/news/special/20190618174031.jpg -- 4032x3024
+            // http://file2.nocutnews.co.kr/nocut/tv/video/20150722170936.jpg -- 5616x3744
+            // https://file2.nocutnews.co.kr/nocut/news/timeline/20170531161019.jpg -- 1999x2354
+            // https://www.nocutnews.co.kr/news/5204209
+            //   https://file2.nocutnews.co.kr/newsroom/image/2019/08/27/20190827183910804787_8_450_254.jpg
+            //     https://file2.nocutnews.co.kr/newsroom/image/2019/08/27/20190827183910804787_6_710_401.jpg
             return src.replace(/(\/[0-9]+)_preview(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
         }
 
