@@ -1136,6 +1136,7 @@ var $$IMU_EXPORT$$;
         };
 
         this.get = function(key) {
+            // TODO: maybe renew timeout per-get?
             if (_nir_debug_)
                 console_log("Cache.get key=" + key, deepcopy(this.data[key]));
 
@@ -1527,6 +1528,27 @@ var $$IMU_EXPORT$$;
 
         //console_log(blacklist_regexes);
     }
+
+    var common_functions = {};
+    common_functions.deviantart_page_from_id = function(do_request, id, cb) {
+        if (api_cache.has("deviantart_page_from_id:" + id)) {
+            return cb(api_cache.get("deviantart_page_from_id:" + id));
+        }
+
+        do_request({
+            method: "GET",
+            url: "http://fav.me/" + id,
+            onload: function(result) {
+                if (result.status !== 200) {
+                    console_log(result);
+                    return cb(null);
+                }
+
+                api_cache.set("deviantart_page_from_id:" + id, result, 3*60*60);
+                cb(result);
+            }
+        });
+    };
 
     function bigimage(src, options) {
         if (!src)
@@ -7551,32 +7573,29 @@ var $$IMU_EXPORT$$;
             match = src.match(/^[a-z]+:\/\/(?:images-)?wixmp-[0-9a-f]+\.wixmp\.com\/+(?:intermediary\/+)?[^/]*\/+[-0-9a-f]+\/+([0-9a-z]+)-[-0-9a-f]+\.[^/.]+(?:\/+v[0-9]*\/.*?)?(?:[?#].*)?$/);
             if (match) {
                 id = match[1];
-                options.do_request({
-                    url: "http://fav.me/" + id,
-                    method: "GET",
-                    onload: function(result) {
-                        if (result.status !== 200) {
-                            options.cb({
-                                url: null,
-                                waiting: false
-                            });
-                            return;
-                        }
 
-                        var fake_deviantart_image = {
-                            url: "http://img.deviantart.net/fake_image/i/0000/000/0/0/_fake_image-" + id + ".jpg",
-                            fake: true
-                        };
-                        var obj = [fake_deviantart_image, {
-                            url: src,
-                            extra: {
-                                page: result.finalUrl
-                            }
-                        }];
-
-                        options.cb(obj);
-                        //options.cb(fake_deviantart_image);
+                common_functions.deviantart_page_from_id(options.do_request, id, function(result) {
+                    if (!result) {
+                        return options.cb({
+                            url: null,
+                            waiting: false
+                        });
                     }
+
+                    var fake_deviantart_image = {
+                        url: "http://img.deviantart.net/fake_image/i/0000/000/0/0/_fake_image-" + id + ".jpg",
+                        fake: true
+                    };
+
+                    var obj = [fake_deviantart_image, {
+                        url: src,
+                        extra: {
+                            page: result.finalUrl
+                        }
+                    }];
+
+                    options.cb(obj);
+                    //options.cb(fake_deviantart_image);
                 });
 
                 return {
@@ -19497,107 +19516,101 @@ var $$IMU_EXPORT$$;
                 var id = src.replace(/.*-([0-9a-z]+)\.[^/.]*$/, "$1");
                 //id = parseInt(id, 36) - 28298170368;
 
-                options.do_request({
-                    method: "GET",
-                    url: "http://fav.me/" + id,
-                    onload: function(result) {
-                        if (result.status !== 200) {
-                            console_log(result);
-                            options.cb(null);
+                common_functions.deviantart_page_from_id(options.do_request, id, function(result) {
+                    if (!result) {
+                        return options.cb(null);
+                    }
+
+                    var obj = {
+                        url: null,
+                        waiting: false,
+                        extra: {
+                            page: result.finalUrl
+                        }
+                    };
+
+                    if (!src.match(/:\/\/[^/]*\/fake_image\//))
+                        obj.url = src;
+
+                    try {
+                        var hrefre = /href=["'](https?:\/\/www\.deviantart\.com\/+download\/+[0-9]+\/+[^/>'"]*?)["']/;
+                        var match = result.responseText.match(hrefre);
+                        if (!match) {
+                            console_error("No public download for " + src);
+
+                            // This will occasionally scale down the image
+                            if (false) {
+                                try {
+                                    var hrefre = /<img[^>]*?src=["'](https?:\/\/(?:images-wixmp)[^>'"]*?)["'][^>]*class=["']dev-content-/g;
+                                    var match = result.responseText.match(hrefre);
+                                    if (match) {
+                                        var maxres = 0;
+                                        var maxurl = null;
+                                        for (var i = 0; i < match.length; i++) {
+                                            var whmatch = match[i].match(/width=["']?([0-9]+)/);
+                                            var oururl = match[i].match(/\ssrc=['"](http[^'"]*)/);
+                                            if (!oururl)
+                                                continue;
+                                            oururl = oururl[1];
+                                            var base = 0;
+                                            if (!whmatch)
+                                                continue;
+                                            base = parseInt(whmatch[1]);
+                                            whmatch = match[i].match(/height=["']?([0-9]+)/);
+                                            if (!whmatch)
+                                                continue;
+                                            base *= parseInt(whmatch[1]);
+
+                                            if (base > maxres) {
+                                                maxres = maxres;
+                                                maxurl = oururl;
+                                            }
+                                        }
+
+                                        if (maxurl &&
+                                            maxurl.replace(/\?.*/) !== src.replace(/\?.*/)) {
+                                            obj.url = maxurl;
+                                            obj.likely_broken = false;
+                                            options.cb(obj);
+                                            return;
+                                        }
+                                    }
+                                    return options.cb(obj);
+                                } catch (e) {
+                                    console_error(e);
+                                    return options.cb(obj);
+                                }
+                            } else {
+                                return options.cb(obj);
+                            }
                             return;
                         }
 
-                        var obj = {
-                            url: null,
-                            waiting: false,
-                            extra: {
-                                page: result.finalUrl
-                            }
-                        };
+                        var href = match[1].replace("&amp;", "&");
 
-                        if (!src.match(/:\/\/[^/]*\/fake_image\//))
-                            obj.url = src;
-
-                        try {
-                            var hrefre = /href=["'](https?:\/\/www\.deviantart\.com\/download\/[0-9]+\/[^/>'"]*?)["']/;
-                            var match = result.responseText.match(hrefre);
-                            if (!match) {
-                                console_error("No public download for " + src);
-
-                                // This will occasionally scale down the image
-                                if (false) {
-                                    try {
-                                        var hrefre = /<img[^>]*?src=["'](https?:\/\/(?:images-wixmp)[^>'"]*?)["'][^>]*class=["']dev-content-/g;
-                                        var match = result.responseText.match(hrefre);
-                                        if (match) {
-                                            var maxres = 0;
-                                            var maxurl = null;
-                                            for (var i = 0; i < match.length; i++) {
-                                                var whmatch = match[i].match(/width=["']?([0-9]+)/);
-                                                var oururl = match[i].match(/\ssrc=['"](http[^'"]*)/);
-                                                if (!oururl)
-                                                    continue;
-                                                oururl = oururl[1];
-                                                var base = 0;
-                                                if (!whmatch)
-                                                    continue;
-                                                base = parseInt(whmatch[1]);
-                                                whmatch = match[i].match(/height=["']?([0-9]+)/);
-                                                if (!whmatch)
-                                                    continue;
-                                                base *= parseInt(whmatch[1]);
-
-                                                if (base > maxres) {
-                                                    maxres = maxres;
-                                                    maxurl = oururl;
-                                                }
-                                            }
-
-                                            if (maxurl &&
-                                                maxurl.replace(/\?.*/) !== src.replace(/\?.*/)) {
-                                                obj.url = maxurl;
-                                                obj.likely_broken = false;
-                                                options.cb(obj);
-                                                return;
-                                            }
-                                        }
-                                        return options.cb(obj);
-                                    } catch (e) {
-                                        console_error(e);
-                                        return options.cb(obj);
-                                    }
-                                } else {
-                                    return options.cb(obj);
-                                }
-                                return;
-                            }
-
-                            var href = match[1].replace("&amp;", "&");
-
-                            options.do_request({
-                                method: "HEAD",
-                                url: href,
-                                onload: function(result) {
-                                    if (result.status !== 200 && result.status !== 405) {
-                                        console_log("Error fetching DeviantArt download link:");
-                                        console_log(result);
-                                        options.cb(obj);
-                                        return;
-                                    }
-
-                                    var finalurl = result.finalUrl;
-                                    if (finalurl.match(/^[a-z]+:\/\/(?:www\.)?deviantart\.com\/users\/outgoing\?/)) {
-                                        finalurl = finalurl.replace(/^[a-z]+:\/\/(?:www\.)?deviantart\.com\/users\/outgoing\?/, "");
-                                    }
-                                    obj.url = finalurl;
-                                    obj.likely_broken = false;
+                        options.do_request({
+                            method: "HEAD",
+                            url: href,
+                            onload: function (result) {
+                                if (result.status !== 200 && result.status !== 405) {
+                                    console_log("Error fetching DeviantArt download link:");
+                                    console_log(result);
                                     options.cb(obj);
+                                    return;
                                 }
-                            });
-                        } catch (e) {
-                            console_error(e);
-                            options.cb(obj);
-                        }
+
+                                var finalurl = result.finalUrl;
+                                if (finalurl.match(/^[a-z]+:\/\/(?:www\.)?deviantart\.com\/+users\/+outgoing\?/)) {
+                                    finalurl = finalurl.replace(/^[a-z]+:\/\/(?:www\.)?deviantart\.com\/+users\/+outgoing\?/, "");
+                                }
+                                obj.url = finalurl;
+                                obj.likely_broken = false;
+                                options.cb(obj);
+                            }
+                        });
+                    } catch (e) {
+                        console_error(e);
+                        options.cb(obj);
                     }
                 });
             })();
