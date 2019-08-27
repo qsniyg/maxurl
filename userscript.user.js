@@ -41192,19 +41192,13 @@ var $$IMU_EXPORT$$;
             var sources = {};
             //var picture_sources = {};
             var links = {};
+            var layers = [];
             var picture_minw = false;
             var picture_maxw = false;
             var picture_minh = false;
             var picture_maxh = false;
 
             var id = 0;
-            var minW = 0;
-            var minH = 0;
-            var minMinW = 0;
-            var minMinH = 0;
-            var minMaxW = 0;
-            var minMaxH = 0;
-            var minX = 0;
 
             var thresh = 20;
 
@@ -41277,6 +41271,14 @@ var $$IMU_EXPORT$$;
                     options = {};
                 }
 
+                if ("layer" in options) {
+                    if (!(options.layer in layers)) {
+                        layers[options.layer] = [];
+                    }
+
+                    layers[options.layer].push(src);
+                }
+
                 if (!(src in sources)) {
                     sources[src] = {
                         count: 1,
@@ -41294,15 +41296,15 @@ var $$IMU_EXPORT$$;
                 return true;
             }
 
-            function addTagElement(el) {
+            function addTagElement(el, layer) {
                 if (el.tagName === "PICTURE") {
                     for (var i = 0; i < el.children.length; i++) {
-                        addElement(el.children[i]);
+                        addElement(el.children[i], layer);
                     }
                 } else if (el.tagName === "SOURCE" || el.tagName === "IMG") {
                     if (el.src) {
                         var src = norm(el.src);
-                        if (!addImage(src, el))
+                        if (!addImage(src, el, {layer:layer}))
                             return;
 
                         if (!el.srcset) {
@@ -41338,7 +41340,7 @@ var $$IMU_EXPORT$$;
                         var src = norm(ssources[i].replace(/ .*/, ""));
                         var desc = ssources[i].replace(/.* /, "");
 
-                        if (!addImage(src, el))
+                        if (!addImage(src, el, {layer:layer}))
                             continue;
 
                         //picture_sources[src] = sources[src];
@@ -41403,8 +41405,11 @@ var $$IMU_EXPORT$$;
                 }
             }
 
-            function addElement(el) {
-                addTagElement(el);
+            function addElement(el, layer) {
+                if (typeof layer === "undefined")
+                    layer = layers.length;
+
+                addTagElement(el, layer);
 
                 var style = window.getComputedStyle(el);
                 if (style.getPropertyValue("background-image")) {
@@ -41414,7 +41419,8 @@ var $$IMU_EXPORT$$;
                         var src = norm(bgimg.replace(/^ *url[(](?:(?:'(.*?)')|(?:"(.*?)")|(?:([^)]*)))[)].*$/, "$1$2$3"));
                         if (src !== bgimg)
                             addImage(src, el, {
-                                isbg: true
+                                isbg: true,
+                                layer: layer
                             });
                     }
                 }
@@ -41428,7 +41434,7 @@ var $$IMU_EXPORT$$;
                 addElement(el);
             }
 
-            if (false) {
+            if (true) {
                 console_log(els);
                 console_log(sources);
             }
@@ -41442,6 +41448,146 @@ var $$IMU_EXPORT$$;
 
                 return source;
             }
+
+            console.log(deepcopy(layers));
+
+            for (var i = 0; i < layers.length; i++) {
+                var minW = 0;
+                var elW = null;
+                var minH = 0;
+                var elH = null;
+                var minMinW = 0;
+                var elMinW = null;
+                var minMinH = 0;
+                var elMinH = null;
+                var minMaxW = 0;
+                var elMaxW = null;
+                var minMaxH = 0;
+                var elMaxH = null;
+                var minX = 0;
+                var elX = null;
+
+                var have_something = false;
+
+                for (var j = 0; j < layers[i].length; j++) {
+                    var source_url = layers[i][j];
+
+                    var source = sources[source_url];
+
+                    if (source.width && source.width > minW) {
+                        minW = source.width;
+                        elW = source;
+                        have_something = true;
+                    }
+
+                    if (source.height && source.height > minH) {
+                        minH = source.height;
+                        elH = source;
+                        have_something = true;
+                    }
+
+                    if (source.minWidth && source.minWidth > minMinW) {
+                        minMinW = source.minWidth;
+                        elMinW = source;
+                        have_something = true;
+                    }
+
+                    if (source.minHeight && source.minHeight > minMinH) {
+                        minMinH = source.minHeight;
+                        elMinH = source;
+                        have_something = true;
+                    }
+
+                    if (source.maxWidth && source.maxWidth > minMaxW) {
+                        minMaxW = source.maxWidth;
+                        elMaxW = source;
+                    }
+
+                    if (source.maxHeight && source.maxHeight > minMaxH) {
+                        minMaxH = source.maxHeight;
+                        elMaxH = source;
+                    }
+
+                    if (source.desc_x && source.desc_x > minX) {
+                        minX = source.desc_x;
+                        elX = source;
+                        have_something = true;
+                    }
+                }
+
+                if (!have_something)
+                    continue;
+
+                var okurls = {};
+
+                if (minX > 1) {
+                    okurls[elX.src] = true;
+                }
+
+                if (minW > thresh && minW > minMinW) {
+                    okurls[elW.src] = true;
+                }
+
+                if (minH > thresh && minH > minMinH) {
+                    okurls[elH.src] = true;
+                }
+
+                if (minMinW > thresh && minMinW >= minW) {
+                    okurls[elMinW.src] = true;
+                }
+
+                if (minMinH > thresh && minMinH >= minH) {
+                    okurls[elMinH.src] = true;
+                }
+
+                layers[i] = [];
+                for (var url in okurls) {
+                    layers[i].push(url);
+                }
+            }
+
+            // TODO: improve?
+            function pickbest(layer) {
+                for (var i = 0; i < layer.length; i++) {
+                    var source_url = layer[i];
+                    var source = sources[source_url];
+
+                    if (source.desc_x)
+                        return source;
+                }
+
+                return sources[layer[0]];
+            }
+
+            function rebuildlayers() {
+                var newlayers = [];
+                for (var i = 0; i < layers.length; i++) {
+                    if (layers[i].length === 0)
+                        continue;
+                    newlayers.push(layers[i]);
+                }
+                layers = newlayers;
+            }
+
+            rebuildlayers();
+
+            // if there are background images ahead of an image, it's likely to be masks
+            if (layers.length > 1 && layers[0].length === 1 && sources[layers[0][0]].isbg) {
+                for (var i = 1; i < layers.length; i++) {
+                    if (layers[i].length === 1 && sources[layers[i][0]].isbg)
+                        continue;
+                    return pickbest(layers[i]);
+                }
+            }
+
+            if (layers.length > 0) {
+                return pickbest(layers[0]);
+            }
+
+            if (source = getsource())
+                return source;
+            else
+                return getfirstsource(sources);
 
             // disable for now, fix later, for websites that don't work with imu
             if (false) {
@@ -41495,34 +41641,6 @@ var $$IMU_EXPORT$$;
 
             if (minMaxH <= thresh)
             minMaxH = 0;*/
-
-            // Remove hidden elements
-            // Test: https://www.vogue.com/article/lady-gaga-met-gala-2019-entrance-behind-the-scenes-video
-            if (false) {
-                for (var source_url in sources) {
-                    var source = sources[source_url];
-
-                    var visible = true;
-                    var el = source.el;
-                    do {
-                        if (!el || !el.style)
-                            break;
-
-                        if (el.style.opacity.toString().match(/^0(?:\.0*)?$/)) {
-                            visible = false;
-                            break;
-                        }
-                    } while (el = el.parentElement);
-
-                    if (!visible)
-                        continue;
-
-                    newsources[source_url] = source;
-                }
-
-                sources = newsources;
-                newsources = {};
-            }
 
             if ((source = getsource()) !== undefined)
                 return source;
