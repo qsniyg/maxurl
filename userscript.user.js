@@ -41348,12 +41348,16 @@ var $$IMU_EXPORT$$;
                         if (desc) {
                             sources[src].desc = desc;
 
-                            // TODO: improve
-                            if (desc.match(/^ *[0-9]*[whx] *$/)) {
-                                var desc_x = parseInt(desc.replace(/^ *([0-9]*)[whx] *$/, "$1"));
-                                if (!sources[src].desc_x || sources[src].desc_x > desc_x) {
-                                    sources[src].desc_x = desc_x;
-                                }
+                            var whxmatch = desc.match(/^ *([0-9.]+)([whx]) *$/);
+                            if (whxmatch) {
+                                var number = parseFloat(whxmatch[1]);
+
+                                if (whxmatch[2] === "w" && !sources[src].width)
+                                    sources[src].width = number;
+                                else if (whxmatch[2] === "h" && !sources[src].height)
+                                    sources[src].height = number;
+                                else if (whxmatch[2] === "x" && !sources[src].desc_x)
+                                    sources[src].desc_x = number;
                             }
                         }
 
