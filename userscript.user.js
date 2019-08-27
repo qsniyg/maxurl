@@ -41304,12 +41304,11 @@ var $$IMU_EXPORT$$;
                 } else if (el.tagName === "SOURCE" || el.tagName === "IMG") {
                     if (el.src) {
                         var src = norm(el.src);
-                        if (!addImage(src, el, {layer:layer}))
-                            return;
-
-                        if (!el.srcset) {
-                            sources[src].width = el.naturalWidth;
-                            sources[src].height = el.naturalHeight;
+                        if (addImage(src, el, { layer: layer })) {
+                            if (!el.srcset) {
+                                sources[src].width = el.naturalWidth;
+                                sources[src].height = el.naturalHeight;
+                            }
                         }
                     }
 
@@ -41434,7 +41433,7 @@ var $$IMU_EXPORT$$;
                 addElement(el);
             }
 
-            if (true) {
+            if (false) {
                 console_log(els);
                 console_log(sources);
             }
@@ -41448,8 +41447,6 @@ var $$IMU_EXPORT$$;
 
                 return source;
             }
-
-            console.log(deepcopy(layers));
 
             for (var i = 0; i < layers.length; i++) {
                 var minW = 0;
@@ -41977,6 +41974,9 @@ var $$IMU_EXPORT$$;
                     ret.indexOf(el) < 0) {
                     ret.push(el);
                 }
+
+                // FIXME: should we stop checking if not in bounding client rect?
+                // this would depend on the fact that children are always within the bounding rect
 
                 if (el.children && el.children.length > 0) {
                     var newels = find_els_at_point(xy, el.children, prev);
