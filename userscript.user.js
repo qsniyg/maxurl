@@ -189,6 +189,7 @@ var $$IMU_EXPORT$$;
         fill_object: true,
         null_if_no_change: false,
         use_cache: true,
+        urlcache_time: 60*60,
         iterations: 200,
         exclude_problems: [
             "watermark",
@@ -1103,8 +1104,58 @@ var $$IMU_EXPORT$$;
     };
 
 
-    var url_cache = {};
+    function Cache() {
+        this.data = {};
+        this.times = {};
 
+        this.set = function(key, value, time) {
+            if (_nir_debug_)
+                console_log("Cache.set key=" + key + ", time=" + time + ", value:", deepcopy(value));
+
+            this.remove(key);
+
+            this.data[key] = value;
+
+            if (typeof time === "number" && time > 0) {
+                var cache = this;
+                var timer = setTimeout(function() {
+                    cache.remove(key);
+                }, time * 1000);
+                this.times[key] = {
+                    timer: timer,
+                    time: time
+                };
+            }
+        };
+
+        this.has = function(key) {
+            if (_nir_debug_)
+                console_log("Cache.has key=" + key, key in this.data);
+
+            return (key in this.data);
+        };
+
+        this.get = function(key) {
+            if (_nir_debug_)
+                console_log("Cache.get key=" + key, deepcopy(this.data[key]));
+
+            return this.data[key];
+        }
+
+        this.remove = function(key) {
+            if (_nir_debug_)
+                console_log("Cache.remove key=" + key);
+
+            if (key in this.times) {
+                clearTimeout(this.times[key].timer);
+            }
+
+            delete this.times[key];
+            delete this.data[key];
+        };
+    };
+
+    var url_cache = new Cache();
 
     var urlparse = function(x) {
         return new URL(x);
@@ -15140,7 +15191,7 @@ var $$IMU_EXPORT$$;
             });
 
             return {
-                "waiting": true
+                waiting: true
             };
         }
 
@@ -38391,16 +38442,17 @@ var $$IMU_EXPORT$$;
         var i = 0;
 
         var do_cache = function() {
-            if (!newhref || !currentobj)
+            if (!endhref || !currentobj)
                 return;
 
-            if (!get_currenthref(newhref) && !get_currenthref(currentobj))
+            if (!get_currenthref(endhref) && !get_currenthref(currentobj))
                 return;
 
             if (_nir_debug_)
-                console_log("do_cache (newhref, currentobj):", deepcopy(newhref), deepcopy(currentobj));
+                console_log("do_cache (endhref, currentobj):", deepcopy(endhref), deepcopy(currentobj));
 
-            var cache_endhref = fillobj(newhref, currentobj);
+
+            var cache_endhref = fillobj(endhref, currentobj);
             currenthref = get_currenthref(cache_endhref);
             if (!currenthref)
                 return;
@@ -38410,7 +38462,7 @@ var $$IMU_EXPORT$$;
                     var href = pasthrefs[i];
 
                     if (href !== currenthref || true)
-                        url_cache[href] = deepcopy(cache_endhref);
+                        url_cache.set(href, deepcopy(cache_endhref), options.urlcache_time);
                 }
             }
         };
@@ -38570,12 +38622,12 @@ var $$IMU_EXPORT$$;
         };
 
         var do_bigimage = function() {
-            if (options.use_cache && (currenthref in url_cache)) {
+            if (options.use_cache && url_cache.has(currenthref)) {
                 if (_nir_debug_) {
-                    console_log("do_bigimage: newhref = url_cache[" + currenthref + "]", deepcopy(url_cache[currenthref]));
+                    console_log("do_bigimage: newhref = url_cache[" + currenthref + "]", deepcopy(url_cache.get(currenthref)));
                 }
 
-                newhref = url_cache[currenthref];
+                newhref = url_cache.get(currenthref);
                 used_cache = true;
                 return false;
             }
