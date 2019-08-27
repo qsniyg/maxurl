@@ -41319,8 +41319,8 @@ var $$IMU_EXPORT$$;
                     var srcset = el.srcset;
                     while (srcset.length > 0) {
                         var old_srcset = srcset;
-                        srcset = srcset.replace(/^[, ]+/, "");
-                        var match = srcset.match(/^([^ ]* +[^,]+)/);
+                        srcset = srcset.replace(/^[,\s]+/, "");
+                        var match = srcset.match(/^(\S*\s+[^,]+)/);
                         if (match) {
                             ssources.push(match[1]);
                             srcset = srcset.substr(match[1].length);
@@ -41435,7 +41435,8 @@ var $$IMU_EXPORT$$;
 
             if (false) {
                 console_log(els);
-                console_log(sources);
+                console_log(deepcopy(sources));
+                console_log(deepcopy(layers));
             }
 
             if ((source = getsource()) !== undefined) {
