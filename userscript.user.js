@@ -1156,6 +1156,7 @@ var $$IMU_EXPORT$$;
     };
 
     var url_cache = new Cache();
+    var api_cache = new Cache();
 
     var urlparse = function(x) {
         return new URL(x);
@@ -15058,6 +15059,10 @@ var $$IMU_EXPORT$$;
             //   https://farm8.staticflickr.com/7002/6432649813_21c9e80f43_o.jpg
 
             function find_api_key(cb) {
+                if (api_cache.has("flickr_api_key")) {
+                    return cb(api_cache.get("flickr_api_key"));
+                }
+
                 options.do_request({
                     url: "https://www.flickr.com/",
                     method: "GET",
@@ -15068,15 +15073,22 @@ var $$IMU_EXPORT$$;
                     },
                     onload: function(resp) {
                         if (resp.readyState === 4) {
-                            var regex = /root\.YUI_config\.flickr\.api\.site_key *= *['"]([^'"]*)['"] *; */;
+                            var regex = /root\.YUI_config\.flickr\.api\.site_key *= *['"]([0-9a-f]+)['"] *; */;
                             var matchobj = resp.responseText.match(regex);
                             if (!matchobj) {
+                                console_error("Unable to find Flickr API key");
                                 cb(null);
                                 return;
                             }
 
                             var key = matchobj[1];
-                            cb(key);
+                            if (key && typeof key === "string") {
+                                api_cache.set("flickr_api_key", key, 60*60);
+                                cb(key);
+                            } else {
+                                console_error("Unable to find Flickr API key");
+                                cb(null);
+                            }
                         }
                     }
                 });
@@ -15085,6 +15097,12 @@ var $$IMU_EXPORT$$;
             function find_original_page(key, src, cb) {
                 var photoid = src.replace(/.*\/([0-9]+)_[^/]*$/, "$1");
                 var photosecret = src.replace(/.*\/[0-9]+_([0-9a-z]+)_[^/]*$/, "$1");
+
+                var cache_key = "flickr_original:" + photoid + "_" + photosecret;
+                if (api_cache.has(cache_key)) {
+                    return cb(api_cache.get(cache_key));
+                }
+
                 var nexturl = "https://api.flickr.com/services/rest?csrf=&api_key=" + key + "&format=json&nojsoncallback=1&method=flickr.photos.getInfo&photo_id=" + photoid + "&secret=" + photosecret;
                 options.do_request({
                     url: nexturl,
@@ -15097,7 +15115,13 @@ var $$IMU_EXPORT$$;
                     onload: function (resp) {
                         try {
                             var out = JSON_parse(resp.responseText);
-                            cb(out.photo.urls.url[0]._content);
+                            var url = out.photo.urls.url[0]._content;
+                            if (/^https?:\/\//.test(url)) {
+                                api_cache.set(cache_key, url, 6*60*60);
+                                cb(out.photo.urls.url[0]._content);
+                            } else {
+                                cb(null);
+                            }
                         } catch (e) {
                             cb(null);
                         }
@@ -15135,12 +15159,14 @@ var $$IMU_EXPORT$$;
                 }
             }
 
-            find_api_key(function(key) {
-                if (!key) {
-                    return options.cb(null);
+            function find_larger_image(key, src, cb) {
+                var photoid = src.replace(/.*\/([0-9]+)_[^/]*$/, "$1");
+
+                var cache_key = "flickr_larger:" + photoid;
+                if (api_cache.has(cache_key)) {
+                    return cb(api_cache.get(cache_key));
                 }
 
-                var photoid = newsrc.replace(/.*\/([0-9]+)_[^/]*$/, "$1");
                 var nexturl = "https://api.flickr.com/services/rest?csrf=&api_key=" + key + "&format=json&nojsoncallback=1&method=flickr.photos.getSizes&photo_id=" + photoid;
                 options.do_request({
                     url: nexturl,
@@ -15163,29 +15189,49 @@ var $$IMU_EXPORT$$;
                                 }
                             });
 
-                            if (options.force_page) {
-                                find_original_page(key, newsrc, function(page) {
-                                    if (page) {
-                                        var obj = {
-                                            url: largesturl,
-                                            extra: {
-                                                page: page
-                                            }
-                                        };
+                            if (typeof largesturl === "string" && /^https?:\/\//.test(largesturl)) {
+                                // Set this to 10 minutes as maybe the person might enable original images later?
+                                // FIXME: should we even cache this?
+                                api_cache.set(cache_key, largesturl, 10*60);
+                                cb(largesturl);
+                            } else {
+                                cb(null);
+                            }
+                        } catch (e) {
+                            cb(null);
+                            return;
+                        }
+                    }
+                });
+            }
 
-                                        options.cb(obj);
-                                    } else {
-                                        options.cb(largesturl);
+            find_api_key(function(key) {
+                if (!key) {
+                    return options.cb(null);
+                }
+
+                find_larger_image(key, src, function(largesturl) {
+                    if (!largesturl) {
+                        return options.cb(null);
+                    }
+
+                    if (options.force_page) {
+                        find_original_page(key, newsrc, function(page) {
+                            if (page) {
+                                var obj = {
+                                    url: largesturl,
+                                    extra: {
+                                        page: page
                                     }
-                                });
+                                };
+
+                                options.cb(obj);
                             } else {
                                 options.cb(largesturl);
                             }
-                            return;
-                        } catch (e) {
-                            options.cb(null);
-                            return;
-                        }
+                        });
+                    } else {
+                        options.cb(largesturl);
                     }
                 });
             });
