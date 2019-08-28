@@ -2422,13 +2422,40 @@ var $$IMU_EXPORT$$;
                 (match = src.match(/photo\.newsen\.com\/+news_photo\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}([0-9]{10,})_[0-9]+\.[^/.]*(?:[?#].*)?$/)))
                 extra.page = "http://www.newsen.com/news_view.php?uid=" + match[1];
 
-            return {
+            var obj = {
                 url: src,
                 headers: {
                     Referer: "http://www.newsen.com/"
                 },
                 extra: extra
             };
+
+            // Needs euc-kr charset decoding
+            if (false && extra.page && options && options.cb && !("3rdparty" in options.exclude_problems)) {
+                options.do_request({
+                    method: "GET",
+                    url: extra.page,
+                    onload: function(result) {
+                        if (result.readyState !== 4)
+                            return;
+
+                        if (result.status !== 200) {
+                            return options.cb(obj);
+                        }
+
+                        var match = result.responseText.match(/<meta\s+property=["']og:title["']\s+content=["']([^'"]+)["']/);
+
+                        if (!match) {
+                            return options.cb(obj);
+                        }
+
+                        var title = match[1];
+                        console_log(title);
+                    }
+                });
+            }
+
+            return obj;
         }
 
         if (domain_nosub === "chosun.com" ||
