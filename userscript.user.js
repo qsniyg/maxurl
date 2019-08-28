@@ -1316,82 +1316,26 @@ var $$IMU_EXPORT$$;
 
     var add_extensions = function(url) {
         return add_full_extensions(url, ["jpg", "png"]);
-
-        if (url.match(/\.jpg(?:\?.*)?$/)) {
-            return [url, url.replace(/\.jpg(\?.*)?$/, ".png$1")];
-        } else {
-            return [url, url.replace(/\.png(\?.*)?$/, ".jpg$1")];
-        }
     };
 
     var add_extensions_jpeg = function(url) {
         return add_full_extensions(url, ["jpeg", "png"]);
-
-        if (url.match(/\.jpeg(?:\?.*)?$/)) {
-            return [url, url.replace(/\.jpeg(\?.*)?$/, ".png$1")];
-        } else {
-            return [url, url.replace(/\.png(\?.*)?$/, ".jpeg$1")];
-        }
     };
 
     var add_extensions_with_jpeg = function(url) {
         return add_full_extensions(url, ["jpg", "jpeg", "png"]);
-
-        if (url.match(/\.jpg(?:\?.*)?$/)) {
-            return [url, url.replace(/\.jpg(\?.*)?$/, ".png$1"), url.replace(/\.jpg(\?.*)?$/, ".jpeg$1")];
-        } else if (url.match(/\.jpeg(?:\?.*)?$/)) {
-            return [url, url.replace(/\.jpeg(\?.*)?$/, ".png$1"), url.replace(/\.jpeg(\?.*)?$/, ".jpg$1")];
-        } else {
-            return [url, url.replace(/\.png(\?.*)?$/, ".jpg$1"), url.replace(/\.png(\?.*)?$/, ".jpeg$1")];
-        }
     };
 
     var add_extensions_gif = function(url) {
         return add_full_extensions(url, ["jpg", "png", "gif"]);
-
-        if (url.match(/\.jpg(?:\?.*)?$/)) {
-            return [url, url.replace(/\.jpg(\?.*)?$/, ".png$1"), url.replace(/\.jpg(\?.*)?$/, ".gif$1")];
-        } else if (url.match(/\.png(?:\?.*)?$/)) {
-            return [url, url.replace(/\.png(\?.*)?$/, ".jpg$1"), url.replace(/\.png(\?.*)?$/, ".gif$1")];
-        } else if (url.match(/\.gif(?:\?.*)?$/)) {
-            return [url, url.replace(/\.gif(\?.*)?$/, ".jpg$1"), url.replace(/\.gif(\?.*)?$/, ".png$1")];
-        }
     };
 
     var add_extensions_upper = function(url) {
         return add_full_extensions(url, ["jpg", "png", "JPG", "PNG"]);
-
-        if (url.toLowerCase().match(/\.jpg(?:\?.*)?$/)) {
-            if (url.match(/\.jpg(?:\?.*)?$/)) {
-                return [url, url.replace(/\.jpg(\?.*)?$/, ".JPG$1"), url.replace(/\.jpg(\?.*)?$/, ".png$1"), url.replace(/\.jpg(\?.*)?$/, ".PNG$1")];
-            } else {
-                return [url, url.replace(/\.JPG(\?.*)?$/, ".jpg$1"), url.replace(/\.JPG(\?.*)?$/, ".png$1"), url.replace(/\.JPG(\?.*)?$/, ".PNG$1")];
-            }
-        } else {
-            if (url.match(/\.png(?:\?.*)?$/)) {
-                return [url, url.replace(/\.png(\?.*)?$/, ".PNG$1"), url.replace(/\.png(\?.*)?$/, ".jpg$1"), url.replace(/\.png(\?.*)?$/, ".JPG$1")];
-            } else {
-                return [url, url.replace(/\.PNG(\?.*)?$/, ".png$1"), url.replace(/\.PNG(\?.*)?$/, ".jpg$1"), url.replace(/\.PNG(\?.*)?$/, ".JPG$1")];
-            }
-        }
     };
 
     var add_extensions_upper_jpeg = function(url) {
         return add_full_extensions(url, ["jpg", "jpeg", "png", "JPG", "JPEG", "PNG"]);
-
-        if (url.toLowerCase().match(/\.jpg(?:\?.*)?$/)) {
-            if (url.match(/\.jpg(?:\?.*)?$/)) {
-                return [url, url.replace(/\.jpg(\?.*)?$/, ".jpeg$1"), url.replace(/\.jpg(\?.*)?$/, ".JPEG$1"), url.replace(/\.jpg(\?.*)?$/, ".JPG$1"), url.replace(/\.jpg(\?.*)?$/, ".png$1"), url.replace(/\.jpg(\?.*)?$/, ".PNG$1")];
-            } else {
-                return [url, url.replace(/\.JPG(\?.*)?$/, ".jpg$1"), url.replace(/\.JPG(\?.*)?$/, ".png$1"), url.replace(/\.JPG(\?.*)?$/, ".PNG$1")];
-            }
-        } else {
-            if (url.match(/\.png(?:\?.*)?$/)) {
-                return [url, url.replace(/\.png(\?.*)?$/, ".PNG$1"), url.replace(/\.png(\?.*)?$/, ".jpg$1"), url.replace(/\.png(\?.*)?$/, ".JPG$1")];
-            } else {
-                return [url, url.replace(/\.PNG(\?.*)?$/, ".png$1"), url.replace(/\.PNG(\?.*)?$/, ".jpg$1"), url.replace(/\.PNG(\?.*)?$/, ".JPG$1")];
-            }
-        }
     };
 
     var add_http = function(url) {
