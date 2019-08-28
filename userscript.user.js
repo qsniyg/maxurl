@@ -6873,6 +6873,28 @@ var $$IMU_EXPORT$$;
             return src.replace(/(\/[0-9]*)_[^/.]*(\.[^/.]*)$/, "$1$2");
         }
 
+        if (domain === "newsimg.sedaily.com") {
+            // https://www.sedaily.com/NewsView/1VN4SN68DC
+            // https://newsimg.sedaily.com/2019/08/27/1VN4SN68DC_1_m.jpg
+            //   https://newsimg.sedaily.com/2019/08/27/1VN4SN68DC_1.jpg
+            // other:
+            // https://newsimg.sedaily.com/2018/11/26/1S7C8XI4V3_1.jpg -- 4656x3091
+            newsrc = src.replace(/(\/[0-9]{4}\/+(?:[0-9]{2}\/+){2}[^/_]+_[0-9]+)_[a-z](\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+            if (newsrc !== src)
+                return newsrc;
+
+            var extra = {};
+            match = src.match(/\/[0-9]{4}\/+(?:[0-9]{2}\/+){2}([^/_]+)_[0-9]+(?:_[a-z])?\.[^/.]*(?:[?#].*)?$/);
+            if (match) {
+                extra.page = "https://www.sedaily.com/NewsView/" + match[1];
+            }
+
+            return {
+                url: src,
+                extra: extra
+            };
+        }
+
         if (domain === "stat.ameba.jp" ||
             domain === "stat.profile.ameba.jp") {
             return src.replace(/\/t[0-9]*_([^/]*)$/, "/o$1");
@@ -9677,11 +9699,19 @@ var $$IMU_EXPORT$$;
             // http://img.yonhapnews.co.kr/mpic/YH/2018/02/23/MYH20180223017200038.jpg (1920x1080)
             // http://img.yonhapnews.co.kr/etc/inner/KR/2016/11/03/AKR20161103119100061_01_i.jpg (3810x2704)
             // returns 400 even if it exists
+            var extra = {};
+
+            match = src.match(/\/(PYH[0-9]{17})[0-9]{2}[_.][^/]*(?:[?#].*)?$/);
+            if (match) {
+                extra.page = "https://www.yna.co.kr/view/" + match[1];
+            }
+
             return {
                 url: src
                     .replace(/(\/PYH[^/_.]*)_[^/.]*(\.[^/.]*)$/, "$1_P4$2")
                     .replace(/(\/A(?:KR|JP|CK|EN)[^/_.]*_[0-9]+_i)_[^/.]*(\.[^/.]*)$/, "$1$2"),
-                can_head: false // 400
+                can_head: false, // 400
+                extra: extra
             };
         }
 
