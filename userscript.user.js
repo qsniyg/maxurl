@@ -1544,7 +1544,7 @@ var $$IMU_EXPORT$$;
                     return cb(null);
                 }
 
-                api_cache.set("deviantart_page_from_id:" + id, result, 3*60*60);
+                api_cache.set("deviantart_page_from_id:" + id, result, 60*60);
                 cb(result);
             }
         });
@@ -19746,6 +19746,12 @@ var $$IMU_EXPORT$$;
             options.do_request && options.cb) {
             newsrc = (function() {
                 var query_ig = function(url, cb) {
+                    var cache_key = "instagram_sharedData_query:" + url;
+
+                    if (api_cache.has(cache_key)) {
+                        return cb(api_cache.get(cache_key));
+                    }
+
                     options.do_request({
                         method: "GET",
                         url: url,
@@ -19764,7 +19770,11 @@ var $$IMU_EXPORT$$;
                                     match = text.match(regex2);
                                 }
 
-                                cb(JSON_parse(match[1]));
+                                var parsed = JSON_parse(match[1]);
+
+                                // TODO: maybe check if parsed is correct before setting to cache?
+                                api_cache.set(cache_key, parsed, 60*60);
+                                cb(parsed);
                             } catch (e) {
                                 console_log(result);
                                 console_error(e);
@@ -19803,6 +19813,11 @@ var $$IMU_EXPORT$$;
                 };
 
                 var uid_to_profile = function(uid, cb) {
+                    var cache_key = "instagram_uid_to_profile:" + uid;
+                    if (api_cache.has(cache_key)) {
+                        return cb(api_cache.get(cache_key));
+                    }
+
                     var url = "https://i.instagram.com/api/v1/users/" + uid + "/info/";
                     options.do_request({
                         method: "GET",
@@ -19812,7 +19827,11 @@ var $$IMU_EXPORT$$;
                                 return;
 
                             try {
-                                cb(JSON_parse(result.responseText).user);
+                                var parsed = JSON_parse(result.responseText).user;
+
+                                // 5 minutes since they can change their profile pic often
+                                api_cache.set(cache_key, parsed, 5*60);
+                                cb(parsed);
                             } catch (e) {
                                 console_log(result);
                                 console_error(e);
@@ -19823,6 +19842,11 @@ var $$IMU_EXPORT$$;
                 };
 
                 var mediainfo_api = function(id, cb) {
+                    var cache_key = "instagram_mediainfo:" + id;
+                    if (api_cache.has(cache_key)) {
+                        return cb(api_cache.get(cache_key));
+                    }
+
                     var url = "https://i.instagram.com/api/v1/media/" + id + "/info/";
                     options.do_request({
                         method: "GET",
@@ -19839,7 +19863,10 @@ var $$IMU_EXPORT$$;
 
                             if (result.status === 200) {
                                 try {
-                                    return cb(JSON.parse(result.responseText));
+                                    var parsed = JSON_parse(result.responseText);
+
+                                    api_cache.set(cache_key, parsed, 60*60);
+                                    return cb(parsed);
                                 } catch (e) {}
                             }
 
