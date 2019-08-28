@@ -2406,6 +2406,26 @@ var $$IMU_EXPORT$$;
             return obj;
         }
 
+        if (domain === "sccdn.chosun.com") {
+            // http://sccdn.chosun.com/news/photobook/201504/13267_scr_201504140000000022741_t.jpg
+            //   http://sccdn.chosun.com/news/photobook/201504/13267_201504140000000022741.jpg
+            // http://sccdn.chosun.com/news/photobook/201504/13267_2015041400000000000122741_t.jpg
+            //   http://sccdn.chosun.com/news/photobook/201504/13267_2015041400000000000122741.jpg
+            // http://sccdn.chosun.com/news/photobook/201203/4488_scr_%EB%8D%9C%EB%8D%9C_t.jpg
+            // large:
+            // http://sccdn.chosun.com/news/photobook/201710/23202_2017101301010007001.jpeg
+            // http://sccdn.chosun.com/news/photobook/201412/11896_20141201010101000972.jpeg
+            // http://sccdn.chosun.com/news/photobook/201607/18084_207777778888816070401010002381.jpeg
+            // http://sccdn.chosun.com/news/photobook/201412/11896_2014120101000156100006731.jpg - small
+            // http://sccdn.chosun.com/news/photobook/201412/11896_2014120101000155800006701.jpg - ^
+            // other:
+            // http://sccdn.chosun.com/news/photobook/201908/29780_2019062501001807700123651.jpg
+            //   http://sccdn.chosun.com/news/html/2019/06/25/2019062501001807700123651.jpg
+            //   http://sports.chosun.com/news/news.htm?id=201906250100180770012365&ServiceDate=20190625 -- ServiceDate is needed
+
+            return src.replace(/\/([0-9]*_)(?:scr_)?([^._/]*)(?:_t)?(\.[^/.]*)$/, "/$1$2$3");
+        }
+
         if (domain_nosub === "chosun.com" ||
             // http://the-star.co.kr/site/data/thumb_dir/2015/11/13/2015111301003_0_thumb.jpg
             //   http://the-star.co.kr/site/data/img_dir/2015/11/13/2015111301003_0.jpg
@@ -2429,27 +2449,12 @@ var $$IMU_EXPORT$$;
             //   http://ekr.chosunonline.com/site/data/img_dir/2018/02/23/2018022301051_1.jpg
             // http://ekr.chosunonline.com/site/data/thumb_dir/2018/02/21/2018022101757_3_thumb.jpg
             //   http://ekr.chosunonline.com/site/data/img_dir/2018/02/21/2018022101757_3.jpg
-            // http://sccdn.chosun.com/news/photobook/201504/13267_scr_201504140000000022741_t.jpg
-            //   http://sccdn.chosun.com/news/photobook/201504/13267_201504140000000022741.jpg
-            // http://sccdn.chosun.com/news/photobook/201504/13267_2015041400000000000122741_t.jpg
-            //   http://sccdn.chosun.com/news/photobook/201504/13267_2015041400000000000122741.jpg
-            // http://sccdn.chosun.com/news/photobook/201203/4488_scr_%EB%8D%9C%EB%8D%9C_t.jpg
             //
             // doesn't work:
             // http://woman.chosun.com/up_fd/wc_news/2018-01/simg_org/1801_164s.jpg
             // http://ekr.chosunonline.com/site/data/img_dir/2015/07/16/2015071601601_thumb.jpg
             // http://ekr.chosunonline.com/site/data/img_dir/2017/10/24/2017102400705_thumb.jpg
             //   http://ekr.chosunonline.com/site/data/img_dir/2017/10/24/2017102400675_0.jpg
-            // large:
-            // http://sccdn.chosun.com/news/photobook/201710/23202_2017101301010007001.jpeg
-            // http://sccdn.chosun.com/news/photobook/201412/11896_20141201010101000972.jpeg
-            // http://sccdn.chosun.com/news/photobook/201607/18084_207777778888816070401010002381.jpeg
-            // http://sccdn.chosun.com/news/photobook/201412/11896_2014120101000156100006731.jpg - small
-            // http://sccdn.chosun.com/news/photobook/201412/11896_2014120101000155800006701.jpg - ^
-
-            if (domain === "sccdn.chosun.com") {
-                return src.replace(/\/([0-9]*_)(?:scr_)?([^._/]*)(?:_t)?(\.[^/.]*)$/, "/$1$2$3");
-            }
 
             return src
                 //.replace(/\/simg_(?:thumb|org)\/([^/]*)s(\.[^/.]*)$/, "/bimg_org/$1$2")
@@ -8996,8 +9001,9 @@ var $$IMU_EXPORT$$;
         }
 
         if (domain === "db.kookje.co.kr") {
-            // http://db.kookje.co.kr/news2000/photo/2018/0202/L20180202.22001000306i1.jpg -- 600x403
-            //  http://db.kookje.co.kr/news2000/photo/2018/0202/20180202.22001000306i1.jpg -- 300x202
+            // http://www.kookje.co.kr/news2011/asp/newsbody.asp?key=20180202.22001000306
+            //   http://db.kookje.co.kr/news2000/photo/2018/0202/L20180202.22001000306i1.jpg -- 600x403
+            //   http://db.kookje.co.kr/news2000/photo/2018/0202/20180202.22001000306i1.jpg -- 300x202
             // http://db.kookje.co.kr/news2000/photo/2012/0414/20120414.99002182507i1.jpg - 2568x1640
             //   http://db.kookje.co.kr/news2000/photo/2012/0414/L20120414.99002182507i1.jpg ??? (website overloaded, try again later, also generic 404 page)
             // http://db.kookje.co.kr/news2000/photo/2013/1003/20131003.99002193930i2.jpeg -- 1674x2718
@@ -9006,7 +9012,16 @@ var $$IMU_EXPORT$$;
             // http://db.kookje.co.kr/news2000/photo/download/20190123.jpg
             // http://db.kookje.co.kr/news2000/photo/download/20171121-1.jpg
             // L, S
-            return src.replace(/\/[A-Z]([^/]*)$/, "/L$1");
+            match = src.match(/\/[A-Z]?([0-9]{8}\.[0-9]+)i[0-9]+\.[^/.]*(?:[?#].*)?$/);
+            var extra = {};
+            if (match) {
+                extra.page = "http://www.kookje.co.kr/news2011/asp/newsbody.asp?key=" + match[1];
+            }
+
+            return {
+                url: src.replace(/\/[A-Z]([0-9]{8}\.[0-9]+i[0-9]+\.[^/.]*)(?:[?#].*)?$/, "/L$1"),
+                extra: extra
+            };
         }
 
         if (domain_nowww === "kookje.co.kr") {
@@ -12545,8 +12560,9 @@ var $$IMU_EXPORT$$;
             // http://file.mk.co.kr/meet/2018/03/image_listtop_2018_156502_1520579288.jpg.thumb
             //   http://file.mk.co.kr/meet/2018/03/image_listtop_2018_156502_1520579288.jpg - slightly larger
             //   http://file.mk.co.kr/meet/2018/03/image_readtop_2018_156502_1520578294.jpg
-            return src
-                .replace(/\.thumb$/, "");
+            newsrc = src.replace(/\.thumb(?:[?#].*)?$/, "");
+            if (newsrc !== src)
+                return newsrc;
         }
 
         if (domain === "kobis.or.kr") {
@@ -13920,6 +13936,12 @@ var $$IMU_EXPORT$$;
                                "$1$2");
         }
 
+        if (domain === "hwcdn.funbags.com") {
+            // https://hwcdn.funbags.com/albums/1082885/thumb/2646921-hot-mexican-girlfriend-at-the-computer.jpg
+            //   https://hwcdn.funbags.com/albums/1082885/orig/2646921-hot-mexican-girlfriend-at-the-computer.jpg
+            return src.replace(/(\/albums\/+[0-9]+\/+)(?:thumb|large)\/+/, "$1orig/");
+        }
+
         if (domain === "aws-foto.amateri.com") {
             // https://aws-foto.amateri.com/foto/4/9/7/1/g1778419/14400873/170x220c.jpg
             //   https://aws-foto.amateri.com/foto/4/9/7/1/g1778419/14400873/x.jpg
@@ -14027,6 +14049,28 @@ var $$IMU_EXPORT$$;
             // http://photo.kmib.co.kr/data/4925/thumb_20150825103025.jpg
             //   http://photo.kmib.co.kr/data/4925/20150825103025.jpg
             return src.replace(/\/thumb_([0-9]+\.[^/.]*)$/, "/$1");
+        }
+
+        if (domain === "image.kmib.co.kr") {
+            // http://image.kmib.co.kr/online_image/2019/0828/611811110013651516_1.jpg
+            // other:
+            // http://image.kmib.co.kr/online_image/2011/0505/0923098852.jpg -- 3184x2120
+            // http://image.kmib.co.kr/online_image/2012/0412/0412yd71-in.jpg -- 2000x2500
+            // http://image.kmib.co.kr/online_image/2018/1212/611211110012911552_1.jpg -- 4406x2244
+            //
+            // http://news.kmib.co.kr/article/view.asp?arcid=0013641297&code=61171811&sid1=lif
+            //   http://image.kmib.co.kr/clipImage/2019/0827/20190827101345.JPG
+            //   http://image.kmib.co.kr/online_image/2019/0826/611718110013641297_1.jpg
+            var extra = {};
+            match = src.match(/\/online_image\/+[0-9]{4}\/+[0-9]{4}\/+[0-9]*([0-9]{10})(?:_[0-9]+)?\.[^/.]*(?:[?#].*)?$/);
+            if (match) {
+                extra.page = "http://news.kmib.co.kr/article/view.asp?arcid=" + match[1];
+            }
+
+            return {
+                url: src,
+                extra: extra
+            };
         }
 
         if (domain === "r.kelkoo.com") {
@@ -37196,6 +37240,36 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/ex_t\/+R\/+[0-9]+x[0-9]+\/+[0-9]+\/+[0-9]+\/+[0-9]+\/+src\/+/, "/ex_t/R/0x0/0/100/0/src/");
         }
 
+        if (domain === "cdn.mydaily.co.kr") {
+            // http://www.mydaily.co.kr/new_yk/html/read.php?newsid=201908271330779882
+            //   http://cdn.mydaily.co.kr/FILES/201908/201908271330779882_1.jpg
+            match = src.match(/\/FILES\/+[0-9]{6}\/+([0-9]+)_[0-9]+\.[^/.]*(?:[?#].*)?$/);
+
+            var extra = {};
+            if (match) {
+                extra.page = "http://www.mydaily.co.kr/new_yk/html/read.php?newsid=" + match[1];
+            }
+
+            return {
+                url: src,
+                extra: extra
+            };
+        }
+
+        if (domain_nosub === "iqiyipic.com") {
+            // http://u8.iqiyipic.com/legopi/20160708/23/9d/legopi_577fa19714d4556dbddb239d_400_x.jpg
+            //   http://u8.iqiyipic.com/legopi/20160708/23/9d/legopi_577fa19714d4556dbddb239d_xxx.jpg
+            return src.replace(/(\/legopi_[0-9a-f]{20,}_)[0-9]+_x(\.[^/.]*)(?:[?#].*)?$/, "$1xxx$2");
+        }
+
+        if (domain_nowww === "stevens-media.com") {
+            // http://stevens-media.com/wp-content/wverrors.php?getimage=aHR0cDovL3RoZWZhcHBlbmluZzIwMTUuY29tL3dwLWNvbnRlbnQvdXBsb2Fkcy8yMDE3LzEyL0tyaXN0ZW4tSGFuY2hlcl90aGVmYXBwZW5pbmcyMDE1X2NvbS01LmpwZw==
+            //   http://thefappening2015.com/wp-content/uploads/2017/12/Kristen-Hancher_thefappening2015_com-5.jpg
+            match = src.match(/\/wp-content\/+wverrors\.php\?(?:.*&)?getimage=([^&]*).*?$/);
+            if (match) {
+                return atob(match[1]);
+            }
+        }
 
 
 
