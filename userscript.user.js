@@ -39252,6 +39252,10 @@ var $$IMU_EXPORT$$;
             var headers = obj.headers;
             console_log(obj.url);
 
+            if (obj && obj.extra && obj.extra.page) {
+                console_log("Original page: " + obj.extra.page);
+            }
+
             if (obj && obj.bad) {
                 err_txt = "Bad image";
                 if (err_cb) {
@@ -39448,7 +39452,7 @@ var $$IMU_EXPORT$$;
 
                 var newurl = newhref[0].url;
 
-                if (newhref[0].extra && newhref[0].extra.page) {
+                if (false && newhref[0].extra && newhref[0].extra.page) {
                     console_log("Original page: " + newhref[0].extra.page);
                 }
 
