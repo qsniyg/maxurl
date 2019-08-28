@@ -10632,7 +10632,36 @@ var $$IMU_EXPORT$$;
             //   http://www.kyeongin.com/mnt/file/201802/2018021501001103400052931.jpg
             // http://www.kyeongin.com/mnt/thum/201903/20190326001657091_1.jpg
             //   http://www.kyeongin.com/mnt/file/201903/20190326001657091_1.jpg
-            return src.replace(/\/mnt\/+(?:thum|file_[a-z]+)\/+/, "/mnt/file/");
+            // http://www.kyeongin.com/mnt/file/201704/20170425010008610_1.jpg
+            //   http://www.kyeongin.com/mnt/org/201704/20170425010008610_1.jpg
+            // other:
+            // http://www.kyeongin.com/mnt/file/201908/2019082701001971400094231.jpg
+            //   http://www.kyeongin.com/main/view.php?key=20190827010009423
+            var extra = {};
+            match = src.match(/^[a-z]+:\/\/[^/]+\/+mnt\/+[^/]+\/+[0-9]{6}\/+([0-9]{17})(?:_[0-9]+)?\.[^/.]+(?:[?#].*)?$/);
+            if (match) {
+                extra.page = "http://www.kyeongin.com/main/view.php?key=" + match[1];
+            }
+
+            regex = /\/mnt\/+(?:thum|file(?:_[a-z]+)?)\/+/;
+            if (regex.test(src)) {
+                // FIXME: for some reason deepcopy(extra) is needed when using an array?
+                return [
+                    {
+                        url: src.replace(regex, "/mnt/org/"),
+                        extra: deepcopy(extra)
+                    },
+                    {
+                        url: src.replace(regex, "/mnt/file/"),
+                        extra: deepcopy(extra)
+                    }
+                ];
+            } else {
+                return {
+                    url: src,
+                    extra: extra
+                };
+            }
             //return src.replace("/file_m/", "/file/");
         }
 
@@ -27035,12 +27064,27 @@ var $$IMU_EXPORT$$;
         }
 
         if (domain === "newsimg.hankookilbo.com" ||
+            // https://image.hankookilbo.com/level/2019/08/28/c1f537b0-2146-4554-98ea-2f20aa7059b7_t.jpg
+            //   https://image.hankookilbo.com/level/2019/08/28/c1f537b0-2146-4554-98ea-2f20aa7059b7.jpg
+            domain === "image.hankookilbo.com" ||
             // http://betaimage.hankookilbo.com/level/2018/10/10/516a1b8e-f0e2-49f2-b1be-9bc7a651fab3_t.jpg
             //   http://betaimage.hankookilbo.com/level/2018/10/10/516a1b8e-f0e2-49f2-b1be-9bc7a651fab3.jpg
             domain === "betaimage.hankookilbo.com") {
             // http://newsimg.hankookilbo.com/2018/10/10/201810101339781259_1_t.jpg -- 384x287
             //   http://newsimg.hankookilbo.com/2018/10/10/201810101339781259_1.jpg -- 640x479
-            return src.replace(/(\/[0-9]{4}\/[0-9]{2}\/[0-9]{2}\/(?:[0-9]+_[0-9]+|[-0-9a-f]+))_[a-z](\.[^/.]*)$/, "$1$2");
+            //   http://star.hankookilbo.com/News/Read/201810101339781259
+            // http://star.hankookilbo.com/News/Read/201908052230730099
+            //   http://newsimg.hankookilbo.com/2019/08/05/201908052230730099_1.jpg
+            var extra = {};
+            match = src.match(/^[a-z]+:\/\/[^/]*\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}([0-9]{8,})_[0-9]+(?:_[a-z])?\.[^/.]*(?:[?#].*)?$/);
+            if (match) {
+                extra.page = "http://star.hankookilbo.com/News/Read/" + match[1];
+            }
+
+            return {
+                url: src.replace(/(\/[0-9]{4}\/[0-9]{2}\/[0-9]{2}\/(?:[0-9]+_[0-9]+|[-0-9a-f]+))_[a-z](\.[^/.]*)$/, "$1$2"),
+                extra: extra
+            };
         }
 
         if (domain === "dispatch.cdnser.be") {
