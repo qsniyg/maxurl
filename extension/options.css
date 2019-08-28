@@ -515,6 +515,7 @@ input:checked + label, button, .button {
 #popup {
   height: auto;
   min-height: initial;
+  font-size: 16px;
 }
 
 #popup #outer-container {
@@ -537,6 +538,22 @@ input:checked + label, button, .button {
   margin: 0;
 }
 
+#popup #footer {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+#popup #footer .line {
+  font-weight: 100;
+  color: #aaa;
+}
+
+#popup #footer a {
+  color: #333;
+  font-size: 13px;
+  margin-left: .5em;
+  margin-right: .5em;
+}
 
 /* Disable image preview */
 /*#max_container {
