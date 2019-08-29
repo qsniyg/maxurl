@@ -20406,10 +20406,14 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/pics\/pics_[a-z]+\//, "/pics/pics_original/");
         }
 
-        if (domain === "static.comicvine.com") {
+        if (domain === "static.comicvine.com" ||
+            // thanks to synthtech on github https://github.com/qsniyg/maxurl/issues/115
+            // https://comicvine1.cbsistatic.com/uploads/scale_small/13/136525/5341716-1.jpg
+            //   https://comicvine1.cbsistatic.com/uploads/original/13/136525/5341716-1.jpg
+            (domain_nosub === "cbsistatic.com" && /^comicvine[0-9]*\./.test(domain))) {
             // https://static.comicvine.com/uploads/square_small/6/67663/6449136-800.jpg
             //   https://static.comicvine.com/uploads/original/6/67663/6449136-800.jpg
-            return src.replace(/\/uploads\/[^/]*\//, "/uploads/original/");
+            return src.replace(/(:\/\/[^/]+\/+)uploads\/+[^/]*\//, "$1uploads/original/");
         }
 
         if (false && domain === "preview.ibb.co") {
