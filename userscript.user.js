@@ -15884,6 +15884,9 @@ var $$IMU_EXPORT$$;
             //   http://img.sportsworldi.com/content/image/2017/12/12/20171212001686_0.jpg -- 500x370
             //return src.replace(/_[a-z](\.[^/.]*)$/, "_0$1");
 
+            // other:
+            // http://img.sportsworldi.com/content/image/2019/01/17/20190117640866.png -- 3808x2097
+
             // http://img.sportsworldi.com/content/image/2019/02/26/128/20190226550905.jpg
             //   http://img.sportsworldi.com/content/image/2019/02/26/20190226550905.jpg
             return src.replace(/(\/content\/+image\/+[0-9]{4}\/+[0-9]{2}\/+[0-9]{2}\/+)[0-9]+\/+([0-9]+(?:_[^/.]*)?\.[^/.]*)(?:[?#].*)?$/,
@@ -37319,6 +37322,19 @@ var $$IMU_EXPORT$$;
             }
         }
 
+        if (domain_nosub === "famtimes.co.kr" && /^img[0-9]*\./.test(domain)) {
+            // http://img.famtimes.co.kr/resources/2019/08/30/s_OVi1dEIxgaQAkUSq.jpg
+            //   http://img.famtimes.co.kr/resources/2019/08/30/OVi1dEIxgaQAkUSq.jpg
+            // other:
+            // https://img1.famtimes.co.kr/public/img/20181206/m/909fe9f9c141d851114baba78069b248.jpg -- /m/ is used for thumbnails, /l/ for images, no difference (/asdf/ works too)
+            return src.replace(/(\/resources\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2})[sl]_([^/]*\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain_nowww === "fiyar.live") {
+            // https://www.fiyar.live/themes/latest/ssd/small/170/small-78354911_72483519_56381ba9eac.jpg
+            //   https://www.fiyar.live/themes/latest/uploads4/pixsense/big/170/78354911_72483519_56381ba9eac.jpg
+            return src.replace(/\/themes\/+latest\/+ssd\/+small\/+([0-9]+)\/+small-/, "/themes/latest/uploads4/pixsense/big/$1/");
+        }
 
 
 
@@ -37601,7 +37617,9 @@ var $$IMU_EXPORT$$;
                 //   http://res.heraldm.com/content/image/2015/07/13/20150713001359_0.jpg
                 // http://res.heraldm.com/phpwas/restmb_idxmake.php?idx=999&simg=/content/image/2018/02/02/20180202000714_0.jpg
                 //   http://res.heraldm.com/content/image/2018/02/02/20180202000714_0.jpg
-                return urljoin(src, decodeURIComponent(src.match(/simg=([^&]*)/)[1]));
+                // http://res.heraldm.com/phpwas/restmb_idxmake.php?idx=140&simg=/content/image/2019/08/30/20190830000445_p.jpg
+                //   http://res.heraldm.com/content/image/2019/08/30/20190830000445_p.jpg
+                return urljoin(src, decodeURIComponent(src.match(/simg=([^&]*)/)[1]), true);
             }
 
             //return src.replace(/\/phpwas\/restmb_[a-z]*make\.php\?.*(simg=[^&]*)/, "/phpwas/restmb_allidxmake.php?idx=999&$1");
