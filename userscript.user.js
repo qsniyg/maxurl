@@ -39265,18 +39265,23 @@ var $$IMU_EXPORT$$;
             return;
         }
 
+        var print_orig = function() {
+            if (obj && obj.extra && obj.extra.page) {
+                console_log("Original page: " + obj.extra.page);
+            }
+        };
+
         var url = obj.url;
         var err_txt;
 
         if (url === document.location.href) {
+            print_orig();
             ok_cb(url);
         } else  {
             var headers = obj.headers;
             console_log(obj.url);
 
-            if (obj && obj.extra && obj.extra.page) {
-                console_log("Original page: " + obj.extra.page);
-            }
+            print_orig();
 
             if (obj && obj.bad) {
                 err_txt = "Bad image";
