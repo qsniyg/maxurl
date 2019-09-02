@@ -35722,14 +35722,28 @@ var $$IMU_EXPORT$$;
             // https://www.famitsu.com/images/000/124/494/t_5874c086779f9.jpg
             //   https://www.famitsu.com/images/000/124/494/5874c086779f9.jpg -- 250x140
             //   https://www.famitsu.com/images/000/124/494/l_5874c086779f9.jpg -- 640x360, y/z don't work
+            // https://www.famitsu.com/images/000/181/637/5d5a8379e4e00.jpg
+            //   https://www.famitsu.com/images/000/181/637/z_5d5a8379e4e00.jpg
             // others:
             // https://www.famitsu.com/images/000/124/494/5874c0867b874.jpg -- 3000x4500
+            //   https://www.famitsu.com/images/000/124/494/l_5874c0867b874.jpg -- 426x640
             regex = /(\/images\/+(?:[0-9]{3}\/+){3})[tly]_([0-9a-f]+\.[^/.]*)(?:[?#].*)?$/;
-            return [
-                src.replace(regex, "$1z_$2"),
-                src.replace(regex, "$1y_$2"),
-                src.replace(regex, "$1l_$2")
-            ];
+            if (regex.test(src)) {
+                return [
+                    src.replace(regex, "$1z_$2"),
+                    src.replace(regex, "$1y_$2"),
+                    src.replace(regex, "$1l_$2")
+                ];
+            }
+
+            // thanks again to fireattack:
+            // https://www.famitsu.com/serial/gameiscool/201908/25181637.html
+            //   https://www.famitsu.com/serial/gameiscool/images/s00000028s.jpg
+            //   https://www.famitsu.com/serial/gameiscool/images/s00000028o.jpg
+            // doesn't work:
+            // https://www.famitsu.com/serial/gameiscool/images/s00000028a.jpg
+            //   https://www.famitsu.com/serial/gameiscool/images/s00000028o.jpg -- different image
+            return src.replace(/(\/images\/+s[0-9]{6,})s(\.[^/.]*)(?:[?#].*)?$/, "$1o$2");
         }
 
         if (domain_nowww === "sexiestpicture.com") {
@@ -37336,6 +37350,22 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/themes\/+latest\/+ssd\/+small\/+([0-9]+)\/+small-/, "/themes/latest/uploads4/pixsense/big/$1/");
         }
 
+        if (false && domain === "image.sportsseoul.com") {
+            // wip
+            // http://image.sportsseoul.com/2019/06/20/news/20190620090902_ma.jpg -- 2362x2953
+            // http://www.sportsseoul.com/news/read/762497
+            //   http://image.sportsseoul.com/2019/05/14/news/20190514080743_04.jpg -- 2130x3149
+            // http://image.sportsseoul.com/2019/07/15/news/20190715153127_b2.jpg -- 1167x1750
+            // http://www.sportsseoul.com/news/read/812656
+            //   http://image.sportsseoul.com/2019/08/31/edit/20190831091040_1-5.jpg
+            //   http://image.sportsseoul.com/2019/08/31/news/20190831085925_1-2.jpg
+        }
+
+        if (domain === "hosted.foxes.com") {
+            // http://hosted.foxes.com/0-sites/FOXES/fhgs/FYMXQKZUO1/t/Noel-Monique_01.jpg
+            //   http://hosted.foxes.com/0-sites/FOXES/fhgs/FYMXQKZUO1/o/Noel-Monique_01.jpg
+            return src.replace(/(\/fhgs\/+[^/]*\/+)t\/+/, "$1o/");
+        }
 
 
 
