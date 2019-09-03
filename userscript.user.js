@@ -5391,6 +5391,8 @@ var $$IMU_EXPORT$$;
             (domain === "d13vpcwfpcq1p8.cloudfront.net" && src.indexOf("/contents/") >= 0) ||
             // https://media3.paperblog.fr/i/582/5820009/critique-colombiana-L-WlVd2S-175x130.jpeg
             (domain_nosub === "paperblog.fr" && domain.match(/^media[0-9]*\./)) ||
+            // https://m52.paperblog.com/i/77/774024/barbara-palvin-for-zoltan-tombor-in-marie-cla-L-ztr8o_-175x130.jpeg
+            (domain_nosub === "paperblog.com" && domain.match(/^m[0-9]*\./)) ||
             // http://bikini.sbgefree.org/files/2018/11/sexy-bikini-models-image328-150x150.jpg
             (domain === "bikini.sbgefree.org" && src.indexOf("/files/") >= 0) ||
             // http://redbust.com/stuff/kloe-kane-in-jeans-mini-skirt/kloe-redhead-jeans-miniskirt-pussy-twistys-02-800x534.jpg
@@ -5592,6 +5594,8 @@ var $$IMU_EXPORT$$;
             (domain_nowww === "illustrationwest.org" && src.indexOf("/files/") >= 0) ||
             // https://www.myjane.ru/data/cache/2018feb/14/28/773144_49860-250x0.jpg
             (domain_nowww === "myjane.ru" && /\/data\/+cache\//.test(src)) ||
+            // http://www.chickradar.net/content/uploads/2013/05/Barbara-Palvin-8-150x150.png
+            (domain_nowww === "chickradar.net" && /\/content\/+uploads\//.test(src)) ||
             // https://1.soompi.io/wp-content/blogs.dir/8/files/2015/09/HA-TFELT-Wonder-Girls-590x730.jpg -- doesn't work
             // https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2018/01/GTA-6-Female-Protag-796x417.jpg -- does work
             /^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|images|photos|blogs.dir)|\/+uploads)\//.test(src)
@@ -18768,7 +18772,7 @@ var $$IMU_EXPORT$$;
             domain_nowww === "nude-gals.com") {
             // http://www.consolefun.fr/fiche/ps4/thumbs/th_1523541277uwo0iwsr40b1rg0p3fq6.jpg
             //   http://www.consolefun.fr/fiche/ps4/1523541277uwo0iwsr40b1rg0p3fq6.jpg
-            return src.replace(/\/thumbs\/th_/, "/");
+            return src.replace(/\/thumbs\/+th_/, "/");
         }
 
         if (domain === "ex.f3img.gq") {
@@ -22697,6 +22701,9 @@ var $$IMU_EXPORT$$;
              domain_nosub === "hentai-image.com" ||
              domain_nosub === "porn-image-xxx.com" ||
              domain_nosub === "porn-movie-xxx.com" ||
+             // https://static19.hentai-comic.com/upload/20190903/1066/1091520/p=160x200/1.jpg
+             //   https://static19.hentai-comic.com/upload/20190903/1066/1091520/1.jpg
+             domain_nosub === "hentai-comic.com" ||
              // https://static4.aniimg.com/upload/20181112/5777/m/Y/C/p=305/mYCmEF.jpg
              //   https://static4.aniimg.com/upload/20181112/5777/m/Y/C/mYCmEF.jpg
              // https://static2.aniimg.com/upload/20170517/473/R/M/N/p=700/RMNFEF.jpg -- 700x393
@@ -30404,7 +30411,8 @@ var $$IMU_EXPORT$$;
             return src.replace(/(\.[^/.]*)\.thumb_[0-9]+x[0-9]+\.[^/.]*(?:[?#].*)?$/, "$1");
         }
 
-        if (domain_nosub === "paheal.net") {
+        if (domain_nosub === "paheal.net" ||
+            domain_nowww === "rule34hentai.net") {
             // https://acacia.paheal.net/_thumbs/4434ac197cedcc25041959a082054c76/thumb.jpg
             //   http://heather.paheal.net/_images/4434ac197cedcc25041959a082054c76/thumb.jpg
             return src.replace(/:\/\/[^/]*\/_thumbs\//, "://peach.paheal.net/_images/");
@@ -35571,8 +35579,11 @@ var $$IMU_EXPORT$$;
         if (domain_nowww === "celebritying.com") {
             // http://celebritying.com/pictures/jessica-alba-nude-body1/jessica-alba-tn-1.jpg
             //   http://celebritying.com/pictures/jessica-alba-nude-body1/jessica-alba-1.jpg
-            return src.replace(/(\/pictures\/+[^/]*\/+[^/]*)-tn(-[0-9]+)?(\.[^/.]*)(?:[?#].*)?$/,
-                               "$1$2$3");
+            // http://www.celebritying.com/9pics/images/barbara-palvin-nude-1-tn.jpg
+            //   http://www.celebritying.com/9pics/images/barbara-palvin-nude-1.jpg
+            return src
+                .replace(/(\/pictures\/+[^/]*\/+[^/]*)-tn(-[0-9]+)?(\.[^/.]*)(?:[?#].*)?$/, "$1$2$3")
+                .replace(/(\/images\/+[^/]*)-tn(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
         }
 
         if (domain_nowww === "daily-celebvideos.com") {
@@ -37367,6 +37378,56 @@ var $$IMU_EXPORT$$;
             return src.replace(/(\/fhgs\/+[^/]*\/+)t\/+/, "$1o/");
         }
 
+        if (domain_nosub === "justjared.com" && /^cdn[0-9]*\.cdn\./.test(domain)) {
+            // http://cdn02.cdn.justjared.com/wp-content/uploads/2019/08/palvin-vffsebergpremiere/thumbs/barbara-palvin-sara-sampaio-annabelle-wallis-slay-at-seberg-venice-premiere-01.jpg
+            //   http://cdn02.cdn.justjared.com/wp-content/uploads/2019/08/palvin-vffsebergpremiere/barbara-palvin-sara-sampaio-annabelle-wallis-slay-at-seberg-venice-premiere-01.jpg
+            return src.replace(/(\/wp-content\/+uploads\/+[0-9]{4}\/+[0-9]{2}\/+[^/]*\/+)thumbs\/+/, "$1");
+        }
+
+        if (domain_nosub === "thesupermodelsgallery.com" && /^cdn[0-9]*\./.test(domain)) {
+            // http://cdn1.thesupermodelsgallery.com/2012/12/Barbara-Palvin/tn_Barbara_Palvin_1.jpg
+            //   http://cdn1.thesupermodelsgallery.com/2012/12/Barbara-Palvin/Barbara_Palvin_1.jpg
+            return src.replace(/(\/[0-9]{4}\/+[0-9]{2}\/+[^/]*\/+)tn_([^/]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain_nowww === "celebritymoviezone.com") {
+            // http://www.celebritymoviezone.com/porn/barbara-palvin-0702/thumbs/barbara-palvin-0702-11.jpg
+            //   http://www.celebritymoviezone.com/porn/barbara-palvin-0702/barbara-palvin-0702-11.jpg
+            return src.replace(/\/thumbs\/+([^/]*\.[^/.]*)(?:[?#].*)?$/, "/$1");
+        }
+
+        if (domain_nowww === "supermodels-online.com") {
+            // http://supermodels-online.com/models/barbara-palvin/photos/loreal/sublime-sm.jpg
+            //   http://supermodels-online.com/models/barbara-palvin/photos/loreal/sublime.jpg -- adds border
+            return src.replace(/(\/photos\/+[^/]*\/+[^/]*)-sm(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain === "thumbs.hentai-foundry.com" && options && options.do_request) {
+            // https://thumbs.hentai-foundry.com/thumb.php?pid=734467&size=350
+            //   https://pictures.hentai-foundry.com/e/Emarine/734467/Emarine-734467-Kitty-Meow.jpg
+            match = src.match(/^[a-z]+:\/\/[^/]*\/+thumb\.php\?(?:.*&)?pid=([0-9]+)/);
+            if (match) {
+                options.do_request({
+                    method: "GET",
+                    url: "https://www.hentai-foundry.com/pictures/" + match[1] + "/?enterAgree=1",
+                    onload: function(result) {
+                        if (result.readyState !== 4)
+                            return;
+
+                        var match = result.responseText.match(/<img[^>]*src=["']((?:https?:)?\/\/pictures\.hentai-foundry\.com\/[^'"]+)/);
+                        if (match) {
+                            return options.cb(urljoin(src, match[1], true));
+                        } else {
+                            return options.cb(null);
+                        }
+                    }
+                });
+
+                return {
+                    waiting: true
+                };
+            }
+        }
 
 
 
