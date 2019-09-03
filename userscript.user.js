@@ -41644,10 +41644,6 @@ var $$IMU_EXPORT$$;
             //var picture_sources = {};
             var links = {};
             var layers = [];
-            var picture_minw = false;
-            var picture_maxw = false;
-            var picture_minh = false;
-            var picture_maxh = false;
 
             var id = 0;
 
@@ -41884,7 +41880,7 @@ var $$IMU_EXPORT$$;
                 addElement(el);
             }
 
-            if (false) {
+            if (true) {
                 console_log(els);
                 console_log(deepcopy(sources));
                 console_log(deepcopy(layers));
@@ -41915,6 +41911,8 @@ var $$IMU_EXPORT$$;
                 var elMaxH = null;
                 var minX = 0;
                 var elX = null;
+
+                var okurls = {};
 
                 var have_something = false;
 
@@ -41962,12 +41960,15 @@ var $$IMU_EXPORT$$;
                         elX = source;
                         have_something = true;
                     }
+
+                    if (source.isbg) {
+                        okurls[source.src] = true;
+                        have_something = true;
+                    }
                 }
 
                 if (!have_something)
                     continue;
-
-                var okurls = {};
 
                 if (minX > 1) {
                     okurls[elX.src] = true;
