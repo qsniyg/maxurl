@@ -37606,6 +37606,8 @@ var $$IMU_EXPORT$$;
             // https://sun6-16.userapi.com/c855624/v855624788/9cf23/CQIxv7kEYOQ.jpg -- 1871x2160
             //   https://pp.userapi.com/c7005/v7005747/743e1/qht4X57c3UY.jpg -- 1871x2160
             //   o_: 130x150, p_: 200x231, q_: 320x370, r_: 510x589, w_: 1871x2160, x_: 523x604, y_: 699x807, z_: 935x1080
+            // TODO: profile photos on other pages (some are /id012345, some are /special.name.
+            //   requesting that will allow us to find <a id="profile_photo_link" href="/photo...">
             newsrc = (function() {
                 function request_photo(id, cb) {
                     var cache_key = "vk_photo:" + id;
