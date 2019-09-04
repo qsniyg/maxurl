@@ -95,6 +95,7 @@ As mentioned above, userscript.user.js also functions as a node module.
         // options = {
         //   url: "",
         //   method: "GET",
+        //   data: "", // for method: "POST"
         //   headers: {}, // If a header is null or "", don't include that header
         //   onload: function(resp) {
         //     // resp is expected to be XMLHttpRequest-like object, implementing these fields:
