@@ -392,6 +392,14 @@ chrome.webRequest.onResponseStarted.addListener(function(details) {
   types: ['xmlhttprequest', 'main_frame', 'sub_frame']
 }, ['responseHeaders']);
 
+// Used for private Instagram accounts which the user follows, user's Flickr images, etc.
+function get_cookies(url, cb) {
+  chrome.cookies.getAll({url: url}, function(cookies) {
+    debug("get_cookies: " + url, cookies);
+    cb(JSON.parse(JSON.stringify(cookies)));
+  });
+}
+
 // Message handler
 chrome.runtime.onMessage.addListener((message, sender, respond) => {
   debug("onMessage", message, sender, respond);
@@ -445,6 +453,15 @@ chrome.runtime.onMessage.addListener((message, sender, respond) => {
         chrome.tabs.sendMessage(currentTab.id, message);
       });
     }
+  } else if (message.type === "getcookies") {
+    get_cookies(message.data.url, function(cookies) {
+      respond({
+        type: "cookies",
+        data: cookies
+      });
+    });
+
+    return true;
   }
 });
 

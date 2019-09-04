@@ -170,6 +170,30 @@ var $$IMU_EXPORT$$;
         };
     }
 
+    var get_cookies = null;
+    if (is_extension) {
+        get_cookies = function(url, cb) {
+            extension_send_message({
+                type: "getcookies",
+                data: {url: url}
+            }, function(message) {
+                cb(message.data);
+            });
+        };
+    }
+
+    var cookies_to_httpheader = function(cookies) {
+        // deduplication apparently isn't necessary (browser duplicates them too)
+
+        var strs = [];
+        for (var i = 0; i < cookies.length; i++) {
+            var str = cookies[i].name + "=" + cookies[i].value;
+            strs.push(str);
+        }
+
+        return strs.join("; ");
+    };
+
     var bigimage_filter = function() {
         return true;
     };
@@ -202,6 +226,7 @@ var $$IMU_EXPORT$$;
         filter: bigimage_filter,
 
         do_request: do_request,
+        get_cookies: get_cookies,
         host_url: null,
         document: null,
         window: null,
@@ -1158,6 +1183,7 @@ var $$IMU_EXPORT$$;
 
     var url_cache = new Cache();
     var api_cache = new Cache();
+    var cookie_cache = new Cache();
 
     var urlparse = function(x) {
         return new URL(x);
@@ -19958,6 +19984,44 @@ var $$IMU_EXPORT$$;
                     });
                 };
 
+                var get_instagram_cookies = function(cb) {
+                    var cookie_cache_key = "instagram";
+                    if (cookie_cache.has(cookie_cache_key)) {
+                        return cb(cookie_cache.get(cookie_cache_key));
+                    }
+
+                    if (options.get_cookies) {
+                        options.get_cookies("https://www.instagram.com/", function(cookies) {
+                            cookie_cache.set(cookie_cache_key, cookies);
+                            cb(cookies);
+                        });
+                    } else {
+                        cb(null);
+                    }
+                };
+
+                var app_api_call = function (url, cb) {
+                    var headers = {
+                        "User-Agent": "Instagram 10.26.0 (iPhone7,2; iOS 10_1_1; en_US; en-US; scale=2.00; gamut=normal; 750x1334) AppleWebKit/420+",
+                        "X-IG-Capabilities": "36oD",
+                        "Accept": "*/*",
+                        "Accept-Language": "en-US,en;q=0.8"
+                    };
+
+                    get_instagram_cookies(function(cookies) {
+                        if (cookies) {
+                            headers.Cookie = cookies_to_httpheader(cookies);
+                        }
+
+                        options.do_request({
+                            method: "GET",
+                            url: url,
+                            headers: headers,
+                            onload: cb
+                        });
+                    });
+                };
+
                 var mediainfo_api = function(id, cb) {
                     var cache_key = "instagram_mediainfo:" + id;
                     if (api_cache.has(cache_key)) {
@@ -19965,30 +20029,20 @@ var $$IMU_EXPORT$$;
                     }
 
                     var url = "https://i.instagram.com/api/v1/media/" + id + "/info/";
-                    options.do_request({
-                        method: "GET",
-                        url: url,
-                        headers: {
-                            "User-Agent": "Instagram 10.26.0 (iPhone7,2; iOS 10_1_1; en_US; en-US; scale=2.00; gamut=normal; 750x1334) AppleWebKit/420+",
-                            "X-IG-Capabilities": "36oD",
-                            "Accept": "*/*",
-                            "Accept-Language": "en-US,en;q=0.8"
-                        },
-                        onload: function(result) {
-                            if (result.readyState !== 4)
-                                return;
+                    app_api_call(url, function(result) {
+                        if (result.readyState !== 4)
+                            return;
 
-                            if (result.status === 200) {
-                                try {
-                                    var parsed = JSON_parse(result.responseText);
+                        if (result.status === 200) {
+                            try {
+                                var parsed = JSON_parse(result.responseText);
 
-                                    api_cache.set(cache_key, parsed, 60*60);
-                                    return cb(parsed);
-                                } catch (e) {}
-                            }
-
-                            cb(null);
+                                api_cache.set(cache_key, parsed, 60 * 60);
+                                return cb(parsed);
+                            } catch (e) { }
                         }
+
+                        cb(null);
                     });
                 };
 
@@ -41888,7 +41942,7 @@ var $$IMU_EXPORT$$;
                 addElement(el);
             }
 
-            if (true) {
+            if (false) {
                 console_log(els);
                 console_log(deepcopy(sources));
                 console_log(deepcopy(layers));
