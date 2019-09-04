@@ -1064,7 +1064,10 @@ var $$IMU_EXPORT$$;
         browser_cookies: {
             name: "Use browser cookies",
             description: "Uses the browser's cookies for API calls in order to access otherwise private data",
-            category: "rules"
+            category: "rules",
+            example_websites: [
+                "Private Flickr images"
+            ]
         },
         bigimage_blacklist: {
             name: "Blacklist",
@@ -15231,43 +15234,111 @@ var $$IMU_EXPORT$$;
             // https://farm8.staticflickr.com/7002/6432649813_4fe18483a6.jpg
             //   https://farm8.staticflickr.com/7002/6432649813_21c9e80f43_o.jpg
 
-            function find_api_key(cb) {
-                if (api_cache.has("flickr_api_key")) {
-                    return cb(api_cache.get("flickr_api_key"));
+            function get_flickr_cookies(cb) {
+                if (cookie_cache.has("flickr")) {
+                    return cb(cookie_cache.get("flickr"));
                 }
 
-                options.do_request({
-                    url: "https://www.flickr.com/",
-                    method: "GET",
-                    headers: {
-                        "Origin": "",
-                        "Referer": "",
-                        "Cookie": ""
-                    },
-                    onload: function(resp) {
-                        if (resp.readyState === 4) {
-                            var regex = /root\.YUI_config\.flickr\.api\.site_key *= *['"]([0-9a-f]+)['"] *; */;
-                            var matchobj = resp.responseText.match(regex);
-                            if (!matchobj) {
-                                console_error("Unable to find Flickr API key");
-                                cb(null);
-                                return;
-                            }
+                if (options.get_cookies) {
+                    options.get_cookies("https://www.flickr.com/", function(cookies) {
+                        cookie_cache.set("flickr", cookies);
+                        cb(cookies);
+                    });
+                } else {
+                    return cb(null);
+                }
+            }
 
-                            var key = matchobj[1];
-                            if (key && typeof key === "string") {
-                                api_cache.set("flickr_api_key", key, 60*60);
-                                cb(key);
-                            } else {
-                                console_error("Unable to find Flickr API key");
-                                cb(null);
+            function do_flickr_request(url, cb) {
+                get_flickr_cookies(function(cookies) {
+                    var cookie_header = "";
+                    if (cookies) {
+                        cookie_header = cookies_to_httpheader(cookies);
+                    }
+
+                    options.do_request({
+                        url: url,
+                        method: "GET",
+                        headers: {
+                            "Origin": "",
+                            "Referer": "",
+                            "Cookie": cookie_header
+                        },
+                        onload: cb
+                    });
+                });
+            }
+
+            function find_api_info(cb) {
+                if (api_cache.has("flickr_api_info")) {
+                    return cb(api_cache.get("flickr_api_info"));
+                }
+
+                do_flickr_request("https://www.flickr.com/", function(resp) {
+                    if (resp.readyState === 4) {
+                        var regex = /root\.YUI_config\.flickr\.api\.site_key *= *['"]([0-9a-f]+)['"] *; */;
+                        var matchobj = resp.responseText.match(regex);
+                        if (!matchobj) {
+                            console_error("Unable to find Flickr API key");
+                            cb(null);
+                            return;
+                        }
+
+                        var key = matchobj[1];
+                        if (!key || typeof key !== "string") {
+                            console_error("Unable to find Flickr API key");
+                            return cb(null);
+                        }
+
+                        regex = /root\.auth\s*=\s*({.*?});/;
+                        matchobj = resp.responseText.match(regex);
+                        var auth = {};
+                        if (!matchobj) {
+                            console_error("Unable to find Flickr auth info");
+                        } else {
+                            try {
+                                auth = JSON_parse(matchobj[1]);
+                            } catch (e) {
+                                auth = {};
+                                console_error("Unable to find Flickr auth info");
                             }
                         }
+
+                        if ("user" in auth && "nsid" in auth.user) {
+                            auth.nsid = auth.user.nsid;
+                        }
+
+                        var info = {
+                            key: key,
+                            nsid: auth.nsid,
+                            csrf: auth.csrf
+                        };
+
+                        api_cache.set("flickr_api_info", info, 60 * 60);
+                        cb(info);
                     }
                 });
             }
 
-            function find_original_page(key, src, cb) {
+            function do_flickrapi_request(info, params, cb) {
+                var url = "https://api.flickr.com/services/rest?csrf=";
+
+                if (info.csrf) {
+                    url += info.csrf;
+                }
+
+                url += "&api_key=" + info.key + "&format=json";
+
+                if (info.nsid) {
+                    url += "&viewerNSID=" + info.nsid;
+                }
+
+                url += "&format=json&nojsoncallback=1&" + params;
+
+                do_flickr_request(url, cb);
+            }
+
+            function find_original_page(info, src, cb) {
                 var photoid = src.replace(/.*\/([0-9]+)_[^/]*$/, "$1");
                 var photosecret = src.replace(/.*\/[0-9]+_([0-9a-z]+)_[^/]*$/, "$1");
 
@@ -15276,28 +15347,18 @@ var $$IMU_EXPORT$$;
                     return cb(api_cache.get(cache_key));
                 }
 
-                var nexturl = "https://api.flickr.com/services/rest?csrf=&api_key=" + key + "&format=json&nojsoncallback=1&method=flickr.photos.getInfo&photo_id=" + photoid + "&secret=" + photosecret;
-                options.do_request({
-                    url: nexturl,
-                    method: "GET",
-                    headers: {
-                        "Origin": "",
-                        "Referer": "",
-                        "Cookie": ""
-                    },
-                    onload: function (resp) {
-                        try {
-                            var out = JSON_parse(resp.responseText);
-                            var url = out.photo.urls.url[0]._content;
-                            if (/^https?:\/\//.test(url)) {
-                                api_cache.set(cache_key, url, 6*60*60);
-                                cb(out.photo.urls.url[0]._content);
-                            } else {
-                                cb(null);
-                            }
-                        } catch (e) {
+                do_flickrapi_request(info, "method=flickr.photos.getInfo&photo_id=" + photoid + "&secret=" + photosecret, function (resp) {
+                    try {
+                        var out = JSON_parse(resp.responseText);
+                        var url = out.photo.urls.url[0]._content;
+                        if (/^https?:\/\//.test(url)) {
+                            api_cache.set(cache_key, url, 6 * 60 * 60);
+                            cb(out.photo.urls.url[0]._content);
+                        } else {
                             cb(null);
                         }
+                    } catch (e) {
+                        cb(null);
                     }
                 });
             }
@@ -15310,12 +15371,12 @@ var $$IMU_EXPORT$$;
                 };
 
                 if (options.force_page) {
-                    find_api_key(function(key) {
-                        if (!key) {
+                    find_api_info(function(info) {
+                        if (!info) {
                             return options.cb(obj);
                         }
 
-                        find_original_page(key, newsrc, function(page) {
+                        find_original_page(info, newsrc, function(page) {
                             if (page) {
                                 obj.extra = {page: page};
                             }
@@ -15332,7 +15393,7 @@ var $$IMU_EXPORT$$;
                 }
             }
 
-            function find_larger_image(key, src, cb) {
+            function find_larger_image(info, src, cb) {
                 var photoid = src.replace(/.*\/([0-9]+)_[^/]*$/, "$1");
 
                 var cache_key = "flickr_larger:" + photoid;
@@ -15340,56 +15401,46 @@ var $$IMU_EXPORT$$;
                     return cb(api_cache.get(cache_key));
                 }
 
-                var nexturl = "https://api.flickr.com/services/rest?csrf=&api_key=" + key + "&format=json&nojsoncallback=1&method=flickr.photos.getSizes&photo_id=" + photoid;
-                options.do_request({
-                    url: nexturl,
-                    method: "GET",
-                    headers: {
-                        "Origin": "",
-                        "Referer": "",
-                        "Cookie": ""
-                    },
-                    onload: function (resp) {
-                        try {
-                            var out = JSON_parse(resp.responseText);
-                            var largesturl = null;
-                            var largestsize = 0;
-                            out.sizes.size.forEach(function (size) {
-                                var currentsize = parseInt(size.width) * parseInt(size.height);
-                                if (currentsize > largestsize || size.label === "Original") {
-                                    largestsize = currentsize;
-                                    largesturl = size.source;
-                                }
-                            });
-
-                            if (typeof largesturl === "string" && /^https?:\/\//.test(largesturl)) {
-                                // Set this to 10 minutes as maybe the person might enable original images later?
-                                // FIXME: should we even cache this?
-                                api_cache.set(cache_key, largesturl, 10*60);
-                                cb(largesturl);
-                            } else {
-                                cb(null);
+                do_flickrapi_request(info, "method=flickr.photos.getSizes&photo_id=" + photoid, function (resp) {
+                    try {
+                        var out = JSON_parse(resp.responseText);
+                        var largesturl = null;
+                        var largestsize = 0;
+                        out.sizes.size.forEach(function (size) {
+                            var currentsize = parseInt(size.width) * parseInt(size.height);
+                            if (currentsize > largestsize || size.label === "Original") {
+                                largestsize = currentsize;
+                                largesturl = size.source;
                             }
-                        } catch (e) {
+                        });
+
+                        if (typeof largesturl === "string" && /^https?:\/\//.test(largesturl)) {
+                            // Set this to 10 minutes as maybe the person might enable original images later?
+                            // FIXME: should we even cache this?
+                            api_cache.set(cache_key, largesturl, 10 * 60);
+                            cb(largesturl);
+                        } else {
                             cb(null);
-                            return;
                         }
+                    } catch (e) {
+                        cb(null);
+                        return;
                     }
                 });
             }
 
-            find_api_key(function(key) {
-                if (!key) {
+            find_api_info(function(info) {
+                if (!info) {
                     return options.cb(null);
                 }
 
-                find_larger_image(key, src, function(largesturl) {
+                find_larger_image(info, src, function(largesturl) {
                     if (!largesturl) {
                         return options.cb(null);
                     }
 
                     if (options.force_page) {
-                        find_original_page(key, newsrc, function(page) {
+                        find_original_page(info, newsrc, function(page) {
                             if (page) {
                                 var obj = {
                                     url: largesturl,
