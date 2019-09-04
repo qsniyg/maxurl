@@ -1156,6 +1156,11 @@ var $$IMU_EXPORT$$;
                 var timer = setTimeout(function() {
                     cache.remove(key);
                 }, time * 1000);
+
+                // Ensures the process can exit in node.js
+                if (is_node && "unref" in timer) {
+                    timer.unref();
+                }
                 this.times[key] = {
                     timer: timer,
                     time: time
