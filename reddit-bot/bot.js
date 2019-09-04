@@ -485,6 +485,7 @@ function dourl(url, post) {
         }
       }
 
+      // TODO: implement POST (.body or .form?)
       request({
         method: options.method,
         uri: options.url,
