@@ -37599,6 +37599,129 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/images\/+thumbnails\/+[0-9]+\/+[0-9]+\/+/, "/images/");
         }
 
+        if (domain_nosub === "userapi.com" &&
+            host_domain_nosub === "vk.com" && options.element &&
+            options.do_request && options.cb) {
+            // https://vk.com/photo153162173_457261604?all=1
+            // https://sun6-16.userapi.com/c855624/v855624788/9cf23/CQIxv7kEYOQ.jpg -- 1871x2160
+            //   https://pp.userapi.com/c7005/v7005747/743e1/qht4X57c3UY.jpg -- 1871x2160
+            //   o_: 130x150, p_: 200x231, q_: 320x370, r_: 510x589, w_: 1871x2160, x_: 523x604, y_: 699x807, z_: 935x1080
+            newsrc = (function() {
+                function request_photo(id, cb) {
+                    var cache_key = "vk_photo:" + id;
+                    if (api_cache.has(cache_key)) {
+                        return cb(api_cache.get(cache_key));
+                    }
+
+                    options.do_request({
+                        method: "POST",
+                        url: "https://vk.com/al_photos.php",
+                        data: "act=show&al=1&photo=" + id,
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded",
+                            "X-Requested-With": "XMLHttpRequest"
+                        },
+                        onload: function(result) {
+                            if (result.readyState !== 4)
+                                return;
+
+                            var match = result.responseText.match(/<!json>(\[.*?\])<!>/);
+                            if (!match) {
+                                return options.cb(null);
+                            }
+
+                            try {
+                                var jsonarray = JSON_parse(match[1]);
+                                var jsonobj = null;
+
+                                //console_log(jsonarray);
+
+                                for (var i = 0; i < jsonarray.length; i++) {
+                                    if (!jsonarray[i].id)
+                                        continue;
+
+                                    api_cache.set("vk_photo:" + jsonarray[i].id, jsonarray[i]);
+
+                                    if (jsonarray[i].id !== id)
+                                        continue;
+
+                                    jsonobj = jsonarray[i];
+                                    break;
+                                }
+
+                                return cb(jsonobj);
+                            } catch (e) {
+                                console_error(e);
+                                cb(null);
+                            }
+                        }
+                    });
+                }
+
+                function process_photo(jsonobj) {
+                    //console_log(jsonobj);
+
+                    var maxsize = 0;
+                    var maxurl = null;
+                    for (var key in jsonobj) {
+                        if (/^[a-z]_$/.test(key) && (key + "src") in jsonobj &&
+                            jsonobj[key] instanceof Array && jsonobj[key].length === 3) {
+                            var size = jsonobj[key][1] * jsonobj[key][2];
+                            if (size > maxsize) {
+                                maxsize = size;
+                                maxurl = jsonobj[key + "src"];
+                            }
+                        }
+                    }
+
+                    return maxurl;
+                }
+
+                function process_el(current) {
+                    if (current.tagName === "A") {
+                        var match = current.href.match(/^[a-z]+:\/\/(?:[^/]+\.)?vk\.com\/+photo(-?[0-9]+_[0-9]+)\/*(?:[?#].*)?$/);
+                        if (match) {
+                            request_photo(match[1], function(obj) {
+                                if (!obj) {
+                                    options.cb(null);
+                                } else {
+                                    options.cb(process_photo(obj));
+                                }
+                            });
+
+                            return true;
+                        }
+                    }
+
+                    return false;
+                }
+
+                var current = options.element;
+                if (current.children && current.children.length === 1) {
+                    if (process_el(current.children[0])) {
+                        return {
+                            waiting: true
+                        };
+                    }
+                }
+
+                //current = options.element;
+                while (current) {
+                    if (process_el(current)) {
+                        return {
+                            waiting: true
+                        };
+                    }
+
+                    current = current.parentElement;
+                }
+
+                return src;
+            })();
+
+            if (newsrc && newsrc !== src)
+                return newsrc;
+        }
 
 
 
