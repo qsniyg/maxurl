@@ -392,7 +392,9 @@ chrome.webRequest.onResponseStarted.addListener(function(details) {
   types: ['xmlhttprequest', 'main_frame', 'sub_frame']
 }, ['responseHeaders']);
 
-// Used for private Instagram accounts which the user follows, user's Flickr images, etc.
+// Currently unused, will be used later if the Cookie header need to be modified
+// Originally this was intended for submitting cookies to URLs,
+//   but not including the "Cookie" header works just as well.
 function get_cookies(url, cb) {
   chrome.cookies.getAll({url: url}, function(cookies) {
     debug("get_cookies: " + url, cookies);
