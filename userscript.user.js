@@ -29333,7 +29333,9 @@ var $$IMU_EXPORT$$;
             // http://cdn-webimages.wimages.net/0500f01de1cce241634c92ca5813e8ce2958d-retina-thumbnail-large.jpg?v=3
             //   http://cdn-webimages.wimages.net/0500f01de1cce241634c92ca5813e8ce2958d-wm.jpg?v=3 -- watermark
             //   http://cdn-webimages.wimages.net/0500f01de1cce241634c92ca5813e8ce2958d.jpg?v=3
-            return src.replace(/(:\/\/[^/]*\/[0-9a-f]+)-[-a-z]+(\.[^/.]*)$/,
+            // http://cdn-webimages.wimages.net/0532bdb9eecbb577465761916eb01a71b87c5d-v5-wm.jpg
+            //   http://cdn-webimages.wimages.net/0532bdb9eecbb577465761916eb01a71b87c5d.jpg
+            return src.replace(/(:\/\/[^/]*\/[0-9a-f]+)(?:-(?:[a-z]+|v[0-9]+)){1,}(\.[^/.]*)$/,
                                "$1$2");
         }
 
