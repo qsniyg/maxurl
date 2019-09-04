@@ -1064,10 +1064,7 @@ var $$IMU_EXPORT$$;
         browser_cookies: {
             name: "Use browser cookies",
             description: "Uses the browser's cookies for API calls in order to access otherwise private data",
-            category: "rules",
-            example_websites: [
-                "Instagram"
-            ]
+            category: "rules"
         },
         bigimage_blacklist: {
             name: "Blacklist",
