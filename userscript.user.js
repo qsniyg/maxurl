@@ -3432,6 +3432,8 @@ var $$IMU_EXPORT$$;
             // https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1497668011i/22813064._UX100_CR0,0,100,100_.jpg
             //   https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/users/1497668011i/22813064.jpg
             domain === "i.gr-assets.com") {
+            // apparently some images can be replaced to 160px? ._SCRM_. apparently fixes this?
+            //   ref: https://wiki.musicbrainz.org/User:Nikki/CAA
             return {
                 //url: src.replace(/\._[^/]*\.([^./]*)$/, "._.$1"),
                 url: src
@@ -3908,6 +3910,7 @@ var $$IMU_EXPORT$$;
             //   https://pbs.twimg.com/media/DhqeJS2UcAAo7fr.jpg
             //   https://pbs.twimg.com/media/DhqeJS2UcAAo7fr.jpg?name=orig -- doesn't work
             //   https://pbs.twimg.com/media/DhqeJS2UcAAo7fr.png?name=orig -- works
+            // 4096x4096 is also a valid "name"
             newsrc = src
                 .replace(/(\/[^?&.]*)(?:\.[^/.?&]*)?([^/]*)[?&]format=([^&]*)/, "$1.$3$2")
                 .replace(/(\/[^?&]*)[?&][^/]*$/, "$1")
@@ -13709,10 +13712,14 @@ var $$IMU_EXPORT$$;
         if (domain_nosub === "bcbits.com" &&
             domain.match(/f[0-9]*\.bcbits\.com/) &&
             src.indexOf("/img/") >= 0) {
+            // see discussion here about _1 vs _0 https://github.com/qsniyg/maxurl/issues/116
+            //   current conclusion is that _1 is a stripped png'd version of _0, which is likely the original image
             // https://f4.bcbits.com/img/0012903078_36.jpg
-            //   https://f4.bcbits.com/img/0012903078_0.jpg
+            //   https://f4.bcbits.com/img/0012903078_1.jpg -- 3000x2000, png, smaller+stripped
+            //   https://f4.bcbits.com/img/0012903078_0.jpg -- 3000x2000, png
             // https://f4.bcbits.com/img/a0452005993_10.jpg -- desaturated slightly
-            //   https://f4.bcbits.com/img/a0452005993_0.jpg -- more saturated
+            //   https://f4.bcbits.com/img/a0452005993_1.jpg -- 1600x1600, png
+            //   https://f4.bcbits.com/img/a0452005993_0.jpg -- ^, jpg, more saturated
             return src.replace(/_[0-9]+(\.[^/.]*)$/, "_0$1");
         }
 
@@ -18830,6 +18837,7 @@ var $$IMU_EXPORT$$;
         }
 
         if (domain === "static.qobuz.com") {
+            // _max is also supported?
             // https://static.qobuz.com/images/covers/67/31/8606102083167_600.jpg
             //   https://static.qobuz.com/images/covers/67/31/8606102083167_org.jpg
             return src.replace(/_[0-9]+(\.[^/.]*)$/, "_org$1");
