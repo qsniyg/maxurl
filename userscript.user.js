@@ -630,11 +630,11 @@ var $$IMU_EXPORT$$;
         canhead_get: true,
         redirect_force_page: false,
         mouseover: true,
-        // thanks to blue-lightning on github for the idea
+        // thanks to blue-lightning on github for the idea: https://github.com/qsniyg/maxurl/issues/16
         mouseover_open_behavior: "popup",
         //mouseover_trigger: ["ctrl", "shift"],
         mouseover_trigger_behavior: "keyboard",
-        // thanks to 894-572 on github for the idea
+        // thanks to 894-572 on github for the idea: https://github.com/qsniyg/maxurl/issues/30
         mouseover_trigger_key: ["shift", "alt", "i"],
         mouseover_trigger_delay: 1,
         mouseover_ui: true,
@@ -643,18 +643,18 @@ var $$IMU_EXPORT$$;
         mouseover_ui_gallerymax: 50,
         mouseover_ui_optionsbtn: is_userscript ? true : false,
         mouseover_ui_rotationbtns: false,
-        // also thanks to blue-lightning
+        // also thanks to blue-lightning: https://github.com/qsniyg/maxurl/issues/16
         mouseover_close_behavior: "esc",
         mouseover_zoom_behavior: "fit",
         mouseover_pan_behavior: "drag",
         mouseover_scroll_behavior: "zoom",
         scroll_zoom_behavior: "fitfull",
-        // thanks to 07416 on github for the idea
+        // thanks to 07416 on github for the idea: https://github.com/qsniyg/maxurl/issues/20#issuecomment-439599984
         mouseover_position: "cursor",
         mouseover_download: false,
-        // also thanks to 07416
+        // also thanks to 07416: https://github.com/qsniyg/maxurl/issues/25
         mouseover_links: false,
-        // thanks to acid-crash on github for the idea
+        // thanks to acid-crash on github for the idea: https://github.com/qsniyg/maxurl/issues/20
         mouseover_styles: "",
         website_inject_imu: true,
         website_image: true,
@@ -663,7 +663,7 @@ var $$IMU_EXPORT$$;
         allow_smaller: false,
         allow_possibly_different: false,
         allow_possibly_broken: false,
-        // thanks to LukasThyWalls on github for the idea
+        // thanks to LukasThyWalls on github for the idea: https://github.com/qsniyg/maxurl/issues/75
         bigimage_blacklist: "",
         bigimage_blacklist_engine: "glob",
         replaceimgs_usedata: true
