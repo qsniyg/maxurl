@@ -1189,6 +1189,18 @@ var $$IMU_EXPORT$$;
             delete this.times[key];
             delete this.data[key];
         };
+
+        this.clear = function() {
+            if (_nir_debug_)
+                console_log("Cache.clear");
+
+            for (var key in this.times) {
+                clearTimeout(this.times[key].timer);
+            }
+
+            this.times = {};
+            this.data = {};
+        };
     };
 
     var url_cache = new Cache();
@@ -39184,6 +39196,13 @@ var $$IMU_EXPORT$$;
         return true;
     }
     bigimage_recursive.is_internet_url = is_internet_url;
+
+    function clear_all_caches() {
+        url_cache.clear();
+        api_cache.clear();
+        cookie_cache.clear();
+    }
+    bigimage_recursive.clear_caches = clear_all_caches;
 
     var obj_to_simplelist = function(obj) {
         var out = [];
