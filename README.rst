@@ -119,10 +119,6 @@ As mentioned above, userscript.user.js also functions as a node module.
         for (var i = 0; i < result.length; i++) {
           // Do something with the object
         }
-
-        // The process will hang until all caches are cleared (due to node's behavior for setTimeout).
-        // For now, this is required in order to let the process exit.
-        maximage.clear_caches();
       }
     });
 
