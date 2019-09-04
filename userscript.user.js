@@ -1067,7 +1067,9 @@ var $$IMU_EXPORT$$;
             category: "rules",
             example_websites: [
                 "Private Flickr images"
-            ]
+            ],
+            // Until GM_Cookie is implemented
+            extension_only: true
         },
         bigimage_blacklist: {
             name: "Blacklist",
@@ -7898,6 +7900,7 @@ var $$IMU_EXPORT$$;
             // http://www.femalefirst.co.uk/image-library/deluxe/d/despicable-me-3-character-poster-5.jpg (4050x6000)
             // http://www.femalefirst.co.uk/image-library/deluxe/r/real-housewives-of-beverly-hills-season-8-camille-grammer-deluxe-image.jpg (2249x3000)
             // http://www.femalefirst.co.uk/image-library/deluxe/w/world-of-warcraft-battle-for-azeroth-logo-deluxe.jpg (4500x2400)
+            // https://www.femalefirst.co.uk/image-library/deluxe/s/starsdance-1.jpg -- 404, returns blank document (0 bytes), but "original" etc. return a proper 404 html page
             //return src.replace(/\/(?:[0-9]+x[0-9]+x)?x*([^/.]*\.[^/.]*)[^/]*$/, "/$1");
             src = src.replace(/\/[0-9x]*([^/.]*\.[^/.]*)[^/]*$/, "/$1");
             origsize = src.match(/\/([0-9]*)\/.\/[^/]*$/);
@@ -37572,6 +37575,12 @@ var $$IMU_EXPORT$$;
             }
         }
 
+        if (domain_nowww === "boutiquefonts.com") {
+            // https://boutiquefonts.com/images/thumbnails/170/170/detailed/2/Dance_Stars.PNG
+            //   https://boutiquefonts.com/images/detailed/2/Dance_Stars.PNG
+            return src.replace(/\/images\/+thumbnails\/+[0-9]+\/+[0-9]+\/+/, "/images/");
+        }
+
 
 
 
@@ -38038,6 +38047,9 @@ var $$IMU_EXPORT$$;
             // https://th.gossipblog.it/0Rz-WpcEpaLroC6K0lYFrW8FfLE=/fit-in/600x400/http://media.gossipblog.it/c/car/cara-delevingne-le-foto-piu-belle/th/cara-delevingne-foto-155752915-10.jpg
             //   https://media.gossipblog.it/c/car/cara-delevingne-le-foto-piu-belle/th/cara-delevingne-foto-155752915-10.jpg
             domain === "th.gossipblog.it" ||
+            // https://th.cineblog.it/h75SqpcjC6zmBnzgVBp1jV-ULrs=/170x170/filters:quality(20)/media.cineblog.it/th/terms/cat_119.jpg
+            //   http://media.cineblog.it/th/terms/cat_119.jpg
+            domain === "th.cineblog.it" ||
             src.match(/:\/\/[^/]*\/thumbor\/[^/]*=\//) ||
             // https://www.orlandosentinel.com/resizer/tREpzmUU7LJX1cbkAN-unm7wL0Y=/fit-in/800x600/top/filters:fill(black)/arc-anglerfish-arc2-prod-tronc.s3.amazonaws.com/public/XC6HBG2I4VHTJGGCOYVPLBGVSM.jpg
             //   http://arc-anglerfish-arc2-prod-tronc.s3.amazonaws.com/public/XC6HBG2I4VHTJGGCOYVPLBGVSM.jpg
