@@ -173,6 +173,10 @@ var $$IMU_EXPORT$$;
     var get_cookies = null;
     if (is_extension) {
         get_cookies = function(url, cb) {
+            if (settings.browser_cookies === false) {
+                return cb(null);
+            }
+
             extension_send_message({
                 type: "getcookies",
                 data: {url: url}
@@ -663,6 +667,7 @@ var $$IMU_EXPORT$$;
         allow_smaller: false,
         allow_possibly_different: false,
         allow_possibly_broken: false,
+        browser_cookies: true,
         // thanks to LukasThyWalls on github for the idea: https://github.com/qsniyg/maxurl/issues/75
         bigimage_blacklist: "",
         bigimage_blacklist_engine: "glob",
@@ -1054,6 +1059,14 @@ var $$IMU_EXPORT$$;
             category: "rules",
             example_websites: [
                 "Tumblr GIFs"
+            ]
+        },
+        browser_cookies: {
+            name: "Use browser cookies",
+            description: "Uses the browser's cookies for API calls in order to access otherwise private data",
+            category: "rules",
+            example_websites: [
+                "Instagram"
             ]
         },
         bigimage_blacklist: {
