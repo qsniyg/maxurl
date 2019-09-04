@@ -19998,6 +19998,9 @@ var $$IMU_EXPORT$$;
                 };
 
                 var get_instagram_cookies = function(cb) {
+                    // For now, we'll disable this as it doesn't appear to be needed
+                    return cb(null);
+
                     var cookie_cache_key = "instagram";
                     if (cookie_cache.has(cookie_cache_key)) {
                         return cb(cookie_cache.get(cookie_cache_key));
