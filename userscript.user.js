@@ -667,7 +667,7 @@ var $$IMU_EXPORT$$;
         allow_smaller: false,
         allow_possibly_different: false,
         allow_possibly_broken: false,
-        browser_cookies: true,
+        //browser_cookies: true,
         // thanks to LukasThyWalls on github for the idea: https://github.com/qsniyg/maxurl/issues/75
         bigimage_blacklist: "",
         bigimage_blacklist_engine: "glob",
@@ -15253,6 +15253,22 @@ var $$IMU_EXPORT$$;
             }
 
             function do_flickr_request(url, cb) {
+                var headers = {
+                    "Origin": "",
+                    "Referer": ""
+                };
+
+                if (false && !settings.browser_cookies) {
+                    headers.Cookie = "";
+                }
+
+                return options.do_request({
+                    url: url,
+                    method: "GET",
+                    headers: headers,
+                    onload: cb
+                });
+
                 get_flickr_cookies(function(cookies) {
                     var cookie_header = "";
                     if (cookies) {
