@@ -4419,7 +4419,8 @@ var $$IMU_EXPORT$$;
             (domain_nosub === "nyt.com" && domain.match(/^static[0-9]*\.nyt\.com/)) ||
             // https://video-images.vice.com/articles/592ed99499168942accbdf39/lede/1496243427040-BadGyal_JavierRuiz_2.jpeg?crop=1xw:0.4212xh;0xw,0.3534xh&resize=1200:*
             // https://i-d-images.vice.com/images/2016/07/29/club-marab-cierra-su-temporada-con-bad-gyal-la-princesa-del-trap-cataln-body-image-1469779091.jpg?crop=1xw:0.5625xh;center,center&resize=0:*
-            (domain_nosub === "vice.com" && domain.match(/-images\.vice\.com$/)) ||
+            // https://images.vice.com/noisey/content-images/article/die-antwoord-gucci-coochie/Screen-Shot-2016-05-18-at-16-32-36.jpg?crop=1xw%3A0.8371478873239436xh%3Bcenter%2Ccenter&resize=650%3A*&output-quality=55
+            (domain_nosub === "vice.com" && domain.match(/images\.vice\.com$/)) ||
             // https://i.imgur.com/ajsLfCa_d.jpg?maxwidth=520&shape=thumb&fidelity=high
             (domain === "i.imgur.com" && !src.match(/\?[0-9]+$/)) ||
             // https://media.discordapp.net/attachments/170399623859404800/411963827412795394/CdynalsW4AQYsgy.png?width=223&height=300
@@ -7207,7 +7208,10 @@ var $$IMU_EXPORT$$;
             }
         }
 
-        if (domain === "wc-ahba9see.c.sakurastorage.jp") {
+        if (domain === "wc-ahba9see.c.sakurastorage.jp" ||
+            // https://cdn.worldcosplay.net/553279/ydllsnlmqigtzjdeycnoucmbtreadgeplevutcww-740.jpg
+            //   https://cdn.worldcosplay.net/553279/ydllsnlmqigtzjdeycnoucmbtreadgeplevutcww-3000.jpg
+            domain === "cdn.worldcosplay.net") {
             if (src.indexOf("/max-1200/") >= 0) {
                 // https://wc-ahba9see.c.sakurastorage.jp/max-1200/59530/e929c45f84ace23cf416c2b6fc1c1eacb34f20bf-350x600.jpg
                 //   https://wc-ahba9see.c.sakurastorage.jp/max-1200/59530/e929c45f84ace23cf416c2b6fc1c1eacb34f20bf-1200.jpg
@@ -33234,6 +33238,9 @@ var $$IMU_EXPORT$$;
             // http://olharalerta.com.br/class/phpThumb/phpThumb.php?src=http://img.youtube.com/vi/BQ0mxQXmLsk/0.jpg&w=343&h=192&zc=1
             //   https://img.youtube.com/vi/BQ0mxQXmLsk/maxresdefault.jpg
             domain_nowww === "olharalerta.com.br" ||
+            // https://wikiquicky.com/backup/phpThumb/phpThumb.php?src=/uploads/singer/Yolandi%20Visser.jpg&w=500&h=500&iar=1
+            //   https://wikiquicky.com/uploads/singer/Yolandi%20Visser.jpg
+            domain_nowww === "wikiquicky.com" ||
             // https://joinsmediacanada.com/plugin/phpThumb/phpThumb.php?src=http%3A%2F%2Fimage.newsis.com%2F2015%2F09%2F23%2FNISI20150923_0005935978_web.jpg&w=130&h=110&zc=1&hash=d6c980fa0aa014e6aa91199b3805b778
             //   http://image.newsis.com/2015/09/23/NISI20150923_0005935978_web.jpg
             domain_nowww === "joinsmediacanada.com") {
@@ -37816,6 +37823,53 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/CropUp\/+[-0-9]+x[-0-9]+\/+media\/+/i, "/media/");
         }
 
+        if (domain === "turntable.kagiso.io") {
+            // https://turntable.kagiso.io/images/POPPIE_NONGENA_PR.width-800.jpg
+            //   https://turntable.kagiso.io/images/POPPIE_NONGENA_PR.original.jpg
+            // doesn't work for all:
+            // https://turntable.kagiso.io/images/Screen_Shot_2018-03-07_at_10.45.28_AM.width-800.png
+            //   https://turntable.kagiso.io/images/Screen_Shot_2018-03-07_at_10.45.28_AM.original.png -- doesn't work (jpg,jpeg,JPG,JPEG,PNG either)
+            return src.replace(/(\/images\/+[^/]+)\.(?:width|height)-[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1.original$2");
+        }
+
+        if (domain === "t.facdn.net" && options.cb && options.do_request) {
+            // https://t.facdn.net/21645783@400-1478448675.jpg
+            match = src.match(/^[a-z]+:\/\/[^/]*\/+([0-9]+)@[0-9]+-[0-9]+\.[^/.]*(?:[?#].*)?$/);
+            if (match) {
+                var page = "https://www.furaffinity.net/full/" + match[1] + "/";
+                options.do_request({
+                    method: "GET",
+                    url: page,
+                    headers: {
+                        "Referer": "",
+                        "Origin": ""
+                    },
+                    onload: function(result) {
+                        if (result.readyState !== 4)
+                            return;
+
+                        if (result.status !== 200)
+                            return options.cb(null);
+
+                        var match = result.responseText.match(/<a\s+href=["'](.*?)["']\s*>Download<\/a>/);
+                        if (match) {
+                            return options.cb({
+                                url: urljoin(src, match[1], true),
+                                extra: {
+                                    page: page
+                                }
+                            });
+                        } else {
+                            return options.cb(null);
+                        }
+                    }
+                });
+
+                return {
+                    waiting: true
+                };
+            }
+        }
 
 
 
