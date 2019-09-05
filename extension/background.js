@@ -109,7 +109,7 @@ var do_request = function(request) {
     xhr: xhr
   };
 
-  xhr.send();
+  xhr.send(request.data);
 };
 
 // Modify request headers if needed
