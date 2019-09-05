@@ -37612,21 +37612,27 @@ var $$IMU_EXPORT$$;
             return src.replace(/(\/photos\/+[^/]*\/+[^/]*)-sm(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
         }
 
-        if (domain === "thumbs.hentai-foundry.com" && options && options.do_request) {
+        if (domain === "thumbs.hentai-foundry.com" && options && options.do_request && options.cb) {
             // https://thumbs.hentai-foundry.com/thumb.php?pid=734467&size=350
             //   https://pictures.hentai-foundry.com/e/Emarine/734467/Emarine-734467-Kitty-Meow.jpg
             match = src.match(/^[a-z]+:\/\/[^/]*\/+thumb\.php\?(?:.*&)?pid=([0-9]+)/);
             if (match) {
+                var page = "https://www.hentai-foundry.com/pictures/" + match[1] + "/";
                 options.do_request({
                     method: "GET",
-                    url: "https://www.hentai-foundry.com/pictures/" + match[1] + "/?enterAgree=1",
+                    url: page + "?enterAgree=1",
                     onload: function(result) {
                         if (result.readyState !== 4)
                             return;
 
                         var match = result.responseText.match(/<img[^>]*src=["']((?:https?:)?\/\/pictures\.hentai-foundry\.com\/[^'"]+)/);
                         if (match) {
-                            return options.cb(urljoin(src, match[1], true));
+                            return options.cb({
+                                url: urljoin(src, match[1], true),
+                                extra: {
+                                    page: page
+                                }
+                            });
                         } else {
                             return options.cb(null);
                         }
