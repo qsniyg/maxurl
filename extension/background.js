@@ -392,7 +392,7 @@ chrome.webRequest.onResponseStarted.addListener(function(details) {
   types: ['xmlhttprequest', 'main_frame', 'sub_frame']
 }, ['responseHeaders']);
 
-// Currently unused, will be used later if the Cookie header need to be modified
+// Currently unused, will be used later if the Cookie header needs to be modified
 // Originally this was intended for submitting cookies to URLs,
 //   but not including the "Cookie" header works just as well.
 function get_cookies(url, cb) {
