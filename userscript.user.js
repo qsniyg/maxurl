@@ -5662,6 +5662,8 @@ var $$IMU_EXPORT$$;
             (domain_nowww === "myjane.ru" && /\/data\/+cache\//.test(src)) ||
             // http://www.chickradar.net/content/uploads/2013/05/Barbara-Palvin-8-150x150.png
             (domain_nowww === "chickradar.net" && /\/content\/+uploads\//.test(src)) ||
+            // http://www.creepmachine.com/images/2012/07/yolandi_visser_soeymilk-610x765-520x400.jpg
+            (domain_nowww === "creepmachine.com" && src.indexOf("/images/") >= 0) ||
             // https://1.soompi.io/wp-content/blogs.dir/8/files/2015/09/HA-TFELT-Wonder-Girls-590x730.jpg -- doesn't work
             // https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2018/01/GTA-6-Female-Protag-796x417.jpg -- does work
             /^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|images|photos|blogs.dir)|\/+uploads)\//.test(src)
@@ -13397,6 +13399,9 @@ var $$IMU_EXPORT$$;
             // http://yukite.ru/image/cache/data/product-29118/HTB1f17EGXXXXXXdXXXXq6xXFXXX5-585x650.jpg
             //   http://yukite.ru/image/data/product-29118/HTB1f17EGXXXXXXdXXXXq6xXFXXX5.jpg
             domain_nowww === "yukite.ru" ||
+            // http://huzzk.com/image/cache/data/Vocaloid-Hatsune-Miku-Cosplay-Costume--MR-046-001--p11923551638/1-800x800.jpg
+            //   http://huzzk.com/image/data/Vocaloid-Hatsune-Miku-Cosplay-Costume--MR-046-001--p11923551638/1.jpg
+            domain_nowww === "huzzk.com" ||
             // http://www.honeydear.my/image/cache/data/YW1031WH/213%20(4)-850x1300.jpg
             //   http://www.honeydear.my/image/data/YW1031WH/213%20(4).jpg
             domain_nowww === "honeydear.my") {
@@ -24601,10 +24606,12 @@ var $$IMU_EXPORT$$;
             // https://simsettlements.com/site/data/avatars/m/0/288.jpg?1521204948
             //   https://simsettlements.com/site/data/avatars/l/0/288.jpg?1521204948 -- o doesn't work
             domain_nowww === "simsettlements.com" ||
-            src.match(/^[a-z]+:\/\/[^/]*\/data\/+avatars\/+[sml]\/+[0-9]+\/+[0-9]+\.[a-z]+(?:\?[0-9]+)?$/)) {
+            // https://www.skinnygossip.com/community/data/avatars/m/0/172.jpg?1559693885
+            //   https://www.skinnygossip.com/community/data/avatars/o/0/172.jpg?1559693885
+            src.match(/^[a-z]+:\/\/[^/]*\/+(?:community\/+)?data\/+avatars\/+[sml]\/+[0-9]+\/+[0-9]+\.[a-z]+(?:\?[0-9]+)?$/)) {
             // https://d3ofq03apmfb8c.cloudfront.net/data/avatars/m/121/121702.jpg?1514486539
             //   https://d3ofq03apmfb8c.cloudfront.net/data/avatars/o/121/121702.jpg?1514486539
-            var regex = /\/data\/avatars\/[a-z]\/([0-9]+\/[0-9]+\.[^/.]*)$/;
+            var regex = /\/data\/+avatars\/+[a-z]\/+([0-9]+\/+[0-9]+\.[^/.]*)$/;
             return [
                 src.replace(regex, "/data/avatars/o/$1"),
                 src.replace(regex, "/data/avatars/l/$1")
@@ -37632,7 +37639,10 @@ var $$IMU_EXPORT$$;
             }
         }
 
-        if (domain_nowww === "boutiquefonts.com") {
+        if (domain_nowww === "boutiquefonts.com" ||
+            // https://www.animuk.co.uk/images/thumbnails/280/480/detailed/2/vocaloidhatsunemikucosplaytanktop.jpg?t=1445304178
+            //   https://www.animuk.co.uk/images/detailed/2/vocaloidhatsunemikucosplaytanktop.jpg?t=1445304178
+            domain_nowww === "animuk.co.uk") {
             // https://boutiquefonts.com/images/thumbnails/170/170/detailed/2/Dance_Stars.PNG
             //   https://boutiquefonts.com/images/detailed/2/Dance_Stars.PNG
             return src.replace(/\/images\/+thumbnails\/+[0-9]+\/+[0-9]+\/+/, "/images/");
