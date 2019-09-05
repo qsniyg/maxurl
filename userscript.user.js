@@ -37630,7 +37630,7 @@ var $$IMU_EXPORT$$;
                             return options.cb({
                                 url: urljoin(src, match[1], true),
                                 extra: {
-                                    page: page
+                                    page: result.finalUrl
                                 }
                             });
                         } else {
