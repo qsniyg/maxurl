@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.10.1
+// @version      0.10.2
 // @description  Finds larger or original versions of images for 5200+ websites
 // @author       qsniyg
 // @homepageURL  https://qsniyg.github.io/maxurl/options.html
@@ -173,6 +173,34 @@ var $$IMU_EXPORT$$;
         };
     }
 
+    var get_cookies = null;
+    if (is_extension) {
+        get_cookies = function(url, cb) {
+            if (settings.browser_cookies === false) {
+                return cb(null);
+            }
+
+            extension_send_message({
+                type: "getcookies",
+                data: {url: url}
+            }, function(message) {
+                cb(message.data);
+            });
+        };
+    }
+
+    var cookies_to_httpheader = function(cookies) {
+        // deduplication apparently isn't necessary (browser duplicates them too)
+
+        var strs = [];
+        for (var i = 0; i < cookies.length; i++) {
+            var str = cookies[i].name + "=" + cookies[i].value;
+            strs.push(str);
+        }
+
+        return strs.join("; ");
+    };
+
     var bigimage_filter = function() {
         return true;
     };
@@ -205,6 +233,7 @@ var $$IMU_EXPORT$$;
         filter: bigimage_filter,
 
         do_request: do_request,
+        get_cookies: get_cookies,
         host_url: null,
         document: null,
         window: null,
@@ -608,11 +637,11 @@ var $$IMU_EXPORT$$;
         canhead_get: true,
         redirect_force_page: false,
         mouseover: true,
-        // thanks to blue-lightning on github for the idea
+        // thanks to blue-lightning on github for the idea: https://github.com/qsniyg/maxurl/issues/16
         mouseover_open_behavior: "popup",
         //mouseover_trigger: ["ctrl", "shift"],
         mouseover_trigger_behavior: "keyboard",
-        // thanks to 894-572 on github for the idea
+        // thanks to 894-572 on github for the idea: https://github.com/qsniyg/maxurl/issues/30
         mouseover_trigger_key: ["shift", "alt", "i"],
         mouseover_trigger_delay: 1,
         mouseover_ui: true,
@@ -621,18 +650,18 @@ var $$IMU_EXPORT$$;
         mouseover_ui_gallerymax: 50,
         mouseover_ui_optionsbtn: is_userscript ? true : false,
         mouseover_ui_rotationbtns: false,
-        // also thanks to blue-lightning
+        // also thanks to blue-lightning: https://github.com/qsniyg/maxurl/issues/16
         mouseover_close_behavior: "esc",
         mouseover_zoom_behavior: "fit",
         mouseover_pan_behavior: "drag",
         mouseover_scroll_behavior: "zoom",
         scroll_zoom_behavior: "fitfull",
-        // thanks to 07416 on github for the idea
+        // thanks to 07416 on github for the idea: https://github.com/qsniyg/maxurl/issues/20#issuecomment-439599984
         mouseover_position: "cursor",
         mouseover_download: false,
-        // also thanks to 07416
+        // also thanks to 07416: https://github.com/qsniyg/maxurl/issues/25
         mouseover_links: false,
-        // thanks to acid-crash on github for the idea
+        // thanks to acid-crash on github for the idea: https://github.com/qsniyg/maxurl/issues/20
         mouseover_styles: "",
         website_inject_imu: true,
         website_image: true,
@@ -641,7 +670,8 @@ var $$IMU_EXPORT$$;
         allow_smaller: false,
         allow_possibly_different: false,
         allow_possibly_broken: false,
-        // thanks to LukasThyWalls on github for the idea
+        //browser_cookies: true,
+        // thanks to LukasThyWalls on github for the idea: https://github.com/qsniyg/maxurl/issues/75
         bigimage_blacklist: "",
         bigimage_blacklist_engine: "glob",
         replaceimgs_usedata: true
@@ -1034,6 +1064,16 @@ var $$IMU_EXPORT$$;
                 "Tumblr GIFs"
             ]
         },
+        browser_cookies: {
+            name: "Use browser cookies",
+            description: "Uses the browser's cookies for API calls in order to access otherwise private data",
+            category: "rules",
+            example_websites: [
+                "Private Flickr images"
+            ],
+            // Until GM_Cookie is implemented
+            extension_only: true
+        },
         bigimage_blacklist: {
             name: "Blacklist",
             description: "A list of URLs that are blacklisted from being processed",
@@ -1124,6 +1164,11 @@ var $$IMU_EXPORT$$;
                 var timer = setTimeout(function() {
                     cache.remove(key);
                 }, time * 1000);
+
+                // Ensures the process can exit in node.js
+                if (is_node && "unref" in timer) {
+                    timer.unref();
+                }
                 this.times[key] = {
                     timer: timer,
                     time: time
@@ -1157,10 +1202,23 @@ var $$IMU_EXPORT$$;
             delete this.times[key];
             delete this.data[key];
         };
+
+        this.clear = function() {
+            if (_nir_debug_)
+                console_log("Cache.clear");
+
+            for (var key in this.times) {
+                clearTimeout(this.times[key].timer);
+            }
+
+            this.times = {};
+            this.data = {};
+        };
     };
 
     var url_cache = new Cache();
     var api_cache = new Cache();
+    var cookie_cache = new Cache();
 
     var urlparse = function(x) {
         return new URL(x);
@@ -1856,7 +1914,7 @@ var $$IMU_EXPORT$$;
             if (newsrc !== src)
                 return newsrc;
 
-            newsrc = src.replace(/^[a-z]+:\/\/thumb\.([^/]*)\/[0-9]+\//, "http://image.$1/");
+            newsrc = src.replace(/^[a-z]+:\/\/thumb\.([^/]*)\/+([^/]*\/+)?[0-9]{2}\/+([0-9]{4}\/+[0-9]{2}\/+[0-9]{8,}_[0-9]+\.)/, "http://image.$1/$2$3");
             if (newsrc !== src)
                 return newsrc;
         }
@@ -2971,7 +3029,7 @@ var $$IMU_EXPORT$$;
             domain === "img.lum.dolimg.com" ||
             domain_nowww === "xxlmag.com" ||
             (domain_nosub === "nyt.com" && domain.match(/^static[0-9]*\.nyt\.com/)) ||
-            (domain_nosub === "vice.com" && domain.match(/-images\.vice\.com$/)) ||
+            (domain_nosub === "vice.com" && domain.match(/images\.vice\.com$/)) ||
             (domain === "i.imgur.com" && !src.match(/\?[0-9]+$/)) ||
             domain === "media.discordapp.net" ||
             domain === "images.discordapp.net" ||
@@ -3230,6 +3288,7 @@ var $$IMU_EXPORT$$;
             (domain === "2sao.vietnamnetjsc.vn" && src.indexOf("/images/") >= 0) ||
             (domain === "images.jkn.co.kr" && src.indexOf("/images/") >= 0) ||
             (domain_nowww === "instylemag.com.au" && src.indexOf("/media/") >= 0) ||
+            domain === "i.eurosport.com" ||
             src.match(/\/demandware\.static\//) ||
             src.match(/\?i10c=[^/]*$/) ||
             /^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|blogs.dir)|\/+uploads)\//.test(src)
@@ -3476,6 +3535,7 @@ var $$IMU_EXPORT$$;
             (domain_nosub === "musicfeeds.com.au" && domain.match(/^cdn[0-9]*/) && src.indexOf("/assets/uploads/")) ||
             (domain === "d13vpcwfpcq1p8.cloudfront.net" && src.indexOf("/contents/") >= 0) ||
             (domain_nosub === "paperblog.fr" && domain.match(/^media[0-9]*\./)) ||
+            (domain_nosub === "paperblog.com" && domain.match(/^m[0-9]*\./)) ||
             (domain === "bikini.sbgefree.org" && src.indexOf("/files/") >= 0) ||
             (domain_nowww === "redbust.com" && src.indexOf("/stuff/") >= 0) ||
             domain === "img.providr.com" ||
@@ -3575,6 +3635,8 @@ var $$IMU_EXPORT$$;
             domain === "p.elle.bg" ||
             (domain_nowww === "illustrationwest.org" && src.indexOf("/files/") >= 0) ||
             (domain_nowww === "myjane.ru" && /\/data\/+cache\//.test(src)) ||
+            (domain_nowww === "chickradar.net" && /\/content\/+uploads\//.test(src)) ||
+            (domain_nowww === "creepmachine.com" && src.indexOf("/images/") >= 0) ||
             /^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|images|photos|blogs.dir)|\/+uploads)\//.test(src)
             /*src.indexOf("/wp/uploads/") >= 0*/
             ) {
@@ -4301,7 +4363,8 @@ var $$IMU_EXPORT$$;
             }
         }
 
-        if (domain === "wc-ahba9see.c.sakurastorage.jp") {
+        if (domain === "wc-ahba9see.c.sakurastorage.jp" ||
+            domain === "cdn.worldcosplay.net") {
             if (src.indexOf("/max-1200/") >= 0) {
                 return {
                     url: src.replace(/-[0-9a-z]+(\.[^/.]*)$/, "-1200$1"),
@@ -5414,6 +5477,7 @@ var $$IMU_EXPORT$$;
             domain === "image.laodong.com.vn" ||
             domain === "cdn-images.saostar.vn" ||
             (domain_nosub === "tienphong.vn" && domain.match(/image[0-9]*\.tienphong\.vn/)) ||
+            domain === "img.infonet.vn" ||
             domain === "media.laodong.vn") {
             newsrc = src
                 .replace(/(:\/\/[^/]*)\/[wht]p?[0-9]+x?(?:_[^/]*)?(?:[0-9]+)?\//, "$1/")
@@ -5658,10 +5722,11 @@ var $$IMU_EXPORT$$;
             (domain_nowww === "gozzip.id" && /\/BlogBody\/+photos\//.test(src)) ||
             domain_nowww === "greasyfork.org" ||
             domain === "static.themezy.com" ||
+            domain_nowww === "hairhapi.com" ||
             domain_nowww === "sonar.es") {
             return src
                 .replace(/(\/attached_images\/+[0-9]+\/+)[a-z]+\/+/, "$1original/")
-                .replace(/(\/system\/+(?:(?:attached|item)_images|App\/+BlogBody|post_pictures|events|posts|items|file_uploads|screenshots|resources)\/+(?:(?:images|photos|files|assets|pictures|posters|uploads|screenshots|previews)\/+)?(?:[0-9]{3}\/+){3})[a-z_0-9]+\/+/, "$1original/");
+                .replace(/(\/(?:system|images)\/+(?:(?:attached|item)_images|App\/+BlogBody|post_pictures|events|posts|items|file_uploads|screenshots|resources)\/+(?:(?:images|photos|files|assets|pictures|posters|uploads|screenshots|previews)\/+)?(?:[0-9]{3}\/+){3})[a-z_0-9]+\/+/, "$1original/");
         }
 
         if (domain === "pgw.udn.com.tw") {
@@ -6203,7 +6268,7 @@ var $$IMU_EXPORT$$;
             return src.replace(/_[0-9]+x[0-9]+[a-z]?_[0-9]+(\.[^/.]*)$/, "$1");
         }
 
-        if (domain === "www.nationmultimedia.com") {
+        if (domain_nowww === "nationmultimedia.com") {
             return src.replace(/-[^/.]*(\.[^/.]*)$/, "$1");
         }
 
@@ -7245,6 +7310,8 @@ var $$IMU_EXPORT$$;
             domain_nowww === "duvardamoda.com" ||
             domain_nowww === "fresh38.ru" ||
             domain_nowww === "malaysiadropship.com" ||
+            domain_nowww === "yukite.ru" ||
+            domain_nowww === "huzzk.com" ||
             domain_nowww === "honeydear.my") {
             return src
                 .replace(/\/image_cache\/+resize\/+[0-9]+x[0-9]+\/+image\/+/, "/image/")
@@ -8213,43 +8280,127 @@ var $$IMU_EXPORT$$;
             src.match(/\/[0-9]+_[0-9a-f]+(?:_[a-z]*)?\.[a-z]+.*$/) &&
             options && options.do_request && options.cb) {
 
-            function find_api_key(cb) {
-                if (api_cache.has("flickr_api_key")) {
-                    return cb(api_cache.get("flickr_api_key"));
+            function get_flickr_cookies(cb) {
+                if (cookie_cache.has("flickr")) {
+                    return cb(cookie_cache.get("flickr"));
                 }
 
-                options.do_request({
-                    url: "https://www.flickr.com/",
-                    method: "GET",
-                    headers: {
-                        "Origin": "",
-                        "Referer": "",
-                        "Cookie": ""
-                    },
-                    onload: function(resp) {
-                        if (resp.readyState === 4) {
-                            var regex = /root\.YUI_config\.flickr\.api\.site_key *= *['"]([0-9a-f]+)['"] *; */;
-                            var matchobj = resp.responseText.match(regex);
-                            if (!matchobj) {
-                                console_error("Unable to find Flickr API key");
-                                cb(null);
-                                return;
-                            }
+                if (options.get_cookies) {
+                    options.get_cookies("https://www.flickr.com/", function(cookies) {
+                        cookie_cache.set("flickr", cookies);
+                        cb(cookies);
+                    });
+                } else {
+                    return cb(null);
+                }
+            }
 
-                            var key = matchobj[1];
-                            if (key && typeof key === "string") {
-                                api_cache.set("flickr_api_key", key, 60*60);
-                                cb(key);
-                            } else {
-                                console_error("Unable to find Flickr API key");
-                                cb(null);
+            function do_flickr_request(url, cb) {
+                var headers = {
+                    "Origin": "",
+                    "Referer": ""
+                };
+
+                if (false && !settings.browser_cookies) {
+                    headers.Cookie = "";
+                }
+
+                return options.do_request({
+                    url: url,
+                    method: "GET",
+                    headers: headers,
+                    onload: cb
+                });
+
+                get_flickr_cookies(function(cookies) {
+                    var cookie_header = "";
+                    if (cookies) {
+                        cookie_header = cookies_to_httpheader(cookies);
+                    }
+
+                    options.do_request({
+                        url: url,
+                        method: "GET",
+                        headers: {
+                            "Origin": "",
+                            "Referer": "",
+                            "Cookie": cookie_header
+                        },
+                        onload: cb
+                    });
+                });
+            }
+
+            function find_api_info(cb) {
+                if (api_cache.has("flickr_api_info")) {
+                    return cb(api_cache.get("flickr_api_info"));
+                }
+
+                do_flickr_request("https://www.flickr.com/", function(resp) {
+                    if (resp.readyState === 4) {
+                        var regex = /root\.YUI_config\.flickr\.api\.site_key *= *['"]([0-9a-f]+)['"] *; */;
+                        var matchobj = resp.responseText.match(regex);
+                        if (!matchobj) {
+                            console_error("Unable to find Flickr API key");
+                            cb(null);
+                            return;
+                        }
+
+                        var key = matchobj[1];
+                        if (!key || typeof key !== "string") {
+                            console_error("Unable to find Flickr API key");
+                            return cb(null);
+                        }
+
+                        regex = /root\.auth\s*=\s*({.*?});/;
+                        matchobj = resp.responseText.match(regex);
+                        var auth = {};
+                        if (!matchobj) {
+                            console_error("Unable to find Flickr auth info");
+                        } else {
+                            try {
+                                auth = JSON_parse(matchobj[1]);
+                            } catch (e) {
+                                auth = {};
+                                console_error("Unable to find Flickr auth info");
                             }
                         }
+
+                        if ("user" in auth && "nsid" in auth.user) {
+                            auth.nsid = auth.user.nsid;
+                        }
+
+                        var info = {
+                            key: key,
+                            nsid: auth.nsid,
+                            csrf: auth.csrf
+                        };
+
+                        api_cache.set("flickr_api_info", info, 60 * 60);
+                        cb(info);
                     }
                 });
             }
 
-            function find_original_page(key, src, cb) {
+            function do_flickrapi_request(info, params, cb) {
+                var url = "https://api.flickr.com/services/rest?csrf=";
+
+                if (info.csrf) {
+                    url += info.csrf;
+                }
+
+                url += "&api_key=" + info.key + "&format=json";
+
+                if (info.nsid) {
+                    url += "&viewerNSID=" + info.nsid;
+                }
+
+                url += "&format=json&nojsoncallback=1&" + params;
+
+                do_flickr_request(url, cb);
+            }
+
+            function find_original_page(info, src, cb) {
                 var photoid = src.replace(/.*\/([0-9]+)_[^/]*$/, "$1");
                 var photosecret = src.replace(/.*\/[0-9]+_([0-9a-z]+)_[^/]*$/, "$1");
 
@@ -8258,28 +8409,18 @@ var $$IMU_EXPORT$$;
                     return cb(api_cache.get(cache_key));
                 }
 
-                var nexturl = "https://api.flickr.com/services/rest?csrf=&api_key=" + key + "&format=json&nojsoncallback=1&method=flickr.photos.getInfo&photo_id=" + photoid + "&secret=" + photosecret;
-                options.do_request({
-                    url: nexturl,
-                    method: "GET",
-                    headers: {
-                        "Origin": "",
-                        "Referer": "",
-                        "Cookie": ""
-                    },
-                    onload: function (resp) {
-                        try {
-                            var out = JSON_parse(resp.responseText);
-                            var url = out.photo.urls.url[0]._content;
-                            if (/^https?:\/\//.test(url)) {
-                                api_cache.set(cache_key, url, 6*60*60);
-                                cb(out.photo.urls.url[0]._content);
-                            } else {
-                                cb(null);
-                            }
-                        } catch (e) {
+                do_flickrapi_request(info, "method=flickr.photos.getInfo&photo_id=" + photoid + "&secret=" + photosecret, function (resp) {
+                    try {
+                        var out = JSON_parse(resp.responseText);
+                        var url = out.photo.urls.url[0]._content;
+                        if (/^https?:\/\//.test(url)) {
+                            api_cache.set(cache_key, url, 6 * 60 * 60);
+                            cb(out.photo.urls.url[0]._content);
+                        } else {
                             cb(null);
                         }
+                    } catch (e) {
+                        cb(null);
                     }
                 });
             }
@@ -8292,12 +8433,12 @@ var $$IMU_EXPORT$$;
                 };
 
                 if (options.force_page) {
-                    find_api_key(function(key) {
-                        if (!key) {
+                    find_api_info(function(info) {
+                        if (!info) {
                             return options.cb(obj);
                         }
 
-                        find_original_page(key, newsrc, function(page) {
+                        find_original_page(info, newsrc, function(page) {
                             if (page) {
                                 obj.extra = {page: page};
                             }
@@ -8314,7 +8455,7 @@ var $$IMU_EXPORT$$;
                 }
             }
 
-            function find_larger_image(key, src, cb) {
+            function find_larger_image(info, src, cb) {
                 var photoid = src.replace(/.*\/([0-9]+)_[^/]*$/, "$1");
 
                 var cache_key = "flickr_larger:" + photoid;
@@ -8322,54 +8463,44 @@ var $$IMU_EXPORT$$;
                     return cb(api_cache.get(cache_key));
                 }
 
-                var nexturl = "https://api.flickr.com/services/rest?csrf=&api_key=" + key + "&format=json&nojsoncallback=1&method=flickr.photos.getSizes&photo_id=" + photoid;
-                options.do_request({
-                    url: nexturl,
-                    method: "GET",
-                    headers: {
-                        "Origin": "",
-                        "Referer": "",
-                        "Cookie": ""
-                    },
-                    onload: function (resp) {
-                        try {
-                            var out = JSON_parse(resp.responseText);
-                            var largesturl = null;
-                            var largestsize = 0;
-                            out.sizes.size.forEach(function (size) {
-                                var currentsize = parseInt(size.width) * parseInt(size.height);
-                                if (currentsize > largestsize || size.label === "Original") {
-                                    largestsize = currentsize;
-                                    largesturl = size.source;
-                                }
-                            });
-
-                            if (typeof largesturl === "string" && /^https?:\/\//.test(largesturl)) {
-                                api_cache.set(cache_key, largesturl, 10*60);
-                                cb(largesturl);
-                            } else {
-                                cb(null);
+                do_flickrapi_request(info, "method=flickr.photos.getSizes&photo_id=" + photoid, function (resp) {
+                    try {
+                        var out = JSON_parse(resp.responseText);
+                        var largesturl = null;
+                        var largestsize = 0;
+                        out.sizes.size.forEach(function (size) {
+                            var currentsize = parseInt(size.width) * parseInt(size.height);
+                            if (currentsize > largestsize || size.label === "Original") {
+                                largestsize = currentsize;
+                                largesturl = size.source;
                             }
-                        } catch (e) {
+                        });
+
+                        if (typeof largesturl === "string" && /^https?:\/\//.test(largesturl)) {
+                            api_cache.set(cache_key, largesturl, 10 * 60);
+                            cb(largesturl);
+                        } else {
                             cb(null);
-                            return;
                         }
+                    } catch (e) {
+                        cb(null);
+                        return;
                     }
                 });
             }
 
-            find_api_key(function(key) {
-                if (!key) {
+            find_api_info(function(info) {
+                if (!info) {
                     return options.cb(null);
                 }
 
-                find_larger_image(key, src, function(largesturl) {
+                find_larger_image(info, src, function(largesturl) {
                     if (!largesturl) {
                         return options.cb(null);
                     }
 
                     if (options.force_page) {
-                        find_original_page(key, newsrc, function(page) {
+                        find_original_page(info, newsrc, function(page) {
                             if (page) {
                                 var obj = {
                                     url: largesturl,
@@ -8655,6 +8786,7 @@ var $$IMU_EXPORT$$;
         if ((domain_nosub === "sportsworldi.com" ||
              domain_nosub === "segye.com") &&
             src.indexOf("/content/image/") >= 0) {
+
 
             return src.replace(/(\/content\/+image\/+[0-9]{4}\/+[0-9]{2}\/+[0-9]{2}\/+)[0-9]+\/+([0-9]+(?:_[^/.]*)?\.[^/.]*)(?:[?#].*)?$/,
                                "$1$2");
@@ -10123,7 +10255,7 @@ var $$IMU_EXPORT$$;
 
         if (domain === "www.consolefun.fr" ||
             domain_nowww === "nude-gals.com") {
-            return src.replace(/\/thumbs\/th_/, "/");
+            return src.replace(/\/thumbs\/+th_/, "/");
         }
 
         if (domain === "ex.f3img.gq") {
@@ -10963,6 +11095,46 @@ var $$IMU_EXPORT$$;
                     });
                 };
 
+                var get_instagram_cookies = function(cb) {
+                    return cb(null);
+
+                    var cookie_cache_key = "instagram";
+                    if (cookie_cache.has(cookie_cache_key)) {
+                        return cb(cookie_cache.get(cookie_cache_key));
+                    }
+
+                    if (options.get_cookies) {
+                        options.get_cookies("https://www.instagram.com/", function(cookies) {
+                            cookie_cache.set(cookie_cache_key, cookies);
+                            cb(cookies);
+                        });
+                    } else {
+                        cb(null);
+                    }
+                };
+
+                var app_api_call = function (url, cb) {
+                    var headers = {
+                        "User-Agent": "Instagram 10.26.0 (iPhone7,2; iOS 10_1_1; en_US; en-US; scale=2.00; gamut=normal; 750x1334) AppleWebKit/420+",
+                        "X-IG-Capabilities": "36oD",
+                        "Accept": "*/*",
+                        "Accept-Language": "en-US,en;q=0.8"
+                    };
+
+                    get_instagram_cookies(function(cookies) {
+                        if (cookies) {
+                            headers.Cookie = cookies_to_httpheader(cookies);
+                        }
+
+                        options.do_request({
+                            method: "GET",
+                            url: url,
+                            headers: headers,
+                            onload: cb
+                        });
+                    });
+                };
+
                 var mediainfo_api = function(id, cb) {
                     var cache_key = "instagram_mediainfo:" + id;
                     if (api_cache.has(cache_key)) {
@@ -10970,30 +11142,20 @@ var $$IMU_EXPORT$$;
                     }
 
                     var url = "https://i.instagram.com/api/v1/media/" + id + "/info/";
-                    options.do_request({
-                        method: "GET",
-                        url: url,
-                        headers: {
-                            "User-Agent": "Instagram 10.26.0 (iPhone7,2; iOS 10_1_1; en_US; en-US; scale=2.00; gamut=normal; 750x1334) AppleWebKit/420+",
-                            "X-IG-Capabilities": "36oD",
-                            "Accept": "*/*",
-                            "Accept-Language": "en-US,en;q=0.8"
-                        },
-                        onload: function(result) {
-                            if (result.readyState !== 4)
-                                return;
+                    app_api_call(url, function(result) {
+                        if (result.readyState !== 4)
+                            return;
 
-                            if (result.status === 200) {
-                                try {
-                                    var parsed = JSON_parse(result.responseText);
+                        if (result.status === 200) {
+                            try {
+                                var parsed = JSON_parse(result.responseText);
 
-                                    api_cache.set(cache_key, parsed, 60*60);
-                                    return cb(parsed);
-                                } catch (e) {}
-                            }
-
-                            cb(null);
+                                api_cache.set(cache_key, parsed, 60 * 60);
+                                return cb(parsed);
+                            } catch (e) { }
                         }
+
+                        cb(null);
                     });
                 };
 
@@ -11324,8 +11486,9 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/pics\/pics_[a-z]+\//, "/pics/pics_original/");
         }
 
-        if (domain === "static.comicvine.com") {
-            return src.replace(/\/uploads\/[^/]*\//, "/uploads/original/");
+        if (domain === "static.comicvine.com" ||
+            (domain_nosub === "cbsistatic.com" && /^comicvine[0-9]*\./.test(domain))) {
+            return src.replace(/(:\/\/[^/]+\/+)uploads\/+[^/]*\//, "$1uploads/original/");
         }
 
 
@@ -12619,6 +12782,7 @@ var $$IMU_EXPORT$$;
              domain_nosub === "hentai-image.com" ||
              domain_nosub === "porn-image-xxx.com" ||
              domain_nosub === "porn-movie-xxx.com" ||
+             domain_nosub === "hentai-comic.com" ||
              domain_nosub === "aniimg.com") &&
             domain.match(/^static[0-9]*\./) &&
             src.indexOf("/upload/") >= 0) {
@@ -13059,9 +13223,8 @@ var $$IMU_EXPORT$$;
             return decodeURIComponent(src.replace(/^[a-z]+:\/\/[^/]*\/img\/p\.php.*?[?&]p=([^&]*).*?$/, "$1"));
         }
 
-        if (domain_nosub === "vagalume.com" &&
-            domain.match(/^s[0-9]*\.vagalume/)) {
-            return src.replace(/(\/images\/[0-9]+)[wh][0-9]+(\.[^/.]*)$/, "$1$2");
+        if (domain_nosub === "vagalume.com" && /^s[0-9]*\./.test(domain)) {
+            return src.replace(/(\/images\/g?[0-9]+)[wh][0-9]+(\.[^/.]*)$/, "$1$2");
         }
 
         if (domain_nosub === "glanacion.com" && domain.match(/^bucket[0-9]*\./)) {
@@ -13593,8 +13756,8 @@ var $$IMU_EXPORT$$;
             domain === "forum.purseblog.com" ||
             (domain_nowww === "behindbigbrother.com" && src.indexOf("/forums/data/") >= 0) ||
             domain_nowww === "simsettlements.com" ||
-            src.match(/^[a-z]+:\/\/[^/]*\/data\/+avatars\/+[sml]\/+[0-9]+\/+[0-9]+\.[a-z]+(?:\?[0-9]+)?$/)) {
-            var regex = /\/data\/avatars\/[a-z]\/([0-9]+\/[0-9]+\.[^/.]*)$/;
+            src.match(/^[a-z]+:\/\/[^/]*\/+(?:community\/+)?data\/+avatars\/+[sml]\/+[0-9]+\/+[0-9]+\.[a-z]+(?:\?[0-9]+)?$/)) {
+            var regex = /\/data\/+avatars\/+[a-z]\/+([0-9]+\/+[0-9]+\.[^/.]*)$/;
             return [
                 src.replace(regex, "/data/avatars/o/$1"),
                 src.replace(regex, "/data/avatars/l/$1")
@@ -16464,7 +16627,7 @@ var $$IMU_EXPORT$$;
         }
 
         if (domain === "cdn-webimages.wimages.net") {
-            return src.replace(/(:\/\/[^/]*\/[0-9a-f]+)-[-a-z]+(\.[^/.]*)$/,
+            return src.replace(/(:\/\/[^/]*\/[0-9a-f]+)(?:-(?:[a-z]+|v[0-9]+)){1,}(\.[^/.]*)$/,
                                "$1$2");
         }
 
@@ -17243,7 +17406,8 @@ var $$IMU_EXPORT$$;
             return src.replace(/(\.[^/.]*)\.thumb_[0-9]+x[0-9]+\.[^/.]*(?:[?#].*)?$/, "$1");
         }
 
-        if (domain_nosub === "paheal.net") {
+        if (domain_nosub === "paheal.net" ||
+            domain_nowww === "rule34hentai.net") {
             return src.replace(/:\/\/[^/]*\/_thumbs\//, "://peach.paheal.net/_images/");
         }
 
@@ -17586,7 +17750,8 @@ var $$IMU_EXPORT$$;
                                "$1");
         }
 
-        if (domain_nowww === "livesport.ru") {
+        if (domain_nowww === "livesport.ru" ||
+            domain === "cdn.livesport.ru") {
             return src.replace(/\/picture--[0-9]+(\.[^/.]*)(?:[?#].*)$/, "/picture$1");
         }
 
@@ -18544,7 +18709,7 @@ var $$IMU_EXPORT$$;
         }
 
         if (domain_nowww === "sobaka.ru") {
-            return src.replace(/(\/images\/+image\/+(?:[0-9]{2}\/+){4})_[a-z]+(\.[^/.]*)(?:[?#].*)?$/, "$1_origin$2");
+            return src.replace(/(\/images\/+(?:image|post)\/+(?:[0-9]{2}\/+){4})_(?:normal|huge|origin)(\.[^/.]*)(?:[?#].*)?$/, "$1_zoom$2");
         }
 
         if (domain_nowww === "ziaruldeiasi.ro") {
@@ -18882,6 +19047,7 @@ var $$IMU_EXPORT$$;
 
         if (domain_nowww === "silenzioinsala.com" ||
             domain_nowww === "olharalerta.com.br" ||
+            domain_nowww === "wikiquicky.com" ||
             domain_nowww === "joinsmediacanada.com") {
             newsrc = src.replace(/.*\/+phpThumb\.php\?(?:.*?&)?src=([^&]*).*?$/, "$1");
             if (newsrc !== src)
@@ -19890,7 +20056,7 @@ var $$IMU_EXPORT$$;
         }
 
         if (domain_nowww === "show-biz.by") {
-            return src.replace(/(\/gallery_image\/[0-9]+\/+)[^/]*\/+/, "$1original/");
+            return src.replace(/(\/(?:(?:gallery|blog)_image|upimg_file)\/+[0-9]+\/+)[^/]+(\/+_v=[0-9a-f]+)?(?:[?#].*)?$/, "$1original$2");
         }
 
         if (domain_nowww === "songtexte.co") {
@@ -20448,8 +20614,9 @@ var $$IMU_EXPORT$$;
         }
 
         if (domain_nowww === "celebritying.com") {
-            return src.replace(/(\/pictures\/+[^/]*\/+[^/]*)-tn(-[0-9]+)?(\.[^/.]*)(?:[?#].*)?$/,
-                               "$1$2$3");
+            return src
+                .replace(/(\/pictures\/+[^/]*\/+[^/]*)-tn(-[0-9]+)?(\.[^/.]*)(?:[?#].*)?$/, "$1$2$3")
+                .replace(/(\/images\/+[^/]*)-tn(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
         }
 
         if (domain_nowww === "daily-celebvideos.com") {
@@ -20545,11 +20712,15 @@ var $$IMU_EXPORT$$;
 
         if (domain_nowww === "famitsu.com") {
             regex = /(\/images\/+(?:[0-9]{3}\/+){3})[tly]_([0-9a-f]+\.[^/.]*)(?:[?#].*)?$/;
-            return [
-                src.replace(regex, "$1z_$2"),
-                src.replace(regex, "$1y_$2"),
-                src.replace(regex, "$1l_$2")
-            ];
+            if (regex.test(src)) {
+                return [
+                    src.replace(regex, "$1z_$2"),
+                    src.replace(regex, "$1y_$2"),
+                    src.replace(regex, "$1l_$2")
+                ];
+            }
+
+            return src.replace(/(\/images\/+s[0-9]{6,})s(\.[^/.]*)(?:[?#].*)?$/, "$1o$2");
         }
 
         if (domain_nowww === "sexiestpicture.com") {
@@ -21553,12 +21724,262 @@ var $$IMU_EXPORT$$;
             }
         }
 
+        if (domain_nosub === "famtimes.co.kr" && /^img[0-9]*\./.test(domain)) {
+            return src.replace(/(\/resources\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2})[sl]_([^/]*\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain_nowww === "fiyar.live") {
+            return src.replace(/\/themes\/+latest\/+ssd\/+small\/+([0-9]+)\/+small-/, "/themes/latest/uploads4/pixsense/big/$1/");
+        }
 
 
+        if (domain === "hosted.foxes.com") {
+            return src.replace(/(\/fhgs\/+[^/]*\/+)t\/+/, "$1o/");
+        }
+
+        if (domain_nosub === "justjared.com" && /^cdn[0-9]*\.cdn\./.test(domain)) {
+            return src.replace(/(\/wp-content\/+uploads\/+[0-9]{4}\/+[0-9]{2}\/+[^/]*\/+)thumbs\/+/, "$1");
+        }
+
+        if (domain_nosub === "thesupermodelsgallery.com" && /^cdn[0-9]*\./.test(domain)) {
+            return src.replace(/(\/[0-9]{4}\/+[0-9]{2}\/+[^/]*\/+)tn_([^/]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain_nowww === "celebritymoviezone.com") {
+            return src.replace(/\/thumbs\/+([^/]*\.[^/.]*)(?:[?#].*)?$/, "/$1");
+        }
+
+        if (domain_nowww === "supermodels-online.com") {
+            return src.replace(/(\/photos\/+[^/]*\/+[^/]*)-sm(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain === "thumbs.hentai-foundry.com" && options && options.do_request) {
+            match = src.match(/^[a-z]+:\/\/[^/]*\/+thumb\.php\?(?:.*&)?pid=([0-9]+)/);
+            if (match) {
+                options.do_request({
+                    method: "GET",
+                    url: "https://www.hentai-foundry.com/pictures/" + match[1] + "/?enterAgree=1",
+                    onload: function(result) {
+                        if (result.readyState !== 4)
+                            return;
+
+                        var match = result.responseText.match(/<img[^>]*src=["']((?:https?:)?\/\/pictures\.hentai-foundry\.com\/[^'"]+)/);
+                        if (match) {
+                            return options.cb(urljoin(src, match[1], true));
+                        } else {
+                            return options.cb(null);
+                        }
+                    }
+                });
+
+                return {
+                    waiting: true
+                };
+            }
+        }
+
+        if (domain_nowww === "boutiquefonts.com" ||
+            domain_nowww === "animuk.co.uk") {
+            return src.replace(/\/images\/+thumbnails\/+[0-9]+\/+[0-9]+\/+/, "/images/");
+        }
+
+        if (domain_nosub === "userapi.com" &&
+            host_domain_nosub === "vk.com" && options.element &&
+            options.do_request && options.cb) {
+            newsrc = (function() {
+                function request_photo(id, cb) {
+                    var cache_key = "vk_photo:" + id;
+                    if (api_cache.has(cache_key)) {
+                        return cb(api_cache.get(cache_key));
+                    }
+
+                    options.do_request({
+                        method: "POST",
+                        url: "https://vk.com/al_photos.php",
+                        data: "act=show&al=1&photo=" + id,
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded",
+                            "X-Requested-With": "XMLHttpRequest"
+                        },
+                        onload: function(result) {
+                            if (result.readyState !== 4)
+                                return;
+
+                            var match = result.responseText.match(/<!json>(\[.*?\])<!>/);
+                            if (!match) {
+                                return options.cb(null);
+                            }
+
+                            try {
+                                var jsonarray = JSON_parse(match[1]);
+                                var jsonobj = null;
 
 
+                                for (var i = 0; i < jsonarray.length; i++) {
+                                    if (!jsonarray[i].id)
+                                        continue;
 
+                                    api_cache.set("vk_photo:" + jsonarray[i].id, jsonarray[i]);
 
+                                    if (jsonarray[i].id !== id)
+                                        continue;
+
+                                    jsonobj = jsonarray[i];
+                                    break;
+                                }
+
+                                return cb(jsonobj);
+                            } catch (e) {
+                                console_error(e);
+                                cb(null);
+                            }
+                        }
+                    });
+                }
+
+                function process_photo(jsonobj) {
+
+                    var maxsize = 0;
+                    var maxurl = null;
+                    for (var key in jsonobj) {
+                        if (/^[a-z]_$/.test(key) && (key + "src") in jsonobj &&
+                            jsonobj[key] instanceof Array && jsonobj[key].length === 3) {
+                            var size = jsonobj[key][1] * jsonobj[key][2];
+                            if (size > maxsize) {
+                                maxsize = size;
+                                maxurl = jsonobj[key + "src"];
+                            }
+                        }
+                    }
+
+                    return maxurl;
+                }
+
+                function process_el(current) {
+                    if (current.tagName === "A") {
+                        var match = current.href.match(/^[a-z]+:\/\/(?:[^/]+\.)?vk\.com\/+photo(-?[0-9]+_[0-9]+)\/*(?:[?#].*)?$/);
+                        if (match) {
+                            request_photo(match[1], function(obj) {
+                                if (!obj) {
+                                    options.cb(null);
+                                } else {
+                                    options.cb(process_photo(obj));
+                                }
+                            });
+
+                            return true;
+                        }
+                    }
+
+                    return false;
+                }
+
+                var current = options.element;
+                if (current.children && current.children.length === 1) {
+                    if (process_el(current.children[0])) {
+                        return {
+                            waiting: true
+                        };
+                    }
+                }
+
+                while (current) {
+                    if (process_el(current)) {
+                        return {
+                            waiting: true
+                        };
+                    }
+
+                    current = current.parentElement;
+                }
+
+                return src;
+            })();
+
+            if (newsrc && newsrc !== src)
+                return newsrc;
+        }
+
+        if (domain_nowww === "free2music.com") {
+            return src.replace(/\/images\/+thumb\/+(.*\.[^/.,]+),[0-9]+(?:,[0-9]+)?\.[^/.]*(?:[?#].*)?$/, "/images/$1");
+        }
+
+        if (domain === "cdn.muabannhanh.com") {
+            return {
+                url: src.replace(/\/img\/+gallery\/+thumbnail\/+/, "/img/gallery/"),
+                problems: {
+                    watermark: true
+                }
+            };
+        }
+
+        if (domain_nosub === "eski.mobi") {
+            newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+mobile\/+[^/]*\/+cache\/+img\/+q[0-9]+\/+[0-9]+\/+(https?%)/, "$1");
+            if (newsrc !== src)
+                return decodeURIComponent(newsrc);
+        }
+
+        if (domain_nosub === "soccer365.ru" && /^st[0-9]*\./.test(domain)) {
+            return src
+                .replace(/(\/players\/+[0-9]+_[0-9]+_[0-9]+\/+[0-9]+)_thumb(\.[^/.]*)(?:[?#].*)?$/, "$1$2")
+                .replace(/(\/images\/+[0-9]+_[0-9]+_[0-9]+\/+img_[^/._]+)_[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain === "static.grouple.co") {
+            return src.replace(/(\/uploads\/+pics\/+[0-9]{2}\/+[0-9]{2}\/+[0-9]+)_p(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain_nowww === "vkpeople.ru") {
+            newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+_\/+[^/?]+\?([^/]+\.userapi\.com\/+)/, "$1");
+            if (newsrc !== src)
+                return add_http(newsrc);
+        }
+
+        if (domain_nowww === "edchomes.com") {
+            return src.replace(/\/CropUp\/+[-0-9]+x[-0-9]+\/+media\/+/i, "/media/");
+        }
+
+        if (domain === "turntable.kagiso.io") {
+            return src.replace(/(\/images\/+[^/]+)\.(?:width|height)-[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1.original$2");
+        }
+
+        if (domain === "t.facdn.net" && options.cb && options.do_request) {
+            match = src.match(/^[a-z]+:\/\/[^/]*\/+([0-9]+)@[0-9]+-[0-9]+\.[^/.]*(?:[?#].*)?$/);
+            if (match) {
+                var page = "https://www.furaffinity.net/full/" + match[1] + "/";
+                options.do_request({
+                    method: "GET",
+                    url: page,
+                    headers: {
+                        "Referer": "",
+                        "Origin": ""
+                    },
+                    onload: function(result) {
+                        if (result.readyState !== 4)
+                            return;
+
+                        if (result.status !== 200)
+                            return options.cb(null);
+
+                        var match = result.responseText.match(/<a\s+href=["'](.*?)["']\s*>Download<\/a>/);
+                        if (match) {
+                            return options.cb({
+                                url: urljoin(src, match[1], true),
+                                extra: {
+                                    page: page
+                                }
+                            });
+                        } else {
+                            return options.cb(null);
+                        }
+                    }
+                });
+
+                return {
+                    waiting: true
+                };
+            }
+        }
 
 
 
@@ -21781,7 +22202,7 @@ var $$IMU_EXPORT$$;
 
             if (domain === "res.heraldm.com" &&
                 decodeURIComponent(src.match(/simg=([^&]*)/)[1])[0] === "/") {
-                return urljoin(src, decodeURIComponent(src.match(/simg=([^&]*)/)[1]));
+                return urljoin(src, decodeURIComponent(src.match(/simg=([^&]*)/)[1]), true);
             }
 
             return src.replace(/(\/phpwas\/restmb_[a-z]*make\.php)\?.*(simg=[^&]*)/, "$1?idx=999&$2");
@@ -21849,6 +22270,7 @@ var $$IMU_EXPORT$$;
             domain === "t.jwwb.nl" ||
             domain === "thumbs.videogamer.com" ||
             domain === "th.gossipblog.it" ||
+            domain === "th.cineblog.it" ||
             src.match(/:\/\/[^/]*\/thumbor\/[^/]*=\//) ||
             src.match(/:\/\/[^/]*\/resizer\/[^/]*=\/(?:fit-in\/+)?[0-9]+x[0-9]+(?::[^/]*\/[0-9]+x[0-9]+)?\/(?:filters:[^/]*\/)?/)) {
             newsrc = src.replace(/.*\/(?:thumb(?:or)?|(?:new-)?resizer)\/.*?\/(?:filters:[^/]*\/)?([a-z]*:\/\/.*)/, "$1");
@@ -22770,6 +23192,13 @@ var $$IMU_EXPORT$$;
     }
     bigimage_recursive.is_internet_url = is_internet_url;
 
+    function clear_all_caches() {
+        url_cache.clear();
+        api_cache.clear();
+        cookie_cache.clear();
+    }
+    bigimage_recursive.clear_caches = clear_all_caches;
+
     var obj_to_simplelist = function(obj) {
         var out = [];
         for (var i = 0; i < obj.length; i++) {
@@ -23016,18 +23445,23 @@ var $$IMU_EXPORT$$;
             return;
         }
 
+        var print_orig = function() {
+            if (obj && obj.extra && obj.extra.page) {
+                console_log("Original page: " + obj.extra.page);
+            }
+        };
+
         var url = obj.url;
         var err_txt;
 
         if (url === document.location.href) {
+            print_orig();
             ok_cb(url);
         } else  {
             var headers = obj.headers;
             console_log(obj.url);
 
-            if (obj && obj.extra && obj.extra.page) {
-                console_log("Original page: " + obj.extra.page);
-            }
+            print_orig();
 
             if (obj && obj.bad) {
                 err_txt = "Bad image";
@@ -25299,10 +25733,6 @@ var $$IMU_EXPORT$$;
             //var picture_sources = {};
             var links = {};
             var layers = [];
-            var picture_minw = false;
-            var picture_maxw = false;
-            var picture_minh = false;
-            var picture_maxh = false;
 
             var id = 0;
 
@@ -25571,6 +26001,8 @@ var $$IMU_EXPORT$$;
                 var minX = 0;
                 var elX = null;
 
+                var okurls = {};
+
                 var have_something = false;
 
                 for (var j = 0; j < layers[i].length; j++) {
@@ -25617,12 +26049,15 @@ var $$IMU_EXPORT$$;
                         elX = source;
                         have_something = true;
                     }
+
+                    if (source.isbg) {
+                        okurls[source.src] = true;
+                        have_something = true;
+                    }
                 }
 
                 if (!have_something)
                     continue;
-
-                var okurls = {};
 
                 if (minX > 1) {
                     okurls[elX.src] = true;
