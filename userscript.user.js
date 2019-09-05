@@ -2,7 +2,7 @@
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
 // @version      0.10.1
-// @description  Finds larger or original versions of images for 5300+ websites
+// @description  Finds larger or original versions of images for 5200+ websites
 // @author       qsniyg
 // @homepageURL  https://qsniyg.github.io/maxurl/options.html
 // @supportURL   https://github.com/qsniyg/maxurl/issues
@@ -2071,6 +2071,8 @@ var $$IMU_EXPORT$$;
             // http://thumb.mtstarnews.com/06/2018/04/2018040415075698337_1.jpg
             //   http://thumb.mtstarnews.com/07/2018/04/2018040415075698337_1.jpg -- much smaller
             //   http://image.mtstarnews.com/2018/04/2018040415075698337_1.jpg
+            // http://thumb.mtstarnews.com/star_chi/02/2019/04/2019040415557949978_1.jpg
+            //   http://image.mtstarnews.com/star_chi/2019/04/2019040415557949978_1.jpg
 
             // https://thumb.mt.co.kr/11/2019/08/2019082308100726893_1.jpg/dims/resize/100x/optimize/
             //   http://image.mt.co.kr/2019/08/2019082308100726893_1.jpg
@@ -2081,7 +2083,7 @@ var $$IMU_EXPORT$$;
             // 06 and 21 seem to be identical
             // after that, in order of size: 05, 07, 17, 11, 16, 10, 20, 04, 15, 03, 14, 19
             //src = src.replace(/(thumb\.[^/]*)\/[0-9]+(\/[0-9]*\/[0-9]*\/[^/]*).*/, "$1/06$2");
-            newsrc = src.replace(/^[a-z]+:\/\/thumb\.([^/]*)\/[0-9]+\//, "http://image.$1/");
+            newsrc = src.replace(/^[a-z]+:\/\/thumb\.([^/]*)\/+([^/]*\/+)?[0-9]{2}\/+([0-9]{4}\/+[0-9]{2}\/+[0-9]{8,}_[0-9]+\.)/, "http://image.$1/$2$3");
             if (newsrc !== src)
                 return newsrc;
         }
@@ -4953,6 +4955,8 @@ var $$IMU_EXPORT$$;
             (domain === "images.jkn.co.kr" && src.indexOf("/images/") >= 0) ||
             // https://www.instylemag.com.au/media/19665/anne-hathaway.jpg?width=640
             (domain_nowww === "instylemag.com.au" && src.indexOf("/media/") >= 0) ||
+            // https://i.eurosport.com/2018/06/17/2356762-49034010-2560-1440.jpg?w=750
+            domain === "i.eurosport.com" ||
             // http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
             // https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
             src.match(/\/demandware\.static\//) ||
@@ -9572,6 +9576,9 @@ var $$IMU_EXPORT$$;
             // https://image3.tienphong.vn/w665/Uploaded/2018/khunflu/2016_07_03/jessica_alba_braun_beauty_campaign_2016_adds_04_redb.jpg
             //   https://image3.tienphong.vn/Uploaded/2018/khunflu/2016_07_03/jessica_alba_braun_beauty_campaign_2016_adds_04_redb.jpg
             (domain_nosub === "tienphong.vn" && domain.match(/image[0-9]*\.tienphong\.vn/)) ||
+            // https://img.infonet.vn/w490/Uploaded/2019/hb_yuqzfdgzs/2017_02_04/thai_kim_dinh.jpg
+            //   https://img.infonet.vn/Uploaded/2019/hb_yuqzfdgzs/2017_02_04/thai_kim_dinh.jpg
+            domain === "img.infonet.vn" ||
             domain === "media.laodong.vn") {
             // https://znews-photo-td.zadn.vn/w960/Uploaded/qfssu/2017_11_05/NGT.jpg
             //   https://znews-photo-td.zadn.vn/Uploaded/qfssu/2017_11_05/NGT.jpg
@@ -10072,6 +10079,9 @@ var $$IMU_EXPORT$$;
             // https://static.themezy.com/system/resources/previews/000/000/244/non_2x/web-designer-portfolio-website-template.jpg
             //   https://static.themezy.com/system/resources/previews/000/000/244/original/web-designer-portfolio-website-template.jpg
             domain === "static.themezy.com" ||
+            // https://hairhapi.com/images/item_images/images/000/037/150/medium/27b4ce4e-b343-4d78-a4f4-7d610099257f.jpg
+            //   https://hairhapi.com/images/item_images/images/000/037/150/original/27b4ce4e-b343-4d78-a4f4-7d610099257f.jpg
+            domain_nowww === "hairhapi.com" ||
             // https://sonar.es/system/attached_images/18702/medium/badgyal_xs_sonar2017_fernandoschlaepfer_004.jpg?1497713257 -- stretched?
             //   https://sonar.es/system/attached_images/18702/original/badgyal_xs_sonar2017_fernandoschlaepfer_004.jpg?1497713257
             domain_nowww === "sonar.es") {
@@ -10080,7 +10090,7 @@ var $$IMU_EXPORT$$;
             //   https://sonarreykjavik.com/system/attached_images/19379/original/BadGyal_AlexisG%C3%B3mez.jpg?1513685256
             return src
                 .replace(/(\/attached_images\/+[0-9]+\/+)[a-z]+\/+/, "$1original/")
-                .replace(/(\/system\/+(?:(?:attached|item)_images|App\/+BlogBody|post_pictures|events|posts|items|file_uploads|screenshots|resources)\/+(?:(?:images|photos|files|assets|pictures|posters|uploads|screenshots|previews)\/+)?(?:[0-9]{3}\/+){3})[a-z_0-9]+\/+/, "$1original/");
+                .replace(/(\/(?:system|images)\/+(?:(?:attached|item)_images|App\/+BlogBody|post_pictures|events|posts|items|file_uploads|screenshots|resources)\/+(?:(?:images|photos|files|assets|pictures|posters|uploads|screenshots|previews)\/+)?(?:[0-9]{3}\/+){3})[a-z_0-9]+\/+/, "$1original/");
             //return src.replace(/(\/system\/(?:post_pictures\/(?:files|assets|pictures)\/|posts\/posters\/|events\/images\/)(?:[0-9]+\/){3})[a-z]+(\/[^/]*)$/, "$1original$2");
             //return src.replace(/\/[a-z]*\/([-0-9a-f]*\.[^/.]*)$/, "/original/$1");
             //return src.replace(/(\/[0-9]+\/[0-9]+\/[0-9]+)\/[a-z]+\/([^/]*)$/, "$1/original/$2");
@@ -11161,7 +11171,7 @@ var $$IMU_EXPORT$$;
             return src.replace(/_[0-9]+x[0-9]+[a-z]?_[0-9]+(\.[^/.]*)$/, "$1");
         }
 
-        if (domain === "www.nationmultimedia.com") {
+        if (domain_nowww === "nationmultimedia.com") {
             // http://www.nationmultimedia.com/img/gallery/2017/10/14/194/9ef48d31930c4bbe00957654ab1aaf1a-vps.jpeg
             //   http://www.nationmultimedia.com/img/gallery/2017/10/14/194/9ef48d31930c4bbe00957654ab1aaf1a.jpeg
             // http://www.nationmultimedia.com/img/news/2018/02/18/30339149/b4065a2adeea2230b7d230a13eda5701-atwb.jpeg
@@ -13380,6 +13390,9 @@ var $$IMU_EXPORT$$;
             // https://www.malaysiadropship.com/image/creativeffects/image/cache/data/all_product_images/product-1707/1sexy-bikini-babydoll-yw672-536-850x1000-700x700.jpg
             //   https://www.malaysiadropship.com/image/creativeffects/image/data/all_product_images/product-1707/1sexy-bikini-babydoll-yw672-536-850x1000.jpg
             domain_nowww === "malaysiadropship.com" ||
+            // http://yukite.ru/image/cache/data/product-29118/HTB1f17EGXXXXXXdXXXXq6xXFXXX5-585x650.jpg
+            //   http://yukite.ru/image/data/product-29118/HTB1f17EGXXXXXXdXXXXq6xXFXXX5.jpg
+            domain_nowww === "yukite.ru" ||
             // http://www.honeydear.my/image/cache/data/YW1031WH/213%20(4)-850x1300.jpg
             //   http://www.honeydear.my/image/data/YW1031WH/213%20(4).jpg
             domain_nowww === "honeydear.my") {
@@ -23648,11 +23661,12 @@ var $$IMU_EXPORT$$;
             return decodeURIComponent(src.replace(/^[a-z]+:\/\/[^/]*\/img\/p\.php.*?[?&]p=([^&]*).*?$/, "$1"));
         }
 
-        if (domain_nosub === "vagalume.com" &&
-            domain.match(/^s[0-9]*\.vagalume/)) {
+        if (domain_nosub === "vagalume.com" && /^s[0-9]*\./.test(domain)) {
             // https://s2.vagalume.com/rihanna/images/112365w260.jpg
             //   https://s2.vagalume.com/rihanna/images/112365.jpg
-            return src.replace(/(\/images\/[0-9]+)[wh][0-9]+(\.[^/.]*)$/, "$1$2");
+            // https://s2.vagalume.com/selena-gomez/images/g121771w200.jpg
+            //   https://s2.vagalume.com/selena-gomez/images/g121771.jpg
+            return src.replace(/(\/images\/g?[0-9]+)[wh][0-9]+(\.[^/.]*)$/, "$1$2");
         }
 
         if (domain_nosub === "glanacion.com" && domain.match(/^bucket[0-9]*\./)) {
@@ -31107,7 +31121,10 @@ var $$IMU_EXPORT$$;
                                "$1");
         }
 
-        if (domain_nowww === "livesport.ru") {
+        if (domain_nowww === "livesport.ru" ||
+            // https://cdn.livesport.ru/l/football/2019/08/10/5_tour_rpl/picture--510.jpg?1565438230
+            //   https://cdn.livesport.ru/l/football/2019/08/10/5_tour_rpl/picture.jpg
+            domain === "cdn.livesport.ru") {
             // https://www.livesport.ru/l/tips/hockey/2019/03/09/capitals_devils/picture--240.jpg?1551958561
             //   https://www.livesport.ru/l/tips/hockey/2019/03/09/capitals_devils/picture.jpg
             return src.replace(/\/picture--[0-9]+(\.[^/.]*)(?:[?#].*)$/, "/picture$1");
@@ -32692,9 +32709,19 @@ var $$IMU_EXPORT$$;
         }
 
         if (domain_nowww === "sobaka.ru") {
-            // http://www.sobaka.ru/images/image/00/95/07/07/_normal.jpg -- upscaled?
+            // http://www.sobaka.ru/images/image/00/95/07/07/_normal.jpg
             //   http://www.sobaka.ru/images/image/00/95/07/07/_origin.jpg
-            return src.replace(/(\/images\/+image\/+(?:[0-9]{2}\/+){4})_[a-z]+(\.[^/.]*)(?:[?#].*)?$/, "$1_origin$2");
+            //   http://www.sobaka.ru/images/image/00/95/07/07/_zoom.jpg -- 649x975
+            // http://www.sobaka.ru/images/post/00/07/95/29/_origin.jpg -- 538x298
+            //   http://www.sobaka.ru/images/post/00/07/95/29/_huge.jpg -- 640x520, cropped but not upscaled
+            //   http://www.sobaka.ru/images/post/00/07/95/29/_zoom.jpg -- 936x520
+            // doesn't work for all:
+            // http://www.sobaka.ru/images/post/00/07/95/23/_huge.jpeg
+            //   http://www.sobaka.ru/images/post/00/07/95/23/_zoom.jpeg -- jpg doesn't work either
+            // other:
+            // http://www.sobaka.ru/images/image/01/00/47/17/_zoom.jpg -- 2976x4464
+            return src.replace(/(\/images\/+(?:image|post)\/+(?:[0-9]{2}\/+){4})_(?:normal|huge|origin)(\.[^/.]*)(?:[?#].*)?$/, "$1_zoom$2");
+            //return src.replace(/\/images\/+post\/+(?:[0-9]{2}\/+){4}_(?:origin|huge)(\.[^/.]*)(?:[?#].*)?$/, "$1_zoom$2");
         }
 
         if (domain_nowww === "ziaruldeiasi.ro") {
@@ -34866,7 +34893,12 @@ var $$IMU_EXPORT$$;
             // http://show-biz.by/gallery/image/gallery_image/18574/xxsmall/_v=7c4781547384861
             //   http://show-biz.by/gallery/image/gallery_image/18574/1280/_v=7c4781547384861 -- 1280x853, upscaled
             //   http://show-biz.by/gallery/image/gallery_image/18574/original/_v=7c4781547384861 -- 1024x683
-            return src.replace(/(\/gallery_image\/[0-9]+\/+)[^/]*\/+/, "$1original/");
+            // http://show-biz.by/blog/image/blog_image/3582/large/_v=64d081521373425
+            //   http://show-biz.by/blog/image/blog_image/3582/original/_v=64d081521373425
+            //   http://show-biz.by/blog/image/blog_image/3582/original
+            // http://show-biz.by/upimg/image/upimg_file/1907/800
+            //   http://show-biz.by/upimg/image/upimg_file/1907/original
+            return src.replace(/(\/(?:(?:gallery|blog)_image|upimg_file)\/+[0-9]+\/+)[^/]+(\/+_v=[0-9a-f]+)?(?:[?#].*)?$/, "$1original$2");
         }
 
         if (domain_nowww === "songtexte.co") {
@@ -37725,7 +37757,64 @@ var $$IMU_EXPORT$$;
                 return newsrc;
         }
 
+        if (domain_nowww === "free2music.com") {
+            // https://free2music.com/images/thumb/singer/2019/04/03/selena-gomez_0.jpg,0,400.jpg
+            //   https://free2music.com/images/singer/2019/04/03/selena-gomez_0.jpg
+            return src.replace(/\/images\/+thumb\/+(.*\.[^/.,]+),[0-9]+(?:,[0-9]+)?\.[^/.]*(?:[?#].*)?$/, "/images/$1");
+        }
 
+        if (domain === "cdn.muabannhanh.com") {
+            // https://cdn.muabannhanh.com/asset/frontend/img/gallery/thumbnail/2019/01/21/5c458bae2c8db_1548061614.jpg
+            //   https://cdn.muabannhanh.com/asset/frontend/img/gallery/2019/01/21/5c458bae2c8db_1548061614.jpg -- watermark
+            return {
+                url: src.replace(/\/img\/+gallery\/+thumbnail\/+/, "/img/gallery/"),
+                problems: {
+                    watermark: true
+                }
+            };
+        }
+
+        if (domain_nosub === "eski.mobi") {
+            // https://pro2.eski.mobi/mobile/soccer365-ru/cache/img/q50/1536/https%3A%2F%2Fst1.soccer365.ru%2Fs1%2Fplayers%2F19_49_17%2F2230111_thumb.png
+            //   https://st1.soccer365.ru/s1/players/19_49_17/2230111_thumb.png
+            newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+mobile\/+[^/]*\/+cache\/+img\/+q[0-9]+\/+[0-9]+\/+(https?%)/, "$1");
+            if (newsrc !== src)
+                return decodeURIComponent(newsrc);
+        }
+
+        if (domain_nosub === "soccer365.ru" && /^st[0-9]*\./.test(domain)) {
+            // https://st1.soccer365.ru/s1/players/19_49_17/2230111_thumb.png
+            //   https://st1.soccer365.ru/s1/players/19_49_17/2230111.png
+            // https://st1.soccer365.ru/s1/images/18_162_22/img_egA9AlR_600.jpg
+            //   https://st1.soccer365.ru/s1/images/18_162_22/img_egA9AlR.jpg
+            return src
+                .replace(/(\/players\/+[0-9]+_[0-9]+_[0-9]+\/+[0-9]+)_thumb(\.[^/.]*)(?:[?#].*)?$/, "$1$2")
+                .replace(/(\/images\/+[0-9]+_[0-9]+_[0-9]+\/+img_[^/._]+)_[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain === "static.grouple.co") {
+            // https://static.grouple.co/uploads/pics/08/13/978_p.jpg
+            //   https://static.grouple.co/uploads/pics/08/13/978.jpg
+            // https://static.grouple.co/uploads/pics/10/94/373_p.jpg
+            //   https://static.grouple.co/uploads/pics/10/94/373.jpg
+            // other:
+            // https://static.grouple.co/forum/images/auto/02/92/29294_2_1415281294114.jpg -- 3557x1370
+            return src.replace(/(\/uploads\/+pics\/+[0-9]{2}\/+[0-9]{2}\/+[0-9]+)_p(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain_nowww === "vkpeople.ru") {
+            // https://vkpeople.ru/_/%D0%98%D0%BC-%D0%A2%D1%85%D1%8D%D0%B5%D0%BD-%D1%84%D0%BE%D1%82%D0%BE?pp.userapi.com/c846420/v846420187/198625/69r2fPpcraw.jpg?ava=1
+            //   https://pp.userapi.com/c846420/v846420187/198625/69r2fPpcraw.jpg?ava=1
+            newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+_\/+[^/?]+\?([^/]+\.userapi\.com\/+)/, "$1");
+            if (newsrc !== src)
+                return add_http(newsrc);
+        }
+
+        if (domain_nowww === "edchomes.com") {
+            // https://www.edchomes.com/CropUp/-x480/media/1087626/R-40.jpg
+            //   https://www.edchomes.com/media/1087626/R-40.jpg
+            return src.replace(/\/CropUp\/+[-0-9]+x[-0-9]+\/+media\/+/i, "/media/");
+        }
 
 
 
