@@ -16,7 +16,7 @@ It is currently released as:
   - `userscript.user.js <https://github.com/qsniyg/maxurl/blob/master/userscript.user.js>`__ is also the base for everything listed below
   - It also serves as a node module (used by the reddit bot), and can be embedded in a website
 
-- `Firefox Addon <https://addons.mozilla.org/en-US/firefox/addon/image-max-url/>`__ (Firefox Quantum-based browsers only, other browsers supporting WebExtensions can sideload the extension through this git repository)
+- Browser extension: `Firefox Quantum <https://addons.mozilla.org/en-US/firefox/addon/image-max-url/>`__ | `Opera <https://addons.opera.com/en/extensions/details/image-max-url/>`__ (other browsers supporting WebExtensions can sideload the extension through this git repository)
 
   - Since addons have more privileges than userscripts, it has a bit of extra functionality over the userscript
   - Source code is in `manifest.json <https://github.com/qsniyg/maxurl/blob/master/manifest.json>`__ and the `extension <https://github.com/qsniyg/maxurl/tree/master/extension>`__ folder
