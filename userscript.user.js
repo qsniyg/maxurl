@@ -38232,6 +38232,31 @@ var $$IMU_EXPORT$$;
             }
         }
 
+        if (domain === "static.aryion.com") {
+            // https://static.aryion.com/g4/thumb/547402-73531-thumb.auto.jpg
+            //   https://static.aryion.com/g4/thumb/547402-73531-thumb.auto.jpg/test.jpg
+            //   https://static.aryion.com/g4/data/547402-73531.png
+            //   https://aryion.com/g4/view/547402
+            // doesn't work for all:
+            // https://static.aryion.com/g4/thumb/204167-29583-thumb.jpg
+            //   https://aryion.com/g4/view/204167
+            newsrc = src.replace(/\/thumb\/+([0-9]+-[0-9]+)-thumb(?:\.[^/]*)?(\.[^/.]*)(\/+[^/]*)?(?:[?#].*)?$/, "/data/$1$2");
+            if (newsrc !== src)
+                return add_full_extensions(newsrc);
+
+            match = src.match(/^[a-z]+:\/\/[^/]*\/+([^/]*)\/+(?:thumb|data\/+)([0-9]+)-/);
+            if (match) {
+                var obj = {
+                    url: src,
+                    extra: {
+                        page: "https://aryion.com/" + match[1] + "/view/" + match[2]
+                    }
+                };
+
+                return obj;
+            }
+        }
+
         if (domain === "ano.lolcathost.org") {
             // http://ano.lolcathost.org/thumbs//2017-12-14_22_56_04.jpg
             //   http://ano.lolcathost.org/pics/2017-12-14_22_56_04.jpg
