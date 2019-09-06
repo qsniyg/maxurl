@@ -38460,6 +38460,32 @@ var $$IMU_EXPORT$$;
             };
         }
 
+        if (domain === "cdn.pururin.io") {
+            // https://cdn.pururin.io/assets/images/data/40279/2t.jpg
+            //   https://cdn.pururin.io/assets/images/data/40279/2.jpg
+            //   https://pururin.io/read/40279/02/shiki-to-p
+            newsrc = src.replace(/(\/assets\/+images\/+data\/+[0-9]+\/+[0-9]+)t(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+            if (newsrc !== src)
+                return newsrc;
+
+            match = src.match(/\/assets\/+images\/+data\/+([0-9]+)\/+([0-9]+|cover)t?\./);
+            if (match) {
+                var pageurl = "https://pururin.io/read/" + match[1];
+
+                if (match[2] === "cover") {
+                    pageurl += "/a";
+                } else {
+                    pageurl += "/" + zpadnum(match[2], 2) + "/a";
+                }
+
+                return {
+                    url: src,
+                    extra: {
+                        page: pageurl
+                    }
+                };
+            }
+        }
 
 
 
