@@ -82,6 +82,9 @@ As mentioned above, userscript.user.js also functions as a node module.
       //  Currently only applies to Flickr.
       force_page: false,
 
+      // This allows rules that use 3rd-party websites to find larger images
+      allow_thirdparty: false,
+
       // This is useful for implementing a blacklist or whitelist.
       //  If unspecified, it accepts all URLs.
       filter: function(url) {
