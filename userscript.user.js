@@ -2484,9 +2484,12 @@ var $$IMU_EXPORT$$;
 
             var extra = {};
             match = src.match(/cdn\.newsen\.com\/+newsen\/+news_photo\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}([0-9]{10,})_[0-9]+\.[^/.]*(?:[?#].*)?$/);
+            var pageid = null;
             if (match ||
-                (match = src.match(/photo\.newsen\.com\/+news_photo\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}([0-9]{10,})_[0-9]+\.[^/.]*(?:[?#].*)?$/)))
+                (match = src.match(/photo\.newsen\.com\/+news_photo\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}([0-9]{10,})_[0-9]+\.[^/.]*(?:[?#].*)?$/))) {
+                pageid = match[1];
                 extra.page = "http://www.newsen.com/news_view.php?uid=" + match[1];
+            }
 
             var obj = {
                 url: src,
@@ -2499,68 +2502,86 @@ var $$IMU_EXPORT$$;
             // http://www.newsen.com/news_view.php?uid=201909050803320410 -- multiple images in one page
             //   http://cdn.newsen.com/newsen/news_photo/2019/09/05/201909050803320410_1.jpg
             if (extra.page && options && options.cb && !("3rdparty" in options.exclude_problems)) {
-                options.do_request({
-                    method: "GET",
-                    url: extra.page,
-                    overrideMimeType: "text/html; charset=euc-kr",
-                    onload: function(result) {
-                        if (result.readyState !== 4)
-                            return;
+                var get_imageid = function(url) {
+                    var match = url.match(/\/[0-9]{4}\/+(?:[0-9]{2}\/+){2}([0-9]{10,}_[0-9]+)\.[^/.]*(?:[?#].*)?$/);
+                    if (!match)
+                        return null;
 
-                        if (result.status !== 200) {
-                            return options.cb(obj);
-                        }
+                    return match[1];
+                };
 
-                        var match = result.responseText.match(/<meta\s+property=["']og:title["']\s+content=["']([^'"]+)["']/);
+                var get_newsen_pageinfo = function(page, pageid, cb) {
+                    api_cache.fetch("newsen_pageinfo:" + pageid, cb, function(done) {
+                        options.do_request({
+                            method: "GET",
+                            url: extra.page,
+                            overrideMimeType: "text/html; charset=euc-kr",
+                            onload: function(result) {
+                                if (result.readyState !== 4)
+                                    return;
 
-                        if (!match) {
-                            return options.cb(obj);
-                        }
+                                if (result.status !== 200) {
+                                    return done(null, false);
+                                }
 
-                        var title = match[1];
-                        console_log("Title: ", title);
+                                var match = result.responseText.match(/<meta\s+property=["']og:title["']\s+content=["']([^'"]+)["']/);
+                                if (!match) {
+                                    return done(null, false);
+                                }
 
-                        match = result.responseText.match(/<img\s+id=["']artImg["']\s+src=["'](?:https?:)\/\/[a-z]+\.newsen\.com\/.*?["']/g);
+                                var title = match[1];
+                                console_log("Title: ", title);
 
-                        if (!match) {
-                            return options.cb(obj);
-                        }
+                                match = result.responseText.match(/<img\s+id=["']artImg["']\s+src=["'](?:https?:)\/\/[a-z]+\.newsen\.com\/.*?["']/g);
+                                if (!match) {
+                                    return done(null, false);
+                                }
 
-                        var imageid_regex = /\/[0-9]{4}\/+(?:[0-9]{2}\/+){2}([0-9]{10,}_[0-9]+)\.[^/.]*(?:[?#].*)?$/;
-                        var imageid = src.match(imageid_regex);
-                        if (!imageid) {
-                            return options.cb(obj);
-                        }
+                                return done({
+                                    page: result.finalUrl,
+                                    title: title,
+                                    images: match
+                                }, 6*60*60);
+                            }
+                        });
+                    });
+                };
 
-                        imageid = imageid[1];
-                        var imagenum;
-                        var total_images = match.length;
-                        for (imagenum = 0; imagenum < match.length; imagenum++) {
-                            var i_imageid = match[imagenum].match(imageid_regex);
-                            if (!i_imageid)
-                                continue;
-                            i_imageid = i_imageid[1];
+                var get_imagenum_from_newsen_pageinfo = function(image, pageinfo) {
+                    var imageid = get_imageid(image);
+                    if (!imageid)
+                        return null;
 
-                            if (i_imageid === imageid)
-                                break;
-                        }
+                    var imagenum;
+                    for (imagenum = 0; imagenum < pageinfo.images.length; imagenum++) {
+                        var i_imageid = get_imageid(pageinfo.images[imagenum]);
+                        if (!i_imageid)
+                            continue;
 
-                        if (imagenum === match.length) {
-                            return options.cb(obj);
-                        }
+                        if (i_imageid === imageid)
+                            break;
+                    }
 
-                        // mobile is less to download, but maybe more prone to changes?
+                    if (imagenum === match.length) {
+                        return null;
+                    }
+
+                    return imagenum;
+                };
+
+                var get_daum_search_results = function(title, cb) {
+                    api_cache.fetch("newsen_daum_search:" + title, cb, function(done) {
                         var searchurl = "https://m.search.daum.net/search?w=news&q=" + encodeURIComponent(title) + "&enc=utf8";
                         options.do_request({
                             method: "GET",
                             url: searchurl,
-                            onload: function(result) {
+                            onload: function (result) {
                                 if (result.readyState !== 4) {
                                     return;
                                 }
 
                                 if (result.status !== 200) {
-                                    return options.cb(obj);
+                                    return done(null, false);
                                 }
 
                                 // TODO: check date too
@@ -2568,62 +2589,117 @@ var $$IMU_EXPORT$$;
                                 var nonglobal_regex = new RegExp(entry_regex, "");
                                 var entries_match = result.responseText.match(entry_regex);
                                 if (!entries_match) {
-                                    return options.cb(obj);
+                                    return done(null, false);
                                 }
+
+                                var search_entries = [];
 
                                 for (var entry_i = 0; entry_i < entries_match.length; entry_i++) {
                                     var match = entries_match[entry_i].match(nonglobal_regex);
                                     if (!match)
                                         continue;
 
-                                    var daum_title = decode_entities(match[2].replace(/<([a-z])>(.*?)<\/\1>/g, "$2"));
-                                    //console.log(daum_title);
-
-                                    if (fuzzify_text(title) === fuzzify_text(daum_title)) {
-                                        console_log("Daum article URL:", match[1]);
-
-                                        return options.do_request({
-                                            method: "GET",
-                                            url: urljoin(result.finalUrl, match[1].replace(/[?#].*/, ""), true),
-                                            onload: function (result) {
-                                                if (result.readyState !== 4)
-                                                    return;
-
-                                                if (result.status !== 200) {
-                                                    return options.cb(obj);
-                                                }
-
-                                                var image_regex = /<img[^>]+dmcf-mtype=["']image["'][^>]+src=["']((?:https?:)\/\/[^/]+\.daumcdn\.net\/.*?)["']/g;
-                                                var nonglobal_regex = new RegExp(image_regex, "");
-
-                                                var images_match = result.responseText.match(image_regex);
-                                                if (!images_match) {
-                                                    return options.cb(obj);
-                                                }
-
-                                                if (images_match.length !== total_images) {
-                                                    console_error("Image number mismatch");
-                                                    return options.cb(obj);
-                                                }
-
-                                                var our_image = images_match[imagenum].match(nonglobal_regex);
-                                                if (!our_image) {
-                                                    return options.cb(obj);
-                                                }
-
-                                                obj.url = urljoin(result.finalUrl, our_image[1], true);
-                                                obj.extra.page = result.finalUrl;
-                                                return options.cb(obj);
-                                            }
-                                        });
-                                    }
+                                    search_entries.push({
+                                        title: decode_entities(match[2].replace(/<([a-z])>(.*?)<\/\1>/g, "$2")),
+                                        // getting rid of ?f=o, which'll redirect to newsen instead
+                                        url: urljoin(result.finalUrl, match[1].replace(/[?#].*/, ""), true)
+                                    });
                                 }
-                                //console.log(fuzzify_text(title), fuzzify_text(daum_title));
 
-                                //console.log(match);
+                                done(search_entries, 2*60*60);
                             }
                         });
+                    });
+                };
+
+                var get_daum_url_from_results = function(real_title, results) {
+                    if (!results)
+                        return null;
+
+                    var real_fuzzy = fuzzify_text(real_title);
+
+                    for (var i = 0; i < results.length; i++) {
+                        if (real_fuzzy === fuzzify_text(results[i].title)) {
+                            return results[i].url;
+                        }
                     }
+
+                    return null;
+                };
+
+                var get_daum_pageinfo = function(daumurl, cb) {
+                    api_cache.fetch("newsen_daum_pageinfo:" + daumurl, cb, function(done) {
+                        options.do_request({
+                            method: "GET",
+                            url: daumurl,
+                            onload: function (result) {
+                                if (result.readyState !== 4)
+                                    return;
+
+                                if (result.status !== 200) {
+                                    return done(null, false);
+                                }
+
+                                var image_regex = /<img[^>]+dmcf-mtype=["']image["'][^>]+src=["']((?:https?:)\/\/[^/]+\.daumcdn\.net\/.*?)["']/g;
+                                var nonglobal_regex = new RegExp(image_regex, "");
+
+                                var obj = {
+                                    url: result.finalUrl,
+                                    images: []
+                                };
+
+                                var images_match = result.responseText.match(image_regex);
+                                if (!images_match) {
+                                    return done(obj, 60*60);
+                                }
+
+                                for (var i = 0; i < images_match.length; i++) {
+                                    var image_match = images_match[i].match(nonglobal_regex);
+                                    if (!image_match)
+                                        continue;
+
+                                    obj.images.push(urljoin(result.finalUrl, image_match[1], true));
+                                }
+
+                                done(obj, 6*60*60);
+                            }
+                        });
+                    });
+                };
+
+                get_newsen_pageinfo(extra.page, pageid, function(pageinfo) {
+                    if (!pageinfo) {
+                        return options.cb(obj);
+                    }
+
+                    var title = pageinfo.title;
+                    var total_images = pageinfo.images.length;
+                    var imagenum = get_imagenum_from_newsen_pageinfo(src, pageinfo);
+                    if (imagenum === null) {
+                        return options.cb(obj);
+                    }
+
+                    get_daum_search_results(title, function(results) {
+                        var daumurl = get_daum_url_from_results(title, results);
+                        if (!daumurl)
+                            return options.cb(obj);
+
+                        console_log("Daum article URL:", daumurl);
+
+                        get_daum_pageinfo(daumurl, function(daum_pageinfo) {
+                            if (!daum_pageinfo)
+                                return options.cb(obj);
+
+                            if (daum_pageinfo.images.length !== total_images) {
+                                console_error("Image number mismatch");
+                                return options.cb(obj);
+                            }
+
+                            obj.url = daum_pageinfo.images[imagenum];
+                            obj.extra.page = daum_pageinfo.url;
+                            return options.cb(obj);
+                        });
+                    });
                 });
 
                 return {
