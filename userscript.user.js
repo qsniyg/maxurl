@@ -1153,6 +1153,8 @@ var $$IMU_EXPORT$$;
         this.data = {};
         this.times = {};
 
+        this.fetches = {};
+
         this.set = function(key, value, time) {
             if (_nir_debug_)
                 console_log("Cache.set key=" + key + ", time=" + time + ", value:", deepcopy(value));
@@ -1191,7 +1193,35 @@ var $$IMU_EXPORT$$;
                 console_log("Cache.get key=" + key, deepcopy(this.data[key]));
 
             return this.data[key];
-        }
+        };
+
+        this.fetch = function(key, done, fetcher) {
+            if (_nir_debug_)
+                console_log("Cache.fetch key=" + key + ", exists=" + (key in this.data));
+
+            if (!(key in this.data)) {
+                if (key in this.fetches) {
+                    this.fetches[key].push(done);
+                } else {
+                    fetcher(function(data, time) {
+                        if (time !== false)
+                            this.set(key, data, time);
+
+                        done(data);
+
+                        for (var i = 0; i < this.fetches[key].length; i++) {
+                            this.fetches[key](data);
+                        }
+
+                        delete this.fetches[key];
+                    }.bind(this));
+
+                    this.fetches[key] = [];
+                }
+            } else {
+                done(this.data[key]);
+            }
+        };
 
         this.remove = function(key) {
             if (_nir_debug_)
@@ -15449,53 +15479,50 @@ var $$IMU_EXPORT$$;
             }
 
             function find_api_info(cb) {
-                if (api_cache.has("flickr_api_info")) {
-                    return cb(api_cache.get("flickr_api_info"));
-                }
-
-                do_flickr_request("https://www.flickr.com/", function(resp) {
-                    if (resp.readyState === 4) {
-                        var regex = /root\.YUI_config\.flickr\.api\.site_key *= *['"]([0-9a-f]+)['"] *; */;
-                        var matchobj = resp.responseText.match(regex);
-                        if (!matchobj) {
-                            console_error("Unable to find Flickr API key");
-                            cb(null);
-                            return;
-                        }
-
-                        var key = matchobj[1];
-                        if (!key || typeof key !== "string") {
-                            console_error("Unable to find Flickr API key");
-                            return cb(null);
-                        }
-
-                        regex = /root\.auth\s*=\s*({.*?});/;
-                        matchobj = resp.responseText.match(regex);
-                        var auth = {};
-                        if (!matchobj) {
-                            console_error("Unable to find Flickr auth info");
-                        } else {
-                            try {
-                                auth = JSON_parse(matchobj[1]);
-                            } catch (e) {
-                                auth = {};
-                                console_error("Unable to find Flickr auth info");
+                api_cache.fetch("flickr_api_info", cb, function (done) {
+                    do_flickr_request("https://www.flickr.com/", function (resp) {
+                        if (resp.readyState === 4) {
+                            var regex = /root\.YUI_config\.flickr\.api\.site_key *= *['"]([0-9a-f]+)['"] *; */;
+                            var matchobj = resp.responseText.match(regex);
+                            if (!matchobj) {
+                                console_error("Unable to find Flickr API key");
+                                return done(null, false);
                             }
+
+                            var key = matchobj[1];
+                            if (!key || typeof key !== "string") {
+                                console_error("Unable to find Flickr API key");
+                                return done(null, false);
+                            }
+
+                            regex = /root\.auth\s*=\s*({.*?});/;
+                            matchobj = resp.responseText.match(regex);
+                            var auth = {};
+                            if (!matchobj) {
+                                console_error("Unable to find Flickr auth info");
+                            } else {
+                                try {
+                                    auth = JSON_parse(matchobj[1]);
+                                } catch (e) {
+                                    auth = {};
+                                    console_error("Unable to find Flickr auth info");
+                                }
+                            }
+
+                            if ("user" in auth && "nsid" in auth.user) {
+                                auth.nsid = auth.user.nsid;
+                            }
+
+                            var info = {
+                                key: key,
+                                nsid: auth.nsid,
+                                csrf: auth.csrf
+                            };
+
+                            api_cache.set("flickr_api_info", info, 60 * 60);
+                            done(info, 60 * 60);
                         }
-
-                        if ("user" in auth && "nsid" in auth.user) {
-                            auth.nsid = auth.user.nsid;
-                        }
-
-                        var info = {
-                            key: key,
-                            nsid: auth.nsid,
-                            csrf: auth.csrf
-                        };
-
-                        api_cache.set("flickr_api_info", info, 60 * 60);
-                        cb(info);
-                    }
+                    });
                 });
             }
 
