@@ -15549,23 +15549,21 @@ var $$IMU_EXPORT$$;
                 var photosecret = src.replace(/.*\/[0-9]+_([0-9a-z]+)_[^/]*$/, "$1");
 
                 var cache_key = "flickr_original:" + photoid + "_" + photosecret;
-                if (api_cache.has(cache_key)) {
-                    return cb(api_cache.get(cache_key));
-                }
 
-                do_flickrapi_request(info, "method=flickr.photos.getInfo&photo_id=" + photoid + "&secret=" + photosecret, function (resp) {
-                    try {
-                        var out = JSON_parse(resp.responseText);
-                        var url = out.photo.urls.url[0]._content;
-                        if (/^https?:\/\//.test(url)) {
-                            api_cache.set(cache_key, url, 6 * 60 * 60);
-                            cb(out.photo.urls.url[0]._content);
-                        } else {
-                            cb(null);
+                api_cache.fetch(cache_key, cb, function(done) {
+                    do_flickrapi_request(info, "method=flickr.photos.getInfo&photo_id=" + photoid + "&secret=" + photosecret, function (resp) {
+                        try {
+                            var out = JSON_parse(resp.responseText);
+                            var url = out.photo.urls.url[0]._content;
+                            if (/^https?:\/\//.test(url)) {
+                                done(url, 6 * 60 * 60);
+                            } else {
+                                done(null, false);
+                            }
+                        } catch (e) {
+                            done(null, false);
                         }
-                    } catch (e) {
-                        cb(null);
-                    }
+                    });
                 });
             }
 
@@ -15603,35 +15601,31 @@ var $$IMU_EXPORT$$;
                 var photoid = src.replace(/.*\/([0-9]+)_[^/]*$/, "$1");
 
                 var cache_key = "flickr_larger:" + photoid;
-                if (api_cache.has(cache_key)) {
-                    return cb(api_cache.get(cache_key));
-                }
+                api_cache.fetch(cache_key, cb, function(done) {
+                    do_flickrapi_request(info, "method=flickr.photos.getSizes&photo_id=" + photoid, function (resp) {
+                        try {
+                            var out = JSON_parse(resp.responseText);
+                            var largesturl = null;
+                            var largestsize = 0;
+                            out.sizes.size.forEach(function (size) {
+                                var currentsize = parseInt(size.width) * parseInt(size.height);
+                                if (currentsize > largestsize || size.label === "Original") {
+                                    largestsize = currentsize;
+                                    largesturl = size.source;
+                                }
+                            });
 
-                do_flickrapi_request(info, "method=flickr.photos.getSizes&photo_id=" + photoid, function (resp) {
-                    try {
-                        var out = JSON_parse(resp.responseText);
-                        var largesturl = null;
-                        var largestsize = 0;
-                        out.sizes.size.forEach(function (size) {
-                            var currentsize = parseInt(size.width) * parseInt(size.height);
-                            if (currentsize > largestsize || size.label === "Original") {
-                                largestsize = currentsize;
-                                largesturl = size.source;
+                            if (typeof largesturl === "string" && /^https?:\/\//.test(largesturl)) {
+                                // Set this to 10 minutes as maybe the person might enable original images later?
+                                // FIXME: should we even cache this?
+                                done(largesturl, 10 * 60);
+                            } else {
+                                done(null, false);
                             }
-                        });
-
-                        if (typeof largesturl === "string" && /^https?:\/\//.test(largesturl)) {
-                            // Set this to 10 minutes as maybe the person might enable original images later?
-                            // FIXME: should we even cache this?
-                            api_cache.set(cache_key, largesturl, 10 * 60);
-                            cb(largesturl);
-                        } else {
-                            cb(null);
+                        } catch (e) {
+                            return done(null);
                         }
-                    } catch (e) {
-                        cb(null);
-                        return;
-                    }
+                    });
                 });
             }
 
