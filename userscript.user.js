@@ -228,7 +228,7 @@ var $$IMU_EXPORT$$;
         ],
         include_pastobjs: true,
         force_page: false,
-        allow_thirdparty: true,
+        allow_thirdparty: false,
         filter: bigimage_filter,
 
         do_request: do_request,
@@ -677,7 +677,7 @@ var $$IMU_EXPORT$$;
         allow_smaller: false,
         allow_possibly_different: false,
         allow_possibly_broken: false,
-        allow_thirdparty: true,
+        allow_thirdparty: false,
         //browser_cookies: true,
         // thanks to LukasThyWalls on github for the idea: https://github.com/qsniyg/maxurl/issues/75
         bigimage_blacklist: "",
