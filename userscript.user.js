@@ -38394,6 +38394,54 @@ var $$IMU_EXPORT$$;
             return src.replace(/(\/product_[0-9]+\/+)Thumb([0-9]+_[0-9a-f]+\.[^/.]*)(?:[?#].*)?$/, "$1Full$2");
         }
 
+        if (domain === "static.myfigurecollection.net") {
+            // https://static.myfigurecollection.net/pics/figure/444509.jpg?rev=1518788957 -- 60x60
+            //   https://static.myfigurecollection.net/pics/figure/big/444509.jpg?rev=1518788957 -- 256x238
+            //   https://static.myfigurecollection.net/pics/figure/large/444509.jpg?rev=1518788957 -- 600x557
+            //   https://myfigurecollection.net/item/444509
+            newsrc = src.replace(/\/pics\/+figure\/+(?:big\/+)?([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/pics/figure/large/$1");
+            if (newsrc !== src)
+                return newsrc;
+
+            match = src.match(/\/pics\/+figure\/+(?:[a-z]+\/+)?([0-9]+)\.[^/.]+/);
+            if (match) {
+                return {
+                    url: src,
+                    extra: {
+                        page: "https://myfigurecollection.net/item/" + match[1]
+                    }
+                };
+            }
+
+            // https://static.myfigurecollection.net/pics/encyclopedia/32/8652.jpg?rev=1438729314
+            //   https://static.myfigurecollection.net/pics/encyclopedia/8652.jpg?rev=1438729314
+            //   https://myfigurecollection.net/entry/8652
+            // https://static.myfigurecollection.net/pics/group/64/675.jpg?rev=1318416599
+            //   https://static.myfigurecollection.net/pics/group/675.jpg?rev=1318416599
+            //   https://myfigurecollection.net/club/675
+            newsrc = src.replace(/(\/pics\/+(?:encyclopedia|group)\/+)[0-9]+\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+            if (newsrc !== src)
+                return newsrc;
+
+            match = src.match(/\/pics\/+(encyclopedia|group)\/+(?:[0-9]+\/+)?([0-9]+)\.[^/.]+/);
+            if (match) {
+                var middle = "entry";
+                if (match[1] === "group")
+                    middle = "club";
+
+                return {
+                    url: src,
+                    extra: {
+                        page: "https://myfigurecollection.net/" + middle + "/" + match[2]
+                    }
+                };
+            }
+
+            // https://static.myfigurecollection.net/image/thumbnails/neL1395446768.jpeg
+            //   https://static.myfigurecollection.net/image/neL1395446768.jpeg
+            //   https://myfigurecollection.net/item/193057
+            return src.replace(/\/image\/+thumbnails\/+/, "/image/");
+        }
 
 
 
