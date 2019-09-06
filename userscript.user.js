@@ -38366,6 +38366,27 @@ var $$IMU_EXPORT$$;
             return src.replace(/(\/uploads\/+photos\/+[0-9]{4}\/+[0-9]{2}\/+[0-9]+\/+[^/]*-[0-9]+-[a-zA-Z0-9]+)(\.[^/.]*)(?:[?#].*)?$/, "$1-og$2");
         }
 
+        if (domain_nowww === "sofurryfiles.com") {
+            // https://www.sofurryfiles.com/std/thumb?page=1486058
+            //   https://www.sofurryfiles.com/std/content?page=1486058 -- 1800x900
+            //   https://www.sofurry.com/view/1486058
+            newsrc = src.replace(/\/std\/+(?:thumb|preview)\?/, "/std/content?");
+            if (newsrc !== src)
+                return newsrc;
+
+            match = src.match(/\/std\/+[a-z]+\?(?:.*&)?page=([0-9]+).*?$/);
+            if (match) {
+                var obj = {
+                    url: src,
+                    extra: {
+                        page: "https://www.sofurry.com/view/" + match[1]
+                    }
+                };
+
+                return obj;
+            }
+        }
+
 
 
 
