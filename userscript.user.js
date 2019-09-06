@@ -23204,6 +23204,7 @@ var $$IMU_EXPORT$$;
              domain_nosub === "hentai-image.com" ||
              domain_nosub === "porn-image-xxx.com" ||
              domain_nosub === "porn-movie-xxx.com" ||
+             domain_nosub === "hentai-animes.com" ||
              // https://static19.hentai-comic.com/upload/20190903/1066/1091520/p=160x200/1.jpg
              //   https://static19.hentai-comic.com/upload/20190903/1066/1091520/1.jpg
              domain_nosub === "hentai-comic.com" ||
@@ -38385,6 +38386,12 @@ var $$IMU_EXPORT$$;
 
                 return obj;
             }
+        }
+
+        if (amazon_container === "bw-1651cf0d2f737d7adeab84d339dbabd3-bcs") {
+            // https://bw-1651cf0d2f737d7adeab84d339dbabd3-bcs.s3.amazonaws.com/products/product_126601/Thumb126601_35ed430c80e54f1d4f492b44a232cbc3.jpg
+            //   https://bw-1651cf0d2f737d7adeab84d339dbabd3-bcs.s3.amazonaws.com/products/product_126601/Full126601_35ed430c80e54f1d4f492b44a232cbc3.jpg
+            return src.replace(/(\/product_[0-9]+\/+)Thumb([0-9]+_[0-9a-f]+\.[^/.]*)(?:[?#].*)?$/, "$1Full$2");
         }
 
 
