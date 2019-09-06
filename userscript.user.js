@@ -2507,6 +2507,9 @@ var $$IMU_EXPORT$$;
                     if (!match)
                         return null;
 
+                    if (_nir_debug_)
+                        console_log("Image ID for " + url + ":", match[1]);
+
                     return match[1];
                 };
 
@@ -2562,7 +2565,7 @@ var $$IMU_EXPORT$$;
                             break;
                     }
 
-                    if (imagenum === match.length) {
+                    if (imagenum === pageinfo.images.length) {
                         return null;
                     }
 
