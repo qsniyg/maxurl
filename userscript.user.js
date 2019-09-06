@@ -17465,12 +17465,46 @@ var $$IMU_EXPORT$$;
             //   https://photos.smugmug.com/World-AIDS-Day-Gala-UK/n-3hGNK3/Grassroot-Soccer-World-AIDS-Day-Gala-2017/i-dLbnDsd/0/4f8ff87f/X5/World%20Aids%20Day%20Gala%20%2023-X5.jpg
             // https://stuckincustoms.smugmug.com/Portfolio/i-mhH9FzP/0/900x613/The%20Secret%20Lair%20of%20Hans%20Zimmer%2C%20where%20he%20inspires%20the%20world-900x613.jpg
             //   https://stuckincustoms.smugmug.com/Portfolio/i-mhH9FzP/0/O/The%20Secret%20Lair%20of%20Hans%20Zimmer%2C%20where%20he%20inspires%20the%20world-900x613.jpg
+            //   https://stuckincustoms.smugmug.com/Portfolio/i-mhH9FzP
             //return src.replace(/^((?:https?:)\/\/photos\.smugmug\.com\.?\/.+?\/)[A-Z0-9]{1,2}(\/[^\/]+?-)[A-Z0-9]{1,2}\.jpg(?:$|\?|#)/i,'$1O$2O.jpg');
-            return {
-                //url: src.replace(/(\/i-[A-Za-z0-9]+\/[0-9]\/[a-f0-9]+\/)[A-Z0-9]+(\/[^/.]*-)[A-Z0-9]+(\.[^/.?]*)(?:\?.*)?$/, "$1O$2O$3"),
-                url: src.replace(/(\/i-[A-Za-z0-9]+\/+[0-9]+\/+(?:[a-f0-9]+\/+)?)(?:[A-Z0-9x]+|Ti)(\/+[^/]*)(?:\?.*)?$/, "$1O$2"),
-                redirects: true
-            };
+            newsrc = src.replace(/(\/i-[A-Za-z0-9]+\/+[0-9]+\/+(?:[a-f0-9]+\/+)?)(?:[A-Z0-9x]+|Ti)(\/+[^/]*)(?:\?.*)?$/, "$1O$2");
+
+            if (newsrc !== src) {
+                var obj = {
+                    //url: src.replace(/(\/i-[A-Za-z0-9]+\/[0-9]\/[a-f0-9]+\/)[A-Z0-9]+(\/[^/.]*-)[A-Z0-9]+(\.[^/.?]*)(?:\?.*)?$/, "$1O$2O$3"),
+                    url: newsrc,
+                    redirects: true
+                };
+
+                if (options.force_page && options.do_request && options.cb) {
+                    match = src.match(/\/(i-[A-Za-z0-9]+)\/+[0-9]+\/+/);
+                    if (match) {
+                        options.do_request({
+                            method: "GET",
+                            // it doesn't matter the username, as long as it's a valid username, and it'll get redirected properly
+                            // A is needed because otherwise it think the path component is wrong
+                            url: "https://washingtonlife.smugmug.com/A/" + match[1] + "/A",
+                            onload: function(result) {
+                                if (result.readyState !== 4)
+                                    return;
+
+                                var match = result.responseText.match(/document\.location\.href\s*=\s*["'](.*?)["']/);
+                                if (match) {
+                                    obj.extra = {page: match[1]};
+                                }
+
+                                options.cb(obj);
+                            }
+                        });
+
+                        return {
+                            waiting: true
+                        };
+                    }
+                }
+
+                return obj;
+            }
         }
 
         if (domain_nosub === "lithium.com" && domain.indexOf(".i.lithium.com") >= 0 ||
