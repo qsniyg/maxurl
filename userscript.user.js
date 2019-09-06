@@ -1210,7 +1210,7 @@ var $$IMU_EXPORT$$;
                         done(data);
 
                         for (var i = 0; i < this.fetches[key].length; i++) {
-                            this.fetches[key](data);
+                            this.fetches[key][i](data);
                         }
 
                         delete this.fetches[key];
