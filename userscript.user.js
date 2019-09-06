@@ -17470,8 +17470,18 @@ var $$IMU_EXPORT$$;
             // https://stuckincustoms.smugmug.com/Portfolio/i-mhH9FzP/0/900x613/The%20Secret%20Lair%20of%20Hans%20Zimmer%2C%20where%20he%20inspires%20the%20world-900x613.jpg
             //   https://stuckincustoms.smugmug.com/Portfolio/i-mhH9FzP/0/O/The%20Secret%20Lair%20of%20Hans%20Zimmer%2C%20where%20he%20inspires%20the%20world-900x613.jpg
             //   https://stuckincustoms.smugmug.com/Portfolio/i-mhH9FzP
+            // can't find original page:
+            // https://photos.smugmug.com/photos/i-HqPJ9sp/0/2fc18a58/X3/i-HqPJ9sp-X3.jpg
+            //   https://extremerossphotography.smugmug.com/Into-the-Night
+            // but this works:
+            //   https://extremerossphotography.smugmug.com/Extreme-Ross-Photography/i-56c4k4m/A
+            //   https://photos.smugmug.com/Extreme-Ross-Photography/i-56c4k4m/0/4c1b59d0/XL/Large--XL.jpg
             //return src.replace(/^((?:https?:)\/\/photos\.smugmug\.com\.?\/.+?\/)[A-Z0-9]{1,2}(\/[^\/]+?-)[A-Z0-9]{1,2}\.jpg(?:$|\?|#)/i,'$1O$2O.jpg');
-            newsrc = src.replace(/(\/i-[A-Za-z0-9]+\/+[0-9]+\/+(?:[a-f0-9]+\/+)?)(?:[A-Z0-9x]+|Ti)(\/+[^/]*)(?:\?.*)?$/, "$1O$2");
+            regex  =/(\/i-[A-Za-z0-9]+\/+[0-9]+\/+(?:[a-f0-9]+\/+)?)(?:[A-Z0-9x]+|Ti)(\/+[^/]*)(?:\?.*)?$/;
+            newsrc = src.replace(regex, "$1O$2");
+            var obj = {
+                url: src
+            };
 
             if (newsrc !== src) {
                 var obj = {
@@ -17479,36 +17489,36 @@ var $$IMU_EXPORT$$;
                     url: newsrc,
                     redirects: true
                 };
-
-                if (options.force_page && options.do_request && options.cb) {
-                    match = src.match(/\/(i-[A-Za-z0-9]+)\/+[0-9]+\/+/);
-                    if (match) {
-                        options.do_request({
-                            method: "GET",
-                            // it doesn't matter the username, as long as it's a valid username, and it'll get redirected properly
-                            // A is needed because otherwise it think the path component is wrong
-                            url: "https://washingtonlife.smugmug.com/A/" + match[1] + "/A",
-                            onload: function(result) {
-                                if (result.readyState !== 4)
-                                    return;
-
-                                var match = result.responseText.match(/document\.location\.href\s*=\s*["'](.*?)["']/);
-                                if (match) {
-                                    obj.extra = {page: match[1]};
-                                }
-
-                                options.cb(obj);
-                            }
-                        });
-
-                        return {
-                            waiting: true
-                        };
-                    }
-                }
-
-                return obj;
             }
+
+            if (options.force_page && options.do_request && options.cb && (newsrc !== src || regex.test(src))) {
+                match = src.match(/\/(i-[A-Za-z0-9]+)\/+[0-9]+\/+/);
+                if (match) {
+                    options.do_request({
+                        method: "GET",
+                        // it doesn't matter the username, as long as it's a valid username, and it'll get redirected properly
+                        // A is needed because otherwise it think the path component is wrong
+                        url: "https://washingtonlife.smugmug.com/A/" + match[1] + "/A",
+                        onload: function (result) {
+                            if (result.readyState !== 4)
+                                return;
+
+                            var match = result.responseText.match(/document\.location\.href\s*=\s*["'](.*?)["']/);
+                            if (match) {
+                                obj.extra = { page: match[1] };
+                            }
+
+                            options.cb(obj);
+                        }
+                    });
+
+                    return {
+                        waiting: true
+                    };
+                }
+            }
+
+            return obj;
         }
 
         if (domain_nosub === "lithium.com" && domain.indexOf(".i.lithium.com") >= 0 ||
