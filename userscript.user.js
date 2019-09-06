@@ -38326,6 +38326,11 @@ var $$IMU_EXPORT$$;
             return src.replace(/(:\/\/[^/]*\/+[0-9]+\/+)f\/+[0-9]*x[0-9]*\/+p\/+/, "$1p/");
         }
 
+        if (domain_nosub === "erome.com" && /^s[0-9]*\./.test(domain)) {
+            // https://s2.erome.com/165/aToCOFkn/thumbs/of5tx2ym.jpeg
+            //   https://s2.erome.com/165/aToCOFkn/of5tx2ym.jpeg
+            return src.replace(/\/thumbs\/+([^/]*\.[^/.]*)(?:[?#].*)?$/, "/$1");
+        }
 
 
 
