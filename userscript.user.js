@@ -17749,24 +17749,35 @@ var $$IMU_EXPORT$$;
             }
 
             if (options.force_page && options.do_request && options.cb && (newsrc !== src || regex.test(src))) {
+                var get_original_page = function(imageid, cb) {
+                    api_cache.fetch("smugmug_original_page:" + imageid, cb, function(done) {
+                        options.do_request({
+                            method: "GET",
+                            // it doesn't matter the username, as long as it's a valid username, and it'll get redirected properly
+                            // A is needed because otherwise it think the path component is wrong
+                            url: "https://washingtonlife.smugmug.com/A/" + imageid + "/A",
+                            onload: function (result) {
+                                if (result.readyState !== 4)
+                                    return;
+
+                                var match = result.responseText.match(/document\.location\.href\s*=\s*["'](.*?)["']/);
+                                if (match) {
+                                    return done(match[1], 6*60*60);
+                                }
+
+                                done(null, false);
+                            }
+                        });
+                    });
+                };
+
                 match = src.match(/\/(i-[A-Za-z0-9]+)\/+[0-9]+\/+/);
                 if (match) {
-                    options.do_request({
-                        method: "GET",
-                        // it doesn't matter the username, as long as it's a valid username, and it'll get redirected properly
-                        // A is needed because otherwise it think the path component is wrong
-                        url: "https://washingtonlife.smugmug.com/A/" + match[1] + "/A",
-                        onload: function (result) {
-                            if (result.readyState !== 4)
-                                return;
+                    get_original_page(match[1], function(originalpage) {
+                        if (originalpage)
+                            obj.extra = { page: originalpage };
 
-                            var match = result.responseText.match(/document\.location\.href\s*=\s*["'](.*?)["']/);
-                            if (match) {
-                                obj.extra = { page: match[1] };
-                            }
-
-                            options.cb(obj);
-                        }
+                        options.cb(obj);
                     });
 
                     return {
