@@ -38449,6 +38449,16 @@ var $$IMU_EXPORT$$;
             return src.replace(/(:\/\/[^/]*\/+)image\/+th\/+/, "$1image/fl/");
         }
 
+        if (domain === "stored-edge.slickpic.com") {
+            // https://stored-edge.slickpic.com/NDk5MjNmYTc1MzU0MQ,,/20190806/MTYzMTY3NTU3N2Y1/pef/550/1966_VW_21_Window_Bus_A-GC.com-1.jpg
+            //   https://stored-edge.slickpic.com/NDk5MjNmYTc1MzU0MQ,,/20190806/MTYzMTY3NTU3N2Y1/pef/-/1966_VW_21_Window_Bus_A-GC.com-1.jpg -- 2560x1707
+            //   https://mattcrandall.slickpic.com/albums/Album-2019-08-06-1449/photos/16316755/1966-vw-21-window-bus-a-gc-com-1/
+            // TODO: make stricter somehow. /p/ can be anything
+            return {
+                url: src.replace(/\/[0-9]+\/+([^/]*\.[^/.]*)(?:[?#].*)?$/, "/-/$1"),
+                head_wrong_contentlength: true
+            };
+        }
 
 
 
