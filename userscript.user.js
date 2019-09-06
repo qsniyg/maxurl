@@ -1423,6 +1423,16 @@ var $$IMU_EXPORT$$;
         return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
     }
 
+    // https://www.w3resource.com/javascript-exercises/javascript-string-exercise-28.php
+    function hex_to_ascii(str1) {
+        var hex = str1.toString();
+        var str = '';
+        for (var n = 0; n < hex.length; n += 2) {
+            str += String.fromCharCode(parseInt(hex.substr(n, 2), 16));
+        }
+        return str;
+    }
+
     // bug in chrome, see
     // https://github.com/qsniyg/maxurl/issues/7
     // https://our.umbraco.org/forum/using-umbraco-and-getting-started/91715-js-error-when-aligning-content-left-center-right-justify-in-richtext-editor
@@ -23442,6 +23452,12 @@ var $$IMU_EXPORT$$;
             // https://content6.morazzia.com/ftv-girls/0536/tn_01.jpg
             //   https://content6.morazzia.com/ftv-girls/0536/01.jpg
             (domain_nosub === "morazzia.com" && domain.match(/^content[0-9a-z]*\./)) ||
+            // https://content6.babesmachine.com/babesmachine.com/mplstudios.com/0924/tn_00.jpg
+            //   https://content6.babesmachine.com/babesmachine.com/mplstudios.com/0924/00.jpg
+            (domain_nosub === "babesmachine.com" && domain.match(/^content[0-9a-z]*\./)) ||
+            // https://content6.glam0ur.com/glam0ur.com/gals/celeste_star/38/tn_00.jpg
+            //   https://content6.glam0ur.com/glam0ur.com/gals/celeste_star/38/00.jpg
+            (domain_nosub === "glam0ur.com" && domain.match(/^content[0-9a-z]*\./)) ||
             // http://fhg.avidolz.com/Idol_Collection_Mio_Kanna/gravure/scene1a/avidolz_tn_01.jpg
             //   http://fhg.avidolz.com/Idol_Collection_Mio_Kanna/gravure/scene1a/avidolz_01.jpg
             domain_nosub === "avidolz.com" ||
@@ -23498,6 +23514,12 @@ var $$IMU_EXPORT$$;
             // http://japanesegirlspictures.com/gallery/Asian_Sensations_6/th_44.jpg
             //   http://japanesegirlspictures.com/gallery/Asian_Sensations_6/44.jpg
             domain_nowww === "japanesegirlspictures.com" ||
+            // http://koreanpornpictures.com/gallery/ASIAN/th_43.jpg
+            //   http://koreanpornpictures.com/gallery/ASIAN/43.jpg
+            domain_nowww === "koreanpornpictures.com" ||
+            // http://sexyasians.net/gallery/Asians752/th_27.jpg
+            //   http://sexyasians.net/gallery/Asians752/27.jpg
+            domain_nowww === "sexyasians.net" ||
             // http://teengalleries.mobi/g/d55bf2/th_02.jpg
             //   http://teengalleries.mobi/g/d55bf2/02.jpg
             domain_nowww === "teengalleries.mobi") {
@@ -24613,7 +24635,9 @@ var $$IMU_EXPORT$$;
         if (domain === "content.wafflegirl.com" ||
             // https://cdnwg.youx.xxx/galleries/gthumb/3/918/3918216_20a9a01_320x_.jpg
             //   https://cdnwg.youx.xxx/galleries/content/3/918/3918216_20a9a01.jpg
-            domain === "cdnwg.youx.xxx" ||
+            // https://cdnxw1.youx.xxx/gthumb/2/499/2499910_384d521_320x_.jpg
+            //   https://cdnxw1.youx.xxx/content/2/499/2499910_384d521.jpg
+            domain_nosub === "youx.xxx" ||
             // https://cdncontent.xxxwaffle.com/gthumb/1/812/1812867_9141b65_300x_.jpg
             //   https://cdncontent.xxxwaffle.com/content/1/812/1812867_9141b65.jpg
             domain === "cdncontent.xxxwaffle.com" ||
@@ -25723,12 +25747,15 @@ var $$IMU_EXPORT$$;
             return src.replace(/:\/\/[^/]*\/cache\/preview\/data\//, "://mediasole.ru/data/");
         }
 
-        if (domain_nosub === "godsartnudes.com" &&
+        if ((domain_nosub === "godsartnudes.com" ||
+             // http://pics7.godsartglam.com/4/3/3/10/pussy-many-72371_1_thumb.jpg
+             //   http://pics7.godsartglam.com/4/3/3/10/pussy-many-72371_1_big.jpg
+             domain_nosub === "godsartglam.com") &&
             domain.match(/^pics[0-9]*\./)) {
             // http://pics16.godsartnudes.com/4/3/2/3/bree-daniels-spreads-her-thighs-show-you-where-she-needs-attention--desire-digital-33091_4.jpg -- 110x150
             //   http://pics16.godsartnudes.com/4/3/2/3/bree-daniels-spreads-her-thighs-show-you-where-she-needs-attention--desire-digital-33091_4_thumb.jpg -- 198x281
             //   http://pics16.godsartnudes.com/4/3/2/3/bree-daniels-spreads-her-thighs-show-you-where-she-needs-attention--desire-digital-33091_4_big.jpg -- 638x1024
-            return src.replace(/(-[0-9]+_[0-9]+)(?:_[a-z]+)?(\.[^/.]*)$/, "$1_big$2");
+            return src.replace(/(-[0-9]+_[0-9]+)(?:_thumb)?(\.[^/.]*)$/, "$1_big$2");
         }
 
         if (domain_nowww === "gotgalleries.com") {
@@ -25884,7 +25911,13 @@ var $$IMU_EXPORT$$;
         if (domain_nowww === "live-stats.me") {
             // https://live-stats.me/pics/thumbs/104/372/12.jpg
             //   https://live-stats.me/pics/images/104/372/12.jpg
-            return src.replace(/\/pics\/thumbs\//, "/pics/images/");
+            return src.replace(/\/pics\/+thumbs\//, "/pics/images/");
+        }
+
+        if (domain_nowww === "plekoflady.ga") {
+            // https://plekoflady.ga/media/thumbs/165/369/1.jpg
+            //   https://plekoflady.ga/media/images/165/369/1.jpg
+            return src.replace(/\/media\/+thumbs\/+/, "/media/images/");
         }
 
         if (domain_nowww === "celebcafe.net") {
@@ -26572,12 +26605,15 @@ var $$IMU_EXPORT$$;
             // http://xpicse.com/pics/3137/_hot-sexy-asian-cute-japanese-girl.jpg
             //   http://xpicse.com/pics/3137/hot-sexy-asian-cute-japanese-girl.jpg
             domain_nowww === "xpicse.com" ||
+            // https://hdpicsx.com/pics/3276/_thick-curvy-asian-girls-self-shot.jpg
+            //   https://hdpicsx.com/pics/3276/thick-curvy-asian-girls-self-shot.jpg
+            domain_nowww === "hdpicsx.com" ||
             // https://repicsx.com/pics/1342/_steampunk-girl.jpg
             //   https://repicsx.com/pics/1342/steampunk-girl.jpg
             domain_nowww === "repicsx.com") {
             // https://nupics.pro/pics/2267/_keira-metz-witcher-3.jpg
             //   https://nupics.pro/pics/2267/keira-metz-witcher-3.jpg
-            return src.replace(/(\/pics\/[0-9]+\/)_([^/]*)$/, "$1$2");
+            return src.replace(/(\/pics\/+[0-9]+\/+)_([^/]*)$/, "$1$2");
         }
 
         if (domain_nosub === "cloud.it" &&
@@ -37935,6 +37971,34 @@ var $$IMU_EXPORT$$;
             }
         }
 
+        if (domain === "ano.lolcathost.org") {
+            // http://ano.lolcathost.org/thumbs//2017-12-14_22_56_04.jpg
+            //   http://ano.lolcathost.org/pics/2017-12-14_22_56_04.jpg
+            return src.replace(/(:\/\/[^/]*\/+)thumbs\/+/, "$1pics/");
+        }
+
+        if (domain_nowww === "okkisokuho.com") {
+            // https://okkisokuho.com/wp-content/picture/2017/171126/a/171126a_as001tn.jpg
+            //   https://okkisokuho.com/wp-content/picture/2017/171126/a/171126a_as001.jpg
+            return src.replace(/(\/wp-content\/+picture\/+[0-9]{4}\/+[0-9]{6}\/+[^/]*\/+[^/]*_as[0-9]+)tn(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain === "simg.userboard.org") {
+            // https://simg.userboard.org/1ef10b4b981baf7ec89ce2a0baa8fd1b4f786f79/687474703a2f2f69322e696d61676574776973742e636f6d2f74682f32313136392f627a6868363267396c6d37302e6a7067
+            //   http://img161.imagetwist.com/th/19866/eekhw02yq2xy.jpg
+            match = src.match(/^[a-z]+:\/\/[^/]*\/+[0-9a-f]{20,}\/+([0-9a-f]{16,})/);
+            if (match) {
+                return hex_to_ascii(match[1]);
+            }
+        }
+
+        if (domain_nowww === "hot.ag") {
+            // http://hot.ag/BodyPainting/BodyPainting%20Thumbnails/World-Cup-Body-Paint.jpg
+            //   http://hot.ag/BodyPainting/World-Cup-Body-Paint.jpg
+            newsrc = src.replace(/\/([^/]+)\/+\1(?:%20| )Thumbnails\/+/, "/$1/");
+            if (newsrc !== src)
+                return add_full_extensions(newsrc);
+        }
 
 
 
