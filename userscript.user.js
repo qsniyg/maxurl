@@ -20875,6 +20875,9 @@ var $$IMU_EXPORT$$;
         }
 
         if ((domain_nowww === "kb4images.com" ||
+             // http://digitalimagemakerworld.com/images/natural-wallpapers/36343079-natural-wallpapers-small.jpg
+             //   http://digitalimagemakerworld.com/images/natural-wallpapers/36343079-natural-wallpapers.jpg
+             domain_nowww === "digitalimagemakerworld.com" ||
              // https://99desktopwallpapers.com/images/selena-gomez-wallpapers/14_Selena-Gomez-small.jpg
              //   https://99desktopwallpapers.com/images/selena-gomez-wallpapers/14_Selena-Gomez.jpg
              domain_nowww === "99desktopwallpapers.com") &&
@@ -38258,6 +38261,70 @@ var $$IMU_EXPORT$$;
                 return add_full_extensions(newsrc);
         }
 
+        if (domain_nowww === "finn-neo-admin.info" ||
+            // https://finn-neo.com/newsimage/103966_pc_popup.jpg
+            //   https://finn-neo.com/newsimage/103966.jpg
+            domain_nowww === "finn-neo.com") {
+            // https://finn-neo-admin.info/newsimage/102115_pc_thumb.jpg -- 400x283
+            //   https://finn-neo-admin.info/newsimage/102115_pc_popup.jpg -- 500x354
+            //   https://finn-neo-admin.info/newsimage/102115.jpg -- 844x597
+            return src.replace(/(\/newsimage\/+[0-9]+)_pc_[a-z]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain_nowww === "freeaddon.com") {
+            // https://freeaddon.com/wallpaper/nature/thumb444x250-02.jpg
+            //   https://freeaddon.com/wallpaper/nature/bg-02.jpg -- 1920x1080
+            return src.replace(/\/thumb[0-9]+x[0-9]+-/, "/bg-");
+        }
+
+        if (amazon_container === "classconnection") {
+            // https://classconnection.s3.amazonaws.com/272/flashcards/1061272/jpg/selva_20110803_10636796041328847728849-thumb400.jpg
+            //   https://classconnection.s3.amazonaws.com/272/flashcards/1061272/jpg/selva_20110803_10636796041328847728849.jpg
+            return src.replace(/-thumb[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1");
+        }
+
+        if (domain_nowww === "intoclassics.net") {
+            // http://intoclassics.net/_nw/222/s15806925.jpg
+            //   http://intoclassics.net/_nw/222/15806925.jpg
+            return src.replace(/(\/_nw\/+[0-9]+\/+)s([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (false && (domain_nowww === "slideplayer.com.br" ||
+            // https://slideplayer.info/8/2337452/big_thumb.jpg
+            //   https://player.slideplayer.info/8/2337452/data/images/img0.jpg -- redirects to 404
+            domain_nowww === "slideplayer.info" ||
+            // https://slideplayer.com/27/9171393/big_thumb.jpg
+            //   https://player.slideplayer.com/27/9171393/data/images/img0.jpg -- redirects to 404
+            domain_nowww === "slideplayer.com" ||
+            // https://slideplayer.es/47/11743789/big_thumb.jpg
+            //   https://player.slideplayer.es/47/11743789/data/images/img0.jpg -- different
+            domain_nowww === "slideplayer.es")) {
+            // https://slideplayer.com.br/9/1796403/big_thumb.jpg
+            //   https://player.slideplayer.com.br/9/1796403/data/images/img0.jpg
+            return {
+                url: src.replace(/:\/\/[^/]*(slideplayer\.[^/]*)\/+([0-9]+\/+[0-9]+\/+)big_thumb(\.[^/.]*)(?:[?#].*)?$/, "://player.$1/$2data/images/img0$3"),
+                head_wrong_contenttype: true
+            };
+        }
+
+        if (false && domain_nosub === "agoravox.fr") {
+            // https://mobile.agoravox.fr/IMG/jpg/La-Marianne-des-gilets-jaunes-est-l-artiste-Deborah-de-Robertis.jpg -- 2000x1332
+            // https://mobile.agoravox.fr/local/cache-vignettes/L513xH383/P1000948JPG-f10f-ef1ce.jpg -- 1600x1200
+            // https://mobile.agoravox.fr/local/cache-vignettes/L640xH1642/map_develop_f936-7cba8.png -- 3500x1642
+            // https://www.agoravox.fr/IMG/jpg/22_mars.jpg -- 3307x2362 (interchangeable with mobile.)
+        }
+
+        if (false && domain_nosub === "imgiz.com" && /^i[0-9]*\./.test(domain)) {
+            // https://i1.imgiz.com/ramazan/camiler/bayburt.jpg -- 3264x2448
+            // https://i1.imgiz.com/data/videoshots/7164/7164388-91520.jpg -- 2730x1536
+            // https://i1.imgiz.com/rshots/8444/dusbaz-yuregim-yanginlarda_8444102-27150_640x360.jpg -- /data/ works too, but removing _640x360 doesn't, even if text before id is removed
+        }
+
+        if (domain === "monsite.woopic.com") {
+            // https://monsite.woopic.com/383/f/500x/p/Roselyange/img/254891230c9211073de0b2ed7970d28f.jpg
+            //   https://monsite.woopic.com/383/p/Roselyange/img/254891230c9211073de0b2ed7970d28f.jpg
+            return src.replace(/(:\/\/[^/]*\/+[0-9]+\/+)f\/+[0-9]*x[0-9]*\/+p\/+/, "$1p/");
+        }
 
 
 
