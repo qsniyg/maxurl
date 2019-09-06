@@ -703,6 +703,10 @@ var $$IMU_EXPORT$$;
             requires: {
                 redirect: true
             },
+            example_websites: [
+                "Flickr",
+                "SmugMug"
+            ],
             category: "redirection"
         },
         mouseover: {
