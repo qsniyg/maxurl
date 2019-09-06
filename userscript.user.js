@@ -34,7 +34,8 @@ var $$IMU_EXPORT$$;
 // Disable linting because otherwise editing is incredibly slow
 // jshint ignore: start
 (function() {
-    'use strict';
+    // Don't 'use strict', as it prevents nested functions
+    //'use strict';
 
     var _nir_debug_ = false;
 
