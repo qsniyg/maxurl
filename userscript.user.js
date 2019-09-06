@@ -228,6 +228,7 @@ var $$IMU_EXPORT$$;
         ],
         include_pastobjs: true,
         force_page: false,
+        allow_thirdparty: true,
         filter: bigimage_filter,
 
         do_request: do_request,
@@ -263,8 +264,7 @@ var $$IMU_EXPORT$$;
             watermark: false,
             smaller: false,
             possibly_different: false,
-            possibly_broken: false,
-            thirdparty: false
+            possibly_broken: false
         }
     };
 
@@ -677,7 +677,7 @@ var $$IMU_EXPORT$$;
         allow_smaller: false,
         allow_possibly_different: false,
         allow_possibly_broken: false,
-        allow_thirdparty: false,
+        allow_thirdparty: true,
         //browser_cookies: true,
         // thanks to LukasThyWalls on github for the idea: https://github.com/qsniyg/maxurl/issues/75
         bigimage_blacklist: "",
@@ -1145,8 +1145,7 @@ var $$IMU_EXPORT$$;
         allow_watermark: "watermark",
         allow_smaller: "smaller",
         allow_possibly_different: "possibly_different",
-        allow_possibly_broken: "possibly_broken",
-        allow_thirdparty: "thirdparty"
+        allow_possibly_broken: "possibly_broken"
     };
 
     var categories = {
@@ -2525,7 +2524,7 @@ var $$IMU_EXPORT$$;
 
             // http://www.newsen.com/news_view.php?uid=201909050803320410 -- multiple images in one page
             //   http://cdn.newsen.com/newsen/news_photo/2019/09/05/201909050803320410_1.jpg
-            if (extra.page && options && options.cb && !("thirdparty" in options.exclude_problems)) {
+            if (extra.page && options && options.cb && options.allow_thirdparty) {
                 var get_imageid = function(url) {
                     var match = url.match(/\/[0-9]{4}\/+(?:[0-9]{2}\/+){2}([0-9]{10,}_[0-9]+)\.[^/.]*(?:[?#].*)?$/);
                     if (!match)
@@ -39589,6 +39588,10 @@ var $$IMU_EXPORT$$;
 
         if (!options)
             options = {};
+
+        if ((is_userscript || is_extension) && !("allow_thirdparty" in options)) {
+            options.allow_thirdparty = (settings["allow_thirdparty"] + "") === "true";
+        }
 
         for (var option in bigimage_recursive.default_options) {
             if (!(option in options)) {
