@@ -699,7 +699,7 @@ var $$IMU_EXPORT$$;
         },
         redirect_force_page: {
             name: "Try finding original page",
-            description: "Enables more time-intensive methods for finding the original page, currently only applies to Flickr",
+            description: "Enables more time-intensive methods for finding the original page",
             requires: {
                 redirect: true
             },
