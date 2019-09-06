@@ -38357,6 +38357,14 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/thumbs\/+([^/]*\.[^/.]*)(?:[?#].*)?$/, "/$1");
         }
 
+        if (domain_nosub === "bdsmlr.com") {
+            // https://cdn08.bdsmlr.com/uploads/photos/2019/09/74125/bdsmlr-74125-zXEarM4sh8.jpg
+            //   https://cdn08.bdsmlr.com/uploads/photos/2019/09/74125/bdsmlr-74125-zXEarM4sh8-og.jpg
+            // https://cdno07.bdsmlr.com/uploads/photos/2019/07/36606/bdsmlr-36606-hv4ns7ywrB.JPG
+            //   https://cdno07.bdsmlr.com/uploads/photos/2019/07/36606/bdsmlr-36606-hv4ns7ywrB-og.JPG
+            // https://cdn04.bdsmlr.com/uploads/photos/2019/03/16995/bdsmlr-16995-p1xblnflJS-og.jpg -- 4213x2290
+            return src.replace(/(\/uploads\/+photos\/+[0-9]{4}\/+[0-9]{2}\/+[0-9]+\/+[^/]*-[0-9]+-[a-zA-Z0-9]+)(\.[^/.]*)(?:[?#].*)?$/, "$1-og$2");
+        }
 
 
 
