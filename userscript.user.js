@@ -261,7 +261,10 @@ var $$IMU_EXPORT$$;
         filename: "",
         problems: {
             watermark: false,
-            smaller: false
+            smaller: false,
+            possibly_different: false,
+            possibly_broken: false,
+            thirdparty: false
         }
     };
 
@@ -517,6 +520,12 @@ var $$IMU_EXPORT$$;
         "Possibly broken images": {
             "ko": "손상될 수 있는 이미지"
         },
+        "Rules using 3rd-party websites": {
+            "ko": "3파티 사이트를 사용하는 규칙"
+        },
+        "Newsen": {
+            "ko": "뉴스엔"
+        },
         "category_website": {
             "en": "Website",
             "ko": "웹사이트"
@@ -668,6 +677,7 @@ var $$IMU_EXPORT$$;
         allow_smaller: false,
         allow_possibly_different: false,
         allow_possibly_broken: false,
+        allow_thirdparty: false,
         //browser_cookies: true,
         // thanks to LukasThyWalls on github for the idea: https://github.com/qsniyg/maxurl/issues/75
         bigimage_blacklist: "",
@@ -1066,6 +1076,14 @@ var $$IMU_EXPORT$$;
                 "Tumblr GIFs"
             ]
         },
+        allow_thirdparty: {
+            name: "Rules using 3rd-party websites",
+            description: "Enables rules that use 3rd-party websites",
+            category: "rules",
+            example_websites: [
+                "Newsen"
+            ]
+        },
         browser_cookies: {
             name: "Use browser cookies",
             description: "Uses the browser's cookies for API calls in order to access otherwise private data",
@@ -1127,7 +1145,8 @@ var $$IMU_EXPORT$$;
         allow_watermark: "watermark",
         allow_smaller: "smaller",
         allow_possibly_different: "possibly_different",
-        allow_possibly_broken: "possibly_broken"
+        allow_possibly_broken: "possibly_broken",
+        allow_thirdparty: "thirdparty"
     };
 
     var categories = {
@@ -1147,6 +1166,11 @@ var $$IMU_EXPORT$$;
             "replaceimages": "subcategory_replaceimages"
         }
     };
+
+    for (var option in option_to_problems) {
+        var problem = option_to_problems[option];
+        settings[option] = default_options.exclude_problems.indexOf(problem) < 0;
+    }
 
 
     function Cache() {
@@ -2501,7 +2525,7 @@ var $$IMU_EXPORT$$;
 
             // http://www.newsen.com/news_view.php?uid=201909050803320410 -- multiple images in one page
             //   http://cdn.newsen.com/newsen/news_photo/2019/09/05/201909050803320410_1.jpg
-            if (extra.page && options && options.cb && !("3rdparty" in options.exclude_problems)) {
+            if (extra.page && options && options.cb && !("thirdparty" in options.exclude_problems)) {
                 var get_imageid = function(url) {
                     var match = url.match(/\/[0-9]{4}\/+(?:[0-9]{2}\/+){2}([0-9]{10,}_[0-9]+)\.[^/.]*(?:[?#].*)?$/);
                     if (!match)
@@ -39568,14 +39592,23 @@ var $$IMU_EXPORT$$;
 
         for (var option in bigimage_recursive.default_options) {
             if (!(option in options)) {
-                options[option] = bigimage_recursive.default_options[option];
+                options[option] = deepcopy(bigimage_recursive.default_options[option]);
             }
         }
 
         if (is_userscript || is_extension) {
             for (var option in settings) {
-                if (settings[option] && option in option_to_problems) {
-                    options.exclude_problems.splice(options.exclude_problems.indexOf(option_to_problems[option]), 1);
+                if (option in option_to_problems) {
+                    var problem = option_to_problems[option];
+                    var index = options.exclude_problems.indexOf(problem);
+
+                    if (settings[option]) {
+                        if (index >= 0)
+                            options.exclude_problems.splice(index, 1);
+                    } else {
+                        if (index < 0)
+                            options.exclude_problems.push(problem);
+                    }
                 }
             }
         }
