@@ -25,7 +25,7 @@
 // If you see "A userscript wants to access a cross-origin resource.",
 //   it's used to detect whether or not the destination URL exists before redirecting,
 //   downloading the image for the popup, and querying various websites' API to get larger images.
-// Search for do_request_raw if you want to see what the code does exactly.
+// Search for do_request if you want to see what the code does exactly.
 
 
 
@@ -1434,6 +1434,20 @@ var $$IMU_EXPORT$$;
         return str;
     }
 
+    function decode_entities(str) {
+        return str
+            .replace(/&nbsp;/g, " ")
+            .replace(/&#([0-9]+);/g, function (full, num) { return String.fromCharCode(num); })
+            .replace(/&amp;/g, "&");
+    }
+
+    function fuzzify_text(str) {
+        return str
+            .replace(/(?:["'’‘”“]|\[|])/g, " ")
+            .replace(/\s+/g, " ")
+            .replace(/^\s+|\s+$/g, "");
+    }
+
     // bug in chrome, see
     // https://github.com/qsniyg/maxurl/issues/7
     // https://our.umbraco.org/forum/using-umbraco-and-getting-started/91715-js-error-when-aligning-content-left-center-right-justify-in-richtext-editor
@@ -2107,6 +2121,8 @@ var $$IMU_EXPORT$$;
             // https://img.koreatimes.co.kr/upload/thumbnailV2/590K2019061200203.jpg/dims/resize/720/optimize
             //   https://img.koreatimes.co.kr/upload/thumbnailV2/590K2019061200203.jpg
             domain === "img.koreatimes.co.kr" ||
+            // http://1290000230.desst.vcase2.myskcdn.com/1100000038/dev/1290000230/2018/03/20/1890835738_1_1.jpg?key=6a156742b5f85fb887bd7b79a94eea2471884c8c.3669019742&cid=1890835745&pid=1993936257&oid=1890835738/dims/resize/95x54
+            //   http://1290000230.desst.vcase2.myskcdn.com/1100000038/dev/1290000230/2018/03/20/1890835738_1_1.jpg?key=6a156742b5f85fb887bd7b79a94eea2471884c8c.3669019742&cid=1890835745&pid=1993936257&oid=1890835738
             domain_nosub === "myskcdn.com") {
             // http://moneys.mt.co.kr/photoDb/mwPhotoDbList.php?no=2017013115555978429&page=1&idx=3
             //   http://menu.mt.co.kr/moneyweek/photoDb/2017/01/31/20170131155559784294333.jpg/dims/optimize
@@ -2125,9 +2141,6 @@ var $$IMU_EXPORT$$;
 
             // http://menu.mt.co.kr/moneyweek/thumb/2017/05/26/00/2017052617068063683_1.jpg -- works
             // http://menu.mt.co.kr/moneyweek/thumb/2017/05/23/00/2017052310108026652_1.jpg -- doesn't
-
-            // http://1290000230.desst.vcase2.myskcdn.com/1100000038/dev/1290000230/2018/03/20/1890835738_1_1.jpg?key=6a156742b5f85fb887bd7b79a94eea2471884c8c.3669019742&cid=1890835745&pid=1993936257&oid=1890835738/dims/resize/95x54
-            //   http://1290000230.desst.vcase2.myskcdn.com/1100000038/dev/1290000230/2018/03/20/1890835738_1_1.jpg?key=6a156742b5f85fb887bd7b79a94eea2471884c8c.3669019742&cid=1890835745&pid=1993936257&oid=1890835738
 
             // http://menu.mt.co.kr/theleader/photo_img/00/2018/02/01/2018020114447262989_0.jpg
             var obj = src.match(/\/thumb\/(?:[0-9]+\/){3}([0-9]+)\//);
@@ -2453,11 +2466,13 @@ var $$IMU_EXPORT$$;
                 extra: extra
             };
 
-            // Needs euc-kr charset decoding
-            if (false && extra.page && options && options.cb && !("3rdparty" in options.exclude_problems)) {
+            // http://www.newsen.com/news_view.php?uid=201909050803320410 -- multiple images in one page
+            //   http://cdn.newsen.com/newsen/news_photo/2019/09/05/201909050803320410_1.jpg
+            if (extra.page && options && options.cb && !("3rdparty" in options.exclude_problems)) {
                 options.do_request({
                     method: "GET",
                     url: extra.page,
+                    overrideMimeType: "text/html; charset=euc-kr",
                     onload: function(result) {
                         if (result.readyState !== 4)
                             return;
@@ -2473,9 +2488,117 @@ var $$IMU_EXPORT$$;
                         }
 
                         var title = match[1];
-                        console_log(title);
+                        console_log("Title: ", title);
+
+                        match = result.responseText.match(/<img\s+id=["']artImg["']\s+src=["'](?:https?:)\/\/[a-z]+\.newsen\.com\/.*?["']/g);
+
+                        if (!match) {
+                            return options.cb(obj);
+                        }
+
+                        var imageid_regex = /\/[0-9]{4}\/+(?:[0-9]{2}\/+){2}([0-9]{10,}_[0-9]+)\.[^/.]*(?:[?#].*)?$/;
+                        var imageid = src.match(imageid_regex);
+                        if (!imageid) {
+                            return options.cb(obj);
+                        }
+
+                        imageid = imageid[1];
+                        var imagenum;
+                        var total_images = match.length;
+                        for (imagenum = 0; imagenum < match.length; imagenum++) {
+                            var i_imageid = match[imagenum].match(imageid_regex);
+                            if (!i_imageid)
+                                continue;
+                            i_imageid = i_imageid[1];
+
+                            if (i_imageid === imageid)
+                                break;
+                        }
+
+                        if (imagenum === match.length) {
+                            return options.cb(obj);
+                        }
+
+                        // mobile is less to download, but maybe more prone to changes?
+                        var searchurl = "https://m.search.daum.net/search?w=news&q=" + encodeURIComponent(title) + "&enc=utf8";
+                        options.do_request({
+                            method: "GET",
+                            url: searchurl,
+                            onload: function(result) {
+                                if (result.readyState !== 4) {
+                                    return;
+                                }
+
+                                if (result.status !== 200) {
+                                    return options.cb(obj);
+                                }
+
+                                // TODO: check date too
+                                var entry_regex = /<a\s+class=["']info_item["']\s+href=["']((?:https?:)\/\/v\.media\.daum\.net\/+.*?)["'][^>]*?>\s*<span\s+class=["']wrap_tit["']\s*>(.*?)<\/span>/g;
+                                var nonglobal_regex = new RegExp(entry_regex, "");
+                                var entries_match = result.responseText.match(entry_regex);
+                                if (!entries_match) {
+                                    return options.cb(obj);
+                                }
+
+                                for (var entry_i = 0; entry_i < entries_match.length; entry_i++) {
+                                    var match = entries_match[entry_i].match(nonglobal_regex);
+                                    if (!match)
+                                        continue;
+
+                                    var daum_title = decode_entities(match[2].replace(/<([a-z])>(.*?)<\/\1>/g, "$2"));
+                                    //console.log(daum_title);
+
+                                    if (fuzzify_text(title) === fuzzify_text(daum_title)) {
+                                        console_log("Daum article URL:", match[1]);
+
+                                        return options.do_request({
+                                            method: "GET",
+                                            url: urljoin(result.finalUrl, match[1].replace(/[?#].*/, ""), true),
+                                            onload: function (result) {
+                                                if (result.readyState !== 4)
+                                                    return;
+
+                                                if (result.status !== 200) {
+                                                    return options.cb(obj);
+                                                }
+
+                                                var image_regex = /<img[^>]+dmcf-mtype=["']image["'][^>]+src=["']((?:https?:)\/\/[^/]+\.daumcdn\.net\/.*?)["']/g;
+                                                var nonglobal_regex = new RegExp(image_regex, "");
+
+                                                var images_match = result.responseText.match(image_regex);
+                                                if (!images_match) {
+                                                    return options.cb(obj);
+                                                }
+
+                                                if (images_match.length !== total_images) {
+                                                    console_error("Image number mismatch");
+                                                    return options.cb(obj);
+                                                }
+
+                                                var our_image = images_match[imagenum].match(nonglobal_regex);
+                                                if (!our_image) {
+                                                    return options.cb(obj);
+                                                }
+
+                                                obj.url = urljoin(result.finalUrl, our_image[1], true);
+                                                obj.extra.page = result.finalUrl;
+                                                return options.cb(obj);
+                                            }
+                                        });
+                                    }
+                                }
+                                //console.log(fuzzify_text(title), fuzzify_text(daum_title));
+
+                                //console.log(match);
+                            }
+                        });
                     }
                 });
+
+                return {
+                    waiting: true
+                };
             }
 
             return obj;
