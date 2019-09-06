@@ -38443,6 +38443,11 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/image\/+thumbnails\/+/, "/image/");
         }
 
+        if (domain_nowww === "8muses.com") {
+            // https://www.8muses.com/image/th/pwS7aQk-zMwJDawQMuoUauicwhmk55nZLsB5vM5dZBVOzpkFuazyVkhmuyqk6n1z3JSHoHKBM88eO1VWwPiOVXHC52YyDIWH9tlkODxeBXk+zpRLU3NS1Sb5JOaOKh78.jpg
+            //   https://www.8muses.com/image/fl/pwS7aQk-zMwJDawQMuoUauicwhmk55nZLsB5vM5dZBVOzpkFuazyVkhmuyqk6n1z3JSHoHKBM88eO1VWwPiOVXHC52YyDIWH9tlkODxeBXk+zpRLU3NS1Sb5JOaOKh78.jpg
+            return src.replace(/(:\/\/[^/]*\/+)image\/+th\/+/, "$1image/fl/");
+        }
 
 
 
