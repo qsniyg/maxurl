@@ -20275,6 +20275,12 @@ var $$IMU_EXPORT$$;
         if (domain === "www.anewsa.com") {
             // http://www.anewsa.com/news_images/2016/07/14/mark/20160714163711-1.jpg
             //   http://www.anewsa.com/news_images/2016/07/14/original/20160714163711-1.jpg
+            // page:
+            // http://www.anewsa.com/news_images/2019/09/06/original/20190906151757.jpg
+            //   http://www.anewsa.com/detail.php?number=1959271
+            // other:
+            // http://www.anewsa.com/upload/editor/20171118163158_4.jpg -- 3184x2123
+            //   http://www.anewsa.com/detail.php?number=1245482&thread=05r02
             return src.replace(/(_images\/[0-9]+\/[0-9]+\/[0-9]+\/)mark(\/[^/]*)$/, "$1original$2");
         }
 
@@ -24498,7 +24504,13 @@ var $$IMU_EXPORT$$;
             // http://image.tvdaily.co.kr/upimages/files/201906/1467999-1.jpg
             // http://tvdaily.asiae.co.kr/upimages/thumb/sl1467999.png
             //   http://image.tvdaily.co.kr/upimages/gisaimg/201906/1561649680_1467999.jpg
-            return src.replace(/\/upimages\/photoda\//, "/upimages/gisaimg/");
+            // http://mtvdaily.asiae.co.kr/article.php?aid=14908605451226106017
+            //   http://image.tvdaily.co.kr/upimages/files//201703/1226106-2.jpg -- 2603x3911
+            //   http://image.tvdaily.co.kr/upimages/files//201703/1226106-1.jpg -- 540x811
+            // http://image.tvdaily.co.kr/upimages/gisaimg/201205/15326559.jpg -- 2312x3056
+            //   http://mtvdaily.asiae.co.kr/article.php?aid=1337058132326559017
+            //   http://tvdaily.asiae.co.kr/read.php3?aid=1337058132326559017
+            return src.replace(/\/upimages\/+photoda\//, "/upimages/gisaimg/");
         }
 
         if (domain === "img.thefactjp.com") {
@@ -38364,6 +38376,7 @@ var $$IMU_EXPORT$$;
             // https://cdno07.bdsmlr.com/uploads/photos/2019/07/36606/bdsmlr-36606-hv4ns7ywrB.JPG
             //   https://cdno07.bdsmlr.com/uploads/photos/2019/07/36606/bdsmlr-36606-hv4ns7ywrB-og.JPG
             // https://cdn04.bdsmlr.com/uploads/photos/2019/03/16995/bdsmlr-16995-p1xblnflJS-og.jpg -- 4213x2290
+            // some cdn numbers redirect endlessly, however, they are not interchangeable
             return src.replace(/(\/uploads\/+photos\/+[0-9]{4}\/+[0-9]{2}\/+[0-9]+\/+[^/]*-[0-9]+-[a-zA-Z0-9]+)(\.[^/.]*)(?:[?#].*)?$/, "$1-og$2");
         }
 
@@ -38487,6 +38500,60 @@ var $$IMU_EXPORT$$;
             }
         }
 
+        if (domain_nowww === "upinews.kr") {
+            // https://www.upinews.kr/news/data/20190814/p1065589122046660_727_h.jpg -- 315x472
+            //   https://www.upinews.kr/news/data/20190814/p1065589122046660_727_h2.jpg -- 679x1019
+            //   https://www.upinews.kr/news/data/20190814/p1065589122046660_727_thum.jpg -- 679x1019
+            //   https://www.upinews.kr/news/data/20190814/p1065589122046660_727_h3.jpg -- 1023x1535
+            // https://www.upinews.kr/news/newsview.php?ncode=1065602821580462
+            //   https://www.upinews.kr/news/data/20190822/p1065602821580462_683_h3.jpg
+            // other:
+            // https://www.upinews.kr/news/data/20190701/p1065589773349704_340_h3.png -- 6158x1944
+            newsrc = src.replace(/(\/news\/+data\/+[0-9]{8}\/+p[0-9]+_[0-9]+)_(?:thum|h2?)(\.[^/.]*)(?:[?#].*)?$/, "$1_h3$2");
+            if (newsrc !== src)
+                return newsrc;
+
+            match = src.match(/\/news\/+data\/+[0-9]+\/+p([0-9]{10,})_/);
+            if (match) {
+                return {
+                    url: src,
+                    extra: {
+                        page: "https://www.upinews.kr/news/newsview.php?ncode=" + match[1]
+                    }
+                };
+            }
+        }
+
+        if (domain === "image.newdaily.co.kr") {
+            // http://www.newdaily.co.kr/site/data/html/2010/04/25/2010042500038.html
+            //   http://image.newdaily.co.kr/site/data/img/2010/04/25/2010042500038_0.jpg -- 3872x2592
+            //   http://image.newdaily.co.kr/site/data/img/2010/04/25/2010042500038_1.jpg -- 580x388 (different image)
+            match = src.match(/\/site\/+data\/+img\/+([0-9]{4}\/+(?:[0-9]{2}\/+){2}[0-9]{10,})_[0-9]+\./);
+            if (match) {
+                return {
+                    url: src,
+                    extra: {
+                        page: "http://www.newdaily.co.kr/site/data/html/" + match[1] + ".html"
+                    }
+                };
+            }
+        }
+
+        if (domain === "img.stoo.com") {
+            // http://img.stoo.com/upimages/gisaimg/201907/09_560590_81844.jpg -- 3720x2778
+            //   http://stoo.asiae.co.kr/article.php?aid=56059081844
+            // http://img.stoo.com/upimages/gisaimg/201905/545202-430.jpg -- 3712x5085
+            //   http://mstoo.asiae.co.kr/article.php?aid=54520222344
+            match = src.match(/\/upimages\/+gisaimg\/+[0-9]{6}\/+(?:[0-9]{2}_)?([0-9]+)_([0-9]+)\./);
+            if (match) {
+                return {
+                    url: src,
+                    extra: {
+                        page: "http://stoo.asiae.co.kr/article.php?aid=" + match[1] + match[2]
+                    }
+                };
+            }
+        }
 
 
 
