@@ -15653,7 +15653,12 @@ var $$IMU_EXPORT$$;
                 var cache_key = "flickr_original:" + photoid + "_" + photosecret;
 
                 api_cache.fetch(cache_key, cb, function(done) {
-                    do_flickrapi_request(info, "method=flickr.photos.getInfo&photo_id=" + photoid + "&secret=" + photosecret, function (resp) {
+                    var apirequest = "method=flickr.photos.getInfo&photo_id=" + photoid;
+
+                    if (photosecret !== "face")
+                        apirequest += "&secret=" + photosecret;
+
+                    do_flickrapi_request(info, apirequest, function (resp) {
                         try {
                             var out = JSON_parse(resp.responseText);
                             var url = out.photo.urls.url[0]._content;
@@ -38555,6 +38560,47 @@ var $$IMU_EXPORT$$;
             }
         }
 
+        if (domain_nowww === "freeseximages.com") {
+            // https://freeseximages.com/static/thumbnail/84525.jpg
+            //   https://freeseximages.com/static/source/84525.jpg
+            return src.replace(/\/static\/+thumbnail\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/static/source/$1");
+        }
+
+        if (domain_nosub === "ravelrycache.com" && /^images[0-9]*/.test(domain)) {
+            // https://images4-e.ravelrycache.com/uploads/amyraDE/622698897/thetis-komplett_small.jpg
+            //   https://images4-e.ravelrycache.com/uploads/amyraDE/622698897/thetis-komplett_small2.jpg
+            //   https://images4-e.ravelrycache.com/uploads/amyraDE/622698897/thetis-komplett_medium2.jpg
+            //   https://images4-e.ravelrycache.com/uploads/amyraDE/622698897/thetis-komplett.jpg -- 1000x750
+            // https://images4-e.ravelrycache.com/uploads/amyraDE/479213139/alkmene_umgelegt1_square.jpg
+            //   https://images4-e.ravelrycache.com/uploads/amyraDE/479213139/alkmene_umgelegt1.jpg
+            // https://images4-b.ravelrycache.com/uploads/softsweater/489868171/IMG_9332.jpg -- 1067x1600
+            //   https://www.ravelry.com/patterns/library/waiting-for-rain
+            // https://images4-e.ravelrycache.com/uploads/softsweater/401022832/webp/IMG_3490_small2.webp
+            //   https://images4-e.ravelrycache.com/uploads/softsweater/401022832/IMG_3490.jpg -- removing small2 with /webp/ doesn't work
+            // other:
+            // https://skitch2.ravelrycache.com/il_fullxfull.1320471158_heuv-1550264287.jpg -- 3000x3000
+            newsrc = src.replace(/(\/[0-9]+\/+)webp\/+([^/]*)\.webp([?#].*)?$/, "$1$2.jpg");
+            if (newsrc !== src)
+                return add_full_extensions(newsrc);
+
+            // https://images4-e.ravelrycache.com/flickr/2/5/1/25108855132/25108855132_n.jpg
+            //   https://images4-e.ravelrycache.com/flickr/2/5/1/25108855132/25108855132.jpg
+            //   https://images4-e.ravelrycache.com/flickr/2/5/1/25108855132/25108855132_b.jpg
+            //   https://www.flickr.com/photos/63369864@N00/25108855132
+            newsrc = src.replace(/(\/flickr\/+(?:[0-9]\/+){3}[0-9]+\/+[0-9]+)(?:_n)?(\.[^/.]*)(?:[?#].*)?$/, "$1_b$2");
+            if (newsrc !== src)
+                return newsrc;
+
+            match = src.match(/\/flickr\/+(?:[0-9]\/+){3}[0-9]+\/+([0-9]+)(?:_[a-z])?\.[^/.]*(?:[?#].*)?$/);
+            if (match) {
+                return {
+                    url: "https://live.staticflickr.com/0000/" + match[1] + "_face_k.jpg",
+                    fake: true
+                };
+            }
+
+            return src.replace(/(\/uploads\/+[^/]*\/+[0-9]+\/+[^/]*)_(?:small|medium|square)[0-9]*(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
 
 
 
