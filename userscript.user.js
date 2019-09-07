@@ -15655,6 +15655,7 @@ var $$IMU_EXPORT$$;
                 api_cache.fetch(cache_key, cb, function(done) {
                     var apirequest = "method=flickr.photos.getInfo&photo_id=" + photoid;
 
+                    // k in "fake" isn't hex
                     if (photosecret !== "face")
                         apirequest += "&secret=" + photosecret;
 
