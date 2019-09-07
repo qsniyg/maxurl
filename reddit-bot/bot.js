@@ -397,11 +397,14 @@ function dourl_inner(big, url, post) {
               comment += "*****\n\nOriginal page: " + big.extra.page + "\n\n";
             }
 
+            //var faq_link = "https://www.reddit.com/r/MaxImage/comments/8znfgw/faq/";
+            var faq_link = "https://www.reddit.com/r/MaxImage/comments/d0zshj/faq/";
+
             comment += "*****\n\n";
             //comment += "^[why?](https://www.reddit.com/r/MaxImage/comments/8znfgw/faq/)&nbsp;|&nbsp;to&nbsp;find&nbsp;larger&nbsp;images:&nbsp;[website](https://qsniyg.github.io/maxurl/)&nbsp;/&nbsp;[userscript](https://greasyfork.org/en/scripts/36662-image-max-url)";
             //comment += "[why?](https://www.reddit.com/r/MaxImage/comments/8znfgw/faq/) | to find larger images yourself: [website](https://qsniyg.github.io/maxurl/) / [userscript](https://greasyfork.org/en/scripts/36662-image-max-url)";
             // show the extension link instead of the website, as gitcdn is really off and on (need to find something else)
-            comment += "[why?](https://www.reddit.com/r/MaxImage/comments/8znfgw/faq/) | to find larger images yourself: [extension](https://addons.mozilla.org/en-US/firefox/addon/image-max-url/) / [userscript](https://greasyfork.org/en/scripts/36662-image-max-url)";
+            comment += "[why?](" + faq_link + ") | to find larger images yourself: [extension](https://addons.mozilla.org/en-US/firefox/addon/image-max-url/) / [userscript](https://greasyfork.org/en/scripts/36662-image-max-url)";
             console.log(comment);
             if (post) {
               var logged = false;
