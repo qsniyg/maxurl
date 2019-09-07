@@ -8613,6 +8613,9 @@ var $$IMU_EXPORT$$;
             // http://www.quejadore.com/var/quejadore_fr/storage/images/culture/cine-tv-series-dvd/autour-d-un-verre-avec-solene-rigot-a-l-affiche-de-les-revoltes-cette-semaine-56359-15-07-2015/986942-1-fre-MASTER/Autour-d-un-verre-avec-Solene-Rigot-a-l-affiche-de-Les-revoltes-cette-semaine_carrousel_quejadore.jpg
             //   http://www.quejadore.com/var/quejadore_fr/storage/images/culture/cine-tv-series-dvd/autour-d-un-verre-avec-solene-rigot-a-l-affiche-de-les-revoltes-cette-semaine-56359-15-07-2015/986942-1-fre-MASTER/Autour-d-un-verre-avec-Solene-Rigot-a-l-affiche-de-Les-revoltes-cette-semaine.jpg
             domain_nowww === "quejadore.com" ||
+            // https://file1.grazia.fr/var/grazia/storage/images/media/images/galerie/2016-05-18-en-images.-la-folle-soiree-de-grisogno-a-cannes/barbara-palvin/13423851-2-fre-FR/Barbara-Palvin_width1024.jpg
+            //   https://file1.grazia.fr/var/grazia/storage/images/media/images/galerie/2016-05-18-en-images.-la-folle-soiree-de-grisogno-a-cannes/barbara-palvin/13423851-2-fre-FR/Barbara-Palvin.jpg
+            (domain_nosub === "grazia.fr" && /^file[0-9]*\./.test(domain)) ||
             // https://img3.closermag.fr/var/closermag/storage/images/bio-people/biographie-jose-garcia-112817/827937-1-fre-FR/Jose-Garcia_square500x500.jpg
             //   https://img3.closermag.fr/var/closermag/storage/images/bio-people/biographie-jose-garcia-112817/827937-1-fre-FR/Jose-Garcia.jpg
             // https://img1.closermag.fr/var/closermag/storage/images/media/images-des-contenus/actu-people/people-anglo-saxons/20151129-selena/selena-gomez-pose-pour-in-style/4987068-1-fre-FR/Selena-Gomez-pose-pour-In-Style.png?v1/focus=0x0/cover=626x768
@@ -15399,7 +15402,9 @@ var $$IMU_EXPORT$$;
             // https://i03.fotocdn.net/s10/119/public_pin_l/473/2467682422.jpg -- don't believe there's a public_pin_xl
             // https://i07.fotocdn.net/s26/103/public_pin_3c/186/2651896166.jpg
             //   https://i07.fotocdn.net/s26/103/public_pin_l/186/2651896166.jpg
-            regex = /_(?:[a-z]+|[0-9]+c)(\/[0-9]+\/[0-9]+\.[^/.]*)$/;
+            // https://i03.fotocdn.net/s105/84875d618bc8f8f9/public_pin_m/2266704428.jpg
+            //  https://i03.fotocdn.net/s105/84875d618bc8f8f9/public_pin_l/2266704428.jpg -- doesn't work
+            regex = /_(?:[a-z]+|[0-9]+c)(\/+[0-9]+\/+[0-9]+\.[^/.]*)$/;
             return [
                 src.replace(regex, "_xl$1"),
                 src.replace(regex, "_l$1")
@@ -18684,7 +18689,13 @@ var $$IMU_EXPORT$$;
             //   https://img.day.az/2018/02/10/sexiest-women-selena-gomez.jpg
             // https://img.day.az/2018/03/07/thumb/ali_kerimli.jpg
             //   https://img.day.az/2018/03/07/ali_kerimli.jpg
-            return src.replace(/\/(?:(?:[0-9]+x[0-9]+[a-z]?)|thumb)(\/[^/]*)$/, "$1");
+            // other:
+            // https://img.milli.az/250x0s/n/clickable/0b/5/http_photos.milli.az_images_year_2013_177439_212.jpg
+            // https://img2.milli.az/n/clickable/0b/5/http_photos.milli.az_images_year_2013_177439_203.jpg
+            // no ip found for photos.milli.az
+            newsrc = src.replace(/\/(?:(?:[0-9]+x[0-9]+[a-z]?)|thumb)(\/[^/]*)$/, "$1");
+            if (newsrc !== src)
+                return newsrc;
             //return src.replace(/\/[0-9]+x[0-9]+[a-z]*\/([^/]*)$/, "/$1");
         }
 
@@ -19756,6 +19767,15 @@ var $$IMU_EXPORT$$;
             // https://thumbs.wikifeet.com/3398643.jpg
             //   https://pics.wikifeet.com/3398643.jpg
             return src.replace(/:\/\/[^/]*\//, "://pics.wikifeet.com/");
+        }
+
+        if (false && domain === "my.wikifeet.com") {
+            // https://my.wikifeet.com/photos/t179623.jpg
+            //   https://my.wikifeet.com/photos/179623.jpg
+            // doesn't work for all:
+            // https://my.wikifeet.com/photos/t166055.jpg
+            //   https://my.wikifeet.com/photos/166055.jpg -- access denied (Content-Length: 169698, Last-Modified: Thu, 01 Aug 2019 12:02:01 GMT, Vary: Cookie)
+            return src.replace(/\/photos\/+t([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/photos/$1");
         }
 
         if (domain === "static.spotboye.com") {
@@ -23589,8 +23609,12 @@ var $$IMU_EXPORT$$;
         if (domain_nowww === "lichnosti.net") {
             // http://lichnosti.net/rs/thumbs/599/set_8_51e52868d9343_jpg_0_250_250.png
             //   http://lichnosti.net/photos/599/sets/8_51e52868d9343.jpg
-            return src.replace(/\/rs\/thumbs\/([0-9]+)\/set_([^/]*)_([a-z]+)_[0-9]+_[0-9]+_[0-9]+\.[^/.]*$/,
-                               "/photos/$1/sets/$2.$3");
+            // http://lichnosti.net/rs/thumbs/4758/13791893438_jpg_0_100_0.png
+            //   http://lichnosti.net/photos/4758/13791893438.jpg
+            //   http://lichnosti.net/photo_55508.html
+            return src
+                .replace(/\/rs\/+thumbs\/+([0-9]+)\/+set_([^/]*)_([a-z]+)_[0-9]+_[0-9]+_[0-9]+\.[^/.]*$/, "/photos/$1/sets/$2.$3")
+                .replace(/\/rs\/+thumbs\/+([0-9]+)\/+([^/]*)_([a-z]+)_[0-9]+_[0-9]+_[0-9]+\.[^/.]*$/, "/photos/$1/$2.$3");
         }
 
         if (domain_nosub === "zmones.lt" &&
@@ -24920,7 +24944,7 @@ var $$IMU_EXPORT$$;
             domain_nosub === "youx.xxx" ||
             // https://cdncontent.xxxwaffle.com/gthumb/1/812/1812867_9141b65_300x_.jpg
             //   https://cdncontent.xxxwaffle.com/content/1/812/1812867_9141b65.jpg
-            domain === "cdncontent.xxxwaffle.com" ||
+            domain_nosub === "xxxwaffle.com" ||
             // https://cdn.pornpictureshq.com/galleries/gthumb/5/608/5608634_a66a64b_2400x_.jpg -- stretched
             //   https://cdn.pornpictureshq.com/galleries/content/5/608/5608634_a66a64b.jpg
             domain === "cdn.pornpictureshq.com") {
@@ -27542,10 +27566,14 @@ var $$IMU_EXPORT$$;
         if (domain_nosub === "game234.com" && domain.match(/^webimg[0-9]*\./) ||
             // https://reho.st/https://img.izismile.com/img/img12/20190705/640/fine_examples_when_a_picture_says_more_than_just_a_thousand_words_640_38.jpg
             //   https://img.izismile.com/img/img12/20190705/640/fine_examples_when_a_picture_says_more_than_just_a_thousand_words_640_38.jpg
+            // https://reho.st/s02.tcuniverse.com/vkmedia_store/2012/11/YbVg7sxObxiITQsb/sizes/clean/pic_106_clean_790.jpg
+            //   https://s02.tcuniverse.com/vkmedia_store/2012/11/YbVg7sxObxiITQsb/sizes/clean/pic_106_clean_790.jpg
             domain_nowww === "reho.st") {
             // http://webimg1.game234.com/http://i-4.yxdown.com/2018/3/30/KDYwMHgp/a9be3ebb-50a7-4993-9cfb-c1a3ddc3ff61.png
             //   http://i-4-yxdown.715083.com/2018/3/30/a9be3ebb-50a7-4993-9cfb-c1a3ddc3ff61.png?imageView2/2/q/65/w/600 -- broken with referrer
-            return src.replace(/^[a-z]+:\/\/[^/]*\/([a-z]+:\/\/)/, "$1");
+            newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+((?:[a-z]+:\/\/)?[^/]+\.[^/.]+\/+)/, "$1");
+            if (newsrc !== src)
+                return add_http(newsrc);
         }
 
         if (domain === "cdn.snsimg.carview.co.jp") {
@@ -33972,6 +34000,9 @@ var $$IMU_EXPORT$$;
 
         if (domain === "cdn.moar.exchange" ||
             domain === "cdn.viral.porn" ||
+            // https://cdn.moar.network/media/38-749/conversions/5c4ba83ed2090-post_archive_thumb.jpg -- upscaled?
+            //   https://cdn.moar.network/media/38-749/5c4ba83ed2090.jpeg
+            domain === "cdn.moar.network" ||
             domain === "cdn.nsfw.exchange") {
             // https://cdn.moar.exchange/media/38-8310/conversions/5ce759d7db688-post_archive_thumb.jpg
             //   https://cdn.moar.exchange/media/38-8310/5ce759d7db688.jpeg
@@ -36716,7 +36747,7 @@ var $$IMU_EXPORT$$;
             //   https://img.index.hu/imgfrm/8/2/4/5/IMG_0000938245.jpg
             // https://img.index.hu/imgfrm/5/0/7/4/BIG_0003105074.jpg
             //   https://img.index.hu/imgfrm/5/0/7/4/IMG_0003105074.jpg
-            return src.replace(/(\/imgfrm\/+(?:.\/+){4})(?:THM|BIG)_/, "$1IMG_");
+            return src.replace(/(\/imgfrm\/+(?:.\/+){4})(?:THM|BIG|MED)_/, "$1IMG_");
         }
 
         if (domain_nowww === "eventpixx.org") {
@@ -38603,6 +38634,17 @@ var $$IMU_EXPORT$$;
             return src.replace(/(\/uploads\/+[^/]*\/+[0-9]+\/+[^/]*)_(?:small|medium|square)[0-9]*(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
         }
 
+        if (domain_nowww === "fotorgia.com") {
+            // http://www.fotorgia.com/wp-content/plugins/wp-o-matic/cache/0f9b1be272_dzawi3Q-1-180x240.jpg
+            //   http://www.fotorgia.com/wp-content/plugins/wp-o-matic/cache/0f9b1be272_dzawi3Q.jpg
+            return src.replace(/(\/wp-content\/+plugins\/+wp-o-matic\/+cache\/+[0-9a-f]+_[^/]+)-[0-9]-[0-9]+x[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain_nowww === "bonjourlesmadames.fr") {
+            // https://www.bonjourlesmadames.fr/static/files/2017/2017-07-23/200_bonjour-la-rousse.jpg
+            //   https://www.bonjourlesmadames.fr/static/files/2017/2017-07-23/bonjour-la-rousse.jpg
+            return src.replace(/(\/static\/+files\/+[0-9]{4}\/+[0-9]{4}-[0-9]{2}-[0-9]{2}\/+)[0-9]+_([^/]*\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
 
 
 
