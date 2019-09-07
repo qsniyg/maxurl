@@ -99,6 +99,7 @@ As mentioned above, userscript.user.js also functions as a node module.
         //   url: "",
         //   method: "GET",
         //   data: "", // for method: "POST"
+        //   overrideMimeType: "", // used to decode alternate charsets
         //   headers: {}, // If a header is null or "", don't include that header
         //   onload: function(resp) {
         //     // resp is expected to be XMLHttpRequest-like object, implementing these fields:

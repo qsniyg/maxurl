@@ -486,6 +486,7 @@ function dourl(url, post) {
       }
 
       // TODO: implement POST (.body or .form?)
+      // implement overrideMimeType
       request({
         method: options.method,
         uri: options.url,
