@@ -1615,22 +1615,21 @@ var $$IMU_EXPORT$$;
 
     var common_functions = {};
     common_functions.deviantart_page_from_id = function(do_request, id, cb) {
-        if (api_cache.has("deviantart_page_from_id:" + id)) {
-            return cb(api_cache.get("deviantart_page_from_id:" + id));
-        }
+        var cache_key = "deviantart_page_from_id:" + id;
 
-        do_request({
-            method: "GET",
-            url: "http://fav.me/" + id,
-            onload: function(result) {
-                if (result.status !== 200) {
-                    console_log(result);
-                    return cb(null);
+        api_cache.fetch(cache_key, cb, function (done) {
+            do_request({
+                method: "GET",
+                url: "http://fav.me/" + id,
+                onload: function (result) {
+                    if (result.status !== 200) {
+                        console_log(cache_key, result);
+                        return done(null, false);
+                    }
+
+                    done(result, 60 * 60);
                 }
-
-                api_cache.set("deviantart_page_from_id:" + id, result, 60*60);
-                cb(result);
-            }
+            });
         });
     };
 
