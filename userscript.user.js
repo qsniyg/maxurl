@@ -20357,6 +20357,13 @@ var $$IMU_EXPORT$$;
             options.do_request && options.cb) {
             newsrc = (function() {
                 var query_ig = function(url, cb) {
+                    // Normalize the URL to reduce duplicate cache checks
+                    url = url
+                        .replace(/[?#].*/, "")
+                        .replace(/([^/])$/, "$1/")
+                        .replace(/^http:/, "https:")
+                        .replace(/(:\/\/.*?)\/\/+/g, "$1/");
+
                     var cache_key = "instagram_sharedData_query:" + url;
                     api_cache.fetch(cache_key, cb, function (done) {
                         options.do_request({
@@ -20654,27 +20661,37 @@ var $$IMU_EXPORT$$;
                     if (current.tagName === "HEADER") {
                         var sharedData = null;
 
-                        var scripts = document.getElementsByTagName("script");
-                        for (var i = 0; i < scripts.length; i++) {
-                            if (scripts[i].innerText.match(/^ *window\._sharedData/)) {
-                                sharedData = scripts[i].innerText.replace(/^ *window\._sharedData *= *({.*}) *;.*?/, "$1");
+                        // Still keep this code because this way we can know it exists?
+                        if (true) {
+                            var scripts = document.getElementsByTagName("script");
+                            for (var i = 0; i < scripts.length; i++) {
+                                if (scripts[i].innerText.match(/^ *window\._sharedData/)) {
+                                    sharedData = scripts[i].innerText.replace(/^ *window\._sharedData *= *({.*}) *;.*?/, "$1");
+                                }
+                            }
+
+                            if (!sharedData) {
+                                console_error("Shared data not found");
+                                continue;
+                            } else {
+                                sharedData = JSON.parse(sharedData);
                             }
                         }
 
-                        if (!sharedData) {
-                            console_error("Shared data not found");
-                            continue;
-                        } else {
-                            sharedData = JSON.parse(sharedData);
-                        }
-
-                        uid_to_profile(uid_from_sharedData(sharedData), function(profile) {
-                            if (!profile) {
-                                options.cb(null);
+                        query_ig(options.host_url, function (sharedData) {
+                            if (!sharedData) {
+                                console_error("Shared data not found");
                                 return;
                             }
 
-                            options.cb(profile_to_url(profile));
+                            uid_to_profile(uid_from_sharedData(sharedData), function (profile) {
+                                if (!profile) {
+                                    options.cb(null);
+                                    return;
+                                }
+
+                                options.cb(profile_to_url(profile));
+                            });
                         });
 
                         return {
