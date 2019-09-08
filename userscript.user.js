@@ -20360,6 +20360,10 @@ var $$IMU_EXPORT$$;
              domain_nosub === "cdninstagram.com") &&
             host_domain_nosub === "instagram.com" && options.element &&
             options.do_request && options.cb) {
+            // ig_cache_key, se, _nc_cat aren't needed
+            // _nt_ht is needed
+            // if oe is missing, "Bad URL timestamp"
+            // if oh is missing, "Bad URL hash"
             newsrc = (function() {
                 var query_ig = function(url, cb) {
                     // Normalize the URL to reduce duplicate cache checks
@@ -38682,6 +38686,15 @@ var $$IMU_EXPORT$$;
             return src.replace(/(\/img\/+[0-9]+(?:\/+|-))[^/]*((?:\/+|-)[0-9]+[^0-9])/, "$1origin$2");
         }
 
+        if (domain === "uimg.ngfiles.com") {
+            // https://uimg.ngfiles.com/icons/7097/7097354_small.png?f1547808730
+            //   https://uimg.ngfiles.com/icons/7097/7097354_large.png?f1547808730
+            // other:
+            // https://art.ngfiles.com/thumbnails/1017000/1017695_full.png?f1567918106
+            //   https://www.newgrounds.com/art/view/grillhou5e/jesus-quintana
+            //   https://art.ngfiles.com/images/1017000/1017695_grillhou5e_jesus-quintana.png?f1567918067
+            return src.replace(/(\/icons\/+[0-9]+\/+[0-9]+_)(?:small|medium)\./, "$1large.")
+        }
 
 
 
