@@ -8514,8 +8514,7 @@ var $$IMU_EXPORT$$;
             return src.replace(/-[0-9]*(\.[^/.]*)$/, "$1");
         }
 
-        if (domain_nosub === "deviantart.net" &&
-            domain.match(/t[0-9]*\.deviantart\.net/)) {
+        if (domain_nosub === "deviantart.net" && domain.match(/^t[0-9]*\./)) {
             // https://t00.deviantart.net/7PiX79OLWVS6WAzA0thSVYzWarQ=/300x200/filters:fixed_height(100,100):origin()/pre00/f044/th/pre/i/2004/235/7/b/megaman.jpg
             //   https://pre00.deviantart.net/f044/th/pre/i/2004/235/7/b/megaman.jpg
             // https://t00.deviantart.net/lNDj1np7JyLzN7U1MHhJlzp38Vs=/300x200/filters:fixed_height(100,100):origin()/pre00/4328/th/pre/f/2011/194/b/6/megaman_tribute_by_saiyagina-d3odj4t.jpg
@@ -40510,7 +40509,7 @@ var $$IMU_EXPORT$$;
 
         send_redirect(obj, function() {
             if (settings.redirect_history) {
-                window.location = url;
+                window.location.assign(url);
             } else {
                 window.location.replace(url);
             }
