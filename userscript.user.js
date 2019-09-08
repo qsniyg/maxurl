@@ -38101,7 +38101,7 @@ var $$IMU_EXPORT$$;
                                 } catch (e) {
                                     console_log("vk_photo", result);
                                     console_error("vk_photo", e);
-                                    cb(null);
+                                    done(null, false);
                                 }
                             }
                         });
