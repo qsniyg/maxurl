@@ -1719,6 +1719,11 @@ var $$IMU_EXPORT$$;
             }
         }
 
+        if (options.document)
+            document = options.document;
+        if (options.window)
+            window = options.window;
+
         var newsrc, i, id, size, origsize, regex, match;
 
         // instart logic morpheus
