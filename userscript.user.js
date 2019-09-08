@@ -12302,10 +12302,13 @@ var $$IMU_EXPORT$$;
             return src.replace(/.*:\/\/[^/]*\//, "http://");
         }
 
-        if (domain_nowww === "girlscene.nl") {
+        if (domain_nowww === "girlscene.nl" ||
+            // https://www.trendalert.nl/thumb/200x200/ckfinder/userfiles/images/Fashionscene/Beelden%202016/April%202016/Cara%20Delevingne%20Fashionscene14.jpg
+            //   https://www.trendalert.nl/ckfinder/userfiles/images/Fashionscene/Beelden%202016/April%202016/Cara%20Delevingne%20Fashionscene14.jpg
+            domain_nowww === "trendalert.nl") {
             // https://www.girlscene.nl/thumb/782x0/ckfinder/userfiles/images/Beauty/2015/mei/Braun%20Silk-epil%209%20-%20Jessica%20Alba.jpg -- stretched
             //   https://www.girlscene.nl/ckfinder/userfiles/images/Beauty/2015/mei/Braun%20Silk-epil%209%20-%20Jessica%20Alba.jpg
-            return src.replace(/\/thumb\/[0-9]+x[0-9]+\//, "/");
+            return src.replace(/\/thumb\/+[0-9]+x[0-9]+\/+ckfinder\/+/, "/ckfinder/");
         }
 
         if (domain_nowww === "hdfullfilmizle.com") {
@@ -20357,40 +20360,36 @@ var $$IMU_EXPORT$$;
             newsrc = (function() {
                 var query_ig = function(url, cb) {
                     var cache_key = "instagram_sharedData_query:" + url;
+                    api_cache.fetch(cache_key, cb, function (done) {
+                        options.do_request({
+                            method: "GET",
+                            url: url,
+                            onload: function (result) {
+                                if (result.readyState !== 4)
+                                    return;
 
-                    if (api_cache.has(cache_key)) {
-                        return cb(api_cache.get(cache_key));
-                    }
+                                try {
+                                    var text = result.responseText;
 
-                    options.do_request({
-                        method: "GET",
-                        url: url,
-                        onload: function(result) {
-                            if (result.readyState !== 4)
-                                return;
+                                    var regex1 = /window\._sharedData = *(.*?);?<\/script>/;
+                                    var regex2 = /window\._sharedData *= *(.*?}) *;[\s]*window\.__initialDataLoaded/;
 
-                            try {
-                                var text = result.responseText;
+                                    var match = text.match(regex1);
+                                    if (!match) {
+                                        match = text.match(regex2);
+                                    }
 
-                                var regex1 = /window\._sharedData = *(.*?);?<\/script>/;
-                                var regex2 = /window\._sharedData *= *(.*?}) *;[\s]*window\.__initialDataLoaded/;
+                                    var parsed = JSON_parse(match[1]);
 
-                                var match = text.match(regex1);
-                                if (!match) {
-                                    match = text.match(regex2);
+                                    // TODO: maybe check if parsed is correct before setting to cache?
+                                    done(parsed, 60 * 60);
+                                } catch (e) {
+                                    console_log("instagram_sharedData", result);
+                                    console_error("instagram_sharedData", e);
+                                    done(null, false);
                                 }
-
-                                var parsed = JSON_parse(match[1]);
-
-                                // TODO: maybe check if parsed is correct before setting to cache?
-                                api_cache.set(cache_key, parsed, 60*60);
-                                cb(parsed);
-                            } catch (e) {
-                                console_log(result);
-                                console_error(e);
-                                cb(null);
                             }
-                        }
+                        });
                     });
                 };
 
@@ -20424,30 +20423,27 @@ var $$IMU_EXPORT$$;
 
                 var uid_to_profile = function(uid, cb) {
                     var cache_key = "instagram_uid_to_profile:" + uid;
-                    if (api_cache.has(cache_key)) {
-                        return cb(api_cache.get(cache_key));
-                    }
+                    api_cache.fetch(cache_key, cb, function (done) {
+                        var url = "https://i.instagram.com/api/v1/users/" + uid + "/info/";
+                        options.do_request({
+                            method: "GET",
+                            url: url,
+                            onload: function (result) {
+                                if (result.readyState !== 4)
+                                    return;
 
-                    var url = "https://i.instagram.com/api/v1/users/" + uid + "/info/";
-                    options.do_request({
-                        method: "GET",
-                        url: url,
-                        onload: function(result) {
-                            if (result.readyState !== 4)
-                                return;
+                                try {
+                                    var parsed = JSON_parse(result.responseText).user;
 
-                            try {
-                                var parsed = JSON_parse(result.responseText).user;
-
-                                // 5 minutes since they can change their profile pic often
-                                api_cache.set(cache_key, parsed, 5*60);
-                                cb(parsed);
-                            } catch (e) {
-                                console_log(result);
-                                console_error(e);
-                                cb(null);
+                                    // 5 minutes since they can change their profile pic often
+                                    done(parsed, 5 * 60);
+                                } catch (e) {
+                                    console_log("instagram_uid_to_profile", result);
+                                    console_error("instagram_uid_to_profile", e);
+                                    done(null, false);
+                                }
                             }
-                        }
+                        });
                     });
                 };
 
@@ -20494,25 +20490,25 @@ var $$IMU_EXPORT$$;
 
                 var mediainfo_api = function(id, cb) {
                     var cache_key = "instagram_mediainfo:" + id;
-                    if (api_cache.has(cache_key)) {
-                        return cb(api_cache.get(cache_key));
-                    }
+                    api_cache.fetch(cache_key, cb, function (done) {
+                        var url = "https://i.instagram.com/api/v1/media/" + id + "/info/";
+                        app_api_call(url, function (result) {
+                            if (result.readyState !== 4)
+                                return;
 
-                    var url = "https://i.instagram.com/api/v1/media/" + id + "/info/";
-                    app_api_call(url, function(result) {
-                        if (result.readyState !== 4)
-                            return;
+                            if (result.status === 200) {
+                                try {
+                                    var parsed = JSON_parse(result.responseText);
 
-                        if (result.status === 200) {
-                            try {
-                                var parsed = JSON_parse(result.responseText);
+                                    return done(parsed, 60 * 60);
+                                } catch (e) {
+                                    console_log("instagram_mediainfo", result);
+                                    console_error("instagram_mediainfo", e);
+                                }
+                            }
 
-                                api_cache.set(cache_key, parsed, 60 * 60);
-                                return cb(parsed);
-                            } catch (e) { }
-                        }
-
-                        cb(null);
+                            done(null, false);
+                        });
                     });
                 };
 
@@ -20583,6 +20579,8 @@ var $$IMU_EXPORT$$;
                                         parse_image(item);
                                     }
                                 } else {
+                                    console_log("Unable to use API to find Instagram image");
+
                                     var parse_image = function(node) {
                                         var image = node.display_src;
                                         if (!image)
@@ -38061,52 +38059,54 @@ var $$IMU_EXPORT$$;
             newsrc = (function() {
                 function request_photo(id, cb) {
                     var cache_key = "vk_photo:" + id;
-                    if (api_cache.has(cache_key)) {
-                        return cb(api_cache.get(cache_key));
-                    }
+                    api_cache.fetch(cache_key, cb, function (done) {
+                        options.do_request({
+                            method: "POST",
+                            url: "https://vk.com/al_photos.php",
+                            data: "act=show&al=1&photo=" + id,
+                            headers: {
+                                "Content-Type": "application/x-www-form-urlencoded",
+                                "X-Requested-With": "XMLHttpRequest"
+                            },
+                            onload: function (result) {
+                                if (result.readyState !== 4)
+                                    return;
 
-                    options.do_request({
-                        method: "POST",
-                        url: "https://vk.com/al_photos.php",
-                        data: "act=show&al=1&photo=" + id,
-                        headers: {
-                            "Content-Type": "application/x-www-form-urlencoded",
-                            "X-Requested-With": "XMLHttpRequest"
-                        },
-                        onload: function(result) {
-                            if (result.readyState !== 4)
-                                return;
-
-                            var match = result.responseText.match(/<!json>(\[.*?\])<!>/);
-                            if (!match) {
-                                return options.cb(null);
-                            }
-
-                            try {
-                                var jsonarray = JSON_parse(match[1]);
-                                var jsonobj = null;
-
-                                //console_log(jsonarray);
-
-                                for (var i = 0; i < jsonarray.length; i++) {
-                                    if (!jsonarray[i].id)
-                                        continue;
-
-                                    api_cache.set("vk_photo:" + jsonarray[i].id, jsonarray[i]);
-
-                                    if (jsonarray[i].id !== id)
-                                        continue;
-
-                                    jsonobj = jsonarray[i];
-                                    break;
+                                var match = result.responseText.match(/<!json>(\[.*?\])<!>/);
+                                if (!match) {
+                                    return done(null, false);
                                 }
 
-                                return cb(jsonobj);
-                            } catch (e) {
-                                console_error(e);
-                                cb(null);
+                                try {
+                                    var jsonarray = JSON_parse(match[1]);
+                                    var jsonobj = null;
+
+                                    //console_log(jsonarray);
+
+                                    for (var i = 0; i < jsonarray.length; i++) {
+                                        if (!jsonarray[i].id)
+                                            continue;
+
+                                        api_cache.set("vk_photo:" + jsonarray[i].id, jsonarray[i], 3*60*60);
+
+                                        if (jsonarray[i].id !== id)
+                                            continue;
+
+                                        jsonobj = jsonarray[i];
+                                        break;
+                                    }
+
+                                    if (jsonobj !== null)
+                                        done(jsonobj, 3*60*60);
+                                    else
+                                        done(null, false);
+                                } catch (e) {
+                                    console_log("vk_photo", result);
+                                    console_error("vk_photo", e);
+                                    cb(null);
+                                }
                             }
-                        }
+                        });
                     });
                 }
 
@@ -38646,6 +38646,21 @@ var $$IMU_EXPORT$$;
             return src.replace(/(\/static\/+files\/+[0-9]{4}\/+[0-9]{4}-[0-9]{2}-[0-9]{2}\/+)[0-9]+_([^/]*\.[^/.]*)(?:[?#].*)?$/, "$1$2");
         }
 
+        if (domain === "img.blesk.cz") {
+            // https://img.blesk.cz/img/17/article/2043571/rihanna.jpg
+            //   https://img.blesk.cz/img/17/origin/2043571/rihanna.jpg -- 1158x1600
+            //   https://img.blesk.cz/img/17/origin/2043571.jpg -- works too
+            //   https://img.blesk.cz/img/17/origin/2043571_.jpg
+            //   https://img.blesk.cz/img/17/origin/2043571-.jpg
+            // https://img.blesk.cz/img/33-origin-5163189.jpg -- 1920x1080
+            // https://img.blesk.cz/img/17/full/1864477.jpg -- 978x1224, upscaled (maybe the image itself is upscaled?), origin doesn't work
+            // https://img.blesk.cz/img/17/normal108/2002124_rihanna.jpg
+            // https://img.blesk.cz/img/1-full-976650.jpg -- 320x240
+            //   https://img.blesk.cz/img/1-origin-976650.jpg -- 320x240
+            // other:
+            // https://img.blesk.cz/static/images/1/upload_field/24_CPROMOBOX/1467/56/56272_b38fe9f3e3c20ca3e6cb60cd359ee86a.jpg
+            return src.replace(/(\/img\/+[0-9]+(?:\/+|-))[^/]*((?:\/+|-)[0-9]+[^0-9])/, "$1origin$2");
+        }
 
 
 
