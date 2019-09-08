@@ -15628,7 +15628,6 @@ var $$IMU_EXPORT$$;
                                 csrf: auth.csrf
                             };
 
-                            api_cache.set("flickr_api_info", info, 60 * 60);
                             done(info, 60 * 60);
                         }
                     });
