@@ -58,8 +58,8 @@ var $$IMU_EXPORT$$;
     var options_page = "https://qsniyg.github.io/maxurl/options.html";
 
     try {
-        if (document.location.href.match(/^https?:\/\/qsniyg\.github\.io\/maxurl\/options\.html/) ||
-            document.location.href.match(/^file:\/\/.*\/maxurl\/site\/options\.html/)) {
+        if (window.location.href.match(/^https?:\/\/qsniyg\.github\.io\/maxurl\/options\.html/) ||
+            window.location.href.match(/^file:\/\/.*\/maxurl\/site\/options\.html/)) {
             is_options_page = true;
         }
     } catch(e) {
@@ -70,7 +70,7 @@ var $$IMU_EXPORT$$;
         is_extension = extension_manifest.name === "Image Max URL";
 
         extension_options_page = chrome.runtime.getURL("extension/options.html");
-        is_extension_options_page = document.location.href.replace(/[?#].*$/, "") === extension_options_page;
+        is_extension_options_page = window.location.href.replace(/[?#].*$/, "") === extension_options_page;
         is_options_page = is_options_page || is_extension_options_page;
         //options_page = extension_options_page; // can't load from website
 
@@ -20646,12 +20646,12 @@ var $$IMU_EXPORT$$;
                     if (current.tagName !== "A")
                         continue;
 
-                    if (current.href.match(/:\/\/[^/]*\/p\//)) {
+                    if (current.href.match(/:\/\/[^/]+\/+(?:[^/]+\/+)?p\//)) {
                         // post
                         newsrc = request_post(current.href, options.element.src);
                         if (newsrc)
                             return newsrc;
-                    } else if (current.href.match(/:\/\/[^/]*\/[^/]*(?:\/(?:\?.*)?)?$/)) {
+                    } else if (current.href.match(/:\/\/[^/]+\/+[^/]+(?:\/+(?:[?#].*)?)?$/)) {
                         // user
                         newsrc = request_profile(current.href);
                         if (newsrc)
@@ -20707,8 +20707,8 @@ var $$IMU_EXPORT$$;
                     // popup
                     if ((current.tagName === "DIV" && current.getAttribute("role") === "dialog") ||
                         // post page
-                        (current.tagName === "MAIN" && document.location.href.match(/:\/\/[^/]*\/+(?:[^/]*\/+)?p\//))) {
-                        newsrc = request_post(document.location.href, options.element.src);
+                        (current.tagName === "BODY" && options.host_url.match(/:\/\/[^/]*\/+(?:[^/]+\/+)?p\//))) {
+                        newsrc = request_post(options.host_url, options.element.src);
                         if (newsrc)
                             return newsrc;
                     }
@@ -20719,7 +20719,7 @@ var $$IMU_EXPORT$$;
         }
 
         if (domain_nosub === "instagram.com" &&
-            src.match(/:\/\/[^/]*\/p\/+[^/]*\/+media\/*[?]size=[a-z](?:[&#].*)?$/)) {
+            src.match(/:\/\/[^/]*\/+p\/+[^/]*\/+media\/*[?]size=[a-z](?:[&#].*)?$/)) {
             // https://www.instagram.com/p/BkArbRJBpNS/media?size=m
             //   https://www.instagram.com/p/BkArbRJBpNS/media?size=l
             //   https://instagram.fyvr2-1.fna.fbcdn.net/vp/6d735911bc97047c9b65a842b7cb3547/5D963B3E/t51.2885-15/e35/34777339_389407841565200_4095040588460589056_n.jpg?_nc_ht=instagram.fyvr2-1.fna.fbcdn.net
@@ -39847,6 +39847,10 @@ var $$IMU_EXPORT$$;
             }
         }
 
+        if (options.window)
+            window = options.window;
+        if (options.document);
+            document = options.document;
 
 
         if (host_domain_nosub === "imgur.com") {
@@ -39856,7 +39860,7 @@ var $$IMU_EXPORT$$;
                         return null;
 
                     try {
-                        var images = unsafeWindow.runSlots.item.album_images.images;
+                        var images = window.runSlots.item.album_images.images;
                         var current_hash = bigimage_recursive(el.src, {fill_object: true})[0].url.replace(/.*\/([^/._]*?)\.[^/.]*?(?:[?#].*)?$/, "$1");
                         if (current_hash !== el.src) {
                             for (var i = 0; i < images.length; i++) {
@@ -40481,7 +40485,7 @@ var $$IMU_EXPORT$$;
         if (_nir_debug_ && _nir_debug_.no_redirect)
             return;
 
-        if (url === document.location.href)
+        if (url === window.location.href)
             return;
 
         // wrap in try/catch due to nano defender
@@ -40493,7 +40497,7 @@ var $$IMU_EXPORT$$;
 
         send_redirect(obj, function() {
             if (settings.redirect_history) {
-                document.location = url;
+                window.location = url;
             } else {
                 window.location.replace(url);
             }
@@ -40625,7 +40629,7 @@ var $$IMU_EXPORT$$;
         var url = obj.url;
         var err_txt;
 
-        if (url === document.location.href) {
+        if (url === window.location.href) {
             print_orig();
             ok_cb(url);
         } else  {
@@ -40711,7 +40715,7 @@ var $$IMU_EXPORT$$;
                         if (resp.readyState == 4) {
                             cursor_default();
 
-                            if (resp.finalUrl === document.location.href) {
+                            if (resp.finalUrl === window.location.href) {
                                 console_log(resp.finalUrl);
                                 console_log("Same URL");
                                 return;
@@ -40816,7 +40820,7 @@ var $$IMU_EXPORT$$;
         if ((settings["redirect_force_page"] + "") === "true")
             force_page = true;
 
-        bigimage_recursive_loop(document.location.href, {
+        bigimage_recursive_loop(window.location.href, {
             fill_object: true,
             force_page: force_page,
             document: document,
@@ -40834,7 +40838,7 @@ var $$IMU_EXPORT$$;
                     console_log("Original page: " + newhref[0].extra.page);
                 }
 
-                if (newurl === document.location.href)
+                if (newurl === window.location.href)
                     return;
 
                 if (!newurl)
@@ -40853,7 +40857,7 @@ var $$IMU_EXPORT$$;
             if (false && !newhref[0].can_head || newhref[0].always_ok) {
                 var newurl = newhref[0].url;
 
-                if (newurl === document.location.href) {
+                if (newurl === window.location.href) {
                     cursor_default();
                     return;
                 }
@@ -41700,8 +41704,8 @@ var $$IMU_EXPORT$$;
 
         if (!headers || Object.keys(headers).length === 0) {
             headers = {
-                "Origin": url_domain,
-                "Referer": document.location.href
+                //"Origin": url_domain,
+                "Referer": window.location.href
             };
         } else if (!headers.Origin && !headers.origin) {
             headers.Origin = url_domain;
@@ -42957,7 +42961,7 @@ var $$IMU_EXPORT$$;
             }
 
             function norm(src) {
-                return urljoin(document.location.href, src, true);
+                return urljoin(window.location.href, src, true);
             }
 
             function addImage(src, el, options) {
@@ -43575,7 +43579,7 @@ var $$IMU_EXPORT$$;
                 try {
                     bigimage_recursive_loop(source.src, {
                         fill_object: true,
-                        host_url: document.location.href,
+                        host_url: window.location.href,
                         document: document,
                         window: window,
                         element: source.el,
@@ -43650,7 +43654,9 @@ var $$IMU_EXPORT$$;
 
             var options = {
                 element: popup_el,
-                host_url: document.location.href
+                document: document,
+                window: window,
+                host_url: window.location.href
             };
 
             var helpers = get_helpers(options);
@@ -44133,8 +44139,8 @@ var $$IMU_EXPORT$$;
             if (settings.redirect)
                 do_redirect();
 
-            if (document.location.href.match(/^https?:\/\/qsniyg\.github\.io\/+maxurl\/+options\.html/) ||
-                document.location.href.match(/^file:\/\/.*\/maxurl\/site\/options\.html/) ||
+            if (window.location.href.match(/^https?:\/\/qsniyg\.github\.io\/+maxurl\/+options\.html/) ||
+                window.location.href.match(/^file:\/\/.*\/maxurl\/site\/options\.html/) ||
                 (is_extension && is_extension_options_page)) {
                 onload(function() {
                     do_options();
@@ -44142,8 +44148,8 @@ var $$IMU_EXPORT$$;
             }
 
             if (settings.website_inject_imu &&
-                (document.location.href.match(/^https?:\/\/qsniyg\.github\.io\/+maxurl(\/+|\/+index\.html)?(?:[?#].*)?$/) ||
-                 document.location.href.match(/^file:\/\/.*\/maxurl\/site\/index\.html/))) {
+                (window.location.href.match(/^https?:\/\/qsniyg\.github\.io\/+maxurl(\/+|\/+index\.html)?(?:[?#].*)?$/) ||
+                 window.location.href.match(/^file:\/\/.*\/maxurl\/site\/index\.html/))) {
                 if (typeof(unsafeWindow) !== "undefined") {
                     onload(function() {
                         do_websitehome();
