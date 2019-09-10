@@ -1496,7 +1496,7 @@ var $$IMU_EXPORT$$;
 
     function fuzzify_text(str) {
         return str
-            .replace(/(?:["'’‘”“]|\[|])/g, " ")
+            .replace(/(?:[-=_!?$#"'’‘”“]|\[|])/g, " ")
             .replace(/\s+/g, " ")
             .replace(/^\s+|\s+$/g, "");
     }
@@ -2619,6 +2619,7 @@ var $$IMU_EXPORT$$;
                                 var nonglobal_regex = new RegExp(entry_regex, "");
                                 var entries_match = result.responseText.match(entry_regex);
                                 if (!entries_match) {
+                                    console_error("No search entries found", searchurl);
                                     return done(null, false);
                                 }
 
@@ -2626,14 +2627,20 @@ var $$IMU_EXPORT$$;
 
                                 for (var entry_i = 0; entry_i < entries_match.length; entry_i++) {
                                     var match = entries_match[entry_i].match(nonglobal_regex);
-                                    if (!match)
+                                    if (!match) {
+                                        console_error("Unable to match non-global regex (this shouldn't happen)");
                                         continue;
+                                    }
 
                                     search_entries.push({
                                         title: decode_entities(match[2].replace(/<([a-z])>(.*?)<\/\1>/g, "$2")),
                                         // getting rid of ?f=o, which'll redirect to newsen instead
                                         url: urljoin(result.finalUrl, match[1].replace(/[?#].*/, ""), true)
                                     });
+                                }
+
+                                if (search_entries.length === 0) {
+                                    console_error("Zero search entries found", searchurl);
                                 }
 
                                 done(search_entries, 2*60*60);
@@ -2646,13 +2653,16 @@ var $$IMU_EXPORT$$;
                     if (!results)
                         return null;
 
-                    var real_fuzzy = fuzzify_text(real_title);
+                    // Daum seems to cut off the text at 38 characters in, let's use 35 to be safe
+                    var real_fuzzy = fuzzify_text(real_title).substr(0, 35);
 
                     for (var i = 0; i < results.length; i++) {
-                        if (real_fuzzy === fuzzify_text(results[i].title)) {
+                        if (real_fuzzy === fuzzify_text(results[i].title).substr(0, 35)) {
                             return results[i].url;
                         }
                     }
+
+                    console_error("Unable to find result from search", real_title, results);
 
                     return null;
                 };
@@ -38700,6 +38710,11 @@ var $$IMU_EXPORT$$;
             return src.replace(/(\/icons\/+[0-9]+\/+[0-9]+_)(?:small|medium)\./, "$1large.")
         }
 
+        if (domain_nowww === "pinimg.icu") {
+            // https://pinimg.icu/wall/200x200/south-korean-girls-pinterest-heyitsmesophia-asian-girl-korean-girl-cute-girls-korean-E4da4470ff0b1335d96e2d15858679d5e.jpg?t=5d7744985798c
+            //   https://pinimg.icu/wall/0x0/south-korean-girls-pinterest-heyitsmesophia-asian-girl-korean-girl-cute-girls-korean-E4da4470ff0b1335d96e2d15858679d5e.jpg?t=5d7744985798c
+            return src.replace(/\/wall\/+[0-9]+x[0-9]+\/+/, "/wall/0x0/");
+        }
 
 
 
