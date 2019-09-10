@@ -27563,7 +27563,21 @@ var $$IMU_EXPORT$$;
             (domain_nowww === "metartdb.com" && src.indexOf("/images/galleries/") >= 0)) {
             // http://image.jjang0u.service.concdn.com/data3/chalkadak/162/201204/23/t_133516093835090.jpg
             //   http://image.jjang0u.service.concdn.com/data3/chalkadak/162/201204/23/133516093835090.jpg
-            return src.replace(/\/t_([0-9]+\.[^/.]*)$/, "/$1");
+            // http://image.jjang0u.service.concdn.com/data3/chalkadak/160/201909/11/t_156814968374034.jpg
+            //   http://image.jjang0u.service.concdn.com/data3/chalkadak/160/201909/11/156814968374034.jpg
+            newsrc = src.replace(/\/t_([0-9]+\.[^/.]*)$/, "/$1");
+            if (newsrc !== src) {
+                return newsrc;
+            }
+        }
+
+        if (domain === "image.jjang0u.service.concdn.com") {
+            return {
+                url: src,
+                headers: {
+                    Referer: "http://fun.jjang0u.com/"
+                }
+            };
         }
 
         if (domain_nowww === "fotoshoots.be") {
@@ -37369,6 +37383,9 @@ var $$IMU_EXPORT$$;
             //   http://img3.imgtn.bdimg.com/it/u=946498972,2763894941&fm=26&gp=0.jpg
             // https://daguaw.com/img/aHR0cDovL2ltZzIuaW1ndG4uYmRpbWcuY29tL2l0L3U9Mjg4NDcyNTE3NywzMTQxOTEwOTgzJmZtPTI2JmdwPTAuanBn.jpg
             domain_nosub === "daguaw.com" ||
+            // https://www.ditiw.com/img/aHR0cDovL2ltZzAuaW1ndG4uYmRpbWcuY29tL2l0L3U9OTg4MjI3NzA5LDQwNDQ3NDYwNjEmZm09MjYmZ3A9MC5qcGc=.jpg
+            //   http://img0.imgtn.bdimg.com/it/u=988227709,4044746061&fm=26&gp=0.jpg
+            domain_nowww === "ditiw.com" ||
             // https://m.dalangw.com/img/aHR0cDovL2ltZzQuaW1ndG4uYmRpbWcuY29tL2l0L3U9Mzk1ODY3NTA2NCwzMzA0NzAxMzMwJmZtPTI2JmdwPTAuanBn.jpg
             //   http://img4.imgtn.bdimg.com/it/u=3958675064,3304701330&fm=26&gp=0.jpg
             domain_nosub === "dalangw.com") {
@@ -38854,6 +38871,32 @@ var $$IMU_EXPORT$$;
             // https://i-ngoisao.vnecdn.net/2016/11/23/yura-7472-1479876568_m_460x0.jpg
             //   https://i-ngoisao.vnecdn.net/2016/11/23/yura-7472-1479876568.jpg
             return src.replace(/(?:_m)?_[0-9]+x[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1");
+        }
+
+        if (domain === "pocket.playxp.com") {
+            // https://pocket.playxp.com/thumbs/728x/1285203?ada1752df875da28
+            //   https://pocket.playxp.com/preview/1285203?ada1752df875da28
+            //   https://pocket.playxp.com/download/1285203?ada1752df875da28
+            return {
+                url: src.replace(/(:\/\/[^/]+\/+)(?:thumbs\/+[0-9]*x[0-9]*|preview)\/+/, "$1download/"),
+                head_wrong_contenttype: true,
+                headers: {
+                    Referer: "https://www.playxp.com/community/funny/view.php?article_id=12345"
+                }
+            };
+        }
+
+        if (domain_nowww === "flash24.co.kr") {
+            // http://flash24.co.kr/g4/m/thumb.php?w=300&bo_table=commu&img=2049238704_NApTRomD_IMG_0477.jpg
+            //   http://flash24.co.kr/g4/m/thumb.php?bo_table=commu&img=2049238704_NApTRomD_IMG_0477.jpg -- max of 400 width, even if w=500
+            if (/\/g[0-9]*\/+m\/+thumb\.php\?/.test(src)) {
+                var bo_table = url.searchParams.get("bo_table");
+                var img = url.searchParams.get("img");
+
+                if (bo_table && img) {
+                    return src.replace(/\/thumb\.php\?.*/, "/thumb.php?bo_table=" + bo_table + "&img=" + img);
+                }
+            }
         }
 
 
