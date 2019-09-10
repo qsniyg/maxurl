@@ -5998,11 +5998,6 @@ var $$IMU_EXPORT$$;
             domain === "i.vimeocdn.com" ||
             // https://media.indiatimes.in/media/content/2018/Feb/arun_jaitley_allocates_rs_1200_crore_to_promote_bamboo_cultivation_1517487222_100x150.jpg
             domain === "media.indiatimes.in" ||
-            // https://vcdn-ione.vnecdn.net/2018/02/04/topoppp-1681-1517742371_500x300.jpg
-            // https://vcdn-giaitri.vnecdn.net/2018/10/11/tiffany-young-tren-tham-do-american-music-awards-1539224433_1539233031_140x84.jpg
-            // https://i-giaitri.vnecdn.net/2009/02/18/me2-1345649328_480x0.jpg
-            // https://i-ngoisao.vnecdn.net/2012/11/26/10-585669-1376858787_500x0.jpg
-            (domain_nosub === "vnecdn.net" && domain.match(/^(?:vcdn|i)-[^.]*\./)) ||
             // https://www.bangkokpost.com/media/content/20180126/c1_1401970_180126042828_620x413.jpg
             // https://bangkokpost.com/media/content/20180126/c1_1401970_180126042828_620x413.jpg
             domain_nowww === "bangkokpost.com" ||
@@ -8638,6 +8633,9 @@ var $$IMU_EXPORT$$;
             // https://file1.grazia.fr/var/grazia/storage/images/media/images/galerie/2016-05-18-en-images.-la-folle-soiree-de-grisogno-a-cannes/barbara-palvin/13423851-2-fre-FR/Barbara-Palvin_width1024.jpg
             //   https://file1.grazia.fr/var/grazia/storage/images/media/images/galerie/2016-05-18-en-images.-la-folle-soiree-de-grisogno-a-cannes/barbara-palvin/13423851-2-fre-FR/Barbara-Palvin.jpg
             (domain_nosub === "grazia.fr" && /^file[0-9]*\./.test(domain)) ||
+            // https://www.esquirehk.com/var/esquirehk/storage/images/people/women_we_love/2015-girl-group-korea-hong-kong-japn-hottest/girl-s-day-yura/293873-1-chi-HK/Girl-s-Day-Yura_img_1032_688.jpg
+            //   https://www.esquirehk.com/var/esquirehk/storage/images/people/women_we_love/2015-girl-group-korea-hong-kong-japn-hottest/girl-s-day-yura/293873-1-chi-HK/Girl-s-Day-Yura.jpg
+            domain_nosub === "esquirehk.com" ||
             // https://img3.closermag.fr/var/closermag/storage/images/bio-people/biographie-jose-garcia-112817/827937-1-fre-FR/Jose-Garcia_square500x500.jpg
             //   https://img3.closermag.fr/var/closermag/storage/images/bio-people/biographie-jose-garcia-112817/827937-1-fre-FR/Jose-Garcia.jpg
             // https://img1.closermag.fr/var/closermag/storage/images/media/images-des-contenus/actu-people/people-anglo-saxons/20151129-selena/selena-gomez-pose-pour-in-style/4987068-1-fre-FR/Selena-Gomez-pose-pour-In-Style.png?v1/focus=0x0/cover=626x768
@@ -12994,6 +12992,7 @@ var $$IMU_EXPORT$$;
             // http://static.news.zumst.com/images/thumb/18/2018/04/17/a9f0d24d1aa64b9f868a5743640e8de8.jpg
             //   http://static.news.zumst.com/images/18/2018/04/17/a9f0d24d1aa64b9f868a5743640e8de8.jpg
             // http://static.news.zumst.com/images/3/2018/12/23/PCM20181214003940005_P2.jpg
+            // http://static.news.zumst.com/images/51/2014/01/02/716383_medium.jpg
             return src
                 .replace(/\/images\/+thumb\/+/, "/images/")
                 .replace(/\/([0-9a-f]+)_[0-9]+x[0-9]+[a-z]?(\.[^/.]*)(?:[?#].*)?$/, "/$1$2");
@@ -38784,9 +38783,12 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/wall\/+[0-9]+x[0-9]+\/+/, "/wall/0x0/");
         }
 
-        if (domain_nosub === "netnews.vn" && /\.media\./.test(domain)) {
+        if ((domain_nosub === "netnews.vn" && /\.media\./.test(domain)) ||
+            domain === "mediaold.tiin.vn") {
             // http://mcnews2.media.netnews.vn/netnews/archive/images/2019090415/tinngan_034115_273110685_0wap_320.jpg
             //   http://mcnews2.media.netnews.vn/netnews/archive/images/2019090415/tinngan_034115_273110685_0.jpg
+            // http://mediaold.tiin.vn:8080/media_old_2016//archive/images/2016/11/23/170654_9wap_320.jpg
+            //   http://mediaold.tiin.vn:8080/media_old_2016//archive/images/2016/11/23/170654_9.jpg
             // other:
             // http://mcnews1.media.netnews.vn:8080/netnews/archive/images/2019080915/tinngan_034557_695485757_0.jpg -- 3000x2182
             return src.replace(/(_[0-9]+)wap_[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
@@ -38829,6 +38831,30 @@ var $$IMU_EXPORT$$;
             return src.replace(/(\/imgs\/+[^/]+\/+i_[0-9]+)s(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
         }
 
+        if (domain === "img.8kmm.com") {
+            // http://img.8kmm.com/2014/1/201401220952378518_S.jpg
+            //   http://img.8kmm.com/2014/1/201401220952378518.jpg
+            return src.replace(/(\/[0-9]{4}\/+[0-9]{1,2}\/+[0-9]{8,})_S(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain_nosub === "kpopis.com" && /^cdn[0-9]*\./.test(domain)) {
+            // http://cdn10.kpopis.com/ts/data/file/lib2/1/158_20140619171011_1.png_SM.png
+            //   http://cdn10.kpopis.com/ts/data/file/lib2/1/158_20140619171011_1.png
+            return src.replace(/(\/data\/+file\/+lib2\/+[0-9]+\/+[0-9]+_[0-9]+_[0-9]+\.[^/._]+)_SM\.[^/.]*(?:[?$].*)?$/, "$1");
+        }
+
+        if (domain_nosub === "vnecdn.net" && domain.match(/^(?:vcdn|i)-[^.]*\./)) {
+            // https://vcdn-ione.vnecdn.net/2018/02/04/topoppp-1681-1517742371_500x300.jpg
+            //   https://vcdn-ione.vnecdn.net/2018/02/04/topoppp-1681-1517742371.jpg
+            // https://vcdn-giaitri.vnecdn.net/2018/10/11/tiffany-young-tren-tham-do-american-music-awards-1539224433_1539233031_140x84.jpg
+            //   https://vcdn-giaitri.vnecdn.net/2018/10/11/tiffany-young-tren-tham-do-american-music-awards-1539224433_1539233031.jpg
+            // https://i-giaitri.vnecdn.net/2009/02/18/me2-1345649328_480x0.jpg
+            // https://i-ngoisao.vnecdn.net/2012/11/26/10-585669-1376858787_500x0.jpg
+            //   https://i-ngoisao.vnecdn.net/2012/11/26/10-585669-1376858787.jpg
+            // https://i-ngoisao.vnecdn.net/2016/11/23/yura-7472-1479876568_m_460x0.jpg
+            //   https://i-ngoisao.vnecdn.net/2016/11/23/yura-7472-1479876568.jpg
+            return src.replace(/(?:_m)?_[0-9]+x[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1");
+        }
 
 
 
