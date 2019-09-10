@@ -33848,13 +33848,30 @@ var $$IMU_EXPORT$$;
         if (domain === "img.oppaisan.com" ||
             // http://megamich.com/lib/thumb300.php?p=L2hvbWUvb2ZsZXg5ODkxL3B1YmxpY19odG1sL19tZWdhbWkvd3AtY29udGVudC91cGxvYWRzL2ltZy9nZWlub3VfMjAxNzA4MDkvMjcuanBn&w=300&r=
             //   http://megamich.com/lib/thumb300.php?p=L2hvbWUvb2ZsZXg5ODkxL3B1YmxpY19odG1sL19tZWdhbWkvd3AtY29udGVudC91cGxvYWRzL2ltZy9nZWlub3VfMjAxNzA4MDkvMjcuanBn&w=-1
+            //   http://megamich.com/wp-content/uploads/img/geinou_20170809/27.jpg
             // http://megamich.com/lib/bbs_thumb300.php?p=L2hvbWUvb2ZsZXg5ODkxL3B1YmxpY19odG1sL19tZWdhbWkvd3AtY29udGVudC91cGxvYWRzL2ltZy9nZWlub3VfMjAxNzA4MDkvMjcuanBn&w=300&r=
             //   http://megamich.com/lib/bbs_thumb300.php?p=L2hvbWUvb2ZsZXg5ODkxL3B1YmxpY19odG1sL19tZWdhbWkvd3AtY29udGVudC91cGxvYWRzL2ltZy9nZWlub3VfMjAxNzA4MDkvMjcuanBn&w=-1
-            domain_nowww === "megamich.com") {
+            //   http://megamich.com/wp-content/uploads/img/geinou_20170809/27.jpg
+            domain_nowww === "megamich.com" ||
+            // http://img0.fightingirl.com/panchira/lib/thumb2.php?p=L2hvbWUvbGkxNTgyMTYyL3B1YmxpY19odG1sL19maWdodGluZ2lybC9wYW5jaGlyYS8vaW1nL3RhbGVudC9rLXBvcDAxLzAzOC5qcGc=&w=830&q=80
+            //   atob: /home/li1582162/public_html/_fightingirl/panchira//img/talent/k-pop01/038.jpg
+            //   http://img0.fightingirl.com/panchira//img/talent/k-pop01/038.jpg
+            (domain_nosub === "fightingirl.com" && /^img[0-9]*\./.test(domain))) {
             // http://img.oppaisan.com/lib/thumb2.php?p=L2hvbWUvb2ZsZXg5NTMxL3B1YmxpY19odG1sL19vcHBhaTMvaW1nL2VudHJ5X2ltYWdlcy8yMDE5MDUwNi8wMDYuanBn
             //   http://img.oppaisan.com/lib/thumb2.php?p=L2hvbWUvb2ZsZXg5NTMxL3B1YmxpY19odG1sL19vcHBhaTMvaW1nL2VudHJ5X2ltYWdlcy8yMDE5MDUwNi8wMDYuanBn&w=-1
-            return src.replace(/(\/lib\/+(?:bbs_)?thumb[0-9]+\.php).*?[?&](p=[^&]*).*?$/,
-                               "$1?$2&w=-1");
+            newsrc = src.replace(/(\/lib\/+(?:bbs_)?thumb[0-9]+\.php).*?[?&](p=[^&]*).*?$/, "$1?$2&w=-1");
+            if (newsrc !== src)
+                return newsrc;
+
+            match = src.match(/^[a-z]+:\/\/[^/]*\/+(?:[^/]+\/+)?lib\/+(?:bbs_)?thumb[0-9]+\.php\?(?:.*&)?p=([^&]+)/);
+            if (match) {
+                var path = atob(match[1]);
+                console_log(path);
+                var newpath = path.replace(/.*\/public_html\/+_[^/]+\/+/, "/");
+                if (newpath !== path) {
+                    return urljoin(src, newpath, true);
+                }
+            }
         }
 
         if (domain_nowww === "517japan.com") {
@@ -33901,6 +33918,9 @@ var $$IMU_EXPORT$$;
             // http://45.33.110.172/uploads/feed_image/image/22896/middle_resize_20160206191925.jpg
             //   http://45.33.110.172/uploads/feed_image/image/22896/20160206191925.jpg
             domain === "45.33.110.172" ||
+            // http://panchira-news.net/uploads/feed_image/image/0/6629/middle_resize_0.jpg
+            //   http://panchira-news.net/uploads/feed_image/image/0/6629/0.jpg
+            domain_nowww === "panchira-news.net" ||
             // http://idol-gazoum.net/uploads/feed_image/image/9/90978/middle_resize_0.jpg
             //   http://idol-gazoum.net/uploads/feed_image/image/9/90978/0.jpg
             // http://idol-gazoum.net/uploads/feed_image/image/13/138755/middle_thumb_0.jpg
@@ -38803,7 +38823,11 @@ var $$IMU_EXPORT$$;
             //   https://www.nikkansports.com/m/area/jiyugaoka/shop.html?no=25
         }
 
-
+        if (domain_nosub === "minkch.com" && /^imgs/.test(domain)) {
+            // https://imgsb.minkch.com/imgs/minkch/i_20140121081405s.jpg
+            //   https://imgsb.minkch.com/imgs/minkch/i_20140121081405.jpg
+            return src.replace(/(\/imgs\/+[^/]+\/+i_[0-9]+)s(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
 
 
 
