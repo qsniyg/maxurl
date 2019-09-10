@@ -1823,10 +1823,16 @@ var $$IMU_EXPORT$$;
             // http://img.hankyung.com/photo/201902/01.19032633.3.jpg
             //   http://img.hankyung.com/photo/201902/01.19032633.1.jpg -- no watermark
             // http://img.hankyung.com/photo/201802/ZA.16036542.1.jpg -- 3696x2778 (4 is not available)
+            // https://img.hankyung.com/photo/201906/01.19968607.1-1200x.jpg -- 1200x795, upscaled
+            //   https://img.hankyung.com/photo/201906/01.19968607.1.jpg
             //
             // thanks to Bobfrnw on greasyfork for reporting this:
             // http://img.hankyung.com/photo/201903/03.19066867.4.jpg -- no watermark, larger (1800x1200)
             //   http://img.hankyung.com/photo/201903/03.19066867.1.jpg -- watermark, smaller (620x420)
+            newsrc = src.replace(/(\/photo\/+[0-9]{6}\/+[0-9A-Z]{2}\.[0-9]+\.[0-9]+)-[0-9]*x[0-9]*(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+            if (newsrc !== src)
+                return newsrc;
+
             if (src.match(/\.[0-9](\.[^/.]*)(?:[?#].*)?$/)) {
                 newsrc = src.replace(/[?#].*$/, "");
                 if (newsrc !== src)
@@ -9425,6 +9431,23 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/thum\/+thumbnail\/+([0-9]+y\/+[0-9]+m\/+[0-9]+d\/+)thumb/, "/file/$1");
         }
 
+        if (domain === "img.asiatoday.co.kr") {
+            // http://img.asiatoday.co.kr/file/2019y/06m/27d/20190627000744579_350.jpg
+            //   http://img.asiatoday.co.kr/file/2019y/06m/27d/20190627000744579_1561589714_1.jpg?1561589714
+            //   http://www.asiatoday.co.kr/view.php?key=20190627000744579
+            // http://img.asiatoday.co.kr/webdata/content/2019y/09m/10d/20190910010006235_77_58.jpg
+            //   http://www.asiatoday.co.kr/view.php?key=20190910010006235
+            match = src.match(/\/[0-9]{4}y\/+[0-9]{2}m\/+[0-9]{2}d\/+([0-9]{15,})_[0-9]+(?:_[0-9]+)?\./);
+            if (match) {
+                return {
+                    url: src,
+                    extra: {
+                        page: "http://www.asiatoday.co.kr/view.php?key=" + match[1]
+                    }
+                };
+            }
+        }
+
         if (domain === "jmagazine.joins.com" ||
             // http://www.urbanbug.net/uploads/gallery/photos/2083/thumb_31888-170-05-005.jpg
             //   http://www.urbanbug.net/uploads/gallery/photos/2083/31888-170-05-005.jpg
@@ -9542,12 +9565,6 @@ var $$IMU_EXPORT$$;
             // https://cdn-ak.f.st-hatena.com/images/fotolife/k/kara-hara_8825/20100909/20100909200143_m.jpg
             //   https://cdn-ak.f.st-hatena.com/images/fotolife/k/kara-hara_8825/20100909/20100909200143.jpg
             return src.replace(/_(?:[0-9]+|m)(\.[^/.]*)$/, "$1");
-        }
-
-        if (domain === "pimg.togetter.com") {
-            // https://pimg.togetter.com/1ac25d603c8ca6f205c7fbfb13f0413ed09017dc/68747470733a2f2f7062732e7477696d672e636f6d2f6d656469612f445536524d442d567741457a3969552e6a70673a6c61726765?w=1200&h=630&t=c
-            //   https://pimg.togetter.com/1ac25d603c8ca6f205c7fbfb13f0413ed09017dc/68747470733a2f2f7062732e7477696d672e636f6d2f6d656469612f445536524d442d567741457a3969552e6a70673a6c61726765?w=o&h=o
-            return src.replace(/\?[^/]*$/, "?w=o&h=o");
         }
 
         if (domain === "nimage.newsway.kr") {
@@ -11541,17 +11558,17 @@ var $$IMU_EXPORT$$;
                                "/recuperator/img/toi/$1.cms");
         }
 
-        if (domain === "www.jawapos.com") {
+        if (domain_nowww === "jawapos.com") {
             // https://www.jawapos.com/thumbs/xs/news/2018/02/18/tips-menghadapi-kulit-kering-di-musim-hujan_m_189572.jpeg
             //   https://www.jawapos.com/thumbs/l/news/2018/02/18/tips-menghadapi-kulit-kering-di-musim-hujan_m_189572.jpeg
             //   https://www.jawapos.com/uploads/news/2018/02/18/tips-menghadapi-kulit-kering-di-musim-hujan_m_189572.jpeg
-            return src.replace(/\/thumbs\/[^/]*\//, "/uploads/");
+            return src.replace(/\/thumbs\/+[^/]*\//, "/uploads/");
         }
 
-        if (domain === "www.tnnthailand.com") {
+        if (domain_nowww === "tnnthailand.com") {
             // http://www.tnnthailand.com/stocks/media/thumb_big/0656a4.jpg
             //   http://www.tnnthailand.com/stocks/media/0656a4.jpg
-            return src.replace(/\/media\/[^/]*\/([^/]*)$/, "/media/$1");
+            return src.replace(/\/media\/+[^/]+\/+([^/]+)(?:[?#].*)?$/, "/media/$1");
         }
 
         if ((domain_nosub === "ibtimes.co.in" ||
@@ -14994,7 +15011,9 @@ var $$IMU_EXPORT$$;
             //     http://afpbb.ismcdn.jp/mwimgs/6/b/full//img_6b3d3ed08132ac948cb47d119a152aad174843.jpg -- much larger
             // http://dol.ismcdn.jp/mwimgs/3/8/670m/img_38ec77dc8d6e7438877c3cf39207e20a26382.jpg
             //   http://dol.ismcdn.jp/mwimgs/3/8/-/img_38ec77dc8d6e7438877c3cf39207e20a26382.jpg
-            return src.replace(/(\/mwimgs\/+(?:[0-9a-f]\/+){2})[0-9]+(?:[xm](?:[0-9]+)?)?(\/[^/]*)$/, "$1-$2");
+            // https://tokushima.ismcdn.jp/mwimgs/f/b/600mw/img_fb362946e995ce69ae5a7ad8eaf59c99100255.jpg
+            //   https://tokushima.ismcdn.jp/mwimgs/f/b/-/img_fb362946e995ce69ae5a7ad8eaf59c99100255.jpg
+            return src.replace(/(\/mwimgs\/+(?:[0-9a-f]\/+){2})[0-9]+(?:[xm]w?[0-9]*)?(\/+img_[0-9a-f]{20,}\.[^/.]*)(?:[?#].*)?$/, "$1-$2");
             //return src.replace(/(\/mwimgs\/+(?:[0-9a-f]\/+){2})[0-9]+\/+(img_)/, "$1-/$2");
             //return src.replace(/(\/mwimgs\/[0-9a-f]+\/[0-9a-f]+\/)[0-9]+\//, "$1-/");
         }
@@ -25312,6 +25331,21 @@ var $$IMU_EXPORT$$;
             // https://www.nishinippon.co.jp/import/showbiz_news/20180821/201808210001_001_s.jpg?1534811525
             //   https://www.nishinippon.co.jp/import/showbiz_news/20180821/201808210001_001.jpg?1534811525
             return src.replace(/(\/[0-9]+\/[0-9]+_[0-9]+)_s(\.[^/.]*)$/, "$1$2");
+        }
+
+        if (domain_nowww === "nishinippon.co.jp") {
+            // https://www.nishinippon.co.jp/uploads/image/242737/small_835e982344.jpg -- 120x110
+            //   https://www.nishinippon.co.jp/uploads/image/242737/middle_835e982344.jpg -- 320x293
+            //   https://www.nishinippon.co.jp/uploads/image/242737/large_835e982344.jpg -- 670x613
+            //   https://www.nishinippon.co.jp/uploads/image/242737/835e982344.jpg -- 1000x915
+            //   https://www.nishinippon.co.jp/uploads/image/242737/835e982344_org.jpg -- doesn't work
+            // https://www.nishinippon.co.jp/uploads/image/137494/middle_e9e1befdc1_org.jpg
+            //   https://www.nishinippon.co.jp/uploads/image/137494/e9e1befdc1_org.jpg -- 640x427
+            //   https://www.nishinippon.co.jp/uploads/image/137494/e9e1befdc1.jpg -- doesn't work
+            // other:
+            // https://www.nishinippon.co.jp/uploads/image/139445/6d7f7acba6.jpg -- 1766x1719
+            // https://www.nishinippon.co.jp/uploads/image/236462/0bca901503.jpg -- 4758x2595
+            return src.replace(/(\/uploads\/+image\/+[0-9]+\/+)[a-z]+_([0-9a-f]{6,}(?:_org)?\.[^/.]*)(?:[?#].*)?$/, "$1$2");
         }
 
         if (domain === "resource.shuud.mn") {
@@ -38357,7 +38391,21 @@ var $$IMU_EXPORT$$;
             return src.replace(/(\/wp-content\/+picture\/+[0-9]{4}\/+[0-9]{6}\/+[^/]*\/+[^/]*_as[0-9]+)tn(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
         }
 
-        if (domain === "simg.userboard.org") {
+        if (domain === "pimg.togetter.com") {
+            // https://pimg.togetter.com/1ac25d603c8ca6f205c7fbfb13f0413ed09017dc/68747470733a2f2f7062732e7477696d672e636f6d2f6d656469612f445536524d442d567741457a3969552e6a70673a6c61726765?w=1200&h=630&t=c
+            //   https://pimg.togetter.com/1ac25d603c8ca6f205c7fbfb13f0413ed09017dc/68747470733a2f2f7062732e7477696d672e636f6d2f6d656469612f445536524d442d567741457a3969552e6a70673a6c61726765?w=o&h=o
+            //   https://pbs.twimg.com/media/DU6RMD-VwAEz9iU.jpg?name=orig
+            // https://pimg.togetter.com/77ffd4d31faa90f56ea0334c65ee33f78ff6775a/68747470733a2f2f6d656469612e696d6167652e696e666f7365656b2e636f2e6a702f69736e6577732f70686f746f732f6f7269636f6e2f6f7269636f6e5f323133383330305f302e6a7067
+            //   https://pimg.togetter.com/77ffd4d31faa90f56ea0334c65ee33f78ff6775a/68747470733a2f2f6d656469612e696d6167652e696e666f7365656b2e636f2e6a702f69736e6577732f70686f746f732f6f7269636f6e2f6f7269636f6e5f323133383330305f302e6a7067?w=o&h=o -- 415
+            newsrc = src.replace(/(?:\?.*)?$/, "?w=o&h=o");
+            if (newsrc !== src)
+                return newsrc;
+        }
+
+        if (domain === "simg.userboard.org" ||
+            // https://pimg.togetter.com/77ffd4d31faa90f56ea0334c65ee33f78ff6775a/68747470733a2f2f6d656469612e696d6167652e696e666f7365656b2e636f2e6a702f69736e6577732f70686f746f732f6f7269636f6e2f6f7269636f6e5f323133383330305f302e6a7067
+            //   https://media.image.infoseek.co.jp/isnews/photos/oricon/oricon_2138300_0.jpg -- 404
+            domain === "pimg.togetter.com") {
             // https://simg.userboard.org/1ef10b4b981baf7ec89ce2a0baa8fd1b4f786f79/687474703a2f2f69322e696d61676574776973742e636f6d2f74682f32313136392f627a6868363267396c6d37302e6a7067
             //   http://img161.imagetwist.com/th/19866/eekhw02yq2xy.jpg
             match = src.match(/^[a-z]+:\/\/[^/]*\/+[0-9a-f]{20,}\/+([0-9a-f]{16,})/);
@@ -38716,6 +38764,44 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/wall\/+[0-9]+x[0-9]+\/+/, "/wall/0x0/");
         }
 
+        if (domain_nosub === "netnews.vn" && /\.media\./.test(domain)) {
+            // http://mcnews2.media.netnews.vn/netnews/archive/images/2019090415/tinngan_034115_273110685_0wap_320.jpg
+            //   http://mcnews2.media.netnews.vn/netnews/archive/images/2019090415/tinngan_034115_273110685_0.jpg
+            // other:
+            // http://mcnews1.media.netnews.vn:8080/netnews/archive/images/2019080915/tinngan_034557_695485757_0.jpg -- 3000x2182
+            return src.replace(/(_[0-9]+)wap_[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain === "d343xr8tqpm2fx.cloudfront.net") {
+            // https://d343xr8tqpm2fx.cloudfront.net/mottokorea/userfiles/2019/06/15615151663802379s.jpg
+            //   https://d343xr8tqpm2fx.cloudfront.net/mottokorea/userfiles/2019/06/15615151663802379.jpg
+            // https://d343xr8tqpm2fx.cloudfront.net/mottokorea/userfiles/2019/06/15615897163803866s1.jpg
+            //   https://d343xr8tqpm2fx.cloudfront.net/mottokorea/userfiles/2019/06/156158971638038661.jpg -- linked by article
+            //   http://mottokorea.com/mottoKoreaW/FunJoy_list.do?bbsBasketType=R&seq=84462
+            //   http://mottokorea.com/mottoKoreaW/FunJoy_list.do?bbsBasketType=R&seq=84530
+            //   https://d343xr8tqpm2fx.cloudfront.net/mottokorea/userfiles/2019/06/15615897163803866.jpg -- same as above
+            // doesn't work for all:
+            // https://d343xr8tqpm2fx.cloudfront.net/mottokorea/userfiles/2019/09/15098481073088382s.jpg -- forces download
+            //   https://d343xr8tqpm2fx.cloudfront.net/mottokorea/userfiles/2019/09/15098481073088382.jpg -- 403
+            //   http://mottokorea.com/mottoKoreaW/Business_list.do?bbsBasketType=R&seq=86214
+            return src.replace(/(\/userfiles\/+[0-9]{4}\/+[0-9]{2}\/+[0-9]{10,})s([0-9]*\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (false && domain_nowww === "nikkansports.com") {
+            // wip
+            // https://www.nikkansports.com/entertainment/news/img/201801300000608-nsogp_0.jpg -- 800x1067
+            // https://www.nikkansports.com/entertainment/news/img/201903030000871-w1300_0.jpg -- 1300x1632
+            // https://www.nikkansports.com/sports/special/icehockey/img/smilejapan_004_01.jpg -- 3780x2126
+            // https://www.nikkansports.com/sports/special/sanno/2014/img/newsphoto-sanno_06.jpg -- 3744x3326
+            //   https://www.nikkansports.com/sports/special/sanno/2014/news/news-sanno_06.html
+            // https://www.nikkansports.com/battle/sumo/election/2016/img/kisenosato_01.jpg -- 1900x2436
+            //   https://www.nikkansports.com/battle/sumo/election/2016/note/note-01.html
+            // https://www.nikkansports.com/entertainment/news/1738732.html
+            //   https://www.nikkansports.com/entertainment/news/img/et-su-161116darenoga-w300_0.jpg
+            //   https://www.nikkansports.com/entertainment/news/img/et-su-161116darenoga-w1300_0.jpg -- upscaled?
+            // https://www.nikkansports.com/m/area/jiyugaoka/img/25.jpg -- 2250x4000
+            //   https://www.nikkansports.com/m/area/jiyugaoka/shop.html?no=25
+        }
 
 
 
