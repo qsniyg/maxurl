@@ -29431,7 +29431,10 @@ var $$IMU_EXPORT$$;
             return src.replace(/(\/upload\/+[0-9]+\/+)[a-z]+\/+/, "$1images/");
         }
 
-        if (domain_nowww === "fortstore.net") {
+        if (domain_nowww === "fortstore.net" ||
+            // https://www.fiyar.live/data_server_2/2951/small/small_presenting1(3).jpg
+            //   https://www.fiyar.live/data_server_2/2951/big/presenting1(3).jpg
+            domain_nowww === "fiyar.live") {
             // https://www.fortstore.net/data_server_2/3703/small/small_14(43).jpg
             //   https://www.fortstore.net/data_server_2/3703/big/14(43).jpg
             return src.replace(/(\/data_server_[0-9]+\/+[0-9]+\/+)[a-z]+\/+[a-z]+_([^/]*\.[^/.]*)(?:[?#].*)?$/,
@@ -38896,6 +38899,56 @@ var $$IMU_EXPORT$$;
                 if (bo_table && img) {
                     return src.replace(/\/thumb\.php\?.*/, "/thumb.php?bo_table=" + bo_table + "&img=" + img);
                 }
+            }
+        }
+
+        if ((domain_nowww === "imgbaron.com" ||
+             // https://it1.imgtown.net/i/00735/hm00jfc5ry20_t.jpg
+             //   https://imgtown.net/hm00jfc5ry20/MetArt_Foina_Elizabet_high_0005.jpg.html
+             //   https://imgtown.pw/wTZBlVBrPJdIAePl8XE7N8slVPVKtNeXlw.php
+             // imgtown.pw is more complex, it requires hito=tm&30c1d0baa91130cb11d5a51fda929de6haenu=1
+             // in the source code for GET, it has f30c1d0baa91130cb11d5a51fda929de6. remove f, add haenu?
+             //domain_nosub === "imgtown.net" ||
+             // https://www.picbaron.com/i/00167/6mcldhdqwxwi_t.jpg
+             //   https://www.picbaron.com/img/uu5si5rhdliptxsqhap3eekotqhlfdh2r2iqvhsrsi/metart_loxima_elizabet_high_0040.jpg
+             domain_nowww === "picbaron.com")
+            && options.do_request && options.cb) {
+            // https://imgbaron.com/i/00087/8r1hprs298m6_t.jpg
+            //   https://imgbaron.com/8r1hprs298m6/.html
+            //   https://imgbaron.com/img/zdnt43lf4uzsmgawy3zy6kfqp4smlrlag3lwb5bdjq/egh_0003.JPG
+            match = src.match(/\/i\/+[0-9]+\/+([0-9a-z]+)_t\./);
+            if (match) {
+                var pageurl = "https://" + domain_nosub + "/" + match[1] + "/.html";
+                options.do_request({
+                    method: "POST",
+                    url: pageurl,
+                    data: "op=view&id=" + match[1] + "&pre=1&next=Continue+to+image...",
+                    headers: {
+                        Origin: "https://" + domain_nosub,
+                        Referer: pageurl,
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    onload: function(result) {
+                        if (result.readyState !== 4)
+                            return;
+
+                        if (result.status !== 200) {
+                            return options.cb(null);
+                        }
+
+                        //console_log(result);
+                        var match = result.responseText.match(/<img\s+src=["']((?:https?:)?\/\/[^/]+\/+img\/+[0-9a-z]{10,}\/+.*?)['"]\s+class=["']pic["']/);
+                        if (match) {
+                            return options.cb(urljoin(url, match[1], true));
+                        } else {
+                            return options.cb(null);
+                        }
+                    }
+                });
+
+                return {
+                    waiting: true
+                };
             }
         }
 
