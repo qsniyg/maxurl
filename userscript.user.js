@@ -38903,12 +38903,6 @@ var $$IMU_EXPORT$$;
         }
 
         if ((domain_nowww === "imgbaron.com" ||
-             // https://it1.imgtown.net/i/00735/hm00jfc5ry20_t.jpg
-             //   https://imgtown.net/hm00jfc5ry20/MetArt_Foina_Elizabet_high_0005.jpg.html
-             //   https://imgtown.pw/wTZBlVBrPJdIAePl8XE7N8slVPVKtNeXlw.php
-             // imgtown.pw is more complex, it requires hito=tm&30c1d0baa91130cb11d5a51fda929de6haenu=1
-             // in the source code for GET, it has f30c1d0baa91130cb11d5a51fda929de6. remove f, add haenu?
-             //domain_nosub === "imgtown.net" ||
              // https://www.picbaron.com/i/00167/6mcldhdqwxwi_t.jpg
              //   https://www.picbaron.com/img/uu5si5rhdliptxsqhap3eekotqhlfdh2r2iqvhsrsi/metart_loxima_elizabet_high_0040.jpg
              domain_nowww === "picbaron.com")
@@ -38943,6 +38937,204 @@ var $$IMU_EXPORT$$;
                         } else {
                             return options.cb(null);
                         }
+                    }
+                });
+
+                return {
+                    waiting: true
+                };
+            }
+        }
+
+        if (domain_nosub === "imgtown.net" ||
+            domain_nosub === "imgtown.pw") {
+            // https://adultboard.net/threads/elizabet-foina-2015-12-10.153098/
+            // https://it1.imgtown.net/i/00735/hm00jfc5ry20_t.jpg
+            //   https://imgtown.net/hm00jfc5ry20/MetArt_Foina_Elizabet_high_0005.jpg.html
+            //   https://imgtown.pw/wTZBlVBrPJdIAePl8XE7N8slVPVKtNeXlw.php
+            //   https://it1.imgtown.net/img/znyc6gte7uyjo6od5ijyavmuhf4dbph252w4mgnlgi/MetArt_Foina_Elizabet_high_0005.jpg
+            // imgtown.pw is more complex, it requires hito=tm&30c1d0baa91130cb11d5a51fda929de6haenu=1
+            // in the source code for GET, it has f30c1d0baa91130cb11d5a51fda929de6. remove f, add haenu?
+            match = src.match(/\/i\/+[0-9]+\/+([0-9a-z]+)_t\./);
+            if (match) {
+                id = match[1];
+                var pageurl = "https://" + domain_nosub + "/" + id + "/.html";
+                options.do_request({
+                    method: "GET",
+                    url: pageurl,
+                    headers: {
+                        Referer: ""
+                    },
+                    onload: function(result) {
+                        if (result.readyState !== 4)
+                            return;
+
+                        if (result.status !== 200) {
+                            console_error("Bad response code for " + pageurl, result);
+                            return options.cb(null);
+                        }
+
+                        // First we need to find the encrypted URL
+                        var match = result.responseText.match(/((?:var _0x[0-9a-f]+=(?:"[-_A-Za-z0-9=]*"|(?:_0x[0-9a-f]+\+){1,}_0x[0-9a-f]+);){1,}var _0x[0-9a-f]+=atob\((?:_0x[0-9a-f]+\+){1,}_0x[0-9a-f]+\))/);
+                        if (!match) {
+                            console_error("Unable to find encrypted URL for " + pageurl, result);
+                            return options.cb(null);
+                        }
+
+                        var final = "";
+                        function parse_vartable(varstring) {
+                            var splitted = varstring.split(";");
+
+                            var vartable = {};
+                            for (var i = 0; i < splitted.length; i++) {
+                                splitted[i] = splitted[i].replace(/^\s*|\s*$/, "");
+                                if (splitted[i].length === 0)
+                                    continue;
+
+                                var smatch = splitted[i].match(/^var (_0x[0-9a-f]+)=(.*)/);
+
+                                var varname = smatch[1];
+                                var varval = smatch[2];
+
+                                var vmatch = varval.match(/^["'](.*)["']/);
+                                if (vmatch) {
+                                    vartable[varname] = vmatch[1];
+                                } else if ((vmatch = varval.match(/^_0x[0-9a-f]+\+/))) {
+                                    var vsplitted = varval.split("+");
+                                    varval = "";
+
+                                    for (var j = 0; j < vsplitted.length; j++) {
+                                        varval += vartable[vsplitted[j]];
+                                    }
+
+                                    vartable[varname] = varval;
+                                } else if ((vmatch = varval.match(/^atob/))) {
+                                    var vsplitted = varval.replace(/^atob\((.*)\)$/, "$1").split("+");
+                                    varval = "";
+
+                                    for (var j = 0; j < vsplitted.length; j++) {
+                                        varval += vartable[vsplitted[j]];
+                                    }
+
+                                    vartable[varname] = atob(varval);
+                                    final = vartable[varname];
+                                } else {
+                                    console_log("Unknown varval type:" + splitted[i]);
+                                }
+                            }
+
+                            return vartable;
+                        }
+
+                        parse_vartable(match[1]);
+
+                        if (!final) {
+                            console_error("Unable to create vartable", result);
+                            return options.cb(null);
+                        }
+
+                        options.do_request({
+                            method: "GET",
+                            url: final,
+                            headers: {
+                                Referer: result.finalUrl
+                            },
+                            onload: function(result) {
+                                if (result.readyState !== 4)
+                                    return;
+
+                                if (result.status !== 200) {
+                                    return options.cb(null);
+                                }
+
+                                if (false) {
+                                    var matches = result.responseText.match(/["'][a-z]{0,3}([0-9a-f]{32})["']/g);
+                                    if (!matches) {
+                                        console_error("No hex matches", result);
+                                        return options.cb(null);
+                                    }
+
+                                    var obj = {};
+                                    var maxkey = null;
+                                    var maxnum = 0;
+                                    for (var i = 0; i < matches.length; i++) {
+                                        var hex = matches[i].replace(/.*([0-9a-f]{32})["']$/, "$1");
+
+                                        if (hex in obj) {
+                                            obj[hex]++;
+
+                                            if (obj[hex] > maxnum) {
+                                                maxkey = hex;
+                                                maxnum = obj[hex];
+                                            }
+                                        } else {
+                                            obj[hex] = 1;
+                                        }
+                                    }
+
+                                    if (maxnum <= 1) { // there should be 5
+                                        console_error("Has hex matches, but maxnum <= 1", result);
+                                        return options.cb(null);
+                                    }
+                                }
+
+                                var varmatch = result.responseText.match(/{(?:var _0x[0-9a-f]+='[0-9a-z]*';){4,}/g);
+                                if (varmatch.length > 1 || varmatch.length === 0) {
+                                    console_error("varmatches.length != 1", result);
+                                    return options.cb(null);
+                                }
+
+                                var varsstr = varmatch[0].substr(1); // remove {
+                                var vartable = parse_vartable(varsstr);
+
+                                var firstvar = Object.keys(vartable)[0];
+
+                                var combinedmatch = result.responseText.match(/,((?:_0x[0-9a-f]+\+){4,}_0x[0-9a-f]+)\)/);
+                                if (!combinedmatch) {
+                                    console_error("Unable to find variable combiner", result);
+                                    return options.cb(null);
+                                }
+
+                                var combiner = combinedmatch[1].split("+");
+                                var hash = "";
+                                for (var i = 0; i < combiner.length; i++) {
+                                    if (!(combiner[i] in vartable)) {
+                                        console_error("Unable to find variable " + combiner[i] + " in vartable", vartable, result);
+                                        return options.cb(null);
+                                    }
+
+                                    hash += vartable[combiner[i]];
+                                }
+
+                                options.do_request({
+                                    method: "POST",
+                                    url: result.finalUrl,
+                                    headers: {
+                                        Origin: result.finalUrl.replace(/^([a-z]+:\/\/[^/]+\/+).*/, "$1"),
+                                        Referer: result.finalUrl,
+                                        "Content-Type": "application/x-www-form-urlencoded"
+                                    },
+                                    data: "op=view&id=" + id + "&pre=1&hito=tm&" + hash + "=1",
+                                    onload: function (result) {
+                                        if (result.readyState !== 4) {
+                                            return options.cb(null);
+                                        }
+
+                                        //console_log(result);
+                                        if (result.status !== 200) {
+                                            return options.cb(null);
+                                        }
+
+                                        var match = result.responseText.match(/<img\s+src=["']((?:https?:)?\/\/[^/]+\/+img\/+[0-9a-z]{10,}\/+.*?)['"]\s+class=['"]picview["']/);
+                                        if (match) {
+                                            return options.cb(urljoin(src, match[1], true));
+                                        } else {
+                                            return options.cb(null);
+                                        }
+                                    }
+                                });
+                            }
+                        });
                     }
                 });
 
