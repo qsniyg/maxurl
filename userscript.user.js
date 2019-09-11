@@ -39055,6 +39055,7 @@ var $$IMU_EXPORT$$;
                                 var varsstr = varmatch[0].substr(1); // remove {
                                 var vartable = parse_vartable(varsstr);
 
+                                // Maybe check for a variable in vartable?
                                 var combinedmatch = result.responseText.match(/,((?:_0x[0-9a-f]+\+){4,}_0x[0-9a-f]+)\)/);
                                 if (!combinedmatch) {
                                     console_error("Unable to find variable combiner", result);
