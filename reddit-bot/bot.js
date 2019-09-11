@@ -488,16 +488,22 @@ function dourl(url, post) {
         }
       }
 
-      // TODO: implement POST (.body or .form?)
-      // implement overrideMimeType
-      request({
+      var requestopts = {
         method: options.method,
         uri: options.url,
         jar: jar,
         headers: headers,
         followRedirect: true,
         gzip: true
-      }, function(error, response, body) {
+      };
+
+      if (options.data) {
+        requestopts.body = options.data;
+      }
+
+      // TODO: implement POST (.body or .form?)
+      // implement overrideMimeType
+      request(requestopts, function(error, response, body) {
         var loc = response.caseless.get('location');
         if (!loc)
           loc = response.request.href;
@@ -548,6 +554,8 @@ const links = new NodeCache({ stdTTL: 600, checkperiod: 100 });
 //dourl("https://pbs.twimg.com/media/DYlCdhxVMAAi8OM.jpg");
 // can return a wrong image:
 //dourl("https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/3953b6c9-6b84-493b-9832-cc14ba59fa07/d1fl69c-907907a6-ce19-48b2-b915-f823507cbbc4.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzM5NTNiNmM5LTZiODQtNDkzYi05ODMyLWNjMTRiYTU5ZmEwN1wvZDFmbDY5Yy05MDc5MDdhNi1jZTE5LTQ4YjItYjkxNS1mODIzNTA3Y2JiYzQuanBnIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.5IJp0mWnHzp_yKTxTaoNvw5c1r_1-PhUvzcvVdt_8Vk");
+// post request
+//dourl("https://it1.imgtown.net/i/00735/hm00jfc5ry20_t.jpg");
 
 
 //console.dir(blacklist_json.disallowed);
