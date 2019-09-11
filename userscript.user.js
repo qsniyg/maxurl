@@ -39046,37 +39046,6 @@ var $$IMU_EXPORT$$;
                                     return options.cb(null);
                                 }
 
-                                if (false) {
-                                    var matches = result.responseText.match(/["'][a-z]{0,3}([0-9a-f]{32})["']/g);
-                                    if (!matches) {
-                                        console_error("No hex matches", result);
-                                        return options.cb(null);
-                                    }
-
-                                    var obj = {};
-                                    var maxkey = null;
-                                    var maxnum = 0;
-                                    for (var i = 0; i < matches.length; i++) {
-                                        var hex = matches[i].replace(/.*([0-9a-f]{32})["']$/, "$1");
-
-                                        if (hex in obj) {
-                                            obj[hex]++;
-
-                                            if (obj[hex] > maxnum) {
-                                                maxkey = hex;
-                                                maxnum = obj[hex];
-                                            }
-                                        } else {
-                                            obj[hex] = 1;
-                                        }
-                                    }
-
-                                    if (maxnum <= 1) { // there should be 5
-                                        console_error("Has hex matches, but maxnum <= 1", result);
-                                        return options.cb(null);
-                                    }
-                                }
-
                                 var varmatch = result.responseText.match(/{(?:var _0x[0-9a-f]+='[0-9a-z]*';){4,}/g);
                                 if (varmatch.length > 1 || varmatch.length === 0) {
                                     console_error("varmatches.length != 1", result);
