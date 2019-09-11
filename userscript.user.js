@@ -22828,6 +22828,12 @@ var $$IMU_EXPORT$$;
                 return newsrc;
         }
 
+        if (domain_nowww === "jjgirls.com") {
+            // http://www.jjgirls.com/photo/watch4beauty/watch-beauty-sapphira/sapphira-peeing/thumbnail006.jpg
+            //   http://www.jjgirls.com/photo/watch4beauty/watch-beauty-sapphira/sapphira-peeing/middle006.jpg
+            return src.replace(/(\/photo\/+watch4beauty\/+.*\/+)thumbnail([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1middle$2");
+        }
+
         if (domain_nowww === "pics.tubetubetube.com") {
             // https://pics.tubetubetube.com/thumbs/teacherfucksteens/hollie-mack-karla-kush-piper-perri/cutey-panties-magazine/hd-hollie-mack-karla-kush-piper-perri-3.jpg
             //   https://pics.tubetubetube.com/pornpics/teacherfucksteens/hollie-mack-karla-kush-piper-perri/cutey-panties-magazine/hd-hollie-mack-karla-kush-piper-perri-3.jpg
@@ -24846,11 +24852,17 @@ var $$IMU_EXPORT$$;
             };
         }
 
-        if (domain_nosub === "pictoa.com" &&
-            domain.match(/^s[0-9]*\.pictoa\.com/)) {
+        if ((domain_nosub === "pictoa.com" ||
+             // https://s.lilitube.com/068/695/0686955565570053c59/thumbs/137493255655700ac8bd.jpg
+             //   https://s.lilitube.com/068/695/0686955565570053c59/137493255655700ac8bd.jpg
+             domain === "s.lilitube.com" ||
+             // https://s.babaporn.com/180/740/180740594bf165c6cd1/thumbs/3262186594bf165da740.jpg
+             //   https://s.babaporn.com/180/740/180740594bf165c6cd1/3262186594bf165da740.jpg
+             domain_nosub === "babaporn.com")
+            && domain.match(/^s[0-9]*\./)) {
             // https://s2.pictoa.com/media/galleries/058/990/058990556bf9f7d10b8/thumbs/1650366556bf9f89826e.jpg
             //   https://s2.pictoa.com/media/galleries/058/990/058990556bf9f7d10b8/1650366556bf9f89826e.jpg
-            return src.replace(/(\/media\/galleries\/[0-9a-f]+\/[0-9a-f]+\/[0-9a-f]+\/)thumbs\/([^/]*)$/, "$1$2");
+            return src.replace(/(\/[0-9a-f]{3}\/+[0-9a-f]{3}\/+[0-9a-f]+\/+)thumbs\/+([^/]*)(?:[?#].*)?$/, "$1$2");
         }
 
         if (domain_nosub === "vcg.com" &&
@@ -27612,6 +27624,13 @@ var $$IMU_EXPORT$$;
         }
 
         if (domain === "image.jjang0u.service.concdn.com" ||
+            // http://pic.doctorteen.com/dt/sapphira_peeing/t_08.jpg
+            //   http://pic.doctorteen.com/dt/sapphira_peeing/08.jpg
+            domain === "pic.doctorteen.com" ||
+            // http://pic.freeporn.hu/sapphira_peeing/t_06.jpg
+            //   http://pic.freeporn.hu/sapphira_peeing/06.jpg
+            // needs http://freeporn.hu/ referer
+            domain === "pic.freeporn.hu" ||
             // http://www.metartdb.com/images/galleries/1/1613/t_10.jpg
             //   http://www.metartdb.com/images/galleries/1/1613/10.jpg
             (domain_nowww === "metartdb.com" && src.indexOf("/images/galleries/") >= 0)) {
@@ -31563,7 +31582,10 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/t_([^/]*-[0-9]+\.[^/.]*)(?:[?#].*)?$/, "/$1");
         }
 
-        if (domain === "fhg.karupsow.com") {
+        if (domain === "fhg.karupsow.com" ||
+            // https://fhg.karupsha.com/pictures/new-kha-photo-053/images/thumbs-matti/001.jpg
+            //   https://fhg.karupsha.com/pictures/new-kha-photo-053/images/pics-matti/001.jpg
+            domain === "fhg.karupsha.com") {
             // https://fhg.karupsow.com/pictures/new-kow-photo-052/images/thumbs-sindy/001.jpg
             //   https://fhg.karupsow.com/pictures/new-kow-photo-052/images/pics-sindy/001.jpg
             return src.replace(/\/images\/+thumbs(-[^/]*\/)/, "/images/pics$1");
@@ -39232,6 +39254,53 @@ var $$IMU_EXPORT$$;
                     }
                 };
             }
+        }
+
+        if (domain_nowww === "teengirl-pics.com") {
+            // http://teengirl-pics.com/aHR0cHM6Ly9zdGF0aWMtZmhnLm1ldGFydC5jb20vbWVkaWEvQTBEMkM0RDE3NDgyREEyNDE1N0YxNUJBNjAxMkNENjMvd3RfQUM5QkI0RURFRkNBMDcxNEE5RjQ0MjZGRENFOEZBQTYuanBn.jpg
+            //   https://static-fhg.metart.com/media/A0D2C4D17482DA24157F15BA6012CD63/wt_AC9BB4EDEFCA0714A9F4426FDCE8FAA6.jpg
+            match = src.match(/^[a-z]+:\/\/[^/]+\/+([^/.]{50,})\.[^/.]*(?:[?#].*)?$/);
+            if (match) {
+                return base64_decode(match[1]);
+            }
+        }
+
+        if (domain === "fhg.asiansexdiary.com") {
+            // https://fhg.asiansexdiary.com/wp-content/uploads/menchie_set_3/menchie_set_3_th_04.jpg
+            //   https://fhg.asiansexdiary.com/wp-content/uploads/menchie_set_3/menchie_set_3_04.jpg
+            return src.replace(/(\/wp-content\/+uploads\/+[^/]*\/+[^/]+_)th_([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain_nowww === "lesarchive.com") {
+            // https://www.lesarchive.com/promo/pictures/22/veronikalisa/thumbs/1.jpg
+            //   https://www.lesarchive.com/promo/pictures/22/veronikalisa/pics/1.jpg
+            return src.replace(/(\/pictures\/+[0-9]+\/+[^/]+\/+)thumbs\/+/, "$1pics/");
+        }
+
+        if (domain_nosub === "scoreuniverse.com" && /^cdn[0-9]*\./.test(domain)) {
+            // https://cdn77.scoreuniverse.com/18eighteen/gallys/images_content/AliceMarch_28734/01_tn.jpg
+            //   https://cdn77.scoreuniverse.com/18eighteen/gallys/images_content/AliceMarch_28734/01.jpg
+            return src.replace(/(\/images_content\/+[^/]*\/+[0-9]+)_tn(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain_nowww === "sexgrace.com") {
+            // http://www.sexgrace.com/amateurs/tr/amateur_sexy_girl_00809.jpg
+            //   http://www.sexgrace.com/amateurs/pics/amateur_sexy_girl_00809.jpg
+            return {
+                url: src.replace(/\/tr\/+/, "/pics/"),
+                headers: {
+                    Referer: "http://www.sexgrace.com/"
+                }
+            };
+        }
+
+        if (domain_nowww === "idealbabes.net" ||
+            // http://www.purescans.com/girls/mpl_tr/Ariel_3_01.jpg
+            //   http://www.purescans.com/girls/mpl_pics/Ariel_3_01.jpg
+            domain_nowww === "purescans.com") {
+            // http://www.idealbabes.net/girls/femjoy_tr/Rena_4_01.jpg
+            //   http://www.idealbabes.net/girls/femjoy_pics/Rena_4_01.jpg
+            return src.replace(/_tr(\/+[^/]*\.[^/.]*)(?:[?#].*)?$/, "_pics$1");
         }
 
 
