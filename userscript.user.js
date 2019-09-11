@@ -38948,7 +38948,6 @@ var $$IMU_EXPORT$$;
 
         if (domain_nosub === "imgtown.net" ||
             domain_nosub === "imgtown.pw") {
-            // https://adultboard.net/threads/elizabet-foina-2015-12-10.153098/
             // https://it1.imgtown.net/i/00735/hm00jfc5ry20_t.jpg
             //   https://imgtown.net/hm00jfc5ry20/MetArt_Foina_Elizabet_high_0005.jpg.html
             //   https://imgtown.pw/wTZBlVBrPJdIAePl8XE7N8slVPVKtNeXlw.php
