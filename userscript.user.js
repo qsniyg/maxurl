@@ -38952,8 +38952,6 @@ var $$IMU_EXPORT$$;
             //   https://imgtown.net/hm00jfc5ry20/MetArt_Foina_Elizabet_high_0005.jpg.html
             //   https://imgtown.pw/wTZBlVBrPJdIAePl8XE7N8slVPVKtNeXlw.php
             //   https://it1.imgtown.net/img/znyc6gte7uyjo6od5ijyavmuhf4dbph252w4mgnlgi/MetArt_Foina_Elizabet_high_0005.jpg
-            // imgtown.pw is more complex, it requires hito=tm&30c1d0baa91130cb11d5a51fda929de6haenu=1
-            // in the source code for GET, it has f30c1d0baa91130cb11d5a51fda929de6. remove f, add haenu?
             match = src.match(/\/i\/+[0-9]+\/+([0-9a-z]+)_t\./);
             if (match) {
                 id = match[1];
