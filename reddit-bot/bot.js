@@ -4,6 +4,8 @@ var url = require('url');
 const NodeCache = require( "node-cache" );
 var fs = require("fs");
 var request = require("request");
+//require("request-debug")(request);
+var iconv = require("iconv-lite");
 
 /*const monk = require("monk");
 var db = monk("localhost/maximage");
@@ -471,6 +473,7 @@ function dourl(url, post) {
   bigimage(url, {
     fill_object: true,
     force_page: true,
+    //allow_thirdparty: true,
     filter: function(url) {
       if (!bigimage.is_internet_url(url))
         return false;
@@ -494,18 +497,38 @@ function dourl(url, post) {
         jar: jar,
         headers: headers,
         followRedirect: true,
-        gzip: true
+        gzip: true,
+        encoding: null
       };
 
       if (options.data) {
         requestopts.body = options.data;
       }
 
-      // TODO: implement overrideMimeType
       request(requestopts, function(error, response, body) {
+        if (error) {
+          console.error(error);
+          //console.log(requestopts);
+        }
+
+        if (!response) {
+          console.error("Unable to get response");
+          return;
+        }
+
         var loc = response.caseless.get('location');
         if (!loc)
           loc = response.request.href;
+
+        var encoding = "utf8";
+        if (options.overrideMimeType) {
+          var charsetmatch = options.overrideMimeType.match(/;\s*charset=([^;]*)/);
+          if (charsetmatch) {
+            encoding = charsetmatch[1];
+          }
+        }
+
+        body = iconv.decode(body, encoding);
 
         var resp = {
           readyState: 4,
@@ -555,6 +578,8 @@ const links = new NodeCache({ stdTTL: 600, checkperiod: 100 });
 //dourl("https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/3953b6c9-6b84-493b-9832-cc14ba59fa07/d1fl69c-907907a6-ce19-48b2-b915-f823507cbbc4.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzM5NTNiNmM5LTZiODQtNDkzYi05ODMyLWNjMTRiYTU5ZmEwN1wvZDFmbDY5Yy05MDc5MDdhNi1jZTE5LTQ4YjItYjkxNS1mODIzNTA3Y2JiYzQuanBnIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.5IJp0mWnHzp_yKTxTaoNvw5c1r_1-PhUvzcvVdt_8Vk");
 // post request
 //dourl("https://it1.imgtown.net/i/00735/hm00jfc5ry20_t.jpg");
+// overrideMimeType: (needs allow_thirdparty: true, and it fails due to photo.newsen.com requiring newsen to be the referer)
+//dourl("http://photo.newsen.com/news_photo/2018/07/13/201807131531391510_1.jpg");
 
 
 //console.dir(blacklist_json.disallowed);
