@@ -8520,12 +8520,44 @@ var $$IMU_EXPORT$$;
             // http://rs375.pbsrc.com/albums/oo198/ZaraTTucker/Get%20Italian%20Translation%20Services%20to%20Boost_zpsms99llho.jpg~c400
             //   http://i375.photobucket.com/albums/oo198/ZaraTTucker/Get%20Italian%20Translation%20Services%20to%20Boost_zpsms99llho.jpg
             // http://i843.photobucket.com/albums/zz352/loaloauk/dlp%20encounter/New%20Album%2042/4640363830_9e9c2ae51b_z.jpg~original
+            //   http://oi843.photobucket.com/albums/zz352/loaloauk/dlp%20encounter/New%20Album%2042/4640363830_9e9c2ae51b_z.jpg
             // http://rs414.pbsrc.com/albums/pp228/sweetblonda/NATURA.jpg?w=280&h=210&fit=crop
             //   http://i414.photobucket.com/albums/pp228/sweetblonda/NATURA.jpg
             return src
                 .replace(/rs([0-9]*)\.pbsrc\.com/, "i$1.photobucket.com")
                 .replace(/\?.*/, "")
                 .replace(/(?:~[^/.]*)?$/, "~original");
+        }
+
+        if (domain_nosub === "photobucket.com" && /^i[0-9]+\./.test(domain)) {
+            // https://i785.photobucket.com/albums/yy140/Impzor/points.png?1568174690926&1568174703483 -- watermark
+            //   https://oi785.photobucket.com/albums/yy140/Impzor/points.png?1568174690926&1568174703483 -- no watermark
+            //   http://s785.photobucket.com/user/Impzor/media/points.png.html?o=4
+            //   https://photobucket.com/gallery/https://s785.photobucket.com/user/Impzor/media/points.png.html?o=4
+            //   https://photobucket.com/gallery/user/Impzor/media/cGF0aDovcG9pbnRzLnBuZw==?ref=
+            //   atob: path:/points.png
+            // http://i843.photobucket.com/albums/zz352/loaloauk/dlp%20encounter/New%20Album%2042/4640363830_9e9c2ae51b_z.jpg~original
+            //   http://oi843.photobucket.com/albums/zz352/loaloauk/dlp%20encounter/New%20Album%2042/4640363830_9e9c2ae51b_z.jpg -- ~original works too
+            // http://i496.photobucket.com/albums/rr323/878990/555.jpg
+            //   http://oi496.photobucket.com/albums/rr323/878990/555.jpg
+            //   https://photobucket.com/gallery/user/878990/media/bWVkaWFJZDoyMTgwODM0OA==/?ref=
+            newsrc = src.replace(/(?:~[^/.]*)?(?:[?#].*)?$/, "~original");
+            if (newsrc !== src)
+                return newsrc;
+
+            return src.replace(/:\/\/i([0-9]+\..*?)(?:~original)?(?:[?#].*)?$/, "://oi$1");
+        }
+
+        if (domain_nosub === "photobucket.com" && /^o?i[0-9]*\./.test(domain)) {
+            match = src.match(/^[a-z]+:\/\/[a-z]*([0-9]+)\.[^/]*\/+albums\/+[a-z]{2}[0-9]+\/+([^/]+)\/+([^/]+\.[^/.~]*?)(?:~[^/.]*)?(?:[?#].*)?$/);
+            if (match) {
+                return {
+                    url: src,
+                    extra: {
+                        page: "http://s" + match[1] + ".photobucket.com/user/" + match[2] + "/media/" + match[3] + ".html"
+                    }
+                };
+            }
         }
 
         if (domain === "www.welt.de") {
