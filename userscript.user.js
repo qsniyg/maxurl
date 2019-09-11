@@ -15849,7 +15849,7 @@ var $$IMU_EXPORT$$;
                                 done(null, false);
                             }
                         } catch (e) {
-                            return done(null);
+                            return done(null, false);
                         }
                     });
                 });
