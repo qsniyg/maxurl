@@ -501,8 +501,7 @@ function dourl(url, post) {
         requestopts.body = options.data;
       }
 
-      // TODO: implement POST (.body or .form?)
-      // implement overrideMimeType
+      // TODO: implement overrideMimeType
       request(requestopts, function(error, response, body) {
         var loc = response.caseless.get('location');
         if (!loc)
