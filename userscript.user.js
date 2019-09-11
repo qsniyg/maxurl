@@ -39210,6 +39210,30 @@ var $$IMU_EXPORT$$;
             return src.replace(/(\/utuku\/+img[0-9]*\/+)[0-9]+x[0-9]+\/+/, "$10x0/");
         }
 
+        if (domain === "storage.enuri.info") {
+            // http://storage.enuri.info/pic_upload/knowbox_rss/aHR0cDovL3d3dy56ZW5pdGhuZXdzLmNvbS9uZXdzL3Bob3RvLzIwMTgwNi8xMTY4NjhfMTA0MjYxXzQ1NDEucG5n
+            //   http://www.zenithnews.com/news/photo/201806/116868_104261_4541.png
+            match = src.match(/\/pic_upload\/+knowbox_rss\/+([^/.?#]+)(?:[?#].*)?$/);
+            if (match) {
+                return base64_decode(match[1]);
+            }
+        }
+
+        if (domain === "img.mediapen.com") {
+            // http://img.mediapen.com/news/201909/news_461542_1568165911_c.jpg -- 520x365
+            //   http://img.mediapen.com/news/201909/news_461542_1568163469_m.jpg -- 600x338
+            //   http://www.mediapen.com/news/view/461542
+            match = src.match(/\/news\/+[0-9]{6}\/+news_([0-9]+)_[0-9]+_[a-z]\./);
+            if (match) {
+                return {
+                    url: src,
+                    extra: {
+                        page: "http://www.mediapen.com/news/view/" + match[1]
+                    }
+                };
+            }
+        }
+
 
 
 
