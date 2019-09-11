@@ -1294,6 +1294,12 @@ var $$IMU_EXPORT$$;
         };
     }
 
+    if (is_node && typeof atob === 'undefined') {
+        function atob(a) {
+            return Buffer.from(a, 'base64').toString('binary');
+        };
+    }
+
     // https://stackoverflow.com/a/17323608
     function mod(n, m) {
         return ((n % m) + m) % m;
