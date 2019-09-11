@@ -2749,6 +2749,7 @@ var $$IMU_EXPORT$$;
 
                             obj.url = daum_pageinfo.images[imagenum];
                             obj.extra.page = daum_pageinfo.url;
+                            delete obj.headers.Referer;
                             return options.cb(obj);
                         });
                     });
@@ -7986,6 +7987,9 @@ var $$IMU_EXPORT$$;
             // http://www.cnbnews.com/data/cache/public/photos/cdn/20181251/art_1545381746_176x135.jpg
             //   http://www.cnbnews.com/data/photos/cdn/20181251/art_1545381746.jpg
             domain_nowww === "cnbnews.com" ||
+            // http://www.newsgg.net/data/cache/public/photos/20190521/art_1558846341886_b2bf4b_178x118.jpg
+            //   http://www.newsgg.net/data/photos/20190521/art_1558846341886_b2bf4b.jpg
+            domain_nowww === "newsgg.net" ||
             // http://www.ddaily.co.kr/data/cache/public/photos/cdn/20180205/art_1517533165_58x58.jpg
             domain_nowww === "ddaily.co.kr") {
             // http://cdn.kukinews.com/data/cache/public/photos/cdn/20180104/art_1516601165_300x190.jpg
@@ -13549,7 +13553,10 @@ var $$IMU_EXPORT$$;
             return src.replace(/_lit(\.[^/.]*)$/, "_0$1");
         }
 
-        if (domain_nowww === "9x2.net") {
+        if (domain_nowww === "9x2.net" ||
+            // http://img1.izaoxing.com/allimg/c190726/1564095V601350-1T58_lit.jpg
+            //   http://img1.izaoxing.com/allimg/c190726/1564095V601350-1T58.jpg
+            (domain_nosub === "izaoxing.com" && /^img[0-9]*\./.test(domain))) {
             // http://www.9x2.net/uploads/allimg/c150117/14214X005960-129259_lit.jpg
             //   http://www.9x2.net/uploads/allimg/c150117/14214X005960-129259.jpg
             return src.replace(/_lit(\.[^/.]*)$/, "$1");
@@ -34261,6 +34268,20 @@ var $$IMU_EXPORT$$;
             //   http://www.ujnews.co.kr/news/data/20190311/p1065591978055877_117_thum.jpg?2032 -- 700x987
             //   http://www.ujnews.co.kr/news/data/20190311/p1065591978055877_117.jpg?2032 -- 1156x1631
             domain_nowww === "ujnews.co.kr" ||
+            // http://www.segyelocalnews.com/news/data/20190401/p1065598663206509_272_h.jpg
+            //   http://www.segyelocalnews.com/news/data/20190401/p1065598663206509_272_thum.jpg
+            // http://www.segyelocalnews.com/news/newsview.php?ncode=1065598663206509
+            // http://www.segyelocalnews.com/news/data/20190911/p1065581565021106_108.jpg -- 2000x1335
+            domain_nosub === "segyelocalnews.com" ||
+            // https://www.upinews.kr/news/data/20190814/p1065589122046660_727_h.jpg -- 315x472
+            //   https://www.upinews.kr/news/data/20190814/p1065589122046660_727_h2.jpg -- 679x1019
+            //   https://www.upinews.kr/news/data/20190814/p1065589122046660_727_thum.jpg -- 679x1019
+            //   https://www.upinews.kr/news/data/20190814/p1065589122046660_727_h3.jpg -- 1023x1535
+            // https://www.upinews.kr/news/newsview.php?ncode=1065602821580462
+            //   https://www.upinews.kr/news/data/20190822/p1065602821580462_683_h3.jpg
+            // other:
+            // https://www.upinews.kr/news/data/20190701/p1065589773349704_340_h3.png -- 6158x1944
+            domain_nowww === "upinews.kr" ||
             // http://www.newswiz.kr/news/data/20190606/p1065589870763517_698_h.jpg -- 314x393
             //   http://www.newswiz.kr/news/data/20190606/p1065589870763517_698_thum.jpg -- 699x874
             //   http://www.newswiz.kr/news/data/20190606/p1065589870763517_698.jpg -- 745x931
@@ -34268,14 +34289,55 @@ var $$IMU_EXPORT$$;
             // http://kpopdaily.co.kr/news/data/20190319/p1065597075569557_714_h.jpg
             //   http://kpopdaily.co.kr/news/data/20190319/p1065597075569557_714_thum.jpg -- 499x750
             //   http://kpopdaily.co.kr/news/data/20190319/p1065597075569557_714.jpg -- 499x750
-            regex = /(\/news\/+data\/+[0-9]{8}\/+[a-z]*[0-9]+_[0-9]+)_(?:h|thum)(\.[^/.]*)(?:[?#].*)?$/;
+            regex = /(\/news\/+data\/+[0-9]{8}\/+[a-z]*[0-9]+_[0-9]+)_(?:h[0-9]*|thum)(\.[^/.]*)(?:[?#].*)?$/;
+
+            var extra = {};
+            match = src.match(/\/news\/+data\/+[0-9]+\/+p([0-9]{10,})_/);
+            if (match) {
+                extra = {
+                    page: "http://www." + domain_nosub + "/news/newsview.php?ncode=" + match[1]
+                };
+            }
 
             if (regex.test(src)) {
                 return [
-                    src.replace(regex, "$1$2"),
-                    src.replace(regex, "$1_thum$2")
+                    {
+                        url: src.replace(regex, "$1$2"),
+                        extra: extra
+                    },
+                    {
+                        url: src.replace(regex, "$1_h3$2"),
+                        extra: extra
+                    },
+                    {
+                        url: src.replace(regex, "$1_thum$2"),
+                        extra: extra
+                    },
+                    {
+                        url: src.replace(regex, "$1_h2$2"),
+                        extra: extra
+                    }
                 ];
+            } else if (extra) {
+                return {
+                    url: src,
+                    extra: extra
+                };
             }
+
+            /*newsrc = src.replace(/(\/news\/+data\/+[0-9]{8}\/+p[0-9]+_[0-9]+)_(?:thum|h2?)(\.[^/.]*)(?:[?#].*)?$/, "$1_h3$2");
+            if (newsrc !== src)
+                return newsrc;
+
+            match = src.match(/\/news\/+data\/+[0-9]+\/+p([0-9]{10,})_/);
+            if (match) {
+                return {
+                    url: src,
+                    extra: {
+                        page: "https://www.upinews.kr/news/newsview.php?ncode=" + match[1]
+                    }
+                };
+            }*/
         }
 
         if (domain_nosub === "bytecdn.cn" ||
@@ -38668,30 +38730,6 @@ var $$IMU_EXPORT$$;
             }
         }
 
-        if (domain_nowww === "upinews.kr") {
-            // https://www.upinews.kr/news/data/20190814/p1065589122046660_727_h.jpg -- 315x472
-            //   https://www.upinews.kr/news/data/20190814/p1065589122046660_727_h2.jpg -- 679x1019
-            //   https://www.upinews.kr/news/data/20190814/p1065589122046660_727_thum.jpg -- 679x1019
-            //   https://www.upinews.kr/news/data/20190814/p1065589122046660_727_h3.jpg -- 1023x1535
-            // https://www.upinews.kr/news/newsview.php?ncode=1065602821580462
-            //   https://www.upinews.kr/news/data/20190822/p1065602821580462_683_h3.jpg
-            // other:
-            // https://www.upinews.kr/news/data/20190701/p1065589773349704_340_h3.png -- 6158x1944
-            newsrc = src.replace(/(\/news\/+data\/+[0-9]{8}\/+p[0-9]+_[0-9]+)_(?:thum|h2?)(\.[^/.]*)(?:[?#].*)?$/, "$1_h3$2");
-            if (newsrc !== src)
-                return newsrc;
-
-            match = src.match(/\/news\/+data\/+[0-9]+\/+p([0-9]{10,})_/);
-            if (match) {
-                return {
-                    url: src,
-                    extra: {
-                        page: "https://www.upinews.kr/news/newsview.php?ncode=" + match[1]
-                    }
-                };
-            }
-        }
-
         if (domain === "image.newdaily.co.kr") {
             // http://www.newdaily.co.kr/site/data/html/2010/04/25/2010042500038.html
             //   http://image.newdaily.co.kr/site/data/img/2010/04/25/2010042500038_0.jpg -- 3872x2592
@@ -39113,6 +39151,18 @@ var $$IMU_EXPORT$$;
                     waiting: true
                 };
             }
+        }
+
+        if (domain === "m.wdqyan.com") {
+            // https://m.wdqyan.com/static/upload/thumbs/20190725/15640499319146.jpg
+            //   https://m.wdqyan.com/static/upload/thumbs/20190725/15640499319146.jpg
+            return src.replace(/\/static\/+upload\/+thumbs\/+/, "/static/upload/");
+        }
+
+        if (domain === "kan.china.com") {
+            // https://kan.china.com/utuku/img0/240x0/m/20180906/f3dc54f3-6999-4a86-a821-edfe55fe0293.jpg
+            //   https://kan.china.com/utuku/img0/0x0/m/20180906/f3dc54f3-6999-4a86-a821-edfe55fe0293.jpg
+            return src.replace(/(\/utuku\/+img[0-9]*\/+)[0-9]+x[0-9]+\/+/, "$10x0/");
         }
 
 
