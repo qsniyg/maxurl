@@ -417,7 +417,7 @@ input:checked + label, button, .button {
     padding-bottom: 0.5em;
   }
 
-  #options {
+  #options, select {
     font-size: 0.95em;
   }
 
