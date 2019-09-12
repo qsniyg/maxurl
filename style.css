@@ -32,7 +32,7 @@ footer, header, hgroup, menu, nav, section {
 	display: block;
 }
 body {
-	line-height: 1;
+  line-height: 1;
 }
 ol, ul {
 	list-style: none;
@@ -54,6 +54,10 @@ table {
 
 
 /* Stylesheet */
+
+body, select {
+  font-size: 16px;
+}
 
 #content {
   display: table-row;
@@ -325,7 +329,7 @@ code {
   padding: 0;
 }
 
-label, button, .button {
+label, button, .button, select {
   display: inline-block;
   padding: 6px 14px;
   margin: 0em .3em;
