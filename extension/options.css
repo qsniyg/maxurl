@@ -349,11 +349,11 @@ button:active, .button:active {
   border-color: #08c;
 }
 
-.disabled {
+.disabled, .disabled select {
   color: #aaa;
 }
 
-.disabled label, .disabled button, .disabled input {
+.disabled label, .disabled button, .disabled input, .disabled select {
   cursor: default;
   border: 1px solid #aaa !important;
 }
