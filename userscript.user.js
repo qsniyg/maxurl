@@ -341,7 +341,7 @@ var $$IMU_EXPORT$$;
         return navigator.language || navigator.userLanguage;
     }
 
-    var supported_languages = ["en", "ko"];
+    var supported_languages = ["en", "ko", "fr"];
 
     var browser_language = "en";
     try {
@@ -359,11 +359,13 @@ var $$IMU_EXPORT$$;
         },
         "yes": {
             "en": "Yes",
-            "ko": "예"
+            "ko": "예",
+            "fr": "Oui"
         },
         "no": {
             "en": "No",
-            "ko": "아니오"
+            "ko": "아니오",
+            "fr": "Non"
         },
         "category_redirection": {
             "en": "Redirection",
@@ -392,7 +394,8 @@ var $$IMU_EXPORT$$;
             "en": "UI"
         },
         "New tab": {
-            "ko": "새 탭"
+            "ko": "새 탭",
+            "fr": "Nouvel onglet"
         },
         "Mouseover popup trigger": {
             // FIXME is 트리거 correct?
@@ -419,7 +422,8 @@ var $$IMU_EXPORT$$;
             "ko": "팝업 UI"
         },
         "Opacity": {
-            "ko": "불투명"
+            "ko": "불투명",
+            "fr": "Opacité"
         },
         "Gallery counter": {
             "ko": "갤러리 이미지 수"
@@ -450,10 +454,13 @@ var $$IMU_EXPORT$$;
             "ko": "확대/축소 기본값"
         },
         "Fit to screen": {
-            "ko": "화면 크기에 맞춤"
+            "ko": "화면 크기에 맞춤",
+            "fr": "Adapter a l'ecran"
         },
         "Full size": {
-            "ko": "전체 크기"
+            "ko": "전체 크기",
+            "fr": "Taille réelle"
+            //"fr": "Pleine grandeur" // should it be this instead?
         },
         "Popup panning method": {
             "ko": "이미지 이동하려면"
@@ -484,7 +491,8 @@ var $$IMU_EXPORT$$;
             "ko": "화면맞춤/전체"
         },
         "Incremental": {
-            "ko": "증분"
+            "ko": "증분",
+            "fr": "Incrémentale"
         },
         "Popup position": {
             "ko": "팝업 위치"
@@ -506,7 +514,8 @@ var $$IMU_EXPORT$$;
         },
         "category_rules": {
             "en": "Rules",
-            "ko": "규칙"
+            "ko": "규칙",
+            "fr": "Règles"
         },
         "Larger watermarked images": {
             "ko": "더 크지만 워터마크 있는 이미지"
@@ -518,20 +527,24 @@ var $$IMU_EXPORT$$;
             "ko": "다를 수 있는 이미지"
         },
         "Possibly broken images": {
-            "ko": "손상될 수 있는 이미지"
+            "ko": "손상될 수 있는 이미지",
+            "fr": "Images possiblement brisée"
         },
         "Rules using 3rd-party websites": {
-            "ko": "3파티 사이트를 사용하는 규칙"
+            "ko": "3파티 사이트를 사용하는 규칙",
+            "fr": "Règles utilisant des sites 3rd-party"
         },
         "Newsen": {
             "ko": "뉴스엔"
         },
         "category_website": {
             "en": "Website",
-            "ko": "웹사이트"
+            "ko": "웹사이트",
+            "fr": "Site"
         },
         "Use userscript": {
-            "ko": "유저스크립트 사용하기"
+            "ko": "유저스크립트 사용하기",
+            "fr": "Utiliser ce userscript"
         },
         "Website image preview": {
             "ko": "링크 붙인 후 이미지 미리보기"
@@ -542,14 +555,16 @@ var $$IMU_EXPORT$$;
         },
         "save": {
             "en": "Save",
-            "ko": "저장"
+            "ko": "저장",
+            "fr": "Enregistrer"
         },
         "record": {
             "en": "Record"
         },
         "cancel": {
             "en": "Cancel",
-            "ko": "취소"
+            "ko": "취소",
+            "fr": "Annuler"
         },
         "Mouseover popup (%%1) is needed to display the original version": {
             "ko": "원본 이미지 보려면 팝업 (%%1) 필요합니다"
@@ -559,19 +574,24 @@ var $$IMU_EXPORT$$;
         },
         "forces download": {}, // TODO
         "Close": {
-            "ko": "닫기"
+            "ko": "닫기",
+            "fr": "Fermer"
         },
         "Previous": {
-            "ko": "이전"
+            "ko": "이전",
+            "fr": "Image précédente"
         },
         "Next": {
-            "ko": "다음"
+            "ko": "다음",
+            "fr": "Image suivante"
         },
         "Left Arrow": {
-            "ko": "왼쪽 화살표"
+            "ko": "왼쪽 화살표",
+            "fr": "Flèche gauche"
         },
         "Right Arrow": {
-            "ko": "오른쪽 화살표"
+            "ko": "오른쪽 화살표",
+            "fr": "Flèche droite"
         },
         "Blacklist": {
             "ko": "블랙리스트"
@@ -711,6 +731,9 @@ var $$IMU_EXPORT$$;
                 },
                 ko: {
                     name: "한국어"
+                },
+                fr: {
+                    name: "Français"
                 }
             },
             onedit: function() {
