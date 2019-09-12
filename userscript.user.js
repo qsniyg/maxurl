@@ -530,6 +530,9 @@ var $$IMU_EXPORT$$;
             "en": "Website",
             "ko": "웹사이트"
         },
+        "Use userscript": {
+            "ko": "유저스크립트 사용하기"
+        },
         "Website image preview": {
             "ko": "링크 붙인 후 이미지 미리보기"
         },
