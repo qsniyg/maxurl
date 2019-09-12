@@ -349,7 +349,7 @@ var $$IMU_EXPORT$$;
         if (supported_languages.indexOf(browser_language) < 0)
             browser_language = "en";
     } catch (e) {
-        console.error(e);
+        console_error(e);
     }
 
     var strings = {
@@ -596,6 +596,13 @@ var $$IMU_EXPORT$$;
         },
         "subcategory_replaceimages": {
             "en": "Replace Images"
+        },
+        "category_general": {
+            "en": "General",
+            "ko": "일반"
+        },
+        "Language": {
+            "ko": "언어"
         }
     };
 
@@ -604,9 +611,11 @@ var $$IMU_EXPORT$$;
             return str;
         }
 
+        var language = settings.language;
+
         if (str in strings) {
-            if (browser_language in strings[str]) {
-                str = strings[str][browser_language];
+            if (language in strings[str]) {
+                str = strings[str][language];
             } else if ("en" in strings[str]) {
                 str = strings[str]["en"];
             }
@@ -639,6 +648,7 @@ var $$IMU_EXPORT$$;
 
 
     var settings = {
+        language: browser_language,
         redirect: true,
         redirect_history: true,
         canhead_get: true,
@@ -687,6 +697,23 @@ var $$IMU_EXPORT$$;
     var orig_settings = deepcopy(settings);
 
     var settings_meta = {
+        language: {
+            name: "Language",
+            description: "Language for this extension",
+            category: "general",
+            options: {
+                _type: "combo",
+                en: {
+                    name: "English"
+                },
+                ko: {
+                    name: "한국어"
+                }
+            },
+            onedit: function() {
+                do_options();
+            }
+        },
         redirect: {
             name: "Enable redirection",
             description: "Redirect images opened in their own tab",
@@ -1149,6 +1176,7 @@ var $$IMU_EXPORT$$;
     };
 
     var categories = {
+        "general": "category_general",
         "redirection": "category_redirection",
         "popup": "category_popup",
         "rules": "category_rules",
@@ -41794,27 +41822,31 @@ var $$IMU_EXPORT$$;
                     else
                         option_list["false"].checked = true;
                 } else if (meta.options) {
-                    type = "options";
-                    option_list = deepcopy(meta.options);
+                    if (meta.options._type === "combo") {
+                        type = "combo";
+                    } else {
+                        type = "options";
+                        option_list = deepcopy(meta.options);
 
-                    var check_optionlist = function(val, list) {
-                        if (val in list) {
-                            list[val].checked = true;
-                        } else {
-                            for (var item in list) {
-                                if (item.match(/^_group/)) {
-                                    check_optionlist(val, list[item]);
+                        var check_optionlist = function (val, list) {
+                            if (val in list) {
+                                list[val].checked = true;
+                            } else {
+                                for (var item in list) {
+                                    if (item.match(/^_group/)) {
+                                        check_optionlist(val, list[item]);
+                                    }
                                 }
                             }
-                        }
-                    };
+                        };
 
-                    if (value instanceof Array) {
-                        value.forEach(function (val) {
-                            check_optionlist(val, option_list);
-                        });
-                    } else {
-                        check_optionlist(value, option_list);
+                        if (value instanceof Array) {
+                            value.forEach(function (val) {
+                                check_optionlist(val, option_list);
+                            });
+                        } else {
+                            check_optionlist(value, option_list);
+                        }
                     }
                 } else if (meta.type) {
                     if (meta.type === "textarea" ||
@@ -42094,6 +42126,27 @@ var $$IMU_EXPORT$$;
                     sub_record_td.appendChild(sub_cancel_btn);
                     sub_tr.appendChild(sub_record_td);
                     sub.appendChild(sub_tr);
+                    value_td.appendChild(sub);
+                } else if (type === "combo") {
+                    var sub = document.createElement("select");
+
+                    for (var coption in meta.options) {
+                        if (!coption || coption[0] === '_')
+                            continue;
+
+                        var optionel = document.createElement("option");
+                        optionel.innerText = _(meta.options[coption].name);
+                        optionel.value = coption;
+
+                        sub.appendChild(optionel);
+                    }
+
+                    sub.value = settings[setting];
+
+                    sub.onchange = function() {
+                        update_setting(setting, sub.value);
+                    };
+
                     value_td.appendChild(sub);
                 }
 
