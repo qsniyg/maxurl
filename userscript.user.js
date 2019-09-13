@@ -1231,7 +1231,8 @@ var $$IMU_EXPORT$$;
             name: "Use data URLs",
             description: "Uses data:// URLs instead of image links",
             category: "extra",
-            subcategory: "replaceimages"
+            subcategory: "replaceimages",
+            imu_enabled_exempt: true
         }
     };
 
