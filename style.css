@@ -519,6 +519,21 @@ input:checked + label, button, .button {
   transition: visibility 0s 0.5s, opacity 0.5s linear;
 }
 
+#options .spoiler-title {
+  margin: 1em;
+  margin-left: 1.5em;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+  display: block;
+}
+
+#options .spoiler-contents {
+  font-size: 13px;
+  max-width: 600px;
+  line-height: 1.5em;
+}
+
 
 /* Popup */
 #popup {
