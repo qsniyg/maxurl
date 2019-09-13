@@ -42213,7 +42213,7 @@ var $$IMU_EXPORT$$;
                     var sub = document.createElement("table");
                     var sub_tr = document.createElement("tr");
                     var sub_key_td = document.createElement("td");
-                    sub_key_td.style = "display:inline;font-family:monospace;font-size:1.1em";
+                    sub_key_td.style = "display:inline;font-family:monospace";
                     if (value) {
                         sub_key_td.innerText = get_trigger_key_text(value);
                     }
