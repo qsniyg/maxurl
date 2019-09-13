@@ -42754,6 +42754,14 @@ var $$IMU_EXPORT$$;
         var delay_handle = null;
         var delay_mouseonly = true;
 
+        function set_el_all_initial(el) {
+            el.style.all = "initial";
+
+            // Under Waterfox, if offsetInlineStart is set to anything (even unset), it'll set the left to 0
+            // Thanks to decembre on github for reporting this: https://github.com/qsniyg/maxurl/issues/14#issuecomment-531080061
+            el.style.removeProperty("offset-inline-start");
+        }
+
         function update_waiting() {
             var x = mouseX;//mouseAbsX;
             var y = mouseY;//mouseAbsY;
@@ -42764,6 +42772,7 @@ var $$IMU_EXPORT$$;
         function start_waiting() {
             if (!waitingel) {
                 waitingel = document.createElement("div");
+                set_el_all_initial(waitingel);
                 waitingel.style.zIndex = maxzindex;
                 waitingel.style.cursor = "wait";
                 waitingel.style.width = waitingsize + "px";
@@ -42947,13 +42956,13 @@ var $$IMU_EXPORT$$;
                 //img.addEventListener("mousedown", estop, true);
 
                 var outerdiv = document.createElement("div");
-                outerdiv.style.all = "initial";
+                set_el_all_initial(outerdiv);
                 outerdiv.style.position = "fixed";
                 outerdiv.style.zIndex = maxzindex - 2;
 
                 var div = document.createElement("div");
                 var popupshown = false;
-                div.style.all = "initial";
+                set_el_all_initial(div);
                 div.style.boxShadow = "0 0 15px rgba(0,0,0,.5)";
                 div.style.border = "3px solid white";
                 div.style.position = "relative";
@@ -43018,7 +43027,7 @@ var $$IMU_EXPORT$$;
 
                 update_vwh();
 
-                img.style.all = "initial";
+                set_el_all_initial(img);
                 img.style.cursor = "pointer";
                 // https://stackoverflow.com/questions/7774814/remove-white-space-below-image
                 img.style.verticalAlign = "bottom";
@@ -43126,7 +43135,7 @@ var $$IMU_EXPORT$$;
                     if (!istop) {
                         opacity_hover(btn);
                     }
-                    btn.style.all = "initial";
+                    set_el_all_initial(btn);
                     if (action) {
                         btn.style.cursor = "pointer";
                     }
@@ -43162,7 +43171,7 @@ var $$IMU_EXPORT$$;
 
                 function create_topbarel() {
                     var topbarel = document.createElement("div");
-                    topbarel.style.all = "initial";
+                    set_el_all_initial(topbarel);
                     topbarel.style.position = "absolute";
                     topbarel.style.opacity = defaultopacity;
                     topbarel.style.zIndex = maxzindex - 1;
@@ -43205,7 +43214,7 @@ var $$IMU_EXPORT$$;
                             return;
 
                         var lrhover = document.createElement("div");
-                        lrhover.style.all = "initial";
+                        set_el_all_intitial(lrhover);
                         if (isleft) {
                             lrhover.style.left = "0em";
                         } else {
@@ -43350,7 +43359,7 @@ var $$IMU_EXPORT$$;
                     e.stopImmediatePropagation();
                     return true;
                 };
-                a.style.all = "initial";
+                set_el_all_initial(a);
                 a.style.cursor = "pointer";
                 a.style.setProperty("vertical-align", "bottom", "important");
                 a.style.setProperty("display", "block", "important");
@@ -44580,7 +44589,7 @@ var $$IMU_EXPORT$$;
             };
 
             var progressc_el = document.createElement("div");
-            progressc_el.style.all = "initial";
+            set_el_all_initial(progressc_el);
             progressc_el.style.position = "fixed";
             progressc_el.style.top = "0px";
             progressc_el.style.left = "0px";
@@ -44593,7 +44602,7 @@ var $$IMU_EXPORT$$;
             progressc_el.style.zIndex = maxzindex - 2;
 
             var progressb_el = document.createElement("div");
-            progressb_el.style.all = "initial";
+            set_el_all_initial(progressb_el);
             progressb_el.style.position = "absolute";
             progressb_el.style.top = "0px";
             progressb_el.style.left = "0px";
