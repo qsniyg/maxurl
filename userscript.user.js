@@ -890,6 +890,7 @@ var $$IMU_EXPORT$$;
                 mouseover_trigger_behavior: "mouse"
             },
             type: "number",
+            number_min: 0,
             number_unit: "seconds",
             category: "popup"
         },
@@ -940,6 +941,7 @@ var $$IMU_EXPORT$$;
                 mouseover_ui_gallerycounter: true
             },
             type: "number",
+            number_min: 0,
             number_unit: "images",
             category: "popup",
             subcategory: "ui"
@@ -42125,7 +42127,12 @@ var $$IMU_EXPORT$$;
                     var sub_in_td = document.createElement("td");
                     sub_in_td.style = "display:inline";
                     var input = document.createElement("input");
-                    input.type = "number";
+
+                    // doesn't work properly on Waterfox, most of the functionality is implemented here anyways
+                    // thanks to decembre on github for reporting: https://github.com/qsniyg/maxurl/issues/14#issuecomment-531080061
+                    //input.type = "number";
+                    input.type = "text";
+
                     input.style = "text-align:right";
                     if (meta.number_max !== undefined)
                         input.setAttribute("max", meta.number_max.toString());
@@ -42162,9 +42169,8 @@ var $$IMU_EXPORT$$;
                         if (meta.number_int || value !== orig_value)
                             input.value = value;
 
-                        update_setting(setting, value);
-                        settings[setting] = value;
-
+                        update_setting(setting, parseFloat(value));
+                        //settings[setting] = value;
                         show_saved_message();
                     }
 
@@ -42355,6 +42361,7 @@ var $$IMU_EXPORT$$;
         }
     }
 
+    var updating_options = false;
     function set_value(key, value) {
         if (key in settings_meta && settings_meta[key].onedit) {
             settings_meta[key].onedit(value);
@@ -42367,10 +42374,13 @@ var $$IMU_EXPORT$$;
             var kv = {};
             kv[key] = value;
             //chrome.storage.sync.set(kv, function() {});
+            updating_options = true;
             extension_send_message({
                 type: "setvalue",
                 data: kv
-            }, function() {});
+            }, function() {
+                updating_options = false;
+            });
         } else if (typeof GM_setValue !== "undefined") {
             return GM_setValue(key, value);
         } else if (typeof GM !== "undefined" && GM.getValue) {
@@ -44783,7 +44793,7 @@ var $$IMU_EXPORT$$;
                         }
                     }
 
-                    if (changed && is_extension_options_page) {
+                    if (changed && !updating_options && is_extension_options_page) {
                         //console_log("Refreshing options");
                         do_options();
                     }
