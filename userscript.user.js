@@ -705,6 +705,7 @@ var $$IMU_EXPORT$$;
         // also thanks to blue-lightning: https://github.com/qsniyg/maxurl/issues/16
         mouseover_close_behavior: "esc",
         mouseover_zoom_behavior: "fit",
+        // thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-531080061
         mouseover_zoom_custom_percent: 100,
         mouseover_pan_behavior: "drag",
         mouseover_scroll_behavior: "zoom",
