@@ -42479,6 +42479,14 @@ var $$IMU_EXPORT$$;
         }
     }
 
+    function set_el_all_initial(el) {
+        el.style.all = "initial";
+
+        // Under Waterfox, if offsetInlineStart is set to anything (even unset), it'll set the left to 0
+        // Thanks to decembre on github for reporting this: https://github.com/qsniyg/maxurl/issues/14#issuecomment-531080061
+        el.style.removeProperty("offset-inline-start");
+    }
+
     function check_image_get(obj, cb, processing) {
         if (!obj || !obj[0]) {
             return cb(null);
@@ -42753,14 +42761,6 @@ var $$IMU_EXPORT$$;
         var delay = false;
         var delay_handle = null;
         var delay_mouseonly = true;
-
-        function set_el_all_initial(el) {
-            el.style.all = "initial";
-
-            // Under Waterfox, if offsetInlineStart is set to anything (even unset), it'll set the left to 0
-            // Thanks to decembre on github for reporting this: https://github.com/qsniyg/maxurl/issues/14#issuecomment-531080061
-            el.style.removeProperty("offset-inline-start");
-        }
 
         function update_waiting() {
             var x = mouseX;//mouseAbsX;
@@ -43214,7 +43214,7 @@ var $$IMU_EXPORT$$;
                             return;
 
                         var lrhover = document.createElement("div");
-                        set_el_all_intitial(lrhover);
+                        set_el_all_initial(lrhover);
                         if (isleft) {
                             lrhover.style.left = "0em";
                         } else {
