@@ -43059,13 +43059,19 @@ var $$IMU_EXPORT$$;
                 img.style.verticalAlign = "bottom";
                 img.style.setProperty("display", "block", "important");
 
+                var imgh = img.naturalHeight;
+                var imgw = img.naturalWidth;
+
                 if (initial_zoom_behavior === "fit") {
                     img.style.maxWidth = vw + "px";
                     img.style.maxHeight = vh + "px";
+                } else if (initial_zoom_behavior === "custom") {
+                    var zoom_percent = settings.mouseover_zoom_custom_percent / 100;
+                    img.style.maxWidth = Math.max(imgw * zoom_percent, 20) + "px";
+                    img.style.width = img.style.maxWidth;
+                    img.style.maxHeight = Math.max(imgh * zoom_percent, 20) + "px";
+                    img.style.height = img.style.maxHeight;
                 }
-
-                var imgh = img.naturalHeight;
-                var imgw = img.naturalWidth;
 
                 if (imgh < 20 ||
                     imgw < 20) {
@@ -43567,6 +43573,9 @@ var $$IMU_EXPORT$$;
                     var scroll_zoom = get_single_setting("scroll_zoom_behavior");
 
                     if (scroll_zoom === "fitfull") {
+                        img.style.width = "initial";
+                        img.style.height = "initial";
+
                         if (e.deltaY > 0 && currentmode !== "fit") {
                             update_vwh();
                             img.style.maxWidth = vw + "px";
