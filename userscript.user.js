@@ -41719,7 +41719,10 @@ var $$IMU_EXPORT$$;
         else
             options_el.innerHTML = "";
 
-        var saved_el = document.createElement("div");
+        var saved_el = document.getElementById("saved");
+        if (!saved_el)
+            saved_el = document.createElement("div");
+
         var text = "saved_refresh_target";
         if (is_extension) {
             text = "saved_no_refresh";
@@ -42333,7 +42336,7 @@ var $$IMU_EXPORT$$;
             }
         }
 
-        options_el.appendChild(saved_el);
+        document.body.appendChild(saved_el);
     }
 
     function parse_value(value) {
