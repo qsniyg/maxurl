@@ -759,7 +759,8 @@ var $$IMU_EXPORT$$;
             },
             onedit: function() {
                 do_options();
-            }
+            },
+            imu_enabled_exempt: true
         },
         redirect: {
             name: "Enable redirection",
