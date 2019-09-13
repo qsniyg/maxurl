@@ -679,6 +679,7 @@ var $$IMU_EXPORT$$;
 
 
     var settings = {
+        // thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-530760246
         imu_enabled: true,
         language: browser_language,
         redirect: true,
