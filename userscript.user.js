@@ -693,6 +693,8 @@ var $$IMU_EXPORT$$;
         // thanks to 894-572 on github for the idea: https://github.com/qsniyg/maxurl/issues/30
         mouseover_trigger_key: ["shift", "alt", "i"],
         mouseover_trigger_delay: 1,
+        // thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-530760246
+        mouseover_exclude_page_bg: true,
         mouseover_ui: true,
         mouseover_ui_opacity: 30,
         mouseover_ui_gallerycounter: true,
@@ -888,6 +890,14 @@ var $$IMU_EXPORT$$;
             },
             type: "number",
             number_unit: "seconds",
+            category: "popup"
+        },
+        mouseover_exclude_page_bg: {
+            name: "Exclude page background",
+            description: "Excludes the page background for the popup",
+            requires: {
+                mouseover: true,
+            },
             category: "popup"
         },
         mouseover_ui: {
@@ -43920,6 +43930,10 @@ var $$IMU_EXPORT$$;
             }
 
             function addElement(el, layer) {
+                if (settings.mouseover_exclude_page_bg && el.tagName === "BODY") {
+                    return;
+                }
+
                 if (typeof layer === "undefined")
                     layer = layers.length;
 
