@@ -1209,7 +1209,8 @@ var $$IMU_EXPORT$$;
                     "<li><code>google.com/**/test</code> will block https://google.com/abc/test, https://google.com/abc/def/test, https://google.com/abc/def/ghi/test, etc. but not https://google.com/test</li>",
                     "<li><code>g??gle.com</code> will block https://google.com/, https://gaagle.com/, https://goagle.com/, etc.</li>",
                     "<li><code>google.{com,co.uk}</code> will block https://google.com/ and https://google.co.uk/</li>",
-                    "<li><code>g[oa]gle.com</code> will block https://google.com/ and https://gaogle.com/</li>",
+                    "<li><code>g[oau]ogle.com</code> will block https://google.com/, https://gaogle.com/, and http://www.guogle.com/</li>",
+                    "<li><code>g[0-9]ogle.com</code> will block https://g0ogle.com/, https://g1ogle.com/, etc. (up to https://g9ogle.com/)</li>",
                     "</ul>"
                 ].join("\n")
             }
