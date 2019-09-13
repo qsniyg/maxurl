@@ -375,10 +375,14 @@ var $$IMU_EXPORT$$;
             "ko": "리디렉션 사용"
         },
         "Add to history": {
-            "ko": "브라우저 기록에 추가"
+            "ko": "브라우저 기록에 추가",
+            "fr": "Ajouter à l'historique"
         },
         "Use GET if HEAD is unsupported": {
             "ko": "HEAD 지원되지 않으면 GET 사용"
+        },
+        "Try finding original page": {
+            "fr": "Essayer de trouver la page d'origine"
         },
         "Enable mouseover popup": {
             "ko": "이미지 팝업 사용"
@@ -671,6 +675,7 @@ var $$IMU_EXPORT$$;
 
 
     var settings = {
+        imu_enabled: true,
         language: browser_language,
         redirect: true,
         redirect_history: true,
@@ -720,6 +725,15 @@ var $$IMU_EXPORT$$;
     var orig_settings = deepcopy(settings);
 
     var settings_meta = {
+        imu_enabled: {
+            name: "Enable extension",
+            description: "Globally enables or disables the extension",
+            category: "general",
+            // Userscript users can easily disable it from the userscript menu,
+            //   and enabling it again isn't as trivial as it is for the extension
+            extension_only: true,
+            imu_enabled_exempt: true
+        },
         language: {
             name: "Language",
             description: "Language for this extension",
@@ -1101,7 +1115,8 @@ var $$IMU_EXPORT$$;
             name: "IMU entry in context menu",
             description: "Enables a custom entry for this extension in the right click/context menu",
             extension_only: true,
-            category: "extension"
+            category: "extension",
+            imu_enabled_exempt: true
         },
         allow_watermark: {
             name: "Larger watermarked images",
@@ -41684,9 +41699,18 @@ var $$IMU_EXPORT$$;
 
                 enabled_map[setting] = "processing";
 
-                if (meta.requires) {
+                var requires = deepcopy(meta.requires);
+                if (!requires) {
+                    requires = {};
+                }
+
+                if (!meta.imu_enabled_exempt) {
+                    requires.imu_enabled = true;
+                }
+
+                if (requires) {
                     // fixme: this only works for one option in meta.requires
-                    for (var required_setting in meta.requires) {
+                    for (var required_setting in requires) {
                         var value = settings[required_setting];
 
                         if (!(required_setting in enabled_map)) {
@@ -41698,7 +41722,7 @@ var $$IMU_EXPORT$$;
                             return;
                         }
 
-                        if (enabled_map[required_setting] && value === meta.requires[required_setting]) {
+                        if (enabled_map[required_setting] && value === requires[required_setting]) {
                             enabled = true;
                         } else {
                             enabled = false;
@@ -42558,6 +42582,8 @@ var $$IMU_EXPORT$$;
     }
 
     function do_mouseover() {
+        var mouseover_enabled = settings.imu_enabled && settings.mouseover;
+
         var mouseX = 0;
         var mouseY = 0;
         var mouseAbsX = 0;
@@ -44495,7 +44521,7 @@ var $$IMU_EXPORT$$;
         register_menucommand("Replace images", replace_images);
 
         document.addEventListener('keydown', function(event) {
-            if (settings.mouseover_trigger_behavior !== "keyboard")
+            if (!mouseover_enabled || settings.mouseover_trigger_behavior !== "keyboard")
                 return;
 
             if (set_chord(event, true)) {
@@ -44538,7 +44564,7 @@ var $$IMU_EXPORT$$;
         }, true);
 
         document.addEventListener('keyup', function(event) {
-            if (settings.mouseover_trigger_behavior !== "keyboard")
+            if (!mouseover_enabled || settings.mouseover_trigger_behavior !== "keyboard")
                 return;
 
             var condition = set_chord(event, false);
@@ -44682,7 +44708,7 @@ var $$IMU_EXPORT$$;
                 do_popup_pan(popups[0], event, mouseX, mouseY);
             }
 
-            if (delay !== false && typeof delay === "number" && delay_mouseonly) {
+            if (mouseover_enabled && delay !== false && typeof delay === "number" && delay_mouseonly) {
                 if (delay_handle) {
                     clearTimeout(delay_handle);
 
@@ -44830,9 +44856,6 @@ var $$IMU_EXPORT$$;
         do_export();
 
         if (is_userscript || is_extension) {
-            if (settings.redirect)
-                do_redirect();
-
             if (window.location.href.match(/^https?:\/\/qsniyg\.github\.io\/+maxurl\/+options\.html/) ||
                 window.location.href.match(/^file:\/\/.*\/maxurl\/site\/options\.html/) ||
                 (is_extension && is_extension_options_page)) {
@@ -44841,18 +44864,22 @@ var $$IMU_EXPORT$$;
                 });
             }
 
-            if (settings.website_inject_imu &&
-                (window.location.href.match(/^https?:\/\/qsniyg\.github\.io\/+maxurl(\/+|\/+index\.html)?(?:[?#].*)?$/) ||
-                 window.location.href.match(/^file:\/\/.*\/maxurl\/site\/index\.html/))) {
-                if (typeof(unsafeWindow) !== "undefined") {
-                    onload(function() {
-                        do_websitehome();
-                    });
+            if (settings.imu_enabled) {
+                if (settings.redirect)
+                    do_redirect();
+
+                if (settings.website_inject_imu &&
+                    (window.location.href.match(/^https?:\/\/qsniyg\.github\.io\/+maxurl(\/+|\/+index\.html)?(?:[?#].*)?$/) ||
+                        window.location.href.match(/^file:\/\/.*\/maxurl\/site\/index\.html/))) {
+                    if (typeof (unsafeWindow) !== "undefined") {
+                        onload(function () {
+                            do_websitehome();
+                        });
+                    }
                 }
             }
 
-            if (settings.mouseover)
-                do_mouseover();
+            do_mouseover();
         }
     }
 
