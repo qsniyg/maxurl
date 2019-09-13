@@ -532,8 +532,20 @@ input:checked + label, button, .button {
 }
 
 #popup #logo {
-  padding: 1em;
+  padding: 0.5em;
+  cursor: pointer;
   /*margin-bottom: .5em;*/
+}
+
+#popup #logo img {
+  padding: 0.5em;
+}
+
+#popup #enabled-state {
+  font-weight: 600;
+  color: #0af;
+  font-size: 12px;
+  display: block;
 }
 
 #popup #buttons {

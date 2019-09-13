@@ -42,14 +42,25 @@ function update_logo(value) {
     }
 
     document.getElementById("logo").style.filter = filter;
+
+    if (value) {
+        document.getElementById("enabled-state").classList.remove("disabled");
+        document.getElementById("enabled-state").innerText = "Enabled";
+    } else {
+        document.getElementById("enabled-state").classList.add("disabled");
+        document.getElementById("enabled-state").innerText = "Disabled";
+    }
 }
 
-document.getElementById("logo").onclick = function() {
+function toggle_enabled() {
     get_option("imu_enabled", function(value) {
         set_option("imu_enabled", !value);
         update_logo(!value);
     }, true);
-};
+}
+
+document.getElementById("logo").onclick = toggle_enabled;
+//document.getElementById("enabled-state").onclick = toggle_enabled;
 
 get_option("imu_enabled", function(value) {
     update_logo(value);
