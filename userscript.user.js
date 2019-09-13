@@ -557,6 +557,10 @@ var $$IMU_EXPORT$$;
             "en": "Saved! Refresh the target page for changes to take effect",
             "ko": "저장됩니다. 번경사항 적용하려면 대상 웹페이지 다시 로드하십시오"
         },
+        "saved_no_refresh": {
+            "en": "Saved!",
+            "ko": "저장됩니다"
+        },
         "save": {
             "en": "Save",
             "ko": "저장",
@@ -41682,7 +41686,12 @@ var $$IMU_EXPORT$$;
             options_el.innerHTML = "";
 
         var saved_el = document.createElement("div");
-        saved_el.innerHTML = "<p>" + _("saved_refresh_target") + "</p>";
+        var text = "saved_refresh_target";
+        if (is_extension) {
+            text = "saved_no_refresh";
+        }
+
+        saved_el.innerHTML = "<p>" + _(text) + "</p>";
         saved_el.id = "saved";
         saved_el.classList.add("topsaved");
         //saved_el.style.pointer_events = "none";
