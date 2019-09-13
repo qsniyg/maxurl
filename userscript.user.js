@@ -41811,13 +41811,13 @@ var $$IMU_EXPORT$$;
                 if (enabled) {
                     options[i].classList.remove("disabled");
 
-                    options[i].querySelectorAll("input, textarea, button").forEach((input) => {
+                    options[i].querySelectorAll("input, textarea, button, select").forEach((input) => {
                         input.disabled = false;
                     });
                 } else {
                     options[i].classList.add("disabled");
 
-                    options[i].querySelectorAll("input, textarea, button").forEach((input) => {
+                    options[i].querySelectorAll("input, textarea, button, select").forEach((input) => {
                         input.disabled = true;
                     });
                 }
