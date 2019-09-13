@@ -705,6 +705,7 @@ var $$IMU_EXPORT$$;
         // also thanks to blue-lightning: https://github.com/qsniyg/maxurl/issues/16
         mouseover_close_behavior: "esc",
         mouseover_zoom_behavior: "fit",
+        mouseover_zoom_custom_percent: 100,
         mouseover_pan_behavior: "drag",
         mouseover_scroll_behavior: "zoom",
         scroll_zoom_behavior: "fitfull",
@@ -1007,10 +1008,26 @@ var $$IMU_EXPORT$$;
                     full: {
                         name: "Full size"
                     }
+                },
+                _group3: {
+                    custom: {
+                        name: "Custom size"
+                    }
                 }
             },
             requires: {
                 mouseover_open_behavior: "popup"
+            },
+            category: "popup"
+        },
+        mouseover_zoom_custom_percent: {
+            name: "Custom zoom percent",
+            description: "Custom percent to initially size the popup",
+            type: "number",
+            number_min: 0,
+            number_unit: "%",
+            requires: {
+                mouseover_zoom_behavior: "custom"
             },
             category: "popup"
         },
@@ -41721,8 +41738,12 @@ var $$IMU_EXPORT$$;
             options_el.innerHTML = "";
 
         var saved_el = document.getElementById("saved");
-        if (!saved_el)
+        if (!saved_el) {
             saved_el = document.createElement("div");
+            saved_el.style.visibility = "hidden";
+            saved_el.id = "saved";
+            saved_el.classList.add("topsaved");
+        }
 
         var text = "saved_refresh_target";
         if (is_extension) {
@@ -41730,10 +41751,7 @@ var $$IMU_EXPORT$$;
         }
 
         saved_el.innerHTML = "<p>" + _(text) + "</p>";
-        saved_el.id = "saved";
-        saved_el.classList.add("topsaved");
         //saved_el.style.pointer_events = "none";
-        saved_el.style.visibility = "hidden";
         //saved_el.style.textAlign = "center";
         //saved_el.style.paddingTop = "1em";
         //saved_el.style.fontStyle = "italic";
@@ -41764,6 +41782,9 @@ var $$IMU_EXPORT$$;
                     // fixme: this only works for one option in meta.requires
                     for (var required_setting in requires) {
                         var value = settings[required_setting];
+
+                        if (value instanceof Array && !(requires[required_setting] instanceof Array))
+                            value = value[0];
 
                         if (!(required_setting in enabled_map)) {
                             check_option(required_setting);
@@ -42366,7 +42387,7 @@ var $$IMU_EXPORT$$;
         }
     }
 
-    var updating_options = false;
+    var updating_options = 0;
     function set_value(key, value) {
         if (key in settings_meta && settings_meta[key].onedit) {
             settings_meta[key].onedit(value);
@@ -42379,12 +42400,12 @@ var $$IMU_EXPORT$$;
             var kv = {};
             kv[key] = value;
             //chrome.storage.sync.set(kv, function() {});
-            updating_options = true;
+            updating_options++;
             extension_send_message({
                 type: "setvalue",
                 data: kv
             }, function() {
-                updating_options = false;
+                updating_options--;
             });
         } else if (typeof GM_setValue !== "undefined") {
             return GM_setValue(key, value);
@@ -44807,7 +44828,7 @@ var $$IMU_EXPORT$$;
                         }
                     }
 
-                    if (changed && !updating_options && is_extension_options_page) {
+                    if (changed && updating_options <= 0 && is_extension_options_page) {
                         //console_log("Refreshing options");
                         do_options();
                     }
