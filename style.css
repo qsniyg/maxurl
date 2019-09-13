@@ -183,6 +183,10 @@ html, body {
   padding: 0;
 }
 
+body {
+  background: #ffffff;
+}
+
 body.main {
   /*overflow: hidden;*/
 }
@@ -532,6 +536,11 @@ input:checked + label, button, .button {
   font-size: 13px;
   max-width: 600px;
   line-height: 1.5em;
+}
+
+#options .spoiler-contents li {
+  padding-top: .2em;
+  padding-bottom: .2em;
 }
 
 
