@@ -1167,6 +1167,9 @@ var $$IMU_EXPORT$$;
             description: "A list of URLs that are blacklisted from being processed",
             category: "rules",
             type: "textarea",
+            onupdate: function() {
+                create_blacklist_regexes();
+            },
             onedit: function() {
                 var errors = create_blacklist_regexes();
 
@@ -1591,6 +1594,8 @@ var $$IMU_EXPORT$$;
     var blacklist_regexes = [];
 
     function create_blacklist_regexes() {
+        url_cache.clear();
+
         blacklist_regexes = [];
         var blacklist = settings.bigimage_blacklist || "";
         if (typeof blacklist !== "string")
@@ -44687,8 +44692,12 @@ var $$IMU_EXPORT$$;
 
                     for (var key in message.data.changes) {
                         //console_log("Setting " + key + " = " + message.data.changes[key].newValue);
-                        changed = update_setting_from_host(key, JSON_parse(message.data.changes[key].newValue)) || changed;
-                        // TODO: create and run on_update for certain settings
+                        var setting_updated = update_setting_from_host(key, JSON_parse(message.data.changes[key].newValue));
+                        changed = setting_updated || changed;
+
+                        if (setting_updated && key in settings_meta && "onupdate" in settings_meta[key]) {
+                            settings_meta[key].onupdate();
+                        }
                     }
 
                     if (changed && is_extension_options_page) {
