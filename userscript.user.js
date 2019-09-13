@@ -42352,6 +42352,21 @@ var $$IMU_EXPORT$$;
         });
     }
 
+    function update_setting_from_host(setting, value) {
+        if (value !== undefined) {
+            if (typeof settings[setting] === "number") {
+                value = parseFloat(value);
+            }
+
+            if (value !== settings[setting]) {
+                settings[setting] = value;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     function do_config() {
         if (is_userscript || is_extension) {
             var settings_done = 0;
@@ -42359,13 +42374,7 @@ var $$IMU_EXPORT$$;
                 (function(setting) {
                     get_value(setting, function(value) {
                         settings_done++;
-                        if (value !== undefined) {
-                            if (typeof settings[setting] === "number") {
-                                value = parseFloat(value);
-                            }
-
-                            settings[setting] = value;
-                        }
+                        update_setting_from_host(setting, value);
                         if (settings_done >= Object.keys(settings).length)
                             upgrade_settings(start);
                     });
@@ -42582,7 +42591,9 @@ var $$IMU_EXPORT$$;
     }
 
     function do_mouseover() {
-        var mouseover_enabled = settings.imu_enabled && settings.mouseover;
+        var mouseover_enabled = function() {
+            return settings.imu_enabled && settings.mouseover;
+        }
 
         var mouseX = 0;
         var mouseY = 0;
@@ -44521,7 +44532,7 @@ var $$IMU_EXPORT$$;
         register_menucommand("Replace images", replace_images);
 
         document.addEventListener('keydown', function(event) {
-            if (!mouseover_enabled || settings.mouseover_trigger_behavior !== "keyboard")
+            if (!mouseover_enabled() || settings.mouseover_trigger_behavior !== "keyboard")
                 return;
 
             if (set_chord(event, true)) {
@@ -44564,7 +44575,7 @@ var $$IMU_EXPORT$$;
         }, true);
 
         document.addEventListener('keyup', function(event) {
-            if (!mouseover_enabled || settings.mouseover_trigger_behavior !== "keyboard")
+            if (!mouseover_enabled() || settings.mouseover_trigger_behavior !== "keyboard")
                 return;
 
             var condition = set_chord(event, false);
@@ -44661,6 +44672,7 @@ var $$IMU_EXPORT$$;
         }
 
         if (is_extension) {
+            // TODO: move out of do_mouseover
             chrome.runtime.onMessage.addListener(function(message, sender, respond) {
                 //console_log("ON_MESSAGE", message);
                 if (message.type === "context_imu") {
@@ -44668,6 +44680,20 @@ var $$IMU_EXPORT$$;
                 } else if (message.type === "popupaction") {
                     if (message.data.action === "replace_images") {
                         replace_images();
+                    }
+                } else if (message.type === "settings_update") {
+                    //console_log(message);
+                    var changed = false;
+
+                    for (var key in message.data.changes) {
+                        //console_log("Setting " + key + " = " + message.data.changes[key].newValue);
+                        changed = update_setting_from_host(key, JSON_parse(message.data.changes[key].newValue)) || changed;
+                        // TODO: create and run on_update for certain settings
+                    }
+
+                    if (changed && is_extension_options_page) {
+                        //console_log("Refreshing options");
+                        do_options();
                     }
                 }
             });
@@ -44708,7 +44734,7 @@ var $$IMU_EXPORT$$;
                 do_popup_pan(popups[0], event, mouseX, mouseY);
             }
 
-            if (mouseover_enabled && delay !== false && typeof delay === "number" && delay_mouseonly) {
+            if (mouseover_enabled() && delay !== false && typeof delay === "number" && delay_mouseonly) {
                 if (delay_handle) {
                     clearTimeout(delay_handle);
 

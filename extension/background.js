@@ -502,3 +502,19 @@ chrome.storage.sync.get(["extension_contextmenu"], function(response) {
     create_contextmenu();
   }
 });
+
+chrome.storage.onChanged.addListener(function(changes, namespace) {
+  if (namespace !== "sync")
+    return;
+
+  chrome.tabs.query({}, function (tabs) {
+    tabs.forEach((tab) => {
+      chrome.tabs.sendMessage(tab.id, {
+        "type": "settings_update",
+        "data": {
+          "changes": changes
+        }
+      });
+    });
+  });
+});
