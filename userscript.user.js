@@ -42247,6 +42247,7 @@ var $$IMU_EXPORT$$;
 
                     sub.onchange = function() {
                         update_setting(setting, sub.value);
+                        show_saved_message();
                     };
 
                     value_td.appendChild(sub);
