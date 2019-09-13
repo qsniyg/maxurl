@@ -1193,6 +1193,25 @@ var $$IMU_EXPORT$$;
                         console.error(errors[i]);
                     }
                 }
+            },
+            documentation: {
+                title: "Documentation",
+                value: [
+                    "The examples below are written for the simple (glob) engine, not the regex engine. The glob engine is generally based on the UNIX glob syntax.<br />",
+                    "<ul><br />",
+                    "<li><code>google.com</code> will block https://google.com/, https://www.google.com/, https://abcdef.google.com/, https://def.abc.google.com/, etc.</li>",
+                    "<li><code>abc.google.com</code> will block https://abc.google.com/, https://def.abc.google.com/, etc.</li>",
+                    "<li><code>*.google.com</code> will block https://www.google.com/, https://def.abc.google.com/, etc. but not https://google.com/</li>",
+                    "<li><code>google.*/</code> will block https://google.com/, https://www.google.co.uk, etc.</li>",
+                    "<li><code>http://google.com</code> will block http://google.com/, but not https://google.com/, http://www.google.com/, etc.</li>",
+                    "<li><code>google.com/test</code> will block https://google.com/test, https://www.google.com/test/abcdef, but not https://google.com/, etc.</li>",
+                    "<li><code>google.com/*/test</code> will block https://google.com/abc/test, but not https://google.com/test or https://google.com/abc/def/test</li>",
+                    "<li><code>google.com/**/test</code> will block https://google.com/abc/test, https://google.com/abc/def/test, https://google.com/abc/def/ghi/test, etc. but not https://google.com/test</li>",
+                    "<li><code>g??gle.com</code> will block https://google.com/, https://gaagle.com/, https://goagle.com/, etc.</li>",
+                    "<li><code>google.{com,co.uk}</code> will block https://google.com/ and https://google.co.uk/</li>",
+                    "<li><code>g[oa]gle.com</code> will block https://google.com/ and https://gaogle.com/</li>",
+                    "</ul>"
+                ].join("\n")
             }
         },
         bigimage_blacklist_engine: {
@@ -42229,6 +42248,44 @@ var $$IMU_EXPORT$$;
                     }
 
                     option.appendChild(examples);
+                }
+
+                if (meta.documentation) {
+                    var get_title = function(expanded) {
+                        var arrow = "⯈";
+                        if (expanded) {
+                            arrow = "⯆";
+                        }
+
+                        return arrow + " " + _(meta.documentation.title);
+                    };
+
+                    var text = get_title(false);
+
+                    var spoiler_title = document.createElement("span");
+                    spoiler_title.classList.add("spoiler-title");
+                    spoiler_title.innerText = text;
+
+                    var expanded = false;
+                    spoiler_title.onclick = function() {
+                        expanded = !expanded;
+
+                        if (expanded) {
+                            spoiler_contents.style.display = "block";
+                        } else {
+                            spoiler_contents.style.display = "none";
+                        }
+
+                        spoiler_title.innerText = get_title(expanded);
+                    };
+
+                    var spoiler_contents = document.createElement("div");
+                    spoiler_contents.classList.add("spoiler-contents");
+                    spoiler_contents.style.display = "none";
+                    spoiler_contents.innerHTML = meta.documentation.value;
+
+                    option.appendChild(spoiler_title);
+                    option.appendChild(spoiler_contents);
                 }
 
                 var errordiv = document.createElement("div");
