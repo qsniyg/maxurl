@@ -698,6 +698,7 @@ var $$IMU_EXPORT$$;
         mouseover_close_behavior: "esc",
         // thanks to acid-crash on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-436594057
         mouseover_close_need_mouseout: true,
+        mouseover_jitter_threshold: 30,
         // thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-530760246
         mouseover_exclude_page_bg: true,
         mouseover_ui: true,
@@ -1006,6 +1007,18 @@ var $$IMU_EXPORT$$;
                     $or: ["any", "all"]
                 }
             },
+            category: "popup"
+        },
+        mouseover_jitter_threshold: {
+            name: "Threshold to leave image",
+            description: "How many pixels outside of the image before the cursor is considered to have left the image",
+            requires: {
+                _type: "or",
+                mouseover_close_need_mouseout: true,
+                mouseover_trigger_behavior: "mouse"
+            },
+            type: "number",
+            number_unit: "pixels",
             category: "popup"
         },
         mouseover_zoom_behavior: {
@@ -41791,12 +41804,21 @@ var $$IMU_EXPORT$$;
                 }
 
                 if (!meta.imu_enabled_exempt) {
-                    requires.imu_enabled = true;
+                    if (!settings.imu_enabled) {
+                        enabled = false;
+                    }
                 }
 
-                if (requires) {
-                    // fixme: this only works for one option in meta.requires
+                if (enabled && requires) {
+                    var type = "and";
+
+                    if ("_type" in requires)
+                        type = requires._type;
+
                     for (var required_setting in requires) {
+                        if (required_setting[0] === "_")
+                            continue;
+
                         var required_value = requires[required_setting];
 
                         var rvalues = [];
@@ -41823,6 +41845,7 @@ var $$IMU_EXPORT$$;
                                 return;
                             }
 
+                            console_log(setting, required_setting, value, rvalues[i]);
                             if (enabled_map[required_setting] && value === rvalues[i]) {
                                 enabled = true;
                                 break;
@@ -41831,8 +41854,14 @@ var $$IMU_EXPORT$$;
                             }
                         }
 
-                        if (!enabled) {
-                            break;
+                        if (type === "and") {
+                            if (!enabled) {
+                                break;
+                            }
+                        } else if (type === "or") {
+                            if (enabled) {
+                                break;
+                            }
                         }
                     }
                 }
@@ -44967,7 +44996,7 @@ var $$IMU_EXPORT$$;
                 do_popup_pan(popups[0], event, mouseX, mouseY);
             }
 
-            var jitter_base = 30;
+            var jitter_base = settings.mouseover_jitter_threshold;
 
             if (settings.mouseover_trigger_behavior === "keyboard" && get_close_need_mouseout() && popups.length > 0 &&
                 popup_trigger_reason === "keyboard") {
@@ -45065,7 +45094,7 @@ var $$IMU_EXPORT$$;
                     }
                 }
 
-                // TODO: this is rather weird. Less CPU usage, but doesn't behave in the way one would expect
+                // FIXME: this is rather weird. Less CPU usage, but doesn't behave in the way one would expect
                 if (popups.length === 0 && !delay_handle) {
                     mouseDelayX = mouseX;
                     mouseDelayY = mouseY;
