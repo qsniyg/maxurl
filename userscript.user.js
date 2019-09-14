@@ -44853,7 +44853,7 @@ var $$IMU_EXPORT$$;
                                 pass = true;
                             }
 
-                            settings_history.splice(index, 1);
+                            settings_history[key].splice(index, 1);
 
                             if (pass)
                                 continue;
@@ -45082,6 +45082,12 @@ var $$IMU_EXPORT$$;
             }
 
             do_mouseover();
+
+            if (is_extension) {
+                extension_send_message({
+                    type: "ready"
+                });
+            }
         }
     }
 
