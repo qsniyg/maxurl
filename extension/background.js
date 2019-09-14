@@ -6,6 +6,7 @@ var requests = {};
 var redirects = {};
 var loading_urls = {};
 var loading_redirects = {};
+var tabs_ready = {};
 
 var nir_debug = false;
 var debug = function() {
@@ -464,6 +465,8 @@ chrome.runtime.onMessage.addListener((message, sender, respond) => {
     });
 
     return true;
+  } else if (message.type === "ready") {
+    tabready(sender.tab.id);
   }
 });
 
@@ -517,4 +520,79 @@ chrome.storage.onChanged.addListener(function(changes, namespace) {
       });
     });
   });
+});
+
+function tabremoved(tabid) {
+  if (nir_debug)
+    console.log("Removed tab: ", tabid);
+
+  delete tabs_ready[tabid];
+
+  if (tabid === currenttab)
+    enable_contextmenu(false);
+}
+
+function tabready(tabid) {
+  if (nir_debug)
+    console.log("Tab ready: ", tabid);
+
+  tabs_ready[tabid] = true;
+
+  if (tabid === currenttab)
+    enable_contextmenu(true);
+}
+
+chrome.tabs.onRemoved.addListener(function(tabid) {
+  if (nir_debug)
+    console.log("tabs.onRemoved");
+
+  tabremoved(tabid)
+});
+
+chrome.tabs.onReplaced.addListener(function (added, removed) {
+  if (nir_debug)
+    console.log("tabs.onReplaced");
+
+  tabremoved(removed);
+  tabremoved(added);
+});
+
+chrome.tabs.onUpdated.addListener(function(tabid, info, tab) {
+  if (info.status === "loading") {
+    if (nir_debug)
+      console.log("loading");
+
+    tabremoved(tabid);
+  } else if (info.status === "complete") {
+    tabready(tabid);
+  }
+});
+
+function enable_contextmenu(enabled) {
+  if (nir_debug)
+    console.log("Setting contextmenu: " + enabled);
+
+  chrome.contextMenus.update(contextmenu, {
+    enabled: enabled
+  });
+}
+
+var currenttab = null;
+chrome.tabs.onActivated.addListener(function(activeInfo) {
+  currenttab = activeInfo.tabId;
+
+  if (activeInfo.tabId in tabs_ready) {
+    enable_contextmenu(true);
+  } else {
+    enable_contextmenu(false);
+
+    // Disable, because this likely means the extension was reloaded, which means the context menu won't work anyways
+    if (false) {
+      chrome.tabs.getCurrent(function (tab) {
+        if (tab.status === "complete") {
+          tabready(tab.id);
+        }
+      });
+    }
+  }
 });
