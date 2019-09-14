@@ -44872,7 +44872,7 @@ var $$IMU_EXPORT$$;
             if (!mouseover_enabled())
                 return;
 
-            var condition = set_chord(event, false);
+            var condition = set_chord(event, false, settings.mouseover_trigger_key);
 
             var close_behavior = get_close_behavior();
             if (condition && close_behavior === "all") {
