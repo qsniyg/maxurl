@@ -716,6 +716,7 @@ var $$IMU_EXPORT$$;
         mouseover_pan_behavior: "drag",
         mouseover_scroll_behavior: "zoom",
         scroll_zoom_behavior: "fitfull",
+        zoom_out_to_close: false,
         // thanks to 07416 on github for the idea: https://github.com/qsniyg/maxurl/issues/20#issuecomment-439599984
         mouseover_position: "cursor",
         mouseover_download: false,
@@ -1130,6 +1131,14 @@ var $$IMU_EXPORT$$;
                     name: "Incremental"
                 }
             },
+            requires: {
+                mouseover_scroll_behavior: "zoom"
+            },
+            category: "popup"
+        },
+        zoom_out_to_close: {
+            name: "Zoom out fully to close",
+            description: "Closes the popup if you zoom out past the minimum zoom",
             requires: {
                 mouseover_scroll_behavior: "zoom"
             },
@@ -43673,6 +43682,11 @@ var $$IMU_EXPORT$$;
                         img.style.width = "initial";
                         img.style.height = "initial";
 
+                        if (settings.zoom_out_to_close && currentmode === "fit" && e.deltaY > 0) {
+                            resetpopups();
+                            return false;
+                        }
+
                         if (e.deltaY > 0 && currentmode !== "fit") {
                             update_vwh();
                             img.style.maxWidth = vw + "px";
@@ -43713,9 +43727,12 @@ var $$IMU_EXPORT$$;
                         imgwidth = img.naturalWidth * mult;
                         imgheight = img.naturalHeight * mult;
 
-                        if (imgwidth < 64 || imgheight < 64 ||
-                            imgwidth > img.naturalWidth * 16 ||
-                            imgheight > img.naturalHeight * 16) {
+                        var too_small = imgwidth < 64 || imgheight < 64;
+                        var too_big = imgwidth > img.naturalWidth * 16 || imgheight > img.naturalHeight * 16;
+
+                        if (too_small || too_big) {
+                            if (settings.zoom_out_to_close && too_small)
+                                resetpopups();
                             return false;
                         }
 
