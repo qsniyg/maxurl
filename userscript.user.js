@@ -700,6 +700,9 @@ var $$IMU_EXPORT$$;
         mouseover_close_need_mouseout: true,
         mouseover_jitter_threshold: 30,
         // thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-530760246
+        mouseover_use_hold_key: true,
+        mouseover_hold_key: ["i"],
+        // thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-530760246
         mouseover_exclude_page_bg: true,
         mouseover_ui: true,
         mouseover_ui_opacity: 30,
@@ -1019,6 +1022,23 @@ var $$IMU_EXPORT$$;
             },
             type: "number",
             number_unit: "pixels",
+            category: "popup"
+        },
+        mouseover_use_hold_key: {
+            name: "Use hold key",
+            description: "Enables the use of a hold key that, when pressed, will keep the popup open",
+            requires: {
+                mouseover_trigger_behavior: "mouse"
+            },
+            category: "popup"
+        },
+        mouseover_hold_key: {
+            name: "Hold key",
+            description: "Hold key that, when pressed, will keep the popup open",
+            requires: {
+                mouseover_use_hold_key: true
+            },
+            type: "keysequence",
             category: "popup"
         },
         mouseover_zoom_behavior: {
@@ -42820,6 +42840,7 @@ var $$IMU_EXPORT$$;
         var popups_active = false;
         var popup_trigger_reason = null;
         var can_close_popup = [false, false];
+        var popup_hold = false;
         var dragstart = false;
         var dragstartX = null;
         var dragstartY = null;
@@ -43761,6 +43782,7 @@ var $$IMU_EXPORT$$;
                 popups.push(outerdiv);
                 popupshown = true;
                 can_close_popup = [false, false];
+                popup_hold = false;
 
                 stop_waiting();
                 popups_active = true;
@@ -44342,8 +44364,11 @@ var $$IMU_EXPORT$$;
         settings_meta.mouseover_trigger_delay.onupdate = update_mouseover_trigger_delay;
         settings_meta.mouseover_trigger_behavior.onupdate = update_mouseover_trigger_delay;
 
-        function keystr_in_trigger(str) {
-            return settings.mouseover_trigger_key.indexOf(str) >= 0;
+        function keystr_in_trigger(str, wanted_chord) {
+            if (wanted_chord === undefined)
+                wanted_chord = settings.mouseover_trigger_key;
+
+            return wanted_chord.indexOf(str) >= 0;
         }
 
         function key_in_trigger(key) {
@@ -44372,12 +44397,23 @@ var $$IMU_EXPORT$$;
             return false;
         }
 
-        function set_chord(e, value) {
+        function event_in_chord(e, wanted_chord) {
+            var map = get_keystrs_map(e, value)
+
+            for (var key in map) {
+                if (keystr_in_trigger(key, wanted_chord))
+                    return true;
+            }
+
+            return false;
+        }
+
+        function set_chord(e, value, wanted_chord) {
             var map = get_keystrs_map(e, value)
 
             var changed = false;
             for (var key in map) {
-                if (!keystr_in_trigger(key))
+                if (wanted_chord !== undefined && !keystr_in_trigger(key, wanted_chord))
                     continue;
 
                 if (set_chord_sub(key, map[key]))
@@ -44387,9 +44423,12 @@ var $$IMU_EXPORT$$;
             return changed;
         }
 
-        function trigger_complete(e) {
-            for (var i = 0; i < settings.mouseover_trigger_key.length; i++) {
-                var key = settings.mouseover_trigger_key[i];
+        function trigger_complete(e, wanted_chord) {
+            if (wanted_chord === undefined)
+                wanted_chord = settings.mouseover_trigger_key;
+
+            for (var i = 0; i < wanted_chord.length; i++) {
+                var key = wanted_chord[i];
 
                 if (current_chord.indexOf(key) < 0)
                     return false;
@@ -44398,9 +44437,12 @@ var $$IMU_EXPORT$$;
             return true;
         }
 
-        function trigger_partially_complete(e) {
-            for (var i = 0; i < settings.mouseover_trigger_key.length; i++) {
-                var key = settings.mouseover_trigger_key[i];
+        function trigger_partially_complete(e, wanted_chord) {
+            if (wanted_chord === undefined)
+                wanted_chord = settings.mouseover_trigger_key;
+
+            for (var i = 0; i < wanted_chord.length; i++) {
+                var key = wanted_chord[i];
 
                 if (current_chord.indexOf(key) >= 0)
                     return true;
@@ -44762,11 +44804,11 @@ var $$IMU_EXPORT$$;
         register_menucommand("Replace images", replace_images);
 
         document.addEventListener('keydown', function(event) {
-            if (!mouseover_enabled() || settings.mouseover_trigger_behavior !== "keyboard")
+            if (!mouseover_enabled())
                 return;
 
-            if (set_chord(event, true)) {
-                if (trigger_complete(event) && !popups_active) {
+            if (settings.mouseover_trigger_behavior === "keyboard" && set_chord(event, true, settings.mouseover_trigger_key)) {
+                if (trigger_complete(event, settings.mouseover_trigger_key) && !popups_active) {
                     if (!delay_handle) {
                         popup_trigger_reason = "keyboard";
                         trigger_popup();
@@ -44774,11 +44816,21 @@ var $$IMU_EXPORT$$;
                 }
 
                 var close_behavior = get_close_behavior();
-
-                if (close_behavior === "all" || (close_behavior === "any" && trigger_complete(event))) {
+                if (close_behavior === "all" || (close_behavior === "any" && trigger_complete(event, settings.mouseover_trigger_key))) {
                     can_close_popup[0] = false;
                 }
             }
+
+            if (popups_active && popup_trigger_reason === "mouse" &&
+                settings.mouseover_use_hold_key && set_chord(event, true, settings.mouseover_hold_key)) {
+                if (trigger_complete(event, settings.mouseover_hold_key)) {
+                    popup_hold = !popup_hold;
+
+                    if (!popup_hold && can_close_popup[1])
+                        resetpopups();
+                }
+            }
+
 
             if (popups.length > 0 && popup_el) {
                 var ret = undefined;
@@ -45082,13 +45134,19 @@ var $$IMU_EXPORT$$;
                             }
                         }
 
+                        can_close_popup[1] = false;
                         if (mouse_in_image_yet) {
                             if (Math.abs(mouseX - mouseDelayX) > jitter_threshx ||
                                 Math.abs(mouseY - mouseDelayY) > jitter_threshy) {
                                 //console_log(mouseX);
                                 //console_log(mouseDelayX);
                                 //console_log(jitter_threshx);
-                                resetpopups();
+
+                                if (popup_hold) {
+                                    can_close_popup[1] = true;
+                                } else {
+                                    resetpopups();
+                                }
                             }
                         }
                     }
