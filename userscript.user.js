@@ -707,6 +707,7 @@ var $$IMU_EXPORT$$;
         mouseover_ui: true,
         mouseover_ui_opacity: 50,
         mouseover_ui_imagesize: true,
+        mouseover_ui_zoomlevel: true,
         mouseover_ui_gallerycounter: true,
         mouseover_ui_gallerymax: 50,
         mouseover_ui_optionsbtn: is_userscript ? true : false,
@@ -939,6 +940,15 @@ var $$IMU_EXPORT$$;
         mouseover_ui_imagesize: {
             name: "Image size",
             description: "Displays the image size on top of the UI",
+            requires: {
+                mouseover_ui: true
+            },
+            category: "popup",
+            subcategory: "ui"
+        },
+        mouseover_ui_zoomlevel: {
+            name: "Zoom percent",
+            description: "Displays the current zoom level on top of the UI",
             requires: {
                 mouseover_ui: true
             },
@@ -43471,9 +43481,35 @@ var $$IMU_EXPORT$$;
                         }
                     }
 
-                    if (settings.mouseover_ui_imagesize) {
-                        var text = img.naturalWidth + "x" + img.naturalHeight;
-                        var imagesize = addbtn(text, "", null, true);
+                    function get_imagesizezoom_text() {
+                        var text = "";
+
+                        var rect = img.getBoundingClientRect();
+
+                        // This is needed if img isn't displayed yet
+                        var rect_height = rect.height || parseFloat(img.style.maxHeight);
+
+                        if (isNaN(rect_height))
+                            rect_height = img.naturalHeight;
+
+                        var zoom_percent = rect_height / img.naturalHeight;
+                        var currentzoom = parseInt(zoom_percent * 100);
+
+                        if (settings.mouseover_ui_imagesize) {
+                            text = img.naturalWidth + "x" + img.naturalHeight;
+
+                            if (settings.mouseover_ui_zoomlevel) {
+                                text += " (" + currentzoom + "%)"
+                            }
+                        } else {
+                            text = currentzoom + "%";
+                        }
+
+                        return text;
+                    }
+
+                    if (settings.mouseover_ui_imagesize || settings.mouseover_ui_zoomlevel) {
+                        var imagesize = addbtn(get_imagesizezoom_text(100), "", null, true);
                         imagesize.style.fontSize = gallerycount_fontsize;
                         topbarel.appendChild(imagesize);
                     }
