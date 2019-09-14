@@ -44967,7 +44967,7 @@ var $$IMU_EXPORT$$;
                 do_popup_pan(popups[0], event, mouseX, mouseY);
             }
 
-            var jitter_base = 30;
+            var jitter_base = 40;
 
             if (settings.mouseover_trigger_behavior === "keyboard" && get_close_need_mouseout() && popups.length > 0 &&
                 popup_trigger_reason === "keyboard") {
@@ -45002,21 +45002,27 @@ var $$IMU_EXPORT$$;
                     }
 
                     if (popups.length > 0) {
-                        var jitter_threshx = 40;
-                        var jitter_threshy = jitter_threshx;
+                        var jitter_threshx = jitter_base;
+                        var jitter_threshy = jitter_base;
 
                         var img = popups[0].getElementsByTagName("img")[0];
                         if (img) {
-                            var w = Math.min(parseInt(img.style.maxWidth), img.naturalWidth);
-                            var h = Math.min(parseInt(img.style.maxHeight), img.naturalHeight);
+                            var rect = img.getBoundingClientRect();
+
+                            // why this instead of getBoundingClientRect?
+                            //var w = Math.min(parseInt(img.style.maxWidth), img.naturalWidth);
+                            //var h = Math.min(parseInt(img.style.maxHeight), img.naturalHeight);
+                            var w = rect.width;
+                            var h = rect.height;
 
                             jitter_threshx = Math.min(Math.max(jitter_threshx, w / 2), img.naturalWidth);
                             jitter_threshy = Math.min(Math.max(jitter_threshy, h / 2), img.naturalHeight);
 
-                            jitter_threshx += jitter_base;
-                            jitter_threshy += jitter_base;
+                            jitter_threshx += 30;
+                            jitter_threshy += 30;
 
-                            var rect = img.getBoundingClientRect();
+                            /*console_log(jitter_threshx, img.naturalWidth, w);
+                            console_log(jitter_threshy, img.naturalHeight, h);*/
                             if (mouse_in_image_yet === false) {
                                 if (mouseX >= rect.left && mouseX <= rect.right &&
                                     mouseY >= rect.top && mouseY <= rect.bottom) {
@@ -45059,6 +45065,7 @@ var $$IMU_EXPORT$$;
                     }
                 }
 
+                // TODO: this is rather weird. Less CPU usage, but doesn't behave in the way one would expect
                 if (popups.length === 0 && !delay_handle) {
                     mouseDelayX = mouseX;
                     mouseDelayY = mouseY;
