@@ -1169,12 +1169,21 @@ var $$IMU_EXPORT$$;
             description: "Where the popup will appear",
             options: {
                 _type: "or",
-                cursor: {
-                    name: "Mouse cursor",
-                    description: "Underneath the mouse cursor"
+                _group1: {
+                    cursor: {
+                        name: "Cursor middle",
+                        description: "Underneath the mouse cursor"
+                    }
                 },
-                center: {
-                    name: "Page middle"
+                _group2: {
+                    beside_cursor: {
+                        name: "Beside cursor"
+                    }
+                },
+                _group3: {
+                    center: {
+                        name: "Page middle"
+                    }
                 }
             },
             requires: {
@@ -43193,9 +43202,11 @@ var $$IMU_EXPORT$$;
                     img.style.maxHeight = vh + "px";
                 } else if (initial_zoom_behavior === "custom") {
                     var zoom_percent = settings.mouseover_zoom_custom_percent / 100;
-                    img.style.maxWidth = Math.max(imgw * zoom_percent, 20) + "px";
+                    imgw = Math.max(imgw * zoom_percent, 20);
+                    imgh = Math.max(imgh * zoom_percent, 20);
+                    img.style.maxWidth = imgw + "px";
                     img.style.width = img.style.maxWidth;
-                    img.style.maxHeight = Math.max(imgh * zoom_percent, 20) + "px";
+                    img.style.maxHeight = imgh + "px";
                     img.style.height = img.style.maxHeight;
                 }
 
@@ -43231,6 +43242,20 @@ var $$IMU_EXPORT$$;
                 } else if (mouseover_position === "center") {
                     outerdiv.style.top = (sct + Math.min(Math.max(((vh / 2) - sct) - (imgh / 2), border_thresh), Math.max(vh - imgh, border_thresh))) + "px";
                     outerdiv.style.left = (scl + Math.min(Math.max(((vw / 2) - scl) - (imgw / 2), border_thresh), Math.max(vw - imgw, border_thresh))) + "px";
+                } else if (mouseover_position === "beside_cursor") {
+                    // TODO: improve this to be more interpolated
+
+                    if (y > vh / 2) {
+                        outerdiv.style.top = Math.max(y - imgh - border_thresh, border_thresh) + "px";
+                    } else {
+                        outerdiv.style.top = Math.min(y + border_thresh, Math.max(vh - imgh, border_thresh)) + "px";
+                    }
+
+                    if (x > vw / 2) {
+                        outerdiv.style.left = Math.max(x - imgw - border_thresh, border_thresh) + "px";
+                    } else {
+                        outerdiv.style.left = Math.min(x + border_thresh, Math.max(vw - imgw, border_thresh)) + "px";
+                    }
                 }
                 /*console_log(x - (imgw / 2));
                   console_log(vw);
