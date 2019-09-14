@@ -512,12 +512,16 @@ chrome.storage.onChanged.addListener(function(changes, namespace) {
 
   chrome.tabs.query({}, function (tabs) {
     tabs.forEach((tab) => {
-      chrome.tabs.sendMessage(tab.id, {
-        "type": "settings_update",
-        "data": {
-          "changes": changes
-        }
-      });
+      try {
+        chrome.tabs.sendMessage(tab.id, {
+          "type": "settings_update",
+          "data": {
+            "changes": changes
+          }
+        });
+      } catch (e) {
+        console.error(e);
+      }
     });
   });
 });
