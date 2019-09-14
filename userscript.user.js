@@ -696,6 +696,8 @@ var $$IMU_EXPORT$$;
         mouseover_trigger_delay: 1,
         // also thanks to blue-lightning: https://github.com/qsniyg/maxurl/issues/16
         mouseover_close_behavior: "esc",
+        // thanks to acid-crash on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-436594057
+        mouseover_close_need_mouseout: true,
         // thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-530760246
         mouseover_exclude_page_bg: true,
         mouseover_ui: true,
@@ -993,6 +995,16 @@ var $$IMU_EXPORT$$;
             requires: {
                 mouseover_open_behavior: "popup",
                 mouseover_trigger_behavior: "keyboard"
+            },
+            category: "popup"
+        },
+        mouseover_close_need_mouseout: {
+            name: "Don't close until mouse leaves",
+            description: "If true, this keeps the popup open even if all triggers are released if the mouse is still over the image",
+            requires: {
+                mouseover_close_behavior: {
+                    $or: ["any", "all"]
+                }
             },
             category: "popup"
         },
@@ -41785,24 +41797,41 @@ var $$IMU_EXPORT$$;
                 if (requires) {
                     // fixme: this only works for one option in meta.requires
                     for (var required_setting in requires) {
-                        var value = settings[required_setting];
+                        var required_value = requires[required_setting];
 
-                        if (value instanceof Array && !(requires[required_setting] instanceof Array))
-                            value = value[0];
-
-                        if (!(required_setting in enabled_map)) {
-                            check_option(required_setting);
-                        }
-
-                        if (enabled_map[required_setting] === "processing") {
-                            console_error("Dependency cycle detected for: " + setting + ", " + required_setting);
-                            return;
-                        }
-
-                        if (enabled_map[required_setting] && value === requires[required_setting]) {
-                            enabled = true;
+                        var rvalues = [];
+                        if (typeof required_value === "object" && "$or" in required_value) {
+                            for (var i = 0; i < required_value.$or.length; i++) {
+                                rvalues.push(required_value.$or[i]);
+                            }
                         } else {
-                            enabled = false;
+                            rvalues = [required_value];
+                        }
+
+                        for (var i = 0; i < rvalues.length; i++) {
+                            var value = settings[required_setting];
+
+                            if (value instanceof Array && !(rvalues[i] instanceof Array))
+                                value = value[0];
+
+                            if (!(required_setting in enabled_map)) {
+                                check_option(required_setting);
+                            }
+
+                            if (enabled_map[required_setting] === "processing") {
+                                console_error("Dependency cycle detected for: " + setting + ", " + required_setting);
+                                return;
+                            }
+
+                            if (enabled_map[required_setting] && value === rvalues[i]) {
+                                enabled = true;
+                                break;
+                            } else {
+                                enabled = false;
+                            }
+                        }
+
+                        if (!enabled) {
                             break;
                         }
                     }
@@ -42760,6 +42789,7 @@ var $$IMU_EXPORT$$;
         var popups = [];
         var popup_el = null;
         var popups_active = false;
+        var can_close_popup = [false, false];
         var dragstart = false;
         var dragstartX = null;
         var dragstartY = null;
@@ -43700,6 +43730,7 @@ var $$IMU_EXPORT$$;
                 document.documentElement.appendChild(outerdiv);
                 popups.push(outerdiv);
                 popupshown = true;
+                can_close_popup = [false, false];
 
                 stop_waiting();
                 popups_active = true;
@@ -44358,6 +44389,10 @@ var $$IMU_EXPORT$$;
             return get_single_setting("mouseover_close_behavior");
         }
 
+        function get_close_need_mouseout() {
+            return settings.mouseover_close_need_mouseout && get_close_behavior() !== "esc";
+        }
+
         function find_els_at_point(xy, els, prev) {
             if (!prev) {
                 prev = [];
@@ -44705,6 +44740,8 @@ var $$IMU_EXPORT$$;
                     if (!delay_handle)
                         trigger_popup();
                 }
+
+                can_close_popup[0] = false;
             }
 
             if (popups.length > 0 && popup_el) {
@@ -44752,9 +44789,13 @@ var $$IMU_EXPORT$$;
 
             if (condition && close_behavior !== "esc") {
                 controlPressed = false;
-                stop_waiting();
 
-                resetpopups();
+                if (!settings.mouseover_close_need_mouseout || can_close_popup[1]) {
+                    stop_waiting();
+                    resetpopups();
+                } else {
+                    can_close_popup[0] = true;
+                }
 
                 return;
             }
@@ -44918,6 +44959,29 @@ var $$IMU_EXPORT$$;
                 do_popup_pan(popups[0], event, mouseX, mouseY);
             }
 
+            var jitter_base = 30;
+
+            if (settings.mouseover_trigger_behavior === "keyboard" && get_close_need_mouseout() && popups.length > 0) {
+                var img = popups[0].getElementsByTagName("img")[0];
+                if (img) {
+                    var rect = popups[0].getBoundingClientRect();
+
+                    var our_jitter = jitter_base / 2;
+
+                    if (mouseX >= (rect.left - our_jitter) && mouseX <= (rect.right + our_jitter) &&
+                        mouseY >= (rect.top - our_jitter) && mouseY <= (rect.bottom + our_jitter)) {
+                        can_close_popup[1] = false;
+                    } else {
+                        if (can_close_popup[0]) {
+                            stop_waiting();
+                            resetpopups();
+                        } else {
+                            can_close_popup[1] = true;
+                        }
+                    }
+                }
+            }
+
             if (mouseover_enabled() && delay !== false && typeof delay === "number" && delay_mouseonly) {
                 if (delay_handle) {
                     clearTimeout(delay_handle);
@@ -44937,8 +45001,8 @@ var $$IMU_EXPORT$$;
                             jitter_threshx = Math.min(Math.max(jitter_threshx, w / 2), img.naturalWidth);
                             jitter_threshy = Math.min(Math.max(jitter_threshy, h / 2), img.naturalHeight);
 
-                            jitter_threshx += 30;
-                            jitter_threshy += 30;
+                            jitter_threshx += jitter_base;
+                            jitter_threshy += jitter_base;
 
                             var rect = img.getBoundingClientRect();
                             if (mouse_in_image_yet === false) {
