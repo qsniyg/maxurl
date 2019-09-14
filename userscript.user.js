@@ -45095,7 +45095,18 @@ var $$IMU_EXPORT$$;
                 }
 
                 // FIXME: this is rather weird. Less CPU usage, but doesn't behave in the way one would expect
-                if (popups.length === 0 && !delay_handle) {
+                if (popups.length === 0) {
+                    if (delay_handle) {
+                        var trigger_mouse_jitter_thresh = 10;
+
+                        if ((mouseX - mouseDelayX) < trigger_mouse_jitter_thresh &&
+                            (mouseY - mouseDelayY) < trigger_mouse_jitter_thresh)
+                            return;
+
+                        delay_handle = null;
+                        clearTimeout(delay_handle);
+                    }
+
                     mouseDelayX = mouseX;
                     mouseDelayY = mouseY;
                     mouse_in_image_yet = false;
