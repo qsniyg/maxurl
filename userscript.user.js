@@ -694,6 +694,8 @@ var $$IMU_EXPORT$$;
         // thanks to 894-572 on github for the idea: https://github.com/qsniyg/maxurl/issues/30
         mouseover_trigger_key: ["shift", "alt", "i"],
         mouseover_trigger_delay: 1,
+        // also thanks to blue-lightning: https://github.com/qsniyg/maxurl/issues/16
+        mouseover_close_behavior: "esc",
         // thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-530760246
         mouseover_exclude_page_bg: true,
         mouseover_ui: true,
@@ -702,8 +704,6 @@ var $$IMU_EXPORT$$;
         mouseover_ui_gallerymax: 50,
         mouseover_ui_optionsbtn: is_userscript ? true : false,
         mouseover_ui_rotationbtns: false,
-        // also thanks to blue-lightning: https://github.com/qsniyg/maxurl/issues/16
-        mouseover_close_behavior: "esc",
         mouseover_zoom_behavior: "fit",
         // thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-531080061
         mouseover_zoom_custom_percent: 100,
@@ -991,7 +991,8 @@ var $$IMU_EXPORT$$;
                 }
             },
             requires: {
-                mouseover_open_behavior: "popup"
+                mouseover_open_behavior: "popup",
+                mouseover_trigger_behavior: "keyboard"
             },
             category: "popup"
         },
