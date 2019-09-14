@@ -43532,7 +43532,7 @@ var $$IMU_EXPORT$$;
                         if (settings.mouseover_ui_imagesize) {
                             text = img.naturalWidth + "x" + img.naturalHeight;
 
-                            if (settings.mouseover_ui_zoomlevel) {
+                            if (settings.mouseover_ui_zoomlevel && currentzoom !== 100) {
                                 text += " (" + currentzoom + "%)"
                             }
                         } else {
