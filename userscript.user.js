@@ -44741,7 +44741,11 @@ var $$IMU_EXPORT$$;
                         trigger_popup();
                 }
 
-                can_close_popup[0] = false;
+                var close_behavior = get_close_behavior();
+
+                if (close_behavior === "all" || (close_behavior === "any" && trigger_complete(event))) {
+                    can_close_popup[0] = false;
+                }
             }
 
             if (popups.length > 0 && popup_el) {
