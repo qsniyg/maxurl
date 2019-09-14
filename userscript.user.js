@@ -1300,6 +1300,8 @@ var $$IMU_EXPORT$$;
         settings[option] = default_options.exclude_problems.indexOf(problem) < 0;
     }
 
+    var settings_history = {};
+
 
     function Cache() {
         this.data = {};
@@ -42416,8 +42418,20 @@ var $$IMU_EXPORT$$;
     }
 
     function update_setting(key, value) {
+        if (value === settings[key])
+            return false;
+
         settings[key] = value;
+
+        if (is_extension) {
+            if (!(key in settings_history))
+                settings_history[key] = [];
+
+            settings_history[key].push(value);
+        }
+
         set_value(key, value);
+        return true;
     }
 
     function upgrade_settings(cb) {
@@ -44830,7 +44844,22 @@ var $$IMU_EXPORT$$;
 
                     for (var key in message.data.changes) {
                         //console_log("Setting " + key + " = " + message.data.changes[key].newValue);
-                        var setting_updated = update_setting_from_host(key, JSON_parse(message.data.changes[key].newValue));
+                        var newvalue = JSON_parse(message.data.changes[key].newValue);
+                        if (key in settings_history) {
+                            var index = settings_history[key].indexOf(newvalue);
+
+                            var pass = false
+                            if (index >= 0 && index < settings_history[key].length - 1) {
+                                pass = true;
+                            }
+
+                            settings_history.splice(index, 1);
+
+                            if (pass)
+                                continue;
+                        }
+
+                        var setting_updated = update_setting_from_host(key, newvalue);
                         changed = setting_updated || changed;
 
                         if (setting_updated && key in settings_meta && "onupdate" in settings_meta[key]) {
