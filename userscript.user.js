@@ -726,6 +726,7 @@ var $$IMU_EXPORT$$;
         mouseover_links: false,
         // thanks to acid-crash on github for the idea: https://github.com/qsniyg/maxurl/issues/20
         mouseover_styles: "",
+        mouseover_apply_blacklist: false,
         website_inject_imu: true,
         website_image: true,
         extension_contextmenu: true,
@@ -1213,6 +1214,14 @@ var $$IMU_EXPORT$$;
             type: "textarea",
             requires: {
                 mouseover_open_behavior: "popup"
+            },
+            category: "popup"
+        },
+        mouseover_apply_blacklist: {
+            name: "Don't popup blacklisted images",
+            description: "This option prevents a popup from appearing altogether for blacklisted images",
+            requires: {
+                mouseover: true
             },
             category: "popup"
         },
@@ -44036,6 +44045,9 @@ var $$IMU_EXPORT$$;
             }
 
             function addImage(src, el, options) {
+                if (settings.mouseover_apply_blacklist && !bigimage_filter(src))
+                    return false;
+
                 // blank images
                 // https://www.harpersbazaar.com/celebrity/red-carpet-dresses/g7565/selena-gomez-style-transformation/?slide=2
                 var el_style = null;
