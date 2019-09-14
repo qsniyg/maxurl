@@ -44260,18 +44260,25 @@ var $$IMU_EXPORT$$;
 
         normalize_trigger();*/
 
-        delay = settings.mouseover_trigger_delay;
-        if (delay <= 0 || isNaN(delay))
-            delay = false;
-        if (typeof delay === "number" && delay >= 10)
-            delay = 10;
+        function update_mouseover_trigger_delay() {
+            delay = settings.mouseover_trigger_delay;
+            if (delay <= 0 || isNaN(delay))
+                delay = false;
+            if (typeof delay === "number" && delay >= 10)
+                delay = 10;
 
-        if (settings.mouseover_trigger_behavior === "mouse") {
-            delay_mouseonly = true;
-        } else {
-            delay = false;
-            delay_mouseonly = false;
+            if (settings.mouseover_trigger_behavior === "mouse") {
+                delay_mouseonly = true;
+            } else {
+                delay = false;
+                delay_mouseonly = false;
+            }
         }
+
+        update_mouseover_trigger_delay();
+
+        settings_meta.mouseover_trigger_delay.onupdate = update_mouseover_trigger_delay;
+        settings_meta.mouseover_trigger_behavior.onupdate = update_mouseover_trigger_delay;
 
         function keystr_in_trigger(str) {
             return settings.mouseover_trigger_key.indexOf(str) >= 0;
