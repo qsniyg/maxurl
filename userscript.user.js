@@ -44967,7 +44967,7 @@ var $$IMU_EXPORT$$;
                 do_popup_pan(popups[0], event, mouseX, mouseY);
             }
 
-            var jitter_base = 40;
+            var jitter_base = 30;
 
             if (settings.mouseover_trigger_behavior === "keyboard" && get_close_need_mouseout() && popups.length > 0 &&
                 popup_trigger_reason === "keyboard") {
@@ -44975,7 +44975,7 @@ var $$IMU_EXPORT$$;
                 if (img) {
                     var rect = popups[0].getBoundingClientRect();
 
-                    var our_jitter = jitter_base / 2;
+                    var our_jitter = jitter_base;
 
                     if (mouseX >= (rect.left - our_jitter) && mouseX <= (rect.right + our_jitter) &&
                         mouseY >= (rect.top - our_jitter) && mouseY <= (rect.bottom + our_jitter)) {
@@ -45002,8 +45002,8 @@ var $$IMU_EXPORT$$;
                     }
 
                     if (popups.length > 0) {
-                        var jitter_threshx = jitter_base;
-                        var jitter_threshy = jitter_base;
+                        var jitter_threshx = 40;
+                        var jitter_threshy = jitter_threshx;
 
                         var img = popups[0].getElementsByTagName("img")[0];
                         if (img) {
@@ -45018,8 +45018,8 @@ var $$IMU_EXPORT$$;
                             jitter_threshx = Math.max(jitter_threshx, w / 2);
                             jitter_threshy = Math.max(jitter_threshy, h / 2);
 
-                            jitter_threshx += 30;
-                            jitter_threshy += 30;
+                            jitter_threshx += jitter_base;
+                            jitter_threshy += jitter_base;
 
                             /*console_log(jitter_threshx, img.naturalWidth, w);
                             console_log(jitter_threshy, img.naturalHeight, h);*/
