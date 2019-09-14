@@ -705,7 +705,8 @@ var $$IMU_EXPORT$$;
         // thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-530760246
         mouseover_exclude_page_bg: true,
         mouseover_ui: true,
-        mouseover_ui_opacity: 30,
+        mouseover_ui_opacity: 50,
+        mouseover_ui_imagesize: true,
         mouseover_ui_gallerycounter: true,
         mouseover_ui_gallerymax: 50,
         mouseover_ui_optionsbtn: is_userscript ? true : false,
@@ -932,6 +933,15 @@ var $$IMU_EXPORT$$;
             number_max: 100,
             number_min: 0,
             number_int: true,
+            category: "popup",
+            subcategory: "ui"
+        },
+        mouseover_ui_imagesize: {
+            name: "Image size",
+            description: "Displays the image size on top of the UI",
+            requires: {
+                mouseover_ui: true
+            },
             category: "popup",
             subcategory: "ui"
         },
@@ -43217,11 +43227,18 @@ var $$IMU_EXPORT$$;
                   console_log(imgw);
                   console_log(vw - imgw);*/
 
-                var defaultopacity = (settings.mouseover_ui_opacity / 100);
-                if (defaultopacity > 1)
-                    defaultopacity = 1;
-                if (defaultopacity < 0)
-                    defaultopacity = 0;
+                function get_defaultopacity() {
+                    var defaultopacity = (settings.mouseover_ui_opacity / 100);
+                    if (defaultopacity > 1)
+                        defaultopacity = 1;
+                    if (defaultopacity < 0)
+                        defaultopacity = 0;
+
+                    return defaultopacity;
+                }
+
+                var defaultopacity = get_defaultopacity();
+
                 function opacity_hover(el, targetel) {
                     if (!targetel)
                         targetel = el;
@@ -43230,7 +43247,7 @@ var $$IMU_EXPORT$$;
                         targetel.style.opacity = "1.0";
                     }, true);
                     el.addEventListener("mouseout", function(e) {
-                        targetel.style.opacity = defaultopacity;
+                        targetel.style.opacity = get_defaultopacity();
                     }, true);
                 }
 
@@ -43452,6 +43469,13 @@ var $$IMU_EXPORT$$;
                                 cached_nextimages = next_images;
                             }
                         }
+                    }
+
+                    if (settings.mouseover_ui_imagesize) {
+                        var text = img.naturalWidth + "x" + img.naturalHeight;
+                        var imagesize = addbtn(text, "", null, true);
+                        imagesize.style.fontSize = gallerycount_fontsize;
+                        topbarel.appendChild(imagesize);
                     }
 
                     if (prev_images + next_images > 0) {
