@@ -45015,8 +45015,8 @@ var $$IMU_EXPORT$$;
                             var w = rect.width;
                             var h = rect.height;
 
-                            jitter_threshx = Math.min(Math.max(jitter_threshx, w / 2), img.naturalWidth);
-                            jitter_threshy = Math.min(Math.max(jitter_threshy, h / 2), img.naturalHeight);
+                            jitter_threshx = Math.max(jitter_threshx, w / 2);
+                            jitter_threshy = Math.max(jitter_threshy, h / 2);
 
                             jitter_threshx += 30;
                             jitter_threshy += 30;
