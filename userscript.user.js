@@ -43783,6 +43783,7 @@ var $$IMU_EXPORT$$;
                 popupshown = true;
                 can_close_popup = [false, false];
                 popup_hold = false;
+                mouse_in_image_yet = false;
 
                 stop_waiting();
                 popups_active = true;
