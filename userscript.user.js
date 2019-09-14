@@ -42789,6 +42789,7 @@ var $$IMU_EXPORT$$;
         var popups = [];
         var popup_el = null;
         var popups_active = false;
+        var popup_trigger_reason = null;
         var can_close_popup = [false, false];
         var dragstart = false;
         var dragstartX = null;
@@ -44737,8 +44738,10 @@ var $$IMU_EXPORT$$;
 
             if (set_chord(event, true)) {
                 if (trigger_complete(event) && !popups_active) {
-                    if (!delay_handle)
+                    if (!delay_handle) {
+                        popup_trigger_reason = "keyboard";
                         trigger_popup();
+                    }
                 }
 
                 var close_behavior = get_close_behavior();
@@ -44781,7 +44784,7 @@ var $$IMU_EXPORT$$;
         }, true);
 
         document.addEventListener('keyup', function(event) {
-            if (!mouseover_enabled() || settings.mouseover_trigger_behavior !== "keyboard")
+            if (!mouseover_enabled())
                 return;
 
             var condition = set_chord(event, false);
@@ -44791,7 +44794,7 @@ var $$IMU_EXPORT$$;
                 condition = !trigger_partially_complete(event);
             }
 
-            if (condition && close_behavior !== "esc") {
+            if (condition && close_behavior !== "esc" && popup_trigger_reason === "keyboard") {
                 controlPressed = false;
 
                 if (!settings.mouseover_close_need_mouseout || can_close_popup[1]) {
@@ -44886,6 +44889,7 @@ var $$IMU_EXPORT$$;
             chrome.runtime.onMessage.addListener(function(message, sender, respond) {
                 //console_log("ON_MESSAGE", message);
                 if (message.type === "context_imu") {
+                    popup_trigger_reason = "contextmenu";
                     trigger_popup(true);
                 } else if (message.type === "popupaction") {
                     if (message.data.action === "replace_images") {
@@ -44965,7 +44969,8 @@ var $$IMU_EXPORT$$;
 
             var jitter_base = 30;
 
-            if (settings.mouseover_trigger_behavior === "keyboard" && get_close_need_mouseout() && popups.length > 0) {
+            if (settings.mouseover_trigger_behavior === "keyboard" && get_close_need_mouseout() && popups.length > 0 &&
+                popup_trigger_reason === "keyboard") {
                 var img = popups[0].getElementsByTagName("img")[0];
                 if (img) {
                     var rect = popups[0].getBoundingClientRect();
@@ -44987,11 +44992,14 @@ var $$IMU_EXPORT$$;
             }
 
             if (mouseover_enabled() && delay !== false && typeof delay === "number" && delay_mouseonly) {
-                if (delay_handle) {
-                    clearTimeout(delay_handle);
+                if (popup_trigger_reason === "mouse") {
+                    if (delay_handle) {
+                        clearTimeout(delay_handle);
+                        delay_handle = null;
 
-                    if (waiting)
-                        stop_waiting();
+                        if (waiting)
+                            stop_waiting();
+                    }
 
                     if (popups.length > 0) {
                         var jitter_threshx = 40;
@@ -45051,12 +45059,15 @@ var $$IMU_EXPORT$$;
                     }
                 }
 
-                if (popups.length === 0) {
+                if (popups.length === 0 && !delay_handle) {
                     mouseDelayX = mouseX;
                     mouseDelayY = mouseY;
                     mouse_in_image_yet = false;
 
-                    delay_handle = setTimeout(trigger_popup, delay * 1000);
+                    delay_handle = setTimeout(function() {
+                        popup_trigger_reason = "mouse";
+                        trigger_popup();
+                    }, delay * 1000);
                 }
             }
         });
