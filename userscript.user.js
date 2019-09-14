@@ -43727,7 +43727,7 @@ var $$IMU_EXPORT$$;
                         imgwidth = img.naturalWidth * mult;
                         imgheight = img.naturalHeight * mult;
 
-                        var too_small = imgwidth < 64 || imgheight < 64;
+                        var too_small = imgwidth < 48 || imgheight < 32;
                         var too_big = imgwidth > img.naturalWidth * 16 || imgheight > img.naturalHeight * 16;
 
                         if (too_small || too_big) {
