@@ -41865,7 +41865,7 @@ var $$IMU_EXPORT$$;
                                 return;
                             }
 
-                            console_log(setting, required_setting, value, rvalues[i]);
+                            //console_log(setting, required_setting, value, rvalues[i]);
                             if (enabled_map[required_setting] && value === rvalues[i]) {
                                 enabled = true;
                                 break;
@@ -43849,7 +43849,7 @@ var $$IMU_EXPORT$$;
                 var style = get_computed_style(source);
                 if (style.getPropertyValue("background-image")) {
                     var bgimg = style.getPropertyValue("background-image");
-                    if (!bgimg.match(/^ *url[(]/)) {
+                    if (!bgimg.match(/^(.*?\)\s*,)?\s*url[(]/)) {
                         return false;
                     }
                 } else {
@@ -44096,9 +44096,11 @@ var $$IMU_EXPORT$$;
                 var style = window.getComputedStyle(el);
                 if (style.getPropertyValue("background-image")) {
                     var bgimg = style.getPropertyValue("background-image");
-                    if (bgimg.match(/^ *url[(]/)) {
+                    // https://www.flickr.com/account/upgrade/pro
+                    // background-image: linear-gradient(rgba(0,0,0,.2),rgba(0,0,0,.2)),url(https://combo.staticflickr.com/ap/build/images/pro/flickrpro-hero-header.jpg)
+                    if (bgimg.match(/^(.*?\)\s*,)?\s*url[(]/)) {
                         // url('https://t00.deviantart.net/I94eYVLky718W9_zFjV-SJ-_qm8=/300x200/filters:fixed_height(100,100):origin()/pre00/abda/th/pre/i/2013/069/9/0/black_rock_shooter_by_mrtviolet-d5xktg7.jpg');
-                        var src = norm(bgimg.replace(/^ *url[(](?:(?:'(.*?)')|(?:"(.*?)")|(?:([^)]*)))[)].*$/, "$1$2$3"));
+                        var src = norm(bgimg.replace(/^(?:.*?\)\s*,)?\s*url[(](?:(?:'(.*?)')|(?:"(.*?)")|(?:([^)]*)))[)].*$/, "$1$2$3"));
                         if (src !== bgimg)
                             addImage(src, el, {
                                 isbg: true,
@@ -44258,6 +44260,7 @@ var $$IMU_EXPORT$$;
             rebuildlayers();
 
             // if there are background images ahead of an image, it's likely to be masks
+            // Except: https://www.flickr.com/account/upgrade/pro (featured pro, the avatar's image is a bg image, while the image behind isn't)
             if (layers.length > 1 && layers[0].length === 1 && sources[layers[0][0]].isbg) {
                 for (var i = 1; i < layers.length; i++) {
                     if (layers[i].length === 1 && sources[layers[i][0]].isbg)
