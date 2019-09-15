@@ -43548,13 +43548,14 @@ var $$IMU_EXPORT$$;
                     var prev_images = 0;
                     var next_images = 0;
 
-                    var add_lrhover = function(isleft, btnel, action) {
+                    var add_lrhover = function(isleft, btnel, action, title) {
                         if ((popupshown && outerdiv.clientWidth < 200) ||
                             imgw < 200)
                             return;
 
                         var lrhover = document.createElement("div");
                         set_el_all_initial(lrhover);
+                        lrhover.title = title;
                         if (isleft) {
                             lrhover.style.left = "0em";
                         } else {
@@ -43614,13 +43615,15 @@ var $$IMU_EXPORT$$;
                             return lraction(false);
                         };
 
-                        var leftbtn = addbtn("←", _("Previous") + " (" + _("Left Arrow") + ")", leftaction);
+                        var lefttitle = _("Previous") + " (" + _("Left Arrow") + ")";
+
+                        var leftbtn = addbtn("←", lefttitle, leftaction);
                         leftbtn.style.top = "calc(50% - 7px - " + emhalf + ")";
                         leftbtn.style.left = "-" + em1;
                         outerdiv.appendChild(leftbtn);
                         ui_els.push(leftbtn);
 
-                        add_lrhover(true, leftbtn, leftaction);
+                        add_lrhover(true, leftbtn, leftaction, lefttitle);
 
                         if (settings.mouseover_ui_gallerycounter) {
                             if (use_cached_gallery) {
@@ -43637,14 +43640,16 @@ var $$IMU_EXPORT$$;
                             return lraction(true);
                         };
 
-                        var rightbtn = addbtn("→", _("Next") + " (" + _("Right Arrow") + ")", rightaction);
+                        var righttitle = _("Next") + " (" + _("Right Arrow") + ")";
+
+                        var rightbtn = addbtn("→", righttitle, rightaction);
                         rightbtn.style.top = "calc(50% - 7px - " + emhalf + ")";
                         rightbtn.style.left = "initial";
                         rightbtn.style.right = "-" + em1;
                         outerdiv.appendChild(rightbtn);
                         ui_els.push(rightbtn);
 
-                        add_lrhover(false, rightbtn, rightaction);
+                        add_lrhover(false, rightbtn, rightaction, righttitle);
 
                         if (settings.mouseover_ui_gallerycounter) {
                             if (use_cached_gallery) {
