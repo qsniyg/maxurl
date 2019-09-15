@@ -43142,6 +43142,7 @@ var $$IMU_EXPORT$$;
 
             disable_click = false;
             popups_active = false;
+            delay_handle_triggering = false;
             popup_el = null;
 
             if (!delay_mouseonly && delay_handle) {
@@ -45299,8 +45300,7 @@ var $$IMU_EXPORT$$;
             }
 
             // esc
-            if (event.which === 27 ||
-                delay_handle) {
+            if (event.which === 27 || delay_handle_triggering) {
                 stop_waiting();
                 resetpopups();
             }
