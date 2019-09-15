@@ -35,20 +35,18 @@ function set_option(name, value, cb) {
 }
 
 function update_logo(value) {
-    var filter = "none";
-
-    if (!value) {
-        filter = "saturate(0%)";
-    }
-
-    document.getElementById("logo").style.filter = filter;
-
     if (value) {
         document.getElementById("enabled-state").classList.remove("disabled");
         document.getElementById("enabled-state").innerText = "Enabled";
+
+        document.getElementById("enabled-logo").style = "";
+        document.getElementById("disabled-logo").style = "display:none";
     } else {
         document.getElementById("enabled-state").classList.add("disabled");
         document.getElementById("enabled-state").innerText = "Disabled";
+
+        document.getElementById("enabled-logo").style = "display:none";
+        document.getElementById("disabled-logo").style = "";
     }
 }
 

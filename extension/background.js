@@ -494,17 +494,23 @@ function destroy_contextmenu() {
   contextmenu = null;
 }
 
-chrome.storage.sync.get(["extension_contextmenu"], function(response) {
-  var value = true;
+function get_option(name, cb, _default) {
+  chrome.storage.sync.get([name], function(response) {
+      var value = _default;
 
-  if (Object.keys(response).length > 0 && response.extension_contextmenu !== undefined) {
-    value = JSON.parse(response.extension_contextmenu);
-  }
+      if (Object.keys(response).length > 0 && response[name] !== undefined) {
+          value = JSON.parse(response[name]);
+      }
 
+      cb(value);
+  });
+}
+
+get_option("extension_contextmenu", function(value) {
   if (value) {
     create_contextmenu();
   }
-});
+}, true);
 
 function update_browseraction_enabled(enabled) {
   var disabled_text = "";
@@ -514,7 +520,27 @@ function update_browseraction_enabled(enabled) {
   chrome.browserAction.setTitle({
     title: "Image Max URL" + disabled_text
   });
+
+  if (enabled) {
+    chrome.browserAction.setIcon({
+      path: {
+        "40": "../resources/logo_40.png",
+        "48": "../resources/logo_48.png",
+        "96": "../resources/logo_96.png"
+      }
+    });
+  } else {
+    chrome.browserAction.setIcon({
+      path: {
+        "40": "../resources/disabled_40.png",
+        "48": "../resources/disabled_48.png",
+        "96": "../resources/disabled_96.png"
+      }
+    });
+  }
 }
+
+get_option("imu_enabled", update_browseraction_enabled, true);
 
 chrome.storage.onChanged.addListener(function(changes, namespace) {
   if (namespace !== "sync")
