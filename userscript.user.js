@@ -549,7 +549,7 @@ var $$IMU_EXPORT$$;
         },
         "Possibly different images": {
             "ko": "다를 수 있는 이미지",
-            "fr": "Images possiblement différents"
+            "fr": "Images possiblement différentes"
         },
         "Possibly broken images": {
             "ko": "손상될 수 있는 이미지",
