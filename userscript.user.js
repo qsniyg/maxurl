@@ -751,7 +751,9 @@ var $$IMU_EXPORT$$;
         // thanks to LukasThyWalls on github for the idea: https://github.com/qsniyg/maxurl/issues/75
         bigimage_blacklist: "",
         bigimage_blacklist_engine: "glob",
-        replaceimgs_usedata: true
+        replaceimgs_usedata: true,
+        replaceimgs_totallimit: 8,
+        replaceimgs_domainlimit: 2
     };
     var orig_settings = deepcopy(settings);
 
@@ -1393,6 +1395,26 @@ var $$IMU_EXPORT$$;
             category: "extra",
             subcategory: "replaceimages",
             imu_enabled_exempt: true
+        },
+        replaceimgs_totallimit: {
+            name: "Max images to process at once",
+            description: "The maximum amount of images to process at once",
+            type: "number",
+            number_min: 1,
+            number_int: true,
+            category: "extra",
+            subcategory: "replaceimages",
+            imu_enabled_exempt: true
+        },
+        replaceimgs_domainlimit: {
+            name: "Max images per domain at once",
+            description: "The maximum amount of images per domain to process at once",
+            type: "number",
+            number_min: 1,
+            number_int: true,
+            category: "extra",
+            subcategory: "replaceimages",
+            imu_enabled_exempt: true
         }
     };
 
@@ -1600,7 +1622,7 @@ var $$IMU_EXPORT$$;
     function urljoin(a, b, browser) {
         if (b.length === 0)
             return a;
-        if (b.match(/^[a-z]*:\/\//) || b.match(/^data:/))
+        if (b.match(/^[-a-z]*:\/\//) || b.match(/^(?:data|x-raw-image):/))
             return b;
 
         var protocol_split = a.split("://");
@@ -1925,7 +1947,7 @@ var $$IMU_EXPORT$$;
         var domain;
         var port;
 
-        if (!src.match(/^data:/)) {
+        if (!src.match(/^(?:data|x-raw-image):/)) {
             var protocol_split = src.split("://");
             protocol = protocol_split[0];
             var splitted = protocol_split[1].split("/");
@@ -1936,7 +1958,7 @@ var $$IMU_EXPORT$$;
                 port = "";
             domain = domain.replace(/(.*):[0-9]+$/, "$1");
         } else {
-            protocol = "data";
+            protocol = src.replace(/^([-a-z]+):.*/, "$1");
             domain = "";
         }
 
@@ -20350,7 +20372,9 @@ var $$IMU_EXPORT$$;
                     if (!current.href.match(/\/imgres\?/))
                         continue;
 
-                    return decodeURIComponent(current.href.replace(/.*?\/imgres.*?[?&]imgurl=([^&]*).*?$/, "$1"));
+                    newsrc = current.href.replace(/.*?\/imgres.*?[?&]imgurl=([^&]*).*?$/, "$1");
+                    if (newsrc !== src)
+                        return decodeURIComponent(newsrc);
                 }
 
                 // small previews
@@ -44900,12 +44924,73 @@ var $$IMU_EXPORT$$;
 
             var finish_img = function() {
                 finished++;
-                progressb_el.style.width = ((finished/imgs.length)*100) + "%";
-                console_log("Finished " + finished + "/" + imgs.length);
+                progressb_el.style.width = ((finished/total_imgs)*100) + "%";
+                console_log("Finished " + finished + "/" + total_imgs);
 
-                if (finished >= imgs.length) {
+                if (finished >= total_imgs) {
                     progressc_el.parentElement.removeChild(progressc_el);
                     replacing_imgs = false;
+                } else {
+                    next_img();
+                }
+            };
+
+            var next_img = function () {
+                var total_limit = parseInt(settings.replaceimgs_totallimit);
+                if (currently_processing > total_limit) {
+                    currently_processing--;
+                    return;
+                } else if (currently_processing < total_limit) {
+                    currently_processing++;
+                    next_img();
+                }
+
+
+                var our_source = null;
+                var our_domain = null;
+
+                for (var domain in domains) {
+                    if (domains_processing[domain] >= parseInt(settings.replaceimgs_domainlimit)) {
+                        continue;
+                    }
+
+                    our_domain = domain;
+
+                    domains_processing[domain]++;
+
+                    our_source = domains[domain][0];
+                    domains[domain].splice(0, 1);
+
+                    if (domains[domain].length === 0) {
+                        delete domains[domain];
+                    }
+
+                    break;
+                }
+
+                if (our_source === null && other.length > 0) {
+                    our_source = other[0];
+                    other.splice(0, 1);
+                }
+
+                if (our_source) {
+                    get_final_from_source(our_source, true, true, false, function (source_imu, source, processing, data) {
+                        if (our_domain)
+                            domains_processing[our_domain]--;
+
+                        if (!data) {
+                            return finish_img();
+                        }
+
+                        if (data.data.img) {
+                            source.el.src = data.data.img.src;
+                        } else if (data.data.obj) {
+                            source.el.src = data.data.obj.url;
+                        }
+                        finish_img();
+                    });
+                } else {
+                    currently_processing--;
                 }
             };
 
@@ -44935,26 +45020,40 @@ var $$IMU_EXPORT$$;
             progressc_el.appendChild(progressb_el);
             document.documentElement.appendChild(progressc_el);
 
-            replacing_imgs = true;
+            var domains = {};
+            var domains_processing = {};
+            var other = [];
+
+            var total_imgs = imgs.length;
+
             for (var i = 0; i < imgs.length; i++) {
                 var source = find_source([imgs[i]]);
-                if (source) {
-                    get_final_from_source(source, true, true, false, function (source_imu, source, processing, data) {
-                        if (!data) {
-                            return finish_img();
-                        }
-
-                        if (data.data.img) {
-                            source.el.src = data.data.img.src;
-                        } else if (data.data.obj) {
-                            source.el.src = data.data.obj.url;
-                        }
-                        finish_img();
-                    });
-                } else {
-                    finish_img();
+                if (!source) {
+                    total_imgs--;
+                    continue;
                 }
+
+                if (!source.src) {
+                    other.push(source);
+                    continue;
+                }
+
+                var domain = source.src.match(/^https?:\/\/([^/]+)\//);
+                if (!domain) {
+                    other.push(source);
+                    continue;
+                }
+
+                if (!(domain[1] in domains)) {
+                    domains[domain[1]] = [];
+                    domains_processing[domain[1]] = 0;
+                }
+
+                domains[domain[1]].push(source);
             }
+
+            var currently_processing = 1;
+            next_img();
         }
 
         register_menucommand("Replace images", replace_images);
