@@ -42893,6 +42893,7 @@ var $$IMU_EXPORT$$;
                             var img = document.createElement("img");
                             img.src = e.target.result;
                             img.onload = function() {
+                                // Firefox thinks SVGs have an empty naturalWidth/naturalHeight
                                 if (img.naturalWidth === 0 || img.naturalHeight === 0) {
                                     return err_cb();
                                 }
