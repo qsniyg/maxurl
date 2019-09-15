@@ -1989,6 +1989,7 @@ var $$IMU_EXPORT$$;
             //protocol = src.replace(/^([-a-z]+):.*/, "$1");
             protocol = "data";
             domain = "";
+            src = ""; // FIXME: this isn't great
         }
 
         var domain_nowww = domain.replace(/^www\./, "");
@@ -44117,7 +44118,30 @@ var $$IMU_EXPORT$$;
             return el.currentStyle || window.getComputedStyle(el);
         }
 
+        function is_popup_el(el) {
+            var current = el;
+            do {
+                if (popups.indexOf(current) >= 0) {
+                    //console_error("Trying to find popup");
+                    return true;
+                }
+            } while ((current = current.parentElement))
+
+            return false;
+        }
+
         function find_source(els) {
+            var result = _find_source(els);
+
+            if (result && result.el) {
+                if (is_popup_el(result.el))
+                    return null;
+            }
+
+            return result;
+        }
+
+        function _find_source(els) {
             // resetpopups() is already called in trigger_popup()
             /*if (popups.length >= 1)
                 return;*/
