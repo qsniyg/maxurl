@@ -372,20 +372,23 @@ var $$IMU_EXPORT$$;
             "ko": "리디렉션"
         },
         "Enable redirection": {
-            "ko": "리디렉션 사용"
+            "ko": "리디렉션 사용",
+            "fr": "Activer la redirection"
         },
         "Add to history": {
             "ko": "브라우저 기록에 추가",
             "fr": "Ajouter à l'historique"
         },
         "Use GET if HEAD is unsupported": {
-            "ko": "HEAD 지원되지 않으면 GET 사용"
+            "ko": "HEAD 지원되지 않으면 GET 사용",
+            "fr": "Utilise GET si HEAD n'est pas supporté"
         },
         "Try finding original page": {
             "fr": "Essayer de trouver la page d'origine"
         },
         "Enable mouseover popup": {
-            "ko": "이미지 팝업 사용"
+            "ko": "이미지 팝업 사용",
+            "fr": "Activer le popup"
         },
         "Mouseover popup action": {
             "ko": "이미지 팝업 작업"
@@ -398,7 +401,8 @@ var $$IMU_EXPORT$$;
             "en": "UI"
         },
         "subcategory_trigger": {
-            "en": "Trigger"
+            "en": "Trigger",
+            "fr": "Déclencheur"
         },
         "subcategory_open_behavior": {
             "en": "Open Behavior"
@@ -407,7 +411,8 @@ var $$IMU_EXPORT$$;
             "en": "Popup Behavior"
         },
         "subcategory_popup_other": {
-            "en": "Other"
+            "en": "Other",
+            "fr": "Autre"
         },
         "New tab": {
             "ko": "새 탭",
@@ -442,10 +447,12 @@ var $$IMU_EXPORT$$;
             "fr": "Opacité"
         },
         "Gallery counter": {
-            "ko": "갤러리 이미지 수"
+            "ko": "갤러리 이미지 수",
+            "fr": "Nombre d'images dans la galerie"
         },
         "Gallery counter max": {
-            "ko": "갤러리 이미지 수의 최대값"
+            "ko": "갤러리 이미지 수의 최대값",
+            "fr": "Nombre max d'images a compter pour la galerie"
         },
         "images": {
             "ko": "이미지"
@@ -520,7 +527,8 @@ var $$IMU_EXPORT$$;
             "ko": "페이지 중간"
         },
         "Clicking image downloads": {
-            "ko": "이미지 클릭하면 다운로드"
+            "ko": "이미지 클릭하면 다운로드",
+            "fr": "Cliquer l'image le télécharge"
         },
         "Popup for plain hyperlinks": {
             "ko": "일반적인 링크에도 팝업"
@@ -540,7 +548,8 @@ var $$IMU_EXPORT$$;
             "ko": "더 작지만 워터마크 없는 이미지"
         },
         "Possibly different images": {
-            "ko": "다를 수 있는 이미지"
+            "ko": "다를 수 있는 이미지",
+            "fr": "Images possiblement différents"
         },
         "Possibly broken images": {
             "ko": "손상될 수 있는 이미지",
@@ -567,11 +576,13 @@ var $$IMU_EXPORT$$;
         },
         "saved_refresh_target": {
             "en": "Saved! Refresh the target page for changes to take effect",
-            "ko": "저장됩니다. 번경사항 적용하려면 대상 웹페이지 다시 로드하십시오"
+            "ko": "저장됩니다. 번경사항 적용하려면 대상 웹페이지 다시 로드하십시오",
+            "fr": "Enregistré! Actualiser la page que vous visitez pour que les changements prennent effet" // FIXME: this is a terrible translation
         },
         "saved_no_refresh": {
             "en": "Saved!",
-            "ko": "저장됩니다"
+            "ko": "저장됩니다",
+            "fr": "Enregistré!"
         },
         "save": {
             "en": "Save",
@@ -580,6 +591,7 @@ var $$IMU_EXPORT$$;
         },
         "record": {
             "en": "Record"
+            // "Enregistrer" also means "Record"
         },
         "cancel": {
             "en": "Cancel",
@@ -988,7 +1000,7 @@ var $$IMU_EXPORT$$;
         },
         mouseover_ui_gallerymax: {
             name: "Gallery counter max",
-            description: "Maximum amount of images to check in the counter",
+            description: "Maximum amount of images to check in the counter (this can be slightly CPU-intensive)",
             requires: {
                 mouseover_ui_gallerycounter: true
             },
