@@ -386,6 +386,7 @@ input:checked + label, button, .button {
 
 .option .name_td {
   width: 20em;
+  padding-right: .5em;
 }
 
 .option .group {
