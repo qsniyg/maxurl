@@ -387,10 +387,12 @@ var $$IMU_EXPORT$$;
             "fr": "Essayer de trouver la page d'origine"
         },
         "Enable mouseover popup": {
+            "en": "Enable image popup",
             "ko": "이미지 팝업 사용",
             "fr": "Activer le popup"
         },
         "Mouseover popup action": {
+            "en": "Popup action",
             "ko": "이미지 팝업 작업"
         },
         "category_popup": {
@@ -402,6 +404,7 @@ var $$IMU_EXPORT$$;
         },
         "subcategory_trigger": {
             "en": "Trigger",
+            "ko": "트리거",
             "fr": "Déclencheur"
         },
         "subcategory_open_behavior": {
@@ -420,6 +423,7 @@ var $$IMU_EXPORT$$;
         },
         "Mouseover popup trigger": {
             // FIXME is 트리거 correct?
+            "en": "Popup trigger",
             "ko": "팝업 트리거",
             "fr": "Déclencheur du popup"
         },
