@@ -397,6 +397,18 @@ var $$IMU_EXPORT$$;
         "subcategory_ui": {
             "en": "UI"
         },
+        "subcategory_trigger": {
+            "en": "Trigger"
+        },
+        "subcategory_open_behavior": {
+            "en": "Open Behavior"
+        },
+        "subcategory_behavior": {
+            "en": "Behavior"
+        },
+        "subcategory_popup_other": {
+            "en": "Other"
+        },
         "New tab": {
             "ko": "새 탭",
             "fr": "Nouvel onglet"
@@ -828,7 +840,8 @@ var $$IMU_EXPORT$$;
             requires: {
                 mouseover: true
             },
-            category: "popup"
+            category: "popup",
+            subcategory: "open_behavior"
         },
         mouseover_trigger: {
             name: "Popup trigger",
@@ -860,7 +873,8 @@ var $$IMU_EXPORT$$;
             requires: {
                 mouseover: true
             },
-            category: "popup"
+            category: "popup",
+            subcategory: "trigger"
         },
         mouseover_trigger_behavior: {
             name: "Mouseover popup trigger",
@@ -883,7 +897,8 @@ var $$IMU_EXPORT$$;
             requires: {
                 mouseover: true
             },
-            category: "popup"
+            category: "popup",
+            subcategory: "trigger"
         },
         mouseover_trigger_key: {
             name: "Popup trigger key",
@@ -893,7 +908,8 @@ var $$IMU_EXPORT$$;
                 mouseover: true,
                 mouseover_trigger_behavior: "keyboard"
             },
-            category: "popup"
+            category: "popup",
+            subcategory: "trigger"
         },
         mouseover_trigger_delay: {
             name: "Popup trigger delay",
@@ -905,7 +921,8 @@ var $$IMU_EXPORT$$;
             type: "number",
             number_min: 0,
             number_unit: "seconds",
-            category: "popup"
+            category: "popup",
+            subcategory: "trigger"
         },
         mouseover_exclude_page_bg: {
             name: "Exclude page background",
@@ -913,7 +930,8 @@ var $$IMU_EXPORT$$;
             requires: {
                 mouseover: true,
             },
-            category: "popup"
+            category: "popup",
+            subcategory: "open_behavior"
         },
         mouseover_ui: {
             name: "Popup UI",
@@ -1022,7 +1040,8 @@ var $$IMU_EXPORT$$;
                 mouseover_open_behavior: "popup",
                 mouseover_trigger_behavior: "keyboard"
             },
-            category: "popup"
+            category: "popup",
+            subcategory: "trigger"
         },
         mouseover_close_need_mouseout: {
             name: "Don't close until mouse leaves",
@@ -1032,7 +1051,8 @@ var $$IMU_EXPORT$$;
                     $or: ["any", "all"]
                 }
             },
-            category: "popup"
+            category: "popup",
+            subcategory: "trigger"
         },
         mouseover_jitter_threshold: {
             name: "Threshold to leave image",
@@ -1044,7 +1064,8 @@ var $$IMU_EXPORT$$;
             },
             type: "number",
             number_unit: "pixels",
-            category: "popup"
+            category: "popup",
+            subcategory: "trigger"
         },
         mouseover_use_hold_key: {
             name: "Use hold key",
@@ -1052,7 +1073,8 @@ var $$IMU_EXPORT$$;
             requires: {
                 mouseover_trigger_behavior: "mouse"
             },
-            category: "popup"
+            category: "popup",
+            subcategory: "trigger"
         },
         mouseover_hold_key: {
             name: "Hold key",
@@ -1061,7 +1083,8 @@ var $$IMU_EXPORT$$;
                 mouseover_use_hold_key: true
             },
             type: "keysequence",
-            category: "popup"
+            category: "popup",
+            subcategory: "trigger"
         },
         mouseover_zoom_behavior: {
             name: "Popup default zoom",
@@ -1087,7 +1110,8 @@ var $$IMU_EXPORT$$;
             requires: {
                 mouseover_open_behavior: "popup"
             },
-            category: "popup"
+            category: "popup",
+            subcategory: "open_behavior"
         },
         mouseover_zoom_custom_percent: {
             name: "Custom zoom percent",
@@ -1098,7 +1122,8 @@ var $$IMU_EXPORT$$;
             requires: {
                 mouseover_zoom_behavior: "custom"
             },
-            category: "popup"
+            category: "popup",
+            subcategory: "open_behavior"
         },
         mouseover_pan_behavior: {
             name: "Popup panning method",
@@ -1117,7 +1142,8 @@ var $$IMU_EXPORT$$;
             requires: {
                 mouseover_open_behavior: "popup"
             },
-            category: "popup"
+            category: "popup",
+            subcategory: "behavior"
         },
         mouseover_scroll_behavior: {
             name: "Popup scroll action",
@@ -1137,7 +1163,8 @@ var $$IMU_EXPORT$$;
             requires: {
                 mouseover_open_behavior: "popup"
             },
-            category: "popup"
+            category: "popup",
+            subcategory: "behavior"
         },
         scroll_zoom_behavior: {
             name: "Zoom behavior",
@@ -1155,7 +1182,8 @@ var $$IMU_EXPORT$$;
             requires: {
                 mouseover_scroll_behavior: "zoom"
             },
-            category: "popup"
+            category: "popup",
+            subcategory: "behavior"
         },
         zoom_out_to_close: {
             name: "Zoom out fully to close",
@@ -1163,7 +1191,8 @@ var $$IMU_EXPORT$$;
             requires: {
                 mouseover_scroll_behavior: "zoom"
             },
-            category: "popup"
+            category: "popup",
+            subcategory: "behavior"
         },
         mouseover_position: {
             name: "Popup position",
@@ -1190,7 +1219,8 @@ var $$IMU_EXPORT$$;
             requires: {
                 mouseover_open_behavior: "popup"
             },
-            category: "popup"
+            category: "popup",
+            subcategory: "open_behavior"
         },
         mouseover_download: {
             name: "Clicking image downloads",
@@ -1198,7 +1228,8 @@ var $$IMU_EXPORT$$;
             requires: {
                 mouseover: true
             },
-            category: "popup"
+            category: "popup",
+            subcategory: "behavior"
         },
         mouseover_links: {
             name: "Popup for plain hyperlinks",
@@ -1206,7 +1237,8 @@ var $$IMU_EXPORT$$;
             requires: {
                 mouseover: true
             },
-            category: "popup"
+            category: "popup",
+            subcategory: "open_behavior"
         },
         mouseover_styles: {
             name: "Popup CSS style",
@@ -1215,7 +1247,8 @@ var $$IMU_EXPORT$$;
             requires: {
                 mouseover_open_behavior: "popup"
             },
-            category: "popup"
+            category: "popup",
+            subcategory: "popup_other"
         },
         mouseover_apply_blacklist: {
             name: "Don't popup blacklisted images",
@@ -1223,7 +1256,8 @@ var $$IMU_EXPORT$$;
             requires: {
                 mouseover: true
             },
-            category: "popup"
+            category: "popup",
+            subcategory: "open_behavior"
         },
         website_inject_imu: {
             name: "Use userscript",
@@ -1381,7 +1415,11 @@ var $$IMU_EXPORT$$;
 
     var subcategories = {
         "popup": {
-            "ui": "subcategory_ui"
+            "trigger": "subcategory_trigger",
+            "open_behavior": "subcategory_open_behavior",
+            "behavior": "subcategory_behavior",
+            "ui": "subcategory_ui",
+            "popup_other": "subcategory_popup_other"
         },
         "extra": {
             "replaceimages": "subcategory_replaceimages"
