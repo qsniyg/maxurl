@@ -506,9 +506,25 @@ chrome.storage.sync.get(["extension_contextmenu"], function(response) {
   }
 });
 
+function update_browseraction_enabled(enabled) {
+  var disabled_text = "";
+  if (!enabled)
+    disabled_text = " (disabled)";
+
+  chrome.browserAction.setTitle({
+    title: "Image Max URL" + disabled_text
+  });
+}
+
 chrome.storage.onChanged.addListener(function(changes, namespace) {
   if (namespace !== "sync")
     return;
+
+  for (var key in changes) {
+    if (key === "imu_enabled") {
+      update_browseraction_enabled(changes[key].newValue);
+    }
+  }
 
   chrome.tabs.query({}, function (tabs) {
     tabs.forEach((tab) => {
