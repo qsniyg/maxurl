@@ -6278,6 +6278,8 @@ var $$IMU_EXPORT$$;
             (domain_nowww === "chickradar.net" && /\/content\/+uploads\//.test(src)) ||
             // http://www.creepmachine.com/images/2012/07/yolandi_visser_soeymilk-610x765-520x400.jpg
             (domain_nowww === "creepmachine.com" && src.indexOf("/images/") >= 0) ||
+            // https://theinspirationgrid.com/app/uploads/2019/03/photography-neon-flowers-06-768x1023.jpg
+            (domain_nowww === "theinspirationgrid.com" && /\/app\/+uploads\//.test(src)) ||
             // https://1.soompi.io/wp-content/blogs.dir/8/files/2015/09/HA-TFELT-Wonder-Girls-590x730.jpg -- doesn't work
             // https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2018/01/GTA-6-Female-Protag-796x417.jpg -- does work
             /^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|images|photos|blogs.dir)|\/+uploads)\//.test(src)
@@ -13644,6 +13646,8 @@ var $$IMU_EXPORT$$;
             (domain_nowww === "image.farm" && src.indexOf("/images/") >= 0) ||
             // https://girlspic.net/images/2018/04/05/403215_01bige47b3488e70ef46a.md.jpg
             (domain_nowww === "girlspic.net" && src.indexOf("/images/") >= 0) ||
+            // https://tgfimage.rocks/images/2018/01/25/0b7e8a02ed3c2d3611675f678fecead9.md.jpg
+            (domain_nowww === "tgfimage.rocks" && src.indexOf("/images/") >= 0) ||
             // https://s1.picho.st/2017/08/18/diwd.md.png
             (domain_nosub === "picho.st" && /^s[0-9]*\./.test(domain)) ||
             // http://image-bugs.com/images/2017/09/09/CelebsFlash.com_NP_Harpers_Bazaar_090817__3_.md.jpg
@@ -37810,6 +37814,15 @@ var $$IMU_EXPORT$$;
             domain_nowww === "soamasterclass.com" ||
             // https://www.royal-city.com/images/miley-cyrus-short-hair__aHR0cDovLzEuYnAuYmxvZ3Nwb3QuY29tLy1yZHNZWVhaS3RDTS9VUVdGU0ppNW5QSS9BQUFBQUFBQUJKUS9fS2o0aHd1Tnpkdy9zNjQwL01pbGV5LUN5cnVzLUZlZXQtODk5NTg1LmpwZw==.jpg
             domain_nowww === "royal-city.com" ||
+            // http://www.ulsterscotsacademy.org/images/beautiful-house-my-house-in-2018-pinterest-house__aHR0cHM6Ly9pLnBpbmltZy5jb20vb3JpZ2luYWxzLzBiLzdlLzhhLzBiN2U4YTAyZWQzYzJkMzYxMTY3NWY2NzhmZWNlYWQ5LmpwZw==.jpg
+            //   https://i.pinimg.com/originals/0b/7e/8a/0b7e8a02ed3c2d3611675f678fecead9.jpg
+            domain_nowww === "ulsterscotsacademy.org" ||
+            // http://newkunci.co/images/casa-estilo-mediterr-225-neo-home-en-2019-y__aHR0cHM6Ly9pLnBpbmltZy5jb20vb3JpZ2luYWxzLzhjL2E5L2QwLzhjYTlkMDA4YjJhZWMzNjFjNDg1Y2RhY2IxN2Y5MWY3LmpwZw==.jpg
+            //   https://i.pinimg.com/originals/8c/a9/d0/8ca9d008b2aec361c485cdacb17f91f7.jpg
+            domain_nowww === "newkunci.co" ||
+            // http://xianweizhu.com/images/casa-estilo-mediterr-225-neo-casas-pinterest-casa-estilo-estilo-y-casas__aHR0cHM6Ly9zLW1lZGlhLWNhY2hlLWFrMC5waW5pbWcuY29tL29yaWdpbmFscy84Yy9hOS9kMC84Y2E5ZDAwOGIyYWVjMzYxYzQ4NWNkYWNiMTdmOTFmNy5qcGc=.jpg
+            //   https://s-media-cache-ak0.pinimg.com/originals/8c/a9/d0/8ca9d008b2aec361c485cdacb17f91f7.jpg
+            domain_nowww === "xianweizhu.com" ||
             // http://www.edu.kustantiblogs.web.id/images/showing-porn-images-for-hisui-nightshade-porn-www__aHR0cHM6Ly9pLnBpbmltZy5jb20vb3JpZ2luYWxzL2M4LzI4L2QyL2M4MjhkMjBhODYwMjUyZjAwOGU3MjUyM2YwNGU2YWRiLmpwZw==.jpg
             //   https://i.pinimg.com/originals/c8/28/d2/c828d20a860252f008e72523f04e6adb.jpg
             domain === "www.edu.kustantiblogs.web.id") {
@@ -37929,7 +37942,10 @@ var $$IMU_EXPORT$$;
                 return add_http(newsrc);
         }
 
-        if (domain_nowww === "artspace712.com") {
+        if (domain_nowww === "artspace712.com" ||
+            // https://aihara-company.com/uploads/large/WVVoU01HTklUVFpNZVRsd1RHNUNjR0p0YkhSYWVUVnFZakl3ZG1JelNuQmFNbXgxV1ZkNGVreDZRbWxNZW1Sc1RIcG9hRXg2UW1sT01sVTBXVlJCZVZwWFVYcFpla3ByVFhwWmVFMVVXVE5PVjFreVRucG9iVnBYVG14WlYxRTFURzF3ZDFwMw/house-design-house-house-styles.jpg
+            //   https://i.pinimg.com/originals/0b/7e/8a/0b7e8a02ed3c2d3611675f678fecead9.jpg
+            domain_nowww === "aihara-company.com") {
             // https://artspace712.com/uploads/large/WVVoU01HTkViM1pNZWtsMVdXNUJkVmx0ZUhaYU0wNTNZak5SZFZreU9YUk1lVEZYVFVoS1FtTnJVazFoYWs1VlVsTTVWbFZJVm5aWU1rcGhVV2t3TkZOVE9VSlJWVVpDVVZWR1FsRlZTVEJUVXpnMFdtNWFWMUl6WkhOU2JtY3hVVk01ZWsxVVdYZE5RemxxWkZoU2JGZ3lSblZoVnpGc1dESmtjR050ZUdaWmJteG1Zek5XYzFwWWJIUlpWelZ2V1ZoYU1XVnBNV3RPVjBadVlsaHNiVXh0Y0hkYWR3/anime-and-manga/vocanime-crazy-shoujo-type.jpg
             //   http://2.bp.blogspot.com/-V0rArDLj3TE/UPuo_bZB-8I/AAAAAAAAB4I/8fvVGwlFx5A/s0/cute_anime_girl_by_suleymanhavuz-d5agmyf.jpg=s0?imgmax=0
             match = src.match(/^[a-z]+:\/\/[^/]*\/+uploads\/+[^/]*\/+([^/.]{60,})\/+.*(?:[?#].*)?$/);
@@ -39618,6 +39634,33 @@ var $$IMU_EXPORT$$;
             return src.replace(/_tr(\/+[^/]*\.[^/.]*)(?:[?#].*)?$/, "_pics$1");
         }
 
+        if (domain === "imganuncios.mitula.net") {
+            // https://imganuncios.mitula.net/small/3_bed_independent_ground_portion_1230070557493543252.jpg
+            //   https://imganuncios.mitula.net/3_bed_independent_ground_portion_1230070557493543252.jpg
+            // https://imganuncios.mitula.net/bmw_x5_4450128427590868488.jpg -- 1920x1440
+            return src.replace(/(:\/\/[^/]*\/+)[a-z]+\/+([^/]+_[0-9]{10,}\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain_nowww === "recbook.com") {
+            // https://recbook.com/storage/thumbs/1884627720_1554863223.png
+            //   https://recbook.com/storage/uploads/1884627720_1554863223.png
+            return src.replace(/\/storage\/+thumbs\/+/, "/storage/uploads/");
+        }
+
+        if (domain === "apollo-frankfurt.akamaized.net" ||
+            // https://apollo-singapore.akamaized.net/v1/files/jbyitvgly1na-PK/image;s=272x0
+            //   https://apollo-singapore.akamaized.net/v1/files/jbyitvgly1na-PK/image
+            domain === "apollo-singapore.akamaized.net") {
+            // https://apollo-frankfurt.akamaized.net/v1/files/5lwmg93wkg212-KZ/image;s=261x203
+            //   https://apollo-frankfurt.akamaized.net/v1/files/5lwmg93wkg212-KZ/image
+            return src.replace(/(\/files\/+[^/]*\/+image);s=[0-9]+x[0-9]+(?:[?#].*)?$/, "$1");
+        }
+
+        if (domain_nosub === "jdmagicbox.com" && /^content[0-9]*\./.test(domain)) {
+            // https://content3.jdmagicbox.com/comp/delhi/l2/011pxx11.xx11.181201121520.n6l2/catalogue/guru-kirpa-gupta-properties-shastri-nagar-n-delhi-estate-agents-bhqcuqr44l-250.jpg
+            //   https://content3.jdmagicbox.com/comp/delhi/l2/011pxx11.xx11.181201121520.n6l2/catalogue/guru-kirpa-gupta-properties-shastri-nagar-n-delhi-estate-agents-bhqcuqr44l.jpg
+            return src.replace(/(\/catalogue\/+[^/]*-[a-z0-9]{10,})-[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
 
 
 
