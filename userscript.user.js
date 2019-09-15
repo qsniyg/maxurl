@@ -43359,22 +43359,28 @@ var $$IMU_EXPORT$$;
 
                 if (imgh < 20 ||
                     imgw < 20) {
+                    // FIXME: This will stop "custom" percentages with low percentages for small images
                     stop_waiting();
                     return;
                 }
 
-                if (initial_zoom_behavior === "fit" && (imgh > vh ||
-                                                        imgw > vw)) {
-                    var ratio;
-                    if (imgh / vh >
-                        imgw / vw) {
-                        ratio = imgh / vh;
-                    } else {
-                        ratio = imgw / vw;
-                    }
+                function calc_imghw_for_fit() {
+                    if (imgh > vh || imgw > vw) {
+                        var ratio;
+                        if (imgh / vh >
+                            imgw / vw) {
+                            ratio = imgh / vh;
+                        } else {
+                            ratio = imgw / vw;
+                        }
 
-                    imgh /= ratio;
-                    imgw /= ratio;
+                        imgh /= ratio;
+                        imgw /= ratio;
+                    }
+                }
+
+                if (initial_zoom_behavior === "fit") {
+                    calc_imghw_for_fit();
                 }
 
                 img.style.width = imgw + "px";
@@ -43919,9 +43925,6 @@ var $$IMU_EXPORT$$;
                     var scroll_zoom = get_single_setting("scroll_zoom_behavior");
 
                     if (scroll_zoom === "fitfull") {
-                        img.style.width = img.naturalWidth + "px";
-                        img.style.height = img.naturalHeight + "px";
-
                         if (settings.zoom_out_to_close && currentmode === "fit" && e.deltaY > 0) {
                             resetpopups();
                             return false;
@@ -43929,12 +43932,23 @@ var $$IMU_EXPORT$$;
 
                         if (e.deltaY > 0 && currentmode !== "fit") {
                             update_vwh();
+
+                            imgh = img.naturalHeight;
+                            imgw = img.naturalWidth;
+                            calc_imghw_for_fit();
+
                             img.style.maxWidth = vw + "px";
                             img.style.maxHeight = vh + "px";
+
+                            img.style.width = imgw + "px";
+                            img.style.height = imgh + "px";
 
                             currentmode = "fit";
                             changed = true;
                         } else if (e.deltaY < 0 && currentmode !== "full") {
+                            img.style.width = img.naturalWidth + "px";
+                            img.style.height = img.naturalHeight + "px";
+
                             img.style.maxWidth = "initial";
                             img.style.maxHeight = "initial";
 
