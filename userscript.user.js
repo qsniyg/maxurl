@@ -404,7 +404,7 @@ var $$IMU_EXPORT$$;
             "en": "Open Behavior"
         },
         "subcategory_behavior": {
-            "en": "Behavior"
+            "en": "Popup Behavior"
         },
         "subcategory_popup_other": {
             "en": "Other"
@@ -1229,7 +1229,7 @@ var $$IMU_EXPORT$$;
             name: "Clicking image downloads",
             description: "Instead of opening the link in a new tab, it will download the image instead",
             requires: {
-                mouseover: true
+                mouseover_open_behavior: "popup"
             },
             category: "popup",
             subcategory: "behavior"
