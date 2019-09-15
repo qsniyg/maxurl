@@ -45576,6 +45576,9 @@ var $$IMU_EXPORT$$;
                     mouse_in_image_yet = false;
 
                     delay_handle = setTimeout(function() {
+                        if (delay_handle_triggering)
+                            return;
+
                         popup_trigger_reason = "mouse";
                         trigger_popup();
                     }, delay * 1000);
