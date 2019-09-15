@@ -21086,7 +21086,7 @@ var $$IMU_EXPORT$$;
                                 console_error("Shared data not found");
                                 continue;
                             } else {
-                                sharedData = JSON.parse(sharedData);
+                                sharedData = JSON_parse(sharedData);
                             }
                         }
 
@@ -30317,7 +30317,7 @@ var $$IMU_EXPORT$$;
                         if (resp.readyState === 4) {
                             var match = resp.responseText.match(/window\.PxPreloadedData *= *({.*?});\s*</);
                             if (match) {
-                                var data = JSON.parse(match[1]).photo;
+                                var data = JSON_parse(match[1]).photo;
                                 options.cb({
                                     url: data.images[data.images.length - 1].url,
                                     extra: {
@@ -37757,10 +37757,9 @@ var $$IMU_EXPORT$$;
             //   http://media-her.maximummedia.ie.s3.amazonaws.com/wp-content/uploads/2018/11/05111224/Screen-Shot-2018-11-05-at-11.11.48.png
             match = src.match(/^[a-z]+:\/\/[^/]*\/[^/]*\/+([^/]{50,})(?:\/+[^/]*)?(?:[?#].*)?$/);
             if (match) {
-                console.log(match[1]);
-                var json = JSON.parse(base64_decode(match[1]));
+                var json = JSON_parse(base64_decode(match[1]));
                 if (json.data) {
-                    var data = JSON.parse(json.data);
+                    var data = JSON_parse(json.data);
                     if (data.url)
                         return data.url;
                 }
@@ -40807,7 +40806,7 @@ var $$IMU_EXPORT$$;
                             }
                         }
                     } catch (e) {
-                        console.error(e);
+                        console_error(e);
                     }
 
                     var current = el;
@@ -41606,7 +41605,7 @@ var $$IMU_EXPORT$$;
                 }
 
                 if (_nir_debug_)
-                    console.log("(check_image) headers", headers);
+                    console_log("(check_image) headers", headers);
 
                 if (obj.always_ok ||
                     (!obj.can_head && !settings.canhead_get))
@@ -41625,7 +41624,7 @@ var $$IMU_EXPORT$$;
                     headers: headers,
                     onload: function(resp) {
                         if (_nir_debug_)
-                            console.log("(check_image) resp", resp);
+                            console_log("(check_image) resp", resp);
 
                         // nano defender removes this.DONE
                         if (resp.readyState == 4) {
@@ -41649,7 +41648,7 @@ var $$IMU_EXPORT$$;
                             });
 
                             if (_nir_debug_)
-                                console.log("(check_image) resp headers", headers);
+                                console_log("(check_image) resp headers", headers);
 
 
                             var digit = resp.status.toString()[0];
@@ -41767,7 +41766,7 @@ var $$IMU_EXPORT$$;
             }
         }, function(newhref, finalcb) {
             if (_nir_debug_) {
-                console.log("do_redirect", newhref);
+                console_log("do_redirect", newhref);
             }
 
             if (false && !newhref[0].can_head || newhref[0].always_ok) {
