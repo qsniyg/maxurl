@@ -43595,7 +43595,7 @@ var $$IMU_EXPORT$$;
                         var rect = img.getBoundingClientRect();
 
                         // This is needed if img isn't displayed yet
-                        var rect_height = rect.height || parseFloat(img.style.maxHeight);
+                        var rect_height = rect.height || imgh;
 
                         if (isNaN(rect_height))
                             rect_height = img.naturalHeight;
