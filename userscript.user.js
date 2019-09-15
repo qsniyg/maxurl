@@ -420,7 +420,8 @@ var $$IMU_EXPORT$$;
         },
         "Mouseover popup trigger": {
             // FIXME is 트리거 correct?
-            "ko": "팝업 트리거"
+            "ko": "팝업 트리거",
+            "fr": "Déclencheur du popup"
         },
         "Mouseover": {
             // FIXME
@@ -599,10 +600,12 @@ var $$IMU_EXPORT$$;
             "fr": "Annuler"
         },
         "Mouseover popup (%%1) is needed to display the original version": {
-            "ko": "원본 이미지 보려면 팝업 (%%1) 필요합니다"
+            "ko": "원본 이미지 보려면 팝업 (%%1) 필요합니다",
+            "fr": "Popup (%%1) est nécessaire pour trouver la version originale"
         },
         "custom headers": {
-            "ko": "특정 헤더"
+            "ko": "특정 헤더",
+            "fr": "en-têtes spéciales"
         },
         "forces download": {}, // TODO
         "Close": {
