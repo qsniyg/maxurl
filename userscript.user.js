@@ -1402,6 +1402,7 @@ var $$IMU_EXPORT$$;
             type: "number",
             number_min: 1,
             number_int: true,
+            number_unit: "images",
             category: "extra",
             subcategory: "replaceimages",
             imu_enabled_exempt: true
@@ -1412,6 +1413,7 @@ var $$IMU_EXPORT$$;
             type: "number",
             number_min: 1,
             number_int: true,
+            number_unit: "images",
             category: "extra",
             subcategory: "replaceimages",
             imu_enabled_exempt: true
