@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.10.3
+// @version      0.11.0
 // @description  Finds larger or original versions of images for 5300+ websites
 // @author       qsniyg
 // @homepageURL  https://qsniyg.github.io/maxurl/options.html
@@ -344,7 +344,7 @@ var $$IMU_EXPORT$$;
         return navigator.language || navigator.userLanguage;
     }
 
-    var supported_languages = ["en", "ko"];
+    var supported_languages = ["en", "ko", "fr"];
 
     var browser_language = "en";
     try {
@@ -352,7 +352,7 @@ var $$IMU_EXPORT$$;
         if (supported_languages.indexOf(browser_language) < 0)
             browser_language = "en";
     } catch (e) {
-        console.error(e);
+        console_error(e);
     }
 
     var strings = {
@@ -362,29 +362,40 @@ var $$IMU_EXPORT$$;
         },
         "yes": {
             "en": "Yes",
-            "ko": "예"
+            "ko": "예",
+            "fr": "Oui"
         },
         "no": {
             "en": "No",
-            "ko": "아니오"
+            "ko": "아니오",
+            "fr": "Non"
         },
         "category_redirection": {
             "en": "Redirection",
             "ko": "리디렉션"
         },
         "Enable redirection": {
-            "ko": "리디렉션 사용"
+            "ko": "리디렉션 사용",
+            "fr": "Activer la redirection"
         },
         "Add to history": {
-            "ko": "브라우저 기록에 추가"
+            "ko": "브라우저 기록에 추가",
+            "fr": "Ajouter à l'historique"
         },
         "Use GET if HEAD is unsupported": {
-            "ko": "HEAD 지원되지 않으면 GET 사용"
+            "ko": "HEAD 지원되지 않으면 GET 사용",
+            "fr": "Utiliser GET si HEAD n'est pas supporté"
+        },
+        "Try finding original page": {
+            "fr": "Essayer de trouver la page d'origine"
         },
         "Enable mouseover popup": {
-            "ko": "이미지 팝업 사용"
+            "en": "Enable image popup",
+            "ko": "이미지 팝업 사용",
+            "fr": "Activer le popup"
         },
         "Mouseover popup action": {
+            "en": "Popup action",
             "ko": "이미지 팝업 작업"
         },
         "category_popup": {
@@ -394,12 +405,30 @@ var $$IMU_EXPORT$$;
         "subcategory_ui": {
             "en": "UI"
         },
+        "subcategory_trigger": {
+            "en": "Trigger",
+            "ko": "트리거",
+            "fr": "Déclencheur"
+        },
+        "subcategory_open_behavior": {
+            "en": "Open Behavior"
+        },
+        "subcategory_behavior": {
+            "en": "Popup Behavior"
+        },
+        "subcategory_popup_other": {
+            "en": "Other",
+            "fr": "Autre"
+        },
         "New tab": {
-            "ko": "새 탭"
+            "ko": "새 탭",
+            "fr": "Nouvel onglet"
         },
         "Mouseover popup trigger": {
             // FIXME is 트리거 correct?
-            "ko": "팝업 트리거"
+            "en": "Popup trigger",
+            "ko": "팝업 트리거",
+            "fr": "Déclencheur du popup"
         },
         "Mouseover": {
             // FIXME
@@ -422,13 +451,16 @@ var $$IMU_EXPORT$$;
             "ko": "팝업 UI"
         },
         "Opacity": {
-            "ko": "불투명"
+            "ko": "불투명",
+            "fr": "Opacité"
         },
         "Gallery counter": {
-            "ko": "갤러리 이미지 수"
+            "ko": "갤러리 이미지 수",
+            "fr": "Nombre d'images dans la galerie"
         },
         "Gallery counter max": {
-            "ko": "갤러리 이미지 수의 최대값"
+            "ko": "갤러리 이미지 수의 최대값",
+            "fr": "Nombre max d'images a compter pour la galerie"
         },
         "images": {
             "ko": "이미지"
@@ -453,10 +485,13 @@ var $$IMU_EXPORT$$;
             "ko": "확대/축소 기본값"
         },
         "Fit to screen": {
-            "ko": "화면 크기에 맞춤"
+            "ko": "화면 크기에 맞춤",
+            "fr": "Adapter a l'ecran"
         },
         "Full size": {
-            "ko": "전체 크기"
+            "ko": "전체 크기",
+            "fr": "Taille réelle"
+            //"fr": "Pleine grandeur" // should it be this instead?
         },
         "Popup panning method": {
             "ko": "이미지 이동하려면"
@@ -487,7 +522,8 @@ var $$IMU_EXPORT$$;
             "ko": "화면맞춤/전체"
         },
         "Incremental": {
-            "ko": "증분"
+            "ko": "증분",
+            "fr": "Incrémentale"
         },
         "Popup position": {
             "ko": "팝업 위치"
@@ -499,7 +535,8 @@ var $$IMU_EXPORT$$;
             "ko": "페이지 중간"
         },
         "Clicking image downloads": {
-            "ko": "이미지 클릭하면 다운로드"
+            "ko": "이미지 클릭하면 다운로드",
+            "fr": "Cliquer l'image le télécharge"
         },
         "Popup for plain hyperlinks": {
             "ko": "일반적인 링크에도 팝업"
@@ -509,7 +546,8 @@ var $$IMU_EXPORT$$;
         },
         "category_rules": {
             "en": "Rules",
-            "ko": "규칙"
+            "ko": "규칙",
+            "fr": "Règles"
         },
         "Larger watermarked images": {
             "ko": "더 크지만 워터마크 있는 이미지"
@@ -518,60 +556,84 @@ var $$IMU_EXPORT$$;
             "ko": "더 작지만 워터마크 없는 이미지"
         },
         "Possibly different images": {
-            "ko": "다를 수 있는 이미지"
+            "ko": "다를 수 있는 이미지",
+            "fr": "Images possiblement différentes"
         },
         "Possibly broken images": {
-            "ko": "손상될 수 있는 이미지"
+            "ko": "손상될 수 있는 이미지",
+            "fr": "Images possiblement brisée"
         },
         "Rules using 3rd-party websites": {
-            "ko": "3파티 사이트를 사용하는 규칙"
+            "ko": "3파티 사이트를 사용하는 규칙",
+            "fr": "Règles utilisant des sites 3rd-party"
         },
         "Newsen": {
             "ko": "뉴스엔"
         },
         "category_website": {
             "en": "Website",
-            "ko": "웹사이트"
+            "ko": "웹사이트",
+            "fr": "Site"
+        },
+        "Use userscript": {
+            "ko": "유저스크립트 사용하기",
+            "fr": "Utiliser ce userscript"
         },
         "Website image preview": {
             "ko": "링크 붙인 후 이미지 미리보기"
         },
         "saved_refresh_target": {
             "en": "Saved! Refresh the target page for changes to take effect",
-            "ko": "저장됩니다. 번경사항 적용하려면 대상 웹페이지 다시 로드하십시오"
+            "ko": "저장됩니다. 번경사항 적용하려면 대상 웹페이지 다시 로드하십시오",
+            "fr": "Enregistré! Actualiser la page que vous visitez pour que les changements prennent effet" // FIXME: this is a terrible translation
+        },
+        "saved_no_refresh": {
+            "en": "Saved!",
+            "ko": "저장됩니다",
+            "fr": "Enregistré!"
         },
         "save": {
             "en": "Save",
-            "ko": "저장"
+            "ko": "저장",
+            "fr": "Enregistrer"
         },
         "record": {
             "en": "Record"
+            // "Enregistrer" also means "Record"
         },
         "cancel": {
             "en": "Cancel",
-            "ko": "취소"
+            "ko": "취소",
+            "fr": "Annuler"
         },
         "Mouseover popup (%%1) is needed to display the original version": {
-            "ko": "원본 이미지 보려면 팝업 (%%1) 필요합니다"
+            "ko": "원본 이미지 보려면 팝업 (%%1) 필요합니다",
+            "fr": "Popup (%%1) est nécessaire pour trouver la version originale"
         },
         "custom headers": {
-            "ko": "특정 헤더"
+            "ko": "특정 헤더",
+            "fr": "en-têtes spéciales"
         },
         "forces download": {}, // TODO
         "Close": {
-            "ko": "닫기"
+            "ko": "닫기",
+            "fr": "Fermer"
         },
         "Previous": {
-            "ko": "이전"
+            "ko": "이전",
+            "fr": "Image précédente"
         },
         "Next": {
-            "ko": "다음"
+            "ko": "다음",
+            "fr": "Image suivante"
         },
         "Left Arrow": {
-            "ko": "왼쪽 화살표"
+            "ko": "왼쪽 화살표",
+            "fr": "Flèche gauche"
         },
         "Right Arrow": {
-            "ko": "오른쪽 화살표"
+            "ko": "오른쪽 화살표",
+            "fr": "Flèche droite"
         },
         "Blacklist": {
             "ko": "블랙리스트"
@@ -599,6 +661,13 @@ var $$IMU_EXPORT$$;
         },
         "subcategory_replaceimages": {
             "en": "Replace Images"
+        },
+        "category_general": {
+            "en": "General",
+            "ko": "일반"
+        },
+        "Language": {
+            "ko": "언어"
         }
     };
 
@@ -607,9 +676,11 @@ var $$IMU_EXPORT$$;
             return str;
         }
 
+        var language = settings.language;
+
         if (str in strings) {
-            if (browser_language in strings[str]) {
-                str = strings[str][browser_language];
+            if (language in strings[str]) {
+                str = strings[str][language];
             } else if ("en" in strings[str]) {
                 str = strings[str]["en"];
             }
@@ -642,6 +713,9 @@ var $$IMU_EXPORT$$;
 
 
     var settings = {
+        // thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-530760246
+        imu_enabled: true,
+        language: browser_language,
         redirect: true,
         redirect_history: true,
         canhead_get: true,
@@ -654,18 +728,31 @@ var $$IMU_EXPORT$$;
         // thanks to 894-572 on github for the idea: https://github.com/qsniyg/maxurl/issues/30
         mouseover_trigger_key: ["shift", "alt", "i"],
         mouseover_trigger_delay: 1,
+        // also thanks to blue-lightning: https://github.com/qsniyg/maxurl/issues/16
+        mouseover_close_behavior: "esc",
+        // thanks to acid-crash on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-436594057
+        mouseover_close_need_mouseout: true,
+        mouseover_jitter_threshold: 30,
+        // thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-530760246
+        mouseover_use_hold_key: true,
+        mouseover_hold_key: ["i"],
+        // thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-530760246
+        mouseover_exclude_page_bg: true,
         mouseover_ui: true,
-        mouseover_ui_opacity: 30,
+        mouseover_ui_opacity: 50,
+        mouseover_ui_imagesize: true,
+        mouseover_ui_zoomlevel: true,
         mouseover_ui_gallerycounter: true,
         mouseover_ui_gallerymax: 50,
         mouseover_ui_optionsbtn: is_userscript ? true : false,
         mouseover_ui_rotationbtns: false,
-        // also thanks to blue-lightning: https://github.com/qsniyg/maxurl/issues/16
-        mouseover_close_behavior: "esc",
         mouseover_zoom_behavior: "fit",
+        // thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-531080061
+        mouseover_zoom_custom_percent: 100,
         mouseover_pan_behavior: "drag",
         mouseover_scroll_behavior: "zoom",
         scroll_zoom_behavior: "fitfull",
+        zoom_out_to_close: false,
         // thanks to 07416 on github for the idea: https://github.com/qsniyg/maxurl/issues/20#issuecomment-439599984
         mouseover_position: "cursor",
         mouseover_download: false,
@@ -673,6 +760,7 @@ var $$IMU_EXPORT$$;
         mouseover_links: false,
         // thanks to acid-crash on github for the idea: https://github.com/qsniyg/maxurl/issues/20
         mouseover_styles: "",
+        mouseover_apply_blacklist: false,
         website_inject_imu: true,
         website_image: true,
         extension_contextmenu: true,
@@ -685,11 +773,44 @@ var $$IMU_EXPORT$$;
         // thanks to LukasThyWalls on github for the idea: https://github.com/qsniyg/maxurl/issues/75
         bigimage_blacklist: "",
         bigimage_blacklist_engine: "glob",
-        replaceimgs_usedata: true
+        replaceimgs_usedata: true,
+        replaceimgs_wait_fullyloaded: true,
+        replaceimgs_totallimit: 8,
+        replaceimgs_domainlimit: 2
     };
     var orig_settings = deepcopy(settings);
 
     var settings_meta = {
+        imu_enabled: {
+            name: "Enable extension",
+            description: "Globally enables or disables the extension",
+            category: "general",
+            // Userscript users can easily disable it from the userscript menu,
+            //   and enabling it again isn't as trivial as it is for the extension
+            extension_only: true,
+            imu_enabled_exempt: true
+        },
+        language: {
+            name: "Language",
+            description: "Language for this extension",
+            category: "general",
+            options: {
+                _type: "combo",
+                en: {
+                    name: "English"
+                },
+                ko: {
+                    name: "한국어"
+                },
+                fr: {
+                    name: "Français"
+                }
+            },
+            onedit: function() {
+                do_options();
+            },
+            imu_enabled_exempt: true
+        },
         redirect: {
             name: "Enable redirection",
             description: "Redirect images opened in their own tab",
@@ -744,7 +865,8 @@ var $$IMU_EXPORT$$;
             requires: {
                 mouseover: true
             },
-            category: "popup"
+            category: "popup",
+            subcategory: "open_behavior"
         },
         mouseover_trigger: {
             name: "Popup trigger",
@@ -776,7 +898,8 @@ var $$IMU_EXPORT$$;
             requires: {
                 mouseover: true
             },
-            category: "popup"
+            category: "popup",
+            subcategory: "trigger"
         },
         mouseover_trigger_behavior: {
             name: "Mouseover popup trigger",
@@ -799,7 +922,8 @@ var $$IMU_EXPORT$$;
             requires: {
                 mouseover: true
             },
-            category: "popup"
+            category: "popup",
+            subcategory: "trigger"
         },
         mouseover_trigger_key: {
             name: "Popup trigger key",
@@ -809,7 +933,8 @@ var $$IMU_EXPORT$$;
                 mouseover: true,
                 mouseover_trigger_behavior: "keyboard"
             },
-            category: "popup"
+            category: "popup",
+            subcategory: "trigger"
         },
         mouseover_trigger_delay: {
             name: "Popup trigger delay",
@@ -819,8 +944,19 @@ var $$IMU_EXPORT$$;
                 mouseover_trigger_behavior: "mouse"
             },
             type: "number",
+            number_min: 0,
             number_unit: "seconds",
-            category: "popup"
+            category: "popup",
+            subcategory: "trigger"
+        },
+        mouseover_exclude_page_bg: {
+            name: "Exclude page background",
+            description: "Excludes the page background for the popup",
+            requires: {
+                mouseover: true,
+            },
+            category: "popup",
+            subcategory: "open_behavior"
         },
         mouseover_ui: {
             name: "Popup UI",
@@ -845,6 +981,24 @@ var $$IMU_EXPORT$$;
             category: "popup",
             subcategory: "ui"
         },
+        mouseover_ui_imagesize: {
+            name: "Image size",
+            description: "Displays the image size on top of the UI",
+            requires: {
+                mouseover_ui: true
+            },
+            category: "popup",
+            subcategory: "ui"
+        },
+        mouseover_ui_zoomlevel: {
+            name: "Zoom percent",
+            description: "Displays the current zoom level on top of the UI",
+            requires: {
+                mouseover_ui: true
+            },
+            category: "popup",
+            subcategory: "ui"
+        },
         mouseover_ui_gallerycounter: {
             name: "Gallery counter",
             description: "Enables a gallery counter on top of the UI",
@@ -856,11 +1010,12 @@ var $$IMU_EXPORT$$;
         },
         mouseover_ui_gallerymax: {
             name: "Gallery counter max",
-            description: "Maximum amount of images to check in the counter",
+            description: "Maximum amount of images to check in the counter (this can be slightly CPU-intensive)",
             requires: {
                 mouseover_ui_gallerycounter: true
             },
             type: "number",
+            number_min: 0,
             number_unit: "images",
             category: "popup",
             subcategory: "ui"
@@ -907,9 +1062,54 @@ var $$IMU_EXPORT$$;
                 }
             },
             requires: {
-                mouseover_open_behavior: "popup"
+                mouseover_open_behavior: "popup",
+                mouseover_trigger_behavior: "keyboard"
             },
-            category: "popup"
+            category: "popup",
+            subcategory: "trigger"
+        },
+        mouseover_close_need_mouseout: {
+            name: "Don't close until mouse leaves",
+            description: "If true, this keeps the popup open even if all triggers are released if the mouse is still over the image",
+            requires: {
+                mouseover_close_behavior: {
+                    $or: ["any", "all"]
+                }
+            },
+            category: "popup",
+            subcategory: "trigger"
+        },
+        mouseover_jitter_threshold: {
+            name: "Threshold to leave image",
+            description: "How many pixels outside of the image before the cursor is considered to have left the image",
+            requires: {
+                _type: "or",
+                mouseover_close_need_mouseout: true,
+                mouseover_trigger_behavior: "mouse"
+            },
+            type: "number",
+            number_unit: "pixels",
+            category: "popup",
+            subcategory: "trigger"
+        },
+        mouseover_use_hold_key: {
+            name: "Use hold key",
+            description: "Enables the use of a hold key that, when pressed, will keep the popup open",
+            requires: {
+                mouseover_trigger_behavior: "mouse"
+            },
+            category: "popup",
+            subcategory: "trigger"
+        },
+        mouseover_hold_key: {
+            name: "Hold key",
+            description: "Hold key that, when pressed, will keep the popup open",
+            requires: {
+                mouseover_use_hold_key: true
+            },
+            type: "keysequence",
+            category: "popup",
+            subcategory: "trigger"
         },
         mouseover_zoom_behavior: {
             name: "Popup default zoom",
@@ -925,12 +1125,30 @@ var $$IMU_EXPORT$$;
                     full: {
                         name: "Full size"
                     }
+                },
+                _group3: {
+                    custom: {
+                        name: "Custom size"
+                    }
                 }
             },
             requires: {
                 mouseover_open_behavior: "popup"
             },
-            category: "popup"
+            category: "popup",
+            subcategory: "open_behavior"
+        },
+        mouseover_zoom_custom_percent: {
+            name: "Custom zoom percent",
+            description: "Custom percent to initially size the popup",
+            type: "number",
+            number_min: 0,
+            number_unit: "%",
+            requires: {
+                mouseover_zoom_behavior: "custom"
+            },
+            category: "popup",
+            subcategory: "open_behavior"
         },
         mouseover_pan_behavior: {
             name: "Popup panning method",
@@ -949,7 +1167,8 @@ var $$IMU_EXPORT$$;
             requires: {
                 mouseover_open_behavior: "popup"
             },
-            category: "popup"
+            category: "popup",
+            subcategory: "behavior"
         },
         mouseover_scroll_behavior: {
             name: "Popup scroll action",
@@ -969,7 +1188,8 @@ var $$IMU_EXPORT$$;
             requires: {
                 mouseover_open_behavior: "popup"
             },
-            category: "popup"
+            category: "popup",
+            subcategory: "behavior"
         },
         scroll_zoom_behavior: {
             name: "Zoom behavior",
@@ -987,33 +1207,54 @@ var $$IMU_EXPORT$$;
             requires: {
                 mouseover_scroll_behavior: "zoom"
             },
-            category: "popup"
+            category: "popup",
+            subcategory: "behavior"
+        },
+        zoom_out_to_close: {
+            name: "Zoom out fully to close",
+            description: "Closes the popup if you zoom out past the minimum zoom",
+            requires: {
+                mouseover_scroll_behavior: "zoom"
+            },
+            category: "popup",
+            subcategory: "behavior"
         },
         mouseover_position: {
             name: "Popup position",
             description: "Where the popup will appear",
             options: {
                 _type: "or",
-                cursor: {
-                    name: "Mouse cursor",
-                    description: "Underneath the mouse cursor"
+                _group1: {
+                    cursor: {
+                        name: "Cursor middle",
+                        description: "Underneath the mouse cursor"
+                    }
                 },
-                center: {
-                    name: "Page middle"
+                _group2: {
+                    beside_cursor: {
+                        name: "Beside cursor"
+                    }
+                },
+                _group3: {
+                    center: {
+                        name: "Page middle"
+                    }
                 }
             },
             requires: {
                 mouseover_open_behavior: "popup"
             },
-            category: "popup"
+            category: "popup",
+            subcategory: "open_behavior"
         },
         mouseover_download: {
             name: "Clicking image downloads",
             description: "Instead of opening the link in a new tab, it will download the image instead",
             requires: {
-                mouseover: true
+                mouseover_open_behavior: "popup"
             },
-            category: "popup"
+            category: "popup",
+            subcategory: "behavior"
         },
         mouseover_links: {
             name: "Popup for plain hyperlinks",
@@ -1021,7 +1262,8 @@ var $$IMU_EXPORT$$;
             requires: {
                 mouseover: true
             },
-            category: "popup"
+            category: "popup",
+            subcategory: "open_behavior"
         },
         mouseover_styles: {
             name: "Popup CSS style",
@@ -1030,7 +1272,17 @@ var $$IMU_EXPORT$$;
             requires: {
                 mouseover_open_behavior: "popup"
             },
-            category: "popup"
+            category: "popup",
+            subcategory: "popup_other"
+        },
+        mouseover_apply_blacklist: {
+            name: "Don't popup blacklisted images",
+            description: "This option prevents a popup from appearing altogether for blacklisted images",
+            requires: {
+                mouseover: true
+            },
+            category: "popup",
+            subcategory: "open_behavior"
         },
         website_inject_imu: {
             name: "Use userscript",
@@ -1051,7 +1303,8 @@ var $$IMU_EXPORT$$;
             name: "IMU entry in context menu",
             description: "Enables a custom entry for this extension in the right click/context menu",
             extension_only: true,
-            category: "extension"
+            category: "extension",
+            imu_enabled_exempt: true
         },
         allow_watermark: {
             name: "Larger watermarked images",
@@ -1102,6 +1355,9 @@ var $$IMU_EXPORT$$;
             description: "A list of URLs that are blacklisted from being processed",
             category: "rules",
             type: "textarea",
+            onupdate: function() {
+                create_blacklist_regexes();
+            },
             onedit: function() {
                 var errors = create_blacklist_regexes();
 
@@ -1121,6 +1377,26 @@ var $$IMU_EXPORT$$;
                         console.error(errors[i]);
                     }
                 }
+            },
+            documentation: {
+                title: "Documentation",
+                value: [
+                    "The examples below are written for the simple (glob) engine, not the regex engine. The glob engine is generally based on the UNIX glob syntax.<br />",
+                    "<ul><br />",
+                    "<li><code>google.com</code> will block https://google.com/, https://www.google.com/, https://abcdef.google.com/, https://def.abc.google.com/, etc.</li>",
+                    "<li><code>abc.google.com</code> will block https://abc.google.com/, https://def.abc.google.com/, etc.</li>",
+                    "<li><code>*.google.com</code> will block https://www.google.com/, https://def.abc.google.com/, etc. but not https://google.com/</li>",
+                    "<li><code>google.*/</code> will block https://google.com/, https://www.google.co.uk, etc.</li>",
+                    "<li><code>http://google.com</code> will block http://google.com/, but not https://google.com/, http://www.google.com/, etc.</li>",
+                    "<li><code>google.com/test</code> will block https://google.com/test, https://www.google.com/test/abcdef, but not https://google.com/, etc.</li>",
+                    "<li><code>google.com/*/test</code> will block https://google.com/abc/test, but not https://google.com/test or https://google.com/abc/def/test</li>",
+                    "<li><code>google.com/**/test</code> will block https://google.com/abc/test, https://google.com/abc/def/test, https://google.com/abc/def/ghi/test, etc. but not https://google.com/test</li>",
+                    "<li><code>g??gle.com</code> will block https://google.com/, https://gaagle.com/, https://goagle.com/, etc.</li>",
+                    "<li><code>google.{com,co.uk}</code> will block https://google.com/ and https://google.co.uk/</li>",
+                    "<li><code>g[oau]ogle.com</code> will block https://google.com/, https://gaogle.com/, and http://www.guogle.com/</li>",
+                    "<li><code>g[0-9]ogle.com</code> will block https://g0ogle.com/, https://g1ogle.com/, etc. (up to https://g9ogle.com/)</li>",
+                    "</ul>"
+                ].join("\n")
             }
         },
         bigimage_blacklist_engine: {
@@ -1140,7 +1416,40 @@ var $$IMU_EXPORT$$;
             name: "Use data URLs",
             description: "Uses data:// URLs instead of image links",
             category: "extra",
-            subcategory: "replaceimages"
+            subcategory: "replaceimages",
+            imu_enabled_exempt: true
+        },
+        replaceimgs_wait_fullyloaded: {
+            name: "Wait until image is fully loaded",
+            description: "Waits until the image being replaced is fully loaded before moving on to the next image",
+            category: "extra",
+            subcategory: "replaceimages",
+            requires: {
+                replaceimgs_usedata: false
+            },
+            imu_enabled_exempt: true
+        },
+        replaceimgs_totallimit: {
+            name: "Max images to process at once",
+            description: "The maximum amount of images to process at once",
+            type: "number",
+            number_min: 1,
+            number_int: true,
+            number_unit: "images",
+            category: "extra",
+            subcategory: "replaceimages",
+            imu_enabled_exempt: true
+        },
+        replaceimgs_domainlimit: {
+            name: "Max images per domain at once",
+            description: "The maximum amount of images per domain to process at once",
+            type: "number",
+            number_min: 1,
+            number_int: true,
+            number_unit: "images",
+            category: "extra",
+            subcategory: "replaceimages",
+            imu_enabled_exempt: true
         }
     };
 
@@ -1152,6 +1461,7 @@ var $$IMU_EXPORT$$;
     };
 
     var categories = {
+        "general": "category_general",
         "redirection": "category_redirection",
         "popup": "category_popup",
         "rules": "category_rules",
@@ -1162,7 +1472,11 @@ var $$IMU_EXPORT$$;
 
     var subcategories = {
         "popup": {
-            "ui": "subcategory_ui"
+            "trigger": "subcategory_trigger",
+            "open_behavior": "subcategory_open_behavior",
+            "behavior": "subcategory_behavior",
+            "ui": "subcategory_ui",
+            "popup_other": "subcategory_popup_other"
         },
         "extra": {
             "replaceimages": "subcategory_replaceimages"
@@ -1173,6 +1487,8 @@ var $$IMU_EXPORT$$;
         var problem = option_to_problems[option];
         settings[option] = default_options.exclude_problems.indexOf(problem) < 0;
     }
+
+    var settings_history = {};
 
 
     function Cache() {
@@ -1341,7 +1657,7 @@ var $$IMU_EXPORT$$;
     function urljoin(a, b, browser) {
         if (b.length === 0)
             return a;
-        if (b.match(/^[a-z]*:\/\//) || b.match(/^data:/))
+        if (b.match(/^[-a-z]*:\/\//) || b.match(/^(?:data|x-raw-image):/))
             return b;
 
         var protocol_split = a.split("://");
@@ -1525,6 +1841,8 @@ var $$IMU_EXPORT$$;
     var blacklist_regexes = [];
 
     function create_blacklist_regexes() {
+        url_cache.clear();
+
         blacklist_regexes = [];
         var blacklist = settings.bigimage_blacklist || "";
         if (typeof blacklist !== "string")
@@ -1649,11 +1967,7 @@ var $$IMU_EXPORT$$;
         if (!src)
             return src;
 
-        // to prevent infinite loops
-        if (src.length >= 65535)
-            return src;
-
-        if (!src.match(/^https?:\/\//))
+        if (!src.match(/^(?:https?|x-raw-image):\/\//) && !src.match(/^data:/))
             return src;
 
         var origsrc = src;
@@ -1664,7 +1978,11 @@ var $$IMU_EXPORT$$;
         var domain;
         var port;
 
-        if (!src.match(/^data:/)) {
+        if (!src.match(/^(?:data|x-raw-image):/)) {
+            // to prevent infinite loops
+            if (src.length >= 65535)
+                return src;
+
             var protocol_split = src.split("://");
             protocol = protocol_split[0];
             var splitted = protocol_split[1].split("/");
@@ -1675,8 +1993,10 @@ var $$IMU_EXPORT$$;
                 port = "";
             domain = domain.replace(/(.*):[0-9]+$/, "$1");
         } else {
+            //protocol = src.replace(/^([-a-z]+):.*/, "$1");
             protocol = "data";
             domain = "";
+            src = ""; // FIXME: this isn't great
         }
 
         var domain_nowww = domain.replace(/^www\./, "");
@@ -3931,6 +4251,7 @@ var $$IMU_EXPORT$$;
             (domain_nowww === "myjane.ru" && /\/data\/+cache\//.test(src)) ||
             (domain_nowww === "chickradar.net" && /\/content\/+uploads\//.test(src)) ||
             (domain_nowww === "creepmachine.com" && src.indexOf("/images/") >= 0) ||
+            (domain_nowww === "theinspirationgrid.com" && /\/app\/+uploads\//.test(src)) ||
             /^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|images|photos|blogs.dir)|\/+uploads)\//.test(src)
             /*src.indexOf("/wp/uploads/") >= 0*/
             ) {
@@ -7437,6 +7758,7 @@ var $$IMU_EXPORT$$;
             (domain_nowww === "celebphotos.club" && src.indexOf("/images/") >= 0) ||
             (domain_nowww === "image.farm" && src.indexOf("/images/") >= 0) ||
             (domain_nowww === "girlspic.net" && src.indexOf("/images/") >= 0) ||
+            (domain_nowww === "tgfimage.rocks" && src.indexOf("/images/") >= 0) ||
             (domain_nosub === "picho.st" && /^s[0-9]*\./.test(domain)) ||
             domain_nowww === "image-bugs.com") {
             return src.replace(/\.(?:th|md)(\.[^/.]*)$/, "$1");
@@ -8813,7 +9135,7 @@ var $$IMU_EXPORT$$;
                                 done(null, false);
                             }
                         } catch (e) {
-                            return done(null);
+                            return done(null, false);
                         }
                     });
                 });
@@ -11108,7 +11430,9 @@ var $$IMU_EXPORT$$;
                     if (!current.href.match(/\/imgres\?/))
                         continue;
 
-                    return decodeURIComponent(current.href.replace(/.*?\/imgres.*?[?&]imgurl=([^&]*).*?$/, "$1"));
+                    newsrc = current.href.replace(/.*?\/imgres.*?[?&]imgurl=([^&]*).*?$/, "$1");
+                    if (newsrc !== src)
+                        return decodeURIComponent(newsrc);
                 }
 
                 current = options.element;
@@ -11687,7 +12011,7 @@ var $$IMU_EXPORT$$;
                                 console_error("Shared data not found");
                                 continue;
                             } else {
-                                sharedData = JSON.parse(sharedData);
+                                sharedData = JSON_parse(sharedData);
                             }
                         }
 
@@ -12877,6 +13201,10 @@ var $$IMU_EXPORT$$;
                 return newsrc;
         }
 
+        if (domain_nowww === "jjgirls.com") {
+            return src.replace(/(\/photo\/+watch4beauty\/+.*\/+)thumbnail([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1middle$2");
+        }
+
         if (domain_nowww === "pics.tubetubetube.com") {
             return src.replace(/(:\/\/[^/]*\/)thumbs(\/.*\/)hd-([^/]*)$/, "$1pornpics$2$3")
         }
@@ -14002,9 +14330,11 @@ var $$IMU_EXPORT$$;
             };
         }
 
-        if (domain_nosub === "pictoa.com" &&
-            domain.match(/^s[0-9]*\.pictoa\.com/)) {
-            return src.replace(/(\/media\/galleries\/[0-9a-f]+\/[0-9a-f]+\/[0-9a-f]+\/)thumbs\/([^/]*)$/, "$1$2");
+        if ((domain_nosub === "pictoa.com" ||
+             domain === "s.lilitube.com" ||
+             domain_nosub === "babaporn.com")
+            && domain.match(/^s[0-9]*\./)) {
+            return src.replace(/(\/[0-9a-f]{3}\/+[0-9a-f]{3}\/+[0-9a-f]+\/+)thumbs\/+([^/]*)(?:[?#].*)?$/, "$1$2");
         }
 
         if (domain_nosub === "vcg.com" &&
@@ -15636,6 +15966,8 @@ var $$IMU_EXPORT$$;
         }
 
         if (domain === "image.jjang0u.service.concdn.com" ||
+            domain === "pic.doctorteen.com" ||
+            domain === "pic.freeporn.hu" ||
             (domain_nowww === "metartdb.com" && src.indexOf("/images/galleries/") >= 0)) {
             newsrc = src.replace(/\/t_([0-9]+\.[^/.]*)$/, "/$1");
             if (newsrc !== src) {
@@ -17114,7 +17446,7 @@ var $$IMU_EXPORT$$;
                         if (resp.readyState === 4) {
                             var match = resp.responseText.match(/window\.PxPreloadedData *= *({.*?});\s*</);
                             if (match) {
-                                var data = JSON.parse(match[1]).photo;
+                                var data = JSON_parse(match[1]).photo;
                                 options.cb({
                                     url: data.images[data.images.length - 1].url,
                                     extra: {
@@ -18091,7 +18423,8 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/t_([^/]*-[0-9]+\.[^/.]*)(?:[?#].*)?$/, "/$1");
         }
 
-        if (domain === "fhg.karupsow.com") {
+        if (domain === "fhg.karupsow.com" ||
+            domain === "fhg.karupsha.com") {
             return src.replace(/\/images\/+thumbs(-[^/]*\/)/, "/images/pics$1");
         }
 
@@ -21722,10 +22055,9 @@ var $$IMU_EXPORT$$;
         if (domain === "img.maximummedia.ie") {
             match = src.match(/^[a-z]+:\/\/[^/]*\/[^/]*\/+([^/]{50,})(?:\/+[^/]*)?(?:[?#].*)?$/);
             if (match) {
-                console.log(match[1]);
-                var json = JSON.parse(base64_decode(match[1]));
+                var json = JSON_parse(base64_decode(match[1]));
                 if (json.data) {
-                    var data = JSON.parse(json.data);
+                    var data = JSON_parse(json.data);
                     if (data.url)
                         return data.url;
                 }
@@ -21746,6 +22078,9 @@ var $$IMU_EXPORT$$;
             domain_nowww === "geodomehome.org" ||
             domain_nowww === "soamasterclass.com" ||
             domain_nowww === "royal-city.com" ||
+            domain_nowww === "ulsterscotsacademy.org" ||
+            domain_nowww === "newkunci.co" ||
+            domain_nowww === "xianweizhu.com" ||
             domain === "www.edu.kustantiblogs.web.id") {
             newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+images\/+[^/]*__([^-/._]{30,})\.[^/.]*(?:[?#].*)?$/, "$1");
             if (newsrc !== src)
@@ -21818,7 +22153,8 @@ var $$IMU_EXPORT$$;
                 return add_http(newsrc);
         }
 
-        if (domain_nowww === "artspace712.com") {
+        if (domain_nowww === "artspace712.com" ||
+            domain_nowww === "aihara-company.com") {
             match = src.match(/^[a-z]+:\/\/[^/]*\/+uploads\/+[^/]*\/+([^/.]{60,})\/+.*(?:[?#].*)?$/);
             if (match) {
                 return base64_decode(base64_decode(base64_decode(match[1])));
@@ -22966,6 +23302,55 @@ var $$IMU_EXPORT$$;
             }
         }
 
+        if (domain_nowww === "teengirl-pics.com") {
+            match = src.match(/^[a-z]+:\/\/[^/]+\/+([^/.]{50,})\.[^/.]*(?:[?#].*)?$/);
+            if (match) {
+                return base64_decode(match[1]);
+            }
+        }
+
+        if (domain === "fhg.asiansexdiary.com") {
+            return src.replace(/(\/wp-content\/+uploads\/+[^/]*\/+[^/]+_)th_([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain_nowww === "lesarchive.com") {
+            return src.replace(/(\/pictures\/+[0-9]+\/+[^/]+\/+)thumbs\/+/, "$1pics/");
+        }
+
+        if (domain_nosub === "scoreuniverse.com" && /^cdn[0-9]*\./.test(domain)) {
+            return src.replace(/(\/images_content\/+[^/]*\/+[0-9]+)_tn(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain_nowww === "sexgrace.com") {
+            return {
+                url: src.replace(/\/tr\/+/, "/pics/"),
+                headers: {
+                    Referer: "http://www.sexgrace.com/"
+                }
+            };
+        }
+
+        if (domain_nowww === "idealbabes.net" ||
+            domain_nowww === "purescans.com") {
+            return src.replace(/_tr(\/+[^/]*\.[^/.]*)(?:[?#].*)?$/, "_pics$1");
+        }
+
+        if (domain === "imganuncios.mitula.net") {
+            return src.replace(/(:\/\/[^/]*\/+)[a-z]+\/+([^/]+_[0-9]{10,}\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain_nowww === "recbook.com") {
+            return src.replace(/\/storage\/+thumbs\/+/, "/storage/uploads/");
+        }
+
+        if (domain === "apollo-frankfurt.akamaized.net" ||
+            domain === "apollo-singapore.akamaized.net") {
+            return src.replace(/(\/files\/+[^/]*\/+image);s=[0-9]+x[0-9]+(?:[?#].*)?$/, "$1");
+        }
+
+        if (domain_nosub === "jdmagicbox.com" && /^content[0-9]*\./.test(domain)) {
+            return src.replace(/(\/catalogue\/+[^/]*-[a-z0-9]{10,})-[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
 
 
 
@@ -23700,7 +24085,7 @@ var $$IMU_EXPORT$$;
                             }
                         }
                     } catch (e) {
-                        console.error(e);
+                        console_error(e);
                     }
 
                     var current = el;
@@ -24499,7 +24884,7 @@ var $$IMU_EXPORT$$;
                 }
 
                 if (_nir_debug_)
-                    console.log("(check_image) headers", headers);
+                    console_log("(check_image) headers", headers);
 
                 if (obj.always_ok ||
                     (!obj.can_head && !settings.canhead_get))
@@ -24518,7 +24903,7 @@ var $$IMU_EXPORT$$;
                     headers: headers,
                     onload: function(resp) {
                         if (_nir_debug_)
-                            console.log("(check_image) resp", resp);
+                            console_log("(check_image) resp", resp);
 
                         // nano defender removes this.DONE
                         if (resp.readyState == 4) {
@@ -24542,7 +24927,7 @@ var $$IMU_EXPORT$$;
                             });
 
                             if (_nir_debug_)
-                                console.log("(check_image) resp headers", headers);
+                                console_log("(check_image) resp headers", headers);
 
 
                             var digit = resp.status.toString()[0];
@@ -24660,7 +25045,7 @@ var $$IMU_EXPORT$$;
             }
         }, function(newhref, finalcb) {
             if (_nir_debug_) {
-                console.log("do_redirect", newhref);
+                console_log("do_redirect", newhref);
             }
 
             if (false && !newhref[0].can_head || newhref[0].always_ok) {
@@ -24801,12 +25186,21 @@ var $$IMU_EXPORT$$;
         else
             options_el.innerHTML = "";
 
-        var saved_el = document.createElement("div");
-        saved_el.innerHTML = "<p>" + _("saved_refresh_target") + "</p>";
-        saved_el.id = "saved";
-        saved_el.classList.add("topsaved");
+        var saved_el = document.getElementById("saved");
+        if (!saved_el) {
+            saved_el = document.createElement("div");
+            saved_el.style.visibility = "hidden";
+            saved_el.id = "saved";
+            saved_el.classList.add("topsaved");
+        }
+
+        var text = "saved_refresh_target";
+        if (is_extension) {
+            text = "saved_no_refresh";
+        }
+
+        saved_el.innerHTML = "<p>" + _(text) + "</p>";
         //saved_el.style.pointer_events = "none";
-        saved_el.style.visibility = "hidden";
         //saved_el.style.textAlign = "center";
         //saved_el.style.paddingTop = "1em";
         //saved_el.style.fontStyle = "italic";
@@ -24824,25 +25218,70 @@ var $$IMU_EXPORT$$;
 
                 enabled_map[setting] = "processing";
 
-                if (meta.requires) {
-                    // fixme: this only works for one option in meta.requires
-                    for (var required_setting in meta.requires) {
-                        var value = settings[required_setting];
+                var requires = deepcopy(meta.requires);
+                if (!requires) {
+                    requires = {};
+                }
 
-                        if (!(required_setting in enabled_map)) {
-                            check_option(required_setting);
-                        }
+                if (!meta.imu_enabled_exempt) {
+                    if (!settings.imu_enabled) {
+                        enabled = false;
+                    }
+                }
 
-                        if (enabled_map[required_setting] === "processing") {
-                            console_error("Dependency cycle detected for: " + setting + ", " + required_setting);
-                            return;
-                        }
+                if (enabled && requires) {
+                    var type = "and";
 
-                        if (enabled_map[required_setting] && value === meta.requires[required_setting]) {
-                            enabled = true;
+                    if ("_type" in requires)
+                        type = requires._type;
+
+                    for (var required_setting in requires) {
+                        if (required_setting[0] === "_")
+                            continue;
+
+                        var required_value = requires[required_setting];
+
+                        var rvalues = [];
+                        if (typeof required_value === "object" && "$or" in required_value) {
+                            for (var i = 0; i < required_value.$or.length; i++) {
+                                rvalues.push(required_value.$or[i]);
+                            }
                         } else {
-                            enabled = false;
-                            break;
+                            rvalues = [required_value];
+                        }
+
+                        for (var i = 0; i < rvalues.length; i++) {
+                            var value = settings[required_setting];
+
+                            if (value instanceof Array && !(rvalues[i] instanceof Array))
+                                value = value[0];
+
+                            if (!(required_setting in enabled_map)) {
+                                check_option(required_setting);
+                            }
+
+                            if (enabled_map[required_setting] === "processing") {
+                                console_error("Dependency cycle detected for: " + setting + ", " + required_setting);
+                                return;
+                            }
+
+                            //console_log(setting, required_setting, value, rvalues[i]);
+                            if (enabled_map[required_setting] && value === rvalues[i]) {
+                                enabled = true;
+                                break;
+                            } else {
+                                enabled = false;
+                            }
+                        }
+
+                        if (type === "and") {
+                            if (!enabled) {
+                                break;
+                            }
+                        } else if (type === "or") {
+                            if (enabled) {
+                                break;
+                            }
                         }
                     }
                 }
@@ -24876,13 +25315,13 @@ var $$IMU_EXPORT$$;
                 if (enabled) {
                     options[i].classList.remove("disabled");
 
-                    options[i].querySelectorAll("input, textarea, button").forEach((input) => {
+                    options[i].querySelectorAll("input, textarea, button, select").forEach((input) => {
                         input.disabled = false;
                     });
                 } else {
                     options[i].classList.add("disabled");
 
-                    options[i].querySelectorAll("input, textarea, button").forEach((input) => {
+                    options[i].querySelectorAll("input, textarea, button, select").forEach((input) => {
                         input.disabled = true;
                     });
                 }
@@ -24988,27 +25427,31 @@ var $$IMU_EXPORT$$;
                     else
                         option_list["false"].checked = true;
                 } else if (meta.options) {
-                    type = "options";
-                    option_list = deepcopy(meta.options);
+                    if (meta.options._type === "combo") {
+                        type = "combo";
+                    } else {
+                        type = "options";
+                        option_list = deepcopy(meta.options);
 
-                    var check_optionlist = function(val, list) {
-                        if (val in list) {
-                            list[val].checked = true;
-                        } else {
-                            for (var item in list) {
-                                if (item.match(/^_group/)) {
-                                    check_optionlist(val, list[item]);
+                        var check_optionlist = function (val, list) {
+                            if (val in list) {
+                                list[val].checked = true;
+                            } else {
+                                for (var item in list) {
+                                    if (item.match(/^_group/)) {
+                                        check_optionlist(val, list[item]);
+                                    }
                                 }
                             }
-                        }
-                    };
+                        };
 
-                    if (value instanceof Array) {
-                        value.forEach(function (val) {
-                            check_optionlist(val, option_list);
-                        });
-                    } else {
-                        check_optionlist(value, option_list);
+                        if (value instanceof Array) {
+                            value.forEach(function (val) {
+                                check_optionlist(val, option_list);
+                            });
+                        } else {
+                            check_optionlist(value, option_list);
+                        }
                     }
                 } else if (meta.type) {
                     if (meta.type === "textarea" ||
@@ -25191,7 +25634,12 @@ var $$IMU_EXPORT$$;
                     var sub_in_td = document.createElement("td");
                     sub_in_td.style = "display:inline";
                     var input = document.createElement("input");
-                    input.type = "number";
+
+                    // doesn't work properly on Waterfox, most of the functionality is implemented here anyways
+                    // thanks to decembre on github for reporting: https://github.com/qsniyg/maxurl/issues/14#issuecomment-531080061
+                    //input.type = "number";
+                    input.type = "text";
+
                     input.style = "text-align:right";
                     if (meta.number_max !== undefined)
                         input.setAttribute("max", meta.number_max.toString());
@@ -25228,9 +25676,8 @@ var $$IMU_EXPORT$$;
                         if (meta.number_int || value !== orig_value)
                             input.value = value;
 
-                        update_setting(setting, value);
-                        settings[setting] = value;
-
+                        update_setting(setting, parseFloat(value));
+                        //settings[setting] = value;
                         show_saved_message();
                     }
 
@@ -25247,7 +25694,7 @@ var $$IMU_EXPORT$$;
                     var sub = document.createElement("table");
                     var sub_tr = document.createElement("tr");
                     var sub_key_td = document.createElement("td");
-                    sub_key_td.style = "display:inline;font-family:monospace;font-size:1.1em";
+                    sub_key_td.style = "display:inline;font-family:monospace";
                     if (value) {
                         sub_key_td.innerText = get_trigger_key_text(value);
                     }
@@ -25289,6 +25736,28 @@ var $$IMU_EXPORT$$;
                     sub_tr.appendChild(sub_record_td);
                     sub.appendChild(sub_tr);
                     value_td.appendChild(sub);
+                } else if (type === "combo") {
+                    var sub = document.createElement("select");
+
+                    for (var coption in meta.options) {
+                        if (!coption || coption[0] === '_')
+                            continue;
+
+                        var optionel = document.createElement("option");
+                        optionel.innerText = _(meta.options[coption].name);
+                        optionel.value = coption;
+
+                        sub.appendChild(optionel);
+                    }
+
+                    sub.value = settings[setting];
+
+                    sub.onchange = function() {
+                        update_setting(setting, sub.value);
+                        show_saved_message();
+                    };
+
+                    value_td.appendChild(sub);
                 }
 
                 tr.appendChild(value_td);
@@ -25306,6 +25775,44 @@ var $$IMU_EXPORT$$;
                     }
 
                     option.appendChild(examples);
+                }
+
+                if (meta.documentation) {
+                    var get_title = function(expanded) {
+                        var arrow = "⯈";
+                        if (expanded) {
+                            arrow = "⯆";
+                        }
+
+                        return arrow + " " + _(meta.documentation.title);
+                    };
+
+                    var text = get_title(false);
+
+                    var spoiler_title = document.createElement("span");
+                    spoiler_title.classList.add("spoiler-title");
+                    spoiler_title.innerText = text;
+
+                    var expanded = false;
+                    spoiler_title.onclick = function() {
+                        expanded = !expanded;
+
+                        if (expanded) {
+                            spoiler_contents.style.display = "block";
+                        } else {
+                            spoiler_contents.style.display = "none";
+                        }
+
+                        spoiler_title.innerText = get_title(expanded);
+                    };
+
+                    var spoiler_contents = document.createElement("div");
+                    spoiler_contents.classList.add("spoiler-contents");
+                    spoiler_contents.style.display = "none";
+                    spoiler_contents.innerHTML = meta.documentation.value;
+
+                    option.appendChild(spoiler_title);
+                    option.appendChild(spoiler_contents);
                 }
 
                 var errordiv = document.createElement("div");
@@ -25333,7 +25840,7 @@ var $$IMU_EXPORT$$;
             }
         }
 
-        options_el.appendChild(saved_el);
+        document.body.appendChild(saved_el);
     }
 
     function parse_value(value) {
@@ -25362,6 +25869,7 @@ var $$IMU_EXPORT$$;
         }
     }
 
+    var updating_options = 0;
     function set_value(key, value) {
         if (key in settings_meta && settings_meta[key].onedit) {
             settings_meta[key].onedit(value);
@@ -25374,10 +25882,13 @@ var $$IMU_EXPORT$$;
             var kv = {};
             kv[key] = value;
             //chrome.storage.sync.set(kv, function() {});
+            updating_options++;
             extension_send_message({
                 type: "setvalue",
                 data: kv
-            }, function() {});
+            }, function() {
+                updating_options--;
+            });
         } else if (typeof GM_setValue !== "undefined") {
             return GM_setValue(key, value);
         } else if (typeof GM !== "undefined" && GM.getValue) {
@@ -25386,8 +25897,20 @@ var $$IMU_EXPORT$$;
     }
 
     function update_setting(key, value) {
+        if (value === settings[key])
+            return false;
+
         settings[key] = value;
+
+        if (is_extension) {
+            if (!(key in settings_history))
+                settings_history[key] = [];
+
+            settings_history[key].push(value);
+        }
+
         set_value(key, value);
+        return true;
     }
 
     function upgrade_settings(cb) {
@@ -25443,6 +25966,21 @@ var $$IMU_EXPORT$$;
         });
     }
 
+    function update_setting_from_host(setting, value) {
+        if (value !== undefined) {
+            if (typeof settings[setting] === "number") {
+                value = parseFloat(value);
+            }
+
+            if (value !== settings[setting]) {
+                settings[setting] = value;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     function do_config() {
         if (is_userscript || is_extension) {
             var settings_done = 0;
@@ -25450,13 +25988,7 @@ var $$IMU_EXPORT$$;
                 (function(setting) {
                     get_value(setting, function(value) {
                         settings_done++;
-                        if (value !== undefined) {
-                            if (typeof settings[setting] === "number") {
-                                value = parseFloat(value);
-                            }
-
-                            settings[setting] = value;
-                        }
+                        update_setting_from_host(setting, value);
                         if (settings_done >= Object.keys(settings).length)
                             upgrade_settings(start);
                     });
@@ -25465,6 +25997,14 @@ var $$IMU_EXPORT$$;
         } else {
             start();
         }
+    }
+
+    function set_el_all_initial(el) {
+        el.style.all = "initial";
+
+        // Under Waterfox, if offsetInlineStart is set to anything (even unset), it'll set the left to 0
+        // Thanks to decembre on github for reporting this: https://github.com/qsniyg/maxurl/issues/14#issuecomment-531080061
+        el.style.removeProperty("offset-inline-start");
     }
 
     function check_image_get(obj, cb, processing) {
@@ -25568,6 +26108,11 @@ var $$IMU_EXPORT$$;
                             var img = document.createElement("img");
                             img.src = e.target.result;
                             img.onload = function() {
+                                // Firefox thinks SVGs have an empty naturalWidth/naturalHeight
+                                if (img.naturalWidth === 0 || img.naturalHeight === 0) {
+                                    return err_cb();
+                                }
+
                                 cb(img, resp.finalUrl, obj[0], resp);
                             };
                             img.onerror = function() {
@@ -25673,6 +26218,10 @@ var $$IMU_EXPORT$$;
     }
 
     function do_mouseover() {
+        var mouseover_enabled = function() {
+            return settings.imu_enabled && settings.mouseover;
+        }
+
         var mouseX = 0;
         var mouseY = 0;
         var mouseAbsX = 0;
@@ -25694,6 +26243,9 @@ var $$IMU_EXPORT$$;
         var popups = [];
         var popup_el = null;
         var popups_active = false;
+        var popup_trigger_reason = null;
+        var can_close_popup = [false, false];
+        var popup_hold = false;
         var dragstart = false;
         var dragstartX = null;
         var dragstartY = null;
@@ -25736,6 +26288,7 @@ var $$IMU_EXPORT$$;
 
         var delay = false;
         var delay_handle = null;
+        var delay_handle_triggering = false;
         var delay_mouseonly = true;
 
         function update_waiting() {
@@ -25748,6 +26301,7 @@ var $$IMU_EXPORT$$;
         function start_waiting() {
             if (!waitingel) {
                 waitingel = document.createElement("div");
+                set_el_all_initial(waitingel);
                 waitingel.style.zIndex = maxzindex;
                 waitingel.style.cursor = "wait";
                 waitingel.style.width = waitingsize + "px";
@@ -25804,6 +26358,7 @@ var $$IMU_EXPORT$$;
 
             disable_click = false;
             popups_active = false;
+            delay_handle_triggering = false;
             popup_el = null;
 
             if (!delay_mouseonly && delay_handle) {
@@ -25904,6 +26459,8 @@ var $$IMU_EXPORT$$;
                 }
 
                 if (!img) {
+                    delay_handle_triggering = false;
+
                     if (processing.running)
                         stop_waiting();
                     return;
@@ -25931,13 +26488,13 @@ var $$IMU_EXPORT$$;
                 //img.addEventListener("mousedown", estop, true);
 
                 var outerdiv = document.createElement("div");
-                outerdiv.style.all = "initial";
+                set_el_all_initial(outerdiv);
                 outerdiv.style.position = "fixed";
                 outerdiv.style.zIndex = maxzindex - 2;
 
                 var div = document.createElement("div");
                 var popupshown = false;
-                div.style.all = "initial";
+                set_el_all_initial(div);
                 div.style.boxShadow = "0 0 15px rgba(0,0,0,.5)";
                 div.style.border = "3px solid white";
                 div.style.position = "relative";
@@ -26002,39 +26559,56 @@ var $$IMU_EXPORT$$;
 
                 update_vwh();
 
-                img.style.all = "initial";
+                set_el_all_initial(img);
                 img.style.cursor = "pointer";
                 // https://stackoverflow.com/questions/7774814/remove-white-space-below-image
                 img.style.verticalAlign = "bottom";
                 img.style.setProperty("display", "block", "important");
 
-                if (initial_zoom_behavior === "fit") {
-                    img.style.maxWidth = vw + "px";
-                    img.style.maxHeight = vh + "px";
-                }
-
                 var imgh = img.naturalHeight;
                 var imgw = img.naturalWidth;
 
+                if (initial_zoom_behavior === "fit") {
+                    img.style.maxWidth = vw + "px";
+                    img.style.maxHeight = vh + "px";
+                } else if (initial_zoom_behavior === "custom") {
+                    var zoom_percent = settings.mouseover_zoom_custom_percent / 100;
+                    imgw = Math.max(imgw * zoom_percent, 20);
+                    imgh = Math.max(imgh * zoom_percent, 20);
+                    img.style.maxWidth = imgw + "px";
+                    img.style.width = img.style.maxWidth;
+                    img.style.maxHeight = imgh + "px";
+                    img.style.height = img.style.maxHeight;
+                }
+
                 if (imgh < 20 ||
                     imgw < 20) {
+                    // FIXME: This will stop "custom" percentages with low percentages for small images
                     stop_waiting();
                     return;
                 }
 
-                if (initial_zoom_behavior === "fit" && (imgh > vh ||
-                                                        imgw > vw)) {
-                    var ratio;
-                    if (imgh / vh >
-                        imgw / vw) {
-                        ratio = imgh / vh;
-                    } else {
-                        ratio = imgw / vw;
-                    }
+                function calc_imghw_for_fit() {
+                    if (imgh > vh || imgw > vw) {
+                        var ratio;
+                        if (imgh / vh >
+                            imgw / vw) {
+                            ratio = imgh / vh;
+                        } else {
+                            ratio = imgw / vw;
+                        }
 
-                    imgh /= ratio;
-                    imgw /= ratio;
+                        imgh /= ratio;
+                        imgw /= ratio;
+                    }
                 }
+
+                if (initial_zoom_behavior === "fit") {
+                    calc_imghw_for_fit();
+                }
+
+                img.style.width = imgw + "px";
+                img.style.height = imgh + "px";
 
                 var sct = scrollTop();
                 var scl = scrollLeft();
@@ -26048,17 +26622,38 @@ var $$IMU_EXPORT$$;
                 } else if (mouseover_position === "center") {
                     outerdiv.style.top = (sct + Math.min(Math.max(((vh / 2) - sct) - (imgh / 2), border_thresh), Math.max(vh - imgh, border_thresh))) + "px";
                     outerdiv.style.left = (scl + Math.min(Math.max(((vw / 2) - scl) - (imgw / 2), border_thresh), Math.max(vw - imgw, border_thresh))) + "px";
+                } else if (mouseover_position === "beside_cursor") {
+                    // TODO: improve this to be more interpolated
+
+                    if (y > vh / 2) {
+                        outerdiv.style.top = Math.max(y - imgh - border_thresh, border_thresh) + "px";
+                    } else {
+                        outerdiv.style.top = Math.min(y + border_thresh, Math.max(vh - imgh, border_thresh)) + "px";
+                    }
+
+                    if (x > vw / 2) {
+                        outerdiv.style.left = Math.max(x - imgw - border_thresh, border_thresh) + "px";
+                    } else {
+                        outerdiv.style.left = Math.min(x + border_thresh, Math.max(vw - imgw, border_thresh)) + "px";
+                    }
                 }
                 /*console_log(x - (imgw / 2));
                   console_log(vw);
                   console_log(imgw);
                   console_log(vw - imgw);*/
 
-                var defaultopacity = (settings.mouseover_ui_opacity / 100);
-                if (defaultopacity > 1)
-                    defaultopacity = 1;
-                if (defaultopacity < 0)
-                    defaultopacity = 0;
+                function get_defaultopacity() {
+                    var defaultopacity = (settings.mouseover_ui_opacity / 100);
+                    if (defaultopacity > 1)
+                        defaultopacity = 1;
+                    if (defaultopacity < 0)
+                        defaultopacity = 0;
+
+                    return defaultopacity;
+                }
+
+                var defaultopacity = get_defaultopacity();
+
                 function opacity_hover(el, targetel) {
                     if (!targetel)
                         targetel = el;
@@ -26067,7 +26662,7 @@ var $$IMU_EXPORT$$;
                         targetel.style.opacity = "1.0";
                     }, true);
                     el.addEventListener("mouseout", function(e) {
-                        targetel.style.opacity = defaultopacity;
+                        targetel.style.opacity = get_defaultopacity();
                     }, true);
                 }
 
@@ -26110,7 +26705,7 @@ var $$IMU_EXPORT$$;
                     if (!istop) {
                         opacity_hover(btn);
                     }
-                    btn.style.all = "initial";
+                    set_el_all_initial(btn);
                     if (action) {
                         btn.style.cursor = "pointer";
                     }
@@ -26146,7 +26741,7 @@ var $$IMU_EXPORT$$;
 
                 function create_topbarel() {
                     var topbarel = document.createElement("div");
-                    topbarel.style.all = "initial";
+                    set_el_all_initial(topbarel);
                     topbarel.style.position = "absolute";
                     topbarel.style.opacity = defaultopacity;
                     topbarel.style.zIndex = maxzindex - 1;
@@ -26183,13 +26778,14 @@ var $$IMU_EXPORT$$;
                     var prev_images = 0;
                     var next_images = 0;
 
-                    var add_lrhover = function(isleft, btnel, action) {
+                    var add_lrhover = function(isleft, btnel, action, title) {
                         if ((popupshown && outerdiv.clientWidth < 200) ||
                             imgw < 200)
                             return;
 
                         var lrhover = document.createElement("div");
-                        lrhover.style.all = "initial";
+                        set_el_all_initial(lrhover);
+                        lrhover.title = title;
                         if (isleft) {
                             lrhover.style.left = "0em";
                         } else {
@@ -26249,13 +26845,15 @@ var $$IMU_EXPORT$$;
                             return lraction(false);
                         };
 
-                        var leftbtn = addbtn("←", _("Previous") + " (" + _("Left Arrow") + ")", leftaction);
+                        var lefttitle = _("Previous") + " (" + _("Left Arrow") + ")";
+
+                        var leftbtn = addbtn("←", lefttitle, leftaction);
                         leftbtn.style.top = "calc(50% - 7px - " + emhalf + ")";
                         leftbtn.style.left = "-" + em1;
                         outerdiv.appendChild(leftbtn);
                         ui_els.push(leftbtn);
 
-                        add_lrhover(true, leftbtn, leftaction);
+                        add_lrhover(true, leftbtn, leftaction, lefttitle);
 
                         if (settings.mouseover_ui_gallerycounter) {
                             if (use_cached_gallery) {
@@ -26272,14 +26870,16 @@ var $$IMU_EXPORT$$;
                             return lraction(true);
                         };
 
-                        var rightbtn = addbtn("→", _("Next") + " (" + _("Right Arrow") + ")", rightaction);
+                        var righttitle = _("Next") + " (" + _("Right Arrow") + ")";
+
+                        var rightbtn = addbtn("→", righttitle, rightaction);
                         rightbtn.style.top = "calc(50% - 7px - " + emhalf + ")";
                         rightbtn.style.left = "initial";
                         rightbtn.style.right = "-" + em1;
                         outerdiv.appendChild(rightbtn);
                         ui_els.push(rightbtn);
 
-                        add_lrhover(false, rightbtn, rightaction);
+                        add_lrhover(false, rightbtn, rightaction, righttitle);
 
                         if (settings.mouseover_ui_gallerycounter) {
                             if (use_cached_gallery) {
@@ -26289,6 +26889,39 @@ var $$IMU_EXPORT$$;
                                 cached_nextimages = next_images;
                             }
                         }
+                    }
+
+                    function get_imagesizezoom_text() {
+                        var text = "";
+
+                        var rect = img.getBoundingClientRect();
+
+                        // This is needed if img isn't displayed yet
+                        var rect_height = rect.height || imgh;
+
+                        if (isNaN(rect_height))
+                            rect_height = img.naturalHeight;
+
+                        var zoom_percent = rect_height / img.naturalHeight;
+                        var currentzoom = parseInt(zoom_percent * 100);
+
+                        if (settings.mouseover_ui_imagesize) {
+                            text = img.naturalWidth + "x" + img.naturalHeight;
+
+                            if (settings.mouseover_ui_zoomlevel && currentzoom !== 100) {
+                                text += " (" + currentzoom + "%)"
+                            }
+                        } else {
+                            text = currentzoom + "%";
+                        }
+
+                        return text;
+                    }
+
+                    if (settings.mouseover_ui_imagesize || settings.mouseover_ui_zoomlevel) {
+                        var imagesize = addbtn(get_imagesizezoom_text(100), "", null, true);
+                        imagesize.style.fontSize = gallerycount_fontsize;
+                        topbarel.appendChild(imagesize);
                     }
 
                     if (prev_images + next_images > 0) {
@@ -26334,7 +26967,7 @@ var $$IMU_EXPORT$$;
                     e.stopImmediatePropagation();
                     return true;
                 };
-                a.style.all = "initial";
+                set_el_all_initial(a);
                 a.style.cursor = "pointer";
                 a.style.setProperty("vertical-align", "bottom", "important");
                 a.style.setProperty("display", "block", "important");
@@ -26516,14 +27149,30 @@ var $$IMU_EXPORT$$;
                     var scroll_zoom = get_single_setting("scroll_zoom_behavior");
 
                     if (scroll_zoom === "fitfull") {
+                        if (settings.zoom_out_to_close && currentmode === "fit" && e.deltaY > 0) {
+                            resetpopups();
+                            return false;
+                        }
+
                         if (e.deltaY > 0 && currentmode !== "fit") {
                             update_vwh();
+
+                            imgh = img.naturalHeight;
+                            imgw = img.naturalWidth;
+                            calc_imghw_for_fit();
+
                             img.style.maxWidth = vw + "px";
                             img.style.maxHeight = vh + "px";
+
+                            img.style.width = imgw + "px";
+                            img.style.height = imgh + "px";
 
                             currentmode = "fit";
                             changed = true;
                         } else if (e.deltaY < 0 && currentmode !== "full") {
+                            img.style.width = img.naturalWidth + "px";
+                            img.style.height = img.naturalHeight + "px";
+
                             img.style.maxWidth = "initial";
                             img.style.maxHeight = "initial";
 
@@ -26556,9 +27205,12 @@ var $$IMU_EXPORT$$;
                         imgwidth = img.naturalWidth * mult;
                         imgheight = img.naturalHeight * mult;
 
-                        if (imgwidth < 64 || imgheight < 64 ||
-                            imgwidth > img.naturalWidth * 16 ||
-                            imgheight > img.naturalHeight * 16) {
+                        var too_small = imgwidth < 64 || imgheight < 64;
+                        var too_big = imgwidth > img.naturalWidth * 16 || imgheight > img.naturalHeight * 16;
+
+                        if (too_small || too_big) {
+                            if (settings.zoom_out_to_close && too_small)
+                                resetpopups();
                             return false;
                         }
 
@@ -26624,6 +27276,10 @@ var $$IMU_EXPORT$$;
                 document.documentElement.appendChild(outerdiv);
                 popups.push(outerdiv);
                 popupshown = true;
+                can_close_popup = [false, false];
+                popup_hold = false;
+                mouse_in_image_yet = false;
+                delay_handle_triggering = false;
 
                 stop_waiting();
                 popups_active = true;
@@ -26690,7 +27346,7 @@ var $$IMU_EXPORT$$;
                 var style = get_computed_style(source);
                 if (style.getPropertyValue("background-image")) {
                     var bgimg = style.getPropertyValue("background-image");
-                    if (!bgimg.match(/^ *url[(]/)) {
+                    if (!bgimg.match(/^(.*?\)\s*,)?\s*url[(]/)) {
                         return false;
                     }
                 } else {
@@ -26706,7 +27362,30 @@ var $$IMU_EXPORT$$;
             return el.currentStyle || window.getComputedStyle(el);
         }
 
+        function is_popup_el(el) {
+            var current = el;
+            do {
+                if (popups.indexOf(current) >= 0) {
+                    //console_error("Trying to find popup");
+                    return true;
+                }
+            } while ((current = current.parentElement))
+
+            return false;
+        }
+
         function find_source(els) {
+            var result = _find_source(els);
+
+            if (result && result.el) {
+                if (is_popup_el(result.el))
+                    return null;
+            }
+
+            return result;
+        }
+
+        function _find_source(els) {
             // resetpopups() is already called in trigger_popup()
             /*if (popups.length >= 1)
                 return;*/
@@ -26774,6 +27453,9 @@ var $$IMU_EXPORT$$;
             }
 
             function addImage(src, el, options) {
+                if (settings.mouseover_apply_blacklist && !bigimage_filter(src))
+                    return false;
+
                 // blank images
                 // https://www.harpersbazaar.com/celebrity/red-carpet-dresses/g7565/selena-gomez-style-transformation/?slide=2
                 var el_style = null;
@@ -26925,6 +27607,10 @@ var $$IMU_EXPORT$$;
             }
 
             function addElement(el, layer) {
+                if (settings.mouseover_exclude_page_bg && el.tagName === "BODY") {
+                    return;
+                }
+
                 if (typeof layer === "undefined")
                     layer = layers.length;
 
@@ -26933,9 +27619,11 @@ var $$IMU_EXPORT$$;
                 var style = window.getComputedStyle(el);
                 if (style.getPropertyValue("background-image")) {
                     var bgimg = style.getPropertyValue("background-image");
-                    if (bgimg.match(/^ *url[(]/)) {
+                    // https://www.flickr.com/account/upgrade/pro
+                    // background-image: linear-gradient(rgba(0,0,0,.2),rgba(0,0,0,.2)),url(https://combo.staticflickr.com/ap/build/images/pro/flickrpro-hero-header.jpg)
+                    if (bgimg.match(/^(.*?\)\s*,)?\s*url[(]/)) {
                         // url('https://t00.deviantart.net/I94eYVLky718W9_zFjV-SJ-_qm8=/300x200/filters:fixed_height(100,100):origin()/pre00/abda/th/pre/i/2013/069/9/0/black_rock_shooter_by_mrtviolet-d5xktg7.jpg');
-                        var src = norm(bgimg.replace(/^ *url[(](?:(?:'(.*?)')|(?:"(.*?)")|(?:([^)]*)))[)].*$/, "$1$2$3"));
+                        var src = norm(bgimg.replace(/^(?:.*?\)\s*,)?\s*url[(](?:(?:'(.*?)')|(?:"(.*?)")|(?:([^)]*)))[)].*$/, "$1$2$3"));
                         if (src !== bgimg)
                             addImage(src, el, {
                                 isbg: true,
@@ -27095,6 +27783,7 @@ var $$IMU_EXPORT$$;
             rebuildlayers();
 
             // if there are background images ahead of an image, it's likely to be masks
+            // Except: https://www.flickr.com/account/upgrade/pro (featured pro, the avatar's image is a bg image, while the image behind isn't)
             if (layers.length > 1 && layers[0].length === 1 && sources[layers[0][0]].isbg) {
                 for (var i = 1; i < layers.length; i++) {
                     if (layers[i].length === 1 && sources[layers[i][0]].isbg)
@@ -27181,21 +27870,31 @@ var $$IMU_EXPORT$$;
 
         normalize_trigger();*/
 
-        delay = settings.mouseover_trigger_delay;
-        if (delay <= 0 || isNaN(delay))
-            delay = false;
-        if (typeof delay === "number" && delay >= 10)
-            delay = 10;
+        function update_mouseover_trigger_delay() {
+            delay = settings.mouseover_trigger_delay;
+            if (delay <= 0 || isNaN(delay))
+                delay = false;
+            if (typeof delay === "number" && delay >= 10)
+                delay = 10;
 
-        if (settings.mouseover_trigger_behavior === "mouse") {
-            delay_mouseonly = true;
-        } else {
-            delay = false;
-            delay_mouseonly = false;
+            if (settings.mouseover_trigger_behavior === "mouse") {
+                delay_mouseonly = true;
+            } else {
+                delay = false;
+                delay_mouseonly = false;
+            }
         }
 
-        function keystr_in_trigger(str) {
-            return settings.mouseover_trigger_key.indexOf(str) >= 0;
+        update_mouseover_trigger_delay();
+
+        settings_meta.mouseover_trigger_delay.onupdate = update_mouseover_trigger_delay;
+        settings_meta.mouseover_trigger_behavior.onupdate = update_mouseover_trigger_delay;
+
+        function keystr_in_trigger(str, wanted_chord) {
+            if (wanted_chord === undefined)
+                wanted_chord = settings.mouseover_trigger_key;
+
+            return wanted_chord.indexOf(str) >= 0;
         }
 
         function key_in_trigger(key) {
@@ -27224,12 +27923,23 @@ var $$IMU_EXPORT$$;
             return false;
         }
 
-        function set_chord(e, value) {
+        function event_in_chord(e, wanted_chord) {
+            var map = get_keystrs_map(e, value)
+
+            for (var key in map) {
+                if (keystr_in_trigger(key, wanted_chord))
+                    return true;
+            }
+
+            return false;
+        }
+
+        function set_chord(e, value, wanted_chord) {
             var map = get_keystrs_map(e, value)
 
             var changed = false;
             for (var key in map) {
-                if (!keystr_in_trigger(key))
+                if (wanted_chord !== undefined && !keystr_in_trigger(key, wanted_chord))
                     continue;
 
                 if (set_chord_sub(key, map[key]))
@@ -27239,9 +27949,12 @@ var $$IMU_EXPORT$$;
             return changed;
         }
 
-        function trigger_complete(e) {
-            for (var i = 0; i < settings.mouseover_trigger_key.length; i++) {
-                var key = settings.mouseover_trigger_key[i];
+        function trigger_complete(e, wanted_chord) {
+            if (wanted_chord === undefined)
+                wanted_chord = settings.mouseover_trigger_key;
+
+            for (var i = 0; i < wanted_chord.length; i++) {
+                var key = wanted_chord[i];
 
                 if (current_chord.indexOf(key) < 0)
                     return false;
@@ -27250,9 +27963,12 @@ var $$IMU_EXPORT$$;
             return true;
         }
 
-        function trigger_partially_complete(e) {
-            for (var i = 0; i < settings.mouseover_trigger_key.length; i++) {
-                var key = settings.mouseover_trigger_key[i];
+        function trigger_partially_complete(e, wanted_chord) {
+            if (wanted_chord === undefined)
+                wanted_chord = settings.mouseover_trigger_key;
+
+            for (var i = 0; i < wanted_chord.length; i++) {
+                var key = wanted_chord[i];
 
                 if (current_chord.indexOf(key) >= 0)
                     return true;
@@ -27269,6 +27985,10 @@ var $$IMU_EXPORT$$;
 
         function get_close_behavior() {
             return get_single_setting("mouseover_close_behavior");
+        }
+
+        function get_close_need_mouseout() {
+            return settings.mouseover_close_need_mouseout && get_close_behavior() !== "esc";
         }
 
         function find_els_at_point(xy, els, prev) {
@@ -27316,6 +28036,7 @@ var $$IMU_EXPORT$$;
 
         function trigger_popup(is_contextmenu) {
             controlPressed = true;
+            delay_handle_triggering = true;
             //var els = document.elementsFromPoint(mouseX, mouseY);
             var point = [mouseX, mouseY];
             if (is_contextmenu)
@@ -27326,13 +28047,17 @@ var $$IMU_EXPORT$$;
             var source = find_source(els);
             if (source) {
                 trigger_popup_with_source(source);
+            } else {
+                delay_handle_triggering = false;
             }
         }
 
         function trigger_popup_with_source(source, automatic, use_last_pos) {
             return get_final_from_source(source, automatic, false, use_last_pos, function(source_imu, source, processing, data) {
-                if (!source_imu && !source && !processing && !data)
+                if (!source_imu && !source && !processing && !data) {
+                    delay_handle_triggering = false;
                     return;
+                }
 
                 //console_log(source_imu);
                 resetpopups();
@@ -27449,6 +28174,9 @@ var $$IMU_EXPORT$$;
             if (delay && !delay_mouseonly && !automatic) {
                 start_progress();
                 delay_handle = setTimeout(function() {
+                    if (delay_handle_triggering)
+                        return;
+
                     delay_handle = null;
                     do_popup();
                 }, delay * 1000);
@@ -27550,17 +28278,96 @@ var $$IMU_EXPORT$$;
 
             var finish_img = function() {
                 finished++;
-                progressb_el.style.width = ((finished/imgs.length)*100) + "%";
-                console_log("Finished " + finished + "/" + imgs.length);
+                progressb_el.style.width = ((finished/total_imgs)*100) + "%";
+                console_log("Finished " + finished + "/" + total_imgs);
 
-                if (finished >= imgs.length) {
+                if (finished >= total_imgs) {
                     progressc_el.parentElement.removeChild(progressc_el);
                     replacing_imgs = false;
+                } else {
+                    next_img();
+                }
+            };
+
+            var next_img = function () {
+                var total_limit = parseInt(settings.replaceimgs_totallimit);
+                if (currently_processing > total_limit) {
+                    currently_processing--;
+                    return;
+                } else if (currently_processing < total_limit) {
+                    currently_processing++;
+                    next_img();
+                }
+
+
+                var our_source = null;
+                var our_domain = null;
+
+                for (var domain in domains) {
+                    if (domains_processing[domain] >= parseInt(settings.replaceimgs_domainlimit)) {
+                        continue;
+                    }
+
+                    our_domain = domain;
+
+                    domains_processing[domain]++;
+
+                    our_source = domains[domain][0];
+                    domains[domain].splice(0, 1);
+
+                    if (domains[domain].length === 0) {
+                        delete domains[domain];
+                    }
+
+                    break;
+                }
+
+                if (our_source === null && other.length > 0) {
+                    our_source = other[0];
+                    other.splice(0, 1);
+                }
+
+                if (our_source) {
+                    get_final_from_source(our_source, true, true, false, function (source_imu, source, processing, data) {
+                        if (our_domain)
+                            domains_processing[our_domain]--;
+
+                        if (!data) {
+                            return finish_img();
+                        }
+
+                        var waiting = false;
+                        if (data.data.img) {
+                            source.el.src = data.data.img.src;
+                        } else if (data.data.obj) {
+                            if (settings.replaceimgs_wait_fullyloaded) {
+                                // Preload the image, as adding onload/onerror to existing images won't fire the event
+                                var image = new Image();
+                                var finish_image = function() {
+                                    source.el.src = image.src;
+                                    finish_img();
+                                };
+
+                                image.onload = finish_image;
+                                image.onerror = finish_img;
+                                image.src = data.data.obj.url;
+
+                                waiting = true;
+                            } else {
+                                source.el.src = data.data.obj.url;
+                            }
+                        }
+
+                        if (!waiting)
+                            finish_img();
+                    });
+                } else {
+                    currently_processing--;
                 }
             };
 
             var progressc_el = document.createElement("div");
-            progressc_el.style.all = "initial";
+            set_el_all_initial(progressc_el);
             progressc_el.style.position = "fixed";
             progressc_el.style.top = "0px";
             progressc_el.style.left = "0px";
@@ -27573,11 +28380,12 @@ var $$IMU_EXPORT$$;
             progressc_el.style.zIndex = maxzindex - 2;
 
             var progressb_el = document.createElement("div");
-            progressb_el.style.all = "initial";
+            set_el_all_initial(progressb_el);
             progressb_el.style.position = "absolute";
             progressb_el.style.top = "0px";
             progressb_el.style.left = "0px";
-            progressb_el.style.backgroundColor = "#00aa00";
+            //progressb_el.style.backgroundColor = "#00aa00";
+            progressb_el.style.backgroundColor = "#00aaff";
             progressb_el.style.height = "100%";
             progressb_el.style.width = "0%";
             progressb_el.style.zIndex = maxzindex - 1;
@@ -27585,40 +28393,72 @@ var $$IMU_EXPORT$$;
             progressc_el.appendChild(progressb_el);
             document.documentElement.appendChild(progressc_el);
 
-            replacing_imgs = true;
+            var domains = {};
+            var domains_processing = {};
+            var other = [];
+
+            var total_imgs = imgs.length;
+
             for (var i = 0; i < imgs.length; i++) {
                 var source = find_source([imgs[i]]);
-                if (source) {
-                    get_final_from_source(source, true, true, false, function (source_imu, source, processing, data) {
-                        if (!data) {
-                            return finish_img();
-                        }
-
-                        if (data.data.img) {
-                            source.el.src = data.data.img.src;
-                        } else if (data.data.obj) {
-                            source.el.src = data.data.obj.url;
-                        }
-                        finish_img();
-                    });
-                } else {
-                    finish_img();
+                if (!source) {
+                    total_imgs--;
+                    continue;
                 }
+
+                if (!source.src) {
+                    other.push(source);
+                    continue;
+                }
+
+                var domain = source.src.match(/^https?:\/\/([^/]+)\//);
+                if (!domain) {
+                    other.push(source);
+                    continue;
+                }
+
+                if (!(domain[1] in domains)) {
+                    domains[domain[1]] = [];
+                    domains_processing[domain[1]] = 0;
+                }
+
+                domains[domain[1]].push(source);
             }
+
+            var currently_processing = 1;
+            next_img();
         }
 
         register_menucommand("Replace images", replace_images);
 
         document.addEventListener('keydown', function(event) {
-            if (settings.mouseover_trigger_behavior !== "keyboard")
+            if (!mouseover_enabled())
                 return;
 
-            if (set_chord(event, true)) {
-                if (trigger_complete(event) && !popups_active) {
-                    if (!delay_handle)
+            if (settings.mouseover_trigger_behavior === "keyboard" && set_chord(event, true, settings.mouseover_trigger_key)) {
+                if (trigger_complete(event, settings.mouseover_trigger_key) && !popups_active) {
+                    if (!delay_handle) {
+                        popup_trigger_reason = "keyboard";
                         trigger_popup();
+                    }
+                }
+
+                var close_behavior = get_close_behavior();
+                if (close_behavior === "all" || (close_behavior === "any" && trigger_complete(event, settings.mouseover_trigger_key))) {
+                    can_close_popup[0] = false;
                 }
             }
+
+            if (popups_active && popup_trigger_reason === "mouse" &&
+                settings.mouseover_use_hold_key && set_chord(event, true, settings.mouseover_hold_key)) {
+                if (trigger_complete(event, settings.mouseover_hold_key)) {
+                    popup_hold = !popup_hold;
+
+                    if (!popup_hold && can_close_popup[1])
+                        resetpopups();
+                }
+            }
+
 
             if (popups.length > 0 && popup_el) {
                 var ret = undefined;
@@ -27653,28 +28493,31 @@ var $$IMU_EXPORT$$;
         }, true);
 
         document.addEventListener('keyup', function(event) {
-            if (settings.mouseover_trigger_behavior !== "keyboard")
+            if (!mouseover_enabled())
                 return;
 
-            var condition = set_chord(event, false);
+            var condition = set_chord(event, false, settings.mouseover_trigger_key);
 
             var close_behavior = get_close_behavior();
             if (condition && close_behavior === "all") {
                 condition = !trigger_partially_complete(event);
             }
 
-            if (condition && close_behavior !== "esc") {
+            if (condition && close_behavior !== "esc" && popup_trigger_reason === "keyboard") {
                 controlPressed = false;
-                stop_waiting();
 
-                resetpopups();
+                if (!settings.mouseover_close_need_mouseout || can_close_popup[1]) {
+                    stop_waiting();
+                    resetpopups();
+                } else {
+                    can_close_popup[0] = true;
+                }
 
                 return;
             }
 
             // esc
-            if (event.which === 27 ||
-                delay_handle) {
+            if (event.which === 27 || delay_handle_triggering) {
                 stop_waiting();
                 resetpopups();
             }
@@ -27750,13 +28593,48 @@ var $$IMU_EXPORT$$;
         }
 
         if (is_extension) {
+            // TODO: move out of do_mouseover
             chrome.runtime.onMessage.addListener(function(message, sender, respond) {
                 //console_log("ON_MESSAGE", message);
                 if (message.type === "context_imu") {
+                    popup_trigger_reason = "contextmenu";
                     trigger_popup(true);
                 } else if (message.type === "popupaction") {
                     if (message.data.action === "replace_images") {
                         replace_images();
+                    }
+                } else if (message.type === "settings_update") {
+                    //console_log(message);
+                    var changed = false;
+
+                    for (var key in message.data.changes) {
+                        //console_log("Setting " + key + " = " + message.data.changes[key].newValue);
+                        var newvalue = JSON_parse(message.data.changes[key].newValue);
+                        if (key in settings_history) {
+                            var index = settings_history[key].indexOf(newvalue);
+
+                            var pass = false
+                            if (index >= 0 && index < settings_history[key].length - 1) {
+                                pass = true;
+                            }
+
+                            settings_history[key].splice(index, 1);
+
+                            if (pass)
+                                continue;
+                        }
+
+                        var setting_updated = update_setting_from_host(key, newvalue);
+                        changed = setting_updated || changed;
+
+                        if (setting_updated && key in settings_meta && "onupdate" in settings_meta[key]) {
+                            settings_meta[key].onupdate();
+                        }
+                    }
+
+                    if (changed && updating_options <= 0 && is_extension_options_page) {
+                        //console_log("Refreshing options");
+                        do_options();
                     }
                 }
             });
@@ -27797,12 +28675,39 @@ var $$IMU_EXPORT$$;
                 do_popup_pan(popups[0], event, mouseX, mouseY);
             }
 
-            if (delay !== false && typeof delay === "number" && delay_mouseonly) {
-                if (delay_handle) {
-                    clearTimeout(delay_handle);
+            var jitter_base = settings.mouseover_jitter_threshold;
 
-                    if (waiting)
-                        stop_waiting();
+            if (settings.mouseover_trigger_behavior === "keyboard" && get_close_need_mouseout() && popups.length > 0 &&
+                popup_trigger_reason === "keyboard") {
+                var img = popups[0].getElementsByTagName("img")[0];
+                if (img) {
+                    var rect = popups[0].getBoundingClientRect();
+
+                    var our_jitter = jitter_base;
+
+                    if (mouseX >= (rect.left - our_jitter) && mouseX <= (rect.right + our_jitter) &&
+                        mouseY >= (rect.top - our_jitter) && mouseY <= (rect.bottom + our_jitter)) {
+                        can_close_popup[1] = false;
+                    } else {
+                        if (can_close_popup[0]) {
+                            stop_waiting();
+                            resetpopups();
+                        } else {
+                            can_close_popup[1] = true;
+                        }
+                    }
+                }
+            }
+
+            if (mouseover_enabled() && delay !== false && typeof delay === "number" && delay_mouseonly) {
+                if (popup_trigger_reason === "mouse") {
+                    if (delay_handle) {
+                        clearTimeout(delay_handle);
+                        delay_handle = null;
+
+                        if (waiting)
+                            stop_waiting();
+                    }
 
                     if (popups.length > 0) {
                         var jitter_threshx = 40;
@@ -27810,16 +28715,22 @@ var $$IMU_EXPORT$$;
 
                         var img = popups[0].getElementsByTagName("img")[0];
                         if (img) {
-                            var w = Math.min(parseInt(img.style.maxWidth), img.naturalWidth);
-                            var h = Math.min(parseInt(img.style.maxHeight), img.naturalHeight);
-
-                            jitter_threshx = Math.min(Math.max(jitter_threshx, w / 2), img.naturalWidth);
-                            jitter_threshy = Math.min(Math.max(jitter_threshy, h / 2), img.naturalHeight);
-
-                            jitter_threshx += 30;
-                            jitter_threshy += 30;
-
                             var rect = img.getBoundingClientRect();
+
+                            // why this instead of getBoundingClientRect?
+                            //var w = Math.min(parseInt(img.style.maxWidth), img.naturalWidth);
+                            //var h = Math.min(parseInt(img.style.maxHeight), img.naturalHeight);
+                            var w = rect.width;
+                            var h = rect.height;
+
+                            jitter_threshx = Math.max(jitter_threshx, w / 2);
+                            jitter_threshy = Math.max(jitter_threshy, h / 2);
+
+                            jitter_threshx += jitter_base;
+                            jitter_threshy += jitter_base;
+
+                            /*console_log(jitter_threshx, img.naturalWidth, w);
+                            console_log(jitter_threshy, img.naturalHeight, h);*/
                             if (mouse_in_image_yet === false) {
                                 if (mouseX >= rect.left && mouseX <= rect.right &&
                                     mouseY >= rect.top && mouseY <= rect.bottom) {
@@ -27850,24 +28761,48 @@ var $$IMU_EXPORT$$;
                             }
                         }
 
+                        can_close_popup[1] = false;
                         if (mouse_in_image_yet) {
                             if (Math.abs(mouseX - mouseDelayX) > jitter_threshx ||
                                 Math.abs(mouseY - mouseDelayY) > jitter_threshy) {
                                 //console_log(mouseX);
                                 //console_log(mouseDelayX);
                                 //console_log(jitter_threshx);
-                                resetpopups();
+
+                                if (popup_hold) {
+                                    can_close_popup[1] = true;
+                                } else {
+                                    resetpopups();
+                                }
                             }
                         }
                     }
                 }
 
+                // FIXME: this is rather weird. Less CPU usage, but doesn't behave in the way one would expect
                 if (popups.length === 0) {
+                    if (delay_handle) {
+                        var trigger_mouse_jitter_thresh = 10;
+
+                        if ((mouseX - mouseDelayX) < trigger_mouse_jitter_thresh &&
+                            (mouseY - mouseDelayY) < trigger_mouse_jitter_thresh)
+                            return;
+
+                        delay_handle = null;
+                        clearTimeout(delay_handle);
+                    }
+
                     mouseDelayX = mouseX;
                     mouseDelayY = mouseY;
                     mouse_in_image_yet = false;
 
-                    delay_handle = setTimeout(trigger_popup, delay * 1000);
+                    delay_handle = setTimeout(function() {
+                        if (delay_handle_triggering)
+                            return;
+
+                        popup_trigger_reason = "mouse";
+                        trigger_popup();
+                    }, delay * 1000);
                 }
             }
         });
@@ -27945,9 +28880,6 @@ var $$IMU_EXPORT$$;
         do_export();
 
         if (is_userscript || is_extension) {
-            if (settings.redirect)
-                do_redirect();
-
             if (window.location.href.match(/^https?:\/\/qsniyg\.github\.io\/+maxurl\/+options\.html/) ||
                 window.location.href.match(/^file:\/\/.*\/maxurl\/site\/options\.html/) ||
                 (is_extension && is_extension_options_page)) {
@@ -27956,18 +28888,28 @@ var $$IMU_EXPORT$$;
                 });
             }
 
-            if (settings.website_inject_imu &&
-                (window.location.href.match(/^https?:\/\/qsniyg\.github\.io\/+maxurl(\/+|\/+index\.html)?(?:[?#].*)?$/) ||
-                 window.location.href.match(/^file:\/\/.*\/maxurl\/site\/index\.html/))) {
-                if (typeof(unsafeWindow) !== "undefined") {
-                    onload(function() {
-                        do_websitehome();
-                    });
+            if (settings.imu_enabled) {
+                if (settings.redirect)
+                    do_redirect();
+
+                if (settings.website_inject_imu &&
+                    (window.location.href.match(/^https?:\/\/qsniyg\.github\.io\/+maxurl(\/+|\/+index\.html)?(?:[?#].*)?$/) ||
+                        window.location.href.match(/^file:\/\/.*\/maxurl\/site\/index\.html/))) {
+                    if (typeof (unsafeWindow) !== "undefined") {
+                        onload(function () {
+                            do_websitehome();
+                        });
+                    }
                 }
             }
 
-            if (settings.mouseover)
-                do_mouseover();
+            do_mouseover();
+
+            if (is_extension) {
+                extension_send_message({
+                    type: "ready"
+                });
+            }
         }
     }
 
