@@ -27,7 +27,7 @@ function get_option(name, cb, _default) {
 
 function set_option(name, value, cb) {
     var kv = {};
-    kv[name] = value;
+    kv[name] = JSON.stringify(value);
     chrome.storage.sync.set(kv, function(result) {
         if (cb)
             cb(result);

@@ -543,12 +543,15 @@ function update_browseraction_enabled(enabled) {
 get_option("imu_enabled", update_browseraction_enabled, true);
 
 chrome.storage.onChanged.addListener(function(changes, namespace) {
+  if (nir_debug)
+    console.log("storage.onChanged", changes);
+
   if (namespace !== "sync")
     return;
 
   for (var key in changes) {
     if (key === "imu_enabled") {
-      update_browseraction_enabled(changes[key].newValue);
+      update_browseraction_enabled(JSON.parse(changes[key].newValue));
     }
   }
 
