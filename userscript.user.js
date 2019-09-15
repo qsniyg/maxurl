@@ -752,6 +752,7 @@ var $$IMU_EXPORT$$;
         bigimage_blacklist: "",
         bigimage_blacklist_engine: "glob",
         replaceimgs_usedata: true,
+        replaceimgs_wait_fullyloaded: true,
         replaceimgs_totallimit: 8,
         replaceimgs_domainlimit: 2
     };
@@ -1394,6 +1395,16 @@ var $$IMU_EXPORT$$;
             description: "Uses data:// URLs instead of image links",
             category: "extra",
             subcategory: "replaceimages",
+            imu_enabled_exempt: true
+        },
+        replaceimgs_wait_fullyloaded: {
+            name: "Wait until image is fully loaded",
+            description: "Waits until the image being replaced is fully loaded before moving on to the next image",
+            category: "extra",
+            subcategory: "replaceimages",
+            requires: {
+                replaceimgs_usedata: false
+            },
             imu_enabled_exempt: true
         },
         replaceimgs_totallimit: {
@@ -44984,12 +44995,30 @@ var $$IMU_EXPORT$$;
                             return finish_img();
                         }
 
+                        var waiting = false;
                         if (data.data.img) {
                             source.el.src = data.data.img.src;
                         } else if (data.data.obj) {
-                            source.el.src = data.data.obj.url;
+                            if (settings.replaceimgs_wait_fullyloaded) {
+                                // Preload the image, as adding onload/onerror to existing images won't fire the event
+                                var image = new Image();
+                                var finish_image = function() {
+                                    source.el.src = image.src;
+                                    finish_img();
+                                };
+
+                                image.onload = finish_image;
+                                image.onerror = finish_img;
+                                image.src = data.data.obj.url;
+
+                                waiting = true;
+                            } else {
+                                source.el.src = data.data.obj.url;
+                            }
                         }
-                        finish_img();
+
+                        if (!waiting)
+                            finish_img();
                     });
                 } else {
                     currently_processing--;
