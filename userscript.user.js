@@ -42888,6 +42888,10 @@ var $$IMU_EXPORT$$;
                             var img = document.createElement("img");
                             img.src = e.target.result;
                             img.onload = function() {
+                                if (img.naturalWidth === 0 || img.naturalHeight === 0) {
+                                    return err_cb();
+                                }
+
                                 cb(img, resp.finalUrl, obj[0], resp);
                             };
                             img.onerror = function() {
@@ -43371,6 +43375,9 @@ var $$IMU_EXPORT$$;
                     imgh /= ratio;
                     imgw /= ratio;
                 }
+
+                img.style.width = imgw + "px";
+                img.style.height = imgh + "px";
 
                 var sct = scrollTop();
                 var scl = scrollLeft();
@@ -43906,8 +43913,8 @@ var $$IMU_EXPORT$$;
                     var scroll_zoom = get_single_setting("scroll_zoom_behavior");
 
                     if (scroll_zoom === "fitfull") {
-                        img.style.width = "initial";
-                        img.style.height = "initial";
+                        img.style.width = img.naturalWidth + "px";
+                        img.style.height = img.naturalHeight + "px";
 
                         if (settings.zoom_out_to_close && currentmode === "fit" && e.deltaY > 0) {
                             resetpopups();
