@@ -43068,6 +43068,7 @@ var $$IMU_EXPORT$$;
 
         var delay = false;
         var delay_handle = null;
+        var delay_handle_triggering = false;
         var delay_mouseonly = true;
 
         function update_waiting() {
@@ -43237,6 +43238,8 @@ var $$IMU_EXPORT$$;
                 }
 
                 if (!img) {
+                    delay_handle_triggering = false;
+
                     if (processing.running)
                         stop_waiting();
                     return;
@@ -44055,6 +44058,7 @@ var $$IMU_EXPORT$$;
                 can_close_popup = [false, false];
                 popup_hold = false;
                 mouse_in_image_yet = false;
+                delay_handle_triggering = false;
 
                 stop_waiting();
                 popups_active = true;
@@ -44811,6 +44815,7 @@ var $$IMU_EXPORT$$;
 
         function trigger_popup(is_contextmenu) {
             controlPressed = true;
+            delay_handle_triggering = true;
             //var els = document.elementsFromPoint(mouseX, mouseY);
             var point = [mouseX, mouseY];
             if (is_contextmenu)
@@ -44821,13 +44826,17 @@ var $$IMU_EXPORT$$;
             var source = find_source(els);
             if (source) {
                 trigger_popup_with_source(source);
+            } else {
+                delay_handle_triggering = false;
             }
         }
 
         function trigger_popup_with_source(source, automatic, use_last_pos) {
             return get_final_from_source(source, automatic, false, use_last_pos, function(source_imu, source, processing, data) {
-                if (!source_imu && !source && !processing && !data)
+                if (!source_imu && !source && !processing && !data) {
+                    delay_handle_triggering = false;
                     return;
+                }
 
                 //console_log(source_imu);
                 resetpopups();
@@ -44944,6 +44953,9 @@ var $$IMU_EXPORT$$;
             if (delay && !delay_mouseonly && !automatic) {
                 start_progress();
                 delay_handle = setTimeout(function() {
+                    if (delay_handle_triggering)
+                        return;
+
                     delay_handle = null;
                     do_popup();
                 }, delay * 1000);
