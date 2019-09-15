@@ -573,6 +573,10 @@ input:checked + label, button, .button {
   display: block;
 }
 
+#popup #enabled-state.disabled {
+  color: #888;
+}
+
 #popup #buttons {
   margin: 0;
   margin-bottom: 0.5em;
