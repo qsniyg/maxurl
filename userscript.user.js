@@ -381,7 +381,7 @@ var $$IMU_EXPORT$$;
         },
         "Use GET if HEAD is unsupported": {
             "ko": "HEAD 지원되지 않으면 GET 사용",
-            "fr": "Utilise GET si HEAD n'est pas supporté"
+            "fr": "Utiliser GET si HEAD n'est pas supporté"
         },
         "Try finding original page": {
             "fr": "Essayer de trouver la page d'origine"
@@ -1960,11 +1960,7 @@ var $$IMU_EXPORT$$;
         if (!src)
             return src;
 
-        // to prevent infinite loops
-        if (src.length >= 65535)
-            return src;
-
-        if (!src.match(/^https?:\/\//))
+        if (!src.match(/^(?:https?|x-raw-image):\/\//) && !src.match(/^data:/))
             return src;
 
         var origsrc = src;
@@ -1976,6 +1972,10 @@ var $$IMU_EXPORT$$;
         var port;
 
         if (!src.match(/^(?:data|x-raw-image):/)) {
+            // to prevent infinite loops
+            if (src.length >= 65535)
+                return src;
+
             var protocol_split = src.split("://");
             protocol = protocol_split[0];
             var splitted = protocol_split[1].split("/");
@@ -1986,7 +1986,8 @@ var $$IMU_EXPORT$$;
                 port = "";
             domain = domain.replace(/(.*):[0-9]+$/, "$1");
         } else {
-            protocol = src.replace(/^([-a-z]+):.*/, "$1");
+            //protocol = src.replace(/^([-a-z]+):.*/, "$1");
+            protocol = "data";
             domain = "";
         }
 
