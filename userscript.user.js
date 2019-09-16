@@ -733,6 +733,8 @@ var $$IMU_EXPORT$$;
         // thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-530760246
         mouseover_use_hold_key: true,
         mouseover_hold_key: ["i"],
+        // thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-531549043
+        mouseover_close_on_leave_el: true,
         // thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-530760246
         mouseover_exclude_page_bg: true,
         mouseover_minimum_size: 20,
@@ -1130,6 +1132,15 @@ var $$IMU_EXPORT$$;
                 mouseover_use_hold_key: true
             },
             type: "keysequence",
+            category: "popup",
+            subcategory: "trigger"
+        },
+        mouseover_close_on_leave_el: {
+            name: "Close when leaving thumbnail",
+            description: "Closes the popup when the mouse leaves the thumbnail element (won't close if the mouse instead moves to the popup)",
+            requires: {
+                mouseover_trigger_behavior: "mouse"
+            },
             category: "popup",
             subcategory: "trigger"
         },
@@ -45707,6 +45718,15 @@ var $$IMU_EXPORT$$;
                                 if (popup_hold) {
                                     can_close_popup[1] = true;
                                 } else {
+                                    resetpopups();
+                                }
+                            }
+                        } else if (settings.mouseover_close_on_leave_el && popup_el) {
+                            var rect = popup_el.getBoundingClientRect();
+
+                            if (rect.width > 0 && rect.height > 0) {
+                                if (mouseX < rect.left || mouseX > rect.right ||
+                                    mouseY < rect.top || mouseY > rect.bottom) {
                                     resetpopups();
                                 }
                             }
