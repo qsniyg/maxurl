@@ -43116,6 +43116,7 @@ var $$IMU_EXPORT$$;
         var processing_list = [];
         var popups = [];
         var popup_el = null;
+        var popup_el_automatic = false;
         var popups_active = false;
         var popup_trigger_reason = null;
         var can_close_popup = [false, false];
@@ -43219,6 +43220,18 @@ var $$IMU_EXPORT$$;
             waiting = false;
         }
 
+        function in_clientrect(mouseX, mouseY, rect, border) {
+            if (isNaN(border) || border === undefined)
+                border = 0;
+
+            if (mouseX >= (rect.left - border) && mouseX <= (rect.right + border) &&
+                mouseY >= (rect.top - border) && mouseY <= (rect.bottom + border)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
         function resetpopups() {
             popups.forEach(function (popup) {
                 if (popup.parentNode)
@@ -43234,6 +43247,7 @@ var $$IMU_EXPORT$$;
             popups_active = false;
             delay_handle_triggering = false;
             popup_el = null;
+            popup_el_automatic = false;
 
             if (!delay_mouseonly && delay_handle) {
                 clearTimeout(delay_handle);
@@ -44201,6 +44215,9 @@ var $$IMU_EXPORT$$;
 
                     create_ui(true);
 
+                    // The mouse could accidentally land outside the image in theory
+                    mouse_in_image_yet = false;
+
                     return false;
                 };
 
@@ -44998,8 +45015,10 @@ var $$IMU_EXPORT$$;
             if (is_contextmenu)
                 point = [mouseContextX, mouseContextY];
 
-            if (point === null)
+            if (point === null) {
+                delay_handle_triggering = false;
                 return;
+            }
 
             var els = find_els_at_point(point);
             //console_log(els);
@@ -45021,6 +45040,9 @@ var $$IMU_EXPORT$$;
 
                 //console_log(source_imu);
                 resetpopups();
+
+                if (automatic)
+                    popup_el_automatic = true;
 
                 popup_el = source.el;
                 makePopup(source_imu, source.src, processing, data);
@@ -45647,8 +45669,7 @@ var $$IMU_EXPORT$$;
 
                     var our_jitter = jitter_base;
 
-                    if (mouseX >= (rect.left - our_jitter) && mouseX <= (rect.right + our_jitter) &&
-                        mouseY >= (rect.top - our_jitter) && mouseY <= (rect.bottom + our_jitter)) {
+                    if (in_clientrect(mouseX, mouseY, rect, our_jitter)) {
                         can_close_popup[1] = false;
                     } else {
                         if (can_close_popup[0]) {
@@ -45676,6 +45697,8 @@ var $$IMU_EXPORT$$;
                         var jitter_threshy = jitter_threshx;
 
                         var img = popups[0].getElementsByTagName("img")[0];
+                        var imgmiddleX = null;
+                        var imgmiddleY = null;
                         if (img) {
                             var rect = img.getBoundingClientRect();
 
@@ -45684,6 +45707,9 @@ var $$IMU_EXPORT$$;
                             //var h = Math.min(parseInt(img.style.maxHeight), img.naturalHeight);
                             var w = rect.width;
                             var h = rect.height;
+
+                            imgmiddleX = rect.x + rect.width / 2;
+                            imgmiddleY = rect.y + rect.height / 2;
 
                             jitter_threshx = Math.max(jitter_threshx, w / 2);
                             jitter_threshy = Math.max(jitter_threshy, h / 2);
@@ -45694,14 +45720,13 @@ var $$IMU_EXPORT$$;
                             /*console_log(jitter_threshx, img.naturalWidth, w);
                             console_log(jitter_threshy, img.naturalHeight, h);*/
                             if (mouse_in_image_yet === false) {
-                                if (mouseX >= rect.left && mouseX <= rect.right &&
-                                    mouseY >= rect.top && mouseY <= rect.bottom) {
+                                if (in_clientrect(mouseX, mouseY, rect)) {
                                     mouse_in_image_yet = true;
                                     //mouseDelayX = mouseX;
                                     //mouseDelayY = mouseY;
 
-                                    mouseDelayX = rect.x + rect.width / 2;
-                                    mouseDelayY = rect.y + rect.height / 2;
+                                    //mouseDelayX = imgmiddleX;
+                                    //mouseDelayY = imgmiddleY;
 
                                     if (false) {
                                         var viewport = get_viewport();
@@ -45725,11 +45750,11 @@ var $$IMU_EXPORT$$;
 
                         can_close_popup[1] = false;
                         if (mouse_in_image_yet) {
-                            if (Math.abs(mouseX - mouseDelayX) > jitter_threshx ||
-                                Math.abs(mouseY - mouseDelayY) > jitter_threshy) {
-                                //console_log(mouseX);
-                                //console_log(mouseDelayX);
-                                //console_log(jitter_threshx);
+                            if (imgmiddleX && imgmiddleY &&
+                                (Math.abs(mouseX - imgmiddleX) > jitter_threshx ||
+                                 Math.abs(mouseY - imgmiddleY) > jitter_threshy)) {
+                                //console_log(mouseX, imgmiddleX, jitter_threshx);
+                                //console_log(mouseY, imgmiddleY, jitter_threshy);
 
                                 if (popup_hold) {
                                     can_close_popup[1] = true;
@@ -45737,12 +45762,11 @@ var $$IMU_EXPORT$$;
                                     resetpopups();
                                 }
                             }
-                        } else if (settings.mouseover_close_on_leave_el && popup_el) {
+                        } else if (settings.mouseover_close_on_leave_el && popup_el && !popup_el_automatic) {
                             var rect = popup_el.getBoundingClientRect();
 
                             if (rect.width > 0 && rect.height > 0) {
-                                if (mouseX < rect.left || mouseX > rect.right ||
-                                    mouseY < rect.top || mouseY > rect.bottom) {
+                                if (!in_clientrect(mouseX, mouseY, rect, jitter_base)) {
                                     resetpopups();
                                 }
                             }
@@ -45751,7 +45775,7 @@ var $$IMU_EXPORT$$;
                 }
 
                 // FIXME: this is rather weird. Less CPU usage, but doesn't behave in the way one would expect
-                if (popups.length === 0) {
+                if (popups.length === 0 || popup_el_automatic) {
                     if (delay_handle) {
                         var trigger_mouse_jitter_thresh = 10;
 
@@ -45765,7 +45789,7 @@ var $$IMU_EXPORT$$;
 
                     mouseDelayX = mouseX;
                     mouseDelayY = mouseY;
-                    mouse_in_image_yet = false;
+                    //mouse_in_image_yet = false;
 
                     delay_handle = setTimeout(function() {
                         if (delay_handle_triggering)
