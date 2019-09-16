@@ -43094,6 +43094,8 @@ var $$IMU_EXPORT$$;
             return settings.imu_enabled && settings.mouseover;
         }
 
+        var mousepos_initialized = false;
+
         var mouseX = 0;
         var mouseY = 0;
         var mouseAbsX = 0;
@@ -44989,9 +44991,16 @@ var $$IMU_EXPORT$$;
             controlPressed = true;
             delay_handle_triggering = true;
             //var els = document.elementsFromPoint(mouseX, mouseY);
-            var point = [mouseX, mouseY];
+            var point = null;
+
+            if (mousepos_initialized)
+                point = [mouseX, mouseY];
             if (is_contextmenu)
                 point = [mouseContextX, mouseContextY];
+
+            if (point === null)
+                return;
+
             var els = find_els_at_point(point);
             //console_log(els);
 
@@ -45600,6 +45609,8 @@ var $$IMU_EXPORT$$;
         });
 
         document.addEventListener('mousemove', function(event) {
+            mousepos_initialized = true;
+
             // https://stackoverflow.com/a/7790764
             event = event || window.event;
 
