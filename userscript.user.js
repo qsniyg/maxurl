@@ -45762,7 +45762,8 @@ var $$IMU_EXPORT$$;
                                     resetpopups();
                                 }
                             }
-                        } else if (settings.mouseover_close_on_leave_el && popup_el && !popup_el_automatic) {
+                        } else if (settings.mouseover_position === "beside_cursor" &&
+                                   settings.mouseover_close_on_leave_el && popup_el && !popup_el_automatic) {
                             var rect = popup_el.getBoundingClientRect();
 
                             if (rect.width > 0 && rect.height > 0) {
