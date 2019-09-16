@@ -754,6 +754,8 @@ var $$IMU_EXPORT$$;
         zoom_out_to_close: false,
         // thanks to 07416 on github for the idea: https://github.com/qsniyg/maxurl/issues/20#issuecomment-439599984
         mouseover_position: "cursor",
+        // thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-531549043
+        mouseover_prevent_cursor_overlap: true,
         mouseover_download: false,
         // also thanks to 07416: https://github.com/qsniyg/maxurl/issues/25
         mouseover_links: false,
@@ -1263,6 +1265,15 @@ var $$IMU_EXPORT$$;
             },
             requires: {
                 mouseover_open_behavior: "popup"
+            },
+            category: "popup",
+            subcategory: "open_behavior"
+        },
+        mouseover_prevent_cursor_overlap: {
+            name: "Prevent cursor overlap",
+            description: "Prevents the image from overlapping with the cursor",
+            requires: {
+                mouseover_position: "beside_cursor"
             },
             category: "popup",
             subcategory: "open_behavior"
@@ -43438,14 +43449,23 @@ var $$IMU_EXPORT$$;
                     return;
                 }
 
-                function calc_imghw_for_fit() {
-                    if (imgh > vh || imgw > vw) {
+                function calc_imghw_for_fit(width, height) {
+                    if (width === undefined)
+                        width = vw;
+
+                    if (height === undefined)
+                        height = vh;
+
+                    height -= border_thresh * 2;
+                    width  -= border_thresh * 2;
+
+                    if (imgh > height || imgw > width) {
                         var ratio;
-                        if (imgh / vh >
-                            imgw / vw) {
-                            ratio = imgh / vh;
+                        if (imgh / height >
+                            imgw / width) {
+                            ratio = imgh / height;
                         } else {
-                            ratio = imgw / vw;
+                            ratio = imgw / width;
                         }
 
                         imgh /= ratio;
@@ -43456,9 +43476,6 @@ var $$IMU_EXPORT$$;
                 if (initial_zoom_behavior === "fit") {
                     calc_imghw_for_fit();
                 }
-
-                img.style.width = imgw + "px";
-                img.style.height = imgh + "px";
 
                 var sct = scrollTop();
                 var scl = scrollLeft();
@@ -43475,18 +43492,69 @@ var $$IMU_EXPORT$$;
                 } else if (mouseover_position === "beside_cursor") {
                     // TODO: improve this to be more interpolated
 
-                    if (y > vh / 2) {
-                        outerdiv.style.top = Math.max(y - imgh - border_thresh, border_thresh) + "px";
-                    } else {
-                        outerdiv.style.top = Math.min(y + border_thresh, Math.max(vh - imgh, border_thresh)) + "px";
+                    var popupx;
+                    var popupy;
+
+                    var cursor_thresh = border_thresh;
+
+                    for (var loop_i = 0; loop_i < 16; loop_i++) {
+                        if (y > vh / 2) {
+                            popupy = y - imgh - cursor_thresh;
+                        } else {
+                            popupy = y + cursor_thresh;
+                        }
+
+                        if (x > vw / 2) {
+                            popupx = x - imgw - cursor_thresh;
+                        } else {
+                            popupx = x + cursor_thresh;
+                        }
+
+                        if (popupy < border_thresh) {
+                            if (settings.mouseover_prevent_cursor_overlap) {
+                                calc_imghw_for_fit(undefined, y - cursor_thresh);
+                                continue;
+                            } else {
+                                popupy = border_thresh;
+                            }
+                        }
+
+                        if (popupx < border_thresh) {
+                            if (settings.mouseover_prevent_cursor_overlap) {
+                                calc_imghw_for_fit(x - cursor_thresh, undefined);
+                                continue;
+                            } else {
+                                popupx = border_thresh;
+                            }
+                        }
+
+                        if ((popupy + imgh) > vh - border_thresh) {
+                            if (settings.mouseover_prevent_cursor_overlap) {
+                                calc_imghw_for_fit(undefined, vh - y);
+                                continue;
+                            } else {
+                                popupy = Math.max(vh - imgh, border_thresh);
+                            }
+                        }
+
+                        if ((popupx + imgw) > vw + border_thresh) {
+                            if (settings.mouseover_prevent_cursor_overlap) {
+                                calc_imghw_for_fit(vw - x, undefined);
+                                continue;
+                            } else {
+                                popupx = Math.max(vw - imgw, border_thresh);
+                            }
+                        }
+
+                        break;
                     }
 
-                    if (x > vw / 2) {
-                        outerdiv.style.left = Math.max(x - imgw - border_thresh, border_thresh) + "px";
-                    } else {
-                        outerdiv.style.left = Math.min(x + border_thresh, Math.max(vw - imgw, border_thresh)) + "px";
-                    }
+                    outerdiv.style.top = popupy + "px";
+                    outerdiv.style.left = popupx + "px";
                 }
+
+                img.style.width = imgw + "px";
+                img.style.height = imgh + "px";
                 /*console_log(x - (imgw / 2));
                   console_log(vw);
                   console_log(imgw);
