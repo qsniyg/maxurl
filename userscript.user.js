@@ -45743,8 +45743,8 @@ var $$IMU_EXPORT$$;
                             (mouseY - mouseDelayY) < trigger_mouse_jitter_thresh)
                             return;
 
-                        delay_handle = null;
                         clearTimeout(delay_handle);
+                        delay_handle = null;
                     }
 
                     mouseDelayX = mouseX;
