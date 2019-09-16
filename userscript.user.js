@@ -971,7 +971,7 @@ var $$IMU_EXPORT$$;
         },
         mouseover_exclude_backgroundimages: {
             name: "Exclude `background-image`s",
-            description: "Excludes `background-image`s for the popup. Might prevent the popup from working on many images",
+            description: "Excludes 'background-image's for the popup. Might prevent the popup from working on many images",
             requires: {
                 mouseover: true
             },
