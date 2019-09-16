@@ -735,6 +735,7 @@ var $$IMU_EXPORT$$;
         mouseover_hold_key: ["i"],
         // thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-530760246
         mouseover_exclude_page_bg: true,
+        mouseover_minimum_size: 20,
         mouseover_ui: true,
         mouseover_ui_opacity: 50,
         mouseover_ui_imagesize: true,
@@ -952,6 +953,18 @@ var $$IMU_EXPORT$$;
             requires: {
                 mouseover: true,
             },
+            category: "popup",
+            subcategory: "open_behavior"
+        },
+        mouseover_minimum_size: {
+            name: "Minimum image size",
+            description: "Smallest size acceptable for the popup to open (this option is ignored for background images)",
+            requires: {
+                mouseover: true
+            },
+            type: "number",
+            number_min: 0,
+            number_unit: "pixels",
             category: "popup",
             subcategory: "open_behavior"
         },
@@ -23327,6 +23340,9 @@ var $$IMU_EXPORT$$;
             // https://cdn.pornoreino.com/remote_control.php?time=1565526909&cv2=756352ff666039da808a78fa9aef8b58&file=%2Falbums%2Fsources%2F0%2F145%2F11519.jpg&cv3=df8b98eb2fcd9720c10b32652d63c688&cv4=7679f6a6b66a859d48a72271e2f88853
             //   https://cdn.pornoreino.com/albums/sources/0/145/11519.jpg
             domain_nosub === "pornoreino.com" ||
+            // https://mylust.com/contents/albums/main/200x150/8000/8452/77273.jpg
+            //   https://mylust.com/contents/albums/sources/8000/8452/77273.jpg
+            domain_nowww === "mylust.com" ||
             // https://cdn.pornstill.com/contents/albums/main/300x500/82000/82628/1298509.jpg
             //   https://cdn.pornstill.com/contents/albums/sources/82000/82628/1298509.jpg
             domain === "cdn.pornstill.com") {
@@ -44162,10 +44178,20 @@ var $$IMU_EXPORT$$;
         function find_source(els) {
             var result = _find_source(els);
 
-            if (result && result.el) {
+            if (!result)
+                return result;
+
+            if (result.el) {
                 if (is_popup_el(result.el))
                     return null;
             }
+
+            var thresh = parseInt(settings.mouseover_minimum_size);
+            if (isNaN(thresh))
+                thresh = 0;
+
+            if (result.width < thresh || result.height < thresh)
+                return null;
 
             return result;
         }
@@ -44184,7 +44210,9 @@ var $$IMU_EXPORT$$;
 
             var id = 0;
 
-            var thresh = 20;
+            var thresh = parseInt(settings.mouseover_minimum_size);
+            if (isNaN(thresh))
+                thresh = 0;
 
             var source;
 
@@ -44567,7 +44595,8 @@ var $$IMU_EXPORT$$;
 
             rebuildlayers();
 
-            // if there are background images ahead of an image, it's likely to be masks
+            // If there are background images ahead of an image, it's likely to be masks
+            // Maybe check if there's more than one element of ancestry between them?
             // Except: https://www.flickr.com/account/upgrade/pro (featured pro, the avatar's image is a bg image, while the image behind isn't)
             if (layers.length > 1 && layers[0].length === 1 && sources[layers[0][0]].isbg) {
                 for (var i = 1; i < layers.length; i++) {
