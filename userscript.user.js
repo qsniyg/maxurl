@@ -736,6 +736,7 @@ var $$IMU_EXPORT$$;
         // thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-530760246
         mouseover_exclude_page_bg: true,
         mouseover_minimum_size: 20,
+        mouseover_exclude_backgroundimages: false,
         mouseover_ui: true,
         mouseover_ui_opacity: 50,
         mouseover_ui_imagesize: true,
@@ -965,6 +966,15 @@ var $$IMU_EXPORT$$;
             type: "number",
             number_min: 0,
             number_unit: "pixels",
+            category: "popup",
+            subcategory: "open_behavior"
+        },
+        mouseover_exclude_backgroundimages: {
+            name: "Exclude `background-image`s",
+            description: "Excludes `background-image`s for the popup. Might prevent the popup from working on many images",
+            requires: {
+                mouseover: true
+            },
             category: "popup",
             subcategory: "open_behavior"
         },
@@ -42141,6 +42151,45 @@ var $$IMU_EXPORT$$;
             }, 2000);
         }
 
+        function md_to_html(parent, text) {
+            var current_el = null;
+            var current_text = "";
+            var current_tag = null;
+
+            var apply_tag = function() {
+                if (current_text.length === 0)
+                    return;
+
+                if (current_tag === "`") {
+                    current_el = document.createElement("code");
+                } else {
+                    current_el = document.createElement("span");
+                }
+
+                current_el.innerText = current_text;
+                current_text = "";
+                parent.appendChild(current_el);
+            }
+
+            for (var i = 0; i < text.length; i++) {
+                if (text[i] === current_tag) {
+                    apply_tag();
+                    current_tag = null;
+                    continue;
+                }
+
+                if (text[i] === "`") {
+                    apply_tag();
+                    current_tag = text[i];
+                    continue;
+                }
+
+                current_text += text[i];
+            }
+
+            apply_tag();
+        }
+
         var category_els = {};
         var subcategory_els = {};
 
@@ -42204,7 +42253,7 @@ var $$IMU_EXPORT$$;
                 table.appendChild(tr);
 
                 var name = document.createElement("strong");
-                name.innerText = _(meta.name);
+                md_to_html(name, _(meta.name));
                 name.title = _(meta.description);
 
                 var name_td = document.createElement("td");
@@ -44284,6 +44333,10 @@ var $$IMU_EXPORT$$;
 
                 if (!options) {
                     options = {};
+                }
+
+                if (options.isbg && settings.mouseover_exclude_backgroundimages) {
+                    return false;
                 }
 
                 if ("layer" in options) {
