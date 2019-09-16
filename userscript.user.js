@@ -44829,6 +44829,11 @@ var $$IMU_EXPORT$$;
                 delay = false;
                 delay_mouseonly = false;
             }
+
+            if (delay_handle) {
+                clearTimeout(delay_handle);
+                delay_handle = null;
+            }
         }
 
         update_mouseover_trigger_delay();
