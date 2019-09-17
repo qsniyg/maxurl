@@ -12089,6 +12089,7 @@ var $$IMU_EXPORT$$;
             // http://image.yes24.com/dms/201802/%EC%8A%A4%EC%B9%B4%EC%9D%B4-%EA%B3%A0%EC%A0%95%EC%9A%B1.jpg
             // http://image.yes24.com/Goods/57840388/800x0
             // http://image.yes24.com/goods/76075109/L -- 3000x3000
+            // http://image.yes24.com/goods/76175408/1150x1150 -- 150x150
             return src.replace(/(:\/\/[^/]*\/goods\/[0-9]+)(?:\/S)?$/i, "$1/L");
         }
 
@@ -12201,10 +12202,18 @@ var $$IMU_EXPORT$$;
             // http://sexypet.co.kr/web/product/medium/201711/856_shop1_379496.jpg
             //   http://sexypet.co.kr/web/product/big/201711/856_shop1_379496.jpg -- upscaled?
             domain_nowww === "sexypet.co.kr" ||
+            // http://bookculture.co.kr/product/detail.html?product_no=107573&cate_no=164&display_group=1
+            // http://bookculture.co.kr/web/product/medium/201905/a9dd5883f1bc104d7ddeb6c4faf9a1b1.jpg
+            //   http://bookculture.co.kr/web/product/big/201905/90957b7ab17a2d2ca15f038b9220c295.jpg
+            //domain_nowww === "bookculture.co.kr" ||
+            // http://www.comicbookclub.co.kr/product/detail.html?product_no=4155&cate_no=1&display_group=3
+            // http://www.comicbookclub.co.kr/web/product/tiny/201902/09b398f5996561b79ae039567e888e33.jpg
+            //   http://www.comicbookclub.co.kr/web/product/big/201902/2db1140f95b2b01f650064710bc3a32e.jpg
+            //domain_nowww === "comicbookclub.co.kr" ||
             // http://fncstore.com/web/product/small/201805/624_shop1_15268628600267.jpg
             domain_nowww === "fncstore.com") {
             // http://koreamg.com/web/product/big/201511/1198_shop1_844046.jpg
-            newsrc = src.replace(/\/web\/product\/(?:tiny|small|medium)\//, "/web/product/big/");
+            newsrc = src.replace(/\/web\/+product\/+(?:tiny|small|medium)\//, "/web/product/big/");
             if (newsrc !== src) {
                 return [newsrc, newsrc.replace(/0(\.[^/.]*)(?:[?#].*)?$/, "00$1")];
             }
@@ -38143,6 +38152,23 @@ var $$IMU_EXPORT$$;
             return src.replace(/(^[a-z]+:\/\/[^/]*\/+)mx_([^/.]*\.[^/.]*)(?:[?#].*)?$/, "$1$2");
         }
 
+        if (domain === "imgs.plurk.com") {
+            // https://imgs.plurk.com/Qwz/DVj/SBPzYpEOYaYHuBNedfU3lNdZnlW_tn.jpg
+            //   https://imgs.plurk.com/Qwz/DVj/SBPzYpEOYaYHuBNedfU3lNdZnlW_lg.jpg -- 857x1200
+            // other:
+            // https://imgs.plurk.com/QuZ/6TS/5LaXHO9c9PxWD6ilTpS16UUDocq_lg.jpeg -- 3840x2160
+            return src.replace(/(:\/\/[^/]*\/+[^/]{3}\/+[^/]{3}\/+[a-zA-Z0-9]{10,})_tn(\.[^/.]*)(?:[?#].*)?$/, "$1_lg$2");
+        }
+
+        if (domain === "avatars.plurk.com") {
+            // https://avatars.plurk.com/4959900-small14885049.gif
+            //   https://avatars.plurk.com/4959900-medium14885049.gif
+            //   https://avatars.plurk.com/4959900-big14885049.jpg
+            newsrc = src.replace(/(\/[0-9]+-)(?:medium|small)([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1big$2");
+            if (newsrc !== src)
+                return add_full_extensions(newsrc);
+        }
+
         if (domain === "cdnph.upi.com") {
             // https://cdnph.upi.com/topic/ph/9447/upi/5f28f5addc0bbe79fe39ee860993f933/Jennifer_Hudson_0.jpg
             //   https://cdnph.upi.com/pv/upi/5f28f5addc0bbe79fe39ee860993f933/Jennifer_Hudson_0.jpg
@@ -39716,6 +39742,66 @@ var $$IMU_EXPORT$$;
             return src.replace(/(\/catalogue\/+[^/]*-[a-z0-9]{10,})-[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
         }
 
+        if (domain === "image.aladin.co.kr") {
+            // https://image.aladin.co.kr/product/19928/0/coversum/k242635748_1.jpg -- 85x124
+            //   https://image.aladin.co.kr/product/19928/0/cover500/k242635748_1.jpg -- 500x733
+            // https://image.aladin.co.kr/product/18004/88/cover150/k892534639_1.jpg
+            //   https://image.aladin.co.kr/product/18004/88/cover500/k892534639_1.jpg
+            // other:
+            // https://image.aladin.co.kr/product/17719/20/cover500/4800292263_1.jpg -- 1500x2112
+            return src.replace(/(\/product\/+[0-9]+\/+[0-9]+\/+)cover(?:sum|150)\/+/, "$1cover500/");
+        }
+
+        if (domain === "book.interpark.com" ||
+            // http://bimage.interpark.com/goods_image/7/3/5/0/300247350h.jpg
+            //   http://bimage.interpark.com/goods_image/7/3/5/0/300247350g.jpg
+            domain === "bimage.interpark.com") {
+            // http://book.interpark.com/goods_image/7/3/5/0/300247350h.jpg
+            //   http://book.interpark.com/goods_image/7/3/5/0/300247350s.jpg -- 201x280
+            //   http://book.interpark.com/goods_image/7/3/5/0/300247350g.jpg -- 300x420
+            // other:
+            // http://book.interpark.com/goods_image/4/8/5/9/201314859s.jpg -- 3395x3248
+            // g, s, o, h, i
+            // s can be larger (probably a bug), so let's not replace it
+            return src.replace(/(\/goods_image\/+(?:[0-9]\/+){4}[0-9]+)[hoi](\.[^/.]*)(?:[?#].*)?$/, "$1g$2");
+        }
+
+        if (domain === "mobile.kyobobook.co.kr") {
+            // http://mobile.kyobobook.co.kr/common/image/resize?url=http://image.kyobobook.co.kr/images/book/large/089/l9791189320089.jpg
+            //   http://image.kyobobook.co.kr/images/book/large/089/l9791189320089.jpg
+            newsrc = src.replace(/.*\/common\/+image\/+resize\?(?:.*&)?url=([^&]*).*?$/, "$1");
+            if (newsrc !== src)
+                return decodeuri_ifneeded(newsrc);
+        }
+
+        if (domain === "image.kyobobook.co.kr") {
+            // http://image.kyobobook.co.kr/images/book/large/089/l9791189320089.jpg
+            //   http://image.kyobobook.co.kr/images/book/xlarge/089/x9791189320089.jpg
+            // other:
+            // https://manatong.com/data/item/image/x9791189320089.jpg -- different site, same filename, 1772x2480
+            return src.replace(/\/images\/+book\/+large\/+([0-9]{3}\/+)l/, "/images/book/xlarge/$1x");
+        }
+
+        if (domain === "cdn.011st.com") {
+            // http://cdn.011st.com/11dims/resize/300x300/quality/75/11src/pd/19/7/8/2/8/6/5/eMXwX/2304782865_B.jpg
+            //   http://cdn.011st.com/pd/19/7/8/2/8/6/5/eMXwX/2304782865_B.jpg
+            // http://cdn.011st.com/11dims/thumbnail/11src/editorImg/20190904/23565502/1567574523744_E.jpg
+            //   http://cdn.011st.com/editorImg/20190904/23565502/1567574523744_E.jpg
+            return src.replace(/\/+11dims\/.*?\/11src\/+/, "/");
+        }
+
+        if (domain_nowww === "comiczone.co.kr") {
+            // http://www.comiczone.co.kr/shop/data/goods/t/1548727385567m0.jpg
+            //   http://www.comiczone.co.kr/shop/data/goods/1548727385567m0.jpg
+            return src.replace(/\/data\/+goods\/+t\/+/, "/data/goods/");
+        }
+
+        if (domain === "static.mangahub.ru") {
+            // https://static.mangahub.ru/uploads/media/manga_cover/thumbnail/small/0018/78/1777080.jpeg
+            //   https://static.mangahub.ru/uploads/media/manga_cover/thumbnail/big/0018/78/1777080.jpeg
+            return src.replace(/\/uploads\/+media\/+manga_cover\/+thumbnail\/+small\/+/, "/uploads/media/manga_cover/thumbnail/big/");
+        }
+
 
 
 
@@ -40343,9 +40429,12 @@ var $$IMU_EXPORT$$;
         }
 
         if (domain_nowww === "dvdprime.com" ||
-            src.match(/\/data\/cheditor[0-9]*\/[0-9]+\/view_thumbnail\/[^/]*$/)) {
+            // https://mania.kr/dvdprime/public_html/g2/data/file/comm/view_thumbnail/1536714695_eB0A3D7s_05.jpg
+            //   https://mania.kr/dvdprime/public_html/g2/data/file/comm/1536714695_eB0A3D7s_05.jpg
+            domain_nowww === "mania.kr" ||
             // https://hiphopplaya.com/g2/data/cheditor5/1806/view_thumbnail/mania-done-20180621001609_mduiyalw.jpg
             //   https://hiphopplaya.com/g2/data/cheditor5/1806/mania-done-20180621001609_mduiyalw.jpg
+            src.match(/\/data\/+cheditor[0-9]*\/+[0-9]+\/+view_thumbnail\/+[^/]+(?:[?#].*)?$/)) {
             // https://dvdprime.com/g2/data/cheditor5/1806/view_thumbnail/mania-done-20180618175156_aftmezvl.jpg
             //   https://dvdprime.com/g2/data/cheditor5/1806/mania-done-20180618175156_aftmezvl.jpg
             // https://dvdprime.com/g2//data/file/comm/view_thumbnail/135924_201180154028029.jpg
