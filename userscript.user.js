@@ -44413,7 +44413,10 @@ var $$IMU_EXPORT$$;
         }
 
         function find_source(els) {
+            //console_log(els);
             var result = _find_source(els);
+
+            //console_log(result);
 
             if (!result)
                 return result;
@@ -44427,7 +44430,8 @@ var $$IMU_EXPORT$$;
             if (isNaN(thresh))
                 thresh = 0;
 
-            if (result.width < thresh || result.height < thresh)
+            if ((!isNaN(result.width) && result.width > 0 && result.width < thresh) ||
+                (!isNaN(result.height) && result.height > 0 && result.height < thresh))
                 return null;
 
             return result;
@@ -44462,11 +44466,10 @@ var $$IMU_EXPORT$$;
                     if (!style)
                         break;
 
-                    if (style.opacity.toString().match(/^0(?:\.0*)?$/)) {
+                    if (style.opacity.toString().match(/^0(?:\.0*)?$/))
                         return false;
                     if (style.visibility === "hidden")
                         return false;
-                    }
                 } while (el = el.parentElement);
 
                 return true;
@@ -44503,6 +44506,7 @@ var $$IMU_EXPORT$$;
             }
 
             function addImage(src, el, options) {
+                //console_log("addImage", el, check_visible(el));
                 if (settings.mouseover_apply_blacklist && !bigimage_filter(src))
                     return false;
 
@@ -44834,6 +44838,8 @@ var $$IMU_EXPORT$$;
                 layers = newlayers;
             }
 
+            //console_log(deepcopy(layers));
+
             rebuildlayers();
 
             // If there are background images ahead of an image, it's likely to be masks
@@ -44887,7 +44893,8 @@ var $$IMU_EXPORT$$;
 
                 if (current_el.tagName === stack[0]) {
                     if (stack.length === 1) {
-                        if (valid_source(current_el))
+                        //if (valid_source(current_el))
+                        if (is_valid_el(current_el))
                             return current_el;
                         continue;
                     }
@@ -45076,7 +45083,8 @@ var $$IMU_EXPORT$$;
                 prev.push(el);
 
                 var rect = el.getBoundingClientRect();
-                if (rect.left <= xy[0] && rect.right >= xy[0] &&
+                if (rect && rect.width > 0 && rect.height > 0 &&
+                    rect.left <= xy[0] && rect.right >= xy[0] &&
                     rect.top <= xy[1] && rect.bottom >= xy[1] &&
                     ret.indexOf(el) < 0) {
                     ret.push(el);
@@ -45096,6 +45104,39 @@ var $$IMU_EXPORT$$;
             }
 
             return ret;
+        }
+
+        function find_els_at_el(el) {
+            return [el];
+
+            var rect = el.getBoundingClientRect();
+            //console.log("find_els_at_el", el, rect);
+            if (rect && rect.width > 0 && rect.height > 0) {
+                var point = [rect.left + rect.width / 2, rect.top + rect.height / 2];
+                var pointels = find_els_at_point(point);
+
+                // ensure el is the first element
+                var index = pointels.indexOf(el);
+                if (index > 0) {
+                    pointels.splice(index, 1);
+                }
+
+                if (pointels.indexOf(el) < 0)
+                    pointels.unshift(el);
+
+                var newels = [];
+
+                for (var i = 0; i < pointels.length; i++) {
+                    if (!is_popup_el(pointels[i]))
+                        newels.push(pointels[i]);
+                }
+
+                //console.log("find_els_at_el", newels);
+
+                return newels;
+            }
+
+            return [el];
         }
 
         function trigger_popup(is_contextmenu) {
