@@ -45859,8 +45859,11 @@ var $$IMU_EXPORT$$;
                         var img = popups[0].getElementsByTagName("img")[0];
                         var imgmiddleX = null;
                         var imgmiddleY = null;
+                        var in_img_jitter = false;
                         if (img) {
                             var rect = img.getBoundingClientRect();
+
+                            in_img_jitter = in_clientrect(mouseX, mouseY, rect, jitter_base);
 
                             // why this instead of getBoundingClientRect?
                             //var w = Math.min(parseInt(img.style.maxWidth), img.naturalWidth);
@@ -45914,7 +45917,7 @@ var $$IMU_EXPORT$$;
                         if (close_on_leave_el) {
                             var popup_el_rect = popup_el.getBoundingClientRect();
                             if (popup_el_rect.width > 0 && popup_el_rect.height > 0) {
-                                if (!in_clientrect(mouseX, mouseY, popup_el_rect, jitter_base)) {
+                                if (!in_clientrect(mouseX, mouseY, popup_el_rect) && !in_img_jitter) {
                                     outside_of_popup_el = true;
                                 }
                             }
