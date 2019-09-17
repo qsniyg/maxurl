@@ -56,6 +56,7 @@ var $$IMU_EXPORT$$;
     var is_extension_options_page = false;
     var is_options_page = false;
     var options_page = "https://qsniyg.github.io/maxurl/options.html";
+    var imagetab_ok_override = false;
 
     try {
         if (window.location.href.match(/^https?:\/\/qsniyg\.github\.io\/maxurl\/options\.html/) ||
@@ -739,6 +740,7 @@ var $$IMU_EXPORT$$;
         mouseover_exclude_page_bg: true,
         mouseover_minimum_size: 20,
         mouseover_exclude_backgroundimages: false,
+        mouseover_exclude_imagetab: true,
         mouseover_ui: true,
         mouseover_ui_opacity: 50,
         mouseover_ui_imagesize: true,
@@ -978,6 +980,16 @@ var $$IMU_EXPORT$$;
             description: "Excludes 'background-image's for the popup. Might prevent the popup from working on many images",
             requires: {
                 mouseover: true
+            },
+            category: "popup",
+            subcategory: "open_behavior"
+        },
+        mouseover_exclude_imagetab: {
+            name: "Exclude image tabs",
+            description: "Excludes images that are opened in their own tabs",
+            requires: {
+                mouseover: true,
+                mouseover_trigger_behavior: "mouse"
             },
             category: "popup",
             subcategory: "open_behavior"
@@ -41774,6 +41786,8 @@ var $$IMU_EXPORT$$;
                     mouseover = "delay " + settings.mouseover_trigger_delay + "s";
                 }
 
+                imagetab_ok_override = true;
+
                 var trigger_options_link = "<a style='color:blue; font-weight:bold' href='" + options_page + "' target='_blank' rel='noreferrer'>" + mouseover + "</a>";
                 show_image_infobox(_("Mouseover popup (%%1) is needed to display the original version", trigger_options_link) + " (" + _(reason) + ")");
             };
@@ -41925,8 +41939,12 @@ var $$IMU_EXPORT$$;
         }
     }
 
+    function currenttab_is_image() {
+        return !document.contentType.match(/^text\//);
+    }
+
     function do_redirect() {
-        if (document.contentType.match(/^text\//)) {
+        if (!currenttab_is_image()) {
             return;
         }
 
@@ -45062,6 +45080,11 @@ var $$IMU_EXPORT$$;
             return settings.mouseover_close_on_leave_el && get_single_setting("mouseover_position") === "beside_cursor";
         }
 
+        function should_exclude_imagetab() {
+            return settings.mouseover_exclude_imagetab && get_single_setting("mouseover_trigger_behavior") === "mouse" &&
+                   currenttab_is_image() && !imagetab_ok_override;
+        }
+
         function find_els_at_point(xy, els, prev) {
             if (!prev) {
                 prev = [];
@@ -45918,7 +45941,7 @@ var $$IMU_EXPORT$$;
                 }
 
                 // FIXME: this is rather weird. Less CPU usage, but doesn't behave in the way one would expect
-                if (popups.length === 0 || popup_el_automatic) {
+                if ((popups.length === 0 || popup_el_automatic) && !should_exclude_imagetab()) {
                     if (delay_handle) {
                         var trigger_mouse_jitter_thresh = 10;
 
