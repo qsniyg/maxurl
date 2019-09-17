@@ -394,6 +394,11 @@ input:checked + label, button, .button {
   padding-top: .3em;
 }
 
+#options .value_td .record_keybinding {
+  display: inline;
+  font-family: monospace
+}
+
 @media (max-width:700px) {
   .option table {
     margin-left: .5em;
