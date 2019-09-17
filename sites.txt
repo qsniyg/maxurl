@@ -380,6 +380,7 @@ avatanplus.com
 avatarfiles.alphacoders.com
 avatarko.ru
 avatars.mds.yandex.net
+avatars.plurk.com
 avatars.yandex.net
 avdbs.com
 avecdn.akamaized.net
@@ -497,6 +498,7 @@ bikini.sbgefree.org
 bilder.bild.de
 bildix.mmcloud.se
 billboard-japan.com
+bimage.interpark.com
 binaryapi.ap.org
 bing.com
 bing.net
@@ -546,6 +548,7 @@ bonjourlesmadames.fr
 bonnassesworld.com
 bontonland.cz
 book.com.tw
+book.interpark.com
 booklikes.com
 books.com.tw
 booktrust.org.uk
@@ -674,6 +677,7 @@ cdn-stylehaus-jp.akamaized.net
 cdn-tehran.wisgoon.com
 cdn-tn.fishki.net
 cdn-webimages.wimages.net
+cdn.011st.com
 cdn.20m.es
 cdn.24press.net
 cdn.46graus.com
@@ -1024,6 +1028,7 @@ colors.life
 colorwallpaper.net
 comic.systems
 comicsblog.fr
+comiczone.co.kr
 comingsoon.net
 community-content-assets.minecraft.net
 compote.slate.com
@@ -2124,6 +2129,7 @@ image-store.slidesharecdn.com
 image.afcdn.com
 image.ajunews.com
 image.akiba-souken.k-img.com
+image.aladin.co.kr
 image.apost.com
 image.bada.tv
 image.baophapluat.vn
@@ -2169,6 +2175,7 @@ image.kkday.com
 image.kmib.co.kr
 image.kpopstarz.com
 image.kurier.at
+image.kyobobook.co.kr
 image.lag.vn
 image.laodong.com.vn
 image.make-book.jp
@@ -2780,6 +2787,7 @@ imgs.aixifan.com
 imgs.cc
 imgs.ckcdn.com
 imgs.ngaotruyen.com
+imgs.plurk.com
 imgsa.baidu.com
 imgsearches.com
 imgserve.net
@@ -3190,6 +3198,7 @@ maminka.cz
 mandatory.com
 manga-news.com
 mangadrawing.net
+mania.kr
 mariahsworld.com
 marieclaire.com.au
 marieclaire.hu
@@ -3460,6 +3469,7 @@ mmc.tirto.id
 mmorpg.org.pl
 mnews.imaeil.com
 mobify.com
+mobile.kyobobook.co.kr
 mobile.pic.people.com.cn
 mobile9.com
 mobilmusic.ru
@@ -3550,6 +3560,7 @@ myheimat.de
 myidol.com.vn
 myjane.ru
 mykentfamily.co.uk
+mylust.com
 mymypic.net
 mynavi.jp
 mynetsit.ir
@@ -4595,6 +4606,7 @@ static.leiphone.com
 static.life.ru
 static.lovely-media.jp.s3.amazonaws.com
 static.lpnt.fr
+static.mangahub.ru
 static.marquardmedia.hu
 static.maxmodels.pl
 static.mellbimbo.eu
