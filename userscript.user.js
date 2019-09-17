@@ -45051,6 +45051,10 @@ var $$IMU_EXPORT$$;
             return settings.mouseover_close_need_mouseout && get_close_behavior() !== "esc";
         }
 
+        function get_close_on_leave_el() {
+            return settings.mouseover_close_on_leave_el && get_single_setting("mouseover_position") === "beside_cursor";
+        }
+
         function find_els_at_point(xy, els, prev) {
             if (!prev) {
                 prev = [];
@@ -45838,8 +45842,20 @@ var $$IMU_EXPORT$$;
                             }
                         }
 
+                        var close_on_leave_el = get_close_on_leave_el() && popup_el && !popup_el_automatic;
+                        var outside_of_popup_el = false;
+
+                        if (close_on_leave_el) {
+                            var popup_el_rect = popup_el.getBoundingClientRect();
+                            if (popup_el_rect.width > 0 && popup_el_rect.height > 0) {
+                                if (!in_clientrect(mouseX, mouseY, popup_el_rect, jitter_base)) {
+                                    outside_of_popup_el = true;
+                                }
+                            }
+                        }
+
                         can_close_popup[1] = false;
-                        if (mouse_in_image_yet) {
+                        if (mouse_in_image_yet && (!close_on_leave_el || outside_of_popup_el)) {
                             if (imgmiddleX && imgmiddleY &&
                                 (Math.abs(mouseX - imgmiddleX) > jitter_threshx ||
                                  Math.abs(mouseY - imgmiddleY) > jitter_threshy)) {
@@ -45852,14 +45868,9 @@ var $$IMU_EXPORT$$;
                                     resetpopups();
                                 }
                             }
-                        } else if (get_single_setting("mouseover_position") === "beside_cursor" &&
-                                   settings.mouseover_close_on_leave_el && popup_el && !popup_el_automatic) {
-                            var rect = popup_el.getBoundingClientRect();
-
-                            if (rect.width > 0 && rect.height > 0) {
-                                if (!in_clientrect(mouseX, mouseY, rect, jitter_base)) {
-                                    resetpopups();
-                                }
+                        } else if (close_on_leave_el) {
+                            if (outside_of_popup_el) {
+                                resetpopups();
                             }
                         }
                     }
