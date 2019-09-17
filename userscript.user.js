@@ -1151,7 +1151,8 @@ var $$IMU_EXPORT$$;
             name: "Close when leaving thumbnail",
             description: "Closes the popup when the mouse leaves the thumbnail element (won't close if the mouse instead moves to the popup)",
             requires: {
-                mouseover_trigger_behavior: "mouse"
+                mouseover_trigger_behavior: "mouse",
+                mouseover_position: "beside_cursor"
             },
             category: "popup",
             subcategory: "trigger"
@@ -41786,6 +41787,7 @@ var $$IMU_EXPORT$$;
                     mouseover = "delay " + settings.mouseover_trigger_delay + "s";
                 }
 
+                // TODO: another option could be to allow it whenever the image can be imu'd
                 imagetab_ok_override = true;
 
                 var trigger_options_link = "<a style='color:blue; font-weight:bold' href='" + options_page + "' target='_blank' rel='noreferrer'>" + mouseover + "</a>";
