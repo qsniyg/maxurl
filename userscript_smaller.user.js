@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.11.0
+// @version      0.11.1
 // @description  Finds larger or original versions of images for 5300+ websites
 // @author       qsniyg
 // @homepageURL  https://qsniyg.github.io/maxurl/options.html
@@ -59,6 +59,7 @@ var $$IMU_EXPORT$$;
     var is_extension_options_page = false;
     var is_options_page = false;
     var options_page = "https://qsniyg.github.io/maxurl/options.html";
+    var imagetab_ok_override = false;
 
     try {
         if (window.location.href.match(/^https?:\/\/qsniyg\.github\.io\/maxurl\/options\.html/) ||
@@ -736,8 +737,13 @@ var $$IMU_EXPORT$$;
         // thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-530760246
         mouseover_use_hold_key: true,
         mouseover_hold_key: ["i"],
+        // thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-531549043
+        mouseover_close_on_leave_el: true,
         // thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-530760246
         mouseover_exclude_page_bg: true,
+        mouseover_minimum_size: 20,
+        mouseover_exclude_backgroundimages: false,
+        mouseover_exclude_imagetab: true,
         mouseover_ui: true,
         mouseover_ui_opacity: 50,
         mouseover_ui_imagesize: true,
@@ -755,6 +761,8 @@ var $$IMU_EXPORT$$;
         zoom_out_to_close: false,
         // thanks to 07416 on github for the idea: https://github.com/qsniyg/maxurl/issues/20#issuecomment-439599984
         mouseover_position: "cursor",
+        // thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-531549043
+        mouseover_prevent_cursor_overlap: true,
         mouseover_download: false,
         // also thanks to 07416: https://github.com/qsniyg/maxurl/issues/25
         mouseover_links: false,
@@ -958,6 +966,37 @@ var $$IMU_EXPORT$$;
             category: "popup",
             subcategory: "open_behavior"
         },
+        mouseover_minimum_size: {
+            name: "Minimum image size",
+            description: "Smallest size acceptable for the popup to open (this option is ignored for background images)",
+            requires: {
+                mouseover: true
+            },
+            type: "number",
+            number_min: 0,
+            number_unit: "pixels",
+            category: "popup",
+            subcategory: "open_behavior"
+        },
+        mouseover_exclude_backgroundimages: {
+            name: "Exclude `background-image`s",
+            description: "Excludes 'background-image's for the popup. Might prevent the popup from working on many images",
+            requires: {
+                mouseover: true
+            },
+            category: "popup",
+            subcategory: "open_behavior"
+        },
+        mouseover_exclude_imagetab: {
+            name: "Exclude image tabs",
+            description: "Excludes images that are opened in their own tabs",
+            requires: {
+                mouseover: true,
+                mouseover_trigger_behavior: "mouse"
+            },
+            category: "popup",
+            subcategory: "open_behavior"
+        },
         mouseover_ui: {
             name: "Popup UI",
             description: "Enables a UI on top of the popup",
@@ -1111,6 +1150,16 @@ var $$IMU_EXPORT$$;
             category: "popup",
             subcategory: "trigger"
         },
+        mouseover_close_on_leave_el: {
+            name: "Close when leaving thumbnail",
+            description: "Closes the popup when the mouse leaves the thumbnail element (won't close if the mouse instead moves to the popup)",
+            requires: {
+                mouseover_trigger_behavior: "mouse",
+                mouseover_position: "beside_cursor"
+            },
+            category: "popup",
+            subcategory: "trigger"
+        },
         mouseover_zoom_behavior: {
             name: "Popup default zoom",
             description: "How the popup should be initially sized",
@@ -1243,6 +1292,15 @@ var $$IMU_EXPORT$$;
             },
             requires: {
                 mouseover_open_behavior: "popup"
+            },
+            category: "popup",
+            subcategory: "open_behavior"
+        },
+        mouseover_prevent_cursor_overlap: {
+            name: "Prevent cursor overlap",
+            description: "Prevents the image from overlapping with the cursor",
+            requires: {
+                mouseover_position: "beside_cursor"
             },
             category: "popup",
             subcategory: "open_behavior"
@@ -7073,7 +7131,7 @@ var $$IMU_EXPORT$$;
             domain_nowww === "getbarrel.com" ||
             domain_nowww === "sexypet.co.kr" ||
             domain_nowww === "fncstore.com") {
-            newsrc = src.replace(/\/web\/product\/(?:tiny|small|medium)\//, "/web/product/big/");
+            newsrc = src.replace(/\/web\/+product\/+(?:tiny|small|medium)\//, "/web/product/big/");
             if (newsrc !== src) {
                 return [newsrc, newsrc.replace(/0(\.[^/.]*)(?:[?#].*)?$/, "00$1")];
             }
@@ -13291,6 +13349,7 @@ var $$IMU_EXPORT$$;
             (domain_nosub === "cdntrex.com" && /^album[0-9]*\./.test(domain)) ||
             domain_nosub === "p7cdn.com" ||
             domain_nosub === "pornoreino.com" ||
+            domain_nowww === "mylust.com" ||
             domain === "cdn.pornstill.com") {
             newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+remote_control\.php\?(?:.*?&)?file=([^&]*).*?$/, "$1");
             if (newsrc !== src)
@@ -22256,6 +22315,16 @@ var $$IMU_EXPORT$$;
             return src.replace(/(^[a-z]+:\/\/[^/]*\/+)mx_([^/.]*\.[^/.]*)(?:[?#].*)?$/, "$1$2");
         }
 
+        if (domain === "imgs.plurk.com") {
+            return src.replace(/(:\/\/[^/]*\/+[^/]{3}\/+[^/]{3}\/+[a-zA-Z0-9]{10,})_tn(\.[^/.]*)(?:[?#].*)?$/, "$1_lg$2");
+        }
+
+        if (domain === "avatars.plurk.com") {
+            newsrc = src.replace(/(\/[0-9]+-)(?:medium|small)([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1big$2");
+            if (newsrc !== src)
+                return add_full_extensions(newsrc);
+        }
+
         if (domain === "cdnph.upi.com") {
             return src.replace(/(:\/\/[^/]*\/+)(?:topic\/+ph\/+[0-9]+\/+upi\/+|upi\/+)/, "$1pv/upi/");
         }
@@ -23352,6 +23421,37 @@ var $$IMU_EXPORT$$;
             return src.replace(/(\/catalogue\/+[^/]*-[a-z0-9]{10,})-[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
         }
 
+        if (domain === "image.aladin.co.kr") {
+            return src.replace(/(\/product\/+[0-9]+\/+[0-9]+\/+)cover(?:sum|150)\/+/, "$1cover500/");
+        }
+
+        if (domain === "book.interpark.com" ||
+            domain === "bimage.interpark.com") {
+            return src.replace(/(\/goods_image\/+(?:[0-9]\/+){4}[0-9]+)[hoi](\.[^/.]*)(?:[?#].*)?$/, "$1g$2");
+        }
+
+        if (domain === "mobile.kyobobook.co.kr") {
+            newsrc = src.replace(/.*\/common\/+image\/+resize\?(?:.*&)?url=([^&]*).*?$/, "$1");
+            if (newsrc !== src)
+                return decodeuri_ifneeded(newsrc);
+        }
+
+        if (domain === "image.kyobobook.co.kr") {
+            return src.replace(/\/images\/+book\/+large\/+([0-9]{3}\/+)l/, "/images/book/xlarge/$1x");
+        }
+
+        if (domain === "cdn.011st.com") {
+            return src.replace(/\/+11dims\/.*?\/11src\/+/, "/");
+        }
+
+        if (domain_nowww === "comiczone.co.kr") {
+            return src.replace(/\/data\/+goods\/+t\/+/, "/data/goods/");
+        }
+
+        if (domain === "static.mangahub.ru") {
+            return src.replace(/\/uploads\/+media\/+manga_cover\/+thumbnail\/+small\/+/, "/uploads/media/manga_cover/thumbnail/big/");
+        }
+
 
 
 
@@ -23716,7 +23816,8 @@ var $$IMU_EXPORT$$;
         }
 
         if (domain_nowww === "dvdprime.com" ||
-            src.match(/\/data\/cheditor[0-9]*\/[0-9]+\/view_thumbnail\/[^/]*$/)) {
+            domain_nowww === "mania.kr" ||
+            src.match(/\/data\/+cheditor[0-9]*\/+[0-9]+\/+view_thumbnail\/+[^/]+(?:[?#].*)?$/)) {
             return src.replace(/\/view_thumbnail\/([^/]*)$/, "/$1");
         }
 
@@ -24852,6 +24953,9 @@ var $$IMU_EXPORT$$;
                     mouseover = "delay " + settings.mouseover_trigger_delay + "s";
                 }
 
+                // TODO: another option could be to allow it whenever the image can be imu'd
+                imagetab_ok_override = true;
+
                 var trigger_options_link = "<a style='color:blue; font-weight:bold' href='" + options_page + "' target='_blank' rel='noreferrer'>" + mouseover + "</a>";
                 show_image_infobox(_("Mouseover popup (%%1) is needed to display the original version", trigger_options_link) + " (" + _(reason) + ")");
             };
@@ -25003,8 +25107,12 @@ var $$IMU_EXPORT$$;
         }
     }
 
+    function currenttab_is_image() {
+        return !document.contentType.match(/^text\//);
+    }
+
     function do_redirect() {
-        if (document.contentType.match(/^text\//)) {
+        if (!currenttab_is_image()) {
             return;
         }
 
@@ -25340,6 +25448,45 @@ var $$IMU_EXPORT$$;
             }, 2000);
         }
 
+        function md_to_html(parent, text) {
+            var current_el = null;
+            var current_text = "";
+            var current_tag = null;
+
+            var apply_tag = function() {
+                if (current_text.length === 0)
+                    return;
+
+                if (current_tag === "`") {
+                    current_el = document.createElement("code");
+                } else {
+                    current_el = document.createElement("span");
+                }
+
+                current_el.innerText = current_text;
+                current_text = "";
+                parent.appendChild(current_el);
+            }
+
+            for (var i = 0; i < text.length; i++) {
+                if (text[i] === current_tag) {
+                    apply_tag();
+                    current_tag = null;
+                    continue;
+                }
+
+                if (text[i] === "`") {
+                    apply_tag();
+                    current_tag = text[i];
+                    continue;
+                }
+
+                current_text += text[i];
+            }
+
+            apply_tag();
+        }
+
         var category_els = {};
         var subcategory_els = {};
 
@@ -25403,7 +25550,7 @@ var $$IMU_EXPORT$$;
                 table.appendChild(tr);
 
                 var name = document.createElement("strong");
-                name.innerText = _(meta.name);
+                md_to_html(name, _(meta.name));
                 name.title = _(meta.description);
 
                 var name_td = document.createElement("td");
@@ -25694,7 +25841,8 @@ var $$IMU_EXPORT$$;
                     var sub = document.createElement("table");
                     var sub_tr = document.createElement("tr");
                     var sub_key_td = document.createElement("td");
-                    sub_key_td.style = "display:inline;font-family:monospace";
+                    //sub_key_td.style = "display:inline;font-family:monospace";
+                    sub_key_td.classList.add("record_keybinding");
                     if (value) {
                         sub_key_td.innerText = get_trigger_key_text(value);
                     }
@@ -26222,6 +26370,8 @@ var $$IMU_EXPORT$$;
             return settings.imu_enabled && settings.mouseover;
         }
 
+        var mousepos_initialized = false;
+
         var mouseX = 0;
         var mouseY = 0;
         var mouseAbsX = 0;
@@ -26242,6 +26392,7 @@ var $$IMU_EXPORT$$;
         var processing_list = [];
         var popups = [];
         var popup_el = null;
+        var popup_el_automatic = false;
         var popups_active = false;
         var popup_trigger_reason = null;
         var can_close_popup = [false, false];
@@ -26345,6 +26496,18 @@ var $$IMU_EXPORT$$;
             waiting = false;
         }
 
+        function in_clientrect(mouseX, mouseY, rect, border) {
+            if (isNaN(border) || border === undefined)
+                border = 0;
+
+            if (mouseX >= (rect.left - border) && mouseX <= (rect.right + border) &&
+                mouseY >= (rect.top - border) && mouseY <= (rect.bottom + border)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
         function resetpopups() {
             popups.forEach(function (popup) {
                 if (popup.parentNode)
@@ -26360,6 +26523,7 @@ var $$IMU_EXPORT$$;
             popups_active = false;
             delay_handle_triggering = false;
             popup_el = null;
+            popup_el_automatic = false;
 
             if (!delay_mouseonly && delay_handle) {
                 clearTimeout(delay_handle);
@@ -26588,14 +26752,23 @@ var $$IMU_EXPORT$$;
                     return;
                 }
 
-                function calc_imghw_for_fit() {
-                    if (imgh > vh || imgw > vw) {
+                function calc_imghw_for_fit(width, height) {
+                    if (width === undefined)
+                        width = vw;
+
+                    if (height === undefined)
+                        height = vh;
+
+                    height -= border_thresh * 2;
+                    width  -= border_thresh * 2;
+
+                    if (imgh > height || imgw > width) {
                         var ratio;
-                        if (imgh / vh >
-                            imgw / vw) {
-                            ratio = imgh / vh;
+                        if (imgh / height >
+                            imgw / width) {
+                            ratio = imgh / height;
                         } else {
-                            ratio = imgw / vw;
+                            ratio = imgw / width;
                         }
 
                         imgh /= ratio;
@@ -26606,9 +26779,6 @@ var $$IMU_EXPORT$$;
                 if (initial_zoom_behavior === "fit") {
                     calc_imghw_for_fit();
                 }
-
-                img.style.width = imgw + "px";
-                img.style.height = imgh + "px";
 
                 var sct = scrollTop();
                 var scl = scrollLeft();
@@ -26625,18 +26795,69 @@ var $$IMU_EXPORT$$;
                 } else if (mouseover_position === "beside_cursor") {
                     // TODO: improve this to be more interpolated
 
-                    if (y > vh / 2) {
-                        outerdiv.style.top = Math.max(y - imgh - border_thresh, border_thresh) + "px";
-                    } else {
-                        outerdiv.style.top = Math.min(y + border_thresh, Math.max(vh - imgh, border_thresh)) + "px";
+                    var popupx;
+                    var popupy;
+
+                    var cursor_thresh = border_thresh;
+
+                    for (var loop_i = 0; loop_i < 16; loop_i++) {
+                        if (y > vh / 2) {
+                            popupy = y - imgh - cursor_thresh;
+                        } else {
+                            popupy = y + cursor_thresh;
+                        }
+
+                        if (x > vw / 2) {
+                            popupx = x - imgw - cursor_thresh;
+                        } else {
+                            popupx = x + cursor_thresh;
+                        }
+
+                        if (popupy < border_thresh) {
+                            if (settings.mouseover_prevent_cursor_overlap) {
+                                calc_imghw_for_fit(undefined, y - cursor_thresh);
+                                continue;
+                            } else {
+                                popupy = border_thresh;
+                            }
+                        }
+
+                        if (popupx < border_thresh) {
+                            if (settings.mouseover_prevent_cursor_overlap) {
+                                calc_imghw_for_fit(x - cursor_thresh, undefined);
+                                continue;
+                            } else {
+                                popupx = border_thresh;
+                            }
+                        }
+
+                        if ((popupy + imgh) > vh - border_thresh) {
+                            if (settings.mouseover_prevent_cursor_overlap) {
+                                calc_imghw_for_fit(undefined, vh - y);
+                                continue;
+                            } else {
+                                popupy = Math.max(vh - imgh, border_thresh);
+                            }
+                        }
+
+                        if ((popupx + imgw) > vw + border_thresh) {
+                            if (settings.mouseover_prevent_cursor_overlap) {
+                                calc_imghw_for_fit(vw - x, undefined);
+                                continue;
+                            } else {
+                                popupx = Math.max(vw - imgw, border_thresh);
+                            }
+                        }
+
+                        break;
                     }
 
-                    if (x > vw / 2) {
-                        outerdiv.style.left = Math.max(x - imgw - border_thresh, border_thresh) + "px";
-                    } else {
-                        outerdiv.style.left = Math.min(x + border_thresh, Math.max(vw - imgw, border_thresh)) + "px";
-                    }
+                    outerdiv.style.top = popupy + "px";
+                    outerdiv.style.left = popupx + "px";
                 }
+
+                img.style.width = imgw + "px";
+                img.style.height = imgh + "px";
                 /*console_log(x - (imgw / 2));
                   console_log(vw);
                   console_log(imgw);
@@ -27270,6 +27491,9 @@ var $$IMU_EXPORT$$;
 
                     create_ui(true);
 
+                    // The mouse could accidentally land outside the image in theory
+                    mouse_in_image_yet = false;
+
                     return false;
                 };
 
@@ -27375,12 +27599,26 @@ var $$IMU_EXPORT$$;
         }
 
         function find_source(els) {
+            //console_log(els);
             var result = _find_source(els);
 
-            if (result && result.el) {
+            //console_log(result);
+
+            if (!result)
+                return result;
+
+            if (result.el) {
                 if (is_popup_el(result.el))
                     return null;
             }
+
+            var thresh = parseInt(settings.mouseover_minimum_size);
+            if (isNaN(thresh))
+                thresh = 0;
+
+            if ((!isNaN(result.width) && result.width > 0 && result.width < thresh) ||
+                (!isNaN(result.height) && result.height > 0 && result.height < thresh))
+                return null;
 
             return result;
         }
@@ -27399,7 +27637,9 @@ var $$IMU_EXPORT$$;
 
             var id = 0;
 
-            var thresh = 20;
+            var thresh = parseInt(settings.mouseover_minimum_size);
+            if (isNaN(thresh))
+                thresh = 0;
 
             var source;
 
@@ -27412,11 +27652,10 @@ var $$IMU_EXPORT$$;
                     if (!style)
                         break;
 
-                    if (style.opacity.toString().match(/^0(?:\.0*)?$/)) {
+                    if (style.opacity.toString().match(/^0(?:\.0*)?$/))
                         return false;
                     if (style.visibility === "hidden")
                         return false;
-                    }
                 } while (el = el.parentElement);
 
                 return true;
@@ -27453,6 +27692,7 @@ var $$IMU_EXPORT$$;
             }
 
             function addImage(src, el, options) {
+                //console_log("addImage", el, check_visible(el));
                 if (settings.mouseover_apply_blacklist && !bigimage_filter(src))
                     return false;
 
@@ -27471,6 +27711,10 @@ var $$IMU_EXPORT$$;
 
                 if (!options) {
                     options = {};
+                }
+
+                if (options.isbg && settings.mouseover_exclude_backgroundimages) {
+                    return false;
                 }
 
                 if ("layer" in options) {
@@ -27780,9 +28024,12 @@ var $$IMU_EXPORT$$;
                 layers = newlayers;
             }
 
+            //console_log(deepcopy(layers));
+
             rebuildlayers();
 
-            // if there are background images ahead of an image, it's likely to be masks
+            // If there are background images ahead of an image, it's likely to be masks
+            // Maybe check if there's more than one element of ancestry between them?
             // Except: https://www.flickr.com/account/upgrade/pro (featured pro, the avatar's image is a bg image, while the image behind isn't)
             if (layers.length > 1 && layers[0].length === 1 && sources[layers[0][0]].isbg) {
                 for (var i = 1; i < layers.length; i++) {
@@ -27832,7 +28079,8 @@ var $$IMU_EXPORT$$;
 
                 if (current_el.tagName === stack[0]) {
                     if (stack.length === 1) {
-                        if (valid_source(current_el))
+                        //if (valid_source(current_el))
+                        if (is_valid_el(current_el))
                             return current_el;
                         continue;
                     }
@@ -27882,6 +28130,11 @@ var $$IMU_EXPORT$$;
             } else {
                 delay = false;
                 delay_mouseonly = false;
+            }
+
+            if (delay_handle) {
+                clearTimeout(delay_handle);
+                delay_handle = null;
             }
         }
 
@@ -27991,6 +28244,15 @@ var $$IMU_EXPORT$$;
             return settings.mouseover_close_need_mouseout && get_close_behavior() !== "esc";
         }
 
+        function get_close_on_leave_el() {
+            return settings.mouseover_close_on_leave_el && get_single_setting("mouseover_position") === "beside_cursor";
+        }
+
+        function should_exclude_imagetab() {
+            return settings.mouseover_exclude_imagetab && get_single_setting("mouseover_trigger_behavior") === "mouse" &&
+                   currenttab_is_image() && !imagetab_ok_override;
+        }
+
         function find_els_at_point(xy, els, prev) {
             if (!prev) {
                 prev = [];
@@ -28012,7 +28274,8 @@ var $$IMU_EXPORT$$;
                 prev.push(el);
 
                 var rect = el.getBoundingClientRect();
-                if (rect.left <= xy[0] && rect.right >= xy[0] &&
+                if (rect && rect.width > 0 && rect.height > 0 &&
+                    rect.left <= xy[0] && rect.right >= xy[0] &&
                     rect.top <= xy[1] && rect.bottom >= xy[1] &&
                     ret.indexOf(el) < 0) {
                     ret.push(el);
@@ -28034,13 +28297,55 @@ var $$IMU_EXPORT$$;
             return ret;
         }
 
+        function find_els_at_el(el) {
+            return [el];
+
+            var rect = el.getBoundingClientRect();
+            //console.log("find_els_at_el", el, rect);
+            if (rect && rect.width > 0 && rect.height > 0) {
+                var point = [rect.left + rect.width / 2, rect.top + rect.height / 2];
+                var pointels = find_els_at_point(point);
+
+                // ensure el is the first element
+                var index = pointels.indexOf(el);
+                if (index > 0) {
+                    pointels.splice(index, 1);
+                }
+
+                if (pointels.indexOf(el) < 0)
+                    pointels.unshift(el);
+
+                var newels = [];
+
+                for (var i = 0; i < pointels.length; i++) {
+                    if (!is_popup_el(pointels[i]))
+                        newels.push(pointels[i]);
+                }
+
+                //console.log("find_els_at_el", newels);
+
+                return newels;
+            }
+
+            return [el];
+        }
+
         function trigger_popup(is_contextmenu) {
             controlPressed = true;
             delay_handle_triggering = true;
             //var els = document.elementsFromPoint(mouseX, mouseY);
-            var point = [mouseX, mouseY];
+            var point = null;
+
+            if (mousepos_initialized)
+                point = [mouseX, mouseY];
             if (is_contextmenu)
                 point = [mouseContextX, mouseContextY];
+
+            if (point === null) {
+                delay_handle_triggering = false;
+                return;
+            }
+
             var els = find_els_at_point(point);
             //console_log(els);
 
@@ -28061,6 +28366,9 @@ var $$IMU_EXPORT$$;
 
                 //console_log(source_imu);
                 resetpopups();
+
+                if (automatic)
+                    popup_el_automatic = true;
 
                 popup_el = source.el;
                 makePopup(source_imu, source.src, processing, data);
@@ -28649,6 +28957,8 @@ var $$IMU_EXPORT$$;
         });
 
         document.addEventListener('mousemove', function(event) {
+            mousepos_initialized = true;
+
             // https://stackoverflow.com/a/7790764
             event = event || window.event;
 
@@ -28685,8 +28995,7 @@ var $$IMU_EXPORT$$;
 
                     var our_jitter = jitter_base;
 
-                    if (mouseX >= (rect.left - our_jitter) && mouseX <= (rect.right + our_jitter) &&
-                        mouseY >= (rect.top - our_jitter) && mouseY <= (rect.bottom + our_jitter)) {
+                    if (in_clientrect(mouseX, mouseY, rect, our_jitter)) {
                         can_close_popup[1] = false;
                     } else {
                         if (can_close_popup[0]) {
@@ -28714,14 +29023,22 @@ var $$IMU_EXPORT$$;
                         var jitter_threshy = jitter_threshx;
 
                         var img = popups[0].getElementsByTagName("img")[0];
+                        var imgmiddleX = null;
+                        var imgmiddleY = null;
+                        var in_img_jitter = false;
                         if (img) {
                             var rect = img.getBoundingClientRect();
+
+                            in_img_jitter = in_clientrect(mouseX, mouseY, rect, jitter_base);
 
                             // why this instead of getBoundingClientRect?
                             //var w = Math.min(parseInt(img.style.maxWidth), img.naturalWidth);
                             //var h = Math.min(parseInt(img.style.maxHeight), img.naturalHeight);
                             var w = rect.width;
                             var h = rect.height;
+
+                            imgmiddleX = rect.x + rect.width / 2;
+                            imgmiddleY = rect.y + rect.height / 2;
 
                             jitter_threshx = Math.max(jitter_threshx, w / 2);
                             jitter_threshy = Math.max(jitter_threshy, h / 2);
@@ -28732,14 +29049,13 @@ var $$IMU_EXPORT$$;
                             /*console_log(jitter_threshx, img.naturalWidth, w);
                             console_log(jitter_threshy, img.naturalHeight, h);*/
                             if (mouse_in_image_yet === false) {
-                                if (mouseX >= rect.left && mouseX <= rect.right &&
-                                    mouseY >= rect.top && mouseY <= rect.bottom) {
+                                if (in_clientrect(mouseX, mouseY, rect)) {
                                     mouse_in_image_yet = true;
                                     //mouseDelayX = mouseX;
                                     //mouseDelayY = mouseY;
 
-                                    mouseDelayX = rect.x + rect.width / 2;
-                                    mouseDelayY = rect.y + rect.height / 2;
+                                    //mouseDelayX = imgmiddleX;
+                                    //mouseDelayY = imgmiddleY;
 
                                     if (false) {
                                         var viewport = get_viewport();
@@ -28761,13 +29077,25 @@ var $$IMU_EXPORT$$;
                             }
                         }
 
+                        var close_on_leave_el = get_close_on_leave_el() && popup_el && !popup_el_automatic;
+                        var outside_of_popup_el = false;
+
+                        if (close_on_leave_el) {
+                            var popup_el_rect = popup_el.getBoundingClientRect();
+                            if (popup_el_rect.width > 0 && popup_el_rect.height > 0) {
+                                if (!in_clientrect(mouseX, mouseY, popup_el_rect) && !in_img_jitter) {
+                                    outside_of_popup_el = true;
+                                }
+                            }
+                        }
+
                         can_close_popup[1] = false;
-                        if (mouse_in_image_yet) {
-                            if (Math.abs(mouseX - mouseDelayX) > jitter_threshx ||
-                                Math.abs(mouseY - mouseDelayY) > jitter_threshy) {
-                                //console_log(mouseX);
-                                //console_log(mouseDelayX);
-                                //console_log(jitter_threshx);
+                        if (mouse_in_image_yet && (!close_on_leave_el || outside_of_popup_el)) {
+                            if (imgmiddleX && imgmiddleY &&
+                                (Math.abs(mouseX - imgmiddleX) > jitter_threshx ||
+                                 Math.abs(mouseY - imgmiddleY) > jitter_threshy)) {
+                                //console_log(mouseX, imgmiddleX, jitter_threshx);
+                                //console_log(mouseY, imgmiddleY, jitter_threshy);
 
                                 if (popup_hold) {
                                     can_close_popup[1] = true;
@@ -28775,12 +29103,16 @@ var $$IMU_EXPORT$$;
                                     resetpopups();
                                 }
                             }
+                        } else if (close_on_leave_el) {
+                            if (outside_of_popup_el) {
+                                resetpopups();
+                            }
                         }
                     }
                 }
 
                 // FIXME: this is rather weird. Less CPU usage, but doesn't behave in the way one would expect
-                if (popups.length === 0) {
+                if ((popups.length === 0 || popup_el_automatic) && !should_exclude_imagetab()) {
                     if (delay_handle) {
                         var trigger_mouse_jitter_thresh = 10;
 
@@ -28788,13 +29120,13 @@ var $$IMU_EXPORT$$;
                             (mouseY - mouseDelayY) < trigger_mouse_jitter_thresh)
                             return;
 
-                        delay_handle = null;
                         clearTimeout(delay_handle);
+                        delay_handle = null;
                     }
 
                     mouseDelayX = mouseX;
                     mouseDelayY = mouseY;
-                    mouse_in_image_yet = false;
+                    //mouse_in_image_yet = false;
 
                     delay_handle = setTimeout(function() {
                         if (delay_handle_triggering)
