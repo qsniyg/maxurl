@@ -8441,6 +8441,10 @@ var $$IMU_EXPORT$$;
         }
 
         if ((domain_nosub === "imagetwist.com" ||
+             // https://img118.imagexport.com/th/31366/sg42bjfx22p4.jpg
+             //   https://img118.imagetwist.com/i/31366/sg42bjfx22p4.jpg/101100-001.jpg
+             // https://imagexport.com/sg42bjfx22p4/101100-001.jpg.html
+             domain_nosub === "imagexport.com" ||
              // http://img26.picshick.com/th/13110/2ab7lhypu3l2.jpg
              //   http://img26.picshick.com/i/13110/2ab7lhypu3l2.jpg -- forces download
              // some images return an error image with 200
@@ -8454,16 +8458,17 @@ var $$IMU_EXPORT$$;
             // https://img201.imagetwist.com/th/28668/v007u2hokmhj.jpg
             //   https://img201.imagetwist.com/i/28668/v007u2hokmhj.JPG
 
-            id = src.replace(/^([a-z]+:\/\/)(?:[^/.]*\.)?([^/.]+\.[^/.]+\/)th\/+[0-9]+\/+([0-9a-z]+)(?:\.[^/.]*)?$/,
-                             "$1$2$3");
+            id = src.replace(/^([a-z]+:\/\/)(?:[^/.]*\.)?([^/.]+\.[^/.]+\/+)th\/+[0-9]+\/+([0-9a-z]+)(\.[^/.]*)?$/,
+                             "$1$2$3/$4");
             //console_log(id);
             if (id !== src && options && options.cb && options.do_request) {
                 options.do_request({
                     method: "GET",
                     url: id,
                     onload: function(resp) {
+                        //console_log(resp);
                         if (resp.readyState === 4) {
-                            var match =resp.responseText.match(/<a\s+href=["'](https?:\/\/.*?)["'][^>]*\sdownload>/);
+                            var match =resp.responseText.match(/<a\s+href=["'](https?:\/\/i(?:mg)?[0-9]*\.[^/]+\/+.*?)["'][^>]*\sdownload>/);
                             if (match) {
                                 options.cb(match[1]);
                             } else {
@@ -8480,6 +8485,46 @@ var $$IMU_EXPORT$$;
 
             return {
                 url: src.replace(/\/th\//, "/i/"),
+                headers: {
+                    Referer: src.replace(/:\/\/(?:[^/]*\.)?([^/.]*\.[^/.]*)\/.*/, "://$1/"),
+                    Origin: src.replace(/:\/\/(?:[^/]*\.)?([^/.]*\.[^/.]*)\/.*/, "://$1/"),
+                    "Sec-Metadata": "destination=image, site=same-site"
+                }
+            };
+        }
+
+        if (domain_nosub === "fappic.com") {
+            // https://img100.fappic.com/i/00698/y86osh64in9k_t.jpg
+            //   https://img100.fappic.com/img/lyhjsfz3nde7hsjrkaehbba63w5xjupbtmqt67awuu/0002.jpeg
+            // https://www.fappic.com/i/00536/vz6f4d6kubov_t.jpg
+            //   https://www.fappic.com/img/lahkdnrgnddldsjyc4chbwyc2gbhthljxo25o7spsu/27afDSm-lhf_1091_0001.jpeg
+            id = src.replace(/^([a-z]+:\/\/)(?:[^/.]*\.)?([^/.]+\.[^/.]+\/+)(?:th|i)\/+[0-9]+\/+([0-9a-z]+)(?:_t)?(\.[^/.]*)?$/,
+                             "$1$2$3/$4");
+            console_log(id);
+            if (id !== src && options && options.cb && options.do_request) {
+                options.do_request({
+                    method: "GET",
+                    url: id,
+                    onload: function(resp) {
+                        console_log(resp);
+                        if (resp.readyState === 4) {
+                            var match =resp.responseText.match(/<img\s+src=["'](https?:\/\/[^/]+\/+img\/+.*?)["'][^>]*\s+class=['"]pic["']/);
+                            if (match) {
+                                options.cb(match[1]);
+                            } else {
+                                options.cb(null);
+                            }
+                        }
+                    }
+                });
+
+                return {
+                    waiting: true
+                };
+            }
+
+            return {
+                url: src,
                 headers: {
                     Referer: src.replace(/:\/\/(?:[^/]*\.)?([^/.]*\.[^/.]*)\/.*/, "://$1/"),
                     Origin: src.replace(/:\/\/(?:[^/]*\.)?([^/.]*\.[^/.]*)\/.*/, "://$1/"),
@@ -39815,6 +39860,17 @@ var $$IMU_EXPORT$$;
             return src.replace(/\/uploads\/+media\/+manga_cover\/+thumbnail\/+small\/+/, "/uploads/media/manga_cover/thumbnail/big/");
         }
 
+        if (false && domain_nosub === "imgant.com") {
+            // wip:
+            // http://t1.imgant.com/thumb/84e0343a04/c52d0949f0.png
+            //   http://t1.imgant.com/tempImages/c52d0949f0051f99ad180c690.png
+            //   c52d0949f0 = 846864140784
+            //     reversing: 0f9490d25c = 66917028444
+            //   84e0343a04 = 570697202180
+            // http://imgant.com/img-329649.html
+            //   http://imgant.com/imgview-329649.html
+        }
+
 
 
 
@@ -45848,6 +45904,7 @@ var $$IMU_EXPORT$$;
                         clearTimeout(delay_handle);
                         delay_handle = null;
 
+                        // FIXME: shouldn't this be in if (popups.length > 0) instead?
                         if (waiting)
                             stop_waiting();
                     }
