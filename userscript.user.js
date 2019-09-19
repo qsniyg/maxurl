@@ -46031,18 +46031,22 @@ var $$IMU_EXPORT$$;
 
                         var close_on_leave_el = get_close_on_leave_el() && popup_el && !popup_el_automatic;
                         var outside_of_popup_el = false;
+                        var popup_el_hidden = false;
 
                         if (close_on_leave_el) {
                             var popup_el_rect = popup_el.getBoundingClientRect();
-                            if (popup_el_rect.width > 0 && popup_el_rect.height > 0) {
+                            if (popup_el_rect && popup_el_rect.width > 0 && popup_el_rect.height > 0) {
                                 if (!in_clientrect(mouseX, mouseY, popup_el_rect) && !in_img_jitter) {
                                     outside_of_popup_el = true;
                                 }
+                            } else {
+                                // the element must be hidden
+                                popup_el_hidden = true;
                             }
                         }
 
                         can_close_popup[1] = false;
-                        if (mouse_in_image_yet && (!close_on_leave_el || outside_of_popup_el)) {
+                        if (mouse_in_image_yet && (!close_on_leave_el || outside_of_popup_el || popup_el_hidden)) {
                             if (imgmiddleX && imgmiddleY &&
                                 (Math.abs(mouseX - imgmiddleX) > jitter_threshx ||
                                  Math.abs(mouseY - imgmiddleY) > jitter_threshy)) {
