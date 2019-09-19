@@ -18480,20 +18480,20 @@ var $$IMU_EXPORT$$;
             domain === "gallica.bnf.fr") {
             // first is region:
             // java.lang.IllegalArgumentException: Invalid region
-	    //   at edu.illinois.library.cantaloupe.resource.iiif.v2.Region.fromUri(Region.java:56)
-	    //   at edu.illinois.library.cantaloupe.resource.iiif.v2.Parameters.(Parameters.java:78)
-	    //   at edu.illinois.library.cantaloupe.resource.iiif.v2.ImageResource.doGet(ImageResource.java:62)
+            //   at edu.illinois.library.cantaloupe.resource.iiif.v2.Region.fromUri(Region.java:56)
+            //   at edu.illinois.library.cantaloupe.resource.iiif.v2.Parameters.(Parameters.java:78)
+            //   at edu.illinois.library.cantaloupe.resource.iiif.v2.ImageResource.doGet(ImageResource.java:62)
             // second is size:
             // java.lang.IllegalArgumentException: Invalid size
-	    //   at edu.illinois.library.cantaloupe.resource.iiif.v2.Size.fromUri(Size.java:80)
-	    //   at edu.illinois.library.cantaloupe.resource.iiif.v2.Parameters.(Parameters.java:80)
-	    //   at edu.illinois.library.cantaloupe.resource.iiif.v2.ImageResource.doGet(ImageResource.java:62)
+            //   at edu.illinois.library.cantaloupe.resource.iiif.v2.Size.fromUri(Size.java:80)
+            //   at edu.illinois.library.cantaloupe.resource.iiif.v2.Parameters.(Parameters.java:80)
+            //   at edu.illinois.library.cantaloupe.resource.iiif.v2.ImageResource.doGet(ImageResource.java:62)
             // last is rotation:
             // java.lang.IllegalArgumentException: Invalid rotation
-	    //   at edu.illinois.library.cantaloupe.resource.iiif.v2.Rotation.fromUri(Rotation.java:29)
-	    //   at edu.illinois.library.cantaloupe.resource.iiif.v2.Parameters.(Parameters.java:79)
-	    //   at edu.illinois.library.cantaloupe.resource.iiif.v2.ImageResource.doGet(ImageResource.java:62)
-	    //   at sun.reflect.GeneratedMethodAccessor4.invoke(Unknown Source)
+            //   at edu.illinois.library.cantaloupe.resource.iiif.v2.Rotation.fromUri(Rotation.java:29)
+            //   at edu.illinois.library.cantaloupe.resource.iiif.v2.Parameters.(Parameters.java:79)
+            //   at edu.illinois.library.cantaloupe.resource.iiif.v2.ImageResource.doGet(ImageResource.java:62)
+            //   at sun.reflect.GeneratedMethodAccessor4.invoke(Unknown Source)
 
             // https://lakeimagesweb.artic.edu/iiif/2/08baefe5-1f78-bc4b-db7b-4f53d2edcc29/full/!800,800/0/default.jpg
             //   https://lakeimagesweb.artic.edu/iiif/2/08baefe5-1f78-bc4b-db7b-4f53d2edcc29/full/full/0/default.jpg
@@ -24273,6 +24273,9 @@ var $$IMU_EXPORT$$;
         }
 
         if ((domain_nowww === "sensualgirls.org" ||
+             // https://www.deliciousbabes.org/media/pictures/2014-08-10-yui-kawagoe/01_thumb.jpg
+             //   https://www.deliciousbabes.org/media/pictures/2014-08-10-yui-kawagoe/01.jpg
+             domain_nowww === "deliciousbabes.org" ||
              // https://www.girlsofdesire.org/media/pictures_new/2009/2009-12-07-leopard/03_thumb.jpg
              //   https://www.girlsofdesire.org/media/pictures_new/2009/2009-12-07-leopard/03.jpg
              domain_nowww === "girlsofdesire.org") &&
@@ -33125,7 +33128,9 @@ var $$IMU_EXPORT$$;
             // http://cdn01.freeasianpics.net/galleries/vn/sxj/_s_1.jpg
             //   http://cdn01.freeasianpics.net/galleries/vn/sxj/1.jpg
             //   http://cdn01.freeasianpics.net/galleries/vn/sxj/n1.jpg -- slightly darker
-            return src.replace(/\/_[a-z]_([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/$1");
+            // http://cdn01.freeasianpics.net/galleries/ru/7dh/n1.jpg -- 599x800
+            //   http://cdn01.freeasianpics.net/galleries/ru/7dh/1.jpg -- 1364x2048
+            return src.replace(/\/(?:_[a-z]_|n)([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/$1");
         }
 
         if (amazon_container === "nudiez-production") {
@@ -37979,10 +37984,22 @@ var $$IMU_EXPORT$$;
                 return base64_decode(newsrc);
         }
 
-        if (domain_nowww === "kabelversand.info") {
+        if (domain_nowww === "kabelversand.info" ||
+            // https://teamupforkansaskids.com/pics/aHR0cHM6Ly90c2U0Lm1tLmJpbmcubmV0L3RoP2lkPU9JUC5QMk5LLXI0dm1zZmctdUN4b0RiXzBnSGFGaiZ3PTUwMCZycz0xJnBpZD0xNS4x
+            //   https://tse4.mm.bing.net/th?id=OIP.P2NK-r4vmsfg-uCxoDb_0gHaFj
+            domain_nowww === "teamupforkansaskids.com" ||
+            // https://gbracingpix.com/pics/aHR0cHM6Ly90c2UzLm1tLmJpbmcubmV0L3RoP2lkPU9JUC54anVCRW4xeXdkQVhoX2hoNExFbjNBSGFIYSZ3PTUwMCZycz0xJnBpZD0xNS4x
+            //   https://tse3.mm.bing.net/th?id=OIP.xjuBEn1ywdAXh_hh4LEn3AHaHa
+            domain_nowww === "gbracingpix.com" ||
+            // https://kickin.info/pics/aHR0cHM6Ly90c2UzLm1tLmJpbmcubmV0L3RoP2lkPU9JUC41OE40dkNDVWw4WVlOUjlEUlptZ01nSGFFNyZycz0xJnBpZD0xNS4xJnc9MTAyNA==.jpg
+            //   https://tse3.mm.bing.net/th?id=OIP.58N4vCCUl8YYNR9DRZmgMgHaE7
+            domain_nowww === "kcckin.info" ||
+            // https://carltonstaffing.info/pics/aHR0cHM6Ly90c2UzLm1tLmJpbmcubmV0L3RoP2lkPU9JUC41OE40dkNDVWw4WVlOUjlEUlptZ01nSGFFNyZycz0xJnBpZD0xNS4xJnc9MTAyNA==.jpg
+            //   https://tse3.mm.bing.net/th?id=OIP.58N4vCCUl8YYNR9DRZmgMgHaE7
+            domain_nowww === "carltonstaffing.info") {
             // https://kabelversand.info/pics/aHR0cHM6Ly90c2UyLm1tLmJpbmcubmV0L3RoP2lkPU9JUC5mX1BlNFo1aHBCTkF4V2tPckF3Q25BSGFGMyZycz0xJnBpZD0xNS4x
             //   https://tse2.mm.bing.net/th?id=OIP.f_Pe4Z5hpBNAxWkOrAwCnAHaF3
-            newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+pics\/+([^-/._]{30,})(?:[?#].*)?$/, "$1");
+            newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+pics\/+([^-/._]{30,})(?:\.[^/.]*)?(?:[?#].*)?$/, "$1");
             if (newsrc !== src)
                 return base64_decode(newsrc);
         }
@@ -39871,7 +39888,40 @@ var $$IMU_EXPORT$$;
             //   http://imgant.com/imgview-329649.html
         }
 
+        if (domain_nosub === "poringa.net" && /^img-[0-9]*\./.test(domain)) {
+            // https://img-9.poringa.net/poringa/posts/E/0/0/8/5/5/Momsile/161x121_714.jpg
+            //   https://img-9.poringa.net/poringa/posts/E/0/0/8/5/5/Momsile/714.jpg
+            return src.replace(/(\/posts\/+(?:[^/]\/+){6}[^/]+\/+)[0-9]+x[0-9]+_([^/]+)(?:[?#].*)?$/, "$1$2");
+        }
 
+        if (domain_nowww === "warashi-asian-pornstars.fr") {
+            // http://warashi-asian-pornstars.fr/WAPdB-img/pornostars-f-galeries/25000/25462/mini/wapdb-kalina-ryu-pornostar-asiatique.warashi-asian-pornstars.fr-25462-001.jpg
+            //    http://warashi-asian-pornstars.fr/WAPdB-img/pornostars-f-galeries/25000/25462/large/wapdb-kalina-ryu-pornostar-asiatique.warashi-asian-pornstars.fr-25462-001.jpg
+            return src.replace(/(\/[^/]+-img\/+[^/]*\/+[0-9]+\/+[0-9]+\/+)mini\/+/, "$1large/");
+        }
+
+        if (domain_nowww === "kinghost.com") {
+            // http://www.kinghost.com/asian/manpe/pacific/594/s02.jpg
+            //   http://www.kinghost.com/asian/manpe/pacific/594/02.jpg
+            return {
+                url: src.replace(/(\/+[0-9]+\/+)s([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2"),
+                headers: {
+                    Referer: "http://www.kinghost.com/asian/"
+                }
+            };
+        }
+
+        if (domain_nowww === "sexygirlcity.com") {
+            // http://sexygirlcity.com/gal/1213/02_tumba.jpg
+            //   http://sexygirlcity.com/gal/1213/02.jpg
+            return src.replace(/(\/gal\/+[0-9]+\/+[0-9]+)_tumb[a-z]?(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain === "image.pornyl.com") {
+            // http://image.pornyl.com/content/3285-587/tn/3285-mycuteasian_08.jpg -- 690x920, upscaled
+            //   http://image.pornyl.com/content/3285-587/3285-mycuteasian_08.jpg -- 480x640
+            return src.replace(/(\/content\/+[0-9]+-[0-9]+\/+)tn\/+/, "$1");
+        }
 
 
 
