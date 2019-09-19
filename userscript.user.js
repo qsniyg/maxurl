@@ -718,6 +718,7 @@ var $$IMU_EXPORT$$;
         redirect_history: true,
         canhead_get: true,
         redirect_force_page: false,
+        redirect_disable_for_responseheader: false,
         mouseover: true,
         // thanks to blue-lightning on github for the idea: https://github.com/qsniyg/maxurl/issues/16
         mouseover_open_behavior: "popup",
@@ -847,6 +848,13 @@ var $$IMU_EXPORT$$;
                 "Flickr",
                 "SmugMug"
             ],
+            category: "redirection"
+        },
+        redirect_disable_for_responseheader: {
+            name: "Disable when response headers need modifying",
+            description: "This option works around Chrome's migration to manifest v3, redirecting some images to being force-downloaded",
+            extension_only: true,
+            hidden: true, // Doesn't seem to be needed?
             category: "redirection"
         },
         mouseover: {
@@ -16622,7 +16630,7 @@ var $$IMU_EXPORT$$;
             //   http://4everstatic.com/pictures/people/musicians/rihanna,-redhead-217524.jpg
             //return src.replace(/\/pictures\/[0-9X]+x[0-9X]+\//, "/pictures/");
 
-            if (!src.match(/:\/\/[^/]*\/data\/download\//)) {
+            if (!src.match(/:\/\/[^/]*\/data\/+download\//)) {
                 return [
                     // removes the logo, but forces download
                     src.replace(/:\/\/[^/]*\/[a-z]+\/(?:[0-9X]+x[0-9X]+\/)?([^?]*).*?$/, "://pictures.4ever.eu/data/download/$1?no-logo"),
@@ -42008,7 +42016,7 @@ var $$IMU_EXPORT$$;
                                 return;
                             }
 
-                            if (!is_extension) {
+                            if (!is_extension || settings.redirect_disable_for_responseheader) {
                                 if (obj.forces_download || (
                                     (content_type.match(/(?:binary|application)\//) ||
                                      // such as [image/png] (server bug)
@@ -42472,6 +42480,9 @@ var $$IMU_EXPORT$$;
 
                 var value = settings[setting];
                 var orig_value = orig_settings[setting];
+
+                if (meta.hidden)
+                    return;
 
                 if (meta.userscript_only && !is_userscript)
                     return;
