@@ -1372,12 +1372,14 @@ var $$IMU_EXPORT$$;
         allow_watermark: {
             name: "Larger watermarked images",
             description: "Enables rules that return larger images that include watermarks",
-            category: "rules"
+            category: "rules",
+            onupdate: update_rule_setting
         },
         allow_smaller: {
             name: "Smaller non-watermarked images",
             description: "Enables rules that return smaller images without watermarks",
-            category: "rules"
+            category: "rules",
+            onupdate: update_rule_setting
         },
         allow_possibly_different: {
             name: "Possibly different images",
@@ -1385,7 +1387,8 @@ var $$IMU_EXPORT$$;
             category: "rules",
             example_websites: [
                 "YouTube video thumbnails"
-            ]
+            ],
+            onupdate: update_rule_setting
         },
         allow_possibly_broken: {
             name: "Possibly broken images",
@@ -1393,7 +1396,8 @@ var $$IMU_EXPORT$$;
             category: "rules",
             example_websites: [
                 "Tumblr GIFs"
-            ]
+            ],
+            onupdate: update_rule_setting
         },
         allow_thirdparty: {
             name: "Rules using 3rd-party websites",
@@ -1401,7 +1405,8 @@ var $$IMU_EXPORT$$;
             category: "rules",
             example_websites: [
                 "Newsen"
-            ]
+            ],
+            onupdate: update_rule_setting
         },
         browser_cookies: {
             name: "Use browser cookies",
@@ -1411,7 +1416,8 @@ var $$IMU_EXPORT$$;
                 "Private Flickr images"
             ],
             // Until GM_Cookie is implemented
-            extension_only: true
+            extension_only: true,
+            onupdate: update_rule_setting
         },
         bigimage_blacklist: {
             name: "Blacklist",
@@ -1419,6 +1425,7 @@ var $$IMU_EXPORT$$;
             category: "rules",
             type: "textarea",
             onupdate: function() {
+                update_rule_setting();
                 create_blacklist_regexes();
             },
             onedit: function() {
@@ -1903,9 +1910,11 @@ var $$IMU_EXPORT$$;
 
     var blacklist_regexes = [];
 
-    function create_blacklist_regexes() {
+    function update_rule_setting() {
         url_cache.clear();
+    }
 
+    function create_blacklist_regexes() {
         blacklist_regexes = [];
         var blacklist = settings.bigimage_blacklist || "";
         if (typeof blacklist !== "string")
