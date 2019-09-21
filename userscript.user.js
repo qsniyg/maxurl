@@ -741,6 +741,7 @@ var $$IMU_EXPORT$$;
         mouseover_exclude_page_bg: true,
         mouseover_minimum_size: 20,
         mouseover_exclude_backgroundimages: false,
+        mouseover_exclude_sameimage: false,
         mouseover_exclude_imagetab: true,
         mouseover_ui: true,
         mouseover_ui_opacity: 50,
@@ -998,6 +999,15 @@ var $$IMU_EXPORT$$;
             requires: {
                 mouseover: true,
                 mouseover_trigger_behavior: "mouse"
+            },
+            category: "popup",
+            subcategory: "open_behavior"
+        },
+        mouseover_exclude_sameimage: {
+            name: "Exclude if image unchanged",
+            description: "Don't pop up if the new image is the same as the thumbnail image",
+            requires: {
+                mouseover: true
             },
             category: "popup",
             subcategory: "open_behavior"
@@ -45478,8 +45488,16 @@ var $$IMU_EXPORT$$;
 
                         var newobj = deepcopy(obj);
 
-                        if (source.src && obj_indexOf(newobj, source.src) < 0)
-                            newobj.push(fillobj(source.src)[0]);
+                        if (!settings.mouseover_exclude_sameimage) {
+                            if (source.src && obj_indexOf(newobj, source.src) < 0)
+                                newobj.push(fillobj(source.src)[0]);
+                        } else if (source.src) {
+                            var index;
+
+                            while ((index = obj_indexOf(newobj, source.src)) >= 0) {
+                                newobj.splice(index, 1);
+                            }
+                        }
 
                         var usehead = false;
 
