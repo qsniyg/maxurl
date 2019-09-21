@@ -3393,7 +3393,7 @@ var $$IMU_EXPORT$$;
         if (domain_nosub.match(/^google\./) &&
             src.match(/\/www\.google\.(?:[a-z]+\.)?[a-z]*\/url\?/)) {
             newsrc = src.replace(/.*url=([^&]*).*/, "$1");
-            if (newsrc !== src)
+            if (newsrc !== src && /^https?/.test(newsrc))
                 return decodeURIComponent(newsrc);
         }
 
