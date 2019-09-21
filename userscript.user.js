@@ -2128,6 +2128,19 @@ var $$IMU_EXPORT$$;
         if (options.window)
             window = options.window;
 
+        var problem_excluded = function(problem) {
+            if (!options.exclude_problems)
+                return false;
+
+            if (typeof options.exclude_problems === "string" && options.exclude_problems === problem)
+                return true;
+
+            if (!(options.exclude_problems instanceof Array))
+                return false;
+
+            return options.exclude_problems.indexOf(problem) >= 0;
+        };
+
         var newsrc, i, id, size, origsize, regex, match;
 
         // instart logic morpheus
@@ -39938,6 +39951,78 @@ var $$IMU_EXPORT$$;
             // http://image.pornyl.com/content/3285-587/tn/3285-mycuteasian_08.jpg -- 690x920, upscaled
             //   http://image.pornyl.com/content/3285-587/3285-mycuteasian_08.jpg -- 480x640
             return src.replace(/(\/content\/+[0-9]+-[0-9]+\/+)tn\/+/, "$1");
+        }
+
+        if (domain === "media.gettyimages.com") {
+            // https://media.gettyimages.com/photos/kristen-stewart-attends-the-chanel-parisnew-york-201819-metiers-dart-picture-id1152257105?k=6&m=1152257105&s=612x612&w=0&h=ldl1UENpuL1pgLlSO_GKwZTj0liOL4paEuFVjUCkv0E= -- no watermark
+            // https://www.gettyimages.it/detail/fotografie-di-cronaca/kristen-stewart-attends-the-chanel-paris-new-fotografie-di-cronaca/1152257105
+            // https://media.gettyimages.com/photos/kristen-stewart-attends-the-chanel-parisnew-york-201819-metiers-dart-picture-id1152257105
+            //   https://media.gettyimages.com/photos/kristen-stewart-attends-the-chanel-parisnew-york-201819-metiers-dart-picture-id1152257105?s=2048x2048 -- 2048x1365 (watermark)
+            if (src.match(/\/photos\/+[^/?]*-id[0-9]+(?:#.*)?$/)) {
+                return src.replace(/(-id[0-9]+)$/, "$1?s=2048x2048");
+            }
+
+            obj = [];
+            id = src.replace(/^[a-z]+:\/\/[^/]*\/+photos\/+[^/?#]+-id([0-9]+)(?:[?#].*)?$/, "$1");
+            if (id !== src && !problem_excluded("watermark")) {
+                obj.push({
+                    url: src.replace(/(-id[0-9]+)(?:[?#].*)?$/, "$1?s=2048x2048"),
+                    problems: {
+                        watermark: true
+                    }
+                });
+            }
+
+            if (id !== src && options && options.do_request && options.cb && (options.force_page || !problem_excluded("smaller"))) {
+                options.do_request({
+                    method: "GET",
+                    url: "https://www.gettyimages.com/detail/a/a/" + id,
+                    headers: {
+                        Referer: ""
+                    },
+                    onload: function(result) {
+                        if (result.readyState !== 4)
+                            return;
+
+                        if (result.status !== 200)
+                            return options.cb(obj || null);
+
+                        var extra = {page: result.finalUrl};
+
+                        //var smallerurl = result.responseText.match(/<meta\s+content=["'](https:\/\/media\.gettyimages\.com\/+photos\/+[^/]*\?k=6.*?)["']\s+property=["']og:image["']\s*\/>/);
+                        // above is slightly smaller (594x594 instead of 612x612), needs decode_entities
+                        var smallerurl = result.responseText.match(/"thumb612Url":\s*(["']https?:\/\/media\.gettyimages\.com\/+photos\/+[^/]*-id[0-9]+\?k=6.*?["'])/);
+                        if (smallerurl && !problem_excluded("smaller")) {
+                            obj.push({
+                                url: JSON_parse(smallerurl[1]),
+                                problems: {
+                                    smaller: true
+                                }
+                            });
+                        }
+
+                        if (obj.length > 0) {
+                            for (var i = 0; i < obj.length; i++) {
+                                obj[i].extra = extra;
+                            }
+                        } else {
+                            obj = {
+                                url: src,
+                                extra: extra
+                            };
+                        }
+
+                        options.cb(obj);
+                    }
+                });
+
+                return {
+                    waiting: true
+                };
+            }
+
+            if (obj.length > 0)
+                return obj;
         }
 
 
