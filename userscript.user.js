@@ -17583,6 +17583,8 @@ var $$IMU_EXPORT$$;
             //   https://inews.gtimg.com/newsapp_match/0/151988165/0
             // http://inews.gtimg.com/newsapp_bt/0/4230564475/641/0
             //   http://inews.gtimg.com/newsapp_match/0/4230564475/0
+            // other:
+            // http://inews.gtimg.com/newsapp_match/0/1607193377/0 -- 2822x4242
             return {
                 url: src.replace(/\/newsapp_[a-z]+\/+([0-9]+\/+[0-9]+\/+)[0-9]+(?:\/+[0-9]+)?(?:[?#].*)?$/, "/newsapp_match/$10"),
                 headers: {
@@ -43848,7 +43850,7 @@ var $$IMU_EXPORT$$;
                     outerdiv.style.top = (sct + Math.min(Math.max(((vh / 2) - sct) - (imgh / 2), border_thresh), Math.max(vh - imgh, border_thresh))) + "px";
                     outerdiv.style.left = (scl + Math.min(Math.max(((vw / 2) - scl) - (imgw / 2), border_thresh), Math.max(vw - imgw, border_thresh))) + "px";
                 } else if (mouseover_position === "beside_cursor") {
-                    // TODO: improve this to be more interpolated
+                    // TODO: maybe improve this to be more interpolated?
 
                     var popupx;
                     var popupy;
@@ -43920,6 +43922,8 @@ var $$IMU_EXPORT$$;
 
                 function get_defaultopacity() {
                     var defaultopacity = (settings.mouseover_ui_opacity / 100);
+                    if (isNaN(defaultopacity))
+                        defaultopacity = 1;
                     if (defaultopacity > 1)
                         defaultopacity = 1;
                     if (defaultopacity < 0)
