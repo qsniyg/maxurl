@@ -770,6 +770,7 @@ var $$IMU_EXPORT$$;
         mouseover_links: false,
         // thanks to acid-crash on github for the idea: https://github.com/qsniyg/maxurl/issues/20
         mouseover_styles: "",
+        //mouseover_download_key: ["ctrl", "s"],
         mouseover_apply_blacklist: false,
         website_inject_imu: true,
         website_image: true,
@@ -1328,6 +1329,15 @@ var $$IMU_EXPORT$$;
             description: "Instead of opening the link in a new tab, it will download the image instead",
             requires: {
                 mouseover_open_behavior: "popup"
+            },
+            category: "popup",
+            subcategory: "behavior"
+        },
+        mouseover_download_key: {
+            name: "Download key",
+            description: "Downloads the image in the popup when this key is pressed",
+            requires: {
+                mouseover: true
             },
             category: "popup",
             subcategory: "behavior"
@@ -43587,6 +43597,7 @@ var $$IMU_EXPORT$$;
 
         var processing_list = [];
         var popups = [];
+        var popup_obj = null;
         var popup_el = null;
         var popup_el_automatic = false;
         var popups_active = false;
@@ -44379,6 +44390,57 @@ var $$IMU_EXPORT$$;
                     outerdiv.appendChild(topbarel);
                 }
 
+                if (typeof newobj.filename !== "string")
+                    newobj.filename = "";
+
+                if (newobj.filename.length === 0) {
+                    try {
+                        var headers = data.data.respdata.responseHeaders.split("\r\n");
+                        for (var h_i = 0; h_i < headers.length; h_i++) {
+                            var header_name = headers[h_i].replace(/^\s*([^:]*?)\s*:.*/, "$1").toLowerCase();
+                            var header_value = headers[h_i].replace(/^[^:]*?:\s*(.*?)\s*$/, "$1").toLowerCase();
+
+                            if (header_name === "content-disposition") {
+                                while (typeof header_value === "string" && header_value.length > 0) {
+                                    var current_value = header_value.replace(/^\s*([^;]*?)\s*(?:;.*)?$/, "$1");
+                                    //header_value = header_value.replace(/^[^;]*(?:;\s*(.*))?$/, "$1");
+
+                                    var attr = current_value.replace(/^\s*([^=;]*?)\s*(?:[=;].*)?$/, "$1").toLowerCase();
+                                    var a_match = header_value.match(/^[^=;]*(?:(?:=\s*(?:(?:["']([^'"]*?)["'])|([^;]*?)\s*(;.*)?)\s*)|;\s*(.*))?$/);
+                                    if (!a_match) {
+                                        console_error("Header value does not match pattern:", header_value);
+                                        break;
+                                    }
+                                    var a_value = a_match[0] + a_match[1];
+
+                                    // TODO: implement properly
+                                    /*if (attr === "filename*") {
+                                        newobj.filename = a_value;
+                                    }*/
+
+                                    if (newobj.filename.length === 0 && attr === "filename") {
+                                        newobj.filename = a_value;
+                                    }
+
+                                    header_value = a_match[2] || a_match[3];
+                                }
+                            }
+
+                            if (newobj.filename.length > 0)
+                                break;
+                        }
+                    } catch (e) {
+                        console_error(e);
+                    }
+
+                    if (newobj.filename.length === 0) {
+                        newobj.filename = url.replace(/.*\/([^?#/]*)(?:[?#].*)?$/, "$1");
+                        if (newobj.filename.match(/\./g).length === 1) {
+                            newobj.filename = newobj.filename.replace(/(.*)\.[^.]*?$/, "$1");
+                        }
+                    }
+                }
+
                 var a = document.createElement("a");
                 //a.addEventListener("click", function(e) {
                 a.onclick = function(e) {
@@ -44393,57 +44455,6 @@ var $$IMU_EXPORT$$;
                 a.href = url;
                 if (settings.mouseover_download) {
                     a.href = img.src;
-
-                    if (typeof newobj.filename !== "string")
-                        newobj.filename = "";
-
-                    if (newobj.filename.length === 0) {
-                        try {
-                            var headers = data.data.respdata.responseHeaders.split("\r\n");
-                            for (var h_i = 0; h_i < headers.length; h_i++) {
-                                var header_name = headers[h_i].replace(/^\s*([^:]*?)\s*:.*/, "$1").toLowerCase();
-                                var header_value = headers[h_i].replace(/^[^:]*?:\s*(.*?)\s*$/, "$1").toLowerCase();
-
-                                if (header_name === "content-disposition") {
-                                    while (typeof header_value === "string" && header_value.length > 0) {
-                                        var current_value = header_value.replace(/^\s*([^;]*?)\s*(?:;.*)?$/, "$1");
-                                        //header_value = header_value.replace(/^[^;]*(?:;\s*(.*))?$/, "$1");
-
-                                        var attr = current_value.replace(/^\s*([^=;]*?)\s*(?:[=;].*)?$/, "$1").toLowerCase();
-                                        var a_match = header_value.match(/^[^=;]*(?:(?:=\s*(?:(?:["']([^'"]*?)["'])|([^;]*?)\s*(;.*)?)\s*)|;\s*(.*))?$/);
-                                        if (!a_match) {
-                                            console_error("Header value does not match pattern:", header_value);
-                                            break;
-                                        }
-                                        var a_value = a_match[0] + a_match[1];
-
-                                        // TODO: implement properly
-                                        /*if (attr === "filename*") {
-                                            newobj.filename = a_value;
-                                        }*/
-
-                                        if (newobj.filename.length === 0 && attr === "filename") {
-                                            newobj.filename = a_value;
-                                        }
-
-                                        header_value = a_match[2] || a_match[3];
-                                    }
-                                }
-
-                                if (newobj.filename.length > 0)
-                                    break;
-                            }
-                        } catch (e) {
-                            console_error(e);
-                        }
-
-                        if (newobj.filename.length === 0) {
-                            newobj.filename = url.replace(/.*\/([^?#/]*)(?:[?#].*)?$/, "$1");
-                            if (newobj.filename.match(/\./g).length === 1) {
-                                newobj.filename = newobj.filename.replace(/(.*)\.[^.]*?$/, "$1");
-                            }
-                        }
-                    }
 
                     if (newobj.filename.length > 0) {
                         a.setAttribute("download", newobj.filename);
@@ -44698,6 +44709,7 @@ var $$IMU_EXPORT$$;
                 document.documentElement.appendChild(outerdiv);
                 popups.push(outerdiv);
                 popupshown = true;
+                popup_obj = newobj;
                 can_close_popup = [false, false];
                 popup_hold = false;
                 mouse_in_image_yet = false;
@@ -45994,6 +46006,25 @@ var $$IMU_EXPORT$$;
                         rotate_gallery(-90);
                         ret = false;
                     }
+                }
+
+                if (ret === undefined && event.which === 83 // s
+                    && !event.shiftKey
+                    && !event.altKey
+                    && !event.metaKey) {
+                    ret = false;
+
+                    var a = document.createElement("a");
+                    a.href = popups[0].getElementsByTagName("img")[0].src;
+
+                    if (popup_obj.filename.length > 0) {
+                        a.setAttribute("download", popup_obj.filename);
+                    } else {
+                        var attr = document.createAttribute("download");
+                        a.setAttributeNode(attr);
+                    }
+
+                    a.click();
                 }
 
                 if (ret === false) {
