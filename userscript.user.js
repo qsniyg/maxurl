@@ -5698,6 +5698,8 @@ var $$IMU_EXPORT$$;
             (domain_nowww === "instylemag.com.au" && src.indexOf("/media/") >= 0) ||
             // https://i.eurosport.com/2018/06/17/2356762-49034010-2560-1440.jpg?w=750
             domain === "i.eurosport.com" ||
+            // https://blog.wirelessanalytics.com/hs-fs/hubfs/bigstock-Burj-Al-Arab-Jumeirah-In-Dubai-129187832.jpg?width=524&name=bigstock-Burj-Al-Arab-Jumeirah-In-Dubai-129187832.jpg
+            (domain === "blog.wirelessanalytics.com" && src.indexOf("/hubfs/") >= 0) ||
             // http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
             // https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
             src.match(/\/demandware\.static\//) ||
@@ -7860,6 +7862,7 @@ var $$IMU_EXPORT$$;
             //   https://66.media.tumblr.com/76597bb3640f73e6af0f5cff3430f6e1/tumblr_inline_pa5nk1DnJW1twvjda_1280.jpg
             // http://static.tumblr.com/db01df3dee618afdc00cc6e886ed1591/xjv1zxw/8G6myp4yn/tumblr_static_kirigiri.kyouko.full.1546231.jpg
             // http://media.tumblr.com/tumblr_mdsw17461H1qeaqka.jpg -- 2575x3500
+            // https://static.tumblr.com/fd14a16bf8d1e9a1147933e8b5d545c1/esbkosq/XLdpbuqlf/tumblr_static_1x2wbomx0a2sko0k0s4wogw8w_2048_v2.jpg
             //
             // working gifs:
             // https://78.media.tumblr.com/4b9573a2fdd97a6e6cac771d4a0c0edd/tumblr_ntg9jreu9X1s5q5l6o4_400.gif
@@ -19332,6 +19335,9 @@ var $$IMU_EXPORT$$;
             // https://sih.avn.com/300x300/top/filters:extract_focal()/album-images/2018/07/23/15432/5b55fe1652a8f-dsc5716-copy.jpg
             //   https://sih.avn.com/album-images/2018/07/23/15432/5b55fe1652a8f-dsc5716-copy.jpg
             domain === "sih.avn.com" ||
+            // https://www.ferra.ru/thumb/495x0/filters:quality(75):no_upscale()/imgs/2019/09/22/11/3574619/fb673adfd041779c2418d172441a6cc47cf39dbe.jpg
+            //   https://www.ferra.ru/imgs/2019/09/22/11/3574619/fb673adfd041779c2418d172441a6cc47cf39dbe.jpg
+            domain_nowww === "ferra.ru" ||
             // https://www.passion.ru/thumb/400x0/filters:quality(75)//imgs/2017/05/13/15/901933/6ed6cad1b0242b0d401881056ab4e55b5b450065.jpg
             //   https://www.passion.ru//imgs/2017/05/13/15/901933/6ed6cad1b0242b0d401881056ab4e55b5b450065.jpg
             domain_nowww === "passion.ru") {
@@ -30514,36 +30520,114 @@ var $$IMU_EXPORT$$;
             // old rule made some smaller (fixed now):
             // https://drscdn.500px.org/photo/176915829/m%3D2048/v2?webp=true&sig=8901652fb89d3d48171709f0656cbb9c06695375eb1149ba1281e5cba0dc4041 -- 2048x1489
             //   https://drscdn.500px.org/photo/176915829/q%3D80_m%3D2000/v2?webp=true&sig=40351336025465fc6f8fd94d0ac6ae8f8672038a90e5b0c17f138c987f2a05ad -- 2000x1454
+            /*
+            PHOTO_GRID_IMAGE_SIZES: ["1", "2", "32", "31", "33", "34", "35", "36", "2048", "4", "14"],
+            PHOTO_SIZES: {
+                S3_IMG_SIZE_70: 1,
+                S3_IMG_SIZE_140: 2,
+                S3_IMG_GRID_300: 32,
+                S3_IMG_GRID_450: 31,
+                S3_IMG_GRID_600: 33,
+                S3_IMG_WEB_1000: 34,
+                S3_IMG_WEB_1500: 35,
+                S3_IMG_WEB_2000: 36,
+                S3_IMG_SIZE_XLARGE: 2048,
+                S3_IMG_STORE_900: 14
+            },
+            */
             id = src.replace(/^[a-z]+:\/\/[^/]*\/photo\/+([0-9]+)\/.*$/, "$1");
             var page = "https://500px.com/photo/" + id + "/";
             if (id !== src) {
                 options.do_request({
+                    url: "https://api.500px.com/v1/photos?image_size%5B%5D=1&image_size%5B%5D=2&image_size%5B%5D=32&image_size%5B%5D=31&image_size%5B%5D=33&image_size%5B%5D=34&image_size%5B%5D=35&image_size%5B%5D=36&image_size%5B%5D=2048&image_size%5B%5D=4&image_size%5B%5D=14&expanded_user_info=true&include_tags=true&include_geo=true&include_equipment_info=true&vendor_photos=true&include_licensing=true&include_releases=true&liked_by=1&following_sample=100&ids=" + id,
+                    method: "GET",
+                    onload: function(resp) {
+                        if (resp.readyState !== 4)
+                            return;
+
+                        if (resp.status !== 200)
+                            return options.cb(null);
+
+                        var obj = {
+                            url: src,
+                            extra: {
+                                page: page
+                            }
+                        };
+
+                        var sizelist = [0, 1, 2, 32, 31, 33, 14, 34, 35, 36, 2048];
+                        var comparesizes = function(a, b) {
+                            var a_index = sizelist.indexOf(a);
+                            if (a_index < 0)
+                                return false;
+
+                            var b_index = sizelist.indexOf(b);
+                            if (b_index < 0)
+                                return false;
+
+                            return b_index > a_index;
+                        };
+
+                        try {
+                            var data = JSON_parse(resp.responseText);
+                            var images = data.photos[id].images;
+                            page = urljoin(page, data.photos[id].url, true);
+                            obj.extra.page = page;
+                            var largestsize = 0;
+                            var largesturl = null;
+
+                            for (var i = 0; i < images.length; i++) {
+                                if (comparesizes(largestsize, images[i].size)) {
+                                    largestsize = images[i].size;
+                                    largesturl = images[i].https_url;
+                                }
+                            }
+
+                            if (largesturl !== null)
+                                obj.url = largesturl;
+                        } catch (e) {
+                            console_error(e);
+                            return options.cb(null);
+                        }
+
+                        return options.cb(obj);
+                    }
+                });
+
+                return {
+                    waiting: true
+                };
+
+                options.do_request({
                     url: page,
                     method: "GET",
                     onload: function(resp) {
-                        if (resp.readyState === 4) {
-                            var match = resp.responseText.match(/window\.PxPreloadedData *= *({.*?});\s*</);
-                            if (match) {
-                                var data = JSON_parse(match[1]).photo;
-                                options.cb({
-                                    url: data.images[data.images.length - 1].url,
-                                    extra: {
-                                        page: page
-                                    }
-                                });
-                            } else {
-                                options.cb(null);
-                            }
+                        if (resp.readyState !== 4) {
+                            return;
+                        }
 
-                            if (false) {
-                                var match = resp.responseText.match(/<meta *content='(https?:\/\/drscdn[^']*)' *property='og:image'/);
-                                if (match) {
-                                    options.cb(match[1].replace("&amp;", "&"));
-                                } else {
-                                    options.cb(null);
-                                }
+                        if (resp.status !== 200)
+                            return options.cb(null);
+
+                        var obj = {
+                            url: src,
+                            extra: {
+                                page: page
+                            }
+                        };
+
+                        var match = resp.responseText.match(/window\.PxPreloadedData *= *({.*?});\s*</);
+                        if (match) {
+                            var data = JSON_parse(match[1]).photo;
+                            obj.url = data.images[data.images.length - 1].url;
+                        } else if (false) {
+                            var match = resp.responseText.match(/<meta *content='(https?:\/\/drscdn[^']*)' *property='og:image'/);
+                            if (match) {
+                                obj.url = decode_entities(match[1]);
                             }
                         }
+
+                        options.cb(obj);
                     }
                 });
 
@@ -40067,6 +40151,11 @@ var $$IMU_EXPORT$$;
             return src.replace(/(\/images\/+(?:screenshots|slinks)\/+[^/]*)-small(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
         }
 
+        if (domain_nowww === "tengritravel.kz") {
+            // https://tengritravel.kz/userdata/images/u281/resized/80c6efdda569780db808280a166818b7.jpg
+            //   https://tengritravel.kz/userdata/images/u281/80c6efdda569780db808280a166818b7.jpg
+            return src.replace(/(\/userdata\/+images\/+u[0-9]+\/+)resized\/+/, "$1");
+        }
 
 
 
