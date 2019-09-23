@@ -4394,6 +4394,7 @@ var $$IMU_EXPORT$$;
              //   https://lh3.googleusercontent.com/qAhRBhfciCcosUoYHPJr5WtNYSJ81vpSqcQwbQitZtsR3mB2aCUj7J5LvhJOCfWn-CWqiLB18SyTr1VJvm_HI7B72opIAMZiZvg=s0?imgmax=0
              // https://lh3.googleusercontent.com/j7RWveJMFLh5TNHWRRvQnTpwFF3Xzz-mZd8ff-2PmKGIycRxZkUaOmf14g7wIj7D5x2ci1d6DbstteRtb9GN5OXF6ozB32KIY0HUtXFKnN48A1DaxnV-7Nk3YoGbI5ITVJiHA6HyN1cGo_djsw
              //   https://lh3.googleusercontent.com/j7RWveJMFLh5TNHWRRvQnTpwFF3Xzz-mZd8ff-2PmKGIycRxZkUaOmf14g7wIj7D5x2ci1d6DbstteRtb9GN5OXF6ozB32KIY0HUtXFKnN48A1DaxnV-7Nk3YoGbI5ITVJiHA6HyN1cGo_djsw=s0?imgmax=0
+             // https://lh3.googleusercontent.com/C6yBYozE1sXc9o_jsrh29_AYQ6ffCKO-fpooQ5nwuu7FSgQvdGtfSbcJVBUGSDi1VXE9TqYT2g=s0?imgmax=s0 -- "imgmax=s0"
              (domain.match(/^lh[0-9]\./) ||
               // https://gp3.googleusercontent.com/a/AGF-l79M_XGVECzZZjz0fjvLRQ2F12vPycaGh4QLpKNN=s32-p-no
               //   https://gp3.googleusercontent.com/a/AGF-l79M_XGVECzZZjz0fjvLRQ2F12vPycaGh4QLpKNN=s0?imgmax=0
@@ -40035,6 +40036,14 @@ var $$IMU_EXPORT$$;
 
             if (obj.length > 0)
                 return obj;
+        }
+
+        if (domain_nowww === "distrowatch.com") {
+            // https://distrowatch.com/images/screenshots/redcore-1908-dark-small.png
+            //   https://distrowatch.com/images/screenshots/redcore-1908-dark.png
+            // https://distrowatch.com/images/slinks/freebsd-small.png
+            //   https://distrowatch.com/images/slinks/freebsd.png
+            return src.replace(/(\/images\/+(?:screenshots|slinks)\/+[^/]*)-small(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
         }
 
 
