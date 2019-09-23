@@ -44401,18 +44401,20 @@ var $$IMU_EXPORT$$;
                             var header_value = headers[h_i].replace(/^[^:]*?:\s*(.*?)\s*$/, "$1").toLowerCase();
 
                             if (header_name === "content-disposition") {
+                                // http://cfile7.uf.tistory.com/original/227CF24E57ABEC701869E7
+                                // Content-Disposition: inline; filename="160731 LA Kcon stage - 15 copy.jpg"; filename*=UTF-8''160731%20LA%20Kcon%20stage%20-%2015%20copy.jpg
                                 var loops = 0;
                                 while (loops < 100 && typeof header_value === "string" && header_value.length > 0) {
                                     var current_value = header_value.replace(/^\s*([^;]*?)\s*(?:;.*)?$/, "$1");
                                     //header_value = header_value.replace(/^[^;]*(?:;\s*(.*))?$/, "$1");
 
                                     var attr = current_value.replace(/^\s*([^=;]*?)\s*(?:[=;].*)?$/, "$1").toLowerCase();
-                                    var a_match = header_value.match(/^[^=;]*(?:(?:=\s*(?:(?:["']([^'"]*?)["'])|([^;]*?)\s*(;.*)?)\s*)|;\s*(.*))?$/);
+                                    var a_match = header_value.match(/^[^=;]*(?:(?:=\s*(?:(?:["']([^'"]*?)["'])|([^;]*?))\s*(;.*)?\s*)|;\s*(.*))?$/);
                                     if (!a_match) {
                                         console_error("Header value does not match pattern:", header_value);
                                         break;
                                     }
-                                    var a_value = a_match[0] + a_match[1];
+                                    var a_value = a_match[1] || a_match[2];
 
                                     // TODO: implement properly
                                     /*if (attr === "filename*") {
@@ -44423,7 +44425,7 @@ var $$IMU_EXPORT$$;
                                         newobj.filename = a_value;
                                     }
 
-                                    header_value = a_match[2] || a_match[3];
+                                    header_value = a_match[3] || a_match[4];
                                     loops++;
                                 }
                             }
@@ -44437,7 +44439,7 @@ var $$IMU_EXPORT$$;
 
                     if (newobj.filename.length === 0) {
                         newobj.filename = url.replace(/.*\/([^?#/]*)(?:[?#].*)?$/, "$1");
-                        if (newobj.filename.match(/\./g).length === 1) {
+                        if ((newobj.filename.split(".").length - 1) === 1) {
                             newobj.filename = newobj.filename.replace(/(.*)\.[^.]*?$/, "$1");
                         }
                     }
