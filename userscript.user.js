@@ -44401,7 +44401,8 @@ var $$IMU_EXPORT$$;
                             var header_value = headers[h_i].replace(/^[^:]*?:\s*(.*?)\s*$/, "$1").toLowerCase();
 
                             if (header_name === "content-disposition") {
-                                while (typeof header_value === "string" && header_value.length > 0) {
+                                var loops = 0;
+                                while (loops < 100 && typeof header_value === "string" && header_value.length > 0) {
                                     var current_value = header_value.replace(/^\s*([^;]*?)\s*(?:;.*)?$/, "$1");
                                     //header_value = header_value.replace(/^[^;]*(?:;\s*(.*))?$/, "$1");
 
@@ -44423,6 +44424,7 @@ var $$IMU_EXPORT$$;
                                     }
 
                                     header_value = a_match[2] || a_match[3];
+                                    loops++;
                                 }
                             }
 
