@@ -1383,6 +1383,9 @@ var $$IMU_EXPORT$$;
             name: "Larger watermarked images",
             description: "Enables rules that return larger images that include watermarks",
             category: "rules",
+            example_websites: [
+                "Stock photo websites"
+            ],
             onupdate: update_rule_setting
         },
         allow_smaller: {
