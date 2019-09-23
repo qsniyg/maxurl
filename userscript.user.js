@@ -814,7 +814,7 @@ var $$IMU_EXPORT$$;
                 }
             },
             onedit: function() {
-                do_options();
+                run_soon(do_options);
             },
             imu_enabled_exempt: true
         },
@@ -1907,6 +1907,10 @@ var $$IMU_EXPORT$$;
             .replace(/(?:[-=_!?$#"'’‘”“]|\[|])/g, " ")
             .replace(/\s+/g, " ")
             .replace(/^\s+|\s+$/g, "");
+    }
+
+    function run_soon(func) {
+        setTimeout(func, 1);
     }
 
     // bug in chrome, see
@@ -42378,6 +42382,116 @@ var $$IMU_EXPORT$$;
         //saved_el.style.color = "#0af";
         var saved_timeout = null;
 
+        var topbtns_holder = document.createElement("div");
+        topbtns_holder.id = "topbtns";
+        options_el.appendChild(topbtns_holder);
+
+        var importexport_ocontainer = document.createElement("div");
+        importexport_ocontainer.id = "importexport";
+        importexport_ocontainer.classList.add("center-outer");
+        importexport_ocontainer.style.display = "none";
+        options_el.appendChild(importexport_ocontainer);
+
+        var importexport_container = document.createElement("div");
+        importexport_container.classList.add("center-inner");
+        importexport_ocontainer.appendChild(importexport_container);
+
+        var importexport_text = document.createElement("textarea");
+        importexport_container.appendChild(importexport_text);
+
+        var importexport_btn = document.createElement("button");
+        importexport_btn.innerText = _("Import");
+        importexport_btn.onclick = function() {
+            var value;
+
+            try {
+                value = JSON_parse(importexport_text.value);
+            } catch (e) {
+                console_error(e);
+                importexport_text.value = "Error!";
+                return;
+            }
+
+            var changed = false;
+
+            var current_settings = deepcopy(settings);
+            var new_settings = deepcopy(orig_settings);
+            for (var key in value) {
+                if (!(key in settings)) {
+                    console_log("Unknown key in imported settings: ", key);
+                    continue;
+                }
+
+                new_settings[key] = value[key];
+            }
+
+            for (var key in new_settings) {
+                if (JSON_stringify(new_settings[key]) !== JSON_stringify(current_settings[key])) {
+                    settings[key] = new_settings[key];
+                    set_value(key, new_settings[key]);
+                    changed = true;
+                }
+            }
+
+            if (changed)
+                do_options();
+
+            show_importexport(false);
+        };
+        importexport_container.appendChild(importexport_btn);
+
+        var show_importexport = function(show, btn) {
+            if (show) {
+                importexport_ocontainer.style.display = "block";
+            } else {
+                importexport_state = null;
+
+                importexport_ocontainer.style.display = "none";
+            }
+
+            if (btn) {
+                if (show)
+                    importexport_state = "import";
+
+                importexport_btn.style.display = "inline-block";
+            } else {
+                if (show)
+                    importexport_state = "export";
+
+                importexport_btn.style.display = "none";
+            }
+        };
+
+        var importexport_state = null;
+
+        var import_btn = document.createElement("button");
+        import_btn.id = "importbtn";
+        import_btn.innerText = _("Import");
+        import_btn.title = _("Import settings");
+        import_btn.onclick = function() {
+            if (importexport_state === "import")
+                return show_importexport(false);
+
+            importexport_text.value = "";
+
+            show_importexport(true, true);
+        };
+        topbtns_holder.appendChild(import_btn);
+
+        var export_btn = document.createElement("button");
+        export_btn.id = "exportbtn";
+        export_btn.innerText = _("Export");
+        export_btn.title = _("Export settings");
+        export_btn.onclick = function() {
+            if (importexport_state === "export")
+                return show_importexport(false);
+
+            importexport_text.value = JSON_stringify(settings);
+
+            show_importexport(true, false);
+        };
+        topbtns_holder.appendChild(export_btn);
+
         function check_disabled_options() {
             var options = options_el.querySelectorAll("div.option");
 
@@ -43084,7 +43198,7 @@ var $$IMU_EXPORT$$;
     }
 
     var updating_options = 0;
-    function set_value(key, value) {
+    function set_value(key, value, cb) {
         if (key in settings_meta && settings_meta[key].onedit) {
             settings_meta[key].onedit(value);
         }
@@ -43102,11 +43216,20 @@ var $$IMU_EXPORT$$;
                 data: kv
             }, function() {
                 updating_options--;
+
+                if (cb)
+                    cb();
             });
         } else if (typeof GM_setValue !== "undefined") {
-            return GM_setValue(key, value);
+            GM_setValue(key, value);
+
+            if (cb)
+                cb();
         } else if (typeof GM !== "undefined" && GM.getValue) {
-            return GM.setValue(key, value);
+            GM.setValue(key, value).then(function() {
+                if (cb)
+                    cb()
+            });
         }
     }
 
