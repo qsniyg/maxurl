@@ -411,6 +411,9 @@ var $$IMU_EXPORT$$;
         "subcategory_open_behavior": {
             "en": "Open Behavior"
         },
+        "subcategory_close_behavior": {
+            "en": "Close Behavior"
+        },
         "subcategory_behavior": {
             "en": "Popup Behavior"
         },
@@ -1120,7 +1123,7 @@ var $$IMU_EXPORT$$;
                 mouseover_trigger_behavior: "keyboard"
             },
             category: "popup",
-            subcategory: "trigger"
+            subcategory: "close_behavior"
         },
         mouseover_close_need_mouseout: {
             name: "Don't close until mouse leaves",
@@ -1131,7 +1134,7 @@ var $$IMU_EXPORT$$;
                 }
             },
             category: "popup",
-            subcategory: "trigger"
+            subcategory: "close_behavior"
         },
         mouseover_jitter_threshold: {
             name: "Threshold to leave image",
@@ -1144,7 +1147,7 @@ var $$IMU_EXPORT$$;
             type: "number",
             number_unit: "pixels",
             category: "popup",
-            subcategory: "trigger"
+            subcategory: "close_behavior"
         },
         mouseover_use_hold_key: {
             name: "Use hold key",
@@ -1153,7 +1156,7 @@ var $$IMU_EXPORT$$;
                 mouseover_trigger_behavior: "mouse"
             },
             category: "popup",
-            subcategory: "trigger"
+            subcategory: "close_behavior"
         },
         mouseover_hold_key: {
             name: "Hold key",
@@ -1163,7 +1166,7 @@ var $$IMU_EXPORT$$;
             },
             type: "keysequence",
             category: "popup",
-            subcategory: "trigger"
+            subcategory: "close_behavior"
         },
         mouseover_close_on_leave_el: {
             name: "Close when leaving thumbnail",
@@ -1173,7 +1176,7 @@ var $$IMU_EXPORT$$;
                 mouseover_position: "beside_cursor"
             },
             category: "popup",
-            subcategory: "trigger"
+            subcategory: "close_behavior"
         },
         mouseover_zoom_behavior: {
             name: "Popup default zoom",
@@ -1281,7 +1284,7 @@ var $$IMU_EXPORT$$;
                 mouseover_scroll_behavior: "zoom"
             },
             category: "popup",
-            subcategory: "behavior"
+            subcategory: "close_behavior"
         },
         mouseover_position: {
             name: "Popup position",
@@ -1557,6 +1560,7 @@ var $$IMU_EXPORT$$;
         "popup": {
             "trigger": "subcategory_trigger",
             "open_behavior": "subcategory_open_behavior",
+            "close_behavior": "subcategory_close_behavior",
             "behavior": "subcategory_behavior",
             "ui": "subcategory_ui",
             "popup_other": "subcategory_popup_other"
