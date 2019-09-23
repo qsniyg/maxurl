@@ -498,6 +498,23 @@ input:checked + label, button, .button {
   font-size: 90%;
 }
 
+.center-outer {
+  text-align: center
+}
+
+.center-inner {
+  display: inline-block;
+}
+
+#importexport {
+  margin-top: .5em;
+}
+
+#importexport textarea {
+  display: block;
+  margin: 1em;
+}
+
 
 .topsaved {
   visibility: visible;
