@@ -76,7 +76,6 @@ As mentioned above, userscript.user.js also functions as a node module.
       include_pastobjs: true,
 
       // This will try to find the original page for an image, even if it requires extra requests.
-      //  Currently only applies to Flickr.
       force_page: false,
 
       // This allows rules that use 3rd-party websites to find larger images
