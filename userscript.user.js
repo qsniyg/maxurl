@@ -1004,7 +1004,7 @@ var $$IMU_EXPORT$$;
             subcategory: "open_behavior"
         },
         mouseover_exclude_sameimage: {
-            name: "Exclude if image unchanged",
+            name: "Exclude if image is unchanged",
             description: "Don't pop up if the new image is the same as the thumbnail image",
             requires: {
                 mouseover: true
