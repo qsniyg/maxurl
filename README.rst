@@ -59,9 +59,6 @@ As mentioned above, userscript.user.js also functions as a node module.
       iterations: 200,
 
       // Whether or not to store to, and use an internal cache for URLs.
-      // Currently there is no option to clear it, meaning memory usage will very slowly increase.
-      //   At ~20 URLs per second, MaxImageBot uses ~1GB of RAM after a few days of running due to this option.
-      // Implementing an auto-clearing cache is tracked at https://github.com/qsniyg/maxurl/issues/109
       use_cache: true,
 
       // Timeout (in seconds) for cache entries in the URL cache
