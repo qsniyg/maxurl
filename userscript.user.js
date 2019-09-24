@@ -101,6 +101,29 @@ var $$IMU_EXPORT$$;
 
     var is_interactive = is_extension || is_userscript;
 
+    var userscript_manager = "unknown"
+    if (is_userscript) {
+        var gm_info = undefined;
+
+        try {
+            gm_info = GM_info();
+        } catch (e) {
+            try {
+                gm_info = GM.info();
+            } catch (e) {
+            }
+        }
+
+        // Unfortunately FireMonkey currently doesn't implement GM_info's scriptHandler:
+        //   https://github.com/erosman/support/issues/98#issuecomment-534671229
+        // We currently have to rely on this hack
+        if (typeof GM_fetch === 'function' && gm_info === null) {
+            userscript_manager = "firemonkey";
+        } else if (gm_info.scriptHandler) {
+            userscript_manager = gm_info.scriptHandler;
+        }
+    }
+
     var do_request_raw = null;
     if (is_extension) {
         do_request_raw = function(data) {
@@ -43540,7 +43563,11 @@ var $$IMU_EXPORT$$;
             chrome.storage.sync.get([key], function(response) {
                 cb(parse_value(response[key]));
             });
-        } else if (typeof GM_getValue !== "undefined") {
+        } else if (typeof GM_getValue !== "undefined" &&
+                   // Unfortunately FireMonkey currently implements GM_getValue as a mapping to GM.getValue for some reason
+                   //   https://github.com/erosman/support/issues/98
+                   // Until this is fixed, we cannot use GM_getValue for FireMonkey
+                   userscript_manager !== "firemonkey") {
             return cb(parse_value(GM_getValue(key, undefined)));
         } else if (typeof GM !== "undefined" && GM.getValue) {
             GM.getValue(key, undefined).then(function (value) {
