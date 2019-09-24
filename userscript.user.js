@@ -46226,7 +46226,11 @@ var $$IMU_EXPORT$$;
                         a.setAttributeNode(attr);
                     }
 
+                    a.style.display = "none";
+
+                    document.body.appendChild(a);
                     a.click();
+                    document.body.removeChild(a);
                 }
 
                 if (ret === false) {
