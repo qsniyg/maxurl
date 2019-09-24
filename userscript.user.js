@@ -21625,10 +21625,13 @@ var $$IMU_EXPORT$$;
                             var tmatch = result.responseText.match(/CHV\.obj\.image_viewer\.image\s*=\s*{.*?[^a-zA-Z0-9_]url:["'](.*?)["']/);
                             if (tmatch) {
                                 // norecurse: true?
-                                return {
-                                    url: options.cb(tmatch[1]),
-                                    is_original: true
-                                };
+                                return options.cb({
+                                    url: tmatch[1],
+                                    is_original: true,
+                                    extra: {
+                                        page: result.finalUrl
+                                    }
+                                });
                             }
 
                             options.cb(null);
