@@ -46617,17 +46617,21 @@ var $$IMU_EXPORT$$;
                             }
                         });
                     } else {
-                        cb(img, newurl);
+                        cb(img, newurl, obj[obj_indexOf(obj, finalurl)]);
                     }
                 }, options);
             };
 
             if (settings.website_image) {
-                loop_url(obj, function(img, url) {
+                loop_url(obj, function(img, url, obj) {
                     if (!img) {
                         orig_set_max("broken");
                     } else {
-                        orig_set_max([{url: url}]);
+                        var newobj = obj;
+                        if (!newobj)
+                            newobj = {url: url};
+
+                        orig_set_max([newobj]);
                         maximgel.src = img.src;
                     }
                 }, {running: true});
@@ -46636,7 +46640,11 @@ var $$IMU_EXPORT$$;
                     if (!resp) {
                         orig_set_max("broken");
                     } else {
-                        orig_set_max([{url: resp.finalUrl}]);
+                        var newobj = obj;
+                        if (!newobj)
+                            newobj = {url: resp.finalUrl};
+
+                        orig_set_max([newobj]);
                     }
                 }, {running: true, head: true});
             } else {
