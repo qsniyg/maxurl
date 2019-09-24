@@ -21796,6 +21796,9 @@ var $$IMU_EXPORT$$;
             // https://secretvt.com/uploads/cache/post/2019/03/thumb-448dfd0f756034f8be2fdd78bcb44a6a_460x0.jpg
             //   https://secretvt.com/uploads/post/2019/03/448dfd0f756034f8be2fdd78bcb44a6a.jpg
             domain_nowww === "secretvt.com" ||
+            // https://file.candlemystar.com/cache/post/2019/09/thumb-320c0273b64098c8dab3746b5542d697_400x400.png
+            //   https://file.candlemystar.com/post/2019/09/320c0273b64098c8dab3746b5542d697.png
+            domain === "file.candlemystar.com" ||
             // http://5rs-1.com/uploads/cache/post/2018/12/thumb-5a2a42aa82d6f9a23efd2e24bc048d28_600x0.jpg
             //   http://5rs-1.com/uploads/post/2018/12/5a2a42aa82d6f9a23efd2e24bc048d28.jpg
             domain_nowww === "5rs-1.com") {
@@ -21803,8 +21806,8 @@ var $$IMU_EXPORT$$;
             //   http://mediaday.co.kr/uploads/editor/2018/06/6b0c51b23bb282ff8113e620c06e6d40_1529461823064781800.jpg
             // http://mediaday.co.kr/uploads/cache/post/2018/07/thumb-357f8c7e9621a870cfc1c1daaf96b5dc_1530693023034070800_214x180.jpg
             //   http://mediaday.co.kr/uploads/post/2018/07/357f8c7e9621a870cfc1c1daaf96b5dc_1530693023034070800.jpg
-            return src.replace(/\/uploads\/+cache\/(.*)\/thumb-([0-9a-f]+(?:_[0-9]+)?)_[0-9]+x[0-9]+(\.[^/.]*)$/,
-                               "/uploads/$1/$2$3");
+            return src.replace(/\/cache\/+((?:post|editor)\/+[0-9]{4}\/+[0-9]{2}\/+)thumb-([0-9a-f]+(?:_[0-9]+)?)_[0-9]+x[0-9]+(\.[^/.]*)(?:[?#].*)?$/,
+                               "/$1$2$3");
         }
 
         if (domain === "up.kpop.re") {
@@ -44313,6 +44316,7 @@ var $$IMU_EXPORT$$;
                         lrhover.style.top = "0em";
                         lrhover.style.position = "absolute";
                         lrhover.style.width = "15%";
+                        lrhover.style.maxWidth = "200px";
                         lrhover.style.height = "100%";
                         lrhover.style.zIndex = maxzindex - 2;
                         lrhover.style.cursor = "pointer";
