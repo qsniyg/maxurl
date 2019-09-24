@@ -119,7 +119,7 @@ var $$IMU_EXPORT$$;
         // We currently have to rely on this hack
         if (typeof GM_fetch === 'function' && gm_info === null) {
             userscript_manager = "firemonkey";
-        } else if (gm_info.scriptHandler) {
+        } else if (typeof gm_info === "object" && gm_info.scriptHandler) {
             userscript_manager = gm_info.scriptHandler;
         }
     }
