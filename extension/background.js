@@ -469,6 +469,7 @@ chrome.runtime.onMessage.addListener((message, sender, respond) => {
 
     return true;
   } else if (message.type === "ready") {
+    // Sometimes tab is undefined. Catching this error shouldn't be needed though
     tabready(sender.tab.id);
   }
 });

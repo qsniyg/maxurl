@@ -22101,20 +22101,28 @@ var $$IMU_EXPORT$$;
             //   http://images3.imagebam.com/5f/1e/36/172f56480587760.jpg
             id = src.replace(/.*\/([0-9a-f]+)\.[^/.]*$/, "$1");
             if (id !== src) {
+                page = "http://www.imagebam.com/image/" + id;
                 options.do_request({
-                    url: "http://www.imagebam.com/image/" + id,
+                    url: page,
                     method: "GET",
                     onload: function(resp) {
                         if (resp.readyState === 4) {
                             var match = resp.responseText.match(/<meta *property="og:image" *content="([^"]*)"/);
                             if (match) {
-                                options.cb(match[1]);
+                                options.cb({
+                                    url: match[1],
+                                    is_original: true,
+                                    extra: {
+                                        page: page
+                                    }
+                                });
                             } else {
                                 options.cb(null);
                             }
                         }
                     }
                 });
+
                 return {
                     waiting: true
                 };
@@ -22141,7 +22149,13 @@ var $$IMU_EXPORT$$;
                         if (resp.readyState === 4) {
                             var match = resp.responseText.match(/<img *id=['"]thepic['"][^>]* (?:src|SRC)=['"]([^"']*)['"]/);
                             if (match) {
-                                options.cb(urljoin(requrl, match[1], true));
+                                options.cb({
+                                    url: urljoin(requrl, match[1], true),
+                                    is_original: true,
+                                    extra: {
+                                        page: requrl
+                                    }
+                                });
                             } else {
                                 options.cb(null);
                             }
@@ -29923,6 +29937,15 @@ var $$IMU_EXPORT$$;
                 var els = options.document.getElementsByTagName("a");
                 for (var i = 0; i < els.length; i++) {
                     var el = els[i];
+                    // https://github.com/tommy351/ehreader-android/wiki/E-Hentai-JSON-API
+                    // https://github.com/ccloli/E-Hentai-Downloader/wiki/E%E2%88%92Hentai-Image-Viewing-Limits
+                    // e-hentai.org/fullimg.php?gid=[GID]&page=[Page Number]&key=[Key]
+                    // gid is number, page is number, key is hex
+                    // https://e-hentai.org/s/485a375924/905277-99
+                    // https://e-hentai.org/fullimg.php?gid=882257&page=7&key=c2syiuq8nz4
+                    //   http://114.33.249.224:18053/h/5209ee99f401a5cf3f21089c1c2b15f2493dd8fd-603051-1200-1743-jpg/keystamp=1455556200-8fb4c6785a/P099.jpg
+                    // https://gitee.com/anti/xehentai/blob/master/xeHentai.py
+                    //   http://exhentai.org/fullimg.php?gid=577354&page=2&key=af594b7cf3
                     if (!el.href.match(/https?:\/\/(?:www\.)?e-hentai\.org\/fullimg\.php/))
                         continue;
 
