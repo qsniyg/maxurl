@@ -506,6 +506,10 @@ input:checked + label, button, .button {
   display: inline-block;
 }
 
+#topbtns {
+  margin-top: 1em;
+}
+
 #importexport {
   margin-top: .5em;
 }
