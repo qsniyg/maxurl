@@ -2,7 +2,7 @@
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
 // @version      0.11.1
-// @description  Finds larger or original versions of images for 5300+ websites
+// @description  Finds larger or original versions of images for 5400+ websites
 // @author       qsniyg
 // @homepageURL  https://qsniyg.github.io/maxurl/options.html
 // @supportURL   https://github.com/qsniyg/maxurl/issues
@@ -21798,6 +21798,8 @@ var $$IMU_EXPORT$$;
             domain_nowww === "secretvt.com" ||
             // https://file.candlemystar.com/cache/post/2019/09/thumb-320c0273b64098c8dab3746b5542d697_400x400.png
             //   https://file.candlemystar.com/post/2019/09/320c0273b64098c8dab3746b5542d697.png
+            // https://file.candlemystar.com/cache/member_photo/2019/09/thumb-6b76ed1bae0e543a1b4aafe7c68b253f_64x64.jpg
+            //   https://file.candlemystar.com/member_photo/2019/09/6b76ed1bae0e543a1b4aafe7c68b253f.jpg
             domain === "file.candlemystar.com" ||
             // http://5rs-1.com/uploads/cache/post/2018/12/thumb-5a2a42aa82d6f9a23efd2e24bc048d28_600x0.jpg
             //   http://5rs-1.com/uploads/post/2018/12/5a2a42aa82d6f9a23efd2e24bc048d28.jpg
@@ -21806,7 +21808,7 @@ var $$IMU_EXPORT$$;
             //   http://mediaday.co.kr/uploads/editor/2018/06/6b0c51b23bb282ff8113e620c06e6d40_1529461823064781800.jpg
             // http://mediaday.co.kr/uploads/cache/post/2018/07/thumb-357f8c7e9621a870cfc1c1daaf96b5dc_1530693023034070800_214x180.jpg
             //   http://mediaday.co.kr/uploads/post/2018/07/357f8c7e9621a870cfc1c1daaf96b5dc_1530693023034070800.jpg
-            return src.replace(/\/cache\/+((?:post|editor)\/+[0-9]{4}\/+[0-9]{2}\/+)thumb-([0-9a-f]+(?:_[0-9]+)?)_[0-9]+x[0-9]+(\.[^/.]*)(?:[?#].*)?$/,
+            return src.replace(/\/cache\/+([_a-z]+\/+[0-9]{4}\/+[0-9]{2}\/+)thumb-([0-9a-f]+(?:_[0-9]+)?)_[0-9]+x[0-9]+(\.[^/.]*)(?:[?#].*)?$/,
                                "/$1$2$3");
         }
 
@@ -38111,25 +38113,26 @@ var $$IMU_EXPORT$$;
                 return base64_decode(newsrc);
         }
 
-        if (domain_nowww === "soumeiwang.com" ||
+        if (domain_nosub === "soumeiwang.com" ||
             // http://m.shianwang.com/img/aHR0cDovL2ltZzAuaW1ndG4uYmRpbWcuY29tL2l0L3U9NDMxODU4MDc4LDIwMjQ2NzA5NzAmZm09MTUmZ3A9MC5qcGc=.jpg
             //   http://img0.imgtn.bdimg.com/it/u=431858078,2024670970&fm=15&gp=0.jpg
             domain === "m.shianwang.com" ||
             // http://www.baobaoyuer.com/img/aHR0cDovL2ltZzMuaW1ndG4uYmRpbWcuY29tL2l0L3U9Mjk0NzkxNTEyNSwzMDc5NDIzNDg2JmZtPTI2JmdwPTAuanBn.jpg
             //   http://img3.imgtn.bdimg.com/it/u=2947915125,3079423486&fm=26&gp=0.jpg
-            domain_nowww === "baobaoyuer.com" ||
+            domain_nosub === "baobaoyuer.com" ||
             // https://m.daguaw.com/img/aHR0cDovL2ltZzMuaW1ndG4uYmRpbWcuY29tL2l0L3U9OTQ2NDk4OTcyLDI3NjM4OTQ5NDEmZm09MjYmZ3A9MC5qcGc=.jpg
             //   http://img3.imgtn.bdimg.com/it/u=946498972,2763894941&fm=26&gp=0.jpg
             // https://daguaw.com/img/aHR0cDovL2ltZzIuaW1ndG4uYmRpbWcuY29tL2l0L3U9Mjg4NDcyNTE3NywzMTQxOTEwOTgzJmZtPTI2JmdwPTAuanBn.jpg
             domain_nosub === "daguaw.com" ||
             // https://www.ditiw.com/img/aHR0cDovL2ltZzAuaW1ndG4uYmRpbWcuY29tL2l0L3U9OTg4MjI3NzA5LDQwNDQ3NDYwNjEmZm09MjYmZ3A9MC5qcGc=.jpg
             //   http://img0.imgtn.bdimg.com/it/u=988227709,4044746061&fm=26&gp=0.jpg
-            domain_nowww === "ditiw.com" ||
+            domain_nosub === "ditiw.com" ||
             // https://m.dalangw.com/img/aHR0cDovL2ltZzQuaW1ndG4uYmRpbWcuY29tL2l0L3U9Mzk1ODY3NTA2NCwzMzA0NzAxMzMwJmZtPTI2JmdwPTAuanBn.jpg
             //   http://img4.imgtn.bdimg.com/it/u=3958675064,3304701330&fm=26&gp=0.jpg
             domain_nosub === "dalangw.com") {
             // http://www.soumeiwang.com/img/aHR0cDovL2ltZzQuaW1ndG4uYmRpbWcuY29tL2l0L3U9OTUzMDIzNjAyLDM1ODIwMzU5MTgmZm09MTUmZ3A9MC5qcGc=.jpg
             //   http://img4.imgtn.bdimg.com/it/u=953023602,3582035918&fm=15&gp=0.jpg
+            // http://m.soumeiwang.com/img/aHR0cDovL2ltZzAuaW1ndG4uYmRpbWcuY29tL2l0L3U9ODU2ODE4NzcxLDM5MDkyODQ5MTEmZm09MjYmZ3A9MC5qcGc=.jpg
             newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+img\/+([^-/._]{30,})\.[^/.]*(?:[?#].*)?$/, "$1");
             if (newsrc !== src)
                 return base64_decode(newsrc);
@@ -40158,6 +40161,22 @@ var $$IMU_EXPORT$$;
             // https://tengritravel.kz/userdata/images/u281/resized/80c6efdda569780db808280a166818b7.jpg
             //   https://tengritravel.kz/userdata/images/u281/80c6efdda569780db808280a166818b7.jpg
             return src.replace(/(\/userdata\/+images\/+u[0-9]+\/+)resized\/+/, "$1");
+        }
+
+        if (domain === "tb.ziareromania.ro") {
+            // http://tb.ziareromania.ro/In-ciuda-crizei-financiare--Dubaiul-organizeaza--petrecerea-deceniului-/8c55d1718d90b6914/327/0/1/70/In-ciuda-crizei-financiare--Dubaiul-organizeaza--petrecerea-deceniului-.jpg
+            //   http://s1.ziareromania.ro/?mmid=8c55d1718d90b6914
+            // other:
+            // http://s2.ziareromania.ro/?mmid=2cb0755eacb4830cea -- 967x1055
+            // http://s2.ziareromania.ro/?mmid=e8e424c149e0270e3 -- 3000x2086 (s1 is the same size)
+            // http://s1.ziareromania.ro/?mmid=f00cc55fe8d4070c76 -- 1024x805
+            return src.replace(/:\/\/tb\.([^/]*)\/+[^/]*\/+([0-9a-f]{15,})\/.*/, "://s1.$1/?mmid=$2");
+        }
+
+        if (domain_nowww === "povarenok.ru") {
+            // https://www.povarenok.ru/images/users/30_11_09/small/238931.jpg
+            //   https://www.povarenok.ru/images/users/30_11_09/238931.jpg
+            return src.replace(/(\/images\/+[^/]*\/+[0-9]{2}_[0-9]{2}_[0-9]{2}\/+)[a-z]+\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
         }
 
 
