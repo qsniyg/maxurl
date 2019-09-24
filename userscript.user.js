@@ -105,13 +105,10 @@ var $$IMU_EXPORT$$;
     if (is_userscript) {
         var gm_info = undefined;
 
-        try {
+        if (typeof GM_info === "function") {
             gm_info = GM_info();
-        } catch (e) {
-            try {
-                gm_info = GM.info();
-            } catch (e) {
-            }
+        } else if (typeof GM_info === "object") {
+            gm_info = GM_info;
         }
 
         // Unfortunately FireMonkey currently doesn't implement GM_info's scriptHandler:
