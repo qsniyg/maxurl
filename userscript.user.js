@@ -25396,12 +25396,7 @@ var $$IMU_EXPORT$$;
                         if (resp.readyState === 4) {
                             var match = resp.responseText.match(/href="(\/media\/images\/[^"]*)"/);
                             if (match) {
-                                options.cb({
-                                    url: urljoin("http://www." + domain_nosub + "/", match[1], true).replace(/\?.*/, ""),
-                                    extra: {
-                                        page: resp.finalUrl
-                                    }
-                                });
+                                options.cb(urljoin("http://www." + domain_nosub + "/", match[1], true).replace(/\?.*/, ""));
                             } else {
                                 options.cb(null);
                             }
@@ -25612,7 +25607,13 @@ var $$IMU_EXPORT$$;
                         if (resp.readyState === 4) {
                             var match = resp.responseText.match(/<meta *property="og:image" *content="([^"]*)"/);
                             if (match) {
-                                options.cb(match[1]);
+                                options.cb({
+                                    url: match[1],
+                                    is_original: true,
+                                    extra: {
+                                        page: resp.finalUrl
+                                    }
+                                });
                             } else {
                                 options.cb(null);
                             }
@@ -39737,7 +39738,10 @@ var $$IMU_EXPORT$$;
                         //console_log(result);
                         var match = result.responseText.match(/<img\s+src=["']((?:https?:)?\/\/[^/]+\/+img\/+[0-9a-z]{10,}\/+.*?)['"]\s+class=["']pic["']/);
                         if (match) {
-                            return options.cb(urljoin(url, match[1], true));
+                            return options.cb({
+                                url: urljoin(url, match[1], true),
+                                is_original: true
+                            });
                         } else {
                             return options.cb(null);
                         }
@@ -39896,7 +39900,10 @@ var $$IMU_EXPORT$$;
 
                                         var match = result.responseText.match(/<img\s+src=["']((?:https?:)?\/\/[^/]+\/+img\/+[0-9a-z]{10,}\/+.*?)['"]\s+class=['"]picview["']/);
                                         if (match) {
-                                            return options.cb(urljoin(src, match[1], true));
+                                            return options.cb({
+                                                url: urljoin(src, match[1], true),
+                                                is_original: true
+                                            });
                                         } else {
                                             return options.cb(null);
                                         }
