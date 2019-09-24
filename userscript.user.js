@@ -13531,6 +13531,12 @@ var $$IMU_EXPORT$$;
             return src.replace(/.*:\/\/[^/]*\/[0-9]+[^/]*\//, "");
         }
 
+        if (domain === "imgp.golos.io") {
+            // https://imgp.golos.io/0x0/https://s26.postimg.org/hfb38d3e1/Dubai_Towers_1.jpg
+            //   https://s26.postimg.org/hfb38d3e1/Dubai_Towers_1.jpg -- postimg.org is down though
+            return src.replace(/^[a-z]+:\/\/[^/]*\/+[0-9]+x[0-9]+\/+(https?:)/, "$1");
+        }
+
         if ((domain_nosub === "zumst.com" ||
              domain_nosub === "zum.com") &&
             domain.match(/^static\./)) {
@@ -24236,7 +24242,10 @@ var $$IMU_EXPORT$$;
             return src.replace(/^[a-z]+:\/\/[^/]*\/img\/([a-z]+:\/\/.*)$/, "$1");
         }
 
-        if (domain === "img.noobzone.ru") {
+        if (domain === "img.noobzone.ru" ||
+            // http://www.guihuayun.com/getimg.php?url=http://mmbiz.qpic.cn/mmbiz/HEwvIqrmFSHOSgdfCNUtZargeuch1HYwhgibGIwylD8rYcqhNibicuCcmwC4zg3N4K4Efws23stKSwohuK5khJNwg/640?wx_fmt=jpeg
+            //   http://mmbiz.qpic.cn/mmbiz/HEwvIqrmFSHOSgdfCNUtZargeuch1HYwhgibGIwylD8rYcqhNibicuCcmwC4zg3N4K4Efws23stKSwohuK5khJNwg/0
+            domain_nowww === "guihuayun.com") {
             // https://img.noobzone.ru/getimg.php?url=http%3A%2F%2Fmtdata.ru%2Fu2%2Fphoto7447%2F20649820661-0%2Foriginal.jpg
             //   http://mtdata.ru/u2/photo7447/20649820661-0/original.jpg
             return decodeURIComponent(src.replace(/^[a-z]+:\/\/[^/]*\/getimg\.php.*?[?&]url=([^&]*).*?$/, "$1"));
@@ -40179,6 +40188,18 @@ var $$IMU_EXPORT$$;
             return src.replace(/(\/images\/+[^/]*\/+[0-9]{2}_[0-9]{2}_[0-9]{2}\/+)[a-z]+\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
         }
 
+        if (domain === "i.servimg.com") {
+            // https://i.servimg.com/u/f43/11/43/57/21/tm/dubai-10.jpg
+            //   https://i.servimg.com/u/f43/11/43/57/21/dubai-10.jpg
+            return src.replace(/\/tm\/+([^/]*\.[^/.]*)(?:[?#].*)?$/, "/$1");
+        }
+
+        if (domain_nowww === "ammonnews.net") {
+            // http://www.ammonnews.net/image.php?token=4c5c89246d62e1dd9dbb6a8d746e6b75&size=small
+            //   http://www.ammonnews.net/image.php?token=4c5c89246d62e1dd9dbb6a8d746e6b75
+            return src.replace(/\/image\.php\?(?:.*?&)?token=([0-9a-f]+).*?$/, "/image.php?token=$1");
+        }
+
 
 
 
@@ -42205,87 +42226,101 @@ var $$IMU_EXPORT$$;
                             console_log("(check_image) resp", resp);
 
                         // nano defender removes this.DONE
-                        if (resp.readyState == 4) {
-                            cursor_default();
-
-                            if (resp.finalUrl === window.location.href) {
-                                console_log(resp.finalUrl);
-                                console_log("Same URL");
-                                return;
-                            }
-
-                            var headers = {};
-                            var headers_splitted = resp.responseHeaders.split("\n");
-                            headers_splitted.forEach(function (header) {
-                                header = header
-                                    .replace(/^\s*/, "")
-                                    .replace(/\s*$/, "");
-                                var headername = header.replace(/^([^:]*?):\s*.*/, "$1");
-                                var headerbody = header.replace(/^[^:]*?:\s*(.*)/, "$1");
-                                headers[headername.toLowerCase()] = headerbody;
-                            });
-
-                            if (_nir_debug_)
-                                console_log("(check_image) resp headers", headers);
-
-
-                            var digit = resp.status.toString()[0];
-
-                            var ok_error = check_ok_error(obj.head_ok_errors, resp.status);
-
-                            if (((digit === "4" || digit === "5") &&
-                                 resp.status !== 405) &&
-                                ok_error !== true) {
-                                err_txt = "Error: " + resp.status;
-                                if (err_cb) {
-                                    err_cb(err_txt);
-                                } else {
-                                    console_error(err_txt);
-                                }
-
-                                return;
-                            }
-
-                            var content_type = headers["content-type"];
-                            if (!content_type)
-                                content_type = "";
-                            content_type = content_type.toLowerCase();
-
-                            if (content_type.match(/text\/html/) && !obj.head_wrong_contenttype &&
-                                ok_error !== true) {
-                                var err_txt = "Error: Not an image: " + content_type;
-                                if (err_cb) {
-                                    err_cb(err_txt);
-                                } else {
-                                    console_error(err_txt);
-                                }
-
-                                return;
-                            }
-
-                            if (!is_extension || settings.redirect_disable_for_responseheader) {
-                                if (obj.forces_download || (
-                                    (content_type.match(/(?:binary|application)\//) ||
-                                     // such as [image/png] (server bug)
-                                     content_type.match(/^ *\[/)) && !obj.head_wrong_contenttype) ||
-                                    (headers["content-disposition"] &&
-                                     headers["content-disposition"].toLowerCase().match(/^ *attachment/))) {
-                                    console_error("Forces download");
-                                    mouseover_text("forces download");
-                                    return;
-                                }
-                            }
-
-                            if (headers["content-length"] && headers["content-length"] == "0" && !obj.head_wrong_contentlength) {
-                                console_error("Zero-length image");
-                                return;
-                            }
-
-                            if (!customheaders || is_extension)
-                                ok_cb(url);
-                            else
-                                console_log("Custom headers needed, currently unhandled");
+                        if (resp.readyState !== 4) {
+                            return;
                         }
+
+                        if (resp.finalUrl === "" && resp.status === 0) {
+                            // error loading image (IP doesn't exist, etc.), ignore
+                            err_txt = "Error: status == 0";
+                            if (err_cb) {
+                                err_cb(err_txt);
+                            } else {
+                                console_error(err_txt);
+                            }
+
+                            return;
+                        }
+
+                        cursor_default();
+
+                        if (resp.finalUrl === window.location.href) {
+                            console_log(resp.finalUrl);
+                            console_log("Same URL");
+                            return;
+                        }
+
+                        var headers = {};
+                        var headers_splitted = resp.responseHeaders.split("\n");
+                        headers_splitted.forEach(function (header) {
+                            header = header
+                                .replace(/^\s*/, "")
+                                .replace(/\s*$/, "");
+                            var headername = header.replace(/^([^:]*?):\s*.*/, "$1");
+                            var headerbody = header.replace(/^[^:]*?:\s*(.*)/, "$1");
+                            headers[headername.toLowerCase()] = headerbody;
+                        });
+
+                        if (_nir_debug_)
+                            console_log("(check_image) resp headers", headers);
+
+
+                        var digit = resp.status.toString()[0];
+
+                        var ok_error = check_ok_error(obj.head_ok_errors, resp.status);
+
+                        if (((digit === "4" || digit === "5") &&
+                            resp.status !== 405) &&
+                            ok_error !== true) {
+                            err_txt = "Error: " + resp.status;
+                            if (err_cb) {
+                                err_cb(err_txt);
+                            } else {
+                                console_error(err_txt);
+                            }
+
+                            return;
+                        }
+
+                        var content_type = headers["content-type"];
+                        if (!content_type)
+                            content_type = "";
+                        content_type = content_type.toLowerCase();
+
+                        if (content_type.match(/text\/html/) && !obj.head_wrong_contenttype &&
+                            ok_error !== true) {
+                            var err_txt = "Error: Not an image: " + content_type;
+                            if (err_cb) {
+                                err_cb(err_txt);
+                            } else {
+                                console_error(err_txt);
+                            }
+
+                            return;
+                        }
+
+                        if (!is_extension || settings.redirect_disable_for_responseheader) {
+                            if (obj.forces_download || (
+                                (content_type.match(/(?:binary|application)\//) ||
+                                    // such as [image/png] (server bug)
+                                    content_type.match(/^ *\[/)) && !obj.head_wrong_contenttype) ||
+                                (headers["content-disposition"] &&
+                                    headers["content-disposition"].toLowerCase().match(/^ *attachment/))) {
+                                console_error("Forces download");
+                                mouseover_text("forces download");
+                                return;
+                            }
+                        }
+
+                        if (headers["content-length"] && headers["content-length"] == "0" && !obj.head_wrong_contentlength) {
+                            console_error("Zero-length image");
+                            return;
+                        }
+
+                        if (!customheaders || is_extension)
+                            ok_cb(url);
+                        else
+                            console_log("Custom headers needed, currently unhandled");
                     }
                 });
             }
