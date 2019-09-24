@@ -40354,6 +40354,38 @@ var $$IMU_EXPORT$$;
             return src.replace(/(\/haber\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}[^/]*-[0-9]+_[0-9]+)_[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1_osd$2");
         }
 
+        if (domain_nowww === "segre.to") {
+            // https://segre.to/a/shouts/ZymQnbPnj3Rv7ZVAaye/VayAnVjj1nvJK44wAEE_hq.jpg
+            //  https://segre.to/a/shouts/ZymQnbPnj3Rv7ZVAaye/VayAnVjj1nvJK44wAEE.jpg  -- 2000x2400
+            return src.replace(/(\/shouts\/+[^/]*\/+[^/]*)_hq(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+        }
+
+        if (domain === "img.fotodom.ru") {
+            // http://img.fotodom.ru/QV04-2555.jpg?size=s
+            obj = [];
+
+            regex = /(:\/\/[^/]*\/+[^/?]*)(?:\?size=[sml])?(?:\#.*)?$/;
+            newsrc = src.replace(regex, "$1?size=l");
+            if (newsrc !== src)
+                obj.push({
+                    url: newsrc,
+                    problems: {
+                        watermark: true
+                    }
+                });
+
+            newsrc = src.replace(regex, "$1?size=m");
+            if (newsrc !== src)
+                obj.push({
+                    url: newsrc,
+                    problems: {
+                        smaller: true
+                    }
+                });
+
+            return obj;
+        }
+
 
 
 
