@@ -8533,9 +8533,12 @@ var $$IMU_EXPORT$$;
                     onload: function(resp) {
                         //console_log(resp);
                         if (resp.readyState === 4) {
-                            var match =resp.responseText.match(/<a\s+href=["'](https?:\/\/i(?:mg)?[0-9]*\.[^/]+\/+.*?)["'][^>]*\sdownload>/);
+                            var match = resp.responseText.match(/<a\s+href=["'](https?:\/\/i(?:mg)?[0-9]*\.[^/]+\/+.*?)["'][^>]*\sdownload>/);
                             if (match) {
-                                options.cb(match[1]);
+                                options.cb({
+                                    url: match[1],
+                                    is_original: true
+                                });
                             } else {
                                 options.cb(null);
                             }
@@ -8565,17 +8568,20 @@ var $$IMU_EXPORT$$;
             //   https://www.fappic.com/img/lahkdnrgnddldsjyc4chbwyc2gbhthljxo25o7spsu/27afDSm-lhf_1091_0001.jpeg
             id = src.replace(/^([a-z]+:\/\/)(?:[^/.]*\.)?([^/.]+\.[^/.]+\/+)(?:th|i)\/+[0-9]+\/+([0-9a-z]+)(?:_t)?(\.[^/.]*)?$/,
                              "$1$2$3/$4");
-            console_log(id);
+            //console_log(id);
             if (id !== src && options && options.cb && options.do_request) {
                 options.do_request({
                     method: "GET",
                     url: id,
                     onload: function(resp) {
-                        console_log(resp);
+                        //console_log(resp);
                         if (resp.readyState === 4) {
-                            var match =resp.responseText.match(/<img\s+src=["'](https?:\/\/[^/]+\/+img\/+.*?)["'][^>]*\s+class=['"]pic["']/);
+                            var match = resp.responseText.match(/<img\s+src=["'](https?:\/\/[^/]+\/+img\/+.*?)["'][^>]*\s+class=['"]pic["']/);
                             if (match) {
-                                options.cb(match[1]);
+                                options.cb({
+                                    url: match[1],
+                                    is_original: true
+                                });
                             } else {
                                 options.cb(null);
                             }
@@ -15793,13 +15799,14 @@ var $$IMU_EXPORT$$;
             // https://mfiles.alphacoders.com/586/thumb-586777.jpg
             //   https://images2.alphacoders.com/152/152200.jpg
             // https://mobile.alphacoders.com/wallpapers/view/18416/
-            id = src.replace(/.*\/thumb(?:-[0-9]*)?-([0-9]+)\.[^/.]*$/, "$1");
+            id = src.replace(/.*\/(?:thumb(?:-[0-9]*)?-)?([0-9]+)\.[^/.]*$/, "$1");
             if (id !== src) {
                 options.do_request({
                     url: "https://mobile.alphacoders.com/wallpapers/view/" + id + "/",
                     method: "GET",
                     onload: function(resp) {
                         if (resp.readyState === 4) {
+                            var page = resp.finalUrl;
                             var match = resp.responseText.match(/"([a-z]+:\/\/wall\.alphacoders\.com\/big\.php\?i=[0-9]+)"/);
                             if (match) {
                                 options.do_request({
@@ -15809,7 +15816,13 @@ var $$IMU_EXPORT$$;
                                         if (resp.readyState === 4) {
                                             var match = resp.responseText.match(/<meta *property="og:image" *content="([^"]*)"/);
                                             if (match) {
-                                                options.cb(match[1]);
+                                                options.cb({
+                                                    url: match[1],
+                                                    is_original: true,
+                                                    extra: {
+                                                        page: page
+                                                    }
+                                                });
                                             } else {
                                                 options.cb(null);
                                             }
@@ -25371,7 +25384,7 @@ var $$IMU_EXPORT$$;
             src.indexOf("/media/") && options && options.cb && options.do_request) {
             // https://t.imageweb.ws/media/thumbs_200/12/11108/1181579.jpg
             //   https://www.imageweb.ws/media/images/12/bree-daniels/bree-daniels-1181579.jpg
-            match = src.match(/\/media\/[^/]*\/[0-9]+\/[0-9]+\/([0-9]+)\.[^/.]*/);
+            match = src.match(/\/media\/+[^/]*\/+[0-9]+\/+[0-9]+\/+([0-9]+)\.[^/.]*/);
             if (match) {
                 id = match[1];
 
@@ -25383,18 +25396,23 @@ var $$IMU_EXPORT$$;
                         if (resp.readyState === 4) {
                             var match = resp.responseText.match(/href="(\/media\/images\/[^"]*)"/);
                             if (match) {
-                                options.cb(urljoin("http://www." + domain_nosub + "/", match[1], true).replace(/\?.*/, ""));
+                                options.cb({
+                                    url: urljoin("http://www." + domain_nosub + "/", match[1], true).replace(/\?.*/, ""),
+                                    extra: {
+                                        page: resp.finalUrl
+                                    }
+                                });
                             } else {
                                 options.cb(null);
                             }
                         }
                     }
                 });
-            }
 
-            return {
-                waiting: true
-            };
+                return {
+                    waiting: true
+                };
+            }
         }
 
         if ((domain_nosub === "pictoa.com" ||
