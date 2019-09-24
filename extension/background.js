@@ -53,6 +53,9 @@ var do_request = function(request) {
       statusText: xhr.statusText
     };
 
+    if (xhr.status === 0 && xhr.responseURL === "")
+      resp.status = 0;
+
     if (resp.readyState === 4) {
       try {
         resp.responseText = xhr.responseText;
