@@ -19,7 +19,7 @@
 // @grant        GM.openInTab
 // @connect      *
 // @run-at       document-start
-// @license      Apache 2.0
+// @license      Apache-2.0
 // ==/UserScript==
 
 // If you see "A userscript wants to access a cross-origin resource.",
