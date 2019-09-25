@@ -167,7 +167,7 @@ The result is a list of objects that contain properties that may be useful in us
       // If this is true, you shouldn't input this URL again into IMU.
       norecurse: false,
 
-      // Whether or not this URL should be used
+      // Whether or not this URL should be used. If true, treat this like a 404
       bad: false,
 
       // Whether or not this URL is a "fake" URL that was used internally (i.e. if true, don't use this)
