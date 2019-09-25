@@ -42231,10 +42231,15 @@ var $$IMU_EXPORT$$;
 							var obj_url = obj[i].url;
 							var orig_url = null;
 
+							obj.splice(i, 1);
+							images.splice(i, 1);
+							i--;
+
 							for (var j = 0; j < tried_urls.length; j++) {
 								if (tried_urls[j][2] === obj_url) {
 									var orig_url = tried_urls[j][3].url;
 									var index = images.indexOf(orig_url);
+									tried_urls[j][4] = true;
 
 									if (index >= 0) {
 										obj.splice(index, 1);
@@ -42256,22 +42261,21 @@ var $$IMU_EXPORT$$;
 						var index = images.indexOf(fine_urls[i][0]);
 						if (index >= 0) {
 							obj = [obj[index]];
-							if (obj[0].bad)
-								continue;
-
 							return options.cb(obj, fine_urls[i][1]);
 						}
 					}
 
+					var try_any = false;
 					for (var i = 0; i < tried_urls.length; i++) {
-						if (tried_urls[i][0] === url) {
+						if (tried_urls[i][0] === url || try_any) {
+							if (tried_urls[i][4] === true) {
+								try_any = true;
+								continue;
+							}
+
 							var index = images.indexOf(tried_urls[i][2]);
 							if (index >= 0) {
 								obj = [obj[index]];
-								if (obj[0].bad) {
-									continue;
-								}
-
 								return options.cb(obj, tried_urls[i][1]);
 							} else {
 								return options.cb(null, tried_urls[i][1]);
@@ -42285,7 +42289,7 @@ var $$IMU_EXPORT$$;
 						}
 
 						fine_urls.push([newurl, data]);
-						tried_urls.push([url, data, newurl, deepcopy(newobj)]);
+						tried_urls.push([url, data, newurl, deepcopy(newobj), false]);
 
 						//if (images.indexOf(newurl) < 0 && newurl !== url || true) {
 						if (images.indexOf(newurl) < 0 || !obj[images.indexOf(newurl)].norecurse) {
