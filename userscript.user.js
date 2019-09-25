@@ -44698,7 +44698,8 @@ var $$IMU_EXPORT$$;
 
 					opacity_hover(topbarel);
 
-					var closebtn = addbtn("×", _("Close") + " (" + _("ESC") + ")", function() {
+					// \xD7 = ×
+					var closebtn = addbtn("\xD7", _("Close") + " (" + _("ESC") + ")", function() {
 						resetpopups();
 					}, true);
 					topbarel.appendChild(closebtn);
@@ -44779,7 +44780,8 @@ var $$IMU_EXPORT$$;
 
 						var lefttitle = _("Previous") + " (" + _("Left Arrow") + ")";
 
-						var leftbtn = addbtn("←", lefttitle, leftaction);
+						// \u2190 = ←
+						var leftbtn = addbtn("\u2190", lefttitle, leftaction);
 						leftbtn.style.top = "calc(50% - 7px - " + emhalf + ")";
 						leftbtn.style.left = "-" + em1;
 						outerdiv.appendChild(leftbtn);
@@ -44804,7 +44806,8 @@ var $$IMU_EXPORT$$;
 
 						var righttitle = _("Next") + " (" + _("Right Arrow") + ")";
 
-						var rightbtn = addbtn("→", righttitle, rightaction);
+						// \u2192 = →
+						var rightbtn = addbtn("\u2192", righttitle, rightaction);
 						rightbtn.style.top = "calc(50% - 7px - " + emhalf + ")";
 						rightbtn.style.left = "initial";
 						rightbtn.style.right = "-" + em1;
@@ -44870,13 +44873,16 @@ var $$IMU_EXPORT$$;
 					}
 
 					if (settings.mouseover_ui_optionsbtn) {
-						var optionsbtn = addbtn("⚙", _("Options"), options_page, true);
+						// \u2699 = ⚙
+						var optionsbtn = addbtn("\u2699", _("Options"), options_page, true);
 						topbarel.appendChild(optionsbtn);
 					}
 
 					if (settings.mouseover_ui_rotationbtns) {
-						var rotateleftbtn = addbtn("↶", _("rotate_left_btn"), function() {rotate_gallery(-90)}, true);
-						var rotaterightbtn = addbtn("↷", _("rotate_right_btn"), function() {rotate_gallery(90)}, true);
+						// \u21B6 = ↶
+						var rotateleftbtn = addbtn("\u21B6", _("rotate_left_btn"), function() {rotate_gallery(-90)}, true);
+						// \u21B7 = ↶
+						var rotaterightbtn = addbtn("\u21B7", _("rotate_right_btn"), function() {rotate_gallery(90)}, true);
 
 						topbarel.appendChild(rotateleftbtn);
 						topbarel.appendChild(rotaterightbtn);
