@@ -44788,7 +44788,7 @@ var $$IMU_EXPORT$$;
 										newobj.filename = a_value;
 									}*/
 
-									if (newobj.filename.length === 0 && attr === "filename") {
+									if (newobj.filename.length === 0 && attr === "filename" && typeof a_value === "string" && a_value.length > 0) {
 										newobj.filename = a_value;
 									}
 
@@ -45315,7 +45315,7 @@ var $$IMU_EXPORT$$;
 					};
 
 					if (options.isbg)
-						sources[src].isbg = true;
+						sources[src].isbg = options.isbg;
 				} else {
 					sources[src].count++;
 				}
@@ -45431,6 +45431,42 @@ var $$IMU_EXPORT$$;
 				}
 			}
 
+			function get_url_from_css(str) {
+				var src = norm(str.replace(/^(?:.*?\)\s*,)?\s*url[(](?:(?:'(.*?)')|(?:"(.*?)")|(?:([^)]*)))[)].*$/, "$1$2$3"));
+				if (src !== str)
+					return src;
+				return null;
+			}
+
+			function add_bgimage(layer, el, style, beforeafter) {
+				if (style.getPropertyValue("background-image")) {
+					var bgimg = style.getPropertyValue("background-image");
+					// https://www.flickr.com/account/upgrade/pro
+					// background-image: linear-gradient(rgba(0,0,0,.2),rgba(0,0,0,.2)),url(https://combo.staticflickr.com/ap/build/images/pro/flickrpro-hero-header.jpg)
+					if (bgimg.match(/^(.*?\)\s*,)?\s*url[(]/)) {
+						// url('https://t00.deviantart.net/I94eYVLky718W9_zFjV-SJ-_qm8=/300x200/filters:fixed_height(100,100):origin()/pre00/abda/th/pre/i/2013/069/9/0/black_rock_shooter_by_mrtviolet-d5xktg7.jpg');
+						var src = get_url_from_css(bgimg);
+						if (src)
+							addImage(src, el, {
+								isbg: true,
+								layer: layer
+							});
+					}
+				}
+
+				if (beforeafter) {
+					if (style.getPropertyValue("content")) {
+						var src = get_url_from_css(style.getPropertyValue("content"));
+						if (src) {
+							addImage(src, el, {
+								isbg: beforeafter,
+								layer: layer
+							});
+						}
+					}
+				}
+			}
+
 			function addElement(el, layer) {
 				if (settings.mouseover_exclude_page_bg && el.tagName === "BODY") {
 					return;
@@ -45441,21 +45477,9 @@ var $$IMU_EXPORT$$;
 
 				addTagElement(el, layer);
 
-				var style = window.getComputedStyle(el);
-				if (style.getPropertyValue("background-image")) {
-					var bgimg = style.getPropertyValue("background-image");
-					// https://www.flickr.com/account/upgrade/pro
-					// background-image: linear-gradient(rgba(0,0,0,.2),rgba(0,0,0,.2)),url(https://combo.staticflickr.com/ap/build/images/pro/flickrpro-hero-header.jpg)
-					if (bgimg.match(/^(.*?\)\s*,)?\s*url[(]/)) {
-						// url('https://t00.deviantart.net/I94eYVLky718W9_zFjV-SJ-_qm8=/300x200/filters:fixed_height(100,100):origin()/pre00/abda/th/pre/i/2013/069/9/0/black_rock_shooter_by_mrtviolet-d5xktg7.jpg');
-						var src = norm(bgimg.replace(/^(?:.*?\)\s*,)?\s*url[(](?:(?:'(.*?)')|(?:"(.*?)")|(?:([^)]*)))[)].*$/, "$1$2$3"));
-						if (src !== bgimg)
-							addImage(src, el, {
-								isbg: true,
-								layer: layer
-							});
-					}
-				}
+				add_bgimage(layer, el, window.getComputedStyle(el));
+				add_bgimage(layer, el, window.getComputedStyle(el, ":before"), "before");
+				add_bgimage(layer, el, window.getComputedStyle(el, ":after"), "after");
 			}
 
 			// todo: do multiple passes, one per layer
@@ -45912,6 +45936,9 @@ var $$IMU_EXPORT$$;
 		}
 
 		function trigger_popup(is_contextmenu) {
+			if (_nir_debug_)
+				console_log("trigger_popup (is_contextmenu=" + is_contextmenu + ")");
+
 			controlPressed = true;
 			delay_handle_triggering = true;
 			//var els = document.elementsFromPoint(mouseX, mouseY);
@@ -45930,7 +45957,14 @@ var $$IMU_EXPORT$$;
 			var els = find_els_at_point(point);
 			//console_log(els);
 
+			if (_nir_debug_)
+				console_log("trigger_popup: els =", els);
+
 			var source = find_source(els);
+
+			if (_nir_debug_)
+				console_log("trigger_popup: source =", source);
+
 			if (source) {
 				trigger_popup_with_source(source);
 			} else {
