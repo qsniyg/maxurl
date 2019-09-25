@@ -5801,6 +5801,8 @@ var $$IMU_EXPORT$$;
 			domain === "pc.wangpan.xycdn.n0808.com" ||
 			// http://resource.meihua.info/fa6c53e3-2dfb-441d-a323-158146e5a9aa.jpg?imageView2/0/format/jpg
 			domain === "resource.meihua.info" ||
+			// https://i.ezbuy.sg/Fgf2dNzJvLXyyw04b-yGRWTRUbmx?imageView2/2/w/264/q/90/format/webp
+			domain === "i.ezbuy.sg" ||
 			// http://upload-images.jianshu.io/upload_images/1685198-ebfc2a22664f623c?imageMogr2/auto-orient/strip%7CimageView2/2/w/300
 			domain === "upload-images.jianshu.io") {
 			src = src.replace(/\?.*$/, "");
@@ -38271,7 +38273,7 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "gbracingpix.com" ||
 			// https://kickin.info/pics/aHR0cHM6Ly90c2UzLm1tLmJpbmcubmV0L3RoP2lkPU9JUC41OE40dkNDVWw4WVlOUjlEUlptZ01nSGFFNyZycz0xJnBpZD0xNS4xJnc9MTAyNA==.jpg
 			//   https://tse3.mm.bing.net/th?id=OIP.58N4vCCUl8YYNR9DRZmgMgHaE7
-			domain_nowww === "kcckin.info" ||
+			domain_nowww === "kickin.info" ||
 			// https://catmario.info/pics/aHR0cHM6Ly90c2UzLm1tLmJpbmcubmV0L3RoP2lkPU9JUC41OE40dkNDVWw4WVlOUjlEUlptZ01nSGFFNyZycz0xJnBpZD0xNS4xJnc9MTAyNA==.jpg
 			//   https://tse3.mm.bing.net/th?id=OIP.58N4vCCUl8YYNR9DRZmgMgHaE7
 			domain_nowww === "catmario.info" ||
@@ -40487,6 +40489,14 @@ var $$IMU_EXPORT$$;
 			// http://cdn-yotpo-images-production.yotpo.com/Account/278495/87773147/medium_square.jpg?1563232768
 			//   http://cdn-yotpo-images-production.yotpo.com/Account/278495/87773147/original.jpg?1563232768
 			return src.replace(/(\/(?:Product|Review|Account)\/+[0-9]+\/+[0-9]+\/+)[a-z_]+(\.[^/.]*)(?:[?#].*)?$/, "$1original$2");
+		}
+
+		if (domain_nowww === "maquillagecreation.ch") {
+			// http://maquillagecreation.ch/img/content/dark/makeup/comic256x340.jpg
+			//   http://maquillagecreation.ch/img/content/dark/makeup/comic.jpg
+			// http://maquillagecreation.ch/img/content/dark/symbio/symbio3_m.jpg
+			//   http://maquillagecreation.ch/img/content/dark/symbio/symbio3.jpg
+			return src.replace(/(\/img\/+content\/+[^/]*\/+[^/]*\/+[^/]*?)(?:_m|[0-9]+x[0-9]+)(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
 		}
 
 
