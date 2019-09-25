@@ -45432,6 +45432,12 @@ var $$IMU_EXPORT$$;
 			}
 
 			function get_url_from_css(str) {
+				if (!str.match(/^(.*?\)\s*,)?\s*url[(]/))
+					return null;
+
+				// https://www.flickr.com/account/upgrade/pro
+				// background-image: linear-gradient(rgba(0,0,0,.2),rgba(0,0,0,.2)),url(https://combo.staticflickr.com/ap/build/images/pro/flickrpro-hero-header.jpg)
+				// url('https://t00.deviantart.net/I94eYVLky718W9_zFjV-SJ-_qm8=/300x200/filters:fixed_height(100,100):origin()/pre00/abda/th/pre/i/2013/069/9/0/black_rock_shooter_by_mrtviolet-d5xktg7.jpg');
 				var src = norm(str.replace(/^(?:.*?\)\s*,)?\s*url[(](?:(?:'(.*?)')|(?:"(.*?)")|(?:([^)]*)))[)].*$/, "$1$2$3"));
 				if (src !== str)
 					return src;
@@ -45441,17 +45447,12 @@ var $$IMU_EXPORT$$;
 			function add_bgimage(layer, el, style, beforeafter) {
 				if (style.getPropertyValue("background-image")) {
 					var bgimg = style.getPropertyValue("background-image");
-					// https://www.flickr.com/account/upgrade/pro
-					// background-image: linear-gradient(rgba(0,0,0,.2),rgba(0,0,0,.2)),url(https://combo.staticflickr.com/ap/build/images/pro/flickrpro-hero-header.jpg)
-					if (bgimg.match(/^(.*?\)\s*,)?\s*url[(]/)) {
-						// url('https://t00.deviantart.net/I94eYVLky718W9_zFjV-SJ-_qm8=/300x200/filters:fixed_height(100,100):origin()/pre00/abda/th/pre/i/2013/069/9/0/black_rock_shooter_by_mrtviolet-d5xktg7.jpg');
-						var src = get_url_from_css(bgimg);
-						if (src)
-							addImage(src, el, {
-								isbg: true,
-								layer: layer
-							});
-					}
+					var src = get_url_from_css(bgimg);
+					if (src)
+						addImage(src, el, {
+							isbg: true,
+							layer: layer
+						});
 				}
 
 				if (beforeafter) {
