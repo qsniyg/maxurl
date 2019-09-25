@@ -101,7 +101,8 @@ var $$IMU_EXPORT$$;
 
 	var is_interactive = is_extension || is_userscript;
 
-	var userscript_manager = "unknown"
+	var userscript_manager = "unknown";
+	var userscript_manager_version = "";
 	if (is_userscript) {
 		var gm_info = undefined;
 
@@ -111,13 +112,19 @@ var $$IMU_EXPORT$$;
 			gm_info = GM_info;
 		}
 
-		// Unfortunately FireMonkey currently doesn't implement GM_info's scriptHandler:
-		//   https://github.com/erosman/support/issues/98#issuecomment-534671229
-		// We currently have to rely on this hack
-		if (typeof GM_fetch === 'function' && gm_info === null) {
-			userscript_manager = "firemonkey";
-		} else if (typeof gm_info === "object" && gm_info.scriptHandler) {
-			userscript_manager = gm_info.scriptHandler;
+		if (typeof gm_info === "object") {
+			if (gm_info.scriptHandler) {
+				userscript_manager = gm_info.scriptHandler;
+			}
+
+			if (gm_info.version) {
+				userscript_manager_version = gm_info.version;
+			}
+		} else if (typeof GM_fetch === 'function' && gm_info === null) {
+			// Unfortunately FireMonkey currently doesn't implement GM_info's scriptHandler:
+			//   https://github.com/erosman/support/issues/98#issuecomment-534671229
+			// We currently have to rely on this hack
+			userscript_manager = "FireMonkey";
 		}
 	}
 
@@ -43564,7 +43571,7 @@ var $$IMU_EXPORT$$;
 				   // Unfortunately FireMonkey currently implements GM_getValue as a mapping to GM.getValue for some reason
 				   //   https://github.com/erosman/support/issues/98
 				   // Until this is fixed, we cannot use GM_getValue for FireMonkey
-				   userscript_manager !== "firemonkey") {
+				   userscript_manager !== "FireMonkey") {
 			return cb(parse_value(GM_getValue(key, undefined)));
 		} else if (typeof GM !== "undefined" && GM.getValue) {
 			GM.getValue(key, undefined).then(function (value) {
@@ -46429,8 +46436,8 @@ var $$IMU_EXPORT$$;
 				return;
 			}
 
-			// esc
-			// why was that second check added?
+			// 27 = esc
+			// why was the second check added?
 			if (event.which === 27 || (popup_trigger_reason === "mouse" && delay_handle_triggering)) {
 				stop_waiting();
 				resetpopups();
