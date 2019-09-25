@@ -37,7 +37,7 @@ function get_userscript_stats(response) {
   return [
     // rules
     //userscript_rcontents.match(/\n {8}(?:[/][*])?if /g).length,
-    userscript_rcontents.match(/\n\t{2}(?:[/][*])?if /g).length,
+    userscript_rcontents.match(/\n(?: {8}|\t{2})(?:[/][*])?if /g).length,
     // sites
     get_sites().length
     //userscript_rcontents.match(/[^/](?:domain(?:_[a-z]+)?|amazon_container|googlestorage_container) *===/g).length
