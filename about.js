@@ -1,5 +1,5 @@
-// For LibreJS
 // @license http://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
+// ^ for LibreJS (this comment has to be below)
 
 "use strict";
 
