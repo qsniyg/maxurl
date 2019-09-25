@@ -44881,7 +44881,7 @@ var $$IMU_EXPORT$$;
 					if (settings.mouseover_ui_rotationbtns) {
 						// \u21B6 = ↶
 						var rotateleftbtn = addbtn("\u21B6", _("rotate_left_btn"), function() {rotate_gallery(-90)}, true);
-						// \u21B7 = ↶
+						// \u21B7 = ↷
 						var rotaterightbtn = addbtn("\u21B7", _("rotate_right_btn"), function() {rotate_gallery(90)}, true);
 
 						topbarel.appendChild(rotateleftbtn);
