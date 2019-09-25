@@ -9784,7 +9784,10 @@ var $$IMU_EXPORT$$;
 			};
 		}
 
-		if (domain === "imgur.dcard.tw") {
+		if (domain === "imgur.dcard.tw" ||
+			// https://i.wgirlz.us/iYezyBA.jpg
+			//   https://i.imgur.com/iYezyBA.jpg
+			domain === "i.wgirlz.us") {
 			// https://imgur.dcard.tw/gyU7d4s.jpg
 			//   https://i.imgur.com/gyU7d4s.jpg
 			return src.replace(/:\/\/[^/]*\//, "://i.imgur.com/");
@@ -38269,6 +38272,12 @@ var $$IMU_EXPORT$$;
 			// https://kickin.info/pics/aHR0cHM6Ly90c2UzLm1tLmJpbmcubmV0L3RoP2lkPU9JUC41OE40dkNDVWw4WVlOUjlEUlptZ01nSGFFNyZycz0xJnBpZD0xNS4xJnc9MTAyNA==.jpg
 			//   https://tse3.mm.bing.net/th?id=OIP.58N4vCCUl8YYNR9DRZmgMgHaE7
 			domain_nowww === "kcckin.info" ||
+			// https://catmario.info/pics/aHR0cHM6Ly90c2UzLm1tLmJpbmcubmV0L3RoP2lkPU9JUC41OE40dkNDVWw4WVlOUjlEUlptZ01nSGFFNyZycz0xJnBpZD0xNS4xJnc9MTAyNA==.jpg
+			//   https://tse3.mm.bing.net/th?id=OIP.58N4vCCUl8YYNR9DRZmgMgHaE7
+			domain_nowww === "catmario.info" ||
+			// https://greateasternwallgallery.com/pics/aHR0cHM6Ly90c2UzLm1tLmJpbmcubmV0L3RoP2lkPU9JUC41OE40dkNDVWw4WVlOUjlEUlptZ01nSGFFNyZycz0xJnBpZD0xNS4xJnc9MTAyNA==.jpg
+			//   https://tse3.mm.bing.net/th?id=OIP.58N4vCCUl8YYNR9DRZmgMgHaE7
+			domain_nowww === "greateasternwallgallery.com" ||
 			// https://carltonstaffing.info/pics/aHR0cHM6Ly90c2UzLm1tLmJpbmcubmV0L3RoP2lkPU9JUC41OE40dkNDVWw4WVlOUjlEUlptZ01nSGFFNyZycz0xJnBpZD0xNS4xJnc9MTAyNA==.jpg
 			//   https://tse3.mm.bing.net/th?id=OIP.58N4vCCUl8YYNR9DRZmgMgHaE7
 			domain_nowww === "carltonstaffing.info") {
@@ -42209,13 +42218,47 @@ var $$IMU_EXPORT$$;
 		for (var option in options) {
 			if (option === "cb") {
 				newoptions.cb = function(obj) {
+					if (_nir_debug_) {
+						console_log("bigimage_recursive_loop's cb: obj:", deepcopy(obj));
+						console_log("bigimage_recursive_loop's cb: oldobj:", deepcopy(oldobj));
+					}
+
 					obj = obj_merge(obj, oldobj);
 					var images = obj_to_simplelist(obj);
+
+					for (var i = 0; i < obj.length; i++) {
+						if (obj[i].bad) {
+							var obj_url = obj[i].url;
+							var orig_url = null;
+
+							for (var j = 0; j < tried_urls.length; j++) {
+								if (tried_urls[j][2] === obj_url) {
+									var orig_url = tried_urls[j][3].url;
+									var index = images.indexOf(orig_url);
+
+									if (index >= 0) {
+										obj.splice(index, 1);
+										images.splice(index, 1);
+
+										if (index < i)
+											i -= 2;
+										else if (index === i)
+											i--;
+									}
+
+									break;
+								}
+							}
+						}
+					}
 
 					for (var i = 0; i < fine_urls.length; i++) {
 						var index = images.indexOf(fine_urls[i][0]);
 						if (index >= 0) {
 							obj = [obj[index]];
+							if (obj[0].bad)
+								continue;
+
 							return options.cb(obj, fine_urls[i][1]);
 						}
 					}
@@ -42225,6 +42268,10 @@ var $$IMU_EXPORT$$;
 							var index = images.indexOf(tried_urls[i][2]);
 							if (index >= 0) {
 								obj = [obj[index]];
+								if (obj[0].bad) {
+									continue;
+								}
+
 								return options.cb(obj, tried_urls[i][1]);
 							} else {
 								return options.cb(null, tried_urls[i][1]);
@@ -42232,13 +42279,13 @@ var $$IMU_EXPORT$$;
 						}
 					}
 
-					query(obj, function(newurl, data) {
+					query(obj, function (newurl, newobj, data) {
 						if (!newurl) {
 							return options.cb(null, data);
 						}
 
 						fine_urls.push([newurl, data]);
-						tried_urls.push([url, data, newurl]);
+						tried_urls.push([url, data, newurl, deepcopy(newobj)]);
 
 						//if (images.indexOf(newurl) < 0 && newurl !== url || true) {
 						if (images.indexOf(newurl) < 0 || !obj[images.indexOf(newurl)].norecurse) {
@@ -42664,10 +42711,14 @@ var $$IMU_EXPORT$$;
 
 				redirect(newurl, newhref);
 			}
-		}, function(newhref, finalcb) {
+		}, function(newhref, real_finalcb) {
 			if (_nir_debug_) {
 				console_log("do_redirect", newhref);
 			}
+
+			var finalcb = function(newurl, data, newobj) {
+				real_finalcb(newurl, newobj, data);
+			};
 
 			if (false && !newhref[0].can_head || newhref[0].always_ok) {
 				var newurl = newhref[0].url;
@@ -46110,8 +46161,11 @@ var $$IMU_EXPORT$$;
 						element: source.el,
 						cb: realcb
 					}, function(obj, finalcb) {
+						if (_nir_debug_)
+							console_log("do_popup: brl query:", obj);
+
 						if (multi && obj[0].url === source.src) {
-							return finalcb(source.src, null);
+							return finalcb(source.src, obj[0], null);
 						}
 
 						var newobj = deepcopy(obj);
@@ -46140,6 +46194,9 @@ var $$IMU_EXPORT$$;
 						}
 
 						check_image_get(newobj, function(img, newurl, obj, respdata) {
+							if (_nir_debug_)
+								console_log("do_popup: check_image_get response:", newurl, obj, respdata);
+
 							if (!img) {
 								return finalcb(null);
 							}
@@ -46152,7 +46209,7 @@ var $$IMU_EXPORT$$;
 								newurl1 = data.resp.finalUrl;
 							}
 
-							finalcb(newurl1, data);
+							finalcb(newurl1, data.obj, data);
 							return;
 							// why?
 							if (newurl == source.src) {
