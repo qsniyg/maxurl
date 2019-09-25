@@ -46416,7 +46416,7 @@ var $$IMU_EXPORT$$;
 				condition = !trigger_partially_complete(event);
 			}
 
-			if (condition && close_behavior !== "esc" && popup_trigger_reason === "keyboard") {
+			if (condition && close_behavior !== "esc" && popup_trigger_reason === "keyboard" && popups_active) {
 				controlPressed = false;
 
 				if (!settings.mouseover_close_need_mouseout || can_close_popup[1]) {
@@ -46430,7 +46430,8 @@ var $$IMU_EXPORT$$;
 			}
 
 			// esc
-			if (event.which === 27 || delay_handle_triggering) {
+			// why was that second check added?
+			if (event.which === 27 || (popup_trigger_reason === "mouse" && delay_handle_triggering)) {
 				stop_waiting();
 				resetpopups();
 			}
