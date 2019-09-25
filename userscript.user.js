@@ -5727,6 +5727,8 @@ var $$IMU_EXPORT$$;
 			domain === "i.eurosport.com" ||
 			// https://blog.wirelessanalytics.com/hs-fs/hubfs/bigstock-Burj-Al-Arab-Jumeirah-In-Dubai-129187832.jpg?width=524&name=bigstock-Burj-Al-Arab-Jumeirah-In-Dubai-129187832.jpg
 			(domain === "blog.wirelessanalytics.com" && src.indexOf("/hubfs/") >= 0) ||
+			// https://b.zmtcdn.com/data/user_profile_pictures/b8b/0bbe96945a87de2eb8c9d9d82e1ecb8b.jpg?fit=around%7C400%3A400&crop=400%3A400%3B%2A%2C%2A
+			(domain_nosub === "zmtcdn.com" && src.indexOf("/data/") >= 0) ||
 			// http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
 			// https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
 			src.match(/\/demandware\.static\//) ||
@@ -40411,6 +40413,71 @@ var $$IMU_EXPORT$$;
 				});
 
 			return obj;
+		}
+
+		if (domain === "d3m2o2bzrl719s.cloudfront.net") {
+			// https://d3m2o2bzrl719s.cloudfront.net/photos/2019/02/christian-siriano-fw19-runway-show/gallery_e01bb255-9c85-4da2-b0df-4156883ab2d5.JPG
+			//   https://d3m2o2bzrl719s.cloudfront.net/photos/2019/02/christian-siriano-fw19-runway-show/lightbox_e01bb255-9c85-4da2-b0df-4156883ab2d5.JPG
+			// other:
+			// https://d3m2o2bzrl719s.cloudfront.net/photos/2018/02_February18/07/The_Blue_Jacket_Fashion_Show_Benefiting_Prostate_Cancer_Foundation/Selected/gallery_6365366598339006669054352_3_775108381NM091_The_Blue_Jac.JPG -- 3600x2400, no watermark
+			//   https://d3m2o2bzrl719s.cloudfront.net/photos/2018/02_February18/07/The_Blue_Jacket_Fashion_Show_Benefiting_Prostate_Cancer_Foundation/Selected/lightbox_6365366598339006669054352_3_775108381NM091_The_Blue_Jac.JPG -- 713x475, watermarked
+			// https://d3m2o2bzrl719s.cloudfront.net/sliders/4e072e65-a8cd-4e04-a38e-1a2d5d7a3ba9.JPG -- 1349x600, replacing with other guids doesn't work
+			obj = [];
+
+			regex = /(:\/\/[^/]*\/+photos\/+[0-9]{4}\/+[0-9]{2}\/+[^/]+\/+)(?:gallery|lightbox)_([-0-9a-f]{20,}\.)/;
+			newsrc = src.replace(regex, "$1lightbox_$2");
+			if (false && newsrc !== src) // disabling because too many images get smaller
+				obj.push({
+					url: newsrc,
+					problems: {
+						watermark: true
+					}
+				});
+
+			newsrc = src.replace(regex, "$1gallery_$2");
+			if (newsrc !== src)
+				obj.push({
+					url: newsrc,
+					problems: {
+						smaller: true
+					}
+				});
+
+			return obj
+		}
+
+		if (domain_nowww === "secureservercdn.net") {
+			// https://secureservercdn.net/45.40.148.106/oh4.a07.myftpupload.com/wp-content/uploads/2019-03-20_0172.jpg
+			//   http://oh4.a07.myftpupload.com/wp-content/uploads/2019-03-20_0172.jpg
+			return src.replace(/^[a-z]+:\/\/[^/]*\/+(?:[0-9]+\.){3}[0-9]+\/+([^/]*\.[^/]*\/)/, "http://$1");
+		}
+
+		if (false && domain === "api.netnoticias.mx") {
+			// https://api.netnoticias.mx/media/2019/08/26/preview_a47f0386a7fe1b4696295097a566aede35d82402.jpg
+			//   https://api.netnoticias.mx/media/2019/08/26/_hda47f0386a7fe1b4696295097a566aede35d82402.jpg -- 1280x853, stretched?
+			// https://api.netnoticias.mx/media/2019/08/23/preview_7156fc0ef4fc82186c6dd44696dbfc182fac5a9f.JPG
+			//   https://api.netnoticias.mx/media/2019/08/23/_hd7156fc0ef4fc82186c6dd44696dbfc182fac5a9f.JPG -- stretched?
+			// other:
+			// https://api.netnoticias.mx/images/2018/08/30/b1HQLIupUvfmm.JPG -- 3264x2448
+			return src.replace(/(\/media\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2})preview_([0-9a-f]{20,}\.[^/.]*)(?:[?#].*)?$/, "$1_hd$2");
+		}
+
+		if (domain === "cdn-yotpo-images-production.yotpo.com") {
+			// https://cdn-yotpo-images-production.yotpo.com/instagram/6/17957285275230906/low_resolution.jpg
+			//   https://cdn-yotpo-images-production.yotpo.com/instagram/6/17957285275230906/standard_resolution.jpg -- 1536x1536
+			// other:
+			// https://cdn-yotpo-images-production.yotpo.com/Product/110770801/83715126/original.png?1558838082
+			newsrc = src.replace(/\/low_resolution(\.[^/.]*)(?:[?#].*)?$/, "/standard_resolution$1");
+			if (newsrc !== src)
+				return newsrc;
+
+			// https://cdn-yotpo-images-production.yotpo.com/Product/94816388/77914457/facebook.png?1564765419 -- stretched
+			//   https://cdn-yotpo-images-production.yotpo.com/Product/94816388/77914457/original.png?1564765419
+			// https://cdn-yotpo-images-production.yotpo.com/Review/124351182/94024713/medium_square.jpg?1567878815
+			//   https://cdn-yotpo-images-production.yotpo.com/Review/124351182/94024713/original.jpg?1567878815
+			// http://cdn-yotpo-images-production.yotpo.com/Account/278495/87773147/medium_square.jpg?1563232768
+			//   http://cdn-yotpo-images-production.yotpo.com/Account/278495/87773147/original.jpg?1563232768
+			return src.replace(/(\/(?:Product|Review|Account)\/+[0-9]+\/+[0-9]+\/+)[a-z_]+(\.[^/.]*)(?:[?#].*)?$/, "$1original$2");
 		}
 
 
