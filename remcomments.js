@@ -49,14 +49,14 @@ function update() {
     }
 
     if (in_falserule) {
-      if (line.match(/^ {8}[}](?:[*][/])?$/))
+      if (line.match(/^\t{2}[}](?:[*][/])?$/))
         in_falserule = false;
       continue;
     }
 
     if (!line.match(/^\s*\/\//)) {
       var exclude_false = true;
-      if (exclude_false && line.match(/^ {8}(?:[/][*])?if [(]false *&&/)) {
+      if (exclude_false && line.match(/^\t{2}(?:[/][*])?if [(]false *&&/)) {
         in_falserule = true;
         continue;
       } else {
