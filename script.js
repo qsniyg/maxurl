@@ -1,3 +1,6 @@
+// @license http://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
+// ^ for LibreJS (this comment has to be below)
+
 var inputel = document.getElementById("input");
 var maxael = document.getElementById("max_a");
 var maxspanel = document.getElementById("max_span");
@@ -126,6 +129,9 @@ function track_ga(value) {
 
 function set_max(obj) {
   var error = true;
+
+  if (false)
+    console.log(obj);
 
   if (obj === "loading") {
     maxspanel.innerHTML = "Loading...";
@@ -266,3 +272,5 @@ if (document.location.origin === "file://") {
   script.src = loc.replace(/\/[^/]*\/[^/]*$/, "/userscript.user.js");
   document.body.appendChild(script);
 }
+
+// @license-end
