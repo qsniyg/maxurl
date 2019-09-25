@@ -1,3 +1,6 @@
+// @license http://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
+// ^ for LibreJS (this has to be the first comment in the file)
+
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
@@ -47046,3 +47049,5 @@ var $$IMU_EXPORT$$;
 
 	do_config();
 })();
+
+// @license-end
