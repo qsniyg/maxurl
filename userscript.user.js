@@ -40506,7 +40506,9 @@ var $$IMU_EXPORT$$;
 			// thanks to fireattack on github: https://github.com/qsniyg/maxurl/issues/142
 			// https://image.gamer.ne.jp/news/2019/20190909/002727856d434cbc81bc398e8b20960824e2/m/19.jpg
 			//   https://image.gamer.ne.jp/news/2019/20190909/002727856d434cbc81bc398e8b20960824e2/o/19.jpg
-			return src.replace(/(\/news\/+[0-9]{4}\/+[0-9]{8}\/+[0-9a-f]{20,}\/+)[a-z]\/+/, "$1o/");
+			// doesn't work for all:
+			// https://image.gamer.ne.jp/news/2019/20190925/00031a89bc15fd390cbc9dfaf447d5f6d32a/x/i.jpg -- o doesn't work, numbers do work, but x doesn't work for the numbers
+			return src.replace(/(\/news\/+[0-9]{4}\/+[0-9]{8}\/+[0-9a-f]{20,}\/+)[a-z]\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1o/$2");
 		}
 
 
