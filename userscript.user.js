@@ -40502,6 +40502,13 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/img\/+content\/+[^/]*\/+[^/]*\/+[^/]*?)(?:_m|[0-9]+x[0-9]+)(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
 		}
 
+		if (domain === "image.gamer.ne.jp") {
+			// thanks to fireattack on github: https://github.com/qsniyg/maxurl/issues/142
+			// https://image.gamer.ne.jp/news/2019/20190909/002727856d434cbc81bc398e8b20960824e2/m/19.jpg
+			//   https://image.gamer.ne.jp/news/2019/20190909/002727856d434cbc81bc398e8b20960824e2/o/19.jpg
+			return src.replace(/(\/news\/+[0-9]{4}\/+[0-9]{8}\/+[0-9a-f]{20,}\/+)[a-z]\/+/, "$1o/");
+		}
+
 
 
 
