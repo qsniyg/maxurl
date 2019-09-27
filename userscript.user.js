@@ -10611,6 +10611,9 @@ var $$IMU_EXPORT$$;
 			// https://baouc.com/thumb_x550x400/upload/thanhxuan/2017/11/13/nhung-cach-giu-cua-can-than-toi-noi-sieu-trom-nhin-xong-cung-thay-chan-han1510543145.jpg
 			//   https://baouc.com/upload/thanhxuan/2017/11/13/nhung-cach-giu-cua-can-than-toi-noi-sieu-trom-nhin-xong-cung-thay-chan-han1510543145.jpg
 			domain_nowww === "baouc.com" ||
+			// https://media.hay.tv/thumb_x108x130//upload/default/star/24122016/photo/got1.jpg
+			//   https://media.hay.tv//upload/default/star/24122016/photo/got1.jpg
+			domain === "media.hay.tv" ||
 			// http://media.hotbirthdays.com/thumb_x200x204/upload/2015/10/27/emilia-clarke.jpg
 			//   http://media.hotbirthdays.com/upload/2015/10/27/emilia-clarke.jpg
 			domain === "media.hotbirthdays.com") {
@@ -21569,6 +21572,9 @@ var $$IMU_EXPORT$$;
 			// https://ya-webdesign.com/images250_/adobe-logo-png-3.png
 			//   https://i.ya-webdesign.com/images/adobe-logo-png-3.png
 			domain_nowww === "ya-webdesign.com" ||
+			// https://www.quotationof.com/images250_/margot-robbie-6.jpg
+			//   https://www.quotationof.com/images/margot-robbie-6.jpg
+			domain_nowww === "quotationof.com" ||
 			// http://eskipaper.com/images250_/anime-wallpaper-65.jpg
 			//   http://eskipaper.com/images/anime-wallpaper-65.jpg
 			domain_nowww === "eskipaper.com") {
@@ -33543,10 +33549,17 @@ var $$IMU_EXPORT$$;
 		if (domain_nowww === "patch.com") {
 			// https://patch.com/img/cdn/users/26955/2014/08/T800x600/53e96000807fb.png?width=705 -- upscaled?
 			//   https://patch.com/img/cdn/users/26955/2014/08/53e96000807fb.png
+			//   https://patch.com/img/cdn/users/26955/2014/08/raw/53e96000807fb.png -- no difference?
 			// https://patch.com/img/cdn/users/26955/2014/08/53e96000807fb.png?width=200
 			//   https://patch.com/img/cdn/users/26955/2014/08/53e96000807fb.png
-			return src.replace(/(\/img\/+cdn\/+.*\/+[0-9]{4}\/+[0-9]{2}\/+)(?:T[0-9]+x[0-9]+\/+)?([^/]*?)(?:[?#].*)?$/,
-							   "$1$2");
+			// other:
+			// https://patch.com/img/cdn/users/22873889/2016/03/raw/20160356f1867bf2935.jpg -- without /raw/ it doesn't work
+			newsrc = src.replace(/(\/img\/+cdn\/+.*\/+[0-9]{4}\/+[0-9]{2}\/+)(?:T[0-9]+x[0-9]+\/+)?([^/]*?)(?:[?#].*)?$/,
+								 "$1$2");
+			if (newsrc !== src)
+				return newsrc;
+
+			return src.replace(/(\/img\/+cdn\/+users\/+[0-9]+\/+[0-9]{4}\/+[0-9]{2}\/+)([^/]*)(?:[?#].*)?$/, "$1raw/$2");
 		}
 
 		if (domain_nowww === "wsws.org") {
@@ -34219,6 +34232,7 @@ var $$IMU_EXPORT$$;
 		if (domain_nowww === "bomb01.com") {
 			// https://www.bomb01.com/upload/news_cover/1200x630/51973.jpg
 			//   https://www.bomb01.com/upload/news_cover/original/51973.jpg
+			// https://www.bomb01.com/upload/news/original/20a30692c0cb10209e2b8698d7fa3b85.jpg
 			return src.replace(/(\/upload\/+news(?:_cover)?\/+)[0-9]+x[0-9]+\/+/, "$1original/");
 		}
 
@@ -35811,6 +35825,7 @@ var $$IMU_EXPORT$$;
 
 		if (domain === "images.hi67.cn") {
 			// http://images.hi67.cn/hi67/1/cf75539369c523fa373ee9e221337c86_compress.jpg
+			//   http://images.hi67.cn/hi67/cf75539369c523fa373ee9e221337c86.jpg -- doesn't work
 			// http://images.hi67.cn/hi67/1/ce381764eb5b57db4e172d962f3696eb_compress.jpg -- 2560x1600
 			// http://images.hi67.cn/hi67/7fec9463dbb82ffe62482393d823e1.jpg -- 2560x1600
 			return {
@@ -40509,6 +40524,51 @@ var $$IMU_EXPORT$$;
 			// doesn't work for all:
 			// https://image.gamer.ne.jp/news/2019/20190925/00031a89bc15fd390cbc9dfaf447d5f6d32a/x/i.jpg -- o doesn't work, numbers do work, but x doesn't work for the numbers
 			return src.replace(/(\/news\/+[0-9]{4}\/+[0-9]{8}\/+[0-9a-f]{20,}\/+)[a-z]\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1o/$2");
+		}
+
+		if (domain_nowww === "moviemagik.in") {
+			// http://www.moviemagik.in/files/actors/632/thumb/Margot-Robbie-25.jpg
+			//   http://www.moviemagik.in/files/actors/632/Margot-Robbie-25.jpg
+			return src.replace(/(\/files\/+[^/]*\/+[0-9]+\/+)thumb\/+/, "$1");
+		}
+
+		if (domain_nowww === "itedou.com") {
+			// http://www.itedou.com/Uploads/star_tupian/10388/26755_s.jpg
+			//   http://www.itedou.com/Uploads/star_tupian/10388/26755.jpg
+			return src.replace(/(\/Uploads\/+[^/]*\/+[0-9]+\/+[0-9]+)_s(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain === "img.cnread.news") {
+			// https://img.cnread.news/uploads/20170923/00/006F5C5BA993w750h999_600x600_s1.jpeg
+			//   https://img.cnread.news/uploads/20170923/00/006F5C5BA993w750h999.jpeg
+			return src.replace(/(\/uploads\/+[0-9]+\/+[0-9A-F]{2}\/+[0-9A-F]+w[0-9]+h[0-9]+)(?:_[0-9]+x[0-9]+)?(?:_s[0-9]*)?(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "filmitena.com") {
+			// https://filmitena.com/img/Actor/Big/1173_bg.jpg
+			//   https://filmitena.com/img/Actor/Original/1173_or.jpg
+			// https://filmitena.com/img/ImageTmb/7125_Tmb.jpg
+			//   https://filmitena.com/img/Image/7125_mv.jpg
+			//   https://filmitena.com/img/big/7125_bg.jpg
+			return src
+				.replace(/(\/img\/+Actor\/+)[a-zA-Z]+\/+([0-9]+)_[a-z]+(\.[^/.]*)(?:[?#].*)?$/i, "$1Original/$2_or$3")
+				.replace(/(\/img\/+)Image(?:Tmb)?\/+([0-9]+)_[a-zA-Z]+(\.[^/.]*)(?:[?#].*)?$/i, "$1big/$2_bg$3");
+		}
+
+		if (domain_nowww === "fandimefilmu.cz") {
+			// https://www.fandimefilmu.cz/files/images/2016/11/14/gallery_main_xhxhts94tw4o7jnn.jpg
+			//   https://www.fandimefilmu.cz/files/images/2016/11/14/xhxhts94tw4o7jnn.jpg
+			return src.replace(/(\/files\/+images\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2})[a-z_]+_([a-z0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain === "fetcher-cdn.nullmu.com") {
+			// https://fetcher-cdn.nullmu.com/social/1788a9feb08efcb9c5b4dd78a481f638.jpg?u=https%3A%2F%2F66.media.tumblr.com%2F446f5455cf1dad3762256b7538ed8eda%2Ftumblr_pd3kx6a1cA1tiq8ryo1_1280.jpg
+			//   https://66.media.tumblr.com/446f5455cf1dad3762256b7538ed8eda/tumblr_pd3kx6a1cA1tiq8ryo1_1280.jpg
+			// https://fetcher-cdn.nullmu.com/social_preview/5be262ce261019def359d4f6930fb814.webp?u=https%3A%2F%2F66.media.tumblr.com%2F9b2d16279b0c8b74cbba39ba34fc5ff8%2Ftumblr_pd3x08NLTe1tiq8ryo1_1280.jpg
+			//   https://66.media.tumblr.com/9b2d16279b0c8b74cbba39ba34fc5ff8/tumblr_pd3x08NLTe1tiq8ryo1_1280.jpg
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+social(?:_preview)?\/+[0-9a-f]{20,}\.[^/.?]*\?(?:.*&)?u=([^&]*).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
 		}
 
 
