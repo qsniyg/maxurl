@@ -6579,6 +6579,8 @@ var $$IMU_EXPORT$$;
 			(domain === "img.myvideo.net.tw" && src.indexOf("/images/") >= 0) ||
 			// https://image.apost.com/media/articletranslation/2019/05/21/15/c4ac945abf24c9a59a81cdc6130689b8_500x1.jpg
 			(domain === "image.apost.com" && src.indexOf("/media/") >= 0) ||
+			// https://im.indiatimes.in/content/2014/Aug/s_1407321747_540x540.jpg
+			(domain === "im.indiatimes.in" && src.indexOf("/content/") >= 0) ||
 			// http://images.cinefil.com/movies/1053952_1600x450.jpg
 			//   http://images.cinefil.com/movies/1053952.jpg
 			domain === "images.cinefil.com") {
@@ -19950,6 +19952,9 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "www.consolefun.fr" ||
+			// https://nookthem.com/contents/combo/4990/thumbs/th_evil-angel-with-chloe-couture-mark-wood-in-open-my-ass-01.jpg
+			//   https://nookthem.com/contents/combo/4990/evil-angel-with-chloe-couture-mark-wood-in-open-my-ass-01.jpg
+			domain_nowww === "nookthem.com" ||
 			// https://nude-gals.com/galleries/karmen%20bella/0001/thumbs/th_karmen-bella-is-a-treat-to-behold-by-digital-desire-01.jpg
 			//   https://nude-gals.com/galleries/karmen%20bella/0001/karmen-bella-is-a-treat-to-behold-by-digital-desire-01.jpg
 			domain_nowww === "nude-gals.com") {
@@ -23605,6 +23610,68 @@ var $$IMU_EXPORT$$;
 			// https://mylust.com/contents/albums/main/200x150/8000/8452/77273.jpg
 			//   https://mylust.com/contents/albums/sources/8000/8452/77273.jpg
 			domain_nowww === "mylust.com" ||
+			// https://us3.smutr.com/contents/albums/main/690x690/0/721/5058.jpg
+			//   https://us3.smutr.com/contents/albums/sources/0/721/5058.jpg
+			domain_nosub === "smutr.com" ||
+			// https://megaporn.co/contents/albums/main/200x150/0/155/1712.jpg
+			//   https://megaporn.co/contents/albums/sources/0/155/1712.jpg
+			domain_nowww === "megaporn.co" ||
+			// https://i.tubsexer.com/contents/albums/main/360x480/145000/145671/2043061.jpg
+			//   https://i.tubsexer.com/contents/albums/sources/145000/145671/2043061.jpg
+			domain === "i.tubsexer.com" ||
+			// https://www.break.ie/contents/albums/main/700x1800/0/6/523.jpg
+			//   https://www.break.ie/contents/albums/sources/0/6/523.jpg
+			domain_nowww === "break.ie" ||
+			// https://media1.fapcat.com/contents/albums/main/280x370/2000/2732/40740.jpg
+			//   https://media1.fapcat.com/contents/albums/sources/2000/2732/40740.jpg -- doesn't work
+			//   needs remote_control link
+			//(domain_nosub === "fapcat.com" && /^media[0-9]*\./.test(domain)) ||
+			// https://cdn2.watchmygf.me/contents/albums/main/300x500/2000/2169/26340.jpg
+			//   https://cdn2.watchmygf.me/contents/albums/sources/2000/2169/26340.jpg
+			(domain_nosub === "watchmygf.me" && /^cdn[0-9]*\./.test(domain)) ||
+			// https://watchmyexgf.good-cdn.com/contents/albums/main/200x150/3000/3363/43183.jpg
+			//   https://watchmyexgf.good-cdn.com/contents/albums/sources/3000/3363/43183.jpg
+			domain === "watchmyexgf.good-cdn.com" ||
+			// https://www.fitting-room.com/contents/albums/main/200x150/0/234/9932.jpg
+			//   https://www.fitting-room.com/contents/albums/sources/0/234/9932.jpg -- 3744x5616
+			domain_nowww === "fitting-room.com" ||
+			// https://static1.tubepornclassic.com/contents/albums/main/200x150/3000/3553/13128.jpg
+			//   https://static1.tubepornclassic.com/contents/albums/sources/3000/3553/13128.jpg
+			(domain_nosub === "tubepornclassic.com" && /^static[0-9]*\./.test(domain)) ||
+			// https://www.matureshare.com/contents/albums/main/200x150/0/84/6933.jpg
+			//   https://www.matureshare.com/contents/albums/sources/0/84/6933.jpg -- doesn't work (404)
+			//domain_nowww === "matureshare.com" ||
+			// https://www.iloveporn.xxx/contents/albums/main/700x930/0/113/1988.jpg
+			//   https://www.iloveporn.xxx/contents/albums/sources/0/113/1988.jpg
+			domain_nowww === "iloveporn.xxx" ||
+			// https://www.zzgays.com/contents/albums/main/155x205/0/642/10393.jpg
+			//   https://www.zzgays.com/contents/albums/sources/0/642/10393.jpg
+			domain_nowww === "zzgays.com" ||
+			// https://www.pornhat.com/contents/albums/main/1920x1080/8000/8719/374152.jpg
+			//   https://www.pornhat.com/contents/albums/sources/8000/8719/374152.jpg
+			domain_nowww === "pornhat.com" ||
+			// https://i.bobs-tube.com/contents/albums/main/360x480/85000/85226/1347662.jpg
+			//   https://i.bobs-tube.com/contents/albums/sources/85000/85226/1347662.jpg
+			domain === "i.bobs-tube.com" ||
+			// http://www.amateurarchiver.com/contents/albums/main/120x160/7000/7163/49802.jpg
+			//   http://www.amateurarchiver.com/contents/albums/sources/7000/7163/49802.jpg -- doesn't work (404)
+			//domain_nowww === "amateurarchiver.com" ||
+			domain_nowww === "xbabe.com" ||
+			// https://wtfpass.com/contents/albums/main/167x250/0/828/110967.jpg
+			//   https://wtfpass.com/contents/albums/sources/0/828/110967.jpg -- doesn't work (404)
+			//domain_nowww === "wtfpass.com" ||
+			// https://www.pornzee.com/contents/albums/main/200x150/0/615/9028.jpg
+			//   https://www.pornzee.com/contents/albums/sources/0/615/9028.jpg
+			domain_nowww === "pornzee.com" ||
+			// https://media.thebestshemalevideos.com/contents/albums/main/200x150/0/821/11577.jpg
+			//   https://media.thebestshemalevideos.com/contents/albums/sources/0/821/11577.jpg
+			domain === "media.thebestshemalevideos.com" ||
+			// https://www.themilf.net/contents/albums/main/90x100/13000/13899/57822.jpg
+			//   https://www.themilf.net/contents/albums/sources/13000/13899/57822.jpg
+			domain_nowww === "themilf.net" ||
+			// http://h2porn.com/contents/albums/main/160x160/6000/6512/1080778.jpg
+			//   http://h2porn.com/contents/albums/sources/6000/6512/1080778.jpg -- doesn't work (404)
+			//domain_nowww === "h2porn.com" ||
 			// https://cdn.pornstill.com/contents/albums/main/300x500/82000/82628/1298509.jpg
 			//   https://cdn.pornstill.com/contents/albums/sources/82000/82628/1298509.jpg
 			domain === "cdn.pornstill.com") {
@@ -31946,6 +32013,12 @@ var $$IMU_EXPORT$$;
 			// http://galleries.cosmid.net/2903//thumbs/01.jpg
 			//   http://galleries.cosmid.net/2903/01.jpg
 			return src.replace(/(:\/\/[^/]*\/[0-9]+)\/+thumbs\/+/, "$1/");
+		}
+
+		if (domain_nowww === "porn-star.com") {
+			// https://www.porn-star.com/paisley-sleepover/thumbs/01.jpg
+			//   https://www.porn-star.com/paisley-sleepover/01.jpg
+			return src.replace(/\/thumbs\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/$1");
 		}
 
 		if (domain === "video.soloteengirls.net") {
