@@ -606,7 +606,8 @@ if (true) {
         console.log(comment);
 
         r.getComment(comment).fetch().then((comment_data) => {
-          if (comment_data.author.name === "[deleted]") {
+          if (!comment_data.author ||
+              comment_data.author.name === "[deleted]") {
             console.log("Removing message for " + comment);
             message_data.deleteFromInbox();
             //return;
@@ -616,7 +617,9 @@ if (true) {
             return;
 
           r.getComment(comment_data.parent_id).fetch().then((post_data) => {
-            if (post_data.author.name !== "[deleted]" &&
+            if (!post_data.author ||
+                !message_data.author ||
+                post_data.author.name !== "[deleted]" &&
                 post_data.author.name.toLowerCase() !== message_data.author.name.toLowerCase()) {
               return;
             }
