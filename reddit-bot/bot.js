@@ -231,7 +231,7 @@ function is_googlephotos(domain, url) {
   return false;
 }
 
-function dourl_inner(big, url, post) {
+function dourl_inner(big, url, post, options) {
   //console.dir(JSON.parse(JSON.stringify(post)));
 
   var log_entry = {
@@ -354,12 +354,15 @@ function dourl_inner(big, url, post) {
             if (mbs > 5) {
               filesize_text = ", " + mbs.toFixed(1) + "MB";
             }
+            var linkcomment = "";
+            if (options.shocking)
+              linkcomment = " (click at your own risk...)";
             var comment = times + " (" + parseInt(newdata.width) + "x" + parseInt(newdata.height) + filesize_text + ") version of linked image:\n\n";
             comment += "[" + newdata.url
               .replace(/\\/g, "\\\\")
               .replace(/_/g, "\\_")
               .replace(/\*/g, "\\*")
-              .replace(/]/g, "\\]") + "](" + newdata.url.replace(/[)]/g, "\\)") + ")\n\n";
+              .replace(/]/g, "\\]") + "](" + newdata.url.replace(/[)]/g, "\\)") + ")" + linkcomment + "\n\n";
 
             if (orig_domain === "pbs.twimg.com" &&
                 newdata.url.indexOf("?name=orig") >= 0 &&
@@ -467,8 +470,11 @@ function dourl_inner(big, url, post) {
   );
 }
 
-function dourl(url, post) {
+function dourl(url, post, options) {
   var jar = request.jar();
+
+  if (!options)
+    options = {};
 
   bigimage(url, {
     fill_object: true,
@@ -542,7 +548,7 @@ function dourl(url, post) {
       });
     },
     cb: function(big) {
-      dourl_inner(big, url, post);
+      dourl_inner(big, url, post, options);
     }
   });
 }
@@ -580,6 +586,8 @@ const links = new NodeCache({ stdTTL: 600, checkperiod: 100 });
 //dourl("https://it1.imgtown.net/i/00735/hm00jfc5ry20_t.jpg");
 // overrideMimeType: (needs allow_thirdparty: true, and it fails due to photo.newsen.com requiring newsen to be the referer)
 //dourl("http://photo.newsen.com/news_photo/2018/07/13/201807131531391510_1.jpg");
+// test for shocking:
+//dourl("https://i.imgur.com/jrT3cjuh.png", null, {shocking: true});
 
 
 //console.dir(blacklist_json.disallowed);
@@ -638,12 +646,18 @@ if (true) {
       return;
     }
 
+    var options = {};
+
     if (post.subreddit.display_name) {
       if (blacklist_json.disallowed.indexOf(post.subreddit.display_name.toLowerCase()) >= 0 ||
           blacklist_json.users.indexOf(post.author.name.toLowerCase()) >= 0) {
         //console.log(post.subreddit);
         return;
       }
+
+      if (blacklist_json.shocking.indexOf(post.subreddit.display_name.toLowerCase()) >= 0) {
+        options.shocking = true;
+      };
     }
 
     if (links.get(post.permalink) === true) {
@@ -661,7 +675,7 @@ if (true) {
 
     var url = post.url;
     try {
-      dourl(url, post);
+      dourl(url, post, options);
     } catch (e) {
       console.error(e);
     }
