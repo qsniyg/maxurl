@@ -41000,6 +41000,44 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/images\/+styles\/+[^/]*\/+/, "/images/");
 		}
 
+		if (domain_nowww === "vgamuseum.info") {
+			// http://www.vgamuseum.info/images/tech/smart_thumbs/s3tcut_thumb_other200_0.jpg
+			//   http://www.vgamuseum.info/images/tech/s3tcut.jpg
+			return src.replace(/\/smart_thumbs\/+([^/]*?)_thumb_other[0-9]+_[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "/$1$2");
+		}
+
+		if (domain_nowww === "metager.org") {
+			// https://metager.org/meta/picture?url=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.Kl7SFnc-Bb9bFUcd_EN0gQHaML%26pid%3DApi
+			//   https://tse1.mm.bing.net/th?id=OIP.Kl7SFnc-Bb9bFUcd_EN0gQHaML
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+meta\/+picture\?(?:.*&)?url=([^&]*).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+		}
+
+		if (domain === "i.swisscows.ch") {
+			// https://i.swisscows.ch/?link=http%3a%2f%2fcelebmafia.com%2fwp-content%2fuploads%2f2016%2f04%2fselena-gomez-we-day-california-2016-in-inglewood-4-7-2016-14.jpg
+			//   https://celebmafia.com/wp-content/uploads/2016/04/selena-gomez-we-day-california-2016-in-inglewood-4-7-2016-14.jpg
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+\?link=([^&]*).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+		}
+
+		if (domain_nowww === "mithaaprilia.com") {
+			// https://www.mithaaprilia.com/image?id=6461696c796d6f74696f6e26783335396b776c&q=http://s1.dmcdn.net/N2uxj.jpg
+			//   http://s1.dmcdn.net/N2uxj.jpg
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+image\?(?:.*?&)?q=([^&]*).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+		}
+
+		if (domain_nowww === "proprofs.com") {
+			// https://www.proprofs.com/games/puzzle/sliding/resize_image.php?image=https://proprofs-cdn.s3.amazonaws.com/images/games/user_images/misc/2141680024.jpg&new_width=223&new_height=176
+			//   https://proprofs-cdn.s3.amazonaws.com/images/games/user_images/misc/2141680024.jpg
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+games\/+puzzle\/+sliding\/+resize_image\.php\?(?:.*?&)?image=([^&]*).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+		}
+
 
 
 
