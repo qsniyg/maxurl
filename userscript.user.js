@@ -6448,6 +6448,8 @@ var $$IMU_EXPORT$$;
 			(domain === "static-koimoi.akamaized.net" && src.indexOf("/new-galleries/") >= 0) ||
 			// https://img1.elperiodico.com/15/34/f6/keanu-reeves-465x310.jpg
 			(domain_nosub === "elperiodico.com" && /^img[0-9]*\./.test(domain)) ||
+			// https://gsud.cdn-immedia.net/2019/08/MEGHAN-MARKLE-2-296x505.jpg
+			domain_nosub === "cdn-immedia.net" ||
 			// https://1.soompi.io/wp-content/blogs.dir/8/files/2015/09/HA-TFELT-Wonder-Girls-590x730.jpg -- doesn't work
 			// https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2018/01/GTA-6-Female-Protag-796x417.jpg -- does work
 			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|images|photos|blogs.dir)|\/+uploads)\//.test(src)
@@ -6587,6 +6589,8 @@ var $$IMU_EXPORT$$;
 			(domain === "image.apost.com" && src.indexOf("/media/") >= 0) ||
 			// https://im.indiatimes.in/content/2014/Aug/s_1407321747_540x540.jpg
 			(domain === "im.indiatimes.in" && src.indexOf("/content/") >= 0) ||
+			// http://admin.alo.rs/resources/images/0000/071/770/profimedia-0305047636_400x0.jpg
+			(domain === "admin.alo.rs" && /\/resources\/+images\//.test(src)) ||
 			// http://images.cinefil.com/movies/1053952_1600x450.jpg
 			//   http://images.cinefil.com/movies/1053952.jpg
 			domain === "images.cinefil.com") {
@@ -7004,6 +7008,8 @@ var $$IMU_EXPORT$$;
 			domain === "media.brandonsun.com" ||
 			// https://media.necn.com/images/652*367/Anne4.jpg
 			domain === "media.necn.com" ||
+			// https://media.telemundoareadelabahia.com/images/970*1393/GettyImages-865603188-tlmd-00.jpg
+			domain === "media.telemundoareadelabahia.com" ||
 			// https://media.nbcchicago.com/images/652*367/t-swift-cover.jpg
 			domain === "media.nbcchicago.com") {
 			return src.replace(/\/images\/+[0-9]+\*[0-9]+\//, "/images/");
@@ -13220,11 +13226,16 @@ var $$IMU_EXPORT$$;
 			domain_nosub === "fanatik.com.tr" ||
 			// https://i.pstimaj.com/img/78/394x0/5ae2d796ae298b8e001550d0
 			//   https://i.pstimaj.com/img/100/0x0/5ae2d796ae298b8e001550d0
-			domain === "i.pstimaj.com" ||
-			// https://i.cnnturk.com/ps/cnnturk/75/630x0/582064a15659341ab0aea248.jpg
-			//   https://i.cnnturk.com/ps/cnnturk/75/0x0/582064a15659341ab0aea248.jpg
-			//   https://i.cnnturk.com/ps/cnnturk/100/0x0/582064a15659341ab0aea248.jpg
-			domain === "i.cnnturk.com") {
+			((domain_nosub === "pstimaj.com" ||
+			  // https://i.milimaj.com/i/milliyet/90/0x420/5c8d444445d2a05010d4f31f.jpg
+			  //   https://i.milimaj.com/i/milliyet/100/0x0/5c8d444445d2a05010d4f31f.jpg
+			  domain_nosub === "milimaj.com" ||
+			  // https://i.cnnturk.com/ps/cnnturk/75/630x0/582064a15659341ab0aea248.jpg
+			  //   https://i.cnnturk.com/ps/cnnturk/75/0x0/582064a15659341ab0aea248.jpg
+			  //   https://i.cnnturk.com/ps/cnnturk/100/0x0/582064a15659341ab0aea248.jpg
+			  // https://i2.cnnturk.com/i/cnnturk/75/350x0/55d45591e50aa915d0fba246.jpg
+			  //   https://i2.cnnturk.com/i/cnnturk/100/0x0/55d45591e50aa915d0fba246.jpg
+			  domain_nosub === "cnnturk.com") && /^i[0-9]*\./.test(domain))) {
 			// http://i.hurimg.com/i/hdn/10/100x0/5a8becad18c7731320697a39.jpg
 			//   http://i.hurimg.com/i/hdn/100/0x0/5a8becad18c7731320697a39.jpg
 			// http://i.hurimg.com/i/hurriyet/75/770x0/563f20410f2544733cbe7185
@@ -14037,6 +14048,9 @@ var $$IMU_EXPORT$$;
 			// http://news.yule.com.cn/uploadfile/2019/0411/thumb_500_0_20190411043755590.jpg
 			//   http://news.yule.com.cn/uploadfile/2019/0411/20190411043755590.jpg
 			domain === "news.yule.com.cn" ||
+			// http://upload.sanqin.com/2015/0801/thumb_900_600_1438417056121.jpg
+			//   http://upload.sanqin.com/2015/0801/1438417056121.jpg
+			domain === "upload.sanqin.com" ||
 			// http://m1.ablwang.com/uploadfile/2018/0430/thumb_110_69_20180430070256125.jpg
 			//   http://m1.ablwang.com/uploadfile/2018/0430/20180430070256125.jpg
 			(domain_nosub === "ablwang.com" && domain.match(/m[0-9]*\.ablwang\.com/))) {
@@ -25489,7 +25503,9 @@ var $$IMU_EXPORT$$;
 		if (domain_nowww === "showbiz.cz") {
 			// https://www.showbiz.cz/files/gallery/thumb/18/1825acb57fba5f41c83eb7d79f2cae02.jpg
 			//   https://www.showbiz.cz/files/gallery/18/1825acb57fba5f41c83eb7d79f2cae02.jpg
-			return src.replace(/(\/files\/gallery\/)thumb\/([0-9a-f]+\/[0-9a-f]+\.[^/.]*)$/, "$1$2");
+			// http://www.showbiz.cz/public/files/gallery/thumb/28/28bcf43838114960246fe783148e323a1312573752_new.jpg
+			//   https://www.showbiz.cz/files/gallery/28/28bcf43838114960246fe783148e323a1312573752.jpg
+			return src.replace(/(?:\/public)?(\/+files\/+gallery\/+)thumb\/+([0-9a-f]+\/[0-9a-f]+)(?:_[a-z]+)?(\.[^/.]*)$/, "$1$2$3");
 		}
 
 		if (domain === "images.nudereviews.com") {
@@ -30365,6 +30381,12 @@ var $$IMU_EXPORT$$;
 							   "://cdn.pornpics.com/" + folder + "/$1big$2");
 		}
 
+		if (domain === "images.pornpics.com") {
+			// https://images.pornpics.com/300/201801/16/9671015/9671015_002_9104.jpg
+			//   https://images.pornpics.com/1280/201801/16/9671015/9671015_002_9104.jpg
+			return src.replace(/(:\/\/[^/]*\/)(?:300|460)\/+/, "$11280/");
+		}
+
 		if (domain_nowww === "vipissy.com" ||
 			// https://media.fistertwister.com/fhg/26289f49024be011b1b32fae4e825a84/thumbs/1.jpg
 			//   https://media.fistertwister.com/fhg/26289f49024be011b1b32fae4e825a84/files/1.jpg
@@ -34580,8 +34602,10 @@ var $$IMU_EXPORT$$;
 		if (domain_nosub === "news18.com" && domain.match(/^images\./)) {
 			// https://images.hindi.news18.com/ibnkhabar/uploads/300x200/jpg/2017/08/Emma-Stone-fobe.jpg
 			//   https://images.hindi.news18.com/ibnkhabar/uploads/2017/08/Emma-Stone-fobe.jpg
-			return src.replace(/\/uploads\/+[0-9]+x[0-9]+\/+[^/]*\/+([0-9]{4}\/+[0-9]{2}\/+)/,
-							   "/uploads/$1");
+			newsrc = src.replace(/(:\/\/[^/]*\/+[^/]*\/+)uploads\/+[0-9]+x[0-9]+\/+[^/]*\/+([0-9]{4}\/+[0-9]{2}\/+)/,
+							   "$1uploads/$2");
+			if (newsrc !== src)
+				return newsrc;
 		}
 
 		if (domain_nosub === "dainikbhaskar.com" &&
@@ -41049,6 +41073,42 @@ var $$IMU_EXPORT$$;
 				return decodeuri_ifneeded(newsrc);
 		}
 
+		if (domain_nowww === "sweetgirl.org") {
+			// https://sweetgirl.org/files/sets/2017/09-24-jillisa-lynn-dancer-in-pink/thumb/jillisa-lynn-dancer-in-pink-001.jpg
+			//   https://sweetgirl.org/files/sets/2017/09-24-jillisa-lynn-dancer-in-pink/jillisa-lynn-dancer-in-pink-001.jpg
+			return src.replace(/(\/files\/+sets\/+[0-9]+\/+[^/]*\/+)thumb\/+/, "$1");
+		}
+
+		if (domain === "img.lady.ru") {
+			// http://img.lady.ru/data/aphoto/7/2/3/85424/small/609305.jpg
+			//   http://img.lady.ru/data/aphoto/7/2/3/85424/large/609305.jpg
+			// other:
+			// https://www.lady.ru/moda/%D0%A1%D0%B0%D1%80%D0%B0-%D0%A1%D0%B0%D0%BC%D0%BF%D0%B0%D0%B9%D0%BE/10-%D0%BD%D0%BE%D0%B2%D1%8B%D1%85-%D0%B0%D0%BD%D0%B3%D0%B5%D0%BB%D0%BE%D0%B2-Victoria%E2%80%99s-Secret-%D0%B2-%D0%BF%D1%80%D0%BE%D0%BC%D0%BE-%D1%84%D0%BE%D1%82%D0%BE%D1%81%D0%B5%D1%81%D1%81%D0%B8%D0%B8-%D0%B1%D0%B5%D0%BB%D1%8C%D1%8F-2015-Body-by-Victoria-%D0%BF%D0%B5%D1%80%D0%B2%D1%8B%D0%B5-%D0%BA%D0%B0%D0%B4%D1%80%D1%8B
+			// http://img.lady.ru/data/aphoto/7/2/3/85424/large/609310.jpg
+			//   http://img.lady.ru/data/aphoto/7/2/3/85424/main/40bb88334c807ff07b0cc5c3e9a7f765.jpg
+			newsrc = src.replace(/(\/data\/+aphoto\/.*\/)small\/+/, "$1large/");
+			if (newsrc !== src)
+				return newsrc;
+
+			// http://img.lady.ru/data/users/0/0/9700/small.jpg
+			//   http://img.lady.ru/data/users/0/0/9700/large.jpg
+			newsrc = src.replace(/(\/data\/+users\/.*\/)small(\.[^/.]*)(?:[?#].*)?$/, "$1large$2");
+			if (newsrc !== src)
+				return newsrc;
+		}
+
+		if (domain_nowww === "cfake.com") {
+			// http://cfake.com/medias/thumbs/15307934167f319894_cfake.jpg
+			//   http://cfake.com/medias/photos/15307934167f319894_cfake.jpg
+			return src.replace(/\/medias\/+thumbs\/+/, "/medias/photos/");
+		}
+
+		if (domain_nowww === "sks-52.ru") {
+			// http://sks-52.ru/d3/tais_21_46792/m6/tais_21_46792_1.jpg
+			//   http://sks-52.ru/d3/tais_21_46792/tais_21_46792_1.jpg
+			return src.replace(/(\/d[0-9]+\/+[^/]*\/+)m[0-9]+\/+/, "$1");
+		}
+
 
 
 
@@ -41497,6 +41557,11 @@ var $$IMU_EXPORT$$;
 			// https://th.cineblog.it/h75SqpcjC6zmBnzgVBp1jV-ULrs=/170x170/filters:quality(20)/media.cineblog.it/th/terms/cat_119.jpg
 			//   http://media.cineblog.it/th/terms/cat_119.jpg
 			domain === "th.cineblog.it" ||
+			// https://images.news18.com/optimize/-HuDBEieUX2r8KZ73vzd0sz9vSM=/402x0/images.news18.com/ibnlive/uploads/402x0/jpg/2018/09/Radhika-Apte1.jpg
+			domain === "images.news18.com" ||
+			// https://static.telugu.news18.com/optimize/Uo3LUvvuhDZ9Vl5fzqzn2mJrjmA=/0x0/static.telugu.news18.com/telugu/uploads/2018/09/13Radhika-Apte1.jpg
+			//   http://static.telugu.news18.com/telugu/uploads/2018/09/13Radhika-Apte1.jpg
+			domain === "static.telugu.news18.com" ||
 			src.match(/:\/\/[^/]*\/thumbor\/[^/]*=\//) ||
 			// https://www.orlandosentinel.com/resizer/tREpzmUU7LJX1cbkAN-unm7wL0Y=/fit-in/800x600/top/filters:fill(black)/arc-anglerfish-arc2-prod-tronc.s3.amazonaws.com/public/XC6HBG2I4VHTJGGCOYVPLBGVSM.jpg
 			//   http://arc-anglerfish-arc2-prod-tronc.s3.amazonaws.com/public/XC6HBG2I4VHTJGGCOYVPLBGVSM.jpg
