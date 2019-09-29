@@ -21994,7 +21994,8 @@ var $$IMU_EXPORT$$;
 		if (domain === "s.smutty.com") {
 			// https://s.smutty.com/media_smutty_2/d/i/r/t/m/dirtyukguy-8qxdg-6b9be5.jpg
 			//   https://s.smutty.com/media_smutty_2/d/i/r/t/p/dirtyukguy-8qxdg-6b9be5.jpg
-			return src.replace(/\/m\/([^/]*)$/, "/p/$1");
+			//   https://s.smutty.com/media_smutty_2/d/i/r/t/b/dirtyukguy-8qxdg-6b9be5.jpg -- 2516x4200
+			return src.replace(/\/[a-z]\/+([^/]*)(?:[?#].*)?$/, "/b/$1");
 		}
 
 		if (domain_nowww === "welovesexyfeet.com" ||
