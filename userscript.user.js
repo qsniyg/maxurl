@@ -1784,7 +1784,7 @@ var $$IMU_EXPORT$$;
 	function urljoin(a, b, browser) {
 		if (b.length === 0)
 			return a;
-		if (b.match(/^[-a-z]*:\/\//) || b.match(/^(?:data|x-raw-image):/))
+		if (b.match(/^[-a-z]*:\/\//) || b.match(/^(?:data|x-raw-image|blob):/))
 			return b;
 
 		var protocol_split = a.split("://");
@@ -16713,9 +16713,11 @@ var $$IMU_EXPORT$$;
 			//   https://simg3.gelbooru.com/images/ce/b8/ceb852df49b45c7c595eea61951b9ffb.jpg
 			// https://img2.gelbooru.com//samples/56/24/sample_562420ec66ff68dd8e31a8f651283e0d.jpg
 			//   https://img2.gelbooru.com//images/56/24/562420ec66ff68dd8e31a8f651283e0d.jpg
-			return add_full_extensions(src
-									   .replace(/\/thumbnails\/([0-9a-f]+\/[0-9a-f]+\/)thumbnail_/, "/images/$1")
-									   .replace(/\/samples\/([0-9a-f]+\/[0-9a-f]+\/)sample_/, "/images/$1"));
+			newsrc = src.replace(/\/thumbnails\/([0-9a-f]+\/[0-9a-f]+\/)thumbnail_/, "/images/$1")
+						.replace(/\/samples\/([0-9a-f]+\/[0-9a-f]+\/)sample_/, "/images/$1");
+			if (newsrc !== src) {
+				return add_full_extensions(newsrc);
+			}
 		}
 
 		if (domain_nowww === "safebooru.org" ||
@@ -16739,7 +16741,9 @@ var $$IMU_EXPORT$$;
 			//   http://safebooru.org//images/2473/6cf1f0d716b67c369ffe6310219a595f.jpeg?2574463
 			// http://safebooru.org//samples/1293/sample_661a213e5b86a59e86ebfb58ab60b137d4518731.png?1346716
 			//   http://safebooru.org//images/1293/661a213e5b86a59e86ebfb58ab60b137d4518731.png?1346716
-			return add_full_extensions(src.replace(/\/(?:thumbnails|samples)(\/+[0-9]+\/+)(?:thumbnail|sample)_([0-9a-f]+\.[^/.]*)$/, "/images$1$2"));
+			newsrc = src.replace(/\/(?:thumbnails|samples)(\/+[0-9]+\/+)(?:thumbnail|sample)_([0-9a-f]+\.[^/.]*)$/, "/images$1$2");
+			if (newsrc !== src)
+				return add_full_extensions(newsrc);
 		}
 
 		if (domain === "thumbs.booru.org") {
@@ -36053,6 +36057,12 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "xiuren.org") {
+			// http://www.xiuren.org/cover.php?src=http://www.xiuren.org//images/2019/09/1604043574.jpg
+			//   http://www.xiuren.org//images/2019/09/1604043574.jpg
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+cover\.php\?(?:.*?&)?src=([^&]*).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+
 			// http://www.xiuren.org/xiuren/XiuRen-N00001/Thum/Thum-XiuRen-N00001-Viki-0006.jpg
 			//   http://www.xiuren.org/xiuren/XiuRen-N00001/XiuRen-N00001-Viki-0006.jpg
 			return src.replace(/\/Thum\/+Thum-/, "/");
@@ -41038,6 +41048,8 @@ var $$IMU_EXPORT$$;
 			if (newsrc !== src)
 				return decodeuri_ifneeded(newsrc);
 		}
+
+
 
 
 
