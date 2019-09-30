@@ -4,8 +4,8 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.11.2
-// @description  Finds larger or original versions of images for 5400+ websites
+// @version      0.11.3
+// @description  Finds larger or original versions of images for 5500+ websites
 // @author       qsniyg
 // @homepageURL  https://qsniyg.github.io/maxurl/options.html
 // @supportURL   https://github.com/qsniyg/maxurl/issues
@@ -1787,7 +1787,7 @@ var $$IMU_EXPORT$$;
 	function urljoin(a, b, browser) {
 		if (b.length === 0)
 			return a;
-		if (b.match(/^[-a-z]*:\/\//) || b.match(/^(?:data|x-raw-image):/))
+		if (b.match(/^[-a-z]*:\/\//) || b.match(/^(?:data|x-raw-image|blob):/))
 			return b;
 
 		var protocol_split = a.split("://");
@@ -4054,6 +4054,8 @@ var $$IMU_EXPORT$$;
 			domain === "i.eurosport.com" ||
 			(domain === "blog.wirelessanalytics.com" && src.indexOf("/hubfs/") >= 0) ||
 			(domain_nosub === "zmtcdn.com" && src.indexOf("/data/") >= 0) ||
+			(domain === "images.mubi.com" && src.indexOf("/images/") >= 0) ||
+			domain === "i.obozrevatel.com" ||
 			src.match(/\/demandware\.static\//) ||
 			src.match(/\?i10c=[^/]*$/) ||
 			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|blogs.dir)|\/+uploads)\//.test(src)
@@ -4404,6 +4406,9 @@ var $$IMU_EXPORT$$;
 			(domain_nowww === "chickradar.net" && /\/content\/+uploads\//.test(src)) ||
 			(domain_nowww === "creepmachine.com" && src.indexOf("/images/") >= 0) ||
 			(domain_nowww === "theinspirationgrid.com" && /\/app\/+uploads\//.test(src)) ||
+			(domain === "static-koimoi.akamaized.net" && src.indexOf("/new-galleries/") >= 0) ||
+			(domain_nosub === "elperiodico.com" && /^img[0-9]*\./.test(domain)) ||
+			domain_nosub === "cdn-immedia.net" ||
 			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|images|photos|blogs.dir)|\/+uploads)\//.test(src)
 			/*src.indexOf("/wp/uploads/") >= 0*/
 			) {
@@ -4467,6 +4472,8 @@ var $$IMU_EXPORT$$;
 			(domain === "media.cbs8.com" && src.indexOf("/assets/") >= 0) ||
 			(domain === "img.myvideo.net.tw" && src.indexOf("/images/") >= 0) ||
 			(domain === "image.apost.com" && src.indexOf("/media/") >= 0) ||
+			(domain === "im.indiatimes.in" && src.indexOf("/content/") >= 0) ||
+			(domain === "admin.alo.rs" && /\/resources\/+images\//.test(src)) ||
 			domain === "images.cinefil.com") {
 			newsrc = src.replace(/_[0-9]+x[0-9]+(\.[^/.]*)$/, "$1");
 			if (newsrc !== src)
@@ -4644,6 +4651,7 @@ var $$IMU_EXPORT$$;
 			domain === "media.winnipegfreepress.com" ||
 			domain === "media.brandonsun.com" ||
 			domain === "media.necn.com" ||
+			domain === "media.telemundoareadelabahia.com" ||
 			domain === "media.nbcchicago.com") {
 			return src.replace(/\/images\/+[0-9]+\*[0-9]+\//, "/images/");
 		}
@@ -5115,7 +5123,7 @@ var $$IMU_EXPORT$$;
 				return src.replace(/_[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "_512$1");
 
 			if (true || !src.match(/_[0-9]*\.gif$/)) {
-				obj.url = src.replace(/(\/tumblr(?:_(?:static|inline))?_[0-9a-zA-Z]+(?:_og)?(?:_r[0-9]*)?)_[0-9]*(\.[^/.]*)$/, "$1_1280$2");
+				obj.url = src.replace(/(\/(?:tumblr(?:_(?:static|inline))?_)?[0-9a-zA-Z]+(?:_og)?(?:_r[0-9]*)?)_[0-9]*(\.[^/.]*)$/, "$1_1280$2");
 				return obj;
 			}
 
@@ -5376,7 +5384,12 @@ var $$IMU_EXPORT$$;
 			(domain_nosub === "imgspice.com" && domain.match(/^img[0-9]*\./)) ||
 			(domain_nosub === "imageporter.com" && domain.match(/^img[0-9]*\./)) ||
 			(domain_nosub === "pixroute.com" && domain.match(/img[0-9]*\./))) {
-			return src.replace(/(\/i\/.*\/[^/.]*)_t(\.[^/.]*)$/, "$1$2");
+			return {
+				url: src.replace(/(\/i\/.*\/[^/.]*)_t(\.[^/.]*)$/, "$1$2"),
+				headers: {
+					Referer: ""
+				}
+			};
 		}
 
 		if (domain_nosub === "imagetwist.com" && src.match(/:\/\/[^/]*\/+error\.[^/.]*(?:[?#].*)?$/)) {
@@ -5477,6 +5490,7 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "breakingnews.ie" ||
 			domain === "ip.index.hr" ||
 			domain === "images.radiotimes.com" ||
+			domain_nowww === "mffashion.com" ||
 			domain === "ip.trueachievements.com") {
 			newsrc = src.replace(/.*:\/\/[^/]*\/remote\/([^?]*).*/, "$1");
 			if (newsrc !== src)
@@ -5553,6 +5567,7 @@ var $$IMU_EXPORT$$;
 			domain === "thum.buzzni.com" ||
 			domain === "resizer.mundotkm.com" ||
 			domain === "quicksilver.scoopwhoop.com" ||
+			domain_nosub === "telegraphindia.com" ||
 			(domain_nosub === "genius.com" && domain.match(/t[0-9]*\.genius\.com/))) {
 			return add_http(decodeURIComponent(src
 											   .replace(/.*\/unsafe\/smart\/(?:filters:[^/]*\/)?/, "")
@@ -6282,10 +6297,11 @@ var $$IMU_EXPORT$$;
 			domain === "media.bongda.com.vn" ||
 			domain_nosub === "404content.com" ||
 			domain === "image.vtcns.com" ||
+			domain === "media.cungcau.vn" ||
 			domain === "image.vtc.vn") {
 			return src
-				.replace(/\/crop\/[-0-9]+x[-0-9]+\//, "/")
-				.replace(/\/resize\/[-0-9]+x[-0-9]+\//, "/");
+				.replace(/\/crop\/+[-0-9]+x[-0-9]+\//, "/")
+				.replace(/\/resize\/+[-0-9]+x[-0-9]+\//, "/");
 		}
 
 		if (domain_nosub === "zadn.vn" && domain.match(/^photo-resize-/)) {
@@ -6374,6 +6390,7 @@ var $$IMU_EXPORT$$;
 			domain === "media.doisongphapluat.com" ||
 			domain === "media.vietq.vn" ||
 			domain_nowww === "baouc.com" ||
+			domain === "media.hay.tv" ||
 			domain === "media.hotbirthdays.com") {
 			return src.replace(/(:\/\/[^/]*)\/[^/]*x[0-9]+x(?:[0-9]+)?\//, "$1/");
 		}
@@ -6610,6 +6627,8 @@ var $$IMU_EXPORT$$;
 			(domain_nosub === "globo.com" && src.indexOf("/fotos/") >= 0) ||
 			domain === "d26oc3sg82pgk3.cloudfront.net" ||
 			(domain_nowww === "memberme.net" && src.indexOf("/media/") >= 0) ||
+			(domain_nowww === "funasia.net" && src.indexOf("/site_media/") >= 0) ||
+			domain === "image.photocnc.com" ||
 			domain === "d53l9d6fqlxs2.cloudfront.net") {
 			newsrc = src.replace(/(\/[^/.]*\.[^/.]*)\.[^/]*$/, "$1");
 			if (newsrc !== src)
@@ -6813,7 +6832,7 @@ var $$IMU_EXPORT$$;
 
 		if (domain === "imagesvc.timeincuk.net" ||
 			domain === "imagesvc.meredithcorp.io") {
-			return decodeuri_ifneeded(src.replace(/^[a-z]+:\/\/[^/]*\/v3\/+(?:keystone|mm)\/+image.*?[?&]url=([^&]*).*/, "$1"));
+			return decodeuri_ifneeded(src.replace(/^[a-z]+:\/\/[^/]*\/v3\/+[a-z]+\/+image.*?[?&]url=([^&]*).*/, "$1"));
 		}
 
 		if (domain === "img.timeinc.net") {
@@ -7124,7 +7143,9 @@ var $$IMU_EXPORT$$;
 			domain === "img.etimg.com" ||
 			domain === "etimg.etb2bimg.com" ||
 			domain === "telugu.samayam.com" ||
+			domain === "static.langimg.com" ||
 			domain_nosub === "timesofindia.com" ||
+			domain_nosub === "vijaykarnataka.com" ||
 			domain === "static.toiimg.com") {
 			newsrc = src.replace(/(:\/\/[^/]*\/)thumb\//, "$1photo/");
 			if (newsrc !== src)
@@ -7638,6 +7659,7 @@ var $$IMU_EXPORT$$;
 
 		if (domain === "pix.avaxnews.com" ||
 			domain === "pix.avax.news" ||
+			domain_nowww === "pixhost.icu" ||
 			domain_nowww === "pxhst.co") {
 			return src.replace(/_[^/]*(\.[^/.]*)$/, "$1");
 		}
@@ -7648,8 +7670,9 @@ var $$IMU_EXPORT$$;
 			domain === "img.fanatik.com.tr" ||
 			domain === "assets.dogannet.tv" ||
 			domain_nosub === "fanatik.com.tr" ||
-			domain === "i.pstimaj.com" ||
-			domain === "i.cnnturk.com") {
+			((domain_nosub === "pstimaj.com" ||
+			  domain_nosub === "milimaj.com" ||
+			  domain_nosub === "cnnturk.com") && /^i[0-9]*\./.test(domain))) {
 
 			return src.replace(/\/[0-9]+\/[0-9]+x[0-9]+\/([0-9a-f]+(?:\.[^/.]*)?)([?#].*)?$/, "/100/0x0/$1");
 		}
@@ -8023,6 +8046,7 @@ var $$IMU_EXPORT$$;
 			domain === "upload.taihainet.com" ||
 			domain === "img.sexbeautygirl.com" ||
 			domain === "news.yule.com.cn" ||
+			domain === "upload.sanqin.com" ||
 			(domain_nosub === "ablwang.com" && domain.match(/m[0-9]*\.ablwang\.com/))) {
 			return src.replace(/\/thumb_[0-9]+_[0-9]+_/, "/");
 		}
@@ -8129,7 +8153,7 @@ var $$IMU_EXPORT$$;
 		if (domain_nosub === "fc2.com" && domain.match(/blog-imgs-[0-9]*(?:-[^.]*)?.*\.fc2\.com/)) {
 			return src
 				.replace(/:\/\/(blog-imgs-[0-9]*)\./, "://$1-origin.")
-				.replace(/([/_][0-9]{8,}[^-/._]+)s(\.[^/.]*)$/, "$1$2");
+				.replace(/([/_][0-9a-f]{7,}[^-/._]+)s(\.[^/.]*)$/, "$1$2");
 		}
 
 		if (domain === "photos.hancinema.net" ||
@@ -8523,8 +8547,22 @@ var $$IMU_EXPORT$$;
 							   "$1$2");
 		}
 
-		if (domain === "hwcdn.funbags.com") {
-			return src.replace(/(\/albums\/+[0-9]+\/+)(?:thumb|large)\/+/, "$1orig/");
+		if (domain === "hwcdn.funbags.com" ||
+			domain === "hwcdn.voyeurweb.com") {
+			regex = /(\/albums\/+[0-9]+\/+)(?:thumb|large)\/+/;
+
+			obj = [];
+
+			newsrc = src.replace(regex, "$1orig/");
+			if (newsrc !== src)
+				obj.push(newsrc);
+
+			newsrc = src.replace(regex, "$1large/");
+			if (newsrc !== src)
+				obj.push(newsrc);
+
+			if (obj.length > 0)
+				return obj;
 		}
 
 		if (domain === "aws-foto.amateri.com") {
@@ -9487,9 +9525,11 @@ var $$IMU_EXPORT$$;
 
 		if (domain_nosub === "gelbooru.com" &&
 			domain.match(/^s?img[0-9]*\.gelbooru\.com/)) {
-			return add_full_extensions(src
-									   .replace(/\/thumbnails\/([0-9a-f]+\/[0-9a-f]+\/)thumbnail_/, "/images/$1")
-									   .replace(/\/samples\/([0-9a-f]+\/[0-9a-f]+\/)sample_/, "/images/$1"));
+			newsrc = src.replace(/\/thumbnails\/([0-9a-f]+\/[0-9a-f]+\/)thumbnail_/, "/images/$1")
+						.replace(/\/samples\/([0-9a-f]+\/[0-9a-f]+\/)sample_/, "/images/$1");
+			if (newsrc !== src) {
+				return add_full_extensions(newsrc);
+			}
 		}
 
 		if (domain_nowww === "safebooru.org" ||
@@ -9497,7 +9537,9 @@ var $$IMU_EXPORT$$;
 			domain === "img.xbooru.com" ||
 			domain === "img.booru.org" ||
 			domain_nowww === "realbooru.com") {
-			return add_full_extensions(src.replace(/\/(?:thumbnails|samples)(\/+[0-9]+\/+)(?:thumbnail|sample)_([0-9a-f]+\.[^/.]*)$/, "/images$1$2"));
+			newsrc = src.replace(/\/(?:thumbnails|samples)(\/+[0-9]+\/+)(?:thumbnail|sample)_([0-9a-f]+\.[^/.]*)$/, "/images$1$2");
+			if (newsrc !== src)
+				return add_full_extensions(newsrc);
 		}
 
 		if (domain === "thumbs.booru.org") {
@@ -9809,6 +9851,7 @@ var $$IMU_EXPORT$$;
 
 		if (domain === "static.gamefront.com" ||
 			domain_nowww === "wallpaperawesome.com" ||
+			(domain_nowww === "ukstockingsex.com" && src.indexOf("/galleries/") >= 0) ||
 			domain === "cg.adultwork.com") {
 			return src.replace("/thumbnails/", "/");
 		}
@@ -11170,6 +11213,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "www.consolefun.fr" ||
+			domain_nowww === "nookthem.com" ||
 			domain_nowww === "nude-gals.com") {
 			return src.replace(/\/thumbs\/+th_/, "/");
 		}
@@ -12361,6 +12405,7 @@ var $$IMU_EXPORT$$;
 		if (domain_nowww === "paperlief.com" ||
 			domain_nowww === "celebritywc.com" ||
 			domain_nowww === "ya-webdesign.com" ||
+			domain_nowww === "quotationof.com" ||
 			domain_nowww === "eskipaper.com") {
 			return src.replace(/\/images[0-9]+_([0-9]+)?\//, "/images/");
 		}
@@ -12435,7 +12480,7 @@ var $$IMU_EXPORT$$;
 									url: tmatch[1],
 									is_original: true,
 									extra: {
-										page: result.finalUrl
+										page: urljoin(result.finalUrl + "/", tmatch[1].replace(/.*\/([^/.]*).*?$/, "$1"), true)
 									}
 								});
 							}
@@ -12573,7 +12618,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "s.smutty.com") {
-			return src.replace(/\/m\/([^/]*)$/, "/p/$1");
+			return src.replace(/\/[a-z]\/+([^/]*)(?:[?#].*)?$/, "/b/$1");
 		}
 
 		if (domain_nowww === "welovesexyfeet.com" ||
@@ -12591,14 +12636,14 @@ var $$IMU_EXPORT$$;
 				.replace(/:\/\/[^/]*\/(.*\/)tn\/([^/]*)$/, "://hotflicknet.s3.amazonaws.com/$1$2");
 		}
 
-		if (domain === "www.seniorclassaward.com" ||
+		if (domain_nowww === "seniorclassaward.com" ||
 			domain_nowww === "zocalo.com.mx") {
 			return src.replace(/\/images\/sized(\/images\/.*)-[0-9]+x[0-9]+(\.[^/.]*)$/, "$1$2");
 		}
 
-		if (domain === "www.hentairing.com") {
+		if (domain_nowww === "hentairing.com") {
 			return src
-				.replace(/\/(?:width|height)-[0-9]+\/([^/]*)$/, "/$1")
+				.replace(/\/(?:width|height)-[0-9]+\/([^/]*)(?:[?#].*)?$/, "/$1")
 				.replace(/\?.*/, "");
 		}
 
@@ -12623,11 +12668,13 @@ var $$IMU_EXPORT$$;
 			return src.replace(/^[a-z]+:\/\/[^/]*\/img\//, "http://");
 		}
 
-		if (domain === "static.congnghe.vn") {
-			return src
-				.replace(/\/srv_thumb\.ashx.*?[?&]f=([^&]*).*/, "/$1")
-				.replace(/\\/g, "/")
-				.replace(/\/[^/]*-([0-9]+\.[^/.]*)\.[0-9]+\.[0-9]+\.[^/.]*$/, "/$1");
+		if (domain === "static.congnghe.vn" ||
+			domain_nowww === "congnghe.vn") {
+			newsrc = src.replace(/\/srv_thumb\.ashx.*?[?&]f=([^&]*).*/, "/$1");
+			if (newsrc !== src)
+				return newsrc.replace(/\\/g, "/");
+
+			return src.replace(/\/[^/]*-([0-9]+\.[^/.]*)\.[0-9]+\.[0-9]+\.[^/.]*$/, "/$1");
 		}
 
 		if (domain === "images.foody.vn") {
@@ -12639,9 +12686,10 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/uploads\/+media\/+cache\/+[^/]*\/+uploads\//, "/uploads/");
 		}
 
-		if (domain === "www.vidofa.com" &&
-			src.indexOf("/module/thumb/sr.php") >= 0) {
-			return decodeURIComponent(src.replace(/.*?\/module\/thumb\/sr\.php.*?[?&]src=([^&]*)$/, "$1"));
+		if (domain_nowww === "vidofa.com") {
+			newsrc = src.replace(/.*?\/module\/+thumb\/+sr\.php\?(?:.*&)?src=([^&]*).*?$/, "$1");
+			if (newsrc !== src)
+				return newsrc;
 		}
 
 		if (domain_nowww === "free4kwallpapers.com") {
@@ -13283,6 +13331,7 @@ var $$IMU_EXPORT$$;
 
 		if (domain === "media.publika.md" ||
 			domain === "media.dcbusiness.ro" ||
+			domain === "media.realitatea.net" ||
 			domain === "media.feminis.ro") {
 			return src.replace(/(\/image\/+[0-9]{6}\/)+w[0-9]+(?:h[0-9]+)?\/+/, "$1full/");
 		}
@@ -13517,6 +13566,23 @@ var $$IMU_EXPORT$$;
 			domain_nosub === "p7cdn.com" ||
 			domain_nosub === "pornoreino.com" ||
 			domain_nowww === "mylust.com" ||
+			domain_nosub === "smutr.com" ||
+			domain_nowww === "megaporn.co" ||
+			domain === "i.tubsexer.com" ||
+			domain_nowww === "break.ie" ||
+			(domain_nosub === "watchmygf.me" && /^cdn[0-9]*\./.test(domain)) ||
+			domain === "watchmyexgf.good-cdn.com" ||
+			domain_nowww === "fitting-room.com" ||
+			(domain_nosub === "tubepornclassic.com" && /^static[0-9]*\./.test(domain)) ||
+			domain_nowww === "iloveporn.xxx" ||
+			domain_nowww === "zzgays.com" ||
+			domain_nowww === "pornhat.com" ||
+			domain === "i.bobs-tube.com" ||
+			domain_nowww === "xbabe.com" ||
+			domain_nowww === "pornzee.com" ||
+			domain === "media.thebestshemalevideos.com" ||
+			domain_nowww === "themilf.net" ||
+			domain_nowww === "pornstarsadvice.com" ||
 			domain === "cdn.pornstill.com") {
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+remote_control\.php\?(?:.*?&)?file=([^&]*).*?$/, "$1");
 			if (newsrc !== src)
@@ -13769,6 +13835,15 @@ var $$IMU_EXPORT$$;
 			return src.replace(/_tn(\.[^/.]*)$/, "$1");
 		}
 
+		if (domain_nowww === "fabhairypussy.com") {
+			return {
+				url: src.replace(/(\/+galleries\/+[^/]*\/+[^/]*\/+[0-9]+)_tn(\.[^/.]*)(?:[?#].*)?$/, "$1$2"),
+				headers: {
+					Referer: ""
+				}
+			};
+		}
+
 		if (domain_nowww === "redcarpetnudes.com" ||
 			domain === "cdn.onedala.tv") {
 			return src.replace(/-tn(\.[^/.]*)$/, "$1");
@@ -13940,7 +14015,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "media.aintitcool.com") {
-			return src.replace(/_(?:large|big|huge)(\.[^/.]*)$/, "$1");
+			return src.replace(/_(?:large|big|huge|medium)(\.[^/.]*)(?:[?#].*)?$/, "$1");
 		}
 
 		if (domain_nowww === "lichnosti.net") {
@@ -14021,6 +14096,9 @@ var $$IMU_EXPORT$$;
 			(domain_nosub === "glam0ur.com" && domain.match(/^content[0-9a-z]*\./)) ||
 			domain_nosub === "avidolz.com" ||
 			domain_nosub === "pbabes.com" ||
+			(domain === "static.thenude.eu" && src.indexOf("/galleries/") >= 0) ||
+			(domain_nowww === "eros-and-grace.net" && src.indexOf("/galleries/") >= 0) ||
+			domain === "gals.sextronix.com" ||
 			domain_nosub === "pornodontstop.com") {
 			newsrc = src.replace(/(\/(?:[^/]*_)?)tn_([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
 			if (newsrc !== src)
@@ -14029,6 +14107,10 @@ var $$IMU_EXPORT$$;
 
 		if (domain_nosub === "livejasminbabes.net" && domain.match(/^content[0-9]*\./)) {
 			return src.replace(/\/upload\/main\/tn\//, "/upload/main/");
+		}
+
+		if (domain === "static.thenude.eu") {
+			return src.replace(/(\/admin\/+covers\/+.*\/+)thumbs\/+/, "$1");
 		}
 
 		if ((domain_nowww === "captaingoodlink.com" && src.indexOf("/celebrities/") >= 0) ||
@@ -14193,6 +14275,10 @@ var $$IMU_EXPORT$$;
 
 		if (domain === "iasbh.tmgrup.com.tr") {
 			return decodeURIComponent(src.replace(/^[a-z]+:\/\/[^/]*\/[0-9a-f]+\/(?:[0-9]+\/){5}[0-9]+.*?[?&]u=([^&]*).*?$/,"$1"));
+		}
+
+		if (domain === "i.sabah.com.tr") {
+			return src.replace(/(\/sb\/+[^/]*\/+magazin\/+[^/]*\/+[^/]*)_[a-z](\.[^/.]*)(?:[?#].*)?$/, "$1$2");
 		}
 
 		if (domain_nowww === "bideew.com") {
@@ -14486,7 +14572,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "showbiz.cz") {
-			return src.replace(/(\/files\/gallery\/)thumb\/([0-9a-f]+\/[0-9a-f]+\.[^/.]*)$/, "$1$2");
+			return src.replace(/(?:\/public)?(\/+files\/+gallery\/+)thumb\/+([0-9a-f]+\/[0-9a-f]+)(?:_[a-z]+)?(\.[^/.]*)$/, "$1$2$3");
 		}
 
 		if (domain === "images.nudereviews.com") {
@@ -15065,7 +15151,9 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "la-soubrette.fr") {
-			return src.replace(/\/thumbs-photo-nue\//, "/photo-ps-nue/");
+			return src
+				.replace(/\/photo-ps\/+([^/]*)-([0-9]+)\./, "/photo-ps-grande/$2-$1.")
+				.replace(/\/thumbs-photo-nue\//, "/photo-ps-nue/");
 		}
 
 		if (domain === "static.feber.se" && src.indexOf("/article_images/") >= 0) {
@@ -15493,6 +15581,7 @@ var $$IMU_EXPORT$$;
 			domain === "media.jpegworld.com" ||
 			domain_nowww === "tokyoteenies.com" ||
 			domain === "cdn.smutie.com" ||
+			domain_nowww === "sexthread.com" ||
 			domain_nowww === "galleryportal.com") {
 			newsrc = src.replace(/(:\/\/[^/]*|\/media)\/+thumbs\/+((?:[0-9a-f]\/){5}[0-9a-f]+\/)[0-9]+x[0-9]+\//, "$1/galleries/$2");
 			if (newsrc !== src)
@@ -16211,6 +16300,7 @@ var $$IMU_EXPORT$$;
 		if (domain === "image.jjang0u.service.concdn.com" ||
 			domain === "pic.doctorteen.com" ||
 			domain === "pic.freeporn.hu" ||
+			(domain_nowww === "hotxxxgirls.org" && /\/images\/+galleries\/+/.test(src)) ||
 			(domain_nowww === "metartdb.com" && src.indexOf("/images/galleries/") >= 0)) {
 			newsrc = src.replace(/\/t_([0-9]+\.[^/.]*)$/, "/$1");
 			if (newsrc !== src) {
@@ -16934,7 +17024,7 @@ var $$IMU_EXPORT$$;
 		if (domain_nosub === "filmibeat.com") {
 			newsrc = src
 				.replace(/\/ph-[^/]*\/+/, "/ph-big/")
-				.replace(/\/+imgh\/+[0-9]+x[0-9]+\/+/, "/ph-big/")
+				.replace(/\/+img[hm]\/+[0-9]+x[0-9]+\/+/, "/ph-big/")
 				.replace(/\/img\/+[0-9]+x[0-9]+(?:x[0-9]*)?\//, "/img/");
 			if (newsrc !== src)
 				return newsrc;
@@ -17337,8 +17427,10 @@ var $$IMU_EXPORT$$;
 
 		if (domain_nowww === "fortstore.net" ||
 			domain_nowww === "fiyar.live") {
-			return src.replace(/(\/data_server_[0-9]+\/+[0-9]+\/+)[a-z]+\/+[a-z]+_([^/]*\.[^/.]*)(?:[?#].*)?$/,
-							   "$1big/$2");
+			newsrc = src.replace(/(\/data_server_[0-9]+\/+[0-9]+\/+)[a-z]+\/+[a-z]+_([^/]*\.[^/.]*)(?:[?#].*)?$/,
+								   "$1big/$2");
+			if (newsrc !== src)
+				return newsrc;
 		}
 
 		if (domain === "static.jpg.pl") {
@@ -17373,6 +17465,10 @@ var $$IMU_EXPORT$$;
 				folder = "pics1";
 			return src.replace(/:\/\/[^/]*\/([0-9]{4}-[0-9]{2}-[0-9]{2}\/+[0-9]+_[0-9]+)(\.[^/.]*)(?:[?#].*)?$/,
 							   "://cdn.pornpics.com/" + folder + "/$1big$2");
+		}
+
+		if (domain === "images.pornpics.com") {
+			return src.replace(/(:\/\/[^/]*\/)(?:300|460)\/+/, "$11280/");
 		}
 
 		if (domain_nowww === "vipissy.com" ||
@@ -18066,6 +18162,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "jpgravure.com" ||
+			domain_nowww === "tiedvirgins.com" ||
 			domain_nowww === "thethaigirls.com") {
 			return src.replace(/(\/galleries\/.*\/)tn([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
 		}
@@ -18074,8 +18171,18 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/g\/.*\/)tn([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
 		}
 
-		if (domain_nowww === "asianxxxpics.com") {
+		if (domain_nowww === "asianxxxpics.com" ||
+			domain === "promo.spunkyangels.com") {
 			return src.replace(/\/tn([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/$1");
+		}
+
+		if (domain_nowww === "vintage-flash.com") {
+			return {
+				url: src.replace(/(\/vfg\/+[^/]*\/+)tn([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$10$2"),
+				headers: {
+					Referer: ""
+				}
+			};
 		}
 
 		if (domain_nowww === "1pondo.tv") {
@@ -18285,6 +18392,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "hottystop.com" ||
+			domain === "d3m3u5a3.ssl.hwcdn.net" ||
 			domain === "a2w8r2x2.ssl.hwcdn.net") {
 			return src.replace(/\/smallimage([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/$1");
 		}
@@ -18532,6 +18640,22 @@ var $$IMU_EXPORT$$;
 
 		if (domain === "galleries.cosmid.net") {
 			return src.replace(/(:\/\/[^/]*\/[0-9]+)\/+thumbs\/+/, "$1/");
+		}
+
+		if (domain_nowww === "porn-star.com" ||
+			(domain_nosub === "ptclassic.com" && /^galleries[0-9]*\./.test(domain))) {
+			newsrc = src.replace(/\/thumbs\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/$1");
+			if (newsrc !== src)
+				return newsrc;
+		}
+
+		if (domain_nowww === "suburbanamateurs.com") {
+			return {
+				url: src.replace(/(\/galleries\/+[^/]*\/+)thumbs\/+/, "$1highres/"),
+				headers: {
+					Referer: "http://www.suburbanamateurs.com/"
+				}
+			};
 		}
 
 		if (domain === "video.soloteengirls.net") {
@@ -19174,6 +19298,19 @@ var $$IMU_EXPORT$$;
 			};
 		}
 
+		if (domain === "dl.kaskus.id") {
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+([^/]*\.[^/]*\/)/, "$1");
+			if (newsrc !== src)
+				return add_http(newsrc);
+
+			return {
+				url: src,
+				headers: {
+					Referer: ""
+				}
+			}
+		}
+
 		if (domain_nowww === "shofona.net") {
 			return src.replace(/\/cached_uploads\/+resize\/+[0-9]+\/+[0-9]+\/+/, "/cached_uploads/full/");
 		}
@@ -19537,8 +19674,12 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "patch.com") {
-			return src.replace(/(\/img\/+cdn\/+.*\/+[0-9]{4}\/+[0-9]{2}\/+)(?:T[0-9]+x[0-9]+\/+)?([^/]*?)(?:[?#].*)?$/,
-							   "$1$2");
+			newsrc = src.replace(/(\/img\/+cdn\/+.*\/+[0-9]{4}\/+[0-9]{2}\/+)(?:T[0-9]+x[0-9]+\/+)?([^/]*?)(?:[?#].*)?$/,
+								 "$1$2");
+			if (newsrc !== src)
+				return newsrc;
+
+			return src.replace(/(\/img\/+cdn\/+users\/+[0-9]+\/+[0-9]{4}\/+[0-9]{2}\/+)([^/]*)(?:[?#].*)?$/, "$1raw/$2");
 		}
 
 		if (domain_nowww === "wsws.org") {
@@ -20015,8 +20156,10 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nosub === "news18.com" && domain.match(/^images\./)) {
-			return src.replace(/\/uploads\/+[0-9]+x[0-9]+\/+[^/]*\/+([0-9]{4}\/+[0-9]{2}\/+)/,
-							   "/uploads/$1");
+			newsrc = src.replace(/(:\/\/[^/]*\/+[^/]*\/+)uploads\/+[0-9]+x[0-9]+\/+[^/]*\/+([0-9]{4}\/+[0-9]{2}\/+)/,
+							   "$1uploads/$2");
+			if (newsrc !== src)
+				return newsrc;
 		}
 
 		if (domain_nosub === "dainikbhaskar.com" &&
@@ -20923,6 +21066,10 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "xiuren.org") {
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+cover\.php\?(?:.*?&)?src=([^&]*).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+
 			return src.replace(/\/Thum\/+Thum-/, "/");
 		}
 
@@ -21461,6 +21608,15 @@ var $$IMU_EXPORT$$;
 
 		if (domain === "image.thmeythmey.com") {
 			return src.replace(/(\/pictures\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2})thumb[0-9]*\/+/, "$1");
+		}
+
+		if (domain_nowww === "galdump.com") {
+			return {
+				url: src.replace(/(\/images\/+websites\/+[0-9]+\/+[0-9]+\/+)thumb[0-9]*\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2"),
+				headers: {
+					Referer: "http://galdump.com/"
+				}
+			};
 		}
 
 		if (domain === "drp-images.nettavisen.no") {
@@ -22412,8 +22568,19 @@ var $$IMU_EXPORT$$;
 				return base64_decode(newsrc);
 		}
 
+		if (domain_nowww === "xxxsexy.xyz") {
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+images\/+([^.]{50,})\.[^/.]*(?:[?#].*)?$/, "$1");
+			if (newsrc !== src) {
+				var splitted = newsrc.split("/");
+				newsrc = base64_decode(splitted[0]);
+				if (splitted.length > 1)
+					newsrc += "?" + base64_decode(splitted[1]);
+				return newsrc;
+			}
+		}
+
 		if (domain_nosub === "soumeiwang.com" ||
-			domain === "m.shianwang.com" ||
+			domain_nosub === "shianwang.com" ||
 			domain_nosub === "baobaoyuer.com" ||
 			domain_nosub === "daguaw.com" ||
 			domain_nosub === "ditiw.com" ||
@@ -22429,6 +22596,7 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "kickin.info" ||
 			domain_nowww === "catmario.info" ||
 			domain_nowww === "greateasternwallgallery.com" ||
+			domain_nowww === "stepanakert.info" ||
 			domain_nowww === "carltonstaffing.info") {
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+pics\/+([^-/._]{30,})(?:\.[^/.]*)?(?:[?#].*)?$/, "$1");
 			if (newsrc !== src)
@@ -22876,7 +23044,15 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "fiyar.live") {
-			return src.replace(/\/themes\/+latest\/+ssd\/+small\/+([0-9]+)\/+small-/, "/themes/latest/uploads4/pixsense/big/$1/");
+			regex = /\/themes\/+latest\/+ssd\/+small\/+([0-9]+)\/+small-/;
+
+			if (regex.test(src)) {
+				return [
+					src.replace(regex, "/themes/latest/uploads4/pixsense/big/$1/"),
+					src.replace(regex, "/themes/latest/uploads3/pixsense/big/$1/"),
+					src.replace(regex, "/themes/latest/uploads2/pixsense/big/$1/")
+				];
+			}
 		}
 
 
@@ -23652,7 +23828,7 @@ var $$IMU_EXPORT$$;
 		if (domain_nowww === "teengirl-pics.com") {
 			match = src.match(/^[a-z]+:\/\/[^/]+\/+([^/.]{50,})\.[^/.]*(?:[?#].*)?$/);
 			if (match) {
-				return base64_decode(match[1]);
+				return base64_decode(decodeURIComponent(match[1]));
 			}
 		}
 
@@ -23959,6 +24135,265 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/img\/+content\/+[^/]*\/+[^/]*\/+[^/]*?)(?:_m|[0-9]+x[0-9]+)(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
 		}
 
+		if (domain === "image.gamer.ne.jp") {
+			return src.replace(/(\/news\/+[0-9]{4}\/+[0-9]{8}\/+[0-9a-f]{20,}\/+)[a-z]\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1o/$2");
+		}
+
+		if (domain_nowww === "moviemagik.in") {
+			return src.replace(/(\/files\/+[^/]*\/+[0-9]+\/+)thumb\/+/, "$1");
+		}
+
+		if (domain_nowww === "itedou.com") {
+			return src.replace(/(\/Uploads\/+[^/]*\/+[0-9]+\/+[0-9]+)_s(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain === "img.cnread.news") {
+			return src.replace(/(\/uploads\/+[0-9]+\/+[0-9A-F]{2}\/+[0-9A-F]+w[0-9]+h[0-9]+)(?:_[0-9]+x[0-9]+)?(?:_s[0-9]*)?(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "filmitena.com") {
+			return src
+				.replace(/(\/img\/+Actor\/+)[a-zA-Z]+\/+([0-9]+)_[a-z]+(\.[^/.]*)(?:[?#].*)?$/i, "$1Original/$2_or$3")
+				.replace(/(\/img\/+)Image(?:Tmb)?\/+([0-9]+)_[a-zA-Z]+(\.[^/.]*)(?:[?#].*)?$/i, "$1big/$2_bg$3");
+		}
+
+		if (domain_nowww === "fandimefilmu.cz") {
+			return src.replace(/(\/files\/+images\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2})[a-z_]+_([a-z0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain === "fetcher-cdn.nullmu.com") {
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+social(?:_preview)?\/+[0-9a-f]{20,}\.[^/.?]*\?(?:.*&)?u=([^&]*).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+		}
+
+		if (domain_nowww === "bharatstudent.com") {
+			return src.replace(/\/gallery\/+thumb\/+events\/+/, "/gallery/normal/events/");
+		}
+
+		if (domain === "mimgs.sulekha.com") {
+			newsrc = src
+				.replace(/\/(?:images\/+event-photos|events)\/+([^/]*\/+)spot[0-9]*\/+/, "/images/event-photos/$1")
+				.replace(/\/images\/+stills\/+thumbnail\/+/, "/images/stills/");
+			if (newsrc !== src)
+				return {
+					url: newsrc,
+					problems: {
+						watermark: true
+					}
+				};
+		}
+
+		if (domain_nowww === "i.indiglamour.com") {
+			return src.replace(/(\/photogallery\/+.*\/normal\/+[^/]*_[0-9]+)(?:thmb|rs)(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "mom50.com") {
+			return {
+				url: src.replace(/(\/galleries\/+[^/]*\/+[0-9]{4}\/+[0-9]{2}\/+[^/]*\/+[0-9]+)(?:_[a-z]+){1,}(\.[^/.]*)(?:[?#].*)?$/, "$1$2"),
+				headers: {
+					Referer: ""
+				}
+			};
+		}
+
+		if (domain_nowww === "fastpics.eu") {
+			return src.replace(/\/tn_([^/]*\.[^/.]*)(?:[?#].*)?$/, "/$1");
+		}
+
+		if (domain_nowww === "forbidden-dreams.com" ||
+			domain_nowww === "porn-service.us") {
+			return src.replace(/\/([0-9]+)_ci(\.[^/.]*)(?:[?#].*)?$/, "/ci_$1$2");
+		}
+
+		if (domain_nowww === "iie8.com") {
+			return src.replace(/(\/cdn\/+i\/+[0-9a-f]{10,}\/+)th-[0-9]*x[0-9]*\/+/, "$1");
+		}
+
+		if (domain_nowww === "lustfulmodels.com") {
+			return src.replace(/\/s_([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/$1");
+		}
+
+		if (domain_nowww === "tannerbucks.com") {
+			return src.replace(/\/index_files\/+tn([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/$1");
+		}
+
+		if (domain === "galleries.imctrck.com") {
+			return src.replace(/\/tn\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/images/$1");
+		}
+
+		if (domain_nowww === "boobgoddess.com") {
+			return src.replace(/\/thumbs([0-9]*)\/+tn_/, "/pics$1/");
+		}
+
+		if (domain_nowww === "nextpicturez.com") {
+			return src.replace(/(\/gallery\/.*\/)thumbs\/+/, "$1");
+		}
+
+		if (domain_nosub === "porngals4.com") {
+			newsrc = src.replace(/\/media\/+galleries_[0-9]+x[0-9]+\/+/, "/media/galleries/");
+			if (newsrc !== src)
+				return newsrc;
+
+			id = src.match(/^[a-z]+:\/\/[^/]*\/+media\/+gals_[0-9]+x[0-9]+\/+[0-9]+\/+[0-9]+\/+([0-9]+)-[0-9]+\/+/);
+			if (id && options && options.do_request && options.cb) {
+				console_log(id);
+				api_cache.fetch("porngals4:" + id[1],
+					function (text) {
+						if (!text)
+							return options.cb(null);
+
+						options.cb(src.replace(/\/media\/+gals_[0-9]+x[0-9]+\/+([0-9]+\/+[0-9]+\/+[0-9]+-[0-9]+\/+)([0-9]+-[0-9]+\.[^/.]*)(?:[?#].*)?$/,
+						           "/media/galleries/$1" + text + "-$2"));
+					},
+					function (done) {
+						options.do_request({
+							method: "GET",
+							url: "https://www.porngals4.com/" + id[1] + "/",
+							headers: {
+								Referer: "",
+							},
+							onload: function (resp) {
+								if (resp.readyState !== 4)
+									return;
+
+								if (resp.status !== 200)
+									return done(null, false);
+
+								var match = resp.finalUrl.match(/^[a-z]+:\/\/[^/]*\/+([^/]*)-[0-9]+\/+/);
+								if (match) {
+									return done(match[1], 6*60);
+								} else {
+									return done(null, false);
+								}
+							}
+						});
+					}
+				);
+
+				return {
+					waiting: true
+				};
+			}
+		}
+
+		if (domain_nowww === "archivegalleries.net") {
+			return {
+				url: src.replace(/(\/collection\/.*\/[0-9]+)_[a-z]+size(\.[^/.]*)(?:[?#].*)?$/, "$1$2"),
+				headers: {
+					Referer: ""
+				}
+			};
+		}
+
+		if (domain_nosub === "alsscan.com" && /^s[0-9]*\./.test(domain)) {
+			return src.replace(/\/(sample[0-9]+)s(\.[^/.]*)(?:[?#].*)?$/, "/$1$2");
+		}
+
+		if (domain_nowww === "mnvg.com") {
+			return src.replace(/(\/gallery\/+[0-9]+\/+[0-9]+)(\.[^/.]*)(?:[?#].*)?$/, "$1-full$2");
+		}
+
+		if (domain_nowww === "pornpaw.com") {
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+showthumb\.php\?(?:.*?&)?thumblink=([^&]*).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+		}
+
+		if (domain_nosub === "newstracklive.com") {
+			return src.replace(/(\/uploads\/+.*\/+[0-9]{1,2}\/+)[a-z]+_thumb\/+/, "$1big_thumb/");
+		}
+
+		if (domain_nowww === "ap7am.com") {
+			return src.replace(/(\/backimages\/+telugu-news\/+)thumbs\/+(tnews-)/, "$1bigimages/$2");
+		}
+
+		if (domain === "api.parkseason.ru") {
+			return src.replace(/\/images\/+styles\/+[^/]*\/+/, "/images/");
+		}
+
+		if (domain_nowww === "vgamuseum.info") {
+			return src.replace(/\/smart_thumbs\/+([^/]*?)_thumb_other[0-9]+_[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "/$1$2");
+		}
+
+		if (domain_nowww === "metager.org") {
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+meta\/+picture\?(?:.*&)?url=([^&]*).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+		}
+
+		if (domain === "i.swisscows.ch") {
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+\?link=([^&]*).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+		}
+
+		if (domain_nowww === "mithaaprilia.com") {
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+image\?(?:.*?&)?q=([^&]*).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+		}
+
+		if (domain_nowww === "proprofs.com") {
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+games\/+puzzle\/+sliding\/+resize_image\.php\?(?:.*?&)?image=([^&]*).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+		}
+
+		if (domain_nowww === "sweetgirl.org") {
+			return src.replace(/(\/files\/+sets\/+[0-9]+\/+[^/]*\/+)thumb\/+/, "$1");
+		}
+
+		if (domain === "img.lady.ru") {
+			newsrc = src.replace(/(\/data\/+aphoto\/.*\/)small\/+/, "$1large/");
+			if (newsrc !== src)
+				return newsrc;
+
+			newsrc = src.replace(/(\/data\/+users\/.*\/)small(\.[^/.]*)(?:[?#].*)?$/, "$1large$2");
+			if (newsrc !== src)
+				return newsrc;
+		}
+
+		if (domain_nowww === "cfake.com") {
+			return src.replace(/\/medias\/+thumbs\/+/, "/medias/photos/");
+		}
+
+		if (domain_nowww === "sks-52.ru") {
+			return src.replace(/(\/d[0-9]+\/+[^/]*\/+)m[0-9]+\/+/, "$1");
+		}
+
+		if (domain === "abc.2008php.com") {
+			return src.replace(/(\/[0-9]+_)smallimg\/+/, "$1Website_appreciate/");
+		}
+
+		if (domain === "pro.imgcdn2.com") {
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+\?(?:.*&)?url=([^&]*).*?$/, "$1");
+			if (newsrc !== src)
+				return add_http(decodeuri_ifneeded(newsrc.replace(/z-z/g, ".")));
+		}
+
+		if (domain_nowww === "girlswithmuscle.com") {
+			return src.replace(/\/images\/+thumbs\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/images/full/$1");
+		}
+
+		if (domain === "img.jiahes.com") {
+			return src.replace(/(\/upload\/+image\/+[^/]*\/+[0-9]+\/+)c_[0-9]{3}([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain === "img.peta2.jp") {
+			return src.replace(/(\/img\/+upload\/+th\/+[0-9]+-[0-9]+\/+[0-9]+\/+[^/]*_[0-9]+_[0-9]+)_(?:thumb)?[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1_org$2");
+		}
+
+		if (domain_nowww === "fakty.ua") {
+			return src.replace(/(\/photos\/+articles\/+[0-9]{2}\/+[0-9]\/+[0-9]+)(?:[a-z][0-9]*){1,}(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "metrosport.gr") {
+			return src.replace(/\/images\/+thumbs_[a-z]+\/+/, "/images/");
+		}
+
+
+
 
 
 
@@ -24230,6 +24665,8 @@ var $$IMU_EXPORT$$;
 			domain === "thumbs.videogamer.com" ||
 			domain === "th.gossipblog.it" ||
 			domain === "th.cineblog.it" ||
+			domain === "images.news18.com" ||
+			domain === "static.telugu.news18.com" ||
 			src.match(/:\/\/[^/]*\/thumbor\/[^/]*=\//) ||
 			src.match(/:\/\/[^/]*\/resizer\/[^/]*=\/(?:fit-in\/+)?[0-9]+x[0-9]+(?::[^/]*\/[0-9]+x[0-9]+)?\/(?:filters:[^/]*\/)?/)) {
 			newsrc = src.replace(/.*\/(?:thumb(?:or)?|(?:new-)?resizer)\/.*?\/(?:filters:[^/]*\/)?([a-z]*:\/\/.*)/, "$1");
@@ -24539,12 +24976,14 @@ var $$IMU_EXPORT$$;
 			domain === "mediaresources.idiva.com" ||
 			domain === "telugu.samayam.com" ||
 			(domain_nosub === "cpcache.com" && domain.match(/^i[0-9]*\./)) ||
-			domain_nowww === "filmibeat.com" ||
+			domain_nosub === "filmibeat.com" ||
 			domain === "www.cdn.tv2.no" ||
 			domain === "photo.voici.fr" ||
 			domain_nowww === "essexstudent.com" ||
 			domain === "th.thgim.com" ||
 			domain_nosub === "timesofindia.com" ||
+			domain === "static.langimg.com" ||
+			domain_nosub === "indiatimes.com" ||
 			domain_nosub === "thehindu.com" ||
 			domain === "images.contentful.com") {
 			return {
@@ -24598,6 +25037,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if ((domain_nosub === "radikal.ru" && domain.match(/^s[0-9]*\./)) ||
+			domain_nowww === "atkmodels.com" ||
 			domain_nowww === "n3rdabl3.com") {
 			return {
 				url: src,
@@ -29930,7 +30370,7 @@ var $$IMU_EXPORT$$;
 		unsafeWindow.imu_variable = bigimage_recursive;
 		unsafeWindow.imu_inject = 1;
 		unsafeWindow.do_imu = function(url, cb) {
-			return unsafeWindow.imu_variable(url, {
+			return bigimage_recursive(url, {
 				fill_object: true,
 				do_request: do_request,
 				cb: cb
