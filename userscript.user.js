@@ -21772,7 +21772,7 @@ var $$IMU_EXPORT$$;
 									url: tmatch[1],
 									is_original: true,
 									extra: {
-										page: result.finalUrl
+										page: urljoin(result.finalUrl + "/", tmatch[1].replace(/.*\/([^/.]*).*?$/, "$1"), true)
 									}
 								});
 							}
