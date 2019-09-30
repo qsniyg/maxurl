@@ -10408,6 +10408,9 @@ var $$IMU_EXPORT$$;
 			// https://image.vtcns.com/resize/480x270/files/thuylinh/2018/08/01/selenagomez2225x1498instylephotoshoothot2017hd8852-1052581.jpg
 			//   https://image.vtcns.com/files/thuylinh/2018/08/01/selenagomez2225x1498instylephotoshoothot2017hd8852-1052581.jpg
 			domain === "image.vtcns.com" ||
+			// https://media.cungcau.vn/resize/174x104/files/buithuy/2019/07/09/305-2224.jpg
+			//   https://media.cungcau.vn/files/buithuy/2019/07/09/305-2224.jpg
+			domain === "media.cungcau.vn" ||
 			// different though? - and crop doesn't work
 			// https://image.vtc.vn/resize/80x60/files/news/2018/02/21/-210540.jpg
 			domain === "image.vtc.vn") {
@@ -10418,8 +10421,8 @@ var $$IMU_EXPORT$$;
 			// http://file.tintuckpop.net/resize/640x-/2016/05/16/1a922-1670.jpg
 			// http://file.tintuckpop.net/crop/210x158/tintuckpop/2018/02/22/shinminah-1519107250-d126.jpg
 			return src
-				.replace(/\/crop\/[-0-9]+x[-0-9]+\//, "/")
-				.replace(/\/resize\/[-0-9]+x[-0-9]+\//, "/");
+				.replace(/\/crop\/+[-0-9]+x[-0-9]+\//, "/")
+				.replace(/\/resize\/+[-0-9]+x[-0-9]+\//, "/");
 		}
 
 		if (domain_nosub === "zadn.vn" && domain.match(/^photo-resize-/)) {
@@ -11111,6 +11114,8 @@ var $$IMU_EXPORT$$;
 			(domain_nowww === "memberme.net" && src.indexOf("/media/") >= 0) ||
 			// https://funasia.net/site_media/coverphoto/7aef660a-9d55-4f48-a75f-4b500f821312.jpg.260x0_q85.jpg
 			(domain_nowww === "funasia.net" && src.indexOf("/site_media/") >= 0) ||
+			// https://image.photocnc.com/photocnc/2019-06/21/201906210455231280.jpg.h200.jpg
+			domain === "image.photocnc.com" ||
 			// https://d53l9d6fqlxs2.cloudfront.net/photos/41/41127-tokyos-tak.jpg.660x0_q80_crop-scale_upscale.jpg
 			//   https://d53l9d6fqlxs2.cloudfront.net/photos/41/41127-tokyos-tak.jpg
 			domain === "d53l9d6fqlxs2.cloudfront.net") {
@@ -22049,7 +22054,7 @@ var $$IMU_EXPORT$$;
 				.replace(/:\/\/[^/]*\/(.*\/)tn\/([^/]*)$/, "://hotflicknet.s3.amazonaws.com/$1$2");
 		}
 
-		if (domain === "www.seniorclassaward.com" ||
+		if (domain_nowww === "seniorclassaward.com" ||
 			// http://www.zocalo.com.mx/images/sized/images/uploads/articles/emmawat-621x354.jpg
 			//   http://www.zocalo.com.mx/images/uploads/articles/emmawat.jpg
 			domain_nowww === "zocalo.com.mx") {
@@ -22058,12 +22063,12 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/images\/sized(\/images\/.*)-[0-9]+x[0-9]+(\.[^/.]*)$/, "$1$2");
 		}
 
-		if (domain === "www.hentairing.com") {
+		if (domain_nowww === "hentairing.com") {
 			// http://www.hentairing.com/thumb/1/width-248/ada-wong-tomoki-resident-evil.jpg
 			//   http://www.hentairing.com/thumb/1/ada-wong-tomoki-resident-evil.jpg?width=150
 			//   http://www.hentairing.com/thumb/1/ada-wong-tomoki-resident-evil.jpg
 			return src
-				.replace(/\/(?:width|height)-[0-9]+\/([^/]*)$/, "/$1")
+				.replace(/\/(?:width|height)-[0-9]+\/([^/]*)(?:[?#].*)?$/, "/$1")
 				.replace(/\?.*/, "");
 		}
 
@@ -22105,16 +22110,20 @@ var $$IMU_EXPORT$$;
 			return src.replace(/^[a-z]+:\/\/[^/]*\/img\//, "http://");
 		}
 
-		if (domain === "static.congnghe.vn") {
+		if (domain === "static.congnghe.vn" ||
+			// https://congnghe.vn/tinmoi/store/techmag/thumb/30092017/218/top-10-nu-minh-tinh-trung-quoc-hut-khach-cho-thuong-hieu-dai-dien-2094125.jpg.600.0.jpg
+			//   https://congnghe.vn/tinmoi/store/techmag/thumb/30092017/218/2094125.jpg
+			domain_nowww === "congnghe.vn") {
 			// http://static.congnghe.vn/tinmoi/store/techmag/thumb/30092017/218/top-10-nu-minh-tinh-trung-quoc-hut-khach-cho-thuong-hieu-dai-dien-2094125.jpg.600.0.jpg
 			//   http://static.congnghe.vn/tinmoi/srv_thumb.ashx?source=218&w=600&h=0&f=store\techmag\thumb\30092017\218\2094125.jpg&title=top-10-nu-minh-tinh-trung-quoc-hut-khach-cho-thuong-hieu-dai-dien
 			//   http://static.congnghe.vn/tinmoi/store/techmag/thumb/30092017/218/2094125.jpg
 			// http://static.congnghe.vn/tinmoi/srv_thumb.ashx?source=202&w=110&h=96&f=store\techmag\thumb\05072018\202\2132322.jpg&title=nguoi-la-ma-co-dai-da-khien-can-benh-kinh-khung-nay-hoanh-hanh-va-lay-lan-xuyen-luc-dia
 			//   http://static.congnghe.vn/tinmoi/store/techmag/thumb/05072018/202/2132322.jpg
-			return src
-				.replace(/\/srv_thumb\.ashx.*?[?&]f=([^&]*).*/, "/$1")
-				.replace(/\\/g, "/")
-				.replace(/\/[^/]*-([0-9]+\.[^/.]*)\.[0-9]+\.[0-9]+\.[^/.]*$/, "/$1");
+			newsrc = src.replace(/\/srv_thumb\.ashx.*?[?&]f=([^&]*).*/, "/$1");
+			if (newsrc !== src)
+				return newsrc.replace(/\\/g, "/");
+
+			return src.replace(/\/[^/]*-([0-9]+\.[^/.]*)\.[0-9]+\.[0-9]+\.[^/.]*$/, "/$1");
 		}
 
 		if (domain === "images.foody.vn") {
@@ -22132,11 +22141,12 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/uploads\/+media\/+cache\/+[^/]*\/+uploads\//, "/uploads/");
 		}
 
-		if (domain === "www.vidofa.com" &&
-			src.indexOf("/module/thumb/sr.php") >= 0) {
+		if (domain_nowww === "vidofa.com") {
 			// http://www.vidofa.com/module/thumb/sr.php?src=http://dl64.vidofa.com/srv//files/thumbs/2018/06/30//1530342529fd517-30.jpg
 			//   http://dl64.vidofa.com/srv//files/thumbs/2018/06/30//1530342529fd517-30.jpg
-			return decodeURIComponent(src.replace(/.*?\/module\/thumb\/sr\.php.*?[?&]src=([^&]*)$/, "$1"));
+			newsrc = src.replace(/.*?\/module\/+thumb\/+sr\.php\?(?:.*&)?src=([^&]*).*?$/, "$1");
+			if (newsrc !== src)
+				return newsrc;
 		}
 
 		if (domain_nowww === "free4kwallpapers.com") {
@@ -38501,7 +38511,7 @@ var $$IMU_EXPORT$$;
 		if (domain_nosub === "soumeiwang.com" ||
 			// http://m.shianwang.com/img/aHR0cDovL2ltZzAuaW1ndG4uYmRpbWcuY29tL2l0L3U9NDMxODU4MDc4LDIwMjQ2NzA5NzAmZm09MTUmZ3A9MC5qcGc=.jpg
 			//   http://img0.imgtn.bdimg.com/it/u=431858078,2024670970&fm=15&gp=0.jpg
-			domain === "m.shianwang.com" ||
+			domain_nosub === "shianwang.com" ||
 			// http://www.baobaoyuer.com/img/aHR0cDovL2ltZzMuaW1ndG4uYmRpbWcuY29tL2l0L3U9Mjk0NzkxNTEyNSwzMDc5NDIzNDg2JmZtPTI2JmdwPTAuanBn.jpg
 			//   http://img3.imgtn.bdimg.com/it/u=2947915125,3079423486&fm=26&gp=0.jpg
 			domain_nosub === "baobaoyuer.com" ||
@@ -41107,6 +41117,20 @@ var $$IMU_EXPORT$$;
 			// http://sks-52.ru/d3/tais_21_46792/m6/tais_21_46792_1.jpg
 			//   http://sks-52.ru/d3/tais_21_46792/tais_21_46792_1.jpg
 			return src.replace(/(\/d[0-9]+\/+[^/]*\/+)m[0-9]+\/+/, "$1");
+		}
+
+		if (domain === "abc.2008php.com") {
+			// https://abc.2008php.com/2014_smallimg/2014-12-19/20141219222827.jpg
+			//   https://abc.2008php.com/2014_Website_appreciate/2014-12-19/20141219222827.jpg
+			return src.replace(/(\/[0-9]+_)smallimg\/+/, "$1Website_appreciate/");
+		}
+
+		if (domain === "pro.imgcdn2.com") {
+			// http://pro.imgcdn2.com/?tag=a&url=mmbizz-zqpicz-zcn/mmbiz/cfoN9rDaic6yWlTR4upt9g39k8qqic3vPVKdN0GhqH7eMreGibx7IiajGib2hiaZTYH40dwRPjtYNCaCAJf7YWohDbQg/640?wx_fmt=other
+			//   http://mmbiz.qpic.cn/mmbiz/cfoN9rDaic6yWlTR4upt9g39k8qqic3vPVKdN0GhqH7eMreGibx7IiajGib2hiaZTYH40dwRPjtYNCaCAJf7YWohDbQg/0
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+\?(?:.*&)?url=([^&]*).*?$/, "$1");
+			if (newsrc !== src)
+				return add_http(decodeuri_ifneeded(newsrc.replace(/z-z/g, ".")));
 		}
 
 
