@@ -231,6 +231,10 @@ function is_googlephotos(domain, url) {
   return false;
 }
 
+function npify(text) {
+  return text.replace(/:\/\/www\.reddit\./g, "://np.reddit.");
+}
+
 function dourl_inner(big, url, post, options) {
   //console.dir(JSON.parse(JSON.stringify(post)));
 
@@ -404,12 +408,16 @@ function dourl_inner(big, url, post, options) {
 
             //var faq_link = "https://www.reddit.com/r/MaxImage/comments/8znfgw/faq/";
             var faq_link = "https://www.reddit.com/r/MaxImage/comments/d0zshj/faq/";
+            if (options.np)
+              faq_link = npify(faq_link);
 
             comment += "*****\n\n";
             //comment += "^[why?](https://www.reddit.com/r/MaxImage/comments/8znfgw/faq/)&nbsp;|&nbsp;to&nbsp;find&nbsp;larger&nbsp;images:&nbsp;[website](https://qsniyg.github.io/maxurl/)&nbsp;/&nbsp;[userscript](https://greasyfork.org/en/scripts/36662-image-max-url)";
             //comment += "[why?](https://www.reddit.com/r/MaxImage/comments/8znfgw/faq/) | to find larger images yourself: [website](https://qsniyg.github.io/maxurl/) / [userscript](https://greasyfork.org/en/scripts/36662-image-max-url)";
             // show the extension link instead of the website, as gitcdn is really off and on (need to find something else)
             comment += "[why?](" + faq_link + ") | to find larger images yourself: [extension](https://addons.mozilla.org/en-US/firefox/addon/image-max-url/) / [userscript](https://greasyfork.org/en/scripts/36662-image-max-url) ([guide](https://www.reddit.com/r/MaxImage/wiki/pictures))";
+            if (options.np)
+              comment = npify(comment);
             console.log(comment);
             if (post) {
               var logged = false;
@@ -588,6 +596,8 @@ const links = new NodeCache({ stdTTL: 600, checkperiod: 100 });
 //dourl("http://photo.newsen.com/news_photo/2018/07/13/201807131531391510_1.jpg");
 // test for shocking:
 //dourl("https://i.imgur.com/jrT3cjuh.png", null, {shocking: true});
+// test for np:
+//dourl("https://i.imgur.com/jrT3cjuh.png", null, {np: true});
 
 
 //console.dir(blacklist_json.disallowed);
@@ -657,7 +667,11 @@ if (true) {
 
       if (blacklist_json.shocking.indexOf(post.subreddit.display_name.toLowerCase()) >= 0) {
         options.shocking = true;
-      };
+      }
+
+      if (blacklist_json.np.indexOf(post.subreddit.display_name.toLowerCase()) >= 0) {
+        options.np = true;
+      }
     }
 
     if (links.get(post.permalink) === true) {
