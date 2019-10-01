@@ -40957,7 +40957,10 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/([0-9]+)_ci(\.[^/.]*)(?:[?#].*)?$/, "/ci_$1$2");
 		}
 
-		if (domain_nowww === "iie8.com") {
+		if (domain_nowww === "iie8.com" ||
+			// http://e1nn.com/cdn/i/62fda71ec5f2660dbd303ae609305aaa/th-x250/9.jpg
+			//   http://e1nn.com/cdn/i/62fda71ec5f2660dbd303ae609305aaa/9.jpg
+			domain_nowww === "e1nn.com") {
 			// http://iie8.com/cdn/i/752257dcd433ccce2e15fe4c3617c84c/th-x250/3.jpg
 			//   http://iie8.com/cdn/i/752257dcd433ccce2e15fe4c3617c84c/3.jpg
 			return src.replace(/(\/cdn\/+i\/+[0-9a-f]{10,}\/+)th-[0-9]*x[0-9]*\/+/, "$1");
@@ -41161,7 +41164,10 @@ var $$IMU_EXPORT$$;
 				return newsrc;
 		}
 
-		if (domain_nowww === "cfake.com") {
+		if (domain_nowww === "cfake.com" ||
+			// http://lovedat.ru/medias/thumbs/139318625228d7e3bf_cfake.jpg
+			//   http://lovedat.ru/medias/photos/139318625228d7e3bf_cfake.jpg
+			domain_nowww === "lovedat.ru") {
 			// http://cfake.com/medias/thumbs/15307934167f319894_cfake.jpg
 			//   http://cfake.com/medias/photos/15307934167f319894_cfake.jpg
 			return src.replace(/\/medias\/+thumbs\/+/, "/medias/photos/");
@@ -41227,6 +41233,63 @@ var $$IMU_EXPORT$$;
 			// https://www.boobieblog.com/img3/OliviaAustinRealRealityPM1_small.jpg
 			//   https://www.boobieblog.com/img3/OliviaAustinRealRealityPM1.jpg
 			return src.replace(/(\/img[0-9]*\/+[^/]*)_small(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain === "cdn.wearehairy.com") {
+			// http://cdn.wearehairy.com/models/Ocean_Sky/Ocean_Sky_is_rocking_and_rolling/th/OceanSky_LeopardLeggings_001.jpg
+			//   http://cdn.wearehairy.com/models/Ocean_Sky/Ocean_Sky_is_rocking_and_rolling/img/OceanSky_LeopardLeggings_001.jpg
+			return src.replace(/\/th\/+([^/]*\.[^/.]*)(?:[?#].*)?$/, "/img/$1");
+		}
+
+		if (domain === "cdn.picson.mobi") {
+			// http://cdn.picson.mobi/300/513/157009/1.jpg
+			//   http://cdn.picson.mobi/original/513/157009/1.jpg
+			return src.replace(/(:\/\/[^/]*\/+)[0-9]+\/+([0-9]+\/+[0-9]+\/+[0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1original/$2");
+		}
+
+		if (domain === "s.deviant.life" ||
+			// https://s.pornpics.today/img/46/90/25/2a/w400px/814febf205b3499fb782405d.jpg
+			//   https://s.pornpics.today/img/46/90/25/2a/814febf205b3499fb782405d.jpg
+			domain === "s.pornpics.today" ||
+			// https://s.hardcore.pink/img/d9/52/e6/c7/w400px/abf335392a0cce44dbea1eef.jpg
+			//   https://s.hardcore.pink/img/d9/52/e6/c7/abf335392a0cce44dbea1eef.jpg
+			domain === "s.hardcore.pink" ||
+			// https://s.brunette.site/img/a0/a5/2c/a2/w400px/3a15f90306f7d7ed46a52cde.jpg
+			//   https://s.brunette.site/img/a0/a5/2c/a2/3a15f90306f7d7ed46a52cde.jpg
+			domain === "s.brunette.site" ||
+			// https://s.nudepornpics.xyz/img/b5/92/50/3c/w300px/93665e71e8007be1176ffe30.jpg
+			//   https://s.nudepornpics.xyz/img/b5/92/50/3c/93665e71e8007be1176ffe30.jpg
+			domain === "s.nudepornpics.xyz" ||
+			// https://s.picsofporn.club/img/ee/d1/69/30/w300px/74eb26baf7beb89ec3e2ec7b.jpg
+			//   https://s.picsofporn.club/img/ee/d1/69/30/74eb26baf7beb89ec3e2ec7b.jpg
+			domain === "s.picsofporn.club" ||
+			// https://s.xpics.info/img/22/07/e4/ae/w300px/d1814ac16d6f09aa831bcfe8.jpg
+			//   https://s.xpics.info/img/22/07/e4/ae/d1814ac16d6f09aa831bcfe8.jpg
+			domain === "s.xpics.info" ||
+			// https://s.sexoic.com/img/9c/93/b9/07/w300px/73623dcf900d44459c2eafb2.jpg
+			//   https://s.sexoic.com/img/9c/93/b9/07/73623dcf900d44459c2eafb2.jpg
+			domain === "s.sexoic.com" ||
+			// https://s.pornphotos.space/img/92/d7/94/7f/w300px/38d201af694d2041181343f3.jpg
+			//   https://s.pornphotos.space/img/92/d7/94/7f/38d201af694d2041181343f3.jpg
+			domain === "s.pornphotos.space" ||
+			// https://s.pornpictures.space/img/a0/1a/75/6f/w300px/1fff36567c3ae68d59cc5185.jpg
+			//   https://s.pornpictures.space/img/a0/1a/75/6f/1fff36567c3ae68d59cc5185.jpg
+			domain === "s.pornpictures.space" ||
+			// https://s.teenpornpics.today/img/d0/21/50/81/w300px/024ca18507f0a337cccc738b.jpg
+			//   https://s.teenpornpics.today/img/d0/21/50/81/024ca18507f0a337cccc738b.jpg
+			domain === "s.teenpornpics.today" ||
+			// https://s.pornphotos.pw/img/22/dd/69/d1/w300px/f9c6093a17ed184b761b64d3.jpg
+			//   https://s.pornphotos.pw/img/22/dd/69/d1/f9c6093a17ed184b761b64d3.jpg
+			domain === "s.pornphotos.pw" ||
+			// https://s.pics.red/img/1d/0c/a8/bd/w300px/dcb7d81f71ad0ddcdf0943ce.jpg
+			//   https://s.pics.red/img/1d/0c/a8/bd/dcb7d81f71ad0ddcdf0943ce.jpg
+			domain === "s.pics.red" ||
+			// https://s.softcore.life/img/09/fe/4a/dc/w400px/b04688d698821706c3f4c24e.jpg
+			//   https://s.softcore.life/img/09/fe/4a/dc/b04688d698821706c3f4c24e.jpg -- rotated?
+			domain === "s.softcore.life") {
+			// https://s.deviant.life/img/fd/4d/2a/8c/w400px/7bf9d8803ef1d0056dd97fa5.jpg
+			//   https://s.deviant.life/img/fd/4d/2a/8c/7bf9d8803ef1d0056dd97fa5.jpg
+			return src.replace(/(\/img\/+(?:[0-9a-f]{2}\/+){4})[wh][0-9]+px\/+/, "$1");
 		}
 
 
