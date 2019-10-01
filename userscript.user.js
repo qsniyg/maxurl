@@ -40674,7 +40674,10 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/galeri2\/+galeri_[0-9]+\/+)thumbnail\/+[0-9]+x[0-9]+_([^/]*)(?:[?#].*)?$/, "$1$2");
 		}
 
-		if (domain === "img.eronrg.com") {
+		if (domain === "img.eronrg.com" ||
+			// http://eronrg.com/gallery/1967/small/siskegirls_ru_thumb_6.jpg
+			//   http://eronrg.com/gallery/1967/big/siskegirls_ru_img_6.jpg
+			domain_nowww === "eronrg.com") {
 			// http://img.eronrg.com/gallery/2462/small/siskegirls_ru_thumb_1.jpg
 			//   http://img.eronrg.com/gallery/2462/big/siskegirls_ru_img_1.jpg
 			return src.replace(/(\/gallery\/+[0-9]+\/+)small\/+([^/]*_)thumb(_[0-9]+)(\.[^/.]*)(?:[?#].*)?$/, "$1big/$2img$3$4");
@@ -41164,7 +41167,10 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/medias\/+thumbs\/+/, "/medias/photos/");
 		}
 
-		if (domain_nowww === "sks-52.ru") {
+		if (domain_nowww === "sks-52.ru" ||
+			// https://gals.kindgirls.com/d3/melena_10938/m6/melena_10938_1.jpg
+			//   https://gals.kindgirls.com/d3/melena_10938/melena_10938_1.jpg
+			domain === "gals.kindgirls.com") {
 			// http://sks-52.ru/d3/tais_21_46792/m6/tais_21_46792_1.jpg
 			//   http://sks-52.ru/d3/tais_21_46792/tais_21_46792_1.jpg
 			return src.replace(/(\/d[0-9]+\/+[^/]*\/+)m[0-9]+\/+/, "$1");
@@ -41215,6 +41221,12 @@ var $$IMU_EXPORT$$;
 			// http://www.metrosport.gr/images/thumbs_medium/ucJCjqoIlxuk7MOCf7A8.jpg -- upscaled?
 			//   http://www.metrosport.gr/images/ucJCjqoIlxuk7MOCf7A8.jpg
 			return src.replace(/\/images\/+thumbs_[a-z]+\/+/, "/images/");
+		}
+
+		if (domain_nowww === "boobieblog.com") {
+			// https://www.boobieblog.com/img3/OliviaAustinRealRealityPM1_small.jpg
+			//   https://www.boobieblog.com/img3/OliviaAustinRealRealityPM1.jpg
+			return src.replace(/(\/img[0-9]*\/+[^/]*)_small(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
 		}
 
 
