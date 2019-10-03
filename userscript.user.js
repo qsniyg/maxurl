@@ -810,6 +810,7 @@ var $$IMU_EXPORT$$;
 		allow_possibly_different: false,
 		allow_possibly_broken: false,
 		allow_thirdparty: false,
+		allow_apicalls: true,
 		//browser_cookies: true,
 		// thanks to LukasThyWalls on github for the idea: https://github.com/qsniyg/maxurl/issues/75
 		bigimage_blacklist: "",
@@ -881,7 +882,8 @@ var $$IMU_EXPORT$$;
 			},
 			example_websites: [
 				"Flickr",
-				"SmugMug"
+				"SmugMug",
+				"..."
 			],
 			category: "redirection"
 		},
@@ -1463,6 +1465,16 @@ var $$IMU_EXPORT$$;
 				"Newsen"
 			],
 			onupdate: update_rule_setting
+		},
+		allow_apicalls: {
+			name: "Rules using API calls",
+			description: "Enables rules that use API calls. Strongly recommended to keep this enabled",
+			category: "rules",
+			example_websites: [
+				"Instagram",
+				"Flickr",
+				"..."
+			]
 		},
 		browser_cookies: {
 			name: "Use browser cookies",
@@ -3012,7 +3024,7 @@ var $$IMU_EXPORT$$;
 
 			// http://www.newsen.com/news_view.php?uid=201909050803320410 -- multiple images in one page
 			//   http://cdn.newsen.com/newsen/news_photo/2019/09/05/201909050803320410_1.jpg
-			if (extra.page && options && options.cb && options.allow_thirdparty) {
+			if (extra.page && options && options.cb && options.allow_thirdparty && options.do_request) {
 				var get_imageid = function(url) {
 					var match = url.match(/\/[0-9]{4}\/+(?:[0-9]{2}\/+){2}([0-9]{10,}_[0-9]+)\.[^/.]*(?:[?#].*)?$/);
 					if (!match)
@@ -3259,6 +3271,10 @@ var $$IMU_EXPORT$$;
 			// http://the-star.co.kr/site/data/thumb_dir/2015/11/13/2015111301003_0_thumb.jpg
 			//   http://the-star.co.kr/site/data/img_dir/2015/11/13/2015111301003_0.jpg
 			domain_nowww === "the-star.co.kr" ||
+			// http://digitalchosun.dizzo.com/site/data/html_dir/2019/10/02/2019100280037.html
+			// http://digitalchosun.dizzo.com/site/data/thumb_dir/2019/10/02/2019100280036_0_thumb.jpg
+			//   http://digitalchosun.dizzo.com/site/data/img_dir/2019/10/02/2019100280036_0.jpg
+			domain === "digitalchosun.dizzo.com" ||
 			domain_nosub === "chosunonline.com") {
 			// works:
 			// http://woman.chosun.com/up_fd/wc_news/2018-01/simg_thumb/1802_292s.jpg
@@ -3295,6 +3311,17 @@ var $$IMU_EXPORT$$;
 
 			if (newsrc !== src)
 				return add_full_extensions(newsrc);
+
+			id = src.match(/\/site\/+data\/+img_dir\/+([0-9]{4}\/+(?:[0-9]{2}\/+){2})([0-9]{10,})_[0-9]+\./);
+			if (false && id) {
+				var id_plus_one = parseInt(id[2]) + 1; // doesn't always work
+				return {
+					url: src,
+					extra: {
+						page: src.replace(/\/site\/+data\/+img_dir\/+.*/, "/site/data/html_dir/" + id[1] + (id_plus_one) + ".html")
+					}
+				};
+			}
 		}
 
 		// replaced in large rule above
@@ -42791,8 +42818,14 @@ var $$IMU_EXPORT$$;
 		if (!options)
 			options = {};
 
-		if ((is_userscript || is_extension) && !("allow_thirdparty" in options)) {
-			options.allow_thirdparty = (settings["allow_thirdparty"] + "") === "true";
+		if (is_userscript || is_extension) {
+			 if (!("allow_thirdparty" in options)) {
+				options.allow_thirdparty = (settings["allow_thirdparty"] + "") === "true";
+			 }
+
+			 if (!("allow_apicalls" in options)) {
+				 options.allow_apicalls = (settings["allow_apicalls"] + "") === "true";
+			 }
 		}
 
 		for (var option in bigimage_recursive.default_options) {
@@ -42815,6 +42848,10 @@ var $$IMU_EXPORT$$;
 							options.exclude_problems.push(problem);
 					}
 				}
+			}
+
+			if (!options.allow_apicalls) {
+				options.do_request = null;
 			}
 		}
 
