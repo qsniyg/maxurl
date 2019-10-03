@@ -30564,7 +30564,7 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if (domain === "i.artfile.ru") {
+		if (domain === "i.artfile.ru" && options && options.cb && options.do_request) {
 			// http://www.artfile.ru/i.php?i=1310644
 			// http://i.artfile.ru/650x366_1310644_[www.ArtFile.ru].jpg
 			//   http://i.artfile.ru/1920x1080_1310644_[www.ArtFile.ru].jpeg
@@ -30582,7 +30582,12 @@ var $$IMU_EXPORT$$;
 						if (resp.readyState === 4) {
 							var match = resp.responseText.match(/top.location.href *= *["'](https?:\/\/i\.artfile\.ru\/[^"']*)["']/);
 							if (match) {
-								options.cb(urljoin(src, match[1], true));
+								options.cb({
+									url: urljoin(src, match[1], true),
+									extra: {
+										page: resp.finalUrl
+									}
+								});
 							} else {
 								options.cb(null);
 							}
@@ -30878,8 +30883,9 @@ var $$IMU_EXPORT$$;
 							   "/photos_main/$1$2");
 		}
 
-		if (domain === "pw.artfile.me" ||
-			domain === "i.artfile.me") {
+		if ((domain === "pw.artfile.me" ||
+			 domain === "i.artfile.me") &&
+			options && options.cb && options.do_request) {
 			// https://i.artfile.me/wallpaper/19-12-2018/360x225/devushki--unsort--blondinki--svetlovolos-1423954.jpg
 			//   https://i.artfile.me/wallpaper/19-12-2018/2560x1600/devushki--unsort--blondinki--svetlovolos-1423954.jpg
 			// https://pw.artfile.me/wallpaper/01-02-2018/650x434/eda-kolbasnye-izdeliya-kolbasa-assorti-p-1299787.jpg
@@ -30895,9 +30901,15 @@ var $$IMU_EXPORT$$;
 							if (match) {
 								var size = match[1].replace(/.*?размер: ([0-9]+x[0-9]+).*?$/, "$1");
 								if (size !== match[1]) {
-									return options.cb(src
-													  .replace(/\/[0-9]+x[0-9]+\//, "/" + size + "/")
-													  .replace(/:\/\/pw\.artfile/, "://i.artfile"));
+									newsrc = src.replace(/\/[0-9]+x[0-9]+\//, "/" + size + "/")
+												.replace(/:\/\/pw\.artfile/, "://i.artfile");
+
+									options.cb({
+										url: newsrc,
+										extra: {
+											page: resp.finalUrl
+										}
+									});
 								}
 							}
 
@@ -30918,7 +30930,8 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/photo\/+[a-z]+\//, "/photo/full/");
 		}
 
-		if (domain === "drscdn.500px.org") {
+		if (domain === "drscdn.500px.org" &&
+			options && options.cb && options.do_request) {
 			// https://drscdn.500px.org/photo/110928613/w%3D70_h%3D70/v2?webp=true&v=5&sig=44ba66ac19d9f5852e30c17e59f45a48c3fd8a00661cc83486506469823d81ad
 			//   https://drscdn.500px.org/photo/110928613/q%3D80_m%3D2000/v2?webp=true&sig=2f634d5fb1e3fbdf40c4e7b2e3aa112eba72b7c6c5476f07306c25ff1459cf24
 			// https://drscdn.500px.org/photo/155707683/m%3D900/102599ba6f6b6143d74b1f9e593d7559 -- original photo deleted
@@ -32202,6 +32215,7 @@ var $$IMU_EXPORT$$;
 					url: "http://zwz.cz/f/" + id,
 					method: "GET",
 					headers: {
+						Referer: "http://zwz.cz/",
 						Cookie: "agree=yes"
 					},
 					onload: function(result) {
@@ -40257,8 +40271,9 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if (domain_nosub === "imgtown.net" ||
-			domain_nosub === "imgtown.pw") {
+		if ((domain_nosub === "imgtown.net" ||
+			 domain_nosub === "imgtown.pw") &&
+			options && options.cb && options.do_request) {
 			// https://it1.imgtown.net/i/00735/hm00jfc5ry20_t.jpg
 			//   https://imgtown.net/hm00jfc5ry20/MetArt_Foina_Elizabet_high_0005.jpg.html
 			//   https://imgtown.pw/wTZBlVBrPJdIAePl8XE7N8slVPVKtNeXlw.php
