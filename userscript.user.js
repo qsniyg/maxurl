@@ -30633,8 +30633,11 @@ var $$IMU_EXPORT$$;
 
 		if (domain === "static.mellbimbo.eu") {
 			// http://static.mellbimbo.eu/thumb/2018/06/01/1fNeqSq.jpg.webp
+			//   http://static.mellbimbo.eu/files/2018/06/01/1fNeqSq.jpg.webp
+			// http://static.mellbimbo.eu//thumb/2014/02/13/1353086-20140213-KLlVo8.jpg
+			//   http://static.mellbimbo.eu//files/2014/02/13/1353086-20140213-KLlVo8.jpg
 			return {
-				url: src.replace(/(:\/\/[^/]*\/)thumb\//, "$1files/"),
+				url: src.replace(/(:\/\/[^/]*\/+)thumb\//, "$1files/"),
 				headers: {
 					Origin: "http://mellbimbo.eu",
 					Referer: "http://mellbimbo.eu"
@@ -41016,6 +41019,9 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "iie8.com" ||
+			// http://vq50.com/cdn/i/b09f92c0a6e450a3bf41be298f05dc46/th-x250/1.jpg
+			//   http://vq50.com/cdn/i/b09f92c0a6e450a3bf41be298f05dc46/1.jpg
+			domain_nowww === "vq50.com" ||
 			// http://e1nn.com/cdn/i/62fda71ec5f2660dbd303ae609305aaa/th-x250/9.jpg
 			//   http://e1nn.com/cdn/i/62fda71ec5f2660dbd303ae609305aaa/9.jpg
 			domain_nowww === "e1nn.com") {
@@ -41362,6 +41368,74 @@ var $$IMU_EXPORT$$;
 			// http://www.darkmovie.info/upload/cast/nm2244205_small.jpg -- upscaled
 			//   http://www.darkmovie.info/upload/cast/nm2244205.jpg
 			return src.replace(/(\/upload\/+cast\/+nm[0-9]+)_[a-z]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nosub === "shutterstock.com" && /^editorial[0-9]*\./.test(domain)) {
+			// https://www.shutterstock.com/editorial/image-editorial/jarel-zhang-runway-paris-fashion-week-women-ss-2020-france-01-oct-2019-10432664m
+			// https://editorial01.shutterstock.com/wm-preview-1500/10432664m/aeb26858/jarel-zhang-runway-paris-fashion-week-women-s-s-2020-france-shutterstock-editorial-10432664m.jpg
+			id = src.replace(/^[a-z]+:\/\/[^/]*\/+[^/]*\/+([0-9]+[a-z])\/+.*/, "$1");
+			if (id !== src && options.do_request && options.cb) {
+				api_cache.fetch("shutterstock_editorial:" + id, function(data) {
+					options.cb(data);
+				}, function (done) {
+					page = "https://shutterstock.com/editorial/image-editorial/" + id;
+
+					options.do_request({
+						method: "GET",
+						url: page,
+						headers: {
+							Referer: ""
+						},
+						onload: function (result) {
+							if (result.readyState !== 4)
+								return;
+
+							if (result.status !== 200)
+								return done(null, false);
+
+							var base_obj = {
+								url: src,
+								extra: {
+									page: result.finalUrl
+								}
+							};
+
+							var orig_obj = base_obj;
+
+							var obj = [];
+
+							var match = result.responseText.match(/<meta\s+property=["']og:image["']\s+content=["'](.*?)["']/);
+							if (match) {
+								base_obj = deepcopy(base_obj);
+								base_obj.url = decode_entities(match[1]);
+								base_obj.problems = { watermark: true };
+								obj.push(base_obj);
+							}
+
+							var match = result.responseText.match(/<script\s+type=["']application\/ld\+json["']>\s*(\[.*?\])\s*<\/script>/);
+							if (match) {
+								var json_obj = JSON_parse(match[1]);
+								var url = json_obj[1].thumbnail;
+								base_obj = deepcopy(base_obj);
+								base_obj.url = url;
+								base_obj.problems = { smaller: true };
+								obj.push(base_obj);
+							}
+
+							obj.push(orig_obj);
+
+							if (obj.length > 0)
+								return done(obj, 6*60*60);
+							else
+								return done(null, false);
+						}
+					});
+				});
+
+				return {
+					waiting: true
+				};
+			}
 		}
 
 
