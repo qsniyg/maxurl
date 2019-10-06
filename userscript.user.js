@@ -5279,17 +5279,21 @@ var $$IMU_EXPORT$$;
 			// tshop will automatically be replaced to shop
 			// https://tshop.r10s.jp/book/cabinet/3966/4907953093966.jpg?fitin=200:300&composite-to=*,*|200:300
 			//   https://shop.r10s.jp/book/cabinet/3966/4907953093966.jpg
-			domain === "tshop.r10s.jp" ||
+			//domain === "tshop.r10s.jp" ||
 			// https://tshop.r10s.com/4bf21390-ec8c-11e4-9162-005056b75bda/upload/np/A685-M1.jpg?_ex=330x330
-			domain === "tshop.r10s.com" ||
+			domain_nosub === "r10s.com" ||
 			// https://rakuma.r10s.jp/d/strg/ctrl/25/af89f9418a6f8fc899e2e0a280d79acd0c274d16.79.1.25.2.jpg?fit=inside%7C300%3A300
-			domain === "rakuma.r10s.jp" ||
+			//domain === "rakuma.r10s.jp" ||
+			// https://r.r10s.jp/ran/img/1001/0004/943/674/259/502/10010004943674259502_1.jpg?fitin=100:100
+			domain_nosub === "r10s.jp" ||
 			// http://static.netlife.vn//2017/11/07/14/43/sao-han-trong-1-tuan-tara-den-viet-nam-2-lan_1.jpg?maxwidth=480
 			domain === "static.netlife.vn" ||
 			// http://rs.phunuonline.com.vn/staticFile/Subject/2018/02/14/7391244/unnamed_182138203.png?w=51&h=32
 			domain === "rs.phunuonline.com.vn" ||
 			// https://images.nbcolympics.com/www.nbcolympics.com/field_image/22February2018/shuster_smile.jpg?impolicy=960x540_rectangle
 			domain === "images.nbcolympics.com" ||
+			// https://dist.joshinweb.jp/cdshop/img/jacket/P5_G/5863/P5_G5863047W.JPG?impolicy=tp100
+			(domain === "dist.joshinweb.jp" && src.indexOf("/img/") >= 0) ||
 			// https://compote.slate.com/images/4e1e4179-fb17-436b-a890-1a4fdb417d45.jpeg?width=1180&offset=0x0&rect=1560x1040&height=842
 			domain === "compote.slate.com" ||
 			// https://media.gannett-cdn.com/29906170001/29906170001_5720100432001_5720093419001-vs.jpg?pubId=29906170001&quality=10
@@ -12329,9 +12333,11 @@ var $$IMU_EXPORT$$;
 			//   https://eiga.k-img.com/images/buzz/67970/b4763ecf68d81f0e.jpg?1505989880
 			// https://eiga.k-img.com/images/movie/87956/photo/2a98637bcfd5c2c2/640.jpg?1531358070
 			//   https://eiga.k-img.com/images/movie/87956/photo/2a98637bcfd5c2c2.jpg?1531358070
+			// https://eiga.k-img.com/images/anime/news/104504/photo/ca6b941587bf429e/640.jpg
+			//   https://eiga.k-img.com/images/anime/news/104504/photo/ca6b941587bf429e.jpg
 			return src
-				.replace(/(\/images\/[a-z]+\/[0-9]+\/)[0-9]+x(?:[0-9]+)?(\.[^/.]*)$/, "$1original$2")
-				.replace(/(\/images\/[a-z]+\/[0-9]+\/(?:[a-z]+\/)?[0-9a-f]+)\/[0-9]+(\.[^/.]*)$/, "$1$2");
+				.replace(/(\/images\/+[a-z]+\/+(?:[a-z]+\/+)?[0-9]+\/)[0-9]+x(?:[0-9]+)?(\.[^/.]*)$/, "$1original$2")
+				.replace(/(\/images\/+[a-z]+\/+(?:[a-z]+\/+)?[0-9]+\/(?:[a-z]+\/)?[0-9a-f]+)\/[0-9]+(\.[^/.]*)$/, "$1$2");
 		}
 
 		if (domain === "akiba-souken.k-img.com" ||
@@ -17575,7 +17581,9 @@ var $$IMU_EXPORT$$;
 			// http://news.nicovideo.jp/watch/nw3468901
 			// https://img.cdn.nimg.jp/s/niconews/articles/images/3468901/45213edfb355c57cd4794f0ef0c83a3463a6fdb540ccf59db7d2e094c0427a77f183c2c622560c45fa676d4febc525f15ce3aeb95a623b7533a96750725290c6/300x300s_FFFFFFFF?key=293b5fc6c8c97c8a96505ff25eadda2e537c4b415566571114ed309cca61acfb
 			//   https://dcdn.cdn.nimg.jp/niconews/articles/images/3468901/45213edfb355c57cd4794f0ef0c83a3463a6fdb540ccf59db7d2e094c0427a77f183c2c622560c45fa676d4febc525f15ce3aeb95a623b7533a96750725290c6
-			return src.replace(/:\/\/img\.cdn\.nimg\.jp\/s\/(.*?\/images\/[0-9]+\/[0-9a-f]+)\/.*/,
+			// https://img.cdn.nimg.jp/s/niconews/articles/images/2365358/2091988l.jpg/640x480s_FFFFFF?key=617a5b5376e6c089d5c966da650b799984cced8e591ca380692b40649b2c470e
+			//   https://dcdn.cdn.nimg.jp/niconews/articles/images/2365358/2091988l.jpg
+			return src.replace(/:\/\/img\.cdn\.nimg\.jp\/s\/(.*?\/images\/+[0-9]+\/+(?:[0-9a-f]+|[^/.]*\.[^/.]*))\/.*/,
 							   "://dcdn.cdn.nimg.jp/$1");
 		}
 
@@ -20635,7 +20643,12 @@ var $$IMU_EXPORT$$;
 			//   https://img.news.goo.ne.jp/picture/wowkorea/m_wowkorea-20180615wow026.jpg
 			// https://img.news.goo.ne.jp/picture/wowkorea/s2011111590761.jpg
 			//   https://img.news.goo.ne.jp/picture/wowkorea/m2011111590761.jpg
-			return src.replace(/\/picture\/+([a-z]+)\/+s((?:_\1-[0-9]{8}wow[0-9]+|[0-9]{10,})\.[^/.]*)(?:[?#].*)?$/, "/picture/$1/m$2");
+			// https://img.news.goo.ne.jp/picture/nagasaki/s_nagasaki-20191006000925.jpg
+			//   https://img.news.goo.ne.jp/picture/nagasaki/m_nagasaki-20191006000925.jpg
+			// other:
+			// http://img.news.goo.ne.jp/picture/megapicture_editor/20140515/20140515200355_490425581.jpg -- 3093x4647
+			// http://img.news.goo.ne.jp/picture/megapicture_editor/20130519112834_168985365.jpg -- 4532x3112
+			return src.replace(/\/picture\/+([a-z]+)\/+s((?:_\1-[0-9]{8}wow[0-9]+|_\1-[0-9]{10,}|[0-9]{10,})\.[^/.]*)(?:[?#].*)?$/, "/picture/$1/m$2");
 		}
 
 		if (domain === "preview.redd.it") {
@@ -25545,7 +25558,10 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/upload\/[0-9]+_([0-9]{10,}_[0-9]+\.[^/.]*)$/, "/upload/$1");
 		}
 
-		if (domain === "news-img.dwango.jp") {
+		if (domain === "news-img.dwango.jp" ||
+			// https://green-img-news-dwango-jp-prod.s3.amazonaws.com/uploads/medium/file/000/132/923/132923/sm_op3fl7mwxm9svdgo2do.jpg
+			//   https://green-img-news-dwango-jp-prod.s3.amazonaws.com/uploads/medium/file/000/132/923/132923/op3fl7mwxm9svdgo2do.jpg
+			amazon_container === "green-img-news-dwango-jp-prod") {
 			// https://news-img.dwango.jp/uploads/medium/file/000/031/265/31265/md_main_hiki_web.jpg
 			//   https://news-img.dwango.jp/uploads/medium/file/000/031/265/31265/main_hiki_web.jpg -- 2756x1831
 			return src.replace(/(\/uploads\/[a-z]+\/file\/.*\/)(?:md|sm|lg)_([^/]*)$/, "$1$2");
@@ -35784,7 +35800,9 @@ var $$IMU_EXPORT$$;
 		if (domain_nowww === "wmg.jp") {
 			// https://wmg.jp/packages/15123/images/pi_320x320_wpcr000016447_LLL.jpg
 			//   https://wmg.jp/packages/15123/images/wpcr000016447_LLL.jpg
-			return src.replace(/\/images\/+pi_[0-9]+x[0-9]+_/, "/images/");
+			// https://wmg.jp/packages/17910/images/wpzl000031298_L.jpg
+			//   https://wmg.jp/packages/17910/images/wpzl000031298_LLL.jpg
+			return src.replace(/\/images\/+(?:pi_[0-9]+x[0-9]+_)?([a-z]+[0-9]+)_LL?\./, "/images/$1_LLL.");
 		}
 
 		if (domain_nowww === "bontonland.cz") {
@@ -36125,7 +36143,7 @@ var $$IMU_EXPORT$$;
 			return src.replace(/^[a-z]+:\/\/[^/]*\/\?(http)/, "$1");
 		}
 
-		if (domain_nowww === "animeanime.jp") {
+		if (domain_nosub === "animeanime.jp") {
 			// https://animeanime.jp/imgs/sq_sl/157389.jpg
 			//   https://animeanime.jp/imgs/p/jtKDOVlKAvjRrNw8SXAVejagI61Nrq_oqaqr/157389.jpg -- 360x480
 			//   https://animeanime.jp/imgs/p/rQC-FVStleeQ4uCDm4cdn6GgF60oy6_oqaqr/157389.jpg -- 533x709
@@ -36135,7 +36153,17 @@ var $$IMU_EXPORT$$;
 			//   https://animeanime.jp/imgs/ogp_f/189666.jpg -- 600x900
 			// https://s.animeanime.jp/imgs/p/sQnw7oxGTTu4umdJ9vPIDqGgI6ytrq_oqaqr/230649.jpg -- 2048x2048
 			//   https://s.animeanime.jp/imgs/p/rQC-FVStleeQ4uCDm4cdn6GgF60oy6_oqaqr/230649.jpg -- 1024x1024
-			return src.replace(/\/imgs\/+(?:sq_sl|ogp_f|zoom|p\/+(?:jtKDOVlKAvjRrNw8SXAVejagI61Nrq|rQC-FVStleeQ4uCDm4cdn6GgF60oy6)_oqaqr)\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/imgs/p/sQnw7oxGTTu4umdJ9vPIDqGgI6ytrq_oqaqr/$1");
+			// https://animeanime.jp/imgs/slider/260061.png
+			//   https://animeanime.jp/imgs/p/sQnw7oxGTTu4umdJ9vPIDqGgI6ytrq_oqaqr/260061.png
+			// https://animeanime.jp/imgs/list_ml/265233.jpg
+			//   https://animeanime.jp/imgs/p/sQnw7oxGTTu4umdJ9vPIDqGgI6ytrq_oqaqr/265233.jpg
+			// https://animeanime.jp/imgs/p/F0wY7sTvXbM-zUyY3Ct0qjajM6ytrq_oqaqr/113500.jpg
+			//   https://animeanime.jp/imgs/p/sQnw7oxGTTu4umdJ9vPIDqGgI6ytrq_oqaqr/113500.jpg
+			// https://s.animeanime.jp/imgs/p/GAauWYP2lbxlzgJRQBgLncSmE68prq_oqaqr/183050.jpg
+			//   https://s.animeanime.jp/imgs/p/sQnw7oxGTTu4umdJ9vPIDqGgI6ytrq_oqaqr/183050.jpg
+			// https://s.animeanime.jp/imgs/p/qC3cX52_w9YJ28j7VPltKcSgI60Yrq_oqaqr/189365.jpg
+			//   https://s.animeanime.jp/imgs/p/sQnw7oxGTTu4umdJ9vPIDqGgI6ytrq_oqaqr/189365.jpg
+			return src.replace(/\/imgs\/+(?:sq_sl|ogp_f|zoom|(?:thumb|std|list)_[^/]*|slider|p\/+(?:jtKDOVlKAvjRrNw8SXAVejagI61Nrq|qC3cX52_w9YJ28j7VPltKcSgI60Yrq|GAauWYP2lbxlzgJRQBgLncSmE68prq|F0wY7sTvXbM-zUyY3Ct0qjajM6ytrq|rQC-FVStleeQ4uCDm4cdn6GgF60oy6)_oqaqr)\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/imgs/p/sQnw7oxGTTu4umdJ9vPIDqGgI6ytrq_oqaqr/$1");
 		}
 
 		if (domain_nowww === "gamespark.jp") {
@@ -36147,7 +36175,38 @@ var $$IMU_EXPORT$$;
 			//   https://www.gamespark.jp/imgs/p/PseAHU_gq3GEwRLM5htwMwoLvAaDYAQDAgEA/308568.jpg
 			// https://www.gamespark.jp/imgs/zoom/239382.png
 			//   https://www.gamespark.jp/imgs/p/PseAHU_gq3GEwRLM5htwMwoLvAaDYAQDAgEA/239382.png
-			return src.replace(/\/imgs\/+(?:sq_sl|ogp_f|zoom|p\/+(?:YqPw1SnBMRmYIkmrbU1O_DkImAYqBQQDAgEA|yFIzVel2FK9SeCSMtovYejkIJAfnBQQDAgEA))\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/imgs/p/PseAHU_gq3GEwRLM5htwMwoLvAaDYAQDAgEA/$1");
+			// https://www.gamespark.jp/imgs/p/d19fJzDIFCH7XlqenqofxzkLiAatBQQDAgEA/331923.jpg
+			//   https://www.gamespark.jp/imgs/p/PseAHU_gq3GEwRLM5htwMwoLvAaDYAQDAgEA/331923.jpg
+			// https://www.gamespark.jp/imgs/p/w1yUNxfzLf6iwt3Eey88jjkI6AZGBQQDAgEA/325638.jpg
+			//   https://www.gamespark.jp/imgs/p/PseAHU_gq3GEwRLM5htwMwoLvAaDYAQDAgEA/325638.jpg
+			// https://www.gamespark.jp/imgs/p/XDbCbghKzVCeRs9WXItNCQoLUAcGBQQDAgEA/99589.jpg?zoom=spacing
+			//   https://www.gamespark.jp/imgs/p/PseAHU_gq3GEwRLM5htwMwoLvAaDYAQDAgEA/99589.jpg?zoom=spacing
+			// https://www.gamespark.jp/imgs/p/rKjJghwJABdtg-7FAeGmXzkJ1AejBQQDAgEA/331925.jpg
+			//   https://www.gamespark.jp/imgs/p/PseAHU_gq3GEwRLM5htwMwoLvAaDYAQDAgEA/331925.jpg
+			// https://www.gamespark.jp/imgs/p/Up2FUwfg_STscOmZfda3dm8NuASCBQQDAgEA/243604.jpg
+			//   https://www.gamespark.jp/imgs/p/PseAHU_gq3GEwRLM5htwMwoLvAaDYAQDAgEA/243604.jpg
+			return src.replace(/\/imgs\/+(?:sq_sl|ogp_f|zoom|(?:thumb|std|list)_[^/]*|slider|p\/+(?:YqPw1SnBMRmYIkmrbU1O_DkImAYqBQQDAgEA|Up2FUwfg_STscOmZfda3dm8NuASCBQQDAgEA|rKjJghwJABdtg-7FAeGmXzkJ1AejBQQDAgEA|XDbCbghKzVCeRs9WXItNCQoLUAcGBQQDAgEA|w1yUNxfzLf6iwt3Eey88jjkI6AZGBQQDAgEA|d19fJzDIFCH7XlqenqofxzkLiAatBQQDAgEA|yFIzVel2FK9SeCSMtovYejkIJAfnBQQDAgEA))\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/imgs/p/PseAHU_gq3GEwRLM5htwMwoLvAaDYAQDAgEA/$1");
+		}
+
+		if (domain_nosub === "cinemacafe.net") {
+			// https://www.cinemacafe.net/imgs/std_l1/448352.jpg
+			//   https://www.cinemacafe.net/imgs/p/JgD9AR1Ir8Z47f6Bz3cIbgIDgA8ODQwLCgkI/448352.jpg -- 2048x1668
+			// https://www.cinemacafe.net/imgs/std_m1/444453.jpg
+			//   https://www.cinemacafe.net/imgs/p/JgD9AR1Ir8Z47f6Bz3cIbgIDgA8ODQwLCgkI/444453.jpg
+			// https://www.cinemacafe.net/imgs/thumb_h1/69950.jpg
+			//   https://www.cinemacafe.net/imgs/p/JgD9AR1Ir8Z47f6Bz3cIbgIDgA8ODQwLCgkI/69950.jpg
+			// https://www.cinemacafe.net/imgs/p/IdF3CXec7ZLwPC0QhNLSvQMCOg0oDQwLCgkI/448340.jpg
+			//   https://www.cinemacafe.net/imgs/p/JgD9AR1Ir8Z47f6Bz3cIbgIDgA8ODQwLCgkI/448340.jpg
+			// https://www.cinemacafe.net/imgs/p/5Fc34EuXLG5x2tdPmpNB1GcDWA6eDQwLCgkI/448334.jpg
+			//   https://www.cinemacafe.net/imgs/p/JgD9AR1Ir8Z47f6Bz3cIbgIDgA8ODQwLCgkI/448334.jpg
+			// https://s.cinemacafe.net/imgs/p/cj-SRmM3m7t9_NMtR4JzwmcFsAyKDQwLCgkI/195963.jpg
+			//   https://s.cinemacafe.net/imgs/p/JgD9AR1Ir8Z47f6Bz3cIbgIDgA8ODQwLCgkI/195963.jpg
+			// https://www.cinemacafe.net/imgs/p/ATDRThl-6oWF9fpps9341csCOg8ODQwLCgkI/447945.jpg
+			//   https://www.cinemacafe.net/imgs/p/JgD9AR1Ir8Z47f6Bz3cIbgIDgA8ODQwLCgkI/447945.jpg
+			// https://www.cinemacafe.net/imgs/p/teqw5JmZv-V68YYR3gF-gmcAmg4dDQwLCgkI/448809.jpg
+			//   https://www.cinemacafe.net/imgs/p/JgD9AR1Ir8Z47f6Bz3cIbgIDgA8ODQwLCgkI/448809.jpg
+			// https://s.cinemacafe.net/imgs/p/JgD9AR1Ir8Z47f6Bz3cIbgIDgA8ODQwLCgkI/120463.jpg?thumbnailize=zoom -- 7360x4912 (same without thumbnailize=zoom)
+			return src.replace(/\/imgs\/+(?:sq_sl|ogp_f|zoom|(?:thumb|std|list)_[^/]*|slider|p\/+(?:IdF3CXec7ZLwPC0QhNLSvQMCOg0oDQwLCgkI|teqw5JmZv-V68YYR3gF-gmcAmg4dDQwLCgkI|5Fc34EuXLG5x2tdPmpNB1GcDWA6eDQwLCgkI|cj-SRmM3m7t9_NMtR4JzwmcFsAyKDQwLCgkI|ATDRThl-6oWF9fpps9341csCOg8ODQwLCgkI))\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/imgs/p/JgD9AR1Ir8Z47f6Bz3cIbgIDgA8ODQwLCgkI/$1");
 		}
 
 		if (domain_nowww === "pixsell.hr") {
@@ -41608,6 +41667,34 @@ var $$IMU_EXPORT$$;
 			// https://userimg.tellonym.me/xs/14963714_5e0b7c3e269dfb54fdb68c797c571cc9.jpg
 			//   https://img.tellonym.me/14963714_5e0b7c3e269dfb54fdb68c797c571cc9.jpg
 			return src.replace(/:\/\/[^/]*\/+[a-z]+\/+/, "://img.tellonym.me/");
+		}
+
+		if (domain === "img.omni7.jp") {
+			// https://img.omni7.jp/co/productimage/0001/product/39/1301355639/image/1301355639_main_s.jpg
+			//   https://img.omni7.jp/co/productimage/0001/product/39/1301355639/image/1301355639.jpg
+			return src.replace(/(\/product\/+[0-9]+\/+[0-9]+\/+image\/+[0-9]+)_main_s(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain === "d2jtsb989t238a.cloudfront.net") {
+			// https://d2jtsb989t238a.cloudfront.net/p/10716761/1518689821/small
+			//   https://d2jtsb989t238a.cloudfront.net/p/10716761/1518689821/normal -- 275x275
+			// other:
+			// https://d2jtsb989t238a.cloudfront.net/m/ttuv2oqmyr7w56a2hg9mepoxbbu3v1tc/thumb_normal
+			//   https://d2jtsb989t238a.cloudfront.net/m/ttuv2oqmyr7w56a2hg9mepoxbbu3v1tc/movie.mp4
+			return src.replace(/(\/p\/+[0-9]+\/+[0-9]+\/+)small(?:[?#].*)?$/, "$1normal");
+		}
+
+		if (domain === "cdnx.natalie.mu") {
+			// https://cdnx.natalie.mu/media/news/music/2019/0225/nishinonanase_art201902_fit_120x120.jpg
+			//   https://cdnx.natalie.mu/media/news/music/2019/0225/nishinonanase_art201902_fixw_120.jpg
+			//   https://cdnx.natalie.mu/media/news/music/2019/0225/nishinonanase_art201902_fixw_750_lt.jpg
+			// https://cdnx.natalie.mu/media/news/comic/2018/1206/mix_key_fixw_640_hq.jpg
+			//   https://cdnx.natalie.mu/media/news/comic/2018/1206/mix_key_fixw_750_lt.jpg -- 640x905 (same size)
+			// https://cdnx.natalie.mu/media/news/music/2016/0914/dollelements_art201609_fixw_730_hq.jpg
+			//   https://cdnx.natalie.mu/media/news/music/2016/0914/dollelements_art201609_fixw_750_lt.jpg
+			// https://cdnx.natalie.mu/media/news/music/2016/0705/iRis_art20160705_fixw_234.jpg
+			//   https://cdnx.natalie.mu/media/news/music/2016/0705/iRis_art20160705_fixw_750_lt.jpg
+			return src.replace(/(?:_fixw_(?:120|234)|_fit_120x120|_fixw_(?:640|730)_hq)\./, "_fixw_750_lt.");
 		}
 
 
