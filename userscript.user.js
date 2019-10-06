@@ -34743,7 +34743,9 @@ var $$IMU_EXPORT$$;
 		if (domain === "media.karousell.com") {
 			// https://media.karousell.com/media/photos/products/2019/03/20/150723_218912279_thumbnail_progressive_thumbnail.jpg
 			//   https://media.karousell.com/media/photos/products/2019/03/20/150723_218912279_thumbnail.jpg
-			return src.replace(/(\/media\/+photos\/+products\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}[^/]*)_progressive_thumbnail(\.[^/.]*)(?:[?#].*)?$/,
+			// https://media.karousell.com/media/photos/products/2019/04/24/163655_224532925_thumbnail_thumbnail.jpg
+			//   https://media.karousell.com/media/photos/products/2019/04/24/163655_224532925_thumbnail.jpg
+			return src.replace(/(\/media\/+photos\/+products\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}[^/]*?)(?:_progressive)?_thumbnail(\.[^/.]*)(?:[?#].*)?$/,
 							   "$1$2");
 		}
 
@@ -41689,7 +41691,9 @@ var $$IMU_EXPORT$$;
 		if (domain === "img.omni7.jp") {
 			// https://img.omni7.jp/co/productimage/0001/product/39/1301355639/image/1301355639_main_s.jpg
 			//   https://img.omni7.jp/co/productimage/0001/product/39/1301355639/image/1301355639.jpg
-			return src.replace(/(\/product\/+[0-9]+\/+[0-9]+\/+image\/+[0-9]+)_main_s(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+			// https://img.omni7.jp/co/productimage/0001/product/39/1301355639/image/1301355639_main_l.jpg
+			//   https://img.omni7.jp/co/productimage/0001/product/39/1301355639/image/1301355639.jpg
+			return src.replace(/(\/product\/+[0-9]+\/+[0-9]+\/+image\/+[0-9]+)_main_[sl](\.[^/.]*)(?:[?#].*)?$/, "$1$2");
 		}
 
 		if (domain === "d2jtsb989t238a.cloudfront.net") {
@@ -41712,6 +41716,24 @@ var $$IMU_EXPORT$$;
 			// https://cdnx.natalie.mu/media/news/music/2016/0705/iRis_art20160705_fixw_234.jpg
 			//   https://cdnx.natalie.mu/media/news/music/2016/0705/iRis_art20160705_fixw_750_lt.jpg
 			return src.replace(/(?:_fixw_(?:120|234)|_fit_120x120|_fixw_(?:640|730)_hq)\./, "_fixw_750_lt.");
+		}
+
+		if (domain_nowww === "gohong01.com") {
+			// http://gohong01.com/img/7868/mini.jpg
+			//   http://gohong01.com/img/7868/t.jpg
+			return src.replace(/(\/img\/+[0-9]+\/+)mini(\.[^/.]*)(?:[?#].*)?$/, "$1t$2");
+		}
+
+		if (domain === "static.mercdn.net") {
+			// https://static.mercdn.net/thumb/photos/m95828769342_1.jpg?1547988548
+			//  https://static.mercdn.net/item/detail/orig/photos/m95828769342_1.jpg?1547988548
+			return src.replace(/\/thumb\/+photos\/+/, "/item/detail/orig/photos/");
+		}
+
+		if ((domain_nosub === "readthis.one" && /^s[0-9]*\./.test(domain))) {
+			// https://s2.readthis.one/yimg/eJwVxlEKgCAMANAbOTfJZbdZ6ihCDRwEnT56X-8wu-cG0Go5xb2163R5NLgGzGr9v7MHdAmYS2KMntaSRYV5J8HA5BOG9AF1VRaQ.jpg_240.jpg
+			//   https://s2.readthis.one/yimg/eJwVxlEKgCAMANAbOTfJZbdZ6ihCDRwEnT56X-8wu-cG0Go5xb2163R5NLgGzGr9v7MHdAmYS2KMntaSRYV5J8HA5BOG9AF1VRaQ.jpg
+			return src.replace(/(\/yimg\/+[^/]{50,}\.[^/._]+)_[0-9]+\.[^/.]*(?:[?#].*)?$/, "$1");
 		}
 
 
