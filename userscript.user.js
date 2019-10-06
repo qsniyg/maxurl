@@ -36163,10 +36163,12 @@ var $$IMU_EXPORT$$;
 			//   https://s.animeanime.jp/imgs/p/sQnw7oxGTTu4umdJ9vPIDqGgI6ytrq_oqaqr/183050.jpg
 			// https://s.animeanime.jp/imgs/p/qC3cX52_w9YJ28j7VPltKcSgI60Yrq_oqaqr/189365.jpg
 			//   https://s.animeanime.jp/imgs/p/sQnw7oxGTTu4umdJ9vPIDqGgI6ytrq_oqaqr/189365.jpg
-			return src.replace(/\/imgs\/+(?:sq_sl|ogp_f|zoom|(?:thumb|std|list)_[^/]*|slider|p\/+(?:jtKDOVlKAvjRrNw8SXAVejagI61Nrq|qC3cX52_w9YJ28j7VPltKcSgI60Yrq|GAauWYP2lbxlzgJRQBgLncSmE68prq|F0wY7sTvXbM-zUyY3Ct0qjajM6ytrq|rQC-FVStleeQ4uCDm4cdn6GgF60oy6)_oqaqr)\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/imgs/p/sQnw7oxGTTu4umdJ9vPIDqGgI6ytrq_oqaqr/$1");
+			// https://animeanime.jp/imgs/p/ypfYP8UGHHv1ocFz1cgmQGihmaytrq_oqaqr/150033.jpg
+			//   https://animeanime.jp/imgs/p/sQnw7oxGTTu4umdJ9vPIDqGgI6ytrq_oqaqr/150033.jpg
+			return src.replace(/\/imgs\/+(?:sq_sl|ogp_f|zoom|(?:thumb|std|list|rel)_[^/]*|slider|p\/+(?:jtKDOVlKAvjRrNw8SXAVejagI61Nrq|ypfYP8UGHHv1ocFz1cgmQGihmaytrq|qC3cX52_w9YJ28j7VPltKcSgI60Yrq|GAauWYP2lbxlzgJRQBgLncSmE68prq|F0wY7sTvXbM-zUyY3Ct0qjajM6ytrq|rQC-FVStleeQ4uCDm4cdn6GgF60oy6)_oqaqr)\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/imgs/p/sQnw7oxGTTu4umdJ9vPIDqGgI6ytrq_oqaqr/$1");
 		}
 
-		if (domain_nowww === "gamespark.jp") {
+		if (domain_nosub === "gamespark.jp") {
 			// https://www.gamespark.jp/imgs/ogp_f/307336.jpg
 			//   https://www.gamespark.jp/imgs/p/PseAHU_gq3GEwRLM5htwMwoLvAaDYAQDAgEA/307336.jpg -- 1024x576
 			// https://www.gamespark.jp/imgs/p/PseAHU_gq3GEwRLM5htwMwoLvAaDYAQDAgEA/83073.png -- 3050x2233
@@ -36185,7 +36187,12 @@ var $$IMU_EXPORT$$;
 			//   https://www.gamespark.jp/imgs/p/PseAHU_gq3GEwRLM5htwMwoLvAaDYAQDAgEA/331925.jpg
 			// https://www.gamespark.jp/imgs/p/Up2FUwfg_STscOmZfda3dm8NuASCBQQDAgEA/243604.jpg
 			//   https://www.gamespark.jp/imgs/p/PseAHU_gq3GEwRLM5htwMwoLvAaDYAQDAgEA/243604.jpg
-			return src.replace(/\/imgs\/+(?:sq_sl|ogp_f|zoom|(?:thumb|std|list)_[^/]*|slider|p\/+(?:YqPw1SnBMRmYIkmrbU1O_DkImAYqBQQDAgEA|Up2FUwfg_STscOmZfda3dm8NuASCBQQDAgEA|rKjJghwJABdtg-7FAeGmXzkJ1AejBQQDAgEA|XDbCbghKzVCeRs9WXItNCQoLUAcGBQQDAgEA|w1yUNxfzLf6iwt3Eey88jjkI6AZGBQQDAgEA|d19fJzDIFCH7XlqenqofxzkLiAatBQQDAgEA|yFIzVel2FK9SeCSMtovYejkIJAfnBQQDAgEA))\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/imgs/p/PseAHU_gq3GEwRLM5htwMwoLvAaDYAQDAgEA/$1");
+			// https://img.gamespark.jp/imgs/zoom/124504.jpg
+			// https://s.gamespark.jp/imgs/p/DECG0YPrj3VfE9VDCfubi28LiAazBQQDAgEA/102286.jpg
+			//   https://s.gamespark.jp/imgs/p/PseAHU_gq3GEwRLM5htwMwoLvAaDYAQDAgEA/102286.jpg
+			// https://s.gamespark.jp/imgs/p/d8IRfSCmFXPaJb844BSE_jkJwAfOBQQDAgEA/28450.jpg
+			//   https://s.gamespark.jp/imgs/p/PseAHU_gq3GEwRLM5htwMwoLvAaDYAQDAgEA/28450.jpg
+			return src.replace(/\/imgs\/+(?:sq_sl|ogp_f|zoom|(?:thumb|std|list|rel)_[^/]*|slider|p\/+(?:YqPw1SnBMRmYIkmrbU1O_DkImAYqBQQDAgEA|d8IRfSCmFXPaJb844BSE_jkJwAfOBQQDAgEA|DECG0YPrj3VfE9VDCfubi28LiAazBQQDAgEA|Up2FUwfg_STscOmZfda3dm8NuASCBQQDAgEA|rKjJghwJABdtg-7FAeGmXzkJ1AejBQQDAgEA|XDbCbghKzVCeRs9WXItNCQoLUAcGBQQDAgEA|w1yUNxfzLf6iwt3Eey88jjkI6AZGBQQDAgEA|d19fJzDIFCH7XlqenqofxzkLiAatBQQDAgEA|yFIzVel2FK9SeCSMtovYejkIJAfnBQQDAgEA))\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/imgs/p/PseAHU_gq3GEwRLM5htwMwoLvAaDYAQDAgEA/$1");
 		}
 
 		if (domain_nosub === "cinemacafe.net") {
@@ -36205,8 +36212,18 @@ var $$IMU_EXPORT$$;
 			//   https://www.cinemacafe.net/imgs/p/JgD9AR1Ir8Z47f6Bz3cIbgIDgA8ODQwLCgkI/447945.jpg
 			// https://www.cinemacafe.net/imgs/p/teqw5JmZv-V68YYR3gF-gmcAmg4dDQwLCgkI/448809.jpg
 			//   https://www.cinemacafe.net/imgs/p/JgD9AR1Ir8Z47f6Bz3cIbgIDgA8ODQwLCgkI/448809.jpg
+			// https://s.cinemacafe.net/imgs/p/Qzvyd5pnwLoLt2fXuJAbsjEByA-GDQwLCgkI/11766.jpg
+			//   https://s.cinemacafe.net/imgs/p/JgD9AR1Ir8Z47f6Bz3cIbgIDgA8ODQwLCgkI/11766.jpg
+			// https://www.cinemacafe.net/imgs/p/FHVB2qV5ZZzNwK7ACSeDrgIDtA6LaAwLCgkI/121905.jpg
+			//   https://www.cinemacafe.net/imgs/p/JgD9AR1Ir8Z47f6Bz3cIbgIDgA8ODQwLCgkI/121905.jpg
+			// https://s.cinemacafe.net/imgs/p/BJtgHx1uckDhTMJk9wdIh5UDvA0DDQwLCgkI/418853.jpg
+			//   https://s.cinemacafe.net/imgs/p/JgD9AR1Ir8Z47f6Bz3cIbgIDgA8ODQwLCgkI/418853.jpg
+			// https://s.cinemacafe.net/imgs/p/NEpHt5A8X3pD8ze5AiAOOWcAdw4ODQwLCgkI/134164.jpg
+			//   https://s.cinemacafe.net/imgs/p/JgD9AR1Ir8Z47f6Bz3cIbgIDgA8ODQwLCgkI/134164.jpg
+			// https://www.cinemacafe.net/imgs/rel_m1/185213.jpg
+			//   https://www.cinemacafe.net/imgs/p/JgD9AR1Ir8Z47f6Bz3cIbgIDgA8ODQwLCgkI/185213.jpg
 			// https://s.cinemacafe.net/imgs/p/JgD9AR1Ir8Z47f6Bz3cIbgIDgA8ODQwLCgkI/120463.jpg?thumbnailize=zoom -- 7360x4912 (same without thumbnailize=zoom)
-			return src.replace(/\/imgs\/+(?:sq_sl|ogp_f|zoom|(?:thumb|std|list)_[^/]*|slider|p\/+(?:IdF3CXec7ZLwPC0QhNLSvQMCOg0oDQwLCgkI|teqw5JmZv-V68YYR3gF-gmcAmg4dDQwLCgkI|5Fc34EuXLG5x2tdPmpNB1GcDWA6eDQwLCgkI|cj-SRmM3m7t9_NMtR4JzwmcFsAyKDQwLCgkI|ATDRThl-6oWF9fpps9341csCOg8ODQwLCgkI))\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/imgs/p/JgD9AR1Ir8Z47f6Bz3cIbgIDgA8ODQwLCgkI/$1");
+			return src.replace(/\/imgs\/+(?:sq_sl|ogp_f|zoom|(?:thumb|std|list|rel)_[^/]*|slider|p\/+(?:IdF3CXec7ZLwPC0QhNLSvQMCOg0oDQwLCgkI|NEpHt5A8X3pD8ze5AiAOOWcAdw4ODQwLCgkI|BJtgHx1uckDhTMJk9wdIh5UDvA0DDQwLCgkI|FHVB2qV5ZZzNwK7ACSeDrgIDtA6LaAwLCgkI|Qzvyd5pnwLoLt2fXuJAbsjEByA-GDQwLCgkI|teqw5JmZv-V68YYR3gF-gmcAmg4dDQwLCgkI|5Fc34EuXLG5x2tdPmpNB1GcDWA6eDQwLCgkI|cj-SRmM3m7t9_NMtR4JzwmcFsAyKDQwLCgkI|ATDRThl-6oWF9fpps9341csCOg8ODQwLCgkI))\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/imgs/p/JgD9AR1Ir8Z47f6Bz3cIbgIDgA8ODQwLCgkI/$1");
 		}
 
 		if (domain_nowww === "pixsell.hr") {
