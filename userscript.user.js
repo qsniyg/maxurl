@@ -36167,37 +36167,36 @@ var $$IMU_EXPORT$$;
 			//   https://s.animeanime.jp/imgs/p/sQnw7oxGTTu4umdJ9vPIDqGgI6ytrq_oqaqr/189365.jpg
 			// https://animeanime.jp/imgs/p/ypfYP8UGHHv1ocFz1cgmQGihmaytrq_oqaqr/150033.jpg
 			//   https://animeanime.jp/imgs/p/sQnw7oxGTTu4umdJ9vPIDqGgI6ytrq_oqaqr/150033.jpg
-			return src.replace(/\/imgs\/+(?:sq_sl|ogp_f|zoom|(?:thumb|std|list|rel)_[^/]*|slider|p\/+(?:jtKDOVlKAvjRrNw8SXAVejagI61Nrq|ypfYP8UGHHv1ocFz1cgmQGihmaytrq|qC3cX52_w9YJ28j7VPltKcSgI60Yrq|GAauWYP2lbxlzgJRQBgLncSmE68prq|F0wY7sTvXbM-zUyY3Ct0qjajM6ytrq|rQC-FVStleeQ4uCDm4cdn6GgF60oy6)_oqaqr)\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/imgs/p/sQnw7oxGTTu4umdJ9vPIDqGgI6ytrq_oqaqr/$1");
+			return src.replace(/\/imgs\/+(?:[^/]*|p\/+(?:jtKDOVlKAvjRrNw8SXAVejagI61Nrq|ypfYP8UGHHv1ocFz1cgmQGihmaytrq|qC3cX52_w9YJ28j7VPltKcSgI60Yrq|GAauWYP2lbxlzgJRQBgLncSmE68prq|F0wY7sTvXbM-zUyY3Ct0qjajM6ytrq|rQC-FVStleeQ4uCDm4cdn6GgF60oy6)_oqaqr)\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/imgs/p/sQnw7oxGTTu4umdJ9vPIDqGgI6ytrq_oqaqr/$1");
 		}
 
-		if (domain_nosub === "gamespark.jp") {
-			// https://www.gamespark.jp/imgs/ogp_f/307336.jpg
-			//   https://www.gamespark.jp/imgs/p/PseAHU_gq3GEwRLM5htwMwoLvAaDYAQDAgEA/307336.jpg -- 1024x576
-			// https://www.gamespark.jp/imgs/p/PseAHU_gq3GEwRLM5htwMwoLvAaDYAQDAgEA/83073.png -- 3050x2233
-			// https://www.gamespark.jp/imgs/p/YqPw1SnBMRmYIkmrbU1O_DkImAYqBQQDAgEA/308568.jpg
-			//   https://www.gamespark.jp/imgs/p/yFIzVel2FK9SeCSMtovYejkIJAfnBQQDAgEA/308568.jpg
-			//   https://www.gamespark.jp/imgs/p/PseAHU_gq3GEwRLM5htwMwoLvAaDYAQDAgEA/308568.jpg
-			// https://www.gamespark.jp/imgs/zoom/239382.png
-			//   https://www.gamespark.jp/imgs/p/PseAHU_gq3GEwRLM5htwMwoLvAaDYAQDAgEA/239382.png
-			// https://www.gamespark.jp/imgs/p/d19fJzDIFCH7XlqenqofxzkLiAatBQQDAgEA/331923.jpg
-			//   https://www.gamespark.jp/imgs/p/PseAHU_gq3GEwRLM5htwMwoLvAaDYAQDAgEA/331923.jpg
-			// https://www.gamespark.jp/imgs/p/w1yUNxfzLf6iwt3Eey88jjkI6AZGBQQDAgEA/325638.jpg
-			//   https://www.gamespark.jp/imgs/p/PseAHU_gq3GEwRLM5htwMwoLvAaDYAQDAgEA/325638.jpg
-			// https://www.gamespark.jp/imgs/p/XDbCbghKzVCeRs9WXItNCQoLUAcGBQQDAgEA/99589.jpg?zoom=spacing
-			//   https://www.gamespark.jp/imgs/p/PseAHU_gq3GEwRLM5htwMwoLvAaDYAQDAgEA/99589.jpg?zoom=spacing
-			// https://www.gamespark.jp/imgs/p/rKjJghwJABdtg-7FAeGmXzkJ1AejBQQDAgEA/331925.jpg
-			//   https://www.gamespark.jp/imgs/p/PseAHU_gq3GEwRLM5htwMwoLvAaDYAQDAgEA/331925.jpg
-			// https://www.gamespark.jp/imgs/p/Up2FUwfg_STscOmZfda3dm8NuASCBQQDAgEA/243604.jpg
-			//   https://www.gamespark.jp/imgs/p/PseAHU_gq3GEwRLM5htwMwoLvAaDYAQDAgEA/243604.jpg
-			// https://img.gamespark.jp/imgs/zoom/124504.jpg
-			// https://s.gamespark.jp/imgs/p/DECG0YPrj3VfE9VDCfubi28LiAazBQQDAgEA/102286.jpg
-			//   https://s.gamespark.jp/imgs/p/PseAHU_gq3GEwRLM5htwMwoLvAaDYAQDAgEA/102286.jpg
-			// https://s.gamespark.jp/imgs/p/d8IRfSCmFXPaJb844BSE_jkJwAfOBQQDAgEA/28450.jpg
-			//   https://s.gamespark.jp/imgs/p/PseAHU_gq3GEwRLM5htwMwoLvAaDYAQDAgEA/28450.jpg
-			return src.replace(/\/imgs\/+(?:sq_sl|ogp_f|zoom|(?:thumb|std|list|rel)_[^/]*|slider|p\/+(?:YqPw1SnBMRmYIkmrbU1O_DkImAYqBQQDAgEA|d8IRfSCmFXPaJb844BSE_jkJwAfOBQQDAgEA|DECG0YPrj3VfE9VDCfubi28LiAazBQQDAgEA|Up2FUwfg_STscOmZfda3dm8NuASCBQQDAgEA|rKjJghwJABdtg-7FAeGmXzkJ1AejBQQDAgEA|XDbCbghKzVCeRs9WXItNCQoLUAcGBQQDAgEA|w1yUNxfzLf6iwt3Eey88jjkI6AZGBQQDAgEA|d19fJzDIFCH7XlqenqofxzkLiAatBQQDAgEA|yFIzVel2FK9SeCSMtovYejkIJAfnBQQDAgEA))\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/imgs/p/PseAHU_gq3GEwRLM5htwMwoLvAaDYAQDAgEA/$1");
-		}
-
-		if (domain_nosub === "cinemacafe.net") {
+		if (domain_nosub === "response.jp" ||
+			// https://s.inside-games.jp/imgs/p/1UNSdyJKsYSbpw0t-zkIAAoLiAcGBQQDAgEA/511356.jpg?thumbnailize=zoom -- 6016x4000
+			// https://www.inside-games.jp/imgs/p/PseAHU_gq3GEwRLM5htwMwoLvAaDYAQDAgEA/416943.jpg -- 1152x864
+			//   https://www.inside-games.jp/imgs/p/1UNSdyJKsYSbpw0t-zkIAAoLiAcGBQQDAgEA/416943.jpg -- 4608x3456
+			// https://www.inside-games.jp/imgs/ogp_f/743773.jpg
+			//   https://www.inside-games.jp/imgs/p/1UNSdyJKsYSbpw0t-zkIAAoLiAcGBQQDAgEA/743773.jpg
+			domain_nosub === "inside-games.jp" ||
+			// https://www.gamebusiness.jp/imgs/p/bo91TFR6ywNB2t2bceYnWYiJCoWEh4aBgIOC/40014.jpg?thumbnailize=zoom -- 4320x3240
+			// https://www.gamebusiness.jp/imgs/ogp_f/69548.jpg
+			//   https://www.gamebusiness.jp/imgs/p/bo91TFR6ywNB2t2bceYnWYiJCoWEh4aBgIOC/69548.jpg
+			// https://www.gamebusiness.jp/imgs/p/jvknf3IEEkcTVcSof0Ss9buJCoTsh4aBgIOC/75928.jpg
+			//   https://www.gamebusiness.jp/imgs/p/bo91TFR6ywNB2t2bceYnWYiJCoWEh4aBgIOC/75928.jpg
+			domain_nosub === "gamebusiness.jp" ||
+			// https://s.rbbtoday.com/imgs/p/O24ii8l5s579T1Z71xNOb0xNzkFAQ0JFREdG/381072.jpg?thumbnailize=zoom -- 7360x4912
+			// https://s.rbbtoday.com/imgs/zoom/599903.jpg
+			//   https://s.rbbtoday.com/imgs/p/O24ii8l5s579T1Z71xNOb0xNzkFAQ0JFREdG/599903.jpg
+			// https://www.rbbtoday.com/imgs/ogp_f/647887.jpg
+			//   https://www.rbbtoday.com/imgs/p/O24ii8l5s579T1Z71xNOb0xNzkFAQ0JFREdG/647887.jpg
+			domain_nosub === "rbbtoday.com" ||
+			// https://s.cyclestyle.net/imgs/p/SG6XwypJr-L-0cc0vCoMDigpqiUkJyYhICMi/28737.jpg?thumbnailize=zoom -- 3744x5616
+			// http://cyclestyle.net/imgs/ogp_f/300191.jpg
+			//   http://cyclestyle.net/imgs/p/SG6XwypJr-L-0cc0vCoMDigpqiUkJyYhICMi/300191.jpg
+			domain_nosub === "cyclestyle.net" ||
+			// https://s.resemom.jp/imgs/p/iznZhtjPh4xcpFmdtjU2rkRFxklIS0pNTE9O/85649.jpg?thumbnailize=zoom -- 6000x4000
+			// https://resemom.jp/imgs/ogp_f/243379.jpg
+			//   https://resemom.jp/imgs/p/iznZhtjPh4xcpFmdtjU2rkRFxklIS0pNTE9O/243379.jpg
+			domain_nosub === "resemom.jp" ||
 			// https://www.cinemacafe.net/imgs/std_l1/448352.jpg
 			//   https://www.cinemacafe.net/imgs/p/JgD9AR1Ir8Z47f6Bz3cIbgIDgA8ODQwLCgkI/448352.jpg -- 2048x1668
 			// https://www.cinemacafe.net/imgs/std_m1/444453.jpg
@@ -36225,7 +36224,66 @@ var $$IMU_EXPORT$$;
 			// https://www.cinemacafe.net/imgs/rel_m1/185213.jpg
 			//   https://www.cinemacafe.net/imgs/p/JgD9AR1Ir8Z47f6Bz3cIbgIDgA8ODQwLCgkI/185213.jpg
 			// https://s.cinemacafe.net/imgs/p/JgD9AR1Ir8Z47f6Bz3cIbgIDgA8ODQwLCgkI/120463.jpg?thumbnailize=zoom -- 7360x4912 (same without thumbnailize=zoom)
-			return src.replace(/\/imgs\/+(?:sq_sl|ogp_f|zoom|(?:thumb|std|list|rel)_[^/]*|slider|p\/+(?:IdF3CXec7ZLwPC0QhNLSvQMCOg0oDQwLCgkI|NEpHt5A8X3pD8ze5AiAOOWcAdw4ODQwLCgkI|BJtgHx1uckDhTMJk9wdIh5UDvA0DDQwLCgkI|FHVB2qV5ZZzNwK7ACSeDrgIDtA6LaAwLCgkI|Qzvyd5pnwLoLt2fXuJAbsjEByA-GDQwLCgkI|teqw5JmZv-V68YYR3gF-gmcAmg4dDQwLCgkI|5Fc34EuXLG5x2tdPmpNB1GcDWA6eDQwLCgkI|cj-SRmM3m7t9_NMtR4JzwmcFsAyKDQwLCgkI|ATDRThl-6oWF9fpps9341csCOg8ODQwLCgkI))\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/imgs/p/JgD9AR1Ir8Z47f6Bz3cIbgIDgA8ODQwLCgkI/$1");
+			domain_nosub === "cinemacafe.net" ||
+			// https://www.gamespark.jp/imgs/ogp_f/307336.jpg
+			//   https://www.gamespark.jp/imgs/p/PseAHU_gq3GEwRLM5htwMwoLvAaDYAQDAgEA/307336.jpg -- 1024x576
+			// https://www.gamespark.jp/imgs/p/PseAHU_gq3GEwRLM5htwMwoLvAaDYAQDAgEA/83073.png -- 3050x2233
+			// https://www.gamespark.jp/imgs/p/YqPw1SnBMRmYIkmrbU1O_DkImAYqBQQDAgEA/308568.jpg
+			//   https://www.gamespark.jp/imgs/p/yFIzVel2FK9SeCSMtovYejkIJAfnBQQDAgEA/308568.jpg
+			//   https://www.gamespark.jp/imgs/p/PseAHU_gq3GEwRLM5htwMwoLvAaDYAQDAgEA/308568.jpg
+			// https://www.gamespark.jp/imgs/zoom/239382.png
+			//   https://www.gamespark.jp/imgs/p/PseAHU_gq3GEwRLM5htwMwoLvAaDYAQDAgEA/239382.png
+			// https://www.gamespark.jp/imgs/p/d19fJzDIFCH7XlqenqofxzkLiAatBQQDAgEA/331923.jpg
+			//   https://www.gamespark.jp/imgs/p/PseAHU_gq3GEwRLM5htwMwoLvAaDYAQDAgEA/331923.jpg
+			// https://www.gamespark.jp/imgs/p/w1yUNxfzLf6iwt3Eey88jjkI6AZGBQQDAgEA/325638.jpg
+			//   https://www.gamespark.jp/imgs/p/PseAHU_gq3GEwRLM5htwMwoLvAaDYAQDAgEA/325638.jpg
+			// https://www.gamespark.jp/imgs/p/XDbCbghKzVCeRs9WXItNCQoLUAcGBQQDAgEA/99589.jpg?zoom=spacing
+			//   https://www.gamespark.jp/imgs/p/PseAHU_gq3GEwRLM5htwMwoLvAaDYAQDAgEA/99589.jpg?zoom=spacing
+			// https://www.gamespark.jp/imgs/p/rKjJghwJABdtg-7FAeGmXzkJ1AejBQQDAgEA/331925.jpg
+			//   https://www.gamespark.jp/imgs/p/PseAHU_gq3GEwRLM5htwMwoLvAaDYAQDAgEA/331925.jpg
+			// https://www.gamespark.jp/imgs/p/Up2FUwfg_STscOmZfda3dm8NuASCBQQDAgEA/243604.jpg
+			//   https://www.gamespark.jp/imgs/p/PseAHU_gq3GEwRLM5htwMwoLvAaDYAQDAgEA/243604.jpg
+			// https://img.gamespark.jp/imgs/zoom/124504.jpg
+			// https://s.gamespark.jp/imgs/p/DECG0YPrj3VfE9VDCfubi28LiAazBQQDAgEA/102286.jpg
+			//   https://s.gamespark.jp/imgs/p/PseAHU_gq3GEwRLM5htwMwoLvAaDYAQDAgEA/102286.jpg
+			// https://s.gamespark.jp/imgs/p/d8IRfSCmFXPaJb844BSE_jkJwAfOBQQDAgEA/28450.jpg
+			//   https://s.gamespark.jp/imgs/p/PseAHU_gq3GEwRLM5htwMwoLvAaDYAQDAgEA/28450.jpg
+			domain_nosub === "gamespark.jp" ||
+			// https://s.spyder7.com/imgs/p/X4UiqBKWADm8lT-ssAf7B9LTUN-e3dzb2tnY/134234.jpg?thumbnailize=zoom -- 2048x1365, no larger image found, so might not be orig
+			// https://spyder7.com/imgs/p/6ctlLP6jpu3fsvWRdHSre9LTZN5buNzb2tnY/16841.jpg
+			//   https://spyder7.com/imgs/p/X4UiqBKWADm8lT-ssAf7B9LTUN-e3dzb2tnY/16841.jpg
+			domain_nosub === "spyder7.com") {
+			// https://s.response.jp/imgs/p/szHjNsab8jnsrICkTcBeik1MF0BBQkNERUZH/730629.jpg?thumbnailize=zoom -- 5360x8136, 3827065
+			// https://s.response.jp/imgs/p/zkztXxppQllf4-RUXYhKtU1Mz0BBQkNERUZH/730629.jpg?thumbnailize=zoom -- 5360x8135, 3827065
+			// https://response.jp/imgs/p/jMij-aO9UgKPyct8JM4jSX5Oh0DXQkNERUZH/1456013.jpg
+			//   https://response.jp/imgs/p/zkztXxppQllf4-RUXYhKtU1Mz0BBQkNERUZH/1456013.jpg --1600x1200
+			// https://response.jp/imgs/ogp_f/1370333.jpg
+			//   https://response.jp/imgs/p/zkztXxppQllf4-RUXYhKtU1Mz0BBQkNERUZH/1370333.jpg
+			// https://s.response.jp/imgs/p/XHAW6qEKbkuCIphd0G23SChK-0PFQkNERUZH/888930.jpg
+			//   https://s.response.jp/imgs/p/zkztXxppQllf4-RUXYhKtU1Mz0BBQkNERUZH/888930.jpg
+
+			var orig = null;
+
+			if (domain_nosub === "response.jp")
+				orig = "zkztXxppQllf4-RUXYhKtU1Mz0BBQkNERUZH";
+			else if (domain_nosub === "spyder7.com")
+				orig = "X4UiqBKWADm8lT-ssAf7B9LTUN-e3dzb2tnY";
+			else if (domain_nosub === "inside-games.jp")
+				orig = "1UNSdyJKsYSbpw0t-zkIAAoLiAcGBQQDAgEA";
+			else if (domain_nosub === "gamebusiness.jp")
+				orig = "bo91TFR6ywNB2t2bceYnWYiJCoWEh4aBgIOC";
+			else if (domain_nosub === "rbbtoday.com")
+				orig = "O24ii8l5s579T1Z71xNOb0xNzkFAQ0JFREdG";
+			else if (domain_nosub === "cyclestyle.net")
+				orig = "SG6XwypJr-L-0cc0vCoMDigpqiUkJyYhICMi";
+			else if (domain_nosub === "resemom.jp")
+				orig = "iznZhtjPh4xcpFmdtjU2rkRFxklIS0pNTE9O";
+			else if (domain_nosub === "cinemacafe.net")
+				orig = "JgD9AR1Ir8Z47f6Bz3cIbgIDgA8ODQwLCgkI";
+			else if (domain_nosub === "gamespark.jp")
+				orig = "PseAHU_gq3GEwRLM5htwMwoLvAaDYAQDAgEA";
+
+			return src.replace(/\/imgs\/+(?:[^/]*|p\/+[^/]{30,})\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/imgs/p/" + orig + "/$1");
 		}
 
 		if (domain_nowww === "pixsell.hr") {
