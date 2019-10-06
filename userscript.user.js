@@ -6497,6 +6497,8 @@ var $$IMU_EXPORT$$;
 			domain_nosub === "cdn-immedia.net" ||
 			// https://mmglobalmovies.com/wp-content/upload_folders/mmglobalmovies.com/2019/04/MMGlobalMovies-Zoe-L%C3%A9a-Seydoux-214x317.jpg?v=1554664150250
 			(domain_nowww === "mmglobalmovies.com" && /\/wp-content\/+upload_folders\//.test(src)) ||
+			// https://images.in.com/uploads/2018/01/7746509462_deffbcb546_b-768x976.jpg
+			(domain === "images.in.com" && src.indexOf("/uploads/") >= 0) ||
 			// https://1.soompi.io/wp-content/blogs.dir/8/files/2015/09/HA-TFELT-Wonder-Girls-590x730.jpg -- doesn't work
 			// https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2018/01/GTA-6-Female-Protag-796x417.jpg -- does work
 			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|images|photos|blogs.dir)|\/+uploads)\//.test(src)
@@ -21252,16 +21254,19 @@ var $$IMU_EXPORT$$;
 
 				var username_to_uid = function(username, cb) {
 					if (username.match(/^http/)) {
-						username = username.replace(/^[a-z]+:\/\/[^/]*\/+([^/]*)(?:\/.*)?(?:[?#].*)?$/, "$1");
+						username = username.replace(/^[a-z]+:\/\/[^/]*\/+(?:stories\/+)?([^/]*)(?:\/.*)?(?:[?#].*)?$/, "$1");
 					}
 
-					query_ig("https://www.instagram.com/" + username + "/", function(json) {
-						try {
-							cb(uid_from_sharedData(json));
-						} catch (e) {
-							console_error(e);
-							cb(null);
-						}
+					var cache_key = "instagram_username_uid:" + username;
+					api_cache.fetch(cache_key, cb, function (done) {
+						query_ig("https://www.instagram.com/" + username + "/", function (json) {
+							try {
+								done(uid_from_sharedData(json), 5*60);
+							} catch (e) {
+								console_error(cache_key, e);
+								done(null, false);
+							}
+						});
 					});
 				};
 
@@ -21356,6 +21361,64 @@ var $$IMU_EXPORT$$;
 					});
 				};
 
+				var story_api = function(picid, uid, cb) {
+					var cache_key = "instagram_story_pic:" + picid;
+					api_cache.fetch(cache_key, cb, function (done) {
+						// Create a "useless" cache entry in case user does Replace Images, to avoid multiple API calls
+						var story_cache_key = "instagram_story_uid:" + uid;
+						api_cache.fetch(story_cache_key, function(result) {
+							if (!result) {
+								return done(null, false);
+							}
+
+							try {
+								var items = result.items;
+								var our_item = null;
+
+								for (var i = 0; i < items.length; i++) {
+									var item_picid = get_imageid(items[i].image_versions2.candidates[0].url);
+
+									api_cache.set("instagram_story_pic:" + item_picid, deepcopy(items[i]), 6*60*60);
+
+									if (item_picid === picid) {
+										our_item = items[i];
+									}
+								}
+
+								if (our_item !== null)
+									return done(our_item, 6*60*60);
+								return done(null, false);
+							} catch (e) {
+								console_log(cache_key, result);
+								console_error(cache_key, e);
+								return done(null, false);
+							}
+						}, function (done) {
+							var url = "https://i.instagram.com/api/v1/feed/user/" + uid + "/reel_media/";
+							app_api_call(url, function(result) {
+								if (result.readyState !== 4)
+									return;
+
+								if (result.status !== 200) {
+									console_log(story_cache_key, result);
+									return done(null, false);
+								}
+
+								try {
+									var parsed = JSON_parse(result.responseText);
+
+									return done(parsed, 8);
+								} catch(e) {
+									console_log(story_cache_key, result);
+									console_error(story_cache_key, e);
+								}
+
+								return done(null, false);
+							});
+						});
+					});
+				};
+
 				var profile_to_url = function(profile) {
 					return profile.hd_profile_pic_url_info.url;
 				};
@@ -21382,6 +21445,41 @@ var $$IMU_EXPORT$$;
 					};
 				};
 
+				var get_imageid = function(image_url) {
+					return image_url.replace(/.*\/([^/.]*)\.[^/.]*(?:[?#].*)?$/, "$1");
+				};
+
+				var get_maxsize_app = function(item) {
+					var images = [];
+
+					var parse_image = function (img) {
+						var candidates = img.image_versions2.candidates;
+						var maxsize = 0;
+						var maxobj = null;
+						for (var i = 0; i < candidates.length; i++) {
+							var size = candidates[i].width * candidates[i].height;
+							if (size > maxsize) {
+								maxsize = size;
+								maxobj = candidates[i];
+							}
+						}
+
+						if (maxobj !== null) {
+							images.push(maxobj.url);
+						}
+					};
+
+					if ("carousel_media" in item) {
+						for (var i = 0; i < item.carousel_media.length; i++) {
+							parse_image(item.carousel_media[i]);
+						}
+					} else {
+						parse_image(item);
+					}
+
+					return images;
+				};
+
 				var request_post_inner = function(post_url, image_url, cb) {
 					query_ig(post_url, function(json) {
 						if (!json) {
@@ -21396,32 +21494,7 @@ var $$IMU_EXPORT$$;
 								var images = [];
 
 								if (app_response !== null) {
-									var item = app_response.items[0];
-
-									var parse_image = function(img) {
-										var candidates = img.image_versions2.candidates;
-										var maxsize = 0;
-										var maxobj = null;
-										for (var i = 0; i < candidates.length; i++) {
-											var size = candidates[i].width * candidates[i].height;
-											if (size > maxsize) {
-												maxsize = size;
-												maxobj = candidates[i];
-											}
-										}
-
-										if (maxobj !== null) {
-											images.push(maxobj.url);
-										}
-									};
-
-									if ("carousel_media" in item) {
-										for (var i = 0; i < item.carousel_media.length; i++) {
-											parse_image(item.carousel_media[i]);
-										}
-									} else {
-										parse_image(item);
-									}
+									images = get_maxsize_app(app_response.items[0]);
 								} else {
 									console_log("Unable to use API to find Instagram image");
 
@@ -21449,7 +21522,7 @@ var $$IMU_EXPORT$$;
 									}
 								}
 
-								var image_id = image_url.replace(/.*\/([^/.]*)\.[^/.]*(?:[?#].*)?$/, "$1");
+								var image_id = get_imageid(image_url);
 								for (var i = 0; i < images.length; i++) {
 									if (images[i].indexOf(image_id) > 0) {
 										cb(images[i]);
@@ -21473,6 +21546,41 @@ var $$IMU_EXPORT$$;
 				var request_post = function(post_url, image_url) {
 					return request_post_inner(post_url, image_url, options.cb);
 				};
+
+				var request_stories = function(url, image_url) {
+					var username = url.replace(/.*\/stories\/+([^/]*).*$/, "$1");
+					if (username === url)
+						return null;
+
+					username_to_uid(username, function(uid) {
+						if (!uid) {
+							return options.cb(null);
+						}
+
+						var image_id = get_imageid(image_url);
+						story_api(image_id, uid, function(result) {
+							if (!result) {
+								return options.cb(null);
+							}
+
+							var images = get_maxsize_app(result);
+							if (!images) {
+								return options.cb(null);
+							}
+
+							for (var i = 0; i < images.length; i++) {
+								if (images[i].indexOf(image_id) > 0) {
+									return options.cb(images[i]);
+								}
+							}
+							return options.cb(null);
+						});
+					});
+
+					return {
+						waiting: true
+					};
+				}
 
 				// check for links first
 				var current = options.element;
@@ -21543,6 +21651,13 @@ var $$IMU_EXPORT$$;
 						// post page
 						(current.tagName === "BODY" && options.host_url.match(/:\/\/[^/]*\/+(?:[^/]+\/+)?p\//))) {
 						newsrc = request_post(options.host_url, options.element.src);
+						if (newsrc)
+							return newsrc;
+					}
+
+					// stories
+					if (current.tagName === "BODY" && options.host_url.match(/:\/\/[^/]*\/+stories\/+([^/]*)\/*(?:[?#].*)?$/)) {
+						newsrc = request_stories(options.host_url, options.element.src);
 						if (newsrc)
 							return newsrc;
 					}
@@ -41478,6 +41593,25 @@ var $$IMU_EXPORT$$;
 					waiting: true
 				};
 			}
+		}
+
+		if (domain === "images.vinted.net") {
+			// https://images.vinted.net/thumbs/100x100/0398f_Ti3FPei9CZXXGoCezVghbTyp.jpeg?1539031837$a4c09184babcd5cfe9e35429eaf5f84e73a3a1cd
+			//   https://images.vinted.net/thumbs/f800/0398f_Ti3FPei9CZXXGoCezVghbTyp.jpeg?1539031837$61db66833c013ab3feaa84022feb8397a86ded49
+			//   https://images.vinted.net/thumbs/0398f_Ti3FPei9CZXXGoCezVghbTyp.jpeg?1539031837$a4c09184babcd5cfe9e35429eaf5f84e73a3a1cd -- 2012x2015
+			return src.replace(/\/thumbs\/+(?:[0-9]+x[0-9]+|f[0-9]+)\/+/, "/thumbs/");
+		}
+
+		if (domain_nowww === "celebnakedness.com") {
+			// http://www.celebnakedness.com/gallery4/tourgallery/thumbnails/Anne_Hathaway__-_Valentines_Day287.jpg
+			//   http://www.celebnakedness.com/gallery4/tourgallery/Anne_Hathaway__-_Valentines_Day287.jpg
+			return src.replace(/(\/gallery[0-9]*\/+tourgallery\/+)thumbnails\/+/, "$1");
+		}
+
+		if (domain === "userimg.tellonym.me") {
+			// https://userimg.tellonym.me/xs/14963714_5e0b7c3e269dfb54fdb68c797c571cc9.jpg
+			//   https://img.tellonym.me/14963714_5e0b7c3e269dfb54fdb68c797c571cc9.jpg
+			return src.replace(/:\/\/[^/]*\/+[a-z]+\/+/, "://img.tellonym.me/");
 		}
 
 
