@@ -21274,23 +21274,19 @@ var $$IMU_EXPORT$$;
 					var cache_key = "instagram_uid_to_profile:" + uid;
 					api_cache.fetch(cache_key, cb, function (done) {
 						var url = "https://i.instagram.com/api/v1/users/" + uid + "/info/";
-						options.do_request({
-							method: "GET",
-							url: url,
-							onload: function (result) {
-								if (result.readyState !== 4)
-									return;
+						app_api_call(url, function (result) {
+							if (result.readyState !== 4)
+								return;
 
-								try {
-									var parsed = JSON_parse(result.responseText).user;
+							try {
+								var parsed = JSON_parse(result.responseText).user;
 
-									// 5 minutes since they can change their profile pic often
-									done(parsed, 5 * 60);
-								} catch (e) {
-									console_log("instagram_uid_to_profile", result);
-									console_error("instagram_uid_to_profile", e);
-									done(null, false);
-								}
+								// 5 minutes since they can change their profile pic often
+								done(parsed, 5 * 60);
+							} catch (e) {
+								console_log("instagram_uid_to_profile", result);
+								console_error("instagram_uid_to_profile", e);
+								done(null, false);
 							}
 						});
 					});
