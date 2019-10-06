@@ -9507,8 +9507,10 @@ var $$IMU_EXPORT$$;
 			src.indexOf("/i/origin/") >= 0*/) {
 			// https://ugc.kn3.net/i/origin/http://media3.popsugar-assets.com/files/2013/09/16/795/n/1922564/b962955383f6b80f_1592163256t6a65.xxxlarge_2x/i/Emma-Watson-all-legs-sexy-Peter-Pilotto-cutout-minidress.jpg
 			// https://ugc.kn3.net/i/760x/https://butacadavidciana.files.wordpress.com/2015/01/hatefuleightposter.jpg
+			// https://ugc.kn3.net/i/c_960x720/http://damimage.com/upload/big/2017/04/13/58eee7857d1f5.png
+			//   http://damimage.com/upload/big/2017/04/13/58eee7857d1f5.png
 			//return src.replace(/.*?\/i\/origin\//, "");
-			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/i\/[0-9a-z]+\//, "");
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/i\/(?:c_)?[0-9a-z]+\//, "");
 			if (newsrc !== src)
 				return newsrc;
 		}
@@ -13993,6 +13995,8 @@ var $$IMU_EXPORT$$;
 			(domain_nowww === "tgfimage.rocks" && src.indexOf("/images/") >= 0) ||
 			// https://s1.picho.st/2017/08/18/diwd.md.png
 			(domain_nosub === "picho.st" && /^s[0-9]*\./.test(domain)) ||
+			// https://imagenup.com/images/2019/02/05/images.th.jpg
+			domain_nowww === "imagenup.com" ||
 			// http://image-bugs.com/images/2017/09/09/CelebsFlash.com_NP_Harpers_Bazaar_090817__3_.md.jpg
 			domain_nowww === "image-bugs.com") {
 			// http://imgmax.com/images/2017/03/20/0OQhE.th.jpg
@@ -25577,14 +25581,34 @@ var $$IMU_EXPORT$$;
 
 		// Piwigo
 		if (domain_nowww === "amuro.fr" ||
+			// http://freshfappening.com/_data/i/upload/2017/04/11/20170411233928-9bf884c0-th.png
+			//   http://freshfappening.com/_data/i/upload/2017/04/11/20170411233928-9bf884c0-me.png
+			// other:
+			// https://freshfappening.com/upload/2017/05/14/20170514140923-51caa1ce.jpg -- no longer works
+			domain_nowww === "freshfappening.com" ||
+			// https://pornoplaatjes.nl/i.php?/upload/2019/05/14/20190514230022-e2981572-la.jpg
+			//   https://pornoplaatjes.nl/upload/2019/05/14/20190514230022-e2981572.jpg
+			domain_nowww === "pornoplaatjes.nl" ||
+			// https://thefappening.sexy/albums/_data/i/upload/2018/10/17/20181017193654-05a46141-th.jpg
+			//   https://thefappening.sexy/albums/upload/2018/10/17/20181017193654-05a46141.jpg
+			domain_nowww === "thefappening.sexy" ||
 			// https://thefappening.rocks/albums/_data/i/upload/2017/08/05/20170805192918-3a299da8-me.jpg
 			//   https://thefappening.rocks/albums/upload/2017/08/05/20170805192918-3a299da8.jpg
-			domain_nowww === "thefappening.rocks") {
+			domain_nowww === "thefappening.rocks" ||
+			src.match(/\/_data\/+i\/+upload\/+/)) {
 			// http://www.amuro.fr/_data/i/upload/2011/08/14/20110814075347-e08e571c-cu_s9999x160.jpg
 			//   http://www.amuro.fr/upload/2011/08/14/20110814075347-e08e571c.jpg
 			// http://www.amuro.fr/_data/i/upload/2013/09/11/20130911151431-507b3232-cu_s9999x160.jpg
 			//   http://www.amuro.fr/upload/2013/09/11/20130911151431-507b3232.jpg
-			return src.replace(/\/_data\/i(\/+upload\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}[0-9]{10,}-[0-9a-f]+)-(?:[^/.]*|cu_s[0-9]+x[0-9]+)(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+			newsrc = src.replace(/(\/_data\/+i\/+upload\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}[0-9]{10,}-[0-9a-f]+)-th\./, "$1-me.");
+			if (newsrc !== src)
+				return newsrc;
+
+			newsrc = src.replace(/\/i\.php\?\/upload\/+/, "/_data/i/upload/");
+			if (newsrc !== src)
+				return newsrc;
+
+			return src.replace(/\/_data\/+i(\/+upload\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}[0-9]{10,}-[0-9a-f]+)-(?:[^/.]*|cu_s[0-9]+x[0-9]+)(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
 		}
 
 		if (domain_nosub === "cdn-news30.it") {
@@ -25994,6 +26018,9 @@ var $$IMU_EXPORT$$;
 			 // https://img5.xuk.one/images/photos/00/04/28/04/42804/big/835b4874507210df13d36a8b3e88e843.jpg
 			 //   https://img5.xuk.one/images/photos/00/04/28/04/42804/origin/835b4874507210df13d36a8b3e88e843.jpg
 			 domain_nosub === "xuk.one" ||
+			 // https://img5.xuk.life/images/photos/00/01/93/11/19311/thumb/bd9deb75824b5b0bf77f56c97ca0e6c9.jpg
+			 //   https://img5.xuk.life/images/photos/00/01/93/11/19311/origin/bd9deb75824b5b0bf77f56c97ca0e6c9.jpg
+			 domain_nosub === "xuk.life" ||
 			 // https://img2.xuk.ooo/images/photos/00/04/23/60/42360/thumb/601109edfaf6992955ddcb7416433d62.jpg
 			 //   https://img2.xuk.ooo/images/photos/00/04/23/60/42360/origin/601109edfaf6992955ddcb7416433d62.jpg
 			 // https://img5.xuk.ooo/images/photos/00/04/28/04/42804/big/835b4874507210df13d36a8b3e88e843.jpg
@@ -26805,6 +26832,12 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "imageboom.net" ||
 			// https://acidimg.cc/upload/small/2017/08/15/59928f30677ee.jpg
 			domain_nowww === "acidimg.cc" ||
+			// http://imagedecode.com/upload/small/2015/03/19/550a7da5625c9.jpg
+			//   http://imagedecode.com/upload/big/2015/03/19/550a7da5625c9.jpg
+			domain_nowww === "imagedecode.com" ||
+			// http://damimage.com/upload/small/2017/09/24/59c7e1d8623c1.jpg
+			//   http://damimage.com/upload/big/2017/09/24/59c7e1d8623c1.jpg
+			domain_nowww === "damimage.com" ||
 			// http://imgcredit.xyz/upload/small/2017/07/25/5976cb96e01db.jpg
 			//   http://imgcredit.xyz/upload/big/2017/07/25/5976cb96e01db.jpg
 			// http://sr85.imgcredit.xyz/upload/small/2017/07/26/5978364c3cade.jpg
@@ -26812,7 +26845,17 @@ var $$IMU_EXPORT$$;
 			domain_nosub === "imgcredit.xyz") {
 			// http://imgstudio.org/upload/small/2017/05/13/59170f8f9877a.jpg
 			//   http://imgstudio.org/upload/big/2017/05/13/59170f8f9877a.jpg
-			return src.replace(/\/upload\/[-a-z]+\//, "/upload/big/");
+			newsrc = src.replace(/\/upload\/+[-a-z]+\//, "/upload/big/");
+			if (newsrc != src)
+				return newsrc;
+
+			return {
+				url: src,
+				headers: {
+					Referer: "http://" + domain_nosub + "/",
+					Cookie: "showing=3"
+				}
+			};
 		}
 
 		if (domain === "i.acidimg.cc") {
@@ -37136,14 +37179,17 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/[0-9]+\/+)(?:thumb_)?([0-9a-f]{20,}\.[^/.!?#]*)(?:[?#!].*)?$/, "$1$2");
 		}
 
-		if (domain_nosub === "altervista.org") {
+		if (domain_nosub === "altervista.org" ||
+			// http://3xcelebs.com/nudecelebs/cache/Rita-Ora-shows-nudity-and-goes-topless/0rita-ora-goes-naked-35_360_cw360_ch360_thumb.jpg
+			//   http://3xcelebs.com/nudecelebs/albums/Rita-Ora-shows-nudity-and-goes-topless/0rita-ora-goes-naked-35.jpg
+			(domain_nowww === "3xcelebs.com" && src.indexOf("/cache/") >= 0)) {
 			// http://selenagomezfeet.altervista.org/gallery/cache/selena-gomez-s-butt/Selena-Gomez-Feet-801231_595.jpg
 			//   http://selenagomezfeet.altervista.org/gallery/albums/selena-gomez-s-butt/Selena-Gomez-Feet-801231.jpg
 			// http://selenagomezfeet.altervista.org/gallery/cache/selena-gomez-feet/it.pinterest.com01_100_cw85_ch85_thumb.jpg
 			//   http://selenagomezfeet.altervista.org/gallery/albums/selena-gomez-feet/it.pinterest.com01.jpeg
 			// http://selenagomezfeet.altervista.org/gallery/cache/selena-gomez-s-armpits/selena-gomez-in-be-magazine-photoshoot-november-2015-24_100_cw85_ch85_thumb.jpg
 			//   http://selenagomezfeet.altervista.org/gallery/albums/selena-gomez-s-armpits/selena-gomez-in-be-magazine-photoshoot-november-2015-24.jpg
-			return add_full_extensions(src.replace(/\/gallery\/+cache\/+(.*?)_[0-9]+(?:_c[wh][0-9]+)*(?:_thumb)?(\.[^/.]*)(?:[?#].*)?$/, "/gallery/albums/$1$2"));
+			return add_full_extensions(src.replace(/\/cache\/+(.*?)_[0-9]+(?:_c[wh][0-9]+)*(?:_thumb)?(\.[^/.]*)(?:[?#].*)?$/, "/albums/$1$2"));
 		}
 
 		if (domain_nowww === "haberkonseyi.com") {
@@ -37155,7 +37201,11 @@ var $$IMU_EXPORT$$;
 		if (domain_nowww === "snimai.com") {
 			// https://snimai.com/images/media/photos/20150419/553335c1d2864/thumbs/553335c1d2864.jpg
 			//   https://snimai.com/images/media/photos/20150419/553335c1d2864/553335c1d2864.jpg
-			return src.replace(/(\/photos\/+[0-9]{8}\/+[0-9a-z]+\/+)thumbs\/+/, "$1");
+			// https://snimai.com/images/media/photos/20180907/5b922bc8708e6_thumb.jpg
+			//   https://snimai.com/images/media/photos/20180907/5b922bc8708e6.jpg
+			return src
+				.replace(/(\/photos\/+[0-9]{8}\/+[0-9a-z]+\/+)thumbs\/+/, "$1")
+				.replace(/(\/photos\/+[0-9]{8}\/+[0-9a-f]+)_thumb(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
 		}
 
 		if (domain === "fem-img.herokuapp.com") {
@@ -41794,6 +41844,54 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/yimg\/+[^/]{50,}\.[^/._]+)_[0-9]+\.[^/.]*(?:[?#].*)?$/, "$1");
 		}
 
+		if (domain === "photos.fashiongroup.com") {
+			// https://us.fashionnetwork.com/galeries/photos/Richard-Nicoll,8451,2.html
+			// https://photos.fashiongroup.com/2011-09-18/1124438/thumbs_r_nicoll_wss12_001_m.jpg
+			//   https://photos.fashiongroup.com/2011-09-18/1124438/r_nicoll_wss12_001_m.jpg
+			//   https://photos.fashiongroup.com/2011-09-18/1124438/2048/r_nicoll_wss12_001_m.jpg -- 1363x2048
+			// other:
+			// https://photos.fashiongroup.com/2011-05-18/1060230/design_vision_austria_lobmeyr_basket_m.jpg -- 4923x4527
+			// doesn't work for all:
+			// https://photos.fashiongroup.com/2011-02-02/3000001094/_11%20Bonache%20002.jpg
+			//   https://photos.fashiongroup.com/2011-02-02/3000001094/2048/_11%20Bonache%20002.jpg -- 404
+			//   https://us.fashionnetwork.com/galeries/photos/Cardona-Bonache,11702.html -- same error in page
+			newsrc = src.replace(/(\/[0-9]{4}-[0-9]{2}-[0-9]{2}\/+[0-9]+\/+)thumbs_([^/]*\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+			if (newsrc !== src)
+				return newsrc;
+
+			newsrc = src.replace(/(\/[0-9]{4}-[0-9]{2}-[0-9]{2}\/+[0-9]+\/+)([^/]*\.[^/.]*)(?:[?#].*)?$/, "$12048/$2");
+			if (newsrc !== src)
+				return newsrc;
+		}
+
+		if (domain_nowww === "napiszar.com") {
+			// http://www.napiszar.com/uploads/2019/10/03/eef93e03e676ced2966ca6b2fc2da0ba_thumb.jpg
+			//   http://www.napiszar.com/uploads/2019/10/03/eef93e03e676ced2966ca6b2fc2da0ba_origi.jpg
+			return src.replace(/(\/uploads\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}[0-9a-f]{30,})_thumb(\.[^/.]*)(?:[?#].*)?$/, "$1_origi$2");
+		}
+
+		if (domain_nowww === "incontri-passionali.com" ||
+			// https://www.incontri-in-italia.com/images/annunci/med-3203036032-285.jpg
+			//   https://www.incontri-in-italia.com/images/annunci/max-3203036032-285.jpg
+			domain_nowww === "incontri-in-italia.com" ||
+			// https://www.incontri-bakeka.com/images/annunci/med-3203036032-285.jpg
+			//   https://www.incontri-bakeka.com/images/annunci/max-3203036032-285.jpg
+			domain_nowww === "incontri-bakeka.com" ||
+			// https://www.sesso-escort.com/images/annunci/med-3442353909-560.jpg
+			//   https://www.sesso-escort.com/images/annunci/max-3442353909-560.jpg
+			domain_nowww === "sesso-escort.com") {
+			// https://www.incontri-passionali.com/images/annunci/med-3924887861-96.jpg
+			//   https://www.incontri-passionali.com/images/annunci/max-3924887861-96.jpg
+			return src.replace(/(\/images\/+[^/]+\/+)med-([0-9]+-[0-9]+\.)/, "$1max-$2");
+		}
+
+		if (domain_nowww === "filmyerotyczne.tv") {
+			// http://filmyerotyczne.tv/gallery/LadyMargy/20180116_0708525167/medium/G8iXndx.png
+			//   http://filmyerotyczne.tv/gallery/LadyMargy/20180116_0708525167/large/G8iXndx.png
+			return src.replace(/(\/gallery\/+[^/]*\/+[0-9]+_[0-9]+\/+)medium\/+/, "$1large/");
+		}
+
+
 
 
 
@@ -45236,7 +45334,7 @@ var $$IMU_EXPORT$$;
 				"Referer": window.location.href
 			};
 		} else if (!headers.Origin && !headers.origin) {
-			headers.Origin = url_domain;
+			//headers.Origin = url_domain;
 		}
 
 		do_request({
