@@ -5799,6 +5799,8 @@ var $$IMU_EXPORT$$;
 			(domain === "images.mubi.com" && src.indexOf("/images/") >= 0) ||
 			// https://i.obozrevatel.com/gallery/2011/4/1/840669.jpg?size=400x400
 			domain === "i.obozrevatel.com" ||
+			// https://1624909224.rsc.cdn77.org/data/images/full/20509/singer-taylor-swift-c-and-selena-gomez-r-attend-the-58th-grammy-awards-at-staples-center-on-february-15-2016-in-los-angeles-california.jpg?w=600&h=300
+			domain === "1624909224.rsc.cdn77.org" ||
 			// http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
 			// https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
 			src.match(/\/demandware\.static\//) ||
@@ -6519,6 +6521,8 @@ var $$IMU_EXPORT$$;
 			(domain_nowww === "mmglobalmovies.com" && /\/wp-content\/+upload_folders\//.test(src)) ||
 			// https://images.in.com/uploads/2018/01/7746509462_deffbcb546_b-768x976.jpg
 			(domain === "images.in.com" && src.indexOf("/uploads/") >= 0) ||
+			// https://staticuestudio.blob.core.windows.net/buhomag/2016/02/16170844/GettyImages-510506276-1000x793.jpg
+			domain === "staticuestudio.blob.core.windows.net" ||
 			// https://1.soompi.io/wp-content/blogs.dir/8/files/2015/09/HA-TFELT-Wonder-Girls-590x730.jpg -- doesn't work
 			// https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2018/01/GTA-6-Female-Protag-796x417.jpg -- does work
 			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|images|photos|blogs.dir)|\/+uploads)\//.test(src)
@@ -10563,6 +10567,9 @@ var $$IMU_EXPORT$$;
 			// https://img.infonet.vn/w490/Uploaded/2019/hb_yuqzfdgzs/2017_02_04/thai_kim_dinh.jpg
 			//   https://img.infonet.vn/Uploaded/2019/hb_yuqzfdgzs/2017_02_04/thai_kim_dinh.jpg
 			domain === "img.infonet.vn" ||
+			// https://img.giaoduc.net.vn/w1050/uploaded/2019/rutmne/2012_11_14/nicole-kidman-giaoduc.net.vn.jpg -- upscaled?
+			//   https://img.giaoduc.net.vn/uploaded/2019/rutmne/2012_11_14/nicole-kidman-giaoduc.net.vn.jpg
+			domain === "img.giaoduc.net.vn" ||
 			domain === "media.laodong.vn") {
 			// https://znews-photo-td.zadn.vn/w960/Uploaded/qfssu/2017_11_05/NGT.jpg
 			//   https://znews-photo-td.zadn.vn/Uploaded/qfssu/2017_11_05/NGT.jpg
@@ -23702,10 +23709,17 @@ var $$IMU_EXPORT$$;
 			// https://awsimages.detik.net.id/customthumb/2015/11/11/431/2GettyImages-496556088d.jpg?w=900&q=60 -- 366x550
 			//   https://awsimages.detik.net.id/customthumb/2015/11/11/431/2GettyImages-496556088d.jpg?a=1 -- 200x301 (downscaled)
 			//   https://awsimages.detik.net.id/customthumb/2015/11/11/431/2GettyImages-496556088d.jpg -- same as first
+			// https://awsimages.detik.net.id/community/media/visual/2016/02/16/90a9545b-3235-4f74-900f-edbe97d59ce3_43.jpg
+			//   https://awsimages.detik.net.id/community/media/visual/2016/02/16/90a9545b-3235-4f74-900f-edbe97d59ce3.jpg?a=1
 			if (src.match(/\/customthumb\//)) {
 				return src.replace(/\?.*/, "");
 			}
-			return src.replace(/\?.*/, "?a=1");
+
+			newsrc = src.replace(/(\/community\/+media\/+visual\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}[-0-9a-f]{20,})_[0-9]+\./, "$1.");
+			if (newsrc !== src)
+				return newsrc;
+
+			return src.replace(/(?:\?.*)?$/, "?a=1");
 		}
 
 		if (domain_nowww === "sexhd.pics" ||
@@ -35267,7 +35281,9 @@ var $$IMU_EXPORT$$;
 		if (domain === "mpic.haiwainet.cn") {
 			// http://mpic.haiwainet.cn/thumb/d/uploadfile/2016/0613/20160613092727197,w_480.jpg
 			//   http://images.haiwainet.cn/2016/0613/20160613092727197.jpg
-			newsrc = src.replace(/:\/\/[^/]*\/thumb\/+.\/+uploadfile\/+([0-9]{4}\/+.*?)(?:,[wh]_[0-9]+)?(\.[^/.]*)(?:[?#].*)?$/,
+			// http://mpic.haiwainet.cn/thumb/d/uploadfile/20160715/1468549973612979,w_600.jpg
+			//   http://images.haiwainet.cn/20160715/1468549973612979.jpg
+			newsrc = src.replace(/:\/\/[^/]*\/thumb\/+.\/+uploadfile\/+([0-9]{4}\/*[0-9]{4}\/+[0-9]+)(?:,[wh]_[0-9]+)?(\.[^/.]*)(?:[?#].*)?$/,
 								 "://images.haiwainet.cn/$1$2");
 			return {
 				url: newsrc,
@@ -41923,6 +41939,59 @@ var $$IMU_EXPORT$$;
 			// http://filmyerotyczne.tv/gallery/LadyMargy/20180116_0708525167/medium/G8iXndx.png
 			//   http://filmyerotyczne.tv/gallery/LadyMargy/20180116_0708525167/large/G8iXndx.png
 			return src.replace(/(\/gallery\/+[^/]*\/+[0-9]+_[0-9]+\/+)medium\/+/, "$1large/");
+		}
+
+		if (domain_nowww === "idposter.com") {
+			// https://idposter.com/img/smalls/852/s_id847393.jpg
+			//   https://idposter.com/img/bigs/852/id847393.jpg
+			return src.replace(/\/img\/+smalls\/+([0-9]+\/+)s_id/, "/img/bigs/$1id");
+		}
+
+		if (domain_nowww === "fappeningbook.com") {
+			// https://fappeningbook.com/photos/s/e/selena-gomez/2000/1601t.jpg
+			//   https://fappeningbook.com/photos/s/e/selena-gomez/2000/1601.jpg
+			return src.replace(/(\/photos\/+.\/+.\/+[^/]*\/+[0-9]+\/+[0-9]+)t(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain === "pics.hotsexygirls.eu") {
+			// http://pics.hotsexygirls.eu/cache/Sexy%2BNude%2BGirls_women%2Band%2Bhorse.jpg.thumb.jpg
+			//   http://pics.hotsexygirls.eu/cache/Sexy%2BNude%2BGirls_women%2Band%2Bhorse.jpg.small.jpg
+			//   http://pics.hotsexygirls.eu/image.php?twg_album=Sexy+Nude+Girls&twg_show=women+and+horse.jpg -- 637x960, no watermark
+			//   http://pics.hotsexygirls.eu/image.php?twg_album=Sexy+Nude+Girls&twg_show=women+and+horse.jpg&twg_type=fullscreen&twg_rot=-1 -- 654x986, watermark
+			//   http://pics.hotsexygirls.eu/?twg_album=Sexy+Nude+Girls&twg_show=women+and+horse.jpg
+			//   http://pics.hotsexygirls.eu/?twg_album=Sexy%20Nude%20Girls&twg_show=women%20and%20horse.jpg
+			newsrc = src.replace(/\/cache\/+([^/]*\.[^/.]*)\.thumb(\.[^/.]+)(?:[?#].*)?$/, "/cache/$1.small$2");
+			if (newsrc !== src)
+				return newsrc;
+
+			match = src.match(/\/cache\/+([^/_]+)_([^/]*\.[^/.]*)\.[a-z]+\.[^/.]*(?:[?#].*)?$/);
+			if (match) {
+				return urljoin(src, "/image.php?twg_album=" + decodeURIComponent(match[1]) + "&twg_show=" + decodeURIComponent(match[2]), true);
+			}
+
+			match = src.match(/\/image\.php\?(.*?&)?twg_album=/);
+			if (match) {
+				return {
+					url: urljoin(src, "/image.php?twg_album=" + encodeURIComponent(url.searchParams.get("twg_album")) + "&twg_show=" + encodeURIComponent(url.searchParams.get("twg_show")), true),
+					extra: {
+						page: "http://pics.hotsexygirls.eu/?twg_album=" + encodeURIComponent(url.searchParams.get("twg_album")) + "&twg_show=" + encodeURIComponent(url.searchParams.get("twg_show"))
+					}
+				};
+			}
+		}
+
+		if (domain === "mygalleries.allpornmodels.com") {
+			// http://mygalleries.allpornmodels.com/xart-lesbians/small/01-xart-lesbians.jpg
+			//   http://mygalleries.allpornmodels.com/xart-lesbians/01-xart-lesbians.jpg
+			return src.replace(/(:\/\/[^/]*\/+[^/]*\/+)small\/+/, "$1");
+		}
+
+		if (domain === "forum.donanimhaber.com") {
+			// https://forum.donanimhaber.com/cache/ImageThumbnail2.aspx?path=http://store.donanimhaber.com/2a/e6/64/2ae664221cfa992f6580b45112163b7c.jpg&t=108849866&size=1&bound=0&border=0&resolution=0
+			//   https://store.donanimhaber.com/2a/e6/64/2ae664221cfa992f6580b45112163b7c.jpg
+			newsrc = src.replace(/.*?\/cache\/+ImageThumbnail2\.aspx\?(?:.*&)?path=([^&]*).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
 		}
 
 
