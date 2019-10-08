@@ -289,6 +289,10 @@ var $$IMU_EXPORT$$;
 		bad: false,
 		fake: false,
 		headers: {},
+		referer_ok: {
+			same_domain: false,
+			same_domain_nosub: false
+		},
 		extra: {},
 		filename: "",
 		problems: {
@@ -2108,6 +2112,20 @@ var $$IMU_EXPORT$$;
 		});
 	};
 
+	var get_domain_nosub = function(domain) {
+		var domain_nosub = domain.replace(/^.*\.([^.]*\.[^.]*)$/, "$1");
+		if (domain_nosub.match(/^co\.[a-z]{2}$/) ||
+			domain_nosub.match(/^ne\.jp$/) || // stream.ne.jp
+			domain_nosub.match(/^or\.jp$/) ||
+			domain_nosub.match(/^com\.[a-z]{2}$/) ||
+			domain_nosub.match(/^org\.[a-z]{2}$/) ||
+			domain_nosub.match(/^net\.[a-z]{2}$/)) {
+			domain_nosub = domain.replace(/^.*\.([^.]*\.[^.]*\.[^.]*)$/, "$1");
+		}
+
+		return domain_nosub;
+	};
+
 	function bigimage(src, options) {
 		if (!src)
 			return src;
@@ -2145,15 +2163,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		var domain_nowww = domain.replace(/^www\./, "");
-		var domain_nosub = domain.replace(/^.*\.([^.]*\.[^.]*)$/, "$1");
-		if (domain_nosub.match(/^co\.[a-z]{2}$/) ||
-			domain_nosub.match(/^ne\.jp$/) || // stream.ne.jp
-			domain_nosub.match(/^or\.jp$/) ||
-			domain_nosub.match(/^com\.[a-z]{2}$/) ||
-			domain_nosub.match(/^org\.[a-z]{2}$/) ||
-			domain_nosub.match(/^net\.[a-z]{2}$/)) {
-			domain_nosub = domain.replace(/^.*\.([^.]*\.[^.]*\.[^.]*)$/, "$1");
-		}
+		var domain_nosub = get_domain_nosub(domain);
 
 		var amazon_container = null;
 		if (domain.indexOf(".amazonaws.com") >= 0) {
@@ -3622,6 +3632,9 @@ var $$IMU_EXPORT$$;
 			// http://ss12.sinaimg.cn/orignal/6bc10695g923b8902976b&690
 			// http://ss7.sinaimg.cn/orignal/67a7cd73g8b48c289ae26&690
 			// http://ss6.sinaimg.cn/orignal/6b3178f4g92678953d725&690
+			// thanks to fireattack on github for these examples: https://github.com/qsniyg/maxurl/issues/147#issue-503777148
+			// https://wx4.sinaimg.cn/mw690/9a646dd9ly1g7qil8atsgj22ao328qv6.jpg
+			//   https://wx4.sinaimg.cn/large/9a646dd9ly1g7qil8atsgj22ao328qv6.jpg
 			// doesn't:
 			// http://ww4.sinaimg.cn/large/ad769c8bgy1fnaovhjp4rj21m62iob2d.jpg
 			//   http://ww4.sinaimg.cn/woriginal/ad769c8bgy1fnaovhjp4rj21m62iob2d.jpg - works
@@ -3674,6 +3687,9 @@ var $$IMU_EXPORT$$;
 				url: src,
 				headers: {
 					Referer: "https://weibo.com/"
+				},
+				referer_ok: {
+					same_domain: true
 				}
 			}
 		}
@@ -9867,6 +9883,9 @@ var $$IMU_EXPORT$$;
 				url: src.replace(/\/([a-zA-Z0-9]{7})(?:[hrlgmtbs]|_d)(\.[^/.?]*)$/, "/$1$2"),
 				headers: {
 					Referer: null
+				},
+				referer_ok: {
+					same_domain_nosub: true
 				}
 			};
 		}
@@ -28807,6 +28826,21 @@ var $$IMU_EXPORT$$;
 				return add_http(newsrc);
 		}
 
+		if (domain === "img.izismile.com" ||
+			// https://izismile.com/img/img12/20191007/640/new_york_comic_con_was_filled_with_fantastic_cosplay_640_39.jpg
+			//   https://izismile.com/img/img12/20191007/1000/new_york_comic_con_was_filled_with_fantastic_cosplay_39.jpg
+			domain_nowww === "izismile.com") {
+			// https://img.izismile.com/img/img12/20191007/640/new_york_comic_con_was_filled_with_fantastic_cosplay_640_39.jpg
+			//   https://img.izismile.com/img/img12/20191007/1000/new_york_comic_con_was_filled_with_fantastic_cosplay_39.jpg
+			// other:
+			// https://izismile.com/2010/02/05/mother_nature_in_all_its_glory_25_pics.html?fromt=yes
+			// https://img.izismile.com/img/img3/20100205/beautiful_nature_l_06.jpg
+			//   https://img.izismile.com/img/img3/20100205/beautiful_nature_06.jpg  -- 3900x2613
+			return src
+				.replace(/(\/img[0-9]*\/+[0-9]{8}\/+)640\/+([^/]*_)640_(?:high_)?([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$11000/$2$3")
+				.replace(/(\/img[0-9]*\/+[0-9]{8}\/+[^/]*)_l(_[0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+		}
+
 		if (domain === "cdn.snsimg.carview.co.jp") {
 			// https://cdn.snsimg.carview.co.jp/minkara/blog/000/025/020/952/25020952/p1s.jpg
 			//   https://cdn.snsimg.carview.co.jp/minkara/blog/000/025/020/952/25020952/p1.jpg
@@ -43962,6 +43996,18 @@ var $$IMU_EXPORT$$;
 					};
 				} else if (!headers.Origin && !headers.origin) {
 					//headers.Origin = url_domain;
+				}
+
+				if (customheaders && Object.keys(headers).length === 1 && ("Referer" in headers)) {
+					var domain = window.location.href;
+					domain = domain.replace(/^[a-z]+:\/\/([^/]*).*?$/, "$1");
+					var url_domain = url.replace(/^[a-z]+:\/\/([^/]*).*?$/, "$1");
+
+					if (obj.referer_ok.same_domain && domain === url_domain) {
+						customheaders = false;
+					} else if (obj.referer_ok.same_domain_nosub && get_domain_nosub(domain) === get_domain_nosub(url_domain)) {
+						customheaders = false;
+					}
 				}
 
 				if (customheaders && !is_extension) {
