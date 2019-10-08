@@ -48778,7 +48778,17 @@ var $$IMU_EXPORT$$;
 		version_el.style.fontSize = "90%";
 		version_el.style.fontWeight = 800;
 		version_el.style.marginRight = "2em";
-		version_el.innerText = "Installed (v" + gm_info.script.version + ")";
+
+		var version = null;
+		try {
+			version = gm_info.script.version;
+		} catch (e) {
+		}
+
+		version_el.innerText = "Installed";
+
+		if (version !== null)
+			version_el.innerText += "(v" + version + ")";
 
 		options_el = document.createElement("a");
 		options_el.innerText = "Options";
@@ -48822,7 +48832,8 @@ var $$IMU_EXPORT$$;
 				}
 			}
 
-			if (window.location.href.match(/^https?:\/\/(?:www\.)?greasyfork\.org\/+[^/]*\/+scripts\/+36662(?:-[^/]*)?(?:[?#].*)?$/)) {
+			if (is_userscript &&
+				window.location.href.match(/^https?:\/\/(?:www\.)?greasyfork\.org\/+[^/]*\/+scripts\/+36662(?:-[^/]*)?(?:[?#].*)?$/)) {
 				do_greasyfork_page();
 			}
 
