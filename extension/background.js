@@ -7,6 +7,7 @@ var redirects = {};
 var loading_urls = {};
 var loading_redirects = {};
 var tabs_ready = {};
+var request_headers = {};
 
 var nir_debug = false;
 var debug = function() {
@@ -117,7 +118,7 @@ var do_request = function(request) {
 };
 
 // Modify request headers if needed
-chrome.webRequest.onBeforeSendHeaders.addListener(function(details) {
+var onBeforeSendHeaders_listener = function(details) {
   debug("onBeforeSendHeaders", details);
 
   var headers = details.requestHeaders;
@@ -178,8 +179,18 @@ chrome.webRequest.onBeforeSendHeaders.addListener(function(details) {
     }
   });
 
+  // This is useful for redirects, which strip IMU headers
+  if (imu_headers.length === 0 && details.requestId in request_headers) {
+    imu_headers = JSON.parse(JSON.stringify(request_headers[details.requestId]));
+    verify_ok = true;
+  }
+
   if (!verify_ok) {
     return;
+  }
+
+  if (imu_headers.length > 0) {
+    request_headers[details.requestId] = imu_headers;
   }
 
   var use_header = function(value) {
@@ -209,10 +220,24 @@ chrome.webRequest.onBeforeSendHeaders.addListener(function(details) {
   return {
     requestHeaders: new_headers
   };
-}, {
+}
+
+var onBeforeSendHeaders_filter = {
   urls: ['<all_urls>'],
   types: ['xmlhttprequest', 'main_frame', 'sub_frame']
-}, ['blocking', 'requestHeaders']);
+};
+
+try {
+  chrome.webRequest.onBeforeSendHeaders.addListener(
+    onBeforeSendHeaders_listener, onBeforeSendHeaders_filter,
+    ['blocking', 'requestHeaders', 'extraHeaders']
+  );
+} catch (e) {
+  chrome.webRequest.onBeforeSendHeaders.addListener(
+    onBeforeSendHeaders_listener, onBeforeSendHeaders_filter,
+    ['blocking', 'requestHeaders']
+  );
+}
 
 function parse_contentdisposition(cdp) {
   var out = [];
@@ -390,6 +415,10 @@ chrome.webRequest.onResponseStarted.addListener(function(details) {
 
   if (details.tabId in loading_redirects) {
     delete loading_redirects[details.tabId];
+  }
+
+  if (details.requestId in request_headers) {
+    delete request_headers[details.requestId];
   }
 }, {
   urls: ['<all_urls>'],
