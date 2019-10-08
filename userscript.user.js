@@ -1491,7 +1491,10 @@ var $$IMU_EXPORT$$;
 			example_websites: [
 				"Sites using testcookie (slowAES)"
 			],
-			onupdate: update_rule_setting
+			onupdate: function() {
+				update_rule_setting();
+				api_cache.clear();
+			}
 		},
 		browser_cookies: {
 			name: "Use browser cookies",
@@ -45019,6 +45022,9 @@ var $$IMU_EXPORT$$;
 				var name = document.createElement("strong");
 				md_to_html(name, _(meta.name));
 				name.title = _(meta.description);
+
+				if (meta.description_userscript && is_userscript)
+					name.title = _(meta.description_userscript);
 
 				var name_td = document.createElement("td");
 				name_td.style.verticalAlign = "middle";
