@@ -1486,7 +1486,7 @@ var $$IMU_EXPORT$$;
 		allow_thirdparty_libs: {
 			name: "Rules using 3rd-party libraries",
 			description: "Enables rules that use 3rd-party libraries",
-			description_userscript: "Enables rules that use 3rd-party libraries. Possible (but unlikely) security risk for the userscript version",
+			description_userscript: "Enables rules that use 3rd-party libraries. There is a possible (but unlikely) security risk for the userscript version",
 			category: "rules",
 			example_websites: [
 				"Sites using testcookie (slowAES)"
@@ -2131,10 +2131,38 @@ var $$IMU_EXPORT$$;
 		//console_log(blacklist_regexes);
 	}
 
+	// https://stackoverflow.com/a/18639999
+	var makeCRCTable = function() {
+		var c;
+		var crcTable = [];
+		for (var n =0; n < 256; n++) {
+			c = n;
+			for (var k =0; k < 8; k++) {
+				c = ((c&1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1));
+			}
+			crcTable[n] = c;
+		}
+		return crcTable;
+	};
+
+	var cached_crc_table = null;
+	var crc32 = function(str) {
+		var crcTable = cached_crc_table || (cached_crc_table = makeCRCTable());
+		var crc = 0 ^ (-1);
+
+		for (var i = 0; i < str.length; i++) {
+			crc = (crc >>> 8) ^ crcTable[(crc ^ str.charCodeAt(i)) & 0xFF];
+		}
+
+		return (crc ^ (-1)) >>> 0;
+	};
+
 	var lib_urls = {
 		"testcookie_slowaes": {
 			url: "https://raw.githubusercontent.com/qsniyg/maxurl/5af5c0e8bd18fb0ae716aac04ac42992d2ddc2e5/lib/testcookie_slowaes.js",
-			size: 31248
+			size: 31248,
+			crc32: 2955697328,
+			crc32_size: 4174899014
 		}
 	};
 
@@ -2178,9 +2206,8 @@ var $$IMU_EXPORT$$;
 					// For the userscript, we have no other choice than to query and run arbitrary JS.
 					// The commit is specified in lib_urls in order to prevent possible incompatibilities.
 					// Unfortunately this still cannot prevent a very dedicated hostile takeover.
-					// We _could_ implement a checksum, but that itself might require a library.
-					// CRC32 + length test might be a good way to do this:
-					//   check length, then check crc32 of result, then check crc32 of result + length in str.
+					// This is why we use the dual CRC32 check. Not bulletproof, but much better than nothing.
+					// On my system it takes 6ms to do both CRC32 checks, so performance isn't an issue.
 
 					do_request({
 						method: "GET",
@@ -2197,6 +2224,18 @@ var $$IMU_EXPORT$$;
 
 							if (result.responseText.length !== lib_url.size) {
 								console_error("Wrong response length for " + name + ": " + result.responseText.length + " (expected " + lib_url.size + ")");
+								return done(null, false);
+							}
+
+							var crc = crc32(result.responseText);
+							if (crc !== lib_url.crc32) {
+								console_error("Wrong crc32 for " + name + ": " + crc + " (expected " + lib_url.crc32 + ")");
+								return done(null, false);
+							}
+
+							crc = crc32(result.reponseText + (lib_url.size + ""));
+							if (crc !== lib_url.crc32_size) {
+								console_error("Wrong crc32 #2 for " + name + ": " + crc + " (expected " + lib_url.crc32_size + ")");
 								return done(null, false);
 							}
 
