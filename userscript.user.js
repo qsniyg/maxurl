@@ -260,6 +260,7 @@ var $$IMU_EXPORT$$;
 		include_pastobjs: true,
 		force_page: false,
 		allow_thirdparty: false,
+		allow_thirdparty_libs: true,
 		filter: bigimage_filter,
 
 		do_request: do_request,
@@ -815,6 +816,7 @@ var $$IMU_EXPORT$$;
 		allow_possibly_broken: false,
 		allow_thirdparty: false,
 		allow_apicalls: true,
+		allow_thirdparty_libs: is_userscript ? false : true,
 		//browser_cookies: true,
 		// thanks to LukasThyWalls on github for the idea: https://github.com/qsniyg/maxurl/issues/75
 		bigimage_blacklist: "",
@@ -1478,7 +1480,18 @@ var $$IMU_EXPORT$$;
 				"Instagram",
 				"Flickr",
 				"..."
-			]
+			],
+			onupdate: update_rule_setting
+		},
+		allow_thirdparty_libs: {
+			name: "Rules using 3rd-party libraries",
+			description: "Enables rules that use 3rd-party libraries",
+			description_userscript: "Enables rules that use 3rd-party libraries. Possible (but unlikely) security risk for the userscript version",
+			category: "rules",
+			example_websites: [
+				"Sites using testcookie (slowAES)"
+			],
+			onupdate: update_rule_setting
 		},
 		browser_cookies: {
 			name: "Use browser cookies",
@@ -1688,6 +1701,8 @@ var $$IMU_EXPORT$$;
 				if (key in this.fetches) {
 					this.fetches[key].push(done);
 				} else {
+					this.fetches[key] = [];
+
 					fetcher(function(data, time) {
 						if (time !== false)
 							this.set(key, data, time);
@@ -1700,8 +1715,6 @@ var $$IMU_EXPORT$$;
 
 						delete this.fetches[key];
 					}.bind(this));
-
-					this.fetches[key] = [];
 				}
 			} else {
 				done(this.data[key]);
@@ -2119,13 +2132,18 @@ var $$IMU_EXPORT$$;
 		"testcookie_slowaes": "https://raw.githubusercontent.com/qsniyg/maxurl/5af5c0e8bd18fb0ae716aac04ac42992d2ddc2e5/lib/testcookie_slowaes.js"
 	};
 
-	var get_library = function(name, do_request, cb) {
+	var get_library = function(name, options, cb) {
+		if (!options.allow_thirdparty_libs)
+			return cb(null);
+
 		if (is_scripttag) {
 			return cb(null);
 		} else if (is_node) {
 			var lib = require("./lib/" + name + ".js");
 			return cb(lib);
 		}
+
+		var do_request = options.do_request;
 
 		if (is_extension || is_userscript) {
 			// Unfortunately in these cases it's less clean
@@ -2199,13 +2217,14 @@ var $$IMU_EXPORT$$;
 		});
 	};
 
-	common_functions.get_testcookie_cookie = function(do_request, site, cb) {
+	common_functions.get_testcookie_cookie = function(options, site, cb) {
 		var cache_key = "testcookie_cookie:" + site;
+		var do_request = options.do_request;
 
 		api_cache.fetch(cache_key, cb, function (done) {
-			get_library("testcookie_slowaes", do_request, function (lib) {
+			get_library("testcookie_slowaes", options, function (lib) {
 				if (!lib) {
-					console_error(cache_key, "Unable to fetch showaes library");
+					console_error(cache_key, "Unable to fetch patched slowAES library");
 					return done(null, false);
 				}
 
@@ -8901,7 +8920,7 @@ var $$IMU_EXPORT$$;
 							 "$1$2$3/$4");
 			//console_log(id);
 			if (id !== src && options && options.cb && options.do_request) {
-				common_functions.get_testcookie_cookie(options.do_request, "http://www." + domain_nosub + "/", function (cookie) {
+				common_functions.get_testcookie_cookie(options, "http://www." + domain_nosub + "/", function (cookie) {
 					if (!cookie) {
 						return options.cb(null);
 					}
@@ -43569,6 +43588,10 @@ var $$IMU_EXPORT$$;
 			 if (!("allow_apicalls" in options)) {
 				 options.allow_apicalls = (settings["allow_apicalls"] + "") === "true";
 			 }
+
+			 if (!("allow_thirdparty_libs" in options)) {
+				options.allow_thirdparty_libs = (settings["allow_thirdparty_libs"] + "") === "true";
+			}
 		}
 
 		for (var option in bigimage_recursive.default_options) {
