@@ -1735,6 +1735,7 @@ var $$IMU_EXPORT$$;
 
 	var url_cache = new Cache();
 	var api_cache = new Cache();
+	var lib_cache = new Cache();
 	var cookie_cache = new Cache();
 
 	var urlparse = function(x) {
@@ -2091,6 +2092,70 @@ var $$IMU_EXPORT$$;
 
 		//console_log(blacklist_regexes);
 	}
+
+	var lib_urls = {
+		"testcookie_slowaes": "https://raw.githubusercontent.com/qsniyg/maxurl/5af5c0e8bd18fb0ae716aac04ac42992d2ddc2e5/lib/testcookie_slowaes.js"
+	};
+
+	var get_library = function(name, do_request, cb) {
+		if (is_scripttag) {
+			return cb(null);
+		} else if (is_node) {
+			var lib = require("./lib/" + name + ".js");
+			return cb(lib);
+		}
+
+		if (is_extension || is_userscript) {
+			// Unfortunately in these cases it's less clean
+			// Without building separate version of this for each use case, we have to fall back on "eval"ing (through `new Function`)
+			lib_cache.fetch(name, cb, function (done) {
+				if (is_extension) {
+					// Thankfully in this case can query directly from the extension, removing possibility for XSS
+					extension_send_message({
+						type: "get_lib",
+						data: {
+							name: name
+						}
+					}, function (response) {
+						if (!response || !response.data || !response.data.text)
+							return done(null, 0); // 0 instead of false because it will never be available
+
+						done(new Function(response.data.text + ";return lib_export;")(), 0);
+					});
+				} else {
+					if (!(name in lib_urls)) {
+						return done(null, 0);
+					}
+
+					// For the userscript, we have no other choice than to query and run arbitrary JS.
+					// The commit is specified in lib_urls in order to prevent possible incompatibilities.
+					// Unfortunately this still cannot prevent a very dedicated hostile takeover.
+					// We _could_ implement a checksum, but that itself might require a library.
+					// CRC32 + length test might be a good way to do this:
+					//   check length, then check crc32 of result, then check crc32 of result + length in str.
+
+					do_request({
+						method: "GET",
+						url: lib_urls[name],
+						headers: {
+							Referer: ""
+						},
+						onload: function(result) {
+							if (result.readyState !== 4)
+								return;
+
+							if (result.status !== 200)
+								return done(null, false);
+
+							done(new Function(result.responseText + ";return lib_export;")(), 0);
+						}
+					});
+				}
+			});
+		} else {
+			return cb(null);
+		}
+	};
 
 	var common_functions = {};
 	common_functions.deviantart_page_from_id = function(do_request, id, cb) {
@@ -3586,6 +3651,9 @@ var $$IMU_EXPORT$$;
 			// https://www.klik.gr/uploads_image/2017/06/19/p1bivfplat1vjv1ls95fr57b10rlt_900.jpg
 			//   https://www.klik.gr/uploads_image/2017/06/19/p1bivfplat1vjv1ls95fr57b10rlt.jpg
 			(domain_nowww === "klik.gr" && src.indexOf("/uploads_image/") >= 0) ||
+			// https://ug-ts.ru/psyzoo/content/pics/e7e/e7ed71ca9bdb10f35cabb3ac43c2104a_400.jpg
+			//   https://ug-ts.ru/psyzoo/content/pics/e7e/e7ed71ca9bdb10f35cabb3ac43c2104a.jpg
+			(domain_nowww === "ug-ts.ru" && /\/content\/+pics\//.test(src)) ||
 			// http://eroticasearch.net/content/pics/ce9/ce9462d41e02e0c73662f316b1ebaf8f_400.jpg
 			//   http://eroticasearch.net/content/pics/ce9/ce9462d41e02e0c73662f316b1ebaf8f.jpg
 			(domain_nowww === "eroticasearch.net" && src.indexOf("/content/pics/") >= 0) ||

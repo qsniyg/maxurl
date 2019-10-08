@@ -471,6 +471,39 @@ chrome.runtime.onMessage.addListener((message, sender, respond) => {
   } else if (message.type === "ready") {
     // Sometimes tab is undefined. Catching this error shouldn't be needed though
     tabready(sender.tab.id);
+  } else if (message.type === "get_lib") {
+    debug("get_lib", message);
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", chrome.runtime.getURL("/lib/" + message.data.name + ".js"), true);
+
+    xhr.onload = function() {
+      if (xhr.readyState !== 4)
+        return;
+
+      if (xhr.status !== 200 && xhr.status !== 0)
+        return respond({
+          type: "get_lib",
+          data: null
+        });
+
+      respond({
+        type: "get_lib",
+        data: {
+          text: xhr.responseText
+        }
+      });
+    };
+
+    xhr.onerror = function(result) {
+      respond({
+        type: "get_lib",
+        data: null
+      });
+    };
+
+    xhr.send();
+    return true;
   }
 });
 
