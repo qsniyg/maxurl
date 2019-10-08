@@ -48766,6 +48766,35 @@ var $$IMU_EXPORT$$;
 		};
 	}
 
+	var do_greasyfork_page = function() {
+		var imgel = document.querySelector("div.script-author-description > center > img[alt='Image Max URL']");
+		if (!imgel)
+			return;
+
+		var status_container_el = document.createElement("div");
+		status_container_el.style.marginBottom = "2em";
+
+		var version_el = document.createElement("span");
+		version_el.style.fontSize = "90%";
+		version_el.style.fontWeight = 800;
+		version_el.style.marginRight = "2em";
+		version_el.innerText = "Installed (v" + gm_info.script.version + ")";
+
+		options_el = document.createElement("a");
+		options_el.innerText = "Options";
+		options_el.style.background = "#0af";
+		options_el.style.padding = "0.5em 1em";
+		options_el.style.color = "white";
+		options_el.style.display = "inline-block";
+		options_el.style.textDecoration = "none";
+		options_el.target = "_blank";
+		options_el.href = "https://qsniyg.github.io/maxurl/options.html";
+
+		status_container_el.appendChild(version_el);
+		status_container_el.appendChild(options_el);
+		imgel.parentElement.appendChild(status_container_el);
+	};
+
 	function start() {
 		do_export();
 
@@ -48791,6 +48820,10 @@ var $$IMU_EXPORT$$;
 						});
 					}
 				}
+			}
+
+			if (window.location.href.match(/^https?:\/\/(?:www\.)?greasyfork\.org\/+[^/]*\/+scripts\/+36662(?:-[^/]*)?(?:[?#].*)?$/)) {
+				do_greasyfork_page();
 			}
 
 			do_mouseover();
