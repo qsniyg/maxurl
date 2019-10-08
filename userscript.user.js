@@ -1959,6 +1959,28 @@ var $$IMU_EXPORT$$;
 		return str;
 	}
 
+	function hex_to_numberarray(str) {
+		var result = [];
+
+		for (var i = 0; i < str.length; i += 2) {
+			result.push(parseInt(str.substr(i, 2), 16));
+		}
+
+		return result;
+	}
+
+	function numberarray_to_hex(arr) {
+		var str = "";
+
+		for (var i = 0; i < arr.length; i++) {
+			if (arr[i] < 16)
+				str += "0";
+			str += arr[i].toString(16);
+		}
+
+		return str;
+	}
+
 	function decode_entities(str) {
 		return str
 			.replace(/&nbsp;/g, " ")
@@ -2173,6 +2195,75 @@ var $$IMU_EXPORT$$;
 
 					done(result, 60 * 60);
 				}
+			});
+		});
+	};
+
+	common_functions.get_testcookie_cookie = function(do_request, site, cb) {
+		var cache_key = "testcookie_cookie:" + site;
+
+		api_cache.fetch(cache_key, cb, function (done) {
+			get_library("testcookie_slowaes", do_request, function (lib) {
+				if (!lib) {
+					console_error(cache_key, "Unable to fetch showaes library");
+					return done(null, false);
+				}
+
+				do_request({
+					method: "GET",
+					url: site,
+					headers: {
+						Referer: "",
+						Cookie: ""
+					},
+					onload: function (result) {
+						if (result.readyState !== 4)
+							return;
+
+						if (result.status !== 200) {
+							console_log(cache_key, result);
+							return done(null, false);
+						}
+
+						var matches = result.responseText.match(/[a-z]=\s*toNumbers\(["'][0-9a-f]+["']/g);
+						if (matches.length === 0) {
+							console_log(cache_key, "Unable to find toNumbers match", result);
+							return done(null, false);
+						}
+
+						var vartable = {};
+						for (var i = 0; i < matches.length; i++) {
+							var match = matches[i].match(/([a-z])=toNumbers\(["']([0-9a-f]+)["']/);
+							vartable[match[1]] = hex_to_numberarray(match[2]);
+						}
+
+						var slowaesmatch = result.responseText.match(/slowAES\.decrypt\s*\(\s*(.)\s*,\s*(.)\s*,\s*(.)\s*,\s*(.)\s*\)/);
+						if (!slowaesmatch) {
+							console_log(cache_key, "Unable to find slowAES match", result);
+							return done(null, false);
+						}
+
+						var cookiename = result.responseText.match(/document\.cookie\s*=\s*["']([^='"]*?)=/);
+						if (!cookiename) {
+							console_log(cache_key, "Unable to find cookie name match", result);
+							return done(null, false);
+						} else {
+							cookiename = cookiename[1];
+						}
+
+						var getarg = function(x) {
+							if (/[a-z]/.test(x))
+								return vartable[x];
+							return parseInt(x);
+						};
+
+						var cookievalue = numberarray_to_hex(lib.decrypt(
+							getarg(slowaesmatch[1]), getarg(slowaesmatch[2]),
+							getarg(slowaesmatch[3]), getarg(slowaesmatch[4])));
+
+						done(cookiename + "=" + cookievalue, 6*60*60);
+					}
+				});
 			});
 		});
 	};
@@ -8783,6 +8874,60 @@ var $$IMU_EXPORT$$;
 							}
 						}
 					}
+				});
+
+				return {
+					waiting: true
+				};
+			}
+
+			return {
+				url: src,
+				headers: {
+					Referer: src.replace(/:\/\/(?:[^/]*\.)?([^/.]*\.[^/.]*)\/.*/, "://$1/"),
+					Origin: src.replace(/:\/\/(?:[^/]*\.)?([^/.]*\.[^/.]*)\/.*/, "://$1/"),
+					"Sec-Metadata": "destination=image, site=same-site"
+				}
+			};
+		}
+
+		if (domain_nosub === "imgflare.com" ||
+			// http://i.imgbabes.com/i/00403/r0hjwo7rnsr4_t.jpg
+			//   http://i.imgbabes.com/files/7/nxxbauvvaqq5ud/beyonce%20pubes.jpg
+			domain_nosub === "imgbabes.com") {
+			// http://www.imgflare.com/i/00026/u6j8ulxub2su_t.jpg
+			//   http://www.imgflare.com/files/9/mug5ve6613zk84/403.jpg
+			id = src.replace(/^([a-z]+:\/\/)(?:[^/.]*\.)?([^/.]+\.[^/.]+\/+)i\/+[0-9]+\/+([0-9a-z]+)(?:_t)?(\.[^/.]*)?$/,
+							 "$1$2$3/$4");
+			//console_log(id);
+			if (id !== src && options && options.cb && options.do_request) {
+				common_functions.get_testcookie_cookie(options.do_request, "http://www." + domain_nosub + "/", function (cookie) {
+					if (!cookie) {
+						return options.cb(null);
+					}
+
+					options.do_request({
+						method: "GET",
+						headers: {
+							Referer: "",
+							Cookie: cookie
+						},
+						url: id + ".html",
+						onload: function (resp) {
+							//console_log(resp);
+							if (resp.readyState === 4) {
+								var match = resp.responseText.match(/<img\s+src=["'](https?:\/\/[^/]+\/+files\/+.*?)["'][^>]*\s+class=['"]pic["']/);
+								if (match) {
+									options.cb({
+										url: match[1],
+										is_original: true
+									});
+								} else {
+									options.cb(null);
+								}
+							}
+						}
+					});
 				});
 
 				return {
