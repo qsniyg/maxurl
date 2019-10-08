@@ -48817,7 +48817,7 @@ var $$IMU_EXPORT$$;
 		version_el.innerText = "Installed";
 
 		if (version !== null)
-			version_el.innerText += "(v" + version + ")";
+			version_el.innerText += " (v" + version + ")";
 
 		options_el = document.createElement("a");
 		options_el.innerText = "Options";
