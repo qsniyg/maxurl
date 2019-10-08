@@ -42278,6 +42278,21 @@ var $$IMU_EXPORT$$;
 				return decodeuri_ifneeded(newsrc);
 		}
 
+		if (domain_nosub === "newtumbl.com") {
+			// https://dn0.newtumbl.com/img/81100/14861971/1/21809496/nT_sei0rd05cpjcffzfr0pqaee7_300.jpg
+			//   https://dn0.newtumbl.com/img/81100/14861971/1/21809496/nT_sei0rd05cpjcffzfr0pqaee7.jpg
+			return {
+				url: src.replace(/(\/img\/+[0-9]+\/+[0-9]+\/+[0-9]+\/+[0-9]+\/+nT_[0-9a-z]{10,})_[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2"),
+				can_head: false // completely wrong output
+			};
+		}
+
+		if (domain === "img.ohpolly.com") {
+			// https://img.ohpolly.com/u02beaOl1WZ2cvpQMUtXDYhwPIQ=/fit-in/666x999/catalog/product/2/3/2397_10_utopia-neon-lime-deep-v-zipped-collar-playsuit.jpg
+			//   https://www.ohpolly.com/media/catalog/product/2/3/2397_10_utopia-neon-lime-deep-v-zipped-collar-playsuit.jpg
+			return src.replace(/:\/\/[^/]*\/+[^/]*=\/+(?:.*?\/)?(catalog\/+product\/)/, "://www.ohpolly.com/media/$1");
+		}
+
 
 
 
