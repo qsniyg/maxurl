@@ -2132,7 +2132,10 @@ var $$IMU_EXPORT$$;
 	}
 
 	var lib_urls = {
-		"testcookie_slowaes": "https://raw.githubusercontent.com/qsniyg/maxurl/5af5c0e8bd18fb0ae716aac04ac42992d2ddc2e5/lib/testcookie_slowaes.js"
+		"testcookie_slowaes": {
+			url: "https://raw.githubusercontent.com/qsniyg/maxurl/5af5c0e8bd18fb0ae716aac04ac42992d2ddc2e5/lib/testcookie_slowaes.js",
+			size: 31248
+		}
 	};
 
 	var get_library = function(name, options, cb) {
@@ -2170,6 +2173,8 @@ var $$IMU_EXPORT$$;
 						return done(null, 0);
 					}
 
+					var lib_url = lib_urls[name];
+
 					// For the userscript, we have no other choice than to query and run arbitrary JS.
 					// The commit is specified in lib_urls in order to prevent possible incompatibilities.
 					// Unfortunately this still cannot prevent a very dedicated hostile takeover.
@@ -2179,7 +2184,7 @@ var $$IMU_EXPORT$$;
 
 					do_request({
 						method: "GET",
-						url: lib_urls[name],
+						url: lib_url.url,
 						headers: {
 							Referer: ""
 						},
@@ -2189,6 +2194,11 @@ var $$IMU_EXPORT$$;
 
 							if (result.status !== 200)
 								return done(null, false);
+
+							if (result.responseText.length !== lib_url.size) {
+								console_error("Wrong response length for " + name + ": " + result.responseText.length + " (expected " + lib_url.size + ")");
+								return done(null, false);
+							}
 
 							done(new Function(result.responseText + ";return lib_export;")(), 0);
 						}
