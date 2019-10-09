@@ -42293,6 +42293,21 @@ var $$IMU_EXPORT$$;
 			return src.replace(/:\/\/[^/]*\/+[^/]*=\/+(?:.*?\/)?(catalog\/+product\/)/, "://www.ohpolly.com/media/$1");
 		}
 
+		if (domain_nowww === "brightvibes.com") {
+			// https://brightvibes.com/file/php3LYbaT.jpeg/1200x675
+			//   https://brightvibes.com/file/php3LYbaT.jpeg
+			//   https://brightvibes.com/images/php3LYbaT.jpeg
+			newsrc = src.replace(/(\/file\/+[^/]*)\/+[0-9]+x[0-9]+(?:[?#].*)?$/, "$1");
+			if (newsrc !== src)
+				return newsrc;
+
+			// https://brightvibes.com/image-cache/1200x675-php3LYbaT.jpeg
+			//   https://brightvibes.com/images/php3LYbaT.jpeg
+			newsrc = src.replace(/\/image-cache\/+[0-9]+x[0-9]+-([^/]*\.[^/.]*)(?:[?#].*)?$/, "/images/$1");
+			if (newsrc !== src)
+				return newsrc;
+		}
+
 
 
 
