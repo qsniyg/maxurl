@@ -5661,8 +5661,6 @@ var $$IMU_EXPORT$$;
 			domain === "i.iheart.com" ||
 			// https://cdn-hit.scadigital.io/media/10650/justin-bieber-selena-gomez.jpg?preset=MainImage
 			domain === "cdn-hit.scadigital.io" ||
-			// https://displate.com/displates/2018-01-13/2301ff8c98beecd3d095944ba5ec5952_544fe5884a2b74dba13a63a9a50cb48c.jpg?w=280&h=392
-			(domain_nowww === "displate.com" && src.indexOf("/displates/") >= 0) ||
 			// https://cdn56.picsart.com/169599975000202.jpeg?r1024x1024
 			(domain_nosub === "picsart.com" && domain.match(/cdn[0-9]*\.picsart\.com/)) ||
 			// https://cdn.ndtv.com/tech/gadgets/Electronic_Arts_Dragon_Age_Inquisition_Cover.jpg?output-quality=10
@@ -24498,12 +24496,14 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nosub === "stgy.ovh" &&
-			domain.match(/citynews-riminitoday\.stgy\.ovh/)) {
+			domain.match(/citynews-(?:rimini)?today\.stgy\.ovh/)) {
 			// http://2.citynews-riminitoday.stgy.ovh/~media/horizontal-low/18483820294027/riccione-controlli-polizia-notte-005-2.jpg
 			//   http://2.citynews-riminitoday.stgy.ovh/~media/original-hi/18483820294027/riccione-controlli-polizia-notte-005-2.jpg -- 1000x666 (watermarked, stretched)
 			//   http://2.citynews-riminitoday.stgy.ovh/~media/18483820294027/riccione-controlli-polizia-notte-005-2.jpg -- 667x444
 			// http://2.citynews-riminitoday.stgy.ovh/~media/original-hi/40457162851293/enea-basianini-2016-2.jpg -- 1000x666
 			//   http://2.citynews-riminitoday.stgy.ovh/~media/40457162851293/enea-basianini-2016-2.jpg -- 2500x1667
+			// https://citynews-today.stgy.ovh/~media/horizontal-mid/55860123759782/uccello-2.jpg
+			//   https://citynews-today.stgy.ovh/~media/55860123759782/uccello-2.jpg
 			return src.replace(/\/~media\/[-a-z]+(\/[0-9]+\/)/, "/~media/$1");
 		}
 
@@ -42343,6 +42343,113 @@ var $$IMU_EXPORT$$;
 			// http://storage.ning.com/topology/rest/1.0/file/get/3150267632?profile=RESIZE_48X48&width=32&height=32&crop=1:1
 			//   https://st6.ning.com/topology/rest/1.0/file/get/3150267632?profile=original
 			return src.replace(/(\/file\/+get\/+[0-9]+)\?.*$/, "$1?profile=original");
+		}
+
+		if (domain_nowww === "comedywildlifephoto.com") {
+			// https://www.comedywildlifephoto.com/images/gallery/6/00000656_t.jpg
+			//   https://www.comedywildlifephoto.com/images/gallery/6/00000656_p.jpg
+			return src.replace(/(\/images\/+gallery\/+[0-9]+\/+[0-9]+)_t(\.[^/.]*)(?:[?#].*)?$/, "$1_p$2");
+		}
+
+		if (domain_nowww === "islam.kz") {
+			// http://islam.kz/uploads/images/Z26/jvf/XQQubNtRW7H9WQdL-sm.jpg
+			//   http://islam.kz/uploads/images/Z26/jvf/XQQubNtRW7H9WQdL-md.jpg
+			//   http://islam.kz/uploads/images/Z26/jvf/XQQubNtRW7H9WQdL-lg.jpg
+			return src.replace(/(\/uploads\/+images\/+(?:[^/]{3}\/+){2}[^/.]*)-(?:sm|md)(\.[^/.]*)(?:[?#].*)?$/, "$1-lg$2");
+		}
+
+		if (domain_nowww === "todofondos.com" && options && options.cb && options.do_request) {
+			// http://todofondos.com/bin/fondos/01/28/74c.jpg
+			//   http://todofondos.com/bin/descargas/33860012168527551150389631443677963064281133889904.jpg
+			id = src.replace(/.*\/bin\/+fondos\/+((?:[0-9]{2}\/+){2}[0-9]+)[a-z]\.[^/.]*(?:[?#].*)?$/, "$1");
+			if (id !== src) {
+				options.do_request({
+					url: "http://todofondos.com/f/" + id.replace(/\/+/g, "").replace(/^0*/, ""),
+					method: "GET",
+					headers: {
+						Referer: ""
+					},
+					onload: function(result) {
+						if (result.readyState !== 4)
+							return;
+
+						if (result.status !== 200)
+							return options.cb(null);
+
+						var match = result.responseText.match(/<button[^>]*onclick="\s*javascript:location.href='(https?:\/\/todofondos\.com\/+f\/+[0-9]+\/+[0-9]+x[0-9]+)'"[^>]*>\s*<span[^>]*>\s*<\/span>\s*resoluci.n\s+original/);
+						if (!match)
+							return options.cb(null);
+
+						options.do_request({
+							url: match[1],
+							method: "GET",
+							headers: {
+								Referer: ""
+							},
+							onload: function(result) {
+								if (result.readyState !== 4)
+									return;
+
+								if (result.status !== 200)
+									return options.cb(null);
+
+								var match = result.responseText.match(/<a href="([^"']*\/bin\/descargas\/.*?)"/);
+								if (!match)
+									return options.cb(null);
+
+								return options.cb({
+									url: match[1],
+									extra: {
+										page: result.finalUrl
+									}
+								});
+							}
+						});
+					}
+				});
+
+				return {
+					waiting: true
+				};
+			}
+		}
+
+		if (domain === "d2w9rnfcy7mm78.cloudfront.net") {
+			// https://d2w9rnfcy7mm78.cloudfront.net/872026/large_4eba4e46757780caaa11c9284efdb74f.jpg?1486571063?bc=1
+			//   https://d2w9rnfcy7mm78.cloudfront.net/872026/original_4eba4e46757780caaa11c9284efdb74f.jpg?1486571063?bc=1
+			return src.replace(/(\/[0-9]+\/+)[a-z]+_([0-9a-f]{20,}\.[^/.]*)(?:[?#].*)?$/, "$1original_$2");
+		}
+
+		if (domain === "birkrdnawa.com") {
+			// https://birkrdnawa.com/Content/SiteImages/Article/Thumb/551769355-690316059635782044529873345.jpg
+			//   https://birkrdnawa.com/Content/SiteImages/article/551769355-690316059635782044529873345.jpg
+			return src.replace(/(\/content\/+siteimages\/+[a-z]+\/+)thumb\/+/i, "$1");
+		}
+
+		if (domain === "media.bernardinai.lt") {
+			// http://media.bernardinai.lt/o/cc98a635e9ae2313fa2c9a1c752936dfe864f4ce_article_scale.png
+			//   http://media.bernardinai.lt/o/cc98a635e9ae2313fa2c9a1c752936dfe864f4ce.png
+			return src.replace(/(\/o\/+[0-9a-f]{20,})_[_a-z]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "econet.ru") {
+			// https://econet.ru/media/video_covers/12945/medium.jpg?1569350930
+			//   https://econet.ru/media/video_covers/12945/original.jpg?1569350930
+			return src.replace(/(\/media\/+video_covers\/+[0-9]+\/+)[a-z]+(\.[^/.]*)(?:[?#].*)?$/, "$1original$2");
+		}
+
+		if (domain_nowww === "displate.com") {
+			// https://displate.com/displates/1080418/standard/2019-06-16/eb7d1bbe6641f6efd80e59ae5546f83f_606765ff02f7f7c2f8e6b93069155f79.jpg
+			//   https://displate.com/displates/2019-06-16/eb7d1bbe6641f6efd80e59ae5546f83f_606765ff02f7f7c2f8e6b93069155f79.jpg?w=280
+			//   https://displate.com/displates/2019-06-16/eb7d1bbe6641f6efd80e59ae5546f83f_606765ff02f7f7c2f8e6b93069155f79.jpg
+			return src.replace(/\/displates\/+(?:[0-9]+\/+[a-z]+\/+)?([0-9]{4}-[0-9]{2}-[0-9]{2}\/+[^/]*?)(?:[?#].*)?$/, "/displates/$1");
+		}
+
+		if (domain_nowww === "lens2print.co.uk") {
+			// https://lens2print.co.uk/cms/upload_area/images/152_processed/medium/uovzwgl1gbl617_30_01.jpg
+			//   https://lens2print.co.uk/cms/upload_area/images/152_processed/crop/uovzwgl1gbl617_30_01.jpg -- 1100x734
+			//   https://lens2print.co.uk/cms/upload_area/images/152_processed/large/uovzwgl1gbl617_30_01.jpg -- 1920x1281
+			return src.replace(/(\/cms\/+upload_area\/+images\/+[0-9]+_processed\/+)(?:medium|crop)\/+/, "$1large/");
 		}
 
 
