@@ -25,6 +25,7 @@
 127.net
 15min.lt
 1616.ro
+1624909224.rsc.cdn77.org
 1645110239.rsc.cdn77.org
 180grados.com.mx
 1818lao.com
@@ -270,6 +271,7 @@ api.theweek.com
 apk-dl.com
 apollo-frankfurt.akamaized.net
 apollo-singapore.akamaized.net
+apollo-virginia.akamaized.net
 appdata.hungryapp.co.kr
 appdb.winehq.org
 appspot.com
@@ -412,6 +414,7 @@ aws.revistavanityfair.es
 awsimages.detik.net.id
 axisanimation.com
 axtar.org
+az-deteto.bg
 az616578.vo.msecnd.net
 az743702.vo.msecnd.net
 az877327.vo.msecnd.net
@@ -513,6 +516,7 @@ bigtitscelebrities.com
 bikerpunks.com
 bikini.sbgefree.org
 bilder.bild.de
+bilder.t-online.de
 bildix.mmcloud.se
 billboard-japan.com
 bimage.interpark.com
@@ -520,6 +524,7 @@ binaryapi.ap.org
 bing.com
 bing.net
 biography.com
+birkrdnawa.com
 birminghammail.co.uk
 bit-photos.s3.amazonaws.com
 biztribune.co.kr
@@ -591,6 +596,7 @@ breakingnews.ie
 breaknews.com
 breath-takers.com
 bridesmaidca.ca
+brightvibes.com
 brightwallpapers.com.ua
 bristolpost.co.uk
 britishfashioncouncil.co.uk
@@ -823,6 +829,7 @@ cdn.newsfreezone.co.kr
 cdn.newsinside.kr
 cdn.newsserve.net
 cdn.nsfw.exchange
+cdn.nwmgroups.hu
 cdn.oboi7.com
 cdn.odigo.net
 cdn.okdress.co.nz
@@ -873,6 +880,7 @@ cdn.staticaly.com
 cdn.stereo.vn
 cdn.store-assets.com
 cdn.stylefrizz.com
+cdn.substack.com
 cdn.suwalls.com
 cdn.syn-ch.com
 cdn.teamcococdn.com
@@ -899,6 +907,7 @@ cdn.wallpaperdirect.com
 cdn.wallpaperjam.com
 cdn.wearehairy.com
 cdn.webnoviny.sk
+cdn.webshopapp.com
 cdn.wegow.com
 cdn.wikimg.net
 cdn.worldcosplay.net
@@ -1061,6 +1070,7 @@ coleman-rayner.com
 collinsdictionary.com
 colors.life
 colorwallpaper.net
+comedywildlifephoto.com
 comic.systems
 comicsblog.fr
 comiczone.co.kr
@@ -1187,6 +1197,7 @@ d2pqhom6oey9wx.cloudfront.net
 d2skuhm0vrry40.cloudfront.net
 d2t7cq5f1ua57i.cloudfront.net
 d2u7zfhzkfu65k.cloudfront.net
+d2w9rnfcy7mm78.cloudfront.net
 d2yal1mtmg1ts6.cloudfront.net
 d2yoo3qu6vrk5d.cloudfront.net
 d30fl32nd2baj9.cloudfront.net
@@ -1409,6 +1420,7 @@ ebayimg.com
 ebaystatic.com
 ecestaticos.com
 echosrecordbar.co.za
+econet.ru
 ecp.yusercontent.com
 ecranlarge.com
 edaily.co.kr
@@ -1420,6 +1432,7 @@ edna.cz
 edp24.co.uk
 edu.glogster.com
 edu.kustantiblogs.web.id
+efreenews.com
 efu.com.cn
 egehaber.com
 egn.kr
@@ -1564,6 +1577,7 @@ fantasti.cc
 fantlab.ru
 fap.to
 fapality.com
+fappeningbook.com
 fappenist.com
 fappic.com
 farfarawaysite.com
@@ -1687,6 +1701,7 @@ forbidden-dreams.com
 forbiddenplanet.com
 fortstore.net
 forum.combustionpunks.co.uk
+forum.donanimhaber.com
 forum.purseblog.com
 forumfr.com
 forumhentai.net
@@ -1963,6 +1978,7 @@ hc360.cn
 hdbilder.eu
 hdfondos.eu
 hdfullfilmizle.com
+hdnicewallpapers.com
 hdnux.com
 hdpicsx.com
 hdqwalls.com
@@ -2182,6 +2198,7 @@ ideascdn.lego.com
 idnes.cz
 idol-gazoum.net
 idols69.net
+idposter.com
 iemn.kr
 ifairer.com
 ign.com
@@ -2650,6 +2667,7 @@ img.geinou-img.com
 img.geinoueroch.com
 img.gestion.pe
 img.getbg.net
+img.giaoduc.net.vn
 img.gifmagazine.net
 img.gleauty.com
 img.globuya.com
@@ -2682,6 +2700,7 @@ img.insight.co.kr
 img.iseephoto.com
 img.issuedaily.com
 img.itw01.com
+img.izismile.com
 img.jakpost.net
 img.jiahes.com
 img.jizy.cn
@@ -2755,6 +2774,7 @@ img.noritter.com
 img.nyato.com
 img.nzz.ch
 img.oastatic.com
+img.ohpolly.com
 img.omni7.jp
 img.onestore.co.kr
 img.onvshen.com
@@ -2811,13 +2831,13 @@ img.sycs.net
 img.tenasia.hankyung.com
 img.tf.co.kr
 img.tgchengzi.com
+img.theculturetrip.com
 img.thedailybeast.com
 img.thefactjp.com
 img.theqoo.net
 img.thoibao.today
 img.time2draw.com
 img.timeinc.net
-img.timesnownews.com
 img.topddl.net
 img.topky.sk
 img.tsn.ua
@@ -2861,6 +2881,7 @@ img2.ruliweb.com
 img26.com
 imgadult.com
 imganuncios.mitula.net
+imgbabes.com
 imgbaron.com
 imgbase.info
 imgbox.com
@@ -2874,6 +2895,7 @@ imgcredit.xyz
 imgdino.com
 imgdrive.net
 imgfiles.plaync.com
+imgflare.com
 imggaleri.hurriyet.com.tr
 imghost.io
 imgix.bustle.com
@@ -2981,6 +3003,7 @@ iprx.ten.com.au
 ipstatic.net
 ipx.image-gmkt.com
 iqiyipic.com
+iqna.ir
 ir.joins.com
 ir.marieclaire.com.tw
 iravunk.com
@@ -2989,6 +3012,7 @@ irishmirror.ie
 irishtimes.com
 isanook.com
 ishow.gr
+islam.kz
 islingtongazette.co.uk
 ismcdn.jp
 issuedaily.com
@@ -3004,6 +3028,8 @@ iwinv.net
 ixquick.com
 izaoxing.com
 izhevsk.ru
+izismile.com
+iziva.com
 izum.ua
 j-14.com
 jagranimages.com
@@ -3099,6 +3125,7 @@ keymailrecords.com
 kgimg.com
 kh1.co
 khaandaniha.ir
+khabarban.com
 khaskhabar.s3.amazonaws.com
 khmeread.com
 ki.ill.in.ua
@@ -3204,6 +3231,7 @@ ledevoir.com
 legocdn.com
 legswiki.com
 leit.is
+lens2print.co.uk
 leonardo.osnova.io
 lepoint.fr
 lesarchive.com
@@ -3358,6 +3386,7 @@ media.babesource.com
 media.baselineresearch.com
 media.beliefnet.com
 media.beritagar.id
+media.bernardinai.lt
 media.bizj.us
 media.blogto.com
 media.bongda.com.vn
@@ -3695,6 +3724,7 @@ mycharm.ru
 myclip.vn
 myconfinedspace.com
 mycotopia.net
+mygalleries.allpornmodels.com
 myhaircare.com.au
 myheimat.de
 myidol.com.vn
@@ -3810,6 +3840,7 @@ newstown.co.kr
 newstracklive.com
 newswitch.jp
 newswiz.kr
+newtumbl.com
 nextnature.net
 nextpicturez.com
 nferaclub.com
@@ -3835,6 +3866,7 @@ nimage.newsway.kr
 nimg.ws.126.net
 nin-nin-game.com
 nineentertainment.com.au
+ning.com
 nintendo-europe.com
 nintendoeverything.com
 nintendoworldreport.com
@@ -3970,6 +4002,7 @@ paperblog.com
 paperblog.fr
 paperlief.com
 pardisgame.net
+parsine.com
 parsstock.ir
 pas-wordpress-media.s3.amazonaws.com
 passion.ru
@@ -3980,6 +4013,7 @@ patch.com
 pathwright.imgix.net
 patrasevents.gr
 pauza.sk
+paytm.com
 pbabes.com
 pbase.com
 pbs.twimg.com
@@ -4016,6 +4050,7 @@ phoenixnewtimes.com
 phoronix.net
 photo-erotique.org
 photo-net-production-images.s3.amazonaws.com
+photo-viewbug.s3.amazonaws.com
 photo.addyoursex.com
 photo.elcinema.com.s3.amazonaws.com
 photo.gala.fr
@@ -4082,6 +4117,7 @@ pics.dmm.com
 pics.drillspin.com
 pics.filmaffinity.com
 pics.haircutshairstyles.com
+pics.hotsexygirls.eu
 pics.kinokadr.ru
 pics.me.me
 pics.prcm.jp
@@ -4380,6 +4416,7 @@ rin-city.com
 riotpixels.net
 rip-youth.jp
 rl0.ru
+rlv.zcache.ca
 rlv.zcache.co.nz
 rlv.zcache.com.br
 rmrbcmsonline.peopleapp.com
@@ -4868,6 +4905,7 @@ static6.com
 staticdelivery.nexusmods.com
 staticflickr.com
 staticpopopics.popopics.com
+staticuestudio.blob.core.windows.net
 statis.gamen.vn
 steamstatic.com
 steamusercontent-a.akamaihd.net
@@ -5032,6 +5070,7 @@ tgfimage.rocks
 tgp.inthecrack.com
 th.blogosfere.it
 th.cineblog.it
+th.clickblog.it
 th.fashionblog.it
 th.gossipblog.it
 th.pinkblog.it
@@ -5139,6 +5178,7 @@ tienphong.vn
 timdir.com
 timely-api-public.s3.amazonaws.com
 times.hinet.net
+timesnownews.com
 timesofindia.com
 timpul.md
 tin247.com
@@ -5150,6 +5190,7 @@ tn.smilevideo.jp
 tnastatic.com
 tnews.ir
 tnnthailand.com
+todofondos.com
 todosegundo.com.br
 tokkoro.com
 tokopedia.net
@@ -5227,6 +5268,7 @@ ucarecdn.com
 ucatx.cat
 ucoz.ru
 uecdn.es
+ug-ts.ru
 ugc.kn3.net
 uhd.img.topstarnews.net
 uimg.ngfiles.com
@@ -5304,6 +5346,7 @@ videos-de-celebrites.com
 vidofa.com
 vietbao.vn
 vietnamnet.vn
+viewbug.com
 viewers.heraldcorp.com
 viewsofia.com
 vigbo.com
@@ -5488,6 +5531,7 @@ wsimg.com
 wspicsa.vod.nimo.tv
 wsws.org
 wuaki.tv
+wusa9.com
 ww1.sites-telechargement.com
 ww2.aziani.com
 ww22.zone-telechargement.lol
