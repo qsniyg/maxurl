@@ -4068,6 +4068,9 @@ var $$IMU_EXPORT$$;
 			// https://cdn.apartmenttherapy.info/image/fetch/f_auto,q_auto:eco/https%3A%2F%2Fstorage.googleapis.com%2Fgen-atmedia%2F3%2F2018%2F03%2F43997be9fb4a1acca400bfea464fe31701f17157.jpeg
 			//   https://storage.googleapis.com/gen-atmedia/3/2018/03/43997be9fb4a1acca400bfea464fe31701f17157.jpeg
 			domain === "cdn.apartmenttherapy.info" ||
+			// https://cdn.substack.com/image/fetch/c_limit,q_auto:good,f_auto/https%3A%2F%2Fbucketeer-e05bbc84-baa3-437e-9518-adb32be77984.s3.amazonaws.com%2Fpublic%2Fimages%2F0d3b9fbf-c06e-4b6e-ac84-13c53da04462_952x400.png
+			//   https://bucketeer-e05bbc84-baa3-437e-9518-adb32be77984.s3.amazonaws.com/public/images/0d3b9fbf-c06e-4b6e-ac84-13c53da04462_952x400.png
+			domain === "cdn.substack.com" ||
 			domain === "images.taboola.com") {
 			// https://res.cloudinary.com/emazecom/image/fetch/c_limit,a_ignore,w_320,h_200/https%3A%2F%2Fimg-aws.ehowcdn.com%2F877x500p%2Fs3.amazonaws.com%2Fcme_public_images%2Fwww_ehow_com%2Fi.ehow.com%2Fimages%2Fa04%2Fbd%2Fic%2Fchemical-energy-work-3.1-800x800.jpg
 			// https://images.taboola.com/taboola/image/fetch/f_jpg%2Cq_auto%2Cc_fill%2Cg_faces:auto%2Ce_sharpen/https%3A%2F%2Fwww.gannett-cdn.com%2F-mm-%2F2e56892f6a349ad47192b530425d443fb365e5e9%2Fr%3Dx1803%26c%3D3200x1800%2Fhttps%2Fmedia.gannett-cdn.com%2F37861007001%2F37861007001_5735420050001_5735409691001-vs.jpg%3FpubId%3D37861007001
@@ -6031,6 +6034,8 @@ var $$IMU_EXPORT$$;
 			domain === "i.obozrevatel.com" ||
 			// https://1624909224.rsc.cdn77.org/data/images/full/20509/singer-taylor-swift-c-and-selena-gomez-r-attend-the-58th-grammy-awards-at-staples-center-on-february-15-2016-in-los-angeles-california.jpg?w=600&h=300
 			domain === "1624909224.rsc.cdn77.org" ||
+			// https://assetscdn1.paytm.com/images/catalog/product/K/KI/KIDPRIYA-COLLECPRIY20786186F9A127/1564605875711_0..jpg?imwidth=320&impolicy=hq
+			(domain_nosub === "paytm.com" && /^assetscdn[0-9]*\./.test(domain)) ||
 			// http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
 			// https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
 			src.match(/\/demandware\.static\//) ||
@@ -26020,6 +26025,9 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "rlv.zcache.co.nz" ||
+			// https://rlv.zcache.ca/sarcastic_santa_squirrel_hit_of_holiday_parties_round_paper_coaster-r076e33e54e434c6bae79960b1948d5cb_z6j7x_261.jpg?rlvnet=1&rvtype=content
+			//   https://rlv.zcache.ca/sarcastic_santa_squirrel_hit_of_holiday_parties_round_paper_coaster-r076e33e54e434c6bae79960b1948d5cb_z6j7x_999999999.jpg?rvtype=content -- slightly cropped
+			domain === "rlv.zcache.ca" ||
 			// https://rlv.zcache.com.br/almofada_beijo_do_coelho-r37098fa59ed7493895974ae56e2c6920_i52ni_8byvr_307.jpg?rvtype=content
 			//   https://rlv.zcache.com.br/almofada_beijo_do_coelho-r37098fa59ed7493895974ae56e2c6920_i52ni_8byvr_999999999.jpg?rvtype=content -- 2048x2048 (stretched?)
 			domain === "rlv.zcache.com.br") {
@@ -31235,12 +31243,15 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "wfmynews2.com" ||
+			// https://www.wusa9.com/img/resize/content.wusa9.com/photo/2014/04/17/1397787532000-BlR0hBpCcAASCZn_4397010_ver1.0.jpg?mode=pad&bgcolor=000000&scale=both&width=360&height=203
+			//   http://content.wusa9.com/photo/2014/04/17/1397787532000-BlR0hBpCcAASCZn_4397010_ver1.0.jpg
+			domain_nowww === "wusa9.com" ||
 			// https://www.11alive.com/img/resize/content.11alive.com/photo/2016/12/13/GettyImages-628353178_1481633240721_7330683_ver1.0.jpg?mode=pad&bgcolor=000000&scale=both&width=1140&height=641
 			//   http://content.11alive.com/photo/2016/12/13/GettyImages-628353178_1481633240721_7330683_ver1.0.jpg
 			domain_nowww === "11alive.com") {
 			// https://www.wfmynews2.com/img/resize/media.wfmynews2.com/assets/WFMY/images/f472ad72-388e-42c0-9fce-5517164d6513/f472ad72-388e-42c0-9fce-5517164d6513.png?mode=pad&bgcolor=000000&scale=both&width=750&height=422
 			//   http://media.wfmynews2.com/assets/WFMY/images/f472ad72-388e-42c0-9fce-5517164d6513/f472ad72-388e-42c0-9fce-5517164d6513.png
-			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/img\/+resize\/+([^/]*\.[^/]*\/.*?)(?:[?#].*)?$/, "$1");
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+img\/+resize\/+([^/]*\.[^/]*\/.*?)(?:[?#].*)?$/, "$1");
 			if (newsrc !== src)
 				return add_http(newsrc);
 		}
@@ -42306,6 +42317,32 @@ var $$IMU_EXPORT$$;
 			newsrc = src.replace(/\/image-cache\/+[0-9]+x[0-9]+-([^/]*\.[^/.]*)(?:[?#].*)?$/, "/images/$1");
 			if (newsrc !== src)
 				return newsrc;
+		}
+
+		if (domain === "cdn.webshopapp.com") {
+			// https://cdn.webshopapp.com/shops/72247/files/233281437/700x700x2/image.jpg
+			//   https://cdn.webshopapp.com/shops/72247/files/233281437/image.jpg
+			return src.replace(/(\/files\/+[0-9]+\/+)[0-9]+x[0-9]+(?:x[0-9])?\/+/, "$1");
+		}
+
+		if (domain_nowww === "hdnicewallpapers.com") {
+			// http://www.hdnicewallpapers.com/Walls/Normal/Squirrel/Cutest_Squirrel_Baby_Photo.jpg
+			//   http://www.hdnicewallpapers.com/Walls/Big/Squirrel/Cutest_Squirrel_Baby_Photo.jpg
+			return src.replace(/(:\/\/[^/]*\/+)walls\/+[a-z]+\/+/i, "$1Walls/Big/");
+		}
+
+		if (domain === "img.theculturetrip.com") {
+			// https://img.theculturetrip.com/450x/wp-content/uploads/2018/02/quokka--s--rohrlachflickr.jpg
+			//   https://img.theculturetrip.com/wp-content/uploads/2018/02/quokka--s--rohrlachflickr.jpg
+			return src.replace(/\/[0-9]*x[0-9]*\/+wp-content\/+/, "/wp-content/");
+		}
+
+		if (domain_nosub === "ning.com" && /^(?:st[0-9]*|storage)\./.test(domain)) {
+			// https://st2.ning.com/topology/rest/1.0/file/get/3645963028?profile=RESIZE_48X48&width=32&height=32&crop=1:1
+			//   https://st2.ning.com/topology/rest/1.0/file/get/3645963028?profile=original
+			// http://storage.ning.com/topology/rest/1.0/file/get/3150267632?profile=RESIZE_48X48&width=32&height=32&crop=1:1
+			//   https://st6.ning.com/topology/rest/1.0/file/get/3150267632?profile=original
+			return src.replace(/(\/file\/+get\/+[0-9]+)\?.*$/, "$1?profile=original");
 		}
 
 
