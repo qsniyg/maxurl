@@ -25,9 +25,13 @@
 // @license      Apache-2.0
 // ==/UserScript==
 
-// If you see "A userscript wants to access a cross-origin resource.",
-//   it's used to detect whether or not the destination URL exists before redirecting,
-//   downloading the image for the popup, and querying various websites' API to get larger images.
+// If you see "A userscript wants to access a cross-origin resource.", it's used for:
+//   * Detecting whether or not the destination URL exists before redirecting
+//   * API calls for various websites to find the larger image (e.g. for Flickr)
+//     * You can control this with the "Rules using API calls" setting
+//   * Downloading the image for the popup
+//   * Querying a third-party library
+//     * You can control this with the "Rules using 3rd-party libraries" setting
 // Search for do_request if you want to see what the code does exactly.
 
 
