@@ -49097,6 +49097,11 @@ var $$IMU_EXPORT$$;
 		if (!imgel)
 			return;
 
+		// make sure it's the same general layout
+		if (imgel.parentElement.previousElementSibling ||
+			imgel.parentElement.nextElementSibling.tagName !== "UL")
+			return;
+
 		var status_container_el = document.createElement("div");
 		status_container_el.style.marginBottom = "2em";
 
