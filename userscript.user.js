@@ -5723,7 +5723,8 @@ var $$IMU_EXPORT$$;
 			// https://img.csfd.cz/files/images/creator/photos/160/654/160654750_730831.jpg?w100h132crop
 			domain === "img.csfd.cz" ||
 			// http://img.timesnownews.com/2_1518716279__rend_1_1.jpg?d=300x225
-			domain === "img.timesnownews.com" ||
+			// https://imgk.timesnownews.com/00000656_p_edited_1568362924__rend_4_3.jpg?tr=w-600
+			(domain_nosub === "timesnownews.com" && /^img/.test(domain)) ||
 			// https://img.siksinhot.com/place/1487044026161009.jpg?w=508&h=412&c=Y
 			domain === "img.siksinhot.com" ||
 			// https://mp-seoul-image-production-s3.mangoplate.com/keyword_search/meta/pictures/19bmu--ycm0atk5q.png?fit=around|600:400&crop=600:400;*,*&output-format=jpg&output-quality=80
@@ -5810,6 +5811,8 @@ var $$IMU_EXPORT$$;
 			(domain_nosub === "newsplex.pt" && domain.match(/^cdn[0-9]*\./)) ||
 			// http://static.origos.hu/s/img/i/1712/2017121499.jpg?w=644&h=866
 			(domain === "static.origos.hu" && src.indexOf("/img/") >= 0) ||
+			// https://cdn.nwmgroups.hu/s/img/i/1909//20190913comedy-wildlife-photography-awards-20192.jpg?w=600&h=447
+			(domain === "cdn.nwmgroups.hu" && src.indexOf("/img/") >= 0) ||
 			// http://robertocavada.com/Images/6c732c90-1dee-4d93-968f-47c3bd9d8d9d.jpg?width=385&format=png
 			(domain_nowww === "robertocavada.com" && src.indexOf("/Images/") >= 0) ||
 			// https://images.mncdn.pl/com_calendar/kurt_nilsen.png?resizeimage=w:230,q:97?resizeimage=w:130,q:97
@@ -39816,9 +39819,11 @@ var $$IMU_EXPORT$$;
 			//   https://www.popo8.com/host/data/cimages/2019/04/11/c_pic_155492370454991.jpg
 			// https://web.popo8.com/201809/14/0/1fac9342e0.jpg_b.jpg -- upscaled
 			//   https://web.popo8.com/201809/14/0/1fac9342e0.jpg
+			// https://www.popo8.com/host/data/201909/23/4/p1569223164_62432.jpg_b.jpg
+			//   https://www.popo8.com/host/data/201909/23/4/p1569223164_62432.jpg
 			return src
 				.replace(/(\/data\/+cimages\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}c_pic_[0-9]{8,}\.[^/._]*)_[a-z]\.[^/.]*(?:[?#].*)?$/, "$1")
-				.replace(/(\/[0-9]{6}\/+[0-9]{2}\/+[0-9a-f]\/+[0-9a-f]+\.[^/._]+)_[a-z]\.[^/.]*(?:[?#].*)?$/, "$1");
+				.replace(/(\/[0-9]{6}\/+[0-9]{2}\/+[0-9a-f]\/+(?:[0-9a-f]+|p[0-9]+_[0-9]+)\.[^/._]+)_[a-z]\.[^/.]*(?:[?#].*)?$/, "$1");
 		}
 
 		if (domain_nowww === "navicdn.com") {
@@ -41179,12 +41184,15 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "apollo-frankfurt.akamaized.net" ||
+			// https://apollo-virginia.akamaized.net/v1/files/cmgwghqdmduk3-GT/image%3Bp%3Dthumb
+			//   https://apollo-virginia.akamaized.net/v1/files/cmgwghqdmduk3-GT/image
+			domain === "apollo-virginia.akamaized.net" ||
 			// https://apollo-singapore.akamaized.net/v1/files/jbyitvgly1na-PK/image;s=272x0
 			//   https://apollo-singapore.akamaized.net/v1/files/jbyitvgly1na-PK/image
 			domain === "apollo-singapore.akamaized.net") {
 			// https://apollo-frankfurt.akamaized.net/v1/files/5lwmg93wkg212-KZ/image;s=261x203
 			//   https://apollo-frankfurt.akamaized.net/v1/files/5lwmg93wkg212-KZ/image
-			return src.replace(/(\/files\/+[^/]*\/+image);s=[0-9]+x[0-9]+(?:[?#].*)?$/, "$1");
+			return src.replace(/(\/files\/+[^/]*\/+image)(?:%3B|;)[^/]*(?:[?#].*)?$/, "$1");
 		}
 
 		if (domain_nosub === "jdmagicbox.com" && /^content[0-9]*\./.test(domain)) {
@@ -42452,6 +42460,69 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/cms\/+upload_area\/+images\/+[0-9]+_processed\/+)(?:medium|crop)\/+/, "$1large/");
 		}
 
+		if (domain_nowww === "iqna.ir" ||
+			// https://www.parsine.com//files/fa/news_albums/558075/3835/thumbnails/thm_703444_564.jpg
+			//   https://www.parsine.com//files/fa/news_albums/558075/3835/resized/resized_703444_564.jpg
+			domain_nowww === "parsine.com") {
+			// https://iqna.ir/files/fa/news_albums/3844630/17110/thumbnails/thm_1468471_780.jpg
+			//   https://iqna.ir/files/fa/news_albums/3844630/17110/resized/resized_1468471_780.jpg
+			return src.replace(/(\/files\/+[^/]*\/+news_albums\/+[0-9]+\/+[0-9]+\/+)thumbnails\/+thm_/, "$1resized/resized_");
+		}
+
+		if (domain_nowww === "az-deteto.bg") {
+			// http://az-deteto.bg/pic/article/logo/19459.jpg
+			//   http://az-deteto.bg/pic/article/picture/19459.jpg
+			return src.replace(/(\/pic\/+article\/+)logo\/+/, "$1picture/");
+		}
+
+		if (domain_nosub === "efreenews.com") {
+			// http://chinese.efreenews.com/storage/posts/July2019/705a4b17bbd995e58f47389f684d9c3c-thumb.jpg
+			//   http://chinese.efreenews.com/storage/posts/July2019/705a4b17bbd995e58f47389f684d9c3c.jpg
+			return src.replace(/(\/storage\/+posts\/+[A-Za-z]+[0-9]{4}\/+[0-9a-f]{20,})-thumb(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "iziva.com") {
+			// http://www.iziva.com/media/jact/medium/images/LES%20NUMERIQUES_le-comedy-wildlife-2019-revele-les-animaux-finalistes-avec-humour.jpg
+			//   http://www.iziva.com/images/LES%20NUMERIQUES_le-comedy-wildlife-2019-revele-les-animaux-finalistes-avec-humour.jpg
+			return {
+				url: src.replace(/\/media\/+jact\/+[^/]*\/+images\/+/, "/images/"),
+				headers: {
+					Referer: ""
+				},
+				referer_ok: {
+					same_domain: true
+				}
+			};
+		}
+
+		if ((domain_nosub === "viewbug.com" && /^cdnpt[0-9]*\./.test(domain)) ||
+			// https://photo-viewbug.s3.amazonaws.com/media/mediafiles/2018/08/05/80406319_widepreview400.jpg
+			//   https://photo-viewbug.s3.amazonaws.com/media/mediafiles/2018/08/05/80406319_large1300.jpg
+			amazon_container === "photo-viewbug") {
+			// https://cdnpt01.viewbug.com/media/mediafiles/2018/08/05/80406319_widepreview400.jpg
+			//   https://cdnpt01.viewbug.com/media/mediafiles/2018/08/05/80406319_large1300.jpg
+			return src.replace(/(\/media\/+mediafiles\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}[0-9]+)_widepreview400(\.[^/.]*)(?:[?#].*)?$/, "$1_large1300$2");
+		}
+
+		if (domain === "bilder.t-online.de") {
+			// https://bilder.t-online.de/b/84/93/82/46/id_84938246/920/tid_da/eichhoernchen-geert-weggen-zeigt-die-welt-der-kleinen-nager-.jpg
+			//   https://bilder.t-online.de/b/84/93/82/46/id_84938246/c_raw/tid_da/eichhoernchen-geert-weggen-zeigt-die-welt-der-kleinen-nager-.jpg
+			// https://bilder.t-online.de/b/84/93/55/06/id_84935506/343h/c_raw/tid_da/dieser-nager-hat-etwas-zu-tief-in-die-pusteblume-geblickt-.jpg
+			//   https://bilder.t-online.de/b/84/93/55/06/id_84935506/c_raw/tid_da/dieser-nager-hat-etwas-zu-tief-in-die-pusteblume-geblickt-.jpg
+			// https://bilder.t-online.de/b/86/59/58/20/id_86595820/610_80/tid_da/trauer-in-halle-nach-dem-anschlag-hat-sich-eine-gespenstische-stille-ueber-die-stadt-gelegt-.jpg
+			//   https://bilder.t-online.de/b/86/59/58/20/id_86595820/c_raw/tid_da/trauer-in-halle-nach-dem-anschlag-hat-sich-eine-gespenstische-stille-ueber-die-stadt-gelegt-.jpg
+			return src.replace(/(\/id_[0-9]+\/+)(?:[0-9]+(?:_[0-9]+)?[wh]?\/+)?(?:c_[^/]*\/+)?tid_da\/+/, "$1c_raw/tid_da/");
+		}
+
+		if (domain_nowww === "khabarban.com") {
+			// https://khabarban.com/NewsImage/640/aHR0cDovL3BhcnNpbmUuY29tLy9maWxlcy9mYS9uZXdzX2FsYnVtcy81NTgwNzUvMzgzNS90aHVtYm5haWxzL3RobV83MDM0NDRfNTY0LmpwZw==
+			//   https://www.parsine.com//files/fa/news_albums/558075/3835/thumbnails/thm_703444_564.jpg
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+NewsImage\/+[0-9]+\/+([^/.]{50,})(?:[?#].*)?$/, "$1");
+			if (newsrc !== src) {
+				return base64_decode(newsrc);
+			}
+		}
+
 
 
 
@@ -42906,6 +42977,9 @@ var $$IMU_EXPORT$$;
 			// https://static.telugu.news18.com/optimize/Uo3LUvvuhDZ9Vl5fzqzn2mJrjmA=/0x0/static.telugu.news18.com/telugu/uploads/2018/09/13Radhika-Apte1.jpg
 			//   http://static.telugu.news18.com/telugu/uploads/2018/09/13Radhika-Apte1.jpg
 			domain === "static.telugu.news18.com" ||
+			// https://th.clickblog.it/8IYGXWhZUsRHGseuFvNTAO60he4=/fit-in/600x400/https://media.clickblog.it/4/47d/geert-weggen_squirrel-wishes_00003677.jpg
+			//   https://media.clickblog.it/4/47d/geert-weggen_squirrel-wishes_00003677.jpg
+			domain === "th.clickblog.it" ||
 			src.match(/:\/\/[^/]*\/thumbor\/[^/]*=\//) ||
 			// https://www.orlandosentinel.com/resizer/tREpzmUU7LJX1cbkAN-unm7wL0Y=/fit-in/800x600/top/filters:fill(black)/arc-anglerfish-arc2-prod-tronc.s3.amazonaws.com/public/XC6HBG2I4VHTJGGCOYVPLBGVSM.jpg
 			//   http://arc-anglerfish-arc2-prod-tronc.s3.amazonaws.com/public/XC6HBG2I4VHTJGGCOYVPLBGVSM.jpg
