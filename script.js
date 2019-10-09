@@ -136,7 +136,7 @@ function set_max(obj) {
   if (obj === "loading") {
     maxspanel.innerHTML = "Loading...";
   } else if (obj === "error") {
-    maxspanel.innerHTML = "Unknown error";
+    maxspanel.innerHTML = "<p>Unknown error</p><p>Please <a href=\"https://github.com/qsniyg/maxurl/issues\">file an issue on Github</a> including the URL you entered</p>";
     track_ga("error");
   } else if (obj === "broken") {
     maxspanel.innerHTML = "Broken image";
