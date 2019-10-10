@@ -33,7 +33,15 @@ function process_input() {
     text = inputel.value;
   }
 
-  if (text.match(/^https?:\/\//)) {
+  var valid_url = /^https?:\/\//.test(text);
+
+  try {
+    new URL(text);
+  } catch (e) {
+    valid_url = false;
+  }
+
+  if (valid_url) {
     set_max("loading");
     try {
       currenturl = text;
