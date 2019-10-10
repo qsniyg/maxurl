@@ -252,6 +252,7 @@ var $$IMU_EXPORT$$;
 	var default_options = {
 		fill_object: true,
 		null_if_no_change: false,
+		catch_errors: true,
 		use_cache: true,
 		urlcache_time: 60*60,
 		iterations: 200,
@@ -44147,7 +44148,7 @@ var $$IMU_EXPORT$$;
 
 			var big;
 
-			if (true) {
+			if (options.catch_errors) {
 				try {
 					big = bigimage(currenthref, options);
 				} catch(e) {
