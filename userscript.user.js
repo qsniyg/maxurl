@@ -24722,6 +24722,9 @@ var $$IMU_EXPORT$$;
 				url: src.replace(/(\/+galleries\/+[^/]*\/+[^/]*\/+[0-9]+)_tn(\.[^/.]*)(?:[?#].*)?$/, "$1$2"),
 				headers: {
 					Referer: ""
+				},
+				referer_ok: {
+					same_domain: true
 				}
 			};
 		}
@@ -29122,6 +29125,9 @@ var $$IMU_EXPORT$$;
 					.replace(/(\/image[0-9]{4}\/+[0-9]{2}\/+[0-9]{8}_[a-z]{2}_[0-9]+_[0-9]+\/+[^/_.]*)_[A-Z](\.[^/.]*)(?:[?#].*)?$/, "$1$2"),
 				headers: {
 					Referer: ""
+				},
+				referer_ok: {
+					same_domain_nosub: true
 				}
 			};
 		}
@@ -29444,7 +29450,10 @@ var $$IMU_EXPORT$$;
 			return {
 				url: src.replace(/(\/images\/pinporn\/[0-9]{4}\/[0-9]{2}\/[0-9]{2}\/)(?:300|460|126x126)\//, "$1620/"),
 				headers: {
-					Referer: "https://www.sex.com/"
+					Referer: "https://www.sex.com/" // no referer doesn't work
+				},
+				referer_ok: {
+					same_domain_nosub: true
 				}
 			};
 		}
