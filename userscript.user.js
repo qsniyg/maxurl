@@ -811,7 +811,7 @@ var $$IMU_EXPORT$$;
 		// thanks to acid-crash on github for the idea: https://github.com/qsniyg/maxurl/issues/20
 		mouseover_styles: "",
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-541065461
-		mouseover_wait_use_el: true,
+		mouseover_wait_use_el: false,
 		//mouseover_download_key: ["ctrl", "s"],
 		mouseover_apply_blacklist: false,
 		website_inject_imu: true,
@@ -1226,7 +1226,7 @@ var $$IMU_EXPORT$$;
 		},
 		mouseover_wait_use_el: {
 			name: "Use invisible element when waiting",
-			description: "Creates an invisible element under the cursor when waiting for the popup, waiting cursor rarely works otherwise",
+			description: "Creates an invisible element under the cursor when waiting for the popup instead of a style element (legacy)",
 			requires: {
 				mouseover: true
 			},
