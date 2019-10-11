@@ -46219,6 +46219,7 @@ var $$IMU_EXPORT$$;
 		var waiting = false;
 
 		var waitingel = null;
+		var waitingstyleel = null;
 		var waitingsize = 200;
 
 		var current_chord = [];
@@ -46254,6 +46255,18 @@ var $$IMU_EXPORT$$;
 		var delay_handle_triggering = false;
 		var delay_mouseonly = true;
 
+		var get_nonwaitingel = function(x, y) {
+			var els = document.elementsFromPoint(x, y);
+
+			for (var i = 0; i < els.length; i++) {
+				if (els[i] === waitingel)
+					continue;
+				return els[i];
+			}
+
+			return document.body;
+		};
+
 		function update_waiting() {
 			var x = mouseX;//mouseAbsX;
 			var y = mouseY;//mouseAbsY;
@@ -46265,7 +46278,13 @@ var $$IMU_EXPORT$$;
 			waiting = true;
 
 			if (!settings.mouseover_wait_use_el) {
-				document.body.style.cursor = "wait";
+				if (waitingstyleel) {
+					stop_waiting();
+				}
+
+				waitingstyleel = document.createElement("style");
+				waitingstyleel.innerText = "* {cursor: wait!important}";
+				document.documentElement.appendChild(waitingstyleel);
 				return;
 			}
 
@@ -46311,7 +46330,10 @@ var $$IMU_EXPORT$$;
 			waiting = false;
 
 			if (!settings.mouseover_wait_use_el) {
-				document.body.style.cursor = "default";
+				if (waitingstyleel) {
+					waitingstyleel.parentElement.removeChild(waitingstyleel);
+					waitingstyleel = null;
+				}
 				return;
 			}
 
