@@ -810,6 +810,8 @@ var $$IMU_EXPORT$$;
 		mouseover_links: false,
 		// thanks to acid-crash on github for the idea: https://github.com/qsniyg/maxurl/issues/20
 		mouseover_styles: "",
+		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-541065461
+		mouseover_wait_use_el: true,
 		//mouseover_download_key: ["ctrl", "s"],
 		mouseover_apply_blacklist: false,
 		website_inject_imu: true,
@@ -1221,6 +1223,15 @@ var $$IMU_EXPORT$$;
 			},
 			category: "popup",
 			subcategory: "close_behavior"
+		},
+		mouseover_wait_use_el: {
+			name: "Use invisible element when waiting",
+			description: "Creates an invisible element under the cursor when waiting for the popup, waiting cursor rarely works otherwise",
+			requires: {
+				mouseover: true
+			},
+			category: "popup",
+			subcategory: "popup_other"
 		},
 		mouseover_zoom_behavior: {
 			name: "Popup default zoom",
@@ -4840,6 +4851,9 @@ var $$IMU_EXPORT$$;
 			// https://i2.nicepik.com/files/576/225/299/alberta-aspen-autumn-canada-thumb.jpg
 			//   https://i2.nicepik.com/files/576/225/299/alberta-aspen-autumn-canada.jpg
 			(domain_nosub === "nicepik.com" && domain.match(/^i[0-9]*\./) && src.indexOf("/files/") >= 0) ||
+			// https://babylonbee.com/img/articles/article-4919-1-thumb.jpg
+			//   https://babylonbee.com/img/articles/article-4919-1.jpg
+			(domain_nowww === "babylonbee.com" && /\/img\/+articles\//.test(src)) ||
 			// http://www.womansdiary.gr/articles/1686/774bb14b-4d63-4969-adc4-06322e6b852f-thumb.jpg
 			//   http://www.womansdiary.gr/articles/1686/774bb14b-4d63-4969-adc4-06322e6b852f.jpg
 			(domain_nowww === "womansdiary.gr" && src.match(/\/articles\/[0-9]+\/[-0-9a-f]+-thumb/))) {
@@ -46248,6 +46262,13 @@ var $$IMU_EXPORT$$;
 		}
 
 		function start_waiting() {
+			waiting = true;
+
+			if (!settings.mouseover_wait_use_el) {
+				document.body.style.cursor = "wait";
+				return;
+			}
+
 			if (!waitingel) {
 				waitingel = document.createElement("div");
 				set_el_all_initial(waitingel);
@@ -46275,7 +46296,6 @@ var $$IMU_EXPORT$$;
 				document.documentElement.appendChild(waitingel);
 			}
 
-			waiting = true;
 			waitingel.style.cursor = "wait";
 			waitingel.style.display = "block";
 
@@ -46288,10 +46308,15 @@ var $$IMU_EXPORT$$;
 		}
 
 		function stop_waiting() {
+			waiting = false;
+
+			if (!settings.mouseover_wait_use_el) {
+				document.body.style.cursor = "default";
+				return;
+			}
+
 			if (waitingel)
 				waitingel.style.display = "none";
-
-			waiting = false;
 		}
 
 		function in_clientrect(mouseX, mouseY, rect, border) {
