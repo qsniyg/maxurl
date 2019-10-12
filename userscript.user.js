@@ -46433,7 +46433,6 @@ var $$IMU_EXPORT$$;
 					waitingstyleel.parentElement.removeChild(waitingstyleel);
 					waitingstyleel = null;
 				}
-				return;
 			}
 
 			if (waitingel)
