@@ -10038,7 +10038,7 @@ var $$IMU_EXPORT$$;
 		if (domain_nowww === "dealsanimg.com") {
 			// https://www.dealsanimg.com/d/l400/pict/302538448607_/selena-gomez-poster-6-4-sizes-you-choose-uk-seller-uk.jpg
 			//   https://securethumbs.ebay.com/d/l9999/pict/302538448607_/selena-gomez-poster-6-4-sizes-you-choose-uk-seller-uk.jpg
-			return src.replace(/^[a-z]+:\/\/(?:www\.)?dealsanimg\.com\/d\//, "https://securethumbs.ebay.com/d/");
+			return src.replace(/^[a-z]+:\/\/[^/]*\/+d\//, "https://securethumbs.ebay.com/d/");
 		}
 
 		if (domain === "i.slkimg.com") {
@@ -20751,6 +20751,15 @@ var $$IMU_EXPORT$$;
 			return src.replace(/_[0-9]+-[0-9]+(\.[^/.]*)$/, "$1");
 		}
 
+		if (domain === "review.zafcdn.com") {
+			// https://review.zafcdn.com/upload/zaful/review/20190808/C371FD50B19603DE896AD1C0A1CD3366_640-640.jpg
+			//   https://review.zafcdn.com/upload/zaful/review/20190808/C371FD50B19603DE896AD1C0A1CD3366.jpg
+			// https://review.zafcdn.com/upload/zaful/review/20190623/thumb/52E3CDB0D3DECA880F5C9923F66E822A_thumb.jpg
+			//   https://review.zafcdn.com/upload/zaful/review/20190623/52E3CDB0D3DECA880F5C9923F66E822A.jpg
+			return src.replace(/(\/upload\/+zaful\/+review\/+[0-9]{8}\/+)(?:thumb\/+)?([0-9A-F]{10,})_(?:[0-9]+-[0-9]+|thumb)(\.[^/.]*)(?:[?#].*)?$/,
+							"$1$2$3");
+		}
+
 		if (amazon_container === "ro69-bucket") {
 			// https://ro69-bucket.s3.amazonaws.com/uploads/text_image/image/298198/200x200/resize_image.jpg
 			//   https://ro69-bucket.s3.amazonaws.com/uploads/text_image/image/298198/default/resize_image.jpg
@@ -24046,13 +24055,15 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "xxxporn.pics" ||
 			// https://pics.jjgirls.com/thumbs/celebsonly/rihanna/april-celebrities-sweety/hd-rihanna-5.jpg
 			//   https://pics.jjgirls.com/pictures/celebsonly/rihanna/april-celebrities-sweety/rihanna-5.jpg
+			// https://pics.jjgirls.com/pictures/celebmatrix/selena-gomez/hottest-celebrity-sex-life/hd-selena-gomez-8.jpg
+			//   https://pics.jjgirls.com/pictures/celebmatrix/selena-gomez/hottest-celebrity-sex-life/selena-gomez-8.jpg
 			domain_nosub === "jjgirls.com") {
 			// https://sexhd.pics/photo/celebsonly/rihanna/monday-celebrities-trainer/hd-rihanna-5.jpg
 			//   https://sexhd.pics/gallery/celebsonly/rihanna/monday-celebrities-trainer/rihanna-5.jpg
 			newsrc = src
 				.replace(/(:\/\/[^/]*\/)photo(\/.*\/)hd-([^/]*)$/, "$1gallery$2$3")
 				.replace(/(:\/\/[^/]*\/)image(\/.*\/)hd-([^/]*)$/, "$1xxx$2$3")
-				.replace(/(:\/\/[^/]*\/)thumbs(\/.*\/)hd-([^/]*)$/, "$1pictures$2$3")
+				.replace(/(:\/\/[^/]*\/)(?:thumbs|pictures)(\/.*\/)hd-([^/]*)$/, "$1pictures$2$3")
 				.replace(/(:\/\/[^/]*\/)thumb(\/.*\/)hd-([^/]*)$/, "$1media$2$3")
 				.replace(/(:\/\/[^/]*\/)pic(\/.*\/)hd-([^/]*)$/, "$1pics$2$3");
 
@@ -41319,8 +41330,17 @@ var $$IMU_EXPORT$$;
 				url: src.replace(/(\/+[0-9]+\/+)s([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2"),
 				headers: {
 					Referer: "http://www.kinghost.com/asian/"
+				},
+				referer_ok: {
+					same_domain: true
 				}
 			};
+		}
+
+		if (domain_nowww === "japanesegirl-4you.com") {
+			// http://japanesegirl-4you.com/pacific/2011/0621/thumbs/002.jpg
+			//   http://japanesegirl-4you.com/pacific/2011/0621/002.jpg
+			return src.replace(/(\/[0-9]{4}\/+[0-9]{4}\/+)thumbs\/+/, "$1");
 		}
 
 		if (domain_nowww === "sexygirlcity.com") {
@@ -42549,6 +42569,28 @@ var $$IMU_EXPORT$$;
 			if (newsrc !== src) {
 				return base64_decode(newsrc);
 			}
+		}
+
+		if ((domain_nosub === "imagecollect.com" && /^static[0-9]*\./.test(domain)) ||
+			// http://live-imagecollect.s3.amazonaws.com/thumbnail/23343/424cdfa06d8a768
+			//   http://live-imagecollect.s3.amazonaws.com/preview/23343/424cdfa06d8a768
+			amazon_container === "live-imagecollect") {
+			// https://static3.imagecollect.com/thumbnail/23343/424cdfa06d8a768
+			//   https://static3.imagecollect.com/preview/23343/424cdfa06d8a768
+			newsrc = src.replace(/\/thumbnail\/+([0-9]+\/+[0-9a-f]+)(?:[?#].*)?$/, "/preview/$1");
+			if (newsrc !== src)
+				return {
+					url: newsrc,
+					problems: {
+						watermark: true
+					}
+				};
+		}
+
+		if (domain_nosub === "corriereobjects.it" && /^images[0-9]*\./.test(domain)) {
+			// https://images2.corriereobjects.it/methode_image/2019/08/30/Spettacoli/Foto%20Gallery/LAPR0695_MGZOOM.JPG
+			//   https://images2.corriereobjects.it/methode_image/2019/08/30/Spettacoli/Foto%20Gallery/LAPR0695.JPG -- 683x1024
+			return src.replace(/_MGZOOM(\.[^/.]*)(?:[?#].*)?$/, "$1");
 		}
 
 
