@@ -780,6 +780,8 @@ var $$IMU_EXPORT$$;
 		mouseover_hold_key: ["i"],
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-531549043
 		mouseover_close_on_leave_el: true,
+		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/126
+		mouseover_use_fully_loaded_image: true,
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-530760246
 		mouseover_exclude_page_bg: true,
 		mouseover_minimum_size: 20,
@@ -1011,6 +1013,16 @@ var $$IMU_EXPORT$$;
 			number_unit: "seconds",
 			category: "popup",
 			subcategory: "trigger"
+		},
+		mouseover_use_fully_loaded_image: {
+			name: "Use fully loaded image",
+			description: "Wait until the image has fully loaded before displaying it",
+			requires: {
+				mouseover: true,
+				mouseover_open_behavior: "popup"
+			},
+			category: "popup",
+			subcategory: "open_behavior"
 		},
 		mouseover_exclude_page_bg: {
 			name: "Exclude page background",
@@ -46074,7 +46086,7 @@ var $$IMU_EXPORT$$;
 		var method = "GET";
 		var responseType = "blob";
 
-		if (processing.head) {
+		if (processing.head || processing.incomplete_image) {
 			method = "HEAD";
 			responseType = undefined;
 		}
@@ -46152,6 +46164,45 @@ var $$IMU_EXPORT$$;
 						return;
 					}
 
+					var good_cb = function(img) {
+						cb(img, resp.finalUrl, obj[0], resp);
+					};
+
+					if (processing.incomplete_image) {
+						var img = document.createElement("img");
+						img.src = resp.finalUrl;
+
+						var end_cbs = function() {
+							clearInterval(height_interval);
+							img.onload = null;
+							img.onerror = null;
+						};
+
+						img.onload = function() {
+							end_cbs();
+
+							if (img.naturalWidth === 0 || img.naturalHeight === 0) {
+								return err_cb();
+							}
+
+							good_cb(img);
+						};
+
+						img.onerror = function() {
+							end_cbs();
+							err_cb();
+						};
+
+						var height_interval = setInterval(function() {
+							if (img.naturalWidth !== 0 && img.naturalHeight !== 0) {
+								end_cbs();
+								good_cb(img);
+							}
+						}, 15);
+
+						return;
+					}
+
 					if (!resp.response) {
 						err_cb();
 						return;
@@ -46168,7 +46219,7 @@ var $$IMU_EXPORT$$;
 									return err_cb();
 								}
 
-								cb(img, resp.finalUrl, obj[0], resp);
+								good_cb(img);
 							};
 							img.onerror = function() {
 								err_cb();
@@ -48445,6 +48496,8 @@ var $$IMU_EXPORT$$;
 							usehead = true;
 						} else if (multi && !get_single_setting("replaceimgs_usedata")) {
 							usehead = true;
+						} else if (!multi && !settings.mouseover_use_fully_loaded_image) {
+							processing.incomplete_image = true;
 						}
 
 						if (usehead) {
