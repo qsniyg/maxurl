@@ -46929,7 +46929,15 @@ var $$IMU_EXPORT$$;
 					btn.style.background = "#333";
 					btn.style.border = "3px solid white";
 					btn.style.borderRadius = "10px";
-					btn.style.color = "white";
+
+					// workaround for emojis: https://stackoverflow.com/a/39776303
+					if (text.length === 1 && text.charCodeAt(0) > 256) {
+						btn.style.color = "transparent";
+						btn.style.textShadow = "0 0 0 white";
+					} else {
+						btn.style.color = "white";
+					}
+
 					btn.style.padding = "4px";
 					btn.style.lineHeight = "1em";
 					btn.style.whiteSpace = "nowrap";
