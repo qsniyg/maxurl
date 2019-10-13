@@ -8,6 +8,7 @@ var loading_urls = {};
 var loading_redirects = {};
 var tabs_ready = {};
 var request_headers = {};
+var override_headers = {};
 
 var nir_debug = false;
 var debug = function() {
@@ -179,10 +180,24 @@ var onBeforeSendHeaders_listener = function(details) {
     }
   });
 
-  // This is useful for redirects, which strip IMU headers
-  if (imu_headers.length === 0 && details.requestId in request_headers) {
-    imu_headers = JSON.parse(JSON.stringify(request_headers[details.requestId]));
-    verify_ok = true;
+  if (imu_headers.length === 0) {
+    // This is useful for redirects, which strip IMU headers
+    if (details.requestId in request_headers) {
+      imu_headers = JSON.parse(JSON.stringify(request_headers[details.requestId]));
+      verify_ok = true;
+    } else if (details.tabId in override_headers) {
+      for (const override of override_headers[details.tabId]) {
+        if (override.url === details.url && override.method === details.method) {
+          imu_headers = {};
+          for (var header in override.headers) {
+            imu_headers["IMU--" + header] = override.headers[header];
+          }
+
+          verify_ok = true;
+          break;
+        }
+      }
+    }
   }
 
   if (!verify_ok) {
@@ -224,7 +239,7 @@ var onBeforeSendHeaders_listener = function(details) {
 
 var onBeforeSendHeaders_filter = {
   urls: ['<all_urls>'],
-  types: ['xmlhttprequest', 'main_frame', 'sub_frame']
+  types: ['xmlhttprequest', 'main_frame', 'sub_frame', 'image', 'imageset', 'other']
 };
 
 try {
@@ -417,6 +432,19 @@ chrome.webRequest.onResponseStarted.addListener(function(details) {
     delete loading_redirects[details.tabId];
   }
 
+  if (details.tabId in override_headers) {
+    var new_override = [];
+    var removed = false;
+    for (const override in override_headers[details.tabId]) {
+      if (removed || override.url !== details.url || override.method !== details.method) {
+        new_override.push(override);
+      } else {
+        removed = true;
+      }
+    }
+    override_headers[details.tabId] = new_override;
+  }
+
   if (details.requestId in request_headers) {
     delete request_headers[details.requestId];
   }
@@ -533,6 +561,25 @@ chrome.runtime.onMessage.addListener((message, sender, respond) => {
 
     xhr.send();
     return true;
+  } else if (message.type = "override_next_headers") {
+    debug("override_next_headers", message);
+
+    if (!(sender.tab.id in override_headers))
+      override_headers[sender.tab.id] = [];
+
+    override_headers[sender.tab.id].push({
+      url: message.data.url,
+      method: message.data.method,
+      headers: message.data.headers
+		});
+
+		// In order to prevent races
+		respond({
+			type: "override_next_headers",
+			data: null
+		});
+
+		return true;
   }
 });
 
@@ -645,6 +692,18 @@ function tabremoved(tabid) {
 
   if (tabid === currenttab)
     enable_contextmenu(false);
+
+  if (tabid in loading_urls) {
+    delete loading_urls[tabid];
+  }
+
+  if (tabid in loading_redirects) {
+    delete loading_redirects[tabid];
+  }
+
+  if (tabid in override_headers) {
+    delete override_headers[tabid];
+  }
 }
 
 function tabready(tabid) {

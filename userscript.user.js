@@ -46174,36 +46174,53 @@ var $$IMU_EXPORT$$;
 					};
 
 					if (processing.incomplete_image) {
-						var img = document.createElement("img");
-						img.src = resp.finalUrl;
+						var load_image = function () {
+							var img = document.createElement("img");
+							img.src = resp.finalUrl;
 
-						var end_cbs = function() {
-							clearInterval(height_interval);
-							img.onload = null;
-							img.onerror = null;
-						};
+							var end_cbs = function () {
+								clearInterval(height_interval);
+								img.onload = null;
+								img.onerror = null;
+							};
 
-						img.onload = function() {
-							end_cbs();
-
-							if (img.naturalWidth === 0 || img.naturalHeight === 0) {
-								return err_cb();
-							}
-
-							good_cb(img);
-						};
-
-						img.onerror = function() {
-							end_cbs();
-							err_cb();
-						};
-
-						var height_interval = setInterval(function() {
-							if (img.naturalWidth !== 0 && img.naturalHeight !== 0) {
+							img.onload = function () {
 								end_cbs();
+
+								if (img.naturalWidth === 0 || img.naturalHeight === 0) {
+									return err_cb();
+								}
+
 								good_cb(img);
-							}
-						}, 15);
+							};
+
+							img.onerror = function () {
+								end_cbs();
+								err_cb();
+							};
+
+							var height_interval = setInterval(function () {
+								if (img.naturalWidth !== 0 && img.naturalHeight !== 0) {
+									end_cbs();
+									good_cb(img);
+								}
+							}, 15);
+						};
+
+						if (is_extension) {
+							extension_send_message({
+								type: "override_next_headers",
+								data: {
+									url: resp.finalUrl,
+									method: "GET",
+									headers: headers
+								}
+							}, function() {
+								load_image();
+							});
+						} else {
+							load_image();
+						}
 
 						return;
 					}
