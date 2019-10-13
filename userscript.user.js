@@ -48184,7 +48184,7 @@ var $$IMU_EXPORT$$;
 
 		function update_mouseover_trigger_delay() {
 			delay = settings.mouseover_trigger_delay;
-			if (delay <= 0 || isNaN(delay))
+			if (delay < 0 || isNaN(delay))
 				delay = false;
 			if (typeof delay === "number" && delay >= 10)
 				delay = 10;
