@@ -11074,6 +11074,12 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/[0-9]*)_[a-z](\.[^/.]*)$/, "$1$2");
 		}
 
+		if (domain === "content.erooups.com") {
+			// http://content.erooups.com/img3/20141213/37/wonderful_blonde_girl_in_purple_-_bree_daniels_2_m.jpg?1422153720
+			//   http://content.erooups.com/img3/20141213/37/wonderful_blonde_girl_in_purple_-_bree_daniels_2.jpg?1422153720
+			return src.replace(/(\/img[0-9]*\/+[0-9]{8}\/+[0-9]+\/+[^/]*)_m(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+		}
+
 		if (domain_nosub === "seoul.co.kr" && domain.match(/img[^.]*\.seoul\.co\.kr/)) {
 			// http://img.seoul.co.kr/img/upload/2018/02/04/SSI_20180204221012_V.jpg
 			//   http://img.seoul.co.kr/img/upload/2018/02/04/SSI_20180204221012.jpg
@@ -26225,16 +26231,27 @@ var $$IMU_EXPORT$$;
 			// http://www.hardcoreluv.com/media/images_640/2/pics-of-upskirt-sex/pics-of-upskirt-sex-119145.jpg
 			//   http://www.hardcoreluv.com/media/images/2/pics-of-upskirt-sex/pics-of-upskirt-sex-119145.jpg
 			domain_nowww === "hardcoreluv.com" ||
-			domain_nowww === "pussyspot.net") {
+			// http://cdn2.pussyspot.net/media/images_640/5/kelli-young/kelli-young-1154279.jpg
+			//   http://www.pussyspot.net/media/images/5/kelli-young/kelli-young-1154279.jpg
+			domain_nosub === "pussyspot.net") {
 			// https://t.imageweb.ws/media/thumbs_200/13/12813/1435652.jpg
 			// https://www.imageweb.ws/media/images_640/13/lydia-reed/lydia-reed-1435652.jpg
 			//   https://www.imageweb.ws/media/images/13/lydia-reed/lydia-reed-1435652.jpg
 			// http://www.pussyspot.net/media/images_640/1/mandy-tyler/mandy-tyler-317777.jpg
 			//   http://www.pussyspot.net/media/images/1/mandy-tyler/mandy-tyler-317777.jpg
-			return src.replace(/\/media\/+images_[0-9]+\//, "/media/images/");
+			newsrc = src.replace(/(:\/\/)cdn[0-9]*\.([^/]*\/+media\/+images)/, "$1www.$2");
+			if (newsrc !== src)
+				return newsrc;
+
+			newsrc = src.replace(/\/media\/+images_[0-9]+\//, "/media/images/");
+			if (newsrc !== src)
+				return newsrc;
 		}
 
 		if ((domain === "t.imageweb.ws" ||
+			 // http://www.pezporn.com/media/thumbs_60x60/1/522/24060.jpg
+			 //   http://www.pezporn.com/media/images/1/black-gallery-porn/black-gallery-porn-24060.jpg
+			 domain_nowww === "pezporn.com" ||
 			 // http://cdn1.pussyspot.net/media/thumbs_200/1/526/317777.jpg
 			 //   http://www.pussyspot.net/media/images/1/mandy-tyler/mandy-tyler-317777.jpg
 			 (domain_nosub === "pussyspot.net" && domain.match(/^cdn[0-9]*\./))
@@ -26254,7 +26271,9 @@ var $$IMU_EXPORT$$;
 						if (resp.readyState === 4) {
 							var match = resp.responseText.match(/href="(\/media\/images\/[^"]*)"/);
 							if (match) {
-								options.cb(urljoin("http://www." + domain_nosub + "/", match[1], true).replace(/\?.*/, ""));
+								options.cb({
+									url: urljoin("http://www." + domain_nosub + "/", match[1], true).replace(/\?.*/, "")
+								});
 							} else {
 								options.cb(null);
 							}
@@ -27614,7 +27633,11 @@ var $$IMU_EXPORT$$;
 			//   http://img.barelist.com/images/hosted/tgp/halle-von-051415/pics/halle-von-gives-a-sloppy-blowjob-in-the-kitchen-1.jpg
 			// https://img03.barelist.com/images/hosted/tgp/maserati-112713/thumbs/huge-tits-ebony-hottie-maserati-screws-the-photographer-3.jpg
 			//   https://img03.barelist.com/images/hosted/tgp/maserati-112713/pics/huge-tits-ebony-hottie-maserati-screws-the-photographer-3.jpg
-			return src.replace(/(\/images\/hosted\/[^/]*\/[^/]*\/)thumbs\//, "$1pics/");
+			// http://img02.barelist.com/images/gallery_100_150/Bree_Daniels_509412.jpg
+			//   http://img02.barelist.com/images/gallery/Bree_Daniels_509412.jpg
+			return src
+				.replace(/(\/images\/+hosted\/+[^/]*\/+[^/]*\/+)thumbs\//, "$1pics/")
+				.replace(/\/images\/+gallery_[0-9]+_[0-9]+\//, "/images/gallery/");
 		}
 
 		if (domain === "proxy.imgsmail.ru") {
@@ -28520,6 +28543,9 @@ var $$IMU_EXPORT$$;
 			// https://hdpicsx.com/pics/3276/_thick-curvy-asian-girls-self-shot.jpg
 			//   https://hdpicsx.com/pics/3276/thick-curvy-asian-girls-self-shot.jpg
 			domain_nowww === "hdpicsx.com" ||
+			// https://picsninja.com/pics/2607/_leather-lingerie-and-gloves.jpg
+			//   https://picsninja.com/pics/2607/leather-lingerie-and-gloves.jpg
+			domain_nowww === "picsninja.com" ||
 			// https://repicsx.com/pics/1342/_steampunk-girl.jpg
 			//   https://repicsx.com/pics/1342/steampunk-girl.jpg
 			domain_nowww === "repicsx.com") {
@@ -42704,6 +42730,27 @@ var $$IMU_EXPORT$$;
 			// https://hwnds.ddfstatic.com/ddfcash/content/ddf/659bj/thu/002.jpg
 			//   https://hwnds.ddfstatic.com/ddfcash/content/ddf/659bj/fulm/002.jpg
 			return src.replace(/(\/content\/.*\/)thu\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1fulm/$2");
+		}
+
+		if (domain_nosub === "mlo.me") {
+			// https://www-s.mlo.me/upen/s/2018/201806/20180608/201806081154351718708.jpg
+			//   https://www-s.mlo.me/upen/m/2018/201806/20180608/201806081154351718708.jpg
+			//   https://www-s.mlo.me/upen/l/2018/201806/20180608/201806081154351718708.jpg
+			//   https://www-s.mlo.me/upen/v/2018/201806/20180608/201806081154351718708.jpg -- watermark
+			newsrc = src.replace(/(:\/\/[^/]*\/+upen\/+)[sm]\/+/, "$1l/");
+			if (newsrc !== src) {
+				return newsrc;
+			}
+
+			newsrc = src.replace(/(:\/\/[^/]+\/+upen\/+)l\/+/, "$1v/");
+			if (newsrc !== src) {
+				return {
+					url: newsrc,
+					problems: {
+						watermark: true
+					}
+				};
+			}
 		}
 
 
