@@ -781,7 +781,7 @@ var $$IMU_EXPORT$$;
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-531549043
 		mouseover_close_on_leave_el: true,
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/126
-		mouseover_use_fully_loaded_image: true,
+		mouseover_use_fully_loaded_image: is_extension ? false : true,
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-530760246
 		mouseover_exclude_page_bg: true,
 		mouseover_minimum_size: 20,
