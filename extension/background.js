@@ -188,9 +188,12 @@ var onBeforeSendHeaders_listener = function(details) {
 		} else if (details.tabId in override_headers) {
 			for (const override of override_headers[details.tabId]) {
 				if (override.url === details.url && override.method === details.method) {
-					imu_headers = {};
+					imu_headers = [];
 					for (var header in override.headers) {
-						imu_headers["IMU--" + header] = override.headers[header];
+						imu_headers.push({
+							name: header,
+							value: override.headers[header]
+						});
 					}
 
 					verify_ok = true;
@@ -239,7 +242,7 @@ var onBeforeSendHeaders_listener = function(details) {
 
 var onBeforeSendHeaders_filter = {
 	urls: ['<all_urls>'],
-	types: ['xmlhttprequest', 'main_frame', 'sub_frame', 'image', 'imageset', 'other']
+	types: ['xmlhttprequest', 'main_frame', 'sub_frame', 'image']
 };
 
 try {
