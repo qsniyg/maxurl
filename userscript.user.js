@@ -14347,6 +14347,8 @@ var $$IMU_EXPORT$$;
 			(domain_nowww === "girlspic.net" && src.indexOf("/images/") >= 0) ||
 			// https://tgfimage.rocks/images/2018/01/25/0b7e8a02ed3c2d3611675f678fecead9.md.jpg
 			(domain_nowww === "tgfimage.rocks" && src.indexOf("/images/") >= 0) ||
+			// https://imgfy.net/images/2018/11/27/30-mugdha-godse-hd-picture.md.jpg
+			(domain_nowww === "imgfy.net" && src.indexOf("/images/") >= 0) ||
 			// https://s1.picho.st/2017/08/18/diwd.md.png
 			(domain_nosub === "picho.st" && /^s[0-9]*\./.test(domain)) ||
 			// https://imagenup.com/images/2019/02/05/images.th.jpg
@@ -22865,6 +22867,9 @@ var $$IMU_EXPORT$$;
 				options.do_request({
 					url: requrl,
 					method: "GET",
+					headers: {
+						Referer: ""
+					},
 					onload: function(resp) {
 						if (resp.readyState === 4) {
 							var match = resp.responseText.match(/<img *id=['"]thepic['"][^>]* (?:src|SRC)=['"]([^"']*)['"]/);
@@ -27604,9 +27609,11 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/Content\/wallpapers\/.*\/)thumb-([0-9]+-[0-9]+\.[^/.]*)$/, "$1$2");
 		}
 
-		if (domain === "img.barelist.com") {
+		if (domain_nosub === "barelist.com" && /^img[0-9]*\./.test(domain)) {
 			// http://img.barelist.com/images/hosted/tgp/halle-von-051415/thumbs/Halle-Von-gives-a-sloppy-blowjob-in-the-kitchen-1.jpg
 			//   http://img.barelist.com/images/hosted/tgp/halle-von-051415/pics/halle-von-gives-a-sloppy-blowjob-in-the-kitchen-1.jpg
+			// https://img03.barelist.com/images/hosted/tgp/maserati-112713/thumbs/huge-tits-ebony-hottie-maserati-screws-the-photographer-3.jpg
+			//   https://img03.barelist.com/images/hosted/tgp/maserati-112713/pics/huge-tits-ebony-hottie-maserati-screws-the-photographer-3.jpg
 			return src.replace(/(\/images\/hosted\/[^/]*\/[^/]*\/)thumbs\//, "$1pics/");
 		}
 
@@ -27836,6 +27843,18 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "cdn.xpics.me" ||
+			// http://cdn.pornpic.xxx/2/556/278704/1.jpg
+			//   http://cdn.pornpic.xxx/0/556/278704/1.jpg
+			domain === "cdn.pornpic.xxx" ||
+			// http://cdn.pornpictures.today/2/556/278704/1.jpg
+			//   http://cdn.pornpictures.today/0/556/278704/1.jpg
+			domain === "cdn.pornpictures.today" ||
+			// http://cdn.xnxxpics.top/2/556/278704/1.jpg
+			//   http://cdn.xnxxpics.top/0/556/278704/1.jpg
+			domain === "cdn.xnxxpics.top" ||
+			// https://cdn.hdpornpics.net/1/231/115601/8.jpg
+			//   https://cdn.hdpornpics.net/0/231/115601/8.jpg
+			domain === "cdn.hdpornpics.net" ||
 			// http://cdn.pussy-porn-pics.com/2/231/115601/5.jpg
 			//   http://cdn.pussy-porn-pics.com/0/231/115601/5.jpg
 			domain === "cdn.pussy-porn-pics.com") {
@@ -33160,6 +33179,9 @@ var $$IMU_EXPORT$$;
 			// https://www.youngporno.com/images/galleries/0786/56918/81c010fae412f7524b3cdd29e10052e3-t.jpg
 			//   https://www.youngporno.com/images/galleries/0786/56918/81c010fae412f7524b3cdd29e10052e3.jpg
 			domain_nowww === "youngporno.com" ||
+			// https://www.hoodtube.com/images/galleries/0913/11158/0189d2e127c683b81b3db9c02f29c09b-t.jpg
+			//   https://www.hoodtube.com/images/galleries/0913/11158/0189d2e127c683b81b3db9c02f29c09b.jpg
+			domain_nowww === "hoodtube.com" ||
 			// https://cdn1.images.asianpornmovies.com/galleries/0905/73447/2f9c15636603082eab5608da897d62ee-t.jpg
 			//   https://cdn1.images.asianpornmovies.com/galleries/0905/73447/2f9c15636603082eab5608da897d62ee.jpg
 			domain_nosub === "asianpornmovies.com") {
@@ -41999,6 +42021,9 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "cfake.com" ||
+			// http://krishna24.ru/medias/thumbs/155538743247afe499_cfake.jpg
+			//   http://krishna24.ru/medias/photos/155538743247afe499_cfake.jpg
+			domain_nowww === "krishna24.ru" ||
 			// http://lovedat.ru/medias/thumbs/139318625228d7e3bf_cfake.jpg
 			//   http://lovedat.ru/medias/photos/139318625228d7e3bf_cfake.jpg
 			domain_nowww === "lovedat.ru") {
@@ -42661,6 +42686,24 @@ var $$IMU_EXPORT$$;
 			// http://www.drago99.com/Drago99/SaraJeanUnderwood17/tn28434891_227059267868071_7570589752869519360_n.jpg
 			//   http://www.drago99.com/Drago99/SaraJeanUnderwood17/28434891_227059267868071_7570589752869519360_n.jpg
 			return src.replace(/(\/Drago99\/+[^/]*\/+)tn([^/]*\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain === "galleries.justebonysex.com") {
+			// http://galleries.justebonysex.com/photos/19/tp01.jpg
+			//   http://galleries.justebonysex.com/photos/19/p01.jpg
+			return src.replace(/(\/[0-9]+\/+)t(p[0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "intim-photos.ru") {
+			// http://www.intim-photos.ru/photos/6/3238/thumb/intimnye_laski_temnokozhih_lesbi_1.jpg
+			//   http://www.intim-photos.ru/photos/6/3238/intimnye_laski_temnokozhih_lesbi_1.jpg
+			return src.replace(/(\/photos\/+[0-9]+\/+[0-9]+\/+)thumb\/+/, "$1");
+		}
+
+		if (domain === "hwnds.ddfstatic.com") {
+			// https://hwnds.ddfstatic.com/ddfcash/content/ddf/659bj/thu/002.jpg
+			//   https://hwnds.ddfstatic.com/ddfcash/content/ddf/659bj/fulm/002.jpg
+			return src.replace(/(\/content\/.*\/)thu\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1fulm/$2");
 		}
 
 
