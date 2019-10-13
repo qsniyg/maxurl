@@ -46681,6 +46681,7 @@ var $$IMU_EXPORT$$;
 				div.style.top = "0px";
 				div.style.left = "0px";
 				div.style.display = "block";
+				div.style.backgroundColor = "rgba(255,255,255,.5)";
 
 				/*var styles = settings.mouseover_styles.replace("\n", ";");
 				div.setAttribute("style", styles);
