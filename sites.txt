@@ -371,6 +371,7 @@ assets.vogue.com
 assets.whatson.cityofsydney.nsw.gov.au.s3.amazonaws.com
 assets.wonderlandmagazine.com
 assets.yande.re
+assets.yandycdn.com
 assetsadobe2.com
 astro-austral.cl
 astro-image-resizer.s3.amazonaws.com
@@ -434,6 +435,7 @@ babeprofiles.com
 babesandgirls.com
 babesmachine.com
 babeunion.com
+babylonbee.com
 baca.co.id
 backalleypics.net
 badfon.ru
@@ -450,6 +452,7 @@ baocantho.com.vn
 baonghean.vn
 baouc.com
 barahla.net
+barelist.com
 barking-moonbat.com
 base-ec2if.akamaized.net
 bathingnews.com
@@ -515,6 +518,7 @@ bigcommerce.com
 bigtitscelebrities.com
 bikerpunks.com
 bikini.sbgefree.org
+bikinidream.net
 bilder.bild.de
 bilder.t-online.de
 bildix.mmcloud.se
@@ -773,6 +777,7 @@ cdn.gq.com.mx
 cdn.graziadaily.co.uk
 cdn.handjobjapan.com
 cdn.harpersbazaar.com.sg
+cdn.hdpornpics.net
 cdn.heatworld.com
 cdn.highdefdigest.com
 cdn.himalaya.com
@@ -786,6 +791,7 @@ cdn.igromania.ru
 cdn.iguang.co
 cdn.image.st-hatena.com
 cdn.imagepush.to
+cdn.imvges.com
 cdn.indicium.nu
 cdn.instructables.com
 cdn.itv.com
@@ -841,11 +847,14 @@ cdn.onedala.tv
 cdn.otamart.com
 cdn.panda-gossips.com.s3.amazonaws.com
 cdn.pastemagazine.com
+cdn.pax6.com
 cdn.picson.mobi
 cdn.pixabay.com
 cdn.pocket-lint.com
 cdn.popbela.com
 cdn.poplook.com
+cdn.pornpic.xxx
+cdn.pornpictures.today
 cdn.pornpictureshq.com
 cdn.pornstill.com
 cdn.posh24.se
@@ -912,6 +921,7 @@ cdn.wegow.com
 cdn.wikimg.net
 cdn.worldcosplay.net
 cdn.xn--cumpleaosdefamosos-t0b.com
+cdn.xnxxpics.top
 cdn.xpics.me
 cdn.yavtube.com
 cdn.zoomg.ir
@@ -1086,6 +1096,7 @@ connexionfrance.com
 consolefun.fr
 contactmusic.com
 content.eroo.pl
+content.erooups.com
 content.gulte.com
 content.hardtunes.com
 content.pornpics.com
@@ -1100,6 +1111,7 @@ contrastspace.ru
 coolspotters.com
 coolwallpaperz.info
 copia-di-arte.com
+corriereobjects.it
 cosmo.com.ua
 cosmopolitan.com.hk
 cosmopolitan.de
@@ -1364,6 +1376,7 @@ downloadwallpapers.info
 doyo.cn
 dplhqivlpbfks.cloudfront.net
 dpstreaming.live
+drago99.com
 dramaguru.net
 dramaqueen.com.tw
 draw.acharts.net
@@ -1416,6 +1429,7 @@ earone.it
 eastday.com
 easttouch.my-magazine.me
 easycelebritys.com
+easyhotpics.com
 ebayimg.com
 ebaystatic.com
 ecestaticos.com
@@ -1556,6 +1570,7 @@ f.xza.co.kr
 f3img.gq
 f6j6u6m9.ssl.hwcdn.net
 fabhairypussy.com
+facciabuco.com
 facebook.com
 factnews.mn
 fairfaxstatic.com.au
@@ -1734,6 +1749,7 @@ free2music.com
 free4kwallpapers.com
 freeaddon.com
 freeasianpics.net
+freeones.com
 freeseximages.com
 freexcafe.com
 freight.cargo.site
@@ -1785,6 +1801,8 @@ galleries.cosmid.net
 galleries.gloryhole-initiations.com
 galleries.grooby.com
 galleries.imctrck.com
+galleries.justebonysex.com
+galleries.sophiassexylegwear.com
 gallerist.s3.amazonaws.com
 gallery-cdn.tiscali.it
 gallery.123telugu.com
@@ -1854,9 +1872,11 @@ girlfolio.com
 girlfriend.com.au
 girlofthehour.com
 girlscene.nl
+girlsilove.net
 girlsofdesire.org
 girlspic.net
 girlspolish.jp
+girlstop-extra.info
 girlstop.info
 girlswithmuscle.com
 githubusercontent.com
@@ -2036,6 +2056,7 @@ hollywoodnude.club
 hollywoodtuna.com
 honeydear.my
 honnaimg.elwatannews.com
+hoodtube.com
 hoopchina.com.cn
 horizont.net
 hornyteen.pro
@@ -2079,6 +2100,7 @@ hw-static.com
 hwcdn.ddstatic.com
 hwcdn.funbags.com
 hwcdn.voyeurweb.com
+hwnds.ddfstatic.com
 hypebeast.com
 hypnohub.net
 hypnoweb.net
@@ -2328,6 +2350,7 @@ imagebam.com
 imageban.ru
 imageboom.net
 imagebox.cz.osobnosti.cz
+imagecollect.com
 imagecurl.com
 imagedecode.com
 imageflux.jp
@@ -2592,7 +2615,6 @@ img.avdbs.com.s3.amazonaws.com
 img.aws.ehowcdn.com
 img.aws.la-croix.com
 img.aws.livestrongcdn.com
-img.barelist.com
 img.beatles.ru
 img.beevar.com
 img.benzspirit.com
@@ -2896,6 +2918,7 @@ imgdino.com
 imgdrive.net
 imgfiles.plaync.com
 imgflare.com
+imgfy.net
 imggaleri.hurriyet.com.tr
 imghost.io
 imgix.bustle.com
@@ -2937,6 +2960,7 @@ imgtown.net
 imgtown.pw
 imgur.dcard.tw
 imgwallet.com
+imgz.pw
 imhomir.com
 imimg.com
 immagini.quotidiano.net
@@ -2990,6 +3014,7 @@ internationallovescout.com
 internet.watch.impress.co.jp
 interview365.com
 interview365.mk.co.kr
+intim-photos.ru
 intimatecelebs.com
 intoclassics.net
 intronews.net
@@ -3035,6 +3060,7 @@ j-14.com
 jagranimages.com
 japanator.com
 japanesebeauties.net
+japanesegirl-4you.com
 japanesegirlspictures.com
 japanesepussyclub.com
 japanesethumbs.com
@@ -3182,6 +3208,7 @@ kpopping.com
 kpopselca.com
 kpopultra.net
 krauzer.ru
+krishna24.ru
 ksa-press.com
 kstarfashion.com
 kubrick.htvapps.com
@@ -3247,6 +3274,7 @@ lifesite-cache.s3.amazonaws.com
 lifezette.com
 lilianpacce.s3.amazonaws.com
 lilit.lv
+lilykoh.com
 limnlcdn.akamaized.net
 linda.nl
 lingerieav.com
@@ -3258,6 +3286,7 @@ listal.com
 listas.eleconomista.es
 lithium.com
 litlepups.net
+live-imagecollect.s3.amazonaws.com
 live-stats.me
 live.store.cmcm.com
 liveen.co.kr
@@ -3358,6 +3387,7 @@ max-pix.com
 maxim.com
 maxima.pt
 maximkorea.net
+maximum.fm
 maxpapendieck.com
 mb.cision.com
 mbcsportsplus.com
@@ -3628,6 +3658,7 @@ miyanali.com
 mjolbybillack.se
 mjuznews.com
 mklr.pl
+mlo.me
 mmc.tirto.id
 mmglobalmovies.com
 mmorpg.org.pl
@@ -3646,6 +3677,7 @@ modagid.ru
 modelisto.com
 modnaya.org
 mogaznews.com
+mojeek.com
 moly.hu
 mom50.com
 mondrian.mashable.com
@@ -3905,6 +3937,7 @@ nthumb.cyworld.com
 ntoday.co.kr
 ntv.com.tr
 nuceleb.ru
+nude-beauty.net
 nude-gals.com
 nude-scene.net
 nudeasiancelebs.com
@@ -4099,6 +4132,7 @@ pic.qiantucdn.com
 pic.qianye88.com
 pic.rutube.ru
 pic.sucaibar.com
+pic.templetons.com
 pic.xiami.net
 pic.xiao4j.com
 pic.yupoo.com
@@ -4128,6 +4162,7 @@ picsegg.com
 picservice.qimai.cn
 picshick.com
 picsninja.club
+picsninja.com
 picsofcelebrities.com
 picstatio.com
 pictoa.com
@@ -4235,7 +4270,9 @@ prof.prepics-cdn.com
 programma.sorrisi.com
 prokote.info
 promiflash.de
+promo.foxes.com
 promo.ftvgirls.com
+promo.hollyrandall.com
 promo.mattsmodels.com
 promo.spunkyangels.com
 promshopau.com
@@ -4401,10 +4438,12 @@ retail-jeweller.com
 reunion.orange.fr
 reutersmedia.net
 reveliststatic.com
+review.zafcdn.com
 rex-fox.com
 rexxx.co
 rez.cdn.kul.vn
 rfa.org
+rgsex.com
 rhodiesworld.s3.amazonaws.com
 rightinthebox.com
 rightsinfo.org
@@ -4975,6 +5014,7 @@ stylowi.pl
 suanning.com
 subscriber.telegraph.co.uk
 suburbanamateurs.com
+sugarnips.com
 summary-sv.fc2.com
 summerofdan.net
 sumo.cdn.tv2.no
@@ -5041,6 +5081,7 @@ teamupforkansaskids.com
 techadvisor.co.uk
 techbang.com
 tedsby.com
+teen-angels.org
 teenfilipina.net
 teengalleries.mobi
 teengirl-pics.com
@@ -5167,6 +5208,7 @@ thumbor.forbes.com
 thumbs-prod.si-cdn.com
 thumbs.booru.org
 thumbs.hentai-foundry.com
+thumbs.vaultsex.com
 thumbs.videogamer.com
 thumbs.wikifeet.com
 tialoto.bg
@@ -5175,6 +5217,7 @@ ticket.heraldtribune.com
 ticketshow.ma
 tiedvirgins.com
 tienphong.vn
+tight-clothed.com
 timdir.com
 timely-api-public.s3.amazonaws.com
 times.hinet.net
@@ -5266,6 +5309,7 @@ uc.udn.com.tw
 ucanstarjob.com
 ucarecdn.com
 ucatx.cat
+ucoz.net
 ucoz.ru
 uecdn.es
 ug-ts.ru
@@ -5313,8 +5357,10 @@ user-uploads.aznude.com
 userapi.com
 userimg.tellonym.me
 userstyles.org
+uskinfo.ba
 usmall.us
 utaten.com
+utporn.com
 uuhy.com
 uzone.id
 v.angel-porns.com
@@ -5535,6 +5581,7 @@ wusa9.com
 ww1.sites-telechargement.com
 ww2.aziani.com
 ww22.zone-telechargement.lol
+ww3.aziani.com
 wwcdn.weddingwire.com
 wwe.com
 www1.wdr.de

@@ -4,12 +4,12 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.11.5
-// @description  Finds larger or original versions of images for 5600+ websites
+// @version      0.11.6
+// @description  Finds larger or original versions of images for 5700+ websites
 // @author       qsniyg
 // @homepageURL  https://qsniyg.github.io/maxurl/options.html
 // @supportURL   https://github.com/qsniyg/maxurl/issues
-// @icon         https://raw.githubusercontent.com/qsniyg/maxurl/master/resources/logo_256.png
+// @icon         https://raw.githubusercontent.com/qsniyg/maxurl/b5c5488ec05e6e2398d4e0d6e32f1bbad115f6d2/resources/logo_256.png
 // @include      *
 // @grant        GM.xmlHttpRequest
 // @grant        GM_xmlhttpRequest
@@ -255,6 +255,7 @@ var $$IMU_EXPORT$$;
 	var default_options = {
 		fill_object: true,
 		null_if_no_change: false,
+		catch_errors: true,
 		use_cache: true,
 		urlcache_time: 60*60,
 		iterations: 200,
@@ -782,6 +783,8 @@ var $$IMU_EXPORT$$;
 		mouseover_hold_key: ["i"],
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-531549043
 		mouseover_close_on_leave_el: true,
+		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/126
+		mouseover_use_fully_loaded_image: is_extension ? false : true,
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-530760246
 		mouseover_exclude_page_bg: true,
 		mouseover_minimum_size: 20,
@@ -812,6 +815,8 @@ var $$IMU_EXPORT$$;
 		mouseover_links: false,
 		// thanks to acid-crash on github for the idea: https://github.com/qsniyg/maxurl/issues/20
 		mouseover_styles: "",
+		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-541065461
+		mouseover_wait_use_el: false,
 		//mouseover_download_key: ["ctrl", "s"],
 		mouseover_apply_blacklist: false,
 		website_inject_imu: true,
@@ -1011,6 +1016,16 @@ var $$IMU_EXPORT$$;
 			number_unit: "seconds",
 			category: "popup",
 			subcategory: "trigger"
+		},
+		mouseover_use_fully_loaded_image: {
+			name: "Wait until image is fully loaded",
+			description: "Wait until the image has fully loaded before displaying it",
+			requires: {
+				mouseover: true,
+				mouseover_open_behavior: "popup"
+			},
+			category: "popup",
+			subcategory: "open_behavior"
 		},
 		mouseover_exclude_page_bg: {
 			name: "Exclude page background",
@@ -1223,6 +1238,15 @@ var $$IMU_EXPORT$$;
 			},
 			category: "popup",
 			subcategory: "close_behavior"
+		},
+		mouseover_wait_use_el: {
+			name: "Use invisible element when waiting",
+			description: "Creates an invisible element under the cursor when waiting for the popup instead of a style element (legacy)",
+			requires: {
+				mouseover: true
+			},
+			category: "popup",
+			subcategory: "popup_other"
 		},
 		mouseover_zoom_behavior: {
 			name: "Popup default zoom",
@@ -2180,8 +2204,13 @@ var $$IMU_EXPORT$$;
 		if (is_scripttag) {
 			return cb(null);
 		} else if (is_node) {
-			var lib = require("./lib/" + name + ".js");
-			return cb(lib);
+			try {
+				var lib = require("./lib/" + name + ".js");
+				return cb(lib);
+			} catch (e) {
+				console.error(e);
+				return cb(null);
+			}
 		}
 
 		var do_request = options.do_request;
@@ -3768,6 +3797,7 @@ var $$IMU_EXPORT$$;
 		if (domain === "images.huffingtonpost.com" ||
 			(domain_nowww === "kisax.com" && src.indexOf("/images/") >= 0) ||
 			(domain_nosub === "nicepik.com" && domain.match(/^i[0-9]*\./) && src.indexOf("/files/") >= 0) ||
+			(domain_nowww === "babylonbee.com" && /\/img\/+articles\//.test(src)) ||
 			(domain_nowww === "womansdiary.gr" && src.match(/\/articles\/[0-9]+\/[-0-9a-f]+-thumb/))) {
 			return src.replace(/-thumb(\.[^/.]*)$/, "$1");
 		}
@@ -4697,6 +4727,7 @@ var $$IMU_EXPORT$$;
 			(domain_nowww === "mmglobalmovies.com" && /\/wp-content\/+upload_folders\//.test(src)) ||
 			(domain === "images.in.com" && src.indexOf("/uploads/") >= 0) ||
 			domain === "staticuestudio.blob.core.windows.net" ||
+			domain === "cdn.imvges.com" ||
 			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|images|photos|blogs.dir)|\/+uploads)\//.test(src)
 			/*src.indexOf("/wp/uploads/") >= 0*/
 			) {
@@ -5390,7 +5421,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nosub === "tumblr.com" &&
-			domain.indexOf("media.tumblr.com") > 0) {
+			domain.indexOf("media.tumblr.com") >= 0) {
 
 			newsrc = src
 				.replace(/\.pnj(\?.*)?$/, ".png$1")
@@ -5411,7 +5442,7 @@ var $$IMU_EXPORT$$;
 				return src.replace(/_[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "_512$1");
 
 			if (true || !src.match(/_[0-9]*\.gif$/)) {
-				obj.url = src.replace(/(\/(?:tumblr(?:_(?:static|inline))?_)?[0-9a-zA-Z]+(?:_og)?(?:_r[0-9]*)?)_[0-9]*(\.[^/.]*)$/, "$1_1280$2");
+				obj.url = src.replace(/(\/(?:tumblr(?:_(?:static|inline))?_)?[0-9a-zA-Z]+(?:_og)?(?:_r[0-9]*)?)_[0-9]+(\.[^/.]*)$/, "$1_1280$2");
 				return obj;
 			}
 
@@ -6216,7 +6247,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "dealsanimg.com") {
-			return src.replace(/^[a-z]+:\/\/(?:www\.)?dealsanimg\.com\/d\//, "https://securethumbs.ebay.com/d/");
+			return src.replace(/^[a-z]+:\/\/[^/]*\/+d\//, "https://securethumbs.ebay.com/d/");
 		}
 
 		if (domain === "i.slkimg.com") {
@@ -6739,6 +6770,10 @@ var $$IMU_EXPORT$$;
 			(domain_nowww === "fotofap.net" && src.indexOf("/img/") >= 0) ||
 			domain === "images.vfl.ru") {
 			return src.replace(/(\/[0-9]*)_[a-z](\.[^/.]*)$/, "$1$2");
+		}
+
+		if (domain === "content.erooups.com") {
+			return src.replace(/(\/img[0-9]*\/+[0-9]{8}\/+[0-9]+\/+[^/]*)_m(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
 		}
 
 		if (domain_nosub === "seoul.co.kr" && domain.match(/img[^.]*\.seoul\.co\.kr/)) {
@@ -8321,8 +8356,10 @@ var $$IMU_EXPORT$$;
 			(domain_nowww === "image.farm" && src.indexOf("/images/") >= 0) ||
 			(domain_nowww === "girlspic.net" && src.indexOf("/images/") >= 0) ||
 			(domain_nowww === "tgfimage.rocks" && src.indexOf("/images/") >= 0) ||
+			(domain_nowww === "imgfy.net" && src.indexOf("/images/") >= 0) ||
 			(domain_nosub === "picho.st" && /^s[0-9]*\./.test(domain)) ||
 			domain_nowww === "imagenup.com" ||
+			(domain_nowww === "imgz.pw" && /\/ch\/+images\//.test(src)) ||
 			domain_nowww === "image-bugs.com") {
 			return src.replace(/\.(?:th|md)(\.[^/.]*)$/, "$1");
 		}
@@ -9098,8 +9135,9 @@ var $$IMU_EXPORT$$;
 		if ((domain_nosub === "luxnet.ua" && domain.match(/imagecdn[0-9]*\.luxnet\.ua/)) ||
 			domain_nowww === "beztabu.net" ||
 			domain_nowww === "24tv.ua" ||
+			domain_nowww === "maximum.fm" ||
 			domain_nowww === "lux.fm") {
-			return src.replace(/\/[0-9]+(?:x[0-9]+)?_DIR\//, "/");
+			return src.replace(/\/[0-9]+(?:x[0-9]+|[wh])?_DIR\//, "/");
 		}
 
 		if (domain_nowww === "userstyles.org") {
@@ -11591,6 +11629,7 @@ var $$IMU_EXPORT$$;
 		if ((domain === "www.altcine.com" && src.indexOf("/photo/") >= 0) ||
 			domain === "gallery-cdn.tiscali.it" ||
 			(domain === "img.amur.info" && src.indexOf("/res/") >= 0) ||
+			(domain === "thumbs.vaultsex.com" && src.indexOf("/content/") >= 0) ||
 			(domain_nowww === "dspdaily.com" && src.indexOf("/data/") >= 0)) {
 			return src.replace(/\/[0-9]+x[0-9]+\/([^/]*)$/, "/$1");
 		}
@@ -11753,6 +11792,11 @@ var $$IMU_EXPORT$$;
 
 		if (domain === "imgbp.hotp.jp") {
 			return src.replace(/_[0-9]+-[0-9]+(\.[^/.]*)$/, "$1");
+		}
+
+		if (domain === "review.zafcdn.com") {
+			return src.replace(/(\/upload\/+zaful\/+review\/+[0-9]{8}\/+)(?:thumb\/+)?([0-9A-F]{10,})_(?:[0-9]+-[0-9]+|thumb)(\.[^/.]*)(?:[?#].*)?$/,
+							"$1$2$3");
 		}
 
 		if (amazon_container === "ro69-bucket") {
@@ -12964,7 +13008,7 @@ var $$IMU_EXPORT$$;
 				.replace(/\.[0-9]+x[0-9]+(\.[^/]*)$/, "$1")
 				.replace(/\/resized\/[0-9]+\//, "/");
 			if (newsrc !== src) {
-				return [newsrc, newsrc.replace(/\.jpg$/, ".png")];
+				return add_full_extensions(newsrc);
 			}
 		}
 
@@ -13249,6 +13293,9 @@ var $$IMU_EXPORT$$;
 				options.do_request({
 					url: requrl,
 					method: "GET",
+					headers: {
+						Referer: ""
+					},
 					onload: function(resp) {
 						if (resp.readyState === 4) {
 							var match = resp.responseText.match(/<img *id=['"]thepic['"][^>]* (?:src|SRC)=['"]([^"']*)['"]/);
@@ -13935,7 +13982,7 @@ var $$IMU_EXPORT$$;
 			newsrc = src
 				.replace(/(:\/\/[^/]*\/)photo(\/.*\/)hd-([^/]*)$/, "$1gallery$2$3")
 				.replace(/(:\/\/[^/]*\/)image(\/.*\/)hd-([^/]*)$/, "$1xxx$2$3")
-				.replace(/(:\/\/[^/]*\/)thumbs(\/.*\/)hd-([^/]*)$/, "$1pictures$2$3")
+				.replace(/(:\/\/[^/]*\/)(?:thumbs|pictures)(\/.*\/)hd-([^/]*)$/, "$1pictures$2$3")
 				.replace(/(:\/\/[^/]*\/)thumb(\/.*\/)hd-([^/]*)$/, "$1media$2$3")
 				.replace(/(:\/\/[^/]*\/)pic(\/.*\/)hd-([^/]*)$/, "$1pics$2$3");
 
@@ -14302,6 +14349,9 @@ var $$IMU_EXPORT$$;
 				url: src.replace(/(\/+galleries\/+[^/]*\/+[^/]*\/+[0-9]+)_tn(\.[^/.]*)(?:[?#].*)?$/, "$1$2"),
 				headers: {
 					Referer: ""
+				},
+				referer_ok: {
+					same_domain: true
 				}
 			};
 		}
@@ -14337,7 +14387,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nosub === "hellomagazine.com") {
-			return src.replace(/\/thumb\/+[0-9]+x[0-9]+(?:_[0-9]+)?\/+images\/+/, "/images/");
+			return src.replace(/\/thumb\/+[0-9]+x[0-9]+(?:_[0-9]+)?\/+(images|gallery\/+)/, "/$1");
 		}
 
 		if (domain === "images.vogue.it") {
@@ -14596,16 +14646,23 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "i.girlstop.info" ||
+			domain_nosub === "girlstop-extra.info" ||
 			domain_nowww === "girlstop.info") {
-			return src.replace(/\/thumbs\/[0-9]+px_([^/]*)$/, "/$1");
+			return src.replace(/\/thumbs\/+[0-9]+px_([^/]*)$/, "/$1");
 		}
 
 		if (domain === "img.freeones.com") {
-			return src.replace(/\/pinned_pictures\/pin\//, "/pinned_pictures/original/");
+			newsrc = src.replace(/\/pinned_pictures\/pin\//, "/pinned_pictures/original/");
+			if (newsrc !== src)
+				return newsrc;
 		}
 
 		if (domain === "photos.freeones.com") {
 			return src.replace(/(:\/\/[^/]*\/[^/]*_[^/]*\/+[^/]*\/+[^/]*\/+)([^/]*)(?:[?#].*)?$/, "$1images/$2");
+		}
+
+		if (domain_nosub === "freeones.com" && /img\./.test(domain)) {
+			return src.replace(/(\/photos\/+[0-9]{3}\/+[0-9a-f]{2}\/+[0-9a-f]{2}\/+[^/]{10,}\/+)preview\/+/, "$1big/");
 		}
 
 		if (domain_nowww === "starspics.ru" ||
@@ -15090,11 +15147,18 @@ var $$IMU_EXPORT$$;
 		if (domain_nowww === "imageweb.ws" ||
 			domain_nowww === "pezporn.com" ||
 			domain_nowww === "hardcoreluv.com" ||
-			domain_nowww === "pussyspot.net") {
-			return src.replace(/\/media\/+images_[0-9]+\//, "/media/images/");
+			domain_nosub === "pussyspot.net") {
+			newsrc = src.replace(/(:\/\/)cdn[0-9]*\.([^/]*\/+media\/+images)/, "$1www.$2");
+			if (newsrc !== src)
+				return newsrc;
+
+			newsrc = src.replace(/\/media\/+images_[0-9]+\//, "/media/images/");
+			if (newsrc !== src)
+				return newsrc;
 		}
 
 		if ((domain === "t.imageweb.ws" ||
+			 domain_nowww === "pezporn.com" ||
 			 (domain_nosub === "pussyspot.net" && domain.match(/^cdn[0-9]*\./))
 			) &&
 			src.indexOf("/media/") && options && options.cb && options.do_request) {
@@ -15110,7 +15174,9 @@ var $$IMU_EXPORT$$;
 						if (resp.readyState === 4) {
 							var match = resp.responseText.match(/href="(\/media\/images\/[^"]*)"/);
 							if (match) {
-								options.cb(urljoin("http://www." + domain_nosub + "/", match[1], true).replace(/\?.*/, ""));
+								options.cb({
+									url: urljoin("http://www." + domain_nosub + "/", match[1], true).replace(/\?.*/, "")
+								});
 							} else {
 								options.cb(null);
 							}
@@ -15917,8 +15983,10 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/Content\/wallpapers\/.*\/)thumb-([0-9]+-[0-9]+\.[^/.]*)$/, "$1$2");
 		}
 
-		if (domain === "img.barelist.com") {
-			return src.replace(/(\/images\/hosted\/[^/]*\/[^/]*\/)thumbs\//, "$1pics/");
+		if (domain_nosub === "barelist.com" && /^img[0-9]*\./.test(domain)) {
+			return src
+				.replace(/(\/images\/+hosted\/+[^/]*\/+[^/]*\/+)thumbs\//, "$1pics/")
+				.replace(/\/images\/+gallery_[0-9]+_[0-9]+\//, "/images/gallery/");
 		}
 
 		if (domain === "proxy.imgsmail.ru") {
@@ -16014,8 +16082,9 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/imagecache\/display\/image\//, "/image/");
 		}
 
-		if (domain_nosub === "ucoz.ru") {
-			return src.replace(/(\/_ph\/[0-9]+\/)[0-9]+\/([0-9]+\.[^/.]*)$/, "$1$2");
+		if (domain_nosub === "ucoz.ru" ||
+			domain_nosub === "ucoz.net") {
+			return src.replace(/(\/_ph\/+[0-9]+\/+)[0-9]+\/+([0-9]+\.[^/.]*)$/, "$1$2");
 		}
 
 		if (domain_nowww === "wallpapersdig.com") {
@@ -16057,6 +16126,10 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "cdn.xpics.me" ||
+			domain === "cdn.pornpic.xxx" ||
+			domain === "cdn.pornpictures.today" ||
+			domain === "cdn.xnxxpics.top" ||
+			domain === "cdn.hdpornpics.net" ||
 			domain === "cdn.pussy-porn-pics.com") {
 			return src.replace(/(:\/\/[^/]*\/)[0-9]\//, "$10/");
 		}
@@ -16071,6 +16144,7 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "tokyoteenies.com" ||
 			domain === "cdn.smutie.com" ||
 			domain_nowww === "sexthread.com" ||
+			domain_nowww === "sugarnips.com" ||
 			domain_nowww === "galleryportal.com") {
 			newsrc = src.replace(/(:\/\/[^/]*|\/media)\/+thumbs\/+((?:[0-9a-f]\/){5}[0-9a-f]+\/)[0-9]+x[0-9]+\//, "$1/galleries/$2");
 			if (newsrc !== src)
@@ -16441,6 +16515,7 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "upicsz.com" ||
 			domain_nowww === "xpicse.com" ||
 			domain_nowww === "hdpicsx.com" ||
+			domain_nowww === "picsninja.com" ||
 			domain_nowww === "repicsx.com") {
 			return src.replace(/(\/pics\/+[0-9]+\/+)_([^/]*)$/, "$1$2");
 		}
@@ -16851,6 +16926,9 @@ var $$IMU_EXPORT$$;
 					.replace(/(\/image[0-9]{4}\/+[0-9]{2}\/+[0-9]{8}_[a-z]{2}_[0-9]+_[0-9]+\/+[^/_.]*)_[A-Z](\.[^/.]*)(?:[?#].*)?$/, "$1$2"),
 				headers: {
 					Referer: ""
+				},
+				referer_ok: {
+					same_domain_nosub: true
 				}
 			};
 		}
@@ -17030,7 +17108,10 @@ var $$IMU_EXPORT$$;
 			return {
 				url: src.replace(/(\/images\/pinporn\/[0-9]{4}\/[0-9]{2}\/[0-9]{2}\/)(?:300|460|126x126)\//, "$1620/"),
 				headers: {
-					Referer: "https://www.sex.com/"
+					Referer: "https://www.sex.com/" // no referer doesn't work
+				},
+				referer_ok: {
+					same_domain_nosub: true
 				}
 			};
 		}
@@ -18752,7 +18833,7 @@ var $$IMU_EXPORT$$;
 
 		if (domain_nosub === "coedcherry.com" &&
 			domain.match(/^content[0-9]*\./)) {
-			return src.replace(/\/th[0-9]+x[0-9]+_([^/]*)(?:[?#].*)?$/, "/$1");
+			return src.replace(/\/th[0-9]+x[0-9]+(?:_[a-z])?_([^/]*)(?:[?#].*)?$/, "/$1");
 		}
 
 		if (domain_nowww === "nicsgalleries.com") {
@@ -18966,7 +19047,8 @@ var $$IMU_EXPORT$$;
 				.replace(/(\/[0-9]+\/+[0-9]+\/+p[0-9]+\/+)tn_([^/]*)(?:[?#].*)?$/, "$1$2")
 				.replace(/(\/[0-9]+\/+[0-9]+\/+)thumbnails\/+tn([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1images/$2")
 				.replace(/(\/[0-9]+\/+[0-9]+\/+cg_[0-9]+_[0-9]+\/+)thumbs\/+tn_([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2")
-				.replace(/(:\/\/[^/]*\/[^/]*\/+[^/]*\/+[^/]*\/+)tn([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+				.replace(/(:\/\/[^/]*\/[^/]*\/+[^/]*\/+[^/]*\/+)tn([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2")
+				.replace(/(:\/\/[^/]*\/+[0-9]{3}\/+[0-9]+\/+[0-9]+\/+)t([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1i$2");
 			if (newsrc !== src)
 				return newsrc;
 
@@ -19340,6 +19422,7 @@ var $$IMU_EXPORT$$;
 		if (domain_nowww === "nicepornphotos.com" ||
 			domain_nowww === "suzisporn.com" ||
 			domain_nowww === "youngporno.com" ||
+			domain_nowww === "hoodtube.com" ||
 			domain_nosub === "asianpornmovies.com") {
 			return src.replace(/(\/galleries\/+[0-9]+\/+[0-9]+\/+[0-9a-f]{10,})-t(\.[^/.]*)(?:[?#].*)?$/,
 							   "$1$2");
@@ -19363,6 +19446,10 @@ var $$IMU_EXPORT$$;
 		if (domain === "promo.mattsmodels.com" ||
 			domain_nowww === "amateurindex.com") {
 			return src.replace(/(\/galleries\/+[^/]*\/+[^/]*\/+)thumbs\/+/, "$1");
+		}
+
+		if (domain === "ww3.aziani.com") {
+			return src.replace(/(\/galleries\/+[^/]+\/+)thumbs\/+/, "$1");
 		}
 
 		if (domain === "galleries.allover30.com") {
@@ -22656,7 +22743,9 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "tgp.inthecrack.com") {
-			return src.replace(/\/assets\/+images\/+hosted\/+galleries\/+([-0-9a-f]{20,})/, "/assets/images/hosted/galleries/full/$1");
+			return {
+				url: src.replace(/\/assets\/+images\/+hosted\/+galleries\/+([-0-9a-f]{20,})/, "/assets/images/hosted/galleries/full/$1"),
+			};
 		}
 
 		if (domain === "content.pornstarplatinum.com") {
@@ -23059,6 +23148,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nosub === "breath-takers.com" ||
+			domain === "galleries.sophiassexylegwear.com" ||
 			domain_nosub === "girlfolio.com") {
 			return src.replace(/(\/assets\/+images\/+.*\/)(?:small|medium|large)\/+/, "$1orig/");
 		}
@@ -23605,8 +23695,9 @@ var $$IMU_EXPORT$$;
 		}
 
 
-		if (domain === "hosted.foxes.com") {
-			return src.replace(/(\/fhgs\/+[^/]*\/+)t\/+/, "$1o/");
+		if (domain === "hosted.foxes.com" ||
+			domain === "promo.foxes.com") {
+			return src.replace(/(\/fhgs?\/+[^/]*\/+)t(?:_[0-9]+x[0-9]+)?\/+/, "$1o/");
 		}
 
 		if (domain_nosub === "justjared.com" && /^cdn[0-9]*\.cdn\./.test(domain)) {
@@ -24471,8 +24562,15 @@ var $$IMU_EXPORT$$;
 				url: src.replace(/(\/+[0-9]+\/+)s([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2"),
 				headers: {
 					Referer: "http://www.kinghost.com/asian/"
+				},
+				referer_ok: {
+					same_domain: true
 				}
 			};
+		}
+
+		if (domain_nowww === "japanesegirl-4you.com") {
+			return src.replace(/(\/[0-9]{4}\/+[0-9]{4}\/+)thumbs\/+/, "$1");
 		}
 
 		if (domain_nowww === "sexygirlcity.com") {
@@ -24909,6 +25007,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "cfake.com" ||
+			domain_nowww === "krishna24.ru" ||
 			domain_nowww === "lovedat.ru") {
 			return src.replace(/\/medias\/+thumbs\/+/, "/medias/photos/");
 		}
@@ -25316,6 +25415,112 @@ var $$IMU_EXPORT$$;
 				return base64_decode(newsrc);
 			}
 		}
+
+		if ((domain_nosub === "imagecollect.com" && /^static[0-9]*\./.test(domain)) ||
+			amazon_container === "live-imagecollect") {
+			newsrc = src.replace(/\/thumbnail\/+([0-9]+\/+[0-9a-f]+)(?:[?#].*)?$/, "/preview/$1");
+			if (newsrc !== src)
+				return {
+					url: newsrc,
+					problems: {
+						watermark: true
+					}
+				};
+		}
+
+		if (domain_nosub === "corriereobjects.it" && /^images[0-9]*\./.test(domain)) {
+			return src.replace(/_MGZOOM(\.[^/.]*)(?:[?#].*)?$/, "$1");
+		}
+
+		if (domain_nowww === "mojeek.com") {
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+image\?(?:.*&)?img=([^&]*).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+		}
+
+		if (domain === "pic.templetons.com") {
+			return src.replace(/\/thumb\/+(img_[0-9]+\.[^/.]*)(?:[?#].*)?$/, "/$1");
+		}
+
+		if (domain === "assets.yandycdn.com") {
+			return src.replace(/\/(?:t[0-9]*(?:-compressed)?|Products)\/+/, "/HiRez/");
+		}
+
+		if (domain_nosub === "facciabuco.com" && /^cdn-img-[a-z]\./.test(domain)) {
+			return src.replace(/_[ac](\.[^/.]*)(?:[?#].*)?$/, "_b$1");
+		}
+
+		if (domain_nowww === "uskinfo.ba") {
+			return src.replace(/(\/files\/+[^/]*\/+)thumbs\/+/, "$1");
+		}
+
+		if (domain_nowww === "drago99.com") {
+			return src.replace(/(\/Drago99\/+[^/]*\/+)tn([^/]*\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain === "galleries.justebonysex.com") {
+			return src.replace(/(\/[0-9]+\/+)t(p[0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "intim-photos.ru") {
+			return src.replace(/(\/photos\/+[0-9]+\/+[0-9]+\/+)thumb\/+/, "$1");
+		}
+
+		if (domain === "hwnds.ddfstatic.com") {
+			return src.replace(/(\/content\/.*\/)thu\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1fulm/$2");
+		}
+
+		if (domain_nosub === "mlo.me") {
+			newsrc = src.replace(/(:\/\/[^/]*\/+upen\/+)[sm]\/+/, "$1l/");
+			if (newsrc !== src) {
+				return newsrc;
+			}
+
+			newsrc = src.replace(/(:\/\/[^/]+\/+upen\/+)l\/+/, "$1v/");
+			if (newsrc !== src) {
+				return {
+					url: newsrc,
+					problems: {
+						watermark: true
+					}
+				};
+			}
+		}
+
+		if (domain_nowww === "lilykoh.com") {
+			return src.replace(/(\/content\/+[^/]*\/+)[0-9]+tn([0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nosub === "utporn.com" && /^pics[0-9]*\./.test(domain)) {
+			return src.replace(/(\/albums\/+[0-9]+\/+[0-9]+-[^/]+\/+)[0-9]+(?:x[0-9]+)?\/+/, "$1");
+		}
+
+		if (domain_nowww === "girlsilove.net" ||
+			domain_nowww === "tight-clothed.com" ||
+			domain_nowww === "teen-angels.org" ||
+			domain_nowww === "nude-beauty.net" ||
+			domain_nowww === "rgsex.com") {
+			return src.replace(/(\/galleries\/+[^/]*\/+[^/]*\/+(?:[^/]*\/+)?|\/archive\/+[^/]*\/+.\/+[^/]*\/+[0-9]+\/+)p-([^/]*)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "easyhotpics.com") {
+			return src
+				.replace(/(\/tgp\/+[^/]+\/+[0-9]+\/+)t([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1i$2")
+				.replace(/(\/tgp\/+[^/]*\/+[^/]*\/+)t([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain === "cdn.pax6.com") {
+			return src.replace(/(\/galleries\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}[0-9a-f]{10,}\/+images\/+)t([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1i$2");
+		}
+
+		if (domain === "promo.hollyrandall.com") {
+			return src.replace(/\/img\/+tn-([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/img/img-$1");
+		}
+
+		if (domain_nowww === "bikinidream.net") {
+			return src.replace(/(\/gals\/+[^/]+\/+)th_([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+		}
+
 
 
 
@@ -26442,7 +26647,7 @@ var $$IMU_EXPORT$$;
 
 			var big;
 
-			if (true) {
+			if (options.catch_errors) {
 				try {
 					big = bigimage(currenthref, options);
 				} catch(e) {
@@ -28258,7 +28463,7 @@ var $$IMU_EXPORT$$;
 		var method = "GET";
 		var responseType = "blob";
 
-		if (processing.head) {
+		if (processing.head || processing.incomplete_image) {
 			method = "HEAD";
 			responseType = undefined;
 		}
@@ -28336,6 +28541,62 @@ var $$IMU_EXPORT$$;
 						return;
 					}
 
+					var good_cb = function(img) {
+						cb(img, resp.finalUrl, obj[0], resp);
+					};
+
+					if (processing.incomplete_image) {
+						var load_image = function () {
+							var img = document.createElement("img");
+							img.src = resp.finalUrl;
+
+							var end_cbs = function () {
+								clearInterval(height_interval);
+								img.onload = null;
+								img.onerror = null;
+							};
+
+							img.onload = function () {
+								end_cbs();
+
+								if (img.naturalWidth === 0 || img.naturalHeight === 0) {
+									return err_cb();
+								}
+
+								good_cb(img);
+							};
+
+							img.onerror = function () {
+								end_cbs();
+								err_cb();
+							};
+
+							var height_interval = setInterval(function () {
+								if (img.naturalWidth !== 0 && img.naturalHeight !== 0) {
+									end_cbs();
+									good_cb(img);
+								}
+							}, 15);
+						};
+
+						if (is_extension) {
+							extension_send_message({
+								type: "override_next_headers",
+								data: {
+									url: resp.finalUrl,
+									method: "GET",
+									headers: headers
+								}
+							}, function() {
+								load_image();
+							});
+						} else {
+							load_image();
+						}
+
+						return;
+					}
+
 					if (!resp.response) {
 						err_cb();
 						return;
@@ -28352,7 +28613,7 @@ var $$IMU_EXPORT$$;
 									return err_cb();
 								}
 
-								cb(img, resp.finalUrl, obj[0], resp);
+								good_cb(img);
 							};
 							img.onerror = function() {
 								err_cb();
@@ -28499,6 +28760,7 @@ var $$IMU_EXPORT$$;
 		var waiting = false;
 
 		var waitingel = null;
+		var waitingstyleel = null;
 		var waitingsize = 200;
 
 		var current_chord = [];
@@ -28534,7 +28796,22 @@ var $$IMU_EXPORT$$;
 		var delay_handle_triggering = false;
 		var delay_mouseonly = true;
 
+		var get_nonwaitingel = function(x, y) {
+			var els = document.elementsFromPoint(x, y);
+
+			for (var i = 0; i < els.length; i++) {
+				if (els[i] === waitingel)
+					continue;
+				return els[i];
+			}
+
+			return document.body;
+		};
+
 		function update_waiting() {
+			if (!waitingel)
+				return;
+
 			var x = mouseX;//mouseAbsX;
 			var y = mouseY;//mouseAbsY;
 			waitingel.style.left = (x - (waitingsize / 2)) + "px";
@@ -28542,6 +28819,19 @@ var $$IMU_EXPORT$$;
 		}
 
 		function start_waiting() {
+			waiting = true;
+
+			if (!settings.mouseover_wait_use_el) {
+				if (waitingstyleel) {
+					stop_waiting();
+				}
+
+				waitingstyleel = document.createElement("style");
+				waitingstyleel.innerText = "* {cursor: wait!important}";
+				document.documentElement.appendChild(waitingstyleel);
+				return;
+			}
+
 			if (!waitingel) {
 				waitingel = document.createElement("div");
 				set_el_all_initial(waitingel);
@@ -28569,7 +28859,6 @@ var $$IMU_EXPORT$$;
 				document.documentElement.appendChild(waitingel);
 			}
 
-			waiting = true;
 			waitingel.style.cursor = "wait";
 			waitingel.style.display = "block";
 
@@ -28582,10 +28871,17 @@ var $$IMU_EXPORT$$;
 		}
 
 		function stop_waiting() {
+			waiting = false;
+
+			if (!settings.mouseover_wait_use_el) {
+				if (waitingstyleel) {
+					waitingstyleel.parentElement.removeChild(waitingstyleel);
+					waitingstyleel = null;
+				}
+			}
+
 			if (waitingel)
 				waitingel.style.display = "none";
-
-			waiting = false;
 		}
 
 		function in_clientrect(mouseX, mouseY, rect, border) {
@@ -28757,6 +29053,7 @@ var $$IMU_EXPORT$$;
 				div.style.top = "0px";
 				div.style.left = "0px";
 				div.style.display = "block";
+				div.style.backgroundColor = "rgba(255,255,255,.5)";
 
 				/*var styles = settings.mouseover_styles.replace("\n", ";");
 				div.setAttribute("style", styles);
@@ -29027,7 +29324,15 @@ var $$IMU_EXPORT$$;
 					btn.style.background = "#333";
 					btn.style.border = "3px solid white";
 					btn.style.borderRadius = "10px";
-					btn.style.color = "white";
+
+					// workaround for emojis: https://stackoverflow.com/a/39776303
+					if (text.length === 1 && text.charCodeAt(0) > 256) {
+						btn.style.color = "transparent";
+						btn.style.textShadow = "0 0 0 white";
+					} else {
+						btn.style.color = "white";
+					}
+
 					btn.style.padding = "4px";
 					btn.style.lineHeight = "1em";
 					btn.style.whiteSpace = "nowrap";
@@ -30251,7 +30556,7 @@ var $$IMU_EXPORT$$;
 
 		function update_mouseover_trigger_delay() {
 			delay = settings.mouseover_trigger_delay;
-			if (delay <= 0 || isNaN(delay))
+			if (delay < 0 || isNaN(delay))
 				delay = false;
 			if (typeof delay === "number" && delay >= 10)
 				delay = 10;
@@ -30594,6 +30899,8 @@ var $$IMU_EXPORT$$;
 							usehead = true;
 						} else if (multi && !get_single_setting("replaceimgs_usedata")) {
 							usehead = true;
+						} else if (!multi && !settings.mouseover_use_fully_loaded_image) {
+							processing.incomplete_image = true;
 						}
 
 						if (usehead) {
@@ -30803,22 +31110,40 @@ var $$IMU_EXPORT$$;
 						if (data.data.img) {
 							source.el.src = data.data.img.src;
 						} else if (data.data.obj) {
-							if (settings.replaceimgs_wait_fullyloaded) {
-								// Preload the image, as adding onload/onerror to existing images won't fire the event
-								var image = new Image();
-								var finish_image = function() {
-									source.el.src = image.src;
+							var load_image = function() {
+								if (settings.replaceimgs_wait_fullyloaded) {
+									// Preload the image, as adding onload/onerror to existing images won't fire the event
+									var image = new Image();
+									var finish_image = function () {
+										source.el.src = image.src;
+										finish_img();
+									};
+
+									image.onload = finish_image;
+									image.onerror = finish_img;
+									image.src = data.data.obj.url;
+								} else {
+									source.el.src = data.data.obj.url;
 									finish_img();
-								};
+								}
+							};
 
-								image.onload = finish_image;
-								image.onerror = finish_img;
-								image.src = data.data.obj.url;
-
-								waiting = true;
+							if (is_extension) {
+								extension_send_message({
+									type: "override_next_headers",
+									data: {
+										url: data.data.obj.url,
+										headers: data.data.obj.headers,
+										method: "GET"
+									}
+								}, function() {
+									load_image();
+								});
 							} else {
-								source.el.src = data.data.obj.url;
+								load_image();
 							}
+
+							waiting = true;
 						}
 
 						if (!waiting)
