@@ -1015,7 +1015,7 @@ var $$IMU_EXPORT$$;
 			subcategory: "trigger"
 		},
 		mouseover_use_fully_loaded_image: {
-			name: "Use fully loaded image",
+			name: "Wait until image is fully loaded",
 			description: "Wait until the image has fully loaded before displaying it",
 			requires: {
 				mouseover: true,
