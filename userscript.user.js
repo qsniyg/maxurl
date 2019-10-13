@@ -48737,22 +48737,40 @@ var $$IMU_EXPORT$$;
 						if (data.data.img) {
 							source.el.src = data.data.img.src;
 						} else if (data.data.obj) {
-							if (settings.replaceimgs_wait_fullyloaded) {
-								// Preload the image, as adding onload/onerror to existing images won't fire the event
-								var image = new Image();
-								var finish_image = function() {
-									source.el.src = image.src;
+							var load_image = function() {
+								if (settings.replaceimgs_wait_fullyloaded) {
+									// Preload the image, as adding onload/onerror to existing images won't fire the event
+									var image = new Image();
+									var finish_image = function () {
+										source.el.src = image.src;
+										finish_img();
+									};
+
+									image.onload = finish_image;
+									image.onerror = finish_img;
+									image.src = data.data.obj.url;
+								} else {
+									source.el.src = data.data.obj.url;
 									finish_img();
-								};
+								}
+							};
 
-								image.onload = finish_image;
-								image.onerror = finish_img;
-								image.src = data.data.obj.url;
-
-								waiting = true;
+							if (is_extension) {
+								extension_send_message({
+									type: "override_next_headers",
+									data: {
+										url: data.data.obj.url,
+										headers: data.data.obj.headers,
+										method: "GET"
+									}
+								}, function() {
+									load_image();
+								});
 							} else {
-								source.el.src = data.data.obj.url;
+								load_image();
 							}
+
+							waiting = true;
 						}
 
 						if (!waiting)
