@@ -42895,6 +42895,18 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/posts\/+[^/]+\/+)th_([^/]*)(?:[?#].*)?$/, "$1$2");
 		}
 
+		if (domain_nowww === "picua.org") {
+			// https://picua.org/thumbs/2017-08/22/jbdy4v3oit757ebhguwhf4mrw.jpg
+			//   https://picua.org/img/2017-08/22/jbdy4v3oit757ebhguwhf4mrw.jpg
+			return src.replace(/(:\/\/[^/]*\/+)thumbs\/+([0-9]{4}-[0-9]{2}\/+)/, "$1img/$2");
+		}
+
+		if (domain) {
+			// https://www.mariuszlewandowski.pl/environment/cache/images/300_300_productGfx_217b8de435ff985c8893ff43f039aa77.jpg
+			//   https://www.mariuszlewandowski.pl/userdata/gfx/217b8de435ff985c8893ff43f039aa77.jpg
+			return src.replace(/\/environment\/+cache\/+images\/+[0-9]+_[0-9]+_productGfx_/, "/userdata/gfx/");
+		}
+
 
 
 
