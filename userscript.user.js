@@ -2201,8 +2201,13 @@ var $$IMU_EXPORT$$;
 		if (is_scripttag) {
 			return cb(null);
 		} else if (is_node) {
-			var lib = require("./lib/" + name + ".js");
-			return cb(lib);
+			try {
+				var lib = require("./lib/" + name + ".js");
+				return cb(lib);
+			} catch (e) {
+				console.error(e);
+				return cb(null);
+			}
 		}
 
 		var do_request = options.do_request;
