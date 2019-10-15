@@ -639,6 +639,12 @@ if (true) {
           if (comment_data.author.name.toLowerCase() !== "maximagebot")
             return;
 
+          // only delete top-level comments, if the parent is a comment, don't delete it
+          // parent should be t3_ (link)
+          if (/^t1_/.test(comment_data.parent_id)) {
+            return;
+          }
+
           r.getComment(comment_data.parent_id).fetch().then((post_data) => {
             if (!post_data.author ||
                 !message_data.author ||
