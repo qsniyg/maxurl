@@ -7736,6 +7736,9 @@ var $$IMU_EXPORT$$;
 			// http://piccn.ihuaben.com/pic/mark/201903/1552277921814-Vi79361274_540-540.jpeg@200w
 			//   http://piccn.ihuaben.com/pic/mark/201903/1552277921814-Vi79361274_540-540.jpeg
 			(domain === "piccn.ihuaben.com" && src.indexOf("/pic/") >= 0) ||
+			// http://oss2.lanlanlife.com/188de9f8b0de57a55b503fca041f1781_846x564.jpg@!2-w750-80-jpg
+			//   http://oss2.lanlanlife.com/188de9f8b0de57a55b503fca041f1781_846x564.jpg
+			(domain_nosub === "lanlanlife.com" && /^oss[0-9]*\./.test(domain)) ||
 			// http://img.sdxapp.com/say/source/12/d2/12d2bb054022c4fc1038f3e4d279353d.jpg@600w_400h
 			//   http://img.sdxapp.com/say/source/12/d2/12d2bb054022c4fc1038f3e4d279353d.jpg
 			domain === "img.sdxapp.com") {
@@ -24168,6 +24171,12 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/photo\/+watch4beauty\/+.*\/+)thumbnail([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1middle$2");
 		}
 
+		if (domain_nowww === "nakedwench.com") {
+			// http://nakedwench.com/galleries/2018/happyfallyall/thumbnail001.jpg
+			//   http://nakedwench.com/galleries/2018/happyfallyall/middle001.jpg
+			return src.replace(/(\/galleries\/+[0-9]{4}\/+[^/]*\/+)thumbnail([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1middle$2");
+		}
+
 		if (domain === "pics.tubetubetube.com" ||
 			// https://pics.javbtc.com/thumbs/hardx/adriana-chechik/downloadporn-brunette-sxy-womens/hd-adriana-chechik-2.jpg
 			//   https://pics.javbtc.com/pornpics/hardx/adriana-chechik/downloadporn-brunette-sxy-womens/adriana-chechik-2.jpg
@@ -24850,6 +24859,9 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "redcarpetnudes.com" ||
+			// https://www.shamelesscelebrities.com/xhc/1476180120-selena-gomez-pictures-celebrity-hot-slut-sea-teen-perfect-latin/selena-gomez-pictures-celebrity-hot-slut-sea-teen-perfect-latin-1-tn.jpg
+			//   https://www.shamelesscelebrities.com/xhc/1476180120-selena-gomez-pictures-celebrity-hot-slut-sea-teen-perfect-latin/selena-gomez-pictures-celebrity-hot-slut-sea-teen-perfect-latin-1.jpg
+			domain_nowww === "shamelesscelebrities.com" ||
 			// http://cdn.onedala.tv/uploads/article-image/201711/20171110071239W3npxg0y-tn.jpg -- upscaled?
 			//   http://cdn.onedala.tv/uploads/article-image/201711/20171110071239W3npxg0y.jpg
 			domain === "cdn.onedala.tv") {
@@ -32109,9 +32121,13 @@ var $$IMU_EXPORT$$;
 		if (domain === "data.okinny.heypo.net") {
 			// http://data.okinny.heypo.net/image/thumb/8ce440263ef7d6c4996467be34ea8011.jpg
 			//   http://data.okinny.heypo.net/image/large/8ce440263ef7d6c4996467be34ea8011.jpg
+			// http://data.okinny.heypo.net/image/thumb/7ffaf71fd5f997e70d57861c5b097999.jpg
+			//   http://data.okinny.heypo.net/image/large/7ffaf71fd5f997e70d57861c5b097999.jpg
 			return {
 				url: src.replace(/\/image\/+thumb\/+([0-9a-f]+\.[^/.]*)(?:[?#].*)?$/, "/image/large/$1"),
-				can_head: false
+				headers: {
+					Referer: "https://okinny.heypo.net/image/12345"
+				}
 			};
 		}
 
@@ -43049,6 +43065,23 @@ var $$IMU_EXPORT$$;
 			// http://stezor-img-res.s3-website.eu-central-1.amazonaws.com/600x0/0eefab17-aa8b-4f8e-9017-7b9442d1ee9e
 			//   http://stezor-img-res.s3-website.eu-central-1.amazonaws.com/0eefab17-aa8b-4f8e-9017-7b9442d1ee9e
 			return src.replace(/\/[0-9]+x[0-9]+\/+([-0-9a-f]{20,})(?:[?#].*)?$/, "/$1");
+		}
+
+		if (domain === "cdn.letrasdemusicas.fm") {
+			// https://cdn.letrasdemusicas.fm/production/images/2014/10/cover_After%20School-ec171db9-48f1-45db-899a-1d9c9fd648ad.jpg
+			//   https://cdn.letrasdemusicas.fm/production/images/2014/10/After%20School-ec171db9-48f1-45db-899a-1d9c9fd648ad.jpg
+			return src.replace(/(\/production\/+images\/+[0-9]{4}\/+[0-9]{2}\/+)cover_([^/]*\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain === "img.erogazou.gallery" ||
+			// http://img-fdc03.erogazounosuke.com/post3/4691/s/11.jpg
+			//   http://img-fdc03.erogazounosuke.com/post3/4691/b/11.jpg
+			domain_nosub === "erogazounosuke.com") {
+			// https://img.erogazou.gallery/articles2/4777/s/29.jpg
+			//   https://img.erogazou.gallery/articles2/4777/b/29.jpg
+			// https://img.erogazou.gallery/articles/987/s/01.jpg
+			//   https://img.erogazou.gallery/articles/987/b/01.jpg
+			return src.replace(/(\/[a-z]+[0-9]*\/+[0-9]+\/+)s(\/+[0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1b$2");
 		}
 
 
