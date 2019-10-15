@@ -49848,7 +49848,9 @@ var $$IMU_EXPORT$$;
 
 			if (is_userscript &&
 				window.location.href.match(/^https?:\/\/(?:www\.)?greasyfork\.org\/+[^/]*\/+scripts\/+36662(?:-[^/]*)?(?:[?#].*)?$/)) {
-				do_greasyfork_page();
+				onload(function() {
+					do_greasyfork_page();
+				});
 			}
 
 			do_mouseover();
