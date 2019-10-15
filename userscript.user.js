@@ -11249,18 +11249,27 @@ var $$IMU_EXPORT$$;
 			(domain.match(/^assets[0-9]*\./) ||
 			 // http://moviesmedia.ign.com/movies/image/article/996/996170/transformers-revenge-of-the-fallen-20090618000150436_640w.jpg
 			 //   http://moviesmedia.ign.com/movies/image/article/996/996170/transformers-revenge-of-the-fallen-20090618000150436.jpg
-			 domain.match(/^moviesmedia\./))) {
+			 // https://ps3media.ign.com/ps3/image/object/114/114861/Saints-Row-2-Greatest-Hits_US_ESRB_PS3.jpg?width=188
+			 //   https://ps3media.ign.com/ps3/image/object/114/114861/Saints-Row-2-Greatest-Hits_US_ESRB_PS3.jpg
+			 // doesn't work for all:
+			 // http://media.ign.com/games/image/object/143/14304363/Saints-Row-2_LOGOboxart_160w.jpg
+			 //   http://media.ign.com/games/image/object/143/14304363/Saints-Row-2_LOGOboxart.jpg -- doesn't work
+			 domain.match(/^[^.]*media\./))) {
 			// http://assets1.ignimgs.com/2018/02/02/ac-origins-the-hidden-ones---button-1517533272073_180h.jpg
+			//   http://assets1.ignimgs.com/2018/02/02/ac-origins-the-hidden-ones---button-1517533272073.jpg
 			// http://assets1.ignimgs.com/2018/02/06/nightinthewoods-deck-ff6c25-1517944777381_358w.jpg
+			//   http://assets1.ignimgs.com/2018/02/06/nightinthewoods-deck-ff6c25-1517944777381.jpg
 			// http://assets1.ignimgs.com/2017/05/09/1-1-1494366320371_grande.jpg
 			//   http://assets1.ignimgs.com/2017/05/09/1-1-1494366320371.jpg
 			// https://assets.ign.com/thumbs/userUploaded/2014/9/19/20823568_fatalframewiiu_tgs2014trailer_ign-1411150047803_medium.jpg
 			// https://assets1.ignimgs.com/thumbs/userUploaded/2019/6/9/ignnow060919-cyberpunkblogroll-1560126294042.jpg?fit=bounds&dpr=1&quality=75&crop=16%3A9&width=300&format=pjpg
 			//   https://assets1.ignimgs.com/thumbs/userUploaded/2019/6/9/ignnow060919-cyberpunkblogroll-1560126294042.jpg
 			//return src.replace(/_[0-9]*[wh](\.[^/.]*)$/, "$1");
-			return src
-				.replace(/_[^-_/.]*(\.[^/.]*)$/, "$1")
-				.replace(/[?#].*/, "");
+			newsrc = src.replace(/[?#].*$/, "");
+			if (newsrc !== src)
+				return newsrc;
+
+			return src.replace(/_(?:[0-9]+[hw]|medium|grande)(\.[^/.]*)$/, "$1");
 		}
 
 		if (domain === "static.gamespot.com") {
@@ -16459,6 +16468,12 @@ var $$IMU_EXPORT$$;
 			// https://thiswallpaper.com/cdn/thumb/796/amazing%20rihanna%20full%20screen%20image.jpg
 			//   https://thiswallpaper.com/cdn/hdwallpapers/796/amazing%20rihanna%20full%20screen%20image.jpg
 			return src.replace("/cdn/thumb/", "/cdn/hdwallpapers/");
+		}
+
+		if (domain_nowww === "superwallpapers.in") {
+			// http://www.superwallpapers.in/hdwallpapers/selena-gomez-172_196_196_90_cf.jpg
+			//   http://www.superwallpapers.in/hdwallpapers/selena-gomez-172.jpg
+			return src.replace(/_[0-9]+_[0-9]+_[0-9]+_cf(\.[^/.]*)(?:[?#].*)?$/, "$1");
 		}
 
 		if (domain_nowww === "booklikes.com") {
@@ -43082,6 +43097,62 @@ var $$IMU_EXPORT$$;
 			// https://img.erogazou.gallery/articles/987/s/01.jpg
 			//   https://img.erogazou.gallery/articles/987/b/01.jpg
 			return src.replace(/(\/[a-z]+[0-9]*\/+[0-9]+\/+)s(\/+[0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1b$2");
+		}
+
+		if (domain === "screens.latestscreens.com") {
+			// https://screens.latestscreens.com/screenshots/saintsrow2/thumbs/saints_row_04.jpg
+			//   https://screens.latestscreens.com/screenshots/saintsrow2/saints_row_04.jpg
+			return src.replace(/(\/screenshots\/+[^/]+\/+)thumbs\/+/, "$1");
+		}
+
+		if (domain_nowww === "mobygames.com") {
+			// https://www.mobygames.com/images/shots/s/352934-saints-row-2-windows-screenshot-saints-row-2-isn-t-for-pussies.jpg
+			//   https://www.mobygames.com/images/shots/t/352934-saints-row-2-windows-screenshot-saints-row-2-isn-t-for-pussies.jpg
+			//   https://www.mobygames.com/images/shots/l/352934-saints-row-2-windows-screenshot-saints-row-2-isn-t-for-pussies.jpg
+			return src.replace(/(\/images\/+shots\/+)[st]\/+/, "$1l/");
+		}
+
+		if (domain === "img.bhs4.com") {
+			// https://img.bhs4.com/aa/0/aa029164b7d2723af00e32f9960287b44362e909_small.jpg
+			//   https://img.bhs4.com/aa/0/aa029164b7d2723af00e32f9960287b44362e909_orig.jpg
+			return src.replace(/(\/[0-9a-f]{2}\/+[0-9a-f]\/+[0-9a-f]{20,})_[a-z]+(\.[^/.]*)(?:[?#].*)?$/, "$1_orig$2");
+		}
+
+		if (domain === "pisces.bbystatic.com") {
+			// https://pisces.bbystatic.com/image2/BestBuy_US/images/products/8814/8814802_500x500_sa.jpg;maxHeight=150;maxWidth=200
+			//   https://pisces.bbystatic.com/image2/BestBuy_US/images/products/8814/8814802_500x500_sa.jpg
+			//   https://pisces.bbystatic.com/image2/BestBuy_US/images/products/8814/8814802.jpg -- 105x120
+			return src.replace(/(\/images\/+products\/+[0-9]+\/+[0-9]+(?:_[^/.]*)\.[^/.;]+);.*/, "$1");
+		}
+
+		if (domain_nowww === "celebs101.com") {
+			// https://www.celebs101.com/gallery/Selena_Gomez/412117/tn_Selena_Gomez_Picture.jpg
+			//   https://www.celebs101.com/gallery/Selena_Gomez/412117/Selena_Gomez_Picture.jpg
+			return src.replace(/(\/gallery\/+[^/]*\/+[0-9]+\/+)tn_([^/]*)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "hq-celebrity.com") {
+			// http://hq-celebrity.com/photos/selena-gomez-2011-12-09/tn_selena-gomez-6.jpg
+			//   http://hq-celebrity.com/photos/selena-gomez-2011-12-09/selena-gomez-6.jpg
+			newsrc = src.replace(/(\/photos\/+[^/]*\/+)tn_([^/]*)(?:[?#].*)?$/, "$1$2");
+			if (newsrc !== src)
+				return newsrc;
+		}
+
+		if (domain_nowww === "hq-celebrity.com") {
+			// http://hq-celebrity.com/wp-content/plugins/watermark-hotlinked-images/watermark.php?img=photos/selena-gomez-2011-12-09/tn_selena-gomez-22.jpg
+			// http://hq-celebrity.com/wp-content/plugins/watermark-hotlinked-images/watermark.php?img=photos/selena-gomez-2011-12-09/tn_selena-gomez-6.jpg
+			//   http://hq-celebrity.com/photos/selena-gomez-2011-12-09/tn_selena-gomez-6.jpg
+			newsrc = src.replace(/\/wp-content\/+plugins\/+watermark-hotlinked-images\/+watermark\.php\?(?:.*&)?img=([^&]*).*?$/, "/$1");
+			if (newsrc !== src)
+				return newsrc;
+
+			return {
+				url: src,
+				headers: {
+					Referer: ""
+				}
+			};
 		}
 
 
