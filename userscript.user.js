@@ -43155,6 +43155,15 @@ var $$IMU_EXPORT$$;
 			};
 		}
 
+		if (domain === "d3bhdfps5qyllw.cloudfront.net") {
+			// thanks to afterdelight on github: https://github.com/qsniyg/maxurl/issues/153
+			// https://d3bhdfps5qyllw.cloudfront.net/sqr/0f/0fa3d6cb4776d9c8827ac13649fcd653_1080x1080_w.jpg
+			//   https://d3bhdfps5qyllw.cloudfront.net/org/0f/0fa3d6cb4776d9c8827ac13649fcd653_1080x1080_w.jpg
+			// https://d3bhdfps5qyllw.cloudfront.net/thm/c7/c75a7cac21082ac3a712804dc5615c9d_2480x2986_h.jpg
+			//   https://d3bhdfps5qyllw.cloudfront.net/org/c7/c75a7cac21082ac3a712804dc5615c9d_2480x2986_h.jpg
+			return src.replace(/(:\/\/[^/]*\/+)(?:sqr|thm)\/+/, "$1org/");
+		}
+
 
 
 
