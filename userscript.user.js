@@ -16759,7 +16759,7 @@ var $$IMU_EXPORT$$;
 
 		if ((domain_nosub === "staticflickr.com" ||
 			 (domain_nosub === "flickr.com" && domain.indexOf(".static.flickr.com") >= 0)) &&
-			src.match(/\/[0-9]+_[0-9a-f]+(?:_[a-z]*)?\.[a-z]+.*$/) &&
+			src.match(/\/[0-9]+_[0-9a-f]+(?:_[a-z0-9]*)?\.[a-z]+.*$/) &&
 			options && options.do_request && options.cb) {
 			// https://c1.staticflickr.com/5/4190/34341416210_29e6098b30.jpg
 			//   https://farm5.staticflickr.com/4190/34341416210_9f14cc1576_o.jpg
@@ -16771,6 +16771,7 @@ var $$IMU_EXPORT$$;
 			//   https://farm8.staticflickr.com/7034/6693295971_36acecc53b_o.jpg
 			// https://farm8.staticflickr.com/7002/6432649813_4fe18483a6.jpg
 			//   https://farm8.staticflickr.com/7002/6432649813_21c9e80f43_o.jpg
+			// https://live.staticflickr.com/65535/48913730532_83284fa99d_3k.jpg
 
 			function get_flickr_cookies(cb) {
 				if (cookie_cache.has("flickr")) {
