@@ -48263,8 +48263,6 @@ var $$IMU_EXPORT$$;
 					cb: null
 				});
 
-				console_log(result);
-
 				for (var i = 0; i < result.length; i++) {
 					if (result[i].url !== src)
 						continue;
@@ -48306,8 +48304,6 @@ var $$IMU_EXPORT$$;
 
 				if (!imu_check(src))
 					return false;
-
-				console_log(src);
 
 				if ("layer" in options) {
 					if (!(options.layer in layers)) {
