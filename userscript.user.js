@@ -2967,6 +2967,15 @@ var $$IMU_EXPORT$$;
 			// http://menu.mt.co.kr/moneyweek/thumb/2017/05/23/00/2017052310108026652_1.jpg -- doesn't
 
 			// http://menu.mt.co.kr/theleader/photo_img/00/2018/02/01/2018020114447262989_0.jpg
+
+			// http://menu.mt.co.kr/moneys/images/bg_png30.png
+			// http://menu.mt.co.kr/moneys/images/bg_num1.png
+			if (/\/images\/+bg_[a-z]+[0-9]+\.png(?:[?#].*)?$/.test(src))
+				return {
+					url: src,
+					bad: true
+				};
+
 			var obj = src.match(/\/thumb\/(?:[0-9]+\/){3}([0-9]+)\//);
 			if (obj && obj[1] !== "00") {
 				var obj1_str = src.replace(/.*\/thumb\/([0-9]+\/[0-9]+\/[0-9]+\/).*/, "$1").replace(/\//g, "");
@@ -48247,6 +48256,28 @@ var $$IMU_EXPORT$$;
 				return urljoin(window.location.href, src, true);
 			}
 
+			function imu_check(src) {
+				var result = bigimage_recursive(src, {
+					fill_object: true,
+					do_request: null,
+					cb: null
+				});
+
+				console_log(result);
+
+				for (var i = 0; i < result.length; i++) {
+					if (result[i].url !== src)
+						continue;
+
+					if (result[i].bad)
+						return false;
+
+					return true;
+				}
+
+				return true;
+			}
+
 			function addImage(src, el, options) {
 				//console_log("addImage", el, check_visible(el));
 				if (settings.mouseover_apply_blacklist && !bigimage_filter(src))
@@ -48272,6 +48303,11 @@ var $$IMU_EXPORT$$;
 				if (options.isbg && settings.mouseover_exclude_backgroundimages) {
 					return false;
 				}
+
+				if (!imu_check(src))
+					return false;
+
+				console_log(src);
 
 				if ("layer" in options) {
 					if (!(options.layer in layers)) {
