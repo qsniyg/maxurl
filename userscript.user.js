@@ -2973,7 +2973,7 @@ var $$IMU_EXPORT$$;
 			if (/\/images\/+bg_[a-z]+[0-9]+\.png(?:[?#].*)?$/.test(src))
 				return {
 					url: src,
-					bad: true
+					bad: "mask"
 				};
 
 			var obj = src.match(/\/thumb\/(?:[0-9]+\/){3}([0-9]+)\//);
