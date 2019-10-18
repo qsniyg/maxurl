@@ -44617,7 +44617,7 @@ var $$IMU_EXPORT$$;
 			if (!currenthref)
 				return;
 
-			if (!used_cache && options.use_cache && !waiting) {
+			if (!used_cache && (options.use_cache === true) && !waiting) {
 				for (var i = 0; i < pasthrefs.length; i++) {
 					var href = pasthrefs[i];
 
@@ -48259,6 +48259,7 @@ var $$IMU_EXPORT$$;
 			function imu_check(src) {
 				var result = bigimage_recursive(src, {
 					fill_object: true,
+					use_cache: "read",
 					do_request: null,
 					cb: null
 				});
