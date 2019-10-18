@@ -59,6 +59,7 @@ As mentioned above, userscript.user.js also functions as a node module.
       iterations: 200,
 
       // Whether or not to store to, and use an internal cache for URLs.
+      // Set this to "read" if you want to use the cache without storing results to it.
       use_cache: true,
 
       // Timeout (in seconds) for cache entries in the URL cache
@@ -167,7 +168,9 @@ The result is a list of objects that contain properties that may be useful in us
       // If this is true, you shouldn't input this URL again into IMU.
       norecurse: false,
 
-      // Whether or not this URL should be used. If true, treat this like a 404
+      // Whether or not this URL should be used.
+      // If true, treat this like a 404
+      // If "mask", this image is an overlayed mask
       bad: false,
 
       // Whether or not this URL is a "fake" URL that was used internally (i.e. if true, don't use this)
