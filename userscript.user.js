@@ -3391,11 +3391,12 @@ var $$IMU_EXPORT$$;
 								}
 
 								// TODO: check date too
-								var entry_regex = /<a\s+class=["']info_item["']\s+href=["']((?:https?:)\/\/v\.media\.daum\.net\/+.*?)["'][^>]*?>\s*<span\s+class=["']wrap_tit["']\s*>(.*?)<\/span>/g;
+								var entry_regex = /<a\s+class=["']info_item["']\s+href=["']((?:https?:)\/\/v\.media\.daum\.net\/+.*?)["'][^>]*?>\s*(?:<div\s+class=["']compo-.*?["']\s*>\s*)?<span\s+class=["']wrap_(?:tit|head)["']\s*>(?:\s*<strong\s+class=["']tit-g["']\s*>\s*)?([\s\S]*?)(?:\s*<\/strong>\s*)?<\/span>/g;
 								var nonglobal_regex = new RegExp(entry_regex, "");
 								var entries_match = result.responseText.match(entry_regex);
 								if (!entries_match) {
 									console_error("No search entries found", searchurl);
+									console_log(result);
 									return done(null, false);
 								}
 
@@ -3409,7 +3410,7 @@ var $$IMU_EXPORT$$;
 									}
 
 									search_entries.push({
-										title: decode_entities(match[2].replace(/<([a-z])>(.*?)<\/\1>/g, "$2")),
+										title: decode_entities(match[2].replace(/<([a-z]+)(?:\s+.*?)?>(.*?)<\/\1>/g, "$2")),
 										// getting rid of ?f=o, which'll redirect to newsen instead
 										url: urljoin(result.finalUrl, match[1].replace(/[?#].*/, ""), true)
 									});
