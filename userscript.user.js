@@ -5,7 +5,7 @@
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
 // @version      0.11.6
-// @description  Finds larger or original versions of images for 5700+ websites
+// @description  Finds larger or original versions of images for 5800+ websites
 // @author       qsniyg
 // @homepageURL  https://qsniyg.github.io/maxurl/options.html
 // @supportURL   https://github.com/qsniyg/maxurl/issues
