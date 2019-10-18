@@ -3261,7 +3261,9 @@ var $$IMU_EXPORT$$;
 			//   https://t1.daumcdn.net/news/201903/06/newsen/20190306201751195iqvu.jpg -- 641x1000
 			// other:
 			// http://photo.newsen.com/photo/2006/05/15/200605151650091006_1.jpg
-			src = src.replace(/_ts\.[^/._]*$/, ".jpg").replace("/mphoto/", "/news_photo/");
+			newsrc = src.replace(/_ts\.[^/._]*$/, ".jpg").replace("/mphoto/", "/news_photo/");
+			if (newsrc !== src)
+				return newsrc;
 
 			if (src.indexOf("/main_photo/") >= 0) {
 				// http://cdn.newsen.com/newsen/main_photo/index_a2_201801030825321910_1.jpg
@@ -3269,12 +3271,16 @@ var $$IMU_EXPORT$$;
 				// http://cdn.newsen.com/newsen/main_photo/mobile/favphoto_201807131531391510_1.jpg
 				//   http://cdn.newsen.com/newsen/news_photo/2018/07/13/201807131531391510_1.jpg
 				//   http://photo.newsen.com/news_photo/2018/07/13/201807131531391510_1.jpg
-				src = src.replace(/\/main_photo\/+(?:mobile\/+)?[^/]*_([0-9][0-9][0-9][0-9])([0-9][0-9])([0-9][0-9])([^/]*)$/, "/news_photo/$1/$2/$3/$1$2$3$4");
+				newsrc = src.replace(/\/main_photo\/+(?:mobile\/+)?[^/]*_([0-9][0-9][0-9][0-9])([0-9][0-9])([0-9][0-9])([^/]*)$/, "/news_photo/$1/$2/$3/$1$2$3$4");
+				if (newsrc !== src)
+					return newsrc;
 			}
 
 			// http://cdn.newsen.com/newsen/resize/235x-/2019/05/18/201905182149162610_1.jpg
 			//   http://cdn.newsen.com/newsen/news_photo/2019/05/18/201905182149162610_1.jpg
-			src = src.replace(/\/resize\/+[-0-9]+x[-0-9]+\/+/, "/news_photo/");
+			newsrc = src.replace(/\/resize\/+[-0-9]+x[-0-9]+\/+/, "/news_photo/");
+			if (newsrc !== src)
+				return newsrc;
 
 			var extra = {};
 			match = src.match(/cdn\.newsen\.com\/+newsen\/+news_photo\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}([0-9]{10,})_[0-9]+\.[^/.]*(?:[?#].*)?$/);
@@ -3289,6 +3295,9 @@ var $$IMU_EXPORT$$;
 				url: src,
 				headers: {
 					Referer: "http://www.newsen.com/"
+				},
+				referer_ok: {
+					same_domain_nosub: true
 				},
 				extra: extra
 			};
@@ -16772,6 +16781,7 @@ var $$IMU_EXPORT$$;
 			// https://farm8.staticflickr.com/7002/6432649813_4fe18483a6.jpg
 			//   https://farm8.staticflickr.com/7002/6432649813_21c9e80f43_o.jpg
 			// https://live.staticflickr.com/65535/48913730532_83284fa99d_3k.jpg
+			//   https://live.staticflickr.com/65535/48913730532_c31a823c53_o.jpg
 
 			function get_flickr_cookies(cb) {
 				if (cookie_cache.has("flickr")) {
@@ -36229,6 +36239,9 @@ var $$IMU_EXPORT$$;
 			// other:
 			// https://www.upinews.kr/news/data/20190701/p1065589773349704_340_h3.png -- 6158x1944
 			domain_nowww === "upinews.kr" ||
+			// http://www.thedrive.co.kr/news/data/20191016/p1065587293279646_750_thum.jpg
+			//   http://www.thedrive.co.kr/news/data/20191016/p1065587293279646_750.jpg
+			domain_nowww === "thedrive.co.kr" ||
 			// http://www.newswiz.kr/news/data/20190606/p1065589870763517_698_h.jpg -- 314x393
 			//   http://www.newswiz.kr/news/data/20190606/p1065589870763517_698_thum.jpg -- 699x874
 			//   http://www.newswiz.kr/news/data/20190606/p1065589870763517_698.jpg -- 745x931
