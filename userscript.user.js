@@ -6825,6 +6825,8 @@ var $$IMU_EXPORT$$;
 			domain === "media.pamper.my" ||
 			// https://www.rnbjunk.com/foto/2016/08/2016-vmas-hailee-steinfeld-300x450.jpg
 			(domain_nowww === "rnbjunk.com" && src.indexOf("/foto/") >= 0) ||
+			// https://cdn.xpicsxx.com/uploads/2019/10/17151356/ahri-cosplay-364x485.jpg
+			(domain === "cdn.xpicsxx.com" && src.indexOf("/uploads/") >= 0) ||
 			// https://1.soompi.io/wp-content/blogs.dir/8/files/2015/09/HA-TFELT-Wonder-Girls-590x730.jpg -- doesn't work
 			// https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2018/01/GTA-6-Female-Protag-796x417.jpg -- does work
 			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|images|photos|blogs.dir)|\/+uploads)\//.test(src)
