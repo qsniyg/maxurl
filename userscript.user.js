@@ -14189,7 +14189,13 @@ var $$IMU_EXPORT$$;
 		if (domain_nosub === "phncdn.com") {
 			// https://ci.phncdn.com/pics/albums/000/430/541/4503569/(m=eiJ_8b)(mh=EvXtHOjNcliZ7ja0)original_4503569.jpg
 			//   https://ci.phncdn.com/pics/albums/000/430/541/4503569/original_4503569.jpg
-			return add_extensions_gif(src.replace(/\/(?:\([a-z]+=[^/)]*\))*([^/]*)$/, "/$1"));
+			// https://ci.phncdn.com/m=e_rU8f/pics/pornstars/000/284/192/thumb_1068522.jpg
+			//   https://ci.phncdn.com/pics/pornstars/000/284/192/thumb_1068522.jpg
+			newsrc = src.replace(/\/(?:\([a-z]+=[^/)]*\))*([^/]*)$/, "/$1");
+			if (newsrc !== src)
+				return add_extensions_gif(newsrc);
+
+			return src.replace(/(:\/\/[^/]*\/+)[a-z]=[^/]*\/+/, "$1");
 		}
 
 		if (domain_nosub === "t8cdn.com" ||
@@ -24445,6 +24451,9 @@ var $$IMU_EXPORT$$;
 			// http://pornstarsadvice.com/contents/albums/main/150x200/24000/24633/339924.jpg
 			//   http://pornstarsadvice.com/contents/albums/sources/24000/24633/339924.jpg
 			domain_nowww === "pornstarsadvice.com" ||
+			// http://fetishburg.com/contents/albums/main/370x250/22000/22495/336053.jpg
+			// requires get_image
+			//domain_nowww === "fetishburg.com" ||
 			// https://cdn.pornstill.com/contents/albums/main/300x500/82000/82628/1298509.jpg
 			//   https://cdn.pornstill.com/contents/albums/sources/82000/82628/1298509.jpg
 			domain === "cdn.pornstill.com") {
@@ -25404,7 +25413,9 @@ var $$IMU_EXPORT$$;
 		if (domain === "static.thenude.eu") {
 			// https://static.thenude.eu/admin/covers/cosmid/16-01/thumbs/01-18.Eva-Green-in-Eva-Greens-First-Set.jpg
 			//   https://static.thenude.eu/admin/covers/cosmid/16-01/01-18.Eva-Green-in-Eva-Greens-First-Set.jpg
-			return src.replace(/(\/admin\/+covers\/+.*\/+)thumbs\/+/, "$1");
+			// https://static.thenude.eu/admin/covers/atkgalleria/16-11/medheads/11-05-5.Karlie-Brooks-in-BABES-SERIES-3.jpg
+			//   https://static.thenude.eu/admin/covers/atkgalleria/16-11/11-05-5.Karlie-Brooks-in-BABES-SERIES-3.jpg
+			return src.replace(/(\/admin\/+covers\/+.*\/+)(?:thumbs|medheads)\/+/, "$1");
 		}
 
 		if ((domain_nowww === "captaingoodlink.com" && src.indexOf("/celebrities/") >= 0) ||
@@ -43226,6 +43237,53 @@ var $$IMU_EXPORT$$;
 			return src
 				.replace(/(\/images\/+[^/]+\/+[^/]+\/+)main\/+([^/]*?\.[^/.]*)\.thumb_[0-9]+_[a-z]+\.[^/.]*(?:[?#].*)?$/, "$1$2")
 				.replace(/(\/u\/+[0-9]+\/+)m_[a-z]\/+([0-9]+\/+)[^/]*\/+([^/]*?\.[^/.]*)\.thumb_[0-9]+_[a-z]+\.[^/.]*(?:[?#].*)?$/, "$1i/$2$3");
+		}
+
+		if (domain_nowww === "kickasspays.com") {
+			// http://www.kickasspays.com/galleries/bree_olson/bree_olson_01_t.jpg
+			//   http://www.kickasspays.com/galleries/bree_olson/bree_olson_01.jpg
+			return src.replace(/(\/galleries\/+[^/]*\/+[^/]*)_t(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "xnudehack.com") {
+			// http://xnudehack.com/imgwp/t_selena_gomez_mouth.jpg
+			//   http://xnudehack.com/imgcache/selena_gomez_mouth.jpg
+			return src.replace(/\/imgwp\/+t_/, "/imgcache/");
+		}
+
+		if (domain === "media.karups.com" ||
+			// https://media.boyfun.com/content/bfc/2018-02/photos/jerome_james-solo-2/lowres/thumbs/jerome_james_lowres_005.thumb.jpg
+			//   https://media.boyfun.com/content/bfc/2018-02/photos/jerome_james-solo-2/highres/jerome_james_highres_005.jpg
+			domain === "media.boyfun.com") {
+			// https://media.karups.com/content/kha/2019-10/photos/carmella_santos-solo-1/lowres/thumbs/carmella_santos_lowres_009.thumb.jpg
+			//   https://media.karups.com/content/kha/2019-10/photos/carmella_santos-solo-1/lowres/carmella_santos_lowres_009.jpg
+			// other:
+			// https://media.karups.com/content/kha/f/freya_von_doom/3-1500/lowres/freya_von_doom-3-1500-009.jpg
+			newsrc = src.replace(/(\/lowres\/+)thumbs\/+([^/]*)\.thumb(\.[^/.]*)(?:[?#].*)?$/, "$1$2$3");
+			if (newsrc !== src)
+				return newsrc;
+
+			// https://media.karups.com/content/kha/2019-10/photos/carmella_santos-solo-1/lowres/carmella_santos_lowres_009.jpg
+			//   https://media.karups.com/content/kha/2019-10/photos/carmella_santos-solo-1/highres/carmella_santos_highres_009.jpg
+			return src.replace(/\/lowres\/+([^/]*)_lowres(_[0-9]+\.[^/.]*)(?:[?#].*)?$/, "/highres/$1_highres$2");
+		}
+
+		if (domain_nowww === "freefeet4u.com") {
+			// http://www.freefeet4u.com/nikki_brooks/exposing_wet_pink_pussy_and_feet/nikki_brooks_02_t.jpg
+			//   http://www.freefeet4u.com/nikki_brooks/exposing_wet_pink_pussy_and_feet/nikki_brooks_02_b.jpg
+			return src.replace(/(_[0-9]+)_t(\.[^/.]*)(?:[?#].*)?$/, "$1_b$2");
+		}
+
+		if (domain === "content.atkingdom.com") {
+			// https://content.atkingdom.com/models/kar113/335205/160617/kar113JSP_335205001_tn.jpg
+			//   https://content.atkingdom.com/models/kar113/335205/160617/kar113JSP_335205001.jpg
+			return src.replace(/(\/models\/+[^/]*\/+[0-9]+\/+[0-9]+\/+[^/]*)_tn(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain === "bl.definefetish.com") {
+			// http://bl.definefetish.com/1/16/20861/thumb/01.jpg
+			//   http://bl.definefetish.com/1/16/20861/01.jpg
+			return src.replace(/\/thumb\/+([^/]+\.[^/.]*)(?:[?#].*)?$/, "/$1");
 		}
 
 
