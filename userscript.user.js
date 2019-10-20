@@ -26128,7 +26128,9 @@ var $$IMU_EXPORT$$;
 			if (newsrc !== src)
 				return newsrc;
 
-			return src.replace(/\/_data\/+i(\/+upload\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}[0-9]{10,}-[0-9a-f]+)-(?:[^/.]*|cu_s[0-9]+x[0-9]+)(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+			newsrc = src.replace(/\/_data\/+i(\/+upload\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}[0-9]{10,}-[0-9a-f]+)-(?:[^/.]*|cu_s[0-9]+x[0-9]+)(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+			if (newsrc !== src)
+				return newsrc;
 		}
 
 		if (domain_nosub === "cdn-news30.it") {
@@ -27993,6 +27995,9 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "neocelebs.com" ||
 			// http://www.starsmaster.com/j/julia_kijowska_01/pics/thumbs/julia_kijowska_12.jpg
 			domain_nowww === "starsmaster.com" ||
+			// https://www.starzhunter.com/a/aly_raisman_01/pics/thumbs/aly_raisman_03.jpg
+			//   https://www.starzhunter.com/a/aly_raisman_01/pics/aly_raisman_03.jpg
+			domain_nowww === "starzhunter.com" ||
 			// http://www.easycelebritys.com/f/felicity_jones_02/pics/thumbs/felicity_jones_14.jpg
 			//   http://www.easycelebritys.com/f/felicity_jones_02/pics/felicity_jones_14.jpg
 			domain_nowww === "easycelebritys.com") {
@@ -32441,6 +32446,18 @@ var $$IMU_EXPORT$$;
 				url: src.replace(/(\/img\/+[0-9]{4}-[0-9]{2}-[0-9]{2}\/+)tn_([^/]*)(?:[?#].*)?$/, "$1$2"),
 				can_head: false // 404
 			};
+		}
+
+		if (domain_nowww === "haxprofiles.com") {
+			// http://haxprofiles.com/gallery/caroline-wozniack-nude-new-hot/tnCaroline-Wozniacki-Nude-Sexy-TheFappeningBlog.com-31-624x780_150x270.jpg
+			//   http://haxprofiles.com/gallery/caroline-wozniack-nude-new-hot/Caroline-Wozniacki-Nude-Sexy-TheFappeningBlog.com-31-624x780.jpg
+			return src.replace(/(\/gallery\/+[^/]+\/+)tn([^/]*)_[0-9]+x[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2$3");
+		}
+
+		if (domain_nowww === "drago99.com") {
+			// http://www.drago99.com/TPG2019/LindseyVonn/tnLindseyVonn5Drago99.JPG
+			//   http://www.drago99.com/TPG2019/LindseyVonn/LindseyVonn5Drago99.JPG
+			return src.replace(/\/tn([^/]*\.[^/.]*)(?:[?#].*)?$/, "/$1");
 		}
 
 		if (domain === "img.indexxx.com") {
@@ -38476,10 +38493,21 @@ var $$IMU_EXPORT$$;
 		if (domain_nowww === "findnudecelebs.com" ||
 			domain_nowww === "searchcelebrityhd.com" ||
 			domain_nowww === "pluscelebs.com" ||
+			// http://imgtrend.com/free/selena-gomez-sexy-at-living-undocumented-screening-in-la/small/small-selena-gomez-sexy-at-living-undocumented-screening-in-la-1.jpg
+			//   http://imgtrend.com/free/selena-gomez-sexy-at-living-undocumented-screening-in-la/selena-gomez-sexy-at-living-undocumented-screening-in-la-1.jpg
+			domain_nowww === "imgtrend.com" ||
+			// http://chopris.com/free/kendall-jenner-serious-nip-slip-while-out-shopping/small/small-kendall-jenner-serious-nip-slip-while-out-shopping-3.jpg
+			//   http://chopris.com/free/kendall-jenner-serious-nip-slip-while-out-shopping/kendall-jenner-serious-nip-slip-while-out-shopping-3.jpg
+			domain_nowww === "chopris.com" ||
+			domain_nowww === "leadceleb.com" ||
+			domain_nowww === "ultraceleb.com" ||
+			domain_nowww === "freshfappening.com" ||
 			domain_nowww === "allcelebs.club") {
 			// http://findnudecelebs.com/free/emelie-jonsson-aniara-2/small/small-emelie-jonsson-aniara-2-1.jpg
 			//   http://findnudecelebs.com/free/emelie-jonsson-aniara-2/emelie-jonsson-aniara-2-1.jpg
-			return src.replace(/\/(small)\/+\1-/, "/");
+			newsrc = src.replace(/\/(small)\/+\1-([^/]+\.[^/.]*)(?:[?#].*)?$/, "/$2");
+			if (newsrc !== src)
+				return newsrc;
 		}
 
 		if (domain_nowww === "celebritying.com") {
@@ -43188,6 +43216,16 @@ var $$IMU_EXPORT$$;
 			// https://d3bhdfps5qyllw.cloudfront.net/thm/c7/c75a7cac21082ac3a712804dc5615c9d_2480x2986_h.jpg
 			//   https://d3bhdfps5qyllw.cloudfront.net/org/c7/c75a7cac21082ac3a712804dc5615c9d_2480x2986_h.jpg
 			return src.replace(/(:\/\/[^/]*\/+)(?:sqr|thm)\/+/, "$1org/");
+		}
+
+		if (domain_nowww === "imageocd.com") {
+			// http://imageocd.com//images/hairstyles/taylor-spreitler-hairstyles/main/taylor-spreitler-hairstyles.jpg.thumb_100_width.jpg
+			//   http://imageocd.com//images/hairstyles/taylor-spreitler-hairstyles/taylor-spreitler-hairstyles.jpg
+			// http://imageocd.com/u/1/m_t/1/taylor-lautner-hairstyles/taylor-lautner-hairstyles.jpg.thumb_100_width.jpg
+			//   http://imageocd.com/u/1/i/1/taylor-lautner-hairstyles.jpg
+			return src
+				.replace(/(\/images\/+[^/]+\/+[^/]+\/+)main\/+([^/]*?\.[^/.]*)\.thumb_[0-9]+_[a-z]+\.[^/.]*(?:[?#].*)?$/, "$1$2")
+				.replace(/(\/u\/+[0-9]+\/+)m_[a-z]\/+([0-9]+\/+)[^/]*\/+([^/]*?\.[^/.]*)\.thumb_[0-9]+_[a-z]+\.[^/.]*(?:[?#].*)?$/, "$1i/$2$3");
 		}
 
 
