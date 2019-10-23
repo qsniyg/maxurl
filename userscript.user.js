@@ -3846,6 +3846,20 @@ var $$IMU_EXPORT$$;
 			// 3, 4, 5, and 6 seem to be the same
 			// other:
 			// http://dimg.donga.com/egc/PHOTO/udata/photonews/image/201506/04/201506040012/A84P4320.jpg
+			// http://dimg.donga.com/egc/PHOTO/udata/photonews/image/201406/05/201406050013/P90151637.jpg -- 6378x4252
+			//   http://www.donga.com/BIZN/realestate/List/3/all/20141024/67412273/1
+			//   https://dimg.donga.com/egc/PHOTO/udata/photonews/image/201408/19/201408190052/spl823546_002.jpg
+			// http://www.donga.com/news/List/PoliticsN/article/all/20140826/66006935/1
+			//   http://dimg.donga.com/egc/PHOTO/udata/photonews/image/201408/25/201408250020/1.jpg -- 2560x1707
+			//   https://dimg.donga.com/wps/STUDIO/IMAGE/2014/08/25/1363601.1.jpg
+			// https://dimg.donga.com/wps/NEWS/IMAGE/2014/08/26/66006897.2.jpg
+			//   https://dimg.donga.com/wps/STUDIO/IMAGE/2014/08/25/1363600.1.jpg
+			//   http://dimg.donga.com/egc/PHOTO/udata/photonews/image/201408/25/201408250020/2.jpg
+			// https://dimg.donga.com/wps/NEWS/IMAGE/2013/11/18/58982640.3.jpg -- 4505x8026
+			//   http://www.donga.com/news/article/all/20131118/58982687/1
+			// http://dimg.donga.com/ugc/CDB/CHINA/Article/59/3c/c5/f0/593cc5f00d78d2738243.jpg -- 3372x2283
+			//   http://china.donga.com/List/3/all/43/949830/1
+			//   http://china.donga.com/Profile?cid=728339
 			return src
 				.replace(/\/[ca]\/(?:[0-9]+\/){4}/, "/")
 				.replace(/\/i\/[0-9]+\/[0-9]+\/[0-9]+\//, "/");
@@ -7770,6 +7784,12 @@ var $$IMU_EXPORT$$;
 				return newsrc;
 		}
 
+		if (domain === "oss.tan8.com") {
+			// https://oss.tan8.com/resource/attachment/2019/201908/32b8d7076aa5dd7f340511ed1a7a5e78_thumb.jpg
+			//   https://oss.tan8.com/resource/attachment/2019/201908/32b8d7076aa5dd7f340511ed1a7a5e78.jpg
+			return src.replace(/(\/resource\/+attachment\/+[0-9]{4}\/+[0-9]{6}\/+[0-9a-f]{20,})_thumb(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+		}
+
 		if (domain_nowww === "ultimate-guitar.com") {
 			// https://www.ultimate-guitar.com/static/storage/album/images/4/0/4073dfb6d00c5097ccffd68e6872014492625d3b.jpg@115
 			//   https://www.ultimate-guitar.com/static/storage/album/images/4/0/4073dfb6d00c5097ccffd68e6872014492625d3b.jpg
@@ -8868,6 +8888,9 @@ var $$IMU_EXPORT$$;
 			// http://www.newsgg.net/data/cache/public/photos/20190521/art_1558846341886_b2bf4b_178x118.jpg
 			//   http://www.newsgg.net/data/photos/20190521/art_1558846341886_b2bf4b.jpg
 			domain_nowww === "newsgg.net" ||
+			// http://www.newsam.co.kr/data/cache/public/photos/20190834/art_15661884005506_506078_90x60_c0.jpg
+			//   http://www.newsam.co.kr/data/photos/20190834/art_15661884005506_506078.jpg
+			domain_nowww === "newsam.co.kr" ||
 			// http://www.ddaily.co.kr/data/cache/public/photos/cdn/20180205/art_1517533165_58x58.jpg
 			domain_nowww === "ddaily.co.kr") {
 			// http://cdn.kukinews.com/data/cache/public/photos/cdn/20180104/art_1516601165_300x190.jpg
@@ -10120,7 +10143,7 @@ var $$IMU_EXPORT$$;
 		if (domain === "cdn.discordapp.com") {
 			// https://cdn.discordapp.com/avatars/191394916771823617/a_0cc6551148c73504703e5c4dba44bc0a.png?size=128
 			//   https://cdn.discordapp.com/avatars/191394916771823617/a_0cc6551148c73504703e5c4dba44bc0a.png?size=2048
-			return src.replace(/\?size=[0-9]*$/, "?size=2048");
+			return src.replace(/\?size=[0-9]*$/, "?size=4096");
 		}
 
 		if (domain_nosub === "discordapp.net" && domain.match(/images-ext-[0-9]*\.discordapp\.net/)) {
@@ -41474,6 +41497,26 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain === "cdnimage.dailian.co.kr") {
+			// http://cdnimage.dailian.co.kr/news/icon/201910/news_1571709106_835910_c.jpg
+			//   http://cdnimage.dailian.co.kr/news/201910/news_1571709106_835910_m_1.jpg
+			//   http://www.dailian.co.kr/news/view/835910
+			// other:
+			// http://cdnimage.dailian.co.kr/news/201907/news_1561960369_807365_m_1.jpg -- 3648x2432
+			newsrc = src.replace(/\/news\/+icon\/+([0-9]{6}\/+news_[0-9]+_[0-9]+)_c(\.[^/.]*)(?:[?#].*)?$/, "/news/$1_m_1$2");
+			if (newsrc !== src)
+				return newsrc;
+
+			match = src.match(/\/news\/+(?:[a-z]+\/+)?[0-9]{6}\/+news_[0-9]+_([0-9]+)_[a-z](?:_[0-9]+)?\./);
+			if (match) {
+				return {
+					url: src,
+					extra: {
+						page: "http://www.dailian.co.kr/news/view/" + match[1]
+					}
+				};
+			}
+		}
 		if (domain_nowww === "teengirl-pics.com") {
 			// http://teengirl-pics.com/aHR0cHM6Ly9zdGF0aWMtZmhnLm1ldGFydC5jb20vbWVkaWEvQTBEMkM0RDE3NDgyREEyNDE1N0YxNUJBNjAxMkNENjMvd3RfQUM5QkI0RURFRkNBMDcxNEE5RjQ0MjZGRENFOEZBQTYuanBn.jpg
 			//   https://static-fhg.metart.com/media/A0D2C4D17482DA24157F15BA6012CD63/wt_AC9BB4EDEFCA0714A9F4426FDCE8FAA6.jpg
@@ -43284,6 +43327,12 @@ var $$IMU_EXPORT$$;
 			// http://bl.definefetish.com/1/16/20861/thumb/01.jpg
 			//   http://bl.definefetish.com/1/16/20861/01.jpg
 			return src.replace(/\/thumb\/+([^/]+\.[^/.]*)(?:[?#].*)?$/, "/$1");
+		}
+
+		if (domain === "fileup.calobye.com") {
+			// http://fileup.calobye.com/m_250/upload/gallery/201811/1541496480_66.jpg
+			//   http://fileup.calobye.com/upload/gallery/201811/1541496480_66.jpg
+			return src.replace(/\/m_[0-9]+\/+upload\/+/, "/upload/");
 		}
 
 
