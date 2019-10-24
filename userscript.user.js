@@ -41746,7 +41746,7 @@ var $$IMU_EXPORT$$;
 						if (result.status !== 200)
 							return options.cb(obj || null);
 
-						var extra = {page: result.finalUrl};
+						var extra = {page: result.finalUrl.replace(/(:\/\/www\.gettyimages\.)[^/]+\//, "://www.gettyimages.com/")};
 
 						//var smallerurl = result.responseText.match(/<meta\s+content=["'](https:\/\/media\.gettyimages\.com\/+photos\/+[^/]*\?k=6.*?)["']\s+property=["']og:image["']\s*\/>/);
 						// above is slightly smaller (594x594 instead of 612x612), needs decode_entities
