@@ -940,6 +940,7 @@ cdn15764270.ahacdn.me
 cdnberry.com
 cdnds.net
 cdni.rbth.com
+cdnimage.dailian.co.kr
 cdnimage.terbitsport.com
 cdnimg.melon.co.kr
 cdnimg.rg.ru
@@ -1683,6 +1684,7 @@ files.sirclocdn.xyz
 files.theblemish.com
 files.vividscreen.info
 files.yande.re
+fileup.calobye.com
 film-download.club
 film-like.com
 film.kinootziv.com
@@ -3889,6 +3891,7 @@ news.yule.com.cn
 news18.com
 news33.net
 newsa.co.kr
+newsam.co.kr
 newsarama.com
 newsbeast.gr
 newscj.com
@@ -4048,6 +4051,7 @@ oplace.ru
 opt.toiimg.com
 orsm.net
 oshiete.xgoo.jp
+oss.tan8.com
 otakotaku.com
 otaku.com
 otapol.jp

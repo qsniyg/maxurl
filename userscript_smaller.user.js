@@ -4,7 +4,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.11.7
+// @version      0.11.8
 // @description  Finds larger or original versions of images for 5700+ websites
 // @author       qsniyg
 // @homepageURL  https://qsniyg.github.io/maxurl/options.html
@@ -372,6 +372,28 @@ var $$IMU_EXPORT$$;
 		} else {
 			return x;
 		}
+	}
+
+	function overlay_object(base, obj) {
+		if (typeof base === "function" || base instanceof Array)
+			return obj; // FIXME?
+
+		if (typeof base === "object") {
+			if (typeof obj !== "object")
+				return obj;
+
+			for (var key in obj) {
+				if (key in base) {
+					base[key] = overlay_object(base[key], obj[key]);
+				} else {
+					base[key] = obj[key];
+				}
+			}
+
+			return base;
+		}
+
+		return obj;
 	}
 
 	// https://stackoverflow.com/a/25603630
@@ -3060,16 +3082,28 @@ var $$IMU_EXPORT$$;
 					});
 				};
 
-				var get_daum_url_from_results = function(real_title, results) {
+				var get_daum_url_from_results = function(real_title, real_pageid, results) {
 					if (!results)
 						return null;
 
 					var real_fuzzy = fuzzify_text(real_title).substr(0, 35);
 
 					for (var i = 0; i < results.length; i++) {
-						if (real_fuzzy === fuzzify_text(results[i].title).substr(0, 35)) {
-							return results[i].url;
+						if (real_fuzzy !== fuzzify_text(results[i].title).substr(0, 35)) {
+							continue;
 						}
+
+						var pageid = results[i].url.replace(/.*\/v\/([0-9]+)$/, "$1");
+						if (pageid === results[i].url) {
+							console_error("Unhandled URL: " + results[i].url);
+							continue;
+						}
+
+						if (pageid.substr(0, 8) !== real_pageid.substr(0, 8)) {
+							continue;
+						}
+
+						return results[i].url;
 					}
 
 					console_error("Unable to find result from search", real_title, results);
@@ -3130,7 +3164,7 @@ var $$IMU_EXPORT$$;
 					}
 
 					get_daum_search_results(title, function(results) {
-						var daumurl = get_daum_url_from_results(title, results);
+						var daumurl = get_daum_url_from_results(title, pageid, results);
 						if (!daumurl)
 							return options.cb(obj);
 
@@ -5185,6 +5219,10 @@ var $$IMU_EXPORT$$;
 				return newsrc;
 		}
 
+		if (domain === "oss.tan8.com") {
+			return src.replace(/(\/resource\/+attachment\/+[0-9]{4}\/+[0-9]{6}\/+[0-9a-f]{20,})_thumb(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+		}
+
 		if (domain_nowww === "ultimate-guitar.com") {
 			return src.replace(/(\/images\/+(?:[0-9a-f]\/+){2}[0-9a-f]+\.[^/.]*?)@[0-9]+(?:[?#].*)?$/, "$1");
 		}
@@ -5703,6 +5741,7 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "artkoreatv.com" ||
 			domain_nowww === "cnbnews.com" ||
 			domain_nowww === "newsgg.net" ||
+			domain_nowww === "newsam.co.kr" ||
 			domain_nowww === "ddaily.co.kr") {
 			return src
 				.replace(/\/data\/+cache\/+public\//, "/data/")
@@ -6291,7 +6330,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "cdn.discordapp.com") {
-			return src.replace(/\?size=[0-9]*$/, "?size=2048");
+			return src.replace(/\?size=[0-9]*$/, "?size=4096");
 		}
 
 		if (domain_nosub === "discordapp.net" && domain.match(/images-ext-[0-9]*\.discordapp\.net/)) {
@@ -12438,6 +12477,17 @@ var $$IMU_EXPORT$$;
 									}
 
 									var parsed = JSON_parse(match[1]);
+
+									var regex3 = /window\.__additionalDataLoaded\(["'].*?["']\s*,\s*({.*?})\);?\s*<\/script>/;
+									match = text.match(regex3);
+									if (match) {
+										var parsed1 = JSON_parse(match[1]);
+										for (var key in parsed.entry_data) {
+											if (parsed.entry_data[key] instanceof Array) {
+												parsed.entry_data[key][0] = overlay_object(parsed.entry_data[key][0], parsed1);
+											}
+										}
+									}
 
 									done(parsed, 60 * 60);
 								} catch (e) {
@@ -24571,6 +24621,22 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain === "cdnimage.dailian.co.kr") {
+			newsrc = src.replace(/\/news\/+icon\/+([0-9]{6}\/+news_[0-9]+_[0-9]+)_c(\.[^/.]*)(?:[?#].*)?$/, "/news/$1_m_1$2");
+			if (newsrc !== src)
+				return newsrc;
+
+			match = src.match(/\/news\/+(?:[a-z]+\/+)?[0-9]{6}\/+news_[0-9]+_([0-9]+)_[a-z](?:_[0-9]+)?\./);
+			if (match) {
+				return {
+					url: src,
+					extra: {
+						page: "http://www.dailian.co.kr/news/view/" + match[1]
+					}
+				};
+			}
+		}
+
 		if (domain_nowww === "teengirl-pics.com") {
 			match = src.match(/^[a-z]+:\/\/[^/]+\/+([^/.]{50,})\.[^/.]*(?:[?#].*)?$/);
 			if (match) {
@@ -24716,7 +24782,7 @@ var $$IMU_EXPORT$$;
 						if (result.status !== 200)
 							return options.cb(obj || null);
 
-						var extra = {page: result.finalUrl};
+						var extra = {page: result.finalUrl.replace(/(:\/\/www\.gettyimages\.)[^/]+\//, "://www.gettyimages.com/")};
 
 						var smallerurl = result.responseText.match(/"thumb612Url":\s*(["']https?:\/\/media\.gettyimages\.com\/+photos\/+[^/]*-id[0-9]+\?k=6.*?["'])/);
 						if (smallerurl && !problem_excluded("smaller")) {
@@ -25774,6 +25840,10 @@ var $$IMU_EXPORT$$;
 
 		if (domain === "bl.definefetish.com") {
 			return src.replace(/\/thumb\/+([^/]+\.[^/.]*)(?:[?#].*)?$/, "/$1");
+		}
+
+		if (domain === "fileup.calobye.com") {
+			return src.replace(/\/m_[0-9]+\/+upload\/+/, "/upload/");
 		}
 
 
