@@ -371,6 +371,28 @@ var $$IMU_EXPORT$$;
 		}
 	}
 
+	function overlay_object(base, obj) {
+		if (typeof base === "function" || base instanceof Array)
+			return obj; // FIXME?
+
+		if (typeof base === "object") {
+			if (typeof obj !== "object")
+				return obj;
+
+			for (var key in obj) {
+				if (key in base) {
+					base[key] = overlay_object(base[key], obj[key]);
+				} else {
+					base[key] = obj[key];
+				}
+			}
+
+			return base;
+		}
+
+		return obj;
+	}
+
 	// https://stackoverflow.com/a/25603630
 	function get_language() {
 		if (typeof navigator === "undefined")
@@ -2586,6 +2608,8 @@ var $$IMU_EXPORT$$;
 			// http://img.hankyung.com/photo/201802/ZA.16036542.1.jpg -- 3696x2778 (4 is not available)
 			// https://img.hankyung.com/photo/201906/01.19968607.1-1200x.jpg -- 1200x795, upscaled
 			//   https://img.hankyung.com/photo/201906/01.19968607.1.jpg
+			// https://img.hankyung.com/photo/201506/ZA.10064438.1.jpg -- 4078x2155
+			// http://ac.hankyung.com/data/file/53fa81e2501efc21f89ed7a440d2d22c.JPG -- 4032x3024
 			//
 			// thanks to Bobfrnw on greasyfork for reporting this:
 			// http://img.hankyung.com/photo/201903/03.19066867.4.jpg -- no watermark, larger (1800x1200)
@@ -3435,7 +3459,7 @@ var $$IMU_EXPORT$$;
 					});
 				};
 
-				var get_daum_url_from_results = function(real_title, results) {
+				var get_daum_url_from_results = function(real_title, real_pageid, results) {
 					if (!results)
 						return null;
 
@@ -3443,9 +3467,22 @@ var $$IMU_EXPORT$$;
 					var real_fuzzy = fuzzify_text(real_title).substr(0, 35);
 
 					for (var i = 0; i < results.length; i++) {
-						if (real_fuzzy === fuzzify_text(results[i].title).substr(0, 35)) {
-							return results[i].url;
+						if (real_fuzzy !== fuzzify_text(results[i].title).substr(0, 35)) {
+							continue;
 						}
+
+						var pageid = results[i].url.replace(/.*\/v\/([0-9]+)$/, "$1");
+						if (pageid === results[i].url) {
+							console_error("Unhandled URL: " + results[i].url);
+							continue;
+						}
+
+						if (pageid.substr(0, 8) !== real_pageid.substr(0, 8)) {
+							// TODO: Fuzzify the date somehow
+							continue;
+						}
+
+						return results[i].url;
 					}
 
 					console_error("Unable to find result from search", real_title, results);
@@ -3506,7 +3543,7 @@ var $$IMU_EXPORT$$;
 					}
 
 					get_daum_search_results(title, function(results) {
-						var daumurl = get_daum_url_from_results(title, results);
+						var daumurl = get_daum_url_from_results(title, pageid, results);
 						if (!daumurl)
 							return options.cb(obj);
 
@@ -21739,6 +21776,17 @@ var $$IMU_EXPORT$$;
 									}
 
 									var parsed = JSON_parse(match[1]);
+
+									var regex3 = /window\.__additionalDataLoaded\(["'].*?["']\s*,\s*({.*?})\);?\s*<\/script>/;
+									match = text.match(regex3);
+									if (match) {
+										var parsed1 = JSON_parse(match[1]);
+										for (var key in parsed.entry_data) {
+											if (parsed.entry_data[key] instanceof Array) {
+												parsed.entry_data[key][0] = overlay_object(parsed.entry_data[key][0], parsed1);
+											}
+										}
+									}
 
 									// TODO: maybe check if parsed is correct before setting to cache?
 									done(parsed, 60 * 60);
@@ -41517,6 +41565,7 @@ var $$IMU_EXPORT$$;
 				};
 			}
 		}
+
 		if (domain_nowww === "teengirl-pics.com") {
 			// http://teengirl-pics.com/aHR0cHM6Ly9zdGF0aWMtZmhnLm1ldGFydC5jb20vbWVkaWEvQTBEMkM0RDE3NDgyREEyNDE1N0YxNUJBNjAxMkNENjMvd3RfQUM5QkI0RURFRkNBMDcxNEE5RjQ0MjZGRENFOEZBQTYuanBn.jpg
 			//   https://static-fhg.metart.com/media/A0D2C4D17482DA24157F15BA6012CD63/wt_AC9BB4EDEFCA0714A9F4426FDCE8FAA6.jpg
