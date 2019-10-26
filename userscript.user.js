@@ -2061,6 +2061,31 @@ var $$IMU_EXPORT$$;
 			.replace(/^\s+|\s+$/g, "");
 	}
 
+	function version_compare(a, b) {
+		var version_regex = /^[0-9]+(\.[0-9]+){1,}$/;
+		if (!version_regex.test(a) ||
+			!version_regex.test(b))
+			return null;
+
+		var a_split = a.split(".");
+		var b_split = b.split(".");
+
+		if (a_split.length !== b_split.length)
+			return null;
+
+		for (var i = 0; i < a_split.length; i++) {
+			var an = parseInt(a_split[i]);
+			var bn = parseInt(b_split[i]);
+
+			if (an < bn)
+				return 1;
+			if (an > bn)
+				return -1;
+		}
+
+		return 0;
+	}
+
 	function run_soon(func) {
 		setTimeout(func, 1);
 	}
@@ -50123,10 +50148,26 @@ var $$IMU_EXPORT$$;
 		} catch (e) {
 		}
 
+		var gf_version = null;
+		var gf_version_el = document.querySelector("dd.script-show-version");
+		if (gf_version_el) {
+			gf_version = gf_version_el.innerText.replace(/^\s*|\s*$/, "");
+		}
+
 		version_el.innerText = "Installed";
 
-		if (version !== null)
-			version_el.innerText += " (v" + version + ")";
+		if (version !== null) {
+			version_el.innerText += " (v" + version;
+
+			if (gf_version) {
+				var compared = version_compare(gf_version, version);
+				if (compared === -1) {
+					version_el.innerText += ", update available";
+				}
+			}
+
+			version_el.innerText += ")";
+		}
 
 		options_el = document.createElement("a");
 		options_el.innerText = "Options";
