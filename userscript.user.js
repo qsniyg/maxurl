@@ -7748,7 +7748,10 @@ var $$IMU_EXPORT$$;
 				newsrc = src.replace(/(:\/\/[^/]*\/)[^/]*(\/.*\/[^/]*\.[^/.]*)$/, "$1originals$2");
 
 			if (newsrc !== src) {
-				return add_extensions_gif(newsrc);
+				return add_extensions_gif({
+					url: newsrc,
+					is_original: true
+				});
 			}
 		}
 
