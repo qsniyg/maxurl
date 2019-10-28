@@ -14870,9 +14870,15 @@ var $$IMU_EXPORT$$;
 			//   https://blog-imgs-77-origin.fc2.com/t/r/e/trendbooks/IMG_0012_201804162120240e6.jpg
 			// http://blog-imgs-82-origin.fc2.com/s/w/e/sweettriangle2/0c262356s.jpg
 			//   http://blog-imgs-82-origin.fc2.com/s/w/e/sweettriangle2/0c262356.jpg
-			return src
-				.replace(/:\/\/(blog-imgs-[0-9]*)\./, "://$1-origin.")
-				.replace(/([/_][0-9a-f]{7,}[^-/._]+)s(\.[^/.]*)$/, "$1$2");
+			// http://blog-imgs-13.fc2.com/a/k/u/akuma777xx/sofuto060as.jpg
+			//   http://blog-imgs-13-origin.fc2.com/a/k/u/akuma777xx/sofuto060a.jpg
+			// https://blog-imgs-38-origin.fc2.com/n/e/t/netateki/0832b476323d6891250f-1024s.jpg
+			//   https://blog-imgs-38-origin.fc2.com/n/e/t/netateki/0832b476323d6891250f-1024.jpg
+			newsrc = src.replace(/:\/\/(blog-imgs-[0-9]*)\./, "://$1-origin.");
+			if (newsrc !== src)
+				return newsrc;
+
+			return src.replace(/s(\.[^/.]*)$/, "$1");
 		}
 
 		if (domain === "photos.hancinema.net" ||
@@ -19552,6 +19558,12 @@ var $$IMU_EXPORT$$;
 			return src.replace(/_[a-z]+(\.[^/.]*)$/, "$1");
 		}
 
+		if (domain_nowww === "goodblud.com") {
+			// https://goodblud.com/media/mppicture/2019/06/18/17_58f22209-093b-4735-a4a2-43f5aee8714f_mid.jpg
+			//   https://goodblud.com/media/mppicture/2019/06/18/17_58f22209-093b-4735-a4a2-43f5aee8714f_big.jpg
+			return src.replace(/(\/media\/+mppicture\/+[0-9]{4}\/+[0-9]{2}\/+[0-9]{2}\/+[0-9]+_[-0-9a-f]{30,})_mid(\.[^/.]*)(?:[?#].*)?$/, "$1_big$2");
+		}
+
 		if (domain === "da4pli3l5vc0d.cloudfront.net") {
 			// https://da4pli3l5vc0d.cloudfront.net/0f/dd/0fdd8b9ee75364aff60f148056780047a7dc282e/h=310,w=414,crop=top-20/?app=portal&sig=48add57365ba639191586c902db821d28579a8ebe483ba48027c34b5f221fa94
 			//   https://da4pli3l5vc0d.cloudfront.net/0f/dd/0fdd8b9ee75364aff60f148056780047a7dc282e
@@ -20039,6 +20051,14 @@ var $$IMU_EXPORT$$;
 			// https://summary-sv.fc2.com/api/resize_img.php?src=https%3A%2F%2Fsummary-img-sv.fc2.com%2Fsummaryfc2%2Fimg%2Fsummary%2Fwidget%2F100053655.jpeg&width=300&height=600&upd_date=2017-01-11%2008:28:37 -- upscaled
 			//   https://summary-img-sv.fc2.com/summaryfc2/img/summary/widget/100053655.jpeg
 			return decodeURIComponent(src.replace(/.*?\/api\/resize_img\.php.*?[?&]src=([^&]*).*?$/, "$1"));
+		}
+
+		if (domain === "c.fc2.com") {
+			// http://c.fc2.com/imgs/http%3A%2F%2Fcreate-pleasure.com%2Fhigh_lp%2Fmod%2Fc500000%2F0002.jpg/
+			//   http://create-pleasure.com/high_lp/mod/c500000/0002.jpg
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+imgs\/+(http[^/]*)\/*$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
 		}
 
 		if (domain === "image.tmdb.org") {
@@ -43410,6 +43430,41 @@ var $$IMU_EXPORT$$;
 			// http://fileup.calobye.com/m_250/upload/gallery/201811/1541496480_66.jpg
 			//   http://fileup.calobye.com/upload/gallery/201811/1541496480_66.jpg
 			return src.replace(/\/m_[0-9]+\/+upload\/+/, "/upload/");
+		}
+
+		if (domain_nowww === "chyoa.com") {
+			// https://chyoa.com/data/covers/s/6/6006.jpg?1473188430
+			//   https://chyoa.com/data/covers/l/6/6006.jpg?1473188430
+			return src.replace(/\/data\/+covers\/+[sm]\/+/, "/data/covers/l/");
+		}
+
+		if (domain_nowww === "m1sv.net") {
+			// http://m1sv.net/000531/Resize/150623_13-58-05_018.jpg
+			//   http://m1sv.net/000531/150623_13-58-05_018.jpg
+			return src.replace(/(\/[0-9]+\/+)Resize\/+/, "$1");
+		}
+
+		if (domain === "image.i-bbs.sijex.net") {
+			// http://image.i-bbs.sijex.net/bbs/nozomi99/1418562979555s.jpg
+			//   http://image.i-bbs.sijex.net/bbs/nozomi99/1418562979555o.jpg
+			return {
+				url: src.replace(/(\/[0-9]{5,})[sm](\.[^/.]*)(?:[?#].*)?$/, "$1o$2"),
+				headers: {
+					Referer: ""
+				}
+			};
+		}
+
+		if (domain_nowww === "pic-b.com") {
+			// http://pic-b.com/photo/3/251531/251531-110338-111-297605.jpg
+			//   http://pic-b.com/photo/3/251531/251531-110338-111-297605-pc.jpg
+			return src.replace(/(\/photo\/+[0-9]+\/+[0-9]+\/+[-0-9]{20,})(\.[^/.]*)(?:[?#].*)?$/, "$1-pc$2");
+		}
+
+		if (domain_nosub === "momogaki.com") {
+			// http://m3.momogaki.com/bbs/jkseifuku30/img2/163529.jpg
+			//   http://m3.momogaki.com/bbs/jkseifuku30/img/163529.jpg
+			return src.replace(/\/img2\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/img/$1");
 		}
 
 
