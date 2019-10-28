@@ -20038,6 +20038,9 @@ var $$IMU_EXPORT$$;
 			// https://s3-ap-northeast-1.amazonaws.com/static.cdn.xtreeem.com/production/imgs/images/000/098/799/medium.png
 			//   https://s3-ap-northeast-1.amazonaws.com/static.cdn.xtreeem.com/production/imgs/images/000/098/799/original.png
 			amazon_container === "static.cdn.xtreeem.com" ||
+			// https://s3-ap-northeast-1.amazonaws.com/cdn.bibi-star.jp/production/imgs/images/000/381/572/lqip.jpg?1566385971
+			//   https://s3-ap-northeast-1.amazonaws.com/cdn.bibi-star.jp/production/imgs/images/000/381/572/original.jpg?1566385971
+			amazon_container === "cdn.bibi-star.jp" ||
 			// https://s3-us-west-2.amazonaws.com/cdn.panda-gossips.com/production/posts/eyecatches/000/001/000/thumb.jpg?1511378312
 			//   https://s3-us-west-2.amazonaws.com/cdn.panda-gossips.com/production/posts/eyecatches/000/001/000/original.jpg?1511378312
 			amazon_container === "cdn.panda-gossips.com") {
@@ -23513,6 +23516,32 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nosub === "bbend.net" ||
+			// https://cdn.cnngreece.gr/media/com_news/galleries/2018/03/07/6568/photos/thumb/emma2.jpg
+			//   https://cdn.cnngreece.gr/media/com_news/galleries/2018/03/07/6568/photos/full/emma2.jpg
+			// https://cdn.cnngreece.gr/media/com_news/story/2019/04/11/172598/facebook/ASDADAF.jpg
+			//   https://cdn.cnngreece.gr/media/com_news/story/2019/04/11/172598/main/ASDADAF.jpg
+			domain === "cdn.cnngreece.gr" ||
+			// https://www.funtime.gr/media/com_news/galleries/2019/03/08/332/photos/thumb/Alfred-Eisenstaedt-5.jpg
+			//   https://www.funtime.gr/media/com_news/galleries/2019/03/08/332/photos/full/Alfred-Eisenstaedt-5.jpg
+			domain_nowww === "funtime.gr" ||
+			// https://i.mommd.gr/media/com_news/galleries/2019/04/18/11728/photos/thumb/thundercats-1.jpg
+			//   https://i.mommd.gr/media/com_news/galleries/2019/04/18/11728/photos/full/thundercats-1.jpg
+			domain === "i.mommd.gr" ||
+			// https://i.rtpmd.gr/media/com_news/galleries/2019/09/18/5212/photos/thumb/66808498_458790491629181_829656854891845924_n.jpg
+			//   https://i.rtpmd.gr/media/com_news/galleries/2019/09/18/5212/photos/full/66808498_458790491629181_829656854891845924_n.jpg
+			domain === "i.rtpmd.gr" ||
+			// https://i.gosmd.gr/media/news/2019/10/27/611313/thumb/201910261055500.0933_AFRODITI_LIANTOY_EVELINA_PAPOYLIA_15102019.jpg
+			//   https://i.gosmd.gr/media/news/2019/10/27/611313/main/201910261055500.0933_AFRODITI_LIANTOY_EVELINA_PAPOYLIA_15102019.jpg -- upscaled
+			domain === "i.gosmd.gr" ||
+			// https://i.astmd.gr/media/com_news/galleries/2018/03/20/1866/photos/thumb/20-01-39-image-82.png
+			//   https://i.astmd.gr/media/com_news/galleries/2018/03/20/1866/photos/full/20-01-39-image-82.png -- upscaled
+			domain === "i.astmd.gr" ||
+			// https://i.onmmd.gr/media/com_news/galleries/2018/07/12/445/photos/thumb/1-akmi.jpg
+			//   https://i.onmmd.gr/media/com_news/galleries/2018/07/12/445/photos/full/1-akmi.jpg
+			domain === "i.onmmd.gr" ||
+			// https://i.lfmd.gr/media/com_news/galleries/2019/07/22/11437/photos/thumb/garyfa66.jpg
+			//   https://i.lfmd.gr/media/com_news/galleries/2019/07/22/11437/photos/full/garyfa66.jpg
+			domain === "i.lfmd.gr" ||
 			// https://i.qumd.gr/media/com_news/galleries/2016/08/29/20015/photos/thumb/hailee-steinfeld-mtv-vmas-2016.jpg
 			//   https://i.qumd.gr/media/com_news/galleries/2016/08/29/20015/photos/full/hailee-steinfeld-mtv-vmas-2016.jpg
 			domain === "i.qumd.gr") {
@@ -23528,10 +23557,21 @@ var $$IMU_EXPORT$$;
 			//   https://cdn6.bbend.net/media/com_news/galleries/2014/09/08/57412/photos/full/rihanna-5_0.jpg
 			// other:
 			// https://nb.bbend.net/media/news/2019/06/01/986898/ekloges-2019-tsipras-epanaliptikes-kipseli.jpg -- 1200x800
-			return src
-				.replace(/(\/media\/+.*\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}[0-9]+\/+)(?:facebook\/+facebook|(?:thumb|snapshot)\/+)/, "$1main/")
+			newsrc = src
+				.replace(/(\/media\/+.*\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}[0-9]+\/+)(?:facebook\/+facebook|(?:thumb|snapshot|facebook)\/+)/, "$1main/")
 				.replace(/(\/media\/+.*\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}[0-9]+\/+photos\/+)[a-z]+\/+/, "$1full/");
+			if (newsrc !== src)
+				return newsrc;
 			//return src.replace(/\/photos\/thumb\/([^/]*)$/, "/photos/full/$1");
+		}
+
+		if (domain === "i.gosmd.gr") {
+			// https://i.gosmd.gr/templates/gossip/images/placeholder.jpg
+			if (/\/templates\/+gossip\/+images\/+placeholder\.jpg/.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
 		}
 
 		if (domain === "static.fustany.com") {
@@ -30368,7 +30408,7 @@ var $$IMU_EXPORT$$;
 			//   http://cdn-i30.definebabe.com/_idb/g/85/09/04/2f3d38b916/01.jpg
 			// http://cdn-i30.definebabe.com/_idb/g/62/09/13/149ec29c7b/300/01.jpg
 			//   http://cdn-i30.definebabe.com/_idb/g/62/09/13/149ec29c7b/01.jpg
-			return src.replace(/(\/+[0-9a-f]+\/+)[a-z]?[0-9]+\/+([0-9]+\.[^/.]*)$/, "$1$2");
+			return src.replace(/(\/+[0-9a-f]+\/+)[a-z]?[0-9]+\/+((?:[^/]*-)?[0-9]+\.[^/.]*)$/, "$1$2");
 		}
 
 		if (amazon_container === "everipedia-storage") {
@@ -39847,7 +39887,10 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/[0-9a-f]{6,}\/+)(?:small|medium)(\.[^/.]*)(?:[?#].*)?$/, "$1large$2");
 		}
 
-		if (domain === "img.popnroll.tv") {
+		if (domain === "img.popnroll.tv" ||
+			// https://images.dappei.com/uploads/article_image/image/28904/medium_fa0845027647cd69.jpg
+			//   https://images.dappei.com/uploads/article_image/image/28904/fa0845027647cd69.jpg
+			domain === "images.dappei.com") {
 			// https://img.popnroll.tv/uploads/news_item/image/3789/thumb_Liyuu%E3%82%A2%E3%83%BC%E5%86%99.jpg
 			//   https://img.popnroll.tv/uploads/news_item/image/3789/medium_Liyuu%E3%82%A2%E3%83%BC%E5%86%99.jpg
 			//   https://img.popnroll.tv/uploads/news_item/image/3789/large_Liyuu%E3%82%A2%E3%83%BC%E5%86%99.jpg -- upscaled?
@@ -43465,6 +43508,14 @@ var $$IMU_EXPORT$$;
 			// http://m3.momogaki.com/bbs/jkseifuku30/img2/163529.jpg
 			//   http://m3.momogaki.com/bbs/jkseifuku30/img/163529.jpg
 			return src.replace(/\/img2\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/img/$1");
+		}
+
+		if (domain === "images.contentexchange.me") {
+			// https://images.contentexchange.me/fit/magic/?url=http%3A%2F%2Fwww.gossip-tv.gr%2Fmedia%2Fcom_news%2Fgalleries%2F2018%2F03%2F28%2F104973%2Fphotos%2Fthumb%2F---2832018-21409-.jpg&size=300x300
+			//   http://www.gossip-tv.gr/media/com_news/galleries/2018/03/28/104973/photos/thumb/---2832018-21409-.jpg
+			newsrc = src.replace(/.*?(?:.*&)?url=(https?%[^&]*).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
 		}
 
 
