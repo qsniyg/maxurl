@@ -43518,6 +43518,158 @@ var $$IMU_EXPORT$$;
 				return decodeuri_ifneeded(newsrc);
 		}
 
+		if (domain === "thumbs.uloz.to") {
+			// https://ulozto.sk/file/8n5SQuAkGuN5/sexy-harley-quinn-2017-suicide-squad-1600x900-jpg
+			// https://thumbs.uloz.to/2/d/9/2d91cf52c015bf9395769692bdd6258b.260x170.jpg?vt=1572476399&sg=XYxbphU_HKl9xG_v0aoHQw&bl=
+			//   https://thumbs.uloz.to/2/d/9/2d91cf52c015bf9395769692bdd6258b.9999999999999x9999999999999.jpg
+			return src.replace(/(\/[0-9a-f]\/+[0-9a-f]\/+[0-9a-f]\/+[0-9a-f]{20,})\.[0-9]+x[0-9]+(\.[^/.?]*)(?:[?#].*)?$/, "$1.9999999999999x9999999999999$2");
+		}
+
+		if (domain_nosub === "patreonusercontent.com" && options && options.do_request && options.cb) {
+			// 2nd path folder is atob'd (URI encoded) of the operation to run
+			var postid_regex = /\/([^/]*)\/+patreon-media\/+p\/+post\/+([0-9]+)\/([0-9a-f]{20,})\/+/;
+			var postid = src.match(postid_regex);
+			if (postid) {
+				var modifiers = postid[1];
+				var posthash = postid[3];
+				postid = postid[2];
+
+				var are_modifiers_original = function(modifiers) {
+					try {
+						var obj = JSON_parse(base64_decode(decodeURIComponent(modifiers)));
+						var obj_string = JSON_stringify(obj);
+
+						// FIXME: is the second correct?
+						return obj_string === JSON_stringify({}) || obj_string === JSON_stringify({"p":1});
+					} catch (e) {
+						console_log(modifiers);
+						console_error(e);
+						return false;
+					}
+				};
+
+				var find_id_in_included = function(included, id) {
+					for (var i = 0; i < included.length; i++) {
+						if (included[i].id === id)
+							return included[i];
+					}
+
+					return null;
+				}
+
+				var page = "https://www.patreon.com/posts/" + postid;
+
+				if (are_modifiers_original(modifiers)) {
+					return {
+						url: src,
+						is_original: true,
+						extra: {
+							page: page
+						}
+					};
+				}
+
+				var do_website_request = function(page, cb) {
+					var cache_key = "patreon_website:" + page;
+					api_cache.fetch(cache_key, cb, function (done) {
+						options.do_request({
+							url: page,
+							method: "GET",
+							onload: function (result) {
+								if (result.readyState !== 4)
+									return;
+
+								if (result.status !== 200) {
+									console_error(cache_key, result);
+									return done(null, false);
+								}
+
+								var match = result.responseText.match(/Object\.assign\s*\(\s*window\.patreon\.bootstrap\s*,\s*({[\s\S]*?})\);\s*Object\./);
+								if (match) {
+									try {
+										var json = JSON_parse(match[1]);
+										return done(json, 60*60);
+									} catch (e) {
+										console_error(cache_key, e);
+									}
+								}
+
+								return done(null, false);
+							}
+						});
+					});
+				};
+
+				var get_image_from_postdata = function(postdata, imageurl) {
+					var image_ids = postdata.post.data.attributes.post_metadata.image_order;
+					var included = postdata.post.included;
+					var posthash = imageurl.match(postid_regex)[3];
+
+					for (var i = 0; i < image_ids.length; i++) {
+						var image_data = find_id_in_included(included, image_ids[i]).attributes;
+
+						var image_match = image_data.download_url.match(postid_regex);
+						if (image_match[3] !== posthash)
+							continue;
+
+						if (image_data.image_urls.original) {
+							return image_data.image_urls.original;
+						} else {
+							return image_data.download_url;
+						}
+					}
+
+					return null;
+				};
+
+				var find_larger_postimage = function(imageurl, cb) {
+					// FIXME: generate page instead of using global
+					var postmatch = imageurl.match(postid_regex);
+					var cache_key = "patreon_postimage:" + postmatch[2] + "/" + postmatch[3];
+
+					api_cache.fetch(cache_key, function(result) {
+						obj = {
+							url: result,
+							extra: {
+								page: page
+							}
+						};
+
+						if (!result)
+							return cb(null);
+
+						var match = result.match(postid_regex);
+						if (match && are_modifiers_original(match[1])) {
+							obj.is_original = true;
+						}
+
+						cb(obj);
+					}, function(done) {
+						do_website_request(page, function(result) {
+							if (!result) {
+								return done(null, false);
+							}
+
+							try {
+								imageurl = get_image_from_postdata(result, imageurl);
+								return done(imageurl, 60*60); // FIXME: figure out when these URLs expire
+							} catch(e) {
+								console_error(cache_key, e);
+							}
+
+							done(null, false);
+						});
+					});
+				};
+
+				find_larger_postimage(src, options.cb);
+
+				return {
+					waiting: true
+				};
+			}
+		}
+
 
 
 
