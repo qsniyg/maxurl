@@ -43526,7 +43526,6 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nosub === "patreonusercontent.com" && options && options.do_request && options.cb) {
-			// 2nd path folder is atob'd (URI encoded) of the operation to run
 			var postid_regex = /\/([^/]*)\/+patreon-media\/+p\/+post\/+([0-9]+)\/([0-9a-f]{20,})\/+/;
 			var postid = src.match(postid_regex);
 			if (postid) {
@@ -43608,15 +43607,25 @@ var $$IMU_EXPORT$$;
 					for (var i = 0; i < image_ids.length; i++) {
 						var image_data = find_id_in_included(included, image_ids[i]).attributes;
 
-						var image_match = image_data.download_url.match(postid_regex);
+						var image_url;
+
+						// for some reason blurred posts ({"b":1}) return {"b":1,"p":1} for "original" which is 404, but no download_url either
+						if (image_data.image_urls.original) {
+							image_url = image_data.image_urls.original;
+						} else if (image_data.download_url) {
+							image_url = image_data.image_urls.download_url;
+						} else if (image_data.image_urls.default) {
+							image_url = image_data.image_urls.default;
+						}
+
+						if (!image_url)
+							continue;
+
+						var image_match = image_url.match(postid_regex);
 						if (image_match[3] !== posthash)
 							continue;
 
-						if (image_data.image_urls.original) {
-							return image_data.image_urls.original;
-						} else {
-							return image_data.download_url;
-						}
+						return image_url;
 					}
 
 					return null;
