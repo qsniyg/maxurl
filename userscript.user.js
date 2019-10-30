@@ -4391,6 +4391,9 @@ var $$IMU_EXPORT$$;
 			// https://cdn.apartmenttherapy.info/image/upload/f_jpg,q_auto:eco,c_fill,g_auto,w_1500,ar_16:9/k/Photo/Recipes/2019-07-recipe-farmers-market-breakfast-bread/vegetable_quick_bread_4.12
 			//   https://cdn.apartmenttherapy.info/image/upload/k/Photo/Recipes/2019-07-recipe-farmers-market-breakfast-bread/vegetable_quick_bread_4.12
 			domain === "cdn.apartmenttherapy.info" ||
+			// https://cdn.domestika.org/c_fill,dpr_auto,h_157,t_base_params.format_jpg,w_280/v1529661169/course-covers/000/000/262/262-original.jpg?1529661169
+			//   https://cdn.domestika.org/course-covers/000/000/262/262-original.jpg?1529661169
+			domain === "cdn.domestika.org" ||
 			// https://images.moviepilot.com/images/c_limit,q_auto:good,w_600/uom2udz4ogmkncouu83q/beauty-and-the-beast-credit-disney.jpg
 			// https://images.moviepilot.com/image/upload/c_fill,h_64,q_auto,w_64/lpgwdrrgc3m8duvg7zt2.jpg
 			domain === "images.moviepilot.com") {
@@ -15058,6 +15061,8 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "myamericanmarket.com" ||
 			// http://lapakfiguremiina.com/1071-thickbox_default/figma-tv-animation-black-rock-shooter-chariot-tv-animation-ver.jpg
 			domain_nowww === "lapakfiguremiina.com" ||
+			// https://www.donnashape.com/39816-thickbox_default/dynamite-denim-bodypaint-legging-.jpg
+			domain_nowww === "donnashape.com" ||
 			// https://media2.nin-nin-game.com/21296-pos_product/black-rock-shooter-dead-master-anime-ver-good-smile-comapny-fr.jpg
 			(domain_nosub === "nin-nin-game.com" && domain.match(/^media[0-9]*\.nin/)) ||
 			// https://adintime.com/844-large_default/marie-claire-arabia.jpg
@@ -24225,6 +24230,9 @@ var $$IMU_EXPORT$$;
 
 		if ((domain_nosub === "ellingtoncms.com" &&
 			 domain.match(/\.media\.clients\.ellingtoncms\.com$/)) ||
+			// https://media.lasvegasweekly.com/img/photos/2019/10/22/1024_Nights_Union_20191024_CB_t190.jpg?8f7e25bf5d9051e52786571508cc6ab35225febe
+			//   https://media.lasvegasweekly.com/img/photos/2019/10/22/1024_Nights_Union_20191024_CB.jpg?8f7e25bf5d9051e52786571508cc6ab35225febe
+			domain === "media.lasvegasweekly.com" ||
 			// https://media.spokesman.com/photos/2018/07/13/Greenland_Iceberg.JPG_MYCrmE3_t1200.jpg?298603a24e8d51915fce203907ff2746e482a5a6
 			//   https://media.spokesman.com/photos/2018/07/13/Greenland_Iceberg.JPG_MYCrmE3.jpg?298603a24e8d51915fce203907ff2746e482a5a6
 			domain === "media.spokesman.com") {
@@ -43677,6 +43685,14 @@ var $$IMU_EXPORT$$;
 					waiting: true
 				};
 			}
+		}
+
+		if (domain === "s3.dexerto.com") {
+			// https://s3.dexerto.com/thumbnails/_thumbnailSmall/Apex-Legends-Binging-with-Babish-takes-on-Mirages-unpalatablerecipe.jpg
+			//   https://s3.dexerto.com/thumbnails/_thumbnailLarge/Apex-Legends-Binging-with-Babish-takes-on-Mirages-unpalatablerecipe.jpg
+			// other:
+			// https://s3.dexerto.com/articles/brigitte_ow_5_smaller.jpg
+			return src.replace(/\/thumbnails\/+_thumbnailSmall\/+/, "/thumbnails/_thumbnailLarge/");
 		}
 
 
