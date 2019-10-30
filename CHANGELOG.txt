@@ -1,0 +1,175 @@
+0.11.9
+
+* Support for ~30 new websites (using ~10 new rules), including Patreon
+* Various improvements/fixes to existing rules
+* Visiting the Greasyfork page will display if an update is available
+
+---
+
+0.11.8
+
+* Emergency fix for Instagram's latest update, improve Newsen and Discord rules
+* Support for 4 new websites (using 3 new rules)
+
+---
+
+0.11.7
+
+New features:
+
+ * Support for ~60 new websites (using ~40 new rules)
+
+Improvements:
+
+ * Don't pop up for broken images or known image masks
+ * Improve amazon bucket detection
+ * Various improvements/fixes to existing rules (including Flickr and Newsen)
+
+Bugfixes:
+
+ * Greasyfork addition works more consistently now
+
+ ---
+
+ 0.11.6
+
+New features:
+
+ * Option to load popup before image has finished loading (enabled by default for the extension)
+ * Support for ~50 new websites (using ~25 new rules)
+ * catch_errors option has been added to node/script version, to optionally disable catching errors inside the userscript
+
+Improvements:
+
+ * Waiting cursor no longer uses an invisible element by default (the old behavior can be restored using the new "Use invisible element when waiting" option)
+ * Various improvements/fixes to existing rules
+ * Replace Images now works more consistently when not using data URLs (extension only)
+ * Userscript now always uses a specific git commit for the icon
+
+Bugfixes:
+
+ * Options icon will always be white
+
+ ---
+
+ 0.11.5
+
+New features:
+
+* Support for ~45 new websites (using ~30 new rules)
+* Support for sites using testcookie (disabled by default in the userscript for security reasons, although the risk is very unlikely due to commit permalink+salted hash checks)
+* "Installed" status is shown on Greasyfork page for the userscript, with the version and a link to the options
+
+Improvements:
+
+* Various improvements/fixes to existing rules
+* Weibo and Imgur now no longer require the popup if opened in a new tab for the userscript (more websites to follow in future releases)
+
+Bugfixes:
+
+* Redirects are now properly handled by the extension
+* Headers are now properly supported for newer Chrome-based browsers
+
+---
+
+0.11.4
+
+* Option to disable the use of API calls (API calls are enabled by default)
+* Support for ~70 new websites (using ~20 new rules)
+* Various improvements/fixes to existing rules
+  * Instagram stories and profile photos are better supported
+* Various minor bugfixes
+
+---
+
+0.11.3
+
+* Support for ~100 new websites (using ~50 new rules)
+* Various improvements/fixes to existing rules
+
+---
+
+0.11.2
+
+New features:
+
+* You can now easily save the image in the popup using S/Ctrl+S, with the original filename
+* Option to exclude the popup if the image is the same (disabled by default)
+* Support for importing/exporting settings
+* Support for ~50 new websites (using ~30 new rules)
+
+Improvements:
+
+* Settings related to closing are moved to a new subcategory (close behavior)
+* Support for images stored in :before and :after
+* Various improvements/fixes to existing rules (including 500px)
+* Spaces were converted to tabs, which reduces the size of the userscript by >200KB
+
+Bugfixes:
+
+* Fix for rule-related settings not live-reloading when updated
+* It will no longer redirect to images where the host doesn't exist
+* "Bad" images (fake 404) are better handled
+* Fix for Tampermonkey not recognizing Unicode characters
+* Workaround for FireMonkey not reading settings
+* Using LibreJS for the website is now supported
+* Other minor bugfixes
+
+---
+
+0.11.1
+
+* Add option to close popup if the cursor is outside of the thumbnail image (similar to other extensions, enabled by default if "Popup position" is set to "Beside cursor", thanks to decembre for the idea)
+* Add option to fine-tune minimum image size threshold to popup (defaults to 20 pixels wide/high)
+* Add option to exclude 'background-image's (disabled by default)
+* Add option to disable mouseover popup if the image is opened in its own tab (enabled by default)
+  * The userscript will override this in the case that redirection is enabled and the popup is needed to get the full image
+* Add option to prevent the popup from overlapping the cursor (enabled by default if "Popup position" is set to "Beside cursor")
+* Various other fixes around the mouseover popup, as well as improvements for the gallery
+* Support for ~10 new websites (using ~10 new rules)
+
+---
+
+0.11.0
+
+* Live reloading for settings in the extension (not yet for the userscript)
+  * Any change you make should be applied to all other pages, without needing to reload the page. Useful for testing settings
+* Quickly enable/disable the addon through the popup menu
+* Initial work on (currently incomplete) French translation
+* Option to switch languages manually. Previously this was detected automatically based off of your browser's language settings
+* Option to open the popup beside the cursor (similar to MPIV, Imagus, etc.)
+* Option to close when zooming out past the smallest zoom level (similar to MPIV)
+* Option to exclude page background, enabled by default (thanks to decembre for the idea)
+* Option to only close the popup when any/all trigger keys have been released, and mouse has left the image (thanks to acid-crash for the idea)
+* Option to keep the popup open if a customizable "hold" key is pressed for the mouseover popup trigger (thanks to decembre for the idea)
+* Option to open the popup at a specified custom zoom percent (thanks to decembre for the idea)
+* Option to disable popup entirely for URLs that match the blacklist (the blacklist will otherwise only affect the processing of the rules)
+* Image size and zoom level is (by default) shown in the popup UI (similar to MPIV and Imagus)
+* Many fixes for the mouseover popup trigger
+* Documentation for blacklist (thanks to decembre for the idea)
+* More settings to fine-tune the execution of the replace images button
+* Better categorization for settings
+* Support for ~25 new websites (using ~10 new rules)
+* Other various fixes/improvements (including compatibility fixes for Waterfox, thanks to decembre for reporting)
+
+---
+
+0.10.3
+
+* Support for ~65 new websites (using ~40 new rules), including a few complex ones that were previously delayed
+  * A new option ("Rules using 3rd-party websites") was introduced for Newsen, as it fetches images from Daum (thanks to an anonymous tip for the info).
+* Batch cached API calls for fewer calls when checking many similar images at once
+  * This is mainly useful when using the Replace Images function. This will not affect images opened in their own tabs, as each tab holds a separate instance of IMU.
+* Various fixes/improvements to existing rules
+  * Most notably for Instagram, Photobucket , and SmugMug (printing original pages)
+* Various fixes to the extension/userscript itself (mainly for better cross-browser support)
+* Node compatibility has also been improved by including a polyfill for atob (base64 decoding)
+
+---
+
+0.10.2
+
+* Opera addon is finally live
+* Support for ~35 new websites (using ~20 new rules), including VK
+* Various improvements/fixes to existing rules, including private photo support for Flickr
+* Bugfixes to the extension itself (original page will now always print, image masks are now properly filtered)
