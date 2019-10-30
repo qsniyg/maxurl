@@ -322,6 +322,7 @@ asiaworldmusic.fr
 ask.fm
 asn.im
 asobokey.x.fc2.com
+asog-labs.com
 asset.kompas.com
 asset.wsj.net
 assets-old.blogr.xxx
@@ -647,6 +648,7 @@ c-ctrip.com
 c.actve.net
 c.bookwalker.jp
 c.fantia.jp
+c.fc2.com
 c.igte.ch
 c.o0bg.com
 c.tribune.com.pk
@@ -743,6 +745,7 @@ cdn.atwiki.jp
 cdn.axar.az
 cdn.baeblemusic.com
 cdn.benishop.co
+cdn.bibi-star.jp.s3.amazonaws.com
 cdn.blogimage2.crooz.jp
 cdn.breathecast.com
 cdn.britannica.com
@@ -754,6 +757,7 @@ cdn.clien.net
 cdn.cliqueinc.com
 cdn.closeronline.co.uk
 cdn.cnn.com
+cdn.cnngreece.gr
 cdn.conexaohost.com.br
 cdn.cretalive.gr
 cdn.crhoy.net
@@ -762,6 +766,7 @@ cdn.diario26.com.ar
 cdn.discordapp.com
 cdn.discuss.com.hk
 cdn.doctailieu.com
+cdn.domestika.org
 cdn.downtoearth.org.in
 cdn.dribbble.com
 cdn.ebaumsworld.com
@@ -1039,6 +1044,7 @@ christiandaily.com
 chudaowang.com
 chukcha.net
 chunchu.yonsei.ac.kr
+chyoa.com
 ci.xiaohongshu.com
 cilacila.com
 cimg.tvgcdn.net
@@ -1378,6 +1384,7 @@ dollartree.com
 domin.co.kr
 donegaldemocrat.ie
 donmai.us
+donnashape.com
 dontlinkthis.net
 doodoo.ru
 doramakun.ru
@@ -1398,6 +1405,7 @@ dramaguru.net
 dramaqueen.com.tw
 draw.acharts.net
 dreamercdn.com
+dreamline.com
 dreamwiz.net
 driftt.imgix.net
 drop.ndtv.com
@@ -1799,6 +1807,7 @@ funon.cc
 funsubstance.com
 funtasticecards.com
 funtime.ge
+funtime.gr
 funweek.it
 fuse.tv
 fuskator.com
@@ -1935,6 +1944,7 @@ golocalprov.com
 gonet.cz
 gongl8.com
 gonintendo.com
+goodblud.com
 goodfon.com
 goodfon.ru
 goodnet.org
@@ -2140,6 +2150,7 @@ i.amz.mshcdn.com
 i.annihil.us
 i.artfile.me
 i.artfile.ru
+i.astmd.gr
 i.blogs.es
 i.bobs-tube.com
 i.bollywoodmantra.com
@@ -2161,6 +2172,7 @@ i.gadgets360cdn.com
 i.gbc.tw
 i.genius.com
 i.girlstop.info
+i.gosmd.gr
 i.gr-assets.com
 i.guim.co.uk
 i.gyazo.com
@@ -2185,10 +2197,12 @@ i.kinja-img.com
 i.know.cf
 i.ksd-i.com
 i.lensdump.com
+i.lfmd.gr
 i.lihkg.com
 i.linkeddb.com
 i.marieclaire.com.tw
 i.mdel.net
+i.mommd.gr
 i.moveek.com
 i.myass.ru
 i.nahraj.to
@@ -2197,6 +2211,7 @@ i.neoseeker.com
 i.newsarama.com
 i.nextmedia.com.au
 i.obozrevatel.com
+i.onmmd.gr
 i.osvigaristas.net.br
 i.paigeeworld.com
 i.penisbot.com
@@ -2211,6 +2226,7 @@ i.qumd.gr
 i.redd.it
 i.reddituploads.com
 i.rocdn.com
+i.rtpmd.gr
 i.ryt9.com
 i.sabah.com.tr
 i.servimg.com
@@ -2317,6 +2333,7 @@ image.giaoducthoidai.vn
 image.hackadoll.com
 image.hankookilbo.com
 image.hoopchina.com
+image.i-bbs.sijex.net
 image.ibb.co
 image.iol.co.za
 image.istyle24.com
@@ -2434,6 +2451,7 @@ images.cinefil.com
 images.commeaucinema.com
 images.complex.com
 images.contactmusic.com
+images.contentexchange.me
 images.contentful.com
 images.costco-static.com
 images.costcobusinesscentre.ca
@@ -2441,6 +2459,7 @@ images.csmonitor.com
 images.ctfassets.net
 images.curved.de
 images.dailykos.com
+images.dappei.com
 images.dbnaked.com
 images.discerningassets.com
 images.discordapp.net
@@ -3391,6 +3410,7 @@ m.tuniucdn.com
 m.wdqyan.com
 m.wsj.net
 m1905.cn
+m1sv.net
 m24.ru
 m2ch.hk
 m8q3v4v6.stackpathcdn.com
@@ -3517,6 +3537,7 @@ media.kleinezeitung.at
 media.korea25.com
 media.lamsao.com
 media.laodong.vn
+media.lasvegasweekly.com
 media.licdn.com
 media.linkonlineworld.com
 media.lolusercontent.com
@@ -3723,6 +3744,7 @@ mogaznews.com
 mojeek.com
 moly.hu
 mom50.com
+momogaki.com
 mondrian.mashable.com
 monitor.bg
 monocdn.com
@@ -4093,6 +4115,7 @@ pat.primecdn.net
 patch.com
 pathwright.imgix.net
 patrasevents.gr
+patreonusercontent.com
 pauza.sk
 paytm.com
 pbabes.com
@@ -4165,6 +4188,7 @@ photoshelter.com
 photosight.ru
 photosynthesis.bg
 photozou.jp
+pic-b.com
 pic-bucket.ws.126.net
 pic-cdn.35pic.com
 pic.58pic.com
@@ -4595,6 +4619,7 @@ s12emagst.akamaized.net
 s1sf.com
 s3.931wolfcountry.com.s3.amazonaws.com
 s3.bukalapak.com
+s3.dexerto.com
 s3.friday-magazine.ch
 s3.viva.pl
 s3bucketvn.s3.amazonaws.com
@@ -5141,6 +5166,7 @@ tdjakes.com
 teamupforkansaskids.com
 techadvisor.co.uk
 techbang.com
+techno-import.fr
 tedsby.com
 teen-angels.org
 teenfilipina.net
@@ -5270,6 +5296,7 @@ thumbor.forbes.com
 thumbs-prod.si-cdn.com
 thumbs.booru.org
 thumbs.hentai-foundry.com
+thumbs.uloz.to
 thumbs.vaultsex.com
 thumbs.videogamer.com
 thumbs.wikifeet.com

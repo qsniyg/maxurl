@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Image Max URL",
   "author": "qsniyg",
-  "version": "0.11.8",
+  "version": "0.11.9",
 
   "description": "Finds larger or original versions of images",
 
