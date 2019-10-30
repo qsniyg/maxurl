@@ -15050,6 +15050,15 @@ var $$IMU_EXPORT$$;
 			// http://streetstylestore.com/img/p/7/4/7/7/3/74773-home_default.jpg
 			//   http://streetstylestore.com/img/p/7/4/7/7/3/74773.jpg
 			domain_nowww === "streetstylestore.com" ||
+			// http://asog-labs.com/img/p/4/7/47-thickbox_default.jpg
+			//   http://asog-labs.com/img/p/4/7/47.jpg
+			domain_nowww === "asog-labs.com" ||
+			// https://dreamline.com/img/p/1/4/7/5/7/0/147570-thickbox_default.jpg
+			//   https://dreamline.com/img/p/1/4/7/5/7/0/147570.jpg
+			domain_nowww === "dreamline.com" ||
+			// https://techno-import.fr/shop/img/p/3/5/9/5/0/35950-thickbox_default.jpg
+			//   https://techno-import.fr/shop/img/p/3/5/9/5/0/35950.jpg
+			domain_nowww === "techno-import.fr" ||
 			// https://cdn.poplook.com/15360-92883-large_default/lane-bubble-sleeve-blouse-dusty-teal.jpg
 			domain === "cdn.poplook.com" ||
 			// https://www.directgardening.com/878-large_default/forsythia.jpg
@@ -15087,8 +15096,8 @@ var $$IMU_EXPORT$$;
 			// https://www.tiarashop.eu/3412-home_default/o.jpg
 			//   https://www.tiarashop.eu/3412/o.jpg
 			return src
-				.replace(/(:\/\/[^/]*\/img\/.*\/[0-9]*)[-_][^/.]*(\.[^/.]*)$/, "$1$2")
-				.replace(/(:\/\/[^/]*\/[0-9]+(?:-[0-9]+)?)(?:[-_][^/]*?)?(\/[^/]*)$/, "$1$2");
+				.replace(/(\/img\/+p\/+(?:[0-9]\/+){1,}[0-9]+)[-_][^/.]*(\.[^/.]*)$/, "$1$2")
+				.replace(/(:\/\/[^/]*\/+[0-9]+(?:-[0-9]+)?)(?:[-_][^/]*?)?(\/[^/]*)$/, "$1$2");
 		}
 
 		if (domain === "skinzwearphotography.com") {
