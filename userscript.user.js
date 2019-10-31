@@ -43720,10 +43720,13 @@ var $$IMU_EXPORT$$;
 
 		if (domain === "content.ray-web.jp" && options && options.cb && options.do_request && options.element &&
 			host_domain_nowww === "ray-web.jp") {
-			// thanks to vick2 on greasyfork
+			// thanks to vick2 on greasyfork: https://greasyfork.org/en/forum/discussion/65328/add-support-for-ray-web-jp
 			// https://ray-web.jp/50370/photos/47668
 			// https://content.ray-web.jp/photos/pictures/47668/medium/d51ee4a492a483a6606aa407015527ae1b9f986d.jpg?1550540662
 			//   https://content.ray-web.jp/photos/pictures/47668/original/7c23b2b23bf40ec891feb577fdf69e0335545fe6.jpg?1550540662
+			// other:
+			// https://ray-web.jp/series/riho
+			//   https://content.ray-web.jp/series/images/17/original/a2695c70afbe13d62003e7d8f38291247e853e64.png?1568888397
 
 			regex = /\/photos\/+pictures\/+([0-9]+)\/+([a-z]+)\/+[0-9a-f]{20,}\./;
 			match = src.match(regex);
