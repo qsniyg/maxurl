@@ -43704,6 +43704,89 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/thumbnails\/+_thumbnailSmall\/+/, "/thumbnails/_thumbnailLarge/");
 		}
 
+		if (domain === "scp.indiegames.us") {
+			// http://scp.indiegames.us/scn/Star%20Wars%20Conversion/swinterdictor003308217ea_tn.jpg
+			//   http://scp.indiegames.us/scn/Star%20Wars%20Conversion/swinterdictor003308217ea.jpg
+			return src.replace(/(\/scn\/+[^/]*\/+[^/]+)_tn(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain === "content.ray-web.jp") {
+			if (/\/photos\/+pictures\/+[0-9]+\/+original\/+[0-9a-f]{20,}\./.test(src))
+				return {
+					url: src,
+					is_original: true
+				};
+		}
+
+		if (domain === "content.ray-web.jp" && options && options.cb && options.do_request && options.element &&
+			host_domain_nowww === "ray-web.jp") {
+			// thanks to vick2 on greasyfork
+			// https://ray-web.jp/50370/photos/47668
+			// https://content.ray-web.jp/photos/pictures/47668/medium/d51ee4a492a483a6606aa407015527ae1b9f986d.jpg?1550540662
+			//   https://content.ray-web.jp/photos/pictures/47668/original/7c23b2b23bf40ec891feb577fdf69e0335545fe6.jpg?1550540662
+
+			regex = /\/photos\/+pictures\/+([0-9]+)\/+([a-z]+)\/+[0-9a-f]{20,}\./;
+			match = src.match(regex);
+
+			if (match) {
+				var get_og_image = function(data) {
+					var url = data.match(/<meta\s+property=["']og:image["']\s+content=["'](https?:.*?)["']/);
+					if (url)
+						return decode_entities(url[1]);
+					return null;
+				};
+
+				var fetch_image_page = function(albumid, pictureid, cb) {
+					var cache_key = "ray-web:" + albumid + "-" + pictureid;
+					api_cache.fetch(cache_key, cb, function(done) {
+						options.do_request({
+							url: "https://ray-web.jp/" + albumid + "/photos/" + pictureid,
+							method: "GET",
+							onload: function(result) {
+								if (result.readyState !== 4)
+									return;
+
+								if (result.status !== 200) {
+									console_error(cache_key, result);
+									return done(null, false);
+								}
+
+								return done(result.responseText, 6*60*60);
+							}
+						});
+					});
+				};
+
+				var rayweb_url_to_parts = function(url) {
+					var match = url.match(/:\/\/[^/]*\/+([0-9]+)\/+photos\/+([0-9]+)(?:[?#].*)?$/);
+					if (match) {
+						return [match[1], match[2]];
+					} else {
+						return null;
+					}
+				};
+
+				var parts = null;
+				if (options.element.parentElement.tagName === "A") {
+					parts = rayweb_url_to_parts(options.element.parentElement.href);
+				} else {
+					parts = rayweb_url_to_parts(options.host_url);
+					if (!parts || match[1] !== parts[1])
+						parts = null;
+				}
+
+				if (parts) {
+					fetch_image_page(parts[0], parts[1], function (data) {
+						options.cb(get_og_image(data));
+					});
+
+					return {
+						waiting: true
+					};
+				}
+			}
+		}
+
 
 
 
