@@ -91,3 +91,12 @@ sig_len_hex=$(byte_swap $(printf '%08x\n' $(ls -l "$sig" | awk '{print $5}')))
   echo "$crmagic_hex $version_hex $pub_len_hex $sig_len_hex" | xxd -r -p
   cat "$pub" "$sig" "$zip"
 ) > "$crx"
+
+echo
+echo "Release checklist:"
+echo
+echo ' * Ensure xx00+ count is updated (userscript, reddit post, mozilla/opera, website)'
+echo ' * Update greasyfork, firefox, opera'
+echo ' * git tag v0.xx.xx'
+echo ' * Update userscript.user.js for site (but check about.js for site count before)'
+echo ' * Update CHANGELOG.txt and Discord changelog'
