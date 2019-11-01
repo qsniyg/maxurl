@@ -6176,6 +6176,8 @@ var $$IMU_EXPORT$$;
 			(domain_nosub === "eldia.com" && /^cdn[0-9]*\./.test(domain)) ||
 			// https://esquire.com.gr/Content/ImagesDatabase/dd/dd305859aa7b4181b03ee3f615490545.jpg?v=1&maxwidth=760&
 			(domain_nowww === "esquire.com.gr" && /\/Content\/+ImagesDatabase\//i.test(src)) ||
+			// https://akmedia.hollywoodlife.com/2012/04/041012_1d_teaser_spl380257_017120410085753.jpg?w=150&h=115&crop=1
+			domain === "akmedia.hollywoodlife.com" ||
 			// http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
 			// https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
 			src.match(/\/demandware\.static\//) ||
@@ -12409,8 +12411,19 @@ var $$IMU_EXPORT$$;
 			//   http://cdn7.bigcommerce.com/s-aeyni5y9/images/stencil/original/products/517/520/bear_papa_7328_2__12787.1400287249.jpg?c=2
 			// https://cdn7.bigcommerce.com/s-c14n6tful3/images/stencil/735x374/products/136/460/checkbox-categories-filter-for-product-search-preview-734x374__10327.1518675514.jpg?c=2&imbypass=on
 			//   https://cdn7.bigcommerce.com/s-c14n6tful3/images/stencil/original/products/136/460/checkbox-categories-filter-for-product-search-preview-734x374__10327.1518675514.jpg?c=2&imbypass=on -- zero length head
+			// other:
+			// https://cdn2.bigcommerce.com/server5100/wxfmbm/products/7017/images/70970/MVB_0261_92322.1440979988.501.751_1__27160.1444692485.60.90.jpg?c=2
+			//   https://cdn2.bigcommerce.com/server5100/wxfmbm/images/stencil/original/products/7017/70970/MVB_0261_92322.1440979988.501.751_1__27160.1444692485.jpg?c=2
+			newsrc = src.replace(/\/images\/+stencil\/+[0-9]+x[0-9]+\//, "/images/stencil/original/");
+			if (newsrc !== src)
+				return newsrc;
+
+			newsrc = src.replace(/\/products\/+([0-9]+)\/+images\/+([0-9]+)\/+(.*\.[0-9]{8,})(?:\.[0-9]+\.[0-9]+)?(\.[^/.]*)(?:[?#].*)?$/, "/images/stencil/original/products/$1/$2/$3$4");
+			if (newsrc !== src)
+				return newsrc;
+
 			return {
-				url: src.replace(/\/images\/+stencil\/+[0-9]+x[0-9]+\//, "/images/stencil/original/"),
+				url: src,
 				head_wrong_contentlength: true
 			};
 		}
@@ -15878,7 +15891,10 @@ var $$IMU_EXPORT$$;
 			 //   https://s7d9.scene7.com/is/image/zumiez/pdp_hero/adidas-Boys-Trefoil-Black-Hoodie-_289406.jpg?scl=1 -- image not found
 			 /*domain_nosub === "scene7.com"*/
 			 ) &&
-			src.indexOf("/is/image/") >= 0) {
+			src.indexOf("/is/image/") >= 0 ||
+			// https://c.shld.net/rpx/i/s/i/spin/image/spin_prod_944500112?hei=185&wid=185&op_sharpen=1&qlt=85
+			//   https://c.shld.net/rpx/i/s/i/spin/image/spin_prod_944500112?scl=1&fmt=png-alpha
+			domain === "c.shld.net") {
 			// https://dyson-h.assetsadobe2.com/is/image//content/dam/dyson/products/hair-care/dyson-supersonic/customisation/personal-care-dyson-supersonic-customisation-homepage.jpg?scl=1
 			// https://dyson-h.assetsadobe2.com/is/image//content/dam/dyson/icons/owner-footer/register-my-machine.png?scl=1&fmt=png-alpha
 			// https://airbus-h.assetsadobe2.com/is/image/content/dam/products-and-solutions/commercial-aircraft/beluga/belugaxl/BelugaXL.jpg?wid=1920&fit=fit,1&qlt=85,0
@@ -24627,6 +24643,8 @@ var $$IMU_EXPORT$$;
 			// http://pornstarsadvice.com/contents/albums/main/150x200/24000/24633/339924.jpg
 			//   http://pornstarsadvice.com/contents/albums/sources/24000/24633/339924.jpg
 			domain_nowww === "pornstarsadvice.com" ||
+			// http://www.porntb.com/contents/albums/main/370x250/2000/2380/63923.jpg
+			//domain_nowww === "porntb.com" || -- sources is 404
 			// http://fetishburg.com/contents/albums/main/370x250/22000/22495/336053.jpg
 			// requires get_image
 			//domain_nowww === "fetishburg.com" ||
@@ -25070,8 +25088,10 @@ var $$IMU_EXPORT$$;
 		if (domain_nowww === "fabhairypussy.com") {
 			// http://www.fabhairypussy.com/galleries/Atk/uO6FCACz/01_tn.jpg
 			//   http://www.fabhairypussy.com/galleries/Atk/uO6FCACz/01.jpg
+			// http://www.fabhairypussy.com/galleries/haw/2019/11/rj584Fwx/01_weah_fmp_rsz.jpg
+			//   http://www.fabhairypussy.com/galleries/haw/2019/11/rj584Fwx/01.jpg
 			return {
-				url: src.replace(/(\/+galleries\/+[^/]*\/+[^/]*\/+[0-9]+)_tn(\.[^/.]*)(?:[?#].*)?$/, "$1$2"),
+				url: src.replace(/(\/+galleries\/+[^/]*\/+(?:[0-9]{4}\/+[0-9]{2}\/+)?[^/]+\/+[0-9]+)(?:_[a-z]+){1,}(\.[^/.]*)(?:[?#].*)?$/, "$1$2"),
 				headers: {
 					Referer: ""
 				},
@@ -25634,6 +25654,9 @@ var $$IMU_EXPORT$$;
 			// http://sexyasians.net/gallery/Asians752/th_27.jpg
 			//   http://sexyasians.net/gallery/Asians752/27.jpg
 			domain_nowww === "sexyasians.net" ||
+			// http://www.maturexxxpics.net/images/00f6e6/th_01.jpg
+			//   http://www.maturexxxpics.net/images/00f6e6/01.jpg
+			domain_nowww === "maturexxxpics.net" ||
 			// http://teengalleries.mobi/g/d55bf2/th_02.jpg
 			//   http://teengalleries.mobi/g/d55bf2/02.jpg
 			domain_nowww === "teengalleries.mobi") {
@@ -33523,6 +33546,12 @@ var $$IMU_EXPORT$$;
 			//   https://static.planetminecraft.com/files/resource_media/screenshot/1323/adorable-anime-beautiful-blue-blue-eyes-Favimcom-351904_5646190.jpg
 			return src.replace(/(\/files\/.*_[0-9]+)_[a-z]+(\.[^/.]*)(?:[?#].*)?$/,
 							   "$1$2");
+		}
+
+		if (domain === "games.renpy.org") {
+			// https://games.renpy.org/media/screenshot/small/Sc5.PNG.jpg
+			//   https://games.renpy.org/media/screenshot/Sc5.PNG.jpg
+			return src.replace(/\/media\/+screenshot\/+small\/+/, "/media/screenshot/");
 		}
 
 		if (domain_nowww === "700016.xyz") {
@@ -41697,9 +41726,11 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/pictures\/+[0-9]+\/+[^/]+\/+)thumbs\/+/, "$1pics/");
 		}
 
-		if (domain_nosub === "scoreuniverse.com" && /^cdn[0-9]*\./.test(domain)) {
+		if (domain_nosub === "scoreuniverse.com") {
 			// https://cdn77.scoreuniverse.com/18eighteen/gallys/images_content/AliceMarch_28734/01_tn.jpg
 			//   https://cdn77.scoreuniverse.com/18eighteen/gallys/images_content/AliceMarch_28734/01.jpg
+			// http://tsg.scoreuniverse.com/legsex/gallys/images_content/CarolinePierce_19299/12_tn.jpg
+			//   http://tsg.scoreuniverse.com/legsex/gallys/images_content/CarolinePierce_19299/12.jpg
 			return src.replace(/(\/images_content\/+[^/]*\/+[0-9]+)_tn(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
 		}
 
@@ -43788,6 +43819,80 @@ var $$IMU_EXPORT$$;
 					};
 				}
 			}
+		}
+
+		if (domain_nosub === "icdn.ru") {
+			// https://s8.us.icdn.ru/m/mocojopo/4/imgsrc.ru_65724094lHp.jpg
+			//   https://b8.us.icdn.ru/m/mocojopo/4/imgsrc.ru_65724094lGa.jpg
+			regex = /:\/\/s[0-9]+\.[^/]+\/+.\/+([^/]+)\/+[0-9]+\/+imgsrc\.ru_([0-9]+)...(\.[^/.]*)(?:[?#].*)?$/;
+
+			match = src.match(regex);
+			if (match) {
+				obj = {
+					url: src,
+					extra: {
+						page: "https://imgsrc.ru/" + match[1] + "/" + match[2] + ".html"
+					}
+				};
+
+				if (options && options.do_request && options.cb) {
+					var cache_key = "imgsrc.ru:" + match[1] + "/" + match[2];
+					api_cache.fetch(cache_key, function(url) {
+						if (!url)
+							return options.cb(null);
+						obj.url = url;
+						options.cb(obj);
+					}, function(done) {
+						options.do_request({
+							url: obj.extra.page,
+							method: "GET",
+							headers: {
+								Referer: ""
+							},
+							onload: function(result) {
+								if (result.readyState !== 4)
+									return;
+
+								if (result.status !== 200) {
+									console_error(cache_key, "Bad status (" + result.status + ":", result);
+									return done(null, false);
+								}
+
+								var match = result.responseText.match(/<script(?:\s+type=["']text\/javascript["'])?>[\s\S]*?var\s+(\S+)\s*=\s*["'](.*?)["'][\s\S]*?["']\+((?:\1(?:\s*\.\s*charAt\s*\(\s*|\s*\[\s*)([0-9]+)\s*(?:\)|\])\s*\+\s*){1,})\s*['"][\s\S]*?<\/script>/);
+								if (!match) {
+									console_error(cache_key, "Invalid match", result);
+									return done(null, false);
+								}
+
+								var splitted = match[3].split("+");
+								var chars = "";
+								for (var i = 0; i < splitted.length; i++) {
+									var charid = splitted[i].replace(/.*(?:\[|\()\s*([0-9]+).*?$/, "$1");
+									if (charid !== splitted[i])
+										chars += match[2].charAt(charid);
+								}
+
+								if (chars.length !== 3) {
+									console_error(cache_key, "Invalid chars:", chars, result);
+									return done(null, false);
+								}
+
+								done(src.replace(/:\/\/s([0-9]+.*_[0-9]+)...(\.[^/.]*)(?:[?#].*)?$/, "://b$1" + chars + "$2"), 6*60*60);
+							}
+						});
+					});
+
+					return {
+						waiting: true
+					};
+				}
+			}
+		}
+
+		if (domain === "rs.fairywigs.com") {
+			// http://rs.fairywigs.com/images/pinfo/0/154/154173_1_s.jpg
+			//   http://rs.fairywigs.com/images/pinfo/0/154/154173_1.jpg
+			return src.replace(/(\/images\/.*\/[0-9]+\/+[0-9]+_[0-9]+)_s(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
 		}
 
 
