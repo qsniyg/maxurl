@@ -14290,7 +14290,8 @@ var $$IMU_EXPORT$$;
 				.replace(/\/gisa_img\/([0-9]+_[^/._]+)(\.[^/.]*)$/, "/gisa_img_origin/$1_origin$2");
 		}
 
-		if (domain_nosub === "phncdn.com") {
+		if (domain_nosub === "phncdn.com" ||
+			domain_nosub === "pornhub.com") {
 			// https://ci.phncdn.com/pics/albums/000/430/541/4503569/(m=eiJ_8b)(mh=EvXtHOjNcliZ7ja0)original_4503569.jpg
 			//   https://ci.phncdn.com/pics/albums/000/430/541/4503569/original_4503569.jpg
 			// https://ci.phncdn.com/m=e_rU8f/pics/pornstars/000/284/192/thumb_1068522.jpg
@@ -19937,6 +19938,12 @@ var $$IMU_EXPORT$$;
 			// https://www.nintendoeverything.com/wp-content/gallery/fatal-frame-maiden-of-black-water-8515/thumbs/thumbs_fatal-frame-18.jpg
 			//   https://nintendoeverything.com/wp-content/gallery/fatal-frame-maiden-of-black-water-8515/fatal-frame-18.jpg
 			return src.replace(/\/thumbs\/thumbs_([^/]*)$/, "/$1");
+		}
+
+		if (domain_nowww === "bndasupamark.com") {
+			// http://bndasupamark.com/wp-content/gallery/review-of-beccas-knockout-secret-v/cache/FWR-BECCAS-KNOCKOUT-SECRET-V-23.jpg-nggid06191421-ngg0dyn-160x90x100-00f0w010c011r110f110r010t010.jpg
+			//   http://bndasupamark.com/wp-content/gallery/review-of-beccas-knockout-secret-v/FWR-BECCAS-KNOCKOUT-SECRET-V-23.jpg
+			return src.replace(/(\/wp-content\/+gallery\/+[^/]+\/+)(?:cache|dynamic)\/+([^/]*?\.[^/.-]+)-[^/]*\.[^/.]*(?:[?#].*)?$/, "$1$2");
 		}
 
 		if (domain === "images.nintendolife.com") {
@@ -25657,6 +25664,9 @@ var $$IMU_EXPORT$$;
 			// http://www.maturexxxpics.net/images/00f6e6/th_01.jpg
 			//   http://www.maturexxxpics.net/images/00f6e6/01.jpg
 			domain_nowww === "maturexxxpics.net" ||
+			// http://japxxx.pro/dt2/xxx/5e1970/th_06.jpg
+			//   http://japxxx.pro/dt2/xxx/5e1970/06.jpg
+			domain_nowww === "japxxx.pro" ||
 			// http://teengalleries.mobi/g/d55bf2/th_02.jpg
 			//   http://teengalleries.mobi/g/d55bf2/02.jpg
 			domain_nowww === "teengalleries.mobi") {
@@ -32496,6 +32506,9 @@ var $$IMU_EXPORT$$;
 			// http://tiedvirgins.com/galleries/her-first-bondage/tn10.jpg
 			//   http://tiedvirgins.com/galleries/her-first-bondage/10.jpg
 			domain_nowww === "tiedvirgins.com" ||
+			// http://www.hqjpporn.com/galleries/gangbang/miriya-hazuki-asian-spreads-labia-and-gets-vibrator-between-them/tn3.jpg
+			//   http://www.hqjpporn.com/galleries/gangbang/miriya-hazuki-asian-spreads-labia-and-gets-vibrator-between-them/3.jpg
+			domain_nowww === "hqjpporn.com" ||
 			// http://www.thethaigirls.com/galleries/submit/beautiful-girlfriend-moy-strips-to-suck-dick-and-takes-a-huge-facial-and-loves-it/tn1.jpg
 			//   http://www.thethaigirls.com/galleries/submit/beautiful-girlfriend-moy-strips-to-suck-dick-and-takes-a-huge-facial-and-loves-it/1.jpg
 			domain_nowww === "thethaigirls.com") {
@@ -32511,6 +32524,21 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "asianxxxpics.com" ||
+			// https://japanfetishpics.com/japan-legs/pics-166/tn1.jpg
+			//   https://japanfetishpics.com/japan-legs/pics-166/1.jpg
+			domain_nowww === "japanfetishpics.com" ||
+			// http://asianfuckpics.com/sj/000-59/tn1.jpg
+			//   http://asianfuckpics.com/sj/000-59/1.jpg
+			domain_nowww === "asianfuckpics.com" ||
+			// http://www.asianteenpics.com/pics/southeast-asian/thai-beauty-with-hairy-meaty-pussy/tn1.jpg
+			//   http://www.asianteenpics.com/pics/southeast-asian/thai-beauty-with-hairy-meaty-pussy/1.jpg
+			domain_nowww === "asianteenpics.com" ||
+			// http://nudejapangirls.com/girls/gnm-139/tn1.jpg
+			//   http://nudejapangirls.com/girls/gnm-139/1.jpg
+			domain_nowww === "nudejapangirls.com" ||
+			// http://www.japaneseidols.org/cont/natural-look-and-sexy-body-of-an-angel-miyuki-yokoyama/tn10.jpg
+			//   http://www.japaneseidols.org/cont/natural-look-and-sexy-body-of-an-angel-miyuki-yokoyama/10.jpg
+			domain_nowww === "japaneseidols.org" ||
 			// http://promo.spunkyangels.com/kaciejames-uloveme/tn001.jpg
 			//   http://promo.spunkyangels.com/kaciejames-uloveme/001.jpg
 			domain === "promo.spunkyangels.com") {
