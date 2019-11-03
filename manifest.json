@@ -13,9 +13,10 @@
     "persistent": true
   },
 
-  "applications": {
+  "browser_specific_settings": {
     "gecko": {
-      "id": "maxurl@qsniyg"
+      "id": "maxurl@qsniyg",
+      "strict_min_version": "48.0"
     }
   },
 
