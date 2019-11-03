@@ -43923,6 +43923,14 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/images\/.*\/[0-9]+\/+[0-9]+_[0-9]+)_s(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
 		}
 
+		if (domain_nosub === "epio.app" && /^cdn[0-9]*-images\./.test(domain)) {
+			// https://cdn1-images.epio.app/image/download/aHR0cHM6Ly93d3cubXlteXBpYy5uZXQvZGF0YS9hdHRhY2htZW50L2ZvcnVtLzIwMTkxMC8yOC8yMjMxNTlrZzR4Y2NmZjZ4Z3puaXN4LmpwZy50aHVtYi5qcGc=/350X500
+			//   https://www.mymypic.net/data/attachment/forum/201910/28/223159kg4xccff6xgznisx.jpg
+			newsrc = src.replace(/.*?\/image\/+download\/+([^./]{40,})(?:\/+[0-9]+X[0-9]+)?(?:[?#].*)?$/, "$1");
+			if (newsrc !== src)
+				return base64_decode(newsrc);
+		}
+
 
 
 
