@@ -39062,6 +39062,12 @@ var $$IMU_EXPORT$$;
 							   "$1web$2");
 		}
 
+		if (domain_nowww === "techpowerup.com") {
+			// https://www.techpowerup.com/img/CynraNCwRWsSI7wP_thm.jpg
+			//   https://www.techpowerup.com/img/CynraNCwRWsSI7wP.jpg
+			return src.replace(/(\/img\/+[^/]+)_thm(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+		}
+
 		if (domain === "plaza.jp.rakuten-static.com") {
 			// https://plaza.jp.rakuten-static.com/api/Proxy.php?a=http%3A%2F%2Fimage.newsis.com%2F2015%2F02%2F10%2FNISI20150210_0010612208_web.jpg&b=e35d2fdbdc32519e5d05e3f394efd6c8
 			//   http://image.newsis.com/2015/02/10/NISI20150210_0010612208_web.jpg
@@ -43929,6 +43935,12 @@ var $$IMU_EXPORT$$;
 			newsrc = src.replace(/.*?\/image\/+download\/+([^./]{40,})(?:\/+[0-9]+X[0-9]+)?(?:[?#].*)?$/, "$1");
 			if (newsrc !== src)
 				return base64_decode(newsrc);
+		}
+
+		if (domain === "giga-images-makeshop-jp.akamaized.net") {
+			// https://giga-images-makeshop-jp.akamaized.net/crownk2009/shopimages/08/03/s1_000000000308.jpg?1572604703
+			//   https://giga-images-makeshop-jp.akamaized.net/crownk2009/shopimages/08/03/1_000000000308.jpg?1572604703
+			return src.replace(/(\/shopimages\/+[0-9]+\/+[0-9]+\/+)s([0-9]+_[0-9]+\.[^/.]*)(?:[?#].&)?$/, "$1$2");
 		}
 
 
