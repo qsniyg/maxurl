@@ -14678,6 +14678,9 @@ var $$IMU_EXPORT$$;
 		}
 
 		if ((domain_nosub === "pstatp.com" ||
+			 // https://p0.ipstatp.com/list/pgc-image-va/Rgmv8E92sxXqtz.jpg
+			 //   https://p0.ipstatp.com/origin/pgc-image-va/Rgmv8E92sxXqtz.jpg
+			 domain_nosub === "ipstatp.com" ||
 			 domain_nosub === "sgpstatp.com")
 			&& domain.match(/[pi][a-z]?[0-9]*\./)) {
 			// http://p3.pstatp.com/medium/30f1001008f9067618b8
@@ -14695,7 +14698,10 @@ var $$IMU_EXPORT$$;
 			//   http://i0.pstatp.com/origin/6ebf0008169e56582256
 			// http://p0.sgpstatp.com/large/tos-alisg-i-0000/6a3d2ee4939f47b09704d1463c0440f0
 			//   http://p0.sgpstatp.com/origin/tos-alisg-i-0000/6a3d2ee4939f47b09704d1463c0440f0 -- without /tos-alisg-i-000/ works too
-			return src.replace(/(:\/\/[^/]*\/)[a-z]*\/(?:[0-9]+x[0-9]+\/)?/, "$1origin/");
+			return {
+				url: src.replace(/(:\/\/[^/]*\/)[a-z]*\/(?:[0-9]+x[0-9]+\/)?/, "$1origin/"),
+				can_head: false // 404
+			};
 		}
 
 		if (domain === "img-bcy-qn.pstatp.com") {
@@ -19259,10 +19265,15 @@ var $$IMU_EXPORT$$;
 				return decodeuri_ifneeded(newsrc);
 		}
 
-		if (domain === "immagini.quotidiano.net") {
+		if (domain === "immagini.quotidiano.net" ||
+			// https://safeimage.vusercontent.com/?url=http%3A%2F%2Fassets%2Erpgsite%2Enet%2Fimages%2Fimages%2F000%2F054%2F824%2Foriginal%2FMHW%5FJun122017%5F03%2Ejpg
+			//   https://assets.rpgsite.net/images/images/000/054/824/original/MHW_Jun122017_03.jpg
+			domain === "safeimage.vusercontent.com") {
 			// https://immagini.quotidiano.net/?url=http://p1014p.quotidiano.net:80/polopoly_fs/1.3245998.1499154460!/httpImage/image.JPG_gen/derivatives/gallery_800/image.JPG&h=495&pos=top&w=626&mode=clip
 			//   http://p1014p.quotidiano.net/polopoly_fs/1.3245998.1499154460!/httpImage/image.JPG_gen/derivatives/gallery_800/image.JPG
-			return decodeURIComponent(src.replace(/^[a-z]+:\/\/[^/]*\/\?url=([^&]*).*?$/, "$1"));
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+\?url=([^&]*).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
 		}
 
 		if (domain_nowww === "realitytvworld.com" ||
@@ -23871,6 +23882,12 @@ var $$IMU_EXPORT$$;
 			// https://cdn-nus-1.pinme.ru/tumb/600//photo/02/a0/02a0a85155afa459cc04b295ea487d9c.jpg
 			//   https://cdn-nus-1.pinme.ru/photo/02/a0/02a0a85155afa459cc04b295ea487d9c.jpg
 			return src.replace(/\/+tumb\/+[0-9]+\/+photo\//, "/photo/");
+		}
+
+		if (domain_nosub === "kakprosto.ru") {
+			// https://st03.kakprosto.ru/tumb/680/images/article/2019/11/2/130132_5dbd0570daa4c5dbd0570daa84.jpeg
+			//   https://st03.kakprosto.ru/images/article/2019/11/2/130132_5dbd0570daa4c5dbd0570daa84.jpeg
+			return src.replace(/\/tumb\/+[0-9]+\/+images\//, "/images/");
 		}
 
 		if (domain_nosub === "postila.ru" &&
@@ -30980,12 +30997,6 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/[^/]*\.[^/.?#]*)x(?:[?#].*)?$/, "$1");
 		}
 
-		if (domain === "media.vandal.net") {
-			// https://media.vandal.net/i/600x300/11-2016/2016119162645_1.jpg
-			//   https://media.vandal.net/i/99999999999x99999999999/11-2016/2016119162645_1.jpg
-			return src.replace(/\/i\/[0-9]+x[0-9]+\//, "/i/99999999999x99999999999/");
-		}
-
 		if (domain === "images.gog.com") {
 			// https://images.gog.com/93bc827005313cfb4cd9194f05f09fdc4d91e93d7730bda0ed9565c9b7361594_product_card_v2_thumbnail_271.jpg
 			//   https://images.gog.com/93bc827005313cfb4cd9194f05f09fdc4d91e93d7730bda0ed9565c9b7361594.jpg
@@ -32231,7 +32242,9 @@ var $$IMU_EXPORT$$;
 		if (domain_nowww === "stopga.me") {
 			// https://stopga.me/images/uploads/images/152745/form/2015/09/30/normal_1443601214.jpg
 			//   https://stopga.me/images/uploads/images/152745/form/2015/09/30/1443601214.jpg
-			return src.replace(/(\/images\/+uploads\/+images\/+[0-9]+\/+.*\/)[a-z]+_([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+			// https://stopga.me/images/news/2019/11/01/normal_P2CXecGhPDX893.jpg
+			//   https://stopga.me/images/news/2019/11/01/P2CXecGhPDX893.jpg
+			return src.replace(/(\/images\/+(?:uploads\/+images|news)\/+[0-9]+\/+.*\/)normal_([^/]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
 		}
 
 		if (domain_nosub === "foap.com" && domain.match(/^cdn[0-9]*\./)) {
@@ -43941,6 +43954,40 @@ var $$IMU_EXPORT$$;
 			// https://giga-images-makeshop-jp.akamaized.net/crownk2009/shopimages/08/03/s1_000000000308.jpg?1572604703
 			//   https://giga-images-makeshop-jp.akamaized.net/crownk2009/shopimages/08/03/1_000000000308.jpg?1572604703
 			return src.replace(/(\/shopimages\/+[0-9]+\/+[0-9]+\/+)s([0-9]+_[0-9]+\.[^/.]*)(?:[?#].&)?$/, "$1$2");
+		}
+
+		if (domain === "cdn-uploads.gameblog.fr") {
+			// http://cdn-uploads.gameblog.fr/images/jeux/tn/26683/RedDeadRedemptionII_PC_Editeur_025.jpg
+			//   http://cdn-uploads.gameblog.fr/images/jeux/26683/RedDeadRedemptionII_PC_Editeur_025.jpg
+			return src.replace(/(\/images\/+[^/]+\/+)tn\/+/, "$1");
+		}
+
+		if (domain_nowww === "guru3d.com") {
+			// https://www.guru3d.com/index.php?ct=news&action=thumb&id=33953
+			//   https://www.guru3d.com/index.php?ct=news&action=file&id=33953
+			return src.replace(/(\/index\.php\?(?:.*?&)?action=)thumb(&.*)?$/, "$1file$2");
+		}
+
+		if (domain === "medialazy.vandalimg.com") {
+			// https://medialazy.vandalimg.com/i/80x80/11-2019/201911112591165_1.jpg
+			//   https://media.vandal.net/master/11-2019/201911112591165_1.jpg
+			return src.replace(/:\/\/[^/]+\/+/, "://media.vandal.net/");
+		}
+
+		if (domain === "mediamaster.vandal.net" ||
+			// https://media.vandalsports.com/m/7-2017/201776141624_1.jpg
+			//   https://media.vandalsports.com/master/7-2017/201776141624_1.jpg
+			domain === "media.vandalsports.com" ||
+			// https://media.vandal.net/m/11-2019/201911112591165_17.jpg
+			//   https://media.vandal.net/m/11-2019/201911112591165_17.jpg
+			domain === "media.vandal.net") {
+			// https://mediamaster.vandal.net/m/11-2019/201911112591165_1.jpg
+			//   https://mediamaster.vandal.net/master/11-2019/201911112591165_1.jpg
+			// https://media.vandal.net/i/600x300/11-2016/2016119162645_1.jpg
+			//   https://media.vandal.net/i/99999999999x99999999999/11-2016/2016119162645_1.jpg
+			//   https://media.vandal.net/master/11-2016/2016119162645_1.jpg
+			return src.replace(/(:\/\/[^/]+\/+)(?:m|i\/+[0-9]+x[0-9]+)\/+/, "$1master/");
+			//return src.replace(/\/i\/[0-9]+x[0-9]+\//, "/i/99999999999x99999999999/");
 		}
 
 
