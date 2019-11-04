@@ -44870,10 +44870,23 @@ var $$IMU_EXPORT$$;
 			domain === "i.know.cf" ||
 			// http://oyster.ignimgs.com/mediawiki/apis.ign.com/best-of-2017-awards/thumb/8/86/Anime.jpg/610px-Anime.jpg
 			//   http://oyster.ignimgs.com/mediawiki/apis.ign.com/best-of-2017-awards/8/86/Anime.jpg
-			src.match(/\/thumb\/.\/..\/[^/]*\.[^/]*\/[0-9]*px-/)) {
-			newsrc = src.replace(/\/(?:thumb\/)?(.)\/(..)\/([^/]*)\/.*/, "/$1/$2/$3");
+			src.match(/\/thumb\/+[0-9a-f]\/+[0-9a-f]{2}\/+[^/]*\.[^/]*\/+[0-9]+px-[^/]*(?:[?#].*)?$/)) {
+			newsrc = src.replace(/\/(?:thumb\/+)?(.)\/+(..)\/+([^/]*)\/+[0-9]+px-.*?$/, "/$1/$2/$3");
 			if (newsrc !== src)
 				return newsrc;
+		}
+
+		if (domain === "upload.wikimedia.org") {
+			match = src.match(/\/commons\/+[0-9a-f]\/+[0-9a-f]{2}\/+([^/]+\.[^/.]+)(?:[?#].*)?$/);
+			if (match) {
+				return {
+					url: src,
+					is_original: true,
+					extra: {
+						page: "https://commons.wikimedia.org/wiki/File:" + match[1]
+					}
+				};
+			}
 		}
 
 		// Dokuwiki
