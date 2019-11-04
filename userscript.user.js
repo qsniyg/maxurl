@@ -43990,6 +43990,13 @@ var $$IMU_EXPORT$$;
 			//return src.replace(/\/i\/[0-9]+x[0-9]+\//, "/i/99999999999x99999999999/");
 		}
 
+		if (domain_nosub === "cgames.de" && /^[0-9]*images\./.test(domain)) {
+			// https://10images.cgames.de/images/gamestar/204/highlightbild-der-erste-pc-trailer-von-red-dead-redemption-2-verspricht-fantastische-grafik_6081579.jpg
+			//   https://10images.cgames.de/images/gamestar/4/highlightbild-der-erste-pc-trailer-von-red-dead-redemption-2-verspricht-fantastische-grafik_6081579.jpg
+			// https://7images.cgames.de/images/gamestar/4/conan-exiles_6028086.jpg -- 6160x3530
+			return src.replace(/(\/images\/+gamestar\/+)[0-9]+\/+/, "$14/");
+		}
+
 
 
 
@@ -49185,9 +49192,11 @@ var $$IMU_EXPORT$$;
 						sizes = el.sizes.split(",");
 					}
 
+					// https://www.gamestar.de/artikel/red-dead-redemption-2-pc-vorabversion-mit-limit-bei-120-fps-directx-12-und-vulkan,3350718.html
+					// sidebar articles: //8images.cgames.de/images/gamestar/256/red-dead-redemption-2_6062507.jpg, //8images.cgames.de/images/gamestar/210/red-dead-redemption-2_6062507.jpg 2x
 					for (var i = 0; i < ssources.length; i++) {
-						var src = norm(ssources[i].replace(/ .*/, ""));
-						var desc = ssources[i].replace(/.* /, "");
+						var src = norm(ssources[i].replace(/(?:, *| +) .*/, ""));
+						var desc = ssources[i].replace(/.*(?:, *| +)/, "");
 
 						if (!addImage(src, el, {layer:layer}))
 							continue;
