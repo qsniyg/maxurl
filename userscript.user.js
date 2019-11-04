@@ -49859,6 +49859,12 @@ var $$IMU_EXPORT$$;
 						return cb();
 					}
 
+					// In case the user has dragged while loading the next image (#154)
+					if (use_last_pos) {
+						x = lastX;
+						y = lastY;
+					}
+
 					cb(source_imu, source, processing, {
 						data: data,
 						x: x,
