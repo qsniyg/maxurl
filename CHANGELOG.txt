@@ -1,3 +1,21 @@
+0.11.10
+
+New features:
+
+ * Firefox for Android is now supported
+ * Support for ~40 new websites (using ~20 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules
+
+Bugfixes:
+
+ * Moving the popup while switching between gallery items will be respected
+ * `srcset` is now properly supported
+
+---
+
 0.11.9
 
 * Support for ~30 new websites (using ~10 new rules), including Patreon
