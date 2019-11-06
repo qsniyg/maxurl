@@ -4440,6 +4440,12 @@ var $$IMU_EXPORT$$;
 				return newsrc;
 		}
 
+		if (domain === "resources.mynewsdesk.com") {
+			// https://resources.mynewsdesk.com/image/upload/t_next_gen_span3_fit_and_crop/b3d5cr3yxtxylt7sp9wu.jpg
+			//   https://resources.mynewsdesk.com/image/upload/b3d5cr3yxtxylt7sp9wu.jpg
+			return src.replace(/(\/image\/+upload\/+)t_[^/]+\/+/, "$1");
+		}
+
 		if (domain_nosub === "popsugar-assets.com" ||
 			domain_nosub === "onsugar.com") {
 			// https://media1.popsugar-assets.com/files/thumbor/Aq5Tn8-7kqPSJs4U0_QaYoM6x8Q/fit-in/1024x1024/filters:format_auto-!!-:strip_icc-!!-/2015/03/30/647/n/1922564/ccc1eafd_edit_img_cover_file_864129_1397566805/i/Emma-Watson-Best-Red-Carpet-Looks.png
@@ -4945,6 +4951,7 @@ var $$IMU_EXPORT$$;
 			// https://s2.r29static.com//bin/author/f58/75x75,85/1320357/image.webp
 			//   https://s2.r29static.com//bin/author/f58/x,100/1320357/image.webp
 			// 0x0,100 and x,100 both work
+			// other: https://www.refinery29.com/images/8499155.jpg?format=webp&width=720&height=864&quality=85
 			return src.replace(/(\/bin\/(?:entry|public|author)\/[^/]*)\/(?:[0-9]+,[0-9]+,[0-9]+,[0-9]+\/)?[^/]*(?:,[^/]*)?\/([^,]*)$/, "$1/x,100/$2");
 		}
 
@@ -6178,6 +6185,8 @@ var $$IMU_EXPORT$$;
 			(domain_nowww === "esquire.com.gr" && /\/Content\/+ImagesDatabase\//i.test(src)) ||
 			// https://akmedia.hollywoodlife.com/2012/04/041012_1d_teaser_spl380257_017120410085753.jpg?w=150&h=115&crop=1
 			domain === "akmedia.hollywoodlife.com" ||
+			// https://www.refinery29.com/images/8499155.jpg?format=webp&width=720&height=864&quality=85
+			(domain_nowww === "refinery29.com" && src.indexOf("/images/") >= 0) ||
 			// http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
 			// https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
 			src.match(/\/demandware\.static\//) ||
@@ -16306,6 +16315,8 @@ var $$IMU_EXPORT$$;
 		if (domain_nosub === "ismcdn.jp" ||
 			// http://mikiki.tokyo.jp/mwimgs/7/3/200/img_73f63b815ccbc962f9202bd0701f6d6f123483.jpg
 			//   http://mikiki.tokyo.jp/mwimgs/7/3/-/img_73f63b815ccbc962f9202bd0701f6d6f123483.jpg
+			// http://mikiki.tokyo.jp/mwimgs/d/8/120h/img_d87f138a9b1a5a4f453e1fd9927141ff295888.jpg
+			//   http://mikiki.tokyo.jp/mwimgs/d/8/-/img_d87f138a9b1a5a4f453e1fd9927141ff295888.jpg
 			domain === "mikiki.tokyo.jp" ||
 			// http://wedge.ismedia.jp/mwimgs/c/a/200/img_ca529af8c945704fb5432aceff2d60f2795379.jpg
 			//   http://wedge.ismedia.jp/mwimgs/c/a/-/img_ca529af8c945704fb5432aceff2d60f2795379.jpg
@@ -16325,7 +16336,7 @@ var $$IMU_EXPORT$$;
 			//   http://dol.ismcdn.jp/mwimgs/3/8/-/img_38ec77dc8d6e7438877c3cf39207e20a26382.jpg
 			// https://tokushima.ismcdn.jp/mwimgs/f/b/600mw/img_fb362946e995ce69ae5a7ad8eaf59c99100255.jpg
 			//   https://tokushima.ismcdn.jp/mwimgs/f/b/-/img_fb362946e995ce69ae5a7ad8eaf59c99100255.jpg
-			return src.replace(/(\/mwimgs\/+(?:[0-9a-f]\/+){2})[0-9]+(?:[xm]w?[0-9]*)?(\/+img_[0-9a-f]{20,}\.[^/.]*)(?:[?#].*)?$/, "$1-$2");
+			return src.replace(/(\/mwimgs\/+(?:[0-9a-f]\/+){2})[0-9]+(?:[xmhw][wh]?[0-9]*)?(\/+img_[0-9a-f]{20,}\.[^/.]*)(?:[?#].*)?$/, "$1-$2");
 			//return src.replace(/(\/mwimgs\/+(?:[0-9a-f]\/+){2})[0-9]+\/+(img_)/, "$1-/$2");
 			//return src.replace(/(\/mwimgs\/[0-9a-f]+\/[0-9a-f]+\/)[0-9]+\//, "$1-/");
 		}
@@ -29884,9 +29895,24 @@ var $$IMU_EXPORT$$;
 			// http://admin.minutoneuquen.com/u/fotografias/m/2019/1/10/f720x404-128657_170229_20.jpg
 			//   http://admin.minutoneuquen.com/u/fotografias/fotosnoticias/2019/1/10/128657.jpg
 			domain_nosub === "minutoneuquen.com" ||
+			// https://www.abcdiario.com.ar/u/fotografias/m/2019/11/1/f800x450-16548_67994_14.jpg
+			//   https://www.abcdiario.com.ar/u/fotografias/fotosnoticias/2019/11/1/16548.jpg
+			domain_nowww === "abcdiario.com.ar" ||
+			// https://www.gamesbras.com/u/fotografias/m/2019/7/19/f620x350-9733_40751_0.jpg
+			//   https://www.gamesbras.com/u/fotografias/fotosnoticias/2019/7/19/9733.jpg
+			domain_nowww === "gamesbras.com" ||
+			// https://www.paginasiete.bo/u/fotografias/m/2018/11/10/f800x450-238307_289753_189.jpg
+			//   https://www.paginasiete.bo/u/fotografias/fotosnoticias/2018/11/10/238307.jpg
+			domain_nowww === "paginasiete.bo" ||
+			// https://www.diariolaprovinciasj.com/u/fotografias/m/2019/8/19/f960x0-226904_226922_0.jpg
+			//   https://www.diariolaprovinciasj.com/u/fotografias/fotosnoticias/2019/8/19/226904.jpg
+			domain_nowww === "diariolaprovinciasj.com" ||
 			// https://www.elintransigente.com/u/fotografias/m/2018/9/27/f800x450-477885_529331_176.jpg
 			//   https://www.elintransigente.com/u/fotografias/fotosnoticias/2018/9/27/477885.jpg
-			domain_nowww === "elintransigente.com") {
+			domain_nowww === "elintransigente.com" ||
+			// https://www.tiempodesanjuan.com/u/fotografias/m/2013/12/5/f800x450-91246_142692_15.jpg
+			//   https://www.tiempodesanjuan.com/u/fotografias/fotosnoticias/2013/12/5/91246.jpg
+			/^[a-z]+:\/\/[^/]+\/+u\/+fotografias\/+m\/[0-9]{4}\/+[0-9]{1,2}\/+[0-9]{1,2}\/+f[0-9]+x[0-9]+-[0-9]+_/.test(src)) {
 			// https://www.elintra.com.ar/u/fotografias/m/2018/8/25/f260x146-100007_105447_0.jpg
 			//   https://www.elintra.com.ar/u/fotografias/fotosnoticias/2018/8/25/100007.jpg
 			return src.replace(/\/fotografias\/m\/([0-9]{4}\/[0-9]+\/[0-9]+\/)f[0-9]+x[0-9]+-([0-9]+)_[0-9]+[^/]*(\.[^/.]*)$/,
@@ -43997,6 +44023,42 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/images\/+gamestar\/+)[0-9]+\/+/, "$14/");
 		}
 
+		if (domain === "assets.folhavitoria.com.br") {
+			// https://assets.folhavitoria.com.br/images/16bb8340-9db3-0136-e3df-6231c35b6685--w116_h116_lx199_rx1127_ty0_by928.jpg
+			//   https://assets.folhavitoria.com.br/images/16bb8340-9db3-0136-e3df-6231c35b6685.jpg
+			// https://assets.folhavitoria.com.br/images/7f2969c0-7a59-0137-32e0-6231c35b6685--minified.jpg
+			//   https://assets.folhavitoria.com.br/images/7f2969c0-7a59-0137-32e0-6231c35b6685.jpg
+			return src.replace(/(\/images\/+[-0-9a-f]{30,})--(?:(?:[a-z][^-_/.]+_)*[a-z][^-_/.]+)(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain === "dnh0aphdpud22.cloudfront.net") {
+			// https://dnh0aphdpud22.cloudfront.net/sized/be595e6188d754-LIB3195598/med_thumbnail.jpg?1567686958
+			//   https://dnh0aphdpud22.cloudfront.net/sized/be595e6188d754-LIB3195598/high_res.jpg?1567686958 -- 960x960
+			// other:
+			// https://dnh0aphdpud22.cloudfront.net/originals/b711d45538272a-LE73560622.jpg -- 5061x3374
+			// https://dnh0aphdpud22.cloudfront.net/originals/a1af8cc20d8c20-DA65783152.JPG -- 6000x3376
+			// https://dnh0aphdpud22.cloudfront.net/originals/09079e2dff9c9d222c86acb6.jpg -- 640x360
+			// https://dnh0aphdpud22.cloudfront.net/originals/168221d982c062-IO22183510.jpg -- 640x640
+			// https://dnh0aphdpud22.cloudfront.net/linkinbio/22763c4ebf5d2e-LIB3290250.jpg -- 640x640
+			// https://dnh0aphdpud22.cloudfront.net/instagram/9390396580af414265915e01.jpg?1504623771 -- 2160x2160
+			// theory: linkinbio = high_res, LIB prefix is used for linkinbio and sized, but not for originals (originals is two [A-Z])
+			return src.replace(/(\/sized\/+[0-9a-f]+-[A-Z]+[0-9]+\/+)med_thumbnail(\.[^/.]*)(?:[?#].*)?$/, "$1high_res$2");
+		}
+
+		if (domain_nowww === "iansphoto.in") {
+			// http://iansphoto.in/web/photoimages_new/400/2018/08/03/06aa3e3ed3d7cfef662cb05eb6759132.jpg -- upscaled
+			//   http://iansphoto.in/web/photoimages_new/2018/08/03/06aa3e3ed3d7cfef662cb05eb6759132.jpg
+			// other:
+			// http://iansphoto.in/web/photoimages_new/2014/08/05/0bb2c0fc573308847fd919a0ab7ddf53.jpg -- 2400x1759
+			return src.replace(/(\/photoimages_new\/+)[0-9]+\/+([0-9]{4}\/+[0-9]{2}\/+[0-9]{2}\/+)/, "$1$2");
+		}
+
+		if (domain_nowww === "mamby.com") {
+			// https://mamby.com/images/person-woman-clothing-22383_mediumres.jpg
+			//   https://mamby.com/images/person-woman-clothing-22383_maxres.jpg
+			return src.replace(/(\/images\/+[^/]*)_mediumres(\.[^/.]*)(?:[?#].*)?$/, "$1_maxres$2");
+		}
+
 
 
 
@@ -44884,6 +44946,9 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "upload.wikimedia.org") {
+			// other:
+			// https://upload.wikimedia.org/wikipedia/en/a/ae/Flag_of_the_United_Kingdom.svg
+			//   https://commons.wikimedia.org/wiki/File:Flag_of_the_United_Kingdom.svg
 			match = src.match(/\/commons\/+[0-9a-f]\/+[0-9a-f]{2}\/+([^/]+\.[^/.]+)(?:[?#].*)?$/);
 			if (match) {
 				return {
