@@ -4925,7 +4925,8 @@ var $$IMU_EXPORT$$;
 			//   https://cdn.narcity.com/uploads/288430_2f9bf6228fb968d30f49e19268da5c3719d76d74.jpg
 			// https://cdn.narcity.com/u/2018/01/24/a84af3e5ab19eb3af3688b2e4ec6f768801df3fc.jpg_1200x630.jpg
 			//   https://cdn.narcity.com/u/2018/01/24/a84af3e5ab19eb3af3688b2e4ec6f768801df3fc.jpg
-			return src.replace(/(\/[^/.]*\.[^/._]*)_[^/]*$/, "$1");
+			// nano defender blocks js, need website to test
+			return src.replace(/(\/[^/.]*\.[^/._]+)_(?:facebook|[0-9]+x[0-9]+)\.[^/.]*(?:[?#].*)?$/, "$1");
 		}
 
 		if (domain === "images.vanityfair.it" ||
@@ -5285,7 +5286,10 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if (domain === "zeroinger.herokuapp.com") {
+		if (domain === "zeroinger.herokuapp.com" ||
+			// https://you2php.me/thumbnail.php?type=mqdefault&vid=Utx1UMAM4zU
+			//   https://i.ytimg.com/vi/Utx1UMAM4zU/maxresdefault.jpg
+			domain_nowww === "you2php.me") {
 			// https://zeroinger.herokuapp.com/thumbnail.php?type=mqdefault&vid=BQ0mxQXmLsk
 			//   https://zeroinger.herokuapp.com/thumbnail.php?vid=BQ0mxQXmLsk
 			//   https://i.ytimg.com/vi/BQ0mxQXmLsk/maxresdefault.jpg
@@ -35124,10 +35128,13 @@ var $$IMU_EXPORT$$;
 			 // https://cdn.closeronline.co.uk/one/lifestyle-images/celebrity/57ea61548ec529f923122d89/holly-willoughby-this-morning-style.jpg.jpg?quality=10&amp;format=jpg
 			 //   https://cdn.closeronline.co.uk/one/lifestyle-images/celebrity/57ea61548ec529f923122d89/holly-willoughby-this-morning-style.jpg.jpg?resize=atrophy
 			 domain === "cdn.closeronline.co.uk" ||
+			 // https://cdn.planetradio.co.uk/one/media/5d97/5567/c11f/b25b/e632/0950/camila-cabello.jpg?quality=80&format=jpg&width=320&ratio=16-9
+			 //   https://cdn.planetradio.co.uk/one/media/5d97/5567/c11f/b25b/e632/0950/camila-cabello.jpg?resize=atrophy
+			 domain === "cdn.planetradio.co.uk" ||
 			 // https://cdn.heatworld.com/one/lifestyle-images/celebrity/58357d749f0e322331739515/Screen%20Shot%202016-10-06%20at%2014.43.52.png?quality=50&width=960&ratio=16-9&resizeStyle=aspectfill&format=jpg
 			 //   https://cdn.heatworld.com/one/lifestyle-images/celebrity/58357d749f0e322331739515/Screen%20Shot%202016-10-06%20at%2014.43.52.png?resize=atrophy
 			 domain === "cdn.heatworld.com") &&
-			src.match(/^[a-z]+:\/\/[^/]*\/one\//)) {
+			src.match(/^[a-z]+:\/\/[^/]*\/+one\//)) {
 			// https://cdn.onebauer.media/one/lifestyle-images/celebrity/58bab090a8511c6f037af92b/GettyImages-645662194.jpg?quality=80&width=1800&ratio=16-9&resizeStyle=aspectfill&format=jpg
 			//   https://cdn.onebauer.media/one/lifestyle-images/celebrity/58bab090a8511c6f037af92b/GettyImages-645662194.jpg?resize=atrophy -- 4818x3437
 			return src.replace(/(\/[^/?]*)(?:\?.*)?$/, "$1?resize=atrophy");
