@@ -25831,6 +25831,9 @@ var $$IMU_EXPORT$$;
 		}
 
 		if ((domain_nowww === "captaingoodlink.com" && src.indexOf("/celebrities/") >= 0) ||
+			// http://nudecelebs-a-z.com/07/LilyAllen/tn_image2_extralarge_1389984877354.jpg
+			//   http://nudecelebs-a-z.com/07/LilyAllen/image2_extralarge_1389984877354.jpg
+			domain_nowww === "nudecelebs-a-z.com" ||
 			// https://cdn-w.tacamateurs.com/tgps/0028/28141/wet-look-cat-suit--heels/tn_pic06.jpg
 			//   https://cdn-w.tacamateurs.com/tgps/0028/28141/wet-look-cat-suit--heels/pic06.jpg
 			(domain_nosub === "tacamateurs.com" && domain.match(/^cdn(?:-[^/]*)?\./) && src.match(/\/tn_pic[0-9]+\./))) {
@@ -31291,7 +31294,10 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/imgview\.cgi.*?[?&]nid=([0-9]+).*?$/, "/imgview.cgi?nid=$1&type=0");
 		}
 
-		if (domain === "static-thechristianpost.netdna-ssl.com") {
+		if (domain === "static-thechristianpost.netdna-ssl.com" ||
+			// https://cdn.christianpost.com/files/cache/image/13/11/131143_w_450_630.jpg
+			//   https://cdn.christianpost.com/files/original/image/13/11/131143.jpg
+			domain === "cdn.christianpost.com") {
 			// https://static-thechristianpost.netdna-ssl.com/files/cache/image/11/00/110088_w_700.jpg
 			//   https://static-thechristianpost.netdna-ssl.com/files/original/image/11/00/110088.jpg
 			// https://static-thechristianpost.netdna-ssl.com/files/cache/image/8/42/84293_w_725.jpg
@@ -31303,7 +31309,7 @@ var $$IMU_EXPORT$$;
 			// https://static-thechristianpost.netdna-ssl.com/image/sarah-jakes-roberts-toure-roberts.jpg?w=725&amp;s=w
 			//   https://static-thechristianpost.netdna-ssl.com/image/sarah-jakes-roberts-toure-roberts.jpg
 			return src
-				.replace(/\/files\/+cache\/+image\/+([0-9]{1,2}\/+[0-9]{1,2}\/+[0-9]+)_(?:[wh]_[0-9]+|(?:a(?:_[0-9]+){4}))(\.[^/.]*)(?:[?#].*)?$/,
+				.replace(/\/files\/+cache\/+image\/+([0-9]{1,2}\/+[0-9]{1,2}\/+[0-9]+)_(?:[wh]_[0-9]+(?:_[0-9]+)?|(?:a(?:_[0-9]+){4}))(\.[^/.]*)(?:[?#].*)?$/,
 						 "/files/original/image/$1$2")
 				.replace(/(\/image\/+[^/]*\.[^/.?#]+)(?:[?#].*)?$/, "$1");
 		}
@@ -32014,7 +32020,13 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(:\/\/[^/]*\/)[0-9]+\/+([0-9]\/+[0-9]\/+[0-9]+-t)/, "$10/$2");
 		}
 
-		if (domain_nowww === "kosova-sot.info") {
+		if (domain_nowww === "kosova-sot.info" ||
+			// https://www.botasot.info/media/botasot.info/images/2019/August/21/auto_beberexzha1566420677.jpg
+			//   https://www.botasot.info/media/botasot.info/images/2019/August/21/beberexzha1566420677.jpg
+			domain_nowww === "botasot.info" ||
+			// https://www.syri.net/uploads/syri.net/images/2019/May/02/auto__106467110_bebe9761556781547.jpg
+			//   https://www.syri.net/uploads/syri.net/images/2019/May/02/_106467110_bebe9761556781547.jpg
+			domain_nowww === "syri.net") {
 			// https://www.kosova-sot.info/uploads/images/2018/January/30/230x249_Camila-Cabello-In-Vivienne-Westwood-Couture-2018-Grammy-Awards1517299028.jpg
 			//   http://www.kosova-sot.info/uploads/images/2018/January/30/auto_Camila-Cabello-In-Vivienne-Westwood-Couture-2018-Grammy-Awards1517299028.jpg
 			//   https://www.kosova-sot.info/uploads/images/2018/January/30/thumb_Camila-Cabello-In-Vivienne-Westwood-Couture-2018-Grammy-Awards1517299028.jpg
@@ -32022,7 +32034,7 @@ var $$IMU_EXPORT$$;
 			//   https://www.kosova-sot.info/uploads/images/2018/January/30/Camila-Cabello-In-Vivienne-Westwood-Couture-2018-Grammy-Awards1517299028.jpg
 			// https://www.kosova-sot.info/uploads/kosova-sot/images/2019/June/24/570x331__106467110_bebe9761561370397.jpg
 			//   https://www.kosova-sot.info/uploads/kosova-sot/images/2019/June/24/_106467110_bebe9761561370397.jpg
-			return src.replace(/(\/uploads\/+(?:[^/]+\/+)?images\/+[0-9]{4}\/+[A-Z][a-z]+\/+[0-9]+\/+)(?:auto|thumb|thumbauto|[0-9]+x[0-9]+)_([^/]*)(?:[?#].*)?$/, "$1$2");
+			return src.replace(/(\/(?:uploads|media)\/+(?:[^/]+\/+)?images\/+[0-9]{4}\/+[A-Z][a-z]+\/+[0-9]+\/+)(?:auto|thumb|thumbauto|[0-9]+x[0-9]+)_([^/]*)(?:[?#].*)?$/, "$1$2");
 			//return src.replace(/(\/uploads\/+[^/]+\/+images\/+[0-9]{4}\/+[A-Za-z]+\/+[0-9]{1,2}\/+)[0-9]+x[0-9]+__/, "$1auto__");
 		}
 
@@ -39821,13 +39833,16 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "cdn.sahafahn.net" ||
+			// https://cdn.pressbee.net/img/0-160/czo5MDoiaHR0cHM6Ly9zdGF0aWMuaW5kZXBlbmRlbnQuY28udWsvczNmcy1wdWJsaWMvdGh1bWJuYWlscy9pbWFnZS8yMDE4LzA5LzE1LzEyL2xpbHktYWxsZW4uanBnIjs=.jpg
+			//   https://static.independent.co.uk/s3fs-public/thumbnails/image/2018/09/15/12/lily-allen.jpg
+			domain === "cdn.pressbee.net" ||
 			// https://cdn.24press.net/img-0-280/czo2NToiaHR0cHM6Ly93d3cuZWxiYWxhZC5uZXdzL3VwbG9hZC9waG90by9uZXdzLzM5MS82LzI3MHgxNDBvLzYxMS5qcGciOw==.jpeg
 			//   https://www.elbalad.news/upload/photo/news/391/6/611.jpg
 			domain === "cdn.24press.net") {
 			// https://cdn.sahafahn.net/img-200-0/czo2NToiaHR0cHM6Ly93d3cuZWxiYWxhZC5uZXdzL3VwbG9hZC9waG90by9uZXdzLzM5MS82LzI3MHgxNDBvLzYxMS5qcGciOw==.jpg
 			//   atob: s:65:"https://www.elbalad.news/upload/photo/news/391/6/270x140o/611.jpg";
 			//   https://www.elbalad.news/upload/photo/news/391/6/270x140o/611.jpg
-			match = src.match(/^[a-z]+:\/\/[^/]*\/img-[0-9]+-[0-9]+\/([^/]{10,})\.[^/.]*(?:[?#].*)?$/);
+			match = src.match(/^[a-z]+:\/\/[^/]*\/img(?:-|\/+)[0-9]+-[0-9]+\/([^/]{10,})\.[^/.]*(?:[?#].*)?$/);
 			if (match) {
 				var str = base64_decode(match[1]);
 				newsrc = str.replace(/.*?\"(https?:[^"]*).*?$/, "$1");
@@ -44370,6 +44385,41 @@ var $$IMU_EXPORT$$;
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+\?(?:.*?&)?cdURL=([^&]*).*?$/, "$1");
 			if (newsrc !== src)
 				return decodeuri_ifneeded(newsrc);
+		}
+
+		if (domain === "cdn.btportail.0pb.org") {
+			// http://cdn.btportail.0pb.org/d263e11db9ed620c8311d062680d31a5/127/480/200/1195892.jpg
+			//   http://cdn.btportail.0pb.org/d263e11db9ed620c8311d062680d31a5/127/0/0/1195892.jpg
+			return src.replace(/(\/[0-9a-f]{20,}\/+[0-9]+\/+)[0-9]+\/+[0-9]+\/+([^/]+\.[^/.]*)(?:[?#].*)?$/, "$10/0/$2");
+		}
+
+		if (domain_nowww === "cosmopolitan.hr" ||
+			// https://www.sensa.hr/repository/images/_variations/7/d/7d2aa47d48ab8922ab84bac818823c29_3784443798958e52d89f2b6f273222489f92d521_wall-1920x1200.jpg
+			//   https://www.sensa.hr/repository/images/7/d/7d2aa47d48ab8922ab84bac818823c29.jpg
+			domain_nowww === "sensa.hr" ||
+			// https://www.lovesensa.rs/repository/images/_variations/d/2/d271e901388a4dfade2988e4407293e2_72598aeccbccdc92dae1cda34d0d66dffcf66ea6_wall-1920x1200.jpg
+			//   https://www.lovesensa.rs/repository/images/d/2/d271e901388a4dfade2988e4407293e2.jpg
+			domain_nowww === "lovesensa.rs" ||
+			// https://www.naturacroatica.com/repository/images/_variations/d/f/dfc81195c279aa07ca9991538e1f61bc-rakija-travarica-aura-07l_content_zoom.jpg?v=6
+			//   https://www.naturacroatica.com/repository/images/d/f/dfc81195c279aa07ca9991538e1f61bc-rakija-travarica-aura-07l.jpg?v=6
+			/^[a-z]+:\/\/[^/]+\/+repository\/+images\/+_variations\/+[0-9a-f]\/+[0-9a-f]+\/+[0-9a-f]{20,}(?:-[^/]*?)?_[^/]+(\.[^/.]*)(?:[?#].*)?$/.test(src)) {
+			// http://www.cosmopolitan.hr/repository/images/_variations/4/8/48f1f0ad29a4c9f1b35c2f36394dd4d080805623_articlemain.jpg
+			//   http://www.cosmopolitan.hr/repository/images/4/8/48f1f0ad29a4c9f1b35c2f36394dd4d080805623.jpg
+			// http://www.cosmopolitan.hr/repository/images/_variations/c/b/cb78429c71725693a473fa01fcd4c875_wall-1600x1200.jpg
+			//   http://www.cosmopolitan.hr/repository/images/c/b/cb78429c71725693a473fa01fcd4c875.jpg
+			return src.replace(/(\/repository\/+images\/+)_variations\/+([0-9a-f]\/+[0-9a-f]\/+[0-9a-f]{20,}(?:-[^/]*?)?)_[^/]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2$3");
+		}
+
+		if (amazon_container === "blogadda") {
+			// https://blogadda.s3.amazonaws.com/images/posts/lily-allen-cancels-us-tour-1541138717-medium.jpg
+			//   https://blogadda.s3.amazonaws.com/images/posts/lily-allen-cancels-us-tour-1541138717-large.jpg
+			return src.replace(/(\/images\/+posts\/+[^/]+-[0-9]+)-medium(\.[^/.]*)(?:[?#].*)?$/, "$1-large$2");
+		}
+
+		if (domain_nosub === "muzmob.org") {
+			// https://ru.muzmob.org/news/i/21293_300.jpg
+			//   https://ru.muzmob.org/news/i/21293.jpg
+			return src.replace(/(\/news\/+i\/+[0-9]+)_[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
 		}
 
 
