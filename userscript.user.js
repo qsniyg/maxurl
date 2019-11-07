@@ -2086,6 +2086,73 @@ var $$IMU_EXPORT$$;
 		return 0;
 	}
 
+	function _fuzzy_compare_rollover(a, b, lim) {
+		if (a === b)
+			return true;
+
+		if (a - 1 === b || a + 1 === b)
+			return true;
+
+		for (var i = 0; i < lim.length; i++) {
+			if (a === lim[i]) {
+				if (b === 1)
+					return true;
+			} else if (b === lim[i]) {
+				if (a === 1)
+					return true;
+			}
+		}
+
+		return false;
+	}
+
+	function _is_larger_rollover(a, b, end) {
+		if (a === 1 && end.indexOf(b) >= 0)
+			return true;
+
+		if (b === 1 && end.indexOf(a) >= 0)
+			return true;
+
+		return false;
+	}
+
+	function fuzzy_date_compare(a, b) {
+		if (a === b)
+			return true;
+
+		if (a.length !== 8 || b.length !== 8)
+			return false;
+
+		var a_d = parseInt(a.substr(6, 2));
+		var b_d = parseInt(b.substr(6, 2));
+
+		if (!_fuzzy_compare_rollover(a_d, b_d, [28, 29, 30, 31]))
+			return false;
+
+		var a_m = parseInt(a.substr(4, 2));
+		var b_m = parseInt(b.substr(4, 2));
+
+		var d_rollover = _is_larger_rollover(a_d, b_d, [28, 29, 30, 31]);
+		if (a_m !== b_m) {
+			if (!d_rollover)
+				return false;
+			if (!_fuzzy_compare_rollover(a_m, b_m, [12]))
+				return false;
+		}
+
+		var a_y = parseInt(a.substr(0, 4));
+		var b_y = parseInt(b.substr(0, 4));
+
+		if (a_y !== b_y) {
+			if (!d_rollover || !_is_larger_rollover(a_m, b_m, [12]))
+				return false;
+			if (!_fuzzy_compare_rollover(a_y, b_y, []))
+				return false;
+		}
+
+		return true;
+	}
+
 	function run_soon(func) {
 		setTimeout(func, 1);
 	}
@@ -3502,8 +3569,10 @@ var $$IMU_EXPORT$$;
 							continue;
 						}
 
-						if (pageid.substr(0, 8) !== real_pageid.substr(0, 8)) {
-							// TODO: Fuzzify the date somehow
+						if (!fuzzy_date_compare(pageid.substr(0, 8), real_pageid.substr(0, 8))) {
+							if (_nir_debug_) {
+								console_log("Skipping:", pageid, real_pageid);
+							}
 							continue;
 						}
 
@@ -9051,6 +9120,9 @@ var $$IMU_EXPORT$$;
 			 //   https://img118.imagetwist.com/i/31366/sg42bjfx22p4.jpg/101100-001.jpg
 			 // https://imagexport.com/sg42bjfx22p4/101100-001.jpg.html
 			 domain_nosub === "imagexport.com" ||
+			 // https://img200.imagenpic.com/th/24767/dokio7jjefsw.jpg
+			 //   https://img200.imagetwist.com/i/24767/dokio7jjefsw.png/yoshiki.png
+			 domain_nosub === "imagenpic.com" ||
 			 // http://img26.picshick.com/th/13110/2ab7lhypu3l2.jpg
 			 //   http://img26.picshick.com/i/13110/2ab7lhypu3l2.jpg -- forces download
 			 // some images return an error image with 200
@@ -17007,8 +17079,10 @@ var $$IMU_EXPORT$$;
 
 			function do_flickr_request(url, cb) {
 				var headers = {
-					"Origin": "",
-					"Referer": ""
+					"Origin": "https://www.flickr.com",
+					"Referer": "https://www.flickr.com/",
+					"Sec-Fetch-Site": "same-site",
+					"Cookie": ""
 				};
 
 				if (false && !settings.browser_cookies) {
@@ -17072,6 +17146,12 @@ var $$IMU_EXPORT$$;
 								}
 							}
 
+							var reqid = "";
+							matchobj = resp.responseText.match(/root\.reqId\s*=\s*["']([0-9a-f]+)["']\s*;/);
+							if (matchobj) {
+								reqid = matchobj[1];
+							}
+
 							if ("user" in auth && "nsid" in auth.user) {
 								auth.nsid = auth.user.nsid;
 							}
@@ -17079,7 +17159,8 @@ var $$IMU_EXPORT$$;
 							var info = {
 								key: key,
 								nsid: auth.nsid,
-								csrf: auth.csrf
+								csrf: auth.csrf,
+								reqId: reqid
 							};
 
 							done(info, 60 * 60);
@@ -17095,10 +17176,16 @@ var $$IMU_EXPORT$$;
 					url += info.csrf;
 				}
 
-				url += "&api_key=" + info.key + "&format=json";
+				url += "&api_key=" + info.key + "&format=json&hermes=1&hermesClient=1";
 
 				if (info.nsid) {
 					url += "&viewerNSID=" + info.nsid;
+				} else {
+					url += "&viewerNSID=";
+				}
+
+				if (info.reqId) {
+					url += "&reqId=" + info.reqId;
 				}
 
 				url += "&format=json&nojsoncallback=1&" + params;
@@ -17171,8 +17258,19 @@ var $$IMU_EXPORT$$;
 				var cache_key = "flickr_larger:" + photoid;
 				api_cache.fetch(cache_key, cb, function(done) {
 					do_flickrapi_request(info, "method=flickr.photos.getSizes&photo_id=" + photoid, function (resp) {
+						if (resp.readyState !== 4)
+							return;
+
+						if (resp.status !== 200) {
+							console_error(cache_key, resp);
+							return done(null, false);
+						}
+
 						try {
 							var out = JSON_parse(resp.responseText);
+							if (_nir_debug_)
+								console_log(cache_key, deepcopy(out));
+
 							var largesturl = null;
 							var largestsize = 0;
 							out.sizes.size.forEach(function (size) {
@@ -17191,6 +17289,7 @@ var $$IMU_EXPORT$$;
 								done(null, false);
 							}
 						} catch (e) {
+							console_error(cache_key, e);
 							return done(null, false);
 						}
 					});
@@ -44112,6 +44211,18 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/images\/+[^/]*)_mediumres(\.[^/.]*)(?:[?#].*)?$/, "$1_maxres$2");
 		}
 
+		if (domain_nowww === "pixelup.net") {
+			// http://pixelup.net/images/2011/03/04/d9091f563f5b19740068ca2fc91b687a/p.jpg
+			//   http://pixelup.net/images/2011/03/04/d9091f563f5b19740068ca2fc91b687a/r.jpg
+			return src.replace(/(\/images\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}[0-9a-f]{20,}\/+)p(\.[^/.]*)(?:[?#].*)?$/, "$1r$2");
+		}
+
+		if (domain_nowww === "tattoodaze.com") {
+			// http://www.tattoodaze.com/images/373/th_rihanna-pictures-2014-pre-grammy-brunch-roc-nation-04-gotceleb-buuYif.jpg
+			//   http://www.tattoodaze.com/tattoo-images/373/th_rihanna-pictures-2014-pre-grammy-brunch-roc-nation-04-gotceleb-buuYif.jpg
+			return src.replace(/(:\/\/[^/]+\/+)images\/+/, "$1tattoo-images/");
+		}
+
 
 
 
@@ -45771,7 +45882,7 @@ var $$IMU_EXPORT$$;
 				if (options.include_pastobjs) {
 					for (var i = 0; i < pastobjs.length; i++) {
 						if (obj_indexOf(endhref, pastobjs[i].url) < 0 && !pastobjs[i].fake)
-							endhref.push(pastobjs[i]);
+							endhref.push(deepcopy(pastobjs[i]));
 					}
 				}
 			} else {
