@@ -14231,6 +14231,49 @@ var $$IMU_EXPORT$$;
 			return src.replace(/^[a-z]+:\/\/[^/]*\/+[0-9]+x[0-9]+\/+(https?:)/, "$1");
 		}
 
+		if (domain === "i.postimg.cc" && options && options.do_request && options.cb) {
+			// https://i.postimg.cc/s1W2ZvYC/Alina-Kim1-20190825-140824-mp4-20190826-215449-482.jpg
+			match = src.match(/:\/\/[^/]*\/+([^/]+)\/+/);
+			if (match) {
+				options.do_request({
+					url: "https://postimg.cc/" + match[1],
+					method: "GET",
+					headers: {
+						Referer: null
+					},
+					onload: function(result) {
+						if (result.readyState !== 4)
+							return;
+
+						if (result.status !== 200) {
+							console_error(result);
+							return options.cb(null);
+						}
+
+						var match = result.responseText.match(/<meta\s+property=["']og:image["']\s+content=["'](.*?)["']/);
+						if (match) {
+							return options.cb({
+								url: decode_entities(match[1]),
+								headers: {
+									Referer: null
+								},
+								extra: {
+									page: result.finalUrl
+								}
+							});
+						} else {
+							console_error("Unable to find og:image", result);
+							return options.cb(null);
+						}
+					}
+				});
+
+				return {
+					waiting: true
+				};
+			}
+		}
+
 		if ((domain_nosub === "zumst.com" ||
 			 domain_nosub === "zum.com") &&
 			domain.match(/^static\./)) {
@@ -19371,6 +19414,9 @@ var $$IMU_EXPORT$$;
 			// https://cdm15878.contentdm.oclc.org/digital/iiif/p15878coll9/104/0,0,1024,1024/256,256/0/default.jpg
 			//   https://cdm15878.contentdm.oclc.org/digital/iiif/p15878coll9/104/full/full/0/default.jpg
 			(domain_nosub === "oclc.org" && domain.match(/\.contentdm\./)) ||
+			// https://stor.artstor.org/iiif/fpx/amico/dallas/dma_.1969.7.fpx/0,1024,1024,976/1024,/0/default.jpg
+			//   https://stor.artstor.org/iiif/fpx/amico/dallas/dma_.1969.7.fpx/full/full/0/default.jpg
+			domain === "stor.artstor.org" ||
 			domain === "gallica.bnf.fr") {
 			// first is region:
 			// java.lang.IllegalArgumentException: Invalid region
@@ -45629,13 +45675,20 @@ var $$IMU_EXPORT$$;
 
 			if (same_url(currenthref, objified)) {
 				if (_nir_debug_)
-					console_log("parse_bigimage: sameurl(currenthref, objified) == true");
+					console_log("parse_bigimage: sameurl(currenthref, objified) == true", deepcopy(currenthref), deepcopy(objified));
+
+				// FIXME: this is a terrible hack
+				try {
+					if (newhref[0].waiting === true && !objified[0].waiting)
+						newhref = objified;
+				} catch (e) {}
+
 				return false;
 			} else {
 				for (var i = 0; i < pasthrefs.length; i++) {
 					if (same_url(pasthrefs[i], objified)) {
 						if (_nir_debug_)
-							console_log("parse_bigimage: sameurl(pasthrefs[" + i + "], objified) == true");
+							console_log("parse_bigimage: sameurl(pasthrefs[" + i + "], objified) == true", deepcopy(pasthrefs[i]), deepcopy(objified));
 						return false;
 					}
 				}
@@ -45722,14 +45775,22 @@ var $$IMU_EXPORT$$;
 					}
 				}
 			} else {
+				if (_nir_debug_)
+					console_log("finalize (newhref)", deepcopy(newhref));
 				endhref = deepcopy(newhref);
 			}
+
+			if (_nir_debug_)
+				console_log("endhref =", deepcopy(endhref));
 		};
 
 		var cb = null;
 		if (options.cb) {
 			var orig_cb = options.cb;
 			options.cb = function(x) {
+				if (_nir_debug_)
+					console_log("options.cb", deepcopy(x));
+
 				var do_end = function() {
 					if (_nir_debug_)
 						console_log("do_end");
