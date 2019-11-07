@@ -21945,6 +21945,27 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(:\/\/[^/]*\/upload\/)t_[^/]*\/([^/]*)$/, "$1$2");
 		}
 
+		if (domain === "media.vingle.net") {
+			// https://media.vingle.net/images/ca_l/0mcb5mlie2.jpg -- 960x960
+			//   https://media.vingle.net/images/ca_xl/0mcb5mlie2.jpg
+			// https://media.vingle.net/images/us_s/k8nbdisw8k.jpg
+			//   https://media.vingle.net/images/us_l/k8nbdisw8k.jpg
+			newsrc = src.replace(/(\/images\/+(?:ca|us))_s\//, "$1_l/");
+			if (newsrc !== src)
+				return newsrc;
+
+			newsrc = src.replace(/(\/images\/+(?:ca|us))_l\//, "$1_xl/");
+			if (newsrc !== src)
+				return newsrc;
+
+			return {
+				url: src,
+				headers: {
+					Referer: ""
+				}
+			};
+		}
+
 		if (domain === "www.anewsa.com") {
 			// http://www.anewsa.com/news_images/2016/07/14/mark/20160714163711-1.jpg
 			//   http://www.anewsa.com/news_images/2016/07/14/original/20160714163711-1.jpg
@@ -40097,6 +40118,9 @@ var $$IMU_EXPORT$$;
 			// http://www.chudaowang.com/img/aHR0cDovL2ltZzAuaW1ndG4uYmRpbWcuY29tL2l0L3U9NDMxNjU2NTg3LDI2ODIxMjI0NjMmZm09MjYmZ3A9MC5qcGc=.jpg
 			//   http://img0.imgtn.bdimg.com/it/u=431656587,2682122463&fm=26&gp=0.jpg
 			domain_nosub === "chudaowang.com" ||
+			// https://desangw.com/img/aHR0cDovL2ltZzQuaW1ndG4uYmRpbWcuY29tL2l0L3U9NDA4MTI5NzkyNSwxMzI5ODUxNjU1JmZtPTE1JmdwPTAuanBn.jpg
+			//   http://img4.imgtn.bdimg.com/it/u=4081297925,1329851655&fm=15&gp=0.jpg
+			domain_nosub === "desangw.com" ||
 			// https://m.dalangw.com/img/aHR0cDovL2ltZzQuaW1ndG4uYmRpbWcuY29tL2l0L3U9Mzk1ODY3NTA2NCwzMzA0NzAxMzMwJmZtPTI2JmdwPTAuanBn.jpg
 			//   http://img4.imgtn.bdimg.com/it/u=3958675064,3304701330&fm=26&gp=0.jpg
 			domain_nosub === "dalangw.com") {
@@ -44221,6 +44245,70 @@ var $$IMU_EXPORT$$;
 			// http://www.tattoodaze.com/images/373/th_rihanna-pictures-2014-pre-grammy-brunch-roc-nation-04-gotceleb-buuYif.jpg
 			//   http://www.tattoodaze.com/tattoo-images/373/th_rihanna-pictures-2014-pre-grammy-brunch-roc-nation-04-gotceleb-buuYif.jpg
 			return src.replace(/(:\/\/[^/]+\/+)images\/+/, "$1tattoo-images/");
+		}
+
+		if (domain_nowww === "ximg.pro") {
+			// https://ximg.pro/?url=aHR0cHM6Ly93YWxscGFwZXJjYXZlLmNvbS93cC93cDIzNDIzNDYuanBn
+			//   https://wallpapercave.com/wp/wp2342346.jpg
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+\?(?:.*&)?url=([^&/]{20,}).*?$/, "$1");
+			if (newsrc !== src)
+				return base64_decode(newsrc);
+		}
+
+		if (domain === "cdnimage.ebn.co.kr" ||
+			// http://file.ebn.co.kr/news/201911/news_1573112213_1008380_thumbs.jpg
+			//   http://file.ebn.co.kr/news/201911/news_1573112213_1008380_main1.jpg
+			domain === "file.ebn.co.kr") {
+			// http://cdnimage.ebn.co.kr/news/201911/news_1573112213_1008380_thumbs.jpg
+			//   http://cdnimage.ebn.co.kr/news/201911/news_1573112213_1008380_main1.jpg
+			// other:
+			// http://www.ebn.co.kr/news/view/841565?kind=writer&key=284&shword=&page=&period=
+			//   http://cdnimage.ebn.co.kr/news/201607/news_1468919238_841565_main1.jpg -- 3888x2592
+			// https://www.ebn.co.kr/news/view/640367
+			//   http://cdnimage.ebn.co.kr/news/201311/04_640367_1.jpg -- 4446x2502
+			// doesn't work for all:
+			// http://cdnimage.ebn.co.kr/news/201911/news_1572851811_1007745_thumbs.jpg
+			//   http://cdnimage.ebn.co.kr/news/201911/news_1572850797_1007745_main1.jpg
+			newsrc = src.replace(/(\/news\/+[0-9]{6}\/+news_[0-9]+_[0-9]+)_thumbs(\.[^/.]*)(?:[?#].*)?$/, "$1_main1$2");
+			if (newsrc !== src)
+				return newsrc;
+
+			match = src.match(/\/news\/+[0-9]{6}\/+(?:news_[0-9]+|[0-9]{1,3})_([0-9]+)_/);
+			if (match) {
+				return {
+					url: src,
+					extra: {
+						page: "https://www.ebn.co.kr/news/view/" + match[1]
+					}
+				};
+			}
+		}
+
+		if (domain === "img.kbs.co.kr") {
+			// https://img.kbs.co.kr/kbs/160/nsimg.kbs.co.kr/data/news/2017/04/25/3470061_ul7.jpg
+			//   http://nsimg.kbs.co.kr/data/news/2017/04/25/3470061_ul7.jpg
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+kbs\/+[0-9]+\/+([^/]+\.[^/]+\/+)/, "$1");
+			if (newsrc !== src)
+				return add_http(newsrc);
+		}
+
+		if (domain_nowww === "kpop-today.com") {
+			// https://www.kpop-today.com/img-small/medias/images/2016-03/15614.jpg
+			//   https://www.kpop-today.com/img-large/medias/images/2016-03/15614.jpg -- upscaled
+			//   https://www.kpop-today.com/medias/images/2016-03/15614.jpg
+			return src.replace(/\/img-(?:small|large)\/+medias\/+/, "/medias/");
+		}
+
+		if (domain_nowww === "popnable.com") {
+			// https://popnable.com/images/singers/small/kenshi_yonezu_japan_top_40_114.jpg
+			//   https://popnable.com/images/singers/large/kenshi_yonezu_japan_top_40_114.jpg
+			// https://popnable.com/images/songs/small/japan_top_50_spirits_of_the_sea_kenshi_yonezu_1561781279.jpg
+			//   https://popnable.com/images/songs/original/japan_top_50_spirits_of_the_sea_kenshi_yonezu_1561781279.jpg
+			newsrc = src.replace(/(\/images\/+[a-z]+\/+)small\/+/, "$1large/");
+			if (newsrc !== src)
+				return newsrc;
+
+			return src.replace(/(\/images\/+[a-z]+\/+)(?:small|large)\/+/, "$1original/");
 		}
 
 
