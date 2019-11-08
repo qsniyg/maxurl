@@ -13701,6 +13701,9 @@ var $$IMU_EXPORT$$;
 			// https://www.zyzpes.com/img.php?url=http://inews.gtimg.com/newsapp_match/0/4982172462/0
 			//   http://inews.gtimg.com/newsapp_match/0/4982172462/0
 			domain_nowww === "zyzpes.com" ||
+			// https://yoptel.ru/vk/img.php?url=https://pp.userapi.com/c849320/v849320861/dda30/ooRORXzkxuU.jpg
+			//   https://pp.userapi.com/c849320/v849320861/dda30/ooRORXzkxuU.jpg
+			domain_nowww === "yoptel.ru" ||
 			// http://img.viyuedu.com/img.php?url=http://mmbiz.qpic.cn/mmbiz/HiaNy8LPboMzo9U0Dg38XibJQia6sicM2D26icquxZic0eRPVRNLGDSMYu2tgnZ6RjqOaZEJ3608def8gpZEicX2WAM2Q/0?wx_fmt=jpeg
 			//   http://mmbiz.qpic.cn/mmbiz/HiaNy8LPboMzo9U0Dg38XibJQia6sicM2D26icquxZic0eRPVRNLGDSMYu2tgnZ6RjqOaZEJ3608def8gpZEicX2WAM2Q/0?wx_fmt=jpeg
 			domain === "img.viyuedu.com") {
@@ -17356,6 +17359,10 @@ var $$IMU_EXPORT$$;
 			// http://www.carphotoshow.com/var/thumbs/Ford/Ford-F150-Powertrain-Lineup/Ford%20F150%20Powertrain%20Lineup.jpg?m=1311929207
 			//   http://www.carphotoshow.com/var/albums/Ford/Ford-F150-Powertrain-Lineup/Ford%20F150%20Powertrain%20Lineup.jpg?m=1311929207
 			domain_nowww === "carphotoshow.com" ||
+			// http://www.crnobelo.com/gallery3/var/thumbs/slavni-licnosti/rihanna-vo-cuden-outfit/rihanna_outfit_25.jpg
+			//   http://www.crnobelo.com/gallery3/var/resizes/slavni-licnosti/rihanna-vo-cuden-outfit/rihanna_outfit_25.jpg
+			//   http://www.crnobelo.com/gallery3/var/albums/slavni-licnosti/rihanna-vo-cuden-outfit/rihanna_outfit_25.jpg -- 503
+			domain_nowww === "crnobelo.com" ||
 			// http://www.celebritiestown.com/celebritypictures/var/resizes/Celebrity-Street-Style/Jessica-Alba-Best-Street-Style-09.jpg?m=1450092223
 			//   http://www.celebritiestown.com/celebritypictures/var/albums/Celebrity-Street-Style/Jessica-Alba-Best-Street-Style-09.jpg?m=1450092223
 			domain_nowww === "celebritiestown.com") {
@@ -17365,8 +17372,13 @@ var $$IMU_EXPORT$$;
 			//   http://www.imagozone.com/var/albums/vedete/Amber%20Heard/Amber%20Heard%20005.jpg?m=1312958883
 			// doesn't work:
 			// http://www.imagozone.com/var/thumbs/vedete/Amber%20Heard/2007/.album.jpg?m=1312542209
-			if (!src.match(/\/\.album\.[^/.]*$/))
+			if (!src.match(/\/\.album\.[^/.]*$/)) {
+				newsrc = src.replace(/(\/var\/+thumbs\/)/, "/var/resizes/");
+				if (newsrc !== src)
+					return newsrc;
+
 				return src.replace(/\/var\/(?:resizes|thumbs)\//, "/var/albums/");
+			}
 		}
 
 		// gallery v1
@@ -24121,6 +24133,13 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "bstars.eu" ||
+			// http://wstars.net/media/djcatalog2/images/1-grud-dzhennifer-lourens_m.jpg
+			//   http://wstars.net/media/djcatalog2/images/1-grud-dzhennifer-lourens.jpg
+			// doesn't work for all:
+			// http://wstars.net/media/djcatalog2/images/nogi-kiry-najtli-03_t.jpg
+			//   http://wstars.net/media/djcatalog2/images/nogi-kiry-najtli-03_f.jpg
+			//   http://wstars.net/media/djcatalog2/images/nogi-kiry-najtli-03.jpg -- 404
+			domain_nowww === "wstars.net" ||
 			// https://bstars.ru/media/djcatalog2/images/item/15/bebe-rexha.3_f.jpg -- watermark
 			//   https://bstars.ru/media/djcatalog2/images/item/15/bebe-rexha.3.jpg
 			// https://bstars.ru/media/djcatalog2/images/item/15/bebe-rexha.1_l.jpg -- 300x280, watermark
@@ -24132,7 +24151,9 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "bstars.ru") {
 			// https://www.bstars.eu/media/djcatalog2/images/item/11/victoria-justice.2_f.jpg
 			//   https://www.bstars.eu/media/djcatalog2/images/item/11/victoria-justice.2.jpg
-			return src.replace(/(\/media\/+djcatalog2\/+images\/+item\/+[0-9]+\/+[^/]+\.[0-9]+)_[a-z](\.[^/.]*)$/, "$1$2");
+			return src
+				.replace(/(\/media\/+djcatalog2\/+images\/+item\/+[0-9]+\/+[^/]+\.[0-9]+)_[a-z](\.[^/.]*)$/, "$1$2")
+				.replace(/(\/media\/+djcatalog2\/+images\/+[^/]+)_[a-z](\.[^/.]*)(?:[?#].*)?$/, "$1$2");
 		}
 
 		if (domain === "media.toofab.com" ||
@@ -44420,6 +44441,25 @@ var $$IMU_EXPORT$$;
 			// https://ru.muzmob.org/news/i/21293_300.jpg
 			//   https://ru.muzmob.org/news/i/21293.jpg
 			return src.replace(/(\/news\/+i\/+[0-9]+)_[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain === "static.zone-adulte.com") {
+			// https://static.zone-adulte.com/img/3118/320x180/22.jpg
+			//   https://static.zone-adulte.com/img/3118/22.jpg
+			return src.replace(/(\/img\/+[0-9]+\/+)[0-9]+x[0-9]+\/+/, "$1");
+		}
+
+		if (domain_nosub === "ujarani.com" && /^i[0-9]*\./.test(domain)) {
+			// https://i1.ujarani.com/4/2/2a32JE.jpg
+			//   https://i1.ujarani.com/3/2/2a32JE.jpg
+			return src.replace(/(:\/\/[^/]+\/+)4\//, "$13/");
+		}
+
+		if (domain === "media.loupak.fun") {
+			// https://media.loupak.fun/soubory/obrazky_t/_funny/2585/11415.jpg
+			//   https://media.loupak.fun/soubory/obrazky_n/_funny/2585/11415.jpg
+			//   https://media.loupak.fun/soubory/obrazky/_funny/2585/11415.jpg
+			return src.replace(/\/obrazky_[tn]\//, "/obrazky/");
 		}
 
 
