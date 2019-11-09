@@ -811,6 +811,8 @@ var $$IMU_EXPORT$$;
 		mouseover_exclude_page_bg: true,
 		mouseover_minimum_size: 20,
 		mouseover_exclude_backgroundimages: false,
+		// thanks to Jin on discord for the idea
+		mouseover_only_links: false,
 		mouseover_exclude_sameimage: false,
 		mouseover_exclude_imagetab: true,
 		mouseover_ui: true,
@@ -1094,6 +1096,15 @@ var $$IMU_EXPORT$$;
 		mouseover_exclude_sameimage: {
 			name: "Exclude if image is unchanged",
 			description: "Don't pop up if the new image is the same as the thumbnail image",
+			requires: {
+				mouseover: true
+			},
+			category: "popup",
+			subcategory: "open_behavior"
+		},
+		mouseover_only_links: {
+			name: "Only popup for links",
+			description: "Don't pop up if the image isn't linked",
 			requires: {
 				mouseover: true
 			},
@@ -49630,6 +49641,23 @@ var $$IMU_EXPORT$$;
 
 				if (!imu_check(src))
 					return false;
+
+				if (settings.mouseover_only_links) {
+					if (!el)
+						return false;
+
+					var has_link = false;
+					var current = el;
+					do {
+						if (current.tagName === "A") {
+							has_link = true;
+							break;
+						}
+					} while (current = current.parentElement);
+
+					if (!has_link)
+						return false;
+				}
 
 				if ("layer" in options) {
 					if (!(options.layer in layers)) {
