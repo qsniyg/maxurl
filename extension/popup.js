@@ -1,5 +1,5 @@
 document.body.oncontextmenu = function(e) {
-    if (true) {
+    if (false) {
         return true;
     } else {
         e.preventDefault();
