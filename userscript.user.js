@@ -190,7 +190,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (open_in_tab !== nullfunc) {
-			register_menucommand("Options", function() {
+			register_menucommand("[1] Options", function() {
 				open_in_tab(options_page);
 			});
 		}
@@ -725,6 +725,9 @@ var $$IMU_EXPORT$$;
 		"subcategory_replaceimages": {
 			"en": "Replace Images"
 		},
+		"subcategory_highlightimages": {
+			"en": "Highlight Images"
+		},
 		"category_general": {
 			"en": "General",
 			"ko": "일반"
@@ -855,7 +858,9 @@ var $$IMU_EXPORT$$;
 		replaceimgs_usedata: true,
 		replaceimgs_wait_fullyloaded: true,
 		replaceimgs_totallimit: 8,
-		replaceimgs_domainlimit: 2
+		replaceimgs_domainlimit: 2,
+		highlightimgs_enable: false,
+		highlightimgs_css: "border: 4px solid yellow"
 	};
 	var orig_settings = deepcopy(settings);
 
@@ -1658,6 +1663,19 @@ var $$IMU_EXPORT$$;
 			category: "extra",
 			subcategory: "replaceimages",
 			imu_enabled_exempt: true
+		},
+		highlightimgs_enable: {
+			name: "Enable button",
+			description: "Enables the 'Highlight Images' button",
+			category: "extra",
+			subcategory: "highlightimages"
+		},
+		highlightimgs_css: {
+			name: "Highlight CSS",
+			description: "CSS style to apply for highlight",
+			type: "textarea",
+			category: "extra",
+			subcategory: "highlightimages"
 		}
 	};
 
@@ -1688,7 +1706,8 @@ var $$IMU_EXPORT$$;
 			"popup_other": "subcategory_popup_other"
 		},
 		"extra": {
-			"replaceimages": "subcategory_replaceimages"
+			"replaceimages": "subcategory_replaceimages",
+			"highlightimages": "subcategory_highlightimages"
 		}
 	};
 
@@ -50709,7 +50728,32 @@ var $$IMU_EXPORT$$;
 			next_img();
 		}
 
-		register_menucommand("Replace images", replace_images);
+		register_menucommand("[2] Replace images", replace_images);
+
+		var highlight_images = function() {
+			var images = document.querySelectorAll("img");
+			if (images.length === 0)
+				return;
+
+			for (var i = 0; i < images.length; i++) {
+				var src = images[i].src;
+
+				var imu_output = bigimage_recursive(src, {
+					fill_object: false,
+					exclude_problems: [],
+					use_cache: false,
+					cb: function() {},
+					do_request: function() {}
+				});
+
+				if (imu_output !== src) {
+					apply_styles(images[i], settings.highlightimgs_css);
+				}
+			}
+		};
+
+		if (settings.highlightimgs_enable)
+			register_menucommand("[3] Highlight images", highlight_images);
 
 		document.addEventListener('keydown', function(event) {
 			if (!mouseover_enabled())
