@@ -513,7 +513,8 @@ chrome.runtime.onMessage.addListener((message, sender, respond) => {
 			}
 		});
 	} else if (message.type === "popupaction") {
-		if (message.data.action === "replace_images") {
+		if (message.data.action === "replace_images" ||
+				message.data.action === "highlight_images") {
 			chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
 				var currentTab = tabs[0];
 				chrome.tabs.sendMessage(currentTab.id, message);

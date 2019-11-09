@@ -50950,6 +50950,8 @@ var $$IMU_EXPORT$$;
 				} else if (message.type === "popupaction") {
 					if (message.data.action === "replace_images") {
 						replace_images();
+					} else if (message.data.action === "highlight_images") {
+						highlight_images();
 					}
 				} else if (message.type === "settings_update") {
 					//console_log(message);
