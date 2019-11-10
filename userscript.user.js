@@ -5402,6 +5402,12 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain_nowww === "wapinda.in") {
+			// http://www.wapinda.in/vimg.php?v=KAzH-fPJDLQ
+			//   https://i.ytimg.com/vi/KAzH-fPJDLQ/hqdefault.jpg
+			return src.replace(/.*\/vimg\.php\?(?:.*?&)?v=([^&]*).*?$/, "https://i.ytimg.com/vi/$1/mqdefault.jpg");
+		}
+
 		if (domain === "image.bugsm.co.kr") {
 			// blank image: (?version= doesn't impact)
 			// https://image.bugsm.co.kr/artist/images/200/200498/20049877.jpg?version=20180108002103
@@ -6164,6 +6170,8 @@ var $$IMU_EXPORT$$;
 			domain === "images.newrepublic.com" ||
 			// https://www.madametussauds.com/media/1897935/_dsc6467-ariana-grande-mta-2017.jpg?center=0.380281690140845,0.495&mode=crop&width=584&height=643
 			(domain_nowww === "madametussauds.com" && src.indexOf("/media/") >= 0) ||
+			// https://www.tirolerin.at/media/63724/rihanna-wearing-the-rihanna-chopard-joaillerie-collection.jpg?center=0.30769230769230771,0.36073825503355705&mode=crop&width=800&height=400&rnd=131438597590000000
+			(domain_nowww === "tirolerin.at" && src.indexOf("/media/") >= 0) ||
 			// https://media.deseretdigital.com/file/7b4eed7931?resize=width_1200&type=jpg&c=21&a=e0717f4c
 			(domain === "media.deseretdigital.com" && src.indexOf("/file/") >= 0) ||
 			// https://assets.audiomack.com/djsev/c829ceb284e2d4b043145aec664a93dc.jpeg?width=165&height=165&max=true
@@ -8448,7 +8456,7 @@ var $$IMU_EXPORT$$;
 			return src.replace(/:\/\/[^/]*\/aliexpress[0-9]*(\/kf\/)/, "://ae01.alicdn.com$1");
 		}
 
-		if (domain === "thumbor.forbes.com") {
+		if (false && domain === "thumbor.forbes.com") {
 			return decodeURIComponent(src.replace(/.*\/([^/]*%3A%2F%2F[^/]*).*/, "$1"));
 		}
 
@@ -9882,6 +9890,9 @@ var $$IMU_EXPORT$$;
 			// https://www.esquirehk.com/var/esquirehk/storage/images/people/women_we_love/2015-girl-group-korea-hong-kong-japn-hottest/girl-s-day-yura/293873-1-chi-HK/Girl-s-Day-Yura_img_1032_688.jpg
 			//   https://www.esquirehk.com/var/esquirehk/storage/images/people/women_we_love/2015-girl-group-korea-hong-kong-japn-hottest/girl-s-day-yura/293873-1-chi-HK/Girl-s-Day-Yura.jpg
 			domain_nosub === "esquirehk.com" ||
+			// http://gfx.elle.ci/var/ezflow_site/storage/images/people-lifestyle/people/les-senegalais-refusent-de-recevoir-rihanna-dans-leur-pays/42914-1-eng-GB/Les-Senegalais-refusent-de-recevoir-Rihanna-dans-leur-Pays_article_north.jpg
+			//   http://gfx.elle.ci/var/ezflow_site/storage/images/people-lifestyle/people/les-senegalais-refusent-de-recevoir-rihanna-dans-leur-pays/42914-1-eng-GB/Les-Senegalais-refusent-de-recevoir-Rihanna-dans-leur-Pays.jpg
+			domain === "gfx.elle.ci" ||
 			// https://img3.closermag.fr/var/closermag/storage/images/bio-people/biographie-jose-garcia-112817/827937-1-fre-FR/Jose-Garcia_square500x500.jpg
 			//   https://img3.closermag.fr/var/closermag/storage/images/bio-people/biographie-jose-garcia-112817/827937-1-fre-FR/Jose-Garcia.jpg
 			// https://img1.closermag.fr/var/closermag/storage/images/media/images-des-contenus/actu-people/people-anglo-saxons/20151129-selena/selena-gomez-pose-pour-in-style/4987068-1-fre-FR/Selena-Gomez-pose-pour-In-Style.png?v1/focus=0x0/cover=626x768
@@ -14279,10 +14290,12 @@ var $$IMU_EXPORT$$;
 			};
 		}
 
-		if (domain === "igx.4sqi.net") {
+		if (domain_nosub === "4sqi.net") {
 			// https://igx.4sqi.net/img/general/200x200/14154508__KFDGWAVvjjTcK6pEKNuQER_10kmzcBR7eU3BWbYGG4.jpg
 			//   https://igx.4sqi.net/img/general/original/14154508__KFDGWAVvjjTcK6pEKNuQER_10kmzcBR7eU3BWbYGG4.jpg
-			return src.replace(/\/img\/general\/[^/]*\//, "/img/general/original/");
+			// https://fastly.4sqi.net/img/general/200x200/12267819_ZAYNBPR7UX7mVSGBdJfRKEIjAbB3Rwq5WrvTENLVPhA.jpg
+			//   https://fastly.4sqi.net/img/general/original/12267819_ZAYNBPR7UX7mVSGBdJfRKEIjAbB3Rwq5WrvTENLVPhA.jpg
+			return src.replace(/\/img\/+general\/+[0-9]+x[0-9]+\//, "/img/general/original/");
 		}
 
 		if (domain === "static.panoramio.com" ||
@@ -14819,6 +14832,9 @@ var $$IMU_EXPORT$$;
 			// http://upload.sanqin.com/2015/0801/thumb_900_600_1438417056121.jpg
 			//   http://upload.sanqin.com/2015/0801/1438417056121.jpg
 			domain === "upload.sanqin.com" ||
+			// http://upload.art.ifeng.com/2017/0410/thumb_700_325_1491790874748.jpg
+			//   http://upload.art.ifeng.com/2017/0410/1491790874748.jpg
+			domain === "upload.art.ifeng.com" ||
 			// http://m1.ablwang.com/uploadfile/2018/0430/thumb_110_69_20180430070256125.jpg
 			//   http://m1.ablwang.com/uploadfile/2018/0430/20180430070256125.jpg
 			(domain_nosub === "ablwang.com" && domain.match(/m[0-9]*\.ablwang\.com/))) {
@@ -20752,6 +20768,12 @@ var $$IMU_EXPORT$$;
 				.replace(/(\/pics\/[0-9]+)_[0-9]_([0-9]+_[A-Za-z0-9]+\.[^/.]*)$/, "$1_1_$2");
 		}
 
+		if (domain === "mgl.skyrock.net") {
+			// https://mgl.skyrock.net/art/PRIP.80644265.3.0.jpg -- 100x100
+			//   https://mgl.skyrock.net/art/PRIP.80644265.3.1.jpg -- 200x200
+			return src.replace(/(\/art\/+[A-Z]+\.[0-9]+\.[0-9]+)\.0(\.[^/.]*)(?:[?#].*)?$/, "$1.1$2");
+		}
+
 		if (domain_nosub === "xhcdn.com" &&
 			(domain.match(/thumb-p[0-9]*\.xhcdn\.com/) ||
 			 // https://upt.xhcdn.com/000/105/050/371_450.jpg
@@ -22655,6 +22677,9 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "static.stylosophy.it" ||
+			// https://static.ellahoy.es/r/845X0/www.ellahoy.es/img/Rihanna-y-Chopard-lanzan-coleccion-de-joyas.jpg
+			//   https://static.ellahoy.es/r/999999999999x0/www.ellahoy.es/img/Rihanna-y-Chopard-lanzan-coleccion-de-joyas.jpg
+			domain === "static.ellahoy.es" ||
 			// https://image.nanopress.it/r/845X0/donna.nanopress.it/img/Rita-Ora-agli-MTV-EMA-2017.jpg
 			//   https://image.nanopress.it/r/999999999999x0/donna.nanopress.it/img/Rita-Ora-agli-MTV-EMA-2017.jpg
 			//   https://donna.nanopress.it/img/Rita-Ora-agli-MTV-EMA-2017.jpg
@@ -22672,7 +22697,10 @@ var $$IMU_EXPORT$$;
 				return newsrc;
 		}
 
-		if (domain === "static.stylosophy.it") {
+		if (domain === "static.stylosophy.it" ||
+			// http://static.ellahoy.es/625X0/www/ellahoy/es/img/Rihanna-y-Chopard-lanzan-coleccion-de-joyas.jpg
+			//   http://static.ellahoy.es/999999999999X0/www/ellahoy/es/img/Rihanna-y-Chopard-lanzan-coleccion-de-joyas.jpg
+			domain === "static.ellahoy.es") {
 			// http://static.stylosophy.it/625X0/www/stylosophy/it/img/Trucco-rosso-occhi-verdi.jpg
 			//   http://static.stylosophy.it/999999999999X0/www/stylosophy/it/img/Trucco-rosso-occhi-verdi.jpg
 			return src.replace(/(:\/\/[^/]*\/)[0-9]+X[0-9]+\/+www\/+/, "$1999999999999X0/www/");
@@ -27919,6 +27947,9 @@ var $$IMU_EXPORT$$;
 			 // https://www.dostor.org/upload/photo/news/265/7/160x90o/295.jpg?q=2
 			 //   https://www.dostor.org/upload/photo/news/265/7/295.jpg
 			 domain_nowww === "dostor.org" ||
+			 // http://www.studio-dostor.org/upload/photo/news/1/8/400x225o/672.jpg?q=1
+			 //   http://www.studio-dostor.org/upload/photo/news/1/8/672.jpg
+			 domain_nowww === "studio-dostor.org" ||
 			 // https://www.albawabhnews.com/upload/photo/news/261/9/600x338o/986.jpg?q=1
 			 //   https://www.albawabhnews.com/upload/photo/news/261/9/986.jpg?q=1
 			 //   https://www.albawabhnews.com/upload/photo/news/261/9/986.jpg
@@ -28980,7 +29011,23 @@ var $$IMU_EXPORT$$;
 		if (domain === "news.walkerplus.com") {
 			// https://news.walkerplus.com/article/118051/651728_615.jpg
 			//   https://news.walkerplus.com/article/118051/651728.jpg
-			return src.replace(/(\/article\/[0-9]+\/[0-9]+)_[0-9]+(\.[^/.]*)$/, "$1$2");
+			return {
+				url: src.replace(/(\/article\/[0-9]+\/[0-9]+)_[0-9]+(\.[^/.]*)$/, "$1$2"),
+				can_head: false // 404
+			};
+		}
+
+		if (domain === "movie.walkerplus.com") {
+			// https://movie.walkerplus.com/api/resizeimage/content/46673?w=540
+			//   https://movie.walkerplus.com/api/resizeimage/content/46673?w=
+			newsrc = src.replace(/(\/api\/+resizeimage\/.*?)(?:[?#].*)?$/, "$1?w=");
+			if (newsrc !== src)
+				return newsrc;
+
+			// https://movie.walkerplus.com/api/resizeimage/news/article/16919/64515?w=240
+			newsrc = src.replace(/:\/\/[^/]+\/+api\/+resizeimage\/+news\/+(.*?)(?:[?#].*)?$/, "://news.walkerplus.com/$1.jpg");
+			if (newsrc !== src)
+				return add_extensions(newsrc);
 		}
 
 		if (domain === "img.jj20.com") {
@@ -44951,6 +44998,11 @@ var $$IMU_EXPORT$$;
 			// https://th.clickblog.it/8IYGXWhZUsRHGseuFvNTAO60he4=/fit-in/600x400/https://media.clickblog.it/4/47d/geert-weggen_squirrel-wishes_00003677.jpg
 			//   https://media.clickblog.it/4/47d/geert-weggen_squirrel-wishes_00003677.jpg
 			domain === "th.clickblog.it" ||
+			// https://thumbor.forbes.com/thumbor/711x356/https://blogs-images.forbes.com/robertanaas/files/2017/04/Rihanna-wearing-the-RIHANNA-LOVES-CHOPARD-Joaillerie-collection-copy-1200x601.jpg?width=960
+			//   https://blogs-images.forbes.com/robertanaas/files/2017/04/Rihanna-wearing-the-RIHANNA-LOVES-CHOPARD-Joaillerie-collection-copy.jpg
+			// https://thumbor.forbes.com/thumbor/960x0/https%3A%2F%2Fblogs-images.forbes.com%2Fjoresablount%2Ffiles%2F2019%2F05%2Fhitesh-choudhary-666985-unsplash-1200x675.jpg
+			//   https://blogs-images.forbes.com/joresablount/files/2019/05/hitesh-choudhary-666985-unsplash-1200x675.jpg
+			domain === "thumbor.forbes.com" ||
 			src.match(/:\/\/[^/]*\/thumbor\/[^/]*=\//) ||
 			// https://www.orlandosentinel.com/resizer/tREpzmUU7LJX1cbkAN-unm7wL0Y=/fit-in/800x600/top/filters:fill(black)/arc-anglerfish-arc2-prod-tronc.s3.amazonaws.com/public/XC6HBG2I4VHTJGGCOYVPLBGVSM.jpg
 			//   http://arc-anglerfish-arc2-prod-tronc.s3.amazonaws.com/public/XC6HBG2I4VHTJGGCOYVPLBGVSM.jpg
@@ -44984,6 +45036,10 @@ var $$IMU_EXPORT$$;
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/[-_A-Za-z0-9]{64}\/([^%/]*\.[^/]*\/)/, "http://$1");
 			if (newsrc !== src)
 				return newsrc;
+
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+thumbor\/+[0-9]+x[0-9]+\/+http/, "http");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
 
 			newsrc = src.replace(/.*\/[-_A-Za-z0-9]+=\/(?:(?:full-)?fit-in\/)?(?:[0-9x:]+\/)?(?:[0-9x:]+\/)?(?:(?:smart|top|center|middle)\/)?(?:(?:smart|top|center|middle)\/)?(?:filters:[^/]*\/)?((?:https?(?::\/\/|%3[aA]%2[fF]%2[fF]))?[^/%]*\..*)/, "$1");
 			if (newsrc.match(/^[^/]*%2/))
@@ -45610,6 +45666,8 @@ var $$IMU_EXPORT$$;
 			domain === "gallica.bnf.fr" ||
 			// https://dieta.pourfemme.it/img/2010/07/dieta-vegana-8-420x260.jpg
 			domain === "dieta.pourfemme.it" ||
+			// http://www.ellahoy.es/img/Rihanna-y-Chopard-lanzan-coleccion-de-joyas.jpg
+			domain_nowww === "ellahoy.es" ||
 			// https://cdn.akb48.co.jp/cache/image/?path=%2Fmembers%2Fprofile%2Fteam_8_png%2Foguri_yui.png
 			domain === "cdn.akb48.co.jp") {
 			// http://www.ozanyerli.com/uploadfile/2016/0411/thumb_240_0_20160411034324215.jpg
