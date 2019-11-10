@@ -11268,6 +11268,9 @@ var $$IMU_EXPORT$$;
 			// https://a.jeu.cc/images/jeux/600x372_wedgie-toss.jpg -- upscaled
 			//   https://a.jeu.cc/images/jeux/wedgie-toss.jpg
 			(domain === "a.jeu.cc" && src.indexOf("/images/") >= 0) ||
+			// https://www.soyuz.ru/public/uploads/files/22/2435186/740x457_201601140813318f7f7e924d.jpg
+			//   https://www.soyuz.ru/public/uploads/files/22/2435186/201601140813318f7f7e924d.jpg
+			(domain_nowww === "soyuz.ru" && /\/uploads\/+files\//.test(src)) ||
 			// https://www.mjuznews.com/public/photos/1000/236/604x320_236-Wikluh_Sky.jpg
 			//   https://www.mjuznews.com/public/photos/1000/236/236-Wikluh_Sky.jpg
 			(domain === "www.mjuznews.com" && src.indexOf("/photos/") >= 0)) {
@@ -19217,6 +19220,12 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(:\/\/[^/]*\/)(?:s:)?[0-9]+x[0-9]+\//, "$1");
 		}
 
+		if (domain === "cdn.awsli.com.br") {
+			// https://cdn.awsli.com.br/600x450/493/493253/produto/18754331/8ee5235728.jpg
+			//   https://cdn.awsli.com.br/493/493253/produto/18754331/8ee5235728.jpg
+			return src.replace(/(:\/\/[^/]+\/+)[0-9]+x[0-9]+\/+([0-9]+\/+[0-9]+\/+)/, "$1$2");
+		}
+
 		if (domain_nowww === "pets4homes.co.uk") {
 			// https://www.pets4homes.co.uk/images/articles/4276/large/why-might-your-cats-whiskers-fall-out-597f347251d52.jpg
 			//   https://www.pets4homes.co.uk/images/articles/4276/original/why-might-your-cats-whiskers-fall-out-597f347251d52.jpg
@@ -22743,6 +22752,9 @@ var $$IMU_EXPORT$$;
 			// https://www.quotationof.com/images250_/margot-robbie-6.jpg
 			//   https://www.quotationof.com/images/margot-robbie-6.jpg
 			domain_nowww === "quotationof.com" ||
+			// http://7desktopthemes.com/images450_300/rihanna-wallpaper-2.jpg
+			//   http://7desktopthemes.com/images/rihanna-wallpaper-2.jpg
+			domain_nowww === "7desktopthemes.com" ||
 			// http://eskipaper.com/images250_/anime-wallpaper-65.jpg
 			//   http://eskipaper.com/images/anime-wallpaper-65.jpg
 			domain_nowww === "eskipaper.com") {
@@ -44537,6 +44549,30 @@ var $$IMU_EXPORT$$;
 			//   https://media.loupak.fun/soubory/obrazky_n/_funny/2585/11415.jpg
 			//   https://media.loupak.fun/soubory/obrazky/_funny/2585/11415.jpg
 			return src.replace(/\/obrazky_[tn]\//, "/obrazky/");
+		}
+
+		if (domain_nowww === "megalyrics.ru") {
+			// http://www.megalyrics.ru/uploads/blog/cover/a0/4f3196a0c58c20fd560014dd/cs_crop_main_bbcb8f60ddbc15285b3dd11ac98ebc00.jpg
+			//   http://www.megalyrics.ru/uploads/blog/cover/a0/4f3196a0c58c20fd560014dd/bbcb8f60ddbc15285b3dd11ac98ebc00.jpg
+			return src.replace(/(\/uploads\/+blog\/+cover\/+[0-9a-f]{2}\/+[0-9a-f]{10,}\/+)cs_crop_main_([0-9a-f]{20,}\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (false && domain_nowww === "skachat-kartinki.ru") {
+			// http://skachat-kartinki.ru/img/picture/Apr/15/3a3f9663a9428d8406c16a4c926f7742/mini_2.jpg
+			//   http://skachat-kartinki.ru/img/picture/Apr/15/3a3f9663a9428d8406c16a4c926f7742/2.jpg -- cropped
+			return src.replace(/(\/img\/+picture\/+[A-Za-z]+\/+[0-9]+\/+[0-9a-f]{20,}\/+)mini_([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain === "uploads.bemparana.com.br") {
+			// https://uploads.bemparana.com.br/upload/image/noticia/tb1/noticia_159235_img1_luladiscurso.jpg
+			//   https://uploads.bemparana.com.br/upload/image/noticia/noticia_159235_img1_luladiscurso.jpg
+			return src.replace(/(\/upload\/+image\/+noticia\/+)tb[0-9]*\/+/, "$1");
+		}
+
+		if (domain_nowww === "beicon.ru") {
+			// https://www.beicon.ru/uploads/215268a418f8f2077936de06329b307f30ab_16_9_1040.jpg
+			//   https://www.beicon.ru/uploads/215268a418f8f2077936de06329b307f30ab.jpg
+			return src.replace(/(\/uploads\/+[0-9a-f]{20,})_16_9_[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
 		}
 
 
