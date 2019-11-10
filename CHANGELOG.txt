@@ -1,3 +1,21 @@
+0.11.11
+
+New features:
+
+ * Button to highlight supported images (disabled by default)
+ * Option to only open the popup for images that are linked (thanks to Jin on discord for the idea)
+ * Support for ~65 new websites (using ~25 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including Flickr)
+
+Bugfixes:
+
+ * Fix for some rules using `waiting: true` that were ignored
+
+---
+
 0.11.10
 
 New features:
