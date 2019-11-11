@@ -44624,6 +44624,12 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/filemanager\/+shared_[0-9]+\/+/, "/filemanager/shared/");
 		}
 
+		if (domain === "media.lelombrik.net") {
+			// https://media.lelombrik.net/t/9fd6df051ce13dde28f7e4019130c4a3/s/01.jpg
+			//   https://media.lelombrik.net/t/9fd6df051ce13dde28f7e4019130c4a3/f/9fd6df051ce13dde28f7e4019130c4a3.jpg
+			return src.replace(/\/t\/+([0-9a-f]{20,})\/+s\/+01(\.[^/.]*)(?:[?#].*)?$/, "/t/$1/f/$1$2");
+		}
+
 
 
 
