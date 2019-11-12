@@ -4777,6 +4777,8 @@ var $$IMU_EXPORT$$;
 			domain_nosub === "ssl-images-amazon.com" ||
 			// https://m.media-amazon.com/images/I/61rtKO6VrUL._SL500_.jpg
 			//   https://m.media-amazon.com/images/I/61rtKO6VrUL.jpg
+			// https://m.media-amazon.com/images/M/MV5BNTJjZDE0YzQtNjQ1Mi00M2EwLTkxYTEtZDBiY2Q5NzY4NmQ5XkEyXkFqcGdeQXVyMDM2NDM2MQ@@._CR294,163,2581,2581_UX614_UY614.jpg
+			//   https://m.media-amazon.com/images/M/MV5BNTJjZDE0YzQtNjQ1Mi00M2EwLTkxYTEtZDBiY2Q5NzY4NmQ5XkEyXkFqcGdeQXVyMDM2NDM2MQ@@.jpg
 			domain_nosub === "media-amazon.com" ||
 			// https://ia.media-imdb.com/images/M/MV5BNjA1NDYwMDQ3MF5BMl5BanBnXkFtZTcwOTYyNDQ0MQ@@._V1_UY268_CR1,0,182,268_AL_.jpg
 			//   https://ia.media-imdb.com/images/M/MV5BNjA1NDYwMDQ3MF5BMl5BanBnXkFtZTcwOTYyNDQ0MQ@@.jpg
@@ -4796,7 +4798,7 @@ var $$IMU_EXPORT$$;
 				//url: src.replace(/\._[^/]*\.([^./]*)$/, "._.$1"),
 				url: src
 					.replace(/(\.[^/.]*)(?:\.[^/.]*_){1,}\1(?:[?#].*)?$/, "$1") // is this needed?
-					.replace(/\.[^/.]*_\.([^./]*)$/, ".$1"), // for now this seems to work for all images
+					.replace(/\.(?:[^/.]*_|_[^/.]+)\.([^./]*)$/, ".$1"), // for now this seems to work for all images
 				//always_ok: true,
 				is_original: true,
 				can_head: false
