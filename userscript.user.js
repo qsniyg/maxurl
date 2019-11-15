@@ -44942,6 +44942,7 @@ var $$IMU_EXPORT$$;
 
 
 
+		// -- general rules --
 
 		if (src.match(/\/ImageGen\.ashx\?/)) {
 			// http://www.lookalikes.info/umbraco/ImageGen.ashx?image=/media/97522/nick%20hewer%20-%20mark%20brown.jpeg&width=250&constrain=true
@@ -45829,6 +45830,7 @@ var $$IMU_EXPORT$$;
 
 
 
+		// -- info rules -- (rules that explain server limitations, but don't actually modify the URL)
 
 		if (domain === "blogs-images.forbes.com" ||
 			// http://images-origin.playboy.com/ogz4nxetbde6/3CJdCBvUEU2qaE6E00CYQU/a8277fb2808ea265a219036c150c4ffe/24_Dodger.jpg
