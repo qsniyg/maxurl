@@ -45948,6 +45948,12 @@ var $$IMU_EXPORT$$;
 			};
 		}
 
+		if (domain === "ca.slack-edge.com") {
+			// https://ca.slack-edge.com/T81EQ2QNM-UDEDDF8AV-c0aac75e8652-72
+			//   https://ca.slack-edge.com/T81EQ2QNM-UDEDDF8AV-c0aac75e8652-1024
+			return src.replace(/-\d+$/, "-1024");
+		}
+
 
 
 
