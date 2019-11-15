@@ -23471,10 +23471,10 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if (domain_nosub === "imagevenue.com" &&
-			domain.match(/^img[0-9]+\.imagevenue\.com/) &&
-			src.match(/\/th_([^/]*)$/) &&
-			options && options.cb && options.do_request) {
+		if (false && (domain_nosub === "imagevenue.com" &&
+				domain.match(/^img[0-9]+\.imagevenue\.com/) &&
+				src.match(/\/th_([^/]*)$/) &&
+				options && options.cb && options.do_request)) {
 			// http://img2250.imagevenue.com/img.php?image=613512642_0_00_0_0sexyhot0___0_123_257lo.jpg
 			// http://img250.imagevenue.com/loc257/th_613512642_0_00_0_0sexyhot0___0_123_257lo.jpg
 			//   http://img2250.imagevenue.com/aAfkjfp01fo1i-3407/loc257/613512642_0_00_0_0sexyhot0___0_123_257lo.jpg
@@ -44797,6 +44797,15 @@ var $$IMU_EXPORT$$;
 			// https://greasyfork.org/en/forum/discussion/66137/could-you-add-support-for-website
 			// https://photoresources.wtatennis.com/photo-resources/2019/10/09/3e76c099-1d40-4084-a0d0-e97a7db2b969/PskuzqVH.jpg?width=1176&height=662
 			//   https://photoresources.wtatennis.com/wta/photo/2019/10/09/3e76c099-1d40-4084-a0d0-e97a7db2b969/PskuzqVH.jpg
+			// doesn't work for all:
+			// https://www.wtatennis.com/news/1494869/-she-has-a-platform-to-inspire-us-all-billie-jean-king-hails-special-gauff
+			//   https://photoresources.wtatennis.com/photo-resources/2019/10/10/2ad17fec-fad3-4553-ab51-c4b3bece5d0f/VTnZrljU.jpg?width=752&height=574
+			//   https://photoresources.wtatennis.com/wta/photo/2019/10/10/2ad17fec-fad3-4553-ab51-c4b3bece5d0f/VTnZrljU.jpg -- 403
+			// but others in that time period work:
+			// https://www.wtatennis.com/news/1495218/-the-more-you-have-the-less-predictable-you-are-fissette-explains-power-of-sap-patterns-of-play
+			//   https://photoresources.wtatennis.com/wta/photo/2019/11/14/302c5af8-ed0f-44c3-8de2-e9e4cb98c383/DSC_4364_original.jpg
+			// https://www.wtatennis.com/news/1494817/muguruza-summits-mount-kilimanjaro-the-highest-peak-in-africa-we-felt-alive-
+			//   https://photoresources.wtatennis.com/wta/photo/2019/11/14/cd882318-8e58-4491-a8fa-e17b7f3c8927/klsdfajsdf.jpeg
 			return src.replace(/\/photo-resources\/+([0-9]{4}\/+[0-9]{2}\/+[0-9]{2}\/+[-0-9a-f]{20,}\/+[^/]+\.[^/.?]*)(?:[?#].*)?$/, "/wta/photo/$1");
 		}
 
