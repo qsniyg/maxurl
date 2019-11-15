@@ -51200,6 +51200,11 @@ var $$IMU_EXPORT$$;
 					}
 
 					a.style.display = "none";
+					a.onclick = function(e) {
+						e.stopPropagation();
+						e.stopImmediatePropagation();
+						return true;
+					};
 
 					document.body.appendChild(a);
 					a.click();
