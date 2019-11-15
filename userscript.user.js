@@ -782,6 +782,7 @@ var $$IMU_EXPORT$$;
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-530760246
 		imu_enabled: true,
 		language: browser_language,
+		advanced_options: false,
 		redirect: true,
 		redirect_history: true,
 		canhead_get: true,
@@ -897,6 +898,15 @@ var $$IMU_EXPORT$$;
 			},
 			imu_enabled_exempt: true
 		},
+		advanced_options: {
+			name: "Show advanced settings",
+			description: "If disabled, settings that might be harder to understand will be hidden",
+			category: "general",
+			onedit: function() {
+				run_soon(do_options);
+			},
+			imu_enabled_exempt: true
+		},
 		redirect: {
 			name: "Enable redirection",
 			description: "Redirect images opened in their own tab",
@@ -916,7 +926,8 @@ var $$IMU_EXPORT$$;
 			requires: {
 				redirect: true
 			},
-			category: "redirection"
+			category: "redirection",
+			advanced: true
 		},
 		redirect_force_page: {
 			name: "Try finding original page",
@@ -936,7 +947,8 @@ var $$IMU_EXPORT$$;
 			description: "This option works around Chrome's migration to manifest v3, redirecting some images to being force-downloaded",
 			extension_only: true,
 			hidden: true, // Doesn't seem to be needed?
-			category: "redirection"
+			category: "redirection",
+			advanced: true
 		},
 		mouseover: {
 			name: "Enable mouseover popup",
@@ -1281,7 +1293,8 @@ var $$IMU_EXPORT$$;
 				mouseover: true
 			},
 			category: "popup",
-			subcategory: "popup_other"
+			subcategory: "popup_other",
+			advanced: true
 		},
 		mouseover_zoom_behavior: {
 			name: "Popup default zoom",
@@ -47621,6 +47634,8 @@ var $$IMU_EXPORT$$;
 			options_el.appendChild(div);
 		}
 
+		var show_advanced = settings.advanced_options;
+
 		for (var setting in settings) {
 			(function(setting) {
 				var meta = settings_meta[setting];
@@ -47638,6 +47653,9 @@ var $$IMU_EXPORT$$;
 					return;
 
 				if (meta.extension_only && !is_extension)
+					return;
+
+				if (meta.advanced && !show_advanced)
 					return;
 
 				var option = document.createElement("div");
