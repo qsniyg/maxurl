@@ -44764,6 +44764,14 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain === "ca.slack-edge.com") {
+			// thanks to TheLastZombie on Github: https://github.com/qsniyg/maxurl/pull/162
+			// https://ca.slack-edge.com/T81EQ2QNM-UDEDDF8AV-c0aac75e8652-72
+			//   https://ca.slack-edge.com/T81EQ2QNM-UDEDDF8AV-c0aac75e8652-1024
+			//   https://ca.slack-edge.com/T81EQ2QNM-UDEDDF8AV-c0aac75e8652-999999999999999
+			return src.replace(/-\d+$/, "-999999999999999");
+		}
+
 
 
 
@@ -45948,11 +45956,6 @@ var $$IMU_EXPORT$$;
 			};
 		}
 
-		if (domain === "ca.slack-edge.com") {
-			// https://ca.slack-edge.com/T81EQ2QNM-UDEDDF8AV-c0aac75e8652-72
-			//   https://ca.slack-edge.com/T81EQ2QNM-UDEDDF8AV-c0aac75e8652-1024
-			return src.replace(/-\d+$/, "-1024");
-		}
 
 
 
