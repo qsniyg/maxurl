@@ -2303,6 +2303,70 @@ var $$IMU_EXPORT$$;
 		//console_log(blacklist_regexes);
 	}
 
+	var parse_headers = function(headerstr) {
+		var headers = [];
+
+		var splitted = headerstr.split("\r\n");
+		for (var i = 0; i < splitted.length; i++) {
+			var header_name = splitted[i].replace(/^\s*([^:]*?)\s*:.*/, "$1").toLowerCase();
+			var header_value = splitted[i].replace(/^[^:]*?:\s*(.*?)\s*$/, "$1");
+
+			headers.push({name: header_name, value: header_value});
+		}
+
+		return headers;
+	};
+
+	var parse_cookieheader = function(cookieheader) {
+		var cookies = {};
+
+		do {
+			var match = cookieheader.match(/^\s*([^=]*?)\s*=\s*([^;]*?)\s*(?:;\s*(.*))?$/);
+			if (!match)
+				break;
+
+			cookies[match[1]] = match[2];
+			cookieheader = match[3];
+		} while (cookieheader);
+
+		return cookies;
+	};
+
+	var create_cookieheader_from_headers = function(headers, cookieheader) {
+		headers = parse_headers(headers);
+
+		var cookies = {};
+		for (var i = 0; i < headers.length; i++) {
+			if (headers[i].name !== "set-cookie")
+				continue;
+
+			var cookie_match = headers[i].value.match(/^\s*([^=]*?)\s*=\s*([^;]*?)\s*;.*/);
+			if (!cookie_match) {
+				console_error("Unable to match cookie: ", headers[i]);
+				continue;
+			}
+
+			cookies[cookie_match[1]] = cookie_match[2];
+		}
+
+		if (cookieheader) {
+			var parsed = parse_cookieheader(cookieheader);
+
+			for (var key in parsed) {
+				if (!(key in cookies)) {
+					cookies[key] = parsed[key];
+				}
+			}
+		}
+
+		var cookies_array = [];
+		for (var key in cookies) {
+			cookies_array.push(key + "=" + cookies[key]);
+		}
+
+		return cookies_array.join("; ");
+	};
+
 	// https://stackoverflow.com/a/18639999
 	var makeCRCTable = function() {
 		var c;
@@ -5732,6 +5796,10 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "xxlmag.com" ||
 			// https://static01.nyt.com/images/2018/02/03/arts/03playlist/merlin_123145877_5ed2acde-72d5-4afb-a19a-93dbc29b5d2f-superJumbo.jpg?quality=100&auto=webp
 			(domain_nosub === "nyt.com" && domain.match(/^static[0-9]*\.nyt\.com/)) ||
+			// https://image.insider.com/5d1b732b21a8617668149572?width=1100&format=jpeg&auto=webp
+			domain === "image.insider.com" ||
+			// https://image.businessinsider.com/5bc0aeeddde8677f346b9a82?width=1100&format=jpeg&auto=webp
+			domain === "image.businessinsider.com" ||
 			// https://video-images.vice.com/articles/592ed99499168942accbdf39/lede/1496243427040-BadGyal_JavierRuiz_2.jpeg?crop=1xw:0.4212xh;0xw,0.3534xh&resize=1200:*
 			// https://i-d-images.vice.com/images/2016/07/29/club-marab-cierra-su-temporada-con-bad-gyal-la-princesa-del-trap-cataln-body-image-1469779091.jpg?crop=1xw:0.5625xh;center,center&resize=0:*
 			// https://images.vice.com/noisey/content-images/article/die-antwoord-gucci-coochie/Screen-Shot-2016-05-18-at-16-32-36.jpg?crop=1xw%3A0.8371478873239436xh%3Bcenter%2Ccenter&resize=650%3A*&output-quality=55
@@ -5814,6 +5882,8 @@ var $$IMU_EXPORT$$;
 			(domain_nowww === "officialcharts.com" && src.indexOf("/media/") >= 0) ||
 			// https://citywonders.com/media/11395/mt-vesuvius-crater.jpg?anchor=center&mode=crop&quality=65&width=1200&height=900
 			(domain_nowww === "citywonders.com" && src.indexOf("/media/") >= 0) ||
+			// https://fee.org/media/22152/karliekloss_mini.jpg?anchor=center&mode=crop&width=1920&rnd=131388985770000000
+			(domain_nowww === "fee.org" && src.indexOf("/media/") >= 0) ||
 			// http://pix10.agoda.net/hotelImages/519/519394/519394_14031416100018704350.jpg?s=1024x768
 			(domain_nosub === "agoda.net" && domain.match(/pix[0-9]*\.agoda\.net/)) ||
 			// https://images.pottermore.com/bxd3o8b291gf/1FC5pSmkSg44SMew0osm4Y/afb1fbf505eaf4c6a398b80ca075e014/DracoMalfoy_WB_F6_DracoMalfoyOnBathroomFloorHarryStanding_Still_080615_Land.jpg?w=1330&q=85
@@ -6292,6 +6362,8 @@ var $$IMU_EXPORT$$;
 			domain === "1624909224.rsc.cdn77.org" ||
 			// https://assetscdn1.paytm.com/images/catalog/product/K/KI/KIDPRIYA-COLLECPRIY20786186F9A127/1564605875711_0..jpg?imwidth=320&impolicy=hq
 			(domain_nosub === "paytm.com" && /^assetscdn[0-9]*\./.test(domain)) ||
+			// https://images.perthnow.com.au/publication/B881248267Z/1562057175392_GKT29TC6J.2-2.jpg?imwidth=668&impolicy=pn_v3
+			domain === "images.perthnow.com.au" ||
 			// https://cdn1.eldia.com/092017/1506251744295.jpg?&cw=320
 			(domain_nosub === "eldia.com" && /^cdn[0-9]*\./.test(domain)) ||
 			// https://esquire.com.gr/Content/ImagesDatabase/dd/dd305859aa7b4181b03ee3f615490545.jpg?v=1&maxwidth=760&
@@ -20093,12 +20165,15 @@ var $$IMU_EXPORT$$;
 			// https://radioimg.s3.amazonaws.com/kiss985/styles/alpha__380x250/s3/Robin%2520Williams.jpg?itok=mlnntHER
 			//   https://radioimg.s3.amazonaws.com/kiss985/Robin%2520Williams.jpg?itok=mlnntHER
 			amazon_container === "radioimg" ||
+			// https://b2bm.s3.amazonaws.com/styles/default_image/s3/karliekloss_0.jpg?itok=NpNCqZJv
+			//   https://b2bm.s3.amazonaws.com/karliekloss_0.jpg?itok=NpNCqZJv
+			amazon_container === "b2bm" ||
 			// https://kpopimg.s3.amazonaws.com/styles/article_image/s3/eunice-dia.jpg?itok=5JoH8xh6
 			//   https://kpopimg.s3.amazonaws.com/eunice-dia.jpg?itok=5JoH8xh6
 			amazon_container === "kpopimg") {
 			// http://s3.amazonaws.com/s3.931wolfcountry.com/styles/full_content_width__775px_max_/s3/USATSI_10787675.jpg?itok=o8qUHpri
 			//   http://s3.amazonaws.com/s3.931wolfcountry.com/USATSI_10787675.jpg?itok=o8qUHpri
-			newsrc = src.replace(/\/styles\/[^/]*\/s3(?:fs)?\//, "/");
+			newsrc = src.replace(/\/styles\/+[^/]+\/+s3(?:fs)?\//, "/");
 			if (newsrc !== src)
 				return newsrc;
 		}
@@ -23273,12 +23348,15 @@ var $$IMU_EXPORT$$;
 			// https://kecy-maly-holky.webnode.cz/_files/200000055-e5fbde6f5b/200/KILL%20YOUR%20DARLINGS%2003.jpg
 			//   https://kecy-maly-holky.webnode.cz/_files/200000055-e5fbde6f5b/KILL%20YOUR%20DARLINGS%2003.jpg
 			domain_nosub === "webnode.cz" ||
+			// http://files.twilightstories.webnode.sk/system_preview_detail_200000258-99ace9aa71-public/008.jpg
+			//   http://files.twilightstories.webnode.sk/200000258-99ace9aa71-public/008.jpg
+			domain_nosub === "webnode.sk" ||
 			// https://votestars5.webnode.com/_files/system_preview_200000015-8201482fb4-public/Fifth-Harmony3.jpg
 			//   https://votestars5.webnode.com/_files/200000015-8201482fb4-public/Fifth-Harmony3.jpg
 			domain_nosub === "webnode.com") {
 			// https://predadoresblack.webnode.com.br/_files/system_preview_detail_200000000-c9bd6ca3b5-public/thumbbig-124889.jpg
 			//   https://predadoresblack.webnode.com.br/_files/200000000-c9bd6ca3b5-public/thumbbig-124889.jpg
-			return src.replace(/(:\/\/[^/]*\/_files\/)(?:[^/]*_)?([0-9]+-[0-9a-f]+(?:-[a-z]+)?\/)+(?:[0-9]+\/+)?([^/]*)$/, "$1$2$3");
+			return src.replace(/(:\/\/(?:files\.[^/]*\.[^/.]*\.[^/]*\/+|[^/]*\/+_files\/+))(?:[^/]*_)?([0-9]+-[0-9a-f]+(?:-[a-z]+)?\/)+(?:[0-9]+\/+)?([^/]*)$/, "$1$2$3");
 		}
 
 		if (amazon_container === "cdn.roosterteeth.com") {
@@ -23406,14 +23484,33 @@ var $$IMU_EXPORT$$;
 			id = src.replace(/.*\/th_([^/]*?)(?:[?#].*)?$/, "$1");
 			if (id !== src) {
 				var requrl = src.replace(/(:\/\/[^/]*\/).*/, "$1img.php?image=" + id);
-				options.do_request({
-					url: requrl,
-					method: "GET",
-					headers: {
-						Referer: ""
-					},
-					onload: function(resp) {
-						if (resp.readyState === 4) {
+
+				var do_req = function (first) {
+					// TODO: more general cookie handling
+					var cookie = api_cache.get("imagevenue_cookie");
+					if (!cookie)
+						cookie = "";
+
+					options.do_request({
+						url: requrl,
+						method: "GET",
+						headers: {
+							Referer: requrl
+							//Cookie: cookie
+						},
+						onload: function (resp) {
+							if (resp.readyState !== 4) {
+								return;
+							}
+
+							if (resp.status !== 200) {
+								console_error("Bad status", resp);
+								return options.cb(null);
+							}
+
+							cookie = create_cookieheader_from_headers(resp.responseHeaders, cookie);
+							api_cache.set("imagevenue_cookie", cookie, 10*60*60);
+
 							var match = resp.responseText.match(/<img *id=['"]thepic['"][^>]* (?:src|SRC)=['"]([^"']*)['"]/);
 							if (match) {
 								options.cb({
@@ -23424,11 +23521,20 @@ var $$IMU_EXPORT$$;
 									}
 								});
 							} else {
-								options.cb(null);
+								console_error("Unable to find match", resp);
+
+								if (false && first) {
+									return do_req(false);
+								} else {
+									options.cb(null);
+								}
 							}
 						}
-					}
-				});
+					});
+				};
+
+				do_req(true);
+
 				return {
 					waiting: true
 				};
@@ -28468,12 +28574,21 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nosub === "ucoz.ru" ||
+			// http://intoclassics.net/_nw/222/s15806925.jpg
+			//   http://intoclassics.net/_nw/222/15806925.jpg
+			domain_nowww === "intoclassics.net" ||
 			// http://sarajean.ucoz.net/_ph/1/1/274840587.jpg?1570878684
 			//   http://sarajean.ucoz.net/_ph/1/274840587.jpg?1570878684
 			domain_nosub === "ucoz.net") {
 			// http://nadinaderose.ucoz.ru/_ph/37/1/660567815.jpg?1535302566
 			//   http://nadinaderose.ucoz.ru/_ph/37/660567815.jpg?1535302566
-			return src.replace(/(\/_ph\/+[0-9]+\/+)[0-9]+\/+([0-9]+\.[^/.]*)$/, "$1$2");
+			// http://vampire-club.ucoz.ru/_nw/0/s35048683.jpg
+			//   https://vampire-club.ucoz.ru/_nw/0/35048683.jpeg
+			newsrc = src
+				.replace(/(\/_ph\/+[0-9]+\/+)[0-9]+\/+([0-9]+\.[^/.]*)$/, "$1$2")
+				.replace(/(\/_nw\/+[0-9]+\/+)s([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+			if (newsrc !== src)
+				return add_extensions_jpeg(newsrc);
 		}
 
 		if (domain_nowww === "wallpapersdig.com") {
@@ -41451,12 +41566,6 @@ var $$IMU_EXPORT$$;
 			return src.replace(/-thumb[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1");
 		}
 
-		if (domain_nowww === "intoclassics.net") {
-			// http://intoclassics.net/_nw/222/s15806925.jpg
-			//   http://intoclassics.net/_nw/222/15806925.jpg
-			return src.replace(/(\/_nw\/+[0-9]+\/+)s([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
-		}
-
 		if (false && (domain_nowww === "slideplayer.com.br" ||
 			// https://slideplayer.info/8/2337452/big_thumb.jpg
 			//   https://player.slideplayer.info/8/2337452/data/images/img0.jpg -- redirects to 404
@@ -44630,6 +44739,29 @@ var $$IMU_EXPORT$$;
 			// https://media.lelombrik.net/t/9fd6df051ce13dde28f7e4019130c4a3/s/01.jpg
 			//   https://media.lelombrik.net/t/9fd6df051ce13dde28f7e4019130c4a3/f/9fd6df051ce13dde28f7e4019130c4a3.jpg
 			return src.replace(/\/t\/+([0-9a-f]{20,})\/+s\/+01(\.[^/.]*)(?:[?#].*)?$/, "/t/$1/f/$1$2");
+		}
+
+		if (domain_nowww === "funnymasti.com") {
+			// https://www.funnymasti.com/files/resized/mid/files/preview/files/558/100%20Beautiful%20Girls%20-whatsappmasti.com%20(1).jpg.jpg
+			//   https://www.funnymasti.com/files/preview/files/558/100%20Beautiful%20Girls%20-whatsappmasti.com%20(1).jpg.jpg
+			return src.replace(/\/files\/+resized\/+[^/]+\/+files\/+/, "/files/");
+		}
+
+		if (domain === "proxy.zagon.pe") {
+			// https://proxy.zagon.pe/proxify.php?q=aHR0cHM6Ly9wYnMudHdpbWcuY29tL3Byb2ZpbGVfaW1hZ2VzLzExNDU4MTI3MDk5NjA2NjcxMzYvWUY0Vm9QM2VfYmlnZ2VyLmpwZw
+			//   https://pbs.twimg.com/profile_images/1145812709960667136/YF4VoP3e.jpg
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+proxify\.php\?(?:.*?&)?q=([^&]*).*?$/, "$1");
+			if (newsrc !== src)
+				return base64_decode(newsrc);
+		}
+
+		if (domain === "cachedimages.podchaser.com") {
+			// https://cachedimages.podchaser.com/300x300/aHR0cHM6Ly9jcmVhdG9yLWltYWdlcy5wb2RjaGFzZXIuY29tLzI3ZTJhZmY0YjMyNjBhNDc2YmRkOTE3ODUzMDE3MjVlLmpwZWc%3D/aHR0cHM6Ly93d3cucG9kY2hhc2VyLmNvbS9pbWFnZXMvbWlzc2luZy1pbWFnZS5wbmc%3D
+			//   https://creator-images.podchaser.com/27e2aff4b3260a476bdd91785301725e.jpeg
+			match = src.match(/:\/\/[^/]+\/+[0-9]+x[0-9]+\/+([^/.]{30,})\/+/);
+			if (match) {
+				return base64_decode(decodeURIComponent(match[1]));
+			}
 		}
 
 
