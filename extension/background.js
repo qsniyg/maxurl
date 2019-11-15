@@ -9,6 +9,7 @@ var loading_redirects = {};
 var tabs_ready = {};
 var request_headers = {};
 var override_headers = {};
+var reqid_to_redid = {};
 
 var nir_debug = false;
 var debug = function() {
@@ -42,6 +43,11 @@ var do_request = function(request) {
 	xhr.setRequestHeader("IMU-Verify", id);
 
 	var do_final = function(override, cb) {
+		var server_headers = null;
+		if (requests[id].server_headers) {
+			server_headers = requests[id].server_headers;
+		}
+
 		delete requests[id];
 
 		debug("XHR", xhr);
@@ -54,6 +60,17 @@ var do_request = function(request) {
 			status: xhr.status || 200, // file:// returns 0, tracking protection also returns 0
 			statusText: xhr.statusText
 		};
+
+		if (server_headers) {
+			if (!resp.responseHeaders.match(/\r\n\s*$/))
+				resp.responseHeaders += "\r\n";
+
+			server_headers.forEach(header => {
+				if (xhr.getResponseHeader(header.name) === null) {
+					resp.responseHeaders += header.name + ": " + header.value + "\r\n";
+				}
+			});
+		}
 
 		if (xhr.status === 0 && xhr.responseURL === "")
 			resp.status = 0;
@@ -175,6 +192,7 @@ var onBeforeSendHeaders_listener = function(details) {
 			});
 		} else if (header.name === "IMU-Verify") {
 			verify_ok = header.value in requests;
+			reqid_to_redid[details.requestId] = header.value;
 		} else {
 			new_headers.push(header);
 		}
@@ -332,8 +350,92 @@ function stringify_contentdisposition(cdp) {
 	return out_strings.join("; ");
 }
 
+function parse_contentsecurity(csp) {
+	var obj = {};
+
+	var splitted = csp.split(/\s*;\s*/);
+	for (var i = 0; i < splitted.length; i++) {
+		var sources = splitted[i].split(/\s+/);
+		var name = sources.shift();
+
+		if (name in obj) {
+			[].push.apply(obj[name], sources);
+		} else {
+			obj[name] = sources;
+		}
+	}
+
+	return obj;
+}
+
+function get_nonce(sources, defaultobj) {
+	if (sources.indexOf("'none'") >= 0)
+		return false;
+
+	var obj = {
+		nonce: null,
+		unsafe_inline: null,
+		data: null
+	};
+
+	if (defaultobj) {
+		obj.nonce = defaultobj.nonce;
+		obj.unsafe_inline = defaultobj.unsafe_inline;
+		obj.data = defaultobj.data;
+	}
+
+	if (sources.indexOf("'unsafe-inline'") >= 0)
+		obj.unsafe_inline = true;
+
+	if (sources.indexOf("'strict-dynamic'") >= 0)
+		obj.unsafe_inline = false;
+
+	for (var i = 0; i < sources.length; i++) {
+		var match = sources[i].match(/^nonce-(.*)$/);
+		if (match) {
+			obj.nonce = match[1];
+			obj.unsafe_inline = false;
+			break;
+		}
+	}
+
+	if (sources.indexOf("data:") >= 0)
+		obj.data = true;
+
+	return obj;
+}
+
+function get_nonces(parsed_csp) {
+	var default_obj = false;
+	var img_obj, style_obj = null;
+
+	if ("default-src" in parsed_csp) {
+		default_obj = get_nonce(parsed_csp["default-src"]);
+	}
+
+	if ("img-src" in parsed_csp) {
+		img_obj = get_nonce(parsed_csp["img-src"], default_obj);
+	}
+
+	if ("style-src" in parsed_csp) {
+		style_obj = get_nonce(parsed_csp["style-src"], default_obj);
+	}
+
+	return {
+		img: img_obj,
+		style: style_obj
+	};
+}
+
 // Intercept response headers if needed
 chrome.webRequest.onHeadersReceived.addListener(function(details) {
+	debug("onHeadersReceived", details);
+
+	if (details.requestId in reqid_to_redid) {
+		var redid = reqid_to_redid[details.requestId];
+		requests[redid].server_headers = details.responseHeaders;
+	}
+
 	if (details.tabId in loading_urls) {
 		var newheaders = [];
 
@@ -450,6 +552,10 @@ chrome.webRequest.onResponseStarted.addListener(function(details) {
 
 	if (details.requestId in request_headers) {
 		delete request_headers[details.requestId];
+	}
+
+	if (details.requestId in reqid_to_redid) {
+		delete reqid_to_redid[details.requestId];
 	}
 }, {
 	urls: ['<all_urls>'],

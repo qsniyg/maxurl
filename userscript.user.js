@@ -2321,11 +2321,17 @@ var $$IMU_EXPORT$$;
 
 		var splitted = headerstr.split("\r\n");
 		for (var i = 0; i < splitted.length; i++) {
-			var header_name = splitted[i].replace(/^\s*([^:]*?)\s*:.*/, "$1").toLowerCase();
-			var header_value = splitted[i].replace(/^[^:]*?:\s*(.*?)\s*$/, "$1");
+			var header_name = splitted[i].replace(/^\s*([^:]*?)\s*:[\s\S]*/, "$1").toLowerCase();
+			var header_value = splitted[i].replace(/^[^:]*?:\s*([\s\S]*?)\s*$/, "$1");
 
-			headers.push({name: header_name, value: header_value});
+			var value_split = header_value.split("\n");
+			for (var j = 0; j < value_split.length; j++) {
+				headers.push({name: header_name, value: value_split[j]});
+			}
 		}
+
+		if (_nir_debug_)
+			console_log("parse_headers", headerstr, deepcopy(headers));
 
 		return headers;
 	};
@@ -2341,6 +2347,9 @@ var $$IMU_EXPORT$$;
 			cookies[match[1]] = match[2];
 			cookieheader = match[3];
 		} while (cookieheader);
+
+		if (_nir_debug_)
+			console_log("parse_cookieheader", cookieheader, deepcopy(cookies));
 
 		return cookies;
 	};
@@ -2361,6 +2370,9 @@ var $$IMU_EXPORT$$;
 
 			cookies[cookie_match[1]] = cookie_match[2];
 		}
+
+		if (_nir_debug_)
+			console_log("create_cookieheader_from_headers", headers, cookieheader, deepcopy(cookies));
 
 		if (cookieheader) {
 			var parsed = parse_cookieheader(cookieheader);
@@ -23484,10 +23496,10 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if (false && (domain_nosub === "imagevenue.com" &&
-				domain.match(/^img[0-9]+\.imagevenue\.com/) &&
-				src.match(/\/th_([^/]*)$/) &&
-				options && options.cb && options.do_request)) {
+		if (domain_nosub === "imagevenue.com" &&
+			domain.match(/^img[0-9]+\.imagevenue\.com/) &&
+			src.match(/\/th_([^/]*)$/) &&
+			options && options.cb && options.do_request) {
 			// http://img2250.imagevenue.com/img.php?image=613512642_0_00_0_0sexyhot0___0_123_257lo.jpg
 			// http://img250.imagevenue.com/loc257/th_613512642_0_00_0_0sexyhot0___0_123_257lo.jpg
 			//   http://img2250.imagevenue.com/aAfkjfp01fo1i-3407/loc257/613512642_0_00_0_0sexyhot0___0_123_257lo.jpg
@@ -23498,19 +23510,16 @@ var $$IMU_EXPORT$$;
 			if (id !== src) {
 				var requrl = src.replace(/(:\/\/[^/]*\/).*/, "$1img.php?image=" + id);
 
+				// Do it twice to get the cookies
 				var do_req = function (first) {
-					// TODO: more general cookie handling
-					var cookie = api_cache.get("imagevenue_cookie");
-					if (!cookie)
-						cookie = "";
+					var headers = {
+						Referer: requrl
+					};
 
 					options.do_request({
 						url: requrl,
 						method: "GET",
-						headers: {
-							Referer: requrl
-							//Cookie: cookie
-						},
+						headers: headers,
 						onload: function (resp) {
 							if (resp.readyState !== 4) {
 								return;
@@ -23520,9 +23529,6 @@ var $$IMU_EXPORT$$;
 								console_error("Bad status", resp);
 								return options.cb(null);
 							}
-
-							cookie = create_cookieheader_from_headers(resp.responseHeaders, cookie);
-							api_cache.set("imagevenue_cookie", cookie, 10*60*60);
 
 							var match = resp.responseText.match(/<img *id=['"]thepic['"][^>]* (?:src|SRC)=['"]([^"']*)['"]/);
 							if (match) {
@@ -23536,7 +23542,7 @@ var $$IMU_EXPORT$$;
 							} else {
 								console_error("Unable to find match", resp);
 
-								if (false && first) {
+								if (first) {
 									return do_req(false);
 								} else {
 									options.cb(null);
