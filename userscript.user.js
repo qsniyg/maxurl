@@ -44772,6 +44772,10 @@ var $$IMU_EXPORT$$;
 			return src.replace(/-\d+$/, "-999999999999999");
 		}
 
+		if (domain === "files.slack.com") {
+			return src.replace(/\/files-tmb\/+([A-Z0-9]+-[A-Z0-9]+)-[0-9a-f]+\/+([^/]+)_[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "/files-pri/$1/$2$3");
+		}
+
 
 
 
@@ -50020,7 +50024,7 @@ var $$IMU_EXPORT$$;
 					// https://www.gamestar.de/artikel/red-dead-redemption-2-pc-vorabversion-mit-limit-bei-120-fps-directx-12-und-vulkan,3350718.html
 					// sidebar articles: //8images.cgames.de/images/gamestar/256/red-dead-redemption-2_6062507.jpg, //8images.cgames.de/images/gamestar/210/red-dead-redemption-2_6062507.jpg 2x
 					for (var i = 0; i < ssources.length; i++) {
-						var src = norm(ssources[i].replace(/(?:, *| +) .*/, ""));
+						var src = norm(ssources[i].replace(/(?:, *| +).*/, ""));
 						var desc = ssources[i].replace(/.*(?:, *| +)/, "");
 
 						if (!addImage(src, el, {layer:layer}))
