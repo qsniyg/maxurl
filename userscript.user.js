@@ -44776,6 +44776,30 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/files-tmb\/+([A-Z0-9]+-[A-Z0-9]+)-[0-9a-f]+\/+([^/]+)_[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "/files-pri/$1/$2$3");
 		}
 
+		if (domain_nowww === "chathour.com" ||
+			// http://www.chathourmobile.com/photos/thumb/3907646_12_897e3a799f.jpg
+			//   http://www.chathourmobile.com/photos/full/3907646_12_897e3a799f.jpg
+			domain_nowww === "chathourmobile.com") {
+			// http://www.chathour.com/photos/thumb/3907646_12_897e3a799f.jpg
+			//   http://www.chathour.com/photos/full/3907646_12_897e3a799f.jpg
+			return src.replace(/\/photos\/+thumb\//, "/photos/full/");
+		}
+
+		if (domain === "nimage.globaleconomic.co.kr") {
+			// http://nimage.globaleconomic.co.kr/imagesphp/5/201504241142347589779_20150424114714_01.jpg
+			//   http://nimage.globaleconomic.co.kr/phpwas/restmb_allidxmake.php?idx=999&simg=201504241142347589779_20150424114714_01.jpg
+			newsrc = src.replace(/\/imagesphp\/+[0-9]+\/+([^/]+\.[^/.]*?)(?:[?#].*)?$/, "/phpwas/restmb_allidxmake.php?idx=999&simg=$1");
+			if (newsrc !== src)
+				return newsrc;
+		}
+
+		if (domain === "photoresources.wtatennis.com") {
+			// https://greasyfork.org/en/forum/discussion/66137/could-you-add-support-for-website
+			// https://photoresources.wtatennis.com/photo-resources/2019/10/09/3e76c099-1d40-4084-a0d0-e97a7db2b969/PskuzqVH.jpg?width=1176&height=662
+			//   https://photoresources.wtatennis.com/wta/photo/2019/10/09/3e76c099-1d40-4084-a0d0-e97a7db2b969/PskuzqVH.jpg
+			return src.replace(/\/photo-resources\/+([0-9]{4}\/+[0-9]{2}\/+[0-9]{2}\/+[-0-9a-f]{20,}\/+[^/]+\.[^/.?]*)(?:[?#].*)?$/, "/wta/photo/$1");
+		}
+
 
 
 
