@@ -19550,6 +19550,9 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nosub === "lithium.com" && domain.indexOf(".i.lithium.com") >= 0 ||
+			// https://answers.ea.com/t5/image/serverpage/image-id/61452i15549A69E88E263F/image-size/small?v=1.0&px=-1
+			//   https://answers.ea.com/t5/image/serverpage/image-id/61452i15549A69E88E263F?v=1.0
+			domain === "answers.ea.com" ||
 			// https://nasz.orange.pl/t5/image/serverpage/image-id/1694i6BBA12E8BB8E9254/image-size/small/is-moderation-mode/true?v=1.0&px=400
 			//   https://nasz.orange.pl/t5/image/serverpage/image-id/1694i6BBA12E8BB8E9254?v=1.0
 			domain === "nasz.orange.pl") {
@@ -26140,7 +26143,9 @@ var $$IMU_EXPORT$$;
 		if (domain_nosub === "freeones.com" && /img\./.test(domain)) {
 			// https://img.freeones.com/photos/001/7a/97/7A97R5ULZhkDdKwojfW9if/preview/7521debd-07a7-49ec-977d-94d878b59e1b.jpg
 			//   https://img.freeones.com/photos/001/7a/97/7A97R5ULZhkDdKwojfW9if/big/7521debd-07a7-49ec-977d-94d878b59e1b.jpg
-			return src.replace(/(\/photos\/+[0-9]{3}\/+[0-9a-f]{2}\/+[0-9a-f]{2}\/+[^/]{10,}\/+)preview\/+/, "$1big/");
+			// https://us-img.freeones.com/photos/001/ka/w7/kaw7RaL8Q2wKpTuLzDrU2Q/preview/68d794b5-3a4a-44bf-9cd3-c00eb6fc39fd.jpg
+			//   https://us-img.freeones.com/photos/001/ka/w7/kaw7RaL8Q2wKpTuLzDrU2Q/big/68d794b5-3a4a-44bf-9cd3-c00eb6fc39fd.jpg
+			return src.replace(/(\/photos\/+[0-9]{3}\/+[0-9a-z]{2}\/+[0-9a-z]{2}\/+[^/]{10,}\/+)preview\/+/, "$1big/");
 		}
 
 		if (domain_nowww === "starspics.ru" ||
@@ -39287,6 +39292,21 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/thumbs\/+tn_/, "/pictures/");
 		}
 
+		if (domain_nowww === "isecretarylegs.com" ||
+			// http://www.pussynclit.com/wet-pussy/als-scan/lilian-01-flexible-secretary-wet-pussy-ass-fingering/thumbs/tn_lilian-white-higheels-flexible-pussy-01.jpg
+			//   http://www.pussynclit.com/wet-pussy/als-scan/lilian-01-flexible-secretary-wet-pussy-ass-fingering/lilian-white-higheels-flexible-pussy-01.jpg
+			domain_nowww === "pussynclit.com" ||
+			// http://www.ulingerie.com/babes-in-lingerie/foxes/CJ-Miles_-_Asian-Lady-in-Bustier-Big-Ass-n-Stockings/thumbs/tn_lingerie-foxes_406.jpg
+			//    http://www.ulingerie.com/babes-in-lingerie/foxes/CJ-Miles_-_Asian-Lady-in-Bustier-Big-Ass-n-Stockings/lingerie-foxes_406.jpg
+			domain_nowww === "ulingerie.com" ||
+			// http://www.vaginavulva.com/galleries/asian-women/claudia-02-a4y_landfrauen-mal-anders-in-strapsen-und-stoeckelschuhen/thumbs/tn_geiler-hintern-halterlose-struempfe_02.jpg
+			//   http://www.vaginavulva.com/galleries/asian-women/claudia-02-a4y_landfrauen-mal-anders-in-strapsen-und-stoeckelschuhen/geiler-hintern-halterlose-struempfe_02.jpg
+			domain_nowww === "vaginavulva.com") {
+			// http://www.isecretarylegs.com/galleries/stmackenzies/November10_Candice_Collyer__Cat_O-Connell__Naomi_Raine_2/thumbs/tn_secretary-001.jpg
+			//   http://www.isecretarylegs.com/galleries/stmackenzies/November10_Candice_Collyer__Cat_O-Connell__Naomi_Raine_2/secretary-001.jpg
+			return src.replace(/\/thumbs\/+tn_([^/]+)(?:[?#].*)?$/, "/$1");
+		}
+
 		if (domain_nowww === "celebact.com") {
 			// http://www.celebact.com/bust/43/celebrity-thump-02.jpg
 			//   http://www.celebact.com/bust/43/naked-celebrity-02.jpg
@@ -40455,6 +40475,9 @@ var $$IMU_EXPORT$$;
 			// https://stepanakert.info/pics/aHR0cHM6Ly90c2UzLm1tLmJpbmcubmV0L3RoP2lkPU9JUC41OE40dkNDVWw4WVlOUjlEUlptZ01nSGFFNyZycz0xJnBpZD0xNS4xJnc9MTAyNA==.jpg
 			//   https://tse3.mm.bing.net/th?id=OIP.58N4vCCUl8YYNR9DRZmgMgHaE7
 			domain_nowww === "stepanakert.info" ||
+			// https://modellini.info/pics/aHR0cHM6Ly90c2UzLm1tLmJpbmcubmV0L3RoP2lkPU9JUC5iM25jMjR5aEQ4WUo1TDJSeWZ2aFJRSGFGaiZycz0xJnBpZD0xNS4x.jpg
+			//   https://tse3.mm.bing.net/th?id=OIP.b3nc24yhD8YJ5L2RyfvhRQHaFj
+			domain_nowww === "modellini.info" ||
 			// https://carltonstaffing.info/pics/aHR0cHM6Ly90c2UzLm1tLmJpbmcubmV0L3RoP2lkPU9JUC41OE40dkNDVWw4WVlOUjlEUlptZ01nSGFFNyZycz0xJnBpZD0xNS4xJnc9MTAyNA==.jpg
 			//   https://tse3.mm.bing.net/th?id=OIP.58N4vCCUl8YYNR9DRZmgMgHaE7
 			domain_nowww === "carltonstaffing.info") {
@@ -44829,6 +44852,18 @@ var $$IMU_EXPORT$$;
 			// https://www.wtatennis.com/news/1494817/muguruza-summits-mount-kilimanjaro-the-highest-peak-in-africa-we-felt-alive-
 			//   https://photoresources.wtatennis.com/wta/photo/2019/11/14/cd882318-8e58-4491-a8fa-e17b7f3c8927/klsdfajsdf.jpeg
 			return src.replace(/\/photo-resources\/+([0-9]{4}\/+[0-9]{2}\/+[0-9]{2}\/+[-0-9a-f]{20,}\/+[^/]+\.[^/.?]*)(?:[?#].*)?$/, "/wta/photo/$1");
+		}
+
+		if (domain_nowww === "brdteengal.com") {
+			// http://www.brdteengal.com/galleries/thumbs/5/d/c/d/2/5dcd2ac50f2bf/200x300/pooled-featuring-stasey-by-arkisi-3.jpg
+			//   http://www.brdteengal.com/galleries/5/d/c/d/2/5dcd2ac50f2bf/pooled-featuring-stasey-by-arkisi-3.jpg
+			return src.replace(/\/galleries\/+thumbs\/+((?:[0-9a-f]\/+){5}[0-9a-f]{10,}\/+)[0-9]+x[0-9]+\/+/, "/galleries/$1");
+		}
+
+		if (domain_nowww === "destacamos.com") {
+			// http://www.destacamos.com/images/listings/2019-01/bigThmb/escort-en-ciudad-real-naomi-brasilena-en-valdepenas-1548072589-974-d_pic.jpg
+			//   http://www.destacamos.com/images/listings/2019-01/escort-en-ciudad-real-naomi-brasilena-en-valdepenas-1548072589-974-d_pic.jpg
+			return src.replace(/(\/images\/+listings\/+[0-9]{4}-[0-9]{2}\/+)(?:bigThmb|thmb)\/+/, "$1");
 		}
 
 
