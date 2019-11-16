@@ -2324,6 +2324,9 @@ var $$IMU_EXPORT$$;
 			var header_name = splitted[i].replace(/^\s*([^:]*?)\s*:[\s\S]*/, "$1").toLowerCase();
 			var header_value = splitted[i].replace(/^[^:]*?:\s*([\s\S]*?)\s*$/, "$1");
 
+			if (header_name === splitted[i] || header_value === splitted[i])
+				continue;
+
 			var value_split = header_value.split("\n");
 			for (var j = 0; j < value_split.length; j++) {
 				headers.push({name: header_name, value: value_split[j]});
@@ -23511,7 +23514,7 @@ var $$IMU_EXPORT$$;
 				var requrl = src.replace(/(:\/\/[^/]*\/).*/, "$1img.php?image=" + id);
 
 				// Do it twice to get the cookies
-				var do_req = function (first) {
+				var do_req = function (requrl, first) {
 					var headers = {
 						Referer: requrl
 					};
@@ -23533,7 +23536,7 @@ var $$IMU_EXPORT$$;
 							var match = resp.responseText.match(/<img *id=['"]thepic['"][^>]* (?:src|SRC)=['"]([^"']*)['"]/);
 							if (match) {
 								options.cb({
-									url: urljoin(requrl, match[1], true),
+									url: urljoin(resp.finalUrl, match[1], true),
 									is_original: true,
 									extra: {
 										page: requrl
@@ -23543,7 +23546,7 @@ var $$IMU_EXPORT$$;
 								console_error("Unable to find match", resp);
 
 								if (first) {
-									return do_req(false);
+									return do_req(resp.finalUrl, false);
 								} else {
 									options.cb(null);
 								}
@@ -23552,7 +23555,7 @@ var $$IMU_EXPORT$$;
 					});
 				};
 
-				do_req(true);
+				do_req(requrl, true);
 
 				return {
 					waiting: true

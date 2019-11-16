@@ -11,7 +11,7 @@ var request_headers = {};
 var override_headers = {};
 var reqid_to_redid = {};
 
-var nir_debug = false;
+var nir_debug = true;
 var debug = function() {
 	if (nir_debug) {
 		return console.log.apply(this, arguments);
@@ -21,6 +21,36 @@ var debug = function() {
 var get_random_id = function() {
 	var rand = Math.floor((1+Math.random())*100000000000).toString(36);
 	return Date.now().toString(36) + rand;
+};
+
+var parse_headers = function(headerstr) {
+	var headers = [];
+
+	var splitted = headerstr.split("\r\n");
+	for (var i = 0; i < splitted.length; i++) {
+		var header_name = splitted[i].replace(/^\s*([^:]*?)\s*:[\s\S]*/, "$1").toLowerCase();
+		var header_value = splitted[i].replace(/^[^:]*?:\s*([\s\S]*?)\s*$/, "$1");
+
+		if (header_name === splitted[i] || header_value === splitted[i])
+			continue;
+
+		var value_split = header_value.split("\n");
+		for (var j = 0; j < value_split.length; j++) {
+			headers.push({name: header_name, value: value_split[j]});
+		}
+	}
+
+	return headers;
+};
+
+var stringify_headers = function(headers) {
+	var newheaders = [];
+
+	for (var i = 0; i < headers.length; i++) {
+		newheaders.push(headers[i].name + ": " + headers[i].value);
+	}
+
+	return newheaders.join("\r\n");
 };
 
 var do_request = function(request) {
@@ -61,19 +91,33 @@ var do_request = function(request) {
 			statusText: xhr.statusText
 		};
 
+
 		if (server_headers) {
-			if (!resp.responseHeaders.match(/\r\n\s*$/))
-				resp.responseHeaders += "\r\n";
+			var parsed_responseheaders = parse_headers(resp.responseHeaders);
+			var keys = {};
+
+			parsed_responseheaders.forEach(header => {
+				keys[header.name] = true;
+			});
 
 			server_headers.forEach(header => {
-				if (xhr.getResponseHeader(header.name) === null) {
-					resp.responseHeaders += header.name + ": " + header.value + "\r\n";
+				if (!(header.name.toLowerCase() in keys)) {
+					header.value.split("\n").forEach(value => {
+						parsed_responseheaders.push({ name: header.name.toLowerCase(), value: value });
+					});
 				}
 			});
+
+			resp.responseHeaders = stringify_headers(parsed_responseheaders);
 		}
 
 		if (xhr.status === 0 && xhr.responseURL === "")
 			resp.status = 0;
+
+		var endcb = function(data) {
+			debug("XHR (result)", data);
+			cb(data);
+		};
 
 		if (resp.readyState === 4) {
 			try {
@@ -85,7 +129,7 @@ var do_request = function(request) {
 				var body = xhr.response;
 				if (!body) {
 					resp.status = xhr.status;
-					cb(resp);
+					endcb(resp);
 					return;
 				}
 
@@ -104,14 +148,14 @@ var do_request = function(request) {
 						lastModified: body.lastModified
 					};
 
-					cb(resp);
+					endcb(resp);
 				};
 				reader.readAsArrayBuffer(body);
 			} else {
-				cb(resp);
+				endcb(resp);
 			}
 		} else {
-			cb(resp);
+			endcb(resp);
 		}
 	};
 
@@ -428,7 +472,7 @@ function get_nonces(parsed_csp) {
 }
 
 // Intercept response headers if needed
-chrome.webRequest.onHeadersReceived.addListener(function(details) {
+var onHeadersReceived = function(details) {
 	debug("onHeadersReceived", details);
 
 	if (details.requestId in reqid_to_redid) {
@@ -520,10 +564,20 @@ chrome.webRequest.onHeadersReceived.addListener(function(details) {
 			responseHeaders: newheaders
 		};
 	}
-}, {
-	urls: ['<all_urls>'],
-	types: ['xmlhttprequest', 'main_frame', 'sub_frame']
-}, ['blocking', 'responseHeaders']);
+};
+
+try {
+	chrome.webRequest.onHeadersReceived.addListener(onHeadersReceived, {
+		urls: ['<all_urls>'],
+		types: ['xmlhttprequest', 'main_frame', 'sub_frame']
+	}, ['blocking', 'responseHeaders', 'extraHeaders']);
+} catch (e) {
+	chrome.webRequest.onHeadersReceived.addListener(onHeadersReceived, {
+		urls: ['<all_urls>'],
+		types: ['xmlhttprequest', 'main_frame', 'sub_frame']
+	}, ['blocking', 'responseHeaders']);
+}
+
 
 // Remove loading_urls once headers have finished loading
 chrome.webRequest.onResponseStarted.addListener(function(details) {
