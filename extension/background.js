@@ -11,7 +11,7 @@ var request_headers = {};
 var override_headers = {};
 var reqid_to_redid = {};
 
-var nir_debug = true;
+var nir_debug = false;
 var debug = function() {
 	if (nir_debug) {
 		return console.log.apply(this, arguments);
