@@ -7132,6 +7132,8 @@ var $$IMU_EXPORT$$;
 			(domain_nowww === "rnbjunk.com" && src.indexOf("/foto/") >= 0) ||
 			// https://cdn.xpicsxx.com/uploads/2019/10/17151356/ahri-cosplay-364x485.jpg
 			(domain === "cdn.xpicsxx.com" && src.indexOf("/uploads/") >= 0) ||
+			// https://zokatv.net//media/movies/2018/11/image_5a81a2557cb187f555946504aa8130f8-300x444.jpg
+			(domain_nowww === "zokatv.net" && src.indexOf("/media/") >= 0) ||
 			// https://1.soompi.io/wp-content/blogs.dir/8/files/2015/09/HA-TFELT-Wonder-Girls-590x730.jpg -- doesn't work
 			// https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2018/01/GTA-6-Female-Protag-796x417.jpg -- does work
 			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|images|photos|blogs.dir)|\/+uploads)\//.test(src)
@@ -16504,6 +16506,14 @@ var $$IMU_EXPORT$$;
 			// https://s1.twnmm.com/thumb?src=//s1.twnmm.com/images/en_ca/12/GETTY%20-%20Snow%20and%20freezing%20rain-99295.jpg&w=145&h=80&scale=1&crop=1
 			//   https://s1.twnmm.com/images/en_ca/12/GETTY%20-%20Snow%20and%20freezing%20rain-99295.jpg -- zero length image?
 			return urljoin(src, src.replace(/^[a-z]+:\/\/[^/]*\/thumb.*?[?&]src=([^?&]*).*/, "$1"), true);
+		}
+
+		if (domain_nowww === "vuecinemas.nl") {
+			// https://www.vuecinemas.nl/thumb?w=268&f=jpg&src=userfiles/image/movies/43008800_72645.jpg&alt=img/movie_placeholder.png
+			//   https://www.vuecinemas.nl/userfiles/image/movies/43008800_72645.jpg
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+thumb\?(?:.*&)?src=([^&]*).*?$/, "$1");
+			if (newsrc !== src)
+				return urljoin(src, decodeURIComponent(newsrc), true);
 		}
 
 		if (domain === "www.findx.com" &&
@@ -33249,6 +33259,12 @@ var $$IMU_EXPORT$$;
 							   "$1$2")
 		}
 
+		if (domain === "movieassetsdigital.sgp1.cdn.digitaloceanspaces.com") {
+			// https://movieassetsdigital.sgp1.cdn.digitaloceanspaces.com/thumb/ca584e585152f32d7eeb9fb1837732ea5566d431
+			//   https://movieassetsdigital.sgp1.cdn.digitaloceanspaces.com/original/ca584e585152f32d7eeb9fb1837732ea5566d431
+			return src.replace(/\/thumb\/+([0-9a-f]{20,})(?:[?#].*)?$/, "/original/$1");
+		}
+
 		if (domain_nosub === "happyhair.sk") {
 			// https://ucesy-sk.happyhair.sk/celebrity_img/thumbsa/16roberts-2016-04-28-142827.jpg
 			//   https://ucesy-sk.happyhair.sk/celebrity_img/16roberts-2016-04-28-142827.jpg
@@ -39428,8 +39444,9 @@ var $$IMU_EXPORT$$;
 
 		if (domain_nosub === "worldsex.com" && domain.match(/^cdn[0-9]*/)) {
 			// https://cdn2-thumbs.worldsex.com/albums/14/13936/68a516f090530764ba572922b79ec046c0464060_001_240x.jpg
+			//   https://cdn2-thumbs.worldsex.com/albums/14/13936/68a516f090530764ba572922b79ec046c0464060_001_240x@2x.jpg -- upscaled?
 			//   https://cdn2-thumbs.worldsex.com/albums/14/13936/68a516f090530764ba572922b79ec046c0464060_001.jpg
-			return src.replace(/_[0-9]+x(\.[^/.]*)(?:[?#].*)?$/, "$1");
+			return src.replace(/_[0-9]+x(?:@[0-9]+x)?(\.[^/.]*)(?:[?#].*)?$/, "$1");
 		}
 
 		if (domain_nowww === "famitsu.com") {
@@ -44864,6 +44881,50 @@ var $$IMU_EXPORT$$;
 			// http://www.destacamos.com/images/listings/2019-01/bigThmb/escort-en-ciudad-real-naomi-brasilena-en-valdepenas-1548072589-974-d_pic.jpg
 			//   http://www.destacamos.com/images/listings/2019-01/escort-en-ciudad-real-naomi-brasilena-en-valdepenas-1548072589-974-d_pic.jpg
 			return src.replace(/(\/images\/+listings\/+[0-9]{4}-[0-9]{2}\/+)(?:bigThmb|thmb)\/+/, "$1");
+		}
+
+		if (domain === "statici.behindthevoiceactors.com") {
+			// http://statici.behindthevoiceactors.com/behindthevoiceactors/_img/movies/thumbs/movie_2452_thumb.jpg
+			//   http://statici.behindthevoiceactors.com/behindthevoiceactors/_img/movies/movie_2452.jpg
+			return src.replace(/(\/_img\/+[^/]+\/+)thumbs\/+([^/]+_[0-9]+)_thumb(\.[^/.]*)(?:[?#].*)?$/, "$1$2$3")
+		}
+
+		if (domain_nowww === "schokkendnieuws.nl") {
+			// https://www.schokkendnieuws.nl/images/multithumb_thumbs/b_100_0_16777215_00_images_stories_com_form2content_p1_f4764_regression_43008800_ps_1_s-low.jpg
+			//   https://www.schokkendnieuws.nl/images/stories/com_form2content/p1/f4764/regression_43008800_ps_1_s-low.jpg
+			// https://www.schokkendnieuws.nl/images/multithumb_thumbs/b_100_0_16777215_00_images_stories_com_form2content_p1_f4774_thumbs_Kristy.jpg
+			//   https://www.schokkendnieuws.nl/images/stories/com_form2content/p1/f4774/Kristy.jpg
+			return src.replace(/\/images\/+multithumb_thumbs\/+b_[0-9]+_[0-9]+_[0-9]+_[0-9]+_images_stories_com_form2content_(p[0-9]+)_(f[0-9]+)_(?:thumbs_)?([^/]*)(?:[?#].*)?$/,
+								"/images/stories/com_form2content/$1/$2/$3");
+		}
+
+		if (domain_nowww === "biosagenda.nl") {
+			// https://www.biosagenda.nl/poster/regression_20948_123_0_70.jpg
+			//   https://www.biosagenda.nl/poster/regression_20948.jpg
+			return src.replace(/(\/poster\/+[^/]+_[0-9]+)_[0-9]+_[0-9]+_[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "primewire.li" ||
+			// http://primewire.unblocked.nu/poster/small/632049-regression-92bLQ.jpg
+			//   http://primewire.unblocked.nu/poster/medium/632049-regression-92bLQ.jpg
+			domain === "primewire.unblocked.nu") {
+			// https://www.primewire.li/poster/small/44802-gemini-man-Z55L1.jpg
+			//   https://www.primewire.li/poster/medium/44802-gemini-man-Z55L1.jpg
+			return src.replace(/\/poster\/+small\/+/, "/poster/medium/");
+		}
+
+		if (domain_nowww === "moviemistakes.com") {
+			// https://www.moviemistakes.com/images/titles/small/11249.jpg
+			//   https://www.moviemistakes.com/images/titles/full/11249.jpg
+			return src.replace(/(\/images\/+titles\/+)[a-z]+\/+/, "$1full/");
+		}
+
+		if (domain === "simg.chomikuj.pl") {
+			// https://simg.chomikuj.pl/b76aa30c5db7a188fe89db5710d2ad52fc795074?url=https%3A%2F%2Fi1.fdbimg.pl%2Frj5mcfu1%2F400x580_nwvwgf.jpg
+			//   https://i1.fdbimg.pl/rj5mcfu1/400x580_nwvwgf.jpg
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+[0-9a-f]{20,}\?(?:.*&)?url=([^&]*).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
 		}
 
 
