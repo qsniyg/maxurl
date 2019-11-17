@@ -1,3 +1,21 @@
+0.11.12
+
+New features:
+
+ * Option to hide advanced settings (enabled by default)
+ * Support for ~35 new websites (using ~20 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including IMDB)
+
+Bugfixes:
+
+ * `srcset` is better supported (fixes Slack profiles)
+ * Saving using the (ctrl+)s key now works properly under GMail
+
+---
+
 0.11.11
 
 New features:

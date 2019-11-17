@@ -262,6 +262,7 @@ annangelxxx.com
 ano.lolcathost.org
 anon-v.com
 answcdn.com
+answers.ea.com
 aolcdn.com
 ap.imagensbrasil.org
 ap7am.com
@@ -434,6 +435,7 @@ azquotes.com
 b-ssl.duitang.com
 b.fssta.com
 b.njus.me
+b2bm.s3.amazonaws.com
 b6c18f286245704fe3e9-05e2055f4cd9122af02914269431c9f6.ssl.cf1.rackcdn.com
 b92.net
 baaz.com
@@ -542,6 +544,7 @@ binaryapi.ap.org
 bing.com
 bing.net
 biography.com
+biosagenda.nl
 birkrdnawa.com
 birminghammail.co.uk
 bit-photos.s3.amazonaws.com
@@ -614,6 +617,7 @@ bpic.588ku.com
 braunschweiger-zeitung.de
 bravo.de
 bravoerotica.com
+brdteengal.com
 break.ie
 breakingnews.ie
 breaknews.com
@@ -669,12 +673,14 @@ c.tribune.com.pk
 c.xme.net
 c6oxm85c.cloudimg.io
 c9w8v3m5.ssl.hwcdn.net
+ca.slack-edge.com
 cache-graphicslib.viator.com
 cache.lovethispic.com
 cache.net-a-porter.com
 cache.pakistantoday.com.pk
 cache.wizardworld.com
 cached.imagescaler.hbpl.co.uk
+cachedimages.podchaser.com
 cacheimg.bonsante.fr
 cafebiz.cafebizcdn.vn
 cafebizcdn.vn
@@ -1042,6 +1048,8 @@ cgames.de
 cgeimage.commutil.kr
 chacuncherchesonfilm.fr
 chat1102.com
+chathour.com
+chathourmobile.com
 cheap-promdresses.com
 cheapesthosting.xyz
 chenderroad.com
@@ -1350,6 +1358,7 @@ desktop.sakura.ne.jp
 desktopbackground.org
 desktopimages.org
 desktopwallpaperhd.net
+destacamos.com
 destakjornal.com.br
 destructoid.com
 desu-usergeneratedcontent.xyz
@@ -1678,6 +1687,7 @@ fb.ru
 fbcdn.net
 fc2.com
 fdncms.com
+fee.org
 feedme.id
 feelway.com
 fem-img.herokuapp.com
@@ -1722,6 +1732,7 @@ files.mastodon.social
 files.sexyandfunny.com
 files.sharenator.com
 files.sirclocdn.xyz
+files.slack.com
 files.theblemish.com
 files.vividscreen.info
 files.yande.re
@@ -1836,6 +1847,7 @@ fun107.com
 funasia.net
 fundir.org
 funny-anekdot.ru
+funnymasti.com
 funon.cc
 funsubstance.com
 funtasticecards.com
@@ -2352,6 +2364,7 @@ image.board.sbs.co.kr
 image.brazilianbikinishop.com
 image.bugsm.co.kr
 image.buonchoai.club
+image.businessinsider.com
 image.celebrityrave.com
 image.chaojimote.com
 image.cine21.com
@@ -2376,6 +2389,7 @@ image.hankookilbo.com
 image.hoopchina.com
 image.i-bbs.sijex.net
 image.ibb.co
+image.insider.com
 image.iol.co.za
 image.istyle24.com
 image.isu.pub
@@ -2581,6 +2595,7 @@ images.nubilefilms.com
 images.nubiles.net
 images.nudereviews.com
 images.performgroup.com
+images.perthnow.com.au
 images.pexels.com
 images.pigeonsandplanes.com
 images.playboy.com
@@ -3133,6 +3148,7 @@ irishexaminer.com
 irishmirror.ie
 irishtimes.com
 isanook.com
+isecretarylegs.com
 ishow.gr
 islam.kz
 islingtongazette.co.uk
@@ -3591,6 +3607,7 @@ media.korea25.com
 media.lamsao.com
 media.laodong.vn
 media.lasvegasweekly.com
+media.lelombrik.net
 media.licdn.com
 media.linkonlineworld.com
 media.lolusercontent.com
@@ -3799,6 +3816,7 @@ mocah.org
 moda.ru
 modagid.ru
 modelisto.com
+modellini.info
 modnaya.org
 mogaznews.com
 mojeek.com
@@ -3822,10 +3840,12 @@ mosaicon.hu
 motherlessmedia.com
 motorsport.com
 movie.walkerplus.com
+movieassetsdigital.sgp1.cdn.digitaloceanspaces.com
 movieboo.oss-cn-hangzhou.aliyuncs.com
 moviegoers.me
 movieinsider.com
 moviemagik.in
+moviemistakes.com
 moviepic.manmankan.com
 movieplayer.net-cdn.it
 movierj.com
@@ -4024,6 +4044,7 @@ nik.bot.nu
 nikeinc.s3.amazonaws.com
 nikkeibp.co.jp
 niklife.com.ua
+nimage.globaleconomic.co.kr
 nimage.newsway.kr
 nimg.ws.126.net
 nin-nin-game.com
@@ -4238,6 +4259,7 @@ photographers.ua
 photohito.k-img.com
 photoofnude.com
 photorator.com
+photoresources.wtatennis.com
 photos-epg.media-press.tv
 photos.bandsintown.com
 photos.fashiongroup.com
@@ -4404,6 +4426,8 @@ prezly.com
 prikolno.cc
 primagames.com
 primetime.ge
+primewire.li
+primewire.unblocked.nu
 printel.biz
 prnewswire2-a.akamaihd.net
 pro.imgcdn2.com
@@ -4429,6 +4453,7 @@ prothomalo.com
 protv.md
 proxy.duckduckgo.com
 proxy.imgsmail.ru
+proxy.zagon.pe
 prsize.allviki.com
 prt.iza.ne.jp
 prtimes.jp
@@ -4453,6 +4478,7 @@ purepeople.com
 purepeople.com.br
 purescans.com
 puretrend.com
+pussynclit.com
 pussyspot.net
 pvgroup.ru
 pw.artfile.me
@@ -4721,6 +4747,7 @@ scache.vevo.com
 sccdn.chosun.com
 scdn.line-apps.com
 scene7.com
+schokkendnieuws.nl
 scienceleadership.org
 scifi-forum.de
 scirra.net
@@ -4814,6 +4841,7 @@ sih.avn.com
 silenzioinsala.com
 silviomessina.pw
 simdunyasi.com
+simg.chomikuj.pl
 simg.userboard.org
 siminilbo.co.kr
 simsettlements.com
@@ -5106,6 +5134,7 @@ static01.nyt.com
 static6.com
 staticdelivery.nexusmods.com
 staticflickr.com
+statici.behindthevoiceactors.com
 staticpopopics.popopics.com
 staticuestudio.blob.core.windows.net
 statis.gamen.vn
@@ -5500,6 +5529,7 @@ ujnews.co.kr
 uk-arabicnews.com
 ukmix.org
 ukstockingsex.com
+ulingerie.com
 ulsterscotsacademy.org
 ultimate-guitar.com
 ultimateapparels.com
@@ -5562,6 +5592,7 @@ v.angel-porns.com
 v.img.pplive.cn
 vacationidea.com
 vagalume.com
+vaginavulva.com
 vancouversun.com
 vanguardia.com
 vanishingtattoo.com
@@ -5631,6 +5662,7 @@ vsco.co
 vseprosport.ru
 vtianxia.cn
 vtimes.com.au
+vuecinemas.nl
 vz.cnwimg.com
 w-dog.net
 wac.450f.edgecastcdn.net
@@ -5712,6 +5744,7 @@ webnewtype.com
 webnode.com
 webnode.com.br
 webnode.cz
+webnode.sk
 weclap-prodcluster.s3.amazonaws.com
 wedd.today
 weddingandpartynetwork.com
@@ -5904,6 +5937,7 @@ znaj.ua
 znamenitka.ru
 znqnet.com
 zocalo.com.mx
+zokatv.net
 zol-img.com.cn
 zonadelta.net
 zoom.co.uk
