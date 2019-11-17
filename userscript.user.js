@@ -44831,7 +44831,7 @@ var $$IMU_EXPORT$$;
 			// https://ca.slack-edge.com/T81EQ2QNM-UDEDDF8AV-c0aac75e8652-72
 			//   https://ca.slack-edge.com/T81EQ2QNM-UDEDDF8AV-c0aac75e8652-1024
 			//   https://ca.slack-edge.com/T81EQ2QNM-UDEDDF8AV-c0aac75e8652-999999999999999
-			return src.replace(/-\d+$/, "-999999999999999");
+			return src.replace(/^([a-z]+:\/\/[^/]+\/+[^/]+-[0-9a-f]{8,})-\d+(?:[?#].*)?$/, "$1-999999999999999");
 		}
 
 		if (domain === "files.slack.com") {
