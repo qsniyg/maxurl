@@ -1698,6 +1698,9 @@ var $$IMU_EXPORT$$;
 			name: "Highlight CSS",
 			description: "CSS style to apply for highlight",
 			type: "textarea",
+			requires: {
+				highlightimgs_enable: true
+			},
 			category: "extra",
 			subcategory: "highlightimages"
 		}
