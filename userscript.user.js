@@ -49960,23 +49960,33 @@ var $$IMU_EXPORT$$;
 			//console_log(els);
 			var result = _find_source(els);
 
-			//console_log(result);
+			if (_nir_debug_)
+				console_log("find_source: result =", result);
 
 			if (!result)
 				return result;
 
 			if (result.el) {
-				if (is_popup_el(result.el))
+				if (is_popup_el(result.el)) {
+					if (_nir_debug_)
+						console_log("find_source: result.el is popup el", result.el);
+
 					return null;
+				}
 			}
 
 			var thresh = parseInt(settings.mouseover_minimum_size);
-			if (isNaN(thresh))
+			// if it can be imu'd, ignore the treshold because the image could be any size
+			if (isNaN(thresh) || result.imu)
 				thresh = 0;
 
 			if ((!isNaN(result.width) && result.width > 0 && result.width < thresh) ||
-				(!isNaN(result.height) && result.height > 0 && result.height < thresh))
+				(!isNaN(result.height) && result.height > 0 && result.height < thresh)) {
+				if (_nir_debug_)
+					console_log("find_source: result size is too small");
+
 				return null;
+			}
 
 			return result;
 		}
@@ -49986,7 +49996,8 @@ var $$IMU_EXPORT$$;
 			/*if (popups.length >= 1)
 				return;*/
 
-			//console_log(els);
+			if (_nir_debug_)
+				console_log("_find_source (els)", els);
 
 			var sources = {};
 			//var picture_sources = {};
@@ -50054,6 +50065,8 @@ var $$IMU_EXPORT$$;
 					fill_object: true,
 					use_cache: "read",
 					do_request: null,
+					include_pastobjs: true,
+					iterations: 2,
 					cb: null
 				});
 
@@ -50064,16 +50077,27 @@ var $$IMU_EXPORT$$;
 					if (result[i].bad)
 						return false;
 
-					return true;
+					// if result.length > 1, then it can be imu'd
+					if (result.length > 1) {
+						return true;
+					} else {
+						return undefined;
+					}
 				}
 
 				return true;
 			}
 
 			function addImage(src, el, options) {
-				//console_log("addImage", el, check_visible(el));
-				if (settings.mouseover_apply_blacklist && !bigimage_filter(src))
+				if (_nir_debug_)
+					console_log("_find_source (addImage)", el, check_visible(el));
+
+				if (settings.mouseover_apply_blacklist && !bigimage_filter(src)) {
+					if (_nir_debug_)
+						console_log("blacklisted");
+
 					return false;
+				}
 
 				// blank images
 				// https://www.harpersbazaar.com/celebrity/red-carpet-dresses/g7565/selena-gomez-style-transformation/?slide=2
@@ -50085,8 +50109,12 @@ var $$IMU_EXPORT$$;
 				if ((src.match(/^data:/) && src.length <= 500) ||
 					// https://www.smugmug.com/
 					// https://www.vogue.com/article/lady-gaga-met-gala-2019-entrance-behind-the-scenes-video
-					!check_visible(el))
+					!check_visible(el)) {
+					if (_nir_debug_)
+						console_log("Invisible or tiny data: image");
+
 					return false;
+				}
 
 				if (!options) {
 					options = {};
@@ -50096,8 +50124,13 @@ var $$IMU_EXPORT$$;
 					return false;
 				}
 
-				if (!imu_check(src))
+				var imucheck = imu_check(src);
+				if (imucheck === false) {
+					if (_nir_debug_)
+						console_log("Bad image");
+
 					return false;
+				}
 
 				if (settings.mouseover_only_links) {
 					if (!el)
@@ -50129,7 +50162,8 @@ var $$IMU_EXPORT$$;
 						count: 1,
 						src: src,
 						el: el,
-						id: id++
+						id: id++,
+						imu: imucheck === true
 					};
 
 					if (options.isbg)
@@ -50311,13 +50345,16 @@ var $$IMU_EXPORT$$;
 				addElement(el);
 			}
 
-			if (false) {
-				console_log(els);
-				console_log(deepcopy(sources));
-				console_log(deepcopy(layers));
+			if (_nir_debug_) {
+				//console_log(els);
+				console_log("_find_source (sources)", deepcopy(sources));
+				console_log("_find_source (layers)", deepcopy(layers));
 			}
 
 			if ((source = getsource()) !== undefined) {
+				if (_nir_debug_)
+					console_log("_find_source (getsource())", source);
+
 				if (source === null && get_single_setting("mouseover_links")) {
 					if (Object.keys(links).length > 0) {
 						return links[Object.keys(links)[0]];
@@ -50450,9 +50487,13 @@ var $$IMU_EXPORT$$;
 				layers = newlayers;
 			}
 
-			//console_log(deepcopy(layers));
+			if (_nir_debug_)
+				console_log("_find_source (new layers)", deepcopy(layers));
 
 			rebuildlayers();
+
+			if (_nir_debug_)
+				console_log("_find_source (rebuilt layers)", deepcopy(layers));
 
 			// If there are background images ahead of an image, it's likely to be masks
 			// Maybe check if there's more than one element of ancestry between them?
