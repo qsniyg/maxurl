@@ -24177,10 +24177,12 @@ var $$IMU_EXPORT$$;
 				.replace(/\/pictures\/[a-z]+\//, "/pictures/original/");
 		}
 
-		if (domain === "www.sqshi.com") {
+		if (domain_nowww === "sqshi.com") {
 			// http://www.sqshi.com/img.php?imgurl=http://mmbiz.qpic.cn/mmbiz/tjGXef7Wic6vJYcWwicP133lkTsaxoxFEzZX9MYBhUc3puACLiaWesCjqYXjvyt3cYKV0EeQgvEjYQgaGdRAe4FSw/0?wx_fmt=jpeg
 			//   http://mmbiz.qpic.cn/mmbiz/tjGXef7Wic6vJYcWwicP133lkTsaxoxFEzZX9MYBhUc3puACLiaWesCjqYXjvyt3cYKV0EeQgvEjYQgaGdRAe4FSw/0?wx_fmt=jpeg
-			return decodeURIComponent(src.replace(/^[a-z]+:\/\/[^/]*\/img\.php.*?[?&]imgurl=([^&]*).*?$/, "$1"));
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/img\.php.*?[?&]imgurl=([^&]*).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
 		}
 
 		if (domain === "i.annihil.us") {
@@ -24195,10 +24197,12 @@ var $$IMU_EXPORT$$;
 			(domain_nosub === "sywcdn.net" && domain.match(/^s[0-9]*\./))) {
 			// https://pimg.mycdn.me/getImage?url=http%3A%2F%2Fcdn.ok-magazine.ru%2Fcdn%2Ffarfuture%2FTNYbFLIgxMSinQm9JCDwPwuBARaukO40WV04KXprx8A%2Fmtime%3A1474324275%2Fsites%2Fdefault%2Ffiles%2Fstyles%2F620_620_2014%2Fpublic%2Flll_d34_05759_r.jpg%3Fitok%3DwFNbCbKo&type=WIDE_FEED_PANORAMA&signatureToken=2DySh4jD-d-_4Gmusanj_Q
 			//   http://cdn.ok-magazine.ru/cdn/farfuture/TNYbFLIgxMSinQm9JCDwPwuBARaukO40WV04KXprx8A/mtime:1474324275/sites/default/files/styles/620_620_2014/public/lll_d34_05759_r.jpg?itok=wFNbCbKo
-			return decodeURIComponent(src.replace(/^[a-z]+:\/\/[^/]*\/getImage.*?[?&]url=([^&]*).*?$/, "$1"));
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/getImage.*?[?&]url=([^&]*).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
 		}
 
-		if (domain === "www.dissidia-france.com") {
+		if (domain_nowww === "dissidia-france.com") {
 			// http://www.dissidia-france.com/news/18-04-18/small/artwork.jpg
 			//   http://www.dissidia-france.com/news/18-04-18/big/artwork.jpg
 			return src.replace(/\/small\/([^/]*)$/, "/big/$1");
@@ -45335,7 +45339,7 @@ var $$IMU_EXPORT$$;
 			//   http://whatdropsnow.s3.amazonaws.com/product_images/images/46237/e22a12e352862c818b75c15d150ef49f3458aaac.jpeg
 			domain === "thumbor-titelmediaug.netdna-ssl.com" ||
 			// https://www.infobae.com/new-resizer/jfCQ7-AjnQyNdmWHdFGYvzYmVx4=/600x0/filters:quality(100)/arc-anglerfish-arc2-prod-infobae.s3.amazonaws.com/public/4IOFEV5GJVES3DVJ2XHDFXA2TE
-			domain === "www.infobae.com" ||
+			domain_nowww === "infobae.com" ||
 			// http://s2.glbimg.com/i7GBoDhq8XYOfFinAMZv0YYZdPY=/e.glbimg.com/og/ed/f/original/2016/12/26/eb8.jpg
 			//   http://e.glbimg.com/og/ed/f/original/2016/12/26/eb8.jpg
 			// https://s2.glbimg.com/guJ0REQ3RhF8RtD-dacV89xdGQI=/140x111/e.glbimg.com/og/ed/f/original/2015/02/12/nicole_scherzinger.jpg
