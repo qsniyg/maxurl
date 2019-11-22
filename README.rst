@@ -173,6 +173,16 @@ The result is a list of objects that contain properties that may be useful in us
       // If "mask", this image is an overlayed mask
       bad: false,
 
+      // Same as above, but contains a list of objects, e.g.:
+      // [{
+      //    headers: {"Content-Length": "1000"},
+      //    status: 301
+      // }]
+      // If one of the objects matches the response, it's a bad image
+      // You can use maximage.check_bad_if(bad_if, resp) to check
+      // resp is expected to be an XHR-like object
+      bad_if: [],
+
       // Whether or not this URL is a "fake" URL that was used internally (i.e. if true, don't use this)
       fake: false,
 
