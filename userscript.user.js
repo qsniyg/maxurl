@@ -5096,6 +5096,13 @@ var $$IMU_EXPORT$$;
 				.replace(/(=[^/]*)?$/, "=s0?imgmax=0");
 		}
 
+		if (domain_nowww === "star-tool.ru") {
+			// https://star-tool.ru/-IqS0oUzPD8E/V3aAbr--0FI/AAAAAAAAD44/p1gVF4jSTSs5vu_w30KE6C-9SpkNiyWmQCLcB/s200/036-9oBtltvbsT8.jpg
+			//   https://lh3.googleusercontent.com/-IqS0oUzPD8E/V3aAbr--0FI/AAAAAAAAD44/p1gVF4jSTSs5vu_w30KE6C-9SpkNiyWmQCLcB/s0/036-9oBtltvbsT8.jpg=s0?imgmax=0
+			// this rule could probably be improved
+			return src.replace(/^[a-z]+:\/\/[^/]+\/+([^/]+\/+[^/]+\/+[^/]+\/+[^/]+\/+[swh][0-9]*(?:-[^/]*]*)?\/+)/, "https://lh3.googleusercontent.com/$1");
+		}
+
 		if (domain_nosub === "googleusercontent.com" &&
 			domain.indexOf("opensocial.googleusercontent.com") >= 0) {
 			// https://images-blogger-opensocial.googleusercontent.com/gadgets/proxy?url=http%3A%2F%2F1.bp.blogspot.com%2F-jdpU1PhmEgg%2FU2lBLnp50QI%2FAAAAAAAAChs%2FUu01Lvq-2xc%2Fs1600%2Frihanna%2Bmccartney.jpg&container=blogger&gadget=a&rewriteMime=image%2F*
@@ -7138,6 +7145,11 @@ var $$IMU_EXPORT$$;
 			(domain === "cdn.xpicsxx.com" && src.indexOf("/uploads/") >= 0) ||
 			// https://zokatv.net//media/movies/2018/11/image_5a81a2557cb187f555946504aa8130f8-300x444.jpg
 			(domain_nowww === "zokatv.net" && src.indexOf("/media/") >= 0) ||
+			// https://magazin.lufthansa.com/content/uploads/2018/07/Skytalk_Alicia_Vikander_Slider_LHM_08_2018-980x551.jpg
+			//   https://magazin.lufthansa.com/content/uploads/2018/07/Skytalk_Alicia_Vikander_Slider_LHM_08_2018.jpg
+			(domain_nowww === "magazin.lufthansa.com" && /\/content\/+uploads\//.test(src)) ||
+			// https://www.nexofin.com/archivos/2016/05/alicia-vikander-7-360x216.jpg
+			(domain_nowww === "nexofin.com" && src.indexOf("/archivos/") >= 0) ||
 			// https://1.soompi.io/wp-content/blogs.dir/8/files/2015/09/HA-TFELT-Wonder-Girls-590x730.jpg -- doesn't work
 			// https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2018/01/GTA-6-Female-Protag-796x417.jpg -- does work
 			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|images|photos|blogs.dir)|\/+uploads)\//.test(src)
@@ -21147,11 +21159,16 @@ var $$IMU_EXPORT$$;
 			//   Content-Length: 281567
 			//   Last-Modified: Tue, 19 Nov 2019 03:54:27 GMT
 			// needs login
-			newsrc = src
-				.replace(/\/thumbnail\/(.*?)(?:-preview)?(-[0-9]+)(?:\.t)?(\.[^/.]*)$/, "/$1$2$3")
-				.replace(/--([0-9]+\.[^/.]*)$/, "-$1");
+			newsrc = src.replace(/\/thumbnail\/(.*?)(?:-preview)?(-[0-9]+)(?:\.t)?(\.[^/.]*)$/, "/$1-$2$3");
+			if (newsrc !== src)
+				return newsrc;
+
+			newsrc = src.replace(/--([0-9]+\.[^/.]*)$/, "-$1");
+			if (newsrc !== src)
+				return newsrc;
+
 			return {
-				url: newsrc,
+				url: src,
 				headers: {
 					Referer: newsrc.replace(/\/([^/]+)\.[^/.]*$/, "/large-$1.html")
 				},
@@ -24841,9 +24858,19 @@ var $$IMU_EXPORT$$;
 			//   https://images-cdn.impresa.pt/famashow/2018-03-05-GettyImages-927262244.jpg/original -- 2048x3071
 			// http://images-cdn.impresa.pt/caras/2018-02-06-2-Margot-Robbie.jpg?mw=200
 			//   http://images-cdn.impresa.pt/caras/2018-02-06-2-Margot-Robbie.jpg/original
-			return src
+			newsrc = src
 				.replace(/\/(?:[0-9]+x[0-9]+|original)\/m[wh]-[0-9]+(?:\?.*)?$/, "/original")
 				.replace(/\?.*/, "");
+			if (newsrc !== src)
+				return newsrc;
+
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+[a-z]+\/+([^/]+\.[^/.]*?)(?:-[0-9])?\/original/);
+			if (match) {
+				return {
+					url: src,
+					filename: match[1]
+				};
+			}
 			//return src.replace(/(:\/\/[^/]*\/[^/]*\/[^/]*\.[^/.]*)\/[^/]*(?:\/[^/]*)?$/, "$1/original");
 			//return src.replace(/(\/sicmul\/[^/]*\.[^/.]*)\/.*/, "$1/original");
 		}
@@ -28376,6 +28403,9 @@ var $$IMU_EXPORT$$;
 			// https://www.vanguardia.com/binrepository/716x477/0c0/0d0/none/12204/MUHT/web_vanessa_big_tp_VL301097_MG19836930.jpg
 			//   https://www.vanguardia.com/binrepository/web_vanessa_big_tp_VL301097_MG19836930.jpg
 			domain_nowww === "vanguardia.com" ||
+			// https://www.thesundaily.my/binrepository/768x423/0c0/0d0/none/11808/RENN/2019-10-10t215847z-1984077980-rc12bd287fb0-rtrmadp-3-filmfestival-london-earthquake-bird_700740_20191011095053.jpg
+			//   https://www.thesundaily.my/binrepository/2019-10-10t215847z-1984077980-rc12bd287fb0-rtrmadp-3-filmfestival-london-earthquake-bird_700740_20191011095053.jpg
+			domain_nowww === "thesundaily.my" ||
 			// https://www.canarias7.es/binrepository/300x169/0c0/0d0/none/11314/SDSB/1524696124-leslie-grace-colabora-con_4109175_20181011193330.jpg
 			//   https://www.canarias7.es/binrepository/1524696124-leslie-grace-colabora-con_4109175_20181011193330.jpg
 			domain_nowww === "canarias7.es") {
@@ -29868,6 +29898,9 @@ var $$IMU_EXPORT$$;
 			// http://up.deskbus.com/pic_360/f1/d8/27/f1d827456bffe677aa5b2b44c3ef89a7.jpg
 			//   http://up.deskbus.com/pic/f1/d8/27/f1d827456bffe677aa5b2b44c3ef89a7.jpg
 			domain === "up.deskbus.com" ||
+			// http://up.bizhitupian.com/pic_360/7f/35/f5/7f35f5122f64d4863b2543ab34599f6a.jpg
+			//   http://up.bizhitupian.com/pic/7f/35/f5/7f35f5122f64d4863b2543ab34599f6a.jpg
+			domain === "up.bizhitupian.com" ||
 			// http://up.8desk.com/12/pic_360/fe/06/54/fe0654c871b4ea84ac99a4773542d3b1.jpg
 			//   http://up.8desk.com/12/pic/fe/06/54/fe0654c871b4ea84ac99a4773542d3b1.jpg
 			domain === "up.8desk.com") {
@@ -44972,6 +45005,32 @@ var $$IMU_EXPORT$$;
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+[0-9a-f]{20,}\?(?:.*&)?url=([^&]*).*?$/, "$1");
 			if (newsrc !== src)
 				return decodeuri_ifneeded(newsrc);
+		}
+
+		if (domain_nosub === "ccnxs.cn" && /^img[0-9]*\./.test(domain)) {
+			// http://img8.ccnxs.cn/uploadfile/hbase/201908/0816/HBC5D55E1FB8ACE6.jpeg_/fillcrop/150x106
+			//   http://img8.ccnxs.cn/uploadfile/hbase/201908/0816/HBC5D55E1FB8ACE6.jpeg
+			return src.replace(/(\/uploadfile\/+.*\/[^/]*\.[^/.]+)_\/+fillcrop\/+[0-9]+x[0-9]+(?:[?#].*)?$/, "$1");
+		}
+
+		if (domain_nowww === "puschkino.de") {
+			// https://puschkino.de/cms/thumbs.php?src=/dat/cms0/images/movies/692/the_danish_girl145416709989.jpg&w=400
+			//   https://puschkino.de/dat/cms0/images/movies/692/the_danish_girl145416709989.jpg
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+cms\/+thumbs\.php\?(?:.*&)?src=([^&]*).*?$/, "$1");
+			if (newsrc !== src)
+				return urljoin(src, decodeuri_ifneeded(newsrc), true);
+		}
+
+		if (domain === "d3d8y6yhucfd29.cloudfront.net") {
+			// https://d3d8y6yhucfd29.cloudfront.net/sports-product-image/1-t9598351-500.jpg
+			//   https://d3d8y6yhucfd29.cloudfront.net/sports-product-image/1-t9598351-.jpg
+			return src.replace(/(\/1-t[0-9]+-)[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "prothinspo.com") {
+			// http://www.prothinspo.com/sitebuilder/images/alicia-vikander-ballet-shoes-du-jour-03_1_-198x250.jpg
+			//   http://www.prothinspo.com/images/alicia-vikander-ballet-shoes-du-jour-03_1_.jpg
+			return src.replace(/\/sitebuilder\/+(images\/+[^/]+)-[0-9]+x[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "/$1$2");
 		}
 
 
