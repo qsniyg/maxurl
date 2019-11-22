@@ -90,6 +90,9 @@ function update() {
     "# I usually don't visit the host websites (only the image links themselves), so there are sometimes cases",
     "#  where rules don't work for all images under the website.",
     "#  If you spot any issues, please leave an issue on Github, and I will try to fix it as soon as I can.",
+    "#",
+    "# There is currently no automatic testing, which means it's possible some of these don't work anymore.",
+    "#  Please let me know if you find a website that doesn't work!",
     ""
   ];
 
