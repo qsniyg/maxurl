@@ -293,6 +293,7 @@ var $$IMU_EXPORT$$;
 		is_original: false,
 		norecurse: false,
 		bad: false,
+		bad_if: [],
 		fake: false,
 		headers: {},
 		referer_ok: {
@@ -10360,9 +10361,22 @@ var $$IMU_EXPORT$$;
 				return newsrc;
 			}
 
-			return src
+			newsrc = src
 				.replace(/\/thumbs\/images\//, "/images/")
 				.replace(/-l[0-9]+(\.[^/.]*)$/, "-l9999$1");
+			if (newsrc !== src)
+				return newsrc;
+
+
+			return {
+				url: src,
+				can_head: false, // fixme: does it hang here too?
+				bad_if: [{
+					headers: {
+						"x-ebay-c-extension": "responsecode=404,responsemessage=Not Found"
+					}
+				}]
+			};
 		}
 
 		if ((domain_nosub === "ebaystatic.com" && domain.match(/thumbs[0-9]*\.ebaystatic\.com/)) ||
@@ -10387,11 +10401,18 @@ var $$IMU_EXPORT$$;
 
 			newsrc = src.replace(/\/d\/[a-z][0-9]+\/pict\//, "/d/l9999/pict/");
 			if (newsrc !== src) {
-				return {
-					url: src.replace(/\/d\/[a-z][0-9]+\/pict\//, "/d/l9999/pict/"),
-					can_head: false // it just hangs
-				};
+				return newsrc;
 			}
+
+			return {
+				url: src,
+				can_head: false, // it just hangs
+				bad_if: [{
+					headers: {
+						"x-ebay-c-extension": "responsecode=404,responsemessage=Not Found"
+					}
+				}]
+			};
 		}
 
 		if (domain_nowww === "picclickimg.com") {
@@ -16700,13 +16721,23 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/content\/r\/[wh]?[0-9]*(?:x[0-9]+)?\//, "/content/");
 		}
 
-		if (false && domain_nosub === "filesor.com") {
+		if (domain_nosub === "filesor.com") {
 			// bad if content-length == 9408 and last-modified == Tue, 12 Dec 2017 14:23:28 GMT
 			// http://ist5-1.filesor.com/pimpandhost.com/1/_/_/_/1/5/S/b/y/5Sbyx/IE001955316_ORG_l.jpg
 			//   http://ist5-1.filesor.com/pimpandhost.com/1/_/_/_/1/5/S/b/y/5Sbyx/IE001955316_ORG.jpg
 			// http://ist3-2.filesor.com/pimpandhost.com/1/_/_/_/1/3/4/Q/V/34QVp/1_0.jpg
 			//   http://ist3-2.filesor.com/pimpandhost.com/1/_/_/_/1/3/4/Q/V/34QVp/1.jpg
-			return src.replace(/_(?:[a-z]|[0-9])(\.[^/.]*)/, "$1");
+			// http://ist3-6.filesor.com/pimpandhost.com/1/1/2/0/112024/4/i/C/t/4iCt9/The.Good.Wife.S07_0.jpg
+			return {
+				url: src.replace(/_(?:[a-z]|[0-9])(\.[^/.]*)/, "$1"),
+				bad_if: [{
+					headers: {
+						"content-length": "9408",
+						"content-type": "image/gif",
+						"last-modified": "Thu, 02 Mar 2017 08:43:50 GMT"
+					}
+				}]
+			};
 		}
 
 		if (domain_nowww === "namooactors.com") {
@@ -21104,7 +21135,7 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(-v[0-9]+-[0-9]+)-[0-9]+(\.[&/.]*)/, "$1$2");
 		}
 
-		if (domain === "www.bobx.com") {
+		if (domain_nowww === "bobx.com") {
 			// http://www.bobx.com/thumbnail/av-idol/tsubomi-tsubomi/tsubomi-tsubomi-preview-04575180.jpg
 			//   http://www.bobx.com/av-idol/tsubomi-tsubomi/tsubomi-tsubomi-04575180.jpg
 			// http://www.bobx.com/thumbnail/av-idol/tsubomi-tsubomi/tsubomi-tsubomi-04575387.t.jpg
@@ -21112,15 +21143,24 @@ var $$IMU_EXPORT$$;
 			// http://www.bobx.com/av-idol/tsubomi-tsubomi/tsubomi-tsubomi-4236244.html
 			// http://www.bobx.com/av-idol/tsubomi-tsubomi/tsubomi-tsubomi--04236244.jpg
 			//   http://www.bobx.com/av-idol/tsubomi-tsubomi/tsubomi-tsubomi-04236244.jpg
+			// bad if:
+			//   Content-Length: 281567
+			//   Last-Modified: Tue, 19 Nov 2019 03:54:27 GMT
+			// needs login
 			newsrc = src
 				.replace(/\/thumbnail\/(.*?)(?:-preview)?(-[0-9]+)(?:\.t)?(\.[^/.]*)$/, "/$1$2$3")
 				.replace(/--([0-9]+\.[^/.]*)$/, "-$1");
 			return {
 				url: newsrc,
 				headers: {
-					Cookie: null,
-					Referer: newsrc.replace(/\.[^/.]*$/, ".html")
-				}
+					Referer: newsrc.replace(/\/([^/]+)\.[^/.]*$/, "/large-$1.html")
+				},
+				bad_if: [{
+					headers: {
+						"content-length": "281567",
+						"last-modified": "Tue, 19 Nov 2019 03:54:27 GMT"
+					}
+				}]
 			};
 		}
 
@@ -47192,6 +47232,11 @@ var $$IMU_EXPORT$$;
 							return;
 						}
 
+						if (check_bad_if(obj.bad_if, resp)) {
+							console_error("Bad image (bad_if)", obj.bad_if, resp);
+							return err_cb("bad image");
+						}
+
 						if (!customheaders || is_extension)
 							ok_cb(url);
 						else
@@ -48398,6 +48443,46 @@ var $$IMU_EXPORT$$;
 		el.style.removeProperty("offset-inline-start");
 	}
 
+	function check_bad_if(badif, resp) {
+		if (!badif || !(badif instanceof Array) || badif.length === 0)
+			return false;
+
+		var headers = parse_headers(resp.responseHeaders);
+
+		var check_single_badif = function(badif) {
+			if (badif.headers) {
+				for (var header in badif.headers) {
+					header = header.toLowerCase();
+
+					var found = false;
+					for (var i = 0; i < headers.length; i++) {
+						if (headers[i].name.toLowerCase() === header) {
+							if (headers[i].value === badif.headers[header]) {
+								found = true;
+								break;
+							} else {
+								return false;
+							}
+						}
+					}
+
+					if (!found)
+						return false;
+				}
+			}
+
+			return true;
+		};
+
+		for (var j = 0; j < badif.length; j++) {
+			if (check_single_badif(badif[j]))
+				return true;
+		}
+
+		return false;
+	}
+	bigimage_recursive.check_bad_if = check_bad_if;
+
 	function check_image_get(obj, cb, processing) {
 		if (!obj || !obj[0]) {
 			return cb(null);
@@ -48481,6 +48566,11 @@ var $$IMU_EXPORT$$;
 						}
 
 						return;
+					}
+
+					if (check_bad_if(obj[0].bad_if, resp)) {
+						console_log("Bad image (bad_if)", resp, obj[0].bad_if);
+						return err_cb();
 					}
 
 					if (processing.head) {

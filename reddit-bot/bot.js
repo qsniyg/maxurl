@@ -300,6 +300,19 @@ function dourl_inner(big, url, post, options) {
           var newdata = obj.newdata;
           big = obj.big;
 
+          var resp = {
+            responseHeaders: ""
+          };
+
+          for (var header in newdata.headers) {
+            resp.responseHeaders += header + ": " + newdata.headers[header] + "\r\n";
+          }
+
+          if (big.bad || bigimage.check_bad_if(big.bad_if, resp)) {
+            console.log("Bad image");
+            return;
+          }
+
           log_entry.new_probe = JSON.parse(JSON.stringify(newdata));
           if ("headers" in log_entry.new_probe)
             delete log_entry.new_probe.headers;
@@ -603,7 +616,8 @@ const links = new NodeCache({ stdTTL: 600, checkperiod: 100 });
 //dourl("http://www.imgflare.com/i/00026/u6j8ulxub2su_t.jpg");
 // private image:
 //dourl("https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/55843f0c-f773-4b11-b8b1-89ed55c0b243/ddi92x8-76c983c5-4968-4058-be5e-a8442c4f69a8.png/v1/fill/w_1063,h_752,q_70,strp/colt_x_bo_nsfw_by_inflamedurethra_ddi92x8-pre.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9OTA1IiwicGF0aCI6IlwvZlwvNTU4NDNmMGMtZjc3My00YjExLWI4YjEtODllZDU1YzBiMjQzXC9kZGk5Mng4LTc2Yzk4M2M1LTQ5NjgtNDA1OC1iZTVlLWE4NDQyYzRmNjlhOC5wbmciLCJ3aWR0aCI6Ijw9MTI4MCJ9XV0sImF1ZCI6WyJ1cm46c2VydmljZTppbWFnZS5vcGVyYXRpb25zIl19.LeeiL-h6ir-ZMDO91siBlegbFy0OYq-DXFlvRecBQlY");
-
+// bad_if:
+//dourl("https://thumbs.ebaystatic.com/d/l225/pict/400793189705_4.jpg");
 
 //console.dir(blacklist_json.disallowed);
 if (true) {
