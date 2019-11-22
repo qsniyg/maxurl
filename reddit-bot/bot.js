@@ -7,10 +7,6 @@ var request = require("request");
 //require("request-debug")(request);
 var iconv = require("iconv-lite");
 
-/*const monk = require("monk");
-var db = monk("localhost/maximage");
-var db_content = db.get("content");*/
-
 var MongoClient = require('mongodb').MongoClient;
 var url = "mongodb://localhost:27017/";
 
@@ -29,7 +25,6 @@ MongoClient.connect(url, (err, client) => {
 });
 
 var blacklist_json = JSON.parse(fs.readFileSync("./blacklist.json"));
-//var env_json = JSON.parse(fs.readFileSync("./.env.json"));
 var env_json = {};
 
 require('dotenv').config();
