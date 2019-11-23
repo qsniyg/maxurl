@@ -4631,6 +4631,9 @@ var $$IMU_EXPORT$$;
 			// https://cdn.domestika.org/c_fill,dpr_auto,h_157,t_base_params.format_jpg,w_280/v1529661169/course-covers/000/000/262/262-original.jpg?1529661169
 			//   https://cdn.domestika.org/course-covers/000/000/262/262-original.jpg?1529661169
 			domain === "cdn.domestika.org" ||
+			// https://assets.charmboard.com/images/w_375,ar_0.75,c_fill,c_pad,q_auto:eco,e_sharpen/im/lk/810912/pallavi-patil-wearing-kurta.jpg
+			//   https://assets.charmboard.com/images/im/lk/810912/pallavi-patil-wearing-kurta.jpg
+			(domain === "assets.charmboard.com" && src.indexOf("/images/") >= 0) ||
 			// https://images.moviepilot.com/images/c_limit,q_auto:good,w_600/uom2udz4ogmkncouu83q/beauty-and-the-beast-credit-disney.jpg
 			// https://images.moviepilot.com/image/upload/c_fill,h_64,q_auto,w_64/lpgwdrrgc3m8duvg7zt2.jpg
 			domain === "images.moviepilot.com") {
@@ -5758,6 +5761,8 @@ var $$IMU_EXPORT$$;
 			  domain === "cdn-imgix-open.headout.com" ||
 			  // https://images.assettype.com/mediaone%2F2018-06%2F2da714b8-3908-47f6-86fa-8a88ea1ef9d8%2Femma_stone.jpg?w=480&auto=format%2Ccompress&fit=max
 			  domain === "images.assettype.com" ||
+			  // https://images.seoghoer.dk/s3fs-public/storage_1/media/kylie_jenner_1.jpg?ixlib=imgixjs-3.4.0&w=200
+			  domain === "images.seoghoer.dk" ||
 			  // https://imgix.romper.com/2016/8/22/584902004.jpg?w=640&fit=max&auto=format&q=70
 			  domain === "imgix.romper.com") &&
 			 !src.match(/[?&]s=[^/]*$/)) ||
@@ -7192,6 +7197,9 @@ var $$IMU_EXPORT$$;
 			(domain_nowww === "magazin.lufthansa.com" && /\/content\/+uploads\//.test(src)) ||
 			// https://www.nexofin.com/archivos/2016/05/alicia-vikander-7-360x216.jpg
 			(domain_nowww === "nexofin.com" && src.indexOf("/archivos/") >= 0) ||
+			// https://gallery.southindianactress.in/2019/11/priya-singh-photos-q9-fashion-studio-launch-21-720x411.jpg
+			//   https://gallery.southindianactress.in/2019/11/priya-singh-photos-q9-fashion-studio-launch-21.jpg
+			domain === "gallery.southindianactress.in" ||
 			// https://1.soompi.io/wp-content/blogs.dir/8/files/2015/09/HA-TFELT-Wonder-Girls-590x730.jpg -- doesn't work
 			// https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2018/01/GTA-6-Female-Protag-796x417.jpg -- does work
 			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|images|photos|blogs.dir)|\/+uploads)\//.test(src)
@@ -36291,8 +36299,10 @@ var $$IMU_EXPORT$$;
 		if (domain_nowww === "extra.cz") {
 			// https://www.extra.cz/images/thumbs/a5/85/a5850d2-14321-profimedia-0098072335-2048x0-shrink.jpg
 			//   https://www.extra.cz/images/thumbs/a5/85/a5850d2-14321-profimedia-0098072335-9999999x0-shrink.jpg
-			return src.replace(/(\/images\/+thumbs\/+(?:[0-9a-f]{2}\/+){2}[^/]*)-[0-9]+x[0-9]+-shrink(\.[^/.]*)(?:[?#].*)?$/,
-							   "$1-9999999x0-shrink$2");
+			// https://www.extra.cz/images/thumbs/fe/b5/feb5e49-91757-4-658x900-fit.jpg
+			//   https://www.extra.cz/images/original/fe/b5/feb5e49-91757-4.jpg
+			return src.replace(/\/images\/+thumbs\/+((?:[0-9a-f]{2}\/+){2}[^/]+)-[0-9]+x[0-9]+-(?:shrink|fit)(\.[^/.]*)(?:[?#].*)?$/, "/images/original/$1$2");
+			//return src.replace(/(\/images\/+thumbs\/+(?:[0-9a-f]{2}\/+){2}[^/]*)-[0-9]+x[0-9]+-shrink(\.[^/.]*)(?:[?#].*)?$/, "$1-9999999x0-shrink$2");
 		}
 
 		if (domain === "media.services.cinergy.ch") {
@@ -40993,6 +41003,14 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain_nowww === "marecipe.com") {
+			// http://marecipe.com/image.ashx?u=https%3A%2F%2Ficmsstandart.blob.core.windows.net%2Ficms%2Fpf%2Fthumb%2Ff7a1dae4faf69ddd1040c045f6ecb75e.jpg
+			//   https://icmsstandart.blob.core.windows.net/icms/pf/thumb/f7a1dae4faf69ddd1040c045f6ecb75e.jpg
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+image\.ashx\?(?:.*&)?u=([^&]*).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+		}
+
 		if (domain === "cdn.akurat.co") {
 			// https://cdn.akurat.co/images/uploads/images/medium/akurat_20190523022230_2KW910.jpg
 			//   https://cdn.akurat.co/images/uploads/images/akurat_20190523022230_2KW910.jpg
@@ -45098,6 +45116,34 @@ var $$IMU_EXPORT$$;
 			// http://www.prothinspo.com/sitebuilder/images/alicia-vikander-ballet-shoes-du-jour-03_1_-198x250.jpg
 			//   http://www.prothinspo.com/images/alicia-vikander-ballet-shoes-du-jour-03_1_.jpg
 			return src.replace(/\/sitebuilder\/+(images\/+[^/]+)-[0-9]+x[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "/$1$2");
+		}
+
+		if (domain === "assets.yesstud.io") {
+			// https://assets.yesstud.io/roscoproduction/cache/roscoproduction-2288-w1250-h1000-q90-rz3-b75.jpg
+			//   https://assets.yesstud.io/roscoproduction/image/roscoproduction_2288.jpg
+			// http://assets.yesstud.io/shotview/cache/shotview-67430-h1000-q90-rz3-b75.jpg
+			//   http://assets.yesstud.io/shotview/image/shotview_67430.jpg
+			return src.replace(/\/cache\/+([a-z]+)-([0-9]+)(?:-[whqrb][a-z]?[0-9]*){1,}(\.[^/.]*)(?:[?#].*)?$/, "/image/$1_$2$3");
+		}
+
+		if (domain === "light.sunphoto.ro") {
+			// https://light.sunphoto.ro/photos/thumb_small/43460423_IRGWGVQJS.jpg
+			//   https://light.sunphoto.ro/photos/normal/43460423_IRGWGVQJS.jpg
+			// https://light.sunphoto.ro/photos/thumb/85973681_MPKAANP.jpg
+			//   https://light.sunphoto.ro/photos/normal/85973681_MPKAANP.jpg
+			newsrc = src.replace(/\/photos\/+thumb(?:_[a-z]+)?\/+/, "/photos/normal/");
+			if (newsrc !== src)
+				return newsrc;
+
+			return {
+				url: src,
+				headers: {
+					Referer: "https://sunphoto.ro/"
+				},
+				referer_ok: {
+					same_domain_nosub: true
+				}
+			};
 		}
 
 
