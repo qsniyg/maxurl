@@ -2343,6 +2343,16 @@ var $$IMU_EXPORT$$;
 		return headers;
 	};
 
+	var headers_list_to_dict = function(headers) {
+		var dict = {};
+
+		for (var i = 0; i < headers.length; i++) {
+			dict[headers[i].name.toLowerCase()] = headers[i].value;
+		}
+
+		return dict;
+	};
+
 	var parse_cookieheader = function(cookieheader) {
 		var cookies = {};
 
@@ -21159,26 +21169,43 @@ var $$IMU_EXPORT$$;
 			//   Content-Length: 281567
 			//   Last-Modified: Tue, 19 Nov 2019 03:54:27 GMT
 			// needs login
-			newsrc = src.replace(/\/thumbnail\/(.*?)(?:-preview)?(-[0-9]+)(?:\.t)?(\.[^/.]*)$/, "/$1-$2$3");
+			var get_obj = function(url) {
+				var normurl = url
+					.replace(/\/thumbnail\/+(.*?)(?:-preview)?(-[0-9]+)(?:\.t)?(\.[^/.]*)$/, "/$1-$2$3")
+					.replace(/--([0-9]+\.[^/.]*)$/, "-$1");
+
+				var obj = {
+					url: url,
+					headers: {
+						Referer: normurl.replace(/\/([^/]+)\.[^/.]*$/, "/$1.html")
+					},
+					bad_if: [{
+						headers: {
+							"content-length": "281567",
+							"last-modified": "Tue, 19 Nov 2019 03:54:27 GMT"
+						}
+					}]
+				};
+
+				if (url.match(/\/[^/]+[^-]-[0-9]+\.[^/.]+(?:[?#].*)?$/)) {
+					obj.headers.Referer = normurl.replace(/\/([^/]+)\.[^/.]*$/, "/large-$1.html");
+					obj.is_original = true;
+				}
+
+				obj.extra = {page: obj.headers.Referer};
+
+				return obj;
+			};
+
+			newsrc = src.replace(/\/thumbnail\/+(.*?)(?:-preview)?(-[0-9]+)(?:\.t)?(\.[^/.]*)$/, "/$1-$2$3");
 			if (newsrc !== src)
-				return newsrc;
+				return get_obj(newsrc);
 
 			newsrc = src.replace(/--([0-9]+\.[^/.]*)$/, "-$1");
 			if (newsrc !== src)
-				return newsrc;
+				return get_obj(newsrc);
 
-			return {
-				url: src,
-				headers: {
-					Referer: newsrc.replace(/\/([^/]+)\.[^/.]*$/, "/large-$1.html")
-				},
-				bad_if: [{
-					headers: {
-						"content-length": "281567",
-						"last-modified": "Tue, 19 Nov 2019 03:54:27 GMT"
-					}
-				}]
-			};
+			return get_obj(src);
 		}
 
 		if ((domain === "www.altcine.com" && src.indexOf("/photo/") >= 0) ||
@@ -47228,16 +47255,8 @@ var $$IMU_EXPORT$$;
 							return;
 						}
 
-						var headers = {};
-						var headers_splitted = resp.responseHeaders.split("\n");
-						headers_splitted.forEach(function (header) {
-							header = header
-								.replace(/^\s*/, "")
-								.replace(/\s*$/, "");
-							var headername = header.replace(/^([^:]*?):\s*.*/, "$1");
-							var headerbody = header.replace(/^[^:]*?:\s*(.*)/, "$1");
-							headers[headername.toLowerCase()] = headerbody;
-						});
+						var headers_list = parse_headers(resp.responseHeaders);
+						var headers = headers_list_to_dict(headers_list);
 
 						if (_nir_debug_)
 							console_log("(check_image) resp headers", headers);
@@ -49692,10 +49711,10 @@ var $$IMU_EXPORT$$;
 
 				if (newobj.filename.length === 0) {
 					try {
-						var headers = data.data.respdata.responseHeaders.split("\r\n");
+						var headers = parse_headers(data.data.respdata.responseHeaders);
 						for (var h_i = 0; h_i < headers.length; h_i++) {
-							var header_name = headers[h_i].replace(/^\s*([^:]*?)\s*:.*/, "$1").toLowerCase();
-							var header_value = headers[h_i].replace(/^[^:]*?:\s*(.*?)\s*$/, "$1").toLowerCase();
+							var header_name = headers[h_i].name.toLowerCase();
+							var header_value = headers[h_i].value;
 
 							if (header_name === "content-disposition") {
 								// http://cfile7.uf.tistory.com/original/227CF24E57ABEC701869E7
