@@ -173,10 +173,15 @@ var $$IMU_EXPORT$$;
 	}
 
 	var register_menucommand = nullfunc;
+	var num_menucommands = 0;
 
 	if (is_userscript) {
 		if (typeof(GM_registerMenuCommand) !== "undefined") {
-			register_menucommand = GM_registerMenuCommand;
+			register_menucommand = function(name, func) {
+				num_menucommands++;
+
+				return GM_registerMenuCommand("[" + num_menucommands + "] " + name, func);
+			};
 		}
 	}
 
@@ -190,7 +195,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (open_in_tab !== nullfunc) {
-			register_menucommand("[1] Options", function() {
+			register_menucommand("Options", function() {
 				open_in_tab(options_page);
 			});
 		}
@@ -721,7 +726,7 @@ var $$IMU_EXPORT$$;
 			"en": "Rotate Right (R)"
 		},
 		"category_extra": {
-			"en": "Extra"
+			"en": "Buttons"
 		},
 		"subcategory_replaceimages": {
 			"en": "Replace Images"
@@ -859,6 +864,9 @@ var $$IMU_EXPORT$$;
 		// thanks to LukasThyWalls on github for the idea: https://github.com/qsniyg/maxurl/issues/75
 		bigimage_blacklist: "",
 		bigimage_blacklist_engine: "glob",
+		replaceimgs_replaceimgs: true,
+		replaceimgs_addlinks: false,
+		replaceimgs_replacelinks: false,
 		replaceimgs_usedata: true,
 		replaceimgs_wait_fullyloaded: true,
 		replaceimgs_totallimit: 8,
@@ -1687,6 +1695,30 @@ var $$IMU_EXPORT$$;
 			number_unit: "images",
 			category: "extra",
 			subcategory: "replaceimages",
+			imu_enabled_exempt: true
+		},
+		replaceimgs_replaceimgs: {
+			name: "Replace images",
+			description: "Replaces images to their larger versions when the button is pressed",
+			category: "extra",
+			subcategory: "replaceimages",
+			imu_enabled_exempt: true
+		},
+		replaceimgs_addlinks: {
+			name: "Add links",
+			description: "Adds links around images if a link doesn't already exist",
+			category: "extra",
+			subcategory: "replaceimages",
+			imu_enabled_exempt: true
+		},
+		replaceimgs_replacelinks: {
+			name: "Replace links",
+			description: "Replaces links if they already exist",
+			category: "extra",
+			subcategory: "replaceimages",
+			requires: {
+				replaceimgs_addlinks: true
+			},
 			imu_enabled_exempt: true
 		},
 		highlightimgs_enable: {
@@ -17268,6 +17300,14 @@ var $$IMU_EXPORT$$;
 			// http://cdn.teamcococdn.com/image/1000x1000,scale:none/victoria-justice-54ed2693b4bf1.jpg -- stretched
 			//   http://cdn.teamcococdn.com/file/victoria-justice-54ed2693b4bf1.jpg
 			return src.replace(/\/image\/[^/]*\//, "/file/");
+		}
+
+		if (domain === "live.staticflickr.com") {
+			// https://live.staticflickr.com/4741/buddyicons/70777296@N08_l.jpg
+			//   https://live.staticflickr.com/4741/buddyicons/70777296@N08_r.jpg
+			newsrc = src.replace(/(\/buddyicons\/+[0-9]+@N[0-9]+)(?:_l)?(\.[^/.]*)(?:[?#].*)$/, "$1_r$2");
+			if (newsrc !== src)
+				return newsrc;
 		}
 
 		if ((domain_nosub === "staticflickr.com" ||
@@ -51243,7 +51283,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		var replacing_imgs = false;
-		function replace_images() {
+		function replace_images(options) {
 			if (replacing_imgs)
 				return;
 
@@ -51311,20 +51351,49 @@ var $$IMU_EXPORT$$;
 						if (our_domain)
 							domains_processing[our_domain]--;
 
+						var replace_func = function(el, newsrc) {
+							if (options.replace_imgs && el.src !== newsrc) {
+								el.src = newsrc;
+							}
+
+							if (options.add_links) {
+								var current = el;
+
+								while (current = current.parentElement) {
+									if (current.tagName === "A") {
+										if (!options.replace_links)
+											return;
+										else
+											break;
+									}
+								}
+
+								if (!current) {
+									current = document.createElement("a");
+
+									el.parentElement.insertBefore(current, el);
+									current.appendChild(el);
+								}
+
+								current.href = newsrc;
+							}
+						};
+
 						if (!data) {
+							replace_func(our_source.el, our_source.src);
 							return finish_img();
 						}
 
 						var waiting = false;
 						if (data.data.img) {
-							source.el.src = data.data.img.src;
+							replace_func(source.el, data.data.img.src);
 						} else if (data.data.obj) {
 							var load_image = function() {
-								if (settings.replaceimgs_wait_fullyloaded) {
+								if (settings.replaceimgs_wait_fullyloaded && options.replace_imgs) {
 									// Preload the image, as adding onload/onerror to existing images won't fire the event
 									var image = new Image();
 									var finish_image = function () {
-										source.el.src = image.src;
+										replace_func(source.el, image.src);
 										finish_img();
 									};
 
@@ -51332,7 +51401,7 @@ var $$IMU_EXPORT$$;
 									image.onerror = finish_img;
 									image.src = data.data.obj.url;
 								} else {
-									source.el.src = data.data.obj.url;
+									replace_func(source.el, data.data.obj.url);
 									finish_img();
 								}
 							};
@@ -51426,7 +51495,13 @@ var $$IMU_EXPORT$$;
 			next_img();
 		}
 
-		register_menucommand("[2] Replace images", replace_images);
+		register_menucommand("Replace images", function() {
+			replace_images({
+				replace_imgs: settings.replaceimgs_replaceimgs,
+				add_links: settings.replaceimgs_addlinks,
+				replace_links: settings.replaceimgs_replacelinks
+			});
+		});
 
 		var highlight_images = function() {
 			var images = document.querySelectorAll("img");
@@ -51451,7 +51526,7 @@ var $$IMU_EXPORT$$;
 		};
 
 		if (settings.highlightimgs_enable)
-			register_menucommand("[3] Highlight images", highlight_images);
+			register_menucommand("Highlight images", highlight_images);
 
 		document.addEventListener('keydown', function(event) {
 			if (!mouseover_enabled())
