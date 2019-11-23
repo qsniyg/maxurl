@@ -17305,7 +17305,7 @@ var $$IMU_EXPORT$$;
 		if (domain === "live.staticflickr.com") {
 			// https://live.staticflickr.com/4741/buddyicons/70777296@N08_l.jpg
 			//   https://live.staticflickr.com/4741/buddyicons/70777296@N08_r.jpg
-			newsrc = src.replace(/(\/buddyicons\/+[0-9]+@N[0-9]+)(?:_l)?(\.[^/.]*)(?:[?#].*)$/, "$1_r$2");
+			newsrc = src.replace(/(\/buddyicons\/+[0-9]+@N[0-9]+)(?:_[slm])?(\.[^/.]*)(?:[?#].*)?$/, "$1_r$2");
 			if (newsrc !== src)
 				return newsrc;
 		}
