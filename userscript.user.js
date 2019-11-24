@@ -21230,7 +21230,13 @@ var $$IMU_EXPORT$$;
 					bad_if: [{
 						headers: {
 							"content-length": "281567",
-							"last-modified": "Tue, 19 Nov 2019 03:54:27 GMT"
+							"last-modified": function(value) {
+								if (/^Tue, 19 Nov 2019/i.test(value)) {
+									return true;
+								}
+
+								return false;
+							}
 						}
 					}]
 				};
@@ -48618,21 +48624,32 @@ var $$IMU_EXPORT$$;
 	}
 
 	function check_bad_if(badif, resp) {
-		if (!badif || !(badif instanceof Array) || badif.length === 0)
+		if (_nir_debug_)
+			console_log("check_bad_if", badif, resp);
+
+		if (!badif || !(badif instanceof Array) || badif.length === 0) {
+			if (_nir_debug_)
+				console_log("check_bad_if (!badif)");
 			return false;
+		}
 
 		var headers = parse_headers(resp.responseHeaders);
 
 		var check_single_badif = function(badif) {
 			if (badif.headers) {
 				for (var header in badif.headers) {
-					header = header.toLowerCase();
+					var header_lower = header.toLowerCase();
 
 					var found = false;
 					for (var i = 0; i < headers.length; i++) {
-						if (headers[i].name.toLowerCase() === header) {
-							if (headers[i].value === badif.headers[header]) {
-								found = true;
+						if (headers[i].name.toLowerCase() === header_lower) {
+							if (typeof (badif.headers[header]) === "function") {
+								found = badif.headers[header](headers[i].value);
+							} else if (typeof (badif.headers[header]) === "string") {
+								found = headers[i].value === badif.headers[header];
+							}
+
+							if (found) {
 								break;
 							} else {
 								return false;
