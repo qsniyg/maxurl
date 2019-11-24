@@ -1,3 +1,22 @@
+0.11.13
+
+New features:
+
+ * Option to replace links with the Replace Images button (disabled by default)
+ * Support for ~25 new websites (using ~15 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules
+
+Bugfixes:
+
+ * Images below the minimum pixel threshold that can be made larger are now supported
+ * Ebay no longer redirects to broken images (through the new `bad_if` property)
+ * "Highlight CSS" is only enabled when the "Highlight Images" option is enabled
+
+---
+
 0.11.12
 
 New features:

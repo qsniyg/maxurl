@@ -12,6 +12,9 @@
 # I usually don't visit the host websites (only the image links themselves), so there are sometimes cases
 #  where rules don't work for all images under the website.
 #  If you spot any issues, please leave an issue on Github, and I will try to fix it as soon as I can.
+#
+# There is currently no automatic testing, which means it's possible some of these don't work anymore.
+#  Please let me know if you find a website that doesn't work!
 
 00news.co.kr
 100posto.hr
@@ -344,6 +347,7 @@ assets.bwbx.io
 assets.capitalfm.com
 assets.capitalxtra.com
 assets.cdn.moviepilot.de
+assets.charmboard.com
 assets.dogannet.tv
 assets.fireside.fm
 assets.folhavitoria.com.br
@@ -383,6 +387,7 @@ assets.whatson.cityofsydney.nsw.gov.au.s3.amazonaws.com
 assets.wonderlandmagazine.com
 assets.yande.re
 assets.yandycdn.com
+assets.yesstud.io
 assetsadobe2.com
 astro-austral.cl
 astro-image-resizer.s3.amazonaws.com
@@ -613,6 +618,7 @@ boutique.az
 boutiquefonts.com
 boutreview.com
 boxerdergisi.com.tr
+boxofficeturkiye.com
 bpic.588ku.com
 braunschweiger-zeitung.de
 bravo.de
@@ -711,6 +717,7 @@ cbsstatic.com
 ccdailynews.com
 cci.xnxx.fan
 ccio.co
+ccnxs.cn
 cctoday.co.kr
 cd.cinescape.com.pe
 cdbaby.name
@@ -1079,6 +1086,7 @@ ci.xiaohongshu.com
 cilacila.com
 cimg.tvgcdn.net
 cine-vox.com
+cinefish.bg
 cinemacafe.net
 cinemapalace.ch
 cinemapassion.com
@@ -1275,6 +1283,7 @@ d36tnp772eyphs.cloudfront.net
 d38c5dutwb1t0j.cloudfront.net
 d395qfwg4461au.cloudfront.net
 d3bhdfps5qyllw.cloudfront.net
+d3d8y6yhucfd29.cloudfront.net
 d3ewd3ysu1dfsj.cloudfront.net
 d3gz42uwgl1r1y.cloudfront.net
 d3i6fh83elv35t.cloudfront.net
@@ -1317,6 +1326,7 @@ dainikbhaskar.com
 dajiazhao.com
 dalangw.com
 damimage.com
+dangerousminds.net
 dantricdn.com
 danviet.vn
 darkmovie.info
@@ -1736,6 +1746,7 @@ files.slack.com
 files.theblemish.com
 files.vividscreen.info
 files.yande.re
+filesor.com
 fileup.calobye.com
 film-download.club
 film-like.com
@@ -1886,6 +1897,7 @@ gallery-cdn.tiscali.it
 gallery.123telugu.com
 gallery.greatandhra.com
 gallery.ru
+gallery.southindianactress.in
 galleryportal.com
 gallica.bnf.fr
 gals.kindgirls.com
@@ -2615,6 +2627,7 @@ images.saloona.co.il
 images.samsung.com
 images.says.com
 images.scribblelive.com
+images.seoghoer.dk
 images.sex.com
 images.sftcdn.net
 images.shaneco.com
@@ -3395,6 +3408,7 @@ life.tw
 lifesite-cache.s3.amazonaws.com
 lifezette.com
 lifo.gr
+light.sunphoto.ro
 lilianpacce.s3.amazonaws.com
 lilit.lv
 lilykoh.com
@@ -3411,6 +3425,7 @@ lithium.com
 litlepups.net
 live-imagecollect.s3.amazonaws.com
 live-stats.me
+live.staticflickr.com
 live.store.cmcm.com
 liveen.co.kr
 liveinternet.ru
@@ -3486,6 +3501,7 @@ madametussauds.com
 madtv.com.cy
 mafab.hu
 mafengwo.net
+magazin.lufthansa.com
 magnatune.com
 mail.ru
 mainbabes.com
@@ -3502,6 +3518,7 @@ manga-news.com
 mangadrawing.net
 mania.kr
 maquillagecreation.ch
+marecipe.com
 mariahsworld.com
 marieclaire.com.au
 marieclaire.hu
@@ -4023,6 +4040,7 @@ newstracklive.com
 newswitch.jp
 newswiz.kr
 newtumbl.com
+nexofin.com
 nextnature.net
 nextpicturez.com
 nferaclub.com
@@ -4145,6 +4163,7 @@ omusic.friday.tw
 onedio.com
 oneman.gr
 oneniceapp.com
+oneringtrailers.com
 onesieponatime.com
 onlyasianpictures.com
 onlyfans.com
@@ -4449,6 +4468,7 @@ promshopau.com
 pronto.com.ar
 proprofs.com
 prostitutki.today
+prothinspo.com
 prothomalo.com
 protv.md
 proxy.duckduckgo.com
@@ -4478,6 +4498,7 @@ purepeople.com
 purepeople.com.br
 purescans.com
 puretrend.com
+puschkino.de
 pussynclit.com
 pussyspot.net
 pvgroup.ru
@@ -4728,6 +4749,7 @@ s5o.sports.ru
 s9v7j7a4.ssl.hwcdn.net
 safebooru.org
 safeimage.vusercontent.com
+salleobscure.e-monsite.com
 salonfloris.ru
 sama-sama-sama.ru
 samironsheadshots.com
@@ -4849,6 +4871,7 @@ sin-cdn.storage.googleapis.com
 sina.com.cn
 sinaimg.cn
 sinclairstoryline.com
+sinemangoo.org
 sisafocus.co.kr
 sisajb.com
 sisley-paris.com
@@ -4968,6 +4991,7 @@ staples-3p.com
 star-img.idol001.com
 star-magazine.co.uk.s3.amazonaws.com
 star-telegram.com
+star-tool.ru
 staraz.co.kr
 starbeat.ru
 starcelebritydresses.com
@@ -5321,6 +5345,7 @@ thai.ac
 thaicuties.net
 thairomances.com
 thaishop.in.th
+the-numbers.com
 the-star.co.kr
 theactuary.com
 theargus.co.uk
@@ -5368,8 +5393,10 @@ thequestforit.com
 theredlist.com
 therussiantimes.com
 theshonet-assets.s3.amazonaws.com
+thesimsresource.com
 thestar.com
 thestar.com.my
+thesundaily.my
 thesupermodelsgallery.com
 thethaigirls.com
 thetimes.co.uk
@@ -5550,6 +5577,7 @@ unblocked.nl
 unblockweb.cc
 unison.org.uk
 up.8desk.com
+up.bizhitupian.com
 up.deskbus.com
 up.kpop.re
 up.padtu.com
