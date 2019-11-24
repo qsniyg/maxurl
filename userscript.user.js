@@ -5958,6 +5958,8 @@ var $$IMU_EXPORT$$;
 			domain_nosub === "gannett-cdn.com" ||
 			// http://www.rdfm-radio.fr/medias/images/media.nrj.fr-2f436x327-2f2017-2f11-2fbiographie-de-mc-fioti-484.jpg?fx=c_180_180 -- dead?
 			(domain_nowww === "rdfm-radio.fr" && src.indexOf("/medias/") >= 0) ||
+			// http://salleobscure.e-monsite.com/medias/images/affiche-premier-contact-arrival-2016-5.jpg?fx=r_1170_600
+			(domain === "salleobscure.e-monsite.com" && src.indexOf("/medias/") >= 0) ||
 			// http://image-api.nrj.fr/02_5a02579e3cb49.png?w=730&h=410
 			domain === "image-api.nrj.fr" ||
 			// http://api.hdwallpapers5k.com/resource/fileuploads/photos/albums/1400/5382c527-5081-4bf4-8b2b-25ea11356bf4.jpeg?quality=100&w=2560&h=2560&mode=crop
@@ -13902,10 +13904,13 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/thumb\/+[0-9]+x[0-9]+\/+ckfinder\/+/, "/ckfinder/");
 		}
 
-		if (domain_nowww === "hdfullfilmizle.com") {
+		if (domain_nowww === "hdfullfilmizle.com" ||
+			// https://www.sinemangoo.org/thumb/183x284/uploads/film/2017/01/arrival-gelis-turkce-altyazili-izle-255.jpg
+			//   https://www.sinemangoo.org/uploads/film/2017/01/arrival-gelis-turkce-altyazili-izle-255.jpg
+			domain_nowww === "sinemangoo.org") {
 			// http://www.hdfullfilmizle.com/thumb/131x150/uploads/oyuncu/2018/04/milla-jovovich-744.jpg
 			//   http://www.hdfullfilmizle.com/uploads/oyuncu/2018/04/milla-jovovich-744.jpg
-			return src.replace(/\/thumb\/[0-9]+x[0-9]+\/uploads\//, "/uploads/");
+			return src.replace(/\/thumb\/+[0-9]+x[0-9]+\/+uploads\//, "/uploads/");
 		}
 
 		if (domain_nowww === "hairstyleinsider.com" ||
@@ -24400,6 +24405,8 @@ var $$IMU_EXPORT$$;
 		}
 
 		if ((domain_nosub === "popcornnews.ru" && domain.match(/v[0-9]*\.popcornnews\.ru/)) ||
+			// https://static.kinoafisha.info/k/movie_posters/1080x1920/upload/movie_posters/6/0/4/8327406/fbffbd348e19ab4017d143d91a9ecbb5.jpeg
+			//   https://static.kinoafisha.info/upload/movie_posters/6/0/4/8327406/fbffbd348e19ab4017d143d91a9ecbb5.jpeg
 			// https://static.kinoafisha.info/k/news/580/upload/news_images/0/2/6/8329620/e4d9a81021ca2590a28746e13f900da1.jpeg
 			//   https://static.kinoafisha.info/upload/news_images/0/2/6/8329620/e4d9a81021ca2590a28746e13f900da1.jpeg
 			// https://static.kinoafisha.info/k/fests/600/upload/fests/4/5/0/54/c0c0606483cd423c088ba8b8da169d68.jpeg
@@ -24408,10 +24415,10 @@ var $$IMU_EXPORT$$;
 			// http://v1.popcornnews.ru/k/news/500x700/upload/news_images/9/3/3/146339/f05d636fe83741bcbd1f870f019c8e26.jpg
 			//   http://v1.popcornnews.ru/upload/news_images/9/3/3/146339/f05d636fe83741bcbd1f870f019c8e26.jpg -- no watermark
 			return src
-				.replace(/(:\/\/[^/]*\/)[a-z]+\/[a-z]+\/[0-9]+(?:x[0-9]+)?\/upload\//, "$1upload/")
+				.replace(/(:\/\/[^/]*\/+)k\/+[a-z_]+\/+[0-9]+(?:x[0-9]+)?\/+upload\//, "$1upload/")
 			// https://v1.popcornnews.ru/upload/_500_600_80_LWRHQa.jpg
 			//   https://v1.popcornnews.ru/upload/LWRHQa.jpg
-				.replace(/(:\/\/[^/]*\/upload\/+)_[0-9]+_[0-9]+_[0-9]+_([^/_.]*\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+				.replace(/(:\/\/[^/]*\/+upload\/+)_[0-9]+_[0-9]+_[0-9]+_([^/_.]*\.[^/.]*)(?:[?#].*)?$/, "$1$2");
 		}
 
 		if (domain_nowww === "amorq.com" ||
@@ -29265,7 +29272,9 @@ var $$IMU_EXPORT$$;
 		if (domain_nowww === "lostfilm.info") {
 			// http://lostfilm.info/images/150photo_actor/69/2569792_689554.jpg
 			//   http://lostfilm.info/images/photo_actor/69/2569792_689554.jpg
-			return src.replace(/\/images\/[0-9]+photo/, "/images/photo");
+			// http://lostfilm.info/images/150poster/546/5456250.jpg
+			//   http://lostfilm.info/images/poster/546/5456250.jpg
+			return src.replace(/\/images\/+[0-9]+(photo|poster)/, "/images/$1");
 		}
 
 		if (domain_nowww === "hinhnenso1.com") {
@@ -29522,6 +29531,12 @@ var $$IMU_EXPORT$$;
 			// https://www.topcrochetpatterns.com/images/made/images/uploads/blog/Hailee_Steinfeld_625_939_64_c1.jpg
 			//   https://www.topcrochetpatterns.com/images/uploads/blog/Hailee_Steinfeld.jpg
 			return src.replace(/\/images\/+made\/+(images\/+uploads\/+blog\/+[^/]*?)_[0-9]+_[0-9]+_[0-9]+_c[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "/$1$2");
+		}
+
+		if (domain_nowww === "dangerousminds.net") {
+			// https://dangerousminds.net/content/uploads/images/made/content/uploads/images/arrival-poster-venezuela_465_725_int.jpg
+			//   https://dangerousminds.net/content/uploads/images/arrival-poster-venezuela.jpg
+			return src.replace(/\/content\/+uploads\/+images\/+made\/+(content\/+uploads\/+images\/+[^/]+)_[0-9]+_[0-9]+_int(\.[^/.]*)(?:[?#].*)?$/, "/$1$2");
 		}
 
 		if (domain_nosub === "nupics.pro" ||
@@ -45158,6 +45173,31 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/scaled\/+[0-9]+\/+)[wh]-[0-9]+[hw]-[0-9]+-([0-9]+\.)/, "$1$2");
 		}
 
+		if (domain_nowww === "the-numbers.com") {
+			// https://www.the-numbers.com/images/movies/opusdata/Arrival-(2016)-Thumbnail.jpg
+			//   https://www.the-numbers.com/images/movies/opusdata/Arrival-(2016).jpg
+			return src.replace(/(\/images\/+movies\/+.*)-Thumbnail(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "cinefish.bg") {
+			// https://www.cinefish.bg/data/movies_images/269/p_269926_thumb.jpg
+			//   https://www.cinefish.bg/data/movies_images/269/p_269926.jpg
+			return src.replace(/(\/data\/+movies_images\/+[0-9]+\/+p_[0-9]+)_thumb(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "oneringtrailers.com") {
+			// https://oneringtrailers.com/images/posters/thumb_10067824QORUOFFN.jpg
+			//   https://oneringtrailers.com/images/posters/10067824QORUOFFN.jpg
+			return src.replace(/(\/images\/+[a-z]+\/+)thumb_/, "$1");
+		}
+
+		if (domain_nowww === "boxofficeturkiye.com") {
+			// https://boxofficeturkiye.com/images/haberler/430x670/NewsItem_636069708804223649_c_80.jpg
+			//   https://boxofficeturkiye.com/images/haberler/buyuk/NewsItem_636069708804223649.jpg
+			return src.replace(/(\/images\/+haberler\/+)[0-9]+x[0-9]+\/+([^/]+)_c_[0-9]+(\.[^/]*)(?:[?#].*)?$/, "$1buyuk/$2$3");
+		}
+
+
 
 
 
@@ -45773,10 +45813,12 @@ var $$IMU_EXPORT$$;
 		}
 
 		// xenforo
-		if (src.match(/:\/\/[^/]*\/(?:vb\/+)?proxy\.php\?(?:.*?&)?image=http/)) {
+		if (src.match(/:\/\/[^/]*\/+(?:(?:vb|forum)\/+)?proxy\.php\?(?:.*?&)?image=http/)) {
 			// https://defense-arab.com/vb/proxy.php?image=http%3A%2F%2Fimage.newsis.com%2F2016%2F07%2F28%2FNISI20160728_0011966708_web.jpg&hash=43eb7bb12419f7af61c1b6fd2d29232b
 			//   http://image.newsis.com/2016/07/28/NISI20160728_0011966708_web.jpg
-			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/(?:vb\/+)?proxy\.php\?(?:.*?&)?image=(http[^&]*).*?$/, "$1")
+			// https://www.htforum.com/forum/proxy.php?image=https%3A%2F%2Fteaser-trailer.com%2Fwp-content%2Fuploads%2FArrival-Movie-Poster-9.jpg&hash=a4e1362477802c6871d7d61f4e6be059
+			//   https://teaser-trailer.com/wp-content/uploads/Arrival-Movie-Poster-9.jpg
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+(?:[a-z]+\/+)?proxy\.php\?(?:.*?&)?image=(http[^&]*).*?$/, "$1")
 			if (newsrc !== src)
 				return decodeuri_ifneeded(newsrc);
 		}
