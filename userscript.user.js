@@ -8602,7 +8602,8 @@ var $$IMU_EXPORT$$;
 			// http://is5.mzstatic.com/image/thumb/Music62/v4/0b/1f/36/0b1f364c-cc8f-1c8c-74a4-70cfb01d8ef4/source/100000x100000-999.jpg
 			// http://a3.mzstatic.com/us/r30/Music5/v4/2e/0d/6d/2e0d6d8f-bd38-9240-b150-0e989f00374e/cover170x170.jpeg
 			// http://a4.mzstatic.com/us/r30/Music62/v4/fe/61/54/fe6154f6-b064-d788-d114-4b544def3d30/cover1400x1400.jpeg
-			return src.replace(/\/[0-9]*x[0-9]*[a-z]*(?:-[0-9]+)?(\.[^/.]*)$/, "/999999999x0w$1");
+			// add -999 to always set the quality to the max value (https://github.com/qsniyg/maxurl/issues/164)
+			return src.replace(/\/[0-9]*x[0-9]*[a-z]*(?:-[0-9]+)?(\.[^/.]*)$/, "/999999999x0w-999$1");
 		}
 
 		if (domain_nosub === "alicdn.com" &&
