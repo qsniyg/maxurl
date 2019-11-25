@@ -45198,6 +45198,12 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/images\/+haberler\/+)[0-9]+x[0-9]+\/+([^/]+)_c_[0-9]+(\.[^/]*)(?:[?#].*)?$/, "$1buyuk/$2$3");
 		}
 
+		if (amazon_container === "trello-avatars") {
+			// https://trello-avatars.s3.amazonaws.com/4f752093e3c5c5b77a868f79b9cff077/50.png
+			//   https://trello-avatars.s3.amazonaws.com/4f752093e3c5c5b77a868f79b9cff077/original.png
+			return src.replace(/(\/[0-9a-f]{20,}\/+)[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1original$2");
+		}
+
 
 
 
