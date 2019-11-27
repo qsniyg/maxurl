@@ -3180,7 +3180,11 @@ var $$IMU_EXPORT$$;
 				.replace(/(-[0-9]*)(\.[^/]*)$/, "$1-org$2");
 		}
 
-		if (domain_nowww === "topstarnews.net") {
+		if (domain_nowww === "topstarnews.net" ||
+			domain === "cdn.topstarnews.net" ||
+			// http://cds.topstarnews.net/news/thumbnail/201911/698561_409137_392_v150.jpg
+			//   http://cds.topstarnews.net/news/photo/201911/698561_409137_392_org.jpg
+			domain === "cds.topstarnews.net") {
 			// http://www.topstarnews.net/news/thumbnail/201802/365216_8748_4653_v150.jpg
 			//   http://www.topstarnews.net/news/photo/201802/365216_8748_4653_org.jpg
 			// http://www.topstarnews.net/news/photo/201802/364365_7857_4310.jpg
@@ -3188,17 +3192,18 @@ var $$IMU_EXPORT$$;
 			// http://www.topstarnews.net/news/thumbnail/first/201710/img_319718_1_v150.jpg
 			//   http://www.topstarnews.net/news/photo/first/201710/img_319718_1_org.jpg
 			//   http://cdn.topstarnews.net/news/photo/first/201710/img_319718_1_org.jpg
+
+			// credit to Gyuri on discord
+			// http://cdn.topstarnews.net/news/photo/first/201406/img_63025_1.jpg/ndsoft/optimize
+			//   http://www.topstarnews.net/news/photo/first/201406/img_63025_1_org.jpg
+			newsrc = src.replace(/:\/\/[^/]*\/(.*\/photo\/.*_[0-9]+)(\.[^/.]*)\/.*$/, "://www.topstarnews.net/$1_org$2");
+			if (newsrc !== src)
+				return newsrc;
+
 			return src
 				.replace(/_v[0-9]+(\.[^/.]*)$/, "_org$1")
 				.replace(/(_[0-9]+)(\.[^/.]*)$/, "$1_org$2")
 				.replace("/thumbnail/", "/photo/");
-		}
-
-		if (domain === "cdn.topstarnews.net") {
-			// credit to Gyuri on discord
-			// http://cdn.topstarnews.net/news/photo/first/201406/img_63025_1.jpg/ndsoft/optimize
-			//   http://www.topstarnews.net/news/photo/first/201406/img_63025_1_org.jpg
-			return src.replace(/:\/\/[^/]*\/(.*\/photo\/.*_[0-9]+)(\.[^/.]*)\/.*$/, "://www.topstarnews.net/$1_org$2");
 		}
 
 		if (domain === "thumb.mt.co.kr" ||
