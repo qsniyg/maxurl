@@ -5425,24 +5425,71 @@ var $$IMU_EXPORT$$;
 			//   https://pbs.twimg.com/media/DhI2IjaU8AAzEFA.jpg?name=orig
 			// https://pbs.twimg.com/media/DhbrylaVAAYlrss?format=png
 			//   https://pbs.twimg.com/media/DhbrylaVAAYlrss.jpg?name=orig
+			//   https://pbs.twimg.com/media/DhbrylaVAAYlrss:orig?format=jpg
 			// https://pbs.twimg.com/media/DhqeJS2UcAAo7fr.png
 			//   https://pbs.twimg.com/media/DhqeJS2UcAAo7fr.jpg
 			//   https://pbs.twimg.com/media/DhqeJS2UcAAo7fr.jpg?name=orig -- doesn't work
 			//   https://pbs.twimg.com/media/DhqeJS2UcAAo7fr.png?name=orig -- works
 			// 4096x4096 is also a valid "name"
+			// medium == null?
+
+			// replace :orig to name=orig
 			newsrc = src
-				.replace(/(\/[^?&.]*)(?:\.[^/.?&]*)?([^/]*)[?&]format=([^&]*)/, "$1.$3$2")
-				.replace(/(\/[^?&]*)[?&][^/]*$/, "$1")
-				.replace(/(:[^/]*)?$/, ":orig")
-				//.replace(/\.([^/.:]*)(?::[^/.]*)$/, "?format=$1&name=orig")
-				.replace(/\.([^/.:]*)(?::[^/.]*)$/, ".$1?name=orig");
-			if (newsrc !== src) {
+				.replace(/:([^/?]+)(.*)?$/, "$2?name=$1")
+				.replace(/(\?.*)\?name=/, "$1&name=");
+			if (newsrc !== src)
+				return newsrc;
+
+			// replace format=jpg to .jpg
+			newsrc = src
+				.replace(/(\/[^/.?]+)\?(.*?&)?format=([^&]*)(.*?$)?/, "$1.$3?$2$4")
+				.replace(/\?&/, "?")
+				.replace(/[?&]+$/, "");
+			if (newsrc !== src)
+				return newsrc;
+
+			// try various names (thanks to rEnr3n for reporting): https://github.com/qsniyg/maxurl/issues/165
+			// https://pbs.twimg.com/media/Bu4G7k3CcAA6Nx7.jpg
+			//   https://pbs.twimg.com/media/Bu4G7k3CcAA6Nx7.jpg?name=medium -- same size, anything higher doesn't work
+			var names = ["orig", "4096x4096", "large", "medium"];
+			var obj = [];
+
+			var name = src.match(/[?&]name=([^&]+)/);
+			if (name)
+				name = name[1];
+			else
+				name = null;
+
+			// don't downscale
+			var end = names.indexOf(name);
+			if (end < 0)
+				end = names.length;
+
+			for (var i = 0; i < end; i++) {
+				newsrc = src.replace(/(\?.*)?$/, "?name=" + names[i]);
+
+				// don't do this, this doesn't work for .jpg?format=jpg&name=...
+				if (false) {
+					newsrc = src.replace(/([?&]name=)[^&]+(&.*)?$/, "$1" + names[i] + "$2");
+					if (newsrc === src)
+						newsrc = src
+							.replace(/(\?.*)?$/, "$1?name=" + names[i])
+							.replace(/(\?.*)\?name=/, "$1&name=");
+				}
+
 				if (newsrc.match(/\.png(\?.*)?$/)) {
-					return [newsrc, newsrc.replace(/\.png(\?.*)?$/, ".jpg$1")];
+					obj.push(newsrc);
+					obj.push(newsrc.replace(/\.png(\?.*)?$/, ".jpg$1"));
 				} else {
-					return newsrc;
+					// Prefer png over jpg (compression)
+					obj.push(newsrc.replace(/\.jpg(\?.*)?$/, ".png$1"));
+					obj.push(newsrc);
 				}
 			}
+
+			obj.push(src);
+
+			return obj;
 		}
 
 		if (domain === "pbs.twimg.com" &&
