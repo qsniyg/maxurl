@@ -14469,7 +14469,8 @@ var $$IMU_EXPORT$$;
 				.replace(/\/img-master\//, "/img-original/")
 				.replace(/(\/[0-9]+_p[0-9]+)_[^/]*(\.[^/.]*)$/, "$1$2");
 
-			var referer_url = "https://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + src.replace(/.*\/([0-9]+)_[^/]*$/, "$1");
+			//var referer_url = "https://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + src.replace(/.*\/([0-9]+)_[^/]*$/, "$1");
+			var referer_url = "https://www.pixiv.net/artworks/" + src.replace(/.*\/([0-9]+)_[^/]*$/, "$1");
 			return fillobj_urls(add_extensions(newsrc), {
 				headers: {
 					Referer: referer_url
@@ -46299,6 +46300,14 @@ var $$IMU_EXPORT$$;
 			// https://files.mastodon.social/media_attachments/files/000/272/420/small/70972b69912d1e4d.png
 			//   https://files.mastodon.social/media_attachments/files/000/272/420/original/70972b69912d1e4d.png
 			return src.replace(/\/[a-z]+\/([0-9a-f]+\.[^/.]*)(?:[?#].*)?$/, "/original/$1");
+		}
+
+		if (/\/wp-content\/+themes\/+[^/]+\/+functions\/+resize_ext\.php\?(?:.*&)?image=http/.test(src)) {
+			// https://buholmen.no/wp-content/themes/buholmen/functions/resize_ext.php?image=https://images.finncdn.no/mmo/2016/12/vertical-4/07/9/785/970/49_1045558554_xl.jpg&width=1140
+			//   https://images.finncdn.no/dynamic/900x600d/2016/12/vertical-4/07/9/785/970/49_1045558554.jpg
+			newsrc = src.replace(/.*\/wp-content\/+themes\/+[^/]+\/+functions\/+resize_ext\.php\?(?:.*&)?image=(http[^&]*).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
 		}
 
 
