@@ -2584,6 +2584,76 @@ var $$IMU_EXPORT$$;
 		});
 	};
 
+	common_functions.wix_image_info = function(url) {
+		// https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/06653b48-43c3-403f-9d72-c1c5519db560/ddl6lkp-cde05779-5a0a-47d8-8d43-f31a063fd30e.jpg/v1/fill/w_623,h_350,q_100/into_the_light_by_pajunen_ddl6lkp-350t.jpg
+
+		var match = url.match(/^[a-z]+:\/\/[^/]+\/+f\/+[-0-9a-f]{20,}\/+[^/]+(?:[?#].*)?$/);
+		if (match) {
+			return {
+				original: true
+			};
+		}
+
+		var match = url.match(/^[a-z]+:\/\/[^/]+\/+f\/+[-0-9a-f]{20,}\/+[^/]+\/+v1\/+fill\/+([^/]+)\/+[^/]+(?:[?#].*)?$/);
+		if (!match) {
+			return null;
+		}
+
+		var infostr = match[1];
+		var splitted = infostr.split(",");
+
+		var obj = {};
+
+		for (var i = 0; i < splitted.length; i++) {
+			var name = splitted[i].replace(/_.*$/, "");
+			var value = splitted[i].replace(/^.*?_/, "");
+
+			if (value.match(/^[-0-9.]+$/))
+				value = parseFloat(value);
+
+			obj[name] = value;
+		}
+
+		if (obj.w && obj.h) {
+			obj.pixels = obj.w * obj.h;
+		}
+
+		return obj;
+	};
+
+	common_functions.wix_compare = function(url1, url2) {
+		if (!url2)
+			return url1;
+
+		var info1 = common_functions.wix_image_info(url1);
+		var info2 = common_functions.wix_image_info(url2);
+
+		if (!info1 || !info2)
+			return null;
+
+		if (info1.original)
+			return url1;
+
+		if (info2.original)
+			return url2;
+
+		if (info1.pixels && info2.pixels) {
+			if (info1.pixels > info2.pixels)
+				return url1;
+			else if (info2.pixels > info1.pixels)
+				return url2;
+			else if (info1.q && info2.q) {
+				if (info1.q > info2.q) {
+					return url1;
+				} else if (info2.q > info1.q) {
+					return url2;
+				}
+			}
+		}
+
+		return null;
+	};
+
 	common_functions.get_testcookie_cookie = function(options, site, cb) {
 		var cache_key = "testcookie_cookie:" + site;
 		var do_request = options.do_request;
@@ -22182,6 +22252,35 @@ var $$IMU_EXPORT$$;
 					if (!src.match(/:\/\/[^/]*\/fake_image\//))
 						obj.url = src;
 
+					var deviationid = result.finalUrl.replace(/.*-([0-9]+)(?:[?#].*)?$/, "$1");
+					if (deviationid === result.finalUrl)
+						deviationid = null;
+
+					// Support the redesign
+					var initialstate = result.responseText.match(/window\.__INITIAL_STATE__\s*=\s*JSON\.parse\((".*")\);\s*(?:window\.|<\/script)/);
+					if (initialstate && deviationid) {
+						initialstate = JSON_parse(JSON_parse(initialstate[1]));
+						//console_log(initialstate);
+
+						try {
+							var deviation = initialstate["@@entities"].deviation[deviationid];
+							//console_log(deviation);
+
+							var maxurl = obj.url;
+
+							for (var i = deviation.files.length - 1; i >= 0; i--) {
+								var current = deviation.files[i];
+								var newurl = common_functions.wix_compare(current.src, maxurl);
+								if (newurl === current.src)
+									maxurl = newurl;
+							}
+
+							obj.url = maxurl;
+						} catch (e) {
+							console_error(e);
+						}
+					}
+
 					try {
 						var hrefre = /href=["'](https?:\/\/www\.deviantart\.com\/+download\/+[0-9]+\/+[^/>'"]*?)["']/;
 						var match = result.responseText.match(hrefre);
@@ -22189,6 +22288,7 @@ var $$IMU_EXPORT$$;
 							console_error("No public download for " + src);
 
 							// This will occasionally scale down the image
+							// Broken for the site redesign
 							if (false) {
 								try {
 									var hrefre = /<img[^>]*?src=["'](https?:\/\/(?:images-wixmp)[^>'"]*?)["'][^>]*class=["']dev-content-/g;
@@ -22219,12 +22319,19 @@ var $$IMU_EXPORT$$;
 
 										if (maxurl &&
 											maxurl.replace(/\?.*/) !== src.replace(/\?.*/)) {
-											obj.url = maxurl;
-											obj.likely_broken = false;
-											options.cb(obj);
-											return;
+											var compare = common_functions.wix_compare(maxurl, src);
+
+											if (compare === maxurl) {
+												obj.url = maxurl;
+												obj.likely_broken = false;
+												options.cb(obj);
+												return;
+											}
 										}
+									} else {
+										console_error("No image found (this is likely a bug)");
 									}
+
 									return options.cb(obj);
 								} catch (e) {
 									console_error(e);
