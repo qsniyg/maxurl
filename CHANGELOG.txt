@@ -1,3 +1,19 @@
+0.11.14
+
+New features:
+
+ * Support for ~15 new websites (using ~10 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including Twitter and DeviantART)
+
+Bugfixes:
+
+ * Cookies are now properly sent for XHR under later Firefox versions (fixes Instagram and many others)
+
+---
+
 0.11.13
 
 New features:
