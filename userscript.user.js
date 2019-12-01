@@ -26454,6 +26454,9 @@ var $$IMU_EXPORT$$;
 			// http://japxxx.pro/dt2/xxx/5e1970/th_06.jpg
 			//   http://japxxx.pro/dt2/xxx/5e1970/06.jpg
 			domain_nowww === "japxxx.pro" ||
+			// http://hornybabepics.com/gallery/ade4e8/th_01.jpg
+			//   http://hornybabepics.com/gallery/ade4e8/01.jpg
+			domain_nowww === "hornybabepics.com" ||
 			// http://teengalleries.mobi/g/d55bf2/th_02.jpg
 			//   http://teengalleries.mobi/g/d55bf2/02.jpg
 			domain_nowww === "teengalleries.mobi") {
@@ -31756,7 +31759,9 @@ var $$IMU_EXPORT$$;
 			//   https://cdn1.lockerdome.com/uploads/53e56d2b058e011a1aa13ed011161832cae7d9735f8a1e9333b688fd7c66fdae_:original
 			// https://cdn1.lockerdome.com/uploads/7b55b7b64d31e9fe0a14959447c782a855745b7a1129025014c2badbacf82e19_facebook -- 3264x2448
 			//   https://cdn1.lockerdome.com/uploads/7b55b7b64d31e9fe0a14959447c782a855745b7a1129025014c2badbacf82e19_:original -- 3264x2448
-			return src.replace(/(\/+uploads\/+[0-9a-f]+)_:?[a-z]+(?:[?#].*)?$/, "$1_:original");
+			// https://cdn1.lockerdome.com/uploads/c109b254721cc16258b9dfa563f91be385ca8815f55db22cd7e97c6ae0617bc8_thumb_medium
+			//   https://cdn1.lockerdome.com/uploads/c109b254721cc16258b9dfa563f91be385ca8815f55db22cd7e97c6ae0617bc8_:original
+			return src.replace(/(\/+uploads\/+[0-9a-f]+)_:?[_a-z]+(?:[?#].*)?$/, "$1_:original");
 		}
 
 		if (domain === "images.headlines.pw") {
@@ -33693,7 +33698,10 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/galleries-thumbs\/+/, "/galleries/");
 		}
 
-		if (domain_nowww === "yourdailygirls.com") {
+		if (domain_nowww === "yourdailygirls.com" ||
+			// https://www.girlznation.com/galleries/keira_croft_zishy/keira_croft_zishy_1-tn.jpg
+			//   https://www.girlznation.com/galleries/keira_croft_zishy/keira_croft_zishy_1.jpg
+			domain_nowww === "girlznation.com") {
 			// http://www.yourdailygirls.com/galleries/ftv-girls/ftv-girls-nina-north-public-duo/ftv-girls-1-tn.jpg
 			//   http://www.yourdailygirls.com/galleries/ftv-girls/ftv-girls-nina-north-public-duo/ftv-girls-1.jpg
 			return src.replace(/(\/galleries\/.*\/[^/]*)-tn(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
@@ -34499,6 +34507,9 @@ var $$IMU_EXPORT$$;
 			// https://www.hoodtube.com/images/galleries/0913/11158/0189d2e127c683b81b3db9c02f29c09b-t.jpg
 			//   https://www.hoodtube.com/images/galleries/0913/11158/0189d2e127c683b81b3db9c02f29c09b.jpg
 			domain_nowww === "hoodtube.com" ||
+			// http://img1.swapsmut.com/images/galleries/0696/52494/f507af31248f0185645e3098e705879e-t.jpg
+			//   http://img1.swapsmut.com/images/galleries/0696/52494/f507af31248f0185645e3098e705879e.jpg
+			domain_nosub === "swapsmut.com" ||
 			// https://cdn1.images.asianpornmovies.com/galleries/0905/73447/2f9c15636603082eab5608da897d62ee-t.jpg
 			//   https://cdn1.images.asianpornmovies.com/galleries/0905/73447/2f9c15636603082eab5608da897d62ee.jpg
 			domain_nosub === "asianpornmovies.com") {
@@ -42675,6 +42686,12 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/pictures\/+[0-9]+\/+[^/]+\/+)thumbs\/+/, "$1pics/");
 		}
 
+		if (domain === "images.hqseek.com") {
+			// https://images.hqseek.com/pictures/legs9/thumbs/001.jpg
+			//   https://images.hqseek.com/pictures/legs9/001.jpg
+			return src.replace(/(\/pictures\/+[^/]+\/+)thumbs\/+/, "$1");
+		}
+
 		if (domain_nosub === "scoreuniverse.com") {
 			// https://cdn77.scoreuniverse.com/18eighteen/gallys/images_content/AliceMarch_28734/01_tn.jpg
 			//   https://cdn77.scoreuniverse.com/18eighteen/gallys/images_content/AliceMarch_28734/01.jpg
@@ -44350,6 +44367,12 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/screenshots\/+[^/]+\/+)thumbs\/+/, "$1");
 		}
 
+		if (domain_nowww === "perfect-girls-net.com") {
+			// http://perfect-girls-net.com/victoria_justice/thumbs/victoria_justice_005.jpg
+			//   http://perfect-girls-net.com/victoria_justice/victoria_justice_005.jpg
+			return src.replace(/\/thumbs\/+([^/]+\.[^/.]*)(?:[?#].*)?$/, "/$1");
+		}
+
 		if (domain_nowww === "mobygames.com") {
 			// https://www.mobygames.com/images/shots/s/352934-saints-row-2-windows-screenshot-saints-row-2-isn-t-for-pussies.jpg
 			//   https://www.mobygames.com/images/shots/t/352934-saints-row-2-windows-screenshot-saints-row-2-isn-t-for-pussies.jpg
@@ -45399,6 +45422,30 @@ var $$IMU_EXPORT$$;
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+l\/+([^/.?&]{30,})(?:[?#].*)?$/, "$1");
 			if (newsrc !== src)
 				return base64_decode(newsrc);
+		}
+
+		if (domain_nowww === "pinkfineart.com") {
+			// https://www.pinkfineart.com/galleries/hot-legs-and-feet/9857-nikki_fox-sultry_sauna-082818/pthumbs/001.jpg
+			//   https://www.pinkfineart.com/galleries/hot-legs-and-feet/9857-nikki_fox-sultry_sauna-082818/full/001.jpg
+			return src.replace(/(\/galleries\/+.*\/)pthumbs\/+/, "$1full/");
+		}
+
+		if (domain_nosub === "x69.biz") {
+			// https://footsiebabes.x69.biz/thumb/fb/v/2780.jpg
+			//   https://footsiebabes.x69.biz/full/fb/v/2780.jpg
+			return src.replace(/(:\/\/[^/]+\/+)thumb(\/+fb\/+v\/+[0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1full$2")
+		}
+
+		if (domain_nowww === "dudepins.com") {
+			// https://dudepins.com/images/socialpinboard/thumbnails/WxwSP4c.jpg
+			//   https://dudepins.com/images/socialpinboard/WxwSP4c.jpg
+			return src.replace(/(\/images\/+socialpinboard\/+)thumbnails\/+/, "$1");
+		}
+
+		if (domain_nosub === "s3c.es") {
+			// https://s04.s3c.es/imag/_v0/2560x3931/6/6/0/880x_VictoriaJustice.jpg
+			//   https://s04.s3c.es/imag/_v0/2560x3931/6/6/0/VictoriaJustice.jpg
+			return src.replace(/(\/imag\/+_v[0-9]+\/+[0-9]+x[0-9]+\/+(?:[0-9]\/+){3})[0-9]+x_/, "$1");
 		}
 
 
