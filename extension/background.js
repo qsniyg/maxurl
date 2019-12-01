@@ -53,6 +53,16 @@ var stringify_headers = function(headers) {
 	return newheaders.join("\r\n");
 };
 
+var create_cookieheader = function(cookies) {
+	var array = [];
+
+	for (var i = 0; i < cookies.length; i++) {
+		array.push(cookies[i].name + "=" + cookies[i].value);
+	}
+
+	return array.join("; ");
+};
+
 var do_request = function(request) {
 	debug("do_request", request);
 
@@ -66,7 +76,10 @@ var do_request = function(request) {
 		xhr.responseType = request.responseType;
 
 	var headers = request.headers || {};
+	var cookie_overridden = false;
 	for (var header in headers) {
+		if (header.toLowerCase() == "cookie")
+			cookie_overridden = true;
 		xhr.setRequestHeader("IMU--" + header, headers[header]);
 	}
 
@@ -176,7 +189,14 @@ var do_request = function(request) {
 		xhr: xhr
 	};
 
-	xhr.send(request.data);
+	if (!cookie_overridden) {
+		get_cookies(request.url, function(cookies) {
+			xhr.setRequestHeader("IMU--Cookie", create_cookieheader(cookies));
+			xhr.send(request.data);
+		});
+	} else {
+		xhr.send(request.data);
+	}
 };
 
 // Modify request headers if needed
