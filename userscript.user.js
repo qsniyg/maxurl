@@ -46328,6 +46328,8 @@ var $$IMU_EXPORT$$;
 		// MediaWiki
 		// https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Bundesarchiv_-_Wikimedia_Deutschland_-_Pressekonferenz_%285999%29.jpg/220px-Bundesarchiv_-_Wikimedia_Deutschland_-_Pressekonferenz_%285999%29.jpg
 		//   https://upload.wikimedia.org/wikipedia/commons/8/83/Bundesarchiv_-_Wikimedia_Deutschland_-_Pressekonferenz_%285999%29.jpg
+		// https://upload.wikimedia.org/wikipedia/commons/thumb/archive/a/a0/20131028161436%21Pumpkipedia-47.jpg
+		//   https://upload.wikimedia.org/wikipedia/commons/archive/a/a0/20131028161436%21Pumpkipedia-47.jpg
 		if (domain === "upload.wikimedia.org" ||
 			// https://www.generasia.com/w/images/thumb/4/4d/aiko_-_Shimetta_Natsu_no_Hajimari_promo.jpg/500px-aiko_-_Shimetta_Natsu_no_Hajimari_promo.jpg
 			//   https://www.generasia.com/w/images/4/4d/aiko_-_Shimetta_Natsu_no_Hajimari_promo.jpg
@@ -46344,7 +46346,7 @@ var $$IMU_EXPORT$$;
 			// http://oyster.ignimgs.com/mediawiki/apis.ign.com/best-of-2017-awards/thumb/8/86/Anime.jpg/610px-Anime.jpg
 			//   http://oyster.ignimgs.com/mediawiki/apis.ign.com/best-of-2017-awards/8/86/Anime.jpg
 			src.match(/\/thumb\/+[0-9a-f]\/+[0-9a-f]{2}\/+[^/]*\.[^/]*\/+[0-9]+px-[^/]*(?:[?#].*)?$/)) {
-			newsrc = src.replace(/\/(?:thumb\/+)?(.)\/+(..)\/+([^/]*)\/+[0-9]+px-.*?$/, "/$1/$2/$3");
+			newsrc = src.replace(/\/(?:thumb\/+(archive\/+)?)?(.)\/+(..)\/+([^/]*)\/+[0-9]+px-.*?$/, "/$1$2/$3/$4");
 			if (newsrc !== src)
 				return newsrc;
 		}
