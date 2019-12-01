@@ -63,8 +63,8 @@ var create_cookieheader = function(cookies) {
 	return array.join("; ");
 };
 
-var do_request = function(request) {
-	debug("do_request", request);
+var do_request = function(request, sender) {
+	debug("do_request", request, sender);
 
 	var id = get_random_id();
 	var method = request.method || "GET";
@@ -193,7 +193,7 @@ var do_request = function(request) {
 		get_cookies(request.url, function(cookies) {
 			xhr.setRequestHeader("IMU--Cookie", create_cookieheader(cookies));
 			xhr.send(request.data);
-		});
+		}, { tabid: sender.tab.id });
 	} else {
 		xhr.send(request.data);
 	}
@@ -639,11 +639,36 @@ chrome.webRequest.onResponseStarted.addListener(function(details) {
 // Currently unused, will be used later if the Cookie header needs to be modified
 // Originally this was intended for submitting cookies to URLs,
 //   but not including the "Cookie" header works just as well.
-function get_cookies(url, cb) {
-	chrome.cookies.getAll({url: url}, function(cookies) {
-		debug("get_cookies: " + url, cookies);
-		cb(JSON.parse(JSON.stringify(cookies)));
-	});
+function get_cookies(url, cb, options) {
+	if (!options) options = {};
+
+	var end = function (store) {
+		chrome.cookies.getAll({ url: url, storeId: store }, function (cookies) {
+			debug("get_cookies: " + url, cookies, store);
+			cb(JSON.parse(JSON.stringify(cookies)));
+		});
+	};
+
+	if (options.tabid) {
+		// TODO: cache
+		chrome.cookies.getAllCookieStores(function(stores) {
+			var store = null;
+			for (var i = 0; i < stores.length; i++) {
+				if (stores[i].tabIds.indexOf(options.tabid) >= 0) {
+					store = stores[i].id;
+					break;
+				}
+			}
+
+			if (store) {
+				return end(store);
+			} else {
+				return end();
+			}
+		});
+	} else {
+		end();
+	}
 }
 
 // Message handler
@@ -665,7 +690,7 @@ chrome.runtime.onMessage.addListener((message, sender, respond) => {
 			});
 		};
 
-		do_request(message.data);
+		do_request(message.data, sender);
 		return true;
 	} else if (message.type === "redirect") {
 		redirects[sender.tab.id] = message.data;
