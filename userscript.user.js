@@ -3321,6 +3321,8 @@ var $$IMU_EXPORT$$;
 			// http://menu.mt.co.kr/moneyweek/thumb/2018/03/09/06/2018030917238012410_1.jpg (found on sidebar)
 			//   http://menu.mt.co.kr/moneyweek/thumb/2018/03/09/00/2018030917238012410_1.jpg
 			// http://menu.mt.co.kr/moneyweek/thumb/2017/06/24/06/2017062410078087905_1.jpg - larger than 00, but looks scaled
+			// https://menu.mt.co.kr/theleader/thumb/2019/12/06/2019120212067878586_1.jpg
+			//   https://menu.mt.co.kr/theleader/thumb/2019/12/00/2019120212067878586_1.jpg
 
 			// http://menu.mt.co.kr/moneyweek/thumb/2017/05/26/00/2017052617068063683_1.jpg -- works
 			// http://menu.mt.co.kr/moneyweek/thumb/2017/05/23/00/2017052310108026652_1.jpg -- doesn't
@@ -3335,15 +3337,16 @@ var $$IMU_EXPORT$$;
 					bad: "mask"
 				};
 
-			var obj = src.match(/\/thumb\/(?:[0-9]+\/){3}([0-9]+)\//);
+			var obj = src.match(/\/thumb\/+(?:[0-9]+\/+){2,3}([0-9]+)\/[0-9]{10,}_/);
 			if (obj && obj[1] !== "00") {
-				var obj1_str = src.replace(/.*\/thumb\/([0-9]+\/[0-9]+\/[0-9]+\/).*/, "$1").replace(/\//g, "");
+				var obj1_str = src.replace(/.*\/thumb\/+([0-9]+\/+[0-9]+\/+[0-9]+\/).*/, "$1").replace(/\//g, "");
 				var obj1 = parseInt(obj1_str);
 				//console_log(obj1_str);
-				if (obj1 >= 20170526)
-					src = src.replace(/(\/thumb\/(?:[0-9]+\/){3})[0-9]+\//, "$100/");
-				else
-					src = src.replace(/(\/thumb\/(?:[0-9]+\/){3})[0-9]+\//, "$106/");
+				var num = "00";
+				if (obj1 < 20170526)
+					num = "06";
+
+				src = src.replace(/(\/thumb\/+(?:[0-9]+\/+){2,3})[0-9]+(\/+[0-9]{10,}_)/, "$1" + num + "$2");
 			}
 
 			return src
@@ -42178,6 +42181,12 @@ var $$IMU_EXPORT$$;
 			// http://www.newdaily.co.kr/site/data/html/2010/04/25/2010042500038.html
 			//   http://image.newdaily.co.kr/site/data/img/2010/04/25/2010042500038_0.jpg -- 3872x2592
 			//   http://image.newdaily.co.kr/site/data/img/2010/04/25/2010042500038_1.jpg -- 580x388 (different image)
+			// http://image.newdaily.co.kr/site/data/thumb/2019/11/08/2019110800093_0_thumb.jpg
+			//   http://image.newdaily.co.kr/site/data/img/2019/11/08/2019110800093_0.jpg
+			newsrc = src.replace(/(\/site\/+data\/+)thumb(\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}[0-9]{10,}_[0-9]+)_thumb\./, "$1img$2.")
+			if (newsrc !== src)
+				return newsrc;
+
 			match = src.match(/\/site\/+data\/+img\/+([0-9]{4}\/+(?:[0-9]{2}\/+){2}[0-9]{10,})_[0-9]+\./);
 			if (match) {
 				return {
