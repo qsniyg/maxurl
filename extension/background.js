@@ -193,7 +193,7 @@ var do_request = function(request, sender) {
 		get_cookies(request.url, function(cookies) {
 			xhr.setRequestHeader("IMU--Cookie", create_cookieheader(cookies));
 			xhr.send(request.data);
-		}, { tabid: sender.tab.id });
+		}, { tabid: sender.tab.id, store: sender.tab.cookieStoreId });
 	} else {
 		xhr.send(request.data);
 	}
@@ -649,7 +649,7 @@ function get_cookies(url, cb, options) {
 		});
 	};
 
-	if (options.tabid) {
+	if (options.tabid && !options.store) {
 		// TODO: cache
 		chrome.cookies.getAllCookieStores(function(stores) {
 			var store = null;
@@ -667,7 +667,7 @@ function get_cookies(url, cb, options) {
 			}
 		});
 	} else {
-		end();
+		end(options.store);
 	}
 }
 
