@@ -207,6 +207,11 @@ var $$IMU_EXPORT$$;
 			if (!data.onerror)
 				data.onerror = data.onload;
 
+			// For cross-origin cookies
+			if (!("withCredentials" in data)) {
+				data.withCredentials = true;
+			}
+
 			return do_request_raw(data);
 		};
 	}
