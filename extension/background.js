@@ -101,6 +101,7 @@ var do_request = function(request, sender) {
 			responseHeaders: xhr.getAllResponseHeaders(),
 			responseType: xhr.responseType,
 			status: xhr.status || 200, // file:// returns 0, tracking protection also returns 0
+			realStatus: xhr.status,
 			statusText: xhr.statusText
 		};
 

@@ -47530,6 +47530,12 @@ var $$IMU_EXPORT$$;
 		return newlist.join("+");
 	};
 
+	var check_tracking_blocked = function(result) {
+		if (result.realStatus === 0 && result.statusText === "" && result.responseText === "")
+			return true;
+		return false;
+	};
+
 	var check_image = function(obj, err_cb, ok_cb) {
 		if (obj instanceof Array) {
 			obj = obj[0];
@@ -47651,7 +47657,8 @@ var $$IMU_EXPORT$$;
 							return;
 						}
 
-						if (resp.finalUrl === "" && resp.status === 0) {
+						if ((resp.finalUrl === "" && resp.status === 0) ||
+							check_tracking_blocked(resp)) {
 							// error loading image (IP doesn't exist, etc.), ignore
 							err_txt = "Error: status == 0";
 							if (err_cb) {
