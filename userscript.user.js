@@ -51882,13 +51882,15 @@ var $$IMU_EXPORT$$;
 			next_img();
 		}
 
-		register_menucommand("Replace images", function() {
-			replace_images({
+		var replace_images_full = function() {
+			return replace_images({
 				replace_imgs: settings.replaceimgs_replaceimgs,
 				add_links: settings.replaceimgs_addlinks,
 				replace_links: settings.replaceimgs_replacelinks
 			});
-		});
+		};
+
+		register_menucommand("Replace images", replace_images_full);
 
 		var highlight_images = function() {
 			var images = document.querySelectorAll("img");
@@ -52114,7 +52116,7 @@ var $$IMU_EXPORT$$;
 					trigger_popup(true);
 				} else if (message.type === "popupaction") {
 					if (message.data.action === "replace_images") {
-						replace_images();
+						replace_images_full();
 					} else if (message.data.action === "highlight_images") {
 						highlight_images();
 					}
