@@ -6869,6 +6869,8 @@ var $$IMU_EXPORT$$;
 			domain === "qimage.owhat.cn" ||
 			// https://cdn.ruguoapp.com/7b7fbe6f0a56510160ffe58bbdb9f76a?imageMogr2/auto-orient/thumbnail/1000x2000%3E/quality/70/interlace/1
 			domain === "cdn.ruguoapp.com" ||
+			// http://user-assets.sxlcdn.com/images/87741/FnNRSp9wPHG_XCQBPjpiPs6vGwlq.jpg?imageMogr2/strip/auto-orient/thumbnail/1920x9000%3E/quality/90!/interlace/1/format/jpg
+			(domain === "user-assets.sxlcdn.com" && src.indexOf("/images/") >= 0) ||
 			// https://img.ksl.com/slc/2657/265775/26577563.jpg?filter=ksl/img143
 			domain === "img.ksl.com" ||
 			// https://img3.tapimg.com/avatars/1e81533319ff240f73fa29a04ae8b769.jpg?imageMogr2/auto-orient/strip/thumbnail/!300x300r/gravity/Center/crop/300x300/format/jpg/interlace/1/quality/80
@@ -32159,7 +32161,10 @@ var $$IMU_EXPORT$$;
 				.replace(/(\/+uploaded\/+[a-z]+\/+[0-9]{4}-[0-9]{2}\/+[0-9]+)_[a-z]+(\.[^/.]*)$/, "$1$2");
 		}
 
-		if (domain === "t.nhentai.net") {
+		if (domain === "t.nhentai.net" ||
+			// https://t.nyahentai.net/galleries/1527796/1t.jpg
+			//   https://i.nyahentai.net/galleries/1527796/1.jpg
+			domain === "t.nyahentai.net") {
 			// https://t.nhentai.net/galleries/1338652/2t.jpg
 			//   https://i.nhentai.net/galleries/1338652/2.jpg
 			// maybe this as well?
