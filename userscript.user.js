@@ -44,7 +44,7 @@ var $$IMU_EXPORT$$;
 	// Don't 'use strict', as it prevents nested functions
 	//'use strict';
 
-	var _nir_debug_ = false;
+	var _nir_debug_ = true;
 
 	if (_nir_debug_) {
 		_nir_debug_ = {
@@ -132,6 +132,11 @@ var $$IMU_EXPORT$$;
 			//   https://github.com/erosman/support/issues/98#issuecomment-534671229
 			// We currently have to rely on this hack
 			userscript_manager = "FireMonkey";
+			gm_info = {scriptHandler: userscript_manager};
+		}
+
+		if (_nir_debug_ && false) {
+			console.log("GM_info", gm_info);
 		}
 	}
 
@@ -256,6 +261,12 @@ var $$IMU_EXPORT$$;
 		}
 	}
 
+	var check_tracking_blocked = function(result) {
+		if ((result.status === 0 || result.realStatus === 0) && result.statusText === "" && result.responseText === "")
+			return true;
+		return false;
+	};
+
 	var do_request = null;
 	if (do_request_raw) {
 		do_request = function(data) {
@@ -276,8 +287,7 @@ var $$IMU_EXPORT$$;
 				var real_onerror = data.onerror;
 
 				var finalcb = function(resp, iserror) {
-					// TODO: improve
-					if (resp.realStatus === 0) {
+					if (check_tracking_blocked(resp)) {
 						data.onload = real_onload;
 						data.onerror = real_onerror;
 
@@ -47636,12 +47646,6 @@ var $$IMU_EXPORT$$;
 		}
 
 		return newlist.join("+");
-	};
-
-	var check_tracking_blocked = function(result) {
-		if (result.realStatus === 0 && result.statusText === "" && result.responseText === "")
-			return true;
-		return false;
 	};
 
 	var check_image = function(obj, err_cb, ok_cb) {
