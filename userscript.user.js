@@ -44,7 +44,7 @@ var $$IMU_EXPORT$$;
 	// Don't 'use strict', as it prevents nested functions
 	//'use strict';
 
-	var _nir_debug_ = true;
+	var _nir_debug_ = false;
 
 	if (_nir_debug_) {
 		_nir_debug_ = {
