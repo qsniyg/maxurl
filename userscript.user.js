@@ -2680,14 +2680,15 @@ var $$IMU_EXPORT$$;
 	common_functions.wix_image_info = function(url) {
 		// https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/06653b48-43c3-403f-9d72-c1c5519db560/ddl6lkp-cde05779-5a0a-47d8-8d43-f31a063fd30e.jpg/v1/fill/w_623,h_350,q_100/into_the_light_by_pajunen_ddl6lkp-350t.jpg
 
-		var match = url.match(/^[a-z]+:\/\/[^/]+\/+f\/+[-0-9a-f]{20,}\/+[^/]+(?:[?#].*)?$/);
+		// https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/intermediary/f/e04c7e93-4504-4dbe-91f9-fd353fc145f2/dcx503r-30c02b72-c26d-4732-9c9f-14fcbc633aaa.jpg
+		var match = url.match(/^[a-z]+:\/\/[^/]+\/+(?:intermediary\/+)?f\/+[-0-9a-f]{20,}\/+[^/]+(?:[?#].*)?$/);
 		if (match) {
 			return {
 				original: true
 			};
 		}
 
-		var match = url.match(/^[a-z]+:\/\/[^/]+\/+f\/+[-0-9a-f]{20,}\/+[^/]+\/+v1\/+fill\/+([^/]+)\/+[^/]+(?:[?#].*)?$/);
+		var match = url.match(/^[a-z]+:\/\/[^/]+\/+(?:intermediary\/+)?f\/+[-0-9a-f]{20,}\/+[^/]+\/+v1\/+fill\/+([^/]+)\/+[^/]+(?:[?#].*)?$/);
 		if (!match) {
 			return null;
 		}
@@ -2746,6 +2747,141 @@ var $$IMU_EXPORT$$;
 
 		return null;
 	};
+
+	common_functions.deviantart_fullimage = function(options, src, id, cb) {
+		common_functions.deviantart_page_from_id(options.do_request, id, function(result) {
+			if (!result) {
+				return cb(null);
+			}
+
+			var obj = {
+				url: null,
+				waiting: false,
+				extra: {
+					page: result.finalUrl
+				}
+			};
+
+			if (!src.match(/:\/\/[^/]*\/fake_image\//))
+				obj.url = src;
+
+			var deviationid = result.finalUrl.replace(/.*-([0-9]+)(?:[?#].*)?$/, "$1");
+			if (deviationid === result.finalUrl)
+				deviationid = null;
+
+			// Support the redesign
+			var initialstate = result.responseText.match(/window\.__INITIAL_STATE__\s*=\s*JSON\.parse\((".*")\);\s*(?:window\.|<\/script)/);
+			if (initialstate && deviationid) {
+				initialstate = JSON_parse(JSON_parse(initialstate[1]));
+				//console_log(initialstate);
+
+				try {
+					var deviation = initialstate["@@entities"].deviation[deviationid];
+					//console_log(deviation);
+
+					var maxurl = obj.url;
+
+					for (var i = deviation.files.length - 1; i >= 0; i--) {
+						var current = deviation.files[i];
+						var newurl = common_functions.wix_compare(current.src, maxurl);
+						if (newurl === current.src)
+							maxurl = newurl;
+					}
+
+					obj.url = maxurl;
+				} catch (e) {
+					console_error(e);
+				}
+			}
+
+			try {
+				var hrefre = /href=["'](https?:\/\/www\.deviantart\.com\/+download\/+[0-9]+\/+[^/>'"]*?)["']/;
+				var match = result.responseText.match(hrefre);
+				if (!match) {
+					console_error("No public download for " + src);
+
+					// This will occasionally scale down the image
+					// Broken for the site redesign
+					if (false) {
+						try {
+							var hrefre = /<img[^>]*?src=["'](https?:\/\/(?:images-wixmp)[^>'"]*?)["'][^>]*class=["']dev-content-/g;
+							var match = result.responseText.match(hrefre);
+							if (match) {
+								var maxres = 0;
+								var maxurl = null;
+								for (var i = 0; i < match.length; i++) {
+									var whmatch = match[i].match(/width=["']?([0-9]+)/);
+									var oururl = match[i].match(/\ssrc=['"](http[^'"]*)/);
+									if (!oururl)
+										continue;
+									oururl = oururl[1];
+									var base = 0;
+									if (!whmatch)
+										continue;
+									base = parseInt(whmatch[1]);
+									whmatch = match[i].match(/height=["']?([0-9]+)/);
+									if (!whmatch)
+										continue;
+									base *= parseInt(whmatch[1]);
+
+									if (base > maxres) {
+										maxres = maxres;
+										maxurl = oururl;
+									}
+								}
+
+								if (maxurl &&
+									maxurl.replace(/\?.*/) !== src.replace(/\?.*/)) {
+									var compare = common_functions.wix_compare(maxurl, src);
+
+									if (compare === maxurl) {
+										obj.url = maxurl;
+										obj.likely_broken = false;
+										return cb(obj);
+									}
+								}
+							} else {
+								console_error("No image found (this is likely a bug)");
+							}
+
+							return cb(obj)
+						} catch (e) {
+							console_error(e);
+							return cb(obj);
+						}
+					} else {
+						return cb(obj);
+					}
+					return;
+				}
+
+				var href = match[1].replace("&amp;", "&");
+
+				options.do_request({
+					method: "HEAD",
+					url: href,
+					onload: function (result) {
+						if (result.status !== 200 && result.status !== 405) {
+							console_log("Error fetching DeviantArt download link:");
+							console_log(result);
+							return cb(obj);
+						}
+
+						var finalurl = result.finalUrl;
+						if (finalurl.match(/^[a-z]+:\/\/(?:www\.)?deviantart\.com\/+users\/+outgoing\?/)) {
+							finalurl = finalurl.replace(/^[a-z]+:\/\/(?:www\.)?deviantart\.com\/+users\/+outgoing\?/, "");
+						}
+						obj.url = finalurl;
+						obj.likely_broken = false;
+						return cb(obj);
+					}
+				});
+			} catch (e) {
+				console_error(e);
+				return cb(obj);
+			}
+		});
+	}
 
 	common_functions.get_testcookie_cookie = function(options, site, cb) {
 		var cache_key = "testcookie_cookie:" + site;
@@ -9442,20 +9578,18 @@ var $$IMU_EXPORT$$;
 						});
 					}
 
-					var fake_deviantart_image = {
-						url: "http://img.deviantart.net/fake_image/i/0000/000/0/0/_fake_image-" + id + ".jpg",
-						fake: true
-					};
-
-					var obj = [fake_deviantart_image, {
-						url: src,
-						extra: {
-							page: result.finalUrl
+					common_functions.deviantart_fullimage(options, src, id, function(obj) {
+						if (!obj) {
+							obj = {
+								url: src,
+								extra: {
+									page: result.finalUrl
+								}
+							};
 						}
-					}];
 
-					options.cb(obj);
-					//options.cb(fake_deviantart_image);
+						return options.cb(obj);
+					});
 				});
 
 				return {
@@ -22332,140 +22466,7 @@ var $$IMU_EXPORT$$;
 				var id = src.replace(/.*-([0-9a-z]+)\.[^/.]*$/, "$1");
 				//id = parseInt(id, 36) - 28298170368;
 
-				common_functions.deviantart_page_from_id(options.do_request, id, function(result) {
-					if (!result) {
-						return options.cb(null);
-					}
-
-					var obj = {
-						url: null,
-						waiting: false,
-						extra: {
-							page: result.finalUrl
-						}
-					};
-
-					if (!src.match(/:\/\/[^/]*\/fake_image\//))
-						obj.url = src;
-
-					var deviationid = result.finalUrl.replace(/.*-([0-9]+)(?:[?#].*)?$/, "$1");
-					if (deviationid === result.finalUrl)
-						deviationid = null;
-
-					// Support the redesign
-					var initialstate = result.responseText.match(/window\.__INITIAL_STATE__\s*=\s*JSON\.parse\((".*")\);\s*(?:window\.|<\/script)/);
-					if (initialstate && deviationid) {
-						initialstate = JSON_parse(JSON_parse(initialstate[1]));
-						//console_log(initialstate);
-
-						try {
-							var deviation = initialstate["@@entities"].deviation[deviationid];
-							//console_log(deviation);
-
-							var maxurl = obj.url;
-
-							for (var i = deviation.files.length - 1; i >= 0; i--) {
-								var current = deviation.files[i];
-								var newurl = common_functions.wix_compare(current.src, maxurl);
-								if (newurl === current.src)
-									maxurl = newurl;
-							}
-
-							obj.url = maxurl;
-						} catch (e) {
-							console_error(e);
-						}
-					}
-
-					try {
-						var hrefre = /href=["'](https?:\/\/www\.deviantart\.com\/+download\/+[0-9]+\/+[^/>'"]*?)["']/;
-						var match = result.responseText.match(hrefre);
-						if (!match) {
-							console_error("No public download for " + src);
-
-							// This will occasionally scale down the image
-							// Broken for the site redesign
-							if (false) {
-								try {
-									var hrefre = /<img[^>]*?src=["'](https?:\/\/(?:images-wixmp)[^>'"]*?)["'][^>]*class=["']dev-content-/g;
-									var match = result.responseText.match(hrefre);
-									if (match) {
-										var maxres = 0;
-										var maxurl = null;
-										for (var i = 0; i < match.length; i++) {
-											var whmatch = match[i].match(/width=["']?([0-9]+)/);
-											var oururl = match[i].match(/\ssrc=['"](http[^'"]*)/);
-											if (!oururl)
-												continue;
-											oururl = oururl[1];
-											var base = 0;
-											if (!whmatch)
-												continue;
-											base = parseInt(whmatch[1]);
-											whmatch = match[i].match(/height=["']?([0-9]+)/);
-											if (!whmatch)
-												continue;
-											base *= parseInt(whmatch[1]);
-
-											if (base > maxres) {
-												maxres = maxres;
-												maxurl = oururl;
-											}
-										}
-
-										if (maxurl &&
-											maxurl.replace(/\?.*/) !== src.replace(/\?.*/)) {
-											var compare = common_functions.wix_compare(maxurl, src);
-
-											if (compare === maxurl) {
-												obj.url = maxurl;
-												obj.likely_broken = false;
-												options.cb(obj);
-												return;
-											}
-										}
-									} else {
-										console_error("No image found (this is likely a bug)");
-									}
-
-									return options.cb(obj);
-								} catch (e) {
-									console_error(e);
-									return options.cb(obj);
-								}
-							} else {
-								return options.cb(obj);
-							}
-							return;
-						}
-
-						var href = match[1].replace("&amp;", "&");
-
-						options.do_request({
-							method: "HEAD",
-							url: href,
-							onload: function (result) {
-								if (result.status !== 200 && result.status !== 405) {
-									console_log("Error fetching DeviantArt download link:");
-									console_log(result);
-									options.cb(obj);
-									return;
-								}
-
-								var finalurl = result.finalUrl;
-								if (finalurl.match(/^[a-z]+:\/\/(?:www\.)?deviantart\.com\/+users\/+outgoing\?/)) {
-									finalurl = finalurl.replace(/^[a-z]+:\/\/(?:www\.)?deviantart\.com\/+users\/+outgoing\?/, "");
-								}
-								obj.url = finalurl;
-								obj.likely_broken = false;
-								options.cb(obj);
-							}
-						});
-					} catch (e) {
-						console_error(e);
-						options.cb(obj);
-					}
-				});
+				return common_functions.deviantart_fullimage(optoins, src, id, options.cb);
 			})();
 
 			return {
