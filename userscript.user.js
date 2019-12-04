@@ -44,7 +44,7 @@ var $$IMU_EXPORT$$;
 	// Don't 'use strict', as it prevents nested functions
 	//'use strict';
 
-	var _nir_debug_ = false;
+	var _nir_debug_ = true;
 
 	if (_nir_debug_) {
 		_nir_debug_ = {
@@ -135,6 +135,57 @@ var $$IMU_EXPORT$$;
 		}
 	}
 
+	var do_request_browser = function (request) {
+		if (_nir_debug_) {
+			console_log("do_request_browser", request);
+		}
+
+		var method = request.method || "GET";
+
+		var xhr = new XMLHttpRequest();
+		xhr.open(method, request.url, true);
+
+		if (request.responseType)
+			xhr.responseType = request.responseType;
+
+		var do_final = function(override, cb) {
+			var resp = {
+				readyState: xhr.readyState,
+				finalUrl: xhr.responseURL,
+				responseHeaders: xhr.getAllResponseHeaders(),
+				responseType: xhr.responseType,
+				status: xhr.status || 200, // file:// returns 0, tracking protection also returns 0
+				realStatus: xhr.status,
+				statusText: xhr.statusText
+			};
+
+			if (xhr.status === 0 && xhr.responseURL === "")
+				resp.status = 0;
+
+			resp.response = xhr.response;
+
+			try {
+				resp.responseText = xhr.responseText;
+			} catch (e) {}
+
+			cb(resp);
+		};
+
+		xhr.onload = function () {
+			do_final({}, function (resp) {
+				request.onload(resp);
+			});
+		};
+
+		xhr.onerror = function () {
+			do_final({}, function (resp) {
+				request.onerror(resp);
+			});
+		};
+
+		xhr.send(request.data);
+	};
+
 	var do_request_raw = null;
 	if (is_extension) {
 		do_request_raw = function(data) {
@@ -204,12 +255,45 @@ var $$IMU_EXPORT$$;
 	var do_request = null;
 	if (do_request_raw) {
 		do_request = function(data) {
+			if (_nir_debug_) {
+				console_log("do_request", deepcopy(data));
+			}
+
 			if (!data.onerror)
 				data.onerror = data.onload;
 
 			// For cross-origin cookies
 			if (!("withCredentials" in data)) {
 				data.withCredentials = true;
+			}
+
+			if (data.trackingprotection_failsafe) {
+				var real_onload = data.onload;
+				var real_onerror = data.onerror;
+
+				var finalcb = function(resp, iserror) {
+					// TODO: improve
+					if (resp.realStatus === 0) {
+						data.onload = real_onload;
+						data.onerror = real_onerror;
+
+						return do_request_browser(data);
+					} else {
+						if (iserror) {
+							real_onerror(resp);
+						} else {
+							real_onload(resp);
+						}
+					}
+				};
+
+				data.onload = function(resp) {
+					finalcb(resp, false);
+				};
+
+				data.onerror = function(resp) {
+					finalcb(resp, true);
+				};
 			}
 
 			return do_request_raw(data);
@@ -47650,6 +47734,7 @@ var $$IMU_EXPORT$$;
 					method: method,
 					url: url,
 					headers: headers,
+					trackingprotection_failsafe: true,
 					onload: function(resp) {
 						if (_nir_debug_)
 							console_log("(check_image) resp", resp);
@@ -49059,6 +49144,7 @@ var $$IMU_EXPORT$$;
 			url: url,
 			responseType: responseType,
 			headers: headers,
+			trackingprotection_failsafe: true,
 			onload: function(resp) {
 				if (!processing.running) {
 					return cb(null);
