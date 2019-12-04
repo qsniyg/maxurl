@@ -9540,8 +9540,9 @@ var $$IMU_EXPORT$$;
 			// https://www.deviantart.com/f1x-2/art/Nightfall-800934586
 			// https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/db0d85b1-b8b9-4790-bef0-121edb2dce7d/dd8ut2y-b61a578f-28be-496b-8044-559159433e36.jpg/v1/fill/w_1280,h_720,q_75,strp/nightfall_by_f1x_2_dd8ut2y-fullview.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9NzIwIiwicGF0aCI6IlwvZlwvZGIwZDg1YjEtYjhiOS00NzkwLWJlZjAtMTIxZWRiMmRjZTdkXC9kZDh1dDJ5LWI2MWE1NzhmLTI4YmUtNDk2Yi04MDQ0LTU1OTE1OTQzM2UzNi5qcGciLCJ3aWR0aCI6Ijw9MTI4MCJ9XV0sImF1ZCI6WyJ1cm46c2VydmljZTppbWFnZS5vcGVyYXRpb25zIl19.2ttX4dZcVj27yeTuh05fdJbZJSF2hj3pmgWaeCfh63Y
 			newsrc = src.replace(/(:\/\/[^/]*\/)(f\/+[-0-9a-f]{36}\/+[0-9a-z]+-[-0-9a-f]{20,}(?:\.[^/.]*)?\/+v1\/+fill\/+w_[0-9]+,h_[0-9]+)(?:,[^/]+)?(\/+.*[?&]token=.*)$/, "$1$2,q_100$3");
-			if (newsrc !== src)
+			if (newsrc !== src) {
 				return newsrc;
+			}
 
 			newsrc = src.replace(/(:\/\/[^/]*\/)(f\/+[-0-9a-f]{36}\/+.*?)[?&]token=.*$/, "$1intermediary/$2");
 			if (newsrc !== src)
@@ -47257,6 +47258,16 @@ var $$IMU_EXPORT$$;
 		if (options.cb) {
 			var orig_cb = options.cb;
 			options.cb = function(x) {
+				// Is this needed?
+				if (false) {
+					for (var i = 0; i < pastobjs.length; i++) {
+						if (pastobjs[i].url === null && pastobjs[i].waiting) {
+							pastobjs.splice(i, 1);
+							i--;
+						}
+					};
+				}
+
 				if (_nir_debug_)
 					console_log("options.cb", deepcopy(x));
 
@@ -47305,8 +47316,13 @@ var $$IMU_EXPORT$$;
 				break;
 		}
 
+		if (_nir_debug_)
+			console_log("return finalize");
+
 		finalize();
 		do_cache();
+
+		newhref = null;
 
 		if (options.cb && !waiting) {
 			options.cb(endhref);
