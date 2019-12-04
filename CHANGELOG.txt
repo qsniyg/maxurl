@@ -1,3 +1,16 @@
+0.11.15
+
+Improvements:
+
+ * Various improvements/fixes to existing rules
+
+Bugfixes:
+
+ * Fix "Replace Images" not working for the extension
+ * Work around some errors when tracking protection is set to strict/high
+
+---
+
 0.11.14
 
 New features:

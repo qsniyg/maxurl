@@ -4,7 +4,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.11.14
+// @version      0.11.15
 // @description  Finds larger or original versions of images for 5900+ websites
 // @author       qsniyg
 // @homepageURL  https://qsniyg.github.io/maxurl/options.html
@@ -138,6 +138,61 @@ var $$IMU_EXPORT$$;
 		}
 	}
 
+	var do_request_browser = function (request) {
+		if (_nir_debug_) {
+			console_log("do_request_browser", request);
+		}
+
+		var method = request.method || "GET";
+
+		var xhr = new XMLHttpRequest();
+		xhr.open(method, request.url, true);
+
+		if (request.responseType)
+			xhr.responseType = request.responseType;
+
+		var do_final = function(override, cb) {
+			var resp = {
+				readyState: xhr.readyState,
+				finalUrl: xhr.responseURL,
+				responseHeaders: xhr.getAllResponseHeaders(),
+				responseType: xhr.responseType,
+				status: xhr.status || 200, // file:// returns 0, tracking protection also returns 0
+				realStatus: xhr.status,
+				statusText: xhr.statusText
+			};
+
+			if (xhr.status === 0 && xhr.responseURL === "")
+				resp.status = 0;
+
+			resp.response = xhr.response;
+
+			try {
+				resp.responseText = xhr.responseText;
+			} catch (e) {}
+
+			cb(resp);
+		};
+
+		xhr.onload = function () {
+			do_final({}, function (resp) {
+				request.onload(resp);
+			});
+		};
+
+		xhr.onerror = function () {
+			do_final({}, function (resp) {
+				request.onerror(resp);
+			});
+		};
+
+		xhr.send(request.data);
+	};
+
+	if (typeof XMLHttpRequest !== "function") {
+		do_request_browser = null;
+	}
+
 	var do_request_raw = null;
 	if (is_extension) {
 		do_request_raw = function(data) {
@@ -207,8 +262,46 @@ var $$IMU_EXPORT$$;
 	var do_request = null;
 	if (do_request_raw) {
 		do_request = function(data) {
+			if (_nir_debug_) {
+				console_log("do_request", deepcopy(data));
+			}
+
 			if (!data.onerror)
 				data.onerror = data.onload;
+
+			// For cross-origin cookies
+			if (!("withCredentials" in data)) {
+				data.withCredentials = true;
+			}
+
+			if (data.trackingprotection_failsafe && do_request_browser) {
+				var real_onload = data.onload;
+				var real_onerror = data.onerror;
+
+				var finalcb = function(resp, iserror) {
+					// TODO: improve
+					if (resp.realStatus === 0) {
+						data.onload = real_onload;
+						data.onerror = real_onerror;
+
+						return do_request_browser(data);
+					} else {
+						if (iserror) {
+							real_onerror(resp);
+						} else {
+							real_onload(resp);
+						}
+					}
+				};
+
+				data.onload = function(resp) {
+					finalcb(resp, false);
+				};
+
+				data.onerror = function(resp) {
+					finalcb(resp, true);
+				};
+			}
 
 			return do_request_raw(data);
 		};
@@ -3137,14 +3230,15 @@ var $$IMU_EXPORT$$;
 					bad: "mask"
 				};
 
-			var obj = src.match(/\/thumb\/(?:[0-9]+\/){3}([0-9]+)\//);
+			var obj = src.match(/\/thumb\/+(?:[0-9]+\/+){2,3}([0-9]+)\/[0-9]{10,}_/);
 			if (obj && obj[1] !== "00") {
-				var obj1_str = src.replace(/.*\/thumb\/([0-9]+\/[0-9]+\/[0-9]+\/).*/, "$1").replace(/\//g, "");
+				var obj1_str = src.replace(/.*\/thumb\/+([0-9]+\/+[0-9]+\/+[0-9]+\/).*/, "$1").replace(/\//g, "");
 				var obj1 = parseInt(obj1_str);
-				if (obj1 >= 20170526)
-					src = src.replace(/(\/thumb\/(?:[0-9]+\/){3})[0-9]+\//, "$100/");
-				else
-					src = src.replace(/(\/thumb\/(?:[0-9]+\/){3})[0-9]+\//, "$106/");
+				var num = "00";
+				if (obj1 < 20170526)
+					num = "06";
+
+				src = src.replace(/(\/thumb\/+(?:[0-9]+\/+){2,3})[0-9]+(\/+[0-9]{10,}_)/, "$1" + num + "$2");
 			}
 
 			return src
@@ -21193,7 +21287,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "patch.com") {
-			newsrc = src.replace(/(\/img\/+cdn\/+.*\/+[0-9]{4}\/+[0-9]{2}\/+)(?:T[0-9]+x[0-9]+\/+)?([^/]*?)(?:[?#].*)?$/,
+			newsrc = src.replace(/(\/img\/+cdn[0-9]*\/+.*\/+(?:[0-9]{4}\/+[0-9]{2}|[0-9]{8}\/+[0-9]+)\/+)(?:T[0-9]+x[0-9]+\/+)?((?:styles\/+[^/]+\/+public\/+[^/]+\/+)?[^/]*?)(?:[?#].*)?$/,
 								 "$1$2");
 			if (newsrc !== src)
 				return newsrc;
@@ -25080,6 +25174,10 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "image.newdaily.co.kr") {
+			newsrc = src.replace(/(\/site\/+data\/+)thumb(\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}[0-9]{10,}_[0-9]+)_thumb\./, "$1img$2.")
+			if (newsrc !== src)
+				return newsrc;
+
 			match = src.match(/\/site\/+data\/+img\/+([0-9]{4}\/+(?:[0-9]{2}\/+){2}[0-9]{10,})_[0-9]+\./);
 			if (match) {
 				return {
@@ -27846,7 +27944,7 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "liquipedia.net" ||
 			domain === "i.know.cf" ||
 			src.match(/\/thumb\/+[0-9a-f]\/+[0-9a-f]{2}\/+[^/]*\.[^/]*\/+[0-9]+px-[^/]*(?:[?#].*)?$/)) {
-			newsrc = src.replace(/\/(?:thumb\/+)?(.)\/+(..)\/+([^/]*)\/+[0-9]+px-.*?$/, "/$1/$2/$3");
+			newsrc = src.replace(/\/(?:thumb\/+(archive\/+)?)?(.)\/+(..)\/+([^/]*)\/+[0-9]+px-.*?$/, "/$1$2/$3/$4");
 			if (newsrc !== src)
 				return newsrc;
 		}
@@ -28908,6 +29006,12 @@ var $$IMU_EXPORT$$;
 		return newlist.join("+");
 	};
 
+	var check_tracking_blocked = function(result) {
+		if (result.realStatus === 0 && result.statusText === "" && result.responseText === "")
+			return true;
+		return false;
+	};
+
 	var check_image = function(obj, err_cb, ok_cb) {
 		if (obj instanceof Array) {
 			obj = obj[0];
@@ -29020,6 +29124,7 @@ var $$IMU_EXPORT$$;
 					method: method,
 					url: url,
 					headers: headers,
+					trackingprotection_failsafe: true,
 					onload: function(resp) {
 						if (_nir_debug_)
 							console_log("(check_image) resp", resp);
@@ -29029,7 +29134,8 @@ var $$IMU_EXPORT$$;
 							return;
 						}
 
-						if (resp.finalUrl === "" && resp.status === 0) {
+						if ((resp.finalUrl === "" && resp.status === 0) ||
+							check_tracking_blocked(resp)) {
 							// error loading image (IP doesn't exist, etc.), ignore
 							err_txt = "Error: status == 0";
 							if (err_cb) {
@@ -30428,6 +30534,7 @@ var $$IMU_EXPORT$$;
 			url: url,
 			responseType: responseType,
 			headers: headers,
+			trackingprotection_failsafe: true,
 			onload: function(resp) {
 				if (!processing.running) {
 					return cb(null);
@@ -33260,13 +33367,15 @@ var $$IMU_EXPORT$$;
 			next_img();
 		}
 
-		register_menucommand("Replace images", function() {
-			replace_images({
+		var replace_images_full = function() {
+			return replace_images({
 				replace_imgs: settings.replaceimgs_replaceimgs,
 				add_links: settings.replaceimgs_addlinks,
 				replace_links: settings.replaceimgs_replacelinks
 			});
-		});
+		};
+
+		register_menucommand("Replace images", replace_images_full);
 
 		var highlight_images = function() {
 			var images = document.querySelectorAll("img");
@@ -33492,7 +33601,7 @@ var $$IMU_EXPORT$$;
 					trigger_popup(true);
 				} else if (message.type === "popupaction") {
 					if (message.data.action === "replace_images") {
-						replace_images();
+						replace_images_full();
 					} else if (message.data.action === "highlight_images") {
 						highlight_images();
 					}
