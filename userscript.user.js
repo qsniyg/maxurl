@@ -6689,8 +6689,6 @@ var $$IMU_EXPORT$$;
 			(domain_nowww === "refinery29.com" && src.indexOf("/images/") >= 0) ||
 			// https://images.radio.com/aiu-media/BebeRexha.jpg?width=300&crop=16:9,offset-y0
 			(domain === "images.radio.com" && src.indexOf("/aiu-media/") >= 0) ||
-			// https://patch.com/img/cdn20/users/722562/20170624/085326/styles/raw/public/article_images/1498308806-1498308806-849.jpg?width=705
-			(domain_nowww === "patch.com" && src.indexOf("/img/") >= 0) ||
 			// http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
 			// https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
 			src.match(/\/demandware\.static\//) ||
@@ -35942,9 +35940,10 @@ var $$IMU_EXPORT$$;
 			//   https://patch.com/img/cdn/users/26955/2014/08/raw/53e96000807fb.png -- no difference?
 			// https://patch.com/img/cdn/users/26955/2014/08/53e96000807fb.png?width=200
 			//   https://patch.com/img/cdn/users/26955/2014/08/53e96000807fb.png
+			// https://patch.com/img/cdn20/users/722562/20170624/085326/styles/raw/public/article_images/1498308806-1498308806-849.jpg?width=705
 			// other:
 			// https://patch.com/img/cdn/users/22873889/2016/03/raw/20160356f1867bf2935.jpg -- without /raw/ it doesn't work
-			newsrc = src.replace(/(\/img\/+cdn\/+.*\/+[0-9]{4}\/+[0-9]{2}\/+)(?:T[0-9]+x[0-9]+\/+)?([^/]*?)(?:[?#].*)?$/,
+			newsrc = src.replace(/(\/img\/+cdn[0-9]*\/+.*\/+(?:[0-9]{4}\/+[0-9]{2}|[0-9]{8}\/+[0-9]+)\/+)(?:T[0-9]+x[0-9]+\/+)?((?:styles\/+[^/]+\/+public\/+[^/]+\/+)?[^/]*?)(?:[?#].*)?$/,
 								 "$1$2");
 			if (newsrc !== src)
 				return newsrc;
