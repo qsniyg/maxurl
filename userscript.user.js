@@ -46894,8 +46894,10 @@ var $$IMU_EXPORT$$;
 
 	var fillobj = function(obj, baseobj) {
 		//if (typeof obj === "undefined")
-		if (!obj)
-			return [];
+		if (!obj) {
+			//return [];
+			obj = {};
+		}
 
 		if (!(obj instanceof Array)) {
 			obj = [obj];
