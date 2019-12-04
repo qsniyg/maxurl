@@ -186,6 +186,10 @@ var $$IMU_EXPORT$$;
 		xhr.send(request.data);
 	};
 
+	if (typeof XMLHttpRequest !== "function") {
+		do_request_browser = null;
+	}
+
 	var do_request_raw = null;
 	if (is_extension) {
 		do_request_raw = function(data) {
@@ -267,7 +271,7 @@ var $$IMU_EXPORT$$;
 				data.withCredentials = true;
 			}
 
-			if (data.trackingprotection_failsafe) {
+			if (data.trackingprotection_failsafe && do_request_browser) {
 				var real_onload = data.onload;
 				var real_onerror = data.onerror;
 
