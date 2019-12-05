@@ -638,7 +638,7 @@ function get_cookies(url, cb, options) {
 	if (!options) options = {};
 
 	var end = function (store) {
-		chrome.cookies.getAll({ url: url, storeId: store }, function (cookies) {
+		chrome.cookies.getAll({ url: url, storeId: store, firstPartyDomain: null }, function (cookies) {
 			debug("get_cookies: " + url, cookies, store);
 			cb(JSON.parse(JSON.stringify(cookies)));
 		});
