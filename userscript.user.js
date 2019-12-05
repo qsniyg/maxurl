@@ -159,13 +159,9 @@ var $$IMU_EXPORT$$;
 				finalUrl: xhr.responseURL,
 				responseHeaders: xhr.getAllResponseHeaders(),
 				responseType: xhr.responseType,
-				status: xhr.status || 200, // file:// returns 0, tracking protection also returns 0
-				realStatus: xhr.status,
+				status: xhr.status, // file:// returns 0, tracking protection also returns 0
 				statusText: xhr.statusText
 			};
-
-			if (xhr.status === 0 && xhr.responseURL === "")
-				resp.status = 0;
 
 			resp.response = xhr.response;
 
@@ -262,7 +258,7 @@ var $$IMU_EXPORT$$;
 	}
 
 	var check_tracking_blocked = function(result) {
-		if ((result.status === 0 || result.realStatus === 0) && result.statusText === "" && result.responseText === "")
+		if (result.status === 0)
 			return true;
 		return false;
 	};
@@ -47783,7 +47779,7 @@ var $$IMU_EXPORT$$;
 							return;
 						}
 
-						if ((resp.finalUrl === "" && resp.status === 0) ||
+						if (resp.status === 0 ||
 							check_tracking_blocked(resp)) {
 							// error loading image (IP doesn't exist, etc.), ignore
 							err_txt = "Error: status == 0";
