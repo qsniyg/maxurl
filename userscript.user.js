@@ -282,7 +282,7 @@ var $$IMU_EXPORT$$;
 				data.withCredentials = true;
 			}
 
-			if (data.trackingprotection_failsafe && do_request_browser) {
+			if (data.trackingprotection_failsafe && settings.allow_browser_request && do_request_browser) {
 				var real_onload = data.onload;
 				var real_onerror = data.onerror;
 
@@ -892,6 +892,7 @@ var $$IMU_EXPORT$$;
 		imu_enabled: true,
 		language: browser_language,
 		advanced_options: false,
+		allow_browser_request: false,
 		redirect: true,
 		redirect_history: true,
 		canhead_get: true,
@@ -1018,6 +1019,13 @@ var $$IMU_EXPORT$$;
 				run_soon(do_options);
 			},
 			imu_enabled_exempt: true
+		},
+		allow_browser_request: {
+			name: "Allow using browser XHR",
+			description: "This allows XHR requests to be run in the browser's context if they fail in the extension (e.g. when Tracking Protection is set to High)",
+			category: "general",
+			imu_enabled_exempt: true,
+			advanced: true
 		},
 		redirect: {
 			name: "Enable redirection",
