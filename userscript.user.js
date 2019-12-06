@@ -22486,7 +22486,7 @@ var $$IMU_EXPORT$$;
 				var id = src.replace(/.*-([0-9a-z]+)\.[^/.]*$/, "$1");
 				//id = parseInt(id, 36) - 28298170368;
 
-				return common_functions.deviantart_fullimage(optoins, src, id, options.cb);
+				return common_functions.deviantart_fullimage(options, src, id, options.cb);
 			})();
 
 			return {
