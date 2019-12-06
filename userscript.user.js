@@ -2795,14 +2795,33 @@ var $$IMU_EXPORT$$;
 
 					var maxurl = obj.url;
 
-					for (var i = deviation.files.length - 1; i >= 0; i--) {
-						var current = deviation.files[i];
-						var newurl = common_functions.wix_compare(current.src, maxurl);
-						if (newurl === current.src)
-							maxurl = newurl;
+					var files = deviation.files;
+
+					if (files instanceof Array) {
+						for (var i = files.length - 1; i >= 0; i--) {
+							var current = files[i];
+							var newurl = common_functions.wix_compare(current.src, maxurl);
+							if (newurl === current.src)
+								maxurl = newurl;
+						}
+					} else if ("media" in deviation && deviation.media.types instanceof Array) {
+						var types = deviation.media.types;
+
+						for (var i = types.length - 1; i >= 0; i--) {
+							var link = deviation.media.baseUri + types[i].c.replace("<prettyName>", deviation.media.prettyName);
+
+							var newurl = common_functions.wix_compare(link, maxurl);
+							if (newurl === link)
+								maxurl = newurl;
+						}
 					}
 
 					obj.url = maxurl;
+
+					if (common_functions.wix_image_info(obj.url).original) {
+						obj.is_original = true;
+						return cb(obj);
+					}
 				} catch (e) {
 					console_error(e);
 				}
