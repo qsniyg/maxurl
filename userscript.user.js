@@ -27092,7 +27092,10 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/thumb(\/images\/gallery\/.*?)(?:\?.*)?$/, "$1");
 		}
 
-		if (domain_nowww === "admags.xyz") {
+		if (domain_nowww === "admags.xyz" ||
+			// http://hotmags.xyz/m/bjai/jg/d0or1w_tb/004.jpg
+			//   http://hotmags.xyz/m/bjai/jg/d0or1w/004.jpg
+			domain_nowww === "hotmags.xyz") {
 			// http://admags.xyz/m/bjaa/jc/ucr9z7_tb/069.jpg
 			//   http://admags.xyz/m/bjaa/jc/ucr9z7/069.jpg
 			return src.replace(/_tb(\/[^/]*)$/, "$1");
@@ -31275,6 +31278,32 @@ var $$IMU_EXPORT$$;
 			// https://images-assets.nasa.gov/image/PIA18139/PIA18139~thumb.jpg
 			//   https://images-assets.nasa.gov/image/PIA18139/PIA18139~orig.jpg
 			return src.replace(/~[a-z]+(\.[^/.]*)$/, "~orig$1");
+		}
+
+		if (domain === "www.jpl.nasa.gov") {
+			// https://www.jpl.nasa.gov/spaceimages/images/largesize/PIA18874_hires.jpg
+			//   https://images-assets.nasa.gov/image/PIA18874/PIA18874~orig.jpg
+			// https://www.jpl.nasa.gov/spaceimages/images/wallpaper/PIA23572-640x350.jpg
+			//   https://photojournal.jpl.nasa.gov/jpeg/PIA23572.jpg
+			//return src.replace(/:\/\/[^/]+\/+spaceimages\/+images\/+[^/]+\/+(PIA[0-9]+)(?:_[^/]+|-[0-9]+x[0-9]+)(\.[^/.]*)(?:[?#].*)?$/,
+			//				   "://images-assets.nasa.gov/image/$1/$1~orig$2");
+			return src.replace(/:\/\/[^/]+\/+spaceimages\/+images\/+[^/]+\/+(PIA[0-9]+)(?:_[^/]+|-[0-9]+x[0-9]+)(\.(?:jpg|jpeg|JPG|JPEG))(?:[?#].*)?$/,
+				               "://photojournal.jpl.nasa.gov/jpeg/$1$2");
+		}
+
+		if (domain === "photojournal.jpl.nasa.gov") {
+			// https://photojournal.jpl.nasa.gov/jpeg/PIA23572.jpg
+			//   https://www.jpl.nasa.gov/spaceimages/details.php?id=PIA23572
+			id = src.replace(/.*\/(PIA[0-9]+)\.[^/.]+(?:[?#].*)?$/, "$1");
+
+			if (id !== src) {
+				return {
+					url: src,
+					extra: {
+						page: "https://www.jpl.nasa.gov/spaceimages/details.php?id=" + id
+					}
+				};
+			}
 		}
 
 		if (amazon_container === "attachments.readmedia.com") {
@@ -45605,6 +45634,12 @@ var $$IMU_EXPORT$$;
 			// https://s04.s3c.es/imag/_v0/2560x3931/6/6/0/880x_VictoriaJustice.jpg
 			//   https://s04.s3c.es/imag/_v0/2560x3931/6/6/0/VictoriaJustice.jpg
 			return src.replace(/(\/imag\/+_v[0-9]+\/+[0-9]+x[0-9]+\/+(?:[0-9]\/+){3})[0-9]+x_/, "$1");
+		}
+
+		if (domain_nowww === "playboyrussia.com") {
+			// https://playboyrussia.com/premium/data/galleries/17000/4s.jpg
+			//   https://playboyrussia.com/premium/data/galleries/17000/4.jpg
+			return src.replace(/(\/data\/+galleries\/+[0-9]+\/+[0-9]+)s(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
 		}
 
 
