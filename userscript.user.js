@@ -8943,7 +8943,7 @@ var $$IMU_EXPORT$$;
 			domain === "image.news.livedoor.com") {
 			// http://lineofficial.blogimg.jp/en/imgs/c/5/c5832999-s.png
 			//   http://lineofficial.blogimg.jp/en/imgs/c/5/c5832999.png
-			return src.replace(/(\/[^/.]*)-[^/.]*(\.[^/.]*)/, "$1$2");
+			return src.replace(/(\/[^/.]*)-[sm](\.[^/.]*)/, "$1$2");
 		}
 
 		if (domain === "image.cine21.com") {
