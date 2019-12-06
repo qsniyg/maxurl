@@ -888,7 +888,7 @@ var $$IMU_EXPORT$$;
 		imu_enabled: true,
 		language: browser_language,
 		advanced_options: false,
-		allow_browser_request: false,
+		allow_browser_request: true,
 		redirect: true,
 		redirect_history: true,
 		canhead_get: true,
@@ -20179,6 +20179,9 @@ var $$IMU_EXPORT$$;
 			//   https://photos.modelmayhem.com/photos/111017/06/4e9c2f9a9c118.jpg
 			// https://photos.modelmayhem.com/potd/entrants/110916/potd-110916-412494-small.jpg
 			//   https://photos.modelmayhem.com/potd/entrants/110916/potd-110916-412494-big.jpg
+			// https://photos.modelmayhem.com/avatars/2/3/1/0/8/0/9/587507cab04e8_m.jpg
+			//   https://www.modelmayhem.com/portfolio/pic/41774255
+			//   https://photos.modelmayhem.com/photos/170110/07/587501cb8ba84.jpg
 			return src
 				.replace(/(\/photos\/[0-9]+\/[0-9a-f]+\/[0-9a-f]+)_[a-z](\.[^/.]*)$/, "$1$2")
 				.replace(/(\/potd\/entrants\/[0-9]+\/[^/]*)-[a-z]+(\.[^/.]*)$/, "$1-big$2");
