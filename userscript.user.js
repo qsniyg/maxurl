@@ -396,6 +396,7 @@ var $$IMU_EXPORT$$;
 		is_private: false,
 		is_original: false,
 		norecurse: false,
+		forcerecurse: false,
 		bad: false,
 		bad_if: [],
 		fake: false,
@@ -9584,6 +9585,8 @@ var $$IMU_EXPORT$$;
 								}
 							};
 						}
+
+						obj.forcerecurse = true;
 
 						return options.cb(obj);
 					});
@@ -47052,6 +47055,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		var waiting = false;
+		var forcerecurse = false;
 
 		var newhref = url;
 		var endhref;
@@ -47062,18 +47066,17 @@ var $$IMU_EXPORT$$;
 		var pastobjs = [];
 		var currentobj = null;
 		var used_cache = false;
-		var i = 0;
+		var loop_i = 0;
 
 		var do_cache = function() {
-			if (!endhref || !currentobj)
-				return;
-
-			if (!get_currenthref(endhref) && !get_currenthref(currentobj))
-				return;
-
 			if (_nir_debug_)
 				console_log("do_cache (endhref, currentobj):", deepcopy(endhref), deepcopy(currentobj));
 
+			if (!endhref)
+				return;
+
+			if (!get_currenthref(endhref))
+				return;
 
 			var cache_endhref = fillobj(endhref, currentobj);
 			currenthref = get_currenthref(cache_endhref);
@@ -47084,8 +47087,13 @@ var $$IMU_EXPORT$$;
 				for (var i = 0; i < pasthrefs.length; i++) {
 					var href = pasthrefs[i];
 
-					if (href !== currenthref || true)
+					if (href) {
+						if (_nir_debug_) {
+							console_log("do_cache:", href, "=", deepcopy(cache_endhref));
+						}
+
 						url_cache.set(href, deepcopy(cache_endhref), options.urlcache_time);
+					}
 				}
 			}
 		};
@@ -47180,6 +47188,7 @@ var $$IMU_EXPORT$$;
 			}
 
 			waiting = false;
+			forcerecurse = false;
 			var temp_newhref1 = newhref1;
 			if (newhref1 instanceof Array)
 				temp_newhref1 = newhref1[0];
@@ -47192,11 +47201,15 @@ var $$IMU_EXPORT$$;
 						return false;
 					}
 				}
+
+				if (temp_newhref1.forcerecurse) {
+					forcerecurse = true;
+				}
 			} else {
 				currentobj = null;
 			}
 
-			if (same_url(currenthref, objified)) {
+			if (same_url(currenthref, objified) && !forcerecurse) {
 				if (_nir_debug_)
 					console_log("parse_bigimage: sameurl(currenthref, objified) == true", deepcopy(currenthref), deepcopy(objified));
 
@@ -47208,11 +47221,13 @@ var $$IMU_EXPORT$$;
 
 				return false;
 			} else {
-				for (var i = 0; i < pasthrefs.length; i++) {
-					if (same_url(pasthrefs[i], objified)) {
-						if (_nir_debug_)
-							console_log("parse_bigimage: sameurl(pasthrefs[" + i + "], objified) == true", deepcopy(pasthrefs[i]), deepcopy(objified));
-						return false;
+				if (!forcerecurse) {
+					for (var i = 0; i < pasthrefs.length; i++) {
+						if (same_url(pasthrefs[i], objified)) {
+							if (_nir_debug_)
+								console_log("parse_bigimage: sameurl(pasthrefs[" + i + "], objified) == true", deepcopy(pasthrefs[i]), deepcopy(objified));
+							return false;
+						}
 					}
 				}
 
@@ -47252,7 +47267,10 @@ var $$IMU_EXPORT$$;
 		};
 
 		var do_bigimage = function() {
-			if (options.use_cache && url_cache.has(currenthref)) {
+			if (_nir_debug_)
+				console_log("do_bigimage", currenthref, deepcopy(options));
+
+			if (options.use_cache && url_cache.has(currenthref) && !forcerecurse) {
 				if (_nir_debug_) {
 					console_log("do_bigimage: newhref = url_cache[" + currenthref + "]", deepcopy(url_cache.get(currenthref)));
 				}
@@ -47348,10 +47366,11 @@ var $$IMU_EXPORT$$;
 					orig_cb(endhref);
 				};
 
-				if (!parse_bigimage(x) || (i + 1) >= options.iterations) {
+				var parseresult = parse_bigimage(x);
+				if ((!parseresult || (loop_i + 1) >= options.iterations) && !forcerecurse) {
 					do_end();
 				} else {
-					for (; i < options.iterations; i++) {
+					for (; loop_i < options.iterations; loop_i++) {
 						if (!do_bigimage()) {
 							break;
 						}
@@ -47366,7 +47385,7 @@ var $$IMU_EXPORT$$;
 
 		options._internal_info = {};
 
-		for (i = 0; i < options.iterations; i++) {
+		for (loop_i = 0; loop_i < options.iterations; loop_i++) {
 			if (!do_bigimage())
 				break;
 		}
@@ -47491,6 +47510,13 @@ var $$IMU_EXPORT$$;
 								}
 							}
 						}
+					}
+
+					if (_nir_debug_) {
+						console_log("bigimage_recursive_loop's cb: obj after:", deepcopy(obj));
+						console_log("bigimage_recursive_loop's cb: images after:", deepcopy(images));
+						console_log("bigimage_recursive_loop's cb: fine_urls:", deepcopy(fine_urls));
+						console_log("bigimage_recursive_loop's cb: tried_urls:", deepcopy(tried_urls));
 					}
 
 					for (var i = 0; i < fine_urls.length; i++) {
@@ -47939,6 +47965,10 @@ var $$IMU_EXPORT$$;
 			document: document,
 			window: window,
 			cb: function(newhref) {
+				if (_nir_debug_) {
+					console_log("do_redirect (final)", newhref);
+				}
+
 				cursor_default();
 
 				if (!newhref) {
