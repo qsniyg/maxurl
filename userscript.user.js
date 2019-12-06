@@ -2713,6 +2713,11 @@ var $$IMU_EXPORT$$;
 		var obj = {};
 
 		for (var i = 0; i < splitted.length; i++) {
+			if (splitted[i].match(/^[a-z]+$/)) {
+				obj[splitted[i]] = true;
+				continue;
+			}
+
 			var name = splitted[i].replace(/_.*$/, "");
 			var value = splitted[i].replace(/^.*?_/, "");
 
@@ -2730,6 +2735,9 @@ var $$IMU_EXPORT$$;
 	};
 
 	common_functions.wix_compare = function(url1, url2) {
+		if (_nir_debug_)
+			console_log("wix_compare", url1, url2);
+
 		if (!url2)
 			return url1;
 
@@ -2808,7 +2816,7 @@ var $$IMU_EXPORT$$;
 						var types = deviation.media.types;
 
 						for (var i = types.length - 1; i >= 0; i--) {
-							var link = deviation.media.baseUri + types[i].c.replace("<prettyName>", deviation.media.prettyName);
+							var link = deviation.media.baseUri + "/" + types[i].c.replace("<prettyName>", deviation.media.prettyName) + "?token=" + deviation.media.token[0];
 
 							var newurl = common_functions.wix_compare(link, maxurl);
 							if (newurl === link)
@@ -9547,6 +9555,46 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/file\/[^/]*\/)thumb_[0-9]*x[0-9]*[^/]*\//, "$1");
 		}
 
+		if (domain_nosub === "wixmp.com" &&
+			options && options.do_request && options.cb && (!options._internal_info || !options._internal_info.deviantart_page)) {
+			// https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/intermediary/f/bc11a5bd-c85a-4e07-a890-a83ce286cfee/dcqjbom-5b42308b-181c-4bb6-9108-5ce3508986e4.jpg
+			// https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/922c6655-afbf-45cb-929f-b971943216f4/d906aqf-b0e71f31-20c2-45f4-831f-2442087fbbad.jpg/v1/fill/w_1024,h_640,q_75,strp/goblin_naturists_by_warmics_d906aqf-fullview.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9NjQwIiwicGF0aCI6IlwvZlwvOTIyYzY2NTUtYWZiZi00NWNiLTkyOWYtYjk3MTk0MzIxNmY0XC9kOTA2YXFmLWIwZTcxZjMxLTIwYzItNDVmNC04MzFmLTI0NDIwODdmYmJhZC5qcGciLCJ3aWR0aCI6Ijw9MTAyNCJ9XV0sImF1ZCI6WyJ1cm46c2VydmljZTppbWFnZS5vcGVyYXRpb25zIl19.FTWlO6H5303XfAWoFjliFO73UtCmv0WvMNxADrjNBGs
+			// https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/3953b6c9-6b84-493b-9832-cc14ba59fa07/d1fl69c-907907a6-ce19-48b2-b915-f823507cbbc4.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzM5NTNiNmM5LTZiODQtNDkzYi05ODMyLWNjMTRiYTU5ZmEwN1wvZDFmbDY5Yy05MDc5MDdhNi1jZTE5LTQ4YjItYjkxNS1mODIzNTA3Y2JiYzQuanBnIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.5IJp0mWnHzp_yKTxTaoNvw5c1r_1-PhUvzcvVdt_8Vk
+			//   https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/intermediary/f/3953b6c9-6b84-493b-9832-cc14ba59fa07/d1fl69c-907907a6-ce19-48b2-b915-f823507cbbc4.jpg
+			match = src.match(/^[a-z]+:\/\/(?:images-)?wixmp-[0-9a-f]+\.wixmp\.com\/+(?:intermediary\/+)?[^/]*\/+[-0-9a-f]+\/+([0-9a-z]+)-[-0-9a-f]+\.[^/.]+(?:\/+v[0-9]*\/.*?)?(?:[?#].*)?$/);
+			if (match) {
+				id = match[1];
+
+				common_functions.deviantart_page_from_id(options.do_request, id, function(result) {
+					options._internal_info.deviantart_page = true;
+
+					if (!result) {
+						return options.cb({
+							url: null,
+							waiting: false
+						});
+					}
+
+					common_functions.deviantart_fullimage(options, src, id, function(obj) {
+						if (!obj) {
+							obj = {
+								url: src,
+								extra: {
+									page: result.finalUrl
+								}
+							};
+						}
+
+						return options.cb(obj);
+					});
+				});
+
+				return {
+					waiting: true
+				};
+			}
+		}
+
 		if (domain === "static.wixstatic.com" ||
 			// https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/intermediary/f/bc11a5bd-c85a-4e07-a890-a83ce286cfee/dcqjbom-5b42308b-181c-4bb6-9108-5ce3508986e4.jpg/v1/fill/w_730,h_1095,q_70,strp/mileena_by_motesoegyi_dcqjbom-pre.jpg
 			//   https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/intermediary/f/bc11a5bd-c85a-4e07-a890-a83ce286cfee/dcqjbom-5b42308b-181c-4bb6-9108-5ce3508986e4.jpg
@@ -9593,44 +9641,6 @@ var $$IMU_EXPORT$$;
 
 				if (newsrc !== src)
 					return newsrc;
-			}
-		}
-
-		if (domain_nosub === "wixmp.com" &&
-			options && options.do_request && options.cb) {
-			// https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/intermediary/f/bc11a5bd-c85a-4e07-a890-a83ce286cfee/dcqjbom-5b42308b-181c-4bb6-9108-5ce3508986e4.jpg
-			// https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/922c6655-afbf-45cb-929f-b971943216f4/d906aqf-b0e71f31-20c2-45f4-831f-2442087fbbad.jpg/v1/fill/w_1024,h_640,q_75,strp/goblin_naturists_by_warmics_d906aqf-fullview.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9NjQwIiwicGF0aCI6IlwvZlwvOTIyYzY2NTUtYWZiZi00NWNiLTkyOWYtYjk3MTk0MzIxNmY0XC9kOTA2YXFmLWIwZTcxZjMxLTIwYzItNDVmNC04MzFmLTI0NDIwODdmYmJhZC5qcGciLCJ3aWR0aCI6Ijw9MTAyNCJ9XV0sImF1ZCI6WyJ1cm46c2VydmljZTppbWFnZS5vcGVyYXRpb25zIl19.FTWlO6H5303XfAWoFjliFO73UtCmv0WvMNxADrjNBGs
-			// https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/3953b6c9-6b84-493b-9832-cc14ba59fa07/d1fl69c-907907a6-ce19-48b2-b915-f823507cbbc4.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzM5NTNiNmM5LTZiODQtNDkzYi05ODMyLWNjMTRiYTU5ZmEwN1wvZDFmbDY5Yy05MDc5MDdhNi1jZTE5LTQ4YjItYjkxNS1mODIzNTA3Y2JiYzQuanBnIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.5IJp0mWnHzp_yKTxTaoNvw5c1r_1-PhUvzcvVdt_8Vk
-			//   https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/intermediary/f/3953b6c9-6b84-493b-9832-cc14ba59fa07/d1fl69c-907907a6-ce19-48b2-b915-f823507cbbc4.jpg
-			match = src.match(/^[a-z]+:\/\/(?:images-)?wixmp-[0-9a-f]+\.wixmp\.com\/+(?:intermediary\/+)?[^/]*\/+[-0-9a-f]+\/+([0-9a-z]+)-[-0-9a-f]+\.[^/.]+(?:\/+v[0-9]*\/.*?)?(?:[?#].*)?$/);
-			if (match) {
-				id = match[1];
-
-				common_functions.deviantart_page_from_id(options.do_request, id, function(result) {
-					if (!result) {
-						return options.cb({
-							url: null,
-							waiting: false
-						});
-					}
-
-					common_functions.deviantart_fullimage(options, src, id, function(obj) {
-						if (!obj) {
-							obj = {
-								url: src,
-								extra: {
-									page: result.finalUrl
-								}
-							};
-						}
-
-						return options.cb(obj);
-					});
-				});
-
-				return {
-					waiting: true
-				};
 			}
 		}
 
@@ -47353,6 +47363,8 @@ var $$IMU_EXPORT$$;
 				}
 			};
 		}
+
+		options._internal_info = {};
 
 		for (i = 0; i < options.iterations; i++) {
 			if (!do_bigimage())
