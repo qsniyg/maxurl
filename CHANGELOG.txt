@@ -1,3 +1,23 @@
+0.11.16
+
+New features:
+
+ * New option to toggle usage of browser XHR requests (used by the tracking protection workaround, enabled by default)
+ * Support for 2 new websites
+
+Improvements:
+
+ * Tracking protection workaround is simplified and works more consistently
+
+Bugfixes:
+
+ * DeviantART no longer redirects infinitely
+ * Rules using XHR requests that fail will be able to use previous rules (fixes some DeviantART images, though unrelated to the bug above)
+ * First-party isolation is properly supported (fixes TOR Browser)
+ * Tracking protection workaround is properly supported for the userscript
+
+---
+
 0.11.15
 
 Improvements:
