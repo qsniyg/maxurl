@@ -7611,6 +7611,8 @@ var $$IMU_EXPORT$$;
 			domain === "gallery.southindianactress.in" ||
 			// https://ffp4g1ylyit3jdyti1hqcvtb-wpengine.netdna-ssl.com/addons/files/2019/10/bj-160x160.jpg
 			(domain === "ffp4g1ylyit3jdyti1hqcvtb-wpengine.netdna-ssl.com" && /\/addons\/+files\//.test(src)) ||
+			// https://medinaa.archolda.com/ime/a3d78b74fb613f5f-120x86.jpg
+			(domain === "medinaa.archolda.com" && src.indexOf("/ime/") >= 0) ||
 			// https://1.soompi.io/wp-content/blogs.dir/8/files/2015/09/HA-TFELT-Wonder-Girls-590x730.jpg -- doesn't work
 			// https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2018/01/GTA-6-Female-Protag-796x417.jpg -- does work
 			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|images|photos|blogs.dir)|\/+uploads)\//.test(src)
@@ -34728,11 +34730,23 @@ var $$IMU_EXPORT$$;
 
 		if (domain_nowww === "erowall.com") {
 			// https://erowall.com/wallpapers/thumb/28317.jpg
+			//   https://erowall.com/w/28317/ -- original page
 			//   https://erowall.com/wallpapers/original/28317.jpg
 			// https://erowall.com/download_img.php?dimg=28317&raz=2560x1600
-			return src
+			newsrc = src
 				.replace(/\/download_img\.php.*?[?&]dimg=([0-9]+).*?$/, "/wallpapers/original/$1.jpg")
 				.replace(/\/wallpapers\/+[a-z]+\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/wallpapers/original/$1");
+			if (newsrc !== src)
+				return newsrc;
+
+			match = src.match(/\/wallpapers\/+[a-z]+\/+([0-9]+)\.[^/.]+(?:[?#].*)?$/);
+			if (match)
+				return {
+					url: src,
+					extra: {
+						page: "https://erowall.com/w/" + match[1]
+					}
+				};
 		}
 
 		if (domain === "promo.mattsmodels.com" ||
@@ -36768,7 +36782,9 @@ var $$IMU_EXPORT$$;
 			//   https://media.karousell.com/media/photos/products/2019/03/20/150723_218912279_thumbnail.jpg
 			// https://media.karousell.com/media/photos/products/2019/04/24/163655_224532925_thumbnail_thumbnail.jpg
 			//   https://media.karousell.com/media/photos/products/2019/04/24/163655_224532925_thumbnail.jpg
-			return src.replace(/(\/media\/+photos\/+products\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}[^/]*?)(?:_progressive)?_thumbnail(\.[^/.]*)(?:[?#].*)?$/,
+			// https://media.karousell.com/media/photos/products/2019/11/20/104647_263356538_thumbnail0_progressive_thumbnail
+			//   https://media.karousell.com/media/photos/products/2019/11/20/104647_263356538_thumbnail0 -- upscaled?
+			return src.replace(/(\/media\/+photos\/+products\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}[^/]*?)(?:_progressive)?_thumbnail(\.[^/.]*)?(?:[?#].*)?$/,
 							   "$1$2");
 		}
 
@@ -41145,6 +41161,9 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "artspace712.com" ||
+			// http://dientumaytinh.com/uploads/large/WVVoU01HTklUVFpNZVRrelpETmpkVmx0YkhaYU0wcG9ZMGRvTlV4dFRuWmlVemgxWVZjeGFGb3lWWFprUmpsNllVZEdlVnBUT1U1V1JtdDVWR3hTU21Wck1UWlplbEpPVmtWcmVWUlZVazVPUlRGeFZGUlZkbVJ0YkhWWk1sWjFaRVk1TWxsWE5XWmFNamx1WVVZNWVscFhlRzFZTTBKMlkyNVNlVmxYYkRCWU0wSm9ZVmMxTUdGWE5XNVlNakV4WXpKV2JGZ3lVblpqYms1b1pWWTVNbUZYUm1aa01teHlZVmN4YkZwSGJHaFlNazUyWWxjeGRtSnVUbVpqU0VwMllsYzVjV05IWTNWaGJrSnU/vincient-van-gough-art-clip/paintings-quotes-death.jpg
+			//   https://www.biography.com/.image/t_share/MTY2NTIzMzc4MTI2MDM4MjM5/vincent_van_gogh_self_portrait_painting_musee_dorsay_via_wikimedia_commons_promojpg.jpg
+			domain_nowww === "dientumaytinh.com" ||
 			// https://aihara-company.com/uploads/large/WVVoU01HTklUVFpNZVRsd1RHNUNjR0p0YkhSYWVUVnFZakl3ZG1JelNuQmFNbXgxV1ZkNGVreDZRbWxNZW1Sc1RIcG9hRXg2UW1sT01sVTBXVlJCZVZwWFVYcFpla3ByVFhwWmVFMVVXVE5PVjFreVRucG9iVnBYVG14WlYxRTFURzF3ZDFwMw/house-design-house-house-styles.jpg
 			//   https://i.pinimg.com/originals/0b/7e/8a/0b7e8a02ed3c2d3611675f678fecead9.jpg
 			domain_nowww === "aihara-company.com") {
