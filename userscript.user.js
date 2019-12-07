@@ -7613,6 +7613,10 @@ var $$IMU_EXPORT$$;
 			(domain === "ffp4g1ylyit3jdyti1hqcvtb-wpengine.netdna-ssl.com" && /\/addons\/+files\//.test(src)) ||
 			// https://medinaa.archolda.com/ime/a3d78b74fb613f5f-120x86.jpg
 			(domain === "medinaa.archolda.com" && src.indexOf("/ime/") >= 0) ||
+			// https://londonsvenskar.com/kultur/files/2018/10/van-gogh-654x441.jpg
+			(domain_nowww === "londonsvenskar.com" && src.indexOf("/files/") >= 0) ||
+			// https://ia.eferrit.com/ia/a3d78b74fb613f5f-1024x682.jpg -- upscaled (nearest)?
+			(domain === "ia.eferrit.com" && src.indexOf("/ia/") >= 0) ||
 			// https://1.soompi.io/wp-content/blogs.dir/8/files/2015/09/HA-TFELT-Wonder-Girls-590x730.jpg -- doesn't work
 			// https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2018/01/GTA-6-Female-Protag-796x417.jpg -- does work
 			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|images|photos|blogs.dir)|\/+uploads)\//.test(src)
