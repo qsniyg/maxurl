@@ -7609,6 +7609,8 @@ var $$IMU_EXPORT$$;
 			// https://gallery.southindianactress.in/2019/11/priya-singh-photos-q9-fashion-studio-launch-21-720x411.jpg
 			//   https://gallery.southindianactress.in/2019/11/priya-singh-photos-q9-fashion-studio-launch-21.jpg
 			domain === "gallery.southindianactress.in" ||
+			// https://ffp4g1ylyit3jdyti1hqcvtb-wpengine.netdna-ssl.com/addons/files/2019/10/bj-160x160.jpg
+			(domain === "ffp4g1ylyit3jdyti1hqcvtb-wpengine.netdna-ssl.com" && /\/addons\/+files\//.test(src)) ||
 			// https://1.soompi.io/wp-content/blogs.dir/8/files/2015/09/HA-TFELT-Wonder-Girls-590x730.jpg -- doesn't work
 			// https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2018/01/GTA-6-Female-Protag-796x417.jpg -- does work
 			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|images|photos|blogs.dir)|\/+uploads)\//.test(src)
@@ -14198,6 +14200,11 @@ var $$IMU_EXPORT$$;
 			// http://www.golocalprov.com/cache/images/cached/cache/images/remote/http_s3.amazonaws.com/images.golocalprov.com/Emma_Watson_dress_360_533_90.jpg
 			//   http://s3.amazonaws.com/images.golocalprov.com/Emma_Watson_dress.jpg
 			domain_nowww === "golocalprov.com" ||
+			// https://d1lfxha3ugu3d4.cloudfront.net/assets/system-images/made/assets/system-images/remote/https_d1lfxha3ugu3d4.cloudfront.net/exhibitions/images/2020_African_Arts_Global_Conversations_41.222_threequarter_right_PS11_1719w_729_800.jpg
+			//   https://d1lfxha3ugu3d4.cloudfront.net/exhibitions/images/2020_African_Arts_Global_Conversations_41.222_threequarter_right_PS11_1719w.jpg
+			// needs to be updated somehow for this url:
+			// https://d1lfxha3ugu3d4.cloudfront.net/assets/system-images/made/assets/system-images/remote/https_d1lfxha3ugu3d4.cloudfront.net/assets/system-images/made/assets/system-images/remote/https_d1lfxha3ugu3d4.cloudfront.net/exhibitions/images/2020_African_Arts_Global_Conversations_41.222_threequarter_right_PS11_1719w_600_658_220_220_c1_c_t_0_0.jpg
+			(domain === "d1lfxha3ugu3d4.cloudfront.net" && /\/assets\/+system-images\/+remote\/+http/.test(src)) ||
 			// https://cdn2.thelineofbestfit.com/images/remote/https_cdn2.thelineofbestfit.com/galleries/2014/11_clean_bandit-bts_rdn1016_bc.jpg
 			//   https://cdn2.thelineofbestfit.com/galleries/2014/11_clean_bandit-bts_rdn1016_bc.jpg
 			(domain_nosub === "thelineofbestfit.com" && domain.match(/^cdn[0-9]*\.thelineofbestfit\.com/))) {
@@ -14208,7 +14215,13 @@ var $$IMU_EXPORT$$;
 			// https://s3.amazonaws.com/lifesite-cache/images/made/images/remote/https_s3.amazonaws.com/lifesite/man_and_woman_arguing_with_signs_810_500_55_s_c1.jpg
 			//   https://s3.amazonaws.com/lifesite/man_and_woman_arguing_with_signs.jpg
 			return src
-				.replace(/.*\/images\/remote\/([^_]*)_(.*?)(?:_[0-9]+_[0-9]+_[0-9]+(?:_[a-z]_[a-z][0-9])?)?(\.[^/.]*)$/, "$1://$2$3");
+				.replace(/.*\/(?:system-)?images\/+remote\/+(https?)_(.*?)(?:(?:_[0-9]+)?_[0-9]+_[0-9]+(?:_[a-z]_[a-z][0-9])?)?(\.[^/.]*)$/, "$1://$2$3");
+		}
+
+		if (domain === "d1lfxha3ugu3d4.cloudfront.net") {
+			// https://d1lfxha3ugu3d4.cloudfront.net/exhibitions/images/2020_African_Arts_Global_Conversations_41.222_threequarter_right_PS11_1719w.jpg
+			//   https://d1lfxha3ugu3d4.cloudfront.net/exhibitions/images/2020_African_Arts_Global_Conversations_41.222_threequarter_right_PS11.jpg
+			return src.replace(/(\/exhibitions\/+images\/+[^/]+)_[0-9]+w(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		}
 
 		if (domain_nosub === "fap.to") {
@@ -45640,6 +45653,73 @@ var $$IMU_EXPORT$$;
 			// https://playboyrussia.com/premium/data/galleries/17000/4s.jpg
 			//   https://playboyrussia.com/premium/data/galleries/17000/4.jpg
 			return src.replace(/(\/data\/+galleries\/+[0-9]+\/+[0-9]+)s(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "animaldiversity.org") {
+			// https://animaldiversity.org/collections/contributors/james_dowlinghealey/Redearedsliders/medium.jpg
+			//   https://animaldiversity.org/collections/contributors/james_dowlinghealey/Redearedsliders/ -- original page
+			//   https://animaldiversity.org/collections/contributors/james_dowlinghealey/Redearedsliders/large.jpg
+			// https://animaldiversity.org/collections/contributors/phil_myers/odonata/Gomphidae-Gomphus/gomphus2319/small.jpg
+			//   https://animaldiversity.org/collections/contributors/phil_myers/odonata/Gomphidae-Gomphus/gomphus2319/large.jpg
+			newsrc = src.replace(/(\/collections\/+contributors\/+(?:[^/]+\/+){2,4})(?:small|medium)(\.[^/.]*)(?:[?#].*)?$/, "$1large$2");
+			if (newsrc !== src)
+				return newsrc;
+
+			match = src.match(/\/collections\/+contributors\/+(?:[^/]+\/+){2,4}(?:small|medium|large)\.[^/.]*(?:[?#].*)?$/);
+			if (match)
+				return {
+					url: src,
+					extra: {
+						page: src.replace(/\/[^/]+(?:[?#].*)?$/, "/")
+					}
+				};
+		}
+
+		if (domain === "api.creativecommons.engineering") {
+			// https://api.creativecommons.engineering/t/http://capl.washjeff.edu/1/l/2985.jpg
+			//   http://capl.washjeff.edu/1/l/2985.jpg
+			return src.replace(/^[a-z]+:\/\/[^/]+\/+t\/+(https?:)/, "$1");
+		}
+
+		if (domain === "capl.washjeff.edu") {
+			// http://capl.washjeff.edu/1/s/2985.jpg
+			//   http://capl.washjeff.edu/browseresults.php?langID=1&photoID=2985 -- original page
+			//   http://capl.washjeff.edu/1/l/2985.jpg
+			newsrc = src.replace(/^([a-z]+:\/\/[^/]+\/+[0-9]+\/+)[sm](\/+[0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1l$2");
+			if (newsrc !== src)
+				return newsrc;
+
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+([0-9]+)\/+([sml])\/+([0-9]+)\.[^/.]*(?:[?#].*)?$/);
+			if (match) {
+				return {
+					url: src,
+					extra: {
+						page: "http://capl.washjeff.edu/browseresults.php?langID=" + match[1] + "&photoID=" + match[3] + "&size=" + match[2]
+					}
+				};
+			}
+		}
+
+		if (domain === "openaccess-cdn.clevelandart.org") {
+			// https://openaccess-cdn.clevelandart.org/1938.56/1938.56_web.jpg
+			//   https://www.clevelandart.org/art/1938.56 -- original page
+			//   https://openaccess-cdn.clevelandart.org/1938.56/1938.56_print.jpg
+			// https://openaccess-cdn.clevelandart.org/1963.256.159.b/1963.256.159.b_web.jpg
+			//   https://www.clevelandart.org/art/1963.256.159.b
+			//   https://piction.clevelandart.org/cma/ump.di?e=4775B2A7B523789E3119B5487BBC26521198A654710B7E2F122B692DBF57BB4A&s=21&se=1331713318&v=&f=1963.256.159.b_o10.jpg
+			newsrc = src.replace(/(\/[0-9.a-z]+)_web(\.[^/.]*)(?:[?#].*)?$/, "$1_print$2");
+			if (newsrc !== src)
+				return newsrc;
+
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+([0-9.a-z]+)\/+/);
+			if (match) {
+				return {
+					url: src,
+					extra: {
+						page: "https://www.clevelandart.org/art/" + match[1]
+					}
+				};
+			}
 		}
 
 
