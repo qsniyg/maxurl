@@ -5398,6 +5398,9 @@ var $$IMU_EXPORT$$;
 			// https://ru-24.ru/_files/styles/origina/public/news/image/pic_5093dfd3fb1ea735b63380a78a3389be.jpg?itok=p5WOiINr
 			//   https://ru-24.ru/_files/news/image/pic_5093dfd3fb1ea735b63380a78a3389be.jpg
 			(domain_nowww === "ru-24.ru" && src.indexOf("/_files/") >= 0) ||
+			// https://www.selenagomez.com/sites/g/files/aaj1261/f/styles/suzuki_opengraph/public/news/201710/IMG_2992.jpg.jpeg?itok=R0NVE31p
+			//   https://www.selenagomez.com/sites/g/files/aaj1261/f/news/201710/IMG_2992.jpg.jpeg
+			(domain_nowww === "selenagomez.com" && src.indexOf("/sites/") >= 0) ||
 			// http://cdn.whodoyouthinkyouaremagazine.com/sites/default/files/imagecache/623px_wide/episode/hewer500.jpg
 			//   http://cdn.whodoyouthinkyouaremagazine.com/sites/default/files/episode/hewer500.jpg
 			// https://www.telugucinema.com/sites/default/files2/styles/media_gallery_thumbnail/public/amy-jackson-instagram1.jpg?itok=nwFhV2Iy
@@ -7950,6 +7953,8 @@ var $$IMU_EXPORT$$;
 			// https://www.huntspost.co.uk/polopoly_fs/1.5817586.1544697986!/image/image.jpg_gen/derivatives/landscape_630/image.jpg
 			//   https://www.huntspost.co.uk/polopoly_fs/1.5817586.1544697986!/image/image.jpg
 			domain_nowww === "huntspost.co.uk" ||
+			// https://daqui.opopular.com.br/polopoly_fs/1.1791604.1557142930!/image/image.jpg_gen/derivatives/landscape_420/image.jpg
+			//domain_nosub === "opopular.com.br" ||
 			// http://p1014p.quotidiano.net/polopoly_fs/1.3245998.1499154460!/httpImage/image.JPG_gen/derivatives/gallery_800/image.JPG -- doesn't work
 			//(domain_nosub === "quotidiano.net" && src.indexOf("/polopoly_fs/") >= 0) ||
 			// http://www.edp24.co.uk/polopoly_fs/1.5540960!/image/image.jpg_gen/derivatives/landscape_630/image.jpg
@@ -27352,12 +27357,15 @@ var $$IMU_EXPORT$$;
 			// https://thefappening.rocks/albums/_data/i/upload/2017/08/05/20170805192918-3a299da8-me.jpg
 			//   https://thefappening.rocks/albums/upload/2017/08/05/20170805192918-3a299da8.jpg
 			domain_nowww === "thefappening.rocks" ||
+			// http://gallery.cyclegarden.com/GuzziGirls/_data/i/galleries/GuzziGirls/Evelin_Rain/rs7310-la.jpg
+			//   http://gallery.cyclegarden.com/GuzziGirls/galleries/GuzziGirls/Evelin_Rain/rs7310.jpg
+			domain === "gallery.cyclegarden.com" ||
 			src.match(/\/_data\/+i\/+upload\/+/)) {
 			// http://www.amuro.fr/_data/i/upload/2011/08/14/20110814075347-e08e571c-cu_s9999x160.jpg
 			//   http://www.amuro.fr/upload/2011/08/14/20110814075347-e08e571c.jpg
 			// http://www.amuro.fr/_data/i/upload/2013/09/11/20130911151431-507b3232-cu_s9999x160.jpg
 			//   http://www.amuro.fr/upload/2013/09/11/20130911151431-507b3232.jpg
-			newsrc = src.replace(/(\/_data\/+i\/+upload\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}[0-9]{10,}-[0-9a-f]+)-th\./, "$1-me.");
+			newsrc = src.replace(/(\/_data\/+i\/+(?:upload|galleries)\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}[0-9]{10,}-[0-9a-f]+)-th\./, "$1-me.");
 			if (newsrc !== src)
 				return newsrc;
 
@@ -27365,7 +27373,7 @@ var $$IMU_EXPORT$$;
 			if (newsrc !== src)
 				return newsrc;
 
-			newsrc = src.replace(/\/_data\/+i(\/+upload\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}[0-9]{10,}-[0-9a-f]+)-(?:[^/.]*|cu_s[0-9]+x[0-9]+)(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+			newsrc = src.replace(/\/_data\/+i(\/+(?:upload|galleries)\/+(?:[0-9]{4}\/+(?:[0-9]{2}\/+){2}[0-9]{10,}-[0-9a-f]+|[^/]+\/+[^/]+\/+[^/]+))-(?:[^/.]*|cu_s[0-9]+x[0-9]+)(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
 			if (newsrc !== src)
 				return newsrc;
 		}
