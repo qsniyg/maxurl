@@ -17246,10 +17246,10 @@ var $$IMU_EXPORT$$;
 			return {
 				url: src.replace(/_(?:[a-z]|[0-9])(\.[^/.]*)/, "$1"),
 				bad_if: [{
+					// This is too broad, but I can't find another consistent way without requiring CRCs
 					headers: {
 						"content-length": "9408",
-						"content-type": "image/gif",
-						"last-modified": "Thu, 02 Mar 2017 08:43:50 GMT"
+						"content-type": "image/gif"
 					}
 				}]
 			};
@@ -45782,6 +45782,93 @@ var $$IMU_EXPORT$$;
 			// http://www.emovieposter.com/images/moviestars/AA191201/200/french_1p_batman_linen_WC22826_B.jpg
 			//   http://www.emovieposter.com/images/moviestars/AA191201/french_1p_batman_linen_WC22826_B.jpg
 			return src.replace(/(\/images\/+[^/]+\/+[A-Z0-9]+\/+)[0-9]+\/+([^/]+\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nosub === "dimu.org") {
+			// https://dms-cf-08.dimu.org/image/012uMWqAqSiU
+			//   https://dms-cf-08.dimu.org/image/012uMWqAqSiU?dimension=max
+			//   https://digitaltmuseum.org/011015423354/fo207298dia -- original page
+			//   https://dms-cf-08.dimu.org/image/012uMWqAqSiU?filename=Fo207298DIA.jpg&dimension=max -- forces download
+			return src.replace(/^([a-z]+:\/\/[^/]+\/+image\/+[^/]+?)(?:[?#].*)?$/, "$1?dimension=max");
+		}
+
+		if (domain_nowww === "flora-on.pt") {
+			// https://flora-on.pt/Galium-glaucum_low_pzHd.jpg -- no watermark
+			//   https://flora-on.pt/Galium-glaucum_ori_pzHd.jpg -- watermark
+			//   https://flora-on.pt/Galium-glaucum_pzHd.jpg -- smaller, watermark
+			// https://flora-on.pt/Galium-glaucum-australe_JNyR.jpg
+			newsrc = src.replace(/(:\/\/[^/]+\/+[^/]+?)(?:_(?:low|ori))?(_[a-zA-Z0-9]+)(\.jpg)(?:down)?(?:[?#].*)?$/, "$1_ori$2$3");
+			if (newsrc !== src)
+				return newsrc;
+
+			match = src.match(/:\/\/[^/]+\/+[^/]+?(?:_(?:low|ori))?_([a-zA-Z0-9]+)\.jpg(?:down)?(?:[?#].*)?$/);
+			if (match) {
+				return {
+					url: src,
+					extra: {
+						page: "https://flora-on.pt/#/h" + match[1]
+					}
+				};
+			}
+		}
+
+		if (domain_nosub === "geograph.org.uk" && /^s[0-9]*\./.test(domain)) {
+			// https://s0.geograph.org.uk/geophotos/02/57/05/2570540_07389d87.jpg
+			//   https://www.geograph.org.uk/reuse.php?id=2570540&download=07389d87
+			//   https://www.geograph.org.uk/photo/2570540 -- original page
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+geophotos\/+(?:[0-9]{2}\/+){3}([0-9]+)_([0-9a-f]+)\./);
+			if (match) {
+				return {
+					url: "https://www.geograph.org.uk/reuse.php?id=" + match[1] + "&download=" + match[2],
+					extra: {
+						page: "https://www.geograph.org.uk/photo/" + match[1]
+					}
+				};
+			}
+		}
+
+		if (domain === "collections.museumvictoria.com.au") {
+			// https://collections.museumvictoria.com.au/content/media/7/67857-thumbnail.jpg
+			//   https://collections.museumvictoria.com.au/content/media/7/67857-large.jpg
+			return src.replace(/(\/content\/+media\/+[^/]+\/+[0-9]+-)(?:thumbnail|medium)(\.[^/.]*)(?:[?#].*)?$/, "$1large$2");
+		}
+
+		if (domain_nowww === "phylopic.org") {
+			// http://phylopic.org/assets/images/submissions/71b7c167-ffd2-4748-889a-3ace8935424f.512.png
+			//   http://phylopic.org/assets/images/submissions/71b7c167-ffd2-4748-889a-3ace8935424f.svg
+			//   http://phylopic.org/image/71b7c167-ffd2-4748-889a-3ace8935424f/ -- original page
+			newsrc = src.replace(/(\/assets\/+images\/+submissions\/+[-0-9a-f]{20,})\.[0-9]+\.png(?:[?#].*)?$/, "$1.svg");
+			if (newsrc !== src)
+				return newsrc;
+
+			match = src.match(/\/assets\/+images\/+submissions\/+([-0-9a-f]{20,})\./);
+			if (match) {
+				return {
+					url: src,
+					extra: {
+						page: "http://phylopic.org/image/" + match[1]
+					}
+				};
+			}
+		}
+
+		if (domain_nowww === "svgsilh.com") {
+			// https://svgsilh.com/png/2619140-9e9e9e.png
+			//   https://svgsilh.com/svg/2619140-9e9e9e.svg
+			//   https://svgsilh.com/9e9e9e/image/2619140.html -- original page
+			newsrc = src.replace(/\/png\/+([0-9]+)-([0-9a-f]+)\.png(?:[?#].*)?$/, "/svg/$1-$2.svg");
+			if (newsrc !== src)
+				return newsrc;
+
+			match = src.match(/:\/\/[^/]+\/+[a-z]+\/+([0-9]+)-([0-9a-f]+)\.[a-z]+(?:[?#].*)?$/);
+			if (match) {
+				return {
+					url: src,
+					extra: {
+						page: "https://svgsilh.com/" + match[2] + "/image/" + match[1] + ".html"
+					}
+				};
+			}
 		}
 
 
