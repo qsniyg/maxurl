@@ -14230,7 +14230,10 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/exhibitions\/+images\/+[^/]+)_[0-9]+w(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		}
 
-		if (domain_nosub === "fap.to") {
+		if (domain_nosub === "fap.to" ||
+			// http://images.imagefap.com/images/thumb/62/114/1146416891.jpg
+			//   http://images.imagefap.com/images/full/62/114/1146416891.jpg
+			(domain_nosub === "imagefap.com" && /^(?:www|images)\./.test(domain))) {
 			// http://x3.fap.to/images/thumb/62/114/1146416891.jpg
 			//   http://x3.fap.to/images/full/62/114/1146416891.jpg
 			// http://x.fap.to/h175q90/images/full/57/401/401519803.jpg
@@ -14241,6 +14244,11 @@ var $$IMU_EXPORT$$;
 				.replace(/:\/\/x[0-9]*\./, "://x.") // temporary error?
 				.replace(/(:\/\/[^/]*\/)[a-z0-9.]+\/images\//, "$1images/")
 				.replace(/\/images\/[a-z]*\//, "/images/full/");
+		}
+
+		if (domain === "cdn.imagefap.com") {
+			// cdn.* contains a required signature (?end=...&secure=...), but images.* works
+			return src.replace(/:\/\/cdn\.(.*?)(?:[?#].*)?$/, "://images.$1");
 		}
 
 		if (domain === "www.gannett-cdn.com" &&
@@ -45759,6 +45767,12 @@ var $$IMU_EXPORT$$;
 					}
 				};
 			}
+		}
+
+		if (domain_nowww === "emovieposter.com") {
+			// http://www.emovieposter.com/images/moviestars/AA191201/200/french_1p_batman_linen_WC22826_B.jpg
+			//   http://www.emovieposter.com/images/moviestars/AA191201/french_1p_batman_linen_WC22826_B.jpg
+			return src.replace(/(\/images\/+[^/]+\/+[A-Z0-9]+\/+)[0-9]+\/+([^/]+\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		}
 
 
