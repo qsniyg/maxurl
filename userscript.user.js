@@ -8629,6 +8629,9 @@ var $$IMU_EXPORT$$;
 				url: src.replace(/\/((?:v[0-9]*-)?[0-9a-f]+)(?:_[^/._]*)?(\.[^/.]*)$/, "/$1_r$2"),
 				headers: {
 					Referer: ""
+				},
+				referer_ok: {
+					same_domain: true
 				}
 			};
 		}
@@ -8649,7 +8652,7 @@ var $$IMU_EXPORT$$;
 			return {
 				url: src.replace(/_[^/_]*$/, ""),
 				headers: {
-					"Referer": ""
+					Referer: ""
 				}
 			};
 			// return src.replace(/_fw[0-9]*$/, "");
@@ -9185,13 +9188,11 @@ var $$IMU_EXPORT$$;
 			// https://cdn.worldcosplay.net/553279/ydllsnlmqigtzjdeycnoucmbtreadgeplevutcww-740.jpg
 			//   https://cdn.worldcosplay.net/553279/ydllsnlmqigtzjdeycnoucmbtreadgeplevutcww-3000.jpg
 			domain === "cdn.worldcosplay.net") {
+			newsrc = src;
 			if (src.indexOf("/max-1200/") >= 0) {
 				// https://wc-ahba9see.c.sakurastorage.jp/max-1200/59530/e929c45f84ace23cf416c2b6fc1c1eacb34f20bf-350x600.jpg
 				//   https://wc-ahba9see.c.sakurastorage.jp/max-1200/59530/e929c45f84ace23cf416c2b6fc1c1eacb34f20bf-1200.jpg
-				return {
-					url: src.replace(/-[0-9a-z]+(\.[^/.]*)$/, "-1200$1"),
-					can_head: false
-				};
+				newsrc = src.replace(/-[0-9a-z]+(\.[^/.]*)$/, "-1200$1");
 			} else {
 				// https://wc-ahba9see.c.sakurastorage.jp/533191/ebqzwxdflpsovyghbvfmpvzowripdfdorrlkwogi-350x600.jpg
 				//   https://wc-ahba9see.c.sakurastorage.jp/533191/ebqzwxdflpsovyghbvfmpvzowripdfdorrlkwogi-3000.jpg
@@ -9200,14 +9201,19 @@ var $$IMU_EXPORT$$;
 				// doesn't work:
 				// https://wc-ahba9see.c.sakurastorage.jp/40021/5a4bd340b2c95e674a1816f9adece947d06b1df2-100.jpg
 				//   https://wc-ahba9see.c.sakurastorage.jp/40021/5a4bd340b2c95e674a1816f9adece947d06b1df2-3000.jpg -- 404
-				return {
-					url: src.replace(/-[0-9a-z]+(\.[^/.]*)$/, "-3000$1"),
-					can_head: false,
-					headers: {
-						Referer: ""
-					}
-				};
+				newsrc = src.replace(/-[0-9a-z]+(\.[^/.]*)$/, "-3000$1");
 			}
+
+			return {
+				url: newsrc,
+				can_head: false,
+				headers: {
+					Referer: ""
+				},
+				referer_ok: {
+					same_domain: true
+				}
+			};
 		}
 
 		if (domain_nowww === "nautiljon.com" && src.match(/\/images[a-z]*\//)) {
@@ -17099,6 +17105,9 @@ var $$IMU_EXPORT$$;
 					url: newsrc,
 					headers: {
 						Referer: "https://www.pichunter.com/"
+					},
+					referer_ok: {
+						same_domain: true
 					}
 				};
 			}
