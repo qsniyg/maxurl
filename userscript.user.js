@@ -23914,14 +23914,38 @@ var $$IMU_EXPORT$$;
 			return src.replace(/!.*/, "");
 		}
 
-		if (domain === "img.wallpapersafari.com") {
+
+		if (domain === "img.wallpapersafari.com" ||
+			// https://cdn.wallpapersafari.com/2/15/jLsJPf.jpg
+			//   https://wallpapersafari.com/w/jLsJPf -- original page
+			domain === "cdn.wallpapersafari.com") {
 			// https://img.wallpapersafari.com/desktop/1536/864/85/66/Na4mby.jpg
 			//   https://img.wallpapersafari.com/85/66/Na4mby.jpg
 			// https://img.wallpapersafari.com/img720/12/74/SW1XU0.jpg
 			//   https://img.wallpapersafari.com/12/74/SW1XU0.jpg
-			return src
+			newsrc = src
 				.replace(/\/img[0-9]+\//, "/")
-				.replace(/\/desktop\/[0-9]+\/[0-9]+\//, "/");
+				.replace(/\/desktop\/+[0-9]+\/+[0-9]+\//, "/");
+			if (newsrc !== src)
+				return newsrc;
+
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+[0-9]+\/+[0-9]+\/+([^/.]+)\.[^/.]+$/);
+			if (match) {
+				return {
+					url: src,
+					extra: {
+						page: "https://www.wallpapersafari.com/w/" + match[1]
+					}
+				};
+			}
+		}
+
+		if (domain === "mcdn.wallpapersafari.com") {
+			// https://mcdn.wallpapersafari.com/medium/35/4/UEQyne.jpg
+			//   https://cdn.wallpapersafari.com/35/4/UEQyne.jpg
+			// https://mcdn.wallpapersafari.com/small/41/65/C0aESe.jpg
+			//   https://cdn.wallpapersafari.com/41/65/C0aESe.jpg
+			return src.replace(/:\/\/mcdn(\.[^/]*\/)(?:medium|small)\/+/, "://cdn$1");
 		}
 
 		if (domain_nosub === "fjcdn.com" &&
@@ -33208,14 +33232,6 @@ var $$IMU_EXPORT$$;
 			// http://i2.2photo.ru/medium/3/s/559587.jpg
 			//   http://i2.2photo.ru/3/s/559587.jpg
 			return src.replace(/(:\/\/[^/]*)\/[a-z]+\/+(.\/+.\/+[0-9]+\.)/, "$1/$2");
-		}
-
-		if (domain === "mcdn.wallpapersafari.com") {
-			// https://mcdn.wallpapersafari.com/medium/35/4/UEQyne.jpg
-			//   https://cdn.wallpapersafari.com/35/4/UEQyne.jpg
-			// https://mcdn.wallpapersafari.com/small/41/65/C0aESe.jpg
-			//   https://cdn.wallpapersafari.com/41/65/C0aESe.jpg
-			return src.replace(/:\/\/mcdn(\.[^/]*\/)(?:medium|small)\/+/, "://cdn$1");
 		}
 
 		if (domain === "m.salon24.pl") {
