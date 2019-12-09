@@ -11,6 +11,12 @@ var request_headers = {};
 var override_headers = {};
 var reqid_to_redid = {};
 
+var storage = chrome.storage.sync;
+if (!storage) {
+	console.warn("Unable to use sync storage, using local storage instead");
+	storage = chrome.storage.local;
+}
+
 var nir_debug = false;
 var debug = function() {
 	if (nir_debug) {
@@ -189,7 +195,10 @@ var do_request = function(request, sender) {
 
 	if (!cookie_overridden) {
 		get_cookies(request.url, function(cookies) {
-			xhr.setRequestHeader("IMU--Cookie", create_cookieheader(cookies));
+			if (cookies !== null) {
+				xhr.setRequestHeader("IMU--Cookie", create_cookieheader(cookies));
+			}
+
 			xhr.send(request.data);
 		}, { tabid: sender.tab.id, store: sender.tab.cookieStoreId });
 	} else {
@@ -638,29 +647,50 @@ function get_cookies(url, cb, options) {
 	if (!options) options = {};
 
 	var end = function (store) {
-		chrome.cookies.getAll({ url: url, storeId: store, firstPartyDomain: null }, function (cookies) {
+		var base_options = { url: url, storeId: store };
+
+		var new_options = JSON.parse(JSON.stringify(base_options));
+		new_options.firstPartyDomain = null;
+
+		var endcb = function(cookies) {
 			debug("get_cookies: " + url, cookies, store);
 			cb(JSON.parse(JSON.stringify(cookies)));
-		});
+		};
+
+		try {
+			chrome.cookies.getAll(new_options, endcb);
+		} catch (e) {
+			try {
+				chrome.cookies.getAll(base_options, endcb);
+			} catch (e) {
+				console.error(e);
+				cb(null);
+			}
+		}
 	};
 
 	if (options.tabid && !options.store) {
 		// TODO: cache
-		chrome.cookies.getAllCookieStores(function(stores) {
-			var store = null;
-			for (var i = 0; i < stores.length; i++) {
-				if (stores[i].tabIds.indexOf(options.tabid) >= 0) {
-					store = stores[i].id;
-					break;
+		try {
+			chrome.cookies.getAllCookieStores(function (stores) {
+				var store = null;
+				for (var i = 0; i < stores.length; i++) {
+					if (stores[i].tabIds.indexOf(options.tabid) >= 0) {
+						store = stores[i].id;
+						break;
+					}
 				}
-			}
 
-			if (store) {
-				return end(store);
-			} else {
-				return end();
-			}
-		});
+				if (store) {
+					return end(store);
+				} else {
+					return end();
+				}
+			});
+		} catch (e) {
+			console.error(e);
+			end();
+		}
 	} else {
 		end(options.store);
 	}
@@ -702,8 +732,17 @@ chrome.runtime.onMessage.addListener((message, sender, respond) => {
 		});
 
 		return true;
+	} else if (message.type === "getvalue") {
+		storage.get(message.data, function(response) {
+			respond({
+				type: "getvalue",
+				data: response
+			});
+		});
+
+		return true;
 	} else if (message.type === "setvalue") {
-		chrome.storage.sync.set(message.data, function() {
+		storage.set(message.data, function() {
 			if ("extension_contextmenu" in message.data) {
 				if (JSON.parse(message.data.extension_contextmenu)) {
 					create_contextmenu();

@@ -26,7 +26,12 @@ document.getElementById("highlightimages").onclick = function() {
 };
 
 function get_option(name, cb, _default) {
-    chrome.storage.sync.get([name], function(response) {
+    chrome.runtime.sendMessage({
+        type: "getvalue",
+        data: [name]
+    }, function(response) {
+        response = response.data;
+
         var value = _default;
 
         if (Object.keys(response).length > 0 && response[name] !== undefined) {
@@ -37,12 +42,13 @@ function get_option(name, cb, _default) {
     });
 }
 
-function set_option(name, value, cb) {
+function set_option(name, value) {
     var kv = {};
     kv[name] = JSON.stringify(value);
-    chrome.storage.sync.set(kv, function(result) {
-        if (cb)
-            cb(result);
+
+    chrome.runtime.sendMessage({
+        type: "setvalue",
+        data: kv
     });
 }
 

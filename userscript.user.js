@@ -49266,7 +49266,11 @@ var $$IMU_EXPORT$$;
 
 	function get_value(key, cb) {
 		if (is_extension) {
-			chrome.storage.sync.get([key], function(response) {
+			extension_send_message({
+				type: "getvalue",
+				data: [key]
+			}, function(response) {
+				response = response.data;
 				cb(parse_value(response[key]));
 			});
 		} else if (typeof GM_getValue !== "undefined" &&
