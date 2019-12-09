@@ -9057,10 +9057,15 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "lastfm-img2.akamaized.net" ||
+			// thanks to TheLastZombie on github: https://github.com/qsniyg/maxurl/pull/171
+			// https://lastfm.freetls.fastly.net/i/u/300x300/12b1bfb5e2ea09bf084888c6542de63d.jpg
+			//   https://lastfm.freetls.fastly.net/i/u/34s/12b1bfb5e2ea09bf084888c6542de63d.jpg
+			//   https://lastfm.freetls.fastly.net/i/u/12b1bfb5e2ea09bf084888c6542de63d.jpg
+			domain === "lastfm.freetls.fastly.net" ||
 			// http://img2-ak.lst.fm/i/u/770x0/2c2ffdfa64ad4db8d6b5e8c47474fbe8.jpg
 			//   http://img2-ak.lst.fm/i/u/2c2ffdfa64ad4db8d6b5e8c47474fbe8.jpg
 			domain_nosub === "lst.fm") {
-			return src.replace(/\/i\/+u\/+[^/]*\//, "/i/u/");
+			return src.replace(/\/i\/+u\/+(?:[0-9]+x[0-9]+|[0-9]+s)\//, "/i/u/");
 		}
 
 		if (domain_nosub === "myspacecdn.com" &&
