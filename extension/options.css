@@ -336,7 +336,7 @@ code {
 label, button, .button, select {
   display: inline-block;
   padding: 6px 14px;
-  margin: 0em .3em;
+  margin: 0px 5px;
   border: 1px solid #0af;
   cursor: pointer;
   background: none;
@@ -357,7 +357,7 @@ button:active, .button:active {
   color: #aaa;
 }
 
-.disabled label, .disabled button, .disabled input, .disabled select {
+.disabled label, .disabled button, .disabled .button, .button.disabled, .disabled input, .disabled select {
   cursor: default;
   border: 1px solid #aaa !important;
 }
@@ -575,6 +575,10 @@ input:checked + label, button, .button {
 #popup {
   height: auto;
   min-height: initial;
+}
+
+#popup, #popup a, #popup span {
+  line-height: 1;
   font-size: 16px;
 }
 
@@ -583,13 +587,13 @@ input:checked + label, button, .button {
 }
 
 #popup #logo {
-  padding: 0.5em;
+  padding: 8px;
   cursor: pointer;
   /*margin-bottom: .5em;*/
 }
 
 #popup #logo img {
-  padding: 0.5em;
+  padding: 8px;
 }
 
 #popup #enabled-state {
@@ -597,6 +601,7 @@ input:checked + label, button, .button {
   color: #0af;
   font-size: 12px;
   display: block;
+  margin-bottom: 5px;
 }
 
 #popup #enabled-state.disabled {
@@ -605,7 +610,7 @@ input:checked + label, button, .button {
 
 #popup #buttons {
   margin: 0;
-  margin-bottom: 0.5em;
+  margin-bottom: 10px;
 }
 
 #popup #buttons li {
@@ -614,9 +619,14 @@ input:checked + label, button, .button {
   margin: 0;
 }
 
+#popup #buttons .button, #popup #buttons button {
+  padding: 8px 12px;
+  line-height: 1;
+}
+
 #popup #footer {
-  margin-top: 0.5em;
-  margin-bottom: 0.5em;
+  margin-top: 8px;
+  margin-bottom: 8px;
 }
 
 #popup #footer .line {
@@ -627,8 +637,8 @@ input:checked + label, button, .button {
 #popup #footer a {
   color: #333;
   font-size: 13px;
-  margin-left: .5em;
-  margin-right: .5em;
+  margin-left: 6px;
+  margin-right: 6px;
 }
 
 /* Disable image preview */
