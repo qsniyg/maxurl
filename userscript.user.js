@@ -469,7 +469,11 @@ var $$IMU_EXPORT$$;
 		} else if (typeof x === "object") {
 			result = {};
 			for (var key in x) {
-				result[key] = deepcopy(x[key], options);
+				try {
+					result[key] = deepcopy(x[key], options);
+				} catch (e) {
+					result[key] = x[key];
+				}
 			}
 			return result;
 		} else {
@@ -47604,7 +47608,12 @@ var $$IMU_EXPORT$$;
 			if (options.fill_object) {
 				if (_nir_debug_)
 					console_log("finalize (fillobj(newhref, currentobj))", deepcopy(newhref), deepcopy(currentobj));
-				endhref = fillobj(deepcopy(newhref), currentobj);
+
+				if (used_cache && newhref === null) {
+					endhref = deepcopy(currentobj);
+				} else {
+					endhref = fillobj(deepcopy(newhref), currentobj);
+				}
 
 				if (options.include_pastobjs) {
 					for (var i = 0; i < pastobjs.length; i++) {
