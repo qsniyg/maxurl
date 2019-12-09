@@ -45895,7 +45895,7 @@ var $$IMU_EXPORT$$;
 		if (domain === "lastfm.freetls.fastly.net") {
 			// https://lastfm.freetls.fastly.net/i/u/300x300/12b1bfb5e2ea09bf084888c6542de63d.jpg
 			//   https://lastfm.freetls.fastly.net/i/u/12b1bfb5e2ea09bf084888c6542de63d.jpg
-			return src.replace(/\/\d+x\d+\//, "/");
+			return src.replace(/\/(\d+x\d+|\d+s)\//, "/");
 		}
 
 
