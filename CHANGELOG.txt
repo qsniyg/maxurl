@@ -1,3 +1,22 @@
+0.11.17
+
+New features:
+
+ * Support for ~30 new websites (using ~15 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including DeviantART)
+
+Bugfixes:
+
+ * Firefox <59 is supported again (following a regression from 0.11.16)
+ * Image popup positioning is much improved
+ * Extension popup CSS is more consistent across various setups
+ * URL cache is better handled (fixes repeat popups on sites like Twitter)
+
+---
+
 0.11.16
 
 New features:

@@ -244,6 +244,7 @@ anewsa.com
 anh.eva.vn
 anidb.net
 aniimg.com
+animaldiversity.org
 animate-onlineshop.jp
 anime-fresh.ru
 anime-pictures.net
@@ -271,6 +272,7 @@ ap.imagensbrasil.org
 ap7am.com
 apachan.net
 apherald.com
+api.creativecommons.engineering
 api.fidji.lefigaro.fr
 api.hdwallpapers5k.com
 api.ning.com
@@ -703,6 +705,7 @@ canews.kr
 canonnews.com
 capebreton.lokol.me
 caping.co.id
+capl.washjeff.edu
 captaingoodlink.com
 cargocollective.com
 caribbeancompr.com
@@ -833,6 +836,7 @@ cdn.idntimes.com
 cdn.igromania.ru
 cdn.iguang.co
 cdn.image.st-hatena.com
+cdn.imagefap.com
 cdn.imagepush.to
 cdn.imvges.com
 cdn.indicium.nu
@@ -960,6 +964,7 @@ cdn.vthumbs.com
 cdn.wallpaper.com
 cdn.wallpaperdirect.com
 cdn.wallpaperjam.com
+cdn.wallpapersafari.com
 cdn.wearehairy.com
 cdn.webnoviny.sk
 cdn.webshopapp.com
@@ -1135,6 +1140,7 @@ coconala.akamaized.net
 coedcherry.com
 coffelt.me
 coleman-rayner.com
+collections.museumvictoria.com.au
 collinsdictionary.com
 colors.life
 colorwallpaper.net
@@ -1241,6 +1247,7 @@ d1g.com
 d1in1v57myx5v.cloudfront.net
 d1jo5b1m9v3ic.cloudfront.net
 d1kls9wq53whe1.cloudfront.net
+d1lfxha3ugu3d4.cloudfront.net
 d1lofqbqbj927c.cloudfront.net
 d1nslcd7m2225b.cloudfront.net
 d1o73ibskzeirn.cloudfront.net
@@ -1388,6 +1395,7 @@ diariorepublica.com.ar
 diarioshow.com
 diariouno.com.ar
 diasp.org
+dientumaytinh.com
 dienvienvietnam.vn
 dieta.pourfemme.it
 digi-film.ro
@@ -1397,6 +1405,7 @@ digitalchosun.dizzo.com
 digitalimagemakerworld.com
 digitaltrends.com
 dimg.donga.com
+dimu.org
 dimwhp0w2rs83.cloudfront.net
 dingo.care2.com
 dingyue.ws.126.net
@@ -1572,6 +1581,7 @@ embedly.massrelevance.com
 embedwistia-a.akamaihd.net
 emerge-tech.s3.amazonaws.com
 emlakkulisi.com
+emovieposter.com
 empireposter.de
 en.luxuretv.com
 energyfm.ru
@@ -1708,6 +1718,7 @@ ferra.ru
 festivalteen.com.br
 fetcher-cdn.nullmu.com
 fetv.co.kr
+ffp4g1ylyit3jdyti1hqcvtb-wpengine.netdna-ssl.com
 ffw.uol.com.br
 fhg.asiansexdiary.com
 fhg.avidolz.com
@@ -1786,6 +1797,7 @@ flipagramcdn.com
 flipwallpapers.com
 flixcart.com
 flixster.com
+flora-on.pt
 flyhighstore.pl
 fm.cnbc.com
 fmyokohama.jp
@@ -1897,6 +1909,7 @@ galleries.sophiassexylegwear.com
 gallerist.s3.amazonaws.com
 gallery-cdn.tiscali.it
 gallery.123telugu.com
+gallery.cyclegarden.com
 gallery.greatandhra.com
 gallery.ru
 gallery.southindianactress.in
@@ -1947,6 +1960,7 @@ genkcdn.vn
 gentside.co.uk
 geo-media.beatport.com
 geodomehome.org
+geograph.org.uk
 get-the-look.ca
 getbarrel.com
 getfile.fmkorea.com
@@ -2172,6 +2186,7 @@ hoteljardinlebrea.com
 hotflick.net
 hotflicknet.s3.amazonaws.com
 hothag.com
+hotmags.xyz
 hotnessrater.com
 hotnewhiphop.com
 hotnews.bg
@@ -2315,6 +2330,7 @@ i.warosu.org
 i.wgirlz.us
 i.widelec.org
 i.wpimg.pl
+ia.eferrit.com
 ia.tmgrup.com.tr
 iaahbr.tmgrup.com.tr
 iansphoto.in
@@ -2468,6 +2484,7 @@ imagebox.cz.osobnosti.cz
 imagecollect.com
 imagecurl.com
 imagedecode.com
+imagefap.com
 imageflux.jp
 imagelab.nownews.com
 imagenes-cdn.diarioinformacion.com
@@ -3237,6 +3254,7 @@ jpc.de
 jpcoast.com
 jpgravure.com
 jpimedia.uk
+jpl.nasa.gov
 jpopasia.com
 jpstore.dwango.jp
 jrimage.dongascience.com
@@ -3378,6 +3396,7 @@ lasillarota.com
 lasillarotarm.blob.core.windows.net.optimalcdn.com
 lastampa.it
 lastfm-img2.akamaized.net
+lastfm.freetls.fastly.net
 latestwall.com
 latinacelebrities.com
 lattepic.s3.amazonaws.com
@@ -3449,6 +3468,7 @@ lohas.nicoseiga.jp
 loki.zhibotie.net
 lolcow.farm
 lolzilla.net
+londonsvenskar.com
 longroom.com
 longtake.it
 longwallpapers.com
@@ -3750,6 +3770,7 @@ medias.unifrance.org
 mediaslide-europe.storage.googleapis.com
 mediavida.com
 mediavillage.com
+medinaa.archolda.com
 medium.com
 meduza.io
 meetmecdna.com
@@ -4178,6 +4199,7 @@ onsugar.com
 onthemoveworld.com
 op.gg
 opa.kg
+openaccess-cdn.clevelandart.org
 oplace.ru
 opt.toiimg.com
 orsm.net
@@ -4282,6 +4304,7 @@ photobucket.com
 photofiles.alphacoders.com
 photographers.ua
 photohito.k-img.com
+photojournal.jpl.nasa.gov
 photoofnude.com
 photorator.com
 photoresources.wtatennis.com
@@ -4300,6 +4323,7 @@ photoshelter.com
 photosight.ru
 photosynthesis.bg
 photozou.jp
+phylopic.org
 pic-b.com
 pic-bucket.ws.126.net
 pic-cdn.35pic.com
@@ -4385,6 +4409,7 @@ pixroute.com
 pixsell.hr
 pl.scdn.co
 plasticsurgerystar.com
+playboyrussia.com
 playground33.com
 playstationlifestyle.net
 plaza.jp.rakuten-static.com
@@ -4805,6 +4830,7 @@ segre.to
 segye.com
 segyelocalnews.com
 seichimap.jp
+selenagomez.com
 selenagomeznude.club
 selfimg.com.cn
 semainedelacritique.com
@@ -5259,6 +5285,7 @@ superwallpapers.in
 suryaa.com
 sutki.net
 suzisporn.com
+svgsilh.com
 svirtus.cdnvideo.ru
 svtstatic.se
 swagup.co.kr
