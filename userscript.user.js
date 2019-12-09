@@ -50125,6 +50125,7 @@ var $$IMU_EXPORT$$;
 				//disable_click = true;
 
 
+				var outer_thresh = 16;
 				var border_thresh = 20;
 				var top_thresh = 30;
 				var top_mb = top_thresh - border_thresh;
@@ -50149,7 +50150,7 @@ var $$IMU_EXPORT$$;
 					vh = viewport[1];
 
 					vw -= border_thresh * 2;
-					vh -= border_thresh - top_thresh;
+					vh -= border_thresh + top_thresh;
 
 					v_mx = Math.min(vw, Math.max(x - border_thresh, 0));
 					v_my = Math.min(vh, Math.max(y - top_thresh, 0));
@@ -50236,11 +50237,11 @@ var $$IMU_EXPORT$$;
 				var mouseover_position = get_single_setting("mouseover_position");
 
 				if (mouseover_position === "cursor") {
-					set_top (sct + Math.min(Math.max((y - sct) - (imgh / 2), 0), Math.max(vh - imgh, 0)));
-					set_left(scl + Math.min(Math.max((x - scl) - (imgw / 2), 0), Math.max(vw - imgw, 0)));
+					set_top (sct + Math.min(Math.max(v_my - (imgh / 2), 0), Math.max(vh - imgh, 0)));
+					set_left(scl + Math.min(Math.max(v_mx - (imgw / 2), 0), Math.max(vw - imgw, 0)));
 				} else if (mouseover_position === "center") {
-					set_top (sct + Math.min(Math.max(((vh / 2) - sct) - (imgh / 2), 0), Math.max(vh - imgh, 0)));
-					set_left(scl + Math.min(Math.max(((vw / 2) - scl) - (imgw / 2), 0), Math.max(vw - imgw, 0)));
+					set_top (sct + Math.min(Math.max((vh / 2) - (imgh / 2), 0), Math.max(vh - imgh, 0)));
+					set_left(scl + Math.min(Math.max((vw / 2) - (imgw / 2), 0), Math.max(vw - imgw, 0)));
 				} else if (mouseover_position === "beside_cursor") {
 					// TODO: maybe improve this to be more interpolated?
 
@@ -50249,16 +50250,21 @@ var $$IMU_EXPORT$$;
 
 					var cursor_thresh = border_thresh;
 
+					var ovw = vw - cursor_thresh;
+					var ovh = vh - cursor_thresh;
+
+					calc_imghw_for_fit(ovw, ovh);
+
 					for (var loop_i = 0; loop_i < 16; loop_i++) {
 						if (y > viewport[1] / 2) {
 							popupy = v_my - imgh - cursor_thresh;
-						} else {
+						} else if (popupy === undefined) {
 							popupy = v_my + cursor_thresh;
 						}
 
 						if (x > viewport[0] / 2) {
 							popupx = v_mx - imgw - cursor_thresh;
-						} else {
+						} else if (popupx === undefined) {
 							popupx = v_mx + cursor_thresh;
 						}
 
@@ -50266,8 +50272,8 @@ var $$IMU_EXPORT$$;
 							popupy = 0;
 
 							if (settings.mouseover_prevent_cursor_overlap) {
-								calc_imghw_for_fit(undefined, v_my);
-								continue;
+								calc_imghw_for_fit(ovw, v_my);
+								//continue;
 							}
 						}
 
@@ -50275,30 +50281,30 @@ var $$IMU_EXPORT$$;
 							popupx = 0;
 
 							if (settings.mouseover_prevent_cursor_overlap) {
-								calc_imghw_for_fit(v_mx, undefined);
-								continue;
+								calc_imghw_for_fit(v_mx, ovh);
+								//continue;
 							}
 						}
 
 						if ((popupy + imgh) > vh) {
-							popupy = Math.max(vh - imgh - cursor_thresh, 0);
-
 							if (settings.mouseover_prevent_cursor_overlap) {
-								calc_imghw_for_fit(undefined, vh - v_my);
-								continue;
+								calc_imghw_for_fit(ovw, ovh - v_my);
+								//continue;
+							} else {
+								popupy = Math.max(vh - imgh - cursor_thresh, 0);
 							}
 						}
 
 						if ((popupx + imgw) > vw) {
-							popupx = Math.max(vw - imgw - cursor_thresh, 0);
-
 							if (settings.mouseover_prevent_cursor_overlap) {
-								calc_imghw_for_fit(vw - v_mx, undefined);
-								continue;
+								calc_imghw_for_fit(ovw - v_mx, ovh);
+								//continue;
+							} else {
+								popupx = Math.max(vw - imgw - cursor_thresh, 0);
 							}
 						}
 
-						break;
+						//break;
 					}
 
 					set_top(popupy);
