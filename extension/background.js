@@ -851,7 +851,7 @@ function destroy_contextmenu() {
 }
 
 function get_option(name, cb, _default) {
-	chrome.storage.sync.get([name], function(response) {
+	storage.get([name], function(response) {
 			var value = _default;
 
 			if (Object.keys(response).length > 0 && response[name] !== undefined) {
