@@ -23016,6 +23016,17 @@ var $$IMU_EXPORT$$;
 					return image_url.replace(/.*\/([^/.]*)\.[^/.]*(?:[?#].*)?$/, "$1");
 				};
 
+				var image_in_objarr = function(image, objarr) {
+					var imageid = get_imageid(image);
+
+					for (var i = 0; i < objarr.length; i++) {
+						if (objarr[i].src.indexOf(imageid) > 0)
+							return objarr[i];
+					}
+
+					return null;
+				};
+
 				var get_maxsize_app = function(item) {
 					var images = [];
 
@@ -23032,7 +23043,11 @@ var $$IMU_EXPORT$$;
 						}
 
 						if (maxobj !== null) {
-							images.push(maxobj.url);
+							images.push({
+								src: maxobj.url,
+								width: maxobj.width,
+								height: maxobj.height
+							});
 						}
 					};
 
@@ -23042,6 +23057,55 @@ var $$IMU_EXPORT$$;
 						}
 					} else {
 						parse_image(item);
+					}
+
+					return images;
+				};
+
+				var get_maxsize_graphql = function(media) {
+					var images = [];
+
+					var parse_image = function(node) {
+						var image = node.display_src;
+						if (!image)
+							image = node.display_url;
+
+						var width = 0, height = 0;
+						if (node.dimensions) {
+							width = node.dimensions.width;
+							height = node.dimensions.height;
+						}
+
+						if (!image)
+							return;
+
+						var found_image = image_in_objarr(image, images);
+						if (found_image) {
+							var found_size = found_image.width * found_image.height;
+							var our_size = width * height;
+
+							if (our_size <= found_size)
+								return;
+						}
+
+						images.push({
+							src: image,
+							width: width,
+							height: height
+						});
+					};
+
+					parse_image(media);
+
+					if (media.edge_sidecar_to_children) {
+						var edges = media.edge_sidecar_to_children.edges;
+						for (var i = 0; i < edges.length; i++) {
+							var edge = edges[i];
+							if (edge.node)
+								edge = edge.node;
+
+							parse_image(edge);
+						}
 					}
 
 					return images;
@@ -23063,39 +23127,27 @@ var $$IMU_EXPORT$$;
 								if (app_response !== null) {
 									images = get_maxsize_app(app_response.items[0]);
 								} else {
-									console_log("Unable to use API to find Instagram image");
-
-									var parse_image = function(node) {
-										var image = node.display_src;
-										if (!image)
-											image = node.display_url;
-
-										if (image && images.indexOf(image) < 0) {
-											images.push(image);
-										}
-									};
-
-									parse_image(media);
-
-									if (media.edge_sidecar_to_children) {
-										var edges = media.edge_sidecar_to_children.edges;
-										for (var i = 0; i < edges.length; i++) {
-											var edge = edges[i];
-											if (edge.node)
-												edge = edge.node;
-
-											parse_image(edge);
-										}
-									}
+									console_log("Unable to use API to find Instagram image, you may need to login to Instagram");
 								}
 
-								var image_id = get_imageid(image_url);
-								for (var i = 0; i < images.length; i++) {
-									if (images[i].indexOf(image_id) > 0) {
-										cb(images[i]);
-										return;
+								var images_graphql = get_maxsize_graphql(media);
+
+								if (images && images.length === images_graphql.length) {
+									for (var i = 0; i < images.length; i++) {
+										var app_size = images[i].width * images[i].height;
+										var graphql_size = images_graphql[i].width * images_graphql[i].height;
+
+										if (graphql_size > app_size) {
+											images[i] = images_graphql[i];
+										}
 									}
+								} else {
+									images = images_graphql;
 								}
+
+								var image = image_in_objarr(image_url, images);
+								if (image)
+									return cb(image.src);
 
 								cb(null);
 							});
