@@ -16202,14 +16202,19 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\?.*/, "?type=" + type[1]);
 		}
 
-		if (domain === "proxy.duckduckgo.com") {
+		if (domain === "proxy.duckduckgo.com" ||
+			// https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fi.pinimg.com%2Foriginals%2F8f%2F75%2Fad%2F8f75adeb5cd796fc403ade05e3a7b5ca.jpg&f=1&nofb=1
+			//   https://i.pinimg.com/originals/8f/75/ad/8f75adeb5cd796fc403ade05e3a7b5ca.jpg
+			domain === "external-content.duckduckgo.com") {
 			// https://proxy.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.-fIJ70TgJpidmW2R6qcp3QHaE1%26pid%3D15.1&f=1
 			//   https://tse1.mm.bing.net/th?id=OIP.-fIJ70TgJpidmW2R6qcp3QHaE1
 			// https://proxy.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.billboard.com%2Ffiles%2Fmedia%2FGrabbitz-mic-press-photo-2016-billboard-1548.jpg&f=1
 			//   https://www.billboard.com/files/media/Grabbitz-mic-press-photo-2016-billboard-1548.jpg
 			// https://proxy.duckduckgo.com/iur/?f=1&image_host=http://www.billboard.com/files/media/Grabbitz-mic-press-photo-2016-billboard-1548.jpg&u=https://www.billboard.com/files/media/Grabbitz-mic-press-photo-2016-billboard-1548.jpg
 			//   https://www.billboard.com/files/media/Grabbitz-mic-press-photo-2016-billboard-1548.jpg
-			return decodeURIComponent(src.replace(/.*\/iur?\/.*?[?&]u=([^&]*).*/, "$1"));
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+iur?\/\?(?:.*&)?u=([^&]*).*/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
 		}
 
 		// Mura CMS (http://www.getmura.com/)
