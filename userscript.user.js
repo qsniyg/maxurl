@@ -22884,7 +22884,8 @@ var $$IMU_EXPORT$$;
 
 				var app_api_call = function (url, cb) {
 					var headers = {
-						"User-Agent": "Instagram 10.26.0 (iPhone7,2; iOS 10_1_1; en_US; en-US; scale=2.00; gamut=normal; 750x1334) AppleWebKit/420+",
+						//"User-Agent": "Instagram 10.26.0 (iPhone7,2; iOS 10_1_1; en_US; en-US; scale=2.00; gamut=normal; 750x1334) AppleWebKit/420+",
+						"User-Agent": "Instagram 10.26.0 Android (23/6.0.1; 640dpi; 1440x2560; samsung; SM-G930F; herolte; samsungexynos8890; en_US)",
 						"X-IG-Capabilities": "36oD",
 						"Accept": "*/*",
 						"Accept-Language": "en-US,en;q=0.8"
