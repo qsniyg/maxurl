@@ -23188,12 +23188,11 @@ var $$IMU_EXPORT$$;
 								return options.cb(null);
 							}
 
-							for (var i = 0; i < images.length; i++) {
-								if (images[i].indexOf(image_id) > 0) {
-									return options.cb(images[i]);
-								}
-							}
-							return options.cb(null);
+							var image = image_in_objarr(image_url, images);
+							if (!image)
+								return options.cb(null);
+
+							return options.cb(image.src);
 						});
 					});
 
