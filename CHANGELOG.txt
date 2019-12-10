@@ -1,6 +1,6 @@
 0.11.18
 
- * Emergency fix for Instagram's latest update, which caused images to be 750px when logged in
+ * Emergency fix for Instagram's latest update, which caused images to be 750px wide when logged in
  * Support for one new website
  * Various improvements/fixes to existing rules
 
