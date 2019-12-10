@@ -15048,7 +15048,7 @@ var $$IMU_EXPORT$$;
 							return options.cb({
 								url: decode_entities(match[1]),
 								headers: {
-									Referer: null
+									Referer: result.finalUrl
 								},
 								extra: {
 									page: result.finalUrl
