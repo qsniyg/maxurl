@@ -45967,6 +45967,14 @@ var $$IMU_EXPORT$$;
 		if (domain === "cdni.rt.com") {
 			// https://cdni.rt.com/files/2019.01/xxs/5c2f3dfadda4c8ad6b8b465c.jpg
 			//   https://cdni.rt.com/files/2019.01/original/5c2f3dfadda4c8ad6b8b465c.jpg
+			// doesn't work for all (the last numbers below increment/decrement):
+			// https://cdni.rt.com/files/2018.12/xxs/5c221e1ffc7e9397018b4600.jpg
+			//   https://cdni.rt.com/files/2018.12/xs/5c221e1ffc7e9397018b4601.jpg
+			//   https://cdni.rt.com/files/2018.12/thumbnail/5c221e1ffc7e9397018b45ff.jpg
+			//   https://cdni.rt.com/files/2018.12/m/5c221e1ffc7e9397018b4602.jpg
+			//   https://cdni.rt.com/files/2018.12/l/5c221e1ffc7e9397018b4603.jpg
+			//   https://cdni.rt.com/files/2018.12/article/5c221e1ffc7e9397018b45fe.jpg
+			//   https://cdni.rt.com/files/2018.12/xxl/5c221e20fc7e9397018b4604.jpg
 			return src.replace(/(\/files\/+[0-9]{4}\.[0-9]{2}\/+)[a-z]+\/+/, "$1original/");
 		}
 
@@ -51153,6 +51161,11 @@ var $$IMU_EXPORT$$;
 			return false;
 		}
 
+		function get_img_src(el) {
+			// currentSrc is used if another image is used in the srcset
+			return el.currentSrc || el.src;
+		}
+
 		function find_source(els) {
 			//console_log(els);
 			var result = _find_source(els);
@@ -51378,8 +51391,7 @@ var $$IMU_EXPORT$$;
 						addElement(el.children[i], layer);
 					}
 				} else if (el.tagName === "SOURCE" || el.tagName === "IMG") {
-					// currentSrc is used if another image is used in the srcset
-					var el_src = el.currentSrc || el.src;
+					var el_src = get_img_src(el);
 
 					if (el_src) {
 						var src = norm(el_src);
@@ -52350,7 +52362,7 @@ var $$IMU_EXPORT$$;
 							domains_processing[our_domain]--;
 
 						var replace_func = function(el, newsrc) {
-							if (options.replace_imgs && el.src !== newsrc) {
+							if (options.replace_imgs && get_img_src(el) !== newsrc) {
 								el.src = newsrc;
 							}
 
@@ -52509,7 +52521,7 @@ var $$IMU_EXPORT$$;
 				return;
 
 			for (var i = 0; i < images.length; i++) {
-				var src = images[i].src;
+				var src = get_img_src(images[i]);
 
 				var imu_output = bigimage_recursive(src, {
 					fill_object: false,
