@@ -45958,6 +45958,18 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain_nowww === "walldevil.co") {
+			// https://www.walldevil.co/wallpapers/w10/thumb/dmitry-arhar-grey-shirt-blonde-women-katerina-shiryaeva-portrait-tiptoe-sitting-on-the-floor-looking-at-viewer-women-indoors-barefoot-couch.jpg
+			//   https://www.walldevil.co/wallpapers/w10/dmitry-arhar-grey-shirt-blonde-women-katerina-shiryaeva-portrait-tiptoe-sitting-on-the-floor-looking-at-viewer-women-indoors-barefoot-couch.jpg
+			return src.replace(/(\/wallpapers\/+w[0-9]+\/+)thumb\/+/, "$1");
+		}
+
+		if (domain === "cdni.rt.com") {
+			// https://cdni.rt.com/files/2019.01/xxs/5c2f3dfadda4c8ad6b8b465c.jpg
+			//   https://cdni.rt.com/files/2019.01/original/5c2f3dfadda4c8ad6b8b465c.jpg
+			return src.replace(/(\/files\/+[0-9]{4}\.[0-9]{2}\/+)[a-z]+\/+/, "$1original/");
+		}
+
 
 
 
@@ -51366,8 +51378,11 @@ var $$IMU_EXPORT$$;
 						addElement(el.children[i], layer);
 					}
 				} else if (el.tagName === "SOURCE" || el.tagName === "IMG") {
-					if (el.src) {
-						var src = norm(el.src);
+					// currentSrc is used if another image is used in the srcset
+					var el_src = el.currentSrc || el.src;
+
+					if (el_src) {
+						var src = norm(el_src);
 						if (addImage(src, el, { layer: layer })) {
 							if (!el.srcset) {
 								sources[src].width = el.naturalWidth;
@@ -51401,9 +51416,10 @@ var $$IMU_EXPORT$$;
 
 					// https://www.gamestar.de/artikel/red-dead-redemption-2-pc-vorabversion-mit-limit-bei-120-fps-directx-12-und-vulkan,3350718.html
 					// sidebar articles: //8images.cgames.de/images/gamestar/256/red-dead-redemption-2_6062507.jpg, //8images.cgames.de/images/gamestar/210/red-dead-redemption-2_6062507.jpg 2x
+					// newlines: https://www.rt.com/russia/447357-miss-moscow-2018-photos/
 					for (var i = 0; i < ssources.length; i++) {
-						var src = norm(ssources[i].replace(/(?:, *| +).*/, ""));
-						var desc = ssources[i].replace(/.*(?:, *| +)/, "");
+						var src = norm(ssources[i].replace(/(?:,\s*|\s+)[\s\S]*/, ""));
+						var desc = ssources[i].slice(src.length).replace(/^,?\s*([\s\S]*?)\s*$/, "$1");
 
 						if (!addImage(src, el, {layer:layer}))
 							continue;
@@ -51415,45 +51431,48 @@ var $$IMU_EXPORT$$;
 						if (desc) {
 							sources[src].desc = desc;
 
-							var whxmatch = desc.match(/^ *([0-9.]+)([whx]) *$/);
+							var whxmatch = desc.match(/^\s*([0-9.]+)([whx])\s*$/);
 							if (whxmatch) {
 								var number = parseFloat(whxmatch[1]);
 
-								if (whxmatch[2] === "w" && !sources[src].width)
-									sources[src].width = number;
-								else if (whxmatch[2] === "h" && !sources[src].height)
-									sources[src].height = number;
-								else if (whxmatch[2] === "x" && !sources[src].desc_x)
-									sources[src].desc_x = number;
+								if (number > 0) {
+									// if width/height/desc_x > number, then number is probably more accurate (multiple els, see rt link above)
+									if (whxmatch[2] === "w" && (!sources[src].width || sources[src].width > number))
+										sources[src].width = number;
+									else if (whxmatch[2] === "h" && (!sources[src].height || sources[src].height > number))
+										sources[src].height = number;
+									else if (whxmatch[2] === "x" && (!sources[src].desc_x || sources[src].desc_x > number))
+										sources[src].desc_x = number;
+								}
 							}
 						}
 
 						if (el.media) {
 							sources[src].media = el.media;
-							if (el.media.match(/min-width: *([0-9]+)/)) {
+							if (el.media.match(/min-width:\s*([0-9]+)/)) {
 								picture_minw = true;
-								var minWidth = getUnit(el.media.replace(/.*min-width: *([0-9.a-z]+).*/, "$1"));
+								var minWidth = getUnit(el.media.replace(/.*min-width:\s*([0-9.a-z]+).*/, "$1"));
 								if (!sources[src].minWidth || sources[src].minWidth > minWidth)
 									sources[src].minWidth = minWidth;
 							}
 
-							if (el.media.match(/max-width: *([0-9]+)/)) {
+							if (el.media.match(/max-width:\s*([0-9]+)/)) {
 								picture_maxw = true;
-								var maxWidth = getUnit(el.media.replace(/.*max-width: *([0-9.a-z]+).*/, "$1"));
+								var maxWidth = getUnit(el.media.replace(/.*max-width:\s*([0-9.a-z]+).*/, "$1"));
 								if (!sources[src].maxWidth || sources[src].maxWidth > maxWidth)
 									sources[src].maxWidth = maxWidth;
 							}
 
-							if (el.media.match(/min-height: *([0-9]+)/)) {
+							if (el.media.match(/min-height:\s*([0-9]+)/)) {
 								picture_minh = true;
-								var minHeight = getUnit(el.media.replace(/.*min-height: *([0-9.a-z]+).*/, "$1"));
+								var minHeight = getUnit(el.media.replace(/.*min-height:\s*([0-9.a-z]+).*/, "$1"));
 								if (!sources[src].minHeight || sources[src].minHeight > minHeight)
 									sources[src].minHeight = minHeight;
 							}
 
-							if (el.media.match(/max-height: *([0-9]+)/)) {
+							if (el.media.match(/max-height:\s*([0-9]+)/)) {
 								picture_maxh = true;
-								var maxHeight = getUnit(el.media.replace(/.*max-height: *([0-9.a-z]+).*/, "$1"));
+								var maxHeight = getUnit(el.media.replace(/.*max-height:\s*([0-9.a-z]+).*/, "$1"));
 								if (!sources[src].maxHeight || sources[src].maxHeight > maxHeight)
 									sources[src].maxHeight = maxHeight;
 							}
@@ -51522,8 +51541,14 @@ var $$IMU_EXPORT$$;
 				add_bgimage(layer, el, window.getComputedStyle(el, ":after"), "after");
 			}
 
-			// todo: do multiple passes, one per layer
-			// would fix google+, with large backgrounds and small profile images
+			for (var i = 0; i < els.length; i++) {
+				// remove every element before PICTURE as they will be added automatically anyways
+				// this messes up the layering
+				if (els[i].tagName === "PICTURE" && i == 1) {
+					els.splice(0, i);
+					break;
+				}
+			}
 
 			for (var i = 0; i < els.length; i++) {
 				var el = els[i];
