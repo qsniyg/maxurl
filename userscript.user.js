@@ -9661,7 +9661,7 @@ var $$IMU_EXPORT$$;
 			// https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/db0d85b1-b8b9-4790-bef0-121edb2dce7d/dd8ut2y-b61a578f-28be-496b-8044-559159433e36.jpg/v1/fill/w_1280,h_720,q_75,strp/nightfall_by_f1x_2_dd8ut2y-fullview.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9NzIwIiwicGF0aCI6IlwvZlwvZGIwZDg1YjEtYjhiOS00NzkwLWJlZjAtMTIxZWRiMmRjZTdkXC9kZDh1dDJ5LWI2MWE1NzhmLTI4YmUtNDk2Yi04MDQ0LTU1OTE1OTQzM2UzNi5qcGciLCJ3aWR0aCI6Ijw9MTI4MCJ9XV0sImF1ZCI6WyJ1cm46c2VydmljZTppbWFnZS5vcGVyYXRpb25zIl19.2ttX4dZcVj27yeTuh05fdJbZJSF2hj3pmgWaeCfh63Y
 			obj = {};
 
-			if (options._internal_info && options._internal_info.deviantart_page) {
+			if (options._internal_info && options._internal_info.deviantart_page && typeof options._internal_info.deviantart_page === "string") {
 				obj.extra = {page: options._internal_info.deviantart_page};
 			} else {
 				obj._copy_old_props = ["extra"];
