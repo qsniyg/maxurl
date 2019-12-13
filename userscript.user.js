@@ -50746,7 +50746,7 @@ var $$IMU_EXPORT$$;
 				if (typeof newobj.filename !== "string")
 					newobj.filename = "";
 
-				if (newobj.filename.length === 0) {
+				if (newobj.filename.length === 0 && data.data.respdata) {
 					try {
 						var headers = parse_headers(data.data.respdata.responseHeaders);
 						for (var h_i = 0; h_i < headers.length; h_i++) {
