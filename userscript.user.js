@@ -6788,8 +6788,6 @@ var $$IMU_EXPORT$$;
 			(domain_nowww === "warwick.film" && src.indexOf("/image/") >= 0) ||
 			// https://quizizz.com/media/resource/gs/quizizz-media/quizzes/7ba7f6b8-81fe-427a-b455-eb5fabc60880?w=90&h=90
 			(domain_nowww === "quizizz.com" && src.match(/\/media\/+resource\/+/)) ||
-			// https://im.vsco.co/aws-us-west-2/b68580/74476754/5c7624c5ef3068500ce138b2/vsco5c7624c5c4814.jpg
-			domain === "im.vsco.co" ||
 			// http://eroce.com/img/post-images/2017-03-17/35234/009.jpg?p=small
 			(domain_nowww === "eroce.com" && src.indexOf("/img/") >= 0) ||
 			// https://img-cdn.hipertextual.com/files/2019/05/hipertextual-juego-tronos-episodio-final-es-mas-visto-historia-hbo-2019773047.jpg?strip=all&lossy=1&quality=70&resize=740%2C490&ssl=1
@@ -35779,7 +35777,9 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(:\/\/[^/]*\/[a-z]\/+)[0-9]+x[0-9]+\/+/, "$10x0/");
 		}
 
-		if (domain_nosub === "vsco.co" && domain.match(/^image(?:-aws)?.*/)) {
+		if (domain_nosub === "vsco.co" && domain.match(/^image(?:-aws)?.*/) ||
+			// https://im.vsco.co/aws-us-west-2/b68580/74476754/5c7624c5ef3068500ce138b2/vsco5c7624c5c4814.jpg
+			domain === "im.vsco.co") {
 			// https://im.vsco.co/aws-us-west-2/f7e1c6/20638915/5cc9a1ed32fea5392de5c0e7/vsco5cc9a1ee9e4b5.jpg?w=360 -- gets automatically redirected
 			//   https://image-aws-us-west-2.vsco.co/f7e1c6/20638915/5cc9a1ed32fea5392de5c0e7/vsco5cc9a1ee9e4b5.jpg
 			// thanks to modelfe on github: https://github.com/qsniyg/maxurl/issues/57
@@ -35787,8 +35787,36 @@ var $$IMU_EXPORT$$;
 			//   https://image-aws-us-west-2.vsco.co/00b02e/28967640/5cdace744c51282134f55d8c/vsco5cdace96a2daa.jpg
 			// https://image.vsco.co/1/552f8734525d23396531/5603ae65d3dca50b0760e937/720x960/vsco_092415.jpg
 			//   https://image.vsco.co/1/552f8734525d23396531/5603ae65d3dca50b0760e937/vsco_092415.jpg
-			return src.replace(/(\/[0-9a-f]{20,}\/+)[0-9]+x[0-9]+\/+(vsco_?[0-9a-f]+\.[^/.]*)(?:[?#].*)?$/,
+			newsrc = src.replace(/(\/[0-9a-f]{20,}\/+)[0-9]+x[0-9]+\/+(vsco_?[0-9a-f]+\.[^/.]*)(?:[?#].*)?$/,
 							   "$1$2");
+			if (newsrc !== src)
+				return newsrc;
+
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:aws-[^/]+\/+)?[0-9a-f]{6}\/+[0-9]+\/+([0-9a-f]{20,})\/+/);
+			if (match && options && options.force_page && options.cb && options.do_request) {
+				options.do_request({
+					url: "https://vsco.co/vsco/media/" + match[1],
+					method: "HEAD",
+					onload: function(resp) {
+						if (resp.readyState !== 4)
+							return;
+
+						if (resp.status !== 200)
+							return options.cb(null);
+
+						return options.cb({
+							url: src,
+							extra: {
+								page: resp.finalUrl
+							}
+						});
+					}
+				});
+
+				return {
+					waiting: true
+				};
+			}
 		}
 
 		if (domain_nowww === "screenbeauty.com") {
