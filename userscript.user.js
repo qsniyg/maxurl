@@ -5895,33 +5895,49 @@ var $$IMU_EXPORT$$;
 			// thanks to speedymaan on github: https://github.com/qsniyg/maxurl/issues/29
 			// https://i.ytimg.com/vi/sxItyrp55g8/0.jpg
 			//   https://i.ytimg.com/vi/sxItyrp55g8/maxresdefault.jpg
+			// https://i1.ytimg.com/vi/KSUGZNEP-T4/1.jpg
+			//   https://i1.ytimg.com/vi/KSUGZNEP-T4/mq1.jpg
+			//   https://i1.ytimg.com/vi/KSUGZNEP-T4/maxres1.jpg
 			// doesn't work for some urls:
 			// https://i.ytimg.com/vi/o-gVbQHG0Ck/hqdefault.jpg
 			//   https://i.ytimg.com/vi/o-gVbQHG0Ck/sddefault.jpg -- different image
 
-			// Transforms private signed URLs into public ones. Only works for public videos.
-			// Signed URLs can't be changed, so this step is needed.
-			newsrc = src.replace(/^([a-z]+:\/\/)i[0-9]+(\.ytimg\.com\/vi\/+[^/]+\/+[a-z]+\.)/, "$1i$2");
-			if (newsrc !== src)
-				return {
-					url: newsrc,
-					problems: {
-						// FIXME: Is it?
-						possibly_different: true
-					}
-				};
-
-			regex = /(\/+vi\/+[^/]*\/+)(?:[a-z]+|0)(\.[^/.?#]*)(?:[?#].*)?$/;
-			return fillobj_urls([
-				src.replace(regex, "$1maxresdefault$2"),
-				src.replace(regex, "$1sddefault$2"),
-				src.replace(regex, "$1hqdefault$2"),
-				src.replace(regex, "$1mqdefault$2")
-			], {
+			obj = {
 				problems: {
 					possibly_different: true
 				}
-			});
+			};
+
+			match = src.match(/\/vi\/+([^/]+)\/+[^/]+\.[^/.]+(?:[?#].*)?$/);
+			if (match) {
+				obj.extra = {page: "https://www.youtube.com/watch?v=" + match[1]};
+			}
+
+			// Transforms private signed URLs into public ones. Only works for public videos.
+			// Signed URLs can't be changed, so this step is needed.
+			newsrc = src.replace(/^([a-z]+:\/\/)i[0-9]+(\.ytimg\.com\/vi\/+[^/]+\/+[a-z]+\.)/, "$1i$2");
+			if (newsrc !== src) {
+				obj.url = newsrc;
+				// FIXME: is it possibly_different?
+				return obj;
+			}
+
+			regex = /(\/+vi\/+[^/]*\/+)[a-z]*(default|[0-9]+)(\.[^/.?#]*)(?:[?#].*)?$/;
+			if (regex.test(src)) {
+				var urls = [
+					src.replace(regex, "$1maxres$2$3"),
+					src.replace(regex, "$1sddefault$2$3"),
+					src.replace(regex, "$1hqdefault$2$3"),
+					src.replace(regex, "$1mqdefault$2$3")
+				];
+
+				// replace 0 to default if applicable (maxres0 doesn't work)
+				for (var i = 0; i < urls.length; i++) {
+					urls[i] = urls[i].replace(/(\/[a-z]+)0(\.[^/.]+)$/, "$1default$2");
+				}
+
+				return fillobj_urls(urls, obj);
+			}
 		}
 
 		if (domain === "images.attvideo.com") {
