@@ -32395,6 +32395,10 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "t.nhentai.net" ||
+			// should this really be part of this rule?
+			// https://i2.hentaifox.com/003/1533175/1t.jpg
+			//   https://i2.hentaifox.com/003/1533175/1.jpg
+			(domain_nosub === "hentaifox.com" && /^i[0-9]*\./.test(domain)) ||
 			// https://t.nyahentai.net/galleries/1527796/1t.jpg
 			//   https://i.nyahentai.net/galleries/1527796/1.jpg
 			domain === "t.nyahentai.net") {
@@ -32405,7 +32409,9 @@ var $$IMU_EXPORT$$;
 			//   https://t.nhentai.net/galleries/1338533/cover.jpg
 			//   https://t.nhentai.net/galleries/1338533/1t.jpg
 			//   https://i.nhentai.net/galleries/1338533/1.jpg
-			return src.replace(/:\/\/t\.([^/]*\/+galleries\/+[0-9]+\/+[0-9]+)t(\.[^/.]*)(?:[?#].*)?$/, "://i.$1$2");
+			newsrc = src.replace(/(:\/\/[^/]+\/+(?:galleries|[0-9]+)\/+[0-9]+\/+[0-9]+)t(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+			if (newsrc !== src)
+				return newsrc.replace(/:\/\/t\./, "://i.");
 		}
 
 		if (domain_nosub === "hitomi.la") {
