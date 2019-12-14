@@ -8804,6 +8804,15 @@ var $$IMU_EXPORT$$;
 			//   https://img1.doubanio.com/pview/celebrity/raw/public/p24687.jpg -- webp doesn't work
 			// https://img3.doubanio.com/view/photo/sqxs/public/p2223361605.webp
 			//   https://img3.doubanio.com/pview/photo/raw/public/p2223361605.jpg
+			// https://img3.doubanio.com/view/subject/s/public/s4580920.jpg
+			//   https://img3.doubanio.com/view/subject/raw/public/s4580920.webp
+			//   https://img3.doubanio.com/view/subject/raw/public/s4580920.jpg
+			// https://img3.doubanio.com/img/trailer/small/2538645310.jpg?
+			//   https://img3.doubanio.com/img/trailer/medium/2538645310.jpg?
+			newsrc = src.replace(/\/img\/+trailer\/+small\/+/, "/img/trailer/medium/");
+			if (newsrc !== src)
+				return newsrc;
+
 			newsrc = src
 				.replace(/\/[a-z]+(\/public\/[a-f0-9]+\.[^/.]*)$/, "/raw$1")
 				.replace(/\/(?:small|medium)\//, "/large/")
@@ -8814,12 +8823,21 @@ var $$IMU_EXPORT$$;
 			if (newsrc !== src)
 				return newsrc;
 
+			newsrc = src.replace(/\/view\/+subject\/+[a-z]+\/+/, "/view/subject/raw/");
+			if (newsrc !== src)
+				return newsrc;
+
 			if (src.match(/\/+view\/+([^/]*)\/+[^/]*\/+/)) {
 				newsrc = src.replace(/\/+view\/+([^/]*)\/+[^/]*\/+/, "/pview/$1/raw/");
 
 				if (newsrc !== src)
 					return add_extensions(newsrc.replace(/\.webp(?:[?#].*)?$/, ".jpg"));
 			}
+
+			return {
+				url: src,
+				head_wrong_contentlength: true
+			};
 		}
 
 		if (domain === "img.idol001.com") {
@@ -9991,6 +10009,9 @@ var $$IMU_EXPORT$$;
 			// https://www.mffashion.com/remote/static.classeditori.it/content_upload/img/2019/08/201908081535086700/keanu-gq-4-771138.jpg?width=370&height=220&mode=crop
 			//   http://static.classeditori.it/content_upload/img/2019/08/201908081535086700/keanu-gq-4-771138.jpg
 			domain_nowww === "mffashion.com" ||
+			// http://download.iask.ca/remote/img3.doubanio.com/view/photo/s_ratio_poster/public/p2568921730.jpg
+			//   http://img3.doubanio.com/pview/photo/raw/public/p2568921730.jpg
+			domain === "download.iask.ca" ||
 			domain === "ip.trueachievements.com") {
 			// removing ?.* entirely returns 500
 			// https://www.irishexaminer.com/remote/image.assets.pressassociation.io/v2/image/production/144492a205ad478ef0233c59e6617054Y29udGVudHNlYXJjaCwxNTEzMDczMTc2/2.30748323.jpg?crop=0,102,3712,2190&ext=.jpg&width=600
@@ -26509,12 +26530,17 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "img.noobzone.ru" ||
+			// https://m.btdx8.com/uploads/getimg.php?src=https://img3.doubanio.com/view/photo/s_ratio_poster/public/p2533283770.jpg
+			//   https://img3.doubanio.com/pview/photo/raw/public/p2533283770.jpg
+			domain === "m.btdx8.com" ||
 			// http://www.guihuayun.com/getimg.php?url=http://mmbiz.qpic.cn/mmbiz/HEwvIqrmFSHOSgdfCNUtZargeuch1HYwhgibGIwylD8rYcqhNibicuCcmwC4zg3N4K4Efws23stKSwohuK5khJNwg/640?wx_fmt=jpeg
 			//   http://mmbiz.qpic.cn/mmbiz/HEwvIqrmFSHOSgdfCNUtZargeuch1HYwhgibGIwylD8rYcqhNibicuCcmwC4zg3N4K4Efws23stKSwohuK5khJNwg/0
 			domain_nowww === "guihuayun.com") {
 			// https://img.noobzone.ru/getimg.php?url=http%3A%2F%2Fmtdata.ru%2Fu2%2Fphoto7447%2F20649820661-0%2Foriginal.jpg
 			//   http://mtdata.ru/u2/photo7447/20649820661-0/original.jpg
-			return decodeURIComponent(src.replace(/^[a-z]+:\/\/[^/]*\/getimg\.php.*?[?&]url=([^&]*).*?$/, "$1"));
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+(?:uploads\/+)?getimg\.php\?(?:.*&)?(?:url|src)=([^&]+).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
 		}
 
 		if (domain === "media.aintitcool.com") {
@@ -32244,7 +32270,9 @@ var $$IMU_EXPORT$$;
 		if (domain === "img.xuehi.cn") {
 			// http://img.xuehi.cn/1/0/1/www.weituzhai.com%2Fuploads%2Fallimg%2F150320%2F00040233N-0.jpg!600.220x150.auto.jpg
 			//   http://www.52rkl.cn/uploads/allimg/150320/00040233N-0.jpg
-			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+(?:[^/]*\/+){3}([^/]*%2F.*?)![0-9]+[^/]*(?:[?#].*)?$/, "$1");
+			// http://img.xuehi.cn/1/0/1/img3.doubanio.com%2Fview%2Fpresto%2Fmedium%2Fpublic%2F343664.jpg.780x0.auto.jpg
+			//   http://img3.doubanio.com/pview/presto/raw/public/343664.jpg
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+(?:[0-9]\/+){3}([^/]*%2F.*?\.[^%]+?)[.!]([0-9]+\.)?[0-9]+x[0-9]+\.auto\.[^/.]+(?:[?#].*)?$/, "$1");
 			if (newsrc !== src)
 				return add_http(decodeURIComponent(newsrc));
 		}
@@ -38851,6 +38879,14 @@ var $$IMU_EXPORT$$;
 			// http://img01.store.sogou.com/net/a/04/link?appid=100520029&url=https://mmbiz.qpic.cn/mmbiz_jpg/OicUnYGicV66IjCDM7ezmhtfKyPsYGAtgxiaxR1eCOibkmlwiaXS4hUXyia9o87icQQ7VvX5Y0kaOSSayfbTuckQKGHyw/640?wx_fmt=jpeg
 			//   https://mmbiz.qpic.cn/mmbiz_jpg/OicUnYGicV66IjCDM7ezmhtfKyPsYGAtgxiaxR1eCOibkmlwiaXS4hUXyia9o87icQQ7VvX5Y0kaOSSayfbTuckQKGHyw/0
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/net\/+.\/+[0-9]+\/+link.*?[?&]url=(http[^&]*).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+		}
+
+		if (domain_nosub === "sogoucdn.com" && /^img[0-9]*\./.test(domain)) {
+			// http://img02.sogoucdn.com/v2/thumb/resize/w/180/h/240?appid=100140019&url=https%3A%2F%2Fimg1.doubanio.com%2Fview%2Fphoto%2Fs_ratio_poster%2Fpublic%2Fp2524955059.jpg
+			//   https://img1.doubanio.com/pview/photo/raw/public/p2524955059.jpg
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+v2\/+thumb\/+.*?\?(?:.*&)?url=([^&]+).*?$/, "$1");
 			if (newsrc !== src)
 				return decodeuri_ifneeded(newsrc);
 		}
@@ -46037,6 +46073,36 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/files\/+[0-9]{4}\.[0-9]{2}\/+)[a-z]+\/+/, "$1original/");
 		}
 
+		if (domain === "api.97bike.com") {
+			// https://api.97bike.com/pic.php?url=https://img3.doubanio.com/view/photo/l/public/p2573362745.jpg
+			//   https://img3.doubanio.com/pview/photo/raw/public/p2573362745.jpg
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+pic\.php\?(?:.*?&)?url=([^&]+).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+		}
+
+		if (domain_nowww === "hxyy56.com" ||
+			// http://m.meijuxia.com/tu.php?pic=https://img3.doubanio.com/view/photo/s_ratio_poster/public/p2570398360.jpg
+			//   https://img3.doubanio.com/pview/photo/raw/public/p2570398360.jpg
+			domain_nosub === "meijuxia.com" ||
+			// http://zy.itono.cn/tu.php?pic=img3.doubanio.com/view/photo/s_ratio_poster/public/p597700664.jpg
+			//   http://img3.doubanio.com/pview/photo/raw/public/p597700664.jpg
+			domain === "zy.itono.cn") {
+			// http://hxyy56.com/tu.php?url=https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2529882507.jpg
+			//   https://img1.doubanio.com/pview/photo/raw/public/p2529882507.jpg
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+tu\.php\?(?:.*&)?(?:url|pic)=([^&]+).*?$/, "$1");
+			if (newsrc !== src)
+				return add_http(decodeuri_ifneeded(newsrc));
+		}
+
+		if (domain_nowww === "process-safety-lab.com") {
+			// https://www.process-safety-lab.com/imges.php?src=https://img9.doubanio.com/view/subject/l/public/s11082126.jpg
+			//   https://img9.doubanio.com/view/subject/raw/public/s11082126.jpg
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+imges\.php\?(?:.*&)?src=([^&]+).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+		}
+
 
 
 
@@ -47092,6 +47158,7 @@ var $$IMU_EXPORT$$;
 			if (newsrc !== src)
 				return decodeuri_ifneeded(newsrc);
 		}
+
 
 
 
@@ -49950,6 +50017,8 @@ var $$IMU_EXPORT$$;
 
 		var waitingel = null;
 		var waitingstyleel = null;
+		var elwaitingstyleclass = null;
+		var elwaitingstyleel = null;
 		var waitingsize = 200;
 
 		var current_chord = [];
@@ -50007,7 +50076,7 @@ var $$IMU_EXPORT$$;
 			waitingel.style.top = (y - (waitingsize / 2)) + "px";
 		}
 
-		function start_waiting() {
+		function start_waiting(el) {
 			waiting = true;
 
 			if (!settings.mouseover_wait_use_el) {
@@ -50054,8 +50123,8 @@ var $$IMU_EXPORT$$;
 			update_waiting();
 		}
 
-		function start_progress() {
-			start_waiting();
+		function start_progress(el) {
+			start_waiting(el);
 			waitingel.style.cursor = "progress";
 		}
 
@@ -52150,7 +52219,7 @@ var $$IMU_EXPORT$$;
 
 			var do_popup = function() {
 				if (!multi)
-					start_waiting();
+					start_waiting(source.el);
 
 				var x = mouseX;
 				var y = mouseY;
@@ -52260,7 +52329,7 @@ var $$IMU_EXPORT$$;
 			};
 
 			if (delay && !delay_mouseonly && !automatic) {
-				start_progress();
+				start_progress(source.el);
 				delay_handle = setTimeout(function() {
 					if (delay_handle_triggering)
 						return;
