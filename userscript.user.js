@@ -2707,7 +2707,7 @@ var $$IMU_EXPORT$$;
 			};
 		}
 
-		var match = url.match(/^[a-z]+:\/\/[^/]+\/+(?:intermediary\/+)?f\/+[-0-9a-f]{20,}\/+[^/]+\/+v1\/+fill\/+([^/]+)\/+[^/]+(?:[?#].*)?$/);
+		var match = url.match(/^[a-z]+:\/\/[^/]+\/+(?:intermediary\/+)?f\/+[-0-9a-f]{20,}\/+[^/]+\/+v1\/+(?:fit|fill)\/+([^/]+)\/+[^/]+(?:[?#].*)?$/);
 		if (!match) {
 			return null;
 		}
