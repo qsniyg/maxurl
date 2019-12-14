@@ -2821,6 +2821,11 @@ var $$IMU_EXPORT$$;
 						var types = deviation.media.types;
 
 						for (var i = types.length - 1; i >= 0; i--) {
+							// Occasionally this exists for some images, where it instead has:
+							// s: "https://st.deviantart.net/misc/noentrythumb-200.png" (for t: "social_preview")
+							if (!types[i].c)
+								continue;
+
 							var link = deviation.media.baseUri + "/" + types[i].c.replace("<prettyName>", deviation.media.prettyName) + "?token=" + deviation.media.token[0];
 
 							var newurl = common_functions.wix_compare(link, maxurl);
