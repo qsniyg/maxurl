@@ -25439,14 +25439,14 @@ var $$IMU_EXPORT$$;
 			domain === "gdb.radiosawa.us") {
 			// https://gdb.rferl.org/A8AAF0A8-851A-4A70-8803-05E5409C6A19_w1200_r1_s.jpg
 			//   https://gdb.rferl.org/A8AAF0A8-851A-4A70-8803-05E5409C6A19.jpg
-			return src.replace(/(:\/\/[^/]*\/[-0-9A-F]+)(?:_c?[a-z][0-9]*){1,}(\.[^/.]*)$/, "$1$2");
+			return src.replace(/(:\/\/[^/]*\/+[-0-9A-F]+)(?:_c?[a-z][0-9]*){1,}(\.[^/.]*)$/, "$1$2");
 			// return src.replace(/_[^/.]*(\.[^/.]*)$/, "$1");
 		}
 
 		if (domain === "img.nzz.ch") {
 			// https://img.nzz.ch/C=W3500,H1969,X0,Y0/S=W1200/O=75/https://nzz-img.s3.amazonaws.com/2018/7/13/39384ab7-1119-4465-a5c2-12987ed85ec1.jpeg
 			//   https://nzz-img.s3.amazonaws.com/2018/7/13/39384ab7-1119-4465-a5c2-12987ed85ec1.jpeg
-			return src.replace(/^[a-z]+:\/\/[^/]*\/(?:[A-Z]=[^/]+\/){1,}(https?:\/\/)/, "$1");
+			return src.replace(/^[a-z]+:\/\/[^/]+\/+(?:[A-Z]=[^/]+\/+){1,}(https?:\/\/)/, "$1");
 		}
 
 		if (domain === "images-cdn.impresa.pt" ||
@@ -25460,18 +25460,22 @@ var $$IMU_EXPORT$$;
 			// http://images-cdn.impresa.pt/caras/2018-02-06-2-Margot-Robbie.jpg?mw=200
 			//   http://images-cdn.impresa.pt/caras/2018-02-06-2-Margot-Robbie.jpg/original
 			newsrc = src
-				.replace(/\/(?:[0-9]+x[0-9]+|original)\/m[wh]-[0-9]+(?:\?.*)?$/, "/original")
+				.replace(/\/(?:[0-9]+x[0-9]+|original)\/+m[wh]-[0-9]+(?:\?.*)?$/, "/original")
 				.replace(/\?.*/, "");
 			if (newsrc !== src)
 				return newsrc;
 
+			obj = {
+				url: src,
+				head_wrong_contentlength: true
+			};
+
 			match = src.match(/^[a-z]+:\/\/[^/]+\/+[a-z]+\/+([^/]+\.[^/.]*?)(?:-[0-9])?\/original/);
 			if (match) {
-				return {
-					url: src,
-					filename: match[1]
-				};
+				obj.filename = match[1];
 			}
+
+			return obj;
 			//return src.replace(/(:\/\/[^/]*\/[^/]*\/[^/]*\.[^/.]*)\/[^/]*(?:\/[^/]*)?$/, "$1/original");
 			//return src.replace(/(\/sicmul\/[^/]*\.[^/.]*)\/.*/, "$1/original");
 		}
@@ -25887,7 +25891,16 @@ var $$IMU_EXPORT$$;
 		if (domain === "attach.setn.com") {
 			// https://attach.setn.com/newsimages/2018/07/19/1452129-XXL.jpg -- 510x287
 			//   https://attach.setn.com/newsimages/2018/07/19/1452129.jpg -- 1920x1080
-			return src.replace(/(\/newsimages\/[0-9]+\/[0-9]+\/[0-9]+\/[0-9]+)-[A-Z]+(\.[^/.]*)$/, "$1$2");
+			//   https://attach.setn.com/newsimages/2018/07/19/1452129-SOURCE.jpg -- 404
+			// https://attach.setn.com/newsimages/2019/12/15/2303962.jpg -- 600x400
+			//   https://attach.setn.com/newsimages/2019/12/15/2303962-SOURCE.jpg
+			regex = /(\/newsimages\/+[0-9]+\/+[0-9]+\/+[0-9]+\/+[0-9]+)(?:-[A-Z]+)?(\.[^/.]*)$/;
+			if (regex.test(src)) {
+				return [
+					src.replace(regex, "$1-SOURCE$2"),
+					src.replace(regex, "$1$2")
+				];
+			}
 		}
 
 		if (domain_nowww === "heyzo.com") {
@@ -46073,7 +46086,10 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/files\/+[0-9]{4}\.[0-9]{2}\/+)[a-z]+\/+/, "$1original/");
 		}
 
-		if (domain === "api.97bike.com") {
+		if (domain === "api.97bike.com" ||
+			// https://pic.qmglive.com/pic.php?url=https://img3.doubanio.com/view/photo/s_ratio_poster/public/p2575911093.jpg
+			//   https://img3.doubanio.com/pview/photo/raw/public/p2575911093.jpg
+			domain === "pic.qmglive.com") {
 			// https://api.97bike.com/pic.php?url=https://img3.doubanio.com/view/photo/l/public/p2573362745.jpg
 			//   https://img3.doubanio.com/pview/photo/raw/public/p2573362745.jpg
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+pic\.php\?(?:.*?&)?url=([^&]+).*?$/, "$1");
