@@ -9115,7 +9115,17 @@ var $$IMU_EXPORT$$;
 			//   http://a2.ec-images.myspacecdn.com/images02/152/52c2d549e3a647199831fab8c34c2b92/full.jpg
 			// https://a3-images.myspacecdn.com/images01/3/06c1249fcc1441046241101fa905b56b/300x300.jpg
 			//   https://a3-images.myspacecdn.com/images01/3/06c1249fcc1441046241101fa905b56b/full.jpg
+			// doesn't work(?) for all:
+			// https://a1-images.myspacecdn.com/images02/81/20f202e46332442381bbd6ac7e96dd18/300x300.jpg
+			//   https://a1-images.myspacecdn.com/images02/81/20f202e46332442381bbd6ac7e96dd18/full.jpg -- 503 (service temporarily unavailable), jpeg = 403, png = 503
+			// however, the photo page tries to load /full too (and fails)
 			return src.replace(/\/[^/.]*(\.[^/.]*)$/, "/full$1");
+		}
+
+		if (domain === "pics.vampirefreaks.com") {
+			// https://pics.vampirefreaks.com/S/Sn/Sno/SnowWhitePoisonApple/52205231_s.jpg
+			//   https://pics.vampirefreaks.com/S/Sn/Sno/SnowWhitePoisonApple/52205231.jpg
+			return src.replace(/(\/[0-9]+)_s(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		}
 
 		// https://geo-media.beatport.com/image_size/250x250/e6997bab-e115-41b2-acab-3cae7bcf3615.jpg
@@ -46117,6 +46127,12 @@ var $$IMU_EXPORT$$;
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+imges\.php\?(?:.*&)?src=([^&]+).*?$/, "$1");
 			if (newsrc !== src)
 				return decodeuri_ifneeded(newsrc);
+		}
+
+		if (domain_nowww === "bvla.com") {
+			// https://bvla.com/media/inventory/product/alt/1672_0.jpg
+			//   https://bvla.com/media/inventory/product/full/1672_0.jpg
+			return src.replace(/(\/media\/+inventory\/+product\/+)alt(\/+[0-9]+_[0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1full$2");
 		}
 
 
