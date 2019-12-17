@@ -4,7 +4,7 @@
 // ==UserScript==
 // @name         Image Max URL
 // @namespace    http://tampermonkey.net/
-// @version      0.11.18
+// @version      0.11.19
 // @description  Finds larger or original versions of images for 6000+ websites
 // @author       qsniyg
 // @homepageURL  https://qsniyg.github.io/maxurl/options.html
@@ -2710,7 +2710,7 @@ var $$IMU_EXPORT$$;
 			};
 		}
 
-		var match = url.match(/^[a-z]+:\/\/[^/]+\/+(?:intermediary\/+)?f\/+[-0-9a-f]{20,}\/+[^/]+\/+v1\/+fill\/+([^/]+)\/+[^/]+(?:[?#].*)?$/);
+		var match = url.match(/^[a-z]+:\/\/[^/]+\/+(?:intermediary\/+)?f\/+[-0-9a-f]{20,}\/+[^/]+\/+v1\/+(?:fit|fill)\/+([^/]+)\/+[^/]+(?:[?#].*)?$/);
 		if (!match) {
 			return null;
 		}
@@ -2824,6 +2824,11 @@ var $$IMU_EXPORT$$;
 						var types = deviation.media.types;
 
 						for (var i = types.length - 1; i >= 0; i--) {
+							// Occasionally this exists for some images, where it instead has:
+							// s: "https://st.deviantart.net/misc/noentrythumb-200.png" (for t: "social_preview")
+							if (!types[i].c)
+								continue;
+
 							var link = deviation.media.baseUri + "/" + types[i].c.replace("<prettyName>", deviation.media.prettyName) + "?token=" + deviation.media.token[0];
 
 							var newurl = common_functions.wix_compare(link, maxurl);
@@ -4611,26 +4616,38 @@ var $$IMU_EXPORT$$;
 			(domain_nosub === "ytimg.com" && domain.match(/^i[0-9]*\./)) ||
 			domain === "img.youtube.com") {
 
-			newsrc = src.replace(/^([a-z]+:\/\/)i[0-9]+(\.ytimg\.com\/vi\/+[^/]+\/+[a-z]+\.)/, "$1i$2");
-			if (newsrc !== src)
-				return {
-					url: newsrc,
-					problems: {
-						possibly_different: true
-					}
-				};
-
-			regex = /(\/+vi\/+[^/]*\/+)(?:[a-z]+|0)(\.[^/.?#]*)(?:[?#].*)?$/;
-			return fillobj_urls([
-				src.replace(regex, "$1maxresdefault$2"),
-				src.replace(regex, "$1sddefault$2"),
-				src.replace(regex, "$1hqdefault$2"),
-				src.replace(regex, "$1mqdefault$2")
-			], {
+			obj = {
 				problems: {
 					possibly_different: true
 				}
-			});
+			};
+
+			match = src.match(/\/vi\/+([^/]+)\/+[^/]+\.[^/.]+(?:[?#].*)?$/);
+			if (match) {
+				obj.extra = {page: "https://www.youtube.com/watch?v=" + match[1]};
+			}
+
+			newsrc = src.replace(/^([a-z]+:\/\/)i[0-9]+(\.ytimg\.com\/vi\/+[^/]+\/+[a-z]+\.)/, "$1i$2");
+			if (newsrc !== src) {
+				obj.url = newsrc;
+				return obj;
+			}
+
+			regex = /(\/+vi\/+[^/]*\/+)[a-z]*(default|[0-9]+)(\.[^/.?#]*)(?:[?#].*)?$/;
+			if (regex.test(src)) {
+				var urls = [
+					src.replace(regex, "$1maxres$2$3"),
+					src.replace(regex, "$1sddefault$2$3"),
+					src.replace(regex, "$1hqdefault$2$3"),
+					src.replace(regex, "$1mqdefault$2$3")
+				];
+
+				for (var i = 0; i < urls.length; i++) {
+					urls[i] = urls[i].replace(/(\/[a-z]+)0(\.[^/.]+)$/, "$1default$2");
+				}
+
+				return fillobj_urls(urls, obj);
+			}
 		}
 
 		if (domain === "images.attvideo.com") {
@@ -5047,7 +5064,6 @@ var $$IMU_EXPORT$$;
 			domain === "static-ugc-media.hk01.com" ||
 			(domain_nowww === "warwick.film" && src.indexOf("/image/") >= 0) ||
 			(domain_nowww === "quizizz.com" && src.match(/\/media\/+resource\/+/)) ||
-			domain === "im.vsco.co" ||
 			(domain_nowww === "eroce.com" && src.indexOf("/img/") >= 0) ||
 			(domain === "img-cdn.hipertextual.com" && src.indexOf("/files/") >= 0) ||
 			(domain === "img.ponparemall.net" && src.indexOf("/imgmgr/") >= 0) ||
@@ -6008,6 +6024,10 @@ var $$IMU_EXPORT$$;
 
 		if (domain_nosub === "doubanio.com" &&
 			domain.match(/^img[0-9]*\./)) {
+			newsrc = src.replace(/\/img\/+trailer\/+small\/+/, "/img/trailer/medium/");
+			if (newsrc !== src)
+				return newsrc;
+
 			newsrc = src
 				.replace(/\/[a-z]+(\/public\/[a-f0-9]+\.[^/.]*)$/, "/raw$1")
 				.replace(/\/(?:small|medium)\//, "/large/")
@@ -6018,12 +6038,21 @@ var $$IMU_EXPORT$$;
 			if (newsrc !== src)
 				return newsrc;
 
+			newsrc = src.replace(/\/view\/+subject\/+[a-z]+\/+/, "/view/subject/raw/");
+			if (newsrc !== src)
+				return newsrc;
+
 			if (src.match(/\/+view\/+([^/]*)\/+[^/]*\/+/)) {
 				newsrc = src.replace(/\/+view\/+([^/]*)\/+[^/]*\/+/, "/pview/$1/raw/");
 
 				if (newsrc !== src)
 					return add_extensions(newsrc.replace(/\.webp(?:[?#].*)?$/, ".jpg"));
 			}
+
+			return {
+				url: src,
+				head_wrong_contentlength: true
+			};
 		}
 
 		if (domain === "img.idol001.com") {
@@ -6162,6 +6191,10 @@ var $$IMU_EXPORT$$;
 		if (domain_nosub === "myspacecdn.com" &&
 			domain.match(/a[0-9](?:\...)?-images\.myspacecdn\.com/)) {
 			return src.replace(/\/[^/.]*(\.[^/.]*)$/, "/full$1");
+		}
+
+		if (domain === "pics.vampirefreaks.com") {
+			return src.replace(/(\/[0-9]+)_s(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		}
 
 		if (domain === "geo-media.beatport.com") {
@@ -6372,7 +6405,7 @@ var $$IMU_EXPORT$$;
 				id = match[1];
 
 				common_functions.deviantart_page_from_id(options.do_request, id, function(result) {
-					options._internal_info.deviantart_page = true;
+					options._internal_info.deviantart_page = result.finalUrl || true;
 
 					if (!result) {
 						return options.cb({
@@ -6412,32 +6445,36 @@ var $$IMU_EXPORT$$;
 		if (domain === "static.wixstatic.com" ||
 			domain_nosub === "wixmp.com") {
 
+			obj = {};
+
+			if (options._internal_info && options._internal_info.deviantart_page && typeof options._internal_info.deviantart_page === "string") {
+				obj.extra = {page: options._internal_info.deviantart_page};
+			} else {
+				obj._copy_old_props = ["extra"];
+			}
+
 			newsrc = src.replace(/(:\/\/[^/]*\/)(f\/+[-0-9a-f]{36}\/+[0-9a-z]+-[-0-9a-f]{20,}(?:\.[^/.]*)?\/+v1\/+fill\/+w_[0-9]+,h_[0-9]+)(?:,[^/]+)?(\/+.*[?&]token=.*)$/, "$1$2,q_100$3");
 			if (newsrc !== src) {
-				return {
-					url: newsrc,
-					_copy_old_props: ["extra"]
-				};
+				obj.url = newsrc;
+				return obj;
 			}
 
 			newsrc = src.replace(/(:\/\/[^/]*\/)(f\/+[-0-9a-f]{36}\/+.*?)[?&]token=.*$/, "$1intermediary/$2");
-			if (newsrc !== src)
-				return {
-					url: newsrc,
-					likely_broken: true,
-					_copy_old_props: ["extra"]
-				};
+			if (newsrc !== src) {
+				obj.likely_broken = true;
+				obj.url = newsrc;
+				return obj;
+			}
 
 			if (!src.match(/[?&]token=.{30,}/)) {
 				newsrc = src
 					.replace(/(\.[^/.]*)\/v1\/.*/, "$1")
 					.replace(/(\/[^/.]*\.[^/.]*?)_[_0-9.a-z]*$/, "$1");
 
-				if (newsrc !== src)
-					return {
-						url: newsrc,
-						_copy_old_props: ["extra"]
-					};
+				if (newsrc !== src) {
+					obj.url = newsrc;
+					return obj;
+				}
 			}
 		}
 
@@ -6629,6 +6666,7 @@ var $$IMU_EXPORT$$;
 			domain === "ip.index.hr" ||
 			domain === "images.radiotimes.com" ||
 			domain_nowww === "mffashion.com" ||
+			domain === "download.iask.ca" ||
 			domain === "ip.trueachievements.com") {
 			newsrc = src.replace(/.*:\/\/[^/]*\/remote\/([^?]*).*/, "$1");
 			if (newsrc !== src)
@@ -15034,28 +15072,32 @@ var $$IMU_EXPORT$$;
 			domain === "gdb.voanews.com" ||
 			domain === "gdb.alhurra.eu" ||
 			domain === "gdb.radiosawa.us") {
-			return src.replace(/(:\/\/[^/]*\/[-0-9A-F]+)(?:_c?[a-z][0-9]*){1,}(\.[^/.]*)$/, "$1$2");
+			return src.replace(/(:\/\/[^/]*\/+[-0-9A-F]+)(?:_c?[a-z][0-9]*){1,}(\.[^/.]*)$/, "$1$2");
 		}
 
 		if (domain === "img.nzz.ch") {
-			return src.replace(/^[a-z]+:\/\/[^/]*\/(?:[A-Z]=[^/]+\/){1,}(https?:\/\/)/, "$1");
+			return src.replace(/^[a-z]+:\/\/[^/]+\/+(?:[A-Z]=[^/]+\/+){1,}(https?:\/\/)/, "$1");
 		}
 
 		if (domain === "images-cdn.impresa.pt" ||
 			domain === "images.impresa.pt") {
 			newsrc = src
-				.replace(/\/(?:[0-9]+x[0-9]+|original)\/m[wh]-[0-9]+(?:\?.*)?$/, "/original")
+				.replace(/\/(?:[0-9]+x[0-9]+|original)\/+m[wh]-[0-9]+(?:\?.*)?$/, "/original")
 				.replace(/\?.*/, "");
 			if (newsrc !== src)
 				return newsrc;
 
+			obj = {
+				url: src,
+				head_wrong_contentlength: true
+			};
+
 			match = src.match(/^[a-z]+:\/\/[^/]+\/+[a-z]+\/+([^/]+\.[^/.]*?)(?:-[0-9])?\/original/);
 			if (match) {
-				return {
-					url: src,
-					filename: match[1]
-				};
+				obj.filename = match[1];
 			}
+
+			return obj;
 		}
 
 		if (domain === "awsimages.detik.net.id" ||
@@ -15260,7 +15302,13 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "attach.setn.com") {
-			return src.replace(/(\/newsimages\/[0-9]+\/[0-9]+\/[0-9]+\/[0-9]+)-[A-Z]+(\.[^/.]*)$/, "$1$2");
+			regex = /(\/newsimages\/+[0-9]+\/+[0-9]+\/+[0-9]+\/+[0-9]+)(?:-[A-Z]+)?(\.[^/.]*)$/;
+			if (regex.test(src)) {
+				return [
+					src.replace(regex, "$1-SOURCE$2"),
+					src.replace(regex, "$1$2")
+				];
+			}
 		}
 
 		if (domain_nowww === "heyzo.com") {
@@ -15626,8 +15674,11 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "img.noobzone.ru" ||
+			domain === "m.btdx8.com" ||
 			domain_nowww === "guihuayun.com") {
-			return decodeURIComponent(src.replace(/^[a-z]+:\/\/[^/]*\/getimg\.php.*?[?&]url=([^&]*).*?$/, "$1"));
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+(?:uploads\/+)?getimg\.php\?(?:.*&)?(?:url|src)=([^&]+).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
 		}
 
 		if (domain === "media.aintitcool.com") {
@@ -18941,7 +18992,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "img.xuehi.cn") {
-			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+(?:[^/]*\/+){3}([^/]*%2F.*?)![0-9]+[^/]*(?:[?#].*)?$/, "$1");
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+(?:[0-9]\/+){3}([^/]*%2F.*?\.[^%]+?)[.!]([0-9]+\.)?[0-9]+x[0-9]+\.auto\.[^/.]+(?:[?#].*)?$/, "$1");
 			if (newsrc !== src)
 				return add_http(decodeURIComponent(newsrc));
 		}
@@ -19032,8 +19083,11 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "t.nhentai.net" ||
+			(domain_nosub === "hentaifox.com" && /^i[0-9]*\./.test(domain)) ||
 			domain === "t.nyahentai.net") {
-			return src.replace(/:\/\/t\.([^/]*\/+galleries\/+[0-9]+\/+[0-9]+)t(\.[^/.]*)(?:[?#].*)?$/, "://i.$1$2");
+			newsrc = src.replace(/(:\/\/[^/]+\/+(?:galleries|[0-9]+)\/+[0-9]+\/+[0-9]+)t(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+			if (newsrc !== src)
+				return newsrc.replace(/:\/\/t\./, "://i.");
 		}
 
 		if (domain_nosub === "hitomi.la") {
@@ -21236,9 +21290,38 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(:\/\/[^/]*\/[a-z]\/+)[0-9]+x[0-9]+\/+/, "$10x0/");
 		}
 
-		if (domain_nosub === "vsco.co" && domain.match(/^image(?:-aws)?.*/)) {
-			return src.replace(/(\/[0-9a-f]{20,}\/+)[0-9]+x[0-9]+\/+(vsco_?[0-9a-f]+\.[^/.]*)(?:[?#].*)?$/,
+		if (domain_nosub === "vsco.co" && domain.match(/^image(?:-aws)?.*/) ||
+			domain === "im.vsco.co") {
+			newsrc = src.replace(/(\/[0-9a-f]{20,}\/+)[0-9]+x[0-9]+\/+(vsco_?[0-9a-f]+\.[^/.]*)(?:[?#].*)?$/,
 							   "$1$2");
+			if (newsrc !== src)
+				return newsrc;
+
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:aws-[^/]+\/+)?[0-9a-f]{6}\/+[0-9]+\/+([0-9a-f]{20,})\/+/);
+			if (match && options && options.force_page && options.cb && options.do_request) {
+				options.do_request({
+					url: "https://vsco.co/vsco/media/" + match[1],
+					method: "HEAD",
+					onload: function(resp) {
+						if (resp.readyState !== 4)
+							return;
+
+						if (resp.status !== 200)
+							return options.cb(null);
+
+						return options.cb({
+							url: src,
+							extra: {
+								page: resp.finalUrl
+							}
+						});
+					}
+				});
+
+				return {
+					waiting: true
+				};
+			}
 		}
 
 		if (domain_nowww === "screenbeauty.com") {
@@ -23013,6 +23096,12 @@ var $$IMU_EXPORT$$;
 
 		if (domain_nosub === "sogou.com") {
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/net\/+.\/+[0-9]+\/+link.*?[?&]url=(http[^&]*).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+		}
+
+		if (domain_nosub === "sogoucdn.com" && /^img[0-9]*\./.test(domain)) {
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+v2\/+thumb\/+.*?\?(?:.*&)?url=([^&]+).*?$/, "$1");
 			if (newsrc !== src)
 				return decodeuri_ifneeded(newsrc);
 		}
@@ -27765,6 +27854,39 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain_nowww === "walldevil.co") {
+			return src.replace(/(\/wallpapers\/+w[0-9]+\/+)thumb\/+/, "$1");
+		}
+
+		if (domain === "cdni.rt.com") {
+			return src.replace(/(\/files\/+[0-9]{4}\.[0-9]{2}\/+)[a-z]+\/+/, "$1original/");
+		}
+
+		if (domain === "api.97bike.com" ||
+			domain === "pic.qmglive.com") {
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+pic\.php\?(?:.*?&)?url=([^&]+).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+		}
+
+		if (domain_nowww === "hxyy56.com" ||
+			domain_nosub === "meijuxia.com" ||
+			domain === "zy.itono.cn") {
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+tu\.php\?(?:.*&)?(?:url|pic)=([^&]+).*?$/, "$1");
+			if (newsrc !== src)
+				return add_http(decodeuri_ifneeded(newsrc));
+		}
+
+		if (domain_nowww === "process-safety-lab.com") {
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+imges\.php\?(?:.*&)?src=([^&]+).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+		}
+
+		if (domain_nowww === "bvla.com") {
+			return src.replace(/(\/media\/+inventory\/+product\/+)alt(\/+[0-9]+_[0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1full$2");
+		}
+
 
 
 
@@ -28355,6 +28477,7 @@ var $$IMU_EXPORT$$;
 			if (newsrc !== src)
 				return decodeuri_ifneeded(newsrc);
 		}
+
 
 
 
@@ -31175,6 +31298,8 @@ var $$IMU_EXPORT$$;
 
 		var waitingel = null;
 		var waitingstyleel = null;
+		var elwaitingstyleclass = null;
+		var elwaitingstyleel = null;
 		var waitingsize = 200;
 
 		var current_chord = [];
@@ -31232,7 +31357,7 @@ var $$IMU_EXPORT$$;
 			waitingel.style.top = (y - (waitingsize / 2)) + "px";
 		}
 
-		function start_waiting() {
+		function start_waiting(el) {
 			waiting = true;
 
 			if (!settings.mouseover_wait_use_el) {
@@ -31279,8 +31404,8 @@ var $$IMU_EXPORT$$;
 			update_waiting();
 		}
 
-		function start_progress() {
-			start_waiting();
+		function start_progress(el) {
+			start_waiting(el);
 			waitingel.style.cursor = "progress";
 		}
 
@@ -32026,7 +32151,7 @@ var $$IMU_EXPORT$$;
 				if (typeof newobj.filename !== "string")
 					newobj.filename = "";
 
-				if (newobj.filename.length === 0) {
+				if (newobj.filename.length === 0 && data.data.respdata) {
 					try {
 						var headers = parse_headers(data.data.respdata.responseHeaders);
 						for (var h_i = 0; h_i < headers.length; h_i++) {
@@ -32445,6 +32570,11 @@ var $$IMU_EXPORT$$;
 			return false;
 		}
 
+		function get_img_src(el) {
+			// currentSrc is used if another image is used in the srcset
+			return el.currentSrc || el.src;
+		}
+
 		function find_source(els) {
 			//console_log(els);
 			var result = _find_source(els);
@@ -32670,8 +32800,10 @@ var $$IMU_EXPORT$$;
 						addElement(el.children[i], layer);
 					}
 				} else if (el.tagName === "SOURCE" || el.tagName === "IMG") {
-					if (el.src) {
-						var src = norm(el.src);
+					var el_src = get_img_src(el);
+
+					if (el_src) {
+						var src = norm(el_src);
 						if (addImage(src, el, { layer: layer })) {
 							if (!el.srcset) {
 								sources[src].width = el.naturalWidth;
@@ -32705,9 +32837,10 @@ var $$IMU_EXPORT$$;
 
 					// https://www.gamestar.de/artikel/red-dead-redemption-2-pc-vorabversion-mit-limit-bei-120-fps-directx-12-und-vulkan,3350718.html
 					// sidebar articles: //8images.cgames.de/images/gamestar/256/red-dead-redemption-2_6062507.jpg, //8images.cgames.de/images/gamestar/210/red-dead-redemption-2_6062507.jpg 2x
+					// newlines: https://www.rt.com/russia/447357-miss-moscow-2018-photos/
 					for (var i = 0; i < ssources.length; i++) {
-						var src = norm(ssources[i].replace(/(?:, *| +).*/, ""));
-						var desc = ssources[i].replace(/.*(?:, *| +)/, "");
+						var src = norm(ssources[i].replace(/(?:,\s*|\s+)[\s\S]*/, ""));
+						var desc = ssources[i].slice(src.length).replace(/^,?\s*([\s\S]*?)\s*$/, "$1");
 
 						if (!addImage(src, el, {layer:layer}))
 							continue;
@@ -32719,45 +32852,48 @@ var $$IMU_EXPORT$$;
 						if (desc) {
 							sources[src].desc = desc;
 
-							var whxmatch = desc.match(/^ *([0-9.]+)([whx]) *$/);
+							var whxmatch = desc.match(/^\s*([0-9.]+)([whx])\s*$/);
 							if (whxmatch) {
 								var number = parseFloat(whxmatch[1]);
 
-								if (whxmatch[2] === "w" && !sources[src].width)
-									sources[src].width = number;
-								else if (whxmatch[2] === "h" && !sources[src].height)
-									sources[src].height = number;
-								else if (whxmatch[2] === "x" && !sources[src].desc_x)
-									sources[src].desc_x = number;
+								if (number > 0) {
+									// if width/height/desc_x > number, then number is probably more accurate (multiple els, see rt link above)
+									if (whxmatch[2] === "w" && (!sources[src].width || sources[src].width > number))
+										sources[src].width = number;
+									else if (whxmatch[2] === "h" && (!sources[src].height || sources[src].height > number))
+										sources[src].height = number;
+									else if (whxmatch[2] === "x" && (!sources[src].desc_x || sources[src].desc_x > number))
+										sources[src].desc_x = number;
+								}
 							}
 						}
 
 						if (el.media) {
 							sources[src].media = el.media;
-							if (el.media.match(/min-width: *([0-9]+)/)) {
+							if (el.media.match(/min-width:\s*([0-9]+)/)) {
 								picture_minw = true;
-								var minWidth = getUnit(el.media.replace(/.*min-width: *([0-9.a-z]+).*/, "$1"));
+								var minWidth = getUnit(el.media.replace(/.*min-width:\s*([0-9.a-z]+).*/, "$1"));
 								if (!sources[src].minWidth || sources[src].minWidth > minWidth)
 									sources[src].minWidth = minWidth;
 							}
 
-							if (el.media.match(/max-width: *([0-9]+)/)) {
+							if (el.media.match(/max-width:\s*([0-9]+)/)) {
 								picture_maxw = true;
-								var maxWidth = getUnit(el.media.replace(/.*max-width: *([0-9.a-z]+).*/, "$1"));
+								var maxWidth = getUnit(el.media.replace(/.*max-width:\s*([0-9.a-z]+).*/, "$1"));
 								if (!sources[src].maxWidth || sources[src].maxWidth > maxWidth)
 									sources[src].maxWidth = maxWidth;
 							}
 
-							if (el.media.match(/min-height: *([0-9]+)/)) {
+							if (el.media.match(/min-height:\s*([0-9]+)/)) {
 								picture_minh = true;
-								var minHeight = getUnit(el.media.replace(/.*min-height: *([0-9.a-z]+).*/, "$1"));
+								var minHeight = getUnit(el.media.replace(/.*min-height:\s*([0-9.a-z]+).*/, "$1"));
 								if (!sources[src].minHeight || sources[src].minHeight > minHeight)
 									sources[src].minHeight = minHeight;
 							}
 
-							if (el.media.match(/max-height: *([0-9]+)/)) {
+							if (el.media.match(/max-height:\s*([0-9]+)/)) {
 								picture_maxh = true;
-								var maxHeight = getUnit(el.media.replace(/.*max-height: *([0-9.a-z]+).*/, "$1"));
+								var maxHeight = getUnit(el.media.replace(/.*max-height:\s*([0-9.a-z]+).*/, "$1"));
 								if (!sources[src].maxHeight || sources[src].maxHeight > maxHeight)
 									sources[src].maxHeight = maxHeight;
 							}
@@ -32826,8 +32962,14 @@ var $$IMU_EXPORT$$;
 				add_bgimage(layer, el, window.getComputedStyle(el, ":after"), "after");
 			}
 
-			// todo: do multiple passes, one per layer
-			// would fix google+, with large backgrounds and small profile images
+			for (var i = 0; i < els.length; i++) {
+				// remove every element before PICTURE as they will be added automatically anyways
+				// this messes up the layering
+				if (els[i].tagName === "PICTURE" && i == 1) {
+					els.splice(0, i);
+					break;
+				}
+			}
 
 			for (var i = 0; i < els.length; i++) {
 				var el = els[i];
@@ -33358,7 +33500,7 @@ var $$IMU_EXPORT$$;
 
 			var do_popup = function() {
 				if (!multi)
-					start_waiting();
+					start_waiting(source.el);
 
 				var x = mouseX;
 				var y = mouseY;
@@ -33468,7 +33610,7 @@ var $$IMU_EXPORT$$;
 			};
 
 			if (delay && !delay_mouseonly && !automatic) {
-				start_progress();
+				start_progress(source.el);
 				delay_handle = setTimeout(function() {
 					if (delay_handle_triggering)
 						return;
@@ -33629,7 +33771,7 @@ var $$IMU_EXPORT$$;
 							domains_processing[our_domain]--;
 
 						var replace_func = function(el, newsrc) {
-							if (options.replace_imgs && el.src !== newsrc) {
+							if (options.replace_imgs && get_img_src(el) !== newsrc) {
 								el.src = newsrc;
 							}
 
@@ -33788,7 +33930,7 @@ var $$IMU_EXPORT$$;
 				return;
 
 			for (var i = 0; i < images.length; i++) {
-				var src = images[i].src;
+				var src = get_img_src(images[i]);
 
 				var imu_output = bigimage_recursive(src, {
 					fill_object: false,

@@ -1,3 +1,20 @@
+0.11.19
+
+New features:
+
+ * Support for ~15 new websites (using ~10 new rules)
+
+Improvements:
+
+ * Many improvements/fixes to existing rules (including DeviantART, Youtube, VSCO)
+
+Bugfixes:
+
+ * Picture elements and images using `srcset` are better supported
+ * An error will no longer be printed when running the popup over data:// URLs
+
+---
+
 0.11.18
 
  * Emergency fix for Instagram's latest update, which caused images to be 750px wide when logged in

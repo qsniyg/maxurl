@@ -272,6 +272,7 @@ ap.imagensbrasil.org
 ap7am.com
 apachan.net
 apherald.com
+api.97bike.com
 api.creativecommons.engineering
 api.fidji.lefigaro.fr
 api.hdwallpapers5k.com
@@ -664,6 +665,7 @@ businessinsider.in
 bustyparade.com
 buy.line-scdn.net
 buysmartjapan.com
+bvla.com
 bw-1651cf0d2f737d7adeab84d339dbabd3-bcs.s3.amazonaws.com
 bw-1651cf0d2f737d7adeab84d339dbabd3-gallery.s3.amazonaws.com
 bytecdn.cn
@@ -983,6 +985,7 @@ cdn15764270.ahacdn.me
 cdnberry.com
 cdnds.net
 cdni.rbth.com
+cdni.rt.com
 cdnimage.dailian.co.kr
 cdnimage.ebn.co.kr
 cdnimage.terbitsport.com
@@ -1454,6 +1457,7 @@ doubanio.com
 doublage.qc.ca
 down.humoruniv.org
 download-rooz.com
+download.iask.ca
 downloadwallpapers.info
 doyo.cn
 dplhqivlpbfks.cloudfront.net
@@ -2134,6 +2138,7 @@ hentai-animes.com
 hentai-comic.com
 hentai-cosplay.com
 hentai-image.com
+hentaifox.com
 hentairing.com
 heraldscotland.com
 hercampus.com
@@ -2220,6 +2225,7 @@ hwcdn.ddstatic.com
 hwcdn.funbags.com
 hwcdn.voyeurweb.com
 hwnds.ddfstatic.com
+hxyy56.com
 hypebeast.com
 hypnohub.net
 hypnoweb.net
@@ -3507,6 +3513,7 @@ m.acg.ms
 m.actve.net
 m.baishixi.com
 m.blog.hu
+m.btdx8.com
 m.gadzetomania.pl
 m.mbcsportsplus.com
 m.s1ar.cc
@@ -3779,6 +3786,7 @@ meetupstatic.com
 megalyrics.ru
 megamich.com
 megaporn.co
+meijuxia.com
 meinbezirk.at
 meitudata.com
 melonbooks.akamaized.net
@@ -4339,6 +4347,7 @@ pic.kuaizhan.com
 pic.pimg.tw
 pic.qiantucdn.com
 pic.qianye88.com
+pic.qmglive.com
 pic.rutube.ru
 pic.sucaibar.com
 pic.templetons.com
@@ -4367,6 +4376,7 @@ pics.livejournal.com
 pics.me.me
 pics.prcm.jp
 pics.tubetubetube.com
+pics.vampirefreaks.com
 pics.vc
 picsart.com
 picsegg.com
@@ -4483,6 +4493,7 @@ primewire.unblocked.nu
 printel.biz
 prnewswire2-a.akamaihd.net
 pro.imgcdn2.com
+process-safety-lab.com
 prod-media.gameinformer.com.s3.amazonaws.com
 prod.media.larepublica.pe
 prod.presets.larepublica.pe
@@ -4959,6 +4970,7 @@ softline.uz
 sofurryfiles.com
 soganhaber.com
 sogou.com
+sogoucdn.com
 sohacdn.com
 sohobluesgallery.com
 sokuup.net
@@ -5742,6 +5754,7 @@ waikeung.info
 wall.hr
 wall2born.com
 wallcoo.net
+walldevil.co
 walldevil.com
 wallhalla.com
 wallhere.com
@@ -6024,5 +6037,6 @@ zurnal.mk
 zvooq.com
 zwz.cz
 zx590.com
+zy.itono.cn
 zyzpes.com
 zzgays.com
