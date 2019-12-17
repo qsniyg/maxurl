@@ -5905,6 +5905,8 @@ var $$IMU_EXPORT$$;
 			// https://i1.ytimg.com/vi/KSUGZNEP-T4/1.jpg
 			//   https://i1.ytimg.com/vi/KSUGZNEP-T4/mq1.jpg
 			//   https://i1.ytimg.com/vi/KSUGZNEP-T4/maxres1.jpg
+			// https://i.ytimg.com/vi_webp/c8e9Nc36lRg/mqdefault.webp
+			//   https://i.ytimg.com/vi_webp/c8e9Nc36lRg/sddefault.webp
 			// doesn't work for some urls:
 			// https://i.ytimg.com/vi/o-gVbQHG0Ck/hqdefault.jpg
 			//   https://i.ytimg.com/vi/o-gVbQHG0Ck/sddefault.jpg -- different image
@@ -5915,27 +5917,27 @@ var $$IMU_EXPORT$$;
 				}
 			};
 
-			match = src.match(/\/vi\/+([^/]+)\/+[^/]+\.[^/.]+(?:[?#].*)?$/);
+			match = src.match(/\/vi(?:_webp)?\/+([^/]+)\/+[^/]+\.[^/.]+(?:[?#].*)?$/);
 			if (match) {
 				obj.extra = {page: "https://www.youtube.com/watch?v=" + match[1]};
 			}
 
 			// Transforms private signed URLs into public ones. Only works for public videos.
 			// Signed URLs can't be changed, so this step is needed.
-			newsrc = src.replace(/^([a-z]+:\/\/)i[0-9]+(\.ytimg\.com\/vi\/+[^/]+\/+[a-z]+\.)/, "$1i$2");
+			newsrc = src.replace(/^([a-z]+:\/\/)i[0-9]+(\.ytimg\.com\/vi(?:_webp)?\/+[^/]+\/+[a-z]+\.)/, "$1i$2");
 			if (newsrc !== src) {
 				obj.url = newsrc;
 				// FIXME: is it possibly_different?
 				return obj;
 			}
 
-			regex = /(\/+vi\/+[^/]*\/+)[a-z]*(default|[0-9]+)(\.[^/.?#]*)(?:[?#].*)?$/;
+			regex = /(\/+vi(?:_webp)?\/+[^/]*\/+)[a-z]*(default|[0-9]+)(\.[^/.?#]*)(?:[?#].*)?$/;
 			if (regex.test(src)) {
 				var urls = [
 					src.replace(regex, "$1maxres$2$3"),
-					src.replace(regex, "$1sddefault$2$3"),
-					src.replace(regex, "$1hqdefault$2$3"),
-					src.replace(regex, "$1mqdefault$2$3")
+					src.replace(regex, "$1sd$2$3"),
+					src.replace(regex, "$1hq$2$3"),
+					src.replace(regex, "$1mq$2$3")
 				];
 
 				// replace 0 to default if applicable (maxres0 doesn't work)
@@ -9070,6 +9072,14 @@ var $$IMU_EXPORT$$;
 			// http://a4.mzstatic.com/us/r30/Music62/v4/fe/61/54/fe6154f6-b064-d788-d114-4b544def3d30/cover1400x1400.jpeg
 			// add -999 to always set the quality to the max value (https://github.com/qsniyg/maxurl/issues/164)
 			return src.replace(/\/[0-9]*x[0-9]*[a-z]*(?:-[0-9]+)?(\.[^/.]*)$/, "/999999999x0w-999$1");
+		}
+
+		if (domain === "img-tmdetail.alicdn.com") {
+			// https://img-tmdetail.alicdn.com/bao/uploaded///img.alicdn.com/bao/uploaded/TB1_5tiidknBKNjSZKPXXX6OFXa_!!0-item_pic.jpg_160x160q90.jpg
+			//   http://img.alicdn.com/bao/uploaded/TB1_5tiidknBKNjSZKPXXX6OFXa_!!0-item_pic.jpg
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+bao\/+uploaded\/+([^/]+\.[^/]+\/+)/, "$1");
+			if (newsrc !== src)
+				return add_http(newsrc);
 		}
 
 		if (domain_nosub === "alicdn.com" &&
