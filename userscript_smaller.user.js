@@ -2,27 +2,29 @@
 // ^ for LibreJS (this has to be the first comment in the file)
 
 // ==UserScript==
-// @name         Image Max URL
-// @namespace    http://tampermonkey.net/
-// @version      0.11.19
-// @description  Finds larger or original versions of images for 6000+ websites
-// @author       qsniyg
-// @homepageURL  https://qsniyg.github.io/maxurl/options.html
-// @supportURL   https://github.com/qsniyg/maxurl/issues
-// @icon         https://raw.githubusercontent.com/qsniyg/maxurl/b5c5488ec05e6e2398d4e0d6e32f1bbad115f6d2/resources/logo_256.png
-// @include      *
-// @grant        GM.xmlHttpRequest
-// @grant        GM_xmlhttpRequest
-// @grant        GM.setValue
-// @grant        GM_setValue
-// @grant        GM.getValue
-// @grant        GM_getValue
-// @grant        GM_registerMenuCommand
-// @grant        GM_openInTab
-// @grant        GM.openInTab
-// @connect      *
-// @run-at       document-start
-// @license      Apache-2.0
+// @name           Image Max URL
+// @namespace      http://tampermonkey.net/
+// @version        0.11.19
+// @description    Finds larger or original versions of images for 6000+ websites
+// @description:ko 6000개 이사의 사이트에 대해 더 크거나 원본 이미지 찾는 스크립트
+// @description:fr Trouve des images plus grandes ou originales pour plus de 6000 sites
+// @author         qsniyg
+// @homepageURL    https://qsniyg.github.io/maxurl/options.html
+// @supportURL     https://github.com/qsniyg/maxurl/issues
+// @icon           https://raw.githubusercontent.com/qsniyg/maxurl/b5c5488ec05e6e2398d4e0d6e32f1bbad115f6d2/resources/logo_256.png
+// @include        *
+// @grant          GM.xmlHttpRequest
+// @grant          GM_xmlhttpRequest
+// @grant          GM.setValue
+// @grant          GM_setValue
+// @grant          GM.getValue
+// @grant          GM_getValue
+// @grant          GM_registerMenuCommand
+// @grant          GM_openInTab
+// @grant          GM.openInTab
+// @connect        *
+// @run-at         document-start
+// @license        Apache-2.0
 // ==/UserScript==
 
 // If you see "A userscript wants to access a cross-origin resource.", it's used for:
