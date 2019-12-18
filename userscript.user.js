@@ -52530,6 +52530,73 @@ var $$IMU_EXPORT$$;
 			style.transform = "rotate(" + (deg + dir) + "deg)";
 		}
 
+		function create_progress_el() {
+			var progressc_el = document.createElement("div");
+			set_el_all_initial(progressc_el);
+			progressc_el.style.backgroundColor = "rgba(0,0,0,0.7)";
+			//progressc_el.style.padding = "1em";
+			progressc_el.style.height = "2em";
+			progressc_el.style.zIndex = maxzindex - 2;
+
+			var progressb_el = document.createElement("div");
+			set_el_all_initial(progressb_el);
+			progressb_el.style.position = "absolute";
+			progressb_el.style.top = "0px";
+			progressb_el.style.left = "0px";
+			//progressb_el.style.backgroundColor = "#00aa00";
+			progressb_el.style.backgroundColor = "#00aaff";
+			progressb_el.style.height = "100%";
+			progressb_el.style.width = "0%";
+			progressb_el.style.zIndex = maxzindex - 1;
+
+			progressc_el.appendChild(progressb_el);
+
+			return progressc_el;
+		}
+
+		function update_progress_el(el, percent) {
+			var bar = el.children[0];
+
+			if (typeof percent === "number") {
+				if (bar.getAttribute("data-timer")) {
+					clearInterval(parseInt(bar.getAttribute("data-timer")));
+					bar.removeAttribute("data-timer");
+				}
+
+				bar.style.width = (percent * 100) + "%";
+			} else if (percent == "unknown") {
+				bar.style.width = "10%";
+
+				if (!bar.getAttribute("data-timer")) {
+					bar.style.left = "0%";
+					bar.setAttribute("data-dir", "right");
+					var timer = setInterval(function() {
+						var left = parseFloat(bar.style.left);
+						var delta = (15/1000) * 1;
+						var size = 90;
+
+						if (bar.getAttribute("data-dir") == "right") {
+							left += (delta * size);
+							if (left >= size) {
+								left = size - (left - size);
+								bar.setAttribute("data-dir", "left");
+							}
+						} else {
+							left -= (delta * size);
+							if (left <= 0) {
+								left = -left;
+								bar.setAttribute("data-dir", "right");
+							}
+						}
+
+						bar.style.left = left + "%";
+					}, 15);
+
+					bar.setAttribute("data-timer", timer);
+				}
+			}
+		}
+
 		var replacing_imgs = false;
 		function replace_images(options) {
 			if (replacing_imgs)
@@ -52545,7 +52612,7 @@ var $$IMU_EXPORT$$;
 
 			var finish_img = function() {
 				finished++;
-				progressb_el.style.width = ((finished/total_imgs)*100) + "%";
+				update_progress_el(progressc_el, finished / total_imgs);
 				console_log("Finished " + finished + "/" + total_imgs);
 
 				if (finished >= total_imgs) {
@@ -52680,31 +52747,13 @@ var $$IMU_EXPORT$$;
 				}
 			};
 
-			var progressc_el = document.createElement("div");
-			set_el_all_initial(progressc_el);
+			var progressc_el = create_progress_el();
 			progressc_el.style.position = "fixed";
 			progressc_el.style.top = "0px";
 			progressc_el.style.left = "0px";
 			progressc_el.style.width = "80%";
 			progressc_el.style.marginTop = "100px";
 			progressc_el.style.marginLeft = "10%";
-			progressc_el.style.backgroundColor = "rgba(0,0,0,0.7)";
-			//progressc_el.style.padding = "1em";
-			progressc_el.style.height = "2em";
-			progressc_el.style.zIndex = maxzindex - 2;
-
-			var progressb_el = document.createElement("div");
-			set_el_all_initial(progressb_el);
-			progressb_el.style.position = "absolute";
-			progressb_el.style.top = "0px";
-			progressb_el.style.left = "0px";
-			//progressb_el.style.backgroundColor = "#00aa00";
-			progressb_el.style.backgroundColor = "#00aaff";
-			progressb_el.style.height = "100%";
-			progressb_el.style.width = "0%";
-			progressb_el.style.zIndex = maxzindex - 1;
-
-			progressc_el.appendChild(progressb_el);
 			document.documentElement.appendChild(progressc_el);
 
 			var domains = {};
