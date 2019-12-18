@@ -5003,6 +5003,11 @@ var $$IMU_EXPORT$$;
 			// https://assets.charmboard.com/images/w_375,ar_0.75,c_fill,c_pad,q_auto:eco,e_sharpen/im/lk/810912/pallavi-patil-wearing-kurta.jpg
 			//   https://assets.charmboard.com/images/im/lk/810912/pallavi-patil-wearing-kurta.jpg
 			(domain === "assets.charmboard.com" && src.indexOf("/images/") >= 0) ||
+			// https://image.spreadshirtmedia.com/content/q_auto/h_150,f_auto,b_rgb:f2f2f2/v27/cms/ml/tiles/models/t_shirts_men_us
+			//   https://image.spreadshirtmedia.com/content/cms/ml/tiles/models/t_shirts_men_us
+			// https://image.spreadshirtmedia.com/content/w_650/cms/cyo/seo/cheaptshirts/6_us_desktop.png
+			//   https://image.spreadshirtmedia.com/content/cms/cyo/seo/cheaptshirts/6_us_desktop.png
+			domain === "image.spreadshirtmedia.com" ||
 			// https://images.moviepilot.com/images/c_limit,q_auto:good,w_600/uom2udz4ogmkncouu83q/beauty-and-the-beast-credit-disney.jpg
 			// https://images.moviepilot.com/image/upload/c_fill,h_64,q_auto,w_64/lpgwdrrgc3m8duvg7zt2.jpg
 			domain === "images.moviepilot.com") {
@@ -8372,14 +8377,16 @@ var $$IMU_EXPORT$$;
 							   "https://imgix.ranker.com/$1/original/$2?fm=png");
 		}
 
-		if (domain === "driftt.imgix.net" ||
-			// https://pathwright.imgix.net/https%3A%2F%2Fcdn.filestackcontent.com%2Fapi%2Ffile%2FIKM4hngTeadpScVNjbD6%3Fsignature%3D888b9ea3eb997a4d59215bfbe2983c636df3c7da0ff8c6f85811ff74c8982e34%26policy%3DeyJjYWxsIjogWyJyZWFkIiwgInN0YXQiLCAiY29udmVydCJdLCAiZXhwaXJ5IjogNDYyMDM3NzAzMX0%253D?fit=crop&ixlib=python-1.1.0&w=500&s=7c58aa94c9a2446b0d7552e5574ac39e
-			//   https://cdn.filestackcontent.com/api/file/IKM4hngTeadpScVNjbD6?signature=888b9ea3eb997a4d59215bfbe2983c636df3c7da0ff8c6f85811ff74c8982e34&policy=eyJjYWxsIjogWyJyZWFkIiwgInN0YXQiLCAiY29udmVydCJdLCAiZXhwaXJ5IjogNDYyMDM3NzAzMX0%3D
-			domain === "pathwright.imgix.net") {
+		if (domain_nosub === "imgix.net") {
 			// https://driftt.imgix.net/https%3A%2F%2Fdriftt.imgix.net%2Fhttps%253A%252F%252Fs3.amazonaws.com%252Fcustomer-api-avatars-prod%252F124400%252Fa382421eaa0c3184c7c1588a54a481014za77e245kzk%3Ffit%3Dmax%26fm%3Dpng%26h%3D200%26w%3D200%26s%3Db662f982cf04f9f733dcb1ce4522ee73?fit=max&fm=png&h=200&w=200&s=cd4c2695da2c9621a41fc14e92516b37
 			//  https://driftt.imgix.net/https%3A%2F%2Fs3.amazonaws.com%2Fcustomer-api-avatars-prod%2F124400%2Fa382421eaa0c3184c7c1588a54a481014za77e245kzk?fit=max&fm=png&h=200&w=200&s=b662f982cf04f9f733dcb1ce4522ee73
 			//   https://s3.amazonaws.com/customer-api-avatars-prod/124400/a382421eaa0c3184c7c1588a54a481014za77e245kzk
-			return decodeURIComponent(src.replace(/^[a-z]+:\/\/[^/]*\.imgix\.net\/([^?]*).*?$/, "$1"));
+			// https://pathwright.imgix.net/https%3A%2F%2Fcdn.filestackcontent.com%2Fapi%2Ffile%2FIKM4hngTeadpScVNjbD6%3Fsignature%3D888b9ea3eb997a4d59215bfbe2983c636df3c7da0ff8c6f85811ff74c8982e34%26policy%3DeyJjYWxsIjogWyJyZWFkIiwgInN0YXQiLCAiY29udmVydCJdLCAiZXhwaXJ5IjogNDYyMDM3NzAzMX0%253D?fit=crop&ixlib=python-1.1.0&w=500&s=7c58aa94c9a2446b0d7552e5574ac39e
+			//   https://cdn.filestackcontent.com/api/file/IKM4hngTeadpScVNjbD6?signature=888b9ea3eb997a4d59215bfbe2983c636df3c7da0ff8c6f85811ff74c8982e34&policy=eyJjYWxsIjogWyJyZWFkIiwgInN0YXQiLCAiY29udmVydCJdLCAiZXhwaXJ5IjogNDYyMDM3NzAzMX0%3D
+			// https://mms-images-secure-prod.imgix.net/https%3A%2F%2Fmms-images.out.customink.com%2Fmms%2Fimages%2Fcatalog%2Fcolors%2F116200%2Fviews%2Falt%2Ffront_medium_extended.png%3Fdesign%3Ddjn0-00bm-qyge%26autoNegate%3D1%26digest%3D0000000013%26placeMax%3D1%26placeMaxPct%3D0.8%26placeUseProduct%3D1%26placeUseView%3Dfront?ixlib=rb-1.1.0&w=600&h=600&fit=fill&dpr=1&bg=ffffff&fm=pjpg&trim=auto&trimmd=0&q=50&auto=compress&s=e18d4010b5be78f8d517a26ed971d0a0
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\.imgix\.net\/(https?%3A[^?]+).*?$/, "$1")
+			if (newsrc !== src)
+				return decodeURIComponent(newsrc);
 		}
 
 		if (domain === "data.whicdn.com") {
@@ -11287,7 +11294,11 @@ var $$IMU_EXPORT$$;
 			// doesn't work:
 			//  https://image.spreadshirtmedia.com/image-server/v1/mp/products/T812A2MPA1663PT17X49Y58D1014395106S29/views/1,width=1200,height=1200,appearanceId=2,backgroundColor=E8E8E8,modelId=115,crop=detail,version=1515071979/deathgrips-men-s-premium-t-shirt.webp - 1200x1200
 			//    https://image.spreadshirtmedia.com/image-server/v1/mp/products/T812A2MPA1663PT17X49Y58D1014395106S29/views/1/deathgrips-men-s-premium-t-shirt.webp -- 190x190, different image
-			return src.replace(/(\/[0-9]*),(?:[^=/,]*=[^=/,]*,?){1,}(\/[^/]*$)/, "$1$2");
+			// https://image.spreadshirtmedia.com/content/w_650/cms/cyo/seo/cheaptshirts/6_us_desktop.png
+			//   https://image.spreadshirtmedia.com/content/cms/cyo/seo/cheaptshirts/6_us_desktop.png
+			return src
+				.replace(/\/content\/+w_[0-9]+\/+cms\/+/, "/content/cms/");
+			//.replace(/(\/[0-9]*),(?:[^=/,]*=[^=/,]*,?){1,}(\/[^/]*$)/, "$1$2");
 		}
 
 		if (domain_nosub === "blastingcdn.com" && domain.match(/staticr[0-9]*\.blastingcdn\.com/)) {
