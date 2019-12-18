@@ -2240,6 +2240,10 @@ var $$IMU_EXPORT$$;
 		return str;
 	}
 
+	function reverse_str(str) {
+		return str.split("").reverse().join("");
+	}
+
 	function decode_entities(str) {
 		return str
 			.replace(/&nbsp;/g, " ")
@@ -3368,8 +3372,13 @@ var $$IMU_EXPORT$$;
 				//   http://blogpfthumb-phinf.pstatic.net/20131119_160/thenote_13847965353237CovB_JPEG/controlrooma.jpg
 				.replace(/blogpfthumb\.phinf\./, "blogpfthumb-phinf.")
 
-				.replace(/\.phinf\./, ".")
-				.replace(".naver.net/", ".pstatic.net/");
+				//.replace(/\.phinf\./, ".")
+				//.replace(".naver.net/", ".pstatic.net/")
+
+				// http://mblogthumb4.phinf.naver.net/20140302_211/ttlyoung333_1393761808293P7TKj_JPEG/17.jpg?type=w2 -- normal
+				//   http://blogfiles.pstatic.net/20140302_211/ttlyoung333_1393761808293P7TKj_JPEG/17.jpg -- cropped and upscaled (same as type=w1 and type=w2)
+				//   http://blogfiles.naver.net/20140302_211/ttlyoung333_1393761808293P7TKj_JPEG/17.jpg -- works
+				.replace(/(:\/\/blogfiles\.)pstatic\.net\/+/, "$1naver.net/");
 		}
 
 		if ((domain_nosub === "daumcdn.net" ||
@@ -6902,6 +6911,10 @@ var $$IMU_EXPORT$$;
 			(domain_nowww === "refinery29.com" && src.indexOf("/images/") >= 0) ||
 			// https://images.radio.com/aiu-media/BebeRexha.jpg?width=300&crop=16:9,offset-y0
 			(domain === "images.radio.com" && src.indexOf("/aiu-media/") >= 0) ||
+			// http://www.casseycds.net/uploads/sanpham/g1hv6_09.jpg?w=160&h=140&mode=pad
+			(domain_nowww === "casseycds.net" && src.indexOf("/uploads/") >= 0) ||
+			// http://www.youmekorea.com/event_4.brd/_12.12.cea0c14/T-ara%20Day%20By%20Day.jpg?cid=smime_6_50434350&thumb=300x226
+			(domain_nowww === "youmekorea.com" && /[?&]thumb=/.test(src)) ||
 			// http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
 			// https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
 			src.match(/\/demandware\.static\//) ||
@@ -9033,6 +9046,9 @@ var $$IMU_EXPORT$$;
 			// http://image.melon.co.kr/cm/album/images/022/91/986/2291986_500.jpg
 			//   http://image.melon.co.kr/cm/album/images/022/91/986/2291986_org.jpg
 			domain === "image.melon.co.kr" ||
+			// http://kakaoimg.melon.co.kr/cm/album/images/021/33/148/2133148_500.jpg/melon/resize/200x200/quality/80/optimize
+			//   http://kakaoimg.melon.co.kr/cm/album/images/021/33/148/2133148_org.jpg
+			domain === "kakaoimg.melon.co.kr" ||
 			domain === "cmtimg.melon.co.kr"/* &&
 			(src.indexOf("/images/") >= 0 ||
 			 src.indexOf("/image/") >= 0 ||
@@ -11822,6 +11838,12 @@ var $$IMU_EXPORT$$;
 				return newsrc;
 		}
 
+		if (domain === "image.mp3.zdn.vn") {
+			// http://image.mp3.zdn.vn/thumb/240_240/covers/e/0/e06d061a77a7bde916b8a91163029d41_1341286111.jpg
+			//   http://image.mp3.zdn.vn/covers/e/0/e06d061a77a7bde916b8a91163029d41_1341286111.jpg
+			return src.replace(/\/thumb\/+[0-9]+_[0-9]+\/+/, "/");
+		}
+
 		if (domain_nosub === "zadn.vn" ||
 			// https://images.vov.vn/h500/uploaded/wgyyweux2icrb7fgmumzw/2017_05_21/6_LLVB.jpg
 			//   https://images.vov.vn/uploaded/wgyyweux2icrb7fgmumzw/2017_05_21/6_LLVB.jpg
@@ -11874,7 +11896,9 @@ var $$IMU_EXPORT$$;
 			(domain_nosub === "tienphong.vn" && domain.match(/image[0-9]*\.tienphong\.vn/)) ||
 			// https://img.infonet.vn/w490/Uploaded/2019/hb_yuqzfdgzs/2017_02_04/thai_kim_dinh.jpg
 			//   https://img.infonet.vn/Uploaded/2019/hb_yuqzfdgzs/2017_02_04/thai_kim_dinh.jpg
-			domain === "img.infonet.vn" ||
+			// https://img2.infonet.vn/w480/Uploaded/2018/rog/469/t469361.jpg
+			//   https://img2.infonet.vn/Uploaded/2018/rog/469/t469361.jpg
+			(domain_nosub === "infonet.vn" && /^img[0-9]*/.test(domain)) ||
 			// https://img.giaoduc.net.vn/w1050/uploaded/2019/rutmne/2012_11_14/nicole-kidman-giaoduc.net.vn.jpg -- upscaled?
 			//   https://img.giaoduc.net.vn/uploaded/2019/rutmne/2012_11_14/nicole-kidman-giaoduc.net.vn.jpg
 			domain === "img.giaoduc.net.vn" ||
@@ -13843,6 +13867,9 @@ var $$IMU_EXPORT$$;
 			// http://sexypet.co.kr/web/product/medium/201711/856_shop1_379496.jpg
 			//   http://sexypet.co.kr/web/product/big/201711/856_shop1_379496.jpg -- upscaled?
 			domain_nowww === "sexypet.co.kr" ||
+			// https://withdrama.net/web/product/medium/withdrama_901.jpg
+			//   https://withdrama.net/web/product/big/withdrama_901.jpg
+			domain_nowww === "withdrama.net" ||
 			// http://bookculture.co.kr/product/detail.html?product_no=107573&cate_no=164&display_group=1
 			// http://bookculture.co.kr/web/product/medium/201905/a9dd5883f1bc104d7ddeb6c4faf9a1b1.jpg
 			//   http://bookculture.co.kr/web/product/big/201905/90957b7ab17a2d2ca15f038b9220c295.jpg
@@ -15656,6 +15683,12 @@ var $$IMU_EXPORT$$;
 												   "$1f$2"));
 		}
 
+		if (domain === "p16-sg-default.akamaized.net") {
+			// https://p16-sg-default.akamaized.net/china-img/aweme/200x200/330600193414987bd95e.jpeg
+			//   https://p0.pstatp.com/origin/330600193414987bd95e.jpeg
+			return src.replace(/^[a-z]+:\/\/[^/]+\/+china-img\/+/, "https://p0.pstatp.com/");
+		}
+
 		if (domain === "img.jizy.cn") {
 			// l, m, s
 			// https://img.jizy.cn/img/m/276318
@@ -15939,6 +15972,9 @@ var $$IMU_EXPORT$$;
 			// http://huzzk.com/image/cache/data/Vocaloid-Hatsune-Miku-Cosplay-Costume--MR-046-001--p11923551638/1-800x800.jpg
 			//   http://huzzk.com/image/data/Vocaloid-Hatsune-Miku-Cosplay-Costume--MR-046-001--p11923551638/1.jpg
 			domain_nowww === "huzzk.com" ||
+			// http://www.gasookpopgalore.net/image/cache/data/product/CD/0T-Ara%20-%20Day%20By%20Day-158x158.jpeg
+			//   http://www.gasookpopgalore.net/image/data/product/CD/0T-Ara%20-%20Day%20By%20Day.jpeg
+			domain_nowww === "gasookpopgalore.net" ||
 			// http://www.honeydear.my/image/cache/data/YW1031WH/213%20(4)-850x1300.jpg
 			//   http://www.honeydear.my/image/data/YW1031WH/213%20(4).jpg
 			domain_nowww === "honeydear.my") {
@@ -22319,13 +22355,21 @@ var $$IMU_EXPORT$$;
 			return src.replace(/:\/\/[^/]*\//, "://pics.wikifeet.com/");
 		}
 
-		if (false && domain === "my.wikifeet.com") {
+		if (domain === "my.wikifeet.com") {
 			// https://my.wikifeet.com/photos/t179623.jpg
 			//   https://my.wikifeet.com/photos/179623.jpg
 			// doesn't work for all:
 			// https://my.wikifeet.com/photos/t166055.jpg
 			//   https://my.wikifeet.com/photos/166055.jpg -- access denied (Content-Length: 169698, Last-Modified: Thu, 01 Aug 2019 12:02:01 GMT, Vary: Cookie)
-			return src.replace(/\/photos\/+t([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/photos/$1");
+			return {
+				url: src.replace(/\/photos\/+t([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/photos/$1"),
+				bad_if: [{
+					headers: {
+						"content-length": "169698",
+						"last-modified": "Thu, 01 Aug 2019 12:02:01 GMT"
+					}
+				}]
+			};
 		}
 
 		if (domain === "static.spotboye.com") {
@@ -23513,10 +23557,13 @@ var $$IMU_EXPORT$$;
 			return src.replace(/_hd_[0-9]+(\.[^/.]*)$/, "_original$1");
 		}
 
-		if (domain_nowww === "mitazamagica.com" &&
+		if ((domain_nowww === "mitazamagica.com" ||
+			 // http://mengqi.chenggong.it/WebRoot/StoreIT5/Shops/14375/5162/CB01/6F65/1D03/67D3/3E95/9311/1368/T-ara_-_Mini_Album_Vol.6__91_Day_By_Day_93__ml.png
+			 //   http://mengqi.chenggong.it/WebRoot/StoreIT5/Shops/14375/5162/CB01/6F65/1D03/67D3/3E95/9311/1368/T-ara_-_Mini_Album_Vol.6__91_Day_By_Day_93_.png
+			 domain === "mengqi.chenggong.it") &&
 			src.indexOf("/Shops/") >= 0) {
 			// https://mitazamagica.com/WebRoot/Store8/Shops/6fe0d17f-85dc-4216-b8f7-030dc2226c0a/56FB/F6F1/63AF/4EB2/7C87/0A48/3523/638D/Tmg-097_ml.jpg
-			return src.replace(/_[a-z]+(\.[^/.]*)$/, "$1");
+			return src.replace(/_(?:s|m|ml)(\.[^/.]*)$/, "$1");
 		}
 
 		if (domain_nowww === "imgbase.info" &&
@@ -29361,9 +29408,11 @@ var $$IMU_EXPORT$$;
 			//   http://nadinaderose.ucoz.ru/_ph/37/660567815.jpg?1535302566
 			// http://vampire-club.ucoz.ru/_nw/0/s35048683.jpg
 			//   https://vampire-club.ucoz.ru/_nw/0/35048683.jpeg
+			// https://kpop-lover.ucoz.ru/_pu/0/s78304637.jpg
+			//   https://kpop-lover.ucoz.ru/_pu/0/78304637.jpg
 			newsrc = src
 				.replace(/(\/_ph\/+[0-9]+\/+)[0-9]+\/+([0-9]+\.[^/.]*)$/, "$1$2")
-				.replace(/(\/_nw\/+[0-9]+\/+)s([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+				.replace(/(\/_(?:nw|pu)\/+[0-9]+\/+)s([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
 			if (newsrc !== src)
 				return add_extensions_jpeg(newsrc);
 		}
@@ -31459,7 +31508,7 @@ var $$IMU_EXPORT$$;
 			match = src.match(/:\/\/[^/]*\/([0-9]+)\/[^/]*(?:[?#].*)?$/);
 			if (match) {
 				var number = match[1];
-				var reversed_number = parseInt(number.split("").reverse().join("")) - 1;
+				var reversed_number = parseInt(reverse_str(number)) - 1;
 				return "https://c.bookwalker.jp/coverImage_" + reversed_number + src.replace(/.*(\.[^/.?#]*)(?:[?#].*)?$/, "$1");
 			}
 		}
@@ -46213,6 +46262,42 @@ var $$IMU_EXPORT$$;
 				};
 		}
 
+		if (domain_nowww === "jmusicitalia.com" ||
+			// https://static.jmusicitalia.com/artisti/tara/album/jewelry-box-cd.jpg
+			//   https://static.jmusicitalia.com/artisti/tara/album/jewelry-box-cd-big.jpg
+			domain === "static.jmusicitalia.com") {
+			// https://www.jmusicitalia.com/artisti/tara/album/jewelry-box-cd.jpg
+			//   https://www.jmusicitalia.com/artisti/tara/album/jewelry-box-cd-big.jpg
+			return src.replace(/(\/artisti\/+[^/]+\/+album\/+[^/]+?)(?:-big)?(\.[^/.]+)(?:[?#].*)?$/, "$1-big$2");
+		}
+
+		if (domain_nowww === "cooltrack.co.kr") {
+			// http://www.cooltrack.co.kr/shopimages/cooltrack/0010110013713.jpg
+			//   http://www.cooltrack.co.kr/shopimages/cooltrack/001011001371.jpg
+			return src.replace(/(\/shopimages\/+cooltrack\/+[0-9]{12})[0-9](\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nosub === "rakuten.com" && /^images\./.test(domain)) {
+			// https://images.fr.shopping.rakuten.com/photo/927785641_M.jpg
+			//   https://images.fr.shopping.rakuten.com/photo/927785641.jpg
+			return src.replace(/(\/photo\/+[0-9]+)_[SML](\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "suruga-ya.jp") {
+			// https://www.suruga-ya.jp/pics/boxart_m/211019151m.jpg
+			//   https://www.suruga-ya.jp/database/pics/game/211019151.jpg
+			return src.replace(/\/pics\/+boxart_[a-z]\/+([0-9]+)[a-z](\.[^/.]*)(?:[?#].*)?$/, "/database/pics/game/$1$2");
+		}
+
+		if (domain_nowww === "itsfun.com.tw") {
+			// https://www.itsfun.com.tw/images/ef/b2/==wZwpmL2kzMkNGMmhDZ2kjZjFGMyEDM09yX4YjMfhjNy8CZmRXbk9SbvNmLnNXboFnL4A3LvoDc0RHa.jpg
+			//   http://p8.qhmsg.com/t0120acf96d8f0cd396.jpg
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+images\/+(?:[0-9a-f]{2}\/+){2}([^/.]{30,})\.[^/.]+(?:[?#].*)?$/, "$1");
+			if (newsrc !== src) {
+				return base64_decode(reverse_str(newsrc));
+			}
+		}
+
 
 
 
@@ -50519,8 +50604,7 @@ var $$IMU_EXPORT$$;
 					img.style.height = img.style.maxHeight;
 				}
 
-				if (imgh < 20 ||
-					imgw < 20) {
+				if (imgh < 20 || imgw < 20) {
 					// FIXME: This will stop "custom" percentages with low percentages for small images
 					stop_waiting();
 					return;
