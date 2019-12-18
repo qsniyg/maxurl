@@ -46147,6 +46147,41 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/media\/+inventory\/+product\/+)alt(\/+[0-9]+_[0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1full$2");
 		}
 
+		if (domain === "vangogh.teespring.com") {
+			// https://vangogh.teespring.com/static.jpg?height=570&image_url=https%3A%2F%2Fs3.amazonaws.com%2Fteespring-pub-custom%2F9f7_55491109_product_787_103458_front.png&padded=false&signature=f7ohWtC165tZtziN8cxIqs%2FOSWEgpuoTC3Cl8w9UoJQ%3D&version=2019-02-25-20-59&width=480
+			//   https://s3.amazonaws.com/teespring-pub-custom/9f7_55491109_product_787_103458_front.png
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+static\.jpg\?(?:.*&)?image_url=([^&]+).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+
+			// https://vangogh.teespring.com/opengraph.jpg?composition=%7B%22artwork%22%3A%7B%22url%22%3A%22https%3A%2F%2Fteespring-pri.s3.amazonaws.com%2F525_69186279_69425709_front.png%22%2C%22offset%22%3A%7B%22x%22%3A0%2C%22y%22%3A0%7D%7D%2C%22artwork_limit%22%3A%7B%7D%2C%22artwork_transform%22%3A%22FitToPrintableArea%22%2C%22artwork_orientation%22%3A%22Portrait%22%2C%22product_colors%22%3A%5B%7B%22hex%22%3A%22%23000000%22%7D%5D%2C%22product_image%22%3A%7B%22reference_point%22%3A%7B%22x%22%3A530%2C%22y%22%3A377%7D%2C%22printable_area%22%3A%7B%22x%22%3A86%2C%22y%22%3A60%2C%22width%22%3A888%2C%22height%22%3A634%7D%2C%22ppi%22%3A181.8%2C%22url%22%3A%22https%3A%2F%2Fteespring-product-images.s3.amazonaws.com%2F89_front_ghost.png%22%2C%22background_mask_url%22%3A%22https%3A%2F%2Fteespring-product-images.s3.amazonaws.com%2F89_front_mask.png%22%7D%7D&height=627&signature=hD7ZqFU4fSHtESugSbR41PrLSNF3JBSGGdgJvlVJN80%3D&version=2019-10-09-03-11&width=1200
+			//   https://teespring-pri.s3.amazonaws.com/525_69186279_69425709_front.png -- 403
+			//   https://teespring-pub-custom.s3.amazonaws.com/525_69186279_69425709_front.png -- 403 too
+			// should this be kept then?
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+opengraph\.jpg\?(?:.*&)?composition=([^&]+).*?$/, "$1");
+			if (newsrc !== src) {
+				try {
+					var json = JSON.parse(decodeURIComponent(newsrc));
+					return json.artwork.url;
+				} catch (e) {
+					console.error(e);
+					return src;
+				}
+			}
+
+			// https://vangogh.teespring.com/v3/image/wVgPexQfKTNzxdgc3C-lEIQiLo8/480/560.jpg
+			//   https://vangogh.teespring.com/v3/image/wVgPexQfKTNzxdgc3C-lEIQiLo8/999999/999999.jpg
+			// https://vangogh.teespring.com/shirt_pic/37081712/37372743/266/6174/480x9999/front.jpg?v=2018-02-02-12-41
+			//   https://vangogh.teespring.com/shirt_pic/37081712/37372743/266/6174/999999x999999/front.jpg?v=2018-02-02-12-41
+			//   https://vangogh.teespring.com/shirt_pic/37081712/37372743/266/6173/999999x999999/front.jpg?v=2018-02-02-12-41 -- pink
+			//   https://vangogh.teespring.com/shirt_pic/37081712/37372743/2/6173/999999x999999/front.jpg?v=2018-02-02-12-41 -- different shirt
+			//   https://vangogh.teespring.com/og_pic/37081712/37372743/front.jpg?v=2018-02-02-12-41 -- cropped
+			// https://vangogh.teespring.com/og_pic/87447110/12774606/front.jpg?v=2019-11-26-00-02&background-image=wood&effects=inner-glow
+			return src
+				.replace(/(\/v3\/+image\/+[^/]{10,}\/+)[0-9]+\/+[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1999999/999999$2")
+				.replace(/(\/shirt_pic\/+(?:[0-9]+\/+){4})[0-9]+x[0-9]+\/+([^/]+\.[^/.]+)(?:[?#].*)?$/, "$1999999x999999/$2");
+		}
+
 
 
 
