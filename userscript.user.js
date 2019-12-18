@@ -15638,7 +15638,44 @@ var $$IMU_EXPORT$$;
 			 //   https://p0.ipstatp.com/origin/pgc-image-va/Rgmv8E92sxXqtz.jpg
 			 domain_nosub === "ipstatp.com" ||
 			 domain_nosub === "sgpstatp.com")
-			&& domain.match(/[pi][a-z]?[0-9]*\./)) {
+			&& domain.match(/[pi][a-z]?[0-9]*\./) ||
+			// https://p16-tiktokcdn-com.akamaized.net/aweme/100x100/tiktok-obj/1647151559190530.jpeg
+			//   https://p16-tiktokcdn-com.akamaized.net/origin/tiktok-obj/1647151559190530.jpeg
+			// https://p16-tiktokcdn-com.akamaized.net/large/v0201/a4d90921ec0947ed959b757497367d9e.jpg
+			//   https://p16-tiktokcdn-com.akamaized.net/img/v0201/a4d90921ec0947ed959b757497367d9e~noop.jpg
+			//   https://p16-tiktokcdn-com.akamaized.net/obj/v0201/a4d90921ec0947ed959b757497367d9e.jpg -- 720x1080
+			//   https://p16-tiktokcdn-com.akamaized.net/origin/v0201/a4d90921ec0947ed959b757497367d9e.jpg -- 720x1080
+			domain === "p16-tiktokcdn-com.akamaized.net" ||
+			// https://p3-tt.bytecdn.cn/img/pgc-image/f16e7bd2daf14850a8509015e6a45d71~noop_1913x1080.jpeg
+			//   https://p3-tt.bytecdn.cn/img/pgc-image/f16e7bd2daf14850a8509015e6a45d71~noop.jpeg
+			//   https://p3-tt.bytecdn.cn/origin/pgc-image/f16e7bd2daf14850a8509015e6a45d71.jpeg
+			// http://p9-tt.bytecdn.cn/large/pgc-image/59e09a4f55d24a719681881263c67a12
+			//   http://p9-tt.bytecdn.cn/img/pgc-image/59e09a4f55d24a719681881263c67a12~noop.jpeg
+			//   http://p9-tt.bytecdn.cn/origin/pgc-image/59e09a4f55d24a719681881263c67a12
+			// http://p9-hs.bytecdn.cn/large/tos-cn-p-0000/70d1b8c13f074407a38fd77dd8be2833.webp
+			//   http://p9-hs.bytecdn.cn/origin/tos-cn-p-0000/70d1b8c13f074407a38fd77dd8be2833.webp
+			// https://p3-tt.bytecdn.cn/img/tos-cn-i-0022/8407ceb2ec2a4af6ba39cbb73f9a7493~noop_2000x2999.jpeg
+			//   https://p3-tt.bytecdn.cn/large/tos-cn-i-0022/8407ceb2ec2a4af6ba39cbb73f9a7493
+			//   https://p3-tt.bytecdn.cn/origin/tos-cn-i-0022/8407ceb2ec2a4af6ba39cbb73f9a7493
+			//   https://p3-tt.bytecdn.cn/img/tos-cn-i-0022/8407ceb2ec2a4af6ba39cbb73f9a7493~noop.jpeg
+			//   https://p3-tt.bytecdn.cn/origin/tos-cn-i-0022/8407ceb2ec2a4af6ba39cbb73f9a7493.jpeg
+			// http://p9-dy.bytecdn.cn/aweme/720x720/3308000e2f14f3ed5161.webp
+			//   http://p9-dy.bytecdn.cn/obj/3308000e2f14f3ed5161.webp -- 1242x1209
+			//   http://p9-dy.bytecdn.cn/origin/3308000e2f14f3ed5161.webp -- 1242x1209
+			// http://p1-tt.bytecdn.cn/list/300x196/pgc-image/RPqKymt6GomelJ
+			//   http://p1-tt.bytecdn.cn/obj/pgc-image/RPqKymt6GomelJ
+			//   http://p1-tt.bytecdn.cn/origin/pgc-image/RPqKymt6GomelJ
+			// http://p3a.bytecdn.cn/large/153300075dbdb085556d?imageView2/2/w/500/h/840
+			//   http://p3a.bytecdn.cn/large/153300075dbdb085556d
+			//   http://p3a.bytecdn.cn/origin/153300075dbdb085556d
+			// http://p9-hs.bytecdn.cn/large/tos-cn-p-0000/70d1b8c13f074407a38fd77dd8be2833.webp
+			//   http://p9-hs.bytecdn.cn/img/tos-cn-p-0000/70d1b8c13f074407a38fd77dd8be2833~noop.jpeg
+			//   http://p9-tt.bytecdn.cn/origin/pgc-image/59e09a4f55d24a719681881263c67a12.jpeg
+			domain_nosub === "bytecdn.cn" ||
+			// https://p16.muscdn.com/img/musically-maliva-obj/1634882550258693~c5_100x100.jpeg
+			//   https://p16.muscdn.com/img/musically-maliva-obj/1634882550258693~noop.jpeg
+			//   https://p16.muscdn.com/origin/musically-maliva-obj/1634882550258693.jpeg
+			domain_nosub === "muscdn.com") {
 			// http://p3.pstatp.com/medium/30f1001008f9067618b8
 			//   http://p3.pstatp.com/large/30f1001008f9067618b8
 			//   http://p3.pstatp.com/origin/30f1001008f9067618b8
@@ -15655,9 +15692,36 @@ var $$IMU_EXPORT$$;
 			// http://p0.sgpstatp.com/large/tos-alisg-i-0000/6a3d2ee4939f47b09704d1463c0440f0
 			//   http://p0.sgpstatp.com/origin/tos-alisg-i-0000/6a3d2ee4939f47b09704d1463c0440f0 -- without /tos-alisg-i-000/ works too
 			return {
-				url: src.replace(/(:\/\/[^/]*\/)[a-z]*\/(?:[0-9]+x[0-9]+\/)?/, "$1origin/"),
+				url: src
+					.replace(/(:\/\/[^/]*\/+)(?:medium|large|obj|aweme|list)\/+(?:[0-9]+x[0-9]+\/+)?/, "$1origin/")
+					.replace(/\/img\/+([^/]+\/+[0-9a-f]+)~noop(\.[^/.]*)(?:[?#].*)?$/, "/origin/$1$2")
+					.replace(/(\/img\/+[^/]*\/+[0-9a-f]+~)[^/.]*?(\.[^/.]*)(?:[?#].*)?$/, "$1noop$2")
+					.replace(/\?imageView2.*/, ""),
 				can_head: false // 404
 			};
+		}
+
+		if (false) {
+			// old tiktok rule
+			newsrc = src
+				.replace(/(\/img\/+[^/]*\/+[0-9a-f]+~)[^/.]*?(\.[^/.]*)(?:[?#].*)?$/, "$1noop$2")
+				.replace(/\/large(\/+[^/]*\/+[0-9a-f]+)(?:\.[^/.]*)?(?:[?#].*)?$/, "/img$1~noop.jpeg")
+				.replace(/\/(?:aweme|list)\/+[0-9]+x[0-9]+\/+/, "/obj/")
+				.replace(/\?imageView2.*/, "");
+			if (newsrc !== src)
+				return newsrc;
+
+			return {
+				url: src,
+				can_head: false // 404
+			};
+		}
+
+		if (false && domain_nosub === "akamaized.net" &&
+			domain.match(/^p[0-9]*-tiktokcdn-com\./)) {
+			// https://p16-tiktokcdn-com.akamaized.net/large/v0201/a4d90921ec0947ed959b757497367d9e.jpg
+			//   https://p16-tiktokcdn-com.akamaized.net/obj/v0201/a4d90921ec0947ed959b757497367d9e.jpg
+			return src.replace(/(:\/\/[^/]*\/)[a-z]+\//, "$1obj/");
 		}
 
 		if (domain === "img-bcy-qn.pstatp.com") {
@@ -33616,13 +33680,6 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/[^/]*)_(?:size[0-9]*|thumb[0-9]*)(\.[^/.]*)(?:[?#].*)?$/, "$1_size10$2");
 		}
 
-		if (domain_nosub === "akamaized.net" &&
-			domain.match(/^p[0-9]*-tiktokcdn-com\./)) {
-			// https://p16-tiktokcdn-com.akamaized.net/large/v0201/a4d90921ec0947ed959b757497367d9e.jpg
-			//   https://p16-tiktokcdn-com.akamaized.net/obj/v0201/a4d90921ec0947ed959b757497367d9e.jpg
-			return src.replace(/(:\/\/[^/]*\/)[a-z]+\//, "$1obj/");
-		}
-
 		if (domain_nowww === "cinra.net") {
 			// https://www.cinra.net/uploads/img/news/2018/20180601-majimurigakuen_panel.jpg
 			//   https://www.cinra.net/uploads/img/news/2018/20180601-majimurigakuen_full.jpg
@@ -37986,40 +38043,6 @@ var $$IMU_EXPORT$$;
 					}
 				};
 			}*/
-		}
-
-		if (domain_nosub === "bytecdn.cn" ||
-			// https://p16.muscdn.com/img/musically-maliva-obj/1634882550258693~c5_100x100.jpeg
-			//   https://p16.muscdn.com/img/musically-maliva-obj/1634882550258693~noop.jpeg
-			domain_nosub === "muscdn.com") {
-			// https://p3-tt.bytecdn.cn/img/pgc-image/f16e7bd2daf14850a8509015e6a45d71~noop_1913x1080.jpeg
-			//   https://p3-tt.bytecdn.cn/img/pgc-image/f16e7bd2daf14850a8509015e6a45d71~noop.jpeg
-			// http://p9-tt.bytecdn.cn/large/pgc-image/59e09a4f55d24a719681881263c67a12
-			//   http://p9-tt.bytecdn.cn/img/pgc-image/59e09a4f55d24a719681881263c67a12~noop.jpeg
-			// http://p9-hs.bytecdn.cn/large/tos-cn-p-0000/70d1b8c13f074407a38fd77dd8be2833.webp
-			// https://p3-tt.bytecdn.cn/img/tos-cn-i-0022/8407ceb2ec2a4af6ba39cbb73f9a7493~noop_2000x2999.jpeg
-			//   https://p3-tt.bytecdn.cn/large/tos-cn-i-0022/8407ceb2ec2a4af6ba39cbb73f9a7493
-			//   https://p3-tt.bytecdn.cn/img/tos-cn-i-0022/8407ceb2ec2a4af6ba39cbb73f9a7493~noop.jpeg
-			// http://p9-dy.bytecdn.cn/aweme/720x720/3308000e2f14f3ed5161.webp
-			//   http://p9-dy.bytecdn.cn/obj/3308000e2f14f3ed5161.webp
-			// http://p1-tt.bytecdn.cn/list/300x196/pgc-image/RPqKymt6GomelJ
-			//   http://p1-tt.bytecdn.cn/obj/pgc-image/RPqKymt6GomelJ
-			// http://p3a.bytecdn.cn/large/153300075dbdb085556d?imageView2/2/w/500/h/840
-			//   http://p3a.bytecdn.cn/large/153300075dbdb085556d
-			// http://p9-hs.bytecdn.cn/large/tos-cn-p-0000/70d1b8c13f074407a38fd77dd8be2833.webp
-			//   http://p9-hs.bytecdn.cn/img/tos-cn-p-0000/70d1b8c13f074407a38fd77dd8be2833~noop.jpeg
-			newsrc = src
-				.replace(/(\/img\/+[^/]*\/+[0-9a-f]+~)[^/.]*?(\.[^/.]*)(?:[?#].*)?$/, "$1noop$2")
-				.replace(/\/large(\/+[^/]*\/+[0-9a-f]+)(?:\.[^/.]*)?(?:[?#].*)?$/, "/img$1~noop.jpeg")
-				.replace(/\/(?:aweme|list)\/+[0-9]+x[0-9]+\/+/, "/obj/")
-				.replace(/\?imageView2.*/, "");
-			if (newsrc !== src)
-				return newsrc;
-
-			return {
-				url: src,
-				can_head: false // 404
-			};
 		}
 
 		if (domain === "image.newstomato.com") {
