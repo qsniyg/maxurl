@@ -20328,9 +20328,11 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/thumbfiles\/[0-9]+X[0-9]+\//, "/uploadfiles/");
 		}
 
-		if (domain_nosub === "giphy.com" && domain.match(/media[0-9]*.giphy.com/)) {
+		if (domain_nosub === "giphy.com" && domain.match(/^(?:media[0-9]*|i)\./)) {
 			// https://media.giphy.com/media/3og0IRYXdt9tTE52nK/giphy.gif
 			// https://media.giphy.com/media/3og0IRYXdt9tTE52nK/giphy.mp4
+			// https://i.giphy.com/media/3og0IRYXdt9tTE52nK/giphy.webp
+			//   https://i.giphy.com/media/3og0IRYXdt9tTE52nK/source.gif
 			// https://media1.giphy.com/media/l0Iy0lyLZnfdEBmMg/200w.webp
 			// https://media1.giphy.com/media/l0Iy0lyLZnfdEBmMg/200w.gif
 			// https://media2.giphy.com/media/ZBg5XWrvDVzNe/200_s.gif
@@ -46191,6 +46193,24 @@ var $$IMU_EXPORT$$;
 			return src
 				.replace(/(\/v3\/+image\/+[^/]{10,}\/+)[0-9]+\/+[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1999999/999999$2")
 				.replace(/(\/shirt_pic\/+(?:[0-9]+\/+){4})[0-9]+x[0-9]+\/+([^/]+\.[^/.]+)(?:[?#].*)?$/, "$1999999x999999/$2");
+		}
+
+		if (domain_nosub === "lvme.me" && /^[a-z]\./.test(domain)) {
+			// http://e.lvme.me/j4p3om9_2.jpg
+			//   http://e.lvme.me/j4p3om9.jpg
+			//   https://www.livememe.com/j4p3om9/ -- original page
+			newsrc = src.replace(/(:\/\/[^/]+\/+[a-z0-9]+)_[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+			if (newsrc !== src)
+				return newsrc;
+
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+([a-z0-9]+)\.[^/.]+(?:[?#].*)?$/);
+			if (match)
+				return {
+					url: src,
+					extra: {
+						page: "https://www.livememe.com/" + match[1] + "/"
+					}
+				};
 		}
 
 
