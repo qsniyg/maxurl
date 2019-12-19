@@ -11,6 +11,7 @@
 // @description:zh    为6000多个网站查找更大或原始图像
 // @description:zh-CN 为6000多个网站查找更大或原始图像
 // @description:zh-TW 為6000多個網站查找更大或原始圖像
+// @description:zh-HK 為6000多個網站查找更大或原始圖像
 // @author            qsniyg
 // @homepageURL       https://qsniyg.github.io/maxurl/options.html
 // @supportURL        https://github.com/qsniyg/maxurl/issues
