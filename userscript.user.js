@@ -10276,13 +10276,16 @@ var $$IMU_EXPORT$$;
 			// https://m.telegraphindia.com/unsafe/620x350/smart/static.telegraphindia.com/derivative/THE_TELEGRAPH/1691157/16X9/imagef8c0f45f-486b-4aba-9ee8-21091dce0902.jpg
 			//   https://static.telegraphindia.com/derivative/THE_TELEGRAPH/1691157/16X9/imagef8c0f45f-486b-4aba-9ee8-21091dce0902.jpg
 			domain_nosub === "telegraphindia.com" ||
+			// https://mediacdn.libertatea.ro/unsafe/1260x708/smart/filters:contrast(8):quality(80)/https://static4.libertatea.ro/wp-content/uploads/2019/12/morga-timisoaraprofimedia-0416497986.jpg
+			//   https://static4.libertatea.ro/wp-content/uploads/2019/12/morga-timisoaraprofimedia-0416497986.jpg
+			domain === "mediacdn.libertatea.ro" ||
 			// https://t2.genius.com/unsafe/220x0/https%3A%2F%2Fimages.genius.com%2F4e99624bb74700cf1a5ac40f142cb7cf.1000x1000x1.jpg
 			//   https://images.genius.com/4e99624bb74700cf1a5ac40f142cb7cf.1000x1000x1.jpg
 			(domain_nosub === "genius.com" && domain.match(/t[0-9]*\.genius\.com/))) {
 			// https://d3mkh5naggjddw.cloudfront.net/unsafe/smart/filters:format(jpeg)/http%3A%2F%2Fi.dailymail.co.uk%2Fi%2Fpix%2F2017%2F08%2F10%2F19%2F43248C1D00000578-0-image-a-10_1502389640540.jpg
 			//   http://i.dailymail.co.uk/i/pix/2017/08/10/19/43248C1D00000578-0-image-a-10_1502389640540.jpg
 			return add_http(decodeURIComponent(src
-											   .replace(/.*\/unsafe\/smart\/(?:filters:[^/]*\/)?/, "")
+											   .replace(/.*\/unsafe\/(?:fit-in\/)?(?:[0-9]+x[0-9]+\/)?smart\/(?:filters:[^/]*\/)?/, "")
 											   .replace(/.*\/unsafe\/fit-in\/smart\//, "")
 											   .replace(/.*\/unsafe\/(?:fit-in\/)?(?:[0-9]*x[0-9]*\/)?(?:center\/)?(?:smart\/)?/, "")));
 		}
@@ -35709,6 +35712,17 @@ var $$IMU_EXPORT$$;
 			// https://images.gsp.ro/usr/thumbs/thumb_600_x_315/2017/12/11/868470-selena-gomez-1.jpg
 			//   https://images.gsp.ro/usr/imagini/2017/12/11/868470-selena-gomez-1.jpg
 			return src.replace(/\/thumbs\/+thumb_[0-9]+_x_[0-9]+\//, "/imagini/");
+		}
+
+		if (domain === "cacheimg.gsp.ro") {
+			// thanks to Lerortle on greasyfork: https://greasyfork.org/en/forum/discussion/66137/could-you-add-support-for-website
+			// https://cacheimg.gsp.ro/autocrop/smp-images-production/gsp.ro/18122019/1576654064659.jpg?width=924&height=600
+			//   https://cacheimg.gsp.ro/autocrop/smp-images-production/gsp.ro/18122019/1576654064659.jpg?width=0&height=0
+			// https://cacheimg.gsp.ro/autocrop/smp-images-production/gsp.ro/01122019/1575186509430.jpg?width=1200&height=0 -- 1200x1670, upscaled
+			//   https://cacheimg.gsp.ro/autocrop/smp-images-production/gsp.ro/01122019/1575186509430.jpg?width=0&height=0 -- 690x690
+			// https://cacheimg.gsp.ro/autocrop/smp-images-production/gsp.ro/18122019/1576703575633.jpg?width=1200&height=1200 -- 1200x1200, upscaled
+			//   https://cacheimg.gsp.ro/autocrop/smp-images-production/gsp.ro/18122019/1576703575633.jpg?width=0&height=0 -- 924x600
+			return src.replace(/(\/autocrop\/+.*?)(?:[?#].*)?$/, "$1?width=0&height=0");
 		}
 
 		if (domain === "tt.inf.ua") {
