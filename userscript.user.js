@@ -21489,10 +21489,13 @@ var $$IMU_EXPORT$$;
 				.replace(/(\/simgs\/[0-9a-f]+)_[0-9]+(-[0-9]+[./])/, "$1_14$2");
 		}
 
-		if (domain === "www.axisanimation.com" &&
+		if ((domain_nowww === "axisanimation.com" ||
+			 // https://sexo18.net/site/assets/files/35399/sexo18-perfect-nude-chick-mila-azul.225x320.jpg
+			 //   https://sexo18.net/site/assets/files/35399/sexo18-perfect-nude-chick-mila-azul.jpg
+			 domain_nowww === "sexo18.net") &&
 			src.indexOf("/assets/") >= 0) {
 			// http://www.axisanimation.com/site/assets/files/1296/mjs5847.480x270.jpg
-			//  http://www.axisanimation.com/site/assets/files/1296/mjs5847.jpg
+			//   http://www.axisanimation.com/site/assets/files/1296/mjs5847.jpg
 			return src.replace(/\.[0-9]+x[0-9]+(\.[^/.]*)$/, "$1");
 		}
 
@@ -41995,10 +41998,13 @@ var $$IMU_EXPORT$$;
 			return src.replace(/^([a-z]+:\/\/[^/]*\/+)(?:(?:width|height|crop)\/+[^/]*\/+){0,}([^/]*\.[^/]*\/+)/, "$1$2");
 		}
 
-		if (domain_nowww === "x18.xxx") {
+		if (domain_nowww === "x18.xxx" ||
+			// https://p2.drtst.com/media/photos/tmb_new/2764183.jpg
+			//   https://p2.drtst.com/media/photos/2764183.jpg
+			domain_nosub === "drtst.com") {
 			// https://www.x18.xxx/media/photos/tmb/5763.jpg
 			//   https://www.x18.xxx/media/photos/5763.jpg
-			return src.replace(/\/media\/+photos\/+tmb\/+/, "/media/photos/");
+			return src.replace(/\/media\/+photos\/+tmb(?:_new)?\/+/, "/media/photos/");
 		}
 
 		if (domain_nowww === "axtar.org") {
@@ -46452,6 +46458,57 @@ var $$IMU_EXPORT$$;
 			// https://www.hot-sex-photos.com/en/xxx-pics/karen-gillan-7.thumb.jpg
 			//   https://www.hot-sex-photos.com/en/xxx-pics/karen-gillan-7.jpg
 			return src.replace(/\.thumb(\.[^/.]+)(?:[?#].*)?$/, "$1");
+		}
+
+		if (domain === "s.io.ua") {
+			// https://s.io.ua/img_aa/small/3613/30/36133095_0.jpg
+			//   https://g.io.ua/img_aa/large/3613/30/36133095.jpg
+			return {
+				url: src.replace(/:\/\/s(\.[^/]+\/+img_aa\/+)small(\/+[0-9]+\/+[0-9]+\/+[0-9]+)_0(\.[^/.]+)(?:[?#].*)?$/, "://g$1large$2$3"),
+				headers: {
+					Referer: ""
+				},
+				referer_ok: {
+					same_domain_nosub: true
+				}
+			};
+		}
+
+		if (domain_nosub === "io.ua") {
+			obj = {
+				url: src,
+				headers: {
+					Referer: ""
+				},
+				referer_ok: {
+					same_domain_nosub: true
+				}
+			};
+
+			match = src.match(/\/img_aa\/+[a-z]+\/+[0-9]+\/+[0-9]+\/+([0-9]+)(?:_[0-9]+)?\./);
+			if (match) {
+				obj.extra = { page: "https://io.ua/" + match[1] };
+			}
+
+			return obj;
+		}
+
+		if (domain_nowww === "sexylabia.net") {
+			return {
+				url: src.replace(/\/uploads\/+thumbnails\/+FileUpload\/+/, "/uploads/FileUpload/"),
+				headers: {
+					Referer: ""
+				},
+				referer_ok: {
+					same_domain_nosub: true
+				}
+			};
+		}
+
+		if (domain_nowww === "labsporno.com") {
+			// http://labsporno.com/images/7/758590399-t.jpg
+			//   http://labsporno.com/images/7/758590399.jpg
+			return src.replace(/(\/images\/+[0-9]\/+[0-9]+)-t(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
 		}
 
 
