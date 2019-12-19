@@ -11193,6 +11193,8 @@ var $$IMU_EXPORT$$;
 			// https://i.imgur.com/ajsLfCal.jpg
 			// https://i.imgur.com/ajsLfCa_d.jpg?maxwidth=520&shape=thumb&fidelity=high
 			//   https://i.imgur.com/ajsLfCa.jpg
+			// https://i.imgur.com/ajsLfCa.mp4
+			// ?fb, ?fbplay both scale down the image too
 			// h, r, l, g, m, t, b, s
 
 			if (src.match(/\/removed\.[a-zA-Z]+(?:[?#].*)?$/))
@@ -11202,7 +11204,7 @@ var $$IMU_EXPORT$$;
 				};
 
 			obj = {
-				url: src,
+				url: src.replace(/\?.*/, ""),
 				headers: {
 					Referer: null
 				},
@@ -11231,47 +11233,63 @@ var $$IMU_EXPORT$$;
 			}
 
 			if (options && options.cb && options.do_request && obj.extra) {
-				options.do_request({
-					url: obj.extra.page,
-					method: "GET",
-					onload: function(resp) {
-						if (resp.readyState !== 4)
-							return;
+				var cache_key = "imgur:" + obj.extra.page;
 
-						if (resp.status !== 200)
-							return options.cb(obj);
+				api_cache.fetch(cache_key, options.cb, function(done) {
+					options.do_request({
+						url: obj.extra.page,
+						method: "GET",
+						onload: function(resp) {
+							if (resp.readyState !== 4)
+								return;
 
-						var match = resp.responseText.match(/\.\s*mergeConfig\s*\(\s*["']gallery["']\s*,\s*{[\s\S]+?image\s*:\s*({.*?})\s*,\s*\n/);
-						if (!match) {
-							console.warn("Unable to find match for Imgur page");
-							return options.cb(obj);
-						}
+							if (resp.status !== 200)
+								return done(obj, false);
 
-						try {
-							var json = JSON.parse(match[1]);
-
-							var realfilename = null;
-							if (json.hash && json.ext) {
-								realfilename = json.hash + json.ext;
-
-								var origfilename = src.replace(/.*\/(.*?)(?:[?#].*)?$/, "$1");
-								if (realfilename !== origfilename) {
-									obj.url = "https://i.imgur.com/" + realfilename;
+							// Try video first, then image
+							var ogmatch = resp.responseText.match(/<meta\s+property=["']og:video["']\s+content=["'](.*?)["']/);
+							if (ogmatch) {
+								obj.url = decode_entities(ogmatch[1]).replace(/\?.*/, "");
+							} else {
+								ogmatch = resp.responseText.match(/<meta\s+property=["']og:image["']\s+content=["'](.*?)["']/);
+								if (ogmatch) {
+									obj.url = decode_entities(ogmatch[1]).replace(/\?.*/, "");
 								}
 							}
 
-							if (json.source && /^https?:\/\//.test(json.source)) {
-								var newobj = {url: json.source};
-
-								obj = [newobj, obj];
+							var match = resp.responseText.match(/\.\s*mergeConfig\s*\(\s*["']gallery["']\s*,\s*{[\s\S]+?image\s*:\s*({.*?})\s*,\s*\n/);
+							if (!match) {
+								console.warn("Unable to find match for Imgur page (maybe it's NSFW and you aren't logged in?)");
+								//console.log(resp.responseText);
+								return done(obj, false);
 							}
-						} catch (e) {
-							console.error(e);
-							console.log(match);
-						}
 
-						return options.cb(obj);
-					}
+							try {
+								var json = JSON.parse(match[1]);
+
+								var realfilename = null;
+								if (json.hash && json.ext) {
+									realfilename = json.hash + json.ext;
+
+									var origfilename = obj.url.replace(/.*\/(.*?)(?:[?#].*)?$/, "$1");
+									if (realfilename !== origfilename) {
+										obj.url = "https://i.imgur.com/" + realfilename;
+									}
+								}
+
+								if (json.source && /^https?:\/\//.test(json.source)) {
+									var newobj = {url: json.source};
+
+									obj = [newobj, obj];
+								}
+							} catch (e) {
+								console.error(e);
+								console.log(match);
+							}
+
+							return done(obj, 6*60*60);
+						}
+					});
 				});
 
 				return {
