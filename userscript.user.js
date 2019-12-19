@@ -11187,8 +11187,7 @@ var $$IMU_EXPORT$$;
 			return src.replace(/([/=]media\/images\/[0-9]*\/[0-9]*\/)(?:r-)?[^-/.]*-[^-/.]*/, "$1orig-orig");
 		}
 
-		if (domain === "i.imgur.com" &&
-			!src.match(/\.gifv(?:\?.*)?$/)) {
+		if (domain === "i.imgur.com") {
 			// https://i.imgur.com/ajsLfCab.jpg
 			// https://i.imgur.com/ajsLfCam.jpg
 			// https://i.imgur.com/ajsLfCal.jpg
@@ -11196,15 +11195,14 @@ var $$IMU_EXPORT$$;
 			//   https://i.imgur.com/ajsLfCa.jpg
 			// h, r, l, g, m, t, b, s
 
-			// fix images, obj before doing this
 			if (src.match(/\/removed\.[a-zA-Z]+(?:[?#].*)?$/))
 				return {
 					url: src,
 					bad: true
 				};
 
-			return {
-				url: src.replace(/\/([a-zA-Z0-9]{7})(?:[hrlgmtbs]|_d)(\.[^/.?]*)$/, "/$1$2"),
+			obj = {
+				url: src,
 				headers: {
 					Referer: null
 				},
@@ -11212,6 +11210,76 @@ var $$IMU_EXPORT$$;
 					same_domain_nosub: true
 				}
 			};
+
+			var idregex = /^[a-z]+:\/\/[^/]+\/+([a-zA-Z0-9]{7})\./;
+
+			newsrc = src.replace(/\/([a-zA-Z0-9]{7})(?:[hrlgmtbs]|_d)(\.[^/.?]*)$/, "/$1$2");
+			if (newsrc !== src) {
+				obj.url = newsrc;
+
+				match = newsrc.match(idregex);
+				if (match) {
+					obj.extra = {page: "https://imgur.com/" + match[1]};
+				}
+
+				return obj;
+			}
+
+			match = src.match(idregex);
+			if (match) {
+				obj.extra = {page: "https://imgur.com/" + match[1]};
+			}
+
+			if (options && options.cb && options.do_request && obj.extra) {
+				options.do_request({
+					url: obj.extra.page,
+					method: "GET",
+					onload: function(resp) {
+						if (resp.readyState !== 4)
+							return;
+
+						if (resp.status !== 200)
+							return options.cb(obj);
+
+						var match = resp.responseText.match(/\.\s*mergeConfig\s*\(\s*["']gallery["']\s*,\s*{[\s\S]+?image\s*:\s*({.*?})\s*,\s*\n/);
+						if (!match) {
+							console.warn("Unable to find match for Imgur page");
+							return options.cb(obj);
+						}
+
+						try {
+							var json = JSON.parse(match[1]);
+
+							var realfilename = null;
+							if (json.hash && json.ext) {
+								realfilename = json.hash + json.ext;
+
+								var origfilename = src.replace(/.*\/(.*?)(?:[?#].*)?$/, "$1");
+								if (realfilename !== origfilename) {
+									obj.url = "https://i.imgur.com/" + realfilename;
+								}
+							}
+
+							if (json.source && /^https?:\/\//.test(json.source)) {
+								var newobj = {url: json.source};
+
+								obj = [newobj, obj];
+							}
+						} catch (e) {
+							console.error(e);
+							console.log(match);
+						}
+
+						return options.cb(obj);
+					}
+				});
+
+				return {
+					waiting: true
+				};
+			}
+
+			return obj;
 		}
 
 		if (domain === "imgur.dcard.tw" ||
@@ -46319,6 +46387,12 @@ var $$IMU_EXPORT$$;
 			if (newsrc !== src) {
 				return base64_decode(reverse_str(newsrc));
 			}
+		}
+
+		if (domain_nowww === "hot-sex-photos.com") {
+			// https://www.hot-sex-photos.com/en/xxx-pics/karen-gillan-7.thumb.jpg
+			//   https://www.hot-sex-photos.com/en/xxx-pics/karen-gillan-7.jpg
+			return src.replace(/\.thumb(\.[^/.]+)(?:[?#].*)?$/, "$1");
 		}
 
 
