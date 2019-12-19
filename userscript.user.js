@@ -2,29 +2,32 @@
 // ^ for LibreJS (this has to be the first comment in the file)
 
 // ==UserScript==
-// @name           Image Max URL
-// @namespace      http://tampermonkey.net/
-// @version        0.11.19
-// @description    Finds larger or original versions of images for 6000+ websites
-// @description:ko 6000개 이사의 사이트에 대해 더 크거나 원본 이미지 찾는 스크립트
-// @description:fr Trouve des images plus grandes ou originales pour plus de 6000 sites
-// @author         qsniyg
-// @homepageURL    https://qsniyg.github.io/maxurl/options.html
-// @supportURL     https://github.com/qsniyg/maxurl/issues
-// @icon           https://raw.githubusercontent.com/qsniyg/maxurl/b5c5488ec05e6e2398d4e0d6e32f1bbad115f6d2/resources/logo_256.png
-// @include        *
-// @grant          GM.xmlHttpRequest
-// @grant          GM_xmlhttpRequest
-// @grant          GM.setValue
-// @grant          GM_setValue
-// @grant          GM.getValue
-// @grant          GM_getValue
-// @grant          GM_registerMenuCommand
-// @grant          GM_openInTab
-// @grant          GM.openInTab
-// @connect        *
-// @run-at         document-start
-// @license        Apache-2.0
+// @name              Image Max URL
+// @namespace         http://tampermonkey.net/
+// @version           0.11.19
+// @description       Finds larger or original versions of images for 6000+ websites
+// @description:ko    6000개 이사의 사이트에 대해 더 크거나 원본 이미지 찾는 스크립트
+// @description:fr    Trouve des images plus grandes ou originales pour plus de 6000 sites
+// @description:zh    为6000多个网站查找更大或原始图像
+// @description:zh-CN 为6000多个网站查找更大或原始图像
+// @description:zh-TW 為6000多個網站查找更大或原始圖像
+// @author            qsniyg
+// @homepageURL       https://qsniyg.github.io/maxurl/options.html
+// @supportURL        https://github.com/qsniyg/maxurl/issues
+// @icon              https://raw.githubusercontent.com/qsniyg/maxurl/b5c5488ec05e6e2398d4e0d6e32f1bbad115f6d2/resources/logo_256.png
+// @include           *
+// @grant             GM.xmlHttpRequest
+// @grant             GM_xmlhttpRequest
+// @grant             GM.setValue
+// @grant             GM_setValue
+// @grant             GM.getValue
+// @grant             GM_getValue
+// @grant             GM_registerMenuCommand
+// @grant             GM_openInTab
+// @grant             GM.openInTab
+// @connect           *
+// @run-at            document-start
+// @license           Apache-2.0
 // ==/UserScript==
 
 // If you see "A userscript wants to access a cross-origin resource.", it's used for:
@@ -11194,6 +11197,8 @@ var $$IMU_EXPORT$$;
 			// https://i.imgur.com/ajsLfCa_d.jpg?maxwidth=520&shape=thumb&fidelity=high
 			//   https://i.imgur.com/ajsLfCa.jpg
 			// https://i.imgur.com/ajsLfCa.mp4
+			// https://i.imgur.com/2t5WVj6.jpg
+			//   https://35photo.pro/photos_main/465/2325482.jpg
 			// ?fb, ?fbplay both scale down the image too
 			// h, r, l, g, m, t, b, s
 
@@ -13432,7 +13437,10 @@ var $$IMU_EXPORT$$;
 			//   https://mir-cdn.behance.net/v1/rendition/project_modules/fs/568ec59308969.560cc39b2569a.jpg -- 404
 			//   https://mir-s3-cdn-cf.behance.net/project_modules/source/568ec59308969.560cc39b2569a.jpg -- works
 			return [
-				src.replace(/(\/project(?:_modules|s)\/+)[^/]*\//, "$1source/"),
+				{
+					url: src.replace(/(\/project(?:_modules|s)\/+)[^/]*\//, "$1source/"),
+					is_original: true
+				},
 				src.replace(/(\/project(?:_modules|s)\/+)[^/]*\//, "$1fs/")
 			];
 		}
@@ -24406,6 +24414,16 @@ var $$IMU_EXPORT$$;
 
 				return {
 					waiting: true
+				};
+			}
+		}
+
+		if (domain_nosub === "imagebam.com") {
+			// http://109.imagebam.com/download/dWbrQoSl3dQM0smXmubqzw/35844/358432129/1.jpg
+			if (/\/nohotlinking\.jpg(?:[?#].*)?$/.test(src)) {
+				return {
+					url: src,
+					bad: true
 				};
 			}
 		}
