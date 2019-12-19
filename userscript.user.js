@@ -11259,7 +11259,14 @@ var $$IMU_EXPORT$$;
 
 							var match = resp.responseText.match(/\.\s*mergeConfig\s*\(\s*["']gallery["']\s*,\s*{[\s\S]+?image\s*:\s*({.*?})\s*,\s*\n/);
 							if (!match) {
-								console.warn("Unable to find match for Imgur page (maybe it's NSFW and you aren't logged in?)");
+								var nsfwmatch = resp.responseText.match(/<a.*?btn-wall--yes.*?\.signin\(/);
+								var msg = "Unable to find match for Imgur page";
+
+								if (nsfwmatch) {
+									msg += " (it's probably NSFW and you aren't logged in)";
+								}
+
+								console.warn(msg);
 								//console.log(resp.responseText);
 								return done(obj, false);
 							}
