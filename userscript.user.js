@@ -6920,6 +6920,9 @@ var $$IMU_EXPORT$$;
 			(domain_nowww === "casseycds.net" && src.indexOf("/uploads/") >= 0) ||
 			// http://www.youmekorea.com/event_4.brd/_12.12.cea0c14/T-ara%20Day%20By%20Day.jpg?cid=smime_6_50434350&thumb=300x226
 			(domain_nowww === "youmekorea.com" && /[?&]thumb=/.test(src)) ||
+			// https://cdfront.tower.jp/~/media/Images/Mag/Mikiki/mikiki_icon_70.jpg?h=70&thn=1&w=70
+			// https://tower.jp/~/media/Images/Mag/Mikiki/mikiki_icon_70.jpg?h=70&thn=1&w=70
+			(domain_nosub === "tower.jp" && /\/~\/+media\//.test(src)) ||
 			// http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
 			// https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
 			src.match(/\/demandware\.static\//) ||
@@ -22092,7 +22095,15 @@ var $$IMU_EXPORT$$;
 			//   https://avatars.mds.yandex.net/get-zen_doc/198938/pub_5af84b497425f5fcbcde8785_5af84b6583090599f5aded49/orig
 			// https://avatars.mds.yandex.net/get-pdb/1209663/2630abaf-64c6-43d7-a92b-0bcf49b644b6/s1200?webp=false
 			//   https://avatars.mds.yandex.net/get-pdb/1209663/2630abaf-64c6-43d7-a92b-0bcf49b644b6/orig?webp=false
-			return src.replace(/\/[a-z_0-9]+([?&].*)?$/, "/orig$1");
+			obj = {
+				url: src.replace(/\/[a-z_0-9]+([?&].*)?$/, "/orig$1")
+			};
+
+			match = src.match(/\/get-[^/]+\/+([0-9]+)\/+[^/]+\/+[^/]+(?:[?#].*)?$/);
+			if (match)
+				obj.filename = match[1];
+
+			return obj;
 		}
 
 		if (domain_nowww === "t2online.com") {
