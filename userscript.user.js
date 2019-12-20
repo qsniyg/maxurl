@@ -31763,8 +31763,31 @@ var $$IMU_EXPORT$$;
 			//   https://photojournal.jpl.nasa.gov/jpeg/PIA23572.jpg
 			//return src.replace(/:\/\/[^/]+\/+spaceimages\/+images\/+[^/]+\/+(PIA[0-9]+)(?:_[^/]+|-[0-9]+x[0-9]+)(\.[^/.]*)(?:[?#].*)?$/,
 			//				   "://images-assets.nasa.gov/image/$1/$1~orig$2");
-			return src.replace(/:\/\/[^/]+\/+spaceimages\/+images\/+[^/]+\/+(PIA[0-9]+)(?:_[^/]+|-[0-9]+x[0-9]+)(\.(?:jpg|jpeg|JPG|JPEG))(?:[?#].*)?$/,
+			return src.replace(/:\/\/[^/]+\/+spaceimages\/+images\/+[^/]+\/+(PIA[0-9]+)(?:_[^/]+|-[0-9]+x(?:x[0-9]+|[wh]))(\.(?:jpg|jpeg|JPG|JPEG))(?:[?#].*)?$/,
 				               "://photojournal.jpl.nasa.gov/jpeg/$1$2");
+		}
+
+		if (domain === "solarsystem.nasa.gov") {
+			// https://solarsystem.nasa.gov/system/resources/detail_files/17771_PIA21345-800w.jpg
+			//   https://photojournal.jpl.nasa.gov/jpeg/PIA21345.jpg
+			//   https://solarsystem.nasa.gov/resources/17771/so-far-from-home/
+			//   https://solarsystem.nasa.gov/system/downloadable_items/2563_PIA21345-full.tif
+			//   https://solarsystem.nasa.gov/system/resources/detail_files/17771_PIA21345-full.jpg -- doesn't work
+			// https://solarsystem.nasa.gov/system/resources/detail_files/17813_PIA17218_figA_MAIN.jpg
+			//   https://photojournal.jpl.nasa.gov/jpeg/PIA17218.jpg
+			// https://solarsystem.nasa.gov/system/resources/detail_files/17823_PIA21897-full.jpeg
+			//   https://photojournal.jpl.nasa.gov/jpeg/PIA21897.jpg
+			// https://solarsystem.nasa.gov/system/resources/list_images/16120_PIA18295.jpg_320x240.png
+			//   https://photojournal.jpl.nasa.gov/jpeg/PIA18295.jpg
+			// https://solarsystem.nasa.gov/system/resources/detail_files/17678_PIA21448.jpg
+			//   https://photojournal.jpl.nasa.gov/jpeg/PIA21448.jpg
+			// other:
+			// https://solarsystem.nasa.gov/system/resources/list_images/897_KSC-71P-0354_320.jpg
+			//   https://solarsystem.nasa.gov/system/resources/detail_files/897_KSC-71P-0354.jpg
+			//   https://solarsystem.nasa.gov/system/downloadable_items/1241_KSC-71P-0354.jpg
+			//   https://solarsystem.nasa.gov/resources/897/mariner-9-launch/
+			return src.replace(/:\/\/[^/]+\/+system\/+resources\/+(?:detail_files|list_images)\/+[0-9]+_(PIA[0-9]+)(?:\.[^/.]+_[^/]+|[-_][^/]+)?\.[^/.]+(?:[?#].*)?$/,
+								"://photojournal.jpl.nasa.gov/jpeg/$1.jpg");
 		}
 
 		if (domain === "photojournal.jpl.nasa.gov") {
@@ -46509,6 +46532,12 @@ var $$IMU_EXPORT$$;
 			// http://labsporno.com/images/7/758590399-t.jpg
 			//   http://labsporno.com/images/7/758590399.jpg
 			return src.replace(/(\/images\/+[0-9]\/+[0-9]+)-t(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "astro.cz") {
+			// https://www.astro.cz/apod_data/2017/04/SaturnIR_CassiniKakitsev_960_detail.jpg
+			//   https://www.astro.cz/apod_data/2017/04/SaturnIR_CassiniKakitsev_960.jpg
+			return src.replace(/(\/apod_data\/+[0-9]{4}\/+[0-9]{2}\/+[^/]+)_detail(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		}
 
 
