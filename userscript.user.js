@@ -25527,16 +25527,26 @@ var $$IMU_EXPORT$$;
 			// https://www.athensmagazine.gr/photos/w_800px/articles/201802/megan_fox_esquire_rus_2017_4.jpg?0.5079567199359913
 			//   https://www.athensmagazine.gr/photos/master/articles/201802/megan_fox_esquire_rus_2017_4.jpg?0.5079567199359913
 			domain_nowww === "athensmagazine.gr" ||
+			// https://www.digalakis.com/photos/w_300px/products/201807/613101510.jpg
+			//   https://www.digalakis.com/photos/master/products/201807/613101510.jpg
+			// https://www.digalakis.com/photos/w_300px/articles/201808/35459228_206423549991233_4075717178408566784_n.jpg
+			//   https://www.digalakis.com/photos/master/articles/201808/35459228_206423549991233_4075717178408566784_n.jpg
+			// https://www.digalakis.com/photos/w_800px/201612/desire_card.jpg
+			//   https://www.digalakis.com/photos/master/201612/desire_card.jpg
+			// doesn't work for all:
+			// https://www.digalakis.com/photos/c_100px_75px/products/201607/bandolera_dalia_tan.jpg
+			domain_nowww === "digalakis.com" ||
 			// https://www.youweekly.gr/photos/w_200px/articles/201901/riri4.jpg?0.6912698141813052
 			//   https://www.youweekly.gr/photos/master/articles/201901/riri4.jpg?0.6912698141813052
-			domain_nowww === "youweekly.gr") {
+			domain_nowww === "youweekly.gr" ||
+			src.match(/^[a-z]+:\/\/[^/]+\/+photos\/+[wc]_[0-9]+px(?:_[0-9]+px)?\/+(?:products|articles)\//)) {
 			// https://www.xrimaonline.gr/photos/c_450px_255px/articles/201807/groilandia_pagobouno.jpg
 			//   https://www.xrimaonline.gr/photos/w_999999999999px/articles/201807/groilandia_pagobouno.jpg
 			//   https://www.xrimaonline.gr/photos/master/articles/201807/groilandia_pagobouno.jpg -- 1200x750
 			// uses gdthumb to resize:
 			// https://github.com/mewebstudio/Phpthumb/blob/master/src/Mews/Phpthumb/lib/GdThumb.inc.php
 			//return src.replace(/\/photos\/[a-z]_[0-9]+px[^/]*\/articles\//, "/photos/w_999999999999px/articles/");
-			return src.replace(/\/photos\/+[a-z]_[0-9]+px[^/]*\/+articles\//, "/photos/master/articles/");
+			return src.replace(/\/photos\/+[a-z]_[0-9]+px[^/]*\/+([^/]+)\//, "/photos/master/$1/");
 		}
 
 		if (domain_nosub === "avisen.dk" &&
