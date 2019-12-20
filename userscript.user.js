@@ -30318,10 +30318,13 @@ var $$IMU_EXPORT$$;
 			//   https://www.textures.com/system/gallery/photos/Floors/Herringbone/118323/FloorHerringbone0118_2_500.jpg
 			//   https://www.textures.com/system/gallery/photos/Floors/Herringbone/118323/hotlink-ok/FloorHerringbone0118_2_shared.jpg
 			// parts: https://www.textures.com/system/gallery/photos/Floors/Herringbone/118323/zoomed_preview/FloorHerringbone0118_2_z24.jpg 0-24 (for all images)
+			// https://www.textures.com/system/gallery/photos/3D%20Scans/124536/3DScans0022_22_download600.jpg
 			// https://www.textures.com/browse/getPhotoInfoAjax?id=118323
-			if (src.match(/\/system\/gallery\/photos\/[^/]*\/[^/]*\/[0-9]+\/[^/]*$/)) {
+			// https://www.textures.com/system/gallery/photos/3D%20Scans/124536/3DScans0022_22_download600.jpg
+			//   https://www.textures.com/system/gallery/photos/3D%20Scans/124536/hotlink-ok/3DScans0022_22_shared.jpg
+			if (src.match(/\/system\/+gallery\/+photos\/+[^/]*\/+(?:[^/]*\/+)?[0-9]+\/+[^/]+(?:[?#].*)?$/)) {
 				return {
-					url: src.replace(/(\/[0-9]+\/)([^/]*_)(?:download)?[0-9]+(\.[^/.]*)$/, "$1hotlink-ok/$2shared$3"),
+					url: src.replace(/(\/[0-9]+\/+)([^/]*_)(?:download)?[0-9]+(\.[^/.]*)$/, "$1hotlink-ok/$2shared$3"),
 					problems: {
 						watermark: true
 					}
@@ -40120,8 +40123,21 @@ var $$IMU_EXPORT$$;
 		if (domain === "cdn.dribbble.com") {
 			// https://cdn.dribbble.com/users/1253590/screenshots/6744282/lampshades_1x.jpg
 			//   https://cdn.dribbble.com/users/1253590/screenshots/6744282/lampshades.jpg
-			return src.replace(/(\/users\/+[0-9]+\/+screenshots\/+[0-9]+\/+[^/]*)_[0-9]+x(\.[^/.]*)(?:[?#].*)?$/,
+			// https://cdn.dribbble.com/users/2364195/screenshots/6776920/shot-cropped-1563007210060_teaser.png
+			//   https://cdn.dribbble.com/users/2364195/screenshots/6776920/shot-cropped-1563007210060.png
+			//   https://dribbble.com/shots/6776920 -- original page
+			newsrc = src.replace(/(\/users\/+[0-9]+\/+screenshots\/+[0-9]+\/+[^/]+)_(?:[0-9]+x|teaser)(\.[^/.]*)(?:[?#].*)?$/,
 							   "$1$2");
+			obj = {
+				url: newsrc
+			};
+
+			match = src.match(/\/screenshots\/+([0-9]+)\/+/);
+			if (match) {
+				obj.extra = {page: "https://dribbble.com/shots/" + match[1]};
+			}
+
+			return obj;
 		}
 
 		if (domain === "s.tmimgcdn.com") {
@@ -46559,6 +46575,42 @@ var $$IMU_EXPORT$$;
 			// https://www.astro.cz/apod_data/2017/04/SaturnIR_CassiniKakitsev_960_detail.jpg
 			//   https://www.astro.cz/apod_data/2017/04/SaturnIR_CassiniKakitsev_960.jpg
 			return src.replace(/(\/apod_data\/+[0-9]{4}\/+[0-9]{2}\/+[^/]+)_detail(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain === "img.poliigon.com") {
+			// https://img.poliigon.com/assets/WoodEngineeredGenerator/assets/small/sphere.jpg
+			//   https://img.poliigon.com/assets/WoodEngineeredGenerator/assets/large/sphere.jpg
+			return src.replace(/\/assets\/+small\/+([^/]+\.[^/.]+)(?:[?#].*)?$/, "/assets/large/$1");
+		}
+
+		if (domain_nosub === "cgtrader.com" && /^img/.test(domain)) {
+			// https://img-new.cgtrader.com/items/977383/9c22362146/thumb/modern-wood-tiles-pbr-tileable-texture-3d-model-sbs-sbsar.jpg
+			//   https://img2.cgtrader.com/items/977383/9c22362146/modern-wood-tiles-pbr-tileable-texture-3d-model-sbs-sbsar.jpg
+			//   https://img-new.cgtrader.com/items/977383/9c22362146/modern-wood-tiles-pbr-tileable-texture-3d-model-sbs-sbsar.jpg
+			return src.replace(/(\/items\/+[0-9]+\/+[0-9a-f]+\/+)thumb\/+/, "$1");
+		}
+
+		if (domain_nowww === "sketchuptextureclub.com") {
+			// https://www.sketchuptextureclub.com/imgs/q.png
+			if (/\/imgs\/+q\.png(?:[?#].*)?$/.test(src)) {
+				return {
+					url: src,
+					bad: "mask"
+				};
+			}
+
+			// https://www.sketchuptextureclub.com/public/texture_m/0025-cork-texture-seamless.jpg
+			//   https://www.sketchuptextureclub.com/public/texture/0025-cork-texture-seamless.jpg
+			//   https://www.sketchuptextureclub.com/public/texture_d/0025-cork-texture-seamless.jpg -- smaller, no watermark, cropped
+			newsrc = src.replace(/\/public\/+texture_m\/+([0-9]+-)/, "/public/texture/$1");
+			if (newsrc !== src) {
+				return {
+					url: newsrc,
+					problems: {
+						watermark: true
+					}
+				};
+			}
 		}
 
 
