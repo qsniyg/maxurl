@@ -46640,6 +46640,14 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/img\/+[^/]+\/+[0-9]+\/+(?:[0-9]+\/+)?)thumb\/+thumb-/, "$1");
 		}
 
+		if (domain === "img.buymeacoffee.com") {
+			// https://img.buymeacoffee.com/api/?url=aHR0cHM6Ly9jZG4uYnV5bWVhY29mZmVlLmNvbS91cGxvYWRzL3Byb2ZpbGVfcGljdHVyZXMvMjAxOS8xMi9iZDdmYjgzZGQ2N2ZjMjk1NTk5ZTc1MGE0NjEyNDhkMy5qcGc=&size=300&name=Liam+Dawe+-+GamingOnLinux
+			//   https://cdn.buymeacoffee.com/uploads/profile_pictures/2019/12/bd7fb83dd67fc295599e750a461248d3.jpg
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+api\/+\?(?:.*?&)?url=([^&]{20,}).*?$/, "$1");
+			if (newsrc !== src)
+				return base64_decode(newsrc);
+		}
+
 
 
 
