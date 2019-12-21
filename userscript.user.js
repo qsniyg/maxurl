@@ -46659,6 +46659,23 @@ var $$IMU_EXPORT$$;
 				return base64_decode(newsrc);
 		}
 
+		if (domain === "thumbs.gfycat.com" ||
+			domain === "zippy.gfycat.com") {
+			// https://thumbs.gfycat.com/YellowTornCockatiel-size_restricted.gif
+			// https://thumbs.gfycat.com/YellowTornCockatiel-mobile.mp4
+			newsrc = src.replace(/:\/\/thumbs\.([^/]+\/+[^/]+)-(?:size_restricted\.gif|mobile\.(?:webm|mp4)|(?:mobile|poster)\.jpg)(?:[?#].*)?$/, "://zippy.$1.mp4");
+			obj = {
+				url: newsrc
+			};
+
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+([^-./]+)[-.]/);
+			if (match) {
+				obj.extra = {page: "https://gfycat.com/" + match[1]};
+			}
+
+			return obj;
+		}
+
 
 
 
