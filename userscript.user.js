@@ -50354,7 +50354,7 @@ var $$IMU_EXPORT$$;
 						cb(img, resp.finalUrl, obj[0], resp);
 					};
 
-					if (processing.incomplete_image) {
+					if (!is_video && processing.incomplete_image) {
 						var load_image = function () {
 							var img = document.createElement("img");
 							img.src = resp.finalUrl;
@@ -50844,6 +50844,8 @@ var $$IMU_EXPORT$$;
 					return;
 				}
 
+				var is_video = img.tagName === "VIDEO";
+
 				var newobj = data.data.obj;
 
 				if (!newobj)
@@ -50956,14 +50958,15 @@ var $$IMU_EXPORT$$;
 				update_vwh();
 
 				set_el_all_initial(img);
-				img.style.cursor = "pointer";
+
+				if (!is_video) {
+					img.style.cursor = "pointer";
+				}
 				// https://stackoverflow.com/questions/7774814/remove-white-space-below-image
 				img.style.verticalAlign = "bottom";
 				img.style.setProperty("display", "block", "important");
 
 				var img_naturalHeight, img_naturalWidth;
-
-				var is_video = img.tagName === "VIDEO";
 
 				if (!is_video) {
 					img_naturalHeight = img.naturalHeight;
@@ -51502,25 +51505,36 @@ var $$IMU_EXPORT$$;
 				}
 
 				var a = document.createElement("a");
-				//a.addEventListener("click", function(e) {
-				a.onclick = function(e) {
-					e.stopPropagation();
-					e.stopImmediatePropagation();
-					return true;
-				};
+
+				if (!is_video) {
+					//a.addEventListener("click", function(e) {
+					a.onclick = function(e) {
+						e.stopPropagation();
+						e.stopImmediatePropagation();
+						return true;
+					};
+				}
+
 				set_el_all_initial(a);
-				a.style.cursor = "pointer";
+
+				if (!is_video) {
+					a.style.cursor = "pointer";
+				}
+
 				a.style.setProperty("vertical-align", "bottom", "important");
 				a.style.setProperty("display", "block", "important");
-				a.href = url;
-				if (settings.mouseover_download) {
-					a.href = img.src;
 
-					if (newobj.filename.length > 0) {
-						a.setAttribute("download", newobj.filename);
-					} else {
-						var attr = document.createAttribute("download");
-						a.setAttributeNode(attr);
+				if (!is_video) {
+					a.href = url;
+					if (settings.mouseover_download) {
+						a.href = img.src;
+
+						if (newobj.filename.length > 0) {
+							a.setAttribute("download", newobj.filename);
+						} else {
+							var attr = document.createAttribute("download");
+							a.setAttributeNode(attr);
+						}
 					}
 				}
 
