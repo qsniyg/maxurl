@@ -373,6 +373,7 @@ var $$IMU_EXPORT$$;
 			"possibly_different",
 			"possibly_broken"
 		],
+		exclude_videos: false,
 		include_pastobjs: true,
 		force_page: false,
 		allow_thirdparty: false,
@@ -967,6 +968,7 @@ var $$IMU_EXPORT$$;
 		website_inject_imu: true,
 		website_image: true,
 		extension_contextmenu: true,
+		allow_video: true,
 		allow_watermark: false,
 		allow_smaller: false,
 		allow_possibly_different: false,
@@ -1648,6 +1650,11 @@ var $$IMU_EXPORT$$;
 			extension_only: true,
 			category: "extension",
 			imu_enabled_exempt: true
+		},
+		allow_video: {
+			name: "Videos",
+			description: "Allows videos to be returned",
+			category: "rules"
 		},
 		allow_watermark: {
 			name: "Larger watermarked images",
@@ -48265,14 +48272,18 @@ var $$IMU_EXPORT$$;
 			for (var i = 0; i < objified.length; i++) {
 				var obj = objified[i];
 
-				// Remove null URLs
-				if (obj.url === null && !obj.waiting) {
+				var remove_obj = function() {
 					objified.splice(i, 1);
 					if (newhref1 instanceof Array) {
 						newhref1.splice(i, 1);
 					}
 
 					i--;
+				};
+
+				// Remove null URLs
+				if (obj.url === null && !obj.waiting) {
+					remove_obj();
 					continue;
 				}
 
@@ -48280,13 +48291,14 @@ var $$IMU_EXPORT$$;
 				for (var problem in obj.problems) {
 					if (obj.problems[problem] &&
 						options.exclude_problems.indexOf(problem) >= 0) {
-						objified.splice(i, 1);
-						if (newhref1 instanceof Array) {
-							newhref1.splice(i, 1);
-						}
-
-						i--;
+						remove_obj();
+						continue;
 					}
+				}
+
+				if (options.exclude_videos && obj.video) {
+					remove_obj();
+					continue;
 				}
 
 				if (obj._copy_old_props && pastobjs[0]) {
@@ -50430,6 +50442,11 @@ var $$IMU_EXPORT$$;
 					// TODO: improve
 					if (parsed_headers["content-type"] && /^\s*\[?video\//.test(parsed_headers["content-type"])) {
 						is_video = true;
+					}
+
+					if (is_video && !settings.allow_video) {
+						console_log("Video, skipping due to user setting");
+						return err_cb();
 					}
 
 					var good_cb = function(img) {
