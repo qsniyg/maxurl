@@ -47889,7 +47889,7 @@ var $$IMU_EXPORT$$;
 			document = options.document;
 
 
-		if (host_domain_nosub === "imgur.com") {
+		if (host_domain_nosub === "imgur.com" && host_domain !== "i.imgur.com") {
 			return {
 				gallery: function(el, nextprev) {
 					if (!el)
@@ -50342,6 +50342,14 @@ var $$IMU_EXPORT$$;
 						return;
 					}
 
+					var parsed_headers = headers_list_to_dict(parse_headers(resp.responseHeaders));
+					var is_video = false;
+
+					// TODO: improve
+					if (parsed_headers["content-type"] && /^\s*\[?video\//.test(parsed_headers["content-type"])) {
+						is_video = true;
+					}
+
 					var good_cb = function(img) {
 						cb(img, resp.finalUrl, obj[0], resp);
 					};
@@ -50406,19 +50414,34 @@ var $$IMU_EXPORT$$;
 					var a = new FileReader();
 					a.onload = function(e) {
 						try {
-							var img = document.createElement("img");
-							img.src = e.target.result;
-							img.onload = function() {
-								// Firefox thinks SVGs have an empty naturalWidth/naturalHeight
-								if (img.naturalWidth === 0 || img.naturalHeight === 0) {
-									return err_cb();
-								}
+							if (!is_video) {
+								var img = document.createElement("img");
+								img.src = e.target.result;
+								img.onload = function() {
+									// Firefox thinks SVGs have an empty naturalWidth/naturalHeight
+									if (img.naturalWidth === 0 || img.naturalHeight === 0) {
+										return err_cb();
+									}
 
-								good_cb(img);
-							};
-							img.onerror = function() {
-								err_cb();
-							};
+									good_cb(img);
+								};
+								img.onerror = function() {
+									err_cb();
+								};
+							} else {
+								var video = document.createElement("video");
+								video.setAttribute("autoplay", "true");
+								video.setAttribute("controls", "true");
+								video.setAttribute("loop", "true");
+								video.src = e.target.result;
+								video.onloadedmetadata = function() {
+									video.onerror = null;
+									good_cb(video);
+								};
+								video.onerror = function() {
+									err_cb();
+								};
+							}
 						} catch (e) {
 							console_error(e);
 							console_error(e.stack);
@@ -50938,8 +50961,20 @@ var $$IMU_EXPORT$$;
 				img.style.verticalAlign = "bottom";
 				img.style.setProperty("display", "block", "important");
 
-				var imgh = img.naturalHeight;
-				var imgw = img.naturalWidth;
+				var img_naturalHeight, img_naturalWidth;
+
+				var is_video = img.tagName === "VIDEO";
+
+				if (!is_video) {
+					img_naturalHeight = img.naturalHeight;
+					img_naturalWidth = img.naturalWidth;
+				} else {
+					img_naturalHeight = img.videoHeight;
+					img_naturalWidth = img.videoWidth;
+				}
+
+				var imgh = img_naturalHeight;
+				var imgw = img_naturalWidth;
 
 				if (initial_zoom_behavior === "fit") {
 					img.style.maxWidth = vw + "px";
@@ -51348,13 +51383,13 @@ var $$IMU_EXPORT$$;
 						var rect_height = rect.height || imgh;
 
 						if (isNaN(rect_height))
-							rect_height = img.naturalHeight;
+							rect_height = img_naturalHeight;
 
-						var zoom_percent = rect_height / img.naturalHeight;
+						var zoom_percent = rect_height / img_naturalHeight;
 						var currentzoom = parseInt(zoom_percent * 100);
 
 						if (settings.mouseover_ui_imagesize) {
-							text = img.naturalWidth + "x" + img.naturalHeight;
+							text = img_naturalWidth + "x" + img_naturalHeight;
 
 							if (settings.mouseover_ui_zoomlevel && currentzoom !== 100) {
 								text += " (" + currentzoom + "%)"
@@ -51612,8 +51647,8 @@ var $$IMU_EXPORT$$;
 						if (e.deltaY > 0 && currentmode !== "fit") {
 							update_vwh();
 
-							imgh = img.naturalHeight;
-							imgw = img.naturalWidth;
+							imgh = img_naturalHeight;
+							imgw = img_naturalWidth;
 							calc_imghw_for_fit();
 
 							img.style.maxWidth = vw + "px";
@@ -51625,8 +51660,8 @@ var $$IMU_EXPORT$$;
 							currentmode = "fit";
 							changed = true;
 						} else if (e.deltaY < 0 && currentmode !== "full") {
-							img.style.width = img.naturalWidth + "px";
-							img.style.height = img.naturalHeight + "px";
+							img.style.width = img_naturalWidth + "px";
+							img.style.height = img_naturalHeight + "px";
 
 							img.style.maxWidth = "initial";
 							img.style.maxHeight = "initial";
@@ -51639,15 +51674,15 @@ var $$IMU_EXPORT$$;
 						var imgheight = img.clientHeight;
 
 						var mult = 1;
-						if (imgwidth < img.naturalWidth) {
-							mult = img.naturalWidth / imgwidth;
+						if (imgwidth < img_naturalWidth) {
+							mult = img_naturalWidth / imgwidth;
 						} else {
-							mult = imgwidth / img.naturalWidth;
+							mult = imgwidth / img_naturalWidth;
 						}
 
 						mult = Math.round(mult);
 
-						if (imgwidth < img.naturalWidth) {
+						if (imgwidth < img_naturalWidth) {
 							mult = 1 / mult;
 						}
 
@@ -51657,11 +51692,11 @@ var $$IMU_EXPORT$$;
 							mult *= 2;
 						}
 
-						imgwidth = img.naturalWidth * mult;
-						imgheight = img.naturalHeight * mult;
+						imgwidth = img_naturalWidth * mult;
+						imgheight = img_naturalHeight * mult;
 
 						var too_small = imgwidth < 64 || imgheight < 64;
-						var too_big = imgwidth > img.naturalWidth * 16 || imgheight > img.naturalHeight * 16;
+						var too_big = imgwidth > img_naturalWidth * 16 || imgheight > img_naturalHeight * 16;
 
 						if (too_small || too_big) {
 							if (settings.zoom_out_to_close && too_small)
