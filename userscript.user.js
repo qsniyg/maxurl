@@ -16666,7 +16666,11 @@ var $$IMU_EXPORT$$;
 		if (domain_nosub === "kastden.org") {
 			// https://selca.kastden.org/thumb/1271876
 			//   https://selca.kastden.org/original/1271876
-			return src.replace(/\/thumb\//, "/original/");
+			// https://kastden.org/topstarnews/thumbs/1433163841-81-org_th.jpg
+			//   https://kastden.org/topstarnews/1433163841-81-org.jpg
+			return src
+				.replace(/\/thumbs\/+([^/]+)_th(\.[^/]+)(?:[?#].*)?$/, "/$1$2")
+				.replace(/\/thumb\//, "/original/");
 		}
 
 		if (domain === "img.hani.co.kr") {
@@ -20545,7 +20549,16 @@ var $$IMU_EXPORT$$;
 			// https://media1.giphy.com/media/l0Iy0lyLZnfdEBmMg/200w.webp
 			// https://media1.giphy.com/media/l0Iy0lyLZnfdEBmMg/200w.gif
 			// https://media2.giphy.com/media/ZBg5XWrvDVzNe/200_s.gif
-			return src.replace(/\/(?:giphy|[0-9]+[whs_]*)\.(?:gif|webp|mp4)/, "/source.gif");
+
+			// private gif:
+			// https://i.giphy.com/media/mFYcQFmIkedO77iCEH/source.gif
+			newsrc = src.replace(/:\/\/media[0-9]*\./, "://i.");
+			if (newsrc !== src)
+				return newsrc;
+
+			newsrc = src.replace(/\/(?:giphy|[0-9]+[whs_]*)\.(?:gif|webp|mp4)/, "/source.gif");
+			if (newsrc !== src)
+				return newsrc;
 		}
 
 		if (domain === "pics.dmm.com" ||
@@ -46611,6 +46624,20 @@ var $$IMU_EXPORT$$;
 					}
 				};
 			}
+		}
+
+		if (domain_nowww === "gamingonlinux.com") {
+			// https://www.gamingonlinux.com/uploads/articles/article_media/thumbs/4837050791576835482gol1.jpg
+			//   https://www.gamingonlinux.com/uploads/articles/article_media/4837050791576835482gol1.jpg
+			return src.replace(/(\/uploads\/+articles\/+article_media\/+)thumbs\/+/, "$1");
+		}
+
+		if (domain === "img.karaoketexty.sk") {
+			// https://img.karaoketexty.sk/img/artists/13343/thumb/thumb-selena-gomez-567033.jpg
+			//   https://img.karaoketexty.sk/img/artists/13343/selena-gomez-567033.jpg
+			// https://img.karaoketexty.sk/img//covers/756/75608/thumb/thumb-covers-53638.jpg
+			//   https://img.karaoketexty.sk/img//covers/756/75608/covers-53638.jpg
+			return src.replace(/(\/img\/+[^/]+\/+[0-9]+\/+(?:[0-9]+\/+)?)thumb\/+thumb-/, "$1");
 		}
 
 
