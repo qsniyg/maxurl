@@ -51929,6 +51929,7 @@ var $$IMU_EXPORT$$;
 			var thresh = 20;
 
 			if (source.tagName !== "PICTURE" &&
+				source.tagName !== "VIDEO" &&
 				source.tagName !== "IMG" &&
 				source.tagName !== "SOURCE") {
 				var style = get_computed_style(source);
@@ -52187,19 +52188,26 @@ var $$IMU_EXPORT$$;
 			}
 
 			function addTagElement(el, layer) {
-				if (el.tagName === "PICTURE") {
+				if (el.tagName === "PICTURE" || el.tagName === "VIDEO") {
 					for (var i = 0; i < el.children.length; i++) {
 						addElement(el.children[i], layer);
 					}
-				} else if (el.tagName === "SOURCE" || el.tagName === "IMG") {
+				}
+
+				if (el.tagName === "SOURCE" || el.tagName === "IMG" || el.tagName === "VIDEO") {
 					var el_src = get_img_src(el);
 
 					if (el_src) {
 						var src = norm(el_src);
 						if (addImage(src, el, { layer: layer })) {
 							if (!el.srcset) {
-								sources[src].width = el.naturalWidth;
-								sources[src].height = el.naturalHeight;
+								if (el.tagName === "VIDEO") {
+									sources[src].width = el.videoWidth;
+									sources[src].height = el.videoHeight;
+								} else {
+									sources[src].width = el.naturalWidth;
+									sources[src].height = el.naturalHeight;
+								}
 							}
 						}
 					}
