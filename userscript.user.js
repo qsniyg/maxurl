@@ -23380,12 +23380,35 @@ var $$IMU_EXPORT$$;
 							}
 						}
 
+						var image = null;
 						if (maxobj !== null) {
-							images.push({
+							image = {
 								src: maxobj.url,
 								width: maxobj.width,
 								height: maxobj.height
-							});
+							};
+						}
+
+						if (image && img.video_versions) {
+							maxsize = 0;
+							maxobj = null;
+							var videos = img.video_versions;
+
+							for (var i = 0; i < videos.length; i++) {
+								var size = videos[i].width * videos[i].height;
+								if (size > maxsize) {
+									maxsize = size;
+									maxobj = videos[i];
+								}
+							}
+
+							if (maxobj !== null) {
+								image.video = maxobj.url;
+							}
+						}
+
+						if (image !== null) {
+							images.push(image);
 						}
 					};
 
@@ -23428,6 +23451,7 @@ var $$IMU_EXPORT$$;
 
 						images.push({
 							src: image,
+							video: node.video_url,
 							width: width,
 							height: height
 						});
@@ -23447,6 +23471,17 @@ var $$IMU_EXPORT$$;
 					}
 
 					return images;
+				};
+
+				var image_to_obj = function(image) {
+					if (image.video) {
+						return [
+							{url: image.video, video: true},
+							image.src
+						];
+					} else {
+						return image.src;
+					}
 				};
 
 				var request_post_inner = function(post_url, image_url, cb) {
@@ -23485,7 +23520,7 @@ var $$IMU_EXPORT$$;
 
 								var image = image_in_objarr(image_url, images);
 								if (image)
-									return cb(image.src);
+									return cb(image_to_obj(image));
 
 								cb(null);
 							});
@@ -23529,7 +23564,7 @@ var $$IMU_EXPORT$$;
 							if (!image)
 								return options.cb(null);
 
-							return options.cb(image.src);
+							return options.cb(image_to_obj(image));
 						});
 					});
 
