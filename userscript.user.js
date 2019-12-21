@@ -926,6 +926,7 @@ var $$IMU_EXPORT$$;
 		mouseover_close_on_leave_el: true,
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/126
 		mouseover_use_fully_loaded_image: is_extension ? false : true,
+		mouseover_use_fully_loaded_video: false,
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-530760246
 		mouseover_exclude_page_bg: true,
 		mouseover_minimum_size: 20,
@@ -1186,6 +1187,16 @@ var $$IMU_EXPORT$$;
 		mouseover_use_fully_loaded_image: {
 			name: "Wait until image is fully loaded",
 			description: "Wait until the image has fully loaded before displaying it",
+			requires: {
+				mouseover: true,
+				mouseover_open_behavior: "popup"
+			},
+			category: "popup",
+			subcategory: "open_behavior"
+		},
+		mouseover_use_fully_loaded_video: {
+			name: "Wait until video is fully loaded",
+			description: "Wait until the video has fully loaded before displaying it (this may significantly increase memory usage with larger videos)",
 			requires: {
 				mouseover: true,
 				mouseover_open_behavior: "popup"
@@ -50246,6 +50257,16 @@ var $$IMU_EXPORT$$;
 	}
 	bigimage_recursive.check_bad_if = check_bad_if;
 
+	function is_probably_video(obj) {
+		if (obj.video)
+			return true;
+
+		if (/\.(?:mp4|webm|mkv|mpg)/i.test(obj.url))
+			return true;
+
+		return false;
+	}
+
 	function check_image_get(obj, cb, processing) {
 		if (!obj || !obj[0]) {
 			return cb(null);
@@ -50258,7 +50279,11 @@ var $$IMU_EXPORT$$;
 		var method = "GET";
 		var responseType = "blob";
 
-		if (processing.head || processing.incomplete_image) {
+		var incomplete_request = false;
+		if (processing.incomplete_image || (is_probably_video(obj[0]) && processing.incomplete_video))
+			incomplete_request = true;
+
+		if (processing.head || incomplete_request) {
 			method = "HEAD";
 			responseType = undefined;
 		}
@@ -50354,39 +50379,65 @@ var $$IMU_EXPORT$$;
 						cb(img, resp.finalUrl, obj[0], resp);
 					};
 
-					if (!is_video && processing.incomplete_image) {
-						var load_image = function () {
-							var img = document.createElement("img");
-							img.src = resp.finalUrl;
+					var create_video_el = function() {
+						var video = document.createElement("video");
+						video.setAttribute("autoplay", "true");
+						video.setAttribute("controls", "true");
+						video.setAttribute("loop", "true");
+						return video;
+					};
 
-							var end_cbs = function () {
-								clearInterval(height_interval);
-								img.onload = null;
-								img.onerror = null;
-							};
+					if (incomplete_request) {
+						var load_image;
 
-							img.onload = function () {
-								end_cbs();
+						if (!is_video) {
+							load_image = function () {
+								var img = document.createElement("img");
+								img.src = resp.finalUrl;
 
-								if (img.naturalWidth === 0 || img.naturalHeight === 0) {
-									return err_cb();
-								}
+								var end_cbs = function () {
+									clearInterval(height_interval);
+									img.onload = null;
+									img.onerror = null;
+								};
 
-								good_cb(img);
-							};
-
-							img.onerror = function () {
-								end_cbs();
-								err_cb();
-							};
-
-							var height_interval = setInterval(function () {
-								if (img.naturalWidth !== 0 && img.naturalHeight !== 0) {
+								img.onload = function () {
 									end_cbs();
+
+									if (img.naturalWidth === 0 || img.naturalHeight === 0) {
+										return err_cb();
+									}
+
 									good_cb(img);
-								}
-							}, 15);
-						};
+								};
+
+								img.onerror = function () {
+									end_cbs();
+									err_cb();
+								};
+
+								var height_interval = setInterval(function () {
+									if (img.naturalWidth !== 0 && img.naturalHeight !== 0) {
+										end_cbs();
+										good_cb(img);
+									}
+								}, 15);
+							};
+						} else {
+							load_image = function () {
+								var video = create_video_el();
+								video.src = resp.finalUrl;
+
+								video.onloadedmetadata = function() {
+									video.onerror = null;
+									good_cb(video);
+								};
+								video.onerror = function() {
+									video.onloadedmetadata = null;
+									err_cb();
+								};
+							};
+						}
 
 						if (is_extension) {
 							extension_send_message({
@@ -50429,16 +50480,14 @@ var $$IMU_EXPORT$$;
 									err_cb();
 								};
 							} else {
-								var video = document.createElement("video");
-								video.setAttribute("autoplay", "true");
-								video.setAttribute("controls", "true");
-								video.setAttribute("loop", "true");
+								var video = create_video_el();
 								video.src = e.target.result;
 								video.onloadedmetadata = function() {
 									video.onerror = null;
 									good_cb(video);
 								};
 								video.onerror = function() {
+									video.onloadedmetadata = null;
 									err_cb();
 								};
 							}
@@ -52893,8 +52942,14 @@ var $$IMU_EXPORT$$;
 							usehead = true;
 						} else if (multi && !get_single_setting("replaceimgs_usedata")) {
 							usehead = true;
-						} else if (!multi && !settings.mouseover_use_fully_loaded_image) {
-							processing.incomplete_image = true;
+						} else if (!multi) {
+							if (!settings.mouseover_use_fully_loaded_image) {
+								processing.incomplete_image = true;
+							}
+
+							if (!settings.mouseover_use_fully_loaded_video) {
+								processing.incomplete_video = true;
+							}
 						}
 
 						if (usehead) {
