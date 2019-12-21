@@ -50828,6 +50828,7 @@ var $$IMU_EXPORT$$;
 
 			dragged = false;
 			dragstart = false;
+			var seekstart = false;
 
 			function cb(img, url) {
 				if (!controlPressed && false) {
@@ -51552,7 +51553,20 @@ var $$IMU_EXPORT$$;
 				}
 
 				if (get_single_setting("mouseover_pan_behavior") === "drag") {
+					if (is_video) {
+						img.onseeking = function(e) {
+							seekstart = true;
+						};
+
+						img.onseeked = function(e) {
+							seekstart = false;
+						};
+					}
+
 					div.ondragstart = a.ondragstart = img.ondragstart = function(e) {
+						if (seekstart)
+							return;
+
 						//dragstart = true;
 						//dragged = false;
 						startdrag(e);
@@ -51564,7 +51578,7 @@ var $$IMU_EXPORT$$;
 					//div.ondrop = estop;
 
 					div.onmousedown = a.onmousedown = function(e) {
-						if (btndown || e.button !== 0)
+						if (btndown || e.button !== 0 || seekstart)
 							return;
 
 						//dragstart = true;
@@ -51577,7 +51591,7 @@ var $$IMU_EXPORT$$;
 					};
 
 					img.onmousedown = function(e) {
-						if (btndown || e.button !== 0)
+						if (btndown || e.button !== 0 || seekstart)
 							return;
 
 						//dragstart = true;
