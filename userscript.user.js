@@ -53382,7 +53382,12 @@ var $$IMU_EXPORT$$;
 					ret = false;
 
 					var a = document.createElement("a");
-					a.href = popups[0].getElementsByTagName("img")[0].src;
+
+					// Starting with <video> in case another <img> gets added for unrelated reasons
+					var imgels = popups[0].getElementsByTagName("video");
+					if (imgels.length === 0)
+						imgels = popups[0].getElementsByTagName("img");
+					a.href = imgels[0].src;
 
 					if (popup_obj.filename.length > 0) {
 						a.setAttribute("download", popup_obj.filename);
