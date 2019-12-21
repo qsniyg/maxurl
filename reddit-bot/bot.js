@@ -496,6 +496,7 @@ function dourl(url, post, options) {
   bigimage(url, {
     fill_object: true,
     force_page: true,
+    exclude_videos: true,
     //allow_thirdparty: true,
     filter: function(url) {
       if (!bigimage.is_internet_url(url))
@@ -617,6 +618,8 @@ const links = new NodeCache({ stdTTL: 600, checkperiod: 100 });
 //dourl("https://thumbs.ebaystatic.com/d/l225/pict/400793189705_4.jpg");
 // imgur nsfw that should still return a larger image
 //dourl("https://i.imgur.com/L4BmEfg_d.jpg?maxwidth=640&shape=thumb&fidelity=medium");
+// shouldn't show anything if exclude_videos == true
+//dourl("https://thumbs.gfycat.com/YellowTornCockatiel-size_restricted.gif");
 
 //console.dir(blacklist_json.disallowed);
 if (true) {
