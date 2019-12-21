@@ -407,6 +407,7 @@ var $$IMU_EXPORT$$;
 		bad: false,
 		bad_if: [],
 		fake: false,
+		video: false,
 		headers: {},
 		referer_ok: {
 			same_domain: false,
@@ -46667,6 +46668,10 @@ var $$IMU_EXPORT$$;
 			obj = {
 				url: newsrc
 			};
+
+			if (newsrc !== src) {
+				obj.video = true;
+			}
 
 			match = src.match(/^[a-z]+:\/\/[^/]+\/+([^-./]+)[-.]/);
 			if (match) {
