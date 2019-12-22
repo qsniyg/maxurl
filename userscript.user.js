@@ -6982,6 +6982,8 @@ var $$IMU_EXPORT$$;
 			// https://cdfront.tower.jp/~/media/Images/Mag/Mikiki/mikiki_icon_70.jpg?h=70&thn=1&w=70
 			// https://tower.jp/~/media/Images/Mag/Mikiki/mikiki_icon_70.jpg?h=70&thn=1&w=70
 			(domain_nosub === "tower.jp" && /\/~\/+media\//.test(src)) ||
+			// https://images.boosty.to/user/23212/avatar?change_time=1566827978&croped=1&mh=560&mw=450
+			domain === "images.boosty.to" ||
 			// http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
 			// https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
 			src.match(/\/demandware\.static\//) ||
@@ -46805,6 +46807,24 @@ var $$IMU_EXPORT$$;
 			return obj;
 		}
 
+		if (amazon_container === "blurbprod1000") {
+			// http://blurbprod1000.s3.amazonaws.com/28b6660506634feeba18c6f00cb64ccf/5874d1e6-a34d-60e9-f94d-bb7ed3d9dcf4/M.jpeg
+			//   http://blurbprod1000.s3.amazonaws.com/28b6660506634feeba18c6f00cb64ccf/5874d1e6-a34d-60e9-f94d-bb7ed3d9dcf4/O.jpeg
+			return src.replace(/(\/[0-9a-f]{20,}\/+[-0-9a-f]{20,}\/+)[A-Z](\.[^/.]*)(?:[?#].*)?$/, "$1O$2");
+		}
+
+		if (domain === "bookshow.blurb.com") {
+			// https://bookshow.blurb.com/bookshow/cache/P15139626/lw/cover_2.jpeg?access_key=9c182f68f23c916fd32d5be31fb0cab5
+			//   https://bookshow.blurb.com/bookshow/cache/P15139626/md/cover_2.jpeg?access_key=9c182f68f23c916fd32d5be31fb0cab5
+			return src.replace(/(\/bookshow\/+cache\/+[^/]+\/+)lw\/+/, "$1md/");
+		}
+
+		if (domain === "contents.sixshop.com") {
+			// https://contents.sixshop.com/thumbnails/uploadedFiles/152/default/image_1489460747343_1000.png
+			//   https://contents.sixshop.com/uploadedFiles/152/default/image_1489460747343.png
+			return src.replace(/\/thumbnails\/+(uploadedFiles\/+[0-9]+\/+[^/]+\/+[^/]+)_[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "/$1$2");
+		}
+
 
 
 
@@ -47975,6 +47995,8 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "pdfkul.com" ||
 			// http://user-images.strikinglycdn.com/res/hrscywv4p/image/upload/1515559/534889_633117.jpg
 			domain_nosub === "strikinglycdn.com" || // 403
+			// https://images.boosty.to/user/23212/avatar?change_time=1566827978&croped=1&mh=560&mw=450
+			domain === "images.boosty.to" || // 400
 			(domain_nosub === "irishmirror.ie" && domain.match(/i[0-9]*(?:-prod)?\./))) {
 			return {
 				url: src,
