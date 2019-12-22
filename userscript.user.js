@@ -51950,6 +51950,23 @@ var $$IMU_EXPORT$$;
 						//estop(e);
 						return true;
 					};
+
+					if (is_video && !settings.mouseover_video_controls) {
+						img.onclick = function(e) {
+							if (!dragged) {
+								if (!img.paused) {
+									img.pause();
+								} else {
+									img.play();
+								}
+							}
+
+							//console_log("img.mouseup", e);
+							dragstart = false;
+							//estop(e);
+							return true;
+						};
+					}
 				}
 
 				var currentmode = initial_zoom_behavior;
