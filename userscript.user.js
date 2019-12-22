@@ -51837,7 +51837,8 @@ var $$IMU_EXPORT$$;
 
 					//div.ondrop = estop;
 
-					div.onmousedown = a.onmousedown = function(e) {
+					div.onmousedown = div.onpointerdown = a.onmousedown = a.onpointerdown = function(e) {
+						//console_log("(div,a).mousedown", e);
 						if (btndown || e.button !== 0 || seekstart)
 							return;
 
@@ -51850,7 +51851,8 @@ var $$IMU_EXPORT$$;
 						return false;
 					};
 
-					img.onmousedown = function(e) {
+					img.onmousedown = img.onpointerdown = function(e) {
+						//console_log("img.onmousedown", e);
 						if (btndown || e.button !== 0 || seekstart)
 							return;
 
@@ -51863,6 +51865,7 @@ var $$IMU_EXPORT$$;
 					};
 
 					a.onclick = function(e) {
+						//console_log("a.onclick", e);
 						dragstart = false;
 
 						if (dragged) {
@@ -51876,7 +51879,8 @@ var $$IMU_EXPORT$$;
 						return true;
 					};
 
-					div.onmouseup = div.onclick = a.onmouseup = /*a.onclick =*/ function(e) {
+					div.onmouseup = div.onpointerup = div.onclick = a.onmouseup = a.onpointerup = /*a.onclick =*/ function(e) {
+						//console_log("(div,a).mouseup", e);
 						dragstart = false;
 
 						if (dragged) {
@@ -51893,7 +51897,8 @@ var $$IMU_EXPORT$$;
 					//div.addEventListener("click", div.onclick, true);
 					//a.addEventListener("click", a.onclick, true);
 
-					img.onmouseup = img.onclick = function(e) {
+					img.onmouseup = img.onpointerup = img.onclick = function(e) {
+						//console_log("img.mouseup", e);
 						dragstart = false;
 						//estop(e);
 						return true;
