@@ -1654,7 +1654,8 @@ var $$IMU_EXPORT$$;
 		allow_video: {
 			name: "Videos",
 			description: "Allows videos to be returned",
-			category: "rules"
+			category: "rules",
+			onupdate: update_rule_setting
 		},
 		allow_watermark: {
 			name: "Larger watermarked images",
@@ -48213,6 +48214,12 @@ var $$IMU_EXPORT$$;
 
 			if (!options.allow_apicalls) {
 				options.do_request = null;
+			}
+
+			if (!settings.allow_video) {
+				options.exclude_videos = true;
+			} else {
+				options.exclude_videos = false;
 			}
 		}
 
