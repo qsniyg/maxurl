@@ -16267,6 +16267,9 @@ var $$IMU_EXPORT$$;
 			// https://www.asiaworldmusic.fr/64615-medium_default/taeyeon-s-taeyeon-concert-kihno-video-edition-coreenne.jpg
 			//   https://www.asiaworldmusic.fr/64615/taeyeon-s-taeyeon-concert-kihno-video-edition-coreenne.jpg
 			domain_nowww === "asiaworldmusic.fr" ||
+			// https://kpopmart.com/17674-home_default/nature-republic-exo-edition-water-tint-3g-8-types.jpg
+			//   https://kpopmart.com/17674/nature-republic-exo-edition-water-tint-3g-8-types.jpg
+			domain_nowww === "kpopmart.com" ||
 			// http://flyhighstore.pl/2210-home_default/fh-cool-red-winter-jacket.jpg
 			//   http://flyhighstore.pl/2210/fh-cool-red-winter-jacket.jpg
 			domain_nowww === "flyhighstore.pl") {
@@ -35389,7 +35392,9 @@ var $$IMU_EXPORT$$;
 			// https://kpopping.com/uploads/documents/kpics_related-cropped/ro90108367_ori.jpeg
 			//   https://kpopping.com/uploads/documents/kpics_gallery-kept/ro90108367_ori.jpeg
 			//   https://kpopping.com/uploads/documents/ro90108367_ori.jpeg
-			return src.replace(/\/uploads\/+documents\/+[^/]*\/+([^/]*)(?:[?#].*)?$/,
+			// https://kpopping.com/uploads/documents/gallery_thumbnail_small/ReneJingle-1207164667996426240-EMC12x_UcAAVpLo.jpeg.crop.fff.png
+			//   https://kpopping.com/uploads/documents/ReneJingle-1207164667996426240-EMC12x_UcAAVpLo.jpeg
+			return src.replace(/\/uploads\/+documents\/+[^/]+\/+([^/]+?)(?:\.(?:keep|crop)\..*)?(?:[?#].*)?$/,
 							   "/uploads/documents/$1");
 		}
 
@@ -50374,6 +50379,11 @@ var $$IMU_EXPORT$$;
 		var url = obj[0].url;
 
 		console_log("Trying " + url);
+
+		if (obj[0] && obj[0].video && !settings.allow_video) {
+			console_log("Video, skipping due to user setting");
+			return err_cb();
+		}
 
 		if (obj[0] && obj[0].bad) {
 			console_log("Bad image");
