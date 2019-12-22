@@ -11335,6 +11335,15 @@ var $$IMU_EXPORT$$;
 										obj.url = "https://i.imgur.com/" + json.hash + ".jpg"
 										retobj.push(obj);
 									} else {
+										// Prefer video if possible
+										if (json.animated && json.prefer_video) {
+											var newobj = deepcopy(baseobj);
+											newobj.url = "https://i.imgur.com/" + json.hash + ".mp4";
+											newobj.video = true;
+
+											retobj.push(newobj);
+										}
+
 										retobj.push(obj);
 									}
 								}
