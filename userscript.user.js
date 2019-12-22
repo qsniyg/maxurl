@@ -49384,9 +49384,15 @@ var $$IMU_EXPORT$$;
 
 			var current_settings = deepcopy(settings);
 			var new_settings = deepcopy(orig_settings);
+			var settings_version;
 			for (var key in value) {
 				if (!(key in settings)) {
-					console_log("Unknown key in imported settings: ", key);
+					if (key === "settings_version") {
+						settings_version = value[key];
+					} else {
+						console_log("Unknown key in imported settings: ", key);
+					}
+
 					continue;
 				}
 
@@ -49401,10 +49407,20 @@ var $$IMU_EXPORT$$;
 				}
 			}
 
-			if (changed)
-				do_options();
+			if (settings_version === undefined) {
+				settings_version = 1;
+			}
 
-			show_importexport(false);
+			upgrade_settings_with_version(settings_version, function(changed) {
+				if (changed) {
+					console.log("Settings imported");
+					do_options();
+				} else {
+					console.log("No settings changed");
+				}
+
+				show_importexport(false);
+			});
 		};
 		importexport_container.appendChild(importexport_btn);
 
@@ -49454,9 +49470,14 @@ var $$IMU_EXPORT$$;
 			if (importexport_state === "export")
 				return show_importexport(false);
 
-			importexport_text.value = JSON_stringify(settings);
+			var newsettings = deepcopy(settings);
+			get_value("settings_version", function(value) {
+				if (value !== undefined)
+					newsettings.settings_version = value;
+				importexport_text.value = JSON_stringify(newsettings);
 
-			show_importexport(true, false);
+				show_importexport(true, false);
+			});
 		};
 		topbtns_holder.appendChild(export_btn);
 
@@ -50234,6 +50255,53 @@ var $$IMU_EXPORT$$;
 		return true;
 	}
 
+	function upgrade_settings_with_version(version, cb) {
+		if (!version) {
+			version = 0;
+		} else if (typeof version !== "number") {
+			version = parseInt(version);
+			if (isNaN(version))
+				version = 0;
+		}
+
+		var changed = false;
+
+		if (version === 0) {
+			if (settings.mouseover_trigger) {
+				var trigger_keys = [];
+				for (var i = 0; i < settings.mouseover_trigger.length; i++) {
+					var trigger = settings.mouseover_trigger[i];
+					if (trigger.match(/^delay_[0-9]+/)) {
+						var delay = parseInt(settings.mouseover_trigger[i].replace(/^delay_([0-9]+).*?$/, "$1"));
+						if (delay <= 0 || isNaN(delay))
+							delay = false;
+						if (typeof delay === "number" && delay >= 10)
+							delay = 10;
+						update_setting("mouseover_trigger_delay", delay);
+						continue;
+					}
+
+					trigger_keys.push(trigger);
+				}
+
+
+
+				if (trigger_keys.length === 0) {
+					update_setting("mouseover_trigger_key", orig_settings["mouseover_trigger_key"]);
+					update_setting("mouseover_trigger_behavior", "mouse");
+				} else {
+					update_setting("mouseover_trigger_key", trigger_keys);
+					update_setting("mouseover_trigger_behavior", "keyboard");
+				}
+			}
+
+			update_setting("settings_version", 1);
+			changed = true;
+		}
+
+		cb(changed);
+	}
+
 	function upgrade_settings(cb) {
 		try {
 			create_blacklist_regexes();
@@ -50243,47 +50311,7 @@ var $$IMU_EXPORT$$;
 
 		// TODO: merge this get_value in do_config for performance
 		get_value("settings_version", function(version) {
-			if (!version) {
-				version = 0;
-			} else if (typeof version !== "number") {
-				version = parseInt(version);
-				if (isNaN(version))
-					version = 0;
-			}
-
-			if (version === 0) {
-				if (settings.mouseover_trigger) {
-					var trigger_keys = [];
-					for (var i = 0; i < settings.mouseover_trigger.length; i++) {
-						var trigger = settings.mouseover_trigger[i];
-						if (trigger.match(/^delay_[0-9]+/)) {
-							var delay = parseInt(settings.mouseover_trigger[i].replace(/^delay_([0-9]+).*?$/, "$1"));
-							if (delay <= 0 || isNaN(delay))
-								delay = false;
-							if (typeof delay === "number" && delay >= 10)
-								delay = 10;
-							update_setting("mouseover_trigger_delay", delay);
-							continue;
-						}
-
-						trigger_keys.push(trigger);
-					}
-
-
-
-					if (trigger_keys.length === 0) {
-						update_setting("mouseover_trigger_key", orig_settings["mouseover_trigger_key"]);
-						update_setting("mouseover_trigger_behavior", "mouse");
-					} else {
-						update_setting("mouseover_trigger_key", trigger_keys);
-						update_setting("mouseover_trigger_behavior", "keyboard");
-					}
-				}
-
-				update_setting("settings_version", 1);
-			}
-
-			cb();
+			upgrade_settings_with_version(version, cb);
 		});
 	}
 
