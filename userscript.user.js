@@ -46787,10 +46787,14 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "thumbs.gfycat.com" ||
-			domain === "zippy.gfycat.com") {
+			domain === "zippy.gfycat.com" ||
+			domain === "giant.gfycat.com") {
 			// https://thumbs.gfycat.com/YellowTornCockatiel-size_restricted.gif
-			// https://thumbs.gfycat.com/YellowTornCockatiel-mobile.mp4
-			newsrc = src.replace(/:\/\/thumbs\.([^/]+\/+[^/]+)-(?:size_restricted\.gif|mobile\.(?:webm|mp4)|(?:mobile|poster)\.jpg)(?:[?#].*)?$/, "://zippy.$1.mp4");
+			//   https://thumbs.gfycat.com/YellowTornCockatiel-mobile.mp4
+			//   https://zippy.gfycat.com/YellowTornCockatiel.mp4
+			newsrc = src
+				.replace(/:\/\/zippy\.([^/]+\/+[^/]+)(?:-[^/.]+)?\.[^/.]+(?:[?#].*)?$/, "://giant.$1.mp4")
+				.replace(/:\/\/thumbs\.([^/]+\/+[^/]+)-(?:size_restricted\.gif|mobile\.(?:webm|mp4)|(?:mobile|poster)\.jpg)(?:[?#].*)?$/, "://zippy.$1.mp4");
 			obj = {
 				url: newsrc
 			};
@@ -46823,6 +46827,12 @@ var $$IMU_EXPORT$$;
 			// https://contents.sixshop.com/thumbnails/uploadedFiles/152/default/image_1489460747343_1000.png
 			//   https://contents.sixshop.com/uploadedFiles/152/default/image_1489460747343.png
 			return src.replace(/\/thumbnails\/+(uploadedFiles\/+[0-9]+\/+[^/]+\/+[^/]+)_[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "/$1$2");
+		}
+
+		if (domain_nosub === "gumroad.com" && /^static(?:-[0-9]+)\./.test(domain)) {
+			// https://static-2.gumroad.com/res/gumroad/8674105889771/asset_previews/4329e193b99c3d981b7261d21ba18047/retina/IMG_2173.jpg
+			//   https://static-2.gumroad.com/res/gumroad/8674105889771/asset_previews/4329e193b99c3d981b7261d21ba18047/original/IMG_2173.jpg
+			return src.replace(/(\/res\/+gumroad\/+[0-9]+\/+asset_previews\/+[0-9a-f]{10,}\/+)[a-z]+\/+/, "$1original/");
 		}
 
 
