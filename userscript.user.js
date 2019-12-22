@@ -49411,7 +49411,7 @@ var $$IMU_EXPORT$$;
 				settings_version = 1;
 			}
 
-			upgrade_settings_with_version(settings_version, function(changed) {
+			upgrade_settings_with_version(settings_version, new_settings, function(changed) {
 				if (changed) {
 					console.log("Settings imported");
 					do_options();
@@ -50255,7 +50255,7 @@ var $$IMU_EXPORT$$;
 		return true;
 	}
 
-	function upgrade_settings_with_version(version, cb) {
+	function upgrade_settings_with_version(version, new_settings, cb) {
 		if (!version) {
 			version = 0;
 		} else if (typeof version !== "number") {
@@ -50264,15 +50264,18 @@ var $$IMU_EXPORT$$;
 				version = 0;
 		}
 
+		if (new_settings === undefined)
+			new_settings = settings;
+
 		var changed = false;
 
 		if (version === 0) {
-			if (settings.mouseover_trigger) {
+			if (new_settings.mouseover_trigger) {
 				var trigger_keys = [];
-				for (var i = 0; i < settings.mouseover_trigger.length; i++) {
-					var trigger = settings.mouseover_trigger[i];
+				for (var i = 0; i < new_settings.mouseover_trigger.length; i++) {
+					var trigger = new_settings.mouseover_trigger[i];
 					if (trigger.match(/^delay_[0-9]+/)) {
-						var delay = parseInt(settings.mouseover_trigger[i].replace(/^delay_([0-9]+).*?$/, "$1"));
+						var delay = parseInt(new_settings.mouseover_trigger[i].replace(/^delay_([0-9]+).*?$/, "$1"));
 						if (delay <= 0 || isNaN(delay))
 							delay = false;
 						if (typeof delay === "number" && delay >= 10)
@@ -50311,7 +50314,7 @@ var $$IMU_EXPORT$$;
 
 		// TODO: merge this get_value in do_config for performance
 		get_value("settings_version", function(version) {
-			upgrade_settings_with_version(version, cb);
+			upgrade_settings_with_version(version, settings, cb);
 		});
 	}
 
