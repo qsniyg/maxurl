@@ -72,6 +72,9 @@ As mentioned above, userscript.user.js also functions as a node module.
       // By setting it to [], no problems will be excluded.
       //exclude_problems: [],
 
+      // Whether or not to exclude videos
+      exclude_videos: false,
+
       // This will include a "history" of objects found through iterations.
       // Disabling this will only keep the objects found through the last successful iteration.
       include_pastobjs: true,
@@ -131,6 +134,9 @@ The result is a list of objects that contain properties that may be useful in us
     [{
       // The URL of the image
       url: null,
+
+      // Whether or not this URL is a video
+      video: false,
 
       // Whether it's expected that it will always work or not.
       //  Don't rely on this value if you don't have to
