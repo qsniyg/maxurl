@@ -599,6 +599,10 @@ var $$IMU_EXPORT$$;
 		"subcategory_behavior": {
 			"en": "Popup Behavior"
 		},
+		"subcategory_video": {
+			"en": "Video",
+			"ko": "영상"
+		},
 		"subcategory_popup_other": {
 			"en": "Other",
 			"fr": "Autre"
@@ -938,6 +942,9 @@ var $$IMU_EXPORT$$;
 		mouseover_only_links: false,
 		mouseover_exclude_sameimage: false,
 		mouseover_exclude_imagetab: true,
+		mouseover_video_controls: false,
+		mouseover_video_loop: true,
+		mouseover_video_muted: false,
 		mouseover_ui: true,
 		mouseover_ui_opacity: 50,
 		mouseover_ui_imagesize: true,
@@ -1265,6 +1272,36 @@ var $$IMU_EXPORT$$;
 			},
 			category: "popup",
 			subcategory: "open_behavior"
+		},
+		mouseover_video_controls: {
+			name: "Show video controls",
+			description: "Shows native video controls. Note that this prevents dragging under Firefox",
+			requires: {
+				mouseover: true,
+				allow_video: true
+			},
+			category: "popup",
+			subcategory: "video"
+		},
+		mouseover_video_loop: {
+			name: "Loop video",
+			description: "Allows the video to automatically restart to the beginning after finishing playing",
+			requires: {
+				mouseover: true,
+				allow_video: true
+			},
+			category: "popup",
+			subcategory: "video"
+		},
+		mouseover_video_muted: {
+			name: "Mute video",
+			description: "Mutes the video by default",
+			requires: {
+				mouseover: true,
+				allow_video: true
+			},
+			category: "popup",
+			subcategory: "video"
 		},
 		mouseover_ui: {
 			name: "Popup UI",
@@ -1902,6 +1939,7 @@ var $$IMU_EXPORT$$;
 			"open_behavior": "subcategory_open_behavior",
 			"close_behavior": "subcategory_close_behavior",
 			"behavior": "subcategory_behavior",
+			"video": "subcategory_video",
 			"ui": "subcategory_ui",
 			"popup_other": "subcategory_popup_other"
 		},
@@ -50592,9 +50630,18 @@ var $$IMU_EXPORT$$;
 
 					var create_video_el = function() {
 						var video = document.createElement("video");
-						video.setAttribute("autoplay", "true");
-						video.setAttribute("controls", "true");
-						video.setAttribute("loop", "true");
+
+						video.setAttribute("autoplay", "autoplay");
+
+						if (settings.mouseover_video_controls)
+							video.setAttribute("controls", "controls");
+
+						if (settings.mouseover_video_loop)
+							video.setAttribute("loop", true);
+
+						if (settings.mouseover_video_muted)
+							video.muted = true;
+
 						return video;
 					};
 
