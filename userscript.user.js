@@ -48095,9 +48095,12 @@ var $$IMU_EXPORT$$;
 			}
 
 			var item;
-			for (item in baseobj) {
-				if (!(item in obj[i])) {
-					obj[i][item] = baseobj[item];
+			// Only copy from baseobj if the urls are the same (or n/a)
+			if (!obj[i].url || !baseobj.url || baseobj.url === obj[i].url)  {
+				for (item in baseobj) {
+					if (!(item in obj[i])) {
+						obj[i][item] = baseobj[item];
+					}
 				}
 			}
 
@@ -48445,6 +48448,7 @@ var $$IMU_EXPORT$$;
 				if (used_cache && newhref === null) {
 					endhref = deepcopy(currentobj);
 				} else {
+					// the reason for using fillobj(..., currentobj) is for objects that add to the last object (e.g. {url: src, head_wrong_contentlength: true})
 					endhref = fillobj(deepcopy(newhref), currentobj);
 				}
 
