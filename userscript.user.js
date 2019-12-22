@@ -11235,7 +11235,7 @@ var $$IMU_EXPORT$$;
 					bad: true
 				};
 
-			obj = {
+			var baseobj = {
 				url: src.replace(/\?.*/, ""),
 				headers: {
 					Referer: null
@@ -11249,27 +11249,27 @@ var $$IMU_EXPORT$$;
 
 			newsrc = src.replace(/\/([a-zA-Z0-9]{7})(?:[hrlgmtbs]|_d)(\.[^/.?]*)$/, "/$1$2");
 			if (newsrc !== src) {
-				obj.url = newsrc;
+				baseobj.url = newsrc;
 
 				match = newsrc.match(idregex);
 				if (match) {
-					obj.extra = {page: "https://imgur.com/" + match[1]};
+					baseobj.extra = {page: "https://imgur.com/" + match[1]};
 				}
 
-				return obj;
+				return baseobj;
 			}
 
 			match = src.match(idregex);
 			if (match) {
-				obj.extra = {page: "https://imgur.com/" + match[1]};
+				baseobj.extra = {page: "https://imgur.com/" + match[1]};
 			}
 
-			if (options && options.cb && options.do_request && obj.extra) {
-				var cache_key = "imgur:" + obj.extra.page;
+			if (options && options.cb && options.do_request && baseobj.extra) {
+				var cache_key = "imgur:" + baseobj.extra.page;
 
 				api_cache.fetch(cache_key, options.cb, function(done) {
 					options.do_request({
-						url: obj.extra.page,
+						url: baseobj.extra.page,
 						method: "GET",
 						onload: function(resp) {
 							if (resp.readyState !== 4)
@@ -11278,16 +11278,28 @@ var $$IMU_EXPORT$$;
 							if (resp.status !== 200)
 								return done(obj, false);
 
+							var retobj = [];
+
 							// Try video first, then image
 							var ogmatch = resp.responseText.match(/<meta\s+property=["']og:video["']\s+content=["'](.*?)["']/);
 							if (ogmatch) {
+								var obj = deepcopy(baseobj);
 								obj.url = decode_entities(ogmatch[1]).replace(/\?.*/, "");
-							} else {
-								ogmatch = resp.responseText.match(/<meta\s+property=["']og:image["']\s+content=["'](.*?)["']/);
-								if (ogmatch) {
-									obj.url = decode_entities(ogmatch[1]).replace(/\?.*/, "");
-								}
+								obj.video = true;
+
+								retobj.push(obj);
 							}
+
+							ogmatch = resp.responseText.match(/<meta\s+property=["']og:image["']\s+content=["'](.*?)["']/);
+							if (ogmatch) {
+								var obj = deepcopy(baseobj);
+								obj.url = decode_entities(ogmatch[1]).replace(/\?.*/, "");
+
+								retobj.push(obj);
+							}
+
+							if (retobj.length === 0)
+								retobj = baseobj;
 
 							var match = resp.responseText.match(/\.\s*mergeConfig\s*\(\s*["']gallery["']\s*,\s*{[\s\S]+?image\s*:\s*({.*?})\s*,\s*\n/);
 							if (!match) {
@@ -11300,8 +11312,10 @@ var $$IMU_EXPORT$$;
 
 								console.warn(msg);
 								//console.log(resp.responseText);
-								return done(obj, false);
+								return done(retobj, false);
 							}
+
+							retobj = [];
 
 							try {
 								var json = JSON.parse(match[1]);
@@ -11310,23 +11324,37 @@ var $$IMU_EXPORT$$;
 								if (json.hash && json.ext) {
 									realfilename = json.hash + json.ext;
 
-									var origfilename = obj.url.replace(/.*\/(.*?)(?:[?#].*)?$/, "$1");
-									if (realfilename !== origfilename) {
-										obj.url = "https://i.imgur.com/" + realfilename;
+									var obj = deepcopy(baseobj);
+									obj.url = "https://i.imgur.com/" + realfilename;
+
+									if (/^video\//.test(json.mimetype)) {
+										obj.video = true;
+										retobj.push(obj);
+
+										var obj = deepcopy(baseobj);
+										obj.url = "https://i.imgur.com/" + json.hash + ".jpg"
+										retobj.push(obj);
+									} else {
+										retobj.push(obj);
 									}
 								}
 
 								if (json.source && /^https?:\/\//.test(json.source)) {
 									var newobj = {url: json.source};
 
-									obj = [newobj, obj];
+									retobj.unshift(newobj);
 								}
 							} catch (e) {
 								console.error(e);
 								console.log(match);
+
+								retobj = [baseobj];
 							}
 
-							return done(obj, 6*60*60);
+							if (retobj.length === 0)
+								retobj = baseobj;
+
+							return done(retobj, 6*60*60);
 						}
 					});
 				});
@@ -11336,7 +11364,7 @@ var $$IMU_EXPORT$$;
 				};
 			}
 
-			return obj;
+			return baseobj;
 		}
 
 		if (domain === "imgur.dcard.tw" ||
