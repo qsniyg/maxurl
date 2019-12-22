@@ -25,6 +25,7 @@
 // @grant             GM.getValue
 // @grant             GM_getValue
 // @grant             GM_registerMenuCommand
+// @grant             GM_addValueChangeListener
 // @grant             GM_openInTab
 // @grant             GM.openInTab
 // @connect           *
@@ -50255,6 +50256,41 @@ var $$IMU_EXPORT$$;
 		return true;
 	}
 
+	function settings_updated_cb(changes) {
+		//console_log(message);
+		var changed = false;
+
+		for (var key in changes) {
+			//console_log("Setting " + key + " = " + changes[key].newValue);
+			var newvalue = JSON_parse(changes[key].newValue);
+			if (key in settings_history) {
+				var index = settings_history[key].indexOf(newvalue);
+
+				var pass = false
+				if (index >= 0 && index < settings_history[key].length - 1) {
+					pass = true;
+				}
+
+				settings_history[key].splice(index, 1);
+
+				if (pass)
+					continue;
+			}
+
+			var setting_updated = update_setting_from_host(key, newvalue);
+			changed = setting_updated || changed;
+
+			if (setting_updated && key in settings_meta && "onupdate" in settings_meta[key]) {
+				settings_meta[key].onupdate();
+			}
+		}
+
+		if (changed && updating_options <= 0 && is_options_page) {
+			//console_log("Refreshing options");
+			do_options();
+		}
+	};
+
 	function upgrade_settings_with_version(version, new_settings, cb) {
 		if (!version) {
 			version = 0;
@@ -50341,6 +50377,18 @@ var $$IMU_EXPORT$$;
 					get_value(setting, function(value) {
 						settings_done++;
 						update_setting_from_host(setting, value);
+
+						if (typeof GM_addValueChangeListener !== "undefined") {
+							GM_addValueChangeListener(setting, function(name, oldValue, newValue, remote) {
+								if (remote === false)
+									return;
+
+								var updated = {};
+								updated[name] = {newValue: newValue};
+								settings_updated_cb(updated);
+							});
+						}
+
 						if (settings_done >= Object.keys(settings).length)
 							upgrade_settings(start);
 					});
@@ -53760,37 +53808,7 @@ var $$IMU_EXPORT$$;
 					}
 				} else if (message.type === "settings_update") {
 					//console_log(message);
-					var changed = false;
-
-					for (var key in message.data.changes) {
-						//console_log("Setting " + key + " = " + message.data.changes[key].newValue);
-						var newvalue = JSON_parse(message.data.changes[key].newValue);
-						if (key in settings_history) {
-							var index = settings_history[key].indexOf(newvalue);
-
-							var pass = false
-							if (index >= 0 && index < settings_history[key].length - 1) {
-								pass = true;
-							}
-
-							settings_history[key].splice(index, 1);
-
-							if (pass)
-								continue;
-						}
-
-						var setting_updated = update_setting_from_host(key, newvalue);
-						changed = setting_updated || changed;
-
-						if (setting_updated && key in settings_meta && "onupdate" in settings_meta[key]) {
-							settings_meta[key].onupdate();
-						}
-					}
-
-					if (changed && updating_options <= 0 && is_extension_options_page) {
-						//console_log("Refreshing options");
-						do_options();
-					}
+					settings_updated_cb(message.data.changes);
 				}
 			});
 		}
