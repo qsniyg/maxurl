@@ -48661,7 +48661,8 @@ var $$IMU_EXPORT$$;
 				options.do_request = null;
 			}
 
-			if (!settings.allow_video) {
+			// Doing this here breaks things like Imgur, which will redirect to an image if a video was opened in a new tab
+			if (false && !settings.allow_video) {
 				options.exclude_videos = true;
 			} else {
 				options.exclude_videos = false;
@@ -49675,17 +49676,28 @@ var $$IMU_EXPORT$$;
 				return;
 			}
 
+			var new_newhref = newhref;
+
+			if (!settings.allow_video) {
+				var new_newhref = [];
+				for (var i = 0; i < newhref.length; i++) {
+					if (!newhref[i].video) {
+						new_newhref.push(newhref[i]);
+					}
+				}
+			}
+
 			var index = 0;
 			var cb = function(err_txt) {
 				index++;
-				if (index >= newhref.length) {
+				if (index >= new_newhref.length) {
 					cursor_default();
 					console_error(err_txt);
 					return;
 				}
-				check_image(newhref[index], cb, finalcb);
+				check_image(new_newhref[index], cb, finalcb);
 			};
-			check_image(newhref[0], cb, finalcb);
+			check_image(new_newhref[0], cb, finalcb);
 		});
 	}
 
