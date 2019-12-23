@@ -11401,7 +11401,7 @@ var $$IMU_EXPORT$$;
 									try {
 										imageinfo = JSON.parse(imageinfo);
 										retobj.imageinfo = imageinfo;
-										api_cache.set("imgur_imageinfo:" + idhash, imageinfo);
+										api_cache.set("imgur_imageinfo:" + idhash, imageinfo, 6*60*60);
 									} catch (e) {
 										console_error(e);
 										console_log(match);
