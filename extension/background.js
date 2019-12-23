@@ -745,6 +745,13 @@ chrome.runtime.onMessage.addListener((message, sender, respond) => {
 		});
 
 		return true;
+	} else if (message.type === "abort_request") {
+		if (!(message.data in requests)) {
+			console.error("Unable to find request ID: " + message.data);
+			return;
+		}
+
+		requests[message.data].xhr.abort();
 	} else if (message.type === "redirect") {
 		redirects[sender.tab.id] = message.data;
 	} else if (message.type === "newtab") {

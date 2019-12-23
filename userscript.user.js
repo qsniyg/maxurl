@@ -204,8 +204,7 @@ var $$IMU_EXPORT$$;
 	var do_request_raw = null;
 	if (is_extension) {
 		do_request_raw = function(data) {
-			var onload = data.onload;
-			var onerror = data.onerror;
+			var reqid;
 
 			extension_send_message({
 				type: "request",
@@ -216,11 +215,27 @@ var $$IMU_EXPORT$$;
 					return;
 				}
 
-				extension_requests[response.data] = {
-					id: response.data,
+				reqid = response.data;
+
+				extension_requests[reqid] = {
+					id: reqid,
 					data: data
 				};
 			});
+
+			return {
+				abort: function() {
+					if (reqid === undefined) {
+						console_error("abort() was called before the request was initialized");
+						return;
+					}
+
+					extension_send_message({
+						type: "abort_request",
+						data: reqid
+					});
+				}
+			};
 		};
 	} else if (typeof(GM_xmlhttpRequest) !== "undefined") {
 		do_request_raw = GM_xmlhttpRequest;
@@ -427,6 +442,7 @@ var $$IMU_EXPORT$$;
 	// since the userscript is run first, this generally shouldn't be a problem
 	var console_log = console.log;
 	var console_error = console.error;
+	var console_warn = console.warn;
 	var console_trace = console.trace;
 	var JSON_stringify = JSON.stringify;
 	var JSON_parse = JSON.parse;
@@ -49223,7 +49239,7 @@ var $$IMU_EXPORT$$;
 					url: url,
 					headers: headers,
 					trackingprotection_failsafe: true,
-					onprocess: function(resp) {
+					onprogress: function(resp) {
 						// 2 = HEADERS_RECEIVED
 						if (resp.readyState >= 2) {
 							req.abort();
