@@ -2379,6 +2379,38 @@ var $$IMU_EXPORT$$;
 			.replace(/&amp;/g, "&");
 	}
 
+	function remove_queries(url, queries) {
+		if (!(queries instanceof Array)) {
+			queries = [queries];
+		}
+
+		var beforequery = url.replace(/^([^#]*?)\?(.*)$/, "$1");
+		var afterquery = url.replace(/^([^#]*?)\?(.*)$/, "$2");
+
+		// TODO: handle things like: ?a=b&c=b#&d=e
+
+		// no query string
+		if (beforequery === url)
+			return url;
+
+		var splitted = afterquery.split("&");
+		var newsplitted = [];
+		for (var i = 0; i < splitted.length; i++) {
+			var property = splitted[i].replace(/^(.*?)=.*/, "$1");
+			if (queries.indexOf(property) < 0) {
+				newsplitted.push(splitted[i]);
+			}
+		}
+
+		if (newsplitted.length === 0) {
+			afterquery = "";
+		} else {
+			afterquery = "?" + newsplitted.join("&");
+		}
+
+		return beforequery + afterquery;
+	}
+
 	function fuzzify_text(str) {
 		return str
 			.replace(/(?:[-=_!?$#"'’‘”“]|\[|])/g, " ")
@@ -6242,6 +6274,10 @@ var $$IMU_EXPORT$$;
 			//   http://photos.demandstudios.com/getty/article/240/3/178773543.jpg
 			// http://i0.wp.com/mmsns.qpic.cn/mmsns/7KE858KbWtJWJFCnub4OrBAHial0SicILILia7G2I1h6VwXG5cWSWpnPQ/0 -- redirect error, but works
 			// https://i1.wp.com/images-na.ssl-images-amazon.com/images/G/01/aplusautomation/vendorimages/73da407a-f7e0-4d9a-8943-178d8838be48.jpg._CB329731638_.jpg?ssl=1
+			newsrc = remove_queries(src, ["w", "h", "resize"]);
+			if (newsrc !== src)
+				return newsrc;
+
 			newsrc = src.replace(/^[a-z]+:\/\/i[0-9]*\.wp\.com\/(.*?)(?:\?.*)?$/, "$1");
 			if (newsrc !== src) {
 				if (src.match(/[?&]ssl=1(?:&.*)?$/))
@@ -48320,6 +48356,8 @@ var $$IMU_EXPORT$$;
 		if ((domain_nosub === "radikal.ru" && domain.match(/^s[0-9]*\./)) ||
 			// http://www.atkmodels.com/hairy/img/content/190526_7.jpg
 			domain_nowww === "atkmodels.com" ||
+			// https://akibatan.com/wp-content/uploads/2017/06/music-theatre-2017-live-report-09.jpg?ssl=1
+			domain_nowww === "akibatan.com" ||
 			// https://www.n3rdabl3.com/wp-content/images/uploads/2015/04/FPS_Enix_DeusEX-720x423-720x423.jpg
 			domain_nowww === "n3rdabl3.com") {
 			// http://s018.radikal.ru/i521/1301/32/a24fb200297f.jpg
