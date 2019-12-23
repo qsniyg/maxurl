@@ -50599,6 +50599,21 @@ var $$IMU_EXPORT$$;
 		return false;
 	}
 
+	function get_event_error(e) {
+		// https://stackoverflow.com/a/46064096
+		var error = e;
+
+		if (e.path && e.path[0]) {
+			error = e.path[0].error;
+		}
+
+		if (e.originalTarget) {
+			error = e.originalTarget.error;
+		}
+
+		return error;
+	}
+
 	function check_image_get(obj, cb, processing) {
 		if (!obj || !obj[0]) {
 			return cb(null);
@@ -50735,6 +50750,20 @@ var $$IMU_EXPORT$$;
 						if (settings.mouseover_video_muted)
 							video.muted = true;
 
+						var errorhandler = function(e) {
+							console_error("Error loading video", get_event_error(e));
+
+							video.onloadedmetadata = null;
+							err_cb();
+						};
+
+						video.onloadedmetadata = function() {
+							video.removeEventListener("error", errorhandler, true);
+							good_cb(video);
+						};
+
+						video.addEventListener("error", errorhandler, true);
+
 						return video;
 					};
 
@@ -50778,15 +50807,6 @@ var $$IMU_EXPORT$$;
 							load_image = function () {
 								var video = create_video_el();
 								video.src = resp.finalUrl;
-
-								video.onloadedmetadata = function() {
-									video.onerror = null;
-									good_cb(video);
-								};
-								video.onerror = function() {
-									video.onloadedmetadata = null;
-									err_cb();
-								};
 							};
 						}
 
@@ -50833,14 +50853,6 @@ var $$IMU_EXPORT$$;
 							} else {
 								var video = create_video_el();
 								video.src = e.target.result;
-								video.onloadedmetadata = function() {
-									video.onerror = null;
-									good_cb(video);
-								};
-								video.onerror = function() {
-									video.onloadedmetadata = null;
-									err_cb();
-								};
 							}
 						} catch (e) {
 							console_error(e);
@@ -53324,7 +53336,7 @@ var $$IMU_EXPORT$$;
 						} else if (multi && !get_single_setting("replaceimgs_usedata")) {
 							usehead = true;
 						} else if (!multi) {
-							var partial = get_single_setting(settings.mouseover_allow_partial);
+							var partial = get_single_setting("mouseover_allow_partial");
 
 							if (partial === "media") {
 								processing.incomplete_image = true;
