@@ -52184,7 +52184,7 @@ var $$IMU_EXPORT$$;
 
 					var update_imagestotal = function() {
 						if (prev_images + next_images > 0) {
-							images_total.style.display = "initial";
+							images_total.style.display = "inline-block";
 							images_total.innerText = get_imagestotal_text();
 						} else {
 							images_total.style.display = "none";
