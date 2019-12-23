@@ -162,6 +162,10 @@ var $$IMU_EXPORT$$;
 			xhr.responseType = request.responseType;
 
 		var do_final = function(override, cb) {
+			if (_nir_debug_) {
+				console_log("do_request_browser's do_final", xhr, cb);
+			}
+
 			var resp = {
 				readyState: xhr.readyState,
 				finalUrl: xhr.responseURL,
@@ -180,19 +184,30 @@ var $$IMU_EXPORT$$;
 			cb(resp);
 		};
 
-		xhr.onload = function () {
-			do_final({}, function (resp) {
-				request.onload(resp);
-			});
+		var add_handler = function(event, empty) {
+			xhr[event] = function() {
+				if (empty) {
+					return request[event](null);
+				}
+
+				do_final({}, function(resp) {
+					request[event](resp);
+				});
+			};
 		};
 
-		xhr.onerror = function () {
-			do_final({}, function (resp) {
-				request.onerror(resp);
-			});
-		};
+		add_handler("onload");
+		add_handler("onerror");
+		add_handler("onprogress");
+		add_handler("onabort", true);
 
 		xhr.send(request.data);
+
+		return {
+			abort: function() {
+				xhr.abort();
+			}
+		};
 	};
 
 	if (typeof XMLHttpRequest !== "function") {
@@ -49528,7 +49543,8 @@ var $$IMU_EXPORT$$;
 					onprogress: function(resp) {
 						// 2 = HEADERS_RECEIVED
 						if (resp.readyState >= 2) {
-							req.abort();
+							if (req && req.abort)
+								req.abort();
 							onload_cb(resp);
 						}
 					},
@@ -50993,7 +51009,7 @@ var $$IMU_EXPORT$$;
 			headers: headers,
 			trackingprotection_failsafe: true,
 			onprogress: function(resp) {
-				if (!req.abort) {
+				if (!req || !req.abort) {
 					return;
 				}
 
