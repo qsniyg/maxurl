@@ -26358,10 +26358,12 @@ var $$IMU_EXPORT$$;
 			//   http://pornstarsadvice.com/contents/albums/sources/24000/24633/339924.jpg
 			domain_nowww === "pornstarsadvice.com" ||
 			// http://www.porntb.com/contents/albums/main/370x250/2000/2380/63923.jpg
-			//domain_nowww === "porntb.com" || -- sources is 404
+			// http://www.porntb.com/contents/albums/main/370x250/2000/2771/111237.jpg
+			//   http://www.porntb.com/contents/albums/main/1920x1920/2000/2771/111237.jpg
+			domain_nowww === "porntb.com" ||
 			// http://fetishburg.com/contents/albums/main/370x250/22000/22495/336053.jpg
-			// requires get_image
-			//domain_nowww === "fetishburg.com" ||
+			//   http://fetishburg.com/contents/albums/main/1920x1200/22000/22495/336053.jpg
+			domain_nowww === "fetishburg.com" ||
 			// https://cdn.pornstill.com/contents/albums/main/300x500/82000/82628/1298509.jpg
 			//   https://cdn.pornstill.com/contents/albums/sources/82000/82628/1298509.jpg
 			domain === "cdn.pornstill.com") {
@@ -26378,20 +26380,45 @@ var $$IMU_EXPORT$$;
 			if (newsrc !== src)
 				return newsrc;
 
-			newsrc = src.replace(/\/main\/+[0-9]+x[0-9]+\/+/, "/sources/");
+			var max = null;
+			if (domain_nowww === "porntb.com") {
+				max = "1920x1920";
+			} else if (domain_nowww === "fetishburg.com") {
+				max = "1920x1200";
+			}
+
+			match = src.match(/\/main\/+([0-9]+x[0-9]+)\/+/);
+			if (max && match) {
+				var get_pixels = function(x) {
+					var match = x.match(/^([0-9]+)x([0-9]+)$/);
+					if (!match)
+						return 0;
+
+					return parseInt(match[1]) * parseInt(match[2]);
+				};
+
+				if (get_pixels(max) > get_pixels(match[1])) {
+					newsrc = src.replace(/\/main\/+[0-9]+x[0-9]+\/+/, "/main/" + max + "/");
+				}
+			} else if (!max) {
+				newsrc = src.replace(/\/main\/+[0-9]+x[0-9]+\/+/, "/sources/");
+			}
+
+			obj = {
+				url: newsrc
+			};
 
 			var referer = "http://" + domain_nosub + "/";
-			if (domain_nosub === "p7cdn.com")
+			if (domain_nosub === "p7cdn.com") {
 				referer = "https://www.sex-hd.xxx/";
+			} else {
+				obj.referer_ok = {same_domain: true};
+			}
 
-			return {
-				url: newsrc,
-				// a little overreaching, but easier than manually adding support for each of the sites
-				headers: {
-					//Origin: "http://" + domain_nosub,
-					Referer: referer
-				}
-			};
+			// a little overreaching, but easier than manually adding support for each of the sites
+			obj.headers = {Referer: referer};
+
+			return obj;
 		}
 
 		if (domain === "image.jeuxvideo.com") {
@@ -47039,6 +47066,12 @@ var $$IMU_EXPORT$$;
 				url: src,
 				bad: true
 			};
+		}
+
+		if (domain_nowww === "luciecline.com") {
+			// http://www.luciecline.com/cdn-content/20190321/horny-all-the-time/0001/thumbs/img002.jpg
+			//   http://www.luciecline.com/cdn-content/20190321/horny-all-the-time/0001/img002.jpg
+			return src.replace(/(\/cdn-content\/+[0-9]+\/+[^/]+\/+[0-9]+\/+)thumbs\/+img/, "$1img");
 		}
 
 
