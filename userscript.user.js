@@ -1238,7 +1238,7 @@ var $$IMU_EXPORT$$;
 		},
 		mouseover_allow_partial: {
 			name: "Allow showing partially loaded",
-			description: "This will allow the popup to open for a partially loaded video or image+video, but this might break some images for the userscript",
+			description: "This will allow the popup to open for partially loaded media, but this might break some images for the userscript",
 			requires: {
 				mouseover: true,
 				mouseover_open_behavior: "popup"
