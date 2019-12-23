@@ -184,9 +184,9 @@ The result is a list of objects that contain properties that may be useful in us
       //    headers: {"Content-Length": "1000"},
       //    status: 301
       // }]
-      // If one of the objects matches the response, it's a bad image
-      // You can use maximage.check_bad_if(bad_if, resp) to check
-      // resp is expected to be an XHR-like object
+      // If one of the objects matches the response, it's a bad image.
+      // You can use maximage.check_bad_if(bad_if, resp) to check.
+      //  (resp is expected to be an XHR-like object)
       bad_if: [],
 
       // Whether or not this URL is a "fake" URL that was used internally (i.e. if true, don't use this)
@@ -199,7 +199,10 @@ The result is a list of objects that contain properties that may be useful in us
       // Additional properties that could be useful
       extra: {
         // The original page where this image was hosted
-        page: null
+        page: null,
+
+        // The title/caption attached to the image
+        caption: null
       },
 
       // If set, this is a more descriptive filename for the image
