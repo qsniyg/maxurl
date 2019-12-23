@@ -2843,8 +2843,8 @@ var $$IMU_EXPORT$$;
 
 						console_warn(msg);
 
-						if (!apply_headers) {
-							console_log("Retrying");
+						if (headers && !apply_headers) {
+							console_log("Retrying with custom headers");
 							apply_headers = true;
 							return real_fetch(done);
 						}
