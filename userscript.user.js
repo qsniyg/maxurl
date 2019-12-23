@@ -49119,110 +49119,126 @@ var $$IMU_EXPORT$$;
 					method = "GET";
 				}
 
-				do_request({
+				var handled = false;
+
+				var onload_cb = function(resp) {
+					if (handled)
+						return;
+
+					handled = true;
+
+					if (_nir_debug_)
+						console_log("(check_image) resp", resp);
+
+					// nano defender removes this.DONE
+					if (resp.readyState < 2) {
+						return;
+					}
+
+					if (resp.status === 0 ||
+						check_tracking_blocked(resp)) {
+						// error loading image (IP doesn't exist, etc.), ignore
+						err_txt = "Error: status == 0";
+						if (err_cb) {
+							err_cb(err_txt);
+						} else {
+							console_error(err_txt);
+						}
+
+						return;
+					}
+
+					cursor_default();
+
+					if (resp.finalUrl === window.location.href) {
+						console_log(resp.finalUrl);
+						console_log("Same URL");
+						return;
+					}
+
+					var headers_list = parse_headers(resp.responseHeaders);
+					var headers = headers_list_to_dict(headers_list);
+
+					if (_nir_debug_)
+						console_log("(check_image) resp headers", headers);
+
+
+					var digit = resp.status.toString()[0];
+
+					var ok_error = check_ok_error(obj.head_ok_errors, resp.status);
+
+					if (((digit === "4" || digit === "5") &&
+						resp.status !== 405) &&
+						ok_error !== true) {
+						err_txt = "Error: " + resp.status;
+						if (err_cb) {
+							err_cb(err_txt);
+						} else {
+							console_error(err_txt);
+						}
+
+						return;
+					}
+
+					var content_type = headers["content-type"];
+					if (!content_type)
+						content_type = "";
+					content_type = content_type.toLowerCase();
+
+					if (content_type.match(/text\/html/) && !obj.head_wrong_contenttype &&
+						ok_error !== true) {
+						var err_txt = "Error: Not an image: " + content_type;
+						if (err_cb) {
+							err_cb(err_txt);
+						} else {
+							console_error(err_txt);
+						}
+
+						return;
+					}
+
+					if (!is_extension || settings.redirect_disable_for_responseheader) {
+						if (obj.forces_download || (
+							(content_type.match(/(?:binary|application)\//) ||
+								// such as [image/png] (server bug)
+								content_type.match(/^ *\[/)) && !obj.head_wrong_contenttype) ||
+							(headers["content-disposition"] &&
+								headers["content-disposition"].toLowerCase().match(/^ *attachment/))) {
+							console_error("Forces download");
+							mouseover_text("forces download");
+							return;
+						}
+					}
+
+					if (headers["content-length"] && headers["content-length"] == "0" && !obj.head_wrong_contentlength) {
+						console_error("Zero-length image");
+						return;
+					}
+
+					if (check_bad_if(obj.bad_if, resp)) {
+						console_error("Bad image (bad_if)", obj.bad_if, resp);
+						return err_cb("bad image");
+					}
+
+					if (!customheaders || is_extension)
+						ok_cb(url);
+					else
+						console_log("Custom headers needed, currently unhandled");
+				};
+
+				var req = do_request({
 					method: method,
 					url: url,
 					headers: headers,
 					trackingprotection_failsafe: true,
-					onload: function(resp) {
-						if (_nir_debug_)
-							console_log("(check_image) resp", resp);
-
-						// nano defender removes this.DONE
-						if (resp.readyState !== 4) {
-							return;
+					onprocess: function(resp) {
+						// 2 = HEADERS_RECEIVED
+						if (resp.readyState >= 2) {
+							req.abort();
+							onload_cb(resp);
 						}
-
-						if (resp.status === 0 ||
-							check_tracking_blocked(resp)) {
-							// error loading image (IP doesn't exist, etc.), ignore
-							err_txt = "Error: status == 0";
-							if (err_cb) {
-								err_cb(err_txt);
-							} else {
-								console_error(err_txt);
-							}
-
-							return;
-						}
-
-						cursor_default();
-
-						if (resp.finalUrl === window.location.href) {
-							console_log(resp.finalUrl);
-							console_log("Same URL");
-							return;
-						}
-
-						var headers_list = parse_headers(resp.responseHeaders);
-						var headers = headers_list_to_dict(headers_list);
-
-						if (_nir_debug_)
-							console_log("(check_image) resp headers", headers);
-
-
-						var digit = resp.status.toString()[0];
-
-						var ok_error = check_ok_error(obj.head_ok_errors, resp.status);
-
-						if (((digit === "4" || digit === "5") &&
-							resp.status !== 405) &&
-							ok_error !== true) {
-							err_txt = "Error: " + resp.status;
-							if (err_cb) {
-								err_cb(err_txt);
-							} else {
-								console_error(err_txt);
-							}
-
-							return;
-						}
-
-						var content_type = headers["content-type"];
-						if (!content_type)
-							content_type = "";
-						content_type = content_type.toLowerCase();
-
-						if (content_type.match(/text\/html/) && !obj.head_wrong_contenttype &&
-							ok_error !== true) {
-							var err_txt = "Error: Not an image: " + content_type;
-							if (err_cb) {
-								err_cb(err_txt);
-							} else {
-								console_error(err_txt);
-							}
-
-							return;
-						}
-
-						if (!is_extension || settings.redirect_disable_for_responseheader) {
-							if (obj.forces_download || (
-								(content_type.match(/(?:binary|application)\//) ||
-									// such as [image/png] (server bug)
-									content_type.match(/^ *\[/)) && !obj.head_wrong_contenttype) ||
-								(headers["content-disposition"] &&
-									headers["content-disposition"].toLowerCase().match(/^ *attachment/))) {
-								console_error("Forces download");
-								mouseover_text("forces download");
-								return;
-							}
-						}
-
-						if (headers["content-length"] && headers["content-length"] == "0" && !obj.head_wrong_contentlength) {
-							console_error("Zero-length image");
-							return;
-						}
-
-						if (check_bad_if(obj.bad_if, resp)) {
-							console_error("Bad image (bad_if)", obj.bad_if, resp);
-							return err_cb("bad image");
-						}
-
-						if (!customheaders || is_extension)
-							ok_cb(url);
-						else
-							console_log("Custom headers needed, currently unhandled");
-					}
+					},
+					onload: onload_cb
 				});
 			}
 		}
