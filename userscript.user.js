@@ -53492,6 +53492,13 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		function get_window() {
+			if (typeof(unsafeWindow) !== "undefined")
+				return unsafeWindow || window;
+
+			return window
+		}
+
 		function wrap_gallery_func(nextprev, el) {
 			if (!el)
 				el = popup_el;
@@ -53499,7 +53506,7 @@ var $$IMU_EXPORT$$;
 			var options = {
 				element: popup_el,
 				document: document,
-				window: unsafeWindow || window,
+				window: get_window(),
 				host_url: window.location.href
 			};
 
