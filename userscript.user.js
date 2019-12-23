@@ -15333,15 +15333,64 @@ var $$IMU_EXPORT$$;
 				.replace(/(\/[0-9]+_p[0-9]+)_[^/]*(\.[^/.]*)$/, "$1$2");
 
 			//var referer_url = "https://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + src.replace(/.*\/([0-9]+)_[^/]*$/, "$1");
-			var referer_url = "https://www.pixiv.net/artworks/" + src.replace(/.*\/([0-9]+)_[^/]*$/, "$1");
-			return fillobj_urls(add_extensions(newsrc), {
+			var illust_id = src.replace(/.*\/([0-9]+)_[^/]*$/, "$1");
+			var referer_url = "https://www.pixiv.net/artworks/" + illust_id;
+
+			obj = {
 				headers: {
 					Referer: referer_url
 				},
 				extra: {
 					page: referer_url
 				}
-			});
+			};
+
+			var urls = [src];
+			if (newsrc !== src) {
+				urls = add_extensions(newsrc);
+			}
+
+			var retobj = fillobj_urls(urls, obj);
+
+			if (options && options.force_page && options.cb && options.do_request) {
+				options.do_request({
+					url: referer_url,
+					method: "GET",
+					headers: {
+						Referer: ""
+					},
+					onload: function(resp) {
+						if (resp.readyState !== 4)
+							return;
+
+						if (resp.status !== 200) {
+							return options.cb(retobj);
+						}
+
+						var match = resp.responseText.match(/<meta\s+name=\"preload-data\"\s+id=\"meta-preload-data\"\s+content='(.*?)'>/);
+						if (!match) {
+							console_error("Unable to find match", resp);
+							return options.cb(retobj);
+						}
+
+						try {
+							var json = JSON_parse(decode_entities(match[1]));
+
+							obj.extra.caption = json.illust[illust_id].illustTitle;
+							return options.cb(fillobj_urls(urls, obj));
+						} catch(e) {
+							console_error(e);
+							return options.cb(retobj);
+						}
+					}
+				});
+
+				return {
+					waiting: true
+				};
+			}
+
+			return retobj;
 		}
 
 		if (domain_nosub === "booth.pm" && domain.match(/s[0-9]*\.booth\.pm/)) {
