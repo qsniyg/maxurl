@@ -46985,6 +46985,47 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/res\/+gumroad\/+[0-9]+\/+asset_previews\/+[0-9a-f]{10,}\/+)[a-z]+\/+/, "$1original/");
 		}
 
+		if (domain === "cdn.sharesome.com" ||
+			domain === "cache.sharesome.com") {
+			// https://cdn.sharesome.com/uploads/user-images/u573858/yzijng-b5qtztc8rt-m.webp
+			//   https://cdn.sharesome.com/uploads/user-images/u573858/yzijng-b5qtztc8rt.webp
+			//   https://cdn.sharesome.com/uploads/user-images/u573858/yzijng-b5qtztc8rt-lg.webp
+			// https://cache.sharesome.com/file/sharesome/uploads/user-images/u363341/yfhyz5-wudjo22ido-lg.webp -- 332x528 (not upscaled)
+			// {
+			// "code": "not_found",
+			// "message": "bucket sharesome does not have file: uploads/user-images/u363341/yfhyz5-wudjo22ido-o.webp",
+			// "status": 404
+			// }
+			// https://cdn.sharesome.com/uploads/user-images/u428903/cqm7sz-tc5oeldjlh-xl.jpg -- 720x1480 (smaller than lg)
+			//   https://cdn.sharesome.com/uploads/user-images/u428903/cqm7sz-tc5oeldjlh-o.jpg -- 1440x2960 (upscaled tho?)
+			// -o is also a possibility
+			// https://cdn.sharesome.com/uploads/user-images/u199204/owzsd4-gc35hvy9do-o.jpg -- hugely upscaled?
+			// not hugely upscaled:
+			// https://cdn.sharesome.com/uploads/user-images/u99655/cbbozs-jkrgksha9z-lg.jpg -- 1256x1132
+			//   https://cdn.sharesome.com/uploads/user-images/u99655/cbbozs-jkrgksha9z-o.jpg -- 1919x1730
+			regex = /(\/uploads\/+user-images\/+u[0-9]+\/+[^-/.]+-[^-/.]+)(?:-[smlp]|-(?:lg|xl))?(\.[^/.]+)(?:[?#].*)?$/;
+
+			if (regex.test(src)) {
+				return [
+					src.replace(regex, "$1-o$2"),
+					src.replace(regex, "$1-lg$2")
+				];
+			}
+		}
+
+		if (domain === "media.sharesome.com") {
+			// https://media.sharesome.com/11651-1552580919-164/thumb-11651-1552580919-164.mp4.png
+			//   https://media.sharesome.com/11651-1552580919-164/11651-1552580919-164.mp4
+			// https://media.sharesome.com/ilt3kv1kaz/thumb-ilt3kv1kaz.mp4.png
+			//   https://media.sharesome.com/ilt3kv1kaz/ilt3kv1kaz.mp4
+			newsrc = src.replace(/\/thumb-((?:[0-9]+-[0-9]+-[0-9]+|[^-/.]+)\.(?:mp4|webm))\.[^/.]+(?:[?#].*)?$/, "/$1");
+			if (newsrc !== src)
+				return {
+					url: newsrc,
+					video: true
+				};
+		}
+
 
 
 
