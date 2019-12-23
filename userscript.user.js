@@ -987,7 +987,7 @@ var $$IMU_EXPORT$$;
 		mouseover_video_loop: true,
 		mouseover_video_muted: false,
 		mouseover_ui: true,
-		mouseover_ui_opacity: 50,
+		mouseover_ui_opacity: 70,
 		mouseover_ui_imagesize: true,
 		mouseover_ui_zoomlevel: true,
 		mouseover_ui_gallerycounter: true,
