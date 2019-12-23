@@ -994,6 +994,7 @@ var $$IMU_EXPORT$$;
 		mouseover_ui_gallerymax: 50,
 		mouseover_ui_optionsbtn: is_userscript ? true : false,
 		mouseover_ui_rotationbtns: false,
+		mouseover_ui_caption: true,
 		mouseover_zoom_behavior: "fit",
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-531080061
 		mouseover_zoom_custom_percent: 100,
@@ -1443,6 +1444,15 @@ var $$IMU_EXPORT$$;
 		mouseover_ui_rotationbtns: {
 			name: "Rotation Buttons",
 			description: "Enables buttons on the UI to rotate the image by 90 degrees",
+			requires: {
+				mouseover_ui: true
+			},
+			category: "popup",
+			subcategory: "ui"
+		},
+		mouseover_ui_caption: {
+			name: "Caption",
+			description: "Shows the image's caption (if available) at the top",
 			requires: {
 				mouseover_ui: true
 			},
@@ -52022,7 +52032,7 @@ var $$IMU_EXPORT$$;
 					}, true);
 					if (!istop) {
 						opacity_hover(btn);
-					} else if (typeof text === "object") {
+					} else if (typeof text === "object" && text.truncated !== text.full) {
 						btn.addEventListener("mouseover", function(e) {
 							var clientRect = btn.getBoundingClientRect();
 							btn.style.width = clientRect.width + "px";
@@ -52202,9 +52212,9 @@ var $$IMU_EXPORT$$;
 					}
 
 					var caption = get_caption(newobj, popup_el);
-					if (caption) {
+					if (caption && settings.mouseover_ui_caption) {
 						var caption_btn = addbtn({
-							truncated: caption.replace(/^(.{0,40})[\s\S]+$/, "$1..."),
+							truncated: caption.replace(/^((?:.{40}|.{0,40}[\r\n]))[\s\S]+$/, "$1..."),
 							full: caption
 						}, caption, null, true);
 						topbarel.appendChild(caption_btn);
