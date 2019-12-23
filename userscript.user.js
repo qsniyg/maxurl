@@ -2814,8 +2814,10 @@ var $$IMU_EXPORT$$;
 					if (resp.readyState !== 4)
 						return;
 
-					if (resp.status !== 200)
+					if (resp.status !== 200) {
+						console_error("Bad status for Imgur: " + resp.status);
 						return done(null, false);
+					}
 
 					var ogvideo, ogimage;
 
@@ -11478,7 +11480,7 @@ var $$IMU_EXPORT$$;
 						}
 
 						if (json.source && /^https?:\/\//.test(json.source)) {
-							if (!("rule_specific" in options) || options.rule_specific.imgur_source === true) {
+							if (!("rule_specific" in options) || !("imgur_source" in options.rule_specific) || options.rule_specific.imgur_source === true) {
 								var newobj = {url: json.source};
 								retobj.unshift(newobj);
 							}
