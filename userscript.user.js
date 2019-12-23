@@ -11462,9 +11462,17 @@ var $$IMU_EXPORT$$;
 					return retobj;
 				};
 
-				var cache_key = "imgur:" + baseobj.extra.page;
-
+				var cache_key = "imgur:" + idhash;
 				api_cache.fetch(cache_key, options.cb, function(done) {
+					var imageinfo = api_cache.get("imgur_imageinfo:" + idhash);
+					if (imageinfo) {
+						var retobj = parse_imageinfo(baseobj, imageinfo);
+
+						if (retobj.length > 0) {
+							return done(retobj, 6*60*60);
+						}
+					}
+
 					fetch_imgur_webpage(idhash, function(data) {
 						if (!data) {
 							return done(obj, false);
@@ -48194,10 +48202,8 @@ var $$IMU_EXPORT$$;
 										image_id = i - 1;
 									}
 
-									// Convert videos to images for now, until video support is properly added
-									// for the popup
 									var ext = images[image_id].ext;
-									if (ext === ".mp4" || ext === ".webm")
+									if (options.exclude_videos && (ext === ".mp4" || ext === ".webm"))
 										ext = ".jpg";
 
 									var newel = document.createElement("img");
@@ -53493,9 +53499,13 @@ var $$IMU_EXPORT$$;
 			var options = {
 				element: popup_el,
 				document: document,
-				window: window,
+				window: unsafeWindow || window,
 				host_url: window.location.href
 			};
+
+			if (!settings.allow_video) {
+				options.exclude_videos = true;
+			}
 
 			var helpers = get_helpers(options);
 			var gallery = get_next_in_gallery;
