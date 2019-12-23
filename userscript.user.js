@@ -49388,7 +49388,7 @@ var $$IMU_EXPORT$$;
 					headers = {
 						// Origin is not often added by the browser, and doesn't work for some sites
 						//"Origin": url_domain,
-						"Referer": url
+						"Referer": window.location.href
 					};
 				} else if (!headers.Origin && !headers.origin) {
 					//headers.Origin = url_domain;
