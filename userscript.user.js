@@ -18474,11 +18474,11 @@ var $$IMU_EXPORT$$;
 				do_flickr_request(url, cb);
 			}
 
-			function find_original_page(info, src, cb) {
+			function find_image_info(info, src, cb) {
 				var photoid = src.replace(/.*\/([0-9]+)_[^/]*$/, "$1");
 				var photosecret = src.replace(/.*\/[0-9]+_([0-9a-z]+)_[^/]*$/, "$1");
 
-				var cache_key = "flickr_original:" + photoid + "_" + photosecret;
+				var cache_key = "flickr_image_info:" + photoid + "_" + photosecret;
 
 				api_cache.fetch(cache_key, cb, function(done) {
 					var apirequest = "method=flickr.photos.getInfo&photo_id=" + photoid;
@@ -18490,13 +18490,28 @@ var $$IMU_EXPORT$$;
 					do_flickrapi_request(info, apirequest, function (resp) {
 						try {
 							var out = JSON_parse(resp.responseText);
+
 							var url = out.photo.urls.url[0]._content;
-							if (/^https?:\/\//.test(url)) {
-								done(url, 6 * 60 * 60);
+							if (!(/^https?:\/\//.test(url))) {
+								url = null;
+							}
+
+							var caption = out.photo.title._content;
+							if (!caption)
+								caption = null;
+
+							var info = {
+								page: url,
+								caption: caption
+							};
+
+							if (url) {
+								done(info, 6 * 60 * 60);
 							} else {
-								done(null, false);
+								done(info, false);
 							}
 						} catch (e) {
+							console_error(e);
 							done(null, false);
 						}
 					});
@@ -18516,9 +18531,9 @@ var $$IMU_EXPORT$$;
 							return options.cb(obj);
 						}
 
-						find_original_page(info, newsrc, function(page) {
-							if (page) {
-								obj.extra = {page: page};
+						find_image_info(info, newsrc, function(info) {
+							if (info) {
+								obj.extra = info;
 							}
 
 							options.cb(obj);
@@ -18588,13 +18603,11 @@ var $$IMU_EXPORT$$;
 					}
 
 					if (options.force_page) {
-						find_original_page(info, newsrc, function(page) {
-							if (page) {
+						find_image_info(info, newsrc, function(info) {
+							if (info) {
 								var obj = {
 									url: largesturl,
-									extra: {
-										page: page
-									}
+									extra: info
 								};
 
 								options.cb(obj);
