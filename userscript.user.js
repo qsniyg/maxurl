@@ -11343,110 +11343,160 @@ var $$IMU_EXPORT$$;
 			}
 
 			match = src.match(idregex);
+			var idhash;
 			if (match) {
-				baseobj.extra = {page: "https://imgur.com/" + match[1]};
+				idhash = match[1];
+				baseobj.extra = {page: "https://imgur.com/" + idhash};
 			}
 
 			if (options && options.cb && options.do_request && baseobj.extra) {
+				var fetch_imgur_webpage = function(idhash, cb) {
+					var cache_key = "imgur_webpage:" + idhash;
+
+					api_cache.fetch(cache_key, cb, function(done) {
+						options.do_request({
+							url: "https://imgur.com/" + idhash,
+							method: "GET",
+							onload: function(resp) {
+								if (resp.readyState !== 4)
+									return;
+
+								if (resp.status !== 200)
+									return done(null, false);
+
+								var ogvideo, ogimage;
+
+								var ogmatch = resp.responseText.match(/<meta\s+property=["']og:video["']\s+content=["'](.*?)["']/);
+								if (ogmatch) {
+									ogvideo = decode_entities(ogmatch[1]).replace(/\?.*/, "");
+								}
+
+								ogmatch = resp.responseText.match(/<meta\s+property=["']og:image["']\s+content=["'](.*?)["']/);
+								if (ogmatch) {
+									ogimage = decode_entities(ogmatch[1]).replace(/\?.*/, "");
+								}
+
+								var retobj = {
+									ogvideo: ogvideo,
+									ogimage: ogimage
+								};
+
+								var imageinfo;
+								var match = resp.responseText.match(/\.\s*mergeConfig\s*\(\s*["']gallery["']\s*,\s*{[\s\S]+?image\s*:\s*({.*?})\s*,\s*\n/);
+								if (!match) {
+									var nsfwmatch = resp.responseText.match(/<a.*?btn-wall--yes.*?\.signin\(/);
+									var msg = "Unable to find match for Imgur page";
+
+									if (nsfwmatch) {
+										msg += " (it's probably NSFW and you aren't logged in)";
+									}
+
+									console_warn(msg);
+
+									// Only cache it for 15 seconds (helpful if the user logs in)
+									done(retobj, 15);
+								} else {
+									imageinfo = match[1];
+
+									try {
+										imageinfo = JSON.parse(imageinfo);
+										retobj.imageinfo = imageinfo;
+										api_cache.set("imgur_imageinfo:" + idhash, imageinfo);
+									} catch (e) {
+										console_error(e);
+										console_log(match);
+										imageinfo = undefined;
+									}
+
+									done(retobj, 6*60*60);
+								};
+							}
+						});
+					});
+				};
+
+				var parse_imageinfo = function(baseobj, json) {
+					var retobj = [];
+
+					try {
+						var realfilename = null;
+						if (json.hash && json.ext) {
+							realfilename = json.hash + json.ext;
+
+							var obj = deepcopy(baseobj);
+							obj.url = "https://i.imgur.com/" + realfilename;
+
+							if (/^video\//.test(json.mimetype)) {
+								obj.video = true;
+								retobj.push(obj);
+
+								var obj = deepcopy(baseobj);
+								obj.url = "https://i.imgur.com/" + json.hash + ".jpg"
+								retobj.push(obj);
+							} else {
+								// Prefer video if possible
+								if (json.animated && json.prefer_video) {
+									var newobj = deepcopy(baseobj);
+									newobj.url = "https://i.imgur.com/" + json.hash + ".mp4";
+									newobj.video = true;
+
+									retobj.push(newobj);
+								}
+
+								retobj.push(obj);
+							}
+						}
+
+						if (json.source && /^https?:\/\//.test(json.source)) {
+							var newobj = {url: json.source};
+
+							retobj.unshift(newobj);
+						}
+					} catch (e) {
+						console_error(e);
+						console_log(match);
+
+						retobj = [];
+					}
+
+					return retobj;
+				};
+
 				var cache_key = "imgur:" + baseobj.extra.page;
 
 				api_cache.fetch(cache_key, options.cb, function(done) {
-					options.do_request({
-						url: baseobj.extra.page,
-						method: "GET",
-						onload: function(resp) {
-							if (resp.readyState !== 4)
-								return;
+					fetch_imgur_webpage(idhash, function(data) {
+						if (!data) {
+							return done(obj, false);
+						}
 
-							if (resp.status !== 200)
-								return done(obj, false);
+						var retobj = [];
 
-							var retobj = [];
+						if (data.ogvideo) {
+							var obj = deepcopy(baseobj);
+							obj.url = data.ogvideo;
+							obj.video = true;
 
-							// Try video first, then image
-							var ogmatch = resp.responseText.match(/<meta\s+property=["']og:video["']\s+content=["'](.*?)["']/);
-							if (ogmatch) {
-								var obj = deepcopy(baseobj);
-								obj.url = decode_entities(ogmatch[1]).replace(/\?.*/, "");
-								obj.video = true;
+							retobj.push(obj);
+						}
 
-								retobj.push(obj);
+						if (data.ogimage) {
+							var obj = deepcopy(baseobj);
+							obj.url = data.ogimage;
+
+							retobj.push(obj);
+						}
+
+						if (data.imageinfo) {
+							var newretobj = parse_imageinfo(baseobj, data.imageinfo);
+
+							if (newretobj.length > 0) {
+								retobj = newretobj;
 							}
-
-							ogmatch = resp.responseText.match(/<meta\s+property=["']og:image["']\s+content=["'](.*?)["']/);
-							if (ogmatch) {
-								var obj = deepcopy(baseobj);
-								obj.url = decode_entities(ogmatch[1]).replace(/\?.*/, "");
-
-								retobj.push(obj);
-							}
-
-							if (retobj.length === 0)
-								retobj = baseobj;
-
-							var match = resp.responseText.match(/\.\s*mergeConfig\s*\(\s*["']gallery["']\s*,\s*{[\s\S]+?image\s*:\s*({.*?})\s*,\s*\n/);
-							if (!match) {
-								var nsfwmatch = resp.responseText.match(/<a.*?btn-wall--yes.*?\.signin\(/);
-								var msg = "Unable to find match for Imgur page";
-
-								if (nsfwmatch) {
-									msg += " (it's probably NSFW and you aren't logged in)";
-								}
-
-								console.warn(msg);
-								//console.log(resp.responseText);
-								return done(retobj, false);
-							}
-
-							retobj = [];
-
-							try {
-								var json = JSON.parse(match[1]);
-
-								var realfilename = null;
-								if (json.hash && json.ext) {
-									realfilename = json.hash + json.ext;
-
-									var obj = deepcopy(baseobj);
-									obj.url = "https://i.imgur.com/" + realfilename;
-
-									if (/^video\//.test(json.mimetype)) {
-										obj.video = true;
-										retobj.push(obj);
-
-										var obj = deepcopy(baseobj);
-										obj.url = "https://i.imgur.com/" + json.hash + ".jpg"
-										retobj.push(obj);
-									} else {
-										// Prefer video if possible
-										if (json.animated && json.prefer_video) {
-											var newobj = deepcopy(baseobj);
-											newobj.url = "https://i.imgur.com/" + json.hash + ".mp4";
-											newobj.video = true;
-
-											retobj.push(newobj);
-										}
-
-										retobj.push(obj);
-									}
-								}
-
-								if (json.source && /^https?:\/\//.test(json.source)) {
-									var newobj = {url: json.source};
-
-									retobj.unshift(newobj);
-								}
-							} catch (e) {
-								console.error(e);
-								console.log(match);
-
-								retobj = [baseobj];
-							}
-
-							if (retobj.length === 0)
-								retobj = baseobj;
 
 							return done(retobj, 6*60*60);
+						} else {
+							return done(retobj, 10);
 						}
 					});
 				});
