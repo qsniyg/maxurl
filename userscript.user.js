@@ -50171,6 +50171,14 @@ var $$IMU_EXPORT$$;
 
 		var show_advanced = settings.advanced_options;
 
+		var normalize_value = function(value) {
+			if (value instanceof Array && value.length === 1) {
+				return JSON.stringify(value[0]);
+			}
+
+			return JSON.stringify(value);
+		};
+
 		for (var setting in settings) {
 			(function(setting) {
 				var meta = settings_meta[setting];
@@ -50213,6 +50221,25 @@ var $$IMU_EXPORT$$;
 				var name_td = document.createElement("td");
 				name_td.style.verticalAlign = "middle";
 				name_td.classList.add("name_td");
+
+				var check_value_orig_different = function(value) {
+					var value_orig_different = normalize_value(value) !== normalize_value(orig_value);
+					if (value_orig_different) {
+						name_td.classList.add("value_modified");
+					} else {
+						name_td.classList.remove("value_modified");
+					}
+				};
+				check_value_orig_different(value);
+
+				var do_update_setting = function(setting, new_value) {
+					update_setting(setting, new_value);
+
+					run_soon(function() {
+						check_value_orig_different(new_value);
+					});
+				};
+
 				name_td.appendChild(name);
 				tr.appendChild(name_td);
 
@@ -50354,9 +50381,9 @@ var $$IMU_EXPORT$$;
 								}
 
 								new_value = out_value;
-								update_setting(setting, new_value);
+								do_update_setting(setting, new_value);
 							} else {
-								update_setting(setting, value);
+								do_update_setting(setting, value);
 							}
 
 							settings[setting] = new_value;
@@ -50418,7 +50445,7 @@ var $$IMU_EXPORT$$;
 					var savebutton = document.createElement("button");
 					savebutton.innerText = _("save");
 					savebutton.onclick = function() {
-						update_setting(setting, textarea.value);
+						do_update_setting(setting, textarea.value);
 						settings[setting] = textarea.value;
 
 						show_saved_message();
@@ -50480,7 +50507,7 @@ var $$IMU_EXPORT$$;
 						if (meta.number_int || value !== orig_value)
 							input.value = value;
 
-						update_setting(setting, parseFloat(value));
+						do_update_setting(setting, parseFloat(value));
 						//settings[setting] = value;
 						show_saved_message();
 					}
@@ -50519,7 +50546,7 @@ var $$IMU_EXPORT$$;
 					sub_cancel_btn.onclick = do_cancel;
 					sub_record_btn.onclick = function() {
 						if (recording_keys) {
-							update_setting(setting, options_chord);
+							do_update_setting(setting, options_chord);
 							settings[setting] = options_chord;
 
 							show_saved_message();
@@ -50558,7 +50585,7 @@ var $$IMU_EXPORT$$;
 					sub.value = settings[setting];
 
 					sub.onchange = function() {
-						update_setting(setting, sub.value);
+						do_update_setting(setting, sub.value);
 						show_saved_message();
 					};
 
