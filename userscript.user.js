@@ -51633,6 +51633,18 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		function get_caption(obj, el) {
+			if (obj && obj.extra && obj.extra.caption) {
+				return obj.extra.caption;
+			}
+
+			if (el && (el.title || el.alt)) {
+				return el.title || el.alt;
+			}
+
+			return null;
+		}
+
 		function makePopup(obj, orig_url, processing, data) {
 			var openb = get_single_setting("mouseover_open_behavior");
 			if (openb === "newtab") {
@@ -52010,7 +52022,16 @@ var $$IMU_EXPORT$$;
 					}, true);
 					if (!istop) {
 						opacity_hover(btn);
+					} else if (typeof text === "object") {
+						btn.addEventListener("mouseover", function(e) {
+							btn.innerText = text.full;
+						}, true);
+
+						btn.addEventListener("mouseout", function(e) {
+							btn.innerText = text.truncated;
+						}, true);
 					}
+
 					set_el_all_initial(btn);
 					if (action) {
 						btn.style.cursor = "pointer";
@@ -52020,7 +52041,7 @@ var $$IMU_EXPORT$$;
 					btn.style.borderRadius = "10px";
 
 					// workaround for emojis: https://stackoverflow.com/a/39776303
-					if (text.length === 1 && text.charCodeAt(0) > 256) {
+					if (typeof text === "string" && text.length === 1 && text.charCodeAt(0) > 256) {
 						btn.style.color = "transparent";
 						btn.style.textShadow = "0 0 0 white";
 					} else {
@@ -52042,9 +52063,16 @@ var $$IMU_EXPORT$$;
 					}
 					if (action)
 						btn.style.userSelect = "none";
-					btn.innerText = text;
+
+					if (typeof text === "string") {
+						btn.innerText = text;
+					} else {
+						btn.innerText = text.truncated;
+					}
+
 					if (title)
 						btn.title = title;
+
 					return btn;
 				}
 
@@ -52162,6 +52190,15 @@ var $$IMU_EXPORT$$;
 
 						topbarel.appendChild(rotateleftbtn);
 						topbarel.appendChild(rotaterightbtn);
+					}
+
+					var caption = get_caption(newobj, popup_el);
+					if (caption) {
+						var caption_btn = addbtn({
+							truncated: caption.replace(/^(.{0,50})[\s\S]+$/, "$1..."),
+							full: caption
+						}, caption, null, true);
+						topbarel.appendChild(caption_btn);
 					}
 
 					var add_lrhover = function(isleft, btnel, action, title) {
