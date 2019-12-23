@@ -50676,12 +50676,21 @@ var $$IMU_EXPORT$$;
 			//headers.Origin = url_domain;
 		}
 
-		do_request({
+		var req = do_request({
 			method: method,
 			url: url,
 			responseType: responseType,
 			headers: headers,
 			trackingprotection_failsafe: true,
+			onprogress: function(resp) {
+				if (!req.abort) {
+					return;
+				}
+
+				if (!processing.running) {
+					req.abort();
+				}
+			},
 			onload: function(resp) {
 				if (!processing.running) {
 					return cb(null);
@@ -51134,6 +51143,12 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		function stop_processing() {
+			for (var i = 0; i < processing_list.length; i++) {
+				processing_list[i].running = false;
+			}
+		}
+
 		function resetpopups() {
 			popups.forEach(function (popup) {
 				if (popup.parentNode)
@@ -51150,6 +51165,7 @@ var $$IMU_EXPORT$$;
 			delay_handle_triggering = false;
 			popup_el = null;
 			popup_el_automatic = false;
+			stop_processing();
 
 			if (!delay_mouseonly && delay_handle) {
 				clearTimeout(delay_handle);
@@ -53258,9 +53274,7 @@ var $$IMU_EXPORT$$;
 			var processing = {running: true};
 
 			if (!multi) {
-				for (var i = 0; i < processing_list.length; i++) {
-					processing_list[i].running = false;
-				}
+				stop_processing();
 				processing_list = [processing];
 			}
 
