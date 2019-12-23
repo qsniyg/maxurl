@@ -49818,7 +49818,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		var text = "saved_refresh_target";
-		if (is_extension) {
+		if (is_extension || typeof GM_addValueChangeListener !== "undefined") {
 			text = "saved_no_refresh";
 		}
 
