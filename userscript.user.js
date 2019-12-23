@@ -941,7 +941,7 @@ var $$IMU_EXPORT$$;
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-531549043
 		mouseover_close_on_leave_el: true,
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/126
-		mouseover_allow_partial: "video",
+		mouseover_allow_partial: is_extension ? "media" : "video",
 		//mouseover_use_fully_loaded_image: is_extension ? false : true,
 		//mouseover_use_fully_loaded_video: false,
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-530760246
