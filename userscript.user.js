@@ -32849,10 +32849,17 @@ var $$IMU_EXPORT$$;
 			// https://imx.to/u/t/2018/12/06/1whoss.jpg
 			//   https://t.imx.to/t/2018/12/06/1whoss.jpg
 			// https://imx.to/upload/small/2017/02/09/589ccf3f789ee.jpg
+			//   https://imx.to/u/i/2017/02/09/589ccf3f789ee.jpg
 			//   https://x001.imx.to/i/2017/02/09/589ccf3f789ee.jpg
+			newsrc = src
+				.replace(/(:\/\/[^/]+\/+u\/+)t\/+/, "$1i/")
+				.replace(/(:\/\/[^/]+\/+)upload\/+[a-z]+\/+/, "$1u/i/");
+			if (newsrc !== src)
+				return newsrc;
+
 			return src
 				//.replace(/:\/\/[^/]*\/u\/t\//, "://t.imx.to/t/")
-				.replace(/:\/\/[^/]*\/u\/t\//, "://x001.imx.to/t/")
+				.replace(/:\/\/[^/]*\/u\/t\//, "://imx.to/t/")
 				.replace(/:\/\/[^/]*\/upload\/+[a-z]+\/+/, "://x001.imx.to/i/");
 		}
 
@@ -47024,6 +47031,14 @@ var $$IMU_EXPORT$$;
 					url: newsrc,
 					video: true
 				};
+		}
+
+		if (domain_nowww === "nsfwalbum.com" && /\/pic\/+loading\.gif(?:[?#].*)?$/.test(src)) {
+			// https://nsfwalbum.com/pic/loading.gif
+			return {
+				url: src,
+				bad: true
+			};
 		}
 
 
