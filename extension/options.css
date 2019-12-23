@@ -389,6 +389,14 @@ input:checked + label, button, .button {
   padding-right: .5em;
 }
 
+.option .name_td.value_modified strong {
+  /* Bold looks terrible, the color isn't the best either, but it looks different without looking like an error or a hyperlink.
+     Suggestions for improvement are definitely appreciated :) */
+
+  /*font-weight: bold;*/
+  color: #908;
+}
+
 .option .group {
   padding-bottom: .3em;
   padding-top: .3em;
