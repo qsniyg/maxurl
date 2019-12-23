@@ -33,6 +33,8 @@ env_json.client_id = process.env.CLIENT_ID;
 env_json.client_secret = process.env.CLIENT_SECRET;
 env_json.refresh_token = process.env.REFRESH_TOKEN;
 env_json.access_token = process.env.ACCESS_TOKEN;
+env_json.imgur_ua = process.env.IMGUR_UA;
+env_json.imgur_cookie = process.env.IMGUR_COOKIE;
 //env_json.username = process.env.REDDIT_USER;
 //env_json.password = process.env.REDDIT_PASS;
 
@@ -493,7 +495,7 @@ function dourl(url, post, options) {
   if (!options)
     options = {};
 
-  bigimage(url, {
+  var bigimage_options = {
     fill_object: true,
     force_page: true,
     exclude_videos: true,
@@ -570,7 +572,18 @@ function dourl(url, post, options) {
     cb: function(big) {
       dourl_inner(big, url, post, options);
     }
-  });
+  };
+
+  if (env_json.imgur_ua && env_json.imgur_cookie) {
+    bigimage_options.rule_specific = {
+      imgur_nsfw_headers: {
+        Cookie: env_json.imgur_cookie,
+        "User-Agent": env_json.imgur_ua
+      }
+    };
+  }
+
+  bigimage(url, bigimage_options);
 }
 
 const links = new NodeCache({ stdTTL: 600, checkperiod: 100 });
