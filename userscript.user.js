@@ -52024,11 +52024,16 @@ var $$IMU_EXPORT$$;
 						opacity_hover(btn);
 					} else if (typeof text === "object") {
 						btn.addEventListener("mouseover", function(e) {
+							var clientRect = btn.getBoundingClientRect();
+							btn.style.width = clientRect.width + "px";
+
 							btn.innerText = text.full;
+
 						}, true);
 
 						btn.addEventListener("mouseout", function(e) {
 							btn.innerText = text.truncated;
+							btn.style.width = "initial";
 						}, true);
 					}
 
@@ -52061,6 +52066,10 @@ var $$IMU_EXPORT$$;
 						btn.style.position = "relative";
 						btn.style.marginRight = "4px";
 					}
+					btn.style.verticalAlign = "top";
+					//btn.style.maxWidth = "50%";
+					btn.style.whiteSpace = "pre-wrap";
+					btn.style.display = "inline-block";
 					if (action)
 						btn.style.userSelect = "none";
 
@@ -52195,7 +52204,7 @@ var $$IMU_EXPORT$$;
 					var caption = get_caption(newobj, popup_el);
 					if (caption) {
 						var caption_btn = addbtn({
-							truncated: caption.replace(/^(.{0,50})[\s\S]+$/, "$1..."),
+							truncated: caption.replace(/^(.{0,40})[\s\S]+$/, "$1..."),
 							full: caption
 						}, caption, null, true);
 						topbarel.appendChild(caption_btn);
