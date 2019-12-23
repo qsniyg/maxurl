@@ -388,6 +388,10 @@ var $$IMU_EXPORT$$;
 		allow_thirdparty_libs: true,
 		filter: bigimage_filter,
 
+		rule_specific: {
+			imgur_source: true
+		},
+
 		do_request: do_request,
 		get_cookies: get_cookies,
 		host_url: null,
@@ -2788,6 +2792,74 @@ var $$IMU_EXPORT$$;
 	};
 
 	var common_functions = {};
+	common_functions.fetch_imgur_webpage = function(do_request, url, cb) {
+		var cache_key = "imgur_webpage:" + url.replace(/^https?:\/\/(?:www\.)?imgur/, "imgur").replace(/[?#].*/, "");
+
+		api_cache.fetch(cache_key, cb, function(done) {
+			do_request({
+				url: url.replace(/^http:/, "https:"),
+				method: "GET",
+				onload: function(resp) {
+					if (resp.readyState !== 4)
+						return;
+
+					if (resp.status !== 200)
+						return done(null, false);
+
+					var ogvideo, ogimage;
+
+					var ogmatch = resp.responseText.match(/<meta\s+property=["']og:video["']\s+content=["'](.*?)["']/);
+					if (ogmatch) {
+						ogvideo = decode_entities(ogmatch[1]).replace(/\?.*/, "");
+					}
+
+					ogmatch = resp.responseText.match(/<meta\s+property=["']og:image["']\s+content=["'](.*?)["']/);
+					if (ogmatch) {
+						ogimage = decode_entities(ogmatch[1]).replace(/\?.*/, "");
+					}
+
+					var retobj = {
+						ogvideo: ogvideo,
+						ogimage: ogimage
+					};
+
+					var imageinfo;
+					var match = resp.responseText.match(/\.\s*mergeConfig\s*\(\s*["']gallery["']\s*,\s*{[\s\S]+?image\s*:\s*({.*?})\s*,\s*\n/);
+					if (!match) {
+						var nsfwmatch = resp.responseText.match(/<a.*?btn-wall--yes.*?\.signin\(/);
+						var msg = "Unable to find match for Imgur page";
+
+						if (nsfwmatch) {
+							msg += " (it's probably NSFW and you aren't logged in)";
+						}
+
+						console_warn(msg);
+
+						// Only cache it for 15 seconds (helpful if the user logs in)
+						done(retobj, 15);
+					} else {
+						imageinfo = match[1];
+
+						try {
+							imageinfo = JSON.parse(imageinfo);
+							retobj.imageinfo = imageinfo;
+
+							if (imageinfo.source && imageinfo.hash && !imageinfo.is_album) {
+								api_cache.set("imgur_imageinfo:" + imageinfo.hash, imageinfo, 6*60*60);
+							}
+						} catch (e) {
+							console_error(e);
+							console_log(match);
+							imageinfo = undefined;
+						}
+
+						done(retobj, 6*60*60);
+					};
+				}
+			});
+		});
+	};
+
 	common_functions.deviantart_page_from_id = function(do_request, id, cb) {
 		var cache_key = "deviantart_page_from_id:" + id;
 
@@ -11350,71 +11422,6 @@ var $$IMU_EXPORT$$;
 			}
 
 			if (options && options.cb && options.do_request && baseobj.extra) {
-				var fetch_imgur_webpage = function(idhash, cb) {
-					var cache_key = "imgur_webpage:" + idhash;
-
-					api_cache.fetch(cache_key, cb, function(done) {
-						options.do_request({
-							url: "https://imgur.com/" + idhash,
-							method: "GET",
-							onload: function(resp) {
-								if (resp.readyState !== 4)
-									return;
-
-								if (resp.status !== 200)
-									return done(null, false);
-
-								var ogvideo, ogimage;
-
-								var ogmatch = resp.responseText.match(/<meta\s+property=["']og:video["']\s+content=["'](.*?)["']/);
-								if (ogmatch) {
-									ogvideo = decode_entities(ogmatch[1]).replace(/\?.*/, "");
-								}
-
-								ogmatch = resp.responseText.match(/<meta\s+property=["']og:image["']\s+content=["'](.*?)["']/);
-								if (ogmatch) {
-									ogimage = decode_entities(ogmatch[1]).replace(/\?.*/, "");
-								}
-
-								var retobj = {
-									ogvideo: ogvideo,
-									ogimage: ogimage
-								};
-
-								var imageinfo;
-								var match = resp.responseText.match(/\.\s*mergeConfig\s*\(\s*["']gallery["']\s*,\s*{[\s\S]+?image\s*:\s*({.*?})\s*,\s*\n/);
-								if (!match) {
-									var nsfwmatch = resp.responseText.match(/<a.*?btn-wall--yes.*?\.signin\(/);
-									var msg = "Unable to find match for Imgur page";
-
-									if (nsfwmatch) {
-										msg += " (it's probably NSFW and you aren't logged in)";
-									}
-
-									console_warn(msg);
-
-									// Only cache it for 15 seconds (helpful if the user logs in)
-									done(retobj, 15);
-								} else {
-									imageinfo = match[1];
-
-									try {
-										imageinfo = JSON.parse(imageinfo);
-										retobj.imageinfo = imageinfo;
-										api_cache.set("imgur_imageinfo:" + idhash, imageinfo, 6*60*60);
-									} catch (e) {
-										console_error(e);
-										console_log(match);
-										imageinfo = undefined;
-									}
-
-									done(retobj, 6*60*60);
-								};
-							}
-						});
-					});
-				};
-
 				var parse_imageinfo = function(baseobj, json) {
 					var retobj = [];
 
@@ -11448,9 +11455,10 @@ var $$IMU_EXPORT$$;
 						}
 
 						if (json.source && /^https?:\/\//.test(json.source)) {
-							var newobj = {url: json.source};
-
-							retobj.unshift(newobj);
+							if (!("rule_specific" in options) || options.rule_specific.imgur_source === true) {
+								var newobj = {url: json.source};
+								retobj.unshift(newobj);
+							}
 						}
 					} catch (e) {
 						console_error(e);
@@ -11462,51 +11470,48 @@ var $$IMU_EXPORT$$;
 					return retobj;
 				};
 
-				var cache_key = "imgur:" + idhash;
-				api_cache.fetch(cache_key, options.cb, function(done) {
-					var imageinfo = api_cache.get("imgur_imageinfo:" + idhash);
-					if (imageinfo) {
-						var retobj = parse_imageinfo(baseobj, imageinfo);
+				var imageinfo = api_cache.get("imgur_imageinfo:" + idhash);
+				if (imageinfo) {
+					var retobj = parse_imageinfo(baseobj, imageinfo);
 
-						if (retobj.length > 0) {
-							return done(retobj, 6*60*60);
-						}
+					if (retobj.length > 0) {
+						return retobj;
+					}
+				}
+
+				common_functions.fetch_imgur_webpage(options.do_request, baseobj.extra.page, function(data) {
+					if (!data) {
+						return options.cb(obj);
 					}
 
-					fetch_imgur_webpage(idhash, function(data) {
-						if (!data) {
-							return done(obj, false);
+					var retobj = [];
+
+					if (data.ogvideo) {
+						var obj = deepcopy(baseobj);
+						obj.url = data.ogvideo;
+						obj.video = true;
+
+						retobj.push(obj);
+					}
+
+					if (data.ogimage) {
+						var obj = deepcopy(baseobj);
+						obj.url = data.ogimage;
+
+						retobj.push(obj);
+					}
+
+					if (data.imageinfo) {
+						var newretobj = parse_imageinfo(baseobj, data.imageinfo);
+
+						if (newretobj.length > 0) {
+							retobj = newretobj;
 						}
 
-						var retobj = [];
-
-						if (data.ogvideo) {
-							var obj = deepcopy(baseobj);
-							obj.url = data.ogvideo;
-							obj.video = true;
-
-							retobj.push(obj);
-						}
-
-						if (data.ogimage) {
-							var obj = deepcopy(baseobj);
-							obj.url = data.ogimage;
-
-							retobj.push(obj);
-						}
-
-						if (data.imageinfo) {
-							var newretobj = parse_imageinfo(baseobj, data.imageinfo);
-
-							if (newretobj.length > 0) {
-								retobj = newretobj;
-							}
-
-							return done(retobj, 6*60*60);
-						} else {
-							return done(retobj, 10);
-						}
-					});
+						return options.cb(retobj);
+					} else {
+						return options.cb(retobj);
+					}
 				});
 
 				return {
@@ -48183,9 +48188,39 @@ var $$IMU_EXPORT$$;
 					if (!el)
 						return null;
 
-					try {
-						var images = window.runSlots.item.album_images.images;
-						var current_hash = bigimage_recursive(el.src, {fill_object: true})[0].url.replace(/.*\/([^/._]*?)\.[^/.]*?(?:[?#].*)?$/, "$1");
+					var find_from_el = function() {
+						var current = el;
+						while ((current = current.parentElement)) {
+							if (current.tagName === "DIV" &&
+								current.classList && current.classList.contains("post-image-container")) {
+								while (current) {
+									var next = current.nextElementSibling;
+									if (!nextprev)
+										next = current.previousElementSibling;
+
+									current = next;
+									if (!current)
+										return null;
+
+									var img = current.querySelector("img");
+									if (img) {
+										return img;
+									}
+								}
+							}
+						}
+
+						return null;
+					};
+
+					var find_from_api = function(images) {
+						var big = bigimage_recursive(el.src, {
+							fill_object: true,
+							use_cache: false,
+							rule_specific: {imgur_source: false}
+						});
+
+						var current_hash = big[0].url.replace(/.*\/([^/._]+?)(?:_[^/]+)?\.[^/.]*?(?:[?#].*)?$/, "$1");
 						if (current_hash !== el.src) {
 							for (var i = 0; i < images.length; i++) {
 								if (images[i].hash === current_hash) {
@@ -48212,32 +48247,37 @@ var $$IMU_EXPORT$$;
 								}
 							}
 						}
-					} catch (e) {
-						console_error(e);
-					}
 
-					var current = el;
-					while ((current = current.parentElement)) {
-						if (current.tagName === "DIV" &&
-							current.classList && current.classList.contains("post-image-container")) {
-							while (current) {
-								var next = current.nextElementSibling;
-								if (!nextprev)
-									next = current.previousElementSibling;
+						return null;
+					};
 
-								current = next;
-								if (!current)
-									return null;
+					var find_from_both = function(images) {
+						return find_from_api(images) || find_from_el();
+					};
 
-								var img = current.querySelector("img");
-								if (img) {
-									return img;
-								}
+					if (!window.runSlots) {
+						common_functions.fetch_imgur_webpage(options.do_request, options.host_url, function(data) {
+							if (!data || !data.imageinfo) {
+								return options.cb(find_next_el());
 							}
+
+							try {
+								return options.cb(find_from_both(data.imageinfo.album_images.images));
+							} catch (e) {
+								console_error(e);
+								return options.cb(find_next_el());
+							}
+						});
+
+						return "waiting";
+					} else {
+						try {
+							return find_from_both(window.runSlots.item.album_images.images);
+						} catch (e) {
+							console_error(e);
+							return find_from_el();
 						}
 					}
-
-					return null;
 				}
 			};
 		}
@@ -49597,10 +49637,10 @@ var $$IMU_EXPORT$$;
 
 			upgrade_settings_with_version(settings_version, new_settings, function(changed) {
 				if (changed) {
-					console.log("Settings imported");
+					console_log("Settings imported");
 					do_options();
 				} else {
-					console.log("No settings changed");
+					console_log("No settings changed");
 				}
 
 				show_importexport(false);
@@ -51770,6 +51810,77 @@ var $$IMU_EXPORT$$;
 					var prev_images = 0;
 					var next_images = 0;
 
+					function get_imagesizezoom_text() {
+						var text = "";
+
+						var rect = img.getBoundingClientRect();
+
+						// This is needed if img isn't displayed yet
+						var rect_height = rect.height || imgh;
+
+						if (isNaN(rect_height))
+							rect_height = img_naturalHeight;
+
+						var zoom_percent = rect_height / img_naturalHeight;
+						var currentzoom = parseInt(zoom_percent * 100);
+
+						if (settings.mouseover_ui_imagesize) {
+							text = img_naturalWidth + "x" + img_naturalHeight;
+
+							if (settings.mouseover_ui_zoomlevel && currentzoom !== 100) {
+								text += " (" + currentzoom + "%)"
+							}
+						} else {
+							text = currentzoom + "%";
+						}
+
+						return text;
+					}
+
+					if (settings.mouseover_ui_imagesize || settings.mouseover_ui_zoomlevel) {
+						var imagesize = addbtn(get_imagesizezoom_text(100), "", null, true);
+						imagesize.style.fontSize = gallerycount_fontsize;
+						topbarel.appendChild(imagesize);
+					}
+
+					var get_imagestotal_text = function() {
+						if (prev_images + next_images > settings.mouseover_ui_gallerymax) {
+							return settings.mouseover_ui_gallerymax + "+";
+						} else {
+							return (prev_images + 1) + " / " + (prev_images + next_images + 1);
+						}
+					};
+
+					var update_imagestotal = function() {
+						if (prev_images + next_images > 0) {
+							images_total.style.display = "initial";
+							images_total.innerText = get_imagestotal_text();
+						} else {
+							images_total.style.display = "none";
+						}
+					};
+
+					var images_total = addbtn(get_imagestotal_text(), "", null, true);
+					images_total.style.fontSize = gallerycount_fontsize;
+					images_total.style.display = "none";
+					topbarel.appendChild(images_total);
+
+					if (settings.mouseover_ui_optionsbtn) {
+						// \u2699 = ⚙
+						var optionsbtn = addbtn("\u2699", _("Options"), options_page, true);
+						topbarel.appendChild(optionsbtn);
+					}
+
+					if (settings.mouseover_ui_rotationbtns) {
+						// \u21B6 = ↶
+						var rotateleftbtn = addbtn("\u21B6", _("rotate_left_btn"), function() {rotate_gallery(-90)}, true);
+						// \u21B7 = ↷
+						var rotaterightbtn = addbtn("\u21B7", _("rotate_right_btn"), function() {rotate_gallery(90)}, true);
+
+						topbarel.appendChild(rotateleftbtn);
+						topbarel.appendChild(rotaterightbtn);
+					}
+
 					var add_lrhover = function(isleft, btnel, action, title) {
 						if ((popupshown && outerdiv.clientWidth < 200) ||
 							imgw < 200)
@@ -51828,11 +51939,76 @@ var $$IMU_EXPORT$$;
 					};
 
 					function lraction(isright) {
-						if (!trigger_gallery(isright)) {
-							create_ui();
-						}
+						trigger_gallery(isright, function(changed) {
+							if (!changed) {
+								create_ui();
+							}
+						});
 					}
 
+					var add_leftright_gallery_button = function(leftright) {
+						var action = function() {
+							return lraction(leftright);
+						};
+
+						var name = leftright ? "Next" : "Previous";
+						// \u2192 = →
+						// \u2190 = ←
+						var icon = leftright ? "\u2192" : "\u2190"
+						var arrowname = leftright ? "Right Arrow" : "Left Arrow";
+
+						var title = _(name) + " (" + _(arrowname) + ")";
+
+						var btn = addbtn(icon, title, action);
+						btn.style.top = "calc(50% - 7px - " + emhalf + ")";
+						if (!leftright) {
+							btn.style.left = "-" + em1;
+						} else {
+							btn.style.left = "initial";
+							btn.style.right = "-" + em1;
+						}
+						outerdiv.appendChild(btn);
+						ui_els.push(btn);
+
+						add_lrhover(!leftright, btn, action, title);
+
+						if (settings.mouseover_ui_gallerycounter) {
+							if (use_cached_gallery) {
+								if (!leftright) {
+									prev_images = cached_previmages;
+								} else {
+									next_images = cached_nextimages;
+								}
+
+								update_imagestotal();
+							} else {
+								count_gallery(leftright, undefined, function(total) {
+									if (!leftright) {
+										prev_images = total;
+										cached_previmages = prev_images;
+									} else {
+										next_images = total;
+										cached_nextimages = next_images;
+									}
+
+									update_imagestotal();
+								});
+							}
+						}
+					};
+
+					var add_leftright_gallery_button_if_valid = function(leftright) {
+						wrap_gallery_func(leftright, undefined, function(el) {
+							if (is_valid_el(el)) {
+								add_leftright_gallery_button(leftright);
+							}
+						});
+					};
+
+					add_leftright_gallery_button_if_valid(false);
+					add_leftright_gallery_button_if_valid(true);
+
+					if (false) {
 					if (is_valid_el(wrap_gallery_func(false))) {
 						var leftaction = function() {
 							return lraction(false);
@@ -51885,67 +52061,6 @@ var $$IMU_EXPORT$$;
 							}
 						}
 					}
-
-					function get_imagesizezoom_text() {
-						var text = "";
-
-						var rect = img.getBoundingClientRect();
-
-						// This is needed if img isn't displayed yet
-						var rect_height = rect.height || imgh;
-
-						if (isNaN(rect_height))
-							rect_height = img_naturalHeight;
-
-						var zoom_percent = rect_height / img_naturalHeight;
-						var currentzoom = parseInt(zoom_percent * 100);
-
-						if (settings.mouseover_ui_imagesize) {
-							text = img_naturalWidth + "x" + img_naturalHeight;
-
-							if (settings.mouseover_ui_zoomlevel && currentzoom !== 100) {
-								text += " (" + currentzoom + "%)"
-							}
-						} else {
-							text = currentzoom + "%";
-						}
-
-						return text;
-					}
-
-					if (settings.mouseover_ui_imagesize || settings.mouseover_ui_zoomlevel) {
-						var imagesize = addbtn(get_imagesizezoom_text(100), "", null, true);
-						imagesize.style.fontSize = gallerycount_fontsize;
-						topbarel.appendChild(imagesize);
-					}
-
-					if (prev_images + next_images > 0) {
-						var text;
-						if (prev_images + next_images > settings.mouseover_ui_gallerymax) {
-							text = settings.mouseover_ui_gallerymax + "+";
-						} else {
-							text = (prev_images + 1) + " / " + (prev_images + next_images + 1);
-						}
-
-						var images_total = addbtn(text, "", null, true);
-						images_total.style.fontSize = gallerycount_fontsize;
-						topbarel.appendChild(images_total);
-					}
-
-					if (settings.mouseover_ui_optionsbtn) {
-						// \u2699 = ⚙
-						var optionsbtn = addbtn("\u2699", _("Options"), options_page, true);
-						topbarel.appendChild(optionsbtn);
-					}
-
-					if (settings.mouseover_ui_rotationbtns) {
-						// \u21B6 = ↶
-						var rotateleftbtn = addbtn("\u21B6", _("rotate_left_btn"), function() {rotate_gallery(-90)}, true);
-						// \u21B7 = ↷
-						var rotaterightbtn = addbtn("\u21B7", _("rotate_right_btn"), function() {rotate_gallery(90)}, true);
-
-						topbarel.appendChild(rotateleftbtn);
-						topbarel.appendChild(rotaterightbtn);
 					}
 				}
 
@@ -53499,7 +53614,7 @@ var $$IMU_EXPORT$$;
 			return window
 		}
 
-		function wrap_gallery_func(nextprev, el) {
+		function wrap_gallery_func(nextprev, el, cb) {
 			if (!el)
 				el = popup_el;
 
@@ -53507,7 +53622,9 @@ var $$IMU_EXPORT$$;
 				element: popup_el,
 				document: document,
 				window: get_window(),
-				host_url: window.location.href
+				host_url: window.location.href,
+				do_request: do_request,
+				cb: cb
 			};
 
 			if (!settings.allow_video) {
@@ -53527,7 +53644,10 @@ var $$IMU_EXPORT$$;
 				};
 			}
 
-			return gallery(el, nextprev);
+			var value = gallery(el, nextprev);
+			if (value !== "waiting") {
+				return cb(value);
+			}
 		}
 
 		function is_valid_el(el) {
@@ -53537,33 +53657,39 @@ var $$IMU_EXPORT$$;
 			return !!find_source([el]);
 		}
 
-		function count_gallery(nextprev, el) {
+		function count_gallery(nextprev, el, cb) {
 			var count = 0;
-			while ((el = wrap_gallery_func(nextprev, el))) {
-				if (!is_valid_el(el))
-					break;
 
-				count++;
+			var loop = function() {
+				wrap_gallery_func(nextprev, el, function(newel) {
+					if (!newel || !is_valid_el(newel))
+						return cb(count);
 
-				if (count >= settings.mouseover_ui_gallerymax)
-					break;
-			}
+					count++;
 
-			return count;
+					if (count >= settings.mouseover_ui_gallerymax)
+						return cb(count);
+
+					el = newel;
+					loop();
+				});
+			};
+
+			loop();
 		}
 
-		function trigger_gallery(nextprev) {
-			var newel = wrap_gallery_func(nextprev);
-
-			if (newel) {
-				var source = find_source([newel]);
-				if (source) {
-					trigger_popup_with_source(source, true, true);
-					return true;
+		function trigger_gallery(nextprev, cb) {
+			wrap_gallery_func(nextprev, undefined, function(newel) {
+				if (newel) {
+					var source = find_source([newel]);
+					if (source) {
+						trigger_popup_with_source(source, true, true);
+						return cb(true);
+					}
 				}
-			}
 
-			return false;
+				return cb(false);
+			});
 		}
 
 		function rotate_gallery(dir) {
