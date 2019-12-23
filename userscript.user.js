@@ -427,7 +427,10 @@ var $$IMU_EXPORT$$;
 			same_domain: false,
 			same_domain_nosub: false
 		},
-		extra: {},
+		extra: {
+			page: null,
+			caption: null
+		},
 		filename: "",
 		problems: {
 			watermark: false,
@@ -11442,6 +11445,10 @@ var $$IMU_EXPORT$$;
 					var retobj = [];
 
 					try {
+						if (json.description || json.title) {
+							baseobj.extra.caption = json.description || json.title;
+						}
+
 						var realfilename = null;
 						if (json.hash && json.ext) {
 							realfilename = json.hash + json.ext;
@@ -49150,8 +49157,14 @@ var $$IMU_EXPORT$$;
 		}
 
 		var print_orig = function() {
-			if (obj && obj.extra && obj.extra.page) {
-				console_log("Original page: " + obj.extra.page);
+			if (obj && obj.extra) {
+				if (obj.extra.page) {
+					console_log("Original page: " + obj.extra.page);
+				}
+
+				if (obj.extra.caption) {
+					console_log("Caption: " + obj.extra.caption);
+				}
 			}
 		};
 
