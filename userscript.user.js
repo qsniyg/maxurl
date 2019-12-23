@@ -52034,8 +52034,8 @@ var $$IMU_EXPORT$$;
 						opacity_hover(btn);
 					} else if (typeof text === "object" && text.truncated !== text.full) {
 						btn.addEventListener("mouseover", function(e) {
-							var clientRect = btn.getBoundingClientRect();
-							btn.style.width = clientRect.width + "px";
+							var computed_style = get_computed_style(btn);
+							btn.style.width = computed_style.width || (btn.clientWidth + "px");
 
 							btn.innerText = text.full;
 
@@ -52106,6 +52106,7 @@ var $$IMU_EXPORT$$;
 					topbarel.style.position = "absolute";
 					topbarel.style.opacity = defaultopacity;
 					topbarel.style.zIndex = maxzindex - 1;
+					topbarel.style.whiteSpace = "nowrap";
 					return topbarel;
 				}
 
