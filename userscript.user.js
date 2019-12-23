@@ -52191,6 +52191,8 @@ var $$IMU_EXPORT$$;
 						}
 					};
 
+					var popup_width = (popupshown && outerdiv.clientWidth) || imgw;
+
 					var images_total = addbtn(get_imagestotal_text(), "", null, true);
 					images_total.style.fontSize = gallerycount_fontsize;
 					images_total.style.display = "none";
@@ -52214,16 +52216,19 @@ var $$IMU_EXPORT$$;
 
 					var caption = get_caption(newobj, popup_el);
 					if (caption && settings.mouseover_ui_caption) {
+						// /10 is arbitrary, but seems to work well
+						var chars = parseInt(Math.max(10, Math.min(60, (popup_width - topbarel.clientWidth) / 10)));
+						var caption_regex = new RegExp("^((?:.{" + chars + "}|.{0," + chars + "}[\\r\\n]))[\\s\\S]+$");
+
 						var caption_btn = addbtn({
-							truncated: caption.replace(/^((?:.{40}|.{0,40}[\r\n]))[\s\S]+$/, "$1..."),
+							truncated: caption.replace(caption_regex, "$1..."),
 							full: caption
 						}, caption, null, true);
 						topbarel.appendChild(caption_btn);
 					}
 
 					var add_lrhover = function(isleft, btnel, action, title) {
-						if ((popupshown && outerdiv.clientWidth < 200) ||
-							imgw < 200)
+						if (popup_width < 200)
 							return;
 
 						var lrhover = document.createElement("div");
