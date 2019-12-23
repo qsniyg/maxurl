@@ -656,6 +656,15 @@ var $$IMU_EXPORT$$;
 			"ko": "설정 링크"
 		},
 		"Rotation Buttons": {},
+		"Video": {
+			"ko": "영상"
+		},
+		"Media": {
+			"ko": "미디어"
+		},
+		"Both images and video": {
+			"ko": "사진+영상"
+		},
 		"Keep popup open until": {
 			"ko": "팝업 닫으려면"
 		},
@@ -932,8 +941,9 @@ var $$IMU_EXPORT$$;
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-531549043
 		mouseover_close_on_leave_el: true,
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/126
-		mouseover_use_fully_loaded_image: is_extension ? false : true,
-		mouseover_use_fully_loaded_video: false,
+		mouseover_allow_partial: "video",
+		//mouseover_use_fully_loaded_image: is_extension ? false : true,
+		//mouseover_use_fully_loaded_video: false,
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-530760246
 		mouseover_exclude_page_bg: true,
 		mouseover_minimum_size: 20,
@@ -1194,6 +1204,29 @@ var $$IMU_EXPORT$$;
 			number_unit: "seconds",
 			category: "popup",
 			subcategory: "trigger"
+		},
+		mouseover_allow_partial: {
+			name: "Allow showing partially loaded",
+			description: "This will allow the popup to open for a partially loaded video or image+video, but this might break some images for the userscript",
+			requires: {
+				mouseover: true,
+				mouseover_open_behavior: "popup"
+			},
+			options: {
+				_type: "or",
+				video: {
+					name: "Video"
+				},
+				media: {
+					name: "Media",
+					description: "Both images and video"
+				},
+				none: {
+					name: "None"
+				}
+			},
+			category: "popup",
+			subcategory: "open_behavior"
 		},
 		mouseover_use_fully_loaded_image: {
 			name: "Wait until image is fully loaded",
@@ -50393,8 +50426,6 @@ var $$IMU_EXPORT$$;
 					trigger_keys.push(trigger);
 				}
 
-
-
 				if (trigger_keys.length === 0) {
 					update_setting("mouseover_trigger_key", orig_settings["mouseover_trigger_key"]);
 					update_setting("mouseover_trigger_behavior", "mouse");
@@ -50406,6 +50437,36 @@ var $$IMU_EXPORT$$;
 
 			update_setting("settings_version", 1);
 			changed = true;
+
+			version = 1;
+		}
+
+		if (version === 1) {
+			var partial_setting = "none";
+			var partial_setting_set = new_settings.mouseover_use_fully_loaded_video !== undefined ||
+									  new_settings.mouseover_use_fully_loaded_image !== undefined;
+
+			if (partial_setting_set) {
+				if (new_settings.mouseover_use_fully_loaded_video === false ||
+					new_settings.mouseover_use_fully_loaded_video === undefined) {
+					partial_setting = "video";
+				}
+
+				if (new_settings.mouseover_use_fully_loaded_image === undefined) {
+					if (!orig_settings.mouseover_use_fully_loaded_image) {
+						partial_setting = "media";
+					}
+				} else if (new_settings.mouseover_use_fully_loaded_image === false) {
+					partial_setting = "media";
+				}
+
+				update_setting("mouseover_allow_partial", partial_setting);
+			}
+
+			update_setting("settings_version", 2);
+			changed = true;
+
+			version = 2;
 		}
 
 		cb(changed);
@@ -53263,11 +53324,12 @@ var $$IMU_EXPORT$$;
 						} else if (multi && !get_single_setting("replaceimgs_usedata")) {
 							usehead = true;
 						} else if (!multi) {
-							if (!settings.mouseover_use_fully_loaded_image) {
-								processing.incomplete_image = true;
-							}
+							var partial = get_single_setting(settings.mouseover_allow_partial);
 
-							if (!settings.mouseover_use_fully_loaded_video) {
+							if (partial === "media") {
+								processing.incomplete_image = true;
+								processing.incomplete_video = true;
+							} else if (partial === "video") {
 								processing.incomplete_video = true;
 							}
 						}
