@@ -24,9 +24,15 @@ var debug = function() {
 	}
 };
 
-var get_random_id = function() {
+var get_random_id = function(obj) {
 	var rand = Math.floor((1+Math.random())*100000000000).toString(36);
-	return Date.now().toString(36) + rand;
+	var id = Date.now().toString(36) + rand;
+
+	if (obj !== undefined && (id in obj)) {
+		return get_random_id(obj);
+	}
+
+	return id;
 };
 
 var parse_headers = function(headerstr) {
@@ -72,7 +78,7 @@ var create_cookieheader = function(cookies) {
 var do_request = function(request, sender) {
 	debug("do_request", request, sender);
 
-	var id = get_random_id();
+	var id = get_random_id(requests);
 	var method = request.method || "GET";
 
 	var xhr = new XMLHttpRequest();
@@ -91,13 +97,14 @@ var do_request = function(request, sender) {
 
 	xhr.setRequestHeader("IMU-Verify", id);
 
-	var do_final = function(override, cb) {
+	var do_final = function(override, final, cb) {
 		var server_headers = null;
 		if (requests[id].server_headers) {
 			server_headers = requests[id].server_headers;
 		}
 
-		delete requests[id];
+		if (final)
+			delete requests[id];
 
 		debug("XHR", xhr);
 
@@ -176,17 +183,24 @@ var do_request = function(request, sender) {
 		}
 	};
 
-	xhr.onload = function() {
-		do_final({}, function(resp) {
-			request.onload(resp);
-		});
+	var add_handler = function(event, final, empty) {
+		xhr[event] = function() {
+			debug("XHR event: ", event);
+
+			if (empty) {
+				return request[event](null);
+			}
+
+			do_final({}, final, function(resp) {
+				request[event](resp);
+			});
+		};
 	};
 
-	xhr.onerror = function() {
-		do_final({}, function(resp) {
-			request.onerror(resp);
-		});
-	};
+	add_handler("onload", true);
+	add_handler("onerror", true);
+	add_handler("onprogress", false);
+	add_handler("onabort", true, true);
 
 	requests[id] = {
 		id: id,
@@ -204,6 +218,8 @@ var do_request = function(request, sender) {
 	} else {
 		xhr.send(request.data);
 	}
+
+	return id;
 };
 
 // Modify request headers if needed
@@ -701,21 +717,33 @@ chrome.runtime.onMessage.addListener((message, sender, respond) => {
 	debug("onMessage", message, sender, respond);
 
 	if (message.type === "request") {
-		message.data.onload = function(data) {
-			respond({
-				type: "onload",
-				data: data
-			});
+		var reqid;
+
+		var add_handler = function(name, final) {
+			message.data[name] = function(data) {
+				chrome.tabs.sendMessage(sender.tab.id, {
+					type: "request",
+					data: {
+						event: name,
+						final: final,
+						id: reqid,
+						data: data
+					}
+				});
+			};
 		};
 
-		message.data.onerror = function(data) {
-			respond({
-				type: "onerror",
-				data: data
-			});
-		};
+		add_handler("onload", true);
+		add_handler("onerror", true);
+		add_handler("onprogress", false);
+		add_handler("onabort", true);
 
-		do_request(message.data, sender);
+		reqid = do_request(message.data, sender);
+		respond({
+			type: "id",
+			data: reqid
+		});
+
 		return true;
 	} else if (message.type === "redirect") {
 		redirects[sender.tab.id] = message.data;

@@ -199,6 +199,8 @@ var $$IMU_EXPORT$$;
 		do_request_browser = null;
 	}
 
+	var extension_requests = {};
+
 	var do_request_raw = null;
 	if (is_extension) {
 		do_request_raw = function(data) {
@@ -209,25 +211,15 @@ var $$IMU_EXPORT$$;
 				type: "request",
 				data: data
 			}, function (response) {
-				if (response.data.responseType === "blob") {
-					var enc = response.data._responseEncoded;
-
-					if (enc) {
-						var array = new Uint8Array(enc.value.length);
-						for (var i = 0; i < enc.value.length; i++) {
-							array[i] = enc.value.charCodeAt(i);
-						}
-						response.data.response = new Blob([array.buffer], { type: enc.type });
-					} else {
-						response.data.response = null;
-					}
+				if (response.type !== "id") {
+					console_error("Internal error: Wrong response", response);
+					return;
 				}
 
-				if (response.type === "onload") {
-					onload(response.data);
-				} else if (response.type === "onerror" && onerror) {
-					onerror(response.data);
-				}
+				extension_requests[response.data] = {
+					id: response.data,
+					data: data
+				};
 			});
 		};
 	} else if (typeof(GM_xmlhttpRequest) !== "undefined") {
@@ -54014,6 +54006,44 @@ var $$IMU_EXPORT$$;
 				} else if (message.type === "settings_update") {
 					//console_log(message);
 					settings_updated_cb(message.data.changes);
+				} else if (message.type === "request") {
+					var response = message.data;
+
+					if (!(response.id in extension_requests)) {
+						console_error("Request ID " + response.id + " not in extension_requests");
+						return;
+					}
+
+					if (response.data && response.data.responseType === "blob") {
+						var enc = response.data._responseEncoded;
+
+						if (enc) {
+							var array = new Uint8Array(enc.value.length);
+							for (var i = 0; i < enc.value.length; i++) {
+								array[i] = enc.value.charCodeAt(i);
+							}
+							response.data.response = new Blob([array.buffer], { type: enc.type });
+						} else {
+							response.data.response = null;
+						}
+					}
+
+					var reqdata = extension_requests[response.id].data;
+
+					var handle_event = function(event) {
+						if (response.event === event && reqdata[event]) {
+							reqdata[event](response.data);
+						}
+					};
+
+					handle_event("onload");
+					handle_event("onerror");
+					handle_event("onprogress");
+					handle_event("onabort");
+
+					if (response.final) {
+						delete extension_requests[response.id];
+					}
 				}
 			});
 		}
