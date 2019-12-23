@@ -389,7 +389,8 @@ var $$IMU_EXPORT$$;
 		filter: bigimage_filter,
 
 		rule_specific: {
-			imgur_source: true
+			imgur_source: true,
+			imgur_nsfw_headers: null
 		},
 
 		do_request: do_request,
@@ -2792,13 +2793,20 @@ var $$IMU_EXPORT$$;
 	};
 
 	var common_functions = {};
-	common_functions.fetch_imgur_webpage = function(do_request, url, cb) {
+	common_functions.fetch_imgur_webpage = function(do_request, headers, url, cb) {
 		var cache_key = "imgur_webpage:" + url.replace(/^https?:\/\/(?:www\.)?imgur/, "imgur").replace(/[?#].*/, "");
 
-		api_cache.fetch(cache_key, cb, function(done) {
+		var apply_headers = false;
+
+		var real_fetch = function(done) {
+			var request_headers;
+			if (apply_headers)
+				request_headers = headers;
+
 			do_request({
 				url: url.replace(/^http:/, "https:"),
 				method: "GET",
+				headers: request_headers,
 				onload: function(resp) {
 					if (resp.readyState !== 4)
 						return;
@@ -2835,6 +2843,12 @@ var $$IMU_EXPORT$$;
 
 						console_warn(msg);
 
+						if (!apply_headers) {
+							console_log("Retrying");
+							apply_headers = true;
+							return real_fetch(done);
+						}
+
 						// Only cache it for 15 seconds (helpful if the user logs in)
 						done(retobj, 15);
 					} else {
@@ -2857,7 +2871,9 @@ var $$IMU_EXPORT$$;
 					};
 				}
 			});
-		});
+		};
+
+		api_cache.fetch(cache_key, cb, real_fetch);
 	};
 
 	common_functions.deviantart_page_from_id = function(do_request, id, cb) {
@@ -11479,7 +11495,12 @@ var $$IMU_EXPORT$$;
 					}
 				}
 
-				common_functions.fetch_imgur_webpage(options.do_request, baseobj.extra.page, function(data) {
+				var nsfw_headers = undefined;
+				if (options.rule_specific && options.rule_specific.imgur_nsfw_headers) {
+					nsfw_headers = options.rule_specific.imgur_nsfw_headers;
+				}
+
+				common_functions.fetch_imgur_webpage(options.do_request, nsfw_headers, baseobj.extra.page, function(data) {
 					if (!data) {
 						return options.cb(obj);
 					}
@@ -32030,6 +32051,9 @@ var $$IMU_EXPORT$$;
 		if (domain === "images-assets.nasa.gov") {
 			// https://images-assets.nasa.gov/image/PIA18139/PIA18139~thumb.jpg
 			//   https://images-assets.nasa.gov/image/PIA18139/PIA18139~orig.jpg
+			// doesn't work for all:
+			// https://images-assets.nasa.gov/image/GRC-2019-C-11993/GRC-2019-C-11993~large.jpg
+			//   https://images-assets.nasa.gov/image/GRC-2019-C-11993/GRC-2019-C-11993~orig.jpg -- 403
 			return src.replace(/~[a-z]+(\.[^/.]*)$/, "~orig$1");
 		}
 
@@ -48256,7 +48280,7 @@ var $$IMU_EXPORT$$;
 					};
 
 					if (!window.runSlots) {
-						common_functions.fetch_imgur_webpage(options.do_request, options.host_url, function(data) {
+						common_functions.fetch_imgur_webpage(options.do_request, undefined, options.host_url, function(data) {
 							if (!data || !data.imageinfo) {
 								return options.cb(find_next_el());
 							}
