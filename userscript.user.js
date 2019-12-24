@@ -597,8 +597,8 @@ var $$IMU_EXPORT$$;
 			"ko": "HEAD 지원되지 않으면 GET 사용",
 			"fr": "Utiliser GET si HEAD n'est pas supporté"
 		},
-		"Try finding original page": {
-			"fr": "Essayer de trouver la page d'origine"
+		"Try finding original page/caption": {
+			"fr": "Essayer de trouver la page d'origine/sous-titre"
 		},
 		"Enable mouseover popup": {
 			"en": "Enable image popup",
@@ -1112,8 +1112,8 @@ var $$IMU_EXPORT$$;
 			advanced: true
 		},
 		redirect_force_page: {
-			name: "Try finding original page",
-			description: "Enables more time-intensive methods for finding the original page",
+			name: "Try finding original page/caption",
+			description: "Enables methods that use API calls for finding the original page or caption",
 			requires: {
 				redirect: true
 			},
