@@ -34013,6 +34013,7 @@ var $$IMU_EXPORT$$;
 							var images = data.photos[id].images;
 							page = urljoin(page, data.photos[id].url, true);
 							obj.extra.page = page;
+							obj.extra.caption = data.photos[id].name || data.photos[id].description;
 							var largestsize = 0;
 							var largesturl = null;
 
