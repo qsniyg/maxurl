@@ -44132,6 +44132,13 @@ var $$IMU_EXPORT$$;
 
 						var extra = {page: result.finalUrl.replace(/(:\/\/www\.gettyimages\.)[^/]+\//, "://www.gettyimages.com/")};
 
+						var caption = result.responseText.match(/<meta\s+content=["']([^'"]+?)["']\s+property=["']og:description["']/);
+						if (caption) {
+							extra.caption = decode_entities(caption[1]);
+						} else {
+							console_warn("Unable to find caption", result);
+						}
+
 						//var smallerurl = result.responseText.match(/<meta\s+content=["'](https:\/\/media\.gettyimages\.com\/+photos\/+[^/]*\?k=6.*?)["']\s+property=["']og:image["']\s*\/>/);
 						// above is slightly smaller (594x594 instead of 612x612), needs decode_entities
 						var smallerurl = result.responseText.match(/"thumb612Url":\s*(["']https?:\/\/media\.gettyimages\.com\/+photos\/+[^/]*-id[0-9]+\?k=6.*?["'])/);
