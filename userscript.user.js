@@ -42995,6 +42995,22 @@ var $$IMU_EXPORT$$;
 				return newsrc;
 		}
 
+		if (domain_nosub === "vkuservideo.net") {
+			return {
+				url: src,
+				can_head: false,
+				headers: {
+					Origin: "https://vk.com",
+					Referer: "https://vk.com",
+					"Sec-Fetch-Site": "none",
+					"Sec-Fetch-Dest": "document",
+					"Sec-Fetch-Mode": "navigate",
+					"Sec-Fetch-User": "?1",
+					"Sec-Origin-Policy": "0"
+				}
+			};
+		}
+
 		if (domain_nowww === "free2music.com") {
 			// https://free2music.com/images/thumb/singer/2019/04/03/selena-gomez_0.jpg,0,400.jpg
 			//   https://free2music.com/images/singer/2019/04/03/selena-gomez_0.jpg
@@ -51044,7 +51060,12 @@ var $$IMU_EXPORT$$;
 			incomplete_request = true;
 
 		if (processing.head || incomplete_request) {
-			method = "HEAD";
+			if (incomplete_request && !obj.can_head) {
+				method = "GET";
+			} else {
+				method = "HEAD";
+			}
+
 			responseType = undefined;
 		}
 
@@ -51089,6 +51110,195 @@ var $$IMU_EXPORT$$;
 			//headers.Origin = url_domain;
 		}
 
+		var handled = false;
+		var onload_cb = function(resp) {
+			if (handled) {
+				return;
+			}
+
+			handled = true;
+
+			if (!processing.running) {
+				return cb(null);
+			}
+
+			if (resp.readyState == 4 || true) {
+				if (_nir_debug_) {
+					console_log("check_image_get(onload)", resp);
+				}
+
+				var digit = resp.status.toString()[0];
+
+				var ok_error = check_ok_error(obj[0].head_ok_errors, resp.status);
+
+				if (((digit === "4" || digit === "5") &&
+					 resp.status !== 405) && obj[0].can_head &&
+					ok_error !== true) {
+					if (err_cb) {
+						console_log("Bad status: " + resp.status + " ( " + url + " )");
+						err_cb();
+					} else {
+						console_error("Error: " + resp.status);
+					}
+
+					return;
+				}
+
+				if (check_bad_if(obj[0].bad_if, resp)) {
+					console_log("Bad image (bad_if)", resp, obj[0].bad_if);
+					return err_cb();
+				}
+
+				if (processing.head) {
+					cb(resp, obj[0]);
+					return;
+				}
+
+				var parsed_headers = headers_list_to_dict(parse_headers(resp.responseHeaders));
+				var is_video = false;
+
+				// TODO: improve
+				if (parsed_headers["content-type"] && /^\s*\[?video\//.test(parsed_headers["content-type"])) {
+					is_video = true;
+				}
+
+				if (is_video && !settings.allow_video) {
+					console_log("Video, skipping due to user setting");
+					return err_cb();
+				}
+
+				var good_cb = function(img) {
+					cb(img, resp.finalUrl, obj[0], resp);
+				};
+
+				var create_video_el = function() {
+					var video = document.createElement("video");
+
+					video.setAttribute("autoplay", "autoplay");
+
+					if (settings.mouseover_video_controls)
+						video.setAttribute("controls", "controls");
+
+					if (settings.mouseover_video_loop)
+						video.setAttribute("loop", true);
+
+					if (settings.mouseover_video_muted)
+						video.muted = true;
+
+					var errorhandler = function(e) {
+						console_error("Error loading video", get_event_error(e));
+
+						video.onloadedmetadata = null;
+						err_cb();
+					};
+
+					video.onloadedmetadata = function() {
+						video.removeEventListener("error", errorhandler, true);
+						good_cb(video);
+					};
+
+					video.addEventListener("error", errorhandler, true);
+
+					return video;
+				};
+
+				if (incomplete_request) {
+					var load_image;
+
+					if (!is_video) {
+						load_image = function () {
+							var img = document.createElement("img");
+							img.src = resp.finalUrl;
+
+							var end_cbs = function () {
+								clearInterval(height_interval);
+								img.onload = null;
+								img.onerror = null;
+							};
+
+							img.onload = function () {
+								end_cbs();
+
+								if (img.naturalWidth === 0 || img.naturalHeight === 0) {
+									return err_cb();
+								}
+
+								good_cb(img);
+							};
+
+							img.onerror = function () {
+								end_cbs();
+								err_cb();
+							};
+
+							var height_interval = setInterval(function () {
+								if (img.naturalWidth !== 0 && img.naturalHeight !== 0) {
+									end_cbs();
+									good_cb(img);
+								}
+							}, 15);
+						};
+					} else {
+						load_image = function () {
+							var video = create_video_el();
+							video.src = resp.finalUrl;
+						};
+					}
+
+					if (is_extension) {
+						extension_send_message({
+							type: "override_next_headers",
+							data: {
+								url: resp.finalUrl,
+								method: "GET",
+								headers: headers
+							}
+						}, function() {
+							load_image();
+						});
+					} else {
+						load_image();
+					}
+
+					return;
+				}
+
+				if (!resp.response) {
+					err_cb();
+					return;
+				}
+
+				var a = new FileReader();
+				a.onload = function(e) {
+					try {
+						if (!is_video) {
+							var img = document.createElement("img");
+							img.src = e.target.result;
+							img.onload = function() {
+								// Firefox thinks SVGs have an empty naturalWidth/naturalHeight
+								if (img.naturalWidth === 0 || img.naturalHeight === 0) {
+									return err_cb();
+								}
+
+								good_cb(img);
+							};
+							img.onerror = function() {
+								err_cb();
+							};
+						} else {
+							var video = create_video_el();
+							video.src = e.target.result;
+						}
+					} catch (e) {
+						console_error(e);
+						console_error(e.stack);
+						err_cb();
+					}
+				};
+				a.readAsDataURL(resp.response);
+			}
+		};
+
 		var req = do_request({
 			method: method,
 			url: url,
@@ -51096,195 +51306,25 @@ var $$IMU_EXPORT$$;
 			headers: headers,
 			trackingprotection_failsafe: true,
 			onprogress: function(resp) {
-				if (!req || !req.abort) {
-					return;
-				}
+				var do_abort = function() {
+					if (!req || !req.abort) {
+						console_warn("Unable to abort request");
+						return;
+					}
+
+					req.abort();
+				};
 
 				if (!processing.running) {
-					req.abort();
+					do_abort();
+				}
+
+				if (incomplete_request && resp.readyState >= 2) {
+					do_abort();
+					onload_cb(resp);
 				}
 			},
-			onload: function(resp) {
-				if (!processing.running) {
-					return cb(null);
-				}
-
-				if (resp.readyState == 4) {
-					if (_nir_debug_) {
-						console_log("check_image_get(onload)", resp);
-					}
-
-					var digit = resp.status.toString()[0];
-
-					var ok_error = check_ok_error(obj[0].head_ok_errors, resp.status);
-
-					if (((digit === "4" || digit === "5") &&
-						 resp.status !== 405) && obj[0].can_head &&
-						ok_error !== true) {
-						if (err_cb) {
-							console_log("Bad status: " + resp.status + " ( " + url + " )");
-							err_cb();
-						} else {
-							console_error("Error: " + resp.status);
-						}
-
-						return;
-					}
-
-					if (check_bad_if(obj[0].bad_if, resp)) {
-						console_log("Bad image (bad_if)", resp, obj[0].bad_if);
-						return err_cb();
-					}
-
-					if (processing.head) {
-						cb(resp, obj[0]);
-						return;
-					}
-
-					var parsed_headers = headers_list_to_dict(parse_headers(resp.responseHeaders));
-					var is_video = false;
-
-					// TODO: improve
-					if (parsed_headers["content-type"] && /^\s*\[?video\//.test(parsed_headers["content-type"])) {
-						is_video = true;
-					}
-
-					if (is_video && !settings.allow_video) {
-						console_log("Video, skipping due to user setting");
-						return err_cb();
-					}
-
-					var good_cb = function(img) {
-						cb(img, resp.finalUrl, obj[0], resp);
-					};
-
-					var create_video_el = function() {
-						var video = document.createElement("video");
-
-						video.setAttribute("autoplay", "autoplay");
-
-						if (settings.mouseover_video_controls)
-							video.setAttribute("controls", "controls");
-
-						if (settings.mouseover_video_loop)
-							video.setAttribute("loop", true);
-
-						if (settings.mouseover_video_muted)
-							video.muted = true;
-
-						var errorhandler = function(e) {
-							console_error("Error loading video", get_event_error(e));
-
-							video.onloadedmetadata = null;
-							err_cb();
-						};
-
-						video.onloadedmetadata = function() {
-							video.removeEventListener("error", errorhandler, true);
-							good_cb(video);
-						};
-
-						video.addEventListener("error", errorhandler, true);
-
-						return video;
-					};
-
-					if (incomplete_request) {
-						var load_image;
-
-						if (!is_video) {
-							load_image = function () {
-								var img = document.createElement("img");
-								img.src = resp.finalUrl;
-
-								var end_cbs = function () {
-									clearInterval(height_interval);
-									img.onload = null;
-									img.onerror = null;
-								};
-
-								img.onload = function () {
-									end_cbs();
-
-									if (img.naturalWidth === 0 || img.naturalHeight === 0) {
-										return err_cb();
-									}
-
-									good_cb(img);
-								};
-
-								img.onerror = function () {
-									end_cbs();
-									err_cb();
-								};
-
-								var height_interval = setInterval(function () {
-									if (img.naturalWidth !== 0 && img.naturalHeight !== 0) {
-										end_cbs();
-										good_cb(img);
-									}
-								}, 15);
-							};
-						} else {
-							load_image = function () {
-								var video = create_video_el();
-								video.src = resp.finalUrl;
-							};
-						}
-
-						if (is_extension) {
-							extension_send_message({
-								type: "override_next_headers",
-								data: {
-									url: resp.finalUrl,
-									method: "GET",
-									headers: headers
-								}
-							}, function() {
-								load_image();
-							});
-						} else {
-							load_image();
-						}
-
-						return;
-					}
-
-					if (!resp.response) {
-						err_cb();
-						return;
-					}
-
-					var a = new FileReader();
-					a.onload = function(e) {
-						try {
-							if (!is_video) {
-								var img = document.createElement("img");
-								img.src = e.target.result;
-								img.onload = function() {
-									// Firefox thinks SVGs have an empty naturalWidth/naturalHeight
-									if (img.naturalWidth === 0 || img.naturalHeight === 0) {
-										return err_cb();
-									}
-
-									good_cb(img);
-								};
-								img.onerror = function() {
-									err_cb();
-								};
-							} else {
-								var video = create_video_el();
-								video.src = e.target.result;
-							}
-						} catch (e) {
-							console_error(e);
-							console_error(e.stack);
-							err_cb();
-						}
-					};
-					a.readAsDataURL(resp.response);
-				}
-			}
+			onload: onload_cb
 		});
 	}
 
