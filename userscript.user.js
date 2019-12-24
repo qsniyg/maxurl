@@ -36810,10 +36810,15 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/bilder\/+[^/]*\/+[0-9]+_)[a-z]+(\.[^/.]*)(?:[?#].*)?$/, "$1original$2");
 		}
 
-		if (domain === "v.angel-porns.com") {
+		if (domain === "v.angel-porns.com" ||
+			// http://www.sexgirlspics.com/pics/asians/ae/13444/0174-6-wn/tnsn001.jpg
+			//   http://www.sexgirlspics.com/pics/asians/ae/13444/0174-6-wn/sn001.jpg
+			domain_nowww === "sexgirlspics.com") {
 			// http://v.angel-porns.com/pics/asians/pacificgirls/0559-rm/tnsn002.jpg
 			//   http://v.angel-porns.com/pics/asians/pacificgirls/0559-rm/sn002.jpg
-			return src.replace(/\/tn(sn[0-9]+\.[^/.]*)(?:[?#].*)?$/, "/$1");
+			// http://v.angel-porns.com/pics/asians/allgravure/3652-ae/tnxsn003.jpg
+			//   http://v.angel-porns.com/pics/asians/allgravure/3652-ae/sn003.jpg
+			return src.replace(/\/tnx?(sn[0-9]+\.[^/.]*)(?:[?#].*)?$/, "/$1");
 		}
 
 		if (domain === "cdn15764270.ahacdn.me") {
@@ -47278,6 +47283,12 @@ var $$IMU_EXPORT$$;
 					}
 				};
 			}
+		}
+
+		if (domain_nowww === "meituyuan.com") {
+			// http://meituyuan.com/data/share/2013/08/28/2057521df3c9b8003_m.jpg
+			//   http://meituyuan.com/data/share/2013/08/28/2057521df3c9b8003.jpg
+			return src.replace(/(\/data\/+share\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}[0-9a-f]{10,})_[smb](\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		}
 
 
