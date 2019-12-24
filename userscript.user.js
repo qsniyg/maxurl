@@ -51648,8 +51648,12 @@ var $$IMU_EXPORT$$;
 				return obj.extra.caption;
 			}
 
-			if (el && (el.title || el.alt)) {
-				return el.title || el.alt;
+			if (el) {
+				do {
+					if (el.title || el.alt) {
+						return el.title || el.alt;
+					}
+				} while ((el = el.parentElement));
 			}
 
 			return null;
