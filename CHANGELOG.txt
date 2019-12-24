@@ -1,3 +1,31 @@
+0.12.0
+
+New features:
+
+ * Basic support for videos
+ * Basic support for captions
+ * Live settings reloading for userscript
+ * Modified settings are now marked in a different color
+ * Support for ~60 new websites (using ~35 new rules)
+
+Improvements:
+
+ * Many improvements/fixes to existing rules (including Imgur, Naver, TikTok, VSCO, Wordpress.com, and Youtube)
+ * The settings version is saved when exporting settings (for better compatibility with future versions)
+ * The extension now properly supports Imgur albums
+ * GET requests now don't need to load the entire image when being used as a replacement for HEAD requests
+ * Pressing ESC to abort loading a popup now works more reliably
+ * Default UI opacity has been increased to 80% (previously 30%)
+ * A small halo is added around actionable UI elements when hovered (this helps for clarity with a high UI opacity)
+
+Bugfixes:
+
+ * Opening the popup on an i.imgur.com tab will no longer print an error due to a lack of gallery support
+ * Fix edge cases where it would redirect to an image that prevented hotlinking (#180, thanks to fireattack on github for reporting)
+ * Fix cases where the popup would fail because the website didn't support HEAD requests
+
+---
+
 0.11.19
 
 New features:

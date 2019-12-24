@@ -174,6 +174,7 @@ akcenty.com.ua
 akhbarus.com
 akherkhabrtoday.com
 akiba-souken.k-img.com
+akibatan.com
 akm-img-a-in.tosshub.com
 akmedia.hollywoodlife.com
 akns-images.eonline.com
@@ -395,6 +396,7 @@ assetsadobe2.com
 astro-austral.cl
 astro-image-resizer.s3.amazonaws.com
 astro.com.my
+astro.cz
 astrofactor.com
 at.ua
 athensmagazine.gr
@@ -590,6 +592,7 @@ blogspot.es
 bloguru.com
 blovcdn.com
 blue.kumparan.com
+blurbprod1000.s3.amazonaws.com
 bmi.com
 bndasupamark.com
 bnt.bg
@@ -609,6 +612,7 @@ book.com.tw
 book.interpark.com
 booklikes.com
 books.com.tw
+bookshow.blurb.com
 booktrust.org.uk
 boorp.com
 booru.org
@@ -688,10 +692,12 @@ cache-graphicslib.viator.com
 cache.lovethispic.com
 cache.net-a-porter.com
 cache.pakistantoday.com.pk
+cache.sharesome.com
 cache.wizardworld.com
 cached.imagescaler.hbpl.co.uk
 cachedimages.podchaser.com
 cacheimg.bonsante.fr
+cacheimg.gsp.ro
 cafebiz.cafebizcdn.vn
 cafebizcdn.vn
 cafemom.com
@@ -716,6 +722,7 @@ carlyslayjepsen.com
 carphotoshow.com
 cartoonmovement.com
 casopiszdravie.sk
+casseycds.net
 catmario.info
 cbsistatic.com
 cbsstatic.com
@@ -927,6 +934,7 @@ cdn.roosterteeth.com.s3.amazonaws.com
 cdn.ruguoapp.com
 cdn.sabay.com
 cdn.sahafahn.net
+cdn.sharesome.com
 cdn.shazoo.ru
 cdn.shesfreaky.com
 cdn.shopify.com
@@ -1062,6 +1070,7 @@ cfshopeetw-a.akamaihd.net
 cg.adultwork.com
 cgames.de
 cgeimage.commutil.kr
+cgtrader.com
 chacuncherchesonfilm.fr
 chat1102.com
 chathour.com
@@ -1175,10 +1184,12 @@ content.wafflegirl.com
 contents.dt.co.kr
 contents.innolife.net
 contents.mediadecathlon.com
+contents.sixshop.com
 contestimg.wish.com
 conteudo.imguol.com.br
 contrastspace.ru
 coolspotters.com
+cooltrack.co.kr
 coolwallpaperz.info
 copia-di-arte.com
 corriereobjects.it
@@ -1401,6 +1412,7 @@ diasp.org
 dientumaytinh.com
 dienvienvietnam.vn
 dieta.pourfemme.it
+digalakis.com
 digi-film.ro
 digital.denverlibrary.org
 digitalart.io
@@ -1469,10 +1481,10 @@ draw.acharts.net
 dreamercdn.com
 dreamline.com
 dreamwiz.net
-driftt.imgix.net
 drop.ndtv.com
 drp-images.nettavisen.no
 drscdn.500px.org
+drtst.com
 drunkenstepfather.com
 drytickets.com.au
 ds393qgzrxwzn.cloudfront.net
@@ -1722,6 +1734,7 @@ femanes.ru
 ferra.ru
 festivalteen.com.br
 fetcher-cdn.nullmu.com
+fetishburg.com
 fetv.co.kr
 ffp4g1ylyit3jdyti1hqcvtb-wpengine.netdna-ssl.com
 ffw.uol.com.br
@@ -1937,11 +1950,13 @@ gamesite.zoznam.sk
 gamespark.jp
 gameworld.gr
 gaminglives.com
+gamingonlinux.com
 gamme.com.tw
 gannett-cdn.com
 ganref.jp
 gaobei.com
 gaoshouyou.com
+gasookpopgalore.net
 gazeta.pl
 gazeta.ua
 gazetaexpress.com
@@ -1977,6 +1992,7 @@ gfinity-img.s3.amazonaws.com
 gfx.elle.ci
 ggilbo.com
 ggpht.com
+giant.gfycat.com
 gif-favicon.com
 gifposter.com
 giga-images-makeshop-jp.akamaized.net
@@ -2072,6 +2088,7 @@ guitaraficionado.com
 guitarworld.com
 gukjenews.com
 gulf365.co
+gumroad.com
 guru3d.com
 h-cdn.co
 haberkonseyi.com
@@ -2186,6 +2203,7 @@ hosted.amourangels.com
 hosted.foxes.com
 hot-celebs.co
 hot-korea.net
+hot-sex-photos.com
 hot.ag
 hotel-aramis.com
 hoteljardinlebrea.com
@@ -2449,6 +2467,7 @@ image.laodong.com.vn
 image.make-book.jp
 image.melon.co.kr
 image.mlive.com
+image.mp3.zdn.vn
 image.munhwa.com
 image.nanopress.it
 image.newdaily.co.kr
@@ -2465,6 +2484,7 @@ image.photohito.k-img.com
 image.pornyl.com
 image.qianye88.com
 image.side3.no
+image.spreadshirtmedia.com
 image.stirileprotv.ro
 image.thanhnien.vn
 image.thmeythmey.com
@@ -2533,6 +2553,7 @@ images.askmen.com
 images.assettype.com
 images.attvideo.com
 images.blazingmovies.com
+images.boosty.to
 images.businessoffashion.com
 images.buzzerie.com
 images.bwwstatic.com
@@ -2736,6 +2757,7 @@ img-ovh-cloud.zszywka.pl
 img-proxy.blog-video.jp
 img-s-msn-com.akamaized.net
 img-service.nimo.tv
+img-tmdetail.alicdn.com
 img-toutiao.mia.com
 img-www.tf-cdn.com
 img.007shoes.com
@@ -2780,6 +2802,7 @@ img.bmwcase.com
 img.booru.org
 img.bulawayo24.com
 img.butongshe.com
+img.buymeacoffee.com
 img.buzzfeed.com
 img.cache.vevo.com
 img.cactusboy.com
@@ -2868,7 +2891,6 @@ img.iluria.com.s3.amazonaws.com
 img.imgmax.com
 img.index.hu
 img.indexxx.com
-img.infonet.vn
 img.insight.co.kr
 img.iseephoto.com
 img.issuedaily.com
@@ -2883,6 +2905,7 @@ img.joinfo.ua
 img.joj.sk
 img.joomcdn.net
 img.kaikai.ch
+img.karaoketexty.sk
 img.kbs.co.kr
 img.khan.co.kr
 img.koreatimes.co.kr
@@ -2965,6 +2988,7 @@ img.pipimi.com
 img.pixelz.com
 img.pixers.pics
 img.playbuzz.com
+img.poliigon.com
 img.ponparemall.net
 img.pooq.co.kr
 img.popnroll.tv
@@ -3145,6 +3169,7 @@ infectedbyart.com
 infinitymemories.com
 info7rm.blob.core.windows.net.optimalcdn.com
 infobae.com
+infonet.vn
 informador.mx
 informaplus.ru
 infotel.ca
@@ -3171,6 +3196,7 @@ intim-photos.ru
 intimatecelebs.com
 intoclassics.net
 intronews.net
+io.ua
 iol.pt
 ip.index.hr
 ip.trueachievements.com
@@ -3200,6 +3226,7 @@ itedou.com
 item.ssgcdn.com
 itn.dmarge.com
 itpro.nikkeibp.co.jp
+itsfun.com.tw
 itvnet.lv
 ivi.ru
 ivoirematin.com
@@ -3245,6 +3272,7 @@ jjgirls.com
 jk6.cc
 jkcdn.pajk.com.cn
 jmagazine.joins.com
+jmusicitalia.com
 joah-girls.com
 joinsmediacanada.com
 jooinn.com
@@ -3283,6 +3311,7 @@ kaigai-drama-board.com
 kaixian.tv
 kakao.co.kr
 kakaocdn.net
+kakaoimg.melon.co.kr
 kakprosto.ru
 kan.china.com
 kanal24.az
@@ -3366,6 +3395,7 @@ kpop-today.com
 kpopdaily.co.kr
 kpopimg.s3.amazonaws.com
 kpopis.com
+kpopmart.com
 kpopnews.vn
 kpopping.com
 kpopselca.com
@@ -3385,6 +3415,7 @@ kyeongin.com
 kym-cdn.com
 kysiamesecat.sakura.ne.jp
 la-soubrette.fr
+labsporno.com
 lacote.ch
 ladmedia.fr
 ladylike.gr
@@ -3496,6 +3527,7 @@ lrfczp.com
 lst.fm
 ltmcdn.com
 ltu.se
+luciecline.com
 lumiere-a.akamaihd.net
 luna.ovh
 lunarglobalstar.com
@@ -3506,6 +3538,7 @@ luxfon.com
 luxnet.ua
 luxo.co.za
 luxury-inside.vn
+lvme.me
 lystit.com
 lzimages.lazygirls.info
 m.aceshowbiz.com
@@ -3719,6 +3752,7 @@ media.search.lt
 media.self.com
 media.senscritique.com
 media.services.cinergy.ch
+media.sharesome.com
 media.shoko.fr
 media.sistemampa.com.br
 media.spokesman.com
@@ -3761,6 +3795,7 @@ media.women.com
 media.yadbegir.com
 mediaassets.wxyz.com
 mediacdn.grabone.co.nz
+mediacdn.libertatea.ro
 mediacdn.vn
 mediadale.com
 mediaday.co.kr
@@ -3789,10 +3824,12 @@ megaporn.co
 meijuxia.com
 meinbezirk.at
 meitudata.com
+meituyuan.com
 melonbooks.akamaized.net
 melonbooks.co.jp
 memberme.net
 mengchongzhi.com
+mengqi.chenggong.it
 meninafm.com.br
 menshealth.com.au
 menslife.com
@@ -3947,6 +3984,7 @@ mweb.co.za
 my-hit.org
 my.cdn.tokyo-hot.com
 my.evilmilk.com
+my.wikifeet.com
 myajc.com
 myamericanmarket.com
 myanimelist.cdn-dena.com
@@ -4136,6 +4174,7 @@ novostrong.com
 nowtoronto.com
 nrt.ysc123.com.cn
 ns.hitcreative.com.s3.amazonaws.com
+nsfwalbum.com
 nst.sky.it
 ntdtv.kr
 nthumb.cyworld.com
@@ -4236,6 +4275,8 @@ p.mamastar.jp
 p.memecdn.com
 p.potv.bg
 p0.meituan.net
+p16-sg-default.akamaized.net
+p16-tiktokcdn-com.akamaized.net
 p7cdn.com
 paginasiete.bo
 paheal.net
@@ -4254,7 +4295,6 @@ passport.mobilenations.com
 pastefs.com
 pat.primecdn.net
 patch.com
-pathwright.imgix.net
 patrasevents.gr
 patreonusercontent.com
 pauza.sk
@@ -4466,6 +4506,7 @@ pornpaw.com
 pornrice.com
 pornstars.me
 pornstarsadvice.com
+porntb.com
 pornxxxbest.xyz
 pornzee.com
 portal-images.azureedge.net
@@ -4594,6 +4635,7 @@ radiopotok.ru
 radiotimes.com
 radiowebitalia.it
 rainews.it
+rakuten.com
 ramblers.org.uk
 rap-up.com
 rap4ever.org
@@ -4747,6 +4789,7 @@ s.glbimg.com
 s.hardcore.pink
 s.heavenlynudes.net
 s.img.mix.sina.com.cn
+s.io.ua
 s.iw.ro
 s.kaskus.id
 s.libertaddigital.com
@@ -4857,9 +4900,11 @@ serey.io
 seriouseats.com
 sesso-escort.com
 sexbahrain.club
+sexgirlspics.com
 sexgrace.com
 sexhd.pics
 sexiestpicture.com
+sexo18.net
 sexphotos.pw
 sexs-foto.com
 sexs-foto.info
@@ -4867,6 +4912,7 @@ sexthread.com
 sexyasians.net
 sexyfandom.com
 sexygirlcity.com
+sexylabia.net
 sexypet.co.kr
 sexypic.org
 sf.be.com
@@ -4929,6 +4975,7 @@ sites.eveyo.com
 sites.google.com
 sitioandino.com.ar
 skankypussy.com
+sketchuptextureclub.com
 skinnygossip.com
 skinzwearphotography.com
 sks-52.ru
@@ -4975,6 +5022,7 @@ sohacdn.com
 sohobluesgallery.com
 sokuup.net
 sol.no
+solarsystem.nasa.gov
 sonar.es
 sonara.net
 sonarreykjavik.com
@@ -5130,6 +5178,7 @@ static.inaturalist.org
 static.independent.co.uk
 static.infomusic.ro
 static.japanhdv.com
+static.jmusicitalia.com
 static.jpg.pl
 static.juksy.com
 static.keptelenseg.hu
@@ -5295,6 +5344,7 @@ supermodels-online.com
 supersoccershop.com
 superwall.us
 superwallpapers.in
+suruga-ya.jp
 suryaa.com
 sutki.net
 suzisporn.com
@@ -5488,6 +5538,7 @@ thumbor-titelmediaug.netdna-ssl.com
 thumbor.forbes.com
 thumbs-prod.si-cdn.com
 thumbs.booru.org
+thumbs.gfycat.com
 thumbs.hentai-foundry.com
 thumbs.uloz.to
 thumbs.vaultsex.com
@@ -5536,6 +5587,7 @@ tophit.ru
 topstarnews.net
 torrenthaja.com
 tour-rest.ru
+tower.jp
 townnews.com
 townsquare.media
 toyo-arhxo0vh6d1oh9i0c.stackpathdns.com
@@ -5676,6 +5728,7 @@ vacationidea.com
 vagalume.com
 vaginavulva.com
 vancouversun.com
+vangogh.teespring.com
 vanguardia.com
 vanishingtattoo.com
 vbmspic.video.friday.tw
@@ -5717,6 +5770,7 @@ vistanews.ru
 vjav.com
 vk.com
 vkpeople.ru
+vkuservideo.net
 vmg.yonhapnews.co.kr
 vnecdn.net
 vnn-imgs-f.vgcloud.vn
@@ -5799,6 +5853,7 @@ walmartimages.com
 walter.trakt.tv
 wanelo.com
 wangsuimg.fanshuapp.com
+wankerson.com
 wapinda.in
 warashi-asian-pornstars.fr
 warnerbros.co.uk
@@ -5855,6 +5910,7 @@ win4000.com
 windows7themes.net
 wir.skyrock.net
 wisebread.com
+withdrama.net
 wixmp.com
 wlooks.ru
 wmg.jp
@@ -5980,6 +6036,7 @@ you2php.me
 youdew88yl.com
 youloveit.ru
 youmediafanpage.akamaized.net
+youmekorea.com
 youngporno.com
 yourdailygirls.com
 youthdaily.co.kr
@@ -6012,6 +6069,7 @@ zhihutai.com
 zhimg.com
 ziaruldeiasi.ro
 zimbio.com
+zippy.gfycat.com
 zive.cz
 zkpm.net
 zmones.lt
