@@ -36625,9 +36625,10 @@ var $$IMU_EXPORT$$;
 				return newsrc;
 
 			match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:(?:aws-[^/]+\/+)?[0-9a-f]{6}\/+[0-9]+|[0-9]+\/+[0-9a-f]{10,})\/+([0-9a-f]{20,})\/+/);
+			id = match[1];
 			if (match && options && options.force_page && options.cb && options.do_request) {
 				options.do_request({
-					url: "https://vsco.co/vsco/media/" + match[1],
+					url: "https://vsco.co/vsco/media/" + id,
 					method: "GET",
 					onload: function(resp) {
 						if (resp.readyState !== 4)
@@ -36643,11 +36644,24 @@ var $$IMU_EXPORT$$;
 							}
 						};
 
-						var match = resp.responseText.match(/<meta\s+(?:data-rh=\S+\s+)?property=["']og:description["']\s+content=["'](.*?)["']/);
-						if (match) {
-							obj.extra.caption = decode_entities(match[1]);
+						// If there's no description, this returns "See more of ...'s content on VSCO"
+						if (false) {
+							var match = resp.responseText.match(/<meta\s+(?:data-rh=\S+\s+)?property=["']og:description["']\s+content=["'](.*?)["']/);
+							if (match) {
+								obj.extra.caption = decode_entities(match[1]);
+							} else {
+								console_error("Unable to find caption", resp);
+							}
 						} else {
-							console_error("Unable to find caption", resp);
+							try {
+								var match = resp.responseText.match(/window\.__PRELOADED_STATE__\s*=\s*({.*?});?\s*<\/script/);
+								if (match) {
+									var json = JSON_parse(match[1]);
+									obj.extra.caption = json.medias.byId[id].media.description;
+								}
+							} catch (e) {
+								console_error(e);
+							}
 						}
 
 						return options.cb(obj);
