@@ -25,6 +25,7 @@
 // @grant             GM.getValue
 // @grant             GM_getValue
 // @grant             GM_registerMenuCommand
+// @grant             GM_unregisterMenuCommand
 // @grant             GM_addValueChangeListener
 // @grant             GM_openInTab
 // @grant             GM.openInTab
@@ -259,6 +260,7 @@ var $$IMU_EXPORT$$;
 	}
 
 	var register_menucommand = nullfunc;
+	var unregister_menucommand = nullfunc;
 	var num_menucommands = 0;
 
 	if (is_userscript) {
@@ -266,7 +268,20 @@ var $$IMU_EXPORT$$;
 			register_menucommand = function(name, func) {
 				num_menucommands++;
 
-				return GM_registerMenuCommand("[" + num_menucommands + "] " + name, func);
+				var caption = "[" + num_menucommands + "] " + name;
+				var id = GM_registerMenuCommand(caption, func);
+
+				if (id === undefined || id === null)
+					id = caption;
+				return id;
+			};
+		}
+
+		if (typeof(GM_unregisterMenuCommand) !== "undefined") {
+			unregister_menucommand = function(id) {
+				num_menucommands--;
+
+				return GM_unregisterMenuCommand(id);
 			};
 		}
 	}
@@ -47247,6 +47262,24 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/cdn-content\/+[0-9]+\/+[^/]+\/+[0-9]+\/+)thumbs\/+img/, "$1img");
 		}
 
+		if (domain_nosub === "wankerson.com" && /^(?:thumbs|pics)\./.test(domain)) {
+			// http://thumbs.wankerson.com/free-porn/cosplay/cosplay-erotic-cosplay-5c7b89ec5df6f-3.jpg
+			//   http://pics.wankerson.com/free-porn/cosplay/cosplay-erotic-cosplay-5c7b89ec5df6f-3.jpg
+			newsrc = src.replace(/:\/\/thumbs\./, "://pics.");
+			if (newsrc !== src)
+				return newsrc;
+
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+(free-porn\/+.+-[0-9a-f]{10,}-[0-9]+\.)/);
+			if (match) {
+				return {
+					url: src,
+					extra: {
+						page: "http://www.wankerson.com/porn/" + match[1] + "html"
+					}
+				};
+			}
+		}
+
 
 
 
@@ -54445,8 +54478,34 @@ var $$IMU_EXPORT$$;
 			}
 		};
 
-		if (settings.highlightimgs_enable)
-			register_menucommand("Highlight images", highlight_images);
+		(function() {
+			var added = false;
+			var id = null;
+
+			var update_button = function() {
+				if (settings.highlightimgs_enable) {
+					if (!added) {
+						id = register_menucommand("Highlight images", highlight_images);
+						added = true;
+					}
+				} else {
+					if (added) {
+						unregister_menucommand(id);
+						added = false;
+					}
+				}
+			};
+
+			update_button();
+
+			var origfunc = settings_meta.highlightimgs_enable.onupdate;
+			settings_meta.highlightimgs_enable.onupdate = function() {
+				update_button();
+
+				if (origfunc)
+					return origfunc.apply(this, arguments);
+			};
+		})();
 
 		document.addEventListener('keydown', function(event) {
 			if (!mouseover_enabled())
