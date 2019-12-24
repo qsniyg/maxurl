@@ -3653,7 +3653,8 @@ var $$IMU_EXPORT$$;
 				//   http://blogfiles.pstatic.net/20140302_211/ttlyoung333_1393761808293P7TKj_JPEG/17.jpg -- cropped and upscaled (same as type=w1 and type=w2)
 				//   http://blogfiles.naver.net/20140302_211/ttlyoung333_1393761808293P7TKj_JPEG/17.jpg -- works
 				// https for naver.net doesn't work (invalid certificate)
-				.replace(/^https?(:\/\/blogfiles\.)pstatic\.net\/+/, "http$1naver.net/");
+				.replace(/(:\/\/blogfiles\.)pstatic\.net\/+/, "$1naver.net/")
+				.replace(/^https?(:\/\/[^/.]*(?:phinf|files)\.naver\.net\/)/, "http$1");
 			if (newsrc !== src)
 				return newsrc;
 
