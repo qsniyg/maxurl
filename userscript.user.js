@@ -9728,9 +9728,18 @@ var $$IMU_EXPORT$$;
 			// http://0.t.imgbox.com/eLFM9k0c.jpg
 			//   https://thumbs3.imgbox.com/e4/3f/eLFM9k0c_t.jpg
 			//   https://images3.imgbox.com/e4/3f/eLFM9k0c_o.jpg
-			return src
+			newsrc = src
 				.replace(/\/thumbs([0-9]*)\.imgbox\.com\//, "/images$1.imgbox.com/")
-				.replace(/_[a-z]*(\.[^/.]*)/, "_o$1");
+				.replace(/_[a-z](\.[^/.]*)/, "_o$1");
+			if (newsrc !== src)
+				return newsrc;
+
+			if (/\/(?:[0-9a-f]{2}\/+){2}[^/_.]+_o\./.test(src)) {
+				return {
+					url: src,
+					is_original: true
+				};
+			}
 		}
 
 		if ((domain_nosub === "steamstatic.com" && domain.match(/cdn\.[^.]*\.steamstatic\.com/)) ||
