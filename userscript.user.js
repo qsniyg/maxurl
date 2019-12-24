@@ -1114,15 +1114,12 @@ var $$IMU_EXPORT$$;
 		redirect_force_page: {
 			name: "Try finding original page/caption",
 			description: "Enables methods that use API calls for finding the original page or caption",
-			requires: {
-				redirect: true
-			},
 			example_websites: [
 				"Flickr",
 				"SmugMug",
 				"..."
 			],
-			category: "redirection"
+			category: "rules"
 		},
 		redirect_disable_for_responseheader: {
 			name: "Disable when response headers need modifying",
