@@ -388,6 +388,7 @@ var $$IMU_EXPORT$$;
 		null_if_no_change: false,
 		catch_errors: true,
 		use_cache: true,
+		use_api_cache: true,
 		urlcache_time: 60*60,
 		iterations: 200,
 		exclude_problems: [
@@ -1830,7 +1831,7 @@ var $$IMU_EXPORT$$;
 			],
 			onupdate: function() {
 				update_rule_setting();
-				api_cache.clear();
+				real_api_cache.clear();
 			}
 		},
 		browser_cookies: {
@@ -2129,7 +2130,7 @@ var $$IMU_EXPORT$$;
 	};
 
 	var url_cache = new Cache();
-	var api_cache = new Cache();
+	var real_api_cache = new Cache();
 	var lib_cache = new Cache();
 	var cookie_cache = new Cache();
 
@@ -2851,7 +2852,7 @@ var $$IMU_EXPORT$$;
 	};
 
 	var common_functions = {};
-	common_functions.fetch_imgur_webpage = function(do_request, headers, url, cb) {
+	common_functions.fetch_imgur_webpage = function(do_request, api_cache, headers, url, cb) {
 		var cache_key = "imgur_webpage:" + url.replace(/^https?:\/\/(?:www\.)?imgur/, "imgur").replace(/[?#].*/, "");
 
 		var apply_headers = false;
@@ -2936,7 +2937,7 @@ var $$IMU_EXPORT$$;
 		api_cache.fetch(cache_key, cb, real_fetch);
 	};
 
-	common_functions.deviantart_page_from_id = function(do_request, id, cb) {
+	common_functions.deviantart_page_from_id = function(do_request, api_cache, id, cb) {
 		var cache_key = "deviantart_page_from_id:" + id;
 
 		api_cache.fetch(cache_key, cb, function (done) {
@@ -3034,8 +3035,8 @@ var $$IMU_EXPORT$$;
 		return null;
 	};
 
-	common_functions.deviantart_fullimage = function(options, src, id, cb) {
-		common_functions.deviantart_page_from_id(options.do_request, id, function(result) {
+	common_functions.deviantart_fullimage = function(options, api_cache, src, id, cb) {
+		common_functions.deviantart_page_from_id(options.do_request, api_cache, id, function(result) {
 			if (!result) {
 				return cb(null);
 			}
@@ -3193,7 +3194,7 @@ var $$IMU_EXPORT$$;
 		});
 	}
 
-	common_functions.get_testcookie_cookie = function(options, site, cb) {
+	common_functions.get_testcookie_cookie = function(options, api_cache, site, cb) {
 		var cache_key = "testcookie_cookie:" + site;
 		var do_request = options.do_request;
 
@@ -3375,6 +3376,11 @@ var $$IMU_EXPORT$$;
 
 			return options.exclude_problems.indexOf(problem) >= 0;
 		};
+
+		var api_cache = real_api_cache;
+		if (options.use_api_cache === false) {
+			api_cache = new Cache();
+		}
 
 		var newsrc, i, id, size, origsize, regex, match;
 
@@ -9938,7 +9944,7 @@ var $$IMU_EXPORT$$;
 			if (match) {
 				id = match[1];
 
-				common_functions.deviantart_page_from_id(options.do_request, id, function(result) {
+				common_functions.deviantart_page_from_id(options.do_request, api_cache, id, function(result) {
 					options._internal_info.deviantart_page = result.finalUrl || true;
 
 					if (!result) {
@@ -9948,7 +9954,7 @@ var $$IMU_EXPORT$$;
 						});
 					}
 
-					common_functions.deviantart_fullimage(options, src, id, function(obj) {
+					common_functions.deviantart_fullimage(options, api_cache, src, id, function(obj) {
 						if (!obj) {
 							obj = {
 								url: src,
@@ -10242,7 +10248,7 @@ var $$IMU_EXPORT$$;
 							 "$1$2$3/$4");
 			//console_log(id);
 			if (id !== src && options && options.cb && options.do_request) {
-				common_functions.get_testcookie_cookie(options, "http://www." + domain_nosub + "/", function (cookie) {
+				common_functions.get_testcookie_cookie(options, api_cache, "http://www." + domain_nosub + "/", function (cookie) {
 					if (!cookie) {
 						return options.cb(null);
 					}
@@ -11568,7 +11574,7 @@ var $$IMU_EXPORT$$;
 					nsfw_headers = options.rule_specific.imgur_nsfw_headers;
 				}
 
-				common_functions.fetch_imgur_webpage(options.do_request, nsfw_headers, baseobj.extra.page, function(data) {
+				common_functions.fetch_imgur_webpage(options.do_request, api_cache, nsfw_headers, baseobj.extra.page, function(data) {
 					if (!data) {
 						return options.cb(obj);
 					}
@@ -22970,7 +22976,9 @@ var $$IMU_EXPORT$$;
 		if (domain === "i.reddituploads.com") {
 			// https://i.reddituploads.com/59933254fd6e44228dc5f0fef3d850af?fit=max&h=1536&w=1536&s=6db141a8ef89df0720e6666f3e7e26bf
 			//   https://i.reddituploads.com/59933254fd6e44228dc5f0fef3d850af
-			return src.replace(/(:\/\/[^/]*\/[0-9a-f]+)\?.*$/, "$1");
+			newsrc = src.replace(/(:\/\/[^/]*\/[0-9a-f]+)\?.*$/, "$1");
+			if (newsrc !== src)
+				return newsrc;
 		}
 
 		if ((domain_nosub === "redditmedia.com" ||
@@ -22988,6 +22996,7 @@ var $$IMU_EXPORT$$;
 						fill_object: false,
 						iterations: 3,
 						use_cache: false,
+						use_api_cache: false,
 						null_if_no_change: true,
 						do_request: function(){},
 						cb: function(){}
@@ -23262,7 +23271,7 @@ var $$IMU_EXPORT$$;
 				var id = src.replace(/.*-([0-9a-z]+)\.[^/.]*$/, "$1");
 				//id = parseInt(id, 36) - 28298170368;
 
-				return common_functions.deviantart_fullimage(options, src, id, options.cb);
+				return common_functions.deviantart_fullimage(options, api_cache, src, id, options.cb);
 			})();
 
 			return {
@@ -48518,7 +48527,7 @@ var $$IMU_EXPORT$$;
 					};
 
 					if (!window.runSlots) {
-						common_functions.fetch_imgur_webpage(options.do_request, undefined, options.host_url, function(data) {
+						common_functions.fetch_imgur_webpage(options.do_request, real_api_cache, undefined, options.host_url, function(data) {
 							if (!data || !data.imageinfo) {
 								return options.cb(find_next_el());
 							}
@@ -49085,7 +49094,7 @@ var $$IMU_EXPORT$$;
 
 	function clear_all_caches() {
 		url_cache.clear();
-		api_cache.clear();
+		real_api_cache.clear();
 		cookie_cache.clear();
 	}
 	bigimage_recursive.clear_caches = clear_all_caches;
