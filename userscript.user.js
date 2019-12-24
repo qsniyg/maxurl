@@ -3621,7 +3621,7 @@ var $$IMU_EXPORT$$;
 			// http://dbscthumb.phinf.naver.net/4209_000_1/20160408160657214_SYEAAJM97.jpg/5%EA%B0%90%EA%B5%AC.jpg?type=r160
 			//   http://dbscthumb-phinf.pstatic.net/4209_000_1/20160408160657214_SYEAAJM97.jpg/5%EA%B0%90%EA%B5%AC.jpg?type=r160
 
-			return src
+			newsrc = src
 				.replace(/postfiles[^/.]*\./, "blogfiles.")
 				.replace(/m?blogthumb[^./]*/, "blogfiles")
 				.replace(/blogfiles[^/.]*\./, "blogfiles.")
@@ -3652,7 +3652,20 @@ var $$IMU_EXPORT$$;
 				// http://mblogthumb4.phinf.naver.net/20140302_211/ttlyoung333_1393761808293P7TKj_JPEG/17.jpg?type=w2 -- normal
 				//   http://blogfiles.pstatic.net/20140302_211/ttlyoung333_1393761808293P7TKj_JPEG/17.jpg -- cropped and upscaled (same as type=w1 and type=w2)
 				//   http://blogfiles.naver.net/20140302_211/ttlyoung333_1393761808293P7TKj_JPEG/17.jpg -- works
-				.replace(/(:\/\/blogfiles\.)pstatic\.net\/+/, "$1naver.net/");
+				// https for naver.net doesn't work (invalid certificate)
+				.replace(/^https?(:\/\/blogfiles\.)pstatic\.net\/+/, "http$1naver.net/");
+			if (newsrc !== src)
+				return newsrc;
+
+			return {
+				url: src,
+				headers: {
+					Referer: ""
+				},
+				referer_ok: {
+					same_domain_nosub: true
+				}
+			};
 		}
 
 		if ((domain_nosub === "daumcdn.net" ||
@@ -35413,7 +35426,9 @@ var $$IMU_EXPORT$$;
 			//   https://s3-media2.fl.yelpcdn.com/bphoto/7jLx4f5B4asxBP2MX1Jx8A/o.jpg
 			// https://s3-media2.fl.yelpcdn.com/bphoto/7jLx4f5B4asxBP2MX1Jx8A/1000s.jpg -- upscaled?
 			//   https://s3-media2.fl.yelpcdn.com/bphoto/7jLx4f5B4asxBP2MX1Jx8A/o.jpg
-			return src.replace(/(\/bphoto\/+[^/]*\/+)(?:[0-9]+s|[a-z]+)(\.[^/.]*)(?:[?#].*)?$/,
+			// https://s3-media0.fl.yelpcdn.com/photo/yydu_auomtJtS1sUtf2O4Q/180s.jpg
+			//   https://s3-media0.fl.yelpcdn.com/photo/yydu_auomtJtS1sUtf2O4Q/o.jpg
+			return src.replace(/(\/b?photo\/+[^/]*\/+)(?:[0-9]+s|[a-z]+)(\.[^/.]*)(?:[?#].*)?$/,
 							   "$1o$2");
 		}
 
