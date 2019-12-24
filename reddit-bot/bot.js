@@ -365,7 +365,7 @@ function dourl_inner(big, url, post, options) {
 
             var filesize_text = "";
             var mbs = newdata.length / 1024 / 1024;
-            if (mbs > 5) {
+            if (mbs > 2) {
               filesize_text = ", " + mbs.toFixed(1) + "MB";
             }
             var linkcomment = "";
