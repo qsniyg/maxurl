@@ -36615,11 +36615,11 @@ var $$IMU_EXPORT$$;
 			if (newsrc !== src)
 				return newsrc;
 
-			match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:aws-[^/]+\/+)?[0-9a-f]{6}\/+[0-9]+\/+([0-9a-f]{20,})\/+/);
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:(?:aws-[^/]+\/+)?[0-9a-f]{6}\/+[0-9]+|[0-9]+\/+[0-9a-f]{10,})\/+([0-9a-f]{20,})\/+/);
 			if (match && options && options.force_page && options.cb && options.do_request) {
 				options.do_request({
 					url: "https://vsco.co/vsco/media/" + match[1],
-					method: "HEAD",
+					method: "GET",
 					onload: function(resp) {
 						if (resp.readyState !== 4)
 							return;
@@ -36627,12 +36627,21 @@ var $$IMU_EXPORT$$;
 						if (resp.status !== 200)
 							return options.cb(null);
 
-						return options.cb({
+						var obj = {
 							url: src,
 							extra: {
 								page: resp.finalUrl
 							}
-						});
+						};
+
+						var match = resp.responseText.match(/<meta\s+(?:data-rh=\S+\s+)?property=["']og:description["']\s+content=["'](.*?)["']/);
+						if (match) {
+							obj.extra.caption = decode_entities(match[1]);
+						} else {
+							console_error("Unable to find caption", resp);
+						}
+
+						return options.cb(obj);
 					}
 				});
 
