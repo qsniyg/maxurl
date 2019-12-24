@@ -52953,7 +52953,7 @@ var $$IMU_EXPORT$$;
 					if (!el)
 						break;
 
-					var style = window.getComputedStyle(el, null) || el.style;
+					var style = get_computed_style(el);
 					if (!style)
 						break;
 
@@ -53855,12 +53855,15 @@ var $$IMU_EXPORT$$;
 				};
 
 				try {
+					var force_page = settings.mouseover_ui_caption && settings.redirect_force_page;
+
 					bigimage_recursive_loop(source.src, {
 						fill_object: true,
 						host_url: window.location.href,
 						document: document,
 						window: window,
 						element: source.el,
+						force_page: force_page,
 						cb: realcb
 					}, function(obj, finalcb) {
 						if (_nir_debug_)
@@ -53964,7 +53967,7 @@ var $$IMU_EXPORT$$;
 				el = popup_el;
 
 			var options = {
-				element: popup_el,
+				element: el,
 				document: document,
 				window: get_window(),
 				host_url: window.location.href,
@@ -54024,6 +54027,10 @@ var $$IMU_EXPORT$$;
 		}
 
 		function trigger_gallery(nextprev, cb) {
+			if (!cb) {
+				cb = nullfunc;
+			}
+
 			wrap_gallery_func(nextprev, undefined, function(newel) {
 				if (newel) {
 					var source = find_source([newel]);
