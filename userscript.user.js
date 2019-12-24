@@ -51782,7 +51782,13 @@ var $$IMU_EXPORT$$;
 			if (el) {
 				do {
 					if (el.title || el.alt) {
-						return el.title || el.alt;
+						var caption = el.title || el.alt;
+
+						// When opening an image in a new tab in Firefox, alt is set to the src
+						if (caption === el.src)
+							return null;
+
+						return caption;
 					}
 				} while ((el = el.parentElement));
 			}
