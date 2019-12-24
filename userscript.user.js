@@ -54395,6 +54395,7 @@ var $$IMU_EXPORT$$;
 					fill_object: false,
 					exclude_problems: [],
 					use_cache: false,
+					use_api_cache: false,
 					cb: function() {},
 					do_request: function() {}
 				});
