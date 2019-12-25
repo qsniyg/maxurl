@@ -47307,6 +47307,18 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/data\/+share\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}[0-9a-f]{10,})_[smb](\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		}
 
+		if (domain === "dto9r5vaiz7bu.cloudfront.net") {
+			// https://dto9r5vaiz7bu.cloudfront.net/rw50fzhfrrkwl/bug_council_thumbnail.png
+			//   https://dto9r5vaiz7bu.cloudfront.net/rw50fzhfrrkwl/source.png -- 1920x1080
+			return src.replace(/^([a-z]+:\/\/[^/]+\/+[0-9a-z]{10,}\/+)[_a-z]+(\.[^/.]+)(?:[?#].*)?$/, "$1source$2");
+		}
+
+		if (domain_nowww === "robertsspaceindustries.com") {
+			// https://robertsspaceindustries.com/media/2pqqtblh82ujhr/heap_infobox/Thecaptain2.png
+			//   https://robertsspaceindustries.com/media/2pqqtblh82ujhr/source/Thecaptain2.png
+			return src.replace(/(\/media\/+[0-9a-z]{10,}\/+)[_a-z]+\/+/, "$1source/");
+		}
+
 
 
 
