@@ -10158,12 +10158,29 @@ var $$IMU_EXPORT$$;
 			(domain_nosub === "pixroute.com" && domain.match(/img[0-9]*\./))) {
 			// http://50.7.164.242:8182/i/05/00355/qpjey5skv52d_t.jpg
 			//   http://50.7.164.242:8182/i/05/00355/qpjey5skv52d.jpg
-			return {
-				url: src.replace(/(\/i\/.*\/[^/.]*)_t(\.[^/.]*)$/, "$1$2"),
+			newsrc = src.replace(/(\/i\/.*\/[^/.]*)_t(\.[^/.]*)$/, "$1$2");
+
+			obj = {
+				url: src,
 				headers: {
 					Referer: ""
-				}
+				},
+				bad_if: [
+					{
+						headers: {
+							"content-length": "40275",
+							"content-type": "image/jpeg",
+							"last-modified": "Sat, 09 Mar 2019 01:29:42 GMT"
+						}
+					}
+				]
 			};
+
+			if (newsrc !== src) {
+				return fillobj_urls(add_extensions_jpeg(newsrc), obj);
+			} else {
+				return obj;
+			}
 		}
 
 		if (domain_nosub === "imagetwist.com" && src.match(/:\/\/[^/]*\/+error\.[^/.]*(?:[?#].*)?$/)) {
@@ -17990,6 +18007,11 @@ var $$IMU_EXPORT$$;
 			// http://luxfon.com/min/201212/18906.jpg
 			//   http://luxfon.com/images/201212/luxfon.com_18906.jpg
 			domain_nowww === "luxfon.com" ||
+			// https://look.com.ua/pic/201608/2560x1600/look.com.ua-175355.jpg
+			//   https://look.com.ua/images/201608/look.com.ua_175355.jpg -- 404
+			//   https://www.look.com.ua/images/201608/look.com.ua-175355.jpg -- 404
+			//   https://www.look.com.ua/images/201608/175355.jpg -- 404
+			//domain_nowww === "look.com.ua" ||
 			// https://www.artleo.com/mini/201608/322769.jpg
 			//   https://www.artleo.com/images/201608/artleo.com_322769.jpg
 			domain_nowww === "artleo.com") {
@@ -47317,6 +47339,14 @@ var $$IMU_EXPORT$$;
 			// https://robertsspaceindustries.com/media/2pqqtblh82ujhr/heap_infobox/Thecaptain2.png
 			//   https://robertsspaceindustries.com/media/2pqqtblh82ujhr/source/Thecaptain2.png
 			return src.replace(/(\/media\/+[0-9a-z]{10,}\/+)[_a-z]+\/+/, "$1source/");
+		}
+
+		if (domain === "d111vui60acwyt.cloudfront.net") {
+			// https://d111vui60acwyt.cloudfront.net/stores/avatars/1160574/medium/tracer_12.jpg?1528303720
+			//   https://d111vui60acwyt.cloudfront.net/stores/avatars/1160574/original/tracer_12.jpg?1528303720
+			newsrc = src.replace(/(\/stores\/+avatars\/+[0-9]+\/+)[a-z]+\/+/, "$1original/");
+			if (newsrc !== src)
+				return newsrc;
 		}
 
 
