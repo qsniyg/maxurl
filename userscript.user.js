@@ -813,6 +813,9 @@ var $$IMU_EXPORT$$;
 		"Newsen": {
 			"ko": "뉴스엔"
 		},
+		"subcategory_rule_specific": {
+			"en": "Rule-specific"
+		},
 		"category_website": {
 			"en": "Website",
 			"ko": "웹사이트",
@@ -1043,6 +1046,7 @@ var $$IMU_EXPORT$$;
 		allow_apicalls: true,
 		allow_thirdparty_libs: is_userscript ? false : true,
 		//browser_cookies: true,
+		imgur_source: true,
 		// thanks to LukasThyWalls on github for the idea: https://github.com/qsniyg/maxurl/issues/75
 		bigimage_blacklist: "",
 		bigimage_blacklist_engine: "glob",
@@ -1860,6 +1864,11 @@ var $$IMU_EXPORT$$;
 			extension_only: true,
 			onupdate: update_rule_setting
 		},
+		imgur_source: {
+			name: "Source image for Imgur",
+			description: "If a source image is found for Imgur, try using it instead",
+			category: "rule_specific"
+		},
 		bigimage_blacklist: {
 			name: "Blacklist",
 			description: "A list of URLs that are blacklisted from being processed",
@@ -2030,6 +2039,9 @@ var $$IMU_EXPORT$$;
 			"video": "subcategory_video",
 			"ui": "subcategory_ui",
 			"popup_other": "subcategory_popup_other"
+		},
+		"rules": {
+			"rule_specific": "subcategory_rule_specific"
 		},
 		"extra": {
 			"replaceimages": "subcategory_replaceimages",
@@ -48835,6 +48847,8 @@ var $$IMU_EXPORT$$;
 			if (!options.allow_apicalls) {
 				options.do_request = null;
 			}
+
+			options.rule_specific.imgur_source = settings.imgur_source;
 
 			// Doing this here breaks things like Imgur, which will redirect to an image if a video was opened in a new tab
 			if (false && !settings.allow_video) {
