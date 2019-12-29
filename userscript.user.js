@@ -1867,7 +1867,8 @@ var $$IMU_EXPORT$$;
 		imgur_source: {
 			name: "Source image for Imgur",
 			description: "If a source image is found for Imgur, try using it instead",
-			category: "rule_specific"
+			category: "rule_specific",
+			onupdate: update_rule_setting
 		},
 		bigimage_blacklist: {
 			name: "Blacklist",
