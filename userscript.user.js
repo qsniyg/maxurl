@@ -10793,32 +10793,47 @@ var $$IMU_EXPORT$$;
 				.replace(/(?:~[^/.]*)?$/, "~original");
 		}
 
-		if (domain_nosub === "photobucket.com" && /^i[0-9]+\./.test(domain)) {
+		if (domain_nosub === "photobucket.com" && /^i(?:[0-9]+|mg)\./.test(domain)) {
 			// https://i785.photobucket.com/albums/yy140/Impzor/points.png?1568174690926&1568174703483 -- watermark
 			//   https://oi785.photobucket.com/albums/yy140/Impzor/points.png?1568174690926&1568174703483 -- no watermark
+			//   https://oi785.photobucket.com/albums/yy140/Impzor/points.png
 			//   http://s785.photobucket.com/user/Impzor/media/points.png.html?o=4
 			//   https://photobucket.com/gallery/https://s785.photobucket.com/user/Impzor/media/points.png.html?o=4
 			//   https://photobucket.com/gallery/user/Impzor/media/cGF0aDovcG9pbnRzLnBuZw==?ref=
 			//   atob: path:/points.png
+			// https://i785.photobucket.com/albums/yy140/Impzor/points.png?width=100&height=100&crop=1:1,smart
+			//   https://oi785.photobucket.com/albums/yy140/Impzor/points.png
 			// http://i843.photobucket.com/albums/zz352/loaloauk/dlp%20encounter/New%20Album%2042/4640363830_9e9c2ae51b_z.jpg~original
 			//   http://oi843.photobucket.com/albums/zz352/loaloauk/dlp%20encounter/New%20Album%2042/4640363830_9e9c2ae51b_z.jpg -- ~original works too
 			// http://i496.photobucket.com/albums/rr323/878990/555.jpg
 			//   http://oi496.photobucket.com/albums/rr323/878990/555.jpg
 			//   https://photobucket.com/gallery/user/878990/media/bWVkaWFJZDoyMTgwODM0OA==/?ref=
+			newsrc = src.replace(/\?.*/, "");
+			if (newsrc !== src)
+				return newsrc;
+
 			newsrc = src.replace(/(?:~[^/.]*)?(?:[?#].*)?$/, "~original");
 			if (newsrc !== src)
 				return newsrc;
 
-			return src.replace(/:\/\/i([0-9]+\..*?)(?:~original)?(?:[?#].*)?$/, "://oi$1");
+			return src.replace(/:\/\/i((?:[0-9]+|mg)\..*?)(?:~original)?(?:[?#].*)?$/, "://oi$1");
 		}
 
-		if (domain_nosub === "photobucket.com" && /^o?i[0-9]*\./.test(domain)) {
-			match = src.match(/^[a-z]+:\/\/[a-z]*([0-9]+)\.[^/]*\/+albums\/+[a-z]{2}[0-9]+\/+([^/]+)\/+([^/]+\.[^/.~]*?)(?:~[^/.]*)?(?:[?#].*)?$/);
+		if (domain_nosub === "photobucket.com" && /^o?i(?:[0-9]*|mg)\./.test(domain)) {
+			match = src.match(/^[a-z]+:\/\/[a-z]*([0-9]+)?\.[^/]*\/+albums\/+[a-z]{1,2}[0-9]+\/+([^/]+)\/+([^/]+\.[^/.~]*?)(?:~[^/.]*)?(?:[?#].*)?$/);
 			if (match) {
+				var domain = "www";
+				if (match[1])
+					domain = "s" + match[1];
+
+				var page = "http://" + domain + ".photobucket.com/user/" + match[2] + "/media/" + match[3] + ".html";
 				return {
 					url: src,
+					headers: {
+						Referer: page
+					},
 					extra: {
-						page: "http://s" + match[1] + ".photobucket.com/user/" + match[2] + "/media/" + match[3] + ".html"
+						page: page
 					}
 				};
 			}
