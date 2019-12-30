@@ -9588,6 +9588,11 @@ var $$IMU_EXPORT$$;
 		if (domain_nosub === "tumblr.com" && /media\.tumblr\.com$/.test(domain) && options && options.element &&
 			options.do_request && options.cb && options.rule_specific && options.rule_specific.tumblr_api_key) {
 			// thanks to dogancelik on github: https://github.com/qsniyg/maxurl/issues/88#issuecomment-569612947
+			// no trail:
+			//   https://samirafee.tumblr.com/post/189953679332/lake-neusiedl-neusiedlersee-fert%C3%B6-largest
+			//   https://samirafee.tumblr.com/post/189952698762/cat-art-by-elizabeth-katzenlinemensite
+			// trail:
+			//   https://samirafee.tumblr.com/post/189567617202/kerovous-own-picture-337-my-friend-and
 			var apikey = options.rule_specific.tumblr_api_key;
 
 			var get_post = function(blogname, postid, cb) {
@@ -9644,7 +9649,9 @@ var $$IMU_EXPORT$$;
 			};
 
 			var find_media_from_post_mediakey = function(post, mediakey) {
-				post = post.trail[0];
+				if ((!post.content || !post.content[0]) && post.trail[0])
+					post = post.trail[0];
+
 				for (var i = 0; i < post.content.length; i++) {
 					if (!post.content[i].media)
 						continue;
@@ -9652,6 +9659,16 @@ var $$IMU_EXPORT$$;
 					if (post.content[i].media[0].media_key === mediakey) {
 						return post.content[i].media;
 					}
+				}
+
+				return null;
+			};
+
+			var find_blogname_from_url = function(url) {
+				match = url.match(/^[a-z]+:\/\/([^/.]+)\.tumblr\.com\//);
+				if (match) {
+					if (match[1] !== "www" && match[1] !== "support")
+						return match[1];
 				}
 
 				return null;
@@ -9669,9 +9686,36 @@ var $$IMU_EXPORT$$;
 				return null;
 			};
 
+			var try_finding_info = function() {
+				var info = find_blogname_id_from_url(options.host_url);
+				if (info)
+					return info;
+
+				var blogname = find_blogname_from_url(options.host_url);
+				if (blogname) {
+					var obj = {
+						blogname: blogname
+					};
+
+					var currentel = options.element;
+					while ((currentel = currentel.parentElement)) {
+						if (currentel.tagName === "ARTICLE") {
+							var id = currentel.getAttribute("id");
+							if (id) {
+								obj.postid = id;
+								return obj;
+							}
+						}
+					}
+				}
+
+				// TODO: tumblr homepage
+				return null;
+			};
+
 			var mediakey = find_mediakey_from_url(src);
 			if (mediakey) {
-				var info = find_blogname_id_from_url(options.host_url);
+				var info = try_finding_info();
 				if (info) {
 					get_post(info.blogname, info.postid, function(data) {
 						var media = find_media_from_post_mediakey(data, mediakey);
