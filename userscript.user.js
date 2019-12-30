@@ -9707,9 +9707,28 @@ var $$IMU_EXPORT$$;
 							}
 						}
 					}
+				} else {
+					// Tumblr homepage
+					var currentel = options.element;
+					while ((currentel = currentel.parentElement)) {
+						if (currentel.tagName === "DIV" && currentel.getAttribute("data-json")) {
+							var jsondata = currentel.getAttribute("data-json");
+							try {
+								var json = JSON_parse(jsondata);
+								return {
+									blogname: json.tumblelog,
+									postid: json["post-id"]
+								};
+							} catch(e) {
+								console_error(e);
+							}
+
+							// there likely won't be anything after this
+							return null;
+						}
+					}
 				}
 
-				// TODO: tumblr homepage
 				return null;
 			};
 
