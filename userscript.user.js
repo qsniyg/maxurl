@@ -9619,10 +9619,15 @@ var $$IMU_EXPORT$$;
 								var json = JSON_parse(resp.responseText);
 								var post = json.response.posts[0];
 
-								if ((!post.content || !post.content[0]) && post.trail[0])
-									post = post.trail[0];
+								var content = post.content;
 
-								return done(post.content, 6*60*60);
+								if (post.trail) {
+									for (var i = 0; i < post.trail.length; i++) {
+										[].push.apply(content, post.trail[i].content);
+									}
+								}
+
+								return done(content, 6*60*60);
 							} catch (e) {
 								console_error(e, resp);
 								return done(null, false);
