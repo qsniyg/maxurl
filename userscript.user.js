@@ -6339,7 +6339,7 @@ var $$IMU_EXPORT$$;
 			//   http://photos.demandstudios.com/getty/article/240/3/178773543.jpg
 			// http://i0.wp.com/mmsns.qpic.cn/mmsns/7KE858KbWtJWJFCnub4OrBAHial0SicILILia7G2I1h6VwXG5cWSWpnPQ/0 -- redirect error, but works
 			// https://i1.wp.com/images-na.ssl-images-amazon.com/images/G/01/aplusautomation/vendorimages/73da407a-f7e0-4d9a-8943-178d8838be48.jpg._CB329731638_.jpg?ssl=1
-			newsrc = remove_queries(src, ["w", "h", "resize"]);
+			newsrc = remove_queries(src, ["w", "h", "resize", "zoom", "quality", "strip"]);
 			if (newsrc !== src)
 				return newsrc;
 
@@ -9586,7 +9586,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nosub === "tumblr.com" && /media\.tumblr\.com$/.test(domain) && options && options.element &&
-			options.do_request && options.cb && options.rule_specific && options.rule_specific.tumblr_api_key) {
+			options.do_request && options.cb && options.rule_specific) {
 			// thanks to dogancelik on github: https://github.com/qsniyg/maxurl/issues/88#issuecomment-569612947
 			// no trail:
 			//   https://samirafee.tumblr.com/post/189953679332/lake-neusiedl-neusiedlersee-fert%C3%B6-largest
@@ -9595,7 +9595,7 @@ var $$IMU_EXPORT$$;
 			//   https://samirafee.tumblr.com/post/189567617202/kerovous-own-picture-337-my-friend-and
 			var apikey = options.rule_specific.tumblr_api_key;
 
-			var get_post = function(blogname, postid, cb) {
+			var get_post_api = function(blogname, postid, cb) {
 				var cache_key = "tumblr_api_blog:" + blogname + ":post:" + postid;
 				api_cache.fetch(cache_key, cb, function(done) {
 					options.do_request({
@@ -9686,12 +9686,35 @@ var $$IMU_EXPORT$$;
 				return null;
 			};
 
+			var find_blogname_from_head = function() {
+				if (!options.document)
+					return null;
+
+				var links = options.document.getElementsByTagName("link");
+				for (var i = 0; i < links.length; i++) {
+					var href = links[i].href;
+					if (!href)
+						continue;
+
+					var match = href.match(/^android-app:\/\/com\.tumblr\/tumblr\/x-callback-url\/blog\?blogName=(.*?)(?:[&%].*)?$/);
+					if (match) {
+						return match[1];
+					}
+				}
+
+				return null;
+			};
+
 			var try_finding_info = function() {
 				var info = find_blogname_id_from_url(options.host_url);
 				if (info)
 					return info;
 
 				var blogname = find_blogname_from_url(options.host_url);
+				if (!blogname) {
+					blogname = find_blogname_from_head();
+				}
+
 				if (blogname) {
 					var obj = {
 						blogname: blogname
@@ -9707,7 +9730,7 @@ var $$IMU_EXPORT$$;
 							}
 						}
 					}
-				} else {
+				} else if (host_domain_nowww === "tumblr.com") {
 					// Tumblr homepage
 					var currentel = options.element;
 					while ((currentel = currentel.parentElement)) {
@@ -9736,7 +9759,7 @@ var $$IMU_EXPORT$$;
 			if (mediakey) {
 				var info = try_finding_info();
 				if (info) {
-					get_post(info.blogname, info.postid, function(data) {
+					get_post_api(info.blogname, info.postid, function(data) {
 						var media = find_media_from_post_mediakey(data, mediakey);
 						if (!media)
 							return options.cb(null);
