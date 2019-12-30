@@ -52052,11 +52052,19 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		function strip_whitespace(str) {
-			if (!str || typeof str !== "string")
-				return str;
-
+		function normalize_whitespace(str) {
+			// https://stackoverflow.com/a/11305926
 			return str
+				.replace(/[\u200B-\u200D\uFEFF]/g, '')
+				.replace(/[\u2800]/g, ' ');
+		}
+
+		function strip_whitespace(str) {
+			if (!str || typeof str !== "string") {
+				return str;
+			}
+
+			return normalize_whitespace(str)
 				.replace(/^\s+/, "")
 				.replace(/\s+$/, "");
 		}
@@ -52097,7 +52105,7 @@ var $$IMU_EXPORT$$;
 
 		function get_caption(obj, el) {
 			if (obj && obj.extra && obj.extra.caption) {
-				return obj.extra.caption;
+				return strip_whitespace(obj.extra.caption);
 			}
 
 			if (el) {
@@ -52109,7 +52117,7 @@ var $$IMU_EXPORT$$;
 						if (caption === el.src)
 							return null;
 
-						return caption;
+						return strip_whitespace(caption);
 					}
 				} while ((el = el.parentElement));
 			}
@@ -52694,7 +52702,7 @@ var $$IMU_EXPORT$$;
 					if (caption && settings.mouseover_ui_caption) {
 						// /10 is arbitrary, but seems to work well
 						var chars = parseInt(Math.max(10, Math.min(60, (popup_width - topbarel.clientWidth) / 10)));
-						var caption_regex = new RegExp("^((?:.{" + chars + "}|.{0," + chars + "}[\\r\\n]))[\\s\\S]+$");
+						var caption_regex = new RegExp("^((?:.{" + chars + "}|.{0," + chars + "}[\\r\\n]))[\\s\\S]+?$");
 
 						var caption_btn = addbtn({
 							truncated: caption.replace(caption_regex, "$1..."),
