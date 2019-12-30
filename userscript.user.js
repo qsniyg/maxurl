@@ -23957,6 +23957,32 @@ var $$IMU_EXPORT$$;
 					return image_url.replace(/.*\/([^/.]*)\.[^/.]*(?:[?#].*)?$/, "$1");
 				};
 
+				var parse_caption = function(caption) {
+					if (typeof caption === "string")
+						return caption;
+
+					if (caption.text)
+						return caption.text;
+
+					if (caption.edges)
+						return caption.edges[0].node.text;
+
+					return null;
+				};
+
+				var get_caption = function(item) {
+					if (item.caption)
+						return parse_caption(item.caption);
+
+					if (item.title)
+						return parse_caption(item.title);
+
+					if (item.edge_media_to_caption)
+						return parse_caption(item.edge_media_to_caption);
+
+					return undefined;
+				};
+
 				var image_in_objarr = function(image, objarr) {
 					var imageid = get_imageid(image);
 
@@ -23987,6 +24013,7 @@ var $$IMU_EXPORT$$;
 						if (maxobj !== null) {
 							image = {
 								src: maxobj.url,
+								caption: get_caption(item),
 								width: maxobj.width,
 								height: maxobj.height
 							};
@@ -24055,6 +24082,7 @@ var $$IMU_EXPORT$$;
 						images.push({
 							src: image,
 							video: node.video_url,
+							caption: get_caption(media),
 							width: width,
 							height: height
 						});
@@ -24077,13 +24105,20 @@ var $$IMU_EXPORT$$;
 				};
 
 				var image_to_obj = function(image) {
+					var extra = null;
+					if (image.caption)
+						extra = {caption: image.caption};
+
 					if (image.video) {
 						return [
-							{url: image.video, video: true},
-							image.src
+							{url: image.video, video: true, extra: extra},
+							{url: image.src, extra: extra}
 						];
 					} else {
-						return image.src;
+						return {
+							url: image.src,
+							extra: extra
+						};
 					}
 				};
 
@@ -47543,6 +47578,15 @@ var $$IMU_EXPORT$$;
 			// https://cdn1.fireworktv.com/medias/2019/8/21/1566402222-ajgwnxcr/540_960/datauser0com.loopnow.kaminocacheFireworkDownloadez46ig4u2t0y.jpg
 			//   https://cdn1.fireworktv.com/medias/2019/8/21/1566402222-ajgwnxcr/original/datauser0com.loopnow.kaminocacheFireworkDownloadez46ig4u2t0y.jpg
 			return src.replace(/(\/medias\/+[0-9]{4}\/+(?:[0-9]{1,2}\/+){2}[^/]+\/+)[0-9]+_[0-9]+\/+/, "$1original/");
+		}
+
+		if (domain_nosub === "highwebmedia.com" && /^(?:ssl-)?ccstatic\./.test(domain)) {
+			// https://ssl-ccstatic.highwebmedia.com/tsdefaultassets/locked_rectangle4.png
+			if (/\/tsdefaultassets\/+locked_rectangle[0-9]*\./.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
 		}
 
 
