@@ -9586,14 +9586,19 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nosub === "tumblr.com" && /media\.tumblr\.com$/.test(domain) && options && options.element &&
-			options.do_request && options.cb && options.rule_specific) {
+			options.do_request && options.cb) {
 			// thanks to dogancelik on github: https://github.com/qsniyg/maxurl/issues/88#issuecomment-569612947
 			// no trail:
 			//   https://samirafee.tumblr.com/post/189953679332/lake-neusiedl-neusiedlersee-fert%C3%B6-largest
 			//   https://samirafee.tumblr.com/post/189952698762/cat-art-by-elizabeth-katzenlinemensite
 			// trail:
 			//   https://samirafee.tumblr.com/post/189567617202/kerovous-own-picture-337-my-friend-and
-			var apikey = options.rule_specific.tumblr_api_key;
+			// custom domain:
+			//   https://takashiyasui.com/
+
+			var apikey = null;
+			if (options.rule_specific && options.rule_specific.tumblr_api_key)
+				apikey = options.rule_specific.tumblr_api_key;
 
 			var get_post_api = function(blogname, postid, cb) {
 				var cache_key = "tumblr_api_blog:" + blogname + ":post:" + postid;
@@ -9612,8 +9617,12 @@ var $$IMU_EXPORT$$;
 
 							try {
 								var json = JSON_parse(resp.responseText);
-								var post = json.response.posts[0]
-								return done(post, 6*60*60);
+								var post = json.response.posts[0];
+
+								if ((!post.content || !post.content[0]) && post.trail[0])
+									post = post.trail[0];
+
+								return done(post.content, 6*60*60);
 							} catch (e) {
 								console_error(e, resp);
 								return done(null, false);
@@ -9621,6 +9630,60 @@ var $$IMU_EXPORT$$;
 						}
 					});
 				});
+			};
+
+			var get_post_http = function(blogname, postid, cb) {
+				var cache_key = "tumblr_blog_image:" + blogname + ":post:" + postid;
+				api_cache.fetch(cache_key, cb, function(done) {
+					options.do_request({
+						url: "https://" + blogname + ".tumblr.com/image/" + postid + "/",
+						method: "GET",
+						onload: function(resp) {
+							if (resp.readyState !== 4)
+								return;
+
+							if (resp.status !== 200) {
+								console_error(resp);
+								return done(null, false);
+							}
+
+							var match = resp.responseText.match(/window\['___INITIAL_STATE___'\]\s*=\s*({.*?});\s*<\/script>/);
+							if (!match) {
+								console_warn("Unable to find match", resp);
+								return done(null, false);
+							}
+
+							// remove regex, as it's not valid JSON
+							var jsontxt = match[1].replace(/,\"[^"]+?\":\/.*?,\"/, ",\"");
+							try {
+								var json = JSON_parse(jsontxt);
+								// the json does contain apiFetchStore.API_TOKEN, but although it's also 50chars long, it returns 401
+								// it also contains a csrfToken property, but I haven't seen either the api token or the csrf token being used
+								var imageresponse = json.ImagePage.photo.imageResponse;
+
+								var firstimage = {media: []};
+								for (var i = 0; i < imageresponse.length; i++) {
+									imageresponse[i].media_key = imageresponse[i].mediaKey;
+									imageresponse[i].has_original_dimensions = imageresponse[i].hasOriginalDimensions;
+									firstimage.media.push(imageresponse[i]);
+								}
+
+								return done([firstimage], 6*60*60);
+							} catch(e) {
+								console_error(e);
+								return done(null, false);
+							}
+						}
+					});
+				});
+			}
+
+			var get_post = function(blogname, postid, cb) {
+				if (apikey) {
+					return get_post_api(blogname, postid, cb);
+				} else {
+					return get_post_http(blogname, postid, cb);
+				}
 			};
 
 			var find_largest_from_media = function(media) {
@@ -9649,15 +9712,12 @@ var $$IMU_EXPORT$$;
 			};
 
 			var find_media_from_post_mediakey = function(post, mediakey) {
-				if ((!post.content || !post.content[0]) && post.trail[0])
-					post = post.trail[0];
-
-				for (var i = 0; i < post.content.length; i++) {
-					if (!post.content[i].media)
+				for (var i = 0; i < post.length; i++) {
+					if (!post[i].media)
 						continue;
 
-					if (post.content[i].media[0].media_key === mediakey) {
-						return post.content[i].media;
+					if (post[i].media[0].media_key === mediakey) {
+						return post[i].media;
 					}
 				}
 
@@ -9759,13 +9819,21 @@ var $$IMU_EXPORT$$;
 			if (mediakey) {
 				var info = try_finding_info();
 				if (info) {
-					get_post_api(info.blogname, info.postid, function(data) {
+					get_post(info.blogname, info.postid, function(data) {
+						if (!data)
+							return options.cb(null);
+
 						var media = find_media_from_post_mediakey(data, mediakey);
 						if (!media)
 							return options.cb(null);
 
 						var largest = find_largest_from_media(media);
-						return options.cb(largest.url);
+
+						var obj = {url: largest.url};
+						if (largest.has_original_dimensions)
+							obj.is_original = true;
+
+						return options.cb(obj);
 					});
 
 					return {
