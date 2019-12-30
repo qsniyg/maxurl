@@ -421,7 +421,8 @@ var $$IMU_EXPORT$$;
 
 		rule_specific: {
 			imgur_source: true,
-			imgur_nsfw_headers: null
+			imgur_nsfw_headers: null,
+			tumblr_api_key: null
 		},
 
 		do_request: do_request,
@@ -1047,6 +1048,7 @@ var $$IMU_EXPORT$$;
 		allow_thirdparty_libs: is_userscript ? false : true,
 		//browser_cookies: true,
 		imgur_source: true,
+		tumblr_api_key: "",
 		// thanks to LukasThyWalls on github for the idea: https://github.com/qsniyg/maxurl/issues/75
 		bigimage_blacklist: "",
 		bigimage_blacklist_engine: "glob",
@@ -1868,6 +1870,13 @@ var $$IMU_EXPORT$$;
 			name: "Source image for Imgur",
 			description: "If a source image is found for Imgur, try using it instead",
 			category: "rule_specific",
+			onupdate: update_rule_setting
+		},
+		tumblr_api_key: {
+			name: "Tumblr API key",
+			description: "API key for finding larger images on Tumblr",
+			category: "rule_specific",
+			type: "lineedit",
 			onupdate: update_rule_setting
 		},
 		bigimage_blacklist: {
@@ -9567,26 +9576,116 @@ var $$IMU_EXPORT$$;
 			if (src.match(/\/avatar_[0-9a-f]+_(?:64|128)\./))
 				return src.replace(/_[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "_512$1");
 
-			if (true || !src.match(/_[0-9]*\.gif$/)) {
-				// https://66.media.tumblr.com/a304d969f5d0012df41d657d7e4f5c5e/tumblr_p5cne9vRBD1wsufgw_og_500.jpg
-				//   https://66.media.tumblr.com/a304d969f5d0012df41d657d7e4f5c5e/tumblr_p5cne9vRBD1wsufgw_og_1280.jpg
-				obj.url = src.replace(/(\/(?:tumblr(?:_(?:static|inline))?_)?[0-9a-zA-Z]+(?:_og)?(?:_r[0-9]*)?)_[0-9]+(\.[^/.]*)$/, "$1_1280$2");
+			// https://66.media.tumblr.com/a304d969f5d0012df41d657d7e4f5c5e/tumblr_p5cne9vRBD1wsufgw_og_500.jpg
+			//   https://66.media.tumblr.com/a304d969f5d0012df41d657d7e4f5c5e/tumblr_p5cne9vRBD1wsufgw_og_1280.jpg
+			newsrc = src.replace(/(\/(?:tumblr(?:_(?:static|inline))?_)?[0-9a-zA-Z]+(?:_og)?(?:_r[0-9]*)?)_[0-9]+(\.[^/.]*)$/, "$1_1280$2");
+			if (newsrc !== src) {
+				obj.url = newsrc;
 				return obj;
 			}
+		}
 
-			// disable _raw for now, unless something is found
-			if (src.match(/:\/\/[^/]*\/[0-9a-f]*\/tumblr_[0-9a-zA-Z]+(?:_r[0-9]+)?_[0-9]+\.[^/]*$/) && false) {
-				// https://78.media.tumblr.com/3ebf4c3e175553194b3c9a0867a47719/tumblr_nugefiK7yj1u0c780o1_500.jpg
-				//   http://data.tumblr.com/3ebf4c3e175553194b3c9a0867a47719/tumblr_nugefiK7yj1u0c780o1_raw.jpg
-				// https://78.media.tumblr.com/96a4d0ab5a1e05ecc6f3eb638a5504a5/tumblr_oxin3qLmFS1spqhdqo7_500.jpg
-				//   http://data.tumblr.com/96a4d0ab5a1e05ecc6f3eb638a5504a5/tumblr_oxin3qLmFS1spqhdqo7_raw.jpg -- width of 1400 (vs 1280)
-				return src
-					.replace(/:\/\/[^/]*\/(.*)_[0-9]*(\.[^/.]*)$/, "://s3.amazonaws.com/data.tumblr.com/$1_raw$2");
-			} else if (src.match(/:\/\/[^/]*\/[^/]*$/)) {
-				// https://78.media.tumblr.com/tumblr_m4fhyoiFd51rqmd7mo1_500.jpg
-				//   https://78.media.tumblr.com/tumblr_m4fhyoiFd51rqmd7mo1_1280.jpg
-				if (!src.match(/_[0-9]*\.gif$/)) // disable gif support as it's notoriously problematic
-					return src.replace(/_[0-9]*(\.[^/.]*)$/, "_1280$1");
+		if (domain_nosub === "tumblr.com" && /media\.tumblr\.com$/.test(domain) && options && options.element &&
+			options.do_request && options.cb && options.rule_specific && options.rule_specific.tumblr_api_key) {
+			// thanks to dogancelik on github: https://github.com/qsniyg/maxurl/issues/88#issuecomment-569612947
+			var apikey = options.rule_specific.tumblr_api_key;
+
+			var get_post = function(blogname, postid, cb) {
+				var cache_key = "tumblr_api_blog:" + blogname + ":post:" + postid;
+				api_cache.fetch(cache_key, cb, function(done) {
+					options.do_request({
+						url: "https://api.tumblr.com/v2/blog/" + blogname + "/posts?api_key=" + apikey + "&id=" + postid + "&npf=true",
+						method: "GET",
+						onload: function(resp) {
+							if (resp.readyState !== 4)
+								return;
+
+							if (resp.status !== 200) {
+								console_error(resp);
+								return done(null, false);
+							}
+
+							try {
+								var json = JSON_parse(resp.responseText);
+								var post = json.response.posts[0]
+								return done(post, 6*60*60);
+							} catch (e) {
+								console_error(e, resp);
+								return done(null, false);
+							}
+						}
+					});
+				});
+			};
+
+			var find_largest_from_media = function(media) {
+				var pixels = 0;
+				var obj = null;
+				for (var i = 0; i < media.length; i++) {
+					var ourobj = media[i];
+					var ourpixels = ourobj.width * ourobj.height;
+
+					if (ourpixels > pixels) {
+						obj = ourobj;
+						pixels = ourpixels;
+					}
+				}
+
+				return obj;
+			};
+
+			var find_mediakey_from_url = function(url) {
+				var match = url.match(/^[a-z]+:\/\/[^/]+\/+([0-9a-f]{32})\/+([0-9a-f]{16}-[0-9a-f]{2})\/+/);
+				if (match) {
+					return match[1] + ":" + match[2];
+				}
+
+				return null;
+			};
+
+			var find_media_from_post_mediakey = function(post, mediakey) {
+				post = post.trail[0];
+				for (var i = 0; i < post.content.length; i++) {
+					if (!post.content[i].media)
+						continue;
+
+					if (post.content[i].media[0].media_key === mediakey) {
+						return post.content[i].media;
+					}
+				}
+
+				return null;
+			};
+
+			var find_blogname_id_from_url = function(url) {
+				match = url.match(/^[a-z]+:\/\/([^/.]+)\.tumblr\.com\/+post\/+([0-9]+)\//);
+				if (match) {
+					return {
+						blogname: match[1],
+						postid: match[2]
+					};
+				}
+
+				return null;
+			};
+
+			var mediakey = find_mediakey_from_url(src);
+			if (mediakey) {
+				var info = find_blogname_id_from_url(options.host_url);
+				if (info) {
+					get_post(info.blogname, info.postid, function(data) {
+						var media = find_media_from_post_mediakey(data, mediakey);
+						if (!media)
+							return options.cb(null);
+
+						var largest = find_largest_from_media(media);
+						return options.cb(largest.url);
+					});
+
+					return {
+						waiting: true
+					};
+				}
 			}
 		}
 
@@ -47377,6 +47476,12 @@ var $$IMU_EXPORT$$;
 				return newsrc;
 		}
 
+		if (domain_nosub === "fireworktv.com" && /^cdn[0-9]*\./.test(domain)) {
+			// https://cdn1.fireworktv.com/medias/2019/8/21/1566402222-ajgwnxcr/540_960/datauser0com.loopnow.kaminocacheFireworkDownloadez46ig4u2t0y.jpg
+			//   https://cdn1.fireworktv.com/medias/2019/8/21/1566402222-ajgwnxcr/original/datauser0com.loopnow.kaminocacheFireworkDownloadez46ig4u2t0y.jpg
+			return src.replace(/(\/medias\/+[0-9]{4}\/+(?:[0-9]{1,2}\/+){2}[^/]+\/+)[0-9]+_[0-9]+\/+/, "$1original/");
+		}
+
 
 
 
@@ -48841,6 +48946,15 @@ var $$IMU_EXPORT$$;
 		for (var option in bigimage_recursive.default_options) {
 			if (!(option in options)) {
 				options[option] = deepcopy(bigimage_recursive.default_options[option]);
+				continue;
+			}
+
+			if (typeof options[option] === "object" && !(options[option] instanceof Array)) {
+				for (var rsoption in bigimage_recursive.default_options[option]) {
+					if (!(rsoption in options[option])) {
+						options[option][rsoption] = deepcopy(bigimage_recursive.default_options[option][rsoption]);
+					}
+				}
 			}
 		}
 
@@ -48865,6 +48979,7 @@ var $$IMU_EXPORT$$;
 			}
 
 			options.rule_specific.imgur_source = settings.imgur_source;
+			options.rule_specific.tumblr_api_key = settings.tumblr_api_key;
 
 			// Doing this here breaks things like Imgur, which will redirect to an image if a video was opened in a new tab
 			if (false && !settings.allow_video) {
@@ -49752,7 +49867,7 @@ var $$IMU_EXPORT$$;
 
 					if (!is_extension || settings.redirect_disable_for_responseheader) {
 						if (obj.forces_download || (
-							(content_type.match(/(?:binary|application)\//) ||
+							(content_type.match(/(?:binary|application|multipart)\//) ||
 								// such as [image/png] (server bug)
 								content_type.match(/^ *\[/)) && !obj.head_wrong_contenttype) ||
 							(headers["content-disposition"] &&
@@ -50492,7 +50607,8 @@ var $$IMU_EXPORT$$;
 				} else if (meta.type) {
 					if (meta.type === "textarea" ||
 						meta.type === "keysequence" ||
-						meta.type === "number")
+						meta.type === "number" ||
+						meta.type === "lineedit")
 						type = meta.type
 				}
 
@@ -50664,55 +50780,65 @@ var $$IMU_EXPORT$$;
 					sub.appendChild(sub_button_tr);
 
 					value_td.appendChild(sub);
-				} else if (type === "number") {
+				} else if (type === "number" || type === "lineedit") {
 					var sub = document.createElement("table");
 					var sub_tr = document.createElement("tr");
 					var sub_in_td = document.createElement("td");
 					sub_in_td.style = "display:inline";
 					var input = document.createElement("input");
 
-					// doesn't work properly on Waterfox, most of the functionality is implemented here anyways
-					// thanks to decembre on github for reporting: https://github.com/qsniyg/maxurl/issues/14#issuecomment-531080061
-					//input.type = "number";
-					input.type = "text";
+					if (false && type === "number") {
+						// doesn't work properly on Waterfox, most of the functionality is implemented here anyways
+						// thanks to decembre on github for reporting: https://github.com/qsniyg/maxurl/issues/14#issuecomment-531080061
+						input.type = "number";
+					} else {
+						input.type = "text";
+					}
 
-					input.style = "text-align:right";
-					if (meta.number_max !== undefined)
-						input.setAttribute("max", meta.number_max.toString());
-					if (meta.number_min !== undefined)
-						input.setAttribute("min", meta.number_min.toString());
-					if (meta.number_int)
-						input.setAttribute("step", "1");
+					if (type === "number") {
+						input.style = "text-align:right";
+						if (meta.number_max !== undefined)
+							input.setAttribute("max", meta.number_max.toString());
+						if (meta.number_min !== undefined)
+							input.setAttribute("min", meta.number_min.toString());
+						if (meta.number_int)
+							input.setAttribute("step", "1");
+					}
+
 					if (value !== undefined)
 						input.value = value;
 					input.oninput = function(x) {
 						var value = input.value.toString();
 
-						var value = parseFloat(value);
-						var orig_value = value;
+						if (type === "number") {
+							var value = parseFloat(value);
+							var orig_value = value;
 
-						if (isNaN(value)) {
-							return;
+							if (isNaN(value)) {
+								return;
+							}
+
+							if (meta.number_int) {
+								value = parseInt(value);
+							}
+
+							if (meta.number_max !== undefined)
+								value = Math.min(value, meta.number_max);
+							if (meta.number_min !== undefined)
+								value = Math.max(value, meta.number_min);
+
+							if (isNaN(value)) {
+								console_error("Error: number is NaN after min/max");
+								return;
+							}
+
+							if (meta.number_int || value !== orig_value)
+								input.value = value;
+
+							value = parseFloat(value);
 						}
 
-						if (meta.number_int) {
-							value = parseInt(value);
-						}
-
-						if (meta.number_max !== undefined)
-							value = Math.min(value, meta.number_max);
-						if (meta.number_min !== undefined)
-							value = Math.max(value, meta.number_min);
-
-						if (isNaN(value)) {
-							console_error("Error: number is NaN after min/max");
-							return;
-						}
-
-						if (meta.number_int || value !== orig_value)
-							input.value = value;
-
-						do_update_setting(setting, parseFloat(value));
+						do_update_setting(setting, value);
 						//settings[setting] = value;
 						show_saved_message();
 					}
