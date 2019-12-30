@@ -4,7 +4,7 @@
 // ==UserScript==
 // @name              Image Max URL
 // @namespace         http://tampermonkey.net/
-// @version           0.12.0
+// @version           0.12.1
 // @description       Finds larger or original versions of images for 6000+ websites
 // @description:ko    6000개 이사의 사이트에 대해 더 크거나 원본 이미지 찾는 스크립트
 // @description:fr    Trouve des images plus grandes ou originales pour plus de 6000 sites
@@ -424,7 +424,8 @@ var $$IMU_EXPORT$$;
 
 		rule_specific: {
 			imgur_source: true,
-			imgur_nsfw_headers: null
+			imgur_nsfw_headers: null,
+			tumblr_api_key: null
 		},
 
 		do_request: do_request,
@@ -816,6 +817,9 @@ var $$IMU_EXPORT$$;
 		"Newsen": {
 			"ko": "뉴스엔"
 		},
+		"subcategory_rule_specific": {
+			"en": "Rule-specific"
+		},
 		"category_website": {
 			"en": "Website",
 			"ko": "웹사이트",
@@ -1046,6 +1050,8 @@ var $$IMU_EXPORT$$;
 		allow_apicalls: true,
 		allow_thirdparty_libs: is_userscript ? false : true,
 		//browser_cookies: true,
+		imgur_source: true,
+		tumblr_api_key: "",
 		// thanks to LukasThyWalls on github for the idea: https://github.com/qsniyg/maxurl/issues/75
 		bigimage_blacklist: "",
 		bigimage_blacklist_engine: "glob",
@@ -1863,6 +1869,19 @@ var $$IMU_EXPORT$$;
 			extension_only: true,
 			onupdate: update_rule_setting
 		},
+		imgur_source: {
+			name: "Source image for Imgur",
+			description: "If a source image is found for Imgur, try using it instead",
+			category: "rule_specific",
+			onupdate: update_rule_setting
+		},
+		tumblr_api_key: {
+			name: "Tumblr API key",
+			description: "API key for finding larger images on Tumblr",
+			category: "rule_specific",
+			type: "lineedit",
+			onupdate: update_rule_setting
+		},
 		bigimage_blacklist: {
 			name: "Blacklist",
 			description: "A list of URLs that are blacklisted from being processed",
@@ -2033,6 +2052,9 @@ var $$IMU_EXPORT$$;
 			"video": "subcategory_video",
 			"ui": "subcategory_ui",
 			"popup_other": "subcategory_popup_other"
+		},
+		"rules": {
+			"rule_specific": "subcategory_rule_specific"
 		},
 		"extra": {
 			"replaceimages": "subcategory_replaceimages",
@@ -3546,7 +3568,7 @@ var $$IMU_EXPORT$$;
 
 
 
-			return src
+			newsrc = src
 				.replace(/postfiles[^/.]*\./, "blogfiles.")
 				.replace(/m?blogthumb[^./]*/, "blogfiles")
 				.replace(/blogfiles[^/.]*\./, "blogfiles.")
@@ -3567,7 +3589,20 @@ var $$IMU_EXPORT$$;
 				.replace(/blogpfthumb\.phinf\./, "blogpfthumb-phinf.")
 
 
-				.replace(/(:\/\/blogfiles\.)pstatic\.net\/+/, "$1naver.net/");
+				.replace(/(:\/\/blogfiles\.)pstatic\.net\/+/, "$1naver.net/")
+				.replace(/^https?(:\/\/[^/.]*(?:phinf|files)\.naver\.net\/)/, "http$1");
+			if (newsrc !== src)
+				return newsrc;
+
+			return {
+				url: src,
+				headers: {
+					Referer: ""
+				},
+				referer_ok: {
+					same_domain_nosub: true
+				}
+			};
 		}
 
 		if ((domain_nosub === "daumcdn.net" ||
@@ -4971,7 +5006,7 @@ var $$IMU_EXPORT$$;
 
 		if (domain_nosub === "wp.com" &&
 			domain.match(/i[0-9]\.wp\.com/)) {
-			newsrc = remove_queries(src, ["w", "h", "resize"]);
+			newsrc = remove_queries(src, ["w", "h", "resize", "zoom", "quality", "strip"]);
 			if (newsrc !== src)
 				return newsrc;
 
@@ -6519,17 +6554,260 @@ var $$IMU_EXPORT$$;
 			if (src.match(/\/avatar_[0-9a-f]+_(?:64|128)\./))
 				return src.replace(/_[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "_512$1");
 
-			if (true || !src.match(/_[0-9]*\.gif$/)) {
-				obj.url = src.replace(/(\/(?:tumblr(?:_(?:static|inline))?_)?[0-9a-zA-Z]+(?:_og)?(?:_r[0-9]*)?)_[0-9]+(\.[^/.]*)$/, "$1_1280$2");
+			newsrc = src.replace(/(\/(?:tumblr(?:_(?:static|inline))?_)?[0-9a-zA-Z]+(?:_og)?(?:_r[0-9]*)?)_[0-9]+(\.[^/.]*)$/, "$1_1280$2");
+			if (newsrc !== src) {
+				obj.url = newsrc;
 				return obj;
 			}
+		}
 
-			if (src.match(/:\/\/[^/]*\/[0-9a-f]*\/tumblr_[0-9a-zA-Z]+(?:_r[0-9]+)?_[0-9]+\.[^/]*$/) && false) {
-				return src
-					.replace(/:\/\/[^/]*\/(.*)_[0-9]*(\.[^/.]*)$/, "://s3.amazonaws.com/data.tumblr.com/$1_raw$2");
-			} else if (src.match(/:\/\/[^/]*\/[^/]*$/)) {
-				if (!src.match(/_[0-9]*\.gif$/)) // disable gif support as it's notoriously problematic
-					return src.replace(/_[0-9]*(\.[^/.]*)$/, "_1280$1");
+		if (domain_nosub === "tumblr.com" && /media\.tumblr\.com$/.test(domain) && options && options.element &&
+			options.do_request && options.cb) {
+
+			var apikey = null;
+			if (options.rule_specific && options.rule_specific.tumblr_api_key)
+				apikey = options.rule_specific.tumblr_api_key;
+
+			var get_post_api = function(blogname, postid, cb) {
+				var cache_key = "tumblr_api_blog:" + blogname + ":post:" + postid;
+				api_cache.fetch(cache_key, cb, function(done) {
+					options.do_request({
+						url: "https://api.tumblr.com/v2/blog/" + blogname + "/posts?api_key=" + apikey + "&id=" + postid + "&npf=true",
+						method: "GET",
+						onload: function(resp) {
+							if (resp.readyState !== 4)
+								return;
+
+							if (resp.status !== 200) {
+								console_error(resp);
+								return done(null, false);
+							}
+
+							try {
+								var json = JSON_parse(resp.responseText);
+								var post = json.response.posts[0];
+
+								var content = post.content;
+
+								if (post.trail) {
+									for (var i = 0; i < post.trail.length; i++) {
+										[].push.apply(content, post.trail[i].content);
+									}
+								}
+
+								return done(content, 6*60*60);
+							} catch (e) {
+								console_error(e, resp);
+								return done(null, false);
+							}
+						}
+					});
+				});
+			};
+
+			var get_post_http = function(blogname, postid, cb) {
+				var cache_key = "tumblr_blog_image:" + blogname + ":post:" + postid;
+				api_cache.fetch(cache_key, cb, function(done) {
+					options.do_request({
+						url: "https://" + blogname + ".tumblr.com/image/" + postid + "/",
+						method: "GET",
+						onload: function(resp) {
+							if (resp.readyState !== 4)
+								return;
+
+							if (resp.status !== 200) {
+								console_error(resp);
+								return done(null, false);
+							}
+
+							var match = resp.responseText.match(/window\['___INITIAL_STATE___'\]\s*=\s*({.*?});\s*<\/script>/);
+							if (!match) {
+								console_warn("Unable to find match", resp);
+								return done(null, false);
+							}
+
+							var jsontxt = match[1].replace(/,\"[^"]+?\":\/.*?,\"/, ",\"");
+							try {
+								var json = JSON_parse(jsontxt);
+								var imageresponse = json.ImagePage.photo.imageResponse;
+
+								var firstimage = {media: []};
+								for (var i = 0; i < imageresponse.length; i++) {
+									imageresponse[i].media_key = imageresponse[i].mediaKey;
+									imageresponse[i].has_original_dimensions = imageresponse[i].hasOriginalDimensions;
+									firstimage.media.push(imageresponse[i]);
+								}
+
+								return done([firstimage], 6*60*60);
+							} catch(e) {
+								console_error(e);
+								return done(null, false);
+							}
+						}
+					});
+				});
+			}
+
+			var get_post = function(blogname, postid, cb) {
+				if (apikey) {
+					return get_post_api(blogname, postid, cb);
+				} else {
+					return get_post_http(blogname, postid, cb);
+				}
+			};
+
+			var find_largest_from_media = function(media) {
+				var pixels = 0;
+				var obj = null;
+				for (var i = 0; i < media.length; i++) {
+					var ourobj = media[i];
+					var ourpixels = ourobj.width * ourobj.height;
+
+					if (ourpixels > pixels) {
+						obj = ourobj;
+						pixels = ourpixels;
+					}
+				}
+
+				return obj;
+			};
+
+			var find_mediakey_from_url = function(url) {
+				var match = url.match(/^[a-z]+:\/\/[^/]+\/+([0-9a-f]{32})\/+([0-9a-f]{16}-[0-9a-f]{2})\/+/);
+				if (match) {
+					return match[1] + ":" + match[2];
+				}
+
+				return null;
+			};
+
+			var find_media_from_post_mediakey = function(post, mediakey) {
+				for (var i = 0; i < post.length; i++) {
+					if (!post[i].media)
+						continue;
+
+					if (post[i].media[0].media_key === mediakey) {
+						return post[i].media;
+					}
+				}
+
+				return null;
+			};
+
+			var find_blogname_from_url = function(url) {
+				match = url.match(/^[a-z]+:\/\/([^/.]+)\.tumblr\.com\//);
+				if (match) {
+					if (match[1] !== "www" && match[1] !== "support")
+						return match[1];
+				}
+
+				return null;
+			};
+
+			var find_blogname_id_from_url = function(url) {
+				match = url.match(/^[a-z]+:\/\/([^/.]+)\.tumblr\.com\/+post\/+([0-9]+)\//);
+				if (match) {
+					return {
+						blogname: match[1],
+						postid: match[2]
+					};
+				}
+
+				return null;
+			};
+
+			var find_blogname_from_head = function() {
+				if (!options.document)
+					return null;
+
+				var links = options.document.getElementsByTagName("link");
+				for (var i = 0; i < links.length; i++) {
+					var href = links[i].href;
+					if (!href)
+						continue;
+
+					var match = href.match(/^android-app:\/\/com\.tumblr\/tumblr\/x-callback-url\/blog\?blogName=(.*?)(?:[&%].*)?$/);
+					if (match) {
+						return match[1];
+					}
+				}
+
+				return null;
+			};
+
+			var try_finding_info = function() {
+				var info = find_blogname_id_from_url(options.host_url);
+				if (info)
+					return info;
+
+				var blogname = find_blogname_from_url(options.host_url);
+				if (!blogname) {
+					blogname = find_blogname_from_head();
+				}
+
+				if (blogname) {
+					var obj = {
+						blogname: blogname
+					};
+
+					var currentel = options.element;
+					while ((currentel = currentel.parentElement)) {
+						if (currentel.tagName === "ARTICLE") {
+							var id = currentel.getAttribute("id");
+							if (id) {
+								obj.postid = id;
+								return obj;
+							}
+						}
+					}
+				} else if (host_domain_nowww === "tumblr.com") {
+					var currentel = options.element;
+					while ((currentel = currentel.parentElement)) {
+						if (currentel.tagName === "DIV" && currentel.getAttribute("data-json")) {
+							var jsondata = currentel.getAttribute("data-json");
+							try {
+								var json = JSON_parse(jsondata);
+								return {
+									blogname: json.tumblelog,
+									postid: json["post-id"]
+								};
+							} catch(e) {
+								console_error(e);
+							}
+
+							return null;
+						}
+					}
+				}
+
+				return null;
+			};
+
+			var mediakey = find_mediakey_from_url(src);
+			if (mediakey) {
+				var info = try_finding_info();
+				if (info) {
+					get_post(info.blogname, info.postid, function(data) {
+						if (!data)
+							return options.cb(null);
+
+						var media = find_media_from_post_mediakey(data, mediakey);
+						if (!media)
+							return options.cb(null);
+
+						var largest = find_largest_from_media(media);
+
+						var obj = {url: largest.url};
+						if (largest.has_original_dimensions)
+							obj.is_original = true;
+
+						return options.cb(obj);
+					});
+
+					return {
+						waiting: true
+					};
+				}
 			}
 		}
 
@@ -6816,12 +7094,29 @@ var $$IMU_EXPORT$$;
 			(domain_nosub === "imgspice.com" && domain.match(/^img[0-9]*\./)) ||
 			(domain_nosub === "imageporter.com" && domain.match(/^img[0-9]*\./)) ||
 			(domain_nosub === "pixroute.com" && domain.match(/img[0-9]*\./))) {
-			return {
-				url: src.replace(/(\/i\/.*\/[^/.]*)_t(\.[^/.]*)$/, "$1$2"),
+			newsrc = src.replace(/(\/i\/.*\/[^/.]*)_t(\.[^/.]*)$/, "$1$2");
+
+			obj = {
+				url: src,
 				headers: {
 					Referer: ""
-				}
+				},
+				bad_if: [
+					{
+						headers: {
+							"content-length": "40275",
+							"content-type": "image/jpeg",
+							"last-modified": "Sat, 09 Mar 2019 01:29:42 GMT"
+						}
+					}
+				]
 			};
+
+			if (newsrc !== src) {
+				return fillobj_urls(add_extensions_jpeg(newsrc), obj);
+			} else {
+				return obj;
+			}
 		}
 
 		if (domain_nosub === "imagetwist.com" && src.match(/:\/\/[^/]*\/+error\.[^/.]*(?:[?#].*)?$/)) {
@@ -7128,21 +7423,33 @@ var $$IMU_EXPORT$$;
 				.replace(/(?:~[^/.]*)?$/, "~original");
 		}
 
-		if (domain_nosub === "photobucket.com" && /^i[0-9]+\./.test(domain)) {
+		if (domain_nosub === "photobucket.com" && /^i(?:[0-9]+|mg)\./.test(domain)) {
+			newsrc = src.replace(/\?.*/, "");
+			if (newsrc !== src)
+				return newsrc;
+
 			newsrc = src.replace(/(?:~[^/.]*)?(?:[?#].*)?$/, "~original");
 			if (newsrc !== src)
 				return newsrc;
 
-			return src.replace(/:\/\/i([0-9]+\..*?)(?:~original)?(?:[?#].*)?$/, "://oi$1");
+			return src.replace(/:\/\/i((?:[0-9]+|mg)\..*?)(?:~original)?(?:[?#].*)?$/, "://oi$1");
 		}
 
-		if (domain_nosub === "photobucket.com" && /^o?i[0-9]*\./.test(domain)) {
-			match = src.match(/^[a-z]+:\/\/[a-z]*([0-9]+)\.[^/]*\/+albums\/+[a-z]{2}[0-9]+\/+([^/]+)\/+([^/]+\.[^/.~]*?)(?:~[^/.]*)?(?:[?#].*)?$/);
+		if (domain_nosub === "photobucket.com" && /^o?i(?:[0-9]*|mg)\./.test(domain)) {
+			match = src.match(/^[a-z]+:\/\/[a-z]*([0-9]+)?\.[^/]*\/+albums\/+[a-z]{1,2}[0-9]+\/+([^/]+)\/+([^/]+\.[^/.~]*?)(?:~[^/.]*)?(?:[?#].*)?$/);
 			if (match) {
+				var domain = "www";
+				if (match[1])
+					domain = "s" + match[1];
+
+				var page = "http://" + domain + ".photobucket.com/user/" + match[2] + "/media/" + match[3] + ".html";
 				return {
 					url: src,
+					headers: {
+						Referer: page
+					},
 					extra: {
-						page: "http://s" + match[1] + ".photobucket.com/user/" + match[2] + "/media/" + match[3] + ".html"
+						page: page
 					}
 				};
 			}
@@ -14162,6 +14469,32 @@ var $$IMU_EXPORT$$;
 					return image_url.replace(/.*\/([^/.]*)\.[^/.]*(?:[?#].*)?$/, "$1");
 				};
 
+				var parse_caption = function(caption) {
+					if (typeof caption === "string")
+						return caption;
+
+					if (caption.text)
+						return caption.text;
+
+					if (caption.edges)
+						return caption.edges[0].node.text;
+
+					return null;
+				};
+
+				var get_caption = function(item) {
+					if (item.caption)
+						return parse_caption(item.caption);
+
+					if (item.title)
+						return parse_caption(item.title);
+
+					if (item.edge_media_to_caption)
+						return parse_caption(item.edge_media_to_caption);
+
+					return undefined;
+				};
+
 				var image_in_objarr = function(image, objarr) {
 					var imageid = get_imageid(image);
 
@@ -14192,6 +14525,7 @@ var $$IMU_EXPORT$$;
 						if (maxobj !== null) {
 							image = {
 								src: maxobj.url,
+								caption: get_caption(item),
 								width: maxobj.width,
 								height: maxobj.height
 							};
@@ -14260,6 +14594,7 @@ var $$IMU_EXPORT$$;
 						images.push({
 							src: image,
 							video: node.video_url,
+							caption: get_caption(media),
 							width: width,
 							height: height
 						});
@@ -14282,13 +14617,20 @@ var $$IMU_EXPORT$$;
 				};
 
 				var image_to_obj = function(image) {
+					var extra = null;
+					if (image.caption)
+						extra = {caption: image.caption};
+
 					if (image.video) {
 						return [
-							{url: image.video, video: true},
-							image.src
+							{url: image.video, video: true, extra: extra},
+							{url: image.src, extra: extra}
 						];
 					} else {
-						return image.src;
+						return {
+							url: image.src,
+							extra: extra
+						};
 					}
 				};
 
@@ -21167,7 +21509,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nosub === "yelpcdn.com") {
-			return src.replace(/(\/bphoto\/+[^/]*\/+)(?:[0-9]+s|[a-z]+)(\.[^/.]*)(?:[?#].*)?$/,
+			return src.replace(/(\/b?photo\/+[^/]*\/+)(?:[0-9]+s|[a-z]+)(\.[^/.]*)(?:[?#].*)?$/,
 							   "$1o$2");
 		}
 
@@ -28826,6 +29168,32 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/data\/+share\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}[0-9a-f]{10,})_[smb](\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		}
 
+		if (domain === "dto9r5vaiz7bu.cloudfront.net") {
+			return src.replace(/^([a-z]+:\/\/[^/]+\/+[0-9a-z]{10,}\/+)[_a-z]+(\.[^/.]+)(?:[?#].*)?$/, "$1source$2");
+		}
+
+		if (domain_nowww === "robertsspaceindustries.com") {
+			return src.replace(/(\/media\/+[0-9a-z]{10,}\/+)[_a-z]+\/+/, "$1source/");
+		}
+
+		if (domain === "d111vui60acwyt.cloudfront.net") {
+			newsrc = src.replace(/(\/stores\/+avatars\/+[0-9]+\/+)[a-z]+\/+/, "$1original/");
+			if (newsrc !== src)
+				return newsrc;
+		}
+
+		if (domain_nosub === "fireworktv.com" && /^cdn[0-9]*\./.test(domain)) {
+			return src.replace(/(\/medias\/+[0-9]{4}\/+(?:[0-9]{1,2}\/+){2}[^/]+\/+)[0-9]+_[0-9]+\/+/, "$1original/");
+		}
+
+		if (domain_nosub === "highwebmedia.com" && /^(?:ssl-)?ccstatic\./.test(domain)) {
+			if (/\/tsdefaultassets\/+locked_rectangle[0-9]*\./.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
+		}
+
 
 
 
@@ -29785,6 +30153,15 @@ var $$IMU_EXPORT$$;
 		for (var option in bigimage_recursive.default_options) {
 			if (!(option in options)) {
 				options[option] = deepcopy(bigimage_recursive.default_options[option]);
+				continue;
+			}
+
+			if (typeof options[option] === "object" && !(options[option] instanceof Array)) {
+				for (var rsoption in bigimage_recursive.default_options[option]) {
+					if (!(rsoption in options[option])) {
+						options[option][rsoption] = deepcopy(bigimage_recursive.default_options[option][rsoption]);
+					}
+				}
 			}
 		}
 
@@ -29807,6 +30184,9 @@ var $$IMU_EXPORT$$;
 			if (!options.allow_apicalls) {
 				options.do_request = null;
 			}
+
+			options.rule_specific.imgur_source = settings.imgur_source;
+			options.rule_specific.tumblr_api_key = settings.tumblr_api_key;
 
 			// Doing this here breaks things like Imgur, which will redirect to an image if a video was opened in a new tab
 			if (false && !settings.allow_video) {
@@ -30694,7 +31074,7 @@ var $$IMU_EXPORT$$;
 
 					if (!is_extension || settings.redirect_disable_for_responseheader) {
 						if (obj.forces_download || (
-							(content_type.match(/(?:binary|application)\//) ||
+							(content_type.match(/(?:binary|application|multipart)\//) ||
 								// such as [image/png] (server bug)
 								content_type.match(/^ *\[/)) && !obj.head_wrong_contenttype) ||
 							(headers["content-disposition"] &&
@@ -31434,7 +31814,8 @@ var $$IMU_EXPORT$$;
 				} else if (meta.type) {
 					if (meta.type === "textarea" ||
 						meta.type === "keysequence" ||
-						meta.type === "number")
+						meta.type === "number" ||
+						meta.type === "lineedit")
 						type = meta.type
 				}
 
@@ -31606,55 +31987,65 @@ var $$IMU_EXPORT$$;
 					sub.appendChild(sub_button_tr);
 
 					value_td.appendChild(sub);
-				} else if (type === "number") {
+				} else if (type === "number" || type === "lineedit") {
 					var sub = document.createElement("table");
 					var sub_tr = document.createElement("tr");
 					var sub_in_td = document.createElement("td");
 					sub_in_td.style = "display:inline";
 					var input = document.createElement("input");
 
-					// doesn't work properly on Waterfox, most of the functionality is implemented here anyways
-					// thanks to decembre on github for reporting: https://github.com/qsniyg/maxurl/issues/14#issuecomment-531080061
-					//input.type = "number";
-					input.type = "text";
+					if (false && type === "number") {
+						// doesn't work properly on Waterfox, most of the functionality is implemented here anyways
+						// thanks to decembre on github for reporting: https://github.com/qsniyg/maxurl/issues/14#issuecomment-531080061
+						input.type = "number";
+					} else {
+						input.type = "text";
+					}
 
-					input.style = "text-align:right";
-					if (meta.number_max !== undefined)
-						input.setAttribute("max", meta.number_max.toString());
-					if (meta.number_min !== undefined)
-						input.setAttribute("min", meta.number_min.toString());
-					if (meta.number_int)
-						input.setAttribute("step", "1");
+					if (type === "number") {
+						input.style = "text-align:right";
+						if (meta.number_max !== undefined)
+							input.setAttribute("max", meta.number_max.toString());
+						if (meta.number_min !== undefined)
+							input.setAttribute("min", meta.number_min.toString());
+						if (meta.number_int)
+							input.setAttribute("step", "1");
+					}
+
 					if (value !== undefined)
 						input.value = value;
 					input.oninput = function(x) {
 						var value = input.value.toString();
 
-						var value = parseFloat(value);
-						var orig_value = value;
+						if (type === "number") {
+							var value = parseFloat(value);
+							var orig_value = value;
 
-						if (isNaN(value)) {
-							return;
+							if (isNaN(value)) {
+								return;
+							}
+
+							if (meta.number_int) {
+								value = parseInt(value);
+							}
+
+							if (meta.number_max !== undefined)
+								value = Math.min(value, meta.number_max);
+							if (meta.number_min !== undefined)
+								value = Math.max(value, meta.number_min);
+
+							if (isNaN(value)) {
+								console_error("Error: number is NaN after min/max");
+								return;
+							}
+
+							if (meta.number_int || value !== orig_value)
+								input.value = value;
+
+							value = parseFloat(value);
 						}
 
-						if (meta.number_int) {
-							value = parseInt(value);
-						}
-
-						if (meta.number_max !== undefined)
-							value = Math.min(value, meta.number_max);
-						if (meta.number_min !== undefined)
-							value = Math.max(value, meta.number_min);
-
-						if (isNaN(value)) {
-							console_error("Error: number is NaN after min/max");
-							return;
-						}
-
-						if (meta.number_int || value !== orig_value)
-							input.value = value;
-
-						do_update_setting(setting, parseFloat(value));
+						do_update_setting(setting, value);
 						//settings[setting] = value;
 						show_saved_message();
 					}
@@ -32761,11 +33152,19 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		function strip_whitespace(str) {
-			if (!str || typeof str !== "string")
-				return str;
-
+		function normalize_whitespace(str) {
+			// https://stackoverflow.com/a/11305926
 			return str
+				.replace(/[\u200B-\u200D\uFEFF]/g, '')
+				.replace(/[\u2800]/g, ' ');
+		}
+
+		function strip_whitespace(str) {
+			if (!str || typeof str !== "string") {
+				return str;
+			}
+
+			return normalize_whitespace(str)
 				.replace(/^\s+/, "")
 				.replace(/\s+$/, "");
 		}
@@ -32806,7 +33205,7 @@ var $$IMU_EXPORT$$;
 
 		function get_caption(obj, el) {
 			if (obj && obj.extra && obj.extra.caption) {
-				return obj.extra.caption;
+				return strip_whitespace(obj.extra.caption);
 			}
 
 			if (el) {
@@ -32818,7 +33217,7 @@ var $$IMU_EXPORT$$;
 						if (caption === el.src)
 							return null;
 
-						return caption;
+						return strip_whitespace(caption);
 					}
 				} while ((el = el.parentElement));
 			}
@@ -33403,7 +33802,7 @@ var $$IMU_EXPORT$$;
 					if (caption && settings.mouseover_ui_caption) {
 						// /10 is arbitrary, but seems to work well
 						var chars = parseInt(Math.max(10, Math.min(60, (popup_width - topbarel.clientWidth) / 10)));
-						var caption_regex = new RegExp("^((?:.{" + chars + "}|.{0," + chars + "}[\\r\\n]))[\\s\\S]+$");
+						var caption_regex = new RegExp("^((?:.{" + chars + "}|.{0," + chars + "}[\\r\\n]))[\\s\\S]+?$");
 
 						var caption_btn = addbtn({
 							truncated: caption.replace(caption_regex, "$1..."),

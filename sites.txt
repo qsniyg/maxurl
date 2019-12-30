@@ -1247,6 +1247,7 @@ d.ibtimes.co.uk
 d.ifengimg.com
 d.line-scdn.net
 d.newsweek.com
+d111vui60acwyt.cloudfront.net
 d12swbtw719y4s.cloudfront.net
 d13vpcwfpcq1p8.cloudfront.net
 d15hng3vemx011.cloudfront.net
@@ -1494,6 +1495,7 @@ dspmedia.co.kr
 dspvdh6gst59b.cloudfront.net
 dsx.weather.com
 dtiblog.com
+dto9r5vaiz7bu.cloudfront.net
 dtpmhvbsmffsz.cloudfront.net
 dtslb.com
 dubiobikinis.com
@@ -1799,6 +1801,7 @@ findx.com
 finn-neo-admin.info
 finn-neo.com
 firenewsfeed.com
+fireworktv.com
 fitsnews.files.wordpress.com
 fitting-room.com
 fitwell.bg
@@ -2167,6 +2170,7 @@ hi-fi.ru
 hidomin.com
 highasianporn.com
 highresaudio.com
+highwebmedia.com
 hindustantimes.com
 hinhnenso1.com
 hintergrundbild.org
@@ -4745,6 +4749,7 @@ rnkr-static.com
 rnx.kr
 ro69-bucket.s3.amazonaws.com
 robertocavada.com
+robertsspaceindustries.com
 rocklyric.jp
 rockpapershotgun.com
 roleplayhaven.net
