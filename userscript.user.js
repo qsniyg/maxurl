@@ -16468,6 +16468,16 @@ var $$IMU_EXPORT$$;
 			//   http://p9-hs.bytecdn.cn/img/tos-cn-p-0000/70d1b8c13f074407a38fd77dd8be2833~noop.jpeg
 			//   http://p9-tt.bytecdn.cn/origin/pgc-image/59e09a4f55d24a719681881263c67a12.jpeg
 			domain_nosub === "bytecdn.cn" ||
+			// https://p9-dy.byteimg.com/aweme/1080x1080/fbcd00041376e7f54cc6.jpeg
+			//   https://p9-dy.byteimg.com/origin/fbcd00041376e7f54cc6.jpeg
+			// https://p1-bcy.byteimg.com/img/banciyuan/77e60afabbab42278d6240620154cbfb~tplv-banciyuan-w650.image
+			//   https://p1-bcy.byteimg.com/img/banciyuan/77e60afabbab42278d6240620154cbfb~noop.image
+			//   https://p1-bcy.byteimg.com/origin/banciyuan/77e60afabbab42278d6240620154cbfb.jpg
+			// https://p9-bcy.byteimg.com/img/banciyuan/Public/Upload/avatar/4146977575282589/a51aeadaa7d44fd481084e79f27b0cad/fat.jpg~tplv-banciyuan-abig.image
+			//   https://p9-bcy.byteimg.com/img/banciyuan/Public/Upload/avatar/4146977575282589/a51aeadaa7d44fd481084e79f27b0cad/fat.jpg~noop.image
+			//   https://p9-bcy.byteimg.com/origin/banciyuan/Public/Upload/avatar/4146977575282589/a51aeadaa7d44fd481084e79f27b0cad/fat.jpg.jpg
+			//   https://p9-bcy.byteimg.com/origin/banciyuan/Public/Upload/avatar/4146977575282589/a51aeadaa7d44fd481084e79f27b0cad/fat.jpg
+			domain_nosub === "byteimg.com" ||
 			// https://p16.muscdn.com/img/musically-maliva-obj/1634882550258693~c5_100x100.jpeg
 			//   https://p16.muscdn.com/img/musically-maliva-obj/1634882550258693~noop.jpeg
 			//   https://p16.muscdn.com/origin/musically-maliva-obj/1634882550258693.jpeg
@@ -16490,8 +16500,10 @@ var $$IMU_EXPORT$$;
 			return {
 				url: src
 					.replace(/(:\/\/[^/]*\/+)(?:medium|large|obj|aweme|list)\/+(?:[0-9]+x[0-9]+\/+)?/, "$1origin/")
-					.replace(/\/img\/+([^/]+\/+[0-9a-f]+)~noop(\.[^/.]*)(?:[?#].*)?$/, "/origin/$1$2")
-					.replace(/(\/img\/+[^/]*\/+[0-9a-f]+~)[^/.]*?(\.[^/.]*)(?:[?#].*)?$/, "$1noop$2")
+					.replace(/(:\/\/[^/]+\/+origin\/+.*?)\.image(?:[?$].*)?$/, "$1.jpg")
+					.replace(/\/img\/+(.+\/+[0-9a-f]{10,}(?:\/+[^/]+)?)~noop(\.[^/.]*)(?:[?#].*)?$/, "/origin/$1$2")
+					.replace(/(\/origin\/+.+\/+[0-9a-f]{10,}\/+[^/.]+\.[^/.]+)\.[^/.]+$/, "$1")
+					.replace(/(\/img\/+.+\/+[0-9a-f]{10,}(?:\/+[^/]+)?~)[^/.]*?(\.[^/.]*)(?:[?#].*)?$/, "$1noop$2")
 					.replace(/\?imageView2.*/, ""),
 				can_head: false // 404
 			};
