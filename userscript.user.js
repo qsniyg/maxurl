@@ -1060,6 +1060,7 @@ var $$IMU_EXPORT$$;
 		replaceimgs_totallimit: 8,
 		replaceimgs_domainlimit: 2,
 		highlightimgs_enable: false,
+		highlightimgs_auto: false,
 		highlightimgs_css: "border: 4px solid yellow"
 	};
 	var orig_settings = deepcopy(settings);
@@ -2008,6 +2009,12 @@ var $$IMU_EXPORT$$;
 		highlightimgs_enable: {
 			name: "Enable button",
 			description: "Enables the 'Highlight Images' button",
+			category: "extra",
+			subcategory: "highlightimages"
+		},
+		highlightimgs_auto: {
+			name: "Automatically highlight images",
+			description: "Automatically highlights images as you view pages",
 			category: "extra",
 			subcategory: "highlightimages"
 		},
@@ -9851,6 +9858,9 @@ var $$IMU_EXPORT$$;
 		if (domain === "wc-ahba9see.c.sakurastorage.jp" ||
 			// https://cdn.worldcosplay.net/553279/ydllsnlmqigtzjdeycnoucmbtreadgeplevutcww-740.jpg
 			//   https://cdn.worldcosplay.net/553279/ydllsnlmqigtzjdeycnoucmbtreadgeplevutcww-3000.jpg
+			// other:
+			// https://cdn.worldcosplay.net/cv/31293/kiilaerajhaksniiiyobnuwhfshqsbstohlpdvws-store.jpg
+			//   https://cdn.worldcosplay.net/cv/31293/kiilaerajhaksniiiyobnuwhfshqsbstohlpdvws-3000.jpg -- doesn't work
 			domain === "cdn.worldcosplay.net") {
 			newsrc = src;
 			if (src.indexOf("/max-1200/") >= 0) {
@@ -9865,7 +9875,7 @@ var $$IMU_EXPORT$$;
 				// doesn't work:
 				// https://wc-ahba9see.c.sakurastorage.jp/40021/5a4bd340b2c95e674a1816f9adece947d06b1df2-100.jpg
 				//   https://wc-ahba9see.c.sakurastorage.jp/40021/5a4bd340b2c95e674a1816f9adece947d06b1df2-3000.jpg -- 404
-				newsrc = src.replace(/-[0-9a-z]+(\.[^/.]*)$/, "-3000$1");
+				newsrc = src.replace(/-[0-9]+(?:x[0-9]+)?(\.[^/.]*)$/, "-3000$1");
 			}
 
 			return {
@@ -52181,6 +52191,11 @@ var $$IMU_EXPORT$$;
 			if (!str || typeof str !== "string" || !strip_whitespace(str))
 				return;
 
+			var oldstyle = el.getAttribute("style");
+			if (oldstyle) {
+				el.setAttribute("data-imu-oldstyle", oldstyle);
+			}
+
 			var splitted = str.split(/[;\n]/);
 			for (var i = 0; i < splitted.length; i++) {
 				var current = strip_whitespace(splitted[i]);
@@ -52208,7 +52223,22 @@ var $$IMU_EXPORT$$;
 				} else {
 					el.style.setProperty(property, value);
 				}
+
+				el.setAttribute("data-imu-newstyle", true);
 			}
+		}
+
+		function revert_styles(el) {
+			var oldstyle = el.getAttribute("data-imu-oldstyle");
+
+			if (oldstyle) {
+				el.setAttribute("style", oldstyle);
+				el.removeAttribute("data-imu-oldstyle");
+			} else if (el.getAttribute("style") && el.getAttribute("data-imu-newstyle")) {
+				el.removeAttribute("style");
+			}
+
+			el.removeAttribute("data-imu-newstyle");
 		}
 
 		function get_caption(obj, el) {
@@ -54718,12 +54748,16 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		var get_all_valid_els = function() {
+			return document.querySelectorAll("img, picture, video");
+		};
+
 		var replacing_imgs = false;
 		function replace_images(options) {
 			if (replacing_imgs)
 				return;
 
-			var imgs = document.querySelectorAll("img");
+			var imgs = get_all_valid_els();
 			if (imgs.length === 0)
 				return;
 
@@ -54923,9 +54957,12 @@ var $$IMU_EXPORT$$;
 
 		register_menucommand("Replace images", replace_images_full);
 
-		var highlight_images = function() {
-			var images = document.querySelectorAll("img");
-			if (images.length === 0)
+		var highlight_images = function(images) {
+			if (images === undefined) {
+				images = get_all_valid_els();
+			}
+
+			if (!images.length)
 				return;
 
 			for (var i = 0; i < images.length; i++) {
@@ -54942,6 +54979,8 @@ var $$IMU_EXPORT$$;
 
 				if (imu_output !== src) {
 					apply_styles(images[i], settings.highlightimgs_css);
+				} else {
+					revert_styles(images[i]);
 				}
 			}
 		};
@@ -54972,6 +55011,88 @@ var $$IMU_EXPORT$$;
 
 				if (origfunc)
 					return origfunc.apply(this, arguments);
+			};
+		})();
+
+		function on_new_images(images) {
+			highlight_images(images);
+		};
+
+		(function() {
+			var observer;
+
+			var new_mutationobserver = function() {
+				return new MutationObserver(function(mutations, observer) {
+					var images = [];
+
+					var add_nodes = function(nodes) {
+						for (var i = 0; i < nodes.length; i++) {
+							if (nodes[i].tagName === "IMG" || nodes[i].tagName === "PICTURE" || nodes[i].tagName === "VIDEO") {
+								images.push(nodes[i]);
+							}
+						}
+					};
+
+					for (var i = 0; i < mutations.length; i++) {
+						var mutation = mutations[i];
+
+						if (mutation.addedNodes) {
+							add_nodes(mutation.addedNodes);
+						}
+
+						if (mutation.target && mutation.type === "attributes") {
+							if (mutation.attributeName === "src" || mutation.attributeName === "href" || mutation.attributeName === "srcset") {
+								add_nodes([mutation.target]);
+							}
+						}
+					}
+
+					if (images.length > 0) {
+						on_new_images(images);
+					}
+				});
+			}
+
+			var observe = function() {
+				on_new_images(get_all_valid_els());
+
+				if (!observer)
+					return;
+				observer.observe(document, {childList: true, subtree: true, attributes: true});
+			};
+
+			var disconnect = function() {
+				if (!observer)
+					return;
+
+				observer.disconnect();
+			};
+
+			try {
+				// In case the browser doesn't support MutationObservers
+				observer = new_mutationobserver();
+			} catch (e) {
+				console_warn(e);
+			}
+
+			var needs_observer = function() {
+				return settings.highlightimgs_auto;
+			}
+
+			if (needs_observer()) {
+				observe();
+			}
+
+			var origfunc = settings_meta.highlightimgs_auto.onupdate;
+			settings_meta.highlightimgs_auto.onupdate = function() {
+				if (origfunc)
+					origfunc();
+
+				if (needs_observer()) {
+					observe();
+				} else {
+					disconnect();
+				}
 			};
 		})();
 
