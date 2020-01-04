@@ -1767,6 +1767,26 @@ var $$IMU_EXPORT$$;
 			category: "popup",
 			subcategory: "gallery"
 		},
+		mouseover_gallery_prev_key: {
+			name: "Previous gallery item",
+			description: "Key to trigger the previous gallery item",
+			requires: {
+				mouseover: true
+			},
+			type: "keysequence",
+			category: "popup",
+			subcategory: "gallery"
+		},
+		mouseover_gallery_next_key: {
+			name: "Next gallery item",
+			description: "Key to trigger the next gallery item",
+			requires: {
+				mouseover: true
+			},
+			type: "keysequence",
+			category: "popup",
+			subcategory: "gallery"
+		},
 		mouseover_styles: {
 			name: "Popup CSS style",
 			description: "CSS style rules for the mouseover popup",
