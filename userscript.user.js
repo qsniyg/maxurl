@@ -52291,6 +52291,9 @@ var $$IMU_EXPORT$$;
 				if (current.indexOf(":") < 0)
 					continue;
 
+				if (/^\s*\/\//.test(current))
+					continue;
+
 				var property = strip_whitespace(current.replace(/^(.*?)\s*:.*/, "$1"));
 				var value = strip_whitespace(current.replace(/^.*?:\s*(.*)$/, "$1"));
 
@@ -52314,7 +52317,7 @@ var $$IMU_EXPORT$$;
 			var styles_array = [];
 			for (var property in styles) {
 				var current = property + ": " + styles[property].value;
-				if (styles[property].important) {
+				if (styles[property].important || true) {
 					current += " !important"
 				}
 
