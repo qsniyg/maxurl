@@ -901,10 +901,10 @@ var $$IMU_EXPORT$$;
 			"en": "Extension"
 		},
 		"rotate_left_btn": {
-			"en": "Rotate Left (E)"
+			"en": "Rotate Left"
 		},
 		"rotate_right_btn": {
-			"en": "Rotate Right (R)"
+			"en": "Rotate Right"
 		},
 		"category_extra": {
 			"en": "Buttons"
@@ -53049,10 +53049,14 @@ var $$IMU_EXPORT$$;
 					}
 
 					if (settings.mouseover_ui_rotationbtns) {
+						var get_rotate_title = function(leftright) {
+							return _("rotate_" + leftright + "_btn") + " (" + _(get_trigger_key_text(settings["mouseover_rotate_" + leftright + "_key"])) + ")";
+						};
+
 						// \u21B6 = ↶
-						var rotateleftbtn = addbtn("\u21B6", _("rotate_left_btn"), function() {rotate_gallery(-90)}, true);
+						var rotateleftbtn = addbtn("\u21B6", get_rotate_title("left"), function() {rotate_gallery(-90)}, true);
 						// \u21B7 = ↷
-						var rotaterightbtn = addbtn("\u21B7", _("rotate_right_btn"), function() {rotate_gallery(90)}, true);
+						var rotaterightbtn = addbtn("\u21B7", get_rotate_title("right"), function() {rotate_gallery(90)}, true);
 
 						topbarel.appendChild(rotateleftbtn);
 						topbarel.appendChild(rotaterightbtn);
