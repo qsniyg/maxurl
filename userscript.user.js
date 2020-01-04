@@ -1052,6 +1052,7 @@ var $$IMU_EXPORT$$;
 		// thanks to LukasThyWalls on github for the idea: https://github.com/qsniyg/maxurl/issues/75
 		bigimage_blacklist: "",
 		bigimage_blacklist_engine: "glob",
+		replaceimgs_auto: false,
 		replaceimgs_replaceimgs: true,
 		replaceimgs_addlinks: false,
 		replaceimgs_replacelinks: false,
@@ -1942,6 +1943,17 @@ var $$IMU_EXPORT$$;
 					name: "Regex"
 				}
 			}
+		},
+		replaceimgs_auto: {
+			name: "Automatically replace images",
+			description: "Automatically replace images to larger versions on pages you view",
+			warning: {
+				"true": "This could lead to rate limiting or IP bans"
+			},
+			// Auto-updating is disabled due to the warning above
+			needrefresh: true,
+			category: "extra",
+			subcategory: "replaceimages"
 		},
 		replaceimgs_usedata: {
 			name: "Use data URLs",
@@ -50362,12 +50374,20 @@ var $$IMU_EXPORT$$;
 			saved_el.classList.add("topsaved");
 		}
 
-		var text = "saved_refresh_target";
-		if (is_extension || typeof GM_addValueChangeListener !== "undefined") {
-			text = "saved_no_refresh";
-		}
+		var get_default_saved_text = function() {
+			var text = "saved_refresh_target";
+			if (is_extension || typeof GM_addValueChangeListener !== "undefined") {
+				text = "saved_no_refresh";
+			}
 
-		saved_el.innerHTML = "<p>" + _(text) + "</p>";
+			return text;
+		};
+
+		var set_saved_text = function(id) {
+			saved_el.innerHTML = "<p>" + _(id) + "</p>";
+		};
+
+		set_saved_text(get_default_saved_text());
 		//saved_el.style.pointer_events = "none";
 		//saved_el.style.textAlign = "center";
 		//saved_el.style.paddingTop = "1em";
@@ -50627,7 +50647,35 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		function show_saved_message() {
+		function show_warnings() {
+			var options = options_el.querySelectorAll("div.option");
+			for (var i = 0; i < options.length; i++) {
+				var setting = options[i].id.replace(/^option_/, "");
+
+				var meta = settings_meta[setting];
+				if (meta.warning) {
+					var warning = meta.warning[settings[setting] + ""];
+					var el = options[i].querySelector(".warning");
+					if (!el)
+						continue;
+
+					if (warning) {
+						el.innerHTML = warning;
+						el.style.display = "block";
+					} else {
+						el.style.display = "none";
+					}
+				}
+			}
+		}
+
+		function show_saved_message(meta) {
+			if (meta.needrefresh) {
+				set_saved_text("saved_refresh_target");
+			} else {
+				set_saved_text(get_default_saved_text());
+			}
+
 			saved_el.setAttribute("style", "");
 			saved_el.classList.remove("fadeout");
 
@@ -50777,12 +50825,14 @@ var $$IMU_EXPORT$$;
 				};
 				check_value_orig_different(value);
 
-				var do_update_setting = function(setting, new_value) {
+				var do_update_setting = function(setting, new_value, meta) {
 					update_setting(setting, new_value);
 
 					run_soon(function() {
 						check_value_orig_different(new_value);
 					});
+
+					show_saved_message(meta);
 				};
 
 				name_td.appendChild(name);
@@ -50927,15 +50977,14 @@ var $$IMU_EXPORT$$;
 								}
 
 								new_value = out_value;
-								do_update_setting(setting, new_value);
+								do_update_setting(setting, new_value, meta);
 							} else {
-								do_update_setting(setting, value);
+								do_update_setting(setting, value, meta);
 							}
 
 							settings[setting] = new_value;
 							check_disabled_options();
-
-							show_saved_message();
+							show_warnings();
 						});
 
 						parent.appendChild(input);
@@ -50991,10 +51040,8 @@ var $$IMU_EXPORT$$;
 					var savebutton = document.createElement("button");
 					savebutton.innerText = _("save");
 					savebutton.onclick = function() {
-						do_update_setting(setting, textarea.value);
+						do_update_setting(setting, textarea.value, meta);
 						settings[setting] = textarea.value;
-
-						show_saved_message();
 					};
 
 					sub_ta_td.appendChild(textarea);
@@ -51063,9 +51110,7 @@ var $$IMU_EXPORT$$;
 							value = parseFloat(value);
 						}
 
-						do_update_setting(setting, value);
-						//settings[setting] = value;
-						show_saved_message();
+						do_update_setting(setting, value, meta);
 					}
 
 					var sub_units_td = document.createElement("td");
@@ -51102,10 +51147,9 @@ var $$IMU_EXPORT$$;
 					sub_cancel_btn.onclick = do_cancel;
 					sub_record_btn.onclick = function() {
 						if (recording_keys) {
-							do_update_setting(setting, options_chord);
+							do_update_setting(setting, options_chord, meta);
 							settings[setting] = options_chord;
 
-							show_saved_message();
 							do_cancel();
 						} else {
 							options_chord = [];
@@ -51141,8 +51185,7 @@ var $$IMU_EXPORT$$;
 					sub.value = settings[setting];
 
 					sub.onchange = function() {
-						do_update_setting(setting, sub.value);
-						show_saved_message();
+						do_update_setting(setting, sub.value, meta);
 					};
 
 					value_td.appendChild(sub);
@@ -51151,6 +51194,14 @@ var $$IMU_EXPORT$$;
 				tr.appendChild(value_td);
 
 				option.appendChild(table);
+
+				if (meta.warning) {
+					var warning = document.createElement("p");
+					warning.style.display = "none";
+					warning.classList.add("warning");
+
+					option.appendChild(warning);
+				}
 
 				if (meta.example_websites) {
 					var examples = document.createElement("ul");
@@ -51220,6 +51271,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		check_disabled_options();
+		show_warnings();
 
 		for (var category in category_els) {
 			var category_el = category_els[category]
@@ -54757,7 +54809,12 @@ var $$IMU_EXPORT$$;
 			if (replacing_imgs)
 				return;
 
-			var imgs = get_all_valid_els();
+			var imgs = options.images;
+
+			if (imgs === undefined) {
+				imgs = get_all_valid_els();
+			}
+
 			if (imgs.length === 0)
 				return;
 
@@ -54767,11 +54824,16 @@ var $$IMU_EXPORT$$;
 
 			var finish_img = function() {
 				finished++;
-				update_progress_el(progressc_el, finished / total_imgs);
+
+				if (options.use_progressbar)
+					update_progress_el(progressc_el, finished / total_imgs);
+
 				console_log("Finished " + finished + "/" + total_imgs);
 
 				if (finished >= total_imgs) {
-					progressc_el.parentElement.removeChild(progressc_el);
+					if (options.use_progressbar)
+						progressc_el.parentElement.removeChild(progressc_el);
+
 					replacing_imgs = false;
 				} else {
 					next_img();
@@ -54902,14 +54964,18 @@ var $$IMU_EXPORT$$;
 				}
 			};
 
-			var progressc_el = create_progress_el();
-			progressc_el.style.position = "fixed";
-			progressc_el.style.top = "0px";
-			progressc_el.style.left = "0px";
-			progressc_el.style.width = "80%";
-			progressc_el.style.marginTop = "100px";
-			progressc_el.style.marginLeft = "10%";
-			document.documentElement.appendChild(progressc_el);
+			var progressc_el;
+
+			if (options.use_progressbar) {
+				progressc_el = create_progress_el();
+				progressc_el.style.position = "fixed";
+				progressc_el.style.top = "0px";
+				progressc_el.style.left = "0px";
+				progressc_el.style.width = "80%";
+				progressc_el.style.marginTop = "100px";
+				progressc_el.style.marginLeft = "10%";
+				document.documentElement.appendChild(progressc_el);
+			}
 
 			var domains = {};
 			var domains_processing = {};
@@ -54947,11 +55013,13 @@ var $$IMU_EXPORT$$;
 			next_img();
 		}
 
-		var replace_images_full = function() {
+		var replace_images_full = function(images) {
 			return replace_images({
 				replace_imgs: settings.replaceimgs_replaceimgs,
 				add_links: settings.replaceimgs_addlinks,
-				replace_links: settings.replaceimgs_replacelinks
+				replace_links: settings.replaceimgs_replacelinks,
+				images: images,
+				use_progressbar: !images
 			});
 		};
 
@@ -55015,7 +55083,11 @@ var $$IMU_EXPORT$$;
 		})();
 
 		function on_new_images(images) {
-			highlight_images(images);
+			if (settings.highlightimgs_auto)
+				highlight_images(images);
+
+			if (settings.replaceimgs_auto)
+				replace_images_full(images);
 		};
 
 		(function() {
@@ -55076,13 +55148,14 @@ var $$IMU_EXPORT$$;
 			}
 
 			var needs_observer = function() {
-				return settings.highlightimgs_auto;
+				return settings.highlightimgs_auto || settings.replaceimgs_auto;
 			}
 
 			if (needs_observer()) {
 				observe();
 			}
 
+			// replaceimgs_auto is intentionally not added here due to the warning
 			var origfunc = settings_meta.highlightimgs_auto.onupdate;
 			settings_meta.highlightimgs_auto.onupdate = function() {
 				if (origfunc)
