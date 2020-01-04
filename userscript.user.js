@@ -1061,7 +1061,7 @@ var $$IMU_EXPORT$$;
 		replaceimgs_totallimit: 8,
 		replaceimgs_domainlimit: 2,
 		highlightimgs_enable: false,
-		highlightimgs_auto: false,
+		highlightimgs_auto: "never",
 		highlightimgs_css: "border: 4px solid yellow"
 	};
 	var orig_settings = deepcopy(settings);
@@ -2027,6 +2027,19 @@ var $$IMU_EXPORT$$;
 		highlightimgs_auto: {
 			name: "Automatically highlight images",
 			description: "Automatically highlights images as you view pages",
+			options: {
+				_type: "or",
+				always: {
+					name: "Always"
+				},
+				hover: {
+					name: "Hover",
+					description: "When hovering over an image"
+				},
+				never: {
+					name: "Never"
+				}
+			},
 			category: "extra",
 			subcategory: "highlightimages"
 		},
@@ -2037,7 +2050,7 @@ var $$IMU_EXPORT$$;
 			requires: {
 				_type: "or",
 				highlightimgs_enable: true,
-				highlightimgs_auto: true
+				highlightimgs_auto: {$or: ["always", "hover"]}
 			},
 			category: "extra",
 			subcategory: "highlightimages"
@@ -55036,7 +55049,34 @@ var $$IMU_EXPORT$$;
 
 		register_menucommand("Replace images", replace_images_full);
 
-		var highlight_images = function(images) {
+		var apply_highlight_style = function(target) {
+			apply_styles(target, settings.highlightimgs_css);
+		};
+
+		var remove_highlight_style = function(target) {
+			revert_styles(target);
+		}
+
+		var highlight_mouseover = function(e) {
+			if (get_single_setting("highlightimgs_auto") !== "hover") {
+				e.target.removeEventListener("mouseover", highlight_mouseover);
+				e.target.removeEventListener("mouseout", highlight_mouseout);
+				return;
+			}
+
+			apply_highlight_style(e.target);
+		};
+
+		var highlight_mouseout = function(e) {
+			remove_highlight_style(e.target);
+		}
+
+		var highlight_images = function(options) {
+			if (!options) {
+				options = {}
+			}
+
+			var images = options.images;
 			if (images === undefined) {
 				images = get_all_valid_els();
 			}
@@ -55056,10 +55096,15 @@ var $$IMU_EXPORT$$;
 					do_request: function() {}
 				});
 
-				if (imu_output !== src) {
-					apply_styles(images[i], settings.highlightimgs_css);
+				if (options.hoveronly) {
+					images[i].addEventListener("mouseover", highlight_mouseover);
+					images[i].addEventListener("mouseout", highlight_mouseout);
 				} else {
-					revert_styles(images[i]);
+					if (imu_output !== src) {
+						apply_highlight_style(images[i]);
+					} else {
+						remove_highlight_style(images[i]);
+					}
 				}
 			}
 		};
@@ -55094,8 +55139,9 @@ var $$IMU_EXPORT$$;
 		})();
 
 		function on_new_images(images) {
-			if (settings.highlightimgs_auto)
-				highlight_images(images);
+			var highlight = get_single_setting("highlightimgs_auto");
+			if (highlight === "always" || highlight === "hover")
+				highlight_images({images: images, hoveronly: highlight === "hover"});
 
 			if (settings.replaceimgs_auto)
 				replace_images_full(images);
@@ -55159,7 +55205,8 @@ var $$IMU_EXPORT$$;
 			}
 
 			var needs_observer = function() {
-				return settings.highlightimgs_auto || settings.replaceimgs_auto;
+				var highlight = get_single_setting("highlightimgs_auto");
+				return highlight === "always" || highlight === "hover" || settings.replaceimgs_auto;
 			}
 
 			if (needs_observer()) {
