@@ -55164,6 +55164,7 @@ var $$IMU_EXPORT$$;
 			remove_highlight_style(e.target);
 		}
 
+		var auto_highlighted_imgs = [];
 		var highlight_images = function(options) {
 			if (!options) {
 				options = {}
@@ -55204,6 +55205,10 @@ var $$IMU_EXPORT$$;
 					}
 				} else {
 					if (supported) {
+						if (options.is_auto && auto_highlighted_imgs.indexOf(images[i]) < 0) {
+							auto_highlighted_imgs.push(images[i]);
+						}
+
 						apply_highlight_style(images[i]);
 					} else {
 						remove_highlight_style(images[i]);
@@ -55244,7 +55249,7 @@ var $$IMU_EXPORT$$;
 		function on_new_images(images) {
 			var highlight = get_single_setting("highlightimgs_auto");
 			if (highlight === "always" || highlight === "hover")
-				highlight_images({images: images, hoveronly: highlight === "hover"});
+				highlight_images({images: images, hoveronly: highlight === "hover", is_auto: true});
 
 			if (settings.replaceimgs_auto)
 				replace_images_full(images);
@@ -55294,6 +55299,10 @@ var $$IMU_EXPORT$$;
 			};
 
 			var disconnect = function() {
+				for (var i = 0; i < auto_highlighted_imgs.length; i++) {
+					remove_highlight_style(auto_highlighted_imgs[i]);
+				}
+
 				if (!observer)
 					return;
 
