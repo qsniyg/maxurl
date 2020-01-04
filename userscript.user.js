@@ -55444,10 +55444,16 @@ var $$IMU_EXPORT$$;
 				observer.observe(document, {childList: true, subtree: true, attributes: true});
 			};
 
-			var disconnect = function() {
+			var remove_all_highlights = function() {
 				for (var i = 0; i < auto_highlighted_imgs.length; i++) {
 					remove_highlight_style(auto_highlighted_imgs[i]);
 				}
+
+				auto_highlighted_imgs = [];
+			}
+
+			var disconnect = function() {
+				remove_all_highlights();
 
 				if (!observer)
 					return;
@@ -55478,6 +55484,10 @@ var $$IMU_EXPORT$$;
 					origfunc();
 
 				if (needs_observer()) {
+					if (get_single_setting("highlightimgs_auto") !== "always") {
+						remove_all_highlights();
+					}
+
 					observe();
 				} else {
 					disconnect();
