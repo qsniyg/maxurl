@@ -52091,10 +52091,11 @@ var $$IMU_EXPORT$$;
 		var waitingsize = 200;
 
 		var current_chord = [];
+		var current_chord_timeout = {};
 
 		function resetifout(e) {
 			// doesn't work, as e doesn't contain ctrlKey etc.
-			if (!trigger_complete(e)) {
+			if (!trigger_complete(settings.mouseover_trigger_key)) {
 				//current_chord = [];
 				stop_waiting();
 				resetpopups();
@@ -54356,14 +54357,28 @@ var $$IMU_EXPORT$$;
 			return keystr_in_trigger(str);
 		}
 
+		function key_would_modify_chord(str, value) {
+			if (value) {
+				if (current_chord.indexOf(str) < 0)
+					return true;
+			} else {
+				if (current_chord.indexOf(str) >= 0)
+					return true;
+			}
+
+			return false;
+		}
+
 		function set_chord_sub(str, value) {
 			if (value) {
+				current_chord_timeout[str] = Date.now();
 				if (current_chord.indexOf(str) < 0) {
 					current_chord.push(str);
 					//console_log("+" + str);
 					return true;
 				}
 			} else {
+				delete current_chord_timeout[str];
 				if (current_chord.indexOf(str) >= 0) {
 					current_chord.splice(current_chord.indexOf(str), 1);
 					//console_log("-" + str);
@@ -54375,7 +54390,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		function event_in_chord(e, wanted_chord) {
-			var map = get_keystrs_map(e, value)
+			var map = get_keystrs_map(e, true);
 
 			for (var key in map) {
 				if (keystr_in_trigger(key, wanted_chord))
@@ -54385,14 +54400,22 @@ var $$IMU_EXPORT$$;
 			return false;
 		}
 
-		function set_chord(e, value, wanted_chord) {
-			var map = get_keystrs_map(e, value)
+		function remove_old_keys() {
+			var now = Date.now();
+
+			for (var key in current_chord_timeout) {
+				if (now - current_chord_timeout[key] > 5000)
+					set_chord_sub(key, false);
+			}
+		}
+
+		function update_chord(e, value) {
+			var map = get_keystrs_map(e, value);
+
+			remove_old_keys();
 
 			var changed = false;
 			for (var key in map) {
-				if (wanted_chord !== undefined && !keystr_in_trigger(key, wanted_chord))
-					continue;
-
 				if (set_chord_sub(key, map[key]))
 					changed = true;
 			}
@@ -54400,7 +54423,21 @@ var $$IMU_EXPORT$$;
 			return changed;
 		}
 
-		function trigger_complete(e, wanted_chord) {
+		function event_would_modify_chord(e, value, wanted_chord) {
+			var map = get_keystrs_map(e, value)
+
+			for (var key in map) {
+				if (wanted_chord !== undefined && !keystr_in_trigger(key, wanted_chord))
+					continue;
+
+				if (key_would_modify_chord(key, map[key]))
+					return true;
+			}
+
+			return false;
+		}
+
+		function trigger_complete(wanted_chord) {
 			if (wanted_chord === undefined)
 				wanted_chord = settings.mouseover_trigger_key;
 
@@ -54408,6 +54445,12 @@ var $$IMU_EXPORT$$;
 				var key = wanted_chord[i];
 
 				if (current_chord.indexOf(key) < 0)
+					return false;
+			}
+
+			// e.g. if the user presses shift+r, but the chord is r, then it should fail
+			for (var i = 0; i < current_chord.length; i++) {
+				if (wanted_chord.indexOf(current_chord[i]) < 0)
 					return false;
 			}
 
@@ -55366,8 +55409,12 @@ var $$IMU_EXPORT$$;
 			if (!mouseover_enabled())
 				return;
 
-			if (settings.mouseover_trigger_behavior === "keyboard" && set_chord(event, true, settings.mouseover_trigger_key)) {
-				if (trigger_complete(event, settings.mouseover_trigger_key) && !popups_active) {
+			update_chord(event, true);
+
+			if (settings.mouseover_trigger_behavior === "keyboard" && event_in_chord(event, settings.mouseover_trigger_key)) {
+				if (trigger_complete(settings.mouseover_trigger_key) && !popups_active) {
+					// clear timeout so that all/any close behavior works
+					current_chord_timeout = {};
 					if (!delay_handle) {
 						popup_trigger_reason = "keyboard";
 						trigger_popup();
@@ -55375,14 +55422,14 @@ var $$IMU_EXPORT$$;
 				}
 
 				var close_behavior = get_close_behavior();
-				if (close_behavior === "all" || (close_behavior === "any" && trigger_complete(event, settings.mouseover_trigger_key))) {
+				if (close_behavior === "all" || (close_behavior === "any" && trigger_complete(settings.mouseover_trigger_key))) {
 					can_close_popup[0] = false;
 				}
 			}
 
 			if (popups_active && popup_trigger_reason === "mouse" &&
-				settings.mouseover_use_hold_key && set_chord(event, true, settings.mouseover_hold_key)) {
-				if (trigger_complete(event, settings.mouseover_hold_key)) {
+				settings.mouseover_use_hold_key && event_in_chord(event, settings.mouseover_hold_key)) {
+				if (trigger_complete(settings.mouseover_hold_key)) {
 					popup_hold = !popup_hold;
 
 					if (!popup_hold && can_close_popup[1])
@@ -55460,7 +55507,9 @@ var $$IMU_EXPORT$$;
 			if (!mouseover_enabled())
 				return;
 
-			var condition = set_chord(event, false, settings.mouseover_trigger_key);
+			var condition = event_would_modify_chord(event, false, settings.mouseover_trigger_key);
+
+			update_chord(event, false);
 
 			var close_behavior = get_close_behavior();
 			if (condition && close_behavior === "all") {
