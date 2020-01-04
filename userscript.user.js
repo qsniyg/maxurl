@@ -1033,6 +1033,8 @@ var $$IMU_EXPORT$$;
 		// also thanks to 07416: https://github.com/qsniyg/maxurl/issues/25
 		mouseover_links: false,
 		mouseover_gallery_cycle: false,
+		mouseover_gallery_prev_key: ["left"],
+		mouseover_gallery_next_key: ["right"],
 		// thanks to acid-crash on github for the idea: https://github.com/qsniyg/maxurl/issues/20
 		mouseover_styles: "",
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-541065461
@@ -49958,7 +49960,12 @@ var $$IMU_EXPORT$$;
 
 		var newlist = [];
 		for (var i = 0; i < list.length; i++) {
-			newlist.push(list[i].charAt(0).toUpperCase() + list[i].slice(1));
+			var capitalized = list[i].charAt(0).toUpperCase() + list[i].slice(1);
+			if (list.length === 1 && (capitalized === "Left" || capitalized === "Right" || capitalized === "Up" || capitalized === "Down")) {
+				capitalized += " Arrow";
+			}
+
+			newlist.push(_(capitalized));
 		}
 
 		return newlist.join("+");
@@ -53073,10 +53080,12 @@ var $$IMU_EXPORT$$;
 						var name = leftright ? "Next" : "Previous";
 						// \u2192 = →
 						// \u2190 = ←
-						var icon = leftright ? "\u2192" : "\u2190"
-						var arrowname = leftright ? "Right Arrow" : "Left Arrow";
+						var icon = leftright ? "\u2192" : "\u2190";
 
-						var title = _(name) + " (" + _(arrowname) + ")";
+						var keybinding = leftright ? settings.mouseover_gallery_next_key : settings.mouseover_gallery_prev_key;
+						var keybinding_text = get_trigger_key_text(keybinding);
+
+						var title = _(name) + " (" + _(keybinding_text) + ")";
 
 						var btn = addbtn(icon, title, action);
 						btn.style.top = "calc(50% - 7px - " + emhalf + ")";
@@ -55531,10 +55540,10 @@ var $$IMU_EXPORT$$;
 			if (popups.length > 0 && popup_el) {
 				var ret = undefined;
 
-				if (event.which === 37) { // left
+				if (trigger_complete(settings.mouseover_gallery_prev_key)) {
 					trigger_gallery(false);
 					ret = false;
-				} else if (event.which === 39) { // right
+				} else if (trigger_complete(settings.mouseover_gallery_next_key)) {
 					trigger_gallery(true);
 					ret = false;
 				} else if (!event.shiftKey &&
