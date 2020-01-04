@@ -54501,6 +54501,11 @@ var $$IMU_EXPORT$$;
 			return changed;
 		}
 
+		function clear_chord() {
+			current_chord = [];
+			current_chord_timeout = {};
+		}
+
 		function event_would_modify_chord(e, value, wanted_chord) {
 			var map = get_keystrs_map(e, value)
 
@@ -55597,6 +55602,9 @@ var $$IMU_EXPORT$$;
 					ret = false;
 				} else if (trigger_complete(settings.mouseover_download_key)) {
 					ret = false;
+
+					// Clear the chord because keyup might not be called due to the save dialog popup
+					clear_chord();
 
 					var a = document.createElement("a");
 
