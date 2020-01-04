@@ -1039,7 +1039,7 @@ var $$IMU_EXPORT$$;
 		mouseover_styles: "",
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-541065461
 		mouseover_wait_use_el: false,
-		//mouseover_download_key: ["ctrl", "s"],
+		mouseover_download_key: ["s"],
 		mouseover_apply_blacklist: false,
 		website_inject_imu: true,
 		website_image: true,
@@ -1746,6 +1746,7 @@ var $$IMU_EXPORT$$;
 			requires: {
 				mouseover: true
 			},
+			type: "keysequence",
 			category: "popup",
 			subcategory: "behavior"
 		},
@@ -47798,6 +47799,12 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/wp-content\/+uploads\/+.*)-[0-9]+x[0-9]+@[0-9]+x(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		}
 
+		if (domain_nosub === "infcdn.net" && /^art/.test(domain)) {
+			// https://art-u2.infcdn.net/articles_uploads/4/4550/thumb/MacBookSortcuts2-300x.png
+			//   https://art-u2.infcdn.net/articles_uploads/4/4550/MacBookSortcuts2.png
+			return src.replace(/(\/articles_uploads\/+[0-9]\/+[0-9]+\/+)thumb\/+([^/.]+)-[0-9]*x[0-9]*(\.[^/.]+)(?:[?#].*)?$/, "$1$2$3");
+		}
+
 
 
 
@@ -55566,23 +55573,7 @@ var $$IMU_EXPORT$$;
 				} else if (trigger_complete(settings.mouseover_gallery_next_key)) {
 					trigger_gallery(true);
 					ret = false;
-				} else if (!event.shiftKey &&
-						   !event.ctrlKey &&
-						   !event.altKey &&
-						   !event.metaKey) {
-					if (event.which === 82) { // r
-						rotate_gallery(90);
-						ret = false;
-					} else if (event.which === 69) { // e
-						rotate_gallery(-90);
-						ret = false;
-					}
-				}
-
-				if (ret === undefined && event.which === 83 // s
-					&& !event.shiftKey
-					&& !event.altKey
-					&& !event.metaKey) {
+				} else if (trigger_complete(settings.mouseover_download_key)) {
 					ret = false;
 
 					var a = document.createElement("a");
@@ -55613,6 +55604,17 @@ var $$IMU_EXPORT$$;
 					setTimeout(function() {
 						document.body.removeChild(a);
 					}, 500);
+				} else if (!event.shiftKey &&
+						   !event.ctrlKey &&
+						   !event.altKey &&
+						   !event.metaKey) {
+					if (event.which === 82) { // r
+						rotate_gallery(90);
+						ret = false;
+					} else if (event.which === 69) { // e
+						rotate_gallery(-90);
+						ret = false;
+					}
 				}
 
 				if (ret === false) {
