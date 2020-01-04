@@ -651,6 +651,9 @@ var $$IMU_EXPORT$$;
 			"en": "Video",
 			"ko": "영상"
 		},
+		"subcategory_gallery": {
+			"en": "Gallery"
+		},
 		"subcategory_popup_other": {
 			"en": "Other",
 			"fr": "Autre"
@@ -1029,6 +1032,7 @@ var $$IMU_EXPORT$$;
 		mouseover_download: false,
 		// also thanks to 07416: https://github.com/qsniyg/maxurl/issues/25
 		mouseover_links: false,
+		mouseover_gallery_cycle: false,
 		// thanks to acid-crash on github for the idea: https://github.com/qsniyg/maxurl/issues/20
 		mouseover_styles: "",
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-541065461
@@ -1752,6 +1756,15 @@ var $$IMU_EXPORT$$;
 			category: "popup",
 			subcategory: "open_behavior"
 		},
+		mouseover_gallery_cycle: {
+			name: "Cycle gallery",
+			description: "Going to the previous image for the first image will lead to the last image and vice-versa",
+			requires: {
+				mouseover: true
+			},
+			category: "popup",
+			subcategory: "gallery"
+		},
 		mouseover_styles: {
 			name: "Popup CSS style",
 			description: "CSS style rules for the mouseover popup",
@@ -2101,6 +2114,7 @@ var $$IMU_EXPORT$$;
 			"behavior": "subcategory_behavior",
 			"video": "subcategory_video",
 			"ui": "subcategory_ui",
+			"gallery": "subcategory_gallery",
 			"popup_other": "subcategory_popup_other"
 		},
 		"rules": {
@@ -6312,14 +6326,17 @@ var $$IMU_EXPORT$$;
 			if (regex.test(src)) {
 				var urls = [
 					src.replace(regex, "$1maxres$2$3"),
+					src.replace(regex, "$1hq720$3"),
 					src.replace(regex, "$1sd$2$3"),
 					src.replace(regex, "$1hq$2$3"),
 					src.replace(regex, "$1mq$2$3")
 				];
 
 				// replace 0 to default if applicable (maxres0 doesn't work)
+				// https://i.ytimg.com/vi/bXMUBdqyVAE/hq720.jpg
+				//   https://i.ytimg.com/vi/bXMUBdqyVAE/maxresdefault.jpg
 				for (var i = 0; i < urls.length; i++) {
-					urls[i] = urls[i].replace(/(\/[a-z]+)0(\.[^/.]+)$/, "$1default$2");
+					urls[i] = urls[i].replace(/(\/[a-z]+)[0-9]+(\.[^/.]+)$/, "$1default$2");
 				}
 
 				return fillobj_urls(urls, obj);
@@ -53100,7 +53117,7 @@ var $$IMU_EXPORT$$;
 					};
 
 					var add_leftright_gallery_button_if_valid = function(leftright) {
-						wrap_gallery_func(leftright, undefined, function(el) {
+						wrap_gallery_cycle(leftright, undefined, function(el) {
 							if (is_valid_el(el)) {
 								add_leftright_gallery_button(leftright);
 							}
@@ -54830,7 +54847,7 @@ var $$IMU_EXPORT$$;
 			var loop = function() {
 				wrap_gallery_func(nextprev, el, function(newel) {
 					if (!newel || !is_valid_el(newel))
-						return cb(count);
+						return cb(count, el);
 
 					count++;
 
@@ -54845,12 +54862,27 @@ var $$IMU_EXPORT$$;
 			loop();
 		}
 
+		function wrap_gallery_cycle(nextprev, el, cb) {
+			if (!el)
+				el = popup_el;
+
+			wrap_gallery_func(nextprev, el, function(newel) {
+				if (!newel && settings.mouseover_gallery_cycle) {
+					count_gallery(!nextprev, el, function(count, newel) {
+						cb(newel);
+					});
+				} else {
+					cb(newel);
+				}
+			});
+		}
+
 		function trigger_gallery(nextprev, cb) {
 			if (!cb) {
 				cb = nullfunc;
 			}
 
-			wrap_gallery_func(nextprev, undefined, function(newel) {
+			wrap_gallery_cycle(nextprev, undefined, function(newel) {
 				if (newel) {
 					var source = find_source([newel]);
 					if (source) {
