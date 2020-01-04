@@ -1040,6 +1040,8 @@ var $$IMU_EXPORT$$;
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-541065461
 		mouseover_wait_use_el: false,
 		mouseover_download_key: ["s"],
+		mouseover_rotate_left_key: ["e"],
+		mouseover_rotate_right_key: ["r"],
 		mouseover_apply_blacklist: false,
 		website_inject_imu: true,
 		website_image: true,
@@ -1743,6 +1745,26 @@ var $$IMU_EXPORT$$;
 		mouseover_download_key: {
 			name: "Download key",
 			description: "Downloads the image in the popup when this key is pressed",
+			requires: {
+				mouseover: true
+			},
+			type: "keysequence",
+			category: "popup",
+			subcategory: "behavior"
+		},
+		mouseover_rotate_left_key: {
+			name: "Rotate left key",
+			description: "Rotates the popup 90 degrees to the left",
+			requires: {
+				mouseover: true
+			},
+			type: "keysequence",
+			category: "popup",
+			subcategory: "behavior"
+		},
+		mouseover_rotate_right_key: {
+			name: "Rotate right key",
+			description: "Rotates the popup 90 degrees to the right",
 			requires: {
 				mouseover: true
 			},
@@ -55604,17 +55626,12 @@ var $$IMU_EXPORT$$;
 					setTimeout(function() {
 						document.body.removeChild(a);
 					}, 500);
-				} else if (!event.shiftKey &&
-						   !event.ctrlKey &&
-						   !event.altKey &&
-						   !event.metaKey) {
-					if (event.which === 82) { // r
-						rotate_gallery(90);
-						ret = false;
-					} else if (event.which === 69) { // e
-						rotate_gallery(-90);
-						ret = false;
-					}
+				} else if (trigger_complete(settings.mouseover_rotate_left_key)) {
+					rotate_gallery(-90);
+					ret = false;
+				} else if (trigger_complete(settings.mouseover_rotate_right_key)) {
+					rotate_gallery(90);
+					ret = false;
 				}
 
 				if (ret === false) {
