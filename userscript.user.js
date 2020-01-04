@@ -1637,14 +1637,21 @@ var $$IMU_EXPORT$$;
 			description: "How the popup reacts to a scroll/mouse wheel event",
 			options: {
 				_type: "or",
-				zoom: {
-					name: "Zoom"
+				_group1: {
+					zoom: {
+						name: "Zoom"
+					},
+					pan: {
+						name: "Pan"
+					},
+					gallery: {
+						name: "Gallery"
+					}
 				},
-				pan: {
-					name: "Pan"
-				},
-				nothing: {
-					name: "None"
+				_group2: {
+					nothing: {
+						name: "None"
+					}
 				}
 			},
 			requires: {
@@ -52849,6 +52856,14 @@ var $$IMU_EXPORT$$;
 				var cached_previmages = 0;
 				var cached_nextimages = 0;
 
+				function lraction(isright) {
+					trigger_gallery(isright, function(changed) {
+						if (!changed) {
+							create_ui();
+						}
+					});
+				}
+
 				function create_topbarel() {
 					var topbarel = document.createElement("div");
 					set_el_all_initial(topbarel);
@@ -53031,14 +53046,6 @@ var $$IMU_EXPORT$$;
 						ui_els.push(lrhover);
 						return lrhover;
 					};
-
-					function lraction(isright) {
-						trigger_gallery(isright, function(changed) {
-							if (!changed) {
-								create_ui();
-							}
-						});
-					}
 
 					var add_leftright_gallery_button = function(leftright) {
 						var action = function() {
@@ -53386,6 +53393,22 @@ var $$IMU_EXPORT$$;
 						estop(e);
 						outerdiv.style.left = (parseInt(outerdiv.style.left) + e.deltaX) + "px";
 						outerdiv.style.top = (parseInt(outerdiv.style.top) + e.deltaY) + "px";
+						return false;
+					}
+
+					if (get_single_setting("mouseover_scroll_behavior") === "gallery") {
+						estop(e);
+
+						var isright;
+						if (e.deltaX < 0 || e.deltaY < 0) {
+							isright = false;
+						} else if (e.deltaX > 0 || e.deltaY > 0) {
+							isright = true;
+						} else { // ???
+							return false;
+						}
+
+						lraction(isright);
 						return false;
 					}
 
