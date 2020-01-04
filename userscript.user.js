@@ -2035,7 +2035,9 @@ var $$IMU_EXPORT$$;
 			description: "CSS style to apply for highlight",
 			type: "textarea",
 			requires: {
-				highlightimgs_enable: true
+				_type: "or",
+				highlightimgs_enable: true,
+				highlightimgs_auto: true
 			},
 			category: "extra",
 			subcategory: "highlightimages"
@@ -47719,6 +47721,12 @@ var $$IMU_EXPORT$$;
 				};
 		}
 
+		if (domain_nowww === "extension.zone") {
+			// http://www.extension.zone/wp-content/uploads/2017/01/rathernice-90x60@2x.jpg
+			//   http://www.extension.zone/wp-content/uploads/2017/01/rathernice.jpg
+			return src.replace(/(\/wp-content\/+uploads\/+.*)-[0-9]+x[0-9]+@[0-9]+x(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
 
 
 
@@ -50553,6 +50561,9 @@ var $$IMU_EXPORT$$;
 
 					if ("_type" in requires)
 						type = requires._type;
+
+					if (type === "or")
+						enabled = false;
 
 					for (var required_setting in requires) {
 						if (required_setting[0] === "_")
