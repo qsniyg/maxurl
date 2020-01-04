@@ -52277,15 +52277,11 @@ var $$IMU_EXPORT$$;
 				.replace(/\s+$/, "");
 		}
 
-		function apply_styles(el, str) {
+		function get_processed_styles(str) {
 			if (!str || typeof str !== "string" || !strip_whitespace(str))
 				return;
 
-			var oldstyle = el.getAttribute("style");
-			if (oldstyle) {
-				el.setAttribute("data-imu-oldstyle", oldstyle);
-			}
-
+			var styles = {};
 			var splitted = str.split(/[;\n]/);
 			for (var i = 0; i < splitted.length; i++) {
 				var current = strip_whitespace(splitted[i]);
@@ -52304,11 +52300,49 @@ var $$IMU_EXPORT$$;
 					value = strip_whitespace(value.replace(/!important$/, ""));
 				}
 
+				styles[property] = {value: value, important: important};
+			}
+
+			return styles;
+		}
+
+		function get_styletag_styles(str) {
+			var styles = get_processed_styles(str);
+			if (!styles)
+				return;
+
+			var styles_array = [];
+			for (var property in styles) {
+				var current = property + ": " + styles[property].value;
+				if (styles[property].important) {
+					current += " !important"
+				}
+
+				styles_array.push(current);
+			}
+
+			return styles_array.join("; ");
+		}
+
+		function apply_styles(el, str) {
+			var styles = get_processed_styles(str);
+			if (!styles)
+				return;
+
+			var oldstyle = el.getAttribute("style");
+			if (oldstyle) {
+				el.setAttribute("data-imu-oldstyle", oldstyle);
+			}
+
+			for (var property in styles) {
+				var obj = styles[property];
+				var value = obj.value;
+
 				if (value.match(/^['"].*['"]$/)) {
 					value = value.replace(/^["'](.*)["']$/, "$1");
 				}
 
-				if (important) {
+				if (obj.important) {
 					el.style.setProperty(property, value, "important");
 				} else {
 					el.style.setProperty(property, value);
@@ -55091,11 +55125,21 @@ var $$IMU_EXPORT$$;
 				document.documentElement.appendChild(highlightimgs_styleel);
 			}
 
-			highlightimgs_styleel.innerText = "." + highlightimgs_classname + "{" + settings.highlightimgs_css.replace(/\n/g, ";") + "}";
+			highlightimgs_styleel.innerText = "." + highlightimgs_classname + "{" + get_styletag_styles(settings.highlightimgs_css) + "}";
 		}
 
+		update_highlight_styleel();
+		(function() {
+			var oldfunc = settings_meta.highlightimgs_css.onupdate;
+			settings_meta.highlightimgs_css.onupdate = function() {
+				update_highlight_styleel();
+
+				if (oldfunc)
+					return oldfunc.apply(this, arguments);
+			};
+		})();
+
 		var apply_highlight_style = function(target) {
-			update_highlight_styleel();
 			target.classList.add(highlightimgs_classname);
 		};
 
