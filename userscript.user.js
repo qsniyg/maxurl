@@ -53050,7 +53050,7 @@ var $$IMU_EXPORT$$;
 
 					if (settings.mouseover_ui_rotationbtns) {
 						var get_rotate_title = function(leftright) {
-							return _("rotate_" + leftright + "_btn") + " (" + _(get_trigger_key_text(settings["mouseover_rotate_" + leftright + "_key"])) + ")";
+							return _("rotate_" + leftright + "_btn") + " (" + get_trigger_key_text(settings["mouseover_rotate_" + leftright + "_key"]) + ")";
 						};
 
 						// \u21B6 = ↶
