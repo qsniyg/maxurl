@@ -55067,12 +55067,40 @@ var $$IMU_EXPORT$$;
 
 		register_menucommand("Replace images", replace_images_full);
 
+		var get_random_text = function(length) {
+			var text = "";
+
+			while (text.length < length) {
+				var newtext = Math.floor(Math.random() * 10e8).toString(26);
+				text += newtext;
+			}
+
+			text = text.substr(0, length);
+			return text;
+		};
+
+		var generate_random_class = function(name) {
+			return "imu-" + get_random_text(10) + "-" + name;
+		};
+
+		var highlightimgs_styleel = null;
+		var highlightimgs_classname = generate_random_class("highlight");
+		var update_highlight_styleel = function() {
+			if (!highlightimgs_styleel) {
+				highlightimgs_styleel = document.createElement("style");
+				document.documentElement.appendChild(highlightimgs_styleel);
+			}
+
+			highlightimgs_styleel.innerText = "." + highlightimgs_classname + "{" + settings.highlightimgs_css.replace(/\n/g, ";") + "}";
+		}
+
 		var apply_highlight_style = function(target) {
-			apply_styles(target, settings.highlightimgs_css);
+			update_highlight_styleel();
+			target.classList.add(highlightimgs_classname);
 		};
 
 		var remove_highlight_style = function(target) {
-			revert_styles(target);
+			target.classList.remove(highlightimgs_classname);
 		}
 
 		var highlight_mouseover = function(e) {
