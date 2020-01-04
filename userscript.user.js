@@ -1062,6 +1062,7 @@ var $$IMU_EXPORT$$;
 		replaceimgs_domainlimit: 2,
 		highlightimgs_enable: false,
 		highlightimgs_auto: "never",
+		highlightimgs_onlysupported: true,
 		highlightimgs_css: "border: 4px solid yellow"
 	};
 	var orig_settings = deepcopy(settings);
@@ -2039,6 +2040,17 @@ var $$IMU_EXPORT$$;
 				never: {
 					name: "Never"
 				}
+			},
+			category: "extra",
+			subcategory: "highlightimages"
+		},
+		highlightimgs_onlysupported: {
+			name: "Only explicitly supported images",
+			description: "Only highlights images that can be made larger or the original version can be found",
+			requires: {
+				_type: "or",
+				highlightimgs_enable: true,
+				highlightimgs_auto: {$or: ["always", "hover"]}
 			},
 			category: "extra",
 			subcategory: "highlightimages"
@@ -53592,6 +53604,10 @@ var $$IMU_EXPORT$$;
 			return el.currentSrc || el.src;
 		}
 
+		function is_valid_src(src) {
+			return src && !(/^(?:blob:|x-raw)/.test(src));
+		}
+
 		function find_source(els) {
 			//console_log(els);
 			var result = _find_source(els);
@@ -55088,23 +55104,31 @@ var $$IMU_EXPORT$$;
 
 			for (var i = 0; i < images.length; i++) {
 				var src = get_img_src(images[i]);
+				if (!is_valid_src(src))
+					continue;
 
-				var imu_output = bigimage_recursive(src, {
-					fill_object: false,
-					exclude_problems: [],
-					use_cache: false,
-					use_api_cache: false,
-					cb: function() {},
-					do_request: function() {}
-				});
+				supported = !settings.highlightimgs_onlysupported;
+
+				if (settings.highlightimgs_onlysupported) {
+					var imu_output = bigimage_recursive(src, {
+						fill_object: false,
+						exclude_problems: [],
+						use_cache: false,
+						use_api_cache: false,
+						cb: function() {},
+						do_request: function() {}
+					});
+
+					supported = imu_output !== src;
+				}
 
 				if (options.hoveronly) {
-					if (imu_output !== src) {
+					if (supported) {
 						images[i].addEventListener("mouseover", highlight_mouseover);
 						images[i].addEventListener("mouseout", highlight_mouseout);
 					}
 				} else {
-					if (imu_output !== src) {
+					if (supported) {
 						apply_highlight_style(images[i]);
 					} else {
 						remove_highlight_style(images[i]);
