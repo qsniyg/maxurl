@@ -55099,8 +55099,10 @@ var $$IMU_EXPORT$$;
 				});
 
 				if (options.hoveronly) {
-					images[i].addEventListener("mouseover", highlight_mouseover);
-					images[i].addEventListener("mouseout", highlight_mouseout);
+					if (imu_output !== src) {
+						images[i].addEventListener("mouseover", highlight_mouseover);
+						images[i].addEventListener("mouseout", highlight_mouseout);
+					}
 				} else {
 					if (imu_output !== src) {
 						apply_highlight_style(images[i]);
