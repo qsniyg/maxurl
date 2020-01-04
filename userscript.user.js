@@ -55490,7 +55490,10 @@ var $$IMU_EXPORT$$;
 
 					document.body.appendChild(a);
 					a.click();
-					document.body.removeChild(a);
+
+					setTimeout(function() {
+						document.body.removeChild(a);
+					}, 500);
 				}
 
 				if (ret === false) {
