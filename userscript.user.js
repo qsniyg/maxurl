@@ -51091,6 +51091,8 @@ var $$IMU_EXPORT$$;
 						input.type = "text";
 					}
 
+					input.setAttribute("spellcheck", false);
+
 					if (type === "number") {
 						input.style = "text-align:right";
 						if (meta.number_max !== undefined)
