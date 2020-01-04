@@ -53678,6 +53678,9 @@ var $$IMU_EXPORT$$;
 		}
 
 		function get_img_src(el) {
+			if (el.tagName === "A")
+				return el.href;
+
 			// currentSrc is used if another image is used in the srcset
 			return el.currentSrc || el.src;
 		}
@@ -54977,8 +54980,35 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		var looks_like_valid_link = function(src) {
+			return /\.(?:jpe?g|png|web[mp]|gif|mp4|mkv|ogg|ogv)(?:[?#].*)?$/i.test(src);
+		}
+
+		var is_img_pic_vid = function(el) {
+			return el.tagName === "IMG" || el.tagName === "PICTURE" || el.tagName === "VIDEO";
+		};
+
+		var is_img_pic_vid_link = function(el) {
+			if (is_img_pic_vid(el))
+				return true;
+
+			if (settings.mouseover_links && el.tagName === "A")
+				return true;
+
+			return false;
+		}
+
 		var get_all_valid_els = function() {
 			return document.querySelectorAll("img, picture, video");
+		};
+
+		var get_all_valid_els_link = function() {
+			var query = "img, picture, video";
+			if (settings.mouseover_links) {
+				query += ", a";
+			}
+
+			return document.querySelectorAll(query);
 		};
 
 		var replacing_imgs = false;
@@ -54986,10 +55016,18 @@ var $$IMU_EXPORT$$;
 			if (replacing_imgs)
 				return;
 
-			var imgs = options.images;
+			var raw_imgs = options.images;
 
-			if (imgs === undefined) {
-				imgs = get_all_valid_els();
+			if (raw_imgs === undefined) {
+				raw_imgs = get_all_valid_els();
+			}
+
+			// remove non-images/videos
+			var imgs = [];
+			for (var i = 0; i < raw_imgs.length; i++) {
+				if (is_img_pic_vid(raw_imgs[i])) {
+					imgs.push(raw_imgs[i]);
+				}
 			}
 
 			if (imgs.length === 0)
@@ -55190,14 +55228,22 @@ var $$IMU_EXPORT$$;
 			next_img();
 		}
 
-		var replace_images_full = function(images) {
-			return replace_images({
+		var replace_images_full = function(options) {
+			var base_options = {
 				replace_imgs: settings.replaceimgs_replaceimgs,
 				add_links: settings.replaceimgs_addlinks,
 				replace_links: settings.replaceimgs_replacelinks,
-				images: images,
-				use_progressbar: !images
-			});
+				use_progressbar: true
+			};
+
+			if (!options)
+				options = {};
+
+			for (var key in options) {
+				base_options[key] = options[key];
+			}
+
+			return replace_images(base_options);
 		};
 
 		register_menucommand("Replace images", replace_images_full);
@@ -55255,6 +55301,8 @@ var $$IMU_EXPORT$$;
 				return;
 			}
 
+			if (auto_highlighted_imgs.indexOf(e.target) < 0)
+				auto_highlighted_imgs.push(e.target);
 			apply_highlight_style(e.target);
 		};
 
@@ -55270,7 +55318,7 @@ var $$IMU_EXPORT$$;
 
 			var images = options.images;
 			if (images === undefined) {
-				images = get_all_valid_els();
+				images = get_all_valid_els_link();
 			}
 
 			if (!images.length)
@@ -55278,7 +55326,7 @@ var $$IMU_EXPORT$$;
 
 			for (var i = 0; i < images.length; i++) {
 				var src = get_img_src(images[i]);
-				if (!is_valid_src(src))
+				if (!is_valid_src(src) || (images[i].tagName === "A" && !looks_like_valid_link(src)))
 					continue;
 
 				supported = !settings.highlightimgs_onlysupported;
@@ -55350,7 +55398,7 @@ var $$IMU_EXPORT$$;
 				highlight_images({images: images, hoveronly: highlight === "hover", is_auto: true});
 
 			if (settings.replaceimgs_auto)
-				replace_images_full(images);
+				replace_images_full({images: images, use_progressbar: false});
 		};
 
 		(function() {
@@ -55362,7 +55410,7 @@ var $$IMU_EXPORT$$;
 
 					var add_nodes = function(nodes) {
 						for (var i = 0; i < nodes.length; i++) {
-							if (nodes[i].tagName === "IMG" || nodes[i].tagName === "PICTURE" || nodes[i].tagName === "VIDEO") {
+							if (is_img_pic_vid_link(nodes[i])) {
 								images.push(nodes[i]);
 							}
 						}
@@ -55389,7 +55437,7 @@ var $$IMU_EXPORT$$;
 			}
 
 			var observe = function() {
-				on_new_images(get_all_valid_els());
+				on_new_images();
 
 				if (!observer)
 					return;
