@@ -11688,12 +11688,6 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/gen\/(?:constrain|crop|resize|min)\/[0-9]*\/[0-9]*\/[0-9]*\//, "/gen/full/");
 		}
 
-		if (domain === "static.giantbomb.com") {
-			// https://static.giantbomb.com/uploads/square_medium/0/329/2767259-journey_20150721143742.jpg
-			//   https://static.giantbomb.com/uploads/original/0/329/2767259-journey_20150721143742.jpg
-			return src.replace(/\/uploads\/[^/]*\//, "/uploads/original/");
-		}
-
 		if (domain === "images.shazam.com") {
 			// https://images.shazam.com/coverart/t113448093-b320004845_s400.jpg
 			//   https://images.shazam.com/coverart/t113448093-b320004845_s0.jpg
@@ -13158,14 +13152,6 @@ var $$IMU_EXPORT$$;
 				return newsrc;
 
 			return src.replace(/_(?:[0-9]+[hw]|medium|grande)(\.[^/.]*)$/, "$1");
-		}
-
-		if (domain === "static.gamespot.com") {
-			// https://static.gamespot.com/uploads/square_tiny/1578/15789737/3348796-alteredcarbon.jpg
-			//   https://static.gamespot.com/uploads/original/1578/15789737/3348796-alteredcarbon.jpg
-			// https://static.gamespot.com/uploads/scale_small/1365/13658182/2673733-geralt_yennefer-size_1920x1200.jpg
-			//   https://static.gamespot.com/uploads/original/1365/13658182/2673733-geralt_yennefer-size_1920x1200.png
-			return add_extensions(src.replace(/\/uploads\/[^/]*\//, "/uploads/original/"));
 		}
 
 		if (domain === "i.neoseeker.com" &&
@@ -15001,8 +14987,9 @@ var $$IMU_EXPORT$$;
 		if (domain_nosub === "mail.ru" &&
 			domain.match(/^avt.*\.foto\.mail\.ru/)) {
 			// https://avt-30.foto.mail.ru/mail/philimonova56/_avatar180?
+			//   https://avt-30.foto.mail.ru/mail/philimonova56/_avatar
 			//   https://avt-30.foto.mail.ru/mail/philimonova56/_avatarbig
-			return src.replace(/\/_avatar[0-9]+(?:[?#].*)?$/, "/_avatarbig");
+			return src.replace(/\/_avatar[0-9]*(?:[?#].*)?$/, "/_avatarbig");
 		}
 
 		if (domain === "games.mail.ru") {
@@ -24821,13 +24808,27 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "static.comicvine.com" ||
+			// https://static.giantbomb.com/uploads/square_medium/0/329/2767259-journey_20150721143742.jpg
+			//   https://static.giantbomb.com/uploads/original/0/329/2767259-journey_20150721143742.jpg
+			domain === "static.giantbomb.com" ||
+			// https://static.gamespot.com/uploads/square_tiny/1578/15789737/3348796-alteredcarbon.jpg
+			//   https://static.gamespot.com/uploads/original/1578/15789737/3348796-alteredcarbon.jpg
+			// https://static.gamespot.com/uploads/scale_small/1365/13658182/2673733-geralt_yennefer-size_1920x1200.jpg
+			//   https://static.gamespot.com/uploads/original/1365/13658182/2673733-geralt_yennefer-size_1920x1200.png
+			domain === "static.gamespot.com" ||
 			// thanks to synthtech on github https://github.com/qsniyg/maxurl/issues/115
 			// https://comicvine1.cbsistatic.com/uploads/scale_small/13/136525/5341716-1.jpg
 			//   https://comicvine1.cbsistatic.com/uploads/original/13/136525/5341716-1.jpg
-			(domain_nosub === "cbsistatic.com" && /^comicvine[0-9]*\./.test(domain))) {
+			// https://giantbomb1.cbsistatic.com/uploads/square_small/1/12482/278025-harrygregson122525.jpg
+			//   https://giantbomb1.cbsistatic.com/uploads/original/1/12482/278025-harrygregson122525.jpg
+			domain_nosub === "cbsistatic.com") {
 			// https://static.comicvine.com/uploads/square_small/6/67663/6449136-800.jpg
 			//   https://static.comicvine.com/uploads/original/6/67663/6449136-800.jpg
-			return src.replace(/(:\/\/[^/]+\/+)uploads\/+[^/]*\//, "$1uploads/original/");
+			newsrc = src.replace(/(:\/\/[^/]+\/+)uploads\/+[^/]+\/+([0-9]+\/+[0-9]+\/+[0-9]+(?:-[^/]+)?\.)/, "$1uploads/original/$2");
+			if (newsrc !== src)
+				return add_extensions(newsrc);
+			//return src.replace(/\/uploads\/[^/]*\//, "/uploads/original/");
+			//return add_extensions(src.replace(/\/uploads\/[^/]*\//, "/uploads/original/"));
 		}
 
 		if (false && domain === "preview.ibb.co") {
