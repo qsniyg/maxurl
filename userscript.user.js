@@ -984,7 +984,7 @@ var $$IMU_EXPORT$$;
 		// thanks to 894-572 on github for the idea: https://github.com/qsniyg/maxurl/issues/30
 		mouseover_trigger_key: ["shift", "alt", "i"],
 		mouseover_trigger_delay: 1,
-		mouseover_trigger_prevent_key: ["ctrl"],
+		mouseover_trigger_prevent_key: ["shift"],
 		// also thanks to blue-lightning: https://github.com/qsniyg/maxurl/issues/16
 		mouseover_close_behavior: "esc",
 		// thanks to acid-crash on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-436594057
