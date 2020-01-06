@@ -984,6 +984,7 @@ var $$IMU_EXPORT$$;
 		// thanks to 894-572 on github for the idea: https://github.com/qsniyg/maxurl/issues/30
 		mouseover_trigger_key: ["shift", "alt", "i"],
 		mouseover_trigger_delay: 1,
+		mouseover_trigger_prevent_key: ["ctrl"],
 		// also thanks to blue-lightning: https://github.com/qsniyg/maxurl/issues/16
 		mouseover_close_behavior: "esc",
 		// thanks to acid-crash on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-436594057
@@ -1264,6 +1265,17 @@ var $$IMU_EXPORT$$;
 			type: "number",
 			number_min: 0,
 			number_unit: "seconds",
+			category: "popup",
+			subcategory: "trigger"
+		},
+		mouseover_trigger_prevent_key: {
+			name: "Popup prevention key",
+			description: "Holding down this key will prevent the popup from being opened",
+			requires: {
+				mouseover: true,
+				mouseover_trigger_behavior: "mouse"
+			},
+			type: "keysequence",
 			category: "popup",
 			subcategory: "trigger"
 		},
@@ -33756,12 +33768,14 @@ var $$IMU_EXPORT$$;
 				];
 			} else {
 				var pageid = src.replace(/^[a-z]+:\/\/[^/]*\/+[a-z]+\/+([0-9]+)\/+.*/, "$1");
-				var page = "https://hitomi.la/galleries/" + pageid + ".html";
+				if (src !== pageid) {
+					var page = "https://hitomi.la/galleries/" + pageid + ".html";
 
-				return {
-					url: src,
-					extra: { page: page }
-				};
+					return {
+						url: src,
+						extra: { page: page }
+					};
+				}
 			}
 		}
 
@@ -56009,7 +56023,7 @@ var $$IMU_EXPORT$$;
 					//mouse_in_image_yet = false;
 
 					delay_handle = setTimeout(function() {
-						if (delay_handle_triggering)
+						if (delay_handle_triggering || trigger_complete(settings.mouseover_trigger_prevent_key))
 							return;
 
 						popup_trigger_reason = "mouse";
