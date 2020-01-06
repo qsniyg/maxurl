@@ -6358,6 +6358,8 @@ var $$IMU_EXPORT$$;
 			// doesn't work for some urls:
 			// https://i.ytimg.com/vi/o-gVbQHG0Ck/hqdefault.jpg
 			//   https://i.ytimg.com/vi/o-gVbQHG0Ck/sddefault.jpg -- different image
+			// https://i.ytimg.com/vi/bXMUBdqyVAE/hq720.jpg
+			//   https://i.ytimg.com/vi/bXMUBdqyVAE/maxresdefault.jpg
 
 			obj = {
 				problems: {
@@ -6379,24 +6381,31 @@ var $$IMU_EXPORT$$;
 				return obj;
 			}
 
-			regex = /(\/+vi(?:_webp)?\/+[^/]*\/+)[a-z]*(default|[0-9]+)(\.[^/.?#]*)(?:[?#].*)?$/;
+			regex = /^(.+\/+vi(?:_webp)?\/+[^/]*\/+)[a-z]*(default|[0-9]+)(\.[^/.?#]*)(?:[?#].*)?$/;
 			if (regex.test(src)) {
-				var urls = [
-					src.replace(regex, "$1maxres$2$3"),
-					src.replace(regex, "$1hq720$3"),
-					src.replace(regex, "$1sd$2$3"),
-					src.replace(regex, "$1hq$2$3"),
-					src.replace(regex, "$1mq$2$3")
+				var sizes = [
+					"maxres",
+					//"hq720", // don't use because it'll break mq1 etc.
+					"sd",
+					"hq",
+					"mq"
 				];
 
-				// replace 0 to default if applicable (maxres0 doesn't work)
-				// https://i.ytimg.com/vi/bXMUBdqyVAE/hq720.jpg
-				//   https://i.ytimg.com/vi/bXMUBdqyVAE/maxresdefault.jpg
-				for (var i = 0; i < urls.length; i++) {
-					urls[i] = urls[i].replace(/(\/[a-z]+)[0-9]+(\.[^/.]+)$/, "$1default$2");
+				var urls = []
+				for (var i = 0; i < sizes.length; i++) {
+					var match = src.match(regex);
+
+					var number = match[2];
+					if (number.length > 1 || number === "0") {
+						number = "default";
+					}
+
+					newsrc = match[1] + sizes[i] + number + match[3];
+					urls.push(newsrc);
 				}
 
-				return fillobj_urls(urls, obj);
+				if (urls.length > 0)
+					return fillobj_urls(urls, obj);
 			}
 		}
 
