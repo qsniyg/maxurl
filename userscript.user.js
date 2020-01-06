@@ -5887,6 +5887,15 @@ var $$IMU_EXPORT$$;
 				return newsrc;
 		}
 
+		if (domain === "cdn-img.instyle.com") {
+			// https://cdn-img.instyle.com/sites/default/files/styles/594xflex/public/images/2015/04/042015-dakota-fanning-lead_0_0.jpg
+			//   https://cdn-img.instyle.com/sites/default/files/images/2015/04/042015-dakota-fanning-lead.jpg
+			// https://cdn-img.instyle.com/sites/default/files/images/2015/05/050915-lotd-dakota-fanning_0.jpg
+			newsrc = src.replace(/(\/images\/+[0-9]{4}\/+[0-9]{2}\/+[0-9]+-[^/]+)_0(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+			if (newsrc !== src)
+				return newsrc;
+		}
+
 		if (domain_nowww === "etonline.com") {
 			// https://www.etonline.com/sites/default/files/styles/max_970x546/public/images/2014-11/640_mike_myers_458987658.jpg?itok=Z5VnvwQ1
 			return {
@@ -7141,7 +7150,8 @@ var $$IMU_EXPORT$$;
 			// https://img.pixelz.com/blog/how-to-shoot-a-lookbook/photo-bohemian-model-rocks-and-sand.jpg?w=1000
 			(domain === "img.pixelz.com" && src.indexOf("/blog/") >= 0) ||
 			// https://ca.hellomagazine.com/imagenes/healthandbeauty/201210249802/get-the-bond-girl-body/0-49-79/naomie-harris-1--a.jpg?interpolation=lanczos-normal&downsize=200px:*&output-format=progressive-jpeg
-			(domain_nosub === "hellomagazine.com" && src.indexOf("/imagenes/") >= 0) ||
+			// https://ca.hellomagazine.com/images/stories/0/2016/09/02/000/383/648/gallery_3_5.jpg?interpolation=lanczos-normal&downsize=0.75xw:*
+			(domain_nosub === "hellomagazine.com" && (src.indexOf("/imagenes/") >= 0 || src.indexOf("/images/") >= 0)) ||
 			// https://i0.1616.ro/media/521/2861/35030/17944527/1/jennifer-lawrence.jpg?width=160
 			(domain_nosub === "1616.ro" && domain.match(/^i[0-9]*\./)) ||
 			// http://images.lifeandstylemag.com/uploads/posts/image/35601/paula-patton-spirit-awards.jpg?crop=top&fit=clip&h=500&w=698
@@ -7370,6 +7380,8 @@ var $$IMU_EXPORT$$;
 			(domain_nosub === "tower.jp" && /\/~\/+media\//.test(src)) ||
 			// https://images.boosty.to/user/23212/avatar?change_time=1566827978&croped=1&mh=560&mw=450
 			domain === "images.boosty.to" ||
+			// https://media.nbcnewyork.com/2019/09/bestdressed-uma.jpg?fit=700%2C1000
+			domain === "media.nbcnewyork.com" ||
 			// http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
 			// https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
 			src.match(/\/demandware\.static\//) ||
@@ -24661,7 +24673,9 @@ var $$IMU_EXPORT$$;
 			//   https://static.stylosophy.it/r/999999999999x0/www.stylosophy.it/img/Trucco-rosso-occhi-verdi.jpg
 			// https://static.stylosophy.it/845X0/www/stylosophy/it/img/Keira-Knightley-in-Mary-Kontratzou.jpg
 			//   https://static.stylosophy.it/999999999999x0/www/stylosophy/it/img/Keira-Knightley-in-Mary-Kontratzou.jpg -- doesn't work
-			newsrc = src.replace(/(:\/\/[^/]*\/)(r\/+)[0-9]+[xX][0-9]+\//, "$1$2999999999999x0/");
+			// http://static.stylosophy.it/stshoes/fotogallery/1200X0/199283/dakota-fanning-con-sandali-miu-miu.jpg
+			//   http://static.stylosophy.it/stshoes/fotogallery/999999999999X0/199283/dakota-fanning-con-sandali-miu-miu.jpg
+			newsrc = src.replace(/(:\/\/[^/]*\/)(r\/+|[^/]+\/+fotogallery\/+)[0-9]+[xX][0-9]+\//, "$1$2999999999999X0/");
 			if (newsrc !== src)
 				return newsrc;
 
@@ -47848,6 +47862,17 @@ var $$IMU_EXPORT$$;
 			// https://art-u2.infcdn.net/articles_uploads/4/4550/thumb/MacBookSortcuts2-300x.png
 			//   https://art-u2.infcdn.net/articles_uploads/4/4550/MacBookSortcuts2.png
 			return src.replace(/(\/articles_uploads\/+[0-9]\/+[0-9]+\/+)thumb\/+([^/.]+)-[0-9]*x[0-9]*(\.[^/.]+)(?:[?#].*)?$/, "$1$2$3");
+		}
+
+		if (domain === "d2bq4ntp986cty.cloudfront.net") {
+			// https://d2bq4ntp986cty.cloudfront.net/2017/21/napeb9/asst7n.fn6jef.im.lg.jpg
+			//   https://d2bq4ntp986cty.cloudfront.net/2017/21/napeb9/asst7n.fn6jef.im.jpg
+			// https://d2bq4ntp986cty.cloudfront.net/2019/29/7fwx5f/m6cat9.tlt87t.fb.ms.jpg
+			//   https://d2bq4ntp986cty.cloudfront.net/2019/29/7fwx5f/m6cat9.tlt87t.fb.jpg
+			// other:
+			// https://d2bq4ntp986cty.cloudfront.net/2019/13/24adz5/2j2jzw.9xkhtf.fb.jpg
+			// https://d2bq4ntp986cty.cloudfront.net/2019/13/24adz5/pcse48.9xkhtf.im.jpg -- same as above
+			return src.replace(/(\/[0-9]{4}\/+[0-9]+\/+[^/]+\/+[^/]+\.(?:im|fb))\.(?:lg|ms)(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		}
 
 
