@@ -188,7 +188,7 @@ html, body {
   padding: 0;
 }
 
-body {
+body, select option {
   background: #ffffff;
 }
 
@@ -196,7 +196,7 @@ input, textarea {
   background: transparent;
 }
 
-.dark body {
+.dark body, .dark select option {
   background: #333;
 }
 
