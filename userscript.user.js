@@ -55700,6 +55700,9 @@ var $$IMU_EXPORT$$;
 			}
 
 			var observe = function() {
+				if (!settings.imu_enabled)
+					return;
+
 				on_new_images();
 
 				if (!observer)
@@ -55724,34 +55727,54 @@ var $$IMU_EXPORT$$;
 				observer.disconnect();
 			};
 
-			try {
-				// In case the browser doesn't support MutationObservers
-				observer = new_mutationobserver();
-			} catch (e) {
-				console_warn(e);
-			}
-
 			var needs_observer = function() {
 				var highlight = get_single_setting("highlightimgs_auto");
 				return highlight === "always" || highlight === "hover" || settings.replaceimgs_auto;
-			}
+			};
 
-			if (needs_observer()) {
-				observe();
-			}
+			var create_mutationobserver = function() {
+				try {
+					// In case the browser doesn't support MutationObservers
+					observer = new_mutationobserver();
+				} catch (e) {
+					console_warn(e);
+				}
 
-			// replaceimgs_auto is intentionally not added here due to the warning
-			var origfunc = settings_meta.highlightimgs_auto.onupdate;
-			settings_meta.highlightimgs_auto.onupdate = function() {
-				if (origfunc)
-					origfunc();
+				if (needs_observer()) {
+					observe();
+				}
+			};
 
+			create_mutationobserver();
+
+			var update_highlightimgs_func = function() {
 				if (needs_observer()) {
 					if (get_single_setting("highlightimgs_auto") !== "always") {
 						remove_all_highlights();
 					}
 
 					observe();
+				} else {
+					disconnect();
+				}
+			};
+
+			// replaceimgs_auto is intentionally not added here due to the warning
+			var orig_highlightfunc = settings_meta.highlightimgs_auto.onupdate;
+			settings_meta.highlightimgs_auto.onupdate = function() {
+				if (orig_highlightfunc)
+					orig_highlightfunc();
+
+				update_highlightimgs_func();
+			};
+
+			var orig_imuenabledfunc = settings_meta.imu_enabled.onupdate;
+			settings_meta.imu_enabled.onupdate = function() {
+				if (orig_imuenabledfunc)
+					orig_imuenabledfunc.apply(this, arguments);
+
+				if (settings.imu_enabled) {
+					update_highlightimgs_func();
 				} else {
 					disconnect();
 				}
