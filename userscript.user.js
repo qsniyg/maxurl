@@ -2110,7 +2110,8 @@ var $$IMU_EXPORT$$;
 			name: "Enable button",
 			description: "Enables the 'Highlight Images' button",
 			category: "extra",
-			subcategory: "highlightimages"
+			subcategory: "highlightimages",
+			imu_enabled_exempt: true
 		},
 		highlightimgs_auto: {
 			name: "Automatically highlight images",
@@ -2152,7 +2153,8 @@ var $$IMU_EXPORT$$;
 				highlightimgs_auto: {$or: ["always", "hover"]}
 			},
 			category: "extra",
-			subcategory: "highlightimages"
+			subcategory: "highlightimages",
+			imu_enabled_exempt: true
 		}
 	};
 
