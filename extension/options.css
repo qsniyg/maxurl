@@ -148,6 +148,11 @@ ul li {
   margin-right: auto;
 }
 
+textarea {
+  border: 1px solid #0af;
+  padding: .3em;
+}
+
 .option input[type="number"],
 .option input[type="text"] {
   border: 1px solid #0af;
