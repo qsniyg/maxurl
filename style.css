@@ -318,6 +318,10 @@ hr {
   color: #555;
 }
 
+.dark #footer a:hover {
+  color: #ddd;
+}
+
 div.big_break {
   height: 2em;
 }
