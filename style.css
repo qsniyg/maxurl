@@ -506,6 +506,14 @@ input:checked + label, button, .button {
   font-size: 90%;
 }
 
+#options .warning {
+  font-size: 95%;
+  color: #ba0;
+  font-style: italic;
+  margin-top: 1em;
+  margin-left: 2em;
+}
+
 .center-outer {
   text-align: center
 }
