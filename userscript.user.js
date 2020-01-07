@@ -16421,6 +16421,11 @@ var $$IMU_EXPORT$$;
 			// http://imgz.pw/ch/images/2018/03/23/SJU2.th.jpg
 			//   http://imgz.pw/ch/images/2018/03/23/SJU2.jpg
 			(domain_nowww === "imgz.pw" && /\/ch\/+images\//.test(src)) ||
+			// https://xxximg.art/ssdimg1/images/2019/12/14/Ariel_Rebel_Purple_Lingerie_Set_001_001.th.jpg
+			//   https://xxximg.art/ssdimg1/images/2019/12/14/Ariel_Rebel_Purple_Lingerie_Set_001_001.jpg
+			// other: https://xxximg.art/cdn/site1/uploads/2019/12/Ariel_Rebel_Purple_Lingerie_Set_001_001.th_.jpg
+			//   can't replace because /14/ is added
+			(domain_nowww === "xxximg.art" && src.indexOf("/images/") >= 0) ||
 			// http://image-bugs.com/images/2017/09/09/CelebsFlash.com_NP_Harpers_Bazaar_090817__3_.md.jpg
 			domain_nowww === "image-bugs.com") {
 			// http://imgmax.com/images/2017/03/20/0OQhE.th.jpg
@@ -22058,12 +22063,6 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/thumbs\/thumbs_([^/]*)$/, "/$1");
 		}
 
-		if (domain_nowww === "bndasupamark.com") {
-			// http://bndasupamark.com/wp-content/gallery/review-of-beccas-knockout-secret-v/cache/FWR-BECCAS-KNOCKOUT-SECRET-V-23.jpg-nggid06191421-ngg0dyn-160x90x100-00f0w010c011r110f110r010t010.jpg
-			//   http://bndasupamark.com/wp-content/gallery/review-of-beccas-knockout-secret-v/FWR-BECCAS-KNOCKOUT-SECRET-V-23.jpg
-			return src.replace(/(\/wp-content\/+gallery\/+[^/]+\/+)(?:cache|dynamic)\/+([^/]*?\.[^/.-]+)-[^/]*\.[^/.]*(?:[?#].*)?$/, "$1$2");
-		}
-
 		if (domain === "images.nintendolife.com") {
 			// http://images.nintendolife.com/news/2015/09/first_impressions_taking_a_shot_at_fatal_frame_maiden_of_black_water/attachment/0/900x.jpg
 			//   http://images.nintendolife.com/news/2015/09/first_impressions_taking_a_shot_at_fatal_frame_maiden_of_black_water/attachment/0/original.jpg
@@ -25644,13 +25643,28 @@ var $$IMU_EXPORT$$;
 			// https://galleon-realty.ru/thisvid/photos/thumbs/rachel-mcadams-1471264.jpg
 			//   https://galleon-realty.ru/thisvid/photos/images/rachel-mcadams-1471264.jpg
 			domain_nowww === "galleon-realty.ru" ||
+			// https://teatrvmeste.ru/video-jav/photos/thumbs/pic-1-piper-perri-class-project-839461.jpg
+			//   https://teatrvmeste.ru/video-jav/photos/images/pic-1-piper-perri-class-project-839461.jpg
+			domain_nowww === "teatrvmeste.ru" ||
 			// https://pornopics.co/photos/thumbs/mckayla-maroney-turns-today-1476244.jpg
 			//   https://pornopics.co/photos/small/mckayla-maroney-turns-today-1476244.jpg
 			//   https://pornopics.co/photos/images/mckayla-maroney-turns-today-1476244.jpg
 			domain_nowww === "pornopics.co") {
 			// https://photorator.com/photos/thumbs/a-cozy-toucan--69045.jpg
 			//   https://www.photorator.com/photos/images/a-cozy-toucan--69045.jpg
-			return src.replace(/\/photos\/(?:thumbs|small)\//, "/photos/images/");
+			newsrc = src.replace(/\/photos\/(?:thumbs|small)\//, "/photos/images/");
+
+			page = src.replace(/(\/photo)s\/+[^/]+\/+[^/]+-([0-9]+)\.[^/.]+(?:[?#].*)?$/, "$1/$2");
+			if (page !== src) {
+				return {
+					url: newsrc,
+					extra: {
+						page: page
+					}
+				};
+			} else {
+				return newsrc;
+			}
 		}
 
 		if (domain_nosub === "cdn-expressen.se") {
@@ -28037,12 +28051,15 @@ var $$IMU_EXPORT$$;
 			// http://nudecelebs-a-z.com/07/LilyAllen/tn_image2_extralarge_1389984877354.jpg
 			//   http://nudecelebs-a-z.com/07/LilyAllen/image2_extralarge_1389984877354.jpg
 			domain_nowww === "nudecelebs-a-z.com" ||
+			// http://www.poseposter.com/arielrebel/bathtub/tn_pics01.jpg
+			//   http://www.poseposter.com/arielrebel/bathtub/pics01.jpg
+			domain_nowww === "poseposter.com" ||
 			// https://cdn-w.tacamateurs.com/tgps/0028/28141/wet-look-cat-suit--heels/tn_pic06.jpg
 			//   https://cdn-w.tacamateurs.com/tgps/0028/28141/wet-look-cat-suit--heels/pic06.jpg
 			(domain_nosub === "tacamateurs.com" && domain.match(/^cdn(?:-[^/]*)?\./) && src.match(/\/tn_pic[0-9]+\./))) {
 			// http://captaingoodlink.com/celebrities/emma_watson/tn_emma_watson_0062.jpg
 			//   http://captaingoodlink.com/celebrities/emma_watson/emma_watson_0062.jpg
-			return src.replace(/\/tn_([^/]*\.[^/.]*)$/, "/$1");
+			return src.replace(/\/tn_([^/]*\.[^/.]*)(?:[?#].*)?$/, "/$1");
 		}
 
 		if (domain_nosub === "pornodontstop.com" ||
@@ -30444,6 +30461,12 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/images\/galerie\/[0-9]+\/)[a-z]+\/[a-z]+_([0-9a-f]+\.[^/.]*)$/, "$1$2");
 		}
 
+		if (domain === "img.cdn.pornzone.com") {
+			// http://img.cdn.pornzone.com/galerie/3/25106/small_99aed7a494eadd21540ab7b727c5893e.jpg
+			//   http://img.cdn.pornzone.com/galerie/3/25106/big_99aed7a494eadd21540ab7b727c5893e.jpg
+			return src.replace(/(\/galerie\/+[0-9]+\/+[0-9]+\/+)small_([0-9a-f]{20,}\.)/, "$1big_$2");
+		}
+
 		if (domain_nowww === "photo-erotique.org") {
 			// http://photo-erotique.org/girls/1378403247/thumb_3.jpg
 			//   http://photo-erotique.org/girls/1378403247/3.jpg
@@ -32110,6 +32133,9 @@ var $$IMU_EXPORT$$;
 			// https://izismile.com/2010/02/05/mother_nature_in_all_its_glory_25_pics.html?fromt=yes
 			// https://img.izismile.com/img/img3/20100205/beautiful_nature_l_06.jpg
 			//   https://img.izismile.com/img/img3/20100205/beautiful_nature_06.jpg  -- 3900x2613
+			// http://erooups.com/img/img3/20100624/erotic/daily_erotic_picdump_282_112_m.jpg?1277342630
+			//   http://erooups.com/img/img3/20100624/erotic/daily_erotic_picdump_282_112.jpg?1277342630
+			//   http://erooups.com/img/img3/20100624/erotic/daily_erotic_picdump_112.jpg?1277342630 -- doesn't work
 			return src
 				.replace(/(\/img[0-9]*\/+[0-9]{8}\/+)640\/+([^/]*_)640_(?:high_)?([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$11000/$2$3")
 				.replace(/(\/img[0-9]*\/+[0-9]{8}\/+[^/]*)_l(_[0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
@@ -34363,6 +34389,21 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(:\/\/[^/]*\/)[0-9]+\/+([0-9]\/+[0-9]\/+[0-9]+-t)/, "$10/$2");
 		}
 
+		if (domain === "static.spankbang.com") {
+			// https://static.spankbang.com/pornstarimg/f/192-250.jpg
+			//   https://static.spankbang.com/pornstarimg/f/192.jpg
+			return src.replace(/(\/pornstarimg\/+f\/+[0-9]+)-[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nosub === "sb-cd.com" && /^tb[0-9]*\./.test(domain)) {
+			// https://tb2.sb-cd.com/w:350/3/9/3906881-t2-s/aria+rebel+playboy+tv+intervie.jpg
+			//   https://tb2.sb-cd.com/w:0/3/9/3906881-t2-s/aria+rebel+playboy+tv+intervie.jpg
+			//   https://tb2.sb-cd.com/w:0/3/9/3906881-t2/aria+rebel+playboy+tv+intervie.jpg
+			return src
+				.replace(/(\/[0-9]+-t[0-9]+)-(?:s|enh)\/+/, "$1/")
+				.replace(/(:\/\/[^/]+\/+)w:[0-9]+\/+/, "$1w:0/");
+		}
+
 		if (domain_nowww === "kosova-sot.info" ||
 			// https://www.botasot.info/media/botasot.info/images/2019/August/21/auto_beberexzha1566420677.jpg
 			//   https://www.botasot.info/media/botasot.info/images/2019/August/21/beberexzha1566420677.jpg
@@ -35396,6 +35437,9 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "yourdailygirls.com" ||
+			// http://www.girlsfordays.com/galleries/ariel_rebel_hot_tub/ariel_rebel_hot_tub_1-tn.jpg
+			//   http://www.girlsfordays.com/galleries/ariel_rebel_hot_tub/ariel_rebel_hot_tub_1.jpg
+			domain_nowww === "girlsfordays.com" ||
 			// https://www.girlznation.com/galleries/keira_croft_zishy/keira_croft_zishy_1-tn.jpg
 			//   https://www.girlznation.com/galleries/keira_croft_zishy/keira_croft_zishy_1.jpg
 			domain_nowww === "girlznation.com") {
@@ -35460,12 +35504,17 @@ var $$IMU_EXPORT$$;
 			// https://d3m3u5a3.ssl.hwcdn.net/april-grantham-nature-calls-zishy/smallimage1.jpg
 			//   https://d3m3u5a3.ssl.hwcdn.net/april-grantham-nature-calls-zishy/1.jpg
 			domain === "d3m3u5a3.ssl.hwcdn.net" ||
+			// http://www.nextdoortease.com/ariel-rebel-stockings/smallimage6.jpg
+			//   http://www.nextdoortease.com/ariel-rebel-stockings/6.jpg
+			domain_nowww === "nextdoortease.com" ||
 			// https://a2w8r2x2.ssl.hwcdn.net/khyanna-song-cute-asian/smallimage1.jpg
 			//   https://a2w8r2x2.ssl.hwcdn.net/khyanna-song-cute-asian/1.jpg
 			domain === "a2w8r2x2.ssl.hwcdn.net") {
 			// http://www.hottystop.com/hailey-leigh-sexy-sun-hat/smallimage3.jpg
 			//   http://www.hottystop.com/hailey-leigh-sexy-sun-hat/3.jpg
-			return src.replace(/\/smallimage([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/$1");
+			newsrc = src.replace(/\/smallimage([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/$1");
+			if (newsrc !== src)
+				return newsrc;
 		}
 
 		if (domain === "img.highviral.news") {
@@ -36253,6 +36302,9 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "promo.mattsmodels.com" ||
+			// http://www.nextdoortease.com/galleries/ariel_rebel/ariel_rebel_teasing_in_mexico_part_two/thumbs/ariel_rebel_teasing_in_mexico_part_two-5.jpg
+			//   http://www.nextdoortease.com/galleries/ariel_rebel/ariel_rebel_teasing_in_mexico_part_two/ariel_rebel_teasing_in_mexico_part_two-5.jpg
+			domain_nowww === "nextdoortease.com" ||
 			// http://www.amateurindex.com/galleries/ftv-girls/high-heel-masturbation/thumbs/high-heel-masturbation-1.jpg
 			//   http://www.amateurindex.com/galleries/ftv-girls/high-heel-masturbation/high-heel-masturbation-1.jpg
 			domain_nowww === "amateurindex.com") {
@@ -46206,6 +46258,19 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/gallery\/+[^/]*\/+[0-9]+\/+)tn_([^/]*)(?:[?#].*)?$/, "$1$2");
 		}
 
+		if (domain_nowww === "nnconnect.com") {
+			// https://www.nnconnect.com/cum4k/jessie_saint/tn_jessie_saint-01.jpg
+			//   https://www.nnconnect.com/cum4k/jessie_saint/jessie_saint-01.jpg
+			newsrc = src.replace(/(:\/\/[^/]+\/[^/]+\/+[^/]+\/+)tn_([^/]+-[0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+			if (newsrc !== src)
+				return {
+					url: newsrc,
+					extra: {
+						page: src.replace(/(:\/\/[^/]+\/+[^/]+\/+[^/]+)\/.*$/, "$1.html")
+					}
+				};
+		}
+
 		if (domain_nowww === "hq-celebrity.com") {
 			// http://hq-celebrity.com/photos/selena-gomez-2011-12-09/tn_selena-gomez-6.jpg
 			//   http://hq-celebrity.com/photos/selena-gomez-2011-12-09/selena-gomez-6.jpg
@@ -47876,6 +47941,29 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/[0-9]{4}\/+[0-9]+\/+[^/]+\/+[^/]+\.(?:im|fb))\.(?:lg|ms)(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		}
 
+		if (domain_nowww === "freehostedpics.com") {
+			// https://www.freehostedpics.com/hg/arielrebel/hotpinktop_nn/thumbs/tnpics03.jpg
+			//   https://www.freehostedpics.com/hg/arielrebel/hotpinktop_nn/pics03.jpg
+			return src.replace(/\/thumbs\/+tnpics([0-9]+\.)/, "/pics$1");
+		}
+
+		if (domain_nowww === "erotopper.nl") {
+			// http://erotopper.nl/babes/images/2016/621/th-digital-desire01.jpg
+			//   http://erotopper.nl/babes/images/2016/621/digital-desire01.jpg
+			newsrc = src.replace(/(\/images\/+[0-9]{4}\/+[0-9]+\/+)th-/, "$1");
+
+			match = src.match(/:\/\/[^/]+\/+([^/]+)\/+images\/+[0-9]{4}\/+([0-9]+)\/+[^/]+\.[^/.]+(?:[?#].*)?$/);
+			if (match) {
+				return {
+					url: newsrc,
+					extra: {
+						page: "http://erotopper.nl/" + match[1] + "/gallery.php?id=" + match[2]
+					}
+				};
+			}
+
+		}
+
 
 
 
@@ -48606,10 +48694,15 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/img\/posts\/photos\/[0-9]+_[0-9a-f]+)_[a-z](\.[^/.]*)$/, "$1$2");
 		}
 
-		if (src.match(/\/wp-content\/uploads\/(?:.*?\/)?nggallery\/(?:.*?\/)?dynamic\/[^/]*\.[^-_/.]*-nggid[0-9]+-ngg0dyn-[^/]*$/)) {
+		if (src.match(/\/wp-content\/+(?:uploads\/(?:.*?\/)?nggallery|gallery)\/(?:.*?\/)?(?:cache|dynamic)\/+[^/]+\.[^-_/.]*-nggid[0-9]+-ngg0dyn-[^/]*$/)) {
 			// https://ojp8zqasz32qat8n13om56p4-wpengine.netdna-ssl.com/wp-content/uploads/sites/1/nggallery/billboard-music-awards-2018/dynamic/NUP_183094_0909.JPG-nggid0515516-ngg0dyn-100x150x100-00f0w010c011r110f110r010t010.JPG
 			//   https://ojp8zqasz32qat8n13om56p4-wpengine.netdna-ssl.com/wp-content/uploads/sites/1/nggallery/billboard-music-awards-2018/NUP_183094_0909.JPG
-			return src.replace(/\/dynamic(\/[^/]*\.[^-_/.]*)-[^/]*$/, "$1");
+			// http://bndasupamark.com/wp-content/gallery/review-of-beccas-knockout-secret-v/cache/FWR-BECCAS-KNOCKOUT-SECRET-V-23.jpg-nggid06191421-ngg0dyn-160x90x100-00f0w010c011r110f110r010t010.jpg
+			//   http://bndasupamark.com/wp-content/gallery/review-of-beccas-knockout-secret-v/FWR-BECCAS-KNOCKOUT-SECRET-V-23.jpg
+			// http://www.boobjunkie.com/wp-content/gallery/ariel-rebel-natural-light/cache/Natural_Light-100-lg.jpg-nggid0510921-ngg0dyn-181x150x100-00f0w010c011r110f110r010t010.jpg
+			//   http://www.boobjunkie.com/wp-content/gallery/ariel-rebel-natural-light/Natural_Light-100-lg.jpg
+			return src.replace(/\/(?:cache|dynamic)(\/+[^/]+\.[^-_/.]+)-[^/]*$/, "$1");
+			//return src.replace(/(\/wp-content\/+gallery\/+[^/]+\/+)(?:cache|dynamic)\/+([^/]*?\.[^/.-]+)-[^/]*\.[^/.]*(?:[?#].*)?$/, "$1$2");
 		}
 
 		// foogallery
