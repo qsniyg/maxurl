@@ -594,7 +594,6 @@ blovcdn.com
 blue.kumparan.com
 blurbprod1000.s3.amazonaws.com
 bmi.com
-bndasupamark.com
 bnt.bg
 board.makeshop.co.kr
 bobcat.grahamdigital.com
@@ -673,6 +672,7 @@ bvla.com
 bw-1651cf0d2f737d7adeab84d339dbabd3-bcs.s3.amazonaws.com
 bw-1651cf0d2f737d7adeab84d339dbabd3-gallery.s3.amazonaws.com
 bytecdn.cn
+byteimg.com
 bz-berlin.de
 bzqzsj.com
 c-ctrip.com
@@ -1280,6 +1280,7 @@ d26672rfe314dk.cloudfront.net
 d26oc3sg82pgk3.cloudfront.net
 d279m997dpfwgl.cloudfront.net
 d2adpaynhf6x63.cloudfront.net
+d2bq4ntp986cty.cloudfront.net
 d2e7nuz2r6mjca.cloudfront.net
 d2fzf9bbqh0om5.cloudfront.net
 d2h1pu99sxkfvn.cloudfront.net
@@ -1625,6 +1626,7 @@ erome.com
 eronrg.com
 eros-and-grace.net
 eroticasearch.net
+erotopper.nl
 erowall.com
 esa.int
 eshop.fayaque.com.tw
@@ -1666,6 +1668,7 @@ expo.advance.net
 expofashionmagazine.com
 expreso.ec
 express.de
+extension.zone
 external-content.duckduckgo.com
 external.polskieradio.pl
 extra.cz
@@ -1871,6 +1874,7 @@ free4kwallpapers.com
 freeaddon.com
 freeasianpics.net
 freefeet4u.com
+freehostedpics.com
 freeones.com
 freeseximages.com
 freexcafe.com
@@ -2006,6 +2010,7 @@ girlfolio.com
 girlfriend.com.au
 girlofthehour.com
 girlscene.nl
+girlsfordays.com
 girlsilove.net
 girlsofdesire.org
 girlspic.net
@@ -2812,6 +2817,7 @@ img.cache.vevo.com
 img.cactusboy.com
 img.cdandlp.com
 img.cdn.nimg.jp
+img.cdn.pornzone.com
 img.cf.47news.jp
 img.chan4chan.com
 img.chuansong.me
@@ -3169,6 +3175,7 @@ inews.gtimg.com
 inews24.com
 inews365.com
 inewspeople.co.kr
+infcdn.net
 infectedbyart.com
 infinitymemories.com
 info7rm.blob.core.windows.net.optimalcdn.com
@@ -3489,6 +3496,7 @@ listal.com
 listas.eleconomista.es
 lithium.com
 litlepups.net
+litmind.com
 live-imagecollect.s3.amazonaws.com
 live-stats.me
 live.staticflickr.com
@@ -4118,6 +4126,7 @@ newswitch.jp
 newswiz.kr
 newtumbl.com
 nexofin.com
+nextdoortease.com
 nextnature.net
 nextpicturez.com
 nferaclub.com
@@ -4153,6 +4162,7 @@ nishinippon.co.jp
 nitrovideo.com
 niuerdata.donews.com
 niuerdata.g.com.cn
+nnconnect.com
 nnimgt-a.akamaihd.net
 nnmassets.cf
 nocookie.net
@@ -4514,6 +4524,7 @@ porntb.com
 pornxxxbest.xyz
 pornzee.com
 portal-images.azureedge.net
+poseposter.com
 postervdom.ru
 postila.ru
 povarenok.ru
@@ -4859,6 +4870,7 @@ sarajevo.travel
 sasisa.ru
 sass.com.ua
 saywho.fr
+sb-cd.com
 sbs.co.kr
 scache.vevo.com
 sccdn.chosun.com
@@ -5233,6 +5245,7 @@ static.screenweek.it
 static.screenweek.it.s3.amazonaws.com
 static.sify.com
 static.soltana.ma
+static.spankbang.com
 static.spin.com
 static.spotboye.com
 static.standard.co.uk
@@ -5407,6 +5420,7 @@ tbib.org
 tchyn.io
 tdjakes.com
 teamupforkansaskids.com
+teatrvmeste.ru
 techadvisor.co.uk
 techbang.com
 techno-import.fr
@@ -6002,6 +6016,7 @@ xxlmag.com
 xxx-photo.com
 xxx69.net
 xxxcelebscenes.com
+xxximg.art
 xxxporn.pics
 xxxsexy.xyz
 xxxwaffle.com

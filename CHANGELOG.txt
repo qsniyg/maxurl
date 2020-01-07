@@ -1,3 +1,28 @@
+0.12.2
+
+New features:
+
+ * All keybindings can now be rebound
+ * Option to highlight images automatically or when hovering over them
+ * Option to highlight all images that can be zoomed, rather than only images that can be made larger
+ * Option to replace images automatically
+ * Option to allow the gallery to cycle (going to the "previous" image for the first image will lead to the last, and vice-versa)
+ * Option to set the scroll wheel to move through the gallery
+ * You can now press shift (key can be changed) to prevent the popup from loading when the trigger is mouseover
+ * Support for ~15 new websites (using ~10 new rules)
+
+Improvements:
+
+ * Highlight images CSS is now dynamically reloaded
+ * CSS parser now supports `//` comments (currently only if no leading text exists)
+ * Various improvements/fixes to existing rules (including Youtube)
+
+Bugfixes:
+
+ * Browser events no longer trigger when recording key sequences
+
+---
+
 0.12.1
 
 New features:
