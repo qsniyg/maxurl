@@ -388,7 +388,7 @@ input:checked + label, button, .button {
   color: #fff;
 }
 
-.disabled input:checked + label, .disabled button, .disabled button:active, .button.disabled {
+.disabled input:checked + label, .disabled button, .disabled button:active, .button.disabled, .disabled textarea {
   border-color: #aaa;
   background: #aaa;
   color: #fff;
@@ -634,7 +634,7 @@ input:checked + label, button, .button {
 }
 
 #popup #logo img {
-  padding: 8px;
+  margin: 8px;
 }
 
 #popup #enabled-state {
