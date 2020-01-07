@@ -969,6 +969,8 @@ var $$IMU_EXPORT$$;
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-530760246
 		imu_enabled: true,
 		language: browser_language,
+		// thanks to forefix on firefox for the idea: https://github.com/qsniyg/maxurl/issues/189
+		dark_mode: false,
 		advanced_options: false,
 		allow_browser_request: true,
 		redirect: true,
@@ -1105,6 +1107,14 @@ var $$IMU_EXPORT$$;
 			onedit: function() {
 				run_soon(do_options);
 			},
+			imu_enabled_exempt: true
+		},
+		dark_mode: {
+			name: "Dark mode",
+			description: "Changes the colors to have light text on a dark background",
+			category: "general",
+			onedit: update_dark_mode,
+			onupdate: update_dark_mode,
 			imu_enabled_exempt: true
 		},
 		advanced_options: {
@@ -50582,7 +50592,21 @@ var $$IMU_EXPORT$$;
 		return keys;
 	}
 
+	function update_dark_mode() {
+		if (!is_options_page) {
+			return;
+		}
+
+		if (settings.dark_mode) {
+			document.documentElement.classList.add("dark");
+		} else {
+			document.documentElement.classList.remove("dark");
+		}
+	}
+
 	function do_options() {
+		update_dark_mode();
+
 		var recording_keys = false;
 		var options_chord = [];
 		var current_options_chord = [];
