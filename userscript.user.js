@@ -47960,8 +47960,23 @@ var $$IMU_EXPORT$$;
 						page: "http://erotopper.nl/" + match[1] + "/gallery.php?id=" + match[2]
 					}
 				};
+			} else {
+				return newsrc;
 			}
+		}
 
+		if (domain_nosub === "litmind.com") {
+			// https://www.litmind.com/data/photos/1/8/8/2400881.profile_non_retina.jpg
+			//   https://www.litmind.com/data/photos/1/8/8/2400881.huge.jpg -- 2670x4000
+			//   https://www.litmind.com/data/photos/1/8/8/2400881.thumbnail.jpg
+			//   https://www.litmind.com/data/photos/1/8/8/2400881.list_premium.jpg
+			// https://www.litmind.com/data/photos/1/5/1/2436151.thumbnail.jpg?v=1 -- 3408x2499
+			//   https://www.litmind.com/data/photos/1/5/1/2436151.huge.jpg?v=1 -- 4000x2666
+			// https://www.litmind.com/data/logos/2/8/8/73882.profile_non_retina.jpg?v=20191219014236
+			//   https://www.litmind.com/data/logos/2/8/8/73882.profile.jpg?v=20191219014236
+			return src
+				.replace(/(\/data\/+photos\/+(?:[0-9]\/+){3}[0-9]+)\.(?:thumbnail|profile(_non_retina)?|big|list_premium)\./, "$1.huge.")
+				.replace(/(\/data\/+logos\/+(?:[0-9]\/+){3}[0-9]+)\.profile_non_retina\./, "$1.profile.");
 		}
 
 
