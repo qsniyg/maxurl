@@ -89,6 +89,14 @@ function update_highlightimages(value) {
     }
 }
 
+function update_dark_mode(value) {
+    if (value) {
+        document.documentElement.classList.add("dark");
+    } else {
+        document.documentElement.classList.remove("dark");
+    }
+}
+
 function toggle_enabled() {
     get_option("imu_enabled", function(value) {
         set_option("imu_enabled", !value);
@@ -98,6 +106,10 @@ function toggle_enabled() {
 
 document.getElementById("logo").onclick = toggle_enabled;
 //document.getElementById("enabled-state").onclick = toggle_enabled;
+
+get_option("dark_mode", function(value) {
+    update_dark_mode(value);
+}, false);
 
 get_option("imu_enabled", function(value) {
     update_logo(value);
