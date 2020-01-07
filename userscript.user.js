@@ -1074,7 +1074,7 @@ var $$IMU_EXPORT$$;
 		highlightimgs_enable: false,
 		highlightimgs_auto: "never",
 		highlightimgs_onlysupported: true,
-		highlightimgs_css: "border: 4px solid yellow"
+		highlightimgs_css: "outline: 4px solid yellow"
 	};
 	var orig_settings = deepcopy(settings);
 
