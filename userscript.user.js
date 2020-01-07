@@ -55662,6 +55662,9 @@ var $$IMU_EXPORT$$;
 		};
 
 		(function() {
+			if (!settings.imu_enabled)
+				return;
+
 			var observer;
 
 			var new_mutationobserver = function() {
