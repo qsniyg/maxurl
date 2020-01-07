@@ -50624,15 +50624,19 @@ var $$IMU_EXPORT$$;
 		document.addEventListener('keydown', function(event) {
 			update_options_chord(event, true);
 
-			event.preventDefault();
-			return false;
+			if (recording_keys) {
+				event.preventDefault();
+				return false;
+			}
 		});
 
 		document.addEventListener('keyup', function(event) {
 			update_options_chord(event, false);
 
-			event.preventDefault();
-			return false;
+			if (recording_keys) {
+				event.preventDefault();
+				return false;
+			}
 		});
 
 		var options_el = document.getElementById("options");
