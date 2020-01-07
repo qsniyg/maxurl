@@ -188,7 +188,7 @@ html, body {
   padding: 0;
 }
 
-body {
+body, select option {
   background: #ffffff;
 }
 
@@ -196,7 +196,7 @@ input, textarea {
   background: transparent;
 }
 
-.dark body {
+.dark body, .dark select option {
   background: #333;
 }
 
@@ -383,7 +383,7 @@ button:active, .button:active {
   color: #aaa;
 }
 
-.disabled label, .disabled button, .disabled .button, .button.disabled, .disabled input, .disabled select {
+.disabled label, .disabled button, .disabled .button, .button.disabled, .disabled input, .disabled select, .disabled textarea {
   cursor: default;
   border: 1px solid #aaa !important;
 }
@@ -393,7 +393,7 @@ input:checked + label, button, .button {
   color: #fff;
 }
 
-.disabled input:checked + label, .disabled button, .disabled button:active, .button.disabled, .disabled textarea {
+.disabled input:checked + label, .disabled button, .disabled button:active, .button.disabled {
   border-color: #aaa;
   background: #aaa;
   color: #fff;
