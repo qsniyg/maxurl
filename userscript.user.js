@@ -6,7 +6,7 @@
 // @namespace         http://tampermonkey.net/
 // @version           0.12.2
 // @description       Finds larger or original versions of images for 6100+ websites
-// @description:ko    6100개 이사의 사이트에 대해 더 크거나 원본 이미지 찾는 스크립트
+// @description:ko    6100개 이상의 사이트에 대해 더 크거나 원본 이미지 찾는 스크립트
 // @description:fr    Trouve des images plus grandes ou originales pour plus de 6100 sites
 // @description:es    Encuentra imágenes más grandes y originales para más de 6100 sitios
 // @description:zh    为6100多个网站查找更大或原始图像
@@ -8144,6 +8144,8 @@ var $$IMU_EXPORT$$;
 			(domain_nowww === "londonsvenskar.com" && src.indexOf("/files/") >= 0) ||
 			// https://ia.eferrit.com/ia/a3d78b74fb613f5f-1024x682.jpg -- upscaled (nearest)?
 			(domain === "ia.eferrit.com" && src.indexOf("/ia/") >= 0) ||
+			// https://dokkaebi.tv/file/2017/05/60JODGfbtIIZ0FqE8SfLSs1QfHb-185x278.jpg
+			(domain_nowww === "dokkaebi.tv" && src.indexOf("/file/") >= 0) ||
 			// https://1.soompi.io/wp-content/blogs.dir/8/files/2015/09/HA-TFELT-Wonder-Girls-590x730.jpg -- doesn't work
 			// https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2018/01/GTA-6-Female-Protag-796x417.jpg -- does work
 			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|images|photos|blogs.dir)|\/+uploads)\//.test(src)
@@ -23960,6 +23962,7 @@ var $$IMU_EXPORT$$;
 						.replace(/[?#].*/, "")
 						.replace(/([^/])$/, "$1/")
 						.replace(/^http:/, "https:")
+						.replace(/(:\/\/)(instagram\.com\/)/, "$1www.$2")
 						.replace(/(:\/\/.*?)\/\/+/g, "$1/");
 
 					var cache_key = "instagram_sharedData_query:" + url;
@@ -24468,86 +24471,128 @@ var $$IMU_EXPORT$$;
 					};
 				}
 
-				// check for links first
-				var current = options.element;
-				while ((current = current.parentElement)) {
-					if (current.tagName !== "A")
-						continue;
+				var find_el_info = function(document, element) {
+					var possible_infos = [];
 
-					if (current.href.match(/:\/\/[^/]+\/+(?:[^/]+\/+)?p\//)) {
-						// post
-						newsrc = request_post(current.href, options.element.src);
-						if (newsrc)
-							return newsrc;
-					} else if (current.href.match(/:\/\/[^/]+\/+[^/]+(?:\/+(?:[?#].*)?)?$/)) {
-						// user
-						newsrc = request_profile(current.href);
-						if (newsrc)
-							return newsrc;
+					// check for links first
+					var current = element;
+					while ((current = current.parentElement)) {
+						if (current.tagName !== "A")
+							continue;
+
+						if (current.href.match(/:\/\/[^/]+\/+(?:[^/]+\/+)?p\//)) {
+							// link to post
+							possible_infos.push({
+								type: "post",
+								subtype: "link",
+								url: current.href,
+								image: options.element.src,
+								element: current
+							});
+						} else if (current.href.match(/:\/\/[^/]+\/+[^/]+(?:\/+(?:[?#].*)?)?$/)) {
+							// link to profile (e.g. for someone who comments on a post)
+							possible_infos.push({
+								type: "profile",
+								subtype: "link",
+								url: current.href,
+								element: current
+							});
+						}
 					}
-				}
 
-				current = options.element;
-				while ((current = current.parentElement)) {
-					// profile image
-					// a better way would be to check the username from the h2 > a (title, href, innerText)
-					if (current.tagName === "HEADER") {
-						var sharedData = null;
+					current = element;
+					while ((current = current.parentElement)) {
+						// profile image
+						// a better way would be to check the username from the h2 > a (title, href, innerText)
+						if (current.tagName === "HEADER") {
+							var sharedData = null;
 
-						// Still keep this code because this way we can know it exists?
-						if (true) {
-							var scripts = document.getElementsByTagName("script");
-							for (var i = 0; i < scripts.length; i++) {
-								if (scripts[i].innerText.match(/^ *window\._sharedData/)) {
-									sharedData = scripts[i].innerText.replace(/^ *window\._sharedData *= *({.*}) *;.*?/, "$1");
+							// Still keep this code because this way we can know it exists?
+							if (true) {
+								var scripts = document.getElementsByTagName("script");
+								for (var i = 0; i < scripts.length; i++) {
+									if (scripts[i].innerText.match(/^ *window\._sharedData/)) {
+										sharedData = scripts[i].innerText.replace(/^ *window\._sharedData *= *({.*}) *;.*?/, "$1");
+									}
+								}
+
+								if (!sharedData) {
+									console_error("Shared data not found");
+									continue;
+								} else {
+									sharedData = JSON_parse(sharedData);
 								}
 							}
 
-							if (!sharedData) {
-								console_error("Shared data not found");
-								continue;
-							} else {
-								sharedData = JSON_parse(sharedData);
-							}
+							possible_infos.push({
+								type: "profile",
+								subtype: "page",
+								url: options.host_url,
+								element: current
+							});
 						}
 
-						query_ig(options.host_url, function (sharedData) {
-							if (!sharedData) {
-								console_error("Shared data not found");
-								return;
-							}
-
-							uid_to_profile(uid_from_sharedData(sharedData), function (profile) {
-								if (!profile) {
-									options.cb(null);
-									return;
-								}
-
-								options.cb(profile_to_url(profile));
+						// popup
+						if ((current.tagName === "DIV" && current.getAttribute("role") === "dialog") ||
+							// post page
+							(current.tagName === "BODY" && options.host_url.match(/:\/\/[^/]*\/+(?:[^/]+\/+)?p\//))) {
+							possible_infos.push({
+								type: "post",
+								subtype: current.tagName === "BODY" ? "page" : "popup",
+								url: options.host_url,
+								image: options.element.src,
+								element: current
 							});
-						});
+						}
 
-						return {
-							waiting: true
-						};
+						// stories
+						if (current.tagName === "BODY" && options.host_url.match(/:\/\/[^/]*\/+stories\/+([^/]*)\/*(?:[?#].*)?$/)) {
+							possible_infos.push({
+								type: "story",
+								url: options.host_url,
+								image: options.element.src,
+								element: current
+							});
+						}
 					}
 
-					// popup
-					if ((current.tagName === "DIV" && current.getAttribute("role") === "dialog") ||
-						// post page
-						(current.tagName === "BODY" && options.host_url.match(/:\/\/[^/]*\/+(?:[^/]+\/+)?p\//))) {
-						newsrc = request_post(options.host_url, options.element.src);
-						if (newsrc)
-							return newsrc;
+					return possible_infos;
+				};
+
+				var parse_single_el_info = function(info) {
+					var retval;
+
+					if (info.type === "post") {
+						retval = request_post(info.url, info.image);
+						if (retval)
+							return retval;
+					} else if (info.type === "profile") {
+						retval = request_profile(info.url);
+						if (retval)
+							return retval;
+					} else if (info.type === "story") {
+						retval = request_stories(info.url, info.image);
+						if (retval)
+							return retval;
 					}
 
-					// stories
-					if (current.tagName === "BODY" && options.host_url.match(/:\/\/[^/]*\/+stories\/+([^/]*)\/*(?:[?#].*)?$/)) {
-						newsrc = request_stories(options.host_url, options.element.src);
-						if (newsrc)
-							return newsrc;
+					return retval;
+				};
+
+				var parse_el_info = function(info) {
+					var retval;
+
+					for (var i = 0; i < info.length; i++) {
+						retval = parse_single_el_info(info[i]);
+						if (retval)
+							return retval;
 					}
+
+					return retval;
 				}
+
+				var info = find_el_info(document, options.element);
+				return parse_el_info(info);
 			})();
 			if (newsrc !== undefined)
 				return newsrc;
