@@ -50579,7 +50579,7 @@ var $$IMU_EXPORT$$;
 	}
 
 	function update_dark_mode() {
-		if (!is_maxurl_website) {
+		if (!is_maxurl_website && !is_options_page) {
 			return;
 		}
 
@@ -56342,7 +56342,7 @@ var $$IMU_EXPORT$$;
 		do_export();
 
 		if (is_userscript || is_extension) {
-			if (is_maxurl_website) {
+			if (is_maxurl_website || is_options_page) {
 				update_dark_mode();
 			}
 
