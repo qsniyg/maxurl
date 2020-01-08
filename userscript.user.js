@@ -47983,6 +47983,17 @@ var $$IMU_EXPORT$$;
 				.replace(/(\/data\/+logos\/+(?:[0-9]\/+){3}[0-9]+)\.profile_non_retina\./, "$1.profile.");
 		}
 
+		if (domain_nowww === "kabe-uchiroom.com") {
+			// https://kabe-uchiroom.com/upfile_image/3222820136/mObJpuY1eZVk.jpg?w=260
+			//   https://kabe-uchiroom.com/accounts/upfile/6/3222820136/mObJpuY1eZVk.jpg
+			// https://kabe-uchiroom.com/upfile_image/2749335571/zoAdJ1FkCVx9.png?w=260
+			//   https://kabe-uchiroom.com/upfile_image/2749335571/zoAdJ1FkCVx9.png
+			//   https://kabe-uchiroom.com/accounts/upfile/1/2749335571/zoAdJ1FkCVx9.png
+			return src
+				.replace(/\/upfile_image\/+([0-9]+)([0-9])(\/+[^/?]+\.[^/.?]+)$/, "/accounts/upfile/$2/$1$2/$3")
+				.replace(/(\/upfile_image\/.*?)(?:[?#].*)?$/, "$1");
+		}
+
 
 
 
