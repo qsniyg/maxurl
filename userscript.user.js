@@ -47994,6 +47994,26 @@ var $$IMU_EXPORT$$;
 				.replace(/(\/upfile_image\/.*?)(?:[?#].*)?$/, "$1");
 		}
 
+		if (domain_nowww === "mangadex.cc") {
+			// https://mangadex.cc/images/manga/16069.thumb.jpg
+			//   https://mangadex.cc/images/manga/16069.jpg
+			// https://mangadex.cc/images/manga/12152.thumb.jpg
+			//   https://mangadex.cc/images/manga/12152.jpeg
+			newsrc = src.replace(/(\/images\/+manga\/+[0-9]+)\.thumb(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+			if (newsrc !== src)
+				return add_extensions_jpeg(newsrc);
+
+			match = src.match(/\/images\/+manga\/+([0-9]+)\./);
+			if (match) {
+				return {
+					url: src,
+					extra: {
+						page: "https://mangadex.cc/title/" + match[1] + "/"
+					}
+				};
+			}
+		}
+
 
 
 
