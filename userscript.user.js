@@ -502,7 +502,7 @@ var $$IMU_EXPORT$$;
 		}
 	}
 
-	function is_iteratable_object(x) {
+	function is_iterable_object(x) {
 		return typeof x === "object" && x !== null && !(x instanceof Array) && !is_element(x);
 	}
 
@@ -49478,7 +49478,7 @@ var $$IMU_EXPORT$$;
 				continue;
 			}
 
-			if (is_iteratable_object(options[option])) {
+			if (is_iterable_object(options[option])) {
 				for (var rsoption in bigimage_recursive.default_options[option]) {
 					if (!(rsoption in options[option])) {
 						options[option][rsoption] = deepcopy(bigimage_recursive.default_options[option][rsoption]);
