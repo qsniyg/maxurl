@@ -487,6 +487,19 @@ var $$IMU_EXPORT$$;
 	var JSON_stringify = JSON.stringify;
 	var JSON_parse = JSON.parse;
 
+	function is_element(x) {
+		if ((typeof Element !== "undefined" && x instanceof Element) ||
+			(x && typeof x === "object" && (("namespaceURI" in x) && ("ariaSort" in x)))) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	function is_iteratable_object(x) {
+		return typeof x === "object" && x !== null && !(x instanceof Array) && !is_element(x);
+	}
+
 	function deepcopy(x, options) {
 		if (!options)
 			options = {};
@@ -49428,7 +49441,7 @@ var $$IMU_EXPORT$$;
 				continue;
 			}
 
-			if (typeof options[option] === "object" && !(options[option] instanceof Array)) {
+			if (is_iteratable_object(options[option])) {
 				for (var rsoption in bigimage_recursive.default_options[option]) {
 					if (!(rsoption in options[option])) {
 						options[option][rsoption] = deepcopy(bigimage_recursive.default_options[option][rsoption]);
