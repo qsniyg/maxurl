@@ -71,13 +71,19 @@ var $$IMU_EXPORT$$;
 	var extension_options_page = null;
 	var is_extension_options_page = false;
 	var is_options_page = false;
+	var is_maxurl_website = false;
 	var options_page = "https://qsniyg.github.io/maxurl/options.html";
 	var imagetab_ok_override = false;
 
 	try {
-		if (window.location.href.match(/^https?:\/\/qsniyg\.github\.io\/maxurl\/options\.html/) ||
+		if (window.location.href.match(/^https?:\/\/qsniyg\.github\.io\/+maxurl\/+options\.html/) ||
 			window.location.href.match(/^file:\/\/.*\/maxurl\/site\/options\.html/)) {
 			is_options_page = true;
+		}
+
+		if (window.location.href.match(/^https?:\/\/qsniyg\.github\.io\/+maxurl\/+/) ||
+			window.location.href.match(/^file:\/\/.*\/maxurl\/site\/(?:index|about|options)\.html/)) {
+			is_maxurl_website = true;
 		}
 	} catch(e) {
 	}
@@ -6259,7 +6265,7 @@ var $$IMU_EXPORT$$;
 			// use ?name=orig instead of :orig, see:
 			//   https://github.com/qsniyg/maxurl/issues/2
 
-			// https://pbs.twimg.com/media/DWREhilXkAAcafr?format=jpg&name=small
+			// https://pbs.twimg.com/media/DWREhilXkAAcafr?format=jpg&name=small -- 403
 			//   https://pbs.twimg.com/media/DWREhilXkAAcafr.jpg:orig
 			//   https://pbs.twimg.com/media/DWREhilXkAAcafr?format=jpg&name=orig
 			//   https://pbs.twimg.com/media/DWREhilXkAAcafr.jpg?name=orig
@@ -50573,7 +50579,7 @@ var $$IMU_EXPORT$$;
 	}
 
 	function update_dark_mode() {
-		if (!is_options_page) {
+		if (!is_maxurl_website) {
 			return;
 		}
 
@@ -56336,9 +56342,11 @@ var $$IMU_EXPORT$$;
 		do_export();
 
 		if (is_userscript || is_extension) {
-			if (window.location.href.match(/^https?:\/\/qsniyg\.github\.io\/+maxurl\/+options\.html/) ||
-				window.location.href.match(/^file:\/\/.*\/maxurl\/site\/options\.html/) ||
-				(is_extension && is_extension_options_page)) {
+			if (is_maxurl_website) {
+				update_dark_mode();
+			}
+
+			if (is_options_page) {
 				onload(function() {
 					do_options();
 				});
