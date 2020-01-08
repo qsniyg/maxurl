@@ -50415,7 +50415,7 @@ var $$IMU_EXPORT$$;
 					trackingprotection_failsafe: true,
 					onprogress: function(resp) {
 						// 2 = HEADERS_RECEIVED
-						if (resp.readyState >= 2) {
+						if (resp.readyState >= 2 && resp.responseHeaders) {
 							if (req && req.abort)
 								req.abort();
 							onload_cb(resp);
@@ -52207,7 +52207,7 @@ var $$IMU_EXPORT$$;
 					do_abort();
 				}
 
-				if (incomplete_request && resp.readyState >= 2) {
+				if (incomplete_request && resp.readyState >= 2 && resp.responseHeaders) {
 					do_abort();
 					onload_cb(resp);
 				}
