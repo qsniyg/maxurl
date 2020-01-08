@@ -3108,7 +3108,7 @@ var $$IMU_EXPORT$$;
 						imageinfo = match[1];
 
 						try {
-							imageinfo = JSON.parse(imageinfo);
+							imageinfo = JSON_parse(imageinfo);
 							retobj.imageinfo = imageinfo;
 
 							if (imageinfo.source && imageinfo.hash && !imageinfo.is_album) {
@@ -47563,10 +47563,10 @@ var $$IMU_EXPORT$$;
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+opengraph\.jpg\?(?:.*&)?composition=([^&]+).*?$/, "$1");
 			if (newsrc !== src) {
 				try {
-					var json = JSON.parse(decodeURIComponent(newsrc));
+					var json = JSON_parse(decodeURIComponent(newsrc));
 					return json.artwork.url;
 				} catch (e) {
-					console.error(e);
+					console_error(e);
 					return src;
 				}
 			}
