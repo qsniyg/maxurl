@@ -208,6 +208,18 @@ input, textarea {
   color: #f0f0f0;
 }
 
+.dark p {
+  color: #e0e0e0;
+}
+
+.dark a {
+  color: #7af;
+}
+
+.dark a:visited {
+  color: #a7f;
+}
+
 body.main {
   /*overflow: hidden;*/
 }
