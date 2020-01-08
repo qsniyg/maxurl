@@ -18974,21 +18974,6 @@ var $$IMU_EXPORT$$;
 			// https://live.staticflickr.com/65535/48913730532_83284fa99d_3k.jpg
 			//   https://live.staticflickr.com/65535/48913730532_c31a823c53_o.jpg
 
-			function get_flickr_cookies(cb) {
-				if (cookie_cache.has("flickr")) {
-					return cb(cookie_cache.get("flickr"));
-				}
-
-				if (options.get_cookies) {
-					options.get_cookies("https://www.flickr.com/", function(cookies) {
-						cookie_cache.set("flickr", cookies);
-						cb(cookies);
-					});
-				} else {
-					return cb(null);
-				}
-			}
-
 			function do_flickr_request(url, cb) {
 				var headers = {
 					"Origin": "https://www.flickr.com",
@@ -18997,33 +18982,11 @@ var $$IMU_EXPORT$$;
 					"Cookie": ""
 				};
 
-				if (false && !settings.browser_cookies) {
-					headers.Cookie = "";
-				}
-
 				return options.do_request({
 					url: url,
 					method: "GET",
 					headers: headers,
 					onload: cb
-				});
-
-				get_flickr_cookies(function(cookies) {
-					var cookie_header = "";
-					if (cookies) {
-						cookie_header = cookies_to_httpheader(cookies);
-					}
-
-					options.do_request({
-						url: url,
-						method: "GET",
-						headers: {
-							"Origin": "",
-							"Referer": "",
-							"Cookie": cookie_header
-						},
-						onload: cb
-					});
 				});
 			}
 
@@ -24065,20 +24028,22 @@ var $$IMU_EXPORT$$;
 
 				var get_instagram_cookies = function(cb) {
 					// For now, we'll disable this as it doesn't appear to be needed
-					return cb(null);
-
-					var cookie_cache_key = "instagram";
-					if (cookie_cache.has(cookie_cache_key)) {
-						return cb(cookie_cache.get(cookie_cache_key));
-					}
-
-					if (options.get_cookies) {
-						options.get_cookies("https://www.instagram.com/", function(cookies) {
-							cookie_cache.set(cookie_cache_key, cookies);
-							cb(cookies);
-						});
-					} else {
+					if (true) {
 						cb(null);
+					} else {
+						var cookie_cache_key = "instagram";
+						if (cookie_cache.has(cookie_cache_key)) {
+							return cb(cookie_cache.get(cookie_cache_key));
+						}
+
+						if (options.get_cookies) {
+							options.get_cookies("https://www.instagram.com/", function(cookies) {
+								cookie_cache.set(cookie_cache_key, cookies);
+								cb(cookies);
+							});
+						} else {
+							cb(null);
+						}
 					}
 				};
 
@@ -34688,43 +34653,6 @@ var $$IMU_EXPORT$$;
 						}
 
 						return options.cb(obj);
-					}
-				});
-
-				return {
-					waiting: true
-				};
-
-				options.do_request({
-					url: page,
-					method: "GET",
-					onload: function(resp) {
-						if (resp.readyState !== 4) {
-							return;
-						}
-
-						if (resp.status !== 200)
-							return options.cb(null);
-
-						var obj = {
-							url: src,
-							extra: {
-								page: page
-							}
-						};
-
-						var match = resp.responseText.match(/window\.PxPreloadedData *= *({.*?});\s*</);
-						if (match) {
-							var data = JSON_parse(match[1]).photo;
-							obj.url = data.images[data.images.length - 1].url;
-						} else if (false) {
-							var match = resp.responseText.match(/<meta *content='(https?:\/\/drscdn[^']*)' *property='og:image'/);
-							if (match) {
-								obj.url = decode_entities(match[1]);
-							}
-						}
-
-						options.cb(obj);
 					}
 				});
 
@@ -49471,14 +49399,6 @@ var $$IMU_EXPORT$$;
 			return true;
 
 		return false;
-
-		for (var i = 0; i < obj.length; i++) {
-			// handle !obj.url?
-			if (obj[i].url === url)
-				return true;
-		}
-
-		return false;
 	};
 
 	var bigimage_recursive = function(url, options) {
@@ -53889,14 +53809,6 @@ var $$IMU_EXPORT$$;
 			}
 
 			cb(data.data.img, data.data.newurl, obj);
-			return;
-
-			var newobj = deepcopy(obj);
-			if (orig_url && obj_indexOf(orig_url) < 0) {
-				newobj.push(fillobj(orig_url)[0]);
-			}
-
-			check_image_get(newobj, cb, processing);
 		}
 
 		function getUnit(unit) {
@@ -54887,39 +54799,6 @@ var $$IMU_EXPORT$$;
 			return ret;
 		}
 
-		function find_els_at_el(el) {
-			return [el];
-
-			var rect = el.getBoundingClientRect();
-			//console.log("find_els_at_el", el, rect);
-			if (rect && rect.width > 0 && rect.height > 0) {
-				var point = [rect.left + rect.width / 2, rect.top + rect.height / 2];
-				var pointels = find_els_at_point(point);
-
-				// ensure el is the first element
-				var index = pointels.indexOf(el);
-				if (index > 0) {
-					pointels.splice(index, 1);
-				}
-
-				if (pointels.indexOf(el) < 0)
-					pointels.unshift(el);
-
-				var newels = [];
-
-				for (var i = 0; i < pointels.length; i++) {
-					if (!is_popup_el(pointels[i]))
-						newels.push(pointels[i]);
-				}
-
-				//console.log("find_els_at_el", newels);
-
-				return newels;
-			}
-
-			return [el];
-		}
-
 		function trigger_popup(is_contextmenu) {
 			if (_nir_debug_)
 				console_log("trigger_popup (is_contextmenu=" + is_contextmenu + ")");
@@ -55092,12 +54971,14 @@ var $$IMU_EXPORT$$;
 							}
 
 							finalcb(newurl1, data.obj, data);
-							return;
-							// why?
-							if (newurl == source.src) {
-								realcb(obj, data);
-							} else {
-								finalcb(newurl, data);
+
+							if (false) {
+								// why?
+								if (newurl == source.src) {
+									realcb(obj, data);
+								} else {
+									finalcb(newurl, data);
+								}
 							}
 						}, processing);
 					});
