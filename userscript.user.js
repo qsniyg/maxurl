@@ -54820,15 +54820,21 @@ var $$IMU_EXPORT$$;
 		}
 
 		function find_els_at_point(xy, els, prev) {
+			// test for pointer-events: none: https://www.shacknews.com/article/114834/should-you-choose-vulkan-or-directx-12-in-red-dead-redemption-2
+
+			if (false && _nir_debug_)
+				console_log("find_els_at_point", deepcopy(xy), deepcopy(els), deepcopy(prev));
+
 			if (!prev) {
 				prev = [];
 			}
 
 			var ret = [];
+			var afterret = [];
 
 			if (!els) {
 				els = document.elementsFromPoint(xy[0], xy[1]);
-				ret = els;
+				afterret = els;
 			}
 
 			for (var i = 0; i < els.length; i++) {
@@ -54839,6 +54845,27 @@ var $$IMU_EXPORT$$;
 
 				prev.push(el);
 
+				// FIXME: should we stop checking if not in bounding client rect?
+				// this would depend on the fact that children are always within the bounding rect
+				//  - probably not, there are cases where the parent div has a size of 0, but children have proper sizes
+				if (el.children && el.children.length > 0) {
+					// reverse, because the last element is (usually) the highest z
+					var newchildren = [];
+					for (var j = el.children.length - 1; j >= 0; j--) {
+						newchildren.push(el.children[j]);
+					}
+
+					var newels = find_els_at_point(xy, newchildren, prev);
+					for (var j = 0; j < newels.length; j++) {
+						var newel = newels[j];
+						//console_log("about to add", newel, deepcopy(ret))
+						if (ret.indexOf(newel) < 0) {
+							//console_log("adding", newel);
+							ret.push(newel);
+						}
+					}
+				}
+
 				var rect = el.getBoundingClientRect();
 				if (rect && rect.width > 0 && rect.height > 0 &&
 					rect.left <= xy[0] && rect.right >= xy[0] &&
@@ -54846,19 +54873,15 @@ var $$IMU_EXPORT$$;
 					ret.indexOf(el) < 0) {
 					ret.push(el);
 				}
-
-				// FIXME: should we stop checking if not in bounding client rect?
-				// this would depend on the fact that children are always within the bounding rect
-
-				if (el.children && el.children.length > 0) {
-					var newels = find_els_at_point(xy, el.children, prev);
-					for (var j = 0; j < newels.length; j++) {
-						var newel = newels[j];
-						if (ret.indexOf(newel) < 0)
-							ret.push(newel);
-					}
-				}
 			}
+
+			for (var i = 0; i < afterret.length; i++) {
+				if (ret.indexOf(afterret[i]) < 0)
+					ret.push(afterret[i]);
+			}
+
+			if (_nir_debug_ && ret.length > 0)
+				console_log("find_els_at_point (ret)", els, ret, xy);
 
 			return ret;
 		}
