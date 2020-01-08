@@ -54132,6 +54132,15 @@ var $$IMU_EXPORT$$;
 					return false;
 				}
 
+				if (!(src in sources)) {
+					sources[src] = {
+						count: 0,
+						src: src,
+						el: el,
+						id: id++,
+					};
+				}
+
 				// blank images
 				// https://www.harpersbazaar.com/celebrity/red-carpet-dresses/g7565/selena-gomez-style-transformation/?slide=2
 				var el_style = null;
@@ -54165,6 +54174,10 @@ var $$IMU_EXPORT$$;
 					return false;
 				}
 
+				if (!("imu" in sources[src])) {
+					sources[src].imu = imucheck === true;
+				}
+
 				if (settings.mouseover_only_links) {
 					if (!el)
 						return false;
@@ -54190,20 +54203,7 @@ var $$IMU_EXPORT$$;
 					layers[options.layer].push(src);
 				}
 
-				if (!(src in sources)) {
-					sources[src] = {
-						count: 1,
-						src: src,
-						el: el,
-						id: id++,
-						imu: imucheck === true
-					};
-
-					if (options.isbg)
-						sources[src].isbg = options.isbg;
-				} else {
-					sources[src].count++;
-				}
+				sources[src].count++;
 
 				return true;
 			}
@@ -54220,15 +54220,16 @@ var $$IMU_EXPORT$$;
 
 					if (el_src) {
 						var src = norm(el_src);
-						if (addImage(src, el, { layer: layer })) {
-							if (!el.srcset) {
-								if (el.tagName === "VIDEO") {
-									sources[src].width = el.videoWidth;
-									sources[src].height = el.videoHeight;
-								} else {
-									sources[src].width = el.naturalWidth;
-									sources[src].height = el.naturalHeight;
-								}
+
+						addImage(src, el, { layer: layer });
+
+						if (!el.srcset) {
+							if (el.tagName === "VIDEO") {
+								sources[src].width = el.videoWidth;
+								sources[src].height = el.videoHeight;
+							} else {
+								sources[src].width = el.naturalWidth;
+								sources[src].height = el.naturalHeight;
 							}
 						}
 					}
