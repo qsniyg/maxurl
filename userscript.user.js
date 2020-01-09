@@ -36490,8 +36490,10 @@ var $$IMU_EXPORT$$;
 			//   https://kpopping.com/uploads/documents/ro90108367_ori.jpeg
 			// https://kpopping.com/uploads/documents/gallery_thumbnail_small/ReneJingle-1207164667996426240-EMC12x_UcAAVpLo.jpeg.crop.fff.png
 			//   https://kpopping.com/uploads/documents/ReneJingle-1207164667996426240-EMC12x_UcAAVpLo.jpeg
-			return src.replace(/\/uploads\/+documents\/+[^/]+\/+([^/]+?)(?:\.(?:keep|crop)\..*)?(?:[?#].*)?$/,
-							   "/uploads/documents/$1");
+			// https://kpopping.com/uploads/documents/encyclopedia_body_team_big/xfirst_ATEEZ.png.keep.fff.png.pagespeed.ic.uMWjqUQB-G.webp
+			//   https://kpopping.com/uploads/documents/first_ATEEZ.png
+			return src
+				.replace(/\/uploads\/+documents\/+[^/]+\/+x?([^/]+?)(?:\.(?:keep|crop)\..*)?(?:[?#].*)?$/, "/uploads/documents/$1");
 		}
 
 		if (domain_nosub === "tin247.com" &&
@@ -48120,6 +48122,27 @@ var $$IMU_EXPORT$$;
 					}
 				};
 			}
+		}
+
+		if (domain_nowww === "ipetgroup.com") {
+			// https://ipetgroup.com/photo/99349_0_620.jpeg
+			//   https://ipetgroup.com/photo/original/110/5cfc4ac9dd7d53eb39cb9a3e98cb1d61_0.jpeg -- automatically redirected to this link when using a large enough size
+			return src.replace(/(\/photo\/+[0-9]+_[0-9]+)_[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1_99999999$2");
+		}
+
+		if (domain === "cdn.aarp.net") {
+			// https://cdn.aarp.net/content/dam/aarp/money/scams_fraud/2019/12/1140-puppy-sad.imgcache.rev0ad3bc014bcf8eff941546fd6e8204eb.web.500.285.jpg
+			//   https://cdn.aarp.net/content/dam/aarp/money/scams_fraud/2019/12/1140-puppy-sad.jpg
+			// https://cdn.aarp.net/content/dam/aarp/money/scams_fraud/2019/12/1140-puppy-sad-esp.imgcache.rev5b1e8438ce7d3f951ee007f24421585c.web.jpg
+			//   https://cdn.aarp.net/content/dam/aarp/money/scams_fraud/2019/12/1140-puppy-sad-esp.jpg
+			return src.replace(/\.imgcache\.rev[0-9a-f]{20,}\.web(?:\.[0-9]+\.[0-9]+)?(\.[^/.]+)(?:[?#].*)?$/, "$1");
+		}
+
+		if (domain === "img.particlenews.com") {
+			// https://img.particlenews.com/image.php?type=thumbnail_512x288&url=2uDX2N_0NUw5eQ200
+			//   https://img.particlenews.com/image.php?url=2uDX2N_0NUw5eQ200
+			if (/\/image\.php\?/.test(src))
+				return remove_queries(src, ["type"]);
 		}
 
 
