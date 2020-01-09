@@ -3478,6 +3478,9 @@ var $$IMU_EXPORT$$;
 	};
 
 	common_functions.instagram_get_imageid = function(image_url) {
+		if (!image_url)
+			return image_url;
+
 		return image_url.replace(/.*\/([^/.]*)\.[^/.]*(?:[?#].*)?$/, "$1");
 	};
 
@@ -3660,62 +3663,99 @@ var $$IMU_EXPORT$$;
 			});
 		};
 
-		var story_api = function(picid, uid, cb) {
-			var cache_key = "instagram_story_pic:" + picid;
-			api_cache.fetch(cache_key, cb, function (done) {
-				// Create a "useless" cache entry in case user does Replace Images, to avoid multiple API calls
-				var story_cache_key = "instagram_story_uid:" + uid;
-				api_cache.fetch(story_cache_key, function(result) {
-					if (!result) {
+		var get_all_stories_api = function(uid, cb) {
+			var story_cache_key = "instagram_story_uid:" + uid;
+			api_cache.fetch(story_cache_key, cb, function (done) {
+				var url = "https://i.instagram.com/api/v1/feed/user/" + uid + "/reel_media/";
+				app_api_call(url, function(result) {
+					if (result.readyState !== 4)
+						return;
+
+					if (result.status !== 200) {
+						console_log(story_cache_key, result);
 						return done(null, false);
 					}
 
 					try {
+						var parsed = JSON_parse(result.responseText);
+
+						return done(parsed, 10*60);
+					} catch(e) {
+						console_log(story_cache_key, result);
+						console_error(story_cache_key, e);
+					}
+
+					return done(null, false);
+				});
+			});
+		};
+
+		var story_api = function(picid, uid, cb) {
+			var get_stories = function(cb) {
+				get_all_stories_api(uid, function(result) {
+					if (!result) {
+						return cb(null);
+					}
+
+					try {
 						var items = result.items;
+						var all_images = [];
 						var our_item = null;
 
 						for (var i = 0; i < items.length; i++) {
-							var item_picid = common_functions.instagram_get_imageid(items[i].image_versions2.candidates[0].url);
+							var item = items[i];
 
-							api_cache.set("instagram_story_pic:" + item_picid, deepcopy(items[i]), 6*60*60);
+							var images = get_maxsize_app(item);
+							if (images.length < 1) {
+								console_warn("No images found for", item);
+								continue;
+							}
+							var image = images[0];
+							all_images.push(image);
 
-							if (item_picid === picid) {
-								our_item = items[i];
+							var item_picid = common_functions.instagram_get_imageid(image.src);
+							api_cache.set("instagram_story_pic:" + item_picid, image, 6*60*60);
+
+							if (image.video) {
+								var item_vidid = common_functions.instagram_get_imageid(image.video);
+								api_cache.set("instagram_story_pic:" + item_vidid, image, 6*60*60);
+							}
+
+							if (picid && (item_picid === picid || item_vidid === picid)) {
+								our_item = image;
 							}
 						}
 
-						if (our_item !== null)
-							return done(our_item, 6*60*60);
-						return done(null, false);
+						if (picid) {
+							if (our_item !== null)
+								return cb(our_item);
+						} else {
+							return cb(all_images);
+						}
+
+						return cb(null);
 					} catch (e) {
 						console_log(cache_key, result);
 						console_error(cache_key, e);
-						return done(null, false);
+						return cb(null);
 					}
-				}, function (done) {
-					var url = "https://i.instagram.com/api/v1/feed/user/" + uid + "/reel_media/";
-					app_api_call(url, function(result) {
-						if (result.readyState !== 4)
-							return;
+				});
+			};
 
-						if (result.status !== 200) {
-							console_log(story_cache_key, result);
-							return done(null, false);
+			if (picid) {
+				var cache_key = "instagram_story_pic:" + picid;
+				api_cache.fetch(cache_key, cb, function (done) {
+					get_stories(function(result) {
+						if (result) {
+							return done(result, 6*60*60);
+						} else {
+							return done(result, false);
 						}
-
-						try {
-							var parsed = JSON_parse(result.responseText);
-
-							return done(parsed, 10);
-						} catch(e) {
-							console_log(story_cache_key, result);
-							console_error(story_cache_key, e);
-						}
-
-						return done(null, false);
 					});
 				});
-			});
+			} else {
+				get_stories(cb);
+			}
 		};
 
 		var profile_to_url = function(profile) {
@@ -3987,12 +4027,11 @@ var $$IMU_EXPORT$$;
 						return cb(null);
 					}
 
-					var images = get_maxsize_app(result);
-					if (!images) {
-						return cb(null);
-					}
+					var images = result;
+					if (!(images instanceof Array))
+						images = [images];
 
-					if (!all) {
+					if (image_id) {
 						var image = image_in_objarr(image_url, images);
 						if (!image)
 							return cb(null);
@@ -4024,7 +4063,10 @@ var $$IMU_EXPORT$$;
 				if (retval)
 					return retval;
 			} else if (info.type === "story") {
-				retval = request_stories(info.url, info.image, cb, info.all);
+				if (info.all)
+					info.image = null;
+
+				retval = request_stories(info.url, info.image, cb);
 				if (retval)
 					return retval;
 			}
@@ -49446,7 +49488,8 @@ var $$IMU_EXPORT$$;
 					var info = common_functions.instagram_find_el_info(document, options.element, options.host_url);
 					var can_apply = false;
 					for (var i = 0; i < info.length; i++) {
-						if (info[i].type === "post" && (info[i].subtype === "popup" || info[i].subtype === "page")) {
+						if ((info[i].type === "post" && (info[i].subtype === "popup" || info[i].subtype === "page")) ||
+						     info[i].type === "story") {
 							info[i].all = true;
 							can_apply = true;
 						}
