@@ -3469,6 +3469,10 @@ var $$IMU_EXPORT$$;
 		}
 	};
 
+	common_functions.instagram_get_imageid = function(image_url) {
+		return image_url.replace(/.*\/([^/.]*)\.[^/.]*(?:[?#].*)?$/, "$1");
+	};
+
 	common_functions.instagram_parse_el_info = function(api_cache, do_request, info, cb) {
 		var query_ig = function(url, cb) {
 			// Normalize the URL to reduce duplicate cache checks
@@ -3660,7 +3664,7 @@ var $$IMU_EXPORT$$;
 						var our_item = null;
 
 						for (var i = 0; i < items.length; i++) {
-							var item_picid = get_imageid(items[i].image_versions2.candidates[0].url);
+							var item_picid = common_functions.instagram_get_imageid(items[i].image_versions2.candidates[0].url);
 
 							api_cache.set("instagram_story_pic:" + item_picid, deepcopy(items[i]), 6*60*60);
 
@@ -3727,10 +3731,6 @@ var $$IMU_EXPORT$$;
 			};
 		};
 
-		var get_imageid = function(image_url) {
-			return image_url.replace(/.*\/([^/.]*)\.[^/.]*(?:[?#].*)?$/, "$1");
-		};
-
 		var parse_caption = function(caption) {
 			if (typeof caption === "string")
 				return caption;
@@ -3758,7 +3758,7 @@ var $$IMU_EXPORT$$;
 		};
 
 		var image_in_objarr = function(image, objarr) {
-			var imageid = get_imageid(image);
+			var imageid = common_functions.instagram_get_imageid(image);
 
 			for (var i = 0; i < objarr.length; i++) {
 				if (objarr[i].src.indexOf(imageid) > 0)
@@ -3862,8 +3862,6 @@ var $$IMU_EXPORT$$;
 				});
 			};
 
-			parse_image(media);
-
 			if (media.edge_sidecar_to_children) {
 				var edges = media.edge_sidecar_to_children.edges;
 				for (var i = 0; i < edges.length; i++) {
@@ -3874,6 +3872,8 @@ var $$IMU_EXPORT$$;
 					parse_image(edge);
 				}
 			}
+
+			parse_image(media);
 
 			return images;
 		};
@@ -3922,6 +3922,7 @@ var $$IMU_EXPORT$$;
 								var graphql_size = images_graphql[i].width * images_graphql[i].height;
 
 								if (graphql_size > app_size) {
+									//console_log("Using graphql image", images[i], images_graphql[i]);
 									images[i] = images_graphql[i];
 								}
 							}
@@ -3964,7 +3965,7 @@ var $$IMU_EXPORT$$;
 					return cb(null);
 				}
 
-				var image_id = get_imageid(image_url);
+				var image_id = common_functions.instagram_get_imageid(image_url);
 				story_api(image_id, uid, function(result) {
 					if (!result) {
 						return cb(null);
@@ -49297,6 +49298,26 @@ var $$IMU_EXPORT$$;
 			document = options.document;
 
 
+		var new_image = function(src) {
+			var img = document.createElement("img");
+			img.src = src;
+			return img;
+		};
+
+		var new_video = function(src) {
+			var video = document.createElement("video");
+			video.src = src;
+			return video;
+		};
+
+		var new_media = function(src, is_video) {
+			if (is_video)
+				return new_video(src);
+			else
+				return new_image(src);
+		};
+
+
 		if (host_domain_nosub === "imgur.com" && host_domain !== "i.imgur.com") {
 			return {
 				gallery: function(el, nextprev) {
@@ -49393,6 +49414,48 @@ var $$IMU_EXPORT$$;
 							return find_from_el();
 						}
 					}
+				}
+			};
+		}
+
+		if (host_domain_nosub === "instagram.com") {
+			return {
+				gallery: function(el, nextprev) {
+					if (!el)
+						return null;
+
+					var info = common_functions.instagram_find_el_info(document, options.element, options.host_url);
+					var can_apply = false;
+					for (var i = 0; i < info.length; i++) {
+						if (info[i].type === "post" && (info[i].subtype === "popup" || info[i].subtype === "page")) {
+							info[i].all = true;
+							can_apply = true;
+						}
+					}
+
+					if (can_apply) {
+						var our_imageid = common_functions.instagram_get_imageid(el.src);
+						var add = nextprev ? 1 : -1;
+						common_functions.instagram_parse_el_info(real_api_cache, options.do_request, info, function(data) {
+							for (var i = nextprev ? 0 : 1; i < data.length - (nextprev ? 1 : 0); i++) {
+								var current_imageid = common_functions.instagram_get_imageid(data[i].src);
+								var current_videoid = "null";
+								if (data[i].video) {
+									current_videoid = common_functions.instagram_get_imageid(data[i].video);
+								}
+
+								if (our_imageid === current_imageid || our_imageid === current_videoid) {
+									return options.cb(new_media(data[i + add].video || data[i + add].src, data[i + add].video));
+								}
+							}
+
+							return options.cb(null);
+						});
+
+						return "waiting";
+					}
+
+					return "default";
 				}
 			};
 		}
@@ -52384,6 +52447,7 @@ var $$IMU_EXPORT$$;
 		var popups = [];
 		var popup_obj = null;
 		var popup_el = null;
+		var popup_orig_el = null;
 		var popup_el_automatic = false;
 		var popups_active = false;
 		var popup_trigger_reason = null;
@@ -53404,7 +53468,7 @@ var $$IMU_EXPORT$$;
 
 								update_imagestotal();
 							} else {
-								count_gallery(leftright, undefined, function(total) {
+								count_gallery(leftright, undefined, undefined, function(total) {
 									if (!leftright) {
 										prev_images = total;
 										cached_previmages = prev_images;
@@ -53420,7 +53484,7 @@ var $$IMU_EXPORT$$;
 					};
 
 					var add_leftright_gallery_button_if_valid = function(leftright) {
-						wrap_gallery_cycle(leftright, undefined, function(el) {
+						wrap_gallery_cycle(leftright, undefined, undefined, function(el) {
 							if (is_valid_el(el)) {
 								add_leftright_gallery_button(leftright);
 							}
@@ -54933,6 +54997,9 @@ var $$IMU_EXPORT$$;
 					popup_el_automatic = true;
 
 				popup_el = source.el;
+				if (!automatic)
+					popup_orig_el = popup_el;
+
 				makePopup(source_imu, source.src, processing, data);
 			});
 		}
@@ -55094,12 +55161,15 @@ var $$IMU_EXPORT$$;
 			return window
 		}
 
-		function wrap_gallery_func(nextprev, el, cb) {
+		function wrap_gallery_func(nextprev, origel, el, cb) {
 			if (!el)
 				el = popup_el;
 
+			if (!origel)
+				origel = popup_orig_el;
+
 			var options = {
-				element: el,
+				element: origel,
 				document: document,
 				window: get_window(),
 				host_url: window.location.href,
@@ -55125,9 +55195,13 @@ var $$IMU_EXPORT$$;
 			}
 
 			var value = gallery(el, nextprev);
-			if (value !== "waiting") {
-				return cb(value);
+			if (value === "waiting") {
+				return;
+			} else if (value === "default") {
+				return cb(get_next_in_gallery(el, nextprev));
 			}
+
+			return cb(value);
 		}
 
 		function is_valid_el(el) {
@@ -55137,11 +55211,11 @@ var $$IMU_EXPORT$$;
 			return !!find_source([el]);
 		}
 
-		function count_gallery(nextprev, el, cb) {
+		function count_gallery(nextprev, origel, el, cb) {
 			var count = 0;
 
 			var loop = function() {
-				wrap_gallery_func(nextprev, el, function(newel) {
+				wrap_gallery_func(nextprev, origel, el, function(newel) {
 					if (!newel || !is_valid_el(newel))
 						return cb(count, el);
 
@@ -55158,13 +55232,13 @@ var $$IMU_EXPORT$$;
 			loop();
 		}
 
-		function wrap_gallery_cycle(nextprev, el, cb) {
+		function wrap_gallery_cycle(nextprev, origel, el, cb) {
 			if (!el)
 				el = popup_el;
 
-			wrap_gallery_func(nextprev, el, function(newel) {
+			wrap_gallery_func(nextprev, origel, el, function(newel) {
 				if (!newel && settings.mouseover_gallery_cycle) {
-					count_gallery(!nextprev, el, function(count, newel) {
+					count_gallery(!nextprev, origel, el, function(count, newel) {
 						cb(newel);
 					});
 				} else {
@@ -55178,7 +55252,7 @@ var $$IMU_EXPORT$$;
 				cb = nullfunc;
 			}
 
-			wrap_gallery_cycle(nextprev, undefined, function(newel) {
+			wrap_gallery_cycle(nextprev, undefined, undefined, function(newel) {
 				if (newel) {
 					var source = find_source([newel]);
 					if (source) {
