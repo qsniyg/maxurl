@@ -428,6 +428,7 @@ var $$IMU_EXPORT$$;
 		rule_specific: {
 			imgur_source: true,
 			imgur_nsfw_headers: null,
+			instagram_use_app_api: true,
 			tumblr_api_key: null
 		},
 
@@ -1078,6 +1079,7 @@ var $$IMU_EXPORT$$;
 		allow_thirdparty_libs: is_userscript ? false : true,
 		//browser_cookies: true,
 		imgur_source: true,
+		instagram_use_app_api: true,
 		tumblr_api_key: "",
 		// thanks to LukasThyWalls on github for the idea: https://github.com/qsniyg/maxurl/issues/75
 		bigimage_blacklist: "",
@@ -1978,6 +1980,12 @@ var $$IMU_EXPORT$$;
 		imgur_source: {
 			name: "Source image for Imgur",
 			description: "If a source image is found for Imgur, try using it instead",
+			category: "rule_specific",
+			onupdate: update_rule_setting
+		},
+		instagram_use_app_api: {
+			name: "Use native API for Instagram",
+			description: "Uses Instagram's native API if possible, requires you to be logged into Instagram",
 			category: "rule_specific",
 			onupdate: update_rule_setting
 		},
@@ -3473,7 +3481,7 @@ var $$IMU_EXPORT$$;
 		return image_url.replace(/.*\/([^/.]*)\.[^/.]*(?:[?#].*)?$/, "$1");
 	};
 
-	common_functions.instagram_parse_el_info = function(api_cache, do_request, info, cb) {
+	common_functions.instagram_parse_el_info = function(api_cache, do_request, use_app_api, info, cb) {
 		var query_ig = function(url, cb) {
 			// Normalize the URL to reduce duplicate cache checks
 			url = url
@@ -3616,6 +3624,9 @@ var $$IMU_EXPORT$$;
 					headers.Cookie = cookies_to_httpheader(cookies);
 				}
 
+				if (!use_app_api)
+					headers.Cookie = "";
+
 				do_request({
 					method: "GET",
 					url: url,
@@ -3708,7 +3719,12 @@ var $$IMU_EXPORT$$;
 		};
 
 		var profile_to_url = function(profile) {
-			return profile.hd_profile_pic_url_info.url;
+			try {
+				return profile.hd_profile_pic_url_info.url;
+			} catch (e) {
+				console_error(e);
+				return null;
+			}
 		};
 
 		var request_profile = function(username, cb) {
@@ -24610,7 +24626,7 @@ var $$IMU_EXPORT$$;
 			// if oh is missing, "Bad URL hash"
 			newsrc = (function() {
 				var info = common_functions.instagram_find_el_info(document, options.element, options.host_url);
-				return common_functions.instagram_parse_el_info(api_cache, options.do_request, info, options.cb);
+				return common_functions.instagram_parse_el_info(api_cache, options.do_request, options.rule_specific.instagram_use_app_api, info, options.cb);
 			})();
 			if (newsrc !== undefined)
 				return newsrc;
@@ -49391,7 +49407,7 @@ var $$IMU_EXPORT$$;
 						return find_from_api(images) || find_from_el();
 					};
 
-					if (!window.runSlots) {
+					if (!window.runSlots && options.do_request) {
 						common_functions.fetch_imgur_webpage(options.do_request, real_api_cache, undefined, options.host_url, function(data) {
 							if (!data || !data.imageinfo) {
 								return options.cb(find_next_el());
@@ -49424,6 +49440,9 @@ var $$IMU_EXPORT$$;
 					if (!el)
 						return null;
 
+					if (!options.do_request)
+						return "default";
+
 					var info = common_functions.instagram_find_el_info(document, options.element, options.host_url);
 					var can_apply = false;
 					for (var i = 0; i < info.length; i++) {
@@ -49436,7 +49455,7 @@ var $$IMU_EXPORT$$;
 					if (can_apply) {
 						var our_imageid = common_functions.instagram_get_imageid(el.src);
 						var add = nextprev ? 1 : -1;
-						common_functions.instagram_parse_el_info(real_api_cache, options.do_request, info, function(data) {
+						common_functions.instagram_parse_el_info(real_api_cache, options.do_request, options.rule_specific.instagram_use_app_api, info, function(data) {
 							for (var i = nextprev ? 0 : 1; i < data.length - (nextprev ? 1 : 0); i++) {
 								var current_imageid = common_functions.instagram_get_imageid(data[i].src);
 								var current_videoid = "null";
@@ -49547,6 +49566,58 @@ var $$IMU_EXPORT$$;
 		return false;
 	};
 
+	var get_bigimage_extoptions_first = function(options) {
+		if (!("allow_thirdparty" in options)) {
+			options.allow_thirdparty = (settings["allow_thirdparty"] + "") === "true";
+		 }
+
+		 if (!("allow_apicalls" in options)) {
+			 options.allow_apicalls = (settings["allow_apicalls"] + "") === "true";
+		 }
+
+		 if (!("allow_thirdparty_libs" in options)) {
+			options.allow_thirdparty_libs = (settings["allow_thirdparty_libs"] + "") === "true";
+		}
+
+		return options;
+	};
+
+	var get_bigimage_extoptions = function(options) {
+		if ("exclude_problems" in options) {
+			for (var option in settings) {
+				if (option in option_to_problems) {
+					var problem = option_to_problems[option];
+					var index = options.exclude_problems.indexOf(problem);
+
+					if (settings[option]) {
+						if (index >= 0)
+							options.exclude_problems.splice(index, 1);
+					} else {
+						if (index < 0)
+							options.exclude_problems.push(problem);
+					}
+				}
+			}
+		}
+
+		if (!options.allow_apicalls) {
+			options.do_request = null;
+		}
+
+		options.rule_specific.imgur_source = settings.imgur_source;
+		options.rule_specific.instagram_use_app_api = settings.instagram_use_app_api;
+		options.rule_specific.tumblr_api_key = settings.tumblr_api_key;
+
+		// Doing this here breaks things like Imgur, which will redirect to an image if a video was opened in a new tab
+		if (false && !settings.allow_video) {
+			options.exclude_videos = true;
+		} else {
+			options.exclude_videos = false;
+		}
+
+		return options;
+	};
+
 	var bigimage_recursive = function(url, options) {
 		if (!url)
 			return url;
@@ -49555,17 +49626,7 @@ var $$IMU_EXPORT$$;
 			options = {};
 
 		if (is_userscript || is_extension) {
-			 if (!("allow_thirdparty" in options)) {
-				options.allow_thirdparty = (settings["allow_thirdparty"] + "") === "true";
-			 }
-
-			 if (!("allow_apicalls" in options)) {
-				 options.allow_apicalls = (settings["allow_apicalls"] + "") === "true";
-			 }
-
-			 if (!("allow_thirdparty_libs" in options)) {
-				options.allow_thirdparty_libs = (settings["allow_thirdparty_libs"] + "") === "true";
-			}
+			get_bigimage_extoptions_first(options);
 		}
 
 		for (var option in bigimage_recursive.default_options) {
@@ -49584,34 +49645,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (is_userscript || is_extension) {
-			for (var option in settings) {
-				if (option in option_to_problems) {
-					var problem = option_to_problems[option];
-					var index = options.exclude_problems.indexOf(problem);
-
-					if (settings[option]) {
-						if (index >= 0)
-							options.exclude_problems.splice(index, 1);
-					} else {
-						if (index < 0)
-							options.exclude_problems.push(problem);
-					}
-				}
-			}
-
-			if (!options.allow_apicalls) {
-				options.do_request = null;
-			}
-
-			options.rule_specific.imgur_source = settings.imgur_source;
-			options.rule_specific.tumblr_api_key = settings.tumblr_api_key;
-
-			// Doing this here breaks things like Imgur, which will redirect to an image if a video was opened in a new tab
-			if (false && !settings.allow_video) {
-				options.exclude_videos = true;
-			} else {
-				options.exclude_videos = false;
-			}
+			get_bigimage_extoptions(options);
 		}
 
 		var waiting = false;
@@ -55174,12 +55208,12 @@ var $$IMU_EXPORT$$;
 				window: get_window(),
 				host_url: window.location.href,
 				do_request: do_request,
+				rule_specific: {},
 				cb: cb
 			};
 
-			if (!settings.allow_video) {
-				options.exclude_videos = true;
-			}
+			get_bigimage_extoptions_first(options);
+			get_bigimage_extoptions(options);
 
 			var helpers = get_helpers(options);
 			var gallery = get_next_in_gallery;
