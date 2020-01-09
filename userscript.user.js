@@ -4433,6 +4433,9 @@ var $$IMU_EXPORT$$;
 			//   http://cdn.newsen.com/newsen/news_photo/2019/09/05/201909050803320410_1.jpg
 			if (extra.page && options && options.cb && options.allow_thirdparty && options.do_request) {
 				var get_imageid = function(url) {
+					if (!url)
+						return url;
+
 					var match = url.match(/\/[0-9]{4}\/+(?:[0-9]{2}\/+){2}([0-9]{10,}_[0-9]+)\.[^/.]*(?:[?#].*)?$/);
 					if (!match)
 						return null;
@@ -24005,6 +24008,19 @@ var $$IMU_EXPORT$$;
 					}
 				};
 
+				var username_from_sharedData = function(json) {
+					if (json.username)
+						return json.username;
+					else {
+						var entrydata = json.entry_data;
+
+						if (entrydata.ProfilePage)
+							return entrydata.ProfilePage[0].graphql.user.username;
+						else
+							return entrydata.PostPage[0].graphql.shortcode_media.owner.username;
+					}
+				};
+
 				var username_to_uid = function(username, cb) {
 					if (username.match(/^http/)) {
 						username = username.replace(/^[a-z]+:\/\/[^/]*\/+(?:stories\/+)?([^/]*)(?:\/.*)?(?:[?#].*)?$/, "$1");
@@ -24159,7 +24175,7 @@ var $$IMU_EXPORT$$;
 								try {
 									var parsed = JSON_parse(result.responseText);
 
-									return done(parsed, 8);
+									return done(parsed, 10);
 								} catch(e) {
 									console_log(story_cache_key, result);
 									console_error(story_cache_key, e);
@@ -24175,20 +24191,18 @@ var $$IMU_EXPORT$$;
 					return profile.hd_profile_pic_url_info.url;
 				};
 
-				var request_profile = function(username) {
+				var request_profile = function(username, cb) {
 					username_to_uid(username, function(uid) {
 						if (!uid) {
-							options.cb(null);
-							return;
+							return cb(null);
 						}
 
 						uid_to_profile(uid, function(profile) {
 							if (!profile) {
-								options.cb(null);
-								return;
+								return cb(null);
 							}
 
-							options.cb(profile_to_url(profile));
+							return cb(profile_to_url(profile));
 						});
 					});
 
@@ -24369,8 +24383,7 @@ var $$IMU_EXPORT$$;
 				var request_post_inner = function(post_url, image_url, cb) {
 					query_ig(post_url, function(json) {
 						if (!json) {
-							cb(null);
-							return;
+							return cb(null);
 						}
 
 						try {
@@ -24400,9 +24413,13 @@ var $$IMU_EXPORT$$;
 									images = images_graphql;
 								}
 
-								var image = image_in_objarr(image_url, images);
-								if (image)
-									return cb(image_to_obj(image));
+								if (image_url) {
+									var image = image_in_objarr(image_url, images);
+									if (image)
+										return cb(image_to_obj(image));
+								} else {
+									return cb(images);
+								}
 
 								cb(null);
 							});
@@ -24417,36 +24434,40 @@ var $$IMU_EXPORT$$;
 					};
 				};
 
-				var request_post = function(post_url, image_url) {
-					return request_post_inner(post_url, image_url, options.cb);
+				var request_post = function(post_url, image_url, cb) {
+					return request_post_inner(post_url, image_url, cb);
 				};
 
-				var request_stories = function(url, image_url) {
+				var request_stories = function(url, image_url, cb, all) {
 					var username = url.replace(/.*\/stories\/+([^/]*).*$/, "$1");
 					if (username === url)
 						return null;
 
 					username_to_uid(username, function(uid) {
 						if (!uid) {
-							return options.cb(null);
+							return cb(null);
 						}
 
 						var image_id = get_imageid(image_url);
 						story_api(image_id, uid, function(result) {
 							if (!result) {
-								return options.cb(null);
+								return cb(null);
 							}
 
 							var images = get_maxsize_app(result);
 							if (!images) {
-								return options.cb(null);
+								return cb(null);
 							}
 
-							var image = image_in_objarr(image_url, images);
-							if (!image)
-								return options.cb(null);
+							if (!all) {
+								var image = image_in_objarr(image_url, images);
+								if (!image)
+									return cb(null);
 
-							return options.cb(image_to_obj(image));
+								return cb(image_to_obj(image));
+							} else {
+								return cb(images);
+							}
 						});
 					});
 
@@ -24508,10 +24529,15 @@ var $$IMU_EXPORT$$;
 								}
 							}
 
+							var url = options.host_url;
+							if (url.match(/:\/\/[^/]+\/+p\//)) {
+								url = "https://www.instagram.com/" + username_from_sharedData(sharedData);
+							}
+
 							possible_infos.push({
 								type: "profile",
 								subtype: "page",
-								url: options.host_url,
+								url: url,
 								element: current
 							});
 						}
@@ -24543,19 +24569,22 @@ var $$IMU_EXPORT$$;
 					return possible_infos;
 				};
 
-				var parse_single_el_info = function(info) {
+				var parse_single_el_info = function(info, cb) {
 					var retval;
 
 					if (info.type === "post") {
-						retval = request_post(info.url, info.image);
+						if (info.all)
+							info.image = null;
+
+						retval = request_post(info.url, info.image, cb);
 						if (retval)
 							return retval;
 					} else if (info.type === "profile") {
-						retval = request_profile(info.url);
+						retval = request_profile(info.url, cb);
 						if (retval)
 							return retval;
 					} else if (info.type === "story") {
-						retval = request_stories(info.url, info.image);
+						retval = request_stories(info.url, info.image, cb, info.all);
 						if (retval)
 							return retval;
 					}
@@ -24563,11 +24592,11 @@ var $$IMU_EXPORT$$;
 					return retval;
 				};
 
-				var parse_el_info = function(info) {
+				var parse_el_info = function(info, cb) {
 					var retval;
 
 					for (var i = 0; i < info.length; i++) {
-						retval = parse_single_el_info(info[i]);
+						retval = parse_single_el_info(info[i], cb);
 						if (retval)
 							return retval;
 					}
@@ -24576,7 +24605,7 @@ var $$IMU_EXPORT$$;
 				}
 
 				var info = find_el_info(document, options.element);
-				return parse_el_info(info);
+				return parse_el_info(info, options.cb);
 			})();
 			if (newsrc !== undefined)
 				return newsrc;
