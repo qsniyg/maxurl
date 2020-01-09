@@ -208,6 +208,18 @@ input, textarea {
   color: #f0f0f0;
 }
 
+.dark p {
+  color: #e0e0e0;
+}
+
+.dark a {
+  color: #7af;
+}
+
+.dark a:visited {
+  color: #a7f;
+}
+
 body.main {
   /*overflow: hidden;*/
 }
@@ -388,12 +400,12 @@ button:active, .button:active {
   border: 1px solid #aaa !important;
 }
 
-input:checked + label, button, .button {
+input:checked + label, button, .button, .button:visited, .dark .button:visited {
   background: #0af;
   color: #fff;
 }
 
-.disabled input:checked + label, .disabled button, .disabled button:active, .button.disabled {
+.disabled input:checked + label, .disabled button, .disabled button:active, .button.disabled, .button.disabled:visited, .dark .button.disabled:visited {
   border-color: #aaa;
   background: #aaa;
   color: #fff;
