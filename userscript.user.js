@@ -429,6 +429,7 @@ var $$IMU_EXPORT$$;
 			imgur_source: true,
 			imgur_nsfw_headers: null,
 			instagram_use_app_api: true,
+			instagram_gallery_postlink: false,
 			tumblr_api_key: null
 		},
 
@@ -1080,6 +1081,7 @@ var $$IMU_EXPORT$$;
 		//browser_cookies: true,
 		imgur_source: true,
 		instagram_use_app_api: true,
+		instagram_gallery_postlink: false,
 		tumblr_api_key: "",
 		// thanks to LukasThyWalls on github for the idea: https://github.com/qsniyg/maxurl/issues/75
 		bigimage_blacklist: "",
@@ -1988,6 +1990,11 @@ var $$IMU_EXPORT$$;
 			description: "Uses Instagram's native API if possible, requires you to be logged into Instagram",
 			category: "rule_specific",
 			onupdate: update_rule_setting
+		},
+		instagram_gallery_postlink: {
+			name: "Use albums for Instagram post thumbnails",
+			description: "Queries Instagram for albums when using the popup on a post thumbnail",
+			category: "rule_specific"
 		},
 		tumblr_api_key: {
 			name: "Tumblr API key",
@@ -49488,13 +49495,22 @@ var $$IMU_EXPORT$$;
 					if (!options.do_request)
 						return "default";
 
-					var info = common_functions.instagram_find_el_info(document, options.element, options.host_url);
+					var query_el = el;
+					if (!el.parentElement) { // check if it's a fake element returned by this function
+						query_el = options.element;
+					}
+
+					var info = common_functions.instagram_find_el_info(document, query_el, options.host_url);
 					var can_apply = false;
+					var use_default_after = false;
 					for (var i = 0; i < info.length; i++) {
-						if ((info[i].type === "post" && (info[i].subtype === "popup" || info[i].subtype === "page")) ||
+						if ((info[i].type === "post" && (info[i].subtype === "popup" || info[i].subtype === "page" || (info[i].subtype === "link" && options.rule_specific.instagram_gallery_postlink && !options.is_counting))) ||
 						     info[i].type === "story") {
 							info[i].all = true;
 							can_apply = true;
+
+							if (info[i].type === "post" && info[i].subtype === "link")
+								use_default_after = true;
 						}
 					}
 
@@ -49514,7 +49530,10 @@ var $$IMU_EXPORT$$;
 								}
 							}
 
-							return options.cb(null);
+							if (!use_default_after)
+								return options.cb(null);
+							else
+								return options.cb(get_next_in_gallery(options.element, nextprev));
 						});
 
 						return "waiting";
@@ -49527,6 +49546,8 @@ var $$IMU_EXPORT$$;
 
 		return null;
 	}
+
+	var get_next_in_gallery = null;
 
 	var fullurl_obj = function(currenturl, obj) {
 		if (!obj)
@@ -49652,6 +49673,7 @@ var $$IMU_EXPORT$$;
 
 		options.rule_specific.imgur_source = settings.imgur_source;
 		options.rule_specific.instagram_use_app_api = settings.instagram_use_app_api;
+		options.rule_specific.instagram_gallery_postlink = settings.instagram_gallery_postlink;
 		options.rule_specific.tumblr_api_key = settings.tumblr_api_key;
 
 		// Doing this here breaks things like Imgur, which will redirect to an image if a video was opened in a new tab
@@ -54708,7 +54730,7 @@ var $$IMU_EXPORT$$;
 				return getfirstsource(sources);
 		}
 
-		function get_next_in_gallery(el, nextprev) {
+		get_next_in_gallery = function(el, nextprev) {
 			if (!el)
 				return null;
 
@@ -55077,7 +55099,7 @@ var $$IMU_EXPORT$$;
 					popup_el_automatic = true;
 
 				popup_el = source.el;
-				if (!automatic)
+				if (popup_el.parentElement) // check if it's a fake element returned by a gallery helper
 					popup_orig_el = popup_el;
 
 				makePopup(source_imu, source.src, processing, data);
@@ -55241,7 +55263,7 @@ var $$IMU_EXPORT$$;
 			return window
 		}
 
-		function wrap_gallery_func(nextprev, origel, el, cb) {
+		function wrap_gallery_func(nextprev, origel, el, cb, new_options) {
 			if (!el)
 				el = popup_el;
 
@@ -55255,8 +55277,20 @@ var $$IMU_EXPORT$$;
 				host_url: window.location.href,
 				do_request: do_request,
 				rule_specific: {},
-				cb: cb
+				cb: function(result) {
+					if (!result || result === "default") {
+						return cb(get_next_in_gallery(el, nextprev));
+					} else {
+						cb(result);
+					}
+				}
 			};
+
+			if (new_options) {
+				for (var key in new_options) {
+					options[key] = new_options[key];
+				}
+			}
 
 			get_bigimage_extoptions_first(options);
 			get_bigimage_extoptions(options);
@@ -55294,6 +55328,10 @@ var $$IMU_EXPORT$$;
 		function count_gallery(nextprev, origel, el, cb) {
 			var count = 0;
 
+			var firstel = el;
+			if (!firstel)
+				firstel = popup_el;
+
 			var loop = function() {
 				wrap_gallery_func(nextprev, origel, el, function(newel) {
 					if (!newel || !is_valid_el(newel))
@@ -55306,7 +55344,7 @@ var $$IMU_EXPORT$$;
 
 					el = newel;
 					loop();
-				});
+				}, {is_counting: true, counting_firstel: firstel});
 			};
 
 			loop();
