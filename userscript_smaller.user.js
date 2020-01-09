@@ -4,9 +4,9 @@
 // ==UserScript==
 // @name              Image Max URL
 // @namespace         http://tampermonkey.net/
-// @version           0.12.2
+// @version           0.12.3
 // @description       Finds larger or original versions of images for 6100+ websites
-// @description:ko    6100개 이사의 사이트에 대해 더 크거나 원본 이미지 찾는 스크립트
+// @description:ko    6100개 이상의 사이트에 대해 더 크거나 원본 이미지 찾는 스크립트
 // @description:fr    Trouve des images plus grandes ou originales pour plus de 6100 sites
 // @description:es    Encuentra imágenes más grandes y originales para más de 6100 sitios
 // @description:zh    为6100多个网站查找更大或原始图像
@@ -74,13 +74,19 @@ var $$IMU_EXPORT$$;
 	var extension_options_page = null;
 	var is_extension_options_page = false;
 	var is_options_page = false;
+	var is_maxurl_website = false;
 	var options_page = "https://qsniyg.github.io/maxurl/options.html";
 	var imagetab_ok_override = false;
 
 	try {
-		if (window.location.href.match(/^https?:\/\/qsniyg\.github\.io\/maxurl\/options\.html/) ||
+		if (window.location.href.match(/^https?:\/\/qsniyg\.github\.io\/+maxurl\/+options\.html/) ||
 			window.location.href.match(/^file:\/\/.*\/maxurl\/site\/options\.html/)) {
 			is_options_page = true;
+		}
+
+		if (window.location.href.match(/^https?:\/\/qsniyg\.github\.io\/+maxurl\/+/) ||
+			window.location.href.match(/^file:\/\/.*\/maxurl\/site\/(?:index|about|options)\.html/)) {
+			is_maxurl_website = true;
 		}
 	} catch(e) {
 	}
@@ -425,6 +431,8 @@ var $$IMU_EXPORT$$;
 		rule_specific: {
 			imgur_source: true,
 			imgur_nsfw_headers: null,
+			instagram_use_app_api: true,
+			instagram_gallery_postlink: false,
 			tumblr_api_key: null
 		},
 
@@ -489,6 +497,19 @@ var $$IMU_EXPORT$$;
 	var console_trace = console.trace;
 	var JSON_stringify = JSON.stringify;
 	var JSON_parse = JSON.parse;
+
+	function is_element(x) {
+		if ((typeof Element !== "undefined" && x instanceof Element) ||
+			(x && typeof x === "object" && (("namespaceURI" in x) && ("ariaSort" in x)))) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	function is_iterable_object(x) {
+		return typeof x === "object" && x !== null && !(x instanceof Array) && !is_element(x);
+	}
 
 	function deepcopy(x, options) {
 		if (!options)
@@ -972,6 +993,8 @@ var $$IMU_EXPORT$$;
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-530760246
 		imu_enabled: true,
 		language: browser_language,
+		// thanks to forefix on firefox for the idea: https://github.com/qsniyg/maxurl/issues/189
+		dark_mode: false,
 		advanced_options: false,
 		allow_browser_request: true,
 		redirect: true,
@@ -1060,6 +1083,8 @@ var $$IMU_EXPORT$$;
 		allow_thirdparty_libs: is_userscript ? false : true,
 		//browser_cookies: true,
 		imgur_source: true,
+		instagram_use_app_api: true,
+		instagram_gallery_postlink: false,
 		tumblr_api_key: "",
 		// thanks to LukasThyWalls on github for the idea: https://github.com/qsniyg/maxurl/issues/75
 		bigimage_blacklist: "",
@@ -1075,7 +1100,7 @@ var $$IMU_EXPORT$$;
 		highlightimgs_enable: false,
 		highlightimgs_auto: "never",
 		highlightimgs_onlysupported: true,
-		highlightimgs_css: "border: 4px solid yellow"
+		highlightimgs_css: "outline: 4px solid yellow"
 	};
 	var orig_settings = deepcopy(settings);
 
@@ -1108,6 +1133,14 @@ var $$IMU_EXPORT$$;
 			onedit: function() {
 				run_soon(do_options);
 			},
+			imu_enabled_exempt: true
+		},
+		dark_mode: {
+			name: "Dark mode",
+			description: "Changes the colors to have light text on a dark background",
+			category: "general",
+			onedit: update_dark_mode,
+			onupdate: update_dark_mode,
 			imu_enabled_exempt: true
 		},
 		advanced_options: {
@@ -1955,6 +1988,17 @@ var $$IMU_EXPORT$$;
 			category: "rule_specific",
 			onupdate: update_rule_setting
 		},
+		instagram_use_app_api: {
+			name: "Use native API for Instagram",
+			description: "Uses Instagram's native API if possible, requires you to be logged into Instagram",
+			category: "rule_specific",
+			onupdate: update_rule_setting
+		},
+		instagram_gallery_postlink: {
+			name: "Use albums for Instagram post thumbnails",
+			description: "Queries Instagram for albums when using the popup on a post thumbnail",
+			category: "rule_specific"
+		},
 		tumblr_api_key: {
 			name: "Tumblr API key",
 			description: "API key for finding larger images on Tumblr",
@@ -2103,7 +2147,8 @@ var $$IMU_EXPORT$$;
 			name: "Enable button",
 			description: "Enables the 'Highlight Images' button",
 			category: "extra",
-			subcategory: "highlightimages"
+			subcategory: "highlightimages",
+			imu_enabled_exempt: true
 		},
 		highlightimgs_auto: {
 			name: "Automatically highlight images",
@@ -2145,7 +2190,8 @@ var $$IMU_EXPORT$$;
 				highlightimgs_auto: {$or: ["always", "hover"]}
 			},
 			category: "extra",
-			subcategory: "highlightimages"
+			subcategory: "highlightimages",
+			imu_enabled_exempt: true
 		}
 	};
 
@@ -3080,7 +3126,7 @@ var $$IMU_EXPORT$$;
 						imageinfo = match[1];
 
 						try {
-							imageinfo = JSON.parse(imageinfo);
+							imageinfo = JSON_parse(imageinfo);
 							retobj.imageinfo = imageinfo;
 
 							if (imageinfo.source && imageinfo.hash && !imageinfo.is_album) {
@@ -3426,6 +3472,733 @@ var $$IMU_EXPORT$$;
 				});
 			});
 		});
+	};
+
+	common_functions.instagram_username_from_sharedData = function(json) {
+		if (json.username)
+			return json.username;
+		else {
+			var entrydata = json.entry_data;
+
+			if (entrydata.ProfilePage)
+				return entrydata.ProfilePage[0].graphql.user.username;
+			else
+				return entrydata.PostPage[0].graphql.shortcode_media.owner.username;
+		}
+	};
+
+	common_functions.instagram_get_imageid = function(image_url) {
+		if (!image_url)
+			return image_url;
+
+		return image_url.replace(/.*\/([^/.]*)\.[^/.]*(?:[?#].*)?$/, "$1");
+	};
+
+	common_functions.instagram_parse_el_info = function(api_cache, do_request, use_app_api, info, cb) {
+		var query_ig = function(url, cb) {
+			// Normalize the URL to reduce duplicate cache checks
+			url = url
+				.replace(/[?#].*/, "")
+				.replace(/([^/])$/, "$1/")
+				.replace(/^http:/, "https:")
+				.replace(/(:\/\/)(instagram\.com\/)/, "$1www.$2")
+				.replace(/(:\/\/.*?)\/\/+/g, "$1/");
+
+			var cache_key = "instagram_sharedData_query:" + url;
+			api_cache.fetch(cache_key, cb, function (done) {
+				do_request({
+					method: "GET",
+					url: url,
+					onload: function (result) {
+						if (result.readyState !== 4)
+							return;
+
+						try {
+							var text = result.responseText;
+
+							var regex1 = /window\._sharedData = *(.*?);?<\/script>/;
+							var regex2 = /window\._sharedData *= *(.*?}) *;[\s]*window\.__initialDataLoaded/;
+
+							var match = text.match(regex1);
+							if (!match) {
+								match = text.match(regex2);
+							}
+
+							var parsed = JSON_parse(match[1]);
+
+							var regex3 = /window\.__additionalDataLoaded\(["'].*?["']\s*,\s*({.*?})\);?\s*<\/script>/;
+							match = text.match(regex3);
+							if (match) {
+								var parsed1 = JSON_parse(match[1]);
+								for (var key in parsed.entry_data) {
+									if (parsed.entry_data[key] instanceof Array) {
+										parsed.entry_data[key][0] = overlay_object(parsed.entry_data[key][0], parsed1);
+									}
+								}
+							}
+
+							// TODO: maybe check if parsed is correct before setting to cache?
+							done(parsed, 60 * 60);
+						} catch (e) {
+							console_log("instagram_sharedData", result);
+							console_error("instagram_sharedData", e);
+							done(null, false);
+						}
+					}
+				});
+			});
+		};
+
+		var uid_from_sharedData = function(json) {
+			if (json.id)
+				return json.id;
+			else {
+				var entrydata = json.entry_data;
+
+				if (entrydata.ProfilePage)
+					return entrydata.ProfilePage[0].graphql.user.id;
+				else
+					return entrydata.PostPage[0].graphql.shortcode_media.owner.id;
+			}
+		};
+
+		var username_to_uid = function(username, cb) {
+			if (username.match(/^http/)) {
+				username = username.replace(/^[a-z]+:\/\/[^/]*\/+(?:stories\/+)?([^/]*)(?:\/.*)?(?:[?#].*)?$/, "$1");
+			}
+
+			var cache_key = "instagram_username_uid:" + username;
+			api_cache.fetch(cache_key, cb, function (done) {
+				query_ig("https://www.instagram.com/" + username + "/", function (json) {
+					try {
+						done(uid_from_sharedData(json), 5*60);
+					} catch (e) {
+						console_error(cache_key, e);
+						done(null, false);
+					}
+				});
+			});
+		};
+
+		var uid_to_profile = function(uid, cb) {
+			var cache_key = "instagram_uid_to_profile:" + uid;
+			api_cache.fetch(cache_key, cb, function (done) {
+				var url = "https://i.instagram.com/api/v1/users/" + uid + "/info/";
+				app_api_call(url, function (result) {
+					if (result.readyState !== 4)
+						return;
+
+					try {
+						var parsed = JSON_parse(result.responseText).user;
+
+						// 5 minutes since they can change their profile pic often
+						done(parsed, 5 * 60);
+					} catch (e) {
+						console_log("instagram_uid_to_profile", result);
+						console_error("instagram_uid_to_profile", e);
+						done(null, false);
+					}
+				});
+			});
+		};
+
+		var get_instagram_cookies = function(cb) {
+			// For now, we'll disable this as it doesn't appear to be needed
+			if (true) {
+				cb(null);
+			} else {
+				var cookie_cache_key = "instagram";
+				if (cookie_cache.has(cookie_cache_key)) {
+					return cb(cookie_cache.get(cookie_cache_key));
+				}
+
+				if (options.get_cookies) {
+					options.get_cookies("https://www.instagram.com/", function(cookies) {
+						cookie_cache.set(cookie_cache_key, cookies);
+						cb(cookies);
+					});
+				} else {
+					cb(null);
+				}
+			}
+		};
+
+		var app_api_call = function (url, cb) {
+			var headers = {
+				//"User-Agent": "Instagram 10.26.0 (iPhone7,2; iOS 10_1_1; en_US; en-US; scale=2.00; gamut=normal; 750x1334) AppleWebKit/420+",
+				"User-Agent": "Instagram 10.26.0 Android (23/6.0.1; 640dpi; 1440x2560; samsung; SM-G930F; herolte; samsungexynos8890; en_US)",
+				"X-IG-Capabilities": "36oD",
+				"Accept": "*/*",
+				"Accept-Language": "en-US,en;q=0.8"
+			};
+
+			get_instagram_cookies(function(cookies) {
+				if (cookies) {
+					headers.Cookie = cookies_to_httpheader(cookies);
+				}
+
+				if (!use_app_api)
+					headers.Cookie = "";
+
+				do_request({
+					method: "GET",
+					url: url,
+					headers: headers,
+					onload: cb
+				});
+			});
+		};
+
+		var mediainfo_api = function(id, cb) {
+			if (!use_app_api)
+				return cb(null);
+
+			var cache_key = "instagram_mediainfo:" + id;
+			api_cache.fetch(cache_key, cb, function (done) {
+				var url = "https://i.instagram.com/api/v1/media/" + id + "/info/";
+				app_api_call(url, function (result) {
+					if (result.readyState !== 4)
+						return;
+
+					if (result.status === 200) {
+						try {
+							var parsed = JSON_parse(result.responseText);
+
+							return done(parsed, 60 * 60);
+						} catch (e) {
+							console_log("instagram_mediainfo", result);
+							console_error("instagram_mediainfo", e);
+						}
+					}
+
+					done(null, false);
+				});
+			});
+		};
+
+		var get_all_stories_api = function(uid, cb) {
+			if (!use_app_api)
+				return cb(null);
+
+			var story_cache_key = "instagram_story_uid:" + uid;
+			api_cache.fetch(story_cache_key, cb, function (done) {
+				var url = "https://i.instagram.com/api/v1/feed/user/" + uid + "/reel_media/";
+				app_api_call(url, function(result) {
+					if (result.readyState !== 4)
+						return;
+
+					if (result.status !== 200) {
+						console_log(story_cache_key, result);
+						return done(null, false);
+					}
+
+					try {
+						var parsed = JSON_parse(result.responseText);
+
+						return done(parsed, 10*60);
+					} catch(e) {
+						console_log(story_cache_key, result);
+						console_error(story_cache_key, e);
+					}
+
+					return done(null, false);
+				});
+			});
+		};
+
+		var story_api = function(picid, uid, cb) {
+			var get_stories = function(cb) {
+				get_all_stories_api(uid, function(result) {
+					if (!result) {
+						return cb(null);
+					}
+
+					try {
+						var items = result.items;
+						var all_images = [];
+						var our_item = null;
+
+						for (var i = 0; i < items.length; i++) {
+							var item = items[i];
+
+							var images = get_maxsize_app(item);
+							if (images.length < 1) {
+								console_warn("No images found for", item);
+								continue;
+							}
+							var image = images[0];
+							all_images.push(image);
+
+							var item_picid = common_functions.instagram_get_imageid(image.src);
+							api_cache.set("instagram_story_pic:" + item_picid, image, 6*60*60);
+
+							if (image.video) {
+								var item_vidid = common_functions.instagram_get_imageid(image.video);
+								api_cache.set("instagram_story_pic:" + item_vidid, image, 6*60*60);
+							}
+
+							if (picid && (item_picid === picid || item_vidid === picid)) {
+								our_item = image;
+							}
+						}
+
+						if (picid) {
+							if (our_item !== null)
+								return cb(our_item);
+						} else {
+							return cb(all_images);
+						}
+
+						return cb(null);
+					} catch (e) {
+						console_log(cache_key, result);
+						console_error(cache_key, e);
+						return cb(null);
+					}
+				});
+			};
+
+			if (picid) {
+				var cache_key = "instagram_story_pic:" + picid;
+				api_cache.fetch(cache_key, cb, function (done) {
+					get_stories(function(result) {
+						if (result) {
+							return done(result, 6*60*60);
+						} else {
+							return done(result, false);
+						}
+					});
+				});
+			} else {
+				get_stories(cb);
+			}
+		};
+
+		var profile_to_url = function(profile) {
+			try {
+				return profile.hd_profile_pic_url_info.url;
+			} catch (e) {
+				console_error(e);
+				return null;
+			}
+		};
+
+		var request_profile = function(username, cb) {
+			username_to_uid(username, function(uid) {
+				if (!uid) {
+					return cb(null);
+				}
+
+				uid_to_profile(uid, function(profile) {
+					if (!profile) {
+						return cb(null);
+					}
+
+					return cb(profile_to_url(profile));
+				});
+			});
+
+			return {
+				waiting: true
+			};
+		};
+
+		var parse_caption = function(caption) {
+			if (typeof caption === "string")
+				return caption;
+
+			if (caption.text)
+				return caption.text;
+
+			if (caption.edges)
+				return caption.edges[0].node.text;
+
+			return null;
+		};
+
+		var get_caption = function(item) {
+			if (item.caption)
+				return parse_caption(item.caption);
+
+			if (item.title)
+				return parse_caption(item.title);
+
+			if (item.edge_media_to_caption)
+				return parse_caption(item.edge_media_to_caption);
+
+			return undefined;
+		};
+
+		var image_in_objarr = function(image, objarr) {
+			var imageid = common_functions.instagram_get_imageid(image);
+
+			for (var i = 0; i < objarr.length; i++) {
+				if (objarr[i].src.indexOf(imageid) > 0)
+					return objarr[i];
+			}
+
+			return null;
+		};
+
+		var get_maxsize_app = function(item) {
+			var images = [];
+
+			var parse_image = function (img) {
+				var candidates = img.image_versions2.candidates;
+				var maxsize = 0;
+				var maxobj = null;
+				for (var i = 0; i < candidates.length; i++) {
+					var size = candidates[i].width * candidates[i].height;
+					if (size > maxsize) {
+						maxsize = size;
+						maxobj = candidates[i];
+					}
+				}
+
+				var image = null;
+				if (maxobj !== null) {
+					image = {
+						src: maxobj.url,
+						caption: get_caption(item),
+						width: maxobj.width,
+						height: maxobj.height
+					};
+				}
+
+				if (image && img.video_versions) {
+					maxsize = 0;
+					maxobj = null;
+					var videos = img.video_versions;
+
+					for (var i = 0; i < videos.length; i++) {
+						var size = videos[i].width * videos[i].height;
+						if (size > maxsize) {
+							maxsize = size;
+							maxobj = videos[i];
+						}
+					}
+
+					if (maxobj !== null) {
+						image.video = maxobj.url;
+					}
+				}
+
+				if (image !== null) {
+					images.push(image);
+				}
+			};
+
+			if ("carousel_media" in item) {
+				for (var i = 0; i < item.carousel_media.length; i++) {
+					parse_image(item.carousel_media[i]);
+				}
+			} else {
+				parse_image(item);
+			}
+
+			return images;
+		};
+
+		var get_maxsize_graphql = function(media) {
+			var images = [];
+
+			var parse_image = function(node) {
+				var image = node.display_src;
+				if (!image)
+					image = node.display_url;
+
+				var width = 0, height = 0;
+				if (node.dimensions) {
+					width = node.dimensions.width;
+					height = node.dimensions.height;
+				}
+
+				if (!image)
+					return;
+
+				var found_image = image_in_objarr(image, images);
+				if (found_image) {
+					var found_size = found_image.width * found_image.height;
+					var our_size = width * height;
+
+					if (our_size <= found_size)
+						return;
+				}
+
+				images.push({
+					src: image,
+					video: node.video_url,
+					caption: get_caption(media),
+					width: width,
+					height: height
+				});
+			};
+
+			if (media.edge_sidecar_to_children) {
+				var edges = media.edge_sidecar_to_children.edges;
+				for (var i = 0; i < edges.length; i++) {
+					var edge = edges[i];
+					if (edge.node)
+						edge = edge.node;
+
+					parse_image(edge);
+				}
+			}
+
+			parse_image(media);
+
+			return images;
+		};
+
+		var image_to_obj = function(image) {
+			var extra = null;
+			if (image.caption)
+				extra = {caption: image.caption};
+
+			if (image.video) {
+				return [
+					{url: image.video, video: true, extra: extra},
+					{url: image.src, extra: extra}
+				];
+			} else {
+				return {
+					url: image.src,
+					extra: extra
+				};
+			}
+		};
+
+		var request_post_inner = function(post_url, image_url, cb) {
+			query_ig(post_url, function(json) {
+				if (!json) {
+					return cb(null);
+				}
+
+				try {
+					var media = json.entry_data.PostPage[0].graphql.shortcode_media;
+
+					mediainfo_api(media.id + "_" + media.owner.id, function(app_response) {
+						var images = [];
+
+						if (app_response !== null) {
+							images = get_maxsize_app(app_response.items[0]);
+						} else if (use_app_api) {
+							console_log("Unable to use API to find Instagram image, you may need to login to Instagram");
+						}
+
+						var images_graphql = get_maxsize_graphql(media);
+
+						if (images && images.length === images_graphql.length) {
+							for (var i = 0; i < images.length; i++) {
+								var app_size = images[i].width * images[i].height;
+								var graphql_size = images_graphql[i].width * images_graphql[i].height;
+
+								if (graphql_size > app_size) {
+									//console_log("Using graphql image", images[i], images_graphql[i]);
+									images[i] = images_graphql[i];
+								}
+							}
+						} else {
+							images = images_graphql;
+						}
+
+						if (image_url) {
+							var image = image_in_objarr(image_url, images);
+							if (image)
+								return cb(image_to_obj(image));
+						} else {
+							return cb(images);
+						}
+
+						cb(null);
+					});
+				} catch (e) {
+					console_error(e);
+					cb(null);
+				}
+			});
+
+			return {
+				waiting: true
+			};
+		};
+
+		var request_post = function(post_url, image_url, cb) {
+			return request_post_inner(post_url, image_url, cb);
+		};
+
+		var request_stories = function(url, image_url, cb, all) {
+			var username = url.replace(/.*\/stories\/+([^/]*).*$/, "$1");
+			if (username === url)
+				return null;
+
+			username_to_uid(username, function(uid) {
+				if (!uid) {
+					return cb(null);
+				}
+
+				var image_id = common_functions.instagram_get_imageid(image_url);
+				story_api(image_id, uid, function(result) {
+					if (!result) {
+						return cb(null);
+					}
+
+					var images = result;
+					if (!(images instanceof Array))
+						images = [images];
+
+					if (image_id) {
+						var image = image_in_objarr(image_url, images);
+						if (!image)
+							return cb(null);
+
+						return cb(image_to_obj(image));
+					} else {
+						return cb(images);
+					}
+				});
+			});
+
+			return {
+				waiting: true
+			};
+		};
+
+		var parse_single_el_info = function(info, cb) {
+			var retval;
+
+			if (info.type === "post") {
+				if (info.all)
+					info.image = null;
+
+				retval = request_post(info.url, info.image, cb);
+				if (retval)
+					return retval;
+			} else if (info.type === "profile") {
+				retval = request_profile(info.url, cb);
+				if (retval)
+					return retval;
+			} else if (info.type === "story") {
+				if (info.all)
+					info.image = null;
+
+				retval = request_stories(info.url, info.image, cb);
+				if (retval)
+					return retval;
+			}
+
+			return retval;
+		};
+
+		var parse_el_info = function(info, cb) {
+			var retval;
+
+			for (var i = 0; i < info.length; i++) {
+				retval = parse_single_el_info(info[i], cb);
+				if (retval)
+					return retval;
+			}
+
+			return retval;
+		};
+
+		return parse_el_info(info, cb);
+	};
+
+	common_functions.instagram_find_el_info = function(document, element, host_url) {
+		var possible_infos = [];
+
+		// check for links first
+		var current = element;
+		while ((current = current.parentElement)) {
+			if (current.tagName !== "A")
+				continue;
+
+			if (current.href.match(/:\/\/[^/]+\/+(?:[^/]+\/+)?p\//)) {
+				// link to post
+				possible_infos.push({
+					type: "post",
+					subtype: "link",
+					url: current.href,
+					image: element.src,
+					element: current
+				});
+			} else if (current.href.match(/:\/\/[^/]+\/+[^/]+(?:\/+(?:[?#].*)?)?$/)) {
+				// link to profile (e.g. for someone who comments on a post)
+				possible_infos.push({
+					type: "profile",
+					subtype: "link",
+					url: current.href,
+					element: current
+				});
+			}
+		}
+
+		current = element;
+		while ((current = current.parentElement)) {
+			// profile image
+			// a better way would be to check the username from the h2 > a (title, href, innerText)
+			if (current.tagName === "HEADER") {
+				var sharedData = null;
+
+				// Still keep this code because this way we can know it exists?
+				// We can't use this directly because the user might have switched the profile they're currently viewing
+				if (true) {
+					var scripts = document.getElementsByTagName("script");
+					for (var i = 0; i < scripts.length; i++) {
+						if (scripts[i].innerText.match(/^ *window\._sharedData/)) {
+							sharedData = scripts[i].innerText.replace(/^ *window\._sharedData *= *({.*}) *;.*?/, "$1");
+						}
+					}
+
+					if (!sharedData) {
+						console_error("Shared data not found");
+						continue;
+					} else {
+						sharedData = JSON_parse(sharedData);
+					}
+				}
+
+				var url = host_url;
+				if (url.match(/:\/\/[^/]+\/+p\//)) {
+					// There are 2 h1's, the first should be the username (the second is the person's "name")
+					var username = current.querySelector("h1").innerText;
+					url = "https://www.instagram.com/" + username;//common_functions.instagram_username_from_sharedData(sharedData);
+				}
+
+				possible_infos.push({
+					type: "profile",
+					subtype: "page",
+					url: url,
+					element: current
+				});
+			}
+
+			// popup
+			if ((current.tagName === "DIV" && current.getAttribute("role") === "dialog") ||
+				// post page
+				(current.tagName === "BODY" && host_url.match(/:\/\/[^/]*\/+(?:[^/]+\/+)?p\//))) {
+				possible_infos.push({
+					type: "post",
+					subtype: current.tagName === "BODY" ? "page" : "popup",
+					url: host_url,
+					image: element.src,
+					element: current
+				});
+			}
+
+			// stories
+			if (current.tagName === "BODY" && host_url.match(/:\/\/[^/]*\/+stories\/+([^/]*)\/*(?:[?#].*)?$/)) {
+				possible_infos.push({
+					type: "story",
+					url: host_url,
+					image: element.src,
+					element: current
+				});
+			}
+		}
+
+		return possible_infos;
 	};
 
 	var get_domain_nosub = function(domain) {
@@ -4017,6 +4790,9 @@ var $$IMU_EXPORT$$;
 
 			if (extra.page && options && options.cb && options.allow_thirdparty && options.do_request) {
 				var get_imageid = function(url) {
+					if (!url)
+						return url;
+
 					var match = url.match(/\/[0-9]{4}\/+(?:[0-9]{2}\/+){2}([0-9]{10,}_[0-9]+)\.[^/.]*(?:[?#].*)?$/);
 					if (!match)
 						return null;
@@ -5948,6 +6724,7 @@ var $$IMU_EXPORT$$;
 			(domain === "medinaa.archolda.com" && src.indexOf("/ime/") >= 0) ||
 			(domain_nowww === "londonsvenskar.com" && src.indexOf("/files/") >= 0) ||
 			(domain === "ia.eferrit.com" && src.indexOf("/ia/") >= 0) ||
+			(domain_nowww === "dokkaebi.tv" && src.indexOf("/file/") >= 0) ||
 			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|images|photos|blogs.dir)|\/+uploads)\//.test(src)
 			/*src.indexOf("/wp/uploads/") >= 0*/
 			) {
@@ -11493,21 +12270,6 @@ var $$IMU_EXPORT$$;
 			src.match(/\/[0-9]+_[0-9a-f]+(?:_[a-z0-9]*)?\.[a-z]+.*$/) &&
 			options && options.do_request && options.cb) {
 
-			function get_flickr_cookies(cb) {
-				if (cookie_cache.has("flickr")) {
-					return cb(cookie_cache.get("flickr"));
-				}
-
-				if (options.get_cookies) {
-					options.get_cookies("https://www.flickr.com/", function(cookies) {
-						cookie_cache.set("flickr", cookies);
-						cb(cookies);
-					});
-				} else {
-					return cb(null);
-				}
-			}
-
 			function do_flickr_request(url, cb) {
 				var headers = {
 					"Origin": "https://www.flickr.com",
@@ -11516,33 +12278,11 @@ var $$IMU_EXPORT$$;
 					"Cookie": ""
 				};
 
-				if (false && !settings.browser_cookies) {
-					headers.Cookie = "";
-				}
-
 				return options.do_request({
 					url: url,
 					method: "GET",
 					headers: headers,
 					onload: cb
-				});
-
-				get_flickr_cookies(function(cookies) {
-					var cookie_header = "";
-					if (cookies) {
-						cookie_header = cookies_to_httpheader(cookies);
-					}
-
-					options.do_request({
-						url: url,
-						method: "GET",
-						headers: {
-							"Origin": "",
-							"Referer": "",
-							"Cookie": cookie_header
-						},
-						onload: cb
-					});
 				});
 			}
 
@@ -14348,585 +15088,8 @@ var $$IMU_EXPORT$$;
 			host_domain_nosub === "instagram.com" && options.element &&
 			options.do_request && options.cb) {
 			newsrc = (function() {
-				var query_ig = function(url, cb) {
-					url = url
-						.replace(/[?#].*/, "")
-						.replace(/([^/])$/, "$1/")
-						.replace(/^http:/, "https:")
-						.replace(/(:\/\/.*?)\/\/+/g, "$1/");
-
-					var cache_key = "instagram_sharedData_query:" + url;
-					api_cache.fetch(cache_key, cb, function (done) {
-						options.do_request({
-							method: "GET",
-							url: url,
-							onload: function (result) {
-								if (result.readyState !== 4)
-									return;
-
-								try {
-									var text = result.responseText;
-
-									var regex1 = /window\._sharedData = *(.*?);?<\/script>/;
-									var regex2 = /window\._sharedData *= *(.*?}) *;[\s]*window\.__initialDataLoaded/;
-
-									var match = text.match(regex1);
-									if (!match) {
-										match = text.match(regex2);
-									}
-
-									var parsed = JSON_parse(match[1]);
-
-									var regex3 = /window\.__additionalDataLoaded\(["'].*?["']\s*,\s*({.*?})\);?\s*<\/script>/;
-									match = text.match(regex3);
-									if (match) {
-										var parsed1 = JSON_parse(match[1]);
-										for (var key in parsed.entry_data) {
-											if (parsed.entry_data[key] instanceof Array) {
-												parsed.entry_data[key][0] = overlay_object(parsed.entry_data[key][0], parsed1);
-											}
-										}
-									}
-
-									done(parsed, 60 * 60);
-								} catch (e) {
-									console_log("instagram_sharedData", result);
-									console_error("instagram_sharedData", e);
-									done(null, false);
-								}
-							}
-						});
-					});
-				};
-
-				var uid_from_sharedData = function(json) {
-					if (json.id)
-						return json.id;
-					else {
-						var entrydata = json.entry_data;
-
-						if (entrydata.ProfilePage)
-							return entrydata.ProfilePage[0].graphql.user.id;
-						else
-							return entrydata.PostPage[0].graphql.shortcode_media.owner.id;
-					}
-				};
-
-				var username_to_uid = function(username, cb) {
-					if (username.match(/^http/)) {
-						username = username.replace(/^[a-z]+:\/\/[^/]*\/+(?:stories\/+)?([^/]*)(?:\/.*)?(?:[?#].*)?$/, "$1");
-					}
-
-					var cache_key = "instagram_username_uid:" + username;
-					api_cache.fetch(cache_key, cb, function (done) {
-						query_ig("https://www.instagram.com/" + username + "/", function (json) {
-							try {
-								done(uid_from_sharedData(json), 5*60);
-							} catch (e) {
-								console_error(cache_key, e);
-								done(null, false);
-							}
-						});
-					});
-				};
-
-				var uid_to_profile = function(uid, cb) {
-					var cache_key = "instagram_uid_to_profile:" + uid;
-					api_cache.fetch(cache_key, cb, function (done) {
-						var url = "https://i.instagram.com/api/v1/users/" + uid + "/info/";
-						app_api_call(url, function (result) {
-							if (result.readyState !== 4)
-								return;
-
-							try {
-								var parsed = JSON_parse(result.responseText).user;
-
-								done(parsed, 5 * 60);
-							} catch (e) {
-								console_log("instagram_uid_to_profile", result);
-								console_error("instagram_uid_to_profile", e);
-								done(null, false);
-							}
-						});
-					});
-				};
-
-				var get_instagram_cookies = function(cb) {
-					return cb(null);
-
-					var cookie_cache_key = "instagram";
-					if (cookie_cache.has(cookie_cache_key)) {
-						return cb(cookie_cache.get(cookie_cache_key));
-					}
-
-					if (options.get_cookies) {
-						options.get_cookies("https://www.instagram.com/", function(cookies) {
-							cookie_cache.set(cookie_cache_key, cookies);
-							cb(cookies);
-						});
-					} else {
-						cb(null);
-					}
-				};
-
-				var app_api_call = function (url, cb) {
-					var headers = {
-						"User-Agent": "Instagram 10.26.0 Android (23/6.0.1; 640dpi; 1440x2560; samsung; SM-G930F; herolte; samsungexynos8890; en_US)",
-						"X-IG-Capabilities": "36oD",
-						"Accept": "*/*",
-						"Accept-Language": "en-US,en;q=0.8"
-					};
-
-					get_instagram_cookies(function(cookies) {
-						if (cookies) {
-							headers.Cookie = cookies_to_httpheader(cookies);
-						}
-
-						options.do_request({
-							method: "GET",
-							url: url,
-							headers: headers,
-							onload: cb
-						});
-					});
-				};
-
-				var mediainfo_api = function(id, cb) {
-					var cache_key = "instagram_mediainfo:" + id;
-					api_cache.fetch(cache_key, cb, function (done) {
-						var url = "https://i.instagram.com/api/v1/media/" + id + "/info/";
-						app_api_call(url, function (result) {
-							if (result.readyState !== 4)
-								return;
-
-							if (result.status === 200) {
-								try {
-									var parsed = JSON_parse(result.responseText);
-
-									return done(parsed, 60 * 60);
-								} catch (e) {
-									console_log("instagram_mediainfo", result);
-									console_error("instagram_mediainfo", e);
-								}
-							}
-
-							done(null, false);
-						});
-					});
-				};
-
-				var story_api = function(picid, uid, cb) {
-					var cache_key = "instagram_story_pic:" + picid;
-					api_cache.fetch(cache_key, cb, function (done) {
-						var story_cache_key = "instagram_story_uid:" + uid;
-						api_cache.fetch(story_cache_key, function(result) {
-							if (!result) {
-								return done(null, false);
-							}
-
-							try {
-								var items = result.items;
-								var our_item = null;
-
-								for (var i = 0; i < items.length; i++) {
-									var item_picid = get_imageid(items[i].image_versions2.candidates[0].url);
-
-									api_cache.set("instagram_story_pic:" + item_picid, deepcopy(items[i]), 6*60*60);
-
-									if (item_picid === picid) {
-										our_item = items[i];
-									}
-								}
-
-								if (our_item !== null)
-									return done(our_item, 6*60*60);
-								return done(null, false);
-							} catch (e) {
-								console_log(cache_key, result);
-								console_error(cache_key, e);
-								return done(null, false);
-							}
-						}, function (done) {
-							var url = "https://i.instagram.com/api/v1/feed/user/" + uid + "/reel_media/";
-							app_api_call(url, function(result) {
-								if (result.readyState !== 4)
-									return;
-
-								if (result.status !== 200) {
-									console_log(story_cache_key, result);
-									return done(null, false);
-								}
-
-								try {
-									var parsed = JSON_parse(result.responseText);
-
-									return done(parsed, 8);
-								} catch(e) {
-									console_log(story_cache_key, result);
-									console_error(story_cache_key, e);
-								}
-
-								return done(null, false);
-							});
-						});
-					});
-				};
-
-				var profile_to_url = function(profile) {
-					return profile.hd_profile_pic_url_info.url;
-				};
-
-				var request_profile = function(username) {
-					username_to_uid(username, function(uid) {
-						if (!uid) {
-							options.cb(null);
-							return;
-						}
-
-						uid_to_profile(uid, function(profile) {
-							if (!profile) {
-								options.cb(null);
-								return;
-							}
-
-							options.cb(profile_to_url(profile));
-						});
-					});
-
-					return {
-						waiting: true
-					};
-				};
-
-				var get_imageid = function(image_url) {
-					return image_url.replace(/.*\/([^/.]*)\.[^/.]*(?:[?#].*)?$/, "$1");
-				};
-
-				var parse_caption = function(caption) {
-					if (typeof caption === "string")
-						return caption;
-
-					if (caption.text)
-						return caption.text;
-
-					if (caption.edges)
-						return caption.edges[0].node.text;
-
-					return null;
-				};
-
-				var get_caption = function(item) {
-					if (item.caption)
-						return parse_caption(item.caption);
-
-					if (item.title)
-						return parse_caption(item.title);
-
-					if (item.edge_media_to_caption)
-						return parse_caption(item.edge_media_to_caption);
-
-					return undefined;
-				};
-
-				var image_in_objarr = function(image, objarr) {
-					var imageid = get_imageid(image);
-
-					for (var i = 0; i < objarr.length; i++) {
-						if (objarr[i].src.indexOf(imageid) > 0)
-							return objarr[i];
-					}
-
-					return null;
-				};
-
-				var get_maxsize_app = function(item) {
-					var images = [];
-
-					var parse_image = function (img) {
-						var candidates = img.image_versions2.candidates;
-						var maxsize = 0;
-						var maxobj = null;
-						for (var i = 0; i < candidates.length; i++) {
-							var size = candidates[i].width * candidates[i].height;
-							if (size > maxsize) {
-								maxsize = size;
-								maxobj = candidates[i];
-							}
-						}
-
-						var image = null;
-						if (maxobj !== null) {
-							image = {
-								src: maxobj.url,
-								caption: get_caption(item),
-								width: maxobj.width,
-								height: maxobj.height
-							};
-						}
-
-						if (image && img.video_versions) {
-							maxsize = 0;
-							maxobj = null;
-							var videos = img.video_versions;
-
-							for (var i = 0; i < videos.length; i++) {
-								var size = videos[i].width * videos[i].height;
-								if (size > maxsize) {
-									maxsize = size;
-									maxobj = videos[i];
-								}
-							}
-
-							if (maxobj !== null) {
-								image.video = maxobj.url;
-							}
-						}
-
-						if (image !== null) {
-							images.push(image);
-						}
-					};
-
-					if ("carousel_media" in item) {
-						for (var i = 0; i < item.carousel_media.length; i++) {
-							parse_image(item.carousel_media[i]);
-						}
-					} else {
-						parse_image(item);
-					}
-
-					return images;
-				};
-
-				var get_maxsize_graphql = function(media) {
-					var images = [];
-
-					var parse_image = function(node) {
-						var image = node.display_src;
-						if (!image)
-							image = node.display_url;
-
-						var width = 0, height = 0;
-						if (node.dimensions) {
-							width = node.dimensions.width;
-							height = node.dimensions.height;
-						}
-
-						if (!image)
-							return;
-
-						var found_image = image_in_objarr(image, images);
-						if (found_image) {
-							var found_size = found_image.width * found_image.height;
-							var our_size = width * height;
-
-							if (our_size <= found_size)
-								return;
-						}
-
-						images.push({
-							src: image,
-							video: node.video_url,
-							caption: get_caption(media),
-							width: width,
-							height: height
-						});
-					};
-
-					parse_image(media);
-
-					if (media.edge_sidecar_to_children) {
-						var edges = media.edge_sidecar_to_children.edges;
-						for (var i = 0; i < edges.length; i++) {
-							var edge = edges[i];
-							if (edge.node)
-								edge = edge.node;
-
-							parse_image(edge);
-						}
-					}
-
-					return images;
-				};
-
-				var image_to_obj = function(image) {
-					var extra = null;
-					if (image.caption)
-						extra = {caption: image.caption};
-
-					if (image.video) {
-						return [
-							{url: image.video, video: true, extra: extra},
-							{url: image.src, extra: extra}
-						];
-					} else {
-						return {
-							url: image.src,
-							extra: extra
-						};
-					}
-				};
-
-				var request_post_inner = function(post_url, image_url, cb) {
-					query_ig(post_url, function(json) {
-						if (!json) {
-							cb(null);
-							return;
-						}
-
-						try {
-							var media = json.entry_data.PostPage[0].graphql.shortcode_media;
-
-							mediainfo_api(media.id + "_" + media.owner.id, function(app_response) {
-								var images = [];
-
-								if (app_response !== null) {
-									images = get_maxsize_app(app_response.items[0]);
-								} else {
-									console_log("Unable to use API to find Instagram image, you may need to login to Instagram");
-								}
-
-								var images_graphql = get_maxsize_graphql(media);
-
-								if (images && images.length === images_graphql.length) {
-									for (var i = 0; i < images.length; i++) {
-										var app_size = images[i].width * images[i].height;
-										var graphql_size = images_graphql[i].width * images_graphql[i].height;
-
-										if (graphql_size > app_size) {
-											images[i] = images_graphql[i];
-										}
-									}
-								} else {
-									images = images_graphql;
-								}
-
-								var image = image_in_objarr(image_url, images);
-								if (image)
-									return cb(image_to_obj(image));
-
-								cb(null);
-							});
-						} catch (e) {
-							console_error(e);
-							cb(null);
-						}
-					});
-
-					return {
-						waiting: true
-					};
-				};
-
-				var request_post = function(post_url, image_url) {
-					return request_post_inner(post_url, image_url, options.cb);
-				};
-
-				var request_stories = function(url, image_url) {
-					var username = url.replace(/.*\/stories\/+([^/]*).*$/, "$1");
-					if (username === url)
-						return null;
-
-					username_to_uid(username, function(uid) {
-						if (!uid) {
-							return options.cb(null);
-						}
-
-						var image_id = get_imageid(image_url);
-						story_api(image_id, uid, function(result) {
-							if (!result) {
-								return options.cb(null);
-							}
-
-							var images = get_maxsize_app(result);
-							if (!images) {
-								return options.cb(null);
-							}
-
-							var image = image_in_objarr(image_url, images);
-							if (!image)
-								return options.cb(null);
-
-							return options.cb(image_to_obj(image));
-						});
-					});
-
-					return {
-						waiting: true
-					};
-				}
-
-				var current = options.element;
-				while ((current = current.parentElement)) {
-					if (current.tagName !== "A")
-						continue;
-
-					if (current.href.match(/:\/\/[^/]+\/+(?:[^/]+\/+)?p\//)) {
-						newsrc = request_post(current.href, options.element.src);
-						if (newsrc)
-							return newsrc;
-					} else if (current.href.match(/:\/\/[^/]+\/+[^/]+(?:\/+(?:[?#].*)?)?$/)) {
-						newsrc = request_profile(current.href);
-						if (newsrc)
-							return newsrc;
-					}
-				}
-
-				current = options.element;
-				while ((current = current.parentElement)) {
-					if (current.tagName === "HEADER") {
-						var sharedData = null;
-
-						if (true) {
-							var scripts = document.getElementsByTagName("script");
-							for (var i = 0; i < scripts.length; i++) {
-								if (scripts[i].innerText.match(/^ *window\._sharedData/)) {
-									sharedData = scripts[i].innerText.replace(/^ *window\._sharedData *= *({.*}) *;.*?/, "$1");
-								}
-							}
-
-							if (!sharedData) {
-								console_error("Shared data not found");
-								continue;
-							} else {
-								sharedData = JSON_parse(sharedData);
-							}
-						}
-
-						query_ig(options.host_url, function (sharedData) {
-							if (!sharedData) {
-								console_error("Shared data not found");
-								return;
-							}
-
-							uid_to_profile(uid_from_sharedData(sharedData), function (profile) {
-								if (!profile) {
-									options.cb(null);
-									return;
-								}
-
-								options.cb(profile_to_url(profile));
-							});
-						});
-
-						return {
-							waiting: true
-						};
-					}
-
-					if ((current.tagName === "DIV" && current.getAttribute("role") === "dialog") ||
-						(current.tagName === "BODY" && options.host_url.match(/:\/\/[^/]*\/+(?:[^/]+\/+)?p\//))) {
-						newsrc = request_post(options.host_url, options.element.src);
-						if (newsrc)
-							return newsrc;
-					}
-
-					if (current.tagName === "BODY" && options.host_url.match(/:\/\/[^/]*\/+stories\/+([^/]*)\/*(?:[?#].*)?$/)) {
-						newsrc = request_stories(options.host_url, options.element.src);
-						if (newsrc)
-							return newsrc;
-					}
-				}
+				var info = common_functions.instagram_find_el_info(document, options.element, options.host_url);
+				return common_functions.instagram_parse_el_info(api_cache, options.do_request, options.rule_specific.instagram_use_app_api, info, options.cb);
 			})();
 			if (newsrc !== undefined)
 				return newsrc;
@@ -20833,43 +20996,6 @@ var $$IMU_EXPORT$$;
 				return {
 					waiting: true
 				};
-
-				options.do_request({
-					url: page,
-					method: "GET",
-					onload: function(resp) {
-						if (resp.readyState !== 4) {
-							return;
-						}
-
-						if (resp.status !== 200)
-							return options.cb(null);
-
-						var obj = {
-							url: src,
-							extra: {
-								page: page
-							}
-						};
-
-						var match = resp.responseText.match(/window\.PxPreloadedData *= *({.*?});\s*</);
-						if (match) {
-							var data = JSON_parse(match[1]).photo;
-							obj.url = data.images[data.images.length - 1].url;
-						} else if (false) {
-							var match = resp.responseText.match(/<meta *content='(https?:\/\/drscdn[^']*)' *property='og:image'/);
-							if (match) {
-								obj.url = decode_entities(match[1]);
-							}
-						}
-
-						options.cb(obj);
-					}
-				});
-
-				return {
-					waiting: true
-				};
 			}
 		}
 
@@ -21914,8 +22040,8 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "kpopping.com") {
-			return src.replace(/\/uploads\/+documents\/+[^/]+\/+([^/]+?)(?:\.(?:keep|crop)\..*)?(?:[?#].*)?$/,
-							   "/uploads/documents/$1");
+			return src
+				.replace(/\/uploads\/+documents\/+[^/]+\/+x?([^/]+?)(?:\.(?:keep|crop)\..*)?(?:[?#].*)?$/, "/uploads/documents/$1");
 		}
 
 		if (domain_nosub === "tin247.com" &&
@@ -29113,10 +29239,10 @@ var $$IMU_EXPORT$$;
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+opengraph\.jpg\?(?:.*&)?composition=([^&]+).*?$/, "$1");
 			if (newsrc !== src) {
 				try {
-					var json = JSON.parse(decodeURIComponent(newsrc));
+					var json = JSON_parse(decodeURIComponent(newsrc));
 					return json.artwork.url;
 				} catch (e) {
-					console.error(e);
+					console_error(e);
 					return src;
 				}
 			}
@@ -29413,6 +29539,41 @@ var $$IMU_EXPORT$$;
 			return src
 				.replace(/(\/data\/+photos\/+(?:[0-9]\/+){3}[0-9]+)\.(?:thumbnail|profile(_non_retina)?|big|list_premium)\./, "$1.huge.")
 				.replace(/(\/data\/+logos\/+(?:[0-9]\/+){3}[0-9]+)\.profile_non_retina\./, "$1.profile.");
+		}
+
+		if (domain_nowww === "kabe-uchiroom.com") {
+			return src
+				.replace(/\/upfile_image\/+([0-9]+)([0-9])(\/+[^/?]+\.[^/.?]+)$/, "/accounts/upfile/$2/$1$2/$3")
+				.replace(/(\/upfile_image\/.*?)(?:[?#].*)?$/, "$1");
+		}
+
+		if (domain_nowww === "mangadex.cc") {
+			newsrc = src.replace(/(\/images\/+manga\/+[0-9]+)\.thumb(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+			if (newsrc !== src)
+				return add_extensions_jpeg(newsrc);
+
+			match = src.match(/\/images\/+manga\/+([0-9]+)\./);
+			if (match) {
+				return {
+					url: src,
+					extra: {
+						page: "https://mangadex.cc/title/" + match[1] + "/"
+					}
+				};
+			}
+		}
+
+		if (domain_nowww === "ipetgroup.com") {
+			return src.replace(/(\/photo\/+[0-9]+_[0-9]+)_[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1_99999999$2");
+		}
+
+		if (domain === "cdn.aarp.net") {
+			return src.replace(/\.imgcache\.rev[0-9a-f]{20,}\.web(?:\.[0-9]+\.[0-9]+)?(\.[^/.]+)(?:[?#].*)?$/, "$1");
+		}
+
+		if (domain === "img.particlenews.com") {
+			if (/\/image\.php\?/.test(src))
+				return remove_queries(src, ["type"]);
 		}
 
 
@@ -30155,6 +30316,26 @@ var $$IMU_EXPORT$$;
 			document = options.document;
 
 
+		var new_image = function(src) {
+			var img = document.createElement("img");
+			img.src = src;
+			return img;
+		};
+
+		var new_video = function(src) {
+			var video = document.createElement("video");
+			video.src = src;
+			return video;
+		};
+
+		var new_media = function(src, is_video) {
+			if (is_video)
+				return new_video(src);
+			else
+				return new_image(src);
+		};
+
+
 		if (host_domain_nosub === "imgur.com" && host_domain !== "i.imgur.com") {
 			return {
 				gallery: function(el, nextprev) {
@@ -30228,7 +30409,7 @@ var $$IMU_EXPORT$$;
 						return find_from_api(images) || find_from_el();
 					};
 
-					if (!window.runSlots) {
+					if (!window.runSlots && options.do_request) {
 						common_functions.fetch_imgur_webpage(options.do_request, real_api_cache, undefined, options.host_url, function(data) {
 							if (!data || !data.imageinfo) {
 								return options.cb(find_next_el());
@@ -30255,8 +30436,68 @@ var $$IMU_EXPORT$$;
 			};
 		}
 
+		if (host_domain_nosub === "instagram.com") {
+			return {
+				gallery: function(el, nextprev) {
+					if (!el)
+						return null;
+
+					if (!options.do_request)
+						return "default";
+
+					var query_el = el;
+					if (!el.parentElement) { // check if it's a fake element returned by this function
+						query_el = options.element;
+					}
+
+					var info = common_functions.instagram_find_el_info(document, query_el, options.host_url);
+					var can_apply = false;
+					var use_default_after = false;
+					for (var i = 0; i < info.length; i++) {
+						if ((info[i].type === "post" && (info[i].subtype === "popup" || info[i].subtype === "page" || (info[i].subtype === "link" && options.rule_specific.instagram_gallery_postlink && !options.is_counting))) ||
+						     info[i].type === "story") {
+							info[i].all = true;
+							can_apply = true;
+
+							if (info[i].type === "post" && info[i].subtype === "link")
+								use_default_after = true;
+						}
+					}
+
+					if (can_apply) {
+						var our_imageid = common_functions.instagram_get_imageid(el.src);
+						var add = nextprev ? 1 : -1;
+						common_functions.instagram_parse_el_info(real_api_cache, options.do_request, options.rule_specific.instagram_use_app_api, info, function(data) {
+							for (var i = nextprev ? 0 : 1; i < data.length - (nextprev ? 1 : 0); i++) {
+								var current_imageid = common_functions.instagram_get_imageid(data[i].src);
+								var current_videoid = "null";
+								if (data[i].video) {
+									current_videoid = common_functions.instagram_get_imageid(data[i].video);
+								}
+
+								if (our_imageid === current_imageid || our_imageid === current_videoid) {
+									return options.cb(new_media(data[i + add].video || data[i + add].src, data[i + add].video));
+								}
+							}
+
+							if (!use_default_after)
+								return options.cb(null);
+							else
+								return options.cb(get_next_in_gallery(options.element, nextprev));
+						});
+
+						return "waiting";
+					}
+
+					return "default";
+				}
+			};
+		}
+
 		return null;
 	}
+
+	var get_next_in_gallery = null;
 
 	var fullurl_obj = function(currenturl, obj) {
 		if (!obj)
@@ -30340,53 +30581,26 @@ var $$IMU_EXPORT$$;
 			return true;
 
 		return false;
-
-		for (var i = 0; i < obj.length; i++) {
-			// handle !obj.url?
-			if (obj[i].url === url)
-				return true;
-		}
-
-		return false;
 	};
 
-	var bigimage_recursive = function(url, options) {
-		if (!url)
-			return url;
+	var get_bigimage_extoptions_first = function(options) {
+		if (!("allow_thirdparty" in options)) {
+			options.allow_thirdparty = (settings["allow_thirdparty"] + "") === "true";
+		 }
 
-		if (!options)
-			options = {};
+		 if (!("allow_apicalls" in options)) {
+			 options.allow_apicalls = (settings["allow_apicalls"] + "") === "true";
+		 }
 
-		if (is_userscript || is_extension) {
-			 if (!("allow_thirdparty" in options)) {
-				options.allow_thirdparty = (settings["allow_thirdparty"] + "") === "true";
-			 }
-
-			 if (!("allow_apicalls" in options)) {
-				 options.allow_apicalls = (settings["allow_apicalls"] + "") === "true";
-			 }
-
-			 if (!("allow_thirdparty_libs" in options)) {
-				options.allow_thirdparty_libs = (settings["allow_thirdparty_libs"] + "") === "true";
-			}
+		 if (!("allow_thirdparty_libs" in options)) {
+			options.allow_thirdparty_libs = (settings["allow_thirdparty_libs"] + "") === "true";
 		}
 
-		for (var option in bigimage_recursive.default_options) {
-			if (!(option in options)) {
-				options[option] = deepcopy(bigimage_recursive.default_options[option]);
-				continue;
-			}
+		return options;
+	};
 
-			if (typeof options[option] === "object" && !(options[option] instanceof Array)) {
-				for (var rsoption in bigimage_recursive.default_options[option]) {
-					if (!(rsoption in options[option])) {
-						options[option][rsoption] = deepcopy(bigimage_recursive.default_options[option][rsoption]);
-					}
-				}
-			}
-		}
-
-		if (is_userscript || is_extension) {
+	var get_bigimage_extoptions = function(options) {
+		if ("exclude_problems" in options) {
 			for (var option in settings) {
 				if (option in option_to_problems) {
 					var problem = option_to_problems[option];
@@ -30401,20 +30615,55 @@ var $$IMU_EXPORT$$;
 					}
 				}
 			}
+		}
 
-			if (!options.allow_apicalls) {
-				options.do_request = null;
+		if (!options.allow_apicalls) {
+			options.do_request = null;
+		}
+
+		options.rule_specific.imgur_source = settings.imgur_source;
+		options.rule_specific.instagram_use_app_api = settings.instagram_use_app_api;
+		options.rule_specific.instagram_gallery_postlink = settings.instagram_gallery_postlink;
+		options.rule_specific.tumblr_api_key = settings.tumblr_api_key;
+
+		// Doing this here breaks things like Imgur, which will redirect to an image if a video was opened in a new tab
+		if (false && !settings.allow_video) {
+			options.exclude_videos = true;
+		} else {
+			options.exclude_videos = false;
+		}
+
+		return options;
+	};
+
+	var bigimage_recursive = function(url, options) {
+		if (!url)
+			return url;
+
+		if (!options)
+			options = {};
+
+		if (is_userscript || is_extension) {
+			get_bigimage_extoptions_first(options);
+		}
+
+		for (var option in bigimage_recursive.default_options) {
+			if (!(option in options)) {
+				options[option] = deepcopy(bigimage_recursive.default_options[option]);
+				continue;
 			}
 
-			options.rule_specific.imgur_source = settings.imgur_source;
-			options.rule_specific.tumblr_api_key = settings.tumblr_api_key;
-
-			// Doing this here breaks things like Imgur, which will redirect to an image if a video was opened in a new tab
-			if (false && !settings.allow_video) {
-				options.exclude_videos = true;
-			} else {
-				options.exclude_videos = false;
+			if (is_iterable_object(options[option])) {
+				for (var rsoption in bigimage_recursive.default_options[option]) {
+					if (!(rsoption in options[option])) {
+						options[option][rsoption] = deepcopy(bigimage_recursive.default_options[option][rsoption]);
+					}
+				}
 			}
+		}
+
+		if (is_userscript || is_extension) {
+			get_bigimage_extoptions(options);
 		}
 
 		var waiting = false;
@@ -31334,7 +31583,7 @@ var $$IMU_EXPORT$$;
 					trackingprotection_failsafe: true,
 					onprogress: function(resp) {
 						// 2 = HEADERS_RECEIVED
-						if (resp.readyState >= 2) {
+						if (resp.readyState >= 2 && resp.responseHeaders) {
 							if (req && req.abort)
 								req.abort();
 							onload_cb(resp);
@@ -31508,7 +31757,21 @@ var $$IMU_EXPORT$$;
 		return keys;
 	}
 
+	function update_dark_mode() {
+		if (!is_maxurl_website && !is_options_page) {
+			return;
+		}
+
+		if (settings.dark_mode) {
+			document.documentElement.classList.add("dark");
+		} else {
+			document.documentElement.classList.remove("dark");
+		}
+	}
+
 	function do_options() {
+		update_dark_mode();
+
 		var recording_keys = false;
 		var options_chord = [];
 		var current_options_chord = [];
@@ -31550,15 +31813,19 @@ var $$IMU_EXPORT$$;
 		document.addEventListener('keydown', function(event) {
 			update_options_chord(event, true);
 
-			event.preventDefault();
-			return false;
+			if (recording_keys) {
+				event.preventDefault();
+				return false;
+			}
 		});
 
 		document.addEventListener('keyup', function(event) {
 			update_options_chord(event, false);
 
-			event.preventDefault();
-			return false;
+			if (recording_keys) {
+				event.preventDefault();
+				return false;
+			}
 		});
 
 		var options_el = document.getElementById("options");
@@ -33108,7 +33375,7 @@ var $$IMU_EXPORT$$;
 					do_abort();
 				}
 
-				if (incomplete_request && resp.readyState >= 2) {
+				if (incomplete_request && resp.readyState >= 2 && resp.responseHeaders) {
 					do_abort();
 					onload_cb(resp);
 				}
@@ -33232,6 +33499,7 @@ var $$IMU_EXPORT$$;
 		var popups = [];
 		var popup_obj = null;
 		var popup_el = null;
+		var popup_orig_el = null;
 		var popup_el_automatic = false;
 		var popups_active = false;
 		var popup_trigger_reason = null;
@@ -34252,7 +34520,7 @@ var $$IMU_EXPORT$$;
 
 								update_imagestotal();
 							} else {
-								count_gallery(leftright, undefined, function(total) {
+								count_gallery(leftright, undefined, undefined, function(total) {
 									if (!leftright) {
 										prev_images = total;
 										cached_previmages = prev_images;
@@ -34268,7 +34536,7 @@ var $$IMU_EXPORT$$;
 					};
 
 					var add_leftright_gallery_button_if_valid = function(leftright) {
-						wrap_gallery_cycle(leftright, undefined, function(el) {
+						wrap_gallery_cycle(leftright, undefined, undefined, function(el) {
 							if (is_valid_el(el)) {
 								add_leftright_gallery_button(leftright);
 							}
@@ -34740,14 +35008,6 @@ var $$IMU_EXPORT$$;
 			}
 
 			cb(data.data.img, data.data.newurl, obj);
-			return;
-
-			var newobj = deepcopy(obj);
-			if (orig_url && obj_indexOf(orig_url) < 0) {
-				newobj.push(fillobj(orig_url)[0]);
-			}
-
-			check_image_get(newobj, cb, processing);
 		}
 
 		function getUnit(unit) {
@@ -34983,6 +35243,15 @@ var $$IMU_EXPORT$$;
 					return false;
 				}
 
+				if (!(src in sources)) {
+					sources[src] = {
+						count: 0,
+						src: src,
+						el: el,
+						id: id++,
+					};
+				}
+
 				// blank images
 				// https://www.harpersbazaar.com/celebrity/red-carpet-dresses/g7565/selena-gomez-style-transformation/?slide=2
 				var el_style = null;
@@ -35016,6 +35285,10 @@ var $$IMU_EXPORT$$;
 					return false;
 				}
 
+				if (!("imu" in sources[src])) {
+					sources[src].imu = imucheck === true;
+				}
+
 				if (settings.mouseover_only_links) {
 					if (!el)
 						return false;
@@ -35041,20 +35314,7 @@ var $$IMU_EXPORT$$;
 					layers[options.layer].push(src);
 				}
 
-				if (!(src in sources)) {
-					sources[src] = {
-						count: 1,
-						src: src,
-						el: el,
-						id: id++,
-						imu: imucheck === true
-					};
-
-					if (options.isbg)
-						sources[src].isbg = options.isbg;
-				} else {
-					sources[src].count++;
-				}
+				sources[src].count++;
 
 				return true;
 			}
@@ -35071,15 +35331,16 @@ var $$IMU_EXPORT$$;
 
 					if (el_src) {
 						var src = norm(el_src);
-						if (addImage(src, el, { layer: layer })) {
-							if (!el.srcset) {
-								if (el.tagName === "VIDEO") {
-									sources[src].width = el.videoWidth;
-									sources[src].height = el.videoHeight;
-								} else {
-									sources[src].width = el.naturalWidth;
-									sources[src].height = el.naturalHeight;
-								}
+
+						addImage(src, el, { layer: layer });
+
+						if (!el.srcset) {
+							if (el.tagName === "VIDEO") {
+								sources[src].width = el.videoWidth;
+								sources[src].height = el.videoHeight;
+							} else {
+								sources[src].width = el.naturalWidth;
+								sources[src].height = el.naturalHeight;
 							}
 						}
 					}
@@ -35419,7 +35680,7 @@ var $$IMU_EXPORT$$;
 				return getfirstsource(sources);
 		}
 
-		function get_next_in_gallery(el, nextprev) {
+		get_next_in_gallery = function(el, nextprev) {
 			if (!el)
 				return null;
 
@@ -35671,15 +35932,21 @@ var $$IMU_EXPORT$$;
 		}
 
 		function find_els_at_point(xy, els, prev) {
+			// test for pointer-events: none: https://www.shacknews.com/article/114834/should-you-choose-vulkan-or-directx-12-in-red-dead-redemption-2
+
+			if (false && _nir_debug_)
+				console_log("find_els_at_point", deepcopy(xy), deepcopy(els), deepcopy(prev));
+
 			if (!prev) {
 				prev = [];
 			}
 
 			var ret = [];
+			var afterret = [];
 
 			if (!els) {
 				els = document.elementsFromPoint(xy[0], xy[1]);
-				ret = els;
+				afterret = els;
 			}
 
 			for (var i = 0; i < els.length; i++) {
@@ -35690,6 +35957,27 @@ var $$IMU_EXPORT$$;
 
 				prev.push(el);
 
+				// FIXME: should we stop checking if not in bounding client rect?
+				// this would depend on the fact that children are always within the bounding rect
+				//  - probably not, there are cases where the parent div has a size of 0, but children have proper sizes
+				if (el.children && el.children.length > 0) {
+					// reverse, because the last element is (usually) the highest z
+					var newchildren = [];
+					for (var j = el.children.length - 1; j >= 0; j--) {
+						newchildren.push(el.children[j]);
+					}
+
+					var newels = find_els_at_point(xy, newchildren, prev);
+					for (var j = 0; j < newels.length; j++) {
+						var newel = newels[j];
+						//console_log("about to add", newel, deepcopy(ret))
+						if (ret.indexOf(newel) < 0) {
+							//console_log("adding", newel);
+							ret.push(newel);
+						}
+					}
+				}
+
 				var rect = el.getBoundingClientRect();
 				if (rect && rect.width > 0 && rect.height > 0 &&
 					rect.left <= xy[0] && rect.right >= xy[0] &&
@@ -35697,54 +35985,17 @@ var $$IMU_EXPORT$$;
 					ret.indexOf(el) < 0) {
 					ret.push(el);
 				}
-
-				// FIXME: should we stop checking if not in bounding client rect?
-				// this would depend on the fact that children are always within the bounding rect
-
-				if (el.children && el.children.length > 0) {
-					var newels = find_els_at_point(xy, el.children, prev);
-					for (var j = 0; j < newels.length; j++) {
-						var newel = newels[j];
-						if (ret.indexOf(newel) < 0)
-							ret.push(newel);
-					}
-				}
 			}
+
+			for (var i = 0; i < afterret.length; i++) {
+				if (ret.indexOf(afterret[i]) < 0)
+					ret.push(afterret[i]);
+			}
+
+			if (_nir_debug_ && ret.length > 0)
+				console_log("find_els_at_point (ret)", els, ret, xy);
 
 			return ret;
-		}
-
-		function find_els_at_el(el) {
-			return [el];
-
-			var rect = el.getBoundingClientRect();
-			//console.log("find_els_at_el", el, rect);
-			if (rect && rect.width > 0 && rect.height > 0) {
-				var point = [rect.left + rect.width / 2, rect.top + rect.height / 2];
-				var pointels = find_els_at_point(point);
-
-				// ensure el is the first element
-				var index = pointels.indexOf(el);
-				if (index > 0) {
-					pointels.splice(index, 1);
-				}
-
-				if (pointels.indexOf(el) < 0)
-					pointels.unshift(el);
-
-				var newels = [];
-
-				for (var i = 0; i < pointels.length; i++) {
-					if (!is_popup_el(pointels[i]))
-						newels.push(pointels[i]);
-				}
-
-				//console.log("find_els_at_el", newels);
-
-				return newels;
-			}
-
-			return [el];
 		}
 
 		function trigger_popup(is_contextmenu) {
@@ -35798,6 +36049,9 @@ var $$IMU_EXPORT$$;
 					popup_el_automatic = true;
 
 				popup_el = source.el;
+				if (popup_el.parentElement) // check if it's a fake element returned by a gallery helper
+					popup_orig_el = popup_el;
+
 				makePopup(source_imu, source.src, processing, data);
 			});
 		}
@@ -35919,12 +36173,14 @@ var $$IMU_EXPORT$$;
 							}
 
 							finalcb(newurl1, data.obj, data);
-							return;
-							// why?
-							if (newurl == source.src) {
-								realcb(obj, data);
-							} else {
-								finalcb(newurl, data);
+
+							if (false) {
+								// why?
+								if (newurl == source.src) {
+									realcb(obj, data);
+								} else {
+									finalcb(newurl, data);
+								}
 							}
 						}, processing);
 					});
@@ -35957,22 +36213,37 @@ var $$IMU_EXPORT$$;
 			return window
 		}
 
-		function wrap_gallery_func(nextprev, el, cb) {
+		function wrap_gallery_func(nextprev, origel, el, cb, new_options) {
 			if (!el)
 				el = popup_el;
 
+			if (!origel)
+				origel = popup_orig_el;
+
 			var options = {
-				element: el,
+				element: origel,
 				document: document,
 				window: get_window(),
 				host_url: window.location.href,
 				do_request: do_request,
-				cb: cb
+				rule_specific: {},
+				cb: function(result) {
+					if (!result || result === "default") {
+						return cb(get_next_in_gallery(el, nextprev));
+					} else {
+						cb(result);
+					}
+				}
 			};
 
-			if (!settings.allow_video) {
-				options.exclude_videos = true;
+			if (new_options) {
+				for (var key in new_options) {
+					options[key] = new_options[key];
+				}
 			}
+
+			get_bigimage_extoptions_first(options);
+			get_bigimage_extoptions(options);
 
 			var helpers = get_helpers(options);
 			var gallery = get_next_in_gallery;
@@ -35988,9 +36259,13 @@ var $$IMU_EXPORT$$;
 			}
 
 			var value = gallery(el, nextprev);
-			if (value !== "waiting") {
-				return cb(value);
+			if (value === "waiting") {
+				return;
+			} else if (value === "default") {
+				return cb(get_next_in_gallery(el, nextprev));
 			}
+
+			return cb(value);
 		}
 
 		function is_valid_el(el) {
@@ -36000,11 +36275,15 @@ var $$IMU_EXPORT$$;
 			return !!find_source([el]);
 		}
 
-		function count_gallery(nextprev, el, cb) {
+		function count_gallery(nextprev, origel, el, cb) {
 			var count = 0;
 
+			var firstel = el;
+			if (!firstel)
+				firstel = popup_el;
+
 			var loop = function() {
-				wrap_gallery_func(nextprev, el, function(newel) {
+				wrap_gallery_func(nextprev, origel, el, function(newel) {
 					if (!newel || !is_valid_el(newel))
 						return cb(count, el);
 
@@ -36015,19 +36294,19 @@ var $$IMU_EXPORT$$;
 
 					el = newel;
 					loop();
-				});
+				}, {is_counting: true, counting_firstel: firstel});
 			};
 
 			loop();
 		}
 
-		function wrap_gallery_cycle(nextprev, el, cb) {
+		function wrap_gallery_cycle(nextprev, origel, el, cb) {
 			if (!el)
 				el = popup_el;
 
-			wrap_gallery_func(nextprev, el, function(newel) {
+			wrap_gallery_func(nextprev, origel, el, function(newel) {
 				if (!newel && settings.mouseover_gallery_cycle) {
-					count_gallery(!nextprev, el, function(count, newel) {
+					count_gallery(!nextprev, origel, el, function(count, newel) {
 						cb(newel);
 					});
 				} else {
@@ -36041,7 +36320,7 @@ var $$IMU_EXPORT$$;
 				cb = nullfunc;
 			}
 
-			wrap_gallery_cycle(nextprev, undefined, function(newel) {
+			wrap_gallery_cycle(nextprev, undefined, undefined, function(newel) {
 				if (newel) {
 					var source = find_source([newel]);
 					if (source) {
@@ -36558,6 +36837,9 @@ var $$IMU_EXPORT$$;
 		};
 
 		(function() {
+			if (!settings.imu_enabled)
+				return;
+
 			var observer;
 
 			var new_mutationobserver = function() {
@@ -36593,6 +36875,9 @@ var $$IMU_EXPORT$$;
 			}
 
 			var observe = function() {
+				if (!settings.imu_enabled)
+					return;
+
 				on_new_images();
 
 				if (!observer)
@@ -36617,34 +36902,54 @@ var $$IMU_EXPORT$$;
 				observer.disconnect();
 			};
 
-			try {
-				// In case the browser doesn't support MutationObservers
-				observer = new_mutationobserver();
-			} catch (e) {
-				console_warn(e);
-			}
-
 			var needs_observer = function() {
 				var highlight = get_single_setting("highlightimgs_auto");
 				return highlight === "always" || highlight === "hover" || settings.replaceimgs_auto;
-			}
+			};
 
-			if (needs_observer()) {
-				observe();
-			}
+			var create_mutationobserver = function() {
+				try {
+					// In case the browser doesn't support MutationObservers
+					observer = new_mutationobserver();
+				} catch (e) {
+					console_warn(e);
+				}
 
-			// replaceimgs_auto is intentionally not added here due to the warning
-			var origfunc = settings_meta.highlightimgs_auto.onupdate;
-			settings_meta.highlightimgs_auto.onupdate = function() {
-				if (origfunc)
-					origfunc();
+				if (needs_observer()) {
+					observe();
+				}
+			};
 
+			create_mutationobserver();
+
+			var update_highlightimgs_func = function() {
 				if (needs_observer()) {
 					if (get_single_setting("highlightimgs_auto") !== "always") {
 						remove_all_highlights();
 					}
 
 					observe();
+				} else {
+					disconnect();
+				}
+			};
+
+			// replaceimgs_auto is intentionally not added here due to the warning
+			var orig_highlightfunc = settings_meta.highlightimgs_auto.onupdate;
+			settings_meta.highlightimgs_auto.onupdate = function() {
+				if (orig_highlightfunc)
+					orig_highlightfunc();
+
+				update_highlightimgs_func();
+			};
+
+			var orig_imuenabledfunc = settings_meta.imu_enabled.onupdate;
+			settings_meta.imu_enabled.onupdate = function() {
+				if (orig_imuenabledfunc)
+					orig_imuenabledfunc.apply(this, arguments);
+
+				if (settings.imu_enabled) {
+					update_highlightimgs_func();
 				} else {
 					disconnect();
 				}
@@ -37243,9 +37548,11 @@ var $$IMU_EXPORT$$;
 		do_export();
 
 		if (is_userscript || is_extension) {
-			if (window.location.href.match(/^https?:\/\/qsniyg\.github\.io\/+maxurl\/+options\.html/) ||
-				window.location.href.match(/^file:\/\/.*\/maxurl\/site\/options\.html/) ||
-				(is_extension && is_extension_options_page)) {
+			if (is_maxurl_website || is_options_page) {
+				update_dark_mode();
+			}
+
+			if (is_options_page) {
 				onload(function() {
 					do_options();
 				});

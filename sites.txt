@@ -768,6 +768,7 @@ cdn.24press.net
 cdn.46graus.com
 cdn.4archive.org
 cdn.9razia.de
+cdn.aarp.net
 cdn.abcotvs.com
 cdn.admireme.vip
 cdn.agensite.online
@@ -1454,6 +1455,7 @@ dnh0aphdpud22.cloudfront.net
 dodskypict.com
 dogtime.com
 dok7xy59qfw9h.cloudfront.net
+dokkaebi.tv
 dollargeneral.com
 dollartree.com
 domin.co.kr
@@ -2990,6 +2992,7 @@ img.oppaisan.com
 img.osobnosti.cz
 img.over-blog-kiwi.com
 img.over-blog.com
+img.particlenews.com
 img.peerspace.com
 img.peru21.pe
 img.peta2.jp
@@ -3211,6 +3214,7 @@ io.ua
 iol.pt
 ip.index.hr
 ip.trueachievements.com
+ipetgroup.com
 iphone7wallpapers.co
 iphone8wallpapers.com
 ipravda.sk
@@ -3314,6 +3318,7 @@ k.kakaocdn.net
 k4b8k3x5.ssl.hwcdn.net
 k5x5n5g8.ssl.hwcdn.net
 k99.com
+kabe-uchiroom.com
 kabelversand.info
 kabukicho-girls.com
 kadinlarkulubu.com
@@ -3593,6 +3598,7 @@ mamby.com
 maminka.cz
 mandatory.com
 manga-news.com
+mangadex.cc
 mangadrawing.net
 mania.kr
 maquillagecreation.ch

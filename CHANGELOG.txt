@@ -1,3 +1,25 @@
+0.12.3
+
+New features:
+
+ * Optional dark mode (thanks to ForeFix on firefox for the idea)
+ * Support for 6 new websites (using 5 new rules)
+
+Improvements:
+
+ * Less warnings about unreachable code (#190, thanks to haarp on github for reporting)
+ * The popup better supports `pointer-events: none` and cases where images are hidden, but contain information about an image that is referenced somewhere else
+ * Instagram better supports albums and profile pictures
+
+Bugfixes:
+
+ * Browser events will trigger when not recording key sequences (fixes a regression from 0.12.2 which would block all browser events in the options page)
+ * The popup won't crash on certain sites now (fixes a regression from 0.12.1?)
+ * Fix cases where it would fail to redirect due to headers not yet being loaded (#192, thanks to Bwin4L on github for reporting and fixing the issue)
+ * Highlight/replace images now properly handles IMU being enabled/disabled with live settings reloading
+
+---
+
 0.12.2
 
 New features:
