@@ -400,12 +400,12 @@ button:active, .button:active {
   border: 1px solid #aaa !important;
 }
 
-input:checked + label, button, .button {
+input:checked + label, button, .button, .button:visited, .dark .button:visited {
   background: #0af;
   color: #fff;
 }
 
-.disabled input:checked + label, .disabled button, .disabled button:active, .button.disabled {
+.disabled input:checked + label, .disabled button, .disabled button:active, .button.disabled, .button.disabled:visited, .dark .button.disabled:visited {
   border-color: #aaa;
   background: #aaa;
   color: #fff;
