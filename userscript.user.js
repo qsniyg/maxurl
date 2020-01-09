@@ -4126,6 +4126,7 @@ var $$IMU_EXPORT$$;
 				var sharedData = null;
 
 				// Still keep this code because this way we can know it exists?
+				// We can't use this directly because the user might have switched the profile they're currently viewing
 				if (true) {
 					var scripts = document.getElementsByTagName("script");
 					for (var i = 0; i < scripts.length; i++) {
@@ -4144,7 +4145,9 @@ var $$IMU_EXPORT$$;
 
 				var url = host_url;
 				if (url.match(/:\/\/[^/]+\/+p\//)) {
-					url = "https://www.instagram.com/" + common_functions.instagram_username_from_sharedData(sharedData);
+					// There are 2 h1's, the first should be the username (the second is the person's "name")
+					var username = current.querySelector("h1").innerText;
+					url = "https://www.instagram.com/" + username;//common_functions.instagram_username_from_sharedData(sharedData);
 				}
 
 				possible_infos.push({
