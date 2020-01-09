@@ -3647,6 +3647,9 @@ var $$IMU_EXPORT$$;
 		};
 
 		var mediainfo_api = function(id, cb) {
+			if (!use_app_api)
+				return cb(null);
+
 			var cache_key = "instagram_mediainfo:" + id;
 			api_cache.fetch(cache_key, cb, function (done) {
 				var url = "https://i.instagram.com/api/v1/media/" + id + "/info/";
@@ -3671,6 +3674,9 @@ var $$IMU_EXPORT$$;
 		};
 
 		var get_all_stories_api = function(uid, cb) {
+			if (!use_app_api)
+				return cb(null);
+
 			var story_cache_key = "instagram_story_uid:" + uid;
 			api_cache.fetch(story_cache_key, cb, function (done) {
 				var url = "https://i.instagram.com/api/v1/feed/user/" + uid + "/reel_media/";
@@ -3973,7 +3979,7 @@ var $$IMU_EXPORT$$;
 
 						if (app_response !== null) {
 							images = get_maxsize_app(app_response.items[0]);
-						} else {
+						} else if (use_app_api) {
 							console_log("Unable to use API to find Instagram image, you may need to login to Instagram");
 						}
 
