@@ -14730,7 +14730,9 @@ var $$IMU_EXPORT$$;
 		if (domain === "imageproxy.pimg.tw") {
 			// https://imageproxy.pimg.tw/zoomcrop?url=http%3A%2F%2Fimage.newsis.com%2F2013%2F06%2F21%2FNISI20130621_0008354474_web.jpg&width=380&height=228
 			//   http://image.newsis.com/2013/06/21/NISI20130621_0008354474_web.jpg
-			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/zoomcrop\?(?:.*?&)?url=([^&]*).*?$/, "$1");
+			// https://imageproxy.pimg.tw/resize?url=https%3A%2F%2Ffarm5.staticflickr.com%2F4597%2F39252323662_13f70176d7_c.jpg&maxwidth=500&maxheight=350
+			//   https://farm5.staticflickr.com/4597/39252323662_13f70176d7_c.jpg
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+(?:zoomcrop|resize)\?(?:.*?&)?url=([^&]*).*?$/, "$1");
 			if (newsrc !== src)
 				return decodeuri_ifneeded(newsrc);
 		}
@@ -17348,6 +17350,9 @@ var $$IMU_EXPORT$$;
 			// http://upload.art.ifeng.com/2017/0410/thumb_700_325_1491790874748.jpg
 			//   http://upload.art.ifeng.com/2017/0410/1491790874748.jpg
 			domain === "upload.art.ifeng.com" ||
+			// https://file.acgxmanga.com/h/2019102609/thumb_250_0_jozjk4m5b13.jpg
+			//   https://file.acgxmanga.com/h/2019102609/jozjk4m5b13.jpg
+			domain === "file.acgxmanga.com" ||
 			// http://m1.ablwang.com/uploadfile/2018/0430/thumb_110_69_20180430070256125.jpg
 			//   http://m1.ablwang.com/uploadfile/2018/0430/20180430070256125.jpg
 			(domain_nosub === "ablwang.com" && domain.match(/m[0-9]*\.ablwang\.com/))) {
@@ -34002,7 +34007,14 @@ var $$IMU_EXPORT$$;
 			// should this really be part of this rule?
 			// https://i2.hentaifox.com/003/1533175/1t.jpg
 			//   https://i2.hentaifox.com/003/1533175/1.jpg
+			// https://i2.hentaifox.com/002/1500498/thumb.jpg
+			//   https://i2.hentaifox.com/002/1500498/cover.jpg
 			(domain_nosub === "hentaifox.com" && /^i[0-9]*\./.test(domain)) ||
+			// https://images.asmhentai.com/009/277105/1t.jpg
+			//   https://images.asmhentai.com/009/277105/1.jpg
+			// https://images.asmhentai.com/009/277105/thumb.jpg
+			//   https://images.asmhentai.com/009/277105/cover.jpg
+			domain === "images.asmhentai.com" ||
 			// https://t.nyahentai.net/galleries/1527796/1t.jpg
 			//   https://i.nyahentai.net/galleries/1527796/1.jpg
 			domain === "t.nyahentai.net") {
@@ -34016,6 +34028,8 @@ var $$IMU_EXPORT$$;
 			newsrc = src.replace(/(:\/\/[^/]+\/+(?:galleries|[0-9]+)\/+[0-9]+\/+[0-9]+)t(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
 			if (newsrc !== src)
 				return newsrc.replace(/:\/\/t\./, "://i.");
+
+			return src.replace(/(:\/\/[^/]+\/+(?:galleries|[0-9]+)\/+[0-9]+\/)thumb(\.[^/.]*)(?:[?#].*)?$/, "$1cover$2");
 		}
 
 		if (domain_nosub === "hitomi.la") {
@@ -48288,6 +48302,62 @@ var $$IMU_EXPORT$$;
 			}
 
 			return obj;
+		}
+
+		if (domain === "cdn.9hentai.com") {
+			// https://cdn.9hentai.com/images/54560/cover-small.jpg
+			//   https://cdn.9hentai.com/images/54560/cover.jpg
+			// https://cdn.9hentai.com/images/54560/preview/1t.jpg
+			//   https://cdn.9hentai.com/images/54560/1.jpg
+			newsrc = src
+				.replace(/(\/images\/+[0-9]+\/+)cover-small\./, "$1cover.")
+				.replace(/(\/images\/+[0-9]+\/+)preview\/+([0-9]+)t(\.[^/.]+)(?:[?#].*)?$/, "$1$2$3");
+
+			obj = {
+				url: newsrc
+			};
+
+			match = src.match(/\/images\/+([0-9]+)\/+(?:cover|(?:preview\/+)?([0-9]+)t?\.)/);
+			if (match) {
+				obj.extra = {page: "https://9hentai.com/g/" + match[1] + "/" + (match[2] ? match[2] + "/" : "")};
+			}
+
+			return obj;
+		}
+
+		if (domain_nowww === "hentaishark.com") {
+			// https://www.hentaishark.com/uploads/manga/283710/chapters/1/thumb_00001.jpg
+			//   https://www.hentaishark.com/uploads/manga/283710/chapters/1/00001.jpg
+			newsrc = src.replace(/(\/uploads\/+manga\/+[0-9]+\/+chapters\/+[0-9]+\/+)thumb_/, "$1");
+
+			obj = {
+				url: newsrc
+			};
+
+			match = src.match(/\/uploads\/+(manga)\/+([0-9]+)\/+chapters\/+([0-9]+)\/+(?:thumb_)?([0-9]+)\./);
+			if (match) {
+				var type = match[1];
+				var typeid = match[2];
+				var chapter = match[3];
+				var page = parseInt(match[4]);
+
+				obj.extra = {page: "https://www.hentaishark.com/" + type + "/" + typeid + "/" + chapter + "/" + page};
+			}
+
+			return obj;
+		}
+
+		if (domain === "i.hentaihand.com") {
+			// https://i.hentaihand.com/comicsimages/kabukichou-daishuukai-25-kome-kyuujuu-kobaji-hotobori-gintama-english-1571521166/images/1t.jpg
+			//   https://i.hentaihand.com/comicsimages/kabukichou-daishuukai-25-kome-kyuujuu-kobaji-hotobori-gintama-english-1571521166/images/full/1.jpg
+			return src.replace(/(\/images\/+)([0-9]+)t(\.[^/.]+)(?:[?#].*)?$/, "$1full/$2$3");
+		}
+
+		if (domain_nosub === "sh-cdn.com") {
+			// https://is1.sh-cdn.com/images/1/6/b/1/79509/thumb_916384ad.jpg
+			//   https://is1.sh-cdn.com/images/1/6/b/1/79509/giant_thumb_916384ad.jpg
+			//   https://is1.sh-cdn.com/images/1/6/b/1/79509/916384ad.jpg
+			return src.replace(/(\/images\/+(?:[0-9a-f]\/+){4}[0-9]+\/+)(?:giant_)?thumb_([0-9a-f]+\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		}
 
 
