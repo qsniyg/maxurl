@@ -13439,7 +13439,14 @@ var $$IMU_EXPORT$$;
 			domain === "i.4pcdn.org") {
 			// http://i.4cdn.org/hr/1517608108705s.jpg
 			//   http://i.4cdn.org/hr/1517608108705.jpg
-			return add_extensions(src.replace(/(\/[0-9]*)s(\.[^/.]*)$/, "$1$2"));
+			return fillobj_urls(add_extensions(src.replace(/(\/[0-9]*)s(\.[^/.]*)$/, "$1$2")), {
+				headers: {
+					Referer: ""
+				},
+				referer_ok: {
+					same_domain_nosub: true
+				}
+			});
 		}
 
 		if (domain_nowww === "thebarchive.com" ||
@@ -13456,10 +13463,21 @@ var $$IMU_EXPORT$$;
 			return add_extensions(src.replace(/(\/)thumb(\/.*\/[0-9]+)s(\.[^/.]*)$/, "$1image$2$3"));
 		}
 
+		if (domain === "arch.b4k.co") {
+			// https://arch.b4k.co/files/jp/thumb/1578/68/1578682104565s.jpg
+			//   https://i.4cdn.org/jp/1578682104565.jpg
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+files\/+([^/]+)\/+thumb\/+[0-9]+\/+[0-9]+\/+([0-9]+s\.[^/.]*)$/, "https://i.4cdn.org/$1/$2");
+			if (newsrc !== src)
+				return newsrc
+		}
+
 		if (domain === "ii.yakuji.moe" ||
 			// https://iichan.hk/c/thumb/1483306651580s.jpg
 			//   https://iichan.hk/c/src/1483306651580.jpg
 			domain_nowww === "iichan.hk" ||
+			// https://zip.2chan.net/1/thumb/1577237595290s.jpg
+			//   https://zip.2chan.net/1/src/1577237595290.jpg
+			domain_nosub === "2chan.net" ||
 			// http://aqua.komica.org/60/thumb/1509040275477s.jpg
 			//   http://aqua.komica.org/60/src/1509040275477.jpg
 			domain === "aqua.komica.org") {
@@ -48224,6 +48242,52 @@ var $$IMU_EXPORT$$;
 			// https://www.joy.pl/u/ic/T10/u/g/16/02/56d3b319.jpeg
 			//   https://www.joy.pl/u/g/16/02/56d3b319.jpeg
 			return src.replace(/\/u\/+ic\/+T[0-9]+\/+u\/+/, "/u/");
+		}
+
+		if (domain_nowww === "dynasty-scans.com") {
+			// https://dynasty-scans.com/assets/clear-0df7f28079049374c4363cb5a9bbe8ca.gif
+			// https://dynasty-scans.com/assets/next-0febfb08a2f1ae2a4c8d8efbac649799.png
+			if (/\/assets\/+(?:prev|next|clear)-[0-9a-f]{20,}\.(?:png|gif)/.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
+		}
+
+		// FoOlSlide
+		if (domain === "reader.kireicake.com" ||
+			// https://kobato.hologfx.com/reader/content/comics/new_game_56cda9c5d5fcd/thumb_001_a.png
+			//   https://kobato.hologfx.com/reader/content/comics/new_game_56cda9c5d5fcd/001_a.png
+			domain === "kobato.hologfx.com" ||
+			// http://sensescans.com/reader/content/comics/kingdom_5736e592da0a7/thumb_kingdom.png
+			//   http://sensescans.com/reader/content/comics/kingdom_5736e592da0a7/kingdom.png
+			domain_nowww === "sensescans.com" ||
+			// http://www.slide.world-three.org/content/comics/its_not_my_fault_that_im_not_popular_541384160b1d5/thumb_001.jpg
+			//   http://www.slide.world-three.org/content/comics/its_not_my_fault_that_im_not_popular_541384160b1d5/001.jpg
+			(domain_nosub === "world-three.org" && domain.indexOf("slide.") >= 0) ||
+			// https://jaiminisbox.com/reader/content/comics/skeleton-soldier-couldn-t-protect-the-dungeon_5cb6fec258817/thumb_28778.png
+			//   https://jaiminisbox.com/reader/content/comics/skeleton-soldier-couldn-t-protect-the-dungeon_5cb6fec258817/28778.png
+			domain_nowww === "jaiminisbox.com") {
+			// https://reader.kireicake.com/content/comics/the_unqualified_student_of_demon_lord_academy_the_strongest_demon_lord_in_history_the_founder_attends_the_school_of_his_descendants_after_reincarnation_5d9175deda282/thumb_student_cover.jpg
+			//   https://reader.kireicake.com/content/comics/the_unqualified_student_of_demon_lord_academy_the_strongest_demon_lord_in_history_the_founder_attends_the_school_of_his_descendants_after_reincarnation_5d9175deda282/student_cover.jpg
+			return src.replace(/(\/content\/+.*_[0-9a-f]{10,}\/)thumb_([^/]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "piczel.tv") {
+			// https://piczel.tv/static/uploads/gallery_image/35085/image/22396/thumb_26214504-dudeunderscoreart.jpeg
+			//   https://piczel.tv/static/uploads/gallery_image/35085/image/22396/26214504-dudeunderscoreart.jpeg
+			newsrc = src.replace(/(\/static\/+uploads\/+gallery_image\/+[0-9]+\/+image\/+[0-9]+\/+)thumb_/, "$1");
+
+			obj = {
+				url: newsrc
+			};
+
+			match = src.match(/\/gallery_image\/+[0-9]+\/image\/+([0-9]+)\/+[^/]+(?:[?#].*)?$/);
+			if (match) {
+				obj.extra = {page: "https://piczel.tv/gallery/image/" + match[1]};
+			}
+
+			return obj;
 		}
 
 
