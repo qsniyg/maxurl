@@ -75,6 +75,14 @@ var create_cookieheader = function(cookies) {
 	return array.join("; ");
 };
 
+var get_domain = function(url) {
+	return url.replace(/^[a-z]+:\/\/([^/]+)(?:\/*.*)?$/, "$1");
+};
+
+var same_cookie_domain = function(url1, url2) {
+	return get_domain(url1) === get_domain(url2);
+};
+
 var do_request = function(request, sender) {
 	debug("do_request", request, sender);
 
@@ -204,13 +212,15 @@ var do_request = function(request, sender) {
 
 	requests[id] = {
 		id: id,
-		xhr: xhr
+		xhr: xhr,
+		url: request.url
 	};
 
 	if (!cookie_overridden) {
 		get_cookies(request.url, function(cookies) {
 			if (cookies !== null) {
 				xhr.setRequestHeader("IMU--Cookie", create_cookieheader(cookies));
+				requests[id].cookies_added = true;
 			}
 
 			xhr.send(request.data);
@@ -230,6 +240,7 @@ var onBeforeSendHeaders_listener = function(details) {
 	var new_headers = [];
 	var imu_headers = [];
 	var verify_ok = false;
+	var request_id;
 
 	if (details.tabId in redirects) {
 		verify_ok = true;
@@ -279,6 +290,9 @@ var onBeforeSendHeaders_listener = function(details) {
 			});
 		} else if (header.name === "IMU-Verify") {
 			verify_ok = header.value in requests;
+			if (verify_ok)
+				request_id = header.value;
+
 			reqid_to_redid[details.requestId] = header.value;
 		} else {
 			new_headers.push(header);
@@ -304,6 +318,15 @@ var onBeforeSendHeaders_listener = function(details) {
 					verify_ok = true;
 					break;
 				}
+			}
+		}
+	}
+
+	if (request_id && request_id in requests) {
+		for (var i = 0; i < imu_headers.length; i++) {
+			if (imu_headers[i].name.toLowerCase() === "cookie" && !same_cookie_domain(requests[request_id].url, details.url)) {
+				imu_headers.splice(i, 1);
+				i--;
 			}
 		}
 	}
