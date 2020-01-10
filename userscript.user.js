@@ -34179,27 +34179,45 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if (false && domain === "cdn.zenfolio.net") {
+		if ((domain === "cdn.zenfolio.net" ||
+			domain_nosub === "zenfolio.com") && /:\/\/[^/]+\/+cdn[0-9]*\/+pub\//.test(src)) {
 			// https://davidbogener.zenfolio.com/img/s/v-3/p1424840861-6.jpg
 			// https://davidbogener.zenfolio.com/
 			// https://cdn.zenfolio.net/cdn2/pub/uvakqg1m3q3n/0/null/m/xo7hdbxpofq3fbmrsv9b/s/v-3/p3183306634-5.jpg?ts=6VH&tk=BkAA93losjpkbLgkF08hYIRJMPclGX8zGnZrgWoDKqCz7xKEDbCwS7OaJ890omcvn6Z6GhccpweHOtT-egQbvg==&v=2&visitor=3OneGBACzbr2ikINTN6tzRc7mmWaBbQ5myvvnFDbZ__q&auth=exp=1548028799~acl=%2Fcdn2%2Fpub%2Fuvakqg1m3q3n%2F%2A~hmac=5e4317d5c7aea3d4be4f4bb129fe62c1
 			//   https://www.zenfolio.com/img/s/v-3/p3183306634-5.jpg
 			// https://cdn.zenfolio.net/cdn2/pub/uvakqg1m3q3n/0/null/m/xo7hdbxpofq3fbmrsv9b/s/v-2/p3183306634-1.jpg?ts=6VH&tk=BkAA93losjpkbLgkF08hYIRJMPclGX8zGnZrgWoDKqCz7xKEDbCwS7OaJ890omcvn6Z6GhccpweHOtT-egQbvg==&v=2&visitor=3OneGBACzbr2ikINTN6tzRc7mmWaBbQ5myvvnFDbZ__q&auth=exp=1548028799~acl=%2Fcdn2%2Fpub%2Fuvakqg1m3q3n%2F%2A~hmac=5e4317d5c7aea3d4be4f4bb129fe62c1
 			//   https://www.zenfolio.com/img/s/v-2/p3183306634-1.jpg
-			return src.replace(/:\/\/[^/]*\/cdn[0-9]*\/+pub\/+(?:[^?#]*)(\/s\/+[^/]*\/+p[0-9]+-[0-9]+\.[^/.?#]*)(?:[?#].*)?$/,
+			// http://www.zenfolio.com/cdn/pub/6rhr1mgujado/0/null/m/kd9huj2ukkmjnzvx2t6y/s7/v165/p2381501363-3.jpg?ts=6VH&tk=33XfJjt33Doahj8eJht_fzXm2gP5K0kMoog0BqgEvkE=
+			//   https://www.zenfolio.com/img/s7/v165/p2381501363-3.jpg
+			return src.replace(/:\/\/[^/]*\/+cdn[0-9]*\/+pub\/+(?:[^?#]*)(\/s[0-9]*\/+[^/]*\/+p[0-9]+-[0-9]+\.[^/.?#]*)(?:[?#].*)?$/,
 							   "://www.zenfolio.com/img$1");
 		}
 
-		if (false && domain_nosub === "zenfolio.com") {
+		if (domain_nosub === "zenfolio.com") {
 			// if content-length == 3446 && last-modified == Thu, 25 Aug 2016 22:46:02 GMT, then bad (Content Protected by Owner)
-			var regex = /(\/img\/s\/v-[0-9]+\/p[0-9]+)-[0-9]+(\.[^/.?#]*)(?:[?#].*)?$/;
-			return [
+			// || Wed, 29 Mar 2017 22:44:53 GMT || Wed, 29 Mar 2017 22:55:29 GMT || Sat, 18 Jun 2016 00:05:23 GMT
+
+			// https://guildvt.zenfolio.com/img/s/v-3/p248503319-3.jpg
+			//   https://guildvt.zenfolio.com/img/s/v-3/p248503319-5.jpg
+			// http://33outlaw.zenfolio.com/img/s4/v68/p1133398554-3.jpg
+			//   http://33outlaw.zenfolio.com/img/s4/v68/p1133398554.jpg
+
+			var regex = /(\/img\/+s[0-9]*\/+v-?[0-9]+\/+p[0-9]+)-[0-9]+(\.[^/.?#]*)(?:[?#].*)?$/;
+			return fillobj_urls([
 				src.replace(regex, "$1$2"),
 				src.replace(regex, "$1-7$2"),
 				src.replace(regex, "$1-6$2"),
 				src.replace(regex, "$1-5$2"),
 				src.replace(regex, "$1-4$2")
-			];
+			], {
+				bad_if: [{
+					headers: {
+						"content-length": "3446",
+						"content-type": "image/png"
+					}
+				}],
+				can_head: false // head only works sometimes, and returns odd last-modified
+			});
 		}
 
 		if (domain === "gallery.greatandhra.com") {
