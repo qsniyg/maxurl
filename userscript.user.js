@@ -3165,6 +3165,7 @@ var $$IMU_EXPORT$$;
 
 	common_functions.wix_image_info = function(url) {
 		// https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/06653b48-43c3-403f-9d72-c1c5519db560/ddl6lkp-cde05779-5a0a-47d8-8d43-f31a063fd30e.jpg/v1/fill/w_623,h_350,q_100/into_the_light_by_pajunen_ddl6lkp-350t.jpg
+		// https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/faa48d2d-12c2-43d1-bf23-b5e99857825b/ddo0eau-c742e0f9-07f9-4a22-8d47-933e9fd3fb2b.png/v1/crop/w_244,h_350,x_0,y_0,scl_0.066812705366922,q_70,strp/railway_road_to_the_stars_by_ellysiumn_ddo0eau-350t.jpg
 
 		// https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/intermediary/f/e04c7e93-4504-4dbe-91f9-fd353fc145f2/dcx503r-30c02b72-c26d-4732-9c9f-14fcbc633aaa.jpg
 		var match = url.match(/^[a-z]+:\/\/[^/]+\/+(?:intermediary\/+)?f\/+[-0-9a-f]{20,}\/+[^/]+(?:[?#].*)?$/);
@@ -3174,7 +3175,7 @@ var $$IMU_EXPORT$$;
 			};
 		}
 
-		var match = url.match(/^[a-z]+:\/\/[^/]+\/+(?:intermediary\/+)?f\/+[-0-9a-f]{20,}\/+[^/]+\/+v1\/+(?:fit|fill)\/+([^/]+)\/+[^/]+(?:[?#].*)?$/);
+		var match = url.match(/^[a-z]+:\/\/[^/]+\/+(?:intermediary\/+)?f\/+[-0-9a-f]{20,}\/+[^/]+\/+v1\/+(?:fit|fill|crop)\/+([^/]+)\/+[^/]+(?:[?#].*)?$/);
 		if (!match) {
 			return null;
 		}
@@ -11500,7 +11501,7 @@ var $$IMU_EXPORT$$;
 			// http://www.imgflare.com/i/00026/u6j8ulxub2su_t.jpg
 			//   http://www.imgflare.com/files/9/mug5ve6613zk84/403.jpg
 			id = src.replace(/^([a-z]+:\/\/)(?:[^/.]*\.)?([^/.]+\.[^/.]+\/+)i\/+[0-9]+\/+([0-9a-z]+)(?:_t)?(\.[^/.]*)?$/,
-							 "$1$2$3/$4");
+							 "$1www.$2$3/$4");
 			//console_log(id);
 			if (id !== src && options && options.cb && options.do_request) {
 				common_functions.get_testcookie_cookie(options, api_cache, "http://www." + domain_nosub + "/", function (cookie) {
@@ -21051,13 +21052,50 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/thumb\//, "/");
 		}
 
-		if (false && domain.match(/\.fbcdn\.net$/)) {
+		if (false && domain_nosub === "fbcdn.net" && /^scontent\.f[^/.]+\.fna\.fbcdn\./.test(domain) && options && options.do_request && options.cb) {
 			// wip
 			// https://www.facebook.com/Mahore.official.page/photos/a.1771049596262263.1073742012.148396778527561/1771049639595592/?type=3&theater
 			// https://scontent.fcxh3-1.fna.fbcdn.net/v/t1.0-0/c0.0.200.200/p200x200/26804734_1771049639595592_724697207772414518_n.jpg?_nc_cat=0&oh=620d6a106e5646c7829532e0616e2c5f&oe=5B5EE91F
 			// https://graph.facebook.com/1771049639595592?fields=images&access_token=
 			// https://www.facebook.com/photo/download/?fbid=1771049639595592&ext=1525461615&hash=AeS2Z2X1LdqZYGmJ
 			//   https://scontent.fcxh3-1.fna.fbcdn.net/v/t31.0-8/26756562_1771049639595592_724697207772414518_o.jpg?_nc_cat=0&oh=e184f1c97589b647994c3458cb20fb84&oe=5B5DF86F&dl=1
+			// https://scontent.fyvr2-1.fna.fbcdn.net/v/t1.0-1/cp0/p50x50/1486791_550904851654663_569233636_n.jpg?....
+			//   https://www.facebook.com/photo.php?fbid=550904851654663 -- m.facebook.com works too, but only returns 320x320 scaled
+
+			// below only works for profile pics (url matching is not a reliable way to find the id)
+			match = src.match(/\/[0-9]+_([0-9]+)_[0-9]+_[a-z]+\.[^/.]+(?:[?#].*)?$/);
+			if (match) {
+				var fbid = match[1];
+
+				var cache_key = "facebook_fbid:" + fbid;
+				api_cache.fetch(cache_key, options.cb, function(done) {
+					options.do_request({
+						url: "https://www.facebook.com/photo.php?fbid=" + fbid,
+						method: "GET",
+						onload: function(result) {
+							if (result.readyState !== 4)
+								return;
+
+							if (result.status !== 200) {
+								console_error(result);
+								return done(null, false);
+							}
+
+							var match = result.responseText.match(/\<div\s+class=\"hidden_elem\"\s*>.*?data-ploi=\"(https?:\/\/[^"]*?)\"/);
+							if (!match) {
+								console_warn("Unable to find match", result);
+								return done(null, false);
+							}
+
+							return done(decode_entities(match[1]), 6*60*60);
+						}
+					});
+				});
+
+				return {
+					waiting: true
+				};
+			}
 		}
 
 		if (false && domain === "www.the-a.jp") {
@@ -24153,11 +24191,13 @@ var $$IMU_EXPORT$$;
 		if (domain === "my.wikifeet.com") {
 			// https://my.wikifeet.com/photos/t179623.jpg
 			//   https://my.wikifeet.com/photos/179623.jpg
+			// https://my.wikifeet.com/avatars/t214.jpg?1
+			//   https://my.wikifeet.com/avatars/214.jpg?1
 			// doesn't work for all:
 			// https://my.wikifeet.com/photos/t166055.jpg
 			//   https://my.wikifeet.com/photos/166055.jpg -- access denied (Content-Length: 169698, Last-Modified: Thu, 01 Aug 2019 12:02:01 GMT, Vary: Cookie)
-			return {
-				url: src.replace(/\/photos\/+t([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/photos/$1"),
+			obj = {
+				url: src.replace(/\/(photos|avatars)\/+t([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/$1/$2"),
 				bad_if: [{
 					headers: {
 						"content-length": "169698",
@@ -24165,6 +24205,13 @@ var $$IMU_EXPORT$$;
 					}
 				}]
 			};
+
+			match = obj.url.match(/:\/\/[^/]+\/+avatars\/+([0-9]+)\./);
+			if (match) {
+				obj.extra = {page: "https://my.wikifeet.com/models/" + match[1]};
+			}
+
+			return obj;
 		}
 
 		if (domain === "static.spotboye.com") {
@@ -24991,6 +25038,9 @@ var $$IMU_EXPORT$$;
 			// https://image.ibb.co/jYsMbo/Screenshot-2018-07-12-15-56-41.png
 			//   https://image.ibb.co/gp6Q2T/Screenshot-2018-07-12-15-56-41.png
 			domain === "image.ibb.co" ||
+			// https://thumb.ibb.co/c9uL58/2018_06_11_09_46_47.jpg
+			//   https://image.ibb.co/mdAtQ8/2018-06-11-09-46-47.jpg
+			domain === "thumb.ibb.co" ||
 			// https://preview.ibb.co/jYsMbo/Screenshot_2018_07_12_15_56_41.png
 			//   https://image.ibb.co/gp6Q2T/Screenshot-2018-07-12-15-56-41.png
 			domain === "preview.ibb.co") &&
@@ -48143,6 +48193,12 @@ var $$IMU_EXPORT$$;
 			//   https://img.particlenews.com/image.php?url=2uDX2N_0NUw5eQ200
 			if (/\/image\.php\?/.test(src))
 				return remove_queries(src, ["type"]);
+		}
+
+		if (domain_nowww === "joy.pl") {
+			// https://www.joy.pl/u/ic/T10/u/g/16/02/56d3b319.jpeg
+			//   https://www.joy.pl/u/g/16/02/56d3b319.jpeg
+			return src.replace(/\/u\/+ic\/+T[0-9]+\/+u\/+/, "/u/");
 		}
 
 
