@@ -34189,7 +34189,7 @@ var $$IMU_EXPORT$$;
 			//   https://www.zenfolio.com/img/s/v-2/p3183306634-1.jpg
 			// http://www.zenfolio.com/cdn/pub/6rhr1mgujado/0/null/m/kd9huj2ukkmjnzvx2t6y/s7/v165/p2381501363-3.jpg?ts=6VH&tk=33XfJjt33Doahj8eJht_fzXm2gP5K0kMoog0BqgEvkE=
 			//   https://www.zenfolio.com/img/s7/v165/p2381501363-3.jpg
-			return src.replace(/:\/\/[^/]*\/+cdn[0-9]*\/+pub\/+(?:[^?#]*)(\/s[0-9]*\/+[^/]*\/+p[0-9]+-[0-9]+\.[^/.?#]*)(?:[?#].*)?$/,
+			return src.replace(/:\/\/[^/]*\/+cdn[0-9]*\/+pub\/+(?:[^?#]*?)(\/(?:s[0-9]*\/+)?[^/]*\/+p[0-9]+-[0-9]+\.[^/.?#]*)(?:[?#].*)?$/,
 							   "://www.zenfolio.com/img$1");
 		}
 
@@ -34201,8 +34201,11 @@ var $$IMU_EXPORT$$;
 			//   https://guildvt.zenfolio.com/img/s/v-3/p248503319-5.jpg
 			// http://33outlaw.zenfolio.com/img/s4/v68/p1133398554-3.jpg
 			//   http://33outlaw.zenfolio.com/img/s4/v68/p1133398554.jpg
+			//   http://33outlaw.zenfolio.com/img/v68/p1133398554.jpg -- 3264x2448 (same size as above)
+			// http://mkackman.zenfolio.com/img/v1/p564700966-3.jpg
+			//   http://mkackman.zenfolio.com/img/v1/p564700966.jpg
 
-			var regex = /(\/img\/+s[0-9]*\/+v-?[0-9]+\/+p[0-9]+)-[0-9]+(\.[^/.?#]*)(?:[?#].*)?$/;
+			var regex = /(\/img\/+(?:s[0-9]*\/+)?v-?[0-9]+\/+p[0-9]+)-[0-9]+(\.[^/.?#]*)(?:[?#].*)?$/;
 			return fillobj_urls([
 				src.replace(regex, "$1$2"),
 				src.replace(regex, "$1-7$2"),
