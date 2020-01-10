@@ -76,7 +76,7 @@ var create_cookieheader = function(cookies) {
 };
 
 var get_domain = function(url) {
-	return url.replace(/^[a-z]+:\/\/([^/]+)(?:\/*.*)?$/, "$1");
+	return url.replace(/^[a-z]+:\/\/(?:www\.)?([^/]+)(?:\/*.*)?$/, "$1");
 };
 
 var same_cookie_domain = function(url1, url2) {
