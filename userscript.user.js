@@ -32791,7 +32791,11 @@ var $$IMU_EXPORT$$;
 		if (domain === "img.blick.ch") {
 			// https://img.blick.ch/incoming/7040030-v5-file6v0ev8lnk1h15jshehfk.jpg?imwidth=1000&ratio=FREE&x=0&y=0&width=541&height=800
 			//   https://img.blick.ch/incoming/7040030-v5-file6v0ev8lnk1h15jshehfk.jpg?ratio=FREE
-			return src.replace(/\?.*/, "?ratio=FREE");
+			// thanks to carozzz on github: https://github.com/qsniyg/maxurl/issues/194
+			// https://img.blick.ch/incoming/2998379-v4-teaserbildenergyair.jpg?imwidth=1000&ratio=FREE&x=0&y=293&width=4256&height=2397
+			//   https://img.blick.ch/incoming/2998379-v4-teaserbildenergyair.jpg?ratio=FREE -- 2000x1331
+			//   https://img.blick.ch/incoming/2998379-v4-teaserbildenergyair.jpg?ratio=FREE&x=0&y=0 -- 4256x2832
+			return src.replace(/\?.*/, "?ratio=FREE&x=0&y=0");
 		}
 
 		if (domain_nowww === "mixnews.lv") {
