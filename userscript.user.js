@@ -1033,6 +1033,7 @@ var $$IMU_EXPORT$$;
 		mouseover_video_controls: false,
 		mouseover_video_loop: true,
 		mouseover_video_muted: false,
+		mouseover_video_volume: 100,
 		mouseover_ui: true,
 		mouseover_ui_opacity: 80,
 		mouseover_ui_imagesize: true,
@@ -1441,6 +1442,20 @@ var $$IMU_EXPORT$$;
 				mouseover: true,
 				allow_video: true
 			},
+			category: "popup",
+			subcategory: "video"
+		},
+		mouseover_video_volume: {
+			name: "Default volume",
+			description: "Default volume for the video",
+			requires: {
+				mouseover_video_muted: false
+			},
+			type: "number",
+			number_min: 0,
+			number_max: 100,
+			number_int: true,
+			number_unit: "%",
 			category: "popup",
 			subcategory: "video"
 		},
@@ -52602,6 +52617,11 @@ var $$IMU_EXPORT$$;
 
 					if (settings.mouseover_video_muted)
 						video.muted = true;
+					else {
+						var volume = parseInt(settings.mouseover_video_volume);
+						volume = Math.max(Math.min(volume, 100), 0);
+						video.volume = volume / 100.;
+					}
 
 					var errorhandler = function(e) {
 						console_error("Error loading video", get_event_error(e));
