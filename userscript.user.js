@@ -55475,7 +55475,7 @@ var $$IMU_EXPORT$$;
 			if (_nir_debug_)
 				console_log("trigger_popup: source =", source);
 
-			if (source && (popup_trigger_reason !== "mouse" || source.el !== last_popup_el)) {
+			if (source && (popup_trigger_reason !== "mouse" || get_physical_popup_el(source.el) !== last_popup_el)) {
 				trigger_popup_with_source(source);
 			} else {
 				delay_handle_triggering = false;
