@@ -56869,8 +56869,8 @@ var $$IMU_EXPORT$$;
 					if (delay_handle) {
 						var trigger_mouse_jitter_thresh = 10;
 
-						if ((mouseX - mouseDelayX) < trigger_mouse_jitter_thresh &&
-							(mouseY - mouseDelayY) < trigger_mouse_jitter_thresh)
+						if (Math.abs(mouseX - mouseDelayX) < trigger_mouse_jitter_thresh &&
+							Math.abs(mouseY - mouseDelayY) < trigger_mouse_jitter_thresh)
 							return;
 
 						clearTimeout(delay_handle);
