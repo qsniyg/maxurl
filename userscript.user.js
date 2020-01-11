@@ -52881,6 +52881,7 @@ var $$IMU_EXPORT$$;
 		var popups = [];
 		var popup_obj = null;
 		var popup_el = null;
+		var real_popup_el = null;
 		var next_popup_el = null;
 		var last_popup_el = null;
 		var popup_orig_el = null;
@@ -53063,6 +53064,7 @@ var $$IMU_EXPORT$$;
 			if (popup_el)
 				last_popup_el = popup_el;
 			popup_el = null;
+			real_popup_el = null;
 			popup_el_automatic = false;
 
 			stop_processing();
@@ -55387,6 +55389,12 @@ var $$IMU_EXPORT$$;
 			return ret;
 		}
 
+		var get_physical_popup_el = function(el) {
+			if (el.parentElement && el.tagName === "SOURCE")
+				return el.parentElement;
+			return el;
+		}
+
 		function trigger_popup(is_contextmenu) {
 			if (_nir_debug_)
 				console_log("trigger_popup (is_contextmenu=" + is_contextmenu + ")");
@@ -55439,7 +55447,8 @@ var $$IMU_EXPORT$$;
 				if (automatic)
 					popup_el_automatic = true;
 
-				popup_el = source.el;
+				real_popup_el = source.el;
+				popup_el = get_physical_popup_el(real_popup_el);
 				if (popup_el.parentElement) // check if it's a fake element returned by a gallery helper
 					popup_orig_el = popup_el;
 
@@ -55606,7 +55615,7 @@ var $$IMU_EXPORT$$;
 
 		function wrap_gallery_func(nextprev, origel, el, cb, new_options) {
 			if (!el)
-				el = popup_el;
+				el = real_popup_el;
 
 			if (!origel)
 				origel = popup_orig_el;
@@ -55671,7 +55680,7 @@ var $$IMU_EXPORT$$;
 
 			var firstel = el;
 			if (!firstel)
-				firstel = popup_el;
+				firstel = real_popup_el;
 
 			var loop = function() {
 				wrap_gallery_func(nextprev, origel, el, function(newel) {
@@ -55693,7 +55702,7 @@ var $$IMU_EXPORT$$;
 
 		function wrap_gallery_cycle(nextprev, origel, el, cb) {
 			if (!el)
-				el = popup_el;
+				el = real_popup_el;
 
 			wrap_gallery_func(nextprev, origel, el, function(newel) {
 				if (!newel && settings.mouseover_gallery_cycle) {
