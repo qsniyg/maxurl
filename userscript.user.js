@@ -1013,6 +1013,7 @@ var $$IMU_EXPORT$$;
 		// thanks to acid-crash on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-436594057
 		mouseover_close_need_mouseout: true,
 		mouseover_jitter_threshold: 30,
+		mouseover_cancel_popup_when_elout: true,
 		mouseover_cancel_popup_with_esc: true,
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-530760246
 		mouseover_use_hold_key: true,
@@ -1605,8 +1606,18 @@ var $$IMU_EXPORT$$;
 			category: "popup",
 			subcategory: "close_behavior"
 		},
+		mouseover_cancel_popup_when_elout: {
+			name: "Leaving thumbnail cancels loading",
+			description: "Cancels the current popup loading when the cursor has left the thumbnail image",
+			requires: {
+				mouseover: true,
+				mouseover_trigger_behavior: "mouse"
+			},
+			category: "popup",
+			subcategory: "close_behavior"
+		},
 		mouseover_cancel_popup_with_esc: {
-			name: "Cancel popup loading with ESC",
+			name: "ESC cancels loading",
 			description: "Cancels the current popup loading if ESC is pressed",
 			requires: {
 				mouseover: true
@@ -56875,7 +56886,7 @@ var $$IMU_EXPORT$$;
 							}
 						}
 					} else if (delay_handle_triggering) {
-						if (next_popup_el) {
+						if (next_popup_el && settings.mouseover_cancel_popup_when_elout) {
 							var popup_el_rect = next_popup_el.getBoundingClientRect();
 							if (!in_clientrect(mouseX, mouseY, popup_el_rect)) {
 								resetpopups();
