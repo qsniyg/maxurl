@@ -52882,6 +52882,7 @@ var $$IMU_EXPORT$$;
 		var popup_obj = null;
 		var popup_el = null;
 		var next_popup_el = null;
+		var last_popup_el = null;
 		var popup_orig_el = null;
 		var popup_el_automatic = false;
 		var popups_active = false;
@@ -53057,9 +53058,13 @@ var $$IMU_EXPORT$$;
 			disable_click = false;
 			popups_active = false;
 			delay_handle_triggering = false;
+
 			next_popup_el = null;
+			if (popup_el)
+				last_popup_el = popup_el;
 			popup_el = null;
 			popup_el_automatic = false;
+
 			stop_processing();
 
 			if (!delay_mouseonly && delay_handle) {
@@ -56789,8 +56794,15 @@ var $$IMU_EXPORT$$;
 						}
 					}
 
+					if (last_popup_el) {
+						var popup_el_rect = last_popup_el.getBoundingClientRect();
+						if (!in_clientrect(mouseX, mouseY, popup_el_rect)) {
+							last_popup_el = null;
+						}
+					}
+
 					delay_handle = setTimeout(function() {
-						if (delay_handle_triggering || trigger_complete(settings.mouseover_trigger_prevent_key))
+						if (delay_handle_triggering || trigger_complete(settings.mouseover_trigger_prevent_key) || last_popup_el)
 							return;
 
 						popup_trigger_reason = "mouse";
