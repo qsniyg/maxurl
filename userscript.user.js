@@ -1409,7 +1409,7 @@ var $$IMU_EXPORT$$;
 			subcategory: "open_behavior"
 		},
 		mouseover_only_links: {
-			name: "Only popup for links",
+			name: "Only popup for linked images",
 			description: "Don't pop up if the image isn't linked",
 			requires: {
 				mouseover: true
