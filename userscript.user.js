@@ -53123,6 +53123,7 @@ var $$IMU_EXPORT$$;
 			popup_el_automatic = false;
 
 			stop_processing();
+			stop_waiting();
 
 			if (!delay_mouseonly && delay_handle) {
 				clearTimeout(delay_handle);
@@ -55509,7 +55510,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		function trigger_popup_with_source(source, automatic, use_last_pos) {
-			next_popup_el = source.el;
+			next_popup_el = get_physical_popup_el(source.el);
 
 			return get_final_from_source(source, automatic, false, use_last_pos, function(source_imu, source, processing, data) {
 				if (!source_imu && !source && !processing && !data) {
@@ -56754,7 +56755,7 @@ var $$IMU_EXPORT$$;
 						delay_handle = null;
 
 						// FIXME: shouldn't this be in if (popups.length > 0) instead?
-						if (waiting)
+						if (false && waiting)
 							stop_waiting();
 					}
 
@@ -56861,6 +56862,13 @@ var $$IMU_EXPORT$$;
 								resetpopups();
 							}
 						}
+					} else if (delay_handle_triggering) {
+						if (next_popup_el) {
+							var popup_el_rect = next_popup_el.getBoundingClientRect();
+							if (!in_clientrect(mouseX, mouseY, popup_el_rect)) {
+								resetpopups();
+							}
+						}
 					}
 				}
 
@@ -56880,13 +56888,6 @@ var $$IMU_EXPORT$$;
 					mouseDelayX = mouseX;
 					mouseDelayY = mouseY;
 					//mouse_in_image_yet = false;
-
-					if (next_popup_el && popups.length === 0 && delay_handle_triggering) {
-						var popup_el_rect = next_popup_el.getBoundingClientRect();
-						if (!in_clientrect(mouseX, mouseY, popup_el_rect)) {
-							resetpopups();
-						}
-					}
 
 					if (last_popup_el) {
 						var popup_el_rect = last_popup_el.getBoundingClientRect();
