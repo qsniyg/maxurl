@@ -1,3 +1,20 @@
+0.12.4
+
+New features:
+
+ * Option for setting the initial video volume
+ * Support for ~30 new websites (using ~15 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules
+
+Bugfixes:
+
+ * Using the popup on DeviantArt will no longer log you out when using the extension (thanks to Michyrr on reddit for reporting)
+
+---
+
 0.12.3
 
 New features:

@@ -55,6 +55,7 @@
 251d2191a60056d6ba74-1671eccf3a0275494885881efb0852a4.ssl.cf1.rackcdn.com
 2ch.hk
 2ch.pm
+2chan.net
 2chmatome2.jp
 2e0a24317f4a9294563f-26c3b154822345d9dde0204930c49e9c.ssl.cf1.rackcdn.com
 2photo.ru
@@ -297,6 +298,7 @@ arabmubasher.com
 arabyoum.com
 arasale.com
 arborday.org
+arch.b4k.co
 archive.org
 archivegalleries.net
 archiveofsins.com
@@ -767,6 +769,7 @@ cdn.20m.es
 cdn.24press.net
 cdn.46graus.com
 cdn.4archive.org
+cdn.9hentai.com
 cdn.9razia.de
 cdn.aarp.net
 cdn.abcotvs.com
@@ -885,6 +888,7 @@ cdn.myanimelist.net
 cdn.mydaily.co.kr
 cdn.narcity.com
 cdn.ndtv.com
+cdn.neow.in
 cdn.newsapi.com.au
 cdn.newsbusters.org
 cdn.newsday.com
@@ -939,6 +943,7 @@ cdn.sharesome.com
 cdn.shazoo.ru
 cdn.shesfreaky.com
 cdn.shopify.com
+cdn.shoplightspeed.com
 cdn.simplesite.com
 cdn.sinemia.com
 cdn.skim.gs
@@ -987,6 +992,7 @@ cdn.xnxxpics.top
 cdn.xpics.me
 cdn.xpicsxx.com
 cdn.yavtube.com
+cdn.zenfolio.net
 cdn.zoomg.ir
 cdn1.nyt.com
 cdn107.com
@@ -1303,6 +1309,7 @@ d2yal1mtmg1ts6.cloudfront.net
 d2yoo3qu6vrk5d.cloudfront.net
 d30fl32nd2baj9.cloudfront.net
 d32dm0rphc51dk.cloudfront.net
+d33veqcui7lu1w.cloudfront.net
 d343xr8tqpm2fx.cloudfront.net
 d36tnp772eyphs.cloudfront.net
 d38c5dutwb1t0j.cloudfront.net
@@ -1521,6 +1528,7 @@ dynaimage.cdn.cnn.com
 dynamic.indigoimages.ca
 dynamic.zacdn.com
 dynamicmedia.zuza.com
+dynasty-scans.com
 dzt1km7tv28ex.cloudfront.net
 e-hentai.org
 e-monsite.com
@@ -1755,6 +1763,7 @@ fi.realself.com
 fichub.com
 fightingirl.com
 file.2chmatome2.jp
+file.acgxmanga.com
 file.bodnara.co.kr
 file.candlemystar.com
 file.ebn.co.kr
@@ -1895,6 +1904,7 @@ ftopx.com
 ftvmagic.com
 fuckin.news.s3.amazonaws.com
 fukugan.com
+fullyimportant.ru
 fun107.com
 funasia.net
 fundir.org
@@ -1950,6 +1960,7 @@ game4v.com
 gamebusiness.jp
 gamegrin.com
 gamer.ru
+gamereactor.no
 gamers-onlineshop.jp
 gamersky.com
 games.mail.ru
@@ -2167,6 +2178,7 @@ hentai-cosplay.com
 hentai-image.com
 hentaifox.com
 hentairing.com
+hentaishark.com
 heraldscotland.com
 hercampus.com
 heritagestatic.com
@@ -2295,6 +2307,7 @@ i.gr-assets.com
 i.guim.co.uk
 i.gyazo.com
 i.gzn.jp
+i.hentaihand.com
 i.hexuexiao.cn
 i.huffpost.com
 i.ibb.co
@@ -2561,6 +2574,7 @@ images.apina.biz
 images.archant.co.uk
 images.asianstar.cz
 images.askmen.com
+images.asmhentai.com
 images.assettype.com
 images.attvideo.com
 images.blazingmovies.com
@@ -3255,6 +3269,7 @@ iziva.com
 izum.ua
 j-14.com
 jagranimages.com
+jaiminisbox.com
 japanator.com
 japanesebeauties.net
 japanesegirl-4you.com
@@ -3297,6 +3312,7 @@ joseilbo.com
 journal-farandole.com
 journalmedia.ie
 joy.hu
+joy.pl
 joymii.com
 joyreactor.cc
 joyreactor.com
@@ -3384,6 +3400,7 @@ kn3.net
 knihy.abz.cz
 know.cf
 kntimes.co.kr
+kobato.hologfx.com
 kobis.or.kr
 kollywoodzone.com
 kompasiana.com
@@ -4081,6 +4098,7 @@ netherlands-grlk5lagedl.stackpathdns.com
 netinfo.bg
 netnews.vn
 netstorage-nur.akamaized.net
+netstorage-yen.akamaized.net
 nevseoboi.com.ua
 nevsepic.com.ua
 newegg.com
@@ -4453,6 +4471,7 @@ pictures.4ever.eu
 pictures.icpress.cn
 pictures.ozy.com
 picua.org
+piczel.tv
 pikabu.ru
 piletimaailm.com
 pimg.mycdn.me
@@ -4676,6 +4695,7 @@ reacho.s3.amazonaws.com
 reactor.cc
 read.html5.qq.com
 readdork.com
+reader.kireicake.com
 readthis.one
 realbooru.com
 realestate.com.au
@@ -4916,6 +4936,7 @@ senatus.net
 seniorclassaward.com
 senmedia.kr
 sensa.hr
+sensescans.com
 sensualgirls.org
 seoul.co.kr
 seoulilbo.com
@@ -4944,6 +4965,7 @@ sfo2.digitaloceanspaces.com
 sfondo.info
 sfyry.com
 sgpstatp.com
+sh-cdn.com
 shakespearesglobe.com
 shalala.ru
 shamelesscelebrities.com
@@ -4958,6 +4980,7 @@ shikimori.org
 shinailbo.co.kr
 shisharc.com
 shitpostbot.com
+shobiddak.com
 shofona.net
 shogakukan.co.jp
 shop.marymary.gr
@@ -5249,6 +5272,7 @@ static.santruyen.com
 static.scientificamerican.com
 static.screenweek.it
 static.screenweek.it.s3.amazonaws.com
+static.showit.co
 static.sify.com
 static.soltana.ma
 static.spankbang.com
@@ -5544,6 +5568,7 @@ thumb.connect360.vn
 thumb.egloos.net
 thumb.guucdn.net
 thumb.hankooki.com
+thumb.ibb.co
 thumb.mt.co.kr
 thumb.mtstarnews.com
 thumb.named.com
@@ -5954,6 +5979,7 @@ wonderwall.com
 wonnews.co.kr
 woopic.com
 wordpress.com
+world-three.org
 worldatlas.com
 worldcupgirls.net
 worldsex.com
@@ -5994,6 +6020,7 @@ xdn.vn
 xdressy.com
 xeeok.com
 xgkoushi.com
+xgn.nl
 xhcdn.com
 xianweizhu.com
 xiaoka.tv
@@ -6049,6 +6076,7 @@ yimg.jp
 yinyuetai.com
 ykt.ru
 ykt2.ru
+ymcart.com
 yna.co.kr
 ynjzsf.com
 ynnews.kr
@@ -6085,6 +6113,7 @@ zceleb.com
 zdf.de
 zdn.vn
 zemanceleblegs.com
+zenfolio.com
 zenithnews.com
 zenska.hudo.com
 zerochan.net
@@ -6109,6 +6138,7 @@ zocalo.com.mx
 zokatv.net
 zol-img.com.cn
 zonadelta.net
+zonemod.com
 zoom.co.uk
 zoomit.ir
 zopix.net
