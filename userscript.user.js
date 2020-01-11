@@ -1023,10 +1023,10 @@ var $$IMU_EXPORT$$;
 		mouseover_allow_partial: is_extension ? "media" : "video",
 		//mouseover_use_fully_loaded_image: is_extension ? false : true,
 		//mouseover_use_fully_loaded_video: false,
-		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-530760246
-		mouseover_exclude_page_bg: true,
 		mouseover_minimum_size: 20,
 		mouseover_exclude_backgroundimages: false,
+		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-530760246
+		mouseover_exclude_page_bg: true,
 		// thanks to Jin on discord for the idea
 		mouseover_only_links: false,
 		mouseover_exclude_sameimage: false,
@@ -1363,6 +1363,7 @@ var $$IMU_EXPORT$$;
 			description: "Excludes the page background for the popup",
 			requires: {
 				mouseover: true,
+				mouseover_exclude_backgroundimages: false
 			},
 			category: "popup",
 			subcategory: "open_behavior"
