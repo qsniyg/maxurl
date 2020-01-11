@@ -54538,7 +54538,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		function is_valid_src(src) {
-			return src && !(/^(?:blob:|x-raw)/.test(src));
+			return src && !(/^blob:/.test(src));
 		}
 
 		function find_source(els) {
@@ -54558,6 +54558,13 @@ var $$IMU_EXPORT$$;
 
 					return null;
 				}
+			}
+
+			if (!is_valid_src(result.src)) {
+				if (_nir_debug_)
+					console_log("find_source: invalid src", result);
+
+				return null;
 			}
 
 			var thresh = parseInt(settings.mouseover_minimum_size);
@@ -54775,7 +54782,7 @@ var $$IMU_EXPORT$$;
 
 						addImage(src, el, { layer: layer });
 
-						if (!el.srcset) {
+						if (!el.srcset && src in sources) {
 							if (el.tagName === "VIDEO") {
 								sources[src].width = el.videoWidth;
 								sources[src].height = el.videoHeight;
