@@ -1013,6 +1013,7 @@ var $$IMU_EXPORT$$;
 		// thanks to acid-crash on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-436594057
 		mouseover_close_need_mouseout: true,
 		mouseover_jitter_threshold: 30,
+		mouseover_cancel_popup_with_esc: true,
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-530760246
 		mouseover_use_hold_key: true,
 		mouseover_hold_key: ["i"],
@@ -1601,6 +1602,15 @@ var $$IMU_EXPORT$$;
 			},
 			type: "number",
 			number_unit: "pixels",
+			category: "popup",
+			subcategory: "close_behavior"
+		},
+		mouseover_cancel_popup_with_esc: {
+			name: "Cancel popup loading with ESC",
+			description: "Cancels the current popup loading if ESC is pressed",
+			requires: {
+				mouseover: true
+			},
 			category: "popup",
 			subcategory: "close_behavior"
 		},
@@ -56554,8 +56564,10 @@ var $$IMU_EXPORT$$;
 			}
 
 			// 27 = esc
-			// why was the second check added?
-			if (event.which === 27 || (popup_trigger_reason === "mouse" && delay_handle_triggering)) {
+			if (event.which === 27) {
+				if (delay_handle_triggering && popup_trigger_reason === "mouse" && !settings.mouseover_cancel_popup_with_esc)
+					return;
+
 				stop_waiting();
 				resetpopups();
 			}
