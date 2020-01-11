@@ -1017,7 +1017,8 @@ var $$IMU_EXPORT$$;
 		mouseover_use_hold_key: true,
 		mouseover_hold_key: ["i"],
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-531549043
-		mouseover_close_on_leave_el: true,
+		//mouseover_close_on_leave_el: true,
+		mouseover_close_el_policy: "both",
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/126
 		mouseover_allow_partial: is_extension ? "media" : "video",
 		//mouseover_use_fully_loaded_image: is_extension ? false : true,
@@ -1627,6 +1628,27 @@ var $$IMU_EXPORT$$;
 			requires: {
 				mouseover_trigger_behavior: "mouse",
 				mouseover_position: "beside_cursor"
+			},
+			category: "popup",
+			subcategory: "close_behavior"
+		},
+		mouseover_close_el_policy: {
+			name: "Close when leaving",
+			description: "Closes the popup when the mouse leaves the thumbnail element, the popup, or either",
+			requires: {
+				mouseover_trigger_behavior: "mouse"
+			},
+			options: {
+				_type: "or",
+				thumbnail: {
+					name: "Thumbnail"
+				},
+				popup: {
+					name: "Popup"
+				},
+				both: {
+					name: "Both"
+				}
 			},
 			category: "popup",
 			subcategory: "close_behavior"
@@ -52340,6 +52362,25 @@ var $$IMU_EXPORT$$;
 			version = 2;
 		}
 
+		if (version === 2) {
+			if ("mouseover_close_on_leave_el" in new_settings) {
+				var policy;
+
+				if (new_settings.mouseover_close_on_leave_el) {
+					policy = "both";
+				} else {
+					policy = "popup";
+				}
+
+				update_setting("mouseover_close_el_policy", policy);
+			}
+
+			update_setting("settings_version", 3);
+			changed = true;
+
+			version = 3;
+		}
+
 		cb(changed);
 	}
 
@@ -56750,15 +56791,24 @@ var $$IMU_EXPORT$$;
 							}
 						}
 
-						var close_on_leave_el = get_close_on_leave_el() && popup_el && !popup_el_automatic;
+						var close_el_policy = get_single_setting("mouseover_close_el_policy");
+						var close_on_leave_el = (close_el_policy === "thumbnail" || close_el_policy === "both") && popup_el && !popup_el_automatic;
 						var outside_of_popup_el = false;
 						var popup_el_hidden = false;
 
 						if (close_on_leave_el) {
 							var popup_el_rect = popup_el.getBoundingClientRect();
 							if (popup_el_rect && popup_el_rect.width > 0 && popup_el_rect.height > 0) {
-								if (!in_clientrect(mouseX, mouseY, popup_el_rect) && !in_img_jitter) {
+								var our_in_img_jitter = in_img_jitter;
+								if (close_el_policy === "thumbnail")
+									our_in_img_jitter = false;
+
+								if (!in_clientrect(mouseX, mouseY, popup_el_rect) && !our_in_img_jitter) {
 									outside_of_popup_el = true;
+
+									if (close_el_policy === "thumbnail") {
+										return resetpopups();
+									}
 								}
 							} else {
 								// the element must be hidden
