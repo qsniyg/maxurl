@@ -54686,7 +54686,7 @@ var $$IMU_EXPORT$$;
 
 			function addImage(src, el, options) {
 				if (_nir_debug_)
-					console_log("_find_source (addImage)", el, check_visible(el));
+					console_log("_find_source (addImage)", el, check_visible(el), options);
 
 				if (settings.mouseover_apply_blacklist && !bigimage_filter(src)) {
 					if (_nir_debug_)
@@ -54914,7 +54914,7 @@ var $$IMU_EXPORT$$;
 					var src = get_url_from_css(bgimg);
 					if (src)
 						addImage(src, el, {
-							isbg: true,
+							isbg: beforeafter || true,
 							layer: layer
 						});
 				}
@@ -54965,6 +54965,20 @@ var $$IMU_EXPORT$$;
 				//console_log(els);
 				console_log("_find_source (sources)", deepcopy(sources));
 				console_log("_find_source (layers)", deepcopy(layers));
+			}
+
+			// remove sources that aren't used
+			var activesources = [];
+			for (var i = 0; i < layers.length; i++) {
+				for (var j = 0; j < layers[i].length; j++) {
+					if (activesources.indexOf(layers[i][j]) < 0)
+						activesources.push(layers[i][j]);
+				}
+			}
+
+			for (var source in sources) {
+				if (activesources.indexOf(source) < 0)
+					delete sources[source];
 			}
 
 			if ((source = getsource()) !== undefined) {
