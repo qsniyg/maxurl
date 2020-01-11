@@ -10992,13 +10992,13 @@ var $$IMU_EXPORT$$;
 
 		if (domain_nosub === "medium.com" &&
 			(domain.match(/cdn-images-[0-9]*\.medium\.com/) ||
+			 // https://miro.medium.com/fit/c/240/240/1*Znlrcvh2KRPP4xG_s9Bp7A@2x.jpeg
+			 //   https://miro.medium.com/1*Znlrcvh2KRPP4xG_s9Bp7A@2x.jpeg
 			 domain === "miro.medium.com")) {
 			// https://cdn-images-1.medium.com/fit/c/120/120/1*EBmQkTlD1aZEsZOHFiBcdg.png
 			//   https://cdn-images-1.medium.com/1*EBmQkTlD1aZEsZOHFiBcdg.png
 			// https://cdn-images-1.medium.com/max/800/1*BvC8Rvz4L-CLuK5Ou37qoA.png
 			//   https://cdn-images-1.medium.com/1*BvC8Rvz4L-CLuK5Ou37qoA.png
-			// https://miro.medium.com/fit/c/240/240/1*Znlrcvh2KRPP4xG_s9Bp7A@2x.jpeg
-			//   https://miro.medium.com/1*Znlrcvh2KRPP4xG_s9Bp7A@2x.jpeg
 			//return src.replace(/\/max\/[^/]*\//, "/");
 			return src.replace(/(:\/\/[^/]*\/).*?\/([^/]*)$/, "$1$2");
 		}
@@ -13127,6 +13127,9 @@ var $$IMU_EXPORT$$;
 			// http://www.urbanbug.net/uploads/gallery/photos/2083/thumb_31888-170-05-005.jpg
 			//   http://www.urbanbug.net/uploads/gallery/photos/2083/31888-170-05-005.jpg
 			(domain === "www.urbanbug.net" && src.indexOf("/uploads/") >= 0) ||
+			// https://shobiddak.com/uploads/picture/stuff/name/159476/thumb_maxresdefault.jpg
+			//   https://shobiddak.com/uploads/picture/stuff/name/159476/maxresdefault.jpg
+			(domain_nowww === "shobiddak.com" && /\/uploads\/+picture\//.test(src)) ||
 			// http://celebs-news.ru/images/persons/natalie-portman/1611/thumb_natalie_portman_32.jpg
 			//   http://celebs-news.ru/images/persons/natalie-portman/1611/natalie_portman_32.jpg
 			(domain_nowww === "celebs-news.ru" && src.indexOf("/images/") >= 0)) {
@@ -29848,7 +29851,9 @@ var $$IMU_EXPORT$$;
 			//   https://cc-media-foxit.fichub.com/image/fox-it-life/ea0e5584-d47d-44b1-9afb-c3303787cefd/953895948.jpg
 			// https://cc-media-foxit.fichub.com/image/fox-it-life/f106ec8d-7b94-461d-8a58-1956e84e11a4/max/390x506.jpg
 			//   https://cc-media-foxit.fichub.com/image/fox-it-life/f106ec8d-7b94-461d-8a58-1956e84e11a4/max.jpg
-			return src.replace(/(\/[-0-9a-f]+\/[^/]*)(?:-(?:maxw-[0-9]+|[0-9]+x[0-9]+))?(?:\/+[0-9]+x[0-9]+)?(\.[^/.]*)$/,
+			// https://cc-media-foxit.fichub.com/image/floptv/a58c431e-5c09-4ea2-a3b3-13def20c13d1/gta-4-copertina-216x122.jpg
+			//   https://cc-media-foxit.fichub.com/image/floptv/a58c431e-5c09-4ea2-a3b3-13def20c13d1/gta-4-copertina.jpg
+			return src.replace(/(\/image\/+[^/]+\/+[-0-9a-f]{30,}\/+[^/]+?)(?:-(?:maxw-[0-9]+|[0-9]+x[0-9]+))?(?:\/+[0-9]+x[0-9]+)?(\.[^/.]*)$/,
 							   "$1$2");
 		}
 
@@ -30839,6 +30844,9 @@ var $$IMU_EXPORT$$;
 			// http://intoclassics.net/_nw/222/s15806925.jpg
 			//   http://intoclassics.net/_nw/222/15806925.jpg
 			domain_nowww === "intoclassics.net" ||
+			// http://zonemod.com/_pu/0/s38210375.jpg
+			//   http://zonemod.com/_pu/0/38210375.jpg
+			domain_nowww === "zonemod.com" ||
 			// http://sarajean.ucoz.net/_ph/1/1/274840587.jpg?1570878684
 			//   http://sarajean.ucoz.net/_ph/1/274840587.jpg?1570878684
 			domain_nosub === "ucoz.net") {
@@ -31848,12 +31856,15 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "elle.co.za" ||
+			// https://www.xgn.nl/images/articles/2018/201804/_360x202_crop_center-center_82_line/heel-veel-gta-muziek-verwijdert-uit-de-game-130674.jpg
+			//   https://www.xgn.nl/images/articles/2018/201804/heel-veel-gta-muziek-verwijdert-uit-de-game-130674.jpg
+			domain_nowww === "xgn.nl" ||
 			// https://cache.wizardworld.com/files/wizard/_164xAUTO_fit_center-center_100/rampage-trailer-1-feature.png
 			//   https://cache.wizardworld.com/files/wizard/rampage-trailer-1-feature.png
 			domain === "cache.wizardworld.com") {
 			// https://www.elle.co.za/uploads/files/_768xAUTO_crop_center-center/Screen-Shot-2018-03-09-at-11.17.38-AM.png
 			//   https://www.elle.co.za/uploads/files/Screen-Shot-2018-03-09-at-11.17.38-AM.png
-			return src.replace(/(:\/\/[^/]*\/[^/]*\/+[^/]*\/+)_[0-9AUTO]+x[0-9AUTO]+[^/]*\//, "$1");
+			return src.replace(/\/+_[0-9AUTO]+x[0-9AUTO]+_(?:crop|fit)_[^/]+\/+/, "/");
 			//return src.replace(/(\/files\/+wizard\/+)_[AUTOx0-9]+_[^/]*\//, "$1");
 		}
 
@@ -48393,6 +48404,28 @@ var $$IMU_EXPORT$$;
 			// https://us03-imgcdn.ymcart.com/46175/thumb/60x60/2019/07/10/5/5/55c5d2e0f9fd06d6.jpg
 			//   https://us03-imgcdn.ymcart.com/46175/2019/07/10/5/5/55c5d2e0f9fd06d6.jpg
 			return src.replace(/\/([0-9]+)\/+thumb\/+[0-9]+x[0-9]+\/+/, "/$1/");
+		}
+
+		if (domain === "cdn.neow.in") {
+			// https://cdn.neow.in/news/images/uploaded/2020/01/1578531519_w16_small.jpg
+			//   https://cdn.neow.in/news/images/uploaded/2020/01/1578531519_w16_story.jpg
+			//   https://cdn.neow.in/news/images/uploaded/2020/01/1578531519_w16.jpg
+			return src.replace(/(\/images\/+uploaded\/+[0-9]{4}\/+[0-9]{2}\/+[^/]+)_(?:story|small)(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "gamereactor.no") {
+			// https://www.gamereactor.no/media/35/_2003593_118x87.jpg
+			//   https://www.gamereactor.no/media/35/_2003593t.jpg
+			//   https://www.gamereactor.no/media/35/_2003593.jpg
+			// https://www.gamereactor.no/media/79/grandtheftauto_77929t.jpg
+			//   https://www.gamereactor.no/media/79/grandtheftauto_77929.jpg
+			return src.replace(/(\/media\/+[0-9]+\/+[^/]*_[0-9]+)(?:t|_[0-9]+x[0-9]+)(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "fullyimportant.ru") {
+			// https://fullyimportant.ru/thumbs/62801_1.jpeg
+			//   https://fullyimportant.ru/cdn/1/62801.jpeg
+			return src.replace(/\/thumbs\/+([0-9]+)_([0-9]+)(\.[^/.]+)(?:[?#].*)?$/, "/cdn/$2/$1$3");
 		}
 
 
