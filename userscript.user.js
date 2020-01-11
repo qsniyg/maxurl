@@ -8138,6 +8138,8 @@ var $$IMU_EXPORT$$;
 			(domain_nosub === "paytm.com" && /^assetscdn[0-9]*\./.test(domain)) ||
 			// https://images.perthnow.com.au/publication/B881248267Z/1562057175392_GKT29TC6J.2-2.jpg?imwidth=668&impolicy=pn_v3
 			domain === "images.perthnow.com.au" ||
+			// https://netstorage-yen.akamaized.net/images/3o3bpd2bs54589rka.jpg?imwidth=900
+			(domain === "netstorage-yen.akamaized.net" && src.indexOf("/images/") >= 0) ||
 			// https://cdn1.eldia.com/092017/1506251744295.jpg?&cw=320
 			(domain_nosub === "eldia.com" && /^cdn[0-9]*\./.test(domain)) ||
 			// https://esquire.com.gr/Content/ImagesDatabase/dd/dd305859aa7b4181b03ee3f615490545.jpg?v=1&maxwidth=760&
@@ -45971,7 +45973,10 @@ var $$IMU_EXPORT$$;
 				return newsrc;
 		}
 
-		if (domain === "cdn.webshopapp.com") {
+		if (domain === "cdn.webshopapp.com" ||
+			// https://cdn.shoplightspeed.com/shops/618877/files/16268922/800x1024x1/english-factory-checkered-white-h-line-miniskirt.jpg
+			//   https://cdn.shoplightspeed.com/shops/618877/files/16268922/english-factory-checkered-white-h-line-miniskirt.jpg
+			domain === "cdn.shoplightspeed.com") {
 			// https://cdn.webshopapp.com/shops/72247/files/233281437/700x700x2/image.jpg
 			//   https://cdn.webshopapp.com/shops/72247/files/233281437/image.jpg
 			return src.replace(/(\/files\/+[0-9]+\/+)[0-9]+x[0-9]+(?:x[0-9])?\/+/, "$1");
@@ -48358,6 +48363,36 @@ var $$IMU_EXPORT$$;
 			//   https://is1.sh-cdn.com/images/1/6/b/1/79509/giant_thumb_916384ad.jpg
 			//   https://is1.sh-cdn.com/images/1/6/b/1/79509/916384ad.jpg
 			return src.replace(/(\/images\/+(?:[0-9a-f]\/+){4}[0-9]+\/+)(?:giant_)?thumb_([0-9a-f]+\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain === "static.showit.co") {
+			// https://static.showit.co/200/A8ShtUACQF2MLeQacAvjlQ/81710/watercolor-artist-lifestyle-personal-branding-headshots-photography-session-nashville-photographers_3.jpg
+			//   https://static.showit.co/99999999/A8ShtUACQF2MLeQacAvjlQ/81710/watercolor-artist-lifestyle-personal-branding-headshots-photography-session-nashville-photographers_3.jpg
+			return src.replace(/(:\/\/[^/]+\/+)[0-9]+(\/+[^/]+\/+[0-9]+\/+)/, "$199999999$2");
+		}
+
+		if (domain === "d33veqcui7lu1w.cloudfront.net") {
+			// https://lookbook.nu/market/items/195-mixed-pearls-gold-chains-halter-bra-chest-piece
+			// https://d33veqcui7lu1w.cloudfront.net/files/neo_items/small_square/2014/06/11/205_DSC_0119.jpg
+			//   https://d33veqcui7lu1w.cloudfront.net/files/neo_items/large/2014/06/11/205_DSC_0119.jpg
+			//   https://d33veqcui7lu1w.cloudfront.net/files/neo_items/original/2014/06/11/205_DSC_0119.jpg
+			// http://d33veqcui7lu1w.cloudfront.net/files/looks/medium/2014/01/30/3535656_SAM_3797.jpg?1391061481
+			//   http://d33veqcui7lu1w.cloudfront.net/files/looks/large/2014/01/30/3535656_SAM_3797.jpg?1391061481
+			//   http://d33veqcui7lu1w.cloudfront.net/files/looks/original/2014/01/30/3535656_SAM_3797.jpg?1391061481 -- doesn't work
+			//   http://d33veqcui7lu1w.cloudfront.net/files/neo_items/large/2014/01/30/3535656_SAM_3797.jpg?1391061481 -- doesn't work
+			regex = /(\/files\/+[^/]+\/+)[a-z_]+\/+/;
+			if (regex.test(src)) {
+				return [
+					src.replace(regex, "$1original/"),
+					src.replace(regex, "$1large/")
+				];
+			}
+		}
+
+		if (domain_nosub === "ymcart.com" && domain.indexOf("imgcdn.") >= 0) {
+			// https://us03-imgcdn.ymcart.com/46175/thumb/60x60/2019/07/10/5/5/55c5d2e0f9fd06d6.jpg
+			//   https://us03-imgcdn.ymcart.com/46175/2019/07/10/5/5/55c5d2e0f9fd06d6.jpg
+			return src.replace(/\/([0-9]+)\/+thumb\/+[0-9]+x[0-9]+\/+/, "/$1/");
 		}
 
 
