@@ -11005,6 +11005,15 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\.[0-9]+x[0-9]+(\.[^/]*)$/, "$1");
 		}
 
+		if (domain === "steamstore-a.akamaihd.net") {
+			// https://steamstore-a.akamaihd.net/public/images/v6/app/game_page_background_shadow.png?v=2
+			if (/\/public\/+images\/+v[0-9]*\/+app\/+game_page.*/.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
+		}
+
 		if (domain_nosub === "medium.com" &&
 			(domain.match(/cdn-images-[0-9]*\.medium\.com/) ||
 			 // https://miro.medium.com/fit/c/240/240/1*Znlrcvh2KRPP4xG_s9Bp7A@2x.jpeg
@@ -55425,7 +55434,7 @@ var $$IMU_EXPORT$$;
 			if (_nir_debug_)
 				console_log("trigger_popup: source =", source);
 
-			if (source) {
+			if (source && (popup_trigger_reason !== "mouse" || source.el !== last_popup_el)) {
 				trigger_popup_with_source(source);
 			} else {
 				delay_handle_triggering = false;
@@ -56811,7 +56820,7 @@ var $$IMU_EXPORT$$;
 					}
 
 					delay_handle = setTimeout(function() {
-						if (delay_handle_triggering || trigger_complete(settings.mouseover_trigger_prevent_key) || last_popup_el)
+						if (delay_handle_triggering || trigger_complete(settings.mouseover_trigger_prevent_key))
 							return;
 
 						popup_trigger_reason = "mouse";
