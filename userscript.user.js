@@ -49751,6 +49751,10 @@ var $$IMU_EXPORT$$;
 						return null;
 
 					var find_from_el = function() {
+						if (options.host_url.match(/\/a\/+[^/]+\/+embed/)) {
+							return "default";
+						}
+
 						var current = el;
 						while ((current = current.parentElement)) {
 							if (current.tagName === "DIV" &&
@@ -49820,14 +49824,14 @@ var $$IMU_EXPORT$$;
 					if (!window.runSlots && options.do_request) {
 						common_functions.fetch_imgur_webpage(options.do_request, real_api_cache, undefined, options.host_url, function(data) {
 							if (!data || !data.imageinfo) {
-								return options.cb(find_next_el());
+								return options.cb(find_from_el());
 							}
 
 							try {
 								return options.cb(find_from_both(data.imageinfo.album_images.images));
 							} catch (e) {
 								console_error(e);
-								return options.cb(find_next_el());
+								return options.cb(find_from_el());
 							}
 						});
 
