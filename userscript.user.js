@@ -52881,6 +52881,7 @@ var $$IMU_EXPORT$$;
 		var popups = [];
 		var popup_obj = null;
 		var popup_el = null;
+		var next_popup_el = null;
 		var popup_orig_el = null;
 		var popup_el_automatic = false;
 		var popups_active = false;
@@ -53056,6 +53057,7 @@ var $$IMU_EXPORT$$;
 			disable_click = false;
 			popups_active = false;
 			delay_handle_triggering = false;
+			next_popup_el = null;
 			popup_el = null;
 			popup_el_automatic = false;
 			stop_processing();
@@ -55418,6 +55420,8 @@ var $$IMU_EXPORT$$;
 		}
 
 		function trigger_popup_with_source(source, automatic, use_last_pos) {
+			next_popup_el = source.el;
+
 			return get_final_from_source(source, automatic, false, use_last_pos, function(source_imu, source, processing, data) {
 				if (!source_imu && !source && !processing && !data) {
 					delay_handle_triggering = false;
@@ -56777,6 +56781,13 @@ var $$IMU_EXPORT$$;
 					mouseDelayX = mouseX;
 					mouseDelayY = mouseY;
 					//mouse_in_image_yet = false;
+
+					if (next_popup_el && popups.length === 0 && delay_handle_triggering) {
+						var popup_el_rect = next_popup_el.getBoundingClientRect();
+						if (!in_clientrect(mouseX, mouseY, popup_el_rect)) {
+							resetpopups();
+						}
+					}
 
 					delay_handle = setTimeout(function() {
 						if (delay_handle_triggering || trigger_complete(settings.mouseover_trigger_prevent_key))
