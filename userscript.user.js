@@ -14228,6 +14228,7 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "girlspolish.jp" ||
 			// http://joah-girls.com/system/item_images/images/000/112/476/medium/a9faac95-20df-48f5-a855-0c9791e1ec11.jpg?1513993165
 			//   http://joah-girls.com/system/item_images/images/000/112/476/original/a9faac95-20df-48f5-a855-0c9791e1ec11.jpg?1513993165
+			// http://joah-girls.com/system/articles/images/000/005/369/square/2964aa6c-389c-4920-b383-83083f5d2279.jpg?1547101266
 			domain_nowww === "joah-girls.com" ||
 			// http://listas.eleconomista.es/system/items/000/106/409/medium/listas-eleconomista-enma-stone.jpg?1518398807
 			//   http://listas.eleconomista.es/system/items/000/106/409/original/listas-eleconomista-enma-stone.jpg?1518398807
@@ -14258,7 +14259,7 @@ var $$IMU_EXPORT$$;
 			//   https://sonarreykjavik.com/system/attached_images/19379/original/BadGyal_AlexisG%C3%B3mez.jpg?1513685256
 			return src
 				.replace(/(\/attached_images\/+[0-9]+\/+)[a-z]+\/+/, "$1original/")
-				.replace(/(\/(?:system|images)\/+(?:(?:attached|item)_images|App\/+BlogBody|post_pictures|events|posts|items|file_uploads|screenshots|resources|pictures)\/+(?:(?:images|photos|files|assets|pictures|posters|uploads|screenshots|previews|imgs)\/+)?(?:[0-9]{3}\/+){3})[a-z_0-9]+\/+/, "$1original/");
+				.replace(/(\/(?:system|images)\/+(?:(?:attached|item)_images|App\/+BlogBody|post_pictures|events|posts|items|articles|file_uploads|screenshots|resources|pictures)\/+(?:(?:images|photos|files|assets|pictures|posters|uploads|screenshots|previews|imgs)\/+)?(?:[0-9]{3}\/+){3})[a-z_0-9]+\/+/, "$1original/");
 			//return src.replace(/(\/system\/(?:post_pictures\/(?:files|assets|pictures)\/|posts\/posters\/|events\/images\/)(?:[0-9]+\/){3})[a-z]+(\/[^/]*)$/, "$1original$2");
 			//return src.replace(/\/[a-z]*\/([-0-9a-f]*\.[^/.]*)$/, "/original/$1");
 			//return src.replace(/(\/[0-9]+\/[0-9]+\/[0-9]+)\/[a-z]+\/([^/]*)$/, "$1/original/$2");
@@ -56425,7 +56426,7 @@ var $$IMU_EXPORT$$;
 
 		var auto_highlighted_imgs = [];
 		var highlight_images = function(options) {
-			if (currenttab_is_image() && mouseover.mouseover_exclude_imagetab)
+			if (currenttab_is_image() && settings.mouseover_exclude_imagetab)
 				return;
 
 			if (!options) {
