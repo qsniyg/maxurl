@@ -10512,11 +10512,13 @@ var $$IMU_EXPORT$$;
 			// https://lastfm.freetls.fastly.net/i/u/300x300/12b1bfb5e2ea09bf084888c6542de63d.jpg
 			//   https://lastfm.freetls.fastly.net/i/u/34s/12b1bfb5e2ea09bf084888c6542de63d.jpg
 			//   https://lastfm.freetls.fastly.net/i/u/12b1bfb5e2ea09bf084888c6542de63d.jpg
+			// https://lastfm.freetls.fastly.net/i/u/avatar170s/286c3c59c3c14f9037f0b4ce0fef9bf5.jpg
+			//   https://lastfm.freetls.fastly.net/i/u/286c3c59c3c14f9037f0b4ce0fef9bf5.jpg
 			domain === "lastfm.freetls.fastly.net" ||
 			// http://img2-ak.lst.fm/i/u/770x0/2c2ffdfa64ad4db8d6b5e8c47474fbe8.jpg
 			//   http://img2-ak.lst.fm/i/u/2c2ffdfa64ad4db8d6b5e8c47474fbe8.jpg
 			domain_nosub === "lst.fm") {
-			return src.replace(/\/i\/+u\/+(?:[0-9]+x[0-9]+|[0-9]+s)\//, "/i/u/");
+			return src.replace(/\/i\/+u\/+(?:avatar)?(?:[0-9]+x[0-9]+|[0-9]+s)\//, "/i/u/");
 		}
 
 		if (domain_nosub === "myspacecdn.com" &&
@@ -35850,6 +35852,19 @@ var $$IMU_EXPORT$$;
 							   "$1L$2");
 		}
 
+		if (domain === "zine.istyle24.com") {
+			// http://zine.istyle24.com/App_Themes/FrontThemes/images/common/border_street.gif
+			if (/\/App_Themes\/.*\/images\/+common\//.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
+
+			// http://zine.istyle24.com/FileUpload/Content/636797957602686250_058043.jpg
+			//   http://zine.istyle24.com/FileUpload/Content/636797957602686250.jpg
+			return src.replace(/(\/FileUpload\/+Content\/+[0-9]{10,})_[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
 		if (domain_nowww === "bbstar.kr") {
 			// http://www.bbstar.kr/model/eunpa012s.jpg
 			//   http://www.bbstar.kr/model/eunpa012.jpg
@@ -48575,6 +48590,97 @@ var $$IMU_EXPORT$$;
 			// https://fullyimportant.ru/thumbs/62801_1.jpeg
 			//   https://fullyimportant.ru/cdn/1/62801.jpeg
 			return src.replace(/\/thumbs\/+([0-9]+)_([0-9]+)(\.[^/.]+)(?:[?#].*)?$/, "/cdn/$2/$1$3");
+		}
+
+		if (domain === "az879543.vo.msecnd.net") {
+			// should we keep this? seems rather haphazard
+
+			// unhandled:
+			// http://az879543.vo.msecnd.net/twice/DJAt0BvVwAEUIsG-orig-009.jpg
+			//   http://az879543.vo.msecnd.net/twice/DJAt0BvVwAEUIsG-orig.jpg
+			// https://az879543.vo.msecnd.net/twice/C8eo1szUMAE18pd-orig(1).jpg
+			//   https://az879543.vo.msecnd.net/twice/C8eo1szUMAE18pd-orig.jpg
+
+			// https://az879543.vo.msecnd.net/twice/21_20190422_s.jpg
+			//   https://az879543.vo.msecnd.net/twice/21_20190422.jpg
+			newsrc = src.replace(/(:\/\/[^/]+\/+[a-z]+\/+[^/]+)_s(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+			if (newsrc !== src)
+				return newsrc;
+
+			// https://az879543.vo.msecnd.net/twice/IMG_9046_.jpg
+			//   https://az879543.vo.msecnd.net/twice/IMG_9046.JPG
+			// https://az879543.vo.msecnd.net/twice/2-2_.jpg
+			//   https://az879543.vo.msecnd.net/twice/2-2.jpg
+			// https://az879543.vo.msecnd.net/twice/%ED%81%AC%EA%B8%B0%EB%B3%80%ED%99%98_IMG_7019_.jpg
+			//   https://az879543.vo.msecnd.net/twice/IMG_7019.JPG
+			// https://az879543.vo.msecnd.net/twice/%ED%81%AC%EA%B8%B0%EB%B3%80%ED%99%98_IMG_7048_(1).jpg
+			//   https://az879543.vo.msecnd.net/twice/IMG_7048.JPG
+			newsrc = src.replace(/(:\/\/[^/]+\/+[a-z]+\/+)(?:%ED%81%AC%EA%B8%B0%EB%B3%80%ED%99%98_|크기변환_)?([^/]+)_(?:\(1\))?(\.[^/.]+)(?:[?#].*)?$/, "$1$2$3");
+			if (newsrc !== src)
+				return add_extensions_upper(newsrc);
+		}
+
+		if (domain === "static-buyma-com.akamaized.net") {
+			// https://static-buyma-com.akamaized.net/imgdata/item/171123/0032783382/129092058/090.jpg
+			//   https://static-buyma-com.akamaized.net/imgdata/item/171123/0032783382/129092058/428.jpg
+			//   https://static-buyma-com.akamaized.net/imgdata/item/171123/0032783382/129092058/org.jpg
+			return src.replace(/(\/imgdata\/+item\/+[0-9]+\/+[0-9]+\/+[0-9]+\/+)[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1org$2");
+		}
+
+		if (domain === "images.spoilertv.com") {
+			// https://images.spoilertv.com/cache/ncis-los-angeles/Season%209/Promotional%20Episode%20Photos/Episode%209.09%20-%20Fool%20Me%20Twice/111215_0221b_180_cw180_ch180_thumb.jpg
+			//   https://images.spoilertv.com/cache/ncis-los-angeles/Season%209/Promotional%20Episode%20Photos/Episode%209.09%20-%20Fool%20Me%20Twice/111215_0221b_FULL.jpg
+			return src.replace(/(\/cache\/+.*\/[^/]+)_[0-9]+_cw[0-9]+_ch[0-9]+_thumb\./, "$1_FULL.");
+		}
+
+		if (domain_nosub === "itc.cn" && domain.indexOf(".biz.") >= 0) {
+			// http://m3.biz.itc.cn/pic/new/s/74/87/Img8788774_s.jpg
+			//   http://m3.biz.itc.cn/pic/new/f/74/87/Img8788774_f.jpg
+			return src.replace(/(\/pic\/+[^/]+\/+)[sn](\/+(?:[0-9]{2}\/+){2}Img[0-9]+)_[sn](\.[^/.]+)(?:[?#].*)?$/, "$1f$2_f$3");
+		}
+
+		if (domain === "photo.isportskorea.com") {
+			// http://photo.isportskorea.com/photo/thumbnail/2013/07/20130724184654274.jpg
+			//   http://photo.isportskorea.com/photo/images/2013/07/20130724184654274.jpg
+			newsrc = src.replace(/(\/photo\/+)thumbnail(\/+[0-9]{4}\/+[0-9]{2}\/+[0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1images$2");
+			obj = {
+				url: newsrc
+			};
+
+			match = src.match(/\/photo\/+[^/]+\/+[0-9]{4}\/+[0-9]{2}\/+([0-9]+)\./);
+			if (match) {
+				obj.extra = {page: "http://www.isportskorea.com/mstory/?mode=view&no=" + match[1]};
+			}
+
+			return obj;
+		}
+
+		if (domain === "edc2.healthtap.com") {
+			// https://edc2.healthtap.com/ht-staging/user_answer/reference_image/16764/large/78025379.jpeg?1386670285
+			//   https://edc2.healthtap.com/ht-staging/user_answer/reference_image/16764/original/78025379.jpg
+			// https://edc2.healthtap.com/ht-staging/user_answer/reference_image/59410/topic_large/Jennifer_Dufek_-_iStock-145849205.jpeg
+			//   https://edc2.healthtap.com/ht-staging/user_answer/reference_image/59410/original/Jennifer_Dufek_-_iStock-145849205.jpg
+			// https://edc2.healthtap.com/ht-staging/user_answer/reference_image/14349/xx_normal/allergies.jpeg?1386670866
+			//   https://edc2.healthtap.com/ht-staging/user_answer/reference_image/14349/original/allergies.jpg
+			// https://edc2.healthtap.com/ht-staging/user_answer/reference_image/5396/x_medium/Itch.jpeg?1386670743
+			//   https://edc2.healthtap.com/ht-staging/user_answer/reference_image/5396/large/Itch.jpeg?1386670743
+			//   https://edc2.healthtap.com/ht-staging/user_answer/reference_image/5396/topic_large/Itch.jpeg?1386670743 -- upscaled?
+			//   https://edc2.healthtap.com/ht-staging/user_answer/reference_image/5396/original/Itch.jpg -- doesn't work
+			// https://edc2.healthtap.com/ht-staging/user_answer/reference_image/3227/xx_normal/medication.jpeg?1386670144
+			//   https://edc2.healthtap.com/ht-staging/user_answer/reference_image/3227/topic_large/medication.jpeg?1386670144
+			// doesn't work for all:
+			// https://edc2.healthtap.com/ht-staging/user_answer/avatars/365861/original/open-uri20120820-16677-1ct8q0j.jpeg?1386596719
+			//   https://edc2.healthtap.com/ht-staging/user_answer/avatars/365861/topic_large/open-uri20120820-16677-1ct8q0j.jpeg?1386596719
+			//   https://edc2.healthtap.com/ht-staging/user_answer/avatars/365861/original/open-uri20120820-16677-1ct8q0j.jpg
+			return src
+				.replace(/(\/user_answer\/+[^/]+\/+[0-9]+\/+)topic_large(\/+[^/]+)\.jpeg(?:[?#].*)?$/, "$1original$2.jpg")
+				.replace(/(\/user_answer\/+[^/]+\/+[0-9]+\/+)(?:(?:topic|xx?)_)?(?:medium|normal|large)(\/+[^/]+\.[^/.]+)(?:[?#].*)?$/, "$1topic_large$2");
+		}
+
+		if (domain_nowww === "bomz.org") {
+			// http://bomz.org/i/bomz/thumb_55168_2011.11.17_bomz.org_ssl1uiphwq0006.jpg
+			//   http://bomz.org/i/bomz/55168_2011.11.17_bomz.org_ssl1uiphwq0006.jpg
+			return src.replace(/(\/i\/+[^/]+\/+)thumb_([^/]+)(?:[?#].*)?$/, "$1$2");
 		}
 
 
