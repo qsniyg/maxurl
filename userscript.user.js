@@ -56022,7 +56022,7 @@ var $$IMU_EXPORT$$;
 
 		var replacing_imgs = false;
 		function replace_images(options) {
-			if (replacing_imgs)
+			if (replacing_imgs || currenttab_is_image())
 				return;
 
 			var raw_imgs = options.images;
@@ -56321,6 +56321,9 @@ var $$IMU_EXPORT$$;
 
 		var auto_highlighted_imgs = [];
 		var highlight_images = function(options) {
+			if (currenttab_is_image() && mouseover.mouseover_exclude_imagetab)
+				return;
+
 			if (!options) {
 				options = {}
 			}
