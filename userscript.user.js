@@ -1052,6 +1052,7 @@ var $$IMU_EXPORT$$;
 		mouseover_pan_behavior: "drag",
 		mouseover_scroll_behavior: "zoom",
 		scroll_zoom_behavior: "fitfull",
+		mouseover_move_with_cursor: false,
 		zoom_out_to_close: false,
 		// thanks to 07416 on github for the idea: https://github.com/qsniyg/maxurl/issues/20#issuecomment-439599984
 		mouseover_position: "cursor",
@@ -1787,6 +1788,16 @@ var $$IMU_EXPORT$$;
 			},
 			requires: {
 				mouseover_scroll_behavior: "zoom"
+			},
+			category: "popup",
+			subcategory: "behavior"
+		},
+		mouseover_move_with_cursor: {
+			name: "Move with cursor",
+			description: "Moves the popup as the cursor moves",
+			requires: {
+				mouseover_open_behavior: "popup",
+				mouseover_trigger_behavior: "mouse"
 			},
 			category: "popup",
 			subcategory: "behavior"
@@ -56608,19 +56619,37 @@ var $$IMU_EXPORT$$;
 			var min_move_amt = 5;
 			var moved = false;
 
-			if (pan_behavior === "drag" && dragstart) {
-				var origleft = parseInt(popup.style.left);
-				//var left = origleft + event.movementX;
-				var left = mouseX - dragoffsetX;
+			// lefttop: true = top, false = left
 
-				if (left !== origleft) {
-					if (dragged || Math.abs(left - origleft) >= min_move_amt) {
-						lastX = left - (origleft - lastX);
-						popup.style.left = left + "px";
+			var dodrag = function(lefttop) {
+				var orig = parseInt(lefttop ? popup.style.top : popup.style.left);
+
+				var mousepos = lefttop ? mouseY : mouseX;
+				var dragoffset = lefttop ? dragoffsetY : dragoffsetX;
+				var last = lefttop ? lastY : lastX;
+
+				var current = mousepos - dragoffset;
+
+				if (current !== orig) {
+					if (dragged || Math.abs(current - orig) >= min_move_amt) {
+						var newlast = current - (orig - last);
+
+						if (lefttop) {
+							lastY = newlast;
+							popup.style.top = current + "px";
+						} else {
+							lastX = newlast;
+							popup.style.left = current + "px";
+						}
+
 						dragged = true;
 						moved = true;
 					}
 				}
+			};
+
+			if (pan_behavior === "drag" && dragstart) {
+				dodrag(false);
 			} else if (pan_behavior === "movement" && popup.offsetWidth > viewport[0]) {
 				var mouse_edge = Math.min(Math.max((mouseX - edge_buffer), 0), viewport[0] - edge_buffer * 2);
 				var percent = mouse_edge / (viewport[0] - (edge_buffer * 2));
@@ -56629,18 +56658,7 @@ var $$IMU_EXPORT$$;
 			}
 
 			if (pan_behavior === "drag" && dragstart) {
-				var origtop = parseInt(popup.style.top);
-				//var top = origtop + event.movementY;
-				var top = mouseY - dragoffsetY;
-
-				if (top !== origtop) {
-					if (dragged || Math.abs(top - origtop) >= min_move_amt) {
-						lastY = top - (origtop - lastY);
-						popup.style.top = top + "px";
-						dragged = true;
-						moved = true;
-					}
-				}
+				dodrag(true);
 			} else if (pan_behavior === "movement" && popup.offsetHeight > viewport[1]) {
 				var mouse_edge = Math.min(Math.max((mouseY - edge_buffer), 0), viewport[1] - edge_buffer * 2);
 				var percent = mouse_edge / (viewport[1] - (edge_buffer * 2));
