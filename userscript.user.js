@@ -56709,13 +56709,9 @@ var $$IMU_EXPORT$$;
 
 			if (pan_behavior === "drag" && dragstart) {
 				dodrag(false);
-			} else if (pan_behavior === "movement") {
-				domovement(false);
-			}
-
-			if (pan_behavior === "drag" && dragstart) {
 				dodrag(true);
 			} else if (pan_behavior === "movement") {
+				domovement(false);
 				domovement(true);
 			}
 
