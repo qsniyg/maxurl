@@ -1047,6 +1047,7 @@ var $$IMU_EXPORT$$;
 		mouseover_ui_optionsbtn: is_userscript ? true : false,
 		mouseover_ui_rotationbtns: false,
 		mouseover_ui_caption: true,
+		mouseover_ui_wrap_caption: true,
 		mouseover_zoom_behavior: "fit",
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-531080061
 		mouseover_zoom_custom_percent: 100,
@@ -1562,6 +1563,15 @@ var $$IMU_EXPORT$$;
 			description: "Shows the image's caption (if available) at the top",
 			requires: {
 				mouseover_ui: true
+			},
+			category: "popup",
+			subcategory: "ui"
+		},
+		mouseover_ui_wrap_caption: {
+			name: "Wrap caption text",
+			description: "Wraps the caption if it's too long",
+			requires: {
+				mouseover_ui_caption: true
 			},
 			category: "popup",
 			subcategory: "ui"
@@ -53930,14 +53940,20 @@ var $$IMU_EXPORT$$;
 
 					var caption = get_caption(newobj, popup_el);
 					if (caption && settings.mouseover_ui_caption) {
-						// /10 is arbitrary, but seems to work well
-						var chars = parseInt(Math.max(10, Math.min(60, (popup_width - topbarel.clientWidth) / 10)));
-						var caption_regex = new RegExp("^((?:.{" + chars + "}|.{0," + chars + "}[\\r\\n]))[\\s\\S]+?$");
+						var btntext = caption;
 
-						var caption_btn = addbtn({
-							truncated: caption.replace(caption_regex, "$1..."),
-							full: caption
-						}, caption, null, true);
+						if (settings.mouseover_ui_wrap_caption) {
+							// /10 is arbitrary, but seems to work well
+							var chars = parseInt(Math.max(10, Math.min(60, (popup_width - topbarel.clientWidth) / 10)));
+							var caption_regex = new RegExp("^((?:.{" + chars + "}|.{0," + chars + "}[\\r\\n]))[\\s\\S]+?$");
+
+							btntext = {
+								truncated: caption.replace(caption_regex, "$1..."),
+								full: caption
+							};
+						}
+
+						var caption_btn = addbtn(btntext, caption, null, true);
 						topbarel.appendChild(caption_btn);
 					}
 
