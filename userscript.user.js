@@ -1050,6 +1050,7 @@ var $$IMU_EXPORT$$;
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-531080061
 		mouseover_zoom_custom_percent: 100,
 		mouseover_pan_behavior: "drag",
+		mouseover_drag_min: 5,
 		mouseover_scroll_behavior: "zoom",
 		scroll_zoom_behavior: "fitfull",
 		mouseover_move_with_cursor: false,
@@ -1741,6 +1742,19 @@ var $$IMU_EXPORT$$;
 			},
 			requires: {
 				mouseover_open_behavior: "popup"
+			},
+			category: "popup",
+			subcategory: "behavior"
+		},
+		mouseover_drag_min: {
+			name: "Minimum drag amount",
+			description: "How many pixels the mouse should move to start a drag",
+			type: "number",
+			number_min: 0,
+			number_int: true,
+			number_unit: "pixels",
+			requires: {
+				mouseover_pan_behavior: "drag"
 			},
 			category: "popup",
 			subcategory: "behavior"
@@ -56632,7 +56646,7 @@ var $$IMU_EXPORT$$;
 
 			var viewport = get_viewport();
 			var edge_buffer = 80;
-			var min_move_amt = 5;
+			var min_move_amt = parseInt(settings.mouseover_drag_min);
 			var moved = false;
 
 			// lefttop: true = top, false = left
