@@ -1043,6 +1043,7 @@ var $$IMU_EXPORT$$;
 		mouseover_ui_zoomlevel: true,
 		mouseover_ui_gallerycounter: true,
 		mouseover_ui_gallerymax: 50,
+		mouseover_ui_closebtn: true,
 		mouseover_ui_optionsbtn: is_userscript ? true : false,
 		mouseover_ui_rotationbtns: false,
 		mouseover_ui_caption: true,
@@ -1524,6 +1525,15 @@ var $$IMU_EXPORT$$;
 			type: "number",
 			number_min: 0,
 			number_unit: "images",
+			category: "popup",
+			subcategory: "ui"
+		},
+		mouseover_ui_closebtn: {
+			name: "Close Button",
+			description: "Enables a button to close the popup",
+			requires: {
+				mouseover_ui: true
+			},
 			category: "popup",
 			subcategory: "ui"
 		},
@@ -53826,11 +53836,14 @@ var $$IMU_EXPORT$$;
 
 					opacity_hover(topbarel);
 
-					// \xD7 = ×
-					var closebtn = addbtn("\xD7", _("Close") + " (" + _("ESC") + ")", function() {
-						resetpopups();
-					}, true);
-					topbarel.appendChild(closebtn);
+					if (settings.mouseover_ui_closebtn) {
+						// \xD7 = ×
+						var closebtn = addbtn("\xD7", _("Close") + " (" + _("ESC") + ")", function() {
+							resetpopups();
+						}, true);
+						topbarel.appendChild(closebtn);
+					}
+
 					outerdiv.appendChild(topbarel);
 					ui_els.push(topbarel);
 
