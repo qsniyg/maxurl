@@ -56658,7 +56658,8 @@ var $$IMU_EXPORT$$;
 				return;
 
 			var viewport = get_viewport();
-			var edge_buffer = 80;
+			var edge_buffer = 40;
+			var border_thresh = 20;
 			var min_move_amt = parseInt(settings.mouseover_drag_min);
 			var moved = false;
 
@@ -56700,7 +56701,7 @@ var $$IMU_EXPORT$$;
 					var mouse_edge = Math.min(Math.max((mousepos - edge_buffer), 0), viewportD - edge_buffer * 2);
 					var percent = mouse_edge / (viewportD - (edge_buffer * 2));
 
-					var newpos = percent * (viewportD - offsetD) + "px";
+					var newpos = (percent * (viewportD - offsetD - border_thresh * 2) + border_thresh) + "px";
 
 					if (lefttop)
 						popup.style.top = newpos;
