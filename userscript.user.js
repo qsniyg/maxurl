@@ -55907,19 +55907,68 @@ var $$IMU_EXPORT$$;
 			});
 		}
 
+		var parse_transforms = function(transform) {
+			var transforms = [];
+			var transform_types = {};
+
+			var last = 0;
+			for (var i = 0; i < transform.length; i++) {
+				if (transform[i] === ')') {
+					var our_transform = strip_whitespace(transform.substr(last, (i - last) + 1));
+					var type = our_transform.replace(/\(.*/, "");
+					transforms.push(our_transform);
+
+					if (!(type in transform_types)) {
+						transform_types[type] = [];
+					}
+					transform_types[type].push(transforms.length - 1);
+
+					last = i + 1;
+					continue;
+				}
+			}
+
+			return {transforms: transforms, types: transform_types};
+		};
+
+		var get_popup_transforms = function() {
+			var style = popups[0].querySelector("img").parentElement.parentElement.style;
+			if (style.transform) {
+				return parse_transforms(style.transform);
+			} else {
+				return {transforms: [], types: {}};
+			}
+		}
+
+		var stringify_transforms = function(transforms) {
+			return transforms.transforms.join(" ");
+		};
+
+		var set_popup_transforms = function(transforms) {
+			popups[0].querySelector("img").parentElement.parentElement.style.transform = stringify_transforms(transforms);
+		};
+
 		function rotate_gallery(dir) {
 			if (popups.length === 0)
 				return;
 
-			var style = popups[0].querySelector("img").parentElement.parentElement.style;
-			var deg = 0;
-			if (style.transform) {
-				var match = style.transform.match(/^rotate\(([-0-9]+)deg\)$/);
-				if (match) {
-					deg = parseInt(match[1]);
-				}
+			var transforms = get_popup_transforms();
+
+			var index = 0;
+			if ("rotate" in transforms.types) {
+				index = transforms.types.rotate[0];
+			} else {
+				transforms.transforms.unshift("rotate(0deg)");
 			}
-			style.transform = "rotate(" + (deg + dir) + "deg)";
+
+			var match = transforms.transforms[index].match(/^rotate\(([-0-9]+)deg\)$/);
+			var deg = 0;
+			if (match) {
+				deg = parseInt(match[1]);
+			}
+
+			transforms.transforms[index] = "rotate(" + (deg + dir) + "deg)";
+			set_popup_transforms(transforms);
 		}
 
 		function create_progress_el() {
