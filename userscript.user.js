@@ -2342,9 +2342,9 @@ var $$IMU_EXPORT$$;
 			"open_behavior": "subcategory_open_behavior",
 			"close_behavior": "subcategory_close_behavior",
 			"behavior": "subcategory_behavior",
+			"gallery": "subcategory_gallery",
 			"video": "subcategory_video",
 			"ui": "subcategory_ui",
-			"gallery": "subcategory_gallery",
 			"popup_other": "subcategory_popup_other"
 		},
 		"rules": {
