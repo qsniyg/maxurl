@@ -52982,6 +52982,10 @@ var $$IMU_EXPORT$$;
 		var dragstartY = null;
 		var dragoffsetX = null;
 		var dragoffsetY = null;
+		var popupOpenX = null;
+		var popupOpenY = null;
+		var popupOpenLastX = null;
+		var popupOpenLastY = null;
 		var dragged = false;
 		var controlPressed = false;
 		var waiting = false;
@@ -53365,6 +53369,11 @@ var $$IMU_EXPORT$$;
 
 				lastX = x;
 				lastY = y;
+
+				popupOpenX = x;
+				popupOpenY = y;
+				popupOpenLastX = x;
+				popupOpenLastY = y;
 
 				var initial_zoom_behavior = get_single_setting("mouseover_zoom_behavior");
 
@@ -56609,9 +56618,16 @@ var $$IMU_EXPORT$$;
 				(doc && doc.clientTop || body && body.clientTop || 0);
 		}
 
+		var get_move_with_cursor = function() {
+			// don't require this for now, because esc can also be used to close the popup
+			//var close_el_policy = get_single_setting("mouseover_close_el_policy");
+			return settings.mouseover_move_with_cursor;// && close_el_policy === "thumbnail";
+		};
+
 		function do_popup_pan(popup, event, mouseX, mouseY) {
 			var pan_behavior = get_single_setting("mouseover_pan_behavior");
-			if (pan_behavior === "drag" && (event.buttons === 0 || !dragstart))
+			var move_with_cursor = get_move_with_cursor();
+			if (pan_behavior === "drag" && (event.buttons === 0 || !dragstart) && !move_with_cursor)
 				return;
 
 			var viewport = get_viewport();
@@ -56626,19 +56642,19 @@ var $$IMU_EXPORT$$;
 
 				var mousepos = lefttop ? mouseY : mouseX;
 				var dragoffset = lefttop ? dragoffsetY : dragoffsetX;
-				var last = lefttop ? lastY : lastX;
+				//var last = lefttop ? lastY : lastX;
 
 				var current = mousepos - dragoffset;
 
 				if (current !== orig) {
 					if (dragged || Math.abs(current - orig) >= min_move_amt) {
-						var newlast = current - (orig - last);
+						//var newlast = current - (orig - last);
 
 						if (lefttop) {
-							lastY = newlast;
+							//lastY = newlast;
 							popup.style.top = current + "px";
 						} else {
-							lastX = newlast;
+							//lastX = newlast;
 							popup.style.left = current + "px";
 						}
 
@@ -56668,16 +56684,48 @@ var $$IMU_EXPORT$$;
 				}
 			};
 
+			var domovewith = function(lefttop) {
+				var orig = parseInt(lefttop ? popup.style.top : popup.style.left);
+
+				var mousepos = lefttop ? mouseY : mouseX;
+				//var popupopen = lefttop ? popupOpenY : popupOpenX;
+				var last = lefttop ? popupOpenLastY : popupOpenLastX;
+
+				var current = mousepos - last + orig;
+
+				if (current === orig)
+					return;
+
+				var newlast = mousepos;
+
+				if (lefttop) {
+					popupOpenLastY = newlast;
+					popup.style.top = current + "px";
+				} else {
+					popupOpenLastX = newlast;
+					popup.style.left = current + "px";
+				}
+			};
+
 			if (pan_behavior === "drag" && dragstart) {
 				dodrag(false);
-			} else if (pan_behavior === "movement" && popup.offsetWidth > viewport[0]) {
+			} else if (pan_behavior === "movement") {
 				domovement(false);
 			}
 
 			if (pan_behavior === "drag" && dragstart) {
 				dodrag(true);
-			} else if (pan_behavior === "movement" && popup.offsetHeight > viewport[1]) {
+			} else if (pan_behavior === "movement") {
 				domovement(true);
+			}
+
+			if (move_with_cursor) {
+				var popup_el_rect = popup_el.getBoundingClientRect();
+				// don't check for now, maybe add this as an option later?
+				if (true || in_clientrect(mouseX, mouseY, popup_el_rect)) {
+					domovewith(false);
+					domovewith(true);
+				}
 			}
 
 			if (moved) {
