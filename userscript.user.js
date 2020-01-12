@@ -1074,6 +1074,8 @@ var $$IMU_EXPORT$$;
 		mouseover_download_key: ["s"],
 		mouseover_rotate_left_key: ["e"],
 		mouseover_rotate_right_key: ["r"],
+		mouseover_flip_horizontal_key: ["h"],
+		mouseover_flip_vertical_key: ["v"],
 		mouseover_apply_blacklist: false,
 		website_inject_imu: true,
 		website_image: true,
@@ -1895,7 +1897,7 @@ var $$IMU_EXPORT$$;
 			name: "Download key",
 			description: "Downloads the image in the popup when this key is pressed",
 			requires: {
-				mouseover: true
+				mouseover_open_behavior: "popup"
 			},
 			type: "keysequence",
 			category: "popup",
@@ -1905,7 +1907,7 @@ var $$IMU_EXPORT$$;
 			name: "Rotate left key",
 			description: "Rotates the popup 90 degrees to the left",
 			requires: {
-				mouseover: true
+				mouseover_open_behavior: "popup"
 			},
 			type: "keysequence",
 			category: "popup",
@@ -1915,7 +1917,27 @@ var $$IMU_EXPORT$$;
 			name: "Rotate right key",
 			description: "Rotates the popup 90 degrees to the right",
 			requires: {
-				mouseover: true
+				mouseover_open_behavior: "popup"
+			},
+			type: "keysequence",
+			category: "popup",
+			subcategory: "behavior"
+		},
+		mouseover_flip_horizontal_key: {
+			name: "Horizontal flip key",
+			description: "Flips the image horizontally",
+			requires: {
+				mouseover_open_behavior: "popup"
+			},
+			type: "keysequence",
+			category: "popup",
+			subcategory: "behavior"
+		},
+		mouseover_flip_vertical_key: {
+			name: "Vertical flip key",
+			description: "Flips the image vertically",
+			requires: {
+				mouseover_open_behavior: "popup"
 			},
 			type: "keysequence",
 			category: "popup",
@@ -56696,6 +56718,12 @@ var $$IMU_EXPORT$$;
 					ret = false;
 				} else if (trigger_complete(settings.mouseover_rotate_right_key)) {
 					rotate_gallery(90);
+					ret = false;
+				} else if (trigger_complete(settings.mouseover_flip_horizontal_key)) {
+					flip_gallery(false);
+					ret = false;
+				} else if (trigger_complete(settings.mouseover_flip_vertical_key)) {
+					flip_gallery(true);
 					ret = false;
 				}
 
