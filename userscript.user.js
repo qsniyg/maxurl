@@ -2278,6 +2278,7 @@ var $$IMU_EXPORT$$;
 				highlightimgs_enable: true,
 				highlightimgs_auto: {$or: ["always", "hover"]}
 			},
+			needrefresh: true, // TODO: make this work with live settings reloading
 			category: "extra",
 			subcategory: "highlightimages"
 		},
