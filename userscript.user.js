@@ -55971,6 +55971,39 @@ var $$IMU_EXPORT$$;
 			set_popup_transforms(transforms);
 		}
 
+		// hv: vertical = true, horizontal = false
+		var flip_gallery = function(hv) {
+			if (popups.length === 0)
+				return;
+
+			var transforms = get_popup_transforms();
+
+			var index = transforms.transforms.length;
+			if ("scale" in transforms.types) {
+				index = transforms.types.scale[0];
+			} else {
+				transforms.transforms.push("scale(1,1)");
+			}
+
+			var match = transforms.transforms[index].match(/^scale\(([-0-9.]+)\s*,\s*([-0-9.]+)\)$/);
+			var scaleh = 1;
+			var scalev = 1;
+
+			if (match) {
+				scaleh = parseFloat(match[1]);
+				scalev = parseFloat(match[2]);
+			}
+
+			if (hv) {
+				scalev = -scalev;
+			} else {
+				scaleh = -scaleh;
+			}
+
+			transforms.transforms[index] = "scale(" + scaleh + ", " + scalev + ")";
+			set_popup_transforms(transforms);
+		};
+
 		function create_progress_el() {
 			var progressc_el = document.createElement("div");
 			set_el_all_initial(progressc_el);
