@@ -1429,7 +1429,7 @@ var $$IMU_EXPORT$$;
 			name: "Show video controls",
 			description: "Shows native video controls. Note that this prevents dragging under Firefox",
 			requires: {
-				mouseover: true,
+				mouseover_open_behavior: "popup",
 				allow_video: true
 			},
 			category: "popup",
@@ -1439,7 +1439,7 @@ var $$IMU_EXPORT$$;
 			name: "Loop video",
 			description: "Allows the video to automatically restart to the beginning after finishing playing",
 			requires: {
-				mouseover: true,
+				mouseover_open_behavior: "popup",
 				allow_video: true
 			},
 			category: "popup",
@@ -1449,7 +1449,7 @@ var $$IMU_EXPORT$$;
 			name: "Mute video",
 			description: "Mutes the video by default",
 			requires: {
-				mouseover: true,
+				mouseover_open_behavior: "popup",
 				allow_video: true
 			},
 			category: "popup",
@@ -1956,7 +1956,7 @@ var $$IMU_EXPORT$$;
 			name: "Cycle gallery",
 			description: "Going to the previous image for the first image will lead to the last image and vice-versa",
 			requires: {
-				mouseover: true
+				mouseover_open_behavior: "popup"
 			},
 			category: "popup",
 			subcategory: "gallery"
@@ -1965,7 +1965,7 @@ var $$IMU_EXPORT$$;
 			name: "Previous gallery item",
 			description: "Key to trigger the previous gallery item",
 			requires: {
-				mouseover: true
+				mouseover_open_behavior: "popup"
 			},
 			type: "keysequence",
 			category: "popup",
@@ -1975,7 +1975,7 @@ var $$IMU_EXPORT$$;
 			name: "Next gallery item",
 			description: "Key to trigger the next gallery item",
 			requires: {
-				mouseover: true
+				mouseover_open_behavior: "popup"
 			},
 			type: "keysequence",
 			category: "popup",
