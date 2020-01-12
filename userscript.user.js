@@ -56615,7 +56615,7 @@ var $$IMU_EXPORT$$;
 				return;
 
 			var viewport = get_viewport();
-			var edge_buffer = 40;
+			var edge_buffer = 80;
 			var min_move_amt = 5;
 			var moved = false;
 
@@ -56648,22 +56648,36 @@ var $$IMU_EXPORT$$;
 				}
 			};
 
+			var domovement = function(lefttop) {
+				var offsetD = lefttop ? popup.offsetHeight : popup.offsetWidth;
+				var viewportD = lefttop ? viewport[1] : viewport[0];
+				var mousepos = lefttop ? mouseY : mouseX;
+
+				if (offsetD > viewportD) {
+					var mouse_edge = Math.min(Math.max((mousepos - edge_buffer), 0), viewportD - edge_buffer * 2);
+					var percent = mouse_edge / (viewportD - (edge_buffer * 2));
+
+					var newpos = percent * (viewportD - offsetD) + "px";
+
+					if (lefttop)
+						popup.style.top = newpos;
+					else
+						popup.style.left = newpos;
+
+					moved = true;
+				}
+			};
+
 			if (pan_behavior === "drag" && dragstart) {
 				dodrag(false);
 			} else if (pan_behavior === "movement" && popup.offsetWidth > viewport[0]) {
-				var mouse_edge = Math.min(Math.max((mouseX - edge_buffer), 0), viewport[0] - edge_buffer * 2);
-				var percent = mouse_edge / (viewport[0] - (edge_buffer * 2));
-				popup.style.left = percent * (viewport[0] - popup.offsetWidth) + "px";
-				moved = true;
+				domovement(false);
 			}
 
 			if (pan_behavior === "drag" && dragstart) {
 				dodrag(true);
 			} else if (pan_behavior === "movement" && popup.offsetHeight > viewport[1]) {
-				var mouse_edge = Math.min(Math.max((mouseY - edge_buffer), 0), viewport[1] - edge_buffer * 2);
-				var percent = mouse_edge / (viewport[1] - (edge_buffer * 2));
-				popup.style.top = percent * (viewport[1] - popup.offsetHeight) + "px";
-				moved = true;
+				domovement(true);
 			}
 
 			if (moved) {
