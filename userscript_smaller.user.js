@@ -4,7 +4,7 @@
 // ==UserScript==
 // @name              Image Max URL
 // @namespace         http://tampermonkey.net/
-// @version           0.12.4
+// @version           0.12.5
 // @description       Finds larger or original versions of images for 6100+ websites
 // @description:ko    6100개 이상의 사이트에 대해 더 크거나 원본 이미지 찾는 스크립트
 // @description:fr    Trouve des images plus grandes ou originales pour plus de 6100 sites
@@ -1016,19 +1016,22 @@ var $$IMU_EXPORT$$;
 		// thanks to acid-crash on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-436594057
 		mouseover_close_need_mouseout: true,
 		mouseover_jitter_threshold: 30,
+		mouseover_cancel_popup_when_elout: true,
+		mouseover_cancel_popup_with_esc: true,
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-530760246
 		mouseover_use_hold_key: true,
 		mouseover_hold_key: ["i"],
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-531549043
-		mouseover_close_on_leave_el: true,
+		//mouseover_close_on_leave_el: true,
+		mouseover_close_el_policy: "both",
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/126
 		mouseover_allow_partial: is_extension ? "media" : "video",
 		//mouseover_use_fully_loaded_image: is_extension ? false : true,
 		//mouseover_use_fully_loaded_video: false,
-		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-530760246
-		mouseover_exclude_page_bg: true,
 		mouseover_minimum_size: 20,
 		mouseover_exclude_backgroundimages: false,
+		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-530760246
+		mouseover_exclude_page_bg: true,
 		// thanks to Jin on discord for the idea
 		mouseover_only_links: false,
 		mouseover_exclude_sameimage: false,
@@ -1043,15 +1046,19 @@ var $$IMU_EXPORT$$;
 		mouseover_ui_zoomlevel: true,
 		mouseover_ui_gallerycounter: true,
 		mouseover_ui_gallerymax: 50,
+		mouseover_ui_closebtn: true,
 		mouseover_ui_optionsbtn: is_userscript ? true : false,
 		mouseover_ui_rotationbtns: false,
 		mouseover_ui_caption: true,
+		mouseover_ui_wrap_caption: true,
 		mouseover_zoom_behavior: "fit",
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-531080061
 		mouseover_zoom_custom_percent: 100,
 		mouseover_pan_behavior: "drag",
+		mouseover_drag_min: 5,
 		mouseover_scroll_behavior: "zoom",
 		scroll_zoom_behavior: "fitfull",
+		mouseover_move_with_cursor: false,
 		zoom_out_to_close: false,
 		// thanks to 07416 on github for the idea: https://github.com/qsniyg/maxurl/issues/20#issuecomment-439599984
 		mouseover_position: "cursor",
@@ -1070,6 +1077,8 @@ var $$IMU_EXPORT$$;
 		mouseover_download_key: ["s"],
 		mouseover_rotate_left_key: ["e"],
 		mouseover_rotate_right_key: ["r"],
+		mouseover_flip_horizontal_key: ["h"],
+		mouseover_flip_vertical_key: ["v"],
 		mouseover_apply_blacklist: false,
 		website_inject_imu: true,
 		website_image: true,
@@ -1365,6 +1374,7 @@ var $$IMU_EXPORT$$;
 			description: "Excludes the page background for the popup",
 			requires: {
 				mouseover: true,
+				mouseover_exclude_backgroundimages: false
 			},
 			category: "popup",
 			subcategory: "open_behavior"
@@ -1410,7 +1420,7 @@ var $$IMU_EXPORT$$;
 			subcategory: "open_behavior"
 		},
 		mouseover_only_links: {
-			name: "Only popup for links",
+			name: "Only popup for linked images",
 			description: "Don't pop up if the image isn't linked",
 			requires: {
 				mouseover: true
@@ -1422,7 +1432,7 @@ var $$IMU_EXPORT$$;
 			name: "Show video controls",
 			description: "Shows native video controls. Note that this prevents dragging under Firefox",
 			requires: {
-				mouseover: true,
+				mouseover_open_behavior: "popup",
 				allow_video: true
 			},
 			category: "popup",
@@ -1432,7 +1442,7 @@ var $$IMU_EXPORT$$;
 			name: "Loop video",
 			description: "Allows the video to automatically restart to the beginning after finishing playing",
 			requires: {
-				mouseover: true,
+				mouseover_open_behavior: "popup",
 				allow_video: true
 			},
 			category: "popup",
@@ -1442,7 +1452,7 @@ var $$IMU_EXPORT$$;
 			name: "Mute video",
 			description: "Mutes the video by default",
 			requires: {
-				mouseover: true,
+				mouseover_open_behavior: "popup",
 				allow_video: true
 			},
 			category: "popup",
@@ -1524,6 +1534,15 @@ var $$IMU_EXPORT$$;
 			category: "popup",
 			subcategory: "ui"
 		},
+		mouseover_ui_closebtn: {
+			name: "Close Button",
+			description: "Enables a button to close the popup",
+			requires: {
+				mouseover_ui: true
+			},
+			category: "popup",
+			subcategory: "ui"
+		},
 		mouseover_ui_optionsbtn: {
 			name: "Options Button",
 			description: "Enables a button to go to this page",
@@ -1549,6 +1568,15 @@ var $$IMU_EXPORT$$;
 			description: "Shows the image's caption (if available) at the top",
 			requires: {
 				mouseover_ui: true
+			},
+			category: "popup",
+			subcategory: "ui"
+		},
+		mouseover_ui_wrap_caption: {
+			name: "Wrap caption text",
+			description: "Wraps the caption if it's too long",
+			requires: {
+				mouseover_ui_caption: true
 			},
 			category: "popup",
 			subcategory: "ui"
@@ -1605,6 +1633,25 @@ var $$IMU_EXPORT$$;
 			category: "popup",
 			subcategory: "close_behavior"
 		},
+		mouseover_cancel_popup_when_elout: {
+			name: "Leaving thumbnail cancels loading",
+			description: "Cancels the current popup loading when the cursor has left the thumbnail image",
+			requires: {
+				mouseover: true,
+				mouseover_trigger_behavior: "mouse"
+			},
+			category: "popup",
+			subcategory: "close_behavior"
+		},
+		mouseover_cancel_popup_with_esc: {
+			name: "ESC cancels loading",
+			description: "Cancels the current popup loading if ESC is pressed",
+			requires: {
+				mouseover: true
+			},
+			category: "popup",
+			subcategory: "close_behavior"
+		},
 		mouseover_use_hold_key: {
 			name: "Use hold key",
 			description: "Enables the use of a hold key that, when pressed, will keep the popup open",
@@ -1630,6 +1677,27 @@ var $$IMU_EXPORT$$;
 			requires: {
 				mouseover_trigger_behavior: "mouse",
 				mouseover_position: "beside_cursor"
+			},
+			category: "popup",
+			subcategory: "close_behavior"
+		},
+		mouseover_close_el_policy: {
+			name: "Close when leaving",
+			description: "Closes the popup when the mouse leaves the thumbnail element, the popup, or either",
+			requires: {
+				mouseover_trigger_behavior: "mouse"
+			},
+			options: {
+				_type: "or",
+				thumbnail: {
+					name: "Thumbnail"
+				},
+				popup: {
+					name: "Popup"
+				},
+				both: {
+					name: "Both"
+				}
 			},
 			category: "popup",
 			subcategory: "close_behavior"
@@ -1703,6 +1771,19 @@ var $$IMU_EXPORT$$;
 			category: "popup",
 			subcategory: "behavior"
 		},
+		mouseover_drag_min: {
+			name: "Minimum drag amount",
+			description: "How many pixels the mouse should move to start a drag",
+			type: "number",
+			number_min: 0,
+			number_int: true,
+			number_unit: "pixels",
+			requires: {
+				mouseover_pan_behavior: "drag"
+			},
+			category: "popup",
+			subcategory: "behavior"
+		},
 		mouseover_scroll_behavior: {
 			name: "Popup scroll action",
 			description: "How the popup reacts to a scroll/mouse wheel event",
@@ -1746,6 +1827,16 @@ var $$IMU_EXPORT$$;
 			},
 			requires: {
 				mouseover_scroll_behavior: "zoom"
+			},
+			category: "popup",
+			subcategory: "behavior"
+		},
+		mouseover_move_with_cursor: {
+			name: "Move with cursor",
+			description: "Moves the popup as the cursor moves",
+			requires: {
+				mouseover_open_behavior: "popup",
+				mouseover_trigger_behavior: "mouse"
 			},
 			category: "popup",
 			subcategory: "behavior"
@@ -1809,7 +1900,7 @@ var $$IMU_EXPORT$$;
 			name: "Download key",
 			description: "Downloads the image in the popup when this key is pressed",
 			requires: {
-				mouseover: true
+				mouseover_open_behavior: "popup"
 			},
 			type: "keysequence",
 			category: "popup",
@@ -1819,7 +1910,7 @@ var $$IMU_EXPORT$$;
 			name: "Rotate left key",
 			description: "Rotates the popup 90 degrees to the left",
 			requires: {
-				mouseover: true
+				mouseover_open_behavior: "popup"
 			},
 			type: "keysequence",
 			category: "popup",
@@ -1829,7 +1920,27 @@ var $$IMU_EXPORT$$;
 			name: "Rotate right key",
 			description: "Rotates the popup 90 degrees to the right",
 			requires: {
-				mouseover: true
+				mouseover_open_behavior: "popup"
+			},
+			type: "keysequence",
+			category: "popup",
+			subcategory: "behavior"
+		},
+		mouseover_flip_horizontal_key: {
+			name: "Horizontal flip key",
+			description: "Flips the image horizontally",
+			requires: {
+				mouseover_open_behavior: "popup"
+			},
+			type: "keysequence",
+			category: "popup",
+			subcategory: "behavior"
+		},
+		mouseover_flip_vertical_key: {
+			name: "Vertical flip key",
+			description: "Flips the image vertically",
+			requires: {
+				mouseover_open_behavior: "popup"
 			},
 			type: "keysequence",
 			category: "popup",
@@ -1848,7 +1959,7 @@ var $$IMU_EXPORT$$;
 			name: "Cycle gallery",
 			description: "Going to the previous image for the first image will lead to the last image and vice-versa",
 			requires: {
-				mouseover: true
+				mouseover_open_behavior: "popup"
 			},
 			category: "popup",
 			subcategory: "gallery"
@@ -1857,7 +1968,7 @@ var $$IMU_EXPORT$$;
 			name: "Previous gallery item",
 			description: "Key to trigger the previous gallery item",
 			requires: {
-				mouseover: true
+				mouseover_open_behavior: "popup"
 			},
 			type: "keysequence",
 			category: "popup",
@@ -1867,7 +1978,7 @@ var $$IMU_EXPORT$$;
 			name: "Next gallery item",
 			description: "Key to trigger the next gallery item",
 			requires: {
-				mouseover: true
+				mouseover_open_behavior: "popup"
 			},
 			type: "keysequence",
 			category: "popup",
@@ -2192,6 +2303,7 @@ var $$IMU_EXPORT$$;
 				highlightimgs_enable: true,
 				highlightimgs_auto: {$or: ["always", "hover"]}
 			},
+			needrefresh: true, // TODO: make this work with live settings reloading
 			category: "extra",
 			subcategory: "highlightimages"
 		},
@@ -2233,9 +2345,9 @@ var $$IMU_EXPORT$$;
 			"open_behavior": "subcategory_open_behavior",
 			"close_behavior": "subcategory_close_behavior",
 			"behavior": "subcategory_behavior",
+			"gallery": "subcategory_gallery",
 			"video": "subcategory_video",
 			"ui": "subcategory_ui",
-			"gallery": "subcategory_gallery",
 			"popup_other": "subcategory_popup_other"
 		},
 		"rules": {
@@ -7452,7 +7564,7 @@ var $$IMU_EXPORT$$;
 		if (domain === "lastfm-img2.akamaized.net" ||
 			domain === "lastfm.freetls.fastly.net" ||
 			domain_nosub === "lst.fm") {
-			return src.replace(/\/i\/+u\/+(?:[0-9]+x[0-9]+|[0-9]+s)\//, "/i/u/");
+			return src.replace(/\/i\/+u\/+(?:avatar)?(?:[0-9]+x[0-9]+|[0-9]+s)\//, "/i/u/");
 		}
 
 		if (domain_nosub === "myspacecdn.com" &&
@@ -7833,6 +7945,14 @@ var $$IMU_EXPORT$$;
 				src = src.replace(/(?:_[^/.]*)?(\.[^/.]*)$/, "_full$1");
 			}
 			return src.replace(/\.[0-9]+x[0-9]+(\.[^/]*)$/, "$1");
+		}
+
+		if (domain === "steamstore-a.akamaihd.net") {
+			if (/\/public\/+images\/+v[0-9]*\/+app\/+game_page.*/.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
 		}
 
 		if (domain_nosub === "medium.com" &&
@@ -8258,7 +8378,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "cdn.shopify.com") {
-			return src.replace(/_(?:large|medium|small|grande|compact|[0-9]+x(?:[0-9]+)?)(?:@[0-9]+x)?(?:_crop_[a-z]+)?(?:\.progressive)?(\.[^/.]*)$/, "$1");
+			return src.replace(/_(?:large|medium|small|grande|compact|[0-9]+x(?:[0-9]+)?)(?:@[0-9]+x)?(?:_crop_[a-z]+)?(?:\.progressive)?(\.[^/.]*)(?:[?#].*)?$/, "$1");
 		}
 
 		if (domain === "cdn.itv.com") {
@@ -9472,7 +9592,7 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "sonar.es") {
 			return src
 				.replace(/(\/attached_images\/+[0-9]+\/+)[a-z]+\/+/, "$1original/")
-				.replace(/(\/(?:system|images)\/+(?:(?:attached|item)_images|App\/+BlogBody|post_pictures|events|posts|items|file_uploads|screenshots|resources|pictures)\/+(?:(?:images|photos|files|assets|pictures|posters|uploads|screenshots|previews|imgs)\/+)?(?:[0-9]{3}\/+){3})[a-z_0-9]+\/+/, "$1original/");
+				.replace(/(\/(?:system|images)\/+(?:(?:attached|item)_images|App\/+BlogBody|post_pictures|events|posts|items|articles|file_uploads|screenshots|resources|pictures)\/+(?:(?:images|photos|files|assets|pictures|posters|uploads|screenshots|previews|imgs)\/+)?(?:[0-9]{3}\/+){3})[a-z_0-9]+\/+/, "$1original/");
 		}
 
 		if (domain === "pgw.udn.com.tw") {
@@ -11796,8 +11916,12 @@ var $$IMU_EXPORT$$;
 		}
 
 		if ((domain_nosub === "prezly.com" && domain.indexOf(".assets.prezly.com") >= 0) ||
+			domain === "i.shgcdn.com" ||
+			domain_nowww === "ucarecdn.com" ||
+			domain === "cdn.vyper.io" ||
+			domain === "assets.myzeki.com" ||
 			domain === "cdn.slant.co") {
-			return src.replace(/(:\/\/[^/]*\/[-a-f0-9]*\/).*/, "$1-");
+			return src.replace(/(:\/\/[^/]*\/+[-a-f0-9]{30,}(?:~[0-9a-f]+)?\/+(?:nth\/+[0-9]+\/+)?).*/, "$1");
 		}
 
 		if (domain === "leonardo.osnova.io") {
@@ -14254,10 +14378,6 @@ var $$IMU_EXPORT$$;
 
 		if (domain === "dzt1km7tv28ex.cloudfront.net") {
 			return src.replace(/_[a-z](\.[^/.]*)$/, "_o$1");
-		}
-
-		if (domain_nowww === "ucarecdn.com") {
-			return src.replace(/(:\/\/[^/]*\/[-0-9a-f]+\/).*/, "$1");
 		}
 
 		if (domain_nowww === "celebs-place.com") {
@@ -21559,6 +21679,16 @@ var $$IMU_EXPORT$$;
 		if (domain === "image.istyle24.com") {
 			return src.replace(/(\/upload\/+ProductImage\/+[0-9]+\/+[0-9]+\/+[0-9]+_(?:[0-9]+_)?)[a-zA-Z]+(\.[^/.]*)(?:[?#].*)?$/,
 							   "$1L$2");
+		}
+
+		if (domain === "zine.istyle24.com") {
+			if (/\/App_Themes\/.*\/images\/+common\//.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
+
+			return src.replace(/(\/FileUpload\/+Content\/+[0-9]{10,})_[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		}
 
 		if (domain_nowww === "bbstar.kr") {
@@ -29758,6 +29888,54 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/thumbs\/+([0-9]+)_([0-9]+)(\.[^/.]+)(?:[?#].*)?$/, "/cdn/$2/$1$3");
 		}
 
+		if (domain === "az879543.vo.msecnd.net") {
+
+
+			newsrc = src.replace(/(:\/\/[^/]+\/+[a-z]+\/+[^/]+)_s(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+			if (newsrc !== src)
+				return newsrc;
+
+			newsrc = src.replace(/(:\/\/[^/]+\/+[a-z]+\/+)(?:%ED%81%AC%EA%B8%B0%EB%B3%80%ED%99%98_|크기변환_)?([^/]+)_(?:\(1\))?(\.[^/.]+)(?:[?#].*)?$/, "$1$2$3");
+			if (newsrc !== src)
+				return add_extensions_upper(newsrc);
+		}
+
+		if (domain === "static-buyma-com.akamaized.net") {
+			return src.replace(/(\/imgdata\/+item\/+[0-9]+\/+[0-9]+\/+[0-9]+\/+)[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1org$2");
+		}
+
+		if (domain === "images.spoilertv.com") {
+			return src.replace(/(\/cache\/+.*\/[^/]+)_[0-9]+_cw[0-9]+_ch[0-9]+_thumb\./, "$1_FULL.");
+		}
+
+		if (domain_nosub === "itc.cn" && domain.indexOf(".biz.") >= 0) {
+			return src.replace(/(\/pic\/+[^/]+\/+)[sn](\/+(?:[0-9]{2}\/+){2}Img[0-9]+)_[sn](\.[^/.]+)(?:[?#].*)?$/, "$1f$2_f$3");
+		}
+
+		if (domain === "photo.isportskorea.com") {
+			newsrc = src.replace(/(\/photo\/+)thumbnail(\/+[0-9]{4}\/+[0-9]{2}\/+[0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1images$2");
+			obj = {
+				url: newsrc
+			};
+
+			match = src.match(/\/photo\/+[^/]+\/+[0-9]{4}\/+[0-9]{2}\/+([0-9]+)\./);
+			if (match) {
+				obj.extra = {page: "http://www.isportskorea.com/mstory/?mode=view&no=" + match[1]};
+			}
+
+			return obj;
+		}
+
+		if (domain === "edc2.healthtap.com") {
+			return src
+				.replace(/(\/user_answer\/+[^/]+\/+[0-9]+\/+)topic_large(\/+[^/]+)\.jpeg(?:[?#].*)?$/, "$1original$2.jpg")
+				.replace(/(\/user_answer\/+[^/]+\/+[0-9]+\/+)(?:(?:topic|xx?)_)?(?:medium|normal|large)(\/+[^/]+\.[^/.]+)(?:[?#].*)?$/, "$1topic_large$2");
+		}
+
+		if (domain_nowww === "bomz.org") {
+			return src.replace(/(\/i\/+[^/]+\/+)thumb_([^/]+)(?:[?#].*)?$/, "$1$2");
+		}
+
 
 
 
@@ -30525,6 +30703,10 @@ var $$IMU_EXPORT$$;
 						return null;
 
 					var find_from_el = function() {
+						if (options.host_url.match(/\/a\/+[^/]+\/+embed/)) {
+							return "default";
+						}
+
 						var current = el;
 						while ((current = current.parentElement)) {
 							if (current.tagName === "DIV" &&
@@ -30594,14 +30776,14 @@ var $$IMU_EXPORT$$;
 					if (!window.runSlots && options.do_request) {
 						common_functions.fetch_imgur_webpage(options.do_request, real_api_cache, undefined, options.host_url, function(data) {
 							if (!data || !data.imageinfo) {
-								return options.cb(find_next_el());
+								return options.cb(find_from_el());
 							}
 
 							try {
 								return options.cb(find_from_both(data.imageinfo.album_images.images));
 							} catch (e) {
 								console_error(e);
-								return options.cb(find_next_el());
+								return options.cb(find_from_el());
 							}
 						});
 
@@ -33136,6 +33318,25 @@ var $$IMU_EXPORT$$;
 			version = 2;
 		}
 
+		if (version === 2) {
+			if ("mouseover_close_on_leave_el" in new_settings) {
+				var policy;
+
+				if (new_settings.mouseover_close_on_leave_el) {
+					policy = "both";
+				} else {
+					policy = "popup";
+				}
+
+				update_setting("mouseover_close_el_policy", policy);
+			}
+
+			update_setting("settings_version", 3);
+			changed = true;
+
+			version = 3;
+		}
+
 		cb(changed);
 	}
 
@@ -33686,6 +33887,9 @@ var $$IMU_EXPORT$$;
 		var popups = [];
 		var popup_obj = null;
 		var popup_el = null;
+		var real_popup_el = null;
+		var next_popup_el = null;
+		var last_popup_el = null;
 		var popup_orig_el = null;
 		var popup_el_automatic = false;
 		var popups_active = false;
@@ -33697,6 +33901,10 @@ var $$IMU_EXPORT$$;
 		var dragstartY = null;
 		var dragoffsetX = null;
 		var dragoffsetY = null;
+		var popupOpenX = null;
+		var popupOpenY = null;
+		var popupOpenLastX = null;
+		var popupOpenLastY = null;
 		var dragged = false;
 		var controlPressed = false;
 		var waiting = false;
@@ -33861,9 +34069,16 @@ var $$IMU_EXPORT$$;
 			disable_click = false;
 			popups_active = false;
 			delay_handle_triggering = false;
+
+			next_popup_el = null;
+			if (popup_el)
+				last_popup_el = popup_el;
 			popup_el = null;
+			real_popup_el = null;
 			popup_el_automatic = false;
+
 			stop_processing();
+			stop_waiting();
 
 			if (!delay_mouseonly && delay_handle) {
 				clearTimeout(delay_handle);
@@ -34073,6 +34288,11 @@ var $$IMU_EXPORT$$;
 
 				lastX = x;
 				lastY = y;
+
+				popupOpenX = x;
+				popupOpenY = y;
+				popupOpenLastX = x;
+				popupOpenLastY = y;
 
 				var initial_zoom_behavior = get_single_setting("mouseover_zoom_behavior");
 
@@ -34511,11 +34731,14 @@ var $$IMU_EXPORT$$;
 
 					opacity_hover(topbarel);
 
-					// \xD7 = ×
-					var closebtn = addbtn("\xD7", _("Close") + " (" + _("ESC") + ")", function() {
-						resetpopups();
-					}, true);
-					topbarel.appendChild(closebtn);
+					if (settings.mouseover_ui_closebtn) {
+						// \xD7 = ×
+						var closebtn = addbtn("\xD7", _("Close") + " (" + _("ESC") + ")", function() {
+							resetpopups();
+						}, true);
+						topbarel.appendChild(closebtn);
+					}
+
 					outerdiv.appendChild(topbarel);
 					ui_els.push(topbarel);
 
@@ -34602,14 +34825,20 @@ var $$IMU_EXPORT$$;
 
 					var caption = get_caption(newobj, popup_el);
 					if (caption && settings.mouseover_ui_caption) {
-						// /10 is arbitrary, but seems to work well
-						var chars = parseInt(Math.max(10, Math.min(60, (popup_width - topbarel.clientWidth) / 10)));
-						var caption_regex = new RegExp("^((?:.{" + chars + "}|.{0," + chars + "}[\\r\\n]))[\\s\\S]+?$");
+						var btntext = caption;
 
-						var caption_btn = addbtn({
-							truncated: caption.replace(caption_regex, "$1..."),
-							full: caption
-						}, caption, null, true);
+						if (settings.mouseover_ui_wrap_caption) {
+							// /10 is arbitrary, but seems to work well
+							var chars = parseInt(Math.max(10, Math.min(60, (popup_width - topbarel.clientWidth) / 10)));
+							var caption_regex = new RegExp("^((?:.{" + chars + "}|.{0," + chars + "}[\\r\\n]))[\\s\\S]+?$");
+
+							btntext = {
+								truncated: caption.replace(caption_regex, "$1..."),
+								full: caption
+							};
+						}
+
+						var caption_btn = addbtn(btntext, caption, null, true);
 						topbarel.appendChild(caption_btn);
 					}
 
@@ -35284,7 +35513,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		function is_valid_src(src) {
-			return src && !(/^(?:blob:|x-raw)/.test(src));
+			return src && !(/^blob:/.test(src));
 		}
 
 		function find_source(els) {
@@ -35304,6 +35533,13 @@ var $$IMU_EXPORT$$;
 
 					return null;
 				}
+			}
+
+			if (!is_valid_src(result.src)) {
+				if (_nir_debug_)
+					console_log("find_source: invalid src", result);
+
+				return null;
 			}
 
 			var thresh = parseInt(settings.mouseover_minimum_size);
@@ -35421,7 +35657,7 @@ var $$IMU_EXPORT$$;
 
 			function addImage(src, el, options) {
 				if (_nir_debug_)
-					console_log("_find_source (addImage)", el, check_visible(el));
+					console_log("_find_source (addImage)", el, check_visible(el), options);
 
 				if (settings.mouseover_apply_blacklist && !bigimage_filter(src)) {
 					if (_nir_debug_)
@@ -35521,7 +35757,7 @@ var $$IMU_EXPORT$$;
 
 						addImage(src, el, { layer: layer });
 
-						if (!el.srcset) {
+						if (!el.srcset && src in sources) {
 							if (el.tagName === "VIDEO") {
 								sources[src].width = el.videoWidth;
 								sources[src].height = el.videoHeight;
@@ -35649,7 +35885,7 @@ var $$IMU_EXPORT$$;
 					var src = get_url_from_css(bgimg);
 					if (src)
 						addImage(src, el, {
-							isbg: true,
+							isbg: beforeafter || true,
 							layer: layer
 						});
 				}
@@ -35700,6 +35936,20 @@ var $$IMU_EXPORT$$;
 				//console_log(els);
 				console_log("_find_source (sources)", deepcopy(sources));
 				console_log("_find_source (layers)", deepcopy(layers));
+			}
+
+			// remove sources that aren't used
+			var activesources = [];
+			for (var i = 0; i < layers.length; i++) {
+				for (var j = 0; j < layers[i].length; j++) {
+					if (activesources.indexOf(layers[i][j]) < 0)
+						activesources.push(layers[i][j]);
+				}
+			}
+
+			for (var source in sources) {
+				if (activesources.indexOf(source) < 0)
+					delete sources[source];
 			}
 
 			if ((source = getsource()) !== undefined) {
@@ -36185,6 +36435,12 @@ var $$IMU_EXPORT$$;
 			return ret;
 		}
 
+		var get_physical_popup_el = function(el) {
+			if (el.parentElement && el.tagName === "SOURCE")
+				return el.parentElement;
+			return el;
+		}
+
 		function trigger_popup(is_contextmenu) {
 			if (_nir_debug_)
 				console_log("trigger_popup (is_contextmenu=" + is_contextmenu + ")");
@@ -36215,7 +36471,7 @@ var $$IMU_EXPORT$$;
 			if (_nir_debug_)
 				console_log("trigger_popup: source =", source);
 
-			if (source) {
+			if (source && (popup_trigger_reason !== "mouse" || get_physical_popup_el(source.el) !== last_popup_el)) {
 				trigger_popup_with_source(source);
 			} else {
 				delay_handle_triggering = false;
@@ -36223,6 +36479,8 @@ var $$IMU_EXPORT$$;
 		}
 
 		function trigger_popup_with_source(source, automatic, use_last_pos) {
+			next_popup_el = get_physical_popup_el(source.el);
+
 			return get_final_from_source(source, automatic, false, use_last_pos, function(source_imu, source, processing, data) {
 				if (!source_imu && !source && !processing && !data) {
 					delay_handle_triggering = false;
@@ -36235,7 +36493,8 @@ var $$IMU_EXPORT$$;
 				if (automatic)
 					popup_el_automatic = true;
 
-				popup_el = source.el;
+				real_popup_el = source.el;
+				popup_el = get_physical_popup_el(real_popup_el);
 				if (popup_el.parentElement) // check if it's a fake element returned by a gallery helper
 					popup_orig_el = popup_el;
 
@@ -36402,7 +36661,7 @@ var $$IMU_EXPORT$$;
 
 		function wrap_gallery_func(nextprev, origel, el, cb, new_options) {
 			if (!el)
-				el = popup_el;
+				el = real_popup_el;
 
 			if (!origel)
 				origel = popup_orig_el;
@@ -36467,7 +36726,7 @@ var $$IMU_EXPORT$$;
 
 			var firstel = el;
 			if (!firstel)
-				firstel = popup_el;
+				firstel = real_popup_el;
 
 			var loop = function() {
 				wrap_gallery_func(nextprev, origel, el, function(newel) {
@@ -36489,7 +36748,7 @@ var $$IMU_EXPORT$$;
 
 		function wrap_gallery_cycle(nextprev, origel, el, cb) {
 			if (!el)
-				el = popup_el;
+				el = real_popup_el;
 
 			wrap_gallery_func(nextprev, origel, el, function(newel) {
 				if (!newel && settings.mouseover_gallery_cycle) {
@@ -36520,20 +36779,102 @@ var $$IMU_EXPORT$$;
 			});
 		}
 
+		var parse_transforms = function(transform) {
+			var transforms = [];
+			var transform_types = {};
+
+			var last = 0;
+			for (var i = 0; i < transform.length; i++) {
+				if (transform[i] === ')') {
+					var our_transform = strip_whitespace(transform.substr(last, (i - last) + 1));
+					var type = our_transform.replace(/\(.*/, "");
+					transforms.push(our_transform);
+
+					if (!(type in transform_types)) {
+						transform_types[type] = [];
+					}
+					transform_types[type].push(transforms.length - 1);
+
+					last = i + 1;
+					continue;
+				}
+			}
+
+			return {transforms: transforms, types: transform_types};
+		};
+
+		var get_popup_transforms = function() {
+			var style = popups[0].querySelector("img").parentElement.parentElement.style;
+			if (style.transform) {
+				return parse_transforms(style.transform);
+			} else {
+				return {transforms: [], types: {}};
+			}
+		}
+
+		var stringify_transforms = function(transforms) {
+			return transforms.transforms.join(" ");
+		};
+
+		var set_popup_transforms = function(transforms) {
+			popups[0].querySelector("img").parentElement.parentElement.style.transform = stringify_transforms(transforms);
+		};
+
 		function rotate_gallery(dir) {
 			if (popups.length === 0)
 				return;
 
-			var style = popups[0].querySelector("img").parentElement.parentElement.style;
-			var deg = 0;
-			if (style.transform) {
-				var match = style.transform.match(/^rotate\(([-0-9]+)deg\)$/);
-				if (match) {
-					deg = parseInt(match[1]);
-				}
+			var transforms = get_popup_transforms();
+
+			var index = 0;
+			if ("rotate" in transforms.types) {
+				index = transforms.types.rotate[0];
+			} else {
+				transforms.transforms.unshift("rotate(0deg)");
 			}
-			style.transform = "rotate(" + (deg + dir) + "deg)";
+
+			var match = transforms.transforms[index].match(/^rotate\(([-0-9]+)deg\)$/);
+			var deg = 0;
+			if (match) {
+				deg = parseInt(match[1]);
+			}
+
+			transforms.transforms[index] = "rotate(" + (deg + dir) + "deg)";
+			set_popup_transforms(transforms);
 		}
+
+		// hv: vertical = true, horizontal = false
+		var flip_gallery = function(hv) {
+			if (popups.length === 0)
+				return;
+
+			var transforms = get_popup_transforms();
+
+			var index = transforms.transforms.length;
+			if ("scale" in transforms.types) {
+				index = transforms.types.scale[0];
+			} else {
+				transforms.transforms.push("scale(1,1)");
+			}
+
+			var match = transforms.transforms[index].match(/^scale\(([-0-9.]+)\s*,\s*([-0-9.]+)\)$/);
+			var scaleh = 1;
+			var scalev = 1;
+
+			if (match) {
+				scaleh = parseFloat(match[1]);
+				scalev = parseFloat(match[2]);
+			}
+
+			if (hv) {
+				scalev = -scalev;
+			} else {
+				scaleh = -scaleh;
+			}
+
+			transforms.transforms[index] = "scale(" + scaleh + ", " + scalev + ")";
+			set_popup_transforms(transforms);
+		};
 
 		function create_progress_el() {
 			var progressc_el = document.createElement("div");
@@ -36603,7 +36944,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		var looks_like_valid_link = function(src) {
-			return /\.(?:jpe?g|png|web[mp]|gif|mp4|mkv|ogg|ogv)(?:[?#].*)?$/i.test(src);
+			return /\.(?:jpe?g|png|web[mp]|gif|mp4|mkv|og[gv]|svg)(?:[?#].*)?$/i.test(src);
 		}
 
 		var is_img_pic_vid = function(el) {
@@ -36635,7 +36976,7 @@ var $$IMU_EXPORT$$;
 
 		var replacing_imgs = false;
 		function replace_images(options) {
-			if (replacing_imgs)
+			if (replacing_imgs || currenttab_is_image())
 				return;
 
 			var raw_imgs = options.images;
@@ -36934,6 +37275,9 @@ var $$IMU_EXPORT$$;
 
 		var auto_highlighted_imgs = [];
 		var highlight_images = function(options) {
+			if (currenttab_is_image() && settings.mouseover_exclude_imagetab)
+				return;
+
 			if (!options) {
 				options = {}
 			}
@@ -37225,6 +37569,12 @@ var $$IMU_EXPORT$$;
 				} else if (trigger_complete(settings.mouseover_rotate_right_key)) {
 					rotate_gallery(90);
 					ret = false;
+				} else if (trigger_complete(settings.mouseover_flip_horizontal_key)) {
+					flip_gallery(false);
+					ret = false;
+				} else if (trigger_complete(settings.mouseover_flip_vertical_key)) {
+					flip_gallery(true);
+					ret = false;
 				}
 
 				if (ret === false) {
@@ -37264,8 +37614,10 @@ var $$IMU_EXPORT$$;
 			}
 
 			// 27 = esc
-			// why was the second check added?
-			if (event.which === 27 || (popup_trigger_reason === "mouse" && delay_handle_triggering)) {
+			if (event.which === 27) {
+				if (delay_handle_triggering && popup_trigger_reason === "mouse" && !settings.mouseover_cancel_popup_with_esc)
+					return;
+
 				stop_waiting();
 				resetpopups();
 			}
@@ -37285,54 +37637,111 @@ var $$IMU_EXPORT$$;
 				(doc && doc.clientTop || body && body.clientTop || 0);
 		}
 
+		var get_move_with_cursor = function() {
+			// don't require this for now, because esc can also be used to close the popup
+			//var close_el_policy = get_single_setting("mouseover_close_el_policy");
+			return settings.mouseover_move_with_cursor;// && close_el_policy === "thumbnail";
+		};
+
 		function do_popup_pan(popup, event, mouseX, mouseY) {
 			var pan_behavior = get_single_setting("mouseover_pan_behavior");
-			if (pan_behavior === "drag" && (event.buttons === 0 || !dragstart))
+			var move_with_cursor = get_move_with_cursor();
+			if (pan_behavior === "drag" && (event.buttons === 0 || !dragstart) && !move_with_cursor)
 				return;
 
 			var viewport = get_viewport();
 			var edge_buffer = 40;
-			var min_move_amt = 5;
+			var border_thresh = 20;
+			var min_move_amt = parseInt(settings.mouseover_drag_min);
 			var moved = false;
 
-			if (pan_behavior === "drag" && dragstart) {
-				var origleft = parseInt(popup.style.left);
-				//var left = origleft + event.movementX;
-				var left = mouseX - dragoffsetX;
+			// lefttop: true = top, false = left
 
-				if (left !== origleft) {
-					if (dragged || Math.abs(left - origleft) >= min_move_amt) {
-						lastX = left - (origleft - lastX);
-						popup.style.left = left + "px";
+			var dodrag = function(lefttop) {
+				var orig = parseInt(lefttop ? popup.style.top : popup.style.left);
+
+				var mousepos = lefttop ? mouseY : mouseX;
+				var dragoffset = lefttop ? dragoffsetY : dragoffsetX;
+				var last = lefttop ? lastY : lastX;
+
+				var current = mousepos - dragoffset;
+
+				if (current !== orig) {
+					if (dragged || Math.abs(current - orig) >= min_move_amt) {
+						var newlast = current - (orig - last);
+
+						if (lefttop) {
+							lastY = newlast;
+							popup.style.top = current + "px";
+						} else {
+							lastX = newlast;
+							popup.style.left = current + "px";
+						}
+
 						dragged = true;
 						moved = true;
 					}
 				}
-			} else if (pan_behavior === "movement" && popup.offsetWidth > viewport[0]) {
-				var mouse_edge = Math.min(Math.max((mouseX - edge_buffer), 0), viewport[0] - edge_buffer * 2);
-				var percent = mouse_edge / (viewport[0] - (edge_buffer * 2));
-				popup.style.left = percent * (viewport[0] - popup.offsetWidth) + "px";
-				moved = true;
+			};
+
+			var domovement = function(lefttop) {
+				var offsetD = lefttop ? popup.offsetHeight : popup.offsetWidth;
+				var viewportD = lefttop ? viewport[1] : viewport[0];
+				var mousepos = lefttop ? mouseY : mouseX;
+
+				if (offsetD > viewportD) {
+					var mouse_edge = Math.min(Math.max((mousepos - edge_buffer), 0), viewportD - edge_buffer * 2);
+					var percent = mouse_edge / (viewportD - (edge_buffer * 2));
+
+					var newpos = (percent * (viewportD - offsetD - border_thresh * 2) + border_thresh) + "px";
+
+					if (lefttop)
+						popup.style.top = newpos;
+					else
+						popup.style.left = newpos;
+
+					moved = true;
+				}
+			};
+
+			var domovewith = function(lefttop) {
+				var orig = parseInt(lefttop ? popup.style.top : popup.style.left);
+
+				var mousepos = lefttop ? mouseY : mouseX;
+				//var popupopen = lefttop ? popupOpenY : popupOpenX;
+				var last = lefttop ? popupOpenLastY : popupOpenLastX;
+
+				var current = mousepos - last + orig;
+
+				if (current === orig)
+					return;
+
+				var newlast = mousepos;
+
+				if (lefttop) {
+					popupOpenLastY = newlast;
+					popup.style.top = current + "px";
+				} else {
+					popupOpenLastX = newlast;
+					popup.style.left = current + "px";
+				}
+			};
+
+			if (pan_behavior === "drag" && dragstart) {
+				dodrag(false);
+				dodrag(true);
+			} else if (pan_behavior === "movement") {
+				domovement(false);
+				domovement(true);
 			}
 
-			if (pan_behavior === "drag" && dragstart) {
-				var origtop = parseInt(popup.style.top);
-				//var top = origtop + event.movementY;
-				var top = mouseY - dragoffsetY;
-
-				if (top !== origtop) {
-					if (dragged || Math.abs(top - origtop) >= min_move_amt) {
-						lastY = top - (origtop - lastY);
-						popup.style.top = top + "px";
-						dragged = true;
-						moved = true;
-					}
+			if (move_with_cursor) {
+				var popup_el_rect = popup_el.getBoundingClientRect();
+				// don't check for now, maybe add this as an option later?
+				if (true || in_clientrect(mouseX, mouseY, popup_el_rect)) {
+					domovewith(false);
+					domovewith(true);
 				}
-			} else if (pan_behavior === "movement" && popup.offsetHeight > viewport[1]) {
-				var mouse_edge = Math.min(Math.max((mouseY - edge_buffer), 0), viewport[1] - edge_buffer * 2);
-				var percent = mouse_edge / (viewport[1] - (edge_buffer * 2));
-				popup.style.top = percent * (viewport[1] - popup.offsetHeight) + "px";
-				moved = true;
 			}
 
 			if (moved) {
@@ -37465,7 +37874,7 @@ var $$IMU_EXPORT$$;
 						delay_handle = null;
 
 						// FIXME: shouldn't this be in if (popups.length > 0) instead?
-						if (waiting)
+						if (false && waiting)
 							stop_waiting();
 					}
 
@@ -37528,15 +37937,24 @@ var $$IMU_EXPORT$$;
 							}
 						}
 
-						var close_on_leave_el = get_close_on_leave_el() && popup_el && !popup_el_automatic;
+						var close_el_policy = get_single_setting("mouseover_close_el_policy");
+						var close_on_leave_el = (close_el_policy === "thumbnail" || close_el_policy === "both") && popup_el && !popup_el_automatic;
 						var outside_of_popup_el = false;
 						var popup_el_hidden = false;
 
 						if (close_on_leave_el) {
 							var popup_el_rect = popup_el.getBoundingClientRect();
 							if (popup_el_rect && popup_el_rect.width > 0 && popup_el_rect.height > 0) {
-								if (!in_clientrect(mouseX, mouseY, popup_el_rect) && !in_img_jitter) {
+								var our_in_img_jitter = in_img_jitter;
+								if (close_el_policy === "thumbnail")
+									our_in_img_jitter = false;
+
+								if (!in_clientrect(mouseX, mouseY, popup_el_rect) && !our_in_img_jitter) {
 									outside_of_popup_el = true;
+
+									if (close_el_policy === "thumbnail") {
+										return resetpopups();
+									}
 								}
 							} else {
 								// the element must be hidden
@@ -37563,6 +37981,13 @@ var $$IMU_EXPORT$$;
 								resetpopups();
 							}
 						}
+					} else if (delay_handle_triggering) {
+						if (next_popup_el && settings.mouseover_cancel_popup_when_elout) {
+							var popup_el_rect = next_popup_el.getBoundingClientRect();
+							if (!in_clientrect(mouseX, mouseY, popup_el_rect)) {
+								resetpopups();
+							}
+						}
 					}
 				}
 
@@ -37571,8 +37996,8 @@ var $$IMU_EXPORT$$;
 					if (delay_handle) {
 						var trigger_mouse_jitter_thresh = 10;
 
-						if ((mouseX - mouseDelayX) < trigger_mouse_jitter_thresh &&
-							(mouseY - mouseDelayY) < trigger_mouse_jitter_thresh)
+						if (Math.abs(mouseX - mouseDelayX) < trigger_mouse_jitter_thresh &&
+							Math.abs(mouseY - mouseDelayY) < trigger_mouse_jitter_thresh)
 							return;
 
 						clearTimeout(delay_handle);
@@ -37582,6 +38007,13 @@ var $$IMU_EXPORT$$;
 					mouseDelayX = mouseX;
 					mouseDelayY = mouseY;
 					//mouse_in_image_yet = false;
+
+					if (last_popup_el) {
+						var popup_el_rect = last_popup_el.getBoundingClientRect();
+						if (!in_clientrect(mouseX, mouseY, popup_el_rect)) {
+							last_popup_el = null;
+						}
+					}
 
 					delay_handle = setTimeout(function() {
 						if (delay_handle_triggering || trigger_complete(settings.mouseover_trigger_prevent_key))

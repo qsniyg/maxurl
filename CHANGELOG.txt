@@ -1,3 +1,32 @@
+0.12.5
+
+New features:
+
+ * Option to close the popup when leaving the thumbnail only, even if the cursor is still in the popup (disabled by default)
+ * More options to fine-tune cancelling the popup loading
+ * Option to move popup alongside cursor movement
+ * Option to specify the minimum amount before beginning a drag (5px has been the default)
+ * Option to remove close button
+ * Option to disable wrapping caption text
+ * You can now horizontally or vertically flip the image in the popup through the H and V keys (by default)
+ * Support for ~10 new websites (using ~10 new rules)
+
+Improvements:
+
+ * Minor improvements to the options page
+ * Small margin around popup is added when using the "Movement" popup pan method
+ * Various improvements/fixes to existing rules
+
+Bugfixes:
+
+ * Fix a major regression since 0.12.3 where any blacklisted source might have still popped up.
+ * If using the mouseover trigger, the popup will no longer open repeatedly if it has been closed, and the mouse moves within the element without ever leaving it (fixes things like Twitch embeds)
+ * source elements are now detected properly as thumbnail elements
+ * Highlight images will ignore image tabs if image tabs are disabled in the settings
+ * Replace images now ignores image tabs entirely, as it's identical to redirection, as well as breaking the standard image functionality
+
+---
+
 0.12.4
 
 New features:

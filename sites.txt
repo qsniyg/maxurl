@@ -371,6 +371,7 @@ assets.media-platform.com
 assets.metrolatam.com
 assets.mubi.com
 assets.mycast.io
+assets.myzeki.com
 assets.nuuvem.com
 assets.nydailynews.com
 assets.pcmag.com
@@ -443,6 +444,7 @@ az-deteto.bg
 az616578.vo.msecnd.net
 az743702.vo.msecnd.net
 az877327.vo.msecnd.net
+az879543.vo.msecnd.net
 azquotes.com
 b-ssl.duitang.com
 b.fssta.com
@@ -603,6 +605,7 @@ bobx.com
 boligsurf-production.s3.amazonaws.com
 boltdns.net
 bomb01.com
+bomz.org
 bonjourlesmadames.fr
 bonnassesworld.com
 bontonland.cz
@@ -977,6 +980,7 @@ cdn.videos.rollcall.com
 cdn.viral.porn
 cdn.vor.us
 cdn.vthumbs.com
+cdn.vyper.io
 cdn.wallpaper.com
 cdn.wallpaperdirect.com
 cdn.wallpaperjam.com
@@ -1552,6 +1556,7 @@ ecp.yusercontent.com
 ecranlarge.com
 edaily.co.kr
 edb.co.il
+edc2.healthtap.com
 edchomes.com
 edge.alluremedia.com.au
 edmhunters-563e.kxcdn.com
@@ -2362,6 +2367,7 @@ i.rtpmd.gr
 i.ryt9.com
 i.sabah.com.tr
 i.servimg.com
+i.shgcdn.com
 i.skyrock.net
 i.slkimg.com
 i.smalljoys.me
@@ -2710,6 +2716,7 @@ images.sharerails.com
 images.shazam.com
 images.sk-static.com
 images.spicyadulttools.com
+images.spoilertv.com
 images.sportskhan.net
 images.spot.im
 images.squarespace-cdn.com
@@ -3251,6 +3258,7 @@ islam.kz
 islingtongazette.co.uk
 ismcdn.jp
 issuedaily.com
+itc.cn
 itedou.com
 item.ssgcdn.com
 itn.dmarge.com
@@ -4379,6 +4387,7 @@ photo.addyoursex.com
 photo.elcinema.com.s3.amazonaws.com
 photo.gala.fr
 photo.hankooki.com
+photo.isportskorea.com
 photo.kmib.co.kr
 photo.l99.com
 photo.newsen.com
@@ -5164,6 +5173,7 @@ stat.profile.ameba.jp
 statesman.com
 statf.com
 static-bluray.com
+static-buyma-com.akamaized.net
 static-cdn.jtvnw.net
 static-cdn.sr.se
 static-koimoi.akamaized.net
@@ -5309,6 +5319,7 @@ staticpopopics.popopics.com
 staticuestudio.blob.core.windows.net
 statis.gamen.vn
 steamstatic.com
+steamstore-a.akamaihd.net
 steamusercontent-a.akamaihd.net
 steamuserimages-a.akamaihd.net
 stecamsrl.it
@@ -6124,6 +6135,7 @@ zhihutai.com
 zhimg.com
 ziaruldeiasi.ro
 zimbio.com
+zine.istyle24.com
 zippy.gfycat.com
 zive.cz
 zkpm.net
