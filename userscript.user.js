@@ -11862,7 +11862,9 @@ var $$IMU_EXPORT$$;
 			//   https://cdn.shopify.com/s/files/1/1066/4366/products/MG_84122.jpg?v=1527671088
 			// https://cdn.shopify.com/s/files/1/1878/3879/products/N0690_400x_crop_center.jpg?v=1510258264
 			//   https://cdn.shopify.com/s/files/1/1878/3879/products/N0690.jpg?v=1510258264
-			return src.replace(/_(?:large|medium|small|grande|compact|[0-9]+x(?:[0-9]+)?)(?:@[0-9]+x)?(?:_crop_[a-z]+)?(?:\.progressive)?(\.[^/.]*)$/, "$1");
+			// https://cdn.shopify.com/s/files/1/2656/7538/files/de-mining_large.jpg?v=1524250443-/format/auto/-/stretch/off/-/resize/3000x/-/quality/lighter/-/format/auto/-/stretch/off/-/resize/3000x/-/quality/lighter/-/format/auto/-/stretch/off/-/resize/3000x/-/quality/lighter/
+			//   https://cdn.shopify.com/s/files/1/2656/7538/files/de-mining.jpg
+			return src.replace(/_(?:large|medium|small|grande|compact|[0-9]+x(?:[0-9]+)?)(?:@[0-9]+x)?(?:_crop_[a-z]+)?(?:\.progressive)?(\.[^/.]*)(?:[?#].*)?$/, "$1");
 		}
 
 		if (domain === "cdn.itv.com") {
@@ -18909,16 +18911,32 @@ var $$IMU_EXPORT$$;
 		}
 
 		if ((domain_nosub === "prezly.com" && domain.indexOf(".assets.prezly.com") >= 0) ||
+			// https://i.shgcdn.com/1fab7627-3dea-484e-8130-6915168befc0/-/format/auto/-/preview/3000x3000/-/quality/lighter/
+			//   https://i.shgcdn.com/1fab7627-3dea-484e-8130-6915168befc0/-
+			domain === "i.shgcdn.com" ||
+			// https://ucarecdn.com/1687fe52-388c-4856-974c-1de3effb4d9c~3/nth/0/-/format/auto/-/quality/lighter/
+			//   https://ucarecdn.com/1687fe52-388c-4856-974c-1de3effb4d9c~3/nth/0/-
+			// https://ucarecdn.com/ab72986c-0e99-4e1b-bb8e-562afa21df3c/-/stretch/off/-/resize/2000x/-/quality/normal/
+			//   https://www.ucarecdn.com/ab72986c-0e99-4e1b-bb8e-562afa21df3c/
+			domain_nowww === "ucarecdn.com" ||
+			// https://cdn.vyper.io/21eb103f-b54d-454c-bdbb-a1d119a0a269/-/quality/lighter/-/format/auto/null
+			//   https://cdn.vyper.io/21eb103f-b54d-454c-bdbb-a1d119a0a269/-
+			domain === "cdn.vyper.io" ||
+			// https://assets.myzeki.com/3f7d45fc-9007-4c1f-8a74-281cd4724d31/-/preview/1200x630/-/stretch/fill/-/resize/1200x630/-/format/webp/-/quality/lighter/image.webp
+			//   https://assets.myzeki.com/3f7d45fc-9007-4c1f-8a74-281cd4724d31/
+			domain === "assets.myzeki.com" ||
 			// https://cdn.slant.co/999bce7d-6fb0-4b6b-9820-24e58633edf8/-/format/jpeg/-/progressive/yes/-/preview/480x480/
 			//   https://cdn.slant.co/999bce7d-6fb0-4b6b-9820-24e58633edf8/-
 			domain === "cdn.slant.co") {
 			// https://cdn.uc.assets.prezly.com/d24b5696-a65c-48d6-9cfd-1b0b98ca1f3c/-/preview/1108x1108/
 			//   https://cdn.uc.assets.prezly.com/d24b5696-a65c-48d6-9cfd-1b0b98ca1f3c/-
+			//   https://cdn.uc.assets.prezly.com/d24b5696-a65c-48d6-9cfd-1b0b98ca1f3c/
 			// https://cdn.uc.assets.prezly.com/6201f512-e09d-440f-95e3-d1aa316f70e6/-/resize/1108x/-/quality/best/
 			//   https://cdn.uc.assets.prezly.com/6201f512-e09d-440f-95e3-d1aa316f70e6/-
 			// https://cdn.uc.assets.prezly.com/c204db5f-a17a-4c64-96b2-112b0876cb84/-/preview/1108x1108/
 			//   https://cdn.uc.assets.prezly.com/c204db5f-a17a-4c64-96b2-112b0876cb84/-
-			return src.replace(/(:\/\/[^/]*\/[-a-f0-9]*\/).*/, "$1-");
+			return src.replace(/(:\/\/[^/]*\/+[-a-f0-9]{30,}(?:~[0-9a-f]+)?\/+(?:nth\/+[0-9]+\/+)?).*/, "$1");
+			//return src.replace(/(:\/\/[^/]*\/[-0-9a-f]+\/).*/, "$1");
 		}
 
 		if (domain === "leonardo.osnova.io") {
@@ -23515,12 +23533,6 @@ var $$IMU_EXPORT$$;
 			// https://dzt1km7tv28ex.cloudfront.net/u/195776329524707328_35s_d.jpg
 			//   https://dzt1km7tv28ex.cloudfront.net/u/195776329524707328_35s_o.jpg
 			return src.replace(/_[a-z](\.[^/.]*)$/, "_o$1");
-		}
-
-		if (domain_nowww === "ucarecdn.com") {
-			// https://ucarecdn.com/ab72986c-0e99-4e1b-bb8e-562afa21df3c/-/stretch/off/-/resize/2000x/-/quality/normal/
-			//   https://www.ucarecdn.com/ab72986c-0e99-4e1b-bb8e-562afa21df3c/
-			return src.replace(/(:\/\/[^/]*\/[-0-9a-f]+\/).*/, "$1");
 		}
 
 		if (domain_nowww === "celebs-place.com") {
@@ -56687,19 +56699,19 @@ var $$IMU_EXPORT$$;
 
 				var mousepos = lefttop ? mouseY : mouseX;
 				var dragoffset = lefttop ? dragoffsetY : dragoffsetX;
-				//var last = lefttop ? lastY : lastX;
+				var last = lefttop ? lastY : lastX;
 
 				var current = mousepos - dragoffset;
 
 				if (current !== orig) {
 					if (dragged || Math.abs(current - orig) >= min_move_amt) {
-						//var newlast = current - (orig - last);
+						var newlast = current - (orig - last);
 
 						if (lefttop) {
-							//lastY = newlast;
+							lastY = newlast;
 							popup.style.top = current + "px";
 						} else {
-							//lastX = newlast;
+							lastX = newlast;
 							popup.style.left = current + "px";
 						}
 
