@@ -55990,7 +55990,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		var looks_like_valid_link = function(src) {
-			return /\.(?:jpe?g|png|web[mp]|gif|mp4|mkv|ogg|ogv)(?:[?#].*)?$/i.test(src);
+			return /\.(?:jpe?g|png|web[mp]|gif|mp4|mkv|og[gv]|svg)(?:[?#].*)?$/i.test(src);
 		}
 
 		var is_img_pic_vid = function(el) {
