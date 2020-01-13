@@ -40966,7 +40966,9 @@ var $$IMU_EXPORT$$;
 		if (domain === "d2h1pu99sxkfvn.cloudfront.net") {
 			// https://d2h1pu99sxkfvn.cloudfront.net/b0/6479437/503662872_4oRXGlUWQd/P4.jpg
 			//   https://d2h1pu99sxkfvn.cloudfront.net/b0/6479437/503662872_4oRXGlUWQd/P0.jpg
-			return src.replace(/\/P[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "/P0$1");
+			// https://d2h1pu99sxkfvn.cloudfront.net/b0/5409611/578689840_BT84w7ifLS/U1.jpg
+			//   https://d2h1pu99sxkfvn.cloudfront.net/b0/5409611/578689840_BT84w7ifLS/U0.jpg
+			return src.replace(/\/([PU])[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "/$10$2");
 		}
 
 		if (domain === "img.joomcdn.net") {
@@ -48681,6 +48683,40 @@ var $$IMU_EXPORT$$;
 			// http://bomz.org/i/bomz/thumb_55168_2011.11.17_bomz.org_ssl1uiphwq0006.jpg
 			//   http://bomz.org/i/bomz/55168_2011.11.17_bomz.org_ssl1uiphwq0006.jpg
 			return src.replace(/(\/i\/+[^/]+\/+)thumb_([^/]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "gtainside.com") {
+			// https://www.gtainside.com/includes/lightbox2/img/next.png
+			if (/\/includes\/+lightbox2\/+img\//.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
+
+			// https://www.gtainside.com/downloads/picr/2017-06/thb_1497924934_enb%202017_06_18%2017_05_43_28.jpg
+			//   https://www.gtainside.com/downloads/picr/2017-06/1497924934_enb%202017_06_18%2017_05_43_28.jpg
+			return src.replace(/(\/downloads\/+picr\/+[0-9]{4}-[0-9]{2}\/+)thb_/, "$1");
+		}
+
+		if (domain_nowww === "gta.cz") {
+			// https://www.gta.cz/download/image.php?soubor=2peds-rar&thumb=1&language=en
+			//   https://www.gta.cz/download/image.php?soubor=2peds-rar&language=en
+			if (/\/download\/+image\.php\?/.test(src)) {
+				return remove_queries(src, ["thumb"]);
+			}
+		}
+
+		if (domain_nowww === "feralinteractive.com") {
+			// https://www.feralinteractive.com/images/games/bottom-frame.svg
+			if (/\/images\/+games\/+bottom-frame\./.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
+
+			// https://www.feralinteractive.com/data/games/deusexmd/images/features/screenshots/thumbs/thumb1.jpg
+			//   https://www.feralinteractive.com/data/games/deusexmd/images/features/screenshots/screen1.jpg
+			return src.replace(/(\/screenshots\/+)thumbs\/+thumb([0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1screen$2");
 		}
 
 
