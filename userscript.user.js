@@ -15573,7 +15573,12 @@ var $$IMU_EXPORT$$;
 			domain === "image.akiba-souken.k-img.com") {
 			// https://akiba-souken.k-img.com/assets/images/article/000/602/t640_602120.jpg
 			//   https://akiba-souken.k-img.com/assets/images/article/000/602/602120.jpg
-			return src.replace(/(\/images\/+[^/]*\/+(?:[0-9]{3}\/+){2})t[0-9]+_/, "$1");
+			// thanks to fireattack on github: https://github.com/qsniyg/maxurl/issues/199
+			// https://akiba-souken.k-img.com/thumbnail/images/official/71/71cea5d83dfa537e053b8b8e31b98649.jpg?w=60&h=60
+			//   https://akiba-souken.k-img.com/assets/images/official/71/71cea5d83dfa537e053b8b8e31b98649.jpg
+			return src
+				.replace(/\/thumbnail\/+images\/+/, "/assets/images/")
+				.replace(/(\/images\/+[^/]+\/+(?:(?:[0-9]{3}\/+){2}|[0-9a-f]{2}\/+))(?:t[0-9]+_)?([^/]+?)(?:[?#].*)?$/, "$1$2");
 		}
 
 		if (domain === "image.yes24.com") {
@@ -18841,6 +18846,8 @@ var $$IMU_EXPORT$$;
 			src.indexOf("/is/image/") >= 0 ||
 			// https://c.shld.net/rpx/i/s/i/spin/image/spin_prod_944500112?hei=185&wid=185&op_sharpen=1&qlt=85
 			//   https://c.shld.net/rpx/i/s/i/spin/image/spin_prod_944500112?scl=1&fmt=png-alpha
+			// http://c.shld.net/rpx/i/s/pi/mp/10143589/prod_17215362615?src=http%3A%2F%2Fprodimage.images-bn.com%2Fpimages%2F9780739052204.jpg&d=31514ed0ddc4e4d8bba1651321ad7287b49da72f
+			//   http://prodimage.images-bn.com/pimages/9780739052204.jpg
 			domain === "c.shld.net") {
 			// https://dyson-h.assetsadobe2.com/is/image//content/dam/dyson/products/hair-care/dyson-supersonic/customisation/personal-care-dyson-supersonic-customisation-homepage.jpg?scl=1
 			// https://dyson-h.assetsadobe2.com/is/image//content/dam/dyson/icons/owner-footer/register-my-machine.png?scl=1&fmt=png-alpha
@@ -18849,6 +18856,11 @@ var $$IMU_EXPORT$$;
 			// https://airbus-h.assetsadobe2.com/is/image/content/dam/products-and-solutions/commercial-aircraft/beluga/belugaxl/BelugaXL.jpg?wid=1920&fit=fit,1&qlt=85,0
 			//   https://airbus-h.assetsadobe2.com/is/image/content/dam/products-and-solutions/commercial-aircraft/beluga/belugaxl/BelugaXL.jpg -- much smaller (300x203)
 			//   https://airbus-h.assetsadobe2.com/is/image/content/dam/products-and-solutions/commercial-aircraft/beluga/belugaxl/BelugaXL.jpg?scl=1
+			match = src.match(/\/i\/s\/.*\?(?:.*&)?src=(https?%3A.*?)(?:&.*)?$/);
+			if (match) {
+				return decodeURIComponent(match[1]);
+			}
+
 			match = src.match(/\/is\/image\/+.*\?(?:.*?&)?src=is{(.*?)}/);
 			if (match) {
 				return src.replace(/\/is\/image\/.*/, "/is/image/" + decodeURIComponent(match[1]));
@@ -48738,6 +48750,17 @@ var $$IMU_EXPORT$$;
 			// https://photo.naiadmmm.com/fast_photo.php?type=thumbnail&hash=b362528fd4b1f26b6d1968e61235317729eb040553ed6d408c787a8a04140fbc6b4fdbbe6a91caf212cd31803f5b07a9ed681e94ad7c4754f82f6e02ba114599
 			//   https://photo.naiadmmm.com/fast_photo.php?type=photo&hash=b362528fd4b1f26b6d1968e61235317729eb040553ed6d408c787a8a04140fbc6b4fdbbe6a91caf212cd31803f5b07a9ed681e94ad7c4754f82f6e02ba114599
 			return src.replace(/(\/fast_photo\.php\?)(.*&)?type=thumbnail/, "$1$2type=photo");
+		}
+
+		if (domain === "prodimage.images-bn.com") {
+			// http://prodimage.images-bn.com/pimages/9780739052204.jpg
+			return {
+				url: src,
+				headers: {
+					Referer: ""
+				},
+				can_head: false // doesn't return errors
+			}
 		}
 
 
