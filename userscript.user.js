@@ -34220,6 +34220,12 @@ var $$IMU_EXPORT$$;
 			//   https://ba.hitomi.la/galleries/1338763/1.jpg
 			// https://tn.hitomi.la/bigtn/1338738/0000.jpg.jpg
 			//   https://aa.hitomi.la/galleries/1338738/0000.jpg
+			// https://ctn.hitomi.la/smalltn/d/d4/993eba05ee978ab052c5c72cf9a623cf167e8d2e8fb89d069b0e3d5694de2d4d.jpg
+			//   https://ca.hitomi.la/webp/d/d4/993eba05ee978ab052c5c72cf9a623cf167e8d2e8fb89d069b0e3d5694de2d4d.webp
+			newsrc = src.replace(/:\/\/([a-z])tn\.hitomi\.la\/+(?:small|big)tn\/+([0-9a-f]\/+[0-9a-f]{2}\/+[0-9a-f]{20,})\.[^/.]+(?:[?#].*)?$/, "://$1a.hitomi.la/webp/$2.webp");
+			if (newsrc !== src)
+				return newsrc;
+
 			var regex = /:\/\/[a-z]?tn\.hitomi\.la\/+[a-z]+\/+([0-9]+\/+p?[0-9]+\.[^/.]*)\.[^/.]*(?:[?#].*)?$/;
 
 			if (src.match(regex)) {
@@ -48811,6 +48817,67 @@ var $$IMU_EXPORT$$;
 					Referer: ""
 				},
 				can_head: false // doesn't return errors
+			}
+		}
+
+		if (domain === "dn3pm25xmtlyu.cloudfront.net") {
+			// https://dn3pm25xmtlyu.cloudfront.net/photos/thumb/555322240.gif?1333773919&Expires=1480264803&Signature=FfWz5yprJzJPkKnGj1PniS28A3cEc6CPohd8u2xWu013k71zXIczP~lXauNR7QbU583vN1VLGOw1y3vCjlIm~nsibhW-~FeJtQYxXnAGQz8eCm3B95s0yOp6wczpQbAS43bgiirrro8zct9K37Xsvuljl6P8fyTs4fk6GeaCLkw_&Key-Pair-Id=APKAIYVGSUJFNRFZBBTA
+			match = src.match(/\/photos\/+[a-z]+\/+([0-9]+)\./);
+			if (match) {
+				var get_twitpic_page_from_id = function(id) {
+					return "https://twitpic.com/" + parseInt(id).toString(36);
+				};
+
+				id = match[1];
+
+				obj = {
+					url: src,
+					extra: { page: get_twitpic_page_from_id(id) },
+				};
+
+				var query_twitpic = function(id, cb) {
+					var cache_key = "twitpic:" + id;
+
+					api_cache.fetch(cache_key, cb, function(done) {
+						options.do_request({
+							url: get_twitpic_page_from_id(id),
+							method: "GET",
+							onload: function(result) {
+								if (result.readyState !== 4)
+									return;
+
+								if (result.status !== 200) {
+									console_error(e);
+									return done(null, false);
+								}
+
+								var match = result.responseText.match(/<meta\s+name="twitter:image"\s+value="(https:\/\/dn3pm25xmtlyu\.[^"']+)"\s*\/>/);
+								if (!match) {
+									console_error("Unable to find match", result);
+									return done(null, false);
+								}
+
+								return done(decode_entities(match[1]), 60*60);
+							}
+						});
+					});
+				};
+
+				if (options && options.cb && options.do_request) {
+					query_twitpic(id, function(url) {
+						if (url) {
+							obj.url = url;
+						}
+
+						return options.cb(obj);
+					});
+
+					return {
+						waiting: true
+					};
+				}
+
+				return obj;
 			}
 		}
 
