@@ -1408,7 +1408,7 @@ var $$IMU_EXPORT$$;
 			subcategory: "open_behavior"
 		},
 		mouseover_exclude_sameimage: {
-			name: "Exclude if image is unchanged",
+			name: "Exclude if image URL is unchanged",
 			description: "Don't pop up if the new image is the same as the thumbnail image",
 			requires: {
 				mouseover: true
@@ -35210,7 +35210,7 @@ var $$IMU_EXPORT$$;
 			domain === "media.babesource.com") {
 			// http://www.bestpornbabes.com/media/galleries/5962daae49720/thumbs/5.jpg
 			//   http://www.bestpornbabes.com/media/galleries/5962daae49720/5.jpg
-			return src.replace(/(\/+galleries\/+[0-9a-f]+\/+)thumbs\//, "$1");
+			return src.replace(/(\/+galleries\/+[0-9a-f]+\/+)thumbs\/+(?:[0-9]+x[0-9]+\/+)?/, "$1");
 		}
 
 		if (domain === "staticpopopics.popopics.com") {
@@ -41322,7 +41322,10 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/media\/+resized\/+[^/]*\/+/, "/media/");
 		}
 
-		if (domain === "i.ryt9.com") {
+		if (domain === "i.ryt9.com" ||
+			// https://imageproxy.haaartland.com/1000x/https://m2.nsimg.net/media/8/5/5/8551503.jpg
+			//   https://m2.nsimg.net/media/8/5/5/8551503.jpg
+			domain === "imageproxy.haaartland.com") {
 			// https://i.ryt9.com/320x/https://img.ryt9.com/img/files/20181116/iq2b0a29fc8bdeac1c2d241f7fe2df8d62.jpg
 			//   https://img.ryt9.com/img/files/20181116/iq2b0a29fc8bdeac1c2d241f7fe2df8d62.jpg
 			return src.replace(/^[a-z]+:\/\/[^/]*\/[0-9]*x[0-9]*\/+http/, "http");
@@ -48717,6 +48720,24 @@ var $$IMU_EXPORT$$;
 			// https://www.feralinteractive.com/data/games/deusexmd/images/features/screenshots/thumbs/thumb1.jpg
 			//   https://www.feralinteractive.com/data/games/deusexmd/images/features/screenshots/screen1.jpg
 			return src.replace(/(\/screenshots\/+)thumbs\/+thumb([0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1screen$2");
+		}
+
+		if (domain_nosub === "nsimg.net") {
+			// https://m1.nsimg.net/biopic/160x120/50404138
+			//   https://m1.nsimg.net/biopic/original4x3/50404138
+			// https://m2.nsimg.net/biopic/320x240/41823401
+			//   https://m2.nsimg.net/biopic/original4x3/41823401
+			// http://m1.nsimg.net/biopic/200x150/81562362
+			//   http://m1.nsimg.net/biopic/original4x3/81562362
+			// https://m2.nsimg.net/biopic/240x180/19899373
+			//   https://m2.nsimg.net/biopic/original4x3/19899373
+			return src.replace(/(\/biopic\/+)(?:160x120|320x240|200x150|240x180)\/+/, "$1original4x3/");
+		}
+
+		if (domain === "photo.naiadmmm.com") {
+			// https://photo.naiadmmm.com/fast_photo.php?type=thumbnail&hash=b362528fd4b1f26b6d1968e61235317729eb040553ed6d408c787a8a04140fbc6b4fdbbe6a91caf212cd31803f5b07a9ed681e94ad7c4754f82f6e02ba114599
+			//   https://photo.naiadmmm.com/fast_photo.php?type=photo&hash=b362528fd4b1f26b6d1968e61235317729eb040553ed6d408c787a8a04140fbc6b4fdbbe6a91caf212cd31803f5b07a9ed681e94ad7c4754f82f6e02ba114599
+			return src.replace(/(\/fast_photo\.php\?)(.*&)?type=thumbnail/, "$1$2type=photo");
 		}
 
 
