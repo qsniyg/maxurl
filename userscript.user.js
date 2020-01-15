@@ -43921,6 +43921,14 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/images\/+thumbnails\/+[0-9]+\/+[0-9]+\/+/, "/images/");
 		}
 
+		if (domain_nosub === "userapi.com") {
+			// https://sun6-14.userapi.com/impg/c200620/v200620345/27c83/89QyoQ7VCt8.jpg?size=200x0&quality=90&sign=e60754261191285d162c2466eddcc1a8
+			//   https://sun6-14.userapi.com/c200620/v200620345/27c83/89QyoQ7VCt8.jpg
+			newsrc = src.replace(/(:\/\/[^/]+\/+)impg\/+(.*?)(?:[?#].*)?$/, "$1$2");
+			if (newsrc !== src)
+				return newsrc;
+		}
+
 		if (domain_nosub === "userapi.com" &&
 			host_domain_nosub === "vk.com" && options.element &&
 			options.do_request && options.cb) {
@@ -43931,13 +43939,16 @@ var $$IMU_EXPORT$$;
 			// TODO: profile photos on other pages (some are /id012345, some are /special.name.
 			//   requesting that will allow us to find <a id="profile_photo_link" href="/photo...">
 			newsrc = (function() {
-				function request_photo(id, cb) {
+				function request_photo(id, list, cb) {
 					var cache_key = "vk_photo:" + id;
 					api_cache.fetch(cache_key, cb, function (done) {
+						var listkey = "";
+						if (list)
+							listkey = "&list=" + list;
 						options.do_request({
 							method: "POST",
 							url: "https://vk.com/al_photos.php",
-							data: "act=show&al=1&photo=" + id,
+							data: "act=show&al=1&photo=" + id + listkey,
 							headers: {
 								"Content-Type": "application/x-www-form-urlencoded",
 								"X-Requested-With": "XMLHttpRequest"
@@ -43946,6 +43957,38 @@ var $$IMU_EXPORT$$;
 								if (result.readyState !== 4)
 									return;
 
+								try {
+									var json = JSON_parse(result.responseText);
+
+									var jsonarray = json.payload[1][3];
+									var jsonobj = null;
+
+									//console_log(jsonarray);
+
+									for (var i = 0; i < jsonarray.length; i++) {
+										if (!jsonarray[i].id)
+											continue;
+
+										api_cache.set("vk_photo:" + jsonarray[i].id, jsonarray[i], 3*60*60);
+
+										if (jsonarray[i].id !== id)
+											continue;
+
+										jsonobj = jsonarray[i];
+										break;
+									}
+
+									if (jsonobj !== null)
+										done(jsonobj, 3*60*60);
+									else
+										done(null, false);
+								} catch(e) {
+									console_log("vk_photo", result);
+									console_error("vk_photo", e);
+									return done(null, false);
+								}
+
+								if (false) {
 								var match = result.responseText.match(/<!json>(\[.*?\])<!>/);
 								if (!match) {
 									return done(null, false);
@@ -43979,6 +44022,7 @@ var $$IMU_EXPORT$$;
 									console_error("vk_photo", e);
 									done(null, false);
 								}
+								}
 							}
 						});
 					});
@@ -44006,8 +44050,15 @@ var $$IMU_EXPORT$$;
 				function process_el(current) {
 					if (current.tagName === "A") {
 						var match = current.href.match(/^[a-z]+:\/\/(?:[^/]+\.)?vk\.com\/+photo(-?[0-9]+_[0-9]+)\/*(?:[?#].*)?$/);
+						if (!match) {
+							var onclick = current.getAttribute("onclick");
+							if (onclick) {
+								match = onclick.match(/^return\s+showPhoto\(["'](-?[0-9]+_[0-9]+)["']\s*,\s*["']([^'"]+)["']/);
+							}
+						}
+
 						if (match) {
-							request_photo(match[1], function(obj) {
+							request_photo(match[1], match[2], function(obj) {
 								if (!obj) {
 									options.cb(null);
 								} else {
@@ -49230,6 +49281,9 @@ var $$IMU_EXPORT$$;
 			// https://thumbor.forbes.com/thumbor/960x0/https%3A%2F%2Fblogs-images.forbes.com%2Fjoresablount%2Ffiles%2F2019%2F05%2Fhitesh-choudhary-666985-unsplash-1200x675.jpg
 			//   https://blogs-images.forbes.com/joresablount/files/2019/05/hitesh-choudhary-666985-unsplash-1200x675.jpg
 			domain === "thumbor.forbes.com" ||
+			// https://thumbor.f3.cool/BGpVZveO6bAVctCZ7aGCsL3-iPA=/360x360/smart/profile0.f3.cool/xRGcA9JA/KRpUDdn7_360x360.jpg
+			//   http://profile0.f3.cool/xRGcA9JA/KRpUDdn7_360x360.jpg
+			domain === "thumbor.f3.cool" ||
 			src.match(/:\/\/[^/]*\/thumbor\/[^/]*=\//) ||
 			// https://www.orlandosentinel.com/resizer/tREpzmUU7LJX1cbkAN-unm7wL0Y=/fit-in/800x600/top/filters:fill(black)/arc-anglerfish-arc2-prod-tronc.s3.amazonaws.com/public/XC6HBG2I4VHTJGGCOYVPLBGVSM.jpg
 			//   http://arc-anglerfish-arc2-prod-tronc.s3.amazonaws.com/public/XC6HBG2I4VHTJGGCOYVPLBGVSM.jpg
