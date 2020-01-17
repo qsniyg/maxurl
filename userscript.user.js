@@ -18962,6 +18962,9 @@ var $$IMU_EXPORT$$;
 			// https://assets.myzeki.com/3f7d45fc-9007-4c1f-8a74-281cd4724d31/-/preview/1200x630/-/stretch/fill/-/resize/1200x630/-/format/webp/-/quality/lighter/image.webp
 			//   https://assets.myzeki.com/3f7d45fc-9007-4c1f-8a74-281cd4724d31/
 			domain === "assets.myzeki.com" ||
+			// https://thumb.tildacdn.com/tild6133-3662-4734-a163-303763373638/-/format/webp/stefan-stefancik-257.jpg
+			//   https://static.tildacdn.com/tild6133-3662-4734-a163-303763373638/stefan-stefancik-257.jpg -- thumb gets automatically redirected to static
+			domain === "thumb.tildacdn.com" ||
 			// https://cdn.slant.co/999bce7d-6fb0-4b6b-9820-24e58633edf8/-/format/jpeg/-/progressive/yes/-/preview/480x480/
 			//   https://cdn.slant.co/999bce7d-6fb0-4b6b-9820-24e58633edf8/-
 			domain === "cdn.slant.co") {
@@ -18972,7 +18975,7 @@ var $$IMU_EXPORT$$;
 			//   https://cdn.uc.assets.prezly.com/6201f512-e09d-440f-95e3-d1aa316f70e6/-
 			// https://cdn.uc.assets.prezly.com/c204db5f-a17a-4c64-96b2-112b0876cb84/-/preview/1108x1108/
 			//   https://cdn.uc.assets.prezly.com/c204db5f-a17a-4c64-96b2-112b0876cb84/-
-			return src.replace(/(:\/\/[^/]*\/+[-a-f0-9]{30,}(?:~[0-9a-f]+)?\/+(?:nth\/+[0-9]+\/+)?).*/, "$1");
+			return src.replace(/(:\/\/[^/]*\/+(?:[a-z]+)?[-a-f0-9]{30,}(?:~[0-9a-f]+)?\/+(?:nth\/+[0-9]+\/+)?).*?(?:\/([^/.]+\.[^/.]+))?(?:[?#].*)?$/, "$1$2");
 			//return src.replace(/(:\/\/[^/]*\/[-0-9a-f]+\/).*/, "$1");
 		}
 
@@ -43945,6 +43948,42 @@ var $$IMU_EXPORT$$;
 			// TODO: profile photos on other pages (some are /id012345, some are /special.name.
 			//   requesting that will allow us to find <a id="profile_photo_link" href="/photo...">
 			newsrc = (function() {
+				var request_video = function(id, list, cb) {
+					// payload[1][4].player.params[0].url720|hls(raw)?
+					var cache_key = "vk_video:" + id;
+					api_cache.fetch(cache_key, cb, function(done) {
+						var listkey = "";
+						if (list)
+							listkey = "&list=" + list;
+						options.do_request({
+							method: "POST",
+							url: "https://vk.com/al_video.php?act=show",
+							data: "act=show&al=1&al_ad=0&video=" + id + listkey,
+							headers: {
+								"Content-Type": "application/x-www-form-urlencoded",
+								"X-Requested-With": "XMLHttpRequest",
+								"Referer": "https://vk.com/",
+								"Origin": "https://vk.com"
+							},
+							onload: function(result) {
+								if (result.readyState !== 4)
+									return;
+
+								try {
+									var json = JSON_parse(result.responseText);
+
+									var params = json.payload[1][4].player.params[0];
+									return done(params, 3*60*60);
+								} catch (e) {
+									console_error("vk_video", e);
+								}
+
+								return done(null, false);
+							}
+						});
+					});
+				};
+
 				function request_photo(id, list, cb) {
 					var cache_key = "vk_photo:" + id;
 					api_cache.fetch(cache_key, cb, function (done) {
@@ -44053,24 +44092,60 @@ var $$IMU_EXPORT$$;
 					return maxurl;
 				}
 
+				function process_video(params) {
+					var maxsize = 0;
+					for (var key in params) {
+						var match = key.match(/^url([0-9]+)$/);
+						if (match) {
+							var size = parseInt(match[1]);
+							if (size > maxsize)
+								maxsize = size;
+						}
+					}
+
+					if (maxsize !== 0) {
+						return params["url" + maxsize];
+					}
+
+					return null;
+				}
+
 				function process_el(current) {
 					if (current.tagName === "A") {
+						var is_photo = true;
+
 						var match = current.href.match(/^[a-z]+:\/\/(?:[^/]+\.)?vk\.com\/+photo(-?[0-9]+_[0-9]+)\/*(?:[?#].*)?$/);
 						if (!match) {
 							var onclick = current.getAttribute("onclick");
 							if (onclick) {
 								match = onclick.match(/^return\s+showPhoto\(["'](-?[0-9]+_[0-9]+)["']\s*,\s*["']([^'"]+)["']/);
+								if (!match) {
+									match = onclick.match(/^return\s+showVideo\(["'](-?[0-9]+_[0-9]+)["']\s*,\s*["']([^'"]+)["']/);
+									if (match) {
+										is_photo = false;
+									}
+								}
 							}
 						}
 
 						if (match) {
-							request_photo(match[1], match[2], function(obj) {
-								if (!obj) {
-									options.cb(null);
-								} else {
-									options.cb(process_photo(obj));
-								}
-							});
+							if (is_photo) {
+								request_photo(match[1], match[2], function(obj) {
+									if (!obj) {
+										options.cb(null);
+									} else {
+										options.cb(process_photo(obj));
+									}
+								});
+							} else {
+								request_video(match[1], match[2], function(obj) {
+									if (!obj) {
+										options.cb(null);
+									} else {
+										options.cb(process_video(obj));
+									}
+								});
+							}
 
 							return true;
 						}
@@ -48879,6 +48954,25 @@ var $$IMU_EXPORT$$;
 
 				return obj;
 			}
+		}
+
+		if (domain === "media-ima002.globaltalentsystems.com") {
+			// http://media-ima002.globaltalentsystems.com/25255/500/25255_000-6-13-2018-1311607066.jpg
+			//   https://s3.amazonaws.com/media-ima002.globaltalentsystems.com/25255/500/25255_000-6-13-2018-1311607066.jpg
+			return src.replace(/^[a-z]+:\/\/([^/]+)\/+/, "https://s3.amazonaws.com/$1/");
+		}
+
+		if (amazon_container === "media-ima002.globaltalentsystems.com") {
+			// http://s3.amazonaws.com/media-ima002.globaltalentsystems.com/15950/500/15950_000-9-30-2014-18703.jpg
+			//   http://s3.amazonaws.com/media-joined000.globaltalentsystems.com/2/15950/15950_000-9-30-2014-18703.jpg
+			//   https://www.globaltalentsystems.com/main/15950/15950_000-9-30-2014-18703.jpg -- doesn't work
+			// doesn't work for all:
+			// http://media-ima002.globaltalentsystems.com/25255/500/25255_000-6-13-2018-1311607066.jpg
+			//   http://www.globaltalentsystems.com/main/25255/25255_000-6-13-2018-1311607066.jpg
+			return [
+				src.replace(/.*\/media-ima002\.[^/]+\/+([0-9]+)\/+[0-9]+\/+([0-9]+_[^/]+\.[^/.]+)(?:[?#].*)?$/, "https://www.globaltalentsystems.com/main/$1/$2"),
+				src.replace(/\/media-ima002\.([^/]+)\/+([0-9]+)\/+[0-9]+\/+([0-9]+_[^/]+\.[^/.]+)(?:[?#].*)?$/, "/media-joined000.$1/2/$2/$3")
+			];
 		}
 
 
