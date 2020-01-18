@@ -56538,17 +56538,21 @@ var $$IMU_EXPORT$$;
 			return false;
 		}
 
-		var get_all_valid_els = function() {
-			return document.querySelectorAll("img, picture, video");
+		var get_all_valid_els = function(el) {
+			if (!el)
+				el = document;
+			return el.querySelectorAll("img, picture, video");
 		};
 
-		var get_all_valid_els_link = function() {
+		var get_all_valid_els_link = function(el) {
 			var query = "img, picture, video";
 			if (settings.mouseover_links) {
 				query += ", a";
 			}
 
-			return document.querySelectorAll(query);
+			if (!el)
+				el = document;
+			return el.querySelectorAll(query);
 		};
 
 		var replacing_imgs = false;
@@ -57035,6 +57039,8 @@ var $$IMU_EXPORT$$;
 
 			var observer;
 
+			var observe_options = {childList: true, subtree: true, attributes: true};
+
 			var new_mutationobserver = function() {
 				return new MutationObserver(function(mutations, observer) {
 					var images = [];
@@ -57043,6 +57049,10 @@ var $$IMU_EXPORT$$;
 						for (var i = 0; i < nodes.length; i++) {
 							if (is_img_pic_vid_link(nodes[i])) {
 								images.push(nodes[i]);
+							}
+
+							if (nodes[i].children) {
+								add_nodes(nodes[i].children);
 							}
 						}
 					};
@@ -57075,7 +57085,7 @@ var $$IMU_EXPORT$$;
 
 				if (!observer)
 					return;
-				observer.observe(document, {childList: true, subtree: true, attributes: true});
+				observer.observe(document, observe_options);
 			};
 
 			var remove_all_highlights = function() {
