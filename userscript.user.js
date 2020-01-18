@@ -56822,22 +56822,6 @@ var $$IMU_EXPORT$$;
 			target.classList.remove(highlightimgs_classname);
 		}
 
-		var highlight_mouseover = function(e) {
-			if (get_single_setting("highlightimgs_auto") !== "hover") {
-				e.target.removeEventListener("mouseover", highlight_mouseover);
-				e.target.removeEventListener("mouseout", highlight_mouseout);
-				return;
-			}
-
-			if (auto_highlighted_imgs.indexOf(e.target) < 0)
-				auto_highlighted_imgs.push(e.target);
-			apply_highlight_style(e.target);
-		};
-
-		var highlight_mouseout = function(e) {
-			remove_highlight_style(e.target);
-		};
-
 		var check_highlightimgs_valid_image = function(el) {
 			var src = get_img_src(el);
 			if (!is_valid_src(src) || (el.tagName === "A" && !looks_like_valid_link(src)))
