@@ -1017,6 +1017,7 @@ var $$IMU_EXPORT$$;
 		// thanks to 894-572 on github for the idea: https://github.com/qsniyg/maxurl/issues/30
 		mouseover_trigger_key: ["shift", "alt", "i"],
 		mouseover_trigger_delay: 1,
+		mouseover_trigger_mouseover: false,
 		mouseover_trigger_prevent_key: ["shift"],
 		// also thanks to blue-lightning: https://github.com/qsniyg/maxurl/issues/16
 		mouseover_close_behavior: "esc",
@@ -1318,6 +1319,16 @@ var $$IMU_EXPORT$$;
 			type: "number",
 			number_min: 0,
 			number_unit: "seconds",
+			category: "popup",
+			subcategory: "trigger"
+		},
+		mouseover_trigger_mouseover: {
+			name: "Use mouseover event",
+			description: "Uses the mouseover event instead of mousemove to figure out where to trigger the popup. This more closely matches the way other image popup addons work, at the cost of configurability",
+			requires: {
+				mouseover_trigger_behavior: "mouse"
+			},
+			advanced: true,
 			category: "popup",
 			subcategory: "trigger"
 		},
@@ -53513,6 +53524,7 @@ var $$IMU_EXPORT$$;
 		var delay_handle = null;
 		var delay_handle_triggering = false;
 		var delay_mouseonly = true;
+		var delay_el = null;
 
 		var get_nonwaitingel = function(x, y) {
 			var els = document.elementsFromPoint(x, y);
@@ -56939,6 +56951,14 @@ var $$IMU_EXPORT$$;
 			};
 		})();
 
+		var popup_mouse_head = function() {
+			if (delay_handle_triggering || trigger_complete(settings.mouseover_trigger_prevent_key))
+				return false;
+
+			popup_trigger_reason = "mouse";
+			return true;
+		};
+
 		var image_mouseover = function(e) {
 			if (get_single_setting("highlightimgs_auto") === "hover" && get_highlightimgs_valid_image(e.target)) {
 				var supported = !settings.highlightimgs_onlysupported;
@@ -56952,11 +56972,37 @@ var $$IMU_EXPORT$$;
 					apply_highlight_style(e.target);
 				}
 			}
+
+			if (settings.mouseover_trigger_mouseover && !delay_handle && !should_exclude_imagetab()) {
+				delay_el = e.target;
+				delay_handle = setTimeout(function() {
+					if (!popup_mouse_head())
+						return;
+
+					if (delay_handle) {
+						clearTimeout(delay_handle);
+						delay_handle = null;
+					}
+
+					var source = find_source([e.target]);
+
+					if (source) {
+						trigger_popup_with_source(source);
+					}
+				}, delay * 1000);
+			}
 		};
 
 		var image_mouseout = function(e) {
 			if (get_single_setting("highlightimgs_auto") === "hover" && get_highlightimgs_valid_image(e.target)) {
 				remove_highlight_style(e.target);
+			}
+
+			if (settings.mouseover_trigger_mouseover && delay_handle) {
+				if (delay_el === e.target) {
+					clearTimeout(delay_handle);
+					delay_handle = null;
+				}
 			}
 		};
 
@@ -57604,7 +57650,7 @@ var $$IMU_EXPORT$$;
 
 				// FIXME: this is rather weird. Less CPU usage, but doesn't behave in the way one would expect
 				if ((popups.length === 0 || popup_el_automatic) && !should_exclude_imagetab()) {
-					if (delay_handle) {
+					if (delay_handle && !settings.mouseover_trigger_mouseover) {
 						var trigger_mouse_jitter_thresh = 10;
 
 						if (Math.abs(mouseX - mouseDelayX) < trigger_mouse_jitter_thresh &&
@@ -57626,13 +57672,14 @@ var $$IMU_EXPORT$$;
 						}
 					}
 
-					delay_handle = setTimeout(function() {
-						if (delay_handle_triggering || trigger_complete(settings.mouseover_trigger_prevent_key))
-							return;
+					if (!settings.mouseover_trigger_mouseover) {
+						delay_handle = setTimeout(function() {
+							if (!popup_mouse_head())
+								return;
 
-						popup_trigger_reason = "mouse";
-						trigger_popup();
-					}, delay * 1000);
+							trigger_popup();
+						}, delay * 1000);
+					}
 				}
 			}
 		});
