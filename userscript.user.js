@@ -56976,17 +56976,19 @@ var $$IMU_EXPORT$$;
 			if (settings.mouseover_trigger_mouseover && !delay_handle && !should_exclude_imagetab()) {
 				delay_el = e.target;
 				delay_handle = setTimeout(function() {
-					if (!popup_mouse_head())
-						return;
+					delay_el = null;
 
 					if (delay_handle) {
 						clearTimeout(delay_handle);
 						delay_handle = null;
 					}
 
+					if (!popup_mouse_head())
+						return;
+
 					var source = find_source([e.target]);
 
-					if (source) {
+					if (source && get_physical_popup_el(source.el) !== last_popup_el) {
 						trigger_popup_with_source(source);
 					}
 				}, delay * 1000);
@@ -57526,16 +57528,17 @@ var $$IMU_EXPORT$$;
 
 			if (mouseover_enabled() && delay !== false && typeof delay === "number" && delay_mouseonly) {
 				if (popup_trigger_reason === "mouse") {
-					if (delay_handle) {
-						clearTimeout(delay_handle);
-						delay_handle = null;
-
-						// FIXME: shouldn't this be in if (popups.length > 0) instead?
-						if (false && waiting)
-							stop_waiting();
-					}
-
 					if (popups.length > 0) {
+						// FIXME: why was this not in if (popups.length > 0)?
+						// The reason for putting it here is that if the mouse moves (even within jitter thresh) after a single popup is open, it will cancel the popup request
+						if (delay_handle) {
+							clearTimeout(delay_handle);
+							delay_handle = null;
+
+							if (false && waiting)
+								stop_waiting();
+						}
+
 						var jitter_threshx = 40;
 						var jitter_threshy = jitter_threshx;
 
