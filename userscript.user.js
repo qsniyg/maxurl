@@ -56960,6 +56960,9 @@ var $$IMU_EXPORT$$;
 		};
 
 		var image_mouseover = function(e) {
+			if (currenttab_is_image() && settings.mouseover_exclude_imagetab)
+				return;
+
 			if (get_single_setting("highlightimgs_auto") === "hover" && get_highlightimgs_valid_image(e.target)) {
 				var supported = !settings.highlightimgs_onlysupported;
 				if (!supported) {
