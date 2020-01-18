@@ -582,6 +582,16 @@ var $$IMU_EXPORT$$;
 		return obj;
 	}
 
+	var parse_boolean = function(bool) {
+		if (bool === "true" || bool === true || bool === 1)
+			return true;
+
+		if (bool === "false" || bool === false || bool === 0)
+			return false;
+
+		return;
+	};
+
 	// https://stackoverflow.com/a/25603630
 	function get_language() {
 		if (typeof navigator === "undefined")
@@ -13041,7 +13051,10 @@ var $$IMU_EXPORT$$;
 				.replace(/^[a-z]+:\/\/[^/]*\/board\/+(?:imgur\.php\?|imgur\/+.\/+)([^/]*)$/, "https://i.imgur.com/$1");
 		}
 
-		if (domain_nowww === "vidble.com") {
+		if (domain_nowww === "vidble.com" ||
+			// https://i.vidble.com//FLJ23AtOz0_sqr.jpg
+			//   https://i.vidble.com//FLJ23AtOz0.jpg
+			domain === "i.vidble.com") {
 			// https://www.vidble.com/ZNOTKNmw6y_sqr.jpg
 			//   https://www.vidble.com/ZNOTKNmw6y.jpg
 			return src.replace(/_[^/._]*(\.[^/.]*)$/, "$1");
@@ -17945,7 +17958,8 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "gasookpopgalore.net" ||
 			// http://www.honeydear.my/image/cache/data/YW1031WH/213%20(4)-850x1300.jpg
 			//   http://www.honeydear.my/image/data/YW1031WH/213%20(4).jpg
-			domain_nowww === "honeydear.my") {
+			domain_nowww === "honeydear.my" ||
+			src.match(/^[a-z]+:\/\/[^/]+\/+image\/+cache\/+data\/.*-[0-9]+x[0-9]+\.[^/.]+(?:[?#].*)?$/)) {
 			// https://inimura.com/image/cache/catalog/product/lingerie/0068-01-270x360.jpg
 			//   https://inimura.com/image/catalog/product/lingerie/0068-01.jpg
 			return src
@@ -56823,7 +56837,54 @@ var $$IMU_EXPORT$$;
 
 		var highlight_mouseout = function(e) {
 			remove_highlight_style(e.target);
-		}
+		};
+
+		var check_highlightimgs_valid_image = function(el) {
+			var src = get_img_src(el);
+			if (!is_valid_src(src) || (el.tagName === "A" && !looks_like_valid_link(src)))
+				return false;
+			return true;
+		};
+
+		var get_highlightimgs_valid_image = function(el) {
+			// TODO: dynamic attribute name
+			if (el.hasAttribute("data-imu-valid")) {
+				return !!parse_boolean(el.getAttribute("data-imu-valid"));
+			}
+
+			var valid = check_highlightimgs_valid_image(el);
+			el.setAttribute("data-imu-valid", valid + "");
+			return valid;
+		};
+
+		var check_highlightimgs_supported_image = function(el) {
+			var src = get_img_src(el);
+
+			var imu_output = bigimage_recursive(src, {
+				fill_object: false,
+				exclude_problems: [],
+				use_cache: false,
+				use_api_cache: false,
+				element: el,
+				document: document,
+				window: window,
+				cb: function() {},
+				do_request: function() {}
+			});
+
+			return imu_output !== src;
+		};
+
+		var get_highlightimgs_supported_image = function(el) {
+			// TODO: dynamic attribute name
+			if (el.hasAttribute("data-imu-supported")) {
+				return !!parse_boolean(el.getAttribute("data-imu-supported"));
+			}
+
+			var supported = check_highlightimgs_supported_image(el);
+			el.setAttribute("data-imu-supported", supported + "");
+			return supported;
+		};
 
 		var auto_highlighted_imgs = [];
 		var highlight_images = function(options) {
@@ -56843,31 +56904,16 @@ var $$IMU_EXPORT$$;
 				return;
 
 			for (var i = 0; i < images.length; i++) {
-				var src = get_img_src(images[i]);
-				if (!is_valid_src(src) || (images[i].tagName === "A" && !looks_like_valid_link(src)))
+				if (!get_highlightimgs_valid_image(images[i]))
 					continue;
 
 				supported = !settings.highlightimgs_onlysupported;
 
 				if (settings.highlightimgs_onlysupported) {
-					var imu_output = bigimage_recursive(src, {
-						fill_object: false,
-						exclude_problems: [],
-						use_cache: false,
-						use_api_cache: false,
-						cb: function() {},
-						do_request: function() {}
-					});
-
-					supported = imu_output !== src;
+					supported = get_highlightimgs_supported_image(images[i]);
 				}
 
-				if (options.hoveronly) {
-					if (supported) {
-						images[i].addEventListener("mouseover", highlight_mouseover);
-						images[i].addEventListener("mouseout", highlight_mouseout);
-					}
-				} else {
+				if (!options.hoveronly) {
 					if (supported) {
 						if (options.is_auto && auto_highlighted_imgs.indexOf(images[i]) < 0) {
 							auto_highlighted_imgs.push(images[i]);
@@ -56910,10 +56956,40 @@ var $$IMU_EXPORT$$;
 			};
 		})();
 
+		var image_mouseover = function(e) {
+			if (get_single_setting("highlightimgs_auto") === "hover" && get_highlightimgs_valid_image(e.target)) {
+				var supported = !settings.highlightimgs_onlysupported;
+				if (!supported) {
+					supported = get_highlightimgs_supported_image(e.target);
+				}
+
+				if (supported) {
+					if (auto_highlighted_imgs.indexOf(e.target) < 0)
+						auto_highlighted_imgs.push(e.target);
+					apply_highlight_style(e.target);
+				}
+			}
+		};
+
+		var image_mouseout = function(e) {
+			if (get_single_setting("highlightimgs_auto") === "hover" && get_highlightimgs_valid_image(e.target)) {
+				remove_highlight_style(e.target);
+			}
+		};
+
 		function on_new_images(images) {
 			var highlight = get_single_setting("highlightimgs_auto");
 			if (highlight === "always" || highlight === "hover")
 				highlight_images({images: images, hoveronly: highlight === "hover", is_auto: true});
+
+			for (var i = 0; i < images.length; i++) {
+				// apparently this isn't needed to ensure no duplicate event listeners?
+				images[i].removeEventListener("mouseover", image_mouseover);
+				images[i].removeEventListener("mouseout", image_mouseout);
+
+				images[i].addEventListener("mouseover", image_mouseover);
+				images[i].addEventListener("mouseout", image_mouseout);
+			}
 
 			if (settings.replaceimgs_auto)
 				replace_images_full({images: images, use_progressbar: false});
@@ -56961,7 +57037,7 @@ var $$IMU_EXPORT$$;
 				if (!settings.imu_enabled)
 					return;
 
-				on_new_images();
+				on_new_images(get_all_valid_els_link());
 
 				if (!observer)
 					return;
