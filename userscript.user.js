@@ -1630,22 +1630,20 @@ var $$IMU_EXPORT$$;
 		mouseover_close_need_mouseout: {
 			name: "Don't close until mouse leaves",
 			description: "If true, this keeps the popup open even if all triggers are released if the mouse is still over the image",
-			requires: {
-				mouseover_close_behavior: {
-					$or: ["any", "all"]
-				}
-			},
+			requires: [
+				{mouseover_close_behavior: "any"},
+				{mouseover_close_behavior: "all"}
+			],
 			category: "popup",
 			subcategory: "close_behavior"
 		},
 		mouseover_jitter_threshold: {
 			name: "Threshold to leave image",
 			description: "How many pixels outside of the image before the cursor is considered to have left the image",
-			requires: {
-				_type: "or",
-				mouseover_close_need_mouseout: true,
-				mouseover_trigger_behavior: "mouse"
-			},
+			requires: [
+				{mouseover_close_need_mouseout: true},
+				{mouseover_trigger_behavior: "mouse"}
+			],
 			type: "number",
 			number_unit: "pixels",
 			category: "popup",
@@ -2316,11 +2314,11 @@ var $$IMU_EXPORT$$;
 		highlightimgs_onlysupported: {
 			name: "Only explicitly supported images",
 			description: "Only highlights images that can be made larger or the original version can be found",
-			requires: {
-				_type: "or",
-				highlightimgs_enable: true,
-				highlightimgs_auto: {$or: ["always", "hover"]}
-			},
+			requires: [
+				{highlightimgs_enable: true},
+				{highlightimgs_auto: "always"},
+				{highlightimgs_auto: "hover"}
+			],
 			category: "extra",
 			subcategory: "highlightimages"
 		},
@@ -2328,11 +2326,11 @@ var $$IMU_EXPORT$$;
 			name: "Highlight CSS",
 			description: "CSS style to apply for highlight",
 			type: "textarea",
-			requires: {
-				_type: "or",
-				highlightimgs_enable: true,
-				highlightimgs_auto: {$or: ["always", "hover"]}
-			},
+			requires: [
+				{highlightimgs_enable: true},
+				{highlightimgs_auto: "always"},
+				{highlightimgs_auto: "hover"}
+			],
 			category: "extra",
 			subcategory: "highlightimages",
 			imu_enabled_exempt: true
@@ -49093,11 +49091,13 @@ var $$IMU_EXPORT$$;
 			 domain_nosub === "pngguru.com" ||
 			 // https://f0.pngfuel.com/png/38/972/woman-in-black-cardigan-jennie-kim-blackpink-inkigayo-k-pop-girl-group-blackpink-jennie-png-clip-art-thumbnail.png
 			 //   https://f0.pngfuel.com/png/38/972/woman-in-black-cardigan-jennie-kim-blackpink-inkigayo-k-pop-girl-group-blackpink-jennie-png-clip-art.png
+			 // https://f1.pngfuel.com/png/154/201/248/park-sandara-park-south-korea-kpop-gotta-be-you-girl-group-blackpink-artist-png-clip-art-thumbnail.png
+			 //   https://f1.pngfuel.com/png/154/201/248/park-sandara-park-south-korea-kpop-gotta-be-you-girl-group-blackpink-artist-png-clip-art.png
 			 domain_nosub === "pngfuel.com")
 			&& /^[a-z][0-9]*\./.test(domain)) {
 			// https://p7.hiclipart.com/preview/1024/526/554/stock-photography-royalty-free-woman-surprised-girl-thumbnail.jpg
 			//   https://p7.hiclipart.com/preview/1024/526/554/stock-photography-royalty-free-woman-surprised-girl.jpg
-			return src.replace(/((?:\/preview\/+(?:[0-9]+\/+){3}|\/png\/+(?:[0-9]+\/+){2})[^/]+)-thumbnail(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+			return src.replace(/((?:\/preview\/+(?:[0-9]+\/+){3}|\/png\/+(?:[0-9]+\/+){2,3})[^/]+)-thumbnail(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		}
 
 
@@ -52052,6 +52052,10 @@ var $$IMU_EXPORT$$;
 					requires = {};
 				}
 
+				if (!(requires instanceof Array)) {
+					requires = [requires];
+				}
+
 				if (!meta.imu_enabled_exempt) {
 					if (!settings.imu_enabled) {
 						enabled = false;
@@ -52059,33 +52063,17 @@ var $$IMU_EXPORT$$;
 				}
 
 				if (enabled && requires) {
-					var type = "and";
+					for (var i = 0; i < requires.length; i++) {
+						var current_requires = requires[i];
 
-					if ("_type" in requires)
-						type = requires._type;
+						for (var required_setting in current_requires) {
+							if (required_setting[0] === "_")
+								continue;
 
-					if (type === "or")
-						enabled = false;
+							var required_value = current_requires[required_setting];
 
-					for (var required_setting in requires) {
-						if (required_setting[0] === "_")
-							continue;
-
-						var required_value = requires[required_setting];
-
-						var rvalues = [];
-						if (typeof required_value === "object" && "$or" in required_value) {
-							for (var i = 0; i < required_value.$or.length; i++) {
-								rvalues.push(required_value.$or[i]);
-							}
-						} else {
-							rvalues = [required_value];
-						}
-
-						for (var i = 0; i < rvalues.length; i++) {
 							var value = settings[required_setting];
-
-							if (value instanceof Array && !(rvalues[i] instanceof Array))
+							if (value instanceof Array && !(required_value instanceof Array))
 								value = value[0];
 
 							if (!(required_setting in enabled_map)) {
@@ -52097,24 +52085,20 @@ var $$IMU_EXPORT$$;
 								return;
 							}
 
-							//console_log(setting, required_setting, value, rvalues[i]);
-							if (enabled_map[required_setting] && value === rvalues[i]) {
+							//console_log(setting, required_setting, value, required_value);
+							if (enabled_map[required_setting] && value === required_value) {
 								enabled = true;
-								break;
+								//break;
 							} else {
 								enabled = false;
 							}
+
+							if (!enabled)
+								break;
 						}
 
-						if (type === "and") {
-							if (!enabled) {
-								break;
-							}
-						} else if (type === "or") {
-							if (enabled) {
-								break;
-							}
-						}
+						if (enabled)
+							break;
 					}
 				}
 
