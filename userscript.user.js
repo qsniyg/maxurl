@@ -53543,7 +53543,11 @@ var $$IMU_EXPORT$$;
 	function do_mouseover() {
 		var mouseover_enabled = function() {
 			return settings.imu_enabled && settings.mouseover;
-		}
+		};
+
+		var mouseover_mouse_enabled = function() {
+			return mouseover_enabled() && delay !== false && typeof delay === "number" && delay_mouseonly;
+		};
 
 		var mousepos_initialized = false;
 
@@ -57085,7 +57089,7 @@ var $$IMU_EXPORT$$;
 				}
 			}
 
-			if (settings.mouseover_trigger_mouseover && !delay_handle && !should_exclude_imagetab()) {
+			if (mouseover_mouse_enabled() && settings.mouseover_trigger_mouseover && !delay_handle && !should_exclude_imagetab()) {
 				delay_el = e.target;
 				delay_handle = setTimeout(function() {
 					delay_el = null;
@@ -57112,7 +57116,7 @@ var $$IMU_EXPORT$$;
 				remove_highlight_style(e.target);
 			}
 
-			if (settings.mouseover_trigger_mouseover && delay_handle) {
+			if (mouseover_mouse_enabled() && settings.mouseover_trigger_mouseover && delay_handle) {
 				if (delay_el === e.target) {
 					clearTimeout(delay_handle);
 					delay_handle = null;
@@ -57644,7 +57648,7 @@ var $$IMU_EXPORT$$;
 				}
 			}
 
-			if (mouseover_enabled() && delay !== false && typeof delay === "number" && delay_mouseonly) {
+			if (mouseover_mouse_enabled()) {
 				if (popup_trigger_reason === "mouse") {
 					if (popups.length > 0) {
 						// FIXME: why was this not in if (popups.length > 0)?
