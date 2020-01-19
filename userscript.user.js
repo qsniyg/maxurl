@@ -1415,6 +1415,9 @@ var $$IMU_EXPORT$$;
 			requires: {
 				mouseover: true
 			},
+			disabled_if: {
+				mouseover_trigger_mouseover: true
+			},
 			category: "popup",
 			subcategory: "open_behavior"
 		},
@@ -52047,14 +52050,21 @@ var $$IMU_EXPORT$$;
 
 				enabled_map[setting] = "processing";
 
-				var requires = deepcopy(meta.requires);
-				if (!requires) {
-					requires = {};
+				var prepare_array = function(value) {
+					var result = deepcopy(value);
+					if (!result) {
+						return null;
+					}
+
+					if (!(result instanceof Array)) {
+						result = [result];
+					}
+
+					return result;
 				}
 
-				if (!(requires instanceof Array)) {
-					requires = [requires];
-				}
+				var requires = prepare_array(meta.requires);
+				var disabled_if = prepare_array(meta.disabled_if);
 
 				if (!meta.imu_enabled_exempt) {
 					if (!settings.imu_enabled) {
@@ -52062,15 +52072,16 @@ var $$IMU_EXPORT$$;
 					}
 				}
 
-				if (enabled && requires) {
-					for (var i = 0; i < requires.length; i++) {
-						var current_requires = requires[i];
+				var check_validity = function(array) {
+					for (var i = 0; i < array.length; i++) {
+						var current = array[i];
+						var current_valid = true;
 
-						for (var required_setting in current_requires) {
+						for (var required_setting in current) {
 							if (required_setting[0] === "_")
 								continue;
 
-							var required_value = current_requires[required_setting];
+							var required_value = current[required_setting];
 
 							var value = settings[required_setting];
 							if (value instanceof Array && !(required_value instanceof Array))
@@ -52085,21 +52096,30 @@ var $$IMU_EXPORT$$;
 								return;
 							}
 
-							//console_log(setting, required_setting, value, required_value);
 							if (enabled_map[required_setting] && value === required_value) {
-								enabled = true;
-								//break;
+								current_valid = true;
 							} else {
-								enabled = false;
+								current_valid = false;
 							}
 
-							if (!enabled)
+							if (!current_valid)
 								break;
 						}
 
-						if (enabled)
-							break;
+						if (current_valid) {
+							return true;
+						}
 					}
+
+					return false;
+				};
+
+				if (enabled && requires) {
+					enabled = check_validity(requires);
+				}
+
+				if (enabled && disabled_if) {
+					enabled = !check_validity(disabled_if);
 				}
 
 				enabled_map[setting] = enabled;
