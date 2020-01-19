@@ -6170,6 +6170,9 @@ var $$IMU_EXPORT$$;
 			// https://cdn.apartmenttherapy.info/image/fetch/f_auto,q_auto:eco/https%3A%2F%2Fstorage.googleapis.com%2Fgen-atmedia%2F3%2F2018%2F03%2F43997be9fb4a1acca400bfea464fe31701f17157.jpeg
 			//   https://storage.googleapis.com/gen-atmedia/3/2018/03/43997be9fb4a1acca400bfea464fe31701f17157.jpeg
 			domain === "cdn.apartmenttherapy.info" ||
+			// https://image.thestartmagazine.com/fetch/d_magazineDefault.jpg,c_fill,g_face:auto,fl_lossy,q_70,w_480/http%3A%2F%2Fimages.summitmedia-digital.com%2Fpreview%2Fimages%2F2019%2F10%2F07%2Fmimiyuh-nm.jpg
+			//   http://images.summitmedia-digital.com/preview/images/2019/10/07/mimiyuh-nm.jpg
+			domain === "image.thestartmagazine.com" ||
 			// https://cdn.substack.com/image/fetch/c_limit,q_auto:good,f_auto/https%3A%2F%2Fbucketeer-e05bbc84-baa3-437e-9518-adb32be77984.s3.amazonaws.com%2Fpublic%2Fimages%2F0d3b9fbf-c06e-4b6e-ac84-13c53da04462_952x400.png
 			//   https://bucketeer-e05bbc84-baa3-437e-9518-adb32be77984.s3.amazonaws.com/public/images/0d3b9fbf-c06e-4b6e-ac84-13c53da04462_952x400.png
 			domain === "cdn.substack.com" ||
@@ -6177,8 +6180,8 @@ var $$IMU_EXPORT$$;
 			// https://res.cloudinary.com/emazecom/image/fetch/c_limit,a_ignore,w_320,h_200/https%3A%2F%2Fimg-aws.ehowcdn.com%2F877x500p%2Fs3.amazonaws.com%2Fcme_public_images%2Fwww_ehow_com%2Fi.ehow.com%2Fimages%2Fa04%2Fbd%2Fic%2Fchemical-energy-work-3.1-800x800.jpg
 			// https://images.taboola.com/taboola/image/fetch/f_jpg%2Cq_auto%2Cc_fill%2Cg_faces:auto%2Ce_sharpen/https%3A%2F%2Fwww.gannett-cdn.com%2F-mm-%2F2e56892f6a349ad47192b530425d443fb365e5e9%2Fr%3Dx1803%26c%3D3200x1800%2Fhttps%2Fmedia.gannett-cdn.com%2F37861007001%2F37861007001_5735420050001_5735409691001-vs.jpg%3FpubId%3D37861007001
 			// https://res.cloudinary.com/emazecom/image/fetch/c_limit,a_ignore,w_320,h_200/http%3A%2F%2Fcdn.expansion.mx%2Fdims4%2Fdefault%2F5227468%2F2147483647%2Fthumbnail%2F850x478%255E%2Fquality%2F75%2F%3Furl%3Dhttps%253A%252F%252Fcdn.expansion.mx%252Fmedia%252F2010%252F06%252F08%252Fobreros-chinos-trabajadores-china.jpg
-			if (src.search(/:\/\/[^/]*\/(?:[^/]*\/+)?image\/+fetch\//) >= 0) {
-				newsrc = src.replace(/.*?:\/\/[^/]*\/(?:[^/]*\/)?image\/fetch\/(?:.*?(?:\/|%2F))?([^/%]*(?::|%3A).*)/, "$1");
+			if (src.search(/:\/\/[^/]*\/(?:[^/]*\/+)?(?:image\/+)?fetch\//) >= 0) {
+				newsrc = src.replace(/.*?:\/\/[^/]*\/(?:[^/]*\/)?(?:image\/+)?fetch\/(?:.*?(?:\/|%2F))?([^/%]*(?::|%3A).*)/, "$1");
 				if (newsrc.match(/^[^/:]*%3A/))
 					newsrc = decodeURIComponent(newsrc);
 				return newsrc;
@@ -6435,7 +6438,9 @@ var $$IMU_EXPORT$$;
 			//   https://media1.popsugar-assets.com/files/2014/04/09/959/n/1922564/d006b9f456c00f56_478466321_10/i/Emma-Watson-Wes-Gordon-2014-Noah-Germany-Premiere.jpg
 			// http://media1.popsugar-assets.com/files/thumbor/hEi29uVq6ywnKLkB2konCS2CMJI=/fit-in/2048xorig/2016/05/22/156/n/1922398/c7b25a8fd8aaab98_GettyImages-533596620/i/Mila-Kunis-Ashton-Kutcher-Billboard-Music-Awards-2016.jpg
 			//   http://media1.popsugar-assets.com/files/2016/05/22/156/n/1922398/c7b25a8fd8aaab98_GettyImages-533596620/i/Mila-Kunis-Ashton-Kutcher-Billboard-Music-Awards-2016.jpg
-			newsrc = src.replace(/\/thumbor\/[^/]*\/(?:fit-in\/)?[^/]*\/(?:filters:[^/]*\/)?/, "/");
+			// https://media1.popsugar-assets.com/files/thumbor/t85Z6EqhDjIu8EaEzfzk5hOJ1Ck/0x360:2400x2394/fit-in/728xorig/filters:format_auto-!!-:strip_icc-!!-:watermark-!popsugar-watermark.png,-5,-5,0!-/2020/01/16/687/n/1922564/4606d55d5e20819816a430.09594567_/i/selena-gomez-style-for-new-album-release-2020.jpg
+			//   https://media1.popsugar-assets.com/files/2020/01/16/687/n/1922564/4606d55d5e20819816a430.09594567_/i/selena-gomez-style-for-new-album-release-2020.jpg
+			newsrc = src.replace(/\/thumbor\/[^/]+\/(?:[0-9]+x[0-9]+:[0-9]+x[0-9]+\/)?(?:fit-in\/)?[^/]+\/(?:filters:[^/]+\/)?/, "/");
 			if (newsrc !== src)
 				return newsrc;
 
@@ -11344,7 +11349,7 @@ var $$IMU_EXPORT$$;
 				id = match[1];
 
 				common_functions.deviantart_page_from_id(options.do_request, api_cache, id, function(result) {
-					options._internal_info.deviantart_page = result.finalUrl || true;
+					options._internal_info.deviantart_page = (result && result.finalUrl) || true;
 
 					if (!result) {
 						return options.cb({
@@ -13882,14 +13887,19 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "image.thanhnien.vn") {
-			// https://image.thanhnien.vn/1600/uploaded/phangiang/2016_03_12/anh_lfyk.jpg
 			// https://image.thanhnien.vn/1600/Uploaded/phangiang/2016_03_12/anh_lfyk.jpg
 			//   https://image.thanhnien.vn/Uploaded/phangiang/2016_03_12/anh_lfyk.jpg
 			// https://image.thanhnien.vn/Uploaded/phinp/2018_02_19/thumnail-bi-mat-tuan-anh_cms_VOVN.jpg?width=178&height=100&crop=auto&scale=both
 			//   https://image.thanhnien.vn/Uploaded/phinp/2018_02_19/thumnail-bi-mat-tuan-anh_cms_VOVN.jpg
-			return src
-				.replace(/\?.*/, "")
-				.replace(/(:\/\/[^/]*)\/[0-9]*\/+(uploaded\/)/i, "$1/$2");
+			// https://image.thanhnien.vn/c150x100/0,23,0,79/Uploaded/binhhh/2020_01_09/selena_gomez_UURR.jpg
+			//   https://image.thanhnien.vn/Uploaded/binhhh/2020_01_09/selena_gomez_UURR.jpg
+			return {
+				url: src
+					.replace(/\?.*/, "")
+					.replace(/(:\/\/[^/]*)\/+(?:[0-9]+|c[0-9]+x[0-9]+\/+[0-9]+(?:,[0-9]+){3})\/+(uploaded\/)/i, "$1/$2"),
+				can_head: false // hangs?
+			};
+			//return src.replace(/\/c[0-9]+x[0-9]+\/+[0-9]+(?:,[0-9]+){3}\/+Uploaded\/+/i, "/Uploaded/");
 		}
 
 		if (domain === "media-local.phunu365.net" ||
@@ -19087,9 +19097,17 @@ var $$IMU_EXPORT$$;
 			// https://beztabu.net/uploads/640_DIR/media_news/2018/08/5b6960963029e998726219.jpg
 			//   https://beztabu.net/uploads/media_news/2018/08/5b6960963029e998726219.jpg
 			domain_nowww === "beztabu.net" ||
+			// https://34.ua/uploads/640_DIR/media_news/2019/12/5dfa139f75468048407587.jpg
+			//   https://34.ua/uploads/media_news/2019/12/5dfa139f75468048407587.jpg
+			domain_nowww === "34.ua" ||
 			// https://24tv.ua/resources/photos/news/620_DIR/201808/1010954_2349563.jpg?201808163040
 			//   https://24tv.ua/resources/photos/news/201808/1010954_2349563.jpg?201808163040
-			domain_nowww === "24tv.ua" ||
+			// https://auto.24tv.ua/resources/photos/news/640_DIR/201707/895.jpg?1501002807000
+			//   https://auto.24tv.ua/resources/photos/news/201707/895.jpg?1501002807000
+			domain_nosub === "24tv.ua" ||
+			// https://football24.ua/resources/photos/news/640_DIR/201404/201015_1397570335954.jpg
+			//   https://football24.ua/resources/photos/news/201404/201015_1397570335954.jpg
+			domain_nowww === "football24.ua" ||
 			// https://maximum.fm/uploads/424x239_DIR/media_news/2019/10/5da1ac7105c1a714987453.png
 			//   https://maximum.fm/uploads/media_news/2019/10/5da1ac7105c1a714987453.png
 			domain_nowww === "maximum.fm" ||
@@ -22170,7 +22188,11 @@ var $$IMU_EXPORT$$;
 			(domain_nosub === "grid.id" && domain.match(/^asset(?:-[a-z]*)?\./))) {
 			// https://asset.kompas.com/crop/113x0:787x449/185x124/data/photo/2018/05/14/4120396036.jpg
 			//   https://asset.kompas.com/data/photo/2018/05/14/4120396036.jpg
-			return src.replace(/\/crop\/[0-9x:]+\/[0-9]*x[0-9]*\//, "/");
+			// https://asset.kompas.com/crops/bE85pYvuYsJlLSfVy1CcTNTriWk=/0x0:0x0/780x390/filters:watermark(data/photo/2019/08/13/5d528b377fe82.png,0,-0,1)/data/photo/2016/08/30/0931073maria-selena-aplikas780x390.jpg
+			//   https://asset.kompas.com/data/photo/2016/08/30/0931073maria-selena-aplikas780x390.jpg
+			return src
+				.replace(/\/crop\/[0-9x:]+\/[0-9]*x[0-9]*\//, "/")
+				.replace(/\/crops\/+.*\/+(data\/+photo\/+)/, "/$1");
 		}
 
 		if (domain === "img.4plebs.org") {
@@ -23288,6 +23310,9 @@ var $$IMU_EXPORT$$;
 			// https://www.ferra.ru/thumb/495x0/filters:quality(75):no_upscale()/imgs/2019/09/22/11/3574619/fb673adfd041779c2418d172441a6cc47cf39dbe.jpg
 			//   https://www.ferra.ru/imgs/2019/09/22/11/3574619/fb673adfd041779c2418d172441a6cc47cf39dbe.jpg
 			domain_nowww === "ferra.ru" ||
+			// https://motor.ru/thumb/750x0/filters:quality(75)/imgs/2016/12/30/11/205305/a1cd0b4edb6f2bc4ce457320ef026f22ddd53e33.jpg
+			//   https://motor.ru/imgs/2016/12/30/11/205305/a1cd0b4edb6f2bc4ce457320ef026f22ddd53e33.jpg
+			domain_nowww === "motor.ru" ||
 			// https://www.passion.ru/thumb/400x0/filters:quality(75)//imgs/2017/05/13/15/901933/6ed6cad1b0242b0d401881056ab4e55b5b450065.jpg
 			//   https://www.passion.ru//imgs/2017/05/13/15/901933/6ed6cad1b0242b0d401881056ab4e55b5b450065.jpg
 			domain_nowww === "passion.ru") {
@@ -39125,6 +39150,9 @@ var $$IMU_EXPORT$$;
 			// https://wikiquicky.com/backup/phpThumb/phpThumb.php?src=/uploads/singer/Yolandi%20Visser.jpg&w=500&h=500&iar=1
 			//   https://wikiquicky.com/uploads/singer/Yolandi%20Visser.jpg
 			domain_nowww === "wikiquicky.com" ||
+			// http://dmbtattoo.com/modules/phpThumb/phpThumb.php?src=/images/tattoos/Sara%20(2).JPG&w=225&fltr[]=wmi|/images/watermark.png|BR|100
+			//   http://dmbtattoo.com/images/tattoos/Sara%20(2).JPG
+			domain_nowww === "dmbtattoo.com" ||
 			// https://joinsmediacanada.com/plugin/phpThumb/phpThumb.php?src=http%3A%2F%2Fimage.newsis.com%2F2015%2F09%2F23%2FNISI20150923_0005935978_web.jpg&w=130&h=110&zc=1&hash=d6c980fa0aa014e6aa91199b3805b778
 			//   http://image.newsis.com/2015/09/23/NISI20150923_0005935978_web.jpg
 			domain_nowww === "joinsmediacanada.com") {
@@ -45171,7 +45199,9 @@ var $$IMU_EXPORT$$;
 		if (domain_nosub === "jdmagicbox.com" && /^content[0-9]*\./.test(domain)) {
 			// https://content3.jdmagicbox.com/comp/delhi/l2/011pxx11.xx11.181201121520.n6l2/catalogue/guru-kirpa-gupta-properties-shastri-nagar-n-delhi-estate-agents-bhqcuqr44l-250.jpg
 			//   https://content3.jdmagicbox.com/comp/delhi/l2/011pxx11.xx11.181201121520.n6l2/catalogue/guru-kirpa-gupta-properties-shastri-nagar-n-delhi-estate-agents-bhqcuqr44l.jpg
-			return src.replace(/(\/catalogue\/+[^/]*-[a-z0-9]{10,})-[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+			// https://content1.jdmagicbox.com/comp/mumbai/g4/022pxx22.xx22.190430174247.q1g4/catalogue/blackpink-mumbai-hfcqwtwhyv.jpg?interpolation=lanczos-none&output-format=jpg&resize=1024:*&crop=1024:270px;*,*
+			//   https://content1.jdmagicbox.com/comp/mumbai/g4/022pxx22.xx22.190430174247.q1g4/catalogue/blackpink-mumbai-hfcqwtwhyv.jpg
+			return src.replace(/(\/catalogue\/+[^/?]*-[a-z0-9]{10,})(?:-[0-9]+)?(\.[^/.]*?)(?:[?#].*)?$/, "$1$2");
 		}
 
 		if (domain === "image.aladin.co.kr") {
@@ -48997,6 +49027,77 @@ var $$IMU_EXPORT$$;
 				src.replace(/.*\/media-ima002\.[^/]+\/+([0-9]+)\/+[0-9]+\/+([0-9]+_[^/]+\.[^/.]+)(?:[?#].*)?$/, "https://www.globaltalentsystems.com/main/$1/$2"),
 				src.replace(/\/media-ima002\.([^/]+)\/+([0-9]+)\/+[0-9]+\/+([0-9]+_[^/]+\.[^/.]+)(?:[?#].*)?$/, "/media-joined000.$1/2/$2/$3")
 			];
+		}
+
+		if (domain_nosub === "rbk.ru" && /^s[0-9]*\./.test(domain)) {
+			// https://s0.rbk.ru/v6_top_pics/resized/240x120_crop/media/img/7/22/754823926108227.jpg
+			//   https://s0.rbk.ru/v6_top_pics/media/img/7/22/754823926108227.jpg
+			// https://s0.rbk.ru/v6_top_pics/resized/590xH/media/img/7/22/754823926108227.jpg
+			//   https://s0.rbk.ru/v6_top_pics/media/img/7/22/754823926108227.jpg
+			return src.replace(/\/resized\/+[0-9W]+x[0-9H]+(?:_crop)?\/+media\/+/, "/media/");
+		}
+
+		if (domain_nowww === "kazanfirst.ru") {
+			// https://kazanfirst.ru/storage//post/August2017/X4rnjf58m2uhD2nIjv90-watermark.jpg
+			//   https://kazanfirst.ru/storage//post/August2017/X4rnjf58m2uhD2nIjv90.jpg
+			return src.replace(/(\/storage\/+post\/+[^/]+\/+[^/]+)-watermark(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "vgtour.ro") {
+			// http://www.vgtour.ro/media/poze/unitati/65/thumbs/cazare-bulgaria-sozopol-hotel-selena-beach-e56.jpg
+			newsrc = src.replace(/(\/media\/+poze\/+[^/]+\/+[^/]+\/+)thumbs\/+/, "$1");
+			if (newsrc !== src)
+				return newsrc;
+
+			// http://www.vgtour.ro/watermark.php?source=unitati&id=65&nume=cazare-bulgaria-sozopol-hotel-selena-beach-e56.jpg
+			//   http://www.vgtour.ro/media/poze/unitati/65/cazare-bulgaria-sozopol-hotel-selena-beach-e56.jpg
+			if (/\/watermark\.php\?/.test(src)) {
+				var source = url.searchParams.get("source");
+				id = url.searchParams.get("id");
+				var nume = url.searchParams.get("nume");
+
+				return src.replace(/\/watermark\.php.*/, "/media/poze/" + source + "/" + id + "/" + nume);
+			}
+		}
+
+		if (domain_nowww === "maiolifruttiantichi.it") {
+			// http://www.maiolifruttiantichi.it/upload/e-commerce/prodotti/img/watermark/20171025143303-Mela-Selena.jpg
+			//   http://www.maiolifruttiantichi.it/upload/e-commerce/prodotti/img/20171025143303-Mela-Selena.jpg
+			return src.replace(/(\/e-commerce\/+prodotti\/+img\/+)watermark\/+/, "$1");
+		}
+
+		if (domain === "photo.jpnn.com") {
+			// https://photo.jpnn.com/arsip/watermark/2018/07/24/lisa-blackpink-foto-soompi.jpg
+			//   https://photo.jpnn.com/arsip/normal/2018/07/24/lisa-blackpink-foto-soompi.jpg
+			return src.replace(/\/arsip\/+watermark\/+/, "/arsip/normal/");
+		}
+
+		if (domain_nowww === "posterswholesale.com") {
+			// http://www.posterswholesale.com/resize/Shared/Images/Product/Blackpink/53265.jpg?bw=1000&w=100&bh=1000&h=100
+			//   http://www.posterswholesale.com/shared/Images/Product/Blackpink/53265.jpg
+			return src.replace(/\/resize\/+(Shared\/+.*?)(?:[?#].*)?$/i, "/$1");
+		}
+
+		if (domain === "images.summitmedia-digital.com") {
+			// https://images.summitmedia-digital.com/cosmo/resize/large/images/2020/01/06/blackpink-lisa-manoban-idol-producer-dance-mentor-1578274791.png
+			//   https://images.summitmedia-digital.com/cosmo/images/2020/01/06/blackpink-lisa-manoban-idol-producer-dance-mentor-1578274791.png
+			return src.replace(/\/resize\/+[^/]+\/+(images\/+)/, "/$1");
+		}
+
+		if ((domain_nosub === "hiclipart.com" ||
+			 // https://w0.pngwave.com/png/272/404/park-chaeyoung-blackpink-house-k-pop-square-one-kpop-png-clip-art-thumbnail.png
+			 //   https://w0.pngwave.com/png/272/404/park-chaeyoung-blackpink-house-k-pop-square-one-kpop-png-clip-art.png
+			 domain_nosub === "pngwave.com" ||
+			 // https://i1.pngguru.com/preview/431/523/793/rose-blackpink-180622-woman-holding-microphone-thumbnail.jpg
+			 //   https://i1.pngguru.com/preview/431/523/793/rose-blackpink-180622-woman-holding-microphone.jpg
+			 domain_nosub === "pngguru.com" ||
+			 // https://f0.pngfuel.com/png/38/972/woman-in-black-cardigan-jennie-kim-blackpink-inkigayo-k-pop-girl-group-blackpink-jennie-png-clip-art-thumbnail.png
+			 //   https://f0.pngfuel.com/png/38/972/woman-in-black-cardigan-jennie-kim-blackpink-inkigayo-k-pop-girl-group-blackpink-jennie-png-clip-art.png
+			 domain_nosub === "pngfuel.com")
+			&& /^[a-z][0-9]*\./.test(domain)) {
+			// https://p7.hiclipart.com/preview/1024/526/554/stock-photography-royalty-free-woman-surprised-girl-thumbnail.jpg
+			//   https://p7.hiclipart.com/preview/1024/526/554/stock-photography-royalty-free-woman-surprised-girl.jpg
+			return src.replace(/((?:\/preview\/+(?:[0-9]+\/+){3}|\/png\/+(?:[0-9]+\/+){2})[^/]+)-thumbnail(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		}
 
 
