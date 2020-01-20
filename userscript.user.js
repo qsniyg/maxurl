@@ -13244,10 +13244,13 @@ var $$IMU_EXPORT$$;
 				.replace(/.*\/[0-9]+_[0-9]+_([0-9]{4})([0-9]{4})([^/]*)$/, "http://db.kookje.co.kr/news2000/photo/$1/$2/L$1$2$3");
 		}
 
-		if (domain_nowww === "joongdo.co.kr") {
+		if (domain_nowww === "joongdo.co.kr" ||
+			// http://www.viva100.com/mnt/images/webdata/content/2020y/01m/17d/crop2020011701001363700060161.jpg
+			//    http://www.viva100.com/mnt/images/file/2020y/01m/17d/2020011701001363700060161.jpg
+			domain_nowww === "viva100.com") {
 			// http://www.joongdo.co.kr/mnt/images/webdata/content/2018y/02m/01d/crop2018020101000198000004991.jpg
 			//   http://www.joongdo.co.kr/mnt/images/file/2018y/02m/01d/2018020101000198000004991.jpg
-			return src.replace(/\/webdata\/content\//, "/file/").replace(/\/[^0-9]*([0-9]*\.[^/.]*)$/, "/$1");
+			return src.replace(/\/webdata\/+content\/+([0-9]{4}y\/+[0-9]{2}m\/+[0-9]{2}d\/+)crop([0-9]+\.[^/.]+)(?:[?#].*)?$/, "/file/$1$2");
 		}
 
 		if (false && domain === "img.asiatoday.co.kr") {
@@ -13280,6 +13283,7 @@ var $$IMU_EXPORT$$;
 			//   http://img.asiatoday.co.kr/file/2019y/06m/27d/20190627000744579_1561589714_1.jpg?1561589714
 			//   http://www.asiatoday.co.kr/view.php?key=20190627000744579
 			// http://img.asiatoday.co.kr/webdata/content/2019y/09m/10d/20190910010006235_77_58.jpg
+			//   http://img.asiatoday.co.kr/file/2019y/09m/10d/2019091001001161400069161.jpg
 			//   http://www.asiatoday.co.kr/view.php?key=20190910010006235
 			match = src.match(/\/[0-9]{4}y\/+[0-9]{2}m\/+[0-9]{2}d\/+([0-9]{15,})_[0-9]+(?:_[0-9]+)?\./);
 			if (match) {
@@ -19423,6 +19427,12 @@ var $$IMU_EXPORT$$;
 			// https://c.podium.life/content/r/2/p/28765/8112/5a81580060110.jpg
 			//   https://c.podium.life/content/p/28765/8112/5a81580060110.jpg
 			return src.replace(/\/content\/r\/[wh]?[0-9]*(?:x[0-9]+)?\//, "/content/");
+		}
+
+		if (domain_nowww === "lelulove.com") {
+			// https://www.lelulove.com/content/photo/g7f6q5b7s3h6p8/thumbs/0003.jpg
+			//   https://www.lelulove.com/content/photo/g7f6q5b7s3h6p8/full/0003.jpg
+			return src.replace(/(\/content\/+photo\/+[0-9a-z]+\/+)thumbs\/+/, "$1full/");
 		}
 
 		if (domain_nosub === "filesor.com") {
