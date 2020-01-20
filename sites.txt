@@ -60,6 +60,7 @@
 2e0a24317f4a9294563f-26c3b154822345d9dde0204930c49e9c.ssl.cf1.rackcdn.com
 2photo.ru
 2sao.vietnamnetjsc.vn
+34.ua
 35photo.pro
 35photo.ru
 360buyimg.com
@@ -1461,7 +1462,9 @@ diziler.com
 dl.backbook.me
 dl.kaskus.id
 dlcompare.com
+dmbtattoo.com
 dn-kdt-img.qbox.me
+dn3pm25xmtlyu.cloudfront.net
 dnh0aphdpud22.cloudfront.net
 dodskypict.com
 dogtime.com
@@ -1751,6 +1754,7 @@ feedme.id
 feelway.com
 fem-img.herokuapp.com
 femanes.ru
+feralinteractive.com
 ferra.ru
 festivalteen.com.br
 fetcher-cdn.nullmu.com
@@ -1849,6 +1853,7 @@ focusmicrosites.s3.amazonaws.com
 fondsecran.eu
 fonstola.ru
 fonwall.ru
+football24.ua
 footprint.net
 forbesimg.com
 forbidden-dreams.com
@@ -2105,6 +2110,8 @@ gretschpages.com
 grid.id
 groundctrl.s3.amazonaws.com
 gstatic.com
+gta.cz
+gtainside.com
 gtimg.com
 gtplanet.net
 gttourkorea.com
@@ -2191,6 +2198,7 @@ heykorean.com
 heyzo.com
 hg-times.com
 hi-fi.ru
+hiclipart.com
 hidomin.com
 highasianporn.com
 highresaudio.com
@@ -2380,6 +2388,7 @@ i.trust.ua
 i.tubsexer.com
 i.tuenlinea.com
 i.ucrazy.ru
+i.vidble.com
 i.vimeocdn.com
 i.warosu.org
 i.wgirlz.us
@@ -2517,6 +2526,7 @@ image.side3.no
 image.spreadshirtmedia.com
 image.stirileprotv.ro
 image.thanhnien.vn
+image.thestartmagazine.com
 image.thmeythmey.com
 image.tmdb.org
 image.tophinhanh.me
@@ -2551,6 +2561,7 @@ imagenpic.com
 imagenup.com
 imageocd.com
 imageporter.com
+imageproxy.haaartland.com
 imageproxy.ifcdn.com
 imageproxy.pimg.tw
 imageproxy.themaven.net
@@ -2726,6 +2737,7 @@ images.streamable.com
 images.stv.tv
 images.successstory.com
 images.sudouest.fr
+images.summitmedia-digital.com
 images.superimg.com
 images.sxx.com
 images.sysapi.mtg.now.com
@@ -3368,6 +3380,7 @@ kartinkijane.ru
 kartinnay-galerey.ru
 kastden.org
 kateryan.s3.amazonaws.com
+kazanfirst.ru
 kb4images.com
 kbbs.jp
 kendam-148811.appspot.com.storage.googleapis.com
@@ -3496,6 +3509,7 @@ ledevoir.com
 legocdn.com
 legswiki.com
 leit.is
+lelulove.com
 lens2print.co.uk
 leonardo.osnova.io
 lepoint.fr
@@ -3614,6 +3628,7 @@ magnatune.com
 mail.ru
 mainbabes.com
 mainnews.kr
+maiolifruttiantichi.it
 mairiedesamoens.fr
 makeup.nuovogennarino.org
 malaysiadropship.com
@@ -3651,6 +3666,8 @@ media-amazon.com
 media-assets.aumo.jp
 media-cdn.sueddeutsche.de
 media-cdn.tripadvisor.com
+media-ima002.globaltalentsystems.com
+media-ima002.globaltalentsystems.com.s3.amazonaws.com
 media-imdb.com
 media-local.mywow.vn
 media-local.phunu365.net
@@ -3970,6 +3987,7 @@ mosaic.tnaflix.com
 mosaically.com
 mosaicon.hu
 motherlessmedia.com
+motor.ru
 motorsport.com
 movie.walkerplus.com
 movieassetsdigital.sgp1.cdn.digitaloceanspaces.com
@@ -4221,6 +4239,7 @@ nowtoronto.com
 nrt.ysc123.com.cn
 ns.hitcreative.com.s3.amazonaws.com
 nsfwalbum.com
+nsimg.net
 nst.sky.it
 ntdtv.kr
 nthumb.cyworld.com
@@ -4388,8 +4407,10 @@ photo.elcinema.com.s3.amazonaws.com
 photo.gala.fr
 photo.hankooki.com
 photo.isportskorea.com
+photo.jpnn.com
 photo.kmib.co.kr
 photo.l99.com
+photo.naiadmmm.com
 photo.newsen.com
 photo.roodo.com
 photo.tin8.co
@@ -4518,6 +4539,9 @@ pluscelebs.com
 pluska.sk
 pmdstatic.net
 pnewsapp.tc.qq.com
+pngfuel.com
+pngguru.com
+pngwave.com
 pocket.playxp.com
 pocoimg.cn
 podium.life
@@ -4559,6 +4583,7 @@ pornxxxbest.xyz
 pornzee.com
 portal-images.azureedge.net
 poseposter.com
+posterswholesale.com
 postervdom.ru
 postila.ru
 povarenok.ru
@@ -4587,6 +4612,7 @@ process-safety-lab.com
 prod-media.gameinformer.com.s3.amazonaws.com
 prod.media.larepublica.pe
 prod.presets.larepublica.pe
+prodimage.images-bn.com
 productionparadise.com
 productserve.com
 prof.prepics-cdn.com
@@ -4697,6 +4723,7 @@ razdachi.net
 razdam.net
 razorpics.net
 rbbtoday.com
+rbk.ru
 rbl.ms
 rbsdirect.com.br
 rdfm-radio.fr
@@ -5586,6 +5613,7 @@ thumb.named.com
 thumb.netz.id
 thumb.pann.com
 thumb.test.mod.io
+thumb.tildacdn.com
 thumb.tvpalace.org
 thumb.zumst.com
 thumbnail.egloos.net
@@ -5596,6 +5624,7 @@ thumbnails.trvl-media.com
 thumbnews.nateimg.co.kr
 thumbor-static.factorymedia.com
 thumbor-titelmediaug.netdna-ssl.com
+thumbor.f3.cool
 thumbor.forbes.com
 thumbs-prod.si-cdn.com
 thumbs.booru.org
@@ -5802,6 +5831,7 @@ vetton.ru
 vettri.net
 vev.ru
 vgamuseum.info
+vgtour.ro
 vh1.com
 vhaor.com
 vi.ill.in.ua
@@ -5828,6 +5858,7 @@ vip.tietu.la
 vipissy.com
 vir.com.vn
 vistanews.ru
+viva100.com
 vjav.com
 vk.com
 vkpeople.ru

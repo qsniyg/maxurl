@@ -1,3 +1,22 @@
+0.12.6
+
+New features:
+
+ * Option to only popup on a `mouseover` event (similar to other image popup extensions)
+ * Support for ~30 new websites (using ~20 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including VK)
+ * "Only supported" option under highlight images can now be live-reloaded
+
+Bugfixes:
+
+ * Fix a case where the popup would fail to load if the mouse moved even within a jitter threshold after a popup had been previously opened
+ * Highlight images now supports new elements that already have child elements
+
+---
+
 0.12.5
 
 New features:
