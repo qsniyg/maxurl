@@ -14905,10 +14905,12 @@ var $$IMU_EXPORT$$;
 			//   https://pic.pimg.tw/silvia17895/1518597084-877783212.jpg
 			// http://pic.pimg.tw/kflim/normal_4a56a95bbedef.jpg
 			//   http://pic.pimg.tw/kflim/4a56a95bbedef.jpg
+			// https://pic.pimg.tw/typhoon1212/1528283365-3372533556_wn.jpg
+			//   https://pic.pimg.tw/typhoon1212/1528283365-3372533556.jpg
 			// (none, l), b, m, n, q, s, t
 			return src
 				.replace(/\/[a-z]+_([0-9a-f]+\.[^/.]*)(?:[?#].*)?$/, "/$1")
-				.replace(/_[a-z](\.[^/]*)$/, "$1");
+				.replace(/_w?[a-z](\.[^/]*)$/, "$1");
 		}
 
 		if (domain === "imageproxy.pimg.tw") {
@@ -51536,6 +51538,14 @@ var $$IMU_EXPORT$$;
 
 					// nano defender removes this.DONE
 					if (resp.readyState < 2) {
+						return;
+					}
+
+					if (is_userscript && !resp.status && resp.readyState < 4) {
+						// Tampermonkey and Greasemonkey have a bug where status isn't set for onprogress events
+						// Tampermonkey issue: https://github.com/Tampermonkey/tampermonkey/issues/857
+						// Greasemonkey issue: https://github.com/greasemonkey/greasemonkey/issues/3068
+						handled = false;
 						return;
 					}
 
