@@ -51549,6 +51549,11 @@ var $$IMU_EXPORT$$;
 						return;
 					}
 
+					if (resp.readyState < 4) {
+						if (req && req.abort)
+							req.abort();
+					}
+
 					if (resp.status === 0 ||
 						check_tracking_blocked(resp)) {
 						// error loading image (IP doesn't exist, etc.), ignore
@@ -51648,8 +51653,6 @@ var $$IMU_EXPORT$$;
 					onprogress: function(resp) {
 						// 2 = HEADERS_RECEIVED
 						if (resp.readyState >= 2 && resp.responseHeaders) {
-							if (req && req.abort)
-								req.abort();
 							onload_cb(resp);
 						}
 					},
