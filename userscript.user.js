@@ -49271,6 +49271,92 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/resize\/+[0-9]+x[0-9]+\/+([0-9]{4}\/+)/, "/$1");
 		}
 
+		if (domain === "data.yiff.party") {
+			// https://data.yiff.party/avatars/patreon/thumb/6514828.jpg
+			//   https://data.yiff.party/avatars/patreon/full/6514828.jpg
+			newsrc = src.replace(/(\/avatars\/+[^/]+\/+)thumb\/+/, "$1full/");
+			if (newsrc !== src)
+				return newsrc;
+
+			// https://data.yiff.party/patreon_inline/thumb/30521798/5d8f2e996389b1ac6e313b0b644ebfe66486e3a1.jpg
+			//   https://data.yiff.party/patreon_inline/30521798/5d8f2e996389b1ac6e313b0b644ebfe66486e3a1.jpg
+			// https://data.yiff.party/patreon_inline/thumb/32682463/eba0dd3cd28724ceefa1b9195b82b2f2b31a6884.jpg
+			//   https://data.yiff.party/patreon_inline/32682463/eba0dd3cd28724ceefa1b9195b82b2f2b31a6884.gif
+			newsrc = src.replace(/\/patreon_inline\/+thumb\/+/, "/patreon_inline/");
+			if (newsrc !== src)
+				return add_extensions_gif(newsrc);
+
+			if (/\/patreon_data\/+[0-9]+\/+[0-9]+\/+thumb\./.test(src) && options && options.element) {
+				var current = options.element;
+				if (current.classList.contains("lazyloaded")) {
+					var link = current.parentElement.parentElement.querySelector(".card-action > a");
+					if (link && link.href.indexOf("/patreon_data/") >= 0) {
+						return link.href;
+					}
+				}
+			}
+		}
+
+		if (domain_nosub === "dlivecdn.com" && /^images-sihv[0-9]*\./.test(domain)) {
+			// todo: thumbor really needs to be processed somewhere central, this is terrible
+			// https://images-sihv2.prd.dlivecdn.com/fit-in/50x50/filters:quality(90)/avatar/12246e97-3bd7-11ea-9fd3-a272e850df75
+			//   https://images.prd.dlivecdn.com/avatar/12246e97-3bd7-11ea-9fd3-a272e850df75
+			// https://images-sihv2.prd.dlivecdn.com/fit-in/200x200/filters:quality(90)/category/qffytgkitnjvi1mo1n
+			//   https://images.prd.dlivecdn.com/category/qffytgkitnjvi1mo1n
+			// https://images-sihv2.prd.dlivecdn.com/fit-in/200x200/filters:quality(90)/category/all.png
+			//   https://images.prd.dlivecdn.com/category/all.png
+			// https://images-sihv2.prd.dlivecdn.com/fit-in/256x256/filters:quality(90)/live-thumbnail/6f1a060d-3d4b-11ea-9529-e2443572cd01
+			//   https://images.prd.dlivecdn.com/live-thumbnail/6f1a060d-3d4b-11ea-9529-e2443572cd01
+			return src.replace(/:\/\/images-[^/.]+\.prd\.dlivecdn\.com\/+fit-in\/+[0-9]+x[0-9]+\/+filters:[^/]+\/+([-a-z]+\/+[^/]+)(?:[?#].*)?$/, "://images.prd.dlivecdn.com/$1");
+		}
+
+		if (domain_nosub === "bitchute.com" && /^static/.test(domain)) {
+			// https://static-3.bitchute.com/live/channel_images/1T4G52B7I3Ox/lVnrpenvlHcQESeGbooLmeqY_small.jpg
+			//   https://static-3.bitchute.com/live/channel_images/1T4G52B7I3Ox/lVnrpenvlHcQESeGbooLmeqY_large.jpg
+			// https://static-3.bitchute.com/live/cover_images/dL5WGm6DIxkW/3AH6p6ewO6jgE2xbCrngaYUz_320x180.jpg
+			//   https://static-3.bitchute.com/live/cover_images/dL5WGm6DIxkW/3AH6p6ewO6jgE2xbCrngaYUz_1280x720.jpg -- upscaled
+			// https://static-3.bitchute.com/live/cover_images/dL5WGm6DIxkW/5rP9Kc5gjFqD_640x360.jpg -- not upscaled, 1280x720 doesn't work
+			newsrc = src.replace(/(\/live\/+channel_images\/+.*)_(?:small|medium)(\.[^/.]+)(?:[?#].*)?$/, "$1_large$2");
+			if (newsrc !== src)
+				return newsrc;
+
+			regex = /(\/live\/+cover_images\/+.*_)([0-9]+x[0-9]+)(\.[^/.]+)(?:[?#].*)?$/;
+			match = src.match(regex);
+			if (match) {
+				var sizes = [
+					"1280x720",
+					"640x360",
+					"320x180"
+				];
+
+				var sizetoint = function(size) {
+					var match = size.match(/^([0-9]+)x([0-9]+)$/);
+					return parseInt(match[1]) * parseInt(match[2]);
+				};
+
+				var urlsize = sizetoint(match[2]);
+				var newurls = [];
+				for (var i = 0; i < sizes.length; i++) {
+					if (urlsize < sizetoint(sizes[i])) {
+						newurls.push(src.replace(regex, "$1" + sizes[i] + "$3"));
+					}
+				}
+
+				if (newurls.length > 0) {
+					return newurls;
+				}
+			}
+		}
+
+		if (domain_nowww === "bitchute.com") {
+			// https://www.bitchute.com/static/v103/images/play-button.png -- overlays videos, harder to find the image underneath
+			if (/\/static\/+v[0-9]+\/+images\/+/.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
+		}
+
 
 
 
