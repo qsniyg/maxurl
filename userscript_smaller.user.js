@@ -4,15 +4,15 @@
 // ==UserScript==
 // @name              Image Max URL
 // @namespace         http://tampermonkey.net/
-// @version           0.12.6
-// @description       Finds larger or original versions of images for 6100+ websites
-// @description:ko    6100개 이상의 사이트에 대해 더 크거나 원본 이미지 찾는 스크립트
-// @description:fr    Trouve des images plus grandes ou originales pour plus de 6100 sites
-// @description:es    Encuentra imágenes más grandes y originales para más de 6100 sitios
-// @description:zh    为6100多个网站查找更大或原始图像
-// @description:zh-CN 为6100多个网站查找更大或原始图像
-// @description:zh-TW 為6100多個網站查找更大或原始圖像
-// @description:zh-HK 為6100多個網站查找更大或原始圖像
+// @version           0.12.7
+// @description       Finds larger or original versions of images for 6200+ websites
+// @description:ko    6200개 이상의 사이트에 대해 더 크거나 원본 이미지 찾는 스크립트
+// @description:fr    Trouve des images plus grandes ou originales pour plus de 6200 sites
+// @description:es    Encuentra imágenes más grandes y originales para más de 6200 sitios
+// @description:zh    为6200多个网站查找更大或原始图像
+// @description:zh-CN 为6200多个网站查找更大或原始图像
+// @description:zh-TW 為6200多個網站查找更大或原始圖像
+// @description:zh-HK 為6200多個網站查找更大或原始圖像
 // @author            qsniyg
 // @homepageURL       https://qsniyg.github.io/maxurl/options.html
 // @supportURL        https://github.com/qsniyg/maxurl/issues
@@ -5749,6 +5749,7 @@ var $$IMU_EXPORT$$;
 			domain === "cdn.businessinsider.es" ||
 			(domain_nowww === "ru-24.ru" && src.indexOf("/_files/") >= 0) ||
 			(domain_nowww === "selenagomez.com" && src.indexOf("/sites/") >= 0) ||
+			(domain_nowww === "zizki.com" && src.indexOf("/styles/") >= 0) ||
 			src.match(/\/sites\/[^/]*\/files2?\/styles\/[^/]*/) ||
 			src.match(/\/sites\/[^/]*\/files2?\/[^/]*\/styles\/[^/]*/) ||
 			src.match(/(?:(?:\/sites\/+[^/]*)?\/files\/+|\/sites\/+[^/]*\/+)imagecache\/+[^/]*|\/sites\/+[^/]*\/+public\/+styles\/+/) ||
@@ -6555,6 +6556,10 @@ var $$IMU_EXPORT$$;
 			};
 		}
 
+		if (domain === "img-static.tradesy.com") {
+			return src.replace(/:\/\/[^/]+\/+item\/+([0-9]+)\/+([^/]+)(-[0-9]+-[0-9]+)-[0-9]+-[0-9]+(\.[^/.?]+)(?:[?#].*)?$/, "://item4.tradesy.com/images/$2-$1$3$4");
+		}
+
 		if (domain === "store-images.microsoft.com" ||
 			domain === "store-images.s-microsoft.com") {
 			return {
@@ -6876,6 +6881,8 @@ var $$IMU_EXPORT$$;
 			(domain_nowww === "londonsvenskar.com" && src.indexOf("/files/") >= 0) ||
 			(domain === "ia.eferrit.com" && src.indexOf("/ia/") >= 0) ||
 			(domain_nowww === "dokkaebi.tv" && src.indexOf("/file/") >= 0) ||
+			(domain_nowww === "porncomix.one" && src.indexOf("/gallery/") >= 0) ||
+			(domain_nowww === "porncomix.info" && src.indexOf("/images/") >= 0) ||
 			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|images|photos|blogs.dir)|\/+uploads)\//.test(src)
 			/*src.indexOf("/wp/uploads/") >= 0*/
 			) {
@@ -9900,7 +9907,7 @@ var $$IMU_EXPORT$$;
 		if (domain === "pic.pimg.tw") {
 			return src
 				.replace(/\/[a-z]+_([0-9a-f]+\.[^/.]*)(?:[?#].*)?$/, "/$1")
-				.replace(/_[a-z](\.[^/]*)$/, "$1");
+				.replace(/_w?[a-z](\.[^/]*)$/, "$1");
 		}
 
 		if (domain === "imageproxy.pimg.tw") {
@@ -11164,6 +11171,7 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "imagenup.com" ||
 			(domain_nowww === "imgz.pw" && /\/ch\/+images\//.test(src)) ||
 			(domain_nowww === "xxximg.art" && src.indexOf("/images/") >= 0) ||
+			(domain_nosub === "tag-fox.com" && /^data[0-9]*\./.test(domain)) ||
 			domain_nowww === "image-bugs.com") {
 			return src.replace(/\.(?:th|md)(\.[^/.]*)$/, "$1");
 		}
@@ -11774,6 +11782,7 @@ var $$IMU_EXPORT$$;
 			domain === "f6j6u6m9.ssl.hwcdn.net" ||
 			domain === "cdn.yavtube.com" ||
 			domain === "img.yavtube.com" ||
+			domain === "a2h6m3w6.ssl.hwcdn.net" ||
 			domain === "c9w8v3m5.ssl.hwcdn.net") {
 			return src.replace(/(\/content\/+[0-9]+\/+[^/]+-[0-9]+)_[wh][0-9]+(\.[^/.]*)(?:[?#].*)?$/,
 							   "$1$2");
@@ -12724,7 +12733,14 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "travelseyahat.com" ||
 			domain_nowww === "carphotoshow.com" ||
 			domain_nowww === "crnobelo.com" ||
+			domain_nowww === "myhentaicomics.com" ||
 			domain_nowww === "celebritiestown.com") {
+			if (/\/modules\/+hover_navigation\/+images\//.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
+
 			if (!src.match(/\/\.album\.[^/.]*$/)) {
 				newsrc = src.replace(/(\/var\/+thumbs\/)/, "/var/resizes/");
 				if (newsrc !== src)
@@ -12829,6 +12845,7 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "tbib.org" ||
 			domain === "img.xbooru.com" ||
 			domain === "img.booru.org" ||
+			domain_nosub === "rule34.xxx" ||
 			domain_nowww === "realbooru.com") {
 			newsrc = src.replace(/\/(?:thumbnails|samples)(\/+[0-9]+\/+)(?:thumbnail|sample)_([0-9a-f]+\.[^/.]*)$/, "/images$1$2");
 			if (newsrc !== src)
@@ -21333,6 +21350,8 @@ var $$IMU_EXPORT$$;
 
 		if (domain_nowww === "bestpornbabes.com" ||
 			domain === "cdn.shesfreaky.com" ||
+			domain === "media.ruleporn.com" ||
+			domain_nowww === "teenplanet.org" ||
 			domain === "media.babesource.com") {
 			return src.replace(/(\/+galleries\/+[0-9a-f]+\/+)thumbs\/+(?:[0-9]+x[0-9]+\/+)?/, "$1");
 		}
@@ -21764,6 +21783,7 @@ var $$IMU_EXPORT$$;
 		if (domain_nowww === "hottystop.com" ||
 			domain === "d3m3u5a3.ssl.hwcdn.net" ||
 			domain_nowww === "nextdoortease.com" ||
+			domain_nowww === "foxhq.com" ||
 			domain === "a2w8r2x2.ssl.hwcdn.net") {
 			newsrc = src.replace(/\/smallimage([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/$1");
 			if (newsrc !== src)
@@ -30267,6 +30287,103 @@ var $$IMU_EXPORT$$;
 			return src.replace(/((?:\/preview\/+(?:[0-9]+\/+){3}|\/png\/+(?:[0-9]+\/+){2,3})[^/]+)-thumbnail(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		}
 
+		if (domain_nowww === "aerisdies.com") {
+			newsrc = src.replace(/\/thumbnails(\/+categories\/+[0-9]+\/+[0-9]+\.)gif(?:[?#].*)?$/, "/images$1png");
+			if (newsrc !== src)
+				return add_extensions_gif(newsrc);
+		}
+
+		if (domain_nowww === "erofus.com") {
+			return src.replace(/\/thumb(\/+[0-9]+\/+[0-9a-f]+\.)/, "/medium$1");
+		}
+
+		if (domain_nosub === "hentaicdn.com") {
+			return src
+				.replace(/\/thumbnails\/+(hcdn[0-9]+)tmb(\.[^/.]+)(?:[?#].*)?$/, "/$1$2")
+				.replace(/\/cover\/+[0-9]+\/+_S/, "/cover/_S");
+		}
+
+		if (domain_nowww === "hentaidude.com") {
+			if (/\/wp-content\/+themes\/+awp\/+images\//.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
+		}
+
+		if (domain_nowww === "jabarchives.com") {
+			obj = {
+				url: src
+			};
+
+			match = src.match(/\/main\/+media\/+.*\/([A-Z0-9]{10,})1(?:_[a-z]+)\./);
+			if (match)
+				obj.extra = {page: "https://jabarchives.com/main/post/" + match[1]};
+
+			newsrc = src.replace(/(\/main\/+media\/+.*)_(?:thumb|preview)\./, "$1_large.");
+			if (newsrc !== src)
+				obj.url = newsrc;
+
+			return obj;
+		}
+
+		if (domain === "images.myhentaigrid.com") {
+			return src.replace(/(\/imagesgallery\/+images\/+[^/]+\/+)thumbnail\/+/, "$1original/");
+		}
+
+		if (domain === "content.tsumino.com") {
+			match = src.match(/\/thumbs\/+([0-9]+)\/+([0-9]+)(?:[?#].*)?$/);
+			if (match && options && options.cb && options.do_request) {
+				page = "https://www.tsumino.com/Read/Index/" + match[1] + "?page=" + match[2];
+
+				var cache_key = "tsumino:" + match[1] + ":" + match[2];
+				var book_page = match[2];
+				api_cache.fetch(cache_key, options.cb, function(done) {
+					options.do_request({
+						url: page,
+						method: "GET",
+						onload: function(resp) {
+							if (resp.readyState !== 4)
+								return;
+
+							if (resp.status !== 200) {
+								return done(null, false);
+							}
+
+							var match = resp.responseText.match(/<div[^>]+data-cdn=["'](https:\/\/content\.tsumino[^'"]+\/\[PAGE\][^'"]+)["']/);
+							if (!match) {
+								console_warn("Unable to find match for", resp);
+								return done(null, false);
+							}
+
+							options.cb({
+								url: decode_entities(match[1]).replace("[PAGE]", book_page),
+								headers: {
+									Referer: resp.finalUrl
+								},
+								extra: {
+									page: resp.finalUrl
+								}
+							}, 6*60*60);
+						}
+					});
+				});
+
+				return {
+					waiting: true
+				};
+			}
+		}
+
+		if (domain_nowww === "2dgalleries.com") {
+			return src.replace(/\/planches\/+[0-9]+[WH]\/+/, "/planches/");
+		}
+
+		if (domain === "img.tamindir.com") {
+			return src.replace(/\/resize\/+[0-9]+x[0-9]+\/+([0-9]{4}\/+)/, "/$1");
+		}
+
+
 
 
 
@@ -32181,6 +32298,19 @@ var $$IMU_EXPORT$$;
 						return;
 					}
 
+					if (is_userscript && !resp.status && resp.readyState < 4) {
+						// Tampermonkey and Greasemonkey have a bug where status isn't set for onprogress events
+						// Tampermonkey issue: https://github.com/Tampermonkey/tampermonkey/issues/857
+						// Greasemonkey issue: https://github.com/greasemonkey/greasemonkey/issues/3068
+						handled = false;
+						return;
+					}
+
+					if (resp.readyState < 4) {
+						if (req && req.abort)
+							req.abort();
+					}
+
 					if (resp.status === 0 ||
 						check_tracking_blocked(resp)) {
 						// error loading image (IP doesn't exist, etc.), ignore
@@ -32280,8 +32410,6 @@ var $$IMU_EXPORT$$;
 					onprogress: function(resp) {
 						// 2 = HEADERS_RECEIVED
 						if (resp.readyState >= 2 && resp.responseHeaders) {
-							if (req && req.abort)
-								req.abort();
 							onload_cb(resp);
 						}
 					},

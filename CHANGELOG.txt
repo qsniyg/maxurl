@@ -1,3 +1,19 @@
+0.12.7
+
+New features:
+
+ * Support for ~20 new websites (using ~10 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules
+
+Bugfixes:
+
+ * Add a workaround for a bug in Tampermonkey and Greasemonkey that prevented redirection
+
+---
+
 0.12.6
 
 New features:
