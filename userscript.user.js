@@ -17416,6 +17416,9 @@ var $$IMU_EXPORT$$;
 			// other: https://xxximg.art/cdn/site1/uploads/2019/12/Ariel_Rebel_Purple_Lingerie_Set_001_001.th_.jpg
 			//   can't replace because /14/ is added
 			(domain_nowww === "xxximg.art" && src.indexOf("/images/") >= 0) ||
+			// http://data01.tag-fox.com/2020/01/21/giphy-279d2b6e54aa52733.md.gif
+			//   http://data01.tag-fox.com/2020/01/21/giphy-279d2b6e54aa52733.gif
+			(domain_nosub === "tag-fox.com" && /^data[0-9]*\./.test(domain)) ||
 			// http://image-bugs.com/images/2017/09/09/CelebsFlash.com_NP_Harpers_Bazaar_090817__3_.md.jpg
 			domain_nowww === "image-bugs.com") {
 			// http://imgmax.com/images/2017/03/20/0OQhE.th.jpg
@@ -18659,6 +18662,11 @@ var $$IMU_EXPORT$$;
 			// https://img.yavtube.com/babes/content/140701/aislin-bogotha-01_w400.jpg
 			//   https://img.yavtube.com/babes/content/140701/aislin-bogotha-01.jpg
 			domain === "img.yavtube.com" ||
+			// https://a2h6m3w6.ssl.hwcdn.net/content/200101/0004-01_w400.jpg
+			//   https://a2h6m3w6.ssl.hwcdn.net/content/200101/0004-01.jpg
+			// other:
+			// https://a2h6m3w6.ssl.hwcdn.net/content/200104/0001_400.jpg -- 0001.jpg doesn't work, album cover
+			domain === "a2h6m3w6.ssl.hwcdn.net" ||
 			// https://c9w8v3m5.ssl.hwcdn.net/content/130305/bree-glamorous-01_w400.jpg
 			//   https://c9w8v3m5.ssl.hwcdn.net/content/130305/bree-glamorous-01.jpg
 			domain === "c9w8v3m5.ssl.hwcdn.net") {
@@ -35986,6 +35994,9 @@ var $$IMU_EXPORT$$;
 			// http://www.nextdoortease.com/ariel-rebel-stockings/smallimage6.jpg
 			//   http://www.nextdoortease.com/ariel-rebel-stockings/6.jpg
 			domain_nowww === "nextdoortease.com" ||
+			// https://www.foxhq.com/toni-lynn-sexy-pics-showgirlz/smallimage1.jpg
+			//   https://www.foxhq.com/toni-lynn-sexy-pics-showgirlz/1.jpg
+			domain_nowww === "foxhq.com" ||
 			// https://a2w8r2x2.ssl.hwcdn.net/khyanna-song-cute-asian/smallimage1.jpg
 			//   https://a2w8r2x2.ssl.hwcdn.net/khyanna-song-cute-asian/1.jpg
 			domain === "a2w8r2x2.ssl.hwcdn.net") {
@@ -49113,6 +49124,57 @@ var $$IMU_EXPORT$$;
 			// https://p7.hiclipart.com/preview/1024/526/554/stock-photography-royalty-free-woman-surprised-girl-thumbnail.jpg
 			//   https://p7.hiclipart.com/preview/1024/526/554/stock-photography-royalty-free-woman-surprised-girl.jpg
 			return src.replace(/((?:\/preview\/+(?:[0-9]+\/+){3}|\/png\/+(?:[0-9]+\/+){2,3})[^/]+)-thumbnail(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "aerisdies.com") {
+			// http://www.aerisdies.com/thumbnails/categories/4667/497590.gif
+			//   http://www.aerisdies.com/images/categories/4667/497590.png
+			newsrc = src.replace(/\/thumbnails(\/+categories\/+[0-9]+\/+[0-9]+\.)gif(?:[?#].*)?$/, "/images$1png");
+			if (newsrc !== src)
+				return add_extensions_gif(newsrc);
+		}
+
+		if (domain_nowww === "erofus.com") {
+			// https://www.erofus.com/thumb/7110/5953af5adb0f86102866028.jpeg
+			//   https://www.erofus.com/medium/7110/5953af5adb0f86102866028.jpeg
+			return src.replace(/\/thumb(\/+[0-9]+\/+[0-9a-f]+\.)/, "/medium$1");
+		}
+
+		if (domain_nosub === "hentaicdn.com") {
+			// https://hentaicdn.com/hentai/15652/1/thumbnails/hcdn0001tmb.jpg
+			//   https://hentaicdn.com/hentai/15652/1/hcdn0001.jpg
+			// https://img2.hentaicdn.com/hentai/cover/42/_S15652.jpg
+			//   https://img2.hentaicdn.com/hentai/cover/_S15652.jpg
+			return src
+				.replace(/\/thumbnails\/+(hcdn[0-9]+)tmb(\.[^/.]+)(?:[?#].*)?$/, "/$1$2")
+				.replace(/\/cover\/+[0-9]+\/+_S/, "/cover/_S");
+		}
+
+		if (domain_nowww === "hentaidude.com") {
+			// https://hentaidude.com/wp-content/themes/awp/images/icon-play.png
+			if (/\/wp-content\/+themes\/+awp\/+images\//.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
+		}
+
+		if (domain_nowww === "jabarchives.com") {
+			// http://jabarchives.com/main/media/2016images/images_Feb28th2016/FJDE145671683658162233561_thumb.jpg
+			//   http://jabarchives.com/main/media/2016images/images_Feb28th2016/FJDE145671683658162233561_large.jpg
+			obj = {
+				url: src
+			};
+
+			match = src.match(/\/main\/+media\/+.*\/([A-Z0-9]{10,})1(?:_[a-z]+)\./);
+			if (match)
+				obj.extra = {page: "https://jabarchives.com/main/post/" + match[1]};
+
+			newsrc = src.replace(/(\/main\/+media\/+.*)_(?:thumb|preview)\./, "$1_large.");
+			if (newsrc !== src)
+				obj.url = newsrc;
+
+			return obj;
 		}
 
 
