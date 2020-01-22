@@ -8409,6 +8409,12 @@ var $$IMU_EXPORT$$;
 			};
 		}
 
+		if (domain === "img-static.tradesy.com") {
+			// https://img-static.tradesy.com/item/1063438/miu-miu-cut-off-cat-eye-marble-havana-retro-funky-sunnies-sunglasses-5-0-960-960.jpg
+			//   https://item4.tradesy.com/images/miu-miu-cut-off-cat-eye-marble-havana-retro-funky-sunnies-sunglasses-1063438-5-0.jpg
+			return src.replace(/:\/\/[^/]+\/+item\/+([0-9]+)\/+([^/]+)(-[0-9]+-[0-9]+)-[0-9]+-[0-9]+(\.[^/.?]+)(?:[?#].*)?$/, "://item4.tradesy.com/images/$2-$1$3$4");
+		}
+
 		if (domain === "store-images.microsoft.com" ||
 			// http://store-images.s-microsoft.com/image/apps.29315.9007199266376618.a07f1cfa-b27d-402c-98e5-a3bae29e8cf3.9fd604bc-2a5c-4e17-be7d-37af2d7afe02?w=180&h=180&q=60
 			domain === "store-images.s-microsoft.com") {
