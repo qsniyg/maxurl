@@ -6790,6 +6790,9 @@ var $$IMU_EXPORT$$;
 			// https://www.selenagomez.com/sites/g/files/aaj1261/f/styles/suzuki_opengraph/public/news/201710/IMG_2992.jpg.jpeg?itok=R0NVE31p
 			//   https://www.selenagomez.com/sites/g/files/aaj1261/f/news/201710/IMG_2992.jpg.jpeg
 			(domain_nowww === "selenagomez.com" && src.indexOf("/sites/") >= 0) ||
+			// https://zizki.com/ien/styles/large/public/comics/kirk-lindo/e866597549.jpg?itok=wZbf5gbB
+			//   https://zizki.com/ien/comics/kirk-lindo/e866597549.jpg
+			(domain_nowww === "zizki.com" && src.indexOf("/styles/") >= 0) ||
 			// http://cdn.whodoyouthinkyouaremagazine.com/sites/default/files/imagecache/623px_wide/episode/hewer500.jpg
 			//   http://cdn.whodoyouthinkyouaremagazine.com/sites/default/files/episode/hewer500.jpg
 			// https://www.telugucinema.com/sites/default/files2/styles/media_gallery_thumbnail/public/amy-jackson-instagram1.jpg?itok=nwFhV2Iy
@@ -9066,6 +9069,10 @@ var $$IMU_EXPORT$$;
 			(domain === "ia.eferrit.com" && src.indexOf("/ia/") >= 0) ||
 			// https://dokkaebi.tv/file/2017/05/60JODGfbtIIZ0FqE8SfLSs1QfHb-185x278.jpg
 			(domain_nowww === "dokkaebi.tv" && src.indexOf("/file/") >= 0) ||
+			// https://www.porncomix.one/gallery/2019/11/Matemi-%E2%80%93-Silver-Soul-vol.-10-1-351x565.jpg
+			(domain_nowww === "porncomix.one" && src.indexOf("/gallery/") >= 0) ||
+			// https://www.porncomix.info/images/2013/05/001-39-225x320.jpg
+			(domain_nowww === "porncomix.info" && src.indexOf("/images/") >= 0) ||
 			// https://1.soompi.io/wp-content/blogs.dir/8/files/2015/09/HA-TFELT-Wonder-Girls-590x730.jpg -- doesn't work
 			// https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2018/01/GTA-6-Female-Protag-796x417.jpg -- does work
 			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|images|photos|blogs.dir)|\/+uploads)\//.test(src)
@@ -20274,9 +20281,18 @@ var $$IMU_EXPORT$$;
 			//   http://www.crnobelo.com/gallery3/var/resizes/slavni-licnosti/rihanna-vo-cuden-outfit/rihanna_outfit_25.jpg
 			//   http://www.crnobelo.com/gallery3/var/albums/slavni-licnosti/rihanna-vo-cuden-outfit/rihanna_outfit_25.jpg -- 503
 			domain_nowww === "crnobelo.com" ||
+			// https://myhentaicomics.com/var/thumbs/Corrupted%20Data/002.jpg?m=1579643210
+			domain_nowww === "myhentaicomics.com" ||
 			// http://www.celebritiestown.com/celebritypictures/var/resizes/Celebrity-Street-Style/Jessica-Alba-Best-Street-Style-09.jpg?m=1450092223
 			//   http://www.celebritiestown.com/celebritypictures/var/albums/Celebrity-Street-Style/Jessica-Alba-Best-Street-Style-09.jpg?m=1450092223
 			domain_nowww === "celebritiestown.com") {
+			// https://myhentaicomics.com/modules/hover_navigation/images/photonav_prev.png
+			if (/\/modules\/+hover_navigation\/+images\//.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
+
 			// http://www.imagozone.com/var/resizes/vedete/Victoria%20Justice/Victoria%20Justice%203012.jpg
 			//   http://www.imagozone.com/var/albums/vedete/Victoria%20Justice/Victoria%20Justice%203012.jpg
 			// http://www.imagozone.com/var/thumbs/vedete/Amber%20Heard/Amber%20Heard%20005.jpg?m=1312958883
@@ -20479,6 +20495,9 @@ var $$IMU_EXPORT$$;
 			// https://img.booru.org/thh/thumbnails//100/thumbnail_c450ceb12ae9903b650e2bb8cf08fbb14536d4da.jpg
 			//   https://img.booru.org/thh/images//100/c450ceb12ae9903b650e2bb8cf08fbb14536d4da.jpg
 			domain === "img.booru.org" ||
+			// https://us.rule34.xxx/thumbnails/3196/thumbnail_a969ee2e75d0165716df8e68357a775d.jpg?3590878
+			//   https://us.rule34.xxx/images/3196/a969ee2e75d0165716df8e68357a775d.jpeg
+			domain_nosub === "rule34.xxx" ||
 			// https://realbooru.com/thumbnails/512/thumbnail_73f1ecc9ae212fa6be7e45d30aae769bfa5376c0.jpg?513812
 			//   https://realbooru.com/images/512/73f1ecc9ae212fa6be7e45d30aae769bfa5376c0.jpg?513812
 			domain_nowww === "realbooru.com") {
@@ -35296,6 +35315,12 @@ var $$IMU_EXPORT$$;
 			// https://cdn.shesfreaky.com/galleries/9439556937e05b9d47/thumbs/56937e10983fd.jpg
 			//   https://cdn.shesfreaky.com/galleries/9439556937e05b9d47/56937e10983fd.jpg
 			domain === "cdn.shesfreaky.com" ||
+			// https://media.ruleporn.com/media/galleries/147455d77f2183501a/thumbs/5d77f2595879c.jpg
+			//   https://media.ruleporn.com/media/galleries/147455d77f2183501a/5d77f2595879c.jpg
+			domain === "media.ruleporn.com" ||
+			// http://teenplanet.org/media/galleries/596256ebf206e/thumbs/14.PNG
+			//   http://teenplanet.org/media/galleries/596256ebf206e/14.PNG
+			domain_nowww === "teenplanet.org" ||
 			// https://media.babesource.com/galleries/5cf63225e8fbe/thumbs/101353_005.jpg
 			//   https://media.babesource.com/galleries/5cf63225e8fbe/101353_005.jpg
 			domain === "media.babesource.com") {
@@ -49176,6 +49201,70 @@ var $$IMU_EXPORT$$;
 
 			return obj;
 		}
+
+		if (domain === "images.myhentaigrid.com") {
+			// https://images.myhentaigrid.com/imagesgallery/images/Adventure%20Of%20My%20Dreams/thumbnail/001.jpg?20
+			//   https://images.myhentaigrid.com/imagesgallery/images/Adventure%20Of%20My%20Dreams/original/001.jpg?20
+			return src.replace(/(\/imagesgallery\/+images\/+[^/]+\/+)thumbnail\/+/, "$1original/");
+		}
+
+		if (domain === "content.tsumino.com") {
+			// https://content.tsumino.com/thumbs/48158/2
+			match = src.match(/\/thumbs\/+([0-9]+)\/+([0-9]+)(?:[?#].*)?$/);
+			if (match && options && options.cb && options.do_request) {
+				page = "https://www.tsumino.com/Read/Index/" + match[1] + "?page=" + match[2];
+
+				var cache_key = "tsumino:" + match[1] + ":" + match[2];
+				var book_page = match[2];
+				api_cache.fetch(cache_key, options.cb, function(done) {
+					options.do_request({
+						url: page,
+						method: "GET",
+						onload: function(resp) {
+							if (resp.readyState !== 4)
+								return;
+
+							if (resp.status !== 200) {
+								return done(null, false);
+							}
+
+							var match = resp.responseText.match(/<div[^>]+data-cdn=["'](https:\/\/content\.tsumino[^'"]+\/\[PAGE\][^'"]+)["']/);
+							if (!match) {
+								console_warn("Unable to find match for", resp);
+								return done(null, false);
+							}
+
+							options.cb({
+								url: decode_entities(match[1]).replace("[PAGE]", book_page),
+								headers: {
+									Referer: resp.finalUrl
+								},
+								extra: {
+									page: resp.finalUrl
+								}
+							}, 6*60*60);
+						}
+					});
+				});
+
+				return {
+					waiting: true
+				};
+			}
+		}
+
+		if (domain_nowww === "2dgalleries.com") {
+			// https://www.2dgalleries.com/planches/200H/2019/301/burns-out-of-the-blue-2sgb.jpg
+			//   https://www.2dgalleries.com/planches/2019/301/burns-out-of-the-blue-2sgb.jpg
+			return src.replace(/\/planches\/+[0-9]+[WH]\/+/, "/planches/");
+		}
+
+		if (domain === "img.tamindir.com") {
+			// https://img.tamindir.com/resize/300x152/2020/01/472810/airbnb-ile-yeni-romeo-ve-juliet-siz-olabilirsiniz.jpg
+			//   https://img.tamindir.com/2020/01/472810/airbnb-ile-yeni-romeo-ve-juliet-siz-olabilirsiniz.jpg
+			return src.replace(/\/resize\/+[0-9]+x[0-9]+\/+([0-9]{4}\/+)/, "/$1");
+		}
+
 
 
 
