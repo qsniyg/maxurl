@@ -1197,7 +1197,7 @@ var $$IMU_EXPORT$$;
 				check_updates: true
 			},
 			type: "number",
-			number_min: 0,
+			number_min: 1,
 			number_int: true,
 			number_unit: "hours",
 		},
@@ -2909,7 +2909,8 @@ var $$IMU_EXPORT$$;
 	};
 
 	var check_updates = function(cb) {
-		if (is_firefox_webextension) {
+		// Firefox blocks these requests
+		if (false && is_firefox_webextension) {
 			check_updates_firefox(function(data) {
 				if (!data) {
 					check_updates_github(cb);
@@ -52313,6 +52314,35 @@ var $$IMU_EXPORT$$;
 		//saved_el.style.fontStyle = "italic";
 		//saved_el.style.color = "#0af";
 		var saved_timeout = null;
+
+		var create_update_available = function() {
+			var update_available_el = document.createElement("div");
+			update_available_el.classList.add("update-available");
+			update_available_el.innerHTML = "Update available: v" + current_version + " -&gt; ";
+
+			var link = settings.last_update_url;
+			if (!link) {
+				if (is_firefox_webextension) {
+					link = firefox_addon_page;
+				} else if (is_userscript) {
+					link = greasyfork_update_url;
+				} else {
+					link = null;
+				}
+			}
+
+			if (link) {
+				update_available_el.innerHTML += "<a href=\"" + link + "\" target=\"_blank\" rel=\"noreferer\">v" + settings.last_update_version + "</a>";
+			} else {
+				update_available_el.innerHTML += "v" + settings.last_update_version;
+			}
+
+			return update_available_el;
+		};
+
+		if (settings.check_updates && version_compare(current_version, settings.last_update_version) === 1) {
+			options_el.appendChild(create_update_available());
+		}
 
 		var topbtns_holder = document.createElement("div");
 		topbtns_holder.id = "topbtns";
