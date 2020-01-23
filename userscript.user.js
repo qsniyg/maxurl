@@ -3573,6 +3573,9 @@ var $$IMU_EXPORT$$;
 					var deviation = initialstate["@@entities"].deviation[deviationid];
 					//console_log(deviation);
 
+					if (deviation.title)
+						obj.extra.caption = deviation.title;
+
 					var maxurl = obj.url;
 
 					var files = deviation.files;
