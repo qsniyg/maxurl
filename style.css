@@ -411,6 +411,21 @@ input:checked + label, button, .button, .button:visited, .dark .button:visited {
   color: #fff;
 }
 
+#options div.update-available {
+  background-color: #ff9;
+  text-align: center;
+  padding: 0.5em;
+  color: #000;
+  border: dashed 1px #cc0;
+  margin-top: 1em;
+  margin-bottom: 1.5em;
+}
+
+#options div.update-available a {
+  color: #08c;
+  font-weight: 800;
+}
+
 .option {
   padding: .8em;
 }
