@@ -346,13 +346,13 @@ var $$IMU_EXPORT$$;
 			}
 
 			var raw_request_do = do_request_raw;
-			var use_browser_managers = [
-				"Falkon GreaseMonkey",
-				"USI"
-			];
-			if (is_userscript && use_browser_managers.indexOf(userscript_manager) >= 0 && settings.allow_browser_request) {
-				raw_request_do = do_request_browser;
-				delete data.trackingprotection_failsafe;
+			if (is_userscript && settings.allow_browser_request) {
+				if (userscript_manager === "Falkon GreaseMonkey" ||
+					// USI doesn't properly support blob responses properly: https://bitbucket.org/usi-dev/usi/issues/13/various-problems-with-gm_xmlhttprequest
+					(userscript_manager === "USI" && data.need_blob_response)) {
+					raw_request_do = do_request_browser;
+					delete data.trackingprotection_failsafe;
+				}
 			}
 
 			if (data.trackingprotection_failsafe && settings.allow_browser_request && do_request_browser) {
@@ -53919,6 +53919,7 @@ var $$IMU_EXPORT$$;
 			responseType: responseType,
 			headers: headers,
 			trackingprotection_failsafe: true,
+			need_blob_response: method == "GET",
 			onprogress: function(resp) {
 				var do_abort = function() {
 					if (!req || !req.abort) {
