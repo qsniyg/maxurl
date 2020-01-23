@@ -346,7 +346,11 @@ var $$IMU_EXPORT$$;
 			}
 
 			var raw_request_do = do_request_raw;
-			if (is_userscript && userscript_manager === "Falkon GreaseMonkey" && settings.allow_browser_request) {
+			var use_browser_managers = [
+				"Falkon GreaseMonkey",
+				"USI"
+			];
+			if (is_userscript && use_browser_managers.indexOf(userscript_manager) >= 0 && settings.allow_browser_request) {
 				raw_request_do = do_request_browser;
 				delete data.trackingprotection_failsafe;
 			}
