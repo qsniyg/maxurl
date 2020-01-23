@@ -345,6 +345,12 @@ var $$IMU_EXPORT$$;
 				data.withCredentials = true;
 			}
 
+			var raw_request_do = do_request_raw;
+			if (is_userscript && userscript_manager === "Falkon GreaseMonkey" && settings.allow_browser_request) {
+				raw_request_do = do_request_browser;
+				delete data.trackingprotection_failsafe;
+			}
+
 			if (data.trackingprotection_failsafe && settings.allow_browser_request && do_request_browser) {
 				var real_onload = data.onload;
 				var real_onerror = data.onerror;
@@ -373,7 +379,7 @@ var $$IMU_EXPORT$$;
 				};
 			}
 
-			return do_request_raw(data);
+			return raw_request_do(data);
 		};
 	}
 
