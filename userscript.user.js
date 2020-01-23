@@ -442,6 +442,7 @@ var $$IMU_EXPORT$$;
 		filter: bigimage_filter,
 
 		rule_specific: {
+			deviantart_prefer_size: false,
 			imgur_source: true,
 			imgur_nsfw_headers: null,
 			instagram_use_app_api: true,
@@ -1118,6 +1119,7 @@ var $$IMU_EXPORT$$;
 		allow_apicalls: true,
 		allow_thirdparty_libs: is_userscript ? false : true,
 		//browser_cookies: true,
+		deviantart_prefer_size: false,
 		imgur_source: true,
 		instagram_use_app_api: true,
 		instagram_gallery_postlink: false,
@@ -2167,25 +2169,31 @@ var $$IMU_EXPORT$$;
 			extension_only: true,
 			onupdate: update_rule_setting
 		},
+		deviantart_prefer_size: {
+			name: "DeviantArt: Prefer size over original",
+			description: "Prefers a larger (but not upscaled) thumbnail image over a smaller original animated image",
+			category: "rule_specific",
+			onupdate: update_rule_setting
+		},
 		imgur_source: {
-			name: "Source image for Imgur",
+			name: "Imgur: Use source image",
 			description: "If a source image is found for Imgur, try using it instead",
 			category: "rule_specific",
 			onupdate: update_rule_setting
 		},
 		instagram_use_app_api: {
-			name: "Use native API for Instagram",
+			name: "Instagram: Use native API",
 			description: "Uses Instagram's native API if possible, requires you to be logged into Instagram",
 			category: "rule_specific",
 			onupdate: update_rule_setting
 		},
 		instagram_gallery_postlink: {
-			name: "Use albums for Instagram post thumbnails",
+			name: "Instagram: Use albums for post thumbnails",
 			description: "Queries Instagram for albums when using the popup on a post thumbnail",
 			category: "rule_specific"
 		},
 		tumblr_api_key: {
-			name: "Tumblr API key",
+			name: "Tumblr: API key",
 			description: "API key for finding larger images on Tumblr",
 			category: "rule_specific",
 			type: "lineedit",
@@ -3502,9 +3510,9 @@ var $$IMU_EXPORT$$;
 		return obj;
 	};
 
-	common_functions.wix_compare = function(url1, url2) {
+	common_functions.wix_compare = function(url1, url2, prefer_size) {
 		if (_nir_debug_)
-			console_log("wix_compare", url1, url2);
+			console_log("wix_compare", url1, url2, prefer_size);
 
 		if (!url2)
 			return url1;
@@ -3515,10 +3523,10 @@ var $$IMU_EXPORT$$;
 		if (!info1 || !info2)
 			return null;
 
-		if (info1.original)
+		if (info1.original && (!prefer_size || !info2.preview))
 			return url1;
 
-		if (info2.original)
+		if (info2.original && (!prefer_size || !info1.preview))
 			return url2;
 
 		if (info1.pixels && info2.pixels) {
@@ -3583,7 +3591,7 @@ var $$IMU_EXPORT$$;
 					if (files instanceof Array) {
 						for (var i = files.length - 1; i >= 0; i--) {
 							var current = files[i];
-							var newurl = common_functions.wix_compare(current.src, maxurl);
+							var newurl = common_functions.wix_compare(current.src, maxurl, options.rule_specific.deviantart_prefer_size);
 							if (newurl === current.src)
 								maxurl = newurl;
 						}
@@ -3606,7 +3614,7 @@ var $$IMU_EXPORT$$;
 							if (!link)
 								continue;
 
-							var newurl = common_functions.wix_compare(link, maxurl);
+							var newurl = common_functions.wix_compare(link, maxurl, options.rule_specific.deviantart_prefer_size);
 							if (newurl === link)
 								maxurl = newurl;
 						}
@@ -51083,6 +51091,7 @@ var $$IMU_EXPORT$$;
 			options.do_request = null;
 		}
 
+		options.rule_specific.deviantart_prefer_size = settings.deviantart_prefer_size;
 		options.rule_specific.imgur_source = settings.imgur_source;
 		options.rule_specific.instagram_use_app_api = settings.instagram_use_app_api;
 		options.rule_specific.instagram_gallery_postlink = settings.instagram_gallery_postlink;
