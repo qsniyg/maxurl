@@ -51712,12 +51712,15 @@ var $$IMU_EXPORT$$;
 		});
 	};
 
+	// these functions can run before the document has loaded
 	var cursor_wait = function() {
-		document.documentElement.style.cursor = "wait";
+		if (document.documentElement)
+			document.documentElement.style.cursor = "wait";
 	};
 
 	var cursor_default = function() {
-		document.documentElement.style.cursor = "default";
+		if (document.documentElement)
+			document.documentElement.style.cursor = "default";
 	};
 
 
@@ -57404,7 +57407,10 @@ var $$IMU_EXPORT$$;
 			highlightimgs_styleel.innerText = "." + highlightimgs_classname + "{" + get_styletag_styles(settings.highlightimgs_css) + "}";
 		}
 
-		update_highlight_styleel();
+		onload(function() {
+			update_highlight_styleel();
+		});
+
 		(function() {
 			var oldfunc = settings_meta.highlightimgs_css.onupdate;
 			settings_meta.highlightimgs_css.onupdate = function() {
@@ -58427,7 +58433,9 @@ var $$IMU_EXPORT$$;
 
 		if (is_userscript || is_extension) {
 			if (is_maxurl_website || is_options_page) {
-				update_dark_mode();
+				onload(function() {
+					update_dark_mode();
+				});
 			}
 
 			if (is_options_page) {
