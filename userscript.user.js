@@ -1018,6 +1018,8 @@ var $$IMU_EXPORT$$;
 		language: browser_language,
 		// thanks to forefix on firefox for the idea: https://github.com/qsniyg/maxurl/issues/189
 		dark_mode: false,
+		check_updates: true,
+		check_update_interval: 24,
 		advanced_options: false,
 		allow_browser_request: true,
 		redirect: true,
@@ -1181,6 +1183,23 @@ var $$IMU_EXPORT$$;
 			onedit: update_dark_mode,
 			onupdate: update_dark_mode,
 			imu_enabled_exempt: true
+		},
+		check_updates: {
+			name: "Check for updates",
+			description: "Periodically checks for updates. If a new update is available, you will be notified",
+			category: "general",
+		},
+		check_update_interval: {
+			name: "Update check interval",
+			description: "How often to check for updates",
+			category: "general",
+			requires: {
+				check_updates: true
+			},
+			type: "number",
+			number_min: 0,
+			number_int: true,
+			number_unit: "hours",
 		},
 		advanced_options: {
 			name: "Show advanced settings",
@@ -2905,12 +2924,12 @@ var $$IMU_EXPORT$$;
 
 	var check_updates_if_needed = function() {
 		// if last_update_check == 0, it means for some reason it's not able to store values
-		if (!current_version || !settings.last_update_check) {
+		if (!settings.imu_enabled || !settings.check_updates || !current_version || !settings.last_update_check) {
 			return;
 		}
 
 		var update_check_delta = Date.now() - settings.last_update_check;
-		if (update_check_delta > (24*60*60*1000)) {
+		if (update_check_delta > (settings.check_update_interval*60*60*1000)) {
 			check_updates(function(data) {
 				update_setting("last_update_check", Date.now());
 
