@@ -3457,14 +3457,20 @@ var $$IMU_EXPORT$$;
 		// https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/faa48d2d-12c2-43d1-bf23-b5e99857825b/ddo0eau-c742e0f9-07f9-4a22-8d47-933e9fd3fb2b.png/v1/crop/w_244,h_350,x_0,y_0,scl_0.066812705366922,q_70,strp/railway_road_to_the_stars_by_ellysiumn_ddo0eau-350t.jpg
 
 		// https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/intermediary/f/e04c7e93-4504-4dbe-91f9-fd353fc145f2/dcx503r-30c02b72-c26d-4732-9c9f-14fcbc633aaa.jpg
-		var match = url.match(/^[a-z]+:\/\/[^/]+\/+(?:intermediary\/+)?f\/+[-0-9a-f]{20,}\/+[^/]+(?:[?#].*)?$/);
+		var match = url.match(/^[a-z]+:\/\/[^/]+\/+(?:intermediary\/+)?([if])\/+[-0-9a-f]{20,}\/+[^/]+(?:[?#].*)?$/);
 		if (match) {
-			return {
-				original: true
-			};
+			if (match[1] === "i") {
+				return {
+					preview: true
+				};
+			} else {
+				return {
+					original: true
+				};
+			}
 		}
 
-		var match = url.match(/^[a-z]+:\/\/[^/]+\/+(?:intermediary\/+)?f\/+[-0-9a-f]{20,}\/+[^/]+\/+v1\/+(?:fit|fill|crop)\/+([^/]+)\/+[^/]+(?:[?#].*)?$/);
+		var match = url.match(/^[a-z]+:\/\/[^/]+\/+(?:intermediary\/+)?[if]\/+[-0-9a-f]{20,}\/+[^/]+\/+v1\/+(?:fit|fill|crop)\/+([^/]+)\/+[^/]+(?:[?#].*)?$/);
 		if (!match) {
 			return null;
 		}
@@ -3533,6 +3539,10 @@ var $$IMU_EXPORT$$;
 	};
 
 	common_functions.deviantart_fullimage = function(options, api_cache, src, id, cb) {
+		// animated:
+		// https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/i/db0d85b1-b8b9-4790-bef0-121edb2dce7d/ddabn1h-5342115a-06a6-4f89-9c54-a2843719553a.jpg/v1/fit/w_150,h_150,q_70,strp/spaghetti_high_by_f1x_2_ddabn1h-150.jpg
+		// https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/i/db0d85b1-b8b9-4790-bef0-121edb2dce7d/ddabn1h-5342115a-06a6-4f89-9c54-a2843719553a.jpg -- 1920x1080, but original size says 1280x720 and is animated. however, it doesn't look upscaled either
+		//   https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/db0d85b1-b8b9-4790-bef0-121edb2dce7d/ddabn1h-1d7ac558-1fa8-4943-a3b6-0ad8b06be106.gif
 		common_functions.deviantart_page_from_id(options.do_request, api_cache, id, function(result) {
 			if (!result) {
 				return cb(null);
@@ -3578,12 +3588,20 @@ var $$IMU_EXPORT$$;
 						var types = deviation.media.types;
 
 						for (var i = types.length - 1; i >= 0; i--) {
+							var link = null;
+
+							var tokenq = "?token=" + deviation.media.token[0];
+
+							if (types[i].c) {
+								link = deviation.media.baseUri + "/" + types[i].c.replace("<prettyName>", deviation.media.prettyName) + tokenq;
+							} else if (types[i].b) { // e.g. animated gifs
+								link = types[i].b + tokenq;
+							}
+
 							// Occasionally this exists for some images, where it instead has:
 							// s: "https://st.deviantart.net/misc/noentrythumb-200.png" (for t: "social_preview")
-							if (!types[i].c)
+							if (!link)
 								continue;
-
-							var link = deviation.media.baseUri + "/" + types[i].c.replace("<prettyName>", deviation.media.prettyName) + "?token=" + deviation.media.token[0];
 
 							var newurl = common_functions.wix_compare(link, maxurl);
 							if (newurl === link)
@@ -3593,7 +3611,8 @@ var $$IMU_EXPORT$$;
 
 					obj.url = maxurl;
 
-					if (common_functions.wix_image_info(obj.url).original) {
+					var image_info = common_functions.wix_image_info(obj.url);
+					if (image_info && image_info.original) {
 						obj.is_original = true;
 						return cb(obj);
 					}
