@@ -67,12 +67,16 @@ var $$IMU_EXPORT$$;
 
 	var is_extension = false;
 	var is_webextension = false;
+	var is_firefox_webextension = false;
 	var extension_send_message = null;
 	var extension_options_page = null;
 	var is_extension_options_page = false;
 	var is_options_page = false;
 	var is_maxurl_website = false;
 	var options_page = "https://qsniyg.github.io/maxurl/options.html";
+	var firefox_addon_page = "https://addons.mozilla.org/en-US/firefox/addon/image-max-url/";
+	var greasyfork_update_url = "https://greasyfork.org/scripts/36662-image-max-url/code/Image%20Max%20URL.user.js";
+	var current_version = null;
 	var imagetab_ok_override = false;
 
 	try {
@@ -98,6 +102,12 @@ var $$IMU_EXPORT$$;
 		//options_page = extension_options_page; // can't load from website
 
 		if (is_extension) {
+			is_webextension = true;
+			if (navigator.userAgent.indexOf("Firefox") >= 0)
+				is_firefox_webextension = true;
+
+			current_version = extension_manifest.version;
+
 			extension_send_message = function(message, respond) {
 				message = deepcopy(message, {json:true});
 				return chrome.runtime.sendMessage(null, message, null, respond);
@@ -153,6 +163,12 @@ var $$IMU_EXPORT$$;
 		if (_nir_debug_ && false) {
 			console.log("GM_info", gm_info);
 		}
+
+		try {
+			current_version = gm_info.script.version;
+		} catch (e) {
+			current_version = null;
+		};
 	}
 
 	var do_request_browser = function (request) {
@@ -1118,7 +1134,12 @@ var $$IMU_EXPORT$$;
 		highlightimgs_enable: false,
 		highlightimgs_auto: "never",
 		highlightimgs_onlysupported: true,
-		highlightimgs_css: "outline: 4px solid yellow"
+		highlightimgs_css: "outline: 4px solid yellow",
+
+		// cache entries (not settings, but this is the most convenient way to do it)
+		last_update_check: 0,
+		last_update_version: null,
+		last_update_url: null
 	};
 	var orig_settings = deepcopy(settings);
 
@@ -2806,6 +2827,106 @@ var $$IMU_EXPORT$$;
 
 		return 0;
 	}
+
+	var check_updates_firefox = function(cb) {
+		do_request({
+			url: firefox_addon_page,
+			method: "GET",
+			onload: function(resp) {
+				if (resp.readyState < 4)
+					return;
+
+				if (resp.status !== 200)
+					return cb(null);
+
+				var match = resp.responseText.match(/<script[^>]*id=["']redux-store-state["']\s*>\s*({.*?})\s*<\/script>/);
+				if (!match) {
+					return cb(null);
+				}
+
+				try {
+					var json = JSON_parse(match[1]);
+					var addoninfo = json.addons.byID["1003321"];
+					var versionid = addoninfo.currentVersionId;
+					var versioninfo = json.versions.byId[versionid];
+					var version = versioninfo.version;
+					var downloadurl = versioninfo.platformFiles.all.url.replace(/\?src=.*/, "?src=external-updatecheck");
+
+					cb({
+						version: version,
+						downloadurl: downloadurl
+					});
+				} catch (e) {
+					console_error("Unable to parse mozilla addon info", e);
+					return cb(null);
+				}
+			}
+		});
+	};
+
+	var check_updates_github = function(cb) {
+		do_request({
+			url: "https://api.github.com/repos/qsniyg/maxurl/tags",
+			method: "GET",
+			onload: function(resp) {
+				if (resp.readyState <4 )
+					return;
+
+				if (resp.status !== 200)
+					return cb(null);
+
+				try {
+					var json = JSON_parse(resp.responseText);
+					var version = json[0].name;
+					return cb({
+						version: version.replace(/^v([0-9])/, "$1")
+					});
+				} catch (e) {
+					console_error("Unable to parse github info", e);
+					return cb(null);
+				}
+			}
+		});
+	};
+
+	var check_updates = function(cb) {
+		if (is_firefox_webextension) {
+			check_updates_firefox(function(data) {
+				if (!data) {
+					check_updates_github(cb);
+				} else {
+					cb(data);
+				}
+			});
+		} else {
+			check_updates_github(cb);
+		}
+	};
+
+	var check_updates_if_needed = function() {
+		// if last_update_check == 0, it means for some reason it's not able to store values
+		if (!current_version || !settings.last_update_check) {
+			return;
+		}
+
+		var update_check_delta = Date.now() - settings.last_update_check;
+		if (update_check_delta > (24*60*60*1000)) {
+			check_updates(function(data) {
+				update_setting("last_update_check", Date.now());
+
+				if (!data || !data.version)
+					return;
+
+				if (!data.downloadurl) {
+					update_setting("last_update_url", null);
+				} else {
+					update_setting("last_update_url", data.downloadurl);
+				}
+
+				update_setting("last_update_version", data.version);
+			});
+		}
+	};
 
 	function _fuzzy_compare_rollover(a, b, lim) {
 		if (a === b)
@@ -53160,6 +53281,9 @@ var $$IMU_EXPORT$$;
 		var changed = false;
 
 		for (var key in changes) {
+			if (changes[key].newValue === undefined)
+				continue;
+
 			//console_log("Setting " + key + " = " + changes[key].newValue);
 			var newvalue = JSON_parse(changes[key].newValue);
 			if (key in settings_history) {
@@ -53293,6 +53417,12 @@ var $$IMU_EXPORT$$;
 		} catch(e) {
 			console_error(e);
 		}
+
+		if (!settings.last_update_check) {
+			update_setting("last_update_check", Date.now());
+		}
+
+		check_updates_if_needed();
 
 		// TODO: merge this get_value in do_config for performance
 		get_value("settings_version", function(version) {
