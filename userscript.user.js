@@ -1027,10 +1027,11 @@ var $$IMU_EXPORT$$;
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-530760246
 		imu_enabled: true,
 		language: browser_language,
-		// thanks to forefix on firefox for the idea: https://github.com/qsniyg/maxurl/issues/189
-		dark_mode: false,
 		check_updates: true,
 		check_update_interval: 24,
+		// thanks to forefix on firefox for the idea: https://github.com/qsniyg/maxurl/issues/189
+		dark_mode: false,
+		settings_visible_description: true,
 		advanced_options: false,
 		allow_browser_request: true,
 		redirect: true,
@@ -1194,6 +1195,15 @@ var $$IMU_EXPORT$$;
 			category: "general",
 			onedit: update_dark_mode,
 			onupdate: update_dark_mode,
+			imu_enabled_exempt: true
+		},
+		settings_visible_description: {
+			name: "Description below options",
+			description: "Shows the description below the options (otherwise the description is only shown when you hover over the option's name)",
+			category: "general",
+			onedit: function() {
+				run_soon(do_options);
+			},
 			imu_enabled_exempt: true
 		},
 		check_updates: {
@@ -1463,7 +1473,7 @@ var $$IMU_EXPORT$$;
 		},
 		mouseover_exclude_backgroundimages: {
 			name: "Exclude `background-image`s",
-			description: "Excludes 'background-image's for the popup. Might prevent the popup from working on many images",
+			description: "Excludes `background-image`s for the popup. Might prevent the popup from working on many images",
 			requires: {
 				mouseover: true
 			},
@@ -9260,6 +9270,9 @@ var $$IMU_EXPORT$$;
 			(domain_nowww === "porncomix.one" && src.indexOf("/gallery/") >= 0) ||
 			// https://www.porncomix.info/images/2013/05/001-39-225x320.jpg
 			(domain_nowww === "porncomix.info" && src.indexOf("/images/") >= 0) ||
+			// http://celebsfake.adultcase.com/files/2016/11/jizzonme2-150x150.jpg
+			//   http://celebsfake.adultcase.com/files/2016/11/jizzonme2.jpg
+			(domain === "celebsfake.adultcase.com" && src.indexOf("/files/") >= 0) ||
 			// https://1.soompi.io/wp-content/blogs.dir/8/files/2015/09/HA-TFELT-Wonder-Girls-590x730.jpg -- doesn't work
 			// https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2018/01/GTA-6-Female-Protag-796x417.jpg -- does work
 			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|images|photos|blogs.dir)|\/+uploads)\//.test(src)
@@ -10856,7 +10869,9 @@ var $$IMU_EXPORT$$;
 
 			// https://66.media.tumblr.com/a304d969f5d0012df41d657d7e4f5c5e/tumblr_p5cne9vRBD1wsufgw_og_500.jpg
 			//   https://66.media.tumblr.com/a304d969f5d0012df41d657d7e4f5c5e/tumblr_p5cne9vRBD1wsufgw_og_1280.jpg
-			newsrc = src.replace(/(\/(?:tumblr(?:_(?:static|inline))?_)?[0-9a-zA-Z]+(?:_og)?(?:_r[0-9]*)?)_[0-9]+(\.[^/.]*)$/, "$1_1280$2");
+			// https://68.media.tumblr.com/bca95f7469dda1fc0a5e133bc5d93c21/tumblr_ovczmq44pM1vm1t2io5_75sq.png
+			//   https://68.media.tumblr.com/bca95f7469dda1fc0a5e133bc5d93c21/tumblr_ovczmq44pM1vm1t2io5_1280.png
+			newsrc = src.replace(/(\/(?:tumblr(?:_(?:static|inline))?_)?[0-9a-zA-Z]+(?:_og)?(?:_r[0-9]*)?)_[0-9]+(?:sq)?(\.[^/.]*)$/, "$1_1280$2");
 			if (newsrc !== src) {
 				obj.url = newsrc;
 				return obj;
@@ -11426,9 +11441,12 @@ var $$IMU_EXPORT$$;
 			// https://zemanceleblegs.com/wp-content/gallery/r/rachel-mcadams/thumbs/thumbs_Rachel-McAdams-Legs-Sexy-Celebrity-Picture-Zeman-Celebrity-Legs-00002.jpg
 			//   https://zemanceleblegs.com/wp-content/gallery/r/rachel-mcadams/Rachel-McAdams-Legs-Sexy-Celebrity-Picture-Zeman-Celebrity-Legs-00002.jpg
 			domain_nowww === "zemanceleblegs.com" ||
+			// https://cdn2-www.comingsoon.net/assets/uploads/gallery/anon-set-photos/thumbs/thumbs_anon0020.jpg
+			//   https://cdn2-www.comingsoon.net/assets/uploads/gallery/anon-set-photos/anon0020.jpg
+			(domain_nosub === "comingsoon.net" && domain.match(/cdn[0-9]*-www\./)) ||
 			// http://cdn2-www.dogtime.com/assets/uploads/gallery/shih-tzu-dog-breed-pictures/thumbs/thumbs_shih-tzu-breed-picture-6.jpg
 			//   http://cdn2-www.dogtime.com/assets/uploads/gallery/shih-tzu-dog-breed-pictures/shih-tzu-breed-picture-6.jpg
-			(domain_nosub === "dogtime.com" && domain.match(/cdn[0-9]*-www\.dogtime\.com/))) {
+			(domain_nosub === "dogtime.com" && domain.match(/cdn[0-9]*-www\./))) {
 			// http://cdn2-www.craveonline.com/assets/uploads/gallery/portia-de-rossi-has-arrested-development-mandatory/thumbs/thumbs_portiaderossihotpictures13.jpg
 			//   http://cdn2-www.craveonline.com/assets/uploads/gallery/portia-de-rossi-has-arrested-development-mandatory/portiaderossihotpictures13.jpg
 			newsrc = src.replace("/thumbs/thumbs_", "/");
@@ -37075,6 +37093,13 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "kpopping.com") {
+			// https://kpopping.com/bundles/app/img/like-anim/xnew-like-sprite.png.pagespeed.ic.4zz0kkaFTj.webp
+			if (/\/bundles\/+app\/+img\//.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
+
 			// https://kpopping.com/uploads/documents/kpics_related-cropped/ro90108367_ori.jpeg
 			//   https://kpopping.com/uploads/documents/kpics_gallery-kept/ro90108367_ori.jpeg
 			//   https://kpopping.com/uploads/documents/ro90108367_ori.jpeg
@@ -37082,8 +37107,12 @@ var $$IMU_EXPORT$$;
 			//   https://kpopping.com/uploads/documents/ReneJingle-1207164667996426240-EMC12x_UcAAVpLo.jpeg
 			// https://kpopping.com/uploads/documents/encyclopedia_body_team_big/xfirst_ATEEZ.png.keep.fff.png.pagespeed.ic.uMWjqUQB-G.webp
 			//   https://kpopping.com/uploads/documents/first_ATEEZ.png
+			// https://kpopping.com/uploads/documents/team_member_medium/xthird_thumbnail_bomb,281,29.png.keep.f1f6f9.png.pagespeed.ic.9qFB60QepA.webp
+			//   https://kpopping.com/uploads/documents/third_thumbnail_bomb.png
+			// https://kpopping.com/uploads/documents/activity_guide/88x65xthird_ateez_jongho2_540.png.keep.png.pagespeed.ic.zVZjnS2lfb.webp
+			//   https://kpopping.com/uploads/documents/third_ateez_jongho2_540.png
 			return src
-				.replace(/\/uploads\/+documents\/+[^/]+\/+x?([^/]+?)(?:\.(?:keep|crop)\..*)?(?:[?#].*)?$/, "/uploads/documents/$1");
+				.replace(/\/uploads\/+documents\/+[^/]+\/+(?:[0-9]*x){0,2}([^/]+?)(?:,[0-9]+){0,}(\.[^/]+?)(?:\.(?:keep|crop)\..*)?(?:[?#].*)?$/, "/uploads/documents/$1$2");
 		}
 
 		if (domain_nosub === "tin247.com" &&
@@ -47991,7 +48020,14 @@ var $$IMU_EXPORT$$;
 		if (domain === "statici.behindthevoiceactors.com") {
 			// http://statici.behindthevoiceactors.com/behindthevoiceactors/_img/movies/thumbs/movie_2452_thumb.jpg
 			//   http://statici.behindthevoiceactors.com/behindthevoiceactors/_img/movies/movie_2452.jpg
-			return src.replace(/(\/_img\/+[^/]+\/+)thumbs\/+([^/]+_[0-9]+)_thumb(\.[^/.]*)(?:[?#].*)?$/, "$1$2$3")
+			// https://statici.behindthevoiceactors.com/behindthevoiceactors/_img/chars/thumbs/ella-the-angry-birds-movie-2-4.65_thumb.jpg
+			//   https://statici.behindthevoiceactors.com/behindthevoiceactors/_img/chars/ella-the-angry-birds-movie-2-4.65.jpg
+			return {
+				url: src.replace(/(\/_img\/+[^/]+\/+)thumbs\/+([^/]+)_thumb(\.[^/.]*)(?:[?#].*)?$/, "$1$2$3"),
+				headers: {
+					Referer: "https://www.behindthevoiceactors.com/"
+				}
+			};
 		}
 
 		if (domain_nowww === "schokkendnieuws.nl") {
@@ -49538,6 +49574,12 @@ var $$IMU_EXPORT$$;
 				};
 		}
 
+		if (domain_nowww === "platinum-celebs.com") {
+			// https://www.platinum-celebs.com/news_pic/20057/tn_19July2017-dove_cameron_jeans_shirt_2.jpg
+			//   https://www.platinum-celebs.com/news_pic/20057/big_19July2017-dove_cameron_jeans_shirt_2.jpg
+			return src.replace(/(\/news_pic\/+[0-9]+\/+)tn_/, "$1big_");
+		}
+
 
 
 
@@ -50272,13 +50314,15 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/img\/posts\/photos\/[0-9]+_[0-9a-f]+)_[a-z](\.[^/.]*)$/, "$1$2");
 		}
 
-		if (src.match(/\/wp-content\/+(?:uploads\/(?:.*?\/)?nggallery|gallery)\/(?:.*?\/)?(?:cache|dynamic)\/+[^/]+\.[^-_/.]*-nggid[0-9]+-ngg0dyn-[^/]*$/)) {
+		if (src.match(/\/wp-content\/+(?:uploads\/(?:.*?\/)?nggallery|[gG]allery)\/(?:.*?\/)?(?:cache|dynamic)\/+[^/]+\.[^-_/.]*-nggid[0-9]+-ngg0dyn-[^/]*$/)) {
 			// https://ojp8zqasz32qat8n13om56p4-wpengine.netdna-ssl.com/wp-content/uploads/sites/1/nggallery/billboard-music-awards-2018/dynamic/NUP_183094_0909.JPG-nggid0515516-ngg0dyn-100x150x100-00f0w010c011r110f110r010t010.JPG
 			//   https://ojp8zqasz32qat8n13om56p4-wpengine.netdna-ssl.com/wp-content/uploads/sites/1/nggallery/billboard-music-awards-2018/NUP_183094_0909.JPG
 			// http://bndasupamark.com/wp-content/gallery/review-of-beccas-knockout-secret-v/cache/FWR-BECCAS-KNOCKOUT-SECRET-V-23.jpg-nggid06191421-ngg0dyn-160x90x100-00f0w010c011r110f110r010t010.jpg
 			//   http://bndasupamark.com/wp-content/gallery/review-of-beccas-knockout-secret-v/FWR-BECCAS-KNOCKOUT-SECRET-V-23.jpg
 			// http://www.boobjunkie.com/wp-content/gallery/ariel-rebel-natural-light/cache/Natural_Light-100-lg.jpg-nggid0510921-ngg0dyn-181x150x100-00f0w010c011r110f110r010t010.jpg
 			//   http://www.boobjunkie.com/wp-content/gallery/ariel-rebel-natural-light/Natural_Light-100-lg.jpg
+			// http://paparazzioops.com/wp-content/Gallery/amanda-seyfried-photoshoot-in-miami/dynamic/Amanda-Seyfried-38.JPG-nggid046093-ngg0dyn-250x250x100-00f0w010c011r110f110r010t010.JPG
+			//   http://paparazzioops.com/wp-content/Gallery/amanda-seyfried-photoshoot-in-miami/Amanda-Seyfried-38.JPG
 			return src.replace(/\/(?:cache|dynamic)(\/+[^/]+\.[^-_/.]+)-[^/]*$/, "$1");
 			//return src.replace(/(\/wp-content\/+gallery\/+[^/]+\/+)(?:cache|dynamic)\/+([^/]*?\.[^/.-]+)-[^/]*\.[^/.]*(?:[?#].*)?$/, "$1$2");
 		}
@@ -52803,10 +52847,12 @@ var $$IMU_EXPORT$$;
 
 				var name = document.createElement("strong");
 				md_to_html(name, _(meta.name));
-				name.title = _(meta.description);
 
+				var description = _(meta.description);
 				if (meta.description_userscript && is_userscript)
-					name.title = _(meta.description_userscript);
+					description = _(meta.description_userscript);
+
+				name.title = description;
 
 				var name_td = document.createElement("td");
 				name_td.style.verticalAlign = "middle";
@@ -53193,6 +53239,15 @@ var $$IMU_EXPORT$$;
 				tr.appendChild(value_td);
 
 				option.appendChild(table);
+
+				if (settings.settings_visible_description) {
+					var description_el = document.createElement("p");
+					md_to_html(description_el, description);
+					//description_el.innerText = description;
+					description_el.classList.add("description");
+
+					option.appendChild(description_el);
+				}
 
 				if (meta.warning) {
 					var warning = document.createElement("p");
