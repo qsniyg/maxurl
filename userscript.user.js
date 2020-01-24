@@ -325,7 +325,8 @@ var $$IMU_EXPORT$$;
 	}
 
 	var check_tracking_blocked = function(result) {
-		if (result.status === 0)
+		// FireMonkey returns null for result if blocked
+		if (!result || result.status === 0)
 			return true;
 		return false;
 	};
@@ -361,10 +362,13 @@ var $$IMU_EXPORT$$;
 
 				var finalcb = function(resp, iserror) {
 					if (check_tracking_blocked(resp)) {
-						data.onload = real_onload;
-						data.onerror = real_onerror;
+						// Workaround for a bug in FireMonkey
+						var newdata = shallowcopy(data);
 
-						return do_request_browser(data);
+						newdata.onload = real_onload;
+						newdata.onerror = real_onerror;
+
+						return do_request_browser(newdata);
 					} else {
 						if (iserror) {
 							real_onerror(resp);
@@ -533,6 +537,30 @@ var $$IMU_EXPORT$$;
 
 	function is_iterable_object(x) {
 		return typeof x === "object" && x !== null && !(x instanceof Array) && !is_element(x);
+	}
+
+	function shallowcopy(x) {
+		var result = x;
+
+		if (!is_iterable_object(x)) {
+			return result;
+		} else if (x instanceof Array) {
+			result = [];
+			for (var i = 0; i < x.length; i++) {
+				var item = x[i];
+				result.push(item);
+			}
+			return result;
+		} else if (typeof x === "object") {
+			result = {};
+
+			for (var key in x) {
+				result[key] = x[key];
+			}
+			return result;
+		}
+
+		return result;
 	}
 
 	function deepcopy(x, options) {
@@ -52007,6 +52035,18 @@ var $$IMU_EXPORT$$;
 
 					if (_nir_debug_)
 						console_log("(check_image) resp", resp);
+
+					// FireMonkey returns null when tracking protection blocks a URL
+					if (is_userscript && userscript_manager === "FireMonkey" && !resp) {
+						err_txt = "Error: resp == null (tracking protection blocked, FireMonkey bug)";
+						if (err_cb) {
+							err_cb(err_txt);
+						} else {
+							console_error(err_txt);
+						}
+
+						return;
+					}
 
 					// nano defender removes this.DONE
 					if (resp.readyState < 2) {
