@@ -1208,7 +1208,7 @@ var $$IMU_EXPORT$$;
 		},
 		check_updates: {
 			name: "Check for updates",
-			description: "Periodically checks for updates. If a new update is available, you will be notified",
+			description: "Periodically checks for updates. If a new update is available, it will be shown at the top of the options page",
 			category: "general",
 		},
 		check_update_interval: {
