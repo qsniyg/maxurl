@@ -391,7 +391,7 @@ button:active, .button:active {
   border-color: #08c;
 }
 
-.disabled, .disabled select {
+.disabled, .disabled select, .disabled p {
   color: #aaa;
 }
 
@@ -553,6 +553,11 @@ input:checked + label, button, .button, .button:visited, .dark .button:visited {
   margin-top: 1em;
   color: #e32020;
   font-family: monospace;
+}
+
+#options .option > p.description {
+  width: 30em;
+  font-size: 90%;
 }
 
 #options ul.examples {
