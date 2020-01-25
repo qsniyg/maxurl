@@ -362,9 +362,11 @@ var $$IMU_EXPORT$$;
 
 				var finalcb = function(resp, iserror) {
 					if (check_tracking_blocked(resp)) {
-						// Workaround for a bug in FireMonkey
-						var newdata = shallowcopy(data);
+						// Workaround for a bug in FireMonkey where it calls both onload and onerror: https://github.com/erosman/support/issues/134
+						data.onload = null;
+						data.onerror = null;
 
+						var newdata = shallowcopy(data);
 						newdata.onload = real_onload;
 						newdata.onerror = real_onerror;
 
