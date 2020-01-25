@@ -47254,6 +47254,15 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/models\/+[^/]*\/+[0-9]+\/+[0-9]+\/+[^/]*)_tn(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
 		}
 
+		if (domain_nosub === "atkingdom-network.com" && /^(?:cdn[0-9]*|content)\./.test(domain)) {
+			// https://cdn90.atkingdom-network.com/secure/content/l/lea048/370590/thumbs/lea048ALP_370590001.jpg?h=26e510de1d785a5b87229a9ad0faa9f8&site=1003
+			//   https://cdn90.atkingdom-network.com/secure/content/l/lea048/370590/lea048ALP_370590001.jpg
+			//   https://cdn90.atkingdom-network.com/secure/content/l/lea048/370590/3000/lea048ALP_370590001.jpg -- 2001x3000
+			// https://content.atkingdom-network.com/secure/content/a/ale171/375225/thumbs/ale171GBP_375225003.jpg?h=0884af4473d0b919edcbecd5466b45f5&site=1003
+			//   https://content.atkingdom-network.com/secure/content/a/ale171/375225/3000/ale171GBP_375225003.jpg
+			return src.replace(/(\/secure\/+content\/+.\/+[^/]+\/+[0-9]+\/+)(?:thumbs\/+)?([^/?]+)(?:[?#].*)?$/, "$13000/$2");
+		}
+
 		if (domain === "bl.definefetish.com") {
 			// http://bl.definefetish.com/1/16/20861/thumb/01.jpg
 			//   http://bl.definefetish.com/1/16/20861/01.jpg
@@ -49608,6 +49617,89 @@ var $$IMU_EXPORT$$;
 			// https://www.platinum-celebs.com/news_pic/20057/tn_19July2017-dove_cameron_jeans_shirt_2.jpg
 			//   https://www.platinum-celebs.com/news_pic/20057/big_19July2017-dove_cameron_jeans_shirt_2.jpg
 			return src.replace(/(\/news_pic\/+[0-9]+\/+)tn_/, "$1big_");
+		}
+
+		if (domain === "video.like.video") {
+			// https://video.like.video/eu_live/5ug/10PPly_4.mp4?crc=4192414585&type=5
+			//   https://video.like.video/eu_live/5ug/10PPly.mp4?crc=4192414585&type=5
+			newsrc = src.replace(/(\/[0-9A-Za-z]+)_[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+			if (newsrc !== src)
+				return newsrc;
+		}
+
+		if (domain === "videosnap.like.video") {
+			// http://videosnap.like.video//eu_live//5uu//1188r7_1.jpg?type=8
+			//   http://videosnap.like.video//eu_live//5uu//1188r7_4.jpg?type=8
+			newsrc = src.replace(/(\/[0-9A-Za-z]+)_[12](\.[^/.]+)(?:[?#].*)?$/, "$1_4$2");
+			if (newsrc !== src)
+				return newsrc;
+		}
+
+		if (host_domain_nowww === "likee.com" && options && options.element && options.do_request && options.cb && !options.exclude_videos) {
+			if (options.element.tagName === "A" && /:\/\/[^/]+\/+s\/+[0-9A-Za-z]+$/.test(options.element.href)) {
+				var cache_key = "likee:" + options.element.href.replace(/.*\/([^/]+)$/, "$1");
+				api_cache.fetch(cache_key, options.cb, function(done) {
+					options.do_request({
+						url: options.element.href,
+						method: "GET",
+						onload: function(resp) {
+							if (resp.readyState < 4)
+								return;
+
+							if (resp.status !== 200) {
+								return done(null, false);
+							}
+
+							var match = resp.responseText.match(/<script>\s*window\.data\s*=\s*({.*?})\s*;\s*<\/script/);
+							if (!match) {
+								console_error("Unable to find match", resp);
+								return done(null, false);
+							}
+
+							try {
+								var json = JSON_parse(match[1]);
+								return done(json.video_url, 12*60*60);
+							} catch (e) {
+								console_error(e);
+								return done(null, false);
+							}
+						}
+					});
+				});
+
+				return {
+					waiting: true
+				};
+			}
+		}
+
+		if (domain_nowww === "roleplay.me") {
+			// https://www.roleplay.me/photos/19/70/m_9186562074792811826.jpg
+			//   https://www.roleplay.me/photos/19/70/9186562074792811826.jpg
+			return src.replace(/(\/photos\/+(?:[0-9]+\/+){2})[ms]_([0-9]+\.)/, "$1$2");
+		}
+
+		if (domain === "cdn.21buttons.com") {
+			// https://cdn.21buttons.com/posts/1080x1350/014daf325fae4281a7da5ebed4aa8702_1080x1350.jpg
+			//   https://cdn.21buttons.com/posts/014daf325fae4281a7da5ebed4aa8702_1080x1350.jpg
+			// https://cdn.21buttons.com/users/ecbcd777c28147c084b960fe68fa899b.medium.jpg
+			//   https://cdn.21buttons.com/users/ecbcd777c28147c084b960fe68fa899b.large.jpg -- 1080x1080
+			//   https://cdn.21buttons.com/users/ecbcd777c28147c084b960fe68fa899b.jpg -- 1122x1122
+			return src
+				.replace(/(\/users\/+[0-9a-f]{20,})\.(?:small|medium|large)\./, "$1.")
+				.replace(/\/posts\/+[0-9]+x[0-9]+\/+/, "/posts/");
+		}
+
+		if (domain === "cwh-cdn.21buttons.com") {
+			// https://cwh-cdn.21buttons.com/e7b29323d8322d9169ba323beea50821c6e9ffdf.medium.jpg -- 640x640, borders
+			//   https://cwh-cdn.21buttons.com/e7b29323d8322d9169ba323beea50821c6e9ffdf.smedium.jpg -- 480x720, no borders
+			return src.replace(/(\/[0-9a-f]{20,}\.)(?:small|medium)\./, "$1smedium.");
+		}
+
+		if (domain_nosub === "porngo.com" && /^img[0-9]*\./.test(domain)) {
+			// https://img11.porngo.com/173000/173646/small/1.jpg
+			//   https://img11.porngo.com/173000/173646/medium@2x/1.jpg
+			return src.replace(/\/(?:small|medium)(?:@2x)?\/+([0-9]+\.[^/.]+)(?:[?#].*)?$/, "/medium@2x/$1");
 		}
 
 
@@ -55929,8 +56021,9 @@ var $$IMU_EXPORT$$;
 			}
 
 			function addImage(src, el, options) {
-				if (_nir_debug_)
-					console_log("_find_source (addImage)", el, check_visible(el), options);
+				if (_nir_debug_) {
+					console_log("_find_source (addImage)", src, el, check_visible(el), options);
+				}
 
 				if (settings.mouseover_apply_blacklist && !bigimage_filter(src)) {
 					if (_nir_debug_)
@@ -56139,8 +56232,13 @@ var $$IMU_EXPORT$$;
 				}
 			}
 
-			function get_url_from_css(str) {
-				if (!str.match(/^(.*?\)\s*,)?\s*url[(]/))
+			function get_url_from_css(str, elstr) {
+				var emptystrregex = /^(.*?\)\s*,)?\s*url[(]["']{2}[)]/;
+				if (!str.match(/^(.*?\)\s*,)?\s*url[(]/) || emptystrregex.test(str))
+					return null;
+
+				// window.getComputedStyle returns the window's URL in this case for some reason, so we need the element's style to find the empty string
+				if (elstr && emptystrregex.test(elstr))
 					return null;
 
 				// https://www.flickr.com/account/upgrade/pro
@@ -56155,7 +56253,7 @@ var $$IMU_EXPORT$$;
 			function add_bgimage(layer, el, style, beforeafter) {
 				if (style.getPropertyValue("background-image")) {
 					var bgimg = style.getPropertyValue("background-image");
-					var src = get_url_from_css(bgimg);
+					var src = get_url_from_css(bgimg, el.style.getPropertyValue("background-image"));
 					if (src)
 						addImage(src, el, {
 							isbg: beforeafter || true,
