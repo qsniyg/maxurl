@@ -54846,7 +54846,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		function makePopup(obj, orig_url, processing, data) {
-			if (true || _nir_debug_) {
+			if (_nir_debug_) {
 				console_log("makePopup", obj, orig_url, processing, data);
 			}
 
