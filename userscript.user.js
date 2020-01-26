@@ -140,7 +140,7 @@ var $$IMU_EXPORT$$;
 		}
 	};
 	var is_in_iframe = check_in_iframe();
-	var should_use_remote = false;
+	var can_use_remote = false;
 
 	var is_interactive = is_extension || is_userscript;
 
@@ -234,7 +234,11 @@ var $$IMU_EXPORT$$;
 			});
 		};
 
-		should_use_remote = true;
+		can_use_remote = true;
+	}
+
+	var should_use_remote = function() {
+		return can_use_remote && settings.mouseover_use_remote;
 	}
 
 	var do_request_browser = function (request) {
@@ -1185,6 +1189,7 @@ var $$IMU_EXPORT$$;
 		mouseover_ui_rotationbtns: false,
 		mouseover_ui_caption: true,
 		mouseover_ui_wrap_caption: true,
+		mouseover_use_remote: true,
 		mouseover_zoom_behavior: "fit",
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-531080061
 		mouseover_zoom_custom_percent: 100,
@@ -1888,6 +1893,16 @@ var $$IMU_EXPORT$$;
 			category: "popup",
 			subcategory: "popup_other",
 			advanced: true
+		},
+		mouseover_use_remote: {
+			name: "Pop out of frames",
+			description: "Opens the popup on the top frame instead of within iframes. Still in beta",
+			requires: {
+				mouseover_open_behavior: "popup"
+			},
+			extension_only: true,
+			category: "popup",
+			subcategory: "open_behavior"
 		},
 		mouseover_zoom_behavior: {
 			name: "Popup default zoom",
@@ -24833,6 +24848,15 @@ var $$IMU_EXPORT$$;
 			// http://img.news.goo.ne.jp/picture/megapicture_editor/20140515/20140515200355_490425581.jpg -- 3093x4647
 			// http://img.news.goo.ne.jp/picture/megapicture_editor/20130519112834_168985365.jpg -- 4532x3112
 			return src.replace(/\/picture\/+([a-z]+)\/+s((?:_\1-[0-9]{8}wow[0-9]+|_\1-[0-9]{10,}|[0-9]{10,})\.[^/.]*)(?:[?#].*)?$/, "/picture/$1/m$2");
+		}
+
+		if (domain_nowww === "redditstatic.com") {
+			// https://www.redditstatic.com/sprite-reddit.[random characters].png
+			if (/\/sprite-reddit\./.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
 		}
 
 		if (domain === "preview.redd.it") {
@@ -57103,7 +57127,7 @@ var $$IMU_EXPORT$$;
 				if (popup_el.parentElement) // check if it's a fake element returned by a gallery helper
 					popup_orig_el = popup_el;
 
-				if (should_use_remote && get_single_setting("mouseover_open_behavior") === "popup") {
+				if (is_in_iframe && should_use_remote() && get_single_setting("mouseover_open_behavior") === "popup") {
 					data.data.img = serialize_img(data.data.img);
 					remote_send_message("top", {
 						type: "make_popup",
@@ -57216,7 +57240,7 @@ var $$IMU_EXPORT$$;
 							}
 						}
 
-						if (should_use_remote) {
+						if (is_in_iframe && should_use_remote()) {
 							processing.incomplete_image = true;
 							processing.incomplete_video = true;
 						}
@@ -57351,7 +57375,7 @@ var $$IMU_EXPORT$$;
 			if (!firstel)
 				firstel = real_popup_el;
 
-			if (!firstel && popup_el_remote && should_use_remote && !is_in_iframe) {
+			if (!firstel && popup_el_remote && should_use_remote() && !is_in_iframe) {
 				return remote_send_message(popup_el_remote, {
 					type: "count_gallery",
 					data: {
@@ -57396,7 +57420,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		function is_nextprev_valid(nextprev, cb) {
-			if (popup_el_remote && should_use_remote && !is_in_iframe) {
+			if (popup_el_remote && should_use_remote() && !is_in_iframe) {
 				return remote_send_message(popup_el_remote, {
 					type: "is_nextprev_valid",
 					data: {
@@ -57417,7 +57441,7 @@ var $$IMU_EXPORT$$;
 				cb = nullfunc;
 			}
 
-			if (popup_el_remote && should_use_remote && !is_in_iframe) {
+			if (popup_el_remote && should_use_remote() && !is_in_iframe) {
 				return remote_send_message(popup_el_remote, {
 					type: "trigger_gallery",
 					data: {
