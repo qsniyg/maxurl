@@ -51298,7 +51298,7 @@ var $$IMU_EXPORT$$;
 					var can_apply = false;
 					var use_default_after = false;
 					for (var i = 0; i < info.length; i++) {
-						if ((info[i].type === "post" && (info[i].subtype === "popup" || info[i].subtype === "page" || (info[i].subtype === "link" && options.rule_specific.instagram_gallery_postlink && !options.is_counting))) ||
+						if ((info[i].type === "post" && (info[i].subtype === "popup" || info[i].subtype === "page" || info[i].subtype === "home" || (info[i].subtype === "link" && options.rule_specific.instagram_gallery_postlink && !options.is_counting))) ||
 						     info[i].type === "story") {
 							info[i].all = true;
 							can_apply = true;
