@@ -8065,6 +8065,8 @@ var $$IMU_EXPORT$$;
 			(domain_nosub === "nyt.com" && domain.match(/^static[0-9]*\.nyt\.com/)) ||
 			// https://image.insider.com/5d1b732b21a8617668149572?width=1100&format=jpeg&auto=webp
 			domain === "image.insider.com" ||
+			// https://i.insider.com/520e7783eab8ea6f27000005?width=1300&format=jpeg&auto=webp
+			domain === "i.insider.com" ||
 			// https://image.businessinsider.com/5bc0aeeddde8677f346b9a82?width=1100&format=jpeg&auto=webp
 			domain === "image.businessinsider.com" ||
 			// https://video-images.vice.com/articles/592ed99499168942accbdf39/lede/1496243427040-BadGyal_JavierRuiz_2.jpeg?crop=1xw:0.4212xh;0xw,0.3534xh&resize=1200:*
@@ -52620,8 +52622,8 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (event.buttons !== undefined) {
-			var buttonnames = ["button2", "button3", "button4", "button5"];
-			var buttons = event.buttons >> 1;
+			var buttonnames = ["button1", "button2", "button3", "button4", "button5"];
+			var buttons = event.buttons;
 			while (buttonnames.length > 0) {
 				if (buttons & 1) {
 					keys[buttonnames[0]] = true;
@@ -52642,6 +52644,25 @@ var $$IMU_EXPORT$$;
 		keys[str] = value;
 		return keys;
 	}
+
+	var keysequence_bad = function(keyseq) {
+		if (keyseq.length !== 1)
+			return false;
+
+		return keyseq[0] === "button1" || keyseq[0] === "button2";
+	};
+
+	var keysequence_valid = function(keyseq) {
+		if (keyseq.length === 0)
+			return false;
+		if (keyseq.length > 1)
+			return true;
+
+		if (keysequence_bad(keyseq))
+			return false;
+
+		return true;
+	};
 
 	function update_dark_mode() {
 		if (!is_maxurl_website && !is_options_page) {
@@ -52668,14 +52689,20 @@ var $$IMU_EXPORT$$;
 
 			var map = get_keystrs_map(event, value);
 
-			if ((keycode_to_str(event.which) || event.type === "MouseEvent") &&
+			if ((keycode_to_str(event.which) || event.type === "mousedown") &&
 				current_options_chord.length === 0) {
-				options_chord = [];
+				// Don't clear the options chord for either left or right mouse buttons
+				if (event.button !== 0 && event.button !== 2)
+					options_chord = [];
 			}
 
+			var old_options_chord = deepcopy(options_chord);
 			for (var key in map) {
 				update_options_chord_sub(key, map[key]);
 			}
+
+			if (keysequence_bad(options_chord))
+				options_chord = old_options_chord;
 
 			recording_keys();
 		}
@@ -52706,14 +52733,11 @@ var $$IMU_EXPORT$$;
 		});
 
 		document.addEventListener('mousedown', function(event) {
-			if (event.button === 0) // left
-				return;
-
 			update_options_chord(event, true);
 
 			if (recording_keys) {
 				event.preventDefault();
-				event.stopImmediatePropagation();
+				//event.stopImmediatePropagation();
 				return false;
 			}
 		});
@@ -53567,21 +53591,34 @@ var $$IMU_EXPORT$$;
 					var do_cancel = function() {
 						recording_keys = false;
 						sub_record_btn.innerText = _("Record");
+						sub_record_btn.classList.remove("disabled");
 						sub_cancel_btn.style = "display:none";
 						sub_key_td.innerText = get_trigger_key_text(settings[setting]);
 					};
-					sub_cancel_btn.onclick = do_cancel;
-					sub_record_btn.onclick = function() {
+					sub_cancel_btn.onmousedown = do_cancel;
+					sub_record_btn.onmousedown = function() {
 						if (recording_keys) {
-							do_update_setting(setting, options_chord, meta);
-							settings[setting] = options_chord;
+							if (keysequence_valid(options_chord)) {
+								do_update_setting(setting, options_chord, meta);
+								settings[setting] = options_chord;
 
-							do_cancel();
+								do_cancel();
+							}
 						} else {
 							options_chord = [];
 							current_options_chord = [];
 							recording_keys = function() {
-								sub_key_td.innerText = get_trigger_key_text(options_chord);
+								var our_chord = options_chord;
+								if (our_chord.length === 0)
+									our_chord = settings[setting];
+
+								sub_key_td.innerText = get_trigger_key_text(our_chord);
+
+								if (keysequence_valid(options_chord)) {
+									sub_record_btn.classList.remove("disabled");
+								} else {
+									sub_record_btn.classList.add("disabled");
+								}
 							};
 							sub_record_btn.innerText = _("save");
 							sub_cancel_btn.style = "display:inline-block";
