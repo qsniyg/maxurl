@@ -4646,6 +4646,23 @@ var $$IMU_EXPORT$$;
 				});
 			}
 
+			// home
+			if (current.tagName === "ARTICLE" && host_url.match(/:\/\/[^/]+\/+(?:[?#].*)?$/)) {
+				var timeel = current.querySelector("a > time");
+				if (timeel) {
+					var href = timeel.parentElement.href;
+					if (/:\/\/[^/]*\/+(?:[^/]+\/+)?p\//.test(href)) {
+						possible_infos.push({
+							type: "post",
+							subtype: "home",
+							url: href,
+							image: element.src,
+							element: current
+						});
+					}
+				}
+			}
+
 			// stories
 			if (current.tagName === "BODY" && host_url.match(/:\/\/[^/]*\/+stories\/+([^/]*)\/*(?:[?#].*)?$/)) {
 				possible_infos.push({
@@ -49865,6 +49882,22 @@ var $$IMU_EXPORT$$;
 					waiting: true
 				};
 			}
+		}
+
+		if (domain_nowww === "notion.so") {
+			// https://www.notion.so/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2Fd7273351-a2ab-4208-b67f-2067cbf78684%2FLOGO.jpg?table=block&id=6b035aa7-9bec-475f-9bca-29c4ae2c6eb1&width=80&cache=v2
+			//   https://www.notion.so/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2Fd7273351-a2ab-4208-b67f-2067cbf78684%2FLOGO.jpg?table=block&id=6b035aa7-9bec-475f-9bca-29c4ae2c6eb1&cache=v2
+			if (/^[a-z]+:\/\/[^/]+\/+image\/+https?.*\?/) {
+				newsrc = remove_queries(src, ["width", "height"]);
+				if (newsrc !== src)
+					return newsrc;
+			}
+
+			// doesn't seem to work
+			// https://www.notion.so/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2Feae258ee-d3ad-44e5-bd1d-789c51155436%2F.png?table=block&id=6b035aa7-9bec-475f-9bca-29c4ae2c6eb1&width=3830&cache=v2
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+image\/+(https?%3.*?)(?:[?#].*)?$/, "$1");
+			if (false && newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
 		}
 
 
