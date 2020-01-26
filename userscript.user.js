@@ -654,8 +654,7 @@ var $$IMU_EXPORT$$;
 
 		if (typeof x === "string" || x === null) {
 			return x;
-		} else if ((typeof Element !== "undefined" && x instanceof Element) ||
-				   (x && typeof x === "object" && (("namespaceURI" in x) && ("ariaSort" in x)))) {
+		} else if (is_element(x)) {
 			if (options.json) {
 				return undefined;
 			} else {
