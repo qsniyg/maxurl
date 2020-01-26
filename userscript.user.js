@@ -1241,6 +1241,8 @@ var $$IMU_EXPORT$$;
 		// thanks to LukasThyWalls on github for the idea: https://github.com/qsniyg/maxurl/issues/75
 		bigimage_blacklist: "",
 		bigimage_blacklist_engine: "glob",
+		replaceimgs_enable_keybinding: false,
+		replaceimgs_keybinding: ["shift", "alt", "r"],
 		replaceimgs_auto: false,
 		replaceimgs_replaceimgs: true,
 		replaceimgs_addlinks: false,
@@ -2403,6 +2405,22 @@ var $$IMU_EXPORT$$;
 					name: "Regex"
 				}
 			}
+		},
+		replaceimgs_enable_keybinding: {
+			name: "Enable trigger key",
+			description: "Enables the use of the trigger key to run it without needing to use the menu",
+			category: "extra",
+			subcategory: "replaceimages",
+		},
+		replaceimgs_keybinding: {
+			name: "Trigger key",
+			description: "Trigger keybinding that will run the Replace Images function",
+			requires: {
+				replaceimgs_enable_keybinding: true
+			},
+			type: "keysequence",
+			category: "extra",
+			subcategory: "replaceimages"
 		},
 		replaceimgs_auto: {
 			name: "Automatically replace images",
@@ -58402,6 +58420,12 @@ var $$IMU_EXPORT$$;
 					if (!popup_hold && can_close_popup[1])
 						resetpopups();
 				}
+			}
+
+			if (settings.replaceimgs_enable_keybinding && trigger_complete(settings.replaceimgs_keybinding)) {
+				replace_images_full();
+				ret = false;
+				release_ignore = settings.replaceimgs_keybinding;
 			}
 
 
