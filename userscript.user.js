@@ -1251,6 +1251,8 @@ var $$IMU_EXPORT$$;
 		replaceimgs_wait_fullyloaded: true,
 		replaceimgs_totallimit: 8,
 		replaceimgs_domainlimit: 2,
+		highlightimgs_enable_keybinding: false,
+		highlightimgs_keybinding: ["shift", "alt", "h"],
 		highlightimgs_enable: false,
 		highlightimgs_auto: "never",
 		highlightimgs_onlysupported: true,
@@ -2495,6 +2497,22 @@ var $$IMU_EXPORT$$;
 				replaceimgs_addlinks: true
 			},
 			imu_enabled_exempt: true
+		},
+		highlightimgs_enable_keybinding: {
+			name: "Enable trigger key",
+			description: "Enables the use of the trigger key to run it without needing to use the menu",
+			category: "extra",
+			subcategory: "highlightimages",
+		},
+		highlightimgs_keybinding: {
+			name: "Trigger key",
+			description: "Trigger keybinding that will run the Highlight Images function",
+			requires: {
+				highlightimgs_enable_keybinding: true
+			},
+			type: "keysequence",
+			category: "extra",
+			subcategory: "highlightimages"
 		},
 		highlightimgs_enable: {
 			name: "Enable button",
@@ -58422,10 +58440,17 @@ var $$IMU_EXPORT$$;
 				}
 			}
 
+
 			if (settings.replaceimgs_enable_keybinding && trigger_complete(settings.replaceimgs_keybinding)) {
 				replace_images_full();
 				ret = false;
 				release_ignore = settings.replaceimgs_keybinding;
+			}
+
+			if (settings.highlightimgs_enable_keybinding && trigger_complete(settings.highlightimgs_keybinding)) {
+				highlight_images();
+				ret = false;
+				release_ignore = settings.highlightimgs_keybinding;
 			}
 
 
