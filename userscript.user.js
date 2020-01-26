@@ -131,6 +131,17 @@ var $$IMU_EXPORT$$;
 	if (!is_node && !is_scripttag && !is_extension)
 		is_userscript = true;
 
+	// https://stackoverflow.com/a/326076
+	var check_in_iframe = function() {
+		try {
+			return window.self !== window.top;
+		} catch (e) {
+			return true;
+		}
+	};
+	var is_in_iframe = check_in_iframe();
+	var should_use_remote = false;
+
 	var is_interactive = is_extension || is_userscript;
 
 	var userscript_manager = "unknown";
@@ -169,6 +180,21 @@ var $$IMU_EXPORT$$;
 		} catch (e) {
 			current_version = null;
 		};
+	}
+
+	var remote_send_message = null;
+	if (is_extension) {
+		var remote_send_message = function(data) {
+			//console_log("remote", data);
+			extension_send_message({
+				type: "remote",
+				data: data
+			});
+		};
+
+		if (is_in_iframe) {
+			should_use_remote = true;
+		}
 	}
 
 	var do_request_browser = function (request) {
@@ -53897,6 +53923,46 @@ var $$IMU_EXPORT$$;
 		return error;
 	}
 
+	function serialize_img(img) {
+		var obj = {
+			tag: img.tagName.toLowerCase(),
+			src: img.src,
+			autoplay: img.getAttribute("autoplay"),
+			controls: img.getAttribute("controls"),
+			loop: img.getAttribute("loop"),
+			muted: img.muted,
+			volume: img.volume
+		};
+
+		return obj;
+	}
+
+	function deserialize_img(obj, cb) {
+		var el = document.createElement(obj.tag);
+		if (obj.tag === "video") {
+			if (obj.autoplay)
+				video.setAttribute("autoplay", obj.autoplay);
+			if (obj.controls)
+				video.setAttribute("controls", obj.controls);
+			if (obj.loop)
+				video.setAttribute("loop", obj.loop)
+			if (obj.muted)
+				video.muted = obj.muted;
+			if (obj.volume !== undefined)
+				video.volume = obj.volume;
+
+			video.onloadedmetadata = function() {
+				cb(el);
+			};
+		}
+
+		el.src = obj.src;
+
+		if (obj.tag !== "video") {
+			cb(el);
+		}
+	}
+
 	function check_image_get(obj, cb, processing) {
 		if (!obj || !obj[0]) {
 			return cb(null);
@@ -54312,6 +54378,7 @@ var $$IMU_EXPORT$$;
 		var last_popup_el = null;
 		var popup_orig_el = null;
 		var popup_el_automatic = false;
+		var popup_el_remote = false;
 		var popups_active = false;
 		var popup_trigger_reason = null;
 		var can_close_popup = [false, false];
@@ -54497,6 +54564,7 @@ var $$IMU_EXPORT$$;
 			popup_el = null;
 			real_popup_el = null;
 			popup_el_automatic = false;
+			popup_el_remote = false;
 
 			stop_processing();
 			stop_waiting();
@@ -54652,6 +54720,10 @@ var $$IMU_EXPORT$$;
 		}
 
 		function makePopup(obj, orig_url, processing, data) {
+			if (_nir_debug_) {
+				console_log("makePopup", obj, orig_url, processing, data);
+			}
+
 			var openb = get_single_setting("mouseover_open_behavior");
 			if (openb === "newtab") {
 				stop_waiting();
@@ -56925,7 +56997,20 @@ var $$IMU_EXPORT$$;
 				if (popup_el.parentElement) // check if it's a fake element returned by a gallery helper
 					popup_orig_el = popup_el;
 
-				makePopup(source_imu, source.src, processing, data);
+				if (should_use_remote && get_single_setting("mouseover_open_behavior") === "popup") {
+					data.data.img = serialize_img(data.data.img);
+					remote_send_message({
+						type: "make_popup",
+						data: {
+							source_imu: source_imu,
+							src: source.src,
+							processing: processing,
+							data: data
+						}
+					});
+				} else {
+					makePopup(source_imu, source.src, processing, data);
+				}
 			});
 		}
 
@@ -57023,6 +57108,11 @@ var $$IMU_EXPORT$$;
 							} else if (partial === "video") {
 								processing.incomplete_video = true;
 							}
+						}
+
+						if (should_use_remote) {
+							processing.incomplete_image = true;
+							processing.incomplete_video = true;
 						}
 
 						if (usehead) {
@@ -58274,6 +58364,19 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		var remote_handle_message = function(message) {
+			//console_log("ON_REMOTE_MESSAGE", message);
+			if (message.type === "make_popup") {
+				if (!is_in_iframe) {
+					deserialize_img(message.data.data.data.img, function(el) {
+						message.data.data.data.img = el;
+						//console_log("Making popup", message);
+						makePopup(message.data.source_imu, message.data.src, message.data.processing, message.data.data);
+					});
+				}
+			}
+		};
+
 		if (is_extension) {
 			// TODO: move out of do_mouseover
 			chrome.runtime.onMessage.addListener(function(message, sender, respond) {
@@ -58294,6 +58397,7 @@ var $$IMU_EXPORT$$;
 					var response = message.data;
 
 					if (!(response.id in extension_requests)) {
+						// this happens when there's more than one frame per tab
 						//console_error("Request ID " + response.id + " not in extension_requests");
 						return;
 					}
@@ -58328,6 +58432,8 @@ var $$IMU_EXPORT$$;
 					if (response.final) {
 						delete extension_requests[response.id];
 					}
+				} else if (message.type === "remote") {
+					remote_handle_message(message.data);
 				}
 			});
 		}
