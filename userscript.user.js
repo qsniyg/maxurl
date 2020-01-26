@@ -182,19 +182,59 @@ var $$IMU_EXPORT$$;
 		};
 	}
 
+	var get_random_text = function(length) {
+		var text = "";
+
+		while (text.length < length) {
+			var newtext = Math.floor(Math.random() * 10e8).toString(26);
+			text += newtext;
+		}
+
+		text = text.substr(0, length);
+		return text;
+	};
+
+	var get_random_id = function() {
+		return get_random_text(10) + Date.now();
+	};
+
 	var remote_send_message = null;
+	var remote_send_reply = null;
+	var remote_reply_ids = {};
+	var current_frame_id = null;
 	if (is_extension) {
-		var remote_send_message = function(data) {
+		current_frame_id = get_random_id() + window.location.href;
+
+		if (!is_in_iframe)
+			current_frame_id = "top";
+
+		var remote_send_message = function(to, data, cb) {
+			var id = undefined;
+
+			if (cb) {
+				id = get_random_id();
+				remote_reply_ids[id] = cb;
+			}
+
 			//console_log("remote", data);
 			extension_send_message({
 				type: "remote",
-				data: data
+				data: data,
+				to: to,
+				from: current_frame_id,
+				response_id: id
 			});
 		};
 
-		if (is_in_iframe) {
-			should_use_remote = true;
-		}
+		var remote_send_reply = function(response_id, data) {
+			extension_send_message({
+				type: "remote_reply",
+				data: data,
+				response_id: response_id
+			});
+		};
+
+		should_use_remote = true;
 	}
 
 	var do_request_browser = function (request) {
@@ -55445,8 +55485,8 @@ var $$IMU_EXPORT$$;
 					};
 
 					var add_leftright_gallery_button_if_valid = function(leftright) {
-						wrap_gallery_cycle(leftright, undefined, undefined, function(el) {
-							if (is_valid_el(el)) {
+						is_nextprev_valid(leftright, function(valid) {
+							if (valid) {
 								add_leftright_gallery_button(leftright);
 							}
 						});
@@ -56999,7 +57039,7 @@ var $$IMU_EXPORT$$;
 
 				if (should_use_remote && get_single_setting("mouseover_open_behavior") === "popup") {
 					data.data.img = serialize_img(data.data.img);
-					remote_send_message({
+					remote_send_message("top", {
 						type: "make_popup",
 						data: {
 							source_imu: source_imu,
@@ -57245,6 +57285,17 @@ var $$IMU_EXPORT$$;
 			if (!firstel)
 				firstel = real_popup_el;
 
+			if (!firstel && popup_el_remote && should_use_remote && !is_in_iframe) {
+				return remote_send_message(popup_el_remote, {
+					type: "count_gallery",
+					data: {
+						nextprev: nextprev
+					}
+				}, function(count) {
+					cb(count);
+				});
+			}
+
 			var loop = function() {
 				wrap_gallery_func(nextprev, origel, el, function(newel) {
 					if (!newel || !is_valid_el(newel))
@@ -57278,9 +57329,37 @@ var $$IMU_EXPORT$$;
 			});
 		}
 
+		function is_nextprev_valid(nextprev, cb) {
+			if (popup_el_remote && should_use_remote && !is_in_iframe) {
+				return remote_send_message(popup_el_remote, {
+					type: "is_nextprev_valid",
+					data: {
+						nextprev: nextprev
+					}
+				}, function(valid) {
+					cb(valid);
+				});
+			}
+
+			wrap_gallery_cycle(nextprev, undefined, undefined, function(el) {
+				cb(is_valid_el(el));
+			});
+		}
+
 		function trigger_gallery(nextprev, cb) {
 			if (!cb) {
 				cb = nullfunc;
+			}
+
+			if (popup_el_remote && should_use_remote && !is_in_iframe) {
+				return remote_send_message(popup_el_remote, {
+					type: "trigger_gallery",
+					data: {
+						nextprev: nextprev
+					}
+				}, function(triggered) {
+					cb(triggered);
+				});
 			}
 
 			wrap_gallery_cycle(nextprev, undefined, undefined, function(newel) {
@@ -57731,18 +57810,6 @@ var $$IMU_EXPORT$$;
 		};
 
 		register_menucommand("Replace images", replace_images_full);
-
-		var get_random_text = function(length) {
-			var text = "";
-
-			while (text.length < length) {
-				var newtext = Math.floor(Math.random() * 10e8).toString(26);
-				text += newtext;
-			}
-
-			text = text.substr(0, length);
-			return text;
-		};
 
 		var generate_random_class = function(name) {
 			return "imu-" + get_random_text(10) + "-" + name;
@@ -58364,18 +58431,34 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		var remote_handle_message = function(message) {
-			//console_log("ON_REMOTE_MESSAGE", message);
+		var remote_handle_message = function(message, sender, respond) {
+			//console_log("ON_REMOTE_MESSAGE", message, sender, respond);
 			if (message.type === "make_popup") {
 				if (!is_in_iframe) {
 					resetpopups();
 
 					deserialize_img(message.data.data.data.img, function(el) {
 						message.data.data.data.img = el;
+
+						popup_el_remote = sender;
+						popup_el = null;
+						real_popup_el = null;
 						//console_log("Making popup", message);
 						makePopup(message.data.source_imu, message.data.src, message.data.processing, message.data.data);
 					});
 				}
+			} else if (message.type === "count_gallery") {
+				count_gallery(message.data.nextprev, undefined, undefined, function(count) {
+					respond(count);
+				});
+			} else if (message.type === "is_nextprev_valid") {
+				is_nextprev_valid(message.data.nextprev, function(valid) {
+					respond(valid);
+				});
+			} else if (message.type === "trigger_gallery") {
+				trigger_gallery(message.data.nextprev, function(triggered) {
+					respond(triggered);
+				});
 			}
 		};
 
@@ -58435,7 +58518,28 @@ var $$IMU_EXPORT$$;
 						delete extension_requests[response.id];
 					}
 				} else if (message.type === "remote") {
-					remote_handle_message(message.data);
+					var respond = function() {};
+					if (message.response_id) {
+						var response_id = message.response_id;
+						delete message.response_id; // is this needed?
+
+						respond = function(data) {
+							remote_send_reply(response_id, data);
+						};
+					}
+
+					if (message.to && current_frame_id !== message.to) {
+						return;
+					}
+
+					remote_handle_message(message.data, message.from, respond);
+				} else if (message.type === "remote_reply") {
+					if (message.response_id in remote_reply_ids) {
+						var response_id = message.response_id;
+						delete message.response_id;
+
+						remote_reply_ids[response_id](message.data);
+					}
 				}
 			});
 		}
