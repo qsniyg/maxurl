@@ -54760,7 +54760,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		function makePopup(obj, orig_url, processing, data) {
-			if (_nir_debug_) {
+			if (true || _nir_debug_) {
 				console_log("makePopup", obj, orig_url, processing, data);
 			}
 
@@ -54786,6 +54786,14 @@ var $$IMU_EXPORT$$;
 			//var y = mouseY;//mouseAbsY;
 			var x = data.x;
 			var y = data.y;
+
+			if (x === null || x === undefined) {
+				x = lastX;
+			}
+
+			if (y === null || y === undefined) {
+				y = lastY;
+			}
 
 			dragged = false;
 			dragstart = false;
@@ -57075,8 +57083,8 @@ var $$IMU_EXPORT$$;
 				var y = mouseY;
 
 				if (use_last_pos) {
-					x = lastX;
-					y = lastY;
+					x = null;
+					y = null;
 				}
 
 				var realcb = function(source_imu, data) {
@@ -57090,8 +57098,8 @@ var $$IMU_EXPORT$$;
 
 					// In case the user has dragged while loading the next image (#154)
 					if (use_last_pos) {
-						x = lastX;
-						y = lastY;
+						x = null;
+						y = null;
 					}
 
 					cb(source_imu, source, processing, {
