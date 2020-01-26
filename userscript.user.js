@@ -53845,18 +53845,15 @@ var $$IMU_EXPORT$$;
 			}, function() {
 				updating_options--;
 
-				if (cb)
-					cb();
+				cb && cb();
 			});
 		} else if (typeof GM_setValue !== "undefined") {
 			GM_setValue(key, value);
 
-			if (cb)
-				cb();
+			cb && cb();
 		} else if (typeof GM !== "undefined" && GM.getValue) {
 			GM.setValue(key, value).then(function() {
-				if (cb)
-					cb()
+				cb && cb();
 			});
 		}
 	}
