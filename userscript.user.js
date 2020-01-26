@@ -58368,6 +58368,8 @@ var $$IMU_EXPORT$$;
 			//console_log("ON_REMOTE_MESSAGE", message);
 			if (message.type === "make_popup") {
 				if (!is_in_iframe) {
+					resetpopups();
+
 					deserialize_img(message.data.data.data.img, function(el) {
 						message.data.data.data.img = el;
 						//console_log("Making popup", message);
