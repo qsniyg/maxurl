@@ -34315,9 +34315,11 @@ var $$IMU_EXPORT$$;
 			return src.replace(/:\/\/[^/]*\/t\//, "://i.imx.to/i/");
 		}
 
-		if (domain_nosub === "imx.to" && domain.match(/^x[0-9]+\./)) {
+		if (domain_nosub === "imx.to" && domain.match(/^[xi][0-9]+\./)) {
 			// https://x001.imx.to/t/2016/01/19/569e0e4e392e4.jpg
 			//   https://x001.imx.to/i/2016/01/19/569e0e4e392e4.jpg
+			// https://i002.imx.to/t/2019/04/05/20esya.jpg
+			//   https://i002.imx.to/i/2019/04/05/20esya.jpg
 			return src.replace(/(:\/\/[^/]*\/)t\//, "$1i/");
 		}
 
@@ -49702,6 +49704,60 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/(?:small|medium)(?:@2x)?\/+([0-9]+\.[^/.]+)(?:[?#].*)?$/, "/medium@2x/$1");
 		}
 
+		if (domain === "assets-jpcust.jwpsrv.com") {
+			// https://assets-jpcust.jwpsrv.com/thumbnails/ere54hzk-320.jpg
+			//   https://assets-jpcust.jwpsrv.com/thumbnails/ere54hzk.jpg
+			return src.replace(/(\/thumbnails\/+[^-./]+)-[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nosub === "keep2share.cc" && /^prx-[0-9]+\./.test(domain)) {
+			match = src.match(/\/video\/+[0-9a-f]+\/+[0-9a-f]+\/+alternative_resolution_[0-9a-f]+_.*\?(?:.*&)?uf=([0-9a-f]+)(?:&.*)?$/);
+			if (match && options && options.do_request && options.cb) {
+				var fileid = match[1];
+				var cache_key = "keep2share:" + fileid;
+				api_cache.fetch(cache_key, options.cb, function(done) {
+					options.do_request({
+						url: "https://api.k2s.cc/v1/files/" + fileid + "?referer=",
+						method: "GET",
+						headers: {
+							Referer: "https://k2s.cc/file/" + fileid + "/",
+							Origin: "https://k2s.cc",
+							"Accept": "application/json, text/plain, */*",
+							"Sec-Fetch-Site": "same-site"
+						},
+						onload: function(result) {
+							if (result.readyState < 4)
+								return;
+
+							if (result.status !== 200) {
+								console_error(result);
+								return done(null, false);
+							}
+
+							try {
+								var json = JSON_parse(result.responseText);
+								return done({
+									url: json.videoPreview.video,
+									extra: {
+										page: "https://k2s.cc/file/" + fileid + "/" + json.name,
+									},
+									video: true,
+									filename: json.name
+								}, 3*60*60);
+							} catch (e) {
+								console_error(e);
+								return done(null, false);
+							}
+						}
+					});
+				});
+
+				return {
+					waiting: true
+				};
+			}
+		}
+
 
 
 
@@ -58238,7 +58294,7 @@ var $$IMU_EXPORT$$;
 					var response = message.data;
 
 					if (!(response.id in extension_requests)) {
-						console_error("Request ID " + response.id + " not in extension_requests");
+						//console_error("Request ID " + response.id + " not in extension_requests");
 						return;
 					}
 
