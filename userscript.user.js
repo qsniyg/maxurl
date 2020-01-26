@@ -4881,6 +4881,14 @@ var $$IMU_EXPORT$$;
 				return src;
 			}
 
+			// https://ssl.pstatic.net/img.tvcast/pc/img/sp_tvcast75.png
+			if (/\/img\.tvcast\/+pc\/+img\/+/.test(src)) {
+				return {
+					url: src,
+					bad: "mask"
+				};
+			}
+
 			// http://tv03.search.naver.net/thm?size=120x150&quality=9&q=http://sstatic.naver.net/people/portrait/201401/20140127145415321.jpg
 			//   http://sstatic.naver.net/people/portrait/201401/20140127145415321.jpg
 			// https://tv.pstatic.net/thm?size=120x150&quality=9&q=http://sstatic.naver.net/people/portrait/201604/20160426164831645.jpg
