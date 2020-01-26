@@ -52551,6 +52551,21 @@ var $$IMU_EXPORT$$;
 			keys.shift = false;
 		}
 
+		if (event.buttons !== undefined) {
+			var buttonnames = ["button2", "button3", "button4", "button5"];
+			var buttons = event.buttons >> 1;
+			while (buttonnames.length > 0) {
+				if (buttons & 1) {
+					keys[buttonnames[0]] = true;
+				} else {
+					keys[buttonnames[0]] = false;
+				}
+
+				buttons >>= 1;
+				buttonnames.shift();
+			}
+		}
+
 		var str = keycode_to_str(event.which);
 		if (str === undefined) {
 			return keys;
@@ -52585,7 +52600,7 @@ var $$IMU_EXPORT$$;
 
 			var map = get_keystrs_map(event, value);
 
-			if (keycode_to_str(event.which) &&
+			if ((keycode_to_str(event.which) || event.type === "MouseEvent") &&
 				current_options_chord.length === 0) {
 				options_chord = [];
 			}
@@ -52622,11 +52637,45 @@ var $$IMU_EXPORT$$;
 			}
 		});
 
+		document.addEventListener('mousedown', function(event) {
+			if (event.button === 0) // left
+				return;
+
+			update_options_chord(event, true);
+
+			if (recording_keys) {
+				event.preventDefault();
+				event.stopImmediatePropagation();
+				return false;
+			}
+		});
+
+		document.addEventListener("contextmenu", function(event) {
+			if (recording_keys) {
+				event.preventDefault();
+				event.stopImmediatePropagation();
+				return false;
+			}
+		});
+
 		document.addEventListener('keyup', function(event) {
 			update_options_chord(event, false);
 
 			if (recording_keys) {
 				event.preventDefault();
+				return false;
+			}
+		});
+
+		document.addEventListener('mouseup', function(event) {
+			if (event.button === 1)
+				return;
+
+			update_options_chord(event, false);
+
+			if (recording_keys) {
+				event.preventDefault();
+				event.stopImmediatePropagation();
 				return false;
 			}
 		});
@@ -54452,6 +54501,7 @@ var $$IMU_EXPORT$$;
 
 		var current_chord = [];
 		var current_chord_timeout = {};
+		var release_ignore = [];
 
 		function resetifout(e) {
 			// doesn't work, as e doesn't contain ctrlKey etc.
@@ -58185,9 +58235,11 @@ var $$IMU_EXPORT$$;
 			};
 		})();
 
-		document.addEventListener('keydown', function(event) {
+		var keydown_cb = function(event) {
 			if (!mouseover_enabled())
 				return;
+
+			var ret = undefined;
 
 			update_chord(event, true);
 
@@ -58198,6 +58250,8 @@ var $$IMU_EXPORT$$;
 					if (!delay_handle) {
 						popup_trigger_reason = "keyboard";
 						trigger_popup();
+						ret = false;
+						release_ignore = settings.mouseover_trigger_key;
 					}
 				}
 
@@ -58219,16 +58273,17 @@ var $$IMU_EXPORT$$;
 
 
 			if (popups.length > 0 && popup_el) {
-				var ret = undefined;
-
 				if (trigger_complete(settings.mouseover_gallery_prev_key)) {
 					trigger_gallery(false);
 					ret = false;
+					release_ignore = settings.mouseover_gallery_prev_key;
 				} else if (trigger_complete(settings.mouseover_gallery_next_key)) {
 					trigger_gallery(true);
 					ret = false;
+					release_ignore = settings.mouseover_gallery_next_key;
 				} else if (trigger_complete(settings.mouseover_download_key)) {
 					ret = false;
+					release_ignore = settings.mouseover_download_key;
 
 					// Clear the chord because keyup might not be called due to the save dialog popup
 					clear_chord();
@@ -58264,30 +58319,46 @@ var $$IMU_EXPORT$$;
 				} else if (trigger_complete(settings.mouseover_rotate_left_key)) {
 					rotate_gallery(-90);
 					ret = false;
+					release_ignore = settings.mouseover_rotate_left_key;
 				} else if (trigger_complete(settings.mouseover_rotate_right_key)) {
 					rotate_gallery(90);
 					ret = false;
+					release_ignore = settings.mouseover_rotate_right_key;
 				} else if (trigger_complete(settings.mouseover_flip_horizontal_key)) {
 					flip_gallery(false);
 					ret = false;
+					release_ignore = settings.mouseover_flip_horizontal_key;
 				} else if (trigger_complete(settings.mouseover_flip_vertical_key)) {
 					flip_gallery(true);
 					ret = false;
+					release_ignore = settings.mouseover_flip_vertical_key;
 				}
-
-				if (ret === false) {
-					event.preventDefault();
-					event.stopImmediatePropagation();
-					event.stopPropagation();
-				}
-
-				return ret;
 			}
-		}, true);
 
-		document.addEventListener('keyup', function(event) {
+			if (!release_ignore || !release_ignore.length) {
+				release_ignore = [];
+			} else {
+				release_ignore = deepcopy(release_ignore);
+			}
+
+			if (ret === false) {
+				event.preventDefault();
+				event.stopImmediatePropagation();
+				event.stopPropagation();
+			}
+
+			return ret;
+		};
+
+		document.addEventListener('keydown', keydown_cb, true);
+		document.addEventListener('mousedown', keydown_cb, true);
+		document.addEventListener('contextmenu', keydown_cb, true);
+
+		var keyup_cb = function(event) {
 			if (!mouseover_enabled())
 				return;
+
+			var ret = undefined;
 
 			var condition = event_would_modify_chord(event, false, settings.mouseover_trigger_key);
 
@@ -58319,7 +58390,29 @@ var $$IMU_EXPORT$$;
 				stop_waiting();
 				resetpopups();
 			}
-		}, true);
+
+			if (release_ignore.length > 0) {
+				var map = get_keystrs_map(event, false);
+				for (var key in map) {
+					var index = release_ignore.indexOf(key);
+					if (index >= 0) {
+						release_ignore.splice(index, 1);
+						ret = false;
+					}
+				}
+			}
+
+			if (ret === false) {
+				event.preventDefault();
+				event.stopImmediatePropagation();
+				event.stopPropagation();
+			}
+
+			return ret;
+		};
+
+		document.addEventListener('keyup', keyup_cb, true);
+		document.addEventListener('mouseup', keyup_cb, true);
 
 		function scrollLeft() {
 			var doc = document.documentElement;
