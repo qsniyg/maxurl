@@ -862,7 +862,7 @@ chrome.runtime.onMessage.addListener((message, sender, respond) => {
 
 		xhr.send();
 		return true;
-	} else if (message.type = "override_next_headers") {
+	} else if (message.type === "override_next_headers") {
 		debug("override_next_headers", message);
 
 		if (!(sender.tab.id in override_headers))
@@ -881,6 +881,10 @@ chrome.runtime.onMessage.addListener((message, sender, respond) => {
 		});
 
 		return true;
+	} else if (message.type === "remote" || message.type === "remote_reply") {
+		debug(message.type, message);
+
+		chrome.tabs.sendMessage(sender.tab.id, message);
 	}
 });
 
