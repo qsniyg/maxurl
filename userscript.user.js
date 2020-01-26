@@ -600,7 +600,9 @@ var $$IMU_EXPORT$$;
 
 	function is_element(x) {
 		if ((typeof Element !== "undefined" && x instanceof Element) ||
-			(x && typeof x === "object" && (("namespaceURI" in x) && ("ariaSort" in x)))) {
+			(x && typeof x === "object" && (("namespaceURI" in x) && ("ariaSort" in x))) ||
+			(typeof HTMLDocument !== "undefined" && x instanceof HTMLDocument) ||
+			(typeof Window !== "undefined" && x instanceof Window)) {
 			return true;
 		} else {
 			return false;
@@ -1206,6 +1208,7 @@ var $$IMU_EXPORT$$;
 		mouseover_download: false,
 		// also thanks to 07416: https://github.com/qsniyg/maxurl/issues/25
 		mouseover_links: false,
+		mouseover_allow_canvas_el: false,
 		mouseover_gallery_cycle: false,
 		mouseover_gallery_prev_key: ["left"],
 		mouseover_gallery_next_key: ["right"],
@@ -2141,6 +2144,15 @@ var $$IMU_EXPORT$$;
 		mouseover_links: {
 			name: "Popup for plain hyperlinks",
 			description: "Whether or not the popup should also open for plain hyperlinks",
+			requires: {
+				mouseover: true
+			},
+			category: "popup",
+			subcategory: "open_behavior"
+		},
+		mouseover_allow_canvas_el: {
+			name: "Popup for `<canvas>`",
+			description: "Allows `<canvas>` elements to be popped up as well. This will likely cause popups with any kind of web-based games, so it's recommended to keep this disabled",
 			requires: {
 				mouseover: true
 			},
@@ -56135,8 +56147,36 @@ var $$IMU_EXPORT$$;
 			if (el.tagName === "A")
 				return el.href;
 
+			if (el.tagName === "CANVAS") {
+				try {
+					return el.toDataURL();
+				} catch (e) {
+					// "Tainted canvases may not be exported", CORS error in some pages
+					return;
+				}
+			}
+
 			// currentSrc is used if another image is used in the srcset
 			return el.currentSrc || el.src;
+		}
+
+		function get_el_dimensions(el) {
+			if (el.tagName === "VIDEO") {
+				return [
+					el.videoWidth,
+					el.videoHeight
+				];
+			} else if (el.tagName === "CANVAS") {
+				return [
+					el.width,
+					el.height
+				];
+			} else {
+				return [
+					el.naturalWidth,
+					el.naturalHeight
+				]
+			}
 		}
 
 		function is_valid_src(src) {
@@ -56377,7 +56417,7 @@ var $$IMU_EXPORT$$;
 					}
 				}
 
-				if (el.tagName === "SOURCE" || el.tagName === "IMG" || el.tagName === "VIDEO") {
+				if (el.tagName === "SOURCE" || el.tagName === "IMG" || el.tagName === "VIDEO" || (settings.mouseover_allow_canvas_el && el.tagName === "CANVAS")) {
 					var el_src = get_img_src(el);
 
 					if (el_src) {
@@ -56386,13 +56426,9 @@ var $$IMU_EXPORT$$;
 						addImage(src, el, { layer: layer });
 
 						if (!el.srcset && src in sources) {
-							if (el.tagName === "VIDEO") {
-								sources[src].width = el.videoWidth;
-								sources[src].height = el.videoHeight;
-							} else {
-								sources[src].width = el.naturalWidth;
-								sources[src].height = el.naturalHeight;
-							}
+							var dimensions = get_el_dimensions(el);
+							sources[src].width = dimensions[0];
+							sources[src].height = dimensions[1];
 						}
 					}
 
