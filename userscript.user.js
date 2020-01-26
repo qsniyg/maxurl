@@ -1189,7 +1189,7 @@ var $$IMU_EXPORT$$;
 		mouseover_ui_rotationbtns: false,
 		mouseover_ui_caption: true,
 		mouseover_ui_wrap_caption: true,
-		mouseover_use_remote: true,
+		mouseover_use_remote: false,
 		mouseover_zoom_behavior: "fit",
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-531080061
 		mouseover_zoom_custom_percent: 100,
@@ -54695,6 +54695,10 @@ var $$IMU_EXPORT$$;
 				clearTimeout(delay_handle);
 				delay_handle = null;
 			}
+
+			if (is_in_iframe && should_use_remote()) {
+				remote_send_message("top", {type: "resetpopups"});
+			}
 		}
 
 		function get_viewport() {
@@ -58592,6 +58596,8 @@ var $$IMU_EXPORT$$;
 				trigger_gallery(message.data.nextprev, function(triggered) {
 					respond(triggered);
 				});
+			} else if (message.type === "resetpopups") {
+				resetpopups();
 			}
 		};
 
