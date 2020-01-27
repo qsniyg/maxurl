@@ -9458,6 +9458,9 @@ var $$IMU_EXPORT$$;
 			// http://celebsfake.adultcase.com/files/2016/11/jizzonme2-150x150.jpg
 			//   http://celebsfake.adultcase.com/files/2016/11/jizzonme2.jpg
 			(domain === "celebsfake.adultcase.com" && src.indexOf("/files/") >= 0) ||
+			// thanks to cbadoud on github: https://github.com/qsniyg/maxurl/issues/203#issuecomment-578967505
+			// https://www.theonemilano.com/the-one-milano-uploads/2017/01/IMG_0657-768x573.jpg
+			(domain_nowww === "theonemilano.com" && src.indexOf("/the-one-milano-uploads/") >= 0) ||
 			// https://1.soompi.io/wp-content/blogs.dir/8/files/2015/09/HA-TFELT-Wonder-Girls-590x730.jpg -- doesn't work
 			// https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2018/01/GTA-6-Female-Protag-796x417.jpg -- does work
 			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|images|photos|blogs.dir)|\/+uploads)\//.test(src)
@@ -24800,7 +24803,41 @@ var $$IMU_EXPORT$$;
 			domain === "p.hegre.com") {
 			// http://cdn.public.hegre.com/static-artworks/mr-right-banner-square/mr-right-banner-square-content-image-480x.jpg?v=1541624121
 			//   http://cdn.public.hegre.com/static-artworks/mr-right-banner-square/mr-right-banner-square-content-image-fullsize.jpg?v=1541624121
-			return src.replace(/-image-[0-9]+x(?:_2x)?(\.[^/.]*)(?:[?#].*)?$/, "-image-fullsize$1");
+			newsrc = src.replace(/-image-[0-9]+x(?:_2x)?(\.[^/.]*)(?:[?#].*)?$/, "-image-fullsize$1");
+			if (newsrc !== src)
+				return newsrc;
+
+			// https://p.hegre.com/films/go-west-young-girl/11/go-west-young-girl-11-320x.jpg?v=1577798194
+			//   https://p.hegre.com/films/go-west-young-girl/11/go-west-young-girl-11-640x.jpg?v=1577798194
+			//   https://p.hegre.com/films/go-west-young-girl/11/go-west-young-girl-11-2000x2000.jpg?v=1577798194
+			//   https://p.hegre.com/films/go-west-young-girl/11/go-west-young-girl-11.jpg?v=1577798194 -- 3840x2160
+			newsrc = src.replace(/(\/films\/+[^/]+\/+[0-9]+\/+[^/]+)-[0-9]*x[0-9]*\./, "$1.");
+			if (newsrc !== src)
+				return newsrc;
+
+			// https://p.hegre.com/films/go-west-young-girl/go-west-young-girl-trailer-720p.mp4?v=1577722566
+			//   https://p.hegre.com/films/go-west-young-girl/go-west-young-girl-trailer-2160p.mp4?v=1577722566
+			var sizes = [
+				"2160p",
+				"1080p",
+				"720p",
+				"480p"
+			];
+
+			match = src.match(/\/films\/+[^/]+\/+[^/]+-([0-9]+p)\.mp4/);
+			if (match && sizes.indexOf(match[1]) > 0) {
+				sizes = sizes.slice(0, sizes.indexOf(match[1]));
+
+				var urls = [];
+				for (var i = 0; i < sizes.length; i++) {
+					urls.push({
+						url: src.replace(/(\/films\/+[^/]+\/+[^/]+-)[0-9]+p\./, "$1" + sizes[i] + "."),
+						video: true
+					});
+				}
+
+				return urls;
+			}
 		}
 
 		if (domain_nowww === "crystal.cafe" ||
@@ -49610,6 +49647,16 @@ var $$IMU_EXPORT$$;
 		if (domain_nowww === "hentaidude.com") {
 			// https://hentaidude.com/wp-content/themes/awp/images/icon-play.png
 			if (/\/wp-content\/+themes\/+awp\/+images\//.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
+		}
+
+		if (domain_nowww === "theonemilano.com") {
+			// thanks to cbadoud on github: https://github.com/qsniyg/maxurl/issues/203#issuecomment-578967505
+			// https://www.theonemilano.com/wp-content/themes/the-one-milano-2017-brands/images/slide-prev.png
+			if (/\/wp-content\/+themes\/+[^/]+\/+images\/+/.test(src))
 				return {
 					url: src,
 					bad: "mask"
