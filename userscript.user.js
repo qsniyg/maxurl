@@ -6,7 +6,7 @@
 // @namespace         http://tampermonkey.net/
 // @version           0.12.7
 // @description       Finds larger or original versions of images for 6200+ websites
-// @description:ko    6200개 이상의 사이트에 대해 더 크거나 원본 이미지를 찾습니다
+// @description:ko    6200개 이상의 사이트에 대해 더 크거나 원본 이미지를 찾아드립니다
 // @description:fr    Trouve des images plus grandes ou originales pour plus de 6200 sites
 // @description:es    Encuentra imágenes más grandes y originales para más de 6200 sitios
 // @description:zh    为6200多个网站查找更大或原始图像
@@ -5372,6 +5372,12 @@ var $$IMU_EXPORT$$;
 
 			return src
 				.replace(/\/dims\/.*/, "");
+		}
+
+		if (domain === "cdn.music-flo.com") {
+			// https://cdn.music-flo.com/image/album/820/314/04/04/404314820_5e28056d.jpg?1579681134148/dims/resize/500x500/quality/90
+			//   https://cdn.music-flo.com/image/album/820/314/04/04/404314820_5e28056d.jpg
+			return src.replace(/(\/image\/.*?)(?:[?#].*)?$/, "$1");
 		}
 
 		if (domain === "img.enews24.cjenm.skcdn.com") {
