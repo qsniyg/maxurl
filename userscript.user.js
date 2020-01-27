@@ -24793,10 +24793,14 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/[0-9]+-[^/]*-)[a-z]+(\.[^/.]*)$/, "$1fullsize$2");
 		}
 
-		if (domain === "cdn.public.hegre.com") {
+		if (domain === "cdn.public.hegre.com" ||
+			// https://p.hegre.com/models/veronika-v/veronika-v-poster-image-240x.jpg?v=1525111814
+			//   https://p.hegre.com/models/veronika-v/veronika-v-poster-image-1024x_2x.jpg?v=1525111814
+			//   https://p.hegre.com/models/veronika-v/veronika-v-poster-image-fullsize.jpg?v=1525111814
+			domain === "p.hegre.com") {
 			// http://cdn.public.hegre.com/static-artworks/mr-right-banner-square/mr-right-banner-square-content-image-480x.jpg?v=1541624121
 			//   http://cdn.public.hegre.com/static-artworks/mr-right-banner-square/mr-right-banner-square-content-image-fullsize.jpg?v=1541624121
-			return src.replace(/-image-[0-9]+x(\.[^/.]*)(?:[?#].*)?$/, "-image-fullsize$1");
+			return src.replace(/-image-[0-9]+x(?:_2x)?(\.[^/.]*)(?:[?#].*)?$/, "-image-fullsize$1");
 		}
 
 		if (domain_nowww === "crystal.cafe" ||
