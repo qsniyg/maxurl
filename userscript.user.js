@@ -51103,6 +51103,14 @@ var $$IMU_EXPORT$$;
 				return decodeuri_ifneeded(newsrc);
 		}
 
+		// Invision Community
+		if (/\/monthly_[0-9]{4}_[0-9]{2}\/[^/]+\.thumb\./.test(src) && options && options.host_url && options.host_url.indexOf("/file/") >= 0 && options.element) {
+			// https://www.loverslab.com/files/file/9860-sugarlife-100-july-31-2019/ -- screenshots
+			if (options.element.tagName === "SPAN" && options.element.hasAttribute("data-ipslightbox") && options.element.getAttribute("data-fullurl")) {
+				return options.element.getAttribute("data-fullurl");
+			}
+		}
+
 
 
 
