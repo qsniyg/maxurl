@@ -51104,10 +51104,58 @@ var $$IMU_EXPORT$$;
 		}
 
 		// Invision Community
-		if (/\/monthly_[0-9]{4}_[0-9]{2}\/[^/]+\.thumb\./.test(src) && options && options.host_url && options.host_url.indexOf("/file/") >= 0 && options.element) {
+		if (/\/monthly_[0-9]{4}_[0-9]{2}\/[^/]+\./.test(src) && options && options.element) {
 			// https://www.loverslab.com/files/file/9860-sugarlife-100-july-31-2019/ -- screenshots
 			if (options.element.tagName === "SPAN" && options.element.hasAttribute("data-ipslightbox") && options.element.getAttribute("data-fullurl")) {
 				return options.element.getAttribute("data-fullurl");
+			}
+
+			var get_gallery_image = function(url, cb) {
+				var cache_key = "invision_gallery_image:" + url.replace(/^[a-z]+:\/\//, "://").replace(/[?#].*/, "");
+				api_cache.fetch(cache_key, cb, function(done) {
+					options.do_request({
+						url: url,
+						method: "GET",
+						onload: function(resp) {
+							if (resp.readyState < 4)
+								return;
+
+							if (resp.status !== 200)
+								return done(null, false);
+
+							var match = resp.responseText.match(/<meta\s+property=["']og:image["']\s+content=["']([^'"]+)["']/);
+							if (match) {
+								return done(decode_entities(match[1], 12*60*60));
+							} else {
+								console_warn("Unable to find match", resp);
+								return done(null, false);
+							}
+						}
+					});
+				});
+			};
+
+			// http://tiaradiadem.com/forums/gallery/album/2825-jiyeon-for-naver-x-dispatch-012019/
+			// http://tiaradiadem.com/forums/gallery/category/39-behind-the-scenes/
+			if ((options.element.tagName === "IMG" || options.element.tagName === "LI") && options.do_request && options.cb) {
+				var ael = options.element.parentElement;
+				if (ael.tagName !== "A" && options.element.children.length === 1) {
+					ael = options.element.children[0];
+				}
+
+				if (ael.tagName === "A" && ael.hasAttribute("data-imagelightbox")) {
+					get_gallery_image(ael.href, function(url) {
+						if (url) {
+							options.cb(url);
+						} else {
+							options.cb(null);
+						}
+					});
+
+					return {
+						waiting: true
+					};
+				}
 			}
 		}
 
