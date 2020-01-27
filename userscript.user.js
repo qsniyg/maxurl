@@ -49938,6 +49938,53 @@ var $$IMU_EXPORT$$;
 				return decodeuri_ifneeded(newsrc);
 		}
 
+		if (domain === "cdn.futura-sciences.com") {
+			// https://cdn.futura-sciences.com/buildsv6/images/mediumoriginal/2/5/c/25ccdad9de_35653_11986-tableau-tel.gif
+			//   https://cdn.futura-sciences.com/buildsv6/images/largeoriginal/5/7/3/573d54fd56_118006_john-young-apollo-nasa.jpg
+			// https://cdn.futura-sciences.com/buildsv6/images/wide1920/5/7/3/573d54fd56_118006_john-young-apollo-nasa.jpg
+			//   https://cdn.futura-sciences.com/buildsv6/images/largeoriginal/5/7/3/573d54fd56_118006_john-young-apollo-nasa.jpg
+			// https://cdn.futura-sciences.com/buildsv6/images/smallsquare/0/b/9/0b9e66c73b_50008316_bing-20090601-130815-02.jpg
+			//   https://cdn.futura-sciences.com/buildsv6/images/largeoriginal/0/b/9/0b9e66c73b_50008316_bing-20090601-130815-02.jpg
+			// https://cdn.futura-sciences.com/buildsv6/images/largesquare/2/a/d/2ada6c4477_50140458_5-terre.jpg
+			//   https://cdn.futura-sciences.com/buildsv6/images/largeoriginal/2/a/d/2ada6c4477_50140458_5-terre.jpg -- doesn't work
+			// https://cdn.futura-sciences.com/buildsv6/images/wide640/1/4/7/1475202ffa_50148960_alma-voie-lactee-eso-y-beletsky.jpg
+			//   https://cdn.futura-sciences.com/buildsv6/images/largeoriginal/1/4/7/1475202ffa_50148960_alma-voie-lactee-eso-y-beletsky.jpg
+			// https://cdn.futura-sciences.com/buildsv6/images/midioriginal/5/f/0/5f00ad7076_50152720_mousson-sugitas-fotolia.jpg
+			//   https://cdn.futura-sciences.com/buildsv6/images/largeoriginal/5/f/0/5f00ad7076_50152720_mousson-sugitas-fotolia.jpg
+			// https://cdn.futura-sciences.com/buildsv6/images/wide1440/e/f/7/ef75495b32_50153524_territoires-durables-drong-fotoliacom.jpg
+			//   https://cdn.futura-sciences.com/buildsv6/images/largeoriginal/e/f/7/ef75495b32_50153524_territoires-durables-drong-fotoliacom.jpg
+			// https://cdn.futura-sciences.com/buildsv6/images/smallrectangle/6/b/7/6b70baebe2_50142421_diderot-1000.jpg
+			//   https://cdn.futura-sciences.com/buildsv6/images/largeoriginal/6/b/7/6b70baebe2_50142421_diderot-1000.jpg
+			// https://cdn.futura-sciences.com/buildsv6/images/smalloriginal/4/8/4/484ff37950_100940_18-avenir-jung.jpg
+			//   https://cdn.futura-sciences.com/buildsv6/images/largeoriginal/4/8/4/484ff37950_100940_18-avenir-jung.jpg -- doesn't work
+			// other:
+			// https://cdn.futura-sciences.com/sources/mkt/qsn-data.jpg
+			// https://cdn.futura-sciences.com/systeme/misc/eboutique/pedro-jarque-krebs-3.jpg
+			return src.replace(/\/buildsv6\/+images\/+(?:(?:small|medium|midi)original|wide(?:640|1920|1440)|smallsquare|smallrectangle)\/+/, "/buildsv6/images/largeoriginal/");
+		}
+
+		if (domain === "6d4be195623157e28848-7697ece4918e0a73861de0eb37d08968.ssl.cf1.rackcdn.com") {
+			// https://6d4be195623157e28848-7697ece4918e0a73861de0eb37d08968.ssl.cf1.rackcdn.com/175085_200w.jpg
+			//   https://6d4be195623157e28848-7697ece4918e0a73861de0eb37d08968.ssl.cf1.rackcdn.com/175085_original.jpg
+			return src.replace(/(:\/\/[^/]+\/+[0-9]+)_[0-9]+[wh](\.[^/.]+)(?:[?#].*)?$/, "$1_original$2");
+		}
+
+		if (domain_nosub === "editmysite.com" && /^cdn[0-9]*\./.test(domain)) {
+			// https://cdn2.editmysite.com/images/blank.gif
+			if (/:\/\/[^/]+\/+images\/+blank\.gif(?:[?#].*)?$/.test(src)) {
+				return {
+					url: src,
+					bad: "mask"
+				};
+			}
+		}
+
+		if (domain === "d1rw89lz12ur5s.cloudfront.net") {
+			// https://d1rw89lz12ur5s.cloudfront.net/photo/themagiccardtrader/file/63fa31c0e35311e592516ba78e288a12/medium/kmc%20super%20silver%20(Custom).gif
+			//   https://d1rw89lz12ur5s.cloudfront.net/photo/themagiccardtrader/file/63fa31c0e35311e592516ba78e288a12/kmc%20super%20silver%20(Custom).gif
+			return src.replace(/(\/photo\/+[^/]+\/+file\/+[0-9a-f]{20,}\/+)(?:thumb|medium|large)\/+/, "$1");
+		}
+
 
 
 
