@@ -6,7 +6,7 @@
 // @namespace         http://tampermonkey.net/
 // @version           0.12.7
 // @description       Finds larger or original versions of images for 6200+ websites
-// @description:ko    6200개 이상의 사이트에 대해 더 크거나 원본 이미지 찾는 스크립트
+// @description:ko    6200개 이상의 사이트에 대해 더 크거나 원본 이미지를 찾습니다
 // @description:fr    Trouve des images plus grandes ou originales pour plus de 6200 sites
 // @description:es    Encuentra imágenes más grandes y originales para más de 6200 sitios
 // @description:zh    为6200多个网站查找更大或原始图像
@@ -8136,7 +8136,8 @@ var $$IMU_EXPORT$$;
 			// https://i.gadgets360cdn.com/large/tara_main_1511903994721.jpg?output-quality=70&output-format=webp
 			domain === "i.gadgets360cdn.com" ||
 			// https://i.ndtvimg.com/video/images/vod/medium/2018-02/big_478201_1517848813.jpg?downsize=298:224&output-quality=70&output-format=webp
-			domain === "i.ndtvimg.com" ||
+			// https://c.ndtvimg.com/2020-01/gmvetdoo_gadgets-360_640x480_27_January_20.jpg?downsize=140:105&output-quality=80&output-format=jpg
+			domain_nosub === "ndtvimg.com" ||
 			// https://d3lp4xedbqa8a5.cloudfront.net/s3/digital-cougar-assets/Now/2018/02/16/44694/Healthy-pizza.jpg?width=132&height=107&mode=crop&scale=both&anchor=middlecenter&quality=85
 			domain === "d3lp4xedbqa8a5.cloudfront.net" ||
 			// https://brnow.org/getattachment/cc67f65b-b0b7-4365-abd5-258e4e1c1680?maxsidesize=50
@@ -9618,6 +9619,9 @@ var $$IMU_EXPORT$$;
 			// https://www.delas.pt/files/2016/08/hd-aspect-1459874430-hbz-jennifer-lawrence-may-2016-09-150x84.jpg
 			//   https://www.delas.pt/files/2016/08/hd-aspect-1459874430-hbz-jennifer-lawrence-may-2016-09.jpg
 			(domain_nowww === "delas.pt" && src.indexOf("/files/") >= 0) ||
+			// https://www.xda-developers.com/files/2020/01/Google-Nearby-Sharing-Featured-Image-250x125_c.jpg
+			//   https://www.xda-developers.com/files/2020/01/Google-Nearby-Sharing-Featured-Image.jpg
+			(domain_nowww === "xda-developers.com" && src.indexOf("/files/") >= 0) ||
 			// http://www.onthemoveworld.com/otm-fr/wp-content/uploads/2019/03/Carly-rae-jepsen-2018-cr-Natalie-OMoore-billboard-1548-347x246_c.jpg
 			//   http://www.onthemoveworld.com/otm-fr/wp-content/uploads/2019/03/Carly-rae-jepsen-2018-cr-Natalie-OMoore-billboard-1548.jpg
 			domain_nowww === "onthemoveworld.com") {
@@ -50034,6 +50038,12 @@ var $$IMU_EXPORT$$;
 			// https://d1rw89lz12ur5s.cloudfront.net/photo/themagiccardtrader/file/63fa31c0e35311e592516ba78e288a12/medium/kmc%20super%20silver%20(Custom).gif
 			//   https://d1rw89lz12ur5s.cloudfront.net/photo/themagiccardtrader/file/63fa31c0e35311e592516ba78e288a12/kmc%20super%20silver%20(Custom).gif
 			return src.replace(/(\/photo\/+[^/]+\/+file\/+[0-9a-f]{20,}\/+)(?:thumb|medium|large)\/+/, "$1");
+		}
+
+		if (domain_nowww === "howtogeek.com") {
+			// https://www.howtogeek.com/thumbcache/300/200/a13952e55e89ccf67988cad6ea2633fa/wp-content/uploads/2020/01/lock-on-keyboard.jpg
+			//   https://www.howtogeek.com/wp-content/uploads/2020/01/lock-on-keyboard.jpg
+			return src.replace(/\/thumbcache\/+[0-9]+\/+[0-9]+\/+[0-9a-f]{20,}\/+/, "/");
 		}
 
 
