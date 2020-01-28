@@ -36,6 +36,20 @@ Community:
 
 - `Subreddit <http://reddit.com/r/MaxImage>`__
 
+*************************
+Sideloading the extension
+*************************
+
+The extension is currently unavailable to other browsers's addon stores (such as Chrome and Microsoft Edge),
+but you can sideload this repository if you wish to use the extension instead of the userscript.
+
+- Download the repository however you wish (I'd recommend cloning it through git as it allows easier updating)
+
+- Go to chrome://extensions, make sure "Developer mode" is enabled, click "Load unpacked [extension]", and navigate to the maxurl repository
+
+You'll probably want to keep "Check for updates" enabled (it's enabled by default) as sideloaded extensions aren't automatically updated.
+Any new updates will be displayed at the top of the options page.
+
 *******************************
 Integrating IMU in your program
 *******************************
