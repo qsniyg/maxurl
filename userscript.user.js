@@ -10899,6 +10899,16 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain === "cdnticket.melon.co.kr") {
+			// https://cdnticket.melon.co.kr/resource/image/web/common/frame_180_180_radius.png
+			if (/\/resource\/+image\/+web\/+common\//.test(src)) {
+				return {
+					url: src,
+					bad: "mask"
+				};
+			}
+		}
+
 		// itunes, is4-ssl.mzstatic.com
 		if (domain_nosub === "mzstatic.com" && domain.match(/is[0-9](-ssl)?\.mzstatic\.com/) &&
 			src.indexOf("/image/thumb/") >= 0) {
@@ -17608,7 +17618,139 @@ var $$IMU_EXPORT$$;
 			domain_nosub === "ypncdn.com") {
 			// https://ei1.t8cdn.com/201707/10/37854111/originals/1(m=eqw4mgaaaa).jpg
 			//   https://ei1.t8cdn.com/201707/10/37854111/originals/1.jpg
-			return src.replace(/(\/originals?\/+[0-9]+(?:\/+[^/]*?)?)(?:[(][a-z]+=[^/)]*\)){1,}([^/]*)$/, "$1$2");
+			newsrc = src.replace(/(\/originals?\/+[0-9]+(?:\/+[^/]*?)?)(?:[(][a-z]+=[^/)]*\)){1,}([^/]*)$/, "$1$2");
+			if (newsrc !== src)
+				return newsrc;
+		}
+
+		if ((domain_nosub === "t8cdn.com" || domain_nosub === "ypncdn.com") && options && options.do_request && options.cb) {
+			// https://ep.t8cdn.com/201305/26/11984001/vl_mp4_ultra_480p_11984001.mp4
+			// https://ev-ph.ypncdn.com/videos/201911/26/264376432/240P_400K_264376432.mp4 -- video ID doesn't work
+			// https://ev.ypncdn.com/202001/19/15807000/240p_240k_15807000/YouPorn_-_swim-sexy-suit-on-the-beach-hot-bikini.mp4
+			id = src.match(/:\/\/[^/]+\/+[0-9]{6}\/+[0-9]{1,2}\/+([0-9]+)\/+(?:vl_|[0-9]+[pP]_[0-9]+[kK]_)/);
+			if (id) {
+				id = id[1];
+
+				var fetch_tube8 = function(done) {
+					options.do_request({
+						url: "https://www.tube8.com/a/a/" + id + "/",
+						method: "GET",
+						onload: function(resp) {
+							if (resp.readyState < 4)
+								return;
+
+							if (resp.status !== 200) {
+								console_error(resp);
+								return done(null, false);
+							}
+
+							var match = resp.responseText.match(/var\s+flashvars\s*=\s*({.*?})\s*; *\n/);
+							if (!match) {
+								console_error("Unable to find match", resp);
+								return done(null, false);
+							}
+
+							try {
+								var json = JSON_parse(match[1]);
+								done(json, 6*60*60);
+							} catch (e) {
+								console_error(e);
+								return done(null, false);
+							}
+						}
+					});
+				};
+
+				var fetch_ypn = function(done) {
+					options.do_request({
+						url: "https://www.youporn.com/watch/" + id + "/",
+						method: "GET",
+						onload: function(resp) {
+							if (resp.readyState < 4)
+								return;
+
+							if (resp.status !== 200) {
+								console_error(resp);
+								return done(null, false);
+							}
+
+							var match = resp.responseText.match(/page_params.video.mediaDefinition\s*=\s*(\[{.*?}\])\s*; *\n/);
+							if (!match) {
+								console_error("Unable to find match", resp);
+								return done(null, false);
+							}
+
+							try {
+								var mediaDefinition = JSON_parse(match[1]);
+								var json = {
+									link_url: resp.finalUrl,
+									mediaDefinition: mediaDefinition
+								};
+								done(json, 6*60*60);
+							} catch (e) {
+								console_error(e);
+								return done(null, false);
+							}
+						}
+					});
+				};
+
+				var cache_key = id;
+				var fetch = null;
+
+				if (domain_nosub === "t8cdn.com") {
+					cache_key = "tube8:" + id;
+					fetch = fetch_tube8;
+				} else if (domain_nosub === "ypncdn.com") {
+					cache_key = "ypn:" + id;
+					fetch = fetch_ypn;
+				}
+
+				api_cache.fetch(cache_key, function(data) {
+					if (!data) {
+						return options.cb(null);
+					}
+
+					try {
+						var maxdef = 0;
+						var maxobj = null;
+						for (var i = 0; i < data.mediaDefinition.length; i++) {
+							// e.g. 1080p videos for non-logged in members
+							if (!data.mediaDefinition[i].videoUrl)
+								continue;
+
+							if (data.mediaDefinition[i].quality > maxdef) {
+								maxdef = data.mediaDefinition[i].quality;
+								maxobj = data.mediaDefinition[i];
+							}
+						}
+
+						// the queries constantly change, so to avoid constantly refreshing, let's make sure the base URL is different
+						// the domain can also change (cv/ev) so remove that as well
+						var newsrc = maxobj.videoUrl;
+						var noq = src.replace(/[?#].*$/, "").replace(/^[a-z]+:\/\/[^/]+\/+/, "");
+						var newnoq = newsrc.replace(/[?#].*$/, "").replace(/^[a-z]+:\/\/[^/]+\/+/, "");
+
+						if (noq === newnoq)
+							newsrc = src;
+
+						return options.cb({
+							url: newsrc,
+							extra: {
+								page: data.link_url
+							}
+						});
+					} catch(e) {
+						console_error(e);
+					}
+
+					options.cb(null);
+				}, fetch);
+
+				return {
+					waiting: true
+				};
+			}
 		}
 
 		if (domain === "cci.xnxx.fan") {
@@ -24869,9 +25011,6 @@ var $$IMU_EXPORT$$;
 			// http://alphachan.org/eot/thumb/151908726550.jpg
 			//   http://alphachan.org/eot/src/151908726550.jpg
 			domain_nowww === "alphachan.org" ||
-			// https://neochan.ru/kpop/thumb/1555744119012.png
-			//   https://neochan.ru/kpop/src/1555744119012.jpg
-			domain_nowww === "neochan.ru" ||
 			// http://zonadelta.net/deltachan/thumb/1494318792278.png
 			//   http://zonadelta.net/deltachan/src/1494318792278.png
 			(domain_nowww === "zonadelta.net" && src.indexOf("/deltachan/") >= 0) ||
@@ -24881,6 +25020,20 @@ var $$IMU_EXPORT$$;
 			// https://crystal.cafe/hb/thumb/1497657761080.jpeg
 			//   https://crystal.cafe/hb/src/1497657761080.jpeg
 			return add_extensions(src.replace(/\/thumb\//, "/src/"));
+		}
+
+		if (domain_nowww === "neochan.ru") {
+			// https://neochan.ru/kpop/thumb/1526040603153.jpg
+			//   https://s.neochan.ru/kpop/1526040603153.jpg
+			// https://neochan.ru/kpop/thumb/1555744119012.png
+			//   https://neochan.ru/kpop/src/1555744119012.jpg
+			newsrc = src.replace(/:\/\/(?:www\.)?([^/]+\/+[^/]+\/+)thumb\/+/, ":\/\/s.$1");
+			if (newsrc !== src) {
+				obj = add_extensions_gif(newsrc);
+
+				[].push.apply(obj, add_extensions_gif(src.replace(/\/thumb\//, "/src/")));
+				return obj;
+			}
 		}
 
 		if ((domain_nowww === "skinnygossip.com" ||
@@ -38090,7 +38243,10 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/userfiles\/+[^/]*\/+[0-9]+\/+[0-9]+-)[0-9]+x[0-9]+\./, "$1full_size.");
 		}
 
-		if (domain === "cn.opendesktop.org") {
+		if (domain === "cn.opendesktop.org" ||
+			// https://cdn.pling.com/cache/85x85-crop/img/e/5/c/8/c4f7b851ffdc6b8ed65a36dba14ebe877b91.png
+			//   https://cdn.pling.com/img/e/5/c/8/c4f7b851ffdc6b8ed65a36dba14ebe877b91.png
+			domain === "cdn.pling.com") {
 			// https://cn.opendesktop.org/cache/85x85-crop/img/a/9/8/d/3cfd377ef98337a694c5bf79dc93d6524005.png
 			//   https://cn.opendesktop.org/img/a/9/8/d/3cfd377ef98337a694c5bf79dc93d6524005.png
 			// https://cn.opendesktop.org/cache/200x200/img/7/9/5/f/a99d0af9e85271c8631c558eb56b3aa93991.png -- upscaled
@@ -50064,6 +50220,10 @@ var $$IMU_EXPORT$$;
 			// https://www.howtogeek.com/thumbcache/300/200/a13952e55e89ccf67988cad6ea2633fa/wp-content/uploads/2020/01/lock-on-keyboard.jpg
 			//   https://www.howtogeek.com/wp-content/uploads/2020/01/lock-on-keyboard.jpg
 			return src.replace(/\/thumbcache\/+[0-9]+\/+[0-9]+\/+[0-9a-f]{20,}\/+/, "/");
+		}
+
+		if (domain === "cdnu.porndoe.com") {
+			return src.replace(/(\/movie\/+(?:[0-9]\/+){5,}[^/]+-)(?:preview|240p-400|480p-1000)\./, "$1720p-hd-2500.");
 		}
 
 
