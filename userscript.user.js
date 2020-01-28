@@ -17739,6 +17739,7 @@ var $$IMU_EXPORT$$;
 							extra: {
 								page: data.link_url
 							},
+							video: true,
 							is_private: true // linked to IP
 						});
 					} catch(e) {
