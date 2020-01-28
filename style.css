@@ -395,7 +395,7 @@ button:active, .button:active {
   color: #aaa;
 }
 
-.disabled label, .disabled button, .disabled .button, .button.disabled, .disabled input, .disabled select, .disabled textarea {
+.disabled label, .disabled button, .disabled .button, .button.disabled, button.disabled, .disabled input, .disabled select, .disabled textarea {
   cursor: default;
   border: 1px solid #aaa !important;
 }
@@ -405,7 +405,7 @@ input:checked + label, button, .button, .button:visited, .dark .button:visited {
   color: #fff;
 }
 
-.disabled input:checked + label, .disabled button, .disabled button:active, .button.disabled, .button.disabled:visited, .dark .button.disabled:visited {
+.disabled input:checked + label, .disabled button, button.disabled, button.disabled:active, .disabled button:active, .button.disabled, .button.disabled:visited, .dark .button.disabled:visited {
   border-color: #aaa;
   background: #aaa;
   color: #fff;
