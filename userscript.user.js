@@ -38205,7 +38205,9 @@ var $$IMU_EXPORT$$;
 			//   https://image-aws-us-west-2.vsco.co/00b02e/28967640/5cdace744c51282134f55d8c/vsco5cdace96a2daa.jpg
 			// https://image.vsco.co/1/552f8734525d23396531/5603ae65d3dca50b0760e937/720x960/vsco_092415.jpg
 			//   https://image.vsco.co/1/552f8734525d23396531/5603ae65d3dca50b0760e937/vsco_092415.jpg
-			newsrc = src.replace(/(\/[0-9a-f]{20,}\/+)[0-9]+x[0-9]+\/+(vsco_?[0-9a-f]+\.[^/.]*)(?:[?#].*)?$/,
+			// https://image-aws-us-west-2.vsco.co/c69ba2/8053058/5c9d80d33722ba472b0dd822/105x105/92bb3b19587edeb604d5dde82167a9ac/vsco5c9d80d3bc610.jpg
+			//   https://image-aws-us-west-2.vsco.co/c69ba2/8053058/5c9d80d33722ba472b0dd822/vsco5c9d80d3bc610.jpg
+			newsrc = src.replace(/(\/[0-9a-f]{20,}\/+)[0-9]+x[0-9]+\/+(?:[0-9a-f]+\/+)?(vsco_?[0-9a-f]+\.[^/.]*)(?:[?#].*)?$/,
 							   "$1$2");
 			if (newsrc !== src)
 				return newsrc;
