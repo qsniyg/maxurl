@@ -1129,7 +1129,7 @@ var $$IMU_EXPORT$$;
 		imu_enabled: true,
 		language: browser_language,
 		check_updates: true,
-		check_update_interval: 12,
+		check_update_interval: 24,
 		// thanks to forefix on firefox for the idea: https://github.com/qsniyg/maxurl/issues/189
 		dark_mode: false,
 		settings_visible_description: true,
