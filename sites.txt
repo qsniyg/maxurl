@@ -98,6 +98,7 @@
 69876.com
 69dv.com
 6asian.com
+6d4be195623157e28848-7697ece4918e0a73861de0eb37d08968.ssl.cf1.rackcdn.com
 700016.xyz
 715083.com
 7desktopthemes.com
@@ -345,6 +346,7 @@ asobokey.x.fc2.com
 asog-labs.com
 asset.kompas.com
 asset.wsj.net
+assets-jpcust.jwpsrv.com
 assets-old.blogr.xxx
 assets.afcdn.com
 assets.atlasobscura.com
@@ -409,6 +411,7 @@ at.ua
 athensmagazine.gr
 athinorama.gr
 atkfan.com
+atkingdom-network.com
 atkmodels.com
 atmag-static-timeout.netdna-ssl.com
 atoananet.com.br
@@ -566,6 +569,7 @@ biosagenda.nl
 birkrdnawa.com
 birminghammail.co.uk
 bit-photos.s3.amazonaws.com
+bitchute.com
 biztribune.co.kr
 bizweb.dktcdn.net
 bjwinslow.com
@@ -773,6 +777,7 @@ cdn-webimages.wimages.net
 cdn-yotpo-images-production.yotpo.com
 cdn.011st.com
 cdn.20m.es
+cdn.21buttons.com
 cdn.24press.net
 cdn.46graus.com
 cdn.4archive.org
@@ -838,6 +843,7 @@ cdn.fishki.net
 cdn.fortune-girl.com
 cdn.funpic.us
 cdn.furiffic.com
+cdn.futura-sciences.com
 cdn.gamer-network.net
 cdn.gq.com.mx
 cdn.graziadaily.co.uk
@@ -891,6 +897,7 @@ cdn.moar.exchange
 cdn.moar.network
 cdn.mos.cms.futurecdn.net
 cdn.muabannhanh.com
+cdn.music-flo.com
 cdn.myanimelist.net
 cdn.mydaily.co.kr
 cdn.narcity.com
@@ -920,6 +927,7 @@ cdn.pax6.com
 cdn.picson.mobi
 cdn.pixabay.com
 cdn.planetradio.co.uk
+cdn.pling.com
 cdn.pocket-lint.com
 cdn.popbela.com
 cdn.poplook.com
@@ -1023,7 +1031,9 @@ cdnpuc.sinchew.com.my
 cdnrockol-rockolcomsrl.netdna-ssl.com
 cdns.klimg.com
 cdnscreenshot.xyz
+cdnticket.melon.co.kr
 cdntrex.com
+cdnu.porndoe.com
 cdnvideo.ru
 cdnx.natalie.mu
 cdp.pl
@@ -1058,6 +1068,7 @@ celebs-porno.com
 celebs101.com
 celebsandstarsnude.com
 celebsdump.com
+celebsfake.adultcase.com
 celebsking.com
 celebsnetworth.org
 celebwallpaper.org
@@ -1256,6 +1267,7 @@ cuore.es
 customcelebritydresses.com
 customity.com
 cwcontent.asiae.co.kr
+cwh-cdn.21buttons.com
 cyclestyle.net
 czmodels.cz
 d.backbook.me
@@ -1283,6 +1295,7 @@ d1lofqbqbj927c.cloudfront.net
 d1nslcd7m2225b.cloudfront.net
 d1o73ibskzeirn.cloudfront.net
 d1qikntta4cp8k.cloudfront.net
+d1rw89lz12ur5s.cloudfront.net
 d1t35hkz8sx2bl.cloudfront.net
 d1uzk9o9cg136f.cloudfront.net
 d1w8cc2yygc27j.cloudfront.net
@@ -1376,6 +1389,7 @@ data.japanese.kpopstarz.com
 data.kontrakty.ua
 data.okinny.heypo.net
 data.whicdn.com
+data.yiff.party
 datanet.co.kr
 daum.net
 daumcdn.net
@@ -1466,6 +1480,7 @@ diziler.com
 dl.backbook.me
 dl.kaskus.id
 dlcompare.com
+dlivecdn.com
 dmbtattoo.com
 dn-kdt-img.qbox.me
 dn3pm25xmtlyu.cloudfront.net
@@ -1566,6 +1581,7 @@ edb.co.il
 edc2.healthtap.com
 edchomes.com
 edge.alluremedia.com.au
+editmysite.com
 edmhunters-563e.kxcdn.com
 edna.cz
 edp24.co.uk
@@ -2262,6 +2278,7 @@ hotnupics.com
 hottystop.com
 hotxxxgirls.org
 houstonpress.com
+howtogeek.com
 hp.funrahi.com
 hq-celebrity.com
 hqbabes.com
@@ -2341,6 +2358,7 @@ i.imgscc.com
 i.imgur.com
 i.indiglamour.com
 i.infospesial.net
+i.insider.com
 i.inswave.net
 i.iplsc.com
 i.joylada.net
@@ -2358,7 +2376,6 @@ i.mommd.gr
 i.moveek.com
 i.myass.ru
 i.nahraj.to
-i.ndtvimg.com
 i.neoseeker.com
 i.newsarama.com
 i.nextmedia.com.au
@@ -3395,6 +3412,7 @@ kateryan.s3.amazonaws.com
 kazanfirst.ru
 kb4images.com
 kbbs.jp
+keep2share.cc
 kendam-148811.appspot.com.storage.googleapis.com
 kenh14cdn.com
 kep.cdn.index.hu
@@ -3538,6 +3556,7 @@ lifesite-cache.s3.amazonaws.com
 lifezette.com
 lifo.gr
 light.sunphoto.ro
+likee.com
 lilianpacce.s3.amazonaws.com
 lilit.lv
 lilykoh.com
@@ -4125,6 +4144,7 @@ navicdn.com
 nbocdn.akamaized.net
 nbstr.org
 ndsstatic.com
+ndtvimg.com
 needradio.fr
 negani.com
 nehuha.net
@@ -4243,6 +4263,7 @@ noticiamax.com.br
 noticiastudoaqui.com
 notifeed.net
 notigape.com
+notion.so
 notredamedeparis.fr
 novel-img.prepics-cdn.com
 novi.ba
@@ -4350,6 +4371,7 @@ ozone.ru
 p.cosmopolitan.bg
 p.elle.bg
 p.fod4.com
+p.hegre.com
 p.mamastar.jp
 p.memecdn.com
 p.potv.bg
@@ -4543,6 +4565,7 @@ pixroute.com
 pixsell.hr
 pl.scdn.co
 plasticsurgerystar.com
+platinum-celebs.com
 playboyrussia.com
 playground33.com
 playstationlifestyle.net
@@ -4583,6 +4606,7 @@ pornchampion.com
 porncomix.info
 porncomix.one
 porngals4.com
+porngo.com
 pornhat.com
 pornhub.com
 pornodontstop.com
@@ -4763,6 +4787,7 @@ redcdn.pl
 redd.it
 reddit.com
 redditmedia.com
+redditstatic.com
 redocn.com
 redonline.cdnds.net
 redu.pl
@@ -4841,6 +4866,7 @@ robertocavada.com
 robertsspaceindustries.com
 rocklyric.jp
 rockpapershotgun.com
+roleplay.me
 roleplayhaven.net
 ropose.com
 rosario3.com
@@ -5591,6 +5617,7 @@ themepack.me
 themilf.net
 thenational.ae
 thenorthernecho.co.uk
+theonemilano.com
 thepaysites.com
 thephuketnews.com
 theplace.ru
@@ -5857,9 +5884,11 @@ vi.ill.in.ua
 vice.com
 vid.alarabiya.net
 vidble.com
+video.like.video
 video.newsserve.net
 video.soloteengirls.net
 videos-de-celebrites.com
+videosnap.like.video
 vidofa.com
 vietbao.vn
 vietnamnet.vn
@@ -6076,6 +6105,7 @@ xbabe.com
 xboxlive.com
 xcadr.com
 xcdnpro.com
+xda-developers.com
 xdn.tf.rs
 xdn.vn
 xdressy.com

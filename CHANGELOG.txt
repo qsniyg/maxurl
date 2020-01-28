@@ -1,3 +1,27 @@
+0.12.8
+
+New features:
+
+ * Option for showing the description of options below the options themselves (enabled by default)
+ * Beta option to let the popup pop-out of frames (disabled by default, there are still some bugs with the feature, #66, #201)
+ * Added optional ability to popup for canvas elements as well (disabled by default as it will likely be more annoying than helpful for most users)
+ * Optional keybindings for Replace Images and Highlight Images
+ * Automatic checking for updates (can be disabled). If a new update is found, it will be displayed in the options screen.
+ * Support for ~30 new websites (using ~30 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including DeviantART, Instagram, VSCO)
+ * Mouse buttons can be used in keybindings (#202)
+ * Frames are now supported by the extension
+
+Bugfixes:
+
+ * Add workarounds for Falkon Greasemonkey, USI, and FireMonkey
+ * Fix for when the userscript is loaded too early
+
+---
+
 0.12.7
 
 New features:
