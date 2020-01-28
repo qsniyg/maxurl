@@ -3073,6 +3073,9 @@ var $$IMU_EXPORT$$;
 		do_request({
 			url: "https://api.github.com/repos/qsniyg/maxurl/tags",
 			method: "GET",
+			headers: {
+				Referer: ""
+			},
 			onload: function(resp) {
 				if (resp.readyState <4 )
 					return;
@@ -3082,14 +3085,23 @@ var $$IMU_EXPORT$$;
 
 				try {
 					var json = JSON_parse(resp.responseText);
-					var version = json[0].name;
-					return cb({
-						version: version.replace(/^v([0-9])/, "$1")
-					});
+
+					for (var i = 0; i < json.length; i++) {
+						var version = json[i].name;
+
+						if (!version.match(/^v[0-9.]+$/)) {
+							continue;
+						}
+
+						return cb({
+							version: version.replace(/^v([0-9])/, "$1")
+						});
+					}
 				} catch (e) {
 					console_error("Unable to parse github info", e);
-					return cb(null);
 				}
+
+				return cb(null);
 			}
 		});
 	};
