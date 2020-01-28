@@ -40,7 +40,7 @@ Community:
 Sideloading the extension
 *************************
 
-The extension is currently unavailable to other browsers's addon stores (such as Chrome and Microsoft Edge),
+The extension is currently unavailable to other browsers' addon stores (such as Chrome and Microsoft Edge),
 but you can sideload this repository if you wish to use the extension instead of the userscript.
 
 - Download the repository however you wish (I'd recommend cloning it through git as it allows easier updating)
