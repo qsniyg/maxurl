@@ -53955,7 +53955,8 @@ var $$IMU_EXPORT$$;
 					}
 
 					var sub_units_td = document.createElement("td");
-					sub_units_td.style = "display:inline";
+					//sub_units_td.style = "display:inline";
+					sub_units_td.classList.add("number_units");
 					if (meta.number_unit)
 						sub_units_td.innerText = _(meta.number_unit);
 
