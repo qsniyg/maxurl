@@ -8798,6 +8798,8 @@ var $$IMU_EXPORT$$;
 			domain === "resource.meihua.info" ||
 			// https://i.ezbuy.sg/Fgf2dNzJvLXyyw04b-yGRWTRUbmx?imageView2/2/w/264/q/90/format/webp
 			domain === "i.ezbuy.sg" ||
+			// https://i.guancha.cn/bbs/2020/01/15/20200115091914743?imageView2/2/w/500/format/jpg
+			domain === "i.guancha.cn" ||
 			// http://upload-images.jianshu.io/upload_images/1685198-ebfc2a22664f623c?imageMogr2/auto-orient/strip%7CimageView2/2/w/300
 			domain === "upload-images.jianshu.io") {
 			src = src.replace(/\?.*$/, "");
@@ -43407,7 +43409,10 @@ var $$IMU_EXPORT$$;
 		}
 
 		// project diaspora
-		if (domain_nowww === "diasp.org") {
+		if (domain_nowww === "diasp.org" ||
+			// https://diasp.eu/uploads/images/thumb_large_213fd176442b8fa6fc12.jpg
+			//   https://diasp.eu/uploads/images/213fd176442b8fa6fc12.jpg
+			domain_nowww === "diasp.eu") {
 			// https://diasp.org/uploads/images/scaled_full_0aa2bc73c57545c2a222.jpg
 			//   https://diasp.org/uploads/images/0aa2bc73c57545c2a222.jpg
 			return src.replace(/\/uploads\/+images\/+[a-z_]+_([0-9a-f]{10,}\.[^/.]*)(?:[?#].*)?$/, "/uploads/images/$1");
@@ -50236,6 +50241,81 @@ var $$IMU_EXPORT$$;
 
 		if (domain === "cdnu.porndoe.com") {
 			return src.replace(/(\/movie\/+(?:[0-9]\/+){5,}[^/]+-)(?:preview|240p-400|480p-1000)\./, "$1720p-hd-2500.");
+		}
+
+		if (domain === "images.newsnowgr.com" ||
+			// http://images.newsnowgreece.com/131/1316458/apisteftes-eikones-sti-venetia-stegnosan-ta-kanalia-tis-pics-1-124x78.jpg
+			//   http://images.newsnowgreece.com/131/1316458/1.jpg
+			domain === "images.newsnowgreece.com") {
+			// http://images.newsnowgr.com/131/1316496/Stars-and-Dust-in-Corona-Australis-1-315x236.jpg
+			//   http://images.newsnowgreece.com/131/1316496/1.jpg
+			//   http://www.newsnowgr.com/photo/1316496/1/ -- todo: add original page
+			newsrc = src.replace(/:\/\/[^/]+\/+([0-9]{3}\/+[0-9]+\/+)[^/]+-([0-9]+)-[0-9]+x[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "://images.newsnowgreece.com/$1$2$3");
+			obj = {
+				url: newsrc
+			};
+
+			match = src.match(/:\/\/[^/]+\/+[0-9]{3}\/+([0-9]+)\/+(?:[^/]+-)?([0-9]+)(?:-[0-9]+x[0-9]+)?\.[^/.]+(?:[?#].*)?$/);
+			if (match) {
+				obj.extra = {page: "http://www.newsnowgr.com/photo/" + match[1] + "/" + match[2] + "/"};
+			}
+
+			return obj;
+		}
+
+		if (domain_nowww === "wallpapers.net") {
+			// http://wallpapers.net/web/wallpapers/corona-australis-hd-wallpaper/thumbnail/md.jpg
+			//   http://wallpapers.net/web/wallpapers/corona-australis-hd-wallpaper/2560x1600.jpg
+			newsrc = src.replace(/(\/web\/+wallpapers\/+[^/]+\/+thumbnail\/+)(?:xs|sm|md)\./, "$1lg.");
+			if (newsrc !== src)
+				return newsrc;
+
+			// http://wallpapers.net/corona-australis-hd-wallpaper/download/800x480.jpg
+			//   http://wallpapers.net/web/wallpapers/corona-australis-hd-wallpaper/800x480.jpg
+			newsrc = src.replace(/(:\/\/[^/]+\/+)([^/]+\/+)download\/+/, "$1web/wallpapers/$2");
+			if (newsrc !== src)
+				return newsrc;
+
+			match = src.match(/\/web\/+wallpapers\/+([^/]+)\/+(?:[0-9]+x[0-9]+|thumbnail)/);
+			if (match && options && options.do_request && options.cb) {
+				var page = "https://wallpapers.net/" + match[1];
+
+				cache_key = "wallpapers.net:" + page;
+				api_cache.fetch(cache_key, options.cb, function(done) {
+					options.do_request({
+						url: page,
+						method: "GET",
+						headers: {
+							"Accept-Language": "en;q=0.9"
+						},
+						onload: function(resp) {
+							if (resp.readyState < 4)
+								return;
+
+							if (resp.status !== 200) {
+								return done(null, false);
+							}
+
+							var match = resp.responseText.match(/<p class="small">Resolution:\s*<a href="\/[^"]+"\s*>([0-9]+x[0-9]+)<\/a>/);
+							if (!match) {
+								console_error("Unable to find match", resp);
+								return done(null, false);
+							}
+
+							return done({
+								url: src.replace(/(\/web\/+wallpapers\/+[^/]+\/+).*?(\.[^/.]+)(?:[?#].*)?$/, "$1" + match[1] + "$2"),
+								extra: {
+									page: resp.finalUrl
+								}
+							}, 12*60*60);
+						}
+					});
+				});
+
+				return {
+					waiting: true
+				};
+			}
 		}
 
 
