@@ -2098,7 +2098,8 @@ var $$IMU_EXPORT$$;
 			name: "Clicking image downloads",
 			description: "Instead of opening the link in a new tab, it will download the image instead",
 			requires: {
-				mouseover_open_behavior: "popup"
+				mouseover_open_behavior: "popup",
+				mouseover_add_link: true
 			},
 			category: "popup",
 			subcategory: "behavior"
