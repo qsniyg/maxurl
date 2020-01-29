@@ -53583,7 +53583,7 @@ var $$IMU_EXPORT$$;
 			if (category in subcategories) {
 				for (var subcat in subcategories[category]) {
 					var newsubdiv = document.createElement("div");
-					newsubdiv.id = "subcat_ " + subcat;
+					newsubdiv.id = "subcat_" + subcat;
 					newsubdiv.classList.add("subcat");
 
 					var h3 = document.createElement("h3");
