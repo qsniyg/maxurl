@@ -2034,8 +2034,7 @@ var $$IMU_EXPORT$$;
 			name: "Move with cursor",
 			description: "Moves the popup as the cursor moves",
 			requires: {
-				mouseover_open_behavior: "popup",
-				mouseover_trigger_behavior: "mouse"
+				mouseover_open_behavior: "popup"
 			},
 			category: "popup",
 			subcategory: "behavior"
