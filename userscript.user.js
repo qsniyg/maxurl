@@ -58841,7 +58841,14 @@ var $$IMU_EXPORT$$;
 			if (should_use_remote()) {
 				if (!("remote_info" in event)) {
 					event.remote_info = get_frame_info();
-					var recipient = is_in_iframe ? "top" : mouse_frame_id;
+
+					var recipient = "top";
+					if (!is_in_iframe) {
+						recipient = mouse_frame_id;
+						if (recipient === "top")
+							return;
+					}
+
 					remote_send_message(recipient, {
 						type: "keyevent",
 						data: event
