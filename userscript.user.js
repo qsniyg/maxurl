@@ -59170,7 +59170,9 @@ var $$IMU_EXPORT$$;
 			}
 
 			if (move_with_cursor) {
-				var popup_el_rect = popup_el.getBoundingClientRect();
+				// make sure to fix this for remote (this is called at the top frame, but popup_el is remote)
+				//var popup_el_rect = popup_el.getBoundingClientRect();
+				var popup_el_rect = null;
 				// don't check for now, maybe add this as an option later?
 				if (true || in_clientrect(mouseX, mouseY, popup_el_rect)) {
 					domovewith(false);
