@@ -202,8 +202,9 @@ var $$IMU_EXPORT$$;
 	var remote_send_reply = null;
 	var remote_reply_ids = {};
 	var current_frame_id = null;
+	var current_frame_url = window.location.href;
 	if (is_extension) {
-		current_frame_id = get_random_id() + window.location.href;
+		current_frame_id = get_random_id() + " " + current_frame_url;
 
 		if (!is_in_iframe)
 			current_frame_id = "top";
@@ -55028,6 +55029,7 @@ var $$IMU_EXPORT$$;
 		var mouseY = 0;
 		var mouseAbsX = 0;
 		var mouseAbsY = 0;
+		var mouse_frame_id = "top";
 
 		var mouseContextX = 0;
 		var mouseContextY = 0;
@@ -58835,9 +58837,24 @@ var $$IMU_EXPORT$$;
 			};
 		})();
 
+		var keyevent_remote = function(event) {
+			if (should_use_remote()) {
+				if (!("remote_info" in event)) {
+					event.remote_info = get_frame_info();
+					var recipient = is_in_iframe ? "top" : mouse_frame_id;
+					remote_send_message(recipient, {
+						type: "keyevent",
+						data: event
+					});
+				}
+			}
+		};
+
 		var keydown_cb = function(event) {
 			if (!mouseover_enabled())
 				return;
+
+			keyevent_remote(event);
 
 			var ret = undefined;
 
@@ -58955,9 +58972,11 @@ var $$IMU_EXPORT$$;
 			}
 
 			if (ret === false) {
-				event.preventDefault();
-				event.stopImmediatePropagation();
-				event.stopPropagation();
+				try {
+					event.preventDefault();
+					event.stopImmediatePropagation();
+					event.stopPropagation();
+				} catch (e) {}
 			}
 
 			return ret;
@@ -58970,6 +58989,8 @@ var $$IMU_EXPORT$$;
 		var keyup_cb = function(event) {
 			if (!mouseover_enabled())
 				return;
+
+			keyevent_remote(event);
 
 			var ret = undefined;
 
@@ -59016,9 +59037,11 @@ var $$IMU_EXPORT$$;
 			}
 
 			if (ret === false) {
-				event.preventDefault();
-				event.stopImmediatePropagation();
-				event.stopPropagation();
+				try {
+					event.preventDefault();
+					event.stopImmediatePropagation();
+					event.stopPropagation();
+				} catch (e) {}
 			}
 
 			return ret;
@@ -59183,6 +59206,15 @@ var $$IMU_EXPORT$$;
 				});
 			} else if (message.type === "resetpopups") {
 				resetpopups();
+			} else if (message.type === "mousemove") {
+				// todo: offset iframe location
+				mousemove_cb(message.data);
+			} else if (message.type === "keyevent") {
+				if (message.data.type === "keydown") {
+					keydown_cb(message.data);
+				} else if (message.data.type === "keyup") {
+					keyup_cb(message.data);
+				}
 			}
 		};
 
@@ -59276,7 +59308,72 @@ var $$IMU_EXPORT$$;
 			mouseAbsContextY = event.pageY;
 		});
 
-		document.addEventListener('mousemove', function(event) {
+		var id_to_iframe = {};
+
+		var get_frame_info = function() {
+			return {
+				id: current_frame_id,
+				//url: window.location.href, // doesn't get updated for the iframe src's attribute?
+				url: current_frame_url,
+				size: [
+					document.documentElement.scrollWidth,
+					document.documentElement.scrollHeight
+				]
+			};
+		};
+
+		var find_iframe_for_info = function(info) {
+			if (info.id in id_to_iframe)
+				return id_to_iframe[info.id];
+
+			var finish = function(iframe) {
+				if (!iframe)
+					return iframe;
+
+				id_to_iframe[info.id] = iframe;
+				return iframe;
+			}
+
+			var iframes = document.getElementsByTagName("iframe");
+			var newiframes = [];
+			for (var i = 0; i < iframes.length; i++) {
+				if (iframes[i].src !== info.url)
+					continue;
+
+				newiframes.push(iframes[i]);
+			}
+
+			if (newiframes.length <= 1)
+				return finish(newiframes[0]);
+
+			iframes = newiframes;
+			newiframes = [];
+			for (var i = 0; i < iframes.length; i++) {
+				if (iframes[i].scrollWidth !== info.size[0] ||
+					iframes[i].scrollHeight !== info.size[1]) {
+					continue;
+				}
+
+				newiframes.push(iframes[i]);
+			}
+
+			if (newiframes.length <= 1)
+				return finish(newiframes[0]);
+
+			// TODO: check cursor too
+			return null;
+		};
+
+		var iframe_to_id = function(iframe) {
+			for (var id in id_to_iframe) {
+				if (id_to_iframe[id] === iframe)
+					return id;
+			}
+
+			return null;
+		};
+
+		var mousemove_cb = function(event) {
 			mousepos_initialized = true;
 
 			// https://stackoverflow.com/a/7790764
@@ -59291,11 +59388,41 @@ var $$IMU_EXPORT$$;
 				event.pageY = event.clientY + scrollTop();
 			}
 
+			if (should_use_remote()) {
+				if (!("remote_info" in event)) {
+					event.remote_info = get_frame_info();
+				}
+
+				if (event.remote_info.id !== current_frame_id) {
+					var iframe = find_iframe_for_info(event.remote_info);
+					if (!iframe) {
+						return;
+					}
+
+					//console_log(iframe);
+					var bb = iframe.getBoundingClientRect();
+
+					event.clientX += bb.left;
+					event.clientY += bb.top;
+
+					event.pageX += bb.left + window.scrollX;
+					event.pageY += bb.top + window.scrollY;
+				} else if (is_in_iframe) {
+					// todo: add timeouts to avoid too much cpu usage
+					remote_send_message("top", {
+						type: "mousemove",
+						data: event
+					});
+				}
+			}
+
 			mouseX = event.clientX;
 			mouseY = event.clientY;
 
 			mouseAbsX = event.pageX;
 			mouseAbsY = event.pageY;
+
+			mouse_frame_id = event.remote_info.id;
 
 			if (waiting) {
 				update_waiting();
@@ -59487,7 +59614,9 @@ var $$IMU_EXPORT$$;
 					}
 				}
 			}
-		});
+		};
+
+		document.addEventListener('mousemove', mousemove_cb);
 	}
 
 	function do_websitehome() {
