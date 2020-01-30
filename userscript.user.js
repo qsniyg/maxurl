@@ -59423,6 +59423,8 @@ var $$IMU_EXPORT$$;
 						data: event
 					});
 				}
+
+				mouse_frame_id = event.remote_info.id;
 			}
 
 			mouseX = event.clientX;
@@ -59430,8 +59432,6 @@ var $$IMU_EXPORT$$;
 
 			mouseAbsX = event.pageX;
 			mouseAbsY = event.pageY;
-
-			mouse_frame_id = event.remote_info.id;
 
 			if (waiting) {
 				update_waiting();
