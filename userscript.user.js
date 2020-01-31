@@ -55721,8 +55721,34 @@ var $$IMU_EXPORT$$;
 					set_left(popupx);
 				}
 
-				img.style.width = imgw + "px";
-				img.style.height = imgh + "px";
+				var set_popup_size_helper = function(size, maxsize, widthheight) {
+					if (maxsize === undefined)
+						maxsize = size;
+
+					if (typeof size === "number")
+						size = size + "px";
+					if (typeof maxsize === "number")
+						maxsize = maxsize + "px";
+
+					if (widthheight) {
+						img.style.width = size;
+						img.style.maxWidth = maxsize;
+					} else {
+						img.style.height = size;
+						img.style.maxHeight = maxsize;
+					}
+				};
+
+				var set_popup_width = function(width, maxwidth) {
+					set_popup_size_helper(width, maxwidth, true);
+				};
+
+				var set_popup_height = function(height, maxheight) {
+					set_popup_size_helper(height, maxheight, false);
+				};
+
+				set_popup_width(imgw, "initial");
+				set_popup_height(imgh, "initial");
 				/*console_log(x - (imgw / 2));
 				  console_log(vw);
 				  console_log(imgw);
@@ -56471,20 +56497,14 @@ var $$IMU_EXPORT$$;
 							imgw = img_naturalWidth;
 							calc_imghw_for_fit();
 
-							img.style.maxWidth = vw + "px";
-							img.style.maxHeight = vh + "px";
-
-							img.style.width = imgw + "px";
-							img.style.height = imgh + "px";
+							set_popup_width(imgw, vw);
+							set_popup_height(imgh, vh);
 
 							currentmode = "fit";
 							changed = true;
 						} else if (e.deltaY < 0 && currentmode !== "full") {
-							img.style.width = img_naturalWidth + "px";
-							img.style.height = img_naturalHeight + "px";
-
-							img.style.maxWidth = "initial";
-							img.style.maxHeight = "initial";
+							set_popup_width(img_naturalWidth, "initial");
+							set_popup_height(img_naturalHeight, "initial");
 
 							currentmode = "full";
 							changed = true;
@@ -56524,10 +56544,8 @@ var $$IMU_EXPORT$$;
 							return false;
 						}
 
-						img.style.maxWidth = imgwidth + "px";
-						img.style.maxHeight = imgheight + "px";
-						img.style.width = imgwidth + "px";
-						img.style.height = imgheight + "px";
+						set_popup_width(imgwidth);
+						set_popup_height(imgheight);
 						changed = true;
 					}
 
