@@ -56167,61 +56167,6 @@ var $$IMU_EXPORT$$;
 
 					add_leftright_gallery_button_if_valid(false);
 					add_leftright_gallery_button_if_valid(true);
-
-					if (false) {
-					if (is_valid_el(wrap_gallery_func(false))) {
-						var leftaction = function() {
-							return lraction(false);
-						};
-
-						var lefttitle = _("Previous") + " (" + _("Left Arrow") + ")";
-
-						// \u2190 = ←
-						var leftbtn = addbtn("\u2190", lefttitle, leftaction);
-						leftbtn.style.top = "calc(50% - 7px - " + emhalf + ")";
-						leftbtn.style.left = "-" + em1;
-						outerdiv.appendChild(leftbtn);
-						ui_els.push(leftbtn);
-
-						add_lrhover(true, leftbtn, leftaction, lefttitle);
-
-						if (settings.mouseover_ui_gallerycounter) {
-							if (use_cached_gallery) {
-								prev_images = cached_previmages;
-							} else {
-								prev_images = count_gallery(false);
-								cached_previmages = prev_images;
-							}
-						}
-					}
-
-					if (is_valid_el(wrap_gallery_func(true))) {
-						var rightaction = function() {
-							return lraction(true);
-						};
-
-						var righttitle = _("Next") + " (" + _("Right Arrow") + ")";
-
-						// \u2192 = →
-						var rightbtn = addbtn("\u2192", righttitle, rightaction);
-						rightbtn.style.top = "calc(50% - 7px - " + emhalf + ")";
-						rightbtn.style.left = "initial";
-						rightbtn.style.right = "-" + em1;
-						outerdiv.appendChild(rightbtn);
-						ui_els.push(rightbtn);
-
-						add_lrhover(false, rightbtn, rightaction, righttitle);
-
-						if (settings.mouseover_ui_gallerycounter) {
-							if (use_cached_gallery) {
-								next_images = cached_nextimages;
-							} else {
-								next_images = count_gallery(true);
-								cached_nextimages = next_images;
-							}
-						}
-					}
-					}
 				}
 
 				if (settings.mouseover_ui) {
