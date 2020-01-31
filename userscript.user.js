@@ -56067,34 +56067,13 @@ var $$IMU_EXPORT$$;
 						lrhover.style.height = "100%";
 						lrhover.style.zIndex = maxzindex - 2;
 						lrhover.style.cursor = "pointer";
-						var forwardevent = function(e) {
-							var type = e.type;
-							//console_log(type);
-							/*btnel.dispatchEvent(new MouseEvent(e.type, {
-								clientX: e.clientX,
-								clientY: e.clientY,
-								movementX: e.movementX,
-								movementY: e.movementY,
-								offsetX: e.offsetX,
-								offsetY: e.offsetY,
-								pageX: e.pageX,
-								pageY: e.pageY,
-								x: e.x,
-								y: e.y
-								}));*/
-							btnel.dispatchEvent(new MouseEvent(type));
-							estop(e);
-							return false;
-						};
-						//lrhover.addEventListener("mouseover", forwardevent, true);
-						//lrhover.addEventListener("mouseout", forwardevent, true);
+
 						opacity_hover(lrhover, btnel, true);
 						lrhover.addEventListener("click", function(e) {
 							if (dragged) {
 								return false;
 							}
 
-							//forwardevent(e);
 							estop(e);
 							action(e);
 							return false;
