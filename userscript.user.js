@@ -56481,7 +56481,7 @@ var $$IMU_EXPORT$$;
 						return false;
 					}
 
-					if (scrolly_behavior !== "zoom") {
+					if (scrolly_behavior !== "zoom" || e.deltaY === 0) {
 						return;
 					}
 
