@@ -202,8 +202,10 @@ var $$IMU_EXPORT$$;
 	var remote_send_reply = null;
 	var remote_reply_ids = {};
 	var current_frame_id = null;
-	var current_frame_url = window.location.href;
+	var current_frame_url = null;
+
 	if (is_extension) {
+		current_frame_url = window.location.href;
 		current_frame_id = get_random_id() + " " + current_frame_url;
 
 		if (!is_in_iframe)
@@ -50358,6 +50360,12 @@ var $$IMU_EXPORT$$;
 					waiting: true
 				};
 			}
+		}
+
+		if (domain_nowww === "youngjump.jp") {
+			// https://youngjump.jp/photobook/japanesegravure/images/tn02.jpg
+			//   https://youngjump.jp/photobook/japanesegravure/images/photo02.jpg
+			return src.replace(/(\/images\/+)tn([0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1photo$2");
 		}
 
 
