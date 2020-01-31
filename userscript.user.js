@@ -1143,6 +1143,7 @@ var $$IMU_EXPORT$$;
 		settings_visible_description: true,
 		advanced_options: false,
 		allow_browser_request: true,
+		allow_live_settings_reload: true,
 		redirect: true,
 		redirect_history: true,
 		canhead_get: true,
@@ -1352,6 +1353,13 @@ var $$IMU_EXPORT$$;
 		allow_browser_request: {
 			name: "Allow using browser XHR",
 			description: "This allows XHR requests to be run in the browser's context if they fail in the extension (e.g. when Tracking Protection is set to High)",
+			category: "general",
+			imu_enabled_exempt: true,
+			advanced: true
+		},
+		allow_live_settings_reload: {
+			name: "Live settings reloading",
+			description: "Enables/disables live settings reloading. There shouldn't be a reason to disable this unless you're experiencing issues with this feature",
 			category: "general",
 			imu_enabled_exempt: true,
 			advanced: true
@@ -54358,6 +54366,9 @@ var $$IMU_EXPORT$$;
 	}
 
 	function settings_updated_cb(changes) {
+		if (!settings.allow_live_settings_reload)
+			return;
+
 		//console_log(message);
 		var changed = false;
 
