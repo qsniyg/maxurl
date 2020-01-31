@@ -1205,7 +1205,7 @@ var $$IMU_EXPORT$$;
 		mouseover_pan_behavior: "drag",
 		mouseover_drag_min: 5,
 		mouseover_scrolly_behavior: "zoom",
-		mouseover_scrollx_behavior: "zoom",
+		mouseover_scrollx_behavior: "gallery",
 		scroll_zoom_behavior: "fitfull",
 		mouseover_move_with_cursor: false,
 		zoom_out_to_close: false,
@@ -54480,7 +54480,10 @@ var $$IMU_EXPORT$$;
 
 		if (version === 3) {
 			if ("mouseover_scroll_behavior" in new_settings) {
-				update_setting("mouseover_scrollx_behavior", new_settings.mouseover_scroll_behavior);
+				if (get_single_setting_raw(new_settings.mouseover_scroll_behavior) !== "zoom") {
+					update_setting("mouseover_scrollx_behavior", new_settings.mouseover_scroll_behavior);
+				}
+
 				update_setting("mouseover_scrolly_behavior", new_settings.mouseover_scroll_behavior);
 			}
 
@@ -57583,10 +57586,14 @@ var $$IMU_EXPORT$$;
 			return false;
 		}
 
+		function get_single_setting_raw(value) {
+			if (value instanceof Array)
+				return value[0];
+			return value;
+		}
+
 		function get_single_setting(setting) {
-			if (settings[setting] instanceof Array)
-				return settings[setting][0];
-			return settings[setting];
+			return get_single_setting_raw(settings[setting]);
 		}
 
 		function get_close_behavior() {
