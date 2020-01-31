@@ -53936,7 +53936,7 @@ var $$IMU_EXPORT$$;
 								do_update_setting(setting, value, meta);
 							}
 
-							settings[setting] = new_value;
+							//settings[setting] = new_value;
 							check_disabled_options();
 							show_warnings();
 						});
@@ -53995,7 +53995,7 @@ var $$IMU_EXPORT$$;
 					savebutton.innerText = _("save");
 					savebutton.onclick = function() {
 						do_update_setting(setting, textarea.value, meta);
-						settings[setting] = textarea.value;
+						//settings[setting] = textarea.value;
 					};
 
 					sub_ta_td.appendChild(textarea);
@@ -54107,7 +54107,7 @@ var $$IMU_EXPORT$$;
 						if (recording_keys) {
 							if (keysequence_valid(options_chord)) {
 								do_update_setting(setting, options_chord, meta);
-								settings[setting] = options_chord;
+								//settings[setting] = options_chord;
 
 								do_cancel();
 							}
@@ -54262,6 +54262,16 @@ var $$IMU_EXPORT$$;
 		document.body.appendChild(saved_el);
 	}
 
+	function get_single_setting_raw(value) {
+		if (value instanceof Array)
+			return value[0];
+		return value;
+	}
+
+	function get_single_setting(setting) {
+		return get_single_setting_raw(settings[setting]);
+	}
+
 	function parse_value(value) {
 		try {
 			return JSON_parse(value);
@@ -54333,6 +54343,7 @@ var $$IMU_EXPORT$$;
 		if (value === settings[key])
 			return false;
 
+		value = deepcopy(value);
 		settings[key] = value;
 
 		if (is_extension) {
@@ -54535,24 +54546,36 @@ var $$IMU_EXPORT$$;
 			var settings_done = 0;
 			var total_settings = Object.keys(settings).length + old_settings_keys.length;
 
+			var add_value_change_listeners = function(cb) {
+				if (typeof GM_addValueChangeListener === "undefined") {
+					return cb();
+				}
+
+				for (var setting in settings) {
+					GM_addValueChangeListener(setting, function(name, oldValue, newValue, remote) {
+						if (remote === false)
+							return;
+
+						var updated = {};
+						updated[name] = {newValue: newValue};
+						settings_updated_cb(updated);
+					});
+				}
+
+				cb();
+			};
+
 			var process_setting = function(setting) {
 				get_value(setting, function(value) {
 					settings_done++;
 					update_setting_from_host(setting, value);
 
-					if (typeof GM_addValueChangeListener !== "undefined") {
-						GM_addValueChangeListener(setting, function(name, oldValue, newValue, remote) {
-							if (remote === false)
-								return;
-
-							var updated = {};
-							updated[name] = {newValue: newValue};
-							settings_updated_cb(updated);
-						});
-					}
-
 					if (settings_done >= total_settings)
-						upgrade_settings(start);
+						upgrade_settings(function(value) {
+							add_value_change_listeners(function() {
+								start(value);
+							});
+						});
 				});
 			};
 
@@ -57584,16 +57607,6 @@ var $$IMU_EXPORT$$;
 			}
 
 			return false;
-		}
-
-		function get_single_setting_raw(value) {
-			if (value instanceof Array)
-				return value[0];
-			return value;
-		}
-
-		function get_single_setting(setting) {
-			return get_single_setting_raw(settings[setting]);
 		}
 
 		function get_close_behavior() {
