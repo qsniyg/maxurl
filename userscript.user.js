@@ -1124,6 +1124,13 @@ var $$IMU_EXPORT$$;
 		return parts.join("");
 	}
 
+	var old_settings_keys = [
+		"mouseover_trigger",
+		"mouseover_use_fully_loaded_video",
+		"mouseover_use_fully_loaded_image",
+		"mouseover_close_on_leave_el",
+		"mouseover_scroll_behavior",
+	];
 
 	var settings = {
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-530760246
@@ -1197,7 +1204,8 @@ var $$IMU_EXPORT$$;
 		mouseover_zoom_custom_percent: 100,
 		mouseover_pan_behavior: "drag",
 		mouseover_drag_min: 5,
-		mouseover_scroll_behavior: "zoom",
+		mouseover_scrolly_behavior: "zoom",
+		mouseover_scrollx_behavior: "zoom",
 		scroll_zoom_behavior: "fitfull",
 		mouseover_move_with_cursor: false,
 		zoom_out_to_close: false,
@@ -1984,9 +1992,9 @@ var $$IMU_EXPORT$$;
 			category: "popup",
 			subcategory: "behavior"
 		},
-		mouseover_scroll_behavior: {
-			name: "Popup scroll action",
-			description: "How the popup reacts to a scroll/mouse wheel event",
+		mouseover_scrolly_behavior: {
+			name: "Vertical scroll action",
+			description: "How the popup reacts to a vertical scroll/mouse wheel event",
 			options: {
 				_type: "or",
 				_group1: {
@@ -2012,6 +2020,29 @@ var $$IMU_EXPORT$$;
 			category: "popup",
 			subcategory: "behavior"
 		},
+		mouseover_scrollx_behavior: {
+			name: "Horizontal scroll action",
+			description: "How the popup reacts to a horizontal scroll/mouse wheel event",
+			options: {
+				_type: "or",
+				_group1: {
+					pan: {
+						name: "Pan"
+					},
+					gallery: {
+						name: "Gallery"
+					},
+					nothing: {
+						name: "None"
+					}
+				}
+			},
+			requires: {
+				mouseover_open_behavior: "popup"
+			},
+			category: "popup",
+			subcategory: "behavior"
+		},
 		scroll_zoom_behavior: {
 			name: "Zoom behavior",
 			description: "How zooming should work",
@@ -2025,9 +2056,10 @@ var $$IMU_EXPORT$$;
 					name: "Incremental"
 				}
 			},
-			requires: {
-				mouseover_scroll_behavior: "zoom"
-			},
+			requires: [
+				{mouseover_scrollx_behavior: "zoom"},
+				{mouseover_scrolly_behavior: "zoom"}
+			],
 			category: "popup",
 			subcategory: "behavior"
 		},
@@ -2043,9 +2075,10 @@ var $$IMU_EXPORT$$;
 		zoom_out_to_close: {
 			name: "Zoom out fully to close",
 			description: "Closes the popup if you zoom out past the minimum zoom",
-			requires: {
-				mouseover_scroll_behavior: "zoom"
-			},
+			requires: [
+				{mouseover_scrollx_behavior: "zoom"},
+				{mouseover_scrolly_behavior: "zoom"}
+			],
 			category: "popup",
 			subcategory: "close_behavior"
 		},
@@ -54270,7 +54303,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		value = serialize_value(value);
-		//console_log("Setting " + key + " = " + value);
+		console_log("Setting " + key + " = " + value);
 
 		if (is_extension) {
 			var kv = {};
@@ -54445,6 +54478,18 @@ var $$IMU_EXPORT$$;
 			version = 3;
 		}
 
+		if (version === 3) {
+			if ("mouseover_scroll_behavior" in new_settings) {
+				update_setting("mouseover_scrollx_behavior", new_settings.mouseover_scroll_behavior);
+				update_setting("mouseover_scrolly_behavior", new_settings.mouseover_scroll_behavior);
+			}
+
+			update_setting("settings_version", 4);
+			changed = true;
+
+			version = 4;
+		}
+
 		cb(changed);
 	}
 
@@ -54485,27 +54530,35 @@ var $$IMU_EXPORT$$;
 	function do_config() {
 		if (is_userscript || is_extension) {
 			var settings_done = 0;
+			var total_settings = Object.keys(settings).length + old_settings_keys.length;
+
+			var process_setting = function(setting) {
+				get_value(setting, function(value) {
+					settings_done++;
+					update_setting_from_host(setting, value);
+
+					if (typeof GM_addValueChangeListener !== "undefined") {
+						GM_addValueChangeListener(setting, function(name, oldValue, newValue, remote) {
+							if (remote === false)
+								return;
+
+							var updated = {};
+							updated[name] = {newValue: newValue};
+							settings_updated_cb(updated);
+						});
+					}
+
+					if (settings_done >= total_settings)
+						upgrade_settings(start);
+				});
+			};
+
 			for (var setting in settings) {
-				(function(setting) {
-					get_value(setting, function(value) {
-						settings_done++;
-						update_setting_from_host(setting, value);
+				process_setting(setting);
+			}
 
-						if (typeof GM_addValueChangeListener !== "undefined") {
-							GM_addValueChangeListener(setting, function(name, oldValue, newValue, remote) {
-								if (remote === false)
-									return;
-
-								var updated = {};
-								updated[name] = {newValue: newValue};
-								settings_updated_cb(updated);
-							});
-						}
-
-						if (settings_done >= Object.keys(settings).length)
-							upgrade_settings(start);
-					});
-				})(setting);
+			for (var i = 0; i < old_settings_keys.length; i++) {
+				process_setting(old_settings_keys[i]);
 			}
 		} else {
 			start();
@@ -56369,30 +56422,66 @@ var $$IMU_EXPORT$$;
 				var currentmode = initial_zoom_behavior;
 
 				outerdiv.onwheel = function(e) {
-					if (get_single_setting("mouseover_scroll_behavior") === "pan") {
-						estop(e);
+					var scrollx_behavior = get_single_setting("mouseover_scrollx_behavior");
+					var scrolly_behavior = get_single_setting("mouseover_scrolly_behavior");
+
+					var handledx = false;
+					var handledy = false;
+
+					if (scrollx_behavior === "pan") {
 						outerdiv.style.left = (parseInt(outerdiv.style.left) + e.deltaX) + "px";
-						outerdiv.style.top = (parseInt(outerdiv.style.top) + e.deltaY) + "px";
-						return false;
+						handledx = true;
 					}
 
-					if (get_single_setting("mouseover_scroll_behavior") === "gallery") {
-						estop(e);
+					if (scrolly_behavior === "pan") {
+						outerdiv.style.top = (parseInt(outerdiv.style.top) + e.deltaY) + "px";
+						handledy = true;
+					}
 
-						var isright;
-						if (e.deltaX < 0 || e.deltaY < 0) {
-							isright = false;
-						} else if (e.deltaX > 0 || e.deltaY > 0) {
-							isright = true;
-						} else { // ???
-							return false;
+					var handle_gallery = function(xy) {
+						var isright = false;
+
+						if (xy) {
+							if (e.deltaX < 0)
+								isright = false;
+							else if (e.deltaX > 0)
+								isright = true;
+							else return;
+						} else {
+							if (e.deltaY < 0)
+								isright = false;
+							else if (e.deltaY > 0)
+								isright = true;
+							else return;
 						}
 
 						lraction(isright);
+						estop(e);
+						return true;
+					};
+
+					if (scrollx_behavior === "gallery") {
+						if (handle_gallery(true)) {
+							return;
+						}
+
+						handledx = true;
+					}
+
+					if (scrolly_behavior === "gallery") {
+						if (handle_gallery(false)) {
+							return;
+						}
+
+						handledy = true;
+					}
+
+					if (handledy) {
+						estop(e);
 						return false;
 					}
 
-					if (get_single_setting("mouseover_scroll_behavior") !== "zoom") {
+					if (scrolly_behavior !== "zoom") {
 						return;
 					}
 
