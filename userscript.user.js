@@ -1392,6 +1392,7 @@ var $$IMU_EXPORT$$;
 			name: "Live settings reloading",
 			description: "Enables/disables live settings reloading. There shouldn't be a reason to disable this unless you're experiencing issues with this feature",
 			category: "general",
+			hidden: is_userscript && typeof GM_addValueChangeListener === "undefined",
 			imu_enabled_exempt: true,
 			advanced: true
 		},
