@@ -422,11 +422,28 @@ var $$IMU_EXPORT$$;
 			var raw_request_do = do_request_raw;
 			if (is_userscript && settings.allow_browser_request) {
 				if (userscript_manager === "Falkon GreaseMonkey" ||
-					// USI doesn't properly support blob responses properly: https://bitbucket.org/usi-dev/usi/issues/13/various-problems-with-gm_xmlhttprequest
+					// USI doesn't properly support blob responses: https://bitbucket.org/usi-dev/usi/issues/13/various-problems-with-gm_xmlhttprequest
 					(userscript_manager === "USI" && data.need_blob_response)) {
 					raw_request_do = do_request_browser;
 					delete data.trackingprotection_failsafe;
 				}
+			}
+
+			if (data.responseType === "blob" && !settings.use_blob_over_arraybuffer) {
+				(function(real_onload) {
+					data.onload = function(resp) {
+						var newresp = resp;
+
+						if (resp.response) {
+							newresp = shallowcopy(resp);
+							newresp.response = new Blob([resp.response]);
+						}
+
+						real_onload(newresp);
+					};
+				})(data.onload);
+
+				data.responseType = "arraybuffer";
 			}
 
 			if (data.trackingprotection_failsafe && settings.allow_browser_request && do_request_browser) {
@@ -1145,6 +1162,7 @@ var $$IMU_EXPORT$$;
 		settings_visible_description: true,
 		advanced_options: false,
 		allow_browser_request: true,
+		use_blob_over_arraybuffer: true,
 		allow_live_settings_reload: true,
 		redirect: true,
 		redirect_history: true,
@@ -1358,6 +1376,14 @@ var $$IMU_EXPORT$$;
 			category: "general",
 			imu_enabled_exempt: true,
 			advanced: true
+		},
+		use_blob_over_arraybuffer: {
+			name: "Use `Blob` over `ArrayBuffer`",
+			description: "Uses `Blob`s for XHRs instead of `ArrayBuffer`s. Keep this enabled unless your userscript manager doesn't support blob requests",
+			category: "general",
+			imu_enabled_exempt: true,
+			advanced: true,
+			hidden: true
 		},
 		allow_live_settings_reload: {
 			name: "Live settings reloading",
