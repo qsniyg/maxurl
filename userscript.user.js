@@ -1236,6 +1236,7 @@ var $$IMU_EXPORT$$;
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-531549043
 		mouseover_prevent_cursor_overlap: true,
 		mouseover_add_link: true,
+		mouseover_add_video_link: false,
 		mouseover_download: false,
 		// also thanks to 07416: https://github.com/qsniyg/maxurl/issues/25
 		mouseover_links: false,
@@ -2165,13 +2166,29 @@ var $$IMU_EXPORT$$;
 			category: "popup",
 			subcategory: "behavior"
 		},
-		mouseover_download: {
-			name: "Clicking image downloads",
-			description: "Instead of opening the link in a new tab, it will download the image instead",
+		mouseover_add_video_link: {
+			name: "Link video",
+			description: "Adds a link to the video in the popup",
 			requires: {
 				mouseover_open_behavior: "popup",
-				mouseover_add_link: true
+				allow_video: true
 			},
+			category: "popup",
+			subcategory: "behavior"
+		},
+		mouseover_download: {
+			name: "Clicking link downloads",
+			description: "Instead of opening the link in a new tab, it will download the image/video instead",
+			requires: [
+				{
+					mouseover_open_behavior: "popup",
+					mouseover_add_link: true
+				},
+				{
+					mouseover_open_behavior: "popup",
+					mouseover_add_video_link: true
+				},
+			],
 			category: "popup",
 			subcategory: "behavior"
 		},
@@ -55879,7 +55896,14 @@ var $$IMU_EXPORT$$;
 
 				set_el_all_initial(img);
 
+				var add_link = false;
 				if (!is_video && settings.mouseover_add_link) {
+					add_link = true;
+				} else if (is_video && settings.mouseover_add_video_link) {
+					add_link = true;
+				}
+
+				if (add_link) {
 					img.style.cursor = "pointer";
 				}
 				// https://stackoverflow.com/questions/7774814/remove-white-space-below-image
@@ -56521,7 +56545,7 @@ var $$IMU_EXPORT$$;
 				var a = document.createElement("a");
 				set_el_all_initial(a);
 
-				if (!is_video && settings.mouseover_add_link) {
+				if (add_link) {
 					a.style.cursor = "pointer";
 
 					//a.addEventListener("click", function(e) {
@@ -56535,7 +56559,7 @@ var $$IMU_EXPORT$$;
 				a.style.setProperty("vertical-align", "bottom", "important");
 				a.style.setProperty("display", "block", "important");
 
-				if (!is_video && settings.mouseover_add_link) {
+				if (add_link) {
 					a.href = url;
 					if (settings.mouseover_download) {
 						a.href = img.src;
