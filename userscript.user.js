@@ -399,7 +399,8 @@ var $$IMU_EXPORT$$;
 
 	var check_tracking_blocked = function(result) {
 		// FireMonkey returns null for result if blocked
-		if (!result || result.status === 0)
+		// GreaseMonkey returns null for status if blocked
+		if (!result || result.status === 0 || result.status === null)
 			return true;
 		return false;
 	};
