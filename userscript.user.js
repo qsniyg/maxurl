@@ -32085,6 +32085,13 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "y.yarn.co") {
+			// https://y.yarn.co/site/assets/images/black.png
+			if (/\/site\/+assets\/+images\/+black\./.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
+
 			// https://y.yarn.co/0660ad5b-af07-4955-b979-4819b385ae57_thumb.jpg -- 273x114
 			//   https://y.yarn.co/0660ad5b-af07-4955-b979-4819b385ae57_screenshot.jpg -- 1142x480
 			// https://y.yarn.co/c8b6499c-40e3-435e-b5f2-c41e464144a6_100_h_6.gif
