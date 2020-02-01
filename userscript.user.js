@@ -7075,10 +7075,55 @@ var $$IMU_EXPORT$$;
 			// https://ssl.c.photoshelter.com/img-get2/I0000Ie55NrhpWqc/sec=wdfsdfoeflwefms1440ed20190122M0EoIIVFG8_ziPw/fit=350x2040
 			//   https://ssl.c.photoshelter.com/img-get2/I0000Ie55NrhpWqc/fit=99999999999/fit=350x2040
 			//   https://ssl.c.photoshelter.com/img-get2/I0000Ie55NrhpWqc/fit=99999999999
-			return src
+			newsrc = src
 				.replace(/\/img-get2\/([^/]*)\/(?:[a-z]+=[^/]*\/)*([^/]*)$/, "/img-get2/$1/fit=99999999999/$2")
 				.replace(/\/img-get\/([^/]*)(?:\/[ts]\/[0-9]+\/(?:[0-9]+\/)?)?([^/]*)$/, "/img-get2/$1/fit=99999999999/$2")
 				.replace(/\/+fit=[0-9x]+\/+fit=[0-9x]+/, "/fit=99999999999");
+
+			if (newsrc !== src)
+				return newsrc;
+
+			match = src.match(/\/img-get2\/+(I[^/]{10,})\//);
+			if (match && options.force_page) {
+				id = match[1];
+				var cache_key = "photoshelter_page:" + id;
+				api_cache.fetch(cache_key, function(data) {
+					if (data) {
+						return options.cb({
+							url: src,
+							extra: {
+								page: data
+							}
+						});
+					} else {
+						return options.cb(null);
+					}
+				}, function(done) {
+					options.do_request({
+						url: "https://www.photoshelter.com/image/" + id,
+						method: "GET",
+						onload: function(resp) {
+							if (resp.readyState < 4)
+								return;
+
+							if (resp.status !== 200) {
+								return done(null, false);
+							}
+
+							var url = resp.finalUrl;
+							if (url.match(/\.photoshelter\.com\/+image\/+/)) {
+								return done(url, 12*60*60);
+							} else {
+								return done(null, false);
+							}
+						}
+					});
+				});
+
+				return {
+					waiting: true
+				};
+			}
 		}
 
 		if (domain_nowww === "celebzz.com" &&
