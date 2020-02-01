@@ -1445,6 +1445,7 @@ var $$IMU_EXPORT$$;
 			description: "Determines how the mouseover popup will open",
 			// While it won't work for some images without the extension, let's not disable it outright either
 			//extension_only: true,
+			hidden: is_userscript && open_in_tab === nullfunc,
 			options: {
 				_type: "or",
 				popup: {
@@ -2207,6 +2208,7 @@ var $$IMU_EXPORT$$;
 		mouseover_open_new_tab_key: {
 			name: "Open in new tab key",
 			description: "Opens the image in the popup in a new tab when this key is pressed",
+			hidden: is_userscript && open_in_tab === nullfunc,
 			requires: {
 				mouseover_open_behavior: "popup"
 			},
