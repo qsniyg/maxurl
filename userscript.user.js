@@ -52014,6 +52014,21 @@ var $$IMU_EXPORT$$;
 			};
 		}
 
+		if (host_domain_nosub === "tiktok.com") {
+			return {
+				gallery: function(el, nextprev) {
+					if (el.tagName === "VIDEO" && el.parentElement && el.parentElement.parentElement) {
+						if (el.parentElement.classList.contains("video-card") &&
+							el.parentElement.parentElement.classList.contains("image-card")) {
+							return get_next_in_gallery(el.parentElement.parentElement, nextprev);
+						}
+					}
+
+					return "default";
+				}
+			};
+		}
+
 		return null;
 	}
 
