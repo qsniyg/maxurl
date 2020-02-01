@@ -18261,6 +18261,79 @@ var $$IMU_EXPORT$$;
 			return src.replace(/_[a-z](\.[^/.]*)$/, "_b$1");
 		}
 
+		if (host_domain_nosub === "tiktok.com" && options && options.cb && options.do_request && options.element) {
+			var query_tiktok = function(url, cb) {
+				var normalized_url = url
+					.replace(/^[a-z]+:\/\//, "https://")
+					.replace(/:\/\/[^/]*tiktok\.com\/+/, "://www.tiktok.com/")
+					.replace(/\/*(?:[?#].*)?$/, "");
+				var cache_key = "tiktok:" + normalized_url;
+				api_cache.fetch(cache_key, cb, function(done) {
+					options.do_request({
+						url: url,
+						method: "GET",
+						onload: function(resp) {
+							if (resp.readyState < 4)
+								return;
+
+							if (resp.status !== 200) {
+								console_error(resp);
+								return done(null, false);
+							}
+
+							var match = resp.responseText.match(/<script[^>]+id="__NEXT_DATA__"[^>]*>({.*?})\s*<\/script>/);
+							if (!match) {
+								console_error("Unable to find match", resp);
+								return done(null, false);
+							}
+
+							try {
+								var json = JSON_parse(match[1]);
+								return done(json, 60*60);
+							} catch (e) {
+								console_error(e);
+								return done(null, false);
+							}
+						}
+					});
+				});
+			};
+
+			var current = options.element;
+			while (current) {
+				if (current.tagName === "A" && /\/@[^/]+\/+video\/+[0-9]+\/*(?:[?#].*)?$/.test(current.href)) {
+					query_tiktok(current.href, function(data) {
+						if (!data) {
+							return options.cb(null);
+						}
+
+						try {
+							var item = data.props.pageProps.videoData.itemInfos;
+							var videourl = item.video.urls[0];
+							var caption = item.text;
+
+							return options.cb({
+								url: videourl,
+								extra: {
+									caption: caption
+								},
+								video: true
+							});
+						} catch (e) {
+							console_error(e);
+							return options.cb(null);
+						}
+					});
+
+					return {
+						waiting: true
+					};
+				}
+
+				current = current.parentElement;
+			}
+		}
+
 		if ((domain_nosub === "pstatp.com" ||
 			 // https://p0.ipstatp.com/list/pgc-image-va/Rgmv8E92sxXqtz.jpg
 			 //   https://p0.ipstatp.com/origin/pgc-image-va/Rgmv8E92sxXqtz.jpg
@@ -18391,6 +18464,14 @@ var $$IMU_EXPORT$$;
 			// https://p16-sg-default.akamaized.net/china-img/aweme/200x200/330600193414987bd95e.jpeg
 			//   https://p0.pstatp.com/origin/330600193414987bd95e.jpeg
 			return src.replace(/^[a-z]+:\/\/[^/]+\/+china-img\/+/, "https://p0.pstatp.com/");
+		}
+
+		if (domain_nosub === "tiktokcdn.com" && /^v[0-9]*\./.test(domain) && src.indexOf("/video/") >= 0) {
+			// https://v21.tiktokcdn.com/video/n/v0102/ab13a0512d41473bb07c555205e2d0b2/
+			return {
+				url: src,
+				video: true
+			};
 		}
 
 		if (domain === "img.jizy.cn") {
