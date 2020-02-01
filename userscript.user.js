@@ -1249,6 +1249,7 @@ var $$IMU_EXPORT$$;
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-541065461
 		mouseover_wait_use_el: false,
 		mouseover_download_key: ["s"],
+		mouseover_open_new_tab_key: ["o"],
 		mouseover_rotate_left_key: ["e"],
 		mouseover_rotate_right_key: ["r"],
 		mouseover_flip_horizontal_key: ["h"],
@@ -1442,7 +1443,8 @@ var $$IMU_EXPORT$$;
 		mouseover_open_behavior: {
 			name: "Mouseover popup action",
 			description: "Determines how the mouseover popup will open",
-			extension_only: true,
+			// While it won't work for some images without the extension, let's not disable it outright either
+			//extension_only: true,
 			options: {
 				_type: "or",
 				popup: {
@@ -2195,6 +2197,16 @@ var $$IMU_EXPORT$$;
 		mouseover_download_key: {
 			name: "Download key",
 			description: "Downloads the image in the popup when this key is pressed",
+			requires: {
+				mouseover_open_behavior: "popup"
+			},
+			type: "keysequence",
+			category: "popup",
+			subcategory: "behavior"
+		},
+		mouseover_open_new_tab_key: {
+			name: "Open in new tab key",
+			description: "Opens the image in the popup in a new tab when this key is pressed",
 			requires: {
 				mouseover_open_behavior: "popup"
 			},
@@ -55721,6 +55733,22 @@ var $$IMU_EXPORT$$;
 			return null;
 		}
 
+		function open_in_tab_imu(imu, bg, cb) {
+			if (is_extension) {
+				extension_send_message({
+					type: "newtab",
+					data: {
+						imu: imu
+					}
+				}, cb);
+			} else if (is_userscript && open_in_tab) {
+				open_in_tab(imu.url, bg);
+				if (cb) {
+					cb();
+				}
+			}
+		}
+
 		function makePopup(obj, orig_url, processing, data) {
 			if (_nir_debug_) {
 				console_log("makePopup", obj, orig_url, processing, data);
@@ -55733,14 +55761,7 @@ var $$IMU_EXPORT$$;
 				var theobj = data.data.obj;
 				theobj.url = data.data.resp.finalUrl;
 
-				extension_send_message({
-					type: "newtab",
-					data: {
-						imu: theobj
-					}
-				}, function() {
-					//popups_active = true;
-				});
+				open_in_tab_imu(theobj);
 				return;
 			}
 
@@ -59255,6 +59276,11 @@ var $$IMU_EXPORT$$;
 					setTimeout(function() {
 						document.body.removeChild(a);
 					}, 500);
+				} else if (trigger_complete(settings.mouseover_open_new_tab_key)) {
+					ret = false;
+					release_ignore = settings.mouseover_open_new_tab_key;
+
+					open_in_tab_imu(popup_obj);
 				} else if (trigger_complete(settings.mouseover_rotate_left_key)) {
 					rotate_gallery(-90);
 					ret = false;
