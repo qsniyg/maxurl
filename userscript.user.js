@@ -18383,6 +18383,9 @@ var $$IMU_EXPORT$$;
 			//   https://p9-bcy.byteimg.com/img/banciyuan/Public/Upload/avatar/4146977575282589/a51aeadaa7d44fd481084e79f27b0cad/fat.jpg~noop.image
 			//   https://p9-bcy.byteimg.com/origin/banciyuan/Public/Upload/avatar/4146977575282589/a51aeadaa7d44fd481084e79f27b0cad/fat.jpg.jpg
 			//   https://p9-bcy.byteimg.com/origin/banciyuan/Public/Upload/avatar/4146977575282589/a51aeadaa7d44fd481084e79f27b0cad/fat.jpg
+			// https://p1-bcy.byteimg.com/img/banciyuan/user/219002/item/web/17al0/62afbfd0deb611e9afe7e78e9c02f7f3.jpg~tplv-banciyuan-w650.image
+			//   https://p1-bcy.byteimg.com/img/banciyuan/user/219002/item/web/17al0/62afbfd0deb611e9afe7e78e9c02f7f3.jpg~noop.image
+			//   https://p1-bcy.byteimg.com/origin/banciyuan/user/219002/item/web/17al0/62afbfd0deb611e9afe7e78e9c02f7f3.jpg.jpg
 			domain_nosub === "byteimg.com" ||
 			// https://p16.muscdn.com/img/musically-maliva-obj/1634882550258693~c5_100x100.jpeg
 			//   https://p16.muscdn.com/img/musically-maliva-obj/1634882550258693~noop.jpeg
@@ -18407,9 +18410,9 @@ var $$IMU_EXPORT$$;
 				url: src
 					.replace(/(:\/\/[^/]*\/+)(?:medium|large|obj|aweme|list)\/+(?:[0-9]+x[0-9]+\/+)?/, "$1origin/")
 					.replace(/(:\/\/[^/]+\/+origin\/+.*?)\.image(?:[?$].*)?$/, "$1.jpg")
-					.replace(/\/img\/+(.+\/+[0-9a-f]{10,}(?:\/+[^/]+)?)~noop(\.[^/.]*)(?:[?#].*)?$/, "/origin/$1$2")
+					.replace(/\/img\/+(.+\/+[0-9a-f]{10,}(?:\/+[^/]+|\.[^/.~?#]+)?)~noop(\.[^/.]*)(?:[?#].*)?$/, "/origin/$1$2")
 					.replace(/(\/origin\/+.+\/+[0-9a-f]{10,}\/+[^/.]+\.[^/.]+)\.[^/.]+$/, "$1")
-					.replace(/(\/img\/+.+\/+[0-9a-f]{10,}(?:\/+[^/]+)?~)[^/.]*?(\.[^/.]*)(?:[?#].*)?$/, "$1noop$2")
+					.replace(/(\/img\/+.+\/+[0-9a-f]{10,}(?:\/+[^/]+|\.[^/.~?#]+)?~)[^/.]*?(\.[^/.]*)(?:[?#].*)?$/, "$1noop$2")
 					.replace(/\?imageView2.*/, ""),
 				can_head: false // 404
 			};
@@ -28981,7 +28984,10 @@ var $$IMU_EXPORT$$;
 				.replace(/__resized_[0-9]+x[0-9]+(\.[^/.]*)$/, "$1");
 		}
 
-		if (domain === "media.8ch.net") {
+		if (domain === "media.8ch.net" ||
+			// https://media.8kun.top/file_store/thumb/cb73694524387233a9f4bf5a6c3a7021fe82e17b1b6023311eee66e1234f1ca1.jpg
+			//   https://media.8kun.top/file_store/cb73694524387233a9f4bf5a6c3a7021fe82e17b1b6023311eee66e1234f1ca1.jpg
+			domain === "media.8kun.top") {
 			// https://media.8ch.net/file_store/thumb/b024015a42f19d474d282a532ef8b99fdfad69cad68c0e95efc68e071c8afa4c.jpg
 			//   https://media.8ch.net/file_store/b024015a42f19d474d282a532ef8b99fdfad69cad68c0e95efc68e071c8afa4c.jpg
 			return src.replace(/\/file_store\/thumb\//, "/file_store/");
@@ -32081,8 +32087,29 @@ var $$IMU_EXPORT$$;
 		if (domain === "y.yarn.co") {
 			// https://y.yarn.co/0660ad5b-af07-4955-b979-4819b385ae57_thumb.jpg -- 273x114
 			//   https://y.yarn.co/0660ad5b-af07-4955-b979-4819b385ae57_screenshot.jpg -- 1142x480
-			return src.replace(/(:\/\/[^/]*\/[-0-9a-f]+)_thumb(\.[^/.]*)$/,
-							   "$1_screenshot$2");
+			// https://y.yarn.co/c8b6499c-40e3-435e-b5f2-c41e464144a6_100_h_6.gif
+			obj = {
+				url: src
+			};
+
+			match = src.match(/:\/\/[^/]*\/([-0-9a-f]+)(?:_.*?)(?:[?#].*)?$/);
+			if (match) {
+				obj.extra = {page: "https://yarn.co/yarn-clip/" + match[1]};
+			}
+
+			newsrc = src.replace(/(:\/\/[^/]*\/[-0-9a-f]+)_thumb(\.[^/.]*)$/, "$1_screenshot$2");
+			if (newsrc !== src) {
+				obj.url = newsrc;
+				return obj;
+			}
+
+			newsrc = src.replace(/(:\/\/[^/]*\/[-0-9a-f]+)_[0-9]+_[wh]_[0-9]+\.gif(?:[?#].*)?$/, "$1.mp4");
+			if (newsrc !== src) {
+				obj.url = newsrc;
+				obj.video = true;
+
+				return obj;
+			}
 		}
 
 		if (domain === "images.genius.com") {
@@ -50521,6 +50548,12 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/images\/+)tn([0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1photo$2");
 		}
 
+		if (domain === "forums.auscelebs.net") {
+			// https://forums.auscelebs.net/acnet-images/47493/thumbs/jessica-van-vonderen-351458.jpg
+			//   https://forums.auscelebs.net/acnet-images/47493/jessica-van-vonderen-351458.jpg
+			return src.replace(/(\/[0-9]+\/+)thumbs\/+([^/]+\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
 
 
 
@@ -55017,7 +55050,7 @@ var $$IMU_EXPORT$$;
 				var is_video = false;
 
 				// TODO: improve
-				if (parsed_headers["content-type"] && /^\s*\[?video\//.test(parsed_headers["content-type"])) {
+				if (obj[0].video || parsed_headers["content-type"] && /^\s*\[?video\//.test(parsed_headers["content-type"])) {
 					is_video = true;
 				}
 
