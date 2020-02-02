@@ -1195,6 +1195,7 @@ var $$IMU_EXPORT$$;
 		mouseover_close_el_policy: "both",
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/126
 		mouseover_allow_partial: is_extension ? "media" : "video",
+		mouseover_use_blob_over_data: true,
 		//mouseover_use_fully_loaded_image: is_extension ? false : true,
 		//mouseover_use_fully_loaded_video: false,
 		mouseover_minimum_size: 20,
@@ -1587,6 +1588,16 @@ var $$IMU_EXPORT$$;
 			},
 			category: "popup",
 			subcategory: "open_behavior"
+		},
+		mouseover_use_blob_over_data: {
+			name: "Use `blob:` over `data:` URLs",
+			description: "Blob URLs are more efficient, but aren't supported by earlier browsers",
+			requires: {
+				mouseover_open_behavior: "popup"
+			},
+			category: "popup",
+			subcategory: "open_behavior",
+			advanced: true
 		},
 		mouseover_use_fully_loaded_image: {
 			name: "Wait until image is fully loaded",
@@ -28946,12 +28957,16 @@ var $$IMU_EXPORT$$;
 			// https://images.vogue.it/gallery/38166/Big/10c148fb-73cb-49d7-b2fe-4a30926462bd.jpg
 			//   https://images.vogue.it/gallery/38166/Original/10c148fb-73cb-49d7-b2fe-4a30926462bd.jpg
 			// http://images.vogue.it/imgs/galleries/bellezza/idea-del-giorno/018811/selena-gomez-168691_201x113.jpg
+			// http://images.vogue.it/Photovogue/6f1dedb0-f990-11e9-a462-7dc8db5ac32a_small.jpg
+			//   http://images.vogue.it/Photovogue/6f1dedb0-f990-11e9-a462-7dc8db5ac32a_large.jpg
 			// other:
 			// https://www.vogue.it/sfilate/sfilata/collezioni-primavera-estate-2017/altuzarra?refresh_ce=
 			// http://images.vogue.it/imgs/sfilate/collezioni-primavera-estate-2017/altuzarra/collezione/Thumb/_ALT0026_20160912015409.jpg
 			//   http://images.vogue.it/imgs/sfilate/collezioni-primavera-estate-2017/altuzarra/collezione/Base/_ALT0026_20160912015415.jpg
 			//   http://images.vogue.it/imgs/sfilate/collezioni-primavera-estate-2017/altuzarra/collezione/HQ/_ALT0026_20160912015447.jpg -- different IDs
-			return src.replace(/(\/gallery\/[0-9]+\/)[A-Za-z]+(\/[-0-9a-f]+\.[^/.]*)$/, "$1Original$2");
+			return src
+				.replace(/(\/gallery\/[0-9]+\/)[A-Za-z]+(\/[-0-9a-f]+\.[^/.]*)$/, "$1Original$2")
+				.replace(/(\/Photovogue\/+[-0-9a-f]{10,})_small(\.[^/.]+)(?:[?#].*)?$/, "$1_large$2");
 		}
 
 		if (domain === "blogs.glamour.de") {
@@ -50593,6 +50608,12 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/[0-9]+\/+)thumbs\/+([^/]+\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		}
 
+		if (domain_nowww === "dyncdn2.com") {
+			// https://dyncdn2.com/mimages/342184/over_opt.jpg
+			//   https://dyncdn2.com/mimages/342184/poster_opt.jpg
+			return src.replace(/(\/mimages\/+[0-9]+\/+)over_opt\./, "$1poster_opt.");
+		}
+
 
 
 
@@ -54974,6 +54995,35 @@ var $$IMU_EXPORT$$;
 		}
 	}
 
+	var get_window_url = function() {
+		return window.URL || window.webkitURL;
+	};
+
+	var create_dataurl = function(blob, cb) {
+		var a = new FileReader();
+		a.onload = function(e) {
+			try {
+				cb(e.target.result);
+			} catch (e) {
+				console_error(e);
+				console_error(e.stack);
+				cb(null);
+			}
+		};
+		a.readAsDataURL(blob);
+	};
+
+	var create_objecturl = function(blob) {
+		return get_window_url().createObjectURL(blob);
+	};
+
+	var revoke_objecturl = function(objecturl) {
+		if (is_element(objecturl))
+			objecturl = objecturl.src;
+
+		return get_window_url().revokeObjectURL(objecturl);
+	};
+
 	function check_image_get(obj, cb, processing) {
 		if (!obj || !obj[0]) {
 			return cb(null);
@@ -54985,6 +55035,7 @@ var $$IMU_EXPORT$$;
 
 		var method = "GET";
 		var responseType = "blob";
+		var last_objecturl = null;
 
 		var incomplete_request = false;
 		if (processing.incomplete_image || (is_probably_video(obj[0]) && processing.incomplete_video))
@@ -55010,6 +55061,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		function err_cb() {
+			revoke_objecturl(last_objecturl);
 			obj.shift();
 			return check_image_get(obj, cb, processing);
 		}
@@ -55204,34 +55256,39 @@ var $$IMU_EXPORT$$;
 					return;
 				}
 
-				var a = new FileReader();
-				a.onload = function(e) {
-					try {
-						if (!is_video) {
-							var img = document.createElement("img");
-							img.src = e.target.result;
-							img.onload = function() {
-								// Firefox thinks SVGs have an empty naturalWidth/naturalHeight
-								if (img.naturalWidth === 0 || img.naturalHeight === 0) {
-									return err_cb();
-								}
+				var loadcb = function(urldata) {
+					last_objecturl = urldata;
 
-								good_cb(img);
-							};
-							img.onerror = function() {
-								err_cb();
-							};
-						} else {
-							var video = create_video_el();
-							video.src = e.target.result;
-						}
-					} catch (e) {
-						console_error(e);
-						console_error(e.stack);
-						err_cb();
+					if (!urldata) {
+						return err_cb();
+					}
+
+					if (!is_video) {
+						var img = document.createElement("img");
+						img.src = urldata;
+						img.onload = function() {
+							// Firefox thinks SVGs have an empty naturalWidth/naturalHeight
+							if (img.naturalWidth === 0 || img.naturalHeight === 0) {
+								return err_cb();
+							}
+
+							good_cb(img);
+						};
+						img.onerror = function() {
+							err_cb();
+						};
+					} else {
+						var video = create_video_el();
+						video.src = urldata;
 					}
 				};
-				a.readAsDataURL(resp.response);
+
+				if (!settings.mouseover_use_blob_over_data) {
+					create_dataurl(resp.response, loadcb);
+				} else {
+					var objecturl = create_objecturl(resp.response);
+					loadcb(objecturl);
+				}
 			}
 		};
 
@@ -55384,6 +55441,7 @@ var $$IMU_EXPORT$$;
 		var processing_list = [];
 		var popups = [];
 		var popup_obj = null;
+		var popup_objecturl = null;
 		var popup_el = null;
 		var real_popup_el = null;
 		var next_popup_el = null;
@@ -55558,6 +55616,12 @@ var $$IMU_EXPORT$$;
 
 		function resetpopups() {
 			popups.forEach(function (popup) {
+				var els = popup.querySelectorAll("img, video");
+				for (var i = 0; i < els.length; i++) {
+					// TODO: maybe check to make sure it's a blob? according to the spec, this will silently fail, but browsers may print an error
+					revoke_objecturl(els[i].src);
+				}
+
 				if (popup.parentNode)
 					popup.parentNode.removeChild(popup);
 
@@ -59995,6 +60059,7 @@ var $$IMU_EXPORT$$;
 							fill_object: true,
 							do_request: do_request,
 							cb: function(obj) {
+								revoke_objecturl(img);
 								loop_url(obj, cb, options, finalurl);
 							}
 						});
