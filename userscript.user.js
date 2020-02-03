@@ -26854,6 +26854,7 @@ var $$IMU_EXPORT$$;
 
 		if (domain_nosub === "imagebam.com") {
 			// http://109.imagebam.com/download/dWbrQoSl3dQM0smXmubqzw/35844/358432129/1.jpg
+			// http://www.imagebam.com/nohotlinking.jpg
 			if (/\/nohotlinking\.jpg(?:[?#].*)?$/.test(src)) {
 				return {
 					url: src,
@@ -53464,7 +53465,7 @@ var $$IMU_EXPORT$$;
 				real_finalcb(newurl, newobj, data);
 			};
 
-			if (false && !newhref[0].can_head || newhref[0].always_ok) {
+			if (false && (!newhref[0].can_head || newhref[0].always_ok)) {
 				var newurl = newhref[0].url;
 
 				if (newurl === window.location.href) {
