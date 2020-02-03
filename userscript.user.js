@@ -8973,6 +8973,8 @@ var $$IMU_EXPORT$$;
 			domain === "images.boosty.to" ||
 			// https://media.nbcnewyork.com/2019/09/bestdressed-uma.jpg?fit=700%2C1000
 			domain === "media.nbcnewyork.com" ||
+			// https://d15-a.sdn.cz/d_15/c_img_E_J/Da7BAUs.jpeg?fl=cro,0,0,1280,719%7Cres,1200,,1%7Cwebp,75
+			domain_nosub === "sdn.cz" ||
 			// http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
 			// https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
 			src.match(/\/demandware\.static\//) ||
@@ -16606,6 +16608,12 @@ var $$IMU_EXPORT$$;
 			return src
 				.replace(/\/(?:download|thumbs)\//, "/walls/")
 				.replace(/-[^-_/.]*(\.[^/.]*)$/, "-wide$1");
+		}
+
+		if (domain_nowww === "superwallpapers.in") {
+			// http://www.superwallpapers.in/hdwallpapers/parineeti-chopra-shuddh-desi-romance_100_100_100_ff.jpg
+			//   http://www.superwallpapers.in/hdwallpapers/parineeti-chopra-shuddh-desi-romance.jpg
+			return src.replace(/(\/hdwallpapers\/+[^/]+)_[0-9]+_[0-9]+_[0-9]+_[0-9a-f]{2}(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		}
 
 		if (false && (domain.indexOf("images.deezer.com") >= 0 ||
@@ -28490,6 +28498,9 @@ var $$IMU_EXPORT$$;
 			// http://fetishburg.com/contents/albums/main/370x250/22000/22495/336053.jpg
 			//   http://fetishburg.com/contents/albums/main/1920x1200/22000/22495/336053.jpg
 			domain_nowww === "fetishburg.com" ||
+			// https://albums193.zbporn.tv/main/120x160/227000/227924/5410359.jpg
+			//   https://albums193.zbporn.tv/main/9998x9998/227000/227924/5410359.jpg
+			domain_nosub === "zbporn.tv" ||
 			// https://cdn.pornstill.com/contents/albums/main/300x500/82000/82628/1298509.jpg
 			//   https://cdn.pornstill.com/contents/albums/sources/82000/82628/1298509.jpg
 			domain === "cdn.pornstill.com") {
@@ -28511,6 +28522,8 @@ var $$IMU_EXPORT$$;
 				max = "1920x1920";
 			} else if (domain_nowww === "fetishburg.com") {
 				max = "1920x1200";
+			} else if (domain_nosub === "zbporn.tv") {
+				max = "9998x9998";
 			}
 
 			match = src.match(/\/main\/+([0-9]+x[0-9]+)\/+/);
@@ -45542,6 +45555,12 @@ var $$IMU_EXPORT$$;
 			// https://www.agoravox.fr/IMG/jpg/22_mars.jpg -- 3307x2362 (interchangeable with mobile.)
 		}
 
+		if (domain === "pictures.topspeed.com") {
+			// https://pictures.topspeed.com/IMG/crop/202001/mercedes-vision-avtr-65_800x0w.jpg
+			//   https://pictures.topspeed.com/IMG/jpg/202001/mercedes-vision-avtr-65.jpg
+			return src.replace(/(\/IMG\/+)crop\/+([0-9]{6}\/+[^/]+)_[0-9]+x[0-9]+[wh](\.[^/.]+)(?:[?#].*)?$/, "$1jpg/$2$3");
+		}
+
 		if (false && domain_nosub === "imgiz.com" && /^i[0-9]*\./.test(domain)) {
 			// https://i1.imgiz.com/ramazan/camiler/bayburt.jpg -- 3264x2448
 			// https://i1.imgiz.com/data/videoshots/7164/7164388-91520.jpg -- 2730x1536
@@ -50706,6 +50725,39 @@ var $$IMU_EXPORT$$;
 			// https://dyncdn2.com/mimages/342184/over_opt.jpg
 			//   https://dyncdn2.com/mimages/342184/poster_opt.jpg
 			return src.replace(/(\/mimages\/+[0-9]+\/+)over_opt\./, "$1poster_opt.");
+		}
+
+		if (domain_nosub === "1z2x1z.com") {
+			// http://kr.1z2x1z.com/wp-content/plugins/use-your-drive/css/images/mag.png
+			if (/\/wp-content\/+plugins\/+use-your-drive\/+css\/+images\//.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
+		}
+
+		if (domain_nosub === "vercity.ru") {
+			// https://auto.vercity.ru/gallery/img/automobiles/Mercedes-Benz/2020-01%20Mercedes-Benz%20VISION%20AVTR/150x/1579255494.jpg
+			//   https://auto.vercity.ru/gallery/img/automobiles/Mercedes-Benz/2020-01%20Mercedes-Benz%20VISION%20AVTR/1579255494.jpg
+			return src.replace(/(\/gallery\/+img\/+.*\/)[0-9]+x[0-9]*\/+([^/]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "auto.sk") {
+			// https://auto.sk/static/gallery/2020/01/5e1d932bf30e5/5e1d93868bb22/14127-thumb.jpg
+			//   https://auto.sk/static/gallery/2020/01/5e1d932bf30e5/5e1d93868bb22/14127.jpg
+			return src.replace(/(\/static\/+gallery\/+[0-9]{4}\/+[0-9]{2}\/+[0-9a-f]{5,}\/+[0-9a-f]{5,}\/+[0-9]+)-thumb(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain === "imgs.firmenwagen.co.at") {
+			// https://imgs.firmenwagen.co.at/m/4428_1_400-0-0_.jpg
+			//   https://imgs.firmenwagen.co.at/m/4428_1.jpg
+			return src.replace(/(:\/\/[^/]+\/+m\/+[0-9]+_[0-9]+)_[0-9]+-[0-9]+-[0-9]+_(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain === "s.car.info") {
+			// http://s.car.info/image_files/360/0-849941.jpg
+			//   https://s.car.info/image_files/orig/0-849941.jpg
+			return src.replace(/(\/image_files\/+)[0-9]+\/+/, "$1orig/");
 		}
 
 
