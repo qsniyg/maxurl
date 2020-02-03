@@ -55562,6 +55562,7 @@ var $$IMU_EXPORT$$;
 
 		var waitingel = null;
 		var waitingstyleel = null;
+		var waitingel_cursor = null;
 		var elwaitingstyleclass = null;
 		var elwaitingstyleel = null;
 		var waitingsize = 200;
@@ -55627,6 +55628,8 @@ var $$IMU_EXPORT$$;
 		function start_waiting(el, cursor) {
 			if (!cursor)
 				cursor = "wait";
+
+			waitingel_cursor = cursor;
 
 			waiting = true;
 
@@ -55704,7 +55707,10 @@ var $$IMU_EXPORT$$;
 			}
 
 			not_allowed_timer = setTimeout(function() {
-				stop_waiting(); // TODO: maybe check if a cursor existed before not-allowed, and reset it to that?
+				not_allowed_timer = null;
+
+				if (waitingel_cursor === "not-allowed")
+					stop_waiting();
 			}, settings.mouseover_notallowed_duration);
 		};
 
