@@ -1253,6 +1253,7 @@ var $$IMU_EXPORT$$;
 		mouseover_wait_use_el: false,
 		mouseover_download_key: ["s"],
 		mouseover_open_new_tab_key: ["o"],
+		mouseover_open_bg_tab_key: ["shift", "o"],
 		mouseover_rotate_left_key: ["e"],
 		mouseover_rotate_right_key: ["r"],
 		mouseover_flip_horizontal_key: ["h"],
@@ -2245,6 +2246,17 @@ var $$IMU_EXPORT$$;
 		mouseover_open_new_tab_key: {
 			name: "Open in new tab key",
 			description: "Opens the image in the popup in a new tab when this key is pressed",
+			hidden: is_userscript && open_in_tab === nullfunc,
+			requires: {
+				mouseover_open_behavior: "popup"
+			},
+			type: "keysequence",
+			category: "popup",
+			subcategory: "behavior"
+		},
+		mouseover_open_bg_tab_key: {
+			name: "Open in background tab key",
+			description: "Opens the image in the popup in a new tab without switching to it when this key is pressed",
 			hidden: is_userscript && open_in_tab === nullfunc,
 			requires: {
 				mouseover_open_behavior: "popup"
@@ -55878,7 +55890,8 @@ var $$IMU_EXPORT$$;
 				extension_send_message({
 					type: "newtab",
 					data: {
-						imu: imu
+						imu: imu,
+						background: bg
 					}
 				}, cb);
 			} else if (is_userscript && open_in_tab) {
@@ -59424,7 +59437,15 @@ var $$IMU_EXPORT$$;
 					ret = false;
 					release_ignore = settings.mouseover_open_new_tab_key;
 
+					// Clear the chord because opening in a new tab will not release the keys
+					clear_chord();
+
 					open_in_tab_imu(popup_obj);
+				} else if (trigger_complete(settings.mouseover_open_bg_tab_key)) {
+					ret = false;
+					release_ignore = settings.mouseover_open_bg_tab_key;
+
+					open_in_tab_imu(popup_obj, true);
 				} else if (trigger_complete(settings.mouseover_rotate_left_key)) {
 					rotate_gallery(-90);
 					ret = false;
