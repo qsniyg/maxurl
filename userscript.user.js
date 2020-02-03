@@ -1591,7 +1591,7 @@ var $$IMU_EXPORT$$;
 		},
 		mouseover_use_blob_over_data: {
 			name: "Use `blob:` over `data:` URLs",
-			description: "Blob URLs are more efficient, but aren't supported by earlier browsers",
+			description: "Blob URLs are more efficient, but aren't supported by earlier browsers. Some websites also block `blob:` URLs",
 			requires: {
 				mouseover_open_behavior: "popup"
 			},
@@ -3669,6 +3669,23 @@ var $$IMU_EXPORT$$;
 		}
 	};
 
+	var normalize_whitespace = function(str) {
+		// https://stackoverflow.com/a/11305926
+		return str
+			.replace(/[\u200B-\u200D\uFEFF]/g, '')
+			.replace(/[\u2800]/g, ' ');
+	};
+
+	var strip_whitespace = function(str) {
+		if (!str || typeof str !== "string") {
+			return str;
+		}
+
+		return normalize_whitespace(str)
+			.replace(/^\s+/, "")
+			.replace(/\s+$/, "");
+	};
+
 	var common_functions = {};
 	common_functions.fetch_imgur_webpage = function(do_request, api_cache, headers, url, cb) {
 		var cache_key = "imgur_webpage:" + url.replace(/^https?:\/\/(?:www\.)?imgur/, "imgur").replace(/[?#].*/, "");
@@ -4407,10 +4424,16 @@ var $$IMU_EXPORT$$;
 
 		var profile_to_url = function(profile) {
 			try {
+				// Try using the app's API
 				return profile.hd_profile_pic_url_info.url;
 			} catch (e) {
-				console_error(e);
-				return null;
+				// Try using the normal browser json
+				try {
+					return profile.profile_pic_url;
+				} catch (e) {
+					console_error(e, profile);
+					return null;
+				}
 			}
 		};
 
@@ -4792,17 +4815,39 @@ var $$IMU_EXPORT$$;
 
 				var url = host_url;
 				if (url.match(/:\/\/[^/]+\/+p\//)) {
-					// There are 2 h1's, the first should be the username (the second is the person's "name")
-					var username = current.querySelector("h1").innerText;
-					url = "https://www.instagram.com/" + username;//common_functions.instagram_username_from_sharedData(sharedData);
+					var username;
+
+					try {
+						var h2 = current.querySelector("h2 > a");
+						if (strip_whitespace(h2.innerText) === strip_whitespace(h2.title)) {
+							username = h2.innerText;
+						}
+					} catch (e) {}
+
+					if (!username) {
+						try {
+							// There are 2 h1's, the first should be the username (the second is the person's "name")
+							username = current.querySelector("section h1").innerText;
+						} catch (e) {
+							console_error(e);
+						}
+					}
+
+					if (username) {
+						url = "https://www.instagram.com/" + strip_whitespace(username);//common_functions.instagram_username_from_sharedData(sharedData);
+					} else {
+						url = null;
+					}
 				}
 
-				possible_infos.push({
-					type: "profile",
-					subtype: "page",
-					url: url,
-					element: current
-				});
+				if (url) {
+					possible_infos.push({
+						type: "profile",
+						subtype: "page",
+						url: url,
+						element: current
+					});
+				}
 			}
 
 			// popup
@@ -9651,6 +9696,8 @@ var $$IMU_EXPORT$$;
 			// thanks to cbadoud on github: https://github.com/qsniyg/maxurl/issues/203#issuecomment-578967505
 			// https://www.theonemilano.com/the-one-milano-uploads/2017/01/IMG_0657-768x573.jpg
 			(domain_nowww === "theonemilano.com" && src.indexOf("/the-one-milano-uploads/") >= 0) ||
+			// https://public.flashingjungle.com/exhibitionism/2020/01/tumblr_l7d540zpVM1qd5asfo1_1280-681x1024.jpg
+			domain === "public.flashingjungle.com" ||
 			// https://1.soompi.io/wp-content/blogs.dir/8/files/2015/09/HA-TFELT-Wonder-Girls-590x730.jpg -- doesn't work
 			// https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2018/01/GTA-6-Female-Protag-796x417.jpg -- does work
 			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|images|photos|blogs.dir)|\/+uploads)\//.test(src)
@@ -55670,23 +55717,6 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		function normalize_whitespace(str) {
-			// https://stackoverflow.com/a/11305926
-			return str
-				.replace(/[\u200B-\u200D\uFEFF]/g, '')
-				.replace(/[\u2800]/g, ' ');
-		}
-
-		function strip_whitespace(str) {
-			if (!str || typeof str !== "string") {
-				return str;
-			}
-
-			return normalize_whitespace(str)
-				.replace(/^\s+/, "")
-				.replace(/\s+$/, "");
-		}
-
 		function get_processed_styles(str) {
 			if (!str || typeof str !== "string" || !strip_whitespace(str))
 				return;
@@ -59175,7 +59205,7 @@ var $$IMU_EXPORT$$;
 
 			var needs_observer = function() {
 				var highlight = get_single_setting("highlightimgs_auto");
-				return highlight === "always" || highlight === "hover" || settings.replaceimgs_auto;
+				return highlight === "always" || highlight === "hover" || settings.replaceimgs_auto || (mouseover_mouse_enabled() && settings.mouseover_trigger_mouseover);
 			};
 
 			var create_mutationobserver = function() {
