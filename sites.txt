@@ -39,6 +39,7 @@
 1pondo.com
 1pondo.tv
 1x.com
+1z2x1z.com
 1zoom.me
 1zoom.ru
 20minutos.es
@@ -420,6 +421,7 @@ att2.citysbs.com
 attach.setn.com
 attachments.readmedia.com.s3.amazonaws.com
 attitude.co.uk
+auto.sk
 autoevolution.com
 autoherald.co.kr
 autoimg.cn
@@ -1441,6 +1443,7 @@ diariolibre.com
 diariorepublica.com.ar
 diarioshow.com
 diariouno.com.ar
+diasp.eu
 diasp.org
 dientumaytinh.com
 dienvienvietnam.vn
@@ -1555,6 +1558,7 @@ dynamic.indigoimages.ca
 dynamic.zacdn.com
 dynamicmedia.zuza.com
 dynasty-scans.com
+dyncdn2.com
 dzt1km7tv28ex.cloudfront.net
 e-hentai.org
 e-monsite.com
@@ -1886,6 +1890,7 @@ forum.purseblog.com
 forumfr.com
 forumhentai.net
 forumkinopoisk.ru
+forums.auscelebs.net
 forums.drom.ru
 forums.lutris.net
 forums.nexusmods.com
@@ -2342,6 +2347,7 @@ i.genius.com
 i.girlstop.info
 i.gosmd.gr
 i.gr-assets.com
+i.guancha.cn
 i.guim.co.uk
 i.gyazo.com
 i.gzn.jp
@@ -2719,6 +2725,8 @@ images.nbcolympics.com
 images.newindianexpress.com
 images.newrepublic.com
 images.news18.com
+images.newsnowgr.com
+images.newsnowgreece.com
 images.nintendolife.com
 images.niooz.fr
 images.nubilefilms.com
@@ -3192,6 +3200,7 @@ imgs-art-dragoart-386112.c.cdn77.org
 imgs.aixifan.com
 imgs.cc
 imgs.ckcdn.com
+imgs.firmenwagen.co.at
 imgs.ngaotruyen.com
 imgs.plurk.com
 imgsa.baidu.com
@@ -3706,6 +3715,7 @@ media-manager.noticiasaominuto.com
 media-manager.starsinsider.com
 media-spiceee.net
 media.8ch.net
+media.8kun.top
 media.aintitcool.com
 media.alienwarearena.com
 media.allure.com
@@ -4536,6 +4546,7 @@ picture-post.com
 pictures.4ever.eu
 pictures.icpress.cn
 pictures.ozy.com
+pictures.topspeed.com
 picua.org
 piczel.tv
 pikabu.ru
@@ -4685,6 +4696,7 @@ pstimaj.com
 psu.com
 ptcdn.info
 ptclassic.com
+public.flashingjungle.com
 public.muragon.com
 publicbroadcasting.net
 publicfeet.com
@@ -4897,6 +4909,7 @@ s-i.huffpost.com
 s-image.hnol.net
 s-nbcnews.com
 s.brunette.site
+s.car.info
 s.clickmyboobs.com
 s.deviant.life
 s.dou.ua
@@ -4992,6 +5005,7 @@ screenbeauty.com
 screencrush.com
 screens.latestscreens.com
 screensonic.net
+sdn.cz
 sdpnoticias.com
 searchcelebrityhd.com
 searx.info
@@ -5687,6 +5701,8 @@ ticketshow.ma
 tiedvirgins.com
 tienphong.vn
 tight-clothed.com
+tiktok.com
+tiktokcdn.com
 timdir.com
 timely-api-public.s3.amazonaws.com
 times.hinet.net
@@ -5872,6 +5888,7 @@ vcg.com
 vcimg.com
 vcmedia.vn
 veltra.com
+vercity.ru
 vestifinance.ru
 vetton.ru
 vettri.net
@@ -5975,6 +5992,7 @@ wallpapermix.club
 wallpaperplay.com
 wallpaperpulse.com
 wallpapers.jami.lt
+wallpapers.net
 wallpapers.wallhaven.cc
 wallpapers4screen.com
 wallpaperscave.ru
@@ -6182,6 +6200,7 @@ youdew88yl.com
 youloveit.ru
 youmediafanpage.akamaized.net
 youmekorea.com
+youngjump.jp
 youngporno.com
 yourdailygirls.com
 youthdaily.co.kr
@@ -6200,6 +6219,7 @@ z-celebs.com
 zadn.vn
 zastavki.com
 zazzybabes.com
+zbporn.tv
 zceleb.com
 zdf.de
 zdn.vn

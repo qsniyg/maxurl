@@ -1,3 +1,31 @@
+0.12.9
+
+New features:
+
+ * Option to toggle linking the image or video in the popup
+ * Separable horizontal/vertical scroll behaviors
+ * Option to disable live settings reloading (only visible if "Show advanced settings" is enabled)
+ * New keybinding ("o" by default) to open the current image in a new tab
+ * New keybinding ("shift+o" by default) to open the current image in a background tab
+ * Popup action is enabled for the userscript as well (although it may not work for some images due to userscript restrictions)
+ * Option to use `blob:` URLs over `data:` URLs (disabled by default)
+ * If the popup isn't supported for the image, the cursor will change to `not-allowed` for a brief duration (#197)
+ * Optional download button (#175)
+ * Support for ~20 new websites (using ~15 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including Instagram, TikTok)
+
+Bugfixes:
+
+ * Settings upgrading now properly works
+ * Using mouseover event works without needing highlight/replace images to be automatically run
+ * Tracking protection now works for GreaseMonkey
+ * Fix redirecting endlessly spinning for blacklisted images
+
+---
+
 0.12.8
 
 New features:
