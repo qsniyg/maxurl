@@ -1220,6 +1220,7 @@ var $$IMU_EXPORT$$;
 		mouseover_ui_gallerymax: 50,
 		mouseover_ui_closebtn: true,
 		mouseover_ui_optionsbtn: is_userscript ? true : false,
+		mouseover_ui_downloadbtn: false,
 		mouseover_ui_rotationbtns: false,
 		mouseover_ui_caption: true,
 		mouseover_ui_wrap_caption: true,
@@ -1830,6 +1831,15 @@ var $$IMU_EXPORT$$;
 			},
 			// While it works for the extension, it's more or less useless
 			userscript_only: true,
+			category: "popup",
+			subcategory: "ui"
+		},
+		mouseover_ui_downloadbtn: {
+			name: "Download Button",
+			description: "Enables a button to download the image",
+			requires: {
+				mouseover_ui: true
+			},
 			category: "popup",
 			subcategory: "ui"
 		},
@@ -56519,6 +56529,12 @@ var $$IMU_EXPORT$$;
 						topbarel.appendChild(optionsbtn);
 					}
 
+					if (settings.mouseover_ui_downloadbtn) {
+						// \uD83E\uDC47 = 🡇
+						var downloadbtn = addbtn("\uD83E\uDC47", _("Download (" + get_trigger_key_text(settings.mouseover_download_key) + ")"), download_popup_image, true);
+						topbarel.appendChild(downloadbtn);
+					}
+
 					if (settings.mouseover_ui_rotationbtns) {
 						var get_rotate_title = function(leftright) {
 							return _("rotate_" + leftright + "_btn") + " (" + get_trigger_key_text(settings["mouseover_rotate_" + leftright + "_key"]) + ")";
@@ -59317,6 +59333,37 @@ var $$IMU_EXPORT$$;
 			};
 		})();
 
+		var download_popup_image = function() {
+			var a = document.createElement("a");
+
+			// Starting with <video> in case another <img> gets added for unrelated reasons
+			var imgels = popups[0].getElementsByTagName("video");
+			if (imgels.length === 0)
+				imgels = popups[0].getElementsByTagName("img");
+			a.href = imgels[0].src;
+
+			if (popup_obj.filename.length > 0) {
+				a.setAttribute("download", popup_obj.filename);
+			} else {
+				var attr = document.createAttribute("download");
+				a.setAttributeNode(attr);
+			}
+
+			a.style.display = "none";
+			a.onclick = function(e) {
+				e.stopPropagation();
+				e.stopImmediatePropagation();
+				return true;
+			};
+
+			document.body.appendChild(a);
+			a.click();
+
+			setTimeout(function() {
+				document.body.removeChild(a);
+			}, 500);
+		};
+
 		var keyevent_remote = function(event) {
 			if (should_use_remote()) {
 				if (!("remote_info" in event)) {
@@ -59405,34 +59452,7 @@ var $$IMU_EXPORT$$;
 					// Clear the chord because keyup might not be called due to the save dialog popup
 					clear_chord();
 
-					var a = document.createElement("a");
-
-					// Starting with <video> in case another <img> gets added for unrelated reasons
-					var imgels = popups[0].getElementsByTagName("video");
-					if (imgels.length === 0)
-						imgels = popups[0].getElementsByTagName("img");
-					a.href = imgels[0].src;
-
-					if (popup_obj.filename.length > 0) {
-						a.setAttribute("download", popup_obj.filename);
-					} else {
-						var attr = document.createAttribute("download");
-						a.setAttributeNode(attr);
-					}
-
-					a.style.display = "none";
-					a.onclick = function(e) {
-						e.stopPropagation();
-						e.stopImmediatePropagation();
-						return true;
-					};
-
-					document.body.appendChild(a);
-					a.click();
-
-					setTimeout(function() {
-						document.body.removeChild(a);
-					}, 500);
+					download_popup_image();
 				} else if (trigger_complete(settings.mouseover_open_new_tab_key)) {
 					ret = false;
 					release_ignore = settings.mouseover_open_new_tab_key;
