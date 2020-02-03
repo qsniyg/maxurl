@@ -778,10 +778,17 @@ chrome.runtime.onMessage.addListener((message, sender, respond) => {
 	} else if (message.type === "redirect") {
 		redirects[sender.tab.id] = message.data;
 	} else if (message.type === "newtab") {
-		chrome.tabs.create({
+		var tab_options = {
 			url: message.data.imu.url,
 			openerTabId: sender.tab.id
-		}, function (tab) {
+		};
+
+		if (message.data.background)
+			tab_options.active = false;
+		else if (message.data.background === false) // if undefined, don't set it so that it will use the browser's default
+			tab_options.active = true;
+
+		chrome.tabs.create(tab_options, function (tab) {
 			debug("newTab", tab);
 			redirects[tab.id] = message.data.imu;
 			respond({
