@@ -4,7 +4,7 @@
 // ==UserScript==
 // @name              Image Max URL
 // @namespace         http://tampermonkey.net/
-// @version           0.12.8
+// @version           0.12.9
 // @description       Finds larger or original versions of images for 6200+ websites
 // @description:ko    6200개 이상의 사이트에 대해 더 크거나 원본 이미지를 찾아드립니다
 // @description:fr    Trouve des images plus grandes ou originales pour plus de 6200 sites
@@ -205,8 +205,11 @@ var $$IMU_EXPORT$$;
 	var remote_send_reply = null;
 	var remote_reply_ids = {};
 	var current_frame_id = null;
+	var current_frame_url = null;
+
 	if (is_extension) {
-		current_frame_id = get_random_id() + window.location.href;
+		current_frame_url = window.location.href;
+		current_frame_id = get_random_id() + " " + current_frame_url;
 
 		if (!is_in_iframe)
 			current_frame_id = "top";
@@ -399,7 +402,8 @@ var $$IMU_EXPORT$$;
 
 	var check_tracking_blocked = function(result) {
 		// FireMonkey returns null for result if blocked
-		if (!result || result.status === 0)
+		// GreaseMonkey returns null for status if blocked
+		if (!result || result.status === 0 || result.status === null)
 			return true;
 		return false;
 	};
@@ -422,11 +426,28 @@ var $$IMU_EXPORT$$;
 			var raw_request_do = do_request_raw;
 			if (is_userscript && settings.allow_browser_request) {
 				if (userscript_manager === "Falkon GreaseMonkey" ||
-					// USI doesn't properly support blob responses properly: https://bitbucket.org/usi-dev/usi/issues/13/various-problems-with-gm_xmlhttprequest
+					// USI doesn't properly support blob responses: https://bitbucket.org/usi-dev/usi/issues/13/various-problems-with-gm_xmlhttprequest
 					(userscript_manager === "USI" && data.need_blob_response)) {
 					raw_request_do = do_request_browser;
 					delete data.trackingprotection_failsafe;
 				}
+			}
+
+			if (data.responseType === "blob" && !settings.use_blob_over_arraybuffer) {
+				(function(real_onload) {
+					data.onload = function(resp) {
+						var newresp = resp;
+
+						if (resp.response) {
+							newresp = shallowcopy(resp);
+							newresp.response = new Blob([resp.response]);
+						}
+
+						real_onload(newresp);
+					};
+				})(data.onload);
+
+				data.responseType = "arraybuffer";
 			}
 
 			if (data.trackingprotection_failsafe && settings.allow_browser_request && do_request_browser) {
@@ -1126,6 +1147,13 @@ var $$IMU_EXPORT$$;
 		return parts.join("");
 	}
 
+	var old_settings_keys = [
+		"mouseover_trigger",
+		"mouseover_use_fully_loaded_video",
+		"mouseover_use_fully_loaded_image",
+		"mouseover_close_on_leave_el",
+		"mouseover_scroll_behavior",
+	];
 
 	var settings = {
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-530760246
@@ -1138,6 +1166,8 @@ var $$IMU_EXPORT$$;
 		settings_visible_description: true,
 		advanced_options: false,
 		allow_browser_request: true,
+		use_blob_over_arraybuffer: false,
+		allow_live_settings_reload: true,
 		redirect: true,
 		redirect_history: true,
 		canhead_get: true,
@@ -1168,6 +1198,9 @@ var $$IMU_EXPORT$$;
 		mouseover_close_el_policy: "both",
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/126
 		mouseover_allow_partial: is_extension ? "media" : "video",
+		mouseover_use_blob_over_data: true,
+		mouseover_enable_notallowed: true,
+		mouseover_notallowed_duration: 300,
 		//mouseover_use_fully_loaded_image: is_extension ? false : true,
 		//mouseover_use_fully_loaded_video: false,
 		mouseover_minimum_size: 20,
@@ -1190,6 +1223,7 @@ var $$IMU_EXPORT$$;
 		mouseover_ui_gallerymax: 50,
 		mouseover_ui_closebtn: true,
 		mouseover_ui_optionsbtn: is_userscript ? true : false,
+		mouseover_ui_downloadbtn: false,
 		mouseover_ui_rotationbtns: false,
 		mouseover_ui_caption: true,
 		mouseover_ui_wrap_caption: true,
@@ -1199,7 +1233,8 @@ var $$IMU_EXPORT$$;
 		mouseover_zoom_custom_percent: 100,
 		mouseover_pan_behavior: "drag",
 		mouseover_drag_min: 5,
-		mouseover_scroll_behavior: "zoom",
+		mouseover_scrolly_behavior: "zoom",
+		mouseover_scrollx_behavior: "gallery",
 		scroll_zoom_behavior: "fitfull",
 		mouseover_move_with_cursor: false,
 		zoom_out_to_close: false,
@@ -1207,6 +1242,8 @@ var $$IMU_EXPORT$$;
 		mouseover_position: "cursor",
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-531549043
 		mouseover_prevent_cursor_overlap: true,
+		mouseover_add_link: true,
+		mouseover_add_video_link: false,
 		mouseover_download: false,
 		// also thanks to 07416: https://github.com/qsniyg/maxurl/issues/25
 		mouseover_links: false,
@@ -1219,6 +1256,8 @@ var $$IMU_EXPORT$$;
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-541065461
 		mouseover_wait_use_el: false,
 		mouseover_download_key: ["s"],
+		mouseover_open_new_tab_key: ["o"],
+		mouseover_open_bg_tab_key: ["shift", "o"],
 		mouseover_rotate_left_key: ["e"],
 		mouseover_rotate_right_key: ["r"],
 		mouseover_flip_horizontal_key: ["h"],
@@ -1349,6 +1388,22 @@ var $$IMU_EXPORT$$;
 			imu_enabled_exempt: true,
 			advanced: true
 		},
+		use_blob_over_arraybuffer: {
+			name: "Use `Blob` over `ArrayBuffer`",
+			description: "Uses `Blob`s for XHRs instead of `ArrayBuffer`s. Keep this enabled unless your userscript manager doesn't support blob requests",
+			category: "general",
+			imu_enabled_exempt: true,
+			advanced: true,
+			hidden: true
+		},
+		allow_live_settings_reload: {
+			name: "Live settings reloading",
+			description: "Enables/disables live settings reloading. There shouldn't be a reason to disable this unless you're experiencing issues with this feature",
+			category: "general",
+			hidden: is_userscript && typeof GM_addValueChangeListener === "undefined",
+			imu_enabled_exempt: true,
+			advanced: true
+		},
 		redirect: {
 			name: "Enable redirection",
 			description: "Redirect images opened in their own tab",
@@ -1397,7 +1452,9 @@ var $$IMU_EXPORT$$;
 		mouseover_open_behavior: {
 			name: "Mouseover popup action",
 			description: "Determines how the mouseover popup will open",
-			extension_only: true,
+			// While it won't work for some images without the extension, let's not disable it outright either
+			//extension_only: true,
+			hidden: is_userscript && open_in_tab === nullfunc,
 			options: {
 				_type: "or",
 				popup: {
@@ -1539,6 +1596,16 @@ var $$IMU_EXPORT$$;
 			category: "popup",
 			subcategory: "open_behavior"
 		},
+		mouseover_use_blob_over_data: {
+			name: "Use `blob:` over `data:` URLs",
+			description: "Blob URLs are more efficient, but aren't supported by earlier browsers. Some websites also block `blob:` URLs",
+			requires: {
+				mouseover_open_behavior: "popup"
+			},
+			category: "popup",
+			subcategory: "open_behavior",
+			advanced: true
+		},
 		mouseover_use_fully_loaded_image: {
 			name: "Wait until image is fully loaded",
 			description: "Wait until the image has fully loaded before displaying it",
@@ -1556,6 +1623,29 @@ var $$IMU_EXPORT$$;
 				mouseover: true,
 				mouseover_open_behavior: "popup"
 			},
+			category: "popup",
+			subcategory: "open_behavior"
+		},
+		mouseover_enable_notallowed: {
+			name: "Enable `not-allowed` cursor",
+			description: "If the image isn't supported, the mouse cursor will change to a `not-allowed` cursor for a brief duration",
+			requires: {
+				mouseover_trigger_behavior: "keyboard"
+			},
+			category: "popup",
+			subcategory: "open_behavior"
+		},
+		mouseover_notallowed_duration: {
+			name: "`not-allowed` cursor duration",
+			description: "How long the `not-allowed` cursor should last",
+			requires: {
+				mouseover_enable_notallowed: true
+			},
+			type: "number",
+			number_min: 0,
+			number_int: true,
+			number_unit: "ms",
+			advanced: true,
 			category: "popup",
 			subcategory: "open_behavior"
 		},
@@ -1744,6 +1834,15 @@ var $$IMU_EXPORT$$;
 			},
 			// While it works for the extension, it's more or less useless
 			userscript_only: true,
+			category: "popup",
+			subcategory: "ui"
+		},
+		mouseover_ui_downloadbtn: {
+			name: "Download Button",
+			description: "Enables a button to download the image",
+			requires: {
+				mouseover_ui: true
+			},
 			category: "popup",
 			subcategory: "ui"
 		},
@@ -1985,9 +2084,9 @@ var $$IMU_EXPORT$$;
 			category: "popup",
 			subcategory: "behavior"
 		},
-		mouseover_scroll_behavior: {
-			name: "Popup scroll action",
-			description: "How the popup reacts to a scroll/mouse wheel event",
+		mouseover_scrolly_behavior: {
+			name: "Vertical scroll action",
+			description: "How the popup reacts to a vertical scroll/mouse wheel event",
 			options: {
 				_type: "or",
 				_group1: {
@@ -2013,6 +2112,29 @@ var $$IMU_EXPORT$$;
 			category: "popup",
 			subcategory: "behavior"
 		},
+		mouseover_scrollx_behavior: {
+			name: "Horizontal scroll action",
+			description: "How the popup reacts to a horizontal scroll/mouse wheel event",
+			options: {
+				_type: "or",
+				_group1: {
+					pan: {
+						name: "Pan"
+					},
+					gallery: {
+						name: "Gallery"
+					},
+					nothing: {
+						name: "None"
+					}
+				}
+			},
+			requires: {
+				mouseover_open_behavior: "popup"
+			},
+			category: "popup",
+			subcategory: "behavior"
+		},
 		scroll_zoom_behavior: {
 			name: "Zoom behavior",
 			description: "How zooming should work",
@@ -2026,9 +2148,10 @@ var $$IMU_EXPORT$$;
 					name: "Incremental"
 				}
 			},
-			requires: {
-				mouseover_scroll_behavior: "zoom"
-			},
+			requires: [
+				{mouseover_scrollx_behavior: "zoom"},
+				{mouseover_scrolly_behavior: "zoom"}
+			],
 			category: "popup",
 			subcategory: "behavior"
 		},
@@ -2036,8 +2159,7 @@ var $$IMU_EXPORT$$;
 			name: "Move with cursor",
 			description: "Moves the popup as the cursor moves",
 			requires: {
-				mouseover_open_behavior: "popup",
-				mouseover_trigger_behavior: "mouse"
+				mouseover_open_behavior: "popup"
 			},
 			category: "popup",
 			subcategory: "behavior"
@@ -2045,9 +2167,10 @@ var $$IMU_EXPORT$$;
 		zoom_out_to_close: {
 			name: "Zoom out fully to close",
 			description: "Closes the popup if you zoom out past the minimum zoom",
-			requires: {
-				mouseover_scroll_behavior: "zoom"
-			},
+			requires: [
+				{mouseover_scrollx_behavior: "zoom"},
+				{mouseover_scrolly_behavior: "zoom"}
+			],
 			category: "popup",
 			subcategory: "close_behavior"
 		},
@@ -2088,18 +2211,66 @@ var $$IMU_EXPORT$$;
 			category: "popup",
 			subcategory: "open_behavior"
 		},
-		mouseover_download: {
-			name: "Clicking image downloads",
-			description: "Instead of opening the link in a new tab, it will download the image instead",
+		mouseover_add_link: {
+			name: "Link image",
+			description: "Adds a link to the image in the popup",
 			requires: {
 				mouseover_open_behavior: "popup"
 			},
 			category: "popup",
 			subcategory: "behavior"
 		},
+		mouseover_add_video_link: {
+			name: "Link video",
+			description: "Adds a link to the video in the popup",
+			requires: {
+				mouseover_open_behavior: "popup",
+				allow_video: true
+			},
+			category: "popup",
+			subcategory: "behavior"
+		},
+		mouseover_download: {
+			name: "Clicking link downloads",
+			description: "Instead of opening the link in a new tab, it will download the image/video instead",
+			requires: [
+				{
+					mouseover_open_behavior: "popup",
+					mouseover_add_link: true
+				},
+				{
+					mouseover_open_behavior: "popup",
+					mouseover_add_video_link: true
+				},
+			],
+			category: "popup",
+			subcategory: "behavior"
+		},
 		mouseover_download_key: {
 			name: "Download key",
 			description: "Downloads the image in the popup when this key is pressed",
+			requires: {
+				mouseover_open_behavior: "popup"
+			},
+			type: "keysequence",
+			category: "popup",
+			subcategory: "behavior"
+		},
+		mouseover_open_new_tab_key: {
+			name: "Open in new tab key",
+			description: "Opens the image in the popup in a new tab when this key is pressed",
+			hidden: is_userscript && open_in_tab === nullfunc,
+			requires: {
+				mouseover_open_behavior: "popup"
+			},
+			type: "keysequence",
+			category: "popup",
+			subcategory: "behavior"
+		},
+		mouseover_open_bg_tab_key: {
+			name: "Open in background tab key",
+			description: "Opens the image in the popup in a new tab without switching to it when this key is pressed",
+			hidden: is_userscript && open_in_tab === nullfunc,
 			requires: {
 				mouseover_open_behavior: "popup"
 			},
@@ -3548,6 +3719,23 @@ var $$IMU_EXPORT$$;
 		}
 	};
 
+	var normalize_whitespace = function(str) {
+		// https://stackoverflow.com/a/11305926
+		return str
+			.replace(/[\u200B-\u200D\uFEFF]/g, '')
+			.replace(/[\u2800]/g, ' ');
+	};
+
+	var strip_whitespace = function(str) {
+		if (!str || typeof str !== "string") {
+			return str;
+		}
+
+		return normalize_whitespace(str)
+			.replace(/^\s+/, "")
+			.replace(/\s+$/, "");
+	};
+
 	var common_functions = {};
 	common_functions.fetch_imgur_webpage = function(do_request, api_cache, headers, url, cb) {
 		var cache_key = "imgur_webpage:" + url.replace(/^https?:\/\/(?:www\.)?imgur/, "imgur").replace(/[?#].*/, "");
@@ -4286,10 +4474,16 @@ var $$IMU_EXPORT$$;
 
 		var profile_to_url = function(profile) {
 			try {
+				// Try using the app's API
 				return profile.hd_profile_pic_url_info.url;
 			} catch (e) {
-				console_error(e);
-				return null;
+				// Try using the normal browser json
+				try {
+					return profile.profile_pic_url;
+				} catch (e) {
+					console_error(e, profile);
+					return null;
+				}
 			}
 		};
 
@@ -4671,17 +4865,39 @@ var $$IMU_EXPORT$$;
 
 				var url = host_url;
 				if (url.match(/:\/\/[^/]+\/+p\//)) {
-					// There are 2 h1's, the first should be the username (the second is the person's "name")
-					var username = current.querySelector("h1").innerText;
-					url = "https://www.instagram.com/" + username;//common_functions.instagram_username_from_sharedData(sharedData);
+					var username;
+
+					try {
+						var h2 = current.querySelector("h2 > a");
+						if (strip_whitespace(h2.innerText) === strip_whitespace(h2.title)) {
+							username = h2.innerText;
+						}
+					} catch (e) {}
+
+					if (!username) {
+						try {
+							// There are 2 h1's, the first should be the username (the second is the person's "name")
+							username = current.querySelector("section h1").innerText;
+						} catch (e) {
+							console_error(e);
+						}
+					}
+
+					if (username) {
+						url = "https://www.instagram.com/" + strip_whitespace(username);//common_functions.instagram_username_from_sharedData(sharedData);
+					} else {
+						url = null;
+					}
 				}
 
-				possible_infos.push({
-					type: "profile",
-					subtype: "page",
-					url: url,
-					element: current
-				});
+				if (url) {
+					possible_infos.push({
+						type: "profile",
+						subtype: "page",
+						url: url,
+						element: current
+					});
+				}
 			}
 
 			// popup
@@ -6069,10 +6285,55 @@ var $$IMU_EXPORT$$;
 
 
 		if (domain_nosub === "photoshelter.com") {
-			return src
+			newsrc = src
 				.replace(/\/img-get2\/([^/]*)\/(?:[a-z]+=[^/]*\/)*([^/]*)$/, "/img-get2/$1/fit=99999999999/$2")
 				.replace(/\/img-get\/([^/]*)(?:\/[ts]\/[0-9]+\/(?:[0-9]+\/)?)?([^/]*)$/, "/img-get2/$1/fit=99999999999/$2")
 				.replace(/\/+fit=[0-9x]+\/+fit=[0-9x]+/, "/fit=99999999999");
+
+			if (newsrc !== src)
+				return newsrc;
+
+			match = src.match(/\/img-get2\/+(I[^/]{10,})\//);
+			if (match && options.force_page) {
+				id = match[1];
+				var cache_key = "photoshelter_page:" + id;
+				api_cache.fetch(cache_key, function(data) {
+					if (data) {
+						return options.cb({
+							url: src,
+							extra: {
+								page: data
+							}
+						});
+					} else {
+						return options.cb(null);
+					}
+				}, function(done) {
+					options.do_request({
+						url: "https://www.photoshelter.com/image/" + id,
+						method: "GET",
+						onload: function(resp) {
+							if (resp.readyState < 4)
+								return;
+
+							if (resp.status !== 200) {
+								return done(null, false);
+							}
+
+							var url = resp.finalUrl;
+							if (url.match(/\.photoshelter\.com\/+image\/+/)) {
+								return done(url, 12*60*60);
+							} else {
+								return done(null, false);
+							}
+						}
+					});
+				});
+
+				return {
+					waiting: true
+				};
+			}
 		}
 
 		if (domain_nowww === "celebzz.com" &&
@@ -6897,6 +7158,7 @@ var $$IMU_EXPORT$$;
 			(domain_nosub === "tower.jp" && /\/~\/+media\//.test(src)) ||
 			domain === "images.boosty.to" ||
 			domain === "media.nbcnewyork.com" ||
+			domain_nosub === "sdn.cz" ||
 			src.match(/\/demandware\.static\//) ||
 			src.match(/\?i10c=[^/]*$/) ||
 			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|blogs.dir)|\/+uploads)\//.test(src)
@@ -6934,6 +7196,7 @@ var $$IMU_EXPORT$$;
 			domain === "pc.wangpan.xycdn.n0808.com" ||
 			domain === "resource.meihua.info" ||
 			domain === "i.ezbuy.sg" ||
+			domain === "i.guancha.cn" ||
 			domain === "upload-images.jianshu.io") {
 			src = src.replace(/\?.*$/, "");
 		}
@@ -7275,6 +7538,7 @@ var $$IMU_EXPORT$$;
 			(domain_nowww === "porncomix.info" && src.indexOf("/images/") >= 0) ||
 			(domain === "celebsfake.adultcase.com" && src.indexOf("/files/") >= 0) ||
 			(domain_nowww === "theonemilano.com" && src.indexOf("/the-one-milano-uploads/") >= 0) ||
+			domain === "public.flashingjungle.com" ||
 			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|images|photos|blogs.dir)|\/+uploads)\//.test(src)
 			/*src.indexOf("/wp/uploads/") >= 0*/
 			) {
@@ -10841,6 +11105,10 @@ var $$IMU_EXPORT$$;
 				.replace(/-[^-_/.]*(\.[^/.]*)$/, "-wide$1");
 		}
 
+		if (domain_nowww === "superwallpapers.in") {
+			return src.replace(/(\/hdwallpapers\/+[^/]+)_[0-9]+_[0-9]+_[0-9]+_[0-9a-f]{2}(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
 
 		if (domain === "cdn.wallpaper.com") {
 			regex = /\/main\/styles\/[^/]*\/[^/]*\/(.*\/)?(?:l-)?([^/]*)/;
@@ -11779,6 +12047,79 @@ var $$IMU_EXPORT$$;
 			return src.replace(/_[a-z](\.[^/.]*)$/, "_b$1");
 		}
 
+		if (host_domain_nosub === "tiktok.com" && options && options.cb && options.do_request && options.element) {
+			var query_tiktok = function(url, cb) {
+				var normalized_url = url
+					.replace(/^[a-z]+:\/\//, "https://")
+					.replace(/:\/\/[^/]*tiktok\.com\/+/, "://www.tiktok.com/")
+					.replace(/\/*(?:[?#].*)?$/, "");
+				var cache_key = "tiktok:" + normalized_url;
+				api_cache.fetch(cache_key, cb, function(done) {
+					options.do_request({
+						url: url,
+						method: "GET",
+						onload: function(resp) {
+							if (resp.readyState < 4)
+								return;
+
+							if (resp.status !== 200) {
+								console_error(resp);
+								return done(null, false);
+							}
+
+							var match = resp.responseText.match(/<script[^>]+id="__NEXT_DATA__"[^>]*>({.*?})\s*<\/script>/);
+							if (!match) {
+								console_error("Unable to find match", resp);
+								return done(null, false);
+							}
+
+							try {
+								var json = JSON_parse(match[1]);
+								return done(json, 60*60);
+							} catch (e) {
+								console_error(e);
+								return done(null, false);
+							}
+						}
+					});
+				});
+			};
+
+			var current = options.element;
+			while (current) {
+				if (current.tagName === "A" && /\/@[^/]+\/+video\/+[0-9]+\/*(?:[?#].*)?$/.test(current.href)) {
+					query_tiktok(current.href, function(data) {
+						if (!data) {
+							return options.cb(null);
+						}
+
+						try {
+							var item = data.props.pageProps.videoData.itemInfos;
+							var videourl = item.video.urls[0];
+							var caption = item.text;
+
+							return options.cb({
+								url: videourl,
+								extra: {
+									caption: caption
+								},
+								video: true
+							});
+						} catch (e) {
+							console_error(e);
+							return options.cb(null);
+						}
+					});
+
+					return {
+						waiting: true
+					};
+				}
+
+				current = current.parentElement;
+			}
+		}
+
 		if ((domain_nosub === "pstatp.com" ||
 			 domain_nosub === "ipstatp.com" ||
 			 domain_nosub === "sgpstatp.com")
@@ -11791,9 +12132,9 @@ var $$IMU_EXPORT$$;
 				url: src
 					.replace(/(:\/\/[^/]*\/+)(?:medium|large|obj|aweme|list)\/+(?:[0-9]+x[0-9]+\/+)?/, "$1origin/")
 					.replace(/(:\/\/[^/]+\/+origin\/+.*?)\.image(?:[?$].*)?$/, "$1.jpg")
-					.replace(/\/img\/+(.+\/+[0-9a-f]{10,}(?:\/+[^/]+)?)~noop(\.[^/.]*)(?:[?#].*)?$/, "/origin/$1$2")
+					.replace(/\/img\/+(.+\/+[0-9a-f]{10,}(?:\/+[^/]+|\.[^/.~?#]+)?)~noop(\.[^/.]*)(?:[?#].*)?$/, "/origin/$1$2")
 					.replace(/(\/origin\/+.+\/+[0-9a-f]{10,}\/+[^/.]+\.[^/.]+)\.[^/.]+$/, "$1")
-					.replace(/(\/img\/+.+\/+[0-9a-f]{10,}(?:\/+[^/]+)?~)[^/.]*?(\.[^/.]*)(?:[?#].*)?$/, "$1noop$2")
+					.replace(/(\/img\/+.+\/+[0-9a-f]{10,}(?:\/+[^/]+|\.[^/.~?#]+)?~)[^/.]*?(\.[^/.]*)(?:[?#].*)?$/, "$1noop$2")
 					.replace(/\?imageView2.*/, ""),
 				can_head: false // 404
 			};
@@ -11828,6 +12169,13 @@ var $$IMU_EXPORT$$;
 
 		if (domain === "p16-sg-default.akamaized.net") {
 			return src.replace(/^[a-z]+:\/\/[^/]+\/+china-img\/+/, "https://p0.pstatp.com/");
+		}
+
+		if (domain_nosub === "tiktokcdn.com" && /^v[0-9]*\./.test(domain) && src.indexOf("/video/") >= 0) {
+			return {
+				url: src,
+				video: true
+			};
 		}
 
 		if (domain === "img.jizy.cn") {
@@ -17307,6 +17655,7 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "pornstarsadvice.com" ||
 			domain_nowww === "porntb.com" ||
 			domain_nowww === "fetishburg.com" ||
+			domain_nosub === "zbporn.tv" ||
 			domain === "cdn.pornstill.com") {
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+remote_control\.php\?(?:.*?&)?file=([^&]*).*?$/, "$1");
 			if (newsrc !== src)
@@ -17321,6 +17670,8 @@ var $$IMU_EXPORT$$;
 				max = "1920x1920";
 			} else if (domain_nowww === "fetishburg.com") {
 				max = "1920x1200";
+			} else if (domain_nosub === "zbporn.tv") {
+				max = "9998x9998";
 			}
 
 			match = src.match(/\/main\/+([0-9]+x[0-9]+)\/+/);
@@ -17639,7 +17990,9 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "images.vogue.it") {
-			return src.replace(/(\/gallery\/[0-9]+\/)[A-Za-z]+(\/[-0-9a-f]+\.[^/.]*)$/, "$1Original$2");
+			return src
+				.replace(/(\/gallery\/[0-9]+\/)[A-Za-z]+(\/[-0-9a-f]+\.[^/.]*)$/, "$1Original$2")
+				.replace(/(\/Photovogue\/+[-0-9a-f]{10,})_small(\.[^/.]+)(?:[?#].*)?$/, "$1_large$2");
 		}
 
 		if (domain === "blogs.glamour.de") {
@@ -17678,7 +18031,8 @@ var $$IMU_EXPORT$$;
 				.replace(/__resized_[0-9]+x[0-9]+(\.[^/.]*)$/, "$1");
 		}
 
-		if (domain === "media.8ch.net") {
+		if (domain === "media.8ch.net" ||
+			domain === "media.8kun.top") {
 			return src.replace(/\/file_store\/thumb\//, "/file_store/");
 		}
 
@@ -19440,8 +19794,34 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "y.yarn.co") {
-			return src.replace(/(:\/\/[^/]*\/[-0-9a-f]+)_thumb(\.[^/.]*)$/,
-							   "$1_screenshot$2");
+			if (/\/site\/+assets\/+images\/+black\./.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
+
+			obj = {
+				url: src
+			};
+
+			match = src.match(/:\/\/[^/]*\/([-0-9a-f]+)(?:_.*?)(?:[?#].*)?$/);
+			if (match) {
+				obj.extra = {page: "https://yarn.co/yarn-clip/" + match[1]};
+			}
+
+			newsrc = src.replace(/(:\/\/[^/]*\/[-0-9a-f]+)_thumb(\.[^/.]*)$/, "$1_screenshot$2");
+			if (newsrc !== src) {
+				obj.url = newsrc;
+				return obj;
+			}
+
+			newsrc = src.replace(/(:\/\/[^/]*\/[-0-9a-f]+)_[0-9]+_[wh]_[0-9]+\.gif(?:[?#].*)?$/, "$1.mp4");
+			if (newsrc !== src) {
+				obj.url = newsrc;
+				obj.video = true;
+
+				return obj;
+			}
 		}
 
 		if (domain === "images.genius.com") {
@@ -26472,7 +26852,8 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(:\/\/[^/]*\/+[^/]*\/+)t([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
 		}
 
-		if (domain_nowww === "diasp.org") {
+		if (domain_nowww === "diasp.org" ||
+			domain_nowww === "diasp.eu") {
 			return src.replace(/\/uploads\/+images\/+[a-z_]+_([0-9a-f]{10,}\.[^/.]*)(?:[?#].*)?$/, "/uploads/images/$1");
 		}
 
@@ -27653,6 +28034,10 @@ var $$IMU_EXPORT$$;
 		}
 
 
+
+		if (domain === "pictures.topspeed.com") {
+			return src.replace(/(\/IMG\/+)crop\/+([0-9]{6}\/+[^/]+)_[0-9]+x[0-9]+[wh](\.[^/.]+)(?:[?#].*)?$/, "$1jpg/$2$3");
+		}
 
 
 		if (domain === "monsite.woopic.com") {
@@ -31214,6 +31599,108 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/movie\/+(?:[0-9]\/+){5,}[^/]+-)(?:preview|240p-400|480p-1000)\./, "$1720p-hd-2500.");
 		}
 
+		if (domain === "images.newsnowgr.com" ||
+			domain === "images.newsnowgreece.com") {
+			newsrc = src.replace(/:\/\/[^/]+\/+([0-9]{3}\/+[0-9]+\/+)[^/]+-([0-9]+)-[0-9]+x[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "://images.newsnowgreece.com/$1$2$3");
+			obj = {
+				url: newsrc
+			};
+
+			match = src.match(/:\/\/[^/]+\/+[0-9]{3}\/+([0-9]+)\/+(?:[^/]+-)?([0-9]+)(?:-[0-9]+x[0-9]+)?\.[^/.]+(?:[?#].*)?$/);
+			if (match) {
+				obj.extra = {page: "http://www.newsnowgr.com/photo/" + match[1] + "/" + match[2] + "/"};
+			}
+
+			return obj;
+		}
+
+		if (domain_nowww === "wallpapers.net") {
+			newsrc = src.replace(/(\/web\/+wallpapers\/+[^/]+\/+thumbnail\/+)(?:xs|sm|md)\./, "$1lg.");
+			if (newsrc !== src)
+				return newsrc;
+
+			newsrc = src.replace(/(:\/\/[^/]+\/+)([^/]+\/+)download\/+/, "$1web/wallpapers/$2");
+			if (newsrc !== src)
+				return newsrc;
+
+			match = src.match(/\/web\/+wallpapers\/+([^/]+)\/+(?:[0-9]+x[0-9]+|thumbnail)/);
+			if (match && options && options.do_request && options.cb) {
+				var page = "https://wallpapers.net/" + match[1];
+
+				cache_key = "wallpapers.net:" + page;
+				api_cache.fetch(cache_key, options.cb, function(done) {
+					options.do_request({
+						url: page,
+						method: "GET",
+						headers: {
+							"Accept-Language": "en;q=0.9"
+						},
+						onload: function(resp) {
+							if (resp.readyState < 4)
+								return;
+
+							if (resp.status !== 200) {
+								return done(null, false);
+							}
+
+							var match = resp.responseText.match(/<p class="small">Resolution:\s*<a href="\/[^"]+"\s*>([0-9]+x[0-9]+)<\/a>/);
+							if (!match) {
+								console_error("Unable to find match", resp);
+								return done(null, false);
+							}
+
+							return done({
+								url: src.replace(/(\/web\/+wallpapers\/+[^/]+\/+).*?(\.[^/.]+)(?:[?#].*)?$/, "$1" + match[1] + "$2"),
+								extra: {
+									page: resp.finalUrl
+								}
+							}, 12*60*60);
+						}
+					});
+				});
+
+				return {
+					waiting: true
+				};
+			}
+		}
+
+		if (domain_nowww === "youngjump.jp") {
+			return src.replace(/(\/images\/+)tn([0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1photo$2");
+		}
+
+		if (domain === "forums.auscelebs.net") {
+			return src.replace(/(\/[0-9]+\/+)thumbs\/+([^/]+\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "dyncdn2.com") {
+			return src.replace(/(\/mimages\/+[0-9]+\/+)over_opt\./, "$1poster_opt.");
+		}
+
+		if (domain_nosub === "1z2x1z.com") {
+			if (/\/wp-content\/+plugins\/+use-your-drive\/+css\/+images\//.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
+		}
+
+		if (domain_nosub === "vercity.ru") {
+			return src.replace(/(\/gallery\/+img\/+.*\/)[0-9]+x[0-9]*\/+([^/]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "auto.sk") {
+			return src.replace(/(\/static\/+gallery\/+[0-9]{4}\/+[0-9]{2}\/+[0-9a-f]{5,}\/+[0-9a-f]{5,}\/+[0-9]+)-thumb(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain === "imgs.firmenwagen.co.at") {
+			return src.replace(/(:\/\/[^/]+\/+m\/+[0-9]+_[0-9]+)_[0-9]+-[0-9]+-[0-9]+_(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain === "s.car.info") {
+			return src.replace(/(\/image_files\/+)[0-9]+\/+/, "$1orig/");
+		}
+
 
 
 
@@ -32183,6 +32670,21 @@ var $$IMU_EXPORT$$;
 						});
 
 						return "waiting";
+					}
+
+					return "default";
+				}
+			};
+		}
+
+		if (host_domain_nosub === "tiktok.com") {
+			return {
+				gallery: function(el, nextprev) {
+					if (el.tagName === "VIDEO" && el.parentElement && el.parentElement.parentElement) {
+						if (el.parentElement.classList.contains("video-card") &&
+							el.parentElement.parentElement.classList.contains("image-card")) {
+							return get_next_in_gallery(el.parentElement.parentElement, nextprev);
+						}
 					}
 
 					return "default";
@@ -33385,7 +33887,7 @@ var $$IMU_EXPORT$$;
 				real_finalcb(newurl, newobj, data);
 			};
 
-			if (false && !newhref[0].can_head || newhref[0].always_ok) {
+			if (false && (!newhref[0].can_head || newhref[0].always_ok)) {
 				var newurl = newhref[0].url;
 
 				if (newurl === window.location.href) {
@@ -34042,7 +34544,7 @@ var $$IMU_EXPORT$$;
 			if (category in subcategories) {
 				for (var subcat in subcategories[category]) {
 					var newsubdiv = document.createElement("div");
-					newsubdiv.id = "subcat_ " + subcat;
+					newsubdiv.id = "subcat_" + subcat;
 					newsubdiv.classList.add("subcat");
 
 					var h3 = document.createElement("h3");
@@ -34280,7 +34782,7 @@ var $$IMU_EXPORT$$;
 								do_update_setting(setting, value, meta);
 							}
 
-							settings[setting] = new_value;
+							//settings[setting] = new_value;
 							check_disabled_options();
 							show_warnings();
 						});
@@ -34339,7 +34841,7 @@ var $$IMU_EXPORT$$;
 					savebutton.innerText = _("save");
 					savebutton.onclick = function() {
 						do_update_setting(setting, textarea.value, meta);
-						settings[setting] = textarea.value;
+						//settings[setting] = textarea.value;
 					};
 
 					sub_ta_td.appendChild(textarea);
@@ -34414,7 +34916,8 @@ var $$IMU_EXPORT$$;
 					}
 
 					var sub_units_td = document.createElement("td");
-					sub_units_td.style = "display:inline";
+					//sub_units_td.style = "display:inline";
+					sub_units_td.classList.add("number_units");
 					if (meta.number_unit)
 						sub_units_td.innerText = _(meta.number_unit);
 
@@ -34450,7 +34953,7 @@ var $$IMU_EXPORT$$;
 						if (recording_keys) {
 							if (keysequence_valid(options_chord)) {
 								do_update_setting(setting, options_chord, meta);
-								settings[setting] = options_chord;
+								//settings[setting] = options_chord;
 
 								do_cancel();
 							}
@@ -34605,6 +35108,16 @@ var $$IMU_EXPORT$$;
 		document.body.appendChild(saved_el);
 	}
 
+	function get_single_setting_raw(value) {
+		if (value instanceof Array)
+			return value[0];
+		return value;
+	}
+
+	function get_single_setting(setting) {
+		return get_single_setting_raw(settings[setting]);
+	}
+
 	function parse_value(value) {
 		try {
 			return JSON_parse(value);
@@ -34676,6 +35189,7 @@ var $$IMU_EXPORT$$;
 		if (value === settings[key])
 			return false;
 
+		value = deepcopy(value);
 		settings[key] = value;
 
 		if (is_extension) {
@@ -34690,6 +35204,9 @@ var $$IMU_EXPORT$$;
 	}
 
 	function settings_updated_cb(changes) {
+		if (!settings.allow_live_settings_reload)
+			return;
+
 		//console_log(message);
 		var changed = false;
 
@@ -34821,6 +35338,21 @@ var $$IMU_EXPORT$$;
 			version = 3;
 		}
 
+		if (version === 3) {
+			if ("mouseover_scroll_behavior" in new_settings) {
+				if (get_single_setting_raw(new_settings.mouseover_scroll_behavior) !== "zoom") {
+					update_setting("mouseover_scrollx_behavior", new_settings.mouseover_scroll_behavior);
+				}
+
+				update_setting("mouseover_scrolly_behavior", new_settings.mouseover_scroll_behavior);
+			}
+
+			update_setting("settings_version", 4);
+			changed = true;
+
+			version = 4;
+		}
+
 		cb(changed);
 	}
 
@@ -34861,27 +35393,47 @@ var $$IMU_EXPORT$$;
 	function do_config() {
 		if (is_userscript || is_extension) {
 			var settings_done = 0;
-			for (var setting in settings) {
-				(function(setting) {
-					get_value(setting, function(value) {
-						settings_done++;
-						update_setting_from_host(setting, value);
+			var total_settings = Object.keys(settings).length + old_settings_keys.length;
 
-						if (typeof GM_addValueChangeListener !== "undefined") {
-							GM_addValueChangeListener(setting, function(name, oldValue, newValue, remote) {
-								if (remote === false)
-									return;
+			var add_value_change_listeners = function(cb) {
+				if (typeof GM_addValueChangeListener === "undefined") {
+					return cb();
+				}
 
-								var updated = {};
-								updated[name] = {newValue: newValue};
-								settings_updated_cb(updated);
-							});
-						}
+				for (var setting in settings) {
+					GM_addValueChangeListener(setting, function(name, oldValue, newValue, remote) {
+						if (remote === false)
+							return;
 
-						if (settings_done >= Object.keys(settings).length)
-							upgrade_settings(start);
+						var updated = {};
+						updated[name] = {newValue: newValue};
+						settings_updated_cb(updated);
 					});
-				})(setting);
+				}
+
+				cb();
+			};
+
+			var process_setting = function(setting) {
+				get_value(setting, function(value) {
+					settings_done++;
+					update_setting_from_host(setting, value);
+
+					if (settings_done >= total_settings)
+						upgrade_settings(function(value) {
+							add_value_change_listeners(function() {
+								start(value);
+							});
+						});
+				});
+			};
+
+			for (var setting in settings) {
+				process_setting(setting);
+			}
+
+			for (var i = 0; i < old_settings_keys.length; i++) {
+				process_setting(old_settings_keys[i]);
 			}
 		} else {
 			start();
@@ -35012,6 +35564,35 @@ var $$IMU_EXPORT$$;
 		}
 	}
 
+	var get_window_url = function() {
+		return window.URL || window.webkitURL;
+	};
+
+	var create_dataurl = function(blob, cb) {
+		var a = new FileReader();
+		a.onload = function(e) {
+			try {
+				cb(e.target.result);
+			} catch (e) {
+				console_error(e);
+				console_error(e.stack);
+				cb(null);
+			}
+		};
+		a.readAsDataURL(blob);
+	};
+
+	var create_objecturl = function(blob) {
+		return get_window_url().createObjectURL(blob);
+	};
+
+	var revoke_objecturl = function(objecturl) {
+		if (is_element(objecturl))
+			objecturl = objecturl.src;
+
+		return get_window_url().revokeObjectURL(objecturl);
+	};
+
 	function check_image_get(obj, cb, processing) {
 		if (!obj || !obj[0]) {
 			return cb(null);
@@ -35023,6 +35604,7 @@ var $$IMU_EXPORT$$;
 
 		var method = "GET";
 		var responseType = "blob";
+		var last_objecturl = null;
 
 		var incomplete_request = false;
 		if (processing.incomplete_image || (is_probably_video(obj[0]) && processing.incomplete_video))
@@ -35048,6 +35630,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		function err_cb() {
+			revoke_objecturl(last_objecturl);
 			obj.shift();
 			return check_image_get(obj, cb, processing);
 		}
@@ -35127,7 +35710,7 @@ var $$IMU_EXPORT$$;
 				var is_video = false;
 
 				// TODO: improve
-				if (parsed_headers["content-type"] && /^\s*\[?video\//.test(parsed_headers["content-type"])) {
+				if (obj[0].video || parsed_headers["content-type"] && /^\s*\[?video\//.test(parsed_headers["content-type"])) {
 					is_video = true;
 				}
 
@@ -35242,34 +35825,39 @@ var $$IMU_EXPORT$$;
 					return;
 				}
 
-				var a = new FileReader();
-				a.onload = function(e) {
-					try {
-						if (!is_video) {
-							var img = document.createElement("img");
-							img.src = e.target.result;
-							img.onload = function() {
-								// Firefox thinks SVGs have an empty naturalWidth/naturalHeight
-								if (img.naturalWidth === 0 || img.naturalHeight === 0) {
-									return err_cb();
-								}
+				var loadcb = function(urldata) {
+					last_objecturl = urldata;
 
-								good_cb(img);
-							};
-							img.onerror = function() {
-								err_cb();
-							};
-						} else {
-							var video = create_video_el();
-							video.src = e.target.result;
-						}
-					} catch (e) {
-						console_error(e);
-						console_error(e.stack);
-						err_cb();
+					if (!urldata) {
+						return err_cb();
+					}
+
+					if (!is_video) {
+						var img = document.createElement("img");
+						img.src = urldata;
+						img.onload = function() {
+							// Firefox thinks SVGs have an empty naturalWidth/naturalHeight
+							if (img.naturalWidth === 0 || img.naturalHeight === 0) {
+								return err_cb();
+							}
+
+							good_cb(img);
+						};
+						img.onerror = function() {
+							err_cb();
+						};
+					} else {
+						var video = create_video_el();
+						video.src = urldata;
 					}
 				};
-				a.readAsDataURL(resp.response);
+
+				if (!settings.mouseover_use_blob_over_data) {
+					create_dataurl(resp.response, loadcb);
+				} else {
+					var objecturl = create_objecturl(resp.response);
+					loadcb(objecturl);
+				}
 			}
 		};
 
@@ -35405,6 +35993,7 @@ var $$IMU_EXPORT$$;
 		var mouseY = 0;
 		var mouseAbsX = 0;
 		var mouseAbsY = 0;
+		var mouse_frame_id = "top";
 
 		var mouseContextX = 0;
 		var mouseContextY = 0;
@@ -35421,6 +36010,7 @@ var $$IMU_EXPORT$$;
 		var processing_list = [];
 		var popups = [];
 		var popup_obj = null;
+		var popup_objecturl = null;
 		var popup_el = null;
 		var real_popup_el = null;
 		var next_popup_el = null;
@@ -35447,6 +36037,7 @@ var $$IMU_EXPORT$$;
 
 		var waitingel = null;
 		var waitingstyleel = null;
+		var waitingel_cursor = null;
 		var elwaitingstyleclass = null;
 		var elwaitingstyleel = null;
 		var waitingsize = 200;
@@ -35509,7 +36100,12 @@ var $$IMU_EXPORT$$;
 			waitingel.style.top = (y - (waitingsize / 2)) + "px";
 		}
 
-		function start_waiting(el) {
+		function start_waiting(el, cursor) {
+			if (!cursor)
+				cursor = "wait";
+
+			waitingel_cursor = cursor;
+
 			waiting = true;
 
 			if (!settings.mouseover_wait_use_el) {
@@ -35518,7 +36114,7 @@ var $$IMU_EXPORT$$;
 				}
 
 				waitingstyleel = document.createElement("style");
-				waitingstyleel.innerText = "* {cursor: wait!important}";
+				waitingstyleel.innerText = "* {cursor: " + cursor + "!important}";
 				document.documentElement.appendChild(waitingstyleel);
 				return;
 			}
@@ -35527,7 +36123,7 @@ var $$IMU_EXPORT$$;
 				waitingel = document.createElement("div");
 				set_el_all_initial(waitingel);
 				waitingel.style.zIndex = maxzindex;
-				waitingel.style.cursor = "wait";
+				waitingel.style.cursor = cursor;
 				waitingel.style.width = waitingsize + "px";
 				waitingel.style.height = waitingsize + "px";
 				//waitingel.style.pointerEvents = "none"; // works, but defeats the purpose, because the cursor isn't changed
@@ -35550,15 +36146,14 @@ var $$IMU_EXPORT$$;
 				document.documentElement.appendChild(waitingel);
 			}
 
-			waitingel.style.cursor = "wait";
+			waitingel.style.cursor = cursor;
 			waitingel.style.display = "block";
 
 			update_waiting();
 		}
 
 		function start_progress(el) {
-			start_waiting(el);
-			waitingel.style.cursor = "progress";
+			start_waiting(el, "progress");
 		}
 
 		function stop_waiting() {
@@ -35574,6 +36169,25 @@ var $$IMU_EXPORT$$;
 			if (waitingel)
 				waitingel.style.display = "none";
 		}
+
+		var not_allowed_timer = null;
+		function cursor_not_allowed() {
+			if (!settings.mouseover_enable_notallowed)
+				return;
+
+			start_waiting(undefined, "not-allowed");
+
+			if (not_allowed_timer) {
+				clearTimeout(not_allowed_timer);
+			}
+
+			not_allowed_timer = setTimeout(function() {
+				not_allowed_timer = null;
+
+				if (waitingel_cursor === "not-allowed")
+					stop_waiting();
+			}, settings.mouseover_notallowed_duration);
+		};
 
 		function in_clientrect(mouseX, mouseY, rect, border) {
 			if (isNaN(border) || border === undefined)
@@ -35595,6 +36209,12 @@ var $$IMU_EXPORT$$;
 
 		function resetpopups() {
 			popups.forEach(function (popup) {
+				var els = popup.querySelectorAll("img, video");
+				for (var i = 0; i < els.length; i++) {
+					// TODO: maybe check to make sure it's a blob? according to the spec, this will silently fail, but browsers may print an error
+					revoke_objecturl(els[i].src);
+				}
+
 				if (popup.parentNode)
 					popup.parentNode.removeChild(popup);
 
@@ -35641,23 +36261,6 @@ var $$IMU_EXPORT$$;
 					window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
 				];
 			}
-		}
-
-		function normalize_whitespace(str) {
-			// https://stackoverflow.com/a/11305926
-			return str
-				.replace(/[\u200B-\u200D\uFEFF]/g, '')
-				.replace(/[\u2800]/g, ' ');
-		}
-
-		function strip_whitespace(str) {
-			if (!str || typeof str !== "string") {
-				return str;
-			}
-
-			return normalize_whitespace(str)
-				.replace(/^\s+/, "")
-				.replace(/\s+$/, "");
 		}
 
 		function get_processed_styles(str) {
@@ -35773,6 +36376,23 @@ var $$IMU_EXPORT$$;
 			return null;
 		}
 
+		function open_in_tab_imu(imu, bg, cb) {
+			if (is_extension) {
+				extension_send_message({
+					type: "newtab",
+					data: {
+						imu: imu,
+						background: bg
+					}
+				}, cb);
+			} else if (is_userscript && open_in_tab) {
+				open_in_tab(imu.url, bg);
+				if (cb) {
+					cb();
+				}
+			}
+		}
+
 		function makePopup(obj, orig_url, processing, data) {
 			if (_nir_debug_) {
 				console_log("makePopup", obj, orig_url, processing, data);
@@ -35785,14 +36405,7 @@ var $$IMU_EXPORT$$;
 				var theobj = data.data.obj;
 				theobj.url = data.data.resp.finalUrl;
 
-				extension_send_message({
-					type: "newtab",
-					data: {
-						imu: theobj
-					}
-				}, function() {
-					//popups_active = true;
-				});
+				open_in_tab_imu(theobj);
 				return;
 			}
 
@@ -35948,7 +36561,14 @@ var $$IMU_EXPORT$$;
 
 				set_el_all_initial(img);
 
-				if (!is_video) {
+				var add_link = false;
+				if (!is_video && settings.mouseover_add_link) {
+					add_link = true;
+				} else if (is_video && settings.mouseover_add_video_link) {
+					add_link = true;
+				}
+
+				if (add_link) {
 					img.style.cursor = "pointer";
 				}
 				// https://stackoverflow.com/questions/7774814/remove-white-space-below-image
@@ -36096,8 +36716,34 @@ var $$IMU_EXPORT$$;
 					set_left(popupx);
 				}
 
-				img.style.width = imgw + "px";
-				img.style.height = imgh + "px";
+				var set_popup_size_helper = function(size, maxsize, widthheight) {
+					if (maxsize === undefined)
+						maxsize = size;
+
+					if (typeof size === "number")
+						size = size + "px";
+					if (typeof maxsize === "number")
+						maxsize = maxsize + "px";
+
+					if (widthheight) {
+						img.style.width = size;
+						img.style.maxWidth = maxsize;
+					} else {
+						img.style.height = size;
+						img.style.maxHeight = maxsize;
+					}
+				};
+
+				var set_popup_width = function(width, maxwidth) {
+					set_popup_size_helper(width, maxwidth, true);
+				};
+
+				var set_popup_height = function(height, maxheight) {
+					set_popup_size_helper(height, maxheight, false);
+				};
+
+				set_popup_width(imgw, "initial");
+				set_popup_height(imgh, "initial");
 				/*console_log(x - (imgw / 2));
 				  console_log(vw);
 				  console_log(imgw);
@@ -36364,6 +37010,12 @@ var $$IMU_EXPORT$$;
 						topbarel.appendChild(optionsbtn);
 					}
 
+					if (settings.mouseover_ui_downloadbtn) {
+						// \uD83E\uDC47 = 🡇
+						var downloadbtn = addbtn("\uD83E\uDC47", _("Download (" + get_trigger_key_text(settings.mouseover_download_key) + ")"), download_popup_image, true);
+						topbarel.appendChild(downloadbtn);
+					}
+
 					if (settings.mouseover_ui_rotationbtns) {
 						var get_rotate_title = function(leftright) {
 							return _("rotate_" + leftright + "_btn") + " (" + get_trigger_key_text(settings["mouseover_rotate_" + leftright + "_key"]) + ")";
@@ -36416,34 +37068,13 @@ var $$IMU_EXPORT$$;
 						lrhover.style.height = "100%";
 						lrhover.style.zIndex = maxzindex - 2;
 						lrhover.style.cursor = "pointer";
-						var forwardevent = function(e) {
-							var type = e.type;
-							//console_log(type);
-							/*btnel.dispatchEvent(new MouseEvent(e.type, {
-								clientX: e.clientX,
-								clientY: e.clientY,
-								movementX: e.movementX,
-								movementY: e.movementY,
-								offsetX: e.offsetX,
-								offsetY: e.offsetY,
-								pageX: e.pageX,
-								pageY: e.pageY,
-								x: e.x,
-								y: e.y
-								}));*/
-							btnel.dispatchEvent(new MouseEvent(type));
-							estop(e);
-							return false;
-						};
-						//lrhover.addEventListener("mouseover", forwardevent, true);
-						//lrhover.addEventListener("mouseout", forwardevent, true);
+
 						opacity_hover(lrhover, btnel, true);
 						lrhover.addEventListener("click", function(e) {
 							if (dragged) {
 								return false;
 							}
 
-							//forwardevent(e);
 							estop(e);
 							action(e);
 							return false;
@@ -36516,61 +37147,6 @@ var $$IMU_EXPORT$$;
 
 					add_leftright_gallery_button_if_valid(false);
 					add_leftright_gallery_button_if_valid(true);
-
-					if (false) {
-					if (is_valid_el(wrap_gallery_func(false))) {
-						var leftaction = function() {
-							return lraction(false);
-						};
-
-						var lefttitle = _("Previous") + " (" + _("Left Arrow") + ")";
-
-						// \u2190 = ←
-						var leftbtn = addbtn("\u2190", lefttitle, leftaction);
-						leftbtn.style.top = "calc(50% - 7px - " + emhalf + ")";
-						leftbtn.style.left = "-" + em1;
-						outerdiv.appendChild(leftbtn);
-						ui_els.push(leftbtn);
-
-						add_lrhover(true, leftbtn, leftaction, lefttitle);
-
-						if (settings.mouseover_ui_gallerycounter) {
-							if (use_cached_gallery) {
-								prev_images = cached_previmages;
-							} else {
-								prev_images = count_gallery(false);
-								cached_previmages = prev_images;
-							}
-						}
-					}
-
-					if (is_valid_el(wrap_gallery_func(true))) {
-						var rightaction = function() {
-							return lraction(true);
-						};
-
-						var righttitle = _("Next") + " (" + _("Right Arrow") + ")";
-
-						// \u2192 = →
-						var rightbtn = addbtn("\u2192", righttitle, rightaction);
-						rightbtn.style.top = "calc(50% - 7px - " + emhalf + ")";
-						rightbtn.style.left = "initial";
-						rightbtn.style.right = "-" + em1;
-						outerdiv.appendChild(rightbtn);
-						ui_els.push(rightbtn);
-
-						add_lrhover(false, rightbtn, rightaction, righttitle);
-
-						if (settings.mouseover_ui_gallerycounter) {
-							if (use_cached_gallery) {
-								next_images = cached_nextimages;
-							} else {
-								next_images = count_gallery(true);
-								cached_nextimages = next_images;
-							}
-						}
-					}
-					}
 				}
 
 				if (settings.mouseover_ui) {
@@ -36638,8 +37214,11 @@ var $$IMU_EXPORT$$;
 				}
 
 				var a = document.createElement("a");
+				set_el_all_initial(a);
 
-				if (!is_video) {
+				if (add_link) {
+					a.style.cursor = "pointer";
+
 					//a.addEventListener("click", function(e) {
 					a.onclick = function(e) {
 						e.stopPropagation();
@@ -36648,16 +37227,10 @@ var $$IMU_EXPORT$$;
 					};
 				}
 
-				set_el_all_initial(a);
-
-				if (!is_video) {
-					a.style.cursor = "pointer";
-				}
-
 				a.style.setProperty("vertical-align", "bottom", "important");
 				a.style.setProperty("display", "block", "important");
 
-				if (!is_video) {
+				if (add_link) {
 					a.href = url;
 					if (settings.mouseover_download) {
 						a.href = img.src;
@@ -36797,30 +37370,66 @@ var $$IMU_EXPORT$$;
 				var currentmode = initial_zoom_behavior;
 
 				outerdiv.onwheel = function(e) {
-					if (get_single_setting("mouseover_scroll_behavior") === "pan") {
-						estop(e);
+					var scrollx_behavior = get_single_setting("mouseover_scrollx_behavior");
+					var scrolly_behavior = get_single_setting("mouseover_scrolly_behavior");
+
+					var handledx = false;
+					var handledy = false;
+
+					if (scrollx_behavior === "pan") {
 						outerdiv.style.left = (parseInt(outerdiv.style.left) + e.deltaX) + "px";
-						outerdiv.style.top = (parseInt(outerdiv.style.top) + e.deltaY) + "px";
-						return false;
+						handledx = true;
 					}
 
-					if (get_single_setting("mouseover_scroll_behavior") === "gallery") {
-						estop(e);
+					if (scrolly_behavior === "pan") {
+						outerdiv.style.top = (parseInt(outerdiv.style.top) + e.deltaY) + "px";
+						handledy = true;
+					}
 
-						var isright;
-						if (e.deltaX < 0 || e.deltaY < 0) {
-							isright = false;
-						} else if (e.deltaX > 0 || e.deltaY > 0) {
-							isright = true;
-						} else { // ???
-							return false;
+					var handle_gallery = function(xy) {
+						var isright = false;
+
+						if (xy) {
+							if (e.deltaX < 0)
+								isright = false;
+							else if (e.deltaX > 0)
+								isright = true;
+							else return;
+						} else {
+							if (e.deltaY < 0)
+								isright = false;
+							else if (e.deltaY > 0)
+								isright = true;
+							else return;
 						}
 
 						lraction(isright);
+						estop(e);
+						return true;
+					};
+
+					if (scrollx_behavior === "gallery") {
+						if (handle_gallery(true)) {
+							return;
+						}
+
+						handledx = true;
+					}
+
+					if (scrolly_behavior === "gallery") {
+						if (handle_gallery(false)) {
+							return;
+						}
+
+						handledy = true;
+					}
+
+					if (handledy) {
+						estop(e);
 						return false;
 					}
 
-					if (get_single_setting("mouseover_scroll_behavior") !== "zoom") {
+					if (scrolly_behavior !== "zoom" || e.deltaY === 0) {
 						return;
 					}
 
@@ -36849,20 +37458,14 @@ var $$IMU_EXPORT$$;
 							imgw = img_naturalWidth;
 							calc_imghw_for_fit();
 
-							img.style.maxWidth = vw + "px";
-							img.style.maxHeight = vh + "px";
-
-							img.style.width = imgw + "px";
-							img.style.height = imgh + "px";
+							set_popup_width(imgw, vw);
+							set_popup_height(imgh, vh);
 
 							currentmode = "fit";
 							changed = true;
 						} else if (e.deltaY < 0 && currentmode !== "full") {
-							img.style.width = img_naturalWidth + "px";
-							img.style.height = img_naturalHeight + "px";
-
-							img.style.maxWidth = "initial";
-							img.style.maxHeight = "initial";
+							set_popup_width(img_naturalWidth, "initial");
+							set_popup_height(img_naturalHeight, "initial");
 
 							currentmode = "full";
 							changed = true;
@@ -36902,10 +37505,8 @@ var $$IMU_EXPORT$$;
 							return false;
 						}
 
-						img.style.maxWidth = imgwidth + "px";
-						img.style.maxHeight = imgheight + "px";
-						img.style.width = imgwidth + "px";
-						img.style.height = imgheight + "px";
+						set_popup_width(imgwidth);
+						set_popup_height(imgheight);
 						changed = true;
 					}
 
@@ -37930,12 +38531,6 @@ var $$IMU_EXPORT$$;
 			return false;
 		}
 
-		function get_single_setting(setting) {
-			if (settings[setting] instanceof Array)
-				return settings[setting][0];
-			return settings[setting];
-		}
-
 		function get_close_behavior() {
 			return get_single_setting("mouseover_close_behavior");
 		}
@@ -38059,6 +38654,10 @@ var $$IMU_EXPORT$$;
 			if (source && (popup_trigger_reason !== "mouse" || get_physical_popup_el(source.el) !== last_popup_el)) {
 				trigger_popup_with_source(source);
 			} else {
+				if (popup_trigger_reason === "keyboard") {
+					cursor_not_allowed();
+				}
+
 				delay_handle_triggering = false;
 			}
 		}
@@ -39163,7 +39762,7 @@ var $$IMU_EXPORT$$;
 
 			var needs_observer = function() {
 				var highlight = get_single_setting("highlightimgs_auto");
-				return highlight === "always" || highlight === "hover" || settings.replaceimgs_auto;
+				return highlight === "always" || highlight === "hover" || settings.replaceimgs_auto || (mouseover_mouse_enabled() && settings.mouseover_trigger_mouseover);
 			};
 
 			var create_mutationobserver = function() {
@@ -39215,9 +39814,62 @@ var $$IMU_EXPORT$$;
 			};
 		})();
 
+		var download_popup_image = function() {
+			var a = document.createElement("a");
+
+			// Starting with <video> in case another <img> gets added for unrelated reasons
+			var imgels = popups[0].getElementsByTagName("video");
+			if (imgels.length === 0)
+				imgels = popups[0].getElementsByTagName("img");
+			a.href = imgels[0].src;
+
+			if (popup_obj.filename.length > 0) {
+				a.setAttribute("download", popup_obj.filename);
+			} else {
+				var attr = document.createAttribute("download");
+				a.setAttributeNode(attr);
+			}
+
+			a.style.display = "none";
+			a.onclick = function(e) {
+				e.stopPropagation();
+				e.stopImmediatePropagation();
+				return true;
+			};
+
+			document.body.appendChild(a);
+			a.click();
+
+			setTimeout(function() {
+				document.body.removeChild(a);
+			}, 500);
+		};
+
+		var keyevent_remote = function(event) {
+			if (should_use_remote()) {
+				if (!("remote_info" in event)) {
+					event.remote_info = get_frame_info();
+
+					var recipient = "top";
+					if (!is_in_iframe) {
+						recipient = mouse_frame_id;
+						if (recipient === "top")
+							return;
+					}
+
+					remote_send_message(recipient, {
+						type: "keyevent",
+						data: event
+					});
+				}
+			}
+		};
+
 		var keydown_cb = function(event) {
 			if (!mouseover_enabled())
 				return;
+
+			keyevent_remote(event);
 
 			var ret = undefined;
 
@@ -39281,34 +39933,20 @@ var $$IMU_EXPORT$$;
 					// Clear the chord because keyup might not be called due to the save dialog popup
 					clear_chord();
 
-					var a = document.createElement("a");
+					download_popup_image();
+				} else if (trigger_complete(settings.mouseover_open_new_tab_key)) {
+					ret = false;
+					release_ignore = settings.mouseover_open_new_tab_key;
 
-					// Starting with <video> in case another <img> gets added for unrelated reasons
-					var imgels = popups[0].getElementsByTagName("video");
-					if (imgels.length === 0)
-						imgels = popups[0].getElementsByTagName("img");
-					a.href = imgels[0].src;
+					// Clear the chord because opening in a new tab will not release the keys
+					clear_chord();
 
-					if (popup_obj.filename.length > 0) {
-						a.setAttribute("download", popup_obj.filename);
-					} else {
-						var attr = document.createAttribute("download");
-						a.setAttributeNode(attr);
-					}
+					open_in_tab_imu(popup_obj);
+				} else if (trigger_complete(settings.mouseover_open_bg_tab_key)) {
+					ret = false;
+					release_ignore = settings.mouseover_open_bg_tab_key;
 
-					a.style.display = "none";
-					a.onclick = function(e) {
-						e.stopPropagation();
-						e.stopImmediatePropagation();
-						return true;
-					};
-
-					document.body.appendChild(a);
-					a.click();
-
-					setTimeout(function() {
-						document.body.removeChild(a);
-					}, 500);
+					open_in_tab_imu(popup_obj, true);
 				} else if (trigger_complete(settings.mouseover_rotate_left_key)) {
 					rotate_gallery(-90);
 					ret = false;
@@ -39335,9 +39973,11 @@ var $$IMU_EXPORT$$;
 			}
 
 			if (ret === false) {
-				event.preventDefault();
-				event.stopImmediatePropagation();
-				event.stopPropagation();
+				try {
+					event.preventDefault();
+					event.stopImmediatePropagation();
+					event.stopPropagation();
+				} catch (e) {}
 			}
 
 			return ret;
@@ -39350,6 +39990,8 @@ var $$IMU_EXPORT$$;
 		var keyup_cb = function(event) {
 			if (!mouseover_enabled())
 				return;
+
+			keyevent_remote(event);
 
 			var ret = undefined;
 
@@ -39396,9 +40038,11 @@ var $$IMU_EXPORT$$;
 			}
 
 			if (ret === false) {
-				event.preventDefault();
-				event.stopImmediatePropagation();
-				event.stopPropagation();
+				try {
+					event.preventDefault();
+					event.stopImmediatePropagation();
+					event.stopPropagation();
+				} catch (e) {}
 			}
 
 			return ret;
@@ -39520,7 +40164,9 @@ var $$IMU_EXPORT$$;
 			}
 
 			if (move_with_cursor) {
-				var popup_el_rect = popup_el.getBoundingClientRect();
+				// make sure to fix this for remote (this is called at the top frame, but popup_el is remote)
+				//var popup_el_rect = popup_el.getBoundingClientRect();
+				var popup_el_rect = null;
 				// don't check for now, maybe add this as an option later?
 				if (true || in_clientrect(mouseX, mouseY, popup_el_rect)) {
 					domovewith(false);
@@ -39563,6 +40209,15 @@ var $$IMU_EXPORT$$;
 				});
 			} else if (message.type === "resetpopups") {
 				resetpopups();
+			} else if (message.type === "mousemove") {
+				// todo: offset iframe location
+				mousemove_cb(message.data);
+			} else if (message.type === "keyevent") {
+				if (message.data.type === "keydown") {
+					keydown_cb(message.data);
+				} else if (message.data.type === "keyup") {
+					keyup_cb(message.data);
+				}
 			}
 		};
 
@@ -39656,7 +40311,76 @@ var $$IMU_EXPORT$$;
 			mouseAbsContextY = event.pageY;
 		});
 
-		document.addEventListener('mousemove', function(event) {
+		var id_to_iframe = {};
+
+		var get_frame_info = function() {
+			return {
+				id: current_frame_id,
+				//url: window.location.href, // doesn't get updated for the iframe src's attribute?
+				url: current_frame_url,
+				size: [
+					document.documentElement.scrollWidth,
+					document.documentElement.scrollHeight
+				]
+			};
+		};
+
+		var find_iframe_for_info = function(info) {
+			if (info.id in id_to_iframe)
+				return id_to_iframe[info.id];
+
+			var finish = function(iframe) {
+				if (!iframe)
+					return iframe;
+
+				id_to_iframe[info.id] = iframe;
+				return iframe;
+			}
+
+			var iframes = document.getElementsByTagName("iframe");
+			var newiframes = [];
+			for (var i = 0; i < iframes.length; i++) {
+				if (iframes[i].src !== info.url)
+					continue;
+
+				newiframes.push(iframes[i]);
+			}
+
+			if (newiframes.length <= 1)
+				return finish(newiframes[0]);
+
+			iframes = newiframes;
+			newiframes = [];
+			for (var i = 0; i < iframes.length; i++) {
+				if (iframes[i].scrollWidth !== info.size[0] ||
+					iframes[i].scrollHeight !== info.size[1]) {
+					continue;
+				}
+
+				newiframes.push(iframes[i]);
+			}
+
+			if (newiframes.length <= 1)
+				return finish(newiframes[0]);
+
+			// TODO: check cursor too
+			return null;
+		};
+
+		var iframe_to_id = function(iframe) {
+			for (var id in id_to_iframe) {
+				if (id_to_iframe[id] === iframe)
+					return id;
+			}
+
+			return null;
+		};
+
+		var last_remote_mousemove = 0;
+		var last_remote_mousemove_timer = null;
+		var last_remote_mousemove_event = null;
+
+		var mousemove_cb = function(event) {
 			mousepos_initialized = true;
 
 			// https://stackoverflow.com/a/7790764
@@ -39669,6 +40393,49 @@ var $$IMU_EXPORT$$;
 
 				event.pageX = event.clientX + scrollLeft();
 				event.pageY = event.clientY + scrollTop();
+			}
+
+			if (should_use_remote()) {
+				if (!("remote_info" in event)) {
+					event.remote_info = get_frame_info();
+				}
+
+				if (event.remote_info.id !== current_frame_id) {
+					var iframe = find_iframe_for_info(event.remote_info);
+					if (!iframe) {
+						return;
+					}
+
+					//console_log(iframe);
+					var bb = iframe.getBoundingClientRect();
+
+					event.clientX += bb.left;
+					event.clientY += bb.top;
+
+					event.pageX += bb.left + window.scrollX;
+					event.pageY += bb.top + window.scrollY;
+				} else if (is_in_iframe) {
+					// todo: add timeouts to avoid too much cpu usage
+					last_remote_mousemove_event = event;
+
+					var current_time = Date.now();
+					var timeout = 16 - (current_time - last_remote_mousemove);
+					if (timeout < 1)
+						timeout = 1;
+
+					if (!last_remote_mousemove_timer) {
+						last_remote_mousemove_timer = setTimeout(function() {
+							last_remote_mousemove_timer = null;
+							last_remote_mousemove = Date.now();
+							remote_send_message("top", {
+								type: "mousemove",
+								data: last_remote_mousemove_event
+							});
+						}, timeout);
+					}
+				}
+
+				mouse_frame_id = event.remote_info.id;
 			}
 
 			mouseX = event.clientX;
@@ -39867,7 +40634,9 @@ var $$IMU_EXPORT$$;
 					}
 				}
 			}
-		});
+		};
+
+		document.addEventListener('mousemove', mousemove_cb);
 	}
 
 	function do_websitehome() {
@@ -39906,6 +40675,7 @@ var $$IMU_EXPORT$$;
 							fill_object: true,
 							do_request: do_request,
 							cb: function(obj) {
+								revoke_objecturl(img);
 								loop_url(obj, cb, options, finalurl);
 							}
 						});
