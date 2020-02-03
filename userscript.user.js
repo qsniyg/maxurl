@@ -54684,7 +54684,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		value = serialize_value(value);
-		console_log("Setting " + key + " = " + value);
+		//console_log("Setting " + key + " = " + value);
 
 		if (is_extension) {
 			var kv = {};
