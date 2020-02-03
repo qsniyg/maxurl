@@ -1163,7 +1163,7 @@ var $$IMU_EXPORT$$;
 		settings_visible_description: true,
 		advanced_options: false,
 		allow_browser_request: true,
-		use_blob_over_arraybuffer: true,
+		use_blob_over_arraybuffer: false,
 		allow_live_settings_reload: true,
 		redirect: true,
 		redirect_history: true,
