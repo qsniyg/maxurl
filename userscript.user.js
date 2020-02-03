@@ -59895,6 +59895,10 @@ var $$IMU_EXPORT$$;
 			return null;
 		};
 
+		var last_remote_mousemove = 0;
+		var last_remote_mousemove_timer = null;
+		var last_remote_mousemove_event = null;
+
 		var mousemove_cb = function(event) {
 			mousepos_initialized = true;
 
@@ -59931,10 +59935,23 @@ var $$IMU_EXPORT$$;
 					event.pageY += bb.top + window.scrollY;
 				} else if (is_in_iframe) {
 					// todo: add timeouts to avoid too much cpu usage
-					remote_send_message("top", {
-						type: "mousemove",
-						data: event
-					});
+					last_remote_mousemove_event = event;
+
+					var current_time = Date.now();
+					var timeout = 16 - (current_time - last_remote_mousemove);
+					if (timeout < 1)
+						timeout = 1;
+
+					if (!last_remote_mousemove_timer) {
+						last_remote_mousemove_timer = setTimeout(function() {
+							last_remote_mousemove_timer = null;
+							last_remote_mousemove = Date.now();
+							remote_send_message("top", {
+								type: "mousemove",
+								data: last_remote_mousemove_event
+							});
+						}, timeout);
+					}
 				}
 
 				mouse_frame_id = event.remote_info.id;
