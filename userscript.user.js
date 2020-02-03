@@ -1196,6 +1196,8 @@ var $$IMU_EXPORT$$;
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/126
 		mouseover_allow_partial: is_extension ? "media" : "video",
 		mouseover_use_blob_over_data: true,
+		mouseover_enable_notallowed: true,
+		mouseover_notallowed_duration: 300,
 		//mouseover_use_fully_loaded_image: is_extension ? false : true,
 		//mouseover_use_fully_loaded_video: false,
 		mouseover_minimum_size: 20,
@@ -1616,6 +1618,29 @@ var $$IMU_EXPORT$$;
 				mouseover: true,
 				mouseover_open_behavior: "popup"
 			},
+			category: "popup",
+			subcategory: "open_behavior"
+		},
+		mouseover_enable_notallowed: {
+			name: "Enable `not-allowed` cursor",
+			description: "If the image isn't supported, the mouse cursor will change to a `not-allowed` cursor for a brief duration",
+			requires: {
+				mouseover_trigger_behavior: "keyboard"
+			},
+			category: "popup",
+			subcategory: "open_behavior"
+		},
+		mouseover_notallowed_duration: {
+			name: "`not-allowed` cursor duration",
+			description: "How long the `not-allowed` cursor should last",
+			requires: {
+				mouseover_enable_notallowed: true
+			},
+			type: "number",
+			number_min: 0,
+			number_int: true,
+			number_unit: "ms",
+			advanced: true,
 			category: "popup",
 			subcategory: "open_behavior"
 		},
@@ -55577,7 +55602,10 @@ var $$IMU_EXPORT$$;
 			waitingel.style.top = (y - (waitingsize / 2)) + "px";
 		}
 
-		function start_waiting(el) {
+		function start_waiting(el, cursor) {
+			if (!cursor)
+				cursor = "wait";
+
 			waiting = true;
 
 			if (!settings.mouseover_wait_use_el) {
@@ -55586,7 +55614,7 @@ var $$IMU_EXPORT$$;
 				}
 
 				waitingstyleel = document.createElement("style");
-				waitingstyleel.innerText = "* {cursor: wait!important}";
+				waitingstyleel.innerText = "* {cursor: " + cursor + "!important}";
 				document.documentElement.appendChild(waitingstyleel);
 				return;
 			}
@@ -55595,7 +55623,7 @@ var $$IMU_EXPORT$$;
 				waitingel = document.createElement("div");
 				set_el_all_initial(waitingel);
 				waitingel.style.zIndex = maxzindex;
-				waitingel.style.cursor = "wait";
+				waitingel.style.cursor = cursor;
 				waitingel.style.width = waitingsize + "px";
 				waitingel.style.height = waitingsize + "px";
 				//waitingel.style.pointerEvents = "none"; // works, but defeats the purpose, because the cursor isn't changed
@@ -55618,15 +55646,14 @@ var $$IMU_EXPORT$$;
 				document.documentElement.appendChild(waitingel);
 			}
 
-			waitingel.style.cursor = "wait";
+			waitingel.style.cursor = cursor;
 			waitingel.style.display = "block";
 
 			update_waiting();
 		}
 
 		function start_progress(el) {
-			start_waiting(el);
-			waitingel.style.cursor = "progress";
+			start_waiting(el, "progress");
 		}
 
 		function stop_waiting() {
@@ -55642,6 +55669,22 @@ var $$IMU_EXPORT$$;
 			if (waitingel)
 				waitingel.style.display = "none";
 		}
+
+		var not_allowed_timer = null;
+		function cursor_not_allowed() {
+			if (!settings.mouseover_enable_notallowed)
+				return;
+
+			start_waiting(undefined, "not-allowed");
+
+			if (not_allowed_timer) {
+				clearTimeout(not_allowed_timer);
+			}
+
+			not_allowed_timer = setTimeout(function() {
+				stop_waiting(); // TODO: maybe check if a cursor existed before not-allowed, and reset it to that?
+			}, settings.mouseover_notallowed_duration);
+		};
 
 		function in_clientrect(mouseX, mouseY, rect, border) {
 			if (isNaN(border) || border === undefined)
@@ -58101,6 +58144,10 @@ var $$IMU_EXPORT$$;
 			if (source && (popup_trigger_reason !== "mouse" || get_physical_popup_el(source.el) !== last_popup_el)) {
 				trigger_popup_with_source(source);
 			} else {
+				if (popup_trigger_reason === "keyboard") {
+					cursor_not_allowed();
+				}
+
 				delay_handle_triggering = false;
 			}
 		}
