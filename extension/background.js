@@ -660,13 +660,16 @@ chrome.webRequest.onResponseStarted.addListener(function(details) {
 	if (details.tabId in override_headers) {
 		var new_override = [];
 		var removed = false;
-		for (const override in override_headers[details.tabId]) {
+		for (const override of override_headers[details.tabId]) {
 			if (removed || override.url !== details.url || override.method !== details.method) {
 				new_override.push(override);
 			} else {
 				removed = true;
 			}
 		}
+
+		//debug("old override_headers", override_headers[details.tabId]);
+		//debug("new override_headers", new_override);
 		override_headers[details.tabId] = new_override;
 	}
 
