@@ -50769,6 +50769,12 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/files\/+[a-z]+\/+)[0-9]+\/+([0-9a-f]{10,}\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		}
 
+		if (domain === "cdn-l-cyberpunk.cdprojektred.com") {
+			// https://cdn-l-cyberpunk.cdprojektred.com/gallery/1080p/Cyberpunk2077-Arriving_at_destination-en.jpg
+			//   https://cdn-l-cyberpunk.cdprojektred.com/gallery/2160p/Cyberpunk2077-Arriving_at_destination-en.jpg
+			return src.replace(/\/gallery\/+1080p\/+/, "/gallery/2160p/");
+		}
+
 
 
 
@@ -57700,7 +57706,7 @@ var $$IMU_EXPORT$$;
 				}
 			}
 
-			function get_url_from_css(str, elstr) {
+			function get_urls_from_css(str, elstr) {
 				var emptystrregex = /^(.*?\)\s*,)?\s*url[(]["']{2}[)]/;
 				if (!str.match(/^(.*?\)\s*,)?\s*url[(]/) || emptystrregex.test(str))
 					return null;
@@ -57709,34 +57715,48 @@ var $$IMU_EXPORT$$;
 				if (elstr && emptystrregex.test(elstr))
 					return null;
 
-				// https://www.flickr.com/account/upgrade/pro
-				// background-image: linear-gradient(rgba(0,0,0,.2),rgba(0,0,0,.2)),url(https://combo.staticflickr.com/ap/build/images/pro/flickrpro-hero-header.jpg)
-				// url('https://t00.deviantart.net/I94eYVLky718W9_zFjV-SJ-_qm8=/300x200/filters:fixed_height(100,100):origin()/pre00/abda/th/pre/i/2013/069/9/0/black_rock_shooter_by_mrtviolet-d5xktg7.jpg');
-				var src = norm(str.replace(/^(?:.*?\)\s*,)?\s*url[(](?:(?:'(.*?)')|(?:"(.*?)")|(?:([^)]*)))[)].*$/, "$1$2$3"));
-				if (src !== str)
-					return src;
-				return null;
+				// https://www.cyberpunk.net/
+				// url(/build/images/home/bg-media-1440-88acc9fc.jpg),url(/build/images/home/bg-media-under-1440-498c46c1.jpg)
+				var urls = [];
+				while (str) {
+					// https://www.flickr.com/account/upgrade/pro
+					// background-image: linear-gradient(rgba(0,0,0,.2),rgba(0,0,0,.2)),url(https://combo.staticflickr.com/ap/build/images/pro/flickrpro-hero-header.jpg)
+					// url('https://t00.deviantart.net/I94eYVLky718W9_zFjV-SJ-_qm8=/300x200/filters:fixed_height(100,100):origin()/pre00/abda/th/pre/i/2013/069/9/0/black_rock_shooter_by_mrtviolet-d5xktg7.jpg');
+					var match = str.match(/^(.*\)\s*,)?\s*url[(](?:(?:'(.*?)')|(?:"(.*?)")|(?:([^)]*)))[)].*?$/);
+					if (!match)
+						break;
+
+					urls.unshift(norm(match[2] || match[3] || match[4]));
+					str = match[1];
+				}
+
+				return urls;
 			}
 
 			function add_bgimage(layer, el, style, beforeafter) {
 				if (style.getPropertyValue("background-image")) {
 					var bgimg = style.getPropertyValue("background-image");
-					var src = get_url_from_css(bgimg, el.style.getPropertyValue("background-image"));
-					if (src)
-						addImage(src, el, {
-							isbg: beforeafter || true,
-							layer: layer
-						});
+					var urls = get_urls_from_css(bgimg, el.style.getPropertyValue("background-image"));
+					if (urls) {
+						for (var i = 0; i < urls.length; i++) {
+							addImage(urls[i], el, {
+								isbg: beforeafter || true,
+								layer: layer
+							});
+						}
+					}
 				}
 
 				if (beforeafter) {
 					if (style.getPropertyValue("content")) {
-						var src = get_url_from_css(style.getPropertyValue("content"));
-						if (src) {
-							addImage(src, el, {
-								isbg: beforeafter,
-								layer: layer
-							});
+						var urls = get_urls_from_css(style.getPropertyValue("content"));
+						if (urls) {
+							for (var i = 0; i < urls.length; i++) {
+								addImage(urls[i], el, {
+									isbg: beforeafter,
+									layer: layer
+								});
+							}
 						}
 					}
 				}
