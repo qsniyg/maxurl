@@ -50761,6 +50761,14 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/image_files\/+)[0-9]+\/+/, "$1orig/");
 		}
 
+		if (domain_nowww === "cryengine.com") {
+			// https://www.cryengine.com/files/news/480/9b028f1114d8aca8d4600bfbaa3255583d52c390efd63fde86f062bc95528539.webp
+			//   https://www.cryengine.com/files/news/9b028f1114d8aca8d4600bfbaa3255583d52c390efd63fde86f062bc95528539.webp
+			// https://www.cryengine.com/files/carousel/768/c0dc875ae417c5a35dd2146f8b80fc34127da9ae0ee3daebfae74b92b973c319.webp
+			//   https://www.cryengine.com/files/carousel/c0dc875ae417c5a35dd2146f8b80fc34127da9ae0ee3daebfae74b92b973c319.webp
+			return src.replace(/(\/files\/+[a-z]+\/+)[0-9]+\/+([0-9a-f]{10,}\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
 
 
 
@@ -56474,7 +56482,7 @@ var $$IMU_EXPORT$$;
 				var cached_nextimages = 0;
 
 				function lraction(isright) {
-					trigger_gallery(isright, function(changed) {
+					trigger_gallery(isright ? 1 : -1, function(changed) {
 						if (!changed) {
 							create_ui();
 						}
@@ -56700,7 +56708,7 @@ var $$IMU_EXPORT$$;
 
 								update_imagestotal();
 							} else {
-								count_gallery(leftright, undefined, undefined, function(total) {
+								count_gallery(leftright, undefined, undefined, undefined, function(total) {
 									if (!leftright) {
 										prev_images = total;
 										cached_previmages = prev_images;
@@ -58501,8 +58509,11 @@ var $$IMU_EXPORT$$;
 			return !!find_source([el]);
 		}
 
-		function count_gallery(nextprev, origel, el, cb) {
+		function count_gallery(nextprev, max, origel, el, cb) {
 			var count = 0;
+
+			if (max === undefined)
+				max = settings.mouseover_ui_gallerymax;
 
 			var firstel = el;
 			if (!firstel)
@@ -58526,8 +58537,8 @@ var $$IMU_EXPORT$$;
 
 					count++;
 
-					if (count >= settings.mouseover_ui_gallerymax)
-						return cb(count);
+					if (count >= max)
+						return cb(count, newel);
 
 					el = newel;
 					loop();
@@ -58537,15 +58548,29 @@ var $$IMU_EXPORT$$;
 			loop();
 		}
 
-		function wrap_gallery_cycle(nextprev, origel, el, cb) {
+		function wrap_gallery_cycle(dir, origel, el, cb) {
 			if (!el)
 				el = real_popup_el;
 
-			wrap_gallery_func(nextprev, origel, el, function(newel) {
-				if (!newel && settings.mouseover_gallery_cycle) {
-					count_gallery(!nextprev, origel, el, function(count, newel) {
-						cb(newel);
-					});
+			if (dir === 0)
+				return cb();
+
+			var nextprev = true;
+			var max = dir;
+			if (dir < 0) {
+				nextprev = false;
+				max = -dir;
+			}
+
+			count_gallery(nextprev, max, origel, el, function(count, newel) {
+				if (count < max) {
+					if (settings.mouseover_gallery_cycle) {
+						count_gallery(!nextprev, undefined, origel, el, function(count, newel) {
+							cb(newel);
+						});
+					} else {
+						cb(null);
+					}
 				} else {
 					cb(newel);
 				}
@@ -58564,12 +58589,12 @@ var $$IMU_EXPORT$$;
 				});
 			}
 
-			wrap_gallery_cycle(nextprev, undefined, undefined, function(el) {
+			wrap_gallery_cycle(nextprev ? 1 : -1, undefined, undefined, function(el) {
 				cb(is_valid_el(el));
 			});
 		}
 
-		function trigger_gallery(nextprev, cb) {
+		function trigger_gallery(dir, cb) {
 			if (!cb) {
 				cb = nullfunc;
 			}
@@ -58578,14 +58603,14 @@ var $$IMU_EXPORT$$;
 				return remote_send_message(popup_el_remote, {
 					type: "trigger_gallery",
 					data: {
-						nextprev: nextprev
+						dir: dir
 					}
 				}, function(triggered) {
 					cb(triggered);
 				});
 			}
 
-			wrap_gallery_cycle(nextprev, undefined, undefined, function(newel) {
+			wrap_gallery_cycle(dir, undefined, undefined, function(newel) {
 				if (newel) {
 					var source = find_source([newel]);
 					if (source) {
@@ -59497,11 +59522,11 @@ var $$IMU_EXPORT$$;
 
 			if (popups.length > 0 && popup_el) {
 				if (trigger_complete(settings.mouseover_gallery_prev_key)) {
-					trigger_gallery(false);
+					trigger_gallery(-1);
 					ret = false;
 					release_ignore = settings.mouseover_gallery_prev_key;
 				} else if (trigger_complete(settings.mouseover_gallery_next_key)) {
-					trigger_gallery(true);
+					trigger_gallery(1);
 					ret = false;
 					release_ignore = settings.mouseover_gallery_next_key;
 				} else if (trigger_complete(settings.mouseover_download_key)) {
@@ -59774,7 +59799,7 @@ var $$IMU_EXPORT$$;
 					});
 				}
 			} else if (message.type === "count_gallery") {
-				count_gallery(message.data.nextprev, undefined, undefined, function(count) {
+				count_gallery(message.data.nextprev, undefined, undefined, undefined, function(count) {
 					respond(count);
 				});
 			} else if (message.type === "is_nextprev_valid") {
@@ -59782,7 +59807,7 @@ var $$IMU_EXPORT$$;
 					respond(valid);
 				});
 			} else if (message.type === "trigger_gallery") {
-				trigger_gallery(message.data.nextprev, function(triggered) {
+				trigger_gallery(message.data.dir, function(triggered) {
 					respond(triggered);
 				});
 			} else if (message.type === "resetpopups") {
