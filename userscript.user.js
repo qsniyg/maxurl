@@ -56376,8 +56376,15 @@ var $$IMU_EXPORT$$;
 					var btn = document.createElement(tagname);
 
 					if (action) {
+						var do_action = function() {
+							return !btn.hasAttribute("data-btn-noaction");
+						};
+
 						if (typeof action === "function") {
 							btn.addEventListener("click", function(e) {
+								if (!do_action())
+									return;
+
 								//console_log(e);
 								e.stopPropagation();
 								e.stopImmediatePropagation();
@@ -56511,6 +56518,7 @@ var $$IMU_EXPORT$$;
 					var em1 = emi + "px"
 					var emhalf = (emi / 2) + "px";
 					var gallerycount_fontsize = "13px";
+					var galleryinput_fontsize = "12px";
 
 					var topbarel = create_topbarel();
 					topbarel.style.left = "-" + em1;
@@ -56575,6 +56583,9 @@ var $$IMU_EXPORT$$;
 					};
 
 					var update_imagestotal = function() {
+						if (images_total_input_active)
+							return;
+
 						if (prev_images + next_images > 0) {
 							images_total.style.display = "inline-block";
 							images_total.innerText = get_imagestotal_text();
@@ -56583,11 +56594,67 @@ var $$IMU_EXPORT$$;
 						}
 					};
 
+					var imagestotal_input_enable = function() {
+						images_total_input_active = true;
+						images_total.innerText = "";
+
+						images_total_input.style.display = "initial";
+						images_total_input.value = prev_images + 1;
+						images_total.setAttribute("data-btn-noaction", true);
+						images_total.appendChild(images_total_input);
+
+						// https://stackoverflow.com/a/19498477
+						setTimeout(function() {
+							images_total_input.select();
+							images_total_input.setSelectionRange(0, images_total_input.value.length);
+						}, 100);
+					};
+
+					var imagestotal_input_disable = function() {
+						if (!images_total_input_active)
+							return;
+
+						images_total_input.style.display = "none";
+						images_total.removeChild(images_total_input);
+						images_total.removeAttribute("data-btn-noaction");
+						images_total_input_active = false;
+
+						update_imagestotal();
+					};
+
 					var popup_width = (popupshown && outerdiv.clientWidth) || imgw;
 
-					var images_total = addbtn(get_imagestotal_text(), "", null, true);
+					var images_total = addbtn(get_imagestotal_text(), "", imagestotal_input_enable, true);
 					images_total.style.fontSize = gallerycount_fontsize;
 					images_total.style.display = "none";
+
+					var images_total_input = document.createElement("input");
+					var images_total_input_active = false;
+					set_el_all_initial(images_total_input);
+					images_total_input.style.display = "none";
+					images_total_input.style.backgroundColor = "white";
+					images_total_input.style.fontFamily = "sans-serif";
+					images_total_input.style.fontSize = galleryinput_fontsize;
+					images_total_input.style.padding = "1px";
+					images_total_input.style.paddingLeft = "2px";
+					images_total_input.style.width = "5em";
+					images_total_input.addEventListener("mouseout", imagestotal_input_disable);
+					images_total_input.addEventListener("keydown", function(e) {
+						if (e.which === 13) { // enter
+							var parsednum = images_total_input.value.replace(/\s+/g, "");
+							if (/^[0-9]+$/.test(parsednum)) {
+								parsednum = parseInt(parsednum);
+								trigger_gallery(parsednum - (prev_images + 1));
+							}
+
+							imagestotal_input_disable();
+
+							e.stopPropagation();
+							e.preventDefault();
+							return false;
+						}
+					}, true);
+
 					topbarel.appendChild(images_total);
 
 					if (settings.mouseover_ui_optionsbtn) {
