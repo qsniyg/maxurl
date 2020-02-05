@@ -27,6 +27,7 @@
 // @grant             GM_registerMenuCommand
 // @grant             GM_unregisterMenuCommand
 // @grant             GM_addValueChangeListener
+// @grant             GM_download
 // @grant             GM_openInTab
 // @grant             GM.openInTab
 // @connect           *
@@ -3535,6 +3536,16 @@ var $$IMU_EXPORT$$;
 		}
 
 		return dict;
+	};
+
+	var headers_dict_to_list = function(headers) {
+		var list = [];
+
+		for (var header in headers) {
+			list.push({name: header, value: headers[header]});
+		}
+
+		return list;
 	};
 
 	var parse_cookieheader = function(cookieheader) {
@@ -59577,11 +59588,28 @@ var $$IMU_EXPORT$$;
 				extension_send_message({
 					type: "download",
 					data: {
-						imu: popup_obj
+						imu: imu
 					}
 				}, function() {
 					if (cb)
 						cb();
+				});
+			} else if (is_userscript && typeof GM_download !== "undefined") {
+				var headers;
+
+				if (imu.headers)
+					headers = headers_dict_to_list(imu.headers);
+
+				GM_download({
+					url: imu.url,
+					name: filename,
+					headers: headers,
+					saveAs: true,
+					onerror: function(error) {
+						if (error && error.error && error.error !== "not_succeeded") {
+							do_browser_download(imu, filename, cb);
+						}
+					}
 				});
 			} else {
 				do_browser_download(imu, filename, cb);
