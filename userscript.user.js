@@ -50790,6 +50790,14 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/media\/+screenshots\/.*\/)thumbs\/+/, "$1");
 		}
 
+		if (domain_nowww === "d-gram.co.kr") {
+			// https://d-gram.co.kr/data/dgram/goods/asiha/small/api201912061553473471228.jpg
+			//   https://d-gram.co.kr/data/dgram/goods/asiha/big/api201912061553473471228.jpg
+			// https://d-gram.co.kr/data/dgram/goods/Ouimaisnon/small/300809957.jpg
+			//   https://d-gram.co.kr/data/dgram/goods/Ouimaisnon/big/300809957.jpg
+			return src.replace(/(\/data\/+dgram\/.*\/)small\/+([^/]+)(?:[?#].*)?$/, "$1big/$2");
+		}
+
 
 
 
@@ -56885,7 +56893,9 @@ var $$IMU_EXPORT$$;
 
 					if (newobj.filename.length === 0) {
 						newobj.filename = url.replace(/.*\/([^?#/]*)(?:[?#].*)?$/, "$1");
-						if ((newobj.filename.split(".").length - 1) === 1) {
+
+						// Disable as there's no use for this
+						if (false && (newobj.filename.split(".").length - 1) === 1) {
 							newobj.filename = newobj.filename.replace(/(.*)\.[^.]*?$/, "$1");
 						}
 					}
@@ -59523,17 +59533,22 @@ var $$IMU_EXPORT$$;
 			};
 		})();
 
-		var download_popup_image = function() {
-			var a = document.createElement("a");
-
-			// Starting with <video> in case another <img> gets added for unrelated reasons
+		var get_popup_media_url = function() {
 			var imgels = popups[0].getElementsByTagName("video");
 			if (imgels.length === 0)
 				imgels = popups[0].getElementsByTagName("img");
-			a.href = imgels[0].src;
+			var url = imgels[0].src;
 
-			if (popup_obj.filename.length > 0) {
-				a.setAttribute("download", popup_obj.filename);
+			return url;
+		};
+
+		var do_browser_download = function(imu, filename, cb) {
+			var a = document.createElement("a");
+
+			a.href = imu.url;
+
+			if (filename && filename.length > 0) {
+				a.setAttribute("download", filename);
 			} else {
 				var attr = document.createAttribute("download");
 				a.setAttributeNode(attr);
@@ -59552,6 +59567,29 @@ var $$IMU_EXPORT$$;
 			setTimeout(function() {
 				document.body.removeChild(a);
 			}, 500);
+
+			if (cb)
+				cb();
+		};
+
+		var do_download = function(imu, filename, cb) {
+			if (is_extension) {
+				extension_send_message({
+					type: "download",
+					data: {
+						imu: popup_obj
+					}
+				}, function() {
+					if (cb)
+						cb();
+				});
+			} else {
+				do_browser_download(imu, filename, cb);
+			}
+		};
+
+		var download_popup_image = function() {
+			do_download(popup_obj, popup_obj.filename);
 		};
 
 		var keyevent_remote = function(event) {

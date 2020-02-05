@@ -9,6 +9,7 @@ var loading_redirects = {};
 var tabs_ready = {};
 var request_headers = {};
 var override_headers = {};
+var override_download = {};
 var reqid_to_redid = {};
 
 var storage = chrome.storage.sync;
@@ -546,7 +547,35 @@ var onHeadersReceived = function(details) {
 		requests[redid].server_headers = details.responseHeaders;
 	}
 
-	if (details.tabId in loading_urls) {
+	// this has to be before the in loading_urls check because it's also in loading_urls
+	if (details.tabId in override_download) {
+		var newheaders = [];
+
+		var override_data = override_download[details.tabId];
+		var contentdisposition_data = [["attachment"]];
+		if (override_data.filename) {
+			contentdisposition_data.push(["filename", override_data.filename]);
+		}
+
+		details.responseHeaders.forEach((header) => {
+			if (header.name.toLowerCase() === "content-disposition")
+				return;
+
+			newheaders.push(header);
+		});
+
+		newheaders.push({
+			name: "Content-Disposition",
+			value: stringify_contentdisposition(contentdisposition_data)
+		});
+
+		debug("Old headers", details.responseHeaders);
+		debug("New headers", newheaders);
+
+		return {
+			responseHeaders: newheaders
+		};
+	} else if (details.tabId in loading_urls) {
 		var newheaders = [];
 
 		var imu = {};
@@ -891,6 +920,29 @@ chrome.runtime.onMessage.addListener((message, sender, respond) => {
 		});
 
 		return true;
+	} else if (message.type === "download") {
+		debug("download", message);
+
+		var tab_options = {
+			url: message.data.imu.url,
+			openerTabId: sender.tab.id,
+			active: false
+		};
+
+		chrome.tabs.create(tab_options, function (tab) {
+			debug("newTab (download)", tab);
+			redirects[tab.id] = message.data.imu;
+
+			override_download[tab.id] = {
+				filename: message.data.imu.filename
+			};
+
+			respond({
+				type: "download"
+			});
+		});
+
+		return true;
 	} else if (message.type === "remote" || message.type === "remote_reply") {
 		debug(message.type, message);
 
@@ -1018,6 +1070,10 @@ function tabremoved(tabid) {
 
 	if (tabid in override_headers) {
 		delete override_headers[tabid];
+	}
+
+	if (tabid in override_download) {
+		delete override_download[tabid];
 	}
 }
 
