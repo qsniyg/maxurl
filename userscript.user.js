@@ -31,6 +31,8 @@
 // @grant             GM_openInTab
 // @grant             GM.openInTab
 // @connect           *
+// api.github.com is used for checking for updates (can be disabled through the "Check Updates" setting)
+// @connect           api.github.com
 // @run-at            document-start
 // @license           Apache-2.0
 // ==/UserScript==
@@ -42,8 +44,6 @@
 //   * Downloading the image for the popup
 //   * Querying a third-party library
 //     * You can control this with the "Rules using 3rd-party libraries" setting
-//   * Checking for updates for this userscript
-//     * You can control this with the "Check Updates" setting
 // Search for do_request if you want to see what the code does exactly.
 
 
