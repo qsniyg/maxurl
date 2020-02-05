@@ -50775,6 +50775,21 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/gallery\/+1080p\/+/, "/gallery/2160p/");
 		}
 
+		if (domain_nowww === "romsmode.com" ||
+			// https://romsmania.cc/statics/assets/covers/gamecube/hunter-the-reckoning-usa-gamecube_1486037702_mini.jpg
+			//   https://romsmania.cc/statics/assets/covers/gamecube/hunter-the-reckoning-usa-gamecube_1486037702.jpg
+			domain_nowww === "romsmania.cc") {
+			// https://romsmode.com/statics/assets/covers/gamecube/legend-of-zelda-the-the-wind-waker-usa-gamecube_1485595101_mini.jpg
+			//   https://romsmode.com/statics/assets/covers/gamecube/legend-of-zelda-the-the-wind-waker-usa-gamecube_1485595101.jpg
+			return src.replace(/(\/statics\/+assets\/+covers\/+.*_[0-9]+)_mini(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "myabandonware.com") {
+			// https://www.myabandonware.com/media/screenshots/0-9/007-nightfire-ilw/thumbs/007-nightfire_13.png
+			//   https://www.myabandonware.com/media/screenshots/0-9/007-nightfire-ilw/007-nightfire_13.png
+			return src.replace(/(\/media\/+screenshots\/.*\/)thumbs\/+/, "$1");
+		}
+
 
 
 
@@ -55953,8 +55968,12 @@ var $$IMU_EXPORT$$;
 
 			if (el) {
 				do {
-					if (el.title || el.alt) {
-						var caption = el.title || el.alt;
+					// don't use el.title/el.alt because if the element is <form>, it refers to form > input[name="title"]
+					var el_title = el.getAttribute("title");
+					var el_alt = el.getAttribute("alt");
+
+					if (el_title || el_alt) {
+						var caption = el_title || el_alt;
 
 						// When opening an image in a new tab in Firefox, alt is set to the src
 						if (caption === el.src)
