@@ -5974,14 +5974,16 @@ var $$IMU_EXPORT$$;
 
 								var match = result.responseText.match(/<meta\s+property=["']og:title["']\s+content=["']([^'"]+)["']/);
 								if (!match) {
+									console_warn("Newsen title not found", result);
 									return done(null, false);
 								}
 
-								var title = match[1];
+								var title = strip_whitespace(match[1]);
 								console_log("Title: ", title);
 
-								match = result.responseText.match(/<img\s+id=["']artImg["']\s+src=["'](?:https?:)\/\/[a-z]+\.newsen\.com\/.*?["']/g);
+								match = result.responseText.match(/<img\s+id=["']artImg["']\s+src=["'](?:https?:)?\/\/[a-z]+\.newsen\.com\/.*?["']/g);
 								if (!match) {
+									console_warn("Newsen images not found", result);
 									return done(null, false);
 								}
 
@@ -10743,10 +10745,12 @@ var $$IMU_EXPORT$$;
 			return src.replace(/[0-9]*_[0-9]*(\.[^/.]*)$/, "0_0$1");
 		}
 
-		if (domain === "b-ssl.duitang.com") {
+		if (domain_nosub === "duitang.com") {
 			// https://b-ssl.duitang.com/uploads/item/201508/01/20150801214854_2Vr53.thumb.700_0.jpeg -- 403
 			//   https://b-ssl.duitang.com/uploads/item/201508/01/20150801214854_2Vr53.jpeg -- works
-			return src.replace(/\.thumb\.[0-9]+_[0-9]+\./, ".");
+			// https://c-ssl.duitang.com/uploads/item/201808/08/20180808195029_brxev.thumb.400_0.jpg
+			//   https://c-ssl.duitang.com/uploads/item/201808/08/20180808195029_brxev.jpg
+			return src.replace(/(\/uploads\/+item\/+.*)\.thumb\.[0-9]+_[0-9]+\./, "$1.");
 		}
 
 		if (domain_nosub === "vcimg.com" &&
@@ -50811,6 +50815,14 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/data\/+dgram\/.*\/)small\/+([^/]+)(?:[?#].*)?$/, "$1big/$2");
 		}
 
+		if (domain === "th.sz-search.com") {
+			// http://th.sz-search.com/t.html?ph=https%3A%2F%2Fencrypted-tbn0.gstatic.com%2Fimages%3Fq%3Dtbn%3AANd9GcQD2V2q2LpAxjuJHVG3fMBh5jZR7zZibnmjiz-B1siymZAznEvW%26s
+			//   https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQD2V2q2LpAxjuJHVG3fMBh5jZR7zZibnmjiz-B1siymZAznEvW&s
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+t.html\?(?:.*&)?ph=(http[^&]*).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+		}
+
 
 
 
@@ -56934,13 +56946,24 @@ var $$IMU_EXPORT$$;
 				if (add_link) {
 					a.href = url;
 					if (settings.mouseover_download) {
-						a.href = img.src;
+						if (false) {
+							a.href = img.src;
 
-						if (newobj.filename.length > 0) {
-							a.setAttribute("download", newobj.filename);
+							if (newobj.filename.length > 0) {
+								a.setAttribute("download", newobj.filename);
+							} else {
+								var attr = document.createAttribute("download");
+								a.setAttributeNode(attr);
+							}
 						} else {
-							var attr = document.createAttribute("download");
-							a.setAttributeNode(attr);
+							a.href = "#";
+							a.addEventListener("click", function(e) {
+								download_popup_image();
+
+								e.preventDefault();
+								e.stopPropagation();
+								return false;
+							}, true);
 						}
 					}
 				}
