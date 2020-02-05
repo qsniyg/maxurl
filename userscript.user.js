@@ -42,6 +42,8 @@
 //   * Downloading the image for the popup
 //   * Querying a third-party library
 //     * You can control this with the "Rules using 3rd-party libraries" setting
+//   * Checking for updates for this userscript
+//     * You can control this with the "Check Updates" setting
 // Search for do_request if you want to see what the code does exactly.
 
 
