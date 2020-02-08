@@ -4,7 +4,7 @@
 // ==UserScript==
 // @name              Image Max URL
 // @namespace         http://tampermonkey.net/
-// @version           0.12.9
+// @version           0.12.10
 // @description       Finds larger or original versions of images for 6200+ websites
 // @description:ko    6200개 이상의 사이트에 대해 더 크거나 원본 이미지를 찾아드립니다
 // @description:fr    Trouve des images plus grandes ou originales pour plus de 6200 sites
@@ -27,9 +27,12 @@
 // @grant             GM_registerMenuCommand
 // @grant             GM_unregisterMenuCommand
 // @grant             GM_addValueChangeListener
+// @grant             GM_download
 // @grant             GM_openInTab
 // @grant             GM.openInTab
 // @connect           *
+// api.github.com is used for checking for updates (can be disabled through the "Check Updates" setting)
+// @connect           api.github.com
 // @run-at            document-start
 // @license           Apache-2.0
 // ==/UserScript==
@@ -3540,6 +3543,16 @@ var $$IMU_EXPORT$$;
 		return dict;
 	};
 
+	var headers_dict_to_list = function(headers) {
+		var list = [];
+
+		for (var header in headers) {
+			list.push({name: header, value: headers[header]});
+		}
+
+		return list;
+	};
+
 	var parse_cookieheader = function(cookieheader) {
 		var cookies = {};
 
@@ -5573,14 +5586,16 @@ var $$IMU_EXPORT$$;
 
 								var match = result.responseText.match(/<meta\s+property=["']og:title["']\s+content=["']([^'"]+)["']/);
 								if (!match) {
+									console_warn("Newsen title not found", result);
 									return done(null, false);
 								}
 
-								var title = match[1];
+								var title = strip_whitespace(match[1]);
 								console_log("Title: ", title);
 
-								match = result.responseText.match(/<img\s+id=["']artImg["']\s+src=["'](?:https?:)\/\/[a-z]+\.newsen\.com\/.*?["']/g);
+								match = result.responseText.match(/<img\s+id=["']artImg["']\s+src=["'](?:https?:)?\/\/[a-z]+\.newsen\.com\/.*?["']/g);
 								if (!match) {
+									console_warn("Newsen images not found", result);
 									return done(null, false);
 								}
 
@@ -7995,8 +8010,8 @@ var $$IMU_EXPORT$$;
 			return src.replace(/[0-9]*_[0-9]*(\.[^/.]*)$/, "0_0$1");
 		}
 
-		if (domain === "b-ssl.duitang.com") {
-			return src.replace(/\.thumb\.[0-9]+_[0-9]+\./, ".");
+		if (domain_nosub === "duitang.com") {
+			return src.replace(/(\/uploads\/+item\/+.*)\.thumb\.[0-9]+_[0-9]+\./, "$1.");
 		}
 
 		if (domain_nosub === "vcimg.com" &&
@@ -29308,6 +29323,18 @@ var $$IMU_EXPORT$$;
 		if (domain_nosub === "newtumbl.com") {
 			return {
 				url: src.replace(/(\/img\/+[0-9]+\/+[0-9]+\/+[0-9]+\/+[0-9]+\/+nT_[0-9a-z]{10,})_[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2"),
+				headers: {
+					Referer: ""
+				},
+				bad_if: [{
+					headers: {
+						"content-type": "image/jpg",
+						"content-length": "688362"
+					}
+				}],
+				referer_ok: {
+					same_domain_nosub: true
+				},
 				can_head: false // completely wrong output
 			};
 		}
@@ -31699,6 +31726,37 @@ var $$IMU_EXPORT$$;
 
 		if (domain === "s.car.info") {
 			return src.replace(/(\/image_files\/+)[0-9]+\/+/, "$1orig/");
+		}
+
+		if (domain_nowww === "cryengine.com") {
+			return src.replace(/(\/files\/+[a-z]+\/+)[0-9]+\/+([0-9a-f]{10,}\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain === "cdn-l-cyberpunk.cdprojektred.com") {
+			return src.replace(/\/gallery\/+1080p\/+/, "/gallery/2160p/");
+		}
+
+		if (domain_nowww === "romsmode.com" ||
+			domain_nowww === "romsmania.cc") {
+			return src.replace(/(\/statics\/+assets\/+covers\/+.*_[0-9]+)_mini(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "myabandonware.com") {
+			return src.replace(/(\/media\/+screenshots\/.*\/)thumbs\/+/, "$1");
+		}
+
+		if (domain_nowww === "d-gram.co.kr") {
+			return src.replace(/(\/data\/+dgram\/.*\/)small\/+([^/]+)(?:[?#].*)?$/, "$1big/$2");
+		}
+
+		if (domain === "th.sz-search.com") {
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+t.html\?(?:.*&)?ph=(http[^&]*).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+		}
+
+		if (domain_nowww === "sanet.pics") {
+			return src.replace(/(\/storage-[0-9]+\/+[0-9]+\/+)th_([^/]+)(?:[?#].*)?$/, "$1$2");
 		}
 
 
@@ -36361,8 +36419,12 @@ var $$IMU_EXPORT$$;
 
 			if (el) {
 				do {
-					if (el.title || el.alt) {
-						var caption = el.title || el.alt;
+					// don't use el.title/el.alt because if the element is <form>, it refers to form > input[name="title"]
+					var el_title = el.getAttribute("title");
+					var el_alt = el.getAttribute("alt");
+
+					if (el_title || el_alt) {
+						var caption = el_title || el_alt;
 
 						// When opening an image in a new tab in Firefox, alt is set to the src
 						if (caption === el.src)
@@ -36790,8 +36852,15 @@ var $$IMU_EXPORT$$;
 					var btn = document.createElement(tagname);
 
 					if (action) {
+						var do_action = function() {
+							return !btn.hasAttribute("data-btn-noaction");
+						};
+
 						if (typeof action === "function") {
 							btn.addEventListener("click", function(e) {
+								if (!do_action())
+									return;
+
 								//console_log(e);
 								e.stopPropagation();
 								e.stopImmediatePropagation();
@@ -36896,7 +36965,7 @@ var $$IMU_EXPORT$$;
 				var cached_nextimages = 0;
 
 				function lraction(isright) {
-					trigger_gallery(isright, function(changed) {
+					trigger_gallery(isright ? 1 : -1, function(changed) {
 						if (!changed) {
 							create_ui();
 						}
@@ -36925,6 +36994,7 @@ var $$IMU_EXPORT$$;
 					var em1 = emi + "px"
 					var emhalf = (emi / 2) + "px";
 					var gallerycount_fontsize = "13px";
+					var galleryinput_fontsize = "12px";
 
 					var topbarel = create_topbarel();
 					topbarel.style.left = "-" + em1;
@@ -36989,6 +37059,9 @@ var $$IMU_EXPORT$$;
 					};
 
 					var update_imagestotal = function() {
+						if (images_total_input_active)
+							return;
+
 						if (prev_images + next_images > 0) {
 							images_total.style.display = "inline-block";
 							images_total.innerText = get_imagestotal_text();
@@ -36997,11 +37070,67 @@ var $$IMU_EXPORT$$;
 						}
 					};
 
+					var imagestotal_input_enable = function() {
+						images_total_input_active = true;
+						images_total.innerText = "";
+
+						images_total_input.style.display = "initial";
+						images_total_input.value = prev_images + 1;
+						images_total.setAttribute("data-btn-noaction", true);
+						images_total.appendChild(images_total_input);
+
+						// https://stackoverflow.com/a/19498477
+						setTimeout(function() {
+							images_total_input.select();
+							images_total_input.setSelectionRange(0, images_total_input.value.length);
+						}, 100);
+					};
+
+					var imagestotal_input_disable = function() {
+						if (!images_total_input_active)
+							return;
+
+						images_total_input.style.display = "none";
+						images_total.removeChild(images_total_input);
+						images_total.removeAttribute("data-btn-noaction");
+						images_total_input_active = false;
+
+						update_imagestotal();
+					};
+
 					var popup_width = (popupshown && outerdiv.clientWidth) || imgw;
 
-					var images_total = addbtn(get_imagestotal_text(), "", null, true);
+					var images_total = addbtn(get_imagestotal_text(), "", imagestotal_input_enable, true);
 					images_total.style.fontSize = gallerycount_fontsize;
 					images_total.style.display = "none";
+
+					var images_total_input = document.createElement("input");
+					var images_total_input_active = false;
+					set_el_all_initial(images_total_input);
+					images_total_input.style.display = "none";
+					images_total_input.style.backgroundColor = "white";
+					images_total_input.style.fontFamily = "sans-serif";
+					images_total_input.style.fontSize = galleryinput_fontsize;
+					images_total_input.style.padding = "1px";
+					images_total_input.style.paddingLeft = "2px";
+					images_total_input.style.width = "5em";
+					images_total_input.addEventListener("mouseout", imagestotal_input_disable);
+					images_total_input.addEventListener("keydown", function(e) {
+						if (e.which === 13) { // enter
+							var parsednum = images_total_input.value.replace(/\s+/g, "");
+							if (/^[0-9]+$/.test(parsednum)) {
+								parsednum = parseInt(parsednum);
+								trigger_gallery(parsednum - (prev_images + 1));
+							}
+
+							imagestotal_input_disable();
+
+							e.stopPropagation();
+							e.preventDefault();
+							return false;
+						}
+					}, true);
+
 					topbarel.appendChild(images_total);
 
 					if (settings.mouseover_ui_optionsbtn) {
@@ -37122,7 +37251,7 @@ var $$IMU_EXPORT$$;
 
 								update_imagestotal();
 							} else {
-								count_gallery(leftright, undefined, undefined, function(total) {
+								count_gallery(leftright, undefined, undefined, undefined, function(total) {
 									if (!leftright) {
 										prev_images = total;
 										cached_previmages = prev_images;
@@ -37207,7 +37336,9 @@ var $$IMU_EXPORT$$;
 
 					if (newobj.filename.length === 0) {
 						newobj.filename = url.replace(/.*\/([^?#/]*)(?:[?#].*)?$/, "$1");
-						if ((newobj.filename.split(".").length - 1) === 1) {
+
+						// Disable as there's no use for this
+						if (false && (newobj.filename.split(".").length - 1) === 1) {
 							newobj.filename = newobj.filename.replace(/(.*)\.[^.]*?$/, "$1");
 						}
 					}
@@ -37233,13 +37364,24 @@ var $$IMU_EXPORT$$;
 				if (add_link) {
 					a.href = url;
 					if (settings.mouseover_download) {
-						a.href = img.src;
+						if (false) {
+							a.href = img.src;
 
-						if (newobj.filename.length > 0) {
-							a.setAttribute("download", newobj.filename);
+							if (newobj.filename.length > 0) {
+								a.setAttribute("download", newobj.filename);
+							} else {
+								var attr = document.createAttribute("download");
+								a.setAttributeNode(attr);
+							}
 						} else {
-							var attr = document.createAttribute("download");
-							a.setAttributeNode(attr);
+							a.href = "#";
+							a.addEventListener("click", function(e) {
+								download_popup_image();
+
+								e.preventDefault();
+								e.stopPropagation();
+								return false;
+							}, true);
 						}
 					}
 				}
@@ -38047,7 +38189,7 @@ var $$IMU_EXPORT$$;
 				}
 			}
 
-			function get_url_from_css(str, elstr) {
+			function get_urls_from_css(str, elstr) {
 				var emptystrregex = /^(.*?\)\s*,)?\s*url[(]["']{2}[)]/;
 				if (!str.match(/^(.*?\)\s*,)?\s*url[(]/) || emptystrregex.test(str))
 					return null;
@@ -38056,34 +38198,48 @@ var $$IMU_EXPORT$$;
 				if (elstr && emptystrregex.test(elstr))
 					return null;
 
-				// https://www.flickr.com/account/upgrade/pro
-				// background-image: linear-gradient(rgba(0,0,0,.2),rgba(0,0,0,.2)),url(https://combo.staticflickr.com/ap/build/images/pro/flickrpro-hero-header.jpg)
-				// url('https://t00.deviantart.net/I94eYVLky718W9_zFjV-SJ-_qm8=/300x200/filters:fixed_height(100,100):origin()/pre00/abda/th/pre/i/2013/069/9/0/black_rock_shooter_by_mrtviolet-d5xktg7.jpg');
-				var src = norm(str.replace(/^(?:.*?\)\s*,)?\s*url[(](?:(?:'(.*?)')|(?:"(.*?)")|(?:([^)]*)))[)].*$/, "$1$2$3"));
-				if (src !== str)
-					return src;
-				return null;
+				// https://www.cyberpunk.net/
+				// url(/build/images/home/bg-media-1440-88acc9fc.jpg),url(/build/images/home/bg-media-under-1440-498c46c1.jpg)
+				var urls = [];
+				while (str) {
+					// https://www.flickr.com/account/upgrade/pro
+					// background-image: linear-gradient(rgba(0,0,0,.2),rgba(0,0,0,.2)),url(https://combo.staticflickr.com/ap/build/images/pro/flickrpro-hero-header.jpg)
+					// url('https://t00.deviantart.net/I94eYVLky718W9_zFjV-SJ-_qm8=/300x200/filters:fixed_height(100,100):origin()/pre00/abda/th/pre/i/2013/069/9/0/black_rock_shooter_by_mrtviolet-d5xktg7.jpg');
+					var match = str.match(/^(.*\)\s*,)?\s*url[(](?:(?:'(.*?)')|(?:"(.*?)")|(?:([^)]*)))[)].*?$/);
+					if (!match)
+						break;
+
+					urls.unshift(norm(match[2] || match[3] || match[4]));
+					str = match[1];
+				}
+
+				return urls;
 			}
 
 			function add_bgimage(layer, el, style, beforeafter) {
 				if (style.getPropertyValue("background-image")) {
 					var bgimg = style.getPropertyValue("background-image");
-					var src = get_url_from_css(bgimg, el.style.getPropertyValue("background-image"));
-					if (src)
-						addImage(src, el, {
-							isbg: beforeafter || true,
-							layer: layer
-						});
+					var urls = get_urls_from_css(bgimg, el.style.getPropertyValue("background-image"));
+					if (urls) {
+						for (var i = 0; i < urls.length; i++) {
+							addImage(urls[i], el, {
+								isbg: beforeafter || true,
+								layer: layer
+							});
+						}
+					}
 				}
 
 				if (beforeafter) {
 					if (style.getPropertyValue("content")) {
-						var src = get_url_from_css(style.getPropertyValue("content"));
-						if (src) {
-							addImage(src, el, {
-								isbg: beforeafter,
-								layer: layer
-							});
+						var urls = get_urls_from_css(style.getPropertyValue("content"));
+						if (urls) {
+							for (var i = 0; i < urls.length; i++) {
+								addImage(urls[i], el, {
+									isbg: beforeafter,
+									layer: layer
+								});
+							}
 						}
 					}
 				}
@@ -38923,8 +39079,11 @@ var $$IMU_EXPORT$$;
 			return !!find_source([el]);
 		}
 
-		function count_gallery(nextprev, origel, el, cb) {
+		function count_gallery(nextprev, max, origel, el, cb) {
 			var count = 0;
+
+			if (max === undefined)
+				max = settings.mouseover_ui_gallerymax;
 
 			var firstel = el;
 			if (!firstel)
@@ -38948,8 +39107,8 @@ var $$IMU_EXPORT$$;
 
 					count++;
 
-					if (count >= settings.mouseover_ui_gallerymax)
-						return cb(count);
+					if (count >= max)
+						return cb(count, newel);
 
 					el = newel;
 					loop();
@@ -38959,15 +39118,29 @@ var $$IMU_EXPORT$$;
 			loop();
 		}
 
-		function wrap_gallery_cycle(nextprev, origel, el, cb) {
+		function wrap_gallery_cycle(dir, origel, el, cb) {
 			if (!el)
 				el = real_popup_el;
 
-			wrap_gallery_func(nextprev, origel, el, function(newel) {
-				if (!newel && settings.mouseover_gallery_cycle) {
-					count_gallery(!nextprev, origel, el, function(count, newel) {
-						cb(newel);
-					});
+			if (dir === 0)
+				return cb();
+
+			var nextprev = true;
+			var max = dir;
+			if (dir < 0) {
+				nextprev = false;
+				max = -dir;
+			}
+
+			count_gallery(nextprev, max, origel, el, function(count, newel) {
+				if (count < max) {
+					if (settings.mouseover_gallery_cycle) {
+						count_gallery(!nextprev, undefined, origel, el, function(count, newel) {
+							cb(newel);
+						});
+					} else {
+						cb(null);
+					}
 				} else {
 					cb(newel);
 				}
@@ -38986,12 +39159,12 @@ var $$IMU_EXPORT$$;
 				});
 			}
 
-			wrap_gallery_cycle(nextprev, undefined, undefined, function(el) {
+			wrap_gallery_cycle(nextprev ? 1 : -1, undefined, undefined, function(el) {
 				cb(is_valid_el(el));
 			});
 		}
 
-		function trigger_gallery(nextprev, cb) {
+		function trigger_gallery(dir, cb) {
 			if (!cb) {
 				cb = nullfunc;
 			}
@@ -39000,14 +39173,14 @@ var $$IMU_EXPORT$$;
 				return remote_send_message(popup_el_remote, {
 					type: "trigger_gallery",
 					data: {
-						nextprev: nextprev
+						dir: dir
 					}
 				}, function(triggered) {
 					cb(triggered);
 				});
 			}
 
-			wrap_gallery_cycle(nextprev, undefined, undefined, function(newel) {
+			wrap_gallery_cycle(dir, undefined, undefined, function(newel) {
 				if (newel) {
 					var source = find_source([newel]);
 					if (source) {
@@ -39814,17 +39987,22 @@ var $$IMU_EXPORT$$;
 			};
 		})();
 
-		var download_popup_image = function() {
-			var a = document.createElement("a");
-
-			// Starting with <video> in case another <img> gets added for unrelated reasons
+		var get_popup_media_url = function() {
 			var imgels = popups[0].getElementsByTagName("video");
 			if (imgels.length === 0)
 				imgels = popups[0].getElementsByTagName("img");
-			a.href = imgels[0].src;
+			var url = imgels[0].src;
 
-			if (popup_obj.filename.length > 0) {
-				a.setAttribute("download", popup_obj.filename);
+			return url;
+		};
+
+		var do_browser_download = function(imu, filename, cb) {
+			var a = document.createElement("a");
+
+			a.href = imu.url;
+
+			if (filename && filename.length > 0) {
+				a.setAttribute("download", filename);
 			} else {
 				var attr = document.createAttribute("download");
 				a.setAttributeNode(attr);
@@ -39843,6 +40021,46 @@ var $$IMU_EXPORT$$;
 			setTimeout(function() {
 				document.body.removeChild(a);
 			}, 500);
+
+			if (cb)
+				cb();
+		};
+
+		var do_download = function(imu, filename, cb) {
+			if (is_extension) {
+				extension_send_message({
+					type: "download",
+					data: {
+						imu: imu
+					}
+				}, function() {
+					if (cb)
+						cb();
+				});
+			} else if (is_userscript && typeof GM_download !== "undefined") {
+				var headers;
+
+				if (imu.headers)
+					headers = headers_dict_to_list(imu.headers);
+
+				GM_download({
+					url: imu.url,
+					name: filename,
+					headers: headers,
+					saveAs: true,
+					onerror: function(error) {
+						if (error && error.error && error.error !== "not_succeeded") {
+							do_browser_download(imu, filename, cb);
+						}
+					}
+				});
+			} else {
+				do_browser_download(imu, filename, cb);
+			}
+		};
+
+		var download_popup_image = function() {
+			do_download(popup_obj, popup_obj.filename);
 		};
 
 		var keyevent_remote = function(event) {
@@ -39919,11 +40137,11 @@ var $$IMU_EXPORT$$;
 
 			if (popups.length > 0 && popup_el) {
 				if (trigger_complete(settings.mouseover_gallery_prev_key)) {
-					trigger_gallery(false);
+					trigger_gallery(-1);
 					ret = false;
 					release_ignore = settings.mouseover_gallery_prev_key;
 				} else if (trigger_complete(settings.mouseover_gallery_next_key)) {
-					trigger_gallery(true);
+					trigger_gallery(1);
 					ret = false;
 					release_ignore = settings.mouseover_gallery_next_key;
 				} else if (trigger_complete(settings.mouseover_download_key)) {
@@ -40196,7 +40414,7 @@ var $$IMU_EXPORT$$;
 					});
 				}
 			} else if (message.type === "count_gallery") {
-				count_gallery(message.data.nextprev, undefined, undefined, function(count) {
+				count_gallery(message.data.nextprev, undefined, undefined, undefined, function(count) {
 					respond(count);
 				});
 			} else if (message.type === "is_nextprev_valid") {
@@ -40204,7 +40422,7 @@ var $$IMU_EXPORT$$;
 					respond(valid);
 				});
 			} else if (message.type === "trigger_gallery") {
-				trigger_gallery(message.data.nextprev, function(triggered) {
+				trigger_gallery(message.data.dir, function(triggered) {
 					respond(triggered);
 				});
 			} else if (message.type === "resetpopups") {
