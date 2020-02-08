@@ -455,7 +455,6 @@ az743702.vo.msecnd.net
 az877327.vo.msecnd.net
 az879543.vo.msecnd.net
 azquotes.com
-b-ssl.duitang.com
 b.fssta.com
 b.njus.me
 b2bm.s3.amazonaws.com
@@ -765,6 +764,7 @@ cdn-img.instyle.com
 cdn-img.jamendo.com
 cdn-imgix-open.headout.com
 cdn-immedia.net
+cdn-l-cyberpunk.cdprojektred.com
 cdn-media.rtl.fr
 cdn-news30.it
 cdn-obs.line-apps.com
@@ -1255,6 +1255,7 @@ crhoy.net
 criturk.com
 crnobelo.com
 crunchyroll.com
+cryengine.com
 crystal.cafe
 cs.mg.co.za
 cseditors.com
@@ -1272,6 +1273,7 @@ cwcontent.asiae.co.kr
 cwh-cdn.21buttons.com
 cyclestyle.net
 czmodels.cz
+d-gram.co.kr
 d.backbook.me
 d.ibtimes.co.uk
 d.ifengimg.com
@@ -1540,6 +1542,7 @@ dtslb.com
 dubiobikinis.com
 dublinlive.ie
 dudepins.com
+duitang.com
 dundalkdemocrat.ie
 duonao.tv
 duvardamoda.com
@@ -4088,6 +4091,7 @@ my-hit.org
 my.cdn.tokyo-hot.com
 my.evilmilk.com
 my.wikifeet.com
+myabandonware.com
 myajc.com
 myamericanmarket.com
 myanimelist.cdn-dena.com
@@ -4880,6 +4884,8 @@ rocklyric.jp
 rockpapershotgun.com
 roleplay.me
 roleplayhaven.net
+romsmania.cc
+romsmode.com
 ropose.com
 rosario3.com
 rosphoto.com
@@ -4979,6 +4985,7 @@ sama-sama-sama.ru
 samironsheadshots.com
 san.imatin.net
 sandinyoureye.co.uk
+sanet.pics
 sanluisobispo.com
 sanspo.com
 santabanta.com
@@ -5588,6 +5595,7 @@ th.fashionblog.it
 th.gossipblog.it
 th.pinkblog.it
 th.sexhotpictures.net
+th.sz-search.com
 th.thgim.com
 thai.ac
 thaicuties.net

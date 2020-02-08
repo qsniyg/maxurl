@@ -1,3 +1,23 @@
+0.12.10
+
+New features:
+
+ * You can now go to a specific image # in a gallery by clicking the gallery position in the UI
+ * Support for 8 new websites (using 7 new rules)
+
+Improvements:
+
+ * Multiple `background-image`s are properly handled
+ * Various improvements to downloading
+ * Various improvements/fixes to existing rules
+
+Bugfixes:
+
+ * Popup will no longer fail to open because of form elements
+ * Downloading now works for the extension
+
+---
+
 0.12.9
 
 New features:
