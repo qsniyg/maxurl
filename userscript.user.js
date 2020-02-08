@@ -47434,6 +47434,18 @@ var $$IMU_EXPORT$$;
 			//   https://dn0.newtumbl.com/img/81100/14861971/1/21809496/nT_sei0rd05cpjcffzfr0pqaee7.jpg
 			return {
 				url: src.replace(/(\/img\/+[0-9]+\/+[0-9]+\/+[0-9]+\/+[0-9]+\/+nT_[0-9a-z]{10,})_[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2"),
+				headers: {
+					Referer: ""
+				},
+				bad_if: [{
+					headers: {
+						"content-type": "image/jpg",
+						"content-length": "688362"
+					}
+				}],
+				referer_ok: {
+					same_domain_nosub: true
+				},
 				can_head: false // completely wrong output
 			};
 		}
@@ -50821,6 +50833,12 @@ var $$IMU_EXPORT$$;
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+t.html\?(?:.*&)?ph=(http[^&]*).*?$/, "$1");
 			if (newsrc !== src)
 				return decodeuri_ifneeded(newsrc);
+		}
+
+		if (domain_nowww === "sanet.pics") {
+			// https://sanet.pics/storage-6/0220/th_9igLbF8otrSYXTItNF7OC6IBGsmuJLOT.jpg
+			//   https://sanet.pics/storage-6/0220/9igLbF8otrSYXTItNF7OC6IBGsmuJLOT.jpg
+			return src.replace(/(\/storage-[0-9]+\/+[0-9]+\/+)th_([^/]+)(?:[?#].*)?$/, "$1$2");
 		}
 
 

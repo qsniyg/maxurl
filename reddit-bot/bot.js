@@ -12,17 +12,21 @@ var url = "mongodb://localhost:27017/";
 
 var db = null;
 var db_content = null;
-MongoClient.connect(url, (err, client) => {
-  if (err) {
-    console.dir(err);
-    return;
-  }
 
-  console.log("Connected to MongoDB");
+var usemongo = false;
+if (usemongo) {
+  MongoClient.connect(url, (err, client) => {
+    if (err) {
+      console.dir(err);
+      return;
+    }
 
-  db = client.db("maximage");
-  db_content = db.collection("content");
-});
+    console.log("Connected to MongoDB");
+
+    db = client.db("maximage");
+    db_content = db.collection("content");
+  });
+}
 
 var blacklist_json = JSON.parse(fs.readFileSync("./blacklist.json"));
 var env_json = {};
@@ -329,8 +333,18 @@ function dourl_inner(big, url, post, options) {
               }
 
               if (ctype.match(/binary\//) ||
-                  ctype.match(/application\//)) {
+                  ctype.match(/application\//) ||
+                  !ctype.match(/^image\//)) {
                 console.log("Content-Type = " + ctype + " (forces download)");
+                log(log_entry);
+                return;
+              }
+            }
+
+            if (newdata.headers["content-disposition"]) {
+              var cdisposition = newdata.headers["content-disposition"];
+              if (cdisposition.match(/^attachment/)) {
+                console.log("Content-Disposition = " + cdisposition);
                 log(log_entry);
                 return;
               }
@@ -380,15 +394,16 @@ function dourl_inner(big, url, post, options) {
 
             if (orig_domain === "pbs.twimg.com" &&
                 newdata.url.indexOf("?name=orig") >= 0 &&
-                // seems like twitter resizes to 2048 height as of late
-                newdata.width < 4096 && newdata.height < 4096 && newdata.height !== 2048) {
+                // seems like twitter resizes to 2048 height (or width?) as of late
+                // https://pbs.twimg.com/media/EN19OKgVAAEmK0E.jpg?name=orig -- 2048x1408
+                newdata.width !== 4096 && newdata.height !== 4096 && newdata.height !== 2048 && newdata.width !== 2048) {
               // https://pbs.twimg.com/media/EApe63wXkAA_GXZ.jpg?name=orig -- 4711x3141, maybe only check height?
               big.is_original = true;
             }
 
             // explain imgur, as the urls often confuse people
             if (orig_domain === "i.imgur.com" &&
-                new_domain === "i.imgur.com") {
+                new_domain === "i.imgur.com" && !big.is_original) {
               comment += "*This is the original size uploaded to imgur";
 
               if (url.length - 1 === newdata.url.length) {
@@ -426,7 +441,7 @@ function dourl_inner(big, url, post, options) {
             //comment += "^[why?](https://www.reddit.com/r/MaxImage/comments/8znfgw/faq/)&nbsp;|&nbsp;to&nbsp;find&nbsp;larger&nbsp;images:&nbsp;[website](https://qsniyg.github.io/maxurl/)&nbsp;/&nbsp;[userscript](https://greasyfork.org/en/scripts/36662-image-max-url)";
             //comment += "[why?](https://www.reddit.com/r/MaxImage/comments/8znfgw/faq/) | to find larger images yourself: [website](https://qsniyg.github.io/maxurl/) / [userscript](https://greasyfork.org/en/scripts/36662-image-max-url)";
             // show the extension link instead of the website, as gitcdn is really off and on (need to find something else)
-            comment += "[why?](" + faq_link + ") | to find larger images yourself: [extension](https://addons.mozilla.org/en-US/firefox/addon/image-max-url/) / [userscript](https://greasyfork.org/en/scripts/36662-image-max-url) ([guide](https://www.reddit.com/r/MaxImage/wiki/pictures))";
+            comment += "[why?](" + faq_link + ") | to find larger images yourself: [extension](https://addons.mozilla.org/en-US/firefox/addon/image-max-url/) / [userscript](https://greasyfork.org/en/scripts/36662-image-max-url) / [website](https://qsniyg.github.io/maxurl/) ([guide](https://www.reddit.com/r/MaxImage/wiki/pictures))";
             if (options.np)
               comment = npify(comment);
             console.log(comment);
@@ -498,7 +513,7 @@ function dourl(url, post, options) {
   var bigimage_options = {
     fill_object: true,
     force_page: true,
-    exclude_videos: true,
+    //exclude_videos: true,
     //allow_thirdparty: true,
     filter: function(url) {
       if (!bigimage.is_internet_url(url))
@@ -611,6 +626,7 @@ const links = new NodeCache({ stdTTL: 600, checkperiod: 100 });
 //dourl("http://i0.kym-cdn.com/photos/images/newsfeed/001/318/958/c7d.png");
 //dourl("https://preview.redd.it/vjf4vjav3j131.jpg?width=640&crop=smart&auto=webp&s=2ceddce951cfff3ec2c627fc6e16c9865f187f02");
 //dourl("https://pbs.twimg.com/media/D--plbeWkAEziX_.jpg");
+//dourl("https://thumbs3.imgbox.com/e4/3f/eLFM9k0c_t.jpg");
 // not original:
 //dourl("https://pbs.twimg.com/media/DYlCdhxVMAAi8OM.jpg");
 // can return a wrong image:
@@ -633,6 +649,10 @@ const links = new NodeCache({ stdTTL: 600, checkperiod: 100 });
 //dourl("https://i.imgur.com/L4BmEfg_d.jpg?maxwidth=640&shape=thumb&fidelity=medium");
 // shouldn't show anything if exclude_videos == true
 //dourl("https://thumbs.gfycat.com/YellowTornCockatiel-size_restricted.gif");
+// should fail (content-disposition: attachment)
+//dourl("https://connectgalaxy.com/gallery/icon/309557/taggable");
+// should fail (bad-if), nsfw!
+//dourl("https://i.imgur.com/4dLcGhR.gif")
 
 //console.dir(blacklist_json.disallowed);
 if (true) {
