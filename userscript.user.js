@@ -50860,6 +50860,62 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/media\/+users\/+[0-9]+\/+[0-9]+)_[sn](\.[^/.]+)(?:[?#].*)?$/, "$1_l$2");
 		}
 
+		if (false && host_domain_nowww === "mega.nz" && options && options.do_request && options.cb && options.element) {
+			// need to decrypt
+			var get_file_id = function(current) {
+				// <span class="block-view-file-type image file">
+				if (current.parentElement && current.parentElement.tagName === "SPAN" && current.parentElement.classList.has("image")) {
+					if (current.parentElement.parentElement.tagName === "A") {
+						return current.parentElement.parentElement.id;
+					}
+				}
+
+				return null;
+			};
+
+			var current = options.element;
+
+			var get_header_params = function() {
+				var localstorage = options.window.localStorage;
+				if (!localstorage)
+					return null;
+
+				var sid = localstorage.sid;
+				var lang = localstorage.lang;
+				var domain = meganz;
+				var id = "1"; // doesn't seem to matter? maybe a randomly generated number
+				var ut = localstorage.apiut;
+
+				if (sid && lang && ut) {
+					return {
+						sid: sid,
+						lang: lang,
+						domain: domain,
+						id: id,
+						ut: ut
+					}
+				} else {
+					return null;
+				}
+			};
+
+			var get_req_payload = function(id) {
+				return [{
+					"a": "g",
+					g: 1,
+					ssl: 2,
+					v: 2,
+					n: id
+				}];
+			};
+		}
+
+		if (domain === "previews.dropbox.com") {
+			if (/\/p\/+thumb\/+[^/]{50,}\/+[^/]+(?:[?#].*)?$/.test(src)) {
+				return src.replace(/(\/[^?#]+)(?:[?#].*)?$/, "$1?fv_content=true&size_mode=5");
+			}
+		}
+
 
 
 
