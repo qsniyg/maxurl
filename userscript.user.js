@@ -50841,6 +50841,25 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/storage-[0-9]+\/+[0-9]+\/+)th_([^/]+)(?:[?#].*)?$/, "$1$2");
 		}
 
+		if (domain === "uploads.cdn.triller.co") {
+			// https://v.triller.co/qyqyn
+			// https://uploads.cdn.triller.co/v1/uploads/3450512/1518746092_thumbnail.jpg
+			newsrc = src.replace(/(\/v1\/+uploads\/+[0-9]+\/+[0-9]+)_thumbnail\.[^/.?#]+(?:[?#].*)?$/, "$1_video.mp4");
+			if (newsrc !== src) {
+				return {
+					url: newsrc,
+					video: true
+				};
+			}
+		}
+
+		if (domain_nowww === "kinolift.ru") {
+			// https://kinolift.ru/media/users/23439/386876_s.jpg -- 341x512
+			//   https://kinolift.ru/media/users/23439/386876_n.jpg -- 682x1024
+			//   https://kinolift.ru/media/users/23439/386876_l.jpg -- 760x1141
+			return src.replace(/(\/media\/+users\/+[0-9]+\/+[0-9]+)_[sn](\.[^/.]+)(?:[?#].*)?$/, "$1_l$2");
+		}
+
 
 
 
@@ -55484,6 +55503,10 @@ var $$IMU_EXPORT$$;
 				}
 
 				var loadcb = function(urldata) {
+					if (_nir_debug_) {
+						console_log("check_object_get's loadcb", urldata, is_video);
+					}
+
 					last_objecturl = urldata;
 
 					if (!urldata) {
@@ -57438,8 +57461,20 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		function is_valid_src(src) {
-			return src && !(/^blob:/.test(src));
+		function is_video_el(el) {
+			if (el.tagName === "VIDEO")
+				return true;
+
+			if (el.tagName !== "SOURCE")
+				return false;
+
+			if (el.parentElement && el.parentElement.tagName === "VIDEO")
+				return true;
+			return false;
+		}
+
+		function is_valid_src(src, isvideo) {
+			return src && (!(/^blob:/.test(src)) || !isvideo);
 		}
 
 		function find_source(els) {
@@ -57461,7 +57496,7 @@ var $$IMU_EXPORT$$;
 				}
 			}
 
-			if (!is_valid_src(result.src)) {
+			if (!is_valid_src(result.src, is_video_el(result.el))) {
 				if (_nir_debug_)
 					console_log("find_source: invalid src", result);
 
@@ -59268,7 +59303,7 @@ var $$IMU_EXPORT$$;
 
 		var check_highlightimgs_valid_image = function(el) {
 			var src = get_img_src(el);
-			if (!is_valid_src(src) || (el.tagName === "A" && !looks_like_valid_link(src)))
+			if (!is_valid_src(src, is_video_el(el)) || (el.tagName === "A" && !looks_like_valid_link(src)))
 				return false;
 			return true;
 		};
@@ -59627,6 +59662,10 @@ var $$IMU_EXPORT$$;
 		};
 
 		var do_download = function(imu, filename, cb) {
+			if (_nir_debug_) {
+				console_log("do_download", imu, filename, cb);
+			}
+
 			if (is_extension) {
 				extension_send_message({
 					type: "download",
