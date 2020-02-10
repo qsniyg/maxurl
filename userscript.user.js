@@ -9068,6 +9068,8 @@ var $$IMU_EXPORT$$;
 			domain === "i.ezbuy.sg" ||
 			// https://i.guancha.cn/bbs/2020/01/15/20200115091914743?imageView2/2/w/500/format/jpg
 			domain === "i.guancha.cn" ||
+			// http://pic.xcarimg.com/2020/02/09/o_1e0jjiker16k31i831ig61jho1b9d0.jpg?imageMogr2/format/jpg/sizeLimit/100k!/ignore-error/1
+			domain === "pic.xcarimg.com" ||
 			// http://upload-images.jianshu.io/upload_images/1685198-ebfc2a22664f623c?imageMogr2/auto-orient/strip%7CimageView2/2/w/300
 			domain === "upload-images.jianshu.io") {
 			src = src.replace(/\?.*$/, "");
@@ -10698,7 +10700,9 @@ var $$IMU_EXPORT$$;
 			domain === "club-img.kdslife.com" ||
 			// http://p0.meituan.net/movie/86f093dd1c7dfb6306ab488c958be31d356758.png@200w_1l
 			//   http://p0.meituan.net/movie/86f093dd1c7dfb6306ab488c958be31d356758.png
-			domain === "p0.meituan.net" ||
+			// http://p1.meituan.net/dpgroup/29bb001965d31aa20c90ff99f405769d21403.jpg%40100w_100h_1e_1c_1l%7Cwatermark%3D0
+			//   http://p1.meituan.net/dpgroup/29bb001965d31aa20c90ff99f405769d21403.jpg
+			(domain_nosub === "meituan.net" && /^p[0-9]*\./.test(domain)) ||
 			// http://piccn.ihuaben.com/pic/mark/201903/1552277921814-Vi79361274_540-540.jpeg@200w
 			//   http://piccn.ihuaben.com/pic/mark/201903/1552277921814-Vi79361274_540-540.jpeg
 			(domain === "piccn.ihuaben.com" && src.indexOf("/pic/") >= 0) ||
@@ -10710,7 +10714,7 @@ var $$IMU_EXPORT$$;
 			domain === "img.sdxapp.com") {
 			// http://pic.xiami.net/images/artistlogo/43/15296162953243.png@!c-330-330
 			//   http://pic.xiami.net/images/artistlogo/43/15296162953243.png
-			newsrc = src.replace(/@[^/]*$/, "");
+			newsrc = src.replace(/(?:@|%40)[^/]*$/, "");
 			if (newsrc !== src)
 				return newsrc;
 		}
@@ -14584,9 +14588,6 @@ var $$IMU_EXPORT$$;
 		}
 
 		if ((domain_nosub === "yan.vn" && domain.match(/static[0-9]*\.yan\.vn/)) ||
-			// https://car2.autoimg.cn/cardfs/product/g30/M01/A3/D2/640x480_autohomecar__wKgHHFs7NY6AUXLiAAj8ddqKSUg436.jpg
-			//   https://car2.autoimg.cn/cardfs/product/g30/M01/A3/D2/autohomecar__wKgHHFs7NY6AUXLiAAj8ddqKSUg436.jpg
-			(domain_nosub === "autoimg.cn" && domain.match(/^car[0-9]*\.autoimg\.cn/)) ||
 			// https://myzutv.ro/uploads/modules/news/0/2018/3/9/37130/560x400_15205880152019549a.jpg
 			//   https://myzutv.ro/uploads/modules/news/0/2018/3/9/37130/15205880152019549a.jpg
 			(domain_nowww === "myzutv.ro" && src.indexOf("/uploads/") >= 0) ||
@@ -14605,6 +14606,16 @@ var $$IMU_EXPORT$$;
 			// http://static2.yan.vn/YanThumbNews/2167221/201711/260x130_414f9ea4-e35b-4b11-aed5-883b288ea050.jpg
 			//   http://static2.yan.vn/YanThumbNews/2167221/201711/414f9ea4-e35b-4b11-aed5-883b288ea050.jpg
 			return src.replace(/\/[0-9]+x[0-9]+_([^/]*)$/, "/$1");
+		}
+
+		if (domain_nosub === "autoimg.cn") {
+			// https://car2.autoimg.cn/cardfs/product/g30/M01/A3/D2/640x480_autohomecar__wKgHHFs7NY6AUXLiAAj8ddqKSUg436.jpg
+			//   https://car2.autoimg.cn/cardfs/product/g30/M01/A3/D2/autohomecar__wKgHHFs7NY6AUXLiAAj8ddqKSUg436.jpg
+			// https://www2.autoimg.cn/newsdfs/g27/M03/9C/69/185x104_0_autohomecar__ChcCQF47p-uAAudlAAZydiRS6bY154.jpg
+			//   https://www2.autoimg.cn/newsdfs/g27/M03/9C/69/autohomecar__ChcCQF47p-uAAudlAAZydiRS6bY154.jpg
+			// https://club2.autoimg.cn/album/g29/M05/9F/DB/userphotos/2020/02/08/17/240180_ChsEfl4-fxaANMwCAAFSlCZ0qHg088.jpg
+			//   https://club2.autoimg.cn/album/g29/M05/9F/DB/userphotos/2020/02/08/17/ChsEfl4-fxaANMwCAAFSlCZ0qHg088.jpg
+			return src.replace(/\/(?:[0-9]+x[0-9]+_(?:[0-9]+_)?|[0-9]+_)([^/]+)(?:[?#].*)?$/, "/$1");
 		}
 
 		if (domain === "image.thanhnien.vn") {
@@ -22426,6 +22437,9 @@ var $$IMU_EXPORT$$;
 			(domain_nosub === "5ceimg.com" && /^i[0-9]*\./.test(domain)) ||
 			// https://movieboo.oss-cn-hangzhou.aliyuncs.com/uploadfile/star/1/1354/1354982.jpg!320_480
 			domain === "movieboo.oss-cn-hangzhou.aliyuncs.com" ||
+			// http://cover.read.duokan.com/mfsv2/download/fdsc3/p01lfaVZynW3/byoAKvtBmNKzjf.jpg!s
+			//   http://cover.read.duokan.com/mfsv2/download/fdsc3/p01lfaVZynW3/byoAKvtBmNKzjf.jpg
+			domain === "cover.read.duokan.com" ||
 			// https://img.mgpyh.com/post_image/52fdf552ea637c47518ad8b5d0db379e.jpg!small
 			//   https://img.mgpyh.com/post_image/52fdf552ea637c47518ad8b5d0db379e.jpg
 			domain === "img.mgpyh.com") {
@@ -50910,10 +50924,54 @@ var $$IMU_EXPORT$$;
 			};
 		}
 
-		if (domain === "previews.dropbox.com") {
+		if ((domain_nosub === "dropbox.com" || domain_nosub === "dropboxusercontent.com") && /previews\.dropbox/.test(domain)) {
 			if (/\/p\/+thumb\/+[^/]{50,}\/+[^/]+(?:[?#].*)?$/.test(src)) {
 				return src.replace(/(\/[^?#]+)(?:[?#].*)?$/, "$1?fv_content=true&size_mode=5");
 			}
+		}
+
+		if (domain_nosub === "ddimg.cn") {
+			// http://img3m0.ddimg.cn/76/26/1569316990-1_l_2.jpg
+			//   http://img3m0.ddimg.cn/76/26/1569316990-1_o_2.jpg -- 800x800
+			// o, u, e, k, w, h, b, l, {s, m, f, a}, t, p, x, v
+			// http://img54.ddimg.cn/206620108363854_s.jpg
+			//   http://img54.ddimg.cn/206620108363854.jpg
+			// http://img57.ddimg.cn/206620117782667_y.jpg
+			//   http://img57.ddimg.cn/206620117782667.jpg
+			// other:
+			// http://img60.ddimg.cn/upload_img/00271/1/0103-y-l-8-1577958567.jpg
+			// http://img63.ddimg.cn/upload_img/00771/11/18249-1574755651.jpg
+			// http://img60.ddimg.cn/upload_img/00802/1/8064-d-1578562138.jpg
+			// http://img63.ddimg.cn/upload_img/00727/123/383x340-1570526824.jpg
+			newsrc = src
+				.replace(/(\/[0-9]{2}\/+[0-9]{2}\/+[0-9]+-[0-9]+)_[a-z]_([0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1_o_$2")
+				.replace(/(:\/\/[^/]+\/+[0-9]+)_[a-z](\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+
+			return {
+				url: newsrc,
+				can_head: false
+			};
+		}
+
+		if (domain === "image.bitautoimg.com") {
+			// https://image.bitautoimg.com/appimage-640-w1/mapi/media/2020/02/01/89f6ccd94eb843519f9f8e1b0d689098.jpeg
+			//   https://image.bitautoimg.com/mapi/media/2020/02/01/89f6ccd94eb843519f9f8e1b0d689098.jpeg
+			return src.replace(/\/appimage-[^/]+\/+mapi\/+media\/+/, "/mapi/media/");
+		}
+
+		if (amazon_container === "miscellaneous-content") {
+			// https://miscellaneous-content.s3.amazonaws.com/uploads/bfa/31033/4191388/thumb_31033_4191388.jpg
+			//   https://miscellaneous-content.s3.amazonaws.com/uploads/bfa/31033/4191388/large_31033_4191388.jpg
+			//   https://miscellaneous-content.s3.amazonaws.com/uploads/bfa/31033/4191388/original_31033_4191388.jpg
+			newsrc = src.replace(/(\/uploads\/+bfa\/+[0-9]+\/+[0-9]+\/+)(?:thumb|large|wl|preview)_([0-9]+_[0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1original_$2");
+			if (newsrc !== src)
+				return newsrc;
+		}
+
+		if (googlestorage_container === "inpock-link-media-storage") {
+			// https://storage.googleapis.com/inpock-link-media-storage/deploy/media/images/2020/2/9/thumb@300_2020-02-09-966029.jpeg
+			//   https://storage.googleapis.com/inpock-link-media-storage/deploy/media/images/2020/2/9/2020-02-09-966029.jpeg
+			return src.replace(/(\/media\/+images\/+[0-9]{4}\/+[0-9]+\/+[0-9]+\/+)thumb@[0-9]+_/, "$1");
 		}
 
 
