@@ -18568,6 +18568,19 @@ var $$IMU_EXPORT$$;
 			//   https://p16-tiktokcdn-com.akamaized.net/obj/v0201/a4d90921ec0947ed959b757497367d9e.jpg -- 720x1080
 			//   https://p16-tiktokcdn-com.akamaized.net/origin/v0201/a4d90921ec0947ed959b757497367d9e.jpg -- 720x1080
 			domain === "p16-tiktokcdn-com.akamaized.net" ||
+			// https://p16.tiktokcdn.com/aweme/100x100/tiktok-obj/1647151559190530.jpeg
+			//   https://p16.tiktokcdn.com/origin/tiktok-obj/1647151559190530.jpeg
+			domain === "p16.tiktokcdn.com" ||
+			// http://p16-hypstarcdn-com.akamaized.net/img/hpimg/db21de51a5c58250bfc4daa08c218e936ba721100afcabf845ba99e09a69c409~100x100.jpg
+			//   http://p16-hypstarcdn-com.akamaized.net/img/hpimg/db21de51a5c58250bfc4daa08c218e936ba721100afcabf845ba99e09a69c409~noop.jpg
+			//   http://p16-hypstarcdn-com.akamaized.net/origin/hpimg/db21de51a5c58250bfc4daa08c218e936ba721100afcabf845ba99e09a69c409.jpg
+			// http://p16-hypstarcdn-com.akamaized.net/img/tos-alisg-i-0000/81caebe48e7a45ca87e6ec57322294c7~480x0_35k.jpg
+			//   http://p16-hypstarcdn-com.akamaized.net/img/tos-alisg-i-0000/81caebe48e7a45ca87e6ec57322294c7~noop.jpg
+			//   http://p16-hypstarcdn-com.akamaized.net/origin/tos-alisg-i-0000/81caebe48e7a45ca87e6ec57322294c7.jpg
+			domain === "p16-hypstarcdn-com.akamaized.net" ||
+			// http://p16.hypstarcdn.com/img/hpimg/db21de51a5c58250bfc4daa08c218e936ba721100afcabf845ba99e09a69c409~100x100.jpg
+			//   http://p16.hypstarcdn.com/origin/hpimg/db21de51a5c58250bfc4daa08c218e936ba721100afcabf845ba99e09a69c409.jpg
+			domain === "p16.hypstarcdn.com" ||
 			// https://p3-tt.bytecdn.cn/img/pgc-image/f16e7bd2daf14850a8509015e6a45d71~noop_1913x1080.jpeg
 			//   https://p3-tt.bytecdn.cn/img/pgc-image/f16e7bd2daf14850a8509015e6a45d71~noop.jpeg
 			//   https://p3-tt.bytecdn.cn/origin/pgc-image/f16e7bd2daf14850a8509015e6a45d71.jpeg
