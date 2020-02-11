@@ -1253,6 +1253,7 @@ var $$IMU_EXPORT$$;
 		mouseover_gallery_next_key: ["right"],
 		// thanks to acid-crash on github for the idea: https://github.com/qsniyg/maxurl/issues/20
 		mouseover_styles: "",
+		mouseover_ui_styles: "",
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-541065461
 		mouseover_wait_use_el: false,
 		mouseover_download_key: ["s"],
@@ -2367,13 +2368,23 @@ var $$IMU_EXPORT$$;
 		},
 		mouseover_styles: {
 			name: "Popup CSS style",
-			description: "CSS style rules for the mouseover popup",
+			description: "Custom CSS styles for the popup",
 			type: "textarea",
 			requires: {
 				mouseover_open_behavior: "popup"
 			},
 			category: "popup",
 			subcategory: "popup_other"
+		},
+		mouseover_ui_styles: {
+			name: "Button CSS style",
+			description: "Custom CSS styles for the popup's UI buttons",
+			type: "textarea",
+			requires: {
+				mouseover_open_behavior: "popup"
+			},
+			category: "popup",
+			subcategory: "ui"
 		},
 		mouseover_apply_blacklist: {
 			name: "Don't popup blacklisted images",
@@ -10887,6 +10898,9 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "imgsrc.baidu.com" ||
+			// http://tiebapic.baidu.com/forum/wh%3D200%2C90%3B/sign=2a1cbd806bd98d1076810433110f9437/7531232dd42a2834305a1d774cb5c9ea14cebfb1.jpg
+			//   http://tiebapic.baidu.com/forum/pic/item/7531232dd42a2834305a1d774cb5c9ea14cebfb1.jpg
+			domain === "tiebapic.baidu.com" ||
 			// http://c.hiphotos.baidu.com/forum/w%3D272%3Bq%3D80%3Bg%3D0/sign=9a65dccd7f8da9774e2f812c826a8924/bf848226cffc1e175a7793cf4690f603728de936.jpg?&src=http%3A%2F%2Fimgsrc.baidu.com%2Fforum%2Fpic%2Fitem%2Fbf848226cffc1e175a7793cf4690f603728de936.jpg
 			//   http://imgsrc.baidu.com/forum/pic/item/bf848226cffc1e175a7793cf4690f603728de936.jpg
 			// http://f.hiphotos.baidu.com/zhidao/wh=600,800/sign=be7fdbc3034f78f0805e92f54901266d/a9d3fd1f4134970a75dc55b895cad1c8a6865dfd.jpg
@@ -51065,6 +51079,14 @@ var $$IMU_EXPORT$$;
 			};
 		}
 
+		if (domain === "img.xda-cdn.com") {
+			// https://img.xda-cdn.com/2yNH6dILNmizNpEEABNKnqs64ys=/https%3A%2F%2Fdl2.pushbulletusercontent.com%2FnT071AMavA0jkluZaGwXx0wgtg23aWTS%2FScreenshot_20170216-140640.png
+			//   https://dl2.pushbulletusercontent.com/nT071AMavA0jkluZaGwXx0wgtg23aWTS/Screenshot_20170216-140640.png
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+[^/]{10,}\/+(https?.*)/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+		}
+
 
 
 
@@ -56359,6 +56381,11 @@ var $$IMU_EXPORT$$;
 				//img.addEventListener("click", estop, true);
 				//img.addEventListener("mousedown", estop, true);
 
+				var bgcolor = "#333";
+				var fgcolor = "#fff";
+				var textcolor = "#fff";
+				var shadowcolor = "rgba(0,0,0,.5)";
+
 				var outerdiv = document.createElement("div");
 				set_el_all_initial(outerdiv);
 				outerdiv.style.position = "fixed";
@@ -56367,8 +56394,8 @@ var $$IMU_EXPORT$$;
 				var div = document.createElement("div");
 				var popupshown = false;
 				set_el_all_initial(div);
-				div.style.boxShadow = "0 0 15px rgba(0,0,0,.5)";
-				div.style.border = "3px solid white";
+				div.style.boxShadow = "0 0 15px " + shadowcolor;
+				div.style.border = "3px solid " + fgcolor;
 				div.style.position = "relative";
 				div.style.top = "0px";
 				div.style.left = "0px";
@@ -56743,23 +56770,26 @@ var $$IMU_EXPORT$$;
 					if (action) {
 						btn.style.cursor = "pointer";
 					}
-					btn.style.background = "#333";
-					btn.style.border = "3px solid white";
+
+					btn.style.background = bgcolor;
+					btn.style.border = "3px solid " + fgcolor;
 					btn.style.borderRadius = "10px";
 
 					// workaround for emojis: https://stackoverflow.com/a/39776303
 					if (typeof text === "string" && text.length === 1 && text.charCodeAt(0) > 256) {
 						btn.style.color = "transparent";
-						btn.style.textShadow = "0 0 0 white";
+						btn.style.textShadow = "0 0 0 " + textcolor;
 					} else {
-						btn.style.color = "white";
+						btn.style.color = textcolor;
 					}
 
 					btn.style.padding = "4px";
 					btn.style.lineHeight = "1em";
-					btn.style.whiteSpace = "nowrap";
+					//btn.style.whiteSpace = "nowrap";
 					btn.style.fontSize = "14px";
 					btn.style.fontFamily = "sans-serif";
+					apply_styles(btn, settings.mouseover_ui_styles);
+
 					btn.style.zIndex = maxzindex - 1;
 					if (!istop) {
 						btn.style.position = "absolute";
