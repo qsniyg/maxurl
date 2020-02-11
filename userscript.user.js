@@ -11197,6 +11197,15 @@ var $$IMU_EXPORT$$;
 			(src.indexOf("/images/") >= 0 ||
 			 src.indexOf("/image/") >= 0 ||
 			 src.indexOf("/user_images/") >= 0)*/) {
+			// thanks to soplparty on discord
+			// https://cdnimg.melon.co.kr/resource/image/web/artist/bg_atist_frame.png
+			if (/\/resource\/+image\/+web\/+artist\/+/.test(src)) {
+				return {
+					url: src,
+					bad: "mask"
+				};
+			}
+
 			// http://cdnimg.melon.co.kr/svc/user_images/plylst/2016/12/21/56/425022806_org.jpg?tm=20171210105300/melon/resize/x262/quality/100/optimize
 			//   http://cdnimg.melon.co.kr/svc/user_images/plylst/2016/12/21/56/425022806_org.jpg
 			// http://cdnimg.melon.co.kr/cm/album/images/003/74/978/374978_500.jpg/melon/resize/120/quality/80/optimize
