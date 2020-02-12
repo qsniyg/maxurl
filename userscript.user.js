@@ -11744,16 +11744,24 @@ var $$IMU_EXPORT$$;
 
 				while ((currentel = currentel.parentElement)) {
 					var id = currentel.getAttribute("id");
-					if (!id)
-						continue;
 
-					var match = id.match(/^photoset_([0-9]+)$/);
-					if (match) {
-						return match[1];
+					if (id) {
+						var match = id.match(/^photoset_([0-9]+)$/);
+						if (match) {
+							return match[1];
+						}
+
+						if (currentel.tagName === "ARTICLE") {
+							return id;
+						}
 					}
 
-					if (currentel.tagName === "ARTICLE") {
-						return id;
+					// https://4seasonstaeyeon.tumblr.com/post/190718700259
+					if (currentel.tagName === "A") {
+						var match = currentel.href.match(/:\/\/[^/]+\/+image\/+([0-9]{8,})\/*(?:[?#].*)?$/);
+						if (match) {
+							return match[1];
+						}
 					}
 				}
 
