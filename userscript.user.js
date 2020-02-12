@@ -14699,6 +14699,8 @@ var $$IMU_EXPORT$$;
 			//   https://ss-images.catscdn.vn/2018/08/21/3516394/south-korea-peace-sign-v-sign.jpg
 			// https://ss-images.catscdn.vn/wp600/2018/06/24/3075529/taeyeon-14.jpg
 			//   https://ss-images.catscdn.vn/2018/06/24/3075529/taeyeon-14.jpg
+			// https://ss-images.catscdn.vn/wpm450/2017/03/02/1128437/2.jpg
+			//   https://ss-images.catscdn.vn/2017/03/02/1128437/2.jpg
 			domain === "ss-images.catscdn.vn" ||
 			// http://img.v3.news.zdn.vn/w660/Uploaded/cqxrcajwp/2014_12_14/t13.jpg
 			//   http://img.v3.news.zdn.vn/Uploaded/cqxrcajwp/2014_12_14/t13.jpg
@@ -14764,7 +14766,7 @@ var $$IMU_EXPORT$$;
 			//   https://baomoi-photo-3-td.zadn.vn/18/07/13/100/26873675/2_45090.jpeg
 			// https://media.laodong.vn/Uploaded/thuctapsinh/2016_03_13/6_QVZZ.jpg?w=629&h=419&crop=auto&scale=both
 			newsrc = src
-				.replace(/(:\/\/[^/]*)\/+[wht]p?[0-9]+x?(?:_[^/]*)?(?:[0-9]+)?\//, "$1/")
+				.replace(/(:\/\/[^/]*)\/+[wht]p?m?[0-9]+x?(?:_[^/]*)?(?:[0-9]+)?\//, "$1/")
 				.replace(/(:\/\/[^/]*)\/+[-0-9]+x[-0-9]+\//, "$1/")
 				.replace(/(?:\.ashx)?\?.*$/, "");
 
@@ -30653,7 +30655,10 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/upimages\/+photoda\//, "/upimages/gisaimg/");
 		}
 
-		if (domain === "img.thefactjp.com") {
+		if (domain === "img.thefactjp.com" ||
+			// http://img.thefact.tv/service/article/2017/03/02/thumb/ffbc8c882a3c62d0d489a1e5f999ce8f.jpg
+			//   http://img.thefact.tv/service/article/2017/03/02/ffbc8c882a3c62d0d489a1e5f999ce8f.jpg
+			domain === "img.thefact.tv") {
 			// http://img.thefactjp.com/service/article/2016/12/01/200/7b310164d575f0b42546d9c02e36560f.jpg
 			//   http://img.thefactjp.com/service/article/2016/12/01/7b310164d575f0b42546d9c02e36560f.jpg
 			// http://img.thefactjp.com/service/article/2017/05/16/thumb/1d5feb31e4765b7cac63187e155e995e.jpg
@@ -51343,6 +51348,22 @@ var $$IMU_EXPORT$$;
 				if (options.element.parentElement.tagName === "A" && options.element.parentElement.href.indexOf("://img.itch.zone/") >= 0) {
 					return options.element.parentElement.href;
 				}
+			}
+		}
+
+		if (domain === "im.camjaxx.com") {
+			// https://im.camjaxx.com/5d141fedc95d8304e6d142cd/preview/preview.webm
+			//   https://camjaxx.com/stream/5d141fedc95d8304e6d142cd
+			return src.replace(/:\/\/[^/]+\/+([0-9a-f]{10,})\/+preview\/+.*/, "://camjaxx.com/stream/$1");
+		}
+
+		if (domain_nowww === "camjaxx.com") {
+			// https://camjaxx.com/stream/5d141fedc95d8304e6d142cd
+			if (/:\/\/[^/]+\/+stream\/+[0-9a-f]+\/*(?:[?#].*)?$/.test(src)) {
+				return {
+					url: src,
+					video: true
+				};
 			}
 		}
 
