@@ -57911,6 +57911,59 @@ var $$IMU_EXPORT$$;
 			return el.currentStyle || window.getComputedStyle(el);
 		}
 
+		var recalculate_rect = function(rect) {
+			rect.left = rect.x;
+			rect.top = rect.y;
+			rect.right = rect.left + rect.width;
+			rect.bottom = rect.right + rect.height;
+
+			return rect;
+		};
+
+		var parse_zoom = function(zoom) {
+			if (typeof zoom === "number")
+				return zoom;
+
+			var match = zoom.match(/^([-0-9.]+)%$/);
+			if (match)
+				return parseFloat(match[1]) / 100.;
+
+			match = zoom.match(/^([-0-9.]+)$/);
+			if (match) {
+				return parseFloat(match[1]);
+			}
+
+			return null;
+		};
+
+		function get_bounding_client_rect(el) {
+			var current = el;
+			var rect = el.getBoundingClientRect();
+
+			// test: https://4seasonstaeyeon.tumblr.com/post/190710743124 (bottom images)
+			while (current) {
+				var computed_style = get_computed_style(current);
+				if (computed_style.zoom) {
+					var zoom = parse_zoom(computed_style.zoom);
+					if (zoom) {
+						rect.width *= zoom;
+						rect.height *= zoom;
+
+						if (current !== el) {
+							rect.x *= zoom;
+							rect.y *= zoom;
+						}
+
+						recalculate_rect(rect);
+					}
+				}
+
+				current = current.parentElement;
+			}
+
+			return rect;
+		}
+
 		function is_popup_el(el) {
 			var current = el;
 			do {
@@ -58884,7 +58937,7 @@ var $$IMU_EXPORT$$;
 					}
 				}
 
-				var rect = el.getBoundingClientRect();
+				var rect = get_bounding_client_rect(el);
 				if (rect && rect.width > 0 && rect.height > 0 &&
 					rect.left <= xy[0] && rect.right >= xy[0] &&
 					rect.top <= xy[1] && rect.bottom >= xy[1] &&
@@ -58912,7 +58965,7 @@ var $$IMU_EXPORT$$;
 
 		function trigger_popup(is_contextmenu) {
 			if (_nir_debug_)
-				console_log("trigger_popup (is_contextmenu=" + is_contextmenu + ")");
+				console_log("trigger_popup (is_contextmenu=" + is_contextmenu + ")", current_frame_id);
 
 			controlPressed = true;
 			delay_handle_triggering = true;
@@ -60818,8 +60871,9 @@ var $$IMU_EXPORT$$;
 					}
 
 					//console_log(iframe);
-					var bb = iframe.getBoundingClientRect();
+					var bb = get_bounding_client_rect(iframe);
 
+					// fixme: should this be done?
 					event.clientX += bb.left;
 					event.clientY += bb.top;
 
@@ -60874,7 +60928,7 @@ var $$IMU_EXPORT$$;
 				popup_trigger_reason === "keyboard") {
 				var img = popups[0].getElementsByTagName("img")[0];
 				if (img) {
-					var rect = popups[0].getBoundingClientRect();
+					var rect = get_bounding_client_rect(popups[0]);
 
 					var our_jitter = jitter_base;
 
@@ -60968,7 +61022,7 @@ var $$IMU_EXPORT$$;
 						var popup_el_hidden = false;
 
 						if (close_on_leave_el) {
-							var popup_el_rect = popup_el.getBoundingClientRect();
+							var popup_el_rect = get_bounding_client_rect(popup_el);
 							if (popup_el_rect && popup_el_rect.width > 0 && popup_el_rect.height > 0) {
 								var our_in_img_jitter = in_img_jitter;
 								if (close_el_policy === "thumbnail")
@@ -61008,7 +61062,7 @@ var $$IMU_EXPORT$$;
 						}
 					} else if (delay_handle_triggering) {
 						if (next_popup_el && settings.mouseover_cancel_popup_when_elout) {
-							var popup_el_rect = next_popup_el.getBoundingClientRect();
+							var popup_el_rect = get_bounding_client_rect(next_popup_el);
 							if (!in_clientrect(mouseX, mouseY, popup_el_rect)) {
 								resetpopups();
 							}
@@ -61034,7 +61088,7 @@ var $$IMU_EXPORT$$;
 					//mouse_in_image_yet = false;
 
 					if (last_popup_el) {
-						var popup_el_rect = last_popup_el.getBoundingClientRect();
+						var popup_el_rect = get_bounding_client_rect(last_popup_el);
 						if (!in_clientrect(mouseX, mouseY, popup_el_rect)) {
 							last_popup_el = null;
 						}
