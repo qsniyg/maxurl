@@ -143,7 +143,7 @@ var $$IMU_EXPORT$$;
 		}
 	};
 	var is_in_iframe = check_in_iframe();
-	var can_use_remote = false;
+	var is_remote_possible = false;
 
 	var is_interactive = is_extension || is_userscript;
 
@@ -296,7 +296,7 @@ var $$IMU_EXPORT$$;
 			extension_send_message(message)
 		};
 
-		can_use_remote = true;
+		is_remote_possible = true;
 	} else if (is_interactive) {
 		if (is_in_iframe && window.parent) {
 			id_to_iframe["top"] = window.parent;
@@ -322,10 +322,10 @@ var $$IMU_EXPORT$$;
 			}
 		};
 
-		can_use_remote = true;
+		is_remote_possible = true;
 	}
 
-	if (can_use_remote) {
+	if (is_remote_possible) {
 		current_frame_url = window.location.href;
 		current_frame_id = get_random_id() + " " + current_frame_url;
 
@@ -359,9 +359,13 @@ var $$IMU_EXPORT$$;
 		};
 	}
 
+	var can_use_remote = function() {
+		return is_remote_possible && settings.allow_remote;
+	};
+
 	// todo: rename to something better, like should_popout_of_iframes
-	var should_use_remote = function() {
-		return can_use_remote && settings.mouseover_use_remote;
+	var can_iframe_popout = function() {
+		return can_use_remote() && settings.mouseover_use_remote;
 	};
 
 	var do_request_browser = function (request) {
@@ -1289,6 +1293,7 @@ var $$IMU_EXPORT$$;
 		allow_browser_request: true,
 		use_blob_over_arraybuffer: false,
 		allow_live_settings_reload: true,
+		allow_remote: true,
 		redirect: true,
 		redirect_history: true,
 		canhead_get: true,
@@ -2124,11 +2129,21 @@ var $$IMU_EXPORT$$;
 			subcategory: "popup_other",
 			advanced: true
 		},
+		allow_remote: {
+			name: "Allow inter-frame communication",
+			description: "Allows communication between frames in windows, improving support for keybindings",
+			description_userscript: "Allows communication between frames in windows, improving support for keybindings. Can pose a fingerprinting risk when used through the userscript",
+			requires: {
+				mouseover: true
+			},
+			category: "general"
+		},
 		mouseover_use_remote: {
 			name: "Pop out of frames",
 			description: "Opens the popup on the top frame instead of within iframes. Still in beta",
 			requires: {
-				mouseover_open_behavior: "popup"
+				mouseover_open_behavior: "popup",
+				mouseover_allow_remote: true
 			},
 			extension_only: true,
 			category: "popup",
@@ -11743,6 +11758,7 @@ var $$IMU_EXPORT$$;
 				var currentel = el;
 
 				while ((currentel = currentel.parentElement)) {
+					// todo: also check for the postid through the reblog buttons
 					var id = currentel.getAttribute("id");
 
 					if (id) {
@@ -56376,7 +56392,7 @@ var $$IMU_EXPORT$$;
 				}
 			});
 
-			if (!from_remote && can_use_remote) {
+			if (!from_remote && can_use_remote()) {
 				if (is_in_iframe) {
 					remote_send_message("top", {type: "resetpopups"});
 				} else if (popup_el_remote) {
@@ -58956,7 +58972,7 @@ var $$IMU_EXPORT$$;
 				if (popup_el.parentElement) // check if it's a fake element returned by a gallery helper
 					popup_orig_el = popup_el;
 
-				if (is_in_iframe && should_use_remote() && get_single_setting("mouseover_open_behavior") === "popup") {
+				if (is_in_iframe && can_iframe_popout() && get_single_setting("mouseover_open_behavior") === "popup") {
 					data.data.img = serialize_img(data.data.img);
 					remote_send_message("top", {
 						type: "make_popup",
@@ -58970,7 +58986,7 @@ var $$IMU_EXPORT$$;
 				} else {
 					makePopup(source_imu, source.src, processing, data);
 
-					if (is_in_iframe && can_use_remote && get_single_setting("mouseover_open_behavior") === "popup") {
+					if (is_in_iframe && can_use_remote() && get_single_setting("mouseover_open_behavior") === "popup") {
 						remote_send_message("top", {
 							type: "popup_open"
 						});
@@ -59075,7 +59091,7 @@ var $$IMU_EXPORT$$;
 							}
 						}
 
-						if (is_in_iframe && should_use_remote()) {
+						if (is_in_iframe && can_iframe_popout()) {
 							processing.incomplete_image = true;
 							processing.incomplete_video = true;
 						}
@@ -59213,7 +59229,7 @@ var $$IMU_EXPORT$$;
 			if (!firstel)
 				firstel = real_popup_el;
 
-			if (!firstel && popup_el_remote && should_use_remote() && !is_in_iframe) {
+			if (!firstel && popup_el_remote && can_iframe_popout() && !is_in_iframe) {
 				return remote_send_message(popup_el_remote, {
 					type: "count_gallery",
 					data: {
@@ -59272,7 +59288,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		function is_nextprev_valid(nextprev, cb) {
-			if (popup_el_remote && should_use_remote() && !is_in_iframe) {
+			if (popup_el_remote && can_iframe_popout() && !is_in_iframe) {
 				return remote_send_message(popup_el_remote, {
 					type: "is_nextprev_valid",
 					data: {
@@ -59293,7 +59309,7 @@ var $$IMU_EXPORT$$;
 				cb = nullfunc;
 			}
 
-			if (popup_el_remote && should_use_remote() && !is_in_iframe) {
+			if (popup_el_remote && can_iframe_popout() && !is_in_iframe) {
 				return remote_send_message(popup_el_remote, {
 					type: "trigger_gallery",
 					data: {
@@ -60239,8 +60255,8 @@ var $$IMU_EXPORT$$;
 		};
 
 		var action_remote = function(actions) {
-			// use can_use_remote instead of should_use_remote because this doesn't necessarily pop out of iframes
-			if (can_use_remote) {
+			// use can_use_remote instead of can_iframe_popout because this doesn't necessarily pop out of iframes
+			if (can_use_remote()) {
 				var recipient = "top";
 				var has_mouse = true;
 
@@ -60755,9 +60771,9 @@ var $$IMU_EXPORT$$;
 					handle_remote_event(message);
 				}
 			});
-		} else if (can_use_remote) {
+		} else {
 			window.addEventListener("message", function(event) {
-				if (!event.data.imu)
+				if (!can_use_remote() || !event.data.imu)
 					return;
 
 				handle_remote_event(event.data);
@@ -60791,7 +60807,7 @@ var $$IMU_EXPORT$$;
 				event.pageY = event.clientY + scrollTop();
 			}
 
-			if (can_use_remote) {
+			if (can_use_remote()) {
 				if (!("remote_info" in event)) {
 					event.remote_info = get_frame_info();
 				}
