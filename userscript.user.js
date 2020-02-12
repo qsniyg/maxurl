@@ -1198,7 +1198,7 @@ var $$IMU_EXPORT$$;
 		mouseover_close_el_policy: "both",
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/126
 		mouseover_allow_partial: is_extension ? "media" : "video",
-		mouseover_use_blob_over_data: true,
+		mouseover_use_blob_over_data: false,
 		mouseover_enable_notallowed: true,
 		mouseover_notallowed_duration: 300,
 		//mouseover_use_fully_loaded_image: is_extension ? false : true,
