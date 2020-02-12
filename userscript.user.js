@@ -60234,14 +60234,25 @@ var $$IMU_EXPORT$$;
 			// use can_use_remote instead of should_use_remote because this doesn't necessarily pop out of iframes
 			if (can_use_remote) {
 				var recipient = "top";
+				var has_mouse = true;
+
 				if (!is_in_iframe) {
 					recipient = mouse_frame_id;
 					if (recipient === "top") {
+						has_mouse = false;
+
 						if (popup_el_remote) {
 							recipient = popup_el_remote;
 						} else {
 							return;
 						}
+					}
+				}
+
+				for (var i = 0; i < actions.length; i++) {
+					if (!has_mouse && actions[i].requires_mouse) {
+						actions.splice(i, 1);
+						i--;
 					}
 				}
 
@@ -60267,6 +60278,7 @@ var $$IMU_EXPORT$$;
 					current_chord_timeout = {};
 					if (!delay_handle) {
 						actions.push({
+							requires_mouse: true,
 							type: "trigger_popup",
 							trigger: "keyboard"
 						});
