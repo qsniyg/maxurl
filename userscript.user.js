@@ -47509,8 +47509,8 @@ var $$IMU_EXPORT$$;
 		if (domain_nosub === "newtumbl.com") {
 			// https://dn0.newtumbl.com/img/81100/14861971/1/21809496/nT_sei0rd05cpjcffzfr0pqaee7_300.jpg
 			//   https://dn0.newtumbl.com/img/81100/14861971/1/21809496/nT_sei0rd05cpjcffzfr0pqaee7.jpg
-			return {
-				url: src.replace(/(\/img\/+[0-9]+\/+[0-9]+\/+[0-9]+\/+[0-9]+\/+nT_[0-9a-z]{10,})_[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2"),
+			obj = {
+				url: src,
 				headers: {
 					Referer: ""
 				},
@@ -47525,6 +47525,21 @@ var $$IMU_EXPORT$$;
 				},
 				can_head: false // completely wrong output
 			};
+
+			newsrc = src.replace(/(\/img\/+[0-9]+\/+[0-9]+\/+[0-9]+\/+[0-9]+\/+nT_[0-9a-z]{10,})_[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+			if (newsrc !== src) {
+				obj.url = newsrc;
+				return obj;
+			}
+
+			// https://dn2.newtumbl.com/img/520981/20720207/1/12312357/nT_nhur9hhheh63uqxj6ppjzst9_300.jpg
+			//   https://dn2.newtumbl.com/img/520981/20720207/1/12312357/nT_nhur9hhheh63uqxj6ppjzst9.mp4
+			// note that non-mp4's get turned into mp4's like this, but this isn't too bad because content-type isn't video/
+			newsrc = src.replace(/(\/img\/+[0-9]+\/+[0-9]+\/+[0-9]+\/+[0-9]+\/+nT_[0-9a-z]{10,})\.(?:jpg|JPG|jpeg|JPEG|png|PNG|webp|WEBP|gif|GIF)(?:[?#].*)?$/, "$1.mp4");
+			if (newsrc !== src) {
+				obj.url = newsrc;
+				return obj;
+			}
 		}
 
 		if (domain === "img.ohpolly.com") {
