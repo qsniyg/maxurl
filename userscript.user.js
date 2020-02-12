@@ -270,8 +270,14 @@ var $$IMU_EXPORT$$;
 		if (!(id in id_to_iframe))
 			return null;
 
-		if (id_to_iframe[id].contentWindow)
-			return id_to_iframe[id].contentWindow;
+		try {
+			if (id_to_iframe[id].contentWindow)
+				return id_to_iframe[id].contentWindow;
+		} catch (e) {
+			// not allowed
+			return false;
+		}
+
 		return id_to_iframe[id];
 	}
 
