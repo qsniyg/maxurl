@@ -60627,8 +60627,13 @@ var $$IMU_EXPORT$$;
 					// todo: add timeouts to avoid too much cpu usage
 					last_remote_mousemove_event = event;
 
+					var mindelta = 16;
+					if (!settings.mouseover_use_remote) {
+						mindelta = 100; // we don't need precise movements, all we need is to inform the top frame that the mouse is here
+					}
+
 					var current_time = Date.now();
-					var timeout = 16 - (current_time - last_remote_mousemove);
+					var timeout = mindelta - (current_time - last_remote_mousemove);
 					if (timeout < 1)
 						timeout = 1;
 
