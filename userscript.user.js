@@ -291,7 +291,7 @@ var $$IMU_EXPORT$$;
 		};
 
 		can_use_remote = true;
-	} else if (false && is_interactive) {
+	} else if (is_interactive) {
 		if (is_in_iframe && window.parent) {
 			id_to_iframe["top"] = window.parent;
 		}
@@ -56382,7 +56382,7 @@ var $$IMU_EXPORT$$;
 				delay_handle = null;
 			}
 
-			if (is_in_iframe && should_use_remote()) {
+			if (is_in_iframe && can_use_remote) {
 				remote_send_message("top", {type: "resetpopups"});
 			}
 		}
@@ -58951,6 +58951,12 @@ var $$IMU_EXPORT$$;
 					});
 				} else {
 					makePopup(source_imu, source.src, processing, data);
+
+					if (is_in_iframe && can_use_remote && get_single_setting("mouseover_open_behavior") === "popup") {
+						remote_send_message("top", {
+							type: "popup_open"
+						});
+					}
 				}
 			});
 		}
@@ -60214,32 +60220,26 @@ var $$IMU_EXPORT$$;
 			return false;
 		};
 
-		var keyevent_remote = function(event) {
+		var action_remote = function(actions) {
 			// use can_use_remote instead of should_use_remote because this doesn't necessarily pop out of iframes
 			if (can_use_remote) {
-				if (!("remote_info" in event)) {
-					event.remote_info = get_frame_info();
-
-					var recipient = "top";
-					if (!is_in_iframe) {
-						recipient = mouse_frame_id;
-						if (recipient === "top")
-							return;
-					}
-
-					remote_send_message(recipient, {
-						type: "keyevent",
-						data: serialize_event(event)
-					});
+				var recipient = "top";
+				if (!is_in_iframe) {
+					recipient = mouse_frame_id;
+					if (recipient === "top")
+						return;
 				}
+
+				remote_send_message(recipient, {
+					type: "action",
+					data: actions
+				});
 			}
 		};
 
 		var keydown_cb = function(event) {
 			if (!mouseover_enabled())
 				return;
-
-			keyevent_remote(event);
 
 			var ret = undefined;
 			var actions = [];
@@ -60294,7 +60294,10 @@ var $$IMU_EXPORT$$;
 			}
 
 
-			if (popups.length > 0 && popup_el) {
+			if (true) {
+				var is_local_popup = popups.length > 0 && popup_el;
+				var is_popup_active = popup_el_remote || (popups.length > 0 && popup_el);
+
 				var keybinds = [
 					{
 						key: settings.mouseover_gallery_prev_key,
@@ -60340,10 +60343,21 @@ var $$IMU_EXPORT$$;
 
 				for (var i = 0; i < keybinds.length; i++) {
 					if (trigger_complete(keybinds[i].key)) {
-						actions.push(keybinds[i].action);
+						var action = keybinds[i].action;
+
+						if (!is_local_popup) {
+							action.ignore_curent = true;
+						}
+
+						actions.push(action);
 
 						if (keybinds[i].clear)
 							clear_chord();
+
+						if (is_popup_active) {
+							release_ignore = keybinds[i].key;
+							ret = false;
+						}
 
 						break;
 					}
@@ -60358,8 +60372,15 @@ var $$IMU_EXPORT$$;
 
 			if (actions) {
 				for (var i = 0; i < actions.length; i++) {
+					if (actions[i].ignore_current) {
+						delete actions[i].ignore_current;
+						continue;
+					}
+
 					action_handler(actions[i]);
 				}
+
+				action_remote(actions);
 			}
 
 			if (ret === false) {
@@ -60380,8 +60401,6 @@ var $$IMU_EXPORT$$;
 		var keyup_cb = function(event) {
 			if (!mouseover_enabled())
 				return;
-
-			keyevent_remote(event);
 
 			var ret = undefined;
 
@@ -60602,12 +60621,12 @@ var $$IMU_EXPORT$$;
 			} else if (message.type === "mousemove") {
 				// todo: offset iframe location
 				mousemove_cb(message.data);
-			} else if (message.type === "keyevent") {
-				if (message.data.type === "keydown") {
-					keydown_cb(message.data);
-				} else if (message.data.type === "keyup") {
-					keyup_cb(message.data);
+			} else if (message.type === "action") {
+				for (var i = 0; i < message.data.length; i++) {
+					action_handler(message.data[i]);
 				}
+			} else if (message.type === "popup_open") {
+				popup_el_remote = sender;
 			}
 		};
 
