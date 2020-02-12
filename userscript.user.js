@@ -243,9 +243,10 @@ var $$IMU_EXPORT$$;
 		can_use_remote = true;
 	}
 
+	// todo: rename to something better, like should_popout_of_iframes
 	var should_use_remote = function() {
 		return can_use_remote && settings.mouseover_use_remote;
-	}
+	};
 
 	var do_request_browser = function (request) {
 		if (_nir_debug_) {
@@ -60053,7 +60054,8 @@ var $$IMU_EXPORT$$;
 		};
 
 		var keyevent_remote = function(event) {
-			if (should_use_remote()) {
+			// use can_use_remote instead of should_use_remote because this doesn't necessarily pop out of iframes
+			if (can_use_remote) {
 				if (!("remote_info" in event)) {
 					event.remote_info = get_frame_info();
 
@@ -60602,7 +60604,7 @@ var $$IMU_EXPORT$$;
 				event.pageY = event.clientY + scrollTop();
 			}
 
-			if (should_use_remote()) {
+			if (can_use_remote) {
 				if (!("remote_info" in event)) {
 					event.remote_info = get_frame_info();
 				}
