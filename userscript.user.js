@@ -12110,6 +12110,8 @@ var $$IMU_EXPORT$$;
 		if ((domain_nosub === "steamstatic.com" && domain.match(/cdn\.[^.]*\.steamstatic\.com/)) ||
 			// https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/2c/2c43030ea4900ebfcd3c42a4e665e9d926b488ef_medium.jpg
 			//   https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/2c/2c43030ea4900ebfcd3c42a4e665e9d926b488ef_full.jpg
+			// https://steamcdn-a.akamaihd.net/steam/apps/256659790/movie480.webm?t=1452876592
+			//   https://steamcdn-a.akamaihd.net/steam/apps/256659790/movie_max.webm?t=1452876592
 			(domain_nosub === "akamaihd.net" && domain.match(/steamcdn(?:-[a-z]*)?\.akamaihd\.net/))) {
 			// http://cdn.edgecast.steamstatic.com/steam/apps/405710/ss_8555059322d118b6665f1ddde6eaa987c54b2f31.600x338.jpg?t=1516755673
 			//   http://cdn.edgecast.steamstatic.com/steam/apps/405710/ss_8555059322d118b6665f1ddde6eaa987c54b2f31.jpg?t=1516755673
@@ -12117,6 +12119,10 @@ var $$IMU_EXPORT$$;
 			//   http://cdn.akamai.steamstatic.com/steam/apps/678950/ss_cd54f0430e919020ce554f6cfa8d2f3b0d062716.jpg
 			// http://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/c4/c44ec2d22a0c379d697c66b05e5ca8204827ce75.jpg
 			//   http://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/c4/c44ec2d22a0c379d697c66b05e5ca8204827ce75_full.jpg
+			newsrc = src.replace(/(\/steam\/+apps\/+[0-9]+\/+movie)[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1_max$2");
+			if (newsrc !== src)
+				return newsrc;
+
 			if (src.indexOf("/public/images/avatars/") >= 0) {
 				src = src.replace(/(?:_[^/.]*)?(\.[^/.]*)$/, "_full$1");
 			}
