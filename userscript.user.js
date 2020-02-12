@@ -60808,7 +60808,7 @@ var $$IMU_EXPORT$$;
 
 					var mindelta = 16;
 					if (!settings.mouseover_use_remote) {
-						mindelta = 100; // we don't need precise movements, all we need is to inform the top frame that the mouse is here
+						mindelta = 300; // we don't need precise movements, all we need is to inform the top frame that the mouse is here
 					}
 
 					var current_time = Date.now();
