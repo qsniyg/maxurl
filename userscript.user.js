@@ -2143,9 +2143,8 @@ var $$IMU_EXPORT$$;
 			description: "Opens the popup on the top frame instead of within iframes. Still in beta",
 			requires: {
 				mouseover_open_behavior: "popup",
-				mouseover_allow_remote: true
+				allow_remote: true
 			},
-			extension_only: true,
 			category: "popup",
 			subcategory: "open_behavior"
 		},
