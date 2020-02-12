@@ -51109,6 +51109,14 @@ var $$IMU_EXPORT$$;
 				return decodeuri_ifneeded(newsrc);
 		}
 
+		if (domain === "img.itch.zone" && host_domain_nosub === "itch.io" && options && options.element) {
+			if (options.element.classList.contains("screenshot")) {
+				if (options.element.parentElement.tagName === "A" && options.element.parentElement.href.indexOf("://img.itch.zone/") >= 0) {
+					return options.element.parentElement.href;
+				}
+			}
+		}
+
 
 
 
