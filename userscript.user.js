@@ -60167,6 +60167,53 @@ var $$IMU_EXPORT$$;
 			do_download(popup_obj, popup_obj.filename);
 		};
 
+		var action_handler = function(action) {
+			switch (action.type) {
+				case "resetpopups":
+					resetpopups();
+					return true;
+				case "replace_images":
+					replace_images_full();
+					return true;
+				case "highlight_images":
+					highlight_images();
+					return true;
+				case "trigger_popup":
+					if (action.trigger === "keyboard") {
+						popup_trigger_reason = "keyboard";
+					}
+
+					trigger_popup();
+					return true;
+				case "gallery_prev":
+					trigger_gallery(-1);
+					return true;
+				case "gallery_next":
+					trigger_gallery(1);
+					return true;
+				case "download":
+					download_popup_image();
+					return true;
+				case "open_in_new_tab":
+					open_in_tab_imu(popup_obj, action.background_tab);
+					return true;
+				case "rotate_left":
+					rotate_gallery(-90);
+					return true;
+				case "rotate_right":
+					rotate_gallery(90);
+					return true;
+				case "flip_horizontal":
+					flip_gallery(false);
+					return true;
+				case "flip_vertical":
+					flip_gallery(true);
+					return true;
+			}
+
+			return false;
+		};
+
 		var keyevent_remote = function(event) {
 			// use can_use_remote instead of should_use_remote because this doesn't necessarily pop out of iframes
 			if (can_use_remote) {
@@ -60195,6 +60242,7 @@ var $$IMU_EXPORT$$;
 			keyevent_remote(event);
 
 			var ret = undefined;
+			var actions = [];
 
 			update_chord(event, true);
 
@@ -60203,8 +60251,11 @@ var $$IMU_EXPORT$$;
 					// clear timeout so that all/any close behavior works
 					current_chord_timeout = {};
 					if (!delay_handle) {
-						popup_trigger_reason = "keyboard";
-						trigger_popup();
+						actions.push({
+							type: "trigger_popup",
+							trigger: "keyboard"
+						});
+
 						ret = false;
 						release_ignore = settings.mouseover_trigger_key;
 					}
@@ -60221,71 +60272,81 @@ var $$IMU_EXPORT$$;
 				if (trigger_complete(settings.mouseover_hold_key)) {
 					popup_hold = !popup_hold;
 
-					if (!popup_hold && can_close_popup[1])
-						resetpopups();
+					if (!popup_hold && can_close_popup[1]) {
+						actions.push({type: "resetpopups"});
+					}
 				}
 			}
 
 
 			if (settings.replaceimgs_enable_keybinding && trigger_complete(settings.replaceimgs_keybinding)) {
-				replace_images_full();
+				actions.push({type: "replace_images"});
+
 				ret = false;
 				release_ignore = settings.replaceimgs_keybinding;
 			}
 
 			if (settings.highlightimgs_enable_keybinding && trigger_complete(settings.highlightimgs_keybinding)) {
-				highlight_images();
+				actions.push({type: "highlight_images"});
+
 				ret = false;
 				release_ignore = settings.highlightimgs_keybinding;
 			}
 
 
 			if (popups.length > 0 && popup_el) {
-				if (trigger_complete(settings.mouseover_gallery_prev_key)) {
-					trigger_gallery(-1);
-					ret = false;
-					release_ignore = settings.mouseover_gallery_prev_key;
-				} else if (trigger_complete(settings.mouseover_gallery_next_key)) {
-					trigger_gallery(1);
-					ret = false;
-					release_ignore = settings.mouseover_gallery_next_key;
-				} else if (trigger_complete(settings.mouseover_download_key)) {
-					ret = false;
-					release_ignore = settings.mouseover_download_key;
+				var keybinds = [
+					{
+						key: settings.mouseover_gallery_prev_key,
+						action: {type: "gallery_prev"}
+					},
+					{
+						key: settings.mouseover_gallery_next_key,
+						action: {type: "gallery_next"}
+					},
+					{
+						key: settings.mouseover_download_key,
+						// Clear the chord because keyup might not be called due to the save dialog popup
+						clear: true,
+						action: {type: "download"}
+					},
+					{
+						key: settings.mouseover_open_new_tab_key,
+						// Clear the chord because opening in a new tab will not release the keys
+						clear: true,
+						action: {type: "open_in_new_tab"}
+					},
+					{
+						key: settings.mouseover_open_bg_tab_key,
+						action: {type: "open_in_new_tab", background_tab: true}
+					},
+					{
+						key: settings.mouseover_rotate_left_key,
+						action: {type: "rotate_left"}
+					},
+					{
+						key: settings.mouseover_rotate_right_key,
+						action: {type: "rotate_right"}
+					},
+					{
+						key: settings.mouseover_flip_horizontal_key,
+						action: {type: "flip_horizontal"}
+					},
+					{
+						key: settings.mouseover_flip_vertical_key,
+						action: {type: "flip_vertical"}
+					}
+				];
 
-					// Clear the chord because keyup might not be called due to the save dialog popup
-					clear_chord();
+				for (var i = 0; i < keybinds.length; i++) {
+					if (trigger_complete(keybinds[i].key)) {
+						actions.push(keybinds[i].action);
 
-					download_popup_image();
-				} else if (trigger_complete(settings.mouseover_open_new_tab_key)) {
-					ret = false;
-					release_ignore = settings.mouseover_open_new_tab_key;
+						if (keybinds[i].clear)
+							clear_chord();
 
-					// Clear the chord because opening in a new tab will not release the keys
-					clear_chord();
-
-					open_in_tab_imu(popup_obj);
-				} else if (trigger_complete(settings.mouseover_open_bg_tab_key)) {
-					ret = false;
-					release_ignore = settings.mouseover_open_bg_tab_key;
-
-					open_in_tab_imu(popup_obj, true);
-				} else if (trigger_complete(settings.mouseover_rotate_left_key)) {
-					rotate_gallery(-90);
-					ret = false;
-					release_ignore = settings.mouseover_rotate_left_key;
-				} else if (trigger_complete(settings.mouseover_rotate_right_key)) {
-					rotate_gallery(90);
-					ret = false;
-					release_ignore = settings.mouseover_rotate_right_key;
-				} else if (trigger_complete(settings.mouseover_flip_horizontal_key)) {
-					flip_gallery(false);
-					ret = false;
-					release_ignore = settings.mouseover_flip_horizontal_key;
-				} else if (trigger_complete(settings.mouseover_flip_vertical_key)) {
-					flip_gallery(true);
-					ret = false;
-					release_ignore = settings.mouseover_flip_vertical_key;
+						break;
+					}
 				}
 			}
 
@@ -60293,6 +60354,12 @@ var $$IMU_EXPORT$$;
 				release_ignore = [];
 			} else {
 				release_ignore = deepcopy(release_ignore);
+			}
+
+			if (actions) {
+				for (var i = 0; i < actions.length; i++) {
+					action_handler(actions[i]);
+				}
 			}
 
 			if (ret === false) {
