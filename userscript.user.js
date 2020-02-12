@@ -56345,7 +56345,7 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		function resetpopups() {
+		function resetpopups(from_remote) {
 			popups.forEach(function (popup) {
 				var els = popup.querySelectorAll("img, video");
 				for (var i = 0; i < els.length; i++) {
@@ -56361,6 +56361,14 @@ var $$IMU_EXPORT$$;
 					popups.splice(index, 1);
 				}
 			});
+
+			if (!from_remote && can_use_remote) {
+				if (is_in_iframe) {
+					remote_send_message("top", {type: "resetpopups"});
+				} else if (popup_el_remote) {
+					remote_send_message(popup_el_remote, {type: "resetpopups"});
+				}
+			}
 
 			disable_click = false;
 			popups_active = false;
@@ -56380,10 +56388,6 @@ var $$IMU_EXPORT$$;
 			if (!delay_mouseonly && delay_handle) {
 				clearTimeout(delay_handle);
 				delay_handle = null;
-			}
-
-			if (is_in_iframe && can_use_remote) {
-				remote_send_message("top", {type: "resetpopups"});
 			}
 		}
 
@@ -60226,8 +60230,13 @@ var $$IMU_EXPORT$$;
 				var recipient = "top";
 				if (!is_in_iframe) {
 					recipient = mouse_frame_id;
-					if (recipient === "top")
-						return;
+					if (recipient === "top") {
+						if (popup_el_remote) {
+							recipient = popup_el_remote;
+						} else {
+							return;
+						}
+					}
 				}
 
 				remote_send_message(recipient, {
@@ -60617,7 +60626,7 @@ var $$IMU_EXPORT$$;
 					respond(triggered);
 				});
 			} else if (message.type === "resetpopups") {
-				resetpopups();
+				resetpopups(true);
 			} else if (message.type === "mousemove") {
 				// todo: offset iframe location
 				mousemove_cb(message.data);
