@@ -11618,6 +11618,77 @@ var $$IMU_EXPORT$$;
 				return null;
 			};
 
+			var find_postid_from_el = function(el) {
+				var currentel = el;
+
+				while ((currentel = currentel.parentElement)) {
+					var id = currentel.getAttribute("id");
+					if (!id)
+						continue;
+
+					var match = id.match(/^photoset_([0-9]+)$/);
+					if (match) {
+						return match[1];
+					}
+
+					if (currentel.tagName === "ARTICLE") {
+						return id;
+					}
+				}
+
+				return null;
+			};
+
+			var el_has_mediakey = function(el, mediakey) {
+				if (el.tagName === "IMG") {
+					return find_mediakey_from_url(el.src) === mediakey;
+				} else if (el.tagName === "IFRAME" && /\/post\/+[0-9]+\/+/.test(el.src)) {
+					try {
+						var images = el.contentDocument.querySelectorAll("img");
+						for (var i = 0; i < images.length; i++) {
+							if (el_has_mediakey(images[i], mediakey))
+								return true;
+						}
+					} catch (e) {
+						console_error(e, el);
+						return false;
+					}
+				}
+
+				return false;
+			};
+
+			var try_finding_postid_from_url = function(url) {
+				if (!options.document)
+					return null;
+
+				var mediakey = find_mediakey_from_url(url);
+				if (!mediakey)
+					return null;
+
+				// use api_cache because this has the chance of being relatively cpu-intensive
+				// don't use fetch because this is synchronous
+				var cache_key = "tumblr_url_postid:" + mediakey;
+				if (api_cache.has(cache_key)) {
+					return api_cache.get(cache_key);
+				}
+
+				var els = options.document.querySelectorAll("article img, article iframe");
+				for (var i = 0; i < els.length; i++) {
+					// todo: get_el_mediakeys.indexOf(mediakey) >= 0, then set cache for all the media keys for performance
+					if (el_has_mediakey(els[i], mediakey)) {
+						var postid = find_postid_from_el(els[i]);
+						if (postid) {
+							api_cache.set(cache_key, postid);
+						}
+
+						return postid;
+					}
+				}
+
+				return null;
+			}
+
 			var try_finding_info = function() {
 				var info = find_blogname_id_from_url(options.host_url);
 				if (info)
@@ -11633,15 +11704,14 @@ var $$IMU_EXPORT$$;
 						blogname: blogname
 					};
 
-					var currentel = options.element;
-					while ((currentel = currentel.parentElement)) {
-						if (currentel.tagName === "ARTICLE") {
-							var id = currentel.getAttribute("id");
-							if (id) {
-								obj.postid = id;
-								return obj;
-							}
-						}
+					var postid = find_postid_from_el(options.element);
+					if (!postid) {
+						postid = try_finding_postid_from_url(src);
+					}
+
+					if (postid) {
+						obj.postid = postid;
+						return obj;
 					}
 				} else if (host_domain_nowww === "tumblr.com") {
 					// Tumblr homepage
