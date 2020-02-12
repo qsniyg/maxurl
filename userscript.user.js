@@ -201,20 +201,132 @@ var $$IMU_EXPORT$$;
 		return get_random_text(10) + Date.now();
 	};
 
+	var id_to_iframe = {};
+
+	var get_frame_info = function() {
+		return {
+			id: current_frame_id,
+			//url: window.location.href, // doesn't get updated for the iframe src's attribute?
+			url: current_frame_url,
+			size: [
+				document.documentElement.scrollWidth,
+				document.documentElement.scrollHeight
+			]
+		};
+	};
+
+	var find_iframe_for_info = function(info) {
+		if (info.id in id_to_iframe)
+			return id_to_iframe[info.id];
+
+		var finish = function(iframe) {
+			if (!iframe)
+				return iframe;
+
+			id_to_iframe[info.id] = iframe;
+			return iframe;
+		}
+
+		var iframes = document.getElementsByTagName("iframe");
+		var newiframes = [];
+		for (var i = 0; i < iframes.length; i++) {
+			if (iframes[i].src !== info.url)
+				continue;
+
+			newiframes.push(iframes[i]);
+		}
+
+		if (newiframes.length <= 1)
+			return finish(newiframes[0]);
+
+		iframes = newiframes;
+		newiframes = [];
+		for (var i = 0; i < iframes.length; i++) {
+			if (iframes[i].scrollWidth !== info.size[0] ||
+				iframes[i].scrollHeight !== info.size[1]) {
+				continue;
+			}
+
+			newiframes.push(iframes[i]);
+		}
+
+		if (newiframes.length <= 1)
+			return finish(newiframes[0]);
+
+		// TODO: check cursor too
+		return null;
+	};
+
+	var iframe_to_id = function(iframe) {
+		for (var id in id_to_iframe) {
+			if (id_to_iframe[id] === iframe)
+				return id;
+		}
+
+		return null;
+	};
+
+	var id_to_iframe_window = function(id) {
+		if (!(id in id_to_iframe))
+			return null;
+
+		if (id_to_iframe[id].contentWindow)
+			return id_to_iframe[id].contentWindow;
+		return id_to_iframe[id];
+	}
+
 	var remote_send_message = null;
 	var remote_send_reply = null;
 	var remote_reply_ids = {};
 	var current_frame_id = null;
 	var current_frame_url = null;
 
+	var raw_remote_send_message = null;
+	var remote_send_message = nullfunc;
+	var remote_send_reply = nullfunc;
+
 	if (is_extension) {
+		raw_remote_send_message = function(to, message) {
+			extension_send_message(message)
+		};
+
+		can_use_remote = true;
+	} else if (false && is_interactive) {
+		if (is_in_iframe && window.parent) {
+			id_to_iframe["top"] = window.parent;
+		}
+
+		raw_remote_send_message = function(to, message) {
+			if (!to && is_in_iframe)
+				to = "top"; // fixme?
+
+			var specified_window;
+			if (to && to in id_to_iframe) {
+				specified_window = id_to_iframe_window(to);
+			}
+
+			message.imu = true;
+
+			if (!specified_window) {
+				for (var i = 0; i < window.frames.length; i++) {
+					window.frames[i].postMessage(message, "*");
+				}
+			} else {
+				specified_window.postMessage(message, "*");
+			}
+		};
+
+		can_use_remote = true;
+	}
+
+	if (can_use_remote) {
 		current_frame_url = window.location.href;
 		current_frame_id = get_random_id() + " " + current_frame_url;
 
 		if (!is_in_iframe)
 			current_frame_id = "top";
 
-		var remote_send_message = function(to, data, cb) {
+		remote_send_message = function(to, data, cb) {
 			var id = undefined;
 
 			if (cb) {
@@ -223,7 +335,7 @@ var $$IMU_EXPORT$$;
 			}
 
 			//console_log("remote", data);
-			extension_send_message({
+			raw_remote_send_message(to, {
 				type: "remote",
 				data: data,
 				to: to,
@@ -232,15 +344,13 @@ var $$IMU_EXPORT$$;
 			});
 		};
 
-		var remote_send_reply = function(response_id, data) {
-			extension_send_message({
+		remote_send_reply = function(to, response_id, data) {
+			raw_remote_send_message(to, {
 				type: "remote_reply",
 				data: data,
 				response_id: response_id
 			});
 		};
-
-		can_use_remote = true;
 	}
 
 	// todo: rename to something better, like should_popout_of_iframes
@@ -712,6 +822,10 @@ var $$IMU_EXPORT$$;
 			return x;
 		}
 	}
+
+	var serialize_event = function(event) {
+		return deepcopy(event, {json: true});
+	};
 
 	function overlay_object(base, obj) {
 		if (typeof base === "function" || base instanceof Array)
@@ -60068,7 +60182,7 @@ var $$IMU_EXPORT$$;
 
 					remote_send_message(recipient, {
 						type: "keyevent",
-						data: event
+						data: serialize_event(event)
 					});
 				}
 			}
@@ -60430,6 +60544,37 @@ var $$IMU_EXPORT$$;
 			}
 		};
 
+		var handle_remote_event = function(message) {
+			if (message.type === "remote") {
+				var respond = function() {};
+				if (message.response_id) {
+					var response_id = message.response_id;
+
+					respond = function(data) {
+						remote_send_reply(message.from, response_id, data);
+					};
+				}
+
+				if (message.to && current_frame_id !== message.to) {
+					return true;
+				}
+
+				remote_handle_message(message.data, message.from, respond);
+				return true;
+			} else if (message.type === "remote_reply") {
+				if (message.response_id in remote_reply_ids) {
+					var response_id = message.response_id;
+					delete message.response_id;
+
+					remote_reply_ids[response_id](message.data);
+				}
+
+				return true;
+			}
+
+			return false;
+		}
+
 		if (is_extension) {
 			// TODO: move out of do_mouseover
 			chrome.runtime.onMessage.addListener(function(message, sender, respond) {
@@ -60485,31 +60630,17 @@ var $$IMU_EXPORT$$;
 					if (response.final) {
 						delete extension_requests[response.id];
 					}
-				} else if (message.type === "remote") {
-					var respond = function() {};
-					if (message.response_id) {
-						var response_id = message.response_id;
-						delete message.response_id; // is this needed?
-
-						respond = function(data) {
-							remote_send_reply(response_id, data);
-						};
-					}
-
-					if (message.to && current_frame_id !== message.to) {
-						return;
-					}
-
-					remote_handle_message(message.data, message.from, respond);
-				} else if (message.type === "remote_reply") {
-					if (message.response_id in remote_reply_ids) {
-						var response_id = message.response_id;
-						delete message.response_id;
-
-						remote_reply_ids[response_id](message.data);
-					}
+				} else if (message.type === "remote" || message.type === "remote_reply") {
+					handle_remote_event(message);
 				}
 			});
+		} else if (can_use_remote) {
+			window.addEventListener("message", function(event) {
+				if (!event.data.imu)
+					return;
+
+				handle_remote_event(event.data);
+			}, false);
 		}
 
 		document.addEventListener('contextmenu', function(event) {
@@ -60519,71 +60650,6 @@ var $$IMU_EXPORT$$;
 			mouseAbsContextX = event.pageX;
 			mouseAbsContextY = event.pageY;
 		});
-
-		var id_to_iframe = {};
-
-		var get_frame_info = function() {
-			return {
-				id: current_frame_id,
-				//url: window.location.href, // doesn't get updated for the iframe src's attribute?
-				url: current_frame_url,
-				size: [
-					document.documentElement.scrollWidth,
-					document.documentElement.scrollHeight
-				]
-			};
-		};
-
-		var find_iframe_for_info = function(info) {
-			if (info.id in id_to_iframe)
-				return id_to_iframe[info.id];
-
-			var finish = function(iframe) {
-				if (!iframe)
-					return iframe;
-
-				id_to_iframe[info.id] = iframe;
-				return iframe;
-			}
-
-			var iframes = document.getElementsByTagName("iframe");
-			var newiframes = [];
-			for (var i = 0; i < iframes.length; i++) {
-				if (iframes[i].src !== info.url)
-					continue;
-
-				newiframes.push(iframes[i]);
-			}
-
-			if (newiframes.length <= 1)
-				return finish(newiframes[0]);
-
-			iframes = newiframes;
-			newiframes = [];
-			for (var i = 0; i < iframes.length; i++) {
-				if (iframes[i].scrollWidth !== info.size[0] ||
-					iframes[i].scrollHeight !== info.size[1]) {
-					continue;
-				}
-
-				newiframes.push(iframes[i]);
-			}
-
-			if (newiframes.length <= 1)
-				return finish(newiframes[0]);
-
-			// TODO: check cursor too
-			return null;
-		};
-
-		var iframe_to_id = function(iframe) {
-			for (var id in id_to_iframe) {
-				if (id_to_iframe[id] === iframe)
-					return id;
-			}
-
-			return null;
-		};
 
 		var last_remote_mousemove = 0;
 		var last_remote_mousemove_timer = null;
@@ -60643,7 +60709,7 @@ var $$IMU_EXPORT$$;
 							last_remote_mousemove = Date.now();
 							remote_send_message("top", {
 								type: "mousemove",
-								data: last_remote_mousemove_event
+								data: serialize_event(last_remote_mousemove_event)
 							});
 						}, timeout);
 					}
