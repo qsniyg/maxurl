@@ -50,7 +50,8 @@
   },
 
   "options_ui": {
-    "page": "extension/options.html"
+    "page": "extension/options.html",
+    "open_in_tab": true
   },
 
   "options_page": "extension/options.html",
