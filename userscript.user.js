@@ -309,13 +309,20 @@ var $$IMU_EXPORT$$;
 			var specified_window;
 			if (to && to in id_to_iframe) {
 				specified_window = id_to_iframe_window(to);
+				if (!specified_window) // not allowed
+					return;
 			}
 
 			message.imu = true;
 
 			if (!specified_window) {
 				for (var i = 0; i < window.frames.length; i++) {
-					window.frames[i].postMessage(message, "*");
+					try {
+						window.frames[i].postMessage(message, "*");
+					} catch (e) {
+						// not allowed
+						continue;
+					}
 				}
 			} else {
 				specified_window.postMessage(message, "*");
@@ -25741,6 +25748,12 @@ var $$IMU_EXPORT$$;
 			//   http://static.sify.com/cms/image/rh1m7Deiccjhi_big.jpg
 			//   http://static.sify.com/cms/image/rh1m7Deiccjhi.jpg
 			return src.replace(/(\/cms\/image\/[^/]*)_[a-z]+(\.[^/.]*)$/, "$1$2");
+		}
+
+		if (domain_nowww === "wikifeet.com") {
+			// https://www.wikifeet.com/profiles/78610.jpg?32
+			//   https://www.wikifeet.com/profiles/78610_fs.jpg?32
+			return src.replace(/(\/profiles\/+[0-9]+)(\.[^/.]+)(?:[?#].*)?$/, "$1_fs$2");
 		}
 
 		if (domain === "thumbs.wikifeet.com") {
@@ -51371,6 +51384,17 @@ var $$IMU_EXPORT$$;
 					video: true
 				};
 			}
+		}
+
+		if (domain === "ars.els-cdn.com") {
+			// https://www.sciencedirect.com/science/article/abs/pii/S0097849399000291
+			// https://ars.els-cdn.com/content/image/1-s2.0-S0097849399000291-gr6.sml
+			//   https://ars.els-cdn.com/content/image/1-s2.0-S0097849399000291-gr6.jpg
+			// https://ars.els-cdn.com/content/image/1-s2.0-S0097849399000291-gr1.sml
+			//   https://ars.els-cdn.com/content/image/1-s2.0-S0097849399000291-gr1.gif
+			newsrc = src.replace(/(\/content\/+image\/+[^/]+)\.sml(?:[?#].*)?$/, "$1.jpg");
+			if (newsrc !== src)
+				return add_extensions_gif(newsrc);
 		}
 
 
