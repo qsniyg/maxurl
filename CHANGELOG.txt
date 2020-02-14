@@ -1,3 +1,11 @@
+0.12.12
+
+This is an emergency fix for a major performance regression in 0.12.11 (caused by supporting the `zoom` CSS property).
+
+It also adds an option to toggle support for `pointer-events: none`, which if disabled, increases performance on sites such as Facebook.
+
+---
+
 0.12.11
 
 New features:
