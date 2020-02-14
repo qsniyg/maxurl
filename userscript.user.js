@@ -55184,7 +55184,7 @@ var $$IMU_EXPORT$$;
 						var result = [];
 
 						for (var i = 0; i < indices.length; i++) {
-							if (indices[i] >= 0) {
+							if (indices[i] >= 0 && values[i].length > 0) {
 								result.push(values[i]);
 							}
 						}
