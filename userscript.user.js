@@ -60698,7 +60698,7 @@ var $$IMU_EXPORT$$;
 						var action = keybinds[i].action;
 
 						if (!is_local_popup) {
-							action.ignore_curent = true;
+							action.ignore_current = true;
 						}
 
 						actions.push(action);
