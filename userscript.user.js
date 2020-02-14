@@ -771,7 +771,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		// very slow
-		if (false && is_interactive) {
+		if (is_interactive) {
 			if ((x instanceof Element) ||
 				(x instanceof HTMLDocument) ||
 				(x instanceof Window)) {
