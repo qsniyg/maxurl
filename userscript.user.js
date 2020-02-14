@@ -370,7 +370,6 @@ var $$IMU_EXPORT$$;
 		return is_remote_possible && settings.allow_remote;
 	};
 
-	// todo: rename to something better, like should_popout_of_iframes
 	var can_iframe_popout = function() {
 		return can_use_remote() && settings.mouseover_use_remote;
 	};
@@ -58128,7 +58127,7 @@ var $$IMU_EXPORT$$;
 			rect.left = rect.x;
 			rect.top = rect.y;
 			rect.right = rect.left + rect.width;
-			rect.bottom = rect.right + rect.height;
+			rect.bottom = rect.top + rect.height;
 
 			return rect;
 		};
@@ -58149,32 +58148,62 @@ var $$IMU_EXPORT$$;
 			return null;
 		};
 
-		function get_bounding_client_rect(el) {
-			var current = el;
-			var rect = el.getBoundingClientRect();
-
+		function get_bounding_client_rect_inner(el, mapcache) {
 			// test: https://4seasonstaeyeon.tumblr.com/post/190710743124 (bottom images)
-			while (current) {
-				var computed_style = get_computed_style(current);
-				if (computed_style.zoom) {
-					var zoom = parse_zoom(computed_style.zoom);
-					if (zoom) {
-						rect.width *= zoom;
-						rect.height *= zoom;
+			if (!el)
+				return null;
 
-						if (current !== el) {
-							rect.x *= zoom;
-							rect.y *= zoom;
-						}
+			if (mapcache && mapcache.has(el))
+				return mapcache.get(el);
 
-						recalculate_rect(rect);
-					}
-				}
-
-				current = current.parentElement;
+			var parent = {};
+			if (el.parentElement) {
+				parent = get_bounding_client_rect_inner(el.parentElement, mapcache);
 			}
 
-			return rect;
+			var current = el;
+			var orig_rect = el.getBoundingClientRect();
+			var rect = deepcopy(orig_rect);
+			var zoom = 1;
+
+			var computed_style = get_computed_style(current);
+			if (computed_style.zoom) {
+				zoom = parse_zoom(computed_style.zoom);
+				if (zoom && zoom !== 1) {
+					rect.width *= zoom;
+					rect.height *= zoom;
+				}
+			}
+
+			if (parent.zoom && parent.zoom !== 1) {
+				rect.x *= parent.zoom;
+				rect.y *= parent.zoom;
+				rect.width *= parent.zoom;
+				rect.height *= parent.zoom;
+			}
+
+			if (parent && parent.orig_rect && parent.rect) {
+				rect.x += parent.rect.x - parent.orig_rect.x;
+				rect.y += parent.rect.y - parent.orig_rect.y;
+			}
+
+			recalculate_rect(rect);
+
+			var result = {
+				zoom: zoom,
+				rect: rect,
+				orig_rect: orig_rect
+			};
+
+			if (mapcache) {
+				mapcache.set(el, result);
+			}
+
+			return result;
+		}
+
+		function get_bounding_client_rect(el, mapcache) {
+			return get_bounding_client_rect_inner(el, mapcache).rect;
 		}
 
 		function is_popup_el(el) {
@@ -59147,7 +59176,7 @@ var $$IMU_EXPORT$$;
 				   currenttab_is_image() && !imagetab_ok_override;
 		}
 
-		function find_els_at_point(xy, els, prev) {
+		function find_els_at_point(xy, els, prev, zoom_cache) {
 			// test for pointer-events: none: https://www.shacknews.com/article/114834/should-you-choose-vulkan-or-directx-12-in-red-dead-redemption-2
 
 			if (false && _nir_debug_)
@@ -59155,6 +59184,14 @@ var $$IMU_EXPORT$$;
 
 			if (!prev) {
 				prev = [];
+			}
+
+			if (zoom_cache === undefined) {
+				try {
+					zoom_cache = new Map();
+				} catch (e) {
+					zoom_cache = null;
+				}
 			}
 
 			var ret = [];
@@ -59194,7 +59231,7 @@ var $$IMU_EXPORT$$;
 					}
 				}
 
-				var rect = get_bounding_client_rect(el);
+				var rect = get_bounding_client_rect(el, zoom_cache);
 				if (rect && rect.width > 0 && rect.height > 0 &&
 					rect.left <= xy[0] && rect.right >= xy[0] &&
 					rect.top <= xy[1] && rect.bottom >= xy[1] &&
