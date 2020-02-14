@@ -60879,9 +60879,7 @@ var $$IMU_EXPORT$$;
 				if (!can_use_remote() || !event.data.imu)
 					return;
 
-				if (event.source && event.data.from) {
-					id_to_iframe[event.data.from] = event.source;
-				}
+				// TODO: update id_to_iframe with event.source (remember that event.source is a window object, not an iframe)
 
 				handle_remote_event(event.data);
 			}, false);
