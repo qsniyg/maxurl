@@ -53728,7 +53728,7 @@ var $$IMU_EXPORT$$;
 		return null;
 	};
 
-	var get_trigger_key_text = function(list) {
+	var get_single_trigger_key_text = function(list) {
 		list = list.sort(function(a, b) {
 			if (a === b)
 				return 0;
@@ -53766,6 +53766,24 @@ var $$IMU_EXPORT$$;
 		}
 
 		return newlist.join("+");
+	};
+
+	var get_trigger_key_texts = function(list) {
+		if (!(list[0] instanceof Array)) {
+			list = [list];
+		}
+
+		var result = [];
+
+		for (var i = 0; i < list.length; i++) {
+			result.push(get_single_trigger_key_text(list[i]));
+		}
+
+		return result;
+	};
+
+	var get_trigger_key_text = function(list) {
+		return get_trigger_key_texts(list).join(" / ");
 	};
 
 	var check_image = function(obj, err_cb, ok_cb) {
@@ -55141,62 +55159,188 @@ var $$IMU_EXPORT$$;
 					value_td.appendChild(sub);
 				} else if (type === "keysequence") {
 					var sub = document.createElement("table");
-					var sub_tr = document.createElement("tr");
-					var sub_key_td = document.createElement("td");
-					//sub_key_td.style = "display:inline;font-family:monospace";
-					sub_key_td.classList.add("record_keybinding");
-					if (value) {
-						sub_key_td.innerText = get_trigger_key_text(value);
+
+					var values = deepcopy(value);
+
+					if (values.length > 0 && !(values[0] instanceof Array))
+						values = [values];
+
+					var indices = [];
+					for (var i = 0; i < values.length; i++) {
+						indices.push(i);
 					}
-					var sub_record_td = document.createElement("td");
-					sub_record_td.style = "display:inline";
-					var sub_record_btn = document.createElement("button");
-					sub_record_btn.innerText = _("record");
-					var sub_cancel_btn = document.createElement("button");
-					sub_cancel_btn.innerText = _("cancel");
-					sub_cancel_btn.style = "display:none";
-					var do_cancel = function() {
-						recording_keys = false;
-						sub_record_btn.innerText = _("Record");
-						sub_record_btn.classList.remove("disabled");
-						sub_cancel_btn.style = "display:none";
-						sub_key_td.innerText = get_trigger_key_text(settings[setting]);
+
+					var is_only_keyseq = function() {
+						var active_indices = 0;
+						for (var i = 0; i < indices.length; i++) {
+							if (indices[i] >= 0)
+								active_indices++;
+						}
+
+						return active_indices < 2;
 					};
-					sub_cancel_btn.onmousedown = do_cancel;
-					sub_record_btn.onmousedown = function() {
-						if (recording_keys) {
-							if (keysequence_valid(options_chord)) {
-								do_update_setting(setting, options_chord, meta);
-								//settings[setting] = options_chord;
 
-								do_cancel();
+					var update_keyseq_setting = function() {
+						var result = [];
+
+						for (var i = 0; i < indices.length; i++) {
+							if (indices[i] >= 0) {
+								result.push(values[i]);
 							}
-						} else {
-							options_chord = [];
-							current_options_chord = [];
-							recording_keys = function() {
-								var our_chord = options_chord;
-								if (our_chord.length === 0)
-									our_chord = settings[setting];
+						}
 
-								sub_key_td.innerText = get_trigger_key_text(our_chord);
+						do_update_setting(setting, result, meta);
+					};
 
-								if (keysequence_valid(options_chord)) {
-									sub_record_btn.classList.remove("disabled");
+					var recalculate_removebtns = function() {
+						var do_remove = !meta.keyseq_allow_none && is_only_keyseq();
+
+						for (var i = 0; i < sub.children.length; i++) {
+							var child = sub.children[i];
+
+							var removebtns = child.getElementsByClassName("removebtn");
+							if (removebtns.length > 0) {
+								if (do_remove) {
+									removebtns[0].style.display = "none";
 								} else {
-									sub_record_btn.classList.add("disabled");
+									removebtns[0].style.display = "initial";
 								}
-							};
-							sub_record_btn.innerText = _("save");
-							sub_cancel_btn.style = "display:inline-block";
+							}
 						}
 					};
 
-					sub_tr.appendChild(sub_key_td);
-					sub_record_td.appendChild(sub_record_btn);
-					sub_record_td.appendChild(sub_cancel_btn);
-					sub_tr.appendChild(sub_record_td);
-					sub.appendChild(sub_tr);
+					var add_keyseq_tr = function(index, start_recording) {
+						var sub_tr = document.createElement("tr");
+						sub_tr.classList.add("keyseq");
+
+						var sub_key_td = document.createElement("td");
+						//sub_key_td.style = "display:inline;font-family:monospace";
+						sub_key_td.classList.add("record_keybinding");
+						if (value) {
+							sub_key_td.innerText = get_trigger_key_texts(values)[index];
+						}
+
+						var sub_record_td = document.createElement("td");
+						sub_record_td.style = "display:inline";
+
+						var sub_record_btn = document.createElement("button");
+						sub_record_btn.innerText = _("record");
+
+						var do_record = function() {
+							if (recording_keys) {
+								if (keysequence_valid(options_chord)) {
+									values[index] = options_chord;
+									update_keyseq_setting();
+									//do_update_setting(setting, options_chord, meta);
+									//settings[setting] = options_chord;
+
+									do_cancel();
+								}
+							} else {
+								options_chord = [];
+								current_options_chord = [];
+								recording_keys = function() {
+									var our_chord = options_chord;
+									if (our_chord.length === 0)
+										our_chord = values[index];
+
+									sub_key_td.innerText = get_trigger_key_texts(our_chord);
+
+									if (keysequence_valid(options_chord)) {
+										sub_record_btn.classList.remove("disabled");
+									} else {
+										sub_record_btn.classList.add("disabled");
+									}
+								};
+								sub_record_btn.innerText = _("save");
+								sub_cancel_btn.style = "display:inline-block";
+							}
+						};
+						sub_record_btn.onmousedown = do_record;
+
+						var sub_cancel_btn = document.createElement("button");
+						sub_cancel_btn.innerText = _("cancel");
+						sub_cancel_btn.style = "display:none";
+
+						var do_cancel = function() {
+							recording_keys = false;
+							sub_record_btn.innerText = _("Record");
+							sub_record_btn.classList.remove("disabled");
+							sub_cancel_btn.style = "display:none";
+							sub_key_td.innerText = get_trigger_key_texts(values)[index];
+						};
+						sub_cancel_btn.onmousedown = do_cancel;
+
+						var sub_remove_btn = document.createElement("button");
+						//sub_remove_btn.innerText = "—";
+						sub_remove_btn.innerText = "\xD7";
+						sub_remove_btn.title = _("Remove");
+						sub_remove_btn.classList.add("removebtn");
+						sub_remove_btn.classList.add("small");
+
+						if (!meta.keyseq_allow_none && is_only_keyseq()) {
+							sub_remove_btn.style = "display:none";
+						}
+
+						sub_remove_btn.onclick = function() {
+							if (!meta.keyseq_allow_none && is_only_keyseq())
+								return;
+
+							recording_keys = false;
+
+							indices[index] = -1;
+							for (var i = index + 1; i < indices.length; i++) {
+								indices[i]--;
+							}
+
+							sub_tr.parentElement.removeChild(sub_tr);
+							recalculate_removebtns();
+
+							update_keyseq_setting();
+						};
+
+						sub_tr.appendChild(sub_key_td);
+						sub_record_td.appendChild(sub_record_btn);
+						sub_record_td.appendChild(sub_cancel_btn);
+						sub_record_td.appendChild(sub_remove_btn);
+						sub_tr.appendChild(sub_record_td);
+
+						if (start_recording)
+							do_record();
+
+						return sub_tr;
+					};
+
+					for (var i = 0; i < indices.length; i++) {
+						sub.appendChild(add_keyseq_tr(i));
+					}
+
+					var sub_add_tr = document.createElement("tr");
+					var sub_add_td = document.createElement("td");
+					var sub_add_btn = document.createElement("button");
+					sub_add_btn.innerText = "+";
+					sub_add_btn.title = _("Add keybinding");
+					sub_add_btn.classList.add("small");
+					sub_add_btn.onclick = function() {
+						var last_index = -1;
+
+						for (var i = indices.length - 1; i >= 0; i--) {
+							if (indices[i] >= 0) {
+								last_index = indices[i];
+								break;
+							}
+						}
+
+						indices.push(last_index + 1);
+						values.push([]);
+
+						sub.insertBefore(add_keyseq_tr(indices.length - 1, true), sub_add_tr);
+						recalculate_removebtns();
+					};
+					sub_add_td.appendChild(sub_add_btn);
+					sub_add_tr.appendChild(sub_add_td);
+
+					sub.appendChild(sub_add_tr);
 					value_td.appendChild(sub);
 				} else if (type === "combo") {
 					var sub = document.createElement("select");
@@ -58790,6 +58934,16 @@ var $$IMU_EXPORT$$;
 		settings_meta.mouseover_trigger_delay.onupdate = update_mouseover_trigger_delay;
 		settings_meta.mouseover_trigger_behavior.onupdate = update_mouseover_trigger_delay;
 
+		function normalize_keychord(keychord) {
+			if (keychord.length === 0)
+				return [[]];
+
+			if (!(keychord[0] instanceof Array))
+				return [keychord];
+
+			return keychord;
+		}
+
 		function keystr_in_trigger(str, wanted_chord) {
 			if (wanted_chord === undefined)
 				wanted_chord = settings.mouseover_trigger_key;
@@ -58805,7 +58959,7 @@ var $$IMU_EXPORT$$;
 			return keystr_in_trigger(str);
 		}
 
-		function key_would_modify_chord(str, value) {
+		function key_would_modify_single_chord(str, value) {
 			if (value) {
 				if (current_chord.indexOf(str) < 0)
 					return true;
@@ -58837,11 +58991,22 @@ var $$IMU_EXPORT$$;
 			return false;
 		}
 
-		function event_in_chord(e, wanted_chord) {
+		function event_in_single_chord(e, wanted_chord) {
 			var map = get_keystrs_map(e, true);
 
 			for (var key in map) {
 				if (keystr_in_trigger(key, wanted_chord))
+					return true;
+			}
+
+			return false;
+		}
+
+		function event_in_chord(e, wanted_chord) {
+			wanted_chord = normalize_keychord(wanted_chord);
+
+			for (var i = 0; i < wanted_chord.length; i++) {
+				if (event_in_single_chord(e, wanted_chord[i]))
 					return true;
 			}
 
@@ -58876,24 +59041,32 @@ var $$IMU_EXPORT$$;
 			current_chord_timeout = {};
 		}
 
-		function event_would_modify_chord(e, value, wanted_chord) {
+		function event_would_modify_single_chord(e, value, wanted_chord) {
 			var map = get_keystrs_map(e, value)
 
 			for (var key in map) {
 				if (wanted_chord !== undefined && !keystr_in_trigger(key, wanted_chord))
 					continue;
 
-				if (key_would_modify_chord(key, map[key]))
+				if (key_would_modify_single_chord(key, map[key]))
 					return true;
 			}
 
 			return false;
 		}
 
-		function trigger_complete(wanted_chord) {
-			if (wanted_chord === undefined)
-				wanted_chord = settings.mouseover_trigger_key;
+		function event_would_modify_chord(e, value, wanted_chord) {
+			wanted_chord = normalize_keychord(wanted_chord);
 
+			for (var i = 0; i < wanted_chord.length; i++) {
+				if (event_would_modify_single_chord(e, value, wanted_chord[i]))
+					return true;
+			}
+
+			return false;
+		}
+
+		function trigger_complete_single(wanted_chord) {
 			for (var i = 0; i < wanted_chord.length; i++) {
 				var key = wanted_chord[i];
 
@@ -58910,14 +59083,39 @@ var $$IMU_EXPORT$$;
 			return true;
 		}
 
-		function trigger_partially_complete(e, wanted_chord) {
+		function trigger_complete(wanted_chord) {
 			if (wanted_chord === undefined)
 				wanted_chord = settings.mouseover_trigger_key;
 
+			wanted_chord = normalize_keychord(wanted_chord);
+
+			for (var i = 0; i < wanted_chord.length; i++) {
+				if (trigger_complete_single(wanted_chord[i]))
+					return true;
+			}
+
+			return false;
+		}
+
+		function trigger_partially_complete_single(e, wanted_chord) {
 			for (var i = 0; i < wanted_chord.length; i++) {
 				var key = wanted_chord[i];
 
 				if (current_chord.indexOf(key) >= 0)
+					return true;
+			}
+
+			return false;
+		}
+
+		function trigger_partially_complete(e, wanted_chord) {
+			if (wanted_chord === undefined)
+				wanted_chord = settings.mouseover_trigger_key;
+
+			wanted_chord = normalize_keychord(wanted_chord);
+
+			for (var i = 0; i < wanted_chord.length; i++) {
+				if (trigger_partially_complete_single(e, wanted_chord[i]))
 					return true;
 			}
 
