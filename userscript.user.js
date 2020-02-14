@@ -58186,9 +58186,8 @@ var $$IMU_EXPORT$$;
 
 			//var computed_style = get_computed_style(current);
 			// computed_style is slow, and also might not be what we're looking for, as it might contain the parent's zoom
-			var computed_style = current.style;
-			if (computed_style.zoom) {
-				zoom = parse_zoom(computed_style.zoom);
+			if (current.style.zoom) {
+				zoom = parse_zoom(current.style.zoom);
 				if (zoom && zoom !== 1) {
 					rect.width *= zoom;
 					rect.height *= zoom;
