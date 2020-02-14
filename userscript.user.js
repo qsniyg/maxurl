@@ -58198,6 +58198,7 @@ var $$IMU_EXPORT$$;
 			var current = el;
 			var orig_rect = el.getBoundingClientRect();
 			var rect = shallowcopy(orig_rect);
+			var rect_changed = false;
 			var zoom = 1;
 
 			//var computed_style = get_computed_style(current);
@@ -58207,6 +58208,7 @@ var $$IMU_EXPORT$$;
 				if (zoom && zoom !== 1) {
 					rect.width *= zoom;
 					rect.height *= zoom;
+					rect_changed = true;
 				}
 			}
 
@@ -58215,9 +58217,11 @@ var $$IMU_EXPORT$$;
 				rect.y *= parent.zoom;
 				rect.width *= parent.zoom;
 				rect.height *= parent.zoom;
+				rect_changed = true;
 			}
 
-			if (parent && parent.orig_rect && parent.rect) {
+			// this is surprisingly slow, so rect is optimized out if possible
+			if (parent.rect && parent.orig_rect) {
 				rect.x += parent.rect.x - parent.orig_rect.x;
 				rect.y += parent.rect.y - parent.orig_rect.y;
 			}
@@ -58226,9 +58230,11 @@ var $$IMU_EXPORT$$;
 
 			var result = {
 				zoom: zoom,
-				rect: rect,
 				orig_rect: orig_rect
 			};
+
+			if (rect_changed)
+				result.rect = rect;
 
 			if (mapcache) {
 				mapcache.set(el, result);
@@ -58238,7 +58244,8 @@ var $$IMU_EXPORT$$;
 		}
 
 		function get_bounding_client_rect(el, mapcache) {
-			return get_bounding_client_rect_inner(el, mapcache).rect;
+			var obj = get_bounding_client_rect_inner(el, mapcache);
+			return obj.rect || obj.orig_rect;
 		}
 
 		function is_popup_el(el) {
