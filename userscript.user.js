@@ -58198,43 +58198,50 @@ var $$IMU_EXPORT$$;
 
 			var current = el;
 			var orig_rect = el.getBoundingClientRect();
-			var rect = shallowcopy(orig_rect);
-			var rect_changed = false;
+			var rect = null;
 			var zoom = 1;
 
 			//var computed_style = get_computed_style(current);
 			// computed_style is slow, and also might not be what we're looking for, as it might contain the parent's zoom
+			// this is still very slow though (50ms on facebook)
 			if (current.style.zoom) {
 				zoom = parse_zoom(current.style.zoom);
 				if (zoom && zoom !== 1) {
+					rect = shallowcopy(orig_rect);
+
 					rect.width *= zoom;
 					rect.height *= zoom;
-					rect_changed = true;
 				}
 			}
 
 			if (parent.zoom && parent.zoom !== 1) {
+				if (!rect)
+					rect = shallowcopy(orig_rect);
+
 				rect.x *= parent.zoom;
 				rect.y *= parent.zoom;
 				rect.width *= parent.zoom;
 				rect.height *= parent.zoom;
-				rect_changed = true;
 			}
 
 			// this is surprisingly slow, so rect is optimized out if possible
 			if (parent.rect && parent.orig_rect) {
+				if (!rect)
+					rect = shallowcopy(orig_rect);
+
 				rect.x += parent.rect.x - parent.orig_rect.x;
 				rect.y += parent.rect.y - parent.orig_rect.y;
 			}
 
-			recalculate_rect(rect);
+			if (rect)
+				recalculate_rect(rect);
 
 			var result = {
 				zoom: zoom,
 				orig_rect: orig_rect
 			};
 
-			if (rect_changed)
+			if (rect)
 				result.rect = rect;
 
 			if (mapcache) {
