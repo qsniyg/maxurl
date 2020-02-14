@@ -786,6 +786,21 @@ var $$IMU_EXPORT$$;
 		return typeof x === "object" && x !== null && !is_array(x) && !is_element(x);
 	}
 
+	var shallowcopy_obj = function(x) {
+		result = {};
+
+		for (var key in x) {
+			result[key] = x[key];
+		}
+		return result;
+	};
+
+	if ("assign" in Object) {
+		shallowcopy_obj = function(x) {
+			return Object.assign({}, x);
+		};
+	}
+
 	function shallowcopy(x) {
 		var result = x;
 
@@ -799,12 +814,7 @@ var $$IMU_EXPORT$$;
 			}
 			return result;
 		} else if (typeof x === "object") {
-			result = {};
-
-			for (var key in x) {
-				result[key] = x[key];
-			}
-			return result;
+			return shallowcopy_obj(x);
 		}
 
 		return result;
