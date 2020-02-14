@@ -1,3 +1,25 @@
+0.12.11
+
+New features:
+
+ * Option to customize the CSS style for the popup buttons
+ * Support for ~30 new websites using ~15 new rules (including Dropbox)
+ * You can now use multiple keybindings for an action
+
+Improvements:
+
+ * Blob URLs are now supported as sources for images
+ * Various improvements/fixes to existing rules (including Steam, Tumblr)
+ * Better support for frames
+ * Options page in the extension opens in a new tab
+
+ Bugfixes:
+
+ * Disable `blob:` URLs by default (some websites are broken due to these)
+ * Fix cases where it would fail to find the correct image because of the `zoom` CSS property
+
+---
+
 0.12.10
 
 New features:

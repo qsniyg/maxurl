@@ -46,6 +46,7 @@
 221.132.38.109
 24.p3k.hu
 24celebs.com
+24cos.com
 24eropixel.net
 24h.com.vn
 24horas.cl
@@ -317,6 +318,7 @@ arine.akamaized.net
 arlingtonhotelgroup.com
 army.mil
 arrse.co.uk
+ars.els-cdn.com
 art-dept.com
 art.wsj.net
 artfiles.alphacoders.com
@@ -421,6 +423,7 @@ att2.citysbs.com
 attach.setn.com
 attachments.readmedia.com.s3.amazonaws.com
 attitude.co.uk
+auto.sina.com.cn
 auto.sk
 autoevolution.com
 autoherald.co.kr
@@ -718,6 +721,7 @@ cafemom.com
 cafemomstatic.com
 cajalwinterconference.es
 calgaryherald.com
+camjaxx.com
 camo.derpicdn.net
 canalblog.com
 canarias7.es
@@ -1236,6 +1240,7 @@ coubsecure-s.akamaihd.net
 coupangcdn.com
 courrier.jp
 coventrytelegraph.net
+cover.read.duokan.com
 coverartarchive.org
 coverfiles.alphacoders.com
 coveteur.com
@@ -1405,6 +1410,7 @@ db.kookje.co.kr
 dbstatic.no
 dcdn.lt
 ddaily.co.kr
+ddimg.cn
 dealsanimg.com
 debate.com.mx
 decoder.ru
@@ -1449,6 +1455,7 @@ diasp.eu
 diasp.org
 dientumaytinh.com
 dienvienvietnam.vn
+diercun.com
 dieta.pourfemme.it
 digalakis.com
 digi-film.ro
@@ -1524,6 +1531,8 @@ dreamercdn.com
 dreamline.com
 dreamwiz.net
 drop.ndtv.com
+dropbox.com
+dropboxusercontent.com
 drp-images.nettavisen.no
 drscdn.500px.org
 drtst.com
@@ -2469,6 +2478,7 @@ iloveporn.xxx
 ilyo.co.kr
 ilyoseoul.co.kr
 ilyosisa.co.kr
+im.camjaxx.com
 im.indiatimes.in
 im.milliyet.com.tr
 im.mtv.fi
@@ -2489,6 +2499,7 @@ image.apost.com
 image.bada.tv
 image.baophapluat.vn
 image.biccamera.com
+image.bitautoimg.com
 image.blozoo.info
 image.board.sbs.co.kr
 image.brazilianbikinishop.com
@@ -2977,6 +2988,7 @@ img.indexxx.com
 img.insight.co.kr
 img.iseephoto.com
 img.issuedaily.com
+img.itch.zone
 img.itw01.com
 img.izismile.com
 img.jakpost.net
@@ -3064,6 +3076,7 @@ img.osobnosti.cz
 img.over-blog-kiwi.com
 img.over-blog.com
 img.particlenews.com
+img.pcauto.com.cn
 img.peerspace.com
 img.peru21.pe
 img.peta2.jp
@@ -3117,6 +3130,7 @@ img.tf.co.kr
 img.tgchengzi.com
 img.theculturetrip.com
 img.thedailybeast.com
+img.thefact.tv
 img.thefactjp.com
 img.theqoo.net
 img.thoibao.today
@@ -3149,6 +3163,7 @@ img.weiduba.net
 img.wennermedia.com
 img.wkorea.com
 img.xbooru.com
+img.xda-cdn.com
 img.xiaohongshu.com
 img.xiaohuazu.com
 img.xiumi.us
@@ -3203,6 +3218,7 @@ imgs-art-dragoart-386112.c.cdn77.org
 imgs.aixifan.com
 imgs.cc
 imgs.ckcdn.com
+imgs.diercun.com
 imgs.firmenwagen.co.at
 imgs.ngaotruyen.com
 imgs.plurk.com
@@ -3261,6 +3277,7 @@ informador.mx
 informaplus.ru
 infotel.ca
 inimura.com
+inpock-link-media-storage.storage.googleapis.com
 inquirer.net
 insectidentification.org
 inside-games.jp
@@ -3311,6 +3328,7 @@ islingtongazette.co.uk
 ismcdn.jp
 issuedaily.com
 itc.cn
+itch.io
 itedou.com
 item.ssgcdn.com
 itn.dmarge.com
@@ -3452,6 +3470,7 @@ kinofilms.ua
 kinofuxy.tv
 kinohron.mskcentrum.sk
 kinokach.com
+kinolift.ru
 kinoukr.com
 kisax.com
 kizsalsorunlar.com
@@ -3928,6 +3947,7 @@ megamich.com
 megaporn.co
 meijuxia.com
 meinbezirk.at
+meituan.net
 meitudata.com
 meituyuan.com
 melonbooks.akamaized.net
@@ -3979,6 +3999,7 @@ mirror.co.uk
 mirrorlessreports.com
 mirrormedia.com.tw
 mirrormedia.mg
+miscellaneous-content.s3.amazonaws.com
 miscmedia-9gag-fun.9cache.com
 missero.ru
 mit24h.com
@@ -4389,9 +4410,11 @@ p.hegre.com
 p.mamastar.jp
 p.memecdn.com
 p.potv.bg
-p0.meituan.net
+p16-hypstarcdn-com.akamaized.net
 p16-sg-default.akamaized.net
 p16-tiktokcdn-com.akamaized.net
+p16.hypstarcdn.com
+p16.tiktokcdn.com
 p7cdn.com
 paginasiete.bo
 paheal.net
@@ -4509,6 +4532,7 @@ pic.qmglive.com
 pic.rutube.ru
 pic.sucaibar.com
 pic.templetons.com
+pic.xcarimg.com
 pic.xiami.net
 pic.xiao4j.com
 pic.yupoo.com
@@ -5109,6 +5133,7 @@ siminilbo.co.kr
 simsettlements.com
 sin-cdn.storage.googleapis.com
 sina.com.cn
+sinaimg.acgsoso.com
 sinaimg.cn
 sinclairstoryline.com
 sinemangoo.org
@@ -5274,6 +5299,7 @@ static-sothebys-production-2.gtsstatic.net
 static-thechristianpost.netdna-ssl.com
 static-ugc-media.hk01.com
 static.acg12.com
+static.acgsoso.com
 static.addiyar.com
 static.altchar.com
 static.apple.nextmedia.com
@@ -5706,6 +5732,7 @@ tialoto.bg
 tiarashop.eu
 ticket.heraldtribune.com
 ticketshow.ma
+tiebapic.baidu.com
 tiedvirgins.com
 tienphong.vn
 tight-clothed.com
@@ -5863,6 +5890,7 @@ uploadbeta.com
 uploadfile.bizhizu.cn
 uploadfile.huiyi8.com
 uploads.bemparana.com.br
+uploads.cdn.triller.co
 uploads.disquscdn.com
 uploads.spiritfanfiction.com
 upt.xhcdn.com
@@ -6066,6 +6094,7 @@ whicdn.com
 whio.com
 whitepaper.co.kr
 wikiart.org
+wikifeet.com
 wikihow.com
 wikiofthrones.com
 wikiquicky.com

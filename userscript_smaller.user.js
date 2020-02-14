@@ -4,8 +4,8 @@
 // ==UserScript==
 // @name              Image Max URL
 // @namespace         http://tampermonkey.net/
-// @version           0.12.10
-// @description       Finds larger or original versions of images for 6200+ websites
+// @version           0.12.11
+// @description       Finds larger or original versions of images for 6200+ websites, including a powerful image popup feature
 // @description:ko    6200개 이상의 사이트에 대해 더 크거나 원본 이미지를 찾아드립니다
 // @description:fr    Trouve des images plus grandes ou originales pour plus de 6200 sites
 // @description:es    Encuentra imágenes más grandes y originales para más de 6200 sitios
@@ -146,7 +146,7 @@ var $$IMU_EXPORT$$;
 		}
 	};
 	var is_in_iframe = check_in_iframe();
-	var can_use_remote = false;
+	var is_remote_possible = false;
 
 	var is_interactive = is_extension || is_userscript;
 
@@ -204,20 +204,145 @@ var $$IMU_EXPORT$$;
 		return get_random_text(10) + Date.now();
 	};
 
+	var id_to_iframe = {};
+
+	var get_frame_info = function() {
+		return {
+			id: current_frame_id,
+			//url: window.location.href, // doesn't get updated for the iframe src's attribute?
+			url: current_frame_url,
+			size: [
+				document.documentElement.scrollWidth,
+				document.documentElement.scrollHeight
+			]
+		};
+	};
+
+	var find_iframe_for_info = function(info) {
+		if (info.id in id_to_iframe)
+			return id_to_iframe[info.id];
+
+		var finish = function(iframe) {
+			if (!iframe)
+				return iframe;
+
+			id_to_iframe[info.id] = iframe;
+			return iframe;
+		}
+
+		var iframes = document.getElementsByTagName("iframe");
+		var newiframes = [];
+		for (var i = 0; i < iframes.length; i++) {
+			if (iframes[i].src !== info.url)
+				continue;
+
+			newiframes.push(iframes[i]);
+		}
+
+		if (newiframes.length <= 1)
+			return finish(newiframes[0]);
+
+		iframes = newiframes;
+		newiframes = [];
+		for (var i = 0; i < iframes.length; i++) {
+			if (iframes[i].scrollWidth !== info.size[0] ||
+				iframes[i].scrollHeight !== info.size[1]) {
+				continue;
+			}
+
+			newiframes.push(iframes[i]);
+		}
+
+		if (newiframes.length <= 1)
+			return finish(newiframes[0]);
+
+		// TODO: check cursor too
+		return null;
+	};
+
+	var iframe_to_id = function(iframe) {
+		for (var id in id_to_iframe) {
+			if (id_to_iframe[id] === iframe)
+				return id;
+		}
+
+		return null;
+	};
+
+	var id_to_iframe_window = function(id) {
+		if (!(id in id_to_iframe))
+			return null;
+
+		try {
+			if (id_to_iframe[id].contentWindow)
+				return id_to_iframe[id].contentWindow;
+		} catch (e) {
+			// not allowed
+			return false;
+		}
+
+		return id_to_iframe[id];
+	}
+
 	var remote_send_message = null;
 	var remote_send_reply = null;
 	var remote_reply_ids = {};
 	var current_frame_id = null;
 	var current_frame_url = null;
 
+	var raw_remote_send_message = null;
+	var remote_send_message = nullfunc;
+	var remote_send_reply = nullfunc;
+
 	if (is_extension) {
+		raw_remote_send_message = function(to, message) {
+			extension_send_message(message)
+		};
+
+		is_remote_possible = true;
+	} else if (is_interactive) {
+		if (is_in_iframe && window.parent) {
+			id_to_iframe["top"] = window.parent;
+		}
+
+		raw_remote_send_message = function(to, message) {
+			if (!to && is_in_iframe)
+				to = "top"; // fixme?
+
+			var specified_window;
+			if (to && to in id_to_iframe) {
+				specified_window = id_to_iframe_window(to);
+				if (!specified_window) // not allowed
+					return;
+			}
+
+			message.imu = true;
+
+			if (!specified_window) {
+				for (var i = 0; i < window.frames.length; i++) {
+					try {
+						window.frames[i].postMessage(message, "*");
+					} catch (e) {
+						// not allowed
+						continue;
+					}
+				}
+			} else {
+				specified_window.postMessage(message, "*");
+			}
+		};
+
+		is_remote_possible = true;
+	}
+
+	if (is_remote_possible) {
 		current_frame_url = window.location.href;
 		current_frame_id = get_random_id() + " " + current_frame_url;
 
 		if (!is_in_iframe)
 			current_frame_id = "top";
 
-		var remote_send_message = function(to, data, cb) {
+		remote_send_message = function(to, data, cb) {
 			var id = undefined;
 
 			if (cb) {
@@ -226,7 +351,7 @@ var $$IMU_EXPORT$$;
 			}
 
 			//console_log("remote", data);
-			extension_send_message({
+			raw_remote_send_message(to, {
 				type: "remote",
 				data: data,
 				to: to,
@@ -235,20 +360,23 @@ var $$IMU_EXPORT$$;
 			});
 		};
 
-		var remote_send_reply = function(response_id, data) {
-			extension_send_message({
+		remote_send_reply = function(to, response_id, data) {
+			raw_remote_send_message(to, {
 				type: "remote_reply",
 				data: data,
 				response_id: response_id
 			});
 		};
-
-		can_use_remote = true;
 	}
 
-	var should_use_remote = function() {
-		return can_use_remote && settings.mouseover_use_remote;
-	}
+	var can_use_remote = function() {
+		return is_remote_possible && settings.allow_remote;
+	};
+
+	// todo: rename to something better, like should_popout_of_iframes
+	var can_iframe_popout = function() {
+		return can_use_remote() && settings.mouseover_use_remote;
+	};
 
 	var do_request_browser = function (request) {
 		if (_nir_debug_) {
@@ -715,6 +843,10 @@ var $$IMU_EXPORT$$;
 		}
 	}
 
+	var serialize_event = function(event) {
+		return deepcopy(event, {json: true});
+	};
+
 	function overlay_object(base, obj) {
 		if (typeof base === "function" || base instanceof Array)
 			return obj; // FIXME?
@@ -1171,6 +1303,7 @@ var $$IMU_EXPORT$$;
 		allow_browser_request: true,
 		use_blob_over_arraybuffer: false,
 		allow_live_settings_reload: true,
+		allow_remote: true,
 		redirect: true,
 		redirect_history: true,
 		canhead_get: true,
@@ -1201,7 +1334,7 @@ var $$IMU_EXPORT$$;
 		mouseover_close_el_policy: "both",
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/126
 		mouseover_allow_partial: is_extension ? "media" : "video",
-		mouseover_use_blob_over_data: true,
+		mouseover_use_blob_over_data: false,
 		mouseover_enable_notallowed: true,
 		mouseover_notallowed_duration: 300,
 		//mouseover_use_fully_loaded_image: is_extension ? false : true,
@@ -1256,9 +1389,10 @@ var $$IMU_EXPORT$$;
 		mouseover_gallery_next_key: ["right"],
 		// thanks to acid-crash on github for the idea: https://github.com/qsniyg/maxurl/issues/20
 		mouseover_styles: "",
+		mouseover_ui_styles: "",
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-541065461
 		mouseover_wait_use_el: false,
-		mouseover_download_key: ["s"],
+		mouseover_download_key: [["s"], ["ctrl", "s"]],
 		mouseover_open_new_tab_key: ["o"],
 		mouseover_open_bg_tab_key: ["shift", "o"],
 		mouseover_rotate_left_key: ["e"],
@@ -2005,13 +2139,22 @@ var $$IMU_EXPORT$$;
 			subcategory: "popup_other",
 			advanced: true
 		},
+		allow_remote: {
+			name: "Allow inter-frame communication",
+			description: "Allows communication between frames in windows, improving support for keybindings",
+			description_userscript: "Allows communication between frames in windows, improving support for keybindings. Can pose a fingerprinting risk when used through the userscript",
+			requires: {
+				mouseover: true
+			},
+			category: "general"
+		},
 		mouseover_use_remote: {
 			name: "Pop out of frames",
 			description: "Opens the popup on the top frame instead of within iframes. Still in beta",
 			requires: {
-				mouseover_open_behavior: "popup"
+				mouseover_open_behavior: "popup",
+				allow_remote: true
 			},
-			extension_only: true,
 			category: "popup",
 			subcategory: "open_behavior"
 		},
@@ -2370,13 +2513,23 @@ var $$IMU_EXPORT$$;
 		},
 		mouseover_styles: {
 			name: "Popup CSS style",
-			description: "CSS style rules for the mouseover popup",
+			description: "Custom CSS styles for the popup",
 			type: "textarea",
 			requires: {
 				mouseover_open_behavior: "popup"
 			},
 			category: "popup",
 			subcategory: "popup_other"
+		},
+		mouseover_ui_styles: {
+			name: "Button CSS style",
+			description: "Custom CSS styles for the popup's UI buttons",
+			type: "textarea",
+			requires: {
+				mouseover_open_behavior: "popup"
+			},
+			category: "popup",
+			subcategory: "ui"
 		},
 		mouseover_apply_blacklist: {
 			name: "Don't popup blacklisted images",
@@ -2998,7 +3151,15 @@ var $$IMU_EXPORT$$;
 		var newobj = [];
 		for (var i = 0; i < urls.length; i++) {
 			var currentobj = deepcopy(obj);
-			currentobj.url = urls[i];
+
+			if (typeof urls[i] === "string") {
+				currentobj.url = urls[i];
+			} else {
+				for (var key in urls[i]) {
+					currentobj[key] = urls[i][key]
+				}
+			}
+
 			newobj.push(currentobj);
 		}
 
@@ -6016,6 +6177,10 @@ var $$IMU_EXPORT$$;
 					return newsrc;
 			}
 
+			newsrc = src.replace(/(\/autoimg\/+serial\/+[0-9]{2}\/+[0-9]{2}\/+[0-9]+)_[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1_src$2");
+			if (newsrc !== src)
+				return newsrc;
+
 			newsrc = src.replace(/\/slidenews\/+([^/_]*)_[^/_]*\//, "/slidenews/$1_img/"); // there's also _ori, but it seems to be smaller?
 			if (newsrc !== src)
 				return newsrc;
@@ -6033,6 +6198,10 @@ var $$IMU_EXPORT$$;
 
 		if (domain_nosub === "sina.com.cn" && domain.match(/^static[0-9]\.photo\.sina\.com\.cn/)) {
 			return src.replace(/:\/\/static([0-9]*)\.photo\.sina\.com\.cn\//, "://ss$1.sinaimg.cn/");
+		}
+
+		if (domain === "sinaimg.acgsoso.com") {
+			return src.replace(/:\/\/[^/]+\/+/, "://wx4.sinaimg.cn/");
 		}
 
 		if (domain === "thumbnail.egloos.net" ||
@@ -7212,6 +7381,7 @@ var $$IMU_EXPORT$$;
 			domain === "resource.meihua.info" ||
 			domain === "i.ezbuy.sg" ||
 			domain === "i.guancha.cn" ||
+			domain === "pic.xcarimg.com" ||
 			domain === "upload-images.jianshu.io") {
 			src = src.replace(/\?.*$/, "");
 		}
@@ -7554,6 +7724,7 @@ var $$IMU_EXPORT$$;
 			(domain === "celebsfake.adultcase.com" && src.indexOf("/files/") >= 0) ||
 			(domain_nowww === "theonemilano.com" && src.indexOf("/the-one-milano-uploads/") >= 0) ||
 			domain === "public.flashingjungle.com" ||
+			(domain === "static.acgsoso.com" && src.indexOf("/uploads/") >= 0) ||
 			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|images|photos|blogs.dir)|\/+uploads)\//.test(src)
 			/*src.indexOf("/wp/uploads/") >= 0*/
 			) {
@@ -7619,6 +7790,7 @@ var $$IMU_EXPORT$$;
 			(domain === "image.apost.com" && src.indexOf("/media/") >= 0) ||
 			(domain === "im.indiatimes.in" && src.indexOf("/content/") >= 0) ||
 			(domain === "admin.alo.rs" && /\/resources\/+images\//.test(src)) ||
+			(domain === "img.pcauto.com.cn" && /\/images\/+upload\//.test(src)) ||
 			domain === "images.cinefil.com") {
 			newsrc = src.replace(/_[0-9]+x[0-9]+(\.[^/.]*)$/, "$1");
 			if (newsrc !== src)
@@ -7984,11 +8156,11 @@ var $$IMU_EXPORT$$;
 
 		if (domain === "pic.xiami.net" ||
 			domain === "club-img.kdslife.com" ||
-			domain === "p0.meituan.net" ||
+			(domain_nosub === "meituan.net" && /^p[0-9]*\./.test(domain)) ||
 			(domain === "piccn.ihuaben.com" && src.indexOf("/pic/") >= 0) ||
 			(domain_nosub === "lanlanlife.com" && /^oss[0-9]*\./.test(domain)) ||
 			domain === "img.sdxapp.com") {
-			newsrc = src.replace(/@[^/]*$/, "");
+			newsrc = src.replace(/(?:@|%40)[^/]*$/, "");
 			if (newsrc !== src)
 				return newsrc;
 		}
@@ -8075,6 +8247,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "imgsrc.baidu.com" ||
+			domain === "tiebapic.baidu.com" ||
 			(domain_nosub === "baidu.com" && domain.match(/^(?:[a-z]\.)?hiphotos\./)) ||
 			domain === "imgsa.baidu.com") {
 			newsrc = decodeURIComponent(src.replace(/.*\/[^/]*[?&]src=([^&]*).*/, "$1"));
@@ -8221,6 +8394,13 @@ var $$IMU_EXPORT$$;
 			(src.indexOf("/images/") >= 0 ||
 			 src.indexOf("/image/") >= 0 ||
 			 src.indexOf("/user_images/") >= 0)*/) {
+			if (/\/resource\/+image\/+web\/+artist\/+/.test(src)) {
+				return {
+					url: src,
+					bad: "mask"
+				};
+			}
+
 
 
 
@@ -8492,6 +8672,81 @@ var $$IMU_EXPORT$$;
 				return null;
 			};
 
+			var find_postid_from_el = function(el) {
+				var currentel = el;
+
+				while ((currentel = currentel.parentElement)) {
+					var id = currentel.getAttribute("id");
+
+					if (id) {
+						var match = id.match(/^photoset_([0-9]+)$/);
+						if (match) {
+							return match[1];
+						}
+
+						if (currentel.tagName === "ARTICLE") {
+							return id;
+						}
+					}
+
+					if (currentel.tagName === "A") {
+						var match = currentel.href.match(/:\/\/[^/]+\/+image\/+([0-9]{8,})\/*(?:[?#].*)?$/);
+						if (match) {
+							return match[1];
+						}
+					}
+				}
+
+				return null;
+			};
+
+			var el_has_mediakey = function(el, mediakey) {
+				if (el.tagName === "IMG") {
+					return find_mediakey_from_url(el.src) === mediakey;
+				} else if (el.tagName === "IFRAME" && /\/post\/+[0-9]+\/+/.test(el.src)) {
+					try {
+						var images = el.contentDocument.querySelectorAll("img");
+						for (var i = 0; i < images.length; i++) {
+							if (el_has_mediakey(images[i], mediakey))
+								return true;
+						}
+					} catch (e) {
+						console_error(e, el);
+						return false;
+					}
+				}
+
+				return false;
+			};
+
+			var try_finding_postid_from_url = function(url) {
+				if (!options.document)
+					return null;
+
+				var mediakey = find_mediakey_from_url(url);
+				if (!mediakey)
+					return null;
+
+				var cache_key = "tumblr_url_postid:" + mediakey;
+				if (api_cache.has(cache_key)) {
+					return api_cache.get(cache_key);
+				}
+
+				var els = options.document.querySelectorAll("article img, article iframe");
+				for (var i = 0; i < els.length; i++) {
+					if (el_has_mediakey(els[i], mediakey)) {
+						var postid = find_postid_from_el(els[i]);
+						if (postid) {
+							api_cache.set(cache_key, postid);
+						}
+
+						return postid;
+					}
+				}
+
+				return null;
+			}
+
 			var try_finding_info = function() {
 				var info = find_blogname_id_from_url(options.host_url);
 				if (info)
@@ -8507,15 +8762,14 @@ var $$IMU_EXPORT$$;
 						blogname: blogname
 					};
 
-					var currentel = options.element;
-					while ((currentel = currentel.parentElement)) {
-						if (currentel.tagName === "ARTICLE") {
-							var id = currentel.getAttribute("id");
-							if (id) {
-								obj.postid = id;
-								return obj;
-							}
-						}
+					var postid = find_postid_from_el(options.element);
+					if (!postid) {
+						postid = try_finding_postid_from_url(src);
+					}
+
+					if (postid) {
+						obj.postid = postid;
+						return obj;
 					}
 				} else if (host_domain_nowww === "tumblr.com") {
 					var currentel = options.element;
@@ -8651,6 +8905,10 @@ var $$IMU_EXPORT$$;
 
 		if ((domain_nosub === "steamstatic.com" && domain.match(/cdn\.[^.]*\.steamstatic\.com/)) ||
 			(domain_nosub === "akamaihd.net" && domain.match(/steamcdn(?:-[a-z]*)?\.akamaihd\.net/))) {
+			newsrc = src.replace(/(\/steam\/+apps\/+[0-9]+\/+movie)[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1_max$2");
+			if (newsrc !== src)
+				return newsrc;
+
 			if (src.indexOf("/public/images/avatars/") >= 0) {
 				src = src.replace(/(?:_[^/.]*)?(\.[^/.]*)$/, "_full$1");
 			}
@@ -10054,7 +10312,7 @@ var $$IMU_EXPORT$$;
 			domain === "img.giaoduc.net.vn" ||
 			domain === "media.laodong.vn") {
 			newsrc = src
-				.replace(/(:\/\/[^/]*)\/+[wht]p?[0-9]+x?(?:_[^/]*)?(?:[0-9]+)?\//, "$1/")
+				.replace(/(:\/\/[^/]*)\/+[wht]p?m?[0-9]+x?(?:_[^/]*)?(?:[0-9]+)?\//, "$1/")
 				.replace(/(:\/\/[^/]*)\/+[-0-9]+x[-0-9]+\//, "$1/")
 				.replace(/(?:\.ashx)?\?.*$/, "");
 
@@ -10095,13 +10353,16 @@ var $$IMU_EXPORT$$;
 		}
 
 		if ((domain_nosub === "yan.vn" && domain.match(/static[0-9]*\.yan\.vn/)) ||
-			(domain_nosub === "autoimg.cn" && domain.match(/^car[0-9]*\.autoimg\.cn/)) ||
 			(domain_nowww === "myzutv.ro" && src.indexOf("/uploads/") >= 0) ||
 			(domain_nowww === "rainews.it" && src.indexOf("/img/") >= 0) ||
 			(domain === "a.jeu.cc" && src.indexOf("/images/") >= 0) ||
 			(domain_nowww === "soyuz.ru" && /\/uploads\/+files\//.test(src)) ||
 			(domain === "www.mjuznews.com" && src.indexOf("/photos/") >= 0)) {
 			return src.replace(/\/[0-9]+x[0-9]+_([^/]*)$/, "/$1");
+		}
+
+		if (domain_nosub === "autoimg.cn") {
+			return src.replace(/\/(?:[0-9]+x[0-9]+_(?:[0-9]+_)?|[0-9]+_)([^/]+)(?:[?#].*)?$/, "/$1");
 		}
 
 		if (domain === "image.thanhnien.vn") {
@@ -12140,6 +12401,9 @@ var $$IMU_EXPORT$$;
 			 domain_nosub === "sgpstatp.com")
 			&& domain.match(/[pi][a-z]?[0-9]*\./) ||
 			domain === "p16-tiktokcdn-com.akamaized.net" ||
+			domain === "p16.tiktokcdn.com" ||
+			domain === "p16-hypstarcdn-com.akamaized.net" ||
+			domain === "p16.hypstarcdn.com" ||
 			domain_nosub === "bytecdn.cn" ||
 			domain_nosub === "byteimg.com" ||
 			domain_nosub === "muscdn.com") {
@@ -14206,6 +14470,7 @@ var $$IMU_EXPORT$$;
 			domain === "pic.cr173.com" ||
 			(domain_nosub === "5ceimg.com" && /^i[0-9]*\./.test(domain)) ||
 			domain === "movieboo.oss-cn-hangzhou.aliyuncs.com" ||
+			domain === "cover.read.duokan.com" ||
 			domain === "img.mgpyh.com") {
 			newsrc = src.replace(/!.*/, "");
 			if (newsrc !== src)
@@ -15843,6 +16108,10 @@ var $$IMU_EXPORT$$;
 
 		if (domain === "static.sify.com") {
 			return src.replace(/(\/cms\/image\/[^/]*)_[a-z]+(\.[^/.]*)$/, "$1$2");
+		}
+
+		if (domain_nowww === "wikifeet.com") {
+			return src.replace(/(\/profiles\/+[0-9]+)(\.[^/.]+)(?:[?#].*)?$/, "$1_fs$2");
 		}
 
 		if (domain === "thumbs.wikifeet.com") {
@@ -18703,7 +18972,8 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/upimages\/+photoda\//, "/upimages/gisaimg/");
 		}
 
-		if (domain === "img.thefactjp.com") {
+		if (domain === "img.thefactjp.com" ||
+			domain === "img.thefact.tv") {
 			return src.replace(/(\/service\/[a-z]+\/[0-9]+\/[0-9]+\/[0-9]+\/)(?:[0-9]+|thumb)\/([0-9a-f]+\.[^/.]*)$/, "$1$2");
 		}
 
@@ -20511,7 +20781,8 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/images\/galerie\/[a-z]+image\/(?:small_)?/, "/images/galerie/bigimage/");
 		}
 
-		if (domain === "ent.sina.com.cn") {
+		if (domain === "ent.sina.com.cn" ||
+			domain === "auto.sina.com.cn") {
 			return src.replace(/^[a-z]+:\/\/[^/]*\/([^/]*\.sinaimg\.cn\/)/, "http://$1");
 		}
 
@@ -29321,8 +29592,8 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nosub === "newtumbl.com") {
-			return {
-				url: src.replace(/(\/img\/+[0-9]+\/+[0-9]+\/+[0-9]+\/+[0-9]+\/+nT_[0-9a-z]{10,})_[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2"),
+			obj = {
+				url: src,
 				headers: {
 					Referer: ""
 				},
@@ -29337,6 +29608,18 @@ var $$IMU_EXPORT$$;
 				},
 				can_head: false // completely wrong output
 			};
+
+			newsrc = src.replace(/(\/img\/+[0-9]+\/+[0-9]+\/+[0-9]+\/+[0-9]+\/+nT_[0-9a-z]{10,})_[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+			if (newsrc !== src) {
+				obj.url = newsrc;
+				return obj;
+			}
+
+			newsrc = src.replace(/(\/img\/+[0-9]+\/+[0-9]+\/+[0-9]+\/+[0-9]+\/+nT_[0-9a-z]{10,})\.(?:jpg|JPG|jpeg|JPEG|png|PNG|webp|WEBP|gif|GIF)(?:[?#].*)?$/, "$1.mp4");
+			if (newsrc !== src) {
+				obj.url = newsrc;
+				return obj;
+			}
 		}
 
 		if (domain === "img.ohpolly.com") {
@@ -31759,6 +32042,145 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/storage-[0-9]+\/+[0-9]+\/+)th_([^/]+)(?:[?#].*)?$/, "$1$2");
 		}
 
+		if (domain === "uploads.cdn.triller.co") {
+			newsrc = src.replace(/(\/v1\/+uploads\/+[0-9]+\/+[0-9]+)_thumbnail\.[^/.?#]+(?:[?#].*)?$/, "$1_video.mp4");
+			if (newsrc !== src) {
+				return {
+					url: newsrc,
+					video: true
+				};
+			}
+		}
+
+		if (domain_nowww === "kinolift.ru") {
+			return src.replace(/(\/media\/+users\/+[0-9]+\/+[0-9]+)_[sn](\.[^/.]+)(?:[?#].*)?$/, "$1_l$2");
+		}
+
+
+		if ((domain_nosub === "dropbox.com" || domain_nosub === "dropboxusercontent.com") && /previews\.dropbox/.test(domain)) {
+			if (/\/p\/+thumb\/+[^/]{50,}\/+[^/]+(?:[?#].*)?$/.test(src)) {
+				return src.replace(/(\/[^?#]+)(?:[?#].*)?$/, "$1?fv_content=true&size_mode=5");
+			}
+		}
+
+		if (domain_nosub === "ddimg.cn") {
+			newsrc = src
+				.replace(/(\/[0-9]{2}\/+[0-9]{2}\/+[0-9]+-[0-9]+)_[a-z]_([0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1_o_$2")
+				.replace(/(:\/\/[^/]+\/+[0-9]+)_[a-z](\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+
+			return {
+				url: newsrc,
+				can_head: false
+			};
+		}
+
+		if (domain === "image.bitautoimg.com") {
+			return src.replace(/\/appimage-[^/]+\/+mapi\/+media\/+/, "/mapi/media/");
+		}
+
+		if (amazon_container === "miscellaneous-content") {
+			regex = /(\/uploads\/+bfa\/+[0-9]+\/+([0-9]+)\/+)(?:thumb|large|wl|preview|original)_([0-9]+_[0-9]+\.[^/.]+)(?:[?#].*)?$/;
+			match = src.match(regex);
+
+			if (match) {
+				page = "https://bfa.com/home/photo/" + match[2];
+
+				obj = {
+					url: src,
+					extra: {
+						page: page
+					},
+					headers: {
+						Referer: page,
+						"Sec-Fetch-Dest": "image",
+						"Sec-Fetch-Mode": "same-origin",
+						"Sec-Fetch-Site": "same-site"
+					}
+				};
+
+				if (src.indexOf("/thumb_") >= 0 || src.indexOf("/large_") >= 0) {
+					return fillobj_urls([
+						src.replace(regex, "$1original_$3"),
+						{
+							url: src.replace(regex, "$1wl_$3"),
+							problems: {
+								watermark: true
+							}
+						},
+						src.replace(regex, "$1large_$3")
+					], obj);
+				}
+
+				if (src.indexOf("/wl_") >= 0 || src.indexOf("preview_") >= 0) {
+					return fillobj_urls([
+						src.replace(regex, "$1original_$3"),
+						{
+							url: src.replace(regex, "$1large_$3"),
+							problems: {
+								smaller: true
+							}
+						}
+					], obj);
+				}
+
+				return obj;
+			}
+		}
+
+		if (googlestorage_container === "inpock-link-media-storage") {
+			return src.replace(/(\/media\/+images\/+[0-9]{4}\/+[0-9]+\/+[0-9]+\/+)thumb@[0-9]+_/, "$1");
+		}
+
+		if (domain_nowww === "24cos.com" ||
+			domain === "imgs.diercun.com") {
+			var referer = "https://" + domain_nosub + "/";
+			if (domain_nosub === "diercun.com") {
+				referer = "https://www.24mntp.com/";
+			}
+
+			return {
+				url: src
+					.replace(/:\/\/imgs(\.[^/]+\/+[^/]+\/+[0-9]{4}\/+[0-9]{4}\/+[0-9]+\/+)m(24[a-z]+_[0-9]+\.[^/.]+)(?:[?#].*)?$/, "://bimg$1$2")
+					.replace(/(\/+[0-9]{4}\/+[0-9]{4}\/+[0-9]+\/+)m(24[a-z]+_[0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1$2"),
+				headers: {
+					Referer: referer
+				}
+			};
+		}
+
+		if (domain === "img.xda-cdn.com") {
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+[^/]{10,}\/+(https?.*)/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+		}
+
+		if (domain === "img.itch.zone" && host_domain_nosub === "itch.io" && options && options.element) {
+			if (options.element.classList.contains("screenshot")) {
+				if (options.element.parentElement.tagName === "A" && options.element.parentElement.href.indexOf("://img.itch.zone/") >= 0) {
+					return options.element.parentElement.href;
+				}
+			}
+		}
+
+		if (domain === "im.camjaxx.com") {
+			return src.replace(/:\/\/[^/]+\/+([0-9a-f]{10,})\/+preview\/+.*/, "://camjaxx.com/stream/$1");
+		}
+
+		if (domain_nowww === "camjaxx.com") {
+			if (/:\/\/[^/]+\/+stream\/+[0-9a-f]+\/*(?:[?#].*)?$/.test(src)) {
+				return {
+					url: src,
+					video: true
+				};
+			}
+		}
+
+		if (domain === "ars.els-cdn.com") {
+			newsrc = src.replace(/(\/content\/+image\/+[^/]+)\.sml(?:[?#].*)?$/, "$1.jpg");
+			if (newsrc !== src)
+				return add_extensions_gif(newsrc);
+		}
+
 
 
 
@@ -33572,7 +33994,7 @@ var $$IMU_EXPORT$$;
 		return null;
 	};
 
-	var get_trigger_key_text = function(list) {
+	var get_single_trigger_key_text = function(list) {
 		list = list.sort(function(a, b) {
 			if (a === b)
 				return 0;
@@ -33610,6 +34032,24 @@ var $$IMU_EXPORT$$;
 		}
 
 		return newlist.join("+");
+	};
+
+	var get_trigger_key_texts = function(list) {
+		if (!(list[0] instanceof Array)) {
+			list = [list];
+		}
+
+		var result = [];
+
+		for (var i = 0; i < list.length; i++) {
+			result.push(get_single_trigger_key_text(list[i]));
+		}
+
+		return result;
+	};
+
+	var get_trigger_key_text = function(list) {
+		return get_trigger_key_texts(list).join(" / ");
 	};
 
 	var check_image = function(obj, err_cb, ok_cb) {
@@ -34674,7 +35114,15 @@ var $$IMU_EXPORT$$;
 				name_td.classList.add("name_td");
 
 				var check_value_orig_different = function(value) {
-					var value_orig_different = normalize_value(value) !== normalize_value(orig_value);
+					var value_norm = normalize_value(value);
+					var orig_norm = normalize_value(orig_value);
+
+					if (meta.type === "keysequence") {
+						value_norm = JSON_stringify(normalize_keychord(value));
+						orig_norm = JSON_stringify(normalize_keychord(orig_value));
+					}
+
+					var value_orig_different = value_norm !== orig_norm;
 					if (value_orig_different) {
 						name_td.classList.add("value_modified");
 					} else {
@@ -34985,62 +35433,188 @@ var $$IMU_EXPORT$$;
 					value_td.appendChild(sub);
 				} else if (type === "keysequence") {
 					var sub = document.createElement("table");
-					var sub_tr = document.createElement("tr");
-					var sub_key_td = document.createElement("td");
-					//sub_key_td.style = "display:inline;font-family:monospace";
-					sub_key_td.classList.add("record_keybinding");
-					if (value) {
-						sub_key_td.innerText = get_trigger_key_text(value);
+
+					var values = deepcopy(value);
+
+					if (values.length > 0 && !(values[0] instanceof Array))
+						values = [values];
+
+					var indices = [];
+					for (var i = 0; i < values.length; i++) {
+						indices.push(i);
 					}
-					var sub_record_td = document.createElement("td");
-					sub_record_td.style = "display:inline";
-					var sub_record_btn = document.createElement("button");
-					sub_record_btn.innerText = _("record");
-					var sub_cancel_btn = document.createElement("button");
-					sub_cancel_btn.innerText = _("cancel");
-					sub_cancel_btn.style = "display:none";
-					var do_cancel = function() {
-						recording_keys = false;
-						sub_record_btn.innerText = _("Record");
-						sub_record_btn.classList.remove("disabled");
-						sub_cancel_btn.style = "display:none";
-						sub_key_td.innerText = get_trigger_key_text(settings[setting]);
+
+					var is_only_keyseq = function() {
+						var active_indices = 0;
+						for (var i = 0; i < indices.length; i++) {
+							if (indices[i] >= 0)
+								active_indices++;
+						}
+
+						return active_indices < 2;
 					};
-					sub_cancel_btn.onmousedown = do_cancel;
-					sub_record_btn.onmousedown = function() {
-						if (recording_keys) {
-							if (keysequence_valid(options_chord)) {
-								do_update_setting(setting, options_chord, meta);
-								//settings[setting] = options_chord;
 
-								do_cancel();
+					var update_keyseq_setting = function() {
+						var result = [];
+
+						for (var i = 0; i < indices.length; i++) {
+							if (indices[i] >= 0 && values[i].length > 0) {
+								result.push(values[i]);
 							}
-						} else {
-							options_chord = [];
-							current_options_chord = [];
-							recording_keys = function() {
-								var our_chord = options_chord;
-								if (our_chord.length === 0)
-									our_chord = settings[setting];
+						}
 
-								sub_key_td.innerText = get_trigger_key_text(our_chord);
+						do_update_setting(setting, result, meta);
+					};
 
-								if (keysequence_valid(options_chord)) {
-									sub_record_btn.classList.remove("disabled");
+					var recalculate_removebtns = function() {
+						var do_remove = !meta.keyseq_allow_none && is_only_keyseq();
+
+						for (var i = 0; i < sub.children.length; i++) {
+							var child = sub.children[i];
+
+							var removebtns = child.getElementsByClassName("removebtn");
+							if (removebtns.length > 0) {
+								if (do_remove) {
+									removebtns[0].style.display = "none";
 								} else {
-									sub_record_btn.classList.add("disabled");
+									removebtns[0].style.display = "initial";
 								}
-							};
-							sub_record_btn.innerText = _("save");
-							sub_cancel_btn.style = "display:inline-block";
+							}
 						}
 					};
 
-					sub_tr.appendChild(sub_key_td);
-					sub_record_td.appendChild(sub_record_btn);
-					sub_record_td.appendChild(sub_cancel_btn);
-					sub_tr.appendChild(sub_record_td);
-					sub.appendChild(sub_tr);
+					var add_keyseq_tr = function(index, start_recording) {
+						var sub_tr = document.createElement("tr");
+						sub_tr.classList.add("keyseq");
+
+						var sub_key_td = document.createElement("td");
+						//sub_key_td.style = "display:inline;font-family:monospace";
+						sub_key_td.classList.add("record_keybinding");
+						if (value) {
+							sub_key_td.innerText = get_trigger_key_texts(values)[index];
+						}
+
+						var sub_record_td = document.createElement("td");
+						sub_record_td.style = "display:inline";
+
+						var sub_record_btn = document.createElement("button");
+						sub_record_btn.innerText = _("record");
+
+						var do_record = function() {
+							if (recording_keys) {
+								if (keysequence_valid(options_chord)) {
+									values[index] = options_chord;
+									update_keyseq_setting();
+									//do_update_setting(setting, options_chord, meta);
+									//settings[setting] = options_chord;
+
+									do_cancel();
+								}
+							} else {
+								options_chord = [];
+								current_options_chord = [];
+								recording_keys = function() {
+									var our_chord = options_chord;
+									if (our_chord.length === 0)
+										our_chord = values[index];
+
+									sub_key_td.innerText = get_trigger_key_texts(our_chord);
+
+									if (keysequence_valid(options_chord)) {
+										sub_record_btn.classList.remove("disabled");
+									} else {
+										sub_record_btn.classList.add("disabled");
+									}
+								};
+								sub_record_btn.innerText = _("save");
+								sub_cancel_btn.style = "display:inline-block";
+							}
+						};
+						sub_record_btn.onmousedown = do_record;
+
+						var sub_cancel_btn = document.createElement("button");
+						sub_cancel_btn.innerText = _("cancel");
+						sub_cancel_btn.style = "display:none";
+
+						var do_cancel = function() {
+							recording_keys = false;
+							sub_record_btn.innerText = _("Record");
+							sub_record_btn.classList.remove("disabled");
+							sub_cancel_btn.style = "display:none";
+							sub_key_td.innerText = get_trigger_key_texts(values)[index];
+						};
+						sub_cancel_btn.onmousedown = do_cancel;
+
+						var sub_remove_btn = document.createElement("button");
+						//sub_remove_btn.innerText = "—";
+						sub_remove_btn.innerText = "\xD7";
+						sub_remove_btn.title = _("Remove");
+						sub_remove_btn.classList.add("removebtn");
+						sub_remove_btn.classList.add("small");
+
+						if (!meta.keyseq_allow_none && is_only_keyseq()) {
+							sub_remove_btn.style = "display:none";
+						}
+
+						sub_remove_btn.onclick = function() {
+							if (!meta.keyseq_allow_none && is_only_keyseq())
+								return;
+
+							recording_keys = false;
+
+							indices[index] = -1;
+							for (var i = index + 1; i < indices.length; i++) {
+								indices[i]--;
+							}
+
+							sub_tr.parentElement.removeChild(sub_tr);
+							recalculate_removebtns();
+
+							update_keyseq_setting();
+						};
+
+						sub_tr.appendChild(sub_key_td);
+						sub_record_td.appendChild(sub_record_btn);
+						sub_record_td.appendChild(sub_cancel_btn);
+						sub_record_td.appendChild(sub_remove_btn);
+						sub_tr.appendChild(sub_record_td);
+
+						if (start_recording)
+							do_record();
+
+						return sub_tr;
+					};
+
+					for (var i = 0; i < indices.length; i++) {
+						sub.appendChild(add_keyseq_tr(i));
+					}
+
+					var sub_add_tr = document.createElement("tr");
+					var sub_add_td = document.createElement("td");
+					var sub_add_btn = document.createElement("button");
+					sub_add_btn.innerText = "+";
+					sub_add_btn.title = _("Add keybinding");
+					sub_add_btn.classList.add("small");
+					sub_add_btn.onclick = function() {
+						var last_index = -1;
+
+						for (var i = indices.length - 1; i >= 0; i--) {
+							if (indices[i] >= 0) {
+								last_index = indices[i];
+								break;
+							}
+						}
+
+						indices.push(last_index + 1);
+						values.push([]);
+
+						sub.insertBefore(add_keyseq_tr(indices.length - 1, true), sub_add_tr);
+						recalculate_removebtns();
+					};
+					sub_add_td.appendChild(sub_add_btn);
+					sub_add_tr.appendChild(sub_add_td);
+
+					sub.appendChild(sub_add_tr);
 					value_td.appendChild(sub);
 				} else if (type === "combo") {
 					var sub = document.createElement("select");
@@ -35884,6 +36458,10 @@ var $$IMU_EXPORT$$;
 				}
 
 				var loadcb = function(urldata) {
+					if (_nir_debug_) {
+						console_log("check_object_get's loadcb", urldata, is_video);
+					}
+
 					last_objecturl = urldata;
 
 					if (!urldata) {
@@ -36034,6 +36612,16 @@ var $$IMU_EXPORT$$;
 			return str_to_keycode_table[x];
 		}
 		return x.toUpperCase().charCodeAt(0);
+	}
+
+	function normalize_keychord(keychord) {
+		if (keychord.length === 0)
+			return [[]];
+
+		if (!(keychord[0] instanceof Array))
+			return [keychord];
+
+		return keychord;
 	}
 
 	function do_mouseover() {
@@ -36265,7 +36853,7 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		function resetpopups() {
+		function resetpopups(from_remote) {
 			popups.forEach(function (popup) {
 				var els = popup.querySelectorAll("img, video");
 				for (var i = 0; i < els.length; i++) {
@@ -36281,6 +36869,14 @@ var $$IMU_EXPORT$$;
 					popups.splice(index, 1);
 				}
 			});
+
+			if (!from_remote && can_use_remote()) {
+				if (is_in_iframe) {
+					remote_send_message("top", {type: "resetpopups"});
+				} else if (popup_el_remote) {
+					remote_send_message(popup_el_remote, {type: "resetpopups"});
+				}
+			}
 
 			disable_click = false;
 			popups_active = false;
@@ -36300,10 +36896,6 @@ var $$IMU_EXPORT$$;
 			if (!delay_mouseonly && delay_handle) {
 				clearTimeout(delay_handle);
 				delay_handle = null;
-			}
-
-			if (is_in_iframe && should_use_remote()) {
-				remote_send_message("top", {type: "resetpopups"});
 			}
 		}
 
@@ -36531,6 +37123,11 @@ var $$IMU_EXPORT$$;
 				//img.addEventListener("click", estop, true);
 				//img.addEventListener("mousedown", estop, true);
 
+				var bgcolor = "#333";
+				var fgcolor = "#fff";
+				var textcolor = "#fff";
+				var shadowcolor = "rgba(0,0,0,.5)";
+
 				var outerdiv = document.createElement("div");
 				set_el_all_initial(outerdiv);
 				outerdiv.style.position = "fixed";
@@ -36539,8 +37136,8 @@ var $$IMU_EXPORT$$;
 				var div = document.createElement("div");
 				var popupshown = false;
 				set_el_all_initial(div);
-				div.style.boxShadow = "0 0 15px rgba(0,0,0,.5)";
-				div.style.border = "3px solid white";
+				div.style.boxShadow = "0 0 15px " + shadowcolor;
+				div.style.border = "3px solid " + fgcolor;
 				div.style.position = "relative";
 				div.style.top = "0px";
 				div.style.left = "0px";
@@ -36915,23 +37512,26 @@ var $$IMU_EXPORT$$;
 					if (action) {
 						btn.style.cursor = "pointer";
 					}
-					btn.style.background = "#333";
-					btn.style.border = "3px solid white";
+
+					btn.style.background = bgcolor;
+					btn.style.border = "3px solid " + fgcolor;
 					btn.style.borderRadius = "10px";
 
 					// workaround for emojis: https://stackoverflow.com/a/39776303
 					if (typeof text === "string" && text.length === 1 && text.charCodeAt(0) > 256) {
 						btn.style.color = "transparent";
-						btn.style.textShadow = "0 0 0 white";
+						btn.style.textShadow = "0 0 0 " + textcolor;
 					} else {
-						btn.style.color = "white";
+						btn.style.color = textcolor;
 					}
 
 					btn.style.padding = "4px";
 					btn.style.lineHeight = "1em";
-					btn.style.whiteSpace = "nowrap";
+					//btn.style.whiteSpace = "nowrap";
 					btn.style.fontSize = "14px";
 					btn.style.fontFamily = "sans-serif";
+					apply_styles(btn, settings.mouseover_ui_styles);
+
 					btn.style.zIndex = maxzindex - 1;
 					if (!istop) {
 						btn.style.position = "absolute";
@@ -37790,6 +38390,59 @@ var $$IMU_EXPORT$$;
 			return el.currentStyle || window.getComputedStyle(el);
 		}
 
+		var recalculate_rect = function(rect) {
+			rect.left = rect.x;
+			rect.top = rect.y;
+			rect.right = rect.left + rect.width;
+			rect.bottom = rect.right + rect.height;
+
+			return rect;
+		};
+
+		var parse_zoom = function(zoom) {
+			if (typeof zoom === "number")
+				return zoom;
+
+			var match = zoom.match(/^([-0-9.]+)%$/);
+			if (match)
+				return parseFloat(match[1]) / 100.;
+
+			match = zoom.match(/^([-0-9.]+)$/);
+			if (match) {
+				return parseFloat(match[1]);
+			}
+
+			return null;
+		};
+
+		function get_bounding_client_rect(el) {
+			var current = el;
+			var rect = el.getBoundingClientRect();
+
+			// test: https://4seasonstaeyeon.tumblr.com/post/190710743124 (bottom images)
+			while (current) {
+				var computed_style = get_computed_style(current);
+				if (computed_style.zoom) {
+					var zoom = parse_zoom(computed_style.zoom);
+					if (zoom) {
+						rect.width *= zoom;
+						rect.height *= zoom;
+
+						if (current !== el) {
+							rect.x *= zoom;
+							rect.y *= zoom;
+						}
+
+						recalculate_rect(rect);
+					}
+				}
+
+				current = current.parentElement;
+			}
+
+			return rect;
+		}
+
 		function is_popup_el(el) {
 			var current = el;
 			do {
@@ -37838,8 +38491,20 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		function is_valid_src(src) {
-			return src && !(/^blob:/.test(src));
+		function is_video_el(el) {
+			if (el.tagName === "VIDEO")
+				return true;
+
+			if (el.tagName !== "SOURCE")
+				return false;
+
+			if (el.parentElement && el.parentElement.tagName === "VIDEO")
+				return true;
+			return false;
+		}
+
+		function is_valid_src(src, isvideo) {
+			return src && (!(/^blob:/.test(src)) || !isvideo);
 		}
 
 		function find_source(els) {
@@ -37861,7 +38526,7 @@ var $$IMU_EXPORT$$;
 				}
 			}
 
-			if (!is_valid_src(result.src)) {
+			if (!is_valid_src(result.src, is_video_el(result.el))) {
 				if (_nir_debug_)
 					console_log("find_source: invalid src", result);
 
@@ -38568,7 +39233,7 @@ var $$IMU_EXPORT$$;
 			return keystr_in_trigger(str);
 		}
 
-		function key_would_modify_chord(str, value) {
+		function key_would_modify_single_chord(str, value) {
 			if (value) {
 				if (current_chord.indexOf(str) < 0)
 					return true;
@@ -38600,11 +39265,22 @@ var $$IMU_EXPORT$$;
 			return false;
 		}
 
-		function event_in_chord(e, wanted_chord) {
+		function event_in_single_chord(e, wanted_chord) {
 			var map = get_keystrs_map(e, true);
 
 			for (var key in map) {
 				if (keystr_in_trigger(key, wanted_chord))
+					return true;
+			}
+
+			return false;
+		}
+
+		function event_in_chord(e, wanted_chord) {
+			wanted_chord = normalize_keychord(wanted_chord);
+
+			for (var i = 0; i < wanted_chord.length; i++) {
+				if (event_in_single_chord(e, wanted_chord[i]))
 					return true;
 			}
 
@@ -38639,24 +39315,32 @@ var $$IMU_EXPORT$$;
 			current_chord_timeout = {};
 		}
 
-		function event_would_modify_chord(e, value, wanted_chord) {
+		function event_would_modify_single_chord(e, value, wanted_chord) {
 			var map = get_keystrs_map(e, value)
 
 			for (var key in map) {
 				if (wanted_chord !== undefined && !keystr_in_trigger(key, wanted_chord))
 					continue;
 
-				if (key_would_modify_chord(key, map[key]))
+				if (key_would_modify_single_chord(key, map[key]))
 					return true;
 			}
 
 			return false;
 		}
 
-		function trigger_complete(wanted_chord) {
-			if (wanted_chord === undefined)
-				wanted_chord = settings.mouseover_trigger_key;
+		function event_would_modify_chord(e, value, wanted_chord) {
+			wanted_chord = normalize_keychord(wanted_chord);
 
+			for (var i = 0; i < wanted_chord.length; i++) {
+				if (event_would_modify_single_chord(e, value, wanted_chord[i]))
+					return true;
+			}
+
+			return false;
+		}
+
+		function trigger_complete_single(wanted_chord) {
 			for (var i = 0; i < wanted_chord.length; i++) {
 				var key = wanted_chord[i];
 
@@ -38673,14 +39357,39 @@ var $$IMU_EXPORT$$;
 			return true;
 		}
 
-		function trigger_partially_complete(e, wanted_chord) {
+		function trigger_complete(wanted_chord) {
 			if (wanted_chord === undefined)
 				wanted_chord = settings.mouseover_trigger_key;
 
+			wanted_chord = normalize_keychord(wanted_chord);
+
+			for (var i = 0; i < wanted_chord.length; i++) {
+				if (trigger_complete_single(wanted_chord[i]))
+					return true;
+			}
+
+			return false;
+		}
+
+		function trigger_partially_complete_single(e, wanted_chord) {
 			for (var i = 0; i < wanted_chord.length; i++) {
 				var key = wanted_chord[i];
 
 				if (current_chord.indexOf(key) >= 0)
+					return true;
+			}
+
+			return false;
+		}
+
+		function trigger_partially_complete(e, wanted_chord) {
+			if (wanted_chord === undefined)
+				wanted_chord = settings.mouseover_trigger_key;
+
+			wanted_chord = normalize_keychord(wanted_chord);
+
+			for (var i = 0; i < wanted_chord.length; i++) {
+				if (trigger_partially_complete_single(e, wanted_chord[i]))
 					return true;
 			}
 
@@ -38751,7 +39460,7 @@ var $$IMU_EXPORT$$;
 					}
 				}
 
-				var rect = el.getBoundingClientRect();
+				var rect = get_bounding_client_rect(el);
 				if (rect && rect.width > 0 && rect.height > 0 &&
 					rect.left <= xy[0] && rect.right >= xy[0] &&
 					rect.top <= xy[1] && rect.bottom >= xy[1] &&
@@ -38779,7 +39488,7 @@ var $$IMU_EXPORT$$;
 
 		function trigger_popup(is_contextmenu) {
 			if (_nir_debug_)
-				console_log("trigger_popup (is_contextmenu=" + is_contextmenu + ")");
+				console_log("trigger_popup (is_contextmenu=" + is_contextmenu + ")", current_frame_id);
 
 			controlPressed = true;
 			delay_handle_triggering = true;
@@ -38838,7 +39547,7 @@ var $$IMU_EXPORT$$;
 				if (popup_el.parentElement) // check if it's a fake element returned by a gallery helper
 					popup_orig_el = popup_el;
 
-				if (is_in_iframe && should_use_remote() && get_single_setting("mouseover_open_behavior") === "popup") {
+				if (is_in_iframe && can_iframe_popout() && get_single_setting("mouseover_open_behavior") === "popup") {
 					data.data.img = serialize_img(data.data.img);
 					remote_send_message("top", {
 						type: "make_popup",
@@ -38851,6 +39560,12 @@ var $$IMU_EXPORT$$;
 					});
 				} else {
 					makePopup(source_imu, source.src, processing, data);
+
+					if (is_in_iframe && can_use_remote() && get_single_setting("mouseover_open_behavior") === "popup") {
+						remote_send_message("top", {
+							type: "popup_open"
+						});
+					}
 				}
 			});
 		}
@@ -38951,7 +39666,7 @@ var $$IMU_EXPORT$$;
 							}
 						}
 
-						if (is_in_iframe && should_use_remote()) {
+						if (is_in_iframe && can_iframe_popout()) {
 							processing.incomplete_image = true;
 							processing.incomplete_video = true;
 						}
@@ -39089,7 +39804,7 @@ var $$IMU_EXPORT$$;
 			if (!firstel)
 				firstel = real_popup_el;
 
-			if (!firstel && popup_el_remote && should_use_remote() && !is_in_iframe) {
+			if (!firstel && popup_el_remote && can_iframe_popout() && !is_in_iframe) {
 				return remote_send_message(popup_el_remote, {
 					type: "count_gallery",
 					data: {
@@ -39148,7 +39863,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		function is_nextprev_valid(nextprev, cb) {
-			if (popup_el_remote && should_use_remote() && !is_in_iframe) {
+			if (popup_el_remote && can_iframe_popout() && !is_in_iframe) {
 				return remote_send_message(popup_el_remote, {
 					type: "is_nextprev_valid",
 					data: {
@@ -39169,7 +39884,7 @@ var $$IMU_EXPORT$$;
 				cb = nullfunc;
 			}
 
-			if (popup_el_remote && should_use_remote() && !is_in_iframe) {
+			if (popup_el_remote && can_iframe_popout() && !is_in_iframe) {
 				return remote_send_message(popup_el_remote, {
 					type: "trigger_gallery",
 					data: {
@@ -39668,7 +40383,7 @@ var $$IMU_EXPORT$$;
 
 		var check_highlightimgs_valid_image = function(el) {
 			var src = get_img_src(el);
-			if (!is_valid_src(src) || (el.tagName === "A" && !looks_like_valid_link(src)))
+			if (!is_valid_src(src, is_video_el(el)) || (el.tagName === "A" && !looks_like_valid_link(src)))
 				return false;
 			return true;
 		};
@@ -40027,6 +40742,10 @@ var $$IMU_EXPORT$$;
 		};
 
 		var do_download = function(imu, filename, cb) {
+			if (_nir_debug_) {
+				console_log("do_download", imu, filename, cb);
+			}
+
 			if (is_extension) {
 				extension_send_message({
 					type: "download",
@@ -40063,23 +40782,90 @@ var $$IMU_EXPORT$$;
 			do_download(popup_obj, popup_obj.filename);
 		};
 
-		var keyevent_remote = function(event) {
-			if (should_use_remote()) {
-				if (!("remote_info" in event)) {
-					event.remote_info = get_frame_info();
+		var popup_active = function() {
+			return popups.length > 0 && popup_el;
+		};
 
-					var recipient = "top";
-					if (!is_in_iframe) {
-						recipient = mouse_frame_id;
-						if (recipient === "top")
-							return;
+		var action_handler = function(action) {
+			if (action.needs_popup && !popup_active())
+				return;
+
+			switch (action.type) {
+				case "resetpopups":
+					resetpopups();
+					return true;
+				case "replace_images":
+					replace_images_full();
+					return true;
+				case "highlight_images":
+					highlight_images();
+					return true;
+				case "trigger_popup":
+					if (action.trigger === "keyboard") {
+						popup_trigger_reason = "keyboard";
 					}
 
-					remote_send_message(recipient, {
-						type: "keyevent",
-						data: event
-					});
+					trigger_popup();
+					return true;
+				case "gallery_prev":
+					trigger_gallery(-1);
+					return true;
+				case "gallery_next":
+					trigger_gallery(1);
+					return true;
+				case "download":
+					download_popup_image();
+					return true;
+				case "open_in_new_tab":
+					open_in_tab_imu(popup_obj, action.background_tab);
+					return true;
+				case "rotate_left":
+					rotate_gallery(-90);
+					return true;
+				case "rotate_right":
+					rotate_gallery(90);
+					return true;
+				case "flip_horizontal":
+					flip_gallery(false);
+					return true;
+				case "flip_vertical":
+					flip_gallery(true);
+					return true;
+			}
+
+			return false;
+		};
+
+		var action_remote = function(actions) {
+			// use can_use_remote instead of can_iframe_popout because this doesn't necessarily pop out of iframes
+			if (can_use_remote()) {
+				var recipient = "top";
+				var has_mouse = true;
+
+				if (!is_in_iframe) {
+					recipient = mouse_frame_id;
+					if (recipient === "top") {
+						has_mouse = false;
+
+						if (popup_el_remote) {
+							recipient = popup_el_remote;
+						} else {
+							return;
+						}
+					}
 				}
+
+				for (var i = 0; i < actions.length; i++) {
+					if (!has_mouse && actions[i].requires_mouse) {
+						actions.splice(i, 1);
+						i--;
+					}
+				}
+
+				remote_send_message(recipient, {
+					type: "action",
+					data: actions
+				});
 			}
 		};
 
@@ -40087,9 +40873,8 @@ var $$IMU_EXPORT$$;
 			if (!mouseover_enabled())
 				return;
 
-			keyevent_remote(event);
-
 			var ret = undefined;
+			var actions = [];
 
 			update_chord(event, true);
 
@@ -40098,8 +40883,12 @@ var $$IMU_EXPORT$$;
 					// clear timeout so that all/any close behavior works
 					current_chord_timeout = {};
 					if (!delay_handle) {
-						popup_trigger_reason = "keyboard";
-						trigger_popup();
+						actions.push({
+							requires_mouse: true,
+							type: "trigger_popup",
+							trigger: "keyboard"
+						});
+
 						ret = false;
 						release_ignore = settings.mouseover_trigger_key;
 					}
@@ -40116,71 +40905,91 @@ var $$IMU_EXPORT$$;
 				if (trigger_complete(settings.mouseover_hold_key)) {
 					popup_hold = !popup_hold;
 
-					if (!popup_hold && can_close_popup[1])
-						resetpopups();
+					if (!popup_hold && can_close_popup[1]) {
+						actions.push({type: "resetpopups"});
+					}
 				}
 			}
 
 
 			if (settings.replaceimgs_enable_keybinding && trigger_complete(settings.replaceimgs_keybinding)) {
-				replace_images_full();
+				actions.push({type: "replace_images"});
+
 				ret = false;
 				release_ignore = settings.replaceimgs_keybinding;
 			}
 
 			if (settings.highlightimgs_enable_keybinding && trigger_complete(settings.highlightimgs_keybinding)) {
-				highlight_images();
+				actions.push({type: "highlight_images"});
+
 				ret = false;
 				release_ignore = settings.highlightimgs_keybinding;
 			}
 
 
-			if (popups.length > 0 && popup_el) {
-				if (trigger_complete(settings.mouseover_gallery_prev_key)) {
-					trigger_gallery(-1);
-					ret = false;
-					release_ignore = settings.mouseover_gallery_prev_key;
-				} else if (trigger_complete(settings.mouseover_gallery_next_key)) {
-					trigger_gallery(1);
-					ret = false;
-					release_ignore = settings.mouseover_gallery_next_key;
-				} else if (trigger_complete(settings.mouseover_download_key)) {
-					ret = false;
-					release_ignore = settings.mouseover_download_key;
+			if (true) {
+				var is_popup_active = popup_el_remote || (popup_active());
 
-					// Clear the chord because keyup might not be called due to the save dialog popup
-					clear_chord();
+				var keybinds = [
+					{
+						key: settings.mouseover_gallery_prev_key,
+						action: {type: "gallery_prev"}
+					},
+					{
+						key: settings.mouseover_gallery_next_key,
+						action: {type: "gallery_next"}
+					},
+					{
+						key: settings.mouseover_download_key,
+						// Clear the chord because keyup might not be called due to the save dialog popup
+						clear: true,
+						action: {type: "download"}
+					},
+					{
+						key: settings.mouseover_open_new_tab_key,
+						// Clear the chord because opening in a new tab will not release the keys
+						clear: true,
+						action: {type: "open_in_new_tab"}
+					},
+					{
+						key: settings.mouseover_open_bg_tab_key,
+						action: {type: "open_in_new_tab", background_tab: true}
+					},
+					{
+						key: settings.mouseover_rotate_left_key,
+						action: {type: "rotate_left"}
+					},
+					{
+						key: settings.mouseover_rotate_right_key,
+						action: {type: "rotate_right"}
+					},
+					{
+						key: settings.mouseover_flip_horizontal_key,
+						action: {type: "flip_horizontal"}
+					},
+					{
+						key: settings.mouseover_flip_vertical_key,
+						action: {type: "flip_vertical"}
+					}
+				];
 
-					download_popup_image();
-				} else if (trigger_complete(settings.mouseover_open_new_tab_key)) {
-					ret = false;
-					release_ignore = settings.mouseover_open_new_tab_key;
+				for (var i = 0; i < keybinds.length; i++) {
+					if (trigger_complete(keybinds[i].key)) {
+						var action = keybinds[i].action;
+						action.needs_popup = true;
 
-					// Clear the chord because opening in a new tab will not release the keys
-					clear_chord();
+						actions.push(action);
 
-					open_in_tab_imu(popup_obj);
-				} else if (trigger_complete(settings.mouseover_open_bg_tab_key)) {
-					ret = false;
-					release_ignore = settings.mouseover_open_bg_tab_key;
+						if (keybinds[i].clear)
+							clear_chord();
 
-					open_in_tab_imu(popup_obj, true);
-				} else if (trigger_complete(settings.mouseover_rotate_left_key)) {
-					rotate_gallery(-90);
-					ret = false;
-					release_ignore = settings.mouseover_rotate_left_key;
-				} else if (trigger_complete(settings.mouseover_rotate_right_key)) {
-					rotate_gallery(90);
-					ret = false;
-					release_ignore = settings.mouseover_rotate_right_key;
-				} else if (trigger_complete(settings.mouseover_flip_horizontal_key)) {
-					flip_gallery(false);
-					ret = false;
-					release_ignore = settings.mouseover_flip_horizontal_key;
-				} else if (trigger_complete(settings.mouseover_flip_vertical_key)) {
-					flip_gallery(true);
-					ret = false;
-					release_ignore = settings.mouseover_flip_vertical_key;
+						if (is_popup_active) {
+							release_ignore = keybinds[i].key;
+							ret = false;
+						}
+
+						break;
+					}
 				}
 			}
 
@@ -40188,6 +40997,14 @@ var $$IMU_EXPORT$$;
 				release_ignore = [];
 			} else {
 				release_ignore = deepcopy(release_ignore);
+			}
+
+			if (actions) {
+				for (var i = 0; i < actions.length; i++) {
+					action_handler(actions[i]);
+				}
+
+				action_remote(actions);
 			}
 
 			if (ret === false) {
@@ -40208,8 +41025,6 @@ var $$IMU_EXPORT$$;
 		var keyup_cb = function(event) {
 			if (!mouseover_enabled())
 				return;
-
-			keyevent_remote(event);
 
 			var ret = undefined;
 
@@ -40426,18 +41241,49 @@ var $$IMU_EXPORT$$;
 					respond(triggered);
 				});
 			} else if (message.type === "resetpopups") {
-				resetpopups();
+				resetpopups(true);
 			} else if (message.type === "mousemove") {
 				// todo: offset iframe location
 				mousemove_cb(message.data);
-			} else if (message.type === "keyevent") {
-				if (message.data.type === "keydown") {
-					keydown_cb(message.data);
-				} else if (message.data.type === "keyup") {
-					keyup_cb(message.data);
+			} else if (message.type === "action") {
+				for (var i = 0; i < message.data.length; i++) {
+					action_handler(message.data[i]);
 				}
+			} else if (message.type === "popup_open") {
+				popup_el_remote = sender;
 			}
 		};
+
+		var handle_remote_event = function(message) {
+			if (message.type === "remote") {
+				var respond = function() {};
+				if (message.response_id) {
+					var response_id = message.response_id;
+
+					respond = function(data) {
+						remote_send_reply(message.from, response_id, data);
+					};
+				}
+
+				if (message.to && current_frame_id !== message.to) {
+					return true;
+				}
+
+				remote_handle_message(message.data, message.from, respond);
+				return true;
+			} else if (message.type === "remote_reply") {
+				if (message.response_id in remote_reply_ids) {
+					var response_id = message.response_id;
+					delete message.response_id;
+
+					remote_reply_ids[response_id](message.data);
+				}
+
+				return true;
+			}
+
+			return false;
+		}
 
 		if (is_extension) {
 			// TODO: move out of do_mouseover
@@ -40494,31 +41340,19 @@ var $$IMU_EXPORT$$;
 					if (response.final) {
 						delete extension_requests[response.id];
 					}
-				} else if (message.type === "remote") {
-					var respond = function() {};
-					if (message.response_id) {
-						var response_id = message.response_id;
-						delete message.response_id; // is this needed?
-
-						respond = function(data) {
-							remote_send_reply(response_id, data);
-						};
-					}
-
-					if (message.to && current_frame_id !== message.to) {
-						return;
-					}
-
-					remote_handle_message(message.data, message.from, respond);
-				} else if (message.type === "remote_reply") {
-					if (message.response_id in remote_reply_ids) {
-						var response_id = message.response_id;
-						delete message.response_id;
-
-						remote_reply_ids[response_id](message.data);
-					}
+				} else if (message.type === "remote" || message.type === "remote_reply") {
+					handle_remote_event(message);
 				}
 			});
+		} else {
+			window.addEventListener("message", function(event) {
+				if (!can_use_remote() || !event.data.imu)
+					return;
+
+				// TODO: update id_to_iframe with event.source (remember that event.source is a window object, not an iframe)
+
+				handle_remote_event(event.data);
+			}, false);
 		}
 
 		document.addEventListener('contextmenu', function(event) {
@@ -40528,71 +41362,6 @@ var $$IMU_EXPORT$$;
 			mouseAbsContextX = event.pageX;
 			mouseAbsContextY = event.pageY;
 		});
-
-		var id_to_iframe = {};
-
-		var get_frame_info = function() {
-			return {
-				id: current_frame_id,
-				//url: window.location.href, // doesn't get updated for the iframe src's attribute?
-				url: current_frame_url,
-				size: [
-					document.documentElement.scrollWidth,
-					document.documentElement.scrollHeight
-				]
-			};
-		};
-
-		var find_iframe_for_info = function(info) {
-			if (info.id in id_to_iframe)
-				return id_to_iframe[info.id];
-
-			var finish = function(iframe) {
-				if (!iframe)
-					return iframe;
-
-				id_to_iframe[info.id] = iframe;
-				return iframe;
-			}
-
-			var iframes = document.getElementsByTagName("iframe");
-			var newiframes = [];
-			for (var i = 0; i < iframes.length; i++) {
-				if (iframes[i].src !== info.url)
-					continue;
-
-				newiframes.push(iframes[i]);
-			}
-
-			if (newiframes.length <= 1)
-				return finish(newiframes[0]);
-
-			iframes = newiframes;
-			newiframes = [];
-			for (var i = 0; i < iframes.length; i++) {
-				if (iframes[i].scrollWidth !== info.size[0] ||
-					iframes[i].scrollHeight !== info.size[1]) {
-					continue;
-				}
-
-				newiframes.push(iframes[i]);
-			}
-
-			if (newiframes.length <= 1)
-				return finish(newiframes[0]);
-
-			// TODO: check cursor too
-			return null;
-		};
-
-		var iframe_to_id = function(iframe) {
-			for (var id in id_to_iframe) {
-				if (id_to_iframe[id] === iframe)
-					return id;
-			}
-
-			return null;
-		};
 
 		var last_remote_mousemove = 0;
 		var last_remote_mousemove_timer = null;
@@ -40613,7 +41382,7 @@ var $$IMU_EXPORT$$;
 				event.pageY = event.clientY + scrollTop();
 			}
 
-			if (should_use_remote()) {
+			if (can_use_remote()) {
 				if (!("remote_info" in event)) {
 					event.remote_info = get_frame_info();
 				}
@@ -40625,8 +41394,9 @@ var $$IMU_EXPORT$$;
 					}
 
 					//console_log(iframe);
-					var bb = iframe.getBoundingClientRect();
+					var bb = get_bounding_client_rect(iframe);
 
+					// fixme: should this be done?
 					event.clientX += bb.left;
 					event.clientY += bb.top;
 
@@ -40636,8 +41406,13 @@ var $$IMU_EXPORT$$;
 					// todo: add timeouts to avoid too much cpu usage
 					last_remote_mousemove_event = event;
 
+					var mindelta = 16;
+					if (!settings.mouseover_use_remote) {
+						mindelta = 300; // we don't need precise movements, all we need is to inform the top frame that the mouse is here
+					}
+
 					var current_time = Date.now();
-					var timeout = 16 - (current_time - last_remote_mousemove);
+					var timeout = mindelta - (current_time - last_remote_mousemove);
 					if (timeout < 1)
 						timeout = 1;
 
@@ -40647,7 +41422,7 @@ var $$IMU_EXPORT$$;
 							last_remote_mousemove = Date.now();
 							remote_send_message("top", {
 								type: "mousemove",
-								data: last_remote_mousemove_event
+								data: serialize_event(last_remote_mousemove_event)
 							});
 						}, timeout);
 					}
@@ -40676,7 +41451,7 @@ var $$IMU_EXPORT$$;
 				popup_trigger_reason === "keyboard") {
 				var img = popups[0].getElementsByTagName("img")[0];
 				if (img) {
-					var rect = popups[0].getBoundingClientRect();
+					var rect = get_bounding_client_rect(popups[0]);
 
 					var our_jitter = jitter_base;
 
@@ -40770,7 +41545,7 @@ var $$IMU_EXPORT$$;
 						var popup_el_hidden = false;
 
 						if (close_on_leave_el) {
-							var popup_el_rect = popup_el.getBoundingClientRect();
+							var popup_el_rect = get_bounding_client_rect(popup_el);
 							if (popup_el_rect && popup_el_rect.width > 0 && popup_el_rect.height > 0) {
 								var our_in_img_jitter = in_img_jitter;
 								if (close_el_policy === "thumbnail")
@@ -40810,7 +41585,7 @@ var $$IMU_EXPORT$$;
 						}
 					} else if (delay_handle_triggering) {
 						if (next_popup_el && settings.mouseover_cancel_popup_when_elout) {
-							var popup_el_rect = next_popup_el.getBoundingClientRect();
+							var popup_el_rect = get_bounding_client_rect(next_popup_el);
 							if (!in_clientrect(mouseX, mouseY, popup_el_rect)) {
 								resetpopups();
 							}
@@ -40836,7 +41611,7 @@ var $$IMU_EXPORT$$;
 					//mouse_in_image_yet = false;
 
 					if (last_popup_el) {
-						var popup_el_rect = last_popup_el.getBoundingClientRect();
+						var popup_el_rect = get_bounding_client_rect(last_popup_el);
 						if (!in_clientrect(mouseX, mouseY, popup_el_rect)) {
 							last_popup_el = null;
 						}
