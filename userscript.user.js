@@ -825,22 +825,24 @@ var $$IMU_EXPORT$$;
 			} else {
 				return x;
 			}
-		} else if (x instanceof Array) {
-			result = [];
-			for (var i = 0; i < x.length; i++) {
-				var item = x[i];
-				result.push(deepcopy(item, options));
-			}
-			return result;
 		} else if (typeof x === "object") {
-			result = {};
-			for (var key in x) {
-				try {
-					result[key] = deepcopy(x[key], options);
-				} catch (e) {
-					result[key] = x[key];
+			if (x instanceof Array) {
+				result = [];
+				for (var i = 0; i < x.length; i++) {
+					var item = x[i];
+					result.push(deepcopy(item, options));
+				}
+			} else {
+				result = {};
+				for (var key in x) {
+					try {
+						result[key] = deepcopy(x[key], options);
+					} catch (e) {
+						result[key] = x[key];
+					}
 				}
 			}
+
 			return result;
 		} else {
 			return x;
