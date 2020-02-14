@@ -54848,7 +54848,15 @@ var $$IMU_EXPORT$$;
 				name_td.classList.add("name_td");
 
 				var check_value_orig_different = function(value) {
-					var value_orig_different = normalize_value(value) !== normalize_value(orig_value);
+					var value_norm = normalize_value(value);
+					var orig_norm = normalize_value(orig_value);
+
+					if (meta.type === "keysequence") {
+						value_norm = JSON_stringify(normalize_keychord(value));
+						orig_norm = JSON_stringify(normalize_keychord(orig_value));
+					}
+
+					var value_orig_different = value_norm !== orig_norm;
 					if (value_orig_different) {
 						name_td.classList.add("value_modified");
 					} else {
@@ -56338,6 +56346,16 @@ var $$IMU_EXPORT$$;
 			return str_to_keycode_table[x];
 		}
 		return x.toUpperCase().charCodeAt(0);
+	}
+
+	function normalize_keychord(keychord) {
+		if (keychord.length === 0)
+			return [[]];
+
+		if (!(keychord[0] instanceof Array))
+			return [keychord];
+
+		return keychord;
 	}
 
 	function do_mouseover() {
@@ -58933,16 +58951,6 @@ var $$IMU_EXPORT$$;
 
 		settings_meta.mouseover_trigger_delay.onupdate = update_mouseover_trigger_delay;
 		settings_meta.mouseover_trigger_behavior.onupdate = update_mouseover_trigger_delay;
-
-		function normalize_keychord(keychord) {
-			if (keychord.length === 0)
-				return [[]];
-
-			if (!(keychord[0] instanceof Array))
-				return [keychord];
-
-			return keychord;
-		}
 
 		function keystr_in_trigger(str, wanted_chord) {
 			if (wanted_chord === undefined)
