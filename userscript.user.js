@@ -1430,6 +1430,7 @@ var $$IMU_EXPORT$$;
 		mouseover_flip_horizontal_key: ["h"],
 		mouseover_flip_vertical_key: ["v"],
 		mouseover_apply_blacklist: false,
+		mouseover_support_pointerevents_none: true,
 		website_inject_imu: true,
 		website_image: true,
 		extension_contextmenu: true,
@@ -2567,6 +2568,16 @@ var $$IMU_EXPORT$$;
 			requires: {
 				mouseover: true
 			},
+			category: "popup",
+			subcategory: "open_behavior"
+		},
+		mouseover_support_pointerevents_none: {
+			name: "Support `pointer-events:none`",
+			description: "Manually looks through every element on the page to see if the cursor is beneath them. Supports more images, but also results in a higher CPU load for websites such as Facebook.",
+			requires: {
+				mouseover: true
+			},
+			//is_advanced: true, // Commenting this out because the option is important
 			category: "popup",
 			subcategory: "open_behavior"
 		},
@@ -59250,6 +59261,9 @@ var $$IMU_EXPORT$$;
 			if (!els) {
 				els = document.elementsFromPoint(xy[0], xy[1]);
 				afterret = els;
+
+				if (!settings.mouseover_support_pointerevents_none)
+					return els;
 			}
 
 			for (var i = 0; i < els.length; i++) {
