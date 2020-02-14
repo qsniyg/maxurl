@@ -4,7 +4,7 @@
 // ==UserScript==
 // @name              Image Max URL
 // @namespace         http://tampermonkey.net/
-// @version           0.12.11
+// @version           0.12.12
 // @description       Finds larger or original versions of images for 6200+ websites, including a powerful image popup feature
 // @description:ko    6200개 이상의 사이트에 대해 더 크거나 원본 이미지를 찾아드립니다
 // @description:fr    Trouve des images plus grandes ou originales pour plus de 6200 sites
@@ -373,7 +373,6 @@ var $$IMU_EXPORT$$;
 		return is_remote_possible && settings.allow_remote;
 	};
 
-	// todo: rename to something better, like should_popout_of_iframes
 	var can_iframe_popout = function() {
 		return can_use_remote() && settings.mouseover_use_remote;
 	};
@@ -753,19 +752,56 @@ var $$IMU_EXPORT$$;
 	var JSON_stringify = JSON.stringify;
 	var JSON_parse = JSON.parse;
 
+	var is_array = function(x) {
+		return x instanceof Array;
+	};
+
+	if ("isArray" in Array) {
+		is_array = Array.isArray;
+	}
+
 	function is_element(x) {
-		if ((typeof Element !== "undefined" && x instanceof Element) ||
-			(x && typeof x === "object" && (("namespaceURI" in x) && ("ariaSort" in x))) ||
-			(typeof HTMLDocument !== "undefined" && x instanceof HTMLDocument) ||
-			(typeof Window !== "undefined" && x instanceof Window)) {
-			return true;
-		} else {
+		if (!x || typeof x !== "object")
 			return false;
+
+		if (("namespaceURI" in x) && ("ariaSort" in x) && ("nodeType" in x)) {
+			return true;
 		}
+
+		// window
+		if (typeof x.HTMLElement === "function" && typeof x.navigator === "object") {
+			return true;
+		}
+
+		// very slow
+		if (is_interactive) {
+			if ((x instanceof Element) ||
+				(x instanceof HTMLDocument) ||
+				(x instanceof Window)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	function is_iterable_object(x) {
-		return typeof x === "object" && x !== null && !(x instanceof Array) && !is_element(x);
+		return typeof x === "object" && x !== null && !is_array(x) && !is_element(x);
+	}
+
+	var shallowcopy_obj = function(x) {
+		result = {};
+
+		for (var key in x) {
+			result[key] = x[key];
+		}
+		return result;
+	};
+
+	if ("assign" in Object) {
+		shallowcopy_obj = function(x) {
+			return Object.assign({}, x);
+		};
 	}
 
 	function shallowcopy(x) {
@@ -773,7 +809,7 @@ var $$IMU_EXPORT$$;
 
 		if (!is_iterable_object(x)) {
 			return result;
-		} else if (x instanceof Array) {
+		} else if (is_array(x)) {
 			result = [];
 			for (var i = 0; i < x.length; i++) {
 				var item = x[i];
@@ -781,12 +817,7 @@ var $$IMU_EXPORT$$;
 			}
 			return result;
 		} else if (typeof x === "object") {
-			result = {};
-
-			for (var key in x) {
-				result[key] = x[key];
-			}
-			return result;
+			return shallowcopy_obj(x);
 		}
 
 		return result;
@@ -821,22 +852,24 @@ var $$IMU_EXPORT$$;
 			} else {
 				return x;
 			}
-		} else if (x instanceof Array) {
-			result = [];
-			for (var i = 0; i < x.length; i++) {
-				var item = x[i];
-				result.push(deepcopy(item, options));
-			}
-			return result;
 		} else if (typeof x === "object") {
-			result = {};
-			for (var key in x) {
-				try {
-					result[key] = deepcopy(x[key], options);
-				} catch (e) {
-					result[key] = x[key];
+			if (is_array(x)) {
+				result = [];
+				for (var i = 0; i < x.length; i++) {
+					var item = x[i];
+					result.push(deepcopy(item, options));
+				}
+			} else {
+				result = {};
+				for (var key in x) {
+					try {
+						result[key] = deepcopy(x[key], options);
+					} catch (e) {
+						result[key] = x[key];
+					}
 				}
 			}
+
 			return result;
 		} else {
 			return x;
@@ -848,7 +881,7 @@ var $$IMU_EXPORT$$;
 	};
 
 	function overlay_object(base, obj) {
-		if (typeof base === "function" || base instanceof Array)
+		if (typeof base === "function" || is_array(base))
 			return obj; // FIXME?
 
 		if (typeof base === "object") {
@@ -1400,6 +1433,7 @@ var $$IMU_EXPORT$$;
 		mouseover_flip_horizontal_key: ["h"],
 		mouseover_flip_vertical_key: ["v"],
 		mouseover_apply_blacklist: false,
+		mouseover_support_pointerevents_none: true,
 		website_inject_imu: true,
 		website_image: true,
 		extension_contextmenu: true,
@@ -2540,6 +2574,16 @@ var $$IMU_EXPORT$$;
 			category: "popup",
 			subcategory: "open_behavior"
 		},
+		mouseover_support_pointerevents_none: {
+			name: "Support `pointer-events:none`",
+			description: "Manually looks through every element on the page to see if the cursor is beneath them. Supports more images, but also results in a higher CPU load for websites such as Facebook.",
+			requires: {
+				mouseover: true
+			},
+			//is_advanced: true, // Commenting this out because the option is important
+			category: "popup",
+			subcategory: "open_behavior"
+		},
 		website_inject_imu: {
 			name: "Use userscript",
 			description: "Replaces the website's IMU instance with the userscript",
@@ -3173,7 +3217,7 @@ var $$IMU_EXPORT$$;
 				"JPG", "JPEG", "PNG", "GIF"
 			];
 
-		if (!(obj instanceof Array)) {
+		if (!is_array(obj)) {
 			obj = [obj];
 		}
 
@@ -3308,7 +3352,7 @@ var $$IMU_EXPORT$$;
 	}
 
 	function remove_queries(url, queries) {
-		if (!(queries instanceof Array)) {
+		if (!is_array(queries)) {
 			queries = [queries];
 		}
 
@@ -4143,14 +4187,14 @@ var $$IMU_EXPORT$$;
 
 					var files = deviation.files;
 
-					if (files instanceof Array) {
+					if (is_array(files)) {
 						for (var i = files.length - 1; i >= 0; i--) {
 							var current = files[i];
 							var newurl = common_functions.wix_compare(current.src, maxurl, options.rule_specific.deviantart_prefer_size);
 							if (newurl === current.src)
 								maxurl = newurl;
 						}
-					} else if ("media" in deviation && deviation.media.types instanceof Array) {
+					} else if ("media" in deviation && is_array(deviation.media.types)) {
 						var types = deviation.media.types;
 
 						for (var i = types.length - 1; i >= 0; i--) {
@@ -4403,7 +4447,7 @@ var $$IMU_EXPORT$$;
 							if (match) {
 								var parsed1 = JSON_parse(match[1]);
 								for (var key in parsed.entry_data) {
-									if (parsed.entry_data[key] instanceof Array) {
+									if (is_array(parsed.entry_data[key])) {
 										parsed.entry_data[key][0] = overlay_object(parsed.entry_data[key][0], parsed1);
 									}
 								}
@@ -4922,7 +4966,7 @@ var $$IMU_EXPORT$$;
 					}
 
 					var images = result;
-					if (!(images instanceof Array))
+					if (!is_array(images))
 						images = [images];
 
 					if (image_id) {
@@ -5225,7 +5269,7 @@ var $$IMU_EXPORT$$;
 			if (typeof options.exclude_problems === "string" && options.exclude_problems === problem)
 				return true;
 
-			if (!(options.exclude_problems instanceof Array))
+			if (!is_array(options.exclude_problems))
 				return false;
 
 			return options.exclude_problems.indexOf(problem) >= 0;
@@ -13352,7 +13396,7 @@ var $$IMU_EXPORT$$;
 
 			regex = /\/(?:(?:(?:mini?|large)|pic\/+[0-9]+x[0-9]+)\/+([0-9]+)|pic\/+([0-9]{6})\/+[0-9]+x[0-9]+)\/+(?:[^/]*?\.[a-z]+[-_])?((?:[0-9a-f]+|[0-9]+)\.[^/.]*)(?:[?#].*)?$/;
 
-			if (prefix instanceof Array) {
+			if (is_array(prefix)) {
 				var urls = [];
 				for (i = 0; i < prefix.length; i++) {
 					urls.push(src.replace(regex, "/images/$1$2/" + prefix[i] + "_$3"));
@@ -28063,7 +28107,7 @@ var $$IMU_EXPORT$$;
 					var maxurl = null;
 					for (var key in jsonobj) {
 						if (/^[a-z]_$/.test(key) && (key + "src") in jsonobj &&
-							jsonobj[key] instanceof Array && jsonobj[key].length === 3) {
+							is_array(jsonobj[key]) && jsonobj[key].length === 3) {
 							var size = jsonobj[key][1] * jsonobj[key][2];
 							if (size > maxsize) {
 								maxsize = size;
@@ -33181,7 +33225,7 @@ var $$IMU_EXPORT$$;
 		if (!obj)
 			return obj;
 
-		if (!(obj instanceof Array)) {
+		if (!is_array(obj)) {
 			obj = [obj];
 		}
 
@@ -33191,7 +33235,7 @@ var $$IMU_EXPORT$$;
 				newobj.push(fullurl(currenturl, url));
 			} else {
 				if (url.url) {
-					if (url.url instanceof Array) {
+					if (is_array(url.url)) {
 						for (var i = 0; i < url.url.length; i++) {
 							url.url[i] = fullurl(currenturl, url.url[i]);
 						}
@@ -33213,14 +33257,14 @@ var $$IMU_EXPORT$$;
 			obj = {};
 		}
 
-		if (!(obj instanceof Array)) {
+		if (!is_array(obj)) {
 			obj = [obj];
 		}
 
 		if (!baseobj)
 			baseobj = {};
 
-		if (baseobj instanceof Array)
+		if (is_array(baseobj))
 			baseobj = baseobj[0];
 
 		for (var i = 0; i < obj.length; i++) {
@@ -33394,7 +33438,7 @@ var $$IMU_EXPORT$$;
 				return objified;
 			}
 
-			if (objified instanceof Array) {
+			if (is_array(objified)) {
 				objified = objified[0];
 			}
 
@@ -33402,7 +33446,7 @@ var $$IMU_EXPORT$$;
 				return objified;
 			}
 
-			if (objified.url instanceof Array)
+			if (is_array(objified.url))
 				currenthref = objified.url[0];
 			else
 				currenthref = objified.url;
@@ -33448,7 +33492,7 @@ var $$IMU_EXPORT$$;
 
 				var remove_obj = function() {
 					objified.splice(i, 1);
-					if (newhref1 instanceof Array) {
+					if (is_array(newhref1)) {
 						newhref1.splice(i, 1);
 					}
 
@@ -33493,7 +33537,7 @@ var $$IMU_EXPORT$$;
 			waiting = false;
 			forcerecurse = false;
 			var temp_newhref1 = newhref1;
-			if (newhref1 instanceof Array)
+			if (is_array(newhref1))
 				temp_newhref1 = newhref1[0];
 			if (typeof(temp_newhref1) === "object") {
 				currentobj = newhref1;
@@ -33662,13 +33706,13 @@ var $$IMU_EXPORT$$;
 					if (!options.null_if_no_change)
 						blankurl = pasthrefs[pasthrefs.length - 1];
 
-					if (!endhref || (endhref instanceof Array && !endhref[0])) {
+					if (!endhref || (is_array(endhref) && !endhref[0])) {
 						endhref = blankurl;
 					} else if (typeof endhref === "string") {
 						endhref = blankurl;
-					} else if (endhref instanceof Array && typeof endhref[0] === "string") {
+					} else if (is_array(endhref) && typeof endhref[0] === "string") {
 						endhref[0] = blankurl;
-					} else if (endhref instanceof Array && endhref[0] && !endhref[0].url) {
+					} else if (is_array(endhref) && endhref[0] && !endhref[0].url) {
 						endhref[0].url = blankurl;
 					}
 
@@ -33981,7 +34025,7 @@ var $$IMU_EXPORT$$;
 	};
 
 	var check_ok_error = function(ok_errors, error) {
-		if (ok_errors && ok_errors instanceof Array) {
+		if (ok_errors && is_array(ok_errors)) {
 			for (var i = 0; i < ok_errors.length; i++) {
 				if (error.toString() === ok_errors[i].toString()) {
 					return true;
@@ -34035,7 +34079,7 @@ var $$IMU_EXPORT$$;
 	};
 
 	var get_trigger_key_texts = function(list) {
-		if (!(list[0] instanceof Array)) {
+		if (!is_array(list[0])) {
 			list = [list];
 		}
 
@@ -34056,7 +34100,7 @@ var $$IMU_EXPORT$$;
 		if (_nir_debug_)
 			console_log("check_image", deepcopy(obj));
 
-		if (obj instanceof Array) {
+		if (is_array(obj)) {
 			obj = obj[0];
 		}
 
@@ -34835,7 +34879,7 @@ var $$IMU_EXPORT$$;
 						return null;
 					}
 
-					if (!(result instanceof Array)) {
+					if (!is_array(result)) {
 						result = [result];
 					}
 
@@ -34863,7 +34907,7 @@ var $$IMU_EXPORT$$;
 							var required_value = current[required_setting];
 
 							var value = settings[required_setting];
-							if (value instanceof Array && !(required_value instanceof Array))
+							if (is_array(value) && !is_array(required_value))
 								value = value[0];
 
 							if (!(required_setting in enabled_map)) {
@@ -35061,7 +35105,7 @@ var $$IMU_EXPORT$$;
 		var show_advanced = settings.advanced_options;
 
 		var normalize_value = function(value) {
-			if (value instanceof Array && value.length === 1) {
+			if (is_array(value) && value.length === 1) {
 				return JSON.stringify(value[0]);
 			}
 
@@ -35177,7 +35221,7 @@ var $$IMU_EXPORT$$;
 							}
 						};
 
-						if (value instanceof Array) {
+						if (is_array(value)) {
 							value.forEach(function (val) {
 								check_optionlist(val, option_list);
 							});
@@ -35436,7 +35480,7 @@ var $$IMU_EXPORT$$;
 
 					var values = deepcopy(value);
 
-					if (values.length > 0 && !(values[0] instanceof Array))
+					if (values.length > 0 && !is_array(values[0]))
 						values = [values];
 
 					var indices = [];
@@ -35741,7 +35785,7 @@ var $$IMU_EXPORT$$;
 	}
 
 	function get_single_setting_raw(value) {
-		if (value instanceof Array)
+		if (is_array(value))
 			return value[0];
 		return value;
 	}
@@ -36084,7 +36128,7 @@ var $$IMU_EXPORT$$;
 		if (_nir_debug_)
 			console_log("check_bad_if", badif, resp);
 
-		if (!badif || !(badif instanceof Array) || badif.length === 0) {
+		if (!badif || !is_array(badif) || badif.length === 0) {
 			if (_nir_debug_)
 				console_log("check_bad_if (!badif)");
 			return false;
@@ -36618,7 +36662,7 @@ var $$IMU_EXPORT$$;
 		if (keychord.length === 0)
 			return [[]];
 
-		if (!(keychord[0] instanceof Array))
+		if (!is_array(keychord[0]))
 			return [keychord];
 
 		return keychord;
@@ -38394,7 +38438,7 @@ var $$IMU_EXPORT$$;
 			rect.left = rect.x;
 			rect.top = rect.y;
 			rect.right = rect.left + rect.width;
-			rect.bottom = rect.right + rect.height;
+			rect.bottom = rect.top + rect.height;
 
 			return rect;
 		};
@@ -38415,32 +38459,78 @@ var $$IMU_EXPORT$$;
 			return null;
 		};
 
-		function get_bounding_client_rect(el) {
-			var current = el;
-			var rect = el.getBoundingClientRect();
-
+		function get_bounding_client_rect_inner(el, mapcache) {
 			// test: https://4seasonstaeyeon.tumblr.com/post/190710743124 (bottom images)
-			while (current) {
-				var computed_style = get_computed_style(current);
-				if (computed_style.zoom) {
-					var zoom = parse_zoom(computed_style.zoom);
-					if (zoom) {
-						rect.width *= zoom;
-						rect.height *= zoom;
+			if (!el)
+				return null;
 
-						if (current !== el) {
-							rect.x *= zoom;
-							rect.y *= zoom;
-						}
+			if (mapcache && mapcache.has(el))
+				return mapcache.get(el);
 
-						recalculate_rect(rect);
-					}
-				}
-
-				current = current.parentElement;
+			var parent = {};
+			var parentel = el.parentElement;
+			if (parentel) {
+				parent = get_bounding_client_rect_inner(parentel, mapcache);
 			}
 
-			return rect;
+			var current = el;
+			var orig_rect = el.getBoundingClientRect();
+			var rect = null;
+			var zoom = 1;
+
+			//var computed_style = get_computed_style(current);
+			// computed_style is slow, and also might not be what we're looking for, as it might contain the parent's zoom
+			// this is still very slow though (50ms on facebook)
+			if (current.style.zoom) {
+				zoom = parse_zoom(current.style.zoom);
+				if (zoom && zoom !== 1) {
+					rect = shallowcopy(orig_rect);
+
+					rect.width *= zoom;
+					rect.height *= zoom;
+				}
+			}
+
+			if (parent.zoom && parent.zoom !== 1) {
+				if (!rect)
+					rect = shallowcopy(orig_rect);
+
+				rect.x *= parent.zoom;
+				rect.y *= parent.zoom;
+				rect.width *= parent.zoom;
+				rect.height *= parent.zoom;
+			}
+
+			// this is surprisingly slow, so rect is optimized out if possible
+			if (parent.rect && parent.orig_rect) {
+				if (!rect)
+					rect = shallowcopy(orig_rect);
+
+				rect.x += parent.rect.x - parent.orig_rect.x;
+				rect.y += parent.rect.y - parent.orig_rect.y;
+			}
+
+			if (rect)
+				recalculate_rect(rect);
+
+			var result = {
+				zoom: zoom,
+				orig_rect: orig_rect
+			};
+
+			if (rect)
+				result.rect = rect;
+
+			if (mapcache) {
+				mapcache.set(el, result);
+			}
+
+			return result;
+		}
+
+		function get_bounding_client_rect(el, mapcache) {
+			var obj = get_bounding_client_rect_inner(el, mapcache);
+			return obj.rect || obj.orig_rect;
 		}
 
 		function is_popup_el(el) {
@@ -39186,7 +39276,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		/*function normalize_trigger() {
-			if (!(settings.mouseover_trigger instanceof Array)) {
+			if (!is_array(settings.mouseover_trigger)) {
 				settings.mouseover_trigger = [settings.mouseover_trigger];
 			}
 		}
@@ -39413,7 +39503,7 @@ var $$IMU_EXPORT$$;
 				   currenttab_is_image() && !imagetab_ok_override;
 		}
 
-		function find_els_at_point(xy, els, prev) {
+		function find_els_at_point(xy, els, prev, zoom_cache) {
 			// test for pointer-events: none: https://www.shacknews.com/article/114834/should-you-choose-vulkan-or-directx-12-in-red-dead-redemption-2
 
 			if (false && _nir_debug_)
@@ -39423,12 +39513,23 @@ var $$IMU_EXPORT$$;
 				prev = [];
 			}
 
+			if (zoom_cache === undefined) {
+				try {
+					zoom_cache = new Map();
+				} catch (e) {
+					zoom_cache = null;
+				}
+			}
+
 			var ret = [];
 			var afterret = [];
 
 			if (!els) {
 				els = document.elementsFromPoint(xy[0], xy[1]);
 				afterret = els;
+
+				if (!settings.mouseover_support_pointerevents_none)
+					return els;
 			}
 
 			for (var i = 0; i < els.length; i++) {
@@ -39460,7 +39561,7 @@ var $$IMU_EXPORT$$;
 					}
 				}
 
-				var rect = get_bounding_client_rect(el);
+				var rect = get_bounding_client_rect(el, zoom_cache);
 				if (rect && rect.width > 0 && rect.height > 0 &&
 					rect.left <= xy[0] && rect.right >= xy[0] &&
 					rect.top <= xy[1] && rect.bottom >= xy[1] &&
