@@ -58191,8 +58191,9 @@ var $$IMU_EXPORT$$;
 				return mapcache.get(el);
 
 			var parent = {};
-			if (el.parentElement) {
-				parent = get_bounding_client_rect_inner(el.parentElement, mapcache);
+			var parentel = el.parentElement;
+			if (parentel) {
+				parent = get_bounding_client_rect_inner(parentel, mapcache);
 			}
 
 			var current = el;
