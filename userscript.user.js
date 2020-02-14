@@ -60508,7 +60508,14 @@ var $$IMU_EXPORT$$;
 			do_download(popup_obj, popup_obj.filename);
 		};
 
+		var popup_active = function() {
+			return popups.length > 0 && popup_el;
+		};
+
 		var action_handler = function(action) {
+			if (action.needs_popup && !popup_active())
+				return;
+
 			switch (action.type) {
 				case "resetpopups":
 					resetpopups();
@@ -60647,8 +60654,7 @@ var $$IMU_EXPORT$$;
 
 
 			if (true) {
-				var is_local_popup = popups.length > 0 && popup_el;
-				var is_popup_active = popup_el_remote || (popups.length > 0 && popup_el);
+				var is_popup_active = popup_el_remote || (popup_active());
 
 				var keybinds = [
 					{
@@ -60696,10 +60702,7 @@ var $$IMU_EXPORT$$;
 				for (var i = 0; i < keybinds.length; i++) {
 					if (trigger_complete(keybinds[i].key)) {
 						var action = keybinds[i].action;
-
-						if (!is_local_popup) {
-							action.ignore_current = true;
-						}
+						action.needs_popup = true;
 
 						actions.push(action);
 
@@ -60724,11 +60727,6 @@ var $$IMU_EXPORT$$;
 
 			if (actions) {
 				for (var i = 0; i < actions.length; i++) {
-					if (actions[i].ignore_current) {
-						delete actions[i].ignore_current;
-						continue;
-					}
-
 					action_handler(actions[i]);
 				}
 
