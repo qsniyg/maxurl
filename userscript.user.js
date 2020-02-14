@@ -750,14 +750,22 @@ var $$IMU_EXPORT$$;
 	var JSON_parse = JSON.parse;
 
 	function is_element(x) {
-		if ((typeof Element !== "undefined" && x instanceof Element) ||
-			(x && typeof x === "object" && (("namespaceURI" in x) && ("ariaSort" in x))) ||
-			(typeof HTMLDocument !== "undefined" && x instanceof HTMLDocument) ||
-			(typeof Window !== "undefined" && x instanceof Window)) {
-			return true;
-		} else {
+		if (!x || typeof x !== "object")
 			return false;
+
+		if (is_interactive) {
+			if ((x instanceof Element) ||
+				(x instanceof HTMLDocument) ||
+				(x instanceof Window)) {
+				return true;
+			}
 		}
+
+		if (("namespaceURI" in x) && ("ariaSort" in x)) {
+			return true;
+		}
+
+		return false;
 	}
 
 	function is_iterable_object(x) {
