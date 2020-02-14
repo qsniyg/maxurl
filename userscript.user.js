@@ -761,16 +761,22 @@ var $$IMU_EXPORT$$;
 		if (!x || typeof x !== "object")
 			return false;
 
-		if (is_interactive) {
+		if (("namespaceURI" in x) && ("ariaSort" in x) && ("nodeType" in x)) {
+			return true;
+		}
+
+		// window
+		if (typeof x.HTMLElement === "function" && typeof x.navigator === "object") {
+			return true;
+		}
+
+		// very slow
+		if (false && is_interactive) {
 			if ((x instanceof Element) ||
 				(x instanceof HTMLDocument) ||
 				(x instanceof Window)) {
 				return true;
 			}
-		}
-
-		if (("namespaceURI" in x) && ("ariaSort" in x)) {
-			return true;
 		}
 
 		return false;
@@ -58181,7 +58187,7 @@ var $$IMU_EXPORT$$;
 
 			var current = el;
 			var orig_rect = el.getBoundingClientRect();
-			var rect = deepcopy(orig_rect);
+			var rect = shallowcopy(orig_rect);
 			var zoom = 1;
 
 			//var computed_style = get_computed_style(current);
