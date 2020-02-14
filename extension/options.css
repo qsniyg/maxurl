@@ -386,6 +386,16 @@ label, button, .button, select {
   user-select: none;
 }
 
+#options button.small {
+  margin: 2px 4px;
+  padding: 4px 8px;
+}
+
+#options button.removebtn {
+  background: #c00;
+  border-color: #c00;
+}
+
 button:active, .button:active {
   background: #08c;
   border-color: #08c;
@@ -405,7 +415,7 @@ input:checked + label, button, .button, .button:visited, .dark .button:visited {
   color: #fff;
 }
 
-.disabled input:checked + label, .disabled button, button.disabled, button.disabled:active, .disabled button:active, .button.disabled, .button.disabled:visited, .dark .button.disabled:visited {
+.disabled input:checked + label, .disabled button, button.disabled, button.disabled:active, .disabled button:active, #options .disabled button.removebtn, .button.disabled, .button.disabled:visited, .dark .button.disabled:visited {
   border-color: #aaa;
   background: #aaa;
   color: #fff;
@@ -600,6 +610,11 @@ input:checked + label, button, .button, .button:visited, .dark .button:visited {
 #importexport textarea {
   display: block;
   margin: 1em;
+}
+
+#options tr.keyseq {
+  padding-bottom: 4px;
+  display: block;
 }
 
 
