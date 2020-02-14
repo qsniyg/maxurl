@@ -749,6 +749,14 @@ var $$IMU_EXPORT$$;
 	var JSON_stringify = JSON.stringify;
 	var JSON_parse = JSON.parse;
 
+	var is_array = function(x) {
+		return x instanceof Array;
+	};
+
+	if ("isArray" in Array) {
+		is_array = Array.isArray;
+	}
+
 	function is_element(x) {
 		if (!x || typeof x !== "object")
 			return false;
@@ -769,7 +777,7 @@ var $$IMU_EXPORT$$;
 	}
 
 	function is_iterable_object(x) {
-		return typeof x === "object" && x !== null && !(x instanceof Array) && !is_element(x);
+		return typeof x === "object" && x !== null && !is_array(x) && !is_element(x);
 	}
 
 	function shallowcopy(x) {
@@ -777,7 +785,7 @@ var $$IMU_EXPORT$$;
 
 		if (!is_iterable_object(x)) {
 			return result;
-		} else if (x instanceof Array) {
+		} else if (is_array(x)) {
 			result = [];
 			for (var i = 0; i < x.length; i++) {
 				var item = x[i];
@@ -826,7 +834,7 @@ var $$IMU_EXPORT$$;
 				return x;
 			}
 		} else if (typeof x === "object") {
-			if (x instanceof Array) {
+			if (is_array(x)) {
 				result = [];
 				for (var i = 0; i < x.length; i++) {
 					var item = x[i];
@@ -854,7 +862,7 @@ var $$IMU_EXPORT$$;
 	};
 
 	function overlay_object(base, obj) {
-		if (typeof base === "function" || base instanceof Array)
+		if (typeof base === "function" || is_array(base))
 			return obj; // FIXME?
 
 		if (typeof base === "object") {
@@ -3179,7 +3187,7 @@ var $$IMU_EXPORT$$;
 				"JPG", "JPEG", "PNG", "GIF"
 			];
 
-		if (!(obj instanceof Array)) {
+		if (!is_array(obj)) {
 			obj = [obj];
 		}
 
@@ -3314,7 +3322,7 @@ var $$IMU_EXPORT$$;
 	}
 
 	function remove_queries(url, queries) {
-		if (!(queries instanceof Array)) {
+		if (!is_array(queries)) {
 			queries = [queries];
 		}
 
@@ -4149,14 +4157,14 @@ var $$IMU_EXPORT$$;
 
 					var files = deviation.files;
 
-					if (files instanceof Array) {
+					if (is_array(files)) {
 						for (var i = files.length - 1; i >= 0; i--) {
 							var current = files[i];
 							var newurl = common_functions.wix_compare(current.src, maxurl, options.rule_specific.deviantart_prefer_size);
 							if (newurl === current.src)
 								maxurl = newurl;
 						}
-					} else if ("media" in deviation && deviation.media.types instanceof Array) {
+					} else if ("media" in deviation && is_array(deviation.media.types)) {
 						var types = deviation.media.types;
 
 						for (var i = types.length - 1; i >= 0; i--) {
@@ -4409,7 +4417,7 @@ var $$IMU_EXPORT$$;
 							if (match) {
 								var parsed1 = JSON_parse(match[1]);
 								for (var key in parsed.entry_data) {
-									if (parsed.entry_data[key] instanceof Array) {
+									if (is_array(parsed.entry_data[key])) {
 										parsed.entry_data[key][0] = overlay_object(parsed.entry_data[key][0], parsed1);
 									}
 								}
@@ -4928,7 +4936,7 @@ var $$IMU_EXPORT$$;
 					}
 
 					var images = result;
-					if (!(images instanceof Array))
+					if (!is_array(images))
 						images = [images];
 
 					if (image_id) {
@@ -5231,7 +5239,7 @@ var $$IMU_EXPORT$$;
 			if (typeof options.exclude_problems === "string" && options.exclude_problems === problem)
 				return true;
 
-			if (!(options.exclude_problems instanceof Array))
+			if (!is_array(options.exclude_problems))
 				return false;
 
 			return options.exclude_problems.indexOf(problem) >= 0;
@@ -20765,7 +20773,7 @@ var $$IMU_EXPORT$$;
 
 			regex = /\/(?:(?:(?:mini?|large)|pic\/+[0-9]+x[0-9]+)\/+([0-9]+)|pic\/+([0-9]{6})\/+[0-9]+x[0-9]+)\/+(?:[^/]*?\.[a-z]+[-_])?((?:[0-9a-f]+|[0-9]+)\.[^/.]*)(?:[?#].*)?$/;
 
-			if (prefix instanceof Array) {
+			if (is_array(prefix)) {
 				var urls = [];
 				for (i = 0; i < prefix.length; i++) {
 					urls.push(src.replace(regex, "/images/$1$2/" + prefix[i] + "_$3"));
@@ -45558,7 +45566,7 @@ var $$IMU_EXPORT$$;
 					var maxurl = null;
 					for (var key in jsonobj) {
 						if (/^[a-z]_$/.test(key) && (key + "src") in jsonobj &&
-							jsonobj[key] instanceof Array && jsonobj[key].length === 3) {
+							is_array(jsonobj[key]) && jsonobj[key].length === 3) {
 							var size = jsonobj[key][1] * jsonobj[key][2];
 							if (size > maxsize) {
 								maxsize = size;
@@ -52924,7 +52932,7 @@ var $$IMU_EXPORT$$;
 		if (!obj)
 			return obj;
 
-		if (!(obj instanceof Array)) {
+		if (!is_array(obj)) {
 			obj = [obj];
 		}
 
@@ -52934,7 +52942,7 @@ var $$IMU_EXPORT$$;
 				newobj.push(fullurl(currenturl, url));
 			} else {
 				if (url.url) {
-					if (url.url instanceof Array) {
+					if (is_array(url.url)) {
 						for (var i = 0; i < url.url.length; i++) {
 							url.url[i] = fullurl(currenturl, url.url[i]);
 						}
@@ -52956,14 +52964,14 @@ var $$IMU_EXPORT$$;
 			obj = {};
 		}
 
-		if (!(obj instanceof Array)) {
+		if (!is_array(obj)) {
 			obj = [obj];
 		}
 
 		if (!baseobj)
 			baseobj = {};
 
-		if (baseobj instanceof Array)
+		if (is_array(baseobj))
 			baseobj = baseobj[0];
 
 		for (var i = 0; i < obj.length; i++) {
@@ -53137,7 +53145,7 @@ var $$IMU_EXPORT$$;
 				return objified;
 			}
 
-			if (objified instanceof Array) {
+			if (is_array(objified)) {
 				objified = objified[0];
 			}
 
@@ -53145,7 +53153,7 @@ var $$IMU_EXPORT$$;
 				return objified;
 			}
 
-			if (objified.url instanceof Array)
+			if (is_array(objified.url))
 				currenthref = objified.url[0];
 			else
 				currenthref = objified.url;
@@ -53191,7 +53199,7 @@ var $$IMU_EXPORT$$;
 
 				var remove_obj = function() {
 					objified.splice(i, 1);
-					if (newhref1 instanceof Array) {
+					if (is_array(newhref1)) {
 						newhref1.splice(i, 1);
 					}
 
@@ -53236,7 +53244,7 @@ var $$IMU_EXPORT$$;
 			waiting = false;
 			forcerecurse = false;
 			var temp_newhref1 = newhref1;
-			if (newhref1 instanceof Array)
+			if (is_array(newhref1))
 				temp_newhref1 = newhref1[0];
 			if (typeof(temp_newhref1) === "object") {
 				currentobj = newhref1;
@@ -53405,13 +53413,13 @@ var $$IMU_EXPORT$$;
 					if (!options.null_if_no_change)
 						blankurl = pasthrefs[pasthrefs.length - 1];
 
-					if (!endhref || (endhref instanceof Array && !endhref[0])) {
+					if (!endhref || (is_array(endhref) && !endhref[0])) {
 						endhref = blankurl;
 					} else if (typeof endhref === "string") {
 						endhref = blankurl;
-					} else if (endhref instanceof Array && typeof endhref[0] === "string") {
+					} else if (is_array(endhref) && typeof endhref[0] === "string") {
 						endhref[0] = blankurl;
-					} else if (endhref instanceof Array && endhref[0] && !endhref[0].url) {
+					} else if (is_array(endhref) && endhref[0] && !endhref[0].url) {
 						endhref[0].url = blankurl;
 					}
 
@@ -53724,7 +53732,7 @@ var $$IMU_EXPORT$$;
 	};
 
 	var check_ok_error = function(ok_errors, error) {
-		if (ok_errors && ok_errors instanceof Array) {
+		if (ok_errors && is_array(ok_errors)) {
 			for (var i = 0; i < ok_errors.length; i++) {
 				if (error.toString() === ok_errors[i].toString()) {
 					return true;
@@ -53778,7 +53786,7 @@ var $$IMU_EXPORT$$;
 	};
 
 	var get_trigger_key_texts = function(list) {
-		if (!(list[0] instanceof Array)) {
+		if (!is_array(list[0])) {
 			list = [list];
 		}
 
@@ -53799,7 +53807,7 @@ var $$IMU_EXPORT$$;
 		if (_nir_debug_)
 			console_log("check_image", deepcopy(obj));
 
-		if (obj instanceof Array) {
+		if (is_array(obj)) {
 			obj = obj[0];
 		}
 
@@ -54578,7 +54586,7 @@ var $$IMU_EXPORT$$;
 						return null;
 					}
 
-					if (!(result instanceof Array)) {
+					if (!is_array(result)) {
 						result = [result];
 					}
 
@@ -54606,7 +54614,7 @@ var $$IMU_EXPORT$$;
 							var required_value = current[required_setting];
 
 							var value = settings[required_setting];
-							if (value instanceof Array && !(required_value instanceof Array))
+							if (is_array(value) && !is_array(required_value))
 								value = value[0];
 
 							if (!(required_setting in enabled_map)) {
@@ -54804,7 +54812,7 @@ var $$IMU_EXPORT$$;
 		var show_advanced = settings.advanced_options;
 
 		var normalize_value = function(value) {
-			if (value instanceof Array && value.length === 1) {
+			if (is_array(value) && value.length === 1) {
 				return JSON.stringify(value[0]);
 			}
 
@@ -54920,7 +54928,7 @@ var $$IMU_EXPORT$$;
 							}
 						};
 
-						if (value instanceof Array) {
+						if (is_array(value)) {
 							value.forEach(function (val) {
 								check_optionlist(val, option_list);
 							});
@@ -55179,7 +55187,7 @@ var $$IMU_EXPORT$$;
 
 					var values = deepcopy(value);
 
-					if (values.length > 0 && !(values[0] instanceof Array))
+					if (values.length > 0 && !is_array(values[0]))
 						values = [values];
 
 					var indices = [];
@@ -55484,7 +55492,7 @@ var $$IMU_EXPORT$$;
 	}
 
 	function get_single_setting_raw(value) {
-		if (value instanceof Array)
+		if (is_array(value))
 			return value[0];
 		return value;
 	}
@@ -55827,7 +55835,7 @@ var $$IMU_EXPORT$$;
 		if (_nir_debug_)
 			console_log("check_bad_if", badif, resp);
 
-		if (!badif || !(badif instanceof Array) || badif.length === 0) {
+		if (!badif || !is_array(badif) || badif.length === 0) {
 			if (_nir_debug_)
 				console_log("check_bad_if (!badif)");
 			return false;
@@ -56361,7 +56369,7 @@ var $$IMU_EXPORT$$;
 		if (keychord.length === 0)
 			return [[]];
 
-		if (!(keychord[0] instanceof Array))
+		if (!is_array(keychord[0]))
 			return [keychord];
 
 		return keychord;
@@ -58176,7 +58184,9 @@ var $$IMU_EXPORT$$;
 			var rect = deepcopy(orig_rect);
 			var zoom = 1;
 
-			var computed_style = get_computed_style(current);
+			//var computed_style = get_computed_style(current);
+			// computed_style is slow, and also might not be what we're looking for, as it might contain the parent's zoom
+			var computed_style = current.style;
 			if (computed_style.zoom) {
 				zoom = parse_zoom(computed_style.zoom);
 				if (zoom && zoom !== 1) {
@@ -58959,7 +58969,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		/*function normalize_trigger() {
-			if (!(settings.mouseover_trigger instanceof Array)) {
+			if (!is_array(settings.mouseover_trigger)) {
 				settings.mouseover_trigger = [settings.mouseover_trigger];
 			}
 		}
