@@ -1389,7 +1389,7 @@ var $$IMU_EXPORT$$;
 		mouseover_ui_styles: "",
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-541065461
 		mouseover_wait_use_el: false,
-		mouseover_download_key: ["s"],
+		mouseover_download_key: [["s"], ["ctrl", "s"]],
 		mouseover_open_new_tab_key: ["o"],
 		mouseover_open_bg_tab_key: ["shift", "o"],
 		mouseover_rotate_left_key: ["e"],
