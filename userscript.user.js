@@ -60879,6 +60879,10 @@ var $$IMU_EXPORT$$;
 				if (!can_use_remote() || !event.data.imu)
 					return;
 
+				if (event.source && event.data.from) {
+					id_to_iframe[event.data.from] = event.source;
+				}
+
 				handle_remote_event(event.data);
 			}, false);
 		}
