@@ -51525,6 +51525,15 @@ var $$IMU_EXPORT$$;
 				return add_extensions_gif(newsrc);
 		}
 
+		if (domain === "static.gearslutz.com") {
+			// https://static.gearslutz.com/board/imgext.php?u=http%3A%2F%2Fdt7v1i9vyp3mf.cloudfront.net%2Fstyles%2Fnews_large%2Fs3%2Fimagelibrary%2FG%2FGainStaging-02.jpg%3F_eyvJd_9VLias8itikySOMcrnMIanelM%3D%26amp%3Bitok%3Dmlx6lSjQ&h=7b670fac2fd6de5327f8c2361c13ece3
+			//   http://dt7v1i9vyp3mf.cloudfront.net/styles/news_large/s3/imagelibrary/G/GainStaging-02.jpg?_eyvJd_9VLias8itikySOMcrnMIanelM=&amp;itok=mlx6lSjQ
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+board\/+imgext\.php\?(?:.*&)?u=([^&]*).*?$/, "$1");
+			if (newsrc !== src) {
+				return decodeuri_ifneeded(newsrc);
+			}
+		}
+
 
 
 
@@ -57681,9 +57690,13 @@ var $$IMU_EXPORT$$;
 						};
 
 						var name = leftright ? "Next" : "Previous";
+
 						// \u2192 = →
 						// \u2190 = ←
-						var icon = leftright ? "\u2192" : "\u2190";
+						// Using the following arrows as they're more consistent throughout fonts
+						// \ud83e\udc52 = 🡒
+						// \ud83e\udc50 = 🡐
+						var icon = leftright ? "\ud83e\udc52" : "\ud83e\udc50";
 
 						var keybinding = leftright ? settings.mouseover_gallery_next_key : settings.mouseover_gallery_prev_key;
 						var keybinding_text = get_trigger_key_text(keybinding);
