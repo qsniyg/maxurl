@@ -47791,6 +47791,8 @@ var $$IMU_EXPORT$$;
 		if (domain_nosub === "newtumbl.com") {
 			// https://dn0.newtumbl.com/img/81100/14861971/1/21809496/nT_sei0rd05cpjcffzfr0pqaee7_300.jpg
 			//   https://dn0.newtumbl.com/img/81100/14861971/1/21809496/nT_sei0rd05cpjcffzfr0pqaee7.jpg
+			// https://dn0.newtumbl.com/img/82808/13699929/1/20114140/nT_gikzbtguejyr0gabqkn82gea_600.jpg
+			//   https://dn0.newtumbl.com/img/82808/13699929/1/20114140/nT_gikzbtguejyr0gabqkn82gea.jpg
 			obj = {
 				url: src,
 				headers: {
@@ -47814,10 +47816,92 @@ var $$IMU_EXPORT$$;
 				return obj;
 			}
 
+			regex = /(\/img\/+[0-9]+\/+[0-9]+\/+[0-9]+\/+[0-9]+\/+nT_[0-9a-z]{10,})\.[^/.]+(?:[?#].*)?$/;
+
+			// https://github.com/qsniyg/maxurl/issues/220
+			if (regex.test(src) && options && options.do_request && options.cb) {
+				var cachelink = src.replace(regex, "$1");
+				api_cache.fetch("newtumbl:" + cachelink, function(url) {
+					if (url) {
+						obj.url = url;
+					}
+
+					options.cb(obj);
+				}, function(done) {
+					var req;
+
+					var do_test = function(ext) {
+						loaded = false;
+						loading_ext = ext;
+						var loadfunc = function(resp) {
+							onload(resp, ext);
+						};
+
+						req = options.do_request({
+							url: src.replace(regex, "$1." + ext),
+							method: "GET",
+							headers: {
+								Referer: ""
+							},
+							onprogress: loadfunc,
+							onload: loadfunc
+						});
+					};
+
+					var loaded = false;
+					var loading_ext;
+					var onload = function(resp, current_ext) {
+						if (loading_ext !== current_ext || loaded) {
+							req.abort();
+							return;
+						}
+
+						if (resp.readyState === 4 || resp.responseHeaders) {
+							loaded = true;
+							req.abort();
+						}
+
+						if (!loaded)
+							return;
+
+						if (resp.status !== 200) {
+							return done(null, false);
+						}
+
+						var headers_list = parse_headers(resp.responseHeaders);
+						var headers = headers_list_to_dict(headers_list);
+
+						// todo: improve?
+						var splitted = headers["content-type"].split("/");
+						var mediatype = splitted[0];
+						var ext = splitted[1];
+
+						var newsrc = src.replace(regex, "$1." + ext);
+
+						if (current_ext === "mp4") {
+							if (mediatype === "video") {
+								return done(newsrc, 24*60*60);
+							} else {
+								do_test("gif");
+							}
+						} else {
+							return done(newsrc, 24*60*60);
+						}
+					};
+
+					do_test("mp4");
+				});
+
+				return {
+					waiting: true
+				};
+			}
+
 			// https://dn2.newtumbl.com/img/520981/20720207/1/12312357/nT_nhur9hhheh63uqxj6ppjzst9_300.jpg
 			//   https://dn2.newtumbl.com/img/520981/20720207/1/12312357/nT_nhur9hhheh63uqxj6ppjzst9.mp4
 			// note that non-mp4's get turned into mp4's like this, but this isn't too bad because content-type isn't video/
-			newsrc = src.replace(/(\/img\/+[0-9]+\/+[0-9]+\/+[0-9]+\/+[0-9]+\/+nT_[0-9a-z]{10,})\.(?:jpg|JPG|jpeg|JPEG|png|PNG|webp|WEBP|gif|GIF)(?:[?#].*)?$/, "$1.mp4");
+			// gifs get broken though
+			newsrc = src.replace(/(\/img\/+[0-9]+\/+[0-9]+\/+[0-9]+\/+[0-9]+\/+nT_[0-9a-z]{10,})\.(?:jpg|JPG|jpeg|JPEG|png|PNG|webp|WEBP)(?:[?#].*)?$/, "$1.mp4");
 			if (newsrc !== src) {
 				obj.url = newsrc;
 				return obj;
