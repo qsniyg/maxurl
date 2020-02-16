@@ -5653,9 +5653,14 @@ var $$IMU_EXPORT$$;
 			// http://image.news1.kr/system/thumbnails/photos/2018/2/19/2973418/thumb_336x230.jpg
 			//   http://image.news1.kr/system/photos/2018/2/19/2973418/original.jpg
 			// http://image.news1.kr/system/photos/2014/8/22/985836/main_thumb.jpg
+			//   http://image.news1.kr/system/photos/2014/8/22/985836/original.jpg/dims/optimize
 			//   http://image.news1.kr/system/photos/2014/8/22/985836/original.jpg
 			// http://image.news1.kr/system/photos/2018/6/15/3162887/high.jpg -- 1400x1867
 			//   http://image.news1.kr/system/photos/2018/6/15/3162887/original.jpg -- 1500x2000
+			newsrc = src.replace(/\/+dims\/.*/, "");
+			if (newsrc !== src)
+				return newsrc;
+
 			newsrc = src
 				.replace(/\/thumbnails\/(.*)\/thumb_[0-9]+x(?:[0-9]+)?(\.[^/.]*)$/, "/$1/original$2")
 				.replace(/main_thumb\.jpg/, "original.jpg")
@@ -17603,7 +17608,17 @@ var $$IMU_EXPORT$$;
 			//   https://derpicdn.net/img/2018/2/24/1664344/full.png
 			// https://derpicdn.net/img/2016/10/9/1268708/large.png -- 1280x973
 			//   https://derpicdn.net/img/2016/10/9/1268708/full.png -- 4603x3500
-			return src.replace(/\/(?:thumb|large)(\.[^/.]*)$/, "/full$1");
+			//   https://derpicdn.net/img/view/2016/10/9/1268708.png -- 4603x3500
+			newsrc = src.replace(/\/(?:thumb|large)(\.[^/.]*)$/, "/full$1");
+			if (newsrc !== src)
+				return newsrc;
+
+			// thanks to /u/evan555alpha: https://www.reddit.com/r/mylittlepony/comments/f4nxru/sparkle_family_artistangusdra/fhsdtzv/
+			// https://derpicdn.net/img/2019/5/4/2030328/full.jpeg
+			//   https://derpicdn.net/img/view/2019/5/4/2030328.jpeg
+			newsrc = src.replace(/(\/img\/+)([0-9]{4}\/+[0-9]{1,2}\/+[0-9]{1,2}\/+[0-9]+)\/+[^/.]+(\.[^/.]+)(?:[?#].*)?$/, "$1view/$2$3");
+			if (newsrc !== src)
+				return newsrc;
 		}
 
 		if (domain_nosub === "iimg.me") {
