@@ -36474,6 +36474,15 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/photo\/+[a-z]+\//, "/photo/full/");
 		}
 
+		if (host_domain_nosub === "500px.com" && options && options.element) {
+			if (src.indexOf("://drscdn.500px.org/") < 0) {
+				if (options.element.tagName === "A" && options.element.parentElement && options.element.parentElement.classList.contains("nsfw_placeholder")) {
+					var img = options.element.querySelector("img");
+					return img.src;
+				}
+			}
+		}
+
 		if (domain === "drscdn.500px.org" &&
 			options && options.cb && options.do_request) {
 			// https://drscdn.500px.org/photo/110928613/w%3D70_h%3D70/v2?webp=true&v=5&sig=44ba66ac19d9f5852e30c17e59f45a48c3fd8a00661cc83486506469823d81ad
