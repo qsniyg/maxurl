@@ -17616,9 +17616,18 @@ var $$IMU_EXPORT$$;
 			// thanks to /u/evan555alpha: https://www.reddit.com/r/mylittlepony/comments/f4nxru/sparkle_family_artistangusdra/fhsdtzv/
 			// https://derpicdn.net/img/2019/5/4/2030328/full.jpeg
 			//   https://derpicdn.net/img/view/2019/5/4/2030328.jpeg
+			// https://derpibooru.org/2030328
 			newsrc = src.replace(/(\/img\/+)([0-9]{4}\/+[0-9]{1,2}\/+[0-9]{1,2}\/+[0-9]+)\/+[^/.]+(\.[^/.]+)(?:[?#].*)?$/, "$1view/$2$3");
 			if (newsrc !== src)
 				return newsrc;
+
+			match = src.match(/\/img\/+(?:view\/+)?[0-9]{4}\/+(?:[0-9]{1,2}\/+){2}([0-9]+)[./]/);
+			if (match) {
+				return {
+					url: src,
+					extra: {page: "https://derpibooru.org/" + match[1]}
+				};
+			}
 		}
 
 		if (domain_nosub === "iimg.me") {
