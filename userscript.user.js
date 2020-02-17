@@ -52973,7 +52973,7 @@ var $$IMU_EXPORT$$;
 			return {
 				gallery: function(el, nextprev) {
 					if (!el)
-						return null;
+						return "default";
 
 					var find_from_el = function() {
 						if (options.host_url.match(/\/a\/+[^/]+\/+embed/)) {
@@ -52991,7 +52991,7 @@ var $$IMU_EXPORT$$;
 
 									current = next;
 									if (!current)
-										return null;
+										return "default";
 
 									var img = current.querySelector("img");
 									if (img) {
@@ -53001,9 +53001,10 @@ var $$IMU_EXPORT$$;
 							}
 						}
 
-						return null;
+						return "default";
 					};
 
+					// "default" isn't used here because it's only used as find_from_api ||
 					var find_from_api = function(images) {
 						var big = bigimage_recursive(el.src, {
 							fill_object: true,
@@ -53077,7 +53078,7 @@ var $$IMU_EXPORT$$;
 			return {
 				gallery: function(el, nextprev) {
 					if (!el)
-						return null;
+						return "default";
 
 					if (!options.do_request)
 						return "default";
@@ -53138,6 +53139,73 @@ var $$IMU_EXPORT$$;
 						if (el.parentElement.classList.contains("video-card") &&
 							el.parentElement.parentElement.classList.contains("image-card")) {
 							return get_next_in_gallery(el.parentElement.parentElement, nextprev);
+						}
+					}
+
+					return "default";
+				}
+			};
+		}
+
+		if (host_domain_nowww === "twitter.com") {
+			return {
+				gallery: function(el, nextprev) {
+					var is_photo_a = function(el) {
+						return el.tagName === "A" && el.href && /\/status\/+[0-9]+\/+photo\/+/.test(el.href);
+					};
+
+					var get_img_from_photo_a = function(el) {
+						var imgel = el.querySelector("img");
+						if (imgel) {
+							// don't return the <img> element because opacity: 0
+							var prev = imgel.previousElementSibling;
+							if (prev && prev.tagName === "DIV" && prev.style.backgroundImage)
+								return prev;
+						}
+
+						return imgel;
+					}
+
+					var get_nextprev = function(el) {
+						if (nextprev) {
+							return el.nextElementSibling;
+						} else {
+							return el.previousElementSibling;
+						}
+					};
+
+					var get_photoel_from_photo_container = function(nextel) {
+						if (nextel.tagName === "A") {
+							return get_img_from_photo_a(nextel);
+						} else if (nextel.tagName === "DIV") {
+							var childid = nextprev ? 0 : (nextel.children.length - 1);
+
+							if (nextel.children.length > 0 && is_photo_a(nextel.children[childid])) {
+								return get_img_from_photo_a(nextel.children[childid]);
+							}
+						} else {
+							return "default";
+						}
+					};
+
+					// tweet albums: https://twitter.com/phoronix/status/1229117085432926209
+					var current = el;
+					while ((current = current.parentElement)) {
+						if (is_photo_a(current)) {
+							var nextel = get_nextprev(current);
+
+							if (nextel) {
+								return get_photoel_from_photo_container(nextel);
+							} else {
+								var parent = current.parentElement;
+								var sibling = get_nextprev(parent);
+
+								if (sibling) {
+									return get_photoel_from_photo_container(sibling);
+								}
+							}
+
+							return null;
 						}
 					}
 
@@ -59808,7 +59876,7 @@ var $$IMU_EXPORT$$;
 				do_request: do_request,
 				rule_specific: {},
 				cb: function(result) {
-					if (!result || result === "default") {
+					if (result === undefined || result === "default") {
 						return cb(get_next_in_gallery(el, nextprev));
 					} else {
 						cb(result);
@@ -59831,7 +59899,7 @@ var $$IMU_EXPORT$$;
 			if (helpers && helpers.gallery) {
 				gallery = function(el, nextprev) {
 					var value = helpers.gallery(el, nextprev);
-					if (value)
+					if (value || value === null)
 						return value;
 
 					return get_next_in_gallery(el, nextprev);
