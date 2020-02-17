@@ -51629,7 +51629,7 @@ var $$IMU_EXPORT$$;
 
 		if (domain_nowww === "pastebin.com") {
 			// https://pastebin.com/i/t.gif
-			if (/^[a-z]+:\/\/[^/]+\/+i\/+t\.gif$/.test(src)) {
+			if (/^[a-z]+:\/\/[^/]+\/+i\/+t\.gif(?:[?#].*)?$/.test(src)) {
 				return {
 					url: src,
 					bad: "mask"
