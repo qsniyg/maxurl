@@ -58367,6 +58367,16 @@ var $$IMU_EXPORT$$;
 			return rect;
 		};
 
+		var copy_rect = function(rect) {
+			// simplified copy, need to use recalculate_rect after
+			return {
+				x: rect.x,
+				y: rect.y,
+				width: rect.width,
+				height: rect.height
+			};
+		};
+
 		var parse_zoom = function(zoom) {
 			if (typeof zoom === "number")
 				return zoom;
@@ -58397,25 +58407,23 @@ var $$IMU_EXPORT$$;
 				parent = get_bounding_client_rect_inner(parentel, mapcache, false);
 			}
 
-			var current = el;
 			var orig_rect = null;
-
 			if (need_rect)
 				orig_rect = el.getBoundingClientRect();
 
 			var rect = null;
 			var zoom = 1;
 
-			//var computed_style = get_computed_style(current);
+			//var computed_style = get_computed_style(el);
 			// computed_style is slow, and also might not be what we're looking for, as it might contain the parent's zoom
 			// this is still very slow though (50ms on facebook)
-			if (current.style.zoom) {
-				zoom = parse_zoom(current.style.zoom);
+			if (el.style.zoom) {
+				zoom = parse_zoom(el.style.zoom);
 				if (zoom && zoom !== 1) {
 					if (!orig_rect)
 						orig_rect = el.getBoundingClientRect();
 
-					rect = shallowcopy(orig_rect);
+					rect = copy_rect(orig_rect);
 
 					rect.width *= zoom;
 					rect.height *= zoom;
@@ -58427,21 +58435,24 @@ var $$IMU_EXPORT$$;
 					orig_rect = el.getBoundingClientRect();
 
 				if (!rect)
-					rect = shallowcopy(orig_rect);
+					rect = copy_rect(orig_rect);
 
 				rect.x *= parent.zoom;
 				rect.y *= parent.zoom;
 				rect.width *= parent.zoom;
 				rect.height *= parent.zoom;
+
+				zoom *= parent.zoom;
+				//console.log(el, zoom, deepcopy(rect));
 			}
 
 			// this is surprisingly slow, so rect is optimized out if possible
-			if (parent.rect && parent.orig_rect) {
+			if (false && parent.rect && parent.orig_rect) {
 				if (!orig_rect)
 					orig_rect = el.getBoundingClientRect();
 
 				if (!rect)
-					rect = shallowcopy(orig_rect);
+					rect = copy_rect(orig_rect);
 
 				rect.x += parent.rect.x - parent.orig_rect.x;
 				rect.y += parent.rect.y - parent.orig_rect.y;
@@ -61291,6 +61302,7 @@ var $$IMU_EXPORT$$;
 				}
 			} else if (message.type === "popup_open") {
 				popup_el_remote = sender;
+				last_popup_el = null;
 			}
 		};
 
