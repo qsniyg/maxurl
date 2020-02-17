@@ -796,6 +796,8 @@ var $$IMU_EXPORT$$;
 	};
 
 	if ("assign" in Object) {
+		// FIXME: should this be kept? it's faster, but it causes issues with object instances, like dom rects. it works fine with plain objects though
+		// it's about as good as JSON.parse(JSON.stringify(x)), but shallow
 		shallowcopy_obj = function(x) {
 			return Object.assign({}, x);
 		};
@@ -1387,6 +1389,8 @@ var $$IMU_EXPORT$$;
 		mouseover_ui_zoomlevel: true,
 		mouseover_ui_gallerycounter: true,
 		mouseover_ui_gallerymax: 50,
+		// thanks to pacep94616 on github for the idea: https://github.com/qsniyg/maxurl/issues/225
+		mouseover_ui_gallerybtns: true,
 		mouseover_ui_closebtn: true,
 		mouseover_ui_optionsbtn: is_userscript ? true : false,
 		mouseover_ui_downloadbtn: false,
@@ -1982,6 +1986,15 @@ var $$IMU_EXPORT$$;
 			type: "number",
 			number_min: 0,
 			number_unit: "images",
+			category: "popup",
+			subcategory: "ui"
+		},
+		mouseover_ui_gallerybtns: {
+			name: "Gallery buttons",
+			description: "Enables buttons to go left/right in the gallery",
+			requires: {
+				mouseover_ui: true
+			},
 			category: "popup",
 			subcategory: "ui"
 		},
@@ -20252,6 +20265,9 @@ var $$IMU_EXPORT$$;
 
 		// nopCommerce
 		if ((domain === "shop.unitedcycle.com" ||
+			 // https://unicorncards.co.uk/images/thumbs/0027281_mp19-en043-called-by-the-grave-prismatic-secret-rare-1st-edition-mint-yugioh-card_415.jpeg
+			 //   https://unicorncards.co.uk/images/thumbs/0027281_mp19-en043-called-by-the-grave-prismatic-secret-rare-1st-edition-mint-yugioh-card.jpeg
+			 domain_nowww === "unicorncards.co.uk" ||
 			 // https://4my3boyz.com/content/images/thumbs/0015622_beautiful-birds-housing-boom-songbirds-song-bird-cream-cotton-fabric_500.jpeg
 			 //   https://4my3boyz.com/content/images/thumbs/0015622_beautiful-birds-housing-boom-songbirds-song-bird-cream-cotton-fabric.jpeg
 			 domain_nowww === "4my3boyz.com") &&
@@ -51637,6 +51653,14 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain_nowww === "davidrevoy.com") {
+			// https://www.davidrevoy.com/plugins/vignette/plxthumbnailer.php?src=https://www.davidrevoy.com/data/images/blog/2020/2020-02-12_18h20_sketchpage_net.jpg&w=430&h=245&s=1&q=70
+			//   https://www.davidrevoy.com/data/images/blog/2020/2020-02-12_18h20_sketchpage_net.jpg
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+plugins\/+vignette\/+plxthumbnailer\.php\?(?:.*&)?src=([^&]*).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+		}
+
 
 
 
@@ -57856,6 +57880,9 @@ var $$IMU_EXPORT$$;
 					};
 
 					var add_leftright_gallery_button = function(leftright) {
+						if (!settings.mouseover_ui_gallerybtns)
+							return;
+
 						var action = function() {
 							return lraction(leftright);
 						};
