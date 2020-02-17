@@ -1438,7 +1438,7 @@ var $$IMU_EXPORT$$;
 		allow_watermark: false,
 		allow_smaller: false,
 		allow_possibly_different: false,
-		//allow_possibly_broken: false,
+		allow_possibly_broken: false,
 		allow_thirdparty: false,
 		allow_apicalls: true,
 		allow_thirdparty_libs: is_userscript ? false : true,
@@ -2637,9 +2637,7 @@ var $$IMU_EXPORT$$;
 			name: "Possibly broken images",
 			description: "Enables rules that return images that are possibly broken",
 			category: "rules",
-			example_websites: [
-				"Tumblr GIFs"
-			],
+			hidden: true, // not currently used
 			onupdate: update_rule_setting
 		},
 		allow_thirdparty: {
