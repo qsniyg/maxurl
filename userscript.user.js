@@ -1438,7 +1438,7 @@ var $$IMU_EXPORT$$;
 		allow_watermark: false,
 		allow_smaller: false,
 		allow_possibly_different: false,
-		allow_possibly_broken: false,
+		//allow_possibly_broken: false,
 		allow_thirdparty: false,
 		allow_apicalls: true,
 		allow_thirdparty_libs: is_userscript ? false : true,
@@ -11570,11 +11570,11 @@ var $$IMU_EXPORT$$;
 			//
 			// semi-working gifs: (thanks to rEnr3n on github)
 			// https://78.media.tumblr.com/b6a2ed8abae3e9f0a64ccc5bd14b5bbf/tumblr_n8w8k50vpR1r3kk98o1_250.gif -- works
-			//   https://78.media.tumblr.com/b6a2ed8abae3e9f0a64ccc5bd14b5bbf/tumblr_n8w8k50vpR1r3kk98o1_1280.gif -- doesn't work
+			//   https://78.media.tumblr.com/b6a2ed8abae3e9f0a64ccc5bd14b5bbf/tumblr_n8w8k50vpR1r3kk98o1_1280.gif -- doesn't work (works now?)
 			//
 			// https://78.media.tumblr.com/a1dfad9537af0e38063ec186e2ff392e/tumblr_n87ft44o4Y1r3kk98o1_250.gif -- works
-			//   https://78.media.tumblr.com/a1dfad9537af0e38063ec186e2ff392e/tumblr_n87ft44o4Y1r3kk98o1_500.gif -- doesn't work
-			//   https://78.media.tumblr.com/a1dfad9537af0e38063ec186e2ff392e/tumblr_n87ft44o4Y1r3kk98o1_1280.gif -- doesn't work
+			//   https://78.media.tumblr.com/a1dfad9537af0e38063ec186e2ff392e/tumblr_n87ft44o4Y1r3kk98o1_500.gif -- doesn't work (works now?)
+			//   https://78.media.tumblr.com/a1dfad9537af0e38063ec186e2ff392e/tumblr_n87ft44o4Y1r3kk98o1_1280.gif -- doesn't work (works now?)
 			//   https://s3.amazonaws.com/data.tumblr.com/a1dfad9537af0e38063ec186e2ff392e/tumblr_n87ft44o4Y1r3kk98o1_raw.gif -- works
 			// https://78.media.tumblr.com/b6a2ed8abae3e9f0a64ccc5bd14b5bbf/tumblr_n8w8k50vpR1r3kk98o1_250.gif
 			//
@@ -11611,8 +11611,10 @@ var $$IMU_EXPORT$$;
 				}
 			};
 
-			if (src.match(/_[0-9]*\.gif$/))
+			// doesn't seem to be needed anymore
+			if (false && src.match(/_[0-9]*\.gif$/)) {
 				obj.problems.possibly_broken = true;
+			}
 
 			// http://78.media.tumblr.com/avatar_43c10cb80f16_64.png
 			//   http://78.media.tumblr.com/avatar_43c10cb80f16_512.png -- upscaled?
