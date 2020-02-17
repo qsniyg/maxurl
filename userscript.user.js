@@ -4574,13 +4574,17 @@ var $$IMU_EXPORT$$;
 						return;
 
 					if (result.status === 200) {
-						try {
-							var parsed = JSON_parse(result.responseText);
+						var parsed = null;
 
-							return done(parsed, 60 * 60);
+						try {
+							parsed = JSON_parse(result.responseText);
 						} catch (e) {
 							console_log("instagram_mediainfo", result);
 							console_error("instagram_mediainfo", e);
+						}
+
+						if (parsed) {
+							return done(parsed, 60 * 60);
 						}
 					}
 
@@ -4729,7 +4733,7 @@ var $$IMU_EXPORT$$;
 			if (caption.text)
 				return caption.text;
 
-			if (caption.edges)
+			if (caption.edges && caption.edges.length > 0)
 				return caption.edges[0].node.text;
 
 			return null;
