@@ -34740,18 +34740,56 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "photojournal.jpl.nasa.gov") {
+			obj = {url: src};
 			// https://photojournal.jpl.nasa.gov/jpeg/PIA23572.jpg
 			//   https://www.jpl.nasa.gov/spaceimages/details.php?id=PIA23572
-			id = src.replace(/.*\/(PIA[0-9]+)\.[^/.]+(?:[?#].*)?$/, "$1");
+			id = src.replace(/.*\/(PIA[0-9]+)(?:_[^/]+)?\.[^/.]+(?:[?#].*)?$/, "$1");
 
 			if (id !== src) {
-				return {
-					url: src,
-					extra: {
-						page: "https://www.jpl.nasa.gov/spaceimages/details.php?id=" + id
-					}
+				obj.extra = {
+					page: "https://www.jpl.nasa.gov/spaceimages/details.php?id=" + id
 				};
 			}
+
+			// https://photojournal.jpl.nasa.gov/jpegMod/PIA09352_modest.jpg
+			//   https://photojournal.jpl.nasa.gov/jpeg/PIA09352.jpg
+			newsrc = src.replace(/(:\/\/[^/]+\/+)jpegMod\/+([^/]+)_modest\./, "$1jpeg/$2.");
+			if (newsrc !== src) {
+				obj.url = newsrc;
+				return obj;
+			}
+
+			// https://photojournal.jpl.nasa.gov/browse/PIA09352.jpg
+			//   https://photojournal.jpl.nasa.gov/jpeg/PIA09352.jpg
+			// https://photojournal.jpl.nasa.gov/thumb/PIA09352.jpg
+			//   https://photojournal.jpl.nasa.gov/jpeg/PIA09352.jpg
+			newsrc = src.replace(/(:\/\/[^/]+\/+)(?:browse|thumb)\/+/, "$1jpeg/");
+			if (newsrc !== src) {
+				obj.url = newsrc;
+				return obj;
+			}
+
+			return obj;
+		}
+
+		if (domain === "nssdc.gsfc.nasa.gov") {
+			obj = {url: src};
+
+			// https://nssdc.gsfc.nasa.gov/imgcat/html/object_page/vg1_p21287.html
+			id = src.match(/\/imgcat\/+[^/]+res\/+(vg[0-9]*_p[0-9]+)\./);
+			if (id) {
+				obj.extra = {page: "https://nssdc.gsfc.nasa.gov/imgcat/html/object_page/" + id[1] + ".html"};
+			}
+
+			// https://nssdc.gsfc.nasa.gov/imgcat/midres/vg1_p21287.gif
+			//   https://nssdc.gsfc.nasa.gov/imgcat/hires/vg1_p21287.gif
+			newsrc = src.replace(/(\/imgcat\/+)midres\/+/, "$1hires/");
+			if (newsrc !== src) {
+				obj.url = newsrc;
+				return obj;
+			}
+
+			return obj;
 		}
 
 		if (amazon_container === "attachments.readmedia.com") {
@@ -51565,6 +51603,22 @@ var $$IMU_EXPORT$$;
 			if (newsrc !== src) {
 				return decodeuri_ifneeded(newsrc);
 			}
+		}
+
+		if ((domain_nosub === "hstatic.dk" ||
+			 // https://sw12513.smartweb-static.com/upload_dir/pics/designere/nasa/34153-7070-AD.w293.h293.fill.jpg
+			 //   https://sw12513.smartweb-static.com/upload_dir/pics/designere/nasa/34153-7070-AD.jpg
+			 domain_nosub === "smartweb-static.com") && src.indexOf("/upload_dir/") >= 0) {
+			// https://shop12157.hstatic.dk/upload_dir/shop/19833_34153.w293.h293.fill.jpg
+			//   https://shop12157.hstatic.dk/upload_dir/shop/19833_34153.jpg
+			return src.replace(/(\/[^/]+?)(?:\.(?:[wh][0-9]+|fill)){1,}(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (amazon_container === "planetary") {
+			// https://www.planetary.org/multimedia/space-images/jupiter/callisto-from-voyager-1.html
+			// https://planetary.s3.amazonaws.com/assets/images/5-jupiter/2015/20151019_CallistoV1m_f840.jpg
+			//   https://planetary.s3.amazonaws.com/assets/images/5-jupiter/2015/20151019_CallistoV1m.jpg
+			return src.replace(/(\/assets\/+images\/+.*)_f[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		}
 
 
