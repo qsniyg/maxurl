@@ -51627,6 +51627,16 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/assets\/+images\/+.*)_f[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		}
 
+		if (domain_nowww === "pastebin.com") {
+			// https://pastebin.com/i/t.gif
+			if (/^[a-z]+:\/\/[^/]+\/+i\/+t\.gif$/.test(src)) {
+				return {
+					url: src,
+					bad: "mask"
+				};
+			}
+		}
+
 
 
 
