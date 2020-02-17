@@ -9216,6 +9216,8 @@ var $$IMU_EXPORT$$;
 			domain === "media.nbcnewyork.com" ||
 			// https://d15-a.sdn.cz/d_15/c_img_E_J/Da7BAUs.jpeg?fl=cro,0,0,1280,719%7Cres,1200,,1%7Cwebp,75
 			domain_nosub === "sdn.cz" ||
+			// https://cdn2.unrealengine.com/Diesel%2Fproductv2%2Fcorruption-2029%2Fhome%2FEGS_TheBeardedLadies_CORRUPTION2029_S1-2560x1440-b8e91bac33e7b50e2dc3e0b8f975b2843f06334f.jpg?h=100&resize=1&w=100
+			(domain_nosub === "unrealengine.com" && /^cdn[0-9]*\./.test(domain)) ||
 			// http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
 			// https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
 			src.match(/\/demandware\.static\//) ||
@@ -58381,7 +58383,7 @@ var $$IMU_EXPORT$$;
 			return null;
 		};
 
-		function get_bounding_client_rect_inner(el, mapcache) {
+		function get_bounding_client_rect_inner(el, mapcache, need_rect) {
 			// test: https://4seasonstaeyeon.tumblr.com/post/190710743124 (bottom images)
 			if (!el)
 				return null;
@@ -58392,11 +58394,15 @@ var $$IMU_EXPORT$$;
 			var parent = {};
 			var parentel = el.parentElement;
 			if (parentel) {
-				parent = get_bounding_client_rect_inner(parentel, mapcache);
+				parent = get_bounding_client_rect_inner(parentel, mapcache, false);
 			}
 
 			var current = el;
-			var orig_rect = el.getBoundingClientRect();
+			var orig_rect = null;
+
+			if (need_rect)
+				orig_rect = el.getBoundingClientRect();
+
 			var rect = null;
 			var zoom = 1;
 
@@ -58406,6 +58412,9 @@ var $$IMU_EXPORT$$;
 			if (current.style.zoom) {
 				zoom = parse_zoom(current.style.zoom);
 				if (zoom && zoom !== 1) {
+					if (!orig_rect)
+						orig_rect = el.getBoundingClientRect();
+
 					rect = shallowcopy(orig_rect);
 
 					rect.width *= zoom;
@@ -58414,6 +58423,9 @@ var $$IMU_EXPORT$$;
 			}
 
 			if (parent.zoom && parent.zoom !== 1) {
+				if (!orig_rect)
+					orig_rect = el.getBoundingClientRect();
+
 				if (!rect)
 					rect = shallowcopy(orig_rect);
 
@@ -58425,6 +58437,9 @@ var $$IMU_EXPORT$$;
 
 			// this is surprisingly slow, so rect is optimized out if possible
 			if (parent.rect && parent.orig_rect) {
+				if (!orig_rect)
+					orig_rect = el.getBoundingClientRect();
+
 				if (!rect)
 					rect = shallowcopy(orig_rect);
 
@@ -58436,14 +58451,16 @@ var $$IMU_EXPORT$$;
 				recalculate_rect(rect);
 
 			var result = {
-				zoom: zoom,
-				orig_rect: orig_rect
+				zoom: zoom
 			};
+
+			if (orig_rect)
+				result.orig_rect = orig_rect
 
 			if (rect)
 				result.rect = rect;
 
-			if (mapcache) {
+			if (mapcache && orig_rect) {
 				mapcache.set(el, result);
 			}
 
@@ -58451,7 +58468,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		function get_bounding_client_rect(el, mapcache) {
-			var obj = get_bounding_client_rect_inner(el, mapcache);
+			var obj = get_bounding_client_rect_inner(el, mapcache, true);
 			return obj.rect || obj.orig_rect;
 		}
 
