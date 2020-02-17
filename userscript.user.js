@@ -61305,7 +61305,7 @@ var $$IMU_EXPORT$$;
 					};
 				}
 
-				if (message.to && current_frame_id !== message.to) {
+				if (message.from === current_frame_id || (message.to && current_frame_id !== message.to)) {
 					return true;
 				}
 
