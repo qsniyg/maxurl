@@ -7802,11 +7802,16 @@ var $$IMU_EXPORT$$;
 			// http://lh4.ggpht.com/__zoKJ77EvEc/TO-9wdVTcwI/AAAAAAAAJEA/SbyR-4a03S0/dekotora%20%289%29%5B2%5D.jpg?imgmax=800 -- larger than s0?
 			//   http://lh4.ggpht.com/__zoKJ77EvEc/TO-9wdVTcwI/AAAAAAAAJEA/SbyR-4a03S0/dekotora%20%289%29%5B2%5D.jpg=s0?imgmax=0 -- same size
 			domain_nosub === "ggpht.com") {
-			return src
+			newsrc = src
 				.replace(/#.*$/, "")
 				.replace(/\?.*$/, "")
 				.replace(/\/[swh][0-9]*(-[^/]*]*)?\/([^/]*)$/, "/s0/$2")
 				.replace(/(=[^/]*)?$/, "=s0?imgmax=0");
+
+			return {
+				url: newsrc,
+				can_head: false // 404
+			};
 		}
 
 		if (domain_nowww === "star-tool.ru") {
