@@ -26,6 +26,7 @@
 123rf.com
 126.net
 127.net
+12andus.com
 15min.lt
 1616.ro
 1624909224.rsc.cdn77.org
@@ -87,6 +88,7 @@
 4th.kr
 4words.ru
 50.7.164.242:8182
+500px.com
 517japan.com
 52shijing.com
 575717b777ff8d928c6b-704c46a8034042e4fc898baf7b3e75d9.ssl.cf1.rackcdn.com
@@ -1336,6 +1338,7 @@ d2skuhm0vrry40.cloudfront.net
 d2t7cq5f1ua57i.cloudfront.net
 d2u7zfhzkfu65k.cloudfront.net
 d2w9rnfcy7mm78.cloudfront.net
+d2xkkdgjnsfvb0.cloudfront.net
 d2yal1mtmg1ts6.cloudfront.net
 d2yoo3qu6vrk5d.cloudfront.net
 d30fl32nd2baj9.cloudfront.net
@@ -1402,6 +1405,7 @@ data.yiff.party
 datanet.co.kr
 daum.net
 daumcdn.net
+davidrevoy.com
 day-download.com
 daytondailynews.com
 dazedimg-dazedgroup.netdna-ssl.com
@@ -1560,6 +1564,7 @@ dvdprime.com
 dvfmubv4tjrqd.cloudfront.net
 dw.com
 dw6vrgax4fzym.cloudfront.net
+dw8stlw9qt0iz.cloudfront.net
 dwgyu36up6iuz.cloudfront.net
 dxglax8otc2dg.cloudfront.net
 dy6g3i6a1660s.cloudfront.net
@@ -2306,6 +2311,7 @@ hronika.info
 hscbw.com
 hsdreams1.s3.amazonaws.com
 hsmedia.ru
+hstatic.dk
 htv-prod-media.s3.amazonaws.com
 huangdi5000.com
 huanqiu.cn
@@ -2451,6 +2457,7 @@ icdn.dantri.com.vn
 icdn.pstimg.com
 icdn.ru
 ichip.ru
+ict-21.ch
 idealbabes.net
 ideascdn.lego.com
 idnes.cz
@@ -2593,6 +2600,7 @@ imagebam.com
 imageban.ru
 imageboom.net
 imagebox.cz.osobnosti.cz
+imagecache.jpl.nasa.gov
 imagecollect.com
 imagecurl.com
 imagedecode.com
@@ -4310,6 +4318,7 @@ nrt.ysc123.com.cn
 ns.hitcreative.com.s3.amazonaws.com
 nsfwalbum.com
 nsimg.net
+nssdc.gsfc.nasa.gov
 nst.sky.it
 ntdtv.kr
 nthumb.cyworld.com
@@ -4430,6 +4439,7 @@ parsstock.ir
 pas-wordpress-media.s3.amazonaws.com
 passion.ru
 passport.mobilenations.com
+pastebin.com
 pastefs.com
 pat.primecdn.net
 patch.com
@@ -4514,6 +4524,7 @@ photosight.ru
 photosynthesis.bg
 photozou.jp
 phylopic.org
+phys.org
 pic-b.com
 pic-bucket.ws.126.net
 pic-cdn.35pic.com
@@ -4603,6 +4614,7 @@ pixpo.net
 pixroute.com
 pixsell.hr
 pl.scdn.co
+planetary.s3.amazonaws.com
 plasticsurgerystar.com
 platinum-celebs.com
 playboyrussia.com
@@ -5163,6 +5175,7 @@ sloanreview.mit.edu
 sm.askmen.com
 sm.ign.com
 smart.usen.com
+smartweb-static.com
 smcloud.net
 smh.com.au
 smlycdn.akamaized.net
@@ -5336,6 +5349,7 @@ static.fustany.com
 static.gamefront.com
 static.gamespot.com
 static.gazetaonline.com.br
+static.gearslutz.com
 static.getindiebill.com
 static.giantbomb.com
 static.gofugyourself.com
@@ -5867,7 +5881,9 @@ unblock.science
 unblocked-sites.pro
 unblocked.nl
 unblockweb.cc
+unicorncards.co.uk
 unison.org.uk
+unrealengine.com
 up.8desk.com
 up.bizhitupian.com
 up.deskbus.com
@@ -5964,6 +5980,7 @@ vjav.com
 vk.com
 vkpeople.ru
 vkuservideo.net
+vln.school.nz
 vmg.yonhapnews.co.kr
 vnecdn.net
 vnn-imgs-f.vgcloud.vn

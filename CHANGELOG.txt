@@ -1,3 +1,21 @@
+0.12.13
+
+New features:
+
+ * Option to toggle gallery buttons (thanks to pacep94616 on github for the idea)
+ * Support for ~15 new websites using ~10 new rules
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including 500px, Instagram, Newtumbl, Tumblr, Twitter)
+ * More performance optimizations
+
+Bugfixes:
+
+ * Improve `zoom` CSS property workaround
+
+---
+
 0.12.12
 
 This is an emergency fix for a major performance regression in 0.12.11 (caused by supporting the `zoom` CSS property).
