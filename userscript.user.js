@@ -26123,6 +26123,26 @@ var $$IMU_EXPORT$$;
 						return decodeURIComponent(newsrc);
 				}
 
+				// new image search, only works for images that are part of the page load
+				// credit for this technique goes to GooglePanicImages
+				current = options.element;
+				if (current.tagName === "IMG") {
+					while ((current = current.parentElement)) {
+						if (current.tagName !== "DIV")
+							continue;
+
+						var tbnid = current.getAttribute("data-tbnid");
+						if (!tbnid)
+							continue;
+
+						var regex = new RegExp("\\[[0-9]+\\s*,\\s*\"" + tbnid + "\"\\s*,\\s*\\[[^\\]]*\\]\\s*,\\s*\\[(\"[^\"]+\")\\s*,");
+						var match = document.documentElement.innerHTML.match(regex); // TODO: optimize
+						if (match) {
+							return JSON_parse(match[1]);
+						}
+					}
+				}
+
 				// small previews
 				current = options.element;
 				while ((current = current.parentElement)) {
