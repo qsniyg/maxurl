@@ -875,6 +875,15 @@ var $$IMU_EXPORT$$;
 		}
 	}
 
+	var base64_decode = nullfunc;
+	if (is_node && typeof atob === 'undefined') {
+		base64_decode = function(a) {
+			return Buffer.from(a, 'base64').toString('binary');
+		};
+	} else if (typeof atob !== 'undefined') {
+		base64_decode = atob;
+	}
+
 	var serialize_event = function(event) {
 		return deepcopy(event, {json: true});
 	};
@@ -1451,7 +1460,8 @@ var $$IMU_EXPORT$$;
 		imgur_source: true,
 		instagram_use_app_api: true,
 		instagram_gallery_postlink: false,
-		tumblr_api_key: "",
+		// just a very small protection against github scraping bots :)
+		tumblr_api_key: base64_decode("IHhyTXBMTThuMWVDZUwzb1JZU1pHN0NMQUx3NkVIaFlEZFU2V3E1ZUQxUGJNa2xkN1kx").substr(1),
 		// thanks to LukasThyWalls on github for the idea: https://github.com/qsniyg/maxurl/issues/75
 		bigimage_blacklist: "",
 		bigimage_blacklist_engine: "glob",
@@ -3114,15 +3124,6 @@ var $$IMU_EXPORT$$;
 			}
 			return parsed;
 		};
-	}
-
-	var base64_decode = nullfunc;
-	if (is_node && typeof atob === 'undefined') {
-		base64_decode = function(a) {
-			return Buffer.from(a, 'base64').toString('binary');
-		};
-	} else if (typeof atob !== 'undefined') {
-		base64_decode = atob;
 	}
 
 	// https://stackoverflow.com/a/17323608
