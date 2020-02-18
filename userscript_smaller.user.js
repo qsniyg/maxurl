@@ -4,15 +4,15 @@
 // ==UserScript==
 // @name              Image Max URL
 // @namespace         http://tampermonkey.net/
-// @version           0.12.12
-// @description       Finds larger or original versions of images for 6200+ websites, including a powerful image popup feature
-// @description:ko    6200개 이상의 사이트에 대해 더 크거나 원본 이미지를 찾아드립니다
-// @description:fr    Trouve des images plus grandes ou originales pour plus de 6200 sites
-// @description:es    Encuentra imágenes más grandes y originales para más de 6200 sitios
-// @description:zh    为6200多个网站查找更大或原始图像
-// @description:zh-CN 为6200多个网站查找更大或原始图像
-// @description:zh-TW 為6200多個網站查找更大或原始圖像
-// @description:zh-HK 為6200多個網站查找更大或原始圖像
+// @version           0.12.13
+// @description       Finds larger or original versions of images for 6300+ websites, including a powerful image popup feature
+// @description:ko    6300개 이상의 사이트에 대해 더 크거나 원본 이미지를 찾아드립니다
+// @description:fr    Trouve des images plus grandes ou originales pour plus de 6300 sites
+// @description:es    Encuentra imágenes más grandes y originales para más de 6300 sitios
+// @description:zh    为6300多个网站查找更大或原始图像
+// @description:zh-CN 为6300多个网站查找更大或原始图像
+// @description:zh-TW 為6300多個網站查找更大或原始圖像
+// @description:zh-HK 為6300多個網站查找更大或原始圖像
 // @author            qsniyg
 // @homepageURL       https://qsniyg.github.io/maxurl/options.html
 // @supportURL        https://github.com/qsniyg/maxurl/issues
@@ -799,6 +799,8 @@ var $$IMU_EXPORT$$;
 	};
 
 	if ("assign" in Object) {
+		// FIXME: should this be kept? it's faster, but it causes issues with object instances, like dom rects. it works fine with plain objects though
+		// it's about as good as JSON.parse(JSON.stringify(x)), but shallow
 		shallowcopy_obj = function(x) {
 			return Object.assign({}, x);
 		};
@@ -1390,6 +1392,8 @@ var $$IMU_EXPORT$$;
 		mouseover_ui_zoomlevel: true,
 		mouseover_ui_gallerycounter: true,
 		mouseover_ui_gallerymax: 50,
+		// thanks to pacep94616 on github for the idea: https://github.com/qsniyg/maxurl/issues/225
+		mouseover_ui_gallerybtns: true,
 		mouseover_ui_closebtn: true,
 		mouseover_ui_optionsbtn: is_userscript ? true : false,
 		mouseover_ui_downloadbtn: false,
@@ -1985,6 +1989,15 @@ var $$IMU_EXPORT$$;
 			type: "number",
 			number_min: 0,
 			number_unit: "images",
+			category: "popup",
+			subcategory: "ui"
+		},
+		mouseover_ui_gallerybtns: {
+			name: "Gallery buttons",
+			description: "Enables buttons to go left/right in the gallery",
+			requires: {
+				mouseover_ui: true
+			},
 			category: "popup",
 			subcategory: "ui"
 		},
@@ -2640,9 +2653,7 @@ var $$IMU_EXPORT$$;
 			name: "Possibly broken images",
 			description: "Enables rules that return images that are possibly broken",
 			category: "rules",
-			example_websites: [
-				"Tumblr GIFs"
-			],
+			hidden: true, // not currently used
 			onupdate: update_rule_setting
 		},
 		allow_thirdparty: {
@@ -4577,13 +4588,17 @@ var $$IMU_EXPORT$$;
 						return;
 
 					if (result.status === 200) {
-						try {
-							var parsed = JSON_parse(result.responseText);
+						var parsed = null;
 
-							return done(parsed, 60 * 60);
+						try {
+							parsed = JSON_parse(result.responseText);
 						} catch (e) {
 							console_log("instagram_mediainfo", result);
 							console_error("instagram_mediainfo", e);
+						}
+
+						if (parsed) {
+							return done(parsed, 60 * 60);
 						}
 					}
 
@@ -4732,7 +4747,7 @@ var $$IMU_EXPORT$$;
 			if (caption.text)
 				return caption.text;
 
-			if (caption.edges)
+			if (caption.edges && caption.edges.length > 0)
 				return caption.edges[0].node.text;
 
 			return null;
@@ -5509,6 +5524,10 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "image.news1.kr") {
+			newsrc = src.replace(/\/+dims\/.*/, "");
+			if (newsrc !== src)
+				return newsrc;
+
 			newsrc = src
 				.replace(/\/thumbnails\/(.*)\/thumb_[0-9]+x(?:[0-9]+)?(\.[^/.]*)$/, "/$1/original$2")
 				.replace(/main_thumb\.jpg/, "original.jpg")
@@ -7387,6 +7406,7 @@ var $$IMU_EXPORT$$;
 			domain === "images.boosty.to" ||
 			domain === "media.nbcnewyork.com" ||
 			domain_nosub === "sdn.cz" ||
+			(domain_nosub === "unrealengine.com" && /^cdn[0-9]*\./.test(domain)) ||
 			src.match(/\/demandware\.static\//) ||
 			src.match(/\?i10c=[^/]*$/) ||
 			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|blogs.dir)|\/+uploads)\//.test(src)
@@ -8529,8 +8549,9 @@ var $$IMU_EXPORT$$;
 				}
 			};
 
-			if (src.match(/_[0-9]*\.gif$/))
+			if (false && src.match(/_[0-9]*\.gif$/)) {
 				obj.problems.possibly_broken = true;
+			}
 
 			if (src.match(/\/avatar_[0-9a-f]+_(?:64|128)\./))
 				return src.replace(/_[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "_512$1");
@@ -11727,7 +11748,21 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "derpicdn.net") {
-			return src.replace(/\/(?:thumb|large)(\.[^/.]*)$/, "/full$1");
+			newsrc = src.replace(/\/(?:thumb|large)(\.[^/.]*)$/, "/full$1");
+			if (newsrc !== src)
+				return newsrc;
+
+			newsrc = src.replace(/(\/img\/+)([0-9]{4}\/+[0-9]{1,2}\/+[0-9]{1,2}\/+[0-9]+)\/+[^/.]+(\.[^/.]+)(?:[?#].*)?$/, "$1view/$2$3");
+			if (newsrc !== src)
+				return newsrc;
+
+			match = src.match(/\/img\/+(?:view\/+)?[0-9]{4}\/+(?:[0-9]{1,2}\/+){2}([0-9]+)[./]/);
+			if (match) {
+				return {
+					url: src,
+					extra: {page: "https://derpibooru.org/" + match[1]}
+				};
+			}
 		}
 
 		if (domain_nosub === "iimg.me") {
@@ -13128,6 +13163,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if ((domain === "shop.unitedcycle.com" ||
+			 domain_nowww === "unicorncards.co.uk" ||
 			 domain_nowww === "4my3boyz.com") &&
 			src.indexOf("/images/thumbs/") >= 0) {
 			return src.replace(/_[0-9]+(\.[^/.]*)$/, "$1");
@@ -21309,26 +21345,62 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "www.jpl.nasa.gov") {
-			return src.replace(/:\/\/[^/]+\/+spaceimages\/+images\/+[^/]+\/+(PIA[0-9]+)(?:_[^/]+|-[0-9]+x(?:x[0-9]+|[wh]))(\.(?:jpg|jpeg|JPG|JPEG))(?:[?#].*)?$/,
+			return src.replace(/:\/\/[^/]+\/+spaceimages\/+images\/+[^/]+\/+(PIA[0-9]+)(?:_[^/]+|-[0-9]+(?:x[0-9]+|[wh]))(\.(?:jpg|jpeg|JPG|JPEG))(?:[?#].*)?$/,
 				               "://photojournal.jpl.nasa.gov/jpeg/$1$2");
 		}
 
+		if (domain === "imagecache.jpl.nasa.gov") {
+			match = src.match(/:\/\/[^/]+\/+images\/+[0-9]+x[0-9]+\/+(?:pia|PIA)([0-9]+)-[0-9]+-[0-9]+x[0-9]+\./);
+			if (match) {
+				return "https://photojournal.jpl.nasa.gov/jpeg/PIA" + match[1] + ".jpg";
+			}
+		}
+
 		if (domain === "solarsystem.nasa.gov") {
-			return src.replace(/:\/\/[^/]+\/+system\/+resources\/+(?:detail_files|list_images)\/+[0-9]+_(PIA[0-9]+)(?:\.[^/.]+_[^/]+|[-_][^/]+)?\.[^/.]+(?:[?#].*)?$/,
-								"://photojournal.jpl.nasa.gov/jpeg/$1.jpg");
+			return src.replace(/:\/\/[^/]+\/+system\/+(?:resources|news_items)\/+(?:detail_files|(?:list|main)_images)\/+[0-9]+_(?:pia|PIA)([0-9]+)(?:_[a-z]+)?(?:\.[^/.]+_[^/]+|[-_][^/]+)?\.[^/.]+(?:[?#].*)?$/,
+								"://photojournal.jpl.nasa.gov/jpeg/PIA$1.jpg");
 		}
 
 		if (domain === "photojournal.jpl.nasa.gov") {
-			id = src.replace(/.*\/(PIA[0-9]+)\.[^/.]+(?:[?#].*)?$/, "$1");
+			obj = {url: src};
+			id = src.replace(/.*\/(PIA[0-9]+)(?:_[^/]+)?\.[^/.]+(?:[?#].*)?$/, "$1");
 
 			if (id !== src) {
-				return {
-					url: src,
-					extra: {
-						page: "https://www.jpl.nasa.gov/spaceimages/details.php?id=" + id
-					}
+				obj.extra = {
+					page: "https://www.jpl.nasa.gov/spaceimages/details.php?id=" + id
 				};
 			}
+
+			newsrc = src.replace(/(:\/\/[^/]+\/+)jpegMod\/+([^/]+)_modest\./, "$1jpeg/$2.");
+			if (newsrc !== src) {
+				obj.url = newsrc;
+				return obj;
+			}
+
+			newsrc = src.replace(/(:\/\/[^/]+\/+)(?:browse|thumb)\/+/, "$1jpeg/");
+			if (newsrc !== src) {
+				obj.url = newsrc;
+				return obj;
+			}
+
+			return obj;
+		}
+
+		if (domain === "nssdc.gsfc.nasa.gov") {
+			obj = {url: src};
+
+			id = src.match(/\/imgcat\/+[^/]+res\/+(vg[0-9]*_p[0-9]+)\./);
+			if (id) {
+				obj.extra = {page: "https://nssdc.gsfc.nasa.gov/imgcat/html/object_page/" + id[1] + ".html"};
+			}
+
+			newsrc = src.replace(/(\/imgcat\/+)midres\/+/, "$1hires/");
+			if (newsrc !== src) {
+				obj.url = newsrc;
+				return obj;
+			}
+
+			return obj;
 		}
 
 		if (amazon_container === "attachments.readmedia.com") {
@@ -21550,8 +21622,9 @@ var $$IMU_EXPORT$$;
 			};
 		}
 
-		if (domain === "3c1703fe8d.site.internapcdn.net") {
-			newsrc = src.replace(/\/newman\/+[a-z]+\/+([^/]*)\/+[^/]*\/+([0-9]{4}\/+[^/]*)(?:[?#].*)?$/, "/newman/gfx/$1/$2");
+		if (domain === "3c1703fe8d.site.internapcdn.net" ||
+			domain_nowww === "phys.org") {
+			newsrc = src.replace(/\/newman\/+csz\/+([^/]*)\/+[^/]*\/+([0-9]{4}\/+[^/]*)(?:[?#].*)?$/, "/newman/gfx/$1/$2");
 			if (newsrc !== src)
 				return newsrc;
 
@@ -22458,6 +22531,15 @@ var $$IMU_EXPORT$$;
 
 		if (domain_nosub === "fotokto.ru" && domain.match(/^s[0-9]*\./)) {
 			return src.replace(/\/photo\/+[a-z]+\//, "/photo/full/");
+		}
+
+		if (host_domain_nosub === "500px.com" && options && options.element) {
+			if (src.indexOf("://drscdn.500px.org/") < 0) {
+				if (options.element.tagName === "A" && options.element.parentElement && options.element.parentElement.classList.contains("nsfw_placeholder")) {
+					var img = options.element.querySelector("img");
+					return img.src;
+				}
+			}
 		}
 
 		if (domain === "drscdn.500px.org" &&
@@ -29659,7 +29741,86 @@ var $$IMU_EXPORT$$;
 				return obj;
 			}
 
-			newsrc = src.replace(/(\/img\/+[0-9]+\/+[0-9]+\/+[0-9]+\/+[0-9]+\/+nT_[0-9a-z]{10,})\.(?:jpg|JPG|jpeg|JPEG|png|PNG|webp|WEBP|gif|GIF)(?:[?#].*)?$/, "$1.mp4");
+			regex = /(\/img\/+[0-9]+\/+[0-9]+\/+[0-9]+\/+[0-9]+\/+nT_[0-9a-z]{10,})\.[^/.]+(?:[?#].*)?$/;
+
+			if (regex.test(src) && options && options.do_request && options.cb) {
+				var cachelink = src.replace(regex, "$1");
+				api_cache.fetch("newtumbl:" + cachelink, function(url) {
+					if (url) {
+						obj.url = url;
+					}
+
+					options.cb(obj);
+				}, function(done) {
+					var req;
+
+					var do_test = function(ext) {
+						loaded = false;
+						loading_ext = ext;
+						var loadfunc = function(resp) {
+							onload(resp, ext);
+						};
+
+						req = options.do_request({
+							url: src.replace(regex, "$1." + ext),
+							method: "GET",
+							headers: {
+								Referer: ""
+							},
+							onprogress: loadfunc,
+							onload: loadfunc
+						});
+					};
+
+					var loaded = false;
+					var loading_ext;
+					var onload = function(resp, current_ext) {
+						if (loading_ext !== current_ext || loaded) {
+							req.abort();
+							return;
+						}
+
+						if (resp.readyState === 4 || resp.responseHeaders) {
+							loaded = true;
+							req.abort();
+						}
+
+						if (!loaded)
+							return;
+
+						if (resp.status !== 200) {
+							return done(null, false);
+						}
+
+						var headers_list = parse_headers(resp.responseHeaders);
+						var headers = headers_list_to_dict(headers_list);
+
+						var splitted = headers["content-type"].split("/");
+						var mediatype = splitted[0];
+						var ext = splitted[1];
+
+						var newsrc = src.replace(regex, "$1." + ext);
+
+						if (current_ext === "mp4") {
+							if (mediatype === "video") {
+								return done(newsrc, 24*60*60);
+							} else {
+								do_test("gif");
+							}
+						} else {
+							return done(newsrc, 24*60*60);
+						}
+					};
+
+					do_test("mp4");
+				});
+
+				return {
+					waiting: true
+				};
+			}
+
+			newsrc = src.replace(/(\/img\/+[0-9]+\/+[0-9]+\/+[0-9]+\/+[0-9]+\/+nT_[0-9a-z]{10,})\.(?:jpg|JPG|jpeg|JPEG|png|PNG|webp|WEBP)(?:[?#].*)?$/, "$1.mp4");
 			if (newsrc !== src) {
 				obj.url = newsrc;
 				return obj;
@@ -32225,6 +32386,40 @@ var $$IMU_EXPORT$$;
 				return add_extensions_gif(newsrc);
 		}
 
+		if (domain === "static.gearslutz.com") {
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+board\/+imgext\.php\?(?:.*&)?u=([^&]*).*?$/, "$1");
+			if (newsrc !== src) {
+				return decodeuri_ifneeded(newsrc);
+			}
+		}
+
+		if ((domain_nosub === "hstatic.dk" ||
+			 domain_nosub === "smartweb-static.com") && src.indexOf("/upload_dir/") >= 0) {
+			return src.replace(/(\/[^/]+?)(?:\.(?:[wh][0-9]+|fill)){1,}(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (amazon_container === "planetary") {
+			return src.replace(/(\/assets\/+images\/+.*)_f[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "pastebin.com") {
+			if (/^[a-z]+:\/\/[^/]+\/+i\/+t\.gif(?:[?#].*)?$/.test(src)) {
+				return {
+					url: src,
+					bad: "mask"
+				};
+			}
+		}
+
+		if (domain_nowww === "davidrevoy.com") {
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+plugins\/+vignette\/+plxthumbnailer\.php\?(?:.*&)?src=([^&]*).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+		}
+
+		if (domain === "d2xkkdgjnsfvb0.cloudfront.net") {
+			return src.replace(/\/Vault\/+Thumb\?(?:.*&)?VaultID=([0-9]+).*$/, "/Vault/VaultOutput?ID=$1");
+		}
 
 
 
@@ -32509,6 +32704,7 @@ var $$IMU_EXPORT$$;
 			domain === "th.clickblog.it" ||
 			domain === "thumbor.forbes.com" ||
 			domain === "thumbor.f3.cool" ||
+			domain === "dw8stlw9qt0iz.cloudfront.net" ||
 			src.match(/:\/\/[^/]*\/thumbor\/[^/]*=\//) ||
 			src.match(/:\/\/[^/]*\/resizer\/[^/]*=\/(?:fit-in\/+)?[0-9]+x[0-9]+(?::[^/]*\/[0-9]+x[0-9]+)?\/(?:filters:[^/]*\/)?/)) {
 			newsrc = src.replace(/.*\/(?:thumb(?:or)?|(?:new-)?resizer)\/.*?\/(?:filters:[^/]*\/)?([a-z]*:\/\/.*)/, "$1");
@@ -32818,6 +33014,13 @@ var $$IMU_EXPORT$$;
 				return decodeuri_ifneeded(newsrc);
 		}
 
+		if (domain_nowww === "12andus.com" ||
+			domain === "vln.school.nz" ||
+			domain_nowww === "ict-21.ch" ||
+			/\/mod\/+file\/+thumbnail\.php\?(?:.*&)?file_guid=[0-9]+(?:&.*)?$/.test(src)) {
+			return src.replace(/(\/mod\/+file\/+thumbnail\.php\?)(?:.*&)?(file_guid=[0-9]+).*$/, "$1$2&size=original");
+		}
+
 		if (/\/monthly_[0-9]{4}_[0-9]{2}\/[^/]+\./.test(src) && options && options.element) {
 			if (options.element.tagName === "SPAN" && options.element.hasAttribute("data-ipslightbox") && options.element.getAttribute("data-fullurl")) {
 				return options.element.getAttribute("data-fullurl");
@@ -33043,7 +33246,7 @@ var $$IMU_EXPORT$$;
 			return {
 				gallery: function(el, nextprev) {
 					if (!el)
-						return null;
+						return "default";
 
 					var find_from_el = function() {
 						if (options.host_url.match(/\/a\/+[^/]+\/+embed/)) {
@@ -33061,7 +33264,7 @@ var $$IMU_EXPORT$$;
 
 									current = next;
 									if (!current)
-										return null;
+										return "default";
 
 									var img = current.querySelector("img");
 									if (img) {
@@ -33071,9 +33274,10 @@ var $$IMU_EXPORT$$;
 							}
 						}
 
-						return null;
+						return "default";
 					};
 
+					// "default" isn't used here because it's only used as find_from_api ||
 					var find_from_api = function(images) {
 						var big = bigimage_recursive(el.src, {
 							fill_object: true,
@@ -33147,7 +33351,7 @@ var $$IMU_EXPORT$$;
 			return {
 				gallery: function(el, nextprev) {
 					if (!el)
-						return null;
+						return "default";
 
 					if (!options.do_request)
 						return "default";
@@ -33208,6 +33412,73 @@ var $$IMU_EXPORT$$;
 						if (el.parentElement.classList.contains("video-card") &&
 							el.parentElement.parentElement.classList.contains("image-card")) {
 							return get_next_in_gallery(el.parentElement.parentElement, nextprev);
+						}
+					}
+
+					return "default";
+				}
+			};
+		}
+
+		if (host_domain_nowww === "twitter.com") {
+			return {
+				gallery: function(el, nextprev) {
+					var is_photo_a = function(el) {
+						return el.tagName === "A" && el.href && /\/status\/+[0-9]+\/+photo\/+/.test(el.href);
+					};
+
+					var get_img_from_photo_a = function(el) {
+						var imgel = el.querySelector("img");
+						if (imgel) {
+							// don't return the <img> element because opacity: 0
+							var prev = imgel.previousElementSibling;
+							if (prev && prev.tagName === "DIV" && prev.style.backgroundImage)
+								return prev;
+						}
+
+						return imgel;
+					}
+
+					var get_nextprev = function(el) {
+						if (nextprev) {
+							return el.nextElementSibling;
+						} else {
+							return el.previousElementSibling;
+						}
+					};
+
+					var get_photoel_from_photo_container = function(nextel) {
+						if (nextel.tagName === "A") {
+							return get_img_from_photo_a(nextel);
+						} else if (nextel.tagName === "DIV") {
+							var childid = nextprev ? 0 : (nextel.children.length - 1);
+
+							if (nextel.children.length > 0 && is_photo_a(nextel.children[childid])) {
+								return get_img_from_photo_a(nextel.children[childid]);
+							}
+						} else {
+							return "default";
+						}
+					};
+
+					// tweet albums: https://twitter.com/phoronix/status/1229117085432926209
+					var current = el;
+					while ((current = current.parentElement)) {
+						if (is_photo_a(current)) {
+							var nextel = get_nextprev(current);
+
+							if (nextel) {
+								return get_photoel_from_photo_container(nextel);
+							} else {
+								var parent = current.parentElement;
+								var sibling = get_nextprev(parent);
+
+								if (sibling) {
+									return get_photoel_from_photo_container(sibling);
+								}
+							}
+
+							return null;
 						}
 					}
 
@@ -37858,14 +38129,21 @@ var $$IMU_EXPORT$$;
 					};
 
 					var add_leftright_gallery_button = function(leftright) {
+						if (!settings.mouseover_ui_gallerybtns)
+							return;
+
 						var action = function() {
 							return lraction(leftright);
 						};
 
 						var name = leftright ? "Next" : "Previous";
+
 						// \u2192 = →
 						// \u2190 = ←
-						var icon = leftright ? "\u2192" : "\u2190";
+						// Using the following arrows as they're more consistent throughout fonts
+						// \ud83e\udc52 = 🡒
+						// \ud83e\udc50 = 🡐
+						var icon = leftright ? "\ud83e\udc52" : "\ud83e\udc50";
 
 						var keybinding = leftright ? settings.mouseover_gallery_next_key : settings.mouseover_gallery_prev_key;
 						var keybinding_text = get_trigger_key_text(keybinding);
@@ -38443,6 +38721,16 @@ var $$IMU_EXPORT$$;
 			return rect;
 		};
 
+		var copy_rect = function(rect) {
+			// simplified copy, need to use recalculate_rect after
+			return {
+				x: rect.x,
+				y: rect.y,
+				width: rect.width,
+				height: rect.height
+			};
+		};
+
 		var parse_zoom = function(zoom) {
 			if (typeof zoom === "number")
 				return zoom;
@@ -38459,7 +38747,7 @@ var $$IMU_EXPORT$$;
 			return null;
 		};
 
-		function get_bounding_client_rect_inner(el, mapcache) {
+		function get_bounding_client_rect_inner(el, mapcache, need_rect) {
 			// test: https://4seasonstaeyeon.tumblr.com/post/190710743124 (bottom images)
 			if (!el)
 				return null;
@@ -38470,21 +38758,26 @@ var $$IMU_EXPORT$$;
 			var parent = {};
 			var parentel = el.parentElement;
 			if (parentel) {
-				parent = get_bounding_client_rect_inner(parentel, mapcache);
+				parent = get_bounding_client_rect_inner(parentel, mapcache, false);
 			}
 
-			var current = el;
-			var orig_rect = el.getBoundingClientRect();
+			var orig_rect = null;
+			if (need_rect)
+				orig_rect = el.getBoundingClientRect();
+
 			var rect = null;
 			var zoom = 1;
 
-			//var computed_style = get_computed_style(current);
+			//var computed_style = get_computed_style(el);
 			// computed_style is slow, and also might not be what we're looking for, as it might contain the parent's zoom
 			// this is still very slow though (50ms on facebook)
-			if (current.style.zoom) {
-				zoom = parse_zoom(current.style.zoom);
+			if (el.style.zoom) {
+				zoom = parse_zoom(el.style.zoom);
 				if (zoom && zoom !== 1) {
-					rect = shallowcopy(orig_rect);
+					if (!orig_rect)
+						orig_rect = el.getBoundingClientRect();
+
+					rect = copy_rect(orig_rect);
 
 					rect.width *= zoom;
 					rect.height *= zoom;
@@ -38492,19 +38785,28 @@ var $$IMU_EXPORT$$;
 			}
 
 			if (parent.zoom && parent.zoom !== 1) {
+				if (!orig_rect)
+					orig_rect = el.getBoundingClientRect();
+
 				if (!rect)
-					rect = shallowcopy(orig_rect);
+					rect = copy_rect(orig_rect);
 
 				rect.x *= parent.zoom;
 				rect.y *= parent.zoom;
 				rect.width *= parent.zoom;
 				rect.height *= parent.zoom;
+
+				zoom *= parent.zoom;
+				//console.log(el, zoom, deepcopy(rect));
 			}
 
 			// this is surprisingly slow, so rect is optimized out if possible
-			if (parent.rect && parent.orig_rect) {
+			if (false && parent.rect && parent.orig_rect) {
+				if (!orig_rect)
+					orig_rect = el.getBoundingClientRect();
+
 				if (!rect)
-					rect = shallowcopy(orig_rect);
+					rect = copy_rect(orig_rect);
 
 				rect.x += parent.rect.x - parent.orig_rect.x;
 				rect.y += parent.rect.y - parent.orig_rect.y;
@@ -38514,14 +38816,16 @@ var $$IMU_EXPORT$$;
 				recalculate_rect(rect);
 
 			var result = {
-				zoom: zoom,
-				orig_rect: orig_rect
+				zoom: zoom
 			};
+
+			if (orig_rect)
+				result.orig_rect = orig_rect
 
 			if (rect)
 				result.rect = rect;
 
-			if (mapcache) {
+			if (mapcache && orig_rect) {
 				mapcache.set(el, result);
 			}
 
@@ -38529,7 +38833,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		function get_bounding_client_rect(el, mapcache) {
-			var obj = get_bounding_client_rect_inner(el, mapcache);
+			var obj = get_bounding_client_rect_inner(el, mapcache, true);
 			return obj.rect || obj.orig_rect;
 		}
 
@@ -39848,7 +40152,7 @@ var $$IMU_EXPORT$$;
 				do_request: do_request,
 				rule_specific: {},
 				cb: function(result) {
-					if (!result || result === "default") {
+					if (result === undefined || result === "default") {
 						return cb(get_next_in_gallery(el, nextprev));
 					} else {
 						cb(result);
@@ -39871,7 +40175,7 @@ var $$IMU_EXPORT$$;
 			if (helpers && helpers.gallery) {
 				gallery = function(el, nextprev) {
 					var value = helpers.gallery(el, nextprev);
-					if (value)
+					if (value || value === null)
 						return value;
 
 					return get_next_in_gallery(el, nextprev);
@@ -41352,6 +41656,7 @@ var $$IMU_EXPORT$$;
 				}
 			} else if (message.type === "popup_open") {
 				popup_el_remote = sender;
+				last_popup_el = null;
 			}
 		};
 
@@ -41366,7 +41671,7 @@ var $$IMU_EXPORT$$;
 					};
 				}
 
-				if (message.to && current_frame_id !== message.to) {
+				if (message.from === current_frame_id || (message.to && current_frame_id !== message.to)) {
 					return true;
 				}
 
