@@ -51733,6 +51733,12 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/coverart\/+)_tn\/+/, "$1gallery/");
 		}
 
+		if (amazon_container === "inteng-storage") {
+			// https://inteng-storage.s3.amazonaws.com/img/iea/zBwgmajpGK/sizes/speed-test-tools_resize_md.jpg
+			//   https://inteng-storage.s3.amazonaws.com/img/iea/zBwgmajpGK/speed-test-tools.jpg
+			return src.replace(/\/sizes\/+([^/]+)_resize_[^/.]+(\.[^/.]+)(?:[?#].*)?$/, "/$1$2");
+		}
+
 
 
 
@@ -56563,13 +56569,19 @@ var $$IMU_EXPORT$$;
 								end_cbs();
 
 								if (img.naturalWidth === 0 || img.naturalHeight === 0) {
+									if (_nir_debug_)
+										console_log("naturalWidth or naturalHeight == 0", img);
+
 									return err_cb();
 								}
 
 								good_cb(img);
 							};
 
-							img.onerror = function () {
+							img.onerror = function (e) {
+								if (_nir_debug_)
+									console_log("Error loading image", img, e);
+
 								end_cbs();
 								err_cb();
 							};
