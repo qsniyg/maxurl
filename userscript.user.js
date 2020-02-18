@@ -10005,19 +10005,7 @@ var $$IMU_EXPORT$$;
 			// https://public.flashingjungle.com/exhibitionism/2020/01/tumblr_l7d540zpVM1qd5asfo1_1280-681x1024.jpg
 			domain === "public.flashingjungle.com" ||
 			// https://static.acgsoso.com/uploads/2020/02/19bd4f091f03c191195d5e626c3190f9-200x300.jpg
-			(domain === "static.acgsoso.com" && src.indexOf("/uploads/") >= 0) ||
-			// https://1.soompi.io/wp-content/blogs.dir/8/files/2015/09/HA-TFELT-Wonder-Girls-590x730.jpg -- doesn't work
-			// https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2018/01/GTA-6-Female-Protag-796x417.jpg -- does work
-			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|images|photos|blogs.dir)|\/+uploads)\//.test(src)
-			//src.indexOf("/wp-content/blogs.dir/") >= 0 ||
-			// https://d13ezvd6yrslxm.cloudfront.net/wp/wp-content/images/x-men-apocalypse-700x300.jpg
-			//src.indexOf("/wp/wp-content/images/") >= 0 ||
-			// http://ljshopch.com/wp-content/photos/2017/12/e6c61489857f770f1738b9a5b8702671-250x150.jpg
-			//src.indexOf("/wp-content/photos/") >= 0 ||
-			// https://cdn.gamerant.com/wp-content/uploads/resident-evil-2-director-remake-faith-738x410.jpg.webp
-			//   https://cdn.gamerant.com/wp-content/uploads/resident-evil-2-director-remake-faith.jpg.webp
-			//src.indexOf("/wp-content/uploads/") >= 0 ||
-			/*src.indexOf("/wp/uploads/") >= 0*/
+			(domain === "static.acgsoso.com" && src.indexOf("/uploads/") >= 0)
 			) {
 			// http://arissa-x.com/miss-x-channel/wp-content/uploads/2017/06/IMG_0005.jpg
 			src = src.replace(/-[0-9]+x[0-9]+\.([^/]*(?:[?#].*)?)$/, ".$1");
@@ -10170,8 +10158,23 @@ var $$IMU_EXPORT$$;
 			(domain_nowww === "xda-developers.com" && src.indexOf("/files/") >= 0) ||
 			// http://www.onthemoveworld.com/otm-fr/wp-content/uploads/2019/03/Carly-rae-jepsen-2018-cr-Natalie-OMoore-billboard-1548-347x246_c.jpg
 			//   http://www.onthemoveworld.com/otm-fr/wp-content/uploads/2019/03/Carly-rae-jepsen-2018-cr-Natalie-OMoore-billboard-1548.jpg
-			domain_nowww === "onthemoveworld.com") {
-			src = src.replace(/-[0-9]*x[0-9]*(?:_[a-z])?(\.[^/.]*)(?:[?#].*)?$/, "$1");
+			domain_nowww === "onthemoveworld.com" ||
+			// https://1.soompi.io/wp-content/blogs.dir/8/files/2015/09/HA-TFELT-Wonder-Girls-590x730.jpg -- doesn't work
+			// https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2018/01/GTA-6-Female-Protag-796x417.jpg -- does work
+			// https://dreamix.eu/blog/wp-content/uploads/2017/05/20150224test644-1508x706_c.jpg
+			//   https://dreamix.eu/blog/wp-content/uploads/2017/05/20150224test644.jpg
+			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|images|photos|blogs.dir)|\/+uploads)\//.test(src)
+			//src.indexOf("/wp-content/blogs.dir/") >= 0 ||
+			// https://d13ezvd6yrslxm.cloudfront.net/wp/wp-content/images/x-men-apocalypse-700x300.jpg
+			//src.indexOf("/wp/wp-content/images/") >= 0 ||
+			// http://ljshopch.com/wp-content/photos/2017/12/e6c61489857f770f1738b9a5b8702671-250x150.jpg
+			//src.indexOf("/wp-content/photos/") >= 0 ||
+			// https://cdn.gamerant.com/wp-content/uploads/resident-evil-2-director-remake-faith-738x410.jpg.webp
+			//   https://cdn.gamerant.com/wp-content/uploads/resident-evil-2-director-remake-faith.jpg.webp
+			//src.indexOf("/wp-content/uploads/") >= 0 ||
+			//src.indexOf("/wp/uploads/") >= 0
+			) {
+			src = src.replace(/-[0-9]*x[0-9]*(?:_c)?(\.[^/.]*)(?:[?#].*)?$/, "$1");
 		}
 
 		// http://felipepitta.com/blog/wp-content/uploads/2014/08/Harry-Potter-Hogwarts-Express-Jacobite-Fort-William-Scotland-Train(pp_w970_h646).jpg
