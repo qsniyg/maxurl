@@ -34732,10 +34732,21 @@ var $$IMU_EXPORT$$;
 			//   https://images-assets.nasa.gov/image/PIA18874/PIA18874~orig.jpg
 			// https://www.jpl.nasa.gov/spaceimages/images/wallpaper/PIA23572-640x350.jpg
 			//   https://photojournal.jpl.nasa.gov/jpeg/PIA23572.jpg
+			// https://www.jpl.nasa.gov/spaceimages/images/wallpaper/PIA02821-1920x1200.jpg
+			//   https://photojournal.jpl.nasa.gov/jpeg/PIA02821.jpg
 			//return src.replace(/:\/\/[^/]+\/+spaceimages\/+images\/+[^/]+\/+(PIA[0-9]+)(?:_[^/]+|-[0-9]+x[0-9]+)(\.[^/.]*)(?:[?#].*)?$/,
 			//				   "://images-assets.nasa.gov/image/$1/$1~orig$2");
-			return src.replace(/:\/\/[^/]+\/+spaceimages\/+images\/+[^/]+\/+(PIA[0-9]+)(?:_[^/]+|-[0-9]+x(?:x[0-9]+|[wh]))(\.(?:jpg|jpeg|JPG|JPEG))(?:[?#].*)?$/,
+			return src.replace(/:\/\/[^/]+\/+spaceimages\/+images\/+[^/]+\/+(PIA[0-9]+)(?:_[^/]+|-[0-9]+(?:x[0-9]+|[wh]))(\.(?:jpg|jpeg|JPG|JPEG))(?:[?#].*)?$/,
 				               "://photojournal.jpl.nasa.gov/jpeg/$1$2");
+		}
+
+		if (domain === "imagecache.jpl.nasa.gov") {
+			// https://imagecache.jpl.nasa.gov/images/640x350/PIA21642-16-640x350.jpg
+			//   https://photojournal.jpl.nasa.gov/jpeg/PIA21642.jpg
+			match = src.match(/:\/\/[^/]+\/+images\/+[0-9]+x[0-9]+\/+(?:pia|PIA)([0-9]+)-[0-9]+-[0-9]+x[0-9]+\./);
+			if (match) {
+				return "https://photojournal.jpl.nasa.gov/jpeg/PIA" + match[1] + ".jpg";
+			}
 		}
 
 		if (domain === "solarsystem.nasa.gov") {
@@ -34752,13 +34763,15 @@ var $$IMU_EXPORT$$;
 			//   https://photojournal.jpl.nasa.gov/jpeg/PIA18295.jpg
 			// https://solarsystem.nasa.gov/system/resources/detail_files/17678_PIA21448.jpg
 			//   https://photojournal.jpl.nasa.gov/jpeg/PIA21448.jpg
+			// https://solarsystem.nasa.gov/system/news_items/main_images/317_pia21977_short.jpg
+			//   https://photojournal.jpl.nasa.gov/jpeg/PIA21977.jpg
 			// other:
 			// https://solarsystem.nasa.gov/system/resources/list_images/897_KSC-71P-0354_320.jpg
 			//   https://solarsystem.nasa.gov/system/resources/detail_files/897_KSC-71P-0354.jpg
 			//   https://solarsystem.nasa.gov/system/downloadable_items/1241_KSC-71P-0354.jpg
 			//   https://solarsystem.nasa.gov/resources/897/mariner-9-launch/
-			return src.replace(/:\/\/[^/]+\/+system\/+resources\/+(?:detail_files|list_images)\/+[0-9]+_(PIA[0-9]+)(?:\.[^/.]+_[^/]+|[-_][^/]+)?\.[^/.]+(?:[?#].*)?$/,
-								"://photojournal.jpl.nasa.gov/jpeg/$1.jpg");
+			return src.replace(/:\/\/[^/]+\/+system\/+(?:resources|news_items)\/+(?:detail_files|(?:list|main)_images)\/+[0-9]+_(?:pia|PIA)([0-9]+)(?:_[a-z]+)?(?:\.[^/.]+_[^/]+|[-_][^/]+)?\.[^/.]+(?:[?#].*)?$/,
+								"://photojournal.jpl.nasa.gov/jpeg/PIA$1.jpg");
 		}
 
 		if (domain === "photojournal.jpl.nasa.gov") {
@@ -35142,15 +35155,19 @@ var $$IMU_EXPORT$$;
 			};
 		}
 
-		if (domain === "3c1703fe8d.site.internapcdn.net") {
+		if (domain === "3c1703fe8d.site.internapcdn.net" ||
+			// https://phys.org/newman/csz/news/tmb/2013/jupiter.jpg
+			//   https://phys.org/newman/gfx/news/hires/2013/jupiter.jpg
+			domain_nowww === "phys.org") {
 			// https://3c1703fe8d.site.internapcdn.net/newman/csz/news/800/2017/nasasfleetof.jpg
 			//   https://3c1703fe8d.site.internapcdn.net/newman/gfx/news/hires/2017/nasasfleetof.jpg
 			// https://3c1703fe8d.site.internapcdn.net/newman/gfx/news/2018/2-tropicalstor.jpg
+			//   https://3c1703fe8d.site.internapcdn.net/newman/gfx/news/hires/2018/2-tropicalstor.jpg -- doesn't work
 			// https://3c1703fe8d.site.internapcdn.net/newman/csz/news/800/2018/praguezookee.jpg
 			//   https://3c1703fe8d.site.internapcdn.net/newman/gfx/news/2018/praguezookee.jpg
 			// https://3c1703fe8d.site.internapcdn.net/newman/csz/news/tmb/2018/1-thisphotorel.jpg
 			//   https://3c1703fe8d.site.internapcdn.net/newman/gfx/news/2018/1-thisphotorel.jpg
-			newsrc = src.replace(/\/newman\/+[a-z]+\/+([^/]*)\/+[^/]*\/+([0-9]{4}\/+[^/]*)(?:[?#].*)?$/, "/newman/gfx/$1/$2");
+			newsrc = src.replace(/\/newman\/+csz\/+([^/]*)\/+[^/]*\/+([0-9]{4}\/+[^/]*)(?:[?#].*)?$/, "/newman/gfx/$1/$2");
 			if (newsrc !== src)
 				return newsrc;
 
@@ -51661,6 +51678,11 @@ var $$IMU_EXPORT$$;
 				return decodeuri_ifneeded(newsrc);
 		}
 
+		if (domain === "d2xkkdgjnsfvb0.cloudfront.net") {
+			// https://d2xkkdgjnsfvb0.cloudfront.net/Vault/Thumb?VaultID=17372&Interlaced=1&Mode=R&ResX=960&OutputFormat=jpg&Quality=90&t=1557760266
+			//   https://d2xkkdgjnsfvb0.cloudfront.net/Vault/VaultOutput?ID=17372
+			return src.replace(/\/Vault\/+Thumb\?(?:.*&)?VaultID=([0-9]+).*$/, "/Vault/VaultOutput?ID=$1");
+		}
 
 
 
@@ -52132,6 +52154,9 @@ var $$IMU_EXPORT$$;
 			// https://thumbor.f3.cool/BGpVZveO6bAVctCZ7aGCsL3-iPA=/360x360/smart/profile0.f3.cool/xRGcA9JA/KRpUDdn7_360x360.jpg
 			//   http://profile0.f3.cool/xRGcA9JA/KRpUDdn7_360x360.jpg
 			domain === "thumbor.f3.cool" ||
+			// http://dw8stlw9qt0iz.cloudfront.net/mQPnCmXmqNYQo57GciDCvFLPgAo=/fit-in/800x450/filters:format(jpeg):quality(75)/curiosity-data.s3.amazonaws.com/images/content/landscape/standard/9c8fb438-27d4-4694-ba65-1a98e8ffd426.png
+			//   http://curiosity-data.s3.amazonaws.com/images/content/landscape/standard/9c8fb438-27d4-4694-ba65-1a98e8ffd426.png
+			domain === "dw8stlw9qt0iz.cloudfront.net" ||
 			src.match(/:\/\/[^/]*\/thumbor\/[^/]*=\//) ||
 			// https://www.orlandosentinel.com/resizer/tREpzmUU7LJX1cbkAN-unm7wL0Y=/fit-in/800x600/top/filters:fill(black)/arc-anglerfish-arc2-prod-tronc.s3.amazonaws.com/public/XC6HBG2I4VHTJGGCOYVPLBGVSM.jpg
 			//   http://arc-anglerfish-arc2-prod-tronc.s3.amazonaws.com/public/XC6HBG2I4VHTJGGCOYVPLBGVSM.jpg
@@ -52726,6 +52751,20 @@ var $$IMU_EXPORT$$;
 			newsrc = src.replace(/.*\/wp-content\/+themes\/+[^/]+\/+functions\/+resize_ext\.php\?(?:.*&)?image=(http[^&]*).*?$/, "$1");
 			if (newsrc !== src)
 				return decodeuri_ifneeded(newsrc);
+		}
+
+		// Moodle?
+		if (domain_nowww === "12andus.com" ||
+			// https://vln.school.nz/mod/file/thumbnail.php?file_guid=690703&size=large&icontime=1338202040
+			//   https://vln.school.nz/mod/file/thumbnail.php?file_guid=690703&size=original
+			domain === "vln.school.nz" ||
+			// http://www.ict-21.ch/l4d/mod/file/thumbnail.php?file_guid=908703&size=large
+			//   http://www.ict-21.ch/l4d/mod/file/thumbnail.php?file_guid=908703&size=original
+			domain_nowww === "ict-21.ch" ||
+			/\/mod\/+file\/+thumbnail\.php\?(?:.*&)?file_guid=[0-9]+(?:&.*)?$/.test(src)) {
+			// https://12andus.com/mod/file/thumbnail.php?file_guid=14980&size=medium&icontime=1489916398
+			//   https://12andus.com/mod/file/thumbnail.php?file_guid=14980&size=original
+			return src.replace(/(\/mod\/+file\/+thumbnail\.php\?)(?:.*&)?(file_guid=[0-9]+).*$/, "$1$2&size=original");
 		}
 
 		// Invision Community
