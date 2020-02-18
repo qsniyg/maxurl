@@ -17938,7 +17938,10 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/mobile\/.*\/[0-9]+_)[0-9]+(-[0-9]*\.[^/]*)$/, "$10$2");
 		}
 
-		if (domain === "i.pximg.net") {
+		if (domain === "i.pximg.net" ||
+			// https://tc-pximg01.techorus-cdn.com/c/250x250_80_a2/img-master/img/2010/07/31/02/46/26/12235259_p0_square1200.jpg
+			//   https://tc-pximg01.techorus-cdn.com/img-original/img/2010/07/31/02/46/26/12235259_p0.png
+			(domain_nosub === "techorus-cdn.com" && /^tc-pximg[0-9]*\./.test(domain))) {
 			// only works if the referrer is correct
 			// https://i.pximg.net/c/600x600/img-master/img/2017/06/25/17/53/43/63558968_p0_master1200.jpg
 			//   https://i.pximg.net/img-original/img/2017/06/25/17/53/43/63558968_p0.jpg
@@ -17958,14 +17961,23 @@ var $$IMU_EXPORT$$;
 			//   https://i.pximg.net/img-original/img/2016/04/20/21/54/33/56447170_p0.png
 			// https://i.pximg.net/c/250x250_80_a2/img-original/img/2018/05/20/14/43/30/68834563_p0.png
 			//   https://i.pximg.net/img-original/img/2018/05/20/14/43/30/68834563_p0.png
+			// https://i.pximg.net/user-profile/img/2008/06/17/01/28/01/171098_fc06efd15628e2ee252941ae5298b5ff_170.jpg
+			//   https://i.pximg.net/user-profile/img/2008/06/17/01/28/01/171098_fc06efd15628e2ee252941ae5298b5ff.jpg
 			newsrc = src
+				.replace(/(\/user-profile\/+img\/.*\/[0-9]+_[0-9a-f]{20,})_[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1$2")
 				.replace(/\/c\/[0-9]+x[0-9]+(?:_[0-9]+)?(?:_[a-z]+[0-9]+)?\//, "/")
 				.replace(/\/img-master\//, "/img-original/")
 				.replace(/(\/[0-9]+_p[0-9]+)_[^/]*(\.[^/.]*)$/, "$1$2");
 
 			//var referer_url = "https://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + src.replace(/.*\/([0-9]+)_[^/]*$/, "$1");
+			var referer_url = "https://www.pixiv.net/";
+
 			var illust_id = src.replace(/.*\/([0-9]+)_[^/]*$/, "$1");
-			var referer_url = "https://www.pixiv.net/artworks/" + illust_id;
+			if (illust_id === src) {
+				illust_id = null;
+			} else {
+				referer_url = "https://www.pixiv.net/artworks/" + illust_id;
+			}
 
 			obj = {
 				headers: {
@@ -17983,7 +17995,7 @@ var $$IMU_EXPORT$$;
 
 			var retobj = fillobj_urls(urls, obj);
 
-			if (options && options.force_page && options.cb && options.do_request) {
+			if (illust_id && options && options.force_page && options.cb && options.do_request) {
 				options.do_request({
 					url: referer_url,
 					method: "GET",
@@ -20357,6 +20369,16 @@ var $$IMU_EXPORT$$;
 			//   https://cdn.uc.assets.prezly.com/c204db5f-a17a-4c64-96b2-112b0876cb84/-
 			return src.replace(/(:\/\/[^/]*\/+(?:[a-z]+)?[-a-f0-9]{30,}(?:~[0-9a-f]+)?\/+(?:nth\/+[0-9]+\/+)?).*?(?:\/([^/.]+\.[^/.]+))?(?:[?#].*)?$/, "$1$2");
 			//return src.replace(/(:\/\/[^/]*\/[-0-9a-f]+\/).*/, "$1");
+		}
+
+		if (domain_nowww === "slant.co") {
+			// https://www.slant.co/images/play.png
+			if (/:\/\/[^/]+\/+images\/+play\.png(?:[?#].*)?$/.test(src)) {
+				return {
+					url: src,
+					bad: "mask"
+				};
+			}
 		}
 
 		if (domain === "leonardo.osnova.io") {
@@ -51683,6 +51705,12 @@ var $$IMU_EXPORT$$;
 			// https://d2xkkdgjnsfvb0.cloudfront.net/Vault/Thumb?VaultID=17372&Interlaced=1&Mode=R&ResX=960&OutputFormat=jpg&Quality=90&t=1557760266
 			//   https://d2xkkdgjnsfvb0.cloudfront.net/Vault/VaultOutput?ID=17372
 			return src.replace(/\/Vault\/+Thumb\?(?:.*&)?VaultID=([0-9]+).*$/, "/Vault/VaultOutput?ID=$1");
+		}
+
+		if (domain_nowww === "albumartexchange.com") {
+			// https://www.albumartexchange.com/coverart/_tn/va/variousartists_kitsunsoleilmix_65el.jpg
+			//   https://www.albumartexchange.com/coverart/gallery/va/variousartists_kitsunsoleilmix_65el.jpg
+			return src.replace(/(\/coverart\/+)_tn\/+/, "$1gallery/");
 		}
 
 
