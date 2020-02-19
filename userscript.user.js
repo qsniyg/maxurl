@@ -60439,6 +60439,7 @@ var $$IMU_EXPORT$$;
 		};
 
 		var replacing_imgs = false;
+		var replaceimgs_elcache = new Cache();
 		function replace_images(options) {
 			if (replacing_imgs || currenttab_is_image())
 				return;
@@ -60460,17 +60461,18 @@ var $$IMU_EXPORT$$;
 			if (imgs.length === 0)
 				return;
 
-			console_log("Replacing images");
+			if (options.use_progressbar)
+				console_log("Replacing images");
 
 			var finished = 0;
 
 			var finish_img = function() {
 				finished++;
 
-				if (options.use_progressbar)
+				if (options.use_progressbar) {
 					update_progress_el(progressc_el, finished / total_imgs);
-
-				console_log("Finished " + finished + "/" + total_imgs);
+					console_log("Finished " + finished + "/" + total_imgs);
+				}
 
 				if (finished >= total_imgs) {
 					if (options.use_progressbar)
@@ -60518,6 +60520,15 @@ var $$IMU_EXPORT$$;
 				if (our_source === null && other.length > 0) {
 					our_source = other[0];
 					other.splice(0, 1);
+				}
+
+				if (options.use_elcache && our_source) {
+					if (replaceimgs_elcache.has(our_source.el)) {
+						return finish_img();
+					} else {
+						// Not perfect, but 5 seconds should be enough
+						replaceimgs_elcache.set(our_source.el, true, 5);
+					}
 				}
 
 				if (our_source) {
@@ -60904,7 +60915,7 @@ var $$IMU_EXPORT$$;
 			}
 
 			if (settings.replaceimgs_auto)
-				replace_images_full({images: images, use_progressbar: false});
+				replace_images_full({images: images, use_progressbar: false, use_elcache: true});
 		};
 
 		(function() {
