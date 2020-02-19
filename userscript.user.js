@@ -60544,7 +60544,7 @@ var $$IMU_EXPORT$$;
 						if (our_domain)
 							domains_processing[our_domain]--;
 
-						var replace_func = function(el, newsrc) {
+						var replace_func = function(el, newsrc, url) {
 							if (options.replace_imgs && get_img_src(el) !== newsrc) {
 								el.src = newsrc;
 							}
@@ -60568,27 +60568,27 @@ var $$IMU_EXPORT$$;
 									current.appendChild(el);
 								}
 
-								if (current.href !== newsrc) {
-									current.href = newsrc;
+								if (current.href !== url) {
+									current.href = url;
 								}
 							}
 						};
 
 						if (!data) {
-							replace_func(our_source.el, our_source.src);
+							replace_func(our_source.el, our_source.src, our_source.src);
 							return finish_img();
 						}
 
 						var waiting = false;
 						if (data.data.img) {
-							replace_func(source.el, data.data.img.src);
+							replace_func(source.el, data.data.img.src, data.data.obj.url);
 						} else if (data.data.obj) {
 							var load_image = function() {
 								if (settings.replaceimgs_wait_fullyloaded && options.replace_imgs) {
 									// Preload the image, as adding onload/onerror to existing images won't fire the event
 									var image = new Image();
 									var finish_image = function () {
-										replace_func(source.el, image.src);
+										replace_func(source.el, image.src, data.data.obj.url);
 										finish_img();
 									};
 
@@ -60596,7 +60596,7 @@ var $$IMU_EXPORT$$;
 									image.onerror = finish_img;
 									image.src = data.data.obj.url;
 								} else {
-									replace_func(source.el, data.data.obj.url);
+									replace_func(source.el, data.data.obj.url, data.data.obj.url);
 									finish_img();
 								}
 							};
