@@ -3002,20 +3002,79 @@ var $$IMU_EXPORT$$;
 
 	var settings_history = {};
 
+	var js_map_available = false;
+	var new_map = function() {
+		var map = {};
+
+		try {
+			map = new Map();
+			js_map_available = true;
+		} catch (e) {
+		}
+
+		return map;
+	};
+
+	var map_set = function(map, key, value) {
+		if (js_map_available) {
+			map.set(key, value);
+		} else {
+			map[key] = value;
+		}
+
+		return value;
+	};
+
+	var map_get = function(map, key) {
+		if (js_map_available) {
+			return map.get(key);
+		} else {
+			return map[key];
+		}
+	};
+
+	var map_has = function(map, key) {
+		if (js_map_available) {
+			return map.has(key);
+		} else {
+			return key in map;
+		}
+	};
+
+	var map_remove = function(map, key) {
+		if (js_map_available) {
+			map.delete(key);
+		} else {
+			delete map[key];
+		}
+	};
+
+	var map_foreach = function(map, cb) {
+		if (js_map_available) {
+			var keys = map.keys();
+			for (var i = 0; i < keys.length; i++) {
+				cb(keys[i], map.get(keys[i]));
+			}
+		} else {
+			for (var key in map) {
+				cb(key, map[key]);
+			}
+		}
+	};
 
 	function Cache() {
-		this.data = {};
-		this.times = {};
+		this.data = new_map();
+		this.times = new_map();
 
-		this.fetches = {};
+		this.fetches = new_map();
 
 		this.set = function(key, value, time) {
 			if (_nir_debug_)
-				console_log("Cache.set key=" + key + ", time=" + time + ", value:", deepcopy(value));
+				console_log("Cache.set key:", key, ", time=" + time + ", value:", deepcopy(value));
 
 			this.remove(key);
 
-			this.data[key] = value;
+			map_set(this.data, key, value);
 
 			if (typeof time === "number" && time > 0) {
 				var cache = this;
@@ -3027,37 +3086,44 @@ var $$IMU_EXPORT$$;
 				if (is_node && "unref" in timer) {
 					timer.unref();
 				}
-				this.times[key] = {
+
+				map_set(this.times, key, {
 					timer: timer,
 					time: time
-				};
+				});
 			}
 		};
 
 		this.has = function(key) {
-			if (_nir_debug_)
-				console_log("Cache.has key=" + key, key in this.data);
+			var has_key = map_has(this.data, key);
 
-			return (key in this.data);
+			if (_nir_debug_)
+				console_log("Cache.has key:", key, has_key);
+
+			return has_key;
 		};
 
 		this.get = function(key) {
+			var value = map_get(this.data, key);
+
 			// TODO: maybe renew timeout per-get?
 			if (_nir_debug_)
-				console_log("Cache.get key=" + key, deepcopy(this.data[key]));
+				console_log("Cache.get key:", key, deepcopy(value));
 
-			return this.data[key];
+			return value;
 		};
 
 		this.fetch = function(key, done, fetcher) {
-			if (_nir_debug_)
-				console_log("Cache.fetch key=" + key + ", exists=" + (key in this.data));
+			var exists = map_has(this.data, key);
 
-			if (!(key in this.data)) {
-				if (key in this.fetches) {
-					this.fetches[key].push(done);
+			if (_nir_debug_)
+				console_log("Cache.fetch key:", key, ", exists=" + exists);
+
+			if (!exists) {
+				if (map_has(this.fetches, key)) {
+					map_get(this.fetches, key).push(done);
 				} else {
-					this.fetches[key] = [];
+					map_set(this.fetches, key, []);
 
 					fetcher(function(data, time) {
 						if (time !== false)
@@ -3065,40 +3131,41 @@ var $$IMU_EXPORT$$;
 
 						done(data);
 
-						for (var i = 0; i < this.fetches[key].length; i++) {
-							this.fetches[key][i](data);
+						var our_fetches = map_get(this.fetches, key);
+						for (var i = 0; i < our_fetches.length; i++) {
+							our_fetches[i](data);
 						}
 
-						delete this.fetches[key];
+						map_remove(this.fetches, key);
 					}.bind(this));
 				}
 			} else {
-				done(this.data[key]);
+				done(map_get(this.data, key));
 			}
 		};
 
 		this.remove = function(key) {
 			if (_nir_debug_)
-				console_log("Cache.remove key=" + key);
+				console_log("Cache.remove key:", key);
 
-			if (key in this.times) {
-				clearTimeout(this.times[key].timer);
+			if (map_has(this.times, key)) {
+				clearTimeout(map_get(this.times, key).timer);
 			}
 
-			delete this.times[key];
-			delete this.data[key];
+			map_remove(this.times, key);
+			map_remove(this.data, key);
 		};
 
 		this.clear = function() {
 			if (_nir_debug_)
 				console_log("Cache.clear");
 
-			for (var key in this.times) {
-				clearTimeout(this.times[key].timer);
-			}
+			map_foreach(this.times, function(key, value) {
+				clearTimeout(value);
+			});
 
-			this.times = {};
-			this.data = {};
+			this.times = new_map();
+			this.data = new_map();
 		};
 	};
 
