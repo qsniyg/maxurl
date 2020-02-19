@@ -58678,8 +58678,16 @@ var $$IMU_EXPORT$$;
 			if (!el)
 				return null;
 
-			if (mapcache && mapcache.has(el))
-				return mapcache.get(el);
+			if (mapcache && mapcache.has(el)) {
+				var value = mapcache.get(el);
+
+				if (need_rect) {
+					if (value.orig_rect)
+						return value;
+				} else {
+					return value;
+				}
+			}
 
 			var parent = {};
 			var parentel = el.parentElement;
@@ -58751,7 +58759,7 @@ var $$IMU_EXPORT$$;
 			if (rect)
 				result.rect = rect;
 
-			if (mapcache && orig_rect) {
+			if (mapcache) {
 				mapcache.set(el, result);
 			}
 
