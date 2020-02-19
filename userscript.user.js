@@ -60568,7 +60568,9 @@ var $$IMU_EXPORT$$;
 									current.appendChild(el);
 								}
 
-								current.href = newsrc;
+								if (current.href !== newsrc) {
+									current.href = newsrc;
+								}
 							}
 						};
 
