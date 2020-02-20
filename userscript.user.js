@@ -38600,8 +38600,19 @@ var $$IMU_EXPORT$$;
 			//   https://kpopping.com/uploads/documents/third_thumbnail_bomb.png
 			// https://kpopping.com/uploads/documents/activity_guide/88x65xthird_ateez_jongho2_540.png.keep.png.pagespeed.ic.zVZjnS2lfb.webp
 			//   https://kpopping.com/uploads/documents/third_ateez_jongho2_540.png
-			return src
-				.replace(/\/uploads\/+documents\/+[^/]+\/+(?:[0-9]*x){0,2}([^/]+?)(?:,[0-9]+){0,}(\.[^/]+?)(?:\.(?:keep|crop)\..*)?(?:[?#].*)?$/, "/uploads/documents/$1$2");
+			// https://kpopping.com/uploads/documents/cover_image/xcover_300x0w,2860,29.jpeg.keep.fff.png.pagespeed.ic.lBx56s5PPQ.webp
+			// https://kpopping.com/uploads/documents/gallery_thumbnail_small/xoriginal_5,28122,29.jpeg.crop.fff.png.pagespeed.ic.SmZA5eU1kA.webp
+			//   https://kpopping.com/uploads/documents/kpics_gallery/xoriginal_5,28122,29.jpeg.keep.fff.png.pagespeed.ic.9JVI1QJVyp.webp
+
+			/*
+			  seems like they changed something, again.
+			  every time i update this script, it seems like a few days later, something changes in the way their site works, breaking the fix i did for this site.
+			  they're aware of this script (they linked to it at one point), so it could very well be intentional on their part.
+			*/
+			if (false) {
+				return src
+					.replace(/\/uploads\/+documents\/+[^/]+\/+(?:[0-9]*x){0,2}([^/]+?)(?:,[0-9]+){0,}(\.[^/]+?)(?:\.(?:keep|crop)\..*)?(?:[?#].*)?$/, "/uploads/documents/$1$2");
+			}
 		}
 
 		if (domain_nosub === "tin247.com" &&
@@ -51897,6 +51908,12 @@ var $$IMU_EXPORT$$;
 			// https://inteng-storage.s3.amazonaws.com/img/iea/zBwgmajpGK/sizes/speed-test-tools_resize_md.jpg
 			//   https://inteng-storage.s3.amazonaws.com/img/iea/zBwgmajpGK/speed-test-tools.jpg
 			return src.replace(/\/sizes\/+([^/]+)_resize_[^/.]+(\.[^/.]+)(?:[?#].*)?$/, "/$1$2");
+		}
+
+		if (domain === "covers.vitalbook.com") {
+			// https://covers.vitalbook.com/vbid/9780190650100/width/200
+			//   https://covers.vitalbook.com/vbid/9780190650100
+			return src.replace(/(\/vbid\/+[0-9]+)(?:\/+(?:height|width)\/+[0-9]+\/*)?(?:[?#].*)?$/, "$1");
 		}
 
 
