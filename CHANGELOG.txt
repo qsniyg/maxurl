@@ -1,3 +1,21 @@
+0.12.14
+
+New features:
+
+ * Support for 4 new websites (using 3 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including Google Images, Pixiv, Tumblr, Wordpress, Youtube)
+ * More performance optimizations
+
+Bugfixes:
+
+ * The "Automatically Replace Images" option will no longer cause sites like Twitch to hang
+ * Fix data: URLs for the extension
+
+---
+
 0.12.13
 
 New features:

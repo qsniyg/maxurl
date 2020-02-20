@@ -4,7 +4,7 @@
 // ==UserScript==
 // @name              Image Max URL
 // @namespace         http://tampermonkey.net/
-// @version           0.12.13
+// @version           0.12.14
 // @description       Finds larger or original versions of images for 6300+ websites, including a powerful image popup feature
 // @description:ko    6300개 이상의 사이트에 대해 더 크거나 원본 이미지를 찾아드립니다
 // @description:fr    Trouve des images plus grandes ou originales pour plus de 6300 sites
@@ -878,6 +878,15 @@ var $$IMU_EXPORT$$;
 		}
 	}
 
+	var base64_decode = nullfunc;
+	if (is_node && typeof atob === 'undefined') {
+		base64_decode = function(a) {
+			return Buffer.from(a, 'base64').toString('binary');
+		};
+	} else if (typeof atob !== 'undefined') {
+		base64_decode = atob;
+	}
+
 	var serialize_event = function(event) {
 		return deepcopy(event, {json: true});
 	};
@@ -1454,7 +1463,8 @@ var $$IMU_EXPORT$$;
 		imgur_source: true,
 		instagram_use_app_api: true,
 		instagram_gallery_postlink: false,
-		tumblr_api_key: "",
+		// just a very small protection against github scraping bots :)
+		tumblr_api_key: base64_decode("IHhyTXBMTThuMWVDZUwzb1JZU1pHN0NMQUx3NkVIaFlEZFU2V3E1ZUQxUGJNa2xkN1kx").substr(1),
 		// thanks to LukasThyWalls on github for the idea: https://github.com/qsniyg/maxurl/issues/75
 		bigimage_blacklist: "",
 		bigimage_blacklist_engine: "glob",
@@ -2995,20 +3005,79 @@ var $$IMU_EXPORT$$;
 
 	var settings_history = {};
 
+	var js_map_available = false;
+	var new_map = function() {
+		var map = {};
+
+		try {
+			map = new Map();
+			js_map_available = true;
+		} catch (e) {
+		}
+
+		return map;
+	};
+
+	var map_set = function(map, key, value) {
+		if (js_map_available) {
+			map.set(key, value);
+		} else {
+			map[key] = value;
+		}
+
+		return value;
+	};
+
+	var map_get = function(map, key) {
+		if (js_map_available) {
+			return map.get(key);
+		} else {
+			return map[key];
+		}
+	};
+
+	var map_has = function(map, key) {
+		if (js_map_available) {
+			return map.has(key);
+		} else {
+			return key in map;
+		}
+	};
+
+	var map_remove = function(map, key) {
+		if (js_map_available) {
+			map.delete(key);
+		} else {
+			delete map[key];
+		}
+	};
+
+	var map_foreach = function(map, cb) {
+		if (js_map_available) {
+			var keys = map.keys();
+			for (var i = 0; i < keys.length; i++) {
+				cb(keys[i], map.get(keys[i]));
+			}
+		} else {
+			for (var key in map) {
+				cb(key, map[key]);
+			}
+		}
+	};
 
 	function Cache() {
-		this.data = {};
-		this.times = {};
+		this.data = new_map();
+		this.times = new_map();
 
-		this.fetches = {};
+		this.fetches = new_map();
 
 		this.set = function(key, value, time) {
 			if (_nir_debug_)
-				console_log("Cache.set key=" + key + ", time=" + time + ", value:", deepcopy(value));
+				console_log("Cache.set key:", key, ", time=" + time + ", value:", deepcopy(value));
 
 			this.remove(key);
 
-			this.data[key] = value;
+			map_set(this.data, key, value);
 
 			if (typeof time === "number" && time > 0) {
 				var cache = this;
@@ -3020,37 +3089,44 @@ var $$IMU_EXPORT$$;
 				if (is_node && "unref" in timer) {
 					timer.unref();
 				}
-				this.times[key] = {
+
+				map_set(this.times, key, {
 					timer: timer,
 					time: time
-				};
+				});
 			}
 		};
 
 		this.has = function(key) {
-			if (_nir_debug_)
-				console_log("Cache.has key=" + key, key in this.data);
+			var has_key = map_has(this.data, key);
 
-			return (key in this.data);
+			if (_nir_debug_)
+				console_log("Cache.has key:", key, has_key);
+
+			return has_key;
 		};
 
 		this.get = function(key) {
+			var value = map_get(this.data, key);
+
 			// TODO: maybe renew timeout per-get?
 			if (_nir_debug_)
-				console_log("Cache.get key=" + key, deepcopy(this.data[key]));
+				console_log("Cache.get key:", key, deepcopy(value));
 
-			return this.data[key];
+			return value;
 		};
 
 		this.fetch = function(key, done, fetcher) {
-			if (_nir_debug_)
-				console_log("Cache.fetch key=" + key + ", exists=" + (key in this.data));
+			var exists = map_has(this.data, key);
 
-			if (!(key in this.data)) {
-				if (key in this.fetches) {
-					this.fetches[key].push(done);
+			if (_nir_debug_)
+				console_log("Cache.fetch key:", key, ", exists=" + exists);
+
+			if (!exists) {
+				if (map_has(this.fetches, key)) {
+					map_get(this.fetches, key).push(done);
 				} else {
-					this.fetches[key] = [];
+					map_set(this.fetches, key, []);
 
 					fetcher(function(data, time) {
 						if (time !== false)
@@ -3058,40 +3134,41 @@ var $$IMU_EXPORT$$;
 
 						done(data);
 
-						for (var i = 0; i < this.fetches[key].length; i++) {
-							this.fetches[key][i](data);
+						var our_fetches = map_get(this.fetches, key);
+						for (var i = 0; i < our_fetches.length; i++) {
+							our_fetches[i](data);
 						}
 
-						delete this.fetches[key];
+						map_remove(this.fetches, key);
 					}.bind(this));
 				}
 			} else {
-				done(this.data[key]);
+				done(map_get(this.data, key));
 			}
 		};
 
 		this.remove = function(key) {
 			if (_nir_debug_)
-				console_log("Cache.remove key=" + key);
+				console_log("Cache.remove key:", key);
 
-			if (key in this.times) {
-				clearTimeout(this.times[key].timer);
+			if (map_has(this.times, key)) {
+				clearTimeout(map_get(this.times, key).timer);
 			}
 
-			delete this.times[key];
-			delete this.data[key];
+			map_remove(this.times, key);
+			map_remove(this.data, key);
 		};
 
 		this.clear = function() {
 			if (_nir_debug_)
 				console_log("Cache.clear");
 
-			for (var key in this.times) {
-				clearTimeout(this.times[key].timer);
-			}
+			map_foreach(this.times, function(key, value) {
+				clearTimeout(value);
+			});
 
-			this.times = {};
-			this.data = {};
+			this.times = new_map();
+			this.data = new_map();
 		};
 	};
 
@@ -3117,15 +3194,6 @@ var $$IMU_EXPORT$$;
 			}
 			return parsed;
 		};
-	}
-
-	var base64_decode = nullfunc;
-	if (is_node && typeof atob === 'undefined') {
-		base64_decode = function(a) {
-			return Buffer.from(a, 'base64').toString('binary');
-		};
-	} else if (typeof atob !== 'undefined') {
-		base64_decode = atob;
 	}
 
 	// https://stackoverflow.com/a/17323608
@@ -6703,11 +6771,16 @@ var $$IMU_EXPORT$$;
 			domain === "d2yal1mtmg1ts6.cloudfront.net" ||
 			(domain_nosub === "blogger.com" && domain.match(/^bp[0-9]*\.blogger\.com/)) ||
 			domain_nosub === "ggpht.com") {
-			return src
+			newsrc = src
 				.replace(/#.*$/, "")
 				.replace(/\?.*$/, "")
 				.replace(/\/[swh][0-9]*(-[^/]*]*)?\/([^/]*)$/, "/s0/$2")
 				.replace(/(=[^/]*)?$/, "=s0?imgmax=0");
+
+			return {
+				url: newsrc,
+				can_head: false // 404
+			};
 		}
 
 		if (domain_nowww === "star-tool.ru") {
@@ -6903,7 +6976,7 @@ var $$IMU_EXPORT$$;
 				return obj;
 			}
 
-			regex = /^(.+\/+vi(?:_webp)?\/+[^/]*\/+)[a-z]*(default|[0-9]+)(\.[^/.?#]*)(?:[?#].*)?$/;
+			regex = /^(.+\/+vi(?:_webp)?\/+[^/]*\/+)[a-z]*(default|[0-9]+)(?:_live)?(\.[^/.?#]*)(?:[?#].*)?$/;
 			if (regex.test(src)) {
 				var sizes = [
 					"maxres",
@@ -7788,9 +7861,7 @@ var $$IMU_EXPORT$$;
 			(domain === "celebsfake.adultcase.com" && src.indexOf("/files/") >= 0) ||
 			(domain_nowww === "theonemilano.com" && src.indexOf("/the-one-milano-uploads/") >= 0) ||
 			domain === "public.flashingjungle.com" ||
-			(domain === "static.acgsoso.com" && src.indexOf("/uploads/") >= 0) ||
-			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|images|photos|blogs.dir)|\/+uploads)\//.test(src)
-			/*src.indexOf("/wp/uploads/") >= 0*/
+			(domain === "static.acgsoso.com" && src.indexOf("/uploads/") >= 0)
 			) {
 			src = src.replace(/-[0-9]+x[0-9]+\.([^/]*(?:[?#].*)?)$/, ".$1");
 		}
@@ -7864,8 +7935,10 @@ var $$IMU_EXPORT$$;
 		if (domain_nowww === "mediaonlinevn.com" ||
 			(domain_nowww === "delas.pt" && src.indexOf("/files/") >= 0) ||
 			(domain_nowww === "xda-developers.com" && src.indexOf("/files/") >= 0) ||
-			domain_nowww === "onthemoveworld.com") {
-			src = src.replace(/-[0-9]*x[0-9]*(?:_[a-z])?(\.[^/.]*)(?:[?#].*)?$/, "$1");
+			domain_nowww === "onthemoveworld.com" ||
+			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|images|photos|blogs.dir)|\/+uploads)\//.test(src)
+			) {
+			src = src.replace(/-[0-9]*x[0-9]*(?:_c)?(\.[^/.]*)(?:[?#].*)?$/, "$1");
 		}
 
 		if (src.indexOf("/wp-content/uploads/") >= 0 ||
@@ -11895,14 +11968,22 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/mobile\/.*\/[0-9]+_)[0-9]+(-[0-9]*\.[^/]*)$/, "$10$2");
 		}
 
-		if (domain === "i.pximg.net") {
+		if (domain === "i.pximg.net" ||
+			(domain_nosub === "techorus-cdn.com" && /^tc-pximg[0-9]*\./.test(domain))) {
 			newsrc = src
+				.replace(/(\/user-profile\/+img\/.*\/[0-9]+_[0-9a-f]{20,})_[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1$2")
 				.replace(/\/c\/[0-9]+x[0-9]+(?:_[0-9]+)?(?:_[a-z]+[0-9]+)?\//, "/")
 				.replace(/\/img-master\//, "/img-original/")
 				.replace(/(\/[0-9]+_p[0-9]+)_[^/]*(\.[^/.]*)$/, "$1$2");
 
+			var referer_url = "https://www.pixiv.net/";
+
 			var illust_id = src.replace(/.*\/([0-9]+)_[^/]*$/, "$1");
-			var referer_url = "https://www.pixiv.net/artworks/" + illust_id;
+			if (illust_id === src) {
+				illust_id = null;
+			} else {
+				referer_url = "https://www.pixiv.net/artworks/" + illust_id;
+			}
 
 			obj = {
 				headers: {
@@ -11920,7 +12001,7 @@ var $$IMU_EXPORT$$;
 
 			var retobj = fillobj_urls(urls, obj);
 
-			if (options && options.force_page && options.cb && options.do_request) {
+			if (illust_id && options && options.force_page && options.cb && options.do_request) {
 				options.do_request({
 					url: referer_url,
 					method: "GET",
@@ -13205,6 +13286,15 @@ var $$IMU_EXPORT$$;
 			domain === "thumb.tildacdn.com" ||
 			domain === "cdn.slant.co") {
 			return src.replace(/(:\/\/[^/]*\/+(?:[a-z]+)?[-a-f0-9]{30,}(?:~[0-9a-f]+)?\/+(?:nth\/+[0-9]+\/+)?).*?(?:\/([^/.]+\.[^/.]+))?(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "slant.co") {
+			if (/:\/\/[^/]+\/+images\/+play\.png(?:[?#].*)?$/.test(src)) {
+				return {
+					url: src,
+					bad: "mask"
+				};
+			}
 		}
 
 		if (domain === "leonardo.osnova.io") {
@@ -16407,6 +16497,24 @@ var $$IMU_EXPORT$$;
 					newsrc = current.href.replace(/.*?\/imgres.*?[?&]imgurl=([^&]*).*?$/, "$1");
 					if (newsrc !== src)
 						return decodeURIComponent(newsrc);
+				}
+
+				current = options.element;
+				if (current.tagName === "IMG") {
+					while ((current = current.parentElement)) {
+						if (current.tagName !== "DIV")
+							continue;
+
+						var tbnid = current.getAttribute("data-tbnid");
+						if (!tbnid)
+							continue;
+
+						var regex = new RegExp("\\[[0-9]+\\s*,\\s*\"" + tbnid + "\"\\s*,\\s*\\[[^\\]]*\\]\\s*,\\s*\\[(\"[^\"]+\")\\s*,");
+						var match = document.documentElement.innerHTML.match(regex); // TODO: optimize
+						if (match) {
+							return JSON_parse(match[1]);
+						}
+					}
 				}
 
 				current = options.element;
@@ -23737,8 +23845,15 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "img.nga.178.com") {
-			return src.replace(/(\/attachments\/+[^/]*_[0-9]{6}\/+[0-9]+\/+[^/]*)\.thumb\.[^/.]*(?:[?#].*)?$/,
-							   "$1");
+			return {
+				url: src.replace(/(\/attachments\/+[^/]*_[0-9]{6}\/+[0-9]+\/+[^/]*)\.(?:thumb|medium)\.[^/.]*(?:[?#].*)?$/, "$1"),
+				headers: {
+					Referer: null
+				},
+				referer_ok: {
+					same_domain_nosub: true
+				}
+			};
 		}
 
 		if (domain_nowww === "livesport.ru" ||
@@ -32421,6 +32536,14 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/Vault\/+Thumb\?(?:.*&)?VaultID=([0-9]+).*$/, "/Vault/VaultOutput?ID=$1");
 		}
 
+		if (domain_nowww === "albumartexchange.com") {
+			return src.replace(/(\/coverart\/+)_tn\/+/, "$1gallery/");
+		}
+
+		if (amazon_container === "inteng-storage") {
+			return src.replace(/\/sizes\/+([^/]+)_resize_[^/.]+(\.[^/.]+)(?:[?#].*)?$/, "/$1$2");
+		}
+
 
 
 
@@ -36579,6 +36702,11 @@ var $$IMU_EXPORT$$;
 		function err_cb() {
 			revoke_objecturl(last_objecturl);
 			obj.shift();
+
+			if (_nir_debug_) {
+				console_log("check_image_get(err_cb):", obj, processing);
+			}
+
 			return check_image_get(obj, cb, processing);
 		}
 
@@ -36623,7 +36751,7 @@ var $$IMU_EXPORT$$;
 
 			if (resp.readyState == 4 || true) {
 				if (_nir_debug_) {
-					console_log("check_image_get(onload)", resp);
+					console_log("check_image_get(onload)", resp, resp.readyState);
 				}
 
 				var digit = resp.status.toString()[0];
@@ -36667,6 +36795,11 @@ var $$IMU_EXPORT$$;
 				}
 
 				var good_cb = function(img) {
+					if (_nir_debug_) {
+						console_log("check_image_get(good_cb):", img, resp.finalUrl, obj[0], resp);
+						console_trace();
+					}
+
 					cb(img, resp.finalUrl, obj[0], resp);
 				};
 
@@ -36724,13 +36857,19 @@ var $$IMU_EXPORT$$;
 								end_cbs();
 
 								if (img.naturalWidth === 0 || img.naturalHeight === 0) {
+									if (_nir_debug_)
+										console_log("naturalWidth or naturalHeight == 0", img);
+
 									return err_cb();
 								}
 
 								good_cb(img);
 							};
 
-							img.onerror = function () {
+							img.onerror = function (e) {
+								if (_nir_debug_)
+									console_log("Error loading image", img, e);
+
 								end_cbs();
 								err_cb();
 							};
@@ -38752,8 +38891,16 @@ var $$IMU_EXPORT$$;
 			if (!el)
 				return null;
 
-			if (mapcache && mapcache.has(el))
-				return mapcache.get(el);
+			if (mapcache && mapcache.has(el)) {
+				var value = mapcache.get(el);
+
+				if (need_rect) {
+					if (value.orig_rect)
+						return value;
+				} else {
+					return value;
+				}
+			}
 
 			var parent = {};
 			var parentel = el.parentElement;
@@ -38825,7 +38972,7 @@ var $$IMU_EXPORT$$;
 			if (rect)
 				result.rect = rect;
 
-			if (mapcache && orig_rect) {
+			if (mapcache) {
 				mapcache.set(el, result);
 			}
 
@@ -40082,7 +40229,7 @@ var $$IMU_EXPORT$$;
 
 						check_image_get(newobj, function(img, newurl, obj, respdata) {
 							if (_nir_debug_)
-								console_log("do_popup: check_image_get response:", newurl, obj, respdata);
+								console_log("do_popup: check_image_get response:", img, newurl, obj, respdata);
 
 							if (!img) {
 								return finalcb(null);
@@ -40513,6 +40660,7 @@ var $$IMU_EXPORT$$;
 		};
 
 		var replacing_imgs = false;
+		var replaceimgs_elcache = new Cache();
 		function replace_images(options) {
 			if (replacing_imgs || currenttab_is_image())
 				return;
@@ -40534,17 +40682,18 @@ var $$IMU_EXPORT$$;
 			if (imgs.length === 0)
 				return;
 
-			console_log("Replacing images");
+			if (options.use_progressbar)
+				console_log("Replacing images");
 
 			var finished = 0;
 
 			var finish_img = function() {
 				finished++;
 
-				if (options.use_progressbar)
+				if (options.use_progressbar) {
 					update_progress_el(progressc_el, finished / total_imgs);
-
-				console_log("Finished " + finished + "/" + total_imgs);
+					console_log("Finished " + finished + "/" + total_imgs);
+				}
 
 				if (finished >= total_imgs) {
 					if (options.use_progressbar)
@@ -40594,12 +40743,21 @@ var $$IMU_EXPORT$$;
 					other.splice(0, 1);
 				}
 
+				if (options.use_elcache && our_source) {
+					if (replaceimgs_elcache.has(our_source.el)) {
+						return finish_img();
+					} else {
+						// Not perfect, but 5 seconds should be enough
+						replaceimgs_elcache.set(our_source.el, true, 5);
+					}
+				}
+
 				if (our_source) {
 					get_final_from_source(our_source, true, true, false, function (source_imu, source, processing, data) {
 						if (our_domain)
 							domains_processing[our_domain]--;
 
-						var replace_func = function(el, newsrc) {
+						var replace_func = function(el, newsrc, url) {
 							if (options.replace_imgs && get_img_src(el) !== newsrc) {
 								el.src = newsrc;
 							}
@@ -40623,25 +40781,27 @@ var $$IMU_EXPORT$$;
 									current.appendChild(el);
 								}
 
-								current.href = newsrc;
+								if (current.href !== url) {
+									current.href = url;
+								}
 							}
 						};
 
 						if (!data) {
-							replace_func(our_source.el, our_source.src);
+							replace_func(our_source.el, our_source.src, our_source.src);
 							return finish_img();
 						}
 
 						var waiting = false;
 						if (data.data.img) {
-							replace_func(source.el, data.data.img.src);
+							replace_func(source.el, data.data.img.src, data.data.obj.url);
 						} else if (data.data.obj) {
 							var load_image = function() {
 								if (settings.replaceimgs_wait_fullyloaded && options.replace_imgs) {
 									// Preload the image, as adding onload/onerror to existing images won't fire the event
 									var image = new Image();
 									var finish_image = function () {
-										replace_func(source.el, image.src);
+										replace_func(source.el, image.src, data.data.obj.url);
 										finish_img();
 									};
 
@@ -40649,7 +40809,7 @@ var $$IMU_EXPORT$$;
 									image.onerror = finish_img;
 									image.src = data.data.obj.url;
 								} else {
-									replace_func(source.el, data.data.obj.url);
+									replace_func(source.el, data.data.obj.url, data.data.obj.url);
 									finish_img();
 								}
 							};
@@ -40978,7 +41138,7 @@ var $$IMU_EXPORT$$;
 			}
 
 			if (settings.replaceimgs_auto)
-				replace_images_full({images: images, use_progressbar: false});
+				replace_images_full({images: images, use_progressbar: false, use_elcache: true});
 		};
 
 		(function() {
