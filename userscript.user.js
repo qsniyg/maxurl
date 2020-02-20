@@ -1395,6 +1395,8 @@ var $$IMU_EXPORT$$;
 		mouseover_video_seek_amount: 10,
 		mouseover_video_seek_left_key: ["shift", "left"],
 		mouseover_video_seek_right_key: ["shift", "right"],
+		mouseover_video_seek_vertical_scroll: false,
+		mouseover_video_seek_horizontal_scroll: false,
 		mouseover_ui: true,
 		mouseover_ui_opacity: 80,
 		mouseover_ui_imagesize: true,
@@ -1972,6 +1974,26 @@ var $$IMU_EXPORT$$;
 				allow_video: true
 			},
 			type: "keysequence",
+			category: "popup",
+			subcategory: "video"
+		},
+		mouseover_video_seek_vertical_scroll: {
+			name: "Vertical scroll seeks",
+			description: "Scrolling vertically will seek the video forward/backward",
+			requires: {
+				mouseover_open_behavior: "popup",
+				allow_video: true
+			},
+			category: "popup",
+			subcategory: "video"
+		},
+		mouseover_video_seek_horizontal_scroll: {
+			name: "Horizontal scroll seeks",
+			description: "Scrolling horizontally will seek the video forward/backward",
+			requires: {
+				mouseover_open_behavior: "popup",
+				allow_video: true
+			},
 			category: "popup",
 			subcategory: "video"
 		},
@@ -26567,6 +26589,16 @@ var $$IMU_EXPORT$$;
 			})();
 			if (newsrc !== undefined)
 				return newsrc;
+		}
+
+		if (domain_nowww === "instagram.com") {
+			// https://www.instagram.com/static/bundles/es6/sprite_video_...
+			if (/\/static\/+bundles\/+[^/]+\/+sprite_/.test(src)) {
+				return {
+					url: src,
+					bad: "mask"
+				};
+			}
 		}
 
 		if (domain_nosub === "instagram.com" &&
@@ -58423,18 +58455,54 @@ var $$IMU_EXPORT$$;
 				var currentmode = initial_zoom_behavior;
 
 				outerdiv.onwheel = function(e) {
-					var scrollx_behavior = get_single_setting("mouseover_scrollx_behavior");
-					var scrolly_behavior = get_single_setting("mouseover_scrolly_behavior");
-
 					var handledx = false;
 					var handledy = false;
 
-					if (scrollx_behavior === "pan") {
+					var handle_seek = function(xy) {
+						var isright = false;
+
+						if (xy) {
+							if (e.deltaX < 0)
+								isright = false;
+							else if (e.deltaX > 0)
+								isright = true;
+							else return;
+						} else {
+							if (e.deltaY < 0)
+								isright = false;
+							else if (e.deltaY > 0)
+								isright = true;
+							else return;
+						}
+
+						seek_popup_video(!isright);
+						estop(e);
+						return true;
+					};
+
+					if (is_video) {
+						if (!handledx && settings.mouseover_video_seek_horizontal_scroll) {
+							if (handle_seek(true)) {
+								handledx = true;
+							}
+						}
+
+						if (!handledy && settings.mouseover_video_seek_vertical_scroll) {
+							if (handle_seek(false)) {
+								handledy = true;
+							}
+						}
+					}
+
+					var scrollx_behavior = get_single_setting("mouseover_scrollx_behavior");
+					var scrolly_behavior = get_single_setting("mouseover_scrolly_behavior");
+
+					if (scrollx_behavior === "pan" && !handledx) {
 						outerdiv.style.left = (parseInt(outerdiv.style.left) + e.deltaX) + "px";
 						handledx = true;
 					}
 
-					if (scrolly_behavior === "pan") {
+					if (scrolly_behavior === "pan" && !handledy) {
 						outerdiv.style.top = (parseInt(outerdiv.style.top) + e.deltaY) + "px";
 						handledy = true;
 					}
@@ -58461,7 +58529,7 @@ var $$IMU_EXPORT$$;
 						return true;
 					};
 
-					if (scrollx_behavior === "gallery") {
+					if (scrollx_behavior === "gallery" && !handledx) {
 						if (handle_gallery(true)) {
 							return;
 						}
@@ -58469,7 +58537,7 @@ var $$IMU_EXPORT$$;
 						handledx = true;
 					}
 
-					if (scrolly_behavior === "gallery") {
+					if (scrolly_behavior === "gallery" && !handledy) {
 						if (handle_gallery(false)) {
 							return;
 						}
