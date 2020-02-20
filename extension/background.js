@@ -93,8 +93,12 @@ var do_request = function(request, sender) {
 	var xhr = new XMLHttpRequest();
 	xhr.open(method, request.url, true);
 
-	if (request.responseType)
+	if (request.responseType) {
+		if (request.responseType === "arraybuffer")
+			request.responseType = "blob";
+
 		xhr.responseType = request.responseType;
+	}
 
 	var headers = request.headers || {};
 	var cookie_overridden = false;

@@ -56514,6 +56514,11 @@ var $$IMU_EXPORT$$;
 		function err_cb() {
 			revoke_objecturl(last_objecturl);
 			obj.shift();
+
+			if (_nir_debug_) {
+				console_log("check_image_get(err_cb):", obj, processing);
+			}
+
 			return check_image_get(obj, cb, processing);
 		}
 
@@ -56558,7 +56563,7 @@ var $$IMU_EXPORT$$;
 
 			if (resp.readyState == 4 || true) {
 				if (_nir_debug_) {
-					console_log("check_image_get(onload)", resp);
+					console_log("check_image_get(onload)", resp, resp.readyState);
 				}
 
 				var digit = resp.status.toString()[0];
@@ -56602,6 +56607,11 @@ var $$IMU_EXPORT$$;
 				}
 
 				var good_cb = function(img) {
+					if (_nir_debug_) {
+						console_log("check_image_get(good_cb):", img, resp.finalUrl, obj[0], resp);
+						console_trace();
+					}
+
 					cb(img, resp.finalUrl, obj[0], resp);
 				};
 
@@ -60031,7 +60041,7 @@ var $$IMU_EXPORT$$;
 
 						check_image_get(newobj, function(img, newurl, obj, respdata) {
 							if (_nir_debug_)
-								console_log("do_popup: check_image_get response:", newurl, obj, respdata);
+								console_log("do_popup: check_image_get response:", img, newurl, obj, respdata);
 
 							if (!img) {
 								return finalcb(null);
