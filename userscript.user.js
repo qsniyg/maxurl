@@ -1392,6 +1392,9 @@ var $$IMU_EXPORT$$;
 		mouseover_video_loop: true,
 		mouseover_video_muted: false,
 		mouseover_video_volume: 100,
+		mouseover_video_seek_amount: 10,
+		mouseover_video_seek_left_key: ["shift", "left"],
+		mouseover_video_seek_right_key: ["shift", "right"],
 		mouseover_ui: true,
 		mouseover_ui_opacity: 80,
 		mouseover_ui_imagesize: true,
@@ -1934,6 +1937,41 @@ var $$IMU_EXPORT$$;
 			number_max: 100,
 			number_int: true,
 			number_unit: "%",
+			category: "popup",
+			subcategory: "video"
+		},
+		mouseover_video_seek_amount: {
+			name: "Seek amount",
+			description: "Amount of time to seek forward/back when using the seek keys",
+			requires: {
+				mouseover_open_behavior: "popup",
+				allow_video: true
+			},
+			type: "number",
+			number_min: 0,
+			number_unit: "seconds",
+			category: "popup",
+			subcategory: "video"
+		},
+		mouseover_video_seek_left_key: {
+			name: "Seek left key",
+			description: "Key to seek backwards in a video by the specified amount",
+			requires: {
+				mouseover_open_behavior: "popup",
+				allow_video: true
+			},
+			type: "keysequence",
+			category: "popup",
+			subcategory: "video"
+		},
+		mouseover_video_seek_right_key: {
+			name: "Seek right key",
+			description: "Key to seek forwards in a video by the specified amount",
+			requires: {
+				mouseover_open_behavior: "popup",
+				allow_video: true
+			},
+			type: "keysequence",
 			category: "popup",
 			subcategory: "video"
 		},
@@ -61159,6 +61197,17 @@ var $$IMU_EXPORT$$;
 			do_download(popup_obj, popup_obj.filename);
 		};
 
+		var seek_popup_video = function(leftright) {
+			var timemul = leftright ? -1 : 1;
+			var time = timemul * settings.mouseover_video_seek_amount;
+
+			var videoel = popups[0].getElementsByTagName("video");
+			if (!videoel || videoel.length === 0)
+				return;
+
+			videoel[0].currentTime += time;
+		};
+
 		var popup_active = function() {
 			return popups.length > 0 && popup_el;
 		};
@@ -61207,6 +61256,12 @@ var $$IMU_EXPORT$$;
 					return true;
 				case "flip_vertical":
 					flip_gallery(true);
+					return true;
+				case "seek_left":
+					seek_popup_video(true);
+					return true;
+				case "seek_right":
+					seek_popup_video(false);
 					return true;
 			}
 
@@ -61347,6 +61402,14 @@ var $$IMU_EXPORT$$;
 					{
 						key: settings.mouseover_flip_vertical_key,
 						action: {type: "flip_vertical"}
+					},
+					{
+						key: settings.mouseover_video_seek_left_key,
+						action: {type: "seek_left"}
+					},
+					{
+						key: settings.mouseover_video_seek_right_key,
+						action: {type: "seek_right"}
 					}
 				];
 
