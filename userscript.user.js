@@ -8301,7 +8301,10 @@ var $$IMU_EXPORT$$;
 				return obj;
 			}
 
-			regex = /^(.+\/+vi(?:_webp)?\/+[^/]*\/+)[a-z]*(default|[0-9]+)(\.[^/.?#]*)(?:[?#].*)?$/;
+			// https://i.ytimg.com/vi/ygdaPcspmDE/hqdefault_live.jpg
+			//   https://i.ytimg.com/vi/ygdaPcspmDE/maxresdefault.jpg
+			// thanks to hentai lzno on greasyfork: https://greasyfork.org/forum/discussion/70889/youtube-live-thumbnails-dont-redirect-to-original-image
+			regex = /^(.+\/+vi(?:_webp)?\/+[^/]*\/+)[a-z]*(default|[0-9]+)(?:_live)?(\.[^/.?#]*)(?:[?#].*)?$/;
 			if (regex.test(src)) {
 				var sizes = [
 					"maxres",
