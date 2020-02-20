@@ -1435,6 +1435,7 @@ var $$IMU_EXPORT$$;
 		mouseover_gallery_cycle: false,
 		mouseover_gallery_prev_key: ["left"],
 		mouseover_gallery_next_key: ["right"],
+		mouseover_gallery_move_after_video: false,
 		// thanks to acid-crash on github for the idea: https://github.com/qsniyg/maxurl/issues/20
 		mouseover_styles: "",
 		mouseover_ui_styles: "",
@@ -1914,6 +1915,9 @@ var $$IMU_EXPORT$$;
 			requires: {
 				mouseover_open_behavior: "popup",
 				allow_video: true
+			},
+			disabled_if: {
+				mouseover_gallery_move_after_video: true
 			},
 			category: "popup",
 			subcategory: "video"
@@ -2622,6 +2626,16 @@ var $$IMU_EXPORT$$;
 				mouseover_open_behavior: "popup"
 			},
 			type: "keysequence",
+			category: "popup",
+			subcategory: "gallery"
+		},
+		mouseover_gallery_move_after_video: {
+			name: "Move to next when video finishes",
+			description: "Moves to the next gallery item when a video finishes playing",
+			requires: {
+				mouseover_open_behavior: "popup",
+				allow_video: true
+			},
 			category: "popup",
 			subcategory: "gallery"
 		},
@@ -56493,6 +56507,8 @@ var $$IMU_EXPORT$$;
 		return error;
 	}
 
+	var trigger_gallery;
+
 	function serialize_img(img) {
 		var obj = {
 			tag: img.tagName.toLowerCase(),
@@ -56710,7 +56726,7 @@ var $$IMU_EXPORT$$;
 					if (settings.mouseover_video_controls)
 						video.setAttribute("controls", "controls");
 
-					if (settings.mouseover_video_loop)
+					if (settings.mouseover_video_loop && !settings.mouseover_gallery_move_after_video)
 						video.setAttribute("loop", true);
 
 					if (settings.mouseover_video_muted)
@@ -56731,6 +56747,12 @@ var $$IMU_EXPORT$$;
 					video.onloadedmetadata = function() {
 						video.removeEventListener("error", errorhandler, true);
 						good_cb(video);
+					};
+
+					video.onended = function() {
+						if (settings.mouseover_gallery_move_after_video) {
+							trigger_gallery(1);
+						}
 					};
 
 					video.addEventListener("error", errorhandler, true);
@@ -60366,7 +60388,7 @@ var $$IMU_EXPORT$$;
 			});
 		}
 
-		function trigger_gallery(dir, cb) {
+		trigger_gallery = function(dir, cb) {
 			if (!cb) {
 				cb = nullfunc;
 			}
