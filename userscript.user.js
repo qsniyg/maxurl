@@ -38604,8 +38604,20 @@ var $$IMU_EXPORT$$;
 		if (domain === "img.nga.178.com") {
 			// https://img.nga.178.com/attachments/mon_201810/09/baQ5-57seXeZ3vT3cS2ms-1hc.jpg.thumb.jpg
 			//   https://img.nga.178.com/attachments/mon_201810/09/baQ5-57seXeZ3vT3cS2ms-1hc.jpg
-			return src.replace(/(\/attachments\/+[^/]*_[0-9]{6}\/+[0-9]+\/+[^/]*)\.thumb\.[^/.]*(?:[?#].*)?$/,
-							   "$1");
+			// thanks to hentai lzno on greasyfork: https://greasyfork.org/zh-CN/forum/discussion/comment/86358#Comment_86358
+			// https://img.nga.178.com/attachments/mon_202002/20/-zue37Q5-28zeZpT3cSnq-11x.jpg.medium.jpg
+			//   https://img.nga.178.com/attachments/mon_202002/20/-zue37Q5-28zeZpT3cSnq-11x.jpg -- 403?
+			// https://img.nga.178.com/attachments/mon_201912/30/-bqqbQ5-4xw1Z1hT3cS1jk-1jk.jpg.medium.jpg
+			//   https://img.nga.178.com/attachments/mon_201912/30/-bqqbQ5-4xw1Z1hT3cS1jk-1jk.jpg
+			return {
+				url: src.replace(/(\/attachments\/+[^/]*_[0-9]{6}\/+[0-9]+\/+[^/]*)\.(?:thumb|medium)\.[^/.]*(?:[?#].*)?$/, "$1"),
+				headers: {
+					Referer: null
+				},
+				referer_ok: {
+					same_domain_nosub: true
+				}
+			};
 		}
 
 		if (domain_nowww === "livesport.ru" ||
