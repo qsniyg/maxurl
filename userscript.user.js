@@ -56975,6 +56975,8 @@ var $$IMU_EXPORT$$;
 	// some sites have z-index: 99999999999999 (http://www.topstarnews.net/)
 	// this gets scaled down to 2147483647 in the elements panel, but it gets seen as higher than 9999* by the browser
 	var maxzindex = Number.MAX_SAFE_INTEGER;
+	// sites like topstarnews under Firefox somehow change sans-serif as the default font
+	var sans_serif_font = '"Noto Sans", Arial, Helvetica, sans-serif';
 
 	function keycode_to_str(event) {
 		var x = event.which;
@@ -57922,7 +57924,7 @@ var $$IMU_EXPORT$$;
 					btn.style.lineHeight = "1em";
 					//btn.style.whiteSpace = "nowrap";
 					btn.style.fontSize = "14px";
-					btn.style.fontFamily = "sans-serif";
+					btn.style.fontFamily = sans_serif_font;
 					apply_styles(btn, settings.mouseover_ui_styles);
 
 					btn.style.zIndex = maxzindex - 1;
@@ -58102,7 +58104,7 @@ var $$IMU_EXPORT$$;
 					set_el_all_initial(images_total_input);
 					images_total_input.style.display = "none";
 					images_total_input.style.backgroundColor = "white";
-					images_total_input.style.fontFamily = "sans-serif";
+					images_total_input.style.fontFamily = sans_serif_font;
 					images_total_input.style.fontSize = galleryinput_fontsize;
 					images_total_input.style.padding = "1px";
 					images_total_input.style.paddingLeft = "2px";
