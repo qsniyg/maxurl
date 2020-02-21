@@ -248,7 +248,7 @@ please file an issue here.
 Translations
 ============
 
-Currently translations are stored inside the source code (userscript.user.js). I'm currently working on trying to separate this into a separate
+Currently translations are stored inside the source code (userscript.user.js). I'm planning to move this into a separate
 file in order to make this easier for translators, but for now:
 
 * All message strings are stored as a JS object as ``strings`` (search for ``var strings =`` in the source code, it's near the top)
