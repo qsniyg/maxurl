@@ -54837,7 +54837,7 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		var str = keycode_to_str(event.which);
+		var str = keycode_to_str(event);
 		if (str === undefined) {
 			return keys;
 		}
@@ -54890,7 +54890,7 @@ var $$IMU_EXPORT$$;
 
 			var map = get_keystrs_map(event, value);
 
-			if ((keycode_to_str(event.which) || event.type === "mousedown") &&
+			if ((keycode_to_str(event) || event.type === "mousedown") &&
 				current_options_chord.length === 0) {
 				// Don't clear the options chord for either left or right mouse buttons
 				if (event.button !== 0 && event.button !== 2)
@@ -56943,6 +56943,15 @@ var $$IMU_EXPORT$$;
 		//91: "super",
 
 		// numpad
+		97: "1",
+		98: "2",
+		99: "3",
+		100: "4",
+		101: "5",
+		102: "6",
+		103: "7",
+		104: "8",
+		105: "9",
 		111: "/",
 		106: "*",
 		107: "+",
@@ -56964,7 +56973,17 @@ var $$IMU_EXPORT$$;
 
 	var maxzindex = 2147483647;
 
-	function keycode_to_str(x) {
+	function keycode_to_str(event) {
+		var x = event.which;
+
+		if (event.code) {
+			// when pressing Shift
+			var match = event.code.match(/^Numpad([0-9]+)$/);
+			if (match) {
+				return match[1];
+			};
+		}
+
 		if (x in keycode_to_str_table) {
 			return keycode_to_str_table[x];
 		}
@@ -56973,9 +56992,9 @@ var $$IMU_EXPORT$$;
 		if (x >= 96 && x <= 105) {
 			x -= 45;
 		}
-		if (!(x >= 65 && x <= 90 ||
+		if (!((x >= 65 && x <= 90) ||
 			  // numbers
-			  x >= 48 && x <= 57)) {
+			  (x >= 48 && x <= 57))) {
 			return;
 		}
 
@@ -59721,14 +59740,6 @@ var $$IMU_EXPORT$$;
 				wanted_chord = settings.mouseover_trigger_key;
 
 			return wanted_chord.indexOf(str) >= 0;
-		}
-
-		function key_in_trigger(key) {
-			var str = keycode_to_str(key);
-			if (str === undefined)
-				return false;
-
-			return keystr_in_trigger(str);
 		}
 
 		function key_would_modify_single_chord(str, value) {
