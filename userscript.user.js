@@ -56988,10 +56988,6 @@ var $$IMU_EXPORT$$;
 			return keycode_to_str_table[x];
 		}
 
-		// lowercase
-		if (x >= 96 && x <= 105) {
-			x -= 45;
-		}
 		if (!((x >= 65 && x <= 90) ||
 			  // numbers
 			  (x >= 48 && x <= 57))) {
