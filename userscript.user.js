@@ -56971,7 +56971,10 @@ var $$IMU_EXPORT$$;
 		222: "'"
 	};
 
-	var maxzindex = 2147483647;
+	//var maxzindex = 2147483647;
+	// some sites have z-index: 99999999999999 (http://www.topstarnews.net/)
+	// this gets scaled down to 2147483647 in the elements panel, but it gets seen as higher than 9999* by the browser
+	var maxzindex = Number.MAX_SAFE_INTEGER;
 
 	function keycode_to_str(event) {
 		var x = event.which;
