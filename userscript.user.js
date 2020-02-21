@@ -12340,6 +12340,8 @@ var $$IMU_EXPORT$$;
 			//   https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/2c/2c43030ea4900ebfcd3c42a4e665e9d926b488ef_full.jpg
 			// https://steamcdn-a.akamaihd.net/steam/apps/256659790/movie480.webm?t=1452876592
 			//   https://steamcdn-a.akamaihd.net/steam/apps/256659790/movie_max.webm?t=1452876592
+			// https://steamcdn-a.akamaihd.net/steam/apps/256774788/movie.jpg?t=1581353800
+			//   https://steamcdn-a.akamaihd.net/steam/apps/256774788/movie_max.webm
 			(domain_nosub === "akamaihd.net" && domain.match(/steamcdn(?:-[a-z]*)?\.akamaihd\.net/))) {
 			// http://cdn.edgecast.steamstatic.com/steam/apps/405710/ss_8555059322d118b6665f1ddde6eaa987c54b2f31.600x338.jpg?t=1516755673
 			//   http://cdn.edgecast.steamstatic.com/steam/apps/405710/ss_8555059322d118b6665f1ddde6eaa987c54b2f31.jpg?t=1516755673
@@ -12351,6 +12353,13 @@ var $$IMU_EXPORT$$;
 			if (newsrc !== src)
 				return newsrc;
 
+			newsrc = src.replace(/(\/steam\/+apps\/+[0-9]+\/+movie)\.(?:jpg|JPG|jpeg|JPEG|png|PNG)(?:[?#].*)?$/, "$1_max.webm");
+			if (newsrc !== src)
+				return {
+					url: newsrc,
+					video: true
+				};
+
 			if (src.indexOf("/public/images/avatars/") >= 0) {
 				src = src.replace(/(?:_[^/.]*)?(\.[^/.]*)$/, "_full$1");
 			}
@@ -12359,7 +12368,8 @@ var $$IMU_EXPORT$$;
 
 		if (domain === "steamstore-a.akamaihd.net") {
 			// https://steamstore-a.akamaihd.net/public/images/v6/app/game_page_background_shadow.png?v=2
-			if (/\/public\/+images\/+v[0-9]*\/+app\/+game_page.*/.test(src))
+			// https://steamstore-a.akamaihd.net/public/images/v5/ico_game_highlight_video.png
+			if (/\/public\/+images\/+v[0-9]*\/+(?:app\/+game_page|ico_game_).*/.test(src))
 				return {
 					url: src,
 					bad: "mask"
@@ -56974,6 +56984,7 @@ var $$IMU_EXPORT$$;
 	//var maxzindex = 2147483647;
 	// some sites have z-index: 99999999999999 (http://www.topstarnews.net/)
 	// this gets scaled down to 2147483647 in the elements panel, but it gets seen as higher than 9999* by the browser
+	// Number.MAX_VALUE doesn't work at all (z-index doesn't get set)
 	var maxzindex = Number.MAX_SAFE_INTEGER;
 	// sites like topstarnews under Firefox somehow change sans-serif as the default font
 	var sans_serif_font = '"Noto Sans", Arial, Helvetica, sans-serif';
