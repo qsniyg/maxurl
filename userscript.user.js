@@ -1438,6 +1438,7 @@ var $$IMU_EXPORT$$;
 		mouseover_gallery_move_after_video: false,
 		// thanks to acid-crash on github for the idea: https://github.com/qsniyg/maxurl/issues/20
 		mouseover_styles: "",
+		mouseover_fade_time: 80,
 		mouseover_ui_styles: "",
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-541065461
 		mouseover_wait_use_el: false,
@@ -2646,6 +2647,18 @@ var $$IMU_EXPORT$$;
 			requires: {
 				mouseover_open_behavior: "popup"
 			},
+			category: "popup",
+			subcategory: "popup_other"
+		},
+		mouseover_fade_time: {
+			name: "Popup fade",
+			description: "Fade in/out time (in milliseconds) for the popup, set to 0 to disable",
+			requires: {
+				mouseover_open_behavior: "popup"
+			},
+			type: "number",
+			number_min: 0,
+			number_unit: "ms",
 			category: "popup",
 			subcategory: "popup_other"
 		},
@@ -57265,7 +57278,8 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		function resetpopups(from_remote) {
+		var removepopups_timer = null;
+		function removepopups() {
 			popups.forEach(function (popup) {
 				var els = popup.querySelectorAll("img, video");
 				for (var i = 0; i < els.length; i++) {
@@ -57279,6 +57293,25 @@ var $$IMU_EXPORT$$;
 				var index = popups.indexOf(popup);
 				if (index > -1) {
 					popups.splice(index, 1);
+				}
+			});
+
+			if (removepopups_timer) {
+				clearTimeout(removepopups_timer);
+				removepopups_timer = null;
+			}
+		}
+
+		function resetpopups(from_remote) {
+			popups.forEach(function (popup) {
+				if (settings.mouseover_fade_time > 0) {
+					popup.style.opacity = 0;
+
+					if (!removepopups_timer) {
+						removepopups_timer = setTimeout(removepopups, settings.mouseover_fade_time);
+					}
+				} else {
+					removepopups();
 				}
 			});
 
@@ -57544,6 +57577,14 @@ var $$IMU_EXPORT$$;
 				set_el_all_initial(outerdiv);
 				outerdiv.style.position = "fixed";
 				outerdiv.style.zIndex = maxzindex - 2;
+
+				if (settings.mouseover_fade_time > 0) {
+					outerdiv.style.opacity = 0;
+					outerdiv.style.setProperty("transition", "opacity " + (settings.mouseover_fade_time / 1000.) + "s");
+					setTimeout(function() {
+						outerdiv.style.opacity = 1;
+					}, 1);
+				}
 
 				var div = document.createElement("div");
 				var popupshown = false;
@@ -58763,6 +58804,8 @@ var $$IMU_EXPORT$$;
 				};
 
 				document.documentElement.appendChild(outerdiv);
+
+				removepopups();
 				popups.push(outerdiv);
 				popupshown = true;
 				popup_obj = newobj;
