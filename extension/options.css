@@ -371,7 +371,7 @@ code {
   padding: 0;
 }
 
-label, button, .button, select {
+label, button, .button, select, .tab {
   display: inline-block;
   padding: 6px 14px;
   margin: 0px 5px;
@@ -410,7 +410,7 @@ button:active, .button:active {
   border: 1px solid #aaa !important;
 }
 
-input:checked + label, button, .button, .button:visited, .dark .button:visited {
+input:checked + label, button, .button, .button:visited, .dark .button:visited, .tab.active {
   background: #0af;
   color: #fff;
 }
@@ -479,6 +479,20 @@ input:checked + label, button, .button, .button:visited, .dark .button:visited {
   cursor: default;
 }
 
+#tabs {
+  text-align: center;
+  margin: 50px 10px;
+  margin-bottom: 30px;
+}
+
+.tab {
+  border-color: transparent;
+}
+
+.tab:hover {
+  border-color: #0af;
+}
+
 @media (max-width:700px) {
   .option table {
     margin-left: .5em;
@@ -528,6 +542,10 @@ input:checked + label, button, .button, .button:visited, .dark .button:visited {
 #options .category {
   margin-top: 2em;
   margin-bottom: 1.5em;
+}
+
+#options .category.tabbed {
+  margin-top: 0em;
 }
 
 #options .category > h2 {
