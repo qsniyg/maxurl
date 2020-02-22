@@ -1910,7 +1910,7 @@ var $$IMU_EXPORT$$;
 		},
 		mouseover_only_links: {
 			name: "Only popup for linked images",
-			description: "Don't pop up if the image isn't linked",
+			description: "Don't pop up if the image isn't hyperlinked",
 			requires: {
 				mouseover: true
 			},
