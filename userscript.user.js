@@ -57224,7 +57224,7 @@ var $$IMU_EXPORT$$;
 
 		var disable_click = false;
 		document.addEventListener("click", function(e) {
-			if (disable_click && popups.length > 0 && false) {
+			if (disable_click && popups_active && false) {
 				e.stopPropagation();
 				e.stopImmediatePropagation();
 
@@ -59226,7 +59226,7 @@ var $$IMU_EXPORT$$;
 
 		function _find_source(els) {
 			// resetpopups() is already called in trigger_popup()
-			/*if (popups.length >= 1)
+			/*if (popups_active)
 				return;*/
 
 			if (_nir_debug_)
@@ -60632,7 +60632,7 @@ var $$IMU_EXPORT$$;
 		};
 
 		function rotate_gallery(dir) {
-			if (popups.length === 0)
+			if (!popups_active)
 				return;
 
 			var transforms = get_popup_transforms();
@@ -60656,7 +60656,7 @@ var $$IMU_EXPORT$$;
 
 		// hv: vertical = true, horizontal = false
 		var flip_gallery = function(hv) {
-			if (popups.length === 0)
+			if (!popups_active)
 				return;
 
 			var transforms = get_popup_transforms();
@@ -61489,7 +61489,7 @@ var $$IMU_EXPORT$$;
 		};
 
 		var popup_active = function() {
-			return popups.length > 0 && popup_el;
+			return popups_active && popup_el;
 		};
 
 		var action_handler = function(action) {
@@ -62162,13 +62162,13 @@ var $$IMU_EXPORT$$;
 				update_waiting();
 			}
 
-			if (popups.length > 0) {
+			if (popups_active) {
 				do_popup_pan(popups[0], event, mouseX, mouseY);
 			}
 
 			var jitter_base = settings.mouseover_jitter_threshold;
 
-			if (settings.mouseover_trigger_behavior === "keyboard" && get_close_need_mouseout() && popups.length > 0 &&
+			if (settings.mouseover_trigger_behavior === "keyboard" && get_close_need_mouseout() && popups_active &&
 				popup_trigger_reason === "keyboard") {
 				var img = popups[0].getElementsByTagName("img")[0];
 				if (img) {
@@ -62191,8 +62191,8 @@ var $$IMU_EXPORT$$;
 
 			if (mouseover_mouse_enabled()) {
 				if (popup_trigger_reason === "mouse") {
-					if (popups.length > 0) {
-						// FIXME: why was this not in if (popups.length > 0)?
+					if (popups_active) {
+						// FIXME: why was this not in if (popups_active)?
 						// The reason for putting it here is that if the mouse moves (even within jitter thresh) after a single popup is open, it will cancel the popup request
 						if (delay_handle) {
 							clearTimeout(delay_handle);
@@ -62315,7 +62315,7 @@ var $$IMU_EXPORT$$;
 				}
 
 				// FIXME: this is rather weird. Less CPU usage, but doesn't behave in the way one would expect
-				if ((popups.length === 0 || popup_el_automatic) && !should_exclude_imagetab()) {
+				if ((!popups_active || popup_el_automatic) && !should_exclude_imagetab()) {
 					if (delay_handle && !settings.mouseover_trigger_mouseover) {
 						var trigger_mouse_jitter_thresh = 10;
 
