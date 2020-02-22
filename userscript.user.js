@@ -1443,7 +1443,7 @@ var $$IMU_EXPORT$$;
 		mouseover_gallery_move_after_video: false,
 		// thanks to acid-crash on github for the idea: https://github.com/qsniyg/maxurl/issues/20
 		mouseover_styles: "",
-		mouseover_fade_time: 80,
+		mouseover_fade_time: 100,
 		mouseover_ui_styles: "",
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-541065461
 		mouseover_wait_use_el: false,
