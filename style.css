@@ -448,7 +448,7 @@ input:checked + label, button, .button, .button:visited, .dark .button:visited, 
 }
 
 .option .name_td {
-  width: 20em;
+  width: 22em;
   padding-right: .5em;
 }
 
