@@ -57669,11 +57669,18 @@ var $$IMU_EXPORT$$;
 				outerdiv.style.zIndex = maxzindex - 2;
 
 				if (settings.mouseover_fade_time > 0) {
-					outerdiv.style.opacity = 0;
 					outerdiv.style.setProperty("transition", "opacity " + (settings.mouseover_fade_time / 1000.) + "s");
-					setTimeout(function() {
+
+					if (!popup_el_automatic) {
+						outerdiv.style.opacity = 0;
+
+						// this is needed in order to make the transition happen
+						setTimeout(function() {
+							outerdiv.style.opacity = 1;
+						}, 1);
+					} else {
 						outerdiv.style.opacity = 1;
-					}, 1);
+					}
 				}
 
 				var div = document.createElement("div");
@@ -60210,8 +60217,10 @@ var $$IMU_EXPORT$$;
 				//console_log(source_imu);
 				resetpopups();
 
-				if (automatic)
+				if (automatic) {
 					popup_el_automatic = true;
+					removepopups(); // don't fade out
+				}
 
 				real_popup_el = source.el;
 				popup_el = get_physical_popup_el(real_popup_el);
