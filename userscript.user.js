@@ -1344,6 +1344,7 @@ var $$IMU_EXPORT$$;
 		dark_mode: false,
 		settings_visible_description: true,
 		advanced_options: false,
+		settings_tabs: true,
 		allow_browser_request: true,
 		use_blob_over_arraybuffer: false,
 		allow_live_settings_reload: true,
@@ -1568,6 +1569,16 @@ var $$IMU_EXPORT$$;
 		advanced_options: {
 			name: "Show advanced settings",
 			description: "If disabled, settings that might be harder to understand will be hidden",
+			category: "general",
+			subcategory: "settings",
+			onedit: function() {
+				run_soon(do_options);
+			},
+			imu_enabled_exempt: true
+		},
+		settings_tabs: {
+			name: "Use tabs",
+			description: "If disabled, all settings will be shown on a single page",
 			category: "general",
 			subcategory: "settings",
 			onedit: function() {
@@ -54914,6 +54925,7 @@ var $$IMU_EXPORT$$;
 		}
 	}
 
+	var current_options_tab = "general";
 	function do_options() {
 		update_dark_mode();
 
@@ -55410,16 +55422,55 @@ var $$IMU_EXPORT$$;
 			apply_tag();
 		}
 
+		var tabscontainer;
+		if (settings.settings_tabs) {
+			tabscontainer = document.createElement("div");
+			tabscontainer.id = "tabs";
+			options_el.appendChild(tabscontainer);
+		}
+
 		var category_els = {};
 		var subcategory_els = {};
 
 		for (var category in categories) {
+			var catname = _(categories[category]);
+
 			var div = document.createElement("div");
 			div.id = "cat_" + category;
 			div.classList.add("category");
-			var h2 = document.createElement("h2");
-			h2.innerText = _(categories[category]);
-			div.appendChild(h2);
+
+			category_els[category] = [div];
+
+			if (settings.settings_tabs) {
+				div.classList.add("tabbed");
+
+				var tab = document.createElement("span");
+				tab.classList.add("tab");
+				//tab.href = "#cat_" + category;
+				tab.id = "tab_cat_" + category;
+				tab.innerText = catname;
+
+				(function(category) {
+					tab.onclick = function() {
+						current_options_tab = category;
+						do_options();
+					};
+				})(category);
+
+				if (category === current_options_tab) {
+					tab.classList.add("active");
+				} else {
+					div.style.display = "none";
+				}
+
+				category_els[category].push(tab);
+
+				tabscontainer.appendChild(tab);
+			} else {
+				var h2 = document.createElement("h2");
+				h2.innerText = catname;
+				div.appendChild(h2);
+			}
 
 			var subdiv = document.createElement("div");
 			subdiv.id = "subcat_" + category;
@@ -55442,7 +55493,6 @@ var $$IMU_EXPORT$$;
 				}
 			}
 
-			category_els[category] = div;
 			options_el.appendChild(div);
 		}
 
@@ -55455,6 +55505,8 @@ var $$IMU_EXPORT$$;
 
 			return JSON.stringify(value);
 		};
+
+		var category_settings = {};
 
 		for (var setting in settings) {
 			(function(setting) {
@@ -55476,6 +55528,10 @@ var $$IMU_EXPORT$$;
 					return;
 
 				if (meta.advanced && !show_advanced)
+					return;
+
+				category_settings[meta.category] = true;
+				if (settings.settings_tabs && meta.category !== current_options_tab)
 					return;
 
 				var option = document.createElement("div");
@@ -56119,9 +56175,12 @@ var $$IMU_EXPORT$$;
 		show_warnings();
 
 		for (var category in category_els) {
-			var category_el = category_els[category]
-			if (category_el.querySelectorAll(".option").length === 0) {
-				category_el.parentNode.removeChild(category_el);
+			var our_els = category_els[category]
+
+			if (!(category in category_settings)) {
+				for (var i = 0; i < our_els.length; i++) {
+					our_els[i].parentNode.removeChild(our_els[i])
+				}
 			}
 		}
 
