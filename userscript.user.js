@@ -1396,6 +1396,7 @@ var $$IMU_EXPORT$$;
 		mouseover_video_loop: true,
 		mouseover_video_muted: false,
 		mouseover_video_volume: 100,
+		mouseover_video_resume_from_source: false,
 		mouseover_video_seek_amount: 10,
 		mouseover_video_seek_left_key: ["shift", "left"],
 		mouseover_video_seek_right_key: ["shift", "right"],
@@ -1960,6 +1961,16 @@ var $$IMU_EXPORT$$;
 			number_max: 100,
 			number_int: true,
 			number_unit: "%",
+			category: "popup",
+			subcategory: "video"
+		},
+		mouseover_video_resume_from_source: {
+			name: "Resume playback from source",
+			description: "If enabled, playback will resume from where the source video left off",
+			requires: {
+				mouseover_open_behavior: "popup",
+				allow_video: true
+			},
 			category: "popup",
 			subcategory: "video"
 		},
@@ -56842,6 +56853,18 @@ var $$IMU_EXPORT$$;
 
 					video.onloadedmetadata = function() {
 						video.removeEventListener("error", errorhandler, true);
+
+						if (settings.mouseover_video_resume_from_source && processing.source && processing.source.el) {
+							var sourceel = processing.source.el;
+							if (sourceel.tagName === "SOURCE") {
+								sourceel = sourceel.parentElement;
+							}
+
+							if (sourceel.tagName === "VIDEO" && sourceel.currentTime) {
+								video.currentTime = sourceel.currentTime;
+							}
+						}
+
 						good_cb(video);
 					};
 
@@ -60322,6 +60345,8 @@ var $$IMU_EXPORT$$;
 						if (usehead) {
 							processing.head = true;
 						}
+
+						processing.source = source;
 
 						check_image_get(newobj, function(img, newurl, obj, respdata) {
 							if (_nir_debug_)
