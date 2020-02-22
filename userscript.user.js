@@ -26653,7 +26653,12 @@ var $$IMU_EXPORT$$;
 			//   https://instagram.fcxh2-1.fna.fbcdn.net/v/t51.2885-15/e35/85066278_101857984707704_1091284702256776100_n.jpg?_nc_ht=instagram.fcxh2-1.fna.fbcdn.net
 
 			// thanks to remlap on github: https://github.com/qsniyg/maxurl/issues/239
-			newsrc = remove_queries(src, ["se", "_nc_cat", "ig_cache_key"]);
+			// these remove_queries calls are separated in case the next one doesn't work.
+			newsrc = remove_queries(src, ["se"]);
+			if (newsrc !== src)
+				return newsrc;
+
+			newsrc = remove_queries(src, ["_nc_cat", "_nc_rid", "efg", "ig_cache_key"]);
 			if (newsrc !== src)
 				return newsrc;
 		}
@@ -26662,8 +26667,9 @@ var $$IMU_EXPORT$$;
 			 domain_nosub === "cdninstagram.com") &&
 			host_domain_nosub === "instagram.com" && options.element &&
 			options.do_request && options.cb) {
-			// ig_cache_key, se, _nc_cat aren't needed
+			// ig_cache_key, se, _nc_cat, _nc_rid, efg aren't needed
 			// _nt_ht, _nc_ohc is needed
+			// if vs or _nc_vs is missing, "URL signature mismatch"
 			// if oe is missing, "Bad URL timestamp"
 			// if oh is missing, "Bad URL hash"
 			newsrc = (function() {
