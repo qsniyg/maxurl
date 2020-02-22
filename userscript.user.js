@@ -1342,9 +1342,9 @@ var $$IMU_EXPORT$$;
 		check_update_interval: 24,
 		// thanks to forefix on firefox for the idea: https://github.com/qsniyg/maxurl/issues/189
 		dark_mode: false,
+		settings_tabs: false,
 		settings_visible_description: true,
 		advanced_options: false,
-		settings_tabs: true,
 		allow_browser_request: true,
 		use_blob_over_arraybuffer: false,
 		allow_live_settings_reload: true,
