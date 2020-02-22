@@ -989,6 +989,9 @@ var $$IMU_EXPORT$$;
 			"en": "Popup",
 			"ko": "팝업"
 		},
+		"subcategory_settings": {
+			"en": "Settings"
+		},
 		"subcategory_ui": {
 			"en": "UI"
 		},
@@ -1539,6 +1542,7 @@ var $$IMU_EXPORT$$;
 			name: "Description below options",
 			description: "Shows the description below the options (otherwise the description is only shown when you hover over the option's name)",
 			category: "general",
+			subcategory: "settings",
 			onedit: function() {
 				run_soon(do_options);
 			},
@@ -1565,6 +1569,7 @@ var $$IMU_EXPORT$$;
 			name: "Show advanced settings",
 			description: "If disabled, settings that might be harder to understand will be hidden",
 			category: "general",
+			subcategory: "settings",
 			onedit: function() {
 				run_soon(do_options);
 			},
@@ -3063,6 +3068,9 @@ var $$IMU_EXPORT$$;
 	};
 
 	var subcategories = {
+		"general": {
+			"settings": "subcategory_settings"
+		},
 		"popup": {
 			"trigger": "subcategory_trigger",
 			"open_behavior": "subcategory_open_behavior",
