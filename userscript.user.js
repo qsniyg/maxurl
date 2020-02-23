@@ -20495,6 +20495,10 @@ var $$IMU_EXPORT$$;
 			 // https://assets.ray-ban.com/is/image/RayBan/tile_ddm_eye_227x130_oval?$jpeg-full$
 			 //   https://assets.ray-ban.com/is/image/RayBan/tile_ddm_eye_227x130_oval?scl=1&fmt=png-alpha
 			 domain === "assets.ray-ban.com" ||
+			 // thanks to user-00 on github: https://github.com/qsniyg/maxurl/issues/244
+			 // https://images.menswearhouse.com/is/image/TMW/MW40_67AA_01_JOE_JOSEPH_ABBOUD_NAVY_SET?$40MainPDP$
+			 //   https://images.menswearhouse.com/is/image/TMW/MW40_67AA_01_JOE_JOSEPH_ABBOUD_NAVY_SET?scl=1&fmt=png-alpha
+			 domain === "images.menswearhouse.com" ||
 			 // https://image.but.fr/is/image/but/3700989515089_Q?$produit_niv3_l$
 			 //   https://image.but.fr/is/image/but/3700989515089_Q?scl=1&fmt=png-alpha -- illegal image size
 			 //domain === "image.but.fr" ||
