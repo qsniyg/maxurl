@@ -4999,6 +4999,8 @@ var $$IMU_EXPORT$$;
 
 					if (maxobj !== null) {
 						image.video = maxobj.url;
+						image.width = maxobj.width;
+						image.height = maxobj.height;
 					}
 				}
 
@@ -5042,6 +5044,12 @@ var $$IMU_EXPORT$$;
 
 					if (our_size <= found_size)
 						return;
+				}
+
+				if (node.video_url) {
+					// width/height corresponds to the image, not the video
+					width = 0;
+					height = 0;
 				}
 
 				images.push({
