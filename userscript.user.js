@@ -5370,7 +5370,10 @@ var $$IMU_EXPORT$$;
 							newel = newel[0];
 					} catch (e) {
 						console_error(e);
+						newel = element;
 					}
+				} else {
+					newel = element;
 				}
 
 				possible_infos.push({
