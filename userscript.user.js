@@ -5355,10 +5355,28 @@ var $$IMU_EXPORT$$;
 
 			// stories
 			if (current.tagName === "BODY" && host_url.match(/:\/\/[^/]*\/+stories\/+([^/]*)\/*(?:[?#].*)?$/)) {
+				// try to find image instead of video because video ids change for app stories
+				var newel = element;
+				if (newel.tagName === "SOURCE") {
+					newel = newel.parentElement;
+				}
+
+				if (newel.tagName === "VIDEO") {
+					try {
+						newel = newel.parentElement.querySelectorAll("img[srcset]");
+						if (!newel || newel.length === 0)
+							newel = element;
+						else
+							newel = newel[0];
+					} catch (e) {
+						console_error(e);
+					}
+				}
+
 				possible_infos.push({
 					type: "story",
 					url: host_url,
-					image: element.src,
+					image: newel.src,
 					element: current
 				});
 			}
