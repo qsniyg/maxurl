@@ -8394,16 +8394,6 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "pbs.twimg.com" &&
-			// https://pbs.twimg.com/card_img/958636711470223361/S0DycGGB?format=jpg&name=600x314
-			//   https://pbs.twimg.com/card_img/958636711470223361/S0DycGGB?format=jpg&name=orig
-			src.indexOf("pbs.twimg.com/card_img/") >= 0 ||
-			// https://pbs.twimg.com/ext_tw_video_thumb/1078225907569967105/pu/img/-Dw-qFfQvMTHz6YA?format=jpg&name=120x120
-			//   https://pbs.twimg.com/ext_tw_video_thumb/1078225907569967105/pu/img/-Dw-qFfQvMTHz6YA?format=jpg&name=orig
-			src.indexOf("/ext_tw_video_thumb/") >= 0) {
-			return src.replace(/(\?[^/]*&?name=)[^&/]*([^/]*)$/, "$1orig$2");
-		}
-
-		if (domain === "pbs.twimg.com" &&
 			src.indexOf("pbs.twimg.com/profile_banners/") >= 0) {
 			// https://pbs.twimg.com/profile_banners/811769379020947458/1503413326/1500x500 -- stretched
 			//   https://pbs.twimg.com/profile_banners/811769379020947458/1503413326
