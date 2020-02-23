@@ -53621,6 +53621,18 @@ var $$IMU_EXPORT$$;
 			};
 		}
 
+		if (host_domain_nowww === "500px.com") {
+			return {
+				element_ok: function(el) {
+					if (el.tagName === "A" && el.classList.contains("photo_link") && el.querySelector("div.nsfw_placeholder_content")) {
+						return true;
+					}
+
+					return "default";
+				}
+			};
+		}
+
 		return null;
 	}
 
@@ -59240,7 +59252,7 @@ var $$IMU_EXPORT$$;
 				}
 			}
 
-			if (!is_valid_src(result.src, is_video_el(result.el))) {
+			if (!result.is_ok_el && !is_valid_src(result.src, is_video_el(result.el))) {
 				if (_nir_debug_)
 					console_log("find_source: invalid src", result);
 
@@ -59274,6 +59286,7 @@ var $$IMU_EXPORT$$;
 			var sources = {};
 			//var picture_sources = {};
 			var links = {};
+			var ok_els = [];
 			var layers = [];
 
 			var id = 0;
@@ -59281,6 +59294,8 @@ var $$IMU_EXPORT$$;
 			var thresh = parseInt(settings.mouseover_minimum_size);
 			if (isNaN(thresh))
 				thresh = 0;
+
+			var helpers = do_get_helpers({});
 
 			var source;
 
@@ -59332,11 +59347,14 @@ var $$IMU_EXPORT$$;
 				return urljoin(window.location.href, src, true);
 			}
 
-			function imu_check(src) {
+			function imu_check(src, el) {
 				var result = bigimage_recursive(src, {
 					fill_object: true,
 					use_cache: "read",
 					do_request: null,
+					document: document,
+					window: get_window(),
+					element: el,
 					include_pastobjs: true,
 					iterations: 2,
 					cb: null
@@ -59365,7 +59383,7 @@ var $$IMU_EXPORT$$;
 					console_log("_find_source (addImage)", src, el, check_visible(el), options);
 				}
 
-				if (settings.mouseover_apply_blacklist && !bigimage_filter(src)) {
+				if (src && settings.mouseover_apply_blacklist && !bigimage_filter(src)) {
 					if (_nir_debug_)
 						console_log("blacklisted");
 
@@ -59388,7 +59406,7 @@ var $$IMU_EXPORT$$;
 					el_style = window.getComputedStyle(el) || el.style;
 				}
 
-				if ((src.match(/^data:/) && src.length <= 500) ||
+				if (src && (src.match(/^data:/) && src.length <= 500) ||
 					// https://www.smugmug.com/
 					// https://www.vogue.com/article/lady-gaga-met-gala-2019-entrance-behind-the-scenes-video
 					!check_visible(el)) {
@@ -59406,7 +59424,7 @@ var $$IMU_EXPORT$$;
 					return false;
 				}
 
-				var imucheck = imu_check(src);
+				var imucheck = imu_check(src, el);
 				if (imucheck === false) {
 					if (_nir_debug_)
 						console_log("Bad image");
@@ -59557,7 +59575,21 @@ var $$IMU_EXPORT$$;
 							}
 						}
 					}
-				} else if (el.tagName === "A") {
+				}
+
+				if (helpers && helpers.element_ok) {
+					if (helpers.element_ok(el) === true) {
+						ok_els.push({
+							count: 1,
+							src: null,
+							el: el,
+							id: id++,
+							is_ok_el: true
+						});
+					}
+				}
+
+				if (el.tagName === "A") {
 					var src = el.href;
 					links[src] = {
 						count: 1,
@@ -59677,9 +59709,13 @@ var $$IMU_EXPORT$$;
 				if (_nir_debug_)
 					console_log("_find_source (getsource())", source);
 
-				if (source === null && get_single_setting("mouseover_links")) {
-					if (Object.keys(links).length > 0) {
-						return links[Object.keys(links)[0]];
+				if (source === null) {
+					if (ok_els.length > 0) {
+						return ok_els[0];
+					} else if (get_single_setting("mouseover_links")) {
+						if (Object.keys(links).length > 0) {
+							return links[Object.keys(links)[0]];
+						}
 					}
 				}
 
@@ -60451,6 +60487,22 @@ var $$IMU_EXPORT$$;
 				return unsafeWindow || window;
 
 			return window
+		}
+
+		function do_get_helpers(options) {
+			var baseoptions = {
+				document: document,
+				window: get_window(),
+				host_url: window.location.href,
+				do_request: do_request,
+				rule_specific: {}
+			};
+
+			for (var option in options) {
+				baseoptions[option] = options[option];
+			}
+
+			return get_helpers(baseoptions);
 		}
 
 		function wrap_gallery_func(nextprev, origel, el, cb, new_options) {
