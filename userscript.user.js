@@ -8285,7 +8285,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if ((domain === "pbs.twimg.com" &&
-			 src.indexOf("pbs.twimg.com/media/") >= 0) ||
+			 /:\/\/[^/]+\/+(?:media|card_img|ext_tw_video_thumb)\//.test(src)) ||
 			(domain === "ton.twitter.com" &&
 			 src.indexOf("/ton/data/dm/") >= 0)) {
 			// use ?name=orig instead of :orig, see:
@@ -8307,6 +8307,10 @@ var $$IMU_EXPORT$$;
 			// https://pbs.twimg.com/media/DhbrylaVAAYlrss?format=png
 			//   https://pbs.twimg.com/media/DhbrylaVAAYlrss.jpg?name=orig
 			//   https://pbs.twimg.com/media/DhbrylaVAAYlrss:orig?format=jpg
+			// https://pbs.twimg.com/card_img/958636711470223361/S0DycGGB?format=jpg&name=600x314
+			//   https://pbs.twimg.com/card_img/958636711470223361/S0DycGGB?format=jpg&name=orig
+			// https://pbs.twimg.com/ext_tw_video_thumb/1078225907569967105/pu/img/-Dw-qFfQvMTHz6YA?format=jpg&name=120x120
+			//   https://pbs.twimg.com/ext_tw_video_thumb/1078225907569967105/pu/img/-Dw-qFfQvMTHz6YA?format=jpg&name=orig
 			// https://pbs.twimg.com/media/DhqeJS2UcAAo7fr.png
 			//   https://pbs.twimg.com/media/DhqeJS2UcAAo7fr.jpg
 			//   https://pbs.twimg.com/media/DhqeJS2UcAAo7fr.jpg?name=orig -- doesn't work
