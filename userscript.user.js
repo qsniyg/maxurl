@@ -5042,7 +5042,8 @@ var $$IMU_EXPORT$$;
 					var found_size = found_image.width * found_image.height;
 					var our_size = width * height;
 
-					if (our_size <= found_size)
+					// fixme: why is this check even here? it breaks width=0, height=0 videos
+					if (our_size <= found_size || true)
 						return;
 				}
 
