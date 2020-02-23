@@ -5389,6 +5389,51 @@ var $$IMU_EXPORT$$;
 		return possible_infos;
 	};
 
+	common_functions.get_twitter_video_tweet = function(el, window) {
+		if (el.tagName !== "VIDEO" || !el.src.match(/^blob:/))
+			return null;
+
+		var poster = el.poster;
+		if (!poster)
+			return null;
+
+		// note that the numbers here corresponds to the media id, not the tweet id, so it can't be used
+		if (!/\/ext_tw_video_thumb\/+[0-9]+\/+pu\/+img\//.test(poster))
+			return null;
+
+		var href = window.location.href;
+
+		// embedded video
+		var match = href.match(/\/i\/+videos\/+tweet\/+([0-9]+)(?:[?#].*)?$/);
+		if (match) {
+			return {
+				id: match[1]
+			};
+		}
+
+		var currentel = el;
+		while ((currentel = currentel.parentElement)) {
+			if (currentel.tagName === "ARTICLE") {
+				var our_as = currentel.querySelectorAll("a[role='link']");
+				for (var i = 0; i < our_as.length; i++) {
+					var our_href = our_as[i].href;
+					if (!our_href)
+						continue;
+
+					var match = our_href.match(/\/status\/+([0-9]+)(?:\/+(?:retweets|likes)|\/*)(?:[?#].*)?$/);
+					if (match) {
+						return {
+							id: match[1]
+						};
+					}
+				}
+				break;
+			}
+		}
+
+		return null;
+	};
+
 	var get_domain_nosub = function(domain) {
 		var domain_nosub = domain.replace(/^.*\.([^.]*\.[^.]*)$/, "$1");
 		if (domain_nosub.match(/^co\.[a-z]{2}$/) ||
@@ -5407,7 +5452,7 @@ var $$IMU_EXPORT$$;
 		if (!src)
 			return src;
 
-		if (!src.match(/^(?:https?|x-raw-image):\/\//) && !src.match(/^data:/))
+		if (!src.match(/^(?:https?|x-raw-image):\/\//) && !src.match(/^(?:data|blob):/))
 			return src;
 
 		var origsrc = src;
@@ -5418,7 +5463,7 @@ var $$IMU_EXPORT$$;
 		var domain;
 		var port;
 
-		if (!src.match(/^(?:data|x-raw-image):/)) {
+		if (!src.match(/^(?:data|x-raw-image|blob):/)) {
 			// to prevent infinite loops
 			if (src.length >= 65535)
 				return src;
@@ -53618,6 +53663,15 @@ var $$IMU_EXPORT$$;
 					}
 
 					return "default";
+				},
+				element_ok: function(el) {
+					var tweet = common_functions.get_twitter_video_tweet(el, window);
+					// disable for now as this method needs to be implemented
+					if (tweet && false) {
+						return true;
+					}
+
+					return "default";
 				}
 			};
 		}
@@ -59236,20 +59290,27 @@ var $$IMU_EXPORT$$;
 
 		function find_source(els) {
 			//console_log(els);
-			var result = _find_source(els);
+			var ok_els = [];
+			var result = _find_source(els, ok_els);
 
 			if (_nir_debug_)
-				console_log("find_source: result =", result);
+				console_log("find_source: result =", result, "ok_els =", ok_els);
 
 			if (!result)
 				return result;
+
+			var ret_bad = function() {
+				if (ok_els.length > 0)
+					return ok_els[0];
+				return null;
+			};
 
 			if (result.el) {
 				if (is_popup_el(result.el)) {
 					if (_nir_debug_)
 						console_log("find_source: result.el is popup el", result.el);
 
-					return null;
+					return ret_bad();
 				}
 			}
 
@@ -59257,7 +59318,7 @@ var $$IMU_EXPORT$$;
 				if (_nir_debug_)
 					console_log("find_source: invalid src", result);
 
-				return null;
+				return ret_bad();
 			}
 
 			var thresh = parseInt(settings.mouseover_minimum_size);
@@ -59270,13 +59331,13 @@ var $$IMU_EXPORT$$;
 				if (_nir_debug_)
 					console_log("find_source: result size is too small");
 
-				return null;
+				return ret_bad();
 			}
 
 			return result;
 		}
 
-		function _find_source(els) {
+		function _find_source(els, ok_els) {
 			// resetpopups() is already called in trigger_popup()
 			/*if (popups_active)
 				return;*/
@@ -59287,7 +59348,6 @@ var $$IMU_EXPORT$$;
 			var sources = {};
 			//var picture_sources = {};
 			var links = {};
-			var ok_els = [];
 			var layers = [];
 
 			var id = 0;
@@ -59468,6 +59528,18 @@ var $$IMU_EXPORT$$;
 			}
 
 			function addTagElement(el, layer) {
+				if (helpers && helpers.element_ok) {
+					if (helpers.element_ok(el) === true) {
+						ok_els.push({
+							count: 1,
+							src: null,
+							el: el,
+							id: id++,
+							is_ok_el: true
+						});
+					}
+				}
+
 				if (el.tagName === "PICTURE" || el.tagName === "VIDEO") {
 					for (var i = 0; i < el.children.length; i++) {
 						addElement(el.children[i], layer);
@@ -59575,18 +59647,6 @@ var $$IMU_EXPORT$$;
 									sources[src].maxHeight = maxHeight;
 							}
 						}
-					}
-				}
-
-				if (helpers && helpers.element_ok) {
-					if (helpers.element_ok(el) === true) {
-						ok_els.push({
-							count: 1,
-							src: null,
-							el: el,
-							id: id++,
-							is_ok_el: true
-						});
 					}
 				}
 
@@ -59702,6 +59762,12 @@ var $$IMU_EXPORT$$;
 			}
 
 			for (var source in sources) {
+				for (var i = 0; i < ok_els.length; i++) {
+					if (sources[source].el === ok_els[i].el) {
+						ok_els[i] = sources[source];
+					}
+				}
+
 				if (activesources.indexOf(source) < 0)
 					delete sources[source];
 			}
