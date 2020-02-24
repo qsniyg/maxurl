@@ -52260,6 +52260,40 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/previo\/+thump_/, "/");
 		}
 
+		if (host_domain_nowww === "justfor.fans" && options && options.element) {
+			if (options.element.parentElement && options.element.parentElement.classList.contains("video-thumbnail")) {
+				var link = options.element.parentElement.parentElement;
+				if (link.tagName === "A") {
+					var match = link.href.match(/^javascript:MakeMovieHD\("[^"]+"\s*,\s*({.*?})\s*,/);
+					if (match) {
+						try {
+							var json = JSON_parse(match[1]);
+							var maxres = 0;
+							var maxobj = null;
+
+							for (var resolution in json) {
+								var our_resolution = parseInt(resolution);
+								if (our_resolution > maxres) {
+									maxres = our_resolution;
+									maxobj = json[resolution];
+								}
+							}
+
+							if (maxobj) {
+								return {
+									url: maxobj,
+									video: true,
+									is_private: true // linked to ip
+								};
+							}
+						} catch (e) {
+							console_error(e);
+						}
+					}
+				}
+			}
+		}
+
 
 
 
