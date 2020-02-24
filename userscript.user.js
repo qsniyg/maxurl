@@ -7303,6 +7303,9 @@ var $$IMU_EXPORT$$;
 			// https://cdn.substack.com/image/fetch/c_limit,q_auto:good,f_auto/https%3A%2F%2Fbucketeer-e05bbc84-baa3-437e-9518-adb32be77984.s3.amazonaws.com%2Fpublic%2Fimages%2F0d3b9fbf-c06e-4b6e-ac84-13c53da04462_952x400.png
 			//   https://bucketeer-e05bbc84-baa3-437e-9518-adb32be77984.s3.amazonaws.com/public/images/0d3b9fbf-c06e-4b6e-ac84-13c53da04462_952x400.png
 			domain === "cdn.substack.com" ||
+			// https://c.bellesa.co/dkvdbifey/image/fetch/h_250,q_75,ar_16:9,c_fill,f_auto//https://i.bellesa.co/video_upload/2350cover.jpg
+			//   https://i.bellesa.co/video_upload/2350cover.jpg
+			domain === "c.bellesa.co" ||
 			domain === "images.taboola.com") {
 			// https://res.cloudinary.com/emazecom/image/fetch/c_limit,a_ignore,w_320,h_200/https%3A%2F%2Fimg-aws.ehowcdn.com%2F877x500p%2Fs3.amazonaws.com%2Fcme_public_images%2Fwww_ehow_com%2Fi.ehow.com%2Fimages%2Fa04%2Fbd%2Fic%2Fchemical-energy-work-3.1-800x800.jpg
 			// https://images.taboola.com/taboola/image/fetch/f_jpg%2Cq_auto%2Cc_fill%2Cg_faces:auto%2Ce_sharpen/https%3A%2F%2Fwww.gannett-cdn.com%2F-mm-%2F2e56892f6a349ad47192b530425d443fb365e5e9%2Fr%3Dx1803%26c%3D3200x1800%2Fhttps%2Fmedia.gannett-cdn.com%2F37861007001%2F37861007001_5735420050001_5735409691001-vs.jpg%3FpubId%3D37861007001
@@ -7505,6 +7508,9 @@ var $$IMU_EXPORT$$;
 			// https://image.spreadshirtmedia.com/content/w_650/cms/cyo/seo/cheaptshirts/6_us_desktop.png
 			//   https://image.spreadshirtmedia.com/content/cms/cyo/seo/cheaptshirts/6_us_desktop.png
 			domain === "image.spreadshirtmedia.com" ||
+			// https://c.bellesa.co/dkvdbifey/image/upload/h_250,q_75,f_auto/v1559314010/body_paint_1.jpg
+			//   https://c.bellesa.co/dkvdbifey/image/upload/body_paint_1.jpg
+			domain === "c.bellesa.co" ||
 			// https://images.moviepilot.com/images/c_limit,q_auto:good,w_600/uom2udz4ogmkncouu83q/beauty-and-the-beast-credit-disney.jpg
 			// https://images.moviepilot.com/image/upload/c_fill,h_64,q_auto,w_64/lpgwdrrgc3m8duvg7zt2.jpg
 			domain === "images.moviepilot.com") {
@@ -52291,6 +52297,51 @@ var $$IMU_EXPORT$$;
 						}
 					}
 				}
+			}
+		}
+
+		if (domain === "d3373orltkomw3.cloudfront.net") {
+			// https://d3373orltkomw3.cloudfront.net/565287/o1c6sb3hkn20a1h7415no1cuv1ktmc.mp4
+			if (/\/[0-9]+\/+[0-9a-z]+\.mp4/.test(src)) {
+				return {
+					url: src,
+					video: true
+				};
+			}
+		}
+
+		if (domain_nowww === "apclips.com") {
+			// https://apclips.com/ui/img/model/rivergray/photo/d0fd82d3759b152a8be1bcb324b19de7_th.jpg
+			//   https://apclips.com/ui/img/model/rivergray/photo/d0fd82d3759b152a8be1bcb324b19de7.jpg
+			return src.replace(/(\/img\/+model\/+[^/]+\/+photo\/+[0-9a-f]{10,})_th(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "iwantclips.com") {
+			// https://iwantclips.com/uploads/aboutme_previews/753097/480_f973db269576958e1b4d18ff0bb87711.jpg
+			//   https://iwantclips.com/uploads/aboutme_previews/753097/f973db269576958e1b4d18ff0bb87711.jpg
+			return src.replace(/(\/uploads\/+aboutme_previews\/+[0-9]+\/+)[0-9]+_/, "$1");
+		}
+
+		if (domain === "s.bellesa.co") {
+			newsrc = src.replace(/(\/v\/+[0-9a-f]{10,}\/+)(?:preview_[0-9]+)(\.[^/.]+)(?:[?#].*)?$/, "$1360$2");
+			if (newsrc !== src)
+				return newsrc;
+
+			// FIXME: is this necessary? only found up to 720 so far...
+			var sizes = [2160, 1080, 720, 480, 360];
+
+			regex = /(\/v\/+[0-9a-f]{10,}\/+)([0-9]+)(\.[^/.]+)(?:[?#].*)?$/;
+			match = src.match(regex);
+			if (match) {
+				var obj = [];
+				for (var i = 0; i < sizes.length; i++) {
+					if (sizes[i] <= match[1])
+						break;
+
+					obj.push(src.replace(regex, "$1" + sizes[i] + "$3"));
+				}
+
+				return obj;
 			}
 		}
 
