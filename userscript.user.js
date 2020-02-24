@@ -5233,6 +5233,30 @@ var $$IMU_EXPORT$$;
 		return parse_el_info(info, cb);
 	};
 
+	common_functions.instagram_get_el_for_imageid = function(element) {
+		var newel = element;
+		if (newel.tagName === "SOURCE") {
+			newel = newel.parentElement;
+		}
+
+		if (newel.tagName === "VIDEO") {
+			try {
+				newel = newel.parentElement.querySelectorAll("img[srcset]");
+				if (!newel || newel.length === 0)
+					newel = element;
+				else
+					newel = newel[0];
+			} catch (e) {
+				console_error(e);
+				newel = element;
+			}
+		} else {
+			newel = element;
+		}
+
+		return newel;
+	};
+
 	common_functions.instagram_find_el_info = function(document, element, host_url) {
 		var possible_infos = [];
 
@@ -5357,25 +5381,7 @@ var $$IMU_EXPORT$$;
 			// stories
 			if (current.tagName === "BODY" && host_url.match(/:\/\/[^/]*\/+stories\/+([^/]*)\/*(?:[?#].*)?$/)) {
 				// try to find image instead of video because video ids change for app stories
-				var newel = element;
-				if (newel.tagName === "SOURCE") {
-					newel = newel.parentElement;
-				}
-
-				if (newel.tagName === "VIDEO") {
-					try {
-						newel = newel.parentElement.querySelectorAll("img[srcset]");
-						if (!newel || newel.length === 0)
-							newel = element;
-						else
-							newel = newel[0];
-					} catch (e) {
-						console_error(e);
-						newel = element;
-					}
-				} else {
-					newel = element;
-				}
+				var newel = common_functions.instagram_get_el_for_imageid(element);
 
 				possible_infos.push({
 					type: "story",
@@ -18573,18 +18579,35 @@ var $$IMU_EXPORT$$;
 			// https://di1.ypncdn.com/201905/07/15322879/original/3/mixed-wrestling-with-mia-little-using-a-strapon-after-winning-3(m=eqvVKgaaaa).jpg
 			//   https://di1.ypncdn.com/201905/07/15322879/original/3/mixed-wrestling-with-mia-little-using-a-strapon-after-winning-3.jpg
 			domain_nosub === "ypncdn.com") {
-			// https://ei1.t8cdn.com/201707/10/37854111/originals/1(m=eqw4mgaaaa).jpg
+			// https://ei1.t8cdn.com/201707/10/37854111/190x143/1(m=eqw4mgaaaa).jpg
+			//   https://ei1.t8cdn.com/201707/10/37854111/originals/1(m=eqw4mgaaaa).jpg
 			//   https://ei1.t8cdn.com/201707/10/37854111/originals/1.jpg
-			newsrc = src.replace(/(\/originals?\/+[0-9]+(?:\/+[^/]*?)?)(?:[(][a-z]+=[^/)]*\)){1,}([^/]*)$/, "$1$2");
+			newsrc = src
+				.replace(/\/[0-9]+x[0-9]+\/+([0-9]+)(?:[(][a-z]+=[^/)]*\)){1,}([^/]*)$/, "/originals/$1$2")
+				.replace(/(\/originals?\/+[0-9]+(?:\/+[^/]*?)?)(?:[(][a-z]+=[^/)]*\)){1,}([^/]*)$/, "$1$2");
 			if (newsrc !== src)
 				return newsrc;
+		}
+
+		if (domain_nosub === "rdtcdn.com" && /^[a-z]i\./.test(domain)) {
+			// https://ei.rdtcdn.com/m=eVYR8f/_thumbs/gallery/000/005/150/i_15005151_423291_5150301_/Sexy-Big-Booty-Black-Girls-Ebony-Babes-with-Thick-Thighs-And-Fat-Asses-9922564.jpg
+			//   https://ei.rdtcdn.com/m=eVYR8f/_thumbs/gallery/000/005/150/i_15005151_423291_5150301_9922564.jpg
+			//   https://ei.rdtcdn.com/m=/_thumbs/gallery/000/005/150/i_15005151_423291_5150301_9922564.jpg
+			// https://di.rdtcdn.com/m=eVYR8f/_thumbs/gallery/000/005/150/i_15005151_423291_5150281_/Sexy-Big-Booty-Black-Girls-Ebony-Babes-with-Thick-Thighs-And-Fat-Asses-1726828.jpg
+			//   https://di.rdtcdn.com/m=/_thumbs/gallery/000/005/150/i_15005151_423291_5150281_1726828.jpg
+			return src
+				.replace(/\/m=[^/]*\/+_thumbs\/+/, "/m=/_thumbs/")
+				.replace(/\/m=[^/]*\/+(_thumbs\/+gallery\/.*_[0-9]+_)\/+[^/]+-([0-9]+\.[^/.]+)(?:[?#].*)?$/, "/m=/$1$2");
 		}
 
 		if ((domain_nosub === "t8cdn.com" || domain_nosub === "ypncdn.com") && options && options.do_request && options.cb) {
 			// https://ep.t8cdn.com/201305/26/11984001/vl_mp4_ultra_480p_11984001.mp4
 			// https://ev-ph.ypncdn.com/videos/201911/26/264376432/240P_400K_264376432.mp4 -- video ID doesn't work
 			// https://ev.ypncdn.com/202001/19/15807000/240p_240k_15807000/YouPorn_-_swim-sexy-suit-on-the-beach-hot-bikini.mp4
-			id = src.match(/:\/\/[^/]+\/+[0-9]{6}\/+[0-9]{1,2}\/+([0-9]+)\/+(?:vl_|[0-9]+[pP]_[0-9]+[kK]_)/);
+			// thumbnail
+			// https://ei2.t8cdn.com/201201/17/2640011/190x143/1.jpg
+			//   https://ep.t8cdn.com/201201/17/2640011/vl_mp4_ultra_480p_2640011.mp4
+			id = src.match(/:\/\/[^/]+\/+[0-9]{6}\/+[0-9]{1,2}\/+([0-9]+)\/+(?:vl_|[0-9]+[pP]_[0-9]+[kK]_|(?:[0-9]+x[0-9]+|originals?)\/+[0-9]+(?:[(][a-z]+=[^/)]*\)){0,}\.)/);
 			if (id) {
 				id = id[1];
 
@@ -29045,12 +29068,6 @@ var $$IMU_EXPORT$$;
 				return newsrc;
 		}
 
-		if (domain_nowww === "jjgirls.com") {
-			// http://www.jjgirls.com/photo/watch4beauty/watch-beauty-sapphira/sapphira-peeing/thumbnail006.jpg
-			//   http://www.jjgirls.com/photo/watch4beauty/watch-beauty-sapphira/sapphira-peeing/middle006.jpg
-			return src.replace(/(\/photo\/+watch4beauty\/+.*\/+)thumbnail([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1middle$2");
-		}
-
 		if (domain_nowww === "nakedwench.com") {
 			// http://nakedwench.com/galleries/2018/happyfallyall/thumbnail001.jpg
 			//   http://nakedwench.com/galleries/2018/happyfallyall/middle001.jpg
@@ -29119,9 +29136,15 @@ var $$IMU_EXPORT$$;
 			//   http://www.jjgirls.com/photo/javhd/nao-kojima/nao-kojima-asian-house-keeper-has-cunt-licked-after-showing-it/1.jpg
 			// http://www.jjgirls.com/photo/lbfm/filipina-bargirl/cute-babe/maan01_small.jpg
 			//   http://www.jjgirls.com/photo/lbfm/filipina-bargirl/cute-babe/maan01.jpg
+			// https://jjgirls.com/photo/bigbuttbounce/big-butt-bounce-lenore/332266/tn02.jpg
+			//   https://jjgirls.com/photo/bigbuttbounce/big-butt-bounce-lenore/332266/02.jpg
+			// http://www.jjgirls.com/photo/watch4beauty/watch-beauty-sapphira/sapphira-peeing/thumbnail006.jpg
+			//   http://www.jjgirls.com/photo/watch4beauty/watch-beauty-sapphira/sapphira-peeing/middle006.jpg
 			return src
 				.replace(/(\/photo\/+[^/]*\/+[^/]*\/+[^/]*\/+[0-9]+)t(\.[^/.]*)(?:[?#].*)?$/, "$1$2")
-				.replace(/(\/photo\/+[^/]*\/+[^/]*\/+[^/]*\/+[^/]*)_small(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+				.replace(/(\/photo\/+[^/]*\/+[^/]*\/+[^/]*\/+[^/]*)_small(\.[^/.]*)(?:[?#].*)?$/, "$1$2")
+				.replace(/(\/photo\/+[^/]+\/+[^/]+\/+[0-9]+\/+)tn([0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1$2")
+				.replace(/(\/photo\/+watch4beauty\/+.*\/+)thumbnail([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1middle$2");;
 		}
 
 		if (domain_nowww === "javbtc.com") {
@@ -32772,7 +32795,13 @@ var $$IMU_EXPORT$$;
 			&& src.indexOf("/galleries/") >= 0) {
 			// http://www.perfectnaked.com/galleries/bree-daniels-teasing-in-her-cute-pink-panties/3_tn.jpg
 			//   http://www.perfectnaked.com/galleries/bree-daniels-teasing-in-her-cute-pink-panties/3_big.jpg
-			return src.replace(/(\/[0-9]+)_[a-z]+(\.[^/.]*)$/, "$1_big$2");
+			return src.replace(/(\/[0-9]+)_tn(\.[^/.]*)$/, "$1_big$2");
+		}
+
+		if (domain_nowww === "facefuckingporn.com") {
+			// https://www.facefuckingporn.com/galleries/ghetto-gaggers-4036/jayden_starr_3_ghetto_gaggers0_tn.jpg
+			//   https://www.facefuckingporn.com/galleries/ghetto-gaggers-4036/jayden_starr_3_ghetto_gaggers0_big.jpg
+			return src.replace(/(\/galleries\/+[^/]+\/+[^/]+)_tn(\.[^/.]+)(?:[?#].*)?$/, "$1_big$2");
 		}
 
 		if (domain === "cdn.eroticbeauties.net" ||
@@ -33720,6 +33749,12 @@ var $$IMU_EXPORT$$;
 			// https://nupics.pro/pics/2267/_keira-metz-witcher-3.jpg
 			//   https://nupics.pro/pics/2267/keira-metz-witcher-3.jpg
 			return src.replace(/(\/pics\/+[0-9]+\/+)_([^/]*)$/, "$1$2");
+		}
+
+		if (domain_nowww === "pornstarapex.com") {
+			// http://pornstarapex.com/pics/32de56/th_02.jpg
+			//   http://pornstarapex.com/pics/32de56/02.jpg
+			return src.replace(/(\/pics\/+[0-9a-f]+\/+)th_([0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		}
 
 		if (domain_nosub === "cloud.it" &&
@@ -37203,6 +37238,9 @@ var $$IMU_EXPORT$$;
 			// http://teenplanet.org/media/galleries/596256ebf206e/thumbs/14.PNG
 			//   http://teenplanet.org/media/galleries/596256ebf206e/14.PNG
 			domain_nowww === "teenplanet.org" ||
+			// http://goodsexporn.org/media/galleries/58988fe0ca18e/thumbs/1.jpg
+			//   http://goodsexporn.org/media/galleries/58988fe0ca18e/1.jpg
+			domain_nowww === "goodsexporn.org" ||
 			// https://media.babesource.com/galleries/5cf63225e8fbe/thumbs/101353_005.jpg
 			//   https://media.babesource.com/galleries/5cf63225e8fbe/101353_005.jpg
 			domain === "media.babesource.com") {
@@ -45299,7 +45337,13 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/[0-9a-f]\/+[0-9a-f]{2}\/+[0-9a-f]{10,}\/+)tn_([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
 		}
 
-		if (domain === "images.eastbabes.com") {
+		if (domain === "images.eastbabes.com" ||
+			// https://images.ebonygirls.sexy/p/hot_black_bikini-babes-myebonygf/th/7.jpg
+			//   https://images.ebonygirls.sexy/p/hot_black_bikini-babes-myebonygf/7.jpg
+			domain === "images.ebonygirls.sexy" ||
+			// https://images.nakedblackbabes.pics/p/roundbrown_7/th/01.jpg
+			//   https://images.nakedblackbabes.pics/p/roundbrown_7/01.jpg
+			domain === "images.nakedblackbabes.pics") {
 			// https://images.eastbabes.com/p/cali_caramel_glory/th/01.jpg
 			//   https://images.eastbabes.com/p/cali_caramel_glory/01.jpg
 			return src.replace(/(\/p\/+[^/]*\/+)th\/+/, "$1");
@@ -48906,6 +48950,12 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/posts\/+[^/]+\/+)th_([^/]*)(?:[?#].*)?$/, "$1$2");
 		}
 
+		if (domain_nowww === "nakedebonybabes.com") {
+			// http://nakedebonybabes.com/dmx/ftr/1f5386/th_02.jpg
+			//   http://nakedebonybabes.com/dmx/ftr/1f5386/02.jpg
+			return src.replace(/(\/[0-9a-f]+\/+)th_([0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
 		if (domain_nowww === "picua.org") {
 			// https://picua.org/thumbs/2017-08/22/jbdy4v3oit757ebhguwhf4mrw.jpg
 			//   https://picua.org/img/2017-08/22/jbdy4v3oit757ebhguwhf4mrw.jpg
@@ -52204,6 +52254,12 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/vbid\/+[0-9]+)(?:\/+(?:height|width)\/+[0-9]+\/*)?(?:[?#].*)?$/, "$1");
 		}
 
+		if (domain_nosub === "subirimagenes.com" && /^s[0-9]*\./.test(domain)) {
+			// http://s2.subirimagenes.com/privadas/previo/thump_2276535diggi.jpg
+			//   http://s2.subirimagenes.com/privadas/2276535diggi.jpg
+			return src.replace(/\/previo\/+thump_/, "/");
+		}
+
 
 
 
@@ -53686,7 +53742,8 @@ var $$IMU_EXPORT$$;
 					}
 
 					if (can_apply) {
-						var our_imageid = common_functions.instagram_get_imageid(el.src);
+						var imageid_el = common_functions.instagram_get_el_for_imageid(el);
+						var our_imageid = common_functions.instagram_get_imageid(imageid_el.src);
 						var add = nextprev ? 1 : -1;
 						common_functions.instagram_parse_el_info(real_api_cache, options.do_request, options.rule_specific.instagram_use_app_api, info, function(data) {
 							for (var i = nextprev ? 0 : 1; i < data.length - (nextprev ? 1 : 0); i++) {
