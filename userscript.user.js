@@ -9503,6 +9503,8 @@ var $$IMU_EXPORT$$;
 			domain_nosub === "sdn.cz" ||
 			// https://cdn2.unrealengine.com/Diesel%2Fproductv2%2Fcorruption-2029%2Fhome%2FEGS_TheBeardedLadies_CORRUPTION2029_S1-2560x1440-b8e91bac33e7b50e2dc3e0b8f975b2843f06334f.jpg?h=100&resize=1&w=100
 			(domain_nosub === "unrealengine.com" && /^cdn[0-9]*\./.test(domain)) ||
+			// https://cdn.repub.ch/s3/republik-assets/github/republik/article-facebook-influenced-elections-in-66-countries/images/0054f5fb5cc553222090e78d27ef4c8ffcf5e85f.jpeg?size=2031x622
+			(domain === "cdn.repub.ch" && src.indexOf("/republik-assets/") >= 0) ||
 			// http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
 			// https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
 			src.match(/\/demandware\.static\//) ||
@@ -44826,16 +44828,6 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(:\/\/[^/]*\/+[^/]*\/+)t([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
 		}
 
-		// project diaspora
-		if (domain_nowww === "diasp.org" ||
-			// https://diasp.eu/uploads/images/thumb_large_213fd176442b8fa6fc12.jpg
-			//   https://diasp.eu/uploads/images/213fd176442b8fa6fc12.jpg
-			domain_nowww === "diasp.eu") {
-			// https://diasp.org/uploads/images/scaled_full_0aa2bc73c57545c2a222.jpg
-			//   https://diasp.org/uploads/images/0aa2bc73c57545c2a222.jpg
-			return src.replace(/\/uploads\/+images\/+[a-z_]+_([0-9a-f]{10,}\.[^/.]*)(?:[?#].*)?$/, "/uploads/images/$1");
-		}
-
 		if (domain_nowww === "manga-news.com") {
 			// https://www.manga-news.com/public/images/events/.anohana-grand-rex-mai-2016_m.jpg
 			//   https://www.manga-news.com/public/images/events/anohana-grand-rex-mai-2016.jpg
@@ -53404,6 +53396,22 @@ var $$IMU_EXPORT$$;
 			// https://files.mastodon.social/media_attachments/files/000/272/420/small/70972b69912d1e4d.png
 			//   https://files.mastodon.social/media_attachments/files/000/272/420/original/70972b69912d1e4d.png
 			return src.replace(/\/[a-z]+\/([0-9a-f]+\.[^/.]*)(?:[?#].*)?$/, "/original/$1");
+		}
+
+		// project diaspora
+		if (domain_nowww === "diasp.org" ||
+			// https://pod.libreplanetbr.org/uploads/images/thumb_large_43339b48adc592fe35e2.png
+			//   https://pod.libreplanetbr.org/uploads/images/thumb_small_43339b48adc592fe35e2.png
+			//   https://pod.libreplanetbr.org/uploads/images/43339b48adc592fe35e2.png
+			//domain === "pod.libreplanetbr.org" ||
+			// https://diasp.eu/uploads/images/thumb_large_213fd176442b8fa6fc12.jpg
+			//   https://diasp.eu/uploads/images/213fd176442b8fa6fc12.jpg
+			domain_nowww === "diasp.eu" ||
+			// https://joindiaspora.com/uploads/images/scaled_full_0e37bb478a688e0d87bd.jpg
+			/^[a-z]+:\/\/[^/]+\/+uploads\/+images\/+(?:thumb|scaled)_(?:large|small|full)_[0-9a-f]{20}\.[^/.]+(?:[?#].*)?$/.test(src)) {
+			// https://diasp.org/uploads/images/scaled_full_0aa2bc73c57545c2a222.jpg
+			//   https://diasp.org/uploads/images/0aa2bc73c57545c2a222.jpg
+			return src.replace(/\/uploads\/+images\/+[a-z_]+_([0-9a-f]{10,}\.[^/.]*)(?:[?#].*)?$/, "/uploads/images/$1");
 		}
 
 		if (/\/wp-content\/+themes\/+[^/]+\/+functions\/+resize_ext\.php\?(?:.*&)?image=http/.test(src)) {
