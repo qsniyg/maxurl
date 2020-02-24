@@ -21455,6 +21455,10 @@ var $$IMU_EXPORT$$;
 			return src.replace(/_[^-/._]*(\.[^/.]*)?$/, "_orig$1");
 		}
 
+		if (domain_nosub === "yandex.ru" && /downloader.disk.yandex.ru/.test(domain)) {
+			return src.replace(/(\/preview\/+[0-9a-f]{30,}\/+.*?\?(?:.*&)?size=)[0-9]+x[0-9]+(&.*)?$/, "$10x0$2");
+		}
+
 		if (domain_nosub === "steemitimages.com") {
 			// deprecated, it's returning hashed urls now
 			// https://steemitimages.com/0x0/https://steemitimages.com/DQmUXTDZ82P2K8iK1naLZETucmAcz7W9vvReEbTi5osSh4U/quantstamp_network-1.png
@@ -22954,14 +22958,21 @@ var $$IMU_EXPORT$$;
 			return src.replace(/_(?:m|thumb)(\?.*)?$/, "$1");
 		}
 
-		if (domain === "static-mercari-jp-imgtr2.akamaized.net") {
+		if (domain === "static-mercari-jp-imgtr2.akamaized.net" ||
+			// https://mercari-images.global.ssl.fastly.net/photos/m64465317108_1.jpg?1582464453&w=200&h=200&fitcrop&sharpen
+			//   https://mercari-images.global.ssl.fastly.net/photos/m64465317108_1.jpg
+			// https://mercari-images.global.ssl.fastly.net/thumb/members/730481941.jpg?1508697152
+			//   https://mercari-images.global.ssl.fastly.net/members/730481941.jpg
+			domain === "mercari-images.global.ssl.fastly.net") {
 			// https://static-mercari-jp-imgtr2.akamaized.net/thumb/photos/m67374048071_1.jpg?1520960098
 			//   https://static-mercari-jp-imgtr2.akamaized.net/photos/m67374048071_1.jpg?1520960098
 			// https://static-mercari-jp-imgtr2.akamaized.net/thumb/members/583883227.jpg?1501875459
 			//   https://static-mercari-jp-imgtr2.akamaized.net/members/583883227.jpg?1501875459 -- stretched
 			// https://static-mercari-jp-imgtr2.akamaized.net/thumb/photos/m86027196730_1.jpg?1528127240
 			//   https://static-mercari-jp-imgtr2.akamaized.net/photos/m86027196730_1.jpg?1528127240 -- 2448x3264
-			return src.replace(/\/thumb\//, "/");
+			return src
+				.replace(/\/thumb\/+(photos|members)\/+/, "/$1/")
+				.replace(/(\/(?:photos|members)\/.*?)(?:[?#].*)$/, "$1");
 		}
 
 		if (false && domain_nosub === "fbcdn.net" && /^scontent\.f[^/.]+\.fna\.fbcdn\./.test(domain) && options && options.do_request && options.cb) {
@@ -26252,8 +26263,17 @@ var $$IMU_EXPORT$$;
 				function checkimage(url) {
 					url = urljoin(options.host_url, url, true);
 					if (url.match(/^(?:[a-z]+)?:\/\/[^/]*\.redditmedia\.com\//) ||
-						url.match(/^(?:[a-z]+)?:\/\/[^/]*\.redd\.it\//))
+						url.match(/^(?:[a-z]+)?:\/\/(?:i|(?:external-)?preview)\.redd\.it\//))
 						return url;
+
+					var match = url.match(/:\/\/(?:www\.)?youtube\.com\/+watch\?(?:.*&)?v=([^&#]*)/);
+					if (!match) {
+						match = url.match(/:\/\/(?:www\.)?youtu\.be\/+([^?&#]*)/);
+					}
+
+					if (match) {
+						return "https://i.ytimg.com/vi/" + match[1] + "/mqdefault.jpg";
+					}
 
 					if (bigimage_recursive(url, {
 						fill_object: false,
@@ -26291,13 +26311,16 @@ var $$IMU_EXPORT$$;
 								var item = json.data.children[0].data;
 								var image = item.url;
 
-								if (!checkimage(image)) {
+								var checked = checkimage(image);
+								if (!checked) {
 									if (item.preview.images[0].variants.gif)
 										image = item.preview.images[0].variants.gif.source.url;
 									else
 										image = item.preview.images[0].source.url;
 
 									image = image.replace(/&amp;/g, "&");
+								} else {
+									image = checked;
 								}
 
 								return options.cb(image);
@@ -26322,8 +26345,9 @@ var $$IMU_EXPORT$$;
 					newsrc = doubleparent.getAttribute("data-url");
 
 					if (newsrc) {
-						if (checkimage(newsrc))
-							return newsrc;
+						var checked = checkimage(newsrc);
+						if (checked)
+							return checked;
 						else {
 							var id = doubleparent.getAttribute("data-fullname");
 							if (id) {
@@ -26349,8 +26373,10 @@ var $$IMU_EXPORT$$;
 							 options.element.parentElement.classList.contains("PostThumbnail"))) {
 
 							newsrc = options.element.parentElement.href;
-							if (checkimage(newsrc))
-								return newsrc;
+
+							var checked = checkimage(newsrc);
+							if (checked)
+								return checked;
 						}
 
 						// new classic
@@ -37390,12 +37416,97 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if (domain_nowww === "onlyfans.com" ||
-			domain === "media.onlyfans.com" ||
-			amazon_container === "of2media") {
+		if (host_domain_nosub === "onlyfans.com" &&
+		     (domain_nosub === "onlyfans.com" ||
+			  domain === "media.onlyfans.com" ||
+			  amazon_container === "of2media") && options && options.element && options.do_request && options.cb) {
 			// https://onlyfans.com/files/thumbs/w760/1/15/154/154381d588ce8b86f8fa86325ef17efa/header.jpg
 			//   https://s3.amazonaws.com/of2media/files/1/15/154/154381d588ce8b86f8fa86325ef17efa/header.jpg
-			return src.replace(/:\/\/[^/]*\/(?:of2media\/+)?files\/+thumbs\/+[wh][0-9]+\/+/, "://media.onlyfans.com/files/");
+			// doesn't work anymore, signed
+			//return src.replace(/:\/\/[^/]*\/(?:of2media\/+)?files\/+thumbs\/+[wh][0-9]+\/+/, "://media.onlyfans.com/files/");
+
+			var get_appkey = function(cb) {
+				// TODO: parse https://static.cdn.onlyfans.com/theme/onlyfans/spa/app.js
+				// h="onlyfans.com",g="[app-token]",v="https://".concat(h)
+				return cb(base64_decode("Lj0zM2Q1N2FkZThjMDJkYmM1YTMzM2RiOTlmZjlhZTI2YQ==").substr(2));
+			};
+
+			var onlyfans_api_call = function(url, querystring, referer, cb) {
+				get_appkey(function(appkey) {
+					if (!appkey)
+						return cb(null);
+
+					url = urljoin("https://onlyfans.com/api2/v2", url, false);
+
+					if (querystring) {
+						url += "?" + querystring + "&app-token=" + appkey;
+					} else {
+						url += "?app-token=" + appkey;
+					}
+
+					options.do_request({
+						url: url,
+						method: "GET",
+						headers: {
+							Referer: referer,
+							"Sec-Fetch-Site": "same-origin"
+						},
+						onload: function(result) {
+							if (result.readyState !== 4)
+								return;
+
+							if (result.status !== 200) {
+								console_error(result);
+								return cb(null);
+							}
+
+							try {
+								var json = JSON_parse(result.responseText);
+								cb(json);
+							} catch (e) {
+								console_error(e, result);
+								cb(null);
+							}
+						}
+					});
+				});
+			};
+
+			var get_user = function(username, cb) {
+				api_cache.fetch("onlyfans_user:" + username, cb, function(done) {
+					onlyfans_api_call("/users/" + username, null, "https://onlyfans.com/" + username, function(data) {
+						if (data) {
+							return done(data, 1*60*60);
+						} else {
+							return done(null, false);
+						}
+					});
+				});
+			};
+
+			var get_avatar = function(username, cb) {
+				get_user(username, function(data) {
+					if (data) {
+						return cb(data.avatar);
+					} else {
+						return cb(null);
+					}
+				});
+			};
+
+			if (options.element.parentElement && options.element.parentElement.classList.contains("b-avatar")) {
+				var link = options.element.parentElement.parentElement;
+				if (link.tagName === "A") {
+					var match = link.href.match(/^https?:\/\/[^/]+\/+([^/]+)\/*(?:[?#].*)?$/);
+					if (match) {
+						get_avatar(match[1], options.cb);
+
+						return {
+							waiting: true
+						};
+					}
+				}
+			}
 		}
 
 		if (domain === "img.mfcimg.com") {
