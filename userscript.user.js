@@ -37494,13 +37494,28 @@ var $$IMU_EXPORT$$;
 				});
 			};
 
-			if (options.element.parentElement && options.element.parentElement.classList.contains("b-avatar")) {
-				var link = options.element.parentElement.parentElement;
-				if (link.tagName === "A") {
-					var match = link.href.match(/^https?:\/\/[^/]+\/+([^/]+)\/*(?:[?#].*)?$/);
-					if (match) {
-						get_avatar(match[1], options.cb);
+			var get_avatar_from_a = function(el, cb) {
+				var match = el.href.match(/^https?:\/\/[^/]+\/+([^/]+)\/*(?:[?#].*)?$/);
+				if (match) {
+					get_avatar(match[1], cb);
+					return true;
+				}
 
+				return false;
+			};
+
+			if (options.element.parentElement && options.element.parentElement.classList.contains("b-avatar")) {
+				var dparent = options.element.parentElement.parentElement;
+				if (dparent.tagName === "A") {
+					if (get_avatar_from_a(dparent, options.cb)) {
+						return {
+							waiting: true
+						};
+					}
+				} else if (dparent.tagName === "DIV" && dparent.classList.contains("b-profile__user")) {
+					// avatar at the top of a user's profile
+					var link = dparent.querySelector("a.g-user-realname__wrapper");
+					if (link && get_avatar_from_a(link, options.cb)) {
 						return {
 							waiting: true
 						};
