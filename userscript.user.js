@@ -52337,6 +52337,16 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain_nowww === "censored.tv") {
+			// https://www.censored.tv/images/censored-bug.png
+			if (/\/images\/+censored-bug\.png(?:[?#].*)?$/.test(src)) {
+				return {
+					url: src,
+					bad: "mask"
+				};
+			}
+		}
+
 
 
 
