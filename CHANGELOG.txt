@@ -1,3 +1,26 @@
+0.12.15
+
+New features:
+
+ * Allow seeking through video by either scrolling (disabled by default) or using keybindings (shift+left/shift+right by default)
+ * Option for moving to next gallery image after video finishes (disabled by default)
+ * Option for popup fade in/out time (set to 80ms by default)
+ * Option to resume video playback from where the source video left off (disabled by default)
+ * Option to organize settings in tabs instead of all in one page (currently disabled by default)
+ * Support for ~20 new websites (using ~15 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including Instagram - thanks to remlap, Steam)
+
+Bugfixes:
+
+ * Fix keybindings using numpad numbers (thanks to LeGiTiM on github, #234)
+ * The popup should no longer be underneath elements in websites that have absurdly large z-indices
+ * The popup's font should be more consistent under Firefox
+
+---
+
 0.12.14
 
 New features:
