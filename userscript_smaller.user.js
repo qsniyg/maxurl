@@ -4,7 +4,7 @@
 // ==UserScript==
 // @name              Image Max URL
 // @namespace         http://tampermonkey.net/
-// @version           0.12.14
+// @version           0.12.15
 // @description       Finds larger or original versions of images for 6300+ websites, including a powerful image popup feature
 // @description:ko    6300개 이상의 사이트에 대해 더 크거나 원본 이미지를 찾아드립니다
 // @description:fr    Trouve des images plus grandes ou originales pour plus de 6300 sites
@@ -992,6 +992,9 @@ var $$IMU_EXPORT$$;
 			"en": "Popup",
 			"ko": "팝업"
 		},
+		"subcategory_settings": {
+			"en": "Settings"
+		},
 		"subcategory_ui": {
 			"en": "UI"
 		},
@@ -1342,6 +1345,7 @@ var $$IMU_EXPORT$$;
 		check_update_interval: 24,
 		// thanks to forefix on firefox for the idea: https://github.com/qsniyg/maxurl/issues/189
 		dark_mode: false,
+		settings_tabs: false,
 		settings_visible_description: true,
 		advanced_options: false,
 		allow_browser_request: true,
@@ -1395,6 +1399,12 @@ var $$IMU_EXPORT$$;
 		mouseover_video_loop: true,
 		mouseover_video_muted: false,
 		mouseover_video_volume: 100,
+		mouseover_video_resume_from_source: false,
+		mouseover_video_seek_amount: 10,
+		mouseover_video_seek_left_key: ["shift", "left"],
+		mouseover_video_seek_right_key: ["shift", "right"],
+		mouseover_video_seek_vertical_scroll: false,
+		mouseover_video_seek_horizontal_scroll: false,
 		mouseover_ui: true,
 		mouseover_ui_opacity: 80,
 		mouseover_ui_imagesize: true,
@@ -1433,8 +1443,10 @@ var $$IMU_EXPORT$$;
 		mouseover_gallery_cycle: false,
 		mouseover_gallery_prev_key: ["left"],
 		mouseover_gallery_next_key: ["right"],
+		mouseover_gallery_move_after_video: false,
 		// thanks to acid-crash on github for the idea: https://github.com/qsniyg/maxurl/issues/20
 		mouseover_styles: "",
+		mouseover_fade_time: 100,
 		mouseover_ui_styles: "",
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-541065461
 		mouseover_wait_use_el: false,
@@ -1535,6 +1547,7 @@ var $$IMU_EXPORT$$;
 			name: "Description below options",
 			description: "Shows the description below the options (otherwise the description is only shown when you hover over the option's name)",
 			category: "general",
+			subcategory: "settings",
 			onedit: function() {
 				run_soon(do_options);
 			},
@@ -1561,6 +1574,17 @@ var $$IMU_EXPORT$$;
 			name: "Show advanced settings",
 			description: "If disabled, settings that might be harder to understand will be hidden",
 			category: "general",
+			subcategory: "settings",
+			onedit: function() {
+				run_soon(do_options);
+			},
+			imu_enabled_exempt: true
+		},
+		settings_tabs: {
+			name: "Use tabs",
+			description: "If disabled, all settings will be shown on a single page",
+			category: "general",
+			subcategory: "settings",
 			onedit: function() {
 				run_soon(do_options);
 			},
@@ -1889,7 +1913,7 @@ var $$IMU_EXPORT$$;
 		},
 		mouseover_only_links: {
 			name: "Only popup for linked images",
-			description: "Don't pop up if the image isn't linked",
+			description: "Don't pop up if the image isn't hyperlinked",
 			requires: {
 				mouseover: true
 			},
@@ -1912,6 +1936,9 @@ var $$IMU_EXPORT$$;
 			requires: {
 				mouseover_open_behavior: "popup",
 				allow_video: true
+			},
+			disabled_if: {
+				mouseover_gallery_move_after_video: true
 			},
 			category: "popup",
 			subcategory: "video"
@@ -1937,6 +1964,71 @@ var $$IMU_EXPORT$$;
 			number_max: 100,
 			number_int: true,
 			number_unit: "%",
+			category: "popup",
+			subcategory: "video"
+		},
+		mouseover_video_resume_from_source: {
+			name: "Resume playback from source",
+			description: "If enabled, playback will resume from where the source video left off",
+			requires: {
+				mouseover_open_behavior: "popup",
+				allow_video: true
+			},
+			category: "popup",
+			subcategory: "video"
+		},
+		mouseover_video_seek_amount: {
+			name: "Seek amount",
+			description: "Amount of time to seek forward/back when using the seek keys",
+			requires: {
+				mouseover_open_behavior: "popup",
+				allow_video: true
+			},
+			type: "number",
+			number_min: 0,
+			number_unit: "seconds",
+			category: "popup",
+			subcategory: "video"
+		},
+		mouseover_video_seek_left_key: {
+			name: "Seek left key",
+			description: "Key to seek backwards in a video by the specified amount",
+			requires: {
+				mouseover_open_behavior: "popup",
+				allow_video: true
+			},
+			type: "keysequence",
+			category: "popup",
+			subcategory: "video"
+		},
+		mouseover_video_seek_right_key: {
+			name: "Seek right key",
+			description: "Key to seek forwards in a video by the specified amount",
+			requires: {
+				mouseover_open_behavior: "popup",
+				allow_video: true
+			},
+			type: "keysequence",
+			category: "popup",
+			subcategory: "video"
+		},
+		mouseover_video_seek_vertical_scroll: {
+			name: "Vertical scroll seeks",
+			description: "Scrolling vertically will seek the video forward/backward",
+			requires: {
+				mouseover_open_behavior: "popup",
+				allow_video: true
+			},
+			category: "popup",
+			subcategory: "video"
+		},
+		mouseover_video_seek_horizontal_scroll: {
+			name: "Horizontal scroll seeks",
+			description: "Scrolling horizontally will seek the video forward/backward",
+			requires: {
+				mouseover_open_behavior: "popup",
+				allow_video: true
+			},
 			category: "popup",
 			subcategory: "video"
 		},
@@ -2568,6 +2660,16 @@ var $$IMU_EXPORT$$;
 			category: "popup",
 			subcategory: "gallery"
 		},
+		mouseover_gallery_move_after_video: {
+			name: "Move to next when video finishes",
+			description: "Moves to the next gallery item when a video finishes playing",
+			requires: {
+				mouseover_open_behavior: "popup",
+				allow_video: true
+			},
+			category: "popup",
+			subcategory: "gallery"
+		},
 		mouseover_styles: {
 			name: "Popup CSS style",
 			description: "Custom CSS styles for the popup",
@@ -2575,6 +2677,18 @@ var $$IMU_EXPORT$$;
 			requires: {
 				mouseover_open_behavior: "popup"
 			},
+			category: "popup",
+			subcategory: "popup_other"
+		},
+		mouseover_fade_time: {
+			name: "Popup fade",
+			description: "Fade in/out time (in milliseconds) for the popup, set to 0 to disable",
+			requires: {
+				mouseover_open_behavior: "popup"
+			},
+			type: "number",
+			number_min: 0,
+			number_unit: "ms",
 			category: "popup",
 			subcategory: "popup_other"
 		},
@@ -2979,6 +3093,9 @@ var $$IMU_EXPORT$$;
 	};
 
 	var subcategories = {
+		"general": {
+			"settings": "subcategory_settings"
+		},
 		"popup": {
 			"trigger": "subcategory_trigger",
 			"open_behavior": "subcategory_open_behavior",
@@ -4885,6 +5002,8 @@ var $$IMU_EXPORT$$;
 
 					if (maxobj !== null) {
 						image.video = maxobj.url;
+						image.width = maxobj.width;
+						image.height = maxobj.height;
 					}
 				}
 
@@ -4926,8 +5045,15 @@ var $$IMU_EXPORT$$;
 					var found_size = found_image.width * found_image.height;
 					var our_size = width * height;
 
-					if (our_size <= found_size)
+					// fixme: why is this check even here? it breaks width=0, height=0 videos
+					if (our_size <= found_size || true)
 						return;
+				}
+
+				if (node.video_url) {
+					// width/height corresponds to the image, not the video
+					width = 0;
+					height = 0;
 				}
 
 				images.push({
@@ -5110,6 +5236,30 @@ var $$IMU_EXPORT$$;
 		return parse_el_info(info, cb);
 	};
 
+	common_functions.instagram_get_el_for_imageid = function(element) {
+		var newel = element;
+		if (newel.tagName === "SOURCE") {
+			newel = newel.parentElement;
+		}
+
+		if (newel.tagName === "VIDEO") {
+			try {
+				newel = newel.parentElement.querySelectorAll("img[srcset]");
+				if (!newel || newel.length === 0)
+					newel = element;
+				else
+					newel = newel[0];
+			} catch (e) {
+				console_error(e);
+				newel = element;
+			}
+		} else {
+			newel = element;
+		}
+
+		return newel;
+	};
+
 	common_functions.instagram_find_el_info = function(document, element, host_url) {
 		var possible_infos = [];
 
@@ -5233,16 +5383,64 @@ var $$IMU_EXPORT$$;
 
 			// stories
 			if (current.tagName === "BODY" && host_url.match(/:\/\/[^/]*\/+stories\/+([^/]*)\/*(?:[?#].*)?$/)) {
+				// try to find image instead of video because video ids change for app stories
+				var newel = common_functions.instagram_get_el_for_imageid(element);
+
 				possible_infos.push({
 					type: "story",
 					url: host_url,
-					image: element.src,
+					image: newel.src,
 					element: current
 				});
 			}
 		}
 
 		return possible_infos;
+	};
+
+	common_functions.get_twitter_video_tweet = function(el, window) {
+		if (el.tagName !== "VIDEO" || !el.src.match(/^blob:/))
+			return null;
+
+		var poster = el.poster;
+		if (!poster)
+			return null;
+
+		// note that the numbers here corresponds to the media id, not the tweet id, so it can't be used
+		if (!/\/ext_tw_video_thumb\/+[0-9]+\/+pu\/+img\//.test(poster))
+			return null;
+
+		var href = window.location.href;
+
+		// embedded video
+		var match = href.match(/\/i\/+videos\/+tweet\/+([0-9]+)(?:[?#].*)?$/);
+		if (match) {
+			return {
+				id: match[1]
+			};
+		}
+
+		var currentel = el;
+		while ((currentel = currentel.parentElement)) {
+			if (currentel.tagName === "ARTICLE") {
+				var our_as = currentel.querySelectorAll("a[role='link']");
+				for (var i = 0; i < our_as.length; i++) {
+					var our_href = our_as[i].href;
+					if (!our_href)
+						continue;
+
+					var match = our_href.match(/\/status\/+([0-9]+)(?:\/+(?:retweets|likes)|\/*)(?:[?#].*)?$/);
+					if (match) {
+						return {
+							id: match[1]
+						};
+					}
+				}
+				break;
+			}
+		}
+
+		return null;
 	};
 
 	var get_domain_nosub = function(domain) {
@@ -5263,7 +5461,7 @@ var $$IMU_EXPORT$$;
 		if (!src)
 			return src;
 
-		if (!src.match(/^(?:https?|x-raw-image):\/\//) && !src.match(/^data:/))
+		if (!src.match(/^(?:https?|x-raw-image):\/\//) && !src.match(/^(?:data|blob):/))
 			return src;
 
 		var origsrc = src;
@@ -5274,7 +5472,7 @@ var $$IMU_EXPORT$$;
 		var domain;
 		var port;
 
-		if (!src.match(/^(?:data|x-raw-image):/)) {
+		if (!src.match(/^(?:data|x-raw-image|blob):/)) {
 			// to prevent infinite loops
 			if (src.length >= 65535)
 				return src;
@@ -6404,6 +6602,7 @@ var $$IMU_EXPORT$$;
 			domain === "cdn.apartmenttherapy.info" ||
 			domain === "image.thestartmagazine.com" ||
 			domain === "cdn.substack.com" ||
+			domain === "c.bellesa.co" ||
 			domain === "images.taboola.com") {
 			if (src.search(/:\/\/[^/]*\/(?:[^/]*\/+)?(?:image\/+)?fetch\//) >= 0) {
 				newsrc = src.replace(/.*?:\/\/[^/]*\/(?:[^/]*\/)?(?:image\/+)?fetch\/(?:.*?(?:\/|%2F))?([^/%]*(?::|%3A).*)/, "$1");
@@ -6486,6 +6685,7 @@ var $$IMU_EXPORT$$;
 			domain === "cdn.domestika.org" ||
 			(domain === "assets.charmboard.com" && src.indexOf("/images/") >= 0) ||
 			domain === "image.spreadshirtmedia.com" ||
+			domain === "c.bellesa.co" ||
 			domain === "images.moviepilot.com") {
 			return src
 				.replace(/%2C/g, ",")
@@ -6877,7 +7077,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if ((domain === "pbs.twimg.com" &&
-			 src.indexOf("pbs.twimg.com/media/") >= 0) ||
+			 /:\/\/[^/]+\/+(?:media|card_img|ext_tw_video_thumb)\//.test(src)) ||
 			(domain === "ton.twitter.com" &&
 			 src.indexOf("/ton/data/dm/") >= 0)) {
 
@@ -6942,12 +7142,6 @@ var $$IMU_EXPORT$$;
 				.replace(/_mini\.([^/_]*)$/, "\.$1")
 				.replace(/_reasonably_small\.([^/_]*)$/, "\.$1")
 				.replace(/_[0-9]+x[0-9]+\.([^/_]*)$/, "\.$1");
-		}
-
-		if (domain === "pbs.twimg.com" &&
-			src.indexOf("pbs.twimg.com/card_img/") >= 0 ||
-			src.indexOf("/ext_tw_video_thumb/") >= 0) {
-			return src.replace(/(\?[^/]*&?name=)[^&/]*([^/]*)$/, "$1orig$2");
 		}
 
 		if (domain === "pbs.twimg.com" &&
@@ -7480,6 +7674,7 @@ var $$IMU_EXPORT$$;
 			domain === "media.nbcnewyork.com" ||
 			domain_nosub === "sdn.cz" ||
 			(domain_nosub === "unrealengine.com" && /^cdn[0-9]*\./.test(domain)) ||
+			(domain === "cdn.repub.ch" && src.indexOf("/republik-assets/") >= 0) ||
 			src.match(/\/demandware\.static\//) ||
 			src.match(/\?i10c=[^/]*$/) ||
 			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|blogs.dir)|\/+uploads)\//.test(src)
@@ -9047,6 +9242,17 @@ var $$IMU_EXPORT$$;
 			if (newsrc !== src)
 				return newsrc;
 
+			newsrc = src.replace(/(\/steam\/+apps\/+[0-9]+\/+movie)\.(?:jpg|JPG|jpeg|JPEG|png|PNG)(?:[?#].*)?$/, "$1_max.webm");
+			if (newsrc !== src)
+				return {
+					url: newsrc,
+					video: true
+				};
+
+			newsrc = src.replace(/(\/steamcommunity\/+public\/+images\/+clans\/+[0-9]+\/+[0-9a-f]{20,})_[0-9]+x[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+			if (newsrc !== src)
+				return newsrc;
+
 			if (src.indexOf("/public/images/avatars/") >= 0) {
 				src = src.replace(/(?:_[^/.]*)?(\.[^/.]*)$/, "_full$1");
 			}
@@ -9054,7 +9260,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "steamstore-a.akamaihd.net") {
-			if (/\/public\/+images\/+v[0-9]*\/+app\/+game_page.*/.test(src))
+			if (/\/public\/+images\/+v[0-9]*\/+(?:app\/+game_page|ico_game_).*/.test(src))
 				return {
 					url: src,
 					bad: "mask"
@@ -12183,13 +12389,21 @@ var $$IMU_EXPORT$$;
 
 		if (domain_nosub === "t8cdn.com" ||
 			domain_nosub === "ypncdn.com") {
-			newsrc = src.replace(/(\/originals?\/+[0-9]+(?:\/+[^/]*?)?)(?:[(][a-z]+=[^/)]*\)){1,}([^/]*)$/, "$1$2");
+			newsrc = src
+				.replace(/\/[0-9]+x[0-9]+\/+([0-9]+)(?:[(][a-z]+=[^/)]*\)){1,}([^/]*)$/, "/originals/$1$2")
+				.replace(/(\/originals?\/+[0-9]+(?:\/+[^/]*?)?)(?:[(][a-z]+=[^/)]*\)){1,}([^/]*)$/, "$1$2");
 			if (newsrc !== src)
 				return newsrc;
 		}
 
+		if (domain_nosub === "rdtcdn.com" && /^[a-z]i\./.test(domain)) {
+			return src
+				.replace(/\/m=[^/]*\/+_thumbs\/+/, "/m=/_thumbs/")
+				.replace(/\/m=[^/]*\/+(_thumbs\/+gallery\/.*_[0-9]+_)\/+[^/]+-([0-9]+\.[^/.]+)(?:[?#].*)?$/, "/m=/$1$2");
+		}
+
 		if ((domain_nosub === "t8cdn.com" || domain_nosub === "ypncdn.com") && options && options.do_request && options.cb) {
-			id = src.match(/:\/\/[^/]+\/+[0-9]{6}\/+[0-9]{1,2}\/+([0-9]+)\/+(?:vl_|[0-9]+[pP]_[0-9]+[kK]_)/);
+			id = src.match(/:\/\/[^/]+\/+[0-9]{6}\/+[0-9]{1,2}\/+([0-9]+)\/+(?:vl_|[0-9]+[pP]_[0-9]+[kK]_|(?:[0-9]+x[0-9]+|originals?)\/+[0-9]+(?:[(][a-z]+=[^/)]*\)){0,}\.)/);
 			if (id) {
 				id = id[1];
 
@@ -13209,6 +13423,7 @@ var $$IMU_EXPORT$$;
 			 domain_nowww === "staples-3p.com" ||
 			 domain === "s.shld.net" ||
 			 domain === "assets.ray-ban.com" ||
+			 domain === "images.menswearhouse.com" ||
 			 domain === "images.shaneco.com"// ||
 			 /*domain_nosub === "scene7.com"*/
 			 ) &&
@@ -13716,6 +13931,10 @@ var $$IMU_EXPORT$$;
 
 		if (domain === "img-fotki.yandex.ru") {
 			return src.replace(/_[^-/._]*(\.[^/.]*)?$/, "_orig$1");
+		}
+
+		if (domain_nosub === "yandex.ru" && /downloader.disk.yandex.ru/.test(domain)) {
+			return src.replace(/(\/preview\/+[0-9a-f]{30,}\/+.*?\?(?:.*&)?size=)[0-9]+x[0-9]+(&.*)?$/, "$10x0$2");
 		}
 
 		if (domain_nosub === "steemitimages.com") {
@@ -14595,8 +14814,11 @@ var $$IMU_EXPORT$$;
 			return src.replace(/_(?:m|thumb)(\?.*)?$/, "$1");
 		}
 
-		if (domain === "static-mercari-jp-imgtr2.akamaized.net") {
-			return src.replace(/\/thumb\//, "/");
+		if (domain === "static-mercari-jp-imgtr2.akamaized.net" ||
+			domain === "mercari-images.global.ssl.fastly.net") {
+			return src
+				.replace(/\/thumb\/+(photos|members)\/+/, "/$1/")
+				.replace(/(\/(?:photos|members)\/.*?)(?:[?#].*)$/, "$1");
 		}
 
 
@@ -16354,8 +16576,17 @@ var $$IMU_EXPORT$$;
 				function checkimage(url) {
 					url = urljoin(options.host_url, url, true);
 					if (url.match(/^(?:[a-z]+)?:\/\/[^/]*\.redditmedia\.com\//) ||
-						url.match(/^(?:[a-z]+)?:\/\/[^/]*\.redd\.it\//))
+						url.match(/^(?:[a-z]+)?:\/\/(?:i|(?:external-)?preview)\.redd\.it\//))
 						return url;
+
+					var match = url.match(/:\/\/(?:www\.)?youtube\.com\/+watch\?(?:.*&)?v=([^&#]*)/);
+					if (!match) {
+						match = url.match(/:\/\/(?:www\.)?youtu\.be\/+([^?&#]*)/);
+					}
+
+					if (match) {
+						return "https://i.ytimg.com/vi/" + match[1] + "/mqdefault.jpg";
+					}
 
 					if (bigimage_recursive(url, {
 						fill_object: false,
@@ -16393,13 +16624,16 @@ var $$IMU_EXPORT$$;
 								var item = json.data.children[0].data;
 								var image = item.url;
 
-								if (!checkimage(image)) {
+								var checked = checkimage(image);
+								if (!checked) {
 									if (item.preview.images[0].variants.gif)
 										image = item.preview.images[0].variants.gif.source.url;
 									else
 										image = item.preview.images[0].source.url;
 
 									image = image.replace(/&amp;/g, "&");
+								} else {
+									image = checked;
 								}
 
 								return options.cb(image);
@@ -16423,8 +16657,9 @@ var $$IMU_EXPORT$$;
 					newsrc = doubleparent.getAttribute("data-url");
 
 					if (newsrc) {
-						if (checkimage(newsrc))
-							return newsrc;
+						var checked = checkimage(newsrc);
+						if (checked)
+							return checked;
 						else {
 							var id = doubleparent.getAttribute("data-fullname");
 							if (id) {
@@ -16447,8 +16682,10 @@ var $$IMU_EXPORT$$;
 							 options.element.parentElement.classList.contains("PostThumbnail"))) {
 
 							newsrc = options.element.parentElement.href;
-							if (checkimage(newsrc))
-								return newsrc;
+
+							var checked = checkimage(newsrc);
+							if (checked)
+								return checked;
 						}
 
 						var current = options.element;
@@ -16702,6 +16939,17 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(:\/\/[^/]*\/media\/[^/]*\/)[^/]*(\/[0-9]+\/[0-9]+\/[^/]*)$/, "$1original$2");
 		}
 
+		if (domain_nosub === "fbcdn.net" || domain_nosub === "cdninstagram.com") {
+
+			newsrc = remove_queries(src, ["se"]);
+			if (newsrc !== src)
+				return newsrc;
+
+			newsrc = remove_queries(src, ["_nc_cat", "_nc_rid", "efg", "ig_cache_key"]);
+			if (newsrc !== src)
+				return newsrc;
+		}
+
 		if (((domain_nosub === "fbcdn.net" && domain.match(/^instagram\./)) ||
 			 domain_nosub === "cdninstagram.com") &&
 			host_domain_nosub === "instagram.com" && options.element &&
@@ -16712,6 +16960,15 @@ var $$IMU_EXPORT$$;
 			})();
 			if (newsrc !== undefined)
 				return newsrc;
+		}
+
+		if (domain_nowww === "instagram.com") {
+			if (/\/static\/+bundles\/+[^/]+\/+sprite_/.test(src)) {
+				return {
+					url: src,
+					bad: "mask"
+				};
+			}
 		}
 
 		if (domain_nosub === "instagram.com" &&
@@ -18018,10 +18275,6 @@ var $$IMU_EXPORT$$;
 				return newsrc;
 		}
 
-		if (domain_nowww === "jjgirls.com") {
-			return src.replace(/(\/photo\/+watch4beauty\/+.*\/+)thumbnail([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1middle$2");
-		}
-
 		if (domain_nowww === "nakedwench.com") {
 			return src.replace(/(\/galleries\/+[0-9]{4}\/+[^/]*\/+)thumbnail([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1middle$2");
 		}
@@ -18055,7 +18308,9 @@ var $$IMU_EXPORT$$;
 		if (domain_nowww === "jjgirls.com") {
 			return src
 				.replace(/(\/photo\/+[^/]*\/+[^/]*\/+[^/]*\/+[0-9]+)t(\.[^/.]*)(?:[?#].*)?$/, "$1$2")
-				.replace(/(\/photo\/+[^/]*\/+[^/]*\/+[^/]*\/+[^/]*)_small(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+				.replace(/(\/photo\/+[^/]*\/+[^/]*\/+[^/]*\/+[^/]*)_small(\.[^/.]*)(?:[?#].*)?$/, "$1$2")
+				.replace(/(\/photo\/+[^/]+\/+[^/]+\/+[0-9]+\/+)tn([0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1$2")
+				.replace(/(\/photo\/+watch4beauty\/+.*\/+)thumbnail([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1middle$2");;
 		}
 
 		if (domain_nowww === "javbtc.com") {
@@ -20117,7 +20372,11 @@ var $$IMU_EXPORT$$;
 		if ((domain_nowww === "perfectnaked.com" ||
 			 domain === "cdn.erocurves.com")
 			&& src.indexOf("/galleries/") >= 0) {
-			return src.replace(/(\/[0-9]+)_[a-z]+(\.[^/.]*)$/, "$1_big$2");
+			return src.replace(/(\/[0-9]+)_tn(\.[^/.]*)$/, "$1_big$2");
+		}
+
+		if (domain_nowww === "facefuckingporn.com") {
+			return src.replace(/(\/galleries\/+[^/]+\/+[^/]+)_tn(\.[^/.]+)(?:[?#].*)?$/, "$1_big$2");
 		}
 
 		if (domain === "cdn.eroticbeauties.net" ||
@@ -20672,6 +20931,10 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "picsninja.com" ||
 			domain_nowww === "repicsx.com") {
 			return src.replace(/(\/pics\/+[0-9]+\/+)_([^/]*)$/, "$1$2");
+		}
+
+		if (domain_nowww === "pornstarapex.com") {
+			return src.replace(/(\/pics\/+[0-9a-f]+\/+)th_([0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		}
 
 		if (domain_nosub === "cloud.it" &&
@@ -22829,6 +23092,7 @@ var $$IMU_EXPORT$$;
 			domain === "cdn.shesfreaky.com" ||
 			domain === "media.ruleporn.com" ||
 			domain_nowww === "teenplanet.org" ||
+			domain_nowww === "goodsexporn.org" ||
 			domain === "media.babesource.com") {
 			return src.replace(/(\/+galleries\/+[0-9a-f]+\/+)thumbs\/+(?:[0-9]+x[0-9]+\/+)?/, "$1");
 		}
@@ -22953,10 +23217,105 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if (domain_nowww === "onlyfans.com" ||
-			domain === "media.onlyfans.com" ||
-			amazon_container === "of2media") {
-			return src.replace(/:\/\/[^/]*\/(?:of2media\/+)?files\/+thumbs\/+[wh][0-9]+\/+/, "://media.onlyfans.com/files/");
+		if (host_domain_nosub === "onlyfans.com" &&
+		     (domain_nosub === "onlyfans.com" ||
+			  domain === "media.onlyfans.com" ||
+			  amazon_container === "of2media") && options && options.element && options.do_request && options.cb) {
+
+			var get_appkey = function(cb) {
+				return cb(base64_decode("Lj0zM2Q1N2FkZThjMDJkYmM1YTMzM2RiOTlmZjlhZTI2YQ==").substr(2));
+			};
+
+			var onlyfans_api_call = function(url, querystring, referer, cb) {
+				get_appkey(function(appkey) {
+					if (!appkey)
+						return cb(null);
+
+					url = urljoin("https://onlyfans.com/api2/v2", url, false);
+
+					if (querystring) {
+						url += "?" + querystring + "&app-token=" + appkey;
+					} else {
+						url += "?app-token=" + appkey;
+					}
+
+					options.do_request({
+						url: url,
+						method: "GET",
+						headers: {
+							Referer: referer,
+							"Sec-Fetch-Site": "same-origin"
+						},
+						onload: function(result) {
+							if (result.readyState !== 4)
+								return;
+
+							if (result.status !== 200) {
+								console_error(result);
+								return cb(null);
+							}
+
+							try {
+								var json = JSON_parse(result.responseText);
+								cb(json);
+							} catch (e) {
+								console_error(e, result);
+								cb(null);
+							}
+						}
+					});
+				});
+			};
+
+			var get_user = function(username, cb) {
+				api_cache.fetch("onlyfans_user:" + username, cb, function(done) {
+					onlyfans_api_call("/users/" + username, null, "https://onlyfans.com/" + username, function(data) {
+						if (data) {
+							return done(data, 1*60*60);
+						} else {
+							return done(null, false);
+						}
+					});
+				});
+			};
+
+			var get_avatar = function(username, cb) {
+				get_user(username, function(data) {
+					if (data) {
+						return cb(data.avatar);
+					} else {
+						return cb(null);
+					}
+				});
+			};
+
+			var get_avatar_from_a = function(el, cb) {
+				var match = el.href.match(/^https?:\/\/[^/]+\/+([^/]+)\/*(?:[?#].*)?$/);
+				if (match) {
+					get_avatar(match[1], cb);
+					return true;
+				}
+
+				return false;
+			};
+
+			if (options.element.parentElement && options.element.parentElement.classList.contains("b-avatar")) {
+				var dparent = options.element.parentElement.parentElement;
+				if (dparent.tagName === "A") {
+					if (get_avatar_from_a(dparent, options.cb)) {
+						return {
+							waiting: true
+						};
+					}
+				} else if (dparent.tagName === "DIV" && dparent.classList.contains("b-profile__user")) {
+					var link = dparent.querySelector("a.g-user-realname__wrapper");
+					if (link && get_avatar_from_a(link, options.cb)) {
+						return {
+							waiting: true
+						};
+					}
+				}
+			}
 		}
 
 		if (domain === "img.mfcimg.com") {
@@ -23793,8 +24152,16 @@ var $$IMU_EXPORT$$;
 					bad: "mask"
 				};
 
-			return src
-				.replace(/\/uploads\/+documents\/+[^/]+\/+(?:[0-9]*x){0,2}([^/]+?)(?:,[0-9]+){0,}(\.[^/]+?)(?:\.(?:keep|crop)\..*)?(?:[?#].*)?$/, "/uploads/documents/$1$2");
+
+			/*
+			  seems like they changed something, again.
+			  every time i update this script, it seems like a few days later, something changes in the way their site works, breaking the fix i did for this site.
+			  they're aware of this script (they linked to it at one point), so it could very well be intentional on their part.
+			*/
+			if (false) {
+				return src
+					.replace(/\/uploads\/+documents\/+[^/]+\/+(?:[0-9]*x){0,2}([^/]+?)(?:,[0-9]+){0,}(\.[^/]+?)(?:\.(?:keep|crop)\..*)?(?:[?#].*)?$/, "/uploads/documents/$1$2");
+			}
 		}
 
 		if (domain_nosub === "tin247.com" &&
@@ -27379,11 +27746,6 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(:\/\/[^/]*\/+[^/]*\/+)t([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
 		}
 
-		if (domain_nowww === "diasp.org" ||
-			domain_nowww === "diasp.eu") {
-			return src.replace(/\/uploads\/+images\/+[a-z_]+_([0-9a-f]{10,}\.[^/.]*)(?:[?#].*)?$/, "/uploads/images/$1");
-		}
-
 		if (domain_nowww === "manga-news.com") {
 			return src.replace(/(\/public\/+images\/+events\/+)\.([^/]*?)_[a-z](\.[^/.]*)(?:[?#].*)?$/, "$1$2$3");
 		}
@@ -27681,7 +28043,9 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/[0-9a-f]\/+[0-9a-f]{2}\/+[0-9a-f]{10,}\/+)tn_([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
 		}
 
-		if (domain === "images.eastbabes.com") {
+		if (domain === "images.eastbabes.com" ||
+			domain === "images.ebonygirls.sexy" ||
+			domain === "images.nakedblackbabes.pics") {
 			return src.replace(/(\/p\/+[^/]*\/+)th\/+/, "$1");
 		}
 
@@ -30209,6 +30573,10 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/posts\/+[^/]+\/+)th_([^/]*)(?:[?#].*)?$/, "$1$2");
 		}
 
+		if (domain_nowww === "nakedebonybabes.com") {
+			return src.replace(/(\/[0-9a-f]+\/+)th_([0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
 		if (domain_nowww === "picua.org") {
 			return src.replace(/(:\/\/[^/]*\/+)thumbs\/+([0-9]{4}-[0-9]{2}\/+)/, "$1img/$2");
 		}
@@ -32544,6 +32912,96 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/sizes\/+([^/]+)_resize_[^/.]+(\.[^/.]+)(?:[?#].*)?$/, "/$1$2");
 		}
 
+		if (domain === "covers.vitalbook.com") {
+			return src.replace(/(\/vbid\/+[0-9]+)(?:\/+(?:height|width)\/+[0-9]+\/*)?(?:[?#].*)?$/, "$1");
+		}
+
+		if (domain_nosub === "subirimagenes.com" && /^s[0-9]*\./.test(domain)) {
+			return src.replace(/\/previo\/+thump_/, "/");
+		}
+
+		if (host_domain_nowww === "justfor.fans" && options && options.element) {
+			if (options.element.parentElement && options.element.parentElement.classList.contains("video-thumbnail")) {
+				var link = options.element.parentElement.parentElement;
+				if (link.tagName === "A") {
+					var match = link.href.match(/^javascript:MakeMovieHD\("[^"]+"\s*,\s*({.*?})\s*,/);
+					if (match) {
+						try {
+							var json = JSON_parse(match[1]);
+							var maxres = 0;
+							var maxobj = null;
+
+							for (var resolution in json) {
+								var our_resolution = parseInt(resolution);
+								if (our_resolution > maxres) {
+									maxres = our_resolution;
+									maxobj = json[resolution];
+								}
+							}
+
+							if (maxobj) {
+								return {
+									url: maxobj,
+									video: true,
+									is_private: true // linked to ip
+								};
+							}
+						} catch (e) {
+							console_error(e);
+						}
+					}
+				}
+			}
+		}
+
+		if (domain === "d3373orltkomw3.cloudfront.net") {
+			if (/\/[0-9]+\/+[0-9a-z]+\.mp4/.test(src)) {
+				return {
+					url: src,
+					video: true
+				};
+			}
+		}
+
+		if (domain_nowww === "apclips.com") {
+			return src.replace(/(\/img\/+model\/+[^/]+\/+photo\/+[0-9a-f]{10,})_th(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "iwantclips.com") {
+			return src.replace(/(\/uploads\/+aboutme_previews\/+[0-9]+\/+)[0-9]+_/, "$1");
+		}
+
+		if (domain === "s.bellesa.co") {
+			newsrc = src.replace(/(\/v\/+[0-9a-f]{10,}\/+)(?:preview_[0-9]+)(\.[^/.]+)(?:[?#].*)?$/, "$1360$2");
+			if (newsrc !== src)
+				return newsrc;
+
+			var sizes = [2160, 1080, 720, 480, 360];
+
+			regex = /(\/v\/+[0-9a-f]{10,}\/+)([0-9]+)(\.[^/.]+)(?:[?#].*)?$/;
+			match = src.match(regex);
+			if (match) {
+				var obj = [];
+				for (var i = 0; i < sizes.length; i++) {
+					if (sizes[i] <= match[1])
+						break;
+
+					obj.push(src.replace(regex, "$1" + sizes[i] + "$3"));
+				}
+
+				return obj;
+			}
+		}
+
+		if (domain_nowww === "censored.tv") {
+			if (/\/images\/+censored-bug\.png(?:[?#].*)?$/.test(src)) {
+				return {
+					url: src,
+					bad: "mask"
+				};
+			}
+		}
+
 
 
 
@@ -33131,6 +33589,12 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/[a-z]+\/([0-9a-f]+\.[^/.]*)(?:[?#].*)?$/, "/original/$1");
 		}
 
+		if (domain_nowww === "diasp.org" ||
+			domain_nowww === "diasp.eu" ||
+			/^[a-z]+:\/\/[^/]+\/+uploads\/+images\/+(?:thumb|scaled)_(?:large|small|full)_[0-9a-f]{20}\.[^/.]+(?:[?#].*)?$/.test(src)) {
+			return src.replace(/\/uploads\/+images\/+[a-z_]+_([0-9a-f]{10,}\.[^/.]*)(?:[?#].*)?$/, "/uploads/images/$1");
+		}
+
 		if (/\/wp-content\/+themes\/+[^/]+\/+functions\/+resize_ext\.php\?(?:.*&)?image=http/.test(src)) {
 			newsrc = src.replace(/.*\/wp-content\/+themes\/+[^/]+\/+functions\/+resize_ext\.php\?(?:.*&)?image=(http[^&]*).*?$/, "$1");
 			if (newsrc !== src)
@@ -33499,7 +33963,8 @@ var $$IMU_EXPORT$$;
 					}
 
 					if (can_apply) {
-						var our_imageid = common_functions.instagram_get_imageid(el.src);
+						var imageid_el = common_functions.instagram_get_el_for_imageid(el);
+						var our_imageid = common_functions.instagram_get_imageid(imageid_el.src);
 						var add = nextprev ? 1 : -1;
 						common_functions.instagram_parse_el_info(real_api_cache, options.do_request, options.rule_specific.instagram_use_app_api, info, function(data) {
 							for (var i = nextprev ? 0 : 1; i < data.length - (nextprev ? 1 : 0); i++) {
@@ -33603,6 +34068,27 @@ var $$IMU_EXPORT$$;
 
 							return null;
 						}
+					}
+
+					return "default";
+				},
+				element_ok: function(el) {
+					var tweet = common_functions.get_twitter_video_tweet(el, window);
+					// disable for now as this method needs to be implemented
+					if (tweet && false) {
+						return true;
+					}
+
+					return "default";
+				}
+			};
+		}
+
+		if (host_domain_nowww === "500px.com") {
+			return {
+				element_ok: function(el) {
+					if (el.tagName === "A" && el.classList.contains("photo_link") && el.querySelector("div.nsfw_placeholder_content")) {
+						return true;
 					}
 
 					return "default";
@@ -34924,7 +35410,7 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		var str = keycode_to_str(event.which);
+		var str = keycode_to_str(event);
 		if (str === undefined) {
 			return keys;
 		}
@@ -34964,6 +35450,7 @@ var $$IMU_EXPORT$$;
 		}
 	}
 
+	var current_options_tab = "general";
 	function do_options() {
 		update_dark_mode();
 
@@ -34977,7 +35464,7 @@ var $$IMU_EXPORT$$;
 
 			var map = get_keystrs_map(event, value);
 
-			if ((keycode_to_str(event.which) || event.type === "mousedown") &&
+			if ((keycode_to_str(event) || event.type === "mousedown") &&
 				current_options_chord.length === 0) {
 				// Don't clear the options chord for either left or right mouse buttons
 				if (event.button !== 0 && event.button !== 2)
@@ -35460,16 +35947,55 @@ var $$IMU_EXPORT$$;
 			apply_tag();
 		}
 
+		var tabscontainer;
+		if (settings.settings_tabs) {
+			tabscontainer = document.createElement("div");
+			tabscontainer.id = "tabs";
+			options_el.appendChild(tabscontainer);
+		}
+
 		var category_els = {};
 		var subcategory_els = {};
 
 		for (var category in categories) {
+			var catname = _(categories[category]);
+
 			var div = document.createElement("div");
 			div.id = "cat_" + category;
 			div.classList.add("category");
-			var h2 = document.createElement("h2");
-			h2.innerText = _(categories[category]);
-			div.appendChild(h2);
+
+			category_els[category] = [div];
+
+			if (settings.settings_tabs) {
+				div.classList.add("tabbed");
+
+				var tab = document.createElement("span");
+				tab.classList.add("tab");
+				//tab.href = "#cat_" + category;
+				tab.id = "tab_cat_" + category;
+				tab.innerText = catname;
+
+				(function(category) {
+					tab.onclick = function() {
+						current_options_tab = category;
+						do_options();
+					};
+				})(category);
+
+				if (category === current_options_tab) {
+					tab.classList.add("active");
+				} else {
+					div.style.display = "none";
+				}
+
+				category_els[category].push(tab);
+
+				tabscontainer.appendChild(tab);
+			} else {
+				var h2 = document.createElement("h2");
+				h2.innerText = catname;
+				div.appendChild(h2);
+			}
 
 			var subdiv = document.createElement("div");
 			subdiv.id = "subcat_" + category;
@@ -35492,7 +36018,6 @@ var $$IMU_EXPORT$$;
 				}
 			}
 
-			category_els[category] = div;
 			options_el.appendChild(div);
 		}
 
@@ -35505,6 +36030,8 @@ var $$IMU_EXPORT$$;
 
 			return JSON.stringify(value);
 		};
+
+		var category_settings = {};
 
 		for (var setting in settings) {
 			(function(setting) {
@@ -35526,6 +36053,10 @@ var $$IMU_EXPORT$$;
 					return;
 
 				if (meta.advanced && !show_advanced)
+					return;
+
+				category_settings[meta.category] = true;
+				if (settings.settings_tabs && meta.category !== current_options_tab)
 					return;
 
 				var option = document.createElement("div");
@@ -36169,9 +36700,12 @@ var $$IMU_EXPORT$$;
 		show_warnings();
 
 		for (var category in category_els) {
-			var category_el = category_els[category]
-			if (category_el.querySelectorAll(".option").length === 0) {
-				category_el.parentNode.removeChild(category_el);
+			var our_els = category_els[category]
+
+			if (!(category in category_settings)) {
+				for (var i = 0; i < our_els.length; i++) {
+					our_els[i].parentNode.removeChild(our_els[i])
+				}
 			}
 		}
 
@@ -36594,6 +37128,8 @@ var $$IMU_EXPORT$$;
 		return error;
 	}
 
+	var trigger_gallery;
+
 	function serialize_img(img) {
 		var obj = {
 			tag: img.tagName.toLowerCase(),
@@ -36811,7 +37347,7 @@ var $$IMU_EXPORT$$;
 					if (settings.mouseover_video_controls)
 						video.setAttribute("controls", "controls");
 
-					if (settings.mouseover_video_loop)
+					if (settings.mouseover_video_loop && !settings.mouseover_gallery_move_after_video)
 						video.setAttribute("loop", true);
 
 					if (settings.mouseover_video_muted)
@@ -36831,7 +37367,25 @@ var $$IMU_EXPORT$$;
 
 					video.onloadedmetadata = function() {
 						video.removeEventListener("error", errorhandler, true);
+
+						if (settings.mouseover_video_resume_from_source && processing.source && processing.source.el) {
+							var sourceel = processing.source.el;
+							if (sourceel.tagName === "SOURCE") {
+								sourceel = sourceel.parentElement;
+							}
+
+							if (sourceel.tagName === "VIDEO" && sourceel.currentTime) {
+								video.currentTime = sourceel.currentTime;
+							}
+						}
+
 						good_cb(video);
+					};
+
+					video.onended = function() {
+						if (settings.mouseover_gallery_move_after_video) {
+							trigger_gallery(1);
+						}
 					};
 
 					video.addEventListener("error", errorhandler, true);
@@ -37022,6 +37576,15 @@ var $$IMU_EXPORT$$;
 		//91: "super",
 
 		// numpad
+		97: "1",
+		98: "2",
+		99: "3",
+		100: "4",
+		101: "5",
+		102: "6",
+		103: "7",
+		104: "8",
+		105: "9",
 		111: "/",
 		106: "*",
 		107: "+",
@@ -37041,20 +37604,32 @@ var $$IMU_EXPORT$$;
 		222: "'"
 	};
 
-	var maxzindex = 2147483647;
+	//var maxzindex = 2147483647;
+	// some sites have z-index: 99999999999999 (http://www.topstarnews.net/)
+	// this gets scaled down to 2147483647 in the elements panel, but it gets seen as higher than 9999* by the browser
+	// Number.MAX_VALUE doesn't work at all (z-index doesn't get set)
+	var maxzindex = Number.MAX_SAFE_INTEGER;
+	// sites like topstarnews under Firefox somehow change sans-serif as the default font
+	var sans_serif_font = '"Noto Sans", Arial, Helvetica, sans-serif';
 
-	function keycode_to_str(x) {
+	function keycode_to_str(event) {
+		var x = event.which;
+
+		if (event.code) {
+			// when pressing Shift
+			var match = event.code.match(/^Numpad([0-9]+)$/);
+			if (match) {
+				return match[1];
+			};
+		}
+
 		if (x in keycode_to_str_table) {
 			return keycode_to_str_table[x];
 		}
 
-		// lowercase
-		if (x >= 96 && x <= 105) {
-			x -= 45;
-		}
-		if (!(x >= 65 && x <= 90 ||
+		if (!((x >= 65 && x <= 90) ||
 			  // numbers
-			  x >= 48 && x <= 57)) {
+			  (x >= 48 && x <= 57))) {
 			return;
 		}
 
@@ -37163,7 +37738,7 @@ var $$IMU_EXPORT$$;
 
 		var disable_click = false;
 		document.addEventListener("click", function(e) {
-			if (disable_click && popups.length > 0 && false) {
+			if (disable_click && popups_active && false) {
 				e.stopPropagation();
 				e.stopImmediatePropagation();
 
@@ -37307,7 +37882,8 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		function resetpopups(from_remote) {
+		var removepopups_timer = null;
+		function removepopups() {
 			popups.forEach(function (popup) {
 				var els = popup.querySelectorAll("img, video");
 				for (var i = 0; i < els.length; i++) {
@@ -37321,6 +37897,25 @@ var $$IMU_EXPORT$$;
 				var index = popups.indexOf(popup);
 				if (index > -1) {
 					popups.splice(index, 1);
+				}
+			});
+
+			if (removepopups_timer) {
+				clearTimeout(removepopups_timer);
+				removepopups_timer = null;
+			}
+		}
+
+		function resetpopups(from_remote) {
+			popups.forEach(function (popup) {
+				if (settings.mouseover_fade_time > 0) {
+					popup.style.opacity = 0;
+
+					if (!removepopups_timer) {
+						removepopups_timer = setTimeout(removepopups, settings.mouseover_fade_time);
+					}
+				} else {
+					removepopups();
 				}
 			});
 
@@ -37586,6 +38181,21 @@ var $$IMU_EXPORT$$;
 				set_el_all_initial(outerdiv);
 				outerdiv.style.position = "fixed";
 				outerdiv.style.zIndex = maxzindex - 2;
+
+				if (settings.mouseover_fade_time > 0) {
+					outerdiv.style.setProperty("transition", "opacity " + (settings.mouseover_fade_time / 1000.) + "s");
+
+					if (!popup_el_automatic) {
+						outerdiv.style.opacity = 0;
+
+						// this is needed in order to make the transition happen
+						setTimeout(function() {
+							outerdiv.style.opacity = 1;
+						}, 1);
+					} else {
+						outerdiv.style.opacity = 1;
+					}
+				}
 
 				var div = document.createElement("div");
 				var popupshown = false;
@@ -37983,7 +38593,7 @@ var $$IMU_EXPORT$$;
 					btn.style.lineHeight = "1em";
 					//btn.style.whiteSpace = "nowrap";
 					btn.style.fontSize = "14px";
-					btn.style.fontFamily = "sans-serif";
+					btn.style.fontFamily = sans_serif_font;
 					apply_styles(btn, settings.mouseover_ui_styles);
 
 					btn.style.zIndex = maxzindex - 1;
@@ -38163,7 +38773,7 @@ var $$IMU_EXPORT$$;
 					set_el_all_initial(images_total_input);
 					images_total_input.style.display = "none";
 					images_total_input.style.backgroundColor = "white";
-					images_total_input.style.fontFamily = "sans-serif";
+					images_total_input.style.fontFamily = sans_serif_font;
 					images_total_input.style.fontSize = galleryinput_fontsize;
 					images_total_input.style.padding = "1px";
 					images_total_input.style.paddingLeft = "2px";
@@ -38573,18 +39183,54 @@ var $$IMU_EXPORT$$;
 				var currentmode = initial_zoom_behavior;
 
 				outerdiv.onwheel = function(e) {
-					var scrollx_behavior = get_single_setting("mouseover_scrollx_behavior");
-					var scrolly_behavior = get_single_setting("mouseover_scrolly_behavior");
-
 					var handledx = false;
 					var handledy = false;
 
-					if (scrollx_behavior === "pan") {
+					var handle_seek = function(xy) {
+						var isright = false;
+
+						if (xy) {
+							if (e.deltaX < 0)
+								isright = false;
+							else if (e.deltaX > 0)
+								isright = true;
+							else return;
+						} else {
+							if (e.deltaY < 0)
+								isright = false;
+							else if (e.deltaY > 0)
+								isright = true;
+							else return;
+						}
+
+						seek_popup_video(!isright);
+						estop(e);
+						return true;
+					};
+
+					if (is_video) {
+						if (!handledx && settings.mouseover_video_seek_horizontal_scroll) {
+							if (handle_seek(true)) {
+								handledx = true;
+							}
+						}
+
+						if (!handledy && settings.mouseover_video_seek_vertical_scroll) {
+							if (handle_seek(false)) {
+								handledy = true;
+							}
+						}
+					}
+
+					var scrollx_behavior = get_single_setting("mouseover_scrollx_behavior");
+					var scrolly_behavior = get_single_setting("mouseover_scrolly_behavior");
+
+					if (scrollx_behavior === "pan" && !handledx) {
 						outerdiv.style.left = (parseInt(outerdiv.style.left) + e.deltaX) + "px";
 						handledx = true;
 					}
 
-					if (scrolly_behavior === "pan") {
+					if (scrolly_behavior === "pan" && !handledy) {
 						outerdiv.style.top = (parseInt(outerdiv.style.top) + e.deltaY) + "px";
 						handledy = true;
 					}
@@ -38611,7 +39257,7 @@ var $$IMU_EXPORT$$;
 						return true;
 					};
 
-					if (scrollx_behavior === "gallery") {
+					if (scrollx_behavior === "gallery" && !handledx) {
 						if (handle_gallery(true)) {
 							return;
 						}
@@ -38619,7 +39265,7 @@ var $$IMU_EXPORT$$;
 						handledx = true;
 					}
 
-					if (scrolly_behavior === "gallery") {
+					if (scrolly_behavior === "gallery" && !handledy) {
 						if (handle_gallery(false)) {
 							return;
 						}
@@ -38769,6 +39415,8 @@ var $$IMU_EXPORT$$;
 				};
 
 				document.documentElement.appendChild(outerdiv);
+
+				removepopups();
 				popups.push(outerdiv);
 				popupshown = true;
 				popup_obj = newobj;
@@ -39050,28 +39698,35 @@ var $$IMU_EXPORT$$;
 
 		function find_source(els) {
 			//console_log(els);
-			var result = _find_source(els);
+			var ok_els = [];
+			var result = _find_source(els, ok_els);
 
 			if (_nir_debug_)
-				console_log("find_source: result =", result);
+				console_log("find_source: result =", result, "ok_els =", ok_els);
 
 			if (!result)
 				return result;
+
+			var ret_bad = function() {
+				if (ok_els.length > 0)
+					return ok_els[0];
+				return null;
+			};
 
 			if (result.el) {
 				if (is_popup_el(result.el)) {
 					if (_nir_debug_)
 						console_log("find_source: result.el is popup el", result.el);
 
-					return null;
+					return ret_bad();
 				}
 			}
 
-			if (!is_valid_src(result.src, is_video_el(result.el))) {
+			if (!result.is_ok_el && !is_valid_src(result.src, is_video_el(result.el))) {
 				if (_nir_debug_)
 					console_log("find_source: invalid src", result);
 
-				return null;
+				return ret_bad();
 			}
 
 			var thresh = parseInt(settings.mouseover_minimum_size);
@@ -39084,15 +39739,15 @@ var $$IMU_EXPORT$$;
 				if (_nir_debug_)
 					console_log("find_source: result size is too small");
 
-				return null;
+				return ret_bad();
 			}
 
 			return result;
 		}
 
-		function _find_source(els) {
+		function _find_source(els, ok_els) {
 			// resetpopups() is already called in trigger_popup()
-			/*if (popups.length >= 1)
+			/*if (popups_active)
 				return;*/
 
 			if (_nir_debug_)
@@ -39108,6 +39763,8 @@ var $$IMU_EXPORT$$;
 			var thresh = parseInt(settings.mouseover_minimum_size);
 			if (isNaN(thresh))
 				thresh = 0;
+
+			var helpers = do_get_helpers({});
 
 			var source;
 
@@ -39159,11 +39816,14 @@ var $$IMU_EXPORT$$;
 				return urljoin(window.location.href, src, true);
 			}
 
-			function imu_check(src) {
+			function imu_check(src, el) {
 				var result = bigimage_recursive(src, {
 					fill_object: true,
 					use_cache: "read",
 					do_request: null,
+					document: document,
+					window: get_window(),
+					element: el,
 					include_pastobjs: true,
 					iterations: 2,
 					cb: null
@@ -39192,7 +39852,7 @@ var $$IMU_EXPORT$$;
 					console_log("_find_source (addImage)", src, el, check_visible(el), options);
 				}
 
-				if (settings.mouseover_apply_blacklist && !bigimage_filter(src)) {
+				if (src && settings.mouseover_apply_blacklist && !bigimage_filter(src)) {
 					if (_nir_debug_)
 						console_log("blacklisted");
 
@@ -39215,7 +39875,7 @@ var $$IMU_EXPORT$$;
 					el_style = window.getComputedStyle(el) || el.style;
 				}
 
-				if ((src.match(/^data:/) && src.length <= 500) ||
+				if (src && (src.match(/^data:/) && src.length <= 500) ||
 					// https://www.smugmug.com/
 					// https://www.vogue.com/article/lady-gaga-met-gala-2019-entrance-behind-the-scenes-video
 					!check_visible(el)) {
@@ -39233,7 +39893,7 @@ var $$IMU_EXPORT$$;
 					return false;
 				}
 
-				var imucheck = imu_check(src);
+				var imucheck = imu_check(src, el);
 				if (imucheck === false) {
 					if (_nir_debug_)
 						console_log("Bad image");
@@ -39276,6 +39936,18 @@ var $$IMU_EXPORT$$;
 			}
 
 			function addTagElement(el, layer) {
+				if (helpers && helpers.element_ok) {
+					if (helpers.element_ok(el) === true) {
+						ok_els.push({
+							count: 1,
+							src: null,
+							el: el,
+							id: id++,
+							is_ok_el: true
+						});
+					}
+				}
+
 				if (el.tagName === "PICTURE" || el.tagName === "VIDEO") {
 					for (var i = 0; i < el.children.length; i++) {
 						addElement(el.children[i], layer);
@@ -39384,7 +40056,9 @@ var $$IMU_EXPORT$$;
 							}
 						}
 					}
-				} else if (el.tagName === "A") {
+				}
+
+				if (el.tagName === "A") {
 					var src = el.href;
 					links[src] = {
 						count: 1,
@@ -39496,6 +40170,12 @@ var $$IMU_EXPORT$$;
 			}
 
 			for (var source in sources) {
+				for (var i = 0; i < ok_els.length; i++) {
+					if (sources[source].el === ok_els[i].el) {
+						ok_els[i] = sources[source];
+					}
+				}
+
 				if (activesources.indexOf(source) < 0)
 					delete sources[source];
 			}
@@ -39504,9 +40184,13 @@ var $$IMU_EXPORT$$;
 				if (_nir_debug_)
 					console_log("_find_source (getsource())", source);
 
-				if (source === null && get_single_setting("mouseover_links")) {
-					if (Object.keys(links).length > 0) {
-						return links[Object.keys(links)[0]];
+				if (source === null) {
+					if (ok_els.length > 0) {
+						return ok_els[0];
+					} else if (get_single_setting("mouseover_links")) {
+						if (Object.keys(links).length > 0) {
+							return links[Object.keys(links)[0]];
+						}
 					}
 				}
 
@@ -39764,14 +40448,6 @@ var $$IMU_EXPORT$$;
 				wanted_chord = settings.mouseover_trigger_key;
 
 			return wanted_chord.indexOf(str) >= 0;
-		}
-
-		function key_in_trigger(key) {
-			var str = keycode_to_str(key);
-			if (str === undefined)
-				return false;
-
-			return keystr_in_trigger(str);
 		}
 
 		function key_would_modify_single_chord(str, value) {
@@ -40091,8 +40767,10 @@ var $$IMU_EXPORT$$;
 				//console_log(source_imu);
 				resetpopups();
 
-				if (automatic)
+				if (automatic) {
 					popup_el_automatic = true;
+					removepopups(); // don't fade out
+				}
 
 				real_popup_el = source.el;
 				popup_el = get_physical_popup_el(real_popup_el);
@@ -40227,6 +40905,8 @@ var $$IMU_EXPORT$$;
 							processing.head = true;
 						}
 
+						processing.source = source;
+
 						check_image_get(newobj, function(img, newurl, obj, respdata) {
 							if (_nir_debug_)
 								console_log("do_popup: check_image_get response:", img, newurl, obj, respdata);
@@ -40282,6 +40962,22 @@ var $$IMU_EXPORT$$;
 				return unsafeWindow || window;
 
 			return window
+		}
+
+		function do_get_helpers(options) {
+			var baseoptions = {
+				document: document,
+				window: get_window(),
+				host_url: window.location.href,
+				do_request: do_request,
+				rule_specific: {}
+			};
+
+			for (var option in options) {
+				baseoptions[option] = options[option];
+			}
+
+			return get_helpers(baseoptions);
 		}
 
 		function wrap_gallery_func(nextprev, origel, el, cb, new_options) {
@@ -40431,7 +41127,7 @@ var $$IMU_EXPORT$$;
 			});
 		}
 
-		function trigger_gallery(dir, cb) {
+		trigger_gallery = function(dir, cb) {
 			if (!cb) {
 				cb = nullfunc;
 			}
@@ -40502,7 +41198,7 @@ var $$IMU_EXPORT$$;
 		};
 
 		function rotate_gallery(dir) {
-			if (popups.length === 0)
+			if (!popups_active)
 				return;
 
 			var transforms = get_popup_transforms();
@@ -40526,7 +41222,7 @@ var $$IMU_EXPORT$$;
 
 		// hv: vertical = true, horizontal = false
 		var flip_gallery = function(hv) {
-			if (popups.length === 0)
+			if (!popups_active)
 				return;
 
 			var transforms = get_popup_transforms();
@@ -41347,8 +42043,19 @@ var $$IMU_EXPORT$$;
 			do_download(popup_obj, popup_obj.filename);
 		};
 
+		var seek_popup_video = function(leftright) {
+			var timemul = leftright ? -1 : 1;
+			var time = timemul * settings.mouseover_video_seek_amount;
+
+			var videoel = popups[0].getElementsByTagName("video");
+			if (!videoel || videoel.length === 0)
+				return;
+
+			videoel[0].currentTime += time;
+		};
+
 		var popup_active = function() {
-			return popups.length > 0 && popup_el;
+			return popups_active && popup_el;
 		};
 
 		var action_handler = function(action) {
@@ -41395,6 +42102,12 @@ var $$IMU_EXPORT$$;
 					return true;
 				case "flip_vertical":
 					flip_gallery(true);
+					return true;
+				case "seek_left":
+					seek_popup_video(true);
+					return true;
+				case "seek_right":
+					seek_popup_video(false);
 					return true;
 			}
 
@@ -41535,6 +42248,14 @@ var $$IMU_EXPORT$$;
 					{
 						key: settings.mouseover_flip_vertical_key,
 						action: {type: "flip_vertical"}
+					},
+					{
+						key: settings.mouseover_video_seek_left_key,
+						action: {type: "seek_left"}
+					},
+					{
+						key: settings.mouseover_video_seek_right_key,
+						action: {type: "seek_right"}
 					}
 				];
 
@@ -42007,13 +42728,13 @@ var $$IMU_EXPORT$$;
 				update_waiting();
 			}
 
-			if (popups.length > 0) {
+			if (popups_active) {
 				do_popup_pan(popups[0], event, mouseX, mouseY);
 			}
 
 			var jitter_base = settings.mouseover_jitter_threshold;
 
-			if (settings.mouseover_trigger_behavior === "keyboard" && get_close_need_mouseout() && popups.length > 0 &&
+			if (settings.mouseover_trigger_behavior === "keyboard" && get_close_need_mouseout() && popups_active &&
 				popup_trigger_reason === "keyboard") {
 				var img = popups[0].getElementsByTagName("img")[0];
 				if (img) {
@@ -42036,8 +42757,8 @@ var $$IMU_EXPORT$$;
 
 			if (mouseover_mouse_enabled()) {
 				if (popup_trigger_reason === "mouse") {
-					if (popups.length > 0) {
-						// FIXME: why was this not in if (popups.length > 0)?
+					if (popups_active) {
+						// FIXME: why was this not in if (popups_active)?
 						// The reason for putting it here is that if the mouse moves (even within jitter thresh) after a single popup is open, it will cancel the popup request
 						if (delay_handle) {
 							clearTimeout(delay_handle);
@@ -42160,7 +42881,7 @@ var $$IMU_EXPORT$$;
 				}
 
 				// FIXME: this is rather weird. Less CPU usage, but doesn't behave in the way one would expect
-				if ((popups.length === 0 || popup_el_automatic) && !should_exclude_imagetab()) {
+				if ((!popups_active || popup_el_automatic) && !should_exclude_imagetab()) {
 					if (delay_handle && !settings.mouseover_trigger_mouseover) {
 						var trigger_mouse_jitter_thresh = 10;
 
