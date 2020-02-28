@@ -52347,6 +52347,18 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain === "imgs.ototoy.jp") {
+			// https://imgs.ototoy.jp/imgs/jacket/0036/00121822.1375675376.146_320.jpg
+			//   https://imgs.ototoy.jp/imgs/jacket/0036/00121822.1375675376.146orig.jpg
+			return src.replace(/(\/imgs\/+jacket\/+[0-9]+\/+[0-9]+\.[0-9]+\.[0-9]+)_[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1orig$2");
+		}
+
+		if (domain === "gl.weburg.net") {
+			// https://gl.weburg.net/00/albums/31/152012/66x66/605339.jpg
+			//   https://gl.weburg.net/00/albums/31/152012/original/605339.jpg
+			return src.replace(/(\/albums\/+[0-9]+\/+[0-9]+\/+)[0-9]+x[0-9]+\/+/, "$1original/");
+		}
+
 
 
 
