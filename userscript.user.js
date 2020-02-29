@@ -1371,6 +1371,9 @@ var $$IMU_EXPORT$$;
 		mouseover_jitter_threshold: 30,
 		mouseover_cancel_popup_when_elout: true,
 		mouseover_cancel_popup_with_esc: true,
+		// thanks to remlap on discord for the idea: https://github.com/qsniyg/maxurl/issues/250
+		mouseover_auto_close_popup: false,
+		mouseover_auto_close_popup_time: 5,
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-530760246
 		mouseover_use_hold_key: true,
 		mouseover_hold_key: ["i"],
@@ -2198,8 +2201,14 @@ var $$IMU_EXPORT$$;
 			name: "Threshold to leave image",
 			description: "How many pixels outside of the image before the cursor is considered to have left the image",
 			requires: [
-				{mouseover_close_need_mouseout: true},
-				{mouseover_trigger_behavior: "mouse"}
+				{
+					mouseover_open_behavior: "popup",
+					mouseover_close_need_mouseout: true
+				},
+				{
+					mouseover_open_behavior: "popup",
+					mouseover_trigger_behavior: "mouse"
+				}
 			],
 			type: "number",
 			number_unit: "pixels",
@@ -2225,12 +2234,40 @@ var $$IMU_EXPORT$$;
 			category: "popup",
 			subcategory: "close_behavior"
 		},
+		mouseover_auto_close_popup: {
+			name: "Automatically close after timeout",
+			description: "Closes the popup automatically after a specified period of time has elapsed",
+			requires: {
+				mouseover_open_behavior: "popup"
+			},
+			category: "popup",
+			subcategory: "close_behavior"
+		},
+		mouseover_auto_close_popup_time: {
+			name: "Timeout to close popup",
+			description: "Amount of time to elapse before automatically closing the popup",
+			requires: {
+				mouseover_auto_close_popup: true
+			},
+			type: "number",
+			number_min: 0,
+			number_unit: "seconds",
+			category: "popup",
+			subcategory: "close_behavior"
+		},
 		mouseover_use_hold_key: {
 			name: "Use hold key",
 			description: "Enables the use of a hold key that, when pressed, will keep the popup open",
-			requires: {
-				mouseover_trigger_behavior: "mouse"
-			},
+			requires: [
+				{
+					mouseover_trigger_behavior: "mouse",
+					mouseover_open_behavior: "popup"
+				},
+				{
+					mouseover_auto_close_popup: true,
+					mouseover_open_behavior: "popup"
+				},
+			],
 			category: "popup",
 			subcategory: "close_behavior"
 		},
@@ -2248,6 +2285,7 @@ var $$IMU_EXPORT$$;
 			name: "Close when leaving thumbnail",
 			description: "Closes the popup when the mouse leaves the thumbnail element (won't close if the mouse instead moves to the popup)",
 			requires: {
+				mouseover_open_behavior: "popup",
 				mouseover_trigger_behavior: "mouse",
 				mouseover_position: "beside_cursor"
 			},
@@ -2258,6 +2296,7 @@ var $$IMU_EXPORT$$;
 			name: "Close when leaving",
 			description: "Closes the popup when the mouse leaves the thumbnail element, the popup, or either",
 			requires: {
+				mouseover_open_behavior: "popup",
 				mouseover_trigger_behavior: "mouse"
 			},
 			options: {
@@ -52369,6 +52408,14 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/albums\/+[0-9]+\/+[0-9]+\/+)[0-9]+x[0-9]+\/+/, "$1original/");
 		}
 
+		if (domain_nowww === "vgmdownloads.com") {
+			// https://vgmdownloads.com/soundtracks/tetris-effect-original-soundtrack-sampler/thumbs/Cover.png
+			//   https://vgmdownloads.com/soundtracks/tetris-effect-original-soundtrack-sampler/Cover.png
+			// https://vgmdownloads.com/soundtracks/metroid-prime-2-echoes/thumbs/3196-daqmtdngpe.jpg
+			//   https://vgmdownloads.com/soundtracks/metroid-prime-2-echoes/3196-daqmtdngpe.jpg -- smaller
+			return src.replace(/\/thumbs\/+([^/]+\.[^/.]+)(?:[?#].*)?$/, "/$1");
+		}
+
 
 
 
@@ -57591,6 +57638,7 @@ var $$IMU_EXPORT$$;
 		var popup_obj = null;
 		var popup_objecturl = null;
 		var popup_el = null;
+		var resetpopup_timeout = null;
 		var real_popup_el = null;
 		var next_popup_el = null;
 		var last_popup_el = null;
@@ -57786,6 +57834,22 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		var clear_resetpopup_timeout = function() {
+			if (resetpopup_timeout) {
+				clearTimeout(resetpopup_timeout);
+				resetpopup_timeout = null;
+			}
+		};
+
+		var add_resetpopup_timeout = function() {
+			if (!settings.mouseover_auto_close_popup || !settings.mouseover_auto_close_popup_time)
+				return;
+
+			clear_resetpopup_timeout();
+
+			resetpopup_timeout = setTimeout(resetpopups, settings.mouseover_auto_close_popup_time * 1000);
+		};
+
 		var removepopups_timer = null;
 		function removepopups() {
 			popups.forEach(function (popup) {
@@ -57834,6 +57898,8 @@ var $$IMU_EXPORT$$;
 			disable_click = false;
 			popups_active = false;
 			delay_handle_triggering = false;
+
+			clear_resetpopup_timeout();
 
 			next_popup_el = null;
 			if (popup_el)
@@ -59329,9 +59395,15 @@ var $$IMU_EXPORT$$;
 				mouse_in_image_yet = false;
 				delay_handle_triggering = false;
 
+				if (popup_trigger_reason !== "mouse") {
+					can_close_popup[1] = true;
+				}
+
 				stop_waiting();
 				popups_active = true;
 				//console_log(div);
+
+				add_resetpopup_timeout();
 			}
 
 			cb(data.data.img, data.data.newurl, obj);
@@ -61962,6 +62034,16 @@ var $$IMU_EXPORT$$;
 			return popups_active && popup_el;
 		};
 
+		var can_use_hold_key = function() {
+			if (!popups_active)
+				return false;
+
+			if (popup_trigger_reason !== "mouse" && (!settings.mouseover_auto_close_popup || !settings.mouseover_auto_close_popup_time))
+				return false;
+
+			return settings.mouseover_use_hold_key;
+		};
+
 		var action_handler = function(action) {
 			if (action.needs_popup && !popup_active())
 				return;
@@ -62082,10 +62164,10 @@ var $$IMU_EXPORT$$;
 				}
 			}
 
-			if (popups_active && popup_trigger_reason === "mouse" &&
-				settings.mouseover_use_hold_key && event_in_chord(event, settings.mouseover_hold_key)) {
+			if (can_use_hold_key() && event_in_chord(event, settings.mouseover_hold_key)) {
 				if (trigger_complete(settings.mouseover_hold_key)) {
 					popup_hold = !popup_hold;
+					clear_resetpopup_timeout();
 
 					if (!popup_hold && can_close_popup[1]) {
 						actions.push({type: "resetpopups"});
@@ -62730,6 +62812,14 @@ var $$IMU_EXPORT$$;
 							}
 						}
 
+						var do_mouse_reset = function() {
+							if (popup_hold) {
+								can_close_popup[1] = true;
+							} else {
+								resetpopups();
+							}
+						};
+
 						var close_el_policy = get_single_setting("mouseover_close_el_policy");
 						var close_on_leave_el = (close_el_policy === "thumbnail" || close_el_policy === "both") && popup_el && !popup_el_automatic;
 						var outside_of_popup_el = false;
@@ -62746,7 +62836,7 @@ var $$IMU_EXPORT$$;
 									outside_of_popup_el = true;
 
 									if (close_el_policy === "thumbnail") {
-										return resetpopups();
+										return do_mouse_reset();
 									}
 								}
 							} else {
@@ -62763,15 +62853,11 @@ var $$IMU_EXPORT$$;
 								//console_log(mouseX, imgmiddleX, jitter_threshx);
 								//console_log(mouseY, imgmiddleY, jitter_threshy);
 
-								if (popup_hold) {
-									can_close_popup[1] = true;
-								} else {
-									resetpopups();
-								}
+								do_mouse_reset();
 							}
 						} else if (close_on_leave_el) {
 							if (outside_of_popup_el) {
-								resetpopups();
+								do_mouse_reset();
 							}
 						}
 					} else if (delay_handle_triggering) {
