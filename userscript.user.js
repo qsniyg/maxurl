@@ -884,6 +884,29 @@ var $$IMU_EXPORT$$;
 		base64_decode = atob;
 	}
 
+	var base64_ok = false;
+
+	try {
+		if (base64_decode("dGVzdA==") === "test") {
+			base64_ok = true;
+		}
+	} catch (e) {}
+
+	if (!base64_ok) {
+		// https://stackoverflow.com/a/15016605
+		// unminified version: https://stackoverflow.com/a/3058974
+		base64_decode = function(s) {
+			var e={},i,b=0,c,x,l=0,a,r='',w=String.fromCharCode,L=s.length;
+			var A="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+			for(i=0;i<64;i++){e[A.charAt(i)]=i;}
+			for(x=0;x<L;x++){
+				c=e[s.charAt(x)];b=(b<<6)+c;l+=6;
+				while(l>=8){((a=(b>>>(l-=8))&0xff)||(x<(L-2)))&&(r+=w(a));}
+			}
+			return r;
+		};
+	}
+
 	var serialize_event = function(event) {
 		return deepcopy(event, {json: true});
 	};
