@@ -1458,6 +1458,8 @@ var $$IMU_EXPORT$$;
 		mouseover_rotate_right_key: ["r"],
 		mouseover_flip_horizontal_key: ["h"],
 		mouseover_flip_vertical_key: ["v"],
+		mouseover_zoom_in_key: [["+"], ["="], ["shift", "="]],
+		mouseover_zoom_out_key: [["-"]],
 		mouseover_apply_blacklist: false,
 		mouseover_matching_media_types: false,
 		mouseover_support_pointerevents_none: true,
@@ -2655,6 +2657,26 @@ var $$IMU_EXPORT$$;
 		mouseover_flip_vertical_key: {
 			name: "Vertical flip key",
 			description: "Flips the image vertically",
+			requires: {
+				mouseover_open_behavior: "popup"
+			},
+			type: "keysequence",
+			category: "popup",
+			subcategory: "behavior"
+		},
+		mouseover_zoom_in_key: {
+			name: "Zoom in key",
+			description: "Incrementally zooms into the image",
+			requires: {
+				mouseover_open_behavior: "popup"
+			},
+			type: "keysequence",
+			category: "popup",
+			subcategory: "behavior"
+		},
+		mouseover_zoom_out_key: {
+			name: "Zoom out key",
+			description: "Incrementally zooms out of the image",
 			requires: {
 				mouseover_open_behavior: "popup"
 			},
@@ -57732,6 +57754,7 @@ var $$IMU_EXPORT$$;
 		var popup_trigger_reason = null;
 		var can_close_popup = [false, false];
 		var popup_hold = false;
+		var popup_zoom_func = nullfunc;
 		var dragstart = false;
 		var dragstartX = null;
 		var dragstartY = null;
@@ -57991,6 +58014,7 @@ var $$IMU_EXPORT$$;
 			real_popup_el = null;
 			popup_el_automatic = false;
 			popup_el_remote = false;
+			popup_zoom_func = nullfunc;
 
 			stop_processing();
 			stop_waiting();
@@ -59249,19 +59273,38 @@ var $$IMU_EXPORT$$;
 
 				var currentmode = initial_zoom_behavior;
 
-				var zoomfunc = function(zoomdir, x, y) {
+				popup_zoom_func = function(zoom_mode, zoomdir, x, y, zoom_out_to_close) {
 					var changed = false;
 
-					var offsetX = x - parseFloat(outerdiv.style.left);
-					var offsetY = y - parseFloat(outerdiv.style.top);
+					var popup_left = parseFloat(outerdiv.style.left);
+					var popup_top = parseFloat(outerdiv.style.top);
+
+					var popup_width = outerdiv.clientWidth;
+					var popup_height = outerdiv.clientHeight;
+
+					if (x === undefined && y === undefined) {
+						//x = mouseAbsX;
+						//y = mouseAbsY;
+
+						var visible_left = Math.max(popup_left, 0);
+						var visible_top = Math.max(popup_top, 0);
+
+						var visible_right = Math.min(visible_left + popup_width, vw);
+						var visible_bottom = Math.min(visible_top + popup_height, vh);
+
+						// get the middle of the visible portion of the popup
+						x = visible_left + (visible_right - visible_left) / 2;
+						y = visible_top + (visible_bottom - visible_top) / 2;
+					}
+
+					var offsetX = x - popup_left;
+					var offsetY = y - popup_top;
 
 					var percentX = offsetX / outerdiv.clientWidth;
 					var percentY = offsetY / outerdiv.clientHeight;
 
-					var scroll_zoom = get_single_setting("scroll_zoom_behavior");
-
-					if (scroll_zoom === "fitfull") {
-						if (settings.zoom_out_to_close && currentmode === "fit" && zoomdir > 0) {
+					if (zoom_mode === "fitfull") {
+						if (zoom_out_to_close && currentmode === "fit" && zoomdir > 0) {
 							resetpopups();
 							return false;
 						}
@@ -59285,7 +59328,7 @@ var $$IMU_EXPORT$$;
 							currentmode = "full";
 							changed = true;
 						}
-					} else if (scroll_zoom === "incremental") {
+					} else if (zoom_mode === "incremental") {
 						var imgwidth = img.clientWidth;
 						var imgheight = img.clientHeight;
 
@@ -59315,7 +59358,7 @@ var $$IMU_EXPORT$$;
 						var too_big = imgwidth > img_naturalWidth * 16 || imgheight > img_naturalHeight * 16;
 
 						if (too_small || too_big) {
-							if (settings.zoom_out_to_close && too_small)
+							if (zoom_out_to_close && too_small)
 								resetpopups();
 							return false;
 						}
@@ -59333,7 +59376,7 @@ var $$IMU_EXPORT$$;
 
 					var newx, newy;
 
-					if ((imgwidth <= vw && imgheight <= vh) || scroll_zoom === "incremental" || true) {
+					if (true || (imgwidth <= vw && imgheight <= vh) || zoom_mode === "incremental") {
 						// centers wanted region to pointer
 						newx = (x - percentX * imgwidth);
 						newy = (y - percentY * imgheight);
@@ -59482,7 +59525,8 @@ var $$IMU_EXPORT$$;
 
 					estop(e);
 
-					if (zoomfunc(e.deltaY, e.clientX, e.clientY) === false)
+					var zoom_mode = get_single_setting("scroll_zoom_behavior");
+					if (popup_zoom_func(zoom_mode, e.deltaY, e.clientX, e.clientY, settings.zoom_out_to_close) === false)
 						return false;
 				};
 
@@ -62179,6 +62223,12 @@ var $$IMU_EXPORT$$;
 				case "flip_vertical":
 					flip_gallery(true);
 					return true;
+				case "zoom_in":
+					popup_zoom_func("incremental", -1);
+					return true;
+				case "zoom_out":
+					popup_zoom_func("incremental", 1);
+					return true;
 				case "seek_left":
 					seek_popup_video(true);
 					return true;
@@ -62324,6 +62374,14 @@ var $$IMU_EXPORT$$;
 					{
 						key: settings.mouseover_flip_vertical_key,
 						action: {type: "flip_vertical"}
+					},
+					{
+						key: settings.mouseover_zoom_in_key,
+						action: {type: "zoom_in"}
+					},
+					{
+						key: settings.mouseover_zoom_out_key,
+						action: {type: "zoom_out"}
 					},
 					{
 						key: settings.mouseover_video_seek_left_key,
