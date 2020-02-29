@@ -893,6 +893,7 @@ var $$IMU_EXPORT$$;
 	} catch (e) {}
 
 	if (!base64_ok) {
+		// Some websites replace atob, so we have to provide our own implementation in those cases
 		// https://stackoverflow.com/a/15016605
 		// unminified version: https://stackoverflow.com/a/3058974
 		base64_decode = function(s) {
