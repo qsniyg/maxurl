@@ -15955,13 +15955,18 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "mirror.co.uk" ||
 			// https://beta.images.theglobeandmail.com/76a/sports/hockey/article38351471.ece/ALTERNATES/w620/web-sp-hk-senators-0326.JPG
 			// https://beta.images.theglobeandmail.com/339/sports/article34852751.ece/BINARY/w620/hk-moss28sp3.JPG
+			// https://beta.images.theglobeandmail.com/6f3/report-on-business/industry-news/marketing/article4543679.ece/ALTERNATES/w620/persuasion-cdntire14rb1.JPG -- BINARY doesn't work
 			domain === "beta.images.theglobeandmail.com" ||
+			// https://static.theglobeandmail.ca/954/incoming/article890990.ece/ALTERNATES/w620/web-shoppers.jpg
+			//   https://static.theglobeandmail.ca/954/incoming/article890990.ece/BINARY/web-shoppers.jpg -- 404
+			//domain === "static.theglobeandmail.ca" ||
 			// http://www.globalblue.com/destinations/uk/london/article288436.ece/alternates/LANDSCAPE2_970/cara_delevingne_rochas.jpg -- upscaled?
 			//   https://www.globalblue.com/destinations/uk/london/article288436.ece/BINARY/cara_delevingne_rochas.jpg
 			domain_nowww === "globalblue.com" ||
 			// https://cdn-04.belfasttelegraph.co.uk/entertainment/film-tv/news/article36669885.ece/ALTERNATES/w620/bpanews_d1dbd5df-f462-4575-86fd-ef234930e632_embedded235347559
 			//   https://cdn-04.belfasttelegraph.co.uk/entertainment/film-tv/news/article36669885.ece/BINARY/bpanews_d1dbd5df-f462-4575-86fd-ef234930e632_embedded235347559
 			// https://www.belfasttelegraph.co.uk/migration_catalog/article25788206.ece/ALTERNATES/h342/SamanthaMumba
+			// https://www.belfasttelegraph.co.uk/incoming/c5491/38997334.ece/AUTOCROP/w940h530/AFP_1PD6Z5.jpg -- BINARY doesn't work
 			(domain_nosub === "belfasttelegraph.co.uk" && domain.match(/^(?:cdn(-[0-9]+)?|www)\./)) ||
 			// http://www.ladylike.gr/articles/galleries/photostories/article2773870.ece/ALTERNATES/w60/olsen.jpg
 			// http://www.ladylike.gr/articles/galleries/photostories/article2773872.ece/BINARY/original/Rihanna.jpg
@@ -16009,6 +16014,12 @@ var $$IMU_EXPORT$$;
 			// https://d30fl32nd2baj9.cloudfront.net/media/2019/05/03/tundra-landscape.jpg/ALTERNATES/w640/tundra-landscape.jpg
 			//   https://d30fl32nd2baj9.cloudfront.net/media/2019/05/03/tundra-landscape.jpg/BINARY/tundra-landscape.jpg
 			domain === "d30fl32nd2baj9.cloudfront.net" ||
+			// https://www.elsoldepuebla.com.mx/gossip/omg/z7ut9g-amanda-interior.jpg/ALTERNATES/FREE_768/Amanda%20interior.jpg
+			//   https://www.elsoldepuebla.com.mx/gossip/omg/z7ut9g-amanda-interior.jpg/BINARY/Amanda%20interior.jpg
+			domain_nowww === "elsoldepuebla.com.mx" ||
+			// https://www.svensktnaringsliv.se/bilder_och_dokument/medarbetare-bilder/johan-britz-3jpg_637088.html/ALTERNATES/LANDSCAPE_1200/Johan%20Britz%203.jpg
+			//   https://www.svensktnaringsliv.se/bilder_och_dokument/medarbetare-bilder/johan-britz-3jpg_637088.html/BINARY/Johan%20Britz%203.jpg
+			domain_nowww === "svensktnaringsliv.se" ||
 			src.match(/\/(?:article[0-9]+\.(?:ece|svt)|[0-9a-z]+\/+picture[0-9]{4,})\/+(?:[^/]*\/)?alternates\//i) ||
 			src.match(/:\/\/i[0-9]*(?:-prod)?\..*\/article[^/]*\.(?:ece|svt)\//i) ||
 			// https://www.independent.ie/world-news/article37114917.ece/ALTERNATES/h342/ipanews_2350b658-06c1-4a29-b747-cbfdcd1b624c_1
