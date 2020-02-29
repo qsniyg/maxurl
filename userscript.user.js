@@ -1460,6 +1460,8 @@ var $$IMU_EXPORT$$;
 		mouseover_flip_vertical_key: ["v"],
 		mouseover_zoom_in_key: [["+"], ["="], ["shift", "="]],
 		mouseover_zoom_out_key: [["-"]],
+		mouseover_zoom_full_key: ["1"],
+		mouseover_zoom_fit_key: ["2"],
 		mouseover_apply_blacklist: false,
 		mouseover_matching_media_types: false,
 		mouseover_support_pointerevents_none: true,
@@ -2677,6 +2679,26 @@ var $$IMU_EXPORT$$;
 		mouseover_zoom_out_key: {
 			name: "Zoom out key",
 			description: "Incrementally zooms out of the image",
+			requires: {
+				mouseover_open_behavior: "popup"
+			},
+			type: "keysequence",
+			category: "popup",
+			subcategory: "behavior"
+		},
+		mouseover_zoom_full_key: {
+			name: "Full zoom key",
+			description: "Sets the image to be at a 100% zoom, even if it overflows the screen",
+			requires: {
+				mouseover_open_behavior: "popup"
+			},
+			type: "keysequence",
+			category: "popup",
+			subcategory: "behavior"
+		},
+		mouseover_zoom_fit_key: {
+			name: "Fit screen key",
+			description: "Sets the image to either be at a 100% zoom, or to fit the screen, whichever is smaller",
 			requires: {
 				mouseover_open_behavior: "popup"
 			},
@@ -59283,6 +59305,7 @@ var $$IMU_EXPORT$$;
 					var popup_height = outerdiv.clientHeight;
 
 					if (x === undefined && y === undefined) {
+						// TODO: if mouse is within the popup, use the mouse's coordinates instead
 						//x = mouseAbsX;
 						//y = mouseAbsY;
 
@@ -62229,6 +62252,12 @@ var $$IMU_EXPORT$$;
 				case "zoom_out":
 					popup_zoom_func("incremental", 1);
 					return true;
+				case "zoom_full":
+					popup_zoom_func("fitfull", -1);
+					return true;
+				case "zoom_fit":
+					popup_zoom_func("fitfull", 1);
+					return true;
 				case "seek_left":
 					seek_popup_video(true);
 					return true;
@@ -62382,6 +62411,14 @@ var $$IMU_EXPORT$$;
 					{
 						key: settings.mouseover_zoom_out_key,
 						action: {type: "zoom_out"}
+					},
+					{
+						key: settings.mouseover_zoom_full_key,
+						action: {type: "zoom_full"}
+					},
+					{
+						key: settings.mouseover_zoom_fit_key,
+						action: {type: "zoom_fit"}
 					},
 					{
 						key: settings.mouseover_video_seek_left_key,
