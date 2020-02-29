@@ -2746,7 +2746,8 @@ var $$IMU_EXPORT$$;
 			description: "Custom CSS styles for the popup's UI buttons",
 			type: "textarea",
 			requires: {
-				mouseover_open_behavior: "popup"
+				mouseover_open_behavior: "popup",
+				mouseover_ui: true
 			},
 			category: "popup",
 			subcategory: "ui"
