@@ -20497,7 +20497,7 @@ var $$IMU_EXPORT$$;
 			return decodeURIComponent(decodeURIComponent(src.replace(/^[a-z]*:\/\/(?:[^/]*\/){7}(http[^/]*).*?$/, "$1")));
 		}
 
-		if ((domain_nosub === "assetsadobe2.com" ||
+		if (((domain_nosub === "assetsadobe2.com" ||
 			 // https://sh-s7-live-s.legocdn.com/is/image/LEGO/75192_alt4?fit=constrain,1&wid=46&hei=37&fmt=jpg
 			 //   https://sh-s7-live-s.legocdn.com/is/image/LEGO/75192_alt4?scl=1 -- 2400x1800 (with white background)
 			 //   https://sh-s7-live-s.legocdn.com/is/image/LEGO/75192_alt4?scl=1&fmt=png-alpha (transparent)
@@ -20557,8 +20557,7 @@ var $$IMU_EXPORT$$;
 			 // https://s7d9.scene7.com/is/image/zumiez/pdp_hero/adidas-Boys-Trefoil-Black-Hoodie-_289406.jpg
 			 //   https://s7d9.scene7.com/is/image/zumiez/pdp_hero/adidas-Boys-Trefoil-Black-Hoodie-_289406.jpg?scl=1 -- image not found
 			 /*domain_nosub === "scene7.com"*/
-			 ) &&
-			src.indexOf("/is/image/") >= 0 ||
+			 ) && src.indexOf("/is/image/") >= 0) ||
 			// https://c.shld.net/rpx/i/s/i/spin/image/spin_prod_944500112?hei=185&wid=185&op_sharpen=1&qlt=85
 			//   https://c.shld.net/rpx/i/s/i/spin/image/spin_prod_944500112?scl=1&fmt=png-alpha
 			// http://c.shld.net/rpx/i/s/pi/mp/10143589/prod_17215362615?src=http%3A%2F%2Fprodimage.images-bn.com%2Fpimages%2F9780739052204.jpg&d=31514ed0ddc4e4d8bba1651321ad7287b49da72f
@@ -20592,7 +20591,7 @@ var $$IMU_EXPORT$$;
 			if (newsrc !== src)
 				return newsrc;
 
-			if (!/[?&]src=/.test(src))
+			if (!(/[?&]src=/.test(src)))
 				return src.replace(/(?:\?.*)?$/, "?" + srcadd);
 		}
 
