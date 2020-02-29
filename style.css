@@ -551,6 +551,7 @@ input:checked + label, button, .button, .button:visited, .dark .button:visited, 
 #options .category > h2 {
   font-size: 1.5em;
   font-weight: 100;
+  margin-top: 2em;
   margin-bottom: 1em;
   padding-bottom: 0.5em;
 
@@ -560,12 +561,24 @@ input:checked + label, button, .button, .button:visited, .dark .button:visited, 
   border-image-slice: 1;
 }
 
+#options .subcat.frame {
+  border: 1px solid #ccc;
+  margin-top: 1.5em;
+  margin-bottom: 1em;
+}
+
+.dark #options .subcat.frame {
+  border-color: #777;
+}
+
 #options .subcat > h3 {
-  font-size: 1.2em;
+  font-size: 1.3em;
   font-weight: 100;
 
-  margin-top: 0.5em;
-  margin-bottom: 0.5em;
+  text-align: center;
+
+  margin-top: 1em;
+  margin-bottom: 1.3em;
 }
 
 @media (max-width:700px) {
