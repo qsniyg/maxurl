@@ -8474,6 +8474,8 @@ var $$IMU_EXPORT$$;
 		}
 
 		if ((domain === "pbs.twimg.com" &&
+			 // https://pbs.twimg.com/card_img/1233609033145171968/yM9hHz4R?format=jpg&name=small`
+			 //   https://pbs.twimg.com/card_img/1233609033145171968/yM9hHz4R?format=jpg&name=orig
 			 /:\/\/[^/]+\/+(?:media|card_img|ext_tw_video_thumb)\//.test(src)) ||
 			(domain === "ton.twitter.com" &&
 			 src.indexOf("/ton/data/dm/") >= 0)) {
@@ -8514,13 +8516,15 @@ var $$IMU_EXPORT$$;
 			if (newsrc !== src)
 				return newsrc;
 
-			// replace format=jpg to .jpg
-			newsrc = src
-				.replace(/(\/[^/.?]+)\?(.*?&)?format=([^&]*)(.*?$)?/, "$1.$3?$2$4")
-				.replace(/\?&/, "?")
-				.replace(/[?&]+$/, "");
-			if (newsrc !== src)
-				return newsrc;
+			if (src.indexOf("/card_img/") < 0) {
+				// replace format=jpg to .jpg, doesn't work for /card_img/
+				newsrc = src
+					.replace(/(\/[^/.?]+)\?(.*?&)?format=([^&]*)(.*?$)?/, "$1.$3?$2$4")
+					.replace(/\?&/, "?")
+					.replace(/[?&]+$/, "");
+				if (newsrc !== src)
+					return newsrc;
+			}
 
 			// try various names (thanks to rEnr3n for reporting): https://github.com/qsniyg/maxurl/issues/165
 			// https://pbs.twimg.com/media/Bu4G7k3CcAA6Nx7.jpg
@@ -8540,7 +8544,10 @@ var $$IMU_EXPORT$$;
 				end = names.length;
 
 			for (var i = 0; i < end; i++) {
-				newsrc = src.replace(/(\?.*)?$/, "?name=" + names[i]);
+				newsrc = src
+					.replace(/(\.[a-z]+)\?(?:(.*)&)?format=[^&]+/, "$1?$2&")
+					.replace(/&$/, "");
+				newsrc = newsrc.replace(/([?&]name=)[^&]+/, "$1" + names[i]);
 
 				// don't do this, this doesn't work for .jpg?format=jpg&name=...
 				if (false) {
@@ -8554,9 +8561,11 @@ var $$IMU_EXPORT$$;
 				if (newsrc.match(/\.png(\?.*)?$/)) {
 					obj.push(newsrc);
 					obj.push(newsrc.replace(/\.png(\?.*)?$/, ".jpg$1"));
-				} else {
+				} else if (newsrc.match(/\.jpg(\?.*)?$/)) {
 					// Prefer png over jpg (compression)
 					obj.push(newsrc.replace(/\.jpg(\?.*)?$/, ".png$1"));
+					obj.push(newsrc);
+				} else {
 					obj.push(newsrc);
 				}
 			}
@@ -52506,6 +52515,16 @@ var $$IMU_EXPORT$$;
 			// https://vgmdownloads.com/soundtracks/metroid-prime-2-echoes/thumbs/3196-daqmtdngpe.jpg
 			//   https://vgmdownloads.com/soundtracks/metroid-prime-2-echoes/3196-daqmtdngpe.jpg -- smaller
 			return src.replace(/\/thumbs\/+([^/]+\.[^/.]+)(?:[?#].*)?$/, "/$1");
+		}
+
+		if (domain_nowww === "linuxgamepublishing.com") {
+			// https://www.linuxgamepublishing.com/images/gamegraphics/40/image90.jpg
+			//   https://www.linuxgamepublishing.com/images/gamegraphics/40/image.jpg
+			// https://www.linuxgamepublishing.com/images/gamegraphics/40/thumbnail0.jpg
+			//   https://www.linuxgamepublishing.com/images/gamegraphics/40/screenshot0.jpg
+			return src
+				.replace(/(\/images\/+gamegraphics\/+[0-9]+\/+image)[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1$2")
+				.replace(/(\/images\/+gamegraphics\/+[0-9]+\/+)thumbnail([0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1screenshot$2")
 		}
 
 
