@@ -59250,6 +59250,137 @@ var $$IMU_EXPORT$$;
 
 				var currentmode = initial_zoom_behavior;
 
+				var zoomfunc = function(zoomdir, x, y) {
+					var changed = false;
+
+					var offsetX = x - parseFloat(outerdiv.style.left);
+					var offsetY = y - parseFloat(outerdiv.style.top);
+
+					var percentX = offsetX / outerdiv.clientWidth;
+					var percentY = offsetY / outerdiv.clientHeight;
+
+					var scroll_zoom = get_single_setting("scroll_zoom_behavior");
+
+					if (scroll_zoom === "fitfull") {
+						if (settings.zoom_out_to_close && currentmode === "fit" && zoomdir > 0) {
+							resetpopups();
+							return false;
+						}
+
+						if (zoomdir > 0 && currentmode !== "fit") {
+							update_vwh();
+
+							imgh = img_naturalHeight;
+							imgw = img_naturalWidth;
+							calc_imghw_for_fit();
+
+							set_popup_width(imgw, vw);
+							set_popup_height(imgh, vh);
+
+							currentmode = "fit";
+							changed = true;
+						} else if (zoomdir < 0 && currentmode !== "full") {
+							set_popup_width(img_naturalWidth, "initial");
+							set_popup_height(img_naturalHeight, "initial");
+
+							currentmode = "full";
+							changed = true;
+						}
+					} else if (scroll_zoom === "incremental") {
+						var imgwidth = img.clientWidth;
+						var imgheight = img.clientHeight;
+
+						var mult = 1;
+						if (imgwidth < img_naturalWidth) {
+							mult = img_naturalWidth / imgwidth;
+						} else {
+							mult = imgwidth / img_naturalWidth;
+						}
+
+						mult = Math.round(mult);
+
+						if (imgwidth < img_naturalWidth) {
+							mult = 1 / mult;
+						}
+
+						if (zoomdir > 0) {
+							mult /= 2;
+						} else {
+							mult *= 2;
+						}
+
+						imgwidth = img_naturalWidth * mult;
+						imgheight = img_naturalHeight * mult;
+
+						var too_small = imgwidth < 64 || imgheight < 64;
+						var too_big = imgwidth > img_naturalWidth * 16 || imgheight > img_naturalHeight * 16;
+
+						if (too_small || too_big) {
+							if (settings.zoom_out_to_close && too_small)
+								resetpopups();
+							return false;
+						}
+
+						set_popup_width(imgwidth);
+						set_popup_height(imgheight);
+						changed = true;
+					}
+
+					if (!changed)
+						return false;
+
+					var imgwidth = outerdiv.clientWidth;
+					var imgheight = outerdiv.clientHeight;
+
+					var newx, newy;
+
+					if ((imgwidth <= vw && imgheight <= vh) || scroll_zoom === "incremental" || true) {
+						// centers wanted region to pointer
+						newx = (x - percentX * imgwidth);
+						newy = (y - percentY * imgheight);
+					} else if (imgwidth > vw || imgheight > vh) {
+						// centers wanted region to center of screen
+						newx = (vw / 2) - percentX * imgwidth;
+						var endx = newx + imgwidth;
+						if (newx > border_thresh && endx > (vw - border_thresh))
+							newx = Math.max(border_thresh, (vw + border_thresh) - imgwidth);
+
+						if (newx < border_thresh && endx < (vw - border_thresh))
+							newx = Math.min(border_thresh, (vw + border_thresh) - imgwidth);
+
+						newy = (vh / 2) - percentY * imgheight;
+						var endy = newy + imgheight;
+						if (newy > border_thresh && endy > (vh - border_thresh))
+							newy = Math.max(border_thresh, (vh + border_thresh) - imgheight);
+
+						if (newy < border_thresh && endy < (vh - border_thresh))
+							newy = Math.min(border_thresh, (vh + border_thresh) - imgheight);
+					}
+
+					if (imgwidth <= vw && imgheight <= vh) {
+						newx = Math.max(newx, border_thresh);
+						if (newx + imgwidth > (vw - border_thresh)) {
+							newx = (vw + border_thresh) - imgwidth;
+						}
+
+						newy = Math.max(newy, border_thresh);
+						if (newy + imgheight > (vh - border_thresh)) {
+							newy = (vh + border_thresh) - imgheight;
+						}
+					}
+
+					//var lefttop = get_lefttopouter();
+					outerdiv.style.left = (newx/* - lefttop[0]*/) + "px";
+					outerdiv.style.top = (newy/* - lefttop[1]*/) + "px";
+
+					create_ui(true);
+
+					// The mouse could accidentally land outside the image in theory
+					mouse_in_image_yet = false;
+
+					return false;
+				};
+
 				outerdiv.onwheel = function(e) {
 					var handledx = false;
 					var handledy = false;
@@ -59352,134 +59483,8 @@ var $$IMU_EXPORT$$;
 
 					estop(e);
 
-					var changed = false;
-
-					var offsetX = e.clientX - parseFloat(outerdiv.style.left);
-					var offsetY = e.clientY - parseFloat(outerdiv.style.top);
-
-					var percentX = offsetX / outerdiv.clientWidth;
-					var percentY = offsetY / outerdiv.clientHeight;
-
-					var scroll_zoom = get_single_setting("scroll_zoom_behavior");
-
-					if (scroll_zoom === "fitfull") {
-						if (settings.zoom_out_to_close && currentmode === "fit" && e.deltaY > 0) {
-							resetpopups();
-							return false;
-						}
-
-						if (e.deltaY > 0 && currentmode !== "fit") {
-							update_vwh();
-
-							imgh = img_naturalHeight;
-							imgw = img_naturalWidth;
-							calc_imghw_for_fit();
-
-							set_popup_width(imgw, vw);
-							set_popup_height(imgh, vh);
-
-							currentmode = "fit";
-							changed = true;
-						} else if (e.deltaY < 0 && currentmode !== "full") {
-							set_popup_width(img_naturalWidth, "initial");
-							set_popup_height(img_naturalHeight, "initial");
-
-							currentmode = "full";
-							changed = true;
-						}
-					} else if (scroll_zoom === "incremental") {
-						var imgwidth = img.clientWidth;
-						var imgheight = img.clientHeight;
-
-						var mult = 1;
-						if (imgwidth < img_naturalWidth) {
-							mult = img_naturalWidth / imgwidth;
-						} else {
-							mult = imgwidth / img_naturalWidth;
-						}
-
-						mult = Math.round(mult);
-
-						if (imgwidth < img_naturalWidth) {
-							mult = 1 / mult;
-						}
-
-						if (e.deltaY > 0) {
-							mult /= 2;
-						} else {
-							mult *= 2;
-						}
-
-						imgwidth = img_naturalWidth * mult;
-						imgheight = img_naturalHeight * mult;
-
-						var too_small = imgwidth < 64 || imgheight < 64;
-						var too_big = imgwidth > img_naturalWidth * 16 || imgheight > img_naturalHeight * 16;
-
-						if (too_small || too_big) {
-							if (settings.zoom_out_to_close && too_small)
-								resetpopups();
-							return false;
-						}
-
-						set_popup_width(imgwidth);
-						set_popup_height(imgheight);
-						changed = true;
-					}
-
-					if (!changed)
+					if (zoomfunc(e.deltaY, e.clientX, e.clientY) === false)
 						return false;
-
-					var imgwidth = outerdiv.clientWidth;
-					var imgheight = outerdiv.clientHeight;
-
-					var newx, newy;
-
-					if ((imgwidth <= vw && imgheight <= vh) || scroll_zoom === "incremental" || true) {
-						// centers wanted region to pointer
-						newx = (e.clientX - percentX * imgwidth);
-						newy = (e.clientY - percentY * imgheight);
-					} else if (imgwidth > vw || imgheight > vh) {
-						// centers wanted region to center of screen
-						newx = (vw / 2) - percentX * imgwidth;
-						var endx = newx + imgwidth;
-						if (newx > border_thresh && endx > (vw - border_thresh))
-							newx = Math.max(border_thresh, (vw + border_thresh) - imgwidth);
-
-						if (newx < border_thresh && endx < (vw - border_thresh))
-							newx = Math.min(border_thresh, (vw + border_thresh) - imgwidth);
-
-						newy = (vh / 2) - percentY * imgheight;
-						var endy = newy + imgheight;
-						if (newy > border_thresh && endy > (vh - border_thresh))
-							newy = Math.max(border_thresh, (vh + border_thresh) - imgheight);
-
-						if (newy < border_thresh && endy < (vh - border_thresh))
-							newy = Math.min(border_thresh, (vh + border_thresh) - imgheight);
-					}
-
-					if (imgwidth <= vw && imgheight <= vh) {
-						newx = Math.max(newx, border_thresh);
-						if (newx + imgwidth > (vw - border_thresh)) {
-							newx = (vw + border_thresh) - imgwidth;
-						}
-
-						newy = Math.max(newy, border_thresh);
-						if (newy + imgheight > (vh - border_thresh)) {
-							newy = (vh + border_thresh) - imgheight;
-						}
-					}
-
-					//var lefttop = get_lefttopouter();
-					outerdiv.style.left = (newx/* - lefttop[0]*/) + "px";
-					outerdiv.style.top = (newy/* - lefttop[1]*/) + "px";
-
-					create_ui(true);
-
-					// The mouse could accidentally land outside the image in theory
-					mouse_in_image_yet = false;
-
-					return false;
 				};
 
 				document.documentElement.appendChild(outerdiv);
