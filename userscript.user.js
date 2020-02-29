@@ -55963,6 +55963,7 @@ var $$IMU_EXPORT$$;
 			var subdiv = document.createElement("div");
 			subdiv.id = "subcat_" + category;
 			subdiv.classList.add("subcat");
+			subdiv.classList.add("frame");
 			div.appendChild(subdiv);
 			subcategory_els[category] = subdiv;
 
@@ -55971,6 +55972,7 @@ var $$IMU_EXPORT$$;
 					var newsubdiv = document.createElement("div");
 					newsubdiv.id = "subcat_" + subcat;
 					newsubdiv.classList.add("subcat");
+					newsubdiv.classList.add("frame");
 
 					var h3 = document.createElement("h3");
 					h3.innerText = _(subcategories[category][subcat]);
@@ -56688,6 +56690,14 @@ var $$IMU_EXPORT$$;
 				for (var i = 0; i < our_els.length; i++) {
 					our_els[i].parentNode.removeChild(our_els[i])
 				}
+			}
+		}
+
+		for (var subcategory in subcategory_els) {
+			var our_el = subcategory_els[subcategory];
+
+			if (our_el.querySelectorAll(".option").length === 0) {
+				our_el.parentNode.removeChild(our_el);
 			}
 		}
 
