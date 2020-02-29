@@ -1459,6 +1459,7 @@ var $$IMU_EXPORT$$;
 		mouseover_flip_horizontal_key: ["h"],
 		mouseover_flip_vertical_key: ["v"],
 		mouseover_apply_blacklist: false,
+		mouseover_matching_media_types: false,
 		mouseover_support_pointerevents_none: true,
 		website_inject_imu: true,
 		website_image: true,
@@ -2755,6 +2756,16 @@ var $$IMU_EXPORT$$;
 			description: "This option prevents a popup from appearing altogether for blacklisted images",
 			requires: {
 				mouseover: true
+			},
+			category: "popup",
+			subcategory: "open_behavior"
+		},
+		mouseover_matching_media_types: {
+			name: "Don't popup video for image",
+			description: "This option prevents the popup from loading a video when the source was an image. Vice-versa is also applied",
+			requires: {
+				mouseover: true,
+				allow_video: true
 			},
 			category: "popup",
 			subcategory: "open_behavior"
@@ -57099,7 +57110,7 @@ var $$IMU_EXPORT$$;
 		if (obj.video)
 			return true;
 
-		if (/\.(?:mp4|webm|mkv|mpg)/i.test(obj.url))
+		if (/\.(?:mp4|webm|mkv|mpg|ogv|wmv)/i.test(obj.url))
 			return true;
 
 		return false;
@@ -57191,7 +57202,23 @@ var $$IMU_EXPORT$$;
 		return get_window_url().revokeObjectURL(objecturl);
 	};
 
+	var is_video_el = function(el) {
+		if (el.tagName === "VIDEO")
+			return true;
+
+		if (el.tagName !== "SOURCE")
+			return false;
+
+		if (el.parentElement && el.parentElement.tagName === "VIDEO")
+			return true;
+		return false;
+	}
+
 	function check_image_get(obj, cb, processing) {
+		if (_nir_debug_) {
+			console_log("check_image_get", obj, cb, processing);
+		}
+
 		if (!obj || !obj[0]) {
 			return cb(null);
 		}
@@ -57320,6 +57347,20 @@ var $$IMU_EXPORT$$;
 				if (is_video && !settings.allow_video) {
 					console_log("Video, skipping due to user setting");
 					return err_cb();
+				}
+
+				if (settings.mouseover_matching_media_types && processing && processing.source && processing.source.el) {
+					if (is_video_el(processing.source.el)) {
+						if (!is_video) {
+							console_log("!video, source was video, skipping");
+							return err_cb();
+						}
+					} else {
+						if (is_video) {
+							console_log("video, source was image, skipping");
+							return err_cb();
+						}
+					}
 				}
 
 				var good_cb = function(img) {
@@ -59710,18 +59751,6 @@ var $$IMU_EXPORT$$;
 					el.naturalHeight
 				]
 			}
-		}
-
-		function is_video_el(el) {
-			if (el.tagName === "VIDEO")
-				return true;
-
-			if (el.tagName !== "SOURCE")
-				return false;
-
-			if (el.parentElement && el.parentElement.tagName === "VIDEO")
-				return true;
-			return false;
 		}
 
 		function is_valid_src(src, isvideo) {
