@@ -1450,6 +1450,7 @@ var $$IMU_EXPORT$$;
 		mouseover_ui_styles: "",
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-541065461
 		mouseover_wait_use_el: false,
+		mouseover_add_to_history: false,
 		mouseover_download_key: [["s"], ["ctrl", "s"]],
 		mouseover_open_new_tab_key: ["o"],
 		mouseover_open_bg_tab_key: ["shift", "o"],
@@ -2323,6 +2324,17 @@ var $$IMU_EXPORT$$;
 			category: "popup",
 			subcategory: "popup_other",
 			advanced: true
+		},
+		mouseover_add_to_history: {
+			name: "Add popup link to history",
+			description: "Adds the image/video link opened through the popup to the browser's history",
+			requires: {
+				mouseover: true
+			},
+			category: "popup",
+			subcategory: "popup_other",
+			required_permission: "history",
+			extension_only: true
 		},
 		allow_remote: {
 			name: "Allow inter-frame communication",
@@ -56051,7 +56063,7 @@ var $$IMU_EXPORT$$;
 				};
 				check_value_orig_different(value);
 
-				var do_update_setting = function(setting, new_value, meta) {
+				var do_update_setting_real = function(setting, new_value, meta) {
 					update_setting(setting, new_value);
 
 					run_soon(function() {
@@ -56059,6 +56071,25 @@ var $$IMU_EXPORT$$;
 					});
 
 					show_saved_message(meta);
+				};
+
+				var do_update_setting = function(setting, new_value, meta) {
+					if (is_extension && meta.required_permission) {
+						extension_send_message({
+							type: "permission",
+							data: {
+								permission: meta.required_permission
+							}
+						}, function(result) {
+							if (result.data.granted) {
+								do_update_setting_real(setting, new_value, meta);
+							} else {
+								do_options();
+							}
+						});
+					} else {
+						do_update_setting_real(setting, new_value, meta);
+					}
 				};
 
 				name_td.appendChild(name);
@@ -58066,9 +58097,24 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		function add_link_to_history(link) {
+			if (is_extension) {
+				extension_send_message({
+					type: "add_to_history",
+					data: {
+						url: link
+					}
+				});
+			}
+		}
+
 		function makePopup(obj, orig_url, processing, data) {
 			if (_nir_debug_) {
 				console_log("makePopup", obj, orig_url, processing, data);
+			}
+
+			if (settings.mouseover_add_to_history) {
+				add_link_to_history(data.data.obj.url);
 			}
 
 			var openb = get_single_setting("mouseover_open_behavior");

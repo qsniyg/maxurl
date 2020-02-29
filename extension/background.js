@@ -951,6 +951,42 @@ chrome.runtime.onMessage.addListener((message, sender, respond) => {
 		debug(message.type, message);
 
 		chrome.tabs.sendMessage(sender.tab.id, message);
+	} else if (message.type === "permission") {
+		debug("permission", message);
+
+		if (message.data.permission === "history") {
+			chrome.permissions.request({
+				permissions: ["history"]
+			}, function(granted) {
+				respond({
+					type: "permission",
+					data: {
+						permission: message.data.permission,
+						granted: granted
+					}
+				});
+			});
+		} else {
+			respond({
+				type: "permission",
+				data: {
+					permission: message.data.permission,
+					granted: false
+				}
+			});
+		}
+
+		return true;
+	} else if (message.type === "add_to_history") {
+		debug("add_to_history", message);
+
+		try {
+			chrome.history.addUrl({
+				url: message.data.url
+			});
+		} catch (e) {
+			console.error(e);
+		}
 	}
 });
 
