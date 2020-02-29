@@ -58732,6 +58732,12 @@ var $$IMU_EXPORT$$;
 					topbarel.style.left = "-" + em1;
 					topbarel.style.top = "-" + em1;
 
+					if (!settings.mouseover_ui) {
+						// Not sure why this is needed, but without it, clicking and dragging images doesn't work under Firefox (#78)
+						outerdiv.appendChild(topbarel);
+						return;
+					}
+
 					opacity_hover(topbarel);
 
 					if (settings.mouseover_ui_closebtn) {
@@ -59017,14 +59023,7 @@ var $$IMU_EXPORT$$;
 					add_leftright_gallery_button_if_valid(true);
 				}
 
-				if (settings.mouseover_ui) {
-					create_ui();
-				} else {
-					// Not sure why this is needed, but without it,
-					// clicking and dragging images doesn't work under Firefox (#78)
-					var topbarel = create_topbarel();
-					outerdiv.appendChild(topbarel);
-				}
+				create_ui();
 
 				if (typeof newobj.filename !== "string")
 					newobj.filename = "";
