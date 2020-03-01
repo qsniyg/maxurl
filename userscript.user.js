@@ -39080,6 +39080,16 @@ var $$IMU_EXPORT$$;
 							   "$1$2");
 		}
 
+		if (host_domain_nosub === "kpopping.com" && domain_nowww === "kpopping.com" && options.element) {
+			if (/\/uploads\/+documents\//.test(src)) {
+				if (options.element.tagName === "IMG" && options.element.classList.contains("img-fluid")) {
+					if (options.element.parentElement.tagName === "A" && options.element.parentElement.href && /\/uploads\/+documents\//.test(options.element.parentElement.href)) {
+						return options.element.parentElement.href;
+					}
+				}
+			}
+		}
+
 		if (domain_nowww === "kpopping.com") {
 			// https://kpopping.com/bundles/app/img/like-anim/xnew-like-sprite.png.pagespeed.ic.4zz0kkaFTj.webp
 			if (/\/bundles\/+app\/+img\//.test(src))
@@ -39112,6 +39122,10 @@ var $$IMU_EXPORT$$;
 				return src
 					.replace(/\/uploads\/+documents\/+[^/]+\/+(?:[0-9]*x){0,2}([^/]+?)(?:,[0-9]+){0,}(\.[^/]+?)(?:\.(?:keep|crop)\..*)?(?:[?#].*)?$/, "/uploads/documents/$1$2");
 			}
+
+			// enabling without the ,[0-9]+,[0-9]+\. part
+			return src
+					.replace(/\/uploads\/+documents\/+[^/]+\/+(?:[0-9]*x){0,2}([^/]+?)(\.[^/]+?)(?:\.(?:keep|crop)\..*)?(?:[?#].*)?$/, "/uploads/documents/$1$2");
 		}
 
 		if (domain_nosub === "tin247.com" &&
