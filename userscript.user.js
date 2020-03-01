@@ -52556,6 +52556,12 @@ var $$IMU_EXPORT$$;
 				.replace(/(\/images\/+gamegraphics\/+[0-9]+\/+)thumbnail([0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1screenshot$2")
 		}
 
+		if (domain_nowww === "kino-teatr.ua") {
+			// https://kino-teatr.ua/public/main/persons/x2_photo_586dedfd79e22.jpg
+			//   https://kino-teatr.ua/public/main/persons/photo_586dedfd79e22.jpg
+			return src.replace(/(\/public\/+main\/+[^/]+\/+)x[0-9]*_(photo_)/, "$1$2");
+		}
+
 
 
 
@@ -58184,7 +58190,7 @@ var $$IMU_EXPORT$$;
 			return styles_array.join("; ");
 		}
 
-		function apply_styles(el, str) {
+		function apply_styles(el, str, force_important) {
 			var styles = get_processed_styles(str);
 			if (!styles)
 				return;
@@ -58202,7 +58208,7 @@ var $$IMU_EXPORT$$;
 					value = value.replace(/^["'](.*)["']$/, "$1");
 				}
 
-				if (obj.important) {
+				if (obj.important || force_important) {
 					el.style.setProperty(property, value, "important");
 				} else {
 					el.style.setProperty(property, value);
@@ -58391,13 +58397,13 @@ var $$IMU_EXPORT$$;
 				var div = document.createElement("div");
 				var popupshown = false;
 				set_el_all_initial(div);
-				div.style.boxShadow = "0 0 15px " + shadowcolor;
-				div.style.border = "3px solid " + fgcolor;
-				div.style.position = "relative";
-				div.style.top = "0px";
-				div.style.left = "0px";
-				div.style.display = "block";
-				div.style.backgroundColor = "rgba(255,255,255,.5)";
+				set_important_style(div, "box-shadow", "0 0 15px " + shadowcolor);
+				set_important_style(div, "border", "3px solid " + fgcolor);
+				set_important_style(div, "position", "relative");
+				set_important_style(div, "top", "0px");
+				set_important_style(div, "left", "0px");
+				set_important_style(div, "display", "block");
+				set_important_style(div, "background-color", "rgba(255,255,255,.5)");
 
 				/*var styles = settings.mouseover_styles.replace("\n", ";");
 				div.setAttribute("style", styles);
@@ -58410,7 +58416,7 @@ var $$IMU_EXPORT$$;
 					div.style.border = "3px solid white";
 					}*/
 
-				apply_styles(div, settings.mouseover_styles);
+				apply_styles(div, settings.mouseover_styles, true);
 				outerdiv.appendChild(div);
 
 				//div.style.position = "fixed"; // instagram has top: -...px
@@ -58785,7 +58791,7 @@ var $$IMU_EXPORT$$;
 					//btn.style.whiteSpace = "nowrap";
 					set_important_style(btn, "font-size", "14px");
 					set_important_style(btn, "font-family", sans_serif_font);
-					apply_styles(btn, settings.mouseover_ui_styles);
+					apply_styles(btn, settings.mouseover_ui_styles, true);
 
 					set_important_style(btn, "z-index", maxzindex - 1);
 					if (!istop) {
