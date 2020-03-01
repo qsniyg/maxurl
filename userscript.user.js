@@ -57872,6 +57872,7 @@ var $$IMU_EXPORT$$;
 		var current_chord = [];
 		var current_chord_timeout = {};
 		var release_ignore = [];
+		var editing_text = false;
 
 		function resetifout(e) {
 			// doesn't work, as e doesn't contain ctrlKey etc.
@@ -58933,6 +58934,7 @@ var $$IMU_EXPORT$$;
 
 					var imagestotal_input_enable = function() {
 						images_total_input_active = true;
+						editing_text = true;
 						images_total.innerText = "";
 
 						set_important_style(images_total_input, "display", "initial");
@@ -58948,6 +58950,7 @@ var $$IMU_EXPORT$$;
 					};
 
 					var imagestotal_input_disable = function() {
+						editing_text = false;
 						if (!images_total_input_active)
 							return;
 
@@ -62382,6 +62385,9 @@ var $$IMU_EXPORT$$;
 
 		var keydown_cb = function(event) {
 			if (!mouseover_enabled())
+				return;
+
+			if (editing_text && event.type === "keydown")
 				return;
 
 			var ret = undefined;
