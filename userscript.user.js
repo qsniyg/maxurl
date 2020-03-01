@@ -3264,6 +3264,10 @@ var $$IMU_EXPORT$$;
 	};
 
 	var map_set = function(map, key, value) {
+		if (_nir_debug_) {
+			console_log("map_set", map, deepcopy(key), deepcopy(value));
+		}
+
 		if (js_map_available) {
 			map.set(key, value);
 		} else {
@@ -26408,7 +26412,8 @@ var $$IMU_EXPORT$$;
 
 		if (domain_nowww === "redditstatic.com") {
 			// https://www.redditstatic.com/sprite-reddit.[random characters].png
-			if (/\/sprite-reddit\./.test(src))
+			// https://www.redditstatic.com/sprite-expando.[random characters].png
+			if (/^[a-z]+:\/\/[^/]+\/+sprite-[^/]+\./.test(src))
 				return {
 					url: src,
 					bad: "mask"
@@ -26434,6 +26439,16 @@ var $$IMU_EXPORT$$;
 			newsrc = src.replace(/(:\/\/[^/]*\/[0-9a-f]+)\?.*$/, "$1");
 			if (newsrc !== src)
 				return newsrc;
+		}
+
+		if (host_domain_nosub === "reddit.com" && options.element) {
+			if (src === "" && options.element.tagName === "A" && options.element.classList.contains("image")) {
+				// ui elements, e.g. by RES, svg images, ~800 bytes
+				return {
+					url: origsrc,
+					bad: "mask"
+				};
+			}
 		}
 
 		if ((domain_nosub === "redditmedia.com" ||
@@ -59999,6 +60014,7 @@ var $$IMU_EXPORT$$;
 					do_request: null,
 					document: document,
 					window: get_window(),
+					host_url: window.location.href,
 					element: el,
 					include_pastobjs: true,
 					iterations: 2,
