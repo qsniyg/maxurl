@@ -58224,6 +58224,10 @@ var $$IMU_EXPORT$$;
 			el.removeAttribute("data-imu-newstyle");
 		}
 
+		function set_important_style(el, property, value) {
+			el.style.setProperty(property, value, "important");
+		}
+
 		function get_caption(obj, el) {
 			if (obj && obj.extra && obj.extra.caption) {
 				return strip_whitespace(obj.extra.caption);
@@ -58727,11 +58731,11 @@ var $$IMU_EXPORT$$;
 						}
 
 						btn.addEventListener("mouseover", function(e) {
-							btn.style.boxShadow = "0px 0px 5px 1px white";
+							set_important_style(btn, "box-shadow", "0px 0px 5px 1px white");
 						}, true);
 
 						btn.addEventListener("mouseout", function(e) {
-							btn.style.boxShadow = "none";
+							set_important_style(btn, "box-shadow", "none");
 						}, true);
 					}
 
@@ -58746,7 +58750,7 @@ var $$IMU_EXPORT$$;
 					} else if (typeof text === "object" && text.truncated !== text.full) {
 						btn.addEventListener("mouseover", function(e) {
 							var computed_style = get_computed_style(btn);
-							btn.style.width = computed_style.width || (btn.clientWidth + "px");
+							set_important_style(btn, "width", computed_style.width || (btn.clientWidth + "px"));
 
 							btn.innerText = text.full;
 
@@ -58760,42 +58764,43 @@ var $$IMU_EXPORT$$;
 
 					set_el_all_initial(btn);
 					if (action) {
-						btn.style.cursor = "pointer";
+						set_important_style(btn, "cursor", "pointer");
 					}
 
-					btn.style.background = bgcolor;
-					btn.style.border = "3px solid " + fgcolor;
-					btn.style.borderRadius = "10px";
+					set_important_style(btn, "background", bgcolor);
+					set_important_style(btn, "border", "3px solid " + fgcolor);
+					set_important_style(btn, "border-radius", "10px");
 
 					// workaround for emojis: https://stackoverflow.com/a/39776303
 					if (typeof text === "string" && text.length === 1 && text.charCodeAt(0) > 256) {
-						btn.style.color = "transparent";
-						btn.style.textShadow = "0 0 0 " + textcolor;
+						set_important_style(btn, "color", "transparent");
+						set_important_style(btn, "text-shadow", "0 0 0 " + textcolor);
 					} else {
-						btn.style.color = textcolor;
+						set_important_style(btn, "color", textcolor);
 					}
 
-					btn.style.padding = "4px";
-					btn.style.lineHeight = "1em";
+					set_important_style(btn, "padding", "4px");
+					set_important_style(btn, "line-height", "1em");
 					//btn.style.whiteSpace = "nowrap";
-					btn.style.fontSize = "14px";
-					btn.style.fontFamily = sans_serif_font;
+					set_important_style(btn, "font-size", "14px");
+					set_important_style(btn, "font-family", sans_serif_font);
 					apply_styles(btn, settings.mouseover_ui_styles);
 
-					btn.style.zIndex = maxzindex - 1;
+					set_important_style(btn, "z-index", maxzindex - 1);
 					if (!istop) {
-						btn.style.position = "absolute";
-						btn.style.opacity = defaultopacity;
+						set_important_style(btn, "position", "absolute");
+						set_important_style(btn, "opacity", defaultopacity);
 					} else {
-						btn.style.position = "relative";
-						btn.style.marginRight = "4px";
+						set_important_style(btn, "position", "relative");
+						set_important_style(btn, "margin-right", "4px");
 					}
-					btn.style.verticalAlign = "top";
+					set_important_style(btn, "vertical-align", "top");
 					//btn.style.maxWidth = "50%";
-					btn.style.whiteSpace = "pre-wrap";
-					btn.style.display = "inline-block";
-					if (action)
-						btn.style.userSelect = "none";
+					set_important_style(btn, "white-space", "pre-wrap");
+					set_important_style(btn, "display", "inline-block");
+					if (action) {
+						set_important_style(btn, "user-select", "none");
+					}
 
 					if (typeof text === "string") {
 						btn.innerText = text;
@@ -58825,10 +58830,10 @@ var $$IMU_EXPORT$$;
 				function create_topbarel() {
 					var topbarel = document.createElement("div");
 					set_el_all_initial(topbarel);
-					topbarel.style.position = "absolute";
-					topbarel.style.opacity = defaultopacity;
-					topbarel.style.zIndex = maxzindex - 1;
-					topbarel.style.whiteSpace = "nowrap";
+					set_important_style(topbarel, "position", "absolute");
+					set_important_style(topbarel, "opacity", defaultopacity);
+					set_important_style(topbarel, "z-index", maxzindex - 1);
+					set_important_style(topbarel, "white-space", "nowrap");
 					return topbarel;
 				}
 
@@ -58902,7 +58907,7 @@ var $$IMU_EXPORT$$;
 
 					if (settings.mouseover_ui_imagesize || settings.mouseover_ui_zoomlevel) {
 						var imagesize = addbtn(get_imagesizezoom_text(100), "", null, true);
-						imagesize.style.fontSize = gallerycount_fontsize;
+						set_important_style(imagesize, "font-size", gallerycount_fontsize);
 						topbarel.appendChild(imagesize);
 					}
 
@@ -58919,10 +58924,10 @@ var $$IMU_EXPORT$$;
 							return;
 
 						if (prev_images + next_images > 0) {
-							images_total.style.display = "inline-block";
+							set_important_style(images_total, "display", "inline-block");
 							images_total.innerText = get_imagestotal_text();
 						} else {
-							images_total.style.display = "none";
+							set_important_style(images_total, "display", "none");
 						}
 					};
 
@@ -58930,7 +58935,7 @@ var $$IMU_EXPORT$$;
 						images_total_input_active = true;
 						images_total.innerText = "";
 
-						images_total_input.style.display = "initial";
+						set_important_style(images_total_input, "display", "initial");
 						images_total_input.value = prev_images + 1;
 						images_total.setAttribute("data-btn-noaction", true);
 						images_total.appendChild(images_total_input);
@@ -58946,7 +58951,7 @@ var $$IMU_EXPORT$$;
 						if (!images_total_input_active)
 							return;
 
-						images_total_input.style.display = "none";
+						set_important_style(images_total_input, "display", "none");
 						images_total.removeChild(images_total_input);
 						images_total.removeAttribute("data-btn-noaction");
 						images_total_input_active = false;
@@ -58957,19 +58962,19 @@ var $$IMU_EXPORT$$;
 					var popup_width = (popupshown && outerdiv.clientWidth) || imgw;
 
 					var images_total = addbtn(get_imagestotal_text(), "", imagestotal_input_enable, true);
-					images_total.style.fontSize = gallerycount_fontsize;
-					images_total.style.display = "none";
+					set_important_style(images_total, "font-size", gallerycount_fontsize);
+					set_important_style(images_total, "display", "none");
 
 					var images_total_input = document.createElement("input");
 					var images_total_input_active = false;
 					set_el_all_initial(images_total_input);
-					images_total_input.style.display = "none";
-					images_total_input.style.backgroundColor = "white";
-					images_total_input.style.fontFamily = sans_serif_font;
-					images_total_input.style.fontSize = galleryinput_fontsize;
-					images_total_input.style.padding = "1px";
-					images_total_input.style.paddingLeft = "2px";
-					images_total_input.style.width = "5em";
+					set_important_style(images_total_input, "display", "none");
+					set_important_style(images_total_input, "background-color", "white");
+					set_important_style(images_total_input, "font-family", sans_serif_font);
+					set_important_style(images_total_input, "font-size", galleryinput_fontsize);
+					set_important_style(images_total_input, "padding", "1px");
+					set_important_style(images_total_input, "padding-left", "2px");
+					set_important_style(images_total_input, "width", "5em");
 					images_total_input.addEventListener("mouseout", imagestotal_input_disable);
 					images_total_input.addEventListener("keydown", function(e) {
 						if (e.which === 13) { // enter
