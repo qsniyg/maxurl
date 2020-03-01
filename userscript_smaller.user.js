@@ -4,9 +4,9 @@
 // ==UserScript==
 // @name              Image Max URL
 // @namespace         http://tampermonkey.net/
-// @version           0.12.15
+// @version           0.12.16
 // @description       Finds larger or original versions of images for 6300+ websites, including a powerful image popup feature
-// @description:ko    6300개 이상의 사이트에 대해 더 크거나 원본 이미지를 찾아드립니다
+// @description:ko    6300개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
 // @description:fr    Trouve des images plus grandes ou originales pour plus de 6300 sites
 // @description:es    Encuentra imágenes más grandes y originales para más de 6300 sitios
 // @description:zh    为6300多个网站查找更大或原始图像
@@ -887,6 +887,30 @@ var $$IMU_EXPORT$$;
 		base64_decode = atob;
 	}
 
+	var base64_ok = false;
+
+	try {
+		if (base64_decode("dGVzdA==") === "test") {
+			base64_ok = true;
+		}
+	} catch (e) {}
+
+	if (!base64_ok) {
+		// Some websites replace atob, so we have to provide our own implementation in those cases
+		// https://stackoverflow.com/a/15016605
+		// unminified version: https://stackoverflow.com/a/3058974
+		base64_decode = function(s) {
+			var e={},i,b=0,c,x,l=0,a,r='',w=String.fromCharCode,L=s.length;
+			var A="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+			for(i=0;i<64;i++){e[A.charAt(i)]=i;}
+			for(x=0;x<L;x++){
+				c=e[s.charAt(x)];b=(b<<6)+c;l+=6;
+				while(l>=8){((a=(b>>>(l-=8))&0xff)||(x<(L-2)))&&(r+=w(a));}
+			}
+			return r;
+		};
+	}
+
 	var serialize_event = function(event) {
 		return deepcopy(event, {json: true});
 	};
@@ -1374,6 +1398,9 @@ var $$IMU_EXPORT$$;
 		mouseover_jitter_threshold: 30,
 		mouseover_cancel_popup_when_elout: true,
 		mouseover_cancel_popup_with_esc: true,
+		// thanks to remlap on discord for the idea: https://github.com/qsniyg/maxurl/issues/250
+		mouseover_auto_close_popup: false,
+		mouseover_auto_close_popup_time: 5,
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-530760246
 		mouseover_use_hold_key: true,
 		mouseover_hold_key: ["i"],
@@ -1450,6 +1477,7 @@ var $$IMU_EXPORT$$;
 		mouseover_ui_styles: "",
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-541065461
 		mouseover_wait_use_el: false,
+		mouseover_add_to_history: false,
 		mouseover_download_key: [["s"], ["ctrl", "s"]],
 		mouseover_open_new_tab_key: ["o"],
 		mouseover_open_bg_tab_key: ["shift", "o"],
@@ -1457,7 +1485,12 @@ var $$IMU_EXPORT$$;
 		mouseover_rotate_right_key: ["r"],
 		mouseover_flip_horizontal_key: ["h"],
 		mouseover_flip_vertical_key: ["v"],
+		mouseover_zoom_in_key: [["+"], ["="], ["shift", "="]],
+		mouseover_zoom_out_key: [["-"]],
+		mouseover_zoom_full_key: ["1"],
+		mouseover_zoom_fit_key: ["2"],
 		mouseover_apply_blacklist: false,
+		mouseover_matching_media_types: false,
 		mouseover_support_pointerevents_none: true,
 		website_inject_imu: true,
 		website_image: true,
@@ -2201,8 +2234,14 @@ var $$IMU_EXPORT$$;
 			name: "Threshold to leave image",
 			description: "How many pixels outside of the image before the cursor is considered to have left the image",
 			requires: [
-				{mouseover_close_need_mouseout: true},
-				{mouseover_trigger_behavior: "mouse"}
+				{
+					mouseover_open_behavior: "popup",
+					mouseover_close_need_mouseout: true
+				},
+				{
+					mouseover_open_behavior: "popup",
+					mouseover_trigger_behavior: "mouse"
+				}
 			],
 			type: "number",
 			number_unit: "pixels",
@@ -2228,12 +2267,40 @@ var $$IMU_EXPORT$$;
 			category: "popup",
 			subcategory: "close_behavior"
 		},
+		mouseover_auto_close_popup: {
+			name: "Automatically close after timeout",
+			description: "Closes the popup automatically after a specified period of time has elapsed",
+			requires: {
+				mouseover_open_behavior: "popup"
+			},
+			category: "popup",
+			subcategory: "close_behavior"
+		},
+		mouseover_auto_close_popup_time: {
+			name: "Timeout to close popup",
+			description: "Amount of time to elapse before automatically closing the popup",
+			requires: {
+				mouseover_auto_close_popup: true
+			},
+			type: "number",
+			number_min: 0,
+			number_unit: "seconds",
+			category: "popup",
+			subcategory: "close_behavior"
+		},
 		mouseover_use_hold_key: {
 			name: "Use hold key",
 			description: "Enables the use of a hold key that, when pressed, will keep the popup open",
-			requires: {
-				mouseover_trigger_behavior: "mouse"
-			},
+			requires: [
+				{
+					mouseover_trigger_behavior: "mouse",
+					mouseover_open_behavior: "popup"
+				},
+				{
+					mouseover_auto_close_popup: true,
+					mouseover_open_behavior: "popup"
+				},
+			],
 			category: "popup",
 			subcategory: "close_behavior"
 		},
@@ -2251,6 +2318,7 @@ var $$IMU_EXPORT$$;
 			name: "Close when leaving thumbnail",
 			description: "Closes the popup when the mouse leaves the thumbnail element (won't close if the mouse instead moves to the popup)",
 			requires: {
+				mouseover_open_behavior: "popup",
 				mouseover_trigger_behavior: "mouse",
 				mouseover_position: "beside_cursor"
 			},
@@ -2261,6 +2329,7 @@ var $$IMU_EXPORT$$;
 			name: "Close when leaving",
 			description: "Closes the popup when the mouse leaves the thumbnail element, the popup, or either",
 			requires: {
+				mouseover_open_behavior: "popup",
 				mouseover_trigger_behavior: "mouse"
 			},
 			options: {
@@ -2287,6 +2356,17 @@ var $$IMU_EXPORT$$;
 			category: "popup",
 			subcategory: "popup_other",
 			advanced: true
+		},
+		mouseover_add_to_history: {
+			name: "Add popup link to history",
+			description: "Adds the image/video link opened through the popup to the browser's history",
+			requires: {
+				mouseover: true
+			},
+			category: "popup",
+			subcategory: "popup_other",
+			required_permission: "history",
+			extension_only: true
 		},
 		allow_remote: {
 			name: "Allow inter-frame communication",
@@ -2613,6 +2693,46 @@ var $$IMU_EXPORT$$;
 			category: "popup",
 			subcategory: "behavior"
 		},
+		mouseover_zoom_in_key: {
+			name: "Zoom in key",
+			description: "Incrementally zooms into the image",
+			requires: {
+				mouseover_open_behavior: "popup"
+			},
+			type: "keysequence",
+			category: "popup",
+			subcategory: "behavior"
+		},
+		mouseover_zoom_out_key: {
+			name: "Zoom out key",
+			description: "Incrementally zooms out of the image",
+			requires: {
+				mouseover_open_behavior: "popup"
+			},
+			type: "keysequence",
+			category: "popup",
+			subcategory: "behavior"
+		},
+		mouseover_zoom_full_key: {
+			name: "Full zoom key",
+			description: "Sets the image to be at a 100% zoom, even if it overflows the screen",
+			requires: {
+				mouseover_open_behavior: "popup"
+			},
+			type: "keysequence",
+			category: "popup",
+			subcategory: "behavior"
+		},
+		mouseover_zoom_fit_key: {
+			name: "Fit screen key",
+			description: "Sets the image to either be at a 100% zoom, or to fit the screen, whichever is smaller",
+			requires: {
+				mouseover_open_behavior: "popup"
+			},
+			type: "keysequence",
+			category: "popup",
+			subcategory: "behavior"
+		},
 		mouseover_links: {
 			name: "Popup for plain hyperlinks",
 			description: "Whether or not the popup should also open for plain hyperlinks",
@@ -2697,7 +2817,8 @@ var $$IMU_EXPORT$$;
 			description: "Custom CSS styles for the popup's UI buttons",
 			type: "textarea",
 			requires: {
-				mouseover_open_behavior: "popup"
+				mouseover_open_behavior: "popup",
+				mouseover_ui: true
 			},
 			category: "popup",
 			subcategory: "ui"
@@ -2707,6 +2828,16 @@ var $$IMU_EXPORT$$;
 			description: "This option prevents a popup from appearing altogether for blacklisted images",
 			requires: {
 				mouseover: true
+			},
+			category: "popup",
+			subcategory: "open_behavior"
+		},
+		mouseover_matching_media_types: {
+			name: "Don't popup video for image",
+			description: "This option prevents the popup from loading a video when the source was an image. Vice-versa is also applied",
+			requires: {
+				mouseover: true,
+				allow_video: true
 			},
 			category: "popup",
 			subcategory: "open_behavior"
@@ -3136,6 +3267,10 @@ var $$IMU_EXPORT$$;
 	};
 
 	var map_set = function(map, key, value) {
+		if (_nir_debug_) {
+			console_log("map_set", map, deepcopy(key), deepcopy(value));
+		}
+
 		if (js_map_available) {
 			map.set(key, value);
 		} else {
@@ -7088,12 +7223,14 @@ var $$IMU_EXPORT$$;
 			if (newsrc !== src)
 				return newsrc;
 
-			newsrc = src
-				.replace(/(\/[^/.?]+)\?(.*?&)?format=([^&]*)(.*?$)?/, "$1.$3?$2$4")
-				.replace(/\?&/, "?")
-				.replace(/[?&]+$/, "");
-			if (newsrc !== src)
-				return newsrc;
+			if (src.indexOf("/card_img/") < 0) {
+				newsrc = src
+					.replace(/(\/[^/.?]+)\?(.*?&)?format=([^&]*)(.*?$)?/, "$1.$3?$2$4")
+					.replace(/\?&/, "?")
+					.replace(/[?&]+$/, "");
+				if (newsrc !== src)
+					return newsrc;
+			}
 
 			var names = ["orig", "4096x4096", "large", "medium"];
 			var obj = [];
@@ -7109,7 +7246,10 @@ var $$IMU_EXPORT$$;
 				end = names.length;
 
 			for (var i = 0; i < end; i++) {
-				newsrc = src.replace(/(\?.*)?$/, "?name=" + names[i]);
+				newsrc = src
+					.replace(/(\.[a-z]+)\?(?:(.*)&)?format=[^&]+/, "$1?$2&")
+					.replace(/&$/, "");
+				newsrc = newsrc.replace(/([?&]name=)[^&]+/, "$1" + names[i]);
 
 				if (false) {
 					newsrc = src.replace(/([?&]name=)[^&]+(&.*)?$/, "$1" + names[i] + "$2");
@@ -7122,8 +7262,10 @@ var $$IMU_EXPORT$$;
 				if (newsrc.match(/\.png(\?.*)?$/)) {
 					obj.push(newsrc);
 					obj.push(newsrc.replace(/\.png(\?.*)?$/, ".jpg$1"));
-				} else {
+				} else if (newsrc.match(/\.jpg(\?.*)?$/)) {
 					obj.push(newsrc.replace(/\.jpg(\?.*)?$/, ".png$1"));
+					obj.push(newsrc);
+				} else {
 					obj.push(newsrc);
 				}
 			}
@@ -11068,6 +11210,8 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "th.thgim.com" ||
 			domain_nowww === "thehindubusinessline.com" ||
 			domain === "d30fl32nd2baj9.cloudfront.net" ||
+			domain_nowww === "elsoldepuebla.com.mx" ||
+			domain_nowww === "svensktnaringsliv.se" ||
 			src.match(/\/(?:article[0-9]+\.(?:ece|svt)|[0-9a-z]+\/+picture[0-9]{4,})\/+(?:[^/]*\/)?alternates\//i) ||
 			src.match(/:\/\/i[0-9]*(?:-prod)?\..*\/article[^/]*\.(?:ece|svt)\//i) ||
 			domain_nosub === "independent.ie") {
@@ -13411,7 +13555,7 @@ var $$IMU_EXPORT$$;
 			return decodeURIComponent(decodeURIComponent(src.replace(/^[a-z]*:\/\/(?:[^/]*\/){7}(http[^/]*).*?$/, "$1")));
 		}
 
-		if ((domain_nosub === "assetsadobe2.com" ||
+		if (((domain_nosub === "assetsadobe2.com" ||
 			 domain_nosub === "legocdn.com" ||
 			 domain === "store.storeimages.cdn-apple.com" ||
 			 domain === "media.playstation.com" ||
@@ -13426,8 +13570,7 @@ var $$IMU_EXPORT$$;
 			 domain === "images.menswearhouse.com" ||
 			 domain === "images.shaneco.com"// ||
 			 /*domain_nosub === "scene7.com"*/
-			 ) &&
-			src.indexOf("/is/image/") >= 0 ||
+			 ) && src.indexOf("/is/image/") >= 0) ||
 			domain === "c.shld.net") {
 			match = src.match(/\/i\/s\/.*\?(?:.*&)?src=(https?%3A.*?)(?:&.*)?$/);
 			if (match) {
@@ -13450,7 +13593,7 @@ var $$IMU_EXPORT$$;
 			if (newsrc !== src)
 				return newsrc;
 
-			if (!/[?&]src=/.test(src))
+			if (!(/[?&]src=/.test(src)))
 				return src.replace(/(?:\?.*)?$/, "?" + srcadd);
 		}
 
@@ -16544,7 +16687,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "redditstatic.com") {
-			if (/\/sprite-reddit\./.test(src))
+			if (/^[a-z]+:\/\/[^/]+\/+sprite-[^/]+\./.test(src))
 				return {
 					url: src,
 					bad: "mask"
@@ -16566,6 +16709,15 @@ var $$IMU_EXPORT$$;
 			newsrc = src.replace(/(:\/\/[^/]*\/[0-9a-f]+)\?.*$/, "$1");
 			if (newsrc !== src)
 				return newsrc;
+		}
+
+		if (host_domain_nosub === "reddit.com" && options.element) {
+			if (src === "" && options.element.tagName === "A" && options.element.classList.contains("image")) {
+				return {
+					url: origsrc,
+					bad: "mask"
+				};
+			}
 		}
 
 		if ((domain_nosub === "redditmedia.com" ||
@@ -24145,6 +24297,16 @@ var $$IMU_EXPORT$$;
 							   "$1$2");
 		}
 
+		if (host_domain_nosub === "kpopping.com" && domain_nowww === "kpopping.com" && options.element) {
+			if (/\/uploads\/+documents\//.test(src)) {
+				if (options.element.tagName === "IMG" && options.element.classList.contains("img-fluid")) {
+					if (options.element.parentElement.tagName === "A" && options.element.parentElement.href && /\/uploads\/+documents\//.test(options.element.parentElement.href)) {
+						return options.element.parentElement.href;
+					}
+				}
+			}
+		}
+
 		if (domain_nowww === "kpopping.com") {
 			if (/\/bundles\/+app\/+img\//.test(src))
 				return {
@@ -24162,6 +24324,9 @@ var $$IMU_EXPORT$$;
 				return src
 					.replace(/\/uploads\/+documents\/+[^/]+\/+(?:[0-9]*x){0,2}([^/]+?)(?:,[0-9]+){0,}(\.[^/]+?)(?:\.(?:keep|crop)\..*)?(?:[?#].*)?$/, "/uploads/documents/$1$2");
 			}
+
+			return src
+					.replace(/\/uploads\/+documents\/+[^/]+\/+(?:[0-9]*x){0,2}([^/]+?)(\.[^/]+?)(?:\.(?:keep|crop)\..*)?(?:[?#].*)?$/, "/uploads/documents/$1$2");
 		}
 
 		if (domain_nosub === "tin247.com" &&
@@ -33002,6 +33167,28 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain === "imgs.ototoy.jp") {
+			return src.replace(/(\/imgs\/+jacket\/+[0-9]+\/+[0-9]+\.[0-9]+\.[0-9]+)_[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1orig$2");
+		}
+
+		if (domain === "gl.weburg.net") {
+			return src.replace(/(\/albums\/+[0-9]+\/+[0-9]+\/+)[0-9]+x[0-9]+\/+/, "$1original/");
+		}
+
+		if (domain_nowww === "vgmdownloads.com") {
+			return src.replace(/\/thumbs\/+([^/]+\.[^/.]+)(?:[?#].*)?$/, "/$1");
+		}
+
+		if (domain_nowww === "linuxgamepublishing.com") {
+			return src
+				.replace(/(\/images\/+gamegraphics\/+[0-9]+\/+image)[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1$2")
+				.replace(/(\/images\/+gamegraphics\/+[0-9]+\/+)thumbnail([0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1screenshot$2")
+		}
+
+		if (domain_nowww === "kino-teatr.ua") {
+			return src.replace(/(\/public\/+main\/+[^/]+\/+)x[0-9]*_(photo_)/, "$1$2");
+		}
+
 
 
 
@@ -36000,6 +36187,7 @@ var $$IMU_EXPORT$$;
 			var subdiv = document.createElement("div");
 			subdiv.id = "subcat_" + category;
 			subdiv.classList.add("subcat");
+			subdiv.classList.add("frame");
 			div.appendChild(subdiv);
 			subcategory_els[category] = subdiv;
 
@@ -36008,6 +36196,7 @@ var $$IMU_EXPORT$$;
 					var newsubdiv = document.createElement("div");
 					newsubdiv.id = "subcat_" + subcat;
 					newsubdiv.classList.add("subcat");
+					newsubdiv.classList.add("frame");
 
 					var h3 = document.createElement("h3");
 					h3.innerText = _(subcategories[category][subcat]);
@@ -36100,7 +36289,7 @@ var $$IMU_EXPORT$$;
 				};
 				check_value_orig_different(value);
 
-				var do_update_setting = function(setting, new_value, meta) {
+				var do_update_setting_real = function(setting, new_value, meta) {
 					update_setting(setting, new_value);
 
 					run_soon(function() {
@@ -36108,6 +36297,25 @@ var $$IMU_EXPORT$$;
 					});
 
 					show_saved_message(meta);
+				};
+
+				var do_update_setting = function(setting, new_value, meta) {
+					if (is_extension && meta.required_permission) {
+						extension_send_message({
+							type: "permission",
+							data: {
+								permission: meta.required_permission
+							}
+						}, function(result) {
+							if (result.data.granted) {
+								do_update_setting_real(setting, new_value, meta);
+							} else {
+								do_options();
+							}
+						});
+					} else {
+						do_update_setting_real(setting, new_value, meta);
+					}
 				};
 
 				name_td.appendChild(name);
@@ -36709,6 +36917,14 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		for (var subcategory in subcategory_els) {
+			var our_el = subcategory_els[subcategory];
+
+			if (our_el.querySelectorAll(".option").length === 0) {
+				our_el.parentNode.removeChild(our_el);
+			}
+		}
+
 		document.body.appendChild(saved_el);
 	}
 
@@ -37107,7 +37323,7 @@ var $$IMU_EXPORT$$;
 		if (obj.video)
 			return true;
 
-		if (/\.(?:mp4|webm|mkv|mpg)/i.test(obj.url))
+		if (/\.(?:mp4|webm|mkv|mpg|ogv|wmv)/i.test(obj.url))
 			return true;
 
 		return false;
@@ -37199,7 +37415,23 @@ var $$IMU_EXPORT$$;
 		return get_window_url().revokeObjectURL(objecturl);
 	};
 
+	var is_video_el = function(el) {
+		if (el.tagName === "VIDEO")
+			return true;
+
+		if (el.tagName !== "SOURCE")
+			return false;
+
+		if (el.parentElement && el.parentElement.tagName === "VIDEO")
+			return true;
+		return false;
+	}
+
 	function check_image_get(obj, cb, processing) {
+		if (_nir_debug_) {
+			console_log("check_image_get", obj, cb, processing);
+		}
+
 		if (!obj || !obj[0]) {
 			return cb(null);
 		}
@@ -37328,6 +37560,20 @@ var $$IMU_EXPORT$$;
 				if (is_video && !settings.allow_video) {
 					console_log("Video, skipping due to user setting");
 					return err_cb();
+				}
+
+				if (settings.mouseover_matching_media_types && processing && processing.source && processing.source.el) {
+					if (is_video_el(processing.source.el)) {
+						if (!is_video) {
+							console_log("!video, source was video, skipping");
+							return err_cb();
+						}
+					} else {
+						if (is_video) {
+							console_log("video, source was image, skipping");
+							return err_cb();
+						}
+					}
 				}
 
 				var good_cb = function(img) {
@@ -37687,6 +37933,7 @@ var $$IMU_EXPORT$$;
 		var popup_obj = null;
 		var popup_objecturl = null;
 		var popup_el = null;
+		var resetpopup_timeout = null;
 		var real_popup_el = null;
 		var next_popup_el = null;
 		var last_popup_el = null;
@@ -37697,6 +37944,7 @@ var $$IMU_EXPORT$$;
 		var popup_trigger_reason = null;
 		var can_close_popup = [false, false];
 		var popup_hold = false;
+		var popup_zoom_func = nullfunc;
 		var dragstart = false;
 		var dragstartX = null;
 		var dragstartY = null;
@@ -37720,6 +37968,7 @@ var $$IMU_EXPORT$$;
 		var current_chord = [];
 		var current_chord_timeout = {};
 		var release_ignore = [];
+		var editing_text = false;
 
 		function resetifout(e) {
 			// doesn't work, as e doesn't contain ctrlKey etc.
@@ -37882,6 +38131,22 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		var clear_resetpopup_timeout = function() {
+			if (resetpopup_timeout) {
+				clearTimeout(resetpopup_timeout);
+				resetpopup_timeout = null;
+			}
+		};
+
+		var add_resetpopup_timeout = function() {
+			if (!settings.mouseover_auto_close_popup || !settings.mouseover_auto_close_popup_time)
+				return;
+
+			clear_resetpopup_timeout();
+
+			resetpopup_timeout = setTimeout(resetpopups, settings.mouseover_auto_close_popup_time * 1000);
+		};
+
 		var removepopups_timer = null;
 		function removepopups() {
 			popups.forEach(function (popup) {
@@ -37931,6 +38196,8 @@ var $$IMU_EXPORT$$;
 			popups_active = false;
 			delay_handle_triggering = false;
 
+			clear_resetpopup_timeout();
+
 			next_popup_el = null;
 			if (popup_el)
 				last_popup_el = popup_el;
@@ -37938,6 +38205,7 @@ var $$IMU_EXPORT$$;
 			real_popup_el = null;
 			popup_el_automatic = false;
 			popup_el_remote = false;
+			popup_zoom_func = nullfunc;
 
 			stop_processing();
 			stop_waiting();
@@ -38012,7 +38280,7 @@ var $$IMU_EXPORT$$;
 			return styles_array.join("; ");
 		}
 
-		function apply_styles(el, str) {
+		function apply_styles(el, str, force_important) {
 			var styles = get_processed_styles(str);
 			if (!styles)
 				return;
@@ -38030,7 +38298,7 @@ var $$IMU_EXPORT$$;
 					value = value.replace(/^["'](.*)["']$/, "$1");
 				}
 
-				if (obj.important) {
+				if (obj.important || force_important) {
 					el.style.setProperty(property, value, "important");
 				} else {
 					el.style.setProperty(property, value);
@@ -38051,6 +38319,10 @@ var $$IMU_EXPORT$$;
 			}
 
 			el.removeAttribute("data-imu-newstyle");
+		}
+
+		function set_important_style(el, property, value) {
+			el.style.setProperty(property, value, "important");
 		}
 
 		function get_caption(obj, el) {
@@ -38096,9 +38368,24 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		function add_link_to_history(link) {
+			if (is_extension) {
+				extension_send_message({
+					type: "add_to_history",
+					data: {
+						url: link
+					}
+				});
+			}
+		}
+
 		function makePopup(obj, orig_url, processing, data) {
 			if (_nir_debug_) {
 				console_log("makePopup", obj, orig_url, processing, data);
+			}
+
+			if (settings.mouseover_add_to_history) {
+				add_link_to_history(data.data.obj.url);
 			}
 
 			var openb = get_single_setting("mouseover_open_behavior");
@@ -38200,13 +38487,13 @@ var $$IMU_EXPORT$$;
 				var div = document.createElement("div");
 				var popupshown = false;
 				set_el_all_initial(div);
-				div.style.boxShadow = "0 0 15px " + shadowcolor;
-				div.style.border = "3px solid " + fgcolor;
-				div.style.position = "relative";
-				div.style.top = "0px";
-				div.style.left = "0px";
-				div.style.display = "block";
-				div.style.backgroundColor = "rgba(255,255,255,.5)";
+				set_important_style(div, "box-shadow", "0 0 15px " + shadowcolor);
+				set_important_style(div, "border", "3px solid " + fgcolor);
+				set_important_style(div, "position", "relative");
+				set_important_style(div, "top", "0px");
+				set_important_style(div, "left", "0px");
+				set_important_style(div, "display", "block");
+				set_important_style(div, "background-color", "rgba(255,255,255,.5)");
 
 				/*var styles = settings.mouseover_styles.replace("\n", ";");
 				div.setAttribute("style", styles);
@@ -38219,7 +38506,7 @@ var $$IMU_EXPORT$$;
 					div.style.border = "3px solid white";
 					}*/
 
-				apply_styles(div, settings.mouseover_styles);
+				apply_styles(div, settings.mouseover_styles, true);
 				outerdiv.appendChild(div);
 
 				//div.style.position = "fixed"; // instagram has top: -...px
@@ -38541,11 +38828,11 @@ var $$IMU_EXPORT$$;
 						}
 
 						btn.addEventListener("mouseover", function(e) {
-							btn.style.boxShadow = "0px 0px 5px 1px white";
+							set_important_style(btn, "box-shadow", "0px 0px 5px 1px white");
 						}, true);
 
 						btn.addEventListener("mouseout", function(e) {
-							btn.style.boxShadow = "none";
+							set_important_style(btn, "box-shadow", "none");
 						}, true);
 					}
 
@@ -38560,7 +38847,7 @@ var $$IMU_EXPORT$$;
 					} else if (typeof text === "object" && text.truncated !== text.full) {
 						btn.addEventListener("mouseover", function(e) {
 							var computed_style = get_computed_style(btn);
-							btn.style.width = computed_style.width || (btn.clientWidth + "px");
+							set_important_style(btn, "width", computed_style.width || (btn.clientWidth + "px"));
 
 							btn.innerText = text.full;
 
@@ -38574,42 +38861,43 @@ var $$IMU_EXPORT$$;
 
 					set_el_all_initial(btn);
 					if (action) {
-						btn.style.cursor = "pointer";
+						set_important_style(btn, "cursor", "pointer");
 					}
 
-					btn.style.background = bgcolor;
-					btn.style.border = "3px solid " + fgcolor;
-					btn.style.borderRadius = "10px";
+					set_important_style(btn, "background", bgcolor);
+					set_important_style(btn, "border", "3px solid " + fgcolor);
+					set_important_style(btn, "border-radius", "10px");
 
 					// workaround for emojis: https://stackoverflow.com/a/39776303
 					if (typeof text === "string" && text.length === 1 && text.charCodeAt(0) > 256) {
-						btn.style.color = "transparent";
-						btn.style.textShadow = "0 0 0 " + textcolor;
+						set_important_style(btn, "color", "transparent");
+						set_important_style(btn, "text-shadow", "0 0 0 " + textcolor);
 					} else {
-						btn.style.color = textcolor;
+						set_important_style(btn, "color", textcolor);
 					}
 
-					btn.style.padding = "4px";
-					btn.style.lineHeight = "1em";
+					set_important_style(btn, "padding", "4px");
+					set_important_style(btn, "line-height", "1em");
 					//btn.style.whiteSpace = "nowrap";
-					btn.style.fontSize = "14px";
-					btn.style.fontFamily = sans_serif_font;
-					apply_styles(btn, settings.mouseover_ui_styles);
+					set_important_style(btn, "font-size", "14px");
+					set_important_style(btn, "font-family", sans_serif_font);
+					apply_styles(btn, settings.mouseover_ui_styles, true);
 
-					btn.style.zIndex = maxzindex - 1;
+					set_important_style(btn, "z-index", maxzindex - 1);
 					if (!istop) {
-						btn.style.position = "absolute";
-						btn.style.opacity = defaultopacity;
+						set_important_style(btn, "position", "absolute");
+						set_important_style(btn, "opacity", defaultopacity);
 					} else {
-						btn.style.position = "relative";
-						btn.style.marginRight = "4px";
+						set_important_style(btn, "position", "relative");
+						set_important_style(btn, "margin-right", "4px");
 					}
-					btn.style.verticalAlign = "top";
+					set_important_style(btn, "vertical-align", "top");
 					//btn.style.maxWidth = "50%";
-					btn.style.whiteSpace = "pre-wrap";
-					btn.style.display = "inline-block";
-					if (action)
-						btn.style.userSelect = "none";
+					set_important_style(btn, "white-space", "pre-wrap");
+					set_important_style(btn, "display", "inline-block");
+					if (action) {
+						set_important_style(btn, "user-select", "none");
+					}
 
 					if (typeof text === "string") {
 						btn.innerText = text;
@@ -38639,10 +38927,10 @@ var $$IMU_EXPORT$$;
 				function create_topbarel() {
 					var topbarel = document.createElement("div");
 					set_el_all_initial(topbarel);
-					topbarel.style.position = "absolute";
-					topbarel.style.opacity = defaultopacity;
-					topbarel.style.zIndex = maxzindex - 1;
-					topbarel.style.whiteSpace = "nowrap";
+					set_important_style(topbarel, "position", "absolute");
+					set_important_style(topbarel, "opacity", defaultopacity);
+					set_important_style(topbarel, "z-index", maxzindex - 1);
+					set_important_style(topbarel, "white-space", "nowrap");
 					return topbarel;
 				}
 
@@ -38663,6 +38951,12 @@ var $$IMU_EXPORT$$;
 					var topbarel = create_topbarel();
 					topbarel.style.left = "-" + em1;
 					topbarel.style.top = "-" + em1;
+
+					if (!settings.mouseover_ui) {
+						// Not sure why this is needed, but without it, clicking and dragging images doesn't work under Firefox (#78)
+						outerdiv.appendChild(topbarel);
+						return;
+					}
 
 					opacity_hover(topbarel);
 
@@ -38710,7 +39004,7 @@ var $$IMU_EXPORT$$;
 
 					if (settings.mouseover_ui_imagesize || settings.mouseover_ui_zoomlevel) {
 						var imagesize = addbtn(get_imagesizezoom_text(100), "", null, true);
-						imagesize.style.fontSize = gallerycount_fontsize;
+						set_important_style(imagesize, "font-size", gallerycount_fontsize);
 						topbarel.appendChild(imagesize);
 					}
 
@@ -38727,18 +39021,19 @@ var $$IMU_EXPORT$$;
 							return;
 
 						if (prev_images + next_images > 0) {
-							images_total.style.display = "inline-block";
+							set_important_style(images_total, "display", "inline-block");
 							images_total.innerText = get_imagestotal_text();
 						} else {
-							images_total.style.display = "none";
+							set_important_style(images_total, "display", "none");
 						}
 					};
 
 					var imagestotal_input_enable = function() {
 						images_total_input_active = true;
+						editing_text = true;
 						images_total.innerText = "";
 
-						images_total_input.style.display = "initial";
+						set_important_style(images_total_input, "display", "initial");
 						images_total_input.value = prev_images + 1;
 						images_total.setAttribute("data-btn-noaction", true);
 						images_total.appendChild(images_total_input);
@@ -38751,10 +39046,11 @@ var $$IMU_EXPORT$$;
 					};
 
 					var imagestotal_input_disable = function() {
+						editing_text = false;
 						if (!images_total_input_active)
 							return;
 
-						images_total_input.style.display = "none";
+						set_important_style(images_total_input, "display", "none");
 						images_total.removeChild(images_total_input);
 						images_total.removeAttribute("data-btn-noaction");
 						images_total_input_active = false;
@@ -38765,19 +39061,19 @@ var $$IMU_EXPORT$$;
 					var popup_width = (popupshown && outerdiv.clientWidth) || imgw;
 
 					var images_total = addbtn(get_imagestotal_text(), "", imagestotal_input_enable, true);
-					images_total.style.fontSize = gallerycount_fontsize;
-					images_total.style.display = "none";
+					set_important_style(images_total, "font-size", gallerycount_fontsize);
+					set_important_style(images_total, "display", "none");
 
 					var images_total_input = document.createElement("input");
 					var images_total_input_active = false;
 					set_el_all_initial(images_total_input);
-					images_total_input.style.display = "none";
-					images_total_input.style.backgroundColor = "white";
-					images_total_input.style.fontFamily = sans_serif_font;
-					images_total_input.style.fontSize = galleryinput_fontsize;
-					images_total_input.style.padding = "1px";
-					images_total_input.style.paddingLeft = "2px";
-					images_total_input.style.width = "5em";
+					set_important_style(images_total_input, "display", "none");
+					set_important_style(images_total_input, "background-color", "white");
+					set_important_style(images_total_input, "font-family", sans_serif_font);
+					set_important_style(images_total_input, "font-size", galleryinput_fontsize);
+					set_important_style(images_total_input, "padding", "1px");
+					set_important_style(images_total_input, "padding-left", "2px");
+					set_important_style(images_total_input, "width", "5em");
 					images_total_input.addEventListener("mouseout", imagestotal_input_disable);
 					images_total_input.addEventListener("keydown", function(e) {
 						if (e.which === 13) { // enter
@@ -38949,14 +39245,7 @@ var $$IMU_EXPORT$$;
 					add_leftright_gallery_button_if_valid(true);
 				}
 
-				if (settings.mouseover_ui) {
-					create_ui();
-				} else {
-					// Not sure why this is needed, but without it,
-					// clicking and dragging images doesn't work under Firefox (#78)
-					var topbarel = create_topbarel();
-					outerdiv.appendChild(topbarel);
-				}
+				create_ui();
 
 				if (typeof newobj.filename !== "string")
 					newobj.filename = "";
@@ -39182,6 +39471,157 @@ var $$IMU_EXPORT$$;
 
 				var currentmode = initial_zoom_behavior;
 
+				popup_zoom_func = function(zoom_mode, zoomdir, x, y, zoom_out_to_close) {
+					var changed = false;
+
+					var popup_left = parseFloat(outerdiv.style.left);
+					var popup_top = parseFloat(outerdiv.style.top);
+
+					var popup_width = outerdiv.clientWidth;
+					var popup_height = outerdiv.clientHeight;
+
+					if (x === undefined && y === undefined) {
+						// TODO: if mouse is within the popup, use the mouse's coordinates instead
+						//x = mouseAbsX;
+						//y = mouseAbsY;
+
+						var visible_left = Math.max(popup_left, 0);
+						var visible_top = Math.max(popup_top, 0);
+
+						var visible_right = Math.min(visible_left + popup_width, vw);
+						var visible_bottom = Math.min(visible_top + popup_height, vh);
+
+						// get the middle of the visible portion of the popup
+						x = visible_left + (visible_right - visible_left) / 2;
+						y = visible_top + (visible_bottom - visible_top) / 2;
+					}
+
+					var offsetX = x - popup_left;
+					var offsetY = y - popup_top;
+
+					var percentX = offsetX / outerdiv.clientWidth;
+					var percentY = offsetY / outerdiv.clientHeight;
+
+					if (zoom_mode === "fitfull") {
+						if (zoom_out_to_close && currentmode === "fit" && zoomdir > 0) {
+							resetpopups();
+							return false;
+						}
+
+						if (zoomdir > 0 && currentmode !== "fit") {
+							update_vwh();
+
+							imgh = img_naturalHeight;
+							imgw = img_naturalWidth;
+							calc_imghw_for_fit();
+
+							set_popup_width(imgw, vw);
+							set_popup_height(imgh, vh);
+
+							currentmode = "fit";
+							changed = true;
+						} else if (zoomdir < 0 && currentmode !== "full") {
+							set_popup_width(img_naturalWidth, "initial");
+							set_popup_height(img_naturalHeight, "initial");
+
+							currentmode = "full";
+							changed = true;
+						}
+					} else if (zoom_mode === "incremental") {
+						var imgwidth = img.clientWidth;
+						var imgheight = img.clientHeight;
+
+						var mult = 1;
+						if (imgwidth < img_naturalWidth) {
+							mult = img_naturalWidth / imgwidth;
+						} else {
+							mult = imgwidth / img_naturalWidth;
+						}
+
+						mult = Math.round(mult);
+
+						if (imgwidth < img_naturalWidth) {
+							mult = 1 / mult;
+						}
+
+						if (zoomdir > 0) {
+							mult /= 2;
+						} else {
+							mult *= 2;
+						}
+
+						imgwidth = img_naturalWidth * mult;
+						imgheight = img_naturalHeight * mult;
+
+						var too_small = imgwidth < 64 || imgheight < 64;
+						var too_big = imgwidth > img_naturalWidth * 16 || imgheight > img_naturalHeight * 16;
+
+						if (too_small || too_big) {
+							if (zoom_out_to_close && too_small)
+								resetpopups();
+							return false;
+						}
+
+						set_popup_width(imgwidth);
+						set_popup_height(imgheight);
+						changed = true;
+					}
+
+					if (!changed)
+						return false;
+
+					var imgwidth = outerdiv.clientWidth;
+					var imgheight = outerdiv.clientHeight;
+
+					var newx, newy;
+
+					if (true || (imgwidth <= vw && imgheight <= vh) || zoom_mode === "incremental") {
+						// centers wanted region to pointer
+						newx = (x - percentX * imgwidth);
+						newy = (y - percentY * imgheight);
+					} else if (imgwidth > vw || imgheight > vh) {
+						// centers wanted region to center of screen
+						newx = (vw / 2) - percentX * imgwidth;
+						var endx = newx + imgwidth;
+						if (newx > border_thresh && endx > (vw - border_thresh))
+							newx = Math.max(border_thresh, (vw + border_thresh) - imgwidth);
+
+						if (newx < border_thresh && endx < (vw - border_thresh))
+							newx = Math.min(border_thresh, (vw + border_thresh) - imgwidth);
+
+						newy = (vh / 2) - percentY * imgheight;
+						var endy = newy + imgheight;
+						if (newy > border_thresh && endy > (vh - border_thresh))
+							newy = Math.max(border_thresh, (vh + border_thresh) - imgheight);
+
+						if (newy < border_thresh && endy < (vh - border_thresh))
+							newy = Math.min(border_thresh, (vh + border_thresh) - imgheight);
+					}
+
+					if (imgwidth <= vw && imgheight <= vh) {
+						newx = Math.max(newx, border_thresh);
+						if (newx + imgwidth > (vw - border_thresh)) {
+							newx = (vw + border_thresh) - imgwidth;
+						}
+
+						newy = Math.max(newy, border_thresh);
+						if (newy + imgheight > (vh - border_thresh)) {
+							newy = (vh + border_thresh) - imgheight;
+						}
+					}
+
+					//var lefttop = get_lefttopouter();
+					outerdiv.style.left = (newx/* - lefttop[0]*/) + "px";
+					outerdiv.style.top = (newy/* - lefttop[1]*/) + "px";
+
+					create_ui(true);
+
+					// The mouse could accidentally land outside the image in theory
+					mouse_in_image_yet = false;
+
+					return false;
+				};
+
 				outerdiv.onwheel = function(e) {
 					var handledx = false;
 					var handledy = false;
@@ -39284,134 +39724,9 @@ var $$IMU_EXPORT$$;
 
 					estop(e);
 
-					var changed = false;
-
-					var offsetX = e.clientX - parseFloat(outerdiv.style.left);
-					var offsetY = e.clientY - parseFloat(outerdiv.style.top);
-
-					var percentX = offsetX / outerdiv.clientWidth;
-					var percentY = offsetY / outerdiv.clientHeight;
-
-					var scroll_zoom = get_single_setting("scroll_zoom_behavior");
-
-					if (scroll_zoom === "fitfull") {
-						if (settings.zoom_out_to_close && currentmode === "fit" && e.deltaY > 0) {
-							resetpopups();
-							return false;
-						}
-
-						if (e.deltaY > 0 && currentmode !== "fit") {
-							update_vwh();
-
-							imgh = img_naturalHeight;
-							imgw = img_naturalWidth;
-							calc_imghw_for_fit();
-
-							set_popup_width(imgw, vw);
-							set_popup_height(imgh, vh);
-
-							currentmode = "fit";
-							changed = true;
-						} else if (e.deltaY < 0 && currentmode !== "full") {
-							set_popup_width(img_naturalWidth, "initial");
-							set_popup_height(img_naturalHeight, "initial");
-
-							currentmode = "full";
-							changed = true;
-						}
-					} else if (scroll_zoom === "incremental") {
-						var imgwidth = img.clientWidth;
-						var imgheight = img.clientHeight;
-
-						var mult = 1;
-						if (imgwidth < img_naturalWidth) {
-							mult = img_naturalWidth / imgwidth;
-						} else {
-							mult = imgwidth / img_naturalWidth;
-						}
-
-						mult = Math.round(mult);
-
-						if (imgwidth < img_naturalWidth) {
-							mult = 1 / mult;
-						}
-
-						if (e.deltaY > 0) {
-							mult /= 2;
-						} else {
-							mult *= 2;
-						}
-
-						imgwidth = img_naturalWidth * mult;
-						imgheight = img_naturalHeight * mult;
-
-						var too_small = imgwidth < 64 || imgheight < 64;
-						var too_big = imgwidth > img_naturalWidth * 16 || imgheight > img_naturalHeight * 16;
-
-						if (too_small || too_big) {
-							if (settings.zoom_out_to_close && too_small)
-								resetpopups();
-							return false;
-						}
-
-						set_popup_width(imgwidth);
-						set_popup_height(imgheight);
-						changed = true;
-					}
-
-					if (!changed)
+					var zoom_mode = get_single_setting("scroll_zoom_behavior");
+					if (popup_zoom_func(zoom_mode, e.deltaY, e.clientX, e.clientY, settings.zoom_out_to_close) === false)
 						return false;
-
-					var imgwidth = outerdiv.clientWidth;
-					var imgheight = outerdiv.clientHeight;
-
-					var newx, newy;
-
-					if ((imgwidth <= vw && imgheight <= vh) || scroll_zoom === "incremental" || true) {
-						// centers wanted region to pointer
-						newx = (e.clientX - percentX * imgwidth);
-						newy = (e.clientY - percentY * imgheight);
-					} else if (imgwidth > vw || imgheight > vh) {
-						// centers wanted region to center of screen
-						newx = (vw / 2) - percentX * imgwidth;
-						var endx = newx + imgwidth;
-						if (newx > border_thresh && endx > (vw - border_thresh))
-							newx = Math.max(border_thresh, (vw + border_thresh) - imgwidth);
-
-						if (newx < border_thresh && endx < (vw - border_thresh))
-							newx = Math.min(border_thresh, (vw + border_thresh) - imgwidth);
-
-						newy = (vh / 2) - percentY * imgheight;
-						var endy = newy + imgheight;
-						if (newy > border_thresh && endy > (vh - border_thresh))
-							newy = Math.max(border_thresh, (vh + border_thresh) - imgheight);
-
-						if (newy < border_thresh && endy < (vh - border_thresh))
-							newy = Math.min(border_thresh, (vh + border_thresh) - imgheight);
-					}
-
-					if (imgwidth <= vw && imgheight <= vh) {
-						newx = Math.max(newx, border_thresh);
-						if (newx + imgwidth > (vw - border_thresh)) {
-							newx = (vw + border_thresh) - imgwidth;
-						}
-
-						newy = Math.max(newy, border_thresh);
-						if (newy + imgheight > (vh - border_thresh)) {
-							newy = (vh + border_thresh) - imgheight;
-						}
-					}
-
-					//var lefttop = get_lefttopouter();
-					outerdiv.style.left = (newx/* - lefttop[0]*/) + "px";
-					outerdiv.style.top = (newy/* - lefttop[1]*/) + "px";
-
-					create_ui(true);
-
-					// The mouse could accidentally land outside the image in theory
-					mouse_in_image_yet = false;
-
-					return false;
 				};
 
 				document.documentElement.appendChild(outerdiv);
@@ -39425,9 +39740,15 @@ var $$IMU_EXPORT$$;
 				mouse_in_image_yet = false;
 				delay_handle_triggering = false;
 
+				if (popup_trigger_reason !== "mouse") {
+					can_close_popup[1] = true;
+				}
+
 				stop_waiting();
 				popups_active = true;
 				//console_log(div);
+
+				add_resetpopup_timeout();
 			}
 
 			cb(data.data.img, data.data.newurl, obj);
@@ -39680,18 +40001,6 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		function is_video_el(el) {
-			if (el.tagName === "VIDEO")
-				return true;
-
-			if (el.tagName !== "SOURCE")
-				return false;
-
-			if (el.parentElement && el.parentElement.tagName === "VIDEO")
-				return true;
-			return false;
-		}
-
 		function is_valid_src(src, isvideo) {
 			return src && (!(/^blob:/.test(src)) || !isvideo);
 		}
@@ -39823,6 +40132,7 @@ var $$IMU_EXPORT$$;
 					do_request: null,
 					document: document,
 					window: get_window(),
+					host_url: window.location.href,
 					element: el,
 					include_pastobjs: true,
 					iterations: 2,
@@ -42058,6 +42368,16 @@ var $$IMU_EXPORT$$;
 			return popups_active && popup_el;
 		};
 
+		var can_use_hold_key = function() {
+			if (!popups_active)
+				return false;
+
+			if (popup_trigger_reason !== "mouse" && (!settings.mouseover_auto_close_popup || !settings.mouseover_auto_close_popup_time))
+				return false;
+
+			return settings.mouseover_use_hold_key;
+		};
+
 		var action_handler = function(action) {
 			if (action.needs_popup && !popup_active())
 				return;
@@ -42102,6 +42422,18 @@ var $$IMU_EXPORT$$;
 					return true;
 				case "flip_vertical":
 					flip_gallery(true);
+					return true;
+				case "zoom_in":
+					popup_zoom_func("incremental", -1);
+					return true;
+				case "zoom_out":
+					popup_zoom_func("incremental", 1);
+					return true;
+				case "zoom_full":
+					popup_zoom_func("fitfull", -1);
+					return true;
+				case "zoom_fit":
+					popup_zoom_func("fitfull", 1);
 					return true;
 				case "seek_left":
 					seek_popup_video(true);
@@ -42151,6 +42483,9 @@ var $$IMU_EXPORT$$;
 			if (!mouseover_enabled())
 				return;
 
+			if (editing_text && event.type === "keydown")
+				return;
+
 			var ret = undefined;
 			var actions = [];
 
@@ -42178,10 +42513,10 @@ var $$IMU_EXPORT$$;
 				}
 			}
 
-			if (popups_active && popup_trigger_reason === "mouse" &&
-				settings.mouseover_use_hold_key && event_in_chord(event, settings.mouseover_hold_key)) {
+			if (can_use_hold_key() && event_in_chord(event, settings.mouseover_hold_key)) {
 				if (trigger_complete(settings.mouseover_hold_key)) {
 					popup_hold = !popup_hold;
+					clear_resetpopup_timeout();
 
 					if (!popup_hold && can_close_popup[1]) {
 						actions.push({type: "resetpopups"});
@@ -42248,6 +42583,22 @@ var $$IMU_EXPORT$$;
 					{
 						key: settings.mouseover_flip_vertical_key,
 						action: {type: "flip_vertical"}
+					},
+					{
+						key: settings.mouseover_zoom_in_key,
+						action: {type: "zoom_in"}
+					},
+					{
+						key: settings.mouseover_zoom_out_key,
+						action: {type: "zoom_out"}
+					},
+					{
+						key: settings.mouseover_zoom_full_key,
+						action: {type: "zoom_full"}
+					},
+					{
+						key: settings.mouseover_zoom_fit_key,
+						action: {type: "zoom_fit"}
 					},
 					{
 						key: settings.mouseover_video_seek_left_key,
@@ -42826,6 +43177,14 @@ var $$IMU_EXPORT$$;
 							}
 						}
 
+						var do_mouse_reset = function() {
+							if (popup_hold) {
+								can_close_popup[1] = true;
+							} else {
+								resetpopups();
+							}
+						};
+
 						var close_el_policy = get_single_setting("mouseover_close_el_policy");
 						var close_on_leave_el = (close_el_policy === "thumbnail" || close_el_policy === "both") && popup_el && !popup_el_automatic;
 						var outside_of_popup_el = false;
@@ -42842,7 +43201,7 @@ var $$IMU_EXPORT$$;
 									outside_of_popup_el = true;
 
 									if (close_el_policy === "thumbnail") {
-										return resetpopups();
+										return do_mouse_reset();
 									}
 								}
 							} else {
@@ -42859,15 +43218,11 @@ var $$IMU_EXPORT$$;
 								//console_log(mouseX, imgmiddleX, jitter_threshx);
 								//console_log(mouseY, imgmiddleY, jitter_threshy);
 
-								if (popup_hold) {
-									can_close_popup[1] = true;
-								} else {
-									resetpopups();
-								}
+								do_mouse_reset();
 							}
 						} else if (close_on_leave_el) {
 							if (outside_of_popup_el) {
-								resetpopups();
+								do_mouse_reset();
 							}
 						}
 					} else if (delay_handle_triggering) {

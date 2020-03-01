@@ -1,3 +1,29 @@
+0.12.16
+
+New features:
+
+ * Option to close the popup automatically after a set time (thanks to remlap on discord for the idea)
+ * Option to add popup media url to browser history
+ * Option to not popup for mismatching media types
+ * Keyboard shortcuts for zooming (in/out, fit/full)
+ * Support for 7 new sites (using ~5 new rules)
+
+Improvements:
+
+ * Frames are added around settings subcategories for clarity (thanks to Forefix for the idea)
+ * Various improvements/fixes to existing rules (including Twitter, Reddit)
+
+Bugfixes:
+
+ * Disable various options when not applicable
+ * Hold key now works for "Close when leaving: Thumbnail" too
+ * Fix Popup UI option being ignored after zooming
+ * Base64 decoding works on more websites
+ * Popup styles are set to `!important` by default, fixing its appearance on some websites
+ * Editing text in the popup will no longer trigger keybinds
+
+---
+
 0.12.15
 
 New features:

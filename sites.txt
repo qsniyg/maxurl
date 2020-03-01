@@ -1661,6 +1661,7 @@ elsalvadortimes.com
 elsewhere.scdn3.secure.raxcdn.com
 elsiglo.mx
 elsiglodetorreon.com.mx
+elsoldepuebla.com.mx
 em.wattpad.com
 embedly.massrelevance.com
 embedwistia-a.akamaihd.net
@@ -2098,6 +2099,7 @@ githubusercontent.com
 gittigidiyor.net
 giveawayoftheday.com
 gjdream.com
+gl.weburg.net
 glam0ur.com
 glamour.bg
 glamour.de
@@ -3241,6 +3243,7 @@ imgs.ckcdn.com
 imgs.diercun.com
 imgs.firmenwagen.co.at
 imgs.ngaotruyen.com
+imgs.ototoy.jp
 imgs.plurk.com
 imgsa.baidu.com
 imgsearches.com
@@ -3486,6 +3489,7 @@ kiev.segodnya.ua
 kiev.ua
 kinataka.ru
 kinghost.com
+kino-teatr.ua
 kino.search.ch
 kino.tricolor.tv
 kinoafisha.ua
@@ -3618,6 +3622,7 @@ limnlcdn.akamaized.net
 linda.nl
 lingerieav.com
 linode.com
+linuxgamepublishing.com
 lipstickalley.com
 liquipedia.net
 lisimg.com
@@ -5560,6 +5565,7 @@ suruga-ya.jp
 suryaa.com
 sutki.net
 suzisporn.com
+svensktnaringsliv.se
 svgsilh.com
 svirtus.cdnvideo.ru
 svtstatic.se
@@ -5969,6 +5975,7 @@ vetton.ru
 vettri.net
 vev.ru
 vgamuseum.info
+vgmdownloads.com
 vgtour.ro
 vh1.com
 vhaor.com
