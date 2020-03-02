@@ -5530,6 +5530,22 @@ var $$IMU_EXPORT$$;
 		return possible_infos;
 	};
 
+	common_functions.get_twitter_caption = function(el) {
+		var currentel = el;
+		while ((currentel = currentel.parentElement)) {
+			if (currentel.tagName === "ARTICLE") {
+				var captiondiv = currentel.querySelectorAll("div[lang]");
+				if (captiondiv && captiondiv.length === 1) {
+					return captiondiv[0].innerText;
+				}
+
+				break;
+			}
+		}
+
+		return null;
+	};
+
 	common_functions.get_twitter_video_tweet = function(el, window) {
 		if (el.tagName !== "VIDEO" || !el.src.match(/^blob:/))
 			return null;
@@ -8517,12 +8533,25 @@ var $$IMU_EXPORT$$;
 			// 4096x4096 is also a valid "name"
 			// medium == null?
 
+			obj = {
+				url: src
+			};
+
+			if (options && options.element && host_domain_nosub === "twitter.com") {
+				var caption = common_functions.get_twitter_caption(options.element);
+				if (caption) {
+					obj.extra = {caption: caption};
+				}
+			}
+
 			// replace :orig to name=orig
 			newsrc = src
 				.replace(/:([^/?]+)(.*)?$/, "$2?name=$1")
 				.replace(/(\?.*)\?name=/, "$1&name=");
-			if (newsrc !== src)
-				return newsrc;
+			if (newsrc !== src) {
+				obj.url = newsrc;
+				return obj;
+			}
 
 			if (!(/\/(?:card|ad)_img\//.test(src))) {
 				// replace format=jpg to .jpg, doesn't work for /card_img/
@@ -8530,15 +8559,19 @@ var $$IMU_EXPORT$$;
 					.replace(/(\/[^/.?]+)\?(.*?&)?format=([^&]*)(.*?$)?/, "$1.$3?$2$4")
 					.replace(/\?&/, "?")
 					.replace(/[?&]+$/, "");
-				if (newsrc !== src)
-					return newsrc;
+
+				if (newsrc !== src) {
+					obj.url = newsrc;
+					return obj;
+				}
 			}
 
 			// try various names (thanks to rEnr3n for reporting): https://github.com/qsniyg/maxurl/issues/165
 			// https://pbs.twimg.com/media/Bu4G7k3CcAA6Nx7.jpg
 			//   https://pbs.twimg.com/media/Bu4G7k3CcAA6Nx7.jpg?name=medium -- same size, anything higher doesn't work
 			var names = ["orig", "4096x4096", "large", "medium"];
-			var obj = [];
+			var baseobj = obj;
+			obj = [];
 
 			var name = src.match(/[?&]name=([^&]+)/);
 			if (name)
@@ -8550,6 +8583,13 @@ var $$IMU_EXPORT$$;
 			var end = names.indexOf(name);
 			if (end < 0)
 				end = names.length;
+
+			var obj_add = function(x) {
+				var newobj = deepcopy(baseobj);
+				newobj.url = x;
+
+				obj.push(newobj);
+			};
 
 			for (var i = 0; i < end; i++) {
 				newsrc = src
@@ -8573,18 +8613,18 @@ var $$IMU_EXPORT$$;
 				}
 
 				if (newsrc.match(/\.png(\?.*)?$/)) {
-					obj.push(newsrc);
-					obj.push(newsrc.replace(/\.png(\?.*)?$/, ".jpg$1"));
+					obj_add(newsrc);
+					obj_add(newsrc.replace(/\.png(\?.*)?$/, ".jpg$1"));
 				} else if (newsrc.match(/\.jpg(\?.*)?$/)) {
 					// Prefer png over jpg (compression)
-					obj.push(newsrc.replace(/\.jpg(\?.*)?$/, ".png$1"));
-					obj.push(newsrc);
+					obj_add(newsrc.replace(/\.jpg(\?.*)?$/, ".png$1"));
+					obj_add(newsrc);
 				} else {
-					obj.push(newsrc);
+					obj_add(newsrc);
 				}
 			}
 
-			obj.push(src);
+			obj_add(src);
 
 			return obj;
 		}
@@ -8596,13 +8636,15 @@ var $$IMU_EXPORT$$;
 			// https://pbs.twimg.com/profile_images/1079712585186852864/l9IiWuzk_reasonably_small.jpg
 			//   https://pbs.twimg.com/profile_images/1079712585186852864/l9IiWuzk.jpg
 			//return src.replace(/_[a-zA-Z0-9]+\.([^/_]*)$/, "\.$1");
-			return src
+			newsrc = src
 				.replace(/[?#].*$/, "")
 				.replace(/_bigger\.([^/_]*)$/, "\.$1")
 				.replace(/_normal\.([^/_]*)$/, "\.$1")
 				.replace(/_mini\.([^/_]*)$/, "\.$1")
 				.replace(/_reasonably_small\.([^/_]*)$/, "\.$1")
 				.replace(/_[0-9]+x[0-9]+\.([^/_]*)$/, "\.$1");
+			if (newsrc !== src)
+				return newsrc;
 		}
 
 		if (domain === "pbs.twimg.com" &&
@@ -8612,7 +8654,21 @@ var $$IMU_EXPORT$$;
 			// thanks to Gyuri on discord:
 			// https://pbs.twimg.com/profile_banners/4746636714/1520928319/1500x500 -- possibly not stretched?
 			//   https://pbs.twimg.com/profile_banners/4746636714/1520928319
-			return src.replace(/\/[0-9]+x[0-9]+$/, "");
+			newsrc = src.replace(/\/[0-9]+x[0-9]+$/, "");
+			if (newsrc !== src)
+				return newsrc;
+		}
+
+		if (host_domain_nosub === "twitter.com" && options && options.element) {
+			var caption = common_functions.get_twitter_caption(options.element);
+			if (caption) {
+				return {
+					url: src,
+					extra: {
+						caption: caption
+					}
+				};
+			}
 		}
 
 		if (domain === "ytimg.googleusercontent.com" ||
