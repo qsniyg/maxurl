@@ -23974,7 +23974,9 @@ var $$IMU_EXPORT$$;
 			//   https://cdn.britannica.com/50/71350-118-1F17F9C4.jpg
 			// https://cdn.britannica.com/s:500x350/35/155335-004-7F46A7C3.jpg
 			//   https://cdn.britannica.com/35/155335-004-7F46A7C3.jpg
-			return src.replace(/(:\/\/[^/]*\/)(?:s:)?[0-9]+x[0-9]+\//, "$1");
+			// https://cdn.britannica.com/s:180x120,c:crop/77/170477-050-1C747EE3/Laptop-computer.jpg
+			//   https://cdn.britannica.com/77/170477-050-1C747EE3/Laptop-computer.jpg
+			return src.replace(/(:\/\/[^/]*\/)(?:s:)?[0-9]+x[0-9]+(?:,[^/]+)?\//, "$1");
 		}
 
 		if (domain === "cdn.awsli.com.br") {
