@@ -60435,10 +60435,17 @@ var $$IMU_EXPORT$$;
 			}
 
 			for (var i = 0; i < els.length; i++) {
+				// sidebar articles on https://www.rt.com/russia/447357-miss-moscow-2018-photos/
+				// the <picture> element has a size of 0, and hence isn't added to find_els_at_point
+				if (els[i].tagName === "IMG" && els[i].parentElement && els[i].parentElement.tagName === "PICTURE" && els.indexOf(els[i].parentElement) < 0) {
+					els.splice(i + 1, 0, els[i].parentElement);
+				}
+
 				// remove every element before PICTURE as they will be added automatically anyways
 				// this messes up the layering
 				if (els[i].tagName === "PICTURE" && i == 1) {
 					els.splice(0, i);
+					i = 0;
 					break;
 				}
 			}
