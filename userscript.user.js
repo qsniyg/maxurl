@@ -52574,6 +52574,24 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/public\/+main\/+[^/]+\/+)x[0-9]*_(photo_)/, "$1$2");
 		}
 
+		if (domain === "images.findagrave.com") {
+			// https://images.findagrave.com/photoThumbnails/photos/2005/226/5579756_112417300044.jpg
+			//   https://images.findagrave.com/photos/2005/226/5579756_112417300044.jpg
+			// https://images.findagrave.com/photos250/photos/2015/338/5579756_1449374172.jpg
+			//   https://images.findagrave.com/photos/2015/338/5579756_1449374172.jpg
+			obj = {
+				url: src.replace(/\/photo(?:Thumbnails|s[0-9]+)\/+photos\/+/, "/photos/"),
+				head_wrong_contentlength: true
+			};
+
+			match = src.match(/\/photos\/+[0-9]{4}\/+[0-9]+\/+([0-9]+)_[0-9]+\./);
+			if (match) {
+				obj.extra = {page: "https://www.findagrave.com/memorial/" + match[1]};
+			}
+
+			return obj;
+		}
+
 
 
 
@@ -60229,14 +60247,28 @@ var $$IMU_EXPORT$$;
 
 					var ssources = [];
 					var srcset = el.srcset;
+
+					// https://www.erinyamagata.com/art-direction/kiernan-shipka
+					// https://format-com-cld-res.cloudinary.com/image/private/s--hNRUHHWH--/c_crop,h_1596,w_1249,x_0,y_0/c_fill,g_center,w_2500/fl_keep_iptc.progressive,q_95/v1/986aaf7dd74bd5041ddfc495c430bf0d/KShipkaR29MW_FULL_3468.jpg?2500 2500w 3194h, https://format-com-cld-res.cloudinary.com/image/private/s--VSup0NR3--/c_crop,h_1596,w_1249,x_0,y_0/c_fill,g_center,w_900/fl_keep_iptc.progressive,q_95/v1/986aaf7dd74bd5041ddfc495c430bf0d/KShipkaR29MW_FULL_3468.jpg?900 900w 1150h
+					// newlines: https://www.rt.com/russia/447357-miss-moscow-2018-photos/
+					//
+					// https://cdni.rt.com/files/2018.12/xxs/5c221e1ffc7e9397018b4600.jpg 280w,
+					// https://cdni.rt.com/files/2018.12/xs/5c221e1ffc7e9397018b4601.jpg 320w,
+					// https://cdni.rt.com/files/2018.12/thumbnail/5c221e1ffc7e9397018b45ff.jpg 460w,
+					// https://cdni.rt.com/files/2018.12/m/5c221e1ffc7e9397018b4602.jpg 540w,
+					// https://cdni.rt.com/files/2018.12/l/5c221e1ffc7e9397018b4603.jpg 768w,
+					// https://cdni.rt.com/files/2018.12/article/5c221e1ffc7e9397018b45fe.jpg 980w,
+					// https://cdni.rt.com/files/2018.12/xxl/5c221e20fc7e9397018b4604.jpg 1240w
 					while (srcset.length > 0) {
 						var old_srcset = srcset;
-						srcset = srcset.replace(/^[,\s]+/, "");
-						var match = srcset.match(/^(\S*\s+[^,]+)/);
+						srcset = srcset.replace(/^\s+/, "");
+						var match = srcset.match(/^(\S+(?:\s+[^,]+)?)(?:,[\s\S]*)?\s*$/);
 						if (match) {
-							ssources.push(match[1]);
+							ssources.push(match[1].replace(/\s*$/, ""));
 							srcset = srcset.substr(match[1].length);
 						}
+
+						srcset = srcset.replace(/^\s*,/, "");
 						if (srcset === old_srcset)
 							break;
 					}
@@ -60249,10 +60281,9 @@ var $$IMU_EXPORT$$;
 
 					// https://www.gamestar.de/artikel/red-dead-redemption-2-pc-vorabversion-mit-limit-bei-120-fps-directx-12-und-vulkan,3350718.html
 					// sidebar articles: //8images.cgames.de/images/gamestar/256/red-dead-redemption-2_6062507.jpg, //8images.cgames.de/images/gamestar/210/red-dead-redemption-2_6062507.jpg 2x
-					// newlines: https://www.rt.com/russia/447357-miss-moscow-2018-photos/
 					for (var i = 0; i < ssources.length; i++) {
-						var src = norm(ssources[i].replace(/(?:,\s*|\s+)[\s\S]*/, ""));
-						var desc = ssources[i].slice(src.length).replace(/^,?\s*([\s\S]*?)\s*$/, "$1");
+						var src = norm(ssources[i].replace(/^(\S+)(?:\s+[\s\S]+)?\s*$/, "$1"));
+						var desc = ssources[i].slice(src.length).replace(/^\s*([\s\S]*?)\s*$/, "$1");
 
 						if (!addImage(src, el, {layer:layer}))
 							continue;
