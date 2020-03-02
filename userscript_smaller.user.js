@@ -1519,7 +1519,7 @@ var $$IMU_EXPORT$$;
 		replaceimgs_replaceimgs: true,
 		replaceimgs_addlinks: false,
 		replaceimgs_replacelinks: false,
-		replaceimgs_usedata: true,
+		replaceimgs_usedata: is_userscript ? true : false,
 		replaceimgs_wait_fullyloaded: true,
 		replaceimgs_totallimit: 8,
 		replaceimgs_domainlimit: 2,
@@ -7212,7 +7212,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if ((domain === "pbs.twimg.com" &&
-			 /:\/\/[^/]+\/+(?:media|card_img|ext_tw_video_thumb)\//.test(src)) ||
+			 /:\/\/[^/]+\/+(?:media|(?:card|ad)_img|ext_tw_video_thumb)\//.test(src)) ||
 			(domain === "ton.twitter.com" &&
 			 src.indexOf("/ton/data/dm/") >= 0)) {
 
@@ -7223,7 +7223,7 @@ var $$IMU_EXPORT$$;
 			if (newsrc !== src)
 				return newsrc;
 
-			if (src.indexOf("/card_img/") < 0) {
+			if (!(/\/(?:card|ad)_img\//.test(src))) {
 				newsrc = src
 					.replace(/(\/[^/.?]+)\?(.*?&)?format=([^&]*)(.*?$)?/, "$1.$3?$2$4")
 					.replace(/\?&/, "?")
@@ -7249,6 +7249,12 @@ var $$IMU_EXPORT$$;
 				newsrc = src
 					.replace(/(\.[a-z]+)\?(?:(.*)&)?format=[^&]+/, "$1?$2&")
 					.replace(/&$/, "");
+
+				if (!(/[?&]name=/.test(newsrc))) {
+					newsrc += "?name=null";
+					newsrc = newsrc.replace(/(\?.*?)\?(name=[^/]+)$/, "$1&$2");
+				}
+
 				newsrc = newsrc.replace(/([?&]name=)[^&]+/, "$1" + names[i]);
 
 				if (false) {
@@ -35637,6 +35643,34 @@ var $$IMU_EXPORT$$;
 		}
 	}
 
+	var request_permission = function(permission, cb) {
+		if (!is_extension)
+			return cb(false);
+
+		// This has to be done in the content script under firefox: https://github.com/qsniyg/maxurl/issues/254
+		if (true) {
+			try {
+				chrome.permissions.request({
+					permissions: [permission]
+				}, function(granted) {
+					cb(granted);
+				});
+			} catch(e) {
+				console_error(e);
+				cb(false);
+			}
+		} else {
+			extension_send_message({
+				type: "permission",
+				data: {
+					permission: permission
+				}
+			}, function(result) {
+				cb(result.data.granted);
+			});
+		}
+	};
+
 	var current_options_tab = "general";
 	function do_options() {
 		update_dark_mode();
@@ -36301,13 +36335,8 @@ var $$IMU_EXPORT$$;
 
 				var do_update_setting = function(setting, new_value, meta) {
 					if (is_extension && meta.required_permission) {
-						extension_send_message({
-							type: "permission",
-							data: {
-								permission: meta.required_permission
-							}
-						}, function(result) {
-							if (result.data.granted) {
+						request_permission(meta.required_permission, function(granted) {
+							if (granted) {
 								do_update_setting_real(setting, new_value, meta);
 							} else {
 								do_options();
