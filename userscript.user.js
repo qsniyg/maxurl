@@ -8478,9 +8478,11 @@ var $$IMU_EXPORT$$;
 		}
 
 		if ((domain === "pbs.twimg.com" &&
-			 // https://pbs.twimg.com/card_img/1233609033145171968/yM9hHz4R?format=jpg&name=small`
+			 // https://pbs.twimg.com/card_img/1233609033145171968/yM9hHz4R?format=jpg&name=small
 			 //   https://pbs.twimg.com/card_img/1233609033145171968/yM9hHz4R?format=jpg&name=orig
-			 /:\/\/[^/]+\/+(?:media|card_img|ext_tw_video_thumb)\//.test(src)) ||
+			 // https://pbs.twimg.com/ad_img/1228452474039619584/WZtokGPI?format=jpg&name=small
+			 //   https://pbs.twimg.com/ad_img/1228452474039619584/WZtokGPI?format=jpg&name=orig
+			 /:\/\/[^/]+\/+(?:media|(?:card|ad)_img|ext_tw_video_thumb)\//.test(src)) ||
 			(domain === "ton.twitter.com" &&
 			 src.indexOf("/ton/data/dm/") >= 0)) {
 			// use ?name=orig instead of :orig, see:
@@ -8510,6 +8512,8 @@ var $$IMU_EXPORT$$;
 			//   https://pbs.twimg.com/media/DhqeJS2UcAAo7fr.jpg
 			//   https://pbs.twimg.com/media/DhqeJS2UcAAo7fr.jpg?name=orig -- doesn't work
 			//   https://pbs.twimg.com/media/DhqeJS2UcAAo7fr.png?name=orig -- works
+			// https://pbs.twimg.com/media/ESHsHpCXkAA2xfZ.png
+			//   https://pbs.twimg.com/media/ESHsHpCXkAA2xfZ.jpg?name=orig
 			// 4096x4096 is also a valid "name"
 			// medium == null?
 
@@ -8520,7 +8524,7 @@ var $$IMU_EXPORT$$;
 			if (newsrc !== src)
 				return newsrc;
 
-			if (src.indexOf("/card_img/") < 0) {
+			if (!/\/(?:card|ad)_img\//.test(src)) {
 				// replace format=jpg to .jpg, doesn't work for /card_img/
 				newsrc = src
 					.replace(/(\/[^/.?]+)\?(.*?&)?format=([^&]*)(.*?$)?/, "$1.$3?$2$4")
@@ -8551,6 +8555,12 @@ var $$IMU_EXPORT$$;
 				newsrc = src
 					.replace(/(\.[a-z]+)\?(?:(.*)&)?format=[^&]+/, "$1?$2&")
 					.replace(/&$/, "");
+
+				if (!(/[?&]name=/.test(newsrc))) {
+					newsrc += "?name=null";
+					newsrc = newsrc.replace(/(\?.*?)\?(name=[^/]+)$/, "$1&$2");
+				}
+
 				newsrc = newsrc.replace(/([?&]name=)[^&]+/, "$1" + names[i]);
 
 				// don't do this, this doesn't work for .jpg?format=jpg&name=...
