@@ -60297,7 +60297,8 @@ var $$IMU_EXPORT$$;
 
 							// https://format-com-cld-res.cloudinary.com/image/pr…dc82/004_003_03-000083520001.jpg?2500 2500w 1831h
 							while (desc.length > 0) {
-								var whxmatch = desc.match(/^\s*([0-9.]+)([whx])\s*(?:[0-9.]+[\s\S]*)?$/);
+								desc = desc.replace(/^\s+/, "");
+								var whxmatch = desc.match(/^([0-9.]+)([whx])(?:\s+[0-9.]+[\s\S]*)?\s*$/);
 								if (whxmatch) {
 									var number = parseFloat(whxmatch[1]);
 
@@ -60311,7 +60312,7 @@ var $$IMU_EXPORT$$;
 											sources[src].desc_x = number;
 									}
 
-									desc = desc.substr(whxmatch[1].length);
+									desc = desc.substr(whxmatch[1].length + whxmatch[2].length);
 								} else {
 									break;
 								}
