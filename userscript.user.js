@@ -60295,18 +60295,25 @@ var $$IMU_EXPORT$$;
 						if (desc) {
 							sources[src].desc = desc;
 
-							var whxmatch = desc.match(/^\s*([0-9.]+)([whx])\s*$/);
-							if (whxmatch) {
-								var number = parseFloat(whxmatch[1]);
+							// https://format-com-cld-res.cloudinary.com/image/pr…dc82/004_003_03-000083520001.jpg?2500 2500w 1831h
+							while (desc) {
+								var whxmatch = desc.match(/^\s*([0-9.]+)([whx])\s*(?:[0-9.]+[\s\S]*)?$/);
+								if (whxmatch) {
+									var number = parseFloat(whxmatch[1]);
 
-								if (number > 0) {
-									// if width/height/desc_x > number, then number is probably more accurate (multiple els, see rt link above)
-									if (whxmatch[2] === "w" && (!sources[src].width || sources[src].width > number))
-										sources[src].width = number;
-									else if (whxmatch[2] === "h" && (!sources[src].height || sources[src].height > number))
-										sources[src].height = number;
-									else if (whxmatch[2] === "x" && (!sources[src].desc_x || sources[src].desc_x > number))
-										sources[src].desc_x = number;
+									if (number > 0) {
+										// if width/height/desc_x > number, then number is probably more accurate (multiple els, see rt link above)
+										if (whxmatch[2] === "w" && (!sources[src].width || sources[src].width > number))
+											sources[src].width = number;
+										else if (whxmatch[2] === "h" && (!sources[src].height || sources[src].height > number))
+											sources[src].height = number;
+										else if (whxmatch[2] === "x" && (!sources[src].desc_x || sources[src].desc_x > number))
+											sources[src].desc_x = number;
+									}
+
+									desc = desc.substr(whxmatch[1].length);
+								} else {
+									break;
 								}
 							}
 						}
