@@ -55547,6 +55547,34 @@ var $$IMU_EXPORT$$;
 		}
 	}
 
+	var request_permission = function(permission, cb) {
+		if (!is_extension)
+			return cb(false);
+
+		// This has to be done in the content script under firefox: https://github.com/qsniyg/maxurl/issues/254
+		if (true) {
+			try {
+				chrome.permissions.request({
+					permissions: [permission]
+				}, function(granted) {
+					cb(granted);
+				});
+			} catch(e) {
+				console_error(e);
+				cb(false);
+			}
+		} else {
+			extension_send_message({
+				type: "permission",
+				data: {
+					permission: permission
+				}
+			}, function(result) {
+				cb(result.data.granted);
+			});
+		}
+	};
+
 	var current_options_tab = "general";
 	function do_options() {
 		update_dark_mode();
@@ -56211,13 +56239,8 @@ var $$IMU_EXPORT$$;
 
 				var do_update_setting = function(setting, new_value, meta) {
 					if (is_extension && meta.required_permission) {
-						extension_send_message({
-							type: "permission",
-							data: {
-								permission: meta.required_permission
-							}
-						}, function(result) {
-							if (result.data.granted) {
+						request_permission(meta.required_permission, function(granted) {
+							if (granted) {
 								do_update_setting_real(setting, new_value, meta);
 							} else {
 								do_options();
