@@ -60296,7 +60296,7 @@ var $$IMU_EXPORT$$;
 							sources[src].desc = desc;
 
 							// https://format-com-cld-res.cloudinary.com/image/pr…dc82/004_003_03-000083520001.jpg?2500 2500w 1831h
-							while (desc) {
+							while (desc.length > 0) {
 								var whxmatch = desc.match(/^\s*([0-9.]+)([whx])\s*(?:[0-9.]+[\s\S]*)?$/);
 								if (whxmatch) {
 									var number = parseFloat(whxmatch[1]);
