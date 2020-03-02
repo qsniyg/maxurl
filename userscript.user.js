@@ -1516,7 +1516,7 @@ var $$IMU_EXPORT$$;
 		replaceimgs_replaceimgs: true,
 		replaceimgs_addlinks: false,
 		replaceimgs_replacelinks: false,
-		replaceimgs_usedata: true,
+		replaceimgs_usedata: is_userscript ? true : false,
 		replaceimgs_wait_fullyloaded: true,
 		replaceimgs_totallimit: 8,
 		replaceimgs_domainlimit: 2,
