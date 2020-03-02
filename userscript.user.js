@@ -8524,7 +8524,7 @@ var $$IMU_EXPORT$$;
 			if (newsrc !== src)
 				return newsrc;
 
-			if (!/\/(?:card|ad)_img\//.test(src)) {
+			if (!(/\/(?:card|ad)_img\//.test(src))) {
 				// replace format=jpg to .jpg, doesn't work for /card_img/
 				newsrc = src
 					.replace(/(\/[^/.?]+)\?(.*?&)?format=([^&]*)(.*?$)?/, "$1.$3?$2$4")
