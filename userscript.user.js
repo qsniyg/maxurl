@@ -17634,6 +17634,16 @@ var $$IMU_EXPORT$$;
 			return decodeURIComponent(src.replace(/.*\/pic.*?[?&]url=([^&]*).*?$/, "$1"));
 		}
 
+		if (domain_nosub === "mail.ru" && /^content-[0-9]+\.foto\.my\./.test(domain)) {
+			// https://my.mail.ru/community/mir/photo/_groupsphoto/49452.html
+			// https://content-29.foto.my.mail.ru/community/mir/_groupsphoto/i-49452.jpg?1583157324
+			//   https://content-29.foto.my.mail.ru/community/mir/_groupsphoto/b-49452.jpg
+			return {
+				url: src.replace(/(\/community\/+[^/]+\/+_groupsphoto\/+)i(-[0-9]+\.[^/.?#]+)(?:[?#].*)?$/, "$1b$2"),
+				can_head: false // 400
+			};
+		}
+
 		if (domain_nosub === "mail.ru" &&
 			domain.match(/^avt.*\.foto\.mail\.ru/)) {
 			// https://avt-30.foto.mail.ru/mail/philimonova56/_avatar180?
@@ -33156,6 +33166,25 @@ var $$IMU_EXPORT$$;
 			return add_http(decodeURIComponent(src.replace(/^[a-z]+:\/\/[^/]*\/.*?[?&]url[0-9]*=([^&]*).*?$/, "$1")));
 		}
 
+		if (domain_nosub === "imgsmail.ru" &&
+			domain.match(/^filapp[0-9]*\./)) {
+			// https://filapp1.imgsmail.ru/pic?url=https%3A%2F%2Fd0.static.media.condenast.ru%2Fvogue%2Fcollection%2F58c37c3fe2998da8a0aaee327e56ffd9.jpg%2F2edd78a6%2Fo%2Fw2000&sig=2e63aa660f05e00217383dbb3d2e794d
+			//   https://d0.static.media.condenast.ru/vogue/58c37c3fe2998da8a0aaee327e56ffd9.jpg/be1fc22c/o/w2000
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+pic.*?[?^]url=([^&]*).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+		}
+
+		if (domain_nosub === "imgsmail.ru" && /^my[0-9]*\./.test(domain)) {
+			// https://my2.imgsmail.ru/mail/ru/images/my/compass/static/video/backscreen/newsfeed_video-play_hover.png
+			if (/\/mail\/+ru\/+images\/+my\/+compass\/+static\//.test(src)) {
+				return {
+					url: src,
+					bad: "mask"
+				};
+			}
+		}
+
 		if (domain_nowww === "pornoonline.com.pl") {
 			// http://www.pornoonline.com.pl/images/galerie/1849/small/small_4fdccc9ca7074.jpg
 			//   http://www.pornoonline.com.pl/images/galerie/1849/4fdccc9ca7074.jpg
@@ -36535,15 +36564,6 @@ var $$IMU_EXPORT$$;
 			//   http://sportuvai.bg/pictures/136739__.jpg -- 388x555
 			return src.replace(/(\/pictures\/+[0-9]+_{1,2})[0-9]+(_+(?:[0-9]+)?)?(\.[^/.]*)(?:[?#].*)?$/,
 							   "$1$2$3");
-		}
-
-		if (domain_nosub === "imgsmail.ru" &&
-			domain.match(/^filapp[0-9]*\./)) {
-			// https://filapp1.imgsmail.ru/pic?url=https%3A%2F%2Fd0.static.media.condenast.ru%2Fvogue%2Fcollection%2F58c37c3fe2998da8a0aaee327e56ffd9.jpg%2F2edd78a6%2Fo%2Fw2000&sig=2e63aa660f05e00217383dbb3d2e794d
-			//   https://d0.static.media.condenast.ru/vogue/58c37c3fe2998da8a0aaee327e56ffd9.jpg/be1fc22c/o/w2000
-			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+pic.*?[?^]url=([^&]*).*?$/, "$1");
-			if (newsrc !== src)
-				return decodeURIComponent(newsrc);
 		}
 
 		if (domain_nosub === "thetimes.co.uk" && src.indexOf("/imageserver/image/") >= 0) {
