@@ -39415,8 +39415,10 @@ var $$IMU_EXPORT$$;
 			//   https://img.nga.178.com/attachments/mon_202002/20/-zue37Q5-28zeZpT3cSnq-11x.jpg -- 403?
 			// https://img.nga.178.com/attachments/mon_201912/30/-bqqbQ5-4xw1Z1hT3cS1jk-1jk.jpg.medium.jpg
 			//   https://img.nga.178.com/attachments/mon_201912/30/-bqqbQ5-4xw1Z1hT3cS1jk-1jk.jpg
+			// https://img.nga.178.com/attachments/mon_202003/03/-zue37Q5-jhdjZ2jT3cSvx-i3.png.thumb_s.jpg
+			//   https://img.nga.178.com/attachments/mon_202003/03/-zue37Q5-jhdjZ2jT3cSvx-i3.png
 			return {
-				url: src.replace(/(\/attachments\/+[^/]*_[0-9]{6}\/+[0-9]+\/+[^/]*)\.(?:thumb|medium)\.[^/.]*(?:[?#].*)?$/, "$1"),
+				url: src.replace(/(\/attachments\/+[^/]*_[0-9]{6}\/+[0-9]+\/+[^/]*)\.(?:thumb|medium)(?:_[a-z])?\.[^/.]*(?:[?#].*)?$/, "$1"),
 				headers: {
 					Referer: null
 				},
