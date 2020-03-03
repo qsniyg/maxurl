@@ -8935,6 +8935,17 @@ var $$IMU_EXPORT$$;
 				return decodeURIComponent(newsrc);
 		}
 
+		if (host_domain_nosub === "yahoo.com" && host_domain.indexOf("search.") >= 0 && options.element) {
+			if (options.element.parentElement && options.element.parentElement.tagName === "A") {
+				match = options.element.parentElement.href.match(/^[a-z]+:\/\/[^/]*images\.search\.[^/]+\/+(?:search\/+images|images\/+view)(?:;.*?)\?(?:.*&)?imgurl=([^&]+)/);
+				if (match) {
+					newsrc = add_http(decodeURIComponent(match[1]));
+					if (newsrc !== src)
+						return newsrc;
+				}
+			}
+		}
+
 		if ((domain_nosub === "yimg.com" && domain.match(/^(?:[sl]|ct)[0-9]*\.yimg\.com/)) ||
 			// https://movies.yahoo.com.tw/y/r/w520/bt/api/res/1.2/7CVvg8ycHHyQQhIFbt0eFw--~A/YXBwaWQ9dHdhYnVuZXdzO2ZpPWZpbGw7dz0xMzY1O2g9MjA0ODs-/http://media.zenfs.com/en/homerun/feed_manager_auto_publish_494/a292a5af4b414a75fc4aa1d0762bc2f2
 			//   http://media.zenfs.com/en/homerun/feed_manager_auto_publish_494/a292a5af4b414a75fc4aa1d0762bc2f2
@@ -21757,10 +21768,12 @@ var $$IMU_EXPORT$$;
 		if ((host_domain_nowww === "yandex.ru" ||
 			 host_domain_nowww === "yandex.com")
 			 && options && options.element) {
-			if (options.element.tagName === "IMG" && options.element.parentElement && options.element.parentElement.tagName === "A") {
+			if (options.element.parentElement && options.element.parentElement.tagName === "A") {
 				match = options.element.parentElement.href.match(/^[a-z]+:\/\/[^/]+\/+images\/+search\?(?:.*&)?img_url=([^&]+)/);
 				if (match) {
-					return decodeuri_ifneeded(match[1]);
+					newsrc = decodeuri_ifneeded(match[1]);
+					if (newsrc !== src)
+						return newsrc;
 				}
 			}
 		}
@@ -52803,6 +52816,14 @@ var $$IMU_EXPORT$$;
 			}
 
 			return obj;
+		}
+
+		if (domain_nosub === "watson.de") {
+			// https://www.watson.de/imgdb/8fe6/Qx,B,0,0,2336,3504,973,1460,389,584/898171612648624
+			//   https://www.watson.de/imgdb/8fe6/898171612648624
+			// https://cdn1.watson.de/imgdb/8b65/Qx,E,0,0,6000,4000,2500,1666,1000,666/951439742847276
+			//   https://cdn1.watson.de/imgdb/8b65/951439742847276
+			return src.replace(/(\/imgdb\/+[0-9a-f]+\/+)[^/]+,[^/]+\/+([0-9]+)(?:[?#].*)?$/, "$1$2");
 		}
 
 
