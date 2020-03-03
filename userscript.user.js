@@ -21754,6 +21754,15 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/s[0-9]+x[0-9]+(?:[?#].*)?$/, "/original");
 		}
 
+		if (host_domain_nowww === "yandex.ru" && options && options.element) {
+			if (options.element.tagName === "IMG" && options.element.parentElement && options.element.parentElement.tagName === "A") {
+				match = options.element.parentElement.href.match(/^[a-z]+:\/\/[^/]+\/+images\/+search\?(?:.*&)?img_url=([^&]+)/);
+				if (match) {
+					return decodeuri_ifneeded(match[1]);
+				}
+			}
+		}
+
 		if (domain === "img-fotki.yandex.ru") {
 			// http://img-fotki.yandex.ru/get/4606/142895192.a/0_6776c_3e548a9d_XL.gif
 			//   http://img-fotki.yandex.ru/get/4606/142895192.a/0_6776c_3e548a9d_orig.gif
