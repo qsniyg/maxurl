@@ -3679,6 +3679,52 @@ var $$IMU_EXPORT$$;
 			.replace(/&amp;/g, "&");
 	}
 
+	function get_queries(url) {
+		// TODO: handle things like: ?a=b&c=b#&d=e
+		var querystring = url.replace(/^[^#]*?\?/, "");
+		if (!querystring || querystring === url)
+			return {};
+
+		var queries = {};
+
+		var splitted = querystring.split("&");
+		for (var i = 0; i < splitted.length; i++) {
+			var name = splitted[i];
+			var value = true;
+
+			var match = splitted[i].match(/^(.*?)=(.*)/);
+			if (match) {
+				name = match[1];
+				value = match[2];
+			}
+
+			if (name.length === 0)
+				continue;
+
+			queries[name] = value;
+		}
+
+		return queries;
+	}
+
+	function stringify_queries(queries) {
+		var queriesstr = [];
+
+		for (var query in queries) {
+			if (query.length === 0)
+				continue;
+
+			var current_query = query;
+			if (queries[query] !== true) {
+				current_query += "=" + queries[query];
+			}
+
+			queriesstr.push(current_query);
+		}
+
+		return queriesstr.join("&");
+	}
+
 	function remove_queries(url, queries) {
 		if (!is_array(queries)) {
 			queries = [queries];
@@ -3709,6 +3755,21 @@ var $$IMU_EXPORT$$;
 		}
 
 		return beforequery + afterquery;
+	}
+
+	function add_queries(url, queries) {
+		var parsed_queries = get_queries(url);
+
+		for (var query in queries) {
+			parsed_queries[query] = queries[query];
+		}
+
+		var newquerystring = stringify_queries(parsed_queries);
+		if (newquerystring) {
+			return url.replace(/^([^#]*?)(?:\?.*)?$/, "$1?" + newquerystring);
+		} else {
+			return url;
+		}
 	}
 
 	function fuzzify_text(str) {
@@ -8596,12 +8657,7 @@ var $$IMU_EXPORT$$;
 					.replace(/(\.[a-z]+)\?(?:(.*)&)?format=[^&]+/, "$1?$2&")
 					.replace(/&$/, "");
 
-				if (!(/[?&]name=/.test(newsrc))) {
-					newsrc += "?name=null";
-					newsrc = newsrc.replace(/(\?.*?)\?(name=[^/]+)$/, "$1&$2");
-				}
-
-				newsrc = newsrc.replace(/([?&]name=)[^&]+/, "$1" + names[i]);
+				newsrc = add_queries(newsrc, {name: names[i]});
 
 				// don't do this, this doesn't work for .jpg?format=jpg&name=...
 				if (false) {
