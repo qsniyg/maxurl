@@ -24375,15 +24375,103 @@ var $$IMU_EXPORT$$;
 			// https://media1.giphy.com/media/l0Iy0lyLZnfdEBmMg/200w.gif
 			// https://media2.giphy.com/media/ZBg5XWrvDVzNe/200_s.gif
 
-			// private gif:
-			// https://i.giphy.com/media/mFYcQFmIkedO77iCEH/source.gif
-			newsrc = src.replace(/:\/\/media[0-9]*\./, "://i.");
-			if (newsrc !== src)
-				return newsrc;
+			var baseobj = {
+				url: src,
+				headers: {
+					Referer: "https://giphy.com/"
+				}
+			};
+			obj = baseobj;
 
-			newsrc = src.replace(/\/(?:giphy|[0-9]+[whs_]*)\.(?:gif|webp|mp4)/, "/source.gif");
-			if (newsrc !== src)
-				return newsrc;
+			match = src.match(/\/media\/+([^/]{10,})\/+/);
+			if (match) {
+				var get_giphy_page = function(id) {
+					return "https://giphy.com/gifs/" + id;
+				};
+
+				id = match[1];
+				var page = get_giphy_page(id);
+				baseobj.extra = {page: page};
+
+				var query_giphy = function(id, cb) {
+					var cache_key = "giphy:" + id;
+					api_cache.fetch(cache_key, cb, function(done) {
+						options.do_request({
+							url: get_giphy_page(id),
+							method: "GET",
+							headers: {
+								Referer: ""
+							},
+							onload: function(result) {
+								if (result.readyState !== 4)
+									return;
+
+								if (result.status !== 200) {
+									console_error(result);
+									return done(null, false);
+								}
+
+								var match = result.responseText.match(/<script>\s*Giphy\.renderDesktop\(.*?{\s*gif:\s*({.+}),/);
+								if (match) {
+									try {
+										var json = JSON_parse(match[1]);
+										return done(json, 6*60*60);
+									} catch (e) {
+										console_error(e);
+									}
+								} else {
+									console_warn("No match found", result);
+								}
+
+								done(null, false);
+							}
+						});
+					});
+				};
+
+				if (options && options.do_request && options.cb) {
+					query_giphy(id, function(data) {
+						var images = data.images;
+
+						var get_image = function(obj) {
+							var ourobj = deepcopy(baseobj);
+							ourobj.url = obj.url;
+							return ourobj;
+						}
+
+						if (images.source) {
+							return options.cb(get_image(images.source));
+						} else {
+							// todo: look through images
+							return options.cb(null);
+						}
+					});
+
+					return {
+						waiting: true
+					};
+				}
+			}
+
+			// Doesn't seem to always work, need to add bad-if to avoid linking to "private" (i.e. broken) images
+			if (false) {
+				// private gif:
+				// https://i.giphy.com/media/mFYcQFmIkedO77iCEH/source.gif
+				newsrc = src.replace(/:\/\/media[0-9]*\./, "://i.");
+				if (newsrc !== src) {
+					obj.url = newsrc;
+					return obj;
+				}
+
+				newsrc = src.replace(/\/(?:giphy|[0-9]+[whs_]*)\.(?:gif|webp|mp4)/, "/source.mp4");
+				// doesn't seem to work
+				if (newsrc !== src) {
+					obj.url = newsrc;
+					return obj;
+				}
+			}
+
+			return obj;
 		}
 
 		if (domain === "pics.dmm.com" ||
