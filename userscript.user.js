@@ -21754,7 +21754,9 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/s[0-9]+x[0-9]+(?:[?#].*)?$/, "/original");
 		}
 
-		if (host_domain_nowww === "yandex.ru" && options && options.element) {
+		if ((host_domain_nowww === "yandex.ru" ||
+			 host_domain_nowww === "yandex.com")
+			 && options && options.element) {
 			if (options.element.tagName === "IMG" && options.element.parentElement && options.element.parentElement.tagName === "A") {
 				match = options.element.parentElement.href.match(/^[a-z]+:\/\/[^/]+\/+images\/+search\?(?:.*&)?img_url=([^&]+)/);
 				if (match) {
