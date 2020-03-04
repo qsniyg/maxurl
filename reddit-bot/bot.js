@@ -117,7 +117,7 @@ var blacklist = [
   "fat"
 ];
 
-function inblacklist(x) {
+function inblacklist(x, blacklist) {
   var black = false;
   x.toLowerCase().replace(/[-_.,!?'"]/g, " ").split(" ").forEach((word) => {
     word = word
@@ -279,7 +279,7 @@ function dourl_inner(big, url, post, options) {
     return;
   }*/
 
-  if (options.use_blacklist && post && inblacklist(post.title)) {
+  if (options.blacklist && post && inblacklist(post.title, options.blacklist)) {
     console.log("Post blacklisted:\n" + post.title + "\n" + post.permalink + "\n" + post.url + "\n=====\n\n");
     log_entry.blacklisted = true;
     log(log_entry);
@@ -520,7 +520,7 @@ var base_options = {
   removable: true,
   explain_original: true,
   original_page: true,
-  use_blacklist: true,
+  blacklist: blacklist,
   only_original: false,
   min_ratio: 1.3
 };
