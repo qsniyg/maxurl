@@ -279,7 +279,7 @@ function dourl_inner(big, url, post, options) {
     return;
   }*/
 
-  if (post && inblacklist(post.title)) {
+  if (options.use_blacklist && post && inblacklist(post.title)) {
     console.log("Post blacklisted:\n" + post.title + "\n" + post.permalink + "\n" + post.url + "\n=====\n\n");
     log_entry.blacklisted = true;
     log(log_entry);
@@ -365,7 +365,7 @@ function dourl_inner(big, url, post, options) {
             r = (newdata.width * newdata.height) / (data.width * data.height);
           }
 
-          if (r >= 1.3 && (((newdata.width - data.width) > thresh_px &&
+          if (r >= options.min_ratio && (((newdata.width - data.width) > thresh_px &&
                             newdata.height > data.height) ||
                            ((newdata.height - data.height) > thresh_px &&
                             newdata.width > data.width))) {
@@ -401,23 +401,25 @@ function dourl_inner(big, url, post, options) {
               big.is_original = true;
             }
 
-            // explain imgur, as the urls often confuse people
-            if (orig_domain === "i.imgur.com" &&
-                new_domain === "i.imgur.com" && !big.is_original) {
-              comment += "*This is the original size uploaded to imgur";
+            if (options.explain_original) {
+              // explain imgur, as the urls often confuse people
+              if (orig_domain === "i.imgur.com" &&
+                  new_domain === "i.imgur.com" && !big.is_original) {
+                comment += "*This is the original size uploaded to imgur";
 
-              if (url.length - 1 === newdata.url.length) {
-                var id1_regex = /^[a-z]+:\/\/[^/]*\/([^/.]*)(.)\.[^/.]*(?:[?#].*)?$/;
-                var id2_regex = /^[a-z]+:\/\/[^/]*\/([^/.]*)\.[^/.]*(?:[?#].*)?$/;
-                var imgur_id_1 = url.replace(id1_regex, "$1");
-                var imgur_id_2 = newdata.url.replace(id2_regex, "$1");
-                if (imgur_id_2 === imgur_id_1) {
-                  comment += " (`" + url.replace(id1_regex, "$2") + "` was removed from the end of the filename)";
+                if (url.length - 1 === newdata.url.length) {
+                  var id1_regex = /^[a-z]+:\/\/[^/]*\/([^/.]*)(.)\.[^/.]*(?:[?#].*)?$/;
+                  var id2_regex = /^[a-z]+:\/\/[^/]*\/([^/.]*)\.[^/.]*(?:[?#].*)?$/;
+                  var imgur_id_1 = url.replace(id1_regex, "$1");
+                  var imgur_id_2 = newdata.url.replace(id2_regex, "$1");
+                  if (imgur_id_2 === imgur_id_1) {
+                    comment += " (`" + url.replace(id1_regex, "$2") + "` was removed from the end of the filename)";
+                  }
                 }
+                comment += "*\n\n";
+              } else if (big.is_original) {
+                comment += "*This is the original size of the image stored on the site. If the image looks upscaled, it's likely because the image stored on the site is itself upscaled.*\n\n";
               }
-              comment += "*\n\n";
-            } else if (big.is_original) {
-              comment += "*This is the original size of the image stored on the site. If the image looks upscaled, it's likely because the image stored on the site is itself upscaled.*\n\n";
             }
 
             if (is_googlephotos(orig_domain, url) &&
@@ -428,7 +430,7 @@ function dourl_inner(big, url, post, options) {
               comment += "*****\n\n**Note to OP:** Your linked image (as well as the image linked by this bot) could expire within a few hours, as it looks like a temporary image link from Google. Consider reuploading this image to a different host.\n\n";
             }
 
-            if (big.extra && big.extra.page) {
+            if (options.original_page && big.extra && big.extra.page) {
               comment += "*****\n\nOriginal page: " + big.extra.page + "\n\n";
             }
 
@@ -458,11 +460,13 @@ function dourl_inner(big, url, post, options) {
                     logged = true;
                   }
 
-                  // np.reddit.com to avoid the "no participation" warning
-                  comment_data.edit(
-                    //comment + "&nbsp;|&nbsp;[remove](https://np.reddit.com/message/compose/?to=MaxImageBot&subject=delete:+" + comment_data.id + "&message=If%20you%20are%20the%20one%20who%20submitted%20the%20post%2C%20it%20should%20be%20deleted%20within%20~20%20seconds.%20If%20it%20isn%27t%2C%20please%20check%20the%20FAQ%3A%20https%3A%2F%2Fnp.reddit.com%2Fr%2FMaxImage%2Fcomments%2F8znfgw%2Ffaq%2F)"
-                    comment + " | [remove](https://np.reddit.com/message/compose/?to=MaxImageBot&subject=delete:+" + comment_data.id + "&message=If%20you%20are%20the%20one%20who%20submitted%20the%20post%2C%20it%20should%20be%20deleted%20within%20~20%20seconds.%20If%20it%20isn%27t%2C%20please%20check%20the%20FAQ%3A%20" + encodeURIComponent(faq_link) + ")"
-                  );
+                  if (options.removable) {
+                    // np.reddit.com to avoid the "no participation" warning
+                    comment_data.edit(
+                      //comment + "&nbsp;|&nbsp;[remove](https://np.reddit.com/message/compose/?to=MaxImageBot&subject=delete:+" + comment_data.id + "&message=If%20you%20are%20the%20one%20who%20submitted%20the%20post%2C%20it%20should%20be%20deleted%20within%20~20%20seconds.%20If%20it%20isn%27t%2C%20please%20check%20the%20FAQ%3A%20https%3A%2F%2Fnp.reddit.com%2Fr%2FMaxImage%2Fcomments%2F8znfgw%2Ffaq%2F)"
+                      comment + " | [remove](https://np.reddit.com/message/compose/?to=MaxImageBot&subject=delete:+" + comment_data.id + "&message=If%20you%20are%20the%20one%20who%20submitted%20the%20post%2C%20it%20should%20be%20deleted%20within%20~20%20seconds.%20If%20it%20isn%27t%2C%20please%20check%20the%20FAQ%3A%20" + encodeURIComponent(faq_link) + ")"
+                    );
+                  }
                 });
               } catch (e) {
                 console.error(e);
@@ -477,7 +481,7 @@ function dourl_inner(big, url, post, options) {
             }
           } else {
             if (wr != 1 || hr != 1)
-              console.log("Ratio too small: " + wr + ", " + hr);
+              console.log("Ratio too small: " + wr + ", " + hr + " (" + r + ", min: " + options.min_ratio + ")");
             if (post)
               log(log_entry);
           }
@@ -504,11 +508,32 @@ function dourl_inner(big, url, post, options) {
   );
 }
 
+var base_options = {
+  removable: true,
+  explain_original: true,
+  original_page: true,
+  use_blacklist: true,
+  min_ratio: 1.3
+};
+
 function dourl(url, post, options) {
+  if (!url.match(/^https?:\/\//) ||
+      url.match(/^https?:\/\/(127\.0\.0\.1|192\.168\.|10\.[0-9]+\.|localhost|[^/.]+\/)/)) {
+    console.log("Invalid URL: " + post.url);
+    return;
+  }
+
   var jar = request.jar();
 
-  if (!options)
+  if (!options) {
     options = {};
+  }
+
+  for (var option in base_options) {
+    if (!(option in options)) {
+      options[option] = base_options[option];
+    }
+  }
 
   var bigimage_options = {
     fill_object: true,
@@ -716,7 +741,12 @@ if (true) {
       return;
     }
 
-    var options = {};
+    var options = {
+      removable: true,
+      explain_original: true,
+      original_page: true,
+      min_ratio: 1.3
+    };
 
     if (post.subreddit.display_name) {
       if (blacklist_json.disallowed.indexOf(post.subreddit.display_name.toLowerCase()) >= 0 ||
@@ -740,12 +770,6 @@ if (true) {
     }
 
     links.set(post.permalink, true);
-
-    if (!post.url.match(/^https?:\/\//) ||
-        post.url.match(/^https?:\/\/(127\.0\.0\.1|192\.168\.|10\.[0-9]+\.|localhost|[^/.]+\/)/)) {
-      console.log("Invalid URL: " + post.url);
-      return;
-    }
 
     var url = post.url;
     try {
