@@ -361,7 +361,7 @@ function dourl_inner(big, url, post, options, cb) {
 							.replace(/\*/g, "\\*")
 							.replace(/]/g, "\\]") + "](" + newdata.url.replace(/[)]/g, "\\)") + ")" + linkcomment + "\n\n";
 
-						if (orig_domain === "pbs.twimg.com" &&
+						if (new_domain === "pbs.twimg.com" &&
 							newdata.url.indexOf("?name=orig") >= 0 &&
 							// seems like twitter resizes to 2048 height (or width?) as of late
 							// https://pbs.twimg.com/media/EN19OKgVAAEmK0E.jpg?name=orig -- 2048x1408
