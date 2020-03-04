@@ -96,7 +96,7 @@ echo
 echo "Release checklist:"
 echo
 echo ' * Ensure xx00+ count is updated (userscript, reddit post, mozilla/opera, website)'
-echo ' * Update greasyfork, firefox, opera'
+echo ' * Update greasyfork, firefox, opera, changelog.txt'
 echo ' * git tag v0.xx.xx'
 echo ' * Update userscript.user.js for site (but check about.js for site count before)'
 echo ' * Update CHANGELOG.txt and Discord changelog'
