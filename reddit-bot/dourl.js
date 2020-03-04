@@ -420,7 +420,18 @@ function dourl_inner(big, url, post, options, cb) {
 						//comment += "^[why?](https://www.reddit.com/r/MaxImage/comments/8znfgw/faq/)&nbsp;|&nbsp;to&nbsp;find&nbsp;larger&nbsp;images:&nbsp;[website](https://qsniyg.github.io/maxurl/)&nbsp;/&nbsp;[userscript](https://greasyfork.org/en/scripts/36662-image-max-url)";
 						//comment += "[why?](https://www.reddit.com/r/MaxImage/comments/8znfgw/faq/) | to find larger images yourself: [website](https://qsniyg.github.io/maxurl/) / [userscript](https://greasyfork.org/en/scripts/36662-image-max-url)";
 						// show the extension link instead of the website, as gitcdn is really off and on (need to find something else)
-						comment += "[why?](" + faq_link + ") | to find larger images yourself: [extension](https://addons.mozilla.org/en-US/firefox/addon/image-max-url/) / [userscript](https://greasyfork.org/en/scripts/36662-image-max-url) / [website](https://qsniyg.github.io/maxurl/) ([guide](https://www.reddit.com/r/MaxImage/wiki/pictures))";
+						var sections = [];
+
+						if (options.add_about_link) {
+							sections.push("[why?](" + faq_link + ")");
+						}
+
+						if (options.add_imu_links) {
+							sections.push("to find larger images yourself: [extension](https://addons.mozilla.org/en-US/firefox/addon/image-max-url/) / [userscript](https://greasyfork.org/en/scripts/36662-image-max-url) / [website](https://qsniyg.github.io/maxurl/) ([guide](https://www.reddit.com/r/MaxImage/wiki/pictures))");
+						}
+
+						//comment += "[why?](" + faq_link + ") | to find larger images yourself: [extension](https://addons.mozilla.org/en-US/firefox/addon/image-max-url/) / [userscript](https://greasyfork.org/en/scripts/36662-image-max-url) / [website](https://qsniyg.github.io/maxurl/) ([guide](https://www.reddit.com/r/MaxImage/wiki/pictures))";
+						comment += sections.join(" | ");
 						if (options.np)
 							comment = npify(comment);
 						console.log(comment);
@@ -439,9 +450,13 @@ function dourl_inner(big, url, post, options, cb) {
 
 									if (options.removable) {
 										// np.reddit.com to avoid the "no participation" warning
+										if (sections.length > 0) {
+											comment += " | ";
+										}
+
 										comment_data.edit(
 											//comment + "&nbsp;|&nbsp;[remove](https://np.reddit.com/message/compose/?to=MaxImageBot&subject=delete:+" + comment_data.id + "&message=If%20you%20are%20the%20one%20who%20submitted%20the%20post%2C%20it%20should%20be%20deleted%20within%20~20%20seconds.%20If%20it%20isn%27t%2C%20please%20check%20the%20FAQ%3A%20https%3A%2F%2Fnp.reddit.com%2Fr%2FMaxImage%2Fcomments%2F8znfgw%2Ffaq%2F)"
-											comment + " | [remove](https://np.reddit.com/message/compose/?to=MaxImageBot&subject=delete:+" + comment_data.id + "&message=If%20you%20are%20the%20one%20who%20submitted%20the%20post%2C%20it%20should%20be%20deleted%20within%20~20%20seconds.%20If%20it%20isn%27t%2C%20please%20check%20the%20FAQ%3A%20" + encodeURIComponent(faq_link) + ")"
+											comment + "[remove](https://np.reddit.com/message/compose/?to=MaxImageBot&subject=delete:+" + comment_data.id + "&message=If%20you%20are%20the%20one%20who%20submitted%20the%20post%2C%20it%20should%20be%20deleted%20within%20~20%20seconds.%20If%20it%20isn%27t%2C%20please%20check%20the%20FAQ%3A%20" + encodeURIComponent(faq_link) + ")"
 										).then(() => {
 											if (cb) {
 												cb(comment_data);
@@ -500,6 +515,8 @@ var base_options = {
 	blacklist: blacklist,
 	only_original: false,
 	allow_nsfw: true,
+	add_about_link: true,
+	add_imu_links: true,
 	imgur_ua: null,
 	imgur_cookie: null,
 	min_ratio: 1.3,
