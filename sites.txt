@@ -2698,6 +2698,7 @@ images.f2fcdn.net
 images.fandango.com
 images.fashionmodeldirectory.com
 images.fastcompany.net
+images.findagrave.com
 images.firstpost.com
 images.foody.vn
 images.footballfanatics.com
@@ -3197,6 +3198,7 @@ img.yonhapnews.co.kr
 img.youtube.com
 img.yt
 img.zone5.ru
+img.zvuqa.net
 img2.ruliweb.com
 img26.com
 imgadult.com
@@ -5868,6 +5870,7 @@ tvdeav.com
 tvperson.ru
 twatis.com
 twitch.tv
+twitter.com
 twnmm.com
 twpriceget.com
 twproxy.stiletto.fr
@@ -6105,6 +6108,7 @@ washingtonpost.com
 washwasha.org
 watchmyexgf.good-cdn.com
 watchmygf.me
+watson.de
 wblk.com
 wc-ahba9see.c.sakurastorage.jp
 wcmimages.edmontonjournal.com
@@ -6251,10 +6255,12 @@ y.zdmimg.com
 y3600.cn
 ya-webdesign.com
 ya.sakura.ne.jp
+yahoo.com
 yahoo.com.tw
 yahoo.tw.weibo.com
 yams.akamaized.net
 yan.vn
+yandex.com
 yandex.ru
 yaplakal.com
 yapokupayu.ru

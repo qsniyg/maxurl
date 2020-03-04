@@ -4,7 +4,7 @@
 // ==UserScript==
 // @name              Image Max URL
 // @namespace         http://tampermonkey.net/
-// @version           0.12.16
+// @version           0.12.17
 // @description       Finds larger or original versions of images for 6300+ websites, including a powerful image popup feature
 // @description:ko    6300개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
 // @description:fr    Trouve des images plus grandes ou originales pour plus de 6300 sites
@@ -1519,7 +1519,7 @@ var $$IMU_EXPORT$$;
 		replaceimgs_replaceimgs: true,
 		replaceimgs_addlinks: false,
 		replaceimgs_replacelinks: false,
-		replaceimgs_usedata: true,
+		replaceimgs_usedata: is_userscript ? true : false,
 		replaceimgs_wait_fullyloaded: true,
 		replaceimgs_totallimit: 8,
 		replaceimgs_domainlimit: 2,
@@ -3682,6 +3682,52 @@ var $$IMU_EXPORT$$;
 			.replace(/&amp;/g, "&");
 	}
 
+	function get_queries(url) {
+		// TODO: handle things like: ?a=b&c=b#&d=e
+		var querystring = url.replace(/^[^#]*?\?/, "");
+		if (!querystring || querystring === url)
+			return {};
+
+		var queries = {};
+
+		var splitted = querystring.split("&");
+		for (var i = 0; i < splitted.length; i++) {
+			var name = splitted[i];
+			var value = true;
+
+			var match = splitted[i].match(/^(.*?)=(.*)/);
+			if (match) {
+				name = match[1];
+				value = match[2];
+			}
+
+			if (name.length === 0)
+				continue;
+
+			queries[name] = value;
+		}
+
+		return queries;
+	}
+
+	function stringify_queries(queries) {
+		var queriesstr = [];
+
+		for (var query in queries) {
+			if (query.length === 0)
+				continue;
+
+			var current_query = query;
+			if (queries[query] !== true) {
+				current_query += "=" + queries[query];
+			}
+
+			queriesstr.push(current_query);
+		}
+
+		return queriesstr.join("&");
+	}
+
 	function remove_queries(url, queries) {
 		if (!is_array(queries)) {
 			queries = [queries];
@@ -3712,6 +3758,21 @@ var $$IMU_EXPORT$$;
 		}
 
 		return beforequery + afterquery;
+	}
+
+	function add_queries(url, queries) {
+		var parsed_queries = get_queries(url);
+
+		for (var query in queries) {
+			parsed_queries[query] = queries[query];
+		}
+
+		var newquerystring = stringify_queries(parsed_queries);
+		if (newquerystring) {
+			return url.replace(/^([^#]*?)(?:\?.*)?$/, "$1?" + newquerystring);
+		} else {
+			return url;
+		}
 	}
 
 	function fuzzify_text(str) {
@@ -5533,6 +5594,22 @@ var $$IMU_EXPORT$$;
 		return possible_infos;
 	};
 
+	common_functions.get_twitter_caption = function(el) {
+		var currentel = el;
+		while ((currentel = currentel.parentElement)) {
+			if (currentel.tagName === "ARTICLE") {
+				var captiondiv = currentel.querySelectorAll("div[lang]");
+				if (captiondiv && captiondiv.length === 1) {
+					return captiondiv[0].innerText;
+				}
+
+				break;
+			}
+		}
+
+		return null;
+	};
+
 	common_functions.get_twitter_video_tweet = function(el, window) {
 		if (el.tagName !== "VIDEO" || !el.src.match(/^blob:/))
 			return null;
@@ -7212,28 +7289,45 @@ var $$IMU_EXPORT$$;
 		}
 
 		if ((domain === "pbs.twimg.com" &&
-			 /:\/\/[^/]+\/+(?:media|card_img|ext_tw_video_thumb)\//.test(src)) ||
+			 /:\/\/[^/]+\/+(?:media|(?:card|ad)_img|ext_tw_video_thumb)\//.test(src)) ||
 			(domain === "ton.twitter.com" &&
 			 src.indexOf("/ton/data/dm/") >= 0)) {
 
 
+			obj = {
+				url: src
+			};
+
+			if (options && options.element && host_domain_nosub === "twitter.com") {
+				var caption = common_functions.get_twitter_caption(options.element);
+				if (caption) {
+					obj.extra = {caption: caption};
+				}
+			}
+
 			newsrc = src
 				.replace(/:([^/?]+)(.*)?$/, "$2?name=$1")
 				.replace(/(\?.*)\?name=/, "$1&name=");
-			if (newsrc !== src)
-				return newsrc;
+			if (newsrc !== src) {
+				obj.url = newsrc;
+				return obj;
+			}
 
-			if (src.indexOf("/card_img/") < 0) {
+			if (!(/\/(?:card|ad)_img\//.test(src))) {
 				newsrc = src
 					.replace(/(\/[^/.?]+)\?(.*?&)?format=([^&]*)(.*?$)?/, "$1.$3?$2$4")
 					.replace(/\?&/, "?")
 					.replace(/[?&]+$/, "");
-				if (newsrc !== src)
-					return newsrc;
+
+				if (newsrc !== src) {
+					obj.url = newsrc;
+					return obj;
+				}
 			}
 
 			var names = ["orig", "4096x4096", "large", "medium"];
-			var obj = [];
+			var baseobj = obj;
+			obj = [];
 
 			var name = src.match(/[?&]name=([^&]+)/);
 			if (name)
@@ -7245,11 +7339,19 @@ var $$IMU_EXPORT$$;
 			if (end < 0)
 				end = names.length;
 
+			var obj_add = function(x) {
+				var newobj = deepcopy(baseobj);
+				newobj.url = x;
+
+				obj.push(newobj);
+			};
+
 			for (var i = 0; i < end; i++) {
 				newsrc = src
 					.replace(/(\.[a-z]+)\?(?:(.*)&)?format=[^&]+/, "$1?$2&")
 					.replace(/&$/, "");
-				newsrc = newsrc.replace(/([?&]name=)[^&]+/, "$1" + names[i]);
+
+				newsrc = add_queries(newsrc, {name: names[i]});
 
 				if (false) {
 					newsrc = src.replace(/([?&]name=)[^&]+(&.*)?$/, "$1" + names[i] + "$2");
@@ -7260,35 +7362,51 @@ var $$IMU_EXPORT$$;
 				}
 
 				if (newsrc.match(/\.png(\?.*)?$/)) {
-					obj.push(newsrc);
-					obj.push(newsrc.replace(/\.png(\?.*)?$/, ".jpg$1"));
+					obj_add(newsrc);
+					obj_add(newsrc.replace(/\.png(\?.*)?$/, ".jpg$1"));
 				} else if (newsrc.match(/\.jpg(\?.*)?$/)) {
-					obj.push(newsrc.replace(/\.jpg(\?.*)?$/, ".png$1"));
-					obj.push(newsrc);
+					obj_add(newsrc.replace(/\.jpg(\?.*)?$/, ".png$1"));
+					obj_add(newsrc);
 				} else {
-					obj.push(newsrc);
+					obj_add(newsrc);
 				}
 			}
 
-			obj.push(src);
+			obj_add(src);
 
 			return obj;
 		}
 
 		if (domain === "pbs.twimg.com" &&
 			src.indexOf("pbs.twimg.com/profile_images/") >= 0) {
-			return src
+			newsrc = src
 				.replace(/[?#].*$/, "")
 				.replace(/_bigger\.([^/_]*)$/, "\.$1")
 				.replace(/_normal\.([^/_]*)$/, "\.$1")
 				.replace(/_mini\.([^/_]*)$/, "\.$1")
 				.replace(/_reasonably_small\.([^/_]*)$/, "\.$1")
 				.replace(/_[0-9]+x[0-9]+\.([^/_]*)$/, "\.$1");
+			if (newsrc !== src)
+				return newsrc;
 		}
 
 		if (domain === "pbs.twimg.com" &&
 			src.indexOf("pbs.twimg.com/profile_banners/") >= 0) {
-			return src.replace(/\/[0-9]+x[0-9]+$/, "");
+			newsrc = src.replace(/\/[0-9]+x[0-9]+$/, "");
+			if (newsrc !== src)
+				return newsrc;
+		}
+
+		if (host_domain_nosub === "twitter.com" && options && options.element) {
+			var caption = common_functions.get_twitter_caption(options.element);
+			if (caption) {
+				return {
+					url: src,
+					extra: {
+						caption: caption
+					}
+				};
+			}
 		}
 
 		if (domain === "ytimg.googleusercontent.com" ||
@@ -7416,6 +7534,17 @@ var $$IMU_EXPORT$$;
 				return newsrc;
 		}
 
+
+		if (host_domain_nosub === "yahoo.com" && host_domain.indexOf("search.") >= 0 && options.element) {
+			if (options.element.parentElement && options.element.parentElement.tagName === "A") {
+				match = options.element.parentElement.href.match(/^[a-z]+:\/\/[^/]*images\.search\.[^/]+\/+(?:search\/+images|images\/+view)(?:;.*?)\?(?:.*&)?imgurl=([^&]+)/);
+				if (match) {
+					newsrc = add_http(decodeURIComponent(match[1]));
+					if (newsrc !== src)
+						return newsrc;
+				}
+			}
+		}
 
 		if ((domain_nosub === "yimg.com" && domain.match(/^(?:[sl]|ct)[0-9]*\.yimg\.com/)) ||
 		   domain_nosub === "yahoo.com.tw") {
@@ -11901,6 +12030,13 @@ var $$IMU_EXPORT$$;
 			return decodeURIComponent(src.replace(/.*\/pic.*?[?&]url=([^&]*).*?$/, "$1"));
 		}
 
+		if (domain_nosub === "mail.ru" && /^content-[0-9]+\.foto\.my\./.test(domain)) {
+			return {
+				url: src.replace(/(\/community\/+[^/]+\/+_groupsphoto\/+)i(-[0-9]+\.[^/.?#]+)(?:[?#].*)?$/, "$1b$2"),
+				can_head: false // 400
+			};
+		}
+
 		if (domain_nosub === "mail.ru" &&
 			domain.match(/^avt.*\.foto\.mail\.ru/)) {
 			return src.replace(/\/_avatar[0-9]*(?:[?#].*)?$/, "/_avatarbig");
@@ -14072,6 +14208,19 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/s[0-9]+x[0-9]+(?:[?#].*)?$/, "/original");
 		}
 
+		if ((host_domain_nowww === "yandex.ru" ||
+			 host_domain_nowww === "yandex.com")
+			 && options && options.element) {
+			if (options.element.parentElement && options.element.parentElement.tagName === "A") {
+				match = options.element.parentElement.href.match(/^[a-z]+:\/\/[^/]+\/+images\/+search\?(?:.*&)?img_url=([^&]+)/);
+				if (match) {
+					newsrc = decodeuri_ifneeded(match[1]);
+					if (newsrc !== src)
+						return newsrc;
+				}
+			}
+		}
+
 		if (domain === "img-fotki.yandex.ru") {
 			return src.replace(/_[^-/._]*(\.[^/.]*)?$/, "_orig$1");
 		}
@@ -15344,7 +15493,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "cdn.britannica.com") {
-			return src.replace(/(:\/\/[^/]*\/)(?:s:)?[0-9]+x[0-9]+\//, "$1");
+			return src.replace(/(:\/\/[^/]*\/)(?:s:)?[0-9]+x[0-9]+(?:,[^/]+)?\//, "$1");
 		}
 
 		if (domain === "cdn.awsli.com.br") {
@@ -15541,13 +15690,98 @@ var $$IMU_EXPORT$$;
 
 		if (domain_nosub === "giphy.com" && domain.match(/^(?:media[0-9]*|i)\./)) {
 
-			newsrc = src.replace(/:\/\/media[0-9]*\./, "://i.");
-			if (newsrc !== src)
-				return newsrc;
+			var baseobj = {
+				url: src,
+				headers: {
+					Referer: "https://giphy.com/"
+				}
+			};
+			obj = baseobj;
 
-			newsrc = src.replace(/\/(?:giphy|[0-9]+[whs_]*)\.(?:gif|webp|mp4)/, "/source.gif");
-			if (newsrc !== src)
-				return newsrc;
+			match = src.match(/\/media\/+([^/]{10,})\/+/);
+			if (match) {
+				var get_giphy_page = function(id) {
+					return "https://giphy.com/gifs/" + id;
+				};
+
+				id = match[1];
+				var page = get_giphy_page(id);
+				baseobj.extra = {page: page};
+
+				var query_giphy = function(id, cb) {
+					var cache_key = "giphy:" + id;
+					api_cache.fetch(cache_key, cb, function(done) {
+						options.do_request({
+							url: get_giphy_page(id),
+							method: "GET",
+							headers: {
+								Referer: ""
+							},
+							onload: function(result) {
+								if (result.readyState !== 4)
+									return;
+
+								if (result.status !== 200) {
+									console_error(result);
+									return done(null, false);
+								}
+
+								var match = result.responseText.match(/<script>\s*Giphy\.renderDesktop\(.*?{\s*gif:\s*({.+}),/);
+								if (match) {
+									try {
+										var json = JSON_parse(match[1]);
+										return done(json, 6*60*60);
+									} catch (e) {
+										console_error(e);
+									}
+								} else {
+									console_warn("No match found", result);
+								}
+
+								done(null, false);
+							}
+						});
+					});
+				};
+
+				if (options && options.do_request && options.cb) {
+					query_giphy(id, function(data) {
+						var images = data.images;
+
+						var get_image = function(obj) {
+							var ourobj = deepcopy(baseobj);
+							ourobj.url = obj.url;
+							return ourobj;
+						}
+
+						if (images.source) {
+							return options.cb(get_image(images.source));
+						} else {
+							return options.cb(null);
+						}
+					});
+
+					return {
+						waiting: true
+					};
+				}
+			}
+
+			if (false) {
+				newsrc = src.replace(/:\/\/media[0-9]*\./, "://i.");
+				if (newsrc !== src) {
+					obj.url = newsrc;
+					return obj;
+				}
+
+				newsrc = src.replace(/\/(?:giphy|[0-9]+[whs_]*)\.(?:gif|webp|mp4)/, "/source.mp4");
+				if (newsrc !== src) {
+					obj.url = newsrc;
+					return obj;
+				}
+			}
+
+			return obj;
 		}
 
 		if (domain === "pics.dmm.com" ||
@@ -20495,6 +20729,22 @@ var $$IMU_EXPORT$$;
 			return add_http(decodeURIComponent(src.replace(/^[a-z]+:\/\/[^/]*\/.*?[?&]url[0-9]*=([^&]*).*?$/, "$1")));
 		}
 
+		if (domain_nosub === "imgsmail.ru" &&
+			domain.match(/^filapp[0-9]*\./)) {
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+pic.*?[?^]url=([^&]*).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+		}
+
+		if (domain_nosub === "imgsmail.ru" && /^my[0-9]*\./.test(domain)) {
+			if (/\/mail\/+ru\/+images\/+my\/+compass\/+static\//.test(src)) {
+				return {
+					url: src,
+					bad: "mask"
+				};
+			}
+		}
+
 		if (domain_nowww === "pornoonline.com.pl") {
 			return src.replace(/(\/images\/galerie\/[0-9]+\/)[a-z]+\/[a-z]+_([0-9a-f]+\.[^/.]*)$/, "$1$2");
 		}
@@ -22472,13 +22722,6 @@ var $$IMU_EXPORT$$;
 							   "$1$2$3");
 		}
 
-		if (domain_nosub === "imgsmail.ru" &&
-			domain.match(/^filapp[0-9]*\./)) {
-			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+pic.*?[?^]url=([^&]*).*?$/, "$1");
-			if (newsrc !== src)
-				return decodeURIComponent(newsrc);
-		}
-
 		if (domain_nosub === "thetimes.co.uk" && src.indexOf("/imageserver/image/") >= 0) {
 			return {
 				url: src.replace(/(?:\?.*)?$/, "?resize=999999999"),
@@ -24378,7 +24621,7 @@ var $$IMU_EXPORT$$;
 
 		if (domain === "img.nga.178.com") {
 			return {
-				url: src.replace(/(\/attachments\/+[^/]*_[0-9]{6}\/+[0-9]+\/+[^/]*)\.(?:thumb|medium)\.[^/.]*(?:[?#].*)?$/, "$1"),
+				url: src.replace(/(\/attachments\/+[^/]*_[0-9]{6}\/+[0-9]+\/+[^/]*)\.(?:thumb|medium)(?:_[a-z])?\.[^/.]*(?:[?#].*)?$/, "$1"),
 				headers: {
 					Referer: null
 				},
@@ -33189,6 +33432,28 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/public\/+main\/+[^/]+\/+)x[0-9]*_(photo_)/, "$1$2");
 		}
 
+		if (domain === "images.findagrave.com") {
+			obj = {
+				url: src.replace(/\/photo(?:Thumbnails|s[0-9]+)\/+photos\/+/, "/photos/"),
+				head_wrong_contentlength: true
+			};
+
+			match = src.match(/\/photos\/+[0-9]{4}\/+[0-9]+\/+([0-9]+)_[0-9]+\./);
+			if (match) {
+				obj.extra = {page: "https://www.findagrave.com/memorial/" + match[1]};
+			}
+
+			return obj;
+		}
+
+		if (domain_nosub === "watson.de") {
+			return src.replace(/(\/imgdb\/+[0-9a-f]+\/+)[^/]+,[^/]+\/+([0-9]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain === "img.zvuqa.net") {
+			return src.replace(/\/artist[0-9]+x[0-9]+\/+/, "/artist-min/");
+		}
+
 
 
 
@@ -35637,6 +35902,34 @@ var $$IMU_EXPORT$$;
 		}
 	}
 
+	var request_permission = function(permission, cb) {
+		if (!is_extension)
+			return cb(false);
+
+		// This has to be done in the content script under firefox: https://github.com/qsniyg/maxurl/issues/254
+		if (true) {
+			try {
+				chrome.permissions.request({
+					permissions: [permission]
+				}, function(granted) {
+					cb(granted);
+				});
+			} catch(e) {
+				console_error(e);
+				cb(false);
+			}
+		} else {
+			extension_send_message({
+				type: "permission",
+				data: {
+					permission: permission
+				}
+			}, function(result) {
+				cb(result.data.granted);
+			});
+		}
+	};
+
 	var current_options_tab = "general";
 	function do_options() {
 		update_dark_mode();
@@ -36301,13 +36594,8 @@ var $$IMU_EXPORT$$;
 
 				var do_update_setting = function(setting, new_value, meta) {
 					if (is_extension && meta.required_permission) {
-						extension_send_message({
-							type: "permission",
-							data: {
-								permission: meta.required_permission
-							}
-						}, function(result) {
-							if (result.data.granted) {
+						request_permission(meta.required_permission, function(granted) {
+							if (granted) {
 								do_update_setting_real(setting, new_value, meta);
 							} else {
 								do_options();
@@ -40284,14 +40572,28 @@ var $$IMU_EXPORT$$;
 
 					var ssources = [];
 					var srcset = el.srcset;
+
+					// https://www.erinyamagata.com/art-direction/kiernan-shipka
+					// https://format-com-cld-res.cloudinary.com/image/private/s--hNRUHHWH--/c_crop,h_1596,w_1249,x_0,y_0/c_fill,g_center,w_2500/fl_keep_iptc.progressive,q_95/v1/986aaf7dd74bd5041ddfc495c430bf0d/KShipkaR29MW_FULL_3468.jpg?2500 2500w 3194h, https://format-com-cld-res.cloudinary.com/image/private/s--VSup0NR3--/c_crop,h_1596,w_1249,x_0,y_0/c_fill,g_center,w_900/fl_keep_iptc.progressive,q_95/v1/986aaf7dd74bd5041ddfc495c430bf0d/KShipkaR29MW_FULL_3468.jpg?900 900w 1150h
+					// newlines: https://www.rt.com/russia/447357-miss-moscow-2018-photos/
+					//
+					// https://cdni.rt.com/files/2018.12/xxs/5c221e1ffc7e9397018b4600.jpg 280w,
+					// https://cdni.rt.com/files/2018.12/xs/5c221e1ffc7e9397018b4601.jpg 320w,
+					// https://cdni.rt.com/files/2018.12/thumbnail/5c221e1ffc7e9397018b45ff.jpg 460w,
+					// https://cdni.rt.com/files/2018.12/m/5c221e1ffc7e9397018b4602.jpg 540w,
+					// https://cdni.rt.com/files/2018.12/l/5c221e1ffc7e9397018b4603.jpg 768w,
+					// https://cdni.rt.com/files/2018.12/article/5c221e1ffc7e9397018b45fe.jpg 980w,
+					// https://cdni.rt.com/files/2018.12/xxl/5c221e20fc7e9397018b4604.jpg 1240w
 					while (srcset.length > 0) {
 						var old_srcset = srcset;
-						srcset = srcset.replace(/^[,\s]+/, "");
-						var match = srcset.match(/^(\S*\s+[^,]+)/);
+						srcset = srcset.replace(/^\s+/, "");
+						var match = srcset.match(/^(\S+(?:\s+[^,]+)?)(?:,[\s\S]*)?\s*$/);
 						if (match) {
-							ssources.push(match[1]);
+							ssources.push(match[1].replace(/\s*$/, ""));
 							srcset = srcset.substr(match[1].length);
 						}
+
+						srcset = srcset.replace(/^\s*,/, "");
 						if (srcset === old_srcset)
 							break;
 					}
@@ -40304,10 +40606,9 @@ var $$IMU_EXPORT$$;
 
 					// https://www.gamestar.de/artikel/red-dead-redemption-2-pc-vorabversion-mit-limit-bei-120-fps-directx-12-und-vulkan,3350718.html
 					// sidebar articles: //8images.cgames.de/images/gamestar/256/red-dead-redemption-2_6062507.jpg, //8images.cgames.de/images/gamestar/210/red-dead-redemption-2_6062507.jpg 2x
-					// newlines: https://www.rt.com/russia/447357-miss-moscow-2018-photos/
 					for (var i = 0; i < ssources.length; i++) {
-						var src = norm(ssources[i].replace(/(?:,\s*|\s+)[\s\S]*/, ""));
-						var desc = ssources[i].slice(src.length).replace(/^,?\s*([\s\S]*?)\s*$/, "$1");
+						var src = norm(ssources[i].replace(/^(\S+)(?:\s+[\s\S]+)?\s*$/, "$1"));
+						var desc = ssources[i].slice(src.length).replace(/^\s*([\s\S]*?)\s*$/, "$1");
 
 						if (!addImage(src, el, {layer:layer}))
 							continue;
@@ -40319,18 +40620,26 @@ var $$IMU_EXPORT$$;
 						if (desc) {
 							sources[src].desc = desc;
 
-							var whxmatch = desc.match(/^\s*([0-9.]+)([whx])\s*$/);
-							if (whxmatch) {
-								var number = parseFloat(whxmatch[1]);
+							// https://format-com-cld-res.cloudinary.com/image/pr…dc82/004_003_03-000083520001.jpg?2500 2500w 1831h
+							while (desc.length > 0) {
+								desc = desc.replace(/^\s+/, "");
+								var whxmatch = desc.match(/^([0-9.]+)([whx])(?:\s+[0-9.]+[\s\S]*)?\s*$/);
+								if (whxmatch) {
+									var number = parseFloat(whxmatch[1]);
 
-								if (number > 0) {
-									// if width/height/desc_x > number, then number is probably more accurate (multiple els, see rt link above)
-									if (whxmatch[2] === "w" && (!sources[src].width || sources[src].width > number))
-										sources[src].width = number;
-									else if (whxmatch[2] === "h" && (!sources[src].height || sources[src].height > number))
-										sources[src].height = number;
-									else if (whxmatch[2] === "x" && (!sources[src].desc_x || sources[src].desc_x > number))
-										sources[src].desc_x = number;
+									if (number > 0) {
+										// if width/height/desc_x > number, then number is probably more accurate (multiple els, see rt link above)
+										if (whxmatch[2] === "w" && (!sources[src].width || sources[src].width > number))
+											sources[src].width = number;
+										else if (whxmatch[2] === "h" && (!sources[src].height || sources[src].height > number))
+											sources[src].height = number;
+										else if (whxmatch[2] === "x" && (!sources[src].desc_x || sources[src].desc_x > number))
+											sources[src].desc_x = number;
+									}
+
+									desc = desc.substr(whxmatch[1].length + whxmatch[2].length);
+								} else {
+									break;
 								}
 							}
 						}
@@ -40451,10 +40760,17 @@ var $$IMU_EXPORT$$;
 			}
 
 			for (var i = 0; i < els.length; i++) {
+				// sidebar articles on https://www.rt.com/russia/447357-miss-moscow-2018-photos/
+				// the <picture> element has a size of 0, and hence isn't added to find_els_at_point
+				if (els[i].tagName === "IMG" && els[i].parentElement && els[i].parentElement.tagName === "PICTURE" && els.indexOf(els[i].parentElement) < 0) {
+					els.splice(i + 1, 0, els[i].parentElement);
+				}
+
 				// remove every element before PICTURE as they will be added automatically anyways
 				// this messes up the layering
 				if (els[i].tagName === "PICTURE" && i == 1) {
 					els.splice(0, i);
+					i = 0;
 					break;
 				}
 			}

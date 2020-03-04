@@ -1,3 +1,23 @@
+0.12.17
+
+New features:
+
+ * Support for ~5 new websites (using ~5 new rules)
+
+Improvements:
+
+ * Don't default to using data:// URLs when replacing images for the extension
+ * Various improvements/fixes to existing rules (including Giphy, Twitter - thanks to barrenden)
+
+Bugfixes:
+
+ * Adding popup links to history now works on Firefox
+ * Fix `srcset` parsing to confirm more to the whatwg spec
+ * Ensure `<picture>` parent elements are considered when finding an image
+ * Options link color is fixed for dark background
+
+---
+
 0.12.16
 
 New features:
