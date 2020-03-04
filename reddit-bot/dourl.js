@@ -1,4 +1,5 @@
 var request = require("request");
+//require("request-debug")(request);
 var bigimage = require('../userscript.user.js');
 var probe = require('probe-image-size');
 var iconv = require("iconv-lite");

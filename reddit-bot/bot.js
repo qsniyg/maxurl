@@ -1,11 +1,5 @@
-var bigimage = require('../userscript.user.js');
-var probe = require('probe-image-size');
-//var url = require('url');
 const NodeCache = require( "node-cache" );
 var fs = require("fs");
-var request = require("request");
-//require("request-debug")(request);
-var iconv = require("iconv-lite");
 
 var blacklist_json = JSON.parse(fs.readFileSync("./blacklist.json"));
 var env_json = {};
