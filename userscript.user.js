@@ -52846,6 +52846,12 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/imgdb\/+[0-9a-f]+\/+)[^/]+,[^/]+\/+([0-9]+)(?:[?#].*)?$/, "$1$2");
 		}
 
+		if (domain === "img.zvuqa.net") {
+			// https://img.zvuqa.net/artist40x40/halsey.jpg
+			//   https://img.zvuqa.net/artist-min/halsey.jpg
+			return src.replace(/\/artist[0-9]+x[0-9]+\/+/, "/artist-min/");
+		}
+
 
 
 
