@@ -1,32 +1,11 @@
 var bigimage = require('../userscript.user.js');
 var probe = require('probe-image-size');
-var url = require('url');
+//var url = require('url');
 const NodeCache = require( "node-cache" );
 var fs = require("fs");
 var request = require("request");
 //require("request-debug")(request);
 var iconv = require("iconv-lite");
-
-var MongoClient = require('mongodb').MongoClient;
-var url = "mongodb://localhost:27017/";
-
-var db = null;
-var db_content = null;
-
-var usemongo = false;
-if (usemongo) {
-  MongoClient.connect(url, (err, client) => {
-    if (err) {
-      console.dir(err);
-      return;
-    }
-
-    console.log("Connected to MongoDB");
-
-    db = client.db("maximage");
-    db_content = db.collection("content");
-  });
-}
 
 var blacklist_json = JSON.parse(fs.readFileSync("./blacklist.json"));
 var env_json = {};
@@ -43,9 +22,6 @@ env_json.imgur_cookie = process.env.IMGUR_COOKIE;
 //env_json.password = process.env.REDDIT_PASS;
 
 //console.dir(env_json);
-
-var thresh_px = 200;
-var disable_nsfw = false;
 
 const Snoowrap = require('snoowrap');
 const Snoostorm = require('snoostorm');
@@ -242,8 +218,7 @@ function dourl_inner(big, url, post, options) {
   var log_entry = {
     reddit: {},
     blacklisted: false,
-    posted: false,
-    nsfw: !disable_nsfw
+    posted: false
   };
 
   var savefields = [
@@ -271,9 +246,6 @@ function dourl_inner(big, url, post, options) {
     log_if_image(log_entry, post);
     return;
   }
-
-  if (post && post.over_18 && disable_nsfw)
-    return;
 
   /*if (big === url) {
     return;
@@ -525,7 +497,7 @@ var base_options = {
   min_ratio: 1.3
 };
 
-function dourl(url, post, options) {
+var dourl = function(url, post, options) {
   if (!url.match(/^https?:\/\//) ||
       url.match(/^https?:\/\/(127\.0\.0\.1|192\.168\.|10\.[0-9]+\.|localhost|[^/.]+\/)/)) {
     console.log("Invalid URL: " + post.url);
@@ -634,6 +606,8 @@ function dourl(url, post, options) {
 
   bigimage(url, bigimage_options);
 }
+
+var dourl = require("./dourl.js");
 
 const links = new NodeCache({ stdTTL: 600, checkperiod: 100 });
 
@@ -751,10 +725,8 @@ if (true) {
     }
 
     var options = {
-      removable: true,
-      explain_original: true,
-      original_page: true,
-      min_ratio: 1.3
+      imgur_ua: env_json.imgur_ua,
+      imgur_cookie: env_json.imgur_cookie
     };
 
     if (post.subreddit.display_name) {
