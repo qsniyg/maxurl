@@ -401,10 +401,13 @@ function dourl_inner(big, url, post, options) {
               big.is_original = true;
             }
 
+            var is_original = big.is_original;
+
             if (options.explain_original) {
               // explain imgur, as the urls often confuse people
               if (orig_domain === "i.imgur.com" &&
                   new_domain === "i.imgur.com" && !big.is_original) {
+                is_original = true;
                 comment += "*This is the original size uploaded to imgur";
 
                 if (url.length - 1 === newdata.url.length) {
@@ -420,6 +423,11 @@ function dourl_inner(big, url, post, options) {
               } else if (big.is_original) {
                 comment += "*This is the original size of the image stored on the site. If the image looks upscaled, it's likely because the image stored on the site is itself upscaled.*\n\n";
               }
+            }
+
+            if (options.only_original && !is_original) {
+              console.log("Not original, ignoring");
+              return;
             }
 
             if (is_googlephotos(orig_domain, url) &&
@@ -513,6 +521,7 @@ var base_options = {
   explain_original: true,
   original_page: true,
   use_blacklist: true,
+  only_original: false,
   min_ratio: 1.3
 };
 
