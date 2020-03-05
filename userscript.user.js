@@ -52852,6 +52852,42 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/artist[0-9]+x[0-9]+\/+/, "/artist-min/");
 		}
 
+		if (domain_nowww === "xboxplay.games") {
+			// https://xboxplay.games/imagenes/redimensionar2.php?imagen=https://respawnfirst.com/wp-content/uploads/2020/02/Wolcen-Primordial-Affinity.jpg&an=722&al=400
+			//   https://respawnfirst.com/wp-content/uploads/2020/02/Wolcen-Primordial-Affinity.jpg
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+imagenes\/+redimensionar2\.php\?(?:.*&)?imagen=([^&]+).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+		}
+
+		if (domain === "owo.lewd.ninja") {
+			// https://owo.lewd.ninja/images/games/3810_1968aee2b8672a3554ce7eeebdc3e28c_thumb.jpg
+			//   https://owo.lewd.ninja/images/games/3810_1968aee2b8672a3554ce7eeebdc3e28c.jpg
+			// https://owo.lewd.ninja/images/games/b_7035_115f6ceba5cef5d5786aebf89d35248a.png
+			//   https://owo.lewd.ninja/images/games/7035_115f6ceba5cef5d5786aebf89d35248a.png
+			return src.replace(/(\/images\/+games\/+)(?:[a-z]_)?([0-9]+_[0-9a-f]{10,})(?:_thumb)?(\.[^/.]+)(?:[?#].*)?$/, "$1$2$3");
+		}
+
+		if (domain_nowww === "kinogo.by") {
+			// https://kinogo.by/uploads/cache/8/8/0/3/6/3/2/7/d/1573951997-628938384-dzhumandzhi-novyy-uroven-KINOGO_BY-200x300.jpg
+			//   https://kinogo.by/uploads/posts/2019-11/1573951997-628938384-dzhumandzhi-novyy-uroven-KINOGO_BY.jpg
+			// https://kinogo.by/uploads/cache/c/a/8/3/4/b/a/b/4/261272-kinogo-by-200x300.jpg
+			//   https://kinogo.by/uploads/posters/261272-kinogo-by.jpg
+			match = src.match(/\/uploads\/+cache\/+(?:[0-9a-f]\/+){9}([0-9]+-[^/]+)-[0-9]+x[0-9]+(\.[^/.]+)(?:[?#].*)?$/);
+			if (match) {
+				obj = [];
+				obj.push(src.replace(/\/uploads\/+.*/, "/uploads/posters/" + match[1] + match[2]));
+
+				var match1 = match[1].match(/^([0-9]{10,})-[0-9]+-/);
+				if (match1) {
+					var date = new Date(parseInt(match1[1]) * 1000);
+					obj.push(src.replace(/\/uploads\/.*/, "/uploads/posts/" + date.getUTCFullYear() + "-" + (date.getUTCMonth() + 1) + "/" + match[1] + match[2]));
+				}
+
+				return obj;
+			}
+		}
+
 
 
 
