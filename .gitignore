@@ -1,5 +1,5 @@
-.env
-.env.json
+.env*
+.env*.json
 node_modules
 *~
 site/

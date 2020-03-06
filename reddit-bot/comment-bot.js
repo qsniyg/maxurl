@@ -4,7 +4,7 @@ var fs = require("fs");
 var blacklist_json = JSON.parse(fs.readFileSync("./blacklist.json"));
 var env_json = {};
 
-require('dotenv').config();
+require('dotenv').config({path: "./.env-comment"});
 env_json.user_agent = process.env.USERAGENT;
 env_json.client_id = process.env.CLIENT_ID;
 env_json.client_secret = process.env.CLIENT_SECRET;
