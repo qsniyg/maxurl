@@ -5,11 +5,11 @@
   "dependencies": {
     "dotenv": "^5.0.1",
     "iconv-lite": "^0.5.0",
-    "monk": "^6.0.6",
+    "js-yaml": "^3.13.1",
+    "mongodb": "^3.5.4",
     "node-cache": "^4.2.0",
     "probe-image-size": "git+https://github.com/qsniyg/probe-image-size.git",
-    "reddit-oauth-helper": "^0.3.0",
-    "request": "^2.85.0",
+    "request": "^2.88.0",
     "snoostorm": "0.0.5",
     "snoowrap": "^1.15.2"
   }
