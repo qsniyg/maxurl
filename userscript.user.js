@@ -1408,6 +1408,8 @@ var $$IMU_EXPORT$$;
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-531549043
 		//mouseover_close_on_leave_el: true,
 		mouseover_close_el_policy: "both",
+		// thanks to hans dokha on greasyfork for the idea: https://greasyfork.org/en/forum/discussion/71894/this-script-is-a-dream-come-true-just-1-thing
+		mouseover_close_click_outside: false,
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/126
 		mouseover_allow_partial: is_extension ? "media" : "video",
 		mouseover_use_blob_over_data: false,
@@ -2323,6 +2325,15 @@ var $$IMU_EXPORT$$;
 				mouseover_open_behavior: "popup",
 				mouseover_trigger_behavior: "mouse",
 				mouseover_position: "beside_cursor"
+			},
+			category: "popup",
+			subcategory: "close_behavior"
+		},
+		mouseover_close_click_outside: {
+			name: "Clicking outside the popup closes",
+			description: "Closes the popup when the mouse clicks outside of it",
+			requires: {
+				mouseover_open_behavior: "popup"
 			},
 			category: "popup",
 			subcategory: "close_behavior"
@@ -58266,6 +58277,7 @@ var $$IMU_EXPORT$$;
 
 		var processing_list = [];
 		var popups = [];
+		var mask_el = null;
 		var popup_obj = null;
 		var popup_objecturl = null;
 		var popup_el = null;
@@ -58519,6 +58531,11 @@ var $$IMU_EXPORT$$;
 					removepopups();
 				}
 			});
+
+			if (mask_el) {
+				mask_el.parentElement.removeChild(mask_el);
+				mask_el = null;
+			}
 
 			if (!from_remote && can_use_remote()) {
 				if (is_in_iframe) {
@@ -58827,6 +58844,37 @@ var $$IMU_EXPORT$$;
 				var fgcolor = "#fff";
 				var textcolor = "#fff";
 				var shadowcolor = "rgba(0,0,0,.5)";
+
+				var setup_mask_el = function(mask) {
+					set_el_all_initial(mask);
+					set_important_style(mask, "position", "fixed");
+					set_important_style(mask, maxzindex - 3);
+					set_important_style(mask, "width", "100%");
+					set_important_style(mask, "height", "100%");
+					set_important_style(mask, "left", "0px");
+					set_important_style(mask, "top", "0px");
+
+					mask.addEventListener("click", function() {
+						if (!settings.mouseover_close_click_outside)
+							return;
+
+						set_important_style(mask, "pointer-events", "none");
+						resetpopups();
+					}, true);
+
+					return mask;
+				};
+
+				if (mask_el) {
+					mask_el.parentElement.removeChild(mask_el);
+					mask_el = null;
+				}
+
+				if (settings.mouseover_close_click_outside) {
+					mask_el = document.createElement("div");
+					setup_mask_el(mask_el);
+					document.documentElement.appendChild(mask_el);
+				}
 
 				var outerdiv = document.createElement("div");
 				set_el_all_initial(outerdiv);
