@@ -1478,6 +1478,8 @@ var $$IMU_EXPORT$$;
 		// thanks to acid-crash on github for the idea: https://github.com/qsniyg/maxurl/issues/20
 		mouseover_styles: "",
 		mouseover_fade_time: 100,
+		mouseover_mask_styles: "",
+		mouseover_mask_fade_time: 100,
 		mouseover_ui_styles: "",
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-541065461
 		mouseover_wait_use_el: false,
@@ -2827,6 +2829,31 @@ var $$IMU_EXPORT$$;
 			description: "Fade in/out time (in milliseconds) for the popup, set to 0 to disable",
 			requires: {
 				mouseover_open_behavior: "popup"
+			},
+			type: "number",
+			number_min: 0,
+			number_unit: "ms",
+			category: "popup",
+			subcategory: "popup_other"
+		},
+		mouseover_mask_styles: {
+			name: "Background CSS style",
+			description: "CSS style for the background when the popup is active",
+			requires: {
+				mouseover_open_behavior: "popup"
+			},
+			type: "textarea",
+			category: "popup",
+			subcategory: "popup_other"
+		},
+		mouseover_mask_fade_time: {
+			name: "Background fade",
+			description: "Fade in/out time (in milliseconds) for the page background, set to 0 to disable",
+			requires: {
+				mouseover_open_behavior: "popup"
+			},
+			disabled_if: {
+				mouseover_mask_styles: ""
 			},
 			type: "number",
 			number_min: 0,
@@ -58519,6 +58546,7 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		var removemask_timer = null;
 		function resetpopups(from_remote) {
 			popups.forEach(function (popup) {
 				if (settings.mouseover_fade_time > 0) {
@@ -58528,13 +58556,28 @@ var $$IMU_EXPORT$$;
 						removepopups_timer = setTimeout(removepopups, settings.mouseover_fade_time);
 					}
 				} else {
+					// FIXME: this is called for each popup
 					removepopups();
 				}
 			});
 
 			if (mask_el) {
-				mask_el.parentElement.removeChild(mask_el);
-				mask_el = null;
+				set_important_style(mask_el, "pointer-events", "none");
+
+				var remove_mask = function() {
+					mask_el.parentElement.removeChild(mask_el);
+					mask_el = null;
+				};
+
+				if (settings.mouseover_mask_fade_time > 0) {
+					set_important_style(mask_el, "opacity", 0);
+
+					if (!removemask_timer) {
+						removemask_timer = setTimeout(remove_mask, settings.mouseover_mask_fade_time);
+					}
+				} else {
+					remove_mask();
+				}
 			}
 
 			if (!from_remote && can_use_remote()) {
@@ -58847,12 +58890,27 @@ var $$IMU_EXPORT$$;
 
 				var setup_mask_el = function(mask) {
 					set_el_all_initial(mask);
+
+					if (settings.mouseover_mask_styles)
+						apply_styles(mask, settings.mouseover_mask_styles, true);
+
+					if (!settings.mouseover_close_click_outside) {
+						set_important_style(mask, "pointer-events", "none");
+					}
+
 					set_important_style(mask, "position", "fixed");
 					set_important_style(mask, maxzindex - 3);
 					set_important_style(mask, "width", "100%");
 					set_important_style(mask, "height", "100%");
 					set_important_style(mask, "left", "0px");
 					set_important_style(mask, "top", "0px");
+
+					set_important_style(mask, "transition", "opacity " + (settings.mouseover_mask_fade_time / 1000.) + "s");
+					set_important_style(mask, "opacity", 0);
+					// this is needed in order to make the transition happen
+					setTimeout(function() {
+						set_important_style(mask, "opacity", 1);
+					}, 1);
 
 					mask.addEventListener("click", function() {
 						if (!settings.mouseover_close_click_outside)
@@ -58870,7 +58928,7 @@ var $$IMU_EXPORT$$;
 					mask_el = null;
 				}
 
-				if (settings.mouseover_close_click_outside) {
+				if (settings.mouseover_close_click_outside || settings.mouseover_mask_styles) {
 					mask_el = document.createElement("div");
 					setup_mask_el(mask_el);
 					document.documentElement.appendChild(mask_el);
