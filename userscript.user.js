@@ -11957,6 +11957,9 @@ var $$IMU_EXPORT$$;
 			// http://kakaoimg.melon.co.kr/cm/album/images/021/33/148/2133148_500.jpg/melon/resize/200x200/quality/80/optimize
 			//   http://kakaoimg.melon.co.kr/cm/album/images/021/33/148/2133148_org.jpg
 			domain === "kakaoimg.melon.co.kr" ||
+			// https://cdnticket.melon.co.kr/resource/image/upload/ticketopen/2020/03/20200305093126b8c9e0c8-09cb-4cfc-90a4-462a0a2e26cd.jpg/melon/resize/160x225/strip/true
+			//   https://cdnticket.melon.co.kr/resource/image/upload/ticketopen/2020/03/20200305093126b8c9e0c8-09cb-4cfc-90a4-462a0a2e26cd.jpg
+			domain === "cdnticket.melon.co.kr" ||
 			domain === "cmtimg.melon.co.kr"/* &&
 			(src.indexOf("/images/") >= 0 ||
 			 src.indexOf("/image/") >= 0 ||
@@ -32223,7 +32226,9 @@ var $$IMU_EXPORT$$;
 		if (domain === "media.alienwarearena.com") {
 			// https://media.alienwarearena.com/thumbnail_630x315/8c559ad4f9e3a06173ff22db75ac65c8.jpg
 			//   https://media.alienwarearena.com/media/8c559ad4f9e3a06173ff22db75ac65c8.jpg
-			return src.replace(/\/thumbnail_[0-9]+x[0-9]+\/([0-9a-f]+\.[^/.]*)$/, "/media/$1");
+			// https://media.alienwarearena.com/thumb_720x405/250729179afb7d6fb923e45df7dd851b.jpg
+			//   https://media.alienwarearena.com/media/250729179afb7d6fb923e45df7dd851b.jpg
+			return src.replace(/\/thumb(?:nail)?_[0-9]+x[0-9]+\/+([0-9a-f]{10,}\.[^/.]*)$/, "/media/$1");
 		}
 
 		if (domain_nowww === "6asian.com") {
@@ -53361,6 +53366,9 @@ var $$IMU_EXPORT$$;
 			// http://dw8stlw9qt0iz.cloudfront.net/mQPnCmXmqNYQo57GciDCvFLPgAo=/fit-in/800x450/filters:format(jpeg):quality(75)/curiosity-data.s3.amazonaws.com/images/content/landscape/standard/9c8fb438-27d4-4694-ba65-1a98e8ffd426.png
 			//   http://curiosity-data.s3.amazonaws.com/images/content/landscape/standard/9c8fb438-27d4-4694-ba65-1a98e8ffd426.png
 			domain === "dw8stlw9qt0iz.cloudfront.net" ||
+			// https://images.adrise.tv/VcGv7kP97DPd9mKXEAkCpJyNVLI=/400x574/smart/img.adrise.tv/aa6d4d27-82d0-4b1d-8cb4-7566928a0389.jpg
+			//   http://img.adrise.tv/aa6d4d27-82d0-4b1d-8cb4-7566928a0389.jpg
+			domain === "images.adrise.tv" ||
 			src.match(/:\/\/[^/]*\/thumbor\/[^/]*=\//) ||
 			// https://www.orlandosentinel.com/resizer/tREpzmUU7LJX1cbkAN-unm7wL0Y=/fit-in/800x600/top/filters:fill(black)/arc-anglerfish-arc2-prod-tronc.s3.amazonaws.com/public/XC6HBG2I4VHTJGGCOYVPLBGVSM.jpg
 			//   http://arc-anglerfish-arc2-prod-tronc.s3.amazonaws.com/public/XC6HBG2I4VHTJGGCOYVPLBGVSM.jpg
