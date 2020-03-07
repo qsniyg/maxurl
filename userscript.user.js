@@ -58905,12 +58905,19 @@ var $$IMU_EXPORT$$;
 					set_important_style(mask, "left", "0px");
 					set_important_style(mask, "top", "0px");
 
-					set_important_style(mask, "transition", "opacity " + (settings.mouseover_mask_fade_time / 1000.) + "s");
-					set_important_style(mask, "opacity", 0);
-					// this is needed in order to make the transition happen
-					setTimeout(function() {
-						set_important_style(mask, "opacity", 1);
-					}, 1);
+					if (settings.mouseover_mask_fade_time > 0) {
+						set_important_style(mask, "transition", "opacity " + (settings.mouseover_mask_fade_time / 1000.) + "s");
+
+						if (!popup_el_automatic) {
+							set_important_style(mask, "opacity", 0);
+							// this is needed in order to make the transition happen
+							setTimeout(function() {
+								set_important_style(mask, "opacity", 1);
+							}, 1);
+						} else {
+							set_important_style(mask, "opacity", 1);
+						}
+					}
 
 					mask.addEventListener("click", function() {
 						if (!settings.mouseover_close_click_outside)
