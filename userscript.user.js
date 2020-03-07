@@ -6318,6 +6318,12 @@ var $$IMU_EXPORT$$;
 				.replace(/\/dims\/.*/, "");
 		}
 
+		if (domain === "tkfile.yes24.com") {
+			// http://tkfile.yes24.com/upload2/BoardNotice/202003/20200305/20200305-222.jpg/dims/quality/70/
+			//   http://tkfile.yes24.com/upload2/BoardNotice/202003/20200305/20200305-222.jpg
+			return src.replace(/(\/upload2\/.*?)\/dims\/+.*/, "$1");
+		}
+
 		if (domain === "cdn.music-flo.com") {
 			// https://cdn.music-flo.com/image/album/820/314/04/04/404314820_5e28056d.jpg?1579681134148/dims/resize/500x500/quality/90
 			//   https://cdn.music-flo.com/image/album/820/314/04/04/404314820_5e28056d.jpg
@@ -60667,58 +60673,280 @@ var $$IMU_EXPORT$$;
 				}
 			}
 
-			function get_urls_from_css(str, elstr) {
-				var emptystrregex = /^(.*?\)\s*,)?\s*url[(]["']{2}[)]/;
-				if (!str.match(/^(.*?\)\s*,)?\s*url[(]/) || emptystrregex.test(str))
-					return null;
+			function _tokenize_css_value(str) {
+				var tokensets = [];
+				var tokens = [];
 
-				// window.getComputedStyle returns the window's URL in this case for some reason, so we need the element's style to find the empty string
-				if (elstr && emptystrregex.test(elstr))
-					return null;
+				var current_token = "";
+				var quote = null;
+				var escaping = false;
+				for (var i = 0; i < str.length; i++) {
+					var char = str[i];
 
-				// https://www.cyberpunk.net/
-				// url(/build/images/home/bg-media-1440-88acc9fc.jpg),url(/build/images/home/bg-media-under-1440-498c46c1.jpg)
-				var urls = [];
-				while (str) {
-					// https://www.flickr.com/account/upgrade/pro
-					// background-image: linear-gradient(rgba(0,0,0,.2),rgba(0,0,0,.2)),url(https://combo.staticflickr.com/ap/build/images/pro/flickrpro-hero-header.jpg)
-					// url('https://t00.deviantart.net/I94eYVLky718W9_zFjV-SJ-_qm8=/300x200/filters:fixed_height(100,100):origin()/pre00/abda/th/pre/i/2013/069/9/0/black_rock_shooter_by_mrtviolet-d5xktg7.jpg');
-					var match = str.match(/^(.*\)\s*,)?\s*url[(](?:(?:'(.*?)')|(?:"(.*?)")|(?:([^)]*)))[)].*?$/);
-					if (!match)
+					if (escaping) {
+						current_token += char;
+						escaping = false;
+						continue;
+					}
+
+					if (quote) {
+						if (char === quote) {
+							quote = null;
+
+							tokens.push(current_token);
+							current_token = "";
+						} else {
+							current_token += char;
+						}
+
+						continue;
+					}
+
+					if (/\s/.test(char)) {
+						if (current_token.length > 0) {
+							tokens.push(current_token);
+							current_token = "";
+						}
+
+						continue;
+					} else if (char === '\\') {
+						escaping = true;
+						continue;
+					} else if (char === '"' || char === "'") {
+						quote = char;
+						continue;
+					} else if (char === '(') {
+						var subtokens = _tokenize_css_value(str.substr(i + 1));
+						tokens.push({name: current_token, tokens: subtokens[0]});
+						i += subtokens[1];
+						current_token = "";
+						continue;
+					} else if (char === ')') {
+						i++;
 						break;
+					} else if (char === ',') {
+						if (current_token)
+							tokens.push(current_token);
 
-					urls.unshift(norm(match[2] || match[3] || match[4]));
-					str = match[1];
+						tokensets.push(tokens);
+
+						tokens = [];
+						current_token = "";
+						continue;
+					}
+
+					current_token += char;
+				}
+
+				if (current_token)
+					tokens.push(current_token);
+
+				if (tokens)
+					tokensets.push(tokens);
+
+				return [tokensets, i];
+			}
+
+			function has_bgimage_url(tokenized) {
+				for (var i = 0; i < tokenized.length; i++) {
+					if (tokenized[i].length < 1)
+						continue;
+
+					if (typeof tokenized[i][0] !== "object")
+						continue;
+
+					var our_func = tokenized[i][0];
+
+					var funcname = our_func.name;
+
+					// TODO: support image() and cross-fade()
+					var allowed = [
+						"url",
+						"-webkit-image-set",
+						"image-set"
+					];
+
+					if (allowed.indexOf(funcname) < 0)
+						continue;
+
+					if (funcname === "url") {
+						if (our_func.tokens.length >= 1 && our_func.tokens[0].length > 0 && our_func.tokens[0][0].length > 0)
+							return true;
+					} else {
+						if (has_bgimage_url(our_func.tokens))
+							return true;
+					}
+				}
+
+				return false;
+			}
+
+			function get_urlfunc_url(func) {
+				if (typeof func !== "object")
+					return null;;
+
+				if (func.name !== "url")
+					return null;
+
+				if (func.tokens.length < 1 || func.tokens[0].length < 1 || func.tokens[0][0].length === 0)
+					return null;
+
+				return func.tokens[0][0];
+			}
+
+			function get_imageset_urls(func) {
+				var urls = [];
+				for (var i = 0; i < func.tokens.length; i++) {
+					if (func.tokens[i].length < 1) {
+						continue;
+					}
+
+					var url = get_urlfunc_url(func.tokens[i][0]);
+					if (!url)
+						continue;
+
+					var source = {
+						src: url
+					};
+
+					for (var j = 1; j < func.tokens[i].length; j++) {
+						var desc = func.tokens[i][j];
+						var whxmatch = desc.match(/^([0-9.]+)(x|dp(?:px|i|cm))$/);
+
+						if (whxmatch) {
+							var number = parseFloat(whxmatch[1]);
+
+							if (number > 0) {
+								var unit = whxmatch[2];
+
+								// https://drafts.csswg.org/css-values-3/#cm
+								if (unit === "dppx") {
+									number *= 96;
+									unit = "dpi";
+								} else if (unit === "dpcm") {
+									number *= 96/2.54;
+									unit = "dpi";
+								}
+
+								if (unit === "x")
+									source.desc_x = number;
+								else if (unit === "dpi")
+									source.dpi = number;
+							}
+						} else {
+							console_warn("Unknown descriptor: " + desc);
+						}
+					}
+
+					urls.push(source);
 				}
 
 				return urls;
 			}
 
-			function add_bgimage(layer, el, style, beforeafter) {
-				if (style.getPropertyValue("background-image")) {
-					var bgimg = style.getPropertyValue("background-image");
-					var urls = get_urls_from_css(bgimg, el.style.getPropertyValue("background-image"));
-					if (urls) {
-						for (var i = 0; i < urls.length; i++) {
-							addImage(urls[i], el, {
-								isbg: beforeafter || true,
-								layer: layer
-							});
+			function get_bgimage_urls(tokenized) {
+				var urls = [];
+
+				for (var i = 0; i < tokenized.length; i++) {
+					if (tokenized[i].length < 1)
+						continue;
+
+					if (typeof tokenized[i][0] !== "object")
+						continue;
+
+					var our_func = tokenized[i][0];
+
+					var funcname = our_func.name;
+
+					// TODO: support image() and cross-fade()
+					var allowed = [
+						"url",
+						"-webkit-image-set",
+						"image-set"
+					];
+
+					if (allowed.indexOf(funcname) < 0)
+						continue;
+
+					if (funcname === "url") {
+						var url = get_urlfunc_url(our_func);
+						if (url) {
+							urls.push(url);
+						}
+					} else if (funcname === "-webkit-image-set" || funcname === "image-set") {
+						var newurls = get_imageset_urls(our_func);
+						if (newurls) {
+							[].push.apply(urls, newurls);
 						}
 					}
 				}
 
-				if (beforeafter) {
-					if (style.getPropertyValue("content")) {
-						var urls = get_urls_from_css(style.getPropertyValue("content"));
-						if (urls) {
-							for (var i = 0; i < urls.length; i++) {
-								addImage(urls[i], el, {
-									isbg: beforeafter,
-									layer: layer
-								});
+				return urls;
+			}
+
+			function get_urls_from_css(str, elstr) {
+				var str_tokenized = _tokenize_css_value(str)[0];
+
+				if (!has_bgimage_url(str_tokenized))
+					return null;
+
+				// -webkit-image-set(url('https://carbonmade-media.accelerator.net/34754698;460x194/lossless.webp') 1x, url('https://carbonmade-media.accelerator.net/34754698;920x388/lossless.webp') 2x)
+
+				//var emptystrregex = /^(.*?\)\s*,)?\s*url[(]["']{2}[)]/;
+				//if (!str.match(/^(.*?\)\s*,)?\s*url[(]/) || emptystrregex.test(str))
+				//	return null;
+
+				// window.getComputedStyle returns the window's URL in this case for some reason, so we need the element's style to find the empty string
+				var elstr_tokenized;
+				if (elstr) {
+					elstr_tokenized = _tokenize_css_value(elstr)[0];
+					if (!has_bgimage_url(elstr_tokenized))
+						return null;
+				}
+
+				return get_bgimage_urls(str_tokenized);
+			}
+
+			function add_urls_from_css(el, str, elstr, layer, bg) {
+				var urls = get_urls_from_css(str, elstr);
+				if (urls) {
+					var url;
+
+					for (var i = 0; i < urls.length; i++) {
+						url = urls[i];
+						if (typeof url !== "string") {
+							url = url.src;
+						}
+
+						addImage(url, el, {
+							isbg: bg,
+							layer: layer
+						});
+
+						if (typeof urls[i] !== "string") {
+							var props = ["desc_x", "dpi"];
+
+							for (var j = 0; j < props.length; j++) {
+								var prop = props[j];
+
+								if (urls[i][prop] && (!sources[url][prop] || sources[url][prop] > urls[i][prop])) {
+									sources[url][prop] = urls[i][prop];
+								}
 							}
 						}
+					}
+				}
+			}
+
+			function add_bgimage(layer, el, style, beforeafter) {
+				if (style.getPropertyValue("background-image")) {
+					var bgimg = style.getPropertyValue("background-image");
+					add_urls_from_css(el, bgimg, el.style.getPropertyValue("background-image"), layer, beforeafter || true);
+				}
+
+				if (beforeafter) {
+					if (style.getPropertyValue("content")) {
+						add_urls_from_css(el, style.getPropertyValue("content"), undefined, layer, beforeafter);
 					}
 				}
 			}
@@ -60817,6 +61045,8 @@ var $$IMU_EXPORT$$;
 				var elMaxH = null;
 				var minX = 0;
 				var elX = null;
+				var minDpi = 0;
+				var elDpi = null;
 
 				var okurls = {};
 
@@ -60867,6 +61097,12 @@ var $$IMU_EXPORT$$;
 						have_something = true;
 					}
 
+					if (source.dpi && source.dpi > minDpi) {
+						dpiX = source.dpi;
+						elDpi = source;
+						have_something = true;
+					}
+
 					if (source.isbg) {
 						okurls[source.src] = true;
 						have_something = true;
@@ -60878,6 +61114,10 @@ var $$IMU_EXPORT$$;
 
 				if (minX > 1) {
 					okurls[elX.src] = true;
+				}
+
+				if (minDpi > 96) {
+					okurls[elDpi.src] = true;
 				}
 
 				if (minW > thresh && minW > minMinW) {
