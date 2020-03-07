@@ -1468,6 +1468,7 @@ var $$IMU_EXPORT$$;
 		// also thanks to 07416: https://github.com/qsniyg/maxurl/issues/25
 		mouseover_links: false,
 		mouseover_allow_canvas_el: false,
+		mouseover_allow_svg_el: true,
 		mouseover_gallery_cycle: false,
 		mouseover_gallery_prev_key: ["left"],
 		mouseover_gallery_next_key: ["right"],
@@ -2746,6 +2747,15 @@ var $$IMU_EXPORT$$;
 		mouseover_allow_canvas_el: {
 			name: "Popup for `<canvas>`",
 			description: "Allows `<canvas>` elements to be popped up as well. This will likely cause popups with any kind of web-based games, so it's recommended to keep this disabled",
+			requires: {
+				mouseover: true
+			},
+			category: "popup",
+			subcategory: "open_behavior"
+		},
+		mouseover_allow_svg_el: {
+			name: "Popup for `<svg>`",
+			description: "Allows `<svg>` elements to be popped up as well. In theory, leaving this option enabled shouldn't cause any harm",
 			requires: {
 				mouseover: true
 			},
@@ -60359,7 +60369,11 @@ var $$IMU_EXPORT$$;
 			}
 
 			if (get_tagname(el) === "SVG") {
-				return get_svg_src(el);
+				if (settings.mouseover_allow_svg_el) {
+					return get_svg_src(el);
+				} else {
+					return null;
+				}
 			}
 
 			// currentSrc is used if another image is used in the srcset
@@ -60630,7 +60644,9 @@ var $$IMU_EXPORT$$;
 					}
 				}
 
-				if (el_tagname === "SOURCE" || el_tagname === "IMG" || el_tagname === "VIDEO" || (settings.mouseover_allow_canvas_el && el_tagname === "CANVAS") || el_tagname === "SVG") {
+				if (el_tagname === "SOURCE" || el_tagname === "IMG" || el_tagname === "VIDEO" ||
+					(settings.mouseover_allow_canvas_el && el_tagname === "CANVAS") ||
+					(settings.mouseover_allow_svg_el && el_tagname === "SVG")) {
 					var el_src = get_img_src(el);
 
 					if (el_src) {
