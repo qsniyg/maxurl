@@ -52899,6 +52899,36 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain === "ip.bitcointalk.org") {
+			// https://ip.bitcointalk.org/?u=https%3A%2F%2Fcarbonmade-media.accelerator.net%2F36648513%3B1920x1080.png&t=610&c=u1C75FAk0XYcBg
+			//   https://carbonmade-media.accelerator.net/36648513;1920x1080.png
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+\?(?:.*&)?u=([^&]+).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+		}
+
+		if (domain === "carbonmade-media.accelerator.net" ||
+			// https://carbon-media.accelerator.net/00000000001/lbPC7JlrUbCbBqxAIlu79M;960x540.mp4
+			//   https://carbon-media.accelerator.net/00000000001/lbPC7JlrUbCbBqxAIlu79M;0x.mp4
+			domain === "carbon-media.accelerator.net") {
+			// {"type":"UnsupportedCommandException","message":"\u0027full()\u0027 does not have an implementation.","stackTrace":"   at Borg.Processor.Canvas.Apply(ICommand command) in E:\\Processor\\src\\Borg.Processor\\Canvas\\Canvas.cs:line 135\r\n   at Borg.Processor.ProcessingController.ProcessInternal(Stream inputStream, MediaInfo source, Pipeline pipeline, Profiler profiler, IReadOnlyDictionary\u00602 sources) in E:\\Processor\\src\\Borg.Processor\\Controllers\\ProcessingController.cs:line 549\r\n   at Borg.Processor.ProcessingController.ProcessInternal(Uri inputUrl, String path, IReadOnlyDictionary\u00602 sources) in E:\\Processor\\src\\Borg.Processor\\Controllers\\ProcessingController.cs:line 371","programVersion":"2.0.0","properties":{"path":"pipe;full().png","source":{"key":"pipe","format":"png","":"Horizontal","width":8000,"height":4500,"frameCount":1},"pipeline":"blob#pipe|\u003Escale(8000,4500)|\u003Efull()|\u003EPNG::encode"}}
+			// Invalid Pipeline
+			//   36648513;.png
+			//   May not be empty
+			// Invalid Pipeline
+			//   36648513;0.png
+			//   Specified argument was out of the range of valid values.
+			// https://carbonmade-media.accelerator.net/34754698;920x388/lossless.webp
+			//   https://carbonmade-media.accelerator.net/34754698;0x0/lossless.webp -- possibly upscaled?
+			//   https://carbonmade-media.accelerator.net/34754698;0x/lossless.webp -- 3338x1410
+			// https://carbonmade-media.accelerator.net/34467736;1280x807.png
+			//   https://carbonmade-media.accelerator.net/34467736;0x0.png -- tiny
+			//   https://carbonmade-media.accelerator.net/34467736;0x.png -- 1446x912
+			// https://carbonmade-media.accelerator.net/36648513;1920x1080.png
+			//   https://carbonmade-media.accelerator.net/36648513;0x.png
+			return src.replace(/(:\/\/[^/]+\/+(?:[0-9]+\/+[^/.]+|[0-9]+));[0-9]+x[0-9]+([/.])/, "$1;0x$2");
+		}
+
 
 
 
