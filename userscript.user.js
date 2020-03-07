@@ -58899,7 +58899,7 @@ var $$IMU_EXPORT$$;
 					}
 
 					set_important_style(mask, "position", "fixed");
-					set_important_style(mask, maxzindex - 3);
+					set_important_style(mask, "z-index", maxzindex - 3);
 					set_important_style(mask, "width", "100%");
 					set_important_style(mask, "height", "100%");
 					set_important_style(mask, "left", "0px");
