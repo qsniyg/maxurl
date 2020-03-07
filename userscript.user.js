@@ -58567,6 +58567,11 @@ var $$IMU_EXPORT$$;
 				var remove_mask = function() {
 					mask_el.parentElement.removeChild(mask_el);
 					mask_el = null;
+
+					if (removemask_timer) {
+						clearTimeout(removemask_timer);
+						removemask_timer = null;
+					}
 				};
 
 				if (settings.mouseover_mask_fade_time > 0) {
@@ -58933,6 +58938,11 @@ var $$IMU_EXPORT$$;
 				if (mask_el) {
 					mask_el.parentElement.removeChild(mask_el);
 					mask_el = null;
+				}
+
+				if (removemask_timer) {
+					clearTimeout(removemask_timer);
+					removemask_timer = null;
 				}
 
 				if (settings.mouseover_close_click_outside || settings.mouseover_mask_styles) {
