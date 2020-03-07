@@ -582,6 +582,10 @@ var $$IMU_EXPORT$$;
 				var real_onerror = data.onerror;
 
 				var finalcb = function(resp, iserror) {
+					if (_nir_debug_) {
+						console_log("do_request's finalcb:", resp, iserror);
+					}
+
 					if (check_tracking_blocked(resp)) {
 						// Workaround for a bug in FireMonkey where it calls both onload and onerror: https://github.com/erosman/support/issues/134
 						data.onload = null;
@@ -52910,8 +52914,10 @@ var $$IMU_EXPORT$$;
 		if (domain === "carbonmade-media.accelerator.net" ||
 			// https://carbon-media.accelerator.net/00000000001/lbPC7JlrUbCbBqxAIlu79M;960x540.mp4
 			//   https://carbon-media.accelerator.net/00000000001/lbPC7JlrUbCbBqxAIlu79M;0x.mp4
+			//   https://carbon-media.accelerator.net/00000000001/lbPC7JlrUbCbBqxAIlu79M;original.mp4
 			domain === "carbon-media.accelerator.net") {
 			// {"type":"UnsupportedCommandException","message":"\u0027full()\u0027 does not have an implementation.","stackTrace":"   at Borg.Processor.Canvas.Apply(ICommand command) in E:\\Processor\\src\\Borg.Processor\\Canvas\\Canvas.cs:line 135\r\n   at Borg.Processor.ProcessingController.ProcessInternal(Stream inputStream, MediaInfo source, Pipeline pipeline, Profiler profiler, IReadOnlyDictionary\u00602 sources) in E:\\Processor\\src\\Borg.Processor\\Controllers\\ProcessingController.cs:line 549\r\n   at Borg.Processor.ProcessingController.ProcessInternal(Uri inputUrl, String path, IReadOnlyDictionary\u00602 sources) in E:\\Processor\\src\\Borg.Processor\\Controllers\\ProcessingController.cs:line 371","programVersion":"2.0.0","properties":{"path":"pipe;full().png","source":{"key":"pipe","format":"png","":"Horizontal","width":8000,"height":4500,"frameCount":1},"pipeline":"blob#pipe|\u003Escale(8000,4500)|\u003Efull()|\u003EPNG::encode"}}
+			// {"type":"UnsupportedCommandException","message":"\u0027original\u0027 does not have an implementation.","stackTrace":"   at Borg.Processor.Canvas.Apply(ICommand command) in E:\\Processor\\src\\Borg.Processor\\Canvas\\Canvas.cs:line 135\r\n   at Borg.Processor.ProcessingController.ProcessInternal(Stream inputStream, MediaInfo source, Pipeline pipeline, Profiler profiler, IReadOnlyDictionary\u00602 sources) in E:\\Processor\\src\\Borg.Processor\\Controllers\\ProcessingController.cs:line 549\r\n   at Borg.Processor.ProcessingController.ProcessInternal(Uri inputUrl, String path, IReadOnlyDictionary\u00602 sources) in E:\\Processor\\src\\Borg.Processor\\Controllers\\ProcessingController.cs:line 371","programVersion":"2.0.0","properties":{"path":"pipe;original/lossless.webp","source":{"key":"pipe","format":"png","":"Horizontal","width":3338,"height":1410,"frameCount":1},"pipeline":"blob#pipe|\u003Escale(3338,1410)|\u003Eoriginal|\u003EWebP::encode(quality:100)"}}
 			// Invalid Pipeline
 			//   36648513;.png
 			//   May not be empty
@@ -52921,12 +52927,15 @@ var $$IMU_EXPORT$$;
 			// https://carbonmade-media.accelerator.net/34754698;920x388/lossless.webp
 			//   https://carbonmade-media.accelerator.net/34754698;0x0/lossless.webp -- possibly upscaled?
 			//   https://carbonmade-media.accelerator.net/34754698;0x/lossless.webp -- 3338x1410
+			//   https://carbonmade-media.accelerator.net/34754698;original.webp
 			// https://carbonmade-media.accelerator.net/34467736;1280x807.png
 			//   https://carbonmade-media.accelerator.net/34467736;0x0.png -- tiny
 			//   https://carbonmade-media.accelerator.net/34467736;0x.png -- 1446x912
+			//   https://carbonmade-media.accelerator.net/34467736;original.png
 			// https://carbonmade-media.accelerator.net/36648513;1920x1080.png
 			//   https://carbonmade-media.accelerator.net/36648513;0x.png
-			return src.replace(/(:\/\/[^/]+\/+(?:[0-9]+\/+[^/.]+|[0-9]+));[0-9]+x[0-9]+([/.])/, "$1;0x$2");
+			//   https://carbonmade-media.accelerator.net/36648513;original.png
+			return src.replace(/(:\/\/[^/]+\/+(?:[0-9]+\/+[^/.]+|[0-9]+));[0-9]*x[0-9]*(?:\/+[^/.]+)?(\.[^/.]+)(?:[?#].*)?$/, "$1;original$2");
 		}
 
 
@@ -54739,6 +54748,12 @@ var $$IMU_EXPORT$$;
 		var waiting = false;
 		var forcerecurse = false;
 
+		var url_is_data = false;
+		var origurl = url;
+		if (typeof url === "string" && /^(?:data|blob):/.test(url)) {
+			url_is_data = true;
+		}
+
 		var newhref = url;
 		var endhref;
 		var currenthref = url;
@@ -54850,6 +54865,10 @@ var $$IMU_EXPORT$$;
 				if (obj.url === null && !obj.waiting) {
 					remove_obj();
 					continue;
+				}
+
+				if (obj.url === "" && url_is_data) {
+					obj.url = origurl;
 				}
 
 				// Remove problems in exclude_problems
@@ -57767,6 +57786,10 @@ var $$IMU_EXPORT$$;
 			img.onload = function() {
 				cb(img, obj[0].url, obj[0]);
 			};
+			img.onerror = function(e) {
+				console_log("Error loading image", e);
+				err_cb();
+			};
 			return;
 		}
 
@@ -58654,6 +58677,34 @@ var $$IMU_EXPORT$$;
 			return null;
 		}
 
+		var get_tagname = function(el) {
+			return el.tagName.toUpperCase();
+		};
+
+		function get_el_dimensions(el) {
+			if (get_tagname(el) === "VIDEO") {
+				return [
+					el.videoWidth,
+					el.videoHeight
+				];
+			} else if (get_tagname(el) === "CANVAS") {
+				return [
+					el.width,
+					el.height
+				];
+			} else if (get_tagname(el) === "SVG") {
+				return [
+					el.width.animVal.value,
+					el.height.animVal.value
+				];
+			} else {
+				return [
+					el.naturalWidth,
+					el.naturalHeight
+				]
+			}
+		}
+
 		function open_in_tab_imu(imu, bg, cb) {
 			if (is_extension) {
 				extension_send_message({
@@ -58872,6 +58923,7 @@ var $$IMU_EXPORT$$;
 
 				update_vwh();
 
+				var el_dimensions = get_el_dimensions(img);
 				set_el_all_initial(img);
 
 				var add_link = false;
@@ -58890,13 +58942,8 @@ var $$IMU_EXPORT$$;
 
 				var img_naturalHeight, img_naturalWidth;
 
-				if (!is_video) {
-					img_naturalHeight = img.naturalHeight;
-					img_naturalWidth = img.naturalWidth;
-				} else {
-					img_naturalHeight = img.videoHeight;
-					img_naturalWidth = img.videoWidth;
-				}
+				img_naturalWidth = el_dimensions[0];
+				img_naturalHeight = el_dimensions[1];
 
 				var imgh = img_naturalHeight;
 				var imgw = img_naturalWidth;
@@ -60268,11 +60315,41 @@ var $$IMU_EXPORT$$;
 			return false;
 		}
 
+		var get_svg_src = function(el) {
+			var remove_attributes = [
+				"class",
+				"id",
+				"tabindex",
+				"style"
+			];
+
+			var newel = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+			newel.innerHTML = el.innerHTML;
+
+			newel.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+
+			var attrs = el.attributes;
+			for (var i = 0; i < attrs.length; i++) {
+				var attr_name = attrs[i].name;
+
+				if (remove_attributes.indexOf(attr_name) >= 0 || /^on/.test(attr_name) || /^aria-/.test(attr_name)) {
+					continue;
+				}
+
+				newel.setAttribute(attr_name, attrs[i].value);
+			}
+
+			var header = '<?xml version="1.0" encoding="UTF-8" standalone="no" ?>\n';
+			var svgdoc = header + newel.outerHTML;
+
+			return "data:image/svg+xml;base64," + btoa(svgdoc);
+		};
+
 		function get_img_src(el) {
-			if (el.tagName === "A")
+			if (get_tagname(el) === "A")
 				return el.href;
 
-			if (el.tagName === "CANVAS") {
+			if (get_tagname(el) === "CANVAS") {
 				try {
 					return el.toDataURL();
 				} catch (e) {
@@ -60281,27 +60358,12 @@ var $$IMU_EXPORT$$;
 				}
 			}
 
+			if (get_tagname(el) === "SVG") {
+				return get_svg_src(el);
+			}
+
 			// currentSrc is used if another image is used in the srcset
 			return el.currentSrc || el.src;
-		}
-
-		function get_el_dimensions(el) {
-			if (el.tagName === "VIDEO") {
-				return [
-					el.videoWidth,
-					el.videoHeight
-				];
-			} else if (el.tagName === "CANVAS") {
-				return [
-					el.width,
-					el.height
-				];
-			} else {
-				return [
-					el.naturalWidth,
-					el.naturalHeight
-				]
-			}
 		}
 
 		function is_valid_src(src, isvideo) {
@@ -60488,7 +60550,7 @@ var $$IMU_EXPORT$$;
 					el_style = window.getComputedStyle(el) || el.style;
 				}
 
-				if (src && (src.match(/^data:/) && src.length <= 500) ||
+				if (src && (src.match(/^data:/) && !(/^data:image\/svg\+xml;/.test(src)) && src.length <= 500) ||
 					// https://www.smugmug.com/
 					// https://www.vogue.com/article/lady-gaga-met-gala-2019-entrance-behind-the-scenes-video
 					!check_visible(el)) {
@@ -60525,7 +60587,7 @@ var $$IMU_EXPORT$$;
 					var has_link = false;
 					var current = el;
 					do {
-						if (current.tagName === "A") {
+						if (get_tagname(current) === "A") {
 							has_link = true;
 							break;
 						}
@@ -60561,13 +60623,14 @@ var $$IMU_EXPORT$$;
 					}
 				}
 
-				if (el.tagName === "PICTURE" || el.tagName === "VIDEO") {
+				var el_tagname = get_tagname(el);
+				if (el_tagname === "PICTURE" || el_tagname === "VIDEO") {
 					for (var i = 0; i < el.children.length; i++) {
 						addElement(el.children[i], layer);
 					}
 				}
 
-				if (el.tagName === "SOURCE" || el.tagName === "IMG" || el.tagName === "VIDEO" || (settings.mouseover_allow_canvas_el && el.tagName === "CANVAS")) {
+				if (el_tagname === "SOURCE" || el_tagname === "IMG" || el_tagname === "VIDEO" || (settings.mouseover_allow_canvas_el && el_tagname === "CANVAS") || el_tagname === "SVG") {
 					var el_src = get_img_src(el);
 
 					if (el_src) {
@@ -60692,7 +60755,7 @@ var $$IMU_EXPORT$$;
 					}
 				}
 
-				if (el.tagName === "A") {
+				if (el_tagname === "A") {
 					var src = el.href;
 					links[src] = {
 						count: 1,
