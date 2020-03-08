@@ -8796,6 +8796,18 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain_nowww === "youtube.com" || domain_nowww === "youtu.be") {
+			// for thumbnails
+			match = src.match(/^[a-z]+:\/\/(?:www\.)?youtube\.com\/+watch\?(?:.*&)?v=([^&#]*)/);
+			if (!match) {
+				match = src.match(/^[a-z]+:\/\/(?:www\.)?youtu\.be\/+([^?&#]*)/);
+			}
+
+			if (match) {
+				return "https://i.ytimg.com/vi/" + match[1] + "/mqdefault.jpg";
+			}
+		}
+
 		if (domain === "ytimg.googleusercontent.com" ||
 			// https://i.ytimg.com/vi/WLUWOwO2U8c/hqdefault.jpg?sqp=-oaymwEZCPYBEIoBSFXyq4qpAwsIARUAAIhCGAFwAQ==&rs=AOn4CLApoW235ABiHOfyJan0ArZIRsbUOA
 			(domain_nosub === "ytimg.com" && domain.match(/^i[0-9]*\./)) ||
@@ -26924,24 +26936,19 @@ var $$IMU_EXPORT$$;
 						url.match(/^(?:[a-z]+)?:\/\/(?:i|(?:external-)?preview)\.redd\.it\//))
 						return url;
 
-					var match = url.match(/:\/\/(?:www\.)?youtube\.com\/+watch\?(?:.*&)?v=([^&#]*)/);
-					if (!match) {
-						match = url.match(/:\/\/(?:www\.)?youtu\.be\/+([^?&#]*)/);
-					}
-
-					if (match) {
-						return "https://i.ytimg.com/vi/" + match[1] + "/mqdefault.jpg";
-					}
-
-					if (bigimage_recursive(url, {
+					var opts = {
 						fill_object: false,
 						iterations: 3,
-						use_cache: false,
+						use_cache: "read",
 						use_api_cache: false,
 						null_if_no_change: true,
+						exclude_problems: [],
 						do_request: function(){},
 						cb: function(){}
-					}) !== null) {
+					};
+
+					opts = get_bigimage_extoptions(opts);
+					if (bigimage_recursive(url, opts) !== null) {
 						return url;
 					}
 				}
@@ -27069,7 +27076,8 @@ var $$IMU_EXPORT$$;
 					}
 				}
 			})();
-			if (newsrc !== undefined)
+
+			if (newsrc !== undefined && newsrc !== src)
 				return newsrc;
 		}
 
@@ -53141,6 +53149,27 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(:\/\/[^/]+\/+(?:[0-9]+\/+[^/.]+|[0-9]+));[0-9]*x[0-9]*(?:\/+[^/.]+)?(\.[^/.]+)(?:[?#].*)?$/, "$1;original$2");
 		}
 
+		if (domain_nowww === "streamja.com") {
+			// https://streamja.com/img/play.png
+			if (/\/img\/+play\.png(?:[?#].*)?$/.test(src)) {
+				return {
+					url: src,
+					bad: "mask"
+				};
+			}
+		}
+
+		if (domain === "img.thedonald.win" && host_domain_nowww === "thedonald.win" && options && options.element) {
+			// post thumbnails (todo: implement with https://github.com/qsniyg/maxurl/issues/246)
+			if (options.element.parentElement && options.element.parentElement.tagName === "A") {
+				var parent = options.element.parentElement;
+				var dparent = parent.parentElement;
+				if (dparent && dparent.tagName === "DIV" && dparent.classList.contains("thumb")) {
+					return parent.href;
+				}
+			}
+		}
+
 
 
 
@@ -54903,11 +54932,13 @@ var $$IMU_EXPORT$$;
 			options.do_request = null;
 		}
 
-		options.rule_specific.deviantart_prefer_size = settings.deviantart_prefer_size;
-		options.rule_specific.imgur_source = settings.imgur_source;
-		options.rule_specific.instagram_use_app_api = settings.instagram_use_app_api;
-		options.rule_specific.instagram_gallery_postlink = settings.instagram_gallery_postlink;
-		options.rule_specific.tumblr_api_key = settings.tumblr_api_key;
+		if ("rule_specific" in options) {
+			options.rule_specific.deviantart_prefer_size = settings.deviantart_prefer_size;
+			options.rule_specific.imgur_source = settings.imgur_source;
+			options.rule_specific.instagram_use_app_api = settings.instagram_use_app_api;
+			options.rule_specific.instagram_gallery_postlink = settings.instagram_gallery_postlink;
+			options.rule_specific.tumblr_api_key = settings.tumblr_api_key;
+		}
 
 		// Doing this here breaks things like Imgur, which will redirect to an image if a video was opened in a new tab
 		if (false && !settings.allow_video) {
@@ -55132,7 +55163,7 @@ var $$IMU_EXPORT$$;
 
 				// FIXME: this is a terrible hack
 				try {
-					if (newhref[0].waiting === true && !objified[0].waiting)
+					if (!options.fill_object || (newhref[0].waiting === true && !objified[0].waiting))
 						newhref = objified;
 				} catch (e) {}
 
