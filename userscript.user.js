@@ -59144,21 +59144,21 @@ var $$IMU_EXPORT$$;
 
 				var outerdiv = document.createElement("div");
 				set_el_all_initial(outerdiv);
-				outerdiv.style.position = "fixed";
-				outerdiv.style.zIndex = maxzindex - 2;
+				set_important_style(outerdiv, "position", "fixed");
+				set_important_style(outerdiv, "z-index", maxzindex - 2);
 
 				if (settings.mouseover_fade_time > 0) {
-					outerdiv.style.setProperty("transition", "opacity " + (settings.mouseover_fade_time / 1000.) + "s");
+					set_important_style(outerdiv, "transition", "opacity " + (settings.mouseover_fade_time / 1000.) + "s");
 
 					if (!popup_el_automatic) {
-						outerdiv.style.opacity = 0;
+						set_important_style(outerdiv, "opacity", 0);
 
 						// this is needed in order to make the transition happen
 						setTimeout(function() {
-							outerdiv.style.opacity = 1;
+							set_important_style(outerdiv, "opacity", 1);
 						}, 1);
 					} else {
-						outerdiv.style.opacity = 1;
+						set_important_style(outerdiv, "opacity", 1);
 					}
 				}
 
