@@ -89,7 +89,18 @@ function update_highlightimages(value) {
     }
 }
 
+var prefers_dark_mode = function() {
+    try {
+        return window.matchMedia("(prefers-color-scheme: dark)").matches;
+    } catch (e) {
+        return false;
+    }
+};
+
 function update_dark_mode(value) {
+    if (value === undefined)
+        value = prefers_dark_mode();
+
     if (value) {
         document.documentElement.classList.add("dark");
     } else {
@@ -109,7 +120,7 @@ document.getElementById("logo").onclick = toggle_enabled;
 
 get_option("dark_mode", function(value) {
     update_dark_mode(value);
-}, false);
+}, undefined);
 
 get_option("imu_enabled", function(value) {
     update_logo(value);

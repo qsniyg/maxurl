@@ -1543,6 +1543,8 @@ var $$IMU_EXPORT$$;
 	};
 	var orig_settings = deepcopy(settings);
 
+	var user_defined_settings = {};
+
 	var settings_meta = {
 		imu_enabled: {
 			name: "Enable extension",
@@ -56159,9 +56161,21 @@ var $$IMU_EXPORT$$;
 		return true;
 	};
 
+	var prefers_dark_mode = function() {
+		try {
+			return window.matchMedia("(prefers-color-scheme: dark)").matches;
+		} catch (e) {
+			return false;
+		}
+	};
+
 	function update_dark_mode() {
 		if (!is_maxurl_website && !is_options_page) {
 			return;
+		}
+
+		if (prefers_dark_mode()) {
+			set_default_value("dark_mode", true);
 		}
 
 		if (settings.dark_mode) {
@@ -57580,6 +57594,12 @@ var $$IMU_EXPORT$$;
 		return true;
 	}
 
+	function set_default_value(key, value) {
+		if (!(key in user_defined_settings)) {
+			settings[key] = value;
+		}
+	}
+
 	function settings_updated_cb(changes) {
 		if (!settings.allow_live_settings_reload)
 			return;
@@ -57757,6 +57777,8 @@ var $$IMU_EXPORT$$;
 			if (typeof settings[setting] === "number") {
 				value = parseFloat(value);
 			}
+
+			user_defined_settings[setting] = value;
 
 			if (value !== settings[setting]) {
 				settings[setting] = value;
