@@ -12456,6 +12456,34 @@ var $$IMU_EXPORT$$;
 				return null;
 			};
 
+			var find_blogname_from_initialstate = function() {
+				var scripts = document.getElementsByTagName("script");
+				for (var i = 0; i < scripts.length; i++) {
+					var text = scripts[i].innerText;
+
+					if (text.length < 100)
+						continue;
+
+					var match = text.match(/window\['___INITIAL_STATE___'\]\s*=\s*({.*?"tumblelog":.*?})\s*;\s*$/);
+					if (match) {
+						// remove regex
+						var json = match[1].replace(/(\"\s*:)\s*\/.*?\/\s*([,}])/g, "$1null$2");
+
+						try {
+							var parsed = JSON_parse(json);
+
+							return parsed.tumblelog.name;
+						} catch (e) {
+							console_error(e);
+						}
+
+						return null;
+					}
+				}
+
+				return null;
+			};
+
 			var find_postid_from_el = function(el) {
 				var currentel = el;
 
@@ -12479,6 +12507,21 @@ var $$IMU_EXPORT$$;
 						var match = currentel.href.match(/:\/\/[^/]+\/+image\/+([0-9]{8,})\/*(?:[?#].*)?$/);
 						if (match) {
 							return match[1];
+						}
+					}
+
+					// https://ponderation.net/archive
+					if (currentel.tagName === "FIGURE") {
+						try {
+							var as = currentel.parentElement.parentElement.getElementsByTagName("a");
+							for (var i = 0; i < as.length; i++) {
+								var match = as[i].href.match(/:\/\/[^/]+\/+(?:image|post)\/+([0-9]{8,})\/*(?:[?#].*)?$/);
+								if (match) {
+									return match[1];
+								}
+							}
+						} catch (e) {
+							console_error(e);
 						}
 					}
 				}
@@ -12546,6 +12589,11 @@ var $$IMU_EXPORT$$;
 					blogname = find_blogname_from_head();
 				}
 
+				if (!blogname) {
+					// needed for https://ponderation.net/archive
+					blogname = find_blogname_from_initialstate();
+				}
+
 				if (blogname) {
 					var obj = {
 						blogname: blogname
@@ -12590,12 +12638,16 @@ var $$IMU_EXPORT$$;
 				var info = try_finding_info();
 				if (info) {
 					get_post(info.blogname, info.postid, function(data) {
-						if (!data)
+						if (!data) {
+							console_warn("Unable to get post data from API", info);
 							return options.cb(null);
+						}
 
 						var media = find_media_from_post_mediakey(data, mediakey);
-						if (!media)
+						if (!media) {
+							console_warn("Unable to find media from post and mediakey", data, mediakey);
 							return options.cb(null);
+						}
 
 						var largest = find_largest_from_media(media);
 
