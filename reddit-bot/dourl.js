@@ -202,6 +202,15 @@ function is_googlephotos(domain, url) {
 	return false;
 }
 
+function is_youtube_url(url) {
+	match = url.match(/^[a-z]+:\/\/(?:www\.)?youtube\.com\/+watch\?(?:.*&)?v=([^&#]*)/);
+	if (!match) {
+		match = url.match(/^[a-z]+:\/\/(?:www\.)?youtu\.be\/+([^?&#]*)/);
+	}
+
+	return !!match;
+}
+
 function npify(text) {
 	return text.replace(/:\/\/www\.reddit\./g, "://np.reddit.");
 }
@@ -527,6 +536,11 @@ function dourl(url, post, options, cb) {
 	if (!url.match(/^https?:\/\//) ||
 		url.match(/^https?:\/\/(127\.0\.0\.1|192\.168\.|10\.[0-9]+\.|localhost|[^/.]+\/)/)) {
 		console.log("Invalid URL: " + post.url);
+		return;
+	}
+
+	if (is_youtube_url(url)) {
+		console.log("Youtube URL: " + url);
 		return;
 	}
 
