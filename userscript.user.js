@@ -12286,6 +12286,25 @@ var $$IMU_EXPORT$$;
 			if (options.rule_specific && options.rule_specific.tumblr_api_key)
 				apikey = options.rule_specific.tumblr_api_key;
 
+			var get_initialstate_from_text = function(text) {
+				var match = text.match(/window\['___INITIAL_STATE___'\]\s*=\s*({.*?"tumblelog":.*?})\s*;\s*(?:<\/script>[\s\S]*)?$/);
+				if (match) {
+					// remove regex
+					var json = match[1].replace(/(\"\s*:)\s*\/.*?\/\s*([,}])/g, "$1null$2");
+
+					try {
+						var parsed = JSON_parse(json);
+						return parsed;
+					} catch (e) {
+						console_error(e);
+					}
+
+					return null;
+				}
+
+				return null;
+			};
+
 			var get_initialstate = function() {
 				var scripts = document.getElementsByTagName("script");
 				for (var i = 0; i < scripts.length; i++) {
@@ -12294,30 +12313,62 @@ var $$IMU_EXPORT$$;
 					if (text.length < 100)
 						continue;
 
-					var match = text.match(/window\['___INITIAL_STATE___'\]\s*=\s*({.*?"tumblelog":.*?})\s*;\s*$/);
-					if (match) {
-						// remove regex
-						var json = match[1].replace(/(\"\s*:)\s*\/.*?\/\s*([,}])/g, "$1null$2");
+					var initialstate = get_initialstate_from_text(text);
+					if (initialstate)
+						return initialstate;
+				}
 
-						try {
-							var parsed = JSON_parse(json);
+				return null;
+			};
 
-							return parsed;
-						} catch (e) {
-							console_error(e);
-						}
-
-						return null;
-					}
+			var get_apikey_from_initialstate = function(initialstate) {
+				if (initialstate && initialstate.apiFetchStore && "API_TOKEN" in initialstate.apiFetchStore) {
+					return initialstate.apiFetchStore.API_TOKEN;
 				}
 
 				return null;
 			};
 
 			var initialstate = get_initialstate();
-			var initialstate_api_key = initialstate && initialstate.apiFetchStore && initialstate.apiFetchStore.API_TOKEN;
+			var initialstate_api_key = get_apikey_from_initialstate(initialstate);
+
+			var get_beta_api_key = function(cb) {
+				api_cache.fetch("tumblr_api_key", cb, function(done) {
+					if (initialstate_api_key) {
+						return done(initialstate_api_key, 24*60*60);
+					}
+
+					options.do_request({
+						method: "GET",
+						url: "https://support.tumblr.com/archive",
+						headers: {
+							Referer: ""
+						},
+						onload: function(resp) {
+							if (resp.readyState !== 4)
+								return;
+
+							if (resp.status !== 200) {
+								console_error(resp);
+								return done(null, false);
+							}
+
+							var initialstate = get_initialstate_from_text(resp.responseText);
+							if (initialstate) {
+								var apikey = get_apikey_from_initialstate(initialstate);
+								if (apikey) {
+									return done(apikey, 24*60*60);
+								}
+							}
+
+							return done(null, false);
+						}
+					});
+				});
+			};
 
 			var do_tumblr_api_call = function(path, params, cb) {
+
 				var request_obj = {
 					url: "https://api.tumblr.com/v2" + path + "?api_key=" + apikey + "&" + params,
 					method: "GET",
@@ -12334,17 +12385,19 @@ var $$IMU_EXPORT$$;
 					}
 				};
 
-				// currently this only works on https://ponderation.net/archive (tumblr beta)
-				if (initialstate_api_key) {
-					request_obj.headers = {
-						"Authorization": "Bearer " + initialstate.apiFetchStore.API_TOKEN,
-						"X-Version": "redpop/3/0//redpop/"
-					};
+				if (!apikey) {
+					get_beta_api_key(function(apikey) {
+						request_obj.headers = {
+							"Authorization": "Bearer " + apikey,
+							"X-Version": "redpop/3/0//redpop/"
+						};
 
-					request_obj.url = request_obj.url.replace(/\?api_key=.*?&/, "?");
+						request_obj.url = request_obj.url.replace(/\?api_key=.*?&/, "?");
+						options.do_request(request_obj);
+					});
+				} else {
+					options.do_request(request_obj);
 				}
-
-				options.do_request(request_obj);
 			};
 
 			var get_post_api = function(blogname, postid, cb) {
@@ -12426,7 +12479,13 @@ var $$IMU_EXPORT$$;
 				if (apikey || initialstate_api_key) {
 					return get_post_api(blogname, postid, cb);
 				} else {
-					return get_post_http(blogname, postid, cb);
+					get_beta_api_key(function (apikey) {
+						if (apikey) {
+							return get_post_api(blogname, postid, cb);
+						} else {
+							return get_post_http(blogname, postid, cb);
+						}
+					});
 				}
 			};
 
