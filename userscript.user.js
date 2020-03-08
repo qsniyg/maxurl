@@ -12286,38 +12286,91 @@ var $$IMU_EXPORT$$;
 			if (options.rule_specific && options.rule_specific.tumblr_api_key)
 				apikey = options.rule_specific.tumblr_api_key;
 
+			var get_initialstate = function() {
+				var scripts = document.getElementsByTagName("script");
+				for (var i = 0; i < scripts.length; i++) {
+					var text = scripts[i].innerText;
+
+					if (text.length < 100)
+						continue;
+
+					var match = text.match(/window\['___INITIAL_STATE___'\]\s*=\s*({.*?"tumblelog":.*?})\s*;\s*$/);
+					if (match) {
+						// remove regex
+						var json = match[1].replace(/(\"\s*:)\s*\/.*?\/\s*([,}])/g, "$1null$2");
+
+						try {
+							var parsed = JSON_parse(json);
+
+							return parsed;
+						} catch (e) {
+							console_error(e);
+						}
+
+						return null;
+					}
+				}
+
+				return null;
+			};
+
+			var initialstate = get_initialstate();
+			var initialstate_api_key = initialstate && initialstate.apiFetchStore && initialstate.apiFetchStore.API_TOKEN;
+
+			var do_tumblr_api_call = function(path, params, cb) {
+				var request_obj = {
+					url: "https://api.tumblr.com/v2" + path + "?api_key=" + apikey + "&" + params,
+					method: "GET",
+					onload: function(resp) {
+						if (resp.readyState !== 4)
+							return;
+
+						if (resp.status !== 200) {
+							console_error(resp);
+							return cb(null);
+						}
+
+						return cb(resp.responseText);
+					}
+				};
+
+				// currently this only works on https://ponderation.net/archive (tumblr beta)
+				if (initialstate_api_key) {
+					request_obj.headers = {
+						"Authorization": "Bearer " + initialstate.apiFetchStore.API_TOKEN,
+						"X-Version": "redpop/3/0//redpop/"
+					};
+
+					request_obj.url = request_obj.url.replace(/\?api_key=.*?&/, "?");
+				}
+
+				options.do_request(request_obj);
+			};
+
 			var get_post_api = function(blogname, postid, cb) {
 				var cache_key = "tumblr_api_blog:" + blogname + ":post:" + postid;
 				api_cache.fetch(cache_key, cb, function(done) {
-					options.do_request({
-						url: "https://api.tumblr.com/v2/blog/" + blogname + "/posts?api_key=" + apikey + "&id=" + postid + "&npf=true",
-						method: "GET",
-						onload: function(resp) {
-							if (resp.readyState !== 4)
-								return;
+					do_tumblr_api_call("/blog/" + blogname + "/posts", "id=" + postid + "&npf=true", function(data) {
+						if (!data) {
+							return done(null, false);
+						}
 
-							if (resp.status !== 200) {
-								console_error(resp);
-								return done(null, false);
-							}
+						try {
+							var json = JSON_parse(data);
+							var post = json.response.posts[0];
 
-							try {
-								var json = JSON_parse(resp.responseText);
-								var post = json.response.posts[0];
+							var content = post.content;
 
-								var content = post.content;
-
-								if (post.trail) {
-									for (var i = 0; i < post.trail.length; i++) {
-										[].push.apply(content, post.trail[i].content);
-									}
+							if (post.trail) {
+								for (var i = 0; i < post.trail.length; i++) {
+									[].push.apply(content, post.trail[i].content);
 								}
-
-								return done(content, 6*60*60);
-							} catch (e) {
-								console_error(e, resp);
-								return done(null, false);
 							}
+
+							return done(content, 6*60*60);
+						} catch (e) {
+							console_error(e, data);
+							return done(null, false);
 						}
 					});
 				});
@@ -12370,7 +12423,7 @@ var $$IMU_EXPORT$$;
 			}
 
 			var get_post = function(blogname, postid, cb) {
-				if (apikey) {
+				if (apikey || initialstate_api_key) {
 					return get_post_api(blogname, postid, cb);
 				} else {
 					return get_post_http(blogname, postid, cb);
@@ -12457,28 +12510,8 @@ var $$IMU_EXPORT$$;
 			};
 
 			var find_blogname_from_initialstate = function() {
-				var scripts = document.getElementsByTagName("script");
-				for (var i = 0; i < scripts.length; i++) {
-					var text = scripts[i].innerText;
-
-					if (text.length < 100)
-						continue;
-
-					var match = text.match(/window\['___INITIAL_STATE___'\]\s*=\s*({.*?"tumblelog":.*?})\s*;\s*$/);
-					if (match) {
-						// remove regex
-						var json = match[1].replace(/(\"\s*:)\s*\/.*?\/\s*([,}])/g, "$1null$2");
-
-						try {
-							var parsed = JSON_parse(json);
-
-							return parsed.tumblelog.name;
-						} catch (e) {
-							console_error(e);
-						}
-
-						return null;
-					}
+				if (initialstate && "tumblelog" in initialstate && "name" in initialstate.tumblelog) {
+					return initialstate.tumblelog.name;
 				}
 
 				return null;
