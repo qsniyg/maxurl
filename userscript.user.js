@@ -58908,6 +58908,7 @@ var $$IMU_EXPORT$$;
 				var setup_mask_el = function(mask) {
 					set_el_all_initial(mask);
 
+					set_important_style(mask, "opacity", 1);
 					if (settings.mouseover_mask_styles)
 						apply_styles(mask, settings.mouseover_mask_styles, true);
 
@@ -58925,14 +58926,17 @@ var $$IMU_EXPORT$$;
 					if (settings.mouseover_mask_fade_time > 0) {
 						set_important_style(mask, "transition", "opacity " + (settings.mouseover_mask_fade_time / 1000.) + "s");
 
+						// this allows us to respect a custom opacity for mouseover_mask_styles
+						var old_opacity = mask.style.opacity;
+
 						if (!popup_el_automatic) {
 							set_important_style(mask, "opacity", 0);
 							// this is needed in order to make the transition happen
 							setTimeout(function() {
-								set_important_style(mask, "opacity", 1);
+								set_important_style(mask, "opacity", old_opacity);
 							}, 1);
 						} else {
-							set_important_style(mask, "opacity", 1);
+							set_important_style(mask, "opacity", old_opacity);
 						}
 					}
 
