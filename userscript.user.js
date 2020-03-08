@@ -5487,7 +5487,7 @@ var $$IMU_EXPORT$$;
 			newel = newel.parentElement;
 		}
 
-		if (newel.tagName === "VIDEO") {
+		if (newel.tagName === "VIDEO" && newel.parentElement) {
 			try {
 				newel = newel.parentElement.querySelectorAll("img[srcset]");
 				if (!newel || newel.length === 0)
@@ -5505,14 +5505,19 @@ var $$IMU_EXPORT$$;
 		return newel;
 	};
 
+	common_functions.instagram_get_image_src_from_el = function(el) {
+		if (el.tagName === "VIDEO") {
+			// use the poster instead as the larger video urls differ
+			return el.poster || el.src;
+		}
+
+		return el.src;
+	}
+
 	common_functions.instagram_find_el_info = function(document, element, host_url) {
 		var possible_infos = [];
 
-		var element_src = element.src;
-		if (element.tagName === "VIDEO") {
-			// use the poster instead as the larger video urls differ
-			element_src = element.poster || element.src;
-		}
+		var element_src = common_functions.instagram_get_image_src_from_el(element);
 
 		// check for links first
 		var current = element;
@@ -54494,7 +54499,8 @@ var $$IMU_EXPORT$$;
 
 					if (can_apply) {
 						var imageid_el = common_functions.instagram_get_el_for_imageid(el);
-						var our_imageid = common_functions.instagram_get_imageid(imageid_el.src);
+						var imageid_el_src = common_functions.instagram_get_image_src_from_el(imageid_el);
+						var our_imageid = common_functions.instagram_get_imageid(imageid_el_src);
 						var add = nextprev ? 1 : -1;
 						common_functions.instagram_parse_el_info(real_api_cache, options.do_request, options.rule_specific.instagram_use_app_api, info, function(data) {
 							for (var i = nextprev ? 0 : 1; i < data.length - (nextprev ? 1 : 0); i++) {
