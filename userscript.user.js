@@ -5508,6 +5508,12 @@ var $$IMU_EXPORT$$;
 	common_functions.instagram_find_el_info = function(document, element, host_url) {
 		var possible_infos = [];
 
+		var element_src = element.src;
+		if (element.tagName === "VIDEO") {
+			// use the poster instead as the larger video urls differ
+			element_src = element.poster || element.src;
+		}
+
 		// check for links first
 		var current = element;
 		while ((current = current.parentElement)) {
@@ -5520,7 +5526,7 @@ var $$IMU_EXPORT$$;
 					type: "post",
 					subtype: "link",
 					url: current.href,
-					image: element.src,
+					image: element_src,
 					element: current
 				});
 			} else if (current.href.match(/:\/\/[^/]+\/+[^/]+(?:\/+(?:[?#].*)?)?$/)) {
@@ -5604,7 +5610,7 @@ var $$IMU_EXPORT$$;
 					type: "post",
 					subtype: current.tagName === "BODY" ? "page" : "popup",
 					url: host_url,
-					image: element.src,
+					image: element_src,
 					element: current
 				});
 			}
@@ -5619,7 +5625,7 @@ var $$IMU_EXPORT$$;
 							type: "post",
 							subtype: "home",
 							url: href,
-							image: element.src,
+							image: element_src,
 							element: current
 						});
 					}
