@@ -8673,7 +8673,9 @@ var $$IMU_EXPORT$$;
 			 //   https://pbs.twimg.com/card_img/1233609033145171968/yM9hHz4R?format=jpg&name=orig
 			 // https://pbs.twimg.com/ad_img/1228452474039619584/WZtokGPI?format=jpg&name=small
 			 //   https://pbs.twimg.com/ad_img/1228452474039619584/WZtokGPI?format=jpg&name=orig
-			 /:\/\/[^/]+\/+(?:media|(?:card|ad)_img|ext_tw_video_thumb)\//.test(src)) ||
+			 // https://pbs.twimg.com/semantic_core_img/1236969872543768578/18vxA6iq?format=jpg&name=240x240
+			 //   https://pbs.twimg.com/semantic_core_img/1236969872543768578/18vxA6iq?format=jpg&name=orig
+			 /:\/\/[^/]+\/+(?:media|(?:card|ad|semantic_core)_img|ext_tw_video_thumb)\//.test(src)) ||
 			(domain === "ton.twitter.com" &&
 			 src.indexOf("/ton/data/dm/") >= 0)) {
 			// use ?name=orig instead of :orig, see:
@@ -8728,7 +8730,7 @@ var $$IMU_EXPORT$$;
 				return obj;
 			}
 
-			if (!(/\/(?:card|ad)_img\//.test(src))) {
+			if (!(/\/(?:card|ad|semantic_core)_img\//.test(src))) {
 				// replace format=jpg to .jpg, doesn't work for /card_img/
 				newsrc = src
 					.replace(/(\/[^/.?]+)\?(.*?&)?format=([^&]*)(.*?$)?/, "$1.$3?$2$4")
