@@ -62077,14 +62077,14 @@ var $$IMU_EXPORT$$;
 				// FIXME: should we stop checking if not in bounding client rect?
 				// this would depend on the fact that children are always within the bounding rect
 				//  - probably not, there are cases where the parent div has a size of 0, but children have proper sizes
-				if (el.children && el.children.length > 0) {
+				if (el.children.length > 0) {
 					// reverse, because the last element is (usually) the highest z
 					var newchildren = [];
 					for (var j = el.children.length - 1; j >= 0; j--) {
 						newchildren.push(el.children[j]);
 					}
 
-					var newels = find_els_at_point(xy, newchildren, prev);
+					var newels = find_els_at_point(xy, newchildren, prev, zoom_cache);
 					for (var j = 0; j < newels.length; j++) {
 						var newel = newels[j];
 						//console_log("about to add", newel, deepcopy(ret))
