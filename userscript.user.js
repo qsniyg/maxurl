@@ -27259,8 +27259,9 @@ var $$IMU_EXPORT$$;
 				while ((element = element.parentElement)) {
 					if (element.tagName === "A") {
 						var ploi = element.getAttribute("data-ploi");
-						if (ploi && ploi.match(/^https?:\/\/[^/]*fbcdn\.net\//))
+						if (ploi && ploi.match(/^https?:\/\/[^/]*fbcdn\.net\//) && ploi !== src) {
 							return ploi;
+						}
 					}
 				}
 			}
