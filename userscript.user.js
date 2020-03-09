@@ -77,6 +77,7 @@ var $$IMU_EXPORT$$;
 	var is_options_page = false;
 	var is_maxurl_website = false;
 	var options_page = "https://qsniyg.github.io/maxurl/options.html";
+	var preferred_options_page = options_page;
 	var firefox_addon_page = "https://addons.mozilla.org/en-US/firefox/addon/image-max-url/";
 	var greasyfork_update_url = "https://greasyfork.org/scripts/36662-image-max-url/code/Image%20Max%20URL.user.js";
 	var current_version = null;
@@ -103,6 +104,7 @@ var $$IMU_EXPORT$$;
 		is_extension_options_page = window.location.href.replace(/[?#].*$/, "") === extension_options_page;
 		is_options_page = is_options_page || is_extension_options_page;
 		//options_page = extension_options_page; // can't load from website
+		preferred_options_page = extension_options_page;
 
 		if (is_extension) {
 			is_webextension = true;
@@ -530,6 +532,23 @@ var $$IMU_EXPORT$$;
 			});
 		}
 	}
+
+	var open_in_tab_imu = function(imu, bg, cb) {
+		if (is_extension) {
+			extension_send_message({
+				type: "newtab",
+				data: {
+					imu: imu,
+					background: bg
+				}
+			}, cb);
+		} else if (is_userscript && open_in_tab) {
+			open_in_tab(imu.url, bg);
+			if (cb) {
+				cb();
+			}
+		}
+	};
 
 	var check_tracking_blocked = function(result) {
 		// FireMonkey returns null for result if blocked
@@ -1492,6 +1511,7 @@ var $$IMU_EXPORT$$;
 		mouseover_download_key: [["s"], ["ctrl", "s"]],
 		mouseover_open_new_tab_key: ["o"],
 		mouseover_open_bg_tab_key: ["shift", "o"],
+		mouseover_open_options_key: ["p"],
 		mouseover_rotate_left_key: ["e"],
 		mouseover_rotate_right_key: ["r"],
 		mouseover_flip_horizontal_key: ["h"],
@@ -2674,6 +2694,17 @@ var $$IMU_EXPORT$$;
 		mouseover_open_bg_tab_key: {
 			name: "Open in background tab key",
 			description: "Opens the image in the popup in a new tab without switching to it when this key is pressed",
+			hidden: is_userscript && open_in_tab === nullfunc,
+			requires: {
+				mouseover_open_behavior: "popup"
+			},
+			type: "keysequence",
+			category: "popup",
+			subcategory: "behavior"
+		},
+		mouseover_open_options_key: {
+			name: "Open options page",
+			description: "Opens this page in a new tab when this key is pressed",
 			hidden: is_userscript && open_in_tab === nullfunc,
 			requires: {
 				mouseover_open_behavior: "popup"
@@ -59001,23 +59032,6 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		function open_in_tab_imu(imu, bg, cb) {
-			if (is_extension) {
-				extension_send_message({
-					type: "newtab",
-					data: {
-						imu: imu,
-						background: bg
-					}
-				}, cb);
-			} else if (is_userscript && open_in_tab) {
-				open_in_tab(imu.url, bg);
-				if (cb) {
-					cb();
-				}
-			}
-		}
-
 		function add_link_to_history(link) {
 			if (is_extension) {
 				extension_send_message({
@@ -63457,6 +63471,9 @@ var $$IMU_EXPORT$$;
 				case "seek_right":
 					seek_popup_video(false);
 					return true;
+				case "open_options":
+					open_in_tab_imu({url: preferred_options_page}, false);
+					return true;
 			}
 
 			return false;
@@ -63598,6 +63615,12 @@ var $$IMU_EXPORT$$;
 					{
 						key: settings.mouseover_open_bg_tab_key,
 						action: {type: "open_in_new_tab", background_tab: true}
+					},
+					{
+						key: settings.mouseover_open_options_key,
+						// Clear the chord because opening in a new tab will not release the keys
+						clear: true,
+						action: {type: "open_options"}
 					},
 					{
 						key: settings.mouseover_rotate_left_key,
