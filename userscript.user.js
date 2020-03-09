@@ -58801,6 +58801,19 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		var remove_mask = function() {
+			if (mask_el) {
+				if (mask_el.parentElement)
+					mask_el.parentElement.removeChild(mask_el);
+				mask_el = null;
+			}
+
+			if (removemask_timer) {
+				clearTimeout(removemask_timer);
+				removemask_timer = null;
+			}
+		};
+
 		var removemask_timer = null;
 		function resetpopups(from_remote) {
 			popups.forEach(function (popup) {
@@ -58818,16 +58831,6 @@ var $$IMU_EXPORT$$;
 
 			if (mask_el) {
 				set_important_style(mask_el, "pointer-events", "none");
-
-				var remove_mask = function() {
-					mask_el.parentElement.removeChild(mask_el);
-					mask_el = null;
-
-					if (removemask_timer) {
-						clearTimeout(removemask_timer);
-						removemask_timer = null;
-					}
-				};
 
 				if (settings.mouseover_mask_fade_time > 0) {
 					set_important_style(mask_el, "opacity", 0);
@@ -59177,20 +59180,11 @@ var $$IMU_EXPORT$$;
 					return mask;
 				};
 
-				if (mask_el) {
-					mask_el.parentElement.removeChild(mask_el);
-					mask_el = null;
-				}
-
-				if (removemask_timer) {
-					clearTimeout(removemask_timer);
-					removemask_timer = null;
-				}
+				remove_mask();
 
 				if (settings.mouseover_close_click_outside || settings.mouseover_mask_styles) {
 					mask_el = document.createElement("div");
 					setup_mask_el(mask_el);
-					document.documentElement.appendChild(mask_el);
 				}
 
 				var outerdiv = document.createElement("div");
@@ -60472,6 +60466,10 @@ var $$IMU_EXPORT$$;
 					if (popup_zoom_func(zoom_mode, e.deltaY, e.clientX, e.clientY, settings.zoom_out_to_close) === false)
 						return false;
 				};
+
+				if (mask_el) {
+					document.documentElement.appendChild(mask_el);
+				}
 
 				document.documentElement.appendChild(outerdiv);
 
