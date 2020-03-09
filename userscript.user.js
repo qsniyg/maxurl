@@ -1377,6 +1377,7 @@ var $$IMU_EXPORT$$;
 		use_blob_over_arraybuffer: false,
 		allow_live_settings_reload: true,
 		allow_remote: true,
+		disable_keybind_when_editing: true,
 		redirect: true,
 		redirect_history: true,
 		canhead_get: true,
@@ -1651,6 +1652,13 @@ var $$IMU_EXPORT$$;
 			description: "Enables/disables live settings reloading. There shouldn't be a reason to disable this unless you're experiencing issues with this feature",
 			category: "general",
 			hidden: is_userscript && typeof GM_addValueChangeListener === "undefined",
+			imu_enabled_exempt: true,
+			advanced: true
+		},
+		disable_keybind_when_editing: {
+			name: "Disable keybindings when editing text",
+			description: "Disables IMU keybindings when key events are sent to an input area on the page",
+			category: "general",
 			imu_enabled_exempt: true,
 			advanced: true
 		},
@@ -63487,8 +63495,21 @@ var $$IMU_EXPORT$$;
 			if (!mouseover_enabled())
 				return;
 
-			if (editing_text && event.type === "keydown")
-				return;
+			if (event.type === "keydown") {
+				if (editing_text)
+					return;
+
+				if (settings.disable_keybind_when_editing) {
+					if (event.target.tagName === "TEXTAREA")
+						return;
+
+					if (event.target.tagName === "INPUT") {
+						if (!event.target.hasAttribute("type") || event.target.getAttribute("type") === "text") {
+							return;
+						}
+					}
+				}
+			}
 
 			var ret = undefined;
 			var actions = [];
