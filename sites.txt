@@ -738,6 +738,8 @@ capebreton.lokol.me
 caping.co.id
 capl.washjeff.edu
 captaingoodlink.com
+carbon-media.accelerator.net
+carbonmade-media.accelerator.net
 cargocollective.com
 caribbeancompr.com
 carltonstaffing.info
@@ -2644,6 +2646,7 @@ images-production.global.ssl.fastly.net
 images.24ur.com
 images.45cat.com
 images.8tracks.com
+images.adrise.tv
 images.all-free-download.com
 images.allocine.fr
 images.alwatanvoice.com
@@ -3153,6 +3156,7 @@ img.tf.co.kr
 img.tgchengzi.com
 img.theculturetrip.com
 img.thedailybeast.com
+img.thedonald.win
 img.thefact.tv
 img.thefactjp.com
 img.theqoo.net
@@ -3328,6 +3332,7 @@ intoclassics.net
 intronews.net
 io.ua
 iol.pt
+ip.bitcointalk.org
 ip.index.hr
 ip.trueachievements.com
 ipetgroup.com
@@ -3497,6 +3502,7 @@ kino.tricolor.tv
 kinoafisha.ua
 kinofilms.ua
 kinofuxy.tv
+kinogo.by
 kinohron.mskcentrum.sk
 kinokach.com
 kinolift.ru
@@ -4432,6 +4438,7 @@ outdoornews.co.kr
 outlookweekly.net
 over-blog.com
 overcast.fm
+owo.lewd.ninja
 oxfordmail.co.uk
 oyster.ignimgs.com
 ozanyerli.com
@@ -5528,6 +5535,7 @@ storge.pic2.me
 storify.com
 str.your-pictionary.com
 stream.ne.jp
+streamja.com
 streetstylestore.com
 strikinglycdn.com
 stripes.com
@@ -5685,6 +5693,7 @@ thecandidforum.com
 thecelebritydresses.com
 thecelebritydresses.us
 thedjlist.com
+thedonald.win
 thedrive.co.kr
 theepochtimes.com
 thefamouspeople.com
@@ -5793,6 +5802,7 @@ tin247.com
 tirolerin.at
 tistory.com
 titus.kz
+tkfile.yes24.com
 tn.nozomi.la
 tn.pooh.pw
 tn.smilevideo.jp
@@ -6209,6 +6219,7 @@ x18.xxx
 x69.biz
 xbabe.com
 xboxlive.com
+xboxplay.games
 xcadr.com
 xcdnpro.com
 xda-developers.com
@@ -6295,6 +6306,8 @@ youngjump.jp
 youngporno.com
 yourdailygirls.com
 youthdaily.co.kr
+youtu.be
+youtube.com
 youweekly.gr
 youx.xxx
 ypncdn.com

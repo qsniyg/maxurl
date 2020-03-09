@@ -1,3 +1,28 @@
+0.12.18:
+
+New features:
+
+ * Option to close the popup when clicking outside of it (thanks to Hosa Dokha on greasyfork for the idea)
+ * Option to style the background when the popup is open (e.g. for dimming the rest of the page)
+ * Option to disable keybindings when editing text (enabled by default)
+ * Keybinding to open the options page (bound to P by default)
+ * Support for SVG tags
+ * Support for ~15 new websites (using ~10 new rules)
+
+Improvements:
+
+ * Support `-webkit-image-set`, possibly also improving some edge cases with background images
+ * Various improvements/fixes to existing rules (including Instagram, Tumblr, Twitter)
+ * Dark mode is automatically detected
+ * Better support RTL sites (Arabic, Hebrew, etc.)
+
+Bugfixes:
+
+ * Some images with data URLs will no longer hang when loading them
+ * Options page will no longer be opened multiple times for the userscript when the host document has frames
+
+---
+
 0.12.17
 
 New features:
