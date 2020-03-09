@@ -59563,6 +59563,8 @@ var $$IMU_EXPORT$$;
 					set_important_style(btn, "background", bgcolor);
 					set_important_style(btn, "border", "3px solid " + fgcolor);
 					set_important_style(btn, "border-radius", "10px");
+					// test: https://www.yeshiva.org.il/ (topbarel sets this to ltr, so it must be set to the initial value in order to respect the direction)
+					set_important_style(btn, "direction", text_direction);
 
 					// workaround for emojis: https://stackoverflow.com/a/39776303
 					if (typeof text === "string" && text.length === 1 && text.charCodeAt(0) > 256) {
@@ -59609,6 +59611,19 @@ var $$IMU_EXPORT$$;
 
 				var ui_els = [];
 
+				var text_direction = "initial";
+
+				var popup_el_style;
+				if (popup_el) {
+					popup_el_style = get_computed_style(popup_el);
+				} else {
+					popup_el_style = get_computed_style(document.body);
+				}
+
+				if (popup_el_style && popup_el_style.direction === "rtl") {
+					text_direction = "rtl";
+				}
+
 				var cached_previmages = 0;
 				var cached_nextimages = 0;
 
@@ -59627,6 +59642,10 @@ var $$IMU_EXPORT$$;
 					set_important_style(topbarel, "opacity", defaultopacity);
 					set_important_style(topbarel, "z-index", maxzindex - 1);
 					set_important_style(topbarel, "white-space", "nowrap");
+
+					// test: https://www.yeshiva.org.il/
+					// otherwise, the buttons are in the wrong order
+					set_important_style(topbarel, "direction", "ltr");
 					return topbarel;
 				}
 
