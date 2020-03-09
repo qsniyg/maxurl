@@ -80,6 +80,7 @@ var $$IMU_EXPORT$$;
 	var is_options_page = false;
 	var is_maxurl_website = false;
 	var options_page = "https://qsniyg.github.io/maxurl/options.html";
+	var preferred_options_page = options_page;
 	var firefox_addon_page = "https://addons.mozilla.org/en-US/firefox/addon/image-max-url/";
 	var greasyfork_update_url = "https://greasyfork.org/scripts/36662-image-max-url/code/Image%20Max%20URL.user.js";
 	var current_version = null;
@@ -106,6 +107,7 @@ var $$IMU_EXPORT$$;
 		is_extension_options_page = window.location.href.replace(/[?#].*$/, "") === extension_options_page;
 		is_options_page = is_options_page || is_extension_options_page;
 		//options_page = extension_options_page; // can't load from website
+		preferred_options_page = extension_options_page;
 
 		if (is_extension) {
 			is_webextension = true;
@@ -525,10 +527,31 @@ var $$IMU_EXPORT$$;
 
 		if (open_in_tab !== nullfunc) {
 			register_menucommand("Options", function() {
+				// this gets run for every frame the script is injected in
+				if (is_in_iframe)
+					return;
+
 				open_in_tab(options_page);
 			});
 		}
 	}
+
+	var open_in_tab_imu = function(imu, bg, cb) {
+		if (is_extension) {
+			extension_send_message({
+				type: "newtab",
+				data: {
+					imu: imu,
+					background: bg
+				}
+			}, cb);
+		} else if (is_userscript && open_in_tab) {
+			open_in_tab(imu.url, bg);
+			if (cb) {
+				cb();
+			}
+		}
+	};
 
 	var check_tracking_blocked = function(result) {
 		// FireMonkey returns null for result if blocked
@@ -585,6 +608,10 @@ var $$IMU_EXPORT$$;
 				var real_onerror = data.onerror;
 
 				var finalcb = function(resp, iserror) {
+					if (_nir_debug_) {
+						console_log("do_request's finalcb:", resp, iserror);
+					}
+
 					if (check_tracking_blocked(resp)) {
 						// Workaround for a bug in FireMonkey where it calls both onload and onerror: https://github.com/erosman/support/issues/134
 						data.onload = null;
@@ -1376,6 +1403,7 @@ var $$IMU_EXPORT$$;
 		use_blob_over_arraybuffer: false,
 		allow_live_settings_reload: true,
 		allow_remote: true,
+		disable_keybind_when_editing: true,
 		redirect: true,
 		redirect_history: true,
 		canhead_get: true,
@@ -1407,6 +1435,8 @@ var $$IMU_EXPORT$$;
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-531549043
 		//mouseover_close_on_leave_el: true,
 		mouseover_close_el_policy: "both",
+		// thanks to hans dokha on greasyfork for the idea: https://greasyfork.org/en/forum/discussion/71894/this-script-is-a-dream-come-true-just-1-thing
+		mouseover_close_click_outside: false,
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/126
 		mouseover_allow_partial: is_extension ? "media" : "video",
 		mouseover_use_blob_over_data: false,
@@ -1467,6 +1497,7 @@ var $$IMU_EXPORT$$;
 		// also thanks to 07416: https://github.com/qsniyg/maxurl/issues/25
 		mouseover_links: false,
 		mouseover_allow_canvas_el: false,
+		mouseover_allow_svg_el: true,
 		mouseover_gallery_cycle: false,
 		mouseover_gallery_prev_key: ["left"],
 		mouseover_gallery_next_key: ["right"],
@@ -1474,6 +1505,8 @@ var $$IMU_EXPORT$$;
 		// thanks to acid-crash on github for the idea: https://github.com/qsniyg/maxurl/issues/20
 		mouseover_styles: "",
 		mouseover_fade_time: 100,
+		mouseover_mask_styles: "",
+		mouseover_mask_fade_time: 100,
 		mouseover_ui_styles: "",
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-541065461
 		mouseover_wait_use_el: false,
@@ -1481,6 +1514,7 @@ var $$IMU_EXPORT$$;
 		mouseover_download_key: [["s"], ["ctrl", "s"]],
 		mouseover_open_new_tab_key: ["o"],
 		mouseover_open_bg_tab_key: ["shift", "o"],
+		mouseover_open_options_key: ["p"],
 		mouseover_rotate_left_key: ["e"],
 		mouseover_rotate_right_key: ["r"],
 		mouseover_flip_horizontal_key: ["h"],
@@ -1536,6 +1570,8 @@ var $$IMU_EXPORT$$;
 		last_update_url: null
 	};
 	var orig_settings = deepcopy(settings);
+
+	var user_defined_settings = {};
 
 	var settings_meta = {
 		imu_enabled: {
@@ -1643,6 +1679,13 @@ var $$IMU_EXPORT$$;
 			description: "Enables/disables live settings reloading. There shouldn't be a reason to disable this unless you're experiencing issues with this feature",
 			category: "general",
 			hidden: is_userscript && typeof GM_addValueChangeListener === "undefined",
+			imu_enabled_exempt: true,
+			advanced: true
+		},
+		disable_keybind_when_editing: {
+			name: "Disable keybindings when editing text",
+			description: "Disables IMU keybindings when key events are sent to an input area on the page",
+			category: "general",
 			imu_enabled_exempt: true,
 			advanced: true
 		},
@@ -2325,6 +2368,15 @@ var $$IMU_EXPORT$$;
 			category: "popup",
 			subcategory: "close_behavior"
 		},
+		mouseover_close_click_outside: {
+			name: "Clicking outside the popup closes",
+			description: "Closes the popup when the mouse clicks outside of it",
+			requires: {
+				mouseover_open_behavior: "popup"
+			},
+			category: "popup",
+			subcategory: "close_behavior"
+		},
 		mouseover_close_el_policy: {
 			name: "Close when leaving",
 			description: "Closes the popup when the mouse leaves the thumbnail element, the popup, or either",
@@ -2653,6 +2705,17 @@ var $$IMU_EXPORT$$;
 			category: "popup",
 			subcategory: "behavior"
 		},
+		mouseover_open_options_key: {
+			name: "Open options key",
+			description: "Opens this page in a new tab when this key is pressed",
+			hidden: is_userscript && open_in_tab === nullfunc,
+			requires: {
+				mouseover_open_behavior: "popup"
+			},
+			type: "keysequence",
+			category: "popup",
+			subcategory: "behavior"
+		},
 		mouseover_rotate_left_key: {
 			name: "Rotate left key",
 			description: "Rotates the popup 90 degrees to the left",
@@ -2751,6 +2814,15 @@ var $$IMU_EXPORT$$;
 			category: "popup",
 			subcategory: "open_behavior"
 		},
+		mouseover_allow_svg_el: {
+			name: "Popup for `<svg>`",
+			description: "Allows `<svg>` elements to be popped up as well. In theory, leaving this option enabled shouldn't cause any harm",
+			requires: {
+				mouseover: true
+			},
+			category: "popup",
+			subcategory: "open_behavior"
+		},
 		mouseover_gallery_cycle: {
 			name: "Cycle gallery",
 			description: "Going to the previous image for the first image will lead to the last image and vice-versa",
@@ -2805,6 +2877,31 @@ var $$IMU_EXPORT$$;
 			description: "Fade in/out time (in milliseconds) for the popup, set to 0 to disable",
 			requires: {
 				mouseover_open_behavior: "popup"
+			},
+			type: "number",
+			number_min: 0,
+			number_unit: "ms",
+			category: "popup",
+			subcategory: "popup_other"
+		},
+		mouseover_mask_styles: {
+			name: "Background CSS style",
+			description: "CSS style for the background when the popup is active",
+			requires: {
+				mouseover_open_behavior: "popup"
+			},
+			type: "textarea",
+			category: "popup",
+			subcategory: "popup_other"
+		},
+		mouseover_mask_fade_time: {
+			name: "Background fade",
+			description: "Fade in/out time (in milliseconds) for the page background, set to 0 to disable",
+			requires: {
+				mouseover_open_behavior: "popup"
+			},
+			disabled_if: {
+				mouseover_mask_styles: ""
 			},
 			type: "number",
 			number_min: 0,
@@ -5438,7 +5535,7 @@ var $$IMU_EXPORT$$;
 			newel = newel.parentElement;
 		}
 
-		if (newel.tagName === "VIDEO") {
+		if (newel.tagName === "VIDEO" && newel.parentElement) {
 			try {
 				newel = newel.parentElement.querySelectorAll("img[srcset]");
 				if (!newel || newel.length === 0)
@@ -5456,8 +5553,19 @@ var $$IMU_EXPORT$$;
 		return newel;
 	};
 
+	common_functions.instagram_get_image_src_from_el = function(el) {
+		if (el.tagName === "VIDEO") {
+			// use the poster instead as the larger video urls differ
+			return el.poster || el.src;
+		}
+
+		return el.src;
+	}
+
 	common_functions.instagram_find_el_info = function(document, element, host_url) {
 		var possible_infos = [];
+
+		var element_src = common_functions.instagram_get_image_src_from_el(element);
 
 		// check for links first
 		var current = element;
@@ -5471,7 +5579,7 @@ var $$IMU_EXPORT$$;
 					type: "post",
 					subtype: "link",
 					url: current.href,
-					image: element.src,
+					image: element_src,
 					element: current
 				});
 			} else if (current.href.match(/:\/\/[^/]+\/+[^/]+(?:\/+(?:[?#].*)?)?$/)) {
@@ -5555,7 +5663,7 @@ var $$IMU_EXPORT$$;
 					type: "post",
 					subtype: current.tagName === "BODY" ? "page" : "popup",
 					url: host_url,
-					image: element.src,
+					image: element_src,
 					element: current
 				});
 			}
@@ -5570,7 +5678,7 @@ var $$IMU_EXPORT$$;
 							type: "post",
 							subtype: "home",
 							url: href,
-							image: element.src,
+							image: element_src,
 							element: current
 						});
 					}
@@ -6107,6 +6215,10 @@ var $$IMU_EXPORT$$;
 
 			return src
 				.replace(/\/dims\/.*/, "");
+		}
+
+		if (domain === "tkfile.yes24.com") {
+			return src.replace(/(\/upload2\/.*?)\/dims\/+.*/, "$1");
 		}
 
 		if (domain === "cdn.music-flo.com") {
@@ -7289,7 +7401,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if ((domain === "pbs.twimg.com" &&
-			 /:\/\/[^/]+\/+(?:media|(?:card|ad)_img|ext_tw_video_thumb)\//.test(src)) ||
+			 /:\/\/[^/]+\/+(?:media|(?:card|ad|semantic_core)_img|ext_tw_video_thumb)\//.test(src)) ||
 			(domain === "ton.twitter.com" &&
 			 src.indexOf("/ton/data/dm/") >= 0)) {
 
@@ -7313,7 +7425,7 @@ var $$IMU_EXPORT$$;
 				return obj;
 			}
 
-			if (!(/\/(?:card|ad)_img\//.test(src))) {
+			if (!(/\/(?:card|ad|semantic_core)_img\//.test(src))) {
 				newsrc = src
 					.replace(/(\/[^/.?]+)\?(.*?&)?format=([^&]*)(.*?$)?/, "$1.$3?$2$4")
 					.replace(/\?&/, "?")
@@ -7406,6 +7518,17 @@ var $$IMU_EXPORT$$;
 						caption: caption
 					}
 				};
+			}
+		}
+
+		if (domain_nowww === "youtube.com" || domain_nowww === "youtu.be") {
+			match = src.match(/^[a-z]+:\/\/(?:www\.)?youtube\.com\/+watch\?(?:.*&)?v=([^&#]*)/);
+			if (!match) {
+				match = src.match(/^[a-z]+:\/\/(?:www\.)?youtu\.be\/+([^?&#]*)/);
+			}
+
+			if (match) {
+				return "https://i.ytimg.com/vi/" + match[1] + "/mqdefault.jpg";
 			}
 		}
 
@@ -8993,6 +9116,7 @@ var $$IMU_EXPORT$$;
 		if (domain === "cdnimg.melon.co.kr" ||
 			domain === "image.melon.co.kr" ||
 			domain === "kakaoimg.melon.co.kr" ||
+			domain === "cdnticket.melon.co.kr" ||
 			domain === "cmtimg.melon.co.kr"/* &&
 			(src.indexOf("/images/") >= 0 ||
 			 src.indexOf("/image/") >= 0 ||
@@ -9109,12 +9233,63 @@ var $$IMU_EXPORT$$;
 			if (options.rule_specific && options.rule_specific.tumblr_api_key)
 				apikey = options.rule_specific.tumblr_api_key;
 
-			var get_post_api = function(blogname, postid, cb) {
-				var cache_key = "tumblr_api_blog:" + blogname + ":post:" + postid;
-				api_cache.fetch(cache_key, cb, function(done) {
+			var get_initialstate_from_text = function(text) {
+				var match = text.match(/window\['___INITIAL_STATE___'\]\s*=\s*({.*?"tumblelog":.*?})\s*;\s*(?:<\/script>[\s\S]*)?$/);
+				if (match) {
+					var json = match[1].replace(/(\"\s*:)\s*\/.*?\/\s*([,}])/g, "$1null$2");
+
+					try {
+						var parsed = JSON_parse(json);
+						return parsed;
+					} catch (e) {
+						console_error(e);
+					}
+
+					return null;
+				}
+
+				return null;
+			};
+
+			var get_initialstate = function() {
+				var scripts = document.getElementsByTagName("script");
+				for (var i = 0; i < scripts.length; i++) {
+					var text = scripts[i].innerText;
+
+					if (text.length < 100)
+						continue;
+
+					var initialstate = get_initialstate_from_text(text);
+					if (initialstate)
+						return initialstate;
+				}
+
+				return null;
+			};
+
+			var get_apikey_from_initialstate = function(initialstate) {
+				if (initialstate && initialstate.apiFetchStore && "API_TOKEN" in initialstate.apiFetchStore) {
+					return initialstate.apiFetchStore.API_TOKEN;
+				}
+
+				return null;
+			};
+
+			var initialstate = get_initialstate();
+			var initialstate_api_key = get_apikey_from_initialstate(initialstate);
+
+			var get_beta_api_key = function(cb) {
+				api_cache.fetch("tumblr_api_key", cb, function(done) {
+					if (initialstate_api_key) {
+						return done(initialstate_api_key, 24*60*60);
+					}
+
 					options.do_request({
-						url: "https://api.tumblr.com/v2/blog/" + blogname + "/posts?api_key=" + apikey + "&id=" + postid + "&npf=true",
 						method: "GET",
+						url: "https://support.tumblr.com/archive",
+						headers: {
+							Referer: ""
+						},
 						onload: function(resp) {
 							if (resp.readyState !== 4)
 								return;
@@ -9124,23 +9299,77 @@ var $$IMU_EXPORT$$;
 								return done(null, false);
 							}
 
-							try {
-								var json = JSON_parse(resp.responseText);
-								var post = json.response.posts[0];
-
-								var content = post.content;
-
-								if (post.trail) {
-									for (var i = 0; i < post.trail.length; i++) {
-										[].push.apply(content, post.trail[i].content);
-									}
+							var initialstate = get_initialstate_from_text(resp.responseText);
+							if (initialstate) {
+								var apikey = get_apikey_from_initialstate(initialstate);
+								if (apikey) {
+									return done(apikey, 24*60*60);
 								}
-
-								return done(content, 6*60*60);
-							} catch (e) {
-								console_error(e, resp);
-								return done(null, false);
 							}
+
+							return done(null, false);
+						}
+					});
+				});
+			};
+
+			var do_tumblr_api_call = function(path, params, cb) {
+
+				var request_obj = {
+					url: "https://api.tumblr.com/v2" + path + "?api_key=" + apikey + "&" + params,
+					method: "GET",
+					onload: function(resp) {
+						if (resp.readyState !== 4)
+							return;
+
+						if (resp.status !== 200) {
+							console_error(resp);
+							return cb(null);
+						}
+
+						return cb(resp.responseText);
+					}
+				};
+
+				if (!apikey) {
+					get_beta_api_key(function(apikey) {
+						request_obj.headers = {
+							"Authorization": "Bearer " + apikey,
+							"X-Version": "redpop/3/0//redpop/"
+						};
+
+						request_obj.url = request_obj.url.replace(/\?api_key=.*?&/, "?");
+						options.do_request(request_obj);
+					});
+				} else {
+					options.do_request(request_obj);
+				}
+			};
+
+			var get_post_api = function(blogname, postid, cb) {
+				var cache_key = "tumblr_api_blog:" + blogname + ":post:" + postid;
+				api_cache.fetch(cache_key, cb, function(done) {
+					do_tumblr_api_call("/blog/" + blogname + "/posts", "id=" + postid + "&npf=true", function(data) {
+						if (!data) {
+							return done(null, false);
+						}
+
+						try {
+							var json = JSON_parse(data);
+							var post = json.response.posts[0];
+
+							var content = post.content;
+
+							if (post.trail) {
+								for (var i = 0; i < post.trail.length; i++) {
+									[].push.apply(content, post.trail[i].content);
+								}
+							}
+
+							return done(content, 6*60*60);
+						} catch (e) {
+							console_error(e, data);
+							return done(null, false);
 						}
 					});
 				});
@@ -9190,10 +9419,16 @@ var $$IMU_EXPORT$$;
 			}
 
 			var get_post = function(blogname, postid, cb) {
-				if (apikey) {
+				if (apikey || initialstate_api_key) {
 					return get_post_api(blogname, postid, cb);
 				} else {
-					return get_post_http(blogname, postid, cb);
+					get_beta_api_key(function (apikey) {
+						if (apikey) {
+							return get_post_api(blogname, postid, cb);
+						} else {
+							return get_post_http(blogname, postid, cb);
+						}
+					});
 				}
 			};
 
@@ -9276,6 +9511,14 @@ var $$IMU_EXPORT$$;
 				return null;
 			};
 
+			var find_blogname_from_initialstate = function() {
+				if (initialstate && "tumblelog" in initialstate && "name" in initialstate.tumblelog) {
+					return initialstate.tumblelog.name;
+				}
+
+				return null;
+			};
+
 			var find_postid_from_el = function(el) {
 				var currentel = el;
 
@@ -9297,6 +9540,20 @@ var $$IMU_EXPORT$$;
 						var match = currentel.href.match(/:\/\/[^/]+\/+image\/+([0-9]{8,})\/*(?:[?#].*)?$/);
 						if (match) {
 							return match[1];
+						}
+					}
+
+					if (currentel.tagName === "FIGURE") {
+						try {
+							var as = currentel.parentElement.parentElement.getElementsByTagName("a");
+							for (var i = 0; i < as.length; i++) {
+								var match = as[i].href.match(/:\/\/[^/]+\/+(?:image|post)\/+([0-9]{8,})\/*(?:[?#].*)?$/);
+								if (match) {
+									return match[1];
+								}
+							}
+						} catch (e) {
+							console_error(e);
 						}
 					}
 				}
@@ -9361,6 +9618,10 @@ var $$IMU_EXPORT$$;
 					blogname = find_blogname_from_head();
 				}
 
+				if (!blogname) {
+					blogname = find_blogname_from_initialstate();
+				}
+
 				if (blogname) {
 					var obj = {
 						blogname: blogname
@@ -9403,12 +9664,16 @@ var $$IMU_EXPORT$$;
 				var info = try_finding_info();
 				if (info) {
 					get_post(info.blogname, info.postid, function(data) {
-						if (!data)
+						if (!data) {
+							console_warn("Unable to get post data from API", info);
 							return options.cb(null);
+						}
 
 						var media = find_media_from_post_mediakey(data, mediakey);
-						if (!media)
+						if (!media) {
+							console_warn("Unable to find media from post and mediakey", data, mediakey);
 							return options.cb(null);
+						}
 
 						var largest = find_largest_from_media(media);
 
@@ -16965,24 +17230,19 @@ var $$IMU_EXPORT$$;
 						url.match(/^(?:[a-z]+)?:\/\/(?:i|(?:external-)?preview)\.redd\.it\//))
 						return url;
 
-					var match = url.match(/:\/\/(?:www\.)?youtube\.com\/+watch\?(?:.*&)?v=([^&#]*)/);
-					if (!match) {
-						match = url.match(/:\/\/(?:www\.)?youtu\.be\/+([^?&#]*)/);
-					}
-
-					if (match) {
-						return "https://i.ytimg.com/vi/" + match[1] + "/mqdefault.jpg";
-					}
-
-					if (bigimage_recursive(url, {
+					var opts = {
 						fill_object: false,
 						iterations: 3,
-						use_cache: false,
+						use_cache: "read",
 						use_api_cache: false,
 						null_if_no_change: true,
+						exclude_problems: [],
 						do_request: function(){},
 						cb: function(){}
-					}) !== null) {
+					};
+
+					opts = get_bigimage_extoptions(opts);
+					if (bigimage_recursive(url, opts) !== null) {
 						return url;
 					}
 				}
@@ -17101,7 +17361,8 @@ var $$IMU_EXPORT$$;
 					}
 				}
 			})();
-			if (newsrc !== undefined)
+
+			if (newsrc !== undefined && newsrc !== src)
 				return newsrc;
 		}
 
@@ -20179,7 +20440,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "media.alienwarearena.com") {
-			return src.replace(/\/thumbnail_[0-9]+x[0-9]+\/([0-9a-f]+\.[^/.]*)$/, "/media/$1");
+			return src.replace(/\/thumb(?:nail)?_[0-9]+x[0-9]+\/+([0-9a-f]{10,}\.[^/.]*)$/, "/media/$1");
 		}
 
 		if (domain_nowww === "6asian.com") {
@@ -33454,6 +33715,62 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/artist[0-9]+x[0-9]+\/+/, "/artist-min/");
 		}
 
+		if (domain_nowww === "xboxplay.games") {
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+imagenes\/+redimensionar2\.php\?(?:.*&)?imagen=([^&]+).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+		}
+
+		if (domain === "owo.lewd.ninja") {
+			return src.replace(/(\/images\/+games\/+)(?:[a-z]_)?([0-9]+_[0-9a-f]{10,})(?:_thumb)?(\.[^/.]+)(?:[?#].*)?$/, "$1$2$3");
+		}
+
+		if (domain_nowww === "kinogo.by") {
+			match = src.match(/\/uploads\/+cache\/+(?:[0-9a-f]\/+){9}([0-9]+-[^/]+)-[0-9]+x[0-9]+(\.[^/.]+)(?:[?#].*)?$/);
+			if (match) {
+				obj = [];
+				obj.push(src.replace(/\/uploads\/+.*/, "/uploads/posters/" + match[1] + match[2]));
+
+				var match1 = match[1].match(/^([0-9]{10,})-[0-9]+-/);
+				if (match1) {
+					var date = new Date(parseInt(match1[1]) * 1000);
+					obj.push(src.replace(/\/uploads\/.*/, "/uploads/posts/" + date.getUTCFullYear() + "-" + (date.getUTCMonth() + 1) + "/" + match[1] + match[2]));
+				}
+
+				return obj;
+			}
+		}
+
+		if (domain === "ip.bitcointalk.org") {
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+\?(?:.*&)?u=([^&]+).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+		}
+
+		if (domain === "carbonmade-media.accelerator.net" ||
+			domain === "carbon-media.accelerator.net") {
+			return src.replace(/(:\/\/[^/]+\/+(?:[0-9]+\/+[^/.]+|[0-9]+));[0-9]*x[0-9]*(?:\/+[^/.]+)?(\.[^/.]+)(?:[?#].*)?$/, "$1;original$2");
+		}
+
+		if (domain_nowww === "streamja.com") {
+			if (/\/img\/+play\.png(?:[?#].*)?$/.test(src)) {
+				return {
+					url: src,
+					bad: "mask"
+				};
+			}
+		}
+
+		if (domain === "img.thedonald.win" && host_domain_nowww === "thedonald.win" && options && options.element) {
+			if (options.element.parentElement && options.element.parentElement.tagName === "A") {
+				var parent = options.element.parentElement;
+				var dparent = parent.parentElement;
+				if (dparent && dparent.tagName === "DIV" && dparent.classList.contains("thumb")) {
+					return parent.href;
+				}
+			}
+		}
+
 
 
 
@@ -33738,6 +34055,7 @@ var $$IMU_EXPORT$$;
 			domain === "thumbor.forbes.com" ||
 			domain === "thumbor.f3.cool" ||
 			domain === "dw8stlw9qt0iz.cloudfront.net" ||
+			domain === "images.adrise.tv" ||
 			src.match(/:\/\/[^/]*\/thumbor\/[^/]*=\//) ||
 			src.match(/:\/\/[^/]*\/resizer\/[^/]*=\/(?:fit-in\/+)?[0-9]+x[0-9]+(?::[^/]*\/[0-9]+x[0-9]+)?\/(?:filters:[^/]*\/)?/)) {
 			newsrc = src.replace(/.*\/(?:thumb(?:or)?|(?:new-)?resizer)\/.*?\/(?:filters:[^/]*\/)?([a-z]*:\/\/.*)/, "$1");
@@ -34416,7 +34734,8 @@ var $$IMU_EXPORT$$;
 
 					if (can_apply) {
 						var imageid_el = common_functions.instagram_get_el_for_imageid(el);
-						var our_imageid = common_functions.instagram_get_imageid(imageid_el.src);
+						var imageid_el_src = common_functions.instagram_get_image_src_from_el(imageid_el);
+						var our_imageid = common_functions.instagram_get_imageid(imageid_el_src);
 						var add = nextprev ? 1 : -1;
 						common_functions.instagram_parse_el_info(real_api_cache, options.do_request, options.rule_specific.instagram_use_app_api, info, function(data) {
 							for (var i = nextprev ? 0 : 1; i < data.length - (nextprev ? 1 : 0); i++) {
@@ -34675,11 +34994,13 @@ var $$IMU_EXPORT$$;
 			options.do_request = null;
 		}
 
-		options.rule_specific.deviantart_prefer_size = settings.deviantart_prefer_size;
-		options.rule_specific.imgur_source = settings.imgur_source;
-		options.rule_specific.instagram_use_app_api = settings.instagram_use_app_api;
-		options.rule_specific.instagram_gallery_postlink = settings.instagram_gallery_postlink;
-		options.rule_specific.tumblr_api_key = settings.tumblr_api_key;
+		if ("rule_specific" in options) {
+			options.rule_specific.deviantart_prefer_size = settings.deviantart_prefer_size;
+			options.rule_specific.imgur_source = settings.imgur_source;
+			options.rule_specific.instagram_use_app_api = settings.instagram_use_app_api;
+			options.rule_specific.instagram_gallery_postlink = settings.instagram_gallery_postlink;
+			options.rule_specific.tumblr_api_key = settings.tumblr_api_key;
+		}
 
 		// Doing this here breaks things like Imgur, which will redirect to an image if a video was opened in a new tab
 		if (false && !settings.allow_video) {
@@ -34723,6 +35044,12 @@ var $$IMU_EXPORT$$;
 
 		var waiting = false;
 		var forcerecurse = false;
+
+		var url_is_data = false;
+		var origurl = url;
+		if (typeof url === "string" && /^(?:data|blob):/.test(url)) {
+			url_is_data = true;
+		}
 
 		var newhref = url;
 		var endhref;
@@ -34837,6 +35164,10 @@ var $$IMU_EXPORT$$;
 					continue;
 				}
 
+				if (obj.url === "" && url_is_data) {
+					obj.url = origurl;
+				}
+
 				// Remove problems in exclude_problems
 				for (var problem in obj.problems) {
 					if (obj.problems[problem] &&
@@ -34894,7 +35225,7 @@ var $$IMU_EXPORT$$;
 
 				// FIXME: this is a terrible hack
 				try {
-					if (newhref[0].waiting === true && !objified[0].waiting)
+					if (!options.fill_object || (newhref[0].waiting === true && !objified[0].waiting))
 						newhref = objified;
 				} catch (e) {}
 
@@ -35890,9 +36221,21 @@ var $$IMU_EXPORT$$;
 		return true;
 	};
 
+	var prefers_dark_mode = function() {
+		try {
+			return window.matchMedia("(prefers-color-scheme: dark)").matches;
+		} catch (e) {
+			return false;
+		}
+	};
+
 	function update_dark_mode() {
 		if (!is_maxurl_website && !is_options_page) {
 			return;
+		}
+
+		if (prefers_dark_mode()) {
+			set_default_value("dark_mode", true);
 		}
 
 		if (settings.dark_mode) {
@@ -36812,6 +37155,9 @@ var $$IMU_EXPORT$$;
 					savebutton.innerText = _("save");
 					savebutton.onclick = function() {
 						do_update_setting(setting, textarea.value, meta);
+
+						// Background CSS style unlocks Background fade
+						check_disabled_options();
 						//settings[setting] = textarea.value;
 					};
 
@@ -37311,6 +37657,12 @@ var $$IMU_EXPORT$$;
 		return true;
 	}
 
+	function set_default_value(key, value) {
+		if (!(key in user_defined_settings)) {
+			settings[key] = value;
+		}
+	}
+
 	function settings_updated_cb(changes) {
 		if (!settings.allow_live_settings_reload)
 			return;
@@ -37488,6 +37840,8 @@ var $$IMU_EXPORT$$;
 			if (typeof settings[setting] === "number") {
 				value = parseFloat(value);
 			}
+
+			user_defined_settings[setting] = value;
 
 			if (value !== settings[setting]) {
 				settings[setting] = value;
@@ -37751,6 +38105,10 @@ var $$IMU_EXPORT$$;
 			img.src = obj[0].url;
 			img.onload = function() {
 				cb(img, obj[0].url, obj[0]);
+			};
+			img.onerror = function(e) {
+				console_log("Error loading image", e);
+				err_cb();
 			};
 			return;
 		}
@@ -38218,6 +38576,7 @@ var $$IMU_EXPORT$$;
 
 		var processing_list = [];
 		var popups = [];
+		var mask_el = null;
 		var popup_obj = null;
 		var popup_objecturl = null;
 		var popup_el = null;
@@ -38459,6 +38818,20 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		var remove_mask = function() {
+			if (mask_el) {
+				if (mask_el.parentElement)
+					mask_el.parentElement.removeChild(mask_el);
+				mask_el = null;
+			}
+
+			if (removemask_timer) {
+				clearTimeout(removemask_timer);
+				removemask_timer = null;
+			}
+		};
+
+		var removemask_timer = null;
 		function resetpopups(from_remote) {
 			popups.forEach(function (popup) {
 				if (settings.mouseover_fade_time > 0) {
@@ -38468,9 +38841,24 @@ var $$IMU_EXPORT$$;
 						removepopups_timer = setTimeout(removepopups, settings.mouseover_fade_time);
 					}
 				} else {
+					// FIXME: this is called for each popup
 					removepopups();
 				}
 			});
+
+			if (mask_el) {
+				set_important_style(mask_el, "pointer-events", "none");
+
+				if (settings.mouseover_mask_fade_time > 0) {
+					set_important_style(mask_el, "opacity", 0);
+
+					if (!removemask_timer) {
+						removemask_timer = setTimeout(remove_mask, settings.mouseover_mask_fade_time);
+					}
+				} else {
+					remove_mask();
+				}
+			}
 
 			if (!from_remote && can_use_remote()) {
 				if (is_in_iframe) {
@@ -38639,20 +39027,31 @@ var $$IMU_EXPORT$$;
 			return null;
 		}
 
-		function open_in_tab_imu(imu, bg, cb) {
-			if (is_extension) {
-				extension_send_message({
-					type: "newtab",
-					data: {
-						imu: imu,
-						background: bg
-					}
-				}, cb);
-			} else if (is_userscript && open_in_tab) {
-				open_in_tab(imu.url, bg);
-				if (cb) {
-					cb();
-				}
+		var get_tagname = function(el) {
+			return el.tagName.toUpperCase();
+		};
+
+		function get_el_dimensions(el) {
+			if (get_tagname(el) === "VIDEO") {
+				return [
+					el.videoWidth,
+					el.videoHeight
+				];
+			} else if (get_tagname(el) === "CANVAS") {
+				return [
+					el.width,
+					el.height
+				];
+			} else if (get_tagname(el) === "SVG") {
+				return [
+					el.width.animVal.value,
+					el.height.animVal.value
+				];
+			} else {
+				return [
+					el.naturalWidth,
+					el.naturalHeight
+				]
 			}
 		}
 
@@ -38752,23 +39151,76 @@ var $$IMU_EXPORT$$;
 				var textcolor = "#fff";
 				var shadowcolor = "rgba(0,0,0,.5)";
 
+				var setup_mask_el = function(mask) {
+					set_el_all_initial(mask);
+
+					set_important_style(mask, "opacity", 1);
+					if (settings.mouseover_mask_styles)
+						apply_styles(mask, settings.mouseover_mask_styles, true);
+
+					if (!settings.mouseover_close_click_outside) {
+						set_important_style(mask, "pointer-events", "none");
+					}
+
+					set_important_style(mask, "position", "fixed");
+					set_important_style(mask, "z-index", maxzindex - 3);
+					set_important_style(mask, "width", "100%");
+					set_important_style(mask, "height", "100%");
+					set_important_style(mask, "left", "0px");
+					set_important_style(mask, "top", "0px");
+
+					if (settings.mouseover_mask_fade_time > 0) {
+						set_important_style(mask, "transition", "opacity " + (settings.mouseover_mask_fade_time / 1000.) + "s");
+
+						// this allows us to respect a custom opacity for mouseover_mask_styles
+						var old_opacity = mask.style.opacity;
+
+						if (!popup_el_automatic) {
+							set_important_style(mask, "opacity", 0);
+							// this is needed in order to make the transition happen
+							setTimeout(function() {
+								set_important_style(mask, "opacity", old_opacity);
+							}, 1);
+						} else {
+							set_important_style(mask, "opacity", old_opacity);
+						}
+					}
+
+					mask.addEventListener("click", function() {
+						if (!settings.mouseover_close_click_outside)
+							return;
+
+						set_important_style(mask, "pointer-events", "none");
+						resetpopups();
+					}, true);
+
+					return mask;
+				};
+
+				remove_mask();
+
+				if (settings.mouseover_close_click_outside || settings.mouseover_mask_styles) {
+					mask_el = document.createElement("div");
+					setup_mask_el(mask_el);
+				}
+
 				var outerdiv = document.createElement("div");
 				set_el_all_initial(outerdiv);
-				outerdiv.style.position = "fixed";
-				outerdiv.style.zIndex = maxzindex - 2;
+				set_important_style(outerdiv, "position", "fixed");
+				set_important_style(outerdiv, "z-index", maxzindex - 2);
 
 				if (settings.mouseover_fade_time > 0) {
-					outerdiv.style.setProperty("transition", "opacity " + (settings.mouseover_fade_time / 1000.) + "s");
+					set_important_style(outerdiv, "transition", "opacity " + (settings.mouseover_fade_time / 1000.) + "s");
 
 					if (!popup_el_automatic) {
-						outerdiv.style.opacity = 0;
+						set_important_style(outerdiv, "opacity", 0);
 
 						// this is needed in order to make the transition happen
 						setTimeout(function() {
-							outerdiv.style.opacity = 1;
+							set_important_style(outerdiv, "opacity", 1);
 						}, 1);
 					} else {
-						outerdiv.style.opacity = 1;
+						set_important_style(outerdiv, "opacity", 1);
 					}
 				}
 
@@ -38857,6 +39309,7 @@ var $$IMU_EXPORT$$;
 
 				update_vwh();
 
+				var el_dimensions = get_el_dimensions(img);
 				set_el_all_initial(img);
 
 				var add_link = false;
@@ -38875,13 +39328,8 @@ var $$IMU_EXPORT$$;
 
 				var img_naturalHeight, img_naturalWidth;
 
-				if (!is_video) {
-					img_naturalHeight = img.naturalHeight;
-					img_naturalWidth = img.naturalWidth;
-				} else {
-					img_naturalHeight = img.videoHeight;
-					img_naturalWidth = img.videoWidth;
-				}
+				img_naturalWidth = el_dimensions[0];
+				img_naturalHeight = el_dimensions[1];
 
 				var imgh = img_naturalHeight;
 				var imgw = img_naturalWidth;
@@ -39155,6 +39603,8 @@ var $$IMU_EXPORT$$;
 					set_important_style(btn, "background", bgcolor);
 					set_important_style(btn, "border", "3px solid " + fgcolor);
 					set_important_style(btn, "border-radius", "10px");
+					// test: https://www.yeshiva.org.il/ (topbarel sets this to ltr, so it must be set to the initial value in order to respect the direction)
+					set_important_style(btn, "direction", text_direction);
 
 					// workaround for emojis: https://stackoverflow.com/a/39776303
 					if (typeof text === "string" && text.length === 1 && text.charCodeAt(0) > 256) {
@@ -39201,6 +39651,19 @@ var $$IMU_EXPORT$$;
 
 				var ui_els = [];
 
+				var text_direction = "initial";
+
+				var popup_el_style;
+				if (popup_el) {
+					popup_el_style = get_computed_style(popup_el);
+				} else {
+					popup_el_style = get_computed_style(document.body);
+				}
+
+				if (popup_el_style && popup_el_style.direction === "rtl") {
+					text_direction = "rtl";
+				}
+
 				var cached_previmages = 0;
 				var cached_nextimages = 0;
 
@@ -39219,6 +39682,10 @@ var $$IMU_EXPORT$$;
 					set_important_style(topbarel, "opacity", defaultopacity);
 					set_important_style(topbarel, "z-index", maxzindex - 1);
 					set_important_style(topbarel, "white-space", "nowrap");
+
+					// test: https://www.yeshiva.org.il/
+					// otherwise, the buttons are in the wrong order
+					set_important_style(topbarel, "direction", "ltr");
 					return topbarel;
 				}
 
@@ -40017,6 +40484,10 @@ var $$IMU_EXPORT$$;
 						return false;
 				};
 
+				if (mask_el) {
+					document.documentElement.appendChild(mask_el);
+				}
+
 				document.documentElement.appendChild(outerdiv);
 
 				removepopups();
@@ -40253,11 +40724,46 @@ var $$IMU_EXPORT$$;
 			return false;
 		}
 
+		var get_svg_src = function(el) {
+			var remove_attributes = [
+				"class",
+				"id",
+				"tabindex",
+				"style"
+			];
+
+			var newel = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+			newel.innerHTML = el.innerHTML;
+
+			newel.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+
+			var attrs = el.attributes;
+			for (var i = 0; i < attrs.length; i++) {
+				var attr_name = attrs[i].name;
+
+				if (remove_attributes.indexOf(attr_name) >= 0 || /^on/.test(attr_name) || /^aria-/.test(attr_name)) {
+					continue;
+				}
+
+				newel.setAttribute(attr_name, attrs[i].value);
+			}
+
+			var computed_style = get_computed_style(el);
+			if (computed_style.color) {
+				newel.setAttribute("fill", computed_style.color);
+			}
+
+			var header = '<?xml version="1.0" encoding="UTF-8" standalone="no" ?>\n';
+			var svgdoc = header + newel.outerHTML;
+
+			return "data:image/svg+xml;base64," + btoa(svgdoc);
+		};
+
 		function get_img_src(el) {
-			if (el.tagName === "A")
+			if (get_tagname(el) === "A")
 				return el.href;
 
-			if (el.tagName === "CANVAS") {
+			if (get_tagname(el) === "CANVAS") {
 				try {
 					return el.toDataURL();
 				} catch (e) {
@@ -40266,27 +40772,16 @@ var $$IMU_EXPORT$$;
 				}
 			}
 
+			if (get_tagname(el) === "SVG") {
+				if (settings.mouseover_allow_svg_el) {
+					return get_svg_src(el);
+				} else {
+					return null;
+				}
+			}
+
 			// currentSrc is used if another image is used in the srcset
 			return el.currentSrc || el.src;
-		}
-
-		function get_el_dimensions(el) {
-			if (el.tagName === "VIDEO") {
-				return [
-					el.videoWidth,
-					el.videoHeight
-				];
-			} else if (el.tagName === "CANVAS") {
-				return [
-					el.width,
-					el.height
-				];
-			} else {
-				return [
-					el.naturalWidth,
-					el.naturalHeight
-				]
-			}
 		}
 
 		function is_valid_src(src, isvideo) {
@@ -40473,7 +40968,7 @@ var $$IMU_EXPORT$$;
 					el_style = window.getComputedStyle(el) || el.style;
 				}
 
-				if (src && (src.match(/^data:/) && src.length <= 500) ||
+				if (src && (src.match(/^data:/) && !(/^data:image\/svg\+xml;/.test(src)) && src.length <= 500) ||
 					// https://www.smugmug.com/
 					// https://www.vogue.com/article/lady-gaga-met-gala-2019-entrance-behind-the-scenes-video
 					!check_visible(el)) {
@@ -40510,7 +41005,7 @@ var $$IMU_EXPORT$$;
 					var has_link = false;
 					var current = el;
 					do {
-						if (current.tagName === "A") {
+						if (get_tagname(current) === "A") {
 							has_link = true;
 							break;
 						}
@@ -40546,13 +41041,16 @@ var $$IMU_EXPORT$$;
 					}
 				}
 
-				if (el.tagName === "PICTURE" || el.tagName === "VIDEO") {
+				var el_tagname = get_tagname(el);
+				if (el_tagname === "PICTURE" || el_tagname === "VIDEO") {
 					for (var i = 0; i < el.children.length; i++) {
 						addElement(el.children[i], layer);
 					}
 				}
 
-				if (el.tagName === "SOURCE" || el.tagName === "IMG" || el.tagName === "VIDEO" || (settings.mouseover_allow_canvas_el && el.tagName === "CANVAS")) {
+				if (el_tagname === "SOURCE" || el_tagname === "IMG" || el_tagname === "VIDEO" ||
+					(settings.mouseover_allow_canvas_el && el_tagname === "CANVAS") ||
+					(settings.mouseover_allow_svg_el && el_tagname === "SVG")) {
 					var el_src = get_img_src(el);
 
 					if (el_src) {
@@ -40677,7 +41175,7 @@ var $$IMU_EXPORT$$;
 					}
 				}
 
-				if (el.tagName === "A") {
+				if (el_tagname === "A") {
 					var src = el.href;
 					links[src] = {
 						count: 1,
@@ -40688,58 +41186,280 @@ var $$IMU_EXPORT$$;
 				}
 			}
 
-			function get_urls_from_css(str, elstr) {
-				var emptystrregex = /^(.*?\)\s*,)?\s*url[(]["']{2}[)]/;
-				if (!str.match(/^(.*?\)\s*,)?\s*url[(]/) || emptystrregex.test(str))
-					return null;
+			function _tokenize_css_value(str) {
+				var tokensets = [];
+				var tokens = [];
 
-				// window.getComputedStyle returns the window's URL in this case for some reason, so we need the element's style to find the empty string
-				if (elstr && emptystrregex.test(elstr))
-					return null;
+				var current_token = "";
+				var quote = null;
+				var escaping = false;
+				for (var i = 0; i < str.length; i++) {
+					var char = str[i];
 
-				// https://www.cyberpunk.net/
-				// url(/build/images/home/bg-media-1440-88acc9fc.jpg),url(/build/images/home/bg-media-under-1440-498c46c1.jpg)
-				var urls = [];
-				while (str) {
-					// https://www.flickr.com/account/upgrade/pro
-					// background-image: linear-gradient(rgba(0,0,0,.2),rgba(0,0,0,.2)),url(https://combo.staticflickr.com/ap/build/images/pro/flickrpro-hero-header.jpg)
-					// url('https://t00.deviantart.net/I94eYVLky718W9_zFjV-SJ-_qm8=/300x200/filters:fixed_height(100,100):origin()/pre00/abda/th/pre/i/2013/069/9/0/black_rock_shooter_by_mrtviolet-d5xktg7.jpg');
-					var match = str.match(/^(.*\)\s*,)?\s*url[(](?:(?:'(.*?)')|(?:"(.*?)")|(?:([^)]*)))[)].*?$/);
-					if (!match)
+					if (escaping) {
+						current_token += char;
+						escaping = false;
+						continue;
+					}
+
+					if (quote) {
+						if (char === quote) {
+							quote = null;
+
+							tokens.push(current_token);
+							current_token = "";
+						} else {
+							current_token += char;
+						}
+
+						continue;
+					}
+
+					if (/\s/.test(char)) {
+						if (current_token.length > 0) {
+							tokens.push(current_token);
+							current_token = "";
+						}
+
+						continue;
+					} else if (char === '\\') {
+						escaping = true;
+						continue;
+					} else if (char === '"' || char === "'") {
+						quote = char;
+						continue;
+					} else if (char === '(') {
+						var subtokens = _tokenize_css_value(str.substr(i + 1));
+						tokens.push({name: current_token, tokens: subtokens[0]});
+						i += subtokens[1];
+						current_token = "";
+						continue;
+					} else if (char === ')') {
+						i++;
 						break;
+					} else if (char === ',') {
+						if (current_token)
+							tokens.push(current_token);
 
-					urls.unshift(norm(match[2] || match[3] || match[4]));
-					str = match[1];
+						tokensets.push(tokens);
+
+						tokens = [];
+						current_token = "";
+						continue;
+					}
+
+					current_token += char;
+				}
+
+				if (current_token)
+					tokens.push(current_token);
+
+				if (tokens)
+					tokensets.push(tokens);
+
+				return [tokensets, i];
+			}
+
+			function has_bgimage_url(tokenized) {
+				for (var i = 0; i < tokenized.length; i++) {
+					if (tokenized[i].length < 1)
+						continue;
+
+					if (typeof tokenized[i][0] !== "object")
+						continue;
+
+					var our_func = tokenized[i][0];
+
+					var funcname = our_func.name;
+
+					// TODO: support image() and cross-fade()
+					var allowed = [
+						"url",
+						"-webkit-image-set",
+						"image-set"
+					];
+
+					if (allowed.indexOf(funcname) < 0)
+						continue;
+
+					if (funcname === "url") {
+						if (our_func.tokens.length >= 1 && our_func.tokens[0].length > 0 && our_func.tokens[0][0].length > 0)
+							return true;
+					} else {
+						if (has_bgimage_url(our_func.tokens))
+							return true;
+					}
+				}
+
+				return false;
+			}
+
+			function get_urlfunc_url(func) {
+				if (typeof func !== "object")
+					return null;;
+
+				if (func.name !== "url")
+					return null;
+
+				if (func.tokens.length < 1 || func.tokens[0].length < 1 || func.tokens[0][0].length === 0)
+					return null;
+
+				return func.tokens[0][0];
+			}
+
+			function get_imageset_urls(func) {
+				var urls = [];
+				for (var i = 0; i < func.tokens.length; i++) {
+					if (func.tokens[i].length < 1) {
+						continue;
+					}
+
+					var url = get_urlfunc_url(func.tokens[i][0]);
+					if (!url)
+						continue;
+
+					var source = {
+						src: url
+					};
+
+					for (var j = 1; j < func.tokens[i].length; j++) {
+						var desc = func.tokens[i][j];
+						var whxmatch = desc.match(/^([0-9.]+)(x|dp(?:px|i|cm))$/);
+
+						if (whxmatch) {
+							var number = parseFloat(whxmatch[1]);
+
+							if (number > 0) {
+								var unit = whxmatch[2];
+
+								// https://drafts.csswg.org/css-values-3/#cm
+								if (unit === "dppx") {
+									number *= 96;
+									unit = "dpi";
+								} else if (unit === "dpcm") {
+									number *= 96/2.54;
+									unit = "dpi";
+								}
+
+								if (unit === "x")
+									source.desc_x = number;
+								else if (unit === "dpi")
+									source.dpi = number;
+							}
+						} else {
+							console_warn("Unknown descriptor: " + desc);
+						}
+					}
+
+					urls.push(source);
 				}
 
 				return urls;
 			}
 
-			function add_bgimage(layer, el, style, beforeafter) {
-				if (style.getPropertyValue("background-image")) {
-					var bgimg = style.getPropertyValue("background-image");
-					var urls = get_urls_from_css(bgimg, el.style.getPropertyValue("background-image"));
-					if (urls) {
-						for (var i = 0; i < urls.length; i++) {
-							addImage(urls[i], el, {
-								isbg: beforeafter || true,
-								layer: layer
-							});
+			function get_bgimage_urls(tokenized) {
+				var urls = [];
+
+				for (var i = 0; i < tokenized.length; i++) {
+					if (tokenized[i].length < 1)
+						continue;
+
+					if (typeof tokenized[i][0] !== "object")
+						continue;
+
+					var our_func = tokenized[i][0];
+
+					var funcname = our_func.name;
+
+					// TODO: support image() and cross-fade()
+					var allowed = [
+						"url",
+						"-webkit-image-set",
+						"image-set"
+					];
+
+					if (allowed.indexOf(funcname) < 0)
+						continue;
+
+					if (funcname === "url") {
+						var url = get_urlfunc_url(our_func);
+						if (url) {
+							urls.push(url);
+						}
+					} else if (funcname === "-webkit-image-set" || funcname === "image-set") {
+						var newurls = get_imageset_urls(our_func);
+						if (newurls) {
+							[].push.apply(urls, newurls);
 						}
 					}
 				}
 
-				if (beforeafter) {
-					if (style.getPropertyValue("content")) {
-						var urls = get_urls_from_css(style.getPropertyValue("content"));
-						if (urls) {
-							for (var i = 0; i < urls.length; i++) {
-								addImage(urls[i], el, {
-									isbg: beforeafter,
-									layer: layer
-								});
+				return urls;
+			}
+
+			function get_urls_from_css(str, elstr) {
+				var str_tokenized = _tokenize_css_value(str)[0];
+
+				if (!has_bgimage_url(str_tokenized))
+					return null;
+
+				// -webkit-image-set(url('https://carbonmade-media.accelerator.net/34754698;460x194/lossless.webp') 1x, url('https://carbonmade-media.accelerator.net/34754698;920x388/lossless.webp') 2x)
+
+				//var emptystrregex = /^(.*?\)\s*,)?\s*url[(]["']{2}[)]/;
+				//if (!str.match(/^(.*?\)\s*,)?\s*url[(]/) || emptystrregex.test(str))
+				//	return null;
+
+				// window.getComputedStyle returns the window's URL in this case for some reason, so we need the element's style to find the empty string
+				var elstr_tokenized;
+				if (elstr) {
+					elstr_tokenized = _tokenize_css_value(elstr)[0];
+					if (!has_bgimage_url(elstr_tokenized))
+						return null;
+				}
+
+				return get_bgimage_urls(str_tokenized);
+			}
+
+			function add_urls_from_css(el, str, elstr, layer, bg) {
+				var urls = get_urls_from_css(str, elstr);
+				if (urls) {
+					var url;
+
+					for (var i = 0; i < urls.length; i++) {
+						url = urls[i];
+						if (typeof url !== "string") {
+							url = url.src;
+						}
+
+						addImage(url, el, {
+							isbg: bg,
+							layer: layer
+						});
+
+						if (typeof urls[i] !== "string") {
+							var props = ["desc_x", "dpi"];
+
+							for (var j = 0; j < props.length; j++) {
+								var prop = props[j];
+
+								if (urls[i][prop] && (!sources[url][prop] || sources[url][prop] > urls[i][prop])) {
+									sources[url][prop] = urls[i][prop];
+								}
 							}
 						}
+					}
+				}
+			}
+
+			function add_bgimage(layer, el, style, beforeafter) {
+				if (style.getPropertyValue("background-image")) {
+					var bgimg = style.getPropertyValue("background-image");
+					add_urls_from_css(el, bgimg, el.style.getPropertyValue("background-image"), layer, beforeafter || true);
+				}
+
+				if (beforeafter) {
+					if (style.getPropertyValue("content")) {
+						add_urls_from_css(el, style.getPropertyValue("content"), undefined, layer, beforeafter);
 					}
 				}
 			}
@@ -40838,6 +41558,8 @@ var $$IMU_EXPORT$$;
 				var elMaxH = null;
 				var minX = 0;
 				var elX = null;
+				var minDpi = 0;
+				var elDpi = null;
 
 				var okurls = {};
 
@@ -40888,6 +41610,12 @@ var $$IMU_EXPORT$$;
 						have_something = true;
 					}
 
+					if (source.dpi && source.dpi > minDpi) {
+						dpiX = source.dpi;
+						elDpi = source;
+						have_something = true;
+					}
+
 					if (source.isbg) {
 						okurls[source.src] = true;
 						have_something = true;
@@ -40899,6 +41627,10 @@ var $$IMU_EXPORT$$;
 
 				if (minX > 1) {
 					okurls[elX.src] = true;
+				}
+
+				if (minDpi > 96) {
+					okurls[elDpi.src] = true;
 				}
 
 				if (minW > thresh && minW > minMinW) {
@@ -42757,6 +43489,9 @@ var $$IMU_EXPORT$$;
 				case "seek_right":
 					seek_popup_video(false);
 					return true;
+				case "open_options":
+					open_in_tab_imu({url: preferred_options_page}, false);
+					return true;
 			}
 
 			return false;
@@ -42799,8 +43534,23 @@ var $$IMU_EXPORT$$;
 			if (!mouseover_enabled())
 				return;
 
-			if (editing_text && event.type === "keydown")
-				return;
+			if (event.type === "keydown") {
+				if (editing_text)
+					return;
+
+				if (settings.disable_keybind_when_editing) {
+					if (event.target.tagName === "TEXTAREA")
+						return;
+
+					if (event.target.tagName === "INPUT") {
+						if (!event.target.hasAttribute("type") || event.target.getAttribute("type") === "text") {
+							return;
+						}
+					}
+
+					// TODO: support editable divs?
+				}
+			}
 
 			var ret = undefined;
 			var actions = [];
@@ -42883,6 +43633,12 @@ var $$IMU_EXPORT$$;
 					{
 						key: settings.mouseover_open_bg_tab_key,
 						action: {type: "open_in_new_tab", background_tab: true}
+					},
+					{
+						key: settings.mouseover_open_options_key,
+						// Clear the chord because opening in a new tab will not release the keys
+						clear: true,
+						action: {type: "open_options"}
 					},
 					{
 						key: settings.mouseover_rotate_left_key,
