@@ -2703,7 +2703,7 @@ var $$IMU_EXPORT$$;
 			subcategory: "behavior"
 		},
 		mouseover_open_options_key: {
-			name: "Open options page",
+			name: "Open options key",
 			description: "Opens this page in a new tab when this key is pressed",
 			hidden: is_userscript && open_in_tab === nullfunc,
 			requires: {
