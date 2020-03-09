@@ -57138,6 +57138,9 @@ var $$IMU_EXPORT$$;
 					savebutton.innerText = _("save");
 					savebutton.onclick = function() {
 						do_update_setting(setting, textarea.value, meta);
+
+						// Background CSS style unlocks Background fade
+						check_disabled_options();
 						//settings[setting] = textarea.value;
 					};
 
