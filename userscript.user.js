@@ -27522,6 +27522,39 @@ var $$IMU_EXPORT$$;
 			};
 		}
 
+		if (host_domain_nowww === "discordapp.com" && (domain_nosub === "fbcdn.net" || domain_nosub === "cdninstagram.com") && options.element && options.cb && options.do_request) {
+			if (options.element.tagName === "IMG" && options.element.parentElement && options.element.parentElement.tagName === "A") {
+				var aparent = options.element.parentElement;
+				var aparent_class = aparent.getAttribute("class");
+				if (aparent_class.indexOf("embedMedia") >= 0) {
+					var divparent = aparent.parentElement;
+					if (divparent) {
+						var divs = divparent.getElementsByTagName("div");
+						for (var i = 0; i < divs.length; i++) {
+							var ourdiv_class = divs[i].getAttribute("class");
+							if (ourdiv_class.indexOf("embedTitle") >= 0) {
+								var our_as = divs[i].getElementsByTagName("a");
+
+								if (our_as.length === 1 && /instagram\.com\//.test(our_as[0].href)) {
+									var info = [{
+										type: "post",
+										subtype: "link",
+										url: our_as[0].href,
+										image: src,
+										element: options.element
+									}];
+
+									return common_functions.instagram_parse_el_info(api_cache, options.do_request, options.rule_specific.instagram_use_app_api, info, options.cb);
+								}
+
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+
 		if (domain === "cdns.klimg.com" ||
 			domain === "cdn.klimg.com") {
 			// https://cdns.klimg.com/resized/300x150/p/photonews/foto-pesona-cantik-krystal-kenakan-suit-0ef272.jpg
