@@ -3411,6 +3411,37 @@ var $$IMU_EXPORT$$;
 		}
 	};
 
+	var js_set_available = false;
+	var new_set = function() {
+		var set = [];
+
+		try {
+			set = new Set();
+			js_set_available = true;
+		} catch (e) {
+		}
+
+		return set;
+	};
+
+	var set_add = function(set, key) {
+		if (js_set_available) {
+			set.add(key);
+		} else {
+			if (!set_has(set, key)) {
+				set.push(key);
+			}
+		}
+	};
+
+	var set_has = function(set, key) {
+		if (js_set_available) {
+			return set.has(key);
+		} else {
+			return set.indexOf(key) >= 0;
+		}
+	};
+
 	function Cache() {
 		this.data = new_map();
 		this.times = new_map();
@@ -62013,7 +62044,7 @@ var $$IMU_EXPORT$$;
 				console_log("find_els_at_point", deepcopy(xy), deepcopy(els), deepcopy(prev));
 
 			if (!prev) {
-				prev = [];
+				prev = new_set();
 			}
 
 			if (zoom_cache === undefined) {
@@ -62038,10 +62069,10 @@ var $$IMU_EXPORT$$;
 			for (var i = 0; i < els.length; i++) {
 				var el = els[i];
 
-				if (prev.indexOf(el) >= 0)
+				if (set_has(prev, el))
 					continue;
 
-				prev.push(el);
+				set_add(prev, el);
 
 				// FIXME: should we stop checking if not in bounding client rect?
 				// this would depend on the fact that children are always within the bounding rect
