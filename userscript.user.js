@@ -522,6 +522,10 @@ var $$IMU_EXPORT$$;
 
 		if (open_in_tab !== nullfunc) {
 			register_menucommand("Options", function() {
+				// this gets run for every frame the script is injected in
+				if (is_in_iframe)
+					return;
+
 				open_in_tab(options_page);
 			});
 		}
@@ -63508,6 +63512,8 @@ var $$IMU_EXPORT$$;
 							return;
 						}
 					}
+
+					// TODO: support editable divs?
 				}
 			}
 
