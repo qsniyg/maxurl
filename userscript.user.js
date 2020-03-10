@@ -292,6 +292,7 @@ var $$IMU_EXPORT$$;
 	var raw_remote_send_message = null;
 	var remote_send_message = nullfunc;
 	var remote_send_reply = nullfunc;
+	var imu_message_key = "__IMU_MESSAGE__";
 
 	if (is_extension) {
 		raw_remote_send_message = function(to, message) {
@@ -317,21 +318,29 @@ var $$IMU_EXPORT$$;
 
 			message.imu = true;
 
+			var wrapped_message = {};
+			wrapped_message[imu_message_key] = message;
+
 			if (!specified_window) {
 				for (var i = 0; i < window.frames.length; i++) {
 					try {
-						window.frames[i].postMessage(message, "*");
+						window.frames[i].postMessage(wrapped_message, "*");
 					} catch (e) {
 						// not allowed
 						continue;
 					}
 				}
 			} else {
-				specified_window.postMessage(message, "*");
+				specified_window.postMessage(wrapped_message, "*");
 			}
 		};
 
 		is_remote_possible = true;
+
+		if (window.location.hostname === "cafe.daum.net") {
+			// unfortunately they interpret all message events, leading to bugs in their website. thanks to solplparty on discord for noticing
+			is_remote_possible = false;
+		}
 	}
 
 	if (is_remote_possible) {
@@ -6203,6 +6212,16 @@ var $$IMU_EXPORT$$;
 			// https://search3.kakaocdn.net/argon/600x0_65_wr/CdIaPo4lsew
 			// https://search3.kakaocdn.net/argon/0x200_85_hr/CdIaPo4lsew
 		}*/
+
+		if (domain_nosub === "daumcdn.net" && /^t[0-9]*\./.test(domain)) {
+			// http://t1.daumcdn.net/cafe_image/fancafe/2018/fancafe-cheer-color-bg.png
+			if (/\/cafe_image\/+fancafe\/+[0-9]+\/+fancafe-cheer-color-bg\./.test(src)) {
+				return {
+					url: src,
+					bad: "mask"
+				};
+			}
+		}
 
 		if ((domain_nosub === "tistory.com" ||
 			  domain_nosub === "daum.net") &&
@@ -13831,6 +13850,16 @@ var $$IMU_EXPORT$$;
 			// https://be35832fa5168a30acd6-5c7e0f2623ae37b4a933167fe83d71b5.ssl.cf3.rackcdn.com/2827/holly-willoughby-head-shot__hero.jpg?1469632555
 			//   https://be35832fa5168a30acd6-5c7e0f2623ae37b4a933167fe83d71b5.ssl.cf3.rackcdn.com/2827/holly-willoughby-head-shot.jpg?1469632555
 			return src.replace(/__hero(\.[^/.]*)(?:[?#].*)?$/, "$1");
+		}
+
+		if (domain === "7e7781e2f767494a7128-d0458b7f69ca26f2871554faadb4939e.ssl.cf5.rackcdn.com") {
+			// https://7e7781e2f767494a7128-d0458b7f69ca26f2871554faadb4939e.ssl.cf5.rackcdn.com/wp-content/themes/photolux/images/box-hover-plus.png
+			// https://7e7781e2f767494a7128-d0458b7f69ca26f2871554faadb4939e.ssl.cf5.rackcdn.com/wp-content/themes/photolux/images/box-hover.png
+			if (/\/wp-content\/+themes\/+photolux\/+images\//.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
 		}
 
 		if (domain === "cdn.shopify.com") {
@@ -55672,6 +55701,10 @@ var $$IMU_EXPORT$$;
 	};
 
 	var redirect = function(url, obj) {
+		if (_nir_debug_) {
+			console_log("redirect", url, obj);
+		}
+
 		if (_nir_debug_ && _nir_debug_.no_redirect)
 			return;
 
@@ -64123,12 +64156,12 @@ var $$IMU_EXPORT$$;
 			});
 		} else {
 			window.addEventListener("message", function(event) {
-				if (!can_use_remote() || !event.data.imu)
+				if (!can_use_remote() || !(imu_message_key in event.data))
 					return;
 
 				// TODO: update id_to_iframe with event.source (remember that event.source is a window object, not an iframe)
 
-				handle_remote_event(event.data);
+				handle_remote_event(event.data[imu_message_key]);
 			}, false);
 		}
 
@@ -64567,8 +64600,9 @@ var $$IMU_EXPORT$$;
 			}
 
 			if (settings.imu_enabled) {
-				if (settings.redirect)
+				if (settings.redirect) {
 					do_redirect();
+				}
 
 				if (settings.website_inject_imu &&
 					(window.location.href.match(/^https?:\/\/qsniyg\.github\.io\/+maxurl(\/+|\/+index\.html)?(?:[?#].*)?$/) ||
