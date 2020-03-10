@@ -56480,7 +56480,10 @@ var $$IMU_EXPORT$$;
 				event.stopPropagation();
 				return false;
 			}
-		}, true);
+		}, {
+			capture: true,
+			passive: false
+		});
 
 		document.addEventListener("contextmenu", function(event) {
 			if (recording_keys) {
@@ -63707,6 +63710,9 @@ var $$IMU_EXPORT$$;
 			if (!mouseover_enabled())
 				return;
 
+			if (event.type === "wheel" && chord_is_only_wheel(current_chord))
+				return;
+
 			if (event.type === "keydown") {
 				if (editing_text)
 					return;
@@ -63905,7 +63911,10 @@ var $$IMU_EXPORT$$;
 		document.addEventListener('keydown', keydown_cb, true);
 		document.addEventListener('mousedown', keydown_cb, true);
 		document.addEventListener('contextmenu', keydown_cb, true);
-		document.addEventListener('wheel', keydown_cb, true);
+		document.addEventListener('wheel', keydown_cb, {
+			capture: true,
+			passive: false
+		});
 
 		var keyup_cb = function(event) {
 			if (!mouseover_enabled())
