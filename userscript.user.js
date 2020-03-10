@@ -56293,6 +56293,20 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (event.type === "wheel") {
+			if (event.deltaY < 0) {
+				keys.wheelUp = true;
+			} else if (event.deltaY > 0) {
+				keys.wheelDown = true;
+			}
+
+			if (event.deltaX < 0) {
+				keys.wheelLeft = true;
+			} else if (event.deltaX > 0) {
+				keys.wheelRight = true;
+			}
+		}
+
 		var str = keycode_to_str(event);
 		if (str === undefined) {
 			return keys;
@@ -56302,7 +56316,24 @@ var $$IMU_EXPORT$$;
 		return keys;
 	}
 
+	var keystr_is_wheel = function(keystr) {
+		return /^wheel/.test(keystr);
+	};
+
+	var chord_is_only_wheel = function(chord) {
+		for (var i = 0; i < chord.length; i++) {
+			if (!keystr_is_wheel(chord[i])) {
+				return false;
+			}
+		}
+
+		return true;
+	};
+
 	var keysequence_bad = function(keyseq) {
+		if (chord_is_only_wheel(keyseq))
+			return true;
+
 		if (keyseq.length !== 1)
 			return false;
 
@@ -56439,6 +56470,17 @@ var $$IMU_EXPORT$$;
 				return false;
 			}
 		});
+
+		document.addEventListener('wheel', function(event) {
+			update_options_chord(event, true);
+
+			if (recording_keys) {
+				event.preventDefault();
+				event.stopImmediatePropagation();
+				event.stopPropagation();
+				return false;
+			}
+		}, true);
 
 		document.addEventListener("contextmenu", function(event) {
 			if (recording_keys) {
@@ -61901,6 +61943,32 @@ var $$IMU_EXPORT$$;
 		settings_meta.mouseover_trigger_delay.onupdate = update_mouseover_trigger_delay;
 		settings_meta.mouseover_trigger_behavior.onupdate = update_mouseover_trigger_delay;
 
+		function can_add_to_chord(str) {
+			if (!keystr_is_wheel(str))
+				return true;
+
+			return !chord_is_only_wheel(current_chord);
+		}
+
+		function clear_chord_wheel() {
+			for (var i = 0; i < current_chord.length; i++) {
+				if (keystr_is_wheel(current_chord[i])) {
+					current_chord.splice(i, 1);
+					i--;
+				}
+			}
+		}
+
+		function clear_chord() {
+			current_chord = [];
+			current_chord_timeout = {};
+		}
+
+		function clear_chord_if_only_wheel() {
+			if (chord_is_only_wheel(current_chord))
+				clear_chord();
+		}
+
 		function keystr_in_trigger(str, wanted_chord) {
 			if (wanted_chord === undefined)
 				wanted_chord = settings.mouseover_trigger_key;
@@ -61910,6 +61978,9 @@ var $$IMU_EXPORT$$;
 
 		function key_would_modify_single_chord(str, value) {
 			if (value) {
+				if (!can_add_to_chord(str))
+					return false;
+
 				if (current_chord.indexOf(str) < 0)
 					return true;
 			} else {
@@ -61922,6 +61993,9 @@ var $$IMU_EXPORT$$;
 
 		function set_chord_sub(str, value) {
 			if (value) {
+				if (!can_add_to_chord(str))
+					return false;
+
 				current_chord_timeout[str] = Date.now();
 				if (current_chord.indexOf(str) < 0) {
 					current_chord.push(str);
@@ -61932,6 +62006,7 @@ var $$IMU_EXPORT$$;
 				delete current_chord_timeout[str];
 				if (current_chord.indexOf(str) >= 0) {
 					current_chord.splice(current_chord.indexOf(str), 1);
+					clear_chord_if_only_wheel();
 					//console_log("-" + str);
 					return true;
 				}
@@ -61985,11 +62060,6 @@ var $$IMU_EXPORT$$;
 			return changed;
 		}
 
-		function clear_chord() {
-			current_chord = [];
-			current_chord_timeout = {};
-		}
-
 		function event_would_modify_single_chord(e, value, wanted_chord) {
 			var map = get_keystrs_map(e, value)
 
@@ -62025,6 +62095,9 @@ var $$IMU_EXPORT$$;
 
 			// e.g. if the user presses shift+r, but the chord is r, then it should fail
 			for (var i = 0; i < current_chord.length; i++) {
+				if (keystr_is_wheel(current_chord[i]))
+					continue;
+
 				if (wanted_chord.indexOf(current_chord[i]) < 0)
 					return false;
 			}
@@ -63808,7 +63881,9 @@ var $$IMU_EXPORT$$;
 				release_ignore = deepcopy(release_ignore);
 			}
 
-			if (actions) {
+			if (actions && actions.length > 0) {
+				clear_chord_wheel();
+
 				for (var i = 0; i < actions.length; i++) {
 					action_handler(actions[i]);
 				}
@@ -63830,6 +63905,7 @@ var $$IMU_EXPORT$$;
 		document.addEventListener('keydown', keydown_cb, true);
 		document.addEventListener('mousedown', keydown_cb, true);
 		document.addEventListener('contextmenu', keydown_cb, true);
+		document.addEventListener('wheel', keydown_cb, true);
 
 		var keyup_cb = function(event) {
 			if (!mouseover_enabled())
