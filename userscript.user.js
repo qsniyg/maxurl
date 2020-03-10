@@ -56320,9 +56320,13 @@ var $$IMU_EXPORT$$;
 		return /^wheel/.test(keystr);
 	};
 
+	var keystr_is_button12 = function(keystr) {
+		return keystr === "button1" || keystr === "button2";
+	}
+
 	var chord_is_only_wheel = function(chord) {
 		for (var i = 0; i < chord.length; i++) {
-			if (!keystr_is_wheel(chord[i])) {
+			if (!keystr_is_wheel(chord[i]) && !keystr_is_button12(chord[i])) {
 				return false;
 			}
 		}
@@ -56337,17 +56341,18 @@ var $$IMU_EXPORT$$;
 		if (keyseq.length !== 1)
 			return false;
 
-		return keyseq[0] === "button1" || keyseq[0] === "button2";
+		return keystr_is_button12(keyseq[0]);
 	};
 
 	var keysequence_valid = function(keyseq) {
 		if (keyseq.length === 0)
 			return false;
-		if (keyseq.length > 1)
-			return true;
 
 		if (keysequence_bad(keyseq))
 			return false;
+
+		if (keyseq.length > 1)
+			return true;
 
 		return true;
 	};
