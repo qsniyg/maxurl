@@ -2398,7 +2398,7 @@ var $$IMU_EXPORT$$;
 		},
 		mouseover_wait_use_el: {
 			name: "Use invisible element when waiting",
-			description: "Creates an invisible element under the cursor when waiting for the popup instead of a style element (legacy)",
+			description: "Creates an invisible element under the cursor when waiting for the popup instead of a style element (can improve performance on websites with many elements, but prevents the cursor from clicking anything while loading the popup)",
 			requires: {
 				mouseover: true
 			},
@@ -4121,7 +4121,7 @@ var $$IMU_EXPORT$$;
 	// https://our.umbraco.org/forum/using-umbraco-and-getting-started/91715-js-error-when-aligning-content-left-center-right-justify-in-richtext-editor
 	if (is_node || true) {
 		fullurl = function(url, x) {
-			return urljoin(url, x);
+			return urljoin(url, x, true);
 		};
 	}
 
@@ -53278,6 +53278,23 @@ var $$IMU_EXPORT$$;
 				var dparent = parent.parentElement;
 				if (dparent && dparent.tagName === "DIV" && dparent.classList.contains("thumb")) {
 					return parent.href;
+				}
+			}
+		}
+
+		if (host_domain_nowww === "derstandard.at" && options.element) {
+			// https://www.derstandard.at/story/2000115095254/firefox-how-mozilla-wants-to-fight-against-googles-dominance
+			if (options.element.tagName === "BUTTON" && options.element.classList.contains("figure-fullscreen-trigger")) {
+				return {
+					url: origsrc,
+					bad: "mask"
+				};
+			}
+
+			if (options.element.parentElement && options.element.parentElement.tagName === "PICTURE") {
+				var fullscreen_img = options.element.parentElement.querySelector("img[data-fullscreen-src]");
+				if (fullscreen_img) {
+					return urljoin(src, fullscreen_img.getAttribute("data-fullscreen-src"), true);
 				}
 			}
 		}
