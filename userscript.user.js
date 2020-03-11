@@ -1468,6 +1468,9 @@ var $$IMU_EXPORT$$;
 		mouseover_video_seek_right_key: ["shift", "right"],
 		mouseover_video_seek_vertical_scroll: false,
 		mouseover_video_seek_horizontal_scroll: false,
+		mouseover_video_speed_down_key: ["["],
+		mouseover_video_speed_up_key: ["]"],
+		mouseover_video_speed_amount: 0.25,
 		mouseover_ui: true,
 		mouseover_ui_opacity: 80,
 		mouseover_ui_imagesize: true,
@@ -2111,6 +2114,41 @@ var $$IMU_EXPORT$$;
 				mouseover_open_behavior: "popup",
 				allow_video: true
 			},
+			category: "popup",
+			subcategory: "video"
+		},
+		mouseover_video_speed_down_key: {
+			name: "Speed down key",
+			description: "Key to speed the video down by a specified amount",
+			requires: {
+				mouseover_open_behavior: "popup",
+				allow_video: true
+			},
+			type: "keysequence",
+			category: "popup",
+			subcategory: "video"
+		},
+		mouseover_video_speed_up_key: {
+			name: "Speed up key",
+			description: "Key to speed the video up by a specified amount",
+			requires: {
+				mouseover_open_behavior: "popup",
+				allow_video: true
+			},
+			type: "keysequence",
+			category: "popup",
+			subcategory: "video"
+		},
+		mouseover_video_speed_amount: {
+			name: "Speed up/down amount",
+			description: "How many times faster/slower to speed the video up/down",
+			requires: {
+				mouseover_open_behavior: "popup",
+				allow_video: true
+			},
+			type: "number",
+			number_min: 0,
+			number_unit: "x",
 			category: "popup",
 			subcategory: "video"
 		},
@@ -63593,6 +63631,18 @@ var $$IMU_EXPORT$$;
 			videoel[0].currentTime += time;
 		};
 
+		var popup_video_speed = function(downup) {
+			var videoel = popups[0].getElementsByTagName("video");
+			if (!videoel || videoel.length === 0)
+				return;
+
+			var amount = settings.mouseover_video_speed_amount;
+			if (downup)
+				amount = -amount;
+
+			videoel[0].playbackRate += amount;
+		};
+
 		var popup_active = function() {
 			return popups_active && popup_el;
 		};
@@ -63669,6 +63719,12 @@ var $$IMU_EXPORT$$;
 					return true;
 				case "seek_right":
 					seek_popup_video(false);
+					return true;
+				case "speed_down":
+					popup_video_speed(true);
+					return true;
+				case "speed_up":
+					popup_video_speed(false);
 					return true;
 				case "open_options":
 					open_in_tab_imu({url: preferred_options_page}, false);
@@ -63863,6 +63919,14 @@ var $$IMU_EXPORT$$;
 					{
 						key: settings.mouseover_video_seek_right_key,
 						action: {type: "seek_right"}
+					},
+					{
+						key: settings.mouseover_video_speed_down_key,
+						action: {type: "speed_down"}
+					},
+					{
+						key: settings.mouseover_video_speed_up_key,
+						action: {type: "speed_up"}
 					}
 				];
 
