@@ -1460,6 +1460,7 @@ var $$IMU_EXPORT$$;
 		mouseover_exclude_imagetab: true,
 		mouseover_video_controls: false,
 		mouseover_video_loop: true,
+		mouseover_video_playpause_key: ["space"],
 		mouseover_video_muted: false,
 		mouseover_video_mute_key: ["m"],
 		mouseover_video_volume: 100,
@@ -2026,6 +2027,17 @@ var $$IMU_EXPORT$$;
 			disabled_if: {
 				mouseover_gallery_move_after_video: true
 			},
+			category: "popup",
+			subcategory: "video"
+		},
+		mouseover_video_playpause_key: {
+			name: "Play/pause key",
+			description: "Key to toggle whether the video is playing or paused",
+			requires: {
+				mouseover_open_behavior: "popup",
+				allow_video: true
+			},
+			type: "keysequence",
 			category: "popup",
 			subcategory: "video"
 		},
@@ -63671,6 +63683,18 @@ var $$IMU_EXPORT$$;
 			videoel.muted = !videoel.muted;
 		};
 
+		var toggle_video_playing = function() {
+			var videoel = get_popup_video();
+			if (!videoel)
+				return;
+
+			if (videoel.paused) {
+				videoel.play();
+			} else {
+				videoel.pause();
+			}
+		};
+
 		var popup_active = function() {
 			return popups_active && popup_el;
 		};
@@ -63756,6 +63780,9 @@ var $$IMU_EXPORT$$;
 					return true;
 				case "toggle_mute":
 					toggle_video_muted();
+					return true;
+				case "toggle_play_pause":
+					toggle_video_playing();
 					return true;
 				case "open_options":
 					open_in_tab_imu({url: preferred_options_page}, false);
@@ -63962,6 +63989,10 @@ var $$IMU_EXPORT$$;
 					{
 						key: settings.mouseover_video_mute_key,
 						action: {type: "toggle_mute"}
+					},
+					{
+						key: settings.mouseover_video_playpause_key,
+						action: {type: "toggle_play_pause"}
 					}
 				];
 
