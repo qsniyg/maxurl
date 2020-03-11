@@ -28041,8 +28041,16 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/thumb\/[0-9]+\/([0-9a-f]+)-([a-z]+)\.[^/.]*$/, "/$1.$2");
 		}
 
+		if (domain === "cdn.theatlantic.com") {
+			// https://cdn.theatlantic.com/thumbor/8edqTskrFQWDsYMUD50hWAHzrF4=/0x208:4000x2458/720x405/media/img/mt/2020/03/GettyImages_1129273816/original.jpg
+			//   https://cdn.theatlantic.com/assets/media/img/mt/2020/03/GettyImages_1129273816/original.jpg
+			newsrc = src.replace(/\/thumbor\/.*\/(?:assets\/+)?media\/+/, "/assets/media/");
+			if (newsrc !== src)
+				return newsrc;
+		}
+
 		if (domain === "cdn.theatlantic.com" &&
-			src.match(/\/assets\/media\/(?:[^/]*\/)?img\//)) {
+			src.match(/\/assets\/+media\/+(?:[^/]*\/)?img\//)) {
 			// https://cdn.theatlantic.com/assets/media/img/photo/2018/06/photos-of-the-week-3/w06_AP18176413538038/main_600.jpg
 			//   https://cdn.theatlantic.com/assets/media/img/photo/2018/06/photos-of-the-week-3/w06_AP18176413538038/original.jpg
 			// https://cdn.theatlantic.com/assets/media/img/2018/06/WEL_Langewiesche_RaidOpener/640x360.jpg?mod=1530451892
@@ -53390,6 +53398,14 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain === "cl.fame10.com") {
+			// https://cl.fame10.com/image/upload/t_cn,f_auto,q_auto,$w_700/f10/2014/03/shutterstock_109340663-450x654.jpg
+			//   https://cl.fame10.com/image/upload/f10/2014/03/shutterstock_109340663.jpg
+			return src
+				.replace(/(\/image\/+upload\/+f10\/+.*)-[0-9]+x[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1$2")
+				.replace(/\/image\/+upload\/+[^/]+\/+(f10\/+.*)$/, "/image/upload/$1");
+		}
+
 
 
 
@@ -64376,7 +64392,7 @@ var $$IMU_EXPORT$$;
 			});
 		} else {
 			window.addEventListener("message", function(event) {
-				if (!can_use_remote() || !(imu_message_key in event.data))
+				if (!can_use_remote() || !event.data || typeof event.data !== "object" || !(imu_message_key in event.data))
 					return;
 
 				// TODO: update id_to_iframe with event.source (remember that event.source is a window object, not an iframe)
