@@ -1461,6 +1461,7 @@ var $$IMU_EXPORT$$;
 		mouseover_video_controls: false,
 		mouseover_video_loop: true,
 		mouseover_video_muted: false,
+		mouseover_video_mute_key: ["m"],
 		mouseover_video_volume: 100,
 		mouseover_video_resume_from_source: false,
 		mouseover_video_seek_amount: 10,
@@ -2035,6 +2036,17 @@ var $$IMU_EXPORT$$;
 				mouseover_open_behavior: "popup",
 				allow_video: true
 			},
+			category: "popup",
+			subcategory: "video"
+		},
+		mouseover_video_mute_key: {
+			name: "Toggle mute key",
+			description: "Key to toggle whether the video is muted or unmuted",
+			requires: {
+				mouseover_open_behavior: "popup",
+				allow_video: true
+			},
+			type: "keysequence",
 			category: "popup",
 			subcategory: "video"
 		},
@@ -63620,27 +63632,43 @@ var $$IMU_EXPORT$$;
 			do_download(popup_obj, popup_obj.filename);
 		};
 
+		var get_popup_video = function() {
+			var videoel = popups[0].getElementsByTagName("video");
+			if (!videoel || videoel.length === 0)
+				return null;
+
+			return videoel[0];
+		};
+
 		var seek_popup_video = function(leftright) {
 			var timemul = leftright ? -1 : 1;
 			var time = timemul * settings.mouseover_video_seek_amount;
 
-			var videoel = popups[0].getElementsByTagName("video");
-			if (!videoel || videoel.length === 0)
+			var videoel = get_popup_video();
+			if (!videoel)
 				return;
 
-			videoel[0].currentTime += time;
+			videoel.currentTime += time;
 		};
 
 		var popup_video_speed = function(downup) {
-			var videoel = popups[0].getElementsByTagName("video");
-			if (!videoel || videoel.length === 0)
+			var videoel = get_popup_video();
+			if (!videoel)
 				return;
 
 			var amount = settings.mouseover_video_speed_amount;
 			if (downup)
 				amount = -amount;
 
-			videoel[0].playbackRate += amount;
+			videoel.playbackRate += amount;
+		};
+
+		var toggle_video_muted = function() {
+			var videoel = get_popup_video();
+			if (!videoel)
+				return;
+
+			videoel.muted = !videoel.muted;
 		};
 
 		var popup_active = function() {
@@ -63725,6 +63753,9 @@ var $$IMU_EXPORT$$;
 					return true;
 				case "speed_up":
 					popup_video_speed(false);
+					return true;
+				case "toggle_mute":
+					toggle_video_muted();
 					return true;
 				case "open_options":
 					open_in_tab_imu({url: preferred_options_page}, false);
@@ -63927,6 +63958,10 @@ var $$IMU_EXPORT$$;
 					{
 						key: settings.mouseover_video_speed_up_key,
 						action: {type: "speed_up"}
+					},
+					{
+						key: settings.mouseover_video_mute_key,
+						action: {type: "toggle_mute"}
 					}
 				];
 
