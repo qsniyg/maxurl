@@ -52635,6 +52635,8 @@ var $$IMU_EXPORT$$;
 			//   https://static-3.bitchute.com/live/cover_images/dL5WGm6DIxkW/3AH6p6ewO6jgE2xbCrngaYUz_1280x720.jpg -- upscaled
 			// https://static-3.bitchute.com/live/cover_images/dL5WGm6DIxkW/5rP9Kc5gjFqD_640x360.jpg -- not upscaled, 1280x720 doesn't work
 			//   https://seed300.bitchute.com/dL5WGm6DIxkW/5rP9Kc5gjFqD.mp4
+			// https://static-3.bitchute.com/live/cover_images/dL5WGm6DIxkW/umTAdzkfTW8fNvGRyIcoAsV4_1280x720.jpg
+			//   original page: https://www.bitchute.com/video/PMlkY1L4vgOe/
 			newsrc = src.replace(/(\/live\/+channel_images\/+.*)_(?:small|medium)(\.[^/.]+)(?:[?#].*)?$/, "$1_large$2");
 			if (newsrc !== src)
 				return newsrc;
@@ -52643,7 +52645,7 @@ var $$IMU_EXPORT$$;
 			match = src.match(regex);
 			if (match) {
 				var baseobj = {url:src};
-				var idmatch = src.match(/\/live\/+cover_images\/+[^/]+\/+([^/_]+)_/);
+				var idmatch = src.match(/\/live\/+cover_images\/+[^/]+\/+([^/_]{5,15})_/);
 				if (idmatch) {
 					baseobj.extra = {page: "https://www.bitchute.com/video/" + idmatch[1] + "/"};
 				}
@@ -52674,7 +52676,7 @@ var $$IMU_EXPORT$$;
 					return newurls;
 				}
 
-				var videourl = src.replace(/^[a-z]+:\/\/static-([0-9])\.bitchute\.com\/+live\/+cover_images\/+([^/]+\/+[^/_]+)_[0-9]+x[0-9]+\..*/, "https://seed$100.bitchute.com/$2.mp4");
+				var videourl = src.replace(/^[a-z]+:\/\/static-([0-9])\.bitchute\.com\/+live\/+cover_images\/+([^/]+\/+[^/_]{5,15})_[0-9]+x[0-9]+\..*/, "https://seed$100.bitchute.com/$2.mp4");
 				if (videourl !== src) {
 					baseobj.url = videourl;
 					return baseobj;
