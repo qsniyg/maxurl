@@ -51683,7 +51683,18 @@ var $$IMU_EXPORT$$;
 		if (domain_nowww === "gamingonlinux.com") {
 			// https://www.gamingonlinux.com/uploads/articles/article_media/thumbs/4837050791576835482gol1.jpg
 			//   https://www.gamingonlinux.com/uploads/articles/article_media/4837050791576835482gol1.jpg
-			return src.replace(/(\/uploads\/+articles\/+article_media\/+)thumbs\/+/, "$1");
+			newsrc = src.replace(/(\/uploads\/+articles\/+article_media\/+)thumbs\/+/, "$1");
+			if (newsrc !== src)
+				return newsrc;
+		}
+
+		if (host_domain_nowww === "gamingonlinux.com" && options.element) {
+			if (options.element.tagName === "IMG" && options.element.parentElement && options.element.parentElement.tagName === "DIV") {
+				var videoid = options.element.parentElement.getAttribute("data-video-id");
+				if (videoid) {
+					return "https://i.ytimg.com/vi/" + videoid + "/mqdefault.jpg";
+				}
+			}
 		}
 
 		if (domain === "img.karaoketexty.sk") {
@@ -52623,6 +52634,7 @@ var $$IMU_EXPORT$$;
 			// https://static-3.bitchute.com/live/cover_images/dL5WGm6DIxkW/3AH6p6ewO6jgE2xbCrngaYUz_320x180.jpg
 			//   https://static-3.bitchute.com/live/cover_images/dL5WGm6DIxkW/3AH6p6ewO6jgE2xbCrngaYUz_1280x720.jpg -- upscaled
 			// https://static-3.bitchute.com/live/cover_images/dL5WGm6DIxkW/5rP9Kc5gjFqD_640x360.jpg -- not upscaled, 1280x720 doesn't work
+			//   https://seed300.bitchute.com/dL5WGm6DIxkW/5rP9Kc5gjFqD.mp4
 			newsrc = src.replace(/(\/live\/+channel_images\/+.*)_(?:small|medium)(\.[^/.]+)(?:[?#].*)?$/, "$1_large$2");
 			if (newsrc !== src)
 				return newsrc;
@@ -52630,6 +52642,12 @@ var $$IMU_EXPORT$$;
 			regex = /(\/live\/+cover_images\/+.*_)([0-9]+x[0-9]+)(\.[^/.]+)(?:[?#].*)?$/;
 			match = src.match(regex);
 			if (match) {
+				var baseobj = {url:src};
+				var idmatch = src.match(/\/live\/+cover_images\/+[^/]+\/+([^/_]+)_/);
+				if (idmatch) {
+					baseobj.extra = {page: "https://www.bitchute.com/video/" + idmatch[1] + "/"};
+				}
+
 				var sizes = [
 					"1280x720",
 					"640x360",
@@ -52645,13 +52663,33 @@ var $$IMU_EXPORT$$;
 				var newurls = [];
 				for (var i = 0; i < sizes.length; i++) {
 					if (urlsize < sizetoint(sizes[i])) {
-						newurls.push(src.replace(regex, "$1" + sizes[i] + "$3"));
+						var obj = deepcopy(baseobj);
+						obj.url = src.replace(regex, "$1" + sizes[i] + "$3");
+
+						newurls.push(obj);
 					}
 				}
 
 				if (newurls.length > 0) {
 					return newurls;
 				}
+
+				var videourl = src.replace(/^[a-z]+:\/\/static-([0-9])\.bitchute\.com\/+live\/+cover_images\/+([^/]+\/+[^/_]+)_[0-9]+x[0-9]+\..*/, "https://seed$100.bitchute.com/$2.mp4");
+				if (videourl !== src) {
+					baseobj.url = videourl;
+					return baseobj;
+				}
+			}
+		}
+
+		if (domain_nosub === "bitchute.com" && /^seed[0-9]*\./.test(domain)) {
+			// https://seed300.bitchute.com/dL5WGm6DIxkW/5rP9Kc5gjFqD.mp4
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+[^/]+\/+([^/.]+)\./);
+			if (match) {
+				return {
+					url: src,
+					extra: {page: "https://www.bitchute.com/video/" + match[1] + "/"}
+				};
 			}
 		}
 
