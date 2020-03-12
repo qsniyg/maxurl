@@ -6550,6 +6550,13 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/image\/.*?)(?:[?#].*)?$/, "$1");
 		}
 
+		if (domain === "static.discovery-expedition.com") {
+			// thanks to rEnr3n on github: https://github.com/qsniyg/maxurl/issues/266
+			// https://static.discovery-expedition.com/images/goods/detail/x/20190507/DXSH02911-BE-8998685969005915.jpg/dims/resize/940x1253
+			//   https://static.discovery-expedition.com/images/goods/detail/x/20190507/DXSH02911-BE-8998685969005915.jpg
+			return src.replace(/(\/images\/.*)\/dims\/.*/, "$1");
+		}
+
 		if (domain === "img.enews24.cjenm.skcdn.com") {
 			// http://img.enews24.cjenm.skcdn.com/News/NewsThumbnail/20180821/4_81524182.jpg
 			//   http://img.enews24.cjenm.skcdn.com/News/NewsThumbnail/20180821/81524182.jpg -- 555x757
@@ -10725,7 +10732,10 @@ var $$IMU_EXPORT$$;
 			// https://static2.diariouno.com.ar/media/2019/03/1543247666-rihanna-hermosa-y-talentosa-estrella-mundial-del-pop-y-del-universo-entero-416x234.jpg
 			(domain_nosub === "diariouno.com.ar" && /^static[0-9]*\./.test(domain) && src.indexOf("/media/") >= 0) ||
 			// https://static-cdn.jtvnw.net/s3_vods/leansquad_/140652046/c72d3b49-5401-4df4-b22b-c8798f9cd2fc/thumb/custom0c0a29f5448f07b3-320x180.jpeg
-			(domain === "static-cdn.jtvnw.net" && src.indexOf("/s3_vods/") >= 0) ||
+			// https://static-cdn.jtvnw.net/previews-ttv/live_user_nightblue3-440x248.jpg
+			// https://static-cdn.jtvnw.net/ttv-boxart/Apex%20Legends-188x250.jpg
+			// https://static-cdn.jtvnw.net/jtv_user_pictures/99b83e5e-4c33-496b-a33a-40ea7c17ce14-profile_image-50x50.png -- doesn't work
+			(domain === "static-cdn.jtvnw.net" && /\/(s3_vods|previews-ttv|ttv-boxart)\//.test(src)) ||
 			// https://thugarmada.com/ta-files/2018/10/ayumi-hamasaki-japanese-trance-j-277x156.jpg
 			(domain_nowww === "thugarmada.com" && src.indexOf("/ta-files/") >= 0) ||
 			// https://flipwallpapers.com/wallpapers/cute-anime-hd-desktop-wallpaper-For-desktop-Wallpaper-200x113.jpg
@@ -38092,6 +38102,26 @@ var $$IMU_EXPORT$$;
 							   "://img$1$2");
 		}
 
+		if (domain === "cdn.photosight.ru") {
+			// https://photosight.ru/photos/7021524/
+			// https://cdn.photosight.ru/img/5/101/7021524_thumb.jpg
+			//   https://cdn.photosight.ru/img/5/101/7021524_large.jpg
+			//   https://cdn.photosight.ru/img/5/101/7021524_xlarge.jpg
+			// https://cdn.photosight.ru/img/c/04c/7020586_mini.jpg?t=1583832066
+			//   https://cdn.photosight.ru/img/c/04c/7020586_xlarge.jpg?t=1583832066
+			newsrc = src.replace(/(\/img\/+[0-9a-f]\/+[0-9a-f]{3}\/+[0-9]+)_(?:thumb|large|mini)(\.[^/.]+)(?:[?#].*)?$/, "$1_xlarge$2");
+
+			match = src.match(/\/img\/+[0-9a-f]\/+[0-9a-f]{3}\/+([0-9]+)(?:_[a-z]+)?\./);
+			if (match) {
+				return {
+					url: newsrc,
+					extra: {page: "https://photosight.ru/photos/" + match[1] + "/"}
+				};
+			} else {
+				return newsrc;
+			}
+		}
+
 		if (domain === "rs.kantie.org") {
 			// https://rs.kantie.org/it/https://i5.hoopchina.com.cn/hupuapp/bbs/274/31712274/thread_31712274_20181229123609_s_80573_w_690_h_994_86382.jpg
 			//   https://i5.hoopchina.com.cn/hupuapp/bbs/274/31712274/thread_31712274_20181229123609_s_80573_w_690_h_994_86382.jpg
@@ -53486,6 +53516,32 @@ var $$IMU_EXPORT$$;
 			return src
 				.replace(/(\/image\/+upload\/+f10\/+.*)-[0-9]+x[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1$2")
 				.replace(/\/image\/+upload\/+[^/]+\/+(f10\/+.*)$/, "/image/upload/$1");
+		}
+
+		if (domain_nowww === "photo-forum.net") {
+			// https://photo-forum.net/imgs_thumbs_200/2020-01/1578941830_17_63.jpg
+			//   https://photo-forum.net/imgs/2020-01/1578941830_17_63.jpg
+			// https://photo-forum.net/imgs_medium/2020-01/1579624765__mg_1977.jpg
+			//   https://photo-forum.net/imgs/2020-01/1579624765__mg_1977.jpg
+			// https://photo-forum.net/imgs_thumbs_big/2020-03/1583667100__d7k8233sait.jpg
+			//   https://photo-forum.net/imgs/2020-03/1583667100__d7k8233sait.jpg
+			// https://photo-forum.net/static/monthlytheme/id125_small.jpg
+			//   https://photo-forum.net/static/monthlytheme/id125.jpg
+			// https://photo-forum.net/static/media/2020/markishky_lekcia-370px.jpg
+			//   https://photo-forum.net/static/media/2020/markishky_lekcia.jpg
+			return src
+				.replace(/\/imgs_(?:thumbs_(?:[0-9]+|[a-z]+)|medium)\/+/, "/imgs/")
+				.replace(/(\/static\/+monthlytheme\/+id[0-9]+)_small(\.[^/.]+)(?:[?#].*)?$/, "$1$2")
+				.replace(/(\/static\/+media\/+[0-9]{4}\/+[^/]+)-[0-9]+px(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "photoforum.ru") {
+			// https://www.photoforum.ru/photo/873742/index.en.html
+			// https://www.photoforum.ru/f/photo.thsq/000/873/873742_50.thsq.jpg
+			//   https://www.photoforum.ru/f/photo/000/873/873742_50.jpg
+			// https://www.photoforum.ru/f/portr.th/000/039/39782_42.th.jpg
+			//   https://www.photoforum.ru/f/portr/000/039/39782_42.jpg
+			return src.replace(/(\/f\/+(?:photo|portr))\.([^/]+)(\/+[0-9]{3}\/+[0-9]{3}\/+[0-9]+_[0-9]+)\.\2(\.[^/.]+)(?:[?#].*)?$/, "$1$3$4");
 		}
 
 
