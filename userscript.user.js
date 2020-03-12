@@ -562,8 +562,12 @@ var $$IMU_EXPORT$$;
 	var check_tracking_blocked = function(result) {
 		// FireMonkey returns null for result if blocked
 		// GreaseMonkey returns null for status if blocked
-		if (!result || result.status === 0 || result.status === null)
+		if (!result || result.status === 0 || result.status === null) {
+			if (result && result.finalUrl && /^file:\/\//.test(result.finalUrl))
+				return false;
+
 			return true;
+		}
 		return false;
 	};
 
@@ -30247,12 +30251,23 @@ var $$IMU_EXPORT$$;
 				return urljoin(src, decodeURIComponent(newsrc), true);
 		}
 
-		if (domain === "statics.cdntrex.com") {
+		if (domain === "statics.cdntrex.com" ||
+			domain_nowww === "pornrewind.com") {
 			id = null;
 			// https://statics.cdntrex.com/contents/videos_screenshots/1047000/1047563/300x168/1.jpg?v=3
-			match = src.match(/\/videos_screenshots\/+[0-9]+\/+([0-9]+)\/+[0-9]+x[0-9]+\/+/);
+			// https://statics.cdntrex.com/contents/videos_screenshots/1061000/1061072/preview.mp4.jpg
+			match = src.match(/\/videos_screenshots\/+[0-9]+\/+([0-9]+)\/+(?:[0-9]+x[0-9]+\/+|preview\.)/);
 			if (match) {
 				id = match[1];
+			}
+
+			var basedomain = "https://www.porntrex.com/";
+			var videos_component = "video";
+			var addslash = false;
+			if (domain_nosub === "pornrewind.com") {
+				basedomain = "https://www.pornrewind.com/";
+				videos_component = "videos";
+				addslash = true;
 			}
 
 			if (id && options.do_request && options.cb) {
@@ -30290,7 +30305,7 @@ var $$IMU_EXPORT$$;
 						return options.cb({
 							url: maxurl,
 							headers: {
-								Referer: "https://www.porntrex.com/"
+								Referer: basedomain
 							}
 						});
 					} else {
@@ -30298,7 +30313,7 @@ var $$IMU_EXPORT$$;
 					}
 				}, function(done) {
 					options.do_request({
-						url: "https://www.porntrex.com/video/" + id + "/a",
+						url: basedomain + videos_component + "/" + id + "/a" + (addslash ? "/" : ""),
 						method: "GET",
 						onload: function(resp) {
 							if (resp.readyState !== 4)
@@ -33982,7 +33997,18 @@ var $$IMU_EXPORT$$;
 			domain === "media.pinkworld.com") {
 			// https://cdn.eroticbeauties.net/content/digital-desire-bree-daniels-11136-1/auto/3/tn@1x/04.jpg
 			//   https://cdn.eroticbeauties.net/content/digital-desire-bree-daniels-11136-1/full/04.jpg
-			return src.replace(/(\/content\/+[^/]*\/+)(?:[^/]*\/+[^/]*\/+)?(?:tn@[^/]*|[0-9]+)\/+([0-9]+\.[^/.]*)$/, "$1full/$2");
+			newsrc = src.replace(/(\/content\/+[^/]*\/+)(?:[^/]*\/+[^/]*\/+)?(?:tn@[^/]*|[0-9]+)\/+([0-9]+\.[^/.]*)$/, "$1full/$2");
+			if (newsrc !== src)
+				return newsrc;
+		}
+
+		if (domain === "media.pinkworld.com") {
+			return {
+				url: src,
+				headers: {
+					Referer: "http://pinkworld.com/"
+				}
+			};
 		}
 
 		if (domain_nowww === "barahla.net") {
@@ -48570,6 +48596,17 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain === "static-fhg.metart.com" ||
+			// https://static-fhg.alsscan.com/media/5E5797E04DBD4244ADD5137FBFC994DB/wt_1A982EA10CA6DE846DAF3ED22CFF7708.jpg
+			//   https://static-fhg.alsscan.com/media/5E5797E04DBD4244ADD5137FBFC994DB/w_1A982EA10CA6DE846DAF3ED22CFF7708.jpg
+			domain === "static-fhg.alsscan.com") {
+			// https://static-fhg.metart.com/media/A0D2C4D17482DA24157F15BA6012CD63/wt_AC9BB4EDEFCA0714A9F4426FDCE8FAA6.jpg
+			//   https://static-fhg.metart.com/media/A0D2C4D17482DA24157F15BA6012CD63/w_AC9BB4EDEFCA0714A9F4426FDCE8FAA6.jpg
+			newsrc = src.replace(/(\/media\/+[0-9A-F]{10,}\/+)wt_([0-9A-F]{10,}\.[^/.]+)(?:[?#].*)?$/, "$1w_$2");
+			if (newsrc !== src)
+				return newsrc;
+		}
+
 		if (domain === "fhg.asiansexdiary.com") {
 			// https://fhg.asiansexdiary.com/wp-content/uploads/menchie_set_3/menchie_set_3_th_04.jpg
 			//   https://fhg.asiansexdiary.com/wp-content/uploads/menchie_set_3/menchie_set_3_04.jpg
@@ -48750,6 +48787,12 @@ var $$IMU_EXPORT$$;
 			// http://japanesegirl-4you.com/pacific/2011/0621/thumbs/002.jpg
 			//   http://japanesegirl-4you.com/pacific/2011/0621/002.jpg
 			return src.replace(/(\/[0-9]{4}\/+[0-9]{4}\/+)thumbs\/+/, "$1");
+		}
+
+		if (domain_nowww === "nsgalleries.com") {
+			// http://www.nsgalleries.com/hosted2/_NATSHG/hrpics/sos-haveen_ora_ILoveBigToys40_HR/thumbs/001.jpg
+			//   http://www.nsgalleries.com/hosted2/_NATSHG/hrpics/sos-haveen_ora_ILoveBigToys40_HR/001.jpg
+			return src.replace(/(\/hosted2\/+[^/]+\/+hrpics\/+[^/]+\/+)thumbs\/+([0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		}
 
 		if (domain_nowww === "sexygirlcity.com") {
@@ -53973,7 +54016,9 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/media\/+profiles\/+[0-9]+\/+[0-9]+\.[^/.]+)(?:\.[^/]+\.[^/.]+)(?:[?#].*)?$/, "$1");
 		}
 
-		if (domain_nowww === "porntrex.com") {
+		if (domain_nowww === "porntrex.com" ||
+			// https://www.pornrewind.com/player/skin/img/play_white.png
+			domain_nowww === "pornrewind.com") {
 			// https://www.porntrex.com/player/skin/img/play_white.png
 			if (/\/player\/+skin\/+img\//.test(src))
 				return {
@@ -55230,6 +55275,8 @@ var $$IMU_EXPORT$$;
 			domain === "dieta.pourfemme.it" ||
 			// http://www.ellahoy.es/img/Rihanna-y-Chopard-lanzan-coleccion-de-joyas.jpg
 			domain_nowww === "ellahoy.es" ||
+			// https://www.allgirlannihilation.net/wp-content/uploads/2016/08/dyked_aurora_and_tali_115.jpg
+			domain_nowww === "allgirlannihilation.net" ||
 			// https://cdn.akb48.co.jp/cache/image/?path=%2Fmembers%2Fprofile%2Fteam_8_png%2Foguri_yui.png
 			domain === "cdn.akb48.co.jp") {
 			// http://www.ozanyerli.com/uploadfile/2016/0411/thumb_240_0_20160411034324215.jpg
