@@ -8540,6 +8540,17 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (host_domain === "docs.google.com" && options.element) {
+			if (options.element.tagName.toUpperCase() === "SVG" && options.element.classList.contains("kix-embeddedobject-image")) {
+				var images = options.element.getElementsByTagName("image");
+				if (images.length === 1) {
+					newsrc = images[0].getAttribute("xlink:href");
+					if (newsrc && newsrc !== src)
+						return newsrc;
+				}
+			}
+		}
+
 		if (domain_nowww === "star-tool.ru") {
 			// https://star-tool.ru/-IqS0oUzPD8E/V3aAbr--0FI/AAAAAAAAD44/p1gVF4jSTSs5vu_w30KE6C-9SpkNiyWmQCLcB/s200/036-9oBtltvbsT8.jpg
 			//   https://lh3.googleusercontent.com/-IqS0oUzPD8E/V3aAbr--0FI/AAAAAAAAD44/p1gVF4jSTSs5vu_w30KE6C-9SpkNiyWmQCLcB/s0/036-9oBtltvbsT8.jpg=s0?imgmax=0
