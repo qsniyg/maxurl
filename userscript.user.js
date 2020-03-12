@@ -8999,8 +8999,10 @@ var $$IMU_EXPORT$$;
 			};
 
 			match = src.match(/\/vi(?:_webp)?\/+([^/]+)\/+[^/]+\.[^/.]+(?:[?#].*)?$/);
+			id = null;
 			if (match) {
 				obj.extra = {page: "https://www.youtube.com/watch?v=" + match[1]};
+				id = match[1];
 			}
 
 			// Transforms private signed URLs into public ones. Only works for public videos.
@@ -9035,11 +9037,87 @@ var $$IMU_EXPORT$$;
 					}
 
 					newsrc = match[1] + sizes[i] + number + match[3];
-					urls.push(newsrc);
+
+					if (newsrc !== src) {
+						urls.push(newsrc);
+					} else {
+						break;
+					}
 				}
 
 				if (urls.length > 0)
 					return fillobj_urls(urls, obj);
+			}
+
+			if (id && options && options.do_request && options.cb) {
+				var cache_key = "youtube_info:" + id;
+				api_cache.fetch(cache_key, function(data) {
+					if (!data) {
+						return options.cb(null);
+					}
+
+					var maxbitrate = 0;
+					var maxobj = null;
+
+					var formats = data.streamingData.formats;
+
+					for (var j = 0; j < formats.length; j++) {
+						var our_format = formats[j];
+
+						if (our_format.bitrate > maxbitrate) {
+							maxbitrate = our_format.bitrate;
+							maxobj = our_format;
+						}
+					}
+
+					if (maxobj) {
+						return options.cb({
+							url: maxobj.url,
+							video: true,
+							is_private: true // linked to IP
+						});
+					} else {
+						return options.cb(null);
+					}
+				}, function(done) {
+					options.do_request({
+						url: "https://www.youtube.com/get_video_info?video_id=" + id,
+						method: "GET",
+						onload: function(resp) {
+							if (resp.readyState !== 4)
+								return;
+
+							if (resp.status !== 200) {
+								console_error(resp);
+								return done(null, false);
+							}
+
+							var splitted = resp.responseText.split("&");
+							for (var i = 0; i < splitted.length; i++) {
+								if (/^player_response=/.test(splitted[i])) {
+									var data = decodeURIComponent(splitted[i].replace(/^[^=]+=/, ""));
+
+									try {
+										var json = JSON_parse(data);
+
+										var formats = json.streamingData.formats; // just to make sure it exists
+										return done(json, 5*60*60); // video URLs expire in 6 hours
+									} catch (e) {
+										console_error(e);
+									}
+
+									break;
+								}
+							}
+
+							done(null, false);
+						}
+					});
+				});
+
+				return {
+					waiting: true
+				};
 			}
 		}
 
