@@ -30247,6 +30247,103 @@ var $$IMU_EXPORT$$;
 				return urljoin(src, decodeURIComponent(newsrc), true);
 		}
 
+		if (domain === "statics.cdntrex.com") {
+			id = null;
+			// https://statics.cdntrex.com/contents/videos_screenshots/1047000/1047563/300x168/1.jpg?v=3
+			match = src.match(/\/videos_screenshots\/+[0-9]+\/+([0-9]+)\/+[0-9]+x[0-9]+\/+/);
+			if (match) {
+				id = match[1];
+			}
+
+			if (id && options.do_request && options.cb) {
+				var cache_key = "porntrex:" + id;
+				api_cache.fetch(cache_key, function(data) {
+					if (!data) {
+						return options.cb(null);
+					}
+
+					var maxurl = null;
+					var maxsize = null;
+
+					for (var key in data) {
+						if (/^video_.*url[0-9]*$/.test(key)) {
+							var oururl = data[key];
+							var oursize = oururl.replace(/.*_([0-9]+)p\.[^/.]+(?:\/*[^/]*)?(?:[?#].*)?$/, "$1");
+							if (oursize === oururl) {
+								if (oururl.match(/\/([0-9]+)\/+\1\.[^/.]+(?:\/*[^/]*)?(?:[?#].*)?$/)) {
+									oursize = 480;
+								} else {
+									console_warn("Unable to detect size from URL: " + oururl);
+									continue;
+								}
+							}
+							oursize = parseInt(oursize);
+
+							if (!maxsize || oursize > maxsize) {
+								maxsize = oursize;
+								maxurl = oururl;
+							}
+						}
+					}
+
+					if (maxurl) {
+						return options.cb({
+							url: maxurl,
+							headers: {
+								Referer: "https://www.porntrex.com/"
+							}
+						});
+					} else {
+						return options.cb(null);
+					}
+				}, function(done) {
+					options.do_request({
+						url: "https://www.porntrex.com/video/" + id + "/a",
+						method: "GET",
+						onload: function(resp) {
+							if (resp.readyState !== 4)
+								return;
+
+							if (resp.status !== 200) {
+								console_error(resp);
+								return done(null, false);
+							}
+
+							var match = resp.responseText.match(/var\s+flashvars\s*=\s*({[\s\S]+?});/);
+							if (!match) {
+								console_error("Unable to find match", resp);
+								return done(null, false);
+							}
+
+							try {
+								var jsoned = match[1]
+									.replace(/([{,])\s*([\S]+)\s*:/g, "$1 \"$2\":")
+									.replace(/(\"[\S]+\":)\s*'([^']*)'/g, "$1 \"$2\"");
+								var json = JSON_parse(jsoned);
+								done(json, 6*60*60);
+							} catch (e) {
+								console_error(e);
+								return done(null, false);
+							}
+						}
+					});
+				});
+
+				return {
+					waiting: true
+				};
+			}
+		}
+
+		if (domain === "cora.porntrex.com") {
+			return {
+				url: src,
+				headers: {
+					Referer: "https://www.porntrex.com/"
+				}
+			};
+		}
+
 		if (domain_nowww === "zceleb.com" ||
 			// https://cdn.faponix.com/contents/albums/main/300x500/83000/83852/1313934.jpg
 			//   https://cdn.faponix.com/contents/albums/sources/83000/83852/1313934.jpg
@@ -37898,9 +37995,147 @@ var $$IMU_EXPORT$$;
 			// https://tb2.sb-cd.com/w:350/3/9/3906881-t2-s/aria+rebel+playboy+tv+intervie.jpg
 			//   https://tb2.sb-cd.com/w:0/3/9/3906881-t2-s/aria+rebel+playboy+tv+intervie.jpg
 			//   https://tb2.sb-cd.com/w:0/3/9/3906881-t2/aria+rebel+playboy+tv+intervie.jpg
-			return src
+			newsrc = src
 				.replace(/(\/[0-9]+-t[0-9]+)-(?:s|enh)\/+/, "$1/")
 				.replace(/(:\/\/[^/]+\/+)w:[0-9]+\/+/, "$1w:0/");
+			if (newsrc !== src)
+				return newsrc;
+		}
+
+		if ((domain_nosub === "sb-cd.com" && /^tbv?[0-9]*\./.test(domain)) ||
+			(domain_nosub === "spankbang.com" && /^vcdn-[^-]+(?:-[0-9]+)?\./.test(domain))) {
+			match = src.match(/:\/\/[^/]+\/+(?:w:[0-9]+\/+)?[0-9]\/+[0-9]\/+([0-9]+)-/);
+			var vidid_numeric, vidid;
+			if (match) {
+				vidid_numeric = parseInt(match[1]);
+				vidid = vidid_numeric.toString(36);
+
+				obj = {
+					url: src,
+					extra: {page: "https://spankbang.com/" + vidid + "/video/"}
+				};
+			}
+
+			if (options.cb && options.do_request && match) {
+				var get_streamkey_for_vidid = function(vidid, cb) {
+					var cache_key = "spankbang_streamkey:" + vidid;
+					api_cache.fetch(cache_key, cb, function(done) {
+						options.do_request({
+							method: "GET",
+							url: "https://spankbang.com/" + vidid + "/video/",
+							onload: function(resp) {
+								if (resp.readyState !== 4)
+									return;
+
+								if (resp.status !== 200) {
+									console_error(resp);
+									return done(null, false);
+								}
+
+								match = resp.responseText.match(/data-videoid=["'][0-9]+["']\s+data-streamkey=["']([^"']+)["']/);
+								if (match) {
+									return done(match[1], 24*60*60);
+								} else {
+									console_warn("Unable to find match", resp);
+									return done(null, false);
+								}
+							}
+						});
+					});
+				};
+
+				var get_streamdata = function(streamkey, cb) {
+					var cache_key = "spankbang_streamdata:" + streamkey;
+					api_cache.fetch(cache_key, cb, function(done) {
+						options.do_request({
+							method: "POST",
+							url: "https://spankbang.com/api/videos/stream",
+							data: "id=" + streamkey + "&data=0",
+							headers: {
+								"Origin": "https://spankbang.com",
+								"Referer": "https://spankbang.com/", // add /.../video?
+								"Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+								"X-Requested-With": "XMLHttpRequest"
+							},
+							onload: function(resp) {
+								if (resp.readyState !== 4)
+									return;
+
+								if (resp.status !== 200) {
+									console_error(resp);
+									return done(null, false);
+								}
+
+								try {
+									var response = JSON_parse(resp.responseText);
+									return done(response, 6*60*60);
+								} catch (e) {
+									console_error(e, resp);
+									return done(null, false);
+								}
+							}
+						});
+					});
+				};
+
+				var find_largest_from_streamdata = function(streamdata) {
+					var sizes = [
+						"4k",
+						"1080p",
+						"720p",
+						"480p",
+						"360p",
+						"320p",
+						"240p",
+						"144p"
+					];
+
+					var largestsize = 100;
+
+					for (var key in streamdata) {
+						if (!streamdata[key] || streamdata[key].length === 0)
+							continue;
+
+						var ourindex = sizes.indexOf(key);
+						if (ourindex >= 0 && ourindex < largestsize)
+							largestsize = ourindex;
+					}
+
+					if (largestsize < sizes.length) {
+						return streamdata[sizes[largestsize]][0];
+					}
+
+					return null;
+				};
+
+				var get_norm_sb_url = function(url) {
+					return url.replace(/.*\/([0-9]+-[0-9]+[a-z]+\.[^/.?]+)(?:[?#].*)?$/, "$1");
+				};
+
+				get_streamkey_for_vidid(vidid, function(streamkey) {
+					if (!streamkey)
+						return options.cb(obj);
+
+					get_streamdata(streamkey, function(streamdata) {
+						if (!streamdata)
+							return options.cb(obj);
+
+						var largest = find_largest_from_streamdata(streamdata);
+
+						if (get_norm_sb_url(largest) !== get_norm_sb_url(src)) {
+							obj.url = largest;
+						}
+
+						options.cb(obj);
+					});
+				});
+
+				return {
+					waiting: true
+				};
+			} else if (match) {
+				return options.cb(obj);
+			}
 		}
 
 		if (domain_nowww === "kosova-sot.info" ||
@@ -53736,6 +53971,15 @@ var $$IMU_EXPORT$$;
 			// https://clippit-prod.s3.amazonaws.com/media/profiles/5515/1440115184.jpg.100x100_q85_crop-scale_upscale.jpg
 			//   https://clippit-prod.s3.amazonaws.com/media/profiles/5515/1440115184.jpg
 			return src.replace(/(\/media\/+profiles\/+[0-9]+\/+[0-9]+\.[^/.]+)(?:\.[^/]+\.[^/.]+)(?:[?#].*)?$/, "$1");
+		}
+
+		if (domain_nowww === "porntrex.com") {
+			// https://www.porntrex.com/player/skin/img/play_white.png
+			if (/\/player\/+skin\/+img\//.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
 		}
 
 
