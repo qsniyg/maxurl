@@ -9071,11 +9071,22 @@ var $$IMU_EXPORT$$;
 					}
 
 					if (maxobj) {
-						return options.cb({
-							url: maxobj.url,
-							video: true,
-							is_private: true // linked to IP
-						});
+						if (maxobj.url) {
+							return options.cb({
+								url: maxobj.url,
+								video: true,
+								is_private: true // linked to IP
+							});
+						} else {
+							// https://www.youtube.com/watch?v=P6dgaXh0K_E
+							if (maxobj.cipher) {
+								console_warn("Encrypted Youtube URLs are currently not supported, sorry");
+							} else {
+								console_error("Unknown streamingData object", maxobj);
+							}
+
+							return options.cb(null);
+						}
 					} else {
 						return options.cb(null);
 					}
@@ -9100,10 +9111,11 @@ var $$IMU_EXPORT$$;
 									try {
 										var json = JSON_parse(data);
 
+										// doesn't work on: https://www.youtube.com/watch?v=vFaeDdEb44A
 										var formats = json.streamingData.formats; // just to make sure it exists
 										return done(json, 5*60*60); // video URLs expire in 6 hours
 									} catch (e) {
-										console_error(e);
+										console_error(e, resp);
 									}
 
 									break;
@@ -53620,6 +53632,48 @@ var $$IMU_EXPORT$$;
 			// https://www.photoforum.ru/f/portr.th/000/039/39782_42.th.jpg
 			//   https://www.photoforum.ru/f/portr/000/039/39782_42.jpg
 			return src.replace(/(\/f\/+(?:photo|portr))\.([^/]+)(\/+[0-9]{3}\/+[0-9]{3}\/+[0-9]+_[0-9]+)\.\2(\.[^/.]+)(?:[?#].*)?$/, "$1$3$4");
+		}
+
+		if (domain_nowww === "clippituser.tv") {
+			// https://www.clippituser.tv/static/2.16.0-345/images/small_play_btn.png
+			if (/\/static\/+[^/]+\/+images\/+small_play_btn\./.test(src)) {
+				return {
+					url: src,
+					bad: "mask"
+				};
+			}
+		}
+
+		if (domain === "clips.clippit.tv") {
+			// https://clips.clippit.tv/evmgm/thumbnail.jpg
+			//   https://clips.clippit.tv/evmgm/360.mp4
+			//   https://clips.clippit.tv/evmgm/720.mp4
+			obj = {url: src};
+			id = null;
+
+			match = src.match(/:\/\/[^/]+\/+([^/]+)\/+/);
+			if (match) {
+				id = match[1];
+				obj.extra = {page: "https://www.clippituser.tv/c/" + id};
+			}
+
+			if (/\/360\.mp4(?:[?#].*)?$/.test(src)) {
+				obj.url = src.replace(/\/[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "/720$1");
+				return obj;
+			}
+
+			if (/\/thumbnail\.jpg(?:[?#].*)?$/.test(src)) {
+				obj.url = src.replace(/\/thumbnail\.jpg(?:[?#].*)?$/, "/360.mp4");
+				return obj;
+			}
+
+			return obj;
+		}
+
+		if (amazon_container === "clippit-prod") {
+			// https://clippit-prod.s3.amazonaws.com/media/profiles/5515/1440115184.jpg.100x100_q85_crop-scale_upscale.jpg
+			//   https://clippit-prod.s3.amazonaws.com/media/profiles/5515/1440115184.jpg
+			return src.replace(/(\/media\/+profiles\/+[0-9]+\/+[0-9]+\.[^/.]+)(?:\.[^/]+\.[^/.]+)(?:[?#].*)?$/, "$1");
 		}
 
 
