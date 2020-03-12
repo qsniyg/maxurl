@@ -8530,6 +8530,16 @@ var $$IMU_EXPORT$$;
 			};
 		}
 
+		if (domain === "ssl.gstatic.com") {
+			// https://ssl.gstatic.com/docs/common/material_common_sprite157_grey_medium.svg
+			if (/\/docs\/+common\/+[^/]+\.svg(?:[?#].*)?$/.test(src)) {
+				return {
+					url: src,
+					bad: "mask"
+				};
+			}
+		}
+
 		if (domain_nowww === "star-tool.ru") {
 			// https://star-tool.ru/-IqS0oUzPD8E/V3aAbr--0FI/AAAAAAAAD44/p1gVF4jSTSs5vu_w30KE6C-9SpkNiyWmQCLcB/s200/036-9oBtltvbsT8.jpg
 			//   https://lh3.googleusercontent.com/-IqS0oUzPD8E/V3aAbr--0FI/AAAAAAAAD44/p1gVF4jSTSs5vu_w30KE6C-9SpkNiyWmQCLcB/s0/036-9oBtltvbsT8.jpg=s0?imgmax=0
@@ -9112,6 +9122,7 @@ var $$IMU_EXPORT$$;
 										var json = JSON_parse(data);
 
 										// doesn't work on: https://www.youtube.com/watch?v=vFaeDdEb44A
+										// it's because embedding isn't allowed: https://www.youtube.com/embed/vFaeDdEb44A
 										var formats = json.streamingData.formats; // just to make sure it exists
 										return done(json, 5*60*60); // video URLs expire in 6 hours
 									} catch (e) {
