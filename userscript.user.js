@@ -51622,6 +51622,15 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "robertsspaceindustries.com") {
+			// https://robertsspaceindustries.com/rsi/static/images/bg-med-lines.png
+			// https://robertsspaceindustries.com/rsi/static/images/gridbg_glow.png
+			if (/^[a-z]+:\/\/[^/]+\/+rsi\/+static\/+images\/+/.test(src)) {
+				return {
+					url: src,
+					bad: "mask"
+				};
+			}
+
 			// https://robertsspaceindustries.com/media/2pqqtblh82ujhr/heap_infobox/Thecaptain2.png
 			//   https://robertsspaceindustries.com/media/2pqqtblh82ujhr/source/Thecaptain2.png
 			return src.replace(/(\/media\/+[0-9a-z]{10,}\/+)[_a-z]+\/+/, "$1source/");
