@@ -24040,14 +24040,87 @@ var $$IMU_EXPORT$$;
 		if (domain === "lohas.nicoseiga.jp") {
 			// https://lohas.nicoseiga.jp/thumb/6494066i
 			//   https://lohas.nicoseiga.jp/thumb/6494066l -- same size
+			//   https://lohas.nicoseiga.jp/thumb/6494066cz -- smaller
 			// https://lohas.nicoseiga.jp/thumb/7639531m
 			//   https://lohas.nicoseiga.jp/thumb/7639531i -- doesn't work
 			//   https://lohas.nicoseiga.jp/thumb/7639531l -- largest
+			//   https://seiga.nicovideo.jp/seiga/im7639531 -- doesn't exist
 			// larger images:
 			// https://lohas.nicoseiga.jp/material/4e1a77/8032880
 			// http://lohas.nicoseiga.jp/priv/5eb1a6e1e94c0e1a55c4b54145af82950dc5145e/1487849470/6505819
 			// (l, i), d, m, t, c, u, z, q, s
-			return src.replace(/(\/thumb\/[0-9]+)[a-z](\?.*)?$/, "$1l$2");
+			newsrc = src.replace(/(\/thumb\/+[0-9]+)[a-z][a-z]?(\?.*)?$/, "$1l$2");
+			if (newsrc !== src)
+				return newsrc;
+
+			var get_nicovideo_obj = function(id) {
+				return {
+					url: src,
+					extra: {page: "https://seiga.nicovideo.jp/seiga/im" + id}
+				};
+			};
+
+			obj = null;
+			match = src.match(/\/thumb\/+([0-9]+)(?:[a-z]+)(?:[?#].*)?$/);
+			if (match) {
+				id = match[1];
+				obj = get_nicovideo_obj(id);
+			}
+
+			if (match && options.do_request && options.cb) {
+				var cache_key = "nicoseiga:" + id;
+				api_cache.fetch(cache_key, options.cb, function(done) {
+					options.do_request({
+						url: "https://seiga.nicovideo.jp/image/source/" + id,
+						method: "GET",
+						onload: function(resp) {
+							if (resp.readyState !== 4)
+								return;
+
+							if (resp.status !== 200) {
+								console_error(resp)
+								return done(null, false);
+							}
+
+							// for https://lohas.nicoseiga.jp/thumb/7639531l, https://seiga.nicovideo.jp/image/source/7639531 is the image itself
+							// TODO; maybe HEAD request to avoid downloading it twice?
+							var headers = headers_list_to_dict(parse_headers(resp.responseHeaders));
+							if ("content-type" in headers) {
+								if (/^image\//.test(headers["content-type"])) {
+									// original page doesn't exist in this case
+									return done(resp.finalUrl, 6*60*60);
+								}
+							}
+
+							var match = resp.responseText.match(/<div\s+class=\"illust_view_big\"[^>]+data-src=\"([^"]+)\"/);
+							if (!match) {
+								console_error("Unable to find match (are you logged in to nicovideo?)", resp);
+								return done(null, false);
+							}
+
+							var url = decode_entities(match[1]);
+							obj.url = urljoin(resp.finalUrl, url, true);
+							done(obj, 6*60*60);
+						}
+					});
+				});
+
+				return {
+					waiting: true
+				};
+			}
+
+			if (!match) {
+				match = src.match(/\/priv\/+[0-9a-f]{10,}\/+[0-9]+\/+([0-9]+)(?:[?#].*)?$/);
+				if (match) {
+					id = match[1];
+					obj = get_nicovideo_obj(id);
+				}
+			}
+
+			if (obj) {
+				return obj;
+			}
 		}
 
 		if (domain === "appdata.hungryapp.co.kr") {
