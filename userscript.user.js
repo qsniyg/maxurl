@@ -21116,8 +21116,136 @@ var $$IMU_EXPORT$$;
 			// https://proxy.duckduckgo.com/iur/?f=1&image_host=http://www.billboard.com/files/media/Grabbitz-mic-press-photo-2016-billboard-1548.jpg&u=https://www.billboard.com/files/media/Grabbitz-mic-press-photo-2016-billboard-1548.jpg
 			//   https://www.billboard.com/files/media/Grabbitz-mic-press-photo-2016-billboard-1548.jpg
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+iur?\/\?(?:.*&)?u=([^&]*).*/, "$1");
-			if (newsrc !== src)
+			if (newsrc !== src) {
 				return decodeuri_ifneeded(newsrc);
+			}
+		}
+
+		if (host_domain_nowww === "duckduckgo.com" && options.element && options.do_request && options.cb) {
+			var get_query_params = function(url, cb) {
+				var query = url.replace(/.*\?(?:.*&)?q=([^&]+).*?$/, "$1");
+
+				var cache_key = "duckduckgo_imagequeryparams:" + query;
+				api_cache.fetch(cache_key, cb, function(done) {
+					options.do_request({
+						url: url,
+						method: "GET",
+						onload: function(resp) {
+							if (resp.readyState !== 4)
+								return;
+
+							if (resp.status !== 200) {
+								console_error(resp);
+								return done(null, false);
+							}
+
+							var respobj = {
+								query: query,
+								start: 0
+							};
+
+							//var match = resp.responseText.match(/;\s*rl\s*=\s*["']([^'"]+)["'];/);
+							var match = resp.responseText.match(/'\/[td]\.js\?(?:.*?&)?l=([^&]+)/);
+							if (!match) {
+								console_error("Unable to find language", resp);
+								return done(null, false);
+							}
+
+							respobj.lang = match[1];
+
+							match = resp.responseText.match(/;\s*vqd\s*=\s*["']([-0-9]{20,})["']/);
+							if (!match) {
+								console_error("Unable to find vqd", resp);
+								return done(null, false);
+							}
+
+							respobj.vqd = match[1];
+
+							return done(respobj, 60*60);
+						}
+					});
+				});
+			};
+
+			var get_images = function(querydata, cb) {
+				var cache_key = "duckduckgo_imageresults:" + querydata.query + "," + querydata.start;
+				api_cache.fetch(cache_key, cb, function(done) {
+					var start_query = "";
+					if (querydata.start) {
+						start_query = "&s=" + querydata.start;
+					}
+
+					options.do_request({
+						method: "GET",
+						url: "https://duckduckgo.com/i.js?l=" + querydata.lang + "&o=json&q=" + querydata.query + "&vqd=" + querydata.vqd + "&p=-1" + start_query + "&v7exp=a",
+						onload: function(resp) {
+							if (resp.readyState !== 4)
+								return;
+
+							if (resp.status !== 200) {
+								console_error(resp);
+								return done(null, false);
+							}
+
+							try {
+								var json = JSON_parse(resp.responseText);
+								return done(json, 60*60);
+							} catch (e) {
+								console_error(e);
+								return done(null, false);
+							}
+						}
+					});
+				});
+			};
+
+			var get_result_from_image = function(querydata, image, cb) {
+				get_images(querydata, function(data) {
+					if (!data) {
+						return cb(null);
+					}
+
+					var image_src = decodeURIComponent(image.src);
+
+					for (var i = 0; i < data.results.length; i++) {
+						// FIXME: hacky
+						if (image_src.indexOf(data.results[i].thumbnail) >= 0) {
+							return cb(data.results[i].image);
+						}
+					}
+
+					if (data.next) {
+						var start = data.next.replace(/.*&s=([0-9]+).*$/, "$1");
+						if (start !== data.next) {
+							querydata.start = start;
+						}
+
+						return get_result_from_image(querydata, image, cb);
+					}
+
+					return cb(null);
+				});
+			}
+
+			if (options.element.tagName === "IMG") {
+				if (options.element.classList.contains("tile--img__img") ||
+					options.element.classList.contains("module--images__thumbnails__image")) {
+					get_query_params(document.location.href, function(data) {
+						if (!data) {
+							return options.cb(null);
+						}
+
+						get_result_from_image(data, options.element, function(url) {
+							return options.cb(url);
+						});
+					});
+
+					// TODO: check if already ran
+					return {
+						waiting: true
+					};
+				}
+			}
 		}
 
 		// Mura CMS (http://www.getmura.com/)
