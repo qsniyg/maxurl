@@ -3741,7 +3741,7 @@ var $$IMU_EXPORT$$;
 		return newobj;
 	};
 
-	var add_full_extensions = function(obj, extensions) {
+	var add_full_extensions = function(obj, extensions, prefer_order) {
 		if (!extensions)
 			extensions = [
 				"jpg", "jpeg", "png", "gif", "webp",
@@ -3761,7 +3761,7 @@ var $$IMU_EXPORT$$;
 				url = currentobj.url;
 			}
 
-			var regex = /(.*)\.([^/.]*)([?#].*)?$/;
+			var regex = /(.*)\.([^/.]*?)([?#].*)?$/;
 			if (!url.match(regex)) {
 				result.push(currentobj);
 				continue;
@@ -3772,10 +3772,11 @@ var $$IMU_EXPORT$$;
 			var query = url.replace(regex, "$3");
 
 			//var result = [url];
-			result.push(currentobj);
+			if (!prefer_order)
+				result.push(currentobj);
 
 			for (var i = 0; i < extensions.length; i++) {
-				if (ext === extensions[i])
+				if (!prefer_order && ext === extensions[i])
 					continue;
 
 				var currenturl = basename + "." + extensions[i] + query;
@@ -3787,6 +3788,9 @@ var $$IMU_EXPORT$$;
 					result.push(newobj);
 				}
 			}
+
+			if (prefer_order && result.indexOf(currentobj) < 0)
+				result.push(currentobj);
 		}
 
 		return result;
@@ -19398,8 +19402,10 @@ var $$IMU_EXPORT$$;
 			// https://ci.phncdn.com/m=e_rU8f/pics/pornstars/000/284/192/thumb_1068522.jpg
 			//   https://ci.phncdn.com/pics/pornstars/000/284/192/thumb_1068522.jpg
 			newsrc = src.replace(/\/(?:\([a-z]+=[^/)]*\))*([^/]*)$/, "/$1");
-			if (newsrc !== src)
-				return add_extensions_gif(newsrc);
+			if (newsrc !== src) {
+				obj = add_full_extensions(newsrc, ["mp4", "gif", "png", "jpg"], true);
+				return obj;
+			}
 
 			newsrc = src.replace(/(:\/\/[^/]*\/+)[a-z]=[^/]*\/+/, "$1");
 			if (newsrc !== src)
