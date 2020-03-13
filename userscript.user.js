@@ -16364,6 +16364,16 @@ var $$IMU_EXPORT$$;
 			//return decodeURIComponent(src.replace(/.*\/serveimage.*?[?&]url=([^&]*).*/, "$1"));
 		}
 
+		if (host_domain_nowww === "startpage.com" && /\/sp\/+search/.test(options.host_url) && options.element) {
+			if (options.element.parentElement && options.element.parentElement.tagName === "DIV") {
+				if (options.element.parentElement.classList.contains("image-container")) {
+					var imgurl = options.element.parentElement.getAttribute("data-img-click-url");
+					if (imgurl !== src)
+						return imgurl;
+				}
+			}
+		}
+
 		if (domain === "beta.ems.ladbiblegroup.com") {
 			// http://beta.ems.ladbiblegroup.com/s3/content/353x199/0b7434735a7a95090e0210baf66f63ed.png
 			//   http://beta.ems.ladbiblegroup.com/s3/content/0b7434735a7a95090e0210baf66f63ed.png
@@ -30550,6 +30560,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "statics.cdntrex.com" ||
+			domain_nowww === "anon-v.com" ||
 			domain_nowww === "pornrewind.com") {
 			id = null;
 			// https://statics.cdntrex.com/contents/videos_screenshots/1047000/1047563/300x168/1.jpg?v=3
@@ -30561,15 +30572,22 @@ var $$IMU_EXPORT$$;
 
 			var basedomain = "https://www.porntrex.com/";
 			var videos_component = "video";
-			var addslash = false;
+			var addslash = "";
+			var cache_host = "porntrex";
 			if (domain_nosub === "pornrewind.com") {
 				basedomain = "https://www.pornrewind.com/";
 				videos_component = "videos";
-				addslash = true;
+				addslash = "/";
+				cache_host = "pornrewind";
+			} else if (domain_nosub === "anon-v.com") {
+				basedomain = "https://www.anon-v.com/";
+				videos_component = "videos";
+				addslash = "/";
+				cache_host = "anon-v";
 			}
 
 			if (id && options.do_request && options.cb) {
-				var cache_key = "porntrex:" + id;
+				var cache_key = cache_host + ":" + id;
 				api_cache.fetch(cache_key, function(data) {
 					if (!data) {
 						return options.cb(null);
@@ -30611,7 +30629,7 @@ var $$IMU_EXPORT$$;
 					}
 				}, function(done) {
 					options.do_request({
-						url: basedomain + videos_component + "/" + id + "/a" + (addslash ? "/" : ""),
+						url: basedomain + videos_component + "/" + id + "/a" + addslash,
 						method: "GET",
 						onload: function(resp) {
 							if (resp.readyState !== 4)
@@ -54343,6 +54361,12 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "porntrex.com" ||
+			// https://fapster.xxx/player/skin/img/play_white.png
+			domain_nowww === "fapster.xxx" ||
+			// https://fapality.com/player/skin/img/play_white.png
+			domain_nowww === "fapality.com" ||
+			// https://www.okporn.com/player/skin/img/play_white.png
+			domain_nowww === "okporn.com" ||
 			// https://www.pornrewind.com/player/skin/img/play_white.png
 			domain_nowww === "pornrewind.com") {
 			// https://www.porntrex.com/player/skin/img/play_white.png
