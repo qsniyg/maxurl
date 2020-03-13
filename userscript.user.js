@@ -21231,8 +21231,7 @@ var $$IMU_EXPORT$$;
 				if (options.element.tagName === "IMG") {
 					if (options.element.classList.contains("tile--img__img") ||
 						options.element.classList.contains("module--images__thumbnails__image")) {
-						if (options._internal_info)
-							options._internal_info.duckduckgo_host = true;
+						options._internal_info.duckduckgo_host = true;
 
 						get_query_params(document.location.href, function(data) {
 							if (!data) {
