@@ -27864,18 +27864,23 @@ var $$IMU_EXPORT$$;
 			];
 		}
 
-		if (domain_nosub === "bing.com" &&
-			host_domain_nosub === "bing.com" && options.element) {
+		if (host_domain_nosub === "bing.com" &&
+			(domain === "" || domain_nosub === "bing.com") && options.element) {
 			var current = options.element;
 			while ((current = current.parentElement)) {
 				if (current.tagName !== "A")
 					continue;
 
-				console_log(current.href);
+				//console_log(current.href);
 				if (!current.href.match(/\/images\/search\?.*mediaurl=/))
 					continue;
 
-				return decodeURIComponent(current.href.replace(/.*?\/search.*?[?&]mediaurl=([^&]*).*?$/, "$1"));
+				newsrc = current.href.replace(/.*?\/search.*?[?&]mediaurl=([^&]*).*?$/, "$1");
+				if (newsrc !== current.href && newsrc !== src) {
+					newsrc = decodeuri_ifneeded(newsrc);
+					//console_log(newsrc);
+					return newsrc;
+				}
 			}
 		}
 
