@@ -21227,23 +21227,27 @@ var $$IMU_EXPORT$$;
 				});
 			}
 
-			if (options.element.tagName === "IMG") {
-				if (options.element.classList.contains("tile--img__img") ||
-					options.element.classList.contains("module--images__thumbnails__image")) {
-					get_query_params(document.location.href, function(data) {
-						if (!data) {
-							return options.cb(null);
-						}
+			if (!options._internal_info || !options._internal_info.duckduckgo_host) {
+				if (options.element.tagName === "IMG") {
+					if (options.element.classList.contains("tile--img__img") ||
+						options.element.classList.contains("module--images__thumbnails__image")) {
+						if (options._internal_info)
+							options._internal_info.duckduckgo_host = true;
 
-						get_result_from_image(data, options.element, function(url) {
-							return options.cb(url);
+						get_query_params(document.location.href, function(data) {
+							if (!data) {
+								return options.cb(null);
+							}
+
+							get_result_from_image(data, options.element, function(url) {
+								return options.cb(url);
+							});
 						});
-					});
 
-					// TODO: check if already ran
-					return {
-						waiting: true
-					};
+						return {
+							waiting: true
+						};
+					}
 				}
 			}
 		}
