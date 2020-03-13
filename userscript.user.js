@@ -33686,11 +33686,39 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/[0-9]+)_[0-9]+(\.[^/.]*)$/, "$1$2");
 		}
 
-		if (domain_nowww === "previiew.com") {
+		// portrix.net ceemes
+		if (domain_nowww === "previiew.com" ||
+			// https://lfi-online.de/ceemes/webfile/img/4717852/x=20/Dafydpressimage1Leonardo_web.jpg?x=600&y=400
+			//   https://lfi-online.de/ceemes/webfile/img/4717852/Dafydpressimage1Leonardo_web.jpg
+			// https://lfi-online.de/ceemes/webfile/img/1002350/YToxOntzOjE6IngiO3M6MzoiNjAwIjt9/cover.jpg
+			//   atob: a:1:{s:1:"x";s:3:"600";}
+			//   https://lfi-online.de/ceemes/webfile/img/1002350/cover.jpg
+			domain_nowww === "lfi-online.de" ||
+			// http://s-magazine.photography/ceemes/webfile/img/4625/GlamFreak-Mag_1A.jpg?y=1000
+			//   http://s-magazine.photography/ceemes/webfile/img/4625/GlamFreak-Mag_1A.jpg
+			domain_nowww === "s-magazine.photography" ||
+			// http://m-magazine.photography/ceemes/webfile/img/222682/PAPEL-Cobelo-2.jpg?x=1920
+			//   http://m-magazine.photography/ceemes/webfile/img/222682/PAPEL-Cobelo-2.jpg
+			domain_nowww === "m-magazine.photography" ||
+			// https://l-mount.com/webfile/img/532/LMount-Mount-FullFrame-Sensor-Leica-SL.jpg?x=1024
+			//   https://l-mount.com/webfile/img/532/LMount-Mount-FullFrame-Sensor-Leica-SL.jpg
+			domain_nowww === "l-mount.com" ||
+			// https://bettinaschoenbach.com/ceemes/webfile/img/1060/x=1024/T-Shirt_ka_weiss_1.jpg
+			//   https://bettinaschoenbach.com/ceemes/webfile/img/1060/T-Shirt_ka_weiss_1.jpg
+			domain_nowww === "bettinaschoenbach.com" ||
+			// https://portrix-ls.de/webfile/img/864/x=600/y=400/blog3.jpg
+			//   https://portrix-ls.de/webfile/img/864/blog3.jpg
+			domain_nowww === "portrix-ls.de" ||
+			// https://glocon.eu/ceemes/webfile/img/1405/x=1000/grafik4c.jpg
+			//   https://glocon.eu/ceemes/webfile/img/1405/grafik4c.jpg
+			domain_nowww === "glocon.eu" ||
+			// https://wow.olympus.eu/webfile/img/1632/x=1024/oly_testwow_stage.jpg
+			//   https://wow.olympus.eu/webfile/img/1632/oly_testwow_stage.jpg
+			domain_nosub === "olympus.eu") {
 			// https://previiew.com/webfile/img/3217/x=500/y=600
 			//   https://previiew.com/webfile/img/3217 -- 501 on head
 			return {
-				url: src.replace(/(\/webfile\/img\/[0-9]+)(?:\/[xy]=[0-9]+)*(?:[?#].*)?$/, "$1"),
+				url: src.replace(/(\/webfile\/+img\/+[0-9]+)(?:\/+[xy]=[0-9]+)*(?:\/+[a-zA-Z0-9=]{10,})?(\/[^/]+\.[^/.?]+)?(?:[?#].*)?$/, "$1$2"),
 				can_head: false
 			};
 		}
