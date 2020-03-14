@@ -63423,8 +63423,62 @@ var $$IMU_EXPORT$$;
 					ret.push(afterret[i]);
 			}
 
+			if (_nir_debug_ && ret.length > 0) {
+				console_log("find_els_at_point (unsorted ret)", shallowcopy(ret));
+			}
+
+			var get_zindex_raw = function(el) {
+				var zindex = get_computed_style(el).zIndex;
+
+				if (zindex === "auto") {
+					if (el.parentElement) {
+						return get_zindex(el.parentElement) + 0.001; // hack: child elements appear above parent elements
+					} else {
+						return 0;
+					}
+				} else {
+					return parseFloat(zindex);
+				}
+			};
+
+			var get_zindex = function(el) {
+				if (zoom_cache) {
+					var cached = map_get(zoom_cache, el);
+					if (!cached || !("zIndex" in cached)) {
+						var zindex = get_zindex_raw(el);
+
+						if (cached) {
+							cached.zIndex = zindex;
+						} else {
+							map_set(zoom_cache, el, {
+								zIndex: zindex
+							});
+						}
+
+						return zindex;
+					} else {
+						return cached.zIndex;
+					}
+				} else {
+					return get_zindex_raw(el);
+				}
+			};
+
+			// TODO: only sort elements that were added outside of elementsFromPoint
+			ret.sort(function(a, b) {
+				var a_zindex, b_zindex;
+
+				a_zindex = get_zindex(a);
+				b_zindex = get_zindex(b);
+
+				//console_log(a_zindex, b_zindex, a, b);
+
+				// opposite because we want it to be reversed (largest first)
+				return b_zindex - a_zindex;
+			});
+
 			if (_nir_debug_ && ret.length > 0)
-				console_log("find_els_at_point (ret)", els, ret, xy);
+				console_log("find_els_at_point (ret)", els, shallowcopy(ret), xy);
 
 			return ret;
 		}
