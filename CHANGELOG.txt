@@ -1,3 +1,27 @@
+0.12.19:
+
+New features:
+
+ * Keybindings to speed up/down the video (bound to [ and ] by default)
+ * Keybinding to toggle the video being muted (bound to M by default)
+ * Keybinding to toggle the video being played or paused (bound to Space by default)
+ * Mouse wheel is supported in keybindings
+ * Support for viewing some YouTube videos from the thumbnails (still in beta, many videos still don't work yet)
+ * Support for ~30 new websites (using ~25 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including Bing, Discord, DuckDuckGo, Facebook, Google Docs, Niconico, Twitch, YouTube)
+ * Major performance improvements for `pointer-events: none` workaround
+
+Bugfixes:
+
+ * Relative URLs are better handled in loops
+ * Workaround for daum cafe's breaking URLs for the userscript (disables support for frames)
+ * Local files are now supported again (if the extension is allowed to access the local filesystem)
+
+---
+
 0.12.18:
 
 New features:

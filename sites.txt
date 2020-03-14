@@ -106,6 +106,7 @@
 700016.xyz
 715083.com
 7desktopthemes.com
+7e7781e2f767494a7128-d0458b7f69ca26f2871554faadb4939e.ssl.cf5.rackcdn.com
 7f9c61237bd6e732e57e-5fa18836a2ae6b5e7c49abcc89b20237.ssl.cf1.rackcdn.com
 7sur7.be
 7xka0y.com1.z0.glb.clouddn.com
@@ -214,6 +215,7 @@ allbox.tv
 allcelebs.club
 allday2.com
 allegroimg.com
+allgirlannihilation.net
 alliswall.com
 alljapantours.com
 allkpop.com
@@ -548,6 +550,7 @@ beta.images.theglobeandmail.com
 betaimage.hankookilbo.com
 betanews.heraldcorp.com
 betanews.net
+bettinaschoenbach.com
 between-legs.com
 bevilacqua.me
 beztabu.net
@@ -937,6 +940,7 @@ cdn.otamart.com
 cdn.panda-gossips.com.s3.amazonaws.com
 cdn.pastemagazine.com
 cdn.pax6.com
+cdn.photosight.ru
 cdn.picson.mobi
 cdn.pixabay.com
 cdn.planetradio.co.uk
@@ -1160,6 +1164,7 @@ citywonders.com
 ckm.pl
 ckywf.com
 cl.buscafs.com
+cl.fame10.com
 clara.es
 classconnection.s3.amazonaws.com
 classy-girls.com
@@ -1168,6 +1173,9 @@ clickthecity.com
 clients-cdnnow.ru
 cliimage.commutil.kr
 clipartmax.com
+clippit-prod.s3.amazonaws.com
+clippituser.tv
+clips.clippit.tv
 cliqueimg.com
 closermag.fr
 cloud.filmfed.com
@@ -1234,6 +1242,7 @@ coolspotters.com
 cooltrack.co.kr
 coolwallpaperz.info
 copia-di-arte.com
+cora.porntrex.com
 corriereobjects.it
 cosmo.com.ua
 cosmopolitan.com.hk
@@ -1438,6 +1447,7 @@ demo.brainymore.com
 demokrathaber.org
 dengekionline.com
 derpicdn.net
+derstandard.at
 desangw.com
 deseretnews.com
 desktop-background.com
@@ -1483,6 +1493,7 @@ dimwhp0w2rs83.cloudfront.net
 dingo.care2.com
 dingyue.ws.126.net
 directgardening.com
+discordapp.com
 discordapp.net
 discourse-cdn-aws1.com
 discourse-cdn-sjc1.com
@@ -1510,6 +1521,7 @@ dmbtattoo.com
 dn-kdt-img.qbox.me
 dn3pm25xmtlyu.cloudfront.net
 dnh0aphdpud22.cloudfront.net
+docs.google.com
 dodskypict.com
 dogtime.com
 dok7xy59qfw9h.cloudfront.net
@@ -1563,6 +1575,7 @@ dtpmhvbsmffsz.cloudfront.net
 dtslb.com
 dubiobikinis.com
 dublinlive.ie
+duckduckgo.com
 dudepins.com
 duitang.com
 dundalkdemocrat.ie
@@ -1779,6 +1792,7 @@ fapality.com
 fappeningbook.com
 fappenist.com
 fappic.com
+fapster.xxx
 farfarawaysite.com
 fashion-headline.com
 fashion-press.net
@@ -2115,6 +2129,7 @@ glbimg.com
 global.unitednations.entermediadb.net
 globalblue.com
 globo.com
+glocon.eu
 gloria.hr
 glow.gr
 glow.pl
@@ -3564,6 +3579,7 @@ kyeonggi.com
 kyeongin.com
 kym-cdn.com
 kysiamesecat.sakura.ne.jp
+l-mount.com
 la-soubrette.fr
 labsporno.com
 lacote.ch
@@ -3613,6 +3629,7 @@ lesarchive.com
 lescinemasaixois.com
 lesinrocks.com
 letradamusica.net
+lfi-online.de
 libe.com
 liberoquotidiano.it
 lichnosti.net
@@ -3695,6 +3712,7 @@ luxury-inside.vn
 lvme.me
 lystit.com
 lzimages.lazygirls.info
+m-magazine.photography
 m.aceshowbiz.com
 m.acg.ms
 m.actve.net
@@ -4347,6 +4365,7 @@ nowtoronto.com
 nrt.ysc123.com.cn
 ns.hitcreative.com.s3.amazonaws.com
 nsfwalbum.com
+nsgalleries.com
 nsimg.net
 nssdc.gsfc.nasa.gov
 nst.sky.it
@@ -4405,6 +4424,7 @@ okporn.com
 old.fishmedia.info
 oldax.com
 olharalerta.com.br
+olympus.eu
 omegalive-sf.cdn.edgeport.net
 omegalive.com.cy
 omusic.friday.tw
@@ -4514,6 +4534,7 @@ phnx.pics
 phoenixnewtimes.com
 phoronix.net
 photo-erotique.org
+photo-forum.net
 photo-net-production-images.s3.amazonaws.com
 photo-viewbug.s3.amazonaws.com
 photo.addyoursex.com
@@ -4533,6 +4554,7 @@ photo.venus.com
 photo.voici.fr
 photobucket.com
 photofiles.alphacoders.com
+photoforum.ru
 photographers.ua
 photohito.k-img.com
 photojournal.jpl.nasa.gov
@@ -4697,14 +4719,17 @@ pornopics.co
 pornoplaatjes.nl
 pornoreino.com
 pornpaw.com
+pornrewind.com
 pornrice.com
 pornstarapex.com
 pornstars.me
 pornstarsadvice.com
 porntb.com
+porntrex.com
 pornxxxbest.xyz
 pornzee.com
 portal-images.azureedge.net
+portrix-ls.de
 poseposter.com
 posterswholesale.com
 postervdom.ru
@@ -4982,6 +5007,7 @@ rule34hentai.net
 russianpulse.ru
 s-i.huffpost.com
 s-image.hnol.net
+s-magazine.photography
 s-nbcnews.com
 s.bellesa.co
 s.brunette.site
@@ -5286,6 +5312,7 @@ ss.metronews.ru
 ss.sport-express.ru
 ssl-gfx.filmweb.pl
 ssl-images-amazon.com
+ssl.gstatic.com
 ssmscdn.yp.ca
 ssproxy.ucloudbiz.olleh.com
 ssref.net
@@ -5340,6 +5367,8 @@ static-bluray.com
 static-buyma-com.akamaized.net
 static-cdn.jtvnw.net
 static-cdn.sr.se
+static-fhg.alsscan.com
+static-fhg.metart.com
 static-koimoi.akamaized.net
 static-mercari-jp-imgtr2.akamaized.net
 static-movie.a.88cdn.com
@@ -5368,6 +5397,7 @@ static.comicvine.com
 static.congnghe.vn
 static.cosplay-it.com
 static.dir.bg
+static.discovery-expedition.com
 static.doramatv.me
 static.ellahoy.es
 static.esea.net
@@ -5482,6 +5512,7 @@ staticdelivery.nexusmods.com
 staticflickr.com
 statici.behindthevoiceactors.com
 staticpopopics.popopics.com
+statics.cdntrex.com
 staticuestudio.blob.core.windows.net
 statis.gamen.vn
 steamstatic.com
