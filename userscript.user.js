@@ -9108,11 +9108,11 @@ var $$IMU_EXPORT$$;
 
 					if (maxobj) {
 						if (maxobj.url) {
-							return options.cb({
-								url: maxobj.url,
-								video: true,
-								is_private: true // linked to IP
-							});
+							obj.url = maxobj.url;
+							obj.video = true;
+							obj.is_private = true;
+
+							return options.cb(obj);
 						} else {
 							// https://www.youtube.com/watch?v=P6dgaXh0K_E
 							if (maxobj.cipher) {
