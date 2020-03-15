@@ -1418,6 +1418,7 @@ var $$IMU_EXPORT$$;
 		redirect_history: true,
 		canhead_get: true,
 		redirect_force_page: false,
+		print_imu_obj: false,
 		redirect_disable_for_responseheader: false,
 		mouseover: true,
 		// thanks to blue-lightning on github for the idea: https://github.com/qsniyg/maxurl/issues/16
@@ -1735,6 +1736,12 @@ var $$IMU_EXPORT$$;
 				"..."
 			],
 			category: "rules"
+		},
+		print_imu_obj: {
+			name: "Log IMU object to console",
+			description: "Prints the full IMU object to the console whenever a popup/redirect is found",
+			category: "rules",
+			advanced: true
 		},
 		redirect_disable_for_responseheader: {
 			name: "Disable when response headers need modifying",
@@ -57353,6 +57360,9 @@ var $$IMU_EXPORT$$;
 					return;
 				}
 
+				if (settings.print_imu_obj)
+					console_log(newhref);
+
 				var newurl = newhref[0].url;
 
 				if (false && newhref[0].extra && newhref[0].extra.page) {
@@ -63643,6 +63653,8 @@ var $$IMU_EXPORT$$;
 						force_page: force_page,
 						cb: realcb
 					}, function(obj, finalcb) {
+						var orig_obj = obj;
+
 						if (_nir_debug_)
 							console_log("do_popup: brl query:", obj);
 
@@ -63706,6 +63718,9 @@ var $$IMU_EXPORT$$;
 								data = {resp: img, obj: newurl};
 								newurl1 = data.resp.finalUrl;
 							}
+
+							if (settings.print_imu_obj)
+								console_log(orig_obj);
 
 							finalcb(newurl1, data.obj, data);
 
