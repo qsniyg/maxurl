@@ -49940,7 +49940,12 @@ var $$IMU_EXPORT$$;
 		if (domain_nowww === "girlswithmuscle.com") {
 			// https://www.girlswithmuscle.com/images/thumbs/61090.jpg
 			//   https://www.girlswithmuscle.com/images/full/61090.jpg
-			return src.replace(/\/images\/+thumbs\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/images/full/$1");
+			// https://www.girlswithmuscle.com/images/thumbs/1322758.jpg?2
+			//   https://www.girlswithmuscle.com/images/full/1322758.mp4?2
+			newsrc = src.replace(/\/images\/+thumbs\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/images/full/$1");
+			if (newsrc !== src) {
+				return add_full_extensions(newsrc, ["mp4", "jpg"], true);
+			}
 		}
 
 		if (domain === "img.jiahes.com") {
@@ -63472,9 +63477,13 @@ var $$IMU_EXPORT$$;
 				b_zindex = get_zindex(b);
 
 				//console_log(a_zindex, b_zindex, a, b);
-
-				// opposite because we want it to be reversed (largest first)
-				return b_zindex - a_zindex;
+				if (b_zindex === a_zindex) {
+					// Don't modify the sort order
+					return ret.indexOf(a) - ret.indexOf(b);
+				} else {
+					// opposite because we want it to be reversed (largest first)
+					return b_zindex - a_zindex;
+				}
 			});
 
 			if (_nir_debug_ && ret.length > 0)
