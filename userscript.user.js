@@ -5878,6 +5878,119 @@ var $$IMU_EXPORT$$;
 		return null;
 	};
 
+	common_functions.get_snapchat_story = function(api_cache, do_request, username, cb) {
+		var cache_key = "snapchat_story:" + username;
+		api_cache.fetch(cache_key, cb, function(done) {
+			do_request({
+				method: "GET",
+				url: "https://search.snapchat.com/lookupStory?id=" + username,
+				headers: {
+					"sec-fetch-dest": "empty",
+					"sec-fetch-mode": "cors",
+					"sec-fetch-site": "same-site",
+					"Origin": "https://www.snapchat.com",
+					"Referer": "https://www.snapchat.com/add/" + username // maybe use real url instead?
+				},
+				onload: function(resp) {
+					if (resp.readyState !== 4)
+						return;
+
+					if (resp.status !== 200) {
+						console_error(resp);
+						return done(null, false);
+					}
+
+					try {
+						var json = JSON_parse(resp.responseText);
+						return done(json, 60); // story can change, so 60 seconds? or less?
+					} catch (e) {
+						console_error(e, resp);
+						return done(null, false);
+					}
+				}
+			});
+		});
+	};
+
+	common_functions.snap_to_obj = function(snap) {
+		var caption = snap.snapTitle + snap.snapSubtitles;
+		caption = caption.replace(/^\s*([\s\S]*)\s*$/, "$1");
+
+		return {
+			url: snap.snapUrls.mediaUrl,
+			extra: {
+				caption: caption || null
+			},
+			need_blob: true
+		};
+	};
+
+	common_functions.get_snapchat_info_from_el = function(el) {
+		if (el.getAttribute("data-imu")) {
+			return {
+				username: el.getAttribute("data-username"),
+				pos: parseInt(el.getAttribute("data-pos")),
+				url: el.getAttribute("data-url")
+			};
+		}
+
+		if (el.tagName !== "VIDEO")
+			return null;
+
+		var current = el;
+		while ((current = current.parentElement)) {
+			if (current.tagName === "DIV" && current.getAttribute("role") === "presentation") {
+				var username = "";
+
+				var as = current.getElementsByTagName("a");
+				for (var i = 0; i < as.length; i++) {
+					var match = as[i].href.match(/^[a-z]+:\/\/story\.snapchat\.com\/+s\/+([^/?#]+)(?:[?#].*)?$/);
+					if (match) {
+						username = match[1];
+						break;
+					}
+				}
+
+				var pos = 0;
+
+				var prevbutton = current.querySelector("#PrevButton");
+				if (prevbutton) {
+					pos = 1;
+				}
+
+				var nextbutton = current.querySelector("#NextButton");
+				if (!nextbutton) {
+					pos = -1;
+				}
+
+				return {
+					username: username,
+					pos: pos
+				};
+			}
+		}
+
+		return null;
+	};
+
+	common_functions.get_obj_from_snap_info = function(api_cache, do_request, info, cb) {
+		if (!info) {
+			return cb(null);
+		}
+
+		common_functions.get_snapchat_story(api_cache, do_request, info.username, function(data) {
+			if (!data) {
+				return cb(null);
+			}
+
+			if (info.pos === -1) {
+				info.pos = data.snapList.length - 1;
+			}
+
+			return cb(common_functions.snap_to_obj(data.snapList[info.pos]));
+		});
+	};
+
 	var get_domain_nosub = function(domain) {
 		var domain_nosub = domain.replace(/^.*\.([^.]*\.[^.]*)$/, "$1");
 		if (domain_nosub.match(/^co\.[a-z]{2}$/) ||
@@ -54551,115 +54664,9 @@ var $$IMU_EXPORT$$;
 		if (host_domain_nosub === "snapchat.com" && options.do_request && options.cb && options.element) {
 			// https://www.snapchat.com/add/jordynjones11
 			// https://story.snapchat.com/s/jordynjones11
-			var get_snapchat_story = function(username, cb) {
-				var cache_key = "snapchat_story:" + username;
-				api_cache.fetch(cache_key, cb, function(done) {
-					options.do_request({
-						method: "GET",
-						url: "https://search.snapchat.com/lookupStory?id=" + username,
-						headers: {
-							"sec-fetch-dest": "empty",
-							"sec-fetch-mode": "cors",
-							"sec-fetch-site": "same-site",
-							"Origin": "https://www.snapchat.com",
-							"Referer": "https://www.snapchat.com/add/" + username // maybe use real url instead?
-						},
-						onload: function(resp) {
-							if (resp.readyState !== 4)
-								return;
-
-							if (resp.status !== 200) {
-								console_error(resp);
-								return done(null, false);
-							}
-
-							try {
-								var json = JSON_parse(resp.responseText);
-								return done(json, 60); // story can change, so 60 seconds? or less?
-							} catch (e) {
-								console_error(e, resp);
-								return done(null, false);
-							}
-						}
-					});
-				});
-			};
-
-			var snap_to_obj = function(snap) {
-				var caption = snap.snapTitle + snap.snapSubtitles;
-				caption = caption.replace(/^\s*([\s\S]*)\s*$/, "$1");
-
-				return {
-					url: snap.snapUrls.mediaUrl,
-					extra: {
-						caption: caption || null
-					},
-					need_blob: true
-				};
-			};
-
-			var get_snapchat_info_from_el = function(el) {
-				if (el.tagName !== "VIDEO")
-					return null;
-
-				var current = el;
-				while ((current = current.parentElement)) {
-					if (current.tagName === "DIV" && current.getAttribute("role") === "presentation") {
-						console_log(current);
-						var username = "";
-
-						var as = current.getElementsByTagName("a");
-						for (var i = 0; i < as.length; i++) {
-							var match = as[i].href.match(/^[a-z]+:\/\/story\.snapchat\.com\/+s\/+([^/?#]+)(?:[?#].*)?$/);
-							if (match) {
-								username = match[1];
-								break;
-							}
-						}
-
-						var pos = 0;
-
-						var prevbutton = current.querySelector("#PrevButton");
-						if (prevbutton) {
-							pos = 1;
-						}
-
-						var nextbutton = current.querySelector("#NextButton");
-						if (!nextbutton) {
-							pos = -1;
-						}
-
-						return {
-							username: username,
-							pos: pos
-						};
-					}
-				}
-
-				return null;
-			};
-
-			var get_obj_from_snap_info = function(info, cb) {
-				if (!info) {
-					return cb(null);
-				}
-
-				get_snapchat_story(info.username, function(data) {
-					if (!data) {
-						return cb(null);
-					}
-
-					if (info.pos === -1) {
-						info.pos = data.snapList.length - 1;
-					}
-
-					return cb(snap_to_obj(data.snapList[info.pos]));
-				});
-			};
-
-			var info = get_snapchat_info_from_el(options.element);
+			var info = common_functions.get_snapchat_info_from_el(options.element);
 			if (info) {
-				get_obj_from_snap_info(info, options.cb);
+				common_functions.get_obj_from_snap_info(api_cache, options.do_request, info, options.cb);
 
 				return {
 					waiting: true
@@ -54670,7 +54677,7 @@ var $$IMU_EXPORT$$;
 				return {
 					url: src,
 					need_blob: true
-				}
+				};
 			} else {
 				return null;
 			}
@@ -56315,6 +56322,51 @@ var $$IMU_EXPORT$$;
 
 		if (host_domain_nosub === "snapchat.com") {
 			return {
+				gallery: function(el, nextprev) {
+					if (el.tagName !== "VIDEO" && el.tagName !== "IMG")
+						return "default";
+
+					var info = common_functions.get_snapchat_info_from_el(el);
+					if (info) {
+						common_functions.get_snapchat_story(real_api_cache, options.do_request, info.username, function(data) {
+							if (!data) {
+								return options.cb(null);
+							}
+
+							if (!("pos" in info)) {
+								for (var i = 0; i < data.snapList.length; i++) {
+									if (data.snapList[i].snapUrls.mediaUrl === info.url) {
+										info.pos = i;
+										break;
+									}
+								}
+							}
+
+							if (!("pos" in info)) {
+								return options.cb(null);
+							}
+
+							var diff = nextprev ? 1 : -1;
+							var newpos = info.pos + diff;
+
+							if (newpos < 0 || newpos >= data.snapList.length)
+								return options.cb(null);
+
+							var url = data.snapList[newpos].snapUrls.mediaUrl;
+							var mediael = new_media(url, /\.mp4(?:[?#].*)?$/.test(url));
+							mediael.setAttribute("data-username", info.username);
+							mediael.setAttribute("data-pos", newpos);
+							mediael.setAttribute("data-url", url);
+							mediael.setAttribute("data-imu", "true");
+
+							return options.cb(mediael);
+						});
+
+						return "waiting";
+					}
+
+					return "default";
+				},
 				element_ok: function(el) {
 					if (el.tagName === "VIDEO") {
 						return true;
