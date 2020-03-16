@@ -63284,6 +63284,12 @@ var $$IMU_EXPORT$$;
 			if (!el)
 				return null;
 
+			// https://www.gog.com/game/shadow_warrior_complete
+			// "Buy series" gallery
+			if (el.tagName === "SOURCE" && el.parentElement && ["PICTURE", "VIDEO"].indexOf(el.parentElement.tagName) >= 0) {
+				el = el.parentElement;
+			}
+
 			var stack = [el.tagName];
 			var current_el = el;
 			var firstchild = false;
