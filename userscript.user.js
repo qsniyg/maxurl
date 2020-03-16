@@ -745,6 +745,7 @@ var $$IMU_EXPORT$$;
 		head_ok_errors: [],
 		head_wrong_contenttype: false,
 		head_wrong_contentlength: false,
+		need_blob: false,
 		waiting: false,
 		redirects: false,
 		forces_download: false,
@@ -7766,6 +7767,9 @@ var $$IMU_EXPORT$$;
 			// https://c.bellesa.co/dkvdbifey/image/fetch/h_250,q_75,ar_16:9,c_fill,f_auto//https://i.bellesa.co/video_upload/2350cover.jpg
 			//   https://i.bellesa.co/video_upload/2350cover.jpg
 			domain === "c.bellesa.co" ||
+			// https://images.haarets.co.il/image/fetch/fl_lossy.any_format.preserve_transparency.progressive:none/https://www.haaretz.co.il/polopoly_fs/1.8674827!/image/4132815329.jpg
+			//   https://www.haaretz.co.il/polopoly_fs/1.8674827!/image/4132815329.jpg
+			domain === "images.haarets.co.il" ||
 			domain === "images.taboola.com") {
 			// https://res.cloudinary.com/emazecom/image/fetch/c_limit,a_ignore,w_320,h_200/https%3A%2F%2Fimg-aws.ehowcdn.com%2F877x500p%2Fs3.amazonaws.com%2Fcme_public_images%2Fwww_ehow_com%2Fi.ehow.com%2Fimages%2Fa04%2Fbd%2Fic%2Fchemical-energy-work-3.1-800x800.jpg
 			// https://images.taboola.com/taboola/image/fetch/f_jpg%2Cq_auto%2Cc_fill%2Cg_faces:auto%2Ce_sharpen/https%3A%2F%2Fwww.gannett-cdn.com%2F-mm-%2F2e56892f6a349ad47192b530425d443fb365e5e9%2Fr%3Dx1803%26c%3D3200x1800%2Fhttps%2Fmedia.gannett-cdn.com%2F37861007001%2F37861007001_5735420050001_5735409691001-vs.jpg%3FpubId%3D37861007001
@@ -17845,6 +17849,9 @@ var $$IMU_EXPORT$$;
 			// http://img10.imgdino.com/images/21620746826144988852_thumb.jpg
 			//   http://img10.imgdino.com/images/21620746826144988852.jpg
 			(domain_nosub === "imgdino.com" && domain.match(/img[0-9]*\.imgdino\.com/) && src.indexOf("/images/") >= 0) ||
+			// https://foto-pic.net/images/92186498534843139589_thumb.jpg
+			//   https://foto-pic.net/images/92186498534843139589.jpg
+			(domain_nowww === "foto-pic.net" && /\/images\/+[0-9]{10,}_thumb\./.test(src)) ||
 			// https://storage.cobak.co/uploads/1524570414485762_2d28e314d0_thumb.jpg
 			(domain === "storage.cobak.co" && src.indexOf("/uploads/") >= 0) ||
 			// https://mycotopia.net/uploads/monthly_11_2016/post-147969-0-17237500-1479361240_thumb.jpg
@@ -30388,7 +30395,10 @@ var $$IMU_EXPORT$$;
 			// technically this looks like cloudinary, but possibly a variant?
 			// https://static.ffx.io/images/$zoom_0.841%2C$multiply_0.7252124645892352%2C$ratio_1.776846%2C$width_1059%2C$x_0%2C$y_0/t_crop_custom/t_sharpen%2Cq_auto%2Cf_auto/edf6feebc2488f212b2ac65be557a89edda359e6
 			//   https://static.ffx.io/images/edf6feebc2488f212b2ac65be557a89edda359e6
-			return src.replace(/\/images\/\$[^/]*\/.*\/([0-9a-f]+)([?#].*)?$/, "/images/$1$2");
+			return {
+				url: src.replace(/\/images\/\$[^/]*\/.*\/([0-9a-f]+)([?#].*)?$/, "/images/$1$2"),
+				can_head: false // 404 for some images
+			};
 		}
 
 		if (domain === "images.stv.tv") {
@@ -44135,6 +44145,9 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "rabstol.net" ||
+			// https://vgtimes.ru/uploads/gallery/thumb/142547/1503408911_8025.jpeg
+			//   https://vgtimes.ru/uploads/gallery/main/142547/1503408911_8025.jpeg
+			domain_nowww === "vgtimes.ru" ||
 			// http://www.youloveit.ru/uploads/gallery/thumb/549/youloveit_ru_selena_gomez_new_foto06.jpg
 			//   http://www.youloveit.ru/uploads/gallery/main/549/youloveit_ru_selena_gomez_new_foto06.jpg
 			domain_nowww === "youloveit.ru") {
@@ -54520,6 +54533,133 @@ var $$IMU_EXPORT$$;
 				};
 		}
 
+		if (domain === "s.sc-cdn.net") {
+			// https://s.sc-cdn.net/1d/feXwf0gm4YfDw_mUoddLXnEWB9n8Fo3vx94Zol9wxJc=/default/preview.jpg
+			//   https://s.sc-cdn.net/1d/Pf3Qi0hkJmeUxsOnJRs777PbJnN_3cv4LMvMZ3FZ8Yc=/default/media.mp4
+			return add_full_extensions(src.replace(/\/default\/+preview\.jpg(?:[?#].*)?$/, "/default/media.mp4"), ["mp4", "jpg"], true);
+		}
+
+		if (host_domain_nosub === "snapchat.com" && options.do_request && options.cb && options.element) {
+			// https://www.snapchat.com/add/jordynjones11
+			// https://story.snapchat.com/s/jordynjones11
+			var get_snapchat_story = function(username, cb) {
+				var cache_key = "snapchat_story:" + username;
+				api_cache.fetch(cache_key, cb, function(done) {
+					options.do_request({
+						method: "GET",
+						url: "https://search.snapchat.com/lookupStory?id=" + username,
+						headers: {
+							"sec-fetch-dest": "empty",
+							"sec-fetch-mode": "cors",
+							"sec-fetch-site": "same-site",
+							"Origin": "https://www.snapchat.com",
+							"Referer": "https://www.snapchat.com/add/" + username // maybe use real url instead?
+						},
+						onload: function(resp) {
+							if (resp.readyState !== 4)
+								return;
+
+							if (resp.status !== 200) {
+								console_error(resp);
+								return done(null, false);
+							}
+
+							try {
+								var json = JSON_parse(resp.responseText);
+								return done(json, 60); // story can change, so 60 seconds? or less?
+							} catch (e) {
+								console_error(e, resp);
+								return done(null, false);
+							}
+						}
+					});
+				});
+			};
+
+			var snap_to_obj = function(snap) {
+				var caption = snap.snapTitle + snap.snapSubtitles;
+				caption = caption.replace(/^\s*([\s\S]*)\s*$/, "$1");
+
+				return {
+					url: snap.snapUrls.mediaUrl,
+					extra: {
+						caption: caption || null
+					},
+					need_blob: true
+				};
+			};
+
+			var get_snapchat_info_from_el = function(el) {
+				if (el.tagName !== "VIDEO")
+					return null;
+
+				var current = el;
+				while ((current = current.parentElement)) {
+					if (current.tagName === "DIV" && current.getAttribute("role") === "presentation") {
+						console_log(current);
+						var username = "";
+
+						var as = current.getElementsByTagName("a");
+						for (var i = 0; i < as.length; i++) {
+							var match = as[i].href.match(/^[a-z]+:\/\/story\.snapchat\.com\/+s\/+([^/?#]+)(?:[?#].*)?$/);
+							if (match) {
+								username = match[1];
+								break;
+							}
+						}
+
+						var pos = 0;
+
+						var prevbutton = current.querySelector("#PrevButton");
+						if (prevbutton) {
+							pos = 1;
+						}
+
+						var nextbutton = current.querySelector("#NextButton");
+						if (!nextbutton) {
+							pos = -1;
+						}
+
+						return {
+							username: username,
+							pos: pos
+						};
+					}
+				}
+
+				return null;
+			};
+
+			var get_obj_from_snap_info = function(info, cb) {
+				if (!info) {
+					return cb(null);
+				}
+
+				get_snapchat_story(info.username, function(data) {
+					if (!data) {
+						return cb(null);
+					}
+
+					if (info.pos === -1) {
+						info.pos = data.snapList.length - 1;
+					}
+
+					return cb(snap_to_obj(data.snapList[info.pos]));
+				});
+			};
+
+			var info = get_snapchat_info_from_el(options.element);
+			if (info) {
+				get_obj_from_snap_info(info, options.cb);
+
+				return {
+					waiting: true
+				};
+			}
+
+			return null;
+		}
+
 
 
 
@@ -56149,6 +56289,18 @@ var $$IMU_EXPORT$$;
 			return {
 				element_ok: function(el) {
 					if (el.tagName === "A" && el.classList.contains("photo_link") && el.querySelector("div.nsfw_placeholder_content")) {
+						return true;
+					}
+
+					return "default";
+				}
+			};
+		}
+
+		if (host_domain_nosub === "snapchat.com") {
+			return {
+				element_ok: function(el) {
+					if (el.tagName === "VIDEO") {
 						return true;
 					}
 
@@ -59437,6 +59589,9 @@ var $$IMU_EXPORT$$;
 		if (processing.incomplete_image || (is_probably_video(obj[0]) && processing.incomplete_video))
 			incomplete_request = true;
 
+		if (obj[0].need_blob)
+			incomplete_request = false;
+
 		if (processing.head || incomplete_request) {
 			if (incomplete_request && !obj.can_head) {
 				method = "GET";
@@ -59735,7 +59890,7 @@ var $$IMU_EXPORT$$;
 					}
 				};
 
-				if (!settings.mouseover_use_blob_over_data) {
+				if (!settings.mouseover_use_blob_over_data && !obj[0].need_blob) {
 					create_dataurl(resp.response, loadcb);
 				} else {
 					var objecturl = create_objecturl(resp.response);
