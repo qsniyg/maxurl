@@ -5913,8 +5913,13 @@ var $$IMU_EXPORT$$;
 	};
 
 	common_functions.snap_to_obj = function(snap) {
-		var caption = snap.snapTitle + snap.snapSubtitles;
-		caption = caption.replace(/^\s*([\s\S]*)\s*$/, "$1");
+		var caption = null;
+
+		// Apparently this isn't related to the caption?
+		if (false) {
+			caption = snap.snapTitle + snap.snapSubtitles;
+			caption = caption.replace(/^\s*([\s\S]*)\s*$/, "$1");
+		}
 
 		return {
 			url: snap.snapUrls.mediaUrl,
