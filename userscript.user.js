@@ -21177,7 +21177,10 @@ var $$IMU_EXPORT$$;
 			return src.replace(/-[a-z]+(\.[^/.]*)$/, "$1");
 		}
 
-		if (domain_nosub === "gog.com" && domain.match(/images.*\.gog\.com/)) {
+		if ((domain_nosub === "gog.com" ||
+			// https://images.gog-statics.com/6361d6a0b2816bbe7deb138d8675569e97d77bca3f078b495f747e9c9e41f543_product_card_v2_thumbnail_271.jpg
+			//   https://images.gog-statics.com/6361d6a0b2816bbe7deb138d8675569e97d77bca3f078b495f747e9c9e41f543.jpg
+			domain_nosub === "gog-statics.com") && domain.match(/images.*\./)) {
 			// https://images-2.gog.com/859a7d00d0c0d46c8c4a215906479580f06837daa13d90837deba59ad51fdd8a_product_card_screenshot_112.jpg
 			//   https://images-2.gog.com/859a7d00d0c0d46c8c4a215906479580f06837daa13d90837deba59ad51fdd8a.jpg
 			return src.replace(/(\/[0-9a-f]*)_[^/.]*(\.[^/.]*)$/, "$1$2");
