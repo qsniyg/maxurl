@@ -54536,7 +54536,16 @@ var $$IMU_EXPORT$$;
 		if (domain === "s.sc-cdn.net") {
 			// https://s.sc-cdn.net/1d/feXwf0gm4YfDw_mUoddLXnEWB9n8Fo3vx94Zol9wxJc=/default/preview.jpg
 			//   https://s.sc-cdn.net/1d/Pf3Qi0hkJmeUxsOnJRs777PbJnN_3cv4LMvMZ3FZ8Yc=/default/media.mp4
-			return add_full_extensions(src.replace(/\/default\/+preview\.jpg(?:[?#].*)?$/, "/default/media.mp4"), ["mp4", "jpg"], true);
+			newsrc = src.replace(/\/default\/+preview\.jpg(?:[?#].*)?$/, "/default/media.mp4");
+			if (newsrc !== src) {
+				var full = add_full_extensions(newsrc, ["mp4", "jpg"], true);
+
+				// awful hack but whatever
+				if (host_domain_nosub === "snapchat.com")
+					full[0].need_blob = true;
+
+				return full;
+			}
 		}
 
 		if (host_domain_nosub === "snapchat.com" && options.do_request && options.cb && options.element) {
@@ -54657,7 +54666,14 @@ var $$IMU_EXPORT$$;
 				};
 			}
 
-			return null;
+			if (src && /\.mp4/.test(src)) {
+				return {
+					url: src,
+					need_blob: true
+				}
+			} else {
+				return null;
+			}
 		}
 
 
