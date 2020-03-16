@@ -56353,7 +56353,7 @@ var $$IMU_EXPORT$$;
 								return options.cb(null);
 
 							var url = data.snapList[newpos].snapUrls.mediaUrl;
-							var mediael = new_media(url, /\.mp4(?:[?#].*)?$/.test(url));
+							var mediael = new_media(url, /\.mp4(?:[?#].*)?$/.test(url) && false);
 							mediael.setAttribute("data-username", info.username);
 							mediael.setAttribute("data-pos", newpos);
 							mediael.setAttribute("data-url", url);
