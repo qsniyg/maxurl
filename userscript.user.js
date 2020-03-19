@@ -24181,13 +24181,24 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "media.moddb.com" ||
+			// https://cdn.dbolical.com/cache/images/articles/1/263/262221/crop_120x90/ModDB_Background.jpg
+			//   https://cdn.dbolical.com/images/articles/1/263/262221/ModDB_Background.jpg
+			domain === "cdn.dbolical.com" ||
 			domain === "media.indiedb.com") {
 			// http://media.moddb.com/cache/images/mods/1/4/3463/crop_120x90/62199.jpg
 			//   http://media.moddb.com/cache/images/mods/1/4/3463/thumb_620x2000/62199.jpg
 			//   http://media.moddb.com/images/mods/1/4/3463/62199.jpg
 			// http://media.indiedb.com/cache/images/articles/1/253/252120/crop_120x90/DevStream_Thumbnail2.png
 			//   http://media.indiedb.com/images/articles/1/253/252120/DevStream_Thumbnail2.png
-			return src.replace(/\/cache\/images\/(.*?)\/[a-z]+_[0-9]+[^/]*(\/[^/]*\.[^/.]*)$/, "/images/$1$2");
+			// https://media.moddb.com/cache/images/mods/1/42/41342/thumb_620x2000/WD_Living_City_Mod_1.9_TRAILER.mp4.jpg
+			//   https://media.moddb.com/videos/mods/1/42/41342/WD_Living_City_Mod_1.9_TRAILER.mp4
+			newsrc = src.replace(/\/cache\/+images\/(.*?)\/[a-z]+_[0-9]+[^/]*(\/[^/]*\.[^/.]*)$/, "/images/$1$2");
+			if (newsrc !== src)
+				return newsrc;
+
+			newsrc = src.replace(/\/images\/+(.*?)\.mp4\.jpg(?:[?#].*)?$/, "/videos/$1.mp4");
+			if (newsrc !== src)
+				return newsrc;
 		}
 
 		if (domain === "static.gamefront.com" ||
@@ -24205,7 +24216,10 @@ var $$IMU_EXPORT$$;
 			return src.replace("/thumbnails/", "/");
 		}
 
-		if (domain === "thumb.test.mod.io") {
+		if (domain === "thumb.test.mod.io" ||
+			// https://thumb.mod.io/mods/1ba7/93437/crop_320x180/logo.png
+			//   https://image.mod.io/mods/1ba7/93437/logo.png
+			domain === "thumb.mod.io") {
 			// https://thumb.test.mod.io/mods/ca81/866/thumb_1020x2000/modio-bg.jpg
 			//   https://image.test.mod.io/mods/ca81/866/modio-bg.jpg
 			return src.replace(/:\/\/thumb\.([^/]*\..*?\/)[a-z]+_[0-9]+[^/]*\/([^/]*)$/, "://image.$1$2");
@@ -54677,8 +54691,9 @@ var $$IMU_EXPORT$$;
 				};
 			}
 
+			// ids are not very human-readable, media/overlay.mp4/jpg is better
 			match = src.match(/:\/\/[^/]+\/+[0-9a-f]{2}\/+([^/]{10,})\//);
-			if (match) {
+			if (false && match) {
 				return {
 					url: src,
 					filename: match[1]
