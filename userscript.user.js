@@ -5939,7 +5939,7 @@ var $$IMU_EXPORT$$;
 			};
 		}
 
-		if (el.tagName !== "VIDEO")
+		if (el.tagName !== "VIDEO" && el.tagName !== "IMG")
 			return null;
 
 		var current = el;
@@ -54666,6 +54666,23 @@ var $$IMU_EXPORT$$;
 					full[0].need_blob = true;
 
 				return full;
+			}
+
+			// https://s.sc-cdn.net/1d/NTegWFoU9mC8cYucFvrJOx4Hn0e4TwTqiTRA97esETg=/default/overlay.png
+			if (false && /\/default\/+overlay\.jpg(?:[?#].*)?$/.test(src)) {
+				// best case would be if they were somehow merged or something
+				return {
+					url: src,
+					bad: "mask"
+				};
+			}
+
+			match = src.match(/:\/\/[^/]+\/+[0-9a-f]{2}\/+([^/]{10,})\//);
+			if (match) {
+				return {
+					url: src,
+					filename: match[1]
+				};
 			}
 		}
 
