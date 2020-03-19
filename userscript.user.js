@@ -59578,6 +59578,17 @@ var $$IMU_EXPORT$$;
 		return false;
 	}
 
+	function is_video_contenttype(contenttype) {
+		if (/^\s*\[?video\//.test(contenttype))
+			return true;
+
+		// https://upload.wikimedia.org/wikipedia/commons/7/74/Leucochloridium.ogv
+		if (/^application\/og[gv]$/.test(contenttype))
+			return true;
+
+		return false;
+	}
+
 	function get_event_error(e) {
 		// https://stackoverflow.com/a/46064096
 		var error = e;
@@ -59809,7 +59820,7 @@ var $$IMU_EXPORT$$;
 				var is_video = false;
 
 				// TODO: improve
-				if (obj[0].video || parsed_headers["content-type"] && /^\s*\[?video\//.test(parsed_headers["content-type"])) {
+				if (obj[0].video || parsed_headers["content-type"] && is_video_contenttype(parsed_headers["content-type"])) {
 					is_video = true;
 				}
 
