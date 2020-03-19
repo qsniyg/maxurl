@@ -54724,6 +54724,16 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain === "soup.onerpm.com") {
+			// thanks to nimuxoha on github: https://github.com/qsniyg/maxurl/issues/271
+			// https://onerpm.com/disco/album?album_number=4838993301
+			// https://soup.onerpm.com/web/user/images/1/aa/aaEQyKG8aZIjzBaQ6Q7D.200.jpg
+			//   https://soup.onerpm.com/web/user/images/1/aa/aaEQyKG8aZIjzBaQ6Q7D.orig.jpg
+			// https://soup.onerpm.com/web/user/content/1/aa/aaEQyKG8aZIjzBaQ6Q7D.200.jpg
+			//   https://soup.onerpm.com/web/user/content/1/aa/aaEQyKG8aZIjzBaQ6Q7D.orig.jpg
+			return src.replace(/(\/web\/+user\/+(?:images|content)\/+.\/+..\/+[^/]+\.)[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1orig$2");
+		}
+
 
 
 
