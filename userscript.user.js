@@ -13424,7 +13424,8 @@ var $$IMU_EXPORT$$;
 		if (domain === "steamstore-a.akamaihd.net") {
 			// https://steamstore-a.akamaihd.net/public/images/v6/app/game_page_background_shadow.png?v=2
 			// https://steamstore-a.akamaihd.net/public/images/v5/ico_game_highlight_video.png
-			if (/\/public\/+images\/+v[0-9]*\/+(?:app\/+game_page|ico_game_).*/.test(src))
+			// https://steamstore-a.akamaihd.net/public/images/v5/game_highlight_activethumb.png
+			if (/\/public\/+images\/+v[0-9]*\/+(?:app\/+game_page|(?:ico_)?game_).*/.test(src))
 				return {
 					url: src,
 					bad: "mask"
