@@ -54751,7 +54751,36 @@ var $$IMU_EXPORT$$;
 			//   https://www.crank-in.net/img/db/1386421_1200.jpg
 			// https://m.crank-in.net/img/db/1294425_150.jpg
 			//   https://m.crank-in.net/img/db/1294425_1200.jpg -- upscaled
+			// other:
+			// https://m.crank-in.net/img/sp/images/_DSC0097.JPG
+			// https://www.crank-in.net/img/sp/images/20120711_zaf_k03_064.jpg
+			// https://www.crank-in.net/img/sp/images/KHolmes100512_14_X17.JPG
 			newsrc = src.replace(/(\/img\/+db\/+[0-9]+)_(?:[0-9]{3}|1[01][0-9]{2})(\.[^/.]+)(?:[?#].*)?$/, "$1_1200$2");
+			if (newsrc !== src) {
+				return {
+					url: newsrc,
+					problems: {
+						possibly_upscaled: true
+					}
+				};
+			}
+		}
+
+		if (domain === "hs.mediadelivery.fi" ||
+			// https://is.mediadelivery.fi/img/658/0fc78cb8a1474ec2b20d891a8e033b37.jpg
+			domain === "is.mediadelivery.fi") {
+			// thanks to thomas-ed on github: https://github.com/qsniyg/maxurl/issues/270
+			// https://www.hs.fi/talous/art-2000006442426.html
+			// https://hs.mediadelivery.fi/img/658/9121cba7d33948309c52ff5691581cec.jpg
+			//   https://hs.mediadelivery.fi/img/1920/9121cba7d33948309c52ff5691581cec.jpg
+			// https://www.is.fi/kotimaa/art-2000006441004.html
+			//   https://is.mediadelivery.fi/img/658/0fc78cb8a1474ec2b20d891a8e033b37.jpg
+			//   https://is.mediadelivery.fi/img/1920/0fc78cb8a1474ec2b20d891a8e033b37.jpg
+			// https://hs.mediadelivery.fi/img/1440/adc2268f4e0442b2843abd5166ed8ed3.jpg
+			//   https://hs.mediadelivery.fi/img/1920/adc2268f4e0442b2843abd5166ed8ed3.jpg -- upscaled
+			// https://hs.mediadelivery.fi/img/square/1440/d279bcab15194b45b4654246d69adb25.jpg.webp
+			//   https://hs.mediadelivery.fi/img/square/1920/d279bcab15194b45b4654246d69adb25.jpg.webp
+			newsrc = src.replace(/(\/img\/+(?:square\/+)?)(?:[0-9]{3}|1[0-8][0-9]{2})\//, "$11920/");
 			if (newsrc !== src) {
 				return {
 					url: newsrc,
