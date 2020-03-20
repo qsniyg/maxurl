@@ -771,7 +771,8 @@ var $$IMU_EXPORT$$;
 			watermark: false,
 			smaller: false,
 			possibly_different: false,
-			possibly_broken: false
+			possibly_broken: false,
+			possibly_upscaled: false
 		}
 	};
 
@@ -1551,6 +1552,7 @@ var $$IMU_EXPORT$$;
 		allow_smaller: false,
 		allow_possibly_different: false,
 		allow_possibly_broken: false,
+		allow_possibly_upscaled: false,
 		allow_thirdparty: false,
 		allow_apicalls: true,
 		allow_thirdparty_libs: is_userscript ? false : true,
@@ -3088,6 +3090,12 @@ var $$IMU_EXPORT$$;
 			hidden: true, // not currently used
 			onupdate: update_rule_setting
 		},
+		allow_possibly_upscaled: {
+			name: "Possibly upscaled images",
+			description: "Enables rules that return images that are possibly upscaled",
+			category: "rules",
+			onupdate: update_rule_setting
+		},
 		allow_thirdparty: {
 			name: "Rules using 3rd-party websites",
 			description: "Enables rules that use 3rd-party websites",
@@ -3387,7 +3395,8 @@ var $$IMU_EXPORT$$;
 		allow_watermark: "watermark",
 		allow_smaller: "smaller",
 		allow_possibly_different: "possibly_different",
-		allow_possibly_broken: "possibly_broken"
+		allow_possibly_broken: "possibly_broken",
+		allow_possibly_upscaled: "possibly_upscaled"
 	};
 
 	var categories = {
@@ -54732,6 +54741,25 @@ var $$IMU_EXPORT$$;
 			// https://soup.onerpm.com/web/user/content/1/aa/aaEQyKG8aZIjzBaQ6Q7D.200.jpg
 			//   https://soup.onerpm.com/web/user/content/1/aa/aaEQyKG8aZIjzBaQ6Q7D.orig.jpg
 			return src.replace(/(\/web\/+user\/+(?:images|content)\/+.\/+..\/+[^/]+\.)[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1orig$2");
+		}
+
+		if (domain_nosub === "crank-in.net") {
+			// thanks to fireattack on github: https://github.com/qsniyg/maxurl/issues/272
+			// https://www.crank-in.net/news/75056/1
+			// https://www.crank-in.net/img/db/1386421_150.jpg
+			//   https://www.crank-in.net/img/db/1386421_650.jpg
+			//   https://www.crank-in.net/img/db/1386421_1200.jpg
+			// https://m.crank-in.net/img/db/1294425_150.jpg
+			//   https://m.crank-in.net/img/db/1294425_1200.jpg -- upscaled
+			newsrc = src.replace(/(\/img\/+db\/+[0-9]+)_(?:[0-9]{3}|1[01][0-9]{2})(\.[^/.]+)(?:[?#].*)?$/, "$1_1200$2");
+			if (newsrc !== src) {
+				return {
+					url: newsrc,
+					problems: {
+						possibly_upscaled: true
+					}
+				};
+			}
 		}
 
 
