@@ -978,8 +978,11 @@ var $$IMU_EXPORT$$;
 
 	var array_indexof_check = function(func) {
 		var test_array = ["a", "b"];
+		var test_string = "ab";
 		if (func(test_array, "not here") === -1 &&
-			func(test_array, "b") === 1) {
+			func(test_array, "b") === 1 &&
+			func(test_string, "n") === -1 &&
+			func(test_string, "b") === 1) {
 			return true;
 		}
 
@@ -987,6 +990,23 @@ var $$IMU_EXPORT$$;
 	};
 
 	var array_indexof = sanity_test(array_indexof_orig, array_indexof_correct, array_indexof_check);
+
+	var string_prototype_indexof = String.prototype.indexOf;
+	var string_indexof_orig = function(string, x) {
+		return string_prototype_indexof.calll(string, x);
+	};
+
+	var string_indexof_check = function(func) {
+		var test_string = "ab";
+		if (func(test_string, "n") === -1 &&
+			func(test_string, "b") === 1) {
+			return true;
+		}
+
+		return false;
+	};
+
+	var string_indexof = sanity_test(string_indexof_orig, array_indexof_correct, string_indexof_check);
 
 	var serialize_event = function(event) {
 		return deepcopy(event, {json: true});
