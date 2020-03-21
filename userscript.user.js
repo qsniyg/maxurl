@@ -950,6 +950,36 @@ var $$IMU_EXPORT$$;
 		};
 	}
 
+	// https://www.mycomicshop.com/search?minyr=1938&maxyr=1955&TID=29170235
+	// this site replaces Array.indexOf
+	// cache Array.prototype.indexOf in case it changes while the script is executing
+	var array_prototype_indexof = Array.prototype.indexOf;
+	var array_indexof = function(array, x) {
+		return array_prototype_indexof.call(array, x);
+	};
+
+	var array_indexof_ok = false;
+
+	try {
+		var test_array = ["a", "b"];
+		if (array_indexof(test_array, "not here") === -1 &&
+			array_indexof(test_array, "b") === 1) {
+			array_indexof_ok = true;
+		}
+	} catch (e) {}
+
+	if (!array_indexof_ok) {
+		array_indexof = function(array, x) {
+			for (var i = 0; i < array.length; i++) {
+				if (array[i] === x) {
+					return i;
+				}
+			}
+
+			return -1;
+		};
+	}
+
 	var serialize_event = function(event) {
 		return deepcopy(event, {json: true});
 	};
@@ -63656,7 +63686,7 @@ var $$IMU_EXPORT$$;
 			for (var i = 0; i < wanted_chord.length; i++) {
 				var key = wanted_chord[i];
 
-				if (current_chord.indexOf(key) < 0)
+				if (array_indexof(current_chord, key) < 0)
 					return false;
 			}
 
@@ -63665,7 +63695,7 @@ var $$IMU_EXPORT$$;
 				if (keystr_is_wheel(current_chord[i]))
 					continue;
 
-				if (wanted_chord.indexOf(current_chord[i]) < 0)
+				if (array_indexof(wanted_chord, current_chord[i]) < 0)
 					return false;
 			}
 
