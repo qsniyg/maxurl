@@ -108,7 +108,7 @@ var $$IMU_EXPORT$$;
 
 		if (is_extension) {
 			is_webextension = true;
-			if (array_indexof(navigator.userAgent, "Firefox") >= 0)
+			if (string_indexof(navigator.userAgent, "Firefox") >= 0)
 				is_firefox_webextension = true;
 
 			current_version = extension_manifest.version;
@@ -5430,7 +5430,7 @@ var $$IMU_EXPORT$$;
 			var imageid = common_functions.instagram_get_imageid(image);
 
 			for (var i = 0; i < objarr.length; i++) {
-				if (array_indexof(objarr[i].src, imageid) > 0)
+				if (string_indexof(objarr[i].src, imageid) > 0)
 					return objarr[i];
 			}
 
@@ -6220,7 +6220,7 @@ var $$IMU_EXPORT$$;
 			}
 
 			str = str.split("/").slice(5).join("/").split("$").slice(1).join("$");
-			if (str && array_indexof(str, "://") < 10 && str[1] == str[2]) {
+			if (str && string_indexof(str, "://") < 10 && str[1] == str[2]) {
 				var diff = mod(str.charCodeAt(0) - 'h'.charCodeAt(0), 26);
 
 				// char - diff
@@ -6241,7 +6241,7 @@ var $$IMU_EXPORT$$;
 				}
 
 				var urlparts = str1;
-				if (urlparts && array_indexof(urlparts, "http") === 0) {
+				if (urlparts && string_indexof(urlparts, "http") === 0) {
 					var $s = urlparts.replace(/.*?([$/]*)$/, "$1");
 					if ($s !== urlparts && $s) {
 						var count = $s.split("$").length - 1;
@@ -9498,7 +9498,7 @@ var $$IMU_EXPORT$$;
 				return decodeURIComponent(newsrc);
 		}
 
-		if (host_domain_nosub === "yahoo.com" && array_indexof(host_domain, "search.") >= 0 && options.element) {
+		if (host_domain_nosub === "yahoo.com" && string_indexof(host_domain, "search.") >= 0 && options.element) {
 			if (options.element.parentElement && options.element.parentElement.tagName === "A") {
 				match = options.element.parentElement.href.match(/^[a-z]+:\/\/[^/]*images\.search\.[^/]+\/+(?:search\/+images|images\/+view)(?:;.*?)\?(?:.*&)?imgurl=([^&]+)/);
 				if (match) {
@@ -10106,7 +10106,7 @@ var $$IMU_EXPORT$$;
 			(domain === "img.pixelz.com" && string_indexof(src, "/blog/") >= 0) ||
 			// https://ca.hellomagazine.com/imagenes/healthandbeauty/201210249802/get-the-bond-girl-body/0-49-79/naomie-harris-1--a.jpg?interpolation=lanczos-normal&downsize=200px:*&output-format=progressive-jpeg
 			// https://ca.hellomagazine.com/images/stories/0/2016/09/02/000/383/648/gallery_3_5.jpg?interpolation=lanczos-normal&downsize=0.75xw:*
-			(domain_nosub === "hellomagazine.com" && (string_indexof(src, "/imagenes/") >= 0 || array_indexof(src, "/images/") >= 0)) ||
+			(domain_nosub === "hellomagazine.com" && (string_indexof(src, "/imagenes/") >= 0 || string_indexof(src, "/images/") >= 0)) ||
 			// https://i0.1616.ro/media/521/2861/35030/17944527/1/jennifer-lawrence.jpg?width=160
 			(domain_nosub === "1616.ro" && domain.match(/^i[0-9]*\./)) ||
 			// http://images.lifeandstylemag.com/uploads/posts/image/35601/paula-patton-spirit-awards.jpg?crop=top&fit=clip&h=500&w=698
@@ -17934,7 +17934,7 @@ var $$IMU_EXPORT$$;
 				.replace(/\/[0-9]+x[0-9]+_/, "/");
 		}
 
-		if ((amazon_container && array_indexof(amazon_container, "nxs-wkrgtv-media") >= 0) ||
+		if ((amazon_container && string_indexof(amazon_container, "nxs-wkrgtv-media") >= 0) ||
 			// http://pic1.win4000.com/pic/f/bd/9db51148625_130_170.jpg
 			//   http://pic1.win4000.com/pic/f/bd/9db51148625.jpg
 			(domain_nosub === "win4000.com" && domain.match(/^pic[0-9]*\.win4000\.com/)) ||
@@ -18985,7 +18985,7 @@ var $$IMU_EXPORT$$;
 			//   http://jp.mnet.com/data/www.mnetjapan.com/admin/000/172/494
 			// http://s.iimg.me/profile.php?url=http%3A%2F%2Fs.iimg.me%2FprofileImage%2Fg%2F9%2F98g_1423385594_profile
 			newsrc = src.replace(/.*\/[a-z]*\.php.*?[?&]url=([^&]*).*?$/, "$1");
-			if (newsrc !== src && array_indexof(newsrc, "http") === 0) {
+			if (newsrc !== src && string_indexof(newsrc, "http") === 0) {
 				return decodeURIComponent(newsrc);
 			}
 		}
@@ -20318,7 +20318,7 @@ var $$IMU_EXPORT$$;
 			//   https://static.maxmodels.pl/photos/1/c/b8/1cb801e95b178afa97bd106362bdec15_320123.jpg
 			// https://static.maxmodels.pl/article/e/f/e/efe5e8884994e41861fa95c6b48f4723_thumb.jpg
 			//   https://static.maxmodels.pl/article/e/f/e/efe5e8884994e41861fa95c6b48f4723.jpg
-			if (string_indexof(src, "/photos/") >= 0 || array_indexof(src, "/article/") >= 0) {
+			if (string_indexof(src, "/photos/") >= 0 || string_indexof(src, "/article/") >= 0) {
 				return src.replace(/_thumb(\.[^/.]*)$/, "$1");
 			}
 
@@ -21413,7 +21413,7 @@ var $$IMU_EXPORT$$;
 
 					for (var i = 0; i < data.results.length; i++) {
 						// FIXME: hacky
-						if (array_indexof(image_src, data.results[i].thumbnail) >= 0) {
+						if (string_indexof(image_src, data.results[i].thumbnail) >= 0) {
 							return cb(data.results[i].image);
 						}
 					}
@@ -28505,13 +28505,13 @@ var $$IMU_EXPORT$$;
 			if (options.element.tagName === "IMG" && options.element.parentElement && options.element.parentElement.tagName === "A") {
 				var aparent = options.element.parentElement;
 				var aparent_class = aparent.getAttribute("class");
-				if (array_indexof(aparent_class, "embedMedia") >= 0) {
+				if (string_indexof(aparent_class, "embedMedia") >= 0) {
 					var divparent = aparent.parentElement;
 					if (divparent) {
 						var divs = divparent.getElementsByTagName("div");
 						for (var i = 0; i < divs.length; i++) {
 							var ourdiv_class = divs[i].getAttribute("class");
-							if (array_indexof(ourdiv_class, "embedTitle") >= 0) {
+							if (string_indexof(ourdiv_class, "embedTitle") >= 0) {
 								var our_as = divs[i].getElementsByTagName("a");
 
 								if (our_as.length === 1 && /instagram\.com\//.test(our_as[0].href)) {
@@ -53590,7 +53590,7 @@ var $$IMU_EXPORT$$;
 				var current = options.element;
 				if (current.classList.contains("lazyloaded")) {
 					var link = current.parentElement.parentElement.querySelector(".card-action > a");
-					if (link && array_indexof(link.href, "/patreon_data/") >= 0) {
+					if (link && string_indexof(link.href, "/patreon_data/") >= 0) {
 						return link.href;
 					}
 				}
@@ -54207,7 +54207,7 @@ var $$IMU_EXPORT$$;
 					}
 				};
 
-				if (string_indexof(src, "/thumb_") >= 0 || array_indexof(src, "/large_") >= 0) {
+				if (string_indexof(src, "/thumb_") >= 0 || string_indexof(src, "/large_") >= 0) {
 					return fillobj_urls([
 						src.replace(regex, "$1original_$3"),
 						{
@@ -54220,7 +54220,7 @@ var $$IMU_EXPORT$$;
 					], obj);
 				}
 
-				if (string_indexof(src, "/wl_") >= 0 || array_indexof(src, "preview_") >= 0) {
+				if (string_indexof(src, "/wl_") >= 0 || string_indexof(src, "preview_") >= 0) {
 					return fillobj_urls([
 						src.replace(regex, "$1original_$3"),
 						{
@@ -54272,7 +54272,7 @@ var $$IMU_EXPORT$$;
 
 		if (domain === "img.itch.zone" && host_domain_nosub === "itch.io" && options && options.element) {
 			if (options.element.classList.contains("screenshot")) {
-				if (options.element.parentElement.tagName === "A" && array_indexof(options.element.parentElement.href, "://img.itch.zone/") >= 0) {
+				if (options.element.parentElement.tagName === "A" && string_indexof(options.element.parentElement.href, "://img.itch.zone/") >= 0) {
 					return options.element.parentElement.href;
 				}
 			}
@@ -55382,7 +55382,7 @@ var $$IMU_EXPORT$$;
 			if (newsrc.match(/^[^/]*%2/))
 				newsrc = decodeURIComponent(newsrc);
 
-			if (array_indexof(newsrc, "http") !== 0) {
+			if (string_indexof(newsrc, "http") !== 0) {
 				newsrc = "http://" + newsrc;
 			}
 
@@ -60680,7 +60680,7 @@ var $$IMU_EXPORT$$;
 				if (!current)
 					continue;
 
-				if (array_indexof(current, ":") < 0)
+				if (string_indexof(current, ":") < 0)
 					continue;
 
 				if (/^\s*\/\//.test(current))
