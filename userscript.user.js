@@ -11278,7 +11278,8 @@ var $$IMU_EXPORT$$;
 
 		// doesn't work:
 		// https://thechive.files.wordpress.com/2018/06/funny-football-memes-fifa-world-cup-27-5b34f3ecb603a__700.jpg
-		if (//domain.indexOf(".files.wordpress.com") >= 0 ||
+		if (
+			//domain.indexOf(".files.wordpress.com") >= 0 ||
 			// https://static.boredpanda.com/blog/wp-content/uploads/2017/08/GW-130817_DSC1426-copy-599f17eddebf2__880.jpg
 			//   https://static.boredpanda.com/blog/wp-content/uploads/2017/08/GW-130817_DSC1426-copy-599f17eddebf2.jpg
 			src.indexOf("/wp-content/uploads/") >= 0 ||
@@ -57232,11 +57233,12 @@ var $$IMU_EXPORT$$;
 						tried_urls.push([url, data, newurl, deepcopy(newobj), false]);
 
 						//if (images.indexOf(newurl) < 0 && newurl !== url || true) {
-						if (images.indexOf(newurl) < 0 || !obj[images.indexOf(newurl)].norecurse) {
+						var newurl_index = images.indexOf(newurl);
+						if (newurl_index < 0 || !obj[newurl_index].norecurse) {
 							bigimage_recursive_loop(newurl, options, query, fine_urls, tried_urls, obj);
 						} else {
 							//obj = obj.slice(images.indexOf(newurl));
-							obj = [obj[images.indexOf(newurl)]];
+							obj = [obj[newurl_index]];
 							options.cb(obj, data);
 						}
 					});
