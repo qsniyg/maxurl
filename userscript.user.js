@@ -54791,6 +54791,20 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain === "cdn.cdkeys.com") {
+			// http://cdn.cdkeys.com/500x706/media/catalog/product/t/h/the_technomancer_cover_large.jpg -- upscaled?
+			//   http://cdn.cdkeys.com/media/catalog/product/t/h/the_technomancer_cover_large.jpg
+			return src.replace(/(:\/\/[^/]+\/+)[0-9]+x[0-9]+\/+media\//, "$1media/");
+		}
+
+		if (domain === "d1466nnw0ex81e.cloudfront.net") {
+			// https://d1466nnw0ex81e.cloudfront.net/n_ii/1200/1326121.jpg
+			//   https://d1466nnw0ex81e.cloudfront.net/n_ii/originalimage/1326121.jpg
+			// other:
+			// http://d1466nnw0ex81e.cloudfront.net/n_iv/600/3737195.jpg -- originalimage doesn't work, even when replacing n_iv to n_ii
+			return src.replace(/\/n_ii\/+[0-9]+\/+/, "/n_ii/originalimage/");
+		}
+
 
 
 
