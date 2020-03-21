@@ -5402,7 +5402,7 @@ var $$IMU_EXPORT$$;
 			var imageid = common_functions.instagram_get_imageid(image);
 
 			for (var i = 0; i < objarr.length; i++) {
-				if (objarr[i].src.indexOf(imageid) > 0)
+				if (array_indexof(objarr[i].src, imageid) > 0)
 					return objarr[i];
 			}
 
@@ -57120,7 +57120,7 @@ var $$IMU_EXPORT$$;
 	};
 
 	var obj_indexOf = function(obj, url) {
-		return obj_to_simplelist(obj).indexOf(url);
+		return array_indexof(obj_to_simplelist(obj), url);
 	};
 
 	var obj_merge = function(newobj, oldobj) {
@@ -59398,7 +59398,7 @@ var $$IMU_EXPORT$$;
 			//console_log("Setting " + key + " = " + changes[key].newValue);
 			var newvalue = JSON_parse(changes[key].newValue);
 			if (key in settings_history) {
-				var index = settings_history[key].indexOf(newvalue);
+				var index = array_indexof(settings_history[key], newvalue);
 
 				var pass = false
 				if (index >= 0 && index < settings_history[key].length - 1) {
@@ -63448,7 +63448,7 @@ var $$IMU_EXPORT$$;
 
 			// https://www.gog.com/game/shadow_warrior_complete
 			// "Buy series" gallery
-			if (el.tagName === "SOURCE" && el.parentElement && ["PICTURE", "VIDEO"].indexOf(el.parentElement.tagName) >= 0) {
+			if (el.tagName === "SOURCE" && el.parentElement && array_indexof(["PICTURE", "VIDEO"], el.parentElement.tagName) >= 0) {
 				el = el.parentElement;
 			}
 
