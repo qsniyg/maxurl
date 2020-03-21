@@ -791,13 +791,21 @@ var $$IMU_EXPORT$$;
 	var JSON_stringify = JSON.stringify;
 	var JSON_parse = JSON.parse;
 
-	var is_array = function(x) {
-		return x instanceof Array;
+	var sanity_test = function(orig, correct, check) {
+		if (!orig)
+			return correct;
+
+		if (check) {
+			try {
+				check(orig);
+				return orig;
+			} catch (e) {};
+		}
+
+		return correct;
 	};
 
-	if ("isArray" in Array) {
-		is_array = Array.isArray;
-	}
+	var is_array = sanity_test(Array.isArray, function(x) { return x instanceof Array; });
 
 	function is_element(x) {
 		if (!x || typeof x !== "object")
@@ -917,68 +925,68 @@ var $$IMU_EXPORT$$;
 		}
 	}
 
-	var base64_decode = nullfunc;
+	var base64_decode_orig = nullfunc;
 	if (is_node && typeof atob === 'undefined') {
-		base64_decode = function(a) {
+		base64_decode_orig = function(a) {
 			return Buffer.from(a, 'base64').toString('binary');
 		};
 	} else if (typeof atob !== 'undefined') {
-		base64_decode = atob;
+		base64_decode_orig = atob;
 	}
 
-	var base64_ok = false;
-
-	try {
-		if (base64_decode("dGVzdA==") === "test") {
-			base64_ok = true;
+	// Some websites replace atob, so we have to provide our own implementation in those cases
+	// https://stackoverflow.com/a/15016605
+	// unminified version: https://stackoverflow.com/a/3058974
+	var base64_decode_correct = function(s) {
+		var e={},i,b=0,c,x,l=0,a,r='',w=String.fromCharCode,L=s.length;
+		var A="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+		for(i=0;i<64;i++){e[A.charAt(i)]=i;}
+		for(x=0;x<L;x++){
+			c=e[s.charAt(x)];b=(b<<6)+c;l+=6;
+			while(l>=8){((a=(b>>>(l-=8))&0xff)||(x<(L-2)))&&(r+=w(a));}
 		}
-	} catch (e) {}
+		return r;
+	};
 
-	if (!base64_ok) {
-		// Some websites replace atob, so we have to provide our own implementation in those cases
-		// https://stackoverflow.com/a/15016605
-		// unminified version: https://stackoverflow.com/a/3058974
-		base64_decode = function(s) {
-			var e={},i,b=0,c,x,l=0,a,r='',w=String.fromCharCode,L=s.length;
-			var A="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-			for(i=0;i<64;i++){e[A.charAt(i)]=i;}
-			for(x=0;x<L;x++){
-				c=e[s.charAt(x)];b=(b<<6)+c;l+=6;
-				while(l>=8){((a=(b>>>(l-=8))&0xff)||(x<(L-2)))&&(r+=w(a));}
-			}
-			return r;
-		};
-	}
+	var base64_decode_test = function(func) {
+		if (func("dGVzdA==") === "test") {
+			return true;
+		}
+
+		return false;
+	};
+
+	var base64_decode = sanity_test(base64_decode_orig, base64_decode_correct, base64_decode_test);
 
 	// https://www.mycomicshop.com/search?minyr=1938&maxyr=1955&TID=29170235
 	// this site replaces Array.indexOf
 	// cache Array.prototype.indexOf in case it changes while the script is executing
 	var array_prototype_indexof = Array.prototype.indexOf;
-	var array_indexof = function(array, x) {
+	var array_indexof_orig = function(array, x) {
 		return array_prototype_indexof.call(array, x);
 	};
 
-	var array_indexof_ok = false;
-
-	try {
-		var test_array = ["a", "b"];
-		if (array_indexof(test_array, "not here") === -1 &&
-			array_indexof(test_array, "b") === 1) {
-			array_indexof_ok = true;
-		}
-	} catch (e) {}
-
-	if (!array_indexof_ok) {
-		array_indexof = function(array, x) {
-			for (var i = 0; i < array.length; i++) {
-				if (array[i] === x) {
-					return i;
-				}
+	var array_indexof_correct = function(array, x) {
+		for (var i = 0; i < array.length; i++) {
+			if (array[i] === x) {
+				return i;
 			}
+		}
 
-			return -1;
-		};
-	}
+		return -1;
+	};
+
+	var array_indexof_check = function(func) {
+		var test_array = ["a", "b"];
+		if (func(test_array, "not here") === -1 &&
+			func(test_array, "b") === 1) {
+			return true;
+		}
+
+		return false;
+	};
+
+	var array_indexof = sanity_test(array_indexof_orig, array_indexof_correct, array_indexof_check);
 
 	var serialize_event = function(event) {
 		return deepcopy(event, {json: true});
