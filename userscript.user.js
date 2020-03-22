@@ -689,7 +689,7 @@ var $$IMU_EXPORT$$;
 	if (is_interactive) {
 		bigimage_filter = function(url) {
 			for (var i = 0; i < blacklist_regexes.length; i++) {
-				if (url.match(blacklist_regexes[i]))
+				if (blacklist_regexes[i].test(url))
 					return false;
 			}
 
@@ -1629,6 +1629,7 @@ var $$IMU_EXPORT$$;
 		mouseover_zoom_full_key: ["1"],
 		mouseover_zoom_fit_key: ["2"],
 		mouseover_apply_blacklist: true,
+		apply_blacklist_host: false,
 		mouseover_matching_media_types: false,
 		mouseover_support_pointerevents_none: true,
 		website_inject_imu: true,
@@ -3098,6 +3099,12 @@ var $$IMU_EXPORT$$;
 			category: "popup",
 			subcategory: "open_behavior"
 		},
+		apply_blacklist_host: {
+			name: "Apply blacklist for host websites",
+			description: "This option prevents the script from applying any popups to host websites that are in the blacklist. For example, adding `twitter.com` to the blacklist would prevent any popup from opening on twitter.com. If disabled, this option only applies to image URLs (such as twimg.com), not host URLs",
+			category: "popup",
+			subcategory: "open_behavior"
+		},
 		mouseover_matching_media_types: {
 			name: "Don't popup video for image",
 			description: "This option prevents the popup from loading a video when the source was an image. Vice-versa is also applied",
@@ -4317,8 +4324,10 @@ var $$IMU_EXPORT$$;
 	function create_blacklist_regexes() {
 		blacklist_regexes = [];
 		var blacklist = settings.bigimage_blacklist || "";
-		if (typeof blacklist !== "string")
+		if (typeof blacklist !== "string") {
+			console_warn("Invalid blacklist", blacklist);
 			return;
+		}
 
 		blacklist = blacklist.split("\n");
 
@@ -60407,7 +60416,12 @@ var $$IMU_EXPORT$$;
 
 	function do_mouseover() {
 		var mouseover_enabled = function() {
-			return settings.imu_enabled && settings.mouseover;
+			var base_enabled = settings.imu_enabled && settings.mouseover;
+
+			if (settings.apply_blacklist_host && !bigimage_filter(window.location.href))
+				return false;
+
+			return base_enabled;
 		};
 
 		var mouseover_mouse_enabled = function() {
@@ -65157,6 +65171,10 @@ var $$IMU_EXPORT$$;
 
 		(function() {
 			if (!settings.imu_enabled)
+				return;
+
+			// TODO: allow this to be automatically updated
+			if (settings.apply_blacklist_host && !bigimage_filter(window.location.href))
 				return;
 
 			var observer;
