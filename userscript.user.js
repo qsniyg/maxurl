@@ -967,6 +967,11 @@ var $$IMU_EXPORT$$;
 	};
 
 	var array_indexof_correct = function(array, x) {
+		if (typeof array === "string") {
+			// TODO: make sure Array.from is sane
+			array = Array.from(array);
+		}
+
 		for (var i = 0; i < array.length; i++) {
 			if (array[i] === x) {
 				return i;
@@ -978,11 +983,12 @@ var $$IMU_EXPORT$$;
 
 	var array_indexof_check = function(func) {
 		var test_array = ["a", "b"];
-		var test_string = "ab";
+		var test_string = "abc";
 		if (func(test_array, "not here") === -1 &&
 			func(test_array, "b") === 1 &&
 			func(test_string, "n") === -1 &&
-			func(test_string, "b") === 1) {
+			func(test_string, "b") === 1 &&
+			func(test_string, "bc") === -1) {
 			return true;
 		}
 
@@ -993,20 +999,43 @@ var $$IMU_EXPORT$$;
 
 	var string_prototype_indexof = String.prototype.indexOf;
 	var string_indexof_orig = function(string, x) {
-		return string_prototype_indexof.calll(string, x);
+		return string_prototype_indexof.call(string, x);
+	};
+
+	var string_indexof_correct = function(string, x) {
+		if (x.length === 0)
+			return 0;
+
+		var x_i = 0;
+		for (var i = 0; i < string.length; i++) {
+			if (string.charAt(i) === x.charAt(x_i)) {
+				if (x_i + 1 === x.length) {
+					return i - x_i;
+				} else {
+					x_i++;
+				}
+			} else {
+				x_i = 0;
+			}
+		}
+
+		return -1;
 	};
 
 	var string_indexof_check = function(func) {
-		var test_string = "ab";
+		var test_string = "abc";
 		if (func(test_string, "n") === -1 &&
-			func(test_string, "b") === 1) {
+			func(test_string, "b") === 1 &&
+			func(test_string, "bc") === 1 &&
+			func(test_string, "bcz") === -1 &&
+			func(test_string, "") === 0) {
 			return true;
 		}
 
 		return false;
 	};
 
-	var string_indexof = sanity_test(string_indexof_orig, array_indexof_correct, string_indexof_check);
+	var string_indexof = sanity_test(string_indexof_orig, string_indexof_correct, string_indexof_check);
 
 	var serialize_event = function(event) {
 		return deepcopy(event, {json: true});
@@ -21066,6 +21095,9 @@ var $$IMU_EXPORT$$;
 			// https://kpopmart.com/17674-home_default/nature-republic-exo-edition-water-tint-3g-8-types.jpg
 			//   https://kpopmart.com/17674/nature-republic-exo-edition-water-tint-3g-8-types.jpg
 			domain_nowww === "kpopmart.com" ||
+			// http://www.planetongames.com/2881-medium_default/ad-astra.jpg
+			//   http://www.planetongames.com/2881/ad-astra.jpg
+			domain_nowww === "planetongames.com" ||
 			// http://flyhighstore.pl/2210-home_default/fh-cool-red-winter-jacket.jpg
 			//   http://flyhighstore.pl/2210/fh-cool-red-winter-jacket.jpg
 			domain_nowww === "flyhighstore.pl") {
@@ -54862,6 +54894,12 @@ var $$IMU_EXPORT$$;
 			// other:
 			// http://d1466nnw0ex81e.cloudfront.net/n_iv/600/3737195.jpg -- originalimage doesn't work, even when replacing n_iv to n_ii
 			return src.replace(/\/n_ii\/+[0-9]+\/+/, "/n_ii/originalimage/");
+		}
+
+		if (domain === "assets.upflix.pl") {
+			// https://assets.upflix.pl/media/zwiastun/2019/ad-astra-antenna-clip-20th-century-fox__177_119.jpg
+			//   https://assets.upflix.pl/media/zwiastun/2019/ad-astra-antenna-clip-20th-century-fox.jpg
+			return src.replace(/(\/media\/.*)__[0-9]+_[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		}
 
 
