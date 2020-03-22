@@ -20904,6 +20904,12 @@ var $$IMU_EXPORT$$;
 			return src.replace(/s(\.[^/.]*)$/, "$1");
 		}
 
+		if (domain_nosub === "fc2.com" && /^video[0-9]*-thumbnail[0-9]*\./.test(domain)) {
+			// https://video-thumbnail2.fc2.com/w480/vip.video83000.fc2.com/up/thumb2/201808/03/1/201808031dv6cvPL.jpg
+			// https://video8-thumbnail2.fc2.com/up/thumb/202003/16/r/20200316ruCdutuy.jpg
+			return src.replace(/^[a-z]+:\/\/[^/]+\/+[wh][0-9]+\/+([^/]+\.fc2\.com\/)/, "http://$1");
+		}
+
 		if (domain === "photos.hancinema.net" ||
 			domain_nowww === "hancinema.net") {
 			// https://photos.hancinema.net/photos/posterphoto679289.jpg
