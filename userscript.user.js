@@ -8648,6 +8648,9 @@ var $$IMU_EXPORT$$;
 			// https://zizki.com/ien/styles/large/public/comics/kirk-lindo/e866597549.jpg?itok=wZbf5gbB
 			//   https://zizki.com/ien/comics/kirk-lindo/e866597549.jpg
 			(domain_nowww === "zizki.com" && string_indexof(src, "/styles/") >= 0) ||
+			// https://rcf.fr/sites/default/static.rcf.fr/imagecache/vignette_diffusion_small/radios/rcf72/visuels/adastra.jpg
+			//   https://rcf.fr/sites/default/static.rcf.fr/radios/rcf72/visuels/adastra.jpg
+			(domain_nowww === "rcf.fr" && string_indexof(src, "/sites/") >= 0) ||
 			// http://cdn.whodoyouthinkyouaremagazine.com/sites/default/files/imagecache/623px_wide/episode/hewer500.jpg
 			//   http://cdn.whodoyouthinkyouaremagazine.com/sites/default/files/episode/hewer500.jpg
 			// https://www.telugucinema.com/sites/default/files2/styles/media_gallery_thumbnail/public/amy-jackson-instagram1.jpg?itok=nwFhV2Iy
@@ -11151,6 +11154,8 @@ var $$IMU_EXPORT$$;
 			(domain_nowww === "theonemilano.com" && string_indexof(src, "/the-one-milano-uploads/") >= 0) ||
 			// https://public.flashingjungle.com/exhibitionism/2020/01/tumblr_l7d540zpVM1qd5asfo1_1280-681x1024.jpg
 			domain === "public.flashingjungle.com" ||
+			// https://static.pr.ricmais.com.br/ricmaispr/uploads/2019/09/adastra01ric-220x134.jpg
+			(domain === "static.pr.ricmais.com.br" && string_indexof(src, "/uploads/") >= 0) ||
 			// https://static.acgsoso.com/uploads/2020/02/19bd4f091f03c191195d5e626c3190f9-200x300.jpg
 			(domain === "static.acgsoso.com" && string_indexof(src, "/uploads/") >= 0)
 			) {
@@ -54900,6 +54905,34 @@ var $$IMU_EXPORT$$;
 			// https://assets.upflix.pl/media/zwiastun/2019/ad-astra-antenna-clip-20th-century-fox__177_119.jpg
 			//   https://assets.upflix.pl/media/zwiastun/2019/ad-astra-antenna-clip-20th-century-fox.jpg
 			return src.replace(/(\/media\/.*)__[0-9]+_[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "enfilme.com") {
+			// https://enfilme.com/img/content/ad_astra_Enfilme_8021e_170_96.jpg
+			//   https://enfilme.com/img/content/ad_astra_Enfilme_8021e.jpg
+			return src.replace(/(\/img\/+content\/+[^/]+_[0-9a-f]+)_[0-9]+_[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "koha.net") {
+			// https://www.koha.net/uploads/images/2019/September/22/250x140_Kino22shtator1569148891.jpg
+			//   https://www.koha.net/uploads/images/2019/September/22/Kino22shtator1569148891.jpg
+			return src.replace(/(\/uploads\/+images\/+[0-9]{4}\/+[A-Za-z]+\/+[0-9]+\/+)[0-9]+x[0-9]+_/, "$1");
+		}
+
+		if (domain_nowww === "nrwkino.de" ||
+			// https://www.biograph.de/img/w230/upload/stills/ad-astra.jpg
+			//   https://www.biograph.de/upload/stills/ad-astra.jpg
+			domain_nowww === "biograph.de") {
+			// https://nrwkino.de/img.php?src=/upload%2Fimages%2FLe+Tellier.jpg&width=500
+			//   https://nrwkino.de/upload/images/Le%20Tellier.jpg
+			// https://nrwkino.de/img/w230/upload/stills/die-perfekte-kandidatin.jpg
+			//   https://nrwkino.de/upload/stills/die-perfekte-kandidatin.jpg
+			newsrc = src.replace(/.*\/img\.php\?(?:.*&)?src=([^&]+).*?$/, "$1");
+			if (newsrc !== src) {
+				return urljoin(src, decodeURIComponent(newsrc.replace(/\+/g, "%20")), true);
+			}
+
+			return src.replace(/\/img\/+[wh][0-9]+\/+upload\/+/, "/upload/");
 		}
 
 
