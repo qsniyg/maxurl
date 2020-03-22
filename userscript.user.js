@@ -58702,6 +58702,9 @@ var $$IMU_EXPORT$$;
 					return;
 				}
 
+				if (!(setting in orig_settings))
+					return;
+
 				var value = settings[setting];
 				var orig_value = orig_settings[setting];
 
