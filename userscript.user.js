@@ -20481,6 +20481,15 @@ var $$IMU_EXPORT$$;
 			return src.replace(/_[a-z](\.[^/.]*)$/, "_b$1");
 		}
 
+		if (host_domain_nosub === "tiktok.com" && options.element) {
+			if (options.element.tagName === "DIV" && options.element.classList.contains("play-button")) {
+				return {
+					url: origsrc,
+					bad: "mask"
+				};
+			}
+		}
+
 		if (host_domain_nosub === "tiktok.com" && options && options.cb && options.do_request && options.element) {
 			var query_tiktok = function(url, cb) {
 				var normalized_url = url
