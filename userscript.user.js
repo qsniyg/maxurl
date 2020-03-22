@@ -20647,7 +20647,7 @@ var $$IMU_EXPORT$$;
 			//   http://i0.pstatp.com/origin/6ebf0008169e56582256
 			// http://p0.sgpstatp.com/large/tos-alisg-i-0000/6a3d2ee4939f47b09704d1463c0440f0
 			//   http://p0.sgpstatp.com/origin/tos-alisg-i-0000/6a3d2ee4939f47b09704d1463c0440f0 -- without /tos-alisg-i-000/ works too
-			return {
+			obj = {
 				url: src
 					.replace(/(:\/\/[^/]*\/+)(?:medium|large|obj|aweme|list)\/+(?:[0-9]+x[0-9]+\/+)?/, "$1origin/")
 					.replace(/(:\/\/[^/]+\/+origin\/+.*?)\.image(?:[?$].*)?$/, "$1.jpg")
@@ -20657,6 +20657,14 @@ var $$IMU_EXPORT$$;
 					.replace(/\?imageView2.*/, ""),
 				can_head: false // 404
 			};
+
+			// https://v16.muscdn.com/31e4c5f591859bacb8fc9b7b3babf6b8/5e771718/video/tos/useast2a/tos-useast2a-ve-0068c002/8e6887884f1e4942a608f092bdea10b4/
+			//  http://v19.muscdn.com/1689da26e0ec6e5f9b2545b4e610abfa/5e771702/video/tos/useast2a/tos-useast2a-ve-0068c001/f168a57c2c9f401db55337c7dab5e210/
+			if (/^v[0-9]*\./.test(domain) && string_indexof(src, "/video/") >= 0) {
+				obj.video = true;
+			}
+
+			return obj;
 		}
 
 		if (false) {
