@@ -1628,7 +1628,7 @@ var $$IMU_EXPORT$$;
 		mouseover_zoom_out_key: [["-"]],
 		mouseover_zoom_full_key: ["1"],
 		mouseover_zoom_fit_key: ["2"],
-		mouseover_apply_blacklist: false,
+		mouseover_apply_blacklist: true,
 		mouseover_matching_media_types: false,
 		mouseover_support_pointerevents_none: true,
 		website_inject_imu: true,
