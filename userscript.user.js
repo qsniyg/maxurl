@@ -15063,9 +15063,19 @@ var $$IMU_EXPORT$$;
 			// http://i.ebayimg.com/t/Trashy-Red-Riding-Hood-Gingham-Cute-Dress-Up-Halloween-Sexy-Teen-Adult-Costume-/00/s/MzUwWDM1MA==/z/be8AAMXQxVZRCdlO/$T2eC16VHJHgE9n0yFji(BRCdlO!Zpg~~60_35.JPG
 			//   http://i.ebayimg.com/00/s/MzUwWDM1MA==/z/be8AAMXQxVZRCdlO/$T2eC16VHJHgE9n0yFji(BRCdlO!Zpg~~60_35.JPG
 			//   http://i.ebayimg.com/images/g/be8AAMXQxVZRCdlO/s-l9999.jpg
+			obj = {
+				url: src,
+				can_head: false, // fixme: does it hang here too?
+				bad_if: [{
+					headers: {
+						"x-ebay-c-extension": "responsecode=404,responsemessage=Not Found"
+					}
+				}]
+			};
+
 			newsrc = src.replace(/\/t\/.*?(\/[0-9]+\/s\/)/, "$1");
 			if (newsrc !== src) {
-				return newsrc;
+				return fillobj_urls([newsrc, src], obj);
 			}
 
 			// http://i.ebayimg.com/00/s/NjAwWDQ1MA==/z/mEAAAOSwKIpWBa25/$_23.JPG
@@ -15075,25 +15085,17 @@ var $$IMU_EXPORT$$;
 			newsrc = src.replace(/\/[0-9]+\/[a-z]+\/[^/]*\/[a-z]+\/([^/]+)\/[^/.]*(\.[^/.]*)$/, "/images/g/$1/s-l9999$2");
 			if (newsrc !== src) {
 				newsrc = newsrc.replace(/(.*\.)[^/.]*$/, "$1") + newsrc.replace(/.*\.([^/.]*)$/, "$1").toLowerCase();
-				return newsrc;
+				return fillobj_urls([newsrc, src], obj);
 			}
 
 			newsrc = src
 				.replace(/\/thumbs\/images\//, "/images/")
 				.replace(/-l[0-9]+(\.[^/.]*)$/, "-l9999$1");
-			if (newsrc !== src)
-				return newsrc;
+			if (newsrc !== src) {
+				return fillobj_urls([newsrc, src], obj);
+			}
 
-
-			return {
-				url: src,
-				can_head: false, // fixme: does it hang here too?
-				bad_if: [{
-					headers: {
-						"x-ebay-c-extension": "responsecode=404,responsemessage=Not Found"
-					}
-				}]
-			};
+			return obj;
 		}
 
 		if ((domain_nosub === "ebaystatic.com" && domain.match(/thumbs[0-9]*\.ebaystatic\.com/)) ||
