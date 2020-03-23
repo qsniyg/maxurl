@@ -108,7 +108,7 @@ var $$IMU_EXPORT$$;
 
 		if (is_extension) {
 			is_webextension = true;
-			if (string_indexof(navigator.userAgent, "Firefox") >= 0)
+			if (navigator.userAgent.indexOf("Firefox") >= 0)
 				is_firefox_webextension = true;
 
 			current_version = extension_manifest.version;
