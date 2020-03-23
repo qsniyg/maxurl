@@ -13543,6 +13543,12 @@ var $$IMU_EXPORT$$;
 				};
 		}
 
+		if (domain_nosub === "nutaku.com" && /^cdn[0-9]*-images\./.test(domain)) {
+			// https://cdn1-images.nutaku.com/images/manage/games/synthetic-love/screenshot5-thumb.jpg
+			//   https://cdn1-images.nutaku.com/images/manage/games/synthetic-love/screenshot5.jpg
+			return src.replace(/(\/images\/.*)-thumb(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
 		if (domain_nosub === "medium.com" &&
 			(domain.match(/cdn-images-[0-9]*\.medium\.com/) ||
 			 // https://miro.medium.com/fit/c/240/240/1*Znlrcvh2KRPP4xG_s9Bp7A@2x.jpeg
@@ -28862,10 +28868,12 @@ var $$IMU_EXPORT$$;
 			//   https://comicvine1.cbsistatic.com/uploads/original/13/136525/5341716-1.jpg
 			// https://giantbomb1.cbsistatic.com/uploads/square_small/1/12482/278025-harrygregson122525.jpg
 			//   https://giantbomb1.cbsistatic.com/uploads/original/1/12482/278025-harrygregson122525.jpg
+			// https://gamespot1.cbsistatic.com/uploads/square_tiny/mig/9/6/0/6/29606-923549_57927.jpg -- upscaled
+			//   https://gamespot1.cbsistatic.com/uploads/original/mig/9/6/0/6/29606-923549_57927.jpg
 			domain_nosub === "cbsistatic.com") {
 			// https://static.comicvine.com/uploads/square_small/6/67663/6449136-800.jpg
 			//   https://static.comicvine.com/uploads/original/6/67663/6449136-800.jpg
-			newsrc = src.replace(/(:\/\/[^/]+\/+)uploads\/+[^/]+\/+([0-9]+\/+[0-9]+\/+[0-9]+(?:-[^/]+)?\.)/, "$1uploads/original/$2");
+			newsrc = src.replace(/(:\/\/[^/]+\/+)uploads\/+[^/]+\/+((?:mig\/+(?:[0-9]\/+){4}|[0-9]+\/+[0-9]+\/+)[0-9]+(?:-[^/]+)?\.)/, "$1uploads/original/$2");
 			if (newsrc !== src)
 				return add_extensions(newsrc);
 			//return src.replace(/\/uploads\/[^/]*\//, "/uploads/original/");
