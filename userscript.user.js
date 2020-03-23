@@ -62664,6 +62664,10 @@ var $$IMU_EXPORT$$;
 				}
 			}
 
+			if (get_tagname(el) === "VIDEO") {
+				return el.currentSrc || el.src || el.poster;
+			}
+
 			// currentSrc is used if another image is used in the srcset
 			return el.currentSrc || el.src;
 		}
