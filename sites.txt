@@ -403,6 +403,7 @@ assets.sport.ro
 assets.survivalinternational.org
 assets.teamrock.com
 assets.teenvogue.com
+assets.upflix.pl
 assets.vg247.com
 assets.vogue.com
 assets.whatson.cityofsydney.nsw.gov.au.s3.amazonaws.com
@@ -575,6 +576,7 @@ bimage.interpark.com
 binaryapi.ap.org
 bing.com
 bing.net
+biograph.de
 biography.com
 biosagenda.nl
 birkrdnawa.com
@@ -824,6 +826,7 @@ cdn.breathecast.com
 cdn.britannica.com
 cdn.btportail.0pb.org
 cdn.businessinsider.es
+cdn.cdkeys.com
 cdn.celebyolo.com
 cdn.christianitydaily.com
 cdn.christianpost.com
@@ -836,6 +839,7 @@ cdn.cnngreece.gr
 cdn.conexaohost.com.br
 cdn.cretalive.gr
 cdn.crhoy.net
+cdn.dbolical.com
 cdn.deview.co.jp
 cdn.diario26.com.ar
 cdn.discordapp.com
@@ -1270,6 +1274,7 @@ cpcache.com
 cphoto.asiae.co.kr
 cps-static.rovicorp.com
 cr-resource.storage.googleapis.com
+crank-in.net
 craveonline.com
 cre.ma
 createphotocalendars.com
@@ -1306,6 +1311,7 @@ d.newsweek.com
 d111vui60acwyt.cloudfront.net
 d12swbtw719y4s.cloudfront.net
 d13vpcwfpcq1p8.cloudfront.net
+d1466nnw0ex81e.cloudfront.net
 d15hng3vemx011.cloudfront.net
 d15mj6e6qmt1na.cloudfront.net
 d16klsh1z1xre7.cloudfront.net
@@ -1686,6 +1692,7 @@ emovieposter.com
 empireposter.de
 en.luxuretv.com
 energyfm.ru
+enfilme.com
 eng.dt.co.kr
 engine.numatek.netuse.gr
 engoo.com
@@ -1936,6 +1943,7 @@ forums.auscelebs.net
 forums.drom.ru
 forums.lutris.net
 forums.nexusmods.com
+foto-pic.net
 foto.sondakika.com
 foto4ka.com
 fotocdn.net
@@ -2137,6 +2145,7 @@ gmbox.ru
 gnmaeil.com
 godsartglam.com
 godsartnudes.com
+gog-statics.com
 gog.com
 gohong01.com
 gokorea.kr
@@ -2336,6 +2345,7 @@ hqjpporn.com
 hrising.com
 hrkgame.com
 hronika.info
+hs.mediadelivery.fi
 hscbw.com
 hsdreams1.s3.amazonaws.com
 hsmedia.ru
@@ -3366,6 +3376,7 @@ iravunk.com
 irishexaminer.com
 irishmirror.ie
 irishtimes.com
+is.mediadelivery.fi
 isanook.com
 isecretarylegs.com
 ishow.gr
@@ -3534,6 +3545,7 @@ know.cf
 kntimes.co.kr
 kobato.hologfx.com
 kobis.or.kr
+koha.net
 kollywoodzone.com
 kompasiana.com
 komyulife.com
@@ -4363,6 +4375,7 @@ novoporn.com
 novostrong.com
 nowtoronto.com
 nrt.ysc123.com.cn
+nrwkino.de
 ns.hitcreative.com.s3.amazonaws.com
 nsfwalbum.com
 nsgalleries.com
@@ -4391,6 +4404,7 @@ nujhrcqkiwag1408085.cdn.ntruss.com
 numberoneturk.com.tr
 nupics.pro
 nusabali.com
+nutaku.com
 nvshenmen.com
 nyafuu.org
 nydailynews.com
@@ -4668,6 +4682,7 @@ pixroute.com
 pixsell.hr
 pl.scdn.co
 planetary.s3.amazonaws.com
+planetongames.com
 plasticsurgerystar.com
 platinum-celebs.com
 playboyrussia.com
@@ -4875,6 +4890,7 @@ rbbtoday.com
 rbk.ru
 rbl.ms
 rbsdirect.com.br
+rcf.fr
 rdfm-radio.fr
 rdtcdn.com
 reacho.s3.amazonaws.com
@@ -5047,6 +5063,7 @@ s.pornpics.today
 s.pornpictures.space
 s.properm.ru
 s.rozali.com
+s.sc-cdn.net
 s.sdgcdn.com
 s.sexoic.com
 s.shld.net
@@ -5245,6 +5262,7 @@ smore.com
 smugmug.com
 smutr.com
 sn.at
+snapchat.com
 sncmedia.ru
 sndcdn.com
 sndimg.com
@@ -5279,6 +5297,7 @@ sortiesdvd.com
 sos.vfan.vlive.tv
 sott.net
 soumeiwang.com
+soup.onerpm.com
 soupcdn.com
 southbank-ipcmedia-com.s3.amazonaws.com
 soycarmin.com
@@ -5467,6 +5486,7 @@ static.pinwallpapers.com
 static.pjmedia.com
 static.planetminecraft.com
 static.pptstore.net
+static.pr.ricmais.com.br
 static.pulse.com.gh
 static.pulse.ng
 static.pulselive.co.ke
@@ -5786,6 +5806,7 @@ thumb.egloos.net
 thumb.guucdn.net
 thumb.hankooki.com
 thumb.ibb.co
+thumb.mod.io
 thumb.mt.co.kr
 thumb.mtstarnews.com
 thumb.named.com
@@ -6020,6 +6041,7 @@ vettri.net
 vev.ru
 vgamuseum.info
 vgmdownloads.com
+vgtimes.ru
 vgtour.ro
 vh1.com
 vhaor.com

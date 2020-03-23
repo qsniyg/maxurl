@@ -1,4 +1,29 @@
-0.12.19:
+0.12.20
+
+New features:
+
+ * Option to log the IMU object to the console (disabled by default)
+ * Option to apply blacklist to host websites (disabled by default)
+ * Support for Snapchat (thanks to remlap on discord for mentioning)
+ * Support for ~20 new websites (using ~15 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including eBay, FC2, ModDB, Steam, TikTok, Wikipedia)
+ * Remove reliance on Array/String.indexOf (fixes some sites that override it).
+   Please let me know if you encounter any regressions. I have tried to do this as safely as possible, but there may be mistakes.
+ * "Don't popup blacklisted images" is now enabled by default.
+ * Video posters are now supported
+
+Bugfixes:
+
+ * Respect z-index when finding elements
+ * Fix gallery for `<source>` elements
+ * Fix removed options still being shown
+
+---
+
+0.12.19
 
 New features:
 
@@ -17,12 +42,12 @@ Improvements:
 Bugfixes:
 
  * Relative URLs are better handled in loops
- * Workaround for daum cafe's breaking URLs for the userscript (disables support for frames)
+ * Workaround for daum cafe's breaking URLs for the userscript (disables support for frames, thanks to solplparty for reporting)
  * Local files are now supported again (if the extension is allowed to access the local filesystem)
 
 ---
 
-0.12.18:
+0.12.18
 
 New features:
 
