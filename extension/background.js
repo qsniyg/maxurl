@@ -573,8 +573,8 @@ var onHeadersReceived = function(details) {
 			value: stringify_contentdisposition(contentdisposition_data)
 		});
 
-		debug("Old headers", details.responseHeaders);
-		debug("New headers", newheaders);
+		debug("(override_download) Old headers", details.responseHeaders);
+		debug("(override_download) New headers", newheaders, contentdisposition_data);
 
 		return {
 			responseHeaders: newheaders
@@ -1125,6 +1125,10 @@ function tabready(tabid) {
 
 	if (tabid === currenttab)
 		enable_contextmenu(true);
+
+	if (tabid in override_download) {
+		chrome.tabs.remove(tabid);
+	}
 }
 
 chrome.tabs.onRemoved.addListener(function(tabid) {
@@ -1145,9 +1149,10 @@ chrome.tabs.onReplaced.addListener(function (added, removed) {
 chrome.tabs.onUpdated.addListener(function(tabid, info, tab) {
 	if (info.status === "loading") {
 		if (nir_debug)
-			console.log("loading");
+			console.log("tabs.onUpdated: loading");
 
-		tabremoved(tabid);
+		// probably incorrect, breaks downloads (https://github.com/qsniyg/maxurl/issues/275)
+		//tabremoved(tabid);
 	} else if (info.status === "complete") {
 		tabready(tabid);
 	}
