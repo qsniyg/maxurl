@@ -20921,17 +20921,120 @@ var $$IMU_EXPORT$$;
 			return src.replace(/s(\.[^/.]*)$/, "$1");
 		}
 
-		if (domain_nosub === "fc2.com" && /^video[0-9]*-thumbnail[0-9]*\./.test(domain)) {
+		if (domain_nosub === "fc2.com" && /^(?:vip-)?video[0-9]*-thumbnail[0-9]*\./.test(domain)) {
 			// https://video8-thumbnail2.fc2.com/up/thumb/202003/16/r/20200316ruCdutuy.jpg
+			//   https://video8-thumbnail2.fc2.com/up/thumb2/202003/16/r/20200316ruCdutuy.jpg
 			// https://video2-thumbnail2.fc2.com/up/member/85/09/mb_pict_icon_14390985.JPG?20200116211601
 			//   https://video2-thumbnail2.fc2.com/up/member/85/09/mb_pict_14390985.JPG?20200116211601
 			// https://video-thumbnail2.fc2.com/w240h135/vip.video52000.fc2.com/up/thumb2/202001/26/v/20200126vgUPMh2x.jpg
 			//   http://vip.video52000.fc2.com/up/thumb2/202001/26/v/20200126vgUPMh2x.jpg
+			obj = {
+				url: src
+			};
+
+			id = null;
+			match = src.match(/\/up\/+thumb[0-9]*\/+[0-9]{6}\/+[0-9]{2}\/+.\/+([0-9]{8}[a-zA-z0-9]+)\./);
+			if (match) {
+				id = match[1];
+
+				obj.extra = {page: "https://video.fc2.com/content/" + id};
+			}
+
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+(?:[wh][0-9]+){1,2}\/+([^/]+\.fc2\.com\/)/, "http://$1");
 			if (newsrc !== src)
-				return newsrc;
+				return fillobj_urls([newsrc, src], obj);
 
-			return src.replace(/(\/member\/+[0-9]+\/+[0-9]+\/+mb_pict_)icon_/, "$1");
+			newsrc = src.replace(/(\/member\/+[0-9]+\/+[0-9]+\/+mb_pict_)icon_/, "$1");
+			if (newsrc !== src)
+				return fillobj_urls([newsrc, src], obj);
+
+			// https://vip-video82000-thumbnail2.fc2.com/up/thumb/201912/11/Y/20191211YDRY2vyn.jpg
+			//   https://vip-video82000-thumbnail2.fc2.com/up/thumb2/201912/11/Y/20191211YDRY2vyn.jpg
+			newsrc = src.replace(/\/up\/+thumb\/+([0-9]{6}\/+)/, "/up/thumb2/$1");
+			if (newsrc !== src)
+				return fillobj_urls([newsrc, src], obj);
+
+			if (id && options.do_request && options.cb) {
+				var cache_key = "fc2_video:" + id;
+				api_cache.fetch(cache_key, function(data) {
+					options.cb(data);
+				}, function(done) {
+					options.do_request({
+						method: "GET",
+						url: obj.extra.page,
+						headers: {
+							Referer: ""
+						},
+						onload: function(resp) {
+							if (resp.readyState !== 4)
+								return;
+
+							if (resp.status !== 200) {
+								console_error(resp);
+								return done(null, false);
+							}
+
+							var match = resp.responseText.match(/window\.FC2VideoObject\.push\(\['..',\s*'([0-9a-f]{10,})'/);
+							if (!match) {
+								console_error("Unable to find match", resp);
+								return done(null, false);
+							}
+
+							obj.extra.page = resp.finalUrl;
+
+							options.do_request({
+								method: "GET",
+								url: "https://video.fc2.com/api/v3/videoplaylist/" + id + "?sh=1&fs=0",
+								headers: {
+									Referer: resp.finalUrl,
+									"X-FC2-Video-Access-Token": match[1],
+									"Sec-Fetch-Site": "same-origin",
+									"Sec-Fetch-Dest": "empty",
+									"Sec-Fetch-Mode": "cors"
+								},
+								onload: function(resp) {
+									if (resp.readyState !== 4)
+										return;
+
+									if (resp.status !== 200) {
+										console_error(resp);
+										return done(null, false);
+									}
+
+									try {
+										var json = JSON_parse(resp.responseText);
+										var playlist = json.playlist;
+
+										var newurl = playlist.nq || playlist.sample;
+
+										if (!url) {
+											console_warn("Unable to find playlist URL", json);
+											return done(obj, false);
+										} else {
+											obj.url = urljoin(obj.extra.page, newurl, true);
+											obj.headers = {
+												Referer: obj.extra.page
+											};
+											obj.referer_ok = {same_domain_nosub: true};
+											obj.video = true;
+											return done(obj, 6*60*60);
+										}
+									} catch(e) {
+										console_error(e);
+										return done(null, false);
+									}
+								}
+							});
+						}
+					});
+				});
+
+				return {
+					waiting: true
+				};
+			}
+
+			return obj;
 		}
 
 		if (domain === "photos.hancinema.net" ||
