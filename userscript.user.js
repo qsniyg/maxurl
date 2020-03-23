@@ -20922,9 +20922,16 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nosub === "fc2.com" && /^video[0-9]*-thumbnail[0-9]*\./.test(domain)) {
-			// https://video-thumbnail2.fc2.com/w480/vip.video83000.fc2.com/up/thumb2/201808/03/1/201808031dv6cvPL.jpg
 			// https://video8-thumbnail2.fc2.com/up/thumb/202003/16/r/20200316ruCdutuy.jpg
-			return src.replace(/^[a-z]+:\/\/[^/]+\/+[wh][0-9]+\/+([^/]+\.fc2\.com\/)/, "http://$1");
+			// https://video2-thumbnail2.fc2.com/up/member/85/09/mb_pict_icon_14390985.JPG?20200116211601
+			//   https://video2-thumbnail2.fc2.com/up/member/85/09/mb_pict_14390985.JPG?20200116211601
+			// https://video-thumbnail2.fc2.com/w240h135/vip.video52000.fc2.com/up/thumb2/202001/26/v/20200126vgUPMh2x.jpg
+			//   http://vip.video52000.fc2.com/up/thumb2/202001/26/v/20200126vgUPMh2x.jpg
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+(?:[wh][0-9]+){1,2}\/+([^/]+\.fc2\.com\/)/, "http://$1");
+			if (newsrc !== src)
+				return newsrc;
+
+			return src.replace(/(\/member\/+[0-9]+\/+[0-9]+\/+mb_pict_)icon_/, "$1");
 		}
 
 		if (domain === "photos.hancinema.net" ||
