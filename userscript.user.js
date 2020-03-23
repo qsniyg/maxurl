@@ -20903,6 +20903,16 @@ var $$IMU_EXPORT$$;
 				return newsrc;
 		}
 
+		if (host_domain_nosub === "fc2.com" && options.element) {
+			if (options.element.tagName === "svg" && options.element.parentElement && options.element.parentElement.tagName === "DIV") {
+				if (string_indexof(options.element.parentElement.getAttribute("class"), "c-videoThumbOver") >= 0)
+					return {
+						url: origsrc,
+						bad: "mask"
+					};
+			}
+		}
+
 		if (domain_nosub === "fc2.com" && domain.match(/blog-imgs-[0-9]*(?:-[^.]*)?.*\.fc2\.com/)) {
 			// https://blog-imgs-118.fc2.com/s/h/i/shiomusubinokasu/20171212120106s.jpg
 			//   https://blog-imgs-118-origin.fc2.com/s/h/i/shiomusubinokasu/20171212120106.jpg
