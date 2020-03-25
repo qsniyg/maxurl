@@ -64176,7 +64176,8 @@ var $$IMU_EXPORT$$;
 
 				if (zindex === "auto") {
 					if (el.parentElement) {
-						return get_zindex(el.parentElement) + 0.001; // hack: child elements appear above parent elements
+						return get_zindex(el.parentElement);// + 0.001; // hack: child elements appear above parent elements
+						// don't use the above hack, it breaks z-ordering, the indexOf thing works already
 					} else {
 						return 0;
 					}
