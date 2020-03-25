@@ -5693,8 +5693,10 @@ var $$IMU_EXPORT$$;
 
 					if (image_id) {
 						var image = image_in_objarr(image_url, images);
-						if (!image)
+						if (!image) {
+							console_warn("Unable to find", image_url, "in", images);
 							return cb(null);
+						}
 
 						return cb(image_to_obj(image));
 					} else {
@@ -5906,7 +5908,8 @@ var $$IMU_EXPORT$$;
 			}
 
 			// stories
-			if (current.tagName === "BODY" && host_url.match(/:\/\/[^/]*\/+stories\/+([^/]*)\/*(?:[?#].*)?$/)) {
+			// https://www.instagram.com/stories/hollyearl__/2271839116690161119/
+			if (current.tagName === "BODY" && host_url.match(/:\/\/[^/]*\/+stories\/+([^/]*)(?:\/+[0-9]+)?\/*(?:[?#].*)?$/)) {
 				// try to find image instead of video because video ids change for app stories
 				var newel = common_functions.instagram_get_el_for_imageid(element);
 
@@ -55127,6 +55130,11 @@ var $$IMU_EXPORT$$;
 			//   https://img.lap.recochoku.jp/p1/imgkp?p=%2F14%2F657%2F194657.jpg&f=736E79&FFh=999999999&FFw=999999999
 			// https://img.lap.recochoku.jp/p1/imgkp?p=%2F12%2F9512%2F157791228.jpg&f=736E79&FFh=300&FFw=300&h=258B7&option=FFenl%3Don
 			//   https://img.lap.recochoku.jp/p1/imgkp?p=%2F12%2F9512%2F157791228.jpg&f=736E79&FFh=999999999&FFw=999999999
+			// other:
+			// https://resource.lap.recochoku.jp/e13/project/dc70fe2e-3395-4073-9155-19fa999ad161.jpg
+			// https://resource.lap.recochoku.jp/e13/media/0044ac26-66e2-4dd5-ac95-812c28790d5c.jpg
+			// https://recruit.recochoku.jp/images/interview405.jpg
+			// https://club-pro-recochoku-jp-res.cloudinary.com/image/upload/UOEHsbBXZakqHcfvd_MavxzDthIKdBuiE1L83Qk3J2o1i67fUr6auvs4ETqZZwJD/sni872mjls7ruik6fu7j.jpg
 			if (/\/p1\/+imgkp\?/.test(src)) {
 				var queries = get_queries(src);
 				for (var query in queries) {
