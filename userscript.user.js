@@ -55103,8 +55103,10 @@ var $$IMU_EXPORT$$;
 		if (domain === "img.lap.recochoku.jp") {
 			// thanks to fireattack on github: https://github.com/qsniyg/maxurl/issues/276
 			// https://img.lap.recochoku.jp/imgicb?p=/common/store/img.gif
+			// https://img.lap.recochoku.jp/imgicb?p=/common/store/boxa2_b.gif
+			// https://img.lap.recochoku.jp/imgicb?p=/common/store_sp/b.png
 			newsrc = decodeURIComponent(src);
-			if (/common\/+store\/+img\.gif/.test(src))
+			if (/common\/+store(?:_[^/]+)?\/+[^/]+\.(?:gif|png)(?:[?#].*)?$/.test(src))
 				return {
 					url: src,
 					bad: "mask"
