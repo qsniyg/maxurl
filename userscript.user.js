@@ -55097,6 +55097,57 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/img\/+[wh][0-9]+\/+upload\/+/, "/upload/");
 		}
 
+		if (domain === "img.lap.recochoku.jp") {
+			// thanks to fireattack on github: https://github.com/qsniyg/maxurl/issues/276
+			// https://img.lap.recochoku.jp/imgicb?p=/common/store/img.gif
+			newsrc = decodeURIComponent(src);
+			if (/common\/+store\/+img\.gif/.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
+
+			// some info:
+			// type 例外レポート
+			// メッセージ For input string: "999999999999"
+			// 説明 The server encountered an internal error that prevented it from fulfilling this request.
+			// 例外
+			// java.lang.NumberFormatException: For input string: "999999999999"
+			//	java.lang.NumberFormatException.forInputString(NumberFormatException.java:65)
+			//	java.lang.Integer.parseInt(Integer.java:583)
+			//	java.lang.Integer.parseInt(Integer.java:615)
+			//	recochoku.fpgapp.user.servlet.FPGImageKpBinaryServlet.doGet(FPGImageKpBinaryServlet.java:111)
+			//	javax.servlet.http.HttpServlet.service(HttpServlet.java:622)
+			//	javax.servlet.http.HttpServlet.service(HttpServlet.java:729)
+			//	org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:52)
+			// 注意 原因のすべてのスタックトレースは、Apache Tomcat/8.0.24のログに記録されています
+
+			// https://img.lap.recochoku.jp/p1/imgkp?p=%2F14%2F657%2F194657.jpg&f=736E79&FFh=300&FFw=300&h=4709E&option=FFenl%3Don
+			//   https://img.lap.recochoku.jp/p1/imgkp?p=%2F14%2F657%2F194657.jpg&f=736E79&FFh=300&FFw=300
+			//   https://img.lap.recochoku.jp/p1/imgkp?p=%2F14%2F657%2F194657.jpg&f=736E79&FFh=999999999&FFw=999999999
+			// https://img.lap.recochoku.jp/p1/imgkp?p=%2F12%2F9512%2F157791228.jpg&f=736E79&FFh=300&FFw=300&h=258B7&option=FFenl%3Don
+			//   https://img.lap.recochoku.jp/p1/imgkp?p=%2F12%2F9512%2F157791228.jpg&f=736E79&FFh=999999999&FFw=999999999
+			if (/\/p1\/+imgkp\?/.test(src)) {
+				var queries = get_queries(src);
+				for (var query in queries) {
+					if (query !== "f" && query !== "FFh" && query !== "FFw" && query !== "p") {
+						delete queries[query];
+						continue;
+					}
+
+					if (query === "FFh" || query === "FFw") {
+						queries[query] = "999999999";
+					}
+				}
+
+				if (queries) {
+					newsrc = src.replace(/\?.*/, "") + "?" + stringify_queries(queries);
+					if (newsrc !== src)
+						return newsrc;
+				}
+			}
+		}
+
 
 
 
