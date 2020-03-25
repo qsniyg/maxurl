@@ -9260,6 +9260,7 @@ var $$IMU_EXPORT$$;
 			//   https://i.ytimg.com/vi/o-gVbQHG0Ck/sddefault.jpg -- different image
 			// https://i.ytimg.com/vi/bXMUBdqyVAE/hq720.jpg
 			//   https://i.ytimg.com/vi/bXMUBdqyVAE/maxresdefault.jpg
+			// https://i.ytimg.com/an_webp/Yn_RYDP93as/mqdefault_6s.webp?du=3000&sqp=CN6znOQF&rs=AOn4CLCcLq2tY4Xg6tnNM01LEHPm--eUmQ
 
 			obj = {
 				problems: {
@@ -9267,7 +9268,7 @@ var $$IMU_EXPORT$$;
 				}
 			};
 
-			match = src.match(/\/vi(?:_webp)?\/+([^/]+)\/+[^/]+\.[^/.]+(?:[?#].*)?$/);
+			match = src.match(/\/(?:vi|an)(?:_webp)?\/+([^/]+)\/+[^/]+\.[^/.]+(?:[?#].*)?$/);
 			id = null;
 			if (match) {
 				obj.extra = {page: "https://www.youtube.com/watch?v=" + match[1]};
@@ -9286,7 +9287,7 @@ var $$IMU_EXPORT$$;
 			// https://i.ytimg.com/vi/ygdaPcspmDE/hqdefault_live.jpg
 			//   https://i.ytimg.com/vi/ygdaPcspmDE/maxresdefault.jpg
 			// thanks to hentai lzno on greasyfork: https://greasyfork.org/forum/discussion/70889/youtube-live-thumbnails-dont-redirect-to-original-image
-			regex = /^(.+\/+vi(?:_webp)?\/+[^/]*\/+)[a-z]*(default|[0-9]+)(?:_live)?(\.[^/.?#]*)(?:[?#].*)?$/;
+			regex = /^(.+\/+vi(?:_webp)?\/+[^/]*\/+)[a-z]*(default|[0-9]+)(?:_(?:live|[0-9]+s))?(\.[^/.?#]*)(?:[?#].*)?$/;
 			if (regex.test(src)) {
 				var sizes = [
 					"maxres",
@@ -14388,12 +14389,18 @@ var $$IMU_EXPORT$$;
 											   .replace(/.*\/unsafe\/(?:fit-in\/)?(?:[0-9]*x[0-9]*\/)?(?:center\/)?(?:smart\/)?/, "")));
 		}
 
-		if (domain === "cdn.uwants.com") {
+		if (domain === "cdn.uwants.com" ||
+			// https://cdn.discuss.com.hk/t/4f8708/f/800x0/https://img.discuss.com.hk/d/attachments/day_141006/20141006_8f6117fe2810d1ccb83bqK4OauUMfFXe.jpg
+			//   https://img.discuss.com.hk/d/attachments/day_141006/20141006_8f6117fe2810d1ccb83bqK4OauUMfFXe.jpg
+			// https://cdn.discuss.com.hk/t/10b213/f/800x0/https://i.ytimg.com/an_webp/upAJE_XhT2Y/mqdefault_6s.webp?du=3000&sqp=CJjq9uwF&rs=AOn4CLB94EaP5VlCpbK0D325pPcOUX4kKg
+			//   https://i.ytimg.com/an_webp/upAJE_XhT2Y/mqdefault_6s.webp?du=3000&sqp=CJjq9uwF&rs=AOn4CLB94EaP5VlCpbK0D325pPcOUX4kKg
+			domain === "cdn.discuss.com.hk") {
 			// https://cdn.uwants.com/t/d72610/f/320x0/filters:extract_cover()/https://img.uwants.com/attachments/day_160614/20160614_9242d5cc975b38a704016qYhzjhCytoI.jpg
 			//   https://img.uwants.com/attachments/day_160614/20160614_9242d5cc975b38a704016qYhzjhCytoI.jpg
 			// https://cdn.uwants.com/t/03d004/f/800x0/https://img.uwants.com/attachments/day_160614/20160614_9242d5cc975b38a704016qYhzjhCytoI.jpg
 			//   https://img.uwants.com/attachments/day_160614/20160614_9242d5cc975b38a704016qYhzjhCytoI.jpg
 			return src.replace(/^[a-z]+:\/\/[^/]*\/+t\/+[0-9a-f]+\/+f\/+[0-9]+x[0-9]+\/+(?:filters:[^/]*\/+)?(https?:)/, "$1");
+			//return src.replace(/^[a-z]+:\/\/[^/]*\/t\/+[0-9a-z]+\/+.\/+[0-9]+x[0-9]+\/http/, "http");
 		}
 
 		if (domain === "elsewhere.scdn3.secure.raxcdn.com") {
@@ -43103,12 +43110,6 @@ var $$IMU_EXPORT$$;
 			// https://m.tuniucdn.com/fb2/t1/G5/M00/28/4F/Cii-slw25U2ITjJSAANIoVF0kZsAAS4owPkFzIAA0i5837_w800_h0_c0_t0.jpg
 			//   https://m.tuniucdn.com/fb2/t1/G5/M00/28/4F/Cii-slw25U2ITjJSAANIoVF0kZsAAS4owPkFzIAA0i5837.jpg
 			return src.replace(/(\/[^/_.]*)(?:_[a-z][0-9]+){1,}(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
-		}
-
-		if (domain === "cdn.discuss.com.hk") {
-			// https://cdn.discuss.com.hk/t/4f8708/f/800x0/https://img.discuss.com.hk/d/attachments/day_141006/20141006_8f6117fe2810d1ccb83bqK4OauUMfFXe.jpg
-			//   https://img.discuss.com.hk/d/attachments/day_141006/20141006_8f6117fe2810d1ccb83bqK4OauUMfFXe.jpg
-			return src.replace(/^[a-z]+:\/\/[^/]*\/t\/+[0-9a-z]+\/+.\/+[0-9]+x[0-9]+\/http/, "http");
 		}
 
 		if (domain === "stat.mozi24.hu") {
