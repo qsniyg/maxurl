@@ -5844,12 +5844,28 @@ var $$IMU_EXPORT$$;
 				if (url.match(/:\/\/[^/]+\/+p\//)) {
 					var username;
 
-					try {
-						var h2 = current.querySelector("h2 > a");
-						if (strip_whitespace(h2.innerText) === strip_whitespace(h2.title)) {
-							username = h2.innerText;
+					if (element.parentElement.tagName === "SPAN" && element.parentElement.getAttribute("role") === "link") {
+						var as = current.getElementsByTagName("a");
+						for (var i = 0; i < as.length; i++) {
+							var a = as[i];
+							var amatch = a.href.match(/^[a-z]+:\/\/[^/]+\/+([^/]+)\/*(?:[?#].*)?$/);
+							if (amatch) {
+								if (strip_whitespace(a.innerText).toLowerCase() === amatch[1].toLowerCase()) {
+									username = strip_whitespace(a.innerText).toLowerCase();
+									break;
+								}
+							}
 						}
-					} catch (e) {}
+					}
+
+					if (!username) {
+						try {
+							var h2 = current.querySelector("h2 > a");
+							if (strip_whitespace(h2.innerText) === strip_whitespace(h2.title)) {
+								username = h2.innerText;
+							}
+						} catch (e) {}
+					}
 
 					if (!username) {
 						try {
