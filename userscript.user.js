@@ -10416,6 +10416,8 @@ var $$IMU_EXPORT$$;
 			(domain_nosub === "unrealengine.com" && /^cdn[0-9]*\./.test(domain)) ||
 			// https://cdn.repub.ch/s3/republik-assets/github/republik/article-facebook-influenced-elections-in-66-countries/images/0054f5fb5cc553222090e78d27ef4c8ffcf5e85f.jpeg?size=2031x622
 			(domain === "cdn.repub.ch" && string_indexof(src, "/republik-assets/") >= 0) ||
+			// https://www.smarthomebeginner.com/images/2012/08/SSH-ubuntu-putty-screenshot-500x301.png?ezimgfmt=ng:webp/ngcb5
+			(domain_nowww === "smarthomebeginner.com" && string_indexof(src, "/images/") >= 0) ||
 			// http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
 			// https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
 			src.match(/\/demandware\.static\//) ||
@@ -11195,6 +11197,8 @@ var $$IMU_EXPORT$$;
 			domain === "public.flashingjungle.com" ||
 			// https://static.pr.ricmais.com.br/ricmaispr/uploads/2019/09/adastra01ric-220x134.jpg
 			(domain === "static.pr.ricmais.com.br" && string_indexof(src, "/uploads/") >= 0) ||
+			// https://www.smarthomebeginner.com/images/2012/08/SSH-ubuntu-putty-screenshot-500x301.png
+			(domain_nowww === "smarthomebeginner.com" && string_indexof(src, "/images/") >= 0) ||
 			// https://static.acgsoso.com/uploads/2020/02/19bd4f091f03c191195d5e626c3190f9-200x300.jpg
 			(domain === "static.acgsoso.com" && string_indexof(src, "/uploads/") >= 0)
 			) {
@@ -27597,6 +27601,7 @@ var $$IMU_EXPORT$$;
 			// https://avatars.mds.yandex.net/get-pdb/1209663/2630abaf-64c6-43d7-a92b-0bcf49b644b6/s1200?webp=false
 			//   https://avatars.mds.yandex.net/get-pdb/1209663/2630abaf-64c6-43d7-a92b-0bcf49b644b6/orig?webp=false
 			// https://avatars.mds.yandex.net/get-entity_search/122335/162789516/S76x101Face_2x
+			//   https://avatars.mds.yandex.net/get-entity_search/122335/162789516/orig
 			obj = {
 				url: src.replace(/\/(?:[a-z]+_|[a-zA-Z])?[0-9]+(?:x[0-9]+)?(?:[A-Za-z_0-9]+)([?&].*)?$/, "/orig$1")
 			};
