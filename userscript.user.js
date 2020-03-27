@@ -61993,15 +61993,6 @@ var $$IMU_EXPORT$$;
 						if (popup_width < 200)
 							return;
 
-						var lrhover = document.createElement("div");
-						set_el_all_initial(lrhover);
-						lrhover.title = title;
-						if (isleft) {
-							lrhover.style.left = "0em";
-						} else {
-							lrhover.style.right = "0em";
-						}
-
 						var bottom_heights = 0;
 						var top_heights = 20;
 						if (is_video) {
@@ -62012,8 +62003,21 @@ var $$IMU_EXPORT$$;
 							top_heights = 0;
 						}
 
+						var lrheight = imgh - top_heights - bottom_heights;
+						if (lrheight < 10)
+							return;
+
+						var lrhover = document.createElement("div");
+						set_el_all_initial(lrhover);
+						lrhover.title = title;
+						if (isleft) {
+							lrhover.style.left = "0em";
+						} else {
+							lrhover.style.right = "0em";
+						}
+
 						lrhover.style.top = top_heights + "px";
-						lrhover.style.height = (imgh - top_heights - bottom_heights) + "px";
+						lrhover.style.height = lrheight + "px";
 						lrhover.style.position = "absolute";
 						lrhover.style.width = "15%";
 						lrhover.style.maxWidth = "200px";
