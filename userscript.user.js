@@ -23194,6 +23194,15 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/preview\/+[0-9a-f]{30,}\/+.*?\?(?:.*&)?size=)[0-9]+x[0-9]+(&.*)?$/, "$10x0$2");
 		}
 
+		if (domain_nowww === "yastatic.net") {
+			// https://yastatic.net/s3/web4static/_/v2/[...].gif
+			if (/\/s3\/+web4static\/+_\/+v2\/+/.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
+		}
+
 		if (domain_nosub === "steemitimages.com") {
 			// deprecated, it's returning hashed urls now
 			// https://steemitimages.com/0x0/https://steemitimages.com/DQmUXTDZ82P2K8iK1naLZETucmAcz7W9vvReEbTi5osSh4U/quantstamp_network-1.png
@@ -27587,8 +27596,9 @@ var $$IMU_EXPORT$$;
 			//   https://avatars.mds.yandex.net/get-zen_doc/198938/pub_5af84b497425f5fcbcde8785_5af84b6583090599f5aded49/orig
 			// https://avatars.mds.yandex.net/get-pdb/1209663/2630abaf-64c6-43d7-a92b-0bcf49b644b6/s1200?webp=false
 			//   https://avatars.mds.yandex.net/get-pdb/1209663/2630abaf-64c6-43d7-a92b-0bcf49b644b6/orig?webp=false
+			// https://avatars.mds.yandex.net/get-entity_search/122335/162789516/S76x101Face_2x
 			obj = {
-				url: src.replace(/\/[a-z_0-9]+([?&].*)?$/, "/orig$1")
+				url: src.replace(/\/(?:[a-z]+_|[a-zA-Z])?[0-9]+(?:x[0-9]+)?(?:[A-Za-z_0-9]+)([?&].*)?$/, "/orig$1")
 			};
 
 			match = src.match(/\/get-[^/]+\/+([0-9]+)\/+[^/]+\/+[^/]+(?:[?#].*)?$/);
