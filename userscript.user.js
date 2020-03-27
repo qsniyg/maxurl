@@ -9262,6 +9262,7 @@ var $$IMU_EXPORT$$;
 		if (domain === "ytimg.googleusercontent.com" ||
 			// https://i.ytimg.com/vi/WLUWOwO2U8c/hqdefault.jpg?sqp=-oaymwEZCPYBEIoBSFXyq4qpAwsIARUAAIhCGAFwAQ==&rs=AOn4CLApoW235ABiHOfyJan0ArZIRsbUOA
 			(domain_nosub === "ytimg.com" && domain.match(/^i[0-9]*\./)) ||
+			// https://img.youtube.com/vi/KsB1ydR8NFk/hqdefault.jpg
 			domain === "img.youtube.com") {
 			// thanks to speedymaan on github: https://github.com/qsniyg/maxurl/issues/29
 			// https://i.ytimg.com/vi/sxItyrp55g8/0.jpg
@@ -9304,7 +9305,7 @@ var $$IMU_EXPORT$$;
 			//   https://i.ytimg.com/vi/ygdaPcspmDE/maxresdefault.jpg
 			// thanks to hentai lzno on greasyfork: https://greasyfork.org/forum/discussion/70889/youtube-live-thumbnails-dont-redirect-to-original-image
 			regex = /^(.+\/+vi(?:_webp)?\/+[^/]*\/+)[a-z]*(default|[0-9]+)(?:_(?:live|[0-9]+s))?(\.[^/.?#]*)(?:[?#].*)?$/;
-			if (regex.test(src)) {
+			if (regex.test(src) && !problem_excluded("possibly_different")) {
 				var sizes = [
 					"maxres",
 					//"hq720", // don't use because it'll break mq1 etc.
@@ -9356,6 +9357,8 @@ var $$IMU_EXPORT$$;
 						}
 					}
 
+					obj.problems.possibly_different = false;
+
 					if (maxobj) {
 						if (maxobj.url) {
 							obj.url = maxobj.url;
@@ -9374,6 +9377,7 @@ var $$IMU_EXPORT$$;
 							return options.cb(null);
 						}
 					} else {
+						console_error("Unable to find any formats", data);
 						return options.cb(null);
 					}
 				}, function(done) {
@@ -9390,8 +9394,10 @@ var $$IMU_EXPORT$$;
 							}
 
 							var splitted = resp.responseText.split("&");
+							var found_player_response = false;
 							for (var i = 0; i < splitted.length; i++) {
 								if (/^player_response=/.test(splitted[i])) {
+									found_player_response = true;
 									var data = decodeURIComponent(splitted[i].replace(/^[^=]+=/, ""));
 
 									try {
@@ -9407,6 +9413,10 @@ var $$IMU_EXPORT$$;
 
 									break;
 								}
+							}
+
+							if (!found_player_response) {
+								console_error("Unable to find player_response in", splitted[i]);
 							}
 
 							done(null, false);
