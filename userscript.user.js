@@ -23479,6 +23479,10 @@ var $$IMU_EXPORT$$;
 						try {
 							var out = JSON_parse(resp.responseText);
 
+							if (out.stat === "fail") {
+								console_error(out.message);
+							}
+
 							var url = out.photo.urls.url[0]._content;
 							if (!(/^https?:\/\//.test(url))) {
 								url = null;
@@ -61987,11 +61991,23 @@ var $$IMU_EXPORT$$;
 						} else {
 							lrhover.style.right = "0em";
 						}
-						lrhover.style.top = "0em";
+
+						var bottom_heights = 0;
+						var top_heights = 20;
+						if (is_video) {
+							bottom_heights = 60;
+						}
+
+						if (imgh < 100) {
+							top_heights = 0;
+						}
+
+						lrhover.style.top = top_heights + "px";
+						lrhover.style.height = (imgh - top_heights - bottom_heights) + "px";
 						lrhover.style.position = "absolute";
 						lrhover.style.width = "15%";
 						lrhover.style.maxWidth = "200px";
-						lrhover.style.height = "100%";
+						//lrhover.style.height = "100%";
 						lrhover.style.zIndex = maxzindex - 2;
 						lrhover.style.cursor = "pointer";
 
