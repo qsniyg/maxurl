@@ -115,6 +115,8 @@ var $$IMU_EXPORT$$;
 
 			extension_send_message = function(message, respond) {
 				message = deepcopy(message, {json:true});
+				if (!respond)
+					respond = nullfunc;
 				return chrome.runtime.sendMessage(null, message, null, respond);
 			};
 		}
@@ -9111,6 +9113,7 @@ var $$IMU_EXPORT$$;
 			//   https://pbs.twimg.com/media/DhqeJS2UcAAo7fr.png?name=orig -- works
 			// https://pbs.twimg.com/media/ESHsHpCXkAA2xfZ.png
 			//   https://pbs.twimg.com/media/ESHsHpCXkAA2xfZ.jpg?name=orig
+			// https://pbs.twimg.com/media/EUEKr-gUYAMrXt_?format=jpg&name=900x900
 			// 4096x4096 is also a valid "name"
 			// medium == null?
 
