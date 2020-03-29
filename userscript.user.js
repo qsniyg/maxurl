@@ -55207,6 +55207,19 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain === "s.akb48.co.jp") {
+			// https://s.akb48.co.jp/sns240/29/a2b9312303bff8bed00d7d10f5d9a3fa.jpeg
+			//   https://s.akb48.co.jp/sns/29/a2b9312303bff8bed00d7d10f5d9a3fa.jpeg
+			// doesn't work for all:
+			// https://www.akb48.co.jp/about/members/detail.php?mid=51
+			// https://s.akb48.co.jp/sns240/51/f20715fc38f4887302ea21392e780f69.jpeg
+			//   https://s.akb48.co.jp/sns/51/d4a7818f902ee067dbae15a36326d2df.jpeg
+			// could be fixed by querying:
+			// POST https://www.akb48.co.jp/public/api/snstimelines/
+			// start=18&limit=9&members=51
+			return src.replace(/(:\/\/[^/]+\/+)sns[0-9]+\/+/, "$1sns/");
+		}
+
 
 
 
@@ -56506,7 +56519,23 @@ var $$IMU_EXPORT$$;
 			};
 		}
 
-		if (domain_nowww === "1in.am") {
+		if (domain_nowww === "image.fomos.kr" ||
+			// http://www.onlifezone.com/files/attach/images/2688285/230/488/010/3.jpg
+			domain_nowww === "onlifezone.com" ||
+			domain === "write.dcinside.com") {
+			return {
+				url: src,
+				can_head: false,
+				headers: {
+					Referer: ""
+				}
+			};
+		}
+
+		if (domain_nowww === "1in.am" ||
+			// http://file1-1.bobaedream.co.kr/multi_image/strange/2016/06/24/14/AAg576cc87160200.jpg
+			(domain_nosub === "bobaedream.co.kr" && /^file[-0-9]+\./.test(domain)) ||
+			domain_nowww === "dogdrip.net") {
 			// https://www.1in.am/assets/uploads/2019/01/02-56-540x360.jpg
 			return {
 				url: src,
