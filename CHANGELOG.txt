@@ -1,3 +1,22 @@
+0.12.21
+
+New features:
+
+ * Support for ~10 new sites (using 3 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including Instagram, Yandex, YouTube)
+
+Bugfixes:
+
+ * Fix downloads under extension (thanks to 7planets on github for reporting)
+ * Fix wrong image being popped up due to a bug with z-ordering (fixes some IG profile pictures)
+ * Fix left/right gallery buttons overlaying video controls (thanks to mr. nobody on discord for reporting)
+ * Workaround a bug on older chrome versions preventing the extension from loading (thanks to liraqb on github for reporting)
+
+---
+
 0.12.20
 
 New features:

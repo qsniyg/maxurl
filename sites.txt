@@ -621,6 +621,7 @@ blurbprod1000.s3.amazonaws.com
 bmi.com
 bnt.bg
 board.makeshop.co.kr
+bobaedream.co.kr
 bobcat.grahamdigital.com
 bobx.com
 boligsurf-production.s3.amazonaws.com
@@ -1529,6 +1530,7 @@ dn3pm25xmtlyu.cloudfront.net
 dnh0aphdpud22.cloudfront.net
 docs.google.com
 dodskypict.com
+dogdrip.net
 dogtime.com
 dok7xy59qfw9h.cloudfront.net
 dokkaebi.tv
@@ -2566,6 +2568,7 @@ image.entertainment-topics.jp
 image.europafm.com
 image.farm
 image.fnnews.com
+image.fomos.kr
 image.gala.de
 image.gamechosun.co.kr
 image.gamer.ne.jp
@@ -3062,6 +3065,7 @@ img.kurocore.com
 img.kutikomiya.jp
 img.lady.ru
 img.laonanren.com
+img.lap.recochoku.jp
 img.leaksx.com
 img.lemde.fr
 img.lengding.cn
@@ -4447,6 +4451,7 @@ oneman.gr
 oneniceapp.com
 oneringtrailers.com
 onesieponatime.com
+onlifezone.com
 onlyasianpictures.com
 onlyfans.com
 onlyhdwallpapers.com
@@ -5025,6 +5030,7 @@ s-i.huffpost.com
 s-image.hnol.net
 s-magazine.photography
 s-nbcnews.com
+s.akb48.co.jp
 s.bellesa.co
 s.brunette.site
 s.car.info
@@ -5253,6 +5259,7 @@ sloanreview.mit.edu
 sm.askmen.com
 sm.ign.com
 smart.usen.com
+smarthomebeginner.com
 smartweb-static.com
 smcloud.net
 smh.com.au
@@ -6252,6 +6259,7 @@ wp.com
 wp.eldeber.com.bo
 wpr-public.s3.amazonaws.com
 wr3mii5n.rocketcdn.com
+write.dcinside.com
 wsimg.com
 wspicsa.vod.nimo.tv
 wstars.net
@@ -6328,6 +6336,7 @@ yandex.com
 yandex.ru
 yaplakal.com
 yapokupayu.ru
+yastatic.net
 yelpcdn.com
 yeongnam.com
 yesky.com
