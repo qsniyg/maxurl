@@ -3358,7 +3358,7 @@ var $$IMU_EXPORT$$;
 		},
 		replaceimgs_usedata: {
 			name: "Use data URLs",
-			description: "Uses data:// URLs instead of image links",
+			description: "Uses data:// URLs instead of image links. Disabling this may improve compatibility with some bulk image downloader extensions",
 			category: "extra",
 			subcategory: "replaceimages",
 			imu_enabled_exempt: true
