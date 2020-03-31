@@ -39523,6 +39523,14 @@ var $$IMU_EXPORT$$;
 			};
 		}
 
+		if (domain === "cdn.slushe.com") {
+			// https://cdn.slushe.com/thumbs/2/2/7/1/5/22715daf55d805772.mp4/22715daf55d805772.mp4-3.jpg
+			newsrc = src.replace(/\/thumbs\/+((?:[0-9a-f]\/+){5}[0-9a-f]+\.mp4)\/+[^/]+(?:[?#].*)?$/, "/videos/$1");
+			if (newsrc !== src) {
+				return newsrc.replace(/:\/\/cdn\./, "://vcdn.");
+			}
+		}
+
 		if (domain_nowww === "bestpornbabes.com" ||
 			// https://cdn.shesfreaky.com/galleries/9439556937e05b9d47/thumbs/56937e10983fd.jpg
 			//   https://cdn.shesfreaky.com/galleries/9439556937e05b9d47/56937e10983fd.jpg
@@ -39536,6 +39544,9 @@ var $$IMU_EXPORT$$;
 			// http://goodsexporn.org/media/galleries/58988fe0ca18e/thumbs/1.jpg
 			//   http://goodsexporn.org/media/galleries/58988fe0ca18e/1.jpg
 			domain_nowww === "goodsexporn.org" ||
+			// https://cdn.slushe.com/galleries/185e24dcdf856fa/thumbs/5e24dd9421299.jpg
+			//   https://cdn.slushe.com/galleries/185e24dcdf856fa/5e24dd9421299.jpg
+			domain === "cdn.slushe.com" ||
 			// https://media.babesource.com/galleries/5cf63225e8fbe/thumbs/101353_005.jpg
 			//   https://media.babesource.com/galleries/5cf63225e8fbe/101353_005.jpg
 			domain === "media.babesource.com") {
