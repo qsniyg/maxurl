@@ -10440,6 +10440,8 @@ var $$IMU_EXPORT$$;
 			(domain === "cdn.repub.ch" && string_indexof(src, "/republik-assets/") >= 0) ||
 			// https://www.smarthomebeginner.com/images/2012/08/SSH-ubuntu-putty-screenshot-500x301.png?ezimgfmt=ng:webp/ngcb5
 			(domain_nowww === "smarthomebeginner.com" && string_indexof(src, "/images/") >= 0) ||
+			// https://images.ask.com/amg-cms-images/media/8rwij2v6x38alhvuwzv-uzy6ssz0zdonqnjlbjt7iykv0vikb9jins3tein0-camegg11x9zq4xnml5haykux-5j1vaz63vk0okokwezlexsa7anvf4kgodprsmdajun-mi7-lfpetvdpmhhg.png?width=380&height=210&fit=crop
+			domain === "images.ask.com" ||
 			// http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
 			// https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
 			src.match(/\/demandware\.static\//) ||
@@ -50380,6 +50382,14 @@ var $$IMU_EXPORT$$;
 				return decodeuri_ifneeded(newsrc);
 		}
 
+		if (domain === "cdn.swisscows.ch") {
+			// https://cdn.swisscows.ch//https://tse1.mm.bing.net/th?id=OIP.Csk8M-_nU1zOLBhPhqp9SwHaDH&pid=Api
+			//   https://tse1.mm.bing.net/th?id=OIP.Csk8M-_nU1zOLBhPhqp9SwHaDH
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+(https?:)/, "$1");
+			if (newsrc !== src)
+				return newsrc;
+		}
+
 		if (domain_nowww === "mithaaprilia.com") {
 			// https://www.mithaaprilia.com/image?id=6461696c796d6f74696f6e26783335396b776c&q=http://s1.dmcdn.net/N2uxj.jpg
 			//   http://s1.dmcdn.net/N2uxj.jpg
@@ -55414,6 +55424,20 @@ var $$IMU_EXPORT$$;
 					url: src,
 					bad: "mask"
 				};
+		}
+
+		if (domain === "imgproxy.geocaching.com") {
+			// https://imgproxy.geocaching.com/4a4effd23058f88035e11486566206eff8c7a450?url=http%3A%2F%2Fwww.wolframcdn.com%2Fwaimage%2Fhset004%2F9cd%2F9cd21927d7d18a362f52e341a5139439_v001ms.jpg
+			//   https://www.wolframcdn.com/waimage/hset004/9cd/9cd21927d7d18a362f52e341a5139439_v001ms.jpg
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+[0-9a-f]{10,}\?(?:.*?&)?url=([^&]+).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+		}
+
+		if (domain_nowww === "wolframcdn.com") {
+			// https://www.wolframcdn.com/waimage/hset028/ee6/ee6999178a59095cc994a656ade3c1ec_v001s.jpg
+			//   https://www.wolframcdn.com/waimage/hset028/ee6/ee6999178a59095cc994a656ade3c1ec_v001ms.jpg
+			return src.replace(/(\/waimage\/.*_v[0-9]+)s(\.[^/.]+)(?:[?#].*)?$/, "$1ms$2");
 		}
 
 
