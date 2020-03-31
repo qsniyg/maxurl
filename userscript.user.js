@@ -960,6 +960,11 @@ var $$IMU_EXPORT$$;
 
 	var base64_decode = sanity_test(base64_decode_orig, base64_decode_correct, base64_decode_test);
 
+	var base64_encode = nullfunc;
+	if (typeof btoa !== 'undefined') {
+		base64_encode = btoa;
+	}
+
 	// https://www.mycomicshop.com/search?minyr=1938&maxyr=1955&TID=29170235
 	// this site replaces Array.indexOf
 	// cache Array.prototype.indexOf in case it changes while the script is executing
@@ -6239,7 +6244,7 @@ var $$IMU_EXPORT$$;
 			if (options.window)
 				window = options.window;
 		} catch (e) {
-			console_warn("Failed to set document/window", e);
+			//console_warn("Failed to set document/window", e);
 		}
 
 		var problem_excluded = function(problem) {
@@ -56809,7 +56814,7 @@ var $$IMU_EXPORT$$;
 			if (options.window)
 				window = options.window;
 		} catch (e) {
-			console_warn("Failed to set document/window", e);
+			//console_warn("Failed to set document/window", e);
 		}
 
 
@@ -63144,7 +63149,7 @@ var $$IMU_EXPORT$$;
 			var header = '<?xml version="1.0" encoding="UTF-8" standalone="no" ?>\n';
 			var svgdoc = header + newel.outerHTML;
 
-			return "data:image/svg+xml;base64," + btoa(svgdoc);
+			return "data:image/svg+xml;base64," + base64_encode(svgdoc);
 		};
 
 		function get_img_src(el) {
