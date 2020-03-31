@@ -642,7 +642,7 @@ var $$IMU_EXPORT$$;
 
 						if (resp.response) {
 							newresp = shallowcopy(resp);
-							newresp.response = new Blob([resp.response]);
+							newresp.response = new native_blob([resp.response]);
 						}
 
 						real_onload(newresp);
@@ -793,6 +793,31 @@ var $$IMU_EXPORT$$;
 	var JSON_stringify = JSON.stringify;
 	var JSON_parse = JSON.parse;
 
+	var native_functions = {};
+	var get_native_functions = function(functions) {
+		// thanks to tophf here: https://github.com/violentmonkey/violentmonkey/issues/944
+		var result = {};
+		var iframe = document.createElement("iframe");
+		iframe.srcdoc = ""; //"javascript:0"
+		document.documentElement.appendChild(iframe);
+		var frame_window = iframe.contentWindow;
+
+		for (var i = 0; i < functions.length; i++) {
+			var func = functions[i];
+			native_functions[func] = frame_window[func];
+		}
+
+		iframe.parentElement.removeChild(iframe);
+	};
+
+	if (is_interactive) {
+		try {
+			get_native_functions(["Blob", "atob", "btoa"]);
+		} catch (e) {
+			console_error(e);
+		}
+	}
+
 	var sanity_test = function(orig, correct, check) {
 		if (!orig)
 			return correct;
@@ -933,7 +958,7 @@ var $$IMU_EXPORT$$;
 			return Buffer.from(a, 'base64').toString('binary');
 		};
 	} else if (typeof atob !== 'undefined') {
-		base64_decode_orig = atob;
+		base64_decode_orig = native_functions.atob || atob;
 	}
 
 	// Some websites replace atob, so we have to provide our own implementation in those cases
@@ -962,7 +987,7 @@ var $$IMU_EXPORT$$;
 
 	var base64_encode = nullfunc;
 	if (typeof btoa !== 'undefined') {
-		base64_encode = btoa;
+		base64_encode = native_functions.btoa || btoa;
 	}
 
 	// https://www.mycomicshop.com/search?minyr=1938&maxyr=1955&TID=29170235
@@ -1043,6 +1068,11 @@ var $$IMU_EXPORT$$;
 	};
 
 	var string_indexof = sanity_test(string_indexof_orig, string_indexof_correct, string_indexof_check);
+
+	var native_blob = nullfunc;
+	if (typeof Blob !== "undefined") {
+		native_blob = native_functions.Blob || Blob;
+	}
 
 	var serialize_event = function(event) {
 		return deepcopy(event, {json: true});
@@ -66610,7 +66640,7 @@ var $$IMU_EXPORT$$;
 							for (var i = 0; i < enc.value.length; i++) {
 								array[i] = enc.value.charCodeAt(i);
 							}
-							response.data.response = new Blob([array.buffer], { type: enc.type });
+							response.data.response = new native_blob([array.buffer], { type: enc.type });
 						} else {
 							response.data.response = null;
 						}
