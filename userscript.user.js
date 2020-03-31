@@ -8030,6 +8030,9 @@ var $$IMU_EXPORT$$;
 			// https://images.haarets.co.il/image/fetch/fl_lossy.any_format.preserve_transparency.progressive:none/https://www.haaretz.co.il/polopoly_fs/1.8674827!/image/4132815329.jpg
 			//   https://www.haaretz.co.il/polopoly_fs/1.8674827!/image/4132815329.jpg
 			domain === "images.haarets.co.il" ||
+			// https://assets.mocha.global/mobicast/image/fetch/w_144,q_40/https%3A%2F%2Fr.kelkoo.com%2Fresize.php%3Fcountry%3Dde%26merchantId%3D16240913%26categoryId%3D134101%26width%3D90%26height%3D90%26image%3Dhttps%253A%252F%252Fstatic.shop-apotheke.com%252Fimages%252FD12391508-p1.jpg%26sign%3DESE.mSGBandnnojBPJJ9hgnoooEByCwODsLQPH42iEY-
+			//   https://r.kelkoo.com/resize.php?country=de&merchantId=16240913&categoryId=134101&width=90&height=90&image=https://static.shop-apotheke.com/images/D12391508-p1.jpg&sign=ESE.mSGBandnnojBPJJ9hgnoooEByCwODsLQPH42iEY-
+			domain === "assets.mocha.global" ||
 			domain === "images.taboola.com") {
 			// https://res.cloudinary.com/emazecom/image/fetch/c_limit,a_ignore,w_320,h_200/https%3A%2F%2Fimg-aws.ehowcdn.com%2F877x500p%2Fs3.amazonaws.com%2Fcme_public_images%2Fwww_ehow_com%2Fi.ehow.com%2Fimages%2Fa04%2Fbd%2Fic%2Fchemical-energy-work-3.1-800x800.jpg
 			// https://images.taboola.com/taboola/image/fetch/f_jpg%2Cq_auto%2Cc_fill%2Cg_faces:auto%2Ce_sharpen/https%3A%2F%2Fwww.gannett-cdn.com%2F-mm-%2F2e56892f6a349ad47192b530425d443fb365e5e9%2Fr%3Dx1803%26c%3D3200x1800%2Fhttps%2Fmedia.gannett-cdn.com%2F37861007001%2F37861007001_5735420050001_5735409691001-vs.jpg%3FpubId%3D37861007001
@@ -22203,7 +22206,15 @@ var $$IMU_EXPORT$$;
 		if (domain === "r.kelkoo.com") {
 			// http://r.kelkoo.com/r/uk/15002013/146501/auto/auto/https%253A%252F%252Fdyson-h.assetsadobe2.com%252Fis%252Fimage%252Fcontent%252Fdam%252Fdyson%252Fimages%252Fproducts%252Fprimary%252F231868-01.png%253F%2524responsive%2524%2526fmt%253Dpng-alpha%2526cropPathE%253Ddesktop%2526fit%253Dstretch%252C1%2526wid%253D800/T5JylUsrxw8XjkR2zJUTmqQIfK8oIrzwXgEbTo_Jtn0-?searchId=10769920122096_1520492759094_270260&offerId=206b270741bc0810a4c2fc0d1b48d86f
 			//   https://dyson-h.assetsadobe2.com/is/image/content/dam/dyson/images/products/primary/231868-01.png?$responsive$&fmt=png-alpha&cropPathE=desktop&fit=stretch,1&wid=800
-			return decodeURIComponent(decodeURIComponent(src.replace(/^[a-z]*:\/\/(?:[^/]*\/){7}(http[^/]*).*?$/, "$1")));
+			// https://r.kelkoo.com/resize.php?country=de&merchantId=16240913&categoryId=134101&width=90&height=90&image=https://static.shop-apotheke.com/images/D12391508-p1.jpg&sign=ESE.mSGBandnnojBPJJ9hgnoooEByCwODsLQPH42iEY-
+			//   https://static.shop-apotheke.com/images/D12391508-p1.jpg
+			newsrc = src.replace(/^[a-z]*:\/\/(?:[^/]*\/){7}(http[^/]*).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+resize\.php\?(?:.*?&)?image=([^&]+).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
 		}
 
 		if (((domain_nosub === "assetsadobe2.com" ||
@@ -55373,6 +55384,14 @@ var $$IMU_EXPORT$$;
 					}
 				}
 			}
+		}
+
+		if (domain === "spapi.searchencrypt.com") {
+			// https://spapi.searchencrypt.com/image?path=https%3a%2f%2fassets.mocha.global%2fmobicast%2fimage%2ffetch%2fw_144%2cq_40%2fhttps%253A%252F%252Fr.kelkoo.com%252Fresize.php%253Fcountry%253Dde%2526merchantId%253D16240913%2526categoryId%253D134101%2526width%253D90%2526height%253D90%2526image%253Dhttps%25253A%25252F%25252Fstatic.shop-apotheke.com%25252Fimages%25252FD12391508-p1.jpg%2526sign%253DESE.mSGBandnnojBPJJ9hgnoooEByCwODsLQPH42iEY-
+			//   https://assets.mocha.global/mobicast/image/fetch/w_144,q_40/https%3A%2F%2Fr.kelkoo.com%2Fresize.php%3Fcountry%3Dde%26merchantId%3D16240913%26categoryId%3D134101%26width%3D90%26height%3D90%26image%3Dhttps%253A%252F%252Fstatic.shop-apotheke.com%252Fimages%252FD12391508-p1.jpg%26sign%3DESE.mSGBandnnojBPJJ9hgnoooEByCwODsLQPH42iEY-
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+image\?(?:.*&)?path=([^&]*).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
 		}
 
 
