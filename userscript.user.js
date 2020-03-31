@@ -55364,6 +55364,17 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (host_domain_nowww === "ecosia.org" && options && options.element) {
+			if (options.element.tagName === "IMG" && options.element.parentElement && options.element.parentElement.tagName === "A") {
+				var parent = options.element.parentElement;
+				if (parent.classList.contains("image-result")) {
+					if (parent.href !== src) {
+						return parent.href;
+					}
+				}
+			}
+		}
+
 
 
 
