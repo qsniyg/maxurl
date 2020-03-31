@@ -3793,6 +3793,16 @@ var $$IMU_EXPORT$$;
 		return protocol_split[0] + "://" + newsplitted.join("/");
 	}
 
+	var is_valid_resource_url = function(url) {
+		var match = url.match(/^([-a-z]+):/);
+		if (match) {
+			var valid_schemes = ["http", "https", "ftp", "data", "x-raw-image", "blob", "chrome", "file"];
+			return valid_schemes.indexOf(match[1].toLowerCase()) >= 0;
+		}
+
+		return true;
+	};
+
 	function urljoin(a, b, browser) {
 		if (b.length === 0)
 			return a;
@@ -63210,6 +63220,9 @@ var $$IMU_EXPORT$$;
 				if (_nir_debug_) {
 					console_log("_find_source (addImage)", src, el, check_visible(el), options);
 				}
+
+				if (!is_valid_resource_url(src))
+					return false;
 
 				if (src && settings.mouseover_apply_blacklist && !bigimage_filter(src)) {
 					if (_nir_debug_)
