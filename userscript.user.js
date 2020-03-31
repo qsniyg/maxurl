@@ -83,6 +83,13 @@ var $$IMU_EXPORT$$;
 	var current_version = null;
 	var imagetab_ok_override = false;
 
+	var get_window = function() {
+		if (typeof(unsafeWindow) !== "undefined")
+			return unsafeWindow || this.window || window;
+
+		return this.window || window;
+	};
+
 	try {
 		if (window.location.href.match(/^https?:\/\/qsniyg\.github\.io\/+maxurl\/+options\.html/) ||
 			window.location.href.match(/^file:\/\/.*\/maxurl\/site\/options\.html/)) {
@@ -6274,7 +6281,7 @@ var $$IMU_EXPORT$$;
 			if (options.window)
 				window = options.window;
 		} catch (e) {
-			//console_warn("Failed to set document/window", e);
+			console_warn("Failed to set document/window", e);
 		}
 
 		var problem_excluded = function(problem) {
@@ -56844,7 +56851,7 @@ var $$IMU_EXPORT$$;
 			if (options.window)
 				window = options.window;
 		} catch (e) {
-			//console_warn("Failed to set document/window", e);
+			console_warn("Failed to set document/window", e);
 		}
 
 
@@ -64844,13 +64851,6 @@ var $$IMU_EXPORT$$;
 			} else {
 				do_popup();
 			}
-		}
-
-		function get_window() {
-			if (typeof(unsafeWindow) !== "undefined")
-				return unsafeWindow || window;
-
-			return window
 		}
 
 		function do_get_helpers(options) {
