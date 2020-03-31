@@ -598,23 +598,6 @@ var $$IMU_EXPORT$$;
 				}
 			}
 
-			if (data.responseType === "blob" && !settings.use_blob_over_arraybuffer) {
-				(function(real_onload) {
-					data.onload = function(resp) {
-						var newresp = resp;
-
-						if (resp.response) {
-							newresp = shallowcopy(resp);
-							newresp.response = new Blob([resp.response]);
-						}
-
-						real_onload(newresp);
-					};
-				})(data.onload);
-
-				data.responseType = "arraybuffer";
-			}
-
 			if (data.trackingprotection_failsafe && settings.allow_browser_request && do_request_browser) {
 				var real_onload = data.onload;
 				var real_onerror = data.onerror;
@@ -650,6 +633,23 @@ var $$IMU_EXPORT$$;
 				data.onerror = function(resp) {
 					finalcb(resp, true);
 				};
+			}
+
+			if (data.responseType === "blob" && !settings.use_blob_over_arraybuffer) {
+				(function(real_onload) {
+					data.onload = function(resp) {
+						var newresp = resp;
+
+						if (resp.response) {
+							newresp = shallowcopy(resp);
+							newresp.response = new Blob([resp.response]);
+						}
+
+						real_onload(newresp);
+					};
+				})(data.onload);
+
+				data.responseType = "arraybuffer";
 			}
 
 			return raw_request_do(data);
