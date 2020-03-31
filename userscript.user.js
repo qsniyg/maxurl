@@ -3796,10 +3796,16 @@ var $$IMU_EXPORT$$;
 	function urljoin(a, b, browser) {
 		if (b.length === 0)
 			return a;
-		if (b.match(/^[-a-z]*:\/\//) || b.match(/^(?:data|x-raw-image|blob):/))
+		if (b.match(/^[-a-z]*:\/\//) || b.match(/^(?:data|x-raw-image|blob|about|javascript):/))
 			return b;
 
 		var protocol_split = a.split("://");
+
+		// FIXME? for URLs like about:blank
+		if (protocol_split.length < 2) {
+			return a;
+		}
+
 		var protocol = protocol_split[0];
 		var splitted = protocol_split[1].split("/");
 		var domain = splitted[0];
@@ -55243,6 +55249,78 @@ var $$IMU_EXPORT$$;
 			newsrc = src.replace(/(\/download\/+games\/+screens\/+[^/]+\/+)t([0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 			if (newsrc !== src)
 				return add_extensions(newsrc);
+		}
+
+		if (domain === "vp.beeg.com") {
+			// https://img.beeg.com/264x198/4x3/99833-0075.jpg
+			// https://vp.beeg.com/vp/19/1989513890_74_0.mp4
+			// https://beeg.com/api/v6/[time]]/video/1989513890?v=2
+			id = null;
+			match = src.match(/:\/\/[^/]+\/+vp\/+[0-9]{2}\/+([0-9]+)_[0-9]+_[0-9]+\.mp4/);
+			if (match) {
+				id = match[1];
+			}
+
+			if (id && options.do_request && options.cb) {
+				api_cache.fetch("beeg:" + id, options.cb, function(done) {
+					options.do_request({
+						url: "https://beeg.com/api/v6/" + Date.now() + "/video/" + id + "?v=2",
+						method: "GET",
+						headers: {
+							Referer: "https://beeg.com/1989513890",
+							"X-Requested-With": "XMLHttpRequest"
+						},
+						onload: function(resp) {
+							if (resp.readyState !== 4)
+								return;
+
+							if (resp.status !== 200) {
+								console_error(resp);
+								return done(null, false);
+							}
+
+							try {
+								var json = JSON_parse(resp.responseText);
+								var maxp = 0;
+								var maxurl = null;
+								for (var key in json) {
+									var match = key.match(/^([0-9]+)p/);
+									if (!match || !json[key])
+										continue;
+
+									var our_p = parseInt(match[1]);
+									if (string_indexof(json[key], "//video.beeg.com/") < 0)
+										continue;
+
+									if (our_p > maxp) {
+										maxp = our_p;
+										maxurl = json[key];
+									}
+								}
+
+								if (maxurl) {
+									maxurl = maxurl.replace(/{DATA_MARKERS}/, "data=pc_US__" + Date.now() + "_");
+									maxurl = urljoin("https://beeg.com/", maxurl, true);
+									return done({
+										url: maxurl,
+										private: true,
+										video: true
+									}, 2*60*60); // expires in 3 hours
+								} else {
+									return done(null, false);
+								}
+							} catch (e) {
+								console_error(e, resp);
+								return done(null, false);
+							}
+						}
+					});
+				});
+
+				return {
+					waiting: true
+				};
+			}
 		}
 
 
