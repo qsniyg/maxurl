@@ -17239,16 +17239,19 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/images\/cropped\//, "/images/");
 		}
 
-		if (domain === "www.thejewelleryeditor.com") {
+		if (domain_nowww === "thejewelleryeditor.com") {
 			// http://www.thejewelleryeditor.com/media/images_thumbnails/filer_public_thumbnails/old/21228/Felicity-Jones-Finch-Oscars-2013.jpg__1536x0_q75_crop-scale_subsampling-2_upscale-false.jpg - stretched
 			//   http://www.thejewelleryeditor.com/media/images/old/21228/Felicity-Jones-Finch-Oscars-2013.jpg
-			return src.replace(/\/images_thumbnails\/[^/]*_thumbnails\/([^/]*\/[0-9]*\/[^/.]*\.[^_/.]*)__[^/]*$/, "/images/$1");
+			return src.replace(/\/images_thumbnails\/+[^/]*_thumbnails\/+([^/]*\/+[0-9]*\/+[^/.]*\.[^_/.]*)__[^/]*(?:[?#].*)?$/, "/images/$1");
 		}
 
-		if (domain_nowww === "sass.com.ua") {
+		if (domain_nowww === "sass.com.ua" ||
+			// https://bento.cdn.pbs.org/hostedbento-prod/filer_public_thumbnails/filer_public/latinmusicusa/Artists/selena_16x9.jpg__1024x576_q85_subsampling-2.jpg
+			//   https://bento.cdn.pbs.org/hostedbento-prod/filer_public/latinmusicusa/Artists/selena_16x9.jpg
+			domain === "bento.cdn.pbs.org") {
 			// https://sass.com.ua/static/media/public_thumbnails/public/2017/11/11/03.jpg__1024x1024_q85_subsampling-2.jpg
 			//   https://sass.com.ua/static/media/public/2017/11/11/03.jpg
-			return src.replace(/\/static\/media\/[^/]*(\/public\/.*\/[^/]*?\.[a-z]+)__[^/]*$/, "/static/media$1");
+			return src.replace(/\/(?:filer_)?public_thumbnails\/+(.*\/[^/]*?\.[a-z]+)__[^/]*(?:[?#].*)?$/, "/$1");
 		}
 
 		if (domain === "files.sharenator.com") {
@@ -55340,6 +55343,22 @@ var $$IMU_EXPORT$$;
 					if (parent.parentElement && parent.parentElement.classList.contains("image")) {
 						if (parent.href !== src)
 							return parent.href;
+					}
+				}
+			}
+		}
+
+		if (host_domain_nowww === "gigablast.com" && options && options.element) {
+			if (options.element.tagName === "IMG" && options.element.parentElement && options.element.parentElement.tagName === "A") {
+				var parent = options.element.parentElement;
+				var current = parent;
+				while ((current = current.parentElement)) {
+					if (current.tagName === "TABLE" && current.classList.contains("image")) {
+						if (parent.href !== origsrc) {
+							return parent.href;
+						} else {
+							break;
+						}
 					}
 				}
 			}
