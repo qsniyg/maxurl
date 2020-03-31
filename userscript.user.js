@@ -14338,7 +14338,7 @@ var $$IMU_EXPORT$$;
 				};
 		}
 
-		if (domain === "cdn.shopify.com") {
+		if (domain_nosub === "shopify.com" && /^cdn[0-9]*\./.test(domain)) {
 			// https://cdn.shopify.com/s/files/1/0947/6410/products/a2178934757_10_1024x1024.jpeg?v=1458824230
 			//   https://cdn.shopify.com/s/files/1/0947/6410/products/a2178934757_10.jpeg?v=1458824230
 			// https://cdn.shopify.com/s/files/1/0947/6410/products/Om-Sweet-Om_1024x1024.png?v=1450196316
@@ -14359,6 +14359,8 @@ var $$IMU_EXPORT$$;
 			//   https://cdn.shopify.com/s/files/1/1878/3879/products/N0690.jpg?v=1510258264
 			// https://cdn.shopify.com/s/files/1/2656/7538/files/de-mining_large.jpg?v=1524250443-/format/auto/-/stretch/off/-/resize/3000x/-/quality/lighter/-/format/auto/-/stretch/off/-/resize/3000x/-/quality/lighter/-/format/auto/-/stretch/off/-/resize/3000x/-/quality/lighter/
 			//   https://cdn.shopify.com/s/files/1/2656/7538/files/de-mining.jpg
+			// https://cdn2.shopify.com/s/files/1/0875/3268/products/Max-Payne-3-Sony-PlayStation-3-PS3-Game-Screenshot-4_1024x1024.jpg?v=1501206616
+			//   https://cdn2.shopify.com/s/files/1/0875/3268/products/Max-Payne-3-Sony-PlayStation-3-PS3-Game-Screenshot-4.jpg?v=1501206616
 			return src.replace(/_(?:large|medium|small|grande|compact|[0-9]+x(?:[0-9]+)?)(?:@[0-9]+x)?(?:_crop_[a-z]+)?(?:\.progressive)?(\.[^/.]*)(?:[?#].*)?$/, "$1");
 		}
 
@@ -54316,7 +54318,11 @@ var $$IMU_EXPORT$$;
 		if (domain_nowww === "myabandonware.com") {
 			// https://www.myabandonware.com/media/screenshots/0-9/007-nightfire-ilw/thumbs/007-nightfire_13.png
 			//   https://www.myabandonware.com/media/screenshots/0-9/007-nightfire-ilw/007-nightfire_13.png
-			return src.replace(/(\/media\/+screenshots\/.*\/)thumbs\/+/, "$1");
+			// https://www.myabandonware.com/media/screenshots/m/max-payne-jig/thumbs/max-payne_1.png
+			//   https://www.myabandonware.com/media/screenshots/m/max-payne-jig/max-payne_1.jpg
+			newsrc = src.replace(/(\/media\/+screenshots\/.*\/)thumbs\/+/, "$1");
+			if (newsrc !== src)
+				return add_extensions(newsrc);
 		}
 
 		if (domain_nowww === "d-gram.co.kr") {
@@ -55229,6 +55235,14 @@ var $$IMU_EXPORT$$;
 			// POST https://www.akb48.co.jp/public/api/snstimelines/
 			// start=18&limit=9&members=51
 			return src.replace(/(:\/\/[^/]+\/+)sns[0-9]+\/+/, "$1sns/");
+		}
+
+		if (domain_nowww === "16bit.pl") {
+			// https://16bit.pl/download/games/screens/max-payne/t1.jpg
+			//   https://16bit.pl/download/games/screens/max-payne/1.png
+			newsrc = src.replace(/(\/download\/+games\/+screens\/+[^/]+\/+)t([0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+			if (newsrc !== src)
+				return add_extensions(newsrc);
 		}
 
 
