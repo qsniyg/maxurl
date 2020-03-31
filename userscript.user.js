@@ -55394,6 +55394,15 @@ var $$IMU_EXPORT$$;
 				return decodeuri_ifneeded(newsrc);
 		}
 
+		if (domain_nowww === "boardreader.com") {
+			// http://boardreader.com/img/placeholder.gif
+			if (/\/img\/+placeholder\.gif/.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
+		}
+
 
 
 
@@ -61667,6 +61676,7 @@ var $$IMU_EXPORT$$;
 				if (imgh < 20 || imgw < 20) {
 					// FIXME: This will stop "custom" percentages with low percentages for small images
 					stop_waiting();
+					console_error("Image too small to popup (" + imgw + "x" + imgh + ")");
 					return;
 				}
 
