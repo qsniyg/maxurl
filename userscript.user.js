@@ -6281,7 +6281,7 @@ var $$IMU_EXPORT$$;
 			if (options.window)
 				window = options.window;
 		} catch (e) {
-			console_warn("Failed to set document/window", e);
+			//console_warn("Failed to set document/window", e);
 		}
 
 		var problem_excluded = function(problem) {
@@ -56851,7 +56851,7 @@ var $$IMU_EXPORT$$;
 			if (options.window)
 				window = options.window;
 		} catch (e) {
-			console_warn("Failed to set document/window", e);
+			//console_warn("Failed to set document/window", e);
 		}
 
 
@@ -58392,7 +58392,7 @@ var $$IMU_EXPORT$$;
 			fill_object: true,
 			force_page: force_page,
 			document: document,
-			window: window,
+			window: get_window(),
 			cb: function(newhref) {
 				if (_nir_debug_) {
 					console_log("do_redirect (final)", newhref);
@@ -64745,7 +64745,7 @@ var $$IMU_EXPORT$$;
 						fill_object: true,
 						host_url: window.location.href,
 						document: document,
-						window: window,
+						window: get_window(),
 						element: source.el,
 						force_page: force_page,
 						cb: realcb
@@ -65559,7 +65559,7 @@ var $$IMU_EXPORT$$;
 				use_api_cache: false,
 				element: el,
 				document: document,
-				window: window,
+				window: get_window(),
 				cb: function() {},
 				do_request: function() {}
 			});
