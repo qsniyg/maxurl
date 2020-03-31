@@ -421,7 +421,8 @@ function dourl_inner(big, url, post, options, cb) {
 						}
 
 						//var faq_link = "https://www.reddit.com/r/MaxImage/comments/8znfgw/faq/";
-						var faq_link = "https://www.reddit.com/r/MaxImage/comments/d0zshj/faq/";
+						//var faq_link = "https://www.reddit.com/r/MaxImage/comments/d0zshj/faq/";
+						var faq_link = "https://www.reddit.com/r/MaxImage/comments/ffxfj1/faq/";
 						if (options.np)
 							faq_link = npify(faq_link);
 
