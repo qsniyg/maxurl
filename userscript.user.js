@@ -55333,6 +55333,18 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (host_domain_nowww === "dogpile.com" && domain_nosub === "bing.net" && /^ts[^.]+\.mm\./.test(domain) && options && options.element) {
+			if (options.element.tagName === "IMG" && options.element.parentElement && options.element.parentElement.tagName === "A") {
+				if (options.element.parentElement.classList.contains("link")) {
+					var parent = options.element.parentElement;
+					if (parent.parentElement && parent.parentElement.classList.contains("image")) {
+						if (parent.href !== src)
+							return parent.href;
+					}
+				}
+			}
+		}
+
 
 
 
