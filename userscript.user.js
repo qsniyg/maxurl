@@ -6233,10 +6233,14 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if (options.document)
-			document = options.document;
-		if (options.window)
-			window = options.window;
+		try {
+			if (options.document)
+				document = options.document;
+			if (options.window)
+				window = options.window;
+		} catch (e) {
+			console_warn("Failed to set document/window", e);
+		}
 
 		var problem_excluded = function(problem) {
 			if (!options.exclude_problems)
@@ -56799,10 +56803,14 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if (options.window)
-			window = options.window;
-		if (options.document);
-			document = options.document;
+		try {
+			if (options.document)
+				document = options.document;
+			if (options.window)
+				window = options.window;
+		} catch (e) {
+			console_warn("Failed to set document/window", e);
+		}
 
 
 		var new_image = function(src) {
