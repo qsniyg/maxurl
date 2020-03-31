@@ -55359,6 +55359,19 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (host_domain_nowww === "yippy.com" && domain_nosub === "bing.net" && /^ts[^.]+\.mm\./.test(domain) && options && options.element) {
+			if (options.element.tagName === "IMG" && options.element.parentElement && options.element.parentElement.tagName === "DIV") {
+				var parent = options.element.parentElement;
+				if (parent.classList.contains("media-box-thumbnail-container") && parent.parentElement) {
+					var dparent = parent.parentElement;
+					newsrc = dparent.getAttribute("data-mfp-src");
+					if (newsrc && newsrc !== src) {
+						return newsrc;
+					}
+				}
+			}
+		}
+
 		if (host_domain_nowww === "gigablast.com" && options && options.element) {
 			if (options.element.tagName === "IMG" && options.element.parentElement && options.element.parentElement.tagName === "A") {
 				var parent = options.element.parentElement;
