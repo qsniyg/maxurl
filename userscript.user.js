@@ -28032,9 +28032,25 @@ var $$IMU_EXPORT$$;
 			//   https://cps-static.rovicorp.com/2/Open/20th_Century_Fox_39/Program/22067798/walking%20with%20the%20enemy_PA.jpg?partner=allrovi.com
 			// https://cps-static.rovicorp.com/3/JPG_100/MI0001/535/MI0001535799.jpg?partner=allrovi.com
 			//   https://cps-static.rovicorp.com/3/JPG_SRC/MI0001/535/MI0001535799.jpg?partner=allrovi.com
+			// thanks to nimuxoha on github: https://github.com/qsniyg/maxurl/issues/279
+			// https://cps-static.rovicorp.com/3/JPG_500/MI0001/754/MI0001754760.jpg?partner=allrovi.com
+			//   https://cps-static.rovicorp.com/3/JPG_SRC/MI0001/754/MI0001754760.jpg?partner=allrovi.com
+			// https://rovimusic.rovicorp.com/image.jpg?c=yYHZyRxSklE9doh5teJWQh_TZlp6n_cq-Emr2zx15tU=&f=5
 			return src
 				.replace(/\/_derived_[^/]*(\/[^/]*)$/, "$1")
 				.replace(/\/JPG_[0-9]+\//, "/JPG_SRC/");
+		}
+
+		if (domain === "rovimusic.rovicorp.com") {
+			// https://rovimusic.rovicorp.com/image.jpg?c=yYHZyRxSklE9doh5teJWQh_TZlp6n_cq-Emr2zx15tU=&f=5
+			//   https://rovimusic.rovicorp.com/image.jpg?c=yYHZyRxSklE9doh5teJWQh_TZlp6n_cq-Emr2zx15tU=&f=0 -- 1408x1386
+			// 1 = 75, 2 = 170, 3 = 250, 4 = 400, 5 = 500, 6 = 1080, 0 = full
+			if (/[?&]c=[^&]{10,}/.test(src)) {
+				var queries = get_queries(src);
+				newsrc = src.replace(/\?.*/, "?c=" + queries.c + "&f=0");
+				if (newsrc !== src)
+					return newsrc;
+			}
 		}
 
 		if (domain_nosub === "netflixmovies.com" && domain.match(/i[0-9]*\.netflixmovies\.com/)) {
@@ -57196,6 +57212,43 @@ var $$IMU_EXPORT$$;
 					}
 
 					return "default";
+				}
+			};
+		}
+
+		if (host_domain_nosub === "allmusic.com") {
+			return {
+				gallery: function(el, nextprev) {
+					// thanks to nimuxoha on github: https://github.com/qsniyg/maxurl/issues/279
+					// https://www.allmusic.com/album/release/mr0002329530
+					// https://www.allmusic.com/album/release/mr0002781134 -- no gallery
+					// https://www.allmusic.com/album/release/mr0000570239
+					// https://www.allmusic.com/album/release/mr0001144566 -- no gallery
+
+					if (el.tagName !== "IMG" || !el.parentElement)
+						return "default";
+
+					if (!el.classList.contains("gallery-main-image"))
+						return "default";
+
+					var carousel_img = el.parentElement.querySelector("#carousel > ul > li.thumb-img > img.highlight-on");
+					if (!carousel_img) {
+						console_warn("Unable to find carousel thumbnail image");
+						return "default";
+					}
+
+					var valid_or_null = function(el) {
+						if (!el.classList.contains("thumb-img"))
+							return null;
+						return el.querySelector("img");
+					}
+
+					var li = carousel_img.parentElement;
+					if (nextprev) {
+						return valid_or_null(li.nextElementSibling);
+					} else {
+						return valid_or_null(li.previousElementSibling);
+					}
 				}
 			};
 		}
