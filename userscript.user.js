@@ -21715,6 +21715,14 @@ var $$IMU_EXPORT$$;
 				});
 			};
 
+			var get_bing_imageid = function(url) {
+				var newurl = url.replace(/.*[?&]id=([^&]+).*/, "$1");
+				if (newurl !== url)
+					return newurl;
+
+				return null;
+			};
+
 			var get_result_from_image = function(querydata, image, cb) {
 				get_images(querydata, function(data) {
 					if (!data) {
@@ -21722,10 +21730,21 @@ var $$IMU_EXPORT$$;
 					}
 
 					var image_src = decodeURIComponent(image.src);
+					var image_id = get_bing_imageid(image_src);
+					if (!image_id) {
+						console_warn("Unable to get bing image id for" + image.src);
+						return cb(null);
+					}
 
 					for (var i = 0; i < data.results.length; i++) {
+						var thumbnail_id = get_bing_imageid(data.results[i].thumbnail);
+						if (!thumbnail_id) {
+							console_warn("Unable to get bing image id for" + data.results[i].thumbnail);
+							continue;
+						}
+
 						// FIXME: hacky
-						if (string_indexof(image_src, data.results[i].thumbnail) >= 0) {
+						if (image_id === thumbnail_id) {
 							return cb(data.results[i].image);
 						}
 					}
@@ -28035,13 +28054,13 @@ var $$IMU_EXPORT$$;
 			// thanks to nimuxoha on github: https://github.com/qsniyg/maxurl/issues/279
 			// https://cps-static.rovicorp.com/3/JPG_500/MI0001/754/MI0001754760.jpg?partner=allrovi.com
 			//   https://cps-static.rovicorp.com/3/JPG_SRC/MI0001/754/MI0001754760.jpg?partner=allrovi.com
-			// https://rovimusic.rovicorp.com/image.jpg?c=yYHZyRxSklE9doh5teJWQh_TZlp6n_cq-Emr2zx15tU=&f=5
 			return src
 				.replace(/\/_derived_[^/]*(\/[^/]*)$/, "$1")
 				.replace(/\/JPG_[0-9]+\//, "/JPG_SRC/");
 		}
 
 		if (domain === "rovimusic.rovicorp.com") {
+			// thanks to nimuxoha on github: https://github.com/qsniyg/maxurl/issues/279
 			// https://rovimusic.rovicorp.com/image.jpg?c=yYHZyRxSklE9doh5teJWQh_TZlp6n_cq-Emr2zx15tU=&f=5
 			//   https://rovimusic.rovicorp.com/image.jpg?c=yYHZyRxSklE9doh5teJWQh_TZlp6n_cq-Emr2zx15tU=&f=0 -- 1408x1386
 			// 1 = 75, 2 = 170, 3 = 250, 4 = 400, 5 = 500, 6 = 1080, 0 = full
