@@ -9,6 +9,7 @@
 // @description:ko    6400개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
 // @description:fr    Trouve des images plus grandes ou originales pour plus de 6400 sites
 // @description:es    Encuentra imágenes más grandes y originales para más de 6400 sitios
+// @description:ru    Находит увеличенные или оригинальные версии изображений для более чем 6400 веб-сайтов
 // @description:zh    为6400多个网站查找更大或原始图像
 // @description:zh-CN 为6400多个网站查找更大或原始图像
 // @description:zh-TW 為6400多個網站查找更大或原始圖像
