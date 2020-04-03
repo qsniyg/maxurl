@@ -13731,6 +13731,9 @@ var $$IMU_EXPORT$$;
 			// https://zemanceleblegs.com/wp-content/gallery/r/rachel-mcadams/thumbs/thumbs_Rachel-McAdams-Legs-Sexy-Celebrity-Picture-Zeman-Celebrity-Legs-00002.jpg
 			//   https://zemanceleblegs.com/wp-content/gallery/r/rachel-mcadams/Rachel-McAdams-Legs-Sexy-Celebrity-Picture-Zeman-Celebrity-Legs-00002.jpg
 			domain_nowww === "zemanceleblegs.com" ||
+			// https://blog.chron.com/rodeoblog/wp-content/blogs.dir/1890/files/selena-gomez-at-rodeohouston/thumbs/thumbs_20140209_rodeo_jjh043.jpg
+			//   https://blog.chron.com/rodeoblog/wp-content/blogs.dir/1890/files/selena-gomez-at-rodeohouston/20140209_rodeo_jjh043.jpg
+			domain === "blog.chron.com" ||
 			// https://cdn2-www.comingsoon.net/assets/uploads/gallery/anon-set-photos/thumbs/thumbs_anon0020.jpg
 			//   https://cdn2-www.comingsoon.net/assets/uploads/gallery/anon-set-photos/anon0020.jpg
 			(domain_nosub === "comingsoon.net" && domain.match(/cdn[0-9]*-www\./)) ||
@@ -55519,6 +55522,33 @@ var $$IMU_EXPORT$$;
 			// https://www.wolframcdn.com/waimage/hset028/ee6/ee6999178a59095cc994a656ade3c1ec_v001s.jpg
 			//   https://www.wolframcdn.com/waimage/hset028/ee6/ee6999178a59095cc994a656ade3c1ec_v001ms.jpg
 			return src.replace(/(\/waimage\/.*_v[0-9]+)s(\.[^/.]+)(?:[?#].*)?$/, "$1ms$2");
+		}
+
+		if (domain_nowww === "allthetests.com") {
+			// https://www.allthetests.com/quiz30/picture_thumb/pic_1364087542_1.jpg?1364087929
+			return src.replace(/\/picture_thumb\/+pic_/, "/picture/pic_");
+		}
+
+		if (domain_nowww === "dicelacancion.com") {
+			// https://www.dicelacancion.com/static/img/artistas/s/selena-gomez/selena-gomez_b.jpg
+			//   https://www.dicelacancion.com/static/img/artistas/s/selena-gomez/selena-gomez_m.jpg
+			//   https://www.dicelacancion.com/static/img/artistas/s/selena-gomez/selena-gomez_l.jpg -- 500x500
+			//   https://www.dicelacancion.com/static/img/artistas/s/selena-gomez/selena-gomez_o.jpg -- 500x500
+			// https://www.dicelacancion.com/static/img/artistas/f/farruko/farruko_o.jpg -- 600x600 (l is the same)
+			// {o, l}, b, m
+			return src.replace(/(\/static\/+img\/+[^/]+\/+.\/+[^/]+\/+[^/]+)_[lbm](\.[^/.]+)(?:[?#].*)?$/, "$1_o$2");
+		}
+
+		if (domain === "static.pressfrom.info") {
+			// https://static.pressfrom.info/upload/images/small/2019/06/18/instagram-s-boss-says-he-s-disappointed-that-selena-gomez-deleted-the-app-from-her-phone__618261_.jpg
+			//   https://static.pressfrom.info/upload/images/real/2019/06/18/instagram-s-boss-says-he-s-disappointed-that-selena-gomez-deleted-the-app-from-her-phone__618261_.jpg
+			return src.replace(/\/upload\/+images\/+small\/+/, "/upload/images/real/");
+		}
+
+		if (domain_nowww === "shadestation.co.uk") {
+			// http://www.shadestation.co.uk/media/thumbs/138x138/media/product_images/Cute-Selena-Gomez-Sunglasses-Designfw138fh138.jpg
+			//   http://www.shadestation.co.uk/media/product_images/Cute-Selena-Gomez-Sunglasses-Design.jpg
+			return src.replace(/\/media\/+thumbs\/+[0-9]+x[0-9]+\/+(media\/+product_images\/+[^/]+)fw[0-9]+fh[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "/$1$2");
 		}
 
 
