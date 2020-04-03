@@ -8080,6 +8080,9 @@ var $$IMU_EXPORT$$;
 			// https://assets.mocha.global/mobicast/image/fetch/w_144,q_40/https%3A%2F%2Fr.kelkoo.com%2Fresize.php%3Fcountry%3Dde%26merchantId%3D16240913%26categoryId%3D134101%26width%3D90%26height%3D90%26image%3Dhttps%253A%252F%252Fstatic.shop-apotheke.com%252Fimages%252FD12391508-p1.jpg%26sign%3DESE.mSGBandnnojBPJJ9hgnoooEByCwODsLQPH42iEY-
 			//   https://r.kelkoo.com/resize.php?country=de&merchantId=16240913&categoryId=134101&width=90&height=90&image=https://static.shop-apotheke.com/images/D12391508-p1.jpg&sign=ESE.mSGBandnnojBPJJ9hgnoooEByCwODsLQPH42iEY-
 			domain === "assets.mocha.global" ||
+			// https://tbn.bidorbuy.co.za/image/fetch/dpr_1.0,f_auto,t_btbnx/https://media.loot.co.za/images/x400/7756832250603179215.jpg
+			//   https://media.loot.co.za/images/x400/7756832250603179215.jpg
+			domain === "tbn.bidorbuy.co.za" ||
 			domain === "images.taboola.com") {
 			// https://res.cloudinary.com/emazecom/image/fetch/c_limit,a_ignore,w_320,h_200/https%3A%2F%2Fimg-aws.ehowcdn.com%2F877x500p%2Fs3.amazonaws.com%2Fcme_public_images%2Fwww_ehow_com%2Fi.ehow.com%2Fimages%2Fa04%2Fbd%2Fic%2Fchemical-energy-work-3.1-800x800.jpg
 			// https://images.taboola.com/taboola/image/fetch/f_jpg%2Cq_auto%2Cc_fill%2Cg_faces:auto%2Ce_sharpen/https%3A%2F%2Fwww.gannett-cdn.com%2F-mm-%2F2e56892f6a349ad47192b530425d443fb365e5e9%2Fr%3Dx1803%26c%3D3200x1800%2Fhttps%2Fmedia.gannett-cdn.com%2F37861007001%2F37861007001_5735420050001_5735409691001-vs.jpg%3FpubId%3D37861007001
@@ -21382,6 +21385,9 @@ var $$IMU_EXPORT$$;
 			// http://www.planetongames.com/2881-medium_default/ad-astra.jpg
 			//   http://www.planetongames.com/2881/ad-astra.jpg
 			domain_nowww === "planetongames.com" ||
+			// https://www.baba.es/21845-home_default/selena-gomez-rare-edicion-deluxe-cd.jpg
+			//   https://www.baba.es/21845/selena-gomez-rare-edicion-deluxe-cd.jpg
+			domain_nowww === "baba.es" ||
 			// http://flyhighstore.pl/2210-home_default/fh-cool-red-winter-jacket.jpg
 			//   http://flyhighstore.pl/2210/fh-cool-red-winter-jacket.jpg
 			domain_nowww === "flyhighstore.pl") {
@@ -24743,6 +24749,9 @@ var $$IMU_EXPORT$$;
 				url: src.replace(/_[a-z](\.[^/.]*)$/, "$1"),
 				headers: {
 					Referer: "https://goods.ruten.com.tw/item/show"
+				},
+				referer_ok: {
+					same_domain: true
 				}
 			};
 		}
@@ -54458,9 +54467,11 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/data\/+dgram\/.*\/)small\/+([^/]+)(?:[?#].*)?$/, "$1big/$2");
 		}
 
-		if (domain === "th.sz-search.com") {
+		if (domain_nosub === "sz-search.com") {
 			// http://th.sz-search.com/t.html?ph=https%3A%2F%2Fencrypted-tbn0.gstatic.com%2Fimages%3Fq%3Dtbn%3AANd9GcQD2V2q2LpAxjuJHVG3fMBh5jZR7zZibnmjiz-B1siymZAznEvW%26s
 			//   https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQD2V2q2LpAxjuJHVG3fMBh5jZR7zZibnmjiz-B1siymZAznEvW&s
+			// http://it.sz-search.com/t.html?ph=https%3A%2F%2Fencrypted-tbn0.gstatic.com%2Fimages%3Fq%3Dtbn%3AANd9GcTWMG1jcS0qEJ3Ap9bbsG8j-KlqU2yWDKUQM0QliEIKrIkWfqux%26s
+			//   https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTWMG1jcS0qEJ3Ap9bbsG8j-KlqU2yWDKUQM0QliEIKrIkWfqux&s
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+t.html\?(?:.*&)?ph=(http[^&]*).*?$/, "$1");
 			if (newsrc !== src)
 				return decodeuri_ifneeded(newsrc);
@@ -55552,6 +55563,137 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/media\/+thumbs\/+[0-9]+x[0-9]+\/+(media\/+product_images\/+[^/]+)fw[0-9]+fh[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "/$1$2");
 		}
 
+		if (domain === "image.ceneostatic.pl") {
+			// https://image.ceneostatic.pl/offercandidates/9QDgAGdodHRwczovL2ltZy1jbG91ZC5tZWdha3NpYXpraS5wbC80OTYxNzctbGFyZ2UvZDc3Yzg4MzhkMmYyY2E4OTE4NTRhYjViNmM3ZjQ3YmUvc2VsZW5hLWdvbWV6LXJhcmUtY2QuanBn
+			//   https://img-cloud.megaksiazki.pl/496177-large/d77c8838d2f2ca891854ab5b6c7f47be/selena-gomez-rare-cd.jpg
+			// https://image.ceneostatic.pl/offercandidates/9QDgAERodHRwczovL21lZGlhLm1lcmxpbi5wbC9tZWRpYS9vcmlnaW5hbC8wMDAvMDE2LzMzMy81ZTQ1NmI0OTAxYjc1LmpwZw%3D%3D
+			//   https://media.merlin.pl/media/original/000/016/333/5e456b4901b75.jpg
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+offercandidates\/+([^/?#]{30,})(?:[?#].*)?$/, "$1");
+			if (newsrc != src) {
+				var decoded = base64_decode(decodeURIComponent(newsrc));
+				// it begins with binary data
+				newsrc = decoded.replace(/.*(https?:\/\/)/, "$1");
+				if (newsrc.match(/^https?:\/\//)) {
+					return newsrc;
+				}
+			}
+		}
+
+		if (domain === "img-cloud.megaksiazki.pl") {
+			// https://img-cloud.megaksiazki.pl/496177-small/d77c8838d2f2ca891854ab5b6c7f47be/selena-gomez-rare-cd.jpg
+			//   https://img-cloud.megaksiazki.pl/496177-large/d77c8838d2f2ca891854ab5b6c7f47be/selena-gomez-rare-cd.jpg
+			//   https://img-cloud.megaksiazki.pl/496177-original/d77c8838d2f2ca891854ab5b6c7f47be/selena-gomez-rare-cd.jpg
+			return src.replace(/(:\/\/[^/]+\/+[0-9]+-)[a-z]+\/+([0-9a-f]{10,}\/+)/, "$1original/$2");
+		}
+
+		if (domain_nowww === "e-onkyo.com") {
+			// https://www.e-onkyo.com/image/jacket/s5/uml00602508682957.jpg -- 30x30
+			//   https://www.e-onkyo.com/image/jacket/s0/uml00602508682957.jpg -- 600x600
+			return src.replace(/\/image\/+jacket\/+s[1-5]\/+/, "/image/jacket/s0/");
+		}
+
+		if (domain_nowww === "ubuy.qa") {
+			// https://www.ubuy.qa/productimg/?image=aHR0cHM6Ly9pLmViYXlpbWcuY29tL3RodW1icy9pbWFnZXMvZy9uWHdBQU9Td3RDTmVGRjNCL3MtbDIyNS5qcGc.jpg
+			//   https://i.ebayimg.com/images/g/nXwAAOSwtCNeFF3B/s-l9999.jpg
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+productimg\/+\?(?:.*&)?image=([^&.]+)(?:\.[^/.&]+)?.*?$/, "$1");
+			if (newsrc !== src)
+				return atob(decodeURIComponent(newsrc));
+		}
+
+		if (domain === "web.rds.it") {
+			// https://web.rds.it/i/jpeg/?url=https://web.rds.it/m/i4376
+			//   https://web.rds.it/m/i4376
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+i\/+[^/]+\/+\?(?:.*&)?url=([^&]+).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+		}
+
+		if (domain === "media.loot.co.za") {
+			// https://media.loot.co.za/images/x120/7756832250603179215.jpg
+			//   https://media.loot.co.za/images/x400/7756832250603179215.jpg
+			return src.replace(/(:\/\/[^/]+\/+images\/+)x(?:40|80|120|200)\/+/, "$1x400/");
+		}
+
+		if (domain === "img.ibs.it") {
+			// https://img.ibs.it/images/0602508561719_0_240_0_0.jpg -- 240x240
+			//   https://img.ibs.it/images/0602508561719_0_0_0_0.jpg -- 822x823
+			// https://img.ibs.it/images/0051141998848_0_0_0_0.jpg -- 2832x2832
+			return src.replace(/(:\/\/[^/]+\/+images\/+[0-9]{5,})(?:_[0-9]+){4}(\.[^/.]+)(?:[?#].*)?$/, "$1_0_0_0_0$2");
+		}
+
+		if (domain_nowww === "melodycenter.hu") {
+			// https://melodycenter.hu/img/3857/MELA03626/250x250,r/MELA03626.jpg?time=1584216418
+			//   https://melodycenter.hu/img/3857/MELA03626/250x250/MELA03626.jpg?time=1584216418
+			//   https://melodycenter.hu/img/3857/MELA03626/MELA03626.jpg?time=1584216418 -- 300x300
+			return src.replace(/(\/img\/+[0-9]+\/+[^/]+\/+)[0-9]+x[0-9]+(?:,[^/]+)?\/+/, "$1");
+		}
+
+		if (domain === "images.music-story.com") {
+			// http://images.music-story.com/img/artiste_K_400/kenny-wayne-shepherd-151167.jpg
+			//   http://images.music-story.com/img/artiste_K/kenny-wayne-shepherd-151167.jpg
+			return src.replace(/(\/img\/+artiste_[A-Z])_[0-9]+\/+/, "$1/");
+		}
+
+		if (domain === "naslehiphop.com") {
+			// http://naslehiphop.com/files//uploads/2020/1/235213523236523636346_thumbnail.jpeg
+			//   http://naslehiphop.com/files//uploads/2020/1/235213523236523636346.jpeg
+			return src.replace(/(\/files\/+uploads\/+[0-9]{4}\/+[0-9]+\/+[0-9]+)_thumbnail(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain === "pic.eslite.com") {
+			// http://pic.eslite.com/Upload/Product/201912/s/637124293733590000.jpg
+			//   http://pic.eslite.com/Upload/Product/201912/o/637124293733590000.jpg -- 1500x1500
+			return src.replace(/(\/Upload\/+Product\/+[0-9]{6}\/+)[a-z]\/+/, "$1o/");
+		}
+
+		if (domain_nosub === "vibbidi-vid.com") {
+			// https://aimg.vibbidi-vid.com/vibbidi-images/albums/img_DEE9F949241C46D8AE676F2B04810493.2019.12.30.07.15.16.256x.jpg
+			//   https://aimg.vibbidi-vid.com/vibbidi-images/albums/img_DEE9F949241C46D8AE676F2B04810493.2019.12.30.07.15.16.jpg
+			// https://aimg.vibbidi-vid.com/vibbidi-images/albums/930919079447277.128x.jpg
+			//   https://aimg.vibbidi-vid.com/vibbidi-images/albums/930919079447277.jpg
+			// https://audio.vibbidi-vid.com/vibbidi-us/audio/audio_A25EC35C1CA84EE6BD7DC3A965BCCA57.mp3.small.jpg
+			//   https://audio.vibbidi-vid.com/vibbidi-us/audio/audio_A25EC35C1CA84EE6BD7DC3A965BCCA57.mp3.jpg -- removing jpg does indeed return an mp3
+			// https://berserker5.vibbidi-vid.com/vibbidi-us/videos/video_53C0AF67624C45B5AFFCD19C7B515231.mp4.small.jpg
+			//   https://berserker5.vibbidi-vid.com/vibbidi-us/videos/video_53C0AF67624C45B5AFFCD19C7B515231.mp4.jpg
+			newsrc = src.replace(/(\/vibbidi-[a-z]+\/+(?:albums|audio|videos)\/+(?:(?:img|audio|video)_[A-F0-9]{10,}|[0-9]+)(?:\.(?:[0-9]+|mp3)){0,})\.(?:[0-9]*x[0-9]*|small)(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+			if (newsrc !== src)
+				return newsrc;
+
+			newsrc = src.replace(/(\/videos\/+video_[0-9A-F]{10,}\.mp4)(?:\..*)?(?:[?#].*)?$/, "$1");
+			if (newsrc !== src)
+				return {
+					url: newsrc,
+					video: true
+				};
+
+			if (/\/videos\/+video_[0-9A-F]{10,}\.mp4$/.test(src)) {
+				return {
+					url: src,
+					video: true
+				};
+			}
+		}
+
+		if (domain_nowww === "vibbidi.net") {
+			// https://www.vibbidi.net/static/img/no_3x3.png
+			if (/\/static\/+img\/+no_[0-9]+x[0-9]+\./.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
+		}
+
+		if (host_domain_nowww === "vibbidi.net" && options.element) {
+			if (options.element.tagName.toLowerCase() === "svg") {
+				if (options.element.classList.contains("IcoPlayMedium")) {
+					return {
+						url: origsrc,
+						bad: "mask"
+					};
+				}
+			}
+		}
+
 
 
 
@@ -56025,6 +56167,9 @@ var $$IMU_EXPORT$$;
 			// http://dw8stlw9qt0iz.cloudfront.net/mQPnCmXmqNYQo57GciDCvFLPgAo=/fit-in/800x450/filters:format(jpeg):quality(75)/curiosity-data.s3.amazonaws.com/images/content/landscape/standard/9c8fb438-27d4-4694-ba65-1a98e8ffd426.png
 			//   http://curiosity-data.s3.amazonaws.com/images/content/landscape/standard/9c8fb438-27d4-4694-ba65-1a98e8ffd426.png
 			domain === "dw8stlw9qt0iz.cloudfront.net" ||
+			// https://img.nrj.fr/QOZGn6LPf8gqvFptuUlEPQNXdtw=/250x250/smart/http%3A%2F%2Fimages.music-story.com%2Fimg%2Falbum_S%2Fselena-gomez-rare.jpg
+			//   http://images.music-story.com/img/album_S/selena-gomez-rare.jpg
+			domain === "img.nrj.fr" ||
 			// https://images.adrise.tv/VcGv7kP97DPd9mKXEAkCpJyNVLI=/400x574/smart/img.adrise.tv/aa6d4d27-82d0-4b1d-8cb4-7566928a0389.jpg
 			//   http://img.adrise.tv/aa6d4d27-82d0-4b1d-8cb4-7566928a0389.jpg
 			domain === "images.adrise.tv" ||
