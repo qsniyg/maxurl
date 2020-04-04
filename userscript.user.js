@@ -1644,6 +1644,7 @@ var $$IMU_EXPORT$$;
 		mouseover_add_link: true,
 		mouseover_add_video_link: false,
 		mouseover_download: false,
+		mouseover_hide_cursor: false,
 		// also thanks to 07416: https://github.com/qsniyg/maxurl/issues/25
 		mouseover_links: false,
 		mouseover_allow_canvas_el: false,
@@ -2852,6 +2853,15 @@ var $$IMU_EXPORT$$;
 			},
 			category: "popup",
 			subcategory: "open_behavior"
+		},
+		mouseover_hide_cursor: {
+			name: "Hide cursor over popup",
+			description: "Hides the cursor when the mouse is over the popup",
+			requires: {
+				mouseover_open_behavior: "popup"
+			},
+			category: "popup",
+			subcategory: "behavior"
 		},
 		mouseover_add_link: {
 			name: "Link image",
@@ -62889,6 +62899,11 @@ var $$IMU_EXPORT$$;
 				a.target = "_blank";
 				a.appendChild(img);
 				div.appendChild(a);
+
+				if (settings.mouseover_hide_cursor) {
+					a.style.cursor = "none";
+					img.style.cursor = "none";
+				}
 
 				function startdrag(e) {
 					dragstart = true;
