@@ -62161,17 +62161,19 @@ var $$IMU_EXPORT$$;
 					div.style.border = "3px solid white";
 					}*/
 
+				// http://png-pixel.com/
+				var transparent_gif = "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==";
 				var styles_variables = {};
 				if (popup_orig_url && !popup_el_is_video) {
 					styles_variables["%thumburl%"] = encodeuri_ifneeded(popup_orig_url);
 				} else {
-					styles_variables["%thumburl%"] = "about:blank";
+					styles_variables["%thumburl%"] = transparent_gif;
 				}
 
 				if (!is_video) {
 					styles_variables["%fullurl%"] = encodeuri_ifneeded(get_img_src(img));
 				} else {
-					styles_variables["%fullurl%"] = "about:blank";
+					styles_variables["%fullurl%"] = transparent_gif;
 				}
 
 				apply_styles(div, settings.mouseover_styles, true, styles_variables);
