@@ -1598,6 +1598,7 @@ var $$IMU_EXPORT$$;
 		mouseover_exclude_sameimage: false,
 		mouseover_exclude_imagetab: true,
 		mouseover_video_controls: false,
+		mouseover_video_controls_key: ["c"],
 		mouseover_video_loop: true,
 		mouseover_video_playpause_key: ["space"],
 		mouseover_video_muted: false,
@@ -2163,6 +2164,17 @@ var $$IMU_EXPORT$$;
 				mouseover_open_behavior: "popup",
 				allow_video: true
 			},
+			category: "popup",
+			subcategory: "video"
+		},
+		mouseover_video_controls_key: {
+			name: "Toggle video controls",
+			description: "Key to toggle whether the video controls are shown",
+			requires: {
+				mouseover_open_behavior: "popup",
+				allow_video: true
+			},
+			type: "keysequence",
 			category: "popup",
 			subcategory: "video"
 		},
@@ -66390,6 +66402,18 @@ var $$IMU_EXPORT$$;
 			videoel.muted = !videoel.muted;
 		};
 
+		var toggle_video_controls = function() {
+			var videoel = get_popup_video();
+			if (!videoel)
+				return;
+
+			if (videoel.getAttribute("controls") === "controls") {
+				videoel.removeAttribute("controls");
+			} else {
+				videoel.setAttribute("controls", "controls");
+			}
+		};
+
 		var toggle_video_playing = function() {
 			var videoel = get_popup_video();
 			if (!videoel)
@@ -66487,6 +66511,9 @@ var $$IMU_EXPORT$$;
 					return true;
 				case "toggle_mute":
 					toggle_video_muted();
+					return true;
+				case "toggle_controls":
+					toggle_video_controls();
 					return true;
 				case "toggle_play_pause":
 					toggle_video_playing();
@@ -66696,6 +66723,10 @@ var $$IMU_EXPORT$$;
 					{
 						key: settings.mouseover_video_mute_key,
 						action: {type: "toggle_mute"}
+					},
+					{
+						key: settings.mouseover_video_controls_key,
+						action: {type: "toggle_controls"}
 					},
 					{
 						key: settings.mouseover_video_playpause_key,
