@@ -1530,6 +1530,7 @@ var $$IMU_EXPORT$$;
 		"mouseover_use_fully_loaded_image",
 		"mouseover_close_on_leave_el",
 		"mouseover_scroll_behavior",
+		"mouseover_mask_styles"
 	];
 
 	var settings = {
@@ -1659,7 +1660,7 @@ var $$IMU_EXPORT$$;
 		mouseover_styles: "",
 		mouseover_fade_time: 100,
 		mouseover_enable_mask_styles: false,
-		mouseover_mask_styles: "",
+		mouseover_mask_styles2: "",
 		mouseover_mask_fade_time: 100,
 		mouseover_ui_styles: "",
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-541065461
@@ -3145,7 +3146,7 @@ var $$IMU_EXPORT$$;
 			category: "popup",
 			subcategory: "popup_other"
 		},
-		mouseover_mask_styles: {
+		mouseover_mask_styles2: {
 			name: "Background CSS style",
 			description: "CSS style for the background when the popup is active",
 			requires: {
@@ -60655,6 +60656,18 @@ var $$IMU_EXPORT$$;
 			changed = true;
 
 			version = 4;
+		}
+
+		if (version === 4) {
+			if ("mouseover_mask_styles" in new_settings && new_settings.mouseover_mask_styles) {
+				update_setting("mouseover_mask_styles2", new_settings.mouseover_mask_styles);
+				update_setting("mouseover_enable_mask_styles", true);
+			}
+
+			update_setting("settings_version", 5);
+			changed = true;
+
+			version = 5;
 		}
 
 		cb(changed);
