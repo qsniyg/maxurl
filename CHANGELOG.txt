@@ -1,3 +1,26 @@
+0.12.22
+
+New features:
+
+ * Option to hide the cursor when over the popup, optionally after a specified period of time
+ * Keybinding to toggle video controls (bound to C by default)
+ * Variables for Popup CSS style that hold the thumbnail and full image URLs (`%thumburl%` and `%fullurl%`)
+ * Support for ~55 new sites (using ~40 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including AllMusic - thanks to nimuxoha, DuckDuckGo, Giphy, Spotify, YouTube)
+ * Background CSS style has been split to allow an option to toggle its usage (Enable background CSS)
+ * Documentation for CSS styles
+
+Bugfixes:
+
+ * The popup will automatically exclude invalid URLs (such as `about:blank`)
+ * Fix for crash under Violentmonkey, due to it refusing to allow certain objects to be overridden
+ * Fix crashes with Bing when using uBlock Origin
+
+---
+
 0.12.21
 
 New features:
