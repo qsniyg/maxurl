@@ -9526,11 +9526,12 @@ var $$IMU_EXPORT$$;
 										var json = JSON_parse(data);
 
 										// doesn't work on: https://www.youtube.com/watch?v=vFaeDdEb44A
-										// it's because embedding isn't allowed: https://www.youtube.com/embed/vFaeDdEb44A
+										// it's sometimes because embedding isn't allowed: https://www.youtube.com/embed/vFaeDdEb44A
+										// sometimes fails with: playabilityStatus { status: UNPLAYABLE, reason: Video+unavailable }: https://www.youtube.com/watch?v=GB_S2qFh5lU
 										var formats = json.streamingData.formats; // just to make sure it exists
 										return done(json, 5*60*60); // video URLs expire in 6 hours
 									} catch (e) {
-										console_error(e, resp);
+										console_error(e, resp, splitted[i], data);
 									}
 
 									break;
