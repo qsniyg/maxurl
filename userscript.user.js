@@ -62054,7 +62054,7 @@ var $$IMU_EXPORT$$;
 
 					set_important_style(mask, "opacity", 1);
 					if (settings.mouseover_enable_mask_styles)
-						apply_styles(mask, settings.mouseover_mask_styles, true);
+						apply_styles(mask, settings.mouseover_mask_styles2, true);
 
 					if (!settings.mouseover_close_click_outside) {
 						set_important_style(mask, "pointer-events", "none");
