@@ -55775,6 +55775,29 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/megahits\/+[^/]+[0-9a-f]{8})_square[a-z]*(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		}
 
+		if (domain === "media.becteroradio.com") {
+			// https://media.becteroradio.com/pix/single/36209_small.jpg
+			//   https://media.becteroradio.com/pix/single/36209_medium.jpg
+			//   https://media.becteroradio.com/pix/single/36209.jpg
+			return src.replace(/(\/pix\/+[^/]+\/+[0-9]+)_[a-z]+(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (false && (domain === "cdnrockol-rockolcomsrl.netdna-ssl.com" ||
+			// https://a6p8a2b3.stackpathcdn.com/SDdEdm_7dVS9L5rPtY9GMl0OZ74=/600x0/smart/filters:no_upscale()/rockol-img/img/foto/upload/rare-selena-gomez-cover-ts1576805435.jpg#direct
+			domain === "a6p8a2b3.stackpathcdn.com")) {
+			// https://cdnrockol-rockolcomsrl.netdna-ssl.com/rdMW-bcVsJ4__mrXPr6A75jzyy0=/300x300/smart/rockol-img/img/foto/upload/rare-selena-gomez-cover-ts1576805435.jpg
+			//   https://www.rockol.it/img/foto/upload/rare-selena-gomez-cover-ts1576805435.jpg
+			//   https://a6p8a2b3.stackpathcdn.com/SDdEdm_7dVS9L5rPtY9GMl0OZ74=/600x0/smart/filters:no_upscale()/rockol-img/img/foto/upload/rare-selena-gomez-cover-ts1576805435.jpg#direct
+			// https://cdnrockol-rockolcomsrl.netdna-ssl.com/xhumGAFrcsVE0USbEQVs6X3ftPk=/x/smart/rockol-img/img/foto/upload/jovanotti-rockol-30.jpg -- 1200x...
+			//   https://a6p8a2b3.stackpathcdn.com/cREyqQZHcCZ_X206n34-whBQ1mg=/600x0/smart/filters:no_upscale()/rockol-img/img/foto/upload/jovanotti-rockol-30.jpg#direct -- 600x...
+			if (string_indexof(src, "#direct") < 0) {
+				return {
+					url: src.replace(/.*\/rockol-img\/+img\/+/, "https://www.rockol.it/img/"),
+					redirects: true
+				};
+			}
+		}
+
 
 
 
