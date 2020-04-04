@@ -1645,6 +1645,7 @@ var $$IMU_EXPORT$$;
 		mouseover_add_video_link: false,
 		mouseover_download: false,
 		mouseover_hide_cursor: false,
+		mouseover_hide_cursor_after: 0,
 		// also thanks to 07416: https://github.com/qsniyg/maxurl/issues/25
 		mouseover_links: false,
 		mouseover_allow_canvas_el: false,
@@ -2860,6 +2861,19 @@ var $$IMU_EXPORT$$;
 			requires: {
 				mouseover_open_behavior: "popup"
 			},
+			category: "popup",
+			subcategory: "behavior"
+		},
+		mouseover_hide_cursor_after: {
+			name: "Hide cursor after",
+			description: "Hides the cursor over the popup after a specified period of time (in milliseconds), 0 always hides the cursor",
+			requires: {
+				mouseover_hide_cursor: true
+			},
+			type: "number",
+			number_unit: "ms",
+			number_int: true,
+			number_min: 0,
 			category: "popup",
 			subcategory: "behavior"
 		},
@@ -61370,6 +61384,8 @@ var $$IMU_EXPORT$$;
 		var can_close_popup = [false, false];
 		var popup_hold = false;
 		var popup_zoom_func = nullfunc;
+		var popup_hidecursor_func = nullfunc;
+		var popup_hidecursor_timer = null;
 		var dragstart = false;
 		var dragstartX = null;
 		var dragstartY = null;
@@ -62900,10 +62916,39 @@ var $$IMU_EXPORT$$;
 				a.appendChild(img);
 				div.appendChild(a);
 
-				if (settings.mouseover_hide_cursor) {
-					a.style.cursor = "none";
-					img.style.cursor = "none";
+				popup_hidecursor_timer = null;
+				var orig_a_cursor = a.style.cursor;
+				var orig_img_cursor = img.style.cursor;
+				popup_hidecursor_func = function(hide) {
+					if (settings.mouseover_hide_cursor && hide) {
+						a.style.cursor = "none";
+						img.style.cursor = "none";
+					} else {
+						if (popup_hidecursor_timer) {
+							clearTimeout(popup_hidecursor_timer);
+							popup_hidecursor_timer = null;
+						}
+
+						a.style.cursor = orig_a_cursor;
+						img.style.cursor = orig_img_cursor;
+					}
+				};
+
+				if (settings.mouseover_hide_cursor && settings.mouseover_hide_cursor_after <= 0) {
+					popup_hidecursor_func(true);
 				}
+
+				div.onmouseover = div.onmousemove = function(e) {
+					if (settings.mouseover_hide_cursor_after > 0 || !settings.mouseover_hide_cursor) {
+						popup_hidecursor_func(false);
+
+						if (settings.mouseover_hide_cursor) {
+							popup_hidecursor_timer = setTimeout(function() {
+								popup_hidecursor_func(true);
+							}, settings.mouseover_hide_cursor_after);
+						}
+					}
+				};
 
 				function startdrag(e) {
 					dragstart = true;
