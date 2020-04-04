@@ -9358,6 +9358,17 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (host_domain_nosub === "youtube.com" && options.element) {
+			if (options.element.tagName.toLowerCase() === "svg" && options.element.parentElement.tagName.toLowerCase() === "yt-icon") {
+				// "play_all" is one icon to exclude
+				if (options.element.parentElement.hasAttribute("icon"))
+					return {
+						url: origsrc,
+						bad: "mask"
+					};
+			}
+		}
+
 		if (domain_nowww === "youtube.com" || domain_nowww === "youtu.be") {
 			// for thumbnails
 			match = src.match(/^[a-z]+:\/\/(?:www\.)?youtube\.com\/+watch\?(?:.*&)?v=([^&#]*)/);
