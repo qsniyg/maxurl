@@ -10355,6 +10355,10 @@ var $$IMU_EXPORT$$;
 			 domain === "nbocdn.akamaized.net" ||
 			 // https://avecdn.akamaized.net/Assets/Images_Upload/Actu24/2019/01/17/5db5bcce-1a52-11e9-8d8b-af38f65ef78d_web_.jpg?maxheight=1000&maxwidth=1000&scale=both
 			 domain === "avecdn.akamaized.net" ||
+			 // https://static.hbvl.be/Assets/Images_Upload/2020/01/18/5db2f5a4-3895-11ea-851f-4cd0e4980a9f.jpg?maxheight=280&maxwidth=400
+			 domain === "static.hbvl.be" ||
+			 // https://static.standaard.be/Assets/Images_Upload/2020/01/15/61c6fa7c-36e3-11ea-8d7f-eca0964b0462.jpg?maxheight=280&maxwidth=400
+			 domain === "static.standaard.be" ||
 			 // https://limnlcdn.akamaized.net/Assets/Images_Upload/2018/10/19/Rihanna.jpg?maxheight=460&maxwidth=629
 			  domain === "limnlcdn.akamaized.net") && /\/Assets\/+Images_Upload\//i.test(src)) ||
 			// https://img.s-msn.com/tenant/amp/entityid/AA1G0zk.img?h=416&w=624&m=6&q=60&u=t&o=f&l=f&x=292&y=145
@@ -18771,6 +18775,9 @@ var $$IMU_EXPORT$$;
 			// https://i.moveek.com/media/cache/full_fixed/media/ee46a470620916e0524592d6859d54a467ad2fb6.jpg
 			//   https://i.moveek.com/media/ee46a470620916e0524592d6859d54a467ad2fb6.jpg
 			domain === "i.moveek.com" ||
+			// https://mainstyles.ru/media/cache/default/rc/hSGOTMvi_maRMn6VB/uploads/material/Selena-Gomes-vypustila-tretiy-albom.jpg
+			//   https://mainstyles.ru/uploads/material/Selena-Gomes-vypustila-tretiy-albom.jpg
+			domain_nowww === "mainstyles.ru" ||
 			// https://shukrabar.nagariknetwork.com/media/cache/nagarik_thumbnail_389_283/uploads/media/Camila%20Cabello.jpg
 			//   https://shukrabar.nagariknetwork.com/uploads/media/Camila%20Cabello.jpg
 			//domain === "shukrabar.nagariknetwork.com" ||
@@ -18780,7 +18787,9 @@ var $$IMU_EXPORT$$;
 			src.match(/^[a-z]+:\/\/[^/]*\/+media\/+cache\/+[^/]*\/+uploads\/+media\//)) {
 			// http://rez.cdn.kul.vn/media/cache/thumbnail_16x10_672x420/uploads/media/thumbnail/59db/29/thumbnail_16x9_t-ara4.jpg
 			//   http://rez.cdn.kul.vn/uploads/media/kul/59db/28/kul_news_t-ara4.jpg
-			return src.replace(/\/media\/+cache\/+[^/]*\//, "/");
+			return src
+				.replace(/\/media\/+cache\/+.*\/+uploads\/+/, "/uploads/")
+				.replace(/\/media\/+cache\/+[^/]*\//, "/");
 		}
 
 		if (domain_nowww === "themebeta.com") {
@@ -21388,6 +21397,9 @@ var $$IMU_EXPORT$$;
 			// https://www.baba.es/21845-home_default/selena-gomez-rare-edicion-deluxe-cd.jpg
 			//   https://www.baba.es/21845/selena-gomez-rare-edicion-deluxe-cd.jpg
 			domain_nowww === "baba.es" ||
+			// https://www.teamworldshop.it/2603-home_default/cd-selena-gomez-rare.jpg
+			//   https://www.teamworldshop.it/2603/cd-selena-gomez-rare.jpg
+			domain_nowww === "teamworldshop.it" ||
 			// http://flyhighstore.pl/2210-home_default/fh-cool-red-winter-jacket.jpg
 			//   http://flyhighstore.pl/2210/fh-cool-red-winter-jacket.jpg
 			domain_nowww === "flyhighstore.pl") {
@@ -32072,6 +32084,9 @@ var $$IMU_EXPORT$$;
 			// https://www.buro247.ua/thumb/670x830_0/images/2018/05/900_benedict-cumberbatch-equal-pay.jpg
 			//   https://www.buro247.ua/images/2018/05/900_benedict-cumberbatch-equal-pay.jpg
 			domain_nosub === "buro247.ua" ||
+			// https://m.buro247.mn/thumb/300x300_5/images/rarealbumsq.jpg
+			//   https://m.buro247.mn/images/rarealbumsq.jpg
+			domain_nosub === "buro247.mn" ||
 			// https://www.buro247.ru/thumb/1000x700/local/images/buro/galleries/2018/01/Vuitton-m-RF18-0784.jpg
 			//   https://www.buro247.ru/local/images/buro/galleries/2018/01/Vuitton-m-RF18-0784.jpg
 			domain_nosub === "buro247.ru") {
@@ -32082,7 +32097,7 @@ var $$IMU_EXPORT$$;
 			//return src.replace(/\/thumb\/[0-9]+x[0-9]+\/local\/images\//, "/local/images/");
 			return src
 				.replace(/(\/thumb\/[^/]*\/)galleries\//, "$1local/images/buro/galleries/")
-				.replace(/\/thumb\/[0-9]+x[0-9]+(?:_0)?((?:\/local)?\/(?:images|thumb)\/)/, "$1");
+				.replace(/\/thumb\/[0-9]+x[0-9]+(?:_[0-9]+)?((?:\/local)?\/(?:images|thumb)\/)/, "$1");
 		}
 
 		if (domain_nosub === "hellomagazine.com") {
@@ -45386,7 +45401,11 @@ var $$IMU_EXPORT$$;
 			//   https://ecs7.tokopedia.net/img/shops-1/2017/11/21/24775816/24775816_04989fcf-5375-4961-a4f2-660649006e24.jpg
 			// https://ecs7.tokopedia.net/img/cache/1190/shops-1/2018/10/21/2960567/2960567_be2b23d3-e5ed-4d8d-af72-551000c5eb4d
 			//   https://ecs7.tokopedia.net/img/shops-1/2018/10/21/2960567/2960567_be2b23d3-e5ed-4d8d-af72-551000c5eb4d
-			return src.replace(/\/img\/+cache\/+[0-9]+(?:-[a-z]+)?\/+/, "/img/");
+			// https://ecs7.tokopedia.net/img/cache/260x200/attachment/2017/2/17/112/112_56935c82-6b9e-4f9a-bf8e-24690556597b.jpg.webp
+			//   https://ecs7.tokopedia.net/img/attachment/2017/2/17/112/112_56935c82-6b9e-4f9a-bf8e-24690556597b.jpg
+			// other:
+			// https://ecs7.tokopedia.net/img/product-1/2020/1/12/5884427/5884427_bde6c941-bf35-432b-a567-0bcd6c5cd810_2048_2048
+			return src.replace(/\/img\/+cache\/+[0-9]+(?:x[0-9]+)?(?:-[a-z]+)?\/+(.*?)(?:(\.[^/.]+)?\.webp)?(?:[?#].*)?$/, "/img/$1$2");
 		}
 
 		if (domain === "icdn.2cda.pl") {
@@ -51429,7 +51448,10 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(:\/\/[^/]*\/+)thumbs\/+([0-9]{4}-[0-9]{2}\/+)/, "$1img/$2");
 		}
 
-		if (domain_nowww === "mariuszlewandowski.pl") {
+		if (domain_nowww === "mariuszlewandowski.pl" ||
+			// https://voiceshop.pl/environment/cache/images/300_300_productGfx_23950/rare-b-iext56853906.jpg
+			//   https://voiceshop.pl/userdata/gfx/23950/rare-b-iext56853906.jpg
+			domain_nowww === "voiceshop.pl") {
 			// https://www.mariuszlewandowski.pl/environment/cache/images/300_300_productGfx_217b8de435ff985c8893ff43f039aa77.jpg
 			//   https://www.mariuszlewandowski.pl/userdata/gfx/217b8de435ff985c8893ff43f039aa77.jpg
 			return src.replace(/\/environment\/+cache\/+images\/+[0-9]+_[0-9]+_productGfx_/, "/userdata/gfx/");
@@ -55694,6 +55716,65 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain_nowww === "puregrainaudio.com") {
+			// https://puregrainaudio.com/images/blogimages/273s/38875.jpg
+			//   https://puregrainaudio.com/images/blogimages/38875.jpg
+			return src.replace(/(\/images\/+blogimages\/+)[0-9]+s\/+/, "$1");
+		}
+
+		if (domain_nowww === "mfmm.ru") {
+			// http://mfmm.ru/_bd/8/s48492261.jpg
+			//   http://mfmm.ru/_bd/8/48492261.jpg -- 1000x1000
+			return src.replace(/(\/_bd\/+[0-9]+\/+)s([0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nosub === "mlstatic.com") {
+			// https://http2.mlstatic.com/cd-selena-gomez-rare-D_Q_NP_737185-MLA40516382913_012020-R.webp
+			//   https://http2.mlstatic.com/cd-selena-gomez-rare-D_Q_NP_737185-MLA40516382913_012020-F.webp -- O is smaller
+			// https://http2.mlstatic.com/D_Q_NP_770389-MLA41222249167_032020-E.jpg-O.webp
+			//   https://http2.mlstatic.com/D_Q_NP_770389-MLA41222249167_032020-F.jpg
+			return src.replace(/(:\/\/[^/]+\/+(?:[^/]+-)?D_[^/.]+)-[A-Z](\.[^/.]+)(?:-[A-Z]\.[^/.]+)?(?:[?#].*)?$/, "$1-F$2");
+		}
+
+		if (domain === "angartwork.akamaized.net") {
+			// https://angartwork.akamaized.net/webp/?id=113873609&size=296
+			//   https://angartwork.akamaized.net/webp/?id=113873609
+			// https://angartwork.akamaized.net/?id=113873609&size=296
+			//   https://angartwork.akamaized.net/?id=113873609
+			obj = {
+				url: src,
+				head_wrong_contentlength: true
+			};
+
+			var queries = get_queries(src);
+			if ("id" in queries) {
+				return fillobj_urls([src.replace(/\?.*/, "?id=" + queries.id)], obj);
+			}
+
+			return obj;
+		}
+
+		if (domain === "pimg.awa.io") {
+			// https://pimg.awa.io/v2/jacket/744b4188bf6730137424.w300.h300.v1584608509.fitcrop.jpg
+			//   https://pimg.awa.io/v2/jacket/744b4188bf6730137424.w9999999999.jpg
+			return {
+				url: src.replace(/(\/v2\/+[^/]+\/+[0-9a-f]{10,})(?:\.(?:[whv][0-9]+|fitcrop)){1,}(\.[^/.]+)(?:[?#].*)?$/, "$1.w9999999999$2"),
+				can_head: false // 404
+			};
+		}
+
+		if (domain_nosub === "hudobny.sk") {
+			// https://m.hudobny.sk/images/middle/56382.jpg
+			//   https://hudobny.sk/images/original/56382.jpg -- 1024x1024
+			return src.replace(/\/images\/+[a-z]+\/+([0-9]+\.[^/.]+)(?:[?#].*)?$/, "/images/original/$1");
+		}
+
+		if (domain === "cdnimages01.azureedge.net") {
+			// https://cdnimages01.azureedge.net/megahits/selenagomez_rare1104e89a_squarexs.jpg
+			//   https://cdnimages01.azureedge.net/megahits/selenagomez_rare1104e89a.jpg
+			return src.replace(/(\/megahits\/+[^/]+[0-9a-f]{8})_square[a-z]*(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
 
 
 
@@ -56170,6 +56251,9 @@ var $$IMU_EXPORT$$;
 			// https://img.nrj.fr/QOZGn6LPf8gqvFptuUlEPQNXdtw=/250x250/smart/http%3A%2F%2Fimages.music-story.com%2Fimg%2Falbum_S%2Fselena-gomez-rare.jpg
 			//   http://images.music-story.com/img/album_S/selena-gomez-rare.jpg
 			domain === "img.nrj.fr" ||
+			// https://img.wynk.in/unsafe/275x275/filters:no_upscale():format(jpg)/http://s3-ap-south-1.amazonaws.com/wynk-music-cms/srch_universalmusic/music/1578588471/srch_universalmusic_00602508682988-USUM71923484.jpg
+			//   http://s3-ap-south-1.amazonaws.com/wynk-music-cms/srch_universalmusic/music/1578588471/srch_universalmusic_00602508682988-USUM71923484.jpg
+			domain === "img.wynk.in" ||
 			// https://images.adrise.tv/VcGv7kP97DPd9mKXEAkCpJyNVLI=/400x574/smart/img.adrise.tv/aa6d4d27-82d0-4b1d-8cb4-7566928a0389.jpg
 			//   http://img.adrise.tv/aa6d4d27-82d0-4b1d-8cb4-7566928a0389.jpg
 			domain === "images.adrise.tv" ||
@@ -56211,7 +56295,7 @@ var $$IMU_EXPORT$$;
 			if (newsrc !== src)
 				return decodeuri_ifneeded(newsrc);
 
-			newsrc = src.replace(/.*\/[-_A-Za-z0-9]+=\/(?:(?:full-)?fit-in\/)?(?:[0-9x:]+\/)?(?:[0-9x:]+\/)?(?:(?:smart|top|center|middle)\/)?(?:(?:smart|top|center|middle)\/)?(?:filters:[^/]*\/)?((?:https?(?::\/\/|%3[aA]%2[fF]%2[fF]))?[^/%]*\..*)/, "$1");
+			newsrc = src.replace(/.*\/(?:[-_A-Za-z0-9]+=|unsafe)\/(?:(?:full-)?fit-in\/)?(?:[0-9x:]+\/)?(?:[0-9x:]+\/)?(?:(?:smart|top|center|middle)\/)?(?:(?:smart|top|center|middle)\/)?(?:filters:[^/]*\/)?((?:https?(?::\/\/|%3[aA]%2[fF]%2[fF]))?[^/%]*\..*)/, "$1");
 			if (newsrc.match(/^[^/]*%2/))
 				newsrc = decodeURIComponent(newsrc);
 
