@@ -3067,7 +3067,7 @@ var $$IMU_EXPORT$$;
 		},
 		mouseover_allow_svg_el: {
 			name: "Popup for `<svg>`",
-			description: "Allows `<svg>` elements to be popped up as well. In theory, leaving this option enabled shouldn't cause any harm",
+			description: "Allows `<svg>` elements to be popped up as well. These are usually used for icons, and can occasionally cause problems for websites that overlay icons on top of images",
 			requires: {
 				mouseover: true
 			},
@@ -26145,6 +26145,8 @@ var $$IMU_EXPORT$$;
 			// https://media1.giphy.com/media/l0Iy0lyLZnfdEBmMg/200w.webp
 			// https://media1.giphy.com/media/l0Iy0lyLZnfdEBmMg/200w.gif
 			// https://media2.giphy.com/media/ZBg5XWrvDVzNe/200_s.gif
+			// private gif:
+			// https://i.giphy.com/media/gHPsfv5TM792hQdBRH/giphy.webp
 
 			var baseobj = {
 				url: src,
@@ -26202,6 +26204,10 @@ var $$IMU_EXPORT$$;
 
 				if (options && options.do_request && options.cb) {
 					query_giphy(id, function(data) {
+						if (!data) {
+							return options.cb(null);
+						}
+
 						var images = data.images;
 
 						var get_image = function(obj) {
