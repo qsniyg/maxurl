@@ -3118,6 +3118,18 @@ var $$IMU_EXPORT$$;
 		mouseover_styles: {
 			name: "Popup CSS style",
 			description: "Custom CSS styles for the popup",
+			documentation: {
+				title: "Documentation",
+				value: [
+					"Most valid CSS is supported, with these differences:",
+					"<ul><li>Multiline comments (<code>/* ... */</code>) are currently not supported</li>",
+					"<li>Single comments (<code>// ...</code>) are supported, but only at the beginning of a line</li>",
+					"<li><code>%thumburl%</code> is the URL of the thumbnail image. For example, you could use it like this: <code>background-image: url(%thumburl%)</code><br />",
+					"The URL is properly encoded, so quotes are not necessary (but not harmful either)</li>",
+					"<li><code>%fullurl%</code> is the URL of the full image. If IMU fails to find a larger image, it will be the same as <code>%thumburl%</code></li>",
+					"<li>Styles are <code>!important</code> by default</li></ul>"
+				].join("\n")
+			},
 			type: "textarea",
 			requires: {
 				mouseover_open_behavior: "popup"
@@ -3148,7 +3160,7 @@ var $$IMU_EXPORT$$;
 		},
 		mouseover_mask_styles2: {
 			name: "Background CSS style",
-			description: "CSS style for the background when the popup is active",
+			description: "CSS style for the background when the popup is active. See the documentation for Popup CSS style for more information (the thumb/full URL variables aren't supported here)",
 			requires: {
 				mouseover_open_behavior: "popup",
 				mouseover_enable_mask_styles: true
