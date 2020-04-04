@@ -8119,6 +8119,9 @@ var $$IMU_EXPORT$$;
 			// https://tbn.bidorbuy.co.za/image/fetch/dpr_1.0,f_auto,t_btbnx/https://media.loot.co.za/images/x400/7756832250603179215.jpg
 			//   https://media.loot.co.za/images/x400/7756832250603179215.jpg
 			domain === "tbn.bidorbuy.co.za" ||
+			// https://resources.sonyliv.com/image/fetch/h_254,w_438,c_fill,fl_lossy,f_auto,q_auto,e_contrast:30,e_brightness:10/https%3A%2F%2Fcf-images.ap-southeast-1.prod.boltdns.net%2Fv1%2Fjit%2F5182475815001%2F9fd45fd7-fdd4-4835-b3bf-d2e2680c1684%2Fmain%2F720x405%2F1m43s780ms%2Fmatch%2Fimage.jpg
+			//   https://cf-images.ap-southeast-1.prod.boltdns.net/v1/jit/5182475815001/9fd45fd7-fdd4-4835-b3bf-d2e2680c1684/main/720x405/1m43s780ms/match/image.jpg -- different image
+			domain === "resources.sonyliv.com" ||
 			domain === "images.taboola.com") {
 			// https://res.cloudinary.com/emazecom/image/fetch/c_limit,a_ignore,w_320,h_200/https%3A%2F%2Fimg-aws.ehowcdn.com%2F877x500p%2Fs3.amazonaws.com%2Fcme_public_images%2Fwww_ehow_com%2Fi.ehow.com%2Fimages%2Fa04%2Fbd%2Fic%2Fchemical-energy-work-3.1-800x800.jpg
 			// https://images.taboola.com/taboola/image/fetch/f_jpg%2Cq_auto%2Cc_fill%2Cg_faces:auto%2Ce_sharpen/https%3A%2F%2Fwww.gannett-cdn.com%2F-mm-%2F2e56892f6a349ad47192b530425d443fb365e5e9%2Fr%3Dx1803%26c%3D3200x1800%2Fhttps%2Fmedia.gannett-cdn.com%2F37861007001%2F37861007001_5735420050001_5735409691001-vs.jpg%3FpubId%3D37861007001
@@ -21492,12 +21495,17 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/cache_images\/([^/_]*)_[^/.]*(\.[^/.]*)$/, "/$1$2");
 		}
 
-		if (domain === "i.embed.ly") {
+		if (domain === "i.embed.ly" ||
+			// https://i-cdn.embed.ly/1/display/crop?height=300&key=fd92ebbc52fc43fb98f69e50e7893c13&url=https%3A%2F%2Fimageresizer.static9.net.au%2FV3xR1INr6kGBTcMsUaIul0O6dDs%3D%2F0x0%2Fhttps%253A%252F%252Fcf-images.ap-southeast-2.prod.boltdns.net%252Fv1%252Fstatic%252F664969388001%252F4ce4fcf5-cbeb-45cf-905d-2d4660787cd1%252F374da747-31e2-46e3-a1eb-8520b351ef90%252F640x360%252Fmatch%252Fimage.jpg&width=636
+			//   https://cf-images.ap-southeast-2.prod.boltdns.net/v1/static/664969388001/4ce4fcf5-cbeb-45cf-905d-2d4660787cd1/374da747-31e2-46e3-a1eb-8520b351ef90/640x360/match/image.jpg
+			domain === "i-cdn.embed.ly") {
 			// https://i.embed.ly/1/display?key=fc778e44915911e088ae4040f9f86dcd&url=http://www.mixtapesaga.com/tapes/mixtape-covers/431.jpg
 			//   http://www.mixtapesaga.com/tapes/mixtape-covers/431.jpg
 			// https://i.embed.ly/1/display?key=fc778e44915911e088ae4040f9f86dcd&url=http%3A%2F%2Fis5.mzstatic.com%2Fimage%2Fthumb%2FMusic6%2Fv4%2F05%2Fd2%2Fdb%2F05d2db2b-a4a9-b1a4-53ef-36e192631a18%2Fsource%2F2400x2400bb.jpg
 			// https://i.embed.ly/1/image?url=https%3A%2F%2Fscontent-iad3-1.cdninstagram.com%2Fvp%2Fbd3ac9237f46bffab2d0265b5e6c0cd7%2F5B335D8F%2Ft51.2885-15%2Fe35%2F25013144_505639503145174_6650174657859158016_n.jpg&key=fc778e44915911e088ae4040f9f86dcd
-			return decodeURIComponent(src.replace(/.*\/(?:display|image).*?[?&]url=([^&]*).*/, "$1"));
+			newsrc = src.replace(/.*\/(?:display|image).*?[?&]url=([^&]*).*/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
 		}
 
 		if (domain === "i.genius.com") {
@@ -42815,9 +42823,20 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nosub === "boltdns.net" && domain.match(/^cf-images\./)) {
+			// doesn't work anymore (width below the minimum)
 			// https://cf-images.us-east-1.prod.boltdns.net/v1/static/1125911414/addcf159-48d5-40ee-a79a-042c17905091/b69cd6b4-82c8-4e82-a11b-a2a0963d697a/1280x720/match/image.jpg
 			//   https://cf-images.us-east-1.prod.boltdns.net/v1/static/1125911414/addcf159-48d5-40ee-a79a-042c17905091/b69cd6b4-82c8-4e82-a11b-a2a0963d697a/-1x-1/match/image.jpg
-			return src.replace(/\/[-0-9]+x[-0-9]+\/+match\/+/, "/-1x-1/match/")
+			// larger sizes upscale, and 0x0 is also below the minimum
+			// interestingly, forbes does link to 9999x9999 images:
+			// https://www.forbes.com/sites/carolinehoward/2017/12/18/verge-genomics-founder-on-taking-the-guessing-game-out-of-drug-discovery/#2aac4589600c
+			//   https://cf-images.us-east-1.prod.boltdns.net/v1/static/2097119709001/715b89fe-3e22-4575-b169-96880f185e16/819bb252-8f44-4901-9ac4-78fd6735cf2b/9999x9999/match/image.jpg
+			//   https://blogs-images.forbes.com/carolinehoward/files/2017/12/Alice-Thumb.jpg
+			// other:
+			// https://cf-images.ap-southeast-1.prod.boltdns.net/v1/jit/5182475815001/9fd45fd7-fdd4-4835-b3bf-d2e2680c1684/main/720x405/1m43s780ms/match/image.jpg
+			return {
+				url: src,//.replace(/\/[-0-9]+x[-0-9]+\/+match\/+/, "/-1x-1/match/"),
+				can_head: false // 405, method not allowed
+			};
 		}
 
 		if (domain === "expo.advance.net") {
@@ -55834,6 +55853,15 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain_nowww === "saga-rian.com") {
+			// https://saga-rian.com/common/image2.php?1=1&w=640&c=1&r=10,7&f=https%3A%2F%2Fexternal%2Dnrt1%2D1%2Exx%2Efbcdn%2Enet%2Fsafe%5Fimage%2Ephp%3Fd%3DAQA0Qrj3UrBqwph6%26w%3D540%26h%3D282%26url%3Dhttps%253A%252F%252Fcf%2Dimages%2Eap%2Dnortheast%2D1%2Eprod%2Eboltdns%2Enet%252Fv1%252Fstatic%252F5490902205001%252F11125029%2D995e%2D4552%2D94f7%2D6da055300145%252F305c21f2%2D9fb5%2D4d25%2Db219%2D5c3d061cf604%252F1280x720%252Fmatch%252Fimage%2Ejpg%26cfs%3D1%26upscale%3D1%26fallback%3Dnews%5Fd%5Fplaceholder%5Fpublisher%26%5Fnc%5Fhash%3DAQAdZJ%2DY%2DF2DTZhP
+			//   https://external-nrt1-1.xx.fbcdn.net/safe_image.php?d=AQA0Qrj3UrBqwph6&w=540&h=282&url=https%3A%2F%2Fcf-images.ap-northeast-1.prod.boltdns.net%2Fv1%2Fstatic%2F5490902205001%2F11125029-995e-4552-94f7-6da055300145%2F305c21f2-9fb5-4d25-b219-5c3d061cf604%2F1280x720%2Fmatch%2Fimage.jpg&cfs=1&upscale=1&fallback=news_d_placeholder_publisher&_nc_hash=AQAdZJ-Y-F2DTZhP
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+common\/+image2\.php\?(?:.*&)?f=([^&]+).*?$/, "$1");
+			if (newsrc !== src) {
+				return decodeuri_ifneeded(newsrc);
+			}
+		}
+
 
 
 
@@ -56531,8 +56559,7 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/BdSGallery\/BdSGaleria\/[0-9]+)_[a-z]+(\.[^/.]*)$/, "$1$2");
 		}
 
-		if ((((domain_nosub === "fbcdn.net" &&
-			   domain.match(/^external\..*\.fbcdn\.net/)) ||
+		if ((((domain_nosub === "fbcdn.net" && domain.match(/^external[-.].*\.fbcdn\.net/)) ||
 			  // https://img.globuya.com/2/safe_image.php?d=AQCqGACH61FCb4Jm&url=http%3A%2F%2Fmtdata.ru%2Fu18%2Fphoto2F2D%2F20511034205-0%2Foriginal.jpg&_nc_hash=AQChQHo04N9q7EES
 			  //   http://mtdata.ru/u18/photo2F2D/20511034205-0/original.jpg
 			  domain === "img.globuya.com" ||
@@ -56546,12 +56573,16 @@ var $$IMU_EXPORT$$;
 			  //   http://static.ounousa.com/content/uploads/Article/160914105046133.jpg
 			  domain === "img.gleauty.com") || (
 				  src.match(/^[a-z]+:\/\/[^/]*\/2\/safe_image\.php.*?[?&]url=http/)
-			  )) && string_indexof(src, "safe_image.php") >= 0) {
+			  )) && string_indexof(src, "/safe_image.php?") >= 0) {
 			// https://external.xx.fbcdn.net/safe_image.php?d=AQAWoxh_q3ft0f3S&w=130&h=130&url=https%3A%2F%2Fi2.wp.com%2Fblog.native-instruments.com%2Fwp-content%2Fuploads%2F2018%2F01%2Fnative-summit-at-namm-collaborating-on-the-future-of-sound-hero.jpg%3Ffit%3D1920%252C880%26ssl%3D1&cfs=1&sx=257&sy=0&sw=880&sh=880&_nc_hash=AQCDl7GN-wkuS3BX
 			//   http://blog.native-instruments.com/wp-content/uploads/2018/01/native-summit-at-namm-collaborating-on-the-future-of-sound-hero.jpg
 			// https://external.fyvr3-1.fna.fbcdn.net/safe_image.php?d=AQAReTYxnQTQOpsB&w=147&h=147&url=https%3A%2F%2Fi.ytimg.com%2Fvi%2FxTo02rvrMXE%2Fhqdefault.jpg&cfs=1&upscale=1&fallback=news_d_placeholder_publisher&sx=120&sy=0&sw=360&sh=360&_nc_eui2=AeGEb7UCGGY2knZiITvwfUugt_JGWM192SmN_z8mNrwGcVY5H1PaPbuXuA21koF5ehdVgERy7WFFxu1GcWy4TKrhpVjj9d-tyHC8Jv-Qn3GT9A&_nc_hash=AQDxVA0hfYftm3Fv
 			//   https://i.ytimg.com/vi/xTo02rvrMXE/hqdefault.jpg
-			return decodeURIComponent(src.replace(/.*safe_image\.php.*?[?&]url=([^&]*).*/, "$1"));
+			// https://external-nrt1-1.xx.fbcdn.net/safe_image.php?d=AQA0Qrj3UrBqwph6&w=540&h=282&url=https%3A%2F%2Fcf-images.ap-northeast-1.prod.boltdns.net%2Fv1%2Fstatic%2F5490902205001%2F11125029-995e-4552-94f7-6da055300145%2F305c21f2-9fb5-4d25-b219-5c3d061cf604%2F1280x720%2Fmatch%2Fimage.jpg&cfs=1&upscale=1&fallback=news_d_placeholder_publisher&_nc_hash=AQAdZJ-Y-F2DTZhP
+			//   https://cf-images.ap-northeast-1.prod.boltdns.net/v1/static/5490902205001/11125029-995e-4552-94f7-6da055300145/305c21f2-9fb5-4d25-b219-5c3d061cf604/1280x720/match/image.jpg
+			newsrc = src.replace(/.*\/safe_image\.php\?(?:.*&)?url=([^&]+).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
 		}
 
 		// Storenvy
