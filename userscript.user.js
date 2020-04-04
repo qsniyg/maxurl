@@ -4054,6 +4054,15 @@ var $$IMU_EXPORT$$;
 		return url;
 	};
 
+	var encodeuri_ifneeded = function(url) {
+		// TODO: improve
+		if (string_indexof(url, "%") < 0) {
+			return encodeURI(url);
+		}
+
+		return url;
+	};
+
 	// https://stackoverflow.com/a/10073788
 	var zpadnum = function(n, width, z) {
 		z = z || '0';
@@ -61456,6 +61465,8 @@ var $$IMU_EXPORT$$;
 		var popup_obj = null;
 		var popup_objecturl = null;
 		var popup_el = null;
+		var popup_el_is_video = false;
+		var popup_orig_url = null;
 		var resetpopup_timeout = null;
 		var real_popup_el = null;
 		var next_popup_el = null;
@@ -61759,6 +61770,8 @@ var $$IMU_EXPORT$$;
 			real_popup_el = null;
 			popup_el_automatic = false;
 			popup_el_remote = false;
+			popup_el_is_video = false;
+			popup_orig_url = null;
 			popup_zoom_func = nullfunc;
 
 			stop_processing();
@@ -61834,7 +61847,7 @@ var $$IMU_EXPORT$$;
 			return styles_array.join("; ");
 		}
 
-		function apply_styles(el, str, force_important) {
+		function apply_styles(el, str, force_important, variables) {
 			var styles = get_processed_styles(str);
 			if (!styles)
 				return;
@@ -61848,8 +61861,15 @@ var $$IMU_EXPORT$$;
 				var obj = styles[property];
 				var value = obj.value;
 
+				// todo: maybe handle escape sequences with JSON_parse?
 				if (value.match(/^['"].*['"]$/)) {
 					value = value.replace(/^["'](.*)["']$/, "$1");
+				}
+
+				if (variables) {
+					for (var variable in variables) {
+						value = value.split(variable).join(variables[variable]);
+					}
 				}
 
 				if (obj.important || force_important) {
@@ -62124,7 +62144,20 @@ var $$IMU_EXPORT$$;
 					div.style.border = "3px solid white";
 					}*/
 
-				apply_styles(div, settings.mouseover_styles, true);
+				var styles_variables = {};
+				if (popup_orig_url && !popup_el_is_video) {
+					styles_variables["%thumburl%"] = encodeuri_ifneeded(popup_orig_url);
+				} else {
+					styles_variables["%thumburl%"] = "about:blank";
+				}
+
+				if (!is_video) {
+					styles_variables["%fullurl%"] = encodeuri_ifneeded(get_img_src(img));
+				} else {
+					styles_variables["%fullurl%"] = "about:blank";
+				}
+
+				apply_styles(div, settings.mouseover_styles, true, styles_variables);
 				outerdiv.appendChild(div);
 
 				//div.style.position = "fixed"; // instagram has top: -...px
@@ -65166,6 +65199,9 @@ var $$IMU_EXPORT$$;
 				popup_el = get_physical_popup_el(real_popup_el);
 				if (popup_el.parentElement) // check if it's a fake element returned by a gallery helper
 					popup_orig_el = popup_el;
+				popup_el_is_video = is_video_el(popup_el);
+
+				popup_orig_url = get_img_src(popup_el);
 
 				if (is_in_iframe && can_iframe_popout() && get_single_setting("mouseover_open_behavior") === "popup") {
 					data.data.img = serialize_img(data.data.img);
