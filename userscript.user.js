@@ -20137,6 +20137,11 @@ var $$IMU_EXPORT$$;
 					}
 					ourquality = parseInt(ourquality);
 
+					if (!data.mediaDefinitions[i].videoUrl) {
+						// for >1080p when not logged in
+						continue;
+					}
+
 					if (!maxquality || ourquality > maxquality) {
 						maxquality = ourquality;
 						maxobj = data.mediaDefinitions[i];
