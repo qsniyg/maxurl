@@ -1658,6 +1658,7 @@ var $$IMU_EXPORT$$;
 		// thanks to acid-crash on github for the idea: https://github.com/qsniyg/maxurl/issues/20
 		mouseover_styles: "",
 		mouseover_fade_time: 100,
+		mouseover_enable_mask_styles: false,
 		mouseover_mask_styles: "",
 		mouseover_mask_fade_time: 100,
 		mouseover_ui_styles: "",
@@ -3135,11 +3136,21 @@ var $$IMU_EXPORT$$;
 			category: "popup",
 			subcategory: "popup_other"
 		},
+		mouseover_enable_mask_styles: {
+			name: "Enable background CSS",
+			description: "Toggles whether CSS styles for the background when the popup is active is enabled",
+			requires: {
+				mouseover_open_behavior: "popup"
+			},
+			category: "popup",
+			subcategory: "popup_other"
+		},
 		mouseover_mask_styles: {
 			name: "Background CSS style",
 			description: "CSS style for the background when the popup is active",
 			requires: {
-				mouseover_open_behavior: "popup"
+				mouseover_open_behavior: "popup",
+				mouseover_enable_mask_styles: true
 			},
 			type: "textarea",
 			category: "popup",
@@ -3149,10 +3160,8 @@ var $$IMU_EXPORT$$;
 			name: "Background fade",
 			description: "Fade in/out time (in milliseconds) for the page background, set to 0 to disable",
 			requires: {
-				mouseover_open_behavior: "popup"
-			},
-			disabled_if: {
-				mouseover_mask_styles: ""
+				mouseover_open_behavior: "popup",
+				mouseover_enable_mask_styles: true
 			},
 			type: "number",
 			number_min: 0,
@@ -26062,6 +26071,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "www.favepeople.com") {
+			// site is dead now
 			// https://www.favepeople.com/photos/h0/35/h035d7s238i5e5o5c97b.jpg
 			//   https://www.favepeople.com/photos/h0/35/h035d7s238i5e5o5c97b_b/Dove_Cameron_Red_Carpet_Style_3528.jpg
 			// https://www.favepeople.com/photos/66/fe/66fe7i5d284bb46hnc04_s.jpg
@@ -62010,7 +62020,7 @@ var $$IMU_EXPORT$$;
 					set_el_all_initial(mask);
 
 					set_important_style(mask, "opacity", 1);
-					if (settings.mouseover_mask_styles)
+					if (settings.mouseover_enable_mask_styles)
 						apply_styles(mask, settings.mouseover_mask_styles, true);
 
 					if (!settings.mouseover_close_click_outside) {
@@ -62054,7 +62064,7 @@ var $$IMU_EXPORT$$;
 
 				remove_mask();
 
-				if (settings.mouseover_close_click_outside || settings.mouseover_mask_styles) {
+				if (settings.mouseover_close_click_outside || settings.mouseover_enable_mask_styles) {
 					mask_el = document.createElement("div");
 					setup_mask_el(mask_el);
 				}
