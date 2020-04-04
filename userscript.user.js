@@ -1660,7 +1660,7 @@ var $$IMU_EXPORT$$;
 		mouseover_styles: "",
 		mouseover_fade_time: 100,
 		mouseover_enable_mask_styles: false,
-		mouseover_mask_styles2: "",
+		mouseover_mask_styles2: "background-color: rgba(0, 0, 0, 0.5)",
 		mouseover_mask_fade_time: 100,
 		mouseover_ui_styles: "",
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-541065461
