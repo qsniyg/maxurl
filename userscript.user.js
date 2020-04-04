@@ -3184,7 +3184,7 @@ var $$IMU_EXPORT$$;
 		},
 		mouseover_ui_styles: {
 			name: "Button CSS style",
-			description: "Custom CSS styles for the popup's UI buttons",
+			description: "Custom CSS styles for the popup's UI buttons. See the documentation for Popup CSS style for more information (the thumb/full URL variables aren't supported here)",
 			type: "textarea",
 			requires: {
 				mouseover_open_behavior: "popup",
@@ -3575,7 +3575,7 @@ var $$IMU_EXPORT$$;
 		},
 		highlightimgs_css: {
 			name: "Highlight CSS",
-			description: "CSS style to apply for highlight",
+			description: "CSS style to apply for highlight. See the documentation for Popup CSS style for more information (the thumb/full URL variables aren't supported here)",
 			type: "textarea",
 			requires: [
 				{highlightimgs_enable: true},
