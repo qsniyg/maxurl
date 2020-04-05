@@ -42692,10 +42692,15 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/(?:_[a-z]_|n)([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/$1");
 		}
 
-		if (amazon_container === "nudiez-production") {
+		if (amazon_container === "nudiez-production" ||
+			// https://d2c4tvdc1w38dj.cloudfront.net/photos/photos/f68/d6d/a8-/medium/data?1586038934
+			//   https://d2c4tvdc1w38dj.cloudfront.net/photos/photos/f68/d6d/a8-/original/data
+			// https://d2c4tvdc1w38dj.cloudfront.net/photos/photos/18c/cc7/c4-/medium/IMG-3938-683x1024.jpeg?1578102185
+			//   https://d2c4tvdc1w38dj.cloudfront.net/photos/photos/18c/cc7/c4-/original/IMG-3938-683x1024.jpeg
+			domain === "d2c4tvdc1w38dj.cloudfront.net") {
 			// https://nudiez-production.s3.amazonaws.com/photos/photos/070/714/04-/thumb/data?1551470312
 			//   https://nudiez-production.s3.amazonaws.com/photos/photos/070/714/04-/original/data
-			return src.replace(/(\/photos\/(?:[-0-9a-f]{3}\/+){3})[a-z]+\/+data(?:[?#].*)?$/, "$1original/data");
+			return src.replace(/(\/photos\/(?:[-0-9a-f]{3}\/+){3})[a-z]+\/+([^/?]+)(?:[?#].*)?$/, "$1original/$2");
 		}
 
 		if (domain_nosub === "avdbs.com" && /^i[0-9]*\./.test(domain)) {
@@ -56206,7 +56211,7 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/phpwas\/restmb_[a-z]*make\.php)\?.*(simg=[^&]*)/, "$1?idx=999&$2");
 		}
 
-		if (src.match(/.*?\/timthumb(?:\/index)?\.php[?/].*?src=(.*)/)) {
+		if (src.match(/.*?\/timthumb(?:\/index)?\.php\?(?:.*&)?src=/)) {
 			// http://dublinfilms.fr/wp-content/themes/purity/includes/timthumb.php?src=http://dublinfilms.fr/wp-content/uploads/2014/06/Actu-bandeau-bis.jpg&h=260&w=662&zc=1
 			//   http://dublinfilms.fr/wp-content/uploads/2014/06/Actu-bandeau-bis.jpg
 			// http://www.hcwd.com.tw/template/corporate_site/fk1/timthumb.php?src=http://www.hcwd.com.tw/snlev801/product/bimg/_MG_8893(001).jpg&w=410&s=1
@@ -56221,7 +56226,12 @@ var $$IMU_EXPORT$$;
 			//   http://lauradaluna.com/image/gallery/141441178010306.jpg
 			// http://www.articlelike.com/timthumb/index.php?src=https://www.articlelike.com/manage/0/product/17589/334/17589_0.jpg
 			//   https://www.articlelike.com/manage/0/product/17589/334/17589_0.jpg
-			return urljoin(src, decodeURIComponent(src.replace(/.*\/timthumb(?:\/index)?\.php[?/].*?src=([^&]*).*/, "$1")), true);
+			// https://api.sextpanther.com/public/timthumb.php?w=300&h=300&a=t&zc=1&src=https://api.sextpanther.com/pre?fk=https://media.sextpanther.com/images/lrg_images/1581196066_7RCAO.jpeg
+			//   https://api.sextpanther.com/pre?fk=https://media.sextpanther.com/images/lrg_images/1581196066_7RCAO.jpeg -- doesn't work
+			newsrc = src.replace(/.*\/timthumb(?:\/index)?\.php\?(?:.*&)?src=([^&]+).*$/, "$1");
+			if (newsrc !== src) {
+				return urljoin(src, decodeURIComponent(newsrc), true);
+			}
 		}
 
 		if (src.match(/\/fotogallery\/[0-9]+X[0-9]+\//)) {
