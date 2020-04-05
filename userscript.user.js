@@ -24081,8 +24081,10 @@ var $$IMU_EXPORT$$;
 			//   https://simg3.gelbooru.com/images/ce/b8/ceb852df49b45c7c595eea61951b9ffb.jpg
 			// https://img2.gelbooru.com//samples/56/24/sample_562420ec66ff68dd8e31a8f651283e0d.jpg
 			//   https://img2.gelbooru.com//images/56/24/562420ec66ff68dd8e31a8f651283e0d.jpg
-			newsrc = src.replace(/\/thumbnails\/([0-9a-f]+\/[0-9a-f]+\/)thumbnail_/, "/images/$1")
-						.replace(/\/samples\/([0-9a-f]+\/[0-9a-f]+\/)sample_/, "/images/$1");
+			// apparently //images is needed: https://www.reddit.com/r/traphentai/comments/fv608m/punish_the_king_of_the_fairies/fmgsi1d/
+			newsrc = src.replace(/\/+thumbnails\/([0-9a-f]+\/[0-9a-f]+\/)thumbnail_/, "//images/$1")
+						.replace(/\/+samples\/([0-9a-f]+\/[0-9a-f]+\/)sample_/, "//images/$1")
+						.replace(/(:\/\/[^/]+)\/+images\/+/, "$1//images/");
 			if (newsrc !== src) {
 				return add_full_extensions(newsrc);
 			}
