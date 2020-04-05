@@ -23392,12 +23392,17 @@ var $$IMU_EXPORT$$;
 		if ((host_domain_nowww === "yandex.ru" ||
 			 host_domain_nowww === "yandex.com")
 			 && options && options.element) {
-			if (options.element.parentElement && options.element.parentElement.tagName === "A") {
-				match = options.element.parentElement.href.match(/^[a-z]+:\/\/[^/]+\/+images\/+search\?(?:.*&)?img_url=([^&]+)/);
-				if (match) {
-					newsrc = decodeuri_ifneeded(match[1]);
-					if (newsrc !== src)
-						return newsrc;
+			var current = options.element;
+			while ((current = current.parentElement)) {
+				if (current.tagName === "A") {
+					match = current.href.match(/^[a-z]+:\/\/[^/]+\/+images\/+search\?(?:.*&)?img_url=([^&]+)/);
+					if (match) {
+						newsrc = decodeuri_ifneeded(match[1]);
+						if (newsrc !== src)
+							return newsrc;
+					}
+
+					break;
 				}
 			}
 		}
