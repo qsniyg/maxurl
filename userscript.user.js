@@ -23399,7 +23399,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if ((host_domain_nowww === "yandex.ru" ||
-			 host_domain_nowww === "yandex.com" || host_domain === "localhost")
+			 host_domain_nowww === "yandex.com")
 			 && options && options.element) {
 			var current = options.element;
 			while ((current = current.parentElement)) {
