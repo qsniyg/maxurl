@@ -6334,7 +6334,7 @@ var $$IMU_EXPORT$$;
 		var host_domain_nowww = "";
 		var host_domain_nosub = "";
 		if (options.host_url) {
-			host_domain = options.host_url.replace(/^[a-z]+:\/\/([^/]*)(?:\/.*)?$/,"$1");
+			host_domain = options.host_url.replace(/^[a-z]+:\/\/([^/]*?)(?::[0-9]+)?(?:\/.*)?$/,"$1");
 
 			host_domain_nowww = host_domain.replace(/^www\./, "");
 			host_domain_nosub = host_domain.replace(/^.*\.([^.]*\.[^.]*)$/, "$1");
@@ -23389,8 +23389,17 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/s[0-9]+x[0-9]+(?:[?#].*)?$/, "/original");
 		}
 
+		if (domain_nowww === "yastatic.net") {
+			// https://yastatic.net/s3/web4static/_/v2/[...].gif
+			if (/\/s3\/+web4static\/+_\/+v2\/+/.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
+		}
+
 		if ((host_domain_nowww === "yandex.ru" ||
-			 host_domain_nowww === "yandex.com")
+			 host_domain_nowww === "yandex.com" || host_domain === "localhost")
 			 && options && options.element) {
 			var current = options.element;
 			while ((current = current.parentElement)) {
@@ -23417,15 +23426,6 @@ var $$IMU_EXPORT$$;
 
 		if (domain_nosub === "yandex.ru" && /downloader.disk.yandex.ru/.test(domain)) {
 			return src.replace(/(\/preview\/+[0-9a-f]{30,}\/+.*?\?(?:.*&)?size=)[0-9]+x[0-9]+(&.*)?$/, "$10x0$2");
-		}
-
-		if (domain_nowww === "yastatic.net") {
-			// https://yastatic.net/s3/web4static/_/v2/[...].gif
-			if (/\/s3\/+web4static\/+_\/+v2\/+/.test(src))
-				return {
-					url: src,
-					bad: "mask"
-				};
 		}
 
 		if (domain_nosub === "steemitimages.com") {
