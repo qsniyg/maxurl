@@ -699,6 +699,11 @@ input:checked + label, button, .button, .dark .button, .button:visited, .dark .b
   padding-bottom: .2em;
 }
 
+#options .disabled .requirements {
+  margin-left: 1.5em;
+  margin-top: 1em;
+}
+
 
 /* Popup */
 #popup {
