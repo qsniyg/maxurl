@@ -44703,6 +44703,15 @@ var $$IMU_EXPORT$$;
 							   "$1$2");
 		}
 
+		if (domain_nosub === "mimint.co.kr") {
+			// https://m.mimint.co.kr/article/thumbnail.asp?thumb=http%3A%2F%2Fimages%2Emimint%2Eco%2Ekr%2Fstar%2Fthefact%2Fbbs%2F2020%2F02%2F05%2FS20200205170414280%2Ejpg
+			//   http://images.mimint.co.kr/star/thefact/bbs/2020/02/05/S20200205170414280.jpg
+			newsrc = src.replace(/.*\/article\/+thumbnail\.asp\?(?:.*?&)?thumb=([^&]+).*?$/, "$1");
+			if (newsrc !== src) {
+				return decodeuri_ifneeded(newsrc);
+			}
+		}
+
 		if (domain_nowww === "hrising.com") {
 			// http://www.hrising.com/img/?p=hrising/attach/201606/20160623/GYvO7zlhcE7SbolD7E5f48wHN7Jh.jpg -- 800x1030
 			//   http://www.hrising.com/data/hrising/attach/201606/20160623/GYvO7zlhcE7SbolD7E5f48wHN7Jh.jpg -- 800x1030
@@ -59484,8 +59493,13 @@ var $$IMU_EXPORT$$;
 		topbtns_holder.appendChild(export_btn);
 
 		var enabled_map = {};
+		var reason_map = {};
 
-		var check_sub_option = function(meta) {
+		var check_sub_option = function(meta, reason) {
+			if (typeof reason === "undefined") {
+				reason = {};
+			}
+
 			var enabled = true;
 
 			var prepare_array = function(value) {
@@ -59510,12 +59524,19 @@ var $$IMU_EXPORT$$;
 				}
 			}
 
+			reason.good = [];
+			reason.bad = [];
 			if (enabled && requires) {
-				enabled = check_validity(requires);
+				enabled = check_validity(requires, reason);
+				reason.good = [];
 			}
 
 			if (enabled && disabled_if) {
-				enabled = !check_validity(disabled_if);
+				reason.good = [];
+				reason.bad = [];
+
+				enabled = !check_validity(disabled_if, reason);
+				reason.bad = [];
 			}
 
 			return enabled;
@@ -59525,16 +59546,24 @@ var $$IMU_EXPORT$$;
 			var meta = settings_meta[setting];
 
 			enabled_map[setting] = "processing";
-			var enabled = check_sub_option(meta);
+			reason_map[setting] = {};
+			var enabled = check_sub_option(meta, reason_map[setting]);
 			enabled_map[setting] = enabled;
 
 			return enabled;
 		};
 
-		var check_validity = function(array) {
+		var check_validity = function(array, reason) {
 			for (var i = 0; i < array.length; i++) {
 				var current = array[i];
 				var current_valid = true;
+
+				var good_reason, bad_reason;
+
+				if (typeof reason !== "undefined") {
+					good_reason = [];
+					bad_reason = [];
+				}
 
 				for (var required_setting in current) {
 					if (required_setting[0] === "_")
@@ -59555,14 +59584,34 @@ var $$IMU_EXPORT$$;
 						return;
 					}
 
+					var current_reason = {
+						setting: required_setting,
+						required_value: required_value,
+						current_value: value,
+						enabled: enabled_map[required_setting]
+					};
+
 					if (enabled_map[required_setting] && value === required_value) {
-						current_valid = true;
+						//current_valid = true;
+						if (typeof good_reason !== "undefined") {
+							good_reason.push(current_reason);
+						}
 					} else {
 						current_valid = false;
+
+						if (typeof bad_reason !== "undefined") {
+							bad_reason.push(current_reason);
+						}
 					}
 
-					if (!current_valid)
+					if (!current_valid && typeof reason === "undefined") {
 						break;
+					}
+				}
+
+				if (typeof reason !== "undefined") {
+					reason.good.push(good_reason);
+					reason.bad.push(bad_reason);
 				}
 
 				if (current_valid) {
@@ -59586,6 +59635,86 @@ var $$IMU_EXPORT$$;
 			return null;
 		};
 
+		var is_nonempty_reason = function(goodbad) {
+			for (var i = 0; i < goodbad.length; i++) {
+				if (goodbad[i].length !== 0)
+					return true;
+			}
+
+			return false;
+		};
+
+		var is_reason_goodbad = function(reason) {
+			if (is_nonempty_reason(reason.good))
+				return "good";
+
+			if (is_nonempty_reason(reason.bad))
+				return "bad";
+
+			return null;
+		};
+
+		var fill_requirements = function(reason, div) {
+			div.innerHTML = "";
+
+			var goodbad = is_reason_goodbad(reason);
+			if (!goodbad)
+				return;
+
+			var requires_p = document.createElement("p");
+			requires_p.innerText = _("Requires:");
+			div.appendChild(requires_p);
+
+			var els = [];
+
+			var array = reason[goodbad];
+			for (var i = 0; i < array.length; i++) {
+				if (array[i].length === 0)
+					continue;
+
+				var ul = document.createElement("ul");
+
+				for (var j = 0; j < array[i].length; j++) {
+					var single_reason = array[i][j];
+
+					var option_el = document.getElementById("option_" + single_reason.setting);
+					var option_name = option_el.getElementsByClassName("name_td")[0].innerText;
+
+					var wanted_value_el = document.querySelector("label[for=\"input_" + single_reason.setting + "_" + single_reason.required_value + "\"]");
+					var wanted_value = single_reason.required_value;
+					if (wanted_value_el) {
+						wanted_value = wanted_value_el.innerText;
+					}
+
+					var equals = "=";
+					if (goodbad === "good")
+						equals = "!=";
+
+					var li = document.createElement("li");
+					li.innerText = option_name + " " + equals + " " + wanted_value;
+					ul.appendChild(li);
+				}
+
+				els.push(ul);
+			}
+
+			var newels = [];
+			for (var i = 0; i < els.length - 1; i++) {
+				newels.push(els[i]);
+
+				var or_p = document.createElement("p");
+				or_p.innerText = _("Or:");
+
+				newels.push(or_p);
+			}
+
+			newels.push(els[els.length-1]);
+
+			for (var i = 0; i < newels.length; i++) {
+				div.appendChild(newels[i]);
+			}
+		};
+
 		function check_disabled_options() {
 			var options = options_el.querySelectorAll("div.option");
 
@@ -59599,6 +59728,8 @@ var $$IMU_EXPORT$$;
 				if (enabled) {
 					options[i].classList.remove("disabled");
 
+					options[i].getElementsByClassName("requirements")[0].style.display = "none";
+
 					var meta = settings_meta[setting];
 					var meta_options = meta.options;
 					var regexp = new RegExp("^input_" + setting + "_");
@@ -59610,11 +59741,8 @@ var $$IMU_EXPORT$$;
 							var option_name = input.id.replace(regexp, "");
 							if (option_name !== input.id) {
 								var option_value = get_option_from_options(meta_options, option_name);
-								console_log(option_value);
 								if (option_value) {
-									console_log(check_sub_option(option_value));
 									if (!check_sub_option(option_value)) {
-										console_log("DISABLING", input);
 										input.disabled = true;
 									}
 								}
@@ -59627,6 +59755,10 @@ var $$IMU_EXPORT$$;
 					options[i].querySelectorAll("input, textarea, button, select").forEach((input) => {
 						input.disabled = true;
 					});
+
+					var requirements_div = options[i].getElementsByClassName("requirements")[0];
+					requirements_div.style.display = "block";
+					fill_requirements(reason_map[setting], requirements_div);
 				}
 			}
 		}
@@ -60413,6 +60545,11 @@ var $$IMU_EXPORT$$;
 
 					option.appendChild(warning);
 				}
+
+				var requirements = document.createElement("div");
+				requirements.style.display = "none";
+				requirements.classList.add("requirements");
+				option.appendChild(requirements);
 
 				if (meta.example_websites) {
 					var examples = document.createElement("ul");
