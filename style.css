@@ -401,11 +401,11 @@ button:active, .button:active {
   border-color: #08c;
 }
 
-.disabled, .disabled select, .disabled p {
+.disabled, .disabled select, .disabled p, input:disabled + label {
   color: #aaa;
 }
 
-.disabled label, .disabled button, .disabled .button, .button.disabled, button.disabled, .disabled input, .disabled select, .disabled textarea {
+.disabled label, .disabled button, .disabled .button, .button.disabled, button.disabled, .disabled input, .disabled select, .disabled textarea, input:disabled, input:disabled + label {
   cursor: default;
   border: 1px solid #aaa !important;
 }
@@ -415,7 +415,7 @@ input:checked + label, button, .button, .dark .button, .button:visited, .dark .b
   color: #fff;
 }
 
-.disabled input:checked + label, .disabled button, button.disabled, button.disabled:active, .disabled button:active, #options .disabled button.removebtn, .button.disabled, .button.disabled:visited, .dark .button.disabled:visited {
+.disabled input:checked + label, input:checked:disabled + label, input:disabled, .disabled button, button.disabled, button.disabled:active, .disabled button:active, #options .disabled button.removebtn, .button.disabled, .button.disabled:visited, .dark .button.disabled:visited {
   border-color: #aaa;
   background: #aaa;
   color: #fff;
