@@ -1652,6 +1652,7 @@ var $$IMU_EXPORT$$;
 		mouseover_links: false,
 		mouseover_allow_canvas_el: false,
 		mouseover_allow_svg_el: true,
+		mouseover_enable_gallery: true,
 		mouseover_gallery_cycle: false,
 		mouseover_gallery_prev_key: ["left"],
 		mouseover_gallery_next_key: ["right"],
@@ -2384,7 +2385,8 @@ var $$IMU_EXPORT$$;
 			name: "Gallery counter",
 			description: "Enables a gallery counter on top of the UI",
 			requires: {
-				mouseover_ui: true
+				mouseover_ui: true,
+				mouseover_enable_gallery: true
 			},
 			category: "popup",
 			subcategory: "ui"
@@ -2393,7 +2395,8 @@ var $$IMU_EXPORT$$;
 			name: "Gallery counter max",
 			description: "Maximum amount of images to check in the counter (this can be slightly CPU-intensive)",
 			requires: {
-				mouseover_ui_gallerycounter: true
+				mouseover_ui_gallerycounter: true,
+				mouseover_enable_gallery: true
 			},
 			type: "number",
 			number_min: 0,
@@ -2405,7 +2408,8 @@ var $$IMU_EXPORT$$;
 			name: "Gallery buttons",
 			description: "Enables buttons to go left/right in the gallery",
 			requires: {
-				mouseover_ui: true
+				mouseover_ui: true,
+				mouseover_enable_gallery: true
 			},
 			category: "popup",
 			subcategory: "ui"
@@ -2755,7 +2759,10 @@ var $$IMU_EXPORT$$;
 						name: "Pan"
 					},
 					gallery: {
-						name: "Gallery"
+						name: "Gallery",
+						requires: [{
+							mouseover_enable_gallery: true
+						}]
 					}
 				},
 				_group2: {
@@ -2780,7 +2787,10 @@ var $$IMU_EXPORT$$;
 						name: "Pan"
 					},
 					gallery: {
-						name: "Gallery"
+						name: "Gallery",
+						requires: [{
+							mouseover_enable_gallery: true
+						}]
 					},
 					nothing: {
 						name: "None"
@@ -3076,11 +3086,21 @@ var $$IMU_EXPORT$$;
 			category: "popup",
 			subcategory: "open_behavior"
 		},
+		mouseover_enable_gallery: {
+			name: "Enable gallery",
+			description: "Toggles whether gallery detection support should be enabled",
+			requires: {
+				mouseover_open_behavior: "popup"
+			},
+			category: "popup",
+			subcategory: "gallery"
+		},
 		mouseover_gallery_cycle: {
 			name: "Cycle gallery",
 			description: "Going to the previous image for the first image will lead to the last image and vice-versa",
 			requires: {
-				mouseover_open_behavior: "popup"
+				mouseover_open_behavior: "popup",
+				mouseover_enable_gallery: true
 			},
 			category: "popup",
 			subcategory: "gallery"
@@ -3089,7 +3109,8 @@ var $$IMU_EXPORT$$;
 			name: "Previous gallery item",
 			description: "Key to trigger the previous gallery item",
 			requires: {
-				mouseover_open_behavior: "popup"
+				mouseover_open_behavior: "popup",
+				mouseover_enable_gallery: true
 			},
 			type: "keysequence",
 			category: "popup",
@@ -3099,7 +3120,8 @@ var $$IMU_EXPORT$$;
 			name: "Next gallery item",
 			description: "Key to trigger the next gallery item",
 			requires: {
-				mouseover_open_behavior: "popup"
+				mouseover_open_behavior: "popup",
+				mouseover_enable_gallery: true
 			},
 			type: "keysequence",
 			category: "popup",
@@ -3110,7 +3132,8 @@ var $$IMU_EXPORT$$;
 			description: "Moves to the next gallery item when a video finishes playing",
 			requires: {
 				mouseover_open_behavior: "popup",
-				allow_video: true
+				allow_video: true,
+				mouseover_enable_gallery: true
 			},
 			category: "popup",
 			subcategory: "gallery"
@@ -59460,120 +59483,143 @@ var $$IMU_EXPORT$$;
 		};
 		topbtns_holder.appendChild(export_btn);
 
+		var enabled_map = {};
+
+		var check_sub_option = function(meta) {
+			var enabled = true;
+
+			var prepare_array = function(value) {
+				var result = deepcopy(value);
+				if (!result) {
+					return null;
+				}
+
+				if (!is_array(result)) {
+					result = [result];
+				}
+
+				return result;
+			}
+
+			var requires = prepare_array(meta.requires);
+			var disabled_if = prepare_array(meta.disabled_if);
+
+			if (!meta.imu_enabled_exempt) {
+				if (!settings.imu_enabled) {
+					enabled = false;
+				}
+			}
+
+			if (enabled && requires) {
+				enabled = check_validity(requires);
+			}
+
+			if (enabled && disabled_if) {
+				enabled = !check_validity(disabled_if);
+			}
+
+			return enabled;
+		};
+
+		var check_option = function(setting) {
+			var meta = settings_meta[setting];
+
+			enabled_map[setting] = "processing";
+			var enabled = check_sub_option(meta);
+			enabled_map[setting] = enabled;
+
+			return enabled;
+		};
+
+		var check_validity = function(array) {
+			for (var i = 0; i < array.length; i++) {
+				var current = array[i];
+				var current_valid = true;
+
+				for (var required_setting in current) {
+					if (required_setting[0] === "_")
+						continue;
+
+					var required_value = current[required_setting];
+
+					var value = settings[required_setting];
+					if (is_array(value) && !is_array(required_value))
+						value = value[0];
+
+					if (!(required_setting in enabled_map)) {
+						check_option(required_setting);
+					}
+
+					if (enabled_map[required_setting] === "processing") {
+						console_error("Dependency cycle detected for: " + setting + ", " + required_setting);
+						return;
+					}
+
+					if (enabled_map[required_setting] && value === required_value) {
+						current_valid = true;
+					} else {
+						current_valid = false;
+					}
+
+					if (!current_valid)
+						break;
+				}
+
+				if (current_valid) {
+					return true;
+				}
+			}
+
+			return false;
+		};
+
+		var get_option_from_options = function(options, option) {
+			if (option in options)
+				return options[option];
+
+			for (var option_name in options) {
+				if (/^_group/.test(option_name)) {
+					return get_option_from_options(options[option_name], option);
+				}
+			}
+
+			return null;
+		};
+
 		function check_disabled_options() {
 			var options = options_el.querySelectorAll("div.option");
 
-			var enabled_map = {};
-
-			function check_option(setting) {
-				var meta = settings_meta[setting];
-				var enabled = true;
-
-				enabled_map[setting] = "processing";
-
-				var prepare_array = function(value) {
-					var result = deepcopy(value);
-					if (!result) {
-						return null;
-					}
-
-					if (!is_array(result)) {
-						result = [result];
-					}
-
-					return result;
-				}
-
-				var requires = prepare_array(meta.requires);
-				var disabled_if = prepare_array(meta.disabled_if);
-
-				if (!meta.imu_enabled_exempt) {
-					if (!settings.imu_enabled) {
-						enabled = false;
-					}
-				}
-
-				var check_validity = function(array) {
-					for (var i = 0; i < array.length; i++) {
-						var current = array[i];
-						var current_valid = true;
-
-						for (var required_setting in current) {
-							if (required_setting[0] === "_")
-								continue;
-
-							var required_value = current[required_setting];
-
-							var value = settings[required_setting];
-							if (is_array(value) && !is_array(required_value))
-								value = value[0];
-
-							if (!(required_setting in enabled_map)) {
-								check_option(required_setting);
-							}
-
-							if (enabled_map[required_setting] === "processing") {
-								console_error("Dependency cycle detected for: " + setting + ", " + required_setting);
-								return;
-							}
-
-							if (enabled_map[required_setting] && value === required_value) {
-								current_valid = true;
-							} else {
-								current_valid = false;
-							}
-
-							if (!current_valid)
-								break;
-						}
-
-						if (current_valid) {
-							return true;
-						}
-					}
-
-					return false;
-				};
-
-				if (enabled && requires) {
-					enabled = check_validity(requires);
-				}
-
-				if (enabled && disabled_if) {
-					enabled = !check_validity(disabled_if);
-				}
-
-				enabled_map[setting] = enabled;
-
-				return enabled;
-			}
+			enabled_map = {};
 
 			for (var i = 0; i < options.length; i++) {
 				var setting = options[i].id.replace(/^option_/, "");
 
-				//var meta = settings_meta[setting];
-				/*var enabled = true;
-				if (meta.requires) {
-					// fixme: this only works for one option in meta.requires
-					for (var required_setting in meta.requires) {
-						var value = settings[required_setting];
-
-
-						if (value === meta.requires[required_setting]) {
-							enabled = true;
-						} else {
-							enabled = false;
-							break;
-						}
-					}
-					}*/
 				var enabled = check_option(setting);
 
 				if (enabled) {
 					options[i].classList.remove("disabled");
 
+					var meta = settings_meta[setting];
+					var meta_options = meta.options;
+					var regexp = new RegExp("^input_" + setting + "_");
+
 					options[i].querySelectorAll("input, textarea, button, select").forEach((input) => {
 						input.disabled = false;
+
+						if (meta_options) {
+							var option_name = input.id.replace(regexp, "");
+							if (option_name !== input.id) {
+								var option_value = get_option_from_options(meta_options, option_name);
+								console_log(option_value);
+								if (option_value) {
+									console_log(check_sub_option(option_value));
+									if (!check_sub_option(option_value)) {
+										console_log("DISABLING", input);
+										input.disabled = true;
+									}
+								}
+							}
+						}
 					});
 				} else {
 					options[i].classList.add("disabled");
@@ -61198,7 +61244,7 @@ var $$IMU_EXPORT$$;
 					};
 
 					video.onended = function() {
-						if (settings.mouseover_gallery_move_after_video) {
+						if (settings.mouseover_enable_gallery && settings.mouseover_gallery_move_after_video) {
 							trigger_gallery(1);
 						}
 					};
@@ -62772,38 +62818,40 @@ var $$IMU_EXPORT$$;
 
 					var popup_width = (popupshown && outerdiv.clientWidth) || imgw;
 
-					var images_total = addbtn(get_imagestotal_text(), "", imagestotal_input_enable, true);
-					set_important_style(images_total, "font-size", gallerycount_fontsize);
-					set_important_style(images_total, "display", "none");
+					if (settings.mouseover_enable_gallery && settings.mouseover_ui_gallerycounter) {
+						var images_total = addbtn(get_imagestotal_text(), "", imagestotal_input_enable, true);
+						set_important_style(images_total, "font-size", gallerycount_fontsize);
+						set_important_style(images_total, "display", "none");
 
-					var images_total_input = document.createElement("input");
-					var images_total_input_active = false;
-					set_el_all_initial(images_total_input);
-					set_important_style(images_total_input, "display", "none");
-					set_important_style(images_total_input, "background-color", "white");
-					set_important_style(images_total_input, "font-family", sans_serif_font);
-					set_important_style(images_total_input, "font-size", galleryinput_fontsize);
-					set_important_style(images_total_input, "padding", "1px");
-					set_important_style(images_total_input, "padding-left", "2px");
-					set_important_style(images_total_input, "width", "5em");
-					images_total_input.addEventListener("mouseout", imagestotal_input_disable);
-					images_total_input.addEventListener("keydown", function(e) {
-						if (e.which === 13) { // enter
-							var parsednum = images_total_input.value.replace(/\s+/g, "");
-							if (/^[0-9]+$/.test(parsednum)) {
-								parsednum = parseInt(parsednum);
-								trigger_gallery(parsednum - (prev_images + 1));
+						var images_total_input = document.createElement("input");
+						var images_total_input_active = false;
+						set_el_all_initial(images_total_input);
+						set_important_style(images_total_input, "display", "none");
+						set_important_style(images_total_input, "background-color", "white");
+						set_important_style(images_total_input, "font-family", sans_serif_font);
+						set_important_style(images_total_input, "font-size", galleryinput_fontsize);
+						set_important_style(images_total_input, "padding", "1px");
+						set_important_style(images_total_input, "padding-left", "2px");
+						set_important_style(images_total_input, "width", "5em");
+						images_total_input.addEventListener("mouseout", imagestotal_input_disable);
+						images_total_input.addEventListener("keydown", function(e) {
+							if (e.which === 13) { // enter
+								var parsednum = images_total_input.value.replace(/\s+/g, "");
+								if (/^[0-9]+$/.test(parsednum)) {
+									parsednum = parseInt(parsednum);
+									trigger_gallery(parsednum - (prev_images + 1));
+								}
+
+								imagestotal_input_disable();
+
+								e.stopPropagation();
+								e.preventDefault();
+								return false;
 							}
+						}, true);
 
-							imagestotal_input_disable();
-
-							e.stopPropagation();
-							e.preventDefault();
-							return false;
-						}
-					}, true);
-
-					topbarel.appendChild(images_total);
+						topbarel.appendChild(images_total);
+					}
 
 					if (settings.mouseover_ui_optionsbtn) {
 						// \u2699 = ⚙
@@ -62851,7 +62899,7 @@ var $$IMU_EXPORT$$;
 					}
 
 					var add_lrhover = function(isleft, btnel, action, title) {
-						if (popup_width < 200)
+						if (!settings.mouseover_enable_gallery || popup_width < 200)
 							return;
 
 						var bottom_heights = 0;
@@ -62902,7 +62950,7 @@ var $$IMU_EXPORT$$;
 					};
 
 					var add_leftright_gallery_button = function(leftright) {
-						if (!settings.mouseover_ui_gallerybtns)
+						if (!settings.mouseover_enable_gallery || !settings.mouseover_ui_gallerybtns)
 							return;
 
 						var action = function() {
@@ -62936,7 +62984,7 @@ var $$IMU_EXPORT$$;
 
 						add_lrhover(!leftright, btn, action, title);
 
-						if (settings.mouseover_ui_gallerycounter) {
+						if (settings.mouseover_enable_gallery && settings.mouseover_ui_gallerycounter) {
 							if (use_cached_gallery) {
 								if (!leftright) {
 									prev_images = cached_previmages;
@@ -62962,6 +63010,9 @@ var $$IMU_EXPORT$$;
 					};
 
 					var add_leftright_gallery_button_if_valid = function(leftright) {
+						if (!settings.mouseover_enable_gallery)
+							return;
+
 						is_nextprev_valid(leftright, function(valid) {
 							if (valid) {
 								add_leftright_gallery_button(leftright);
@@ -63438,6 +63489,9 @@ var $$IMU_EXPORT$$;
 					}
 
 					var handle_gallery = function(xy) {
+						if (!settings.mouseover_enable_gallery)
+							return;
+
 						var isright = false;
 
 						if (xy) {
@@ -66797,11 +66851,13 @@ var $$IMU_EXPORT$$;
 				var keybinds = [
 					{
 						key: settings.mouseover_gallery_prev_key,
-						action: {type: "gallery_prev"}
+						action: {type: "gallery_prev"},
+						requires: settings.mouseover_enable_gallery
 					},
 					{
 						key: settings.mouseover_gallery_next_key,
-						action: {type: "gallery_next"}
+						action: {type: "gallery_next"},
+						requires: settings.mouseover_enable_gallery
 					},
 					{
 						key: settings.mouseover_download_key,
@@ -66889,6 +66945,11 @@ var $$IMU_EXPORT$$;
 
 				for (var i = 0; i < keybinds.length; i++) {
 					if (trigger_complete(keybinds[i].key)) {
+						if ("requires" in keybinds[i]) {
+							if (!keybinds[i].requires)
+								continue;
+						}
+
 						var action = keybinds[i].action;
 						action.needs_popup = true;
 
