@@ -1543,6 +1543,7 @@ var $$IMU_EXPORT$$;
 		dark_mode: false,
 		settings_tabs: false,
 		settings_visible_description: true,
+		settings_show_requirements: true,
 		advanced_options: false,
 		allow_browser_request: true,
 		use_blob_over_arraybuffer: false,
@@ -1773,6 +1774,16 @@ var $$IMU_EXPORT$$;
 		settings_visible_description: {
 			name: "Description below options",
 			description: "Shows the description below the options (otherwise the description is only shown when you hover over the option's name)",
+			category: "general",
+			subcategory: "settings",
+			onedit: function() {
+				run_soon(do_options);
+			},
+			imu_enabled_exempt: true
+		},
+		settings_show_requirements: {
+			name: "Requirements below disabled options",
+			description: "If an option is disabled, the requirements to enable the option will be displayed below it",
 			category: "general",
 			subcategory: "settings",
 			onedit: function() {
@@ -59657,6 +59668,9 @@ var $$IMU_EXPORT$$;
 		var fill_requirements = function(reason, div) {
 			div.innerHTML = "";
 
+			if (!settings.settings_show_requirements)
+				return;
+
 			var goodbad = is_reason_goodbad(reason);
 			if (!goodbad)
 				return;
@@ -59702,6 +59716,7 @@ var $$IMU_EXPORT$$;
 			for (var i = 0; i < els.length - 1; i++) {
 				newels.push(els[i]);
 
+				// FIXME: this should be 'and' for disabled_if
 				var or_p = document.createElement("p");
 				or_p.innerText = _("Or:");
 
