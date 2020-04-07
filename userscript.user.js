@@ -48781,7 +48781,7 @@ var $$IMU_EXPORT$$;
 								try {
 									var json = JSON_parse(result.responseText);
 
-									var params = json.payload[1][4].player.params[0];
+									var params = json.payload[1][4].player;
 									return done(params, 3*60*60);
 								} catch (e) {
 									console_error("vk_video", e);
@@ -48898,10 +48898,18 @@ var $$IMU_EXPORT$$;
 						}
 					}
 
+					if (!maxurl) {
+						console_log("Unable to find photo for", deepcopy(jsonobj));
+					}
+
 					return maxurl;
 				}
 
-				function process_video(params) {
+				function process_video(player) {
+					// https://vk.com/video-19043_456244315 -- youtube video
+					// https://vk.com/video-19043_456244349 -- non-youtube video
+					var params = player.params[0];
+
 					var maxsize = 0;
 					for (var key in params) {
 						var match = key.match(/^url([0-9]+)$/);
@@ -48915,6 +48923,14 @@ var $$IMU_EXPORT$$;
 					if (maxsize !== 0) {
 						return params["url" + maxsize];
 					}
+
+					if (player.type === "youtube") {
+						if (params.extra_data) {
+							return "https://i.ytimg.com/vi/" + params.extra_data + "/mqdefault.jpg";
+						}
+					}
+
+					console_log("Unable to find video for", deepcopy(params));
 
 					return null;
 				}
