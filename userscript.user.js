@@ -48739,7 +48739,8 @@ var $$IMU_EXPORT$$;
 
 		if (domain_nowww === "vk.com") {
 			// https://vk.com/images/icons/video_play_small.png?1
-			if (/^[a-z]+:\/\/[^/]+\/+images\/+icons\/+/.test(src))
+			// https://vk.com/images/album_top_shadow.png
+			if (/^[a-z]+:\/\/[^/]+\/+images\/+(?:icons\/+)?[a-z_]+\.png(?:[?#].*)?$/.test(src))
 				return {
 					url: src,
 					bad: "mask"
