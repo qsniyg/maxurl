@@ -48737,6 +48737,15 @@ var $$IMU_EXPORT$$;
 				return newsrc;
 		}
 
+		if (domain_nowww === "vk.com") {
+			// https://vk.com/images/icons/video_play_small.png?1
+			if (/^[a-z]+:\/\/[^/]+\/+images\/+icons\/+/.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
+		}
+
 		if (domain_nosub === "userapi.com" &&
 			host_domain_nosub === "vk.com" && options.element &&
 			options.do_request && options.cb) {
