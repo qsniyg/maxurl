@@ -39810,7 +39810,7 @@ var $$IMU_EXPORT$$;
 					Cookie: cookie
 				},
 				problems: {
-					watermark
+					watermark: true
 				}
 			};
 		}
