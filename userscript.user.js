@@ -59780,7 +59780,10 @@ var $$IMU_EXPORT$$;
 					var meta_options = meta.options;
 					var regexp = new RegExp("^input_" + setting + "_");
 
-					options[i].querySelectorAll("input, textarea, button, select").forEach((input) => {
+					var els = options[i].querySelectorAll("input, textarea, button, select");
+					for (var j = 0; j < els.length; j++) {
+						var input = els[j];
+
 						input.disabled = false;
 
 						if (meta_options) {
@@ -59794,13 +59797,15 @@ var $$IMU_EXPORT$$;
 								}
 							}
 						}
-					});
+					}
 				} else {
 					options[i].classList.add("disabled");
 
-					options[i].querySelectorAll("input, textarea, button, select").forEach((input) => {
+					var els = options[i].querySelectorAll("input, textarea, button, select");
+					for (var j = 0; j < els.length; j++) {
+						var input = els[j];
 						input.disabled = true;
-					});
+					}
 
 					var requirements_div = options[i].getElementsByClassName("requirements")[0];
 					requirements_div.style.display = "block";
