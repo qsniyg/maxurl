@@ -2,7 +2,11 @@
 
 cd "$(dirname "$(readlink -f "$0")")"
 
-USERVERSION=`cat userscript.user.js | grep '@version *[0-9.]* *$' | sed 's/.*@version *\([0-9.]*\) *$/\1/g'`
+get_userscript_version() {
+    cat $1 | grep '@version *[0-9.]* *$' | sed 's/.*@version *\([0-9.]*\) *$/\1/g'
+}
+
+USERVERSION=`get_userscript_version userscript.user.js`
 MANIFESTVERSION=`cat manifest.json | grep '"version": *"[0-9.]*", *$' | sed 's/.*"version": *"\([0-9.]*\)", *$/\1/g'`
 
 if [ -z "$USERVERSION" -o -z "$MANIFESTVERSION" ]; then
@@ -11,7 +15,15 @@ if [ -z "$USERVERSION" -o -z "$MANIFESTVERSION" ]; then
 fi
 
 if [ "$USERVERSION" != "$MANIFESTVERSION" ]; then
-    echo Conflicting versions
+    echo 'Conflicting versions (userscript and manifest)'
+    exit 1
+fi
+
+node ./gen_minified.js
+MINVERSION=`get_userscript_version userscript_min.user.js`
+
+if [ "$MINVERSION" != "$USERVERSION" ]; then
+    echo 'Conflicting versions (userscript and minified)'
     exit 1
 fi
 
@@ -97,6 +109,6 @@ echo "Release checklist:"
 echo
 echo ' * Ensure xx00+ count is updated (userscript, reddit post, mozilla/opera, website)'
 echo ' * Update greasyfork, firefox, opera, changelog.txt'
-echo ' * git tag v0.xx.xx'
+echo ' * git tag v'$USERVERSION
 echo ' * Update userscript.user.js for site (but check about.js for site count before)'
 echo ' * Update CHANGELOG.txt and Discord changelog'
