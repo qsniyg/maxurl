@@ -4,7 +4,7 @@
 // ==UserScript==
 // @name              Image Max URL
 // @namespace         http://tampermonkey.net/
-// @version           0.12.22
+// @version           0.12.23
 // @description       Finds larger or original versions of images for 6400+ websites, including a powerful image popup feature
 // @description:ko    6400개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
 // @description:fr    Trouve des images plus grandes ou originales pour plus de 6400 sites
@@ -46,6 +46,8 @@
 //   * Querying a third-party library
 //     * You can control this with the "Rules using 3rd-party libraries" setting
 // Search for do_request if you want to see what the code does exactly.
+//
+// Please let me know if you have any questions or concerns regarding the script.
 
 // Due to Greasyfork's 2MB limit, all comments within bigimage() had to be removed
 // You can view the original source code here: https://github.com/qsniyg/maxurl/blob/master/userscript.user.js
@@ -83,7 +85,9 @@ var $$IMU_EXPORT$$;
 	var options_page = "https://qsniyg.github.io/maxurl/options.html";
 	var preferred_options_page = options_page;
 	var firefox_addon_page = "https://addons.mozilla.org/en-US/firefox/addon/image-max-url/";
-	var greasyfork_update_url = "https://greasyfork.org/scripts/36662-image-max-url/code/Image%20Max%20URL.user.js";
+	var userscript_update_url = "https://github.com/qsniyg/maxurl/blob/master/userscript_smaller.user.js?raw=true";
+	var greasyfork_update_url = userscript_update_url;
+	//var greasyfork_update_url = "https://greasyfork.org/scripts/36662-image-max-url/code/Image%20Max%20URL.user.js";
 	var current_version = null;
 	var imagetab_ok_override = false;
 
@@ -1546,6 +1550,7 @@ var $$IMU_EXPORT$$;
 		dark_mode: false,
 		settings_tabs: false,
 		settings_visible_description: true,
+		settings_show_requirements: true,
 		advanced_options: false,
 		allow_browser_request: true,
 		use_blob_over_arraybuffer: false,
@@ -1655,6 +1660,7 @@ var $$IMU_EXPORT$$;
 		mouseover_links: false,
 		mouseover_allow_canvas_el: false,
 		mouseover_allow_svg_el: true,
+		mouseover_enable_gallery: true,
 		mouseover_gallery_cycle: false,
 		mouseover_gallery_prev_key: ["left"],
 		mouseover_gallery_next_key: ["right"],
@@ -1775,6 +1781,16 @@ var $$IMU_EXPORT$$;
 		settings_visible_description: {
 			name: "Description below options",
 			description: "Shows the description below the options (otherwise the description is only shown when you hover over the option's name)",
+			category: "general",
+			subcategory: "settings",
+			onedit: function() {
+				run_soon(do_options);
+			},
+			imu_enabled_exempt: true
+		},
+		settings_show_requirements: {
+			name: "Requirements below disabled options",
+			description: "If an option is disabled, the requirements to enable the option will be displayed below it",
 			category: "general",
 			subcategory: "settings",
 			onedit: function() {
@@ -2387,7 +2403,8 @@ var $$IMU_EXPORT$$;
 			name: "Gallery counter",
 			description: "Enables a gallery counter on top of the UI",
 			requires: {
-				mouseover_ui: true
+				mouseover_ui: true,
+				mouseover_enable_gallery: true
 			},
 			category: "popup",
 			subcategory: "ui"
@@ -2396,7 +2413,8 @@ var $$IMU_EXPORT$$;
 			name: "Gallery counter max",
 			description: "Maximum amount of images to check in the counter (this can be slightly CPU-intensive)",
 			requires: {
-				mouseover_ui_gallerycounter: true
+				mouseover_ui_gallerycounter: true,
+				mouseover_enable_gallery: true
 			},
 			type: "number",
 			number_min: 0,
@@ -2408,7 +2426,8 @@ var $$IMU_EXPORT$$;
 			name: "Gallery buttons",
 			description: "Enables buttons to go left/right in the gallery",
 			requires: {
-				mouseover_ui: true
+				mouseover_ui: true,
+				mouseover_enable_gallery: true
 			},
 			category: "popup",
 			subcategory: "ui"
@@ -2758,7 +2777,10 @@ var $$IMU_EXPORT$$;
 						name: "Pan"
 					},
 					gallery: {
-						name: "Gallery"
+						name: "Gallery",
+						requires: [{
+							mouseover_enable_gallery: true
+						}]
 					}
 				},
 				_group2: {
@@ -2783,7 +2805,10 @@ var $$IMU_EXPORT$$;
 						name: "Pan"
 					},
 					gallery: {
-						name: "Gallery"
+						name: "Gallery",
+						requires: [{
+							mouseover_enable_gallery: true
+						}]
 					},
 					nothing: {
 						name: "None"
@@ -3079,11 +3104,21 @@ var $$IMU_EXPORT$$;
 			category: "popup",
 			subcategory: "open_behavior"
 		},
+		mouseover_enable_gallery: {
+			name: "Enable gallery",
+			description: "Toggles whether gallery detection support should be enabled",
+			requires: {
+				mouseover_open_behavior: "popup"
+			},
+			category: "popup",
+			subcategory: "gallery"
+		},
 		mouseover_gallery_cycle: {
 			name: "Cycle gallery",
 			description: "Going to the previous image for the first image will lead to the last image and vice-versa",
 			requires: {
-				mouseover_open_behavior: "popup"
+				mouseover_open_behavior: "popup",
+				mouseover_enable_gallery: true
 			},
 			category: "popup",
 			subcategory: "gallery"
@@ -3092,7 +3127,8 @@ var $$IMU_EXPORT$$;
 			name: "Previous gallery item",
 			description: "Key to trigger the previous gallery item",
 			requires: {
-				mouseover_open_behavior: "popup"
+				mouseover_open_behavior: "popup",
+				mouseover_enable_gallery: true
 			},
 			type: "keysequence",
 			category: "popup",
@@ -3102,7 +3138,8 @@ var $$IMU_EXPORT$$;
 			name: "Next gallery item",
 			description: "Key to trigger the next gallery item",
 			requires: {
-				mouseover_open_behavior: "popup"
+				mouseover_open_behavior: "popup",
+				mouseover_enable_gallery: true
 			},
 			type: "keysequence",
 			category: "popup",
@@ -3113,7 +3150,8 @@ var $$IMU_EXPORT$$;
 			description: "Moves to the next gallery item when a video finishes playing",
 			requires: {
 				mouseover_open_behavior: "popup",
-				allow_video: true
+				allow_video: true,
+				mouseover_enable_gallery: true
 			},
 			category: "popup",
 			subcategory: "gallery"
@@ -4062,7 +4100,7 @@ var $$IMU_EXPORT$$;
 	var decodeuri_ifneeded = function(url) {
 		if (url.match(/^https?:\/\//))
 			return url;
-		if (url.match(/^https?%3[aA]/))
+		if (url.match(/^https?%3[aA]/) || /^[^/]*%2[fF]/.test(url))
 			return decodeURIComponent(url);
 		if (url.match(/^https?%253[aA]/))
 			return decodeURIComponent(decodeURIComponent(url));
@@ -6337,7 +6375,7 @@ var $$IMU_EXPORT$$;
 		var host_domain_nowww = "";
 		var host_domain_nosub = "";
 		if (options.host_url) {
-			host_domain = options.host_url.replace(/^[a-z]+:\/\/([^/]*)(?:\/.*)?$/,"$1");
+			host_domain = options.host_url.replace(/^[a-z]+:\/\/([^/]*?)(?::[0-9]+)?(?:\/.*)?$/,"$1");
 
 			host_domain_nowww = host_domain.replace(/^www\./, "");
 			host_domain_nosub = host_domain.replace(/^.*\.([^.]*\.[^.]*)$/, "$1");
@@ -9093,6 +9131,7 @@ var $$IMU_EXPORT$$;
 			domain === "public.flashingjungle.com" ||
 			(domain === "static.pr.ricmais.com.br" && string_indexof(src, "/uploads/") >= 0) ||
 			(domain_nowww === "smarthomebeginner.com" && string_indexof(src, "/images/") >= 0) ||
+			(domain_nowww === "inspirationde.com" && string_indexof(src, "/media/") >= 0) ||
 			(domain === "static.acgsoso.com" && string_indexof(src, "/uploads/") >= 0)
 			) {
 			src = src.replace(/-[0-9]+x[0-9]+\.([^/]*(?:[?#].*)?)$/, ".$1");
@@ -9168,9 +9207,9 @@ var $$IMU_EXPORT$$;
 			(domain_nowww === "delas.pt" && string_indexof(src, "/files/") >= 0) ||
 			(domain_nowww === "xda-developers.com" && string_indexof(src, "/files/") >= 0) ||
 			domain_nowww === "onthemoveworld.com" ||
-			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|images|photos|blogs.dir)|\/+uploads)\//.test(src)
+			/^[a-z]+:\/\/[^?]+\/wp(?:-content\/+(?:uploads|images|photos|blogs.dir)|\/+uploads)\/[^?]+-[0-9]+x[0-9]+(?:_c)?\./.test(src)
 			) {
-			src = src.replace(/-[0-9]*x[0-9]*(?:_c)?(\.[^/.]*)(?:[?#].*)?$/, "$1");
+			src = src.replace(/-[0-9]+x[0-9]+(?:_c)?(\.[^/.]*)(?:[?#].*)?$/, "$1");
 		}
 
 		if (string_indexof(src, "/wp-content/uploads/") >= 0 ||
@@ -15732,15 +15771,28 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/s[0-9]+x[0-9]+(?:[?#].*)?$/, "/original");
 		}
 
+		if (domain_nowww === "yastatic.net") {
+			if (/\/s3\/+web4static\/+_\/+v2\/+/.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
+		}
+
 		if ((host_domain_nowww === "yandex.ru" ||
 			 host_domain_nowww === "yandex.com")
 			 && options && options.element) {
-			if (options.element.parentElement && options.element.parentElement.tagName === "A") {
-				match = options.element.parentElement.href.match(/^[a-z]+:\/\/[^/]+\/+images\/+search\?(?:.*&)?img_url=([^&]+)/);
-				if (match) {
-					newsrc = decodeuri_ifneeded(match[1]);
-					if (newsrc !== src)
-						return newsrc;
+			var current = options.element;
+			while ((current = current.parentElement)) {
+				if (current.tagName === "A") {
+					match = current.href.match(/^[a-z]+:\/\/[^/]+\/+images\/+search\?(?:.*&)?img_url=([^&]+)/);
+					if (match) {
+						newsrc = decodeuri_ifneeded(match[1]);
+						if (newsrc !== src)
+							return newsrc;
+					}
+
+					break;
 				}
 			}
 		}
@@ -15751,14 +15803,6 @@ var $$IMU_EXPORT$$;
 
 		if (domain_nosub === "yandex.ru" && /downloader.disk.yandex.ru/.test(domain)) {
 			return src.replace(/(\/preview\/+[0-9a-f]{30,}\/+.*?\?(?:.*&)?size=)[0-9]+x[0-9]+(&.*)?$/, "$10x0$2");
-		}
-
-		if (domain_nowww === "yastatic.net") {
-			if (/\/s3\/+web4static\/+_\/+v2\/+/.test(src))
-				return {
-					url: src,
-					bad: "mask"
-				};
 		}
 
 		if (domain_nosub === "steemitimages.com") {
@@ -16209,10 +16253,20 @@ var $$IMU_EXPORT$$;
 
 		if (domain_nosub === "gelbooru.com" &&
 			domain.match(/^s?img[0-9]*\.gelbooru\.com/)) {
-			newsrc = src.replace(/\/thumbnails\/([0-9a-f]+\/[0-9a-f]+\/)thumbnail_/, "/images/$1")
-						.replace(/\/samples\/([0-9a-f]+\/[0-9a-f]+\/)sample_/, "/images/$1");
+			obj = {
+				url: src,
+				headers: {
+					Referer: ""
+				},
+				referer_ok: {
+					same_domain_nosub: true
+				}
+			};
+
+			newsrc = src.replace(/\/+thumbnails\/([0-9a-f]+\/[0-9a-f]+\/)thumbnail_/, "/images/$1")
+						.replace(/\/+samples\/([0-9a-f]+\/[0-9a-f]+\/)sample_/, "/images/$1");
 			if (newsrc !== src) {
-				return add_full_extensions(newsrc);
+				return fillobj_urls(add_full_extensions(newsrc), obj);
 			}
 		}
 
@@ -18008,8 +18062,10 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/[0-9]+\/)[a-z_]+_([0-9]+\.[^/.]*)$/, "$1$2");
 		}
 
-		if (domain === "wir.skyrock.net") {
-			return decodeURIComponent(src.replace(/:\/\/[^/]*\/.*[?&]im=([^&]*).*/, "://i.skyrock.net$1"));
+		if (domain_nosub === "skyrock.net" && /^(?:[0-9]+\.)?wir\./.test(domain)) {
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/.*[?&]im=([^&]*).*$/, "$1");
+			if (newsrc !== src)
+				return urljoin("https://i.skyrock.net/", decodeuri_ifneeded(newsrc), true);
 		}
 
 		if (domain === "i.skyrock.net") {
@@ -23688,7 +23744,7 @@ var $$IMU_EXPORT$$;
 			match = src.match(/^[a-z]+:\/\/[^/]*\/cinescape-[0-9]+x[0-9]+-([0-9]+)(\.[^/.]*)(?:[?#].*)?$/);
 			if (match) {
 				var digits = match[1].replace(/[0-9]{3}$/, "");
-				let length = digits.length;
+				var length = digits.length;
 				for (i = length; i < 5; i++) {
 					digits = "0" + digits;
 				}
@@ -25434,7 +25490,7 @@ var $$IMU_EXPORT$$;
 					Cookie: cookie
 				},
 				problems: {
-					watermark
+					watermark: true
 				}
 			};
 		}
@@ -26178,7 +26234,7 @@ var $$IMU_EXPORT$$;
 			return src.replace(/:\/\/[^/]*\/_thumbs\//, "://peach.paheal.net/_images/");
 		}
 
-		if (domain === "cache.lovethispic.com") {
+		if (domain_nosub === "lovethispic.com") {
 			return src.replace(/\/uploaded_images\/+thumbs\/+/, "/uploaded_images/");
 		}
 
@@ -27297,8 +27353,9 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/(?:_[a-z]_|n)([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/$1");
 		}
 
-		if (amazon_container === "nudiez-production") {
-			return src.replace(/(\/photos\/(?:[-0-9a-f]{3}\/+){3})[a-z]+\/+data(?:[?#].*)?$/, "$1original/data");
+		if (amazon_container === "nudiez-production" ||
+			domain === "d2c4tvdc1w38dj.cloudfront.net") {
+			return src.replace(/(\/photos\/(?:[-0-9a-f]{3}\/+){3})[a-z]+\/+([^/?]+)(?:[?#].*)?$/, "$1original/$2");
 		}
 
 		if (domain_nosub === "avdbs.com" && /^i[0-9]*\./.test(domain)) {
@@ -28468,6 +28525,13 @@ var $$IMU_EXPORT$$;
 		if (domain === "images.mimint.co.kr") {
 			return src.replace(/(\/[0-9]{4}\/+(?:[0-9]{2}\/+){2}S[0-9]{10,})[a-z](\.[^/.]*)(?:[?#].*)?$/,
 							   "$1$2");
+		}
+
+		if (domain_nosub === "mimint.co.kr") {
+			newsrc = src.replace(/.*\/article\/+thumbnail\.asp\?(?:.*?&)?thumb=([^&]+).*?$/, "$1");
+			if (newsrc !== src) {
+				return decodeuri_ifneeded(newsrc);
+			}
 		}
 
 		if (domain_nowww === "hrising.com") {
@@ -30324,6 +30388,10 @@ var $$IMU_EXPORT$$;
 
 		if (domain === "az743702.vo.msecnd.net" ||
 			domain === "cdn.ko-fi.com") {
+			newsrc = src.replace(/(\/useruploads\/+)((?:[a-z_]+_)?[-0-9a-f]{20,}(?:[^/.]+)?)_post(\.[^/.]*)(?:[?#].*)?$/, "$1$2_display$3");
+			if (newsrc !== src)
+				return newsrc;
+
 			return src.replace(/(\/useruploads\/+)(?:[a-z]+_)?([-0-9a-f]{20,}(?:[a-z]+)?)(?:_[a-z]+)?(\.[^/.]*)(?:[?#].*)?$/, "$1$2$3");
 		}
 
@@ -30908,6 +30976,14 @@ var $$IMU_EXPORT$$;
 				return newsrc;
 		}
 
+		if (domain_nowww === "vk.com") {
+			if (/^[a-z]+:\/\/[^/]+\/+images\/+(?:icons\/+)?[a-z_]+\.png(?:[?#].*)?$/.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
+		}
+
 		if (domain_nosub === "userapi.com" &&
 			host_domain_nosub === "vk.com" && options.element &&
 			options.do_request && options.cb) {
@@ -30935,7 +31011,7 @@ var $$IMU_EXPORT$$;
 								try {
 									var json = JSON_parse(result.responseText);
 
-									var params = json.payload[1][4].player.params[0];
+									var params = json.payload[1][4].player;
 									return done(params, 3*60*60);
 								} catch (e) {
 									console_error("vk_video", e);
@@ -31049,10 +31125,16 @@ var $$IMU_EXPORT$$;
 						}
 					}
 
+					if (!maxurl) {
+						console_log("Unable to find photo for", deepcopy(jsonobj));
+					}
+
 					return maxurl;
 				}
 
-				function process_video(params) {
+				function process_video(player) {
+					var params = player.params[0];
+
 					var maxsize = 0;
 					for (var key in params) {
 						var match = key.match(/^url([0-9]+)$/);
@@ -31066,6 +31148,14 @@ var $$IMU_EXPORT$$;
 					if (maxsize !== 0) {
 						return params["url" + maxsize];
 					}
+
+					if (player.type === "youtube") {
+						if (params.extra_data) {
+							return "https://i.ytimg.com/vi/" + params.extra_data + "/mqdefault.jpg";
+						}
+					}
+
+					console_log("Unable to find video for", deepcopy(params));
 
 					return null;
 				}
@@ -36075,6 +36165,45 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain_nowww === "wigtypes.com") {
+			return src.replace(/(\/product_description\/+[^/]+\/+[^/]+)_175(\.[^/.]+)(?:[?#].*)?$/, "$1_600$2");
+		}
+
+		if (domain_nowww === "beautyhill.com") {
+			return src.replace(/(\/img\/+[^/]+\/+[0-9]{4}\/+.*)_thumb(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "she12.com") {
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+wp-content\/+plugins\/+seo-alrp\/+php\/+thumb\.php\?(?:.*&)?src=([^&]+).*?$/, "$1");
+			if (newsrc !== src) {
+				return urljoin(src, decodeuri_ifneeded(newsrc), true);
+			}
+		}
+
+		if (domain_nowww === "soemo.co.uk") {
+			return src.replace(/(:\/\/[^/]+\/+images\/+[^/]+)x(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nosub === "tasior.com") {
+			return src.replace(/(\/upload\/+foto\/+[0-9]+\/+)th([0-9]+\.)/, "$1$2");
+		}
+
+		if (domain_nosub === "blogerka.cz") {
+			return src.replace(/(\/obrazky\/+[^/]+\/+[^/]+)\.tn\.[^/.]+(?:[?#].*)?$/, "$1");
+		}
+
+		if (domain_nowww === "worldsmostunique.com") {
+			return src.replace(/\/images\/+thumbnails\/+([^/]+)_[a-z]+(\.[^/.]+)(?:[?#].*)?$/, "/images/images/$1$2");
+		}
+
+		if (domain_nowww === "zarzarmodels.com") {
+			return src.replace(/(\/images\/+models\/+[0-9]+\/+)thumb\/+/i, "$1");
+		}
+
+		if (domain === "img.budgettravel.com") {
+			return src.replace(/(:\/\/[^/]+\/+)_[a-zA-Z]+\/+/, "$1");
+		}
+
 
 
 
@@ -36290,8 +36419,11 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/phpwas\/restmb_[a-z]*make\.php)\?.*(simg=[^&]*)/, "$1?idx=999&$2");
 		}
 
-		if (src.match(/.*?\/timthumb(?:\/index)?\.php[?/].*?src=(.*)/)) {
-			return urljoin(src, decodeURIComponent(src.replace(/.*\/timthumb(?:\/index)?\.php[?/].*?src=([^&]*).*/, "$1")), true);
+		if (src.match(/.*?\/timthumb(?:\/index)?\.php\?(?:.*&)?src=/)) {
+			newsrc = src.replace(/.*\/timthumb(?:\/index)?\.php\?(?:.*&)?src=([^&]+).*$/, "$1");
+			if (newsrc !== src) {
+				return urljoin(src, decodeURIComponent(newsrc), true);
+			}
 		}
 
 		if (src.match(/\/fotogallery\/[0-9]+X[0-9]+\//)) {
@@ -38894,7 +39026,7 @@ var $$IMU_EXPORT$$;
 				if (is_firefox_webextension) {
 					link = firefox_addon_page;
 				} else if (is_userscript) {
-					link = greasyfork_update_url;
+					link = userscript_update_url;
 				} else {
 					link = null;
 				}
@@ -39044,127 +39176,282 @@ var $$IMU_EXPORT$$;
 		};
 		topbtns_holder.appendChild(export_btn);
 
+		var enabled_map = {};
+		var reason_map = {};
+
+		var check_sub_option = function(meta, reason) {
+			if (typeof reason === "undefined") {
+				reason = {};
+			}
+
+			var enabled = true;
+
+			var prepare_array = function(value) {
+				var result = deepcopy(value);
+				if (!result) {
+					return null;
+				}
+
+				if (!is_array(result)) {
+					result = [result];
+				}
+
+				return result;
+			}
+
+			var requires = prepare_array(meta.requires);
+			var disabled_if = prepare_array(meta.disabled_if);
+
+			if (!meta.imu_enabled_exempt) {
+				if (!settings.imu_enabled) {
+					enabled = false;
+				}
+			}
+
+			reason.good = [];
+			reason.bad = [];
+			if (enabled && requires) {
+				enabled = check_validity(requires, reason);
+				reason.good = [];
+			}
+
+			if (enabled && disabled_if) {
+				reason.good = [];
+				reason.bad = [];
+
+				enabled = !check_validity(disabled_if, reason);
+				reason.bad = [];
+			}
+
+			return enabled;
+		};
+
+		var check_option = function(setting) {
+			var meta = settings_meta[setting];
+
+			enabled_map[setting] = "processing";
+			reason_map[setting] = {};
+			var enabled = check_sub_option(meta, reason_map[setting]);
+			enabled_map[setting] = enabled;
+
+			return enabled;
+		};
+
+		var check_validity = function(array, reason) {
+			for (var i = 0; i < array.length; i++) {
+				var current = array[i];
+				var current_valid = true;
+
+				var good_reason, bad_reason;
+
+				if (typeof reason !== "undefined") {
+					good_reason = [];
+					bad_reason = [];
+				}
+
+				for (var required_setting in current) {
+					if (required_setting[0] === "_")
+						continue;
+
+					var required_value = current[required_setting];
+
+					var value = settings[required_setting];
+					if (is_array(value) && !is_array(required_value))
+						value = value[0];
+
+					if (!(required_setting in enabled_map)) {
+						check_option(required_setting);
+					}
+
+					if (enabled_map[required_setting] === "processing") {
+						console_error("Dependency cycle detected for: " + setting + ", " + required_setting);
+						return;
+					}
+
+					var current_reason = {
+						setting: required_setting,
+						required_value: required_value,
+						current_value: value,
+						enabled: enabled_map[required_setting]
+					};
+
+					if (enabled_map[required_setting] && value === required_value) {
+						//current_valid = true;
+						if (typeof good_reason !== "undefined") {
+							good_reason.push(current_reason);
+						}
+					} else {
+						current_valid = false;
+
+						if (typeof bad_reason !== "undefined") {
+							bad_reason.push(current_reason);
+						}
+					}
+
+					if (!current_valid && typeof reason === "undefined") {
+						break;
+					}
+				}
+
+				if (typeof reason !== "undefined") {
+					reason.good.push(good_reason);
+					reason.bad.push(bad_reason);
+				}
+
+				if (current_valid) {
+					return true;
+				}
+			}
+
+			return false;
+		};
+
+		var get_option_from_options = function(options, option) {
+			if (option in options)
+				return options[option];
+
+			for (var option_name in options) {
+				if (/^_group/.test(option_name)) {
+					return get_option_from_options(options[option_name], option);
+				}
+			}
+
+			return null;
+		};
+
+		var is_nonempty_reason = function(goodbad) {
+			for (var i = 0; i < goodbad.length; i++) {
+				if (goodbad[i].length !== 0)
+					return true;
+			}
+
+			return false;
+		};
+
+		var is_reason_goodbad = function(reason) {
+			if (is_nonempty_reason(reason.good))
+				return "good";
+
+			if (is_nonempty_reason(reason.bad))
+				return "bad";
+
+			return null;
+		};
+
+		var fill_requirements = function(reason, div) {
+			div.innerHTML = "";
+
+			if (!settings.settings_show_requirements)
+				return;
+
+			var goodbad = is_reason_goodbad(reason);
+			if (!goodbad)
+				return;
+
+			var requires_p = document.createElement("p");
+			requires_p.innerText = _("Requires:");
+			div.appendChild(requires_p);
+
+			var els = [];
+
+			var array = reason[goodbad];
+			for (var i = 0; i < array.length; i++) {
+				if (array[i].length === 0)
+					continue;
+
+				var ul = document.createElement("ul");
+
+				for (var j = 0; j < array[i].length; j++) {
+					var single_reason = array[i][j];
+
+					var option_el = document.getElementById("option_" + single_reason.setting);
+					var option_name = option_el.getElementsByClassName("name_td")[0].innerText;
+
+					var wanted_value_el = document.querySelector("label[for=\"input_" + single_reason.setting + "_" + single_reason.required_value + "\"]");
+					var wanted_value = single_reason.required_value;
+					if (wanted_value_el) {
+						wanted_value = wanted_value_el.innerText;
+					}
+
+					var equals = "=";
+					if (goodbad === "good")
+						equals = "!=";
+
+					var li = document.createElement("li");
+					li.innerText = option_name + " " + equals + " " + wanted_value;
+					ul.appendChild(li);
+				}
+
+				els.push(ul);
+			}
+
+			var newels = [];
+			for (var i = 0; i < els.length - 1; i++) {
+				newels.push(els[i]);
+
+				// FIXME: this should be 'and' for disabled_if
+				var or_p = document.createElement("p");
+				or_p.innerText = _("Or:");
+
+				newels.push(or_p);
+			}
+
+			newels.push(els[els.length-1]);
+
+			for (var i = 0; i < newels.length; i++) {
+				div.appendChild(newels[i]);
+			}
+		};
+
 		function check_disabled_options() {
 			var options = options_el.querySelectorAll("div.option");
 
-			var enabled_map = {};
-
-			function check_option(setting) {
-				var meta = settings_meta[setting];
-				var enabled = true;
-
-				enabled_map[setting] = "processing";
-
-				var prepare_array = function(value) {
-					var result = deepcopy(value);
-					if (!result) {
-						return null;
-					}
-
-					if (!is_array(result)) {
-						result = [result];
-					}
-
-					return result;
-				}
-
-				var requires = prepare_array(meta.requires);
-				var disabled_if = prepare_array(meta.disabled_if);
-
-				if (!meta.imu_enabled_exempt) {
-					if (!settings.imu_enabled) {
-						enabled = false;
-					}
-				}
-
-				var check_validity = function(array) {
-					for (var i = 0; i < array.length; i++) {
-						var current = array[i];
-						var current_valid = true;
-
-						for (var required_setting in current) {
-							if (required_setting[0] === "_")
-								continue;
-
-							var required_value = current[required_setting];
-
-							var value = settings[required_setting];
-							if (is_array(value) && !is_array(required_value))
-								value = value[0];
-
-							if (!(required_setting in enabled_map)) {
-								check_option(required_setting);
-							}
-
-							if (enabled_map[required_setting] === "processing") {
-								console_error("Dependency cycle detected for: " + setting + ", " + required_setting);
-								return;
-							}
-
-							if (enabled_map[required_setting] && value === required_value) {
-								current_valid = true;
-							} else {
-								current_valid = false;
-							}
-
-							if (!current_valid)
-								break;
-						}
-
-						if (current_valid) {
-							return true;
-						}
-					}
-
-					return false;
-				};
-
-				if (enabled && requires) {
-					enabled = check_validity(requires);
-				}
-
-				if (enabled && disabled_if) {
-					enabled = !check_validity(disabled_if);
-				}
-
-				enabled_map[setting] = enabled;
-
-				return enabled;
-			}
+			enabled_map = {};
 
 			for (var i = 0; i < options.length; i++) {
 				var setting = options[i].id.replace(/^option_/, "");
 
-				//var meta = settings_meta[setting];
-				/*var enabled = true;
-				if (meta.requires) {
-					// fixme: this only works for one option in meta.requires
-					for (var required_setting in meta.requires) {
-						var value = settings[required_setting];
-
-
-						if (value === meta.requires[required_setting]) {
-							enabled = true;
-						} else {
-							enabled = false;
-							break;
-						}
-					}
-					}*/
 				var enabled = check_option(setting);
 
 				if (enabled) {
 					options[i].classList.remove("disabled");
 
-					options[i].querySelectorAll("input, textarea, button, select").forEach((input) => {
+					options[i].getElementsByClassName("requirements")[0].style.display = "none";
+
+					var meta = settings_meta[setting];
+					var meta_options = meta.options;
+					var regexp = new RegExp("^input_" + setting + "_");
+
+					var els = options[i].querySelectorAll("input, textarea, button, select");
+					for (var j = 0; j < els.length; j++) {
+						var input = els[j];
+
 						input.disabled = false;
-					});
+
+						if (meta_options) {
+							var option_name = input.id.replace(regexp, "");
+							if (option_name !== input.id) {
+								var option_value = get_option_from_options(meta_options, option_name);
+								if (option_value) {
+									if (!check_sub_option(option_value)) {
+										input.disabled = true;
+									}
+								}
+							}
+						}
+					}
 				} else {
 					options[i].classList.add("disabled");
 
-					options[i].querySelectorAll("input, textarea, button, select").forEach((input) => {
+					var els = options[i].querySelectorAll("input, textarea, button, select");
+					for (var j = 0; j < els.length; j++) {
+						var input = els[j];
 						input.disabled = true;
-					});
+					}
+
+					var requirements_div = options[i].getElementsByClassName("requirements")[0];
+					requirements_div.style.display = "block";
+					fill_requirements(reason_map[setting], requirements_div);
 				}
 			}
 		}
@@ -39951,6 +40238,11 @@ var $$IMU_EXPORT$$;
 
 					option.appendChild(warning);
 				}
+
+				var requirements = document.createElement("div");
+				requirements.style.display = "none";
+				requirements.classList.add("requirements");
+				option.appendChild(requirements);
 
 				if (meta.example_websites) {
 					var examples = document.createElement("ul");
@@ -40782,7 +41074,7 @@ var $$IMU_EXPORT$$;
 					};
 
 					video.onended = function() {
-						if (settings.mouseover_gallery_move_after_video) {
+						if (settings.mouseover_enable_gallery && settings.mouseover_gallery_move_after_video) {
 							trigger_gallery(1);
 						}
 					};
@@ -42356,38 +42648,40 @@ var $$IMU_EXPORT$$;
 
 					var popup_width = (popupshown && outerdiv.clientWidth) || imgw;
 
-					var images_total = addbtn(get_imagestotal_text(), "", imagestotal_input_enable, true);
-					set_important_style(images_total, "font-size", gallerycount_fontsize);
-					set_important_style(images_total, "display", "none");
+					if (settings.mouseover_enable_gallery && settings.mouseover_ui_gallerycounter) {
+						var images_total = addbtn(get_imagestotal_text(), "", imagestotal_input_enable, true);
+						set_important_style(images_total, "font-size", gallerycount_fontsize);
+						set_important_style(images_total, "display", "none");
 
-					var images_total_input = document.createElement("input");
-					var images_total_input_active = false;
-					set_el_all_initial(images_total_input);
-					set_important_style(images_total_input, "display", "none");
-					set_important_style(images_total_input, "background-color", "white");
-					set_important_style(images_total_input, "font-family", sans_serif_font);
-					set_important_style(images_total_input, "font-size", galleryinput_fontsize);
-					set_important_style(images_total_input, "padding", "1px");
-					set_important_style(images_total_input, "padding-left", "2px");
-					set_important_style(images_total_input, "width", "5em");
-					images_total_input.addEventListener("mouseout", imagestotal_input_disable);
-					images_total_input.addEventListener("keydown", function(e) {
-						if (e.which === 13) { // enter
-							var parsednum = images_total_input.value.replace(/\s+/g, "");
-							if (/^[0-9]+$/.test(parsednum)) {
-								parsednum = parseInt(parsednum);
-								trigger_gallery(parsednum - (prev_images + 1));
+						var images_total_input = document.createElement("input");
+						var images_total_input_active = false;
+						set_el_all_initial(images_total_input);
+						set_important_style(images_total_input, "display", "none");
+						set_important_style(images_total_input, "background-color", "white");
+						set_important_style(images_total_input, "font-family", sans_serif_font);
+						set_important_style(images_total_input, "font-size", galleryinput_fontsize);
+						set_important_style(images_total_input, "padding", "1px");
+						set_important_style(images_total_input, "padding-left", "2px");
+						set_important_style(images_total_input, "width", "5em");
+						images_total_input.addEventListener("mouseout", imagestotal_input_disable);
+						images_total_input.addEventListener("keydown", function(e) {
+							if (e.which === 13) { // enter
+								var parsednum = images_total_input.value.replace(/\s+/g, "");
+								if (/^[0-9]+$/.test(parsednum)) {
+									parsednum = parseInt(parsednum);
+									trigger_gallery(parsednum - (prev_images + 1));
+								}
+
+								imagestotal_input_disable();
+
+								e.stopPropagation();
+								e.preventDefault();
+								return false;
 							}
+						}, true);
 
-							imagestotal_input_disable();
-
-							e.stopPropagation();
-							e.preventDefault();
-							return false;
-						}
-					}, true);
-
-					topbarel.appendChild(images_total);
+						topbarel.appendChild(images_total);
+					}
 
 					if (settings.mouseover_ui_optionsbtn) {
 						// \u2699 = ⚙
@@ -42435,7 +42729,7 @@ var $$IMU_EXPORT$$;
 					}
 
 					var add_lrhover = function(isleft, btnel, action, title) {
-						if (popup_width < 200)
+						if (!settings.mouseover_enable_gallery || popup_width < 200)
 							return;
 
 						var bottom_heights = 0;
@@ -42486,7 +42780,7 @@ var $$IMU_EXPORT$$;
 					};
 
 					var add_leftright_gallery_button = function(leftright) {
-						if (!settings.mouseover_ui_gallerybtns)
+						if (!settings.mouseover_enable_gallery || !settings.mouseover_ui_gallerybtns)
 							return;
 
 						var action = function() {
@@ -42520,7 +42814,7 @@ var $$IMU_EXPORT$$;
 
 						add_lrhover(!leftright, btn, action, title);
 
-						if (settings.mouseover_ui_gallerycounter) {
+						if (settings.mouseover_enable_gallery && settings.mouseover_ui_gallerycounter) {
 							if (use_cached_gallery) {
 								if (!leftright) {
 									prev_images = cached_previmages;
@@ -42546,6 +42840,9 @@ var $$IMU_EXPORT$$;
 					};
 
 					var add_leftright_gallery_button_if_valid = function(leftright) {
+						if (!settings.mouseover_enable_gallery)
+							return;
+
 						is_nextprev_valid(leftright, function(valid) {
 							if (valid) {
 								add_leftright_gallery_button(leftright);
@@ -43022,6 +43319,9 @@ var $$IMU_EXPORT$$;
 					}
 
 					var handle_gallery = function(xy) {
+						if (!settings.mouseover_enable_gallery)
+							return;
+
 						var isright = false;
 
 						if (xy) {
@@ -46381,11 +46681,13 @@ var $$IMU_EXPORT$$;
 				var keybinds = [
 					{
 						key: settings.mouseover_gallery_prev_key,
-						action: {type: "gallery_prev"}
+						action: {type: "gallery_prev"},
+						requires: settings.mouseover_enable_gallery
 					},
 					{
 						key: settings.mouseover_gallery_next_key,
-						action: {type: "gallery_next"}
+						action: {type: "gallery_next"},
+						requires: settings.mouseover_enable_gallery
 					},
 					{
 						key: settings.mouseover_download_key,
@@ -46473,6 +46775,11 @@ var $$IMU_EXPORT$$;
 
 				for (var i = 0; i < keybinds.length; i++) {
 					if (trigger_complete(keybinds[i].key)) {
+						if ("requires" in keybinds[i]) {
+							if (!keybinds[i].requires)
+								continue;
+						}
+
 						var action = keybinds[i].action;
 						action.needs_popup = true;
 
@@ -47218,16 +47525,7 @@ var $$IMU_EXPORT$$;
 		};
 	}
 
-	var do_greasyfork_page = function() {
-		var imgel = document.querySelector("div.script-author-description > center > img[alt='Image Max URL']");
-		if (!imgel)
-			return;
-
-		// make sure it's the same general layout
-		if (imgel.parentElement.previousElementSibling ||
-			imgel.parentElement.nextElementSibling.tagName !== "UL")
-			return;
-
+	var do_userscript_page = function(imgel, latest_version) {
 		var status_container_el = document.createElement("div");
 		status_container_el.style.marginBottom = "2em";
 
@@ -47242,19 +47540,13 @@ var $$IMU_EXPORT$$;
 		} catch (e) {
 		}
 
-		var gf_version = null;
-		var gf_version_el = document.querySelector("dd.script-show-version");
-		if (gf_version_el) {
-			gf_version = gf_version_el.innerText.replace(/^\s*|\s*$/, "");
-		}
-
 		version_el.innerText = "Installed";
 
 		if (version !== null) {
 			version_el.innerText += " (v" + version;
 
-			if (gf_version) {
-				var compared = version_compare(gf_version, version);
+			if (latest_version) {
+				var compared = version_compare(latest_version, version);
 				if (compared === -1) {
 					version_el.innerText += ", update available";
 				}
@@ -47276,6 +47568,49 @@ var $$IMU_EXPORT$$;
 		status_container_el.appendChild(version_el);
 		status_container_el.appendChild(options_el);
 		imgel.parentElement.appendChild(status_container_el);
+	};
+
+	var do_greasyfork_page = function() {
+		var imgel = document.querySelector("div.script-author-description > center > img[alt='Image Max URL']");
+		if (!imgel)
+			return;
+
+		// make sure it's the same general layout
+		if (imgel.parentElement.previousElementSibling ||
+			imgel.parentElement.nextElementSibling.tagName !== "UL")
+			return;
+
+		var gf_version = null;
+		var gf_version_el = document.querySelector("dd.script-show-version");
+		if (gf_version_el) {
+			gf_version = gf_version_el.innerText.replace(/^\s*|\s*$/, "");
+		}
+
+		do_userscript_page(imgel, gf_version);
+	};
+
+	var do_oujs_page = function() {
+		var imgel = document.querySelector("div#user-content > p[align='center'] img[alt='Image Max URL']");
+		if (!imgel)
+			return;
+
+		// make sure it's the same general layout
+		if (imgel.parentElement.previousElementSibling ||
+			imgel.parentElement.nextElementSibling.tagName !== "UL")
+			return;
+
+		var latest_version = null;
+		var version_icon_el = document.querySelector("div.script-meta i.fa-history");
+		if (version_icon_el) {
+			var code_el = version_icon_el.parentElement.querySelector("code");
+			if (code_el) {
+				latest_version = code_el.innerText.replace(/[+].*/, "");
+				if (!/^[0-9.]+$/.test(latest_version))
+					latest_version = null;
+			}
+		}
+
+		do_userscript_page(imgel, latest_version);
 	};
 
 	function start() {
@@ -47310,11 +47645,16 @@ var $$IMU_EXPORT$$;
 				}
 			}
 
-			if (is_userscript &&
-				window.location.href.match(/^https?:\/\/(?:www\.)?greasyfork\.org\/+[^/]*\/+scripts\/+36662(?:-[^/]*)?(?:[?#].*)?$/)) {
-				onload(function() {
-					do_greasyfork_page();
-				});
+			if (is_userscript) {
+				if (window.location.href.match(/^https?:\/\/(?:www\.)?greasyfork\.org\/+[^/]*\/+scripts\/+36662(?:-[^/]*)?(?:[?#].*)?$/)) {
+					onload(function() {
+						do_greasyfork_page();
+					});
+				} else if (window.location.href.match(/^https?:\/\/(?:www\.)?openuserjs\.org\/+scripts\/+qsniyg\/+Image_Max_URL(?:[?#].*)?$/)) {
+					onload(function() {
+						do_oujs_page();
+					});
+				}
 			}
 
 			do_mouseover();
