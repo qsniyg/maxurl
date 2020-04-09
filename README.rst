@@ -11,7 +11,7 @@ but it also supports a number of generic engines (such as Wordpress and MediaWik
 
 It is currently released as:
 
-- `Userscript <https://greasyfork.org/en/scripts/36662-image-max-url>`__ (most browsers)
+- Userscript: `Greasyfork <https://greasyfork.org/en/scripts/36662-image-max-url>`__ | `OpenUserJS <https://openuserjs.org/scripts/qsniyg/Image_Max_URL>`__ (most browsers)
 
   - `userscript.user.js <https://github.com/qsniyg/maxurl/blob/master/userscript.user.js>`__ is also the base for everything listed below
   - It also serves as a node module (used by the reddit bot), and can be embedded in a website
