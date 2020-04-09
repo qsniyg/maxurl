@@ -21738,6 +21738,15 @@ var $$IMU_EXPORT$$;
 			if (newsrc !== src)
 				return newsrc;
 
+			// https://images-4.gog-statics.com/7ec3664b4bb3746797e252fd71ad48abea130abf847bf30d0b9eaf25a915da2d_product_tile_349.webp
+			//   https://images-4.gog-statics.com/7ec3664b4bb3746797e252fd71ad48abea130abf847bf30d0b9eaf25a915da2d_product_tile_349_2x.webp
+			// https://images-4.gog-statics.com/7ec3664b4bb3746797e252fd71ad48abea130abf847bf30d0b9eaf25a915da2d_product_tile_398.webp
+			//   https://images-4.gog-statics.com/7ec3664b4bb3746797e252fd71ad48abea130abf847bf30d0b9eaf25a915da2d_product_tile_398_2x.webp
+			// https://images-1.gog-statics.com/43f1850febaf13b4185d9f31ffb7d63ee1e85b496bac723af2bffc7a832ab827_product_tile_536.webp
+			newsrc = src.replace(/(\/[0-9a-f]{10,}_product_tile_(?:349|398))(\.[^/.]+)(?:[?#].*)?$/, "$1_2x$2");
+			if (newsrc !== src)
+				return newsrc;
+
 			return src.replace(/(\/[0-9a-f]*)_[^/.]*(\.[^/.]*)$/, "$1$2");
 		}
 
