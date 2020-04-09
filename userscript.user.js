@@ -67963,16 +67963,7 @@ var $$IMU_EXPORT$$;
 		};
 	}
 
-	var do_greasyfork_page = function() {
-		var imgel = document.querySelector("div.script-author-description > center > img[alt='Image Max URL']");
-		if (!imgel)
-			return;
-
-		// make sure it's the same general layout
-		if (imgel.parentElement.previousElementSibling ||
-			imgel.parentElement.nextElementSibling.tagName !== "UL")
-			return;
-
+	var do_userscript_page = function(imgel, latest_version) {
 		var status_container_el = document.createElement("div");
 		status_container_el.style.marginBottom = "2em";
 
@@ -67987,19 +67978,13 @@ var $$IMU_EXPORT$$;
 		} catch (e) {
 		}
 
-		var gf_version = null;
-		var gf_version_el = document.querySelector("dd.script-show-version");
-		if (gf_version_el) {
-			gf_version = gf_version_el.innerText.replace(/^\s*|\s*$/, "");
-		}
-
 		version_el.innerText = "Installed";
 
 		if (version !== null) {
 			version_el.innerText += " (v" + version;
 
-			if (gf_version) {
-				var compared = version_compare(gf_version, version);
+			if (latest_version) {
+				var compared = version_compare(latest_version, version);
 				if (compared === -1) {
 					version_el.innerText += ", update available";
 				}
@@ -68021,6 +68006,49 @@ var $$IMU_EXPORT$$;
 		status_container_el.appendChild(version_el);
 		status_container_el.appendChild(options_el);
 		imgel.parentElement.appendChild(status_container_el);
+	};
+
+	var do_greasyfork_page = function() {
+		var imgel = document.querySelector("div.script-author-description > center > img[alt='Image Max URL']");
+		if (!imgel)
+			return;
+
+		// make sure it's the same general layout
+		if (imgel.parentElement.previousElementSibling ||
+			imgel.parentElement.nextElementSibling.tagName !== "UL")
+			return;
+
+		var gf_version = null;
+		var gf_version_el = document.querySelector("dd.script-show-version");
+		if (gf_version_el) {
+			gf_version = gf_version_el.innerText.replace(/^\s*|\s*$/, "");
+		}
+
+		do_userscript_page(imgel, gf_version);
+	};
+
+	var do_oujs_page = function() {
+		var imgel = document.querySelector("div#user-content > p[align='center'] img[alt='Image Max URL']");
+		if (!imgel)
+			return;
+
+		// make sure it's the same general layout
+		if (imgel.parentElement.previousElementSibling ||
+			imgel.parentElement.nextElementSibling.tagName !== "UL")
+			return;
+
+		var latest_version = null;
+		var version_icon_el = document.querySelector("div.script-meta i.fa-history");
+		if (version_icon_el) {
+			var code_el = version_icon_el.parentElement.querySelector("code");
+			if (code_el) {
+				latest_version = code_el.innerText.replace(/[+].*/, "");
+				if (!/^[0-9.]+$/.test(latest_version))
+					latest_version = null;
+			}
+		}
+
+		do_userscript_page(imgel, latest_version);
 	};
 
 	function start() {
@@ -68055,11 +68083,16 @@ var $$IMU_EXPORT$$;
 				}
 			}
 
-			if (is_userscript &&
-				window.location.href.match(/^https?:\/\/(?:www\.)?greasyfork\.org\/+[^/]*\/+scripts\/+36662(?:-[^/]*)?(?:[?#].*)?$/)) {
-				onload(function() {
-					do_greasyfork_page();
-				});
+			if (is_userscript) {
+				if (window.location.href.match(/^https?:\/\/(?:www\.)?greasyfork\.org\/+[^/]*\/+scripts\/+36662(?:-[^/]*)?(?:[?#].*)?$/)) {
+					onload(function() {
+						do_greasyfork_page();
+					});
+				} else if (window.location.href.match(/^https?:\/\/(?:www\.)?openuserjs\.org\/+scripts\/+qsniyg\/+Image_Max_URL(?:[?#].*)?$/)) {
+					onload(function() {
+						do_oujs_page();
+					});
+				}
 			}
 
 			do_mouseover();
