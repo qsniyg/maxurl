@@ -4093,7 +4093,7 @@ var $$IMU_EXPORT$$;
 	var decodeuri_ifneeded = function(url) {
 		if (url.match(/^https?:\/\//))
 			return url;
-		if (url.match(/^https?%3[aA]/))
+		if (url.match(/^https?%3[aA]/) || /^[^/]*%2[fF]/.test(url))
 			return decodeURIComponent(url);
 		if (url.match(/^https?%253[aA]/))
 			return decodeURIComponent(decodeURIComponent(url));
@@ -11393,6 +11393,8 @@ var $$IMU_EXPORT$$;
 			(domain === "static.pr.ricmais.com.br" && string_indexof(src, "/uploads/") >= 0) ||
 			// https://www.smarthomebeginner.com/images/2012/08/SSH-ubuntu-putty-screenshot-500x301.png
 			(domain_nowww === "smarthomebeginner.com" && string_indexof(src, "/images/") >= 0) ||
+			// https://www.inspirationde.com/media/2014/04/world-stunning-and-beautiful-eyes-photography-photography-heat-photography-inspirations-and-onli-13981561444k8ng-150x150.jpg
+			(domain_nowww === "inspirationde.com" && string_indexof(src, "/media/") >= 0) ||
 			// https://static.acgsoso.com/uploads/2020/02/19bd4f091f03c191195d5e626c3190f9-200x300.jpg
 			(domain === "static.acgsoso.com" && string_indexof(src, "/uploads/") >= 0)
 			) {
@@ -11404,7 +11406,7 @@ var $$IMU_EXPORT$$;
 			// https://media.coindesk.com/uploads/2018/07/shutterstock_703755544-860x430.jpg
 			(domain === "media.coindesk.com" && string_indexof(src, "/uploads/") >= 0)) {
 			// http://store.pinseyun.com/uploads/2016/10/20161021222440-150x150.jpg
-			// http://store.pinseyun.com/uploads/2016/06/201605work-94-150x150.jpg
+			// http://store.pinseyun.com/uploads/2016/06/201605work-94-150x15`0.jpg
 			return {
 				url: src.replace(/-[0-9]*x[0-9]*\.([^/.]*)$/, ".$1"),
 				can_head: false
@@ -11552,7 +11554,9 @@ var $$IMU_EXPORT$$;
 			// https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2018/01/GTA-6-Female-Protag-796x417.jpg -- does work
 			// https://dreamix.eu/blog/wp-content/uploads/2017/05/20150224test644-1508x706_c.jpg
 			//   https://dreamix.eu/blog/wp-content/uploads/2017/05/20150224test644.jpg
-			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|images|photos|blogs.dir)|\/+uploads)\//.test(src)
+			// don't run it for query args:
+			// https://she12.com/wp-content/plugins/seo-alrp/php/thumb.php?src=http://she12.com/uploads/2012/09/Emo-Hairstyles-for-girls.jpg&h=90&w=114&q=90&zc=1
+			/^[a-z]+:\/\/[^?]+\/wp(?:-content\/+(?:uploads|images|photos|blogs.dir)|\/+uploads)\/[^?]+-[0-9]+x[0-9]+(?:_c)?\./.test(src)
 			//src.indexOf("/wp-content/blogs.dir/") >= 0 ||
 			// https://d13ezvd6yrslxm.cloudfront.net/wp/wp-content/images/x-men-apocalypse-700x300.jpg
 			//src.indexOf("/wp/wp-content/images/") >= 0 ||
@@ -11563,7 +11567,7 @@ var $$IMU_EXPORT$$;
 			//src.indexOf("/wp-content/uploads/") >= 0 ||
 			//src.indexOf("/wp/uploads/") >= 0
 			) {
-			src = src.replace(/-[0-9]*x[0-9]*(?:_c)?(\.[^/.]*)(?:[?#].*)?$/, "$1");
+			src = src.replace(/-[0-9]+x[0-9]+(?:_c)?(\.[^/.]*)(?:[?#].*)?$/, "$1");
 		}
 
 		// http://felipepitta.com/blog/wp-content/uploads/2014/08/Harry-Potter-Hogwarts-Express-Jacobite-Fort-William-Scotland-Train(pp_w970_h646).jpg
@@ -27548,10 +27552,14 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/[0-9]+\/)[a-z_]+_([0-9]+\.[^/.]*)$/, "$1$2");
 		}
 
-		if (domain === "wir.skyrock.net") {
+		if (domain_nosub === "skyrock.net" && /^(?:[0-9]+\.)?wir\./.test(domain)) {
 			// https://wir.skyrock.net/wir/v1/resize/?c=isi&im=%2F7688%2F86157688%2Fpics%2F3171145327_1_9_XywnO238.jpg&w=252
 			//   https://i.skyrock.net/7688/86157688/pics/3171145327_1_9_XywnO238.jpg
-			return decodeURIComponent(src.replace(/:\/\/[^/]*\/.*[?&]im=([^&]*).*/, "://i.skyrock.net$1"));
+			// http://02.wir.skyrock.net/wir/v1/resize/?c=isi&im=%2F4921%2F86694921%2Fpics%2F3138257478_1_4_mkNPTfWC.jpg&w=254
+			//   https://i.skyrock.net/4921/86694921/pics/3138257478_1_4_mkNPTfWC.jpg
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/.*[?&]im=([^&]*).*$/, "$1");
+			if (newsrc !== src)
+				return urljoin("https://i.skyrock.net/", decodeuri_ifneeded(newsrc), true);
 		}
 
 		if (domain === "i.skyrock.net") {
@@ -40995,9 +41003,11 @@ var $$IMU_EXPORT$$;
 			return src.replace(/:\/\/[^/]*\/_thumbs\//, "://peach.paheal.net/_images/");
 		}
 
-		if (domain === "cache.lovethispic.com") {
+		if (domain_nosub === "lovethispic.com") {
 			// https://cache.lovethispic.com/uploaded_images/thumbs/286682-Lily-Collins.jpg
 			//   https://cache.lovethispic.com/uploaded_images/286682-Lily-Collins.jpg
+			// https://www.lovethispic.com/uploaded_images/thumbs/139183-The-Beautiful-Angelina-Jolie.jpg
+			//   https://www.lovethispic.com/uploaded_images/139183-The-Beautiful-Angelina-Jolie.jpg
 			return src.replace(/\/uploaded_images\/+thumbs\/+/, "/uploaded_images/");
 		}
 
@@ -56010,6 +56020,72 @@ var $$IMU_EXPORT$$;
 			if (newsrc !== src) {
 				return decodeuri_ifneeded(newsrc);
 			}
+		}
+
+		if (domain_nowww === "wigtypes.com") {
+			// https://www.wigtypes.com/product_description/outre/outre_quick_weave_big_beautiful_hair_3c_whirly_dr2730_1_175.jpg
+			//   https://www.wigtypes.com/product_description/outre/outre_quick_weave_big_beautiful_hair_3c_whirly_dr2730_1_600.jpg
+			return src.replace(/(\/product_description\/+[^/]+\/+[^/]+)_175(\.[^/.]+)(?:[?#].*)?$/, "$1_600$2");
+		}
+
+		if (domain_nowww === "beautyhill.com") {
+			// http://beautyhill.com/img/arts/2010/Sep/17/697/emohairstyle5_thumb.jpg
+			//   http://beautyhill.com/img/arts/2010/Sep/17/697/emohairstyle5.jpg
+			return src.replace(/(\/img\/+[^/]+\/+[0-9]{4}\/+.*)_thumb(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "she12.com") {
+			// https://she12.com/wp-content/plugins/seo-alrp/php/thumb.php?src=http://she12.com/uploads/2012/09/Emo-Hairstyles-for-girls.jpg&h=90&w=114&q=90&zc=1
+			//   https://she12.com/uploads/2012/09/Emo-Hairstyles-for-girls.jpg
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+wp-content\/+plugins\/+seo-alrp\/+php\/+thumb\.php\?(?:.*&)?src=([^&]+).*?$/, "$1");
+			if (newsrc !== src) {
+				return urljoin(src, decodeuri_ifneeded(newsrc), true);
+			}
+		}
+
+		if (domain_nowww === "soemo.co.uk") {
+			// https://www.soemo.co.uk/images/emo_guy26x.jpg
+			//   https://www.soemo.co.uk/images/emo_guy26.jpg
+			// https://www.soemo.co.uk/images/bless_the_fallx.jpg
+			//   https://www.soemo.co.uk/images/bless_the_fall.jpg
+			// doesn't work for all:
+			// https://www.soemo.co.uk/images/emosx.jpg
+			return src.replace(/(:\/\/[^/]+\/+images\/+[^/]+)x(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nosub === "tasior.com") {
+			// http://fryzury.tasior.com/upload/foto/2/th13503396823.png
+			//   http://fryzury.tasior.com/upload/foto/2/13503396823.png
+			return src.replace(/(\/upload\/+foto\/+[0-9]+\/+)th([0-9]+\.)/, "$1$2");
+		}
+
+		if (domain_nosub === "blogerka.cz") {
+			// http://emoanishka.blogerka.cz/obrazky/emoanishka.blogerka.cz/index.jpg.tn.jpg
+			//   http://emoanishka.blogerka.cz/obrazky/emoanishka.blogerka.cz/index.jpg
+			return src.replace(/(\/obrazky\/+[^/]+\/+[^/]+)\.tn\.[^/.]+(?:[?#].*)?$/, "$1");
+		}
+
+		if (domain_nowww === "worldsmostunique.com") {
+			// http://www.worldsmostunique.com/images/thumbnails/Worlds-most-beautiful-scenes-grand-canyon_jpg.jpg
+			//   http://www.worldsmostunique.com/images/images/Worlds-most-beautiful-scenes-grand-canyon.jpg
+			return src.replace(/\/images\/+thumbnails\/+([^/]+)_[a-z]+(\.[^/.]+)(?:[?#].*)?$/, "/images/images/$1$2");
+		}
+
+		if (domain_nowww === "zarzarmodels.com") {
+			// http://www.zarzarmodels.com/Images/Models/1291/Thumb/beautiful-blonde-fashion-model-kathryn-portrait.jpg
+			//   http://www.zarzarmodels.com/Images/Models/1291/beautiful-blonde-fashion-model-kathryn-portrait.jpg
+			return src.replace(/(\/images\/+models\/+[0-9]+\/+)thumb\/+/i, "$1");
+		}
+
+		if (domain === "img.budgettravel.com") {
+			// https://img.budgettravel.com/_relatedContentImage/Arches-Zoom-Background.jpg?mtime=20200408124252
+			//   https://img.budgettravel.com/_contentHero/Arches-Zoom-Background.jpg?mtime=20200408124252
+			//   https://img.budgettravel.com/Arches-Zoom-Background.jpg?mtime=20200408124252 -- watermark
+			// https://img.budgettravel.com/_galleryImage/golden-gate-bridge-san-francisco-952012-114744_original.jpeg?mtime=20140903194435
+			//   https://img.budgettravel.com/golden-gate-bridge-san-francisco-952012-114744_original.jpeg?mtime=20140903194435 -- no watermark
+			// https://img.budgettravel.com/_thumbnailSquare/Yosemite_1251853.jpg?mtime=20170410164711
+			//   https://img.budgettravel.com/Yosemite_1251853.jpg?mtime=20170410164711
+			return src.replace(/(:\/\/[^/]+\/+)_[a-zA-Z]+\/+/, "$1");
 		}
 
 
