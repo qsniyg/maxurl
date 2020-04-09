@@ -59462,7 +59462,7 @@ var $$IMU_EXPORT$$;
 				if (is_firefox_webextension) {
 					link = firefox_addon_page;
 				} else if (is_userscript) {
-					link = greasyfork_update_url;
+					link = userscript_update_url;
 				} else {
 					link = null;
 				}
