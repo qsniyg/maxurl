@@ -80,7 +80,9 @@ var $$IMU_EXPORT$$;
 	var options_page = "https://qsniyg.github.io/maxurl/options.html";
 	var preferred_options_page = options_page;
 	var firefox_addon_page = "https://addons.mozilla.org/en-US/firefox/addon/image-max-url/";
-	var greasyfork_update_url = "https://greasyfork.org/scripts/36662-image-max-url/code/Image%20Max%20URL.user.js";
+	var userscript_update_url = "https://github.com/qsniyg/maxurl/blob/master/userscript_smaller.user.js?raw=true";
+	var greasyfork_update_url = userscript_update_url;
+	//var greasyfork_update_url = "https://greasyfork.org/scripts/36662-image-max-url/code/Image%20Max%20URL.user.js";
 	var current_version = null;
 	var imagetab_ok_override = false;
 
