@@ -21725,7 +21725,30 @@ var $$IMU_EXPORT$$;
 			domain_nosub === "gog-statics.com") && domain.match(/images.*\./)) {
 			// https://images-2.gog.com/859a7d00d0c0d46c8c4a215906479580f06837daa13d90837deba59ad51fdd8a_product_card_screenshot_112.jpg
 			//   https://images-2.gog.com/859a7d00d0c0d46c8c4a215906479580f06837daa13d90837deba59ad51fdd8a.jpg
+			// https://images-3.gog-statics.com/e81916c6d3612e5423b32e6c641e9589fc5e34cf5b6ccbba09d912f51fa8c4bd_bs_logo_small.webp
+			//   https://images-3.gog-statics.com/e81916c6d3612e5423b32e6c641e9589fc5e34cf5b6ccbba09d912f51fa8c4bd_bs_logo_big.webp
+			newsrc = src.replace(/(\/[0-9a-f]{10,}_bs_logo)_small(\.[^/.]+)(?:[?#].*)?$/, "$1_big$2");
+			if (newsrc !== src)
+				return newsrc;
+
+			// https://images-2.gog-statics.com/c9410707e8fa68b3fcd414f217c4f72b653fbc4dca6abf17c603d924149e3398_bs_background_500.webp
+			//   https://images-2.gog-statics.com/c9410707e8fa68b3fcd414f217c4f72b653fbc4dca6abf17c603d924149e3398_bs_background_800.webp
+			//   https://images-2.gog-statics.com/c9410707e8fa68b3fcd414f217c4f72b653fbc4dca6abf17c603d924149e3398_bs_background_1275.webp
+			newsrc = src.replace(/(\/[0-9a-f]{10,}_bs_background)_(?:500|800)(\.[^/.]+)(?:[?#].*)?$/, "$1_1275$2");
+			if (newsrc !== src)
+				return newsrc;
+
 			return src.replace(/(\/[0-9a-f]*)_[^/.]*(\.[^/.]*)$/, "$1$2");
+		}
+
+		if (domain === "items.gog.com") {
+			// https://items.gog.com/in_other_waters/mp4/IOW_Convo_brine_600px.gif.mp4
+			if (/\/mp4\/+[^/]+\.mp4(?:[?#].*)?$/.test(src)) {
+				return {
+					url: src,
+					video: true
+				};
+			}
 		}
 
 		if (domain === "www.destructoid.com") {
