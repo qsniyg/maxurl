@@ -1,3 +1,22 @@
+0.12.23
+
+New features:
+
+ * Option to toggle gallery support (enabled by default)
+ * Option to show requirements for disabled options (enabled by default)
+ * Support for ~10 new sites (using ~10 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including Gelbooru, VK, Wordpress, Yandex)
+ * Disabled input boxes are more clearly indicated
+
+Bugfixes:
+
+ * Fix compatibility issues with older browsers
+
+---
+
 0.12.22
 
 New features:
