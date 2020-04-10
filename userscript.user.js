@@ -26419,6 +26419,63 @@ var $$IMU_EXPORT$$;
 			// https://stor.artstor.org/iiif/fpx/amico/dallas/dma_.1969.7.fpx/0,1024,1024,976/1024,/0/default.jpg
 			//   https://stor.artstor.org/iiif/fpx/amico/dallas/dma_.1969.7.fpx/full/full/0/default.jpg
 			domain === "stor.artstor.org" ||
+			// https://ids.lib.harvard.edu/ids/iiif/25286607/full/500,/0/native.jpg
+			//   https://ids.lib.harvard.edu/ids/iiif/25286607/full/full/0/native.jpg
+			domain === "ids.lib.harvard.edu" ||
+			// https://digitalcollections.lib.washington.edu/digital/iiif/pioneerlife/26138/full/full/10/default.jpg
+			//   https://digitalcollections.lib.washington.edu/digital/iiif/pioneerlife/26138/full/full/0/default.jpg
+			domain === "digitalcollections.lib.washington.edu" ||
+			// https://mtmemory.org/digital/iiif/p16013coll87/2209/full/full/10/default.jpg
+			//   https://mtmemory.org/digital/iiif/p16013coll87/2209/full/full/0/default.jpg
+			domain_nowww === "mtmemory.org" ||
+			// https://ids.si.edu/ids/iiif/SIA-2004-41356/full/400,/0/default.jpg
+			//   https://ids.si.edu/ids/iiif/SIA-2004-41356/full/full/0/default.jpg
+			domain === "ids.si.edu" ||
+			// https://stacks.stanford.edu/image/iiif/hg676jb4964%2F0380_796-44/2317,1510,799,799/full/0/default.jpg
+			//   https://stacks.stanford.edu/image/iiif/hg676jb4964%2F0380_796-44/full/full/0/default.jpg
+			domain === "stacks.stanford.edu" ||
+			// https://images.britishart.yale.edu/iiif/a866e10e-5a6f-4b87-b4ec-6f0488940796/full/500,/0/native.jpg
+			//   https://images.britishart.yale.edu/iiif/a866e10e-5a6f-4b87-b4ec-6f0488940796/full/full/0/native.jpg
+			domain === "images.britishart.yale.edu" ||
+			// http://iiif.archivelab.org/iiif/39002086306033.med.yale.edu$1/full/500,/0/default.jpg
+			//   http://iiif.archivelab.org/iiif/39002086306033.med.yale.edu$1/full/full/0/default.jpg
+			domain === "iiif.archivelab.org" ||
+			// http://cplorg.cdmhost.com/digital/iiif/p4014coll16/420/full/400,/0/default.jpg
+			//   http://cplorg.cdmhost.com/digital/iiif/p4014coll16/420/full/full/0/default.jpg
+			domain === "cplorg.cdmhost.com" ||
+			// https://iiif.lib.ncsu.edu/iiif/segPap_021/full/400,/0/default.jpg
+			//   https://iiif.lib.ncsu.edu/iiif/segPap_021/full/full/0/default.jpg
+			domain === "iiif.lib.ncsu.edu" ||
+			// https://iiif.eluxemburgensia.lu/iiif/2/ark:%2F70795%2F1drtkj%2Fpages%2F3/full/500,/0/default.jpg
+			//   https://iiif.eluxemburgensia.lu/iiif/2/ark:%2F70795%2F1drtkj%2Fpages%2F3/full/full/0/default.jpg
+			domain === "iiif.eluxemburgensia.lu" ||
+			// https://archives.norwich.edu/digital/iiif/p16663coll8/206/full/500,/0/default.jpg
+			//   https://archives.norwich.edu/digital/iiif/p16663coll8/206/full/full/0/default.jpg
+			domain === "archives.norwich.edu" ||
+			// https://iiif.library.ubc.ca/image/cdm.tokugawa.1-0167752.0000/full/1600,900/0/default.png
+			//   https://iiif.library.ubc.ca/image/cdm.tokugawa.1-0167752.0000/full/full/0/default.png
+			domain === "iiif.library.ubc.ca" ||
+			// https://iiif.library.utoronto.ca/image/v2/anatomia:RBAI035_0001/full/512,/0/default.jpg
+			//   https://iiif.library.utoronto.ca/image/v2/anatomia:RBAI035_0001/full/full/0/default.jpg
+			domain === "iiif.library.utoronto.ca" ||
+			// https://iiif.bodleian.ox.ac.uk/iiif/image/b83fe9b4-3ffb-4890-aa3f-7d551dfd8b38/full/256,/0/default.jpg
+			//   https://iiif.bodleian.ox.ac.uk/iiif/image/b83fe9b4-3ffb-4890-aa3f-7d551dfd8b38/full/full/0/default.jpg
+			domain === "iiif.bodleian.ox.ac.uk" ||
+			// https://iiif.lib.utexas.edu/iiif/2/utldams_utlgs_19be477d-741c-4254-bbaa-6b4fa9a9df52.jp2/full/500,/0/default.jpg
+			//   https://iiif.lib.utexas.edu/iiif/2/utldams_utlgs_19be477d-741c-4254-bbaa-6b4fa9a9df52.jp2/full/full/0/default.jpg
+			domain === "iiif.lib.utexas.edu" ||
+			// https://digital.library.unt.edu/iiif/ark:/67531/metadc66369/m1/16/full/500,/0/default.jpg
+			//   https://digital.library.unt.edu/iiif/ark:/67531/metadc66369/m1/16/full/full/0/default.jpg
+			domain === "digital.library.unt.edu" ||
+			// https://texashistory.unt.edu/iiif/ark:/67531/metapth16124/m1/74/full/500,/0/default.jpg
+			//   https://texashistory.unt.edu/iiif/ark:/67531/metapth16124/m1/74/full/full/0/default.jpg
+			domain === "texashistory.unt.edu" ||
+			// https://media.ng-london.org.uk/iiif/009-0039-0000/full/512,/0/default.jpg
+			//   https://media.ng-london.org.uk/iiif/009-0039-0000/full/full/0/default.jpg
+			domain === "media.ng-london.org.uk" ||
+			// https://iiif.ucd.ie/loris/ivrla:439/full/600,/0/default.jpg
+			//   https://iiif.ucd.ie/loris/ivrla:439/full/full/0/default.jpg
+			domain === "iiif.ucd.ie" ||
 			domain === "gallica.bnf.fr") {
 			// first is region:
 			// java.lang.IllegalArgumentException: Invalid region
@@ -26437,9 +26494,15 @@ var $$IMU_EXPORT$$;
 			//   at edu.illinois.library.cantaloupe.resource.iiif.v2.ImageResource.doGet(ImageResource.java:62)
 			//   at sun.reflect.GeneratedMethodAccessor4.invoke(Unknown Source)
 
+			obj = {
+				url: src
+			};
+
 			// https://gallica.bnf.fr/ark:/12148/bpt6k1510890t/f9.lowres
 			//   https://gallica.bnf.fr/ark:/12148/bpt6k1510890t/f9.highres
-			newsrc = src.replace(/(\/ark:\/+[0-9]+\/+[^/]+\/+f[0-9])\.lowres(?:[?#].*)?$/, "$1.highres");
+			// https://gallica.bnf.fr/ark:/12148/bpt6k6582746n.thumbnail
+			//   https://gallica.bnf.fr/ark:/12148/bpt6k6582746n.highres
+			newsrc = src.replace(/(\/ark:\/+[0-9]+\/+[^/]+(?:\/+f[0-9])?)\.(?:thumbnail|lowres)(?:[?#].*)?$/, "$1.highres");
 			if (newsrc !== src)
 				return newsrc;
 
@@ -26447,9 +26510,20 @@ var $$IMU_EXPORT$$;
 			//   https://lakeimagesweb.artic.edu/iiif/2/08baefe5-1f78-bc4b-db7b-4f53d2edcc29/full/full/0/default.jpg
 			// http://gallica.bnf.fr/iiif/ark:/12148/btv1b6000531z/f1/0,0,1024,1024/256,256/0/native.jpg
 			//   http://gallica.bnf.fr/iiif/ark:/12148/btv1b6000531z/f1/full/full/0/native.jpg
-			newsrc = src.replace(/(\/iiif\/.*?\/)[^/]+\/[^/]+\/[^/]+\/([^/]+\.[^/.]*)$/, "$1full/full/0/$2");
+			var prefix = "iiif";
+			if (domain === "iiif.library.ubc.ca" || domain === "iiif.library.utoronto.ca") {
+				obj.head_wrong_contenttype = true; // text/html
+				prefix = "image";
+			}
+
+			if (domain === "iiif.ucd.ie") {
+				prefix = ".*";
+			}
+
+			regex = new RegExp("(/" + prefix + "/.*?/)[^/]+/[^/]+/[^/]+/([^/]+\\.[^/.]*)$");
+			newsrc = src.replace(regex, "$1full/full/0/$2");
 			if (newsrc !== src)
-				return newsrc;
+				return fillobj_urls([newsrc], obj);
 		}
 
 		if (domain_nosub === "oclc.org" && domain.match(/\.contentdm\./) ||
@@ -26482,6 +26556,14 @@ var $$IMU_EXPORT$$;
 
 				return src.replace(/(:\/\/[^/]*\/).*$/, "$1digital/api/singleitem/image/" + folder + "/" + id + "/default.jpg");
 			}
+		}
+
+		if (domain === "tools.wmflabs.org") {
+			// https://tools.wmflabs.org/zoomviewer/iipsrv.fcgi/?iiif=cache/6302d52ed6ce3d0e2f0c41701aa91813.tif/pct:65,81,35,15/full/0/default.jpg
+			//  https://tools.wmflabs.org/zoomviewer/iipsrv.fcgi/?iiif=cache/6302d52ed6ce3d0e2f0c41701aa91813.tif/full/full/0/default.jpg
+			newsrc = src.replace(/(\/zoomviewer\/+iipsrv\.fcgi\/+\?(?:.*&)?iiif=[^/]+\/+[^/]+\/+)[^/]+\/[^/]+\/[^/]+\/([^/]+\.[^/.]*)$/, "$1full/full/0/$2");
+			if (newsrc !== src)
+				return newsrc;
 		}
 
 		if (domain_nowww === "koodtv.com" ||
@@ -56147,6 +56229,14 @@ var $$IMU_EXPORT$$;
 			// https://s3.amazonaws.com/static.e-junkie.com/products/tiny-images/1595015-1.png
 			//   https://s3.amazonaws.com/static.e-junkie.com/products/images/1595015-1.png
 			return src.replace(/\/products\/+[a-z]+-images\/+/, "/products/images/");
+		}
+
+		if (domain === "api.europeana.eu") {
+			// https://api.europeana.eu/api/v2/thumbnail-by-url.json?uri=http%3A%2F%2Fiiif.archivelab.org%2Fiiif%2F39002086306033.med.yale.edu%241%2Ffull%2Ffull%2F0%2Fdefault.jpg&type=TEXT
+			//   http://iiif.archivelab.org/iiif/39002086306033.med.yale.edu$1/full/full/0/default.jpg
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+api\/+v2\/+thumbnail-by-url\.json\?(?:.*&)?uri=([^&]+).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
 		}
 
 
