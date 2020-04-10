@@ -85,6 +85,7 @@ var $$IMU_EXPORT$$;
 	var userscript_update_url = "https://github.com/qsniyg/maxurl/blob/master/userscript_smaller.user.js?raw=true";
 	var greasyfork_update_url = userscript_update_url;
 	//var greasyfork_update_url = "https://greasyfork.org/scripts/36662-image-max-url/code/Image%20Max%20URL.user.js";
+	var github_issues_page = "https://github.com/qsniyg/maxurl/issues";
 	var current_version = null;
 	var imagetab_ok_override = false;
 
@@ -1088,6 +1089,31 @@ var $$IMU_EXPORT$$;
 
 	var serialize_event = function(event) {
 		return deepcopy(event, {json: true});
+	};
+
+	// Note: None of this information is automatically sent anywhere, it's only displayed to the user when something crashes.
+	var get_crashlog_info = function() {
+		var ua = "";
+		try {ua = window.navigator.userAgent} catch (e) {}
+
+		var imu_version = "(!!!UNKNOWN, PLEASE FILL IN!!!)\n";
+		try {imu_version = gm_info.script.version} catch (e) {}
+
+		var keys = [
+			"User agent: " + ua,
+			"Is userscript: " + is_userscript,
+			"Is addon: " + is_extension,
+			"Image Max URL version: " + imu_version
+		];
+
+		if (is_userscript) {
+			try {
+				keys.push("Userscript manager: " + userscript_manager);
+				keys.push("Userscript manager version: " + userscript_manager_version);
+			} catch (e) {}
+		}
+
+		return keys.join("\n");
 	};
 
 	function overlay_object(base, obj) {
@@ -68210,7 +68236,25 @@ var $$IMU_EXPORT$$;
 
 			if (is_options_page) {
 				onload(function() {
-					do_options();
+					try {
+						do_options();
+					} catch (e) {
+						console_error(e);
+
+						var error_pre = document.createElement("pre");
+						error_pre.style.fontFamily = "monospace";
+						error_pre.style.margin = "1em";
+						error_pre.innerText = get_crashlog_info() + "\n" + e.toString() + "\n" + e.stack;
+
+						var error_div = document.createElement("div");
+						var error_div_text = "Error loading options page, please report this to <a href='" + github_issues_page + "'>" + github_issues_page + "</a>, ";
+						error_div_text += "and include the following information in the report:";
+						error_div.innerHTML = error_div_text;
+
+						error_div.appendChild(error_pre);
+
+						document.body.innerHTML = error_div.outerHTML;
+					}
 				});
 			}
 
