@@ -26437,6 +26437,12 @@ var $$IMU_EXPORT$$;
 			//   at edu.illinois.library.cantaloupe.resource.iiif.v2.ImageResource.doGet(ImageResource.java:62)
 			//   at sun.reflect.GeneratedMethodAccessor4.invoke(Unknown Source)
 
+			// https://gallica.bnf.fr/ark:/12148/bpt6k1510890t/f9.lowres
+			//   https://gallica.bnf.fr/ark:/12148/bpt6k1510890t/f9.highres
+			newsrc = src.replace(/(\/ark:\/+[0-9]+\/+[^/]+\/+f[0-9])\.lowres(?:[?#].*)?$/, "$1.highres");
+			if (newsrc !== src)
+				return newsrc;
+
 			// https://lakeimagesweb.artic.edu/iiif/2/08baefe5-1f78-bc4b-db7b-4f53d2edcc29/full/!800,800/0/default.jpg
 			//   https://lakeimagesweb.artic.edu/iiif/2/08baefe5-1f78-bc4b-db7b-4f53d2edcc29/full/full/0/default.jpg
 			// http://gallica.bnf.fr/iiif/ark:/12148/btv1b6000531z/f1/0,0,1024,1024/256,256/0/native.jpg
@@ -56122,6 +56128,25 @@ var $$IMU_EXPORT$$;
 			// https://img.budgettravel.com/_thumbnailSquare/Yosemite_1251853.jpg?mtime=20170410164711
 			//   https://img.budgettravel.com/Yosemite_1251853.jpg?mtime=20170410164711
 			return src.replace(/(:\/\/[^/]+\/+)_[a-zA-Z]+\/+/, "$1");
+		}
+
+		if (domain === "d3ts7pb9ldoin4.cloudfront.net" ||
+			// https://star-uploads.s3-us-west-2.amazonaws.com/uploads/users/9356/tier_covers/fb980420-356b-4db8-bc72-d281515c2551-120x120_1x0_616x616.jpg
+			//   https://star-uploads.s3-us-west-2.amazonaws.com/uploads/users/9356/tier_covers/fb980420-356b-4db8-bc72-d281515c2551.jpg
+			amazon_container === "star-uploads") {
+			// https://d3ts7pb9ldoin4.cloudfront.net/uploads/users/9356/avatars/3fd19feb-8736-4d79-9815-095eb3423a78-380x380_0x0_833x833.jpg
+			//   https://d3ts7pb9ldoin4.cloudfront.net/uploads/users/9356/avatars/3fd19feb-8736-4d79-9815-095eb3423a78.jpg
+			// https://d3ts7pb9ldoin4.cloudfront.net/uploads/users/9356/tier_covers/fb980420-356b-4db8-bc72-d281515c2551-120x120_1x0_616x616.jpg
+			//   https://d3ts7pb9ldoin4.cloudfront.net/uploads/users/9356/tier_covers/fb980420-356b-4db8-bc72-d281515c2551.jpg
+			return src.replace(/(\/uploads\/+users\/+[0-9]+\/+[^/]+\/+[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12})-[0-9]+x[0-9]+(?:_[0-9]+x[0-9]+){2}(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (amazon_container === "static.e-junkie.com") {
+			// https://s3.amazonaws.com/static.e-junkie.com/products/thumbnails/1595015.png
+			//   https://shopdemo.e-junkie.com/product/1595015/Demo-eBook
+			// https://s3.amazonaws.com/static.e-junkie.com/products/tiny-images/1595015-1.png
+			//   https://s3.amazonaws.com/static.e-junkie.com/products/images/1595015-1.png
+			return src.replace(/\/products\/+[a-z]+-images\/+/, "/products/images/");
 		}
 
 
