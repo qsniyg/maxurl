@@ -12,10 +12,28 @@ var override_headers = {};
 var override_download = {};
 var reqid_to_redid = {};
 
-var storage = chrome.storage.sync;
-if (!storage) {
+var storage = null;
+
+var set_storage_to_local = function() {
 	console.warn("Unable to use sync storage, using local storage instead");
 	storage = chrome.storage.local;
+};
+
+try {
+	storage = chrome.storage.sync;
+	storage.get("nonexistent value", function() {
+		// This can happen if webextensions.storage.sync is disabled: https://github.com/qsniyg/maxurl/issues/287#issuecomment-612106677
+		if (chrome.runtime.lastError && chrome.runtime.lastError.toString().indexOf("webextensions.storage.sync.enabled") >= 0) {
+			set_storage_to_local();
+		}
+	});
+} catch (e) {
+	console.error(e);
+	storage = null;
+}
+
+if (!storage) {
+	set_storage_to_local();
 }
 
 var nir_debug = false;
