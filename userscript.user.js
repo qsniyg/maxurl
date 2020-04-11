@@ -3342,6 +3342,7 @@ var $$IMU_EXPORT$$;
 			example_websites: [
 				"YouTube video thumbnails"
 			],
+			hidden: true, // not currently used
 			onupdate: update_rule_setting
 		},
 		allow_possibly_broken: {
@@ -9498,7 +9499,8 @@ var $$IMU_EXPORT$$;
 
 			obj = {
 				problems: {
-					possibly_different: true
+					// disable for now, it's really rare, and probably a cache issue from youtube.
+					possibly_different: false
 				}
 			};
 
@@ -9522,7 +9524,7 @@ var $$IMU_EXPORT$$;
 			//   https://i.ytimg.com/vi/ygdaPcspmDE/maxresdefault.jpg
 			// thanks to hentai lzno on greasyfork: https://greasyfork.org/forum/discussion/70889/youtube-live-thumbnails-dont-redirect-to-original-image
 			regex = /^(.+\/+vi(?:_webp)?\/+[^/]*\/+)[a-z]*(default|[0-9]+)(?:_(?:live|[0-9]+s))?(\.[^/.?#]*)(?:[?#].*)?$/;
-			if (regex.test(src) && !problem_excluded("possibly_different")) {
+			if (regex.test(src) /*&& !problem_excluded("possibly_different")*/) {
 				var sizes = [
 					"maxres",
 					//"hq720", // don't use because it'll break mq1 etc.
