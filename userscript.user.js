@@ -57429,6 +57429,7 @@ var $$IMU_EXPORT$$;
 			//   https://iiif.irht.cnrs.fr/iiif/France/Arras/Bibliotheque_municipale/620416201_MS0001_0561/DEPOT/620416201_MS0001_0561_0003A/full/full/0/default.jpg
 			domain === "iiif.irht.cnrs.fr" ||
 			domain === "gallica.bnf.fr" ||
+			// thanks to FreemenMuaddib for a ton of information regarding IIIF: https://greasyfork.org/en/forum/discussion/74977/support-for-iiif-zoomable-images
 			/\/(?:iiif|loris)\/+(?:.*\/)?[^/]+\/+(?:full|square|(?:pct:)?[0-9.]+(?:,[0-9.]+){3})\/+(?:full|max|[0-9.]+,|,[0-9.]+|!?[0-9.]+,[0-9.]+|pct:[0-9.]+)\/+!?[0-9.]+\/+(?:color|gray|bitonal|default|native)\.(?:jpg|tif|png|gif|jp2|pdf|webp)(?:[?#].*)?$/.test(src)) {
 			// first is region:
 			// java.lang.IllegalArgumentException: Invalid region
