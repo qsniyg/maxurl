@@ -8981,18 +8981,51 @@ var $$IMU_EXPORT$$;
 			  domain.match(/^ci[0-9]\./))) ||
 			// https://d2yal1mtmg1ts6.cloudfront.net/iFkddP_wLWySXrHXQ9oDom9utMCj3_9wsPjLcT3mipityCgMxnuspjAL5mejAeAQFA=h350-r
 			//   https://d2yal1mtmg1ts6.cloudfront.net/iFkddP_wLWySXrHXQ9oDom9utMCj3_9wsPjLcT3mipityCgMxnuspjAL5mejAeAQFA=s0?imgmax=0
+			// https://d2yal1mtmg1ts6.cloudfront.net/iFkddP_wLWySXrHXQ9oDom9utMCj3_9wsPjLcT3mipityCgMxnuspjAL5mejAeAQFA=g -- works, but is useless (s0 works fine)
+			// <TileInfo tile_width="512" tile_height="512" full_pyramid_depth="2" origin="TOP_LEFT" tiler_version_number="2" image_width="608" image_height="789">
+			//   <pyramid_level num_tiles_x="1" num_tiles_y="1" inverse_scale="2" empty_pels_x="208" empty_pels_y="118"/>
+			//   <pyramid_level num_tiles_x="2" num_tiles_y="2" inverse_scale="1" empty_pels_x="416" empty_pels_y="235"/>
+			// </TileInfo>
 			domain === "d2yal1mtmg1ts6.cloudfront.net" ||
 			// http://bp0.blogger.com/_sBBi-c1S7gU/SD5OZiDWDnI/AAAAAAAAFNc/3-cwL7frca0/s400/Copy+of+milla-jovovich-2.jpg
 			//   https://1.bp.blogspot.com/_sBBi-c1S7gU/SD5OZiDWDnI/AAAAAAAAFNc/3-cwL7frca0/s0/Copy+of+milla-jovovich-2.jpg=s0?imgmax=0
 			(domain_nosub === "blogger.com" && domain.match(/^bp[0-9]*\.blogger\.com/)) ||
 			// http://lh4.ggpht.com/__zoKJ77EvEc/TO-9wdVTcwI/AAAAAAAAJEA/SbyR-4a03S0/dekotora%20%289%29%5B2%5D.jpg?imgmax=800 -- larger than s0?
 			//   http://lh4.ggpht.com/__zoKJ77EvEc/TO-9wdVTcwI/AAAAAAAAJEA/SbyR-4a03S0/dekotora%20%289%29%5B2%5D.jpg=s0?imgmax=0 -- same size
+			// note: some photos are larger:
+			// https://artsandculture.google.com/story/7QXBu-CU26X6QQ
+			// https://lh5.ggpht.com/NkeM5HB7f2PzAWBRYu3RIILrAWWd4b6OgXcu-YK1LQxo9CwEmQfYCW0=g -- info:
+			// <TileInfo tile_width="512" tile_height="512" full_pyramid_depth="5" origin="TOP_LEFT" timestamp="1586660947">
+			//   <pyramid_level num_tiles_x="1" num_tiles_y="1" inverse_scale="16" empty_pels_x="322" empty_pels_y="235"/>
+			//   <pyramid_level num_tiles_x="1" num_tiles_y="2" inverse_scale="8" empty_pels_x="131" empty_pels_y="470"/>
+			//   <pyramid_level num_tiles_x="2" num_tiles_y="3" inverse_scale="4" empty_pels_x="261" empty_pels_y="428"/>
+			//   <pyramid_level num_tiles_x="3" num_tiles_y="5" inverse_scale="2" empty_pels_x="9" empty_pels_y="343"/>
+			//   <pyramid_level num_tiles_x="6" num_tiles_y="9" inverse_scale="1" empty_pels_x="18" empty_pels_y="174"/>
+			// </TileInfo>
+			// https://lh5.ggpht.com/NkeM5HB7f2PzAWBRYu3RIILrAWWd4b6OgXcu-YK1LQxo9CwEmQfYCW0=x0-y0-z0-t7_0zmtlXxvVN0a4cAsXJYDTVVDQ -- z is probably scale
+			// https://lh5.ggpht.com/NkeM5HB7f2PzAWBRYu3RIILrAWWd4b6OgXcu-YK1LQxo9CwEmQfYCW0=x0-y0-z3-tG0EfYTE65CyvDZ5cX04k_8Slzak -- tile
+			// https://lh5.ggpht.com/NkeM5HB7f2PzAWBRYu3RIILrAWWd4b6OgXcu-YK1LQxo9CwEmQfYCW0=x0-y1-z3-tae2UpBVjU2LkaZkmKQ3cWmTh8s8
+			// https://lh5.ggpht.com/NkeM5HB7f2PzAWBRYu3RIILrAWWd4b6OgXcu-YK1LQxo9CwEmQfYCW0=x0-y2-z3-tBm23v_61ZEIChggQIOBypI8K7ps
+			// https://lh5.ggpht.com/NkeM5HB7f2PzAWBRYu3RIILrAWWd4b6OgXcu-YK1LQxo9CwEmQfYCW0=x1-y0-z3-tYmeZ7gkPsTX0jJmNIXbA0rTgb0c
+			// https://lh5.ggpht.com/NkeM5HB7f2PzAWBRYu3RIILrAWWd4b6OgXcu-YK1LQxo9CwEmQfYCW0=x1-y1-z3-t0140arxvbW8b2H3DxDiSzTT3ur0
+			// https://lh5.ggpht.com/NkeM5HB7f2PzAWBRYu3RIILrAWWd4b6OgXcu-YK1LQxo9CwEmQfYCW0=x1-y2-z3-tzl9N9fOYsFgBpAA1GNxr_C_k6o0
+			// https://lh5.ggpht.com/NkeM5HB7f2PzAWBRYu3RIILrAWWd4b6OgXcu-YK1LQxo9CwEmQfYCW0=x2-y0-z3-thNBg5c4zX46kL6erYiaboGKSGuk
+			// https://lh5.ggpht.com/NkeM5HB7f2PzAWBRYu3RIILrAWWd4b6OgXcu-YK1LQxo9CwEmQfYCW0=x2-y1-z3-tOGOP3ky1HKwBr_nipLx6Giu_414
+			// https://lh5.ggpht.com/NkeM5HB7f2PzAWBRYu3RIILrAWWd4b6OgXcu-YK1LQxo9CwEmQfYCW0=x2-y2-z3-tVsoWKC9bk2FYVafDH8ra_7zACos
+			// it can go even deeper:
+			// https://lh5.ggpht.com/NkeM5HB7f2PzAWBRYu3RIILrAWWd4b6OgXcu-YK1LQxo9CwEmQfYCW0=x4-y6-z4-tV5JRod2CcCsS1Kwd35hFVBhxKvk
+			// https://lh5.ggpht.com/NkeM5HB7f2PzAWBRYu3RIILrAWWd4b6OgXcu-YK1LQxo9CwEmQfYCW0=x5-y7-z4-t_LbLZkj4U_KTySghTdk0xE_IGzc
+			// https://lh5.ggpht.com/NkeM5HB7f2PzAWBRYu3RIILrAWWd4b6OgXcu-YK1LQxo9CwEmQfYCW0=s2000 -- same size as s0 (353x512), can be downscaled, but not upscaled
 			domain_nosub === "ggpht.com") {
-			newsrc = src
-				.replace(/#.*$/, "")
-				.replace(/\?.*$/, "")
-				.replace(/\/[swh][0-9]*(-[^/]*]*)?\/([^/]*)$/, "/s0/$2")
-				.replace(/(=[^/]*)?$/, "=s0?imgmax=0");
+			newsrc = src;
+
+			if (!(/^[a-z]+:\/\/[^/]+\/+[^/?#=]{30,}=x[0-9]+-y[0-9]+-z[0-9]+-t[^-/?#]{23,}(?:[?#].*)?$/.test(src))) {
+				newsrc = src
+					.replace(/#.*$/, "")
+					.replace(/\?.*$/, "")
+					.replace(/\/[swh][0-9]*(-[^/]*]*)?\/([^/]*)$/, "/s0/$2")
+					.replace(/(=[^/]*)?$/, "=s0?imgmax=0");
+			}
 
 			return {
 				url: newsrc,
