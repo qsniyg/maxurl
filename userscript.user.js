@@ -26543,7 +26543,8 @@ var $$IMU_EXPORT$$;
 			// https://iiif.irht.cnrs.fr/iiif/France/Arras/Bibliotheque_municipale/620416201_MS0001_0561/DEPOT/620416201_MS0001_0561_0003A/full/200,/0/default.jpg
 			//   https://iiif.irht.cnrs.fr/iiif/France/Arras/Bibliotheque_municipale/620416201_MS0001_0561/DEPOT/620416201_MS0001_0561_0003A/full/full/0/default.jpg
 			domain === "iiif.irht.cnrs.fr" ||
-			domain === "gallica.bnf.fr") {
+			domain === "gallica.bnf.fr" ||
+			/\/(?:iiif|loris)\/+(?:.*\/)?[^/]+\/+(?:full|square|(?:pct:)?[0-9.]+(?:,[0-9.]+){3})\/+(?:full|max|[0-9.]+,|,[0-9.]+|!?[0-9.]+,[0-9.]+|pct:[0-9.]+)\/+!?[0-9.]+\/+(?:color|gray|bitonal|default|native)\.(?:jpg|tif|png|gif|jp2|pdf|webp)(?:[?#].*)?$/.test(src)) {
 			// first is region:
 			// java.lang.IllegalArgumentException: Invalid region
 			//   at edu.illinois.library.cantaloupe.resource.iiif.v2.Region.fromUri(Region.java:56)
@@ -26577,14 +26578,10 @@ var $$IMU_EXPORT$$;
 			//   https://lakeimagesweb.artic.edu/iiif/2/08baefe5-1f78-bc4b-db7b-4f53d2edcc29/full/full/0/default.jpg
 			// http://gallica.bnf.fr/iiif/ark:/12148/btv1b6000531z/f1/0,0,1024,1024/256,256/0/native.jpg
 			//   http://gallica.bnf.fr/iiif/ark:/12148/btv1b6000531z/f1/full/full/0/native.jpg
-			var prefix = "iiif";
+			var prefix = "(?:iiif|loris)";
 			if (domain === "iiif.library.ubc.ca" || domain === "iiif.library.utoronto.ca") {
 				obj.head_wrong_contenttype = true; // text/html
 				prefix = "image";
-			}
-
-			if (domain === "iiif.ucd.ie" || domain_nosub === "unifr.ch") {
-				prefix = "loris";
 			}
 
 			regex = new RegExp("(/" + prefix + "/.*?/)[^/]+/[^/]+/[^/]+/([^/]+\\.[^/.]*)$");
