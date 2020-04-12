@@ -26504,6 +26504,12 @@ var $$IMU_EXPORT$$;
 			// https://iiif.ucd.ie/loris/ivrla:439/full/600,/0/default.jpg
 			//   https://iiif.ucd.ie/loris/ivrla:439/full/full/0/default.jpg
 			domain === "iiif.ucd.ie" ||
+			// https://www.e-codices.unifr.ch/loris/fmb/fmb-cb-0025/fmb-cb-0025_001r.jp2/full/pct:12.5/0/default.jpg
+			//   https://www.e-codices.unifr.ch/loris/fmb/fmb-cb-0025/fmb-cb-0025_001r.jp2/full/full/0/default.jpg
+			(domain_nosub === "unifr.ch" && string_indexof(src, "/loris/") >= 0) ||
+			// https://iiif.irht.cnrs.fr/iiif/France/Arras/Bibliotheque_municipale/620416201_MS0001_0561/DEPOT/620416201_MS0001_0561_0003A/full/200,/0/default.jpg
+			//   https://iiif.irht.cnrs.fr/iiif/France/Arras/Bibliotheque_municipale/620416201_MS0001_0561/DEPOT/620416201_MS0001_0561_0003A/full/full/0/default.jpg
+			domain === "iiif.irht.cnrs.fr" ||
 			domain === "gallica.bnf.fr") {
 			// first is region:
 			// java.lang.IllegalArgumentException: Invalid region
@@ -26544,8 +26550,8 @@ var $$IMU_EXPORT$$;
 				prefix = "image";
 			}
 
-			if (domain === "iiif.ucd.ie") {
-				prefix = ".*";
+			if (domain === "iiif.ucd.ie" || domain_nosub === "unifr.ch") {
+				prefix = "loris";
 			}
 
 			regex = new RegExp("(/" + prefix + "/.*?/)[^/]+/[^/]+/[^/]+/([^/]+\\.[^/.]*)$");
