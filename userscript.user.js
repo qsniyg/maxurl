@@ -19440,6 +19440,9 @@ var $$IMU_EXPORT$$;
 			//   https://reporter.blogs.com/.a/6a00d83451d69069e2011571119659970c
 			//domain === "reporter.blogs.com" ||
 			domain_nosub === "blogs.com" ||
+			// https://latimesblogs.latimes.com/.a/6a00d8341c630a53ef0134885e7e2a970c-200wi
+			//   https://latimesblogs.latimes.com/.a/6a00d8341c630a53ef0134885e7e2a970c
+			domain === "latimesblogs.latimes.com" ||
 			// nowww doesn't exist
 			// http://www.weeklystorybook.com/.a/6a0105369e6edf970b01b8d0ebd465970c-400wi
 			//   http://www.weeklystorybook.com/.a/6a0105369e6edf970b01b8d0ebd465970c
@@ -19447,7 +19450,7 @@ var $$IMU_EXPORT$$;
 			// nowww doesn't exist
 			// http://www.kurtkomaromi.com/.a/6a00d8341c764653ef01b8d144082f970c-500wi
 			//   http://www.kurtkomaromi.com/.a/6a00d8341c764653ef01b8d144082f970c
-			return src.replace(/(\/\.a\/+[^-/]*)-[^/]*(?:[?#].*)?$/, "$1");
+			return src.replace(/^([a-z]+:\/\/[^/]+\/+\.a\/+[0-9a-f]{10,})-[^/]*(?:[?#].*)?$/, "$1");
 		}
 
 		if (domain_nowww === "bathingnews.com") {
@@ -28345,7 +28348,23 @@ var $$IMU_EXPORT$$;
 		if (domain === "images.fashionmodeldirectory.com") {
 			// http://images.fashionmodeldirectory.com/model/000000592070-hanne_linhares-squaresmall.jpg
 			//   http://images.fashionmodeldirectory.com/model/000000592070-hanne_linhares-fullsize.jpg
-			return src.replace(/(\/[0-9]+-[^/]*-)[a-z]+(\.[^/.]*)$/, "$1fullsize$2");
+			// https://images.fashionmodeldirectory.com/images/magazines/covers/1599/cosmopolitan-china-2014-july-02-single.jpg
+			//   https://images.fashionmodeldirectory.com/images/magazines/covers/1599/cosmopolitan-china-2014-july-02-fullsize.jpg
+			// https://images.fashionmodeldirectory.com/model/000000351560-camille_neviere-fit.jpg
+			//   https://images.fashionmodeldirectory.com/model/000000351560-camille_neviere-fullsize.jpg
+			// https://images.fashionmodeldirectory.com/images/editorials/53541/53541-1132-21095-22261-squaremedium.jpg
+			//   https://images.fashionmodeldirectory.com/images/editorials/53541/53541-1132-21095-22261-fullsize.jpg
+			// https://images.fashionmodeldirectory.com/model/000000521628-elise_aarnink-modelprofileMainPicCropped.jpg
+			//   https://images.fashionmodeldirectory.com/model/000000521628-elise_aarnink-fullsize.jpg
+			// https://images.fashionmodeldirectory.com/images/magazines/covers/164/glamour-usa-2019-september-01-profile.jpg
+			//   https://images.fashionmodeldirectory.com/images/magazines/covers/164/glamour-usa-2019-september-01-fullsize.jpg
+			// https://images.fashionmodeldirectory.com/model/000000059279-lyndall_jarvis-alternative.jpg
+			//   https://images.fashionmodeldirectory.com/model/000000059279-lyndall_jarvis-fullsize.jpg
+			// doesn't work:
+			// https://images.fashionmodeldirectory.com/images/designers/zac-posen_1029-profile.jpg
+			//   https://images.fashionmodeldirectory.com/images/designers/zac-posen_1029-fullsize.jpg -- doesn't work
+			// https://images.fashionmodeldirectory.com/images/designers/xavier-delcour_1019-profile.jpg -- fullsize doesn't work either
+			return src.replace(/-(?:square(?:small|medium)|single|fit|modelprofile[A-Za-z]+|profile|alternative)(\.[^/.]*)$/, "-fullsize$1");
 		}
 
 		if (domain === "cdn.public.hegre.com" ||
@@ -56183,6 +56202,18 @@ var $$IMU_EXPORT$$;
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+api\/+v2\/+thumbnail-by-url\.json\?(?:.*&)?uri=([^&]+).*?$/, "$1");
 			if (newsrc !== src)
 				return decodeuri_ifneeded(newsrc);
+		}
+
+		if (domain_nowww === "fanparty.ru") {
+			// https://fanparty.ru/fanclubs/anne-hathaway/gallery/626206_anne_hathaway_medium.jpg
+			//   https://fanparty.ru/fanclubs/anne-hathaway/gallery/626206_anne_hathaway_pic.jpg
+			return src.replace(/(\/gallery\/+[0-9]+_[^/]+)_medium(\.[^/.]+)(?:[?#].*)?$/, "$1_pic$2");
+		}
+
+		if (domain_nowww === "metlifestadium.com") {
+			// https://www.metlifestadium.com/images/default-source/photo-galleries/2013-galleries/taylor-swift-2013/wh1_0309.tmb-.jpg
+			//   https://www.metlifestadium.com/images/default-source/photo-galleries/2013-galleries/taylor-swift-2013/wh1_0309.jpg
+			return src.replace(/(\/images\/+.*)\.tmb-(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		}
 
 
