@@ -4791,7 +4791,11 @@ var $$IMU_EXPORT$$;
 			crc32_size: 2440872286
 		},
 		"hls": {
-			name: "hls"
+			name: "hls",
+			url: "https://github.com/qsniyg/maxurl/raw/0ec7ead029e967854d839c0ee0f0fa30de3848d3/lib/hls.js",
+			size: 694990,
+			crc32: 1683555956,
+			crc32_size: 1065995231
 		}
 	};
 
