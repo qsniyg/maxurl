@@ -9644,17 +9644,16 @@ var $$IMU_EXPORT$$;
 			}
 
 			if (id && options && options.do_request && options.cb) {
-				var cache_key = "youtube_info:" + id;
-				api_cache.fetch(cache_key, function(data) {
+				var parse_player_response = function(player_response) {
 					// TODO: support streamingData.adaptiveFormats
-					if (!data) {
+					if (!player_response) {
 						return options.cb(null);
 					}
 
 					var maxbitrate = 0;
 					var maxobj = null;
 
-					var formats = data.streamingData.formats;
+					var formats = player_response.streamingData.formats;
 
 					for (var j = 0; j < formats.length; j++) {
 						var our_format = formats[j];
@@ -9672,6 +9671,9 @@ var $$IMU_EXPORT$$;
 							obj.url = maxobj.url;
 							obj.video = true;
 							obj.is_private = true;
+							obj.headers = {
+								Referer: "https://www.youtube.com/"
+							};
 
 							return options.cb(obj);
 						} else {
@@ -9688,49 +9690,96 @@ var $$IMU_EXPORT$$;
 						console_error("Unable to find any formats", data);
 						return options.cb(null);
 					}
-				}, function(done) {
-					options.do_request({
-						url: "https://www.youtube.com/get_video_info?video_id=" + id,
-						method: "GET",
-						onload: function(resp) {
-							if (resp.readyState !== 4)
-								return;
+				};
 
-							if (resp.status !== 200) {
-								console_error(resp);
-								return done(null, false);
-							}
+				var fetch_youtube_embed = function(id, cb) {
+					var cache_key = "youtube_embed_info:" + id;
+					api_cache.fetch(cache_key, cb, function(done) {
+						options.do_request({
+							url: "https://www.youtube.com/get_video_info?video_id=" + id,
+							method: "GET",
+							onload: function(resp) {
+								if (resp.readyState !== 4)
+									return;
 
-							var splitted = resp.responseText.split("&");
-							var found_player_response = false;
-							for (var i = 0; i < splitted.length; i++) {
-								if (/^player_response=/.test(splitted[i])) {
-									found_player_response = true;
-									var data = decodeURIComponent(splitted[i].replace(/^[^=]+=/, ""));
+								if (resp.status !== 200) {
+									console_error(resp);
+									return done(null, false);
+								}
 
-									try {
-										var json = JSON_parse(data);
+								var splitted = resp.responseText.split("&");
+								var found_player_response = false;
+								for (var i = 0; i < splitted.length; i++) {
+									if (/^player_response=/.test(splitted[i])) {
+										found_player_response = true;
+										var data = decodeURIComponent(splitted[i].replace(/^[^=]+=/, ""));
 
-										// doesn't work on: https://www.youtube.com/watch?v=vFaeDdEb44A
-										// it's sometimes because embedding isn't allowed: https://www.youtube.com/embed/vFaeDdEb44A
-										// sometimes fails with: playabilityStatus { status: UNPLAYABLE, reason: Video+unavailable }: https://www.youtube.com/watch?v=GB_S2qFh5lU
-										var formats = json.streamingData.formats; // just to make sure it exists
-										return done(json, 5*60*60); // video URLs expire in 6 hours
-									} catch (e) {
-										console_error(e, resp, splitted[i], data);
+										try {
+											var json = JSON_parse(data);
+
+											// doesn't work on: https://www.youtube.com/watch?v=vFaeDdEb44A, https://www.youtube.com/watch?v=wDO3QZq9Zww
+											// it's sometimes because embedding isn't allowed: https://www.youtube.com/embed/vFaeDdEb44A
+											// sometimes fails with: playabilityStatus { status: UNPLAYABLE, reason: Video+unavailable }: https://www.youtube.com/watch?v=GB_S2qFh5lU
+											var formats = json.streamingData.formats; // just to make sure it exists
+											return done(json, 5*60*60); // video URLs expire in 6 hours
+										} catch (e) {
+											console_error(e, resp, splitted[i], data);
+										}
+
+										break;
 									}
+								}
 
-									break;
+								if (!found_player_response) {
+									console_error("Unable to find player_response in", splitted[i]);
+								}
+
+								done(null, false);
+							}
+						});
+					});
+				};
+
+				var fetch_youtube_watchpage = function(id, cb) {
+					var cache_key = "youtube_watchpage:" + id;
+					api_cache.fetch(cache_key, cb, function(done) {
+						options.do_request({
+							method: "GET",
+							url: "https://www.youtube.com/watch?v=" + id,
+							onload: function(resp) {
+								if (resp.readyState !== 4)
+									return;
+
+								if (resp.status !== 200) {
+									console_error(resp);
+									return done(null, false);
+								}
+
+								var match = resp.responseText.match(/ytplayer\.config\s*=\s*({.*?});/);
+								if (!match) {
+									console_warn("Unable to find ytplayer.config for", resp);
+									return done(null, false);
+								}
+
+								try {
+									var json = JSON_parse(match[1]);
+									var player_response = json.args.player_response;
+									var player_response_json = JSON_parse(player_response);
+									done(player_response_json, 5*60*60); // video URLs expire in 6 hours
+								} catch (e) {
+									console_error(e, match[1]);
 								}
 							}
-
-							if (!found_player_response) {
-								console_error("Unable to find player_response in", splitted[i]);
-							}
-
-							done(null, false);
-						}
+						});
 					});
+				};
+
+				fetch_youtube_embed(id, function(data) {
+					if (!data) {
+						fetch_youtube_watchpage(id, parse_player_response);
+					} else {
+						parse_player_response(data);
+					}
 				});
 
 				return {
