@@ -4754,10 +4754,14 @@ var $$IMU_EXPORT$$;
 
 	var lib_urls = {
 		"testcookie_slowaes": {
+			name: "testcookie_slowaes",
 			url: "https://raw.githubusercontent.com/qsniyg/maxurl/5af5c0e8bd18fb0ae716aac04ac42992d2ddc2e5/lib/testcookie_slowaes.js",
 			size: 31248,
 			crc32: 2955697328,
 			crc32_size: 4174899014
+		},
+		"dash": {
+			name: "dash.all.debug"
 		}
 	};
 
@@ -4767,11 +4771,18 @@ var $$IMU_EXPORT$$;
 			return cb(null);
 		}
 
+		if (!(name in lib_urls)) {
+			console_error("Invalid library", name);
+			return cb(null);
+		}
+
+		var lib_obj = lib_urls[name];
+
 		if (is_scripttag) {
 			return cb(null);
 		} else if (is_node) {
 			try {
-				var lib = require("./lib/" + name + ".js");
+				var lib = require("./lib/" + lib_obj.name + ".js");
 				return cb(lib);
 			} catch (e) {
 				console.error(e);
@@ -4790,7 +4801,7 @@ var $$IMU_EXPORT$$;
 					extension_send_message({
 						type: "get_lib",
 						data: {
-							name: name
+							name: lib_obj.name
 						}
 					}, function (response) {
 						if (!response || !response.data || !response.data.text)
@@ -4800,12 +4811,6 @@ var $$IMU_EXPORT$$;
 						done(run_sandboxed_lib(response.data.text), 0);
 					});
 				} else {
-					if (!(name in lib_urls)) {
-						return done(null, 0);
-					}
-
-					var lib_url = lib_urls[name];
-
 					// For the userscript, we have no other choice than to query and run arbitrary JS.
 					// The commit is specified in lib_urls in order to prevent possible incompatibilities.
 					// Unfortunately this still cannot prevent a very dedicated hostile takeover.
@@ -4814,7 +4819,7 @@ var $$IMU_EXPORT$$;
 
 					do_request({
 						method: "GET",
-						url: lib_url.url,
+						url: lib_obj.url,
 						headers: {
 							Referer: ""
 						},
@@ -4827,20 +4832,20 @@ var $$IMU_EXPORT$$;
 								return done(null, false);
 							}
 
-							if (result.responseText.length !== lib_url.size) {
-								console_error("Wrong response length for " + name + ": " + result.responseText.length + " (expected " + lib_url.size + ")");
+							if (result.responseText.length !== lib_obj.size) {
+								console_error("Wrong response length for " + name + ": " + result.responseText.length + " (expected " + lib_obj.size + ")");
 								return done(null, false);
 							}
 
 							var crc = crc32(result.responseText);
-							if (crc !== lib_url.crc32) {
-								console_error("Wrong crc32 for " + name + ": " + crc + " (expected " + lib_url.crc32 + ")");
+							if (crc !== lib_obj.crc32) {
+								console_error("Wrong crc32 for " + name + ": " + crc + " (expected " + lib_obj.crc32 + ")");
 								return done(null, false);
 							}
 
-							crc = crc32(result.reponseText + (lib_url.size + ""));
-							if (crc !== lib_url.crc32_size) {
-								console_error("Wrong crc32 #2 for " + name + ": " + crc + " (expected " + lib_url.crc32_size + ")");
+							crc = crc32(result.reponseText + (lib_obj.size + ""));
+							if (crc !== lib_obj.crc32_size) {
+								console_error("Wrong crc32 #2 for " + name + ": " + crc + " (expected " + lib_obj.crc32_size + ")");
 								return done(null, false);
 							}
 
@@ -28605,9 +28610,11 @@ var $$IMU_EXPORT$$;
 		}
 
 		if ((domain_nosub === "redditmedia.com" ||
-			 domain_nosub === "redd.it") &&
+			 domain_nosub === "redd.it" ||
+			 string_indexof(origsrc, "blob:") === 0) &&
 			host_domain_nosub === "reddit.com" &&
 			options.element && options.do_request && options.cb) {
+			console_log(options.element);
 			newsrc = (function() {
 				function checkimage(url) {
 					url = urljoin(options.host_url, url, true);
@@ -28655,19 +28662,49 @@ var $$IMU_EXPORT$$;
 								var item = json.data.children[0].data;
 								var image = item.url;
 
-								var checked = checkimage(image);
-								if (!checked) {
-									if (item.preview.images[0].variants.gif)
-										image = item.preview.images[0].variants.gif.source.url;
-									else
-										image = item.preview.images[0].source.url;
+								var obj = [];
 
-									image = image.replace(/&amp;/g, "&");
-								} else {
-									image = checked;
+								var preview_image;
+								if (item.preview.images[0].variants.gif)
+									preview_image = item.preview.images[0].variants.gif.source.url;
+								else
+									preview_image = item.preview.images[0].source.url;
+
+								preview_image = preview_image.replace(/&amp;/g, "&");
+								obj.push(preview_image);
+
+								if ("secure_media" in item && "reddit_video" in item.secure_media) {
+									var rv = item.secure_media.reddit_video;
+
+									if (rv.fallback_url) {
+										obj.unshift({
+											url: rv.fallback_url,
+											video: true
+										});
+									}
+
+									if (rv.hls_url) {
+										obj.unshift({
+											url: rv.hls_url,
+											video: "hls"
+										});
+									}
+
+									if (rv.dash_url) {
+										obj.unshift({
+											url: rv.dash_url,
+											video: "dash"
+										});
+									}
 								}
 
-								return options.cb(image);
+								var checked = checkimage(image);
+								if (checked) {
+									image = checked;
+									obj.unshift(image);
+								}
+
+								return options.cb(obj);
 							} catch (e) {
 								console_log(id);
 								console_log(result);
@@ -28684,6 +28721,15 @@ var $$IMU_EXPORT$$;
 				}
 
 				if (options.element.parentElement && options.element.parentElement.parentElement) {
+					if (options.element.tagName === "VIDEO") {
+						var link_url = options.element.parentElement.getAttribute("data-link-url");
+						if (link_url) {
+							newsrc = request(link_url);
+							if (newsrc)
+								return newsrc;
+						}
+					}
+
 					// classic reddit
 					var doubleparent = options.element.parentElement.parentElement;
 					newsrc = doubleparent.getAttribute("data-url");
@@ -58118,6 +58164,18 @@ var $$IMU_EXPORT$$;
 			};
 		}
 
+		if (host_domain_nosub === "reddit.com") {
+			return {
+				element_ok: function(el) {
+					if (el.tagName === "VIDEO") {
+						return true;
+					}
+
+					return "default";
+				}
+			};
+		}
+
 		return null;
 	}
 
@@ -61699,6 +61757,11 @@ var $$IMU_EXPORT$$;
 				// TODO: improve
 				if (obj[0].video || parsed_headers["content-type"] && is_video_contenttype(parsed_headers["content-type"])) {
 					is_video = true;
+				}
+
+				if (obj[0].video && obj[0].video !== true) {
+					console_log("Video type", obj[0].video, "is not yet supported");
+					return err_cb();
 				}
 
 				if (is_video && !settings.allow_video) {
