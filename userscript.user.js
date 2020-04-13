@@ -28673,12 +28673,37 @@ var $$IMU_EXPORT$$;
 					}
 				}
 
+				var request_reddit = function(id, cb) {
+					api_cache.fetch("reddit:" + id, cb, function(done) {
+						options.do_request({
+							method: "GET",
+							url: "https://www.reddit.com/api/info.json?id=" + id,
+							onload: function(result) {
+								if (result.status !== 200) {
+									console_error(result);
+									return done(null, false);
+								}
+
+								try {
+									var json = JSON_parse(result.responseText);
+									var item = json.data.children[0].data;
+									done(item, 60*60);
+								} catch (e) {
+									console_log(id);
+									console_log(result);
+									console_error(e);
+								}
+							}
+						});
+					});
+				};
+
 				function request(url) {
 					var id;
 
-					if (url.match(/^t3_/))
+					if (url.match(/^t3_/)) {
 						id = url;
-					else {
+					} else {
 						id = url.replace(/.*\/comments\/([^/]*)\/[^/]*(?:\/(?:\?.*)?)?$/, "$1");
 						if (id === url) {
 							return;
@@ -28687,66 +28712,56 @@ var $$IMU_EXPORT$$;
 						id = "t3_" + id;
 					}
 
-					options.do_request({
-						method: "GET",
-						url: "https://www.reddit.com/api/info.json?id=" + id,
-						onload: function(result) {
-							try {
-								var json = JSON_parse(result.responseText);
-								var item = json.data.children[0].data;
-								var image = item.url;
+					request_reddit(id, function(item) {
+						if (item.crosspost_parent) {
+							return request(item.crosspost_parent);
+						}
 
-								var obj = [];
+						var image = item.url;
 
-								var preview_image;
-								if (item.preview.images[0].variants.gif)
-									preview_image = item.preview.images[0].variants.gif.source.url;
-								else
-									preview_image = item.preview.images[0].source.url;
+						var obj = [];
 
-								preview_image = preview_image.replace(/&amp;/g, "&");
-								obj.push(preview_image);
+						var preview_image;
+						if (item.preview.images[0].variants.gif)
+							preview_image = item.preview.images[0].variants.gif.source.url;
+						else
+							preview_image = item.preview.images[0].source.url;
 
-								if ("secure_media" in item && "reddit_video" in item.secure_media) {
-									var rv = item.secure_media.reddit_video;
+						preview_image = preview_image.replace(/&amp;/g, "&");
+						obj.push(preview_image);
 
-									if (rv.fallback_url) {
-										obj.unshift({
-											url: rv.fallback_url,
-											video: true
-										});
-									}
+						if (item.secure_media && item.secure_media.reddit_video) {
+							var rv = item.secure_media.reddit_video;
 
-									if (rv.hls_url) {
-										obj.unshift({
-											url: rv.hls_url,
-											video: "hls"
-										});
-									}
-
-									if (rv.dash_url) {
-										obj.unshift({
-											url: rv.dash_url,
-											video: "dash"
-										});
-									}
-								}
-
-								var checked = checkimage(image);
-								if (checked) {
-									image = checked;
-									obj.unshift(image);
-								}
-
-								return options.cb(obj);
-							} catch (e) {
-								console_log(id);
-								console_log(result);
-								console_error(e);
+							if (rv.fallback_url) {
+								obj.unshift({
+									url: rv.fallback_url,
+									video: true
+								});
 							}
 
-							options.cb(null);
+							if (rv.hls_url) {
+								obj.unshift({
+									url: rv.hls_url,
+									video: "hls"
+								});
+							}
+
+							if (rv.dash_url) {
+								obj.unshift({
+									url: rv.dash_url,
+									video: "dash"
+								});
+							}
 						}
+
+						var checked = checkimage(image);
+						if (checked) {
+							image = checked;
+							obj.unshift(image);
+						}
+
+						return options.cb(obj);
 					});
 
 					return {
