@@ -4766,11 +4766,15 @@ var $$IMU_EXPORT$$;
 			crc32_size: 4174899014
 		},
 		"dash": {
-			name: "dash.all.debug"
+			name: "dash.all.debug",
+			url: "https://github.com/qsniyg/maxurl/blob/c18941c401c344a9db868a41899cdc4522eebd64/lib/dash.all.debug.js?raw=true",
+			size: 2192274,
+			crc32: 3434155307,
+			crc32_size: 2440872286
 		}
 	};
 
-	var get_library = function(name, options, cb) {
+	var get_library = function(name, options, do_request, cb) {
 		if (!options.allow_thirdparty_libs) {
 			console_warn("Refusing to request library " + name + " due to 3rd-party library support being disabled");
 			return cb(null);
@@ -4794,8 +4798,6 @@ var $$IMU_EXPORT$$;
 				return cb(null);
 			}
 		}
-
-		var do_request = options.do_request;
 
 		if (is_extension || is_userscript) {
 			// Unfortunately in these cases it's less clean
@@ -5253,7 +5255,7 @@ var $$IMU_EXPORT$$;
 		var do_request = options.do_request;
 
 		api_cache.fetch(cache_key, cb, function (done) {
-			get_library("testcookie_slowaes", options, function (lib) {
+			get_library("testcookie_slowaes", options, options.do_request, function (lib) {
 				if (!lib) {
 					console_error(cache_key, "Unable to fetch patched slowAES library");
 					return done(null, false);
@@ -61873,7 +61875,7 @@ var $$IMU_EXPORT$$;
 						video.src = src;
 					} else {
 						if (video_type === "dash") {
-							get_library("dash", settings, function(dashjs) {
+							get_library("dash", settings, do_request, function(dashjs) {
 								var player = dashjs.MediaPlayer().create();
 								player.updateSettings({
 									streaming: {
