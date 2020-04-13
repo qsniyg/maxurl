@@ -1719,6 +1719,7 @@ var $$IMU_EXPORT$$;
 		extension_contextmenu: true,
 		allow_video: true,
 		allow_dash_video: false,
+		allow_hls_video: false,
 		allow_watermark: false,
 		allow_smaller: false,
 		allow_possibly_different: false,
@@ -3329,6 +3330,14 @@ var $$IMU_EXPORT$$;
 				allow_thirdparty_libs: true
 			}
 		},
+		allow_hls_video: {
+			name: "Allow HLS videos",
+			description: "Allows playback of HLS video streams",
+			category: "rules",
+			requires: {
+				allow_thirdparty_libs: true
+			}
+		},
 		allow_watermark: {
 			name: "Larger watermarked images",
 			description: "Enables rules that return larger images that include watermarks",
@@ -4780,6 +4789,9 @@ var $$IMU_EXPORT$$;
 			size: 2192274,
 			crc32: 3434155307,
 			crc32_size: 2440872286
+		},
+		"hls": {
+			name: "hls"
 		}
 	};
 
@@ -9628,6 +9640,7 @@ var $$IMU_EXPORT$$;
 			if (id && options && options.do_request && options.cb) {
 				var cache_key = "youtube_info:" + id;
 				api_cache.fetch(cache_key, function(data) {
+					// TODO: support streamingData.adaptiveFormats
 					if (!data) {
 						return options.cb(null);
 					}
@@ -28630,7 +28643,6 @@ var $$IMU_EXPORT$$;
 			 string_indexof(origsrc, "blob:") === 0) &&
 			host_domain_nosub === "reddit.com" &&
 			options.element && options.do_request && options.cb) {
-			console_log(options.element);
 			newsrc = (function() {
 				function checkimage(url) {
 					url = urljoin(options.host_url, url, true);
@@ -61549,6 +61561,10 @@ var $$IMU_EXPORT$$;
 			return settings.allow_thirdparty_libs && settings.allow_dash_video;
 		}
 
+		if (videotype === "hls") {
+			return settings.allow_thirdparty_libs && settings.allow_hls_video;
+		}
+
 		return false;
 	};
 
@@ -61885,6 +61901,11 @@ var $$IMU_EXPORT$$;
 					} else {
 						if (video_type === "dash") {
 							get_library("dash", settings, do_request, function(dashjs) {
+								if (!dashjs) {
+									video.src = src;
+									return;
+								}
+
 								var player = dashjs.MediaPlayer().create();
 								player.updateSettings({
 									streaming: {
@@ -61901,6 +61922,22 @@ var $$IMU_EXPORT$$;
 									}
 								});
 								player.initialize(video, src, true);
+							});
+						} else if (video_type === "hls") {
+							get_library("hls", settings, do_request, function(hls_wrap) {
+								if (!hls_wrap || !hls_wrap.Hls.isSupported()) {
+									video.src = src;
+									return;
+								}
+
+								var Hls = hls_wrap.Hls;
+								var hls = new Hls();
+
+								hls.loadSource(src);
+								hls.attachMedia(video);
+								/*hls.on(Hls.Events.MANIFEST_PARSED, function() {
+									video.play();
+								});*/
 							});
 						}
 					}
