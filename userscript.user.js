@@ -4742,6 +4742,16 @@ var $$IMU_EXPORT$$;
 		return (crc ^ (-1)) >>> 0;
 	};
 
+	var run_sandboxed_lib = function(fdata) {
+		var frame = document.createElement('iframe');
+		frame.srcdoc = ""; //"javascript:0"
+		document.body.appendChild(frame);
+		var result = frame.contentWindow.Function(fdata + ";return lib_export;")();
+		frame.parentElement.removeChild(frame);
+
+		return result;
+	};
+
 	var lib_urls = {
 		"testcookie_slowaes": {
 			url: "https://raw.githubusercontent.com/qsniyg/maxurl/5af5c0e8bd18fb0ae716aac04ac42992d2ddc2e5/lib/testcookie_slowaes.js",
@@ -4752,8 +4762,10 @@ var $$IMU_EXPORT$$;
 	};
 
 	var get_library = function(name, options, cb) {
-		if (!options.allow_thirdparty_libs)
+		if (!options.allow_thirdparty_libs) {
+			console_warn("Refusing to request library " + name + " due to 3rd-party library support being disabled");
 			return cb(null);
+		}
 
 		if (is_scripttag) {
 			return cb(null);
@@ -4784,7 +4796,8 @@ var $$IMU_EXPORT$$;
 						if (!response || !response.data || !response.data.text)
 							return done(null, 0); // 0 instead of false because it will never be available
 
-						done(new Function(response.data.text + ";return lib_export;")(), 0);
+						//done(new Function(response.data.text + ";return lib_export;")(), 0);
+						done(run_sandboxed_lib(response.data.text), 0);
 					});
 				} else {
 					if (!(name in lib_urls)) {
@@ -4809,8 +4822,10 @@ var $$IMU_EXPORT$$;
 							if (result.readyState !== 4)
 								return;
 
-							if (result.status !== 200)
+							if (result.status !== 200) {
+								console_error(result);
 								return done(null, false);
+							}
 
 							if (result.responseText.length !== lib_url.size) {
 								console_error("Wrong response length for " + name + ": " + result.responseText.length + " (expected " + lib_url.size + ")");
@@ -4829,7 +4844,8 @@ var $$IMU_EXPORT$$;
 								return done(null, false);
 							}
 
-							done(new Function(result.responseText + ";return lib_export;")(), 0);
+							done(run_sandboxed_lib(result.responseText), 0);
+							//done(new Function(result.responseText + ";return lib_export;")(), 0);
 						}
 					});
 				}
@@ -10677,6 +10693,8 @@ var $$IMU_EXPORT$$;
 			(domain_nowww === "smarthomebeginner.com" && string_indexof(src, "/images/") >= 0) ||
 			// https://images.ask.com/amg-cms-images/media/8rwij2v6x38alhvuwzv-uzy6ssz0zdonqnjlbjt7iykv0vikb9jins3tein0-camegg11x9zq4xnml5haykux-5j1vaz63vk0okokwezlexsa7anvf4kgodprsmdajun-mi7-lfpetvdpmhhg.png?width=380&height=210&fit=crop
 			domain === "images.ask.com" ||
+			// https://i.vimeocdn.com/video/875541868.jpg?mw=960&mh=540
+			(domain === "i.vimeocdn.com" && string_indexof(src, "/video/") >= 0) ||
 			// http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
 			// https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
 			src.match(/\/demandware\.static\//) ||
