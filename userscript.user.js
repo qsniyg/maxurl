@@ -28809,6 +28809,8 @@ var $$IMU_EXPORT$$;
 						while ((current = current.parentElement)) {
 							// new classic
 							if (current.classList.contains("scrollerItem") ||
+								// new post page
+								current.getAttribute("data-test-id") === "post-content" ||
 								// new user page
 								current.classList.contains("Post__top")) {
 								found = true;
@@ -28822,6 +28824,8 @@ var $$IMU_EXPORT$$;
 								var element = elements[i];
 								// new classic
 								if (element.getAttribute("data-click-id") === "body" ||
+									// new post page
+									element.getAttribute("data-click-id") === "timestamp" ||
 									// new user page
 									element.classList.contains("Post__absoluteLink")) {
 									newsrc = request(element.href);
