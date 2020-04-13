@@ -11567,6 +11567,8 @@ var $$IMU_EXPORT$$;
 			(domain_nowww === "smarthomebeginner.com" && string_indexof(src, "/images/") >= 0) ||
 			// https://www.inspirationde.com/media/2014/04/world-stunning-and-beautiful-eyes-photography-photography-heat-photography-inspirations-and-onli-13981561444k8ng-150x150.jpg
 			(domain_nowww === "inspirationde.com" && string_indexof(src, "/media/") >= 0) ||
+			// https://cache.escapistmagazine.com/2020/04/Hello-Neighbor-400x225.jpg
+			domain === "cache.escapistmagazine.com" ||
 			// https://static.acgsoso.com/uploads/2020/02/19bd4f091f03c191195d5e626c3190f9-200x300.jpg
 			(domain === "static.acgsoso.com" && string_indexof(src, "/uploads/") >= 0)
 			) {
@@ -56380,6 +56382,12 @@ var $$IMU_EXPORT$$;
 			// https://www.metlifestadium.com/images/default-source/photo-galleries/2013-galleries/taylor-swift-2013/wh1_0309.tmb-.jpg
 			//   https://www.metlifestadium.com/images/default-source/photo-galleries/2013-galleries/taylor-swift-2013/wh1_0309.jpg
 			return src.replace(/(\/images\/+.*)\.tmb-(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nosub === "fxinteractive.com") {
+			// https://juegos.fxinteractive.com/fx/images/games/Sherlock_Holmes_4/screenshots/Sherlock_Holmes_4_thumbnail_3.jpg
+			//   https://juegos.fxinteractive.com/fx/images/games/Sherlock_Holmes_4/screenshots/Sherlock_Holmes_4_screenshot_3.jpg
+			return src.replace(/(\/images\/+games\/+[^/]+\/+screenshots\/+[^/]+)_thumbnail_([0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1_screenshot_$2");
 		}
 
 
