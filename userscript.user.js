@@ -4743,13 +4743,18 @@ var $$IMU_EXPORT$$;
 	};
 
 	var run_sandboxed_lib = function(fdata) {
-		var frame = document.createElement('iframe');
-		frame.srcdoc = ""; //"javascript:0"
-		document.body.appendChild(frame);
-		var result = frame.contentWindow.Function(fdata + ";return lib_export;")();
-		frame.parentElement.removeChild(frame);
+		if (true) {
+			return new Function(fdata + ";return lib_export;")();
+		} else {
+			// doesn't work unfortunately
+			var frame = document.createElement('iframe');
+			frame.srcdoc = ""; //"javascript:0"
+			document.body.appendChild(frame);
+			var result = frame.contentWindow.Function(fdata + ";return lib_export;")();
+			frame.parentElement.removeChild(frame);
 
-		return result;
+			return result;
+		}
 	};
 
 	var lib_urls = {
@@ -61524,6 +61529,18 @@ var $$IMU_EXPORT$$;
 		return false;
 	}
 
+	var is_video_type_supported = function(videotype) {
+		if (videotype === true || videotype === "direct") {
+			return true;
+		}
+
+		if (videotype === "dash") {
+			return settings.allow_thirdparty_libs;
+		}
+
+		return false;
+	};
+
 	function get_event_error(e) {
 		// https://stackoverflow.com/a/46064096
 		var error = e;
@@ -61753,15 +61770,20 @@ var $$IMU_EXPORT$$;
 
 				var parsed_headers = headers_list_to_dict(parse_headers(resp.responseHeaders));
 				var is_video = false;
+				var video_type = "direct";
 
 				// TODO: improve
 				if (obj[0].video || parsed_headers["content-type"] && is_video_contenttype(parsed_headers["content-type"])) {
 					is_video = true;
-				}
 
-				if (obj[0].video && obj[0].video !== true) {
-					console_log("Video type", obj[0].video, "is not yet supported");
-					return err_cb();
+					if (obj[0].video && obj[0].video !== true) {
+						video_type = obj[0].video;
+					}
+
+					if (!is_video_type_supported(video_type)) {
+						console_warn("Video type", video_type, "is not supported");
+						return err_cb();
+					}
 				}
 
 				if (is_video && !settings.allow_video) {
@@ -61846,6 +61868,33 @@ var $$IMU_EXPORT$$;
 					return video;
 				};
 
+				var set_video_src = function(video, src) {
+					if (video_type === "direct") {
+						video.src = src;
+					} else {
+						if (video_type === "dash") {
+							get_library("dash", settings, function(dashjs) {
+								var player = dashjs.MediaPlayer().create();
+								player.updateSettings({
+									streaming: {
+										abr: {
+											initialBitrate: {
+												audio: Number.MAX_SAFE_INTEGER,
+												video: Number.MAX_SAFE_INTEGER
+											},
+											autoSwitchBitrate: {
+												audio: false,
+												video: false
+											}
+										}
+									}
+								});
+								player.initialize(video, src, true);
+							});
+						}
+					}
+				};
+
 				if (incomplete_request) {
 					var load_image;
 
@@ -61891,7 +61940,7 @@ var $$IMU_EXPORT$$;
 					} else {
 						load_image = function () {
 							var video = create_video_el();
-							video.src = resp.finalUrl;
+							set_video_src(video, resp.finalUrl);
 						};
 					}
 
@@ -61945,7 +61994,7 @@ var $$IMU_EXPORT$$;
 						};
 					} else {
 						var video = create_video_el();
-						video.src = urldata;
+						set_video_src(video, urldata);
 					}
 				};
 
