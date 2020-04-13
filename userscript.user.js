@@ -3324,7 +3324,8 @@ var $$IMU_EXPORT$$;
 		},
 		allow_dash_video: {
 			name: "Allow DASH videos",
-			description: "Allows playback of DASH video streams. Due to the way the dash.js library currently works, some videos may not work with other websites due to hotlinking protection, and it may even break video playback for some websites. Use with caution.",
+			description: "Allows playback of DASH video streams. Some videos may not work with other websites due to hotlinking protection.",
+			description_userscript: "Allows playback of DASH video streams. Some videos may not work with other websites due to hotlinking protection, and it may even break video playback for some websites. Use with caution.",
 			category: "rules",
 			requires: {
 				allow_thirdparty_libs: true
@@ -3332,7 +3333,8 @@ var $$IMU_EXPORT$$;
 		},
 		allow_hls_video: {
 			name: "Allow HLS videos",
-			description: "Allows playback of HLS video streams",
+			description: "Allows playback of HLS video streams. Some videos may not work with other websites due to hotlinking protection.",
+			description_userscript: "Allows playback of HLS video streams. Some videos may not work with other websites due to hotlinking protection, and it may even break video playback for some websites. Use with caution.",
 			category: "rules",
 			requires: {
 				allow_thirdparty_libs: true
