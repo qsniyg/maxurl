@@ -1718,6 +1718,7 @@ var $$IMU_EXPORT$$;
 		website_image: true,
 		extension_contextmenu: true,
 		allow_video: true,
+		allow_dash_video: false,
 		allow_watermark: false,
 		allow_smaller: false,
 		allow_possibly_different: false,
@@ -3319,6 +3320,14 @@ var $$IMU_EXPORT$$;
 			description: "Allows videos to be returned",
 			category: "rules",
 			onupdate: update_rule_setting
+		},
+		allow_dash_video: {
+			name: "Allow DASH videos",
+			description: "Allows playback of DASH video streams. Due to the way the dash.js library currently works, some videos may not work with other websites due to hotlinking protection, and it may even break video playback for some websites. Use with caution.",
+			category: "rules",
+			requires: {
+				allow_thirdparty_libs: true
+			}
 		},
 		allow_watermark: {
 			name: "Larger watermarked images",
@@ -61537,7 +61546,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (videotype === "dash") {
-			return settings.allow_thirdparty_libs;
+			return settings.allow_thirdparty_libs && settings.allow_dash_video;
 		}
 
 		return false;
