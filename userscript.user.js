@@ -20977,6 +20977,10 @@ var $$IMU_EXPORT$$;
 							if (resp.readyState !== 4)
 								return;
 
+							// Tampermonkey has a bug with onprogress: https://github.com/Tampermonkey/tampermonkey/issues/906
+							if (resp.loaded && resp.total && resp.status === 200)
+								return;
+
 							request_handle.abort();
 							request_aborted = true;
 
