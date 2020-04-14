@@ -6380,6 +6380,137 @@ var $$IMU_EXPORT$$;
 		});
 	};
 
+	common_functions.get_tiktok_urlvidid = function(url) {
+		var match = url.match(/^[a-z]+:\/\/[^/]+\/+(?:[0-9a-f]{32}\/+[0-9a-f]{8}\/+)?video\/+[^/]+\/+[^/]+\/+[^/]+\/+([0-9a-f]{32})\/*\?/);
+		if (match)
+			return match[1];
+
+		return null;
+	};
+
+	common_functions.get_best_tiktok_url = function(api_cache, do_request, src, cb) {
+		var get_tiktok_vidid_key = function(url) {
+			var urlvidid = common_functions.get_tiktok_urlvidid(url);
+			if (!urlvidid) {
+				console_warn("Unknown video URL:", url);
+				return null;
+			}
+
+			return "tiktok_vidid:" + urlvidid;
+		};
+
+		var query_tiktok_vidid = function(url, cb) {
+			var cache_key = get_tiktok_vidid_key(url);
+			if (!cache_key)
+				return cb(null);
+
+			api_cache.fetch(cache_key, cb, function(done) {
+				var request_handle;
+				var request_aborted = false;
+
+				var progress_cb = function(resp) {
+					if (request_aborted)
+						return;
+
+					if (!resp.responseText) {
+						if (resp.readyState !== 4)
+							return;
+
+						// Tampermonkey has a bug with onprogress: https://github.com/Tampermonkey/tampermonkey/issues/906
+						if (resp.loaded && resp.total && resp.status === 200)
+							return;
+
+						request_handle.abort();
+						request_aborted = true;
+
+						console_error(resp);
+						return done(null, false);
+					}
+
+					var match = resp.responseText.match(/mdtacomment[\s\S]{10,400}vid:([0-9a-z]{32})/);
+					// after that, it stores 0, 0, 0, 37, with 37 being the length of vid:..., is this related?
+					if (!match) {
+						if (resp.readyState !== 4)
+							return;
+
+						if (resp.readyState === 4) {
+							request_handle.abort();
+							request_aborted = true;
+
+							console_warn("Unable to find video ID for", url);
+							done(null, false);
+						}
+					} else {
+						request_handle.abort();
+						request_aborted = true;
+
+						done(match[1], 24*60*60);
+					}
+				};
+
+				request_handle = do_request({
+					url: url,
+					method: "GET",
+					headers: {
+						Referer: "https://www.tiktok.com/"
+					},
+					onprogress: progress_cb,
+					onload: progress_cb
+				});
+			});
+		};
+
+		var get_nowatermark_for_vidid = function(vidid, cb) {
+			var cache_key = "tiktok_watermarkfree:" + vidid;
+			api_cache.fetch(cache_key, cb, function(done) {
+				do_request({
+					url: "https://api2.musical.ly/aweme/v1/playwm/?video_id=" + vidid,
+					headers: {
+						Referer: ""
+					},
+					method: "HEAD",
+					onload: function(resp) {
+						if (resp.readyState !== 4)
+							return;
+
+						// https://www.tiktok.com/@auliicravalho/video/6813323310521224454 - returns 302
+						if (resp.status !== 200 && resp.status !== 302) {
+							console_error(resp);
+							return done(null, false);
+						}
+
+						return done(force_https(resp.finalUrl), 60*60);
+					}
+				});
+			});
+		};
+
+		var get_newurl_if_changed = function(newsrc, src) {
+			var old_urlvidid = common_functions.get_tiktok_urlvidid(src);
+
+			if (!newsrc)
+				newsrc = src;
+			var new_urlvidid = common_functions.get_tiktok_urlvidid(newsrc);
+
+			// to avoid infinite redirects
+			if (new_urlvidid === old_urlvidid) {
+				newsrc = src;
+			}
+
+			return newsrc;
+		};
+
+		query_tiktok_vidid(src, function(vidid) {
+			if (!vidid) {
+				return cb(null);
+			}
+
+			get_nowatermark_for_vidid(vidid, function(newsrc) {
+				cb(get_newurl_if_changed(newsrc, src));
+			});
+		});
+	};
+
 	var get_domain_nosub = function(domain) {
 		var domain_nosub = domain.replace(/^.*\.([^.]*\.[^.]*)$/, "$1");
 		if (domain_nosub.match(/^co\.[a-z]{2}$/) ||
@@ -20960,138 +21091,30 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nosub === "muscdn.com" && /^v[0-9]+\./.test(domain)) {
-			var get_tiktok_urlvidid = function(url) {
-				var match = url.match(/^[a-z]+:\/\/[^/]+\/+(?:[0-9a-f]{32}\/+[0-9a-f]{8}\/+)?video\/+[^/]+\/+[^/]+\/+[^/]+\/+([0-9a-f]{32})\/*\?/);
-				if (match)
-					return match[1];
-
-				return null;
+			var baseobj = {
+				url: src,
+				video: true
 			};
 
-			var query_tiktok_vidid = function(url, cb) {
-				var urlvidid = get_tiktok_urlvidid(url);
-				if (!urlvidid) {
-					console_warn("Unknown video URL:", url);
-					return cb(null);
-				}
-
-				cache_key = "tiktok_vidid:" + urlvidid;
-				api_cache.fetch(cache_key, cb, function(done) {
-					var request_handle;
-					var request_aborted = false;
-
-					var progress_cb = function(resp) {
-						if (request_aborted)
-							return;
-
-						if (!resp.responseText) {
-							if (resp.readyState !== 4)
-								return;
-
-							// Tampermonkey has a bug with onprogress: https://github.com/Tampermonkey/tampermonkey/issues/906
-							if (resp.loaded && resp.total && resp.status === 200)
-								return;
-
-							request_handle.abort();
-							request_aborted = true;
-
-							console_error(resp);
-							return done(null, false);
-						}
-
-						var match = resp.responseText.match(/mdtacomment[\s\S]{10,400}vid:([0-9a-z]{32})/);
-						// after that, it stores 0, 0, 0, 37, with 37 being the length of vid:..., is this related?
-						if (!match) {
-							if (resp.readyState !== 4)
-								return;
-
-							if (resp.readyState === 4) {
-								request_handle.abort();
-								request_aborted = true;
-
-								console_warn("Unable to find video ID for", url);
-								done(null, false);
-							}
-						} else {
-							request_handle.abort();
-							request_aborted = true;
-
-							done(match[1], 24*60*60);
-						}
-					};
-
-					request_handle = options.do_request({
-						url: url,
-						method: "GET",
-						headers: {
-							Referer: "https://www.tiktok.com/"
-						},
-						onprogress: progress_cb,
-						onload: progress_cb
-					});
-				});
-			};
-
-			var get_nowatermark_for_vidid = function(vidid, cb) {
-				var cache_key = "tiktok_watermarkfree:" + vidid;
-				api_cache.fetch(cache_key, cb, function(done) {
-					options.do_request({
-						url: "https://api2.musical.ly/aweme/v1/playwm/?video_id=" + vidid,
-						headers: {
-							Referer: ""
-						},
-						method: "HEAD",
-						onload: function(resp) {
-							if (resp.readyState !== 4)
-								return;
-
-							// https://www.tiktok.com/@auliicravalho/video/6813323310521224454 - returns 302
-							if (resp.status !== 200 && resp.status !== 302) {
-								console_error(resp);
-								return done(null, false);
-							}
-
-							return done(force_https(resp.finalUrl), 60*60);
-						}
-					});
-				});
-			};
+			var vidid = common_functions.get_tiktok_urlvidid(src);
+			if (vidid) {
+				baseobj.filename = vidid;
+			}
 
 			if (options.do_request && options.cb && options.rule_specific && options.rule_specific.tiktok_no_watermarks) {
-				query_tiktok_vidid(src, function(vidid) {
-					if (!vidid) {
-						return options.cb({
-							url: src,
-							video: true
-						});
+				common_functions.get_best_tiktok_url(api_cache, options.do_request, src, function(newurl) {
+					if (newurl) {
+						baseobj.url = newurl;
 					}
 
-					get_nowatermark_for_vidid(vidid, function(newsrc) {
-						var old_urlvidid = get_tiktok_urlvidid(src);
-
-						if (!newsrc)
-							newsrc = src;
-						var new_urlvidid = get_tiktok_urlvidid(newsrc);
-
-						// to avoid infinite redirects
-						if (new_urlvidid === old_urlvidid)
-							newsrc = src;
-
-						return options.cb({
-							url: newsrc,
-							video: true
-						});
-					});
+					options.cb(baseobj);
 				});
 
 				return {
 					waiting: true
 				};
 			} else {
-				return {
-					url: src,
-					video: true
-				};
+				return baseobj;
 			}
 		}
 
