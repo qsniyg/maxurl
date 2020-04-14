@@ -4748,6 +4748,25 @@ var $$IMU_EXPORT$$;
 		return cookies_array.join("; ");
 	};
 
+	var extmap = {
+		"jpeg": "jpg"
+	};
+
+	var get_ext_from_contenttype = function(contenttype) {
+		var split = contenttype.match(/^\s*\[?([^/]+)\/([^/]+)\]?\s*$/);
+
+		if (!split)
+			return null;
+
+		if (split[0] !== "image" && split[0] !== "video")
+			return null;
+
+		if (split[1] in extmap)
+			return extmap[split[1]];
+
+		return split[1];
+	};
+
 	// https://stackoverflow.com/a/18639999
 	var makeCRCTable = function() {
 		var c;
@@ -6386,6 +6405,16 @@ var $$IMU_EXPORT$$;
 			return match[1];
 
 		return null;
+	};
+
+	common_functions.set_tiktok_vid_filename = function(obj) {
+		var vidid = common_functions.get_tiktok_urlvidid(obj.url);
+		if (vidid) {
+			obj.filename = vidid + ".mp4"; // hack, but needed because firefox etc. doesn't automatically set the extension, because content-type isn't set
+			return true;
+		}
+
+		return false;
 	};
 
 	common_functions.get_best_tiktok_url = function(api_cache, do_request, src, cb) {
@@ -21149,10 +21178,7 @@ var $$IMU_EXPORT$$;
 								video: true
 							};
 
-							var vidid = common_functions.get_tiktok_urlvidid(videourl);
-							if (vidid) {
-								obj.filename = vidid;
-							}
+							common_functions.set_tiktok_vid_filename(baseobj)
 
 							if (options.rule_specific && options.rule_specific.tiktok_no_watermarks) {
 								common_functions.get_best_tiktok_url(api_cache, do_request, videourl, function(newurl) {
@@ -21161,10 +21187,7 @@ var $$IMU_EXPORT$$;
 										obj.url = videourl;
 									}
 
-									var vidid = common_functions.get_tiktok_urlvidid(videourl);
-									if (vidid) {
-										obj.filename = vidid;
-									} else {
+									if (!common_functions.set_tiktok_vid_filename(baseobj)) {
 										delete obj.filename;
 									}
 
@@ -21194,16 +21217,14 @@ var $$IMU_EXPORT$$;
 				video: true
 			};
 
-			var vidid = common_functions.get_tiktok_urlvidid(src);
-			if (vidid) {
-				baseobj.filename = vidid;
-			}
+			common_functions.set_tiktok_vid_filename(baseobj);
 
 			if (options.do_request && options.cb && options.rule_specific && options.rule_specific.tiktok_no_watermarks) {
 				common_functions.get_best_tiktok_url(api_cache, options.do_request, src, function(newurl) {
 					if (newurl) {
 						baseobj.url = newurl;
 					}
+					common_functions.set_tiktok_vid_filename(baseobj);
 
 					options.cb(baseobj);
 				});
@@ -27171,6 +27192,16 @@ var $$IMU_EXPORT$$;
 			// https://akimg0.ask.fm/assets2/151/350/838/784/normal/FB_IMG_1458341455293.jpg
 			// https://d2hhj3gz5jljkm.cloudfront.net/wallpapers2/093/115/576/576/original/file.jpg
 			return src.replace(/\/[a-z]+\/((?:[0-9]+|.+)\.[^/.]*)$/, "/large/$1");
+		}
+
+		if (domain_nosub === "ask.fm" && domain.match(/^akimg[0-9]*\.ask\.fm/) ||
+			// https://d2hhj3gz5jljkm.cloudfront.net/assets2/135/886/818/560/thumb_big/12230823_529579840540203_777134914_n.jpg
+			//   https://d2hhj3gz5jljkm.cloudfront.net/assets2/135/886/818/560/normal/12230823_529579840540203_777134914_n.jpg
+			domain === "d2hhj3gz5jljkm.cloudfront.net" ||
+			// https://d15eldcwi10xcl.cloudfront.net/assets2/135/886/818/560/thumb_big/12230823_529579840540203_777134914_n.jpg
+			//   https://d15eldcwi10xcl.cloudfront.net/assets2/135/886/818/560/normal/12230823_529579840540203_777134914_n.jpg
+			domain === "d15eldcwi10xcl.cloudfront.net") {
+			return src.replace(/\/thumb(?:_big)?\/+([^/]+)(?:[?#].*)?$/, "/normal/$1");
 		}
 
 		if (domain === "d2p4y1juxwnww4.cloudfront.net") {
@@ -64014,6 +64045,7 @@ var $$IMU_EXPORT$$;
 				if (typeof newobj.filename !== "string")
 					newobj.filename = "";
 
+				var newobj_ext = null;
 				if (newobj.filename.length === 0 && data.data.respdata) {
 					try {
 						var headers = parse_headers(data.data.respdata.responseHeaders);
@@ -64049,6 +64081,8 @@ var $$IMU_EXPORT$$;
 									header_value = a_match[3] || a_match[4];
 									loops++;
 								}
+							} else if (header_name === "content-type") {
+								newobj_ext = get_ext_from_contenttype(header_value);
 							}
 
 							if (newobj.filename.length > 0)
@@ -64070,6 +64104,10 @@ var $$IMU_EXPORT$$;
 					// e.g. for /?...
 					if (newobj.filename.length === 0) {
 						newobj.filename = "download";
+					}
+
+					if (newobj.filename.indexOf(".") < 0 && newobj_ext) {
+						newobj.filename += "." + newobj_ext;
 					}
 				}
 
