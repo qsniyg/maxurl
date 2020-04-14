@@ -20977,6 +20977,9 @@ var $$IMU_EXPORT$$;
 							if (resp.readyState !== 4)
 								return;
 
+							request_handle.abort();
+							request_aborted = true;
+
 							console_error(resp);
 							return done(null, false);
 						}
@@ -20988,6 +20991,9 @@ var $$IMU_EXPORT$$;
 								return;
 
 							if (resp.readyState === 4) {
+								request_handle.abort();
+								request_aborted = true;
+
 								console_warn("Unable to find video ID for", url);
 								done(null, false);
 							}
