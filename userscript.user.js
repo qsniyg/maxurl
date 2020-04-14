@@ -739,6 +739,7 @@ var $$IMU_EXPORT$$;
 			imgur_nsfw_headers: null,
 			instagram_use_app_api: true,
 			instagram_gallery_postlink: false,
+			tiktok_no_watermarks: true,
 			tumblr_api_key: null
 		},
 
@@ -1733,6 +1734,7 @@ var $$IMU_EXPORT$$;
 		imgur_source: true,
 		instagram_use_app_api: true,
 		instagram_gallery_postlink: false,
+		tiktok_no_watermarks: true,
 		// just a very small protection against github scraping bots :)
 		tumblr_api_key: base64_decode("IHhyTXBMTThuMWVDZUwzb1JZU1pHN0NMQUx3NkVIaFlEZFU2V3E1ZUQxUGJNa2xkN1kx").substr(1),
 		// thanks to LukasThyWalls on github for the idea: https://github.com/qsniyg/maxurl/issues/75
@@ -3444,6 +3446,12 @@ var $$IMU_EXPORT$$;
 			name: "Instagram: Use albums for post thumbnails",
 			description: "Queries Instagram for albums when using the popup on a post thumbnail",
 			category: "rule_specific"
+		},
+		tiktok_no_watermarks: {
+			name: "TikTok: Don't use watermarked videos",
+			description: "Uses non-watermarked videos for TikTok if possible. This will introduce an extra delay when loading the video as two extra requests need to be performed.",
+			category: "rule_specific",
+			onupdate: update_rule_setting
 		},
 		tumblr_api_key: {
 			name: "Tumblr: API key",
@@ -21021,7 +21029,7 @@ var $$IMU_EXPORT$$;
 				});
 			};
 
-			if (options.do_request && options.cb) {
+			if (options.do_request && options.cb && options.rule_specific && options.rule_specific.tiktok_no_watermarks) {
 				query_tiktok_vidid(src, function(vidid) {
 					if (!vidid) {
 						return options.cb({
@@ -58547,6 +58555,7 @@ var $$IMU_EXPORT$$;
 			options.rule_specific.imgur_source = settings.imgur_source;
 			options.rule_specific.instagram_use_app_api = settings.instagram_use_app_api;
 			options.rule_specific.instagram_gallery_postlink = settings.instagram_gallery_postlink;
+			options.rule_specific.tiktok_no_watermarks = settings.tiktok_no_watermarks;
 			options.rule_specific.tumblr_api_key = settings.tumblr_api_key;
 		}
 
