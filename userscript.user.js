@@ -4149,6 +4149,10 @@ var $$IMU_EXPORT$$;
 		return url;
 	};
 
+	var force_https = function(url) {
+		return url.replace(/^http:\/\//, "https://");
+	};
+
 	var decodeuri_ifneeded = function(url) {
 		if (url.match(/^https?:\/\//))
 			return url;
@@ -14226,6 +14230,13 @@ var $$IMU_EXPORT$$;
 			// https://static.wixstatic.com/media/964c6e_5f9921a4f67248ba807c0a69416a7ec4~mv2_d_3550_5325_s_4_2.jpg/v1/fill/w_183,h_274,al_c,q_80,usm_0.66_1.00_0.01/964c6e_5f9921a4f67248ba807c0a69416a7ec4~mv2_d_3550_5325_s_4_2.jpg
 			//   https://static.wixstatic.com/media/964c6e_5f9921a4f67248ba807c0a69416a7ec4~mv2_d_3550_5325_s_4_2.jpg
 
+			if (/^[a-z]+:\/\/[^/]+\/+media\/+0da768_361994b0f154464682a0aaf9724471cc\./.test(src)) {
+				return {
+					url: src,
+					bad: "mask"
+				};
+			}
+
 			// thanks to nywilds on github: https://github.com/qsniyg/maxurl/issues/93
 			// https://www.deviantart.com/f1x-2/art/Nightfall-800934586
 			// https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/db0d85b1-b8b9-4790-bef0-121edb2dce7d/dd8ut2y-b61a578f-28be-496b-8044-559159433e36.jpg/v1/fill/w_1280,h_720,q_75,strp/nightfall_by_f1x_2_dd8ut2y-fullview.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9NzIwIiwicGF0aCI6IlwvZlwvZGIwZDg1YjEtYjhiOS00NzkwLWJlZjAtMTIxZWRiMmRjZTdkXC9kZDh1dDJ5LWI2MWE1NzhmLTI4YmUtNDk2Yi04MDQ0LTU1OTE1OTQzM2UzNi5qcGciLCJ3aWR0aCI6Ijw9MTI4MCJ9XV0sImF1ZCI6WyJ1cm46c2VydmljZTppbWFnZS5vcGVyYXRpb25zIl19.2ttX4dZcVj27yeTuh05fdJbZJSF2hj3pmgWaeCfh63Y
@@ -21040,7 +21051,7 @@ var $$IMU_EXPORT$$;
 								return done(null, false);
 							}
 
-							return done(resp.finalUrl, 60*60);
+							return done(force_https(resp.finalUrl), 60*60);
 						}
 					});
 				});
