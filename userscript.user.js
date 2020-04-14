@@ -46056,7 +46056,17 @@ var $$IMU_EXPORT$$;
 			//   https://d2h1pu99sxkfvn.cloudfront.net/b0/6479437/503662872_4oRXGlUWQd/P0.jpg
 			// https://d2h1pu99sxkfvn.cloudfront.net/b0/5409611/578689840_BT84w7ifLS/U1.jpg
 			//   https://d2h1pu99sxkfvn.cloudfront.net/b0/5409611/578689840_BT84w7ifLS/U0.jpg
-			return src.replace(/\/([PU])[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "/$10$2");
+			newsrc = src.replace(/\/([PU])[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "/$10$2");
+			if (newsrc !== src)
+				return newsrc;
+		}
+
+		if (host_domain_nowww === "depop.com") {
+			// FIXME: if depop's cloudfront domain, force non-data URL
+			return {
+				url: src,
+				need_blob: true
+			};
 		}
 
 		if (domain === "img.joomcdn.net") {
