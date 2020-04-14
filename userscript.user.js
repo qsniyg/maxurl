@@ -67476,9 +67476,8 @@ var $$IMU_EXPORT$$;
 				if (imu.headers)
 					headers = headers_dict_to_list(imu.headers);
 
-				GM_download({
+				var download_obj = {
 					url: imu.url,
-					name: filename,
 					headers: headers,
 					saveAs: true,
 					onerror: function(error) {
@@ -67486,7 +67485,15 @@ var $$IMU_EXPORT$$;
 							do_browser_download(imu, filename, cb);
 						}
 					}
-				});
+				};
+
+				if (filename) {
+					download_obj.name = filename;
+				} else {
+					download_obj.name = "download"; // it can't be blank
+				}
+
+				GM_download(download_obj);
 			} else {
 				do_browser_download(imu, filename, cb);
 			}
