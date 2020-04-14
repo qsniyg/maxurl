@@ -20992,10 +20992,8 @@ var $$IMU_EXPORT$$;
 								done(null, false);
 							}
 						} else {
-							if (resp.readyState !== 4) {
-								request_handle.abort();
-								request_aborted = true;
-							}
+							request_handle.abort();
+							request_aborted = true;
 
 							done(match[1], 24*60*60);
 						}
