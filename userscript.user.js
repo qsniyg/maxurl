@@ -20970,10 +20970,18 @@ var $$IMU_EXPORT$$;
 					var request_aborted = false;
 
 					var progress_cb = function(resp) {
-						if (!resp.response || request_aborted)
+						if (request_aborted)
 							return;
 
-						var match = resp.response.match(/mdtacomment[\s\S]{10,400}vid:([0-9a-z]{32})/);
+						if (!resp.responseText) {
+							if (resp.readyState !== 4)
+								return;
+
+							console_error(resp);
+							return done(null, false);
+						}
+
+						var match = resp.responseText.match(/mdtacomment[\s\S]{10,400}vid:([0-9a-z]{32})/);
 						// after that, it stores 0, 0, 0, 37, with 37 being the length of vid:..., is this related?
 						if (!match) {
 							if (resp.readyState !== 4)
@@ -21018,6 +21026,7 @@ var $$IMU_EXPORT$$;
 							if (resp.readyState !== 4)
 								return;
 
+							// https://www.tiktok.com/@auliicravalho/video/6813323310521224454 - returns 302
 							if (resp.status !== 200 && resp.status !== 302) {
 								console_error(resp);
 								return done(null, false);
@@ -68213,6 +68222,8 @@ var $$IMU_EXPORT$$;
 						} else {
 							response.data.response = null;
 						}
+					} else if (response.data.responseText && !response.data.response) {
+						response.data.response = response.data.responseText;
 					}
 
 					var reqdata = extension_requests[response.id].data;
