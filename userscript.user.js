@@ -21090,34 +21090,6 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if (domain_nosub === "muscdn.com" && /^v[0-9]+\./.test(domain)) {
-			var baseobj = {
-				url: src,
-				video: true
-			};
-
-			var vidid = common_functions.get_tiktok_urlvidid(src);
-			if (vidid) {
-				baseobj.filename = vidid;
-			}
-
-			if (options.do_request && options.cb && options.rule_specific && options.rule_specific.tiktok_no_watermarks) {
-				common_functions.get_best_tiktok_url(api_cache, options.do_request, src, function(newurl) {
-					if (newurl) {
-						baseobj.url = newurl;
-					}
-
-					options.cb(baseobj);
-				});
-
-				return {
-					waiting: true
-				};
-			} else {
-				return baseobj;
-			}
-		}
-
 		if (host_domain_nosub === "tiktok.com" && options && options.cb && options.do_request && options.element) {
 			var query_tiktok = function(url, cb) {
 				var normalized_url = url
@@ -21169,13 +21141,38 @@ var $$IMU_EXPORT$$;
 							var videourl = item.video.urls[0];
 							var caption = item.text;
 
-							return options.cb({
+							var obj = {
 								url: videourl,
 								extra: {
 									caption: caption
 								},
 								video: true
-							});
+							};
+
+							var vidid = common_functions.get_tiktok_urlvidid(videourl);
+							if (vidid) {
+								obj.filename = vidid;
+							}
+
+							if (options.rule_specific && options.rule_specific.tiktok_no_watermarks) {
+								common_functions.get_best_tiktok_url(api_cache, do_request, videourl, function(newurl) {
+									if (newurl) {
+										videourl = newurl;
+										obj.url = videourl;
+									}
+
+									var vidid = common_functions.get_tiktok_urlvidid(videourl);
+									if (vidid) {
+										obj.filename = vidid;
+									} else {
+										delete obj.filename;
+									}
+
+									return options.cb(obj);
+								});
+							} else {
+								return options.cb(obj);
+							}
 						} catch (e) {
 							console_error(e);
 							return options.cb(null);
@@ -21188,6 +21185,34 @@ var $$IMU_EXPORT$$;
 				}
 
 				current = current.parentElement;
+			}
+		}
+
+		if (domain_nosub === "muscdn.com" && /^v[0-9]+\./.test(domain)) {
+			var baseobj = {
+				url: src,
+				video: true
+			};
+
+			var vidid = common_functions.get_tiktok_urlvidid(src);
+			if (vidid) {
+				baseobj.filename = vidid;
+			}
+
+			if (options.do_request && options.cb && options.rule_specific && options.rule_specific.tiktok_no_watermarks) {
+				common_functions.get_best_tiktok_url(api_cache, options.do_request, src, function(newurl) {
+					if (newurl) {
+						baseobj.url = newurl;
+					}
+
+					options.cb(baseobj);
+				});
+
+				return {
+					waiting: true
+				};
+			} else {
+				return baseobj;
 			}
 		}
 
