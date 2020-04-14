@@ -5,15 +5,15 @@
 // @name              Image Max URL
 // @namespace         http://tampermonkey.net/
 // @version           0.12.23
-// @description       Finds larger or original versions of images for 6400+ websites, including a powerful image popup feature
-// @description:ko    6400개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
-// @description:fr    Trouve des images plus grandes ou originales pour plus de 6400 sites
-// @description:es    Encuentra imágenes más grandes y originales para más de 6400 sitios
-// @description:ru    Находит увеличенные или оригинальные версии изображений для более чем 6400 веб-сайтов
-// @description:zh    为6400多个网站查找更大或原始图像
-// @description:zh-CN 为6400多个网站查找更大或原始图像
-// @description:zh-TW 為6400多個網站查找更大或原始圖像
-// @description:zh-HK 為6400多個網站查找更大或原始圖像
+// @description       Finds larger or original versions of images for 6500+ websites, including a powerful image popup feature
+// @description:ko    6500개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
+// @description:fr    Trouve des images plus grandes ou originales pour plus de 6500 sites
+// @description:es    Encuentra imágenes más grandes y originales para más de 6500 sitios
+// @description:ru    Находит увеличенные или оригинальные версии изображений для более чем 6500 веб-сайтов
+// @description:zh    为6500多个网站查找更大或原始图像
+// @description:zh-CN 为6500多个网站查找更大或原始图像
+// @description:zh-TW 為6500多個網站查找更大或原始圖像
+// @description:zh-HK 為6500多個網站查找更大或原始圖像
 // @author            qsniyg
 // @homepageURL       https://qsniyg.github.io/maxurl/options.html
 // @supportURL        https://github.com/qsniyg/maxurl/issues
