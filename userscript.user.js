@@ -21018,7 +21018,7 @@ var $$IMU_EXPORT$$;
 							if (resp.readyState !== 4)
 								return;
 
-							if (resp.status !== 200) {
+							if (resp.status !== 200 && resp.status !== 302) {
 								console_error(resp);
 								return done(null, false);
 							}
