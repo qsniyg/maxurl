@@ -64007,6 +64007,11 @@ var $$IMU_EXPORT$$;
 							newobj.filename = newobj.filename.replace(/(.*)\.[^.]*?$/, "$1");
 						}
 					}
+
+					// e.g. for /?...
+					if (newobj.filename.length === 0) {
+						newobj.filename = "download";
+					}
 				}
 
 				var a = document.createElement("a");
