@@ -68222,7 +68222,7 @@ var $$IMU_EXPORT$$;
 						} else {
 							response.data.response = null;
 						}
-					} else if (response.data.responseText && !response.data.response) {
+					} else if (response.data && response.data.responseText && !response.data.response) {
 						response.data.response = response.data.responseText;
 					}
 
