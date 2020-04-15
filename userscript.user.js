@@ -1667,6 +1667,8 @@ var $$IMU_EXPORT$$;
 		mouseover_drag_min: 5,
 		mouseover_scrolly_behavior: "zoom",
 		mouseover_scrollx_behavior: "gallery",
+		// thanks to regis on discord for the idea
+		scroll_zoom_origin: "cursor",
 		scroll_zoom_behavior: "fitfull",
 		// thanks to regis on discord for the idea
 		scroll_incremental_mult: 1.25,
@@ -2859,6 +2861,25 @@ var $$IMU_EXPORT$$;
 			requires: {
 				mouseover_open_behavior: "popup"
 			},
+			category: "popup",
+			subcategory: "behavior"
+		},
+		scroll_zoom_origin: {
+			name: "Zoom origin",
+			description: "The point on the image it's zoomed in/out from",
+			options: {
+				_type: "or",
+				cursor: {
+					name: "Cursor"
+				},
+				center: {
+					name: "Center"
+				}
+			},
+			requires: [
+				{mouseover_scrollx_behavior: "zoom"},
+				{mouseover_scrolly_behavior: "zoom"}
+			],
 			category: "popup",
 			subcategory: "behavior"
 		},
@@ -64240,6 +64261,7 @@ var $$IMU_EXPORT$$;
 					dragoffsetY = dragstartY - parseFloat(outerdiv.style.top);
 				}
 
+				// TODO: allow this to be live-reloaded
 				if (get_single_setting("mouseover_pan_behavior") === "drag") {
 					if (is_video) {
 						img.onseeking = function(e) {
@@ -64612,8 +64634,15 @@ var $$IMU_EXPORT$$;
 
 					estop(e);
 
+					var cursor_x = e.clientX;
+					var cursor_y = e.clientY;
+					if (get_single_setting("scroll_zoom_origin") === "center") {
+						cursor_x = undefined;
+						cursor_y = undefined;
+					}
+
 					var zoom_mode = get_single_setting("scroll_zoom_behavior");
-					if (popup_zoom_func(zoom_mode, e.deltaY, e.clientX, e.clientY, settings.zoom_out_to_close) === false)
+					if (popup_zoom_func(zoom_mode, e.deltaY, cursor_x, cursor_y, settings.zoom_out_to_close) === false)
 						return false;
 				};
 
