@@ -919,16 +919,9 @@ var $$IMU_EXPORT$$;
 		if (!options.history)
 			options.history = [];
 
-		if (typeof x === "object") {
-			if (array_indexof(options.history, x) >= 0)
-				return;
-			else
-				options.history.push(x);
-		}
-
 		var result;
 
-		if (typeof x === "string" || x === null) {
+		if (typeof x === "string" || x === null || typeof x === "undefined") {
 			return x;
 		} else if (is_element(x)) {
 			if (options.json) {
@@ -943,6 +936,11 @@ var $$IMU_EXPORT$$;
 				return x;
 			}
 		} else if (typeof x === "object") {
+			if (array_indexof(options.history, x) >= 0)
+				return;
+			else
+				options.history.push(x);
+
 			if (is_array(x)) {
 				result = [];
 				for (var i = 0; i < x.length; i++) {
@@ -1685,6 +1683,7 @@ var $$IMU_EXPORT$$;
 		mouseover_hide_cursor_after: 0,
 		// also thanks to 07416: https://github.com/qsniyg/maxurl/issues/25
 		mouseover_links: false,
+		mouseover_only_valid_links: true,
 		mouseover_allow_canvas_el: false,
 		mouseover_allow_svg_el: true,
 		mouseover_enable_gallery: true,
@@ -3132,6 +3131,15 @@ var $$IMU_EXPORT$$;
 			description: "Whether or not the popup should also open for plain hyperlinks",
 			requires: {
 				mouseover: true
+			},
+			category: "popup",
+			subcategory: "open_behavior"
+		},
+		mouseover_only_valid_links: {
+			name: "Only for links that look valid",
+			description: "Enabling this option will only allow links to be popped up if they look valid (such as if they have a known image/video extension, or are explicitly supported)",
+			requires: {
+				mouseover_links: true
 			},
 			category: "popup",
 			subcategory: "open_behavior"
@@ -58834,7 +58842,7 @@ var $$IMU_EXPORT$$;
 
 			var objified = fillobj(deepcopy(newhref1), important_properties);
 			if (_nir_debug_) {
-				console_log("parse_bigimage (objified)", objified);
+				console_log("parse_bigimage (objified)", deepcopy(objified));
 			}
 
 			for (var i = 0; i < objified.length; i++) {
@@ -58879,6 +58887,10 @@ var $$IMU_EXPORT$$;
 						obj[prop] = deepcopy(pastobjs[0][prop]);
 					}
 				}
+			}
+
+			if (_nir_debug_) {
+				console_log("parse_bigimage (objified, processed)", deepcopy(objified));
 			}
 
 			if (objified.length === 0) {
@@ -65662,7 +65674,22 @@ var $$IMU_EXPORT$$;
 						return ok_els[0];
 					} else if (get_single_setting("mouseover_links")) {
 						if (Object.keys(links).length > 0) {
-							return links[Object.keys(links)[0]];
+							var our_key = null;
+
+							for (var link in links) {
+								if (!settings.mouseover_only_valid_links) {
+									our_key = link;
+									break;
+								}
+
+								if (looks_like_valid_link(link, links[link].el)) {
+									our_key = link;
+									break;
+								}
+							}
+
+							if (our_key)
+								return links[our_key];
 						}
 					}
 				}
@@ -66902,8 +66929,14 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		var looks_like_valid_link = function(src) {
-			return /\.(?:jpe?g|png|web[mp]|gif|mp4|mkv|og[gv]|svg)(?:[?#].*)?$/i.test(src);
+		var looks_like_valid_link = function(src, el) {
+			if (/\.(?:jpe?g|png|web[mp]|gif|mp4|mkv|og[gv]|svg)(?:[?#].*)?$/i.test(src))
+				return true;
+
+			if (el && check_highlightimgs_supported_image(el))
+				return true;
+
+			return false;
 		}
 
 		var is_img_pic_vid = function(el) {
@@ -67226,7 +67259,7 @@ var $$IMU_EXPORT$$;
 
 		var check_highlightimgs_valid_image = function(el) {
 			var src = get_img_src(el);
-			if (!is_valid_src(src, is_video_el(el)) || (el.tagName === "A" && !looks_like_valid_link(src)))
+			if (!is_valid_src(src, is_video_el(el)) || (el.tagName === "A" && !looks_like_valid_link(src, el)))
 				return false;
 			return true;
 		};
@@ -67246,9 +67279,9 @@ var $$IMU_EXPORT$$;
 			var src = get_img_src(el);
 
 			var imu_output = bigimage_recursive(src, {
-				fill_object: false,
-				exclude_problems: [],
-				use_cache: false,
+				fill_object: true,
+				exclude_problems: [], // todo: use settings' exclude_problems instead
+				use_cache: "read",
 				use_api_cache: false,
 				element: el,
 				document: document,
@@ -67257,7 +67290,27 @@ var $$IMU_EXPORT$$;
 				do_request: function() {}
 			});
 
-			return imu_output !== src;
+			// TODO: consolidate into its own routine
+			if (imu_output.length !== 1)
+				return true;
+
+			var imu_obj = imu_output[0];
+			if (imu_obj.url !== src)
+				return true;
+
+			for (var key in imu_obj) {
+				if (key === "url")
+					continue;
+
+				if (!(key in default_object))
+					return true;
+
+				// e.g. for []
+				if (JSON_stringify(default_object[key]) !== JSON_stringify(imu_obj[key]))
+					return true;
+			}
+
+			return false;
 		};
 
 		var get_highlightimgs_supported_image = function(el) {
