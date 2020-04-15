@@ -1675,6 +1675,7 @@ var $$IMU_EXPORT$$;
 		// thanks to regis on discord for the idea
 		scroll_incremental_mult: 1.25,
 		mouseover_move_with_cursor: false,
+		// thanks to regis on discord for the idea
 		mouseover_move_within_page: true,
 		zoom_out_to_close: false,
 		// thanks to 07416 on github for the idea: https://github.com/qsniyg/maxurl/issues/20#issuecomment-439599984
@@ -29009,6 +29010,7 @@ var $$IMU_EXPORT$$;
 
 		if ((domain_nosub === "redditmedia.com" ||
 			 domain_nosub === "redd.it" ||
+			 (domain_nosub === "reddit.com" && /:\/\/[^/]+\/+[ru]\/+/.test(src)) ||
 			 string_indexof(origsrc, "blob:") === 0) &&
 			host_domain_nosub === "reddit.com" &&
 			options.element && options.do_request && options.cb) {
@@ -29158,6 +29160,20 @@ var $$IMU_EXPORT$$;
 									return newsrc;
 							}
 						}
+					}
+
+					// classic reddit link title
+					if (options.element.classList.contains("title") &&
+						options.element.parentElement.classList.contains("title")) {
+						try {
+							var current = doubleparent.parentElement.parentElement;
+							var id = current.getAttribute("data-fullname");
+							if (id) {
+								newsrc = request(id);
+								if (newsrc)
+									return newsrc;
+							}
+						} catch (e) {}
 					}
 
 					if (doubleparent.parentElement) {
@@ -67353,7 +67369,9 @@ var $$IMU_EXPORT$$;
 				fill_object: true,
 				exclude_problems: [], // todo: use settings' exclude_problems instead
 				use_cache: "read",
+				//use_cache: false,
 				use_api_cache: false,
+				host_url: window.location.href,
 				element: el,
 				document: document,
 				window: get_window(),
