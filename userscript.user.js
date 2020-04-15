@@ -1665,6 +1665,7 @@ var $$IMU_EXPORT$$;
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-531080061
 		mouseover_zoom_custom_percent: 100,
 		mouseover_pan_behavior: "drag",
+		mouseover_movement_inverted: true,
 		mouseover_drag_min: 5,
 		mouseover_scrolly_behavior: "zoom",
 		mouseover_scrollx_behavior: "gallery",
@@ -2777,6 +2778,17 @@ var $$IMU_EXPORT$$;
 			requires: {
 				mouseover_open_behavior: "popup"
 			},
+			category: "popup",
+			subcategory: "behavior"
+		},
+		mouseover_movement_inverted: {
+			name: "Invert movement",
+			description: "Inverts the movement of the mouse. For example, if the mouse moves left, the popup moves right. If disabled, it feels more like the popup is being invisibly dragged.",
+			requires: {
+				mouseover_pan_behavior: "movement"
+			},
+			// It's doubtful many users will want this option enabled
+			is_advanced: true,
 			category: "popup",
 			subcategory: "behavior"
 		},
@@ -68184,6 +68196,9 @@ var $$IMU_EXPORT$$;
 				var offsetD = lefttop ? popup.offsetHeight : popup.offsetWidth;
 				var viewportD = lefttop ? viewport[1] : viewport[0];
 				var mousepos = lefttop ? mouseY : mouseX;
+
+				if (!settings.mouseover_movement_inverted)
+					mousepos = viewportD - mousepos;
 
 				if (offsetD > viewportD) {
 					var mouse_edge = Math.min(Math.max((mousepos - edge_buffer), 0), viewportD - edge_buffer * 2);
