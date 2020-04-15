@@ -64404,6 +64404,7 @@ var $$IMU_EXPORT$$;
 
 					if (x === undefined && y === undefined) {
 						// TODO: if mouse is within the popup, use the mouse's coordinates instead
+						//   This will have to check the zoom_origin setting.
 						//x = mouseAbsX;
 						//y = mouseAbsY;
 
@@ -64416,6 +64417,17 @@ var $$IMU_EXPORT$$;
 						// get the middle of the visible portion of the popup
 						x = visible_left + (visible_right - visible_left) / 2;
 						y = visible_top + (visible_bottom - visible_top) / 2;
+					} else {
+						// ensure it's clamped, e.g. when scrolling on the document instead of the popup
+						if (x < popup_left)
+							x = popup_left;
+						else if (x > popup_left + popup_width)
+							x = popup_left + popup_width;
+
+						if (y < popup_top)
+							y = popup_top;
+						else if (y > popup_top + popup_height)
+							y = popup_top + popup_height;
 					}
 
 					var offsetX = x - popup_left;
@@ -64549,8 +64561,6 @@ var $$IMU_EXPORT$$;
 				};
 
 				outerdiv.onwheel = popup_wheel_cb = function(e, is_document) {
-					console_log(e, is_document);
-
 					var handledx = false;
 					var handledy = false;
 
