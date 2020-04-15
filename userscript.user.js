@@ -1669,7 +1669,7 @@ var $$IMU_EXPORT$$;
 		mouseover_scrollx_behavior: "gallery",
 		scroll_zoom_behavior: "fitfull",
 		// thanks to regis on discord for the idea
-		scroll_incremental_mult: 2,
+		scroll_incremental_mult: 1.25,
 		mouseover_move_with_cursor: false,
 		zoom_out_to_close: false,
 		// thanks to 07416 on github for the idea: https://github.com/qsniyg/maxurl/issues/20#issuecomment-439599984
