@@ -1668,6 +1668,8 @@ var $$IMU_EXPORT$$;
 		mouseover_scrolly_behavior: "zoom",
 		mouseover_scrollx_behavior: "gallery",
 		// thanks to regis on discord for the idea
+		scroll_override_page: false,
+		// thanks to regis on discord for the idea
 		scroll_zoom_origin: "cursor",
 		scroll_zoom_behavior: "fitfull",
 		// thanks to regis on discord for the idea
@@ -2858,6 +2860,15 @@ var $$IMU_EXPORT$$;
 					}
 				}
 			},
+			requires: {
+				mouseover_open_behavior: "popup"
+			},
+			category: "popup",
+			subcategory: "behavior"
+		},
+		scroll_override_page: {
+			name: "Override scroll outside of popup",
+			description: "Scroll events performed outside of the popup are still acted on",
 			requires: {
 				mouseover_open_behavior: "popup"
 			},
@@ -62645,6 +62656,7 @@ var $$IMU_EXPORT$$;
 		var can_close_popup = [false, false];
 		var popup_hold = false;
 		var popup_zoom_func = nullfunc;
+		var popup_wheel_cb = null;
 		var popup_hidecursor_func = nullfunc;
 		var popup_hidecursor_timer = null;
 		var dragstart = false;
@@ -62939,6 +62951,7 @@ var $$IMU_EXPORT$$;
 			popup_el_is_video = false;
 			popup_orig_url = null;
 			popup_zoom_func = nullfunc;
+			popup_wheel_cb = null;
 
 			stop_processing();
 			stop_waiting();
@@ -63192,6 +63205,12 @@ var $$IMU_EXPORT$$;
 				var estop = function(e) {
 					e.stopPropagation();
 					e.stopImmediatePropagation();
+					return true;
+				};
+
+				var estop_pd = function(e) {
+					e.preventDefault();
+					estop(e);
 					return true;
 				};
 
@@ -64529,7 +64548,9 @@ var $$IMU_EXPORT$$;
 					return false;
 				};
 
-				outerdiv.onwheel = function(e) {
+				outerdiv.onwheel = popup_wheel_cb = function(e, is_document) {
+					console_log(e, is_document);
+
 					var handledx = false;
 					var handledy = false;
 
@@ -64551,7 +64572,7 @@ var $$IMU_EXPORT$$;
 						}
 
 						seek_popup_video(!isright);
-						estop(e);
+						estop_pd(e);
 						return true;
 					};
 
@@ -64603,7 +64624,7 @@ var $$IMU_EXPORT$$;
 						}
 
 						lraction(isright);
-						estop(e);
+						estop_pd(e);
 						return true;
 					};
 
@@ -64624,7 +64645,7 @@ var $$IMU_EXPORT$$;
 					}
 
 					if (handledy) {
-						estop(e);
+						estop_pd(e);
 						return false;
 					}
 
@@ -64632,7 +64653,7 @@ var $$IMU_EXPORT$$;
 						return;
 					}
 
-					estop(e);
+					estop_pd(e);
 
 					var cursor_x = e.clientX;
 					var cursor_y = e.clientY;
@@ -68502,6 +68523,16 @@ var $$IMU_EXPORT$$;
 		var last_remote_mousemove = 0;
 		var last_remote_mousemove_timer = null;
 		var last_remote_mousemove_event = null;
+
+		var wheel_cb = function(event) {
+			if (settings.scroll_override_page && popups_active && popup_wheel_cb) {
+				return popup_wheel_cb(event, true);
+			}
+		};
+
+		document.addEventListener("wheel", wheel_cb, {
+			passive: false
+		});
 
 		var mousemove_cb = function(event) {
 			mousepos_initialized = true;
