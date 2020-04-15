@@ -21178,7 +21178,7 @@ var $$IMU_EXPORT$$;
 								video: true
 							};
 
-							common_functions.set_tiktok_vid_filename(baseobj)
+							common_functions.set_tiktok_vid_filename(obj)
 
 							if (options.rule_specific && options.rule_specific.tiktok_no_watermarks) {
 								common_functions.get_best_tiktok_url(api_cache, do_request, videourl, function(newurl) {
@@ -21187,7 +21187,7 @@ var $$IMU_EXPORT$$;
 										obj.url = videourl;
 									}
 
-									if (!common_functions.set_tiktok_vid_filename(baseobj)) {
+									if (!common_functions.set_tiktok_vid_filename(obj)) {
 										delete obj.filename;
 									}
 
