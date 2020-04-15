@@ -1669,6 +1669,8 @@ var $$IMU_EXPORT$$;
 		mouseover_scrolly_behavior: "zoom",
 		mouseover_scrollx_behavior: "gallery",
 		scroll_zoom_behavior: "fitfull",
+		// thanks to regis on discord for the idea
+		scroll_incremental_mult: 2,
 		mouseover_move_with_cursor: false,
 		zoom_out_to_close: false,
 		// thanks to 07416 on github for the idea: https://github.com/qsniyg/maxurl/issues/20#issuecomment-439599984
@@ -2865,6 +2867,15 @@ var $$IMU_EXPORT$$;
 				{mouseover_scrollx_behavior: "zoom"},
 				{mouseover_scrolly_behavior: "zoom"}
 			],
+			category: "popup",
+			subcategory: "behavior"
+		},
+		scroll_incremental_mult: {
+			name: "Incremental zoom multiplier",
+			description: "How much to zoom in/out by (for incremental zooming)",
+			type: "number",
+			number_min: 1,
+			number_unit: "x",
 			category: "popup",
 			subcategory: "behavior"
 		},
@@ -27400,7 +27411,11 @@ var $$IMU_EXPORT$$;
 		if (domain === "images.nintendolife.com") {
 			// http://images.nintendolife.com/news/2015/09/first_impressions_taking_a_shot_at_fatal_frame_maiden_of_black_water/attachment/0/900x.jpg
 			//   http://images.nintendolife.com/news/2015/09/first_impressions_taking_a_shot_at_fatal_frame_maiden_of_black_water/attachment/0/original.jpg
-			return src.replace(/(\/attachment\/[^/]*\/)[^/]+(\.[^/.]*)$/, "$1original$2");
+			// https://images.nintendolife.com/d45064cf4e3cf/animal-crossing.900x.jpg
+			//   https://images.nintendolife.com/d45064cf4e3cf/animal-crosing.original.jpg
+			return src
+				.replace(/(\/attachment\/[^/]*\/)[^/]+(\.[^/.]*)$/, "$1original$2")
+				.replace(/(:\/\/[^/]+\/+[0-9a-f]{5,}\/+(?:[^/]+\.)?)[0-9]*x[0-9]*(\.[^/.]+)(?:[?#].*)?$/, "$1original$2");
 		}
 
 		if (domain === "cdn.igromania.ru") {
@@ -64379,23 +64394,27 @@ var $$IMU_EXPORT$$;
 							mult = imgwidth / img_naturalWidth;
 						}
 
-						mult = Math.round(mult);
+						var increment = settings.scroll_incremental_mult - 1;
+
+						mult = Math.round(mult / increment);
+						mult *= increment;
 
 						if (imgwidth < img_naturalWidth) {
-							mult = 1 / mult;
+							if (mult !== 0)
+								mult = 1 / mult;
 						}
 
 						if (zoomdir > 0) {
-							mult /= 2;
+							mult /= 1 + increment;
 						} else {
-							mult *= 2;
+							mult *= 1 + increment;
 						}
 
 						imgwidth = img_naturalWidth * mult;
 						imgheight = img_naturalHeight * mult;
 
 						var too_small = imgwidth < 64 || imgheight < 64;
-						var too_big = imgwidth > img_naturalWidth * 16 || imgheight > img_naturalHeight * 16;
+						var too_big = imgwidth > img_naturalWidth * 512 || imgheight > img_naturalHeight * 512;
 
 						if (too_small || too_big) {
 							if (zoom_out_to_close && too_small)
