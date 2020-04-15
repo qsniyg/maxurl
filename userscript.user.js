@@ -2788,7 +2788,7 @@ var $$IMU_EXPORT$$;
 				mouseover_pan_behavior: "movement"
 			},
 			// It's doubtful many users will want this option enabled
-			is_advanced: true,
+			advanced: true,
 			category: "popup",
 			subcategory: "behavior"
 		},
@@ -3315,7 +3315,7 @@ var $$IMU_EXPORT$$;
 			requires: {
 				mouseover: true
 			},
-			//is_advanced: true, // Commenting this out because the option is important
+			//advanced: true, // Commenting this out because the option is important
 			category: "popup",
 			subcategory: "open_behavior"
 		},
