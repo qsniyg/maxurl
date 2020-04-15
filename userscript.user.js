@@ -1675,6 +1675,7 @@ var $$IMU_EXPORT$$;
 		// thanks to regis on discord for the idea
 		scroll_incremental_mult: 1.25,
 		mouseover_move_with_cursor: false,
+		mouseover_move_within_page: true,
 		zoom_out_to_close: false,
 		// thanks to 07416 on github for the idea: https://github.com/qsniyg/maxurl/issues/20#issuecomment-439599984
 		mouseover_position: "cursor",
@@ -2928,6 +2929,15 @@ var $$IMU_EXPORT$$;
 			description: "Moves the popup as the cursor moves",
 			requires: {
 				mouseover_open_behavior: "popup"
+			},
+			category: "popup",
+			subcategory: "behavior"
+		},
+		mouseover_move_within_page: {
+			name: "Move within page",
+			description: "Ensures the popup doesn't leave the page",
+			requires: {
+				mouseover_move_with_cursor: true
 			},
 			category: "popup",
 			subcategory: "behavior"
@@ -68262,7 +68272,7 @@ var $$IMU_EXPORT$$;
 		var get_move_with_cursor = function() {
 			// don't require this for now, because esc can also be used to close the popup
 			//var close_el_policy = get_single_setting("mouseover_close_el_policy");
-			return settings.mouseover_move_with_cursor;// && close_el_policy === "thumbnail";
+			return settings.mouseover_move_with_cursor && !popup_hold;// && close_el_policy === "thumbnail";
 		};
 
 		function do_popup_pan(popup, event, mouseX, mouseY) {
@@ -68337,6 +68347,17 @@ var $$IMU_EXPORT$$;
 				var last = lefttop ? popupOpenLastY : popupOpenLastX;
 
 				var current = mousepos - last + orig;
+
+				if (settings.mouseover_move_within_page) {
+					var offsetD = lefttop ? popup.offsetHeight : popup.offsetWidth;
+					var viewportD = lefttop ? viewport[1] : viewport[0];
+
+					current = Math.max(current, border_thresh);
+
+					if (current + offsetD > (viewportD - border_thresh)) {
+						current = viewportD - border_thresh - offsetD;
+					}
+				}
 
 				if (current === orig)
 					return;
