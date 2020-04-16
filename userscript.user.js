@@ -5652,6 +5652,8 @@ var $$IMU_EXPORT$$;
 						if (parsed) {
 							return done(parsed, 60 * 60);
 						}
+					} else {
+						console_error(cache_key, result);
 					}
 
 					done(null, false);
@@ -40163,6 +40165,7 @@ var $$IMU_EXPORT$$;
 			// https://drscdn.500px.org/photo/110928613/w%3D70_h%3D70/v2?webp=true&v=5&sig=44ba66ac19d9f5852e30c17e59f45a48c3fd8a00661cc83486506469823d81ad
 			//   https://drscdn.500px.org/photo/110928613/q%3D80_m%3D2000/v2?webp=true&sig=2f634d5fb1e3fbdf40c4e7b2e3aa112eba72b7c6c5476f07306c25ff1459cf24
 			// https://drscdn.500px.org/photo/155707683/m%3D900/102599ba6f6b6143d74b1f9e593d7559 -- original photo deleted
+			// https://drscdn.500px.org/photo/1013960347/q%3D50_h%3D450/v2?sig=70fbcc659af581f0eda4751f12fd7d19a2cc837274c54d1a134aa7e094d2f1a1
 			// old rule made some smaller (fixed now):
 			// https://drscdn.500px.org/photo/176915829/m%3D2048/v2?webp=true&sig=8901652fb89d3d48171709f0656cbb9c06695375eb1149ba1281e5cba0dc4041 -- 2048x1489
 			//   https://drscdn.500px.org/photo/176915829/q%3D80_m%3D2000/v2?webp=true&sig=40351336025465fc6f8fd94d0ac6ae8f8672038a90e5b0c17f138c987f2a05ad -- 2000x1454
@@ -40181,9 +40184,12 @@ var $$IMU_EXPORT$$;
 				S3_IMG_STORE_900: 14
 			},
 			*/
+
+			get_csrf();
 			id = src.replace(/^[a-z]+:\/\/[^/]*\/photo\/+([0-9]+)\/.*$/, "$1");
 			var page = "https://500px.com/photo/" + id + "/";
 			if (id !== src) {
+				// TODO: add x-csrf-token as a header, needed when logged in. It comes from the cookie, needs GM_Cookie support
 				options.do_request({
 					url: "https://api.500px.com/v1/photos?image_size%5B%5D=1&image_size%5B%5D=2&image_size%5B%5D=32&image_size%5B%5D=31&image_size%5B%5D=33&image_size%5B%5D=34&image_size%5B%5D=35&image_size%5B%5D=36&image_size%5B%5D=2048&image_size%5B%5D=4&image_size%5B%5D=14&expanded_user_info=true&include_tags=true&include_geo=true&include_equipment_info=true&vendor_photos=true&include_licensing=true&include_releases=true&liked_by=1&following_sample=100&ids=" + id,
 					method: "GET",
@@ -40191,8 +40197,10 @@ var $$IMU_EXPORT$$;
 						if (resp.readyState !== 4)
 							return;
 
-						if (resp.status !== 200)
+						if (resp.status !== 200) {
+							console_error(resp);
 							return options.cb(null);
+						}
 
 						var obj = {
 							url: src,
