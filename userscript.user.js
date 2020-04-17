@@ -62739,6 +62739,8 @@ var $$IMU_EXPORT$$;
 		var popup_update_pos_func = null;
 		var popup_hidecursor_func = nullfunc;
 		var popup_hidecursor_timer = null;
+		var popup_client_rect_cache = null;
+		var last_popup_client_rect_cache = 0;
 		var dragstart = false;
 		var dragstartX = null;
 		var dragstartY = null;
@@ -63033,6 +63035,8 @@ var $$IMU_EXPORT$$;
 			popup_zoom_func = nullfunc;
 			popup_wheel_cb = null;
 			popup_update_pos_func = null;
+			popup_client_rect_cache = null;
+			last_popup_client_rect_cache = 0;
 
 			stop_processing();
 			stop_waiting();
@@ -65016,6 +65020,19 @@ var $$IMU_EXPORT$$;
 			var obj = get_bounding_client_rect_inner(el, mapcache, true);
 			return obj.rect || obj.orig_rect;
 		}
+
+		function get_popup_client_rect() {
+			if (!popups || !popups[0])
+				return null;
+
+			var current_date = Date.now();
+			if (!popup_client_rect_cache || (current_date - last_popup_client_rect_cache) > 50) {
+				popup_client_rect_cache = get_bounding_client_rect(popups[0]);
+				last_popup_client_rect_cache = current_date;
+			}
+
+			return popup_client_rect_cache;
+		};
 
 		function is_popup_el(el) {
 			var current = el;
@@ -68376,6 +68393,7 @@ var $$IMU_EXPORT$$;
 		var get_move_with_cursor = function() {
 			// don't require this for now, because esc can also be used to close the popup
 			//var close_el_policy = get_single_setting("mouseover_close_el_policy");
+			// maybe disable if popup position == center, and "move within page" is activated?
 			return settings.mouseover_move_with_cursor && !popup_hold;// && close_el_policy === "thumbnail";
 		};
 
@@ -68420,8 +68438,15 @@ var $$IMU_EXPORT$$;
 				}
 			};
 
+			var popup_clientrect = null;
 			var domovement = function(lefttop) {
-				var offsetD = lefttop ? popup.offsetHeight : popup.offsetWidth;
+				if (!popup_clientrect) {
+					popup_clientrect = get_popup_client_rect();
+				}
+
+				// offset* is very slow, slower than setting top/left! 250ms vs 30ms after a while
+				//var offsetD = lefttop ? popup.offsetHeight : popup.offsetWidth;
+				var offsetD = lefttop ? popup_clientrect.height : popup_clientrect.width;
 				var viewportD = lefttop ? viewport[1] : viewport[0];
 				var mousepos = lefttop ? mouseY : mouseX;
 
@@ -68761,7 +68786,7 @@ var $$IMU_EXPORT$$;
 				popup_trigger_reason === "keyboard") {
 				var img = popups[0].getElementsByTagName("img")[0];
 				if (img) {
-					var rect = get_bounding_client_rect(popups[0]);
+					var rect = get_popup_client_rect();
 
 					var our_jitter = jitter_base;
 
