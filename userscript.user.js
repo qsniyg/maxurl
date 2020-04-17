@@ -56760,6 +56760,7 @@ var $$IMU_EXPORT$$;
 
 		if (domain === "image.mux.com") {
 			// https://image.mux.com/UZMwOY6MgmhFNXLbSFXAuPKlRPss5XNA/thumbnail.jpg?time=11
+			//   https://stream.mux.com/UZMwOY6MgmhFNXLbSFXAuPKlRPss5XNA.m3u8
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+([^/.]{30,})\/+thumbnail\.[^/.]+(?:[?#].*)?$/, "https://stream.mux.com/$1.m3u8");
 			if (newsrc !== src) {
 				return {
@@ -59604,14 +59605,21 @@ var $$IMU_EXPORT$$;
 
 			print_orig();
 
-			if (obj && obj.bad) {
-				err_txt = "Bad image";
-				if (err_cb) {
-					err_cb(err_txt);
-				} else {
-					console_error(err_txt);
+			if (obj) {
+				if (obj.bad) {
+					err_txt = "Bad image";
+				} else if (obj.video && obj.video !== true) {
+					err_txt = "Can't redirect to streaming video type " + obj.video;
 				}
-				return;
+
+				if (err_txt) {
+					if (err_cb) {
+						err_cb(err_txt);
+					} else {
+						console_error(err_txt);
+					}
+					return;
+				}
 			}
 
 			var mouseover_text = function(reason) {
