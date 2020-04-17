@@ -1572,6 +1572,7 @@ var $$IMU_EXPORT$$;
 		dark_mode: false,
 		settings_tabs: false,
 		settings_visible_description: true,
+		settings_show_disabled: true,
 		settings_show_requirements: true,
 		advanced_options: false,
 		allow_browser_request: true,
@@ -1824,6 +1825,16 @@ var $$IMU_EXPORT$$;
 			},
 			imu_enabled_exempt: true
 		},
+		settings_show_disabled: {
+			name: "Show disabled options",
+			description: "If disabled, options that are disabled due to their requirements being unmet will not be displayed",
+			category: "general",
+			subcategory: "settings",
+			onedit: function() {
+				run_soon(do_options);
+			},
+			imu_enabled_exempt: true
+		},
 		settings_show_requirements: {
 			name: "Requirements below disabled options",
 			description: "If an option is disabled, the requirements to enable the option will be displayed below it",
@@ -1831,6 +1842,9 @@ var $$IMU_EXPORT$$;
 			subcategory: "settings",
 			onedit: function() {
 				run_soon(do_options);
+			},
+			requires: {
+				settings_show_disabled: true
 			},
 			imu_enabled_exempt: true
 		},
@@ -34487,6 +34501,8 @@ var $$IMU_EXPORT$$;
 			 domain_nosub === "xuk.one" ||
 			 // https://img5.xuk.life/images/photos/00/01/93/11/19311/thumb/bd9deb75824b5b0bf77f56c97ca0e6c9.jpg
 			 //   https://img5.xuk.life/images/photos/00/01/93/11/19311/origin/bd9deb75824b5b0bf77f56c97ca0e6c9.jpg
+			 // https://img5.xuk.life/images/photos/00/02/43/19/24319/mini/898e859c7169b9d97d6982c61d1c4356.jpg
+			 //   https://img5.xuk.life/images/photos/00/02/43/19/24319/origin/898e859c7169b9d97d6982c61d1c4356.jpg
 			 domain_nosub === "xuk.life" ||
 			 // https://img2.xuk.ooo/images/photos/00/04/23/60/42360/thumb/601109edfaf6992955ddcb7416433d62.jpg
 			 //   https://img2.xuk.ooo/images/photos/00/04/23/60/42360/origin/601109edfaf6992955ddcb7416433d62.jpg
@@ -34497,7 +34513,7 @@ var $$IMU_EXPORT$$;
 			string_indexof(src, "/images/photos/") >= 0) {
 			// https://img1.xuk.mobi/images/photos/00/01/93/25/19325/thumb/6de0aa33ad9e5d5dbcd78a1153d6bb26.jpg
 			//   https://img1.xuk.mobi/images/photos/00/01/93/25/19325/origin/6de0aa33ad9e5d5dbcd78a1153d6bb26.jpg
-			return src.replace(/\/(?:thumb|big)\/+([0-9a-f]+\.[^/.]*)$/, "/origin/$1");
+			return src.replace(/\/(?:thumb|big|mini)\/+([0-9a-f]+\.[^/.]*)$/, "/origin/$1");
 		}
 
 		if (domain === "s.filmsextv.com") {
@@ -56736,6 +56752,12 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/images\/+games\/+[^/]+\/+screenshots\/+[^/]+)_thumbnail_([0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1_screenshot_$2");
 		}
 
+		if (domain_nowww === "kinogallery.com") {
+			// https://www.kinogallery.com/pimages/1256/kinogallery.com-pr-1256-369072.jpg
+			//   https://www.kinogallery.com/pimages/1256/kinogallery.com-1256-369072.jpg
+			return src.replace(/(\/pimages\/+[0-9]+\/+[^-/]+-)pr-/, "$1");
+		}
+
 
 
 
@@ -60633,6 +60655,7 @@ var $$IMU_EXPORT$$;
 
 				if (enabled) {
 					options[i].classList.remove("disabled");
+					options[i].classList.remove("disabled-hidden");
 
 					options[i].getElementsByClassName("requirements")[0].style.display = "none";
 
@@ -60660,6 +60683,9 @@ var $$IMU_EXPORT$$;
 					}
 				} else {
 					options[i].classList.add("disabled");
+
+					if (!settings.settings_show_disabled)
+						options[i].classList.add("disabled-hidden");
 
 					var els = options[i].querySelectorAll("input, textarea, button, select");
 					for (var j = 0; j < els.length; j++) {

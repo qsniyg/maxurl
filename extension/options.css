@@ -401,6 +401,10 @@ button:active, .button:active {
   border-color: #08c;
 }
 
+.disabled-hidden {
+  display: none;
+}
+
 .disabled, .disabled select, .disabled p, input:disabled + label {
   color: #aaa;
 }
