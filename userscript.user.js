@@ -8536,6 +8536,9 @@ var $$IMU_EXPORT$$;
 			// https://resources.sonyliv.com/image/fetch/h_254,w_438,c_fill,fl_lossy,f_auto,q_auto,e_contrast:30,e_brightness:10/https%3A%2F%2Fcf-images.ap-southeast-1.prod.boltdns.net%2Fv1%2Fjit%2F5182475815001%2F9fd45fd7-fdd4-4835-b3bf-d2e2680c1684%2Fmain%2F720x405%2F1m43s780ms%2Fmatch%2Fimage.jpg
 			//   https://cf-images.ap-southeast-1.prod.boltdns.net/v1/jit/5182475815001/9fd45fd7-fdd4-4835-b3bf-d2e2680c1684/main/720x405/1m43s780ms/match/image.jpg -- different image
 			domain === "resources.sonyliv.com" ||
+			// https://images2.minutemediacdn.com/image/fetch/http%3A%2F%2Fwww.media2.hw-static.com%2Fmedia%2F2015%2F12%2Ftaylor-swift-april-2008-getty-121115.jpg
+			//   https://www.media2.hw-static.com/media/2015/12/taylor-swift-april-2008-getty-121115.jpg
+			(domain_nosub === "minutemediacdn.com" && /^images[0-9]*\./.test(domain)) ||
 			domain === "images.taboola.com") {
 			// https://res.cloudinary.com/emazecom/image/fetch/c_limit,a_ignore,w_320,h_200/https%3A%2F%2Fimg-aws.ehowcdn.com%2F877x500p%2Fs3.amazonaws.com%2Fcme_public_images%2Fwww_ehow_com%2Fi.ehow.com%2Fimages%2Fa04%2Fbd%2Fic%2Fchemical-energy-work-3.1-800x800.jpg
 			// https://images.taboola.com/taboola/image/fetch/f_jpg%2Cq_auto%2Cc_fill%2Cg_faces:auto%2Ce_sharpen/https%3A%2F%2Fwww.gannett-cdn.com%2F-mm-%2F2e56892f6a349ad47192b530425d443fb365e5e9%2Fr%3Dx1803%26c%3D3200x1800%2Fhttps%2Fmedia.gannett-cdn.com%2F37861007001%2F37861007001_5735420050001_5735409691001-vs.jpg%3FpubId%3D37861007001
@@ -10317,6 +10320,8 @@ var $$IMU_EXPORT$$;
 			  domain === "images.assettype.com" ||
 			  // https://images.seoghoer.dk/s3fs-public/storage_1/media/kylie_jenner_1.jpg?ixlib=imgixjs-3.4.0&w=200
 			  domain === "images.seoghoer.dk" ||
+			  // https://static.camp-fire.jp/uploads/project_version/image/390115/00102017-a11b-48ed-8d7f-fad2faa496b4.jpg?ixlib=rails-2.1.4&auto=format&w=500
+			  (domain === "static.camp-fire.jp" && string_indexof(src, "/uploads/") >= 0) ||
 			  // https://imgix.romper.com/2016/8/22/584902004.jpg?w=640&fit=max&auto=format&q=70
 			  domain === "imgix.romper.com") &&
 			 !src.match(/[?&]s=[^/]*$/)) ||
@@ -16697,6 +16702,8 @@ var $$IMU_EXPORT$$;
 
 			// https://tse1.mm.bing.net/th?id=Ad9e81485410912702a018d5f48ec0f5c&w=136&h=183&c=8&rs=1&qlt=90&pid=3.1&rm=2
 			// https://www.bing.com/th?id=OPN.RTNews_jJZmvGD6PzvUt22LbHHUUg&w=186&h=88&c=7&rs=2&qlt=80&cdv=1&pid=News
+			// other:
+			// https://th.bing.com/th/id/OIP.D4C-i8dfc0T_eveS9Mz2nAHaHg?pid=Api&w=210&h=213
 			newsrc = src.replace(/(:\/\/[^/]*)\/th[^/]*[?&]id=([^&]*)&[^/]*$/, "$1/th?id=$2");
 			if (newsrc !== src)
 				return newsrc;
@@ -57257,6 +57264,9 @@ var $$IMU_EXPORT$$;
 			// https://images.adrise.tv/VcGv7kP97DPd9mKXEAkCpJyNVLI=/400x574/smart/img.adrise.tv/aa6d4d27-82d0-4b1d-8cb4-7566928a0389.jpg
 			//   http://img.adrise.tv/aa6d4d27-82d0-4b1d-8cb4-7566928a0389.jpg
 			domain === "images.adrise.tv" ||
+			// https://www.nydailynews.com/resizer/GaeyAldzSu-KRls2MdKl427zxhQ=/arc-anglerfish-arc2-prod-tronc.s3.amazonaws.com/public/DN2NVNA5MCYD7PCBVYBE5WCQJ4.jpg
+			//   https://arc-anglerfish-arc2-prod-tronc.s3.amazonaws.com/public/DN2NVNA5MCYD7PCBVYBE5WCQJ4.jpg
+			domain_nowww === "nydailynews.com" ||
 			src.match(/:\/\/[^/]*\/thumbor\/[^/]*=\//) ||
 			// https://www.orlandosentinel.com/resizer/tREpzmUU7LJX1cbkAN-unm7wL0Y=/fit-in/800x600/top/filters:fill(black)/arc-anglerfish-arc2-prod-tronc.s3.amazonaws.com/public/XC6HBG2I4VHTJGGCOYVPLBGVSM.jpg
 			//   http://arc-anglerfish-arc2-prod-tronc.s3.amazonaws.com/public/XC6HBG2I4VHTJGGCOYVPLBGVSM.jpg
@@ -63941,6 +63951,17 @@ var $$IMU_EXPORT$$;
 					outerdiv.appendChild(topbarel);
 					ui_els.push(topbarel);
 
+					var get_img_height = function() {
+						var rect = img.getBoundingClientRect();
+						// This is needed if img isn't displayed yet
+						var rect_height = rect.height || imgh;
+
+						if (isNaN(rect_height))
+							rect_height = img_naturalHeight;
+
+						return rect_height;
+					};
+
 
 					var prev_images = 0;
 					var next_images = 0;
@@ -63948,13 +63969,7 @@ var $$IMU_EXPORT$$;
 					function get_imagesizezoom_text() {
 						var text = "";
 
-						var rect = img.getBoundingClientRect();
-
-						// This is needed if img isn't displayed yet
-						var rect_height = rect.height || imgh;
-
-						if (isNaN(rect_height))
-							rect_height = img_naturalHeight;
+						var rect_height = get_img_height();
 
 						var zoom_percent = rect_height / img_naturalHeight;
 						var currentzoom = parseInt(zoom_percent * 100);
@@ -64114,17 +64129,18 @@ var $$IMU_EXPORT$$;
 						if (!settings.mouseover_enable_gallery || popup_width < 200)
 							return;
 
+						var img_height = get_img_height();
 						var bottom_heights = 0;
 						var top_heights = 20;
 						if (is_video) {
 							bottom_heights = 60;
 						}
 
-						if (imgh < 100) {
+						if (img_height < 100) {
 							top_heights = 0;
 						}
 
-						var lrheight = imgh - top_heights - bottom_heights;
+						var lrheight = img_height - top_heights - bottom_heights;
 						if (lrheight < 10)
 							return;
 
@@ -68824,6 +68840,7 @@ var $$IMU_EXPORT$$;
 						var imgmiddleY = null;
 						var in_img_jitter = false;
 						if (img) {
+							// TODO: call this less often
 							var rect = img.getBoundingClientRect();
 
 							in_img_jitter = in_clientrect(mouseX, mouseY, rect, jitter_base);
