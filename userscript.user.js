@@ -23528,10 +23528,10 @@ var $$IMU_EXPORT$$;
 			return decodeURIComponent(src.replace(/^[a-z]*:\/\/[^/]*\/cover.*?[?&]url=([^&]*).*?$/, "$1"));
 		}
 
-		if (domain === "www.fashion-headline.com") {
+		if (domain_nowww === "fashion-headline.com") {
 			// https://www.fashion-headline.com/api/image/width/2000/images/migration/2015/01/a9201396f5dfc04a665e58a118f8f6cf.jpg
 			//   https://www.fashion-headline.com/images/migration/2015/01/a9201396f5dfc04a665e58a118f8f6cf.jpg
-			return src.replace(/\/api\/image\/(?:width|height)\/[0-9]+\//, "/");
+			return src.replace(/\/api\/+image\/+(?:width|height)\/+[0-9]+\//, "/");
 		}
 
 		if (domain_nosub === "stream.ne.jp" && string_indexof(domain, "cdnext.stream.ne.jp") >= 0) {
@@ -62736,6 +62736,7 @@ var $$IMU_EXPORT$$;
 		var popup_hold = false;
 		var popup_zoom_func = nullfunc;
 		var popup_wheel_cb = null;
+		var popup_update_pos_func = null;
 		var popup_hidecursor_func = nullfunc;
 		var popup_hidecursor_timer = null;
 		var dragstart = false;
@@ -63031,6 +63032,7 @@ var $$IMU_EXPORT$$;
 			popup_orig_url = null;
 			popup_zoom_func = nullfunc;
 			popup_wheel_cb = null;
+			popup_update_pos_func = null;
 
 			stop_processing();
 			stop_waiting();
@@ -63457,7 +63459,7 @@ var $$IMU_EXPORT$$;
 					vh = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 					}*/
 
-				function update_vwh() {
+				var update_vwh = function(x, y) {
 					viewport = get_viewport();
 					vw = viewport[0];
 					vh = viewport[1];
@@ -63465,16 +63467,25 @@ var $$IMU_EXPORT$$;
 					vw -= border_thresh * 2;
 					vh -= border_thresh + top_thresh;
 
-					v_mx = Math.min(vw, Math.max(x - border_thresh, 0));
-					v_my = Math.min(vh, Math.max(y - top_thresh, 0));
-				}
+					if (typeof x !== "undefined") {
+						v_mx = Math.min(vw, Math.max(x - border_thresh, 0));
+						v_my = Math.min(vh, Math.max(y - top_thresh, 0));
+					}
+				};
 
 				var set_top = function(x) {
-					outerdiv.style.top = (x + top_thresh) + "px";
+					//outerdiv.style.top = (x + top_thresh) + "px";
+					outerdiv.style.top = x + "px";
 				};
 
 				var set_left = function(x) {
-					outerdiv.style.left = (x + border_thresh) + "px";
+					//outerdiv.style.left = (x + border_thresh) + "px";
+					outerdiv.style.left = x + "px";
+				};
+
+				var set_lefttop = function(xy) {
+					set_top(xy[1]);
+					set_left(xy[0]);
 				};
 
 				// https://stackoverflow.com/a/23270007
@@ -63484,7 +63495,7 @@ var $$IMU_EXPORT$$;
 							style.marginTop + style.borderTopWidth];
 				}
 
-				update_vwh();
+				update_vwh(x, y);
 
 				var el_dimensions = get_el_dimensions(img);
 				set_el_all_initial(img);
@@ -63559,86 +63570,108 @@ var $$IMU_EXPORT$$;
 					calc_imghw_for_fit();
 				}
 
-				var sct = scrollTop();
-				var scl = scrollLeft();
-				sct = scl = 0;
+				popup_update_pos_func = function(x, y, resize) {
+					var popup_left, popup_top;
 
-				var mouseover_position = get_single_setting("mouseover_position");
+					update_vwh(x, y);
 
-				if (mouseover_position === "cursor") {
-					set_top (sct + Math.min(Math.max(v_my - (imgh / 2), 0), Math.max(vh - imgh, 0)));
-					set_left(scl + Math.min(Math.max(v_mx - (imgw / 2), 0), Math.max(vw - imgw, 0)));
-				} else if (mouseover_position === "center") {
-					set_top (sct + Math.min(Math.max((vh / 2) - (imgh / 2), 0), Math.max(vh - imgh, 0)));
-					set_left(scl + Math.min(Math.max((vw / 2) - (imgw / 2), 0), Math.max(vw - imgw, 0)));
-				} else if (mouseover_position === "beside_cursor") {
-					// TODO: maybe improve this to be more interpolated?
+					var sct = scrollTop();
+					var scl = scrollLeft();
+					sct = scl = 0;
 
-					var popupx;
-					var popupy;
+					var mouseover_position = get_single_setting("mouseover_position");
 
-					var cursor_thresh = border_thresh;
+					if (mouseover_position === "cursor") {
+						popup_top =  sct + Math.min(Math.max(v_my - (imgh / 2), 0), Math.max(vh - imgh, 0));
+						popup_left = scl + Math.min(Math.max(v_mx - (imgw / 2), 0), Math.max(vw - imgw, 0));
+					} else if (mouseover_position === "center") {
+						popup_top =  sct + Math.min(Math.max((vh / 2) - (imgh / 2), 0), Math.max(vh - imgh, 0));
+						popup_left = scl + Math.min(Math.max((vw / 2) - (imgw / 2), 0), Math.max(vw - imgw, 0));
+					} else if (mouseover_position === "beside_cursor") {
+						// TODO: maybe improve this to be more interpolated?
 
-					var ovw = vw - cursor_thresh;
-					var ovh = vh - cursor_thresh;
+						var popupx;
+						var popupy;
 
-					calc_imghw_for_fit(ovw, ovh);
+						var cursor_thresh = border_thresh;
 
-					for (var loop_i = 0; loop_i < 16; loop_i++) {
-						if (y > viewport[1] / 2) {
-							popupy = v_my - imgh - cursor_thresh;
-						} else if (popupy === undefined) {
-							popupy = v_my + cursor_thresh;
+						var ovw = vw - cursor_thresh;
+						var ovh = vh - cursor_thresh;
+
+						var update_imghw;
+						if (resize) {
+							update_imghw = function(w, h) {
+								calc_imghw_for_fit(w, h);
+							};
+						} else {
+							update_imghw = nullfunc;
 						}
 
-						if (x > viewport[0] / 2) {
-							popupx = v_mx - imgw - cursor_thresh;
-						} else if (popupx === undefined) {
-							popupx = v_mx + cursor_thresh;
-						}
+						update_imghw(ovw, ovh);
 
-						if (popupy < 0) {
-							popupy = 0;
-
-							if (settings.mouseover_prevent_cursor_overlap) {
-								calc_imghw_for_fit(ovw, v_my);
-								//continue;
+						for (var loop_i = 0; loop_i < (resize ? 16 : 1); loop_i++) {
+							if (y > viewport[1] / 2) {
+								popupy = v_my - imgh - cursor_thresh;
+							} else if (popupy === undefined) {
+								popupy = v_my + cursor_thresh;
 							}
-						}
 
-						if (popupx < 0) {
-							popupx = 0;
-
-							if (settings.mouseover_prevent_cursor_overlap) {
-								calc_imghw_for_fit(v_mx, ovh);
-								//continue;
+							if (x > viewport[0] / 2) {
+								popupx = v_mx - imgw - cursor_thresh;
+							} else if (popupx === undefined) {
+								popupx = v_mx + cursor_thresh;
 							}
-						}
 
-						if ((popupy + imgh) > vh) {
-							if (settings.mouseover_prevent_cursor_overlap) {
-								calc_imghw_for_fit(ovw, ovh - v_my);
-								//continue;
-							} else {
-								popupy = Math.max(vh - imgh - cursor_thresh, 0);
+							if (popupy < 0) {
+								popupy = 0;
+
+								if (settings.mouseover_prevent_cursor_overlap) {
+									update_imghw(ovw, v_my);
+									//continue;
+								}
 							}
-						}
 
-						if ((popupx + imgw) > vw) {
-							if (settings.mouseover_prevent_cursor_overlap) {
-								calc_imghw_for_fit(ovw - v_mx, ovh);
-								//continue;
-							} else {
-								popupx = Math.max(vw - imgw - cursor_thresh, 0);
+							if (popupx < 0) {
+								popupx = 0;
+
+								if (settings.mouseover_prevent_cursor_overlap) {
+									update_imghw(v_mx, ovh);
+									//continue;
+								}
 							}
+
+							if ((popupy + imgh) > vh) {
+								if (settings.mouseover_prevent_cursor_overlap) {
+									update_imghw(ovw, ovh - v_my);
+									//continue;
+								} else {
+									popupy = Math.max(vh - imgh - cursor_thresh, 0);
+								}
+							}
+
+							if ((popupx + imgw) > vw) {
+								if (settings.mouseover_prevent_cursor_overlap) {
+									update_imghw(ovw - v_mx, ovh);
+									//continue;
+								} else {
+									popupx = Math.max(vw - imgw - cursor_thresh, 0);
+								}
+							}
+
+							//break;
 						}
 
-						//break;
+						popup_top =  popupy;
+						popup_left = popupx;
 					}
 
-					set_top(popupy);
-					set_left(popupx);
-				}
+					return [
+						popup_left + border_thresh,
+						popup_top + top_thresh
+					];
+				};
+
+				set_lefttop(popup_update_pos_func(x, y, true));
 
 				var set_popup_size_helper = function(size, maxsize, widthheight) {
 					if (maxsize === undefined)
@@ -68410,6 +68443,7 @@ var $$IMU_EXPORT$$;
 				}
 			};
 
+			var update_pos_cache = null;
 			var domovewith = function(lefttop) {
 				var orig = parseInt(lefttop ? popup.style.top : popup.style.left);
 
@@ -68420,13 +68454,20 @@ var $$IMU_EXPORT$$;
 				var current = mousepos - last + orig;
 
 				if (settings.mouseover_move_within_page) {
-					var offsetD = lefttop ? popup.offsetHeight : popup.offsetWidth;
-					var viewportD = lefttop ? viewport[1] : viewport[0];
+					if (false) {
+						var offsetD = lefttop ? popup.offsetHeight : popup.offsetWidth;
+						var viewportD = lefttop ? viewport[1] : viewport[0];
 
-					current = Math.max(current, border_thresh);
+						current = Math.max(current, border_thresh);
 
-					if (current + offsetD > (viewportD - border_thresh)) {
-						current = viewportD - border_thresh - offsetD;
+						if (current + offsetD > (viewportD - border_thresh)) {
+							current = viewportD - border_thresh - offsetD;
+						}
+					} else if (popup_update_pos_func) {
+						if (!update_pos_cache)
+							update_pos_cache = popup_update_pos_func(mouseX, mouseY, false);
+
+						current = update_pos_cache[lefttop ? 1 : 0];
 					}
 				}
 
