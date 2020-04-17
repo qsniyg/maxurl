@@ -56758,6 +56758,17 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/pimages\/+[0-9]+\/+[^-/]+-)pr-/, "$1");
 		}
 
+		if (domain === "image.mux.com") {
+			// https://image.mux.com/UZMwOY6MgmhFNXLbSFXAuPKlRPss5XNA/thumbnail.jpg?time=11
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+([^/.]{30,})\/+thumbnail\.[^/.]+(?:[?#].*)?$/, "https://stream.mux.com/$1.m3u8");
+			if (newsrc !== src) {
+				return {
+					url: newsrc,
+					video: "hls"
+				};
+			}
+		}
+
 
 
 
