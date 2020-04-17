@@ -24535,6 +24535,13 @@ var $$IMU_EXPORT$$;
 				.replace(/(:\/\/[^/]*\/[^/]*\.)[0-9]+(\.[0-9]+\.[^/.]*)$/, "$1full$2");
 		}
 
+		if (domain === "cdn.donmai.us") {
+			// thanks to nadomodan on github: https://github.com/qsniyg/maxurl/issues/304
+			// https://cdn.donmai.us/preview/5e/c1/5ec172460e1f8cf0dff7219c2ba52f4c.jpg
+			//   https://hijiribe.donmai.us/data/5ec172460e1f8cf0dff7219c2ba52f4c.png
+			return src.replace(/^[a-z]+:\/\/[^/]+\/+(preview|sample)\/+(?:[0-9a-f]{2}\/+){2}([0-9a-f]{10,}\.[^/.]+)(?:[?#].*)?$/, "https://danbooru.donmai.us/data/$1/$2");
+		}
+
 		if (domain_nosub === "donmai.us") {
 			// https://hijiribe.donmai.us/data/sample/__nishimori_yusa_otosaka_ayumi_and_tomori_nao_charlotte_anime_and_newtype_drawn_by_higashiji_kazuki_inoue_katsue_kato_chie_satou_youko_sekiguchi_kanami_and_sugawara_mika__sample-5bae8d2a395e9b9b9f9f803a8c3eb4b1.jpg
 			//   https://hijiribe.donmai.us/data/__nishimori_yusa_otosaka_ayumi_and_tomori_nao_charlotte_anime_and_newtype_drawn_by_higashiji_kazuki_inoue_katsue_kato_chie_satou_youko_sekiguchi_kanami_and_sugawara_mika__5bae8d2a395e9b9b9f9f803a8c3eb4b1.jpg
@@ -56775,6 +56782,12 @@ var $$IMU_EXPORT$$;
 					video: "hls"
 				};
 			}
+		}
+
+		if (domain === "thumbnails.pcgamingwiki.com") {
+			// https://thumbnails.pcgamingwiki.com/a/a4/Ryse_Son_of_Rome_cover.jpg/600px-Ryse_Son_of_Rome_cover.jpg
+			//   https://images.pcgamingwiki.com/a/a4/Ryse_Son_of_Rome_cover.jpg
+			return src.replace(/:\/\/[^/]+\/+(.)\/+(..)\/+([^/]*)\/+[0-9]+px-.*?$/, "://images.pcgamingwiki.com/$1/$2/$3");
 		}
 
 
