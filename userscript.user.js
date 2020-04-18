@@ -4411,8 +4411,17 @@ var $$IMU_EXPORT$$;
 			.replace(/^\s+|\s+$/g, "");
 	}
 
+	var _version_compare_pad_0 = function(array, amount) {
+		if (amount <= 0)
+			return;
+
+		for (var i = 0; i < amount; i++) {
+			array.push(0);
+		}
+	};
+
 	function version_compare(a, b) {
-		var version_regex = /^[0-9]+(\.[0-9]+){1,}$/;
+		var version_regex = /^[0-9]+(\.[0-9]+){0,}$/;
 		if (!version_regex.test(a) ||
 			!version_regex.test(b))
 			return null;
@@ -4420,8 +4429,10 @@ var $$IMU_EXPORT$$;
 		var a_split = a.split(".");
 		var b_split = b.split(".");
 
-		if (a_split.length !== b_split.length)
-			return null;
+		if (a_split.length !== b_split.length) {
+			_version_compare_pad_0(a_split, b_split - a_split);
+			_version_compare_pad_0(b_split, a_split - b_split);
+		}
 
 		for (var i = 0; i < a_split.length; i++) {
 			var an = parseInt(a_split[i]);
