@@ -56801,6 +56801,34 @@ var $$IMU_EXPORT$$;
 			return src.replace(/:\/\/[^/]+\/+(.)\/+(..)\/+([^/]*)\/+[0-9]+px-.*?$/, "://images.pcgamingwiki.com/$1/$2/$3");
 		}
 
+		if (domain_nowww === "filmix.co") {
+			// https://filmix.co/uploads/frames/135461/f294444-film_dostat_nozhi_2019_small.jpg
+			//   https://filmix.co/uploads/frames/135461/f294444-film_dostat_nozhi_2019_original.jpg
+			return src.replace(/(\/uploads\/+frames\/+[0-9]+\/+[^/]+)_small(\.[^/.]+)(?:[?#].*)?$/, "$1_original$2");
+		}
+
+		if (domain === "thumbs.filmix.co") {
+			// https://thumbs.filmix.co/posters/thumbs/w220/film_dostat_nozhi_2019_135461_0.jpg
+			//   https://thumbs.filmix.co/posters/orig/film_dostat_nozhi_2019_135461_0.jpg
+			return src.replace(/\/posters\/+thumbs\/+[wh][0-9]+\/+/, "/posters/orig/");
+		}
+
+		if (domain_nowww === "5tv5.ru") {
+			// http://5tv5.ru/smallposters/66372.jpg
+			//   http://5tv5.ru/posters/66372.jpg
+			// http://5tv5.ru/frames/2310/s0.jpg
+			//   http://5tv5.ru/frames/2310/f0.jpg
+			return src
+				.replace(/\/smallposters\/+/, "/posters/")
+				.replace(/(\/frames\/+[0-9]+\/+)s([0-9]+\.)/, "$1f$2");
+		}
+
+		if (domain === "thumbs.dfs.ivi.ru") {
+			// https://thumbs.dfs.ivi.ru/storage31/contents/b/c/7cb648c2e98beb16b616d6740776e4.jpg/234x360/
+			//   https://thumbs.dfs.ivi.ru/storage31/contents/b/c/7cb648c2e98beb16b616d6740776e4.jpg
+			return src.replace(/(\/contents\/+[0-9a-f]\/+[0-9a-f]\/+[0-9a-f]{10,}\.[^/.]+)(?:\/+[0-9]+x[0-9]+\/*)(?:[?#].*)?$/, "$1");
+		}
+
 
 
 
