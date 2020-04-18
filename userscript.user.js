@@ -4,7 +4,7 @@
 // ==UserScript==
 // @name              Image Max URL
 // @namespace         http://tampermonkey.net/
-// @version           0.12.23
+// @version           0.13.0
 // @description       Finds larger or original versions of images for 6500+ websites, including a powerful image popup feature
 // @description:ko    6500개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
 // @description:fr    Trouve des images plus grandes ou originales pour plus de 6500 sites
@@ -62372,15 +62372,28 @@ var $$IMU_EXPORT$$;
 						video.volume = volume / 100.;
 					}
 
+					var remove_loaded_metadata_listener = function() {
+						video.onloadedmetadata = null;
+						video.removeEventListener("loadedmetadata", loaded_metadata_listener);
+					};
+
 					var errorhandler = function(e) {
 						console_error("Error loading video", get_event_error(e));
 
-						video.onloadedmetadata = null;
+						remove_loaded_metadata_listener();
 						err_cb();
 					};
 
-					video.onloadedmetadata = function() {
+					var ran_loadedmetadata_listener = false;
+					var loaded_metadata_listener = function() {
+						if (!ran_loadedmetadata_listener) {
+							ran_loadedmetadata_listener = true;
+						} else {
+							return;
+						}
+
 						video.removeEventListener("error", errorhandler, true);
+						remove_loaded_metadata_listener();
 
 						if (settings.mouseover_video_resume_from_source && processing.source && processing.source.el) {
 							var sourceel = processing.source.el;
@@ -62393,8 +62406,13 @@ var $$IMU_EXPORT$$;
 							}
 						}
 
-						good_cb(video);
+						run_soon(function() {
+							good_cb(video)
+						});
 					};
+
+					video.onloadedmetadata = loaded_metadata_listener;
+					video.addEventListener("loadedmetadata", loaded_metadata_listener);
 
 					video.onended = function() {
 						if (settings.mouseover_enable_gallery && settings.mouseover_gallery_move_after_video) {
@@ -62438,6 +62456,8 @@ var $$IMU_EXPORT$$;
 						} else if (video_type === "hls") {
 							get_library("hls", settings, do_request, function(hls_wrap) {
 								if (!hls_wrap || !hls_wrap.Hls.isSupported()) {
+									// this will work if (video.canPlayType('application/vnd.apple.mpegurl'))
+									// if not, it will fail, then go to the next URL
 									video.src = src;
 									return;
 								}
@@ -62447,9 +62467,15 @@ var $$IMU_EXPORT$$;
 
 								hls.loadSource(src);
 								hls.attachMedia(video);
-								/*hls.on(Hls.Events.MANIFEST_PARSED, function() {
+								hls.on(Hls.Events.MANIFEST_PARSED, function() {
+									hls.startLoad(-1);
 									video.play();
-								});*/
+								});
+
+								hls.on(Hls.Events.ERROR, function(e) {
+									console_error(e);
+									// TODO: run error handler
+								});
 							});
 						}
 					}
