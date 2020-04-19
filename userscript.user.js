@@ -56927,6 +56927,16 @@ var $$IMU_EXPORT$$;
 			return src.replace(/:\/\/[^/]+\/+photos\/+[0-9]+\/+([0-9]+\.[^/.]+)(?:[?#].*)?$/, "://cdn.meadd.net/photos/full/$1");
 		}
 
+		if (domain === "s.uicdn.com") {
+			// https://s.uicdn.com/3c-cdn/mail/client/wicket/resource/static-res/---/uic/img/themes/unified/mailcomblue/sprite-82a8c5d34e.png
+			// https://s.uicdn.com/3c-cdn/mail/client/wicket/resource/static-res/---/mc/img/themes/densely/mailcomblue/sprite_systemMessage-8ea18368dc.png
+			// FIXME: is this too far-reaching?
+			return {
+				url: src,
+				bad: "mask"
+			};
+		}
+
 
 
 
