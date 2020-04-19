@@ -1181,6 +1181,9 @@ chrome.tabs.onUpdated.addListener(function(tabid, info, tab) {
 });
 
 function enable_contextmenu(enabled) {
+	if (!contextmenu)
+		return;
+
 	if (nir_debug)
 		console.log("Setting contextmenu: " + enabled);
 
