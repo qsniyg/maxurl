@@ -1609,6 +1609,7 @@ var $$IMU_EXPORT$$;
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-530760246
 		mouseover_use_hold_key: true,
 		mouseover_hold_key: ["i"],
+		mouseover_hold_position_center: false,
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-531549043
 		//mouseover_close_on_leave_el: true,
 		mouseover_close_el_policy: "both",
@@ -2657,6 +2658,15 @@ var $$IMU_EXPORT$$;
 				mouseover_use_hold_key: true
 			},
 			type: "keysequence",
+			category: "popup",
+			subcategory: "close_behavior"
+		},
+		mouseover_hold_position_center: {
+			name: "Center popup on hold",
+			description: "Centers the popup to the middle of the page when the popup is held",
+			requires: {
+				mouseover_use_hold_key: true
+			},
 			category: "popup",
 			subcategory: "close_behavior"
 		},
@@ -56911,6 +56921,12 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain === "t.meadd.net") {
+			// https://t.meadd.net/photos/0/67334965.jpg
+			//   https://cdn.meadd.net/photos/full/67334965.jpg
+			return src.replace(/:\/\/[^/]+\/+photos\/+[0-9]+\/+([0-9]+\.[^/.]+)(?:[?#].*)?$/, "://cdn.meadd.net/photos/full/$1");
+		}
+
 
 
 
@@ -63754,6 +63770,8 @@ var $$IMU_EXPORT$$;
 					sct = scl = 0;
 
 					var mouseover_position = get_single_setting("mouseover_position");
+					if (popup_hold && settings.mouseover_hold_position_center)
+						mouseover_position = "center";
 
 					if (mouseover_position === "cursor") {
 						popup_top =  sct + Math.min(Math.max(v_my - (imgh / 2), 0), Math.max(vh - imgh, 0));
@@ -68134,6 +68152,17 @@ var $$IMU_EXPORT$$;
 			return settings.mouseover_use_hold_key;
 		};
 
+		var update_popup_hold = function() {
+			if (!popups_active)
+				return;
+
+			if (popup_update_pos_func && settings.mouseover_hold_position_center) {
+				var newpos = popup_update_pos_func(mouseX, mouseY, true);
+				popups[0].style.top = newpos[1] + "px";
+				popups[0].style.left = newpos[0] + "px";
+			}
+		};
+
 		var action_handler = function(action) {
 			if (action.needs_popup && !popup_active())
 				return;
@@ -68214,6 +68243,9 @@ var $$IMU_EXPORT$$;
 					return true;
 				case "open_options":
 					open_in_tab_imu({url: preferred_options_page}, false);
+					return true;
+				case "hold":
+					update_popup_hold();
 					return true;
 			}
 
@@ -68312,6 +68344,8 @@ var $$IMU_EXPORT$$;
 
 					if (!popup_hold && can_close_popup[1]) {
 						actions.push({type: "resetpopups"});
+					} else {
+						actions.push({type: "hold"});
 					}
 				}
 			}
