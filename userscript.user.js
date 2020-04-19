@@ -63785,7 +63785,7 @@ var $$IMU_EXPORT$$;
 					return;
 				}
 
-				function calc_imghw_for_fit(width, height) {
+				var get_imghw_for_fit = function(width, height) {
 					if (width === undefined)
 						width = vw;
 
@@ -63794,6 +63794,9 @@ var $$IMU_EXPORT$$;
 
 					//height -= border_thresh * 2;
 					//width  -= border_thresh * 2;
+
+					var our_imgh = imgh;
+					var our_imgw = imgw;
 
 					if (imgh > height || imgw > width) {
 						var ratio;
@@ -63804,9 +63807,18 @@ var $$IMU_EXPORT$$;
 							ratio = imgw / width;
 						}
 
-						imgh /= ratio;
-						imgw /= ratio;
+						our_imgh /= ratio;
+						our_imgw /= ratio;
 					}
+
+					return [our_imgw, our_imgh];
+				};
+
+				function calc_imghw_for_fit(width, height) {
+					var new_imghw = get_imghw_for_fit(width, height);
+
+					imgw = new_imghw[0];
+					imgh = new_imghw[1];
 				}
 
 				if (initial_zoom_behavior === "fit") {
@@ -63833,6 +63845,116 @@ var $$IMU_EXPORT$$;
 						popup_top =  sct + Math.min(Math.max((vh / 2) - (imgh / 2), 0), Math.max(vh - imgh, 0));
 						popup_left = scl + Math.min(Math.max((vw / 2) - (imgw / 2), 0), Math.max(vw - imgw, 0));
 					} else if (mouseover_position === "beside_cursor") {
+						var update_imghw;
+						if (resize) {
+							update_imghw = function(w, h) {
+								calc_imghw_for_fit(w, h);
+							};
+						} else {
+							update_imghw = nullfunc;
+						}
+
+						var calc_imgrect = function(w, h) {
+							var new_imghw = [imgw, imgh];
+
+							if (resize) {
+								new_imghw = get_imghw_for_fit(w, h);
+							}
+
+							if (new_imghw[0] > w || new_imghw[1] > h)
+								return null;
+
+							return new_imghw;
+						};
+
+						var cursor_thresh = border_thresh;
+						var ovw = vw - cursor_thresh;
+						var ovh = vh - cursor_thresh;
+
+						var calc_imgposd = function(lefttop, info, popupd) {
+							var moused = lefttop ? v_mx : v_my;
+							var vd = lefttop ? ovw : ovh;
+
+							switch (info) {
+								case -1:
+									return Math.min(vd - popupd, Math.max(0, moused - (popupd / 2)));
+								case 0:
+									return Math.max(0, moused - popupd - cursor_thresh);
+								case 1:
+									return Math.min(vd - popupd, moused + cursor_thresh);
+							}
+						};
+
+						var all_rects = [
+							// top
+							[-1, 0, ovw, v_my - cursor_thresh],
+							// right
+							[1, -1, ovw - v_mx - cursor_thresh, ovh],
+							// bottom
+							[-1, 1, ovw, ovh - v_my - cursor_thresh],
+							// left
+							[0, -1, v_mx - cursor_thresh, ovh]
+						];
+
+						var rects = [];
+
+						// TODO: move the current popup position to the top
+
+						if (x > viewport[0] / 2) {
+							rects.push(all_rects[3]);
+						} else {
+							rects.push(all_rects[1]);
+						}
+
+						if (y > viewport[1] / 2) {
+							rects.push(all_rects[0]);
+						} else {
+							rects.push(all_rects[2]);
+						}
+
+						for (var i = 0; i < all_rects.length; i++) {
+							if (rects.indexOf(all_rects[i]) < 0) {
+								rects.push(all_rects[i]);
+							}
+						}
+
+						var largest_rectsize = -1;
+						var largest_rect = null;
+						var largest_origrect = null;
+
+						for (var i = 0; i < rects.length; i++) {
+							var our_rect = calc_imgrect(rects[i][2], rects[i][3]);
+							if (!our_rect)
+								continue;
+
+							var our_rectsize = our_rect[0] * our_rect[1];
+							if (our_rectsize > largest_rectsize) {
+								largest_rectsize = our_rectsize;
+								largest_rect = our_rect;
+								largest_origrect = rects[i];
+							}
+						}
+
+						if (!largest_origrect) {
+							largest_rectsize = -1;
+							for (var i = 0; i < rects.length; i++) {
+								var rectsize = rects[i][2] * rects[i][3];
+								if (rectsize > largest_rectsize) {
+									largest_origrect = rects[i];
+									largest_rectsize = rectsize;
+								}
+							}
+						}
+
+						if (largest_origrect) {
+							update_imghw(largest_origrect[2], largest_origrect[3]);
+
+							popup_top = calc_imgposd(false, largest_origrect[1], imgh);
+							popup_left = calc_imgposd(true, largest_origrect[0], imgw);
+						} else {
+							// ???
+						}
+					} else if (mouseover_position === "beside_cursor_old") {
 						// TODO: maybe improve this to be more interpolated?
 
 						var popupx;
