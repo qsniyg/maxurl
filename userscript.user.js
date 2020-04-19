@@ -1690,7 +1690,7 @@ var $$IMU_EXPORT$$;
 		mouseover_hide_cursor: false,
 		mouseover_hide_cursor_after: 0,
 		// also thanks to 07416: https://github.com/qsniyg/maxurl/issues/25
-		mouseover_links: true,
+		mouseover_links: false,
 		// thanks to LoneFenris: https://github.com/qsniyg/maxurl/issues/25#issuecomment-482880122
 		mouseover_only_valid_links: true,
 		mouseover_allow_canvas_el: false,
