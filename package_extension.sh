@@ -33,7 +33,7 @@ cp userscript_smaller.user.js site/
 echo Building Firefox extension
 
 zipcmd() {
-    zip -r "$1" LICENSE.txt manifest.json userscript.user.js lib/testcookie_slowaes.js resources/logo_40.png resources/logo_48.png resources/logo_96.png resources/disabled_40.png resources/disabled_48.png resources/disabled_96.png extension -x "*~"
+    zip -r "$1" LICENSE.txt manifest.json userscript.user.js lib/testcookie_slowaes.js lib/hls.js lib/dash.all.debug.js resources/logo_40.png resources/logo_48.png resources/logo_96.png resources/disabled_40.png resources/disabled_48.png resources/disabled_96.png extension -x "*~"
 }
 
 rm extension.xpi
@@ -49,6 +49,8 @@ extension/options.css
 extension/options.html
 extension/popup.html
 extension/popup.js
+lib/dash.all.debug.js
+lib/hls.js
 lib/testcookie_slowaes.js
 LICENSE.txt
 manifest.json
@@ -62,13 +64,14 @@ userscript.user.js
 EOF
 
 DIFF="$(cat files.txt | sort | uniq -u)"
-rm files.txt
 
 if [ ! -z "$DIFF" ]; then
     echo
     echo Wrong files
     exit 1
 fi
+
+rm files.txt
 
 
 echo Building chrome extension
@@ -107,8 +110,8 @@ sig_len_hex=$(byte_swap $(printf '%08x\n' $(ls -l "$sig" | awk '{print $5}')))
 echo
 echo "Release checklist:"
 echo
-echo ' * Ensure xx00+ count is updated (userscript, reddit post, mozilla/opera, website)'
-echo ' * Update greasyfork, firefox, opera, changelog.txt'
+echo ' * Ensure xx00+ count is updated (userscript - greasyfork/oujs, reddit post, mozilla/opera, website)'
+echo ' * Update greasyfork, oujs, firefox, opera, changelog.txt'
 echo ' * git tag v'$USERVERSION
 echo ' * Update userscript.user.js for site (but check about.js for site count before)'
 echo ' * Update CHANGELOG.txt and Discord changelog'
