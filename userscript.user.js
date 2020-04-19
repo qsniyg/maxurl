@@ -56901,6 +56901,13 @@ var $$IMU_EXPORT$$;
 				return {
 					waiting: true
 				};
+			} else if (id) {
+				return {
+					url: dllink,
+					headers: {
+						Referer: get_pixxxels_referer(dllink)
+					}
+				};
 			}
 		}
 
