@@ -28884,6 +28884,10 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain === "storage.hegre.com") {
+			return src.replace(/(\/img\/+gallery-[0-9]+-)thumb(-[0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1image$2");
+		}
+
 		if (domain_nowww === "crystal.cafe" ||
 			// https://cdn.syn-ch.com/thumb/148/46/03/1484603772-9cd34.png
 			//   https://cdn.syn-ch.com/src/148/46/03/1484603772-9cd34.jpg
@@ -42100,7 +42104,10 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/galleries\/+[^/]*\/+[^/]*\/+)thumbs\/+/, "$1");
 		}
 
-		if (domain === "ww3.aziani.com") {
+		if (domain === "ww3.aziani.com" ||
+			// http://www.clubglamour.net/galleries/zishy-misty-lovelace-wet/thumbs/zishy-misty-lovelace-wet-1.jpg
+			//   http://www.clubglamour.net/galleries/zishy-misty-lovelace-wet/zishy-misty-lovelace-wet-1.jpg
+			domain_nowww === "clubglamour.net") {
 			// http://ww3.aziani.com/galleries/0313-az_photos-12-jewelsjade-459/thumbs/1001.jpg
 			//   http://ww3.aziani.com/galleries/0313-az_photos-12-jewelsjade-459/1001.jpg
 			return src.replace(/(\/galleries\/+[^/]+\/+)thumbs\/+/, "$1");
@@ -56022,10 +56029,12 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "fapality.com" ||
 			// https://www.okporn.com/player/skin/img/play_white.png
 			domain_nowww === "okporn.com" ||
+			// http://storage.hegre.com/HegreAnnaSPorcelainDoll/skin/img/play_white.png
+			domain === "storage.hegre.com" ||
 			// https://www.pornrewind.com/player/skin/img/play_white.png
 			domain_nowww === "pornrewind.com") {
 			// https://www.porntrex.com/player/skin/img/play_white.png
-			if (/\/player\/+skin\/+img\//.test(src))
+			if (/\/skin\/+img\/+play_/.test(src))
 				return {
 					url: src,
 					bad: "mask"
@@ -56935,6 +56944,40 @@ var $$IMU_EXPORT$$;
 				url: src,
 				bad: "mask"
 			};
+		}
+
+		if (domain_nosub === "x-art.com" && /^(?:hosted|content[0-9]*)\./.test(domain)) {
+			// https://content4.x-art.com/models/alex%20grey/x-art_alex%20grey-01-tn.jpg
+			//   https://content4.x-art.com/models/alex%20grey/x-art_alex%20grey-01.jpg
+			newsrc = src.replace(/(\/models\/+[^/]+\/+[^/]+)-tn(\.[^/.]+)(?:[/#].*)?$/, "$1$2");
+			if (newsrc !== src)
+				return newsrc;
+
+			match = src.match(/^([a-z]+:\/\/[^/]+\/+galleries\/+[^/]+\/+[^/]+)-(l?tn|sml|med)(\.[^/.]+)(?:[?#].*)?$/);
+			if (match) {
+				// hosted.* only supports up to sml
+				// http://hosted.x-art.com/galleries/russian_invasion/x-art_grace_linsay_nastia_russian_invasion-2-sml.jpg?rand=1587294491
+				// content*. supports up to lrg:
+				// https://content3.x-art.com/galleries/a_fucking_hot_threesome/x-art_veronica_rodriguez_alex_grey_logan_pierce_a_fucking_hot_threesome-30-lrg.jpg
+				// hosted cannot be changed to content?
+				var sizes = [
+					"lrg",
+					"med",
+					"sml",
+					"ltn",
+					"tn"
+				];
+
+				var sizes_index = sizes.indexOf(match[2]);
+				var urls = [];
+				if (sizes_index >= 0) {
+					for (var i = 0; i < sizes_index; i++) {
+						urls.push(match[1] + "-" + sizes[i] + match[3]);
+					}
+
+					return urls;
+				}
+			}
 		}
 
 
