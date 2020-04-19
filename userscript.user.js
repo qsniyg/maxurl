@@ -56829,6 +56829,81 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/contents\/+[0-9a-f]\/+[0-9a-f]\/+[0-9a-f]{10,}\.[^/.]+)(?:\/+[0-9]+x[0-9]+\/*)(?:[?#].*)?$/, "$1");
 		}
 
+		if (domain === "i.pixxxels.cc") {
+			// thanks to hosadokha on github: https://github.com/qsniyg/maxurl/issues/307
+			// https://i.pixxxels.cc/yYcg93ZQ/tumblr-nyllgid-Soi1qi3bk1o1-raw.jpg
+			//   https://i.pixxxels.cc/R9bckcVB/tumblr-nyllgid-Soi1qi3bk1o1-raw.jpg
+			//   https://pixxxels.cc/8jkzg5wM
+			var get_pixxxels_id = function(url) {
+				id = url.match(/^[a-z]+:\/\/[^/]+\/+([^-_/.]+)\/+[^/]+(?:[?#].*)?$/);
+				if (id)
+					return id[1];
+
+				return null;
+			};
+
+			var get_pixxxels_referer = function(url) {
+				var id = get_pixxxels_id(url);
+
+				if (id) {
+					return "https://pixxxels.cc/" + id;
+				} else {
+					return "https://pixxxels.cc/";
+				}
+			};
+
+			id = get_pixxxels_id(src);
+			if (id && options.do_request && options.cb) {
+				var fetch_pixxxels_page = function(id, cb) {
+					var cache_key = "pixxxels:" + id;
+					api_cache.fetch(cache_key, cb, function(done) {
+						options.do_request({
+							url: "https://pixxxels.cc/" + id,
+							method: "GET",
+							headers: {
+								Referer: ""
+							},
+							onload: function(resp) {
+								if (resp.readyState !== 4)
+									return;
+
+								if (resp.status !== 200) {
+									console_error(cache_key, resp);
+									return done(null, false);
+								}
+
+								var match = resp.responseText.match(/<a[^>]+href=["'](https?:\/\/i\.pixxxels\.cc\/+[^"']+\?dl=1)["']/);
+								if (!match) {
+									console_error(cache_key, "Unable to find download link for", resp);
+									return done(null, false);
+								}
+
+								var dllink = decode_entities(match[1]).replace(/[?#].*$/, "");
+								var dllink_id = get_pixxxels_id(dllink);
+								var obj = {
+									url: dllink,
+									headers: {
+										Referer: get_pixxxels_referer(dllink)
+									},
+								};
+
+								if (dllink_id) {
+									obj.extra = {page: "https://pixxxels.cc/" + dllink_id};
+								}
+
+								return done(obj, 60*60);
+							}
+						});
+					});
+				};
+
+				fetch_pixxxels_page(id, options.cb);
+				return {
+					waiting: true
+				};
+			}
+		}
+
 
 
 
