@@ -100,6 +100,7 @@
 5ceimg.com
 5rs-1.com
 5true.net
+5tv5.ru
 69876.com
 69dv.com
 6asian.com
@@ -292,6 +293,7 @@ apclips.com
 apherald.com
 api.97bike.com
 api.creativecommons.engineering
+api.europeana.eu
 api.fidji.lefigaro.fr
 api.hdwallpapers5k.com
 api.ning.com
@@ -318,6 +320,7 @@ arch.b4k.co
 archive.org
 archivegalleries.net
 archiveofsins.com
+archives.norwich.edu
 arcinfo.ch
 arhiva.dalje.com
 arhiva.nacional.hr
@@ -727,6 +730,7 @@ c6oxm85c.cloudimg.io
 c9w8v3m5.ssl.hwcdn.net
 ca.slack-edge.com
 cache-graphicslib.viator.com
+cache.escapistmagazine.com
 cache.net-a-porter.com
 cache.pakistantoday.com.pk
 cache.sharesome.com
@@ -856,6 +860,7 @@ cdn.discordapp.com
 cdn.discuss.com.hk
 cdn.doctailieu.com
 cdn.domestika.org
+cdn.donmai.us
 cdn.downtoearth.org.in
 cdn.dribbble.com
 cdn.ebaumsworld.com
@@ -1200,6 +1205,7 @@ cloud.tcusercontent.net
 cloudia.hnonline.sk
 cloudinary.com
 club-img.kdslife.com
+clubglamour.net
 clzmovies.r.sizr.io
 cme_public_images.s3.amazonaws.com
 cmeimg-a.akamaihd.net
@@ -1284,6 +1290,7 @@ cp12.nevsepic.com.ua
 cp24.com
 cpcache.com
 cphoto.asiae.co.kr
+cplorg.cdmhost.com
 cps-static.rovicorp.com
 cr-resource.storage.googleapis.com
 crank-in.net
@@ -1324,6 +1331,7 @@ d111vui60acwyt.cloudfront.net
 d12swbtw719y4s.cloudfront.net
 d13vpcwfpcq1p8.cloudfront.net
 d1466nnw0ex81e.cloudfront.net
+d15eldcwi10xcl.cloudfront.net
 d15hng3vemx011.cloudfront.net
 d15mj6e6qmt1na.cloudfront.net
 d16klsh1z1xre7.cloudfront.net
@@ -1360,6 +1368,7 @@ d2c4tvdc1w38dj.cloudfront.net
 d2e7nuz2r6mjca.cloudfront.net
 d2fzf9bbqh0om5.cloudfront.net
 d2h1pu99sxkfvn.cloudfront.net
+d2hhj3gz5jljkm.cloudfront.net
 d2isyty7gbnm74.cloudfront.net
 d2jtsb989t238a.cloudfront.net
 d2l930y2yx77uc.cloudfront.net
@@ -1402,6 +1411,7 @@ d3on60wtl1ot7i.cloudfront.net
 d3p157427w54jq.cloudfront.net
 d3pxmkp5ez9u31.cloudfront.net
 d3t543lkaz1xy.cloudfront.net
+d3ts7pb9ldoin4.cloudfront.net
 d3us2i0tqwa7m7.cloudfront.net
 d4zcrs0v202ys.cloudfront.net
 d53l9d6fqlxs2.cloudfront.net
@@ -1465,6 +1475,7 @@ demandstudios.com
 demo.brainymore.com
 demokrathaber.org
 dengekionline.com
+depop.com
 derpicdn.net
 derstandard.at
 desangw.com
@@ -1503,8 +1514,10 @@ dieta.pourfemme.it
 digalakis.com
 digi-film.ro
 digital.denverlibrary.org
+digital.library.unt.edu
 digitalart.io
 digitalchosun.dizzo.com
+digitalcollections.lib.washington.edu
 digitalimagemakerworld.com
 digitaltrends.com
 dimg.donga.com
@@ -1809,6 +1822,7 @@ fanaru.com
 fanatik.com.tr
 fanblogs.jp
 fandimefilmu.cz
+fanparty.ru
 fanpop.com
 fantasti.cc
 fantlab.ru
@@ -1901,6 +1915,7 @@ film-like.com
 film.kinootziv.com
 filmibeat.com
 filmitena.com
+filmix.co
 filmnegah.com
 filmpro.ru
 filmsomniac.com
@@ -2024,6 +2039,7 @@ funweek.it
 fuse.tv
 fuskator.com
 futurekorea.co.kr
+fxinteractive.com
 g-mark.org
 g.acdn.no
 g.ahan.in
@@ -2471,6 +2487,7 @@ i.photographers.ua
 i.pinger.pl
 i.pinimg.com
 i.pipec.info
+i.pixxxels.cc
 i.playground.ru
 i.pornsexer.com
 i.postimg.cc
@@ -2523,6 +2540,8 @@ idnes.cz
 idol-gazoum.net
 idols69.net
 idposter.com
+ids.lib.harvard.edu
+ids.si.edu
 iemn.kr
 ifairer.com
 ign.com
@@ -2533,6 +2552,15 @@ ii.yakuji.moe
 ii77.com
 iichan.hk
 iie8.com
+iiif.archivelab.org
+iiif.bodleian.ox.ac.uk
+iiif.eluxemburgensia.lu
+iiif.irht.cnrs.fr
+iiif.lib.ncsu.edu
+iiif.lib.utexas.edu
+iiif.library.ubc.ca
+iiif.library.utoronto.ca
+iiif.ucd.ie
 iimg.me
 ikea.com
 ikoreadaily.co.kr
@@ -2621,6 +2649,7 @@ image.melon.co.kr
 image.mlive.com
 image.mp3.zdn.vn
 image.munhwa.com
+image.mux.com
 image.nanopress.it
 image.newdaily.co.kr
 image.news.livedoor.com
@@ -2712,6 +2741,7 @@ images.assettype.com
 images.attvideo.com
 images.blazingmovies.com
 images.boosty.to
+images.britishart.yale.edu
 images.businessoffashion.com
 images.buzzerie.com
 images.bwwstatic.com
@@ -3421,6 +3451,7 @@ itc.cn
 itch.io
 itedou.com
 item.ssgcdn.com
+items.gog.com
 itn.dmarge.com
 itpro.nikkeibp.co.jp
 itsfun.com.tw
@@ -3561,6 +3592,7 @@ kino.tricolor.tv
 kinoafisha.ua
 kinofilms.ua
 kinofuxy.tv
+kinogallery.com
 kinogo.by
 kinohron.mskcentrum.sk
 kinokach.com
@@ -3647,6 +3679,7 @@ lastampa.it
 lastfm-img2.akamaized.net
 lastfm.freetls.fastly.net
 latestwall.com
+latimesblogs.latimes.com
 latinacelebrities.com
 lattepic.s3.amazonaws.com
 laughspark.info
@@ -3946,6 +3979,7 @@ media.nbcsandiego.com
 media.nbcwashington.com
 media.necn.com
 media.news.de
+media.ng-london.org.uk
 media.ngoisao.vn
 media.npr.org
 media.ntslive.co.uk
@@ -4070,6 +4104,7 @@ merokhabar.net
 metager.org
 metapix.net
 metartdb.com
+metlifestadium.com
 metronews.ca
 metrosport.gr
 mewch.net
@@ -4188,6 +4223,7 @@ mshreqnews.net
 mtdata.ru
 mthai.com
 mtime.cn
+mtmemory.org
 mtv-intl.mtvnimages.com
 mtv.mtvnimages.com
 mtvnimages.com
@@ -5124,6 +5160,7 @@ s.teenpornpics.today
 s.thestreet.com
 s.tmimgcdn.com
 s.tvp.pl
+s.uicdn.com
 s.w-x.co
 s.xpics.info
 s12emagst.akamaized.net
@@ -5402,6 +5439,7 @@ st.kp.yandex.net
 st.overclockers.ru
 st.relook.ru
 stackpathdns.com
+stacks.stanford.edu
 stagelook.ru
 stakimages.me
 stalkcelebs.com
@@ -5410,6 +5448,7 @@ star-img.idol001.com
 star-magazine.co.uk.s3.amazonaws.com
 star-telegram.com
 star-tool.ru
+star-uploads.s3.amazonaws.com
 staraz.co.kr
 starbeat.ru
 starcelebritydresses.com
@@ -5464,6 +5503,7 @@ static.az-cdn.ch
 static.azteca.com
 static.bangkokpost.com
 static.becomegorgeous.com
+static.camp-fire.jp
 static.caravan.kz
 static.cdn.xtreeem.com.s3.amazonaws.com
 static.celebuzz.com
@@ -5474,6 +5514,7 @@ static.cosplay-it.com
 static.dir.bg
 static.discovery-expedition.com
 static.doramatv.me
+static.e-junkie.com.s3.amazonaws.com
 static.ellahoy.es
 static.esea.net
 static.eva.ro
@@ -5624,6 +5665,7 @@ storage.cobak.co
 storage.enuri.info
 storage.face.ba
 storage.gra1.cloud.ovh.net
+storage.hegre.com
 storage.journaldemontreal.com
 storage.journaldequebec.com
 storage.mantan-web.jp
@@ -5709,6 +5751,7 @@ t.huv.kr
 t.imageweb.ws
 t.imx.to
 t.jwwb.nl
+t.meadd.net
 t.nhentai.net
 t.nyahentai.net
 t.sexywhitepussy.com
@@ -5774,6 +5817,7 @@ tengritravel.kz
 terrigen-cdn-dev.marvel.com
 tert.am
 tesall.ru
+texashistory.unt.edu
 textilwirtschaft.de
 textureking.com
 textures.com
@@ -5882,6 +5926,7 @@ thumbnail.egloos.net
 thumbnail.image.rakuten.co.jp
 thumbnail.named.com
 thumbnailer.mixcloud.com
+thumbnails.pcgamingwiki.com
 thumbnails.trvl-media.com
 thumbnews.nateimg.co.kr
 thumbor-static.factorymedia.com
@@ -5890,6 +5935,8 @@ thumbor.f3.cool
 thumbor.forbes.com
 thumbs-prod.si-cdn.com
 thumbs.booru.org
+thumbs.dfs.ivi.ru
+thumbs.filmix.co
 thumbs.gfycat.com
 thumbs.hentai-foundry.com
 thumbs.uloz.to
@@ -5934,6 +5981,7 @@ tomatazos.buscafs.com
 ton.twitter.com
 tonshuul.mn
 toofab.akamaized.net
+tools.wmflabs.org
 toonpool.com
 tooob.com
 top10films.co.uk
@@ -6039,6 +6087,7 @@ unblocked-sites.pro
 unblocked.nl
 unblockweb.cc
 unicorncards.co.uk
+unifr.ch
 unison.org.uk
 unrealengine.com
 up.8desk.com
@@ -6339,6 +6388,7 @@ www1.wdr.de
 wxzixun.com
 wykop.pl
 wzukusers.storage.googleapis.com
+x-art.com
 x18.xxx
 x69.biz
 xbabe.com

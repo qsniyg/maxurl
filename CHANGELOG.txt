@@ -1,3 +1,36 @@
+0.13.0
+
+New features:
+
+ * Options to enable support for DASH and HLS videos (both are disabled by default)
+ * Option to download original (non-watermarked) TikTok videos (enabled by default, thanks to Regis and remlap on discord for reporting)
+ * Option to control zoom increment multiplier (set to 1.25x by default, thanks to Regis on discord for the idea)
+ * Option to invert mouse movement when popup panning method is set to movement (enabled by default)
+ * Option to only popup for links that look valid, when popping up for links is enabled (enabled by default, thanks to LoneFenris on github for the idea)
+ * Option to set the zoom's origin (set to "Cursor" by default, thanks to Regis on discord for the idea)
+ * Option to scroll on the page as well as the popup (disabled by default, thanks to Regis on discord for the idea)
+ * Option to keep popup movement with cursor restricted to the page (enabled by default, thanks to Regis on discord for the idea)
+ * Option to toggle displaying disabled options (enabled by default)
+ * Option to center popup when hold key is pressed (disabled by default)
+ * Support for ~50 new websites (using ~25 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including GOG, Google Photos, IIIF - thanks to FreemenMuaddib on greasyfork, Reddit, TikTok, Vimeo, Youtube)
+ * Youtube video thumbnails no longer require the "possibly different" option to be enabled (#288)
+ * A crash log is displayed to the user if the options page fails to load (no data is automatically sent, it's up to you to report it - and please do! :)
+ * Automatic movement with the cursor is disabled when the popup is held (hold key)
+ * Minor performance improvements
+
+Bugfixes:
+
+ * Support for Firefox when sync storage is disabled (#287, thanks to iWARR for reporting)
+ * Fixed a bug where downloading files with blank filenames with the userscript would occasionally redirect to the link instead (thanks to Regis on Discord for reporting)
+ * Downloading is now more likely to have file extensions under Firefox
+ * Left/right gallery hover height is more consistent when zooming in/out (fixes a regression since 0.12.21)
+
+---
+
 0.12.23
 
 New features:
