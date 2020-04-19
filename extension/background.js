@@ -1084,7 +1084,7 @@ chrome.storage.onChanged.addListener(function(changes, namespace) {
 	if (nir_debug)
 		console.log("storage.onChanged", changes);
 
-	if (namespace !== "sync")
+	if (namespace !== "sync" && namespace !== "local")
 		return;
 
 	for (var key in changes) {
@@ -1096,12 +1096,16 @@ chrome.storage.onChanged.addListener(function(changes, namespace) {
 	chrome.tabs.query({}, function (tabs) {
 		tabs.forEach((tab) => {
 			try {
-				chrome.tabs.sendMessage(tab.id, {
+				var message = {
 					"type": "settings_update",
 					"data": {
 						"changes": changes
 					}
-				});
+				};
+
+				debug("Sending storage changes to tab", tab.id);
+
+				chrome.tabs.sendMessage(tab.id, message);
 			} catch (e) {
 				console.error(e);
 			}
