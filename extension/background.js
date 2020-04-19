@@ -12,6 +12,17 @@ var override_headers = {};
 var override_download = {};
 var reqid_to_redid = {};
 
+var ready_functions = [];
+var on_ready = function(f) {
+	ready_functions.push(f);
+};
+
+var run_ready = function() {
+	ready_functions.forEach(function(f) {
+		f();
+	});
+};
+
 var storage = null;
 
 var set_storage_to_local = function() {
@@ -26,6 +37,8 @@ try {
 		if (chrome.runtime.lastError && chrome.runtime.lastError.toString().indexOf("webextensions.storage.sync.enabled") >= 0) {
 			set_storage_to_local();
 		}
+
+		run_ready();
 	});
 } catch (e) {
 	console.error(e);
@@ -1044,11 +1057,13 @@ function get_option(name, cb, _default) {
 	});
 }
 
-get_option("extension_contextmenu", function(value) {
-	if (value) {
-		create_contextmenu();
-	}
-}, true);
+on_ready(function() {
+	get_option("extension_contextmenu", function(value) {
+		if (value) {
+			create_contextmenu();
+		}
+	}, true);
+});
 
 function update_browseraction_enabled(enabled) {
 	var disabled_text = "";
@@ -1078,7 +1093,9 @@ function update_browseraction_enabled(enabled) {
 	}
 }
 
-get_option("imu_enabled", update_browseraction_enabled, true);
+on_ready(function() {
+	get_option("imu_enabled", update_browseraction_enabled, true);
+});
 
 chrome.storage.onChanged.addListener(function(changes, namespace) {
 	if (nir_debug)
