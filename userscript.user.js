@@ -64854,8 +64854,8 @@ var $$IMU_EXPORT$$;
 						imgwidth = img_naturalWidth * mult;
 						imgheight = img_naturalHeight * mult;
 
-						var too_small = imgwidth < 64 || imgheight < 64;
-						var too_big = imgwidth > img_naturalWidth * 512 || imgheight > img_naturalHeight * 512;
+						var too_small = zoomdir > 0 && (imgwidth < 64 || imgheight < 64);
+						var too_big = zoomdir < 0 && (imgwidth > img_naturalWidth * 512 || imgheight > img_naturalHeight * 512);
 
 						if (too_small || too_big) {
 							if (zoom_out_to_close && too_small)
