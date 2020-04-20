@@ -12611,13 +12611,34 @@ var $$IMU_EXPORT$$;
 		if (domain === "data.whicdn.com") {
 			// https://data.whicdn.com/images/284282683/superthumb.jpg
 			//   https://data.whicdn.com/images/284282683/original.jpg
-			return src.replace(/\/[^/.]*\.([^/.]*)$/, "/original.$1");
+			match = src.match(/^([a-z]+:\/\/[^/]+\/+images\/+([0-9]+)\/+)[^/.]*\.([^/.]*)$/);
+			if (match) {
+				return {
+					url: match[1] + "original." + match[3],
+					extra: {
+						page: "https://weheartit.com/entry/" + match[2]
+					}
+				};
+			}
 		}
 
 		if (domain_nosub === "whicdn.com" && domain.match(/^data[0-9]*\./)) {
 			// http://data3.whicdn.com/images/139561907/large.jpg
 			//   http://data.whicdn.com/images/139561907/large.jpg
 			return src.replace(/:\/\/data[0-9]*\./, "://data.");
+		}
+
+		if (host_domain_nowww === "weheartit.com" && options.element) {
+			if (domain === "assets.whicdn.com" && /\/assets\/+whi-[^/]+\/+entry_stub\/+entry_stub_unsafe-/.test(src)) {
+				if (options.element.parentElement && options.element.parentElement.tagName === "A") {
+					var href = options.element.parentElement.href;
+					match = href.match(/\/entry\/+([0-9]+)\/*(?:[?#].*)?$/);
+
+					if (match) {
+						return "https://data.whicdn.com/images/" + match[1] + "/original.jpg";
+					}
+				}
+			}
 		}
 
 		if (domain === "cdn.empireonline.com") {
@@ -56978,6 +56999,14 @@ var $$IMU_EXPORT$$;
 					return urls;
 				}
 			}
+		}
+
+		if (domain_nowww === "vkanketa.ru") {
+			// http://vkanketa.ru/file.php?img=https://sun9-35.userapi.com/c848628/v848628170/15fb13/Jx7Qy-etg_Q.jpg
+			//   https://sun9-35.userapi.com/c848628/v848628170/15fb13/Jx7Qy-etg_Q.jpg
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+file\.php\?(?:.*&)?img=(http[^&]+)(?:[#].*)?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
 		}
 
 
