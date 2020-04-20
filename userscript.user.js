@@ -3011,6 +3011,7 @@ var $$IMU_EXPORT$$;
 			requires: {
 				mouseover_position: "beside_cursor"
 			},
+			hidden: true, // no longer applicable with new beside_cursor implementation
 			category: "popup",
 			subcategory: "open_behavior"
 		},
