@@ -13841,6 +13841,14 @@ var $$IMU_EXPORT$$;
 				var currentel = el;
 
 				while ((currentel = currentel.parentElement)) {
+					// tumblr homepage
+					if (currentel.tagName === "ARTICLE" && currentel.hasAttribute("data-id")) {
+						var id = currentel.getAttribute("data-id");
+						if (/^[0-9]+$/.test(id)) {
+							return id;
+						}
+					}
+
 					// todo: also check for the postid through the reblog buttons
 					var id = currentel.getAttribute("id");
 
@@ -13965,7 +13973,7 @@ var $$IMU_EXPORT$$;
 					// Tumblr homepage
 					var currentel = options.element;
 					while ((currentel = currentel.parentElement)) {
-						if (currentel.tagName === "DIV" && currentel.getAttribute("data-json")) {
+						if ((currentel.tagName === "DIV" || currentel.tagName === "ARTICLE") && currentel.getAttribute("data-json")) {
 							var jsondata = currentel.getAttribute("data-json");
 							try {
 								var json = JSON_parse(jsondata);
