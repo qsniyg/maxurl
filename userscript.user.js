@@ -10346,6 +10346,9 @@ var $$IMU_EXPORT$$;
 			  // https://imgix.romper.com/2016/8/22/584902004.jpg?w=640&fit=max&auto=format&q=70
 			  domain === "imgix.romper.com") &&
 			 !src.match(/[?&]s=[^/]*$/)) ||
+			// https://stream-cloud-uploads.imgix.net/images/44430/90a03829-cc48-4211-a285-8b68006502b1.68D6A70A-1FC6-4DBA-BF4C-81D80934E9B7.jpeg?ro=0&s=5f6ef1dd7da8506302abf5387073024c&w=740&auto=format&fit=max
+			// seems like &s= can be removed here
+			domain === "stream-cloud-uploads.imgix.net" ||
 
 			// http://hmg-prod.s3.amazonaws.com/images/bgus-1060427-037-1-1510856807.jpg
 			// http://s3.amazonaws.com/hmg-prod/images/bgus-1060427-037-1-1510856807.jpg
@@ -57007,6 +57010,21 @@ var $$IMU_EXPORT$$;
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+file\.php\?(?:.*&)?img=(http[^&]+)(?:[#].*)?$/, "$1");
 			if (newsrc !== src)
 				return decodeuri_ifneeded(newsrc);
+		}
+
+		if (domain === "blob.freent.de") {
+			// https://blob.freent.de/image/7755064/847x565/847/565/b0/dc2b1c591f5745af166d2888e7546f75/XX/imago0097248969h-jpg.jpg
+			//   https://blob.freent.de/contentblob/7755064/original/imago0097248969h-jpg.jpg
+			// https://blob.freent.de/image/7755964/630x421/630/421/b0/4be23d1bd34b90f65344192d8f652b62/UT/leipzig-urn-newsml-dpa-com-20090101-200420-99-763761.jpg
+			//   https://blob.freent.de/contentblob/7755964/original/leipzig-urn-newsml-dpa-com-20090101-200420-99-763761.jpg
+			// doesn't work for all:
+			// https://blob.freent.de/image/5545356/1220x814/1220/814/b0/466626b2e20df8434dda170324d627fd/NH/sexy-em-fans--76--jpg.jpg -- /1/original/ doesn't wor keither
+			// other:
+			// https://blob.freent.de/contentblob/4495602/2/data/jan-sperlich.jpg
+			// https://blob.freent.de/contentblob/754510/7/original/der-fitnesswahn-der-stars-13-zellweger.jpg
+			//   https://blob.freent.de/contentblob/754510/7/teaserImg847x565/der-fitnesswahn-der-stars-13-zellweger.jpg -- same size
+			return src.replace(/\/image\/+([0-9]+)\/+[0-9]+x[0-9]+\/+[0-9]+\/+[0-9]+\/+[0-9a-f]{2}\/+[0-9a-f]{10,}\/+[^/]+\/+([^/]+)(?:[?#].*)?$/,
+								"/contentblob/$1/original/$2");
 		}
 
 
