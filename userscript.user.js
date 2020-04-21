@@ -10127,6 +10127,12 @@ var $$IMU_EXPORT$$;
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+(vi\/+.*?)(?:[?#].*)?$/, "https://i.ytimg.com/$1");
 			if (newsrc !== src)
 				return newsrc;
+
+			// https://invidio.us/ggpht/a/AATXAJwaxE0nOWJviTyjNG-tjzryyOoCjXhwoPv4Lg=s48-c-k-c0xffffffff-no-rj-mo
+			//   https://lh4.ggpht.com/a/AATXAJwaxE0nOWJviTyjNG-tjzryyOoCjXhwoPv4Lg=s0?imgmax=0
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+ggpht\/+(.*?)(?:[?#].*)?$/, "https://lh4.ggpht.com/$1");
+			if (newsrc !== src)
+				return newsrc;
 		}
 
 		if (domain === "image.bugsm.co.kr") {
