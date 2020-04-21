@@ -10122,6 +10122,13 @@ var $$IMU_EXPORT$$;
 			return src.replace(/.*\/vimg\.php\?(?:.*?&)?v=([^&]*).*?$/, "https://i.ytimg.com/vi/$1/mqdefault.jpg");
 		}
 
+		if (domain_nowww === "invidio.us") {
+			// https://invidio.us/vi/814QFJ4mDaM/mqdefault.jpg
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+(vi\/+.*?)(?:[?#].*)?$/, "https://i.ytimg.com/$1");
+			if (newsrc !== src)
+				return newsrc;
+		}
+
 		if (domain === "image.bugsm.co.kr") {
 			// blank image: (?version= doesn't impact)
 			// https://image.bugsm.co.kr/artist/images/200/200498/20049877.jpg?version=20180108002103
@@ -57034,6 +57041,12 @@ var $$IMU_EXPORT$$;
 			//   https://blob.freent.de/contentblob/754510/7/teaserImg847x565/der-fitnesswahn-der-stars-13-zellweger.jpg -- same size
 			return src.replace(/\/image\/+([0-9]+)\/+[0-9]+x[0-9]+\/+[0-9]+\/+[0-9]+\/+[0-9a-f]{2}\/+[0-9a-f]{10,}\/+[^/]+\/+([^/]+)(?:[?#].*)?$/,
 								"/contentblob/$1/original/$2");
+		}
+
+		if (domain_nosub === "cdnsw.com" && /^mfs[0-9]*\./.test(domain)) {
+			// http://mfs0.cdnsw.com/fs/Root/normal/9swke-katy_perry_est_ravissante_meme_quand_elle_grimace_30436_w460.jpg
+			//   http://mfs0.cdnsw.com/fs/Root/9swke-katy_perry_est_ravissante_meme_quand_elle_grimace_30436_w460.jpg
+			return src.replace(/\/fs\/+Root\/+[a-z]+\/+/, "/fs/Root/");
 		}
 
 
