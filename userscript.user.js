@@ -27477,6 +27477,9 @@ var $$IMU_EXPORT$$;
 			// https://b2bm.s3.amazonaws.com/styles/default_image/s3/karliekloss_0.jpg?itok=NpNCqZJv
 			//   https://b2bm.s3.amazonaws.com/karliekloss_0.jpg?itok=NpNCqZJv
 			amazon_container === "b2bm" ||
+			// https://looppacificassets.s3.amazonaws.com/styles/carousel_large/s3/thumbnails/image/taylor_swift_plays_the_hits_then_runs_in_swansea.jpg?itok=VEhQSs-s
+			//   https://looppacificassets.s3.amazonaws.com/thumbnails/image/taylor_swift_plays_the_hits_then_runs_in_swansea.jpg?itok=VEhQSs-s
+			amazon_container === "looppacificassets" ||
 			// https://kpopimg.s3.amazonaws.com/styles/article_image/s3/eunice-dia.jpg?itok=5JoH8xh6
 			//   https://kpopimg.s3.amazonaws.com/eunice-dia.jpg?itok=5JoH8xh6
 			amazon_container === "kpopimg") {
@@ -57053,6 +57056,33 @@ var $$IMU_EXPORT$$;
 			// http://mfs0.cdnsw.com/fs/Root/normal/9swke-katy_perry_est_ravissante_meme_quand_elle_grimace_30436_w460.jpg
 			//   http://mfs0.cdnsw.com/fs/Root/9swke-katy_perry_est_ravissante_meme_quand_elle_grimace_30436_w460.jpg
 			return src.replace(/\/fs\/+Root\/+[a-z]+\/+/, "/fs/Root/");
+		}
+
+		if (domain_nowww === "kupidon-rf.ru") {
+			// http://kupidon-rf.ru/uploads/news-logo/2018/05/28/487/small-27a4847cf9.jpg
+			//   http://kupidon-rf.ru/uploads/news-logo/2018/05/28/487/27a4847cf9.jpg
+			return src.replace(/(\/uploads\/+[^/]+\/+[0-9]{4}\/+[0-9]{2}\/+[0-9]{2}\/+[0-9]+\/+)[a-z]+-([0-9a-f]{5,}\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "fondecranmagique.com") {
+			// http://www.fondecranmagique.com/actrices/keiraknightley/min/29.jpg
+			//   http://www.fondecranmagique.com/actrices/keiraknightley/29.jpg
+			return src.replace(/\/min\/+([0-9]+\.[^/.]+)(?:[?#].*)?$/, "/$1");
+		}
+
+		if (domain_nowww === "photohost.ru") {
+			// http://www.photohost.ru/t/180/180/204077.jpg
+			//   http://www.photohost.ru/pictures/204077.jpg
+			return src.replace(/\/t\/+[0-9]+\/+[0-9]+\/+/, "/pictures/");
+		}
+
+		if (domain_nosub === "sat1.de" && /^i[0-9]*-img\./.test(domain)) {
+			// https://i3-img.sat1.de/pis/ezone/abcbqgELB38wdEB-ZftQHfHFPn4ON1n0D0sNVdu9-eaKOYcH3fC38cLwzxDoWvxer7dXH5GTyTa-ePfvcETmautfZZfzflW2ioM/profile:mag-maxwidth-1280?source
+			//   https://i3-img.sat1.de/pis/ezone/abcbqgELB38wdEB-ZftQHfHFPn4ON1n0D0sNVdu9-eaKOYcH3fC38cLwzxDoWvxer7dXH5GTyTa-ePfvcETmautfZZfzflW2ioM/profile:original?source
+			return {
+				url: src.replace(/\/profile:[^/]+(?:[?#].*)?$/, "/profile:original?source"),
+				can_head: false // 403
+			};
 		}
 
 
