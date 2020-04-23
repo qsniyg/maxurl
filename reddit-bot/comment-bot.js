@@ -54,6 +54,12 @@ if (true) {
 				console.log(comment);
 
 				r.getComment(comment).fetch().then((comment_data) => {
+					if (!comment_data) {
+						console.log("Unable to fetch comment data for " + comment);
+						message_data.deleteFromInbox();
+						return;
+					}
+
 					if (!comment_data.author ||
 						comment_data.author.name === "[deleted]") {
 						console.log("Removing message for " + comment);
