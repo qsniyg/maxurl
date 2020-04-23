@@ -521,13 +521,13 @@ function dourl_inner(big, url, post, options, cb) {
 										});
 									}
 
-									if (options.report_post) {
+									if (options.lock_post) {
 										operations.push(function(comment_data) {
 											return post.lock();
 										});
 									}
 
-									if (options.lock_post) {
+									if (options.report_post) {
 										operations.push(function(comment_data) {
 											return post.report({
 												reason: options.report_post
