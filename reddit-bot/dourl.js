@@ -521,6 +521,12 @@ function dourl_inner(big, url, post, options, cb) {
 										});
 									}
 
+									if (options.remove_post) {
+										operations.push(function(comment_data) {
+											return post.remove();
+										});
+									}
+
 									var run_operation = function() {
 										if (operations.length === 0) {
 											if (cb) {
@@ -591,6 +597,7 @@ var base_options = {
 	lock_comment: false,
 	sticky_comment: false,
 	distinguish_comment: false,
+	remove_post: false,
 	explain_original: true,
 	original_page: true,
 	blacklist: blacklist,
