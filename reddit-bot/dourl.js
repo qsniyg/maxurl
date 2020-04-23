@@ -480,25 +480,70 @@ function dourl_inner(big, url, post, options, cb) {
 										logged = true;
 									}
 
-									if (options.removable) {
-										// np.reddit.com to avoid the "no participation" warning
-										if (sections.length > 0) {
-											comment += " | ";
+									var operations = [];
+
+									var semifinal_cb = function(comment_data) {
+										if (options.lock_comment) {
+											comment_data.lock();
 										}
 
-										comment_data.edit(
-											//comment + "&nbsp;|&nbsp;[remove](https://np.reddit.com/message/compose/?to=MaxImageBot&subject=delete:+" + comment_data.id + "&message=If%20you%20are%20the%20one%20who%20submitted%20the%20post%2C%20it%20should%20be%20deleted%20within%20~20%20seconds.%20If%20it%20isn%27t%2C%20please%20check%20the%20FAQ%3A%20https%3A%2F%2Fnp.reddit.com%2Fr%2FMaxImage%2Fcomments%2F8znfgw%2Ffaq%2F)"
-											comment + "[remove](https://np.reddit.com/message/compose/?to=MaxImageBot&subject=delete:+" + comment_data.id + "&message=If%20you%20are%20the%20one%20who%20submitted%20the%20post%2C%20it%20should%20be%20deleted%20within%20~20%20seconds.%20If%20it%20isn%27t%2C%20please%20check%20the%20FAQ%3A%20" + encodeURIComponent(faq_link) + ")"
-										).then(() => {
-											if (cb) {
-												cb(comment_data);
-											}
-										});
-									} else {
 										if (cb) {
 											cb(comment_data);
 										}
+									};
+
+									if (options.removable) {
+										operations.push(function(comment_data) {
+											if (sections.length > 0) {
+												comment += " | ";
+											}
+
+											// np.reddit.com to avoid the "no participation" warning
+											return comment_data.edit(
+												//comment + "&nbsp;|&nbsp;[remove](https://np.reddit.com/message/compose/?to=MaxImageBot&subject=delete:+" + comment_data.id + "&message=If%20you%20are%20the%20one%20who%20submitted%20the%20post%2C%20it%20should%20be%20deleted%20within%20~20%20seconds.%20If%20it%20isn%27t%2C%20please%20check%20the%20FAQ%3A%20https%3A%2F%2Fnp.reddit.com%2Fr%2FMaxImage%2Fcomments%2F8znfgw%2Ffaq%2F)"
+												comment + "[remove](https://np.reddit.com/message/compose/?to=MaxImageBot&subject=delete:+" + comment_data.id + "&message=If%20you%20are%20the%20one%20who%20submitted%20the%20post%2C%20it%20should%20be%20deleted%20within%20~20%20seconds.%20If%20it%20isn%27t%2C%20please%20check%20the%20FAQ%3A%20" + encodeURIComponent(faq_link) + ")"
+											);
+										});
 									}
+
+									if (options.lock_comment) {
+										operations.push(function(comment_data) {
+											return comment_data.lock();
+										});
+									}
+
+									if (options.sticky_comment || options.distinguish_comment) {
+										operations.push(function(comment_data) {
+											return comment_data.distinguish({
+												status: true, // needs to be distinguished regardless to be sticky
+												sticky: options.sticky_comment
+											});
+										});
+									}
+
+									var run_operation = function() {
+										if (operations.length === 0) {
+											if (cb) {
+												cb(comment_data);
+											}
+										} else {
+											var current_op = operations.shift();
+
+											current_op(comment_data).then(
+												new_comment_data => {
+													// doesn't work for .edit()
+													//comment_data = new_comment_data;
+													run_operation();
+												},
+												error => {
+													console.error(error);
+													run_operation();
+												}
+											);
+										}
+									};
+
+									run_operation();
 								});
 							} catch (e) {
 								console.error(e);
@@ -543,6 +588,9 @@ function dourl_inner(big, url, post, options, cb) {
 var base_options = {
 	exclude_mod: false,
 	removable: true,
+	lock_comment: false,
+	sticky_comment: false,
+	distinguish_comment: false,
 	explain_original: true,
 	original_page: true,
 	blacklist: blacklist,
