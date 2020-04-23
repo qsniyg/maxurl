@@ -102,6 +102,11 @@ function inblacklist(x, blacklist) {
 	return black;
 }
 
+function inuserblacklist(x, blacklist) {
+	x = x.toLowerCase();
+	return blacklist.indexOf(x) >= 0;
+}
+
 var base_headers = {
 	"User-Agent": 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.106 Safari/537.36',
 	"Pragma": 'no-cache',
@@ -273,6 +278,11 @@ function dourl_inner(big, url, post, options, cb) {
 		console.log("Post blacklisted:\n" + post.title + "\n" + post.permalink + "\n" + post.url + "\n=====\n\n");
 		log_entry.blacklisted = true;
 		log(log_entry);
+		return;
+	}
+
+	if (options.user_blacklist && post && inuserblacklist(post.author.name, options.user_blacklist)) {
+		console.log("User blacklisted: " + post.author.name);
 		return;
 	}
 
@@ -536,6 +546,7 @@ var base_options = {
 	explain_original: true,
 	original_page: true,
 	blacklist: blacklist,
+	user_blacklist: [],
 	only_original: false,
 	allow_nsfw: true,
 	add_about_link: true,
