@@ -523,6 +523,12 @@ function dourl_inner(big, url, post, options, cb) {
 
 									if (options.report_post) {
 										operations.push(function(comment_data) {
+											return post.lock();
+										});
+									}
+
+									if (options.lock_post) {
+										operations.push(function(comment_data) {
 											return post.report({
 												reason: options.report_post
 											});
@@ -607,6 +613,7 @@ var base_options = {
 	distinguish_comment: false,
 	remove_post: false,
 	report_post: false,
+	lock_post: false,
 	explain_original: true,
 	original_page: true,
 	blacklist: blacklist,

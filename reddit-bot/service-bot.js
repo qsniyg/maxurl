@@ -57,6 +57,7 @@ function parse_wiki_doc(doc, options) {
 		"lock_comment": true,
 		"sticky_comment": true,
 		"distinguish_comment": true,
+		"lock_post": true,
 		"remove_post": true,
 		//"report_post": "text",
 		"explain_original": true,
