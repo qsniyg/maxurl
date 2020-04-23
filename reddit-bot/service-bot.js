@@ -60,6 +60,7 @@ function parse_wiki_doc(doc, options) {
 		"lock_post": true,
 		"remove_post": true,
 		//"report_post": "text",
+		//"set_flair": "array",
 		"explain_original": true,
 		"original_page": true,
 		//"blacklisted_words": "blacklist",
@@ -112,6 +113,10 @@ function parse_wiki_doc(doc, options) {
 
 	if ("report_post" in doc && typeof doc.report_post === "string" && doc.report_post.length > 0) {
 		options.report_post = doc.report_post;
+	}
+
+	if ("set_post_flair" in doc && Array.isArray(doc.set_post_flair) && (doc.set_post_flair.length === 1 || doc.set_post_flair.length === 2)) {
+		options.set_post_flair = doc.set_post_flair;
 	}
 }
 

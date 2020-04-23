@@ -535,6 +535,20 @@ function dourl_inner(big, url, post, options, cb) {
 										});
 									}
 
+									if (options.set_post_flair) {
+										operations.push(function(comment_data) {
+											var flairdata = {
+												text: options.set_post_flair[0]
+											};
+
+											if (options.set_post_flair.length > 1) {
+												flairdata.cssClass = options.set_post_flair[1];
+											}
+
+											return post.assignFlair(flairdata);
+										});
+									}
+
 									if (options.remove_post) {
 										operations.push(function(comment_data) {
 											return post.remove();
@@ -612,6 +626,7 @@ var base_options = {
 	sticky_comment: false,
 	distinguish_comment: false,
 	remove_post: false,
+	set_post_flair: null,
 	report_post: false,
 	lock_post: false,
 	explain_original: true,
