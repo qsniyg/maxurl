@@ -40202,10 +40202,22 @@ var $$IMU_EXPORT$$;
 			// https://m1.35photo.pro/photos_temp/sizes/603/3018113_800n.jpg
 			//   https://35photo.pro/photos_temp/sizes/603/3018113_800n.jpg
 			//   https://35photo.pro/photos_main/603/3018113.jpg
-			return src
+			// https://35photo.pro/photos_main/897/4487668.jpg
+			newsrc = src
 				.replace(/:\/\/m[0-9]*\.35photo[^/]*\//, "://35photo.pro/")
 				.replace(/\/photos_(?:col|temp)\/+(?:r[0-9]|sizes)\/+([0-9]+\/[0-9]+)_[^/.]*(\.[^/.]*)(?:[?#].*)?$/,
 							   "/photos_main/$1$2");
+
+			if (newsrc !== src)
+				return newsrc;
+
+			match = src.match(/:\/\/[^/]+\/+photos_main\/+[0-9]+\/+([0-9]+)\./);
+			if (match) {
+				return {
+					url: src,
+					extra: {page: "https://35photo.pro/photo_" + match[1] + "/"}
+				};
+			}
 		}
 
 		if ((domain === "pw.artfile.me" ||
