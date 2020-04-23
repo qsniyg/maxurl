@@ -215,6 +215,11 @@ function npify(text) {
 	return text.replace(/:\/\/www\.reddit\./g, "://np.reddit.");
 }
 
+function post_in_moderated(post) {
+	// TODO: improve?
+	return "approved" in post;
+}
+
 function dourl_inner(big, url, post, options, cb) {
 	//console.dir(JSON.parse(JSON.stringify(post)));
 
@@ -250,8 +255,15 @@ function dourl_inner(big, url, post, options, cb) {
 		return;
 	}
 
-	if (post && post.over_18 && !options.allow_nsfw)
+	if (post && post.over_18 && !options.allow_nsfw) {
+		console.log("Post is NSFW, disallowed by options");
 		return;
+	}
+
+	if (post && options.exclude_mod && post_in_moderated(post)) {
+		console.log("Post is in moderated subreddit, excluding");
+		return;
+	}
 
 	/*if (big === url) {
 	  return;
@@ -519,6 +531,7 @@ function dourl_inner(big, url, post, options, cb) {
 }
 
 var base_options = {
+	exclude_mod: false,
 	removable: true,
 	explain_original: true,
 	original_page: true,

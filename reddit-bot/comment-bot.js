@@ -100,7 +100,8 @@ if (true) {
 
 		var options = {
 			imgur_ua: env_json.imgur_ua,
-			imgur_cookie: env_json.imgur_cookie
+			imgur_cookie: env_json.imgur_cookie,
+			exclude_mod: true
 		};
 
 		if (post.subreddit.display_name) {
