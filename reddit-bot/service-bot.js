@@ -58,6 +58,7 @@ function parse_wiki_doc(doc, options) {
 		"sticky_comment": true,
 		"distinguish_comment": true,
 		"remove_post": true,
+		//"report_post": "text",
 		"explain_original": true,
 		"original_page": true,
 		//"blacklisted_words": "blacklist",
@@ -106,6 +107,10 @@ function parse_wiki_doc(doc, options) {
 
 	if ("min_pixels" in doc && is_number(doc.min_pixels)) {
 		options.thresh_px = parseInt(doc.min_pixels);
+	}
+
+	if ("report_post" in doc && typeof doc.report_post === "string" && doc.report_post.length > 0) {
+		options.report_post = doc.report_post;
 	}
 }
 
