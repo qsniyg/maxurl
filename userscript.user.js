@@ -9694,6 +9694,8 @@ var $$IMU_EXPORT$$;
 			// https://pbs.twimg.com/media/ESHsHpCXkAA2xfZ.png
 			//   https://pbs.twimg.com/media/ESHsHpCXkAA2xfZ.jpg?name=orig
 			// https://pbs.twimg.com/media/EUEKr-gUYAMrXt_?format=jpg&name=900x900
+			// https://pbs.twimg.com/media/EWHdLzNUwAIy7Ik.jpg:orig -- works (1368x2048)
+			//   https://pbs.twimg.com/media/EWHdLzNUwAIy7Ik.jpg?name=orig -- doesn't work (404)
 			// 4096x4096 is also a valid "name"
 			// medium == null?
 
@@ -40301,7 +40303,6 @@ var $$IMU_EXPORT$$;
 			},
 			*/
 
-			get_csrf();
 			id = src.replace(/^[a-z]+:\/\/[^/]*\/photo\/+([0-9]+)\/.*$/, "$1");
 			var page = "https://500px.com/photo/" + id + "/";
 			if (id !== src) {
