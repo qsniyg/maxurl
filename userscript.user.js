@@ -31249,6 +31249,9 @@ var $$IMU_EXPORT$$;
 			// http://www.entline.cn/uploadfile/2016/0411/thumb_260_0_20160411034315914.jpg
 			//   http://www.entline.cn/uploadfile/2016/0411/20160411034315914.jpg
 			domain_nowww === "entline.cn" ||
+			// http://img.ixiumei.com/uploadfile/2016/0602/thumb_294_224_20160602105701954.jpg
+			//   http://img.ixiumei.com/uploadfile/2016/0602/20160602105701954.jpg
+			domain === "img.ixiumei.com" ||
 			// http://www.69876.com/uploadfile/2017/0524/thumb_100_137_20170524125326237.jpg
 			//   http://www.69876.com/uploadfile/2017/0524/20170524125326237.jpg
 			domain_nowww === "69876.com") {
@@ -45010,11 +45013,13 @@ var $$IMU_EXPORT$$;
 			domain === "cdn.viral.porn" ||
 			// https://cdn.moar.network/media/38-749/conversions/5c4ba83ed2090-post_archive_thumb.jpg -- upscaled?
 			//   https://cdn.moar.network/media/38-749/5c4ba83ed2090.jpeg
+			// https://cdn.moar.network/media/115-20280/conversions/5e1b37e35656e7pLgp9945-post_archive_thumb.jpg
+			//   https://cdn.moar.network/media/115-20280/5e1b37e35656e7pLgp9945.jpeg -- upscaled?
 			domain === "cdn.moar.network" ||
 			domain === "cdn.nsfw.exchange") {
 			// https://cdn.moar.exchange/media/38-8310/conversions/5ce759d7db688-post_archive_thumb.jpg
 			//   https://cdn.moar.exchange/media/38-8310/5ce759d7db688.jpeg
-			return add_full_extensions(src.replace(/(\/media\/+[0-9]+-[0-9]+\/+)conversions\/+([0-9a-f]+)-[^-/.]*(\.[^/.]*)(?:[?#].*)?$/,
+			return add_full_extensions(src.replace(/(\/media\/+[0-9]+-[0-9]+\/+)conversions\/+([0-9a-zA-Z]+)-[^-/.]*(\.[^/.]*)(?:[?#].*)?$/,
 												   "$1$2$3"));
 		}
 
@@ -57096,6 +57101,12 @@ var $$IMU_EXPORT$$;
 				url: src.replace(/\/profile:[^/]+(?:[?#].*)?$/, "/profile:original?source"),
 				can_head: false // 403
 			};
+		}
+
+		if (domain === "m.gjcdn.net") {
+			// https://m.gjcdn.net/screenshot-thumbnail/300x2000/828783-v4.jpg
+			//   https://m.gjcdn.net/screenshot-thumbnail/999999999x999999999/828783-v4.jpg
+			return src.replace(/\/screenshot-thumbnail\/+[0-9]+x[0-9]+\/+/, "/screenshot-thumbnail/999999999x999999999/");
 		}
 
 
