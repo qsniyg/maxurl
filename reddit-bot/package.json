@@ -11,6 +11,6 @@
     "probe-image-size": "git+https://github.com/qsniyg/probe-image-size.git",
     "request": "^2.88.0",
     "snoostorm": "0.0.5",
-    "snoowrap": "^1.15.2"
+    "snoowrap": "^1.21.0"
   }
 }
