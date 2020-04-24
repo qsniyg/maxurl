@@ -21324,11 +21324,44 @@ var $$IMU_EXPORT$$;
 				});
 			};
 
+			var tiktok_finalcb = function(obj) {
+				var videourl = obj.url;
+				common_functions.set_tiktok_vid_filename(obj)
+
+				if (options.rule_specific && options.rule_specific.tiktok_no_watermarks) {
+					common_functions.get_best_tiktok_url(api_cache, do_request, videourl, function(newurl) {
+						if (newurl) {
+							videourl = newurl;
+							obj.url = videourl;
+						}
+
+						if (!common_functions.set_tiktok_vid_filename(obj)) {
+							delete obj.filename;
+						}
+
+						return options.cb(obj);
+					});
+				} else {
+					return options.cb(obj);
+				}
+			};
+
 			var current = options.element;
 			while (current) {
 				if (current.tagName === "A" && /\/@[^/]+\/+video\/+[0-9]+\/*(?:[?#].*)?$/.test(current.href)) {
 					query_tiktok(current.href, function(data) {
+						// some tiktok users' videos return 404
 						if (!data) {
+							var video_query = current.querySelector("video");
+							if (video_query && video_query.src && /muscdn\.com\//.test(video_query.src)) {
+								var obj = {
+									url: video_query.src,
+									video: true
+								};
+
+								return tiktok_finalcb(obj);
+							}
+
 							return options.cb(null);
 						}
 
@@ -21345,24 +21378,7 @@ var $$IMU_EXPORT$$;
 								video: true
 							};
 
-							common_functions.set_tiktok_vid_filename(obj)
-
-							if (options.rule_specific && options.rule_specific.tiktok_no_watermarks) {
-								common_functions.get_best_tiktok_url(api_cache, do_request, videourl, function(newurl) {
-									if (newurl) {
-										videourl = newurl;
-										obj.url = videourl;
-									}
-
-									if (!common_functions.set_tiktok_vid_filename(obj)) {
-										delete obj.filename;
-									}
-
-									return options.cb(obj);
-								});
-							} else {
-								return options.cb(obj);
-							}
+							return tiktok_finalcb(obj);
 						} catch (e) {
 							console_error(e);
 							return options.cb(null);
@@ -57105,7 +57121,7 @@ var $$IMU_EXPORT$$;
 
 		if (domain === "m.gjcdn.net") {
 			// https://m.gjcdn.net/screenshot-thumbnail/300x2000/828783-v4.jpg
-			//   https://m.gjcdn.net/screenshot-thumbnail/999999999x999999999/828783-v4.jpg
+			//   https://m.gjcdn.net/screenshot-thumbnail/999999999x999999999/828783-v4.jpg -- x999* isn't needed
 			// https://m.gjcdn.net/game-header/2000/479495-crop0_63_1500_438-euam8zeu-v4.jpg
 			//   https://m.gjcdn.net/game-header/999999999/479495-euam8zeu-v4.jpg
 			// https://m.gjcdn.net/game-thumbnail/200/451063-crop464_491_1512_1080-cxiru8mh-v4.png
