@@ -76,6 +76,13 @@ if (true) {
 						return;
 					}
 
+					//console.log(comment_data);
+					if (comment_data.body.indexOf(comment) < 0) {
+						console.log("Comment id", comment, "isn't in MaxImageBot's message");
+						message_data.deleteFromInbox();
+						return;
+					}
+
 					r.getComment(comment_data.parent_id).fetch().then((post_data) => {
 						if (!post_data.author ||
 							!message_data.author ||
