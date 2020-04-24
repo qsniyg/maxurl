@@ -35,7 +35,10 @@ function is_number(n) {
 	if (typeof n === "number")
 		return true;
 
-	if (typeof n === "string" && /^(?:[0-9]+|[0-9]*\.[0-9]+)$/.test(n)) {
+	if (typeof n === "string" && /^(?:[0-9]+|[0-9]+\.[0-9]+)$/.test(n)) {
+		if (n.length > 30)
+			return false;
+
 		return true;
 	}
 
