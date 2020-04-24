@@ -377,15 +377,22 @@ function dourl_inner(big, url, post, options, cb) {
 
 						times += " larger";
 
+						var comment = "";
+
 						var filesize_text = "";
 						var mbs = newdata.length / 1024 / 1024;
 						if (mbs > 2) {
 							filesize_text = ", " + mbs.toFixed(1) + "MB";
 						}
+
 						var linkcomment = "";
 						if (options.shocking)
 							linkcomment = " (click at your own risk...)";
-						var comment = times + " (" + parseInt(newdata.width) + "x" + parseInt(newdata.height) + filesize_text + ") version of linked image:\n\n";
+
+						if (options.comment_header)
+							comment += options.comment_header + "\n\n";
+
+						comment += times + " (" + parseInt(newdata.width) + "x" + parseInt(newdata.height) + filesize_text + ") version of linked image:\n\n";
 						comment += "[" + newdata.url
 							.replace(/\\/g, "\\\\")
 							.replace(/_/g, "\\_")
@@ -635,6 +642,7 @@ var base_options = {
 	user_blacklist: [],
 	only_original: false,
 	allow_nsfw: true,
+	comment_header: null,
 	add_about_link: true,
 	add_imu_links: true,
 	imgur_ua: null,
