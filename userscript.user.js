@@ -57106,7 +57106,13 @@ var $$IMU_EXPORT$$;
 		if (domain === "m.gjcdn.net") {
 			// https://m.gjcdn.net/screenshot-thumbnail/300x2000/828783-v4.jpg
 			//   https://m.gjcdn.net/screenshot-thumbnail/999999999x999999999/828783-v4.jpg
-			return src.replace(/\/screenshot-thumbnail\/+[0-9]+x[0-9]+\/+/, "/screenshot-thumbnail/999999999x999999999/");
+			// https://m.gjcdn.net/game-header/2000/479495-crop0_63_1500_438-euam8zeu-v4.jpg
+			//   https://m.gjcdn.net/game-header/999999999/479495-euam8zeu-v4.jpg
+			// https://m.gjcdn.net/game-thumbnail/200/451063-crop464_491_1512_1080-cxiru8mh-v4.png
+			//   https://m.gjcdn.net/game-thumbnail/999999999/451063-cxiru8mh-v4.png
+			return src
+				.replace(/\/screenshot-thumbnail\/+[0-9]+x[0-9]+\/+/, "/screenshot-thumbnail/999999999x999999999/")
+				.replace(/\/(game-(?:header|thumbnail))\/+[0-9]+\/+([0-9]+-)(?:crop[0-9]+(?:_[0-9]+){3}-)?/, "/$1/999999999/$2");
 		}
 
 
