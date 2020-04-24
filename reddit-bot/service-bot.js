@@ -60,7 +60,7 @@ function parse_wiki_doc(doc, options) {
 		"lock_post": true,
 		"remove_post": true,
 		"report_post": "text",
-		//"set_flair": "array",
+		//"set_post_flair": "array",
 		"explain_original": true,
 		"original_page": true,
 		//"blacklisted_words": "blacklist",
@@ -115,11 +115,19 @@ function parse_wiki_doc(doc, options) {
 	}
 
 	if ("min_ratio" in doc && is_number(doc.min_ratio)) {
-		options.min_ratio = parseFloat(doc.min_ratio);
+		var value = parseFloat(doc.min_ratio);
+		if (isNaN(value) || value < 1)
+			value = 1;
+
+		options.min_ratio = value;
 	}
 
 	if ("min_pixels" in doc && is_number(doc.min_pixels)) {
-		options.thresh_px = parseInt(doc.min_pixels);
+		var value = parseInt(doc.min_pixels);
+		if (isNaN(value) || value < 0)
+			value = 0;
+
+		options.thresh_px = value;
 	}
 
 	/*if ("report_post" in doc && typeof doc.report_post === "string" && doc.report_post.length > 0) {
