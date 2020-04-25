@@ -30132,6 +30132,12 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(:\/\/[^/]*\/)(?:in|out)\/[0-9]+x[0-9]+\//, "$1");
 		}
 
+		if (domain_nosub === "luscious.net" && /^w[0-9]+\./.test(domain)) {
+			// https://w100.luscious.net/Piclocked/316083/29737493_385675231951060_2443315356056420352_n_01CHCAG9S2B6ZYCNE0STTDBZP3.100x100.jpg
+			//   https://cdnio.luscious.net/Piclocked/316083/29737493_385675231951060_2443315356056420352_n_01CHCAG9S2B6ZYCNE0STTDBZP3.jpg
+			return src.replace(/^[a-z]+:\/\/[^/]+\/+/, "https://cdnio.luscious.net/");
+		}
+
 		if (domain_nosub === "luscious.net" &&
 			domain.match(/cdn[a-z]*\.luscious\.net/)) {
 			// https://cdnio.luscious.net/Piclocked/316083/29737493_385675231951060_2443315356056420352_n_01CHCAG9S2B6ZYCNE0STTDBZP3.100x100.jpg
@@ -50264,6 +50270,15 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/img\/+[0-9]+(?:\/+|-))[^/]*((?:\/+|-)[0-9]+[^0-9])/, "$1origin$2");
 		}
 
+		if (domain === "img.ngfiles.com") {
+			// https://img.ngfiles.com/icons/hovers/rankandrate.png?cached=1578181342
+			if (/\/icons\/+hovers\/+[a-z]+\.png/.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
+		}
+
 		if (domain === "uimg.ngfiles.com") {
 			// https://uimg.ngfiles.com/icons/7097/7097354_small.png?f1547808730
 			//   https://uimg.ngfiles.com/icons/7097/7097354_large.png?f1547808730
@@ -50272,6 +50287,113 @@ var $$IMU_EXPORT$$;
 			//   https://www.newgrounds.com/art/view/grillhou5e/jesus-quintana
 			//   https://art.ngfiles.com/images/1017000/1017695_grillhou5e_jesus-quintana.png?f1567918067
 			return src.replace(/(\/icons\/+[0-9]+\/+[0-9]+_)(?:small|medium)\./, "$1large.")
+		}
+
+		if (domain === "art.ngfiles.com") {
+			// https://art.ngfiles.com/thumbnails/779000/779568_full.jpg?f1551377356
+			//   https://art.ngfiles.com/images/779000/779568_incaseart_the-invitation-chapter-2-page-1.jpg?f1547047570
+
+			newsrc = src.replace(/(\/thumbnails\/+[0-9]+\/+[0-9]+)\./, "$1_full.");
+			if (newsrc !== src)
+				return newsrc;
+
+			var get_origpage_for_ngart = function(id, cb) {
+				var cache_key = "ngart_page:" + id;
+				api_cache.fetch(cache_key, cb, function(done) {
+					options.do_request({
+						url: "https://www.newgrounds.com/content/share/" + id + "/4", // 4 = art?, 3 = audio
+						method: "GET",
+						onload: function(resp) {
+							if (resp.readyState !== 4)
+								return;
+
+							if (resp.status !== 200) {
+								console_error(cache_key, resp);
+								return done(null, false);
+							}
+
+							var match = resp.responseText.match(/<div\s+class=["']embed-link["'][\s\S]{10,100}<input\s+type="text"\s+value=["']([^"']+)/);
+							if (!match) {
+								console_error(cache_key, "Unable to find match for", resp);
+								return done(null, false);
+							}
+
+							return done(decode_entities(match[1]), 12*60*60);
+						}
+					});
+				});
+			};
+
+			var get_orig_from_ngartpage = function(pageurl, cb) {
+				var cache_key = "ngart_orig:" + pageurl;
+				api_cache.fetch(cache_key, cb, function(done) {
+					options.do_request({
+						url: pageurl,
+						method: "GET",
+						onload: function(resp) {
+							if (resp.readyState !== 4)
+								return;
+
+							if (resp.status !== 200) {
+								console_error(cache_key, resp);
+								return done(null, false);
+							}
+
+							var match = resp.responseText.match(/PHP\.merge\(({.*?"full_image_text":.*?})\);/);
+							if (!match) {
+								console_error(cache_key, "Unable to find match for", resp);
+								return done(null, false);
+							}
+
+							try {
+								var json = JSON_parse(match[1]);
+								var img = json.full_image_text;
+
+								match = img.match(/src="([^"]+)"/);
+								if (!match) {
+									console_error(cache_key, "Unable to find img match for", img);
+								} else {
+									return done(decode_entities(match[1]), 12*60*60);
+								}
+							} catch (e) {
+								console_error(cache_key, e);
+							}
+
+							return done(null, false);
+						}
+					});
+				});
+			};
+
+			id = src.match(/\/(?:thumbnails|images)\/+[0-9]+\/+([0-9]+)/);
+			if (id && options.do_request && options.cb) {
+				id = id[1];
+				get_origpage_for_ngart(id, function(page) {
+					var obj = {
+						url: src
+					};
+
+					if (page) {
+						obj.extra = {page: page};
+
+						if (src.indexOf("/thumbnails/") >= 0) {
+							return get_orig_from_ngartpage(page, function(url) {
+								if (url) {
+									obj.url = url;
+								}
+
+								return options.cb(obj);
+							});
+						}
+					}
+
+					return options.cb(obj);
+				});
+
+				return {
+					waiting: true
+				};
+			}
 		}
 
 		if (domain_nowww === "pinimg.icu") {
@@ -57129,6 +57251,12 @@ var $$IMU_EXPORT$$;
 			return src
 				.replace(/\/screenshot-thumbnail\/+[0-9]+x[0-9]+\/+/, "/screenshot-thumbnail/999999999x999999999/")
 				.replace(/\/(game-(?:header|thumbnail))\/+[0-9]+\/+([0-9]+-)(?:crop[0-9]+(?:_[0-9]+){3}-)?/, "/$1/999999999/$2");
+		}
+
+		if (domain_nowww === "crosti.ru") {
+			// http://crosti.ru/patterns/00/11/40/4fc8aa7305/thumbnail.jpg
+			//   http://crosti.ru/patterns/00/11/40/4fc8aa7305/picture.jpg
+			return src.replace(/(\/patterns\/+(?:[0-9a-f]{2}\/+){3}[0-9a-f]{5,}\/+)thumbnail(\.[^/.]+)(?:[?#].*)?$/, "$1picture$2");
 		}
 
 
