@@ -5277,7 +5277,7 @@ var $$IMU_EXPORT$$;
 
 				try {
 					var deviation = initialstate["@@entities"].deviation[deviationid];
-					//console_log(deviation);
+					console_log(deviation);
 
 					if (deviation.title)
 						obj.extra.caption = deviation.title;
@@ -5299,12 +5299,22 @@ var $$IMU_EXPORT$$;
 						for (var i = types.length - 1; i >= 0; i--) {
 							var link = null;
 
-							var tokenq = "?token=" + deviation.media.token[0];
+							var tokenid = 0;
+
+							// https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/40458dca-4360-4b4b-8aca-ba831f8db36d/ddsdflz-9484b31e-187e-4761-9724-6853698242a7.png/v1/fill/w_712,h_1123,q_100/morning_sun_by_pegaite_ddsdflz-pre.png
+							// https://www.deviantart.com/pegaite/art/Morning-Sun-833716295
+							if ("r" in types[i] && types[i].r < deviation.media.token.length)
+								tokenid = types[i].r;
+
+							var tokenq = "?token=" + deviation.media.token[tokenid];
 
 							if (types[i].c) {
 								link = deviation.media.baseUri + "/" + types[i].c.replace("<prettyName>", deviation.media.prettyName) + tokenq;
 							} else if (types[i].b) { // e.g. animated gifs
 								link = types[i].b + tokenq;
+							} else if (types[i].t === "fullview" && "r" in types[i]) {
+								// TODO: improve check?
+								link = deviation.media.baseUri + tokenq;
 							}
 
 							// Occasionally this exists for some images, where it instead has:
