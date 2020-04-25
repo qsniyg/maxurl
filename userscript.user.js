@@ -5277,7 +5277,7 @@ var $$IMU_EXPORT$$;
 
 				try {
 					var deviation = initialstate["@@entities"].deviation[deviationid];
-					console_log(deviation);
+					//console_log(deviation);
 
 					if (deviation.title)
 						obj.extra.caption = deviation.title;
