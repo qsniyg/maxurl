@@ -34522,8 +34522,8 @@ var $$IMU_EXPORT$$;
 
 		if (domain === "1.f.ix.de") {
 			// https://1.f.ix.de/scale/geometry/743x453/q85/download/media/suche/tampermonkey-1_1-1-17.jpg
-			// 	 https://heise.cloudimg.io/bound/743x453/q85.webp-lossy-85.foil1/_www-heise-de_/download/media/suche/tampermonkey-1_1-1-17.jpg
-			return src.replace(/.*(\/hdl\/imgs\/)/, "https://www.heise.de:443/$1");
+			// 	 https://www.heise.de/download/media/suche/tampermonkey-1_1-1-17.jpg
+			return src.replace(/.*\/q[\d]{1,2}/, "https://www.heise.de:443/");
 		}
 
 		if (domain_nowww === "kinataka.ru") {
