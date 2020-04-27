@@ -832,6 +832,23 @@ var $$IMU_EXPORT$$;
 		}
 	}
 
+	// native_functions returns iframe
+	var our_EventTarget = EventTarget;
+	var EventTarget_addEventListener = our_EventTarget.prototype.addEventListener;
+	var EventTarget_removeEventListener = our_EventTarget.prototype.removeEventListener;
+
+	var our_addEventListener = function(element, event, handler, options) {
+		// VM compatibility
+		if (element === window && element.unsafeWindow)
+			element = element.unsafeWindow;
+
+		EventTarget_addEventListener.call(element, event, handler, options);
+	};
+
+	var our_removeEventListener = function(element, event, handler, options) {
+		EventTarget_removeEventListener.call(element, event, handler, options);
+	};
+
 	var sanity_test = function(orig, correct, check) {
 		if (!orig)
 			return correct;
@@ -60690,11 +60707,11 @@ var $$IMU_EXPORT$$;
 					document.readyState === "interactive") {
 					cb();
 
-					document.removeEventListener("readystatechange", state_cb);
+					our_removeEventListener(document, "readystatechange", state_cb);
 				}
 			};
 
-			document.addEventListener("readystatechange", state_cb);
+			our_addEventListener(document, "readystatechange", state_cb);
 		}
 	}
 
@@ -63535,16 +63552,18 @@ var $$IMU_EXPORT$$;
 		  unsafeWindow.addEventListener("focusout", resetifout);
 		  unsafeWindow.addEventListener("blur", resetifout);*/
 
-		var disable_click = false;
-		document.addEventListener("click", function(e) {
-			if (disable_click && popups_active && false) {
-				e.stopPropagation();
-				e.stopImmediatePropagation();
+		if (false) {
+			var disable_click = false;
+			document.addEventListener("click", function(e) {
+				if (disable_click && popups_active && false) {
+					e.stopPropagation();
+					e.stopImmediatePropagation();
 
-				return true;
-				//return false;
-			}
-		}, true);
+					return true;
+					//return false;
+				}
+			}, true);
+		}
 
 		var delay = false;
 		var delay_handle = null;
@@ -63609,11 +63628,11 @@ var $$IMU_EXPORT$$;
 					waitingel.style.display = "block";
 				};
 
-				waitingel.addEventListener("click", function(e) {
+				our_addEventListener(waitingel, "click", function(e) {
 					return simevent(e, "click");
 				});
 
-				waitingel.addEventListener("contextmenu", function(e) {
+				our_addEventListener(waitingel, "contextmenu", function(e) {
 					return simevent(e, "contextmenu");
 				});
 
@@ -64108,7 +64127,7 @@ var $$IMU_EXPORT$$;
 						}
 					}
 
-					mask.addEventListener("click", function() {
+					our_addEventListener(mask, "click", function() {
 						if (!settings.mouseover_close_click_outside)
 							return;
 
@@ -64606,13 +64625,13 @@ var $$IMU_EXPORT$$;
 					if (!targetel)
 						targetel = el;
 
-					el.addEventListener("mouseover", function(e) {
+					our_addEventListener(el, "mouseover", function(e) {
 						targetel.style.opacity = "1.0";
 
 						if (action)
 							targetel.style.boxShadow = "0px 0px 5px 1px white";
 					}, true);
-					el.addEventListener("mouseout", function(e) {
+					our_addEventListener(el, "mouseout", function(e) {
 						targetel.style.opacity = get_defaultopacity();
 
 						if (action)
@@ -64634,7 +64653,7 @@ var $$IMU_EXPORT$$;
 						};
 
 						if (typeof action === "function") {
-							btn.addEventListener("click", function(e) {
+							our_addEventListener(btn, "click", function(e) {
 								if (!do_action())
 									return;
 
@@ -64650,31 +64669,31 @@ var $$IMU_EXPORT$$;
 							btn.target = "_blank";
 							btn.setAttribute("rel", "noreferrer");
 
-							btn.addEventListener("click", function(e) {
+							our_addEventListener(btn, "click", function(e) {
 								e.stopPropagation();
 								e.stopImmediatePropagation();
 							}, true);
 						}
 
-						btn.addEventListener("mouseover", function(e) {
+						our_addEventListener(btn, "mouseover", function(e) {
 							set_important_style(btn, "box-shadow", "0px 0px 5px 1px white");
 						}, true);
 
-						btn.addEventListener("mouseout", function(e) {
+						our_addEventListener(btn, "mouseout", function(e) {
 							set_important_style(btn, "box-shadow", "none");
 						}, true);
 					}
 
-					btn.addEventListener("mousedown", function(e) {
+					our_addEventListener(btn, "mousedown", function(e) {
 						btndown = true;
 					}, true);
-					btn.addEventListener("mouseup", function(e) {
+					our_addEventListener(btn, "mouseup", function(e) {
 						btndown = false;
 					}, true);
 					if (!istop) {
 						opacity_hover(btn, undefined, true);
 					} else if (typeof text === "object" && text.truncated !== text.full) {
-						btn.addEventListener("mouseover", function(e) {
+						our_addEventListener(btn, "mouseover", function(e) {
 							var computed_style = get_computed_style(btn);
 							set_important_style(btn, "width", computed_style.width || (btn.clientWidth + "px"));
 
@@ -64682,7 +64701,7 @@ var $$IMU_EXPORT$$;
 
 						}, true);
 
-						btn.addEventListener("mouseout", function(e) {
+						our_addEventListener(btn, "mouseout", function(e) {
 							btn.innerText = text.truncated;
 							btn.style.width = "initial";
 						}, true);
@@ -64928,8 +64947,8 @@ var $$IMU_EXPORT$$;
 						set_important_style(images_total_input, "padding", "1px");
 						set_important_style(images_total_input, "padding-left", "2px");
 						set_important_style(images_total_input, "width", "5em");
-						images_total_input.addEventListener("mouseout", imagestotal_input_disable);
-						images_total_input.addEventListener("keydown", function(e) {
+						our_addEventListener(images_total_input, "mouseout", imagestotal_input_disable);
+						our_addEventListener(images_total_input, "keydown", function(e) {
 							if (e.which === 13) { // enter
 								var parsednum = images_total_input.value.replace(/\s+/g, "");
 								if (/^[0-9]+$/.test(parsednum)) {
@@ -65031,7 +65050,7 @@ var $$IMU_EXPORT$$;
 						lrhover.style.cursor = "pointer";
 
 						opacity_hover(lrhover, btnel, true);
-						lrhover.addEventListener("click", function(e) {
+						our_addEventListener(lrhover, "click", function(e) {
 							if (dragged) {
 								return false;
 							}
@@ -65222,7 +65241,7 @@ var $$IMU_EXPORT$$;
 							}
 						} else {
 							a.href = "#";
-							a.addEventListener("click", function(e) {
+							our_addEventListener(a, "click", function(e) {
 								download_popup_image();
 
 								e.preventDefault();
@@ -68537,11 +68556,11 @@ var $$IMU_EXPORT$$;
 
 			for (var i = 0; i < images.length; i++) {
 				// apparently this isn't needed to ensure no duplicate event listeners?
-				images[i].removeEventListener("mouseover", image_mouseover);
-				images[i].removeEventListener("mouseout", image_mouseout);
+				our_removeEventListener(images[i], "mouseover", image_mouseover);
+				our_removeEventListener(images[i], "mouseout", image_mouseout);
 
-				images[i].addEventListener("mouseover", image_mouseover);
-				images[i].addEventListener("mouseout", image_mouseout);
+				our_addEventListener(images[i], "mouseover", image_mouseover);
+				our_addEventListener(images[i], "mouseout", image_mouseout);
 			}
 
 			if (settings.replaceimgs_auto)
@@ -69206,10 +69225,10 @@ var $$IMU_EXPORT$$;
 			return ret;
 		};
 
-		document.addEventListener('keydown', keydown_cb, true);
-		document.addEventListener('mousedown', keydown_cb, true);
-		document.addEventListener('contextmenu', keydown_cb, true);
-		document.addEventListener('wheel', keydown_cb, {
+		our_addEventListener(document, 'keydown', keydown_cb, true);
+		our_addEventListener(document, 'mousedown', keydown_cb, true);
+		our_addEventListener(document, 'contextmenu', keydown_cb, true);
+		our_addEventListener(document, 'wheel', keydown_cb, {
 			capture: true,
 			passive: false
 		});
@@ -69273,8 +69292,8 @@ var $$IMU_EXPORT$$;
 			return ret;
 		};
 
-		document.addEventListener('keyup', keyup_cb, true);
-		document.addEventListener('mouseup', keyup_cb, true);
+		our_addEventListener(document, 'keyup', keyup_cb, true);
+		our_addEventListener(document, 'mouseup', keyup_cb, true);
 
 		function scrollLeft() {
 			var doc = document.documentElement;
@@ -69570,7 +69589,7 @@ var $$IMU_EXPORT$$;
 				}
 			});
 		} else {
-			window.addEventListener("message", function(event) {
+			our_addEventListener(window, "message", function(event) {
 				if (!can_use_remote() || !event.data || typeof event.data !== "object" || !(imu_message_key in event.data))
 					return;
 
@@ -69580,7 +69599,7 @@ var $$IMU_EXPORT$$;
 			}, false);
 		}
 
-		document.addEventListener('contextmenu', function(event) {
+		our_addEventListener(document, 'contextmenu', function(event) {
 			mouseContextX = event.clientX;
 			mouseContextY = event.clientY;
 
@@ -69598,7 +69617,7 @@ var $$IMU_EXPORT$$;
 			}
 		};
 
-		document.addEventListener("wheel", wheel_cb, {
+		our_addEventListener(document, "wheel", wheel_cb, {
 			passive: false
 		});
 
@@ -69869,7 +69888,7 @@ var $$IMU_EXPORT$$;
 			}
 		};
 
-		document.addEventListener('mousemove', mousemove_cb);
+		our_addEventListener(document, 'mousemove', mousemove_cb);
 	}
 
 	function do_websitehome() {
