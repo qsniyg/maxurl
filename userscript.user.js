@@ -34443,16 +34443,44 @@ var $$IMU_EXPORT$$;
 			//   https://media.salon.com/2019/05/Game_Of_Thrones_Finale_Dany.jpg
 			domain === "mediaproxy.salon.com") {
 			// https://docs.cloudimage.io/go/cloudimage-documentation-v7/en/introduction (thanks to https://github.com/qsniyg/maxurl/issues/312)
+			// https://docs.cloudimage.io/go/cloudimage-documentation/en/operations (v6)
 			// https://c6oxm85c.cloudimg.io/cdno/n/q10/https://az617363.vo.msecnd.net/imgmodels/models/MD30001282/gallery-1502272667-cara1a74d8ff2128d26eea7a6b74247a45669_thumb.jpg
 			//   https://az617363.vo.msecnd.net/imgmodels/models/MD30001282/gallery-1502272667-cara1a74d8ff2128d26eea7a6b74247a45669_thumb.jpg
 			// https://ce8737e8c.cloudimg.io/width/359/q90/https://twg-live.s3.amazonaws.com/artist_image/twg_11_1519846018_0.jpg
 			//   https://twg-live.s3.amazonaws.com/artist_image/twg_11_1519846018_0.jpg
 			// https://doc.cloudimg.io/v7/sample.li/paris.jpg?width=400&wat=1&wat_scale=35&wat_gravity=northeast&wat_pad=10&grey=1
 			//   https://doc.cloudimg.io/v7/sample.li/paris.jpg
-			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/(?:cdn[a-z]\/n\/)?(?:(?:width|height)\/[0-9]+\/)*(?:q[0-9]*\/)?([a-z]*:\/\/)/, "$1");
+			// https://demo.cloudimg.io/cdn/n/n/http://sample.li/positionning-test-1.jpg
+			//   http://sample.li/positionning-test-1.jpg
+			// https://demo.cloudimg.io/crop_px/1000,0,1500,800-200/n/sample.li/girls.jpg
+			//   http://sample.li/girls.jpg
+			// https://demo.cloudimg.io/crop_px/2000,0,2500,800-x350/n/sample.li/girls.jpg
+			//   http://sample.li/girls.jpg
+			// https://demo.cloudimg.io/crop_px/1500,400,2000,1300-200x300/n/sample.li/girls.jpg
+			//   http://sample.li/girls.jpg
+			// https://demo.cloudimg.io/fit/200x180/c3498db/sample.li/tesla.jpg
+			//   http://sample.li/tesla.jpg
+			// https://demo.cloudimg.io/width/500/none/sample.li/frog.png
+			//   http://sample.li/frog.png
+			// https://demo.cloudimg.io/crop/400x340/n/sample.li/flat2.jpg?v&mark_url=http://sample.li/sothebys-blue.jpg&mark_height=58&mark_pos=southwest&mark_pad=10
+			//   http://sample.li/flat2.jpg
+			//newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/(?:cdn[a-z]?\/)?(?:(?:(?:width|height)\/[0-9]+|n|q[0-9]+|fit\/[0-9]+x[0-9]+\/+)\/)*((?:[a-z]+:\/\/)?[^/]+\.[^/.]+\/)/, "$1");
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+(?:cdn|cdno|fit|width|height|crop(?:_px)?|cover|fit|bound)\/(?:[0-9]+|[0-9]+(?:,[0-9]+){3}-[0-9]*x?[0-9]+|[0-9]+x[0-9]+|n(?:one)?)\/[^/]+\/((?:[a-z]+:\/\/)?[^/]+\.[^/.]+\/.*?)(?:[?#].*)?$/, "$1");
 			if (newsrc !== src)
-				return newsrc;
+				return add_http(newsrc);
 
+			// https://abrgsyenen.cloudimg.io/v7/https://fi.bigshopper.com/logos/agradi.jpg?func=bound&force_format=webp&q=95&org_if_sml=1&ci_sign=12fdf6a4b3a9fc2518de55d0f6329aee22b35bac
+			//   https://abrgsyenen.cloudimg.io/v7/https://fi.bigshopper.com/logos/agradi.jpg -- 401 unauthorized
+			//   https://fi.bigshopper.com/logos/agradi.jpg
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+v7\/+(.*?)(?:[?#].*)?$/, "$1");
+			if (newsrc !== src)
+				return add_http(newsrc);
+
+			// https://docs.cloudimage.io/go/cloudimage-documentation-v7/en/security/token-security/url-signature
+			// TODO: check for &ci_sign=?
+			// https://abrgsyenen.cloudimg.io/v7/https://fi.bigshopper.com/logos/agradi.jpg?func=bound&force_format=webp&q=95&org_if_sml=1&ci_sign=12fdf6a4b3a9fc2518de55d0f6329aee22b35bac
+			//   https://abrgsyenen.cloudimg.io/v7/https://fi.bigshopper.com/logos/agradi.jpg -- 401 unauthorized
+			//   https://fi.bigshopper.com/logos/agradi.jpg
 			return src.replace(/\?.*/, "");
 		}
 
