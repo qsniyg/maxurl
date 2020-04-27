@@ -42,11 +42,11 @@ perfect though, I often get it wrong myself :) I can fix it up if you make a mis
 
   - The general format is:
 
-```
+    ```
     // https://img1.example.com/thumbs/image.jpg -- smaller image (-- denotes a comment)
     //   https://img1.example.com/medium/image.jpg -- a larger image of the one above available on the website that this rule also works for
     //   https://img1.example.com/images/image.jpg -- largest image returned by this rule from any of the above (/medium/ or /thumbs/)
-```
+    ```
 
   - The "format" is quite loose though, don't worry too much about getting it right.
   - Please avoid adding NSFW test cases if possible.
@@ -57,12 +57,12 @@ perfect though, I often get it wrong myself :) I can fix it up if you make a mis
   - Account for query strings or hash strings possibly including a /. The way I usually do it is to add `(?:[?#].*)?$` at the end
   - Try to keep the rule as tight as possible (within reason). For example:
 
-```
+    ```
     // https://www.example.com/images/image_500.jpg
     //   https://www.example.com/images/image.jpg
     return src.replace(/(\/images\/+[^/?#]+)_[0-9]+(\.[^/.]+(?:[?#].*)?)$/, "$1$2"); // good
     return src.replace(/_[0-9]+(\.[^/.]+(?:[?#].*)?)$/, "$1$2"); // bad
-```
+    ```
 
   - While not a strict rule, I don't use `\d` or `\w` as I find that specifying exactly which characters are allowed allows it to be easier
     to understand and modify. Your choice though :)
