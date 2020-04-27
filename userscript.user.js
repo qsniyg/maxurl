@@ -60616,9 +60616,11 @@ var $$IMU_EXPORT$$;
 						content_type = "";
 					content_type = content_type.toLowerCase();
 
-					if (content_type.match(/text\/html/) && !obj.head_wrong_contenttype &&
+					// https://1.f.ix.de/scale/crop/3840x2160/q75/se/ct/motive/image/4291/ct-motiv-07-2019_3840x2160.jpg
+					//   https://www.heise.de/ct/motive/image/4291/ct-motiv-07-2019_3840x2160.jpg -- no content-type header
+					if ((content_type.match(/text\/html/) || !content_type) && !obj.head_wrong_contenttype &&
 						ok_error !== true) {
-						var err_txt = "Error: Not an image: " + content_type;
+						var err_txt = "Error: Not an image: " + (content_type || "(no content-type)");
 						if (err_cb) {
 							err_cb(err_txt);
 						} else {
