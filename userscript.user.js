@@ -9414,6 +9414,12 @@ var $$IMU_EXPORT$$;
 			return src.replace(/^[a-z]+:\/\/[^/]+\/+([^/]+\/+[^/]+\/+[^/]+\/+[^/]+\/+[swh][0-9]*(?:-[^/]*]*)?\/+)/, "https://lh3.googleusercontent.com/$1");
 		}
 
+		if (domain_nowww === "thehackernews.com") {
+			// https://thehackernews.com/images/-yEdv4-r_GCU/XoWjJRMXVeI/AAAAAAAA2nc/z1aSxCSBjJQ1ooqCHbvx7Y4vpNVTkl6cgCLcBGAsYHQ/s72-c-e100/zoom-hacking.jpg
+			//   https://1.bp.blogspot.com/-yEdv4-r_GCU/XoWjJRMXVeI/AAAAAAAA2nc/z1aSxCSBjJQ1ooqCHbvx7Y4vpNVTkl6cgCLcBGAsYHQ/s0/zoom-hacking.jpg=s0?imgmax=0
+			return src.replace(/^[a-z]+:\/\/[^/]+\/+images\/+((?:[^/]+\/+){4}[^/]+\/+[^/]+)(?:[?#].*)?$/, "https://1.bp.blogspot.com/$1");
+		}
+
 		if (domain_nosub === "googleusercontent.com" &&
 			string_indexof(domain, "opensocial.googleusercontent.com") >= 0) {
 			// https://images-blogger-opensocial.googleusercontent.com/gadgets/proxy?url=http%3A%2F%2F1.bp.blogspot.com%2F-jdpU1PhmEgg%2FU2lBLnp50QI%2FAAAAAAAAChs%2FUu01Lvq-2xc%2Fs1600%2Frihanna%2Bmccartney.jpg&container=blogger&gadget=a&rewriteMime=image%2F*
@@ -9704,7 +9710,7 @@ var $$IMU_EXPORT$$;
 			// https://pbs.twimg.com/media/ESHsHpCXkAA2xfZ.png
 			//   https://pbs.twimg.com/media/ESHsHpCXkAA2xfZ.jpg?name=orig
 			// https://pbs.twimg.com/media/EUEKr-gUYAMrXt_?format=jpg&name=900x900
-			// https://pbs.twimg.com/media/EWHdLzNUwAIy7Ik.jpg:orig -- works (1368x2048)
+			// https://pbs.twimg.com/media/EWHdLzNUwAIy7Ik.jpg:orig -- works (1368x2048) -- no longer, probably a cache error?
 			//   https://pbs.twimg.com/media/EWHdLzNUwAIy7Ik.jpg?name=orig -- doesn't work (404)
 			// 4096x4096 is also a valid "name"
 			// medium == null?
@@ -9773,6 +9779,7 @@ var $$IMU_EXPORT$$;
 					.replace(/&$/, "");
 
 				newsrc = add_queries(newsrc, {name: names[i]});
+				//var newsrc_colon = newsrc.replace(/\?name=([^&]+)$/, ":$1");
 
 				// don't do this, this doesn't work for .jpg?format=jpg&name=...
 				if (false) {
@@ -9786,10 +9793,20 @@ var $$IMU_EXPORT$$;
 				if (newsrc.match(/\.png(\?.*)?$/)) {
 					obj_add(newsrc);
 					obj_add(newsrc.replace(/\.png(\?.*)?$/, ".jpg$1"));
+
+					/*if (newsrc_colon !== newsrc) {
+						obj_add(newsrc_colon);
+						obj_add(newsrc_colon.replace(/\.png(\?.*)?$/, ".jpg$1"));
+					}*/
 				} else if (newsrc.match(/\.jpg(\?.*)?$/)) {
 					// Prefer png over jpg (compression)
 					obj_add(newsrc.replace(/\.jpg(\?.*)?$/, ".png$1"));
 					obj_add(newsrc);
+
+					/*if (newsrc_colon !== newsrc) {
+						obj_add(newsrc_colon.replace(/\.jpg(\?.*)?$/, ".png$1"));
+						obj_add(newsrc_colon);
+					}*/
 				} else {
 					obj_add(newsrc);
 				}
@@ -10629,6 +10646,8 @@ var $$IMU_EXPORT$$;
 			(domain_nowww === "voidu.com" && string_indexof(src, "/gallery/") >= 0) ||
 			// https://store.playstation.com/store/api/chihiro/00_09_000/container/US/en/99/UP4139-CUSA10160_00-SURVIVINGMARSFCE//image?_version=00_09_000&platform=chihiro&w=720&h=720&bg_color=000000&opacity=100
 			(domain === "store.playstation.com" && string_indexof(src, "/image?") >= 0) ||
+			// https://blog.us.playstation.com/tachyon/2020/04/49811271288_81f0c02714_k.jpg?resize=1088,612&crop_strategy=smart&zoom=1.5
+			(domain_nosub === "playstation.com" && /^blog\./.test(domain)) ||
 			// https://images.interactives.dk/cdn-connect/98f5b7864bfb4efba3e65b9d0c983122.jpg?auto=compress&ch=Width%2CDPR&ixjsv=2.2.4&w=750
 			domain === "images.interactives.dk" ||
 			// https://toyo-arhxo0vh6d1oh9i0c.stackpathdns.com/media/1200/xl-hero-tire-pr-ra1.jpg?quality=10
@@ -15636,16 +15655,6 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/media\/img\/.*\/)_[^/]*\/([^/]*)$/, "$1$2");
 		}
 
-		if (false && domain === "1.fwcdn.pl") {
-			// http://1.fwcdn.pl/ph/73/52/737352/569269_1.2.jpg
-			// http://1.fwcdn.pl/ph/73/52/737352/569269_1.jpg
-			//   http://1.fwcdn.pl/ph/73/52/737352/569269_1.1.jpg
-			// shrinks some:
-			// http://1.fwcdn.pl/an/np/875720/2018/15046_1.9.jpg -- 320x180
-			//   http://1.fwcdn.pl/an/np/875720/2018/15046_1.1.jpg -- 90x90
-			return src.replace(/(\/[^/.]*)(?:\.[0-9]*)?(\.[^/.]*)$/, "$1.1$2");
-		}
-
 		if (domain_nowww === "semainedelacritique.com" && string_indexof(src, "/ttimg-rsz") >= 0) {
 			// http://www.semainedelacritique.com/ttimg-rsz?src=/uploads/galleriemedia/ed9cf1c0cd7756b1e7e782f8bc2bc3d2.jpg&w=1200&h=800&q=100&zc=2&a=c
 			//   http://www.semainedelacritique.com/uploads/galleriemedia/ed9cf1c0cd7756b1e7e782f8bc2bc3d2.jpg
@@ -17666,7 +17675,9 @@ var $$IMU_EXPORT$$;
 		if (domain === "cdn.mos.cms.futurecdn.net") {
 			// https://cdn.mos.cms.futurecdn.net/wtXpUq7DAuPqftGRshxtzD-650-80.jpg
 			//   https://cdn.mos.cms.futurecdn.net/wtXpUq7DAuPqftGRshxtzD.jpg
-			return src.replace(/-[0-9]+-[0-9]+(\.[^/.]*)$/, "$1");
+			// https://cdn.mos.cms.futurecdn.net/8viJ74GoyGzofeCZA37MM8-650-80.jpg.webp
+			//   https://cdn.mos.cms.futurecdn.net/8viJ74GoyGzofeCZA37MM8.jpg.webp
+			return src.replace(/-[0-9]+-[0-9]+(\.[^/.]*(?:\.webp)?)(?:[?#].*)?$/, "$1");
 		}
 
 		if (domain === "www.allkpop.com") {
@@ -21138,6 +21149,8 @@ var $$IMU_EXPORT$$;
 			// http://data01.tag-fox.com/2020/01/21/giphy-279d2b6e54aa52733.md.gif
 			//   http://data01.tag-fox.com/2020/01/21/giphy-279d2b6e54aa52733.gif
 			(domain_nosub === "tag-fox.com" && /^data[0-9]*\./.test(domain)) ||
+			// https://s5.gifyu.com/images/05---frack-you.md.gif
+			(domain_nosub === "gifyu.com" && string_indexof(src, "/images/") >= 0) ||
 			// http://image-bugs.com/images/2017/09/09/CelebsFlash.com_NP_Harpers_Bazaar_090817__3_.md.jpg
 			domain_nowww === "image-bugs.com") {
 			// http://imgmax.com/images/2017/03/20/0OQhE.th.jpg
@@ -48117,12 +48130,32 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/title_th\/+/, "/title_image/");
 		}
 
-		if (domain === "ssl-gfx.filmweb.pl") {
+		if ((domain_nosub === "filmweb.pl" && /^(?:ssl-)?gfx\./.test(domain)) ||
+			// https://fwcdn.pl/ppo/00/87/87/450015.2.jpg
+			//   https://fwcdn.pl/ppo/00/87/87/450015.$.jpg -- 3333x5000
+			domain_nosub === "fwcdn.pl") {
 			// https://ssl-gfx.filmweb.pl/po/62/64/676264/7510826.1.jpg
 			//   https://ssl-gfx.filmweb.pl/po/62/64/676264/7510826.$.jpg -- 319x450
-			// others:
 			// http://gfx.filmweb.pl/an/1032473/5454.$.jpg -- 2400x3000
-			return src.replace(/(\/[0-9]+\.)[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1$$$2");
+			// https://ssl-gfx.filmweb.pl/an/np/867323/2019/18811_1.8.jpg
+			//   https://ssl-gfx.filmweb.pl/an/np/867323/2019/18811_1.$.jpg
+			// others:
+			// http://gfx.filmweb.pl/n/news.attachment.36554.jpg
+			// $ doesn't work: (1 seems to be the largest?)
+			// https://ssl-gfx.filmweb.pl/ph/57/70/625770/727190_1.3.jpg
+			// https://ssl-gfx.filmweb.pl/ph/72/46/807246/798315_1.2.jpg
+			// https://ssl-gfx.filmweb.pl/ph/71/41/717141/748509_1.3.jpg
+			// http://1.fwcdn.pl/ph/57/70/625770/727190_1.2.jpg
+			return src.replace(/(\/[0-9]+(?:_[0-9]+)?\.)[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1$$$2");
+
+			// old fwcdn rule:
+			// http://1.fwcdn.pl/ph/73/52/737352/569269_1.2.jpg
+			// http://1.fwcdn.pl/ph/73/52/737352/569269_1.jpg
+			//   http://1.fwcdn.pl/ph/73/52/737352/569269_1.1.jpg
+			// shrinks some:
+			// http://1.fwcdn.pl/an/np/875720/2018/15046_1.9.jpg -- 320x180
+			//   http://1.fwcdn.pl/an/np/875720/2018/15046_1.1.jpg -- 90x90
+			//return src.replace(/(\/[^/.]*)(?:\.[0-9]*)?(\.[^/.]*)$/, "$1.1$2");
 		}
 
 		if (domain_nowww === "fantlab.ru") {
@@ -57267,6 +57300,16 @@ var $$IMU_EXPORT$$;
 			// http://crosti.ru/patterns/00/11/40/4fc8aa7305/thumbnail.jpg
 			//   http://crosti.ru/patterns/00/11/40/4fc8aa7305/picture.jpg
 			return src.replace(/(\/patterns\/+(?:[0-9a-f]{2}\/+){3}[0-9a-f]{5,}\/+)thumbnail(\.[^/.]+)(?:[?#].*)?$/, "$1picture$2");
+		}
+
+		if (domain === "cdn.carbuzz.com") {
+			// https://cdn.carbuzz.com/car-thumbnails/700x375/4000/400/4439.jpg
+			//   https://cdn.carbuzz.com/car-thumbnails/original/4000/400/4439.jpg
+			// https://cdn.carbuzz.com/gallery-images/300x200/700000/200/700215.jpg
+			//   https://cdn.carbuzz.com/gallery-images/original/700000/200/700215.jpg
+			// https://cdn.carbuzz.com/gallery-images/1600/698000/500/698549.jpg -- upscaled?
+			//   https://cdn.carbuzz.com/gallery-images/original/698000/500/698549.jpg -- smaller
+			return src.replace(/(\/(?:car-thumbnails|gallery-images)\/+)[0-9]+(?:x[0-9]+)?\/+/, "$1original/");
 		}
 
 
