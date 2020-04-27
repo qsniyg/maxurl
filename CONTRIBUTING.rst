@@ -6,7 +6,7 @@ If you spot any issue with existing rules, or want to suggest a new websites, **
 Pull requests are also accepted (especially if the rule you want to submit is complex), but as  everything is currently stored in one file (userscript.user.js),
 it can lead to merge conflicts.
 
----
+------------
 
 If you decide to make a pull request, here are the general guidelines I follow when adding a new rule. Don't worry too much about getting it
 perfect though, I often get it wrong myself :) I can fix it up if you make a mistake.
@@ -16,7 +16,7 @@ perfect though, I often get it wrong myself :) I can fix it up if you make a mis
   - There's a chance the rule might already exist, but without support for the specific website you want to add support for.
     Try doing a regex search of the script to see if a similar rule has already been created.
 
-- New website-specific rules are generally added before the ``// -- general rules --`` line (there's a large whitespace gap to make it clear).
+- New website-specific rules are generally added before the ``// -- general rules --`` line (there's a large whitespace gap above it to make it clear).
 
   - General rules are added at the end of the general rules section (after the aforementioned line)
   - Sometimes some rules need to be above others for various reasons (e.g. host-specific rules).
