@@ -34526,6 +34526,12 @@ var $$IMU_EXPORT$$;
 				return get_orig_cloudimg_url(newsrc);
 		}
 
+		if (domain === "1.f.ix.de") {
+			// https://1.f.ix.de/scale/geometry/743x453/q85/download/media/suche/tampermonkey-1_1-1-17.jpg
+			// 	 https://heise.cloudimg.io/bound/743x453/q85.webp-lossy-85.foil1/_www-heise-de_/download/media/suche/tampermonkey-1_1-1-17.jpg
+			return src.replace(/.*(\/hdl\/imgs\/)/, "https://www.heise.de:443/$1");
+		}
+
 		if (domain_nowww === "kinataka.ru") {
 			// http://kinataka.ru/images_peolpe/4649/photos/240/kinataka.ru-4649-cara-delevingne_37.jpg
 			//   http://kinataka.ru/images_peolpe/4649/photos/kinataka.ru-4649-cara-delevingne_37.jpg
