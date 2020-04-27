@@ -5091,6 +5091,13 @@ var $$IMU_EXPORT$$;
 
 					if (resp.status !== 200) {
 						console_error("Bad status for Imgur: " + resp.status);
+
+						if (resp.status === 404) {
+							return done({
+								bad: true
+							}, false);
+						}
+
 						return done(null, false);
 					}
 
@@ -16216,6 +16223,12 @@ var $$IMU_EXPORT$$;
 
 				common_functions.fetch_imgur_webpage(options.do_request, api_cache, nsfw_headers, baseobj.extra.page, function(data) {
 					if (!data) {
+						return options.cb(obj);
+					}
+
+					if (data.bad) {
+						var obj = deepcopy(baseobj);
+						obj.bad = true;
 						return options.cb(obj);
 					}
 
@@ -59117,7 +59130,7 @@ var $$IMU_EXPORT$$;
 
 					if (!window.runSlots && options.do_request) {
 						common_functions.fetch_imgur_webpage(options.do_request, real_api_cache, undefined, options.host_url, function(data) {
-							if (!data || !data.imageinfo) {
+							if (!data || !data.imageinfo || data.bad) {
 								return options.cb(find_from_el());
 							}
 
@@ -60047,6 +60060,7 @@ var $$IMU_EXPORT$$;
 					var images = obj_to_simplelist(obj);
 
 					for (var i = 0; i < obj.length; i++) {
+						// TODO: also remove bad_if
 						if (obj[i].bad) {
 							var obj_url = obj[i].url;
 							var orig_url = null;
