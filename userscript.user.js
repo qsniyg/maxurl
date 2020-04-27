@@ -34438,12 +34438,6 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/uploads\/news\/[^/]*\/)thumb(\/[0-9]+\.[^/.]*)$/, "$1images$2");
 		}
 
-		if (domain === "heise.cloudimg.io") {
-			// https://heise.cloudimg.io/width/400/q65.webp-lossy-65.foil1/_www-heise-de_/ct/imgs/04/1/1/3/8/0/2/9/b0ee5f5673ed1b5a.jpeg
-			// https://www.heise.de/ct/imgs/04/1/1/3/8/0/2/9/b0ee5f5673ed1b5a.jpeg
-			return src.replace(/.*_www-heise-de_\//, "https://www.heise.de:443/");
-		}
-
 		if (domain_nosub === "cloudimg.io" ||
 			// https://mediaproxy.salon.com/width/354/https://media.salon.com/2019/05/Game_Of_Thrones_Finale_Dany.jpg
 			//   https://media.salon.com/2019/05/Game_Of_Thrones_Finale_Dany.jpg
