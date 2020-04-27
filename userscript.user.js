@@ -34523,7 +34523,7 @@ var $$IMU_EXPORT$$;
 		if (domain === "1.f.ix.de") {
 			// https://1.f.ix.de/scale/geometry/743x453/q85/download/media/suche/tampermonkey-1_1-1-17.jpg
 			// 	 https://www.heise.de/download/media/suche/tampermonkey-1_1-1-17.jpg
-			return src.replace(/.*\/q[\d]{1,2}/, "https://www.heise.de:443/");
+			return src.replace(/.*\/q[\d]{1,2}/, "https://www.heise.de:443");
 		}
 
 		if (domain_nowww === "kinataka.ru") {
