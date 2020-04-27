@@ -34493,7 +34493,7 @@ var $$IMU_EXPORT$$;
 			//   https://www.heise.de/ct/imgs/04/1/1/3/8/0/2/9/b0ee5f5673ed1b5a.jpeg
 
 			// https://docs.cloudimage.io/go/cloudimage-documentation/en/security/url-signature (@ in filters)
-			newsrc = src.replace(/^([a-z]+:\/\/[^/]+\/+)(?:cdn|cdno|fit|width|height|crop(?:_px)?|cover|fit|bound)\/(?:[0-9]+|[0-9]+(?:,[0-9]+){3}-[0-9]*x?[0-9]+|[0-9]+x[0-9]+|n(?:one)?)\/[^/@]+\//, "$1cdno/n/n/");
+			newsrc = src.replace(/^([a-z]+:\/\/[^/]+\/+)(?:cdn|cdno|fit|width|height|crop(?:_px)?|cover|fit|bound)\/(?:[0-9]+|[0-9]+(?:,[0-9]+){3}-[0-9]*x?[0-9]+|[0-9]+x[0-9]+|n(?:one)?)\/[^/@]+\//, "$1cdn/n/n/");
 			if (newsrc !== src)
 				return newsrc;
 
