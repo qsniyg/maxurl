@@ -833,9 +833,13 @@ var $$IMU_EXPORT$$;
 	}
 
 	// native_functions returns iframe
-	var our_EventTarget = EventTarget;
-	var EventTarget_addEventListener = our_EventTarget.prototype.addEventListener;
-	var EventTarget_removeEventListener = our_EventTarget.prototype.removeEventListener;
+	var our_EventTarget, EventTarget_addEventListener, EventTarget_removeEventListener;
+
+	if (is_interactive) {
+		our_EventTarget = EventTarget;
+		EventTarget_addEventListener = our_EventTarget.prototype.addEventListener;
+		EventTarget_removeEventListener = our_EventTarget.prototype.removeEventListener;
+	}
 
 	var our_addEventListener = function(element, event, handler, options) {
 		// VM compatibility
