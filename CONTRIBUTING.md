@@ -16,25 +16,25 @@ perfect though, I often get it wrong myself :) I can fix it up if you make a mis
   - There's a chance the rule might already exist, but without support for the specific website you want to add support for.
     Try doing a regex search of the script to see if a similar rule has already been created.
 
-- New website-specific rules are generally added before the ``// -- general rules --`` line (there's a large whitespace gap above it to make it clear).
+- New website-specific rules are generally added before the `// -- general rules --` line (there's a large whitespace gap above it to make it clear).
 
   - General rules are added at the end of the general rules section (after the aforementioned line)
   - Sometimes some rules need to be above others for various reasons (e.g. host-specific rules).
 
-- Use ``domain``, ``domain_nosub`` or ``domain_nowww`` with a ``===`` comparison if possible for the ``if`` check.
+- Use `domain`, `domain_nosub` or `domain_nowww` with a `===` comparison if possible for the `if` check.
 
-  - If a regex test is needed, use ``/regex/.test(...)``, and always try to make sure that it's after the initial ``===`` comparison.
-    For example, if you want to match ``img[0-9]+\.example\.com``, you can use ``if (domain_nosub === "example.com" && /^img[0-9]+\./.test(domain))``.
+  - If a regex test is needed, use `/regex/.test(...)`, and always try to make sure that it's after the initial `===` comparison.
+    For example, if you want to match `img[0-9]+\.example\.com`, you can use `if (domain_nosub === "example.com" && /^img[0-9]+\./.test(domain))`.
     This helps to ensure that performance won't be too terrible :)
-  - ``domain_nowww`` matches both example.com and www.example.com. Unless both domains are different (or one is nonexistant), use ``domain_nowww``
+  - `domain_nowww` matches both example.com and www.example.com. Unless both domains are different (or one is nonexistant), use `domain_nowww`
     when referring to either of these domains.
-  - An exception for this is with amazon buckets (e.g. bucket.s3.amazonaws.com or s3.amazonaws.com/bucket/). Use ``amazon_container === "bucket"`` instead.
+  - An exception for this is with amazon buckets (e.g. bucket.s3.amazonaws.com or s3.amazonaws.com/bucket/). Use `amazon_container === "bucket"` instead.
     Note that both URL forms are usually (always?) valid, so make sure the rule accounts for both.
-    For example, be careful when doing something like: ``://[^/]+\/+images\/+`` as it won't work for the second form.
+    For example, be careful when doing something like: `://[^/]+\/+images\/+` as it won't work for the second form.
 
 - Use the script's wrapper functions over builtin functions:
 
-  - For example, ``array_indexof`` or ``string_indexof`` instead of ``foo.indexOf()``, ``base64_decode`` instead of ``atob``, ``JSON_parse`` instead of ``JSON.parse``, etc.
+  - For example, `array_indexof` or `string_indexof` instead of `foo.indexOf()`, `base64_decode` instead of `atob`, `JSON_parse` instead of `JSON.parse`, etc.
     This is because some websites (or adblock) override these functions with broken implementations.
     IMU will use its own implementation of these functions if the browser's version fails a few sanity checks.
 
@@ -42,31 +42,29 @@ perfect though, I often get it wrong myself :) I can fix it up if you make a mis
 
   - The general format is:
 
-.. code-block:: javascript
-
+```
     // https://img1.example.com/thumbs/image.jpg -- smaller image (-- denotes a comment)
     //   https://img1.example.com/medium/image.jpg -- a larger image of the one above available on the website that this rule also works for
     //   https://img1.example.com/images/image.jpg -- largest image returned by this rule from any of the above (/medium/ or /thumbs/)
-
+```
 
   - The "format" is quite loose though, don't worry too much about getting it right.
   - Please avoid adding NSFW test cases if possible.
 
 - Regex style
 
-  - Folder identifiers (``/``) should be referred to as ``/+`` (unless the web server distinguishes between one or more slashes)
-  - Account for query strings or hash strings possibly including a /. The way I usually do it is to add ``(?:[?#].*)?$`` at the end
+  - Folder identifiers (`/`) should be referred to as `/+` (unless the web server distinguishes between one or more slashes)
+  - Account for query strings or hash strings possibly including a /. The way I usually do it is to add `(?:[?#].*)?$` at the end
   - Try to keep the rule as tight as possible (within reason). For example:
 
-.. code-block:: javascript
-
+```
     // https://www.example.com/images/image_500.jpg
     //   https://www.example.com/images/image.jpg
     return src.replace(/(\/images\/+[^/?#]+)_[0-9]+(\.[^/.]+(?:[?#].*)?)$/, "$1$2"); // good
     return src.replace(/_[0-9]+(\.[^/.]+(?:[?#].*)?)$/, "$1$2"); // bad
+```
 
-
-  - While not a strict rule, I don't use ``\d`` or ``\w`` as I find that specifying exactly which characters are allowed allows it to be easier
+  - While not a strict rule, I don't use `\d` or `\w` as I find that specifying exactly which characters are allowed allows it to be easier
     to understand and modify. Your choice though :)
 
 - You'll probably see that a lot of the rules don't follow the guidelines above. More recent rules tend to follow the guidelines better, but older
