@@ -332,6 +332,7 @@ army.mil
 arrse.co.uk
 ars.els-cdn.com
 art-dept.com
+art.ngfiles.com
 art.wsj.net
 artfiles.alphacoders.com
 artist-assets.hubbardradio.com
@@ -414,6 +415,7 @@ assets.upflix.pl
 assets.vg247.com
 assets.vogue.com
 assets.whatson.cityofsydney.nsw.gov.au.s3.amazonaws.com
+assets.whicdn.com
 assets.wonderlandmagazine.com
 assets.yande.re
 assets.yandycdn.com
@@ -603,6 +605,7 @@ blastingcdn.com
 blaxup.in
 bliasak.bg
 blick.ch
+blob.freent.de
 blog-news.it
 blog.chron.com
 blog.hola.com
@@ -840,6 +843,7 @@ cdn.breathecast.com
 cdn.britannica.com
 cdn.btportail.0pb.org
 cdn.businessinsider.es
+cdn.carbuzz.com
 cdn.cdkeys.com
 cdn.celebyolo.com
 cdn.christianitydaily.com
@@ -1070,6 +1074,7 @@ cdnpuc.sinchew.com.my
 cdnrockol-rockolcomsrl.netdna-ssl.com
 cdns.klimg.com
 cdnscreenshot.xyz
+cdnsw.com
 cdnticket.melon.co.kr
 cdntrex.com
 cdnu.porndoe.com
@@ -1302,6 +1307,7 @@ creepmachine.com
 crhoy.net
 criturk.com
 crnobelo.com
+crosti.ru
 crunchyroll.com
 cryengine.com
 crystal.cafe
@@ -1764,6 +1770,7 @@ esquirehk.com
 essentialbaby.com.au
 essexstudent.com
 estaticos.marie-claire.es
+estaticos.telva.com
 estranky.cz
 estranky.sk
 etimg.etb2bimg.com
@@ -1921,6 +1928,7 @@ filmpro.ru
 filmsomniac.com
 filmstarjackets.com
 filmweb.no
+filmweb.pl
 filmyerotyczne.tv
 filmz.dk
 filo.news
@@ -1957,6 +1965,7 @@ fncstore.com
 foap.com
 focus.de
 focusmicrosites.s3.amazonaws.com
+fondecranmagique.com
 fondsecran.eu
 fonstola.ru
 fonwall.ru
@@ -2039,6 +2048,7 @@ funweek.it
 fuse.tv
 fuskator.com
 futurekorea.co.kr
+fwcdn.pl
 fxinteractive.com
 g-mark.org
 g.acdn.no
@@ -2136,6 +2146,7 @@ ggpht.com
 giant.gfycat.com
 gif-favicon.com
 gifposter.com
+gifyu.com
 giga-images-makeshop-jp.akamaized.net
 gigablast.com
 gigacircle.com
@@ -2355,6 +2366,7 @@ hornyteen.pro
 hostave2.net
 hosted.amourangels.com
 hosted.foxes.com
+hosted.thehun.net
 hot-celebs.co
 hot-korea.net
 hot-sex-photos.com
@@ -3099,6 +3111,7 @@ img.iseephoto.com
 img.issuedaily.com
 img.itch.zone
 img.itw01.com
+img.ixiumei.com
 img.izismile.com
 img.jakpost.net
 img.jiahes.com
@@ -3171,6 +3184,7 @@ img.newsdog.today.s3.amazonaws.com
 img.newspim.com
 img.nextmag.com.tw
 img.nga.178.com
+img.ngfiles.com
 img.nimo.tv
 img.noobzone.ru
 img.noritter.com
@@ -3418,6 +3432,7 @@ intim-photos.ru
 intimatecelebs.com
 intoclassics.net
 intronews.net
+invidio.us
 io.ua
 iol.pt
 ip.bitcointalk.org
@@ -3649,6 +3664,7 @@ kstarfashion.com
 kubrick.htvapps.com
 kukinews.com
 kungahuset.org
+kupidon-rf.ru
 kurir.rs
 kurtkomaromi.com
 kwnews.co.kr
@@ -3663,6 +3679,7 @@ lacote.ch
 ladmedia.fr
 ladylike.gr
 lafactoriadelshow.com
+lahiguera.net
 laineygossip.com
 lajt.co.uk
 lakeimagesweb.artic.edu
@@ -3762,6 +3779,7 @@ longwallpapers.com
 lookbookspro.com
 looklive.at
 looper.com
+looppacificassets.s3.amazonaws.com
 looti.net
 lostbird.vn
 lostfilm.info
@@ -3799,6 +3817,7 @@ m.baishixi.com
 m.blog.hu
 m.btdx8.com
 m.gadzetomania.pl
+m.gjcdn.net
 m.mbcsportsplus.com
 m.s1ar.cc
 m.salon24.pl
@@ -4650,6 +4669,7 @@ photofiles.alphacoders.com
 photoforum.ru
 photographers.ua
 photohito.k-img.com
+photohost.ru
 photojournal.jpl.nasa.gov
 photoofnude.com
 photorator.com
@@ -4768,6 +4788,7 @@ plasticsurgerystar.com
 platinum-celebs.com
 playboyrussia.com
 playground33.com
+playstation.com
 playstationlifestyle.net
 plaza.jp.rakuten-static.com
 plekoflady.ga
@@ -5022,10 +5043,12 @@ resize-rbl-ms.cdn.ampproject.org
 resize.abcradio.net.au
 resize.blogsys.jp
 resize.over-blog.com
+resizer.abc.es
 resizer.elcorreo.com
 resizer.elnortedecastilla.es
 resizer.ideal.es
 resizer.lasprovincias.es
+resizer.mujerhoy.com
 resizer.mundotkm.com
 resizer.nortecastilla.es
 resource.breakingnews.mn
@@ -5194,6 +5217,7 @@ saplinghr.com
 sarajevo.travel
 sasisa.ru
 sass.com.ua
+sat1.de
 saywho.fr
 sb-cd.com
 sbs.co.kr
@@ -5338,6 +5362,7 @@ slate.com
 slatic.net
 slender-model.com
 slidely.com
+slideserve.com
 slist.kr
 sloanreview.mit.edu
 sm.askmen.com
@@ -5422,7 +5447,6 @@ squarespace.com
 ss-images.catscdn.vn
 ss.metronews.ru
 ss.sport-express.ru
-ssl-gfx.filmweb.pl
 ssl-images-amazon.com
 ssl.gstatic.com
 ssmscdn.yp.ca
@@ -5686,6 +5710,7 @@ stored-edge.slickpic.com
 storge.pic2.me
 storify.com
 str.your-pictionary.com
+stream-cloud-uploads.imgix.net
 stream.ne.jp
 streamja.com
 streetstylestore.com
@@ -5860,6 +5885,7 @@ thefappeningpics.com
 thefw.com
 thegenealogist.co.uk
 thegioitre.vn
+thehackernews.com
 theheartysoul.com
 thehindu.com
 thehindubusinessline.com
@@ -6188,6 +6214,7 @@ vistanews.ru
 viva100.com
 vjav.com
 vk.com
+vkanketa.ru
 vkpeople.ru
 vkuservideo.net
 vln.school.nz
@@ -6315,6 +6342,7 @@ wede-mail.com
 wedge.ismedia.jp
 weeklystorybook.com
 wegotthiscovered.com
+weheartit.com
 welovesexyfeet.com
 welt.de
 wfcdn.com
@@ -6411,6 +6439,7 @@ xiongyan.tv
 xiuren.org
 xnostars.com
 xnudehack.com
+xnxx.com
 xo.lulus.com
 xochuanime.online
 xoxodigital.com
@@ -6426,6 +6455,7 @@ xuk.life
 xuk.mobi
 xuk.one
 xuk.ooo
+xvideos.com
 xwetpics.com
 xxlmag.com
 xxx-photo.com

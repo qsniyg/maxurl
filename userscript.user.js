@@ -4,7 +4,7 @@
 // ==UserScript==
 // @name              Image Max URL
 // @namespace         http://tampermonkey.net/
-// @version           0.13.0
+// @version           0.13.1
 // @description       Finds larger or original versions of images for 6500+ websites, including a powerful image popup feature
 // @description:ko    6500개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
 // @description:fr    Trouve des images plus grandes ou originales pour plus de 6500 sites

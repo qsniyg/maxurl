@@ -1,3 +1,22 @@
+0.13.1
+
+New features:
+
+ * Support for ~30 new websites (using ~20 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including DeviantArt, Imgur, Newgrounds, TikTok, Tumblr)
+ * "Beside cursor" popup position uses space more efficiently
+ * Better support for sites that override addEventListener
+
+Bugfixes:
+
+ * Zooming into images less than 64px high/wide should work now
+ * Fix crash on certain websites when Hls.js couldn't be loaded
+
+---
+
 0.13.0
 
 New features:
