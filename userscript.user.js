@@ -34448,6 +34448,31 @@ var $$IMU_EXPORT$$;
 			// https://mediaproxy.salon.com/width/354/https://media.salon.com/2019/05/Game_Of_Thrones_Finale_Dany.jpg
 			//   https://media.salon.com/2019/05/Game_Of_Thrones_Finale_Dany.jpg
 			domain === "mediaproxy.salon.com") {
+			var get_orig_cloudimg_url = function(url) {
+				// thanks to BLiTZ on discord
+				// https://heise.cloudimg.io/width/400/q65.webp-lossy-65.foil1/_www-heise-de_/ct/imgs/04/1/1/3/8/0/2/9/b0ee5f5673ed1b5a.jpeg
+				//   https://heise.cloudimg.io/cdno/n/n/_www-heise-de_/ct/imgs/04/1/1/3/8/0/2/9/b0ee5f5673ed1b5a.jpeg
+				//   https://www.heise.de/ct/imgs/04/1/1/3/8/0/2/9/b0ee5f5673ed1b5a.jpeg
+				// documentation:
+				// https://docs.cloudimage.io/go/cloudimage-documentation-v7/en/domains-urls/origin-url-prefix
+				// https://docs.cloudimage.io/go/cloudimage-documentation-v7/en/domains-urls/aliases
+				var aliases = {};
+
+				if (domain === "heise.cloudimg.io") {
+					aliases["_www-heise-de_"] = "https://www.heise.de";
+				}
+
+				var new_domain = url.replace(/^([^/]+)\/.*/, "$1");
+				for (var alias in aliases) {
+					if (new_domain === alias) {
+						url = aliases[new_domain] + url.replace(/^[^/]+\//, "/");
+						break;
+					}
+				}
+
+				return add_http(url);
+			};
+
 			// https://docs.cloudimage.io/go/cloudimage-documentation-v7/en/introduction (thanks to https://github.com/qsniyg/maxurl/issues/312)
 			// https://docs.cloudimage.io/go/cloudimage-documentation/en/operations (v6)
 			// https://c6oxm85c.cloudimg.io/cdno/n/q10/https://az617363.vo.msecnd.net/imgmodels/models/MD30001282/gallery-1502272667-cara1a74d8ff2128d26eea7a6b74247a45669_thumb.jpg
@@ -34470,24 +34495,35 @@ var $$IMU_EXPORT$$;
 			//   http://sample.li/frog.png
 			// https://demo.cloudimg.io/crop/400x340/n/sample.li/flat2.jpg?v&mark_url=http://sample.li/sothebys-blue.jpg&mark_height=58&mark_pos=southwest&mark_pad=10
 			//   http://sample.li/flat2.jpg
-			//newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/(?:cdn[a-z]?\/)?(?:(?:(?:width|height)\/[0-9]+|n|q[0-9]+|fit\/[0-9]+x[0-9]+\/+)\/)*((?:[a-z]+:\/\/)?[^/]+\.[^/.]+\/)/, "$1");
-			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+(?:cdn|cdno|fit|width|height|crop(?:_px)?|cover|fit|bound)\/(?:[0-9]+|[0-9]+(?:,[0-9]+){3}-[0-9]*x?[0-9]+|[0-9]+x[0-9]+|n(?:one)?)\/[^/]+\/((?:[a-z]+:\/\/)?[^/]+\.[^/.]+\/.*?)(?:[?#].*)?$/, "$1");
+			// https://heise.cloudimg.io/width/400/q65.webp-lossy-65.foil1/_www-heise-de_/ct/imgs/04/1/1/3/8/0/2/9/b0ee5f5673ed1b5a.jpeg
+			//   https://www.heise.de/ct/imgs/04/1/1/3/8/0/2/9/b0ee5f5673ed1b5a.jpeg
+
+			// https://docs.cloudimage.io/go/cloudimage-documentation/en/security/url-signature (@ in filters)
+			newsrc = src.replace(/^([a-z]+:\/\/[^/]+\/+)(?:cdn|cdno|fit|width|height|crop(?:_px)?|cover|fit|bound)\/(?:[0-9]+|[0-9]+(?:,[0-9]+){3}-[0-9]*x?[0-9]+|[0-9]+x[0-9]+|n(?:one)?)\/[^/@]+\//, "$1cdno/n/n/");
 			if (newsrc !== src)
-				return add_http(newsrc);
+				return newsrc;
+
+			// https://docs.cloudimage.io/go/cloudimage-documentation-v7/en/security/token-security/url-signature
+			// https://abrgsyenen.cloudimg.io/v7/https://fi.bigshopper.com/logos/agradi.jpg?func=bound&force_format=webp&q=95&org_if_sml=1&ci_sign=12fdf6a4b3a9fc2518de55d0f6329aee22b35bac
+			//   https://abrgsyenen.cloudimg.io/v7/https://fi.bigshopper.com/logos/agradi.jpg -- 401 unauthorized
+			//   https://fi.bigshopper.com/logos/agradi.jpg
+			if (!/[?#]ci_sign=/.test(src)) {
+				newsrc = src.replace(/\?.*/, "");
+				if (newsrc !== src)
+					return newsrc;
+			}
+
+			//newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/(?:cdn[a-z]?\/)?(?:(?:(?:width|height)\/[0-9]+|n|q[0-9]+|fit\/[0-9]+x[0-9]+\/+)\/)*((?:[a-z]+:\/\/)?[^/]+\.[^/.]+\/)/, "$1");
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+(?:cdn|cdno|fit|width|height|crop(?:_px)?|cover|fit|bound)\/(?:[0-9]+|[0-9]+(?:,[0-9]+){3}-[0-9]*x?[0-9]+|[0-9]+x[0-9]+|n(?:one)?)\/[^/]+\/((?:[a-z]+:\/\/)?[^/]+\/.*?)(?:[?#].*)?$/, "$1");
+			if (newsrc !== src)
+				return get_orig_cloudimg_url(newsrc);
 
 			// https://abrgsyenen.cloudimg.io/v7/https://fi.bigshopper.com/logos/agradi.jpg?func=bound&force_format=webp&q=95&org_if_sml=1&ci_sign=12fdf6a4b3a9fc2518de55d0f6329aee22b35bac
 			//   https://abrgsyenen.cloudimg.io/v7/https://fi.bigshopper.com/logos/agradi.jpg -- 401 unauthorized
 			//   https://fi.bigshopper.com/logos/agradi.jpg
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+v7\/+(.*?)(?:[?#].*)?$/, "$1");
 			if (newsrc !== src)
-				return add_http(newsrc);
-
-			// https://docs.cloudimage.io/go/cloudimage-documentation-v7/en/security/token-security/url-signature
-			// TODO: check for &ci_sign=?
-			// https://abrgsyenen.cloudimg.io/v7/https://fi.bigshopper.com/logos/agradi.jpg?func=bound&force_format=webp&q=95&org_if_sml=1&ci_sign=12fdf6a4b3a9fc2518de55d0f6329aee22b35bac
-			//   https://abrgsyenen.cloudimg.io/v7/https://fi.bigshopper.com/logos/agradi.jpg -- 401 unauthorized
-			//   https://fi.bigshopper.com/logos/agradi.jpg
-			return src.replace(/\?.*/, "");
+				return get_orig_cloudimg_url(newsrc);
 		}
 
 		if (domain_nowww === "kinataka.ru") {
