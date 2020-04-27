@@ -16664,6 +16664,9 @@ var $$IMU_EXPORT$$;
 			 // https://resizer.lasprovincias.es/resizer/resizer.php?imagen=http://www.lasprovincias.es/multimedia/201405/30/media/s18.jpg&nuevoalto=480
 			 //   https://static.lasprovincias.es/multimedia/201405/30/media/s18.jpg
 			 domain === "resizer.lasprovincias.es" ||
+			 // http://resizer.abc.es/resizer/resizer.php?imagen=http://laguiatv.abc.es/archivos/201204/ana-de-armas.jpg&nuevoancho=312&nuevoalto=416
+			 //   http://laguiatv.abc.es/archivos/201204/ana-de-armas.jpg
+			 domain === "resizer.abc.es" ||
 			 // https://resizer.larioja.com/resizer/resizer.php?imagen=/deliverty/demo/resources/jpg/5/2/1281441365725.jpg&nuevoancho=950&nuevoalto=570&copyright=conCopyright&encrypt=false
 			 //   https://resizer.larioja.com/deliverty/demo/resources/jpg/5/2/1281441365725.jpg -- not found
 			 //   tried with main domain as well, no luck
@@ -16675,7 +16678,9 @@ var $$IMU_EXPORT$$;
 			// http://r1.abcimg.es/resizer/resizer.php?imagen=http%3A%2F%2Fwww.abc.es%2Fmedia%2Fsociedad%2F2018%2F02%2F01%2Freina-letizia-kYuH--420x236%40abc.jpg&nuevoancho=128&nuevoalto=73&crop=1&medio=abc
 			//   http://www.abc.es/media/sociedad/2018/02/01/reina-letizia-kYuH--420x236@abc.jpg
 			//   http://www.abc.es/media/sociedad/2018/02/01/reina-letizia-kgrH-U213052464546JvF-620x370@abc.jpg
-			return decodeURIComponent(src.replace(/.*\/resizer\.php.*?[?&]imagen=([^&]*).*$/, "$1"));
+			newsrc = src.replace(/.*\/resizer\.php.*?[?&]imagen=([^&]*).*$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
 		}
 
 		if (domain === "resizer.elnortedecastilla.es" ||
@@ -28081,6 +28086,12 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/[0-9]+\/)[^/]*\/([0-9a-f]+\.[^/.]*)$/, "$1original/$2");
 		}
 
+		if (domain === "hosted.thehun.net") {
+			// https://hosted.thehun.net/.content/5d8/5d89ddf4928c0/thumb.met-art_2019-09-12_POOL_DAZE_02.jpg
+			//   https://hosted.thehun.net/.content/5d8/5d89ddf4928c0/met-art_2019-09-12_POOL_DAZE_02.jpg
+			return src.replace(/(\/\.content\/+[0-9a-f]{3}\/+[0-9a-f]{5,}\/+)thumb\./, "$1");
+		}
+
 		if (domain_nosub === "devote.se" && domain.match(/static[0-9]*\.devote\.se/)) {
 			// http://static4.devote.se/gallery/small/20150708/257a5fd7c37599cc814b4760d98eeb81.jpg
 			//   http://static4.devote.se/gallery/big/20150708/257a5fd7c37599cc814b4760d98eeb81.jpg
@@ -31073,6 +31084,152 @@ var $$IMU_EXPORT$$;
 			// https://img-hw.xvideos.com/videos/profiles/galleries/c5/94/00/mbrisebois1963/gal1148191/pic_3_thumbl.jpg
 			//   https://img-hw.xvideos.com/videos/profiles/galleries/c5/94/00/mbrisebois1963/gal1148191/pic_3_big.jpg
 			return src.replace(/(\/pic_[0-9]+)_[a-z]+(\.[^/.]*)$/, "$1_big$2");
+		}
+
+		if ((host_domain_nowww === "xvideos.com" || host_domain_nowww === "xnxx.com") && options.element && options.do_request && options.cb) {
+			var our_host = host_domain_nosub;
+
+			var full_videourl = function(videourl) {
+				if (our_host === "xvideos.com") {
+					return urljoin("https://www.xvideos.com/", videourl, true);
+				} else if (our_host === "xnxx.com") {
+					return urljoin("https://www.xnxx.com/", videourl, true);
+				}
+			};
+
+			var parse_xvideos_page = function(cache_key, resp) {
+				var matches = resp.responseText.match(/html5player\.set(.*)/g);
+				if (!matches) {
+					console_error(cache_key, "Unable to find matches", resp);
+					return null;
+				}
+
+				var table = {};
+				for (var i = 0; i < matches.length; i++) {
+					var match = matches[i].match(/html5player\.set([a-zA-Z0-9]+)\('([^']+)'\);$/);
+					if (!match) {
+						continue;
+					}
+
+					table[match[1]] = decode_entities(match[2]);
+				}
+
+				return table;
+			};
+
+			var objify_xvideos_table = function(table) {
+				var obj = {extra: {}};
+
+				if (table.VideoTitle) {
+					obj.extra.caption = table.VideoTitle;
+				}
+
+				if (table.VideoURL) {
+					obj.extra.page = full_videourl(table.VideoURL);
+				}
+
+				var urls = [];
+				if (table.VideoHLS) {
+					urls.push({
+						url: table.VideoHLS,
+						video: "hls"
+					});
+				}
+
+				if (table.VideoUrlHigh) {
+					urls.push(table.VideoUrlHigh);
+				}
+
+				if (table.VideoUrlLow) {
+					urls.push(table.VideoUrlLow);
+				}
+
+				return fillobj_urls(urls, obj);
+			};
+
+			var videoid_to_videourl = function(videoid) {
+				if (our_host === "xvideos.com") {
+					return "https://www.xvideos.com/video" + videoid + "/";
+				} else if (our_host === "xnxx.com") {
+					return "https://www.xnxx.com/video-" + videoid + "/";
+				}
+			};
+
+			var query_xvideos_page = function(videoid, cb) {
+				var cache_key = "xvideos:" + videoid;
+				if (our_host === "xnxx.com")
+					cache_key = "xnxx:" + videoid;
+
+				api_cache.fetch(cache_key, cb, function(done) {
+					options.do_request({
+						url: videoid_to_videourl(videoid),
+						method: "GET",
+						onload: function(resp) {
+							if (resp.readyState !== 4)
+								return;
+
+							if (resp.status !== 200) {
+								console_error(cache_key, resp);
+								return done(null, false);
+							}
+
+							var parsed_table = parse_xvideos_page(cache_key, resp);
+							if (!parsed_table) {
+								return done(null, false);
+							}
+
+							var obj = objify_xvideos_table(parsed_table);
+							if (!obj) {
+								console_error(cache_key, "Unable to get URLs from", parsed_table, resp);
+								return done(null, false);
+							}
+
+							return done(obj, 3*60*60);
+						}
+					});
+				});
+			};
+
+			var get_videoid_from_url = function(url) {
+				var regex = null;
+
+				if (our_host === "xvideos.com") {
+					regex = /:\/\/[^/]+\/+video([0-9]+)\//;
+				} else if (our_host === "xnxx.com") {
+					regex = /:\/\/[^/]+\/+video-([^-/._]+)\//;
+				}
+
+				if (!regex)
+					return null;
+
+				var match = url.match(regex);
+				if (!match)
+					return null;
+
+				return match[1];
+			}
+
+			var get_xvideos_vidid_from_el = function(el) {
+				var current = el;
+
+				for (; current; current = current.parentElement) {
+					if (current.tagName === "A") {
+						var id = get_videoid_from_url(current.href);
+						if (id) {
+							return id;
+						}
+					}
+				}
+			};
+
+			var vidid = get_xvideos_vidid_from_el(options.element);
+			if (vidid) {
+				query_xvideos_page(vidid, options.cb);
+
+				return {
+					waiting: true
+				};
+			}
 		}
 
 		if (domain === "camo.derpicdn.net") {
@@ -39676,13 +39833,15 @@ var $$IMU_EXPORT$$;
 		if (domain === "content.pornpics.com" ||
 			// https://img.pornpics.com/2016-04-23/348258_01.jpg
 			//   https://cdn.pornpics.com/pics1/2016-04-23/348258_01big.jpg
+			// https://img.pornpics.com/460/2020-04-07/631822_01.jpg
+			//   https://cdn.pornpics.com/pics1/2020-04-07/631822_01big.jpg
 			domain === "img.pornpics.com") {
 			// https://content.pornpics.com/2013-07-12/108230_01.jpg
 			//   https://cdn.pornpics.com/pics/2013-07-12/108230_01big.jpg
 			var folder = "pics";
 			if (domain === "img.pornpics.com")
 				folder = "pics1";
-			return src.replace(/:\/\/[^/]*\/([0-9]{4}-[0-9]{2}-[0-9]{2}\/+[0-9]+_[0-9]+)(\.[^/.]*)(?:[?#].*)?$/,
+			return src.replace(/:\/\/[^/]*\/+(?:[0-9]+\/+)?([0-9]{4}-[0-9]{2}-[0-9]{2}\/+[0-9]+_[0-9]+)(\.[^/.]*)(?:[?#].*)?$/,
 							   "://cdn.pornpics.com/" + folder + "/$1big$2");
 		}
 
@@ -40677,15 +40836,17 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/uploads\/+img\/+.*)_[a-z]+(\.[^/.]*)(?:[?#].*)?$/, "$1_full$2");
 		}
 
-		if (domain_nosub === "uecdn.es" &&
-			/^e00-[a-z]+\./.test(domain)) {
+		if ((domain_nosub === "uecdn.es" && /^e00-[a-z]+\./.test(domain)) ||
+			// http://estaticos.telva.com/albumes/2016/05/24/mechas-para-el-pelo-celebrities/411442075_extras_albumes_0_m.jpg
+			//   http://estaticos.telva.com/albumes/2016/05/24/mechas-para-el-pelo-celebrities/411442075_extras_albumes_0.jpg
+			domain === "estaticos.telva.com") {
 			// https://e00-telva.uecdn.es/albumes/2016/02/09/almuerzo-de-nominados-a-los-oscar-2016/1773429946_extras_albumes_0_inc.jpg
 			//   https://e00-telva.uecdn.es/albumes/2016/02/09/almuerzo-de-nominados-a-los-oscar-2016/1773429946_extras_albumes_0.jpg
 			// https://e00-telva.uecdn.es/albumes/2016/02/09/almuerzo-de-nominados-a-los-oscar-2016/1773429946_extras_albumes_0_movil.jpg
 			//   https://e00-telva.uecdn.es/albumes/2016/02/09/almuerzo-de-nominados-a-los-oscar-2016/1773429946_extras_albumes_0.jpg
 			// https://e00-elmundo.uecdn.es/assets/multimedia/imagenes/2015/05/12/14314386920056_104x70.jpg
 			//   https://e00-elmundo.uecdn.es/assets/multimedia/imagenes/2015/05/12/14314386920056.jpg
-			return src.replace(/_(?:inc|movil|[0-9]+x[0-9]+)(\.[^/.]*)(?:[?#].*)?$/, "$1");
+			return src.replace(/_(?:inc|movil|m|[0-9]+x[0-9]+)(\.[^/.]*)(?:[?#].*)?$/, "$1");
 		}
 
 		if (domain === "fs.kinomania.ru") {
@@ -57312,6 +57473,28 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/(?:car-thumbnails|gallery-images)\/+)[0-9]+(?:x[0-9]+)?\/+/, "$1original/");
 		}
 
+		if (domain_nosub === "slideserve.com" && /^(?:image|cdn)[0-9]*\./.test(domain)) {
+			// https://image4.slideserve.com/7745593/ana-de-armas-reuters-steve-marcus-t.jpg
+			//   https://image4.slideserve.com/7745593/ana-de-armas-reuters-steve-marcus-n.jpg
+			// https://cdn4.slideserve.com/7744549/governors-awards-red-carpet-t.jpg
+			//   https://cdn4.slideserve.com/7744549/governors-awards-red-carpet-n.jpg
+			return src.replace(/(\/[0-9]+\/+[^/]+)-t(\.[^/.]+)(?:[?#].*)?$/, "$1-n$2");
+		}
+
+		if (domain === "resizer.mujerhoy.com") {
+			// https://resizer.mujerhoy.com/resizer/resizer.php?video_id=6031374753001&nuevoancho=177&nuevoalto=177&crop=1&medio=mujerhoy
+			//   https://resizer.mujerhoy.com/resizer/resizer.php?video_id=6031374753001&medio=mujerhoy
+			if (/\/resizer\/+resizer\.php\?/.test(src)) {
+				return remove_queries(src, ["nuevoancho", "nuevoalto", "crop"]);
+			}
+		}
+
+		if (domain_nowww === "lahiguera.net") {
+			// https://www.lahiguera.net/cinemania/actores/ana_de_armas/fotos/14048/ana_de_armas-p.jpg
+			//   https://www.lahiguera.net/cinemania/actores/ana_de_armas/fotos/14048/ana_de_armas.jpg
+			return src.replace(/(\/fotos\/+[0-9]+\/+[^/]+)-p(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
 
 
 
@@ -62966,7 +63149,7 @@ var $$IMU_EXPORT$$;
 							});
 						} else if (video_type === "hls") {
 							get_library("hls", settings, do_request, function(hls_wrap) {
-								if (!hls_wrap || !hls_wrap.Hls.isSupported()) {
+								if (!hls_wrap || !hls_wrap.Hls || !hls_wrap.Hls.isSupported()) {
 									// this will work if (video.canPlayType('application/vnd.apple.mpegurl'))
 									// if not, it will fail, then go to the next URL
 									video.src = src;
