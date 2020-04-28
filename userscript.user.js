@@ -34456,6 +34456,19 @@ var $$IMU_EXPORT$$;
 					aliases["_www-heise-de_"] = "https://www.heise.de";
 				}
 
+				// https://cdm0lfbn.cloudimg.io/v7/_origin_/image_uploader/photos/75/original/midem--music-industry-conference-2020-cannes-cannes.jpg
+				//   https://static1.seecannes.com/image_uploader/photos/75/original/midem--music-industry-conference-2020-cannes-cannes.jpg
+				//   https://static2.chamonet.com/image_uploader/photos/75/original/midem--music-industry-conference-2020-cannes-cannes.jpg
+				if (domain === "cdm0lfbn.cloudimg.io") {
+					aliases["_origin_"] = "https://static1.seecannes.com";
+				}
+
+				// https://cdheefyn.cloudimg.io/s/width/960/--immosquare--/storeimmo/production/wysiwyg_asset/picture/9b28f454-f5fb-42e2-a955-222e32ae0c2b.png
+				//   https://s3.amazonaws.com/storeimmo/production/wysiwyg_asset/picture/9b28f454-f5fb-42e2-a955-222e32ae0c2b.png
+				if (domain === "cdheefyn.cloudimg.io") {
+					aliases["--immosquare--"] = "https://s3.amazonaws.com";
+				}
+
 				var new_domain = url.replace(/^([^/]+)\/.*/, "$1");
 				for (var alias in aliases) {
 					if (new_domain === alias) {
@@ -34491,9 +34504,19 @@ var $$IMU_EXPORT$$;
 			//   http://sample.li/flat2.jpg
 			// https://heise.cloudimg.io/width/400/q65.webp-lossy-65.foil1/_www-heise-de_/ct/imgs/04/1/1/3/8/0/2/9/b0ee5f5673ed1b5a.jpeg
 			//   https://www.heise.de/ct/imgs/04/1/1/3/8/0/2/9/b0ee5f5673ed1b5a.jpeg
+			// https://aumejtoqen.cloudimg.io/cdn/n/n/https://scontent-iad3-1.xx.fbcdn.net/v/t1.0-9/s720x720/92469457_3362961973733346_3350175560050409472_o.jpg?_nc_cat=104&_nc_sid=8024bb&_nc_ohc=u-GISV-pOocAX9MS5mb&_nc_ht=scontent-iad3-1.xx&_nc_tp=7&oh=f08c73709b5ca63a17f23675cea57cd8&oe=5EBADDA2
+			//   https://scontent-iad3-1.xx.fbcdn.net/v/t1.0-9/s720x720/92469457_3362961973733346_3350175560050409472_o.jpg?_nc_sid=8024bb&_nc_ohc=u-GISV-pOocAX9MS5mb&_nc_ht=scontent-iad3-1.xx&_nc_tp=7&oh=f08c73709b5ca63a17f23675cea57cd8&oe=5EBADDA2
+
+			// v3 of the api has /s/(?:crop|width|height|resizeinbox|resizenp), according to https://api.portfolium.com/
+			// https://evdo8pe.cloudimg.io/s/resizeinbox/400x400/https://www.cmprea.com/_client/visuels/articles/img/photo/SC28950_GLOBAL.jpg
+			//   https://www.cmprea.com/_client/visuels/articles/img/photo/SC28950_GLOBAL.jpg
+			// https://e2k9ube.cloudimg.io/s/cdn/x/https://ediewater.s3.amazonaws.com/news/images/full_34426.jpg -- /cdn/ is also an option
+			//   https://ediewater.s3.amazonaws.com/news/images/full_34426.jpg
+			// https://e2k9ube.cloudimg.io/s/fit/730x355/https://desalinationbiz.s3.amazonaws.com/products/images/full_3976.jpg?v=10/04/2018%2015:25:00
+			//   https://desalinationbiz.s3.amazonaws.com/products/images/full_3976.jpg?v=10/04/2018%2015:25:00
 
 			// https://docs.cloudimage.io/go/cloudimage-documentation/en/security/url-signature (@ in filters)
-			newsrc = src.replace(/^([a-z]+:\/\/[^/]+\/+)(?:cdn|cdno|fit|width|height|crop(?:_px)?|cover|fit|bound)\/(?:[0-9]+|[0-9]+(?:,[0-9]+){3}-[0-9]*x?[0-9]+|[0-9]+x[0-9]+|n(?:one)?)\/[^/@]+\//, "$1cdn/n/n/");
+			newsrc = src.replace(/^([a-z]+:\/\/[^/]+\/+)(?:(?:cdn|cdno|fit|width|height|crop(?:_px)?|cover|fit|bound)\/(?:[0-9]+|[0-9]+(?:,[0-9]+){3}-[0-9]*x?[0-9]+|[0-9]+x[0-9]+|n(?:one)?)\/[^/@]+\/|s\/+(?:crop|width|height|resizeinbox|resizenp|cdn|fit)\/+[0-9]*(?:x[0-9]*)?\/+)/, "$1cdn/n/n/");
 			if (newsrc !== src)
 				return newsrc;
 
@@ -34501,14 +34524,16 @@ var $$IMU_EXPORT$$;
 			// https://abrgsyenen.cloudimg.io/v7/https://fi.bigshopper.com/logos/agradi.jpg?func=bound&force_format=webp&q=95&org_if_sml=1&ci_sign=12fdf6a4b3a9fc2518de55d0f6329aee22b35bac
 			//   https://abrgsyenen.cloudimg.io/v7/https://fi.bigshopper.com/logos/agradi.jpg -- 401 unauthorized
 			//   https://fi.bigshopper.com/logos/agradi.jpg
-			if (!/[?#]ci_sign=/.test(src)) {
+			if (/^[a-z]+:\/\/[^/]+\/+v7\//.test(src) && !/[?#]ci_sign=/.test(src)) {
 				newsrc = src.replace(/\?.*/, "");
 				if (newsrc !== src)
 					return newsrc;
 			}
 
 			//newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/(?:cdn[a-z]?\/)?(?:(?:(?:width|height)\/[0-9]+|n|q[0-9]+|fit\/[0-9]+x[0-9]+\/+)\/)*((?:[a-z]+:\/\/)?[^/]+\.[^/.]+\/)/, "$1");
-			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+(?:cdn|cdno|fit|width|height|crop(?:_px)?|cover|fit|bound)\/(?:[0-9]+|[0-9]+(?:,[0-9]+){3}-[0-9]*x?[0-9]+|[0-9]+x[0-9]+|n(?:one)?)\/[^/]+\/((?:[a-z]+:\/\/)?[^/]+\/.*?)(?:[?#].*)?$/, "$1");
+			// don't remove ? for the moment, though maybe later remove the following?
+			// mark_text, mark_pos, mark_fontsize, mark_color, mark_font, mark_pad, mark_url, mark_alpha, mark_height, mark_width (according to dynamic watermark and text watermark from v6 doc)
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+(?:(?:cdn|cdno|fit|width|height|crop(?:_px)?|cover|fit|bound)\/(?:[0-9]+|[0-9]+(?:,[0-9]+){3}-[0-9]*x?[0-9]+|[0-9]+x[0-9]+|n(?:one)?)\/[^/]+\/|s\/+(?:crop|width|height|resizeinbox|resizenp|cdn|fit)\/+[0-9]*(?:x[0-9]*)?\/+)((?:[a-z]+:\/\/)?[^/]+\/.*?)$/, "$1");
 			if (newsrc !== src)
 				return get_orig_cloudimg_url(newsrc);
 
@@ -34524,6 +34549,19 @@ var $$IMU_EXPORT$$;
 			// https://1.f.ix.de/scale/geometry/743x453/q85/download/media/suche/tampermonkey-1_1-1-17.jpg
 			// 	 https://www.heise.de/download/media/suche/tampermonkey-1_1-1-17.jpg
 			return src.replace(/^[a-z]+:\/\/[^/]+\/+scale\/.*?\/q[0-9]+\/+/, "https://www.heise.de/");
+		}
+
+		if (domain_nowww === "cloudphoto.io" || domain === "cdn.cloudphoto.io") {
+			// https://cloudphoto.io/en/docs/v1
+
+			// https://cloudphoto.io/9038d9/fit/1170x500/none/https://s3.amazonaws.com/storeimmo/production/asset/picture/746008ca-6995-4984-9faa-4873092a5fd0.png
+			// https://cdn.cloudphoto.io/9038d9/fit/1170x500/none/https://s3.amazonaws.com/storeimmo/production/asset/picture/746008ca-6995-4984-9faa-4873092a5fd0.png
+			//   https://s3.amazonaws.com/storeimmo/production/asset/picture/746008ca-6995-4984-9faa-4873092a5fd0.png
+			// https://cdn.cloudphoto.io/demo/width/300/none/https://samples-photos.com/tennis.jpg
+			//   https://samples-photos.com/tennis.jpg
+			// https://cdn.cloudphoto.io/demo/crop/900x700/gravityEast/https://samples-photos.com/tennis.jpg
+			//   https://cdn.cloudphoto.io/demo/crop/900x700/gravityEast/https://samples-photos.com/tennis.jpg
+			return src.replace(/^[a-z]+:\/\/[^/]+\/+[^/]+\/+(?:width|height|crop|cover|fit|bound|none)\/+[0-9]+(?:x[0-9]+)?\/+[^/]+\/+(https?:\/\/)/, "$1");
 		}
 
 		if (domain_nowww === "kinataka.ru") {
@@ -58952,6 +58990,9 @@ var $$IMU_EXPORT$$;
 			domain_nosub === "indiatimes.com" ||
 			// https://www.thehindu.com/migration_catalog/article14926809.ece/alternates/FREE_660/30MPSQUIRREL
 			domain_nosub === "thehindu.com" ||
+			// https://api.kauri.io/ipfs/QmX5RCZWSMc4Xj3XcnwfyLVv7Ym2nWeeSSggu2i3urLDTC
+			// https://api.beta.kauri.io:443/ipfs/QmXqLJc3qp8vkHqifRCjbZApg758kdgBrgZVibkMDDFCqZ
+			(domain_nosub === "kauri.io" && /^api\./.test(domain) && string_indexof(src, "/ipfs/") >= 0) ||
 			// http://images.contentful.com/l7es9q9kzr9z/KVC2bUAzyUkW6KaMgGkeA/2f45f07b331a60fc360ff8d641a29d7a/778_KimberlyMcArthur_15.jpg
 			domain === "images.contentful.com") {
 			return {
