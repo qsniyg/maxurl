@@ -24519,6 +24519,10 @@ var $$IMU_EXPORT$$;
 							if (_nir_debug_)
 								console_log(cache_key, deepcopy(out));
 
+							if (out.stat && out.stat === "fail") {
+								console_error(out);
+							}
+
 							var largesturl = null;
 							var largestsize = 0;
 							out.sizes.size.forEach(function (size) {
@@ -24537,7 +24541,7 @@ var $$IMU_EXPORT$$;
 								done(null, false);
 							}
 						} catch (e) {
-							console_error(cache_key, e);
+							console_error(cache_key, e, resp);
 							return done(null, false);
 						}
 					});
