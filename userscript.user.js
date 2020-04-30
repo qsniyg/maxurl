@@ -29524,6 +29524,16 @@ var $$IMU_EXPORT$$;
 				return newsrc;
 		}
 
+		if (domain_nosub === "fbcdn.net") {
+			// https://static.xx.fbcdn.net/rsrc.php/v3/yt/r/nAici4PGRPZ.png
+			if (/^[a-z]+:\/\/[^/]+\/+rsrc\.php\//.test(src)) {
+				return {
+					url: src,
+					bad: "mask"
+				};
+			}
+		}
+
 		if (domain_nosub === "fbcdn.net" &&
 			host_domain_nosub === "facebook.com" && options.element) {
 			var element = options.element;
@@ -57645,6 +57655,23 @@ var $$IMU_EXPORT$$;
 			// https://www.lahiguera.net/cinemania/actores/ana_de_armas/fotos/14048/ana_de_armas-p.jpg
 			//   https://www.lahiguera.net/cinemania/actores/ana_de_armas/fotos/14048/ana_de_armas.jpg
 			return src.replace(/(\/fotos\/+[0-9]+\/+[^/]+)-p(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain === "camo.envatousercontent.com") {
+			// https://camo.envatousercontent.com/09ba4b584488df33ca20c30ddad78f4ab0918aba/68747470733a2f2f7265732e636c6f7564696e6172792e636f6d2f6466683362707973662f696d6167652f75706c6f61642f76313537343336343230372f57616c66792f315f6868367364762e706e67
+			//   https://res.cloudinary.com/dfh3bpysf/image/upload/Walfy/1_hh6sdv.png
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+[0-9a-f]+\/+([0-9a-f]{10,})(?:[?#].*)?$/, "$1");
+			if (newsrc !== src)
+				return hex_to_ascii(newsrc);
+		}
+
+		if (domain === "img.mnggo.net" ||
+			// https://img.lady-first.me/frimage/md_/rROHYUm8aAXdjCzzW2GreZ5h2WDArkToUxd0kCcAO0ZXC8rQrroSUO9oDV6JW9wWDz5XPb7vUg-ugSGHnPyahvrkCW_W266WD8R.jpg
+			//   https://img.lady-first.me/frimage/rROHYUm8aAXdjCzzW2GreZ5h2WDArkToUxd0kCcAO0ZXC8rQrroSUO9oDV6JW9wWDz5XPb7vUg-ugSGHnPyahvrkCW_W266WD8R.jpg
+			domain === "img.lady-first.me") {
+			// https://img.mnggo.net/frimage/md_/rROHYUm8aAXdjCzzW2GreZ5h2WDArkToUxd0kCcAO0ZXC8rQrroSUO9oDV6JW9wWDz5XPb7vUg-ugSGHnPyahvrkCW_W266WD8R.jpg
+			//   https://img.mnggo.net/frimage/rROHYUm8aAXdjCzzW2GreZ5h2WDArkToUxd0kCcAO0ZXC8rQrroSUO9oDV6JW9wWDz5XPb7vUg-ugSGHnPyahvrkCW_W266WD8R.jpg
+			return src.replace(/(:\/\/[^/]+\/+frimage\/+)md_\/+/, "$1");
 		}
 
 
