@@ -1179,7 +1179,7 @@ var $$IMU_EXPORT$$;
 		return navigator.language || navigator.userLanguage;
 	}
 
-	var supported_languages = ["en", "ko", "fr"];
+	var supported_languages = ["en", "ko", "fr", "es"];
 
 	var browser_language = "en";
 	try {
@@ -1193,144 +1193,180 @@ var $$IMU_EXPORT$$;
 	var strings = {
 		"options_header": {
 			"en": "Options",
-			"ko": "설정"
+			"ko": "설정",
+			"es": "Opciones"
 		},
 		"yes": {
 			"en": "Yes",
 			"ko": "예",
-			"fr": "Oui"
+			"fr": "Oui",
+			"es": "Sí"
 		},
 		"no": {
 			"en": "No",
 			"ko": "아니오",
-			"fr": "Non"
+			"fr": "Non",
+			"es": "No"
 		},
 		"category_redirection": {
 			"en": "Redirection",
-			"ko": "리디렉션"
+			"ko": "리디렉션",
+			"es": "Redirección"
 		},
 		"Enable redirection": {
 			"ko": "리디렉션 사용",
-			"fr": "Activer la redirection"
+			"fr": "Activer la redirection",
+			"es": "Habilitar redirección"
 		},
 		"Add to history": {
 			"ko": "브라우저 기록에 추가",
-			"fr": "Ajouter à l'historique"
+			"fr": "Ajouter à l'historique",
+			"es": "Agregar al historial"
 		},
 		"Use GET if HEAD is unsupported": {
 			"ko": "HEAD 지원되지 않으면 GET 사용",
-			"fr": "Utiliser GET si HEAD n'est pas supporté"
+			"fr": "Utiliser GET si HEAD n'est pas supporté",
+			"es": "Utilizar GET si HEAD no es soportado"
 		},
 		"Try finding original page/caption": {
-			"fr": "Essayer de trouver la page d'origine/sous-titre"
+			"fr": "Essayer de trouver la page d'origine/sous-titre",
+			"es": "Intentar de encontrar la página original/título"
 		},
 		"Enable mouseover popup": {
 			"en": "Enable image popup",
 			"ko": "이미지 팝업 사용",
-			"fr": "Activer le popup"
+			"fr": "Activer le popup",
+			"es": "Activar popup de la imagen"
 		},
 		"Mouseover popup action": {
 			"en": "Popup action",
-			"ko": "이미지 팝업 작업"
+			"ko": "이미지 팝업 작업",
+			"es": "Acción del popup"
 		},
 		"category_popup": {
 			"en": "Popup",
-			"ko": "팝업"
+			"ko": "팝업",
+			"es": "Popup" // same as en
 		},
 		"subcategory_settings": {
-			"en": "Settings"
+			"en": "Settings",
+			"es": "Ajustes"
 		},
 		"subcategory_ui": {
-			"en": "UI"
+			"en": "UI",
+			"es": "Interfaz"
 		},
 		"subcategory_trigger": {
 			"en": "Trigger",
 			"ko": "트리거",
-			"fr": "Déclencheur"
+			"fr": "Déclencheur",
+			"es": "Acciones del popup" // TODO: More appropriate translation for string es
 		},
 		"subcategory_open_behavior": {
-			"en": "Open Behavior"
+			"en": "Open Behavior",
+			"es": "Comportamiento al Abrir"
 		},
 		"subcategory_close_behavior": {
-			"en": "Close Behavior"
+			"en": "Close Behavior",
+			"es": "Comportamiento al Cerrar"
 		},
 		"subcategory_behavior": {
-			"en": "Popup Behavior"
+			"en": "Popup Behavior",
+			"es": "Comportamiento del Popup"
 		},
 		"subcategory_video": {
 			"en": "Video",
-			"ko": "영상"
+			"ko": "영상",
+			"es": "Video" // same as en
 		},
 		"subcategory_gallery": {
-			"en": "Gallery"
+			"en": "Gallery",
+			"es": "Galeria"
 		},
 		"subcategory_popup_other": {
 			"en": "Other",
-			"fr": "Autre"
+			"fr": "Autre",
+			"es": "Otro"
 		},
 		"New tab": {
 			"ko": "새 탭",
-			"fr": "Nouvel onglet"
+			"fr": "Nouvel onglet",
+			"es": "Nueva pestaña"
 		},
 		"Mouseover popup trigger": {
-			// FIXME is 트리거 correct?
 			"en": "Popup trigger",
+			// FIXME is 트리거 correct?
 			"ko": "팝업 트리거",
-			"fr": "Déclencheur du popup"
+			"fr": "Déclencheur du popup",
+			"es": "Acción del popup al mover el ratón encima"
 		},
 		"Mouseover": {
-			// FIXME
-			"ko": "마우스"
+			"ko": "마우스", // FIXME
+			"es": "Mover ratón encima"
 		},
 		"Key trigger": {
-			"ko": "키 바인딩"
+			"ko": "키 바인딩",
+			"es": "Tecla de acción"
 		},
 		"Popup trigger key": {
-			"ko": "팝업 키 바인딩"
+			"ko": "팝업 키 바인딩",
+			"es": "Tecla de acción del popup"
 		},
 		"Popup trigger delay": {
-			// FIXME?
-			"ko": "팝업 작업 지연 시간"
+			"ko": "팝업 작업 지연 시간", // FIXME?
+			"es": "Retraso de acción del popup"
 		},
 		"seconds": {
-			"ko": "초"
+			"ko": "초",
+			"es": "segundos",
 		},
 		"Popup UI": {
-			"ko": "팝업 UI"
+			"ko": "팝업 UI",
+			"es": "Interfaz del Popup"
 		},
 		"Opacity": {
 			"ko": "불투명",
-			"fr": "Opacité"
+			"fr": "Opacité",
+			"es": "Opacidad"
 		},
 		"Gallery counter": {
 			"ko": "갤러리 이미지 수",
-			"fr": "Nombre d'images dans la galerie"
+			"fr": "Nombre d'images dans la galerie",
+			"es": "Número de imágenes a contar en la galería"
 		},
 		"Gallery counter max": {
 			"ko": "갤러리 이미지 수의 최대값",
-			"fr": "Nombre max d'images a compter pour la galerie"
+			"fr": "Nombre max d'images a compter pour la galerie",
+			"es": "Número máximo de imágenes a contar para la galería"
 		},
 		"images": {
-			"ko": "이미지"
+			"ko": "이미지",
+			"es": "imágenes"
 		},
 		"Options Button": {
-			"ko": "설정 링크"
+			"ko": "설정 링크",
+			"es": "Botón de Opciones"
 		},
 		"Rotation Buttons": {},
 		"Video": {
-			"ko": "영상"
+			"ko": "영상",
+			"es": "Video"
 		},
 		"Media": {
-			"ko": "미디어"
+			"ko": "미디어",
+			"es": "Medios"
 		},
 		"Both images and video": {
-			"ko": "사진+영상"
+			"ko": "사진+영상",
+			"es": "Imágenes y video"
 		},
 		"Keep popup open until": {
-			"ko": "팝업 닫으려면"
+			"ko": "팝업 닫으려면",
+			"es": "Mantener popup abierto hasta que"
 		},
 		"Any trigger is released": {
-			"ko": "아무 키 놓습니다"
+			"ko": "아무 키 놓습니다",
+			"es": "Cualquier acción se deja ir"
 		},
 		"All triggers are released": {
 			"ko": "키 다 놓습니다"
@@ -1527,10 +1563,12 @@ var $$IMU_EXPORT$$;
 		},
 		"category_general": {
 			"en": "General",
-			"ko": "일반"
+			"ko": "일반",
+			"es": "General"
 		},
 		"Language": {
-			"ko": "언어"
+			"ko": "언어",
+			"es": "Lenguaje"
 		}
 	};
 
@@ -1822,6 +1860,9 @@ var $$IMU_EXPORT$$;
 				},
 				fr: {
 					name: "Français"
+				},
+				es: {
+					name: "Español"
 				}
 			},
 			onedit: function() {
