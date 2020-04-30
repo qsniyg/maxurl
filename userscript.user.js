@@ -6534,8 +6534,12 @@ var $$IMU_EXPORT$$;
 			};
 		}
 
-		if (el.tagName !== "VIDEO" && el.tagName !== "IMG")
-			return null;
+		if (el.tagName !== "VIDEO" && el.tagName !== "IMG") {
+			// <div class="css-crr1df" style="background-image: url(&quot;blob:https://www.snapchat.com/...&quot;);"></div>
+			if (el.tagName !== "DIV" || !el.style.backgroundImage || el.style.backgroundImage.indexOf("blob:") < 0) {
+				return null;
+			}
+		}
 
 		var current = el;
 		while ((current = current.parentElement)) {
@@ -27605,6 +27609,9 @@ var $$IMU_EXPORT$$;
 			// https://looppacificassets.s3.amazonaws.com/styles/carousel_large/s3/thumbnails/image/taylor_swift_plays_the_hits_then_runs_in_swansea.jpg?itok=VEhQSs-s
 			//   https://looppacificassets.s3.amazonaws.com/thumbnails/image/taylor_swift_plays_the_hits_then_runs_in_swansea.jpg?itok=VEhQSs-s
 			amazon_container === "looppacificassets" ||
+			// https://botw-pd.s3.amazonaws.com/styles/logo-thumbnail/s3/012014/2011_nhl_heritage_classic_logo.png?itok=NxkQo6Q7
+			//   https://botw-pd.s3.amazonaws.com/012014/2011_nhl_heritage_classic_logo.png?itok=NxkQo6Q7
+			amazon_container === "botw-pd" ||
 			// https://kpopimg.s3.amazonaws.com/styles/article_image/s3/eunice-dia.jpg?itok=5JoH8xh6
 			//   https://kpopimg.s3.amazonaws.com/eunice-dia.jpg?itok=5JoH8xh6
 			amazon_container === "kpopimg") {
@@ -56654,18 +56661,30 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "s.sc-cdn.net") {
+			obj = {
+				url: src
+			};
+
+			// ids are not very human-readable, maybe add an option?
+			match = src.match(/:\/\/[^/]+\/+[0-9a-f]{2}\/+([^/]{10,})\//);
+			if (match) {
+				obj.filename = match[1];
+			}
+
+			// awful hack but whatever
+			if (host_domain_nosub === "snapchat.com")
+				obj.need_blob = true;
+
 			// https://s.sc-cdn.net/1d/feXwf0gm4YfDw_mUoddLXnEWB9n8Fo3vx94Zol9wxJc=/default/preview.jpg
 			//   https://s.sc-cdn.net/1d/Pf3Qi0hkJmeUxsOnJRs777PbJnN_3cv4LMvMZ3FZ8Yc=/default/media.mp4
 			newsrc = src.replace(/\/default\/+preview\.jpg(?:[?#].*)?$/, "/default/media.mp4");
 			if (newsrc !== src) {
 				var full = add_full_extensions(newsrc, ["mp4", "jpg"], true);
 
-				// awful hack but whatever
-				if (host_domain_nosub === "snapchat.com")
-					full[0].need_blob = true;
-
-				return full;
+				return fillobj_urls(full, obj);
 			}
+
+			return obj;
 
 			// https://s.sc-cdn.net/1d/NTegWFoU9mC8cYucFvrJOx4Hn0e4TwTqiTRA97esETg=/default/overlay.png
 			if (false && /\/default\/+overlay\.jpg(?:[?#].*)?$/.test(src)) {
@@ -56673,15 +56692,6 @@ var $$IMU_EXPORT$$;
 				return {
 					url: src,
 					bad: "mask"
-				};
-			}
-
-			// ids are not very human-readable, media/overlay.mp4/jpg is better
-			match = src.match(/:\/\/[^/]+\/+[0-9a-f]{2}\/+([^/]{10,})\//);
-			if (false && match) {
-				return {
-					url: src,
-					filename: match[1]
 				};
 			}
 		}
@@ -57713,6 +57723,12 @@ var $$IMU_EXPORT$$;
 			// https://img.mnggo.net/frimage/md_/rROHYUm8aAXdjCzzW2GreZ5h2WDArkToUxd0kCcAO0ZXC8rQrroSUO9oDV6JW9wWDz5XPb7vUg-ugSGHnPyahvrkCW_W266WD8R.jpg
 			//   https://img.mnggo.net/frimage/rROHYUm8aAXdjCzzW2GreZ5h2WDArkToUxd0kCcAO0ZXC8rQrroSUO9oDV6JW9wWDz5XPb7vUg-ugSGHnPyahvrkCW_W266WD8R.jpg
 			return src.replace(/(:\/\/[^/]+\/+frimage\/+)md_\/+/, "$1");
+		}
+
+		if (domain_nowww === "hockeydb.com") {
+			// https://www.hockeydb.com/ihdb/stats/program_img_tn.php?if=edmonton_oilers-1994-nhl.jpg
+			//   https://www.hockeydb.com/ihdb/stats/program_img.php?if=edmonton_oilers-1994-nhl.jpg
+			return src.replace(/\/program_img_tn\.php\?/, "/program_img.php?");
 		}
 
 
@@ -59514,7 +59530,8 @@ var $$IMU_EXPORT$$;
 		if (host_domain_nosub === "snapchat.com") {
 			return {
 				gallery: function(el, nextprev) {
-					if (el.tagName !== "VIDEO" && el.tagName !== "IMG")
+					// useless because get_snapchat_info_from_el does this check for us
+					if (false && el.tagName !== "VIDEO" && el.tagName !== "IMG")
 						return "default";
 
 					var info = common_functions.get_snapchat_info_from_el(el);
