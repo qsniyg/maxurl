@@ -56677,7 +56677,8 @@ var $$IMU_EXPORT$$;
 
 			// https://s.sc-cdn.net/1d/feXwf0gm4YfDw_mUoddLXnEWB9n8Fo3vx94Zol9wxJc=/default/preview.jpg
 			//   https://s.sc-cdn.net/1d/Pf3Qi0hkJmeUxsOnJRs777PbJnN_3cv4LMvMZ3FZ8Yc=/default/media.mp4
-			newsrc = src.replace(/\/default\/+preview\.jpg(?:[?#].*)?$/, "/default/media.mp4");
+			// /default/preview_overlay.jpg exists, but media_overlay doesn't exist
+			newsrc = src.replace(/\/default\/+preview(?:_overlay)?\.jpg(?:[?#].*)?$/, "/default/media.mp4");
 			if (newsrc !== src) {
 				var full = add_full_extensions(newsrc, ["mp4", "jpg"], true);
 
