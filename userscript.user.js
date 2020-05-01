@@ -10825,6 +10825,8 @@ var $$IMU_EXPORT$$;
 			domain === "binaryapi.ap.org" ||
 			// https://images.8tracks.com/cover/i/000/618/338/hive_mind_cover-4092.jpg?rect=0,0,500,500&q=98&fm=jpg&fit=max&w=320&h=320
 			domain === "images.8tracks.com" ||
+			// https://d2ykdu8745rm9t.cloudfront.net/cover/i/010/244/327/IMG_20160907_220847-1787.jpg?rect=0,0,1024,100&amp;q=98&amp;fm=jpg&amp;fit=max
+			domain === "d2ykdu8745rm9t.cloudfront.net" ||
 			// http://cdn2.spoilercat.com/ac/a/christopher-nolan-53c9cd8d5bbe5d40048c7003.jpeg?s=640x0 -- upscaled
 			(domain_nosub === "spoilercat.com" && domain.match(/cdn[0-9]*\.spoilercat\.com/)) ||
 			// https://www.mumbailive.com/images/news/Christopher_1514973032318.jpg?w=205
@@ -30760,6 +30762,12 @@ var $$IMU_EXPORT$$;
 								options.cb({
 									url: match[1],
 									is_original: true,
+									headers: {
+										Referer: "https://www.imagebam.com/"
+									},
+									referer_ok: {
+										same_domain_nosub: true
+									},
 									extra: {
 										page: page
 									}
@@ -30784,6 +30792,19 @@ var $$IMU_EXPORT$$;
 				return {
 					url: src,
 					bad: true
+				};
+			}
+
+			if (string_indexof(src, "/download/") >= 0) {
+				return {
+					url: src,
+					is_original: true,
+					headers: {
+						Referer: "https://www.imagebam.com/"
+					},
+					referer_ok: {
+						same_domain_nosub: true
+					}
 				};
 			}
 		}
