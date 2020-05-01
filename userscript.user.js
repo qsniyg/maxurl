@@ -57775,6 +57775,46 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/thumbs\/+([^/]+)_s(\.[^/.]+)(?:[?#].*)?$/, "/pictures/$1$2");
 		}
 
+		if (domain_nowww === "celebshq.com") {
+			// https://celebshq.com/pics/jessica-biel/celebshq_dot_com_-_jessica-biel-Y201804202223009453_smallthumb_.jpg
+			//   https://celebshq.com/pics/jessica-biel/celebshq_dot_com_-_jessica-biel-Y201804202223009453.jpg
+			// https://celebshq.com/pics/bella-thorne/celebshq_dot_com_-_bella-thorne-G201804202222002832_bigthumb_.jpg
+			//   https://celebshq.com/pics/bella-thorne/celebshq_dot_com_-_bella-thorne-G201804202222002832.jpg
+			return src.replace(/(\/pics\/+[^/]+\/+[^/]+)_(?:small|big)thumb_(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain === "images-ssl.gotinder.com" ||
+			// https://preview.gotinder.com/5e9dd722c533de01009ff6dc/172x216_2730b2e9-608d-418a-8143-cb9bb7f59e76.jpg
+			//   https://preview.gotinder.com/5e9dd722c533de01009ff6dc/original_2730b2e9-608d-418a-8143-cb9bb7f59e76.jpeg
+			// https://preview.gotinder.com/a384e339-5285-4d41-a242-395bc53749b7/1080x1350_184d46b8-9466-41b8-853d-3540511caeaf.jpg
+			//   https://preview.gotinder.com/a384e339-5285-4d41-a242-395bc53749b7/original_184d46b8-9466-41b8-853d-3540511caeaf.jpeg -- doesn't work
+			domain === "preview.gotinder.com") {
+			// thanks to 4-FLOSS-Free-Libre-Open-Source-Software on github: https://github.com/qsniyg/maxurl/issues/317
+			// https://images-ssl.gotinder.com/5e9dd722c533de01009ff6dc/172x216_2730b2e9-608d-418a-8143-cb9bb7f59e76.jpg
+			//   https://images-ssl.gotinder.com/5e9dd722c533de01009ff6dc/640x800_2730b2e9-608d-418a-8143-cb9bb7f59e76.jpg
+			//   https://images-ssl.gotinder.com/5e9dd722c533de01009ff6dc/original_2730b2e9-608d-418a-8143-cb9bb7f59e76.jpeg -- uncropped
+			// https://images-ssl.gotinder.com/5cf527471823e116007148a2/640x800_8299bd3d-0d6f-448b-8c7e-a64986d1132f.jpg
+			//   https://images-ssl.gotinder.com/5cf527471823e116007148a2/1080x1350_8299bd3d-0d6f-448b-8c7e-a64986d1132f.jpg
+			//   https://images-ssl.gotinder.com/5cf527471823e116007148a2/original_8299bd3d-0d6f-448b-8c7e-a64986d1132f.jpeg -- 3024x3780
+			// https://images-ssl.gotinder.com/5e14c9b6a4ef3201009e86df/640x800_d6222096-0a14-4a1c-83e2-f4e3a73f5d79.jpg -- upscaled
+			//   https://images-ssl.gotinder.com/5e56e7874136bd01007e48ea/original_938a4826-659d-4a9c-b330-3e16c2757c46.jpeg
+			// https://images-ssl.gotinder.com/5cea505af8a44e16002268bb/640x800_75_68e33c6d-4c0a-46ca-85eb-33560103235a.webp
+			//   https://images-ssl.gotinder.com/5cea505af8a44e16002268bb/original_68e33c6d-4c0a-46ca-85eb-33560103235a.jpeg -- 2470x3023
+			// https://images-ssl.gotinder.com/54b1cb30a38bda4970451f45/320x400_39fac80e-f057-4265-a428-eff95083612a.jpg
+			//   https://images-ssl.gotinder.com/54b1cb30a38bda4970451f45/original_39fac80e-f057-4265-a428-eff95083612a.jpeg
+			// https://images-ssl.gotinder.com/546d72f55f2257a85f1b8538/320x400_b6314fba-2537-4fa9-8d6a-1ea19e940cb3.jpg -- original doesn't work, 640x800 and 1080x1350 does, but is upscaled
+			// doesn't work for all (square):
+			// https://images-ssl.gotinder.com/59fb90fe62dab66a0c554a33/172x172_415283a5-ae1d-4bfa-81a9-ae04f53130cd.jpg
+			//   https://images-ssl.gotinder.com/59fb90fe62dab66a0c554a33/320x320_415283a5-ae1d-4bfa-81a9-ae04f53130cd.jpg
+			//   https://images-ssl.gotinder.com/59fb90fe62dab66a0c554a33/640x640_415283a5-ae1d-4bfa-81a9-ae04f53130cd.jpg
+			//   https://images-ssl.gotinder.com/59fb90fe62dab66a0c554a33/1080x1080_415283a5-ae1d-4bfa-81a9-ae04f53130cd.jpg -- original doesn't work
+			// https://images-ssl.gotinder.com/5b01db0967c5a090092156b7/640x640_df9ecc9e-4c8d-4ae9-8aeb-4c78a37d1083.jpg
+			//   https://images-ssl.gotinder.com/5b01db0967c5a090092156b7/1080x1080_df9ecc9e-4c8d-4ae9-8aeb-4c78a37d1083.jpg -- upscaled? original doesn't work
+			// https://images-ssl.gotinder.com/577918a7bbf0334413f9724a/7cdbc5d9-0e5f-46c5-8467-d9f51cc189b4.jpg -- 320x320 works, 1080x1080 doesn't
+			return src.replace(/(\/[-0-9a-f]{10,}\/+)(?:[0-9]+x[0-9]+_)?(?:[0-9]+_)?([0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12})\.[^/.]+(?:[?#].*)?$/,
+								"$1original_$2.jpeg");
+		}
+
 
 
 
