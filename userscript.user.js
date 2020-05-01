@@ -6751,8 +6751,11 @@ var $$IMU_EXPORT$$;
 	};
 
 	function bigimage(src, options) {
-		if (!src)
-			return src;
+		// for element_ok with elements without sources (src == null)
+		if (!src) {
+			src = "data:";
+			//return src;
+		}
 
 		if (!src.match(/^(?:https?|x-raw-image):\/\//) && !src.match(/^(?:data|blob):/))
 			return src;
@@ -24635,6 +24638,19 @@ var $$IMU_EXPORT$$;
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+\?(?:.*&)?url=([^&]*).*?$/, "$1");
 			if (newsrc !== src)
 				return decodeuri_ifneeded(newsrc);
+		}
+
+		if (host_domain_nosub === "flickr.com" && options.element && string_indexof(src, "staticflickr.com/") < 0) {
+			// https://www.flickr.com/photos/30574959@N08/5194905477/
+			var current = options.element;
+			while ((current = current.parentElement)) {
+				if (current.tagName === "DIV" && current.classList.contains("restricted-interstitial")) {
+					var meta_image = document.head.querySelector("meta[property=\"og:image\"]");
+					if (meta_image) {
+						return meta_image.content;
+					}
+				}
+			}
 		}
 
 		// http://galleryproject.org/
@@ -57753,6 +57769,12 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/program_img_tn\.php\?/, "/program_img.php?");
 		}
 
+		if (domain_nowww === "hahastop.com") {
+			// http://www.hahastop.com/thumbs/Curled_Up_So_Cute_s.jpg
+			//   http://www.hahastop.com/pictures/Curled_Up_So_Cute.jpg
+			return src.replace(/\/thumbs\/+([^/]+)_s(\.[^/.]+)(?:[?#].*)?$/, "/pictures/$1$2");
+		}
+
 
 
 
@@ -59656,6 +59678,21 @@ var $$IMU_EXPORT$$;
 			};
 		}
 
+		if (host_domain_nosub === "flickr.com") {
+			return {
+				element_ok: function(el) {
+					var current = el;
+					while ((current = current.parentElement)) {
+						if (current.tagName === "DIV" && current.classList.contains("restricted-interstitial")) {
+							return true;
+						}
+					}
+
+					return "default";
+				}
+			};
+		}
+
 		return null;
 	}
 
@@ -59803,7 +59840,8 @@ var $$IMU_EXPORT$$;
 	};
 
 	var bigimage_recursive = function(url, options) {
-		if (!url)
+		// breaks element_ok on elements without sources
+		if (false && !url)
 			return url;
 
 		if (!options)
@@ -63142,7 +63180,7 @@ var $$IMU_EXPORT$$;
 			console_log("check_image_get", obj, cb, processing);
 		}
 
-		if (!obj || !obj[0]) {
+		if (!obj || !obj[0] || !obj[0].url) {
 			return cb(null);
 		}
 
