@@ -16072,7 +16072,7 @@ var $$IMU_EXPORT$$;
 			return src.replace(/-[^-/.]*(\.[^/.]*)$/, "-original$1");
 		}
 
-		if (domain === "media.licdn.com") {
+		if (domain_nosub === "licdn.com" && /^media(?:-[^.]+)?\./.test(domain)) {
 			// https://media.licdn.com/mpr/mpr/shrinknp_200_200/AAEAAQAAAAAAAAIsAAAAJDI3NTdjMDNhLWM3ZWMtNGQzZS04MGE1LWJjMzlkNWIzNDlhNw.jpg
 			//   https://media.licdn.com/mpr/mpr/AAEAAQAAAAAAAAIsAAAAJDI3NTdjMDNhLWM3ZWMtNGQzZS04MGE1LWJjMzlkNWIzNDlhNw.jpg
 			return src.replace(/\/shrinknp_[0-9]+_[0-9]+\//, "/");
@@ -18734,7 +18734,12 @@ var $$IMU_EXPORT$$;
 			// https://imageproxy.themaven.net/http%3A%2F%2Fimg.aws.livestrongcdn.com%2Fls-1200x630%2Fcme%2Fcme_public_images%2Fwww_livestrong_com%2Fphotos.demandstudios.com%2Fgetty%2Farticle%2F178%2F99%2F79711775_XS.jpg
 			// https://imageproxy.themaven.net/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fmaven-user-photos%2Fthe-maven%2Fpress%2FhAfH0nLTEU-5d4pCxu-TUA%2F2wNFvsqAbUaqAch2Ndhq9w?w=688&q=75&h=512&auto=format&fit=crop
 			//   https://s3-us-west-2.amazonaws.com/maven-user-photos/the-maven/press/hAfH0nLTEU-5d4pCxu-TUA/2wNFvsqAbUaqAch2Ndhq9w
-			return decodeURIComponent(src.replace(/^.*?:\/\/[^/]*\//, "").replace(/\?.*/, ""));
+			// https://imageproxy.themaven.net/https%3A%2F%2Fmedia-exp1.licdn.com%2Fdms%2Fimage%2FC5622AQF-OIaklbqWOA%2Ffeedshare-shrink_2048_1536%2F0%3Fe%3D1589414400%26v%3Dbeta%26t%3DNzgEJe0DDaOs4dAcMviVvPr1cfWCnzZW-ji-Ol1bQYs
+			//   https://media-exp1.licdn.com/dms/image/C5622AQF-OIaklbqWOA/feedshare-shrink_2048_1536/0?e=1589414400&v=beta&t=NzgEJe0DDaOs4dAcMviVvPr1cfWCnzZW-ji-Ol1bQYs
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+(http)/, "$1")
+			if (newsrc !== src) {
+				return decodeURIComponent(newsrc.replace(/\?.*/, ""));
+			}
 		}
 
 		if ((domain_nosub === "demandstudios.com" && domain.match(/photos[0-9]*\.demandstudios\.com/)) &&
@@ -35605,6 +35610,17 @@ var $$IMU_EXPORT$$;
 			// http://img2.ali213.net/picfile/News/2018/04/24/584_2018042415051896.jpg -- 584x945
 			//   http://img2.ali213.net/picfile/News/2018/04/24/2018042415051896.jpg -- 741x1200
 			return src.replace(/\/[0-9]+_([0-9]+\.[^/.]*)$/, "/$1");
+		}
+
+		if (domain === "cdn.magzter.com" ||
+			// https://magztertemp.s3.amazonaws.com/1370943257/1456368547/images/thumb/thumb_1.jpg
+			//   https://magztertemp.s3.amazonaws.com/1370943257/1456368547/images/original/large_1.jpg
+			amazon_container === "magztertemp") {
+			// http://cdn.magzter.com/1370943257/1456368547/images/thumb/thumb_1.jpg
+			//   http://cdn.magzter.com/1370943257/1456368547/images/original/large_1.jpg
+			newsrc = src.replace(/\/images\/+thumb\/+thumb_([0-9]+\.[^/.]+)(?:[?#].*)?$/, "/images/original/large_$1");
+			if (newsrc !== src)
+				return newsrc;
 		}
 
 		if (domain === "reseuro.magzter.com" ||
@@ -57813,6 +57829,20 @@ var $$IMU_EXPORT$$;
 			// https://images-ssl.gotinder.com/577918a7bbf0334413f9724a/7cdbc5d9-0e5f-46c5-8467-d9f51cc189b4.jpg -- 320x320 works, 1080x1080 doesn't
 			return src.replace(/(\/[-0-9a-f]{10,}\/+)(?:[0-9]+x[0-9]+_)?(?:[0-9]+_)?([0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12})\.[^/.]+(?:[?#].*)?$/,
 								"$1original_$2.jpeg");
+		}
+
+		if (domain_nowww === "jpopsuki.eu") {
+			// https://jpopsuki.eu/static/images/torrents/220699.th.jpg
+			//   https://jpopsuki.eu/static/images/torrents/220699.jpg
+			// https://jpopsuki.eu/static/images/artists/1358.th.jpg
+			//   https://jpopsuki.eu/static/images/artists/1358.jpg
+			return src.replace(/(\/static\/+images\/+[a-z]+\/+[0-9]+)\.th(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "spacefucker.com") {
+			// https://www.spacefucker.com/data/xfmg/thumbnail/7/7617-124cd8cebdd9a91f41cfbc15b594652a.jpg?1524277244
+			//   https://www.spacefucker.com/media/7617/full
+			return src.replace(/\/data\/+xfmg\/+thumbnail\/+[0-9]+\/+([0-9]+)-[0-9a-f]{10,}\.[^/.]+(?:[?#].*)?$/, "/media/$1/full");
 		}
 
 
