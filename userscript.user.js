@@ -9743,7 +9743,17 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nosub === "hubstatic.com") {
-			return src.replace(/_[^_/.]*\.([^/.]*)$/, ".$1");
+			// https://usercontent1.hubstatic.com/9165264_f520.jpg
+			//   https://usercontent1.hubstatic.com/9165264.jpg
+			// https://hubstatic.com/14406441_f1024.jpg
+			//   https://hubstatic.com/14406441.jpg
+			// https://usercontent1.hubstatic.com/10262262_f120.jpg
+			//   https://usercontent1.hubstatic.com/10262262.png
+			// https://hubstatic.com/14483890_f1024.jpg
+			//   https://usercontent1.hubstatic.com/14483890.png
+			newsrc = src.replace(/(\/[0-9]+)_f[0-9]+(\.[^/.]*)$/, "$1$2");
+			if (newsrc !== src)
+				return add_extensions(newsrc);
 		}
 
 		if ((domain === "pbs.twimg.com" &&
@@ -43959,7 +43969,10 @@ var $$IMU_EXPORT$$;
 			return src.replace(/!lengmenjun-[0-9]+(?:[?#].*)?$/, "!lengmenjun");
 		}
 
-		if (amazon_container === "gallerist") {
+		if (amazon_container === "gallerist" ||
+			// https://fireflowergames.com/spree/products/1621/small/Whispering_Willows_DE_Boxart.jpg?1554613058
+			//   https://fireflowergames.com/spree/products/1621/original/Whispering_Willows_DE_Boxart.jpg?1554613058
+			domain_nowww === "fireflowergames.com") {
 			// https://s3.amazonaws.com/gallerist/products/21820/large/beautiful-birds-2.jpg?1550739385
 			//   https://s3.amazonaws.com/gallerist/products/21820/original/beautiful-birds-2.jpg?1550739385
 			return src.replace(/(\/products\/+[0-9]+\/+)[a-z]+\/+([^/]*)(?:[?#].*)?$/, "$1original/$2");
