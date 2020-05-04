@@ -54183,7 +54183,10 @@ var $$IMU_EXPORT$$;
 		if (domain_nowww === "thesimsresource.com") {
 			// https://www.thesimsresource.com/scaled/3073/w-293h-220-3073522.jpg
 			//   https://www.thesimsresource.com/scaled/3073/3073522.jpg
-			return src.replace(/(\/scaled\/+[0-9]+\/+)[wh]-[0-9]+[hw]-[0-9]+-([0-9]+\.)/, "$1$2");
+			return {
+				url: src.replace(/(\/scaled\/+[0-9]+\/+)[wh]-[0-9]+[hw]-[0-9]+-([0-9]+\.)/, "$1$2"),
+				can_head: false // 403
+			};
 		}
 
 		if (domain_nowww === "the-numbers.com") {
