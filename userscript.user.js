@@ -24797,7 +24797,7 @@ var $$IMU_EXPORT$$;
 				.replace(/\/data\/preview\/([^/]*)$/, "/data/__original__$1");
 
 			if (newsrc !== src)
-				return add_extensions(newsrc);
+				return add_extensions_gif(newsrc);
 		}
 
 		if ((domain_nosub === "e621.net" &&
@@ -24966,6 +24966,12 @@ var $$IMU_EXPORT$$;
 			// https://wallpapers.wallhaven.cc/wallpapers/thumb/small/th-68352.jpg
 			//   https://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-68352.jpg
 			return src.replace(/\/thumb\/[^/]*\/th-/, "/full/wallhaven-");
+		}
+
+		if (domain_nowww === "pussycalor.com") {
+			// http://www.pussycalor.com/fotospc/th-14502.jpg
+			//   http://www.pussycalor.com/fotospc/14502.jpg
+			return src.replace(/(\/fotospc\/+)th-([0-9]+\.)/, "$1$2");
 		}
 
 		if (domain === "cdn.animenewsnetwork.com" ||
@@ -56734,6 +56740,8 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "okporn.com" ||
 			// http://storage.hegre.com/HegreAnnaSPorcelainDoll/skin/img/play_white.png
 			domain === "storage.hegre.com" ||
+			// https://www.pornalin.com/player/skin/img/play_white.png
+			domain_nowww === "pornalin.com" ||
 			// https://www.pornrewind.com/player/skin/img/play_white.png
 			domain_nowww === "pornrewind.com") {
 			// https://www.porntrex.com/player/skin/img/play_white.png
@@ -57954,6 +57962,34 @@ var $$IMU_EXPORT$$;
 			// https://s.gamer-info.com/vd/2/4/3/3/24337_small_170_wide.jpg
 			//   https://s.gamer-info.com/vd/2/4/3/3/24337.jpg
 			return src.replace(/(\/vd\/+(?:[0-9]\/+){4}[0-9]+)_[^/.]+(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "iomoio.com") {
+			// https://www.iomoio.com/img/cover-bg.png
+			if (/\/img\/+cover-bg\./.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
+
+			// https://www.iomoio.com/covers/150/42/518942.jpg
+			//   https://www.iomoio.com/covers/src/42/518942.jpg
+			return src.replace(/\/covers\/+[0-9]+\/+/, "/covers/src/");
+		}
+
+		if (domain === "static.rogerebert.com") {
+			// https://static.rogerebert.com/uploads/blog_post/primary_image/streaming/apple-tvs-trying-is-wholly-endearing/thumb_trying-image.jpg
+			//   https://static.rogerebert.com/uploads/blog_post/primary_image/streaming/apple-tvs-trying-is-wholly-endearing/trying-image.jpg
+			// https://static.rogerebert.com/redactor_assets/pictures/5eaaf156b8b50d059a5726a0/thumb_FF2.jpg
+			//   https://static.rogerebert.com/redactor_assets/pictures/5eaaf156b8b50d059a5726a0/content_FF2.jpg
+			//   https://static.rogerebert.com/redactor_assets/pictures/5eaaf156b8b50d059a5726a0/FF2.jpg
+			return src.replace(/(\/(?:uploads\/+blog_post|redactor_assets\/+pictures)\/.*\/)(?:thumb|content)_([^/]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain === "cdn.adltimgcdn.com") {
+			// https://cdn.adltimgcdn.com/user/300/2838761_44473_2020459e8233273c29b7b3e0ed5a414c.jpeg
+			//   https://cdn.adltimgcdn.com/user/2838761_44473_2020459e8233273c29b7b3e0ed5a414c.jpeg
+			return src.replace(/\/user\/+[0-9]+\/+/, "/user/");
 		}
 
 
