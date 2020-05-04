@@ -10290,18 +10290,20 @@ var $$IMU_EXPORT$$;
 			return src.replace(/.*\/uri\/([a-z:]*:)?/, "http://");
 		}*/
 
-		if (domain === "img.voi.pmdstatic.net" ||
+		if (domain_nosub === "pmdstatic.net") {
 			// https is not supported
 			// http://img.voi.pmdstatic.net/fit/http.3A.2F.2Fprd2-bone-image.2Es3-website-eu-west-1.2Eamazonaws.2Ecom.2Fvoi.2F2018.2F09.2F05.2Ff6deca2b-fea8-4f1b-8045-fa30eb8515df.2Ejpeg/565x317/quality/80/pamela-anderson-decouvrez-qui-sera-son-partenaire-dans-danse-avec-les-stars-9.jpg
 			//   http://prd2-bone-image.s3-website-eu-west-1.amazonaws.com/voi/2018/09/05/f6deca2b-fea8-4f1b-8045-fa30eb8515df.jpeg
-
 			// https://voi.img.pmdstatic.net/fit/http.3A.2F.2Fprd2-bone-image.2Es3-website-eu-west-1.2Eamazonaws.2Ecom.2Fvoi.2F2018.2F09.2F05.2Ff6deca2b-fea8-4f1b-8045-fa30eb8515df.2Ejpeg/565x317/quality/80/pamela-anderson-decouvrez-qui-sera-son-partenaire-dans-danse-avec-les-stars-9.jpg
 			//   http://prd2-bone-image.s3-website-eu-west-1.amazonaws.com/voi/2018/09/05/f6deca2b-fea8-4f1b-8045-fa30eb8515df.jpeg
-			domain === "voi.img.pmdstatic.net") {
-			var base = src.replace(/.*\/fit\/([^/]*)\/.*/, "$1");
-			base = base.replace(/\./g, "%");
-			base = decodeURIComponent(base);
-			return base;
+			// http://img.ptv.pmdstatic.net/fit/http.3A.2F.2Fphoto.2Eprogramme.2Etv.2Fupload.2Fslideshow.2Fla-robe-transparente-de-blake-lively-enflamme-le-tapis-rouge-6107.2Fptvs-30022367865-101198.2Ejpg/102x81/crop-from/top/quality/80/blake-lively-au-top-dans-sa-robe-de-sirene.jpg
+			//   http://photo.programme.tv/upload/slideshow/la-robe-transparente-de-blake-lively-enflamme-le-tapis-rouge-6107/ptvs-30022367865-101198.jpg -- 404, but url looks correct
+			var base = src.replace(/^[a-z]+:\/\/[^/]+\/+fit\/+(https?\.3A[^/]+)\/.*/, "$1");
+			if (base !== src) {
+				base = base.replace(/\./g, "%");
+				base = decodeURIComponent(base);
+				return base;
+			}
 		}
 
 		if (domain === "dynaimage.cdn.cnn.com") {
@@ -19339,7 +19341,11 @@ var $$IMU_EXPORT$$;
 			//   https://games.mail.ru/pic/pc/gallery/b6/63/ae529711.jpeg
 			// https://games.mail.ru/pre_700x393_resize/hotbox/content_files/article/2019/06/11/d2cf96b1bf514e9e8b9c641d76da8879.png
 			//   https://games.mail.ru/hotbox/content_files/article/2019/06/11/d2cf96b1bf514e9e8b9c641d76da8879.png
-			return src.replace(/\/pre_(?:[0-9]+x[0-9]+|[a-z]+)_resize\/+(pic|hotbox)\/+/, "/$1/");
+			// https://games.mail.ru/pre_340x175_crop/hotbox/content_files/game/26989/picture/5e2d5.jpeg?quality=85
+			//   https://games.mail.ru/hotbox/content_files/game/26989/picture/5e2d5.jpeg
+			return src
+				.replace(/\/pre_(?:[0-9]+x[0-9]+|[a-z]+)_(?:resize|crop)\/+(pic|hotbox)\/+/, "/$1/")
+				.replace(/\?quality.*/, "");
 		}
 
 		if (domain === "mg.soupingguo.com") {
@@ -35852,7 +35858,19 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/upfile\/[^/]*\/photo\/)[a-z]+\/([0-9]+\/[0-9]+\.[^/.]*)$/, "$1$2");
 		}
 
-		if (domain === "images.stopgame.ru") {
+		if (domain === "static.stopgame.ru") {
+			// https://static.stopgame.ru/video/blank.mp4
+			if (/\/video\/blank\./.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
+		}
+
+		if (domain === "images.stopgame.ru" ||
+			// https://stopga.me/images/video/2020/05/03/c192x108/Pk5Rvj7DmflYX7d42SKUIA/V8Q-3PmdO.jpg
+			//   https://stopga.me/images/video/2020/05/03/V8Q-3PmdO.jpg
+			domain_nowww === "stopga.me") {
 			// https://images.stopgame.ru/articles/2018/08/28/c456x256/eMlTwGkFEIomrj50ODUKhQ/xDGn_Lq7.jpg -- 456x256
 			//   https://images.stopgame.ru/articles/2018/08/28/xDGn_Lq7.jpg -- 1280x720
 			// https://images.stopgame.ru/articles/2018/08/28/death_s_gambit_review_igry-1535467258-s.jpg
@@ -35860,7 +35878,7 @@ var $$IMU_EXPORT$$;
 			// https://images.stopgame.ru/uploads/images/386005/form/2018/03/13/normal_1520890359.jpg
 			//   https://images.stopgame.ru/uploads/images/386005/form/2018/03/13/1520890359.jpg
 			return src
-				.replace(/(\/articles\/[0-9]+\/[0-9]+\/[0-9]+\/)c[0-9]+x[0-9]+\/[0-9a-zA-Z]+\/([^/]*)$/, "$1$2")
+				.replace(/(\/(?:articles|images\/+video)\/[0-9]+\/[0-9]+\/[0-9]+\/)c[0-9]+x[0-9]+\/[0-9a-zA-Z]+\/([^/]*)$/, "$1$2")
 				.replace(/(\/articles\/[0-9]+\/[0-9]+\/[0-9]+\/[^/]*-[0-9]+)-s(\.[^/.]*)$/, "$1$2")
 				.replace(/(\/uploads\/images\/[0-9]+\/[a-z]+\/[0-9]+\/[0-9]+\/[0-9]+\/)[a-z]+_([0-9]+\.[^/.]*)$/, "$1$2");
 		}
@@ -57856,6 +57874,86 @@ var $$IMU_EXPORT$$;
 			// https://www.spacefucker.com/data/xfmg/thumbnail/7/7617-124cd8cebdd9a91f41cfbc15b594652a.jpg?1524277244
 			//   https://www.spacefucker.com/media/7617/full
 			return src.replace(/\/data\/+xfmg\/+thumbnail\/+[0-9]+\/+([0-9]+)-[0-9a-f]{10,}\.[^/.]+(?:[?#].*)?$/, "/media/$1/full");
+		}
+
+		if (domain_nowww === "vikv.net" ||
+			// https://gayles.tv/wp-content/themes/detube/images/icon-plus-24.png
+			domain_nowww === "gayles.tv" ||
+			// https://www.flixchimp.com/wp-content/themes/detube/images/icon-play-24.png
+			domain_nowww === "flixchimp.com") {
+			// https://vikv.net/wp-content/themes/detube/images/icon-play-24.png
+			if (/\/wp-content\/+themes\/+detube\/+images\//.test(src)) {
+				return {
+					url: src,
+					bad: "mask"
+				};
+			}
+		}
+
+		if (domain_nowww === "milanparal.cz") {
+			// https://www.milanparal.cz/static/_user/ilustrace/makita%20girls/Senorita%20Makita%202015/sm_2015_03_small.jpg
+			//   https://www.milanparal.cz/static/_user/ilustrace/makita%20girls/Senorita%20Makita%202015/sm_2015_03.jpg
+			return src.replace(/(\/static\/+_user\/+.*)_small(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "posterhd.ru") {
+			// https://posterhd.ru/pictures/thumb_34885.jpg&t=3
+			//   https://posterhd.ru/pictures/34885.jpg&t=0 -- without &t=0, it's equivalent to &t=1
+			// -- &m=... is also an option, seems to be some kind of splicing?
+			// https://posterhd.ru/pictures/thumb_34885.jpg&t=4&b=%D0%90-%D0%92110466&w=3&p=0&sw=23&sh=30
+			//   https://posterhd.ru/pictures/34885.jpg&t=0
+			// https://posterhd.ru/renderint.php?s=int_2.jpg&i=2&t=3&m=0&si=35309.jpg
+			//   https://posterhd.ru/pictures/35309.jpg&t=0
+			return src.replace(/(?:\/pictures\/+(?:thumb_)?|\/renderint\.php\?(?:.*&)?si=)([0-9]+\.[^/.?#&]+)(?:[?#&].*)?$/, "/pictures/$1&t=0");
+		}
+
+		if (domain_nowww === "tapetus.pl") {
+			// https://www.tapetus.pl/img/adblock.png
+			if (/\/img\/+adblock\.png/.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
+		}
+
+		if (domain_nosub === "ali213.net") {
+			// https://www.ali213.net/zt/images/bg06.png
+			// https://0day.ali213.net/images/showbig_dt.png
+			if (/\/zt\/+images\/+bg[0-9]+\./.test(src) ||
+				/\/images\/+showbig_dt\./.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
+		}
+
+		if (domain === "images.ali213.net") {
+			// http://images.ali213.net/picfile/pic/2016/12/29/120X90_2016122955537639.jpg
+			//   http://images.ali213.net/picfile/pic/2016/12/29/2016122955537639.jpg
+			return src.replace(/\/picfile\/+pic\/+([0-9]{4}\/+[0-9]{2}\/+[0-9]{2}\/+)[0-9]+(?:X[0-9]+)?_/, "/picfile/pic/$1");
+		}
+
+		if (domain_nosub === "yx7088.com") {
+			// http://5566.yx7088.com/images/top.png
+			if (/\/images\/+top\./.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
+		}
+
+		if (domain === "s.gamer-info.com") {
+			// https://s.gamer-info.com/im/gameinfobgshadow-top.png
+			// https://s.gamer-info.com/im/gameinfobgshadow-bottom.png
+			if (/\/im\/+gameinfobgshadow-[a-z]+\./.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
+
+			// https://s.gamer-info.com/vd/2/4/3/3/24337_small_170_wide.jpg
+			//   https://s.gamer-info.com/vd/2/4/3/3/24337.jpg
+			return src.replace(/(\/vd\/+(?:[0-9]\/+){4}[0-9]+)_[^/.]+(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		}
 
 
