@@ -57995,6 +57995,33 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/user\/+[0-9]+\/+/, "/user/");
 		}
 
+		// TODO: make generic
+		if (domain_nowww === "ttgames.com" ||
+			// http://www.digitalwhiplash.com/wp-content/uploads/2019/09/Stationery-Mockup-Free-Version60-biz2-thegem-portfolio-masonry-double.jpg
+			//   http://www.digitalwhiplash.com/wp-content/uploads/2019/09/Stationery-Mockup-Free-Version60-biz2.jpg
+			domain_nowww === "digitalwhiplash.com" ||
+			// https://blog.yellowoctopus.com.au/wp-content/uploads/2019/09/yellow-octopus-aussie-christmas-songs2-thegem-portfolio-masonry-3x.jpg
+			//   https://blog.yellowoctopus.com.au/wp-content/uploads/2019/09/yellow-octopus-aussie-christmas-songs2.jpg
+			domain === "blog.yellowoctopus.com.au") {
+			// https://www.ttgames.com/wp-content/uploads/2019/02/LEGOMovie2-thegem-portfolio-masonry-4x.png
+			//   https://www.ttgames.com/wp-content/uploads/2019/02/LEGOMovie2.png
+			// https://www.ttgames.com/wp-content/uploads/2019/12/Luke-5-thegem-blog-compact.jpg
+			//   https://www.ttgames.com/wp-content/uploads/2019/12/Luke-5.jpg
+			return src.replace(/(\/wp-content\/+uploads\/.*)-thegem-[^/.]+\./, "$1.");
+		}
+
+		if (domain === "assets.infowarsmedia.com") {
+			// https://assets.infowarsmedia.com/images/2a1d8a8d-84c5-439a-a3ae-92e75fc72fe7-large.png
+			//   https://assets.infowarsmedia.com/images/2a1d8a8d-84c5-439a-a3ae-92e75fc72fe7.png
+			return src.replace(/(\/images\/+[-0-9a-f]{10,})-large(\.[^/.]+)(?:[?#].*)?/, "$1$2");
+		}
+
+		if (domain === "assets.infowars.com") {
+			// https://assets.infowars.com/2020/05/HomelessNYCGetty5420-380x218.jpg
+			//   https://assets.infowars.com/2020/05/HomelessNYCGetty5420.jpg
+			return src.replace(/(:\/\/[^/]+\/+[0-9]{4}\/+[0-9]{2}\/+[^/]+)-[0-9]+x[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
 
 
 
