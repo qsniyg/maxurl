@@ -45376,7 +45376,10 @@ var $$IMU_EXPORT$$;
 							   "$1$2");
 		}
 
-		if (domain === "d2l930y2yx77uc.cloudfront.net") {
+		if (domain === "d2l930y2yx77uc.cloudfront.net" ||
+			// https://assets.st-note.com/production/uploads/images/17105324/square_middle_c647f6629bcfe2638e23924d96a7aae4.jpeg?fit=bounds&format=jpeg&quality=45&width=112
+			//   https://assets.st-note.com/production/uploads/images/17105324/c647f6629bcfe2638e23924d96a7aae4.jpeg
+			domain === "assets.st-note.com") {
 			// https://d2l930y2yx77uc.cloudfront.net/production/uploads/images/12067956/rectangle_large_type_2_8200ef2a10803a7a1e459aa2e826ab45.jpeg
 			//   https://d2l930y2yx77uc.cloudfront.net/production/uploads/images/12067956/8200ef2a10803a7a1e459aa2e826ab45.jpeg
 			// https://d2l930y2yx77uc.cloudfront.net/production/uploads/images/10285540/square_large_c3b393df5a71c337870778e4b7105cba.jpeg
@@ -45385,7 +45388,7 @@ var $$IMU_EXPORT$$;
 			//   https://d2l930y2yx77uc.cloudfront.net/production/uploads/images/7977673/12649c6c2ef3d25897e5411185c287e3.jpg
 			// https://d2l930y2yx77uc.cloudfront.net/production/uploads/images/7977672/wallpaper_landscape_4a29f6eba780ba8d288688a8bcbf3e2d.jpg
 			//   https://d2l930y2yx77uc.cloudfront.net/production/uploads/images/7977672/4a29f6eba780ba8d288688a8bcbf3e2d.jpg
-			return src.replace(/(\/production\/+uploads\/+images\/+[0-9]+\/+)[^/]*_([0-9a-f]+\.[^/.]*)(?:[?#].*)?$/,
+			return src.replace(/(\/production\/+uploads\/+images\/+[0-9]+\/+)(?:[^/]*_)?([0-9a-f]+\.[^/.]*?)(?:[?#].*)?$/,
 							   "$1$2");
 		}
 
