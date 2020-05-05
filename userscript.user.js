@@ -8852,6 +8852,9 @@ var $$IMU_EXPORT$$;
 			// https://c.bellesa.co/dkvdbifey/image/upload/h_250,q_75,f_auto/v1559314010/body_paint_1.jpg
 			//   https://c.bellesa.co/dkvdbifey/image/upload/body_paint_1.jpg
 			domain === "c.bellesa.co" ||
+			// https://img.ssensemedia.com/images/b_white,c_lpad,g_south,h_1086,w_724/c_scale,h_480/f_auto,dpr_1.0/201392F054001_1/henrik-vibskov-black-plisse-no3-dress.jpg
+			//   https://img.ssensemedia.com/images/201392F054001_1/henrik-vibskov-black-plisse-no3-dress.jpg
+			domain === "img.ssensemedia.com" ||
 			// https://images.moviepilot.com/images/c_limit,q_auto:good,w_600/uom2udz4ogmkncouu83q/beauty-and-the-beast-credit-disney.jpg
 			// https://images.moviepilot.com/image/upload/c_fill,h_64,q_auto,w_64/lpgwdrrgc3m8duvg7zt2.jpg
 			domain === "images.moviepilot.com") {
@@ -11996,6 +11999,12 @@ var $$IMU_EXPORT$$;
 			(domain_nowww === "inspirationde.com" && string_indexof(src, "/media/") >= 0) ||
 			// https://cache.escapistmagazine.com/2020/04/Hello-Neighbor-400x225.jpg
 			domain === "cache.escapistmagazine.com" ||
+			// https://www.stickboybkk.com/images/2015/09/girls-next-door-3-160x120.jpg
+			(domain_nowww === "stickboybkk.com" && string_indexof(src, "/images/") >= 0) ||
+			// https://www.fitolsam.com/uploads/2019/05/1-2-1024x658.jpg
+			(domain_nowww === "fitolsam.com" && string_indexof(src, "/uploads/") >= 0) ||
+			// https://sevelina.ru/images/uploads/2015/08/1212121-139x120.gif
+			(domain_nowww === "sevelina.ru" && /\/images\/+uploads\//.test(src)) ||
 			// https://static.acgsoso.com/uploads/2020/02/19bd4f091f03c191195d5e626c3190f9-200x300.jpg
 			(domain === "static.acgsoso.com" && string_indexof(src, "/uploads/") >= 0)
 			) {
@@ -30634,6 +30643,12 @@ var $$IMU_EXPORT$$;
 			return src.replace(/^[a-z]+:\/\/[^/]*\/img\//, "http://");
 		}
 
+		if (domain_nowww === "bifaxing.com") {
+			// http://www.bifaxing.com/gpPic/600/0/p1.pstatp.com/large/757400040333c7cb0ce6
+			//   http://p1.pstatp.com/large/757400040333c7cb0ce6
+			return src.replace(/^[a-z]+:\/\/[^/]*\/gpPic\/+[0-9]+\/+[0-9]+\/+([^/]*\.[^/]*)/, "http://$1");
+		}
+
 		if (domain === "static.congnghe.vn" ||
 			// https://congnghe.vn/tinmoi/store/techmag/thumb/30092017/218/top-10-nu-minh-tinh-trung-quoc-hut-khach-cho-thuong-hieu-dai-dien-2094125.jpg.600.0.jpg
 			//   https://congnghe.vn/tinmoi/store/techmag/thumb/30092017/218/2094125.jpg
@@ -35866,7 +35881,9 @@ var $$IMU_EXPORT$$;
 			//   https://assets.vogue.com/photos/589153bd97a3db337a249a68/original/original/00-holding-jones.jpg
 			// http://media.vogue.com/r/pass/2016/05/12/11-margot-robbie-best-red-carpet-looks.jpg -- 2000x3000
 			//   http://media.vogue.com/r/original/2016/05/12/11-margot-robbie-best-red-carpet-looks.jpg -- 2000x3000
-			return src.replace(/(:\/\/[^/]*\/)r\/[a-z]_[0-9]+(?:,[a-z]_[0-9]+)*\//, "$1r/original/");
+			// http://media.vogue.com/r/c_1%2Ch_4000%2Cw_3280/2013/11/victorias-secret-2013-13_115333709600.jpg
+			//   http://media.vogue.com/r/original/2013/11/victorias-secret-2013-13_115333709600.jpg
+			return src.replace(/(:\/\/[^/]*\/)r\/[a-z]_[0-9]+(?:(?:,|%2C)[a-z]_[0-9]+)*\//, "$1r/original/");
 		}
 
 		if (domain_nosub === "efu.com.cn" &&
@@ -44684,12 +44701,6 @@ var $$IMU_EXPORT$$;
 							   "$1$2");
 		}
 
-		if (domain_nowww === "bifaxing.com") {
-			// http://www.bifaxing.com/gpPic/600/0/p1.pstatp.com/large/757400040333c7cb0ce6
-			//   http://p1.pstatp.com/large/757400040333c7cb0ce6
-			return src.replace(/^[a-z]+:\/\/[^/]*\/gpPic\/+[0-9]+\/+[0-9]+\/+([^/]*\.[^/]*)/, "http://$1");
-		}
-
 		if (domain_nosub === "filmpro.ru" && domain.match(/^b[0-9]*\./)) {
 			// https://b1.filmpro.ru/c/138092.600xp.jpg
 			//   https://b1.filmpro.ru/c/138092.jpg
@@ -45938,7 +45949,9 @@ var $$IMU_EXPORT$$;
 		if (amazon_container === "groundctrl") {
 			// http://groundctrl.s3.amazonaws.com/clients/nickiminaj/media/12/12/images/assets/medium.bnUdzyrB34mjfmYMUUC8xxiBiKhhJpCNYYjMjq_FL2k.jpg
 			//   http://groundctrl.s3.amazonaws.com/clients/nickiminaj/media/12/12/images/assets/original.bnUdzyrB34mjfmYMUUC8xxiBiKhhJpCNYYjMjq_FL2k.jpg
-			return src.replace(/(\/images\/+assets\/+)[a-z]+\.([0-9a-zA-Z_]+\.[^/.]*)(?:[?#].*)?$/, "$1original.$2");
+			// https://groundctrl.s3.amazonaws.com/clients/taylorswift/media/00/03/small.g4ux53xk4qvp.jpg
+			//   https://groundctrl.s3.amazonaws.com/clients/taylorswift/media/00/03/original.g4ux53xk4qvp.jpg
+			return src.replace(/(\/media\/+[0-9]+\/+[0-9]+\/+(?:images\/+assets\/+)?)[a-z]+\.([0-9a-zA-Z_]+\.[^/.]*)(?:[?#].*)?$/, "$1original.$2");
 		}
 
 		if (domain === "img.manoramaonline.com") {
@@ -49149,6 +49162,9 @@ var $$IMU_EXPORT$$;
 			// https://desangw.com/img/aHR0cDovL2ltZzQuaW1ndG4uYmRpbWcuY29tL2l0L3U9NDA4MTI5NzkyNSwxMzI5ODUxNjU1JmZtPTE1JmdwPTAuanBn.jpg
 			//   http://img4.imgtn.bdimg.com/it/u=4081297925,1329851655&fm=15&gp=0.jpg
 			domain_nosub === "desangw.com" ||
+			// http://www.hbmygm.com/img/aHR0cDovL2ltZzAuaW1ndG4uYmRpbWcuY29tL2l0L3U9MzMxMjAxNDg1MiwxMzg2OTUyNTUwJmZtPTIzJmdwPTAuanBn.jpg
+			//   http://img0.imgtn.bdimg.com/it/u=3312014852,1386952550&fm=23&gp=0.jpg
+			domain_nowww === "hbmygm.com" ||
 			// https://m.dalangw.com/img/aHR0cDovL2ltZzQuaW1ndG4uYmRpbWcuY29tL2l0L3U9Mzk1ODY3NTA2NCwzMzA0NzAxMzMwJmZtPTI2JmdwPTAuanBn.jpg
 			//   http://img4.imgtn.bdimg.com/it/u=3958675064,3304701330&fm=26&gp=0.jpg
 			domain_nosub === "dalangw.com") {
@@ -51518,7 +51534,11 @@ var $$IMU_EXPORT$$;
 			// https://media.gettyimages.com/photos/kristen-stewart-attends-the-chanel-parisnew-york-201819-metiers-dart-picture-id1152257105
 			//   https://media.gettyimages.com/photos/kristen-stewart-attends-the-chanel-parisnew-york-201819-metiers-dart-picture-id1152257105?s=2048x2048 -- 2048x1365 (watermark)
 			if (src.match(/\/photos\/+[^/?]*-id[0-9]+(?:#.*)?$/)) {
-				return src.replace(/(-id[0-9]+)$/, "$1?s=2048x2048");
+				return {
+					url: src.replace(/(-id[0-9]+)$/, "$1?s=2048x2048"),
+					head_wrong_contenttype: true,
+					head_wrong_contentlength: true
+				};
 			}
 
 			obj = [];
@@ -51528,7 +51548,9 @@ var $$IMU_EXPORT$$;
 					url: src.replace(/(-id[0-9]+)(?:[?#].*)?$/, "$1?s=2048x2048"),
 					problems: {
 						watermark: true
-					}
+					},
+					head_wrong_contenttype: true,
+					head_wrong_contentlength: true
 				});
 			}
 
@@ -51563,7 +51585,9 @@ var $$IMU_EXPORT$$;
 								url: JSON_parse(smallerurl[1]),
 								problems: {
 									smaller: true
-								}
+								},
+								head_wrong_contenttype: true,
+								head_wrong_contentlength: true
 							});
 						}
 
@@ -51574,7 +51598,9 @@ var $$IMU_EXPORT$$;
 						} else {
 							obj = {
 								url: src,
-								extra: extra
+								extra: extra,
+								head_wrong_contenttype: true,
+								head_wrong_contentlength: true
 							};
 						}
 
@@ -58035,6 +58061,46 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(:\/\/[^/]+\/+[0-9]{4}\/+[0-9]{2}\/+[^/]+)-[0-9]+x[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		}
 
+		if (domain_nowww === "wallpapername.com") {
+			// http://www.wallpapername.com/thumbnails/cover/20200422/5ea08f910f60f.jpg
+			//   http://www.wallpapername.com/thumbnails/detail/20200422/5ea08f910f60f.jpg
+			//   http://cdn.wallpapername.com/1920x1200/20200422/5ea08f910f60f.jpg
+			//   http://www.wallpapername.com/Singers/Taylor_Swift/1920x1200_px_Anahi_babes_brunettes_eyes_face_females_Girls_Gonzales_models_sexy_swimsuit_swimwear_wo_77041
+			return src.replace(/\/thumbnails\/+cover\/+/, "/thumbnails/detail/");
+		}
+
+		if (domain === "c.puzzcore.com") {
+			// https://c.puzzcore.com//img_pzl/Z3S/Z3SBL88H/1210056OFN/thumb1.jpg
+			//   https://c.puzzcore.com//img_pzl/Z3S/Z3SBL88H/1210056OFN/thumb2.jpg
+			// https://c.puzzcore.com//img_pzl/NTK/NTKNC6XE/160109R0XC/thumb1.jpg
+			//   https://c.puzzcore.com//img_pzl/NTK/NTKNC6XE/160109R0XC/thumb2.jpg
+			//   https://c.puzzcore.com//img_pzl/NTK/NTKNC6XE/160109R0XC/thumb2.jpg
+			//   https://www.puzzcore.com/pzl/160109R0XC
+			return {
+				url: src.replace(/(\/img_pzl\/.*\/thumb)1(\.[^/.]+)(?:[?#].*)?$/, "$12$2"),
+				headers: {
+					Referer: "https://www.puzzcore.com/"
+				}
+			};
+		}
+
+		if (domain === "img.faxingzhan.com") {
+			// https://img.faxingzhan.com/151223/54-1512230U039592_220_130.jpg
+			//   https://img.faxingzhan.com/151223/54-1512230U039592.jpg
+			return src.replace(/(\/[0-9]+\/+[0-9]+-[0-9A-Z]+)_[0-9]+_[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain === "thumb.ex-cdn.com") {
+			// https://thumb.ex-cdn.com/EXP/media.vntravellive.com/center/1903x700/files/news/2020/03/05/covid-19-epidemic-is-spreading-globally-141354.jpg
+			//   https://thumb.ex-cdn.com/EXP/media.vntravellive.com/resize/99999999999x99999999999/files/news/2020/03/05/covid-19-epidemic-is-spreading-globally-141354.jpg
+			//   https://media.ex-cdn.com/EXP/media.vntravellive.com/files/news/2020/03/05/covid-19-epidemic-is-spreading-globally-141354.jpg
+			newsrc = src.replace(/^([a-z]+:\/\/[^/]+\/+EXP\/+[^/]+\/+)(?:resize|center)\/+[0-9]+x[0-9]+\/+/, "$1resize/99999999999x99999999999/");
+			if (newsrc !== src)
+				return newsrc;
+
+			return src.replace(/^[a-z]+:\/\/[^/]+\/+(EXP\/+[^/]+\/+)(?:resize|center)\/+[0-9]+x[0-9]+\/+/, "https://media.ex-cdn.com/$1");
+		}
+
 
 
 
@@ -63437,7 +63503,7 @@ var $$IMU_EXPORT$$;
 
 	function check_image_get(obj, cb, processing) {
 		if (_nir_debug_) {
-			console_log("check_image_get", obj, cb, processing);
+			console_log("check_image_get", deepcopy(obj), cb, deepcopy(processing));
 		}
 
 		if (!obj || !obj[0] || !obj[0].url) {
@@ -63832,7 +63898,10 @@ var $$IMU_EXPORT$$;
 
 							good_cb(img);
 						};
-						img.onerror = function() {
+						img.onerror = function(e) {
+							if (_nir_debug_)
+								console_log("Error loading image", img, e);
+
 							err_cb();
 						};
 					} else {
