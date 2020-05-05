@@ -15704,7 +15704,7 @@ var $$IMU_EXPORT$$;
 
 			obj.url = src
 				.replace(/:\/\/[^\./]*\.lisimg\.com\//, "://ilarge.lisimg.com/")
-				.replace(/\/([^/]*)\.jpg$/, "/99999999999full.jpg");
+				.replace(/(:\/\/[^/]+\/+(?:image\/+)?[0-9]+)\/+[0-9]+(?:full)?([^/]*?(?:\/[^/]*)?(?:[?#].*)?)$/, "$1/99999999999full$2");
 				//.replace(/\/([^/]*)\.jpg$/, "/0full.jpg");
 
 			return obj;
