@@ -1,3 +1,21 @@
+0.13.2
+
+New features:
+
+ * Initial Spanish translation (thanks to BloodDragoneer on discord)
+ * Support for Tinder (thanks to BLiTZ on discord)
+ * Support for ~40 new websites (using ~30 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including Cloudimage - thanks to BLiTZ on discord, Facebook, Flickr, Snapchat)
+
+Bugfixes:
+
+ * Redirection is now less likely to automatically redirect to an image that renders as text
+
+---
+
 0.13.1
 
 New features:
