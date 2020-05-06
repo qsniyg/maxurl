@@ -42159,11 +42159,122 @@ var $$IMU_EXPORT$$;
 			domain.match(/^content[0-9]*\./)) {
 			// http://content6.flixster.com/photo/14/05/18/14051812_tmb.jpg
 			//   http://content6.flixster.com/photo/14/05/18/14051812_ori.jpg
+			// http://content9.flixster.com/movie/11/16/67/11166787_800.jpg
+			//   https://content9.flixster.com/movie/11/16/67/11166787_mob.jpg
+			//   http://content9.flixster.com/movie/11/16/67/11166787_ori.jpg
+			// http://content9.flixster.com/movie/25/06/250604_pro.jpg
+			//   http://content9.flixster.com/movie/25/06/250604_ori.jpg
+			// http://content9.flixster.com/photo/71/90/71/7190714_gal.jpg
+			//   http://content9.flixster.com/photo/71/90/71/7190714_ori.jpg
+			// http://content9.flixster.com/rtmovie/69/95/69955_gal.jpg
+			//   http://content9.flixster.com/rtmovie/69/95/69955_ori.jpg
+			// http://content9.flixster.com/rtactor/40/36/40363_pro.jpg
+			//   http://content9.flixster.com/rtactor/40/36/40363_ori.jpg
+			// http://content9.flixster.com/editorial/10/25/11/10251155_gal.jpg
+			//   http://content9.flixster.com/editorial/10/25/11/10251155_ori.jpg
+			// http://content9.flixster.com/site/10/24/32/10243271_tmb.jpg
+			//   http://content9.flixster.com/site/10/24/32/10243271_ori.jpg
+			// http://content9.flixster.com/tv/11/02/110267_det.jpg
+			//   http://content9.flixster.com/tv/11/02/110267_ori.jpg
+			// http://content9.flixster.com/quiz/52/5251_tmb.jpg
+			//   http://content9.flixster.com/quiz/52/5251_std.jpg
+			//   http://content9.flixster.com/quiz/52/5251_ori.jpg
+			// http://content8.flixster.com/critic/22/2242_tmb.jpg
+			//   http://content8.flixster.com/critic/22/2242_ori.jpg
+			// http://content6.flixster.com/personality/45/4588_std.jpg
+			//   http://content6.flixster.com/personality/45/4588_ori.jpg
 			//
-			// http://content8.flixster.com/question/68/16/23/6816238_std.jpg
+			// http://content8.flixster.com/question/68/16/23/6816238_tmb.jpg
+			//   http://content8.flixster.com/question/68/16/23/6816238_std.jpg
 			//   http://content8.flixster.com/question/68/16/23/6816238_ori.jpg -- doesn't work
-			return src.replace(/(\/photo\/+[0-9]+\/+[0-9]+\/+[0-9]+\/+[0-9]+_)[a-z]+(\.[^/.]*)(?:[?#].*)?$/,
-							   "$1ori$2");
+			// http://content9.flixster.com/poll/44/82/44827_tmb.jpg
+			//   http://content9.flixster.com/poll/44/82/44827_std.jpg
+			//
+			// mob = mobile
+			// det = detailed
+			// pro = profile
+			// ori = original
+			// tmb = thumbnail?
+			// gal = gallery?
+			return src
+				.replace(/(\/(?:poll|question)\/+(?:[0-9]+\/+){1,3}[0-9]+_)tmb(\.[^/.]*)(?:[?#].*)?$/, "$1std$2")
+				.replace(/(\/(?:photo|(?:rt)?movie|rtactor|editorial|site|tv|quiz|critic|personality)\/+(?:[0-9]+\/+){1,3}[0-9]+_)(?:[a-z]+|[0-9]+)(\.[^/.]*)(?:[?#].*)?$/, "$1ori$2");
+		}
+
+		if (domain === "resizing.flixster.com") {
+			// https://resizing.flixster.com/m3sM1T5vFMbCvOXurBJ2d1wfSUs=/206x305/v1.bTsxMTE2Njc4NztqOzE4NDg5OzEyMDA7ODAwOzEyMDA
+			//   http://content9.flixster.com/movie/11/16/67/11166787_ori.jpg
+			// atob("bTsxMTE2Njc4NztqOzE4NDg5OzEyMDA7ODAwOzEyMDA")
+			//  = "m;11166787;j;18489;1200;800;1200"
+			// https://resizing.flixster.com/q6eOeI7bowm9qY2sFct7LpUh60k=/120x160/v1.bTsxMjMwNDQ4NDtqOzE4NDEyOzEyMDA7NjI2OzkyNA (m;12304484;j;18412;1200;626;924)
+			//   https://content9.flixster.com/movie/12/30/44/12304484_ori.jpg
+			// https://resizing.flixster.com/a83QBW_tq-PUpJpB7LnvwmxZplc=/fit-in/1152x864/v1.cDsxNDA1ODA0MztqOzE4NDc3OzEyMDA7NDU2OzY1Mg (p;14058043;j;18477;1200;456;652)
+			//   https://content9.flixster.com/photo/14/05/80/14058043_ori.jpg
+			// https://resizing.flixster.com/DkDVM7oqx4tJKZJDaIh88BqaYs0=/fit-in/300x533/v1.aDsxMzA5MTc7ajsxODQwNjsxMjAwOzIxMDA7MTE2MA (h;130917;j;18406;1200;2100;1160)
+			//   https://content9.flixster.com/rtmovie/13/09/130917_ori.jpg
+			// https://resizing.flixster.com/lK9XShXVeT-7o4SX8pPVPxAA-yM=/100x120/v1.cjs0MzMwOTtqOzE4NDA1OzEyMDA7MjIwOzE5Ng (r;43309;j;18405;1200;220;196)
+			//   https://content9.flixster.com/rtactor/43/30/43309_ori.jpg -- interestingly, /personality/ also works, but is a completely different image
+			// http://resizing.flixster.com/x0Lf-nt1zhVLUHx31ICE47vaQmg=/128x128/v1.YzsyOTYwO2o7MTg0MDU7MjA0ODs0MDA7NDAw (c;2960;j;18405;2048;400;400)
+			//   https://content9.flixster.com/critic/29/2960_ori.jpg
+			// doesn't work for all:
+			// http://resizing.flixster.com/H0_jkS1hVYzGBFLobDXszJ64xh4=/128x128/v1.YzsyNDkwO2c7MTg0MDU7MjA0ODsxNTI7MTY4 ("c;2490;g;18405;2048;152;168")
+			//   https://content9.flixster.com/critic/24/2490_ori.jpg -- doesn't work
+			// http://resizing.flixster.com/PhT5ThIYHT8vdnBQLtTaeD2nm7g=/38x45/v1.YzsxNjU0O2c7MTg0MDU7MjA0ODszODs0NQ (c;1654;g;18405;2048;38;45)
+			//   https://content9.flixster.com/critic/16/1654_ori.jpg -- /16/54/ doesn't work either
+			// https://resizing.flixster.com/RxEbHudDxuOpys1eA435pUzW46Y=/206x156/v1.czsxMDI4MjEyNztqOzE4NDc5OzEyMDA7MjA2OzE1Ng (s;10282127;j;18479;1200;206;156)
+			//   https://content9.flixster.com/site/10/28/21/10282127_ori.jpg
+
+			// other:
+			// https://resizing.flixster.com/hbkhXYovq-89hd70H-hYFOOiJ9c=/fit-in/1152x864/v1.bjsxNTE4MjEzO2o7MTg0Njc7MTIwMDsxOTIwOzEwODA (n;1518213;j;18467;1200;1920;1080)
+			// https://resizing.flixster.com/fc0xzb6cYdAbcMeip2qPH6W-T-o=/fit-in/1152x864/v1.bjsxNTI3NTY3O2o7MTg0Njc7MTIwMDsyOTMxOzIwMDA (n;1527567;j;18467;1200;2931;2000)
+			// https://resizing.flixster.com/t3LmsYcbnwy2eJ2EJsf2ud1hRrw=/fit-in/1152x864/v1.bjsyMzMxNDU1O2o7MTg0NzY7MTIwMDsxMjAwOzYwMA  (n;2331455;j;18476;1200;1200;600)
+			// https://resizing.flixster.com/e3AVgt8zYkFEafo2yN9IrVt4egc=/100x120/v1.bjs3NjI5OTI7ajsxODQxMzsxMjAwOzU0MDs3MjA             (n;762992;j;18413;1200;540;720) - actor image:
+			//   https://www.rottentomatoes.com/celebrity/matt_oleary
+
+			var match = src.match(/^[a-z]+:\/\/resizing\.flixster\.com\/.*\/v1\.([^-_/?#.]+)(?:[?#].*)?$/);
+			if (match) {
+				try {
+					var decoded = base64_decode(match[1]);
+					var newmatch = decoded.match(/^(?:.*?;)?([chmprs]);([0-9]+)/);
+					if (newmatch) {
+						var cat = newmatch[1];
+						var id = newmatch[2];
+
+						var folder = "";
+
+						var cats = {
+							"m": "movie",
+							"p": "photo",
+							"h": "rtmovie",
+							"r": "rtactor",
+							"c": "critic",
+							"s": "site"
+						};
+
+						folder = cats[cat];
+
+						var base = "https://content9.flixster.com/" + folder + "/" + id.slice(0, 2);
+
+						if (id.length > 4) {
+							base += "/" + id.slice(2, 4);
+						}
+
+						if (id.length > 6) {
+							base += "/" + id.slice(4, 6);
+						}
+
+						return base + "/" + id + "_ori.jpg";
+					}
+				} catch(e) {
+					console_error(e);
+				}
+			}
+		}
+
+		if (domain === "flxt.tmsimg.com") {
+			// https://flxt.tmsimg.com/https://flxt.tmsimg.com/assets/p12792395_p_v8_al.jpg
+			//   https://flxt.tmsimg.com/assets/p12792395_p_v8_al.jpg
+			return src.replace(/^[a-z]+:\/\/[^/]+\/+(https?:\/\/)/, "$1");
 		}
 
 		if (host_domain_nowww === "rottentomatoes.com" && options.element && domain === "resizing.flixster.com") {
@@ -58715,6 +58826,9 @@ var $$IMU_EXPORT$$;
 			// https://www.nydailynews.com/resizer/GaeyAldzSu-KRls2MdKl427zxhQ=/arc-anglerfish-arc2-prod-tronc.s3.amazonaws.com/public/DN2NVNA5MCYD7PCBVYBE5WCQJ4.jpg
 			//   https://arc-anglerfish-arc2-prod-tronc.s3.amazonaws.com/public/DN2NVNA5MCYD7PCBVYBE5WCQJ4.jpg
 			domain_nowww === "nydailynews.com" ||
+			// https://resizing.flixster.com/IaXbRF4gIPh9jireK_4VCPNfdKc=/300x0/v2/https://flxt.tmsimg.com/assets/p17871471_p_v10_aa.jpg
+			//   https://flxt.tmsimg.com/assets/p17871471_p_v10_aa.jpg
+			(domain === "resizing.flixster.com" && /\/https?:\/\//.test(src)) ||
 			src.match(/:\/\/[^/]*\/thumbor\/[^/]*=\//) ||
 			// https://www.orlandosentinel.com/resizer/tREpzmUU7LJX1cbkAN-unm7wL0Y=/fit-in/800x600/top/filters:fill(black)/arc-anglerfish-arc2-prod-tronc.s3.amazonaws.com/public/XC6HBG2I4VHTJGGCOYVPLBGVSM.jpg
 			//   http://arc-anglerfish-arc2-prod-tronc.s3.amazonaws.com/public/XC6HBG2I4VHTJGGCOYVPLBGVSM.jpg
@@ -58753,7 +58867,7 @@ var $$IMU_EXPORT$$;
 			if (newsrc !== src)
 				return decodeuri_ifneeded(newsrc);
 
-			newsrc = src.replace(/.*\/(?:[-_A-Za-z0-9]+=|unsafe)\/(?:(?:full-)?fit-in\/)?(?:[0-9x:]+\/)?(?:[0-9x:]+\/)?(?:(?:smart|top|center|middle)\/)?(?:(?:smart|top|center|middle)\/)?(?:filters:[^/]*\/)?((?:https?(?::\/\/|%3[aA]%2[fF]%2[fF]))?[^/%]*\..*)/, "$1");
+			newsrc = src.replace(/.*\/(?:[-_A-Za-z0-9]+=|unsafe)\/(?:(?:full-)?fit-in\/)?(?:[0-9x:]+\/)?(?:[0-9x:]+\/)?(?:(?:smart|top|center|middle)\/)?(?:(?:smart|top|center|middle)\/)?(?:filters:[^/]*\/)?(?:v[0-9]+\/)?((?:https?(?::\/\/|%3[aA]%2[fF]%2[fF]))?[^/%]*\..*)/, "$1");
 			if (newsrc.match(/^[^/]*%2/))
 				newsrc = decodeURIComponent(newsrc);
 
