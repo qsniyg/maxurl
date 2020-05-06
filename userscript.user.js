@@ -27169,9 +27169,15 @@ var $$IMU_EXPORT$$;
 			// https://photos.modelmayhem.com/avatars/2/3/1/0/8/0/9/587507cab04e8_m.jpg
 			//   https://www.modelmayhem.com/portfolio/pic/41774255
 			//   https://photos.modelmayhem.com/photos/170110/07/587501cb8ba84.jpg
-			return src
+			// https://photos.modelmayhem.com/avatars/1/1/2/5/8/5/7/4f5aae2600639_xt.jpg
+			//   https://photos.modelmayhem.com/avatars/1/1/2/5/8/5/7/4f5aae2600639_t.jpg
+			//   https://photos.modelmayhem.com/avatars/1/1/2/5/8/5/7/4f5aae2600639_m.jpg
+			newsrc = src
 				.replace(/(\/photos\/[0-9]+\/[0-9a-f]+\/[0-9a-f]+)_[a-z](\.[^/.]*)$/, "$1$2")
-				.replace(/(\/potd\/entrants\/[0-9]+\/[^/]*)-[a-z]+(\.[^/.]*)$/, "$1-big$2");
+				.replace(/(\/potd\/entrants\/[0-9]+\/[^/]*)-[a-z]+(\.[^/.]*)$/, "$1-big$2")
+				.replace(/(\/avatars\/+(?:[0-9]\/+){1,}[0-9a-f]+)_x?t(\.[^/.]+)(?:[?#].*)?$/, "$1_m$2");
+			if (newsrc !== src)
+				return newsrc;
 		}
 
 		if (host_domain_nosub === "modelmayhem.com" && options.element) {
@@ -27189,47 +27195,52 @@ var $$IMU_EXPORT$$;
 				}
 			}
 
-			if (/\/images\/+nopic_worksafe-on\./.test(src) && options.do_request && options.cb) {
+			var query_picid = function(picid, cb) {
+				var cache_key = "modelmayhem:" + picid;
+
+				api_cache.fetch(cache_key, cb, function(done) {
+					options.do_request({
+						url: "https://www.modelmayhem.com/portfolio/pic/" + picid,
+						method: "GET",
+						onload: function(resp) {
+							if (resp.readyState !== 4)
+								return;
+
+							if (resp.status !== 200) {
+								console_error(cache_key, resp);
+								return done(null, false);
+							}
+
+							var match = resp.responseText.match(/<meta\s+property="og:image"\s+content="([^"]+)"/);
+							if (!match) {
+								console_error(cache_key, "Unable to find match", resp);
+								return done(null, false);
+							}
+
+							return done(decode_entities(match[1]), 24*60*60);
+						}
+					});
+				});
+			};
+
+			var get_picid_from_url = function(url) {
+				return url.replace(/.*\/portfolio\/+pic\/+([0-9]+)(?:[?#].)?$/, "$1");
+			};
+
+			if (options.do_request && options.cb) {
 				var parent = options.element.parentElement;
 				if (parent && parent.tagName === "A" && /\/portfolio\/+pic\/+[0-9]+/.test(parent.href)) {
-					var query_picid = function(picid, cb) {
-						var cache_key = "modelmayhem:" + picid;
-
-						api_cache.fetch(cache_key, cb, function(done) {
-							options.do_request({
-								url: "https://www.modelmayhem.com/portfolio/pic/" + picid,
-								method: "GET",
-								onload: function(resp) {
-									if (resp.readyState !== 4)
-										return;
-
-									if (resp.status !== 200) {
-										console_error(cache_key, resp);
-										return done(null, false);
-									}
-
-									var match = resp.responseText.match(/<meta\s+property="og:image"\s+content="([^"]+)"/);
-									if (!match) {
-										console_error(cache_key, "Unable to find match", resp);
-										return done(null, false);
-									}
-
-									return done(decode_entities(match[1]), 24*60*60);
-								}
-							});
-						});
-					};
-
-					var get_picid_from_url = function(url) {
-						return url.replace(/.*\/portfolio\/+pic\/+([0-9]+)(?:[?#].)?$/, "$1");
-					};
-
 					query_picid(get_picid_from_url(parent.href), function(newsrc) {
 						if (newsrc) {
-							options.cb({
-								url: newsrc,
-								can_cache: false
-							});
+							var obj = {
+								url: newsrc
+							};
+
+							if (/\/images\/+nopic_worksafe-on\./.test(src)) {
+								obj.can_cache = false;
+							}
+
+							options.cb(obj);
 						} else {
 							options.cb(null);
 						}
