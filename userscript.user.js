@@ -10430,6 +10430,10 @@ var $$IMU_EXPORT$$;
 			//
 			// https://images.squarespace-cdn.com/content/5ad803f6f8370ac56e54a302/1554142468529-R05GL9RO9KSTOOTTT21Y/500w?content-type=image%2Fjpeg
 			//   https://images.squarespace-cdn.com/content/5ad803f6f8370ac56e54a302/1554142468529-R05GL9RO9KSTOOTTT21Y?content-type=image%2Fjpeg
+			//
+			// proxy? or just image name?
+			// https://images.squarespace-cdn.com/content/589e834eff7c50486de031c3/1587075064704-H0L0WI13DJ5V81WAIVQ5/https%25253A%25252F%25252Fstatic.onecms.io%25252Fwp-content%25252Fuploads%25252Fsites%25252F28%25252F2020%25252F02%25252Fqatar-qsuites-seat-FREEQATAR0519.jpg?content-type=image%2Fjpeg
+			//   triple URI encoded, decodes to: https://static.onecms.io/wp-content/uploads/sites/28/2020/02/qatar-qsuites-seat-FREEQATAR0519.jpg
 
 			var contenttype = url.searchParams.get("content-type");
 			var append = "";
@@ -34804,7 +34808,10 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/[_0-9]+\/)[a-z]\/([0-9]+\.[^/.]*)$/, "$1$2");
 		}
 
-		if (domain_nowww === "showbiz.cz") {
+		if (domain_nowww === "showbiz.cz" ||
+			// https://fotky.showbiz.cz/files/gallery/thumb/22/22ca762507ff9da78299c67075cd6fd41312526584.jpg
+			//   https://fotky.showbiz.cz/files/gallery/22/22ca762507ff9da78299c67075cd6fd41312526584.jpg
+			domain === "fotky.showbiz.cz") {
 			// https://www.showbiz.cz/files/gallery/thumb/18/1825acb57fba5f41c83eb7d79f2cae02.jpg
 			//   https://www.showbiz.cz/files/gallery/18/1825acb57fba5f41c83eb7d79f2cae02.jpg
 			// http://www.showbiz.cz/public/files/gallery/thumb/28/28bcf43838114960246fe783148e323a1312573752_new.jpg
@@ -41737,12 +41744,27 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nosub === "wn.com" &&
-			domain.match(/^cdn[0-9]*\./)) {
+			domain.match(/^e?cdn[0-9]*\./)) {
 			// http://cdn5.wn.com/ph/img/8e/bb/d92ffd8931411fff77efcbcf6713-small.jpg
 			//   http://cdn5.wn.com/ph/img/8e/bb/d92ffd8931411fff77efcbcf6713-large.jpg
 			// https://cdn9.wn.com/pd/ea/ec/aa2271cb084c409efbfaf426d528_small.jpg
 			//   https://cdn9.wn.com/pd/ea/ec/aa2271cb084c409efbfaf426d528_large.jpg
-			return src.replace(/(\/[0-9a-f]{20,}[-_])small(\.[^/.]*)(?:[?#].*)?$/, "$1large$2");
+			// https://ecdn7.wn.com/ph/img/c2/8c/87c67c08d194727b672adb0833d6-grande.jpg -- 458x374
+			//   https://ecdn7.wn.com/ph/img/c2/8c/87c67c08d194727b672adb0833d6-large.jpg -- 2731x2230
+			// http://cdn.wn.com/ph/img/12/79/7c18679b47a22f2a4b8c664648d2-small.jpg
+			//   http://cdn.wn.com/ph/img/12/79/7c18679b47a22f2a4b8c664648d2-large.jpg
+			// https://ecdn3.wn.com/ph/img/fb/82/ed766fb9313e5367a458822d34ad-medium.jpg
+			//   https://ecdn3.wn.com/ph/img/fb/82/ed766fb9313e5367a458822d34ad-large.jpg
+			// other:
+			// https://ecdn9.wn.com/ar/i/bc/1d11442a63c592.jpg
+			//   https://ecdn7.wn.com/o25/ph/img/c1/ec/96412bccd6f996894b631ca79e51-large.jpg
+			//   https://article.wn.com/view/2006/10/28/Sanjay_Dutt_to_revive_his_banner_with_Beehad/
+			//
+			// http://cdn9.wn.com/o25/ar/i/12/4d1388cf3e70f2.jpg
+			// http://cdn3.wn.com/o25/ar/i/a4/5e656a4221c8bd.jpg
+			// http://cdn1.wn.com/o25/ar/i/59/4ee911a1e3ee6e.jpg
+			// http://cdn9.wn.com/o25/ar/i/ce/739bc9b12c15a2.jpg
+			return src.replace(/(\/[0-9a-f]{20,}[-_])(?:small|medium|grande)(\.[^/.]*)(?:[?#].*)?$/, "$1large$2");
 		}
 
 		if (domain_nowww === "atoananet.com.br") {
@@ -42214,6 +42236,8 @@ var $$IMU_EXPORT$$;
 			//   https://content9.flixster.com/rtmovie/13/09/130917_ori.jpg
 			// https://resizing.flixster.com/lK9XShXVeT-7o4SX8pPVPxAA-yM=/100x120/v1.cjs0MzMwOTtqOzE4NDA1OzEyMDA7MjIwOzE5Ng (r;43309;j;18405;1200;220;196)
 			//   https://content9.flixster.com/rtactor/43/30/43309_ori.jpg -- interestingly, /personality/ also works, but is a completely different image
+			// https://resizing.flixster.com/RxEbHudDxuOpys1eA435pUzW46Y=/206x156/v1.czsxMDI4MjEyNztqOzE4NDc5OzEyMDA7MjA2OzE1Ng (s;10282127;j;18479;1200;206;156)
+			//   https://content9.flixster.com/site/10/28/21/10282127_ori.jpg
 			// http://resizing.flixster.com/x0Lf-nt1zhVLUHx31ICE47vaQmg=/128x128/v1.YzsyOTYwO2o7MTg0MDU7MjA0ODs0MDA7NDAw (c;2960;j;18405;2048;400;400)
 			//   https://content9.flixster.com/critic/29/2960_ori.jpg
 			// doesn't work for all:
@@ -42221,8 +42245,6 @@ var $$IMU_EXPORT$$;
 			//   https://content9.flixster.com/critic/24/2490_ori.jpg -- doesn't work
 			// http://resizing.flixster.com/PhT5ThIYHT8vdnBQLtTaeD2nm7g=/38x45/v1.YzsxNjU0O2c7MTg0MDU7MjA0ODszODs0NQ (c;1654;g;18405;2048;38;45)
 			//   https://content9.flixster.com/critic/16/1654_ori.jpg -- /16/54/ doesn't work either
-			// https://resizing.flixster.com/RxEbHudDxuOpys1eA435pUzW46Y=/206x156/v1.czsxMDI4MjEyNztqOzE4NDc5OzEyMDA7MjA2OzE1Ng (s;10282127;j;18479;1200;206;156)
-			//   https://content9.flixster.com/site/10/28/21/10282127_ori.jpg
 
 			// other:
 			// https://resizing.flixster.com/hbkhXYovq-89hd70H-hYFOOiJ9c=/fit-in/1152x864/v1.bjsxNTE4MjEzO2o7MTg0Njc7MTIwMDsxOTIwOzEwODA (n;1518213;j;18467;1200;1920;1080)
@@ -53446,7 +53468,9 @@ var $$IMU_EXPORT$$;
 		if (domain_nowww === "celebs101.com") {
 			// https://www.celebs101.com/gallery/Selena_Gomez/412117/tn_Selena_Gomez_Picture.jpg
 			//   https://www.celebs101.com/gallery/Selena_Gomez/412117/Selena_Gomez_Picture.jpg
-			return src.replace(/(\/gallery\/+[^/]*\/+[0-9]+\/+)tn_([^/]*)(?:[?#].*)?$/, "$1$2");
+			// http://www.celebs101.com/screen-savers/Keira-Knightley/tn_Keira%20Knightley%2017.jpg
+			//   http://www.celebs101.com/screen-savers/Keira-Knightley/Keira%20Knightley%2017.jpg
+			return src.replace(/(\/(?:gallery|screen-savers)\/+[^/]*\/+(?:[0-9]+\/+)?)tn_([^/]*)(?:[?#].*)?$/, "$1$2");
 		}
 
 		if (domain_nowww === "nnconnect.com") {
@@ -58334,6 +58358,46 @@ var $$IMU_EXPORT$$;
 				return newsrc;
 
 			return src.replace(/^[a-z]+:\/\/[^/]+\/+(EXP\/+[^/]+\/+)(?:resize|center)\/+[0-9]+x[0-9]+\/+/, "https://media.ex-cdn.com/$1");
+		}
+
+		if (domain_nowww === "sweetandtalented.com") {
+			// http://www.sweetandtalented.com/images/knightley/knightley_tm136.jpg
+			//   http://www.sweetandtalented.com/images/knightley/knightley136.jpg
+			return src.replace(/(\/images\/+[^/]+\/+[^/]+)_tm([0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nosub === "scotsman.com") {
+			// https://www.scotsman.com/jp-ct.co.uk/image/onecms:cb3ec9d1-b8cb-4ceb-9d41-3a01cacb749b:164d1d35-044a-44a9-a1be-2e631c213050/image.jpg
+			//   https://jp-ct.co.uk/image/onecms:cb3ec9d1-b8cb-4ceb-9d41-3a01cacb749b:164d1d35-044a-44a9-a1be-2e631c213050/image.jpg
+			// https://www.edinburghnews.scotsman.com/jp-ct.co.uk/image/onecms:52e335b9-ba0e-452f-bdb0-0d07d4e59215:677812b7-9d2a-47c2-975e-aeeaf6df63ab/image.jpg
+			//   https://jp-ct.co.uk/image/onecms:52e335b9-ba0e-452f-bdb0-0d07d4e59215:677812b7-9d2a-47c2-975e-aeeaf6df63ab/image.jpg
+			// https://www.edinburghnews.scotsman.com/jp-ct.co.uk/image/onecms:4b3333db-2c47-4618-adb8-620540546138:7e54dc7d-fc35-4140-a25e-11bf47337f58/image.jpg?width=640
+			//   https://jp-ct.co.uk/image/onecms:4b3333db-2c47-4618-adb8-620540546138:7e54dc7d-fc35-4140-a25e-11bf47337f58/image.jpg
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+(jp-ct\.co\.uk\/.*?)(?:[?#].*)?$/, "https://$1");
+			if (newsrc !== src)
+				return newsrc;
+
+			// https://www.scotsman.com/webimg/b25lY21zOmI1MGQ0NTk5LTIzYjItNDkxNC1hMDY2LTE5MWY5NDk4NDMzNDo0ZGUyMjZhMS0xYjgyLTQzN2QtOWZkYi1kZWFlZGQyNzEyNTI=.jpg?crop=61:45,smart&width=600
+			//   https://jp-ct.co.uk/image/onecms:b50d4599-23b2-4914-a066-191f94984334:4de226a1-1b82-437d-9fdb-deaedd271252/image.jpg
+			// https://www.scotsman.com/webimg/RUxNODYyNjA1NTY=.jpg?crop=61:45,smart&width=600
+			//   https://www.scotsman.com/webimg/RUxNODYyNjA1NTY=.jpg
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+webimg\/+([^-_/.]+)(\.[^/.?#]+)?(?:[?#].*)?$/);
+			if (match) {
+				newsrc = src.replace(/[?#].*$/, "");
+				if (newsrc !== src)
+					return newsrc;
+
+				try {
+					// atob('b25lY21zOmI1MGQ0NTk5LTIzYjItNDkxNC1hMDY2LTE5MWY5NDk4NDMzNDo0ZGUyMjZhMS0xYjgyLTQzN2QtOWZkYi1kZWFlZGQyNzEyNTI')
+					//  = onecms:b50d4599-23b2-4914-a066-191f94984334:4de226a1-1b82-437d-9fdb-deaedd271252
+					var decoded = base64_decode(match[1]);
+
+					if (/^onecms:([-0-9a-f]+:[-0-9a-f]+)$/.test(decoded))
+						return "https://jp-ct.co.uk/image/" + decoded + "/image" + (match[2] || ".jpg");
+				} catch (e) {
+					console_error(e);
+				}
+			}
 		}
 
 
