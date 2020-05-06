@@ -68048,21 +68048,38 @@ var $$IMU_EXPORT$$;
 
 				set_add(prev, el);
 
+				var el_has_children = false;
 				var el_children = null;
+				var el_shadow_children = null;
+
 				if (el.childElementCount > 0) {
 					el_children = el.children;
-				} else if (el.shadowRoot && el.shadowRoot.childElementCount > 0) {
-					el_children = el.shadowRoot.children;
+					el_has_children = true;
+				}
+
+				if (el.shadowRoot && el.shadowRoot.childElementCount > 0) {
+					el_shadow_children = el.shadowRoot.children;
+					el_has_children = true;
 				}
 
 				// FIXME: should we stop checking if not in bounding client rect?
 				// this would depend on the fact that children are always within the bounding rect
 				//  - probably not, there are cases where the parent div has a size of 0, but children have proper sizes
-				if (el_children) {
+				if (el_has_children) {
 					// reverse, because the last element is (usually) the highest z
 					var newchildren = [];
-					for (var j = el_children.length - 1; j >= 0; j--) {
-						newchildren.push(el_children[j]);
+
+					if (el_children) {
+						for (var j = el_children.length - 1; j >= 0; j--) {
+							newchildren.push(el_children[j]);
+						}
+					}
+
+					// shadow is above non-shadow?
+					if (el_shadow_children) {
+						for (var j = el_shadow_children.length - 1; j >= 0; j--) {
+							newchildren.push(el_shadow_children[j]);
+						}
 					}
 
 					var newels = find_els_at_point(xy, newchildren, prev, zoom_cache);
