@@ -769,6 +769,7 @@ var $$IMU_EXPORT$$;
 		is_original: false,
 		norecurse: false,
 		forcerecurse: false,
+		can_cache: true,
 		bad: false,
 		bad_if: [],
 		fake: false,
@@ -27173,6 +27174,74 @@ var $$IMU_EXPORT$$;
 				.replace(/(\/potd\/entrants\/[0-9]+\/[^/]*)-[a-z]+(\.[^/.]*)$/, "$1-big$2");
 		}
 
+		if (host_domain_nosub === "modelmayhem.com" && options.element) {
+			if (!src) {
+				var current = options.element;
+				while ((current = current.parentElement)) {
+					if (current.tagName === "DIV" && current.id === "viewpic") {
+						var og_image_meta = document.querySelector("meta[property=\"og:image\"]");
+						if (og_image_meta) {
+							return og_image_meta.getAttribute("content");
+						}
+
+						break;
+					}
+				}
+			}
+
+			if (/\/images\/+nopic_worksafe-on\./.test(src) && options.do_request && options.cb) {
+				var parent = options.element.parentElement;
+				if (parent && parent.tagName === "A" && /\/portfolio\/+pic\/+[0-9]+/.test(parent.href)) {
+					var query_picid = function(picid, cb) {
+						var cache_key = "modelmayhem:" + picid;
+
+						api_cache.fetch(cache_key, cb, function(done) {
+							options.do_request({
+								url: "https://www.modelmayhem.com/portfolio/pic/" + picid,
+								method: "GET",
+								onload: function(resp) {
+									if (resp.readyState !== 4)
+										return;
+
+									if (resp.status !== 200) {
+										console_error(cache_key, resp);
+										return done(null, false);
+									}
+
+									var match = resp.responseText.match(/<meta\s+property="og:image"\s+content="([^"]+)"/);
+									if (!match) {
+										console_error(cache_key, "Unable to find match", resp);
+										return done(null, false);
+									}
+
+									return done(decode_entities(match[1]), 24*60*60);
+								}
+							});
+						});
+					};
+
+					var get_picid_from_url = function(url) {
+						return url.replace(/.*\/portfolio\/+pic\/+([0-9]+)(?:[?#].)?$/, "$1");
+					};
+
+					query_picid(get_picid_from_url(parent.href), function(newsrc) {
+						if (newsrc) {
+							options.cb({
+								url: newsrc,
+								can_cache: false
+							});
+						} else {
+							options.cb(null);
+						}
+					});
+
+					return {
+						waiting: true
+					};
+				}
+			}
+		}
+
 		if (domain === "static.artbible.info") {
 			// https://static.artbible.info/medium/lastman_kruisiging.jpg
 			//   https://static.artbible.info/large/lastman_kruisiging.jpg
@@ -47827,6 +47896,10 @@ var $$IMU_EXPORT$$;
 			// doesn't work for all:
 			// https://img-s3.onedio.com/id-5bbd9ebdf526d1a1133f9132/rev-0/raw/s-30c00c91f2295a4c3a2047c0fb4ff312905aa11e.jpg
 			// https://img-s2.onedio.com/id-57347c8f555365205339b2b0/rev-0/w-635/f-jpg-gif-webp-webm-mp4/s-b82ef0d1ffaa9f45602df3969ab5bbabce0e2b6f.gif
+			// https://img-s3.onedio.com/id-585a889e06c369b8113badfd/rev-0/w-300/h-150/f-jpg/s-f960f9e49e60b5f39b3f64eca875f88654c8f622.jpg
+			//   https://img-3.onedio.com/img/585a889e06c369b8113badfd.jpg -- 404, jpeg, JPG, png, gif don't work, -2 and -1 don't work either
+			// other:
+			// https://srv-cdn.onedio.com/twitter/avatar/DuniaGuluzada/original
 			return src
 				.replace(/:\/\/[^/]*\/id-([0-9a-f]+)\/.*?(\.[^/.]*)(?:[?#].*)?$/, "://img-3.onedio.com/img/$1$2")
 				.replace(/\/img\/+(?:[0-9]+\/+bound\/+)?[0-9]*r[0-9]\/+/, "/img/");
@@ -58400,6 +58473,12 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain === "nmbimg.fastmirror.org") {
+			// https://nmbimg.fastmirror.org/thumb/2020-05-06/5eb2c36e37ea0.jpg
+			//   https://nmbimg.fastmirror.org/image/2020-05-06/5eb2c36e37ea0.jpg
+			return src.replace(/\/thumb\/+([0-9]{4}-[0-9]{2}-[0-9]{2}\/+[0-9a-f]+\.)/, "/image/$1");
+		}
+
 
 
 
@@ -60321,6 +60400,22 @@ var $$IMU_EXPORT$$;
 			};
 		}
 
+		if (host_domain_nosub === "modelmayhem.com") {
+			return {
+				element_ok: function(el) {
+					var current = el;
+					while ((current = current.parentElement)) {
+						// https://www.modelmayhem.com/portfolio/pic/45372959
+						if (current.tagName === "DIV" && current.id === "viewpic") {
+							return true;
+						}
+					}
+
+					return "default";
+				}
+			};
+		}
+
 		return null;
 	}
 
@@ -60529,6 +60624,15 @@ var $$IMU_EXPORT$$;
 				return;
 
 			var cache_endhref = fillobj(endhref, currentobj);
+
+			if (!cache_endhref || !cache_endhref.can_cache) {
+				if (_nir_debug_) {
+					console_log("do_cache: skipping cache because cache_endhref.can_cache == false");
+				}
+
+				return;
+			}
+
 			currenthref = get_currenthref(cache_endhref);
 			if (!currenthref)
 				return;
