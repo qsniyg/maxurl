@@ -42166,6 +42166,127 @@ var $$IMU_EXPORT$$;
 							   "$1ori$2");
 		}
 
+		if (host_domain_nowww === "rottentomatoes.com" && options.element && domain === "resizing.flixster.com") {
+			var get_thumborid_for_flixster = function(url) {
+				if (url.match(/^v1\.[^/?#.]+$/)) {
+					return url;
+				}
+
+				// thumborId is base64:
+				// atob("aDsxMzA5MTc7ajsxODQwNjsxMjAwOzIxMDA7MTE2MA")
+				//  = "h;130917;j;18406;1200;2100;1160"
+				var match = url.match(/^[a-z]+:\/\/resizing\.flixster\.com\/.*\/(v1\.[^/?#]+)(?:[?#].*)?$/);
+				if (!match)
+					return null;
+
+				return match[1];
+			};
+
+			// https://www.rottentomatoes.com/m/logan_2017/pictures
+			var get_pictures_json = function() {
+				var pictures_json = document.getElementById("pictures-json");
+				if (!pictures_json)
+					return null;
+
+				try {
+					var json = JSON_parse(pictures_json.innerHTML);
+					return parse_pictures_json(json);
+				} catch (e) {
+					console_error(e);
+					return null;
+				}
+			};
+
+			var parse_pictures_json = function(json) {
+				var images = [];
+
+				for (var i = 0; i < json.length; i++) {
+					var image = {};
+
+					image.full = json[i].srcFull;
+					image.id = get_thumborid_for_flixster(image.full);
+					image.caption = json[i].caption || null;
+
+					images.push(image);
+				}
+
+				return images;
+			};
+
+			// https://www.rottentomatoes.com/m/logan_2017 ("photos" section)
+			var get_imagesjson = function() {
+				var scripts = document.getElementsByTagName("script");
+				for (var i = 0; i < scripts.length; i++) {
+					var script_text = scripts[i].innerHTML;
+
+					var match = script_text.match(/root\.RottenTomatoes\.context\.imagesJson\s*=\s*(\[.*?]);/);
+					if (!match) {
+						continue;
+					}
+
+					try {
+						var json = JSON_parse(match[1]);
+						return parse_imagesjson(json);
+					} catch (e) {
+						console_error(e);
+						return null;
+					}
+				}
+
+				return null;
+			};
+
+			var parse_imagesjson = function(json) {
+				var images = [];
+
+				for (var i = 0; i < json.length; i++) {
+					var image = {};
+
+					image.id = json[i].thumborId;
+					image.full = json[i].urls.fullscreen;
+					image.caption = json[i].caption || json[i].alt || null;
+
+					images.push(image);
+				}
+
+				return images;
+			};
+
+			var get_full_flixster = function(url) {
+				var id = get_thumborid_for_flixster(url);
+				var cache_key = "flixster:" + id;
+
+				if (api_cache.has(cache_key)) {
+					return api_cache.get(cache_key);
+				}
+
+				var imagesjson = get_imagesjson();
+				if (!imagesjson) {
+					imagesjson = get_pictures_json();
+				}
+
+				if (!imagesjson) {
+					return null;
+				}
+
+				for (var i = 0; i < imagesjson.length; i++) {
+					api_cache.set("flixster:" + imagesjson[i].id, imagesjson[i], 24*60*60);
+				}
+
+				return api_cache.get(cache_key);
+			};
+
+			var full_picture = get_full_flixster(src);
+			if (full_picture) {
+				return {
+					url: full_picture.full,
+					extra: {
+						caption: full_picture.caption
+					}
+				};
+			}
+		}
+
 		if (amazon_container === "focusmicrosites") {
 			// http://focusmicrosites.s3.amazonaws.com/assets/uploads/_tmp/1531760771_focus-features_on-the-basis-of-sex_felicity-jones_armie-hammer_justin-theroux_bio-1-148x157.jpg
 			//   http://focusmicrosites.s3.amazonaws.com/assets/uploads/1531760771_focus-features_on-the-basis-of-sex_felicity-jones_armie-hammer_justin-theroux_bio-1.jpg
