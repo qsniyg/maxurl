@@ -1112,19 +1112,33 @@ var $$IMU_EXPORT$$;
 		return deepcopy(event, {json: true});
 	};
 
+	var get_nonsensitive_settings = function() {
+		var new_settings = JSON_parse(JSON_stringify(settings));
+
+		for (var i = 0; i < sensitive_settings.length; i++) {
+			delete new_settings[sensitive_settings[i]];
+		}
+
+		return new_settings;
+	};
+
 	// Note: None of this information is automatically sent anywhere, it's only displayed to the user when something crashes.
 	var get_crashlog_info = function() {
 		var ua = "";
-		try {ua = window.navigator.userAgent} catch (e) {}
+		try {ua = window.navigator.userAgent;} catch (e) {}
 
 		var imu_version = "(!!!UNKNOWN, PLEASE FILL IN!!!)\n";
-		try {imu_version = gm_info.script.version} catch (e) {}
+		try {imu_version = gm_info.script.version;} catch (e) {}
+
+		var our_settings_text = "(unable to find)";
+		try {our_settings_text = JSON_stringify(get_nonsensitive_settings());} catch (e) {}
 
 		var keys = [
 			"User agent: " + ua,
 			"Is userscript: " + is_userscript,
 			"Is addon: " + is_extension,
-			"Image Max URL version: " + imu_version
+			"Image Max URL version: " + imu_version,
+			"Settings: " + our_settings_text
 		];
 
 		if (is_userscript) {
@@ -1834,6 +1848,10 @@ var $$IMU_EXPORT$$;
 		last_update_url: null
 	};
 	var orig_settings = deepcopy(settings);
+
+	var sensitive_settings = [
+		"tumblr_api_key"
+	];
 
 	var user_defined_settings = {};
 
@@ -8249,6 +8267,9 @@ var $$IMU_EXPORT$$;
 			 // https://stephenking.com/xf/proxy.php?image=http%3A%2F%2Fimages.askmen.com%2Fphotos%2Fdimension-films-presents-the-world-premiere-of-1408%2F20574.jpg&hash=f8f6f7179d75c0fd0a960ac5e65612a2
 			 //   http://images.askmen.com/photos/dimension-films-presents-the-world-premiere-of-1408/20574.jpg
 			 domain_nowww === "stephenking.com" ||
+			 // https://forums.audioholics.com/forums/proxy.php?image=https%3A%2F%2Fd27t0qkxhe4r68.cloudfront.net%2Ft_300%2F095115881941.jpg%3F1401982484&hash=54776c8557b4835a9c8cae1ce1b0d56c
+			 //   https://d27t0qkxhe4r68.cloudfront.net/t_300/095115881941.jpg?1401982484
+			 domain === "forums.audioholics.com" ||
 			 // https://www.ambercutie.com/forums/proxy.php?image=http%3A%2F%2F24.media.tumblr.com%2Fc4395a17e157f2a9d9dd7fb9c56495b6%2Ftumblr_mhkekoQgAh1qcr6iqo1_1280.jpg&hash=f7e1ba2a0eb3236d02ea79aa629dfc1a
 			 //   http://66.media.tumblr.com/c4395a17e157f2a9d9dd7fb9c56495b6/tumblr_mhkekoQgAh1qcr6iqo1_1280.jpg
 			 domain_nowww === "ambercutie.com" ||
@@ -58490,6 +58511,49 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/thumb\/+([0-9]{4}-[0-9]{2}-[0-9]{2}\/+[0-9a-f]+\.)/, "/image/$1");
 		}
 
+		if (domain_nowww === "supraphonline.cz") {
+			// https://www.supraphonline.cz/assets/images/sexycover/lp_close.png
+			if (/\/assets\/+images\/+sexycover\/+/.test(src)) {
+				return {
+					url: src,
+					bad: "mask"
+				};
+			}
+		}
+
+		if (domain === "d27t0qkxhe4r68.cloudfront.net") {
+			// https://d27t0qkxhe4r68.cloudfront.net/sizedimages/composers/200/mozart.jpg?1491044400
+			//   https://d27t0qkxhe4r68.cloudfront.net/images/composers/mozart.jpg?1491044400
+			// https://d27t0qkxhe4r68.cloudfront.net/t_900/A10301A00038512959.jpg?1524739180
+			// https://d27t0qkxhe4r68.cloudfront.net/sm/t/300/8661400.jpeg?1572018935
+			//   https://d1iiivw74516uk.cloudfront.net/eyJidWNrZXQiOiJwcmVzdG8tY292ZXItaW1hZ2VzIiwia2V5IjoiODY2MTQwMC4xLmpwZyIsInRpbWVzdGFtcCI6MTU4NTIzNDk5NX0=
+			// other:
+			// https://d27t0qkxhe4r68.cloudfront.net/sm/t/orig/ISBN9783923051502.jpg?1580747809 -- no longer works
+			// https://d27t0qkxhe4r68.cloudfront.net/sm/ft/orig/mds-IMC2656_2.jpg?1380721017 -- no longer works (404)
+			return src
+				.replace(/\/sizedimages\/+([^/]+\/+)[0-9]+\/+/, "/images/$1");
+		}
+
+		if (domain === "d1iiivw74516uk.cloudfront.net") {
+			// https://d1iiivw74516uk.cloudfront.net/eyJidWNrZXQiOiJwcmVzdG8tY292ZXItaW1hZ2VzIiwia2V5IjoiODE3OTQzMy4xLmpwZyIsImVkaXRzIjp7InJlc2l6ZSI6eyJ3aWR0aCI6MzAwfSwianBlZyI6eyJxdWFsaXR5Ijo2NX0sInRvRm9ybWF0IjoianBlZyJ9LCJ0aW1lc3RhbXAiOjE0NzYxMDUxMjR9
+			//   https://d1iiivw74516uk.cloudfront.net/eyJidWNrZXQiOiJwcmVzdG8tY292ZXItaW1hZ2VzIiwia2V5IjoiODE3OTQzMy4xLmpwZyIsInRpbWVzdGFtcCI6MTQ3NjEwNTEyNH0=
+			// atob:
+			//   = {"bucket":"presto-cover-images","key":"8179433.1.jpg","edits":{"resize":{"width":300},"jpeg":{"quality":65},"toFormat":"jpeg"},"timestamp":1476105124}
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+([^-_/.]{20,})(?:[?#].*)?$/);
+			if (match) {
+				try {
+					var decoded = base64_decode(match[1]);
+					var json = JSON_parse(decoded);
+
+					delete json.edits;
+
+					return "https://d1iiivw74516uk.cloudfront.net/" + base64_encode(JSON_stringify(json));
+				} catch (e) {
+					console_error(e);
+				}
+			}
+		}
+
 
 
 
@@ -62398,6 +62462,12 @@ var $$IMU_EXPORT$$;
 					var single_reason = array[i][j];
 
 					var option_el = document.getElementById("option_" + single_reason.setting);
+
+					if (!option_el) {
+						console_error("Unable to find", single_reason.setting);
+						continue;
+					}
+
 					var option_name = option_el.getElementsByClassName("name_td")[0].innerText;
 
 					var wanted_value_el = document.querySelector("label[for=\"input_" + single_reason.setting + "_" + single_reason.required_value + "\"]");
