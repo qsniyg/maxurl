@@ -24832,9 +24832,23 @@ var $$IMU_EXPORT$$;
 			//   https://static.zerochan.net/IA.full.878867.jpg
 			// https://static.zerochan.net/Kirigaya.Kazuto.600.1450176.jpg
 			//   https://static.zerochan.net/Kirigaya.Kazuto.full.1450176.jpg
-			return src
+			obj = {
+				url: src
+			};
+
+			id = src.match(/:\/\/[^/]+\/+(?:[^/]*\.[^/.]+\.([0-9]+)|[^/]+\/+(?:[0-9]+\/+){2}([0-9]+))\.[^/.]+(?:[?#].*)?$/);
+			if (id) {
+				obj.extra = {page: "https://www.zerochan.net/" + (id[1] || id[2])};
+			}
+
+			obj.url = src
 				.replace(/:\/\/s[^.]*.zerochan.net\//, "://static.zerochan.net/")
-				.replace(/(:\/\/[^/]*\/[^/]*\.)[0-9]+(\.[0-9]+\.[^/.]*)$/, "$1full$2");
+				.replace(/(:\/\/[^/]*\/[^/]*\.)[0-9]+(\.[0-9]+\.[^/.]*)$/, "$1full$2")
+				// https://static.zerochan.net/240/21/19/413471.jpg
+				//   https://static.zerochan.net/full/21/19/413471.jpg
+				.replace(/(:\/\/[^/]+\/+)[0-9]+\/+([0-9]+\/+[0-9]+\/+[0-9]+\.)/, "$1full/$2");
+
+			return obj;
 		}
 
 		if (domain === "cdn.donmai.us") {
@@ -58639,6 +58653,7 @@ var $$IMU_EXPORT$$;
 			//   https://1.img-dpreview.com/files/p/feature_blocks/e32d2f171ca24c79b1d7ac6864497d92.jpeg
 			// https://2.img-dpreview.com/files/p/TC300x203S300x203~articles/3840039923/Stocksy_txpee513538L3y100_Small_1841215.jpeg?v=5105
 			//   https://2.img-dpreview.com/files/p/articles/3840039923/Stocksy_txpee513538L3y100_Small_1841215.jpeg?v=5105
+			// https://2.img-dpreview.com/files/p/articles/6295202045/DSCF0302.acr.jpeg -- 5500x3667
 			return src.replace(/(\/files\/+p\/+)(?:E~)?[^/~]+~([^/~]+\/+)/, "$1$2");
 		}
 
@@ -60575,6 +60590,105 @@ var $$IMU_EXPORT$$;
 					}
 
 					return "default";
+				}
+			};
+		}
+
+		if (host_domain_nowww === "imagefap.com" && /\/photo\/+[0-9]+\//.test(options.host_url)) {
+			return {
+				gallery: function(el, nextprev) {
+					if (el.tagName !== "IMG" || !options.do_request)
+						return "default";
+
+					var is_navigation = false;
+					var current = el.parentElement;
+					if (!current && el.hasAttribute("data-imu-imagefap-album")) {
+						is_navigation = true;
+					} else {
+						while ((current = current.parentElement)) {
+							if ((current.tagName === "DIV" && current.id === "navigation") ||
+								// main image
+								current.tagName === "DIV" && current.classList.contains("image-wrapper")) {
+								is_navigation = true;
+								break;
+							}
+						}
+					}
+
+					if (!is_navigation)
+						return "default";
+
+					var query_imagefap_album = function(id, cb) {
+						var cache_key = "imagefap_album:" + id;
+
+						real_api_cache.fetch(cache_key, cb, function(done) {
+							options.do_request({
+								url: "https://www.imagefap.com/photo/" + id + "/",
+								method: "GET",
+								onload: function(resp) {
+									if (resp.status !== 200) {
+										console_error(cache_key, resp);
+										return done(null, false);
+									}
+
+									var regex = /<li>\s*<a href=\"https:\/\/[^/.]+\.imagefap\.com\/+images\/[^"]+".*?>\s*<img border=0 src2="(https:\/\/[^/.]+\.imagefap\.com\/[^"]+)"/;
+									var matches = resp.responseText.match(new RegExp(regex, "g"));
+									if (!matches) {
+										console_warn(cache_key, "Unable to find album matches for", resp);
+										return done(null, false);
+									}
+
+									var albumentries = [];
+									for (var i = 0; i < matches.length; i++) {
+										var match = matches[i].match(regex);
+										albumentries.push(decode_entities(match[1]));
+									}
+
+									return done(albumentries, 60*60);
+								}
+							});
+						});
+					};
+
+					var get_imagefap_photo_id = function(url) {
+						var id = url.replace(/.*\/images\/+.*\/([0-9]+)\.[^/.]+(?:[?#].*)?$/, "$1");
+						if (id !== url)
+							return id;
+
+						return null;
+					};
+
+					var our_photo_id = get_imagefap_photo_id(el.src);
+					if (!our_photo_id)
+						return "default";
+
+					var our_album_id = options.host_url.match(/\/photo\/+([0-9]+)\//);
+					our_album_id = our_album_id[1];
+
+					query_imagefap_album(our_album_id, function(data) {
+						if (!data) {
+							return options.cb("default");
+						}
+
+						for (var i = 0; i < data.length; i++) {
+							var data_id = get_imagefap_photo_id(data[i]);
+
+							if (our_photo_id === data_id) {
+								var nexti = i + (nextprev ? 1 : -1);
+								if (nexti < 0 || nexti >= data.length) {
+									return options.cb(null);
+								} else {
+									var our_el = new_image(data[nexti]);
+									our_el.setAttribute("data-imu-imagefap-album", "true");
+									return options.cb(our_el);
+								}
+							}
+						}
+
+						return options.cb("default");
+					});
+
+					return "waiting";
 				}
 			};
 		}
