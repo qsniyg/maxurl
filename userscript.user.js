@@ -62461,15 +62461,12 @@ var $$IMU_EXPORT$$;
 				for (var j = 0; j < array[i].length; j++) {
 					var single_reason = array[i][j];
 
-					var option_el = document.getElementById("option_" + single_reason.setting);
-
-					if (!option_el) {
-						console_error("Unable to find", single_reason.setting);
-						continue;
+					var option_name = single_reason.setting;
+					if (single_reason.setting in settings_meta) {
+						option_name = _(settings_meta[single_reason.setting].name);
 					}
 
-					var option_name = option_el.getElementsByClassName("name_td")[0].innerText;
-
+					// TODO: don't check for element, this doesn't work with tabs. Instead, do proper parsing
 					var wanted_value_el = document.querySelector("label[for=\"input_" + single_reason.setting + "_" + single_reason.required_value + "\"]");
 					var wanted_value = single_reason.required_value;
 					if (wanted_value_el) {
