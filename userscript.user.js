@@ -57182,8 +57182,6 @@ var $$IMU_EXPORT$$;
 				return fillobj_urls(full, obj);
 			}
 
-			return obj;
-
 			// https://s.sc-cdn.net/1d/NTegWFoU9mC8cYucFvrJOx4Hn0e4TwTqiTRA97esETg=/default/overlay.png
 			if (false && /\/default\/+overlay\.jpg(?:[?#].*)?$/.test(src)) {
 				// best case would be if they were somehow merged or something
@@ -57192,6 +57190,8 @@ var $$IMU_EXPORT$$;
 					bad: "mask"
 				};
 			}
+
+			return obj;
 		}
 
 		if (host_domain_nosub === "snapchat.com" && options.do_request && options.cb && options.element) {
