@@ -29479,8 +29479,10 @@ var $$IMU_EXPORT$$;
 						cb: function(){}
 					};
 
+					opts = get_bigimage_extoptions_first(opts);
 					opts = get_bigimage_extoptions(opts);
-					if (bigimage_recursive(url, opts) !== null) {
+					var result = bigimage_recursive(url, opts);
+					if (result !== null) {
 						return url;
 					}
 				}
@@ -55148,6 +55150,47 @@ var $$IMU_EXPORT$$;
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+api\/+\?(?:.*?&)?url=([^&]{20,}).*?$/, "$1");
 			if (newsrc !== src)
 				return base64_decode(newsrc);
+		}
+
+		if (domain_nowww === "gfycat.com") {
+			// https://www.gfycat.com/ko/YellowTornCockatiel
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:[a-z]{2}\/+)?([a-zA-Z]+)(?:[?#].*)?$/, "$1");
+			if (match && options.do_request && options.cb) {
+				var query_gfycat = function(id, cb) {
+					var cache_key = "gfycat:" + id;
+
+					api_cache.fetch(cache_key, cb, function(done) {
+						options.do_request({
+							url: "https://api.gfycat.com/v1/gfycats/" + id,
+							method: "GET",
+							headers: {
+								Referer: ""
+							},
+							onload: function(resp) {
+								if (resp.status !== 200) {
+									console_error(cache_key, resp);
+									return done(null, false);
+								}
+
+								try {
+									var json = JSON_parse(resp.responseText);
+									return done(json.gfyItem.posterUrl, 24*60*60);
+								} catch (e) {
+									console_error(e);
+								}
+
+								return done(null, false);
+							}
+						});
+					});
+				};
+
+				query_gfycat(match[1], options.cb);
+
+				return {
+					waiting: true
+				};
+			}
 		}
 
 		if (domain === "thumbs.gfycat.com" ||
