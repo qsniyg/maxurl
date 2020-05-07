@@ -840,7 +840,7 @@ var $$IMU_EXPORT$$;
 
 	if (is_userscript) {
 		try {
-			get_native_functions(["Blob", "atob", "btoa"]);
+			get_native_functions(["Blob", "atob", "btoa", "URL"]);
 		} catch (e) {
 			console_error(e);
 		}
@@ -848,11 +848,17 @@ var $$IMU_EXPORT$$;
 
 	// native_functions returns iframe
 	var our_EventTarget, EventTarget_addEventListener, EventTarget_removeEventListener;
+	var our_URL;
 
 	if (is_interactive) {
 		our_EventTarget = EventTarget;
 		EventTarget_addEventListener = our_EventTarget.prototype.addEventListener;
 		EventTarget_removeEventListener = our_EventTarget.prototype.removeEventListener;
+
+		// https://www.dpreview.com/ overrides URL
+		our_URL = URL;
+		if (native_functions.URL)
+			our_URL = native_functions.URL;
 	}
 
 	var our_addEventListener = function(element, event, handler, options) {
@@ -4132,7 +4138,7 @@ var $$IMU_EXPORT$$;
 	var cookie_cache = new Cache();
 
 	var urlparse = function(x) {
-		return new URL(x);
+		return new our_URL(x);
 	};
 
 	if (is_node && typeof URL === 'undefined') {
@@ -58614,6 +58620,28 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/mmo\/.*[0-9]+)_(?:hoved|large|thumb)(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		}
 
+		if (domain_nosub === "img-dpreview.com") {
+			// https://4.img-dpreview.com/resources/images/play-overlay-icon.png?v=5105
+			if (/\/resources\/+images\/+play-overlay-icon\./.test(src)) {
+				return {
+					url: src,
+					bad: "mask"
+				};
+			}
+
+			// https://4.img-dpreview.com/files/w/TC16x9S280x157?url=https%3A%2F%2Fi.ytimg.com%2Fvi%2Fkd7wdYetKbY%2Fhqdefault.jpg&signature=dm28vBZUdFr6S2adlJT4X0Wj3Ak%3D&v=5105
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+files\/+w\/+[^/?]+\?(?:.*&)?url=([^&]+).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+
+			// https://1.img-dpreview.com/files/p/E~C0x160S1200x662T290x160~feature_blocks/e32d2f171ca24c79b1d7ac6864497d92.jpeg
+			//   https://1.img-dpreview.com/files/p/E~feature_blocks/e32d2f171ca24c79b1d7ac6864497d92.jpeg
+			//   https://1.img-dpreview.com/files/p/feature_blocks/e32d2f171ca24c79b1d7ac6864497d92.jpeg
+			// https://2.img-dpreview.com/files/p/TC300x203S300x203~articles/3840039923/Stocksy_txpee513538L3y100_Small_1841215.jpeg?v=5105
+			//   https://2.img-dpreview.com/files/p/articles/3840039923/Stocksy_txpee513538L3y100_Small_1841215.jpeg?v=5105
+			return src.replace(/(\/files\/+p\/+)(?:E~)?[^/~]+~([^/~]+\/+)/, "$1$2");
+		}
+
 
 
 
@@ -64005,7 +64033,7 @@ var $$IMU_EXPORT$$;
 	}
 
 	var get_window_url = function() {
-		return window.URL || window.webkitURL;
+		return our_URL || window.URL || window.webkitURL;
 	};
 
 	var create_dataurl = function(blob, cb) {
