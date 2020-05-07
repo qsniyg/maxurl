@@ -887,7 +887,7 @@ var $$IMU_EXPORT$$;
 		if (!x || typeof x !== "object")
 			return false;
 
-		if (("namespaceURI" in x) && ("ariaSort" in x) && ("nodeType" in x)) {
+		if (("namespaceURI" in x) && ("nodeType" in x) && ("nodeName" in x) && ("childNodes" in x)) {
 			return true;
 		}
 
