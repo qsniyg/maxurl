@@ -838,7 +838,7 @@ var $$IMU_EXPORT$$;
 		iframe.parentElement.removeChild(iframe);
 	};
 
-	if (is_interactive) {
+	if (is_userscript) {
 		try {
 			get_native_functions(["Blob", "atob", "btoa"]);
 		} catch (e) {
@@ -58603,6 +58603,17 @@ var $$IMU_EXPORT$$;
 			};
 		}
 
+		if (domain === "cache.willhaben.at") {
+			// https://www.willhaben.at/iad/immobilien/d/haus-kaufen/wien/wien-1220-donaustadt/anleger-investoren-aufgepasst-360470932/
+			// https://cache.willhaben.at/mmo/2/360/470/932_-1048381452_hoved.jpg
+			//   https://cache.willhaben.at/mmo/2/360/470/932_-1048381452.jpg
+			// https://cache.willhaben.at/mmo/logo/atz/19041691/boubeva_6703718727609813088_large.png
+			//   https://cache.willhaben.at/mmo/logo/atz/19041691/boubeva_6703718727609813088.png
+			// https://cache.willhaben.at/mmo/2/360/470/932_-718016830_thumb.jpg
+			//   https://cache.willhaben.at/mmo/2/360/470/932_-718016830.jpg
+			return src.replace(/(\/mmo\/.*[0-9]+)_(?:hoved|large|thumb)(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
 
 
 
@@ -70702,7 +70713,10 @@ var $$IMU_EXPORT$$;
 		if (is_extension) {
 			// TODO: move out of do_mouseover
 			chrome.runtime.onMessage.addListener(function(message, sender, respond) {
-				//console_log("ON_MESSAGE", message);
+				if (_nir_debug_) {
+					console_log("chrome.runtime.onMessage", message);
+				}
+
 				if (message.type === "context_imu") {
 					popup_trigger_reason = "contextmenu";
 					trigger_popup(true);
@@ -70720,7 +70734,10 @@ var $$IMU_EXPORT$$;
 
 					if (!(response.id in extension_requests)) {
 						// this happens when there's more than one frame per tab
-						//console_error("Request ID " + response.id + " not in extension_requests");
+						if (_nir_debug_) {
+							console_log("Request ID " + response.id + " not in extension_requests");
+						}
+
 						return;
 					}
 
@@ -70732,7 +70749,13 @@ var $$IMU_EXPORT$$;
 							for (var i = 0; i < enc.value.length; i++) {
 								array[i] = enc.value.charCodeAt(i);
 							}
-							response.data.response = new native_blob([array.buffer], { type: enc.type });
+
+							try {
+								response.data.response = new native_blob([array.buffer], { type: enc.type });
+							} catch(e) {
+								console_error(e);
+								response.data.response = null;
+							}
 						} else {
 							response.data.response = null;
 						}
@@ -70742,16 +70765,30 @@ var $$IMU_EXPORT$$;
 
 					var reqdata = extension_requests[response.id].data;
 
-					var handle_event = function(event) {
-						if (response.event === event && reqdata[event]) {
-							reqdata[event](response.data);
-						}
-					};
+					var events = [
+						"onload",
+						"onerror",
+						"onprogress",
+						"onabort"
+					];
 
-					handle_event("onload");
-					handle_event("onerror");
-					handle_event("onprogress");
-					handle_event("onabort");
+					var handled = false;
+					for (var i = 0; i < events.length; i++) {
+						var event = events[i];
+
+						if (response.event === event && reqdata[event]) {
+							if (_nir_debug_) {
+								console_log("Running " + event + " for response", response);
+							}
+
+							reqdata[event](response.data);
+							handled = true;
+						}
+					}
+
+					if (!handled) {
+						console_error("No event handler for", response);
+					}
 
 					if (response.final) {
 						delete extension_requests[response.id];

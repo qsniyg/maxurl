@@ -231,12 +231,19 @@ var do_request = function(request, sender) {
 		xhr[event] = function() {
 			debug("XHR event: ", event);
 
+			var obj = {
+				tabid: sender.tab.id,
+				event: event,
+				final: final,
+				reqid: id
+			};
+
 			if (empty) {
-				return request[event](null);
+				return xhr_final_handler(null, obj);
 			}
 
 			do_final({}, final, function(resp) {
-				request[event](resp);
+				xhr_final_handler(resp, obj);
 			});
 		};
 	};
@@ -802,31 +809,26 @@ function get_cookies(url, cb, options) {
 	}
 }
 
+var xhr_final_handler = function(_data, obj) {
+	var message_data = {
+		type: "request",
+		data: {
+			event: obj.event,
+			final: obj.final,
+			id: obj.reqid,
+			data: _data
+		}
+	};
+
+	chrome.tabs.sendMessage(obj.tabid, message_data);
+};
+
 // Message handler
 chrome.runtime.onMessage.addListener((message, sender, respond) => {
 	debug("onMessage", message, sender, respond);
 
 	if (message.type === "request") {
 		var reqid;
-
-		var add_handler = function(name, final) {
-			message.data[name] = function(data) {
-				chrome.tabs.sendMessage(sender.tab.id, {
-					type: "request",
-					data: {
-						event: name,
-						final: final,
-						id: reqid,
-						data: data
-					}
-				});
-			};
-		};
-
-		add_handler("onload", true);
-		add_handler("onerror", true);
-		add_handler("onprogress", false);
-		add_handler("onabort", true);
 
 		reqid = do_request(message.data, sender);
 		respond({
