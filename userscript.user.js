@@ -629,6 +629,10 @@ var $$IMU_EXPORT$$;
 						newdata.onload = real_onload;
 						newdata.onerror = real_onerror;
 
+						if (newdata.imu_responseType === "blob") {
+							newdata.responseType = "blob";
+						}
+
 						return do_request_browser(newdata);
 					} else {
 						if (iserror) {
@@ -658,11 +662,20 @@ var $$IMU_EXPORT$$;
 							newresp.response = new native_blob([resp.response]);
 						}
 
+						if (_nir_debug_) {
+							console_log("do_request's arraybuffer->blob:", resp, newresp);
+						}
+
 						real_onload(newresp);
 					};
 				})(data.onload);
 
 				data.responseType = "arraybuffer";
+				data.imu_responseType = "blob";
+			}
+
+			if (_nir_debug_) {
+				console_log("do_request (modified data):", deepcopy(data));
 			}
 
 			return raw_request_do(data);
@@ -58525,6 +58538,16 @@ var $$IMU_EXPORT$$;
 		if (domain_nowww === "supraphonline.cz") {
 			// https://www.supraphonline.cz/assets/images/sexycover/lp_close.png
 			if (/\/assets\/+images\/+sexycover\/+/.test(src)) {
+				return {
+					url: src,
+					bad: "mask"
+				};
+			}
+		}
+
+		if (domain_nowww === "mp3va.com") {
+			// https://www.mp3va.com/img/cover-pt-3.png
+			if (/\/img\/+cover-pt-[0-9]+\./.test(src)) {
 				return {
 					url: src,
 					bad: "mask"
