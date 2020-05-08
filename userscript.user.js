@@ -752,6 +752,7 @@ var $$IMU_EXPORT$$;
 			imgur_nsfw_headers: null,
 			instagram_use_app_api: true,
 			instagram_gallery_postlink: false,
+			snapchat_orig_media: true,
 			tiktok_no_watermarks: true,
 			tumblr_api_key: null
 		},
@@ -1838,6 +1839,7 @@ var $$IMU_EXPORT$$;
 		imgur_source: true,
 		instagram_use_app_api: true,
 		instagram_gallery_postlink: false,
+		snapchat_orig_media: true,
 		tiktok_no_watermarks: true,
 		// just a very small protection against github scraping bots :)
 		tumblr_api_key: base64_decode("IHhyTXBMTThuMWVDZUwzb1JZU1pHN0NMQUx3NkVIaFlEZFU2V3E1ZUQxUGJNa2xkN1kx").substr(1),
@@ -3645,6 +3647,11 @@ var $$IMU_EXPORT$$;
 		instagram_gallery_postlink: {
 			name: "Instagram: Use albums for post thumbnails",
 			description: "Queries Instagram for albums when using the popup on a post thumbnail",
+			category: "rule_specific"
+		},
+		snapchat_orig_media: {
+			name: "Snapchat: Use original media without captions",
+			description: "Prefers using original media instead of meida with captions and tags overlayed",
 			category: "rule_specific"
 		},
 		tiktok_no_watermarks: {
@@ -57273,7 +57280,12 @@ var $$IMU_EXPORT$$;
 			// https://s.sc-cdn.net/1d/feXwf0gm4YfDw_mUoddLXnEWB9n8Fo3vx94Zol9wxJc=/default/preview.jpg
 			//   https://s.sc-cdn.net/1d/Pf3Qi0hkJmeUxsOnJRs777PbJnN_3cv4LMvMZ3FZ8Yc=/default/media.mp4
 			// /default/preview_overlay.jpg exists, but media_overlay doesn't exist
-			newsrc = src.replace(/\/default\/+preview(?:_overlay)?\.jpg(?:[?#].*)?$/, "/default/media.mp4");
+			var out_fn = "media";
+			if (options.rule_specific && !options.rule_specific.snapchat_orig_media) {
+				out_fn = "embedded";
+			}
+
+			newsrc = src.replace(/\/default\/+(?:embedded|media|preview(?:_overlay)?)\.(?:jpg|mp4)(?:[?#].*)?$/, "/default/" + out_fn + ".mp4");
 			if (newsrc !== src) {
 				var full = add_full_extensions(newsrc, ["mp4", "jpg"], true);
 
@@ -58327,7 +58339,10 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/program_img_tn\.php\?/, "/program_img.php?");
 		}
 
-		if (domain_nowww === "hahastop.com") {
+		if (domain_nowww === "hahastop.com" ||
+			// https://www.evilmilk.com/thumbs/Tongue_Out_Picdump_8_s.jpg
+			//   https://www.evilmilk.com/pictures/Tongue_Out_Picdump_8.jpg
+			domain_nowww === "evilmilk.com") {
 			// http://www.hahastop.com/thumbs/Curled_Up_So_Cute_s.jpg
 			//   http://www.hahastop.com/pictures/Curled_Up_So_Cute.jpg
 			return src.replace(/\/thumbs\/+([^/]+)_s(\.[^/.]+)(?:[?#].*)?$/, "/pictures/$1$2");
@@ -58708,6 +58723,24 @@ var $$IMU_EXPORT$$;
 			//   https://2.img-dpreview.com/files/p/articles/3840039923/Stocksy_txpee513538L3y100_Small_1841215.jpeg?v=5105
 			// https://2.img-dpreview.com/files/p/articles/6295202045/DSCF0302.acr.jpeg -- 5500x3667
 			return src.replace(/(\/files\/+p\/+)(?:E~)?[^/~]+~([^/~]+\/+)/, "$1$2");
+		}
+
+		if (domain_nowww === "artsphere.fr") {
+			// https://www.artsphere.fr/cache/media/6/image/264x180_david_bellemere_artsphere_beauty_23.jpg
+			//   https://www.artsphere.fr/cache/media/6/image/david_bellemere_artsphere_beauty_23.jpg
+			return src.replace(/(\/cache\/+media\/+[0-9]+\/+image\/+)[0-9]+x[0-9]+_/, "$1");
+		}
+
+		if (domain === "p.zvezda.photo") {
+			// https://p.zvezda.photo/contents/pics/458000/458548/300x300/1.jpg
+			//   https://p.zvezda.photo/contents/pics/458000/458548/preview.jpg
+			return src.replace(/(\/contents\/+pics\/+[0-9]+\/+[0-9]+\/+)[0-9]+x[0-9]+\/+1(\.[^/.]+)(?:[?#].*)?$/, "$1preview$2");
+		}
+
+		if (amazon_container === "speakerd") {
+			// https://speakerd.s3.amazonaws.com/presentations/f8653c8c6ffc4f54bb4683daa8c1a284/preview_slide_67.jpg?513402
+			//   https://speakerd.s3.amazonaws.com/presentations/f8653c8c6ffc4f54bb4683daa8c1a284/slide_67.jpg?513402
+			return src.replace(/\/preview_(slide_[0-9]+\.[^/.]+)(?:[?#].*)?$/, "/$1");
 		}
 
 
@@ -60874,12 +60907,25 @@ var $$IMU_EXPORT$$;
 		}
 
 		if ("rule_specific" in options) {
-			options.rule_specific.deviantart_prefer_size = settings.deviantart_prefer_size;
-			options.rule_specific.imgur_source = settings.imgur_source;
-			options.rule_specific.instagram_use_app_api = settings.instagram_use_app_api;
-			options.rule_specific.instagram_gallery_postlink = settings.instagram_gallery_postlink;
-			options.rule_specific.tiktok_no_watermarks = settings.tiktok_no_watermarks;
-			options.rule_specific.tumblr_api_key = settings.tumblr_api_key;
+			var rule_specific_map = {
+				"deviantart_prefer_size": true,
+				"imgur_source": true,
+				"instagram_use_app_api": true,
+				"instagram_gallery_postlink": true,
+				"snapchat_orig_media": true,
+				"tiktok_no_watermarks": true,
+				"tumblr_api_key": true
+			};
+
+			for (var rule_specific in rule_specific_map) {
+				var rule_specific_value = rule_specific_map[rule_specific];
+
+				if (rule_specific_value === true) {
+					rule_specific_value = rule_specific;
+				}
+
+				options.rule_specific[rule_specific_value] = settings[rule_specific];
+			}
 		}
 
 		// Doing this here breaks things like Imgur, which will redirect to an image if a video was opened in a new tab
