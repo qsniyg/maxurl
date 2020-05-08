@@ -109,17 +109,23 @@ var $$IMU_EXPORT$$;
 	} catch(e) {
 	}
 
-	try {
-		var extension_manifest = chrome.runtime.getManifest();
-		is_extension = extension_manifest.name === "Image Max URL";
+	var check_if_extension = function() {
+		if (typeof chrome !== "object" || typeof chrome.runtime !== "object")
+			return;
 
-		extension_options_page = chrome.runtime.getURL("extension/options.html");
-		is_extension_options_page = window.location.href.replace(/[?#].*$/, "") === extension_options_page;
-		is_options_page = is_options_page || is_extension_options_page;
-		//options_page = extension_options_page; // can't load from website
-		preferred_options_page = extension_options_page;
+		try {
+			var extension_manifest = chrome.runtime.getManifest();
+			is_extension = extension_manifest.name === "Image Max URL";
 
-		if (is_extension) {
+			if (!is_extension)
+				return;
+
+			extension_options_page = chrome.runtime.getURL("extension/options.html");
+			is_extension_options_page = window.location.href.replace(/[?#].*$/, "") === extension_options_page;
+			is_options_page = is_options_page || is_extension_options_page;
+			//options_page = extension_options_page; // can't load from website
+			preferred_options_page = extension_options_page;
+
 			is_webextension = true;
 			if (navigator.userAgent.indexOf("Firefox") >= 0)
 				is_firefox_webextension = true;
@@ -132,9 +138,11 @@ var $$IMU_EXPORT$$;
 					respond = nullfunc;
 				return chrome.runtime.sendMessage(null, message, null, respond);
 			};
-		}
-	} catch (e) {
-	}
+		} catch (e) {
+		};
+	};
+
+	check_if_extension();
 
 	var is_node = false;
 	if ((typeof module !== 'undefined' && module.exports) &&
