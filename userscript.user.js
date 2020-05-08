@@ -21419,10 +21419,7 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/cache\/([^/]*)\/([^/]*\/[0-9]+\/[0-9]+\/)[0-9]+\/([0-9]+\.[^/.]*)$/, "/uploadfile/$1/$2$3");
 		}
 
-		if (domain === "imgsh.jpnxcn.com" ||
-			// http://gongl8.com/uploadfile/2018/0228/thumb_0_300_20180228054831686.jpg
-			//   http://gongl8.com/uploadfile/2018/0228/20180228054831686.jpg
-			domain_nowww === "gongl8.com" ||
+		if (domain_nowww === "gongl8.com" ||
 			// http://upload.mcchina.com/2014/0908/thumb_600_800_1410147115827.jpg
 			//   http://upload.mcchina.com/2014/0908/1410147115827.jpg
 			domain === "upload.mcchina.com" ||
@@ -21435,15 +21432,9 @@ var $$IMU_EXPORT$$;
 			// http://www.artsbj.com/uploadfile/2018/0807/thumb_100_137_20180807020554237.jpg
 			//   http://www.artsbj.com/uploadfile/2018/0807/20180807020554237.jpg
 			domain_nowww === "artsbj.com" ||
-			// https://img.94hnr.com/160711/thumb_600_0_38_162716_1.jpg
-			//   https://img.94hnr.com/160711/38_162716_1.jpg
-			domain === "img.94hnr.com" ||
 			// http://upload.taihainet.com/2016/0713/thumb_500_0_1468369050794.jpg
 			//   http://upload.taihainet.com/2016/0713/1468369050794.jpg
 			domain === "upload.taihainet.com" ||
-			// http://img.sexbeautygirl.com/2015/091002/thumb_300_0_201110301600096500.jpg
-			//   http://img.sexbeautygirl.com/2015/091002/201110301600096500.jpg
-			domain === "img.sexbeautygirl.com" ||
 			// http://news.yule.com.cn/uploadfile/2019/0411/thumb_500_0_20190411043755590.jpg
 			//   http://news.yule.com.cn/uploadfile/2019/0411/20190411043755590.jpg
 			domain === "news.yule.com.cn" ||
@@ -21453,6 +21444,24 @@ var $$IMU_EXPORT$$;
 			// http://upload.art.ifeng.com/2017/0410/thumb_700_325_1491790874748.jpg
 			//   http://upload.art.ifeng.com/2017/0410/1491790874748.jpg
 			domain === "upload.art.ifeng.com" ||
+			// http://uploads.rayli.com.cn/2016/0413/thumb_264_1460513211233.jpg
+			//   http://uploads.rayli.com.cn/2016/0413/1460513211233.jpg
+			domain === "uploads.rayli.com.cn") {
+			// http://gongl8.com/uploadfile/2018/0228/thumb_0_300_20180228054831686.jpg
+			//   http://gongl8.com/uploadfile/2018/0228/20180228054831686.jpg
+			return src.replace(/(\/[0-9]{4}\/+[0-9]{4}\/+)thumb_[0-9]+_(?:[0-9]+_)?([0-9]{8,}\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain === "imgsh.jpnxcn.com" ||
+			// https://img.94hnr.com/160711/thumb_600_0_38_162716_1.jpg
+			//   https://img.94hnr.com/160711/38_162716_1.jpg
+			domain === "img.94hnr.com" ||
+			// https://img.cancai.net/160711/thumb_600_0_38_162716_1.jpg
+			//   https://img.cancai.net/160711/38_162716_1.jpg
+			domain === "img.cancai.net" ||
+			// http://img.sexbeautygirl.com/2015/091002/thumb_300_0_201110301600096500.jpg
+			//   http://img.sexbeautygirl.com/2015/091002/201110301600096500.jpg
+			domain === "img.sexbeautygirl.com" ||
 			// https://file.acgxmanga.com/h/2019102609/thumb_250_0_jozjk4m5b13.jpg
 			//   https://file.acgxmanga.com/h/2019102609/jozjk4m5b13.jpg
 			domain === "file.acgxmanga.com" ||
