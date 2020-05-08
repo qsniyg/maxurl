@@ -21446,10 +21446,35 @@ var $$IMU_EXPORT$$;
 			domain === "upload.art.ifeng.com" ||
 			// http://uploads.rayli.com.cn/2016/0413/thumb_264_1460513211233.jpg
 			//   http://uploads.rayli.com.cn/2016/0413/1460513211233.jpg
-			domain === "uploads.rayli.com.cn") {
+			domain === "uploads.rayli.com.cn" ||
+			// http://m1.ablwang.com/uploadfile/2018/0430/thumb_110_69_20180430070256125.jpg
+			//   http://m1.ablwang.com/uploadfile/2018/0430/20180430070256125.jpg
+			(domain_nosub === "ablwang.com" && domain.match(/m[0-9]*\.ablwang\.com/)) ||
+			// http://image14.m1905.cn/uploadfile/2016/0802/thumb_0_647_500_20160802095117440123_watermark.jpg
+			//   http://image14.m1905.cn/uploadfile/2016/0802/20160802095117440123.jpg
+			(domain_nosub === "m1905.cn" && domain.match(/image[0-9]*\.m1905\.cn/)) ||
+			// http://www.ozanyerli.com/uploadfile/2016/0411/thumb_240_0_20160411034324215.jpg
+			//   http://www.ozanyerli.com/uploadfile/2016/0411/20160411034324215.jpg
+			domain_nowww === "ozanyerli.com" ||
+			// http://www.entline.cn/uploadfile/2016/0411/thumb_260_0_20160411034315914.jpg
+			//   http://www.entline.cn/uploadfile/2016/0411/20160411034315914.jpg
+			domain_nowww === "entline.cn" ||
+			// http://img.ixiumei.com/uploadfile/2016/0602/thumb_294_224_20160602105701954.jpg
+			//   http://img.ixiumei.com/uploadfile/2016/0602/20160602105701954.jpg
+			domain === "img.ixiumei.com" ||
+			// http://www.69876.com/uploadfile/2017/0524/thumb_100_137_20170524125326237.jpg
+			//   http://www.69876.com/uploadfile/2017/0524/20170524125326237.jpg
+			domain_nowww === "69876.com" ||
+			// http://222.186.12.239:10012/uploadfile/2017/0524/thumb_100_137_20170524125326237.jpg
+			domain === "222.186.12.239") {
 			// http://gongl8.com/uploadfile/2018/0228/thumb_0_300_20180228054831686.jpg
 			//   http://gongl8.com/uploadfile/2018/0228/20180228054831686.jpg
-			return src.replace(/(\/[0-9]{4}\/+[0-9]{4}\/+)thumb_[0-9]+_(?:[0-9]+_)?([0-9]{8,}\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+			newsrc = src.replace(/(\/[0-9]{4}\/+[0-9]{4}\/+)thumb_[0-9]+_(?:[0-9]+_){0,2}([0-9]{8,})(?:_watermark)?(\.[^/.]+)(?:[?#].*)?$/, "$1$2$3");
+			if (newsrc !== src)
+				return newsrc;
+			//newsrc = src.replace(/\/(?:thumb_[0-9]+_[0-9]+_(?:[0-9]+_)?)?([0-9]+)(?:_watermark)?(\.[^/.]*)$/, "/$1$2");
+			//if (newsrc !== src)
+			//	return newsrc;
 		}
 
 		if (domain === "imgsh.jpnxcn.com" ||
@@ -21464,10 +21489,7 @@ var $$IMU_EXPORT$$;
 			domain === "img.sexbeautygirl.com" ||
 			// https://file.acgxmanga.com/h/2019102609/thumb_250_0_jozjk4m5b13.jpg
 			//   https://file.acgxmanga.com/h/2019102609/jozjk4m5b13.jpg
-			domain === "file.acgxmanga.com" ||
-			// http://m1.ablwang.com/uploadfile/2018/0430/thumb_110_69_20180430070256125.jpg
-			//   http://m1.ablwang.com/uploadfile/2018/0430/20180430070256125.jpg
-			(domain_nosub === "ablwang.com" && domain.match(/m[0-9]*\.ablwang\.com/))) {
+			domain === "file.acgxmanga.com") {
 			// http://imgsh.jpnxcn.com/pics/star/pic/thumb_180_0_5de4fc683a33a8e1731ecc044918e3b3.jpg
 			//   http://imgsh.jpnxcn.com/pics/star/pic/5de4fc683a33a8e1731ecc044918e3b3.jpg
 			return src.replace(/\/thumb_[0-9]+_[0-9]+_/, "/");
@@ -31779,26 +31801,6 @@ var $$IMU_EXPORT$$;
 			// http://ssref.net/scripts/image_resize.cgi?min=200&url=https://d3k2oh6evki4b7.cloudfront.net/req/201806211/images/headshots/e/e083ea50_davis.jpg
 			//   https://d3k2oh6evki4b7.cloudfront.net/req/201806211/images/headshots/e/e083ea50_davis.jpg
 			return decodeURIComponent(src.replace(/.*?\/image_resize\.cgi.*?[?&]url=([^&]*).*?$/, "$1"));
-		}
-
-		if ((domain_nosub === "m1905.cn" && domain.match(/image[0-9]*\.m1905\.cn/)) ||
-			// http://www.ozanyerli.com/uploadfile/2016/0411/thumb_240_0_20160411034324215.jpg
-			//   http://www.ozanyerli.com/uploadfile/2016/0411/20160411034324215.jpg
-			domain_nowww === "ozanyerli.com" ||
-			// http://www.entline.cn/uploadfile/2016/0411/thumb_260_0_20160411034315914.jpg
-			//   http://www.entline.cn/uploadfile/2016/0411/20160411034315914.jpg
-			domain_nowww === "entline.cn" ||
-			// http://img.ixiumei.com/uploadfile/2016/0602/thumb_294_224_20160602105701954.jpg
-			//   http://img.ixiumei.com/uploadfile/2016/0602/20160602105701954.jpg
-			domain === "img.ixiumei.com" ||
-			// http://www.69876.com/uploadfile/2017/0524/thumb_100_137_20170524125326237.jpg
-			//   http://www.69876.com/uploadfile/2017/0524/20170524125326237.jpg
-			domain_nowww === "69876.com") {
-			// http://image14.m1905.cn/uploadfile/2016/0802/thumb_0_647_500_20160802095117440123_watermark.jpg
-			//   http://image14.m1905.cn/uploadfile/2016/0802/20160802095117440123.jpg
-			newsrc = src.replace(/\/(?:thumb_[0-9]+_[0-9]+_(?:[0-9]+_)?)?([0-9]+)(?:_watermark)?(\.[^/.]*)$/, "/$1$2");
-			if (newsrc !== src)
-				return newsrc;
 		}
 
 		if (domain_nosub === "intermedia.ge"/* &&
