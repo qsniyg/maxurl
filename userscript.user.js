@@ -848,7 +848,7 @@ var $$IMU_EXPORT$$;
 
 	// native_functions returns iframe
 	var our_EventTarget, EventTarget_addEventListener, EventTarget_removeEventListener;
-	var our_URL;
+	var our_URL = URL;
 
 	if (is_interactive) {
 		our_EventTarget = EventTarget;
@@ -856,7 +856,6 @@ var $$IMU_EXPORT$$;
 		EventTarget_removeEventListener = our_EventTarget.prototype.removeEventListener;
 
 		// https://www.dpreview.com/ overrides URL
-		our_URL = URL;
 		if (native_functions.URL)
 			our_URL = native_functions.URL;
 	}
