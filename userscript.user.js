@@ -61991,7 +61991,8 @@ var $$IMU_EXPORT$$;
 	}
 
 	function currenttab_is_image() {
-		return !document.contentType.match(/^text\//);
+		// amazonaws's error page are application/xml
+		return !document.contentType.match(/^(?:text|application)\//);
 	}
 
 	function do_redirect() {
