@@ -13834,6 +13834,123 @@ var $$IMU_EXPORT$$;
 				obj.url = newsrc;
 				return obj;
 			}
+
+			// thanks to fireattack on discord for the link + notifying me that this is possible
+			// https://66.media.tumblr.com/da5fa368ca23d24d1bf2cdcddd6c208e/26b38fdc3a5c76b6-57/s540x810/db7a535b967ca998ef133eb833d8cdb24bed5dc8.png
+			//   https://66.media.tumblr.com/da5fa368ca23d24d1bf2cdcddd6c208e/26b38fdc3a5c76b6-57/s75x75_c1/66f3b76d54cd15c6ef7ff1d2f601aaff4c230bdf.png
+			//   https://66.media.tumblr.com/da5fa368ca23d24d1bf2cdcddd6c208e/26b38fdc3a5c76b6-57/s2048x3072/04accefde073ce214c19e5e3d437755108e737ef.png
+			// https://66.media.tumblr.com/2f1e06be02fe7b7cac4c7f1634a9fcc5/0117045da5da2818-ab/s1280x1920/c2e312c7c204a31974c1a45472a929e5ddc2b7de.jpg
+			if (options.do_request && options.cb && /:\/\/[^/]+\/+[0-9a-f]{32}\/+[0-9a-f]{16}-[0-9a-f]{2}\/+s[0-9]+x[0-9]+(?:_c[0-9]+)?\/+[0-9a-f]{20,}\./.test(src)) {
+				var get_initialstate_from_text = function(text) {
+					var match = text.match(/window\['___INITIAL_STATE___'\]\s*=\s*({.*?"ImageUrlPage":.*?})\s*;\s*(?:<\/script>[\s\S]*)?$/);
+					if (match) {
+						// remove regex
+						var json = match[1].replace(/(\"\s*:)\s*\/.*?\/\s*([,}])/g, "$1null$2");
+
+						try {
+							var parsed = JSON_parse(json);
+							return parsed;
+						} catch (e) {
+							console_error(e);
+						}
+
+						return null;
+					}
+
+					return null;
+				};
+
+				var query_tumblr_original = function(url, cb) {
+					var cache_key = "tumblr_original:" + url;
+					api_cache.fetch(cache_key, cb, function(done) {
+						options.do_request({
+							url: src,
+							headers: {
+								Referer: "",
+								"sec-fetch-mode": "navigate",
+								"sec-fetch-dest": "document",
+								"sec-fetch-site": "none",
+								"if-none-match": "",
+								"accept": "text/html" // This appears to be the important line
+							},
+							method: "GET",
+							onload: function(resp) {
+								if (resp.status !== 200) {
+									console_error(cache_key, resp);
+									return done(null, false);
+								}
+
+								var initialstate = get_initialstate_from_text(resp.responseText);
+								if (!initialstate) {
+									console_warn(cache_key, "Unable to get initial state from", resp);
+									return done(null, false);
+								}
+
+								try {
+									var imageresponse = initialstate.ImageUrlPage.photo.imageResponse;
+									var page = initialstate.ImageUrlPage.post.postUrl;
+
+									return done({
+										images: imageresponse,
+										page: page
+									});
+								} catch (e) {
+									console_error(e);
+								}
+
+								return done(null, false);
+							}
+						});
+					});
+				};
+
+				var find_largest_from_media = function(media) {
+					var pixels = 0;
+					var obj = null;
+					for (var i = 0; i < media.length; i++) {
+						var ourobj = media[i];
+						var ourpixels = ourobj.width * ourobj.height;
+
+						if (ourpixels > pixels) {
+							obj = ourobj;
+							pixels = ourpixels;
+						}
+					}
+
+					return obj;
+				};
+
+				var get_obj_from_imageinfo = function(imageinfo) {
+					var largest = find_largest_from_media(imageinfo.images);
+
+					if (!largest)
+						return;
+
+					var obj = {
+						url: largest.url,
+						is_original: largest.hasOriginalDimensions
+					};
+
+					if (imageinfo.page) {
+						obj.extra = {page: imageinfo.page};
+					}
+
+					return obj;
+				};
+
+				query_tumblr_original(src, function(imageinfo) {
+					if (!imageinfo) {
+						return options.cb(null);
+					}
+
+					var obj = get_obj_from_imageinfo(imageinfo);
+					return options.cb(obj);
+				});
+
+				return {
+					waiting: true
+				};
+			}
 		}
 
 		if (domain_nosub === "tumblr.com" && /media\.tumblr\.com$/.test(domain) && options && options.element &&
@@ -13933,7 +14050,6 @@ var $$IMU_EXPORT$$;
 			};
 
 			var do_tumblr_api_call = function(path, params, cb) {
-
 				var request_obj = {
 					url: "https://api.tumblr.com/v2" + path + "?api_key=" + apikey + "&" + params,
 					method: "GET",
@@ -61898,7 +62014,9 @@ var $$IMU_EXPORT$$;
 					headers = {
 						// Origin is not often added by the browser, and doesn't work for some sites
 						//"Origin": url_domain,
-						"Referer": window.location.href
+						"Referer": window.location.href,
+						// e.g. for Tumblr URLs, this is sent by the browser when redirecting
+						"Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9"
 					};
 				} else if (!headers.Origin && !headers.origin) {
 					//headers.Origin = url_domain;
