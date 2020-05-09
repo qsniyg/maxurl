@@ -71197,11 +71197,7 @@ var $$IMU_EXPORT$$;
 			}
 
 			if (can_use_remote()) {
-				if (!("remote_info" in event)) {
-					event.remote_info = get_frame_info();
-				}
-
-				if (event.remote_info.id !== current_frame_id) {
+				if (event.remote_info && event.remote_info.id !== current_frame_id) {
 					var iframe = find_iframe_for_info(event.remote_info);
 					if (!iframe) {
 						return;
@@ -71231,6 +71227,10 @@ var $$IMU_EXPORT$$;
 						timeout = 1;
 
 					if (!last_remote_mousemove_timer) {
+						if (!last_remote_mousemove_event.remote_info) {
+							last_remote_mousemove_event.remote_info = get_frame_info();
+						}
+
 						last_remote_mousemove_timer = setTimeout(function() {
 							last_remote_mousemove_timer = null;
 							last_remote_mousemove = Date.now();
@@ -71242,7 +71242,7 @@ var $$IMU_EXPORT$$;
 					}
 				}
 
-				mouse_frame_id = event.remote_info.id;
+				mouse_frame_id = current_frame_id;
 			}
 
 			mouseX = event.clientX;
