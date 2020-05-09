@@ -13835,6 +13835,13 @@ var $$IMU_EXPORT$$;
 				return obj;
 			}
 
+			// https://66.media.tumblr.com/previews/tumblr_qa1wm1nDFw1v1ooh6_filmstrip.jpg
+			//   https://66.media.tumblr.com/tumblr_qa1wm1nDFw1v1ooh6_frame1.jpg
+			//   https://ve.media.tumblr.com/tumblr_qa1wm1nDFw1v1ooh6.mp4
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+(?:previews\/+)?(tumblr_[^/_.]+)_(?:filmstrip|frame1)\.jpg(?:[?#].*)?$/, "https://ve.media.tumblr.com/$1.mp4");
+			if (newsrc !== src)
+				return newsrc;
+
 			// thanks to fireattack on discord for the link + notifying me that this is possible
 			// https://66.media.tumblr.com/da5fa368ca23d24d1bf2cdcddd6c208e/26b38fdc3a5c76b6-57/s540x810/db7a535b967ca998ef133eb833d8cdb24bed5dc8.png
 			//   https://66.media.tumblr.com/da5fa368ca23d24d1bf2cdcddd6c208e/26b38fdc3a5c76b6-57/s75x75_c1/66f3b76d54cd15c6ef7ff1d2f601aaff4c230bdf.png
