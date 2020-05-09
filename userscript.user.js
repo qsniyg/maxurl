@@ -897,6 +897,9 @@ var $$IMU_EXPORT$$;
 		is_array = sanity_test(Array.isArray, function(x) { return x instanceof Array; });
 
 		var get_compat_base64 = function() {
+			if (is_node)
+				return;
+
 			// Some websites replace atob, so we have to provide our own implementation in those cases
 			// https://stackoverflow.com/a/15016605
 			// unminified version: https://stackoverflow.com/a/3058974
@@ -1024,6 +1027,9 @@ var $$IMU_EXPORT$$;
 		get_compat_string_indexof();
 
 		var get_compat_url = function() {
+			if (is_node)
+				return;
+
 			var native_url_check = function(URL) {
 				if (typeof URL !== "function" || typeof URL.prototype !== "object")
 					return false;
@@ -1045,6 +1051,9 @@ var $$IMU_EXPORT$$;
 		get_compat_url();
 
 		var get_compat_blob = function() {
+			if (is_node)
+				return;
+
 			var native_blob_check = function(Blob) {
 				if (typeof Blob !== "function" || typeof Blob.prototype !== "object")
 					return false;
@@ -1109,10 +1118,7 @@ var $$IMU_EXPORT$$;
 			}
 		}
 	};
-
-	if (is_interactive) {
-		get_compat_functions();
-	}
+	get_compat_functions();
 
 	function is_element(x) {
 		if (!x || typeof x !== "object")
@@ -4250,7 +4256,7 @@ var $$IMU_EXPORT$$;
 		return new native_URL(x);
 	};
 
-	if (is_node && typeof URL === 'undefined') {
+	if (is_node) {
 		var url = require("url");
 		urlparse = function(x) {
 			var parsed = url.parse(x);
