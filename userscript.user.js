@@ -830,72 +830,289 @@ var $$IMU_EXPORT$$;
 	var JSON_stringify = JSON.stringify;
 	var JSON_parse = JSON.parse;
 
-	var native_functions = {};
-	var get_native_functions = function(functions) {
-		// thanks to tophf here: https://github.com/violentmonkey/violentmonkey/issues/944
-		var result = {};
-		var iframe = document.createElement("iframe");
-		iframe.srcdoc = ""; //"javascript:0"
-		document.documentElement.appendChild(iframe);
-		var frame_window = iframe.contentWindow;
+	var base64_decode, base64_encode,
+		is_array, array_indexof, string_indexof,
+		// https://www.bing.com/ overrides Blob
+		// https://www.dpreview.com/ overrides URL
+		native_blob, native_URL,
+		our_EventTarget, our_addEventListener, our_removeEventListener;
 
-		for (var i = 0; i < functions.length; i++) {
-			var func = functions[i];
-			native_functions[func] = frame_window[func];
-		}
+	if (is_node) {
+		base64_decode = function(a) {
+			return Buffer.from(a, 'base64').toString('binary');
+		};
 
-		iframe.parentElement.removeChild(iframe);
-	};
-
-	if (is_userscript) {
-		try {
-			get_native_functions(["Blob", "atob", "btoa", "URL"]);
-		} catch (e) {
-			console_error(e);
-		}
+		base64_encode = function(a) {
+			return Buffer.from(a).toString('base64');
+		};
 	}
 
-	// native_functions returns iframe
-	var our_EventTarget, EventTarget_addEventListener, EventTarget_removeEventListener;
-	var our_URL = URL;
+	var get_compat_functions = function() {
+		var native_functions_to_get = [];
+
+		// Nano Defender(?) overrides this on some sites.
+		var get_orig_eventtarget = function() {
+			// native_functions returns iframe
+			var EventTarget_addEventListener, EventTarget_removeEventListener;
+
+			if (is_interactive) {
+				our_EventTarget = EventTarget;
+				EventTarget_addEventListener = our_EventTarget.prototype.addEventListener;
+				EventTarget_removeEventListener = our_EventTarget.prototype.removeEventListener;
+			}
+
+			our_addEventListener = function(element, event, handler, options) {
+				// VM compatibility
+				if (element === window && element.unsafeWindow)
+					element = element.unsafeWindow;
+
+				EventTarget_addEventListener.call(element, event, handler, options);
+			};
+
+			our_removeEventListener = function(element, event, handler, options) {
+				EventTarget_removeEventListener.call(element, event, handler, options);
+			};
+		};
+		get_orig_eventtarget();
+
+		var sanity_test = function(orig, correct, check, native_func) {
+			if (!orig)
+				return correct;
+
+			if (check) {
+				try {
+					if (check(orig))
+						return orig;
+				} catch (e) {};
+			}
+
+			if (native_func) {
+				native_functions_to_get.push(native_func);
+			}
+
+			return correct;
+		};
+
+		// FIXME: why is there no check? is this a bug, or was this intentional?
+		is_array = sanity_test(Array.isArray, function(x) { return x instanceof Array; });
+
+		var get_compat_base64 = function() {
+			// Some websites replace atob, so we have to provide our own implementation in those cases
+			// https://stackoverflow.com/a/15016605
+			// unminified version: https://stackoverflow.com/a/3058974
+			var base64_decode_correct = function(s) {
+				var e={},i,b=0,c,x,l=0,a,r='',w=String.fromCharCode,L=s.length;
+				var A="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+				for(i=0;i<64;i++){e[A.charAt(i)]=i;}
+				for(x=0;x<L;x++){
+					c=e[s.charAt(x)];b=(b<<6)+c;l+=6;
+					while(l>=8){((a=(b>>>(l-=8))&0xff)||(x<(L-2)))&&(r+=w(a));}
+				}
+				return r;
+			};
+
+			var base64_decode_test = function(func) {
+				if (func("dGVzdA==") === "test") {
+					return true;
+				}
+
+				return false;
+			};
+
+			base64_decode = sanity_test(atob, base64_decode_correct, base64_decode_test, "atob");
+
+			var base64_encode_test = function(func) {
+				if (func("test") === "dGVzdA==") {
+					return true;
+				}
+
+				return false;
+			};
+
+			var fake_base64_encode = function(s) {
+				console_warn("Using fake base64 encoder");
+				return s;
+			};
+
+			base64_encode = sanity_test(btoa, fake_base64_encode, base64_encode_test, "btoa");
+		};
+		get_compat_base64();
+
+		var get_compat_array_indexof = function() {
+			// https://www.mycomicshop.com/search?minyr=1938&maxyr=1955&TID=29170235
+			// this site replaces Array.indexOf
+			// cache Array.prototype.indexOf in case it changes while the script is executing
+			var array_prototype_indexof = Array.prototype.indexOf;
+			var array_indexof_orig = function(array, x) {
+				return array_prototype_indexof.call(array, x);
+			};
+
+			var array_indexof_correct = function(array, x) {
+				if (typeof array === "string") {
+					// TODO: make sure Array.from is sane
+					array = Array.from(array);
+				}
+
+				for (var i = 0; i < array.length; i++) {
+					if (array[i] === x) {
+						return i;
+					}
+				}
+
+				return -1;
+			};
+
+			var array_indexof_check = function(func) {
+				var test_array = ["a", "b"];
+				var test_string = "abc";
+				if (func(test_array, "not here") === -1 &&
+					func(test_array, "b") === 1 &&
+					func(test_string, "n") === -1 &&
+					func(test_string, "b") === 1 &&
+					func(test_string, "bc") === -1) {
+					return true;
+				}
+
+				return false;
+			};
+
+			array_indexof = sanity_test(array_indexof_orig, array_indexof_correct, array_indexof_check);
+		};
+		get_compat_array_indexof();
+
+		var get_compat_string_indexof = function() {
+			var string_prototype_indexof = String.prototype.indexOf;
+			var string_indexof_orig = function(string, x) {
+				return string_prototype_indexof.call(string, x);
+			};
+
+			var string_indexof_correct = function(string, x) {
+				if (x.length === 0)
+					return 0;
+
+				var x_i = 0;
+				for (var i = 0; i < string.length; i++) {
+					if (string.charAt(i) === x.charAt(x_i)) {
+						if (x_i + 1 === x.length) {
+							return i - x_i;
+						} else {
+							x_i++;
+						}
+					} else {
+						x_i = 0;
+					}
+				}
+
+				return -1;
+			};
+
+			var string_indexof_check = function(func) {
+				var test_string = "abc";
+				if (func(test_string, "n") === -1 &&
+					func(test_string, "b") === 1 &&
+					func(test_string, "bc") === 1 &&
+					func(test_string, "bcz") === -1 &&
+					func(test_string, "") === 0) {
+					return true;
+				}
+
+				return false;
+			};
+
+			string_indexof = sanity_test(string_indexof_orig, string_indexof_correct, string_indexof_check);
+		};
+		get_compat_string_indexof();
+
+		var get_compat_url = function() {
+			var native_url_check = function(URL) {
+				if (typeof URL !== "function" || typeof URL.prototype !== "object")
+					return false;
+
+				if (!("searchParams" in URL.prototype))
+					return false;
+
+				if (is_interactive) {
+					if (!("createObjectURL" in URL) || !("revokeObjectURL" in URL))
+						return false;
+				}
+
+				return true;
+			};
+
+			var orig_URL = URL || webkitURL;
+			native_URL = sanity_test(orig_URL, nullfunc, native_url_check, "URL");
+		};
+		get_compat_url();
+
+		var get_compat_blob = function() {
+			var native_blob_check = function(Blob) {
+				if (typeof Blob !== "function" || typeof Blob.prototype !== "object")
+					return false;
+
+				if (Blob.name !== "Blob")
+					return false;
+
+				if (!("arrayBuffer" in Blob.prototype) ||
+					!("slice" in Blob.prototype) ||
+					!("size" in Blob.prototype))
+					return false;
+
+				return true;
+			};
+
+			var fake_blob = function() {
+				console_warn("This is a fake Blob object, you will almost certainly encounter problems.");
+			};
+
+			native_blob = sanity_test(Blob, fake_blob, native_blob_check, "Blob");
+		};
+		get_compat_blob();
+
+		// this is rather slow (~25ms according to fireattack's profile)
+		var native_functions = {};
+		var get_native_functions = function(functions) {
+			// thanks to tophf here: https://github.com/violentmonkey/violentmonkey/issues/944
+			var iframe = document.createElement("iframe");
+			iframe.srcdoc = ""; //"javascript:0"
+			document.documentElement.appendChild(iframe);
+			var frame_window = iframe.contentWindow;
+
+			for (var i = 0; i < functions.length; i++) {
+				var func = functions[i];
+				native_functions[func] = frame_window[func];
+			}
+
+			iframe.parentElement.removeChild(iframe);
+		};
+
+		if (native_functions_to_get.length > 0) {
+			try {
+				get_native_functions(native_functions_to_get);
+			} catch (e) {
+				console_error(e);
+			}
+
+			if ("Blob" in native_functions) {
+				native_blob = native_functions.Blob;
+			}
+
+			if ("URL" in native_functions) {
+				native_URL = native_functions.URL;
+			}
+
+			if ("atob" in native_functions) {
+				base64_decode = native_functions.atob;
+			}
+
+			if ("btoa" in native_functions) {
+				base64_encode = native_functions.btoa;
+			}
+		}
+	};
 
 	if (is_interactive) {
-		our_EventTarget = EventTarget;
-		EventTarget_addEventListener = our_EventTarget.prototype.addEventListener;
-		EventTarget_removeEventListener = our_EventTarget.prototype.removeEventListener;
-
-		// https://www.dpreview.com/ overrides URL
-		if (native_functions.URL)
-			our_URL = native_functions.URL;
+		get_compat_functions();
 	}
-
-	var our_addEventListener = function(element, event, handler, options) {
-		// VM compatibility
-		if (element === window && element.unsafeWindow)
-			element = element.unsafeWindow;
-
-		EventTarget_addEventListener.call(element, event, handler, options);
-	};
-
-	var our_removeEventListener = function(element, event, handler, options) {
-		EventTarget_removeEventListener.call(element, event, handler, options);
-	};
-
-	var sanity_test = function(orig, correct, check) {
-		if (!orig)
-			return correct;
-
-		if (check) {
-			try {
-				check(orig);
-				return orig;
-			} catch (e) {};
-		}
-
-		return correct;
-	};
-
-	var is_array = sanity_test(Array.isArray, function(x) { return x instanceof Array; });
 
 	function is_element(x) {
 		if (!x || typeof x !== "object")
@@ -1012,128 +1229,6 @@ var $$IMU_EXPORT$$;
 		} else {
 			return x;
 		}
-	}
-
-	var base64_decode_orig = nullfunc;
-	if (is_node && typeof atob === 'undefined') {
-		base64_decode_orig = function(a) {
-			return Buffer.from(a, 'base64').toString('binary');
-		};
-	} else if (typeof atob !== 'undefined') {
-		base64_decode_orig = native_functions.atob || atob;
-	}
-
-	// Some websites replace atob, so we have to provide our own implementation in those cases
-	// https://stackoverflow.com/a/15016605
-	// unminified version: https://stackoverflow.com/a/3058974
-	var base64_decode_correct = function(s) {
-		var e={},i,b=0,c,x,l=0,a,r='',w=String.fromCharCode,L=s.length;
-		var A="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-		for(i=0;i<64;i++){e[A.charAt(i)]=i;}
-		for(x=0;x<L;x++){
-			c=e[s.charAt(x)];b=(b<<6)+c;l+=6;
-			while(l>=8){((a=(b>>>(l-=8))&0xff)||(x<(L-2)))&&(r+=w(a));}
-		}
-		return r;
-	};
-
-	var base64_decode_test = function(func) {
-		if (func("dGVzdA==") === "test") {
-			return true;
-		}
-
-		return false;
-	};
-
-	var base64_decode = sanity_test(base64_decode_orig, base64_decode_correct, base64_decode_test);
-
-	var base64_encode = nullfunc;
-	if (typeof btoa !== 'undefined') {
-		base64_encode = native_functions.btoa || btoa;
-	}
-
-	// https://www.mycomicshop.com/search?minyr=1938&maxyr=1955&TID=29170235
-	// this site replaces Array.indexOf
-	// cache Array.prototype.indexOf in case it changes while the script is executing
-	var array_prototype_indexof = Array.prototype.indexOf;
-	var array_indexof_orig = function(array, x) {
-		return array_prototype_indexof.call(array, x);
-	};
-
-	var array_indexof_correct = function(array, x) {
-		if (typeof array === "string") {
-			// TODO: make sure Array.from is sane
-			array = Array.from(array);
-		}
-
-		for (var i = 0; i < array.length; i++) {
-			if (array[i] === x) {
-				return i;
-			}
-		}
-
-		return -1;
-	};
-
-	var array_indexof_check = function(func) {
-		var test_array = ["a", "b"];
-		var test_string = "abc";
-		if (func(test_array, "not here") === -1 &&
-			func(test_array, "b") === 1 &&
-			func(test_string, "n") === -1 &&
-			func(test_string, "b") === 1 &&
-			func(test_string, "bc") === -1) {
-			return true;
-		}
-
-		return false;
-	};
-
-	var array_indexof = sanity_test(array_indexof_orig, array_indexof_correct, array_indexof_check);
-
-	var string_prototype_indexof = String.prototype.indexOf;
-	var string_indexof_orig = function(string, x) {
-		return string_prototype_indexof.call(string, x);
-	};
-
-	var string_indexof_correct = function(string, x) {
-		if (x.length === 0)
-			return 0;
-
-		var x_i = 0;
-		for (var i = 0; i < string.length; i++) {
-			if (string.charAt(i) === x.charAt(x_i)) {
-				if (x_i + 1 === x.length) {
-					return i - x_i;
-				} else {
-					x_i++;
-				}
-			} else {
-				x_i = 0;
-			}
-		}
-
-		return -1;
-	};
-
-	var string_indexof_check = function(func) {
-		var test_string = "abc";
-		if (func(test_string, "n") === -1 &&
-			func(test_string, "b") === 1 &&
-			func(test_string, "bc") === 1 &&
-			func(test_string, "bcz") === -1 &&
-			func(test_string, "") === 0) {
-			return true;
-		}
-
-		return false;
-	};
-
-	var string_indexof = sanity_test(string_indexof_orig, string_indexof_correct, string_indexof_check);
-
-	var native_blob = nullfunc;
-	if (typeof Blob !== "undefined") {
-		native_blob = native_functions.Blob || Blob;
 	}
 
 	var serialize_event = function(event) {
@@ -4152,7 +4247,7 @@ var $$IMU_EXPORT$$;
 	var cookie_cache = new Cache();
 
 	var urlparse = function(x) {
-		return new our_URL(x);
+		return new native_URL(x);
 	};
 
 	if (is_node && typeof URL === 'undefined') {
@@ -64255,7 +64350,7 @@ var $$IMU_EXPORT$$;
 	}
 
 	var get_window_url = function() {
-		return our_URL || window.URL || window.webkitURL;
+		return native_URL;// || window.URL || window.webkitURL;
 	};
 
 	var create_dataurl = function(blob, cb) {
