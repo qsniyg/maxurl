@@ -381,14 +381,20 @@ var $$IMU_EXPORT$$;
 				remote_reply_ids[id] = cb;
 			}
 
-			//console_log("remote", data);
-			raw_remote_send_message(to, {
+			var message = {
 				type: "remote",
 				data: data,
 				to: to,
 				from: current_frame_id,
 				response_id: id
-			});
+			};
+
+			if (_nir_debug_) {
+				console_log("remote_send_message", to, message);
+			}
+
+			//console_log("remote", data);
+			raw_remote_send_message(to, message);
 		};
 
 		remote_send_reply = function(to, response_id, data) {
@@ -13810,6 +13816,9 @@ var $$IMU_EXPORT$$;
 
 			// due to recent updates disabling _raw, until something is found, _1280 will have to suffice
 			var obj = {
+				headers: {
+					"Accept": "*/*" // otherwise it can return an HTML
+				},
 				problems: {
 					possibly_broken: false
 				}
@@ -13841,8 +13850,10 @@ var $$IMU_EXPORT$$;
 			// https://66.media.tumblr.com/tumblr_q9ruh3h3IV1rd8qzh_smart1.jpg
 			//   https://ve.media.tumblr.com/tumblr_q9ruh3h3IV1rd8qzh.mp4
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+(?:previews\/+)?(tumblr_[^/_.]+)_(?:filmstrip|(?:frame|smart)1)\.jpg(?:[?#].*)?$/, "https://ve.media.tumblr.com/$1.mp4");
-			if (newsrc !== src)
-				return newsrc;
+			if (newsrc !== src) {
+				obj.url = newsrc;
+				return obj;
+			}
 
 			// thanks to fireattack on discord for the link + notifying me that this is possible
 			// https://66.media.tumblr.com/da5fa368ca23d24d1bf2cdcddd6c208e/26b38fdc3a5c76b6-57/s540x810/db7a535b967ca998ef133eb833d8cdb24bed5dc8.png
@@ -13952,8 +13963,9 @@ var $$IMU_EXPORT$$;
 						return options.cb(null);
 					}
 
-					var obj = get_obj_from_imageinfo(imageinfo);
-					return options.cb(obj);
+					var newobj = get_obj_from_imageinfo(imageinfo);
+					newobj = fillobj(newobj, obj);
+					return options.cb(newobj);
 				});
 
 				return {
@@ -62136,10 +62148,9 @@ var $$IMU_EXPORT$$;
 					headers = {
 						// Origin is not often added by the browser, and doesn't work for some sites
 						//"Origin": url_domain,
-						"Referer": window.location.href
-						// FIXME: Somehow figure out a way to get this display a warning instead of refusing to redirect
+						"Referer": window.location.href,
 						// e.g. for Tumblr URLs, this is sent by the browser when redirecting
-						//"Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9"
+						"Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9"
 					};
 				} else if (!headers.Origin && !headers.origin) {
 					//headers.Origin = url_domain;
@@ -70755,6 +70766,7 @@ var $$IMU_EXPORT$$;
 					}
 				}
 
+				console_log(deepcopy(actions));
 				for (var i = 0; i < actions.length; i++) {
 					if (!has_mouse && actions[i].requires_mouse) {
 						actions.splice(i, 1);
@@ -70762,10 +70774,12 @@ var $$IMU_EXPORT$$;
 					}
 				}
 
-				remote_send_message(recipient, {
-					type: "action",
-					data: actions
-				});
+				if (actions.length > 0) {
+					remote_send_message(recipient, {
+						type: "action",
+						data: actions
+					});
+				}
 			}
 		};
 
@@ -71229,7 +71243,10 @@ var $$IMU_EXPORT$$;
 		}
 
 		var remote_handle_message = function(message, sender, respond) {
-			//console_log("ON_REMOTE_MESSAGE", message, sender, respond);
+			if (_nir_debug_) {
+				console_log("ON_REMOTE_MESSAGE", message, sender, respond);
+			}
+
 			if (message.type === "make_popup") {
 				if (!is_in_iframe) {
 					resetpopups();
@@ -71468,11 +71485,11 @@ var $$IMU_EXPORT$$;
 						timeout = 1;
 
 					if (!last_remote_mousemove_timer) {
-						if (!last_remote_mousemove_event.remote_info) {
-							last_remote_mousemove_event.remote_info = get_frame_info();
-						}
-
 						last_remote_mousemove_timer = setTimeout(function() {
+							if (!("remote_info" in last_remote_mousemove_event)) {
+								last_remote_mousemove_event.remote_info = get_frame_info();
+							}
+
 							last_remote_mousemove_timer = null;
 							last_remote_mousemove = Date.now();
 							remote_send_message("top", {
@@ -71483,7 +71500,7 @@ var $$IMU_EXPORT$$;
 					}
 				}
 
-				mouse_frame_id = current_frame_id;
+				mouse_frame_id = event.remote_info ? event.remote_info.id : current_frame_id;
 			}
 
 			mouseX = event.clientX;
