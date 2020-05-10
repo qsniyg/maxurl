@@ -13838,7 +13838,9 @@ var $$IMU_EXPORT$$;
 			// https://66.media.tumblr.com/previews/tumblr_qa1wm1nDFw1v1ooh6_filmstrip.jpg
 			//   https://66.media.tumblr.com/tumblr_qa1wm1nDFw1v1ooh6_frame1.jpg
 			//   https://ve.media.tumblr.com/tumblr_qa1wm1nDFw1v1ooh6.mp4
-			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+(?:previews\/+)?(tumblr_[^/_.]+)_(?:filmstrip|frame1)\.jpg(?:[?#].*)?$/, "https://ve.media.tumblr.com/$1.mp4");
+			// https://66.media.tumblr.com/tumblr_q9ruh3h3IV1rd8qzh_smart1.jpg
+			//   https://ve.media.tumblr.com/tumblr_q9ruh3h3IV1rd8qzh.mp4
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+(?:previews\/+)?(tumblr_[^/_.]+)_(?:filmstrip|(?:frame|smart)1)\.jpg(?:[?#].*)?$/, "https://ve.media.tumblr.com/$1.mp4");
 			if (newsrc !== src)
 				return newsrc;
 
@@ -58975,6 +58977,82 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/preview_(slide_[0-9]+\.[^/.]+)(?:[?#].*)?$/, "/$1");
 		}
 
+		if (domain === "peertube.linuxrocks.online") {
+			// https://peertube.linuxrocks.online/static/previews/caeb68e7-120c-4db5-a44e-5945e09ceb92.jpg
+			//   https://peertube.linuxrocks.online/static/webseed/caeb68e7-120c-4db5-a44e-5945e09ceb92-1080.mp4
+			var query_peertube_api = function(api_url, referer_url, vidid, cb) {
+				// FIXME: are video ids the same between peertube sites?
+				var cache_key = "peertube:" + vidid;
+
+				api_cache.fetch(cache_key, cb, function(done) {
+					options.do_request({
+						url: urljoin(api_url, "/videos/" + vidid, false),
+						method: "GET",
+						headers: {
+							Referer: referer_url
+						},
+						onload: function(resp) {
+							if (resp.status !== 200) {
+								console_error(cache_key, resp);
+								return done(null, false);
+							}
+
+							try {
+								var json = JSON_parse(resp.responseText);
+								var obj = {};
+
+								obj.extra = {
+									page: urljoin(api_url, json.embedPath,true),
+									caption: json.name
+								};
+
+								var maxobj_size = 0;
+								var maxobj = null;
+
+								for (var i = 0; i < json.files.length; i++) {
+									if (json.files[i].size > maxobj_size) {
+										maxobj_size = json.files[i].size;
+										maxobj = json.files[i];
+									}
+								}
+
+								if (maxobj) {
+									obj.url = maxobj.fileUrl; // or fileDownloadUrl?
+
+									// doesn't seem to have an expiry date
+									return done(obj, 6*60*60);
+								}
+							} catch (e) {
+								console_log(cache_key, e, resp);
+							}
+
+							return done(null, false);
+						}
+					});
+				});
+			};
+
+			var get_peertube_urlinfo = function(url) {
+				var match = url.match(/(.*)\/static\/+previews\/+([-0-9a-f]{20,})\.[^/.]+(?:[/#].*)?$/);
+				if (!match)
+					return null;
+
+				return {
+					id: match[2],
+					referer: match[1],
+					api: match[1] + "/api/v1/"
+				};
+			};
+
+			var info = get_peertube_urlinfo(src);
+			if (info && options.do_request && options.cb) {
+				query_peertube_api(info.api, info.referer, info.id, options.cb);
+				return {
+					waiting: true
+				};
+			}
+		}
+
 
 
 
@@ -62021,9 +62099,10 @@ var $$IMU_EXPORT$$;
 					headers = {
 						// Origin is not often added by the browser, and doesn't work for some sites
 						//"Origin": url_domain,
-						"Referer": window.location.href,
+						"Referer": window.location.href
+						// FIXME: Somehow figure out a way to get this display a warning instead of refusing to redirect
 						// e.g. for Tumblr URLs, this is sent by the browser when redirecting
-						"Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9"
+						//"Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9"
 					};
 				} else if (!headers.Origin && !headers.origin) {
 					//headers.Origin = url_domain;
