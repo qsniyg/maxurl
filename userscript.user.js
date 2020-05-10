@@ -59052,6 +59052,30 @@ var $$IMU_EXPORT$$;
 			domain === "pt.kircheneuenburg.de" ||
 			// https://devtube.dev-wiki.de/static/thumbnails/c4bb5efe-9dac-4f5c-8953-ae706892cd72.jpg
 			domain === "devtube.dev-wiki.de" ||
+			// https://porntube.ddns.net/static/thumbnails/1f31fce7-f2b2-48fd-9b58-f1404df7c60c.jpg
+			domain === "porntube.ddns.net" ||
+			// https://peertube.su/static/thumbnails/9c9de5e8-0a1e-484a-b099-e80766180a6d.jpg
+			domain_nowww === "peertube.su" ||
+			// https://yt.is.nota.live/static/thumbnails/62706ca1-df7f-47d2-ad47-7989999266ee.jpg
+			domain === "yt.is.nota.live" ||
+			// https://viid.ga/static/thumbnails/0aeeddb3-c964-4636-9642-3d2cc3f91cce.jpg
+			domain_nowww === "viid.ga" ||
+			// https://diode.zone/static/thumbnails/b9991c48-1754-458d-899e-cd960d68ae21.jpg
+			domain_nowww === "diode.zone" ||
+			// https://scitech.video/static/thumbnails/79965d3d-f788-4cbf-9c05-66e1d39c8a74.jpg
+			domain_nowww === "scitech.video" ||
+			// https://greatview.video/static/thumbnails/4c65d46d-6260-43e1-8f7c-e7e23d71d1e6.jpg
+			domain_nowww === "greatview.video" ||
+			// https://peertube.iriseden.eu/static/thumbnails/76011c74-2a6c-4da0-b277-3568c4d0f2ad.jpg
+			domain === "peertube.iriseden.eu" ||
+			// https://tube.govital.net/static/thumbnails/bcc1c74b-fefe-4092-aab7-17bb18cb09ab.jpg
+			domain === "tube.govital.net" ||
+			// https://video.colibris-outilslibres.org/static/thumbnails/fe3fb11f-799b-4a0b-8b57-9472f85d8f6e.jpg
+			domain === "video.colibris-outilslibres.org" ||
+			// https://libre.tube/static/thumbnails/bf99b555-d91a-46fa-8578-6ed54fe238db.jpg
+			domain_nowww === "libre.tube" ||
+			// https://vidcommons.org/static/thumbnails/50c7204f-fd8e-4f5f-8535-b8a0020c05e3.jpg
+			domain_nowww === "vidcommons.org" ||
 			// https://peertube.cpy.re/static/thumbnails/da2b08d4-a242-4170-b32a-4ec8cbdca701.jpg
 			//   https://peertube.cpy.re/static/webseed/da2b08d4-a242-4170-b32a-4ec8cbdca701-1044.mp4
 			domain === "peertube.cpy.re") {
