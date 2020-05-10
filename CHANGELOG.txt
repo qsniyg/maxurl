@@ -1,3 +1,29 @@
+0.13.3
+
+New features:
+
+ * Support for Rotten Tomatoes
+ * Option to use original video for Snapchat (enabled by default)
+ * Tumblr can now be used as a URL rule, meaning that it's no longer necessary to view images hosted by the host blog page (thanks to fireattack on discord for reporting)
+ * Support for shadow DOM
+ * Support for ~55 new websites (using ~25 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including Gfycat, ModelMayhem, Onlyfans, Reddit, TikTok, Tumblr)
+ * Crashlog debug information now contains settings export (settings containing possibly sensitive data are automatically removed). Note that crashlogs are not automatically sent anywhere, it's up to you to send them.
+ * Loading times are significantly improved (thanks to fireattack on discord for reporting)
+
+Bugfixes:
+
+ * The options page will no longer crash when both "Requirements below disabled options" and "Use tabs" are enabled (#322, thanks to OmarNamis for reporting)
+ * The popup will no longer crash when a URL is blocked by tracking protection
+ * Websites using earlier prototype.js versions will no longer suffer from massive hangs in certain parts of the code
+ * Websites overriding the URL object are better supported
+ * The firefox extension will no longer crash when loading a popup with a page that overrides Blob objects (thanks to RaMpoFOX on discord for reporting)
+
+---
+
 0.13.2
 
 New features:
