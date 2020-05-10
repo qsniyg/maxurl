@@ -13802,19 +13802,6 @@ var $$IMU_EXPORT$$;
 			// https://66.media.tumblr.com/2b129630fe50ae796d9383c5ba6ba35b/9e0fb8a88fdd1bdf-10/s640x960/d1a52d700422d91b37d653867fcadf46e933a1b1.jpg
 			//   https://66.media.tumblr.com/2b129630fe50ae796d9383c5ba6ba35b/9e0fb8a88fdd1bdf-10/s1280x1920/8a3215ccfce8484f565a5a7b71745c49a72ff211.jpg
 
-			// https://78.media.tumblr.com/4efd905dfc517da760d1d53f98b5c5d4/tumblr_oy8m3u1aR01tsmy5xo1_1280.pnj
-			//   https://78.media.tumblr.com/4efd905dfc517da760d1d53f98b5c5d4/tumblr_oy8m3u1aR01tsmy5xo1_1280.png
-			//   https://s3.amazonaws.com/data.tumblr.com/4efd905dfc517da760d1d53f98b5c5d4/tumblr_oy8m3u1aR01tsmy5xo1_raw.png
-			// https://78.media.tumblr.com/b05b512a57c51e5ead1be5159d28b428/tumblr_p8665hUaJv1sejmmmo2_540.gifv
-			//   https://78.media.tumblr.com/b05b512a57c51e5ead1be5159d28b428/tumblr_p8665hUaJv1sejmmmo2_540.gif
-			//   https://s3.amazonaws.com/data.tumblr.com/b05b512a57c51e5ead1be5159d28b428/tumblr_p8665hUaJv1sejmmmo2_raw.gif
-			newsrc = src
-				.replace(/\.pnj(\?.*)?$/, ".png$1")
-				.replace(/\.gifv(\?.*)?$/, ".gif$1");
-			if (newsrc !== src)
-				return newsrc;
-
-			// due to recent updates disabling _raw, until something is found, _1280 will have to suffice
 			var obj = {
 				headers: {
 					"Accept": "*/*" // otherwise it can return an HTML
@@ -13829,9 +13816,23 @@ var $$IMU_EXPORT$$;
 				obj.problems.possibly_broken = true;
 			}
 
+			// https://78.media.tumblr.com/4efd905dfc517da760d1d53f98b5c5d4/tumblr_oy8m3u1aR01tsmy5xo1_1280.pnj
+			//   https://78.media.tumblr.com/4efd905dfc517da760d1d53f98b5c5d4/tumblr_oy8m3u1aR01tsmy5xo1_1280.png
+			//   https://s3.amazonaws.com/data.tumblr.com/4efd905dfc517da760d1d53f98b5c5d4/tumblr_oy8m3u1aR01tsmy5xo1_raw.png
+			// https://78.media.tumblr.com/b05b512a57c51e5ead1be5159d28b428/tumblr_p8665hUaJv1sejmmmo2_540.gifv
+			//   https://78.media.tumblr.com/b05b512a57c51e5ead1be5159d28b428/tumblr_p8665hUaJv1sejmmmo2_540.gif
+			//   https://s3.amazonaws.com/data.tumblr.com/b05b512a57c51e5ead1be5159d28b428/tumblr_p8665hUaJv1sejmmmo2_raw.gif
+			newsrc = src
+				.replace(/\.pnj(\?.*)?$/, ".png$1")
+				.replace(/\.gifv(\?.*)?$/, ".gif$1");
+			if (newsrc !== src) {
+				obj.url = newsrc;
+				return obj;
+			}
+
 			// http://78.media.tumblr.com/avatar_43c10cb80f16_64.png
 			//   http://78.media.tumblr.com/avatar_43c10cb80f16_512.png -- upscaled?
-			if (src.match(/\/avatar_[0-9a-f]+_(?:64|128)\./))
+			if (src.match(/\/avatar_[0-9a-f]+_(?:16|64|128)\./))
 				return src.replace(/_[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "_512$1");
 
 			// https://66.media.tumblr.com/a304d969f5d0012df41d657d7e4f5c5e/tumblr_p5cne9vRBD1wsufgw_og_500.jpg
