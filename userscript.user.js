@@ -21904,6 +21904,9 @@ var $$IMU_EXPORT$$;
 			//   https://p16-tiktokcdn-com.akamaized.net/obj/v0201/a4d90921ec0947ed959b757497367d9e.jpg -- 720x1080
 			//   https://p16-tiktokcdn-com.akamaized.net/origin/v0201/a4d90921ec0947ed959b757497367d9e.jpg -- 720x1080
 			domain === "p16-tiktokcdn-com.akamaized.net" ||
+			// https://p16-va-default.akamaized.net/img/musically-maliva-obj/1654872269613062~c5_720x720.jpeg
+			//   https://p16-va-default.akamaized.net/origin/musically-maliva-obj/1654872269613062.jpeg
+			domain === "p16-va-default.akamaized.net" ||
 			// https://p16.tiktokcdn.com/aweme/100x100/tiktok-obj/1647151559190530.jpeg
 			//   https://p16.tiktokcdn.com/origin/tiktok-obj/1647151559190530.jpeg
 			domain === "p16.tiktokcdn.com" ||
