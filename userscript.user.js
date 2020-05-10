@@ -34848,6 +34848,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "images.ctfassets.net") {
+			// FIXME: why this instead of removing the query string altogether? can't seem to find a difference...
 			// http://images.ctfassets.net/55tpbg0qcsp4/5zeVQCnhqowcwiIw4kM80S/f70edd51832e8640f72c375cb1d72b6b/nagative_farewell4.jpg?w=144&h=102
 			//   http://images.ctfassets.net/55tpbg0qcsp4/5zeVQCnhqowcwiIw4kM80S/f70edd51832e8640f72c375cb1d72b6b/nagative_farewell4.jpg?h=4000
 			return src.replace(/\?.*$/, "?h=4000");
