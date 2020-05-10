@@ -71018,13 +71018,15 @@ var $$IMU_EXPORT$$;
 			return ret;
 		};
 
-		our_addEventListener(document, 'keydown', keydown_cb, true);
-		our_addEventListener(document, 'mousedown', keydown_cb, true);
-		our_addEventListener(document, 'contextmenu', keydown_cb, true);
-		our_addEventListener(document, 'wheel', keydown_cb, {
+		var eventlistener_opts = {
 			capture: true,
 			passive: false
-		});
+		};
+
+		our_addEventListener(document, 'keydown', keydown_cb, eventlistener_opts);
+		our_addEventListener(document, 'mousedown', keydown_cb, eventlistener_opts);
+		our_addEventListener(document, 'contextmenu', keydown_cb, eventlistener_opts);
+		our_addEventListener(document, 'wheel', keydown_cb, eventlistener_opts);
 
 		var keyup_cb = function(event) {
 			if (!mouseover_enabled())
