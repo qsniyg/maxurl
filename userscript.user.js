@@ -1855,6 +1855,8 @@ var $$IMU_EXPORT$$;
 		mouseover_video_speed_down_key: ["["],
 		mouseover_video_speed_up_key: ["]"],
 		mouseover_video_speed_amount: 0.25,
+		// thanks to Rnksts on discord for the idea
+		mouseover_video_reset_speed_key: ["backspace"],
 		mouseover_ui: true,
 		mouseover_ui_opacity: 80,
 		mouseover_ui_imagesize: true,
@@ -2623,6 +2625,17 @@ var $$IMU_EXPORT$$;
 			type: "number",
 			number_min: 0,
 			number_unit: "x",
+			category: "popup",
+			subcategory: "video"
+		},
+		mouseover_video_reset_speed_key: {
+			name: "Reset speed key",
+			description: "Resets the video playback to normal speed",
+			requires: {
+				mouseover_open_behavior: "popup",
+				allow_video: true
+			},
+			type: "keysequence",
 			category: "popup",
 			subcategory: "video"
 		},
@@ -59154,6 +59167,40 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain_nosub === "ftcdn.net") {
+			// https://as2.ftcdn.net/jpg/01/48/39/83/160_F_148398310_NQEzSr9fzbmfo0ZOcQjBhwQCFtSlwiS9.jpg -- no watermark, 107x160
+			//   https://as2.ftcdn.net/jpg/01/48/39/83/240_F_148398310_NQEzSr9fzbmfo0ZOcQjBhwQCFtSlwiS9.jpg -- no watermark, 160x240
+			//   https://as2.ftcdn.net/jpg/01/48/39/83/500_F_148398310_NQEzSr9fzbmfo0ZOcQjBhwQCFtSlwiS9.jpg -- watermark, 334x500
+			//   https://as2.ftcdn.net/jpg/01/48/39/83/1000_F_148398310_NQEzSr9fzbmfo0ZOcQjBhwQCFtSlwiS9.jpg -- watermark, 667x1000
+			match = src.match(/:\/\/[^/]+\/+[^/]+\/+(?:[0-9]{2}\/+){4}([0-9]+)_F_([0-9]+)_[^/_.]+\.[^/.]+(?:[?#].*)?$/);
+			if (match) {
+				id = match[2];
+
+				regex = /(:\/\/[^/]+\/+[^/]+\/+(?:[0-9]{2}\/+){4})[0-9]+(_F_[0-9]+_[^/_.]+\.[^/.]+)(?:[?#].*)?$/;
+
+				newsrc = src;
+
+				if (match[1] === "160") {
+					newsrc = src.replace(regex, "$1240$2");
+				} else if (match[1] === "500") {
+					newsrc = src.replace(regex, "$11000$2");
+				}
+
+				return {
+					url: newsrc,
+					extra: {
+						page: "https://stock.adobe.com/" + id
+					}
+				};
+			}
+		}
+
+		if (domain_nowww === "popoholic.com") {
+			// http://popoholic.com/images6/katy-perry-rainbow-march-02.jpg
+			//   http://popoholic.com/bigimages6/katy-perry-rainbow-march-02.jpg
+			return src.replace(/(:\/\/[^/]+\/+)(images[0-9]+\/+)/, "$1big$2");
+		}
+
 
 
 
@@ -70646,11 +70693,15 @@ var $$IMU_EXPORT$$;
 			if (!videoel)
 				return;
 
-			var amount = settings.mouseover_video_speed_amount;
-			if (downup)
-				amount = -amount;
+			if (typeof downup !== "number") {
+				var amount = settings.mouseover_video_speed_amount;
+				if (downup === true)
+					amount = -amount;
 
-			videoel.playbackRate += amount;
+				videoel.playbackRate += amount;
+			} else {
+				videoel.playbackRate = downup;
+			}
 		};
 
 		var toggle_video_muted = function() {
@@ -70778,6 +70829,9 @@ var $$IMU_EXPORT$$;
 					return true;
 				case "speed_up":
 					popup_video_speed(false);
+					return true;
+				case "reset_speed":
+					popup_video_speed(1);
 					return true;
 				case "toggle_mute":
 					toggle_video_muted();
@@ -70999,6 +71053,10 @@ var $$IMU_EXPORT$$;
 					{
 						key: settings.mouseover_video_speed_up_key,
 						action: {type: "speed_up"}
+					},
+					{
+						key: settings.mouseover_video_reset_speed_key,
+						action: {type: "reset_speed"}
 					},
 					{
 						key: settings.mouseover_video_mute_key,
