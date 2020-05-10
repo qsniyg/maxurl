@@ -58997,12 +58997,13 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/preview_(slide_[0-9]+\.[^/.]+)(?:[?#].*)?$/, "/$1");
 		}
 
+		// TODO: make this generic
 		if (domain === "peertube.linuxrocks.online" ||
 			// https://peertube.live/static/thumbnails/bcc1c74b-fefe-4092-aab7-17bb18cb09ab.jpg
 			//   https://peertube.debian.social/static/webseed/bcc1c74b-fefe-4092-aab7-17bb18cb09ab-720.mp4
 			domain_nowww === "peertube.live" ||
 			// https://peertube.video/static/thumbnails/1cc6b4cd-ac16-4300-8adc-d9df3fb4f0af.jpg
-			domain_nowww === "peertube.video" || // contains links to other peertube instances, useful for finding new domains
+			domain_nowww === "peertube.video" ||
 			// https://peertube.nocturlab.fr/static/webseed/1cc6b4cd-ac16-4300-8adc-d9df3fb4f0af-720.mp4
 			domain_nowww === "peertube.nocturlab.fr" ||
 			// https://peertube.debian.social/static/webseed/1f31fce7-f2b2-48fd-9b58-f1404df7c60c-576.mp4
@@ -59029,6 +59030,28 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "skeptikon.fr" ||
 			// https://peertube.parleur.net/static/webseed/3cf3c055-61f1-4913-ad30-0e51ebe68d98-720.mp4
 			domain_nowww === "peertube.parleur.net" ||
+			// https://open.tube/static/thumbnails/0ef8384c-b732-4352-ae1b-52bb96d8e2ae.jpg
+			domain_nowww === "open.tube" ||
+			// https://peertube.umeahackerspace.se/static/thumbnails/0c8dc9fd-6243-4b04-b99c-64da0bb39ee8.jpg
+			domain === "peertube.umeahackerspace.se" ||
+			// https://tube.rebellion.global/static/thumbnails/758dc98c-a5d0-44e2-b92f-29448763d9d8.jpg
+			domain === "tube.rebellion.global" ||
+			// https://video.lewd.host/static/thumbnails/32902e72-c806-432f-abbe-93eef3c27c97.jpg
+			domain === "video.lewd.host" ||
+			// https://nocensoring.net/static/thumbnails/b2fe309e-ed4c-46ac-aad6-d9fda4f9ff9f.jpg
+			domain_nowww === "nocensoring.net" ||
+			// https://peertube.co.uk/static/thumbnails/a441bd81-dcde-4d41-a745-35068e084dbf.jpg
+			domain_nowww === "peertube.co.uk" ||
+			// https://tube.aquilenet.fr/static/thumbnails/a441bd81-dcde-4d41-a745-35068e084dbf.jpg
+			domain === "tube.aquilenet.fr" ||
+			// https://peertube.datagueule.tv/static/thumbnails/83b17112-d902-46a8-b1a6-95df8ac08888.jpg
+			domain === "peertube.datagueule.tv" ||
+			// https://video.antopie.org/static/thumbnails/b9991c48-1754-458d-899e-cd960d68ae21.jpg
+			domain === "video.antopie.org" ||
+			// https://pt.kircheneuenburg.de/static/thumbnails/afa99430-71cb-4366-9a7d-b857bad7e432.jpg
+			domain === "pt.kircheneuenburg.de" ||
+			// https://devtube.dev-wiki.de/static/thumbnails/c4bb5efe-9dac-4f5c-8953-ae706892cd72.jpg
+			domain === "devtube.dev-wiki.de" ||
 			// https://peertube.cpy.re/static/thumbnails/da2b08d4-a242-4170-b32a-4ec8cbdca701.jpg
 			//   https://peertube.cpy.re/static/webseed/da2b08d4-a242-4170-b32a-4ec8cbdca701-1044.mp4
 			domain === "peertube.cpy.re") {
