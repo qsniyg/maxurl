@@ -108,12 +108,13 @@ function inuserblacklist(x, blacklist) {
 }
 
 var base_headers = {
-	"User-Agent": 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.106 Safari/537.36',
-	"Pragma": 'no-cache',
-	"Cache-Control": 'max-age=0',
-	"Accept": 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-	"Accept-Encoding": "gzip, deflate, br",
-	"Accept-Language": "en-US,en;q=0.9"
+	//"user-agent": 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.106 Safari/537.36',
+	"user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36",
+	"pragma": 'no-cache',
+	"cache-control": 'max-age=0',
+	"accept": 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+	"accept-encoding": "gzip, deflate",
+	"accept-language": "en-US,en;q=0.9"
 };
 
 function getimagesize(url) {
@@ -693,11 +694,12 @@ function dourl(url, post, options, cb) {
 			var headers = JSON.parse(JSON.stringify(base_headers));
 			if (options.headers) {
 				for (var header in options.headers) {
-					var value = options.headers[header];
+					var headername = header.toLowerCase();
+					var value = options.headers[headername];
 					if (value)
-						headers[header] = value;
+						headers[headername] = value;
 					else
-						delete headers[header];
+						delete headers[headername];
 				}
 			}
 
@@ -819,5 +821,7 @@ function dourl(url, post, options, cb) {
 //dourl("https://connectgalaxy.com/gallery/icon/309557/taggable");
 // should fail (bad-if), nsfw!
 //dourl("https://i.imgur.com/4dLcGhR.gif")
+// tumblr ("br" encoding shouldn't be supported)
+//dourl("https://66.media.tumblr.com/2b129630fe50ae796d9383c5ba6ba35b/9e0fb8a88fdd1bdf-10/s640x960/d1a52d700422d91b37d653867fcadf46e933a1b1.jpg");
 
 module.exports = dourl;
