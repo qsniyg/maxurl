@@ -58977,7 +58977,41 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/preview_(slide_[0-9]+\.[^/.]+)(?:[?#].*)?$/, "/$1");
 		}
 
-		if (domain === "peertube.linuxrocks.online") {
+		if (domain === "peertube.linuxrocks.online" ||
+			// https://peertube.live/static/thumbnails/bcc1c74b-fefe-4092-aab7-17bb18cb09ab.jpg
+			//   https://peertube.debian.social/static/webseed/bcc1c74b-fefe-4092-aab7-17bb18cb09ab-720.mp4
+			domain_nowww === "peertube.live" ||
+			// https://peertube.video/static/thumbnails/1cc6b4cd-ac16-4300-8adc-d9df3fb4f0af.jpg
+			domain_nowww === "peertube.video" || // contains links to other peertube instances, useful for finding new domains
+			// https://peertube.nocturlab.fr/static/webseed/1cc6b4cd-ac16-4300-8adc-d9df3fb4f0af-720.mp4
+			domain_nowww === "peertube.nocturlab.fr" ||
+			// https://peertube.debian.social/static/webseed/1f31fce7-f2b2-48fd-9b58-f1404df7c60c-576.mp4
+			domain === "peertube.debian.social" ||
+			// https://bittube.video/static/webseed/64546964-fe85-4505-957b-bea15628e53e-480.mp4
+			domain_nowww === "bittube.video" ||
+			// https://toobnix.org/static/webseed/1f997b3c-00dc-4f7d-b2ce-74538c194fa7-1080.mp4
+			domain_nowww === "toobnix.org" ||
+			domain === "pt.pube.tk" ||
+			// https://framatube.org/static/webseed/9c9de5e8-0a1e-484a-b099-e80766180a6d-1080.mp4
+			domain_nowww === "framatube.org" ||
+			// https://peertube.gegeweb.eu/static/webseed/755d0a1c-2fe8-4839-b802-912c9fd6fe83-360.mp4
+			domain === "peertube.gegeweb.eu" ||
+			// https://peer.hostux.social/static/webseed/7f0b04f7-1774-4597-95c3-47ad1e253027-1080.mp4
+			domain === "peer.hostux.social" ||
+			// https://banneddata.me/static/thumbnails/ab46d9b9-d9fd-4555-8d22-8d4b534867a8.jpg
+			//   https://banneddata.me/static/webseed/ab46d9b9-d9fd-4555-8d22-8d4b534867a8-720.mp4
+			domain_nowww === "banneddata.me" ||
+			// https://tube.midov.pl/static/webseed/1bbc0138-209f-409e-92bd-bd832499e68e-480.mp4
+			domain === "tube.midov.pl" ||
+			// https://vault.mle.party/static/webseed/382a5983-9602-4249-a88d-65f8e0197535-720.mp4
+			domain === "vault.mle.party" ||
+			// https://skeptikon.fr/static/webseed/b49ddfaf-0ece-48ca-b41a-b0d798c76390-1080.mp4
+			domain_nowww === "skeptikon.fr" ||
+			// https://peertube.parleur.net/static/webseed/3cf3c055-61f1-4913-ad30-0e51ebe68d98-720.mp4
+			domain_nowww === "peertube.parleur.net" ||
+			// https://peertube.cpy.re/static/thumbnails/da2b08d4-a242-4170-b32a-4ec8cbdca701.jpg
+			//   https://peertube.cpy.re/static/webseed/da2b08d4-a242-4170-b32a-4ec8cbdca701-1044.mp4
+			domain === "peertube.cpy.re") {
 			// https://peertube.linuxrocks.online/static/previews/caeb68e7-120c-4db5-a44e-5945e09ceb92.jpg
 			//   https://peertube.linuxrocks.online/static/webseed/caeb68e7-120c-4db5-a44e-5945e09ceb92-1080.mp4
 			var query_peertube_api = function(api_url, referer_url, vidid, cb) {
@@ -59033,7 +59067,7 @@ var $$IMU_EXPORT$$;
 			};
 
 			var get_peertube_urlinfo = function(url) {
-				var match = url.match(/(.*)\/static\/+previews\/+([-0-9a-f]{20,})\.[^/.]+(?:[/#].*)?$/);
+				var match = url.match(/(.*)\/static\/+(?:previews|thumbnails|webseed)\/+([0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12})(?:-[0-9]+)?\.[^/.]+(?:[/#].*)?$/);
 				if (!match)
 					return null;
 
