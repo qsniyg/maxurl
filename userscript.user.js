@@ -3779,7 +3779,7 @@ var $$IMU_EXPORT$$;
 		},
 		snapchat_orig_media: {
 			name: "Snapchat: Use original media without captions",
-			description: "Prefers using original media instead of meida with captions and tags overlayed",
+			description: "Prefers using original media instead of media with captions and tags overlayed",
 			category: "rule_specific"
 		},
 		tiktok_no_watermarks: {
