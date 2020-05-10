@@ -7151,7 +7151,10 @@ var $$IMU_EXPORT$$;
 			}
 
 			// https://ssl.pstatic.net/img.tvcast/pc/img/sp_tvcast75.png
-			if (/\/img\.tvcast\/+pc\/+img\/+/.test(src)) {
+			// https://ssl.pstatic.net/static.post/image/im/blank.gif
+			// https://ssl.pstatic.net/static.post/image/im/sp_181016.png
+			if (/\/img\.tvcast\/+pc\/+img\/+/.test(src) ||
+				/\/static\.post\/+image\/+im\/+/.test(src)) {
 				return {
 					url: src,
 					bad: "mask"
