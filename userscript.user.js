@@ -10253,6 +10253,13 @@ var $$IMU_EXPORT$$;
 
 					if (maxobj) {
 						if (maxobj.url) {
+							if (player_response.videoDetails && player_response.videoDetails.title && player_response.videoDetails.videoId) {
+								obj.extra = {
+									page: "https://www.youtube.com/watch?v=" + player_response.videoDetails.videoId,
+									caption: player_response.videoDetails.title
+								};
+							}
+
 							obj.url = maxobj.url;
 							obj.video = true;
 							obj.is_private = true;
@@ -10297,7 +10304,7 @@ var $$IMU_EXPORT$$;
 								for (var i = 0; i < splitted.length; i++) {
 									if (/^player_response=/.test(splitted[i])) {
 										found_player_response = true;
-										var data = decodeURIComponent(splitted[i].replace(/^[^=]+=/, ""));
+										var data = decodeURIComponent(splitted[i].replace(/^[^=]+=/, "").replace(/\+/g, "%20"));
 
 										try {
 											var json = JSON_parse(data);
