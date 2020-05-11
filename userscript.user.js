@@ -28861,6 +28861,132 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/[0-9]+_)[0-9]+(\.[^/.]*)$/, "$11000$2");
 		}
 
+		if (domain_nosub === "xhcdn.com" && /^thumb-(?:lvlt|v[0-9]*)\./.test(domain)) {
+			// https://thumb-lvlt.xhcdn.com/a/XtFVJhj0T4uGdKxntAsGVw/002/499/117/240x135.2.jpg
+			match = src.match(/\/a\/+[^/.]{20,}\/+((?:[0-9]{3}\/+){3})/);
+			if (match) {
+				id = match[1].replace(/\/+/g, "").replace(/^0+/, "");
+
+				obj = {
+					url: src,
+					extra: {page: "https://www.xhamster.com/videos/" + id}
+				};
+
+				var query_xhamster_video = function(id, cb) {
+					var cache_key = "xhamster:" + id;
+					api_cache.fetch(cache_key, cb, function(done) {
+						options.do_request({
+							url: "https://www.xhamster.com/videos/" + id,
+							method: "GET",
+							onload: function(resp) {
+								if (resp.status !== 200) {
+									console_error(cache_key, resp);
+									return done(null, false);
+								}
+
+								var match = resp.responseText.match(/window\.initials\s*=\s*({.*});/);
+								if (!match) {
+									console_log(cache_key, "Unable to find match for", resp);
+									return done(null, false);
+								}
+
+								try {
+									var json = JSON_parse(match[1]);
+									var videomodel = json.videoModel;
+
+									if (videomodel.title && videomodel.pageURL) {
+										return done(videomodel, 60*60);
+									}
+								} catch(e) {
+									console_error(cache_key, e);
+								}
+
+								return done(null, false);
+							}
+						});
+					});
+				};
+
+				var get_max_source = function(sources) {
+					if (!sources)
+						return null;
+
+					var max = 0;
+					var maxobj = null;
+
+					for (var quality in sources) {
+						var qualityn = parseInt(quality);
+
+						if (!isNaN(qualityn) && qualityn > max) {
+							max = qualityn;
+							maxobj = sources[quality];
+						}
+					}
+
+					return maxobj;
+				};
+
+				var get_obj_from_xhamster_videomodel = function(videomodel) {
+					var baseobj = {
+						extra: {
+							page: videomodel.pageURL,
+							caption: videomodel.titleLocalized || videomodel.title
+						}
+					};
+
+					var urls = [];
+
+					if ("sources" in videomodel) {
+						var goodsources = [
+							"mp4",
+							"download"
+						];
+
+						for (var i = 0; i < goodsources.length; i++) {
+							var our_source = goodsources[i];
+
+							var max = get_max_source(videomodel.sources[our_source]);
+							if (max) {
+								var our_obj = {
+									headers: {
+										Origin: "https://xhamster.com",
+										Referer: obj.extra.page,
+										"Sec-Fetch-Dest": "empty"
+									},
+									url: max,
+									video: true
+								};
+
+								urls.push(our_obj);
+
+								break;
+							}
+						}
+					}
+
+					urls.push(videomodel.thumbURL);
+
+					return fillobj_urls(urls, baseobj);
+				};
+
+				if (options.do_request && options.cb) {
+					query_xhamster_video(id, function(data) {
+						if (!data) {
+							return options.cb(null);
+						}
+
+						return options.cb(get_obj_from_xhamster_videomodel(data));
+					});
+
+					return {
+						waiting: true
+					};
+				}
+
+				return obj;
+			}
+		}
+
 		if (domain_nosub === "netease.com" && domain.match(/img[0-9]*\.cache\.netease\.com/)) {
 			// http://img4.cache.netease.com/photo/0026/2016-02-06/s_BF64NUDI43AJ0026.jpg
 			//   http://img4.cache.netease.com/photo/0026/2016-02-06/t_BF64NUDI43AJ0026.jpg
