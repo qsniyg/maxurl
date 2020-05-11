@@ -21241,9 +21241,111 @@ var $$IMU_EXPORT$$;
 			//   https://ei.rdtcdn.com/m=/_thumbs/gallery/000/005/150/i_15005151_423291_5150301_9922564.jpg
 			// https://di.rdtcdn.com/m=eVYR8f/_thumbs/gallery/000/005/150/i_15005151_423291_5150281_/Sexy-Big-Booty-Black-Girls-Ebony-Babes-with-Thick-Thighs-And-Fat-Asses-1726828.jpg
 			//   https://di.rdtcdn.com/m=/_thumbs/gallery/000/005/150/i_15005151_423291_5150281_1726828.jpg
-			return src
+			newsrc = src
 				.replace(/\/m=[^/]*\/+_thumbs\/+/, "/m=/_thumbs/")
 				.replace(/\/m=[^/]*\/+(_thumbs\/+gallery\/.*_[0-9]+_)\/+[^/]+-([0-9]+\.[^/.]+)(?:[?#].*)?$/, "/m=/$1$2");
+			if (newsrc !== src)
+				return newsrc;
+		}
+
+		if (domain_nosub === "rdtcdn.com" && /^[a-z]i\./.test(domain)) {
+			// https://di.rdtcdn.com/m=eah-8f/media/videos/201903/07/14532271/original/13.jpg
+			match = src.match(/\/m=[^/]+\/+media\/+videos\/+[0-9]{6}\/+[0-9]{2}\/+([0-9]+)\/+/);
+			if (match) {
+				id = match[1];
+
+				var obj = {
+					url: src,
+					extra: {
+						page: "https://www.redtube.com/" + id
+					}
+				};
+
+				var query_redtube = function(id, cb) {
+					var cache_key = "redtube:" + id;
+					api_cache.fetch(cache_key, cb, function(done) {
+						options.do_request({
+							url: "https://www.redtube.com/" + id,
+							method: "GET",
+							onload: function(resp) {
+								if (resp.status !== 200) {
+									console_error(cache_key, resp);
+									return done(null, false);
+								}
+
+								var match = resp.responseText.match(/page_params\.video_player_setup[\s\S]+playervars:\s*({.*}),/);
+								if (!match) {
+									console_error(cache_key, "Unable to find match for", resp);
+									return done(null, false);
+								}
+
+								try {
+									var json = JSON_parse(match[1])
+									return done(json, 60*60);
+								} catch (e) {
+									console_error(cache_key, e);
+								}
+
+								return done(null, false);
+							}
+						});
+					});
+				};
+
+				var get_obj_from_redtube_info = function(data) {
+					var baseobj = {
+						extra: {
+							page: data.link_url,
+							caption: data.video_title
+						}
+					};
+
+					var max = 0;
+					var maxobj = null;
+					for (var i = 0; i < data.mediaDefinitions.length; i++) {
+						var media = data.mediaDefinitions[i];
+
+						var our_quality = parseInt(media.quality);
+						if (!isNaN(our_quality) && our_quality > max && media.videoUrl) {
+							max = our_quality;
+							maxobj = media;
+						}
+					}
+
+					var urls = [];
+
+					if (maxobj) {
+						urls.push({
+							url: maxobj.videoUrl,
+							video: true,
+							headers: {
+								Referer: baseobj.extra.page,
+								Origin: "https://redtube.com"
+							}
+						});
+					}
+
+					urls.push(data.image_url);
+
+					return fillobj_urls(urls, baseobj);
+				};
+
+				if (options.do_request && options.cb) {
+					query_redtube(id, function(data) {
+						if (!data) {
+							return options.cb(null);
+						}
+
+						return options.cb(get_obj_from_redtube_info(data));
+					});
+
+					return {
+						waiting: true
+					};
+				}
+
+				return obj;
+			}
 		}
 
 		if ((domain_nosub === "t8cdn.com" || domain_nosub === "ypncdn.com") && options && options.do_request && options.cb) {
