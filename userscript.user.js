@@ -1828,6 +1828,7 @@ var $$IMU_EXPORT$$;
 		mouseover_allow_partial: is_extension ? "media" : "video",
 		mouseover_use_blob_over_data: false,
 		mouseover_enable_notallowed: true,
+		// thanks to Rnksts on discord for the idea
 		mouseover_enable_notallowed_cant_load: true,
 		mouseover_notallowed_duration: 300,
 		//mouseover_use_fully_loaded_image: is_extension ? false : true,
