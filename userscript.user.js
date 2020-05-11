@@ -41979,6 +41979,14 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain === "public.onlyfans.com") {
+			// https://public.onlyfans.com/files/thumbs/c144/m/mt/mtm/mtmo5goxrqv9ga5vccgeffrmvieqfb2h1588129171/avatar.jpg
+			//   https://public.onlyfans.com/files/m/mt/mtm/mtmo5goxrqv9ga5vccgeffrmvieqfb2h1588129171/avatar.jpg
+			newsrc = src.replace(/\/files\/+thumbs\/+c[0-9]+\/+/, "/files/");
+			if (newsrc !== src)
+				return newsrc;
+		}
+
 		if (host_domain_nosub === "onlyfans.com" &&
 		     (domain_nosub === "onlyfans.com" ||
 			  domain === "media.onlyfans.com" ||
