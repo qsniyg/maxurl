@@ -51234,7 +51234,9 @@ var $$IMU_EXPORT$$;
 			};
 		}
 
-		if (false && domain_nosub === "agoravox.fr") {
+		if (false && (domain_nosub === "agoravox.fr" ||
+			// https://www.evous.fr/local/cache-vignettes/L350xH382/350gaul-2-38e5b.jpg?1524260316
+			domain_nowww === "evous.fr")) {
 			// https://mobile.agoravox.fr/IMG/jpg/La-Marianne-des-gilets-jaunes-est-l-artiste-Deborah-de-Robertis.jpg -- 2000x1332
 			// https://mobile.agoravox.fr/local/cache-vignettes/L513xH383/P1000948JPG-f10f-ef1ce.jpg -- 1600x1200
 			// https://mobile.agoravox.fr/local/cache-vignettes/L640xH1642/map_develop_f936-7cba8.png -- 3500x1642
@@ -59208,6 +59210,57 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(:\/\/[^/]+\/+)(images[0-9]+\/+)/, "$1big$2");
 		}
 
+		if (domain === "pictures.abebooks.com") {
+			// https://pictures.abebooks.com/DESIGN/md/md22378955735.jpg
+			//   https://pictures.abebooks.com/DESIGN/22378955735.jpg
+			return src.replace(/(\/DESIGN\/+)md\/+md([0-9]+(?:_[0-9]+)?\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain === "content.ngv.vic.gov.au") {
+			// 1920 scales to 1920 on the largest side (i.e. no side can be larger than 1920)
+			// xxxl = 976 on the width
+			// 1920, 1280, xxxl, xxl, xl, large, medium, small
+			// numbers can't be applied to plain folders, which is why they have to be converted to api instead
+			// https://content.ngv.vic.gov.au/col-images/xxxl/EXHI017454.jpg
+			//   https://content.ngv.vic.gov.au/col-images/api-talks/EXHI017454/xxxl
+			newsrc = src.replace(/\/col-images\/+([a-z]+)\/+([^/.]+)\.[^/.]+(?:[?#].*)?$/, "/col-images/api-talks/$2/$1");
+			if (newsrc !== src)
+				return newsrc;
+
+			// https://content.ngv.vic.gov.au/col-images/api-talks/EXHI017454/small
+			//   https://content.ngv.vic.gov.au/col-images/api-talks/EXHI017454/1920
+			// https://content.ngv.vic.gov.au/col-images/api/EXHI020246/small
+			//   https://content.ngv.vic.gov.au/col-images/api/EXHI020246/1920
+			// https://content.ngv.vic.gov.au/col-images/api/PUPR015933/1920 -- 1280x853 (doesn't upscale)
+			newsrc = src.replace(/(\/col-images\/+api(?:-talks)?\/+[^/]+)(?:\/+(?:1280|x{1,3}l|large|medium|small))?(?:[?#].*)?$/, "$1/1920");
+			if (newsrc !== src)
+				return newsrc;
+
+			// https://content.ngv.vic.gov.au/retrieve.php?type=image&vernonID=2920
+			//   https://content.ngv.vic.gov.au/retrieve.php?size=1280&type=image&vernonID=2920
+			//   https://content.ngv.vic.gov.au/retrieve.php?size=1920&type=image&vernonID=2920
+			// https://content.ngv.vic.gov.au/retrieve.php?type=promotional&imageID=EXHI051562&release=polly-borland-polyverse-2 -- requires authentication
+			//   https://content.ngv.vic.gov.au/retrieve.php?type=image&imageID=EXHI051562&release=polly-borland-polyverse-2&size=1920 -- works
+			// https://content.ngv.vic.gov.au/retrieve.php?type=image&imageID=EXHI017454&size=1920 -- works
+			if (/^[a-z]+:\/\/[^/]+\/+retrieve.php\?/.test(src)) {
+				var queries = get_queries(src);
+				if (!queries.size || ["1280", "xxxl", "xxl", "xl", "large", "medium", "small"].indexOf(queries.size) >= 0)
+					return add_queries(src, {"size": 1920});
+			}
+
+			// image sources:
+			// https://www.ngv.vic.gov.au/about/media/images-video/
+			// https://www.ngv.vic.gov.au/media_release/polly-borland-polyverse-2/
+		}
+
+		if (domain_nowww === "ilmessaggero.it") {
+			// https://www.ilmessaggero.it/photogallery_img/MED/13/54/101354_20150410_95078_w_baker_k_minogue.jpg
+			//   https://www.ilmessaggero.it/photogallery_img/HIGH/13/54/101354_20150410_95078_w_baker_k_minogue.jpg
+			// https://www.ilmessaggero.it/photos/MED/22/99/32299_LGG_20100115_8241_ba1.jpg
+			//   https://www.ilmessaggero.it/photos/HIGH/22/99/32299_LGG_20100115_8241_ba1.jpg
+			return src.replace(/(\/(?:photogallery_img|photos)\/+)MED\/+/, "$1HIGH/");
+		}
+
 
 
 
@@ -65518,6 +65571,10 @@ var $$IMU_EXPORT$$;
 		}
 
 		function stop_waiting() {
+			if (_nir_debug_) {
+				console_log("stop_waiting");
+			}
+
 			waiting = false;
 
 			if (!settings.mouseover_wait_use_el) {
@@ -65533,6 +65590,10 @@ var $$IMU_EXPORT$$;
 
 		var not_allowed_timer = null;
 		function cursor_not_allowed() {
+			if (_nir_debug_) {
+				console_log("cursor_not_allowed (mouseover_enabled_notallowed:", settings.mouseover_enable_notallowed, ")");
+			}
+
 			if (!settings.mouseover_enable_notallowed)
 				return;
 
@@ -65623,6 +65684,10 @@ var $$IMU_EXPORT$$;
 
 		var removemask_timer = null;
 		function resetpopups(from_remote) {
+			if (_nir_debug_) {
+				console_log("resetpopups(", from_remote, ")");
+			}
+
 			popups.forEach(function (popup) {
 				if (settings.mouseover_fade_time > 0) {
 					popup.style.opacity = 0;
@@ -65916,8 +65981,10 @@ var $$IMU_EXPORT$$;
 				if (!img) {
 					delay_handle_triggering = false;
 
-					if (processing.running)
+					if (processing.running) {
 						stop_waiting();
+						cursor_not_allowed();
+					}
 					return;
 				}
 
@@ -66183,6 +66250,7 @@ var $$IMU_EXPORT$$;
 				if (imgh < 20 || imgw < 20) {
 					// FIXME: This will stop "custom" percentages with low percentages for small images
 					stop_waiting();
+					cursor_not_allowed();
 					console_error("Image too small to popup (" + imgw + "x" + imgh + ")");
 					return;
 				}
@@ -69425,8 +69493,11 @@ var $$IMU_EXPORT$$;
 					//console_log(source_imu);
 					//console_log(data);
 					if ((!source_imu && false) || !data) {
-						if (!multi)
+						if (!multi) {
 							stop_waiting();
+							cursor_not_allowed();
+						}
+
 						return cb();
 					}
 
