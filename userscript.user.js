@@ -10435,7 +10435,9 @@ var $$IMU_EXPORT$$;
 			return src.replace(/.*\/vimg\.php\?(?:.*?&)?v=([^&]*).*?$/, "https://i.ytimg.com/vi/$1/mqdefault.jpg");
 		}
 
-		if (domain_nowww === "invidio.us") {
+		if (domain_nowww === "invidio.us" ||
+			// https://dev.invidio.us/vi/Ipi0C0L8AM0/maxres.jpg
+			domain === "dev.invidio.us") {
 			// https://invidio.us/vi/814QFJ4mDaM/mqdefault.jpg
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+(vi\/+.*?)(?:[?#].*)?$/, "https://i.ytimg.com/$1");
 			if (newsrc !== src)
