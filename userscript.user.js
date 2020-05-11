@@ -1828,6 +1828,7 @@ var $$IMU_EXPORT$$;
 		mouseover_allow_partial: is_extension ? "media" : "video",
 		mouseover_use_blob_over_data: false,
 		mouseover_enable_notallowed: true,
+		mouseover_enable_notallowed_cant_load: true,
 		mouseover_notallowed_duration: 300,
 		//mouseover_use_fully_loaded_image: is_extension ? false : true,
 		//mouseover_use_fully_loaded_video: false,
@@ -2364,7 +2365,7 @@ var $$IMU_EXPORT$$;
 			subcategory: "open_behavior"
 		},
 		mouseover_enable_notallowed: {
-			name: "Enable `not-allowed` cursor",
+			name: "Use `not-allowed` cursor when unsupported",
 			description: "If the image isn't supported, the mouse cursor will change to a `not-allowed` cursor for a brief duration",
 			requires: {
 				mouseover_trigger_behavior: "keyboard"
@@ -2372,12 +2373,19 @@ var $$IMU_EXPORT$$;
 			category: "popup",
 			subcategory: "open_behavior"
 		},
+		mouseover_enable_notallowed_cant_load: {
+			name: "Use `not-allowed` cursor when unable to load",
+			description: "If the image fails to load, the mouse cursor will change to a `not-allowed` cursor for a brief duration",
+			category: "popup",
+			subcategory: "open_behavior"
+		},
 		mouseover_notallowed_duration: {
 			name: "`not-allowed` cursor duration",
 			description: "How long the `not-allowed` cursor should last",
-			requires: {
-				mouseover_enable_notallowed: true
-			},
+			requires: [
+				{mouseover_enable_notallowed: true},
+				{mouseover_enable_notallowed_cant_load: true}
+			],
 			type: "number",
 			number_min: 0,
 			number_int: true,
@@ -65591,11 +65599,8 @@ var $$IMU_EXPORT$$;
 		var not_allowed_timer = null;
 		function cursor_not_allowed() {
 			if (_nir_debug_) {
-				console_log("cursor_not_allowed (mouseover_enabled_notallowed:", settings.mouseover_enable_notallowed, ")");
+				console_log("cursor_not_allowed");
 			}
-
-			if (!settings.mouseover_enable_notallowed)
-				return;
 
 			start_waiting(undefined, "not-allowed");
 
@@ -65609,7 +65614,15 @@ var $$IMU_EXPORT$$;
 				if (waitingel_cursor === "not-allowed")
 					stop_waiting();
 			}, settings.mouseover_notallowed_duration);
-		};
+		}
+
+		function stop_waiting_cant_load() {
+			if (settings.mouseover_enable_notallowed_cant_load) {
+				cursor_not_allowed();
+			} else {
+				stop_waiting();
+			}
+		}
 
 		function in_clientrect(mouseX, mouseY, rect, border) {
 			if (isNaN(border) || border === undefined)
@@ -65982,8 +65995,7 @@ var $$IMU_EXPORT$$;
 					delay_handle_triggering = false;
 
 					if (processing.running) {
-						stop_waiting();
-						cursor_not_allowed();
+						stop_waiting_cant_load();
 					}
 					return;
 				}
@@ -66249,8 +66261,7 @@ var $$IMU_EXPORT$$;
 
 				if (imgh < 20 || imgw < 20) {
 					// FIXME: This will stop "custom" percentages with low percentages for small images
-					stop_waiting();
-					cursor_not_allowed();
+					stop_waiting_cant_load();
 					console_error("Image too small to popup (" + imgw + "x" + imgh + ")");
 					return;
 				}
@@ -69409,7 +69420,9 @@ var $$IMU_EXPORT$$;
 				trigger_popup_with_source(source);
 			} else {
 				if (popup_trigger_reason === "keyboard") {
-					cursor_not_allowed();
+					if (settings.mouseover_enable_notallowed) {
+						cursor_not_allowed();
+					}
 				}
 
 				delay_handle_triggering = false;
@@ -69494,8 +69507,7 @@ var $$IMU_EXPORT$$;
 					//console_log(data);
 					if ((!source_imu && false) || !data) {
 						if (!multi) {
-							stop_waiting();
-							cursor_not_allowed();
+							stop_waiting_cant_load();
 						}
 
 						return cb();
