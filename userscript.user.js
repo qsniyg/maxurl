@@ -20197,7 +20197,9 @@ var $$IMU_EXPORT$$;
 			domain_nosub === "ykt2.ru") {
 			// http://cs-msk-fd-4.ykt2.ru/media/upload/photo/2015/11/16/thumb/561772143a52dw350h530cr.jpeg
 			// http://www.news.ykt.ru/upload/image/2017/04/55619/thumb/58ec2ea7219bd.jpg
-			return src.replace(/\/thumb\/([^/]*)$/, "/$1");
+			newsrc = src.replace(/\/thumb\/([^/]*)$/, "/$1");
+			if (newsrc !== src)
+				return newsrc;
 		}
 
 		if (domain === "i.guim.co.uk") {
@@ -59498,6 +59500,64 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/(?:photogallery_img|photos)\/+)MED\/+/, "$1HIGH/");
 		}
 
+		if (host_domain_nowww === "mercifans.com" && options.element && options.do_request && options.cb) {
+			if (options.element.hasAttribute("data-open-medias-gallery")) {
+				var query_mercifans = function(url, cb) {
+					var cache_key = "mercifans:" + url;
+					api_cache.fetch(cache_key, cb, function(done) {
+						options.do_request({
+							url: urljoin(options.host_url, url, true),
+							method: "GET",
+							headers: {
+								Referer: options.host_url,
+								"x-requested-with": "XMLHttpRequest"
+							},
+							onload: function(resp) {
+								if (resp.status !== 200) {
+									console_error(cache_key, resp);
+									return done(null, false);
+								}
+
+								try {
+									var json = JSON_parse(resp.responseText);
+									cb(json, 60*60);
+								} catch (e) {
+									console_error(cache_key, e);
+								}
+
+								return done(null, false);
+							}
+						});
+					});
+				};
+
+				query_mercifans(options.element.getAttribute("data-open-medias-gallery"), function(data) {
+					if (!data) {
+						return options.cb(null);
+					}
+
+					var index = options.element.getAttribute("data-gallery-index");
+					if (index) {
+						index = parseInt(index) - 1;
+					} else {
+						index = 0;
+					}
+
+					// TODO: support gallery
+					if (index >= data.size || index < 0) {
+						console_error("Invalid index", index);
+						return options.cb(null);
+					}
+
+					return options.cb(data[index].src);
+				});
+
+				return {
+					waiting: true
+				};
+			}
+		}
+
 
 
 
@@ -59697,6 +59757,8 @@ var $$IMU_EXPORT$$;
 			//   https://sabrinacarpenter.org/gallery/albums/Instagram/SCORG00656.jpg
 			// http://i.pinger.pl/pgr473/d1187d3e0009772553242703/normal_005~25.jpg
 			//   http://i.pinger.pl/pgr473/d1187d3e0009772553242703/005~25.jpg
+			// https://fotki.ykt.ru/albums/userpics/2014/04-04/normal_f210e8d33c71591981896d738d47e4b5.jpg
+			//   https://fotki.ykt.ru/albums/userpics/2014/04-04/f210e8d33c71591981896d738d47e4b5.jpg
 			newsrc = src.replace(/\/[a-z]*_([^/.]*\.[^/.]*)$/, "/$1");
 			if (newsrc !== src)
 				return newsrc;
