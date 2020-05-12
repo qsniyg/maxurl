@@ -21253,7 +21253,6 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nosub === "rdtcdn.com" && /^[a-z]i\./.test(domain)) {
-			// https://di.rdtcdn.com/m=eah-8f/media/videos/201903/07/14532271/original/13.jpg
 			match = src.match(/\/m=[^/]+\/+media\/+videos\/+[0-9]{6}\/+[0-9]{2}\/+([0-9]+)\/+/);
 			if (match) {
 				id = match[1];
@@ -59566,6 +59565,18 @@ var $$IMU_EXPORT$$;
 					waiting: true
 				};
 			}
+		}
+
+		if (domain === "cdn.spinrilla.com") {
+			// https://cdn.spinrilla.com/albums/217990/large/b11917568079a31c4697.JPEG?1589066250
+			//   https://cdn.spinrilla.com/albums/217990/original/b11917568079a31c4697.JPEG?1589066250
+			return src.replace(/(\/albums\/+[0-9]+\/+)[a-z]+\/+/, "$1original/");
+		}
+
+		if (domain === "community.amd.com") {
+			// https://community.amd.com/servlet/JiveServlet/downloadImage/38-2363-167675/800-393/AMD+_GPUOpen_new_homepage_screensshot.jpg
+			//   https://community.amd.com/servlet/JiveServlet/downloadImage/38-2363-167675/AMD+_GPUOpen_new_homepage_screensshot.jpg
+			return src.replace(/(\/servlet\/+JiveServlet\/+downloadImage\/+[-0-9]+\/+)[0-9]+-[0-9]+\/+/, "$1");
 		}
 
 
