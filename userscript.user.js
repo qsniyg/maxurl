@@ -5309,12 +5309,15 @@ var $$IMU_EXPORT$$;
 		var apply_headers = false;
 
 		var real_fetch = function(done) {
+			var request_url = url.replace(/^http:/, "https:");
+
 			var request_headers;
-			if (apply_headers)
+			if (apply_headers) {
 				request_headers = headers;
+			}
 
 			do_request({
-				url: url.replace(/^http:/, "https:"),
+				url: request_url,
 				method: "GET",
 				headers: request_headers,
 				onload: function(resp) {
@@ -5353,7 +5356,7 @@ var $$IMU_EXPORT$$;
 					var imageinfo;
 					var match = resp.responseText.match(/\.\s*mergeConfig\s*\(\s*["']gallery["']\s*,\s*{[\s\S]+?image\s*:\s*({.*?})\s*,\s*\n/);
 					if (!match) {
-						var nsfwmatch = resp.responseText.match(/<a.*?btn-wall--yes.*?\.signin\(/);
+						var nsfwmatch = resp.responseText.match(/<a.*?btn-wall--yes.*?\.(?:signin|cookie)\(/);
 						var msg = "Unable to find match for Imgur page";
 
 						if (nsfwmatch) {
@@ -9048,6 +9051,9 @@ var $$IMU_EXPORT$$;
 			// https://img.ssensemedia.com/images/b_white,c_lpad,g_south,h_1086,w_724/c_scale,h_480/f_auto,dpr_1.0/201392F054001_1/henrik-vibskov-black-plisse-no3-dress.jpg
 			//   https://img.ssensemedia.com/images/201392F054001_1/henrik-vibskov-black-plisse-no3-dress.jpg
 			domain === "img.ssensemedia.com" ||
+			// https://images.jpost.com/image/upload/f_auto,fl_lossy/t_JD_MostReadFaceDetect/454445
+			//   https://images.jpost.com/image/upload/454445
+			domain === "images.jpost.com" ||
 			// https://images.moviepilot.com/images/c_limit,q_auto:good,w_600/uom2udz4ogmkncouu83q/beauty-and-the-beast-credit-disney.jpg
 			// https://images.moviepilot.com/image/upload/c_fill,h_64,q_auto,w_64/lpgwdrrgc3m8duvg7zt2.jpg
 			domain === "images.moviepilot.com") {
