@@ -391,8 +391,11 @@ function dourl_inner(big, url, post, options, cb) {
 						}
 
 						var linkcomment = "";
-						if (options.shocking)
+						if ((newdata.height * newdata.width) > (10*000 * 10*1000)) {
+							linkcomment = " (due to its size, opening this may consume a significant amount of RAM)";
+						} else if (options.shocking) {
 							linkcomment = " (click at your own risk...)";
+						}
 
 						if (options.comment_header)
 							comment += options.comment_header + "\n\n";
@@ -651,7 +654,8 @@ var base_options = {
 	add_about_link: true,
 	add_imu_links: true,
 	imgur_ua: null,
-	imgur_cookie: null,
+	//imgur_cookie: null,
+	imgur_cookie: "frontpagebetav2=1; retina=0; over18=1",
 	min_ratio: 1.3,
 	thresh_px: 200
 };
@@ -760,13 +764,17 @@ function dourl(url, post, options, cb) {
 		}
 	};
 
-	if (options.imgur_ua && options.imgur_cookie) {
+	if (options.imgur_cookie) {
 		bigimage_options.rule_specific = {
 			imgur_nsfw_headers: {
-				Cookie: options.imgur_cookie,
-				"User-Agent": options.imgur_ua
+				cookie: options.imgur_cookie
+				//"User-Agent": options.imgur_ua
 			}
 		};
+
+		if (options.imgur_ua) {
+			bigimage_options.rule_specific.imgur_nsfw_headers["user-agent"] = options.imgur_ua;
+		}
 	}
 
 	bigimage(url, bigimage_options);
@@ -823,5 +831,8 @@ function dourl(url, post, options, cb) {
 //dourl("https://i.imgur.com/4dLcGhR.gif")
 // tumblr ("br" encoding shouldn't be supported)
 //dourl("https://66.media.tumblr.com/2b129630fe50ae796d9383c5ba6ba35b/9e0fb8a88fdd1bdf-10/s640x960/d1a52d700422d91b37d653867fcadf46e933a1b1.jpg");
+// huge image (10652x14204), nsfw!
+//dourl("https://i.imgur.com/zsSsjXJ.jpg");
+//dourl("https://img39.pixhost.to/images/373/138394353_3s3a1fiv9wfy.jpg");
 
 module.exports = dourl;
