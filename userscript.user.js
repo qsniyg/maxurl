@@ -3002,11 +3002,16 @@ var $$IMU_EXPORT$$;
 					}
 				},
 				_group2: {
+					fill: {
+						name: "Fill screen"
+					}
+				},
+				_group3: {
 					full: {
 						name: "Full size"
 					}
 				},
-				_group3: {
+				_group4: {
 					custom: {
 						name: "Custom size"
 					}
@@ -66564,9 +66569,26 @@ var $$IMU_EXPORT$$;
 				var imgh = img_naturalHeight;
 				var imgw = img_naturalWidth;
 
-				if (initial_zoom_behavior === "fit") {
+				if (initial_zoom_behavior === "fit" || initial_zoom_behavior === "fill") {
 					img.style.maxWidth = vw + "px";
 					img.style.maxHeight = vh + "px";
+
+					if (initial_zoom_behavior === "fill" && (imgw < vw && imgh < vh)) {
+						var zoom_percent = 1;
+						if (imgh > imgw) {
+							zoom_percent = vh / imgh;
+						} else {
+							zoom_percent = vw / imgw;
+						}
+
+						imgw = imgw * zoom_percent;
+						imgh = imgh * zoom_percent;
+
+						img.style.maxWidth = imgw + "px";
+						img.style.width = img.style.maxWidth;
+						img.style.maxHeight = imgh + "px";
+						img.style.height = img.style.maxHeight;
+					}
 				} else if (initial_zoom_behavior === "custom") {
 					var zoom_percent = settings.mouseover_zoom_custom_percent / 100;
 					imgw = Math.max(imgw * zoom_percent, 20);
@@ -66620,7 +66642,7 @@ var $$IMU_EXPORT$$;
 					imgh = new_imghw[1];
 				}
 
-				if (initial_zoom_behavior === "fit") {
+				if (initial_zoom_behavior === "fit" || initial_zoom_behavior === "fill") {
 					calc_imghw_for_fit();
 				}
 
@@ -67676,6 +67698,8 @@ var $$IMU_EXPORT$$;
 				}
 
 				var currentmode = initial_zoom_behavior;
+				if (currentmode === "fill")
+					currentmode = "fit";
 
 				popup_zoom_func = function(zoom_mode, zoomdir, x, y, zoom_out_to_close) {
 					var changed = false;
