@@ -391,7 +391,7 @@ function dourl_inner(big, url, post, options, cb) {
 						}
 
 						var linkcomment = "";
-						if ((newdata.height * newdata.width) > (10*000 * 10*1000)) {
+						if ((newdata.height * newdata.width) > (10*1000 * 10*1000)) {
 							linkcomment = " (due to its size, opening this may consume a significant amount of RAM)";
 						} else if (options.shocking) {
 							linkcomment = " (click at your own risk...)";
