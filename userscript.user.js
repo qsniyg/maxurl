@@ -10244,31 +10244,36 @@ var $$IMU_EXPORT$$;
 						return options.cb(null);
 					}
 
+					obj.url = src;
+
 					var maxbitrate = 0;
 					var maxobj = null;
 
-					var formats = player_response.streamingData.formats;
+					// videos about to premiere don't contain the "formats" key: https://github.com/qsniyg/maxurl/issues/326
+					if (player_response.streamingData && player_response.streamingData.formats) {
+						var formats = player_response.streamingData.formats;
 
-					for (var j = 0; j < formats.length; j++) {
-						var our_format = formats[j];
+						for (var j = 0; j < formats.length; j++) {
+							var our_format = formats[j];
 
-						if (our_format.bitrate > maxbitrate) {
-							maxbitrate = our_format.bitrate;
-							maxobj = our_format;
+							if (our_format.bitrate > maxbitrate) {
+								maxbitrate = our_format.bitrate;
+								maxobj = our_format;
+							}
 						}
 					}
 
 					obj.problems.possibly_different = false;
 
+					if (player_response.videoDetails && player_response.videoDetails.title && player_response.videoDetails.videoId) {
+						obj.extra = {
+							page: "https://www.youtube.com/watch?v=" + player_response.videoDetails.videoId,
+							caption: player_response.videoDetails.title
+						};
+					}
+
 					if (maxobj) {
 						if (maxobj.url) {
-							if (player_response.videoDetails && player_response.videoDetails.title && player_response.videoDetails.videoId) {
-								obj.extra = {
-									page: "https://www.youtube.com/watch?v=" + player_response.videoDetails.videoId,
-									caption: player_response.videoDetails.title
-								};
-							}
-
 							obj.url = maxobj.url;
 							obj.video = true;
 							obj.is_private = true;
@@ -10285,11 +10290,11 @@ var $$IMU_EXPORT$$;
 								console_error("Unknown streamingData object", maxobj);
 							}
 
-							return options.cb(null);
+							return options.cb(obj);
 						}
 					} else {
-						console_error("Unable to find any formats", data);
-						return options.cb(null);
+						console_error("Unable to find any formats", player_response);
+						return options.cb(obj);
 					}
 				};
 
@@ -10321,7 +10326,8 @@ var $$IMU_EXPORT$$;
 											// doesn't work on: https://www.youtube.com/watch?v=vFaeDdEb44A, https://www.youtube.com/watch?v=wDO3QZq9Zww
 											// it's sometimes because embedding isn't allowed: https://www.youtube.com/embed/vFaeDdEb44A
 											// sometimes fails with: playabilityStatus { status: UNPLAYABLE, reason: Video+unavailable }: https://www.youtube.com/watch?v=GB_S2qFh5lU
-											var formats = json.streamingData.formats; // just to make sure it exists
+											// also fails when video is about to premiere
+											//var formats = json.streamingData.formats; // just to make sure it exists
 											return done(json, 5*60*60); // video URLs expire in 6 hours
 										} catch (e) {
 											console_error(e, resp, splitted[i], data);
