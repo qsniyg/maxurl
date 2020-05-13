@@ -17182,6 +17182,15 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(:\/\/[^/]*\/)filter:[^/]*\/(.*?)(?:\?[^/]*)?$/, "$1$2");
 		}
 
+		if (domain_nowww === "cinemablend.com") {
+			// https://www.cinemablend.com/static/images/icons/quote.svg
+			if (/\/static\/+images\/+icons\/+/.test(src))
+				return {
+					url: origsrc,
+					bad: "mask"
+				};
+		}
+
 		if (((domain_nosub === "abcimg.es" && domain.match(/r[0-9]*\.abcimg\.es/)) ||
 			 // https://resizer.lasprovincias.es/resizer/resizer.php?imagen=http://www.lasprovincias.es/multimedia/201405/30/media/s18.jpg&nuevoalto=480
 			 //   https://static.lasprovincias.es/multimedia/201405/30/media/s18.jpg
@@ -67429,7 +67438,7 @@ var $$IMU_EXPORT$$;
 								btntext = {
 									truncated: caption.replace(caption_regex, "$1..."),
 									full: caption,
-									link_underline: true
+									link_underline: caption_link_page
 								};
 							}
 
