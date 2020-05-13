@@ -10195,13 +10195,21 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (host_domain_nosub === "youtube.com" && options.element) {
-			if (options.element.tagName.toLowerCase() === "svg" && options.element.parentElement.tagName.toLowerCase() === "yt-icon") {
+			if (options.element.tagName.toLowerCase() === "svg") {
+				var parent_tagname = options.element.parentElement.tagName.toLowerCase();
 				// "play_all" is one icon to exclude
-				if (options.element.parentElement.hasAttribute("icon"))
+				if (parent_tagname === "yt-icon" || parent_tagname === "button")
 					return {
 						url: origsrc,
 						bad: "mask"
 					};
+			}
+
+			if (options.element.tagName === "DIV" && options.element.classList.contains("ytp-gradient-bottom")) {
+				return {
+					url: origsrc,
+					bad: "mask"
+				};
 			}
 		}
 
