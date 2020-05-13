@@ -66166,6 +66166,7 @@ var $$IMU_EXPORT$$;
 			popup_update_pos_func = null;
 			popup_client_rect_cache = null;
 			last_popup_client_rect_cache = 0;
+			popup_hold = false;
 
 			stop_processing();
 			stop_waiting();
