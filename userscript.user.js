@@ -65224,7 +65224,7 @@ var $$IMU_EXPORT$$;
 			incomplete_request = false;
 
 		if (processing.head || incomplete_request) {
-			if (incomplete_request && !obj.can_head) {
+			if (incomplete_request && !obj[0].can_head) {
 				method = "GET";
 			} else {
 				method = "HEAD";
