@@ -30142,13 +30142,15 @@ var $$IMU_EXPORT$$;
 						var obj = [];
 
 						var preview_image;
-						if (item.preview.images[0].variants.gif)
-							preview_image = item.preview.images[0].variants.gif.source.url;
-						else
-							preview_image = item.preview.images[0].source.url;
+						if (item.preview && item.preview.images) {
+							if (item.preview.images[0].variants.gif)
+								preview_image = item.preview.images[0].variants.gif.source.url;
+							else
+								preview_image = item.preview.images[0].source.url;
 
-						preview_image = preview_image.replace(/&amp;/g, "&");
-						obj.push(preview_image);
+							preview_image = preview_image.replace(/&amp;/g, "&");
+							obj.push(preview_image);
+						}
 
 						if (item.secure_media && item.secure_media.reddit_video) {
 							var rv = item.secure_media.reddit_video;
