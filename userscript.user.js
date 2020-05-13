@@ -72076,8 +72076,8 @@ var $$IMU_EXPORT$$;
 						}
 					}
 
-					if (!handled) {
-						console_error("No event handler for", response);
+					if (_nir_debug_ && !handled) {
+						console_warn("No event handler for", response);
 					}
 
 					if (response.final) {
