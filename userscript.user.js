@@ -65216,8 +65216,9 @@ var $$IMU_EXPORT$$;
 		var responseType = "blob";
 		var last_objecturl = null;
 
+		var obj_is_probably_video = is_probably_video(obj[0]);
 		var incomplete_request = false;
-		if (processing.incomplete_image || (is_probably_video(obj[0]) && processing.incomplete_video))
+		if (processing.incomplete_image || (obj_is_probably_video && processing.incomplete_video))
 			incomplete_request = true;
 
 		if (obj[0].need_blob)
@@ -65617,7 +65618,20 @@ var $$IMU_EXPORT$$;
 			}
 		};
 
-		var req = do_request({
+		var req = null;
+
+		if (incomplete_request && (!obj[0].bad_if || obj[0].bad_if.length === 0)) {
+			onload_cb({
+				status: 200,
+				responseHeaders: "Content-Type: " + (obj_is_probably_video ? "video/mp4" : "image/jpeg"),
+				readyState: 3,
+				finalUrl: obj[0].url
+			});
+
+			return;
+		}
+
+		req = do_request({
 			method: method,
 			url: url,
 			responseType: responseType,
