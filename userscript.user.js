@@ -61128,6 +61128,14 @@ var $$IMU_EXPORT$$;
 				return new_image(src);
 		};
 
+		var get_nextprev_el = function(el, nextprev) {
+			if (nextprev) {
+				return el.nextElementSibling;
+			} else {
+				return el.previousElementSibling;
+			}
+		};
+
 
 		if (host_domain_nosub === "imgur.com" && host_domain !== "i.imgur.com") {
 			return {
@@ -61630,6 +61638,43 @@ var $$IMU_EXPORT$$;
 					});
 
 					return "waiting";
+				}
+			};
+		}
+
+		if (host_domain_nowww === "gog.com") {
+			// https://www.gog.com/game/virtuaverse
+			return {
+				gallery: function(el, nextprev) {
+					var current = el;
+
+					while ((current = current.parentElement)) {
+						if (current.tagName === "DIV" && current.classList.contains("productcard-thumbnails-slider__slide-item")) {
+							var next_container = get_nextprev_el(current, nextprev);
+							if (!next_container) {
+								if (!current.parentElement.classList.contains("productcard-thumbnails-slider__slide")) {
+									return null;
+								}
+
+								next_container = get_nextprev_el(current.parentElement, nextprev);
+								if (!next_container)
+									return null;
+
+								if (!nextprev) {
+									next_container = next_container.children[next_container.children.length - 1];
+								} else {
+									next_container = next_container.children[0];
+								}
+
+								if (!next_container)
+									return null;
+							}
+
+							return next_container.querySelector("picture, img");
+						}
+					}
+
+					return "default";
 				}
 			};
 		}
