@@ -1826,6 +1826,7 @@ var $$IMU_EXPORT$$;
 		mouseover_close_click_outside: false,
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/126
 		mouseover_allow_partial: is_extension ? "media" : "video",
+		mouseover_partial_avoid_head: true,
 		mouseover_use_blob_over_data: false,
 		mouseover_enable_notallowed: true,
 		// thanks to Rnksts on discord for the idea
@@ -2335,6 +2336,17 @@ var $$IMU_EXPORT$$;
 			},
 			category: "popup",
 			subcategory: "open_behavior"
+		},
+		mouseover_partial_avoid_head: {
+			name: "Avoid HEAD request for partially loaded media",
+			description: "Avoids a likely unnecessary HEAD request before displaying partially loaded images, which further decreases the delay before opening the popup. This option is kept in case of regressions",
+			requires: [
+				{mouseover_allow_partial: "video"},
+				{mouseover_allow_partial: "media"}
+			],
+			category: "popup",
+			subcategory: "open_behavior",
+			advanced: true
 		},
 		mouseover_use_blob_over_data: {
 			name: "Use `blob:` over `data:` URLs",
@@ -65620,7 +65632,7 @@ var $$IMU_EXPORT$$;
 
 		var req = null;
 
-		if (incomplete_request && (!obj[0].bad_if || obj[0].bad_if.length === 0)) {
+		if (settings.mouseover_partial_avoid_head && incomplete_request && (!obj[0].bad_if || obj[0].bad_if.length === 0)) {
 			onload_cb({
 				status: 200,
 				responseHeaders: "Content-Type: " + (obj_is_probably_video ? "video/mp4" : "image/jpeg"),
