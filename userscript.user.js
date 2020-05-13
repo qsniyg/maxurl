@@ -7165,6 +7165,13 @@ var $$IMU_EXPORT$$;
 			};
 		}
 
+		if (host_domain === "assets.hcaptcha.com" || domain === "assets.hcaptcha.com" || domain === "imgs.hcaptcha.com") {
+			return {
+				url: origsrc,
+				bad: "mask"
+			};
+		}
+
 		/*if (false && string_indexof(domain, "img.tenasia.hankyung.com") >= 0) {
 			// http://img.hankyung.com/photo/201612/AA.12967766.4.jpg -- larger than .1.
 			//   http://img.hankyung.com/photo/201612/AA.12967766.1.jpg
