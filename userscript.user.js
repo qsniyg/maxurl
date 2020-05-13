@@ -7157,6 +7157,14 @@ var $$IMU_EXPORT$$;
 
 		// -- start bigimage --
 
+		if ((host_domain_nowww === "google.com" ||
+			 domain_nowww === "google.com") && /^[a-z]+:\/\/[^/]+\/+recaptcha\//.test(options.host_url)) {
+			return {
+				url: origsrc,
+				bad: "mask"
+			};
+		}
+
 		/*if (false && string_indexof(domain, "img.tenasia.hankyung.com") >= 0) {
 			// http://img.hankyung.com/photo/201612/AA.12967766.4.jpg -- larger than .1.
 			//   http://img.hankyung.com/photo/201612/AA.12967766.1.jpg
@@ -30006,7 +30014,9 @@ var $$IMU_EXPORT$$;
 		if (domain_nowww === "redditstatic.com") {
 			// https://www.redditstatic.com/sprite-reddit.[random characters].png
 			// https://www.redditstatic.com/sprite-expando.[random characters].png
-			if (/^[a-z]+:\/\/[^/]+\/+sprite-[^/]+\./.test(src))
+			// https://www.redditstatic.com/sidebar-grippy-show.png
+			// https://www.redditstatic.com/icon_planet.png
+			if (/^[a-z]+:\/\/[^/]+\/+(?:sprite|sidebar|icon)[-_][^/]+\./.test(src))
 				return {
 					url: src,
 					bad: "mask"
