@@ -1910,7 +1910,7 @@ var $$IMU_EXPORT$$;
 		// thanks to LoneFenris: https://github.com/qsniyg/maxurl/issues/25#issuecomment-482880122
 		mouseover_only_valid_links: true,
 		mouseover_allow_canvas_el: false,
-		mouseover_allow_svg_el: true,
+		mouseover_allow_svg_el: false,
 		mouseover_enable_gallery: true,
 		mouseover_gallery_cycle: false,
 		mouseover_gallery_prev_key: ["left"],
