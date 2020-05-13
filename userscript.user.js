@@ -1819,6 +1819,7 @@ var $$IMU_EXPORT$$;
 		mouseover_use_hold_key: true,
 		mouseover_hold_key: ["i"],
 		mouseover_hold_position_center: false,
+		mouseover_hold_close_unhold: false,
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-531549043
 		//mouseover_close_on_leave_el: true,
 		mouseover_close_el_policy: "both",
@@ -2925,6 +2926,15 @@ var $$IMU_EXPORT$$;
 		mouseover_hold_position_center: {
 			name: "Center popup on hold",
 			description: "Centers the popup to the middle of the page when the popup is held",
+			requires: {
+				mouseover_use_hold_key: true
+			},
+			category: "popup",
+			subcategory: "close_behavior"
+		},
+		mouseover_hold_close_unhold: {
+			name: "Close popup when unheld",
+			description: "Closes the popup when the hold key is pressed again, after having previously held the popup",
 			requires: {
 				mouseover_use_hold_key: true
 			},
@@ -30220,6 +30230,7 @@ var $$IMU_EXPORT$$;
 					}
 
 					// classic reddit link title
+					// TODO: exclude text posts (e.g. through !!top.querySelector(".thumbnail").href)
 					if (options.element.classList.contains("title") &&
 						options.element.parentElement.classList.contains("title")) {
 						try {
@@ -71504,7 +71515,7 @@ var $$IMU_EXPORT$$;
 					popup_hold = !popup_hold;
 					clear_resetpopup_timeout();
 
-					if (!popup_hold && can_close_popup[1]) {
+					if (!popup_hold && (can_close_popup[1] || settings.mouseover_hold_close_unhold)) {
 						actions.push({type: "resetpopups"});
 					} else {
 						actions.push({type: "hold"});
