@@ -1873,6 +1873,7 @@ var $$IMU_EXPORT$$;
 		mouseover_ui_rotationbtns: false,
 		mouseover_ui_caption: true,
 		mouseover_ui_wrap_caption: true,
+		mouseover_ui_caption_link_page: true,
 		mouseover_use_remote: false,
 		mouseover_zoom_behavior: "fit",
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-531080061
@@ -2772,6 +2773,15 @@ var $$IMU_EXPORT$$;
 		mouseover_ui_wrap_caption: {
 			name: "Wrap caption text",
 			description: "Wraps the caption if it's too long",
+			requires: {
+				mouseover_ui_caption: true
+			},
+			category: "popup",
+			subcategory: "ui"
+		},
+		mouseover_ui_caption_link_page: {
+			name: "Link original page in caption",
+			description: "Links the original page (if it exists) in the caption",
 			requires: {
 				mouseover_ui_caption: true
 			},
@@ -67087,6 +67097,10 @@ var $$IMU_EXPORT$$;
 						set_important_style(btn, "user-select", "none");
 					}
 
+					if (typeof text === "object" && text.link_underline) {
+						set_important_style(btn, "text-decoration", "underline");
+					}
+
 					if (typeof text === "string") {
 						btn.innerText = text;
 					} else {
@@ -67331,23 +67345,37 @@ var $$IMU_EXPORT$$;
 						topbarel.appendChild(rotaterightbtn);
 					}
 
-					var caption = get_caption(newobj, popup_el);
-					if (caption && settings.mouseover_ui_caption) {
-						var btntext = caption;
+					if (settings.mouseover_ui_caption) {
+						var caption = get_caption(newobj, popup_el);
+						var caption_link_page = settings.mouseover_ui_caption_link_page && newobj.extra && newobj.extra.page;
 
-						if (settings.mouseover_ui_wrap_caption) {
-							// /10 is arbitrary, but seems to work well
-							var chars = parseInt(Math.max(10, Math.min(60, (popup_width - topbarel.clientWidth) / 10)));
-							var caption_regex = new RegExp("^((?:.{" + chars + "}|.{0," + chars + "}[\\r\\n]))[\\s\\S]+?$");
-
-							btntext = {
-								truncated: caption.replace(caption_regex, "$1..."),
-								full: caption
-							};
+						if (!caption && caption_link_page) {
+							caption = "(original page)";
 						}
 
-						var caption_btn = addbtn(btntext, caption, null, true);
-						topbarel.appendChild(caption_btn);
+						if (caption) {
+							var btntext = caption;
+
+							if (settings.mouseover_ui_wrap_caption) {
+								// /10 is arbitrary, but seems to work well
+								var chars = parseInt(Math.max(10, Math.min(60, (popup_width - topbarel.clientWidth) / 10)));
+								var caption_regex = new RegExp("^((?:.{" + chars + "}|.{0," + chars + "}[\\r\\n]))[\\s\\S]+?$");
+
+								btntext = {
+									truncated: caption.replace(caption_regex, "$1..."),
+									full: caption,
+									link_underline: true
+								};
+							}
+
+							var caption_link = null;
+							if (caption_link_page) {
+								caption_link = newobj.extra.page;
+							}
+
+							var caption_btn = addbtn(btntext, caption, caption_link, true);
+							topbarel.appendChild(caption_btn);
+						}
 					}
 
 					var add_lrhover = function(isleft, btnel, action, title) {
@@ -69920,6 +69948,7 @@ var $$IMU_EXPORT$$;
 				};
 
 				try {
+					// FIXME: shouldn't this be ||?
 					var force_page = settings.mouseover_ui_caption && settings.redirect_force_page;
 
 					bigimage_recursive_loop(source.src, {
