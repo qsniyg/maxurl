@@ -6259,7 +6259,7 @@ var $$IMU_EXPORT$$;
 				if (node.video_url && false) {
 					// width/height corresponds to the image, not the video
 					// apparently not anymore?
-					// https://www.instagram.com/p/CAIJRpshE0z/
+					// https://www.instagram.com/p/CAIJRpshE0z/ (thanks to fireattack on discord)
 					width = 0;
 					height = 0;
 				}
@@ -24960,7 +24960,7 @@ var $$IMU_EXPORT$$;
 
 		if ((domain_nosub === "staticflickr.com" ||
 			 (domain_nosub === "flickr.com" && string_indexof(domain, ".static.flickr.com") >= 0)) &&
-			src.match(/\/[0-9]+_[0-9a-f]+(?:_[a-z0-9]*)?\.[a-z]+.*$/) &&
+			(src.match(/\/[0-9]+_[0-9a-f]+(?:_[a-z0-9]*)?\.[a-z]+.*$/) || /\/video\/+[0-9]+\/+[0-9a-f]+\/+/.test(src)) &&
 			options && options.do_request && options.cb) {
 			// https://c1.staticflickr.com/5/4190/34341416210_29e6098b30.jpg
 			//   https://farm5.staticflickr.com/4190/34341416210_9f14cc1576_o.jpg
@@ -24974,6 +24974,8 @@ var $$IMU_EXPORT$$;
 			//   https://farm8.staticflickr.com/7002/6432649813_21c9e80f43_o.jpg
 			// https://live.staticflickr.com/65535/48913730532_83284fa99d_3k.jpg
 			//   https://live.staticflickr.com/65535/48913730532_c31a823c53_o.jpg
+			// https://live.staticflickr.com/31337/49782135648_bff29ec44e_b.jpg
+			//   https://live.staticflickr.com/video/49782135648/bff29ec44e/1080p.mp4
 
 			function do_flickr_request(url, cb) {
 				var headers = {
@@ -25069,18 +25071,33 @@ var $$IMU_EXPORT$$;
 				do_flickr_request(url, cb);
 			}
 
-			function find_image_info(info, src, cb) {
-				var photoid = src.replace(/.*\/([0-9]+)_[^/]*$/, "$1");
-				var photosecret = src.replace(/.*\/[0-9]+_([0-9a-z]+)_[^/]*$/, "$1");
+			var find_photoid_secret_from_url = function(src) {
+				var match = src.match(/\/video\/+([0-9]+)\/+([0-9a-f]+)\/+/);
+				if (!match) {
+					match = src.match(/\/[0-9]+\/+([0-9]+)_([0-9a-z]+)(?:_[^/.]+)?\..*/);
+				}
 
-				var cache_key = "flickr_image_info:" + photoid + "_" + photosecret;
+				if (match) {
+					return {
+						id: match[1],
+						secret: match[2]
+					};
+				} else {
+					return null;
+				}
+			};
+
+			function find_image_info(info, src, cb) {
+				var photoinfo = find_photoid_secret_from_url(src);
+
+				var cache_key = "flickr_image_info:" + photoinfo.id + "_" + photoinfo.secret;
 
 				api_cache.fetch(cache_key, cb, function(done) {
-					var apirequest = "method=flickr.photos.getInfo&photo_id=" + photoid;
+					var apirequest = "method=flickr.photos.getInfo&photo_id=" + photoinfo.id;
 
 					// k in "fake" isn't hex
-					if (photosecret !== "face")
-						apirequest += "&secret=" + photosecret;
+					if (photoinfo.secret !== "face")
+						apirequest += "&secret=" + photoinfo.secret;
 
 					do_flickrapi_request(info, apirequest, function (resp) {
 						try {
@@ -25088,27 +25105,10 @@ var $$IMU_EXPORT$$;
 
 							if (out.stat === "fail") {
 								console_error(out.message);
+								return done(null, false);
 							}
 
-							var url = out.photo.urls.url[0]._content;
-							if (!(/^https?:\/\//.test(url))) {
-								url = null;
-							}
-
-							var caption = out.photo.title._content;
-							if (!caption)
-								caption = null;
-
-							var info = {
-								page: url,
-								caption: caption
-							};
-
-							if (url) {
-								done(info, 6 * 60 * 60);
-							} else {
-								done(info, false);
-							}
+							done(out.photo, 60 * 60);
 						} catch (e) {
 							console_error(e);
 							done(null, false);
@@ -25116,6 +25116,85 @@ var $$IMU_EXPORT$$;
 					});
 				});
 			}
+
+			var get_obj_from_image_info = function(info) {
+				try {
+					var url = info.urls.url[0]._content;
+					if (!(/^https?:\/\//.test(url))) {
+						url = null;
+					}
+
+					var caption = info.title._content;
+					if (!caption)
+						caption = null;
+
+					var info = {
+						page: url,
+						caption: caption
+					};
+
+					return info;
+				} catch (e) {
+					console_error(e, info);
+				}
+
+				return null;
+			};
+
+			var find_video_info = function(info, photoinfo, cb) {
+				// https://live.staticflickr.com/31337/49782135648_4bef5823d8_k.jpg
+				// returns info secret (bff29ec44e, available in the smaller urls) instead of url secret
+				var cache_key = "flickr_video:" + photoinfo.id + "_" + photoinfo.secret;
+				api_cache.fetch(cache_key, cb, function(done) {
+					var apirequest = "method=flickr.video.getStreamInfo&photo_id=" + photoinfo.id;
+
+					// k in "fake" isn't hex
+					if (photoinfo.secret !== "face")
+						apirequest += "&secret=" + photoinfo.secret;
+
+					do_flickrapi_request(info, apirequest, function(resp) {
+						try {
+							var out = JSON_parse(resp.responseText);
+
+							if (out.stat === "fail") {
+								console_error(out.message);
+								return done(null, false);
+							}
+
+							if (out.streams.stream.length > 0) {
+								done(out.streams.stream, 60*60);
+							} else {
+								done(null, false);
+							}
+						} catch (e) {
+							console_error(e);
+							done(null, false);
+						}
+					});
+				});
+			};
+
+			var find_largest_video = function(videodata) {
+				var max = 0;
+				var maxobj = null;
+
+				for (var i = 0; i < videodata.length; i++) {
+					var quality = parseInt(videodata[i].type);
+					if (!quality || isNaN(quality) || !videodata[i]._content)
+						continue;
+
+					if (quality > max) {
+						maxobj = videodata[i];
+						max = quality;
+					}
+				}
+
+				if (maxobj) {
+					return maxobj._content;
+				} else {
+					return null;
+				}
+			};
 
 			newsrc = src.replace(/(:\/\/[^/]*\/(?:[0-9]+\/)?[0-9]+\/[0-9]+_[0-9a-f]+(?:_[a-z])?\.[a-zA-Z0-9]*).*$/, "$1");
 			if (newsrc.match(/\/[0-9]+_[0-9a-f]+_o\.[a-z]+.*$/)) {
@@ -25132,7 +25211,7 @@ var $$IMU_EXPORT$$;
 
 						find_image_info(info, newsrc, function(info) {
 							if (info) {
-								obj.extra = info;
+								obj.extra = get_obj_from_image_info(info);
 							}
 
 							options.cb(obj);
@@ -25148,7 +25227,8 @@ var $$IMU_EXPORT$$;
 			}
 
 			function find_larger_image(info, src, cb) {
-				var photoid = src.replace(/.*\/([0-9]+)_[^/]*$/, "$1");
+				var photoinfo = find_photoid_secret_from_url(src);
+				var photoid = photoinfo.id;
 
 				var cache_key = "flickr_larger:" + photoid;
 				api_cache.fetch(cache_key, cb, function(done) {
@@ -25172,18 +25252,26 @@ var $$IMU_EXPORT$$;
 
 							var largesturl = null;
 							var largestsize = 0;
+							var is_video = false;
 							out.sizes.size.forEach(function (size) {
 								var currentsize = parseInt(size.width) * parseInt(size.height);
 								if (currentsize > largestsize || size.label === "Original") {
 									largestsize = currentsize;
 									largesturl = size.source;
 								}
+
+								if (size.media === "video") {
+									is_video = true;
+								}
 							});
 
 							if (typeof largesturl === "string" && /^https?:\/\//.test(largesturl)) {
 								// Set this to 10 minutes as maybe the person might enable original images later?
 								// FIXME: should we even cache this?
-								done(largesturl, 10 * 60);
+								done({
+									url: largesturl,
+									has_video: is_video
+								}, 10 * 60);
 							} else {
 								done(null, false);
 							}
@@ -25200,26 +25288,50 @@ var $$IMU_EXPORT$$;
 					return options.cb(null);
 				}
 
-				find_larger_image(info, src, function(largesturl) {
-					if (!largesturl) {
+				find_larger_image(info, src, function(largest_data) {
+					if (!largest_data) {
 						return options.cb(null);
 					}
 
-					if (options.force_page) {
+					var baseobj = {};
+					var urls = [largest_data.url];
+
+					var final_cb = function(photoinfo) {
+						if (photoinfo && largest_data.has_video) {
+							find_video_info(info, photoinfo, function(video_data) {
+								if (video_data) {
+									var largest_video_url = find_largest_video(video_data);
+									if (largest_video_url) {
+										if (largest_video_url.replace(/[?#].*/, "") === src.replace(/[?#].*/, "")) {
+											largest_video_url = src;
+										}
+
+										urls.unshift({
+											url: largest_video_url,
+											video: true
+										});
+									}
+								}
+
+								return options.cb(fillobj_urls(urls, baseobj));
+							});
+						} else {
+							return options.cb(fillobj_urls(urls, baseobj));
+						}
+					};
+
+					if (options.force_page || largest_data.has_video) {
 						find_image_info(info, newsrc, function(info) {
 							if (info) {
-								var obj = {
-									url: largesturl,
-									extra: info
+								baseobj = {
+									extra: get_obj_from_image_info(info)
 								};
-
-								options.cb(obj);
-							} else {
-								options.cb(largesturl);
 							}
+
+							final_cb(info);
 						});
 					} else {
-						options.cb(largesturl);
+						final_cb();
 					}
 				});
 			});
