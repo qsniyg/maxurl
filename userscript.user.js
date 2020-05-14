@@ -46055,7 +46055,10 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/rimg\/+[0-9]+-[0-9]+(?:-[a-z])?\/+images\/+/, "/images/");
 		}
 
-		if ((domain_nosub === "popmeh.ru"/* ||
+		if ((domain_nosub === "popmeh.ru" /*||
+			 // https://images11.graziamagazine.ru/upload/img_cache/ea3/ea3cd4e8879caf4ed60b9c8eea771943_cropped_740x740.jpeg
+			 // doesn't work
+			 domain_nosub === "graziamagazine.ru" ||
 			 // https://images11.bazaar.ru/upload/img_cache/b26/b267b8cc2b5cb3e0f3f19440fb59235e_fitted_1110x1800.jpg
 			 // doesn't work
 			 domain_nosub === "bazaar.ru"*/)
@@ -68506,7 +68509,9 @@ var $$IMU_EXPORT$$;
 			//var computed_style = get_computed_style(el);
 			// computed_style is slow, and also might not be what we're looking for, as it might contain the parent's zoom
 			// this is still very slow though (50ms on facebook)
-			if (el.style.zoom) {
+			// https://thisistian.github.io/publication/real-time-subsurface-with-adaptive-sampling/
+			// math tags don't have style
+			if ("style" in el && el.style.zoom) {
 				zoom = parse_zoom(el.style.zoom);
 				if (zoom && zoom !== 1) {
 					if (!orig_rect)
