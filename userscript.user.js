@@ -20759,7 +20759,8 @@ var $$IMU_EXPORT$$;
 			return retobj;
 		}
 
-		if (domain_nosub === "booth.pm" && domain.match(/s[0-9]*\.booth\.pm/)) {
+		if (domain_nosub === "booth.pm" && domain.match(/s[0-9]*\.booth\.pm/) ||
+			domain === "booth.pximg.net") {
 			// https://s2.booth.pm/c/c_300/57b9c1d2-83c2-43ca-8368-8caef0f77ecf/i/740855/ce009797-aea2-4084-a029-a766159fa233.jpg
 			//   https://s2.booth.pm/c/c_300/57b9c1d2-83c2-43ca-8368-8caef0f77ecf/i/740855/ce009797-aea2-4084-a029-a766159fa233.jpg
 			// https://s2.booth.pm/c/f_128/users/4030105/icon_image/2a5bf25c-cf1e-4aaa-a537-483ce0a7cbb7.jpg
@@ -20776,18 +20777,9 @@ var $$IMU_EXPORT$$;
 				.replace(/\/c\/[a-z]_[0-9]+\//, "/")
 				.replace(/_c_[0-9]+x[0-9]+(\.[^/.]*)$/, "$1");
 			if (newsrc !== src) {
-				if (newsrc.match(/\.jpg$/)) {
-					return [newsrc, newsrc.replace(/\.jpg$/, ".JPG")];
-				}
-				return newsrc;
+				return add_full_extensions(newsrc);
 			}
 
-			//return src
-			//    .replace(/\/c\/[^/]*\//, "/")
-			//    .replace(/(\/[^/.]*)_c_[0-9]+x[0-9]+(\.[^/.]*$)/, "$1$2");
-		}
-
-		if (domain === "booth.pximg.net") {
 			// https://booth.pximg.net/c/128x128/users/30729/icon_image/8036b56a-897e-44ec-a192-aa418b9df730_base_resized.jpg
 			//   https://booth.pximg.net/users/30729/icon_image/8036b56a-897e-44ec-a192-aa418b9df730_base_resized.jpg
 			//   https://booth.pximg.net/users/30729/icon_image/8036b56a-897e-44ec-a192-aa418b9df730.jpg
@@ -20799,14 +20791,24 @@ var $$IMU_EXPORT$$;
 			// https://booth.pximg.net/c/150x150/3c32475d-0f04-4157-b5bb-6a56cd5d633f/i/178794/1174b9d1-9f8a-4525-88e8-77c7fc7cf858_base_resized.jpg -- works
 			//   https://booth.pximg.net/3c32475d-0f04-4157-b5bb-6a56cd5d633f/i/178794/1174b9d1-9f8a-4525-88e8-77c7fc7cf858_base_resized.jpg -- works
 			//   https://booth.pximg.net/3c32475d-0f04-4157-b5bb-6a56cd5d633f/i/178794/1174b9d1-9f8a-4525-88e8-77c7fc7cf858.jpg -- 404
+			// https://booth.pximg.net/users/1974112/icon_image/4c012645-7cdf-4023-a26f-15b0434c4006_base_resized.jpg
+			//   https://booth.pximg.net/users/1974112/icon_image/4c012645-7cdf-4023-a26f-15b0434c4006.jpeg
+			// https://s2.booth.pm/bf6ae946-2384-473f-b9bc-3f72205b983e/i/1885913/124255bf-702b-4e62-9824-f1fe363716d8_base_resized.jpg
+			//   https://s2.booth.pm/bf6ae946-2384-473f-b9bc-3f72205b983e/i/1885913/124255bf-702b-4e62-9824-f1fe363716d8.jpeg
 			// thanks to fireattack on github for reporting this issue: https://github.com/qsniyg/maxurl/issues/33
 			// https://booth.pximg.net/30cd84bf-4155-491d-abee-5770b2947e00/i/1236274/0df91fe3-7ce5-41ad-89f8-a6a52625e752_base_resized.jpg
 			//   https://booth.pximg.net/30cd84bf-4155-491d-abee-5770b2947e00/i/1236274/0df91fe3-7ce5-41ad-89f8-a6a52625e752.png
 			newsrc = src.replace(/(:\/\/[^/]*\/)c\/[0-9]+x[0-9]+(?:_[^/]*)?\//, "$1");
 			if (newsrc !== src)
-				return add_extensions(newsrc);
+				return add_full_extensions(newsrc);
 
-			return add_extensions(src.replace(/(\/[-0-9a-f]+)_[^/.]*(\.[^/.]*)$/, "$1$2"));
+			newsrc = src.replace(/(\/[-0-9a-f]+)_[^/.]*(\.[^/.]*)$/, "$1$2");
+			if (newsrc !== src)
+				return add_full_extensions(newsrc);
+
+			//return src
+			//    .replace(/\/c\/[^/]*\//, "/")
+			//    .replace(/(\/[^/.]*)_c_[0-9]+x[0-9]+(\.[^/.]*$)/, "$1$2");
 		}
 
 		if (domain === "cache-graphicslib.viator.com") {
@@ -58867,7 +58869,10 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/t\/+[0-9]+\/+[0-9]+\/+/, "/pictures/");
 		}
 
-		if (domain_nosub === "sat1.de" && /^i[0-9]*-img\./.test(domain)) {
+		if ((domain_nosub === "sat1.de" ||
+			 // https://i3-img.7tv.de/pis/ezone/f763qgELB38wdEB0AB1fHPDQCtTDCJ4UYl_Ic-IXCoYylZ0mXaheiyCf8r-rAPqXoJhS5ccKE64i1AGkynIEgNRrQuckq_X56-sgnbOccDnOaLOVaIhyYo2PvKolkrhNQnKZU83RwqR6LJqcOYhLqGuu6Mi-xE5KM72QX-_DtlvAE9Jsb8bAYu_Z_fJsL2Jei-EvWUG4A44I0DPWJhBXsChlvJE_myRBozjcbFfjndSLFJeNUFXc-kw8FgLXKpkXu2jyHhAosdxuf5mab3j0YIUKAAp6Tw/profile:ezone-teaser620x348
+			 //   https://i3-img.7tv.de/pis/ezone/f763qgELB38wdEB0AB1fHPDQCtTDCJ4UYl_Ic-IXCoYylZ0mXaheiyCf8r-rAPqXoJhS5ccKE64i1AGkynIEgNRrQuckq_X56-sgnbOccDnOaLOVaIhyYo2PvKolkrhNQnKZU83RwqR6LJqcOYhLqGuu6Mi-xE5KM72QX-_DtlvAE9Jsb8bAYu_Z_fJsL2Jei-EvWUG4A44I0DPWJhBXsChlvJE_myRBozjcbFfjndSLFJeNUFXc-kw8FgLXKpkXu2jyHhAosdxuf5mab3j0YIUKAAp6Tw/profile:original?source
+			 domain_nosub === "7tv.de") && /^i[0-9]*-img\./.test(domain)) {
 			// https://i3-img.sat1.de/pis/ezone/abcbqgELB38wdEB-ZftQHfHFPn4ON1n0D0sNVdu9-eaKOYcH3fC38cLwzxDoWvxer7dXH5GTyTa-ePfvcETmautfZZfzflW2ioM/profile:mag-maxwidth-1280?source
 			//   https://i3-img.sat1.de/pis/ezone/abcbqgELB38wdEB-ZftQHfHFPn4ON1n0D0sNVdu9-eaKOYcH3fC38cLwzxDoWvxer7dXH5GTyTa-ePfvcETmautfZZfzflW2ioM/profile:original?source
 			return {
@@ -59663,6 +59668,91 @@ var $$IMU_EXPORT$$;
 			// https://community.amd.com/servlet/JiveServlet/downloadImage/38-2363-167675/800-393/AMD+_GPUOpen_new_homepage_screensshot.jpg
 			//   https://community.amd.com/servlet/JiveServlet/downloadImage/38-2363-167675/AMD+_GPUOpen_new_homepage_screensshot.jpg
 			return src.replace(/(\/servlet\/+JiveServlet\/+downloadImage\/+[-0-9]+\/+)[0-9]+-[0-9]+\/+/, "$1");
+		}
+
+		if (domain === "logincdn.msauth.net") {
+			// https://logincdn.msauth.net/16.000.28595.00/content/images/backgrounds/2_bc3d32a696895f78c19df6c717586a5d.svg
+			if (/\/content\/+images\/+backgrounds\//.test(src)) {
+				return {
+					url: src,
+					bad: "mask"
+				};
+			}
+		}
+
+		if (domain_nosub === "porntube.com" && /^cdn[0-9]*-thumbnails\./.test(domain)) {
+			var query_porntube_video = function(id, cb) {
+				var cache_key = "porntube:" + id;
+
+				api_cache.fetch(cache_key, cb, function(done) {
+					options.do_request({
+						url: "https://token.porntube.com/" + id + "/desktop/2160+1080+720+480+360+240",
+						method: "POST",
+						headers: {
+							Origin: "https://www.porntube.com",
+							Referer: "https://www.porntube.com/",
+							Accept: "application/json, text/plain, */*"
+						},
+						onload: function(resp) {
+							if (resp.status !== 200) {
+								console_error(cache_key, resp);
+								return done(null, false);
+							}
+
+							try {
+								var json = JSON_parse(resp.responseText);
+
+								var max = 0;
+								var maxobj = null;
+
+								for (var key in json) {
+									var num = parseInt(key);
+									if (!num || isNaN(num) || json[key].status !== "success" || !json[key].token)
+										continue;
+
+									if (num > max) {
+										max = num;
+										maxobj = json[key];
+									}
+								}
+
+								return done(maxobj.token, 60*60);
+							} catch (e) {
+								console_error(cache_key, e);
+							}
+
+							return done(null, false);
+						}
+					});
+				});
+			};
+
+			var get_porntube_id = function(url) {
+				match = src.match(/^[a-z]+:\/\/[^/]+\/+((?:[0-9]\/+){1,})(?:[0-9]+x[0-9]+|preview)\/+[0-9]+\./);
+				if (match) {
+					return match[1].replace(/\/+/g, "");
+				}
+
+				return null;
+			};
+
+			id = get_porntube_id(src);
+			if (id && options.do_request && options.cb) {
+				query_porntube_video(id, function(url) {
+					if (!url) {
+						return options.cb(null);
+					}
+
+					return options.cb({
+						url: url,
+						video: true
+					});
+				});
+
+				return {
+					waiting: true
+				};
+			}
 		}
 
 
@@ -71178,6 +71268,10 @@ var $$IMU_EXPORT$$;
 		};
 
 		var do_browser_download = function(imu, filename, cb) {
+			if (_nir_debug_) {
+				console_log("do_browser_download", imu, filename, cb);
+			}
+
 			var a = document.createElement("a");
 
 			a.href = imu.url;
@@ -71243,6 +71337,10 @@ var $$IMU_EXPORT$$;
 					download_obj.name = filename;
 				} else {
 					download_obj.name = "download"; // it can't be blank
+				}
+
+				if (_nir_debug_) {
+					console_log("GM_download", deepcopy(download_obj));
 				}
 
 				GM_download(download_obj);
