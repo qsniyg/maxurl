@@ -1064,7 +1064,9 @@ var $$IMU_EXPORT$$;
 				if (typeof Blob !== "function" || typeof Blob.prototype !== "object")
 					return false;
 
-				if (Blob.name !== "Blob")
+				// doesn't seem to work under Firefox
+				// it does exist after a while, but not while checking
+				if (false && Blob.name !== "Blob")
 					return false;
 
 				if (!("arrayBuffer" in Blob.prototype) ||
