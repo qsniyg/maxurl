@@ -6256,8 +6256,10 @@ var $$IMU_EXPORT$$;
 						return;
 				}
 
-				if (node.video_url) {
+				if (node.video_url && false) {
 					// width/height corresponds to the image, not the video
+					// apparently not anymore?
+					// https://www.instagram.com/p/CAIJRpshE0z/
 					width = 0;
 					height = 0;
 				}
