@@ -3796,7 +3796,9 @@ var $$IMU_EXPORT$$;
 		allow_bruteforce: {
 			name: "Rules using brute-force",
 			description: "Enables rules that require using brute force (through binary search) to find the original image",
-			warning: "This can lead to IP bans!",
+			warning: {
+				"true": "This can lead to rate limiting or IP bans"
+			},
 			category: "rules",
 			example_websites: [
 				"Deezer"
