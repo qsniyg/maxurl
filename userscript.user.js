@@ -12334,6 +12334,8 @@ var $$IMU_EXPORT$$;
 			(domain_nowww === "fitolsam.com" && string_indexof(src, "/uploads/") >= 0) ||
 			// https://sevelina.ru/images/uploads/2015/08/1212121-139x120.gif
 			(domain_nowww === "sevelina.ru" && /\/images\/+uploads\//.test(src)) ||
+			// https://www.cdprojekt.com/en/wp-content/uploads-en/2020/04/cyberpunk2077-running_the_show-rgb-1024x576.jpg
+			(domain_nowww === "cdprojekt.com" && string_indexof(src, "/wp-content/") >= 0) ||
 			// https://static.acgsoso.com/uploads/2020/02/19bd4f091f03c191195d5e626c3190f9-200x300.jpg
 			(domain === "static.acgsoso.com" && string_indexof(src, "/uploads/") >= 0)
 			) {
@@ -19781,7 +19783,7 @@ var $$IMU_EXPORT$$;
 			// https://e-cdns-images.dzcdn.net/images/cover/79bf0fcde7554320d40681e21e043c0a/1800x1800-000000-100-0-0.jpg
 			// if the size is larger than the image, it will scale back down to 1200 on the largest side
 
-			newsrc = src.replace(/(\/[0-9a-f]{32}\/+[0-9]+x[0-9]+)(?:(?:-[0-9]+){4})?(\.[^/.]+)(?:[?#].*)?$/, "$1-000000-100-0-0.jpg");
+			newsrc = src.replace(/(\/[0-9a-f]{32}\/+[0-9]+x[0-9]+)(?:(?:-[0-9]+){4})?(\.[^/.]+)(?:[?#].*)?$/, "$1-000000-100-0-0$2");
 			if (newsrc !== src)
 				return newsrc;
 
@@ -19804,8 +19806,13 @@ var $$IMU_EXPORT$$;
 					var firstrun = true;
 					var currentsrc = src;
 
+					// thanks to Rnksts on discord for the idea to use a quality of 1 while testing
+					var get_deezer_image_url = function(origsrc, newsize, newquality) {
+						return origsrc.replace(/(\/[0-9a-f]{32}\/+)[0-9]+x[0-9]+(?:(?:-[0-9]+){4})?(\.[^/.]+)(?:[?#].*)?$/, "$1" + newsize + "-000000-" + newquality + "-0-0$2");
+					}
+
 					if (current_x <= 1200) {
-						currentsrc = currentsrc.replace(/(\/[0-9a-f]{32}\/+)[0-9]+x[0-9]+/, "$11201x0");
+						currentsrc = get_deezer_image_url(currentsrc, "1201x0", 1);
 						firstrun = false;
 					}
 
@@ -19863,10 +19870,10 @@ var $$IMU_EXPORT$$;
 
 							//console_log(mingood, minbad, current_x);
 
-							var goodsrc = currentsrc.replace(/(\/[0-9a-f]{32}\/+)[0-9]+x[0-9]+/, "$1" + mingood + "x0");
+							var goodsrc = get_deezer_image_url(currentsrc, mingood + "x0", 100);
 
 							if (current_x !== mingood) {
-								var newsrc = currentsrc.replace(/(\/[0-9a-f]{32}\/+)[0-9]+x[0-9]+/, "$1" + current_x + "x0");
+								var newsrc = get_deezer_image_url(currentsrc, current_x + "x0", 1);
 								if (newsrc !== currentsrc) {
 									currentsrc = newsrc;
 
