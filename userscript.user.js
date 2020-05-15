@@ -60200,6 +60200,22 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain === "thumb-media.vgm.io") {
+			// https://thumb-media.vgm.io/albums/21/98912/98912-1589538670.png -- 100x100
+			//   https://media.vgm.io/albums/21/98912/98912-1589538670.png -- 571x572
+			return src.replace(/:\/\/thumb-(media\.[^/]+\/+)/, "://$1");
+		}
+
+		if (domain_nowww === "vgmdb.net") {
+			// https://vgmdb.net/db/img/vgmdbnav.png?0909
+			if (/\/db\/+img\/+vgmdbnav\./.test(src)) {
+				return {
+					url: src,
+					bad: "mask"
+				};
+			}
+		}
+
 
 
 
@@ -68691,7 +68707,8 @@ var $$IMU_EXPORT$$;
 				mouse_in_image_yet = false;
 				delay_handle_triggering = false;
 
-				if (popup_trigger_reason !== "mouse") {
+				// causes issues with "Don't close until mouse leaves" if the mouse doesn't move
+				if (false && popup_trigger_reason !== "mouse") {
 					can_close_popup[1] = true;
 				}
 
