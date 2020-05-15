@@ -817,7 +817,8 @@ var $$IMU_EXPORT$$;
 			smaller: false,
 			possibly_different: false,
 			possibly_broken: false,
-			possibly_upscaled: false
+			possibly_upscaled: false,
+			bruteforce: false
 		}
 	};
 
@@ -1958,6 +1959,7 @@ var $$IMU_EXPORT$$;
 		allow_thirdparty: false,
 		allow_apicalls: true,
 		allow_thirdparty_libs: is_userscript ? false : true,
+		allow_bruteforce: false,
 		//browser_cookies: true,
 		deviantart_prefer_size: false,
 		imgur_source: true,
@@ -3791,6 +3793,16 @@ var $$IMU_EXPORT$$;
 				real_api_cache.clear();
 			}
 		},
+		allow_bruteforce: {
+			name: "Rules using brute-force",
+			description: "Enables rules that require using brute force (through binary search) to find the original image",
+			warning: "This can lead to IP bans!",
+			category: "rules",
+			example_websites: [
+				"Deezer"
+			],
+			onupdate: update_rule_setting
+		},
 		browser_cookies: {
 			name: "Use browser cookies",
 			description: "Uses the browser's cookies for API calls in order to access otherwise private data",
@@ -4069,7 +4081,8 @@ var $$IMU_EXPORT$$;
 		allow_smaller: "smaller",
 		allow_possibly_different: "possibly_different",
 		allow_possibly_broken: "possibly_broken",
-		allow_possibly_upscaled: "possibly_upscaled"
+		allow_possibly_upscaled: "possibly_upscaled",
+		allow_bruteforce: "bruteforce"
 	};
 
 	var categories = {
@@ -5335,6 +5348,43 @@ var $$IMU_EXPORT$$;
 			.replace(/^\s+/, "")
 			.replace(/\s+$/, "");
 	};
+
+	var get_image_size = function(url, cb) {
+		var image = new Image(url);
+		var timeout = null;
+
+		var finalcb = function(e) {
+			image.onload = null;
+			image.onerror = null;
+			clearTimeout(timeout);
+
+			var x, y;
+			if (!image.naturalHeight || !image.naturalWidth) {
+				x = null;
+				y = null;
+			}
+
+			x = parseInt(image.naturalHeight);
+			y = parseInt(image.naturalWidth);
+
+			image.src = ""; // stop loading
+
+			cb(x, y);
+		};
+
+		image.onload = image.onerror = finalcb;
+		timeout = setInterval(function() {
+			if (image.naturalHeight && image.naturalWidth) {
+				finalcb();
+			}
+		}, 10);
+
+		image.src = url;
+	};
+
+	if (is_node || typeof "Image" === "undefined") {
+		get_image_size = null;
+	}
 
 	var common_functions = {};
 	common_functions.fetch_imgur_webpage = function(do_request, api_cache, headers, url, cb) {
@@ -19692,17 +19742,159 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/hdwallpapers\/+[^/]+)_[0-9]+_[0-9]+_[0-9]+_[0-9a-f]{2}(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		}
 
-		if (false && (string_indexof(domain, "images.deezer.com") >= 0 ||
-					  string_indexof(domain, "images.dzcdn.net") >= 0)) {
+		if (string_indexof(domain, "images.deezer.com") >= 0 || string_indexof(domain, "images.dzcdn.net") >= 0) {
 			// not reliable, can upscale
 			// http://e-cdn-images.deezer.com/images/artist/7d026f08b34a098e270a663839d8ae8e/200x200-000000-80-0-0.jpg
 			//   http://e-cdn-images.deezer.com/images/artist/7d026f08b34a098e270a663839d8ae8e/99999999999x99999999999-000000-100-0-0.jpg -- 1200x1200, unscaled
 			//   http://e-cdn-images.deezer.com/images/artist/7d026f08b34a098e270a663839d8ae8e/99999999999x0-000000-100-0-0.jpg -- 800x1200, unscaled, more height, less detail
+			//   http://e-cdn-images.deezer.com/images/artist/7d026f08b34a098e270a663839d8ae8e/99999999999x0.jpg -- 800x1200
+			//   http://e-cdn-images.deezer.com/images/artist/7d026f08b34a098e270a663839d8ae8e/2700x0-000000-100-0-0.jpg -- 1800x2700
 			// https://e-cdns-images.dzcdn.net/images/artist/aca61b38901f884503e9cb0fbf0b93b4/200x200-000000-80-0-0.jpg
 			//   https://e-cdns-images.dzcdn.net/images/artist/aca61b38901f884503e9cb0fbf0b93b4/99999999999x0-000000-100-0-0.jpg -- 801x1200, definitely scaled
 			// http://e-cdn-images.deezer.com/images/artist/076659ecd6d7dc5042df677a6a24ea9a/500x500.jpg
 			// https://e-cdns-images.dzcdn.net/images/artist/7d026f08b34a098e270a663839d8ae8e/999x999.jpg
-			return src.replace(/\/[0-9]+x[0-9]+-[0-9]+-[0-9]+-[0-9]+-[0-9]+(\.[^/.]*)$/, "/99999999999x0-000000-100-0-0$1");
+			// https://e-cdns-images.dzcdn.net/images/cover/f8bdca63c2dce11670b9c0b54684ddcb/4000x0.jpg -- 4000x4000
+			// https://e-cdns-images.dzcdn.net/images/artist/d1f9aa9e4271ab737b0c2b456ba6e53e/1200x0.jpg -- 1207x1200
+			// max appears to be 4000
+
+			// thanks to Rnksts on discord for the urls below:
+			// https://e-cdns-images.dzcdn.net/images/cover/36fe13382bfca28a5edcb36e6b7ee68c/264x264-000000-80-0-0.jpg
+			// https://e-cdns-images.dzcdn.net/images/cover/36fe13382bfca28a5edcb36e6b7ee68c/2000x2000-000000-80-0-0.jpg -- 1200x1200, lower quality
+			// https://e-cdns-images.dzcdn.net/images/cover/36fe13382bfca28a5edcb36e6b7ee68c/2000x2000-000000-100-0-0.jpg -- unauthorized
+			// https://e-cdns-images.dzcdn.net/images/cover/36fe13382bfca28a5edcb36e6b7ee68c/1921x1921-000000-100-0-0.jpg -- unauthorized
+			// https://e-cdns-images.dzcdn.net/images/cover/36fe13382bfca28a5edcb36e6b7ee68c/1920x1920-000000-100-0-0.jpg -- 1200x1200
+			// https://e-cdns-images.dzcdn.net/images/cover/36fe13382bfca28a5edcb36e6b7ee68c/1401x1401-000000-100-0-0.jpg -- 1200x1200
+			// https://e-cdns-images.dzcdn.net/images/cover/36fe13382bfca28a5edcb36e6b7ee68c/1400x1400-000000-100-0-0.jpg -- 1400x1400
+
+			// https://e-cdns-images.dzcdn.net/images/cover/5cd71ce9813d9c7559d9c4eda624eb76/2000x2000-000000-80-0-0.jpg -- 2000x2000, lower quality
+			// https://e-cdns-images.dzcdn.net/images/cover/5cd71ce9813d9c7559d9c4eda624eb76/2000x2000-000000-80-0-0.jpg -- unauthorized
+			// https://e-cdns-images.dzcdn.net/images/cover/5cd71ce9813d9c7559d9c4eda624eb76/1920x1920-000000-100-0-0.jpg -- 1920x1920
+			//   https://e-cdns-images.dzcdn.net/images/cover/5cd71ce9813d9c7559d9c4eda624eb76/4000x0-000000-100-0-0.jpg -- 4000x4000
+
+			// https://e-cdns-images.dzcdn.net/images/cover/79bf0fcde7554320d40681e21e043c0a/264x264-000000-80-0-0.jpg
+			// https://e-cdns-images.dzcdn.net/images/cover/79bf0fcde7554320d40681e21e043c0a/2000x2000-000000-80-0-0.jpg -- unauthorized
+			// https://e-cdns-images.dzcdn.net/images/cover/79bf0fcde7554320d40681e21e043c0a/2000x2000-000000-100-0-0.jpg -- unauthorized
+			// https://e-cdns-images.dzcdn.net/images/cover/79bf0fcde7554320d40681e21e043c0a/1921x1921-000000-100-0-0.jpg -- unauthorized
+			// https://e-cdns-images.dzcdn.net/images/cover/79bf0fcde7554320d40681e21e043c0a/1920x1920-000000-100-0-0.jpg -- 1920x1920
+			// https://e-cdns-images.dzcdn.net/images/cover/79bf0fcde7554320d40681e21e043c0a/1800x1800-000000-100-0-0.jpg
+			// if the size is larger than the image, it will scale back down to 1200 on the largest side
+
+			newsrc = src.replace(/(\/[0-9a-f]{32}\/+[0-9]+x[0-9]+)(?:(?:-[0-9]+){4})?(\.[^/.]+)(?:[?#].*)?$/, "$1-000000-100-0-0.jpg");
+			if (newsrc !== src)
+				return newsrc;
+
+			match = src.match(/\/([0-9a-f]{32})\/+([0-9]+)x([0-9]+)/);
+			if (match) {
+				id = match[1]
+				var current_x = parseInt(match[2]);
+				var current_y = parseInt(match[3]);
+
+				if (current_x < 1200 && current_y < 1200 && !problem_excluded("possibly_upscaled")) {
+					return {
+						url: src.replace(/(\/[0-9a-f]{32}\/+)[0-9]+x[0-9]+/, "$11200x0"),
+						problems: {
+							possibly_upscaled: true
+						}
+					};
+				} else if (get_image_size && options.cb && !problem_excluded("bruteforce")) {
+					var mingood = 1200;
+					var minbad = null;
+					var firstrun = true;
+					var currentsrc = src;
+
+					if (current_x <= 1200) {
+						currentsrc = currentsrc.replace(/(\/[0-9a-f]{32}\/+)[0-9]+x[0-9]+/, "$11201x0");
+						firstrun = false;
+					}
+
+					var cache_key = "deezer:" + id;
+
+					var fetch_image_size = function(src, cb) {
+						api_cache.fetch("deezer:" + src, cb, function(done) {
+							get_image_size(src, function(x, y) {
+								done([x, y], 60*60);
+							});
+						});
+					};
+
+					var try_new_image = function() {
+						fetch_image_size(currentsrc, function(xy) {
+							if (window.do_stop)
+								return;
+
+							var x = xy[0];
+							var y = xy[1];
+
+							//console_log(currentsrc, x, y);
+
+							if (!x || !y) {
+								if (!minbad || current_x < minbad) {
+									minbad = current_x;
+								}
+							} else {
+								var largest = Math.max(x, y);
+								if (x === 1200 || y === 1200) {
+									if (!minbad || current_x < minbad) {
+										minbad = current_x;
+									}
+								} else {
+									if (current_x > mingood) {
+										mingood = current_x;
+									}
+								}
+							}
+
+							if (!minbad) {
+								if (firstrun && current_x < 4000) {
+									current_x++;
+								} else if (current_x < 1920) {
+									current_x = 1921;
+								} else if (current_x < 4000) {
+									current_x *= 2;
+
+									if (current_x < 4000)
+										current_x = 4000;
+								}
+							} else if ((minbad - mingood) > 1) {
+								current_x = (mingood + Math.floor((minbad - mingood) / 2)) | 0;
+							}
+
+							//console_log(mingood, minbad, current_x);
+
+							var goodsrc = currentsrc.replace(/(\/[0-9a-f]{32}\/+)[0-9]+x[0-9]+/, "$1" + mingood + "x0");
+
+							if (current_x !== mingood) {
+								var newsrc = currentsrc.replace(/(\/[0-9a-f]{32}\/+)[0-9]+x[0-9]+/, "$1" + current_x + "x0");
+								if (newsrc !== currentsrc) {
+									currentsrc = newsrc;
+
+									firstrun = false;
+									try_new_image();
+								} else {
+									options.cb(goodsrc);
+								}
+							} else {
+								options.cb(goodsrc);
+							}
+						});
+					};
+
+					if (get_image_size && options.cb) {
+						try_new_image();
+						return {
+							waiting: true
+						};
+					}
+				} else if (current_x < 1920 && current_y < 1920) {
+					return {
+						url: src.replace(/(\/[0-9a-f]{32}\/+)[0-9]+x[0-9]+/, "$11920x0"),
+						problems: {
+							possibly_upscaled: true
+						}
+					};
+				}
+			}
+			//return src.replace(/\/[0-9]+x[0-9]+-[0-9]+-[0-9]+-[0-9]+-[0-9]+(\.[^/.]*)$/, "/99999999999x0-000000-100-0-0$1");
 		}
 
 		if (domain === "cdn.wallpaper.com") {
@@ -60369,6 +60561,9 @@ var $$IMU_EXPORT$$;
 			// https://resizing.flixster.com/IaXbRF4gIPh9jireK_4VCPNfdKc=/300x0/v2/https://flxt.tmsimg.com/assets/p17871471_p_v10_aa.jpg
 			//   https://flxt.tmsimg.com/assets/p17871471_p_v10_aa.jpg
 			(domain === "resizing.flixster.com" && /\/https?:\/\//.test(src)) ||
+			// https://thumborcdn.acast.com/d8tlFFORdMw5lXAJgMLoGb-5Ypo=/3000x3000/https://mediacdn.acast.com/assets/8f9c2622-921e-4f71-bcad-043c26db5c97/cover-image-k8tyecor-gpww.jpg
+			//   https://mediacdn.acast.com/assets/8f9c2622-921e-4f71-bcad-043c26db5c97/cover-image-k8tyecor-gpww.jpg
+			domain === "thumborcdn.acast.com" ||
 			src.match(/:\/\/[^/]*\/thumbor\/[^/]*=\//) ||
 			// https://www.orlandosentinel.com/resizer/tREpzmUU7LJX1cbkAN-unm7wL0Y=/fit-in/800x600/top/filters:fill(black)/arc-anglerfish-arc2-prod-tronc.s3.amazonaws.com/public/XC6HBG2I4VHTJGGCOYVPLBGVSM.jpg
 			//   http://arc-anglerfish-arc2-prod-tronc.s3.amazonaws.com/public/XC6HBG2I4VHTJGGCOYVPLBGVSM.jpg
