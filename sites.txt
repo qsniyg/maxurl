@@ -113,6 +113,7 @@
 7e7781e2f767494a7128-d0458b7f69ca26f2871554faadb4939e.ssl.cf5.rackcdn.com
 7f9c61237bd6e732e57e-5fa18836a2ae6b5e7c49abcc89b20237.ssl.cf1.rackcdn.com
 7sur7.be
+7tv.de
 7xka0y.com1.z0.glb.clouddn.com
 8583b52b4a309671f69d-b436b898353c7dc300b5887446a26466.ssl.cf1.rackcdn.com
 8muses.com
@@ -387,6 +388,7 @@ assets.forward.com.s3.amazonaws.com
 assets.forwardcdn.com
 assets.gcstatic.com
 assets.goodhousekeeping.co.uk
+assets.hcaptcha.com
 assets.heart.co.uk
 assets.infowars.com
 assets.infowarsmedia.com
@@ -1024,6 +1026,7 @@ cdn.slushe.com
 cdn.smutie.com
 cdn.snsimg.carview.co.jp
 cdn.spacetelescope.org
+cdn.spinrilla.com
 cdn.staticaly.com
 cdn.stereo.vn
 cdn.store-assets.com
@@ -1193,6 +1196,7 @@ cilacila.com
 cimg.tvgcdn.net
 cine-vox.com
 cinefish.bg
+cinemablend.com
 cinemacafe.net
 cinemapalace.ch
 cinemapassion.com
@@ -1257,6 +1261,7 @@ comicsblog.fr
 comiczone.co.kr
 comingsoon.net
 community-content-assets.minecraft.net
+community.amd.com
 compote.slate.com
 condecdn.net
 condenast-media.gcdn.co
@@ -1272,6 +1277,7 @@ content.eroo.pl
 content.erooups.com
 content.gulte.com
 content.hardtunes.com
+content.ngv.vic.gov.au
 content.pornpics.com
 content.pornstarplatinum.com
 content.ray-web.jp
@@ -1493,6 +1499,7 @@ ddimg.cn
 dealsanimg.com
 debate.com.mx
 decoder.ru
+deezer.com
 defenceforumindia.com
 definebabe.com
 delas.pt
@@ -1518,9 +1525,11 @@ destacamos.com
 destakjornal.com.br
 destructoid.com
 desu-usergeneratedcontent.xyz
+dev.invidio.us
 dev.magzter.com
 deviantart.net
 devote.se
+devtube.dev-wiki.de
 dg31sz3gwrwan.cloudfront.net
 dhgywazgeek0d.cloudfront.net
 dhresource.com
@@ -1554,6 +1563,7 @@ dimu.org
 dimwhp0w2rs83.cloudfront.net
 dingo.care2.com
 dingyue.ws.126.net
+diode.zone
 directgardening.com
 discordapp.com
 discordapp.net
@@ -1662,6 +1672,7 @@ dynamic.zacdn.com
 dynamicmedia.zuza.com
 dynasty-scans.com
 dyncdn2.com
+dzcdn.net
 dzt1km7tv28ex.cloudfront.net
 e-hentai.org
 e-monsite.com
@@ -2060,6 +2071,7 @@ from-ua.com
 frostsnow.com
 fs.kinomania.ru
 ft.com
+ftcdn.net
 ftopx.com
 ftvmagic.com
 fuckin.news.s3.amazonaws.com
@@ -2260,10 +2272,12 @@ grandmagazine.gr
 grazia.fr
 grazia.it
 grazia.rs
+graziamagazine.ru
 greasyfork.org
 greateasternwallgallery.com
 greatfon.com
 greatsong.net
+greatview.video
 green-img-news-dwango-jp-prod.s3.amazonaws.com
 greenpostkorea.co.kr
 gretschpages.com
@@ -2616,6 +2630,7 @@ ikoreadaily.co.kr
 ilemonde.com
 ilikewallpaper.net
 illustrationwest.org
+ilmessaggero.it
 iloveorganic.co.kr
 iloveporn.xxx
 ilyo.co.kr
@@ -2868,6 +2883,7 @@ images.interactives.dk
 images.jg-cdn.com
 images.jkn.co.kr
 images.jovempanfm.uol.com.br
+images.jpost.com
 images.khoeplus24h.vn
 images.kienthuc.net.vn
 images.kpopstarz.com
@@ -3394,6 +3410,7 @@ imgs.cc
 imgs.ckcdn.com
 imgs.diercun.com
 imgs.firmenwagen.co.at
+imgs.hcaptcha.com
 imgs.ngaotruyen.com
 imgs.ototoy.jp
 imgs.plurk.com
@@ -3775,6 +3792,7 @@ letradamusica.net
 lfi-online.de
 libe.com
 liberoquotidiano.it
+libre.tube
 licdn.com
 lichnosti.net
 life.tert.am
@@ -3817,6 +3835,7 @@ lizhi.fm
 llnwd.net
 lmstube.com
 lockerdome.com
+logincdn.msauth.net
 lohas.nicoseiga.jp
 loki.zhibotie.net
 lolcow.farm
@@ -4168,6 +4187,7 @@ mensxp.com
 menu.mt.co.kr
 meowg.com
 mercari-images.global.ssl.fastly.net
+mercifans.com
 merokhabar.net
 metager.org
 metapix.net
@@ -4502,6 +4522,7 @@ nmbimg.fastmirror.org
 nnconnect.com
 nnimgt-a.akamaihd.net
 nnmassets.cf
+nocensoring.net
 nocookie.net
 nocutnews.co.kr
 nodud.com
@@ -4606,6 +4627,7 @@ onsugar.com
 onthemoveworld.com
 op.gg
 opa.kg
+open.tube
 openaccess-cdn.clevelandart.org
 oplace.ru
 opt.toiimg.com
@@ -4676,13 +4698,18 @@ pdfkul.com
 pedestrian.tv
 peency.com
 peer.hostux.social
+peertube.co.uk
 peertube.cpy.re
+peertube.datagueule.tv
 peertube.debian.social
 peertube.gegeweb.eu
+peertube.iriseden.eu
 peertube.linuxrocks.online
 peertube.live
 peertube.nocturlab.fr
 peertube.parleur.net
+peertube.su
+peertube.umeahackerspace.se
 peertube.video
 pegitboard.com
 pensorosa.com
@@ -4814,6 +4841,7 @@ pictoa.com
 picture-cdn.wheretoget.it
 picture-post.com
 pictures.4ever.eu
+pictures.abebooks.com
 pictures.icpress.cn
 pictures.ozy.com
 pictures.topspeed.com
@@ -4880,6 +4908,7 @@ pophaircuts.com
 popmeh.ru
 popnable.com
 popo8.com
+popoholic.com
 popsugar-assets.com
 popwindshop.com
 poringa.net
@@ -4908,6 +4937,8 @@ pornstars.me
 pornstarsadvice.com
 porntb.com
 porntrex.com
+porntube.com
+porntube.ddns.net
 pornxxxbest.xyz
 pornzee.com
 portal-images.azureedge.net
@@ -4975,11 +5006,13 @@ pstatic.net
 pstatp.com
 pstimaj.com
 psu.com
+pt.kircheneuenburg.de
 pt.pube.tk
 ptcdn.info
 ptclassic.com
 public.flashingjungle.com
 public.muragon.com
+public.onlyfans.com
 publicbroadcasting.net
 publicfeet.com
 publika.az
@@ -5301,6 +5334,7 @@ schokkendnieuws.nl
 scienceleadership.org
 scifi-forum.de
 scirra.net
+scitech.video
 scontent.ccdn.cloud
 scoreuniverse.com
 scotsman.com
@@ -6044,6 +6078,7 @@ thumbor-static.factorymedia.com
 thumbor-titelmediaug.netdna-ssl.com
 thumbor.f3.cool
 thumbor.forbes.com
+thumborcdn.acast.com
 thumbs-prod.si-cdn.com
 thumbs.booru.org
 thumbs.dfs.ivi.ru
@@ -6135,7 +6170,10 @@ tsn.ca
 tsundora.com
 tt.inf.ua
 ttgames.com
+tube.aquilenet.fr
+tube.govital.net
 tube.midov.pl
+tube.rebellion.global
 tubepornclassic.com
 tubetubetube.com
 tuchong.pstatp.com
@@ -6279,6 +6317,10 @@ vibbidi.net
 vice.com
 vid.alarabiya.net
 vidble.com
+vidcommons.org
+video.antopie.org
+video.colibris-outilslibres.org
+video.lewd.host
 video.like.video
 video.newsserve.net
 video.soloteengirls.net
@@ -6291,6 +6333,7 @@ viewbug.com
 viewers.heraldcorp.com
 viewsofia.com
 vigbo.com
+viid.ga
 vijaykarnataka.com
 vijesti.ba
 viki.io
@@ -6610,6 +6653,7 @@ youx.xxx
 ypncdn.com
 ysbnow.com
 yscore.co.kr
+yt.is.nota.live
 ytimg.com
 ytimg.googleusercontent.com
 yufit.co.kr

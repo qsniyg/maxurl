@@ -1,3 +1,30 @@
+0.13.4
+
+New features:
+
+ * Key to reset video speed to normal (bound to backspace by default, thanks to Rnksts on discord for the idea)
+ * Option to toggle displaying not-allowed cursor if the image can't be loaded (enabled by default, thanks to Rnksts on discord for the idea)
+ * Popup default zoom option to have the image fill the screen even if it's smaller ("Fill screen", thanks to whiterabb1t- on reddit for the idea)
+ * Option to link the original page for the image in the caption (enabled by default)
+ * Option to avoid HEAD requests when loading an incomplete image (enabled by default)
+ * Option to close popup when unheld (disabled by default)
+ * Support for ~40 new websites (using ~15 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including Flickr, Instagram, Onlyfans, Reddit, Youtube)
+ * Performance for incomplete requests is vastly improved
+ * It will no longer popup for Recaptcha and hCaptcha (thanks for whiterabb1t- on reddit for reporting)
+ * Support for SVG tags is now disabled by default, due to the overwhelming majority of them being for icons
+
+Bugfixes:
+
+ * Popup will not begin centered when closed without holding and "Center popup on hold" is enabled
+ * Fix crash under Firefox (thanks to burchtree721 on reddit for reporting)
+ * Fix crash when the page has a math tag
+
+---
+
 0.13.3
 
 New features:
