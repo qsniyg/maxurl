@@ -66707,10 +66707,16 @@ var $$IMU_EXPORT$$;
 		};
 
 		var removemask_timer = null;
-		function resetpopups(from_remote) {
+		function resetpopups(options) {
 			if (_nir_debug_) {
-				console_log("resetpopups(", from_remote, ")");
+				console_log("resetpopups(", options, ")");
 			}
+
+			if (!options) {
+				options = {};
+			}
+
+			var from_remote = !!options.from_remote;
 
 			popups.forEach(function (popup) {
 				if (settings.mouseover_fade_time > 0) {
@@ -66768,6 +66774,10 @@ var $$IMU_EXPORT$$;
 			popup_client_rect_cache = null;
 			last_popup_client_rect_cache = 0;
 			popup_hold = false;
+
+			if (!options.new_popup) {
+				can_close_popup = [false, false];
+			}
 
 			stop_processing();
 			stop_waiting();
@@ -68702,7 +68712,9 @@ var $$IMU_EXPORT$$;
 				popups.push(outerdiv);
 				popupshown = true;
 				popup_obj = newobj;
-				can_close_popup = [false, false];
+				//can_close_popup = [false, false];
+				// don't set [0] to false, in case "Keep popup open until" == Any/All and keys are released before popup opens
+				can_close_popup[1] = false;
 				popup_hold = false;
 				mouse_in_image_yet = false;
 				delay_handle_triggering = false;
@@ -70494,7 +70506,9 @@ var $$IMU_EXPORT$$;
 				}
 
 				//console_log(source_imu);
-				resetpopups();
+				resetpopups({
+					new_popup: true
+				});
 
 				if (automatic) {
 					popup_el_automatic = true;
@@ -72303,7 +72317,7 @@ var $$IMU_EXPORT$$;
 				condition = !trigger_partially_complete(event);
 			}
 
-			if (condition && close_behavior !== "esc" && popup_trigger_reason === "keyboard" && popups_active) {
+			if (condition && close_behavior !== "esc" && popup_trigger_reason === "keyboard" && (popups_active || delay_handle_triggering)) {
 				controlPressed = false;
 
 				if (!settings.mouseover_close_need_mouseout || can_close_popup[1]) {
@@ -72540,7 +72554,9 @@ var $$IMU_EXPORT$$;
 					respond(triggered);
 				});
 			} else if (message.type === "resetpopups") {
-				resetpopups(true);
+				resetpopups({
+					from_remote: true
+				});
 			} else if (message.type === "mousemove") {
 				// todo: offset iframe location
 				mousemove_cb(message.data);
