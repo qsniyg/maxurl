@@ -19744,7 +19744,7 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/hdwallpapers\/+[^/]+)_[0-9]+_[0-9]+_[0-9]+_[0-9a-f]{2}(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		}
 
-		if (string_indexof(domain, "images.deezer.com") >= 0 || string_indexof(domain, "images.dzcdn.net") >= 0) {
+		if ((domain_nosub === "deezer.com" || domain_nosub === "dzcdn.net") && /images\./.test(domain)) {
 			// not reliable, can upscale
 			// http://e-cdn-images.deezer.com/images/artist/7d026f08b34a098e270a663839d8ae8e/200x200-000000-80-0-0.jpg
 			//   http://e-cdn-images.deezer.com/images/artist/7d026f08b34a098e270a663839d8ae8e/99999999999x99999999999-000000-100-0-0.jpg -- 1200x1200, unscaled
