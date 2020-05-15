@@ -4334,6 +4334,24 @@ var $$IMU_EXPORT$$;
 	var lib_cache = new Cache();
 	var cookie_cache = new Cache();
 
+	var real_api_query = function(api_cache, do_request, key, request, cb, process) {
+		api_cache.fetch(key, cb, function(done) {
+			if (!("method" in request))
+				request.method = "GET";
+
+			request.onload = function(resp) {
+				if (resp.status !== 200) {
+					console_error(key, resp);
+					return done(null, false);
+				}
+
+				return process(done, resp, key);
+			};
+
+			do_request(request);
+		});
+	};
+
 	var urlparse = function(x) {
 		return new native_URL(x);
 	};
@@ -7138,6 +7156,10 @@ var $$IMU_EXPORT$$;
 		if (options.use_api_cache === false) {
 			api_cache = new Cache();
 		}
+
+		var api_query = function(key, request, cb, process) {
+			return real_api_query(api_cache, options.do_request, key, request, cb, process);
+		};
 
 		var newsrc, i, id, size, origsize, regex, match;
 
@@ -38568,7 +38590,7 @@ var $$IMU_EXPORT$$;
 				var full = src.replace(/:\/\/[^/]*\/[^/]*\//, "://previews.123rf.com/images/");
 				var small = src.replace(/:\/\/[^/]*\/[^/]*\//, "://us.123rf.com/450wm/");
 
-				return [
+				var urls = [
 					{
 						url: full,
 						problems: {
@@ -38580,8 +38602,48 @@ var $$IMU_EXPORT$$;
 						problems: {
 							smaller: true
 						}
-					}
+					},
+					src
 				];
+
+				var baseobj = {};
+
+				var match = src.match(/\/([0-9]+)-[^/]+\.[^/.]+(?:[?#].*)?$/);
+				if (match) {
+					id = match[1];
+					baseobj.extra = {
+						page: "https://www.123rf.com/photo_" + id + ".html"
+					};
+
+					if (options.do_request && options.cb) {
+						api_query("123rf:" + id, {
+							url: "https://www.123rf.com/photo_" + id + ".html",
+						}, function(data) {
+							if (data) {
+								baseobj = data;
+							}
+
+							return options.cb(fillobj_urls(urls, baseobj));
+						}, function(done, resp, cache_key) {
+							var match = resp.responseText.match(/dataLayer\.push\({[\s\S]+?["']product_name["']:\s*["'](.*?)["'],/);
+							baseobj.extra.page = resp.finalUrl;
+
+							if (match) {
+								baseobj.extra.caption = match[1];
+							} else {
+								console_warn(cache_key, "Unable to find match in", resp);
+							}
+
+							done(baseobj, 24*60*60);
+						});
+
+						return {
+							waiting: true
+						};
+					}
+				}
+
+				return fillobj_urls(urls, baseobj);
 			}
 		}
 
