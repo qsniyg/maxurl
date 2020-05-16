@@ -1945,6 +1945,7 @@ var $$IMU_EXPORT$$;
 		mouseover_zoom_out_key: [["-"]],
 		mouseover_zoom_full_key: ["1"],
 		mouseover_zoom_fit_key: ["2"],
+		mouseover_fullscreen_key: ["f"],
 		mouseover_apply_blacklist: true,
 		apply_blacklist_host: false,
 		mouseover_matching_media_types: false,
@@ -3502,6 +3503,16 @@ var $$IMU_EXPORT$$;
 			description: "Sets the image to either be at a 100% zoom, or to fit the screen, whichever is smaller",
 			requires: {
 				mouseover_open_behavior: "popup"
+			},
+			type: "keysequence",
+			category: "popup",
+			subcategory: "behavior"
+		},
+		mouseover_fullscreen_key: {
+			name: "Fullscreen key",
+			description: "Enters fullscreen mode for the image/video in the popup",
+			reequires: {
+				mouseover_open_behavior: "popup",
 			},
 			type: "keysequence",
 			category: "popup",
@@ -67328,9 +67339,7 @@ var $$IMU_EXPORT$$;
 				img.style.setProperty("display", "block", "important");
 
 				// https://github.com/qsniyg/maxurl/issues/330
-				if (is_video) {
-					set_important_style(img, "object-fit", "contain");
-				}
+				set_important_style(img, "object-fit", "contain");
 
 				var img_naturalHeight, img_naturalWidth;
 
@@ -71856,13 +71865,24 @@ var $$IMU_EXPORT$$;
 			};
 		})();
 
-		var get_popup_media_url = function() {
+		var get_popup_media_el = function() {
 			var imgels = popups[0].getElementsByTagName("video");
 			if (imgels.length === 0)
 				imgels = popups[0].getElementsByTagName("img");
-			var url = imgels[0].src;
 
-			return url;
+			if (imgels.length > 0)
+				return imgels[0];
+			else
+				return null;
+		};
+
+		var get_popup_media_url = function() {
+			var el = get_popup_media_el();
+
+			if (el)
+				return el.src;
+			else
+				return null;
 		};
 
 		var do_browser_download = function(imu, filename, cb) {
@@ -72018,6 +72038,18 @@ var $$IMU_EXPORT$$;
 			}
 		};
 
+		var is_fullscreen = function() {
+			return document.fullscreenElement !== null || document.fullscreen;
+		};
+
+		var popup_fullscreen = function() {
+			if (!is_fullscreen()) {
+				get_popup_media_el().requestFullscreen();
+			} else {
+				document.exitFullscreen();
+			}
+		};
+
 		var popup_active = function() {
 			return popups_active && popup_el;
 		};
@@ -72101,6 +72133,9 @@ var $$IMU_EXPORT$$;
 					return true;
 				case "zoom_fit":
 					popup_zoom_func("fitfull", 1);
+					return true;
+				case "fullscreen":
+					popup_fullscreen();
 					return true;
 				case "seek_left":
 					seek_popup_video(true);
@@ -72321,6 +72356,10 @@ var $$IMU_EXPORT$$;
 					{
 						key: settings.mouseover_zoom_fit_key,
 						action: {type: "zoom_fit"}
+					},
+					{
+						key: settings.mouseover_fullscreen_key,
+						action: {type: "fullscreen"}
 					},
 					{
 						key: settings.mouseover_video_seek_left_key,
