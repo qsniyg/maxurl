@@ -9942,6 +9942,9 @@ var $$IMU_EXPORT$$;
 			// https://i2.nicepik.com/files/576/225/299/alberta-aspen-autumn-canada-thumb.jpg
 			//   https://i2.nicepik.com/files/576/225/299/alberta-aspen-autumn-canada.jpg
 			(domain_nosub === "nicepik.com" && domain.match(/^i[0-9]*\./) && string_indexof(src, "/files/") >= 0) ||
+			// https://c7.uihere.com/files/103/496/983/bella-thorne-autumn-falls-actor-fashion-is-my-kryptonite-photography-actor-thumb.jpg
+			//   https://c7.uihere.com/files/103/496/983/bella-thorne-autumn-falls-actor-fashion-is-my-kryptonite-photography-actor.jpg
+			(domain_nosub === "uihere.com" && domain.match(/^c[0-9]*\./) && string_indexof(src, "/files/") >= 0) ||
 			// https://babylonbee.com/img/articles/article-4919-1-thumb.jpg
 			//   https://babylonbee.com/img/articles/article-4919-1.jpg
 			(domain_nowww === "babylonbee.com" && /\/img\/+articles\//.test(src)) ||
@@ -59883,6 +59886,8 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "libre.tube" ||
 			// https://vidcommons.org/static/thumbnails/50c7204f-fd8e-4f5f-8535-b8a0020c05e3.jpg
 			domain_nowww === "vidcommons.org" ||
+			// https://spacepub.space/static/thumbnails/691f2bc1-d4bf-4051-a035-035388a059b0.jpg
+			domain_nowww === "spacepub.space" ||
 			// https://peertube.cpy.re/static/thumbnails/da2b08d4-a242-4170-b32a-4ec8cbdca701.jpg
 			//   https://peertube.cpy.re/static/webseed/da2b08d4-a242-4170-b32a-4ec8cbdca701-1044.mp4
 			domain === "peertube.cpy.re") {
@@ -59917,10 +59922,18 @@ var $$IMU_EXPORT$$;
 								var maxobj_size = 0;
 								var maxobj = null;
 
-								for (var i = 0; i < json.files.length; i++) {
-									if (json.files[i].size > maxobj_size) {
-										maxobj_size = json.files[i].size;
-										maxobj = json.files[i];
+								var files = json.files;
+
+								if (files.length === 0) {
+									if ("streamingPlaylists" in json && json.streamingPlaylists.length > 0 && json.streamingPlaylists[0].files.length > 0) {
+										files = json.streamingPlaylists[0].files;
+									}
+								}
+
+								for (var i = 0; i < files.length; i++) {
+									if (files[i].size > maxobj_size) {
+										maxobj_size = files[i].size;
+										maxobj = files[i];
 									}
 								}
 
@@ -59929,6 +59942,8 @@ var $$IMU_EXPORT$$;
 
 									// doesn't seem to have an expiry date
 									return done(obj, 6*60*60);
+								} else {
+									console_warn(cache_key, "Unable to find files from", json);
 								}
 							} catch (e) {
 								console_log(cache_key, e, resp);
@@ -60278,6 +60293,12 @@ var $$IMU_EXPORT$$;
 					bad: "mask"
 				};
 			}
+		}
+
+		if (domain_nowww === "old-games.ru") {
+			// https://www.old-games.ru/games/pc/magic_carpet/thumbs/thumb_magiccarpet_03.gif
+			//   https://www.old-games.ru/games/pc/magic_carpet/screenshots/magiccarpet_03.gif
+			return src.replace(/\/thumbs\/+thumb_/, "/screenshots/");
 		}
 
 
