@@ -3509,8 +3509,8 @@ var $$IMU_EXPORT$$;
 			subcategory: "behavior"
 		},
 		mouseover_fullscreen_key: {
-			name: "Fullscreen key",
-			description: "Enters fullscreen mode for the image/video in the popup",
+			name: "Toggle fullscreen key",
+			description: "Toggles fullscreen mode for the image/video in the popup",
 			reequires: {
 				mouseover_open_behavior: "popup",
 			},
