@@ -30439,6 +30439,17 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain_nosub === "redditmedia.com" && options.element) {
+			if (options.element.tagName === "DIV") {
+				if (options.element.classList.contains("arrow")) {
+					return {
+						url: origsrc,
+						bad: "mask"
+					};
+				}
+			}
+		}
+
 		if ((domain_nosub === "redditmedia.com" ||
 			 domain_nosub === "redd.it" ||
 			 (domain_nosub === "reddit.com" && /:\/\/[^/]+\/+[ru]\/+/.test(src)) ||
@@ -63045,7 +63056,15 @@ var $$IMU_EXPORT$$;
 						}
 					}
 
+					if (_nir_debug_) {
+						console_log("bigimage_recursive_loop: about to query", deepcopy(obj));
+					}
+
 					query(obj, function (newurl, newobj, data) {
+						if (_nir_debug_) {
+							console_log("bigimage_recursive_loop (query):", deepcopy(newurl), deepcopy(newobj), data);
+						}
+
 						if (!newurl) {
 							return options.cb(null, data);
 						}
@@ -63069,8 +63088,9 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if (_nir_debug_)
-			console_log("bigimage_recursive_loop", url);
+		if (_nir_debug_) {
+			console_log("bigimage_recursive_loop", url, deepcopy(options), query, deepcopy(fine_urls), deepcopy(tried_urls), deepcopy(oldobj));
+		}
 
 		return bigimage_recursive(url, newoptions);
 	};
@@ -70654,6 +70674,8 @@ var $$IMU_EXPORT$$;
 
 						var newobj = deepcopy(obj);
 
+						// TODO: find a way to fix bad images popping up because they weren't caught in addImage (because of do_request: null)
+						// brl returns [] if they're bad, but the bad sources are added right back here
 						if (!settings.mouseover_exclude_sameimage) {
 							if (source.src && obj_indexOf(newobj, source.src) < 0)
 								newobj.push(fillobj(source.src)[0]);
