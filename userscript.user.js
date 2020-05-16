@@ -30475,6 +30475,11 @@ var $$IMU_EXPORT$$;
 								try {
 									var json = JSON_parse(result.responseText);
 									var item = json.data.children[0].data;
+
+									if (_nir_debug_) {
+										console_log(id, item);
+									}
+
 									done(item, 60*60);
 								} catch (e) {
 									console_log(id);
@@ -30510,7 +30515,12 @@ var $$IMU_EXPORT$$;
 						var obj = [];
 
 						var preview_image;
-						if (item.preview && item.preview.images) {
+
+						var is_selfpost = item.domain && /^self\./.test(item.domain) && item.url && /^[a-z]+:\/\/[^/]*reddit\.com\/r\//.test(item.url);
+
+						// https://www.reddit.com/r/firefox/comments/97dqq1/is_there_a_functional_bookmarks_manager_extension/
+						// item.preview.enabled is false also on link/image posts, don't use that
+						if (!is_selfpost && item.preview && item.preview.images) {
 							if (item.preview.images[0].variants.gif)
 								preview_image = item.preview.images[0].variants.gif.source.url;
 							else
