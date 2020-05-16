@@ -1909,6 +1909,8 @@ var $$IMU_EXPORT$$;
 		mouseover_download: false,
 		mouseover_hide_cursor: false,
 		mouseover_hide_cursor_after: 0,
+		// thanks to thewhiterabbit- on reddit for the idea: https://github.com/qsniyg/maxurl/issues/331
+		mouseover_clickthrough: false,
 		// also thanks to 07416: https://github.com/qsniyg/maxurl/issues/25
 		mouseover_links: false,
 		// thanks to LoneFenris: https://github.com/qsniyg/maxurl/issues/25#issuecomment-482880122
@@ -3324,6 +3326,15 @@ var $$IMU_EXPORT$$;
 			number_unit: "ms",
 			number_int: true,
 			number_min: 0,
+			category: "popup",
+			subcategory: "behavior"
+		},
+		mouseover_clickthrough: {
+			name: "Disable pointer events",
+			description: "Enabling this option will allow you to click on links underneath the popup",
+			requires: {
+				mouseover_open_behavior: "popup"
+			},
 			category: "popup",
 			subcategory: "behavior"
 		},
@@ -68273,6 +68284,20 @@ var $$IMU_EXPORT$$;
 
 				a.style.setProperty("vertical-align", "bottom", "important");
 				a.style.setProperty("display", "block", "important");
+
+				var update_popup_clickthrough = function(clickthrough) {
+					var value = "none";
+					if (!clickthrough)
+						value = "initial";
+
+					set_important_style(a, "pointer-events", value);
+					set_important_style(img, "pointer-events", value);
+					set_important_style(div, "pointer-events", value);
+					set_important_style(outerdiv, "pointer-events", value);
+				};
+
+				if (settings.mouseover_clickthrough)
+					update_popup_clickthrough(true);
 
 				if (add_link) {
 					a.href = url;
