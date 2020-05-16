@@ -2196,7 +2196,7 @@ var $$IMU_EXPORT$$;
 		},
 		mouseover: {
 			name: "Enable mouseover popup",
-			description: "Show a popup with the larger image when you mouseover an image with the trigger key held",
+			description: "Show a popup with the larger image when you mouseover an image with the trigger key held (if applicable)",
 			category: "popup"
 		},
 		mouseover_open_behavior: {
