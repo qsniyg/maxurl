@@ -66793,7 +66793,10 @@ var $$IMU_EXPORT$$;
 			popup_update_pos_func = null;
 			popup_client_rect_cache = null;
 			last_popup_client_rect_cache = 0;
-			popup_hold = false;
+
+			if (!options.automatic) {
+				popup_hold = false;
+			}
 
 			if (!options.new_popup) {
 				can_close_popup = [false, false];
@@ -68735,7 +68738,11 @@ var $$IMU_EXPORT$$;
 				//can_close_popup = [false, false];
 				// don't set [0] to false, in case "Keep popup open until" == Any/All and keys are released before popup opens
 				can_close_popup[1] = false;
-				popup_hold = false;
+
+				// don't unhold if in gallery
+				if (!popup_el_automatic)
+					popup_hold = false;
+
 				mouse_in_image_yet = false;
 				delay_handle_triggering = false;
 
@@ -70534,7 +70541,8 @@ var $$IMU_EXPORT$$;
 
 				//console_log(source_imu);
 				resetpopups({
-					new_popup: true
+					new_popup: true,
+					automatic: automatic
 				});
 
 				if (automatic) {
