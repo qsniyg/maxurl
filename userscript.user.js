@@ -1823,6 +1823,7 @@ var $$IMU_EXPORT$$;
 		mouseover_hold_key: ["i"],
 		mouseover_hold_position_center: false,
 		mouseover_hold_close_unhold: false,
+		mouseover_hold_unclickthrough: true,
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-531549043
 		//mouseover_close_on_leave_el: true,
 		mouseover_close_el_policy: "both",
@@ -2949,10 +2950,20 @@ var $$IMU_EXPORT$$;
 			subcategory: "close_behavior"
 		},
 		mouseover_hold_close_unhold: {
-			name: "Close popup when unheld",
+			name: "Close popup on unhold",
 			description: "Closes the popup when the hold key is pressed again, after having previously held the popup",
 			requires: {
 				mouseover_use_hold_key: true
+			},
+			category: "popup",
+			subcategory: "close_behavior"
+		},
+		mouseover_hold_unclickthrough: {
+			name: "Enable pointer events on hold",
+			description: "Enables previously disabled pointer events when the popup is held",
+			requires: {
+				mouseover_use_hold_key: true,
+				mouseover_clickthrough: true
 			},
 			category: "popup",
 			subcategory: "close_behavior"
@@ -66496,6 +66507,7 @@ var $$IMU_EXPORT$$;
 		var popup_trigger_reason = null;
 		var can_close_popup = [false, false];
 		var popup_hold = false;
+		var popup_hold_func = nullfunc;
 		var popup_zoom_func = nullfunc;
 		var popup_wheel_cb = null;
 		var popup_update_pos_func = null;
@@ -66819,6 +66831,7 @@ var $$IMU_EXPORT$$;
 			popup_el_remote = false;
 			popup_el_is_video = false;
 			popup_orig_url = null;
+			popup_hold_func = nullfunc;
 			popup_zoom_func = nullfunc;
 			popup_wheel_cb = null;
 			popup_update_pos_func = null;
@@ -68298,6 +68311,20 @@ var $$IMU_EXPORT$$;
 
 				if (settings.mouseover_clickthrough)
 					update_popup_clickthrough(true);
+
+				popup_hold_func = function() {
+					if (popup_hold) {
+						if (settings.mouseover_hold_unclickthrough) {
+							update_popup_clickthrough(false);
+						}
+					} else {
+						if (settings.mouseover_clickthrough) {
+							update_popup_clickthrough(true);
+						} else {
+							update_popup_clickthrough(false);
+						}
+					}
+				};
 
 				if (add_link) {
 					a.href = url;
@@ -72009,6 +72036,8 @@ var $$IMU_EXPORT$$;
 				popups[0].style.top = newpos[1] + "px";
 				popups[0].style.left = newpos[0] + "px";
 			}
+
+			popup_hold_func();
 		};
 
 		var action_handler = function(action) {
