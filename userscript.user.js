@@ -67327,6 +67327,11 @@ var $$IMU_EXPORT$$;
 				img.style.verticalAlign = "bottom";
 				img.style.setProperty("display", "block", "important");
 
+				// https://github.com/qsniyg/maxurl/issues/330
+				if (is_video) {
+					set_important_style(img, "object-fit", "contain");
+				}
+
 				var img_naturalHeight, img_naturalWidth;
 
 				img_naturalWidth = el_dimensions[0];
