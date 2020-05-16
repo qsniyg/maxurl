@@ -22233,6 +22233,9 @@ var $$IMU_EXPORT$$;
 			// http://img.sexbeautygirl.com/2015/091002/thumb_300_0_201110301600096500.jpg
 			//   http://img.sexbeautygirl.com/2015/091002/201110301600096500.jpg
 			domain === "img.sexbeautygirl.com" ||
+			// http://himg2.huanqiu.com/attachment2010/2017/0628/09/26/thumb_100_65_20170628092609389.jpg
+			//   http://himg2.huanqiu.com/attachment2010/2017/0628/09/26/20170628092609389.jpg
+			(domain_nosub === "huanqiu.com" && /^himg[0-9]*\./.test(domain)) ||
 			// https://file.acgxmanga.com/h/2019102609/thumb_250_0_jozjk4m5b13.jpg
 			//   https://file.acgxmanga.com/h/2019102609/jozjk4m5b13.jpg
 			domain === "file.acgxmanga.com") {
@@ -30654,19 +30657,35 @@ var $$IMU_EXPORT$$;
 						}
 					}
 
+					var classic_element = null;
+					if (doubleparent.tagName === "DIV" && doubleparent.classList.contains("media-preview-content") &&
+						options.element.parentElement.tagName === "A") {
+						var current = doubleparent;
+						while ((current = current.parentElement)) {
+							if (current.hasAttribute("data-fullname")) {
+								classic_element = current;
+								break;
+							}
+						}
+					}
+
 					// classic reddit link title
 					// TODO: exclude text posts (e.g. through !!top.querySelector(".thumbnail").href)
 					if (options.element.classList.contains("title") &&
 						options.element.parentElement.classList.contains("title")) {
 						try {
 							var current = doubleparent.parentElement.parentElement;
-							var id = current.getAttribute("data-fullname");
-							if (id) {
-								newsrc = request(id);
-								if (newsrc)
-									return newsrc;
-							}
+							classic_element = current;
 						} catch (e) {}
+					}
+
+					if (classic_element) {
+						var id = current.getAttribute("data-fullname");
+						if (id) {
+							newsrc = request(id);
+							if (newsrc)
+								return newsrc;
+						}
 					}
 
 					if (doubleparent.parentElement) {
@@ -39726,6 +39745,14 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "i.mdel.net") {
+			// https://i.mdel.net/i/db/play-160.png
+			// https://i.mdel.net/i/db/transBack.png
+			if (/\/i\/+db\/+(?:play-[0-9]+|transBack)\./.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
+
 			// https://i.mdel.net/i/db/2017/1/635631/635631-500w.jpg
 			//   https://i.mdel.net/i/db/2017/1/635631/635631-orig.jpg -- 883x1080
 			// https://i.mdel.net/i/db/2016/10/599643/599643-80tn.jpg
