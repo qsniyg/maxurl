@@ -1842,6 +1842,7 @@ var $$IMU_EXPORT$$;
 		mouseover_exclude_backgroundimages: false,
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-530760246
 		mouseover_exclude_page_bg: true,
+		mouseover_exclude_imagemaps: true,
 		// thanks to Jin on discord for the idea
 		mouseover_only_links: false,
 		mouseover_exclude_sameimage: false,
@@ -2469,6 +2470,15 @@ var $$IMU_EXPORT$$;
 		mouseover_only_links: {
 			name: "Only popup for linked images",
 			description: "Don't pop up if the image isn't hyperlinked",
+			requires: {
+				mouseover: true
+			},
+			category: "popup",
+			subcategory: "open_behavior"
+		},
+		mouseover_exclude_imagemaps: {
+			name: "Exclude image maps",
+			description: "Don't pop up if the image is an image map (image with multiple clickable areas)",
 			requires: {
 				mouseover: true
 			},
@@ -69304,6 +69314,13 @@ var $$IMU_EXPORT$$;
 				if (el_tagname === "SOURCE" || el_tagname === "IMG" || el_tagname === "VIDEO" ||
 					(settings.mouseover_allow_canvas_el && el_tagname === "CANVAS") ||
 					(settings.mouseover_allow_svg_el && el_tagname === "SVG")) {
+
+					if (settings.mouseover_exclude_imagemaps && el_tagname === "IMG" && el.hasAttribute("usemap")) {
+						var mapel = document.querySelector("map[name=\"" + el.getAttribute("usemap").replace(/^#/, "") + "\"]");
+						if (mapel)
+							return;
+					}
+
 					var el_src = get_img_src(el);
 
 					if (el_src) {
