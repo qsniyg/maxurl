@@ -63244,7 +63244,7 @@ var $$IMU_EXPORT$$;
 		div.style.position = "absolute";
 		div.style.top = "0px";
 		div.style.left = "0px";
-		div.style.padding = ".4em .8em";
+		div.style.padding = ".3em .8em";
 		div.style.boxShadow = "0px 0px 20px rgba(0,0,0,.6)";
 		div.style.margin = ".8em";
 		div.style.lineHeight = "1.5em";
