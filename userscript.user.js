@@ -1798,6 +1798,7 @@ var $$IMU_EXPORT$$;
 		redirect_force_page: false,
 		// thanks to fireattack on discord for the idea: https://github.com/qsniyg/maxurl/issues/324
 		redirect_infobox_url: false,
+		redirect_infobox_timeout: 7,
 		print_imu_obj: false,
 		redirect_disable_for_responseheader: false,
 		mouseover: true,
@@ -2186,6 +2187,15 @@ var $$IMU_EXPORT$$;
 		redirect_infobox_url: {
 			name: "Show image URL in tooltip",
 			description: "If the popup is needed to display the larger version of an image, display the image link in the tooltip",
+			category: "redirection",
+			userscript_only: true // tooltip isn't shown in the extension
+		},
+		redirect_infobox_timeout: {
+			name: "Hide tooltip after",
+			description: "Hides the tooltip after the specified number of seconds (or when the mouse clicks on it). Set to 0 to never hide automatically",
+			type: "number",
+			number_min: 0,
+			number_unit: "seconds",
 			category: "redirection",
 			userscript_only: true // tooltip isn't shown in the extension
 		},
@@ -63263,12 +63273,12 @@ var $$IMU_EXPORT$$;
 		document.body.appendChild(div);
 
 		var do_timeout = function() {
-			if (infobox_timer)
+			if (infobox_timer || settings.redirect_infobox_timeout <= 0)
 				return;
 
 			infobox_timer = setTimeout(function() {
 				document.body.removeChild(div);
-			}, 7000);
+			}, settings.redirect_infobox_timeout * 1000);
 		};
 
 		if (document.hasFocus()) {
