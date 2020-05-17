@@ -1796,6 +1796,8 @@ var $$IMU_EXPORT$$;
 		redirect_history: true,
 		canhead_get: true,
 		redirect_force_page: false,
+		// thanks to fireattack on discord for the idea: https://github.com/qsniyg/maxurl/issues/324
+		redirect_infobox_url: false,
 		print_imu_obj: false,
 		redirect_disable_for_responseheader: false,
 		mouseover: true,
@@ -2180,6 +2182,12 @@ var $$IMU_EXPORT$$;
 				"..."
 			],
 			category: "rules"
+		},
+		redirect_infobox_url: {
+			name: "Show image URL in tooltip",
+			description: "If the popup is needed to display the larger version of an image, display the image link in the tooltip",
+			category: "redirection",
+			userscript_only: true // tooltip isn't shown in the extension
 		},
 		print_imu_obj: {
 			name: "Log IMU object to console",
@@ -63239,6 +63247,7 @@ var $$IMU_EXPORT$$;
 		div.style.padding = ".4em .8em";
 		div.style.boxShadow = "0px 0px 20px rgba(0,0,0,.6)";
 		div.style.margin = ".8em";
+		div.style.lineHeight = "1.5em";
 
 		div.innerHTML = text;
 
@@ -63349,6 +63358,11 @@ var $$IMU_EXPORT$$;
 		return get_trigger_key_texts(list).join(" / ");
 	};
 
+	var truncate_with_ellipsis = function(text, maxchars) {
+		var truncate_regex = new RegExp("^((?:.{" + maxchars + "}|.{0," + maxchars + "}[\\r\\n]))[\\s\\S]+?$");
+		return text.replace(truncate_regex, "$1…");
+	};
+
 	var check_image = function(obj, err_cb, ok_cb) {
 		if (_nir_debug_)
 			console_log("check_image", deepcopy(obj));
@@ -63417,7 +63431,18 @@ var $$IMU_EXPORT$$;
 				imagetab_ok_override = true;
 
 				var trigger_options_link = "<a style='color:blue; font-weight:bold' href='" + options_page + "' target='_blank' rel='noreferrer'>" + mouseover + "</a>";
-				show_image_infobox(_("Mouseover popup (%%1) is needed to display the original version", trigger_options_link) + " (" + _(reason) + ")");
+				var infobox_text = _("Mouseover popup (%%1) is needed to display the original version", trigger_options_link) + " (" + _(reason) + ")";
+
+				if (settings.redirect_infobox_url) {
+					var link = document.createElement("a");
+					link.href = url;
+					link.innerText = truncate_with_ellipsis(url, 80);
+					link.setAttribute("target", "_blank");
+
+					infobox_text += "<br />" + link.outerHTML;
+				}
+
+				show_image_infobox(infobox_text);
 			};
 
 			if (!_nir_debug_ || !_nir_debug_.no_request) {
@@ -68126,10 +68151,9 @@ var $$IMU_EXPORT$$;
 							if (settings.mouseover_ui_wrap_caption) {
 								// /10 is arbitrary, but seems to work well
 								var chars = parseInt(Math.max(10, Math.min(60, (popup_width - topbarel.clientWidth) / 10)));
-								var caption_regex = new RegExp("^((?:.{" + chars + "}|.{0," + chars + "}[\\r\\n]))[\\s\\S]+?$");
 
 								btntext = {
-									truncated: caption.replace(caption_regex, "$1..."),
+									truncated: truncate_with_ellipsis(caption, chars),
 									full: caption,
 									link_underline: caption_link_page
 								};
