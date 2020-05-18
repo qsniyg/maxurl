@@ -56886,6 +56886,19 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/screenshots\/+)thumbs\/+thumb([0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1screen$2");
 		}
 
+		if (domain === "store.feralinteractive.com") {
+			// https://store.feralinteractive.com/images/screenshots/threekingdomstwdlcaworldbetrayed/thumbs/screen2.jpg
+			//   https://store.feralinteractive.com/images/screenshots/threekingdomstwdlcaworldbetrayed/screen2.jpg
+			newsrc = src.replace(/(\/screenshots\/+[^/]+\/+)thumbs\/+(screen[0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+			if (newsrc !== src)
+				return newsrc;
+
+			// https://store.feralinteractive.com/images/icons/180/riseofthetombraider.png
+			//   https://store.feralinteractive.com/images/icons/360/riseofthetombraider.png
+			// https://store.feralinteractive.com/images/icons/360/shadowofthetombraider.png -- upscaled
+			return src.replace(/(\/images\/+icons\/+)(?:100|140|165|180)\/+/, "$1360/");
+		}
+
 		if (domain_nosub === "nsimg.net") {
 			// https://m1.nsimg.net/biopic/160x120/50404138
 			//   https://m1.nsimg.net/biopic/original4x3/50404138
@@ -60344,6 +60357,12 @@ var $$IMU_EXPORT$$;
 			// https://www.old-games.ru/games/pc/magic_carpet/thumbs/thumb_magiccarpet_03.gif
 			//   https://www.old-games.ru/games/pc/magic_carpet/screenshots/magiccarpet_03.gif
 			return src.replace(/\/thumbs\/+thumb_/, "/screenshots/");
+		}
+
+		if (domain === "cdn-prod.scalefast.com") {
+			// https://cdn-prod.scalefast.com/resize/222x-/public/assets/user/123622/image/f9783754f715c56ef40cd6aeb12c0d1f.jpg
+			//   https://cdn-prod.scalefast.com/public/assets/user/123622/image/f9783754f715c56ef40cd6aeb12c0d1f.jpg
+			return src.replace(/(:\/\/[^/]+\/+)resize\/+[-0-9]+x[-0-9]+\/+(public\/+)/, "$1$2");
 		}
 
 
@@ -70176,7 +70195,7 @@ var $$IMU_EXPORT$$;
 
 			// https://www.gog.com/game/shadow_warrior_complete
 			// "Buy series" gallery
-			if (el.tagName === "SOURCE" && el.parentElement && array_indexof(["PICTURE", "VIDEO"], el.parentElement.tagName) >= 0) {
+			if (array_indexof(["SOURCE", "IMG"], el.tagName) >= 0 && el.parentElement && array_indexof(["PICTURE", "VIDEO"], el.parentElement.tagName) >= 0) {
 				el = el.parentElement;
 			}
 
