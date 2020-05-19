@@ -13368,9 +13368,21 @@ var $$IMU_EXPORT$$;
 			// http://vignette3.wikia.nocookie.net/kpop/images/d/da/Gugudan_debut_group_photo.png/revision/latest?cb=20160617225600 -- 200x133
 			//   https://vignette3.wikia.nocookie.net/kpop/images/d/da/Gugudan_debut_group_photo.png/revision/latest?cb=20160617225600 -- 1620x1080
 			//return src.replace(/(\/images\/[^/]*\/.*)\/scale-to-width-down\/[0-9]*/, "$1");
-			return src
+			obj = {
+				url: src
+			};
+			match = src.match(/\/images\/+[0-9a-f]\/+[0-9a-f]{2}\/+([^/]+)\/+revision\//);
+			if (match) {
+				obj.filename = match[1];
+			}
+
+			newsrc = src
 				.replace(/\/revision\/([^/]*)\/.*?(\?.*)?$/, "/revision/$1/$2")
 				.replace(/^http:\/\//, "https://");
+			if (newsrc !== src)
+				obj.url = newsrc;
+
+			return obj;
 		}
 
 		if (domain === "static.asiachan.com") {
