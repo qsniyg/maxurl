@@ -13385,6 +13385,12 @@ var $$IMU_EXPORT$$;
 			return obj;
 		}
 
+		if (host_domain_nosub === "fandom.com" && options.element) {
+			if (src.length < 10 && options.element.hasAttribute("data-src")) {
+				return options.element.getAttribute("data-src");
+			}
+		}
+
 		if (domain === "static.asiachan.com") {
 			// https://static.asiachan.com/600/38/06/50338.jpg
 			//   https://static.asiachan.com/full/38/06/50338.jpg
@@ -69388,22 +69394,28 @@ var $$IMU_EXPORT$$;
 					cb: null
 				});
 
+				var newurl = src;
+
 				for (var i = 0; i < result.length; i++) {
-					if (result[i].url !== src)
+					if (result[i].url !== src) {
+						if (newurl === src)
+							newurl = result[i].url;
+
 						continue;
+					}
 
 					if (result[i].bad)
 						return false;
 
 					// if result.length > 1, then it can be imu'd
 					if (result.length > 1) {
-						return true;
+						return newurl || true;
 					} else {
 						return undefined;
 					}
 				}
 
-				return true;
+				return newurl || true;
 			}
 
 			function addImage(src, el, options) {
@@ -69437,16 +69449,6 @@ var $$IMU_EXPORT$$;
 					el_style = window.getComputedStyle(el) || el.style;
 				}
 
-				if (src && (src.match(/^data:/) && !(/^data:image\/svg\+xml;/.test(src)) && src.length <= 500) ||
-					// https://www.smugmug.com/
-					// https://www.vogue.com/article/lady-gaga-met-gala-2019-entrance-behind-the-scenes-video
-					!check_visible(el)) {
-					if (_nir_debug_)
-						console_log("Invisible or tiny data: image");
-
-					return false;
-				}
-
 				if (!options) {
 					options = {};
 				}
@@ -69464,7 +69466,20 @@ var $$IMU_EXPORT$$;
 				}
 
 				if (!("imu" in sources[src])) {
-					sources[src].imu = imucheck === true;
+					sources[src].imu = !!imucheck;
+				}
+
+				if (imucheck === true) {
+					// do this after imu_check, for lazy loaded images that have 1x1 images
+					if (newsrc && (newsrc.match(/^data:/) && !(/^data:image\/svg\+xml;/.test(newsrc)) && newsrc.length <= 500) ||
+						// https://www.smugmug.com/
+						// https://www.vogue.com/article/lady-gaga-met-gala-2019-entrance-behind-the-scenes-video
+						!check_visible(el)) {
+						if (_nir_debug_)
+							console_log("Invisible or tiny data: image");
+
+						return false;
+					}
 				}
 
 				if (settings.mouseover_only_links) {
