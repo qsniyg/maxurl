@@ -50787,9 +50787,16 @@ var $$IMU_EXPORT$$;
 			// thanks to 毅j on discord:
 			// http://1024club.org/
 			// https://pic.yupoo.com/peigen123_v/G3KsK729/small.jpg
+			//   https://pic.yupoo.com/peigen123_v/G3KsK729/medish.jpg
 			//   https://pic.yupoo.com/peigen123_v/G3KsK729/large.jpg
 			// original versions are protected(?): https://pic.yupoo.com/peigen123_v/G3KsKKnz/kldgM.jpg
-			return src.replace(/(:\/\/[^/]+\/+[^/]+\/+[0-9a-zA-Z]{6,}\/+)(?:small|medium)(\.[^/.]*)(?:[?#].*)?$/, "$1large$2");
+			// https://pic.yupoo.com/airmanbu6666/49b8fe8e/big.jpg -- 800x533
+			//   https://pic.yupoo.com/airmanbu6666/49b8fe8e/large.jpg -- 1024x683
+			// medium = 500x? max
+			// medish = 640x? max
+			// big = 800x? max
+			// large = 1024x? max(?)
+			return src.replace(/(:\/\/[^/]+\/+[^/]+\/+[0-9a-zA-Z]{6,}\/+)(?:small|medi(?:um|sh)|big)(\.[^/.]*)(?:[?#].*)?$/, "$1large$2");
 		}
 
 		if (domain === "img.popnroll.tv" ||
