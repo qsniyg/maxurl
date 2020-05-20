@@ -13359,6 +13359,39 @@ var $$IMU_EXPORT$$;
 			});
 		}
 
+		if (host_domain_nosub === "fandom.com" && options.element) {
+			if (src.length < 10 && options.element.hasAttribute("data-src")) {
+				return options.element.getAttribute("data-src");
+			}
+
+			if (options.element.hasAttribute("data-video-key") && options.do_request && options.cb) {
+				var query_wikia_video = function(key, cb) {
+					api_query("wikia:" + key, {
+						url: urljoin(options.host_url, "/wikia.php?controller=Lightbox&method=getMediaDetail&fileTitle=" + key + "&format=json", true),
+						headers: {
+							"x-requested-with": "XMLHttpRequest"
+						}
+					}, cb, function(done, resp, cache_key) {
+						try {
+							var json = JSON_parse(resp.responseText);
+							if (json.videoEmbedCode.provider === "youtube") {
+								return done("https://i.ytimg.com/vi/" + json.videoEmbedCode.jsParams.videoId + "/mqdefault.jpg", 24*60*60);
+							}
+						} catch (e) {
+							console_error(e);
+						}
+
+						return done(null, false);
+					});
+				};
+
+				query_wikia_video(options.element.getAttribute("data-video-key"), options.cb);
+				return {
+					waiting: true
+				};
+			}
+		}
+
 		if (domain_nosub === "nocookie.net" &&
 			domain.match(/^vignette[0-9]*\.wikia\./)) {
 			// https://vignette.wikia.nocookie.net/arresteddevelopment/images/2/2a/2015_MM_and_A_TGIT_Party_-_Portia_de_Rossi.jpg/revision/latest/top-crop/width/320/height/320?cb=20151215213157
@@ -13383,12 +13416,6 @@ var $$IMU_EXPORT$$;
 				obj.url = newsrc;
 
 			return obj;
-		}
-
-		if (host_domain_nosub === "fandom.com" && options.element) {
-			if (src.length < 10 && options.element.hasAttribute("data-src")) {
-				return options.element.getAttribute("data-src");
-			}
 		}
 
 		if (domain === "static.asiachan.com") {
