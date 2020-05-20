@@ -50784,7 +50784,12 @@ var $$IMU_EXPORT$$;
 		if (domain === "pic.yupoo.com") {
 			// http://pic.yupoo.com/jpbeta/0284aba2/small.jpg
 			//   http://pic.yupoo.com/jpbeta/0284aba2/large.jpg
-			return src.replace(/(\/[0-9a-f]{6,}\/+)(?:small|medium)(\.[^/.]*)(?:[?#].*)?$/, "$1large$2");
+			// thanks to 毅j on discord:
+			// http://1024club.org/
+			// https://pic.yupoo.com/peigen123_v/G3KsK729/small.jpg
+			//   https://pic.yupoo.com/peigen123_v/G3KsK729/large.jpg
+			// original versions are protected(?): https://pic.yupoo.com/peigen123_v/G3KsKKnz/kldgM.jpg
+			return src.replace(/(:\/\/[^/]+\/+[^/]+\/+[0-9a-zA-Z]{6,}\/+)(?:small|medium)(\.[^/.]*)(?:[?#].*)?$/, "$1large$2");
 		}
 
 		if (domain === "img.popnroll.tv" ||
@@ -60391,6 +60396,24 @@ var $$IMU_EXPORT$$;
 			// https://cdn-prod.scalefast.com/resize/222x-/public/assets/user/123622/image/f9783754f715c56ef40cd6aeb12c0d1f.jpg
 			//   https://cdn-prod.scalefast.com/public/assets/user/123622/image/f9783754f715c56ef40cd6aeb12c0d1f.jpg
 			return src.replace(/(:\/\/[^/]+\/+)resize\/+[-0-9]+x[-0-9]+\/+(public\/+)/, "$1$2");
+		}
+
+		if (domain === "cdn.mp3-lemon.ru" ||
+			// https://mp3cleo.ru/image/Z25wLmJiMDAxeDAwMS9ncGoucmV2b2MvZDViODM3OGNlMTAyLTQyMWUtOTRhOC1kOTE3LWVmZWVjOTVjL2VlL2M5LzVjLzR2LzMxMWNpc3VNL2JtdWh0L2VnYW1pL21vYy5jaXRhdHN6bS5sc3MtMnNpLy86c3B0dGg100x100bb.png
+			//   https://is2-ssl.mzstatic.com/image/thumb/Music113/v4/c5/9c/ee/c59ceefe-719d-8a49-e124-201ec8738b5d/cover.jpg/999999999x0w-999.png
+			domain_nowww === "mp3cleo.ru") {
+			// https://cdn.mp3-lemon.ru/220/Z3BqLnRsdWFmZWRxbS9veC1iN2JnR1pLcS9pdi9tb2MuZ21pdHkuaS8vOnNwdHRo.jpg
+			//   https://i.ytimg.com/vi/qKZGgb7b-xo/maxresdefault.jpg
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:image|[0-9]+)\/+([^-_/.]{30,}?)\.[^/.]+(?:[?#].*)?$/);
+			if (match) {
+				try {
+					newsrc = base64_decode(match[1]);
+					newsrc = newsrc.replace(/(\/\/:s?ptth)[^/]{0,10}$/, "$1");
+					return newsrc.split("").reverse().join("");
+				} catch (e) {
+					console_error(e);
+				}
+			}
 		}
 
 
