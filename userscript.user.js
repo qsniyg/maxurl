@@ -26528,6 +26528,16 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\.[a-z]*(?:[?#].*)?$/, ".orig");
 		}
 
+		if (domain_nowww === "artstation.com") {
+			// https://www.artstation.com/assets/overlay-no-triangle-1c31439ce6ef3bf7ce31abe68712cd01.png
+			if (/\/assets\/+overlay-no-triangle-[0-9a-f]+\./.test(src)) {
+				return {
+					url: src,
+					bad: "mask"
+				};
+			}
+		}
+
 		if (domain_nosub === "artstation.com" && domain.match(/cdn[a-z]*\.artstation\.com/)) {
 			// https://cdnb.artstation.com/p/assets/images/images/001/982/361/small/kevin-lourdel-2012-06-12-09-53-11.jpg?1455539239
 			//   https://cdnb.artstation.com/p/assets/images/images/001/982/361/large/kevin-lourdel-2012-06-12-09-53-11.jpg?1455539239
@@ -26540,7 +26550,7 @@ var $$IMU_EXPORT$$;
 			// https://cdna.artstation.com/p/assets/images/images/016/242/734/20190301045023/micro_square/zephyr-zheng-terra2.jpg?1551437424
 			//   https://cdna.artstation.com/p/assets/images/images/016/242/734/large/zephyr-zheng-terra2.jpg?1551437424
 			// https://cdnb.artstation.com/p/assets/images/images/008/668/847/large/brady-goldsmith-goddessesofcosplay1lizkatzvariantlow.jpg?1514426043
-			regex = /(\/assets\/+images\/+images\/+[0-9]{3}\/+[0-9]{3}\/+[0-9]{3}\/+)(?:[0-9]+\/+)?(?:small(?:er)?|micro|medium|large)(?:_square)?\/([^/]*)$/;
+			regex = /(\/assets\/+(?:images|covers)\/+images\/+[0-9]{3}\/+[0-9]{3}\/+[0-9]{3}\/+)(?:[0-9]+\/+)?(?:small(?:er)?|micro|medium|large)(?:_square)?\/([^/]*)$/;
 			return [
 				src.replace(regex, "$1original/$2"),
 				src.replace(regex, "$1large/$2")
