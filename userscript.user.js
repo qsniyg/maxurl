@@ -5587,17 +5587,20 @@ var $$IMU_EXPORT$$;
 		// https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/faa48d2d-12c2-43d1-bf23-b5e99857825b/ddo0eau-c742e0f9-07f9-4a22-8d47-933e9fd3fb2b.png/v1/crop/w_244,h_350,x_0,y_0,scl_0.066812705366922,q_70,strp/railway_road_to_the_stars_by_ellysiumn_ddo0eau-350t.jpg
 
 		// https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/intermediary/f/e04c7e93-4504-4dbe-91f9-fd353fc145f2/dcx503r-30c02b72-c26d-4732-9c9f-14fcbc633aaa.jpg
-		var match = url.match(/^[a-z]+:\/\/[^/]+\/+(?:intermediary\/+)?([if])\/+[-0-9a-f]{20,}\/+[^/]+(?:[?#].*)?$/);
+		var match = url.match(/^[a-z]+:\/\/[^/]+\/+(?:intermediary\/+)?([if])\/+[-0-9a-f]{20,}\/+[^/?]+([?#].*)?$/);
 		if (match) {
-			if (match[1] === "i") {
-				return {
-					preview: true
-				};
-			} else {
-				return {
-					original: true
-				};
+			var obj = {};
+			if (match[3] && match[3][0] === "?") {
+				obj.has_token = true;
 			}
+
+			if (match[1] === "i") {
+				obj.preview = true;
+			} else {
+				obj.original = true;
+			}
+
+			return obj;
 		}
 
 		var match = url.match(/^[a-z]+:\/\/[^/]+\/+(?:intermediary\/+)?[if]\/+[-0-9a-f]{20,}\/+[^/]+\/+v1\/+(?:fit|fill|crop)\/+([^/]+)\/+[^/]+(?:[?#].*)?$/);
@@ -5644,6 +5647,17 @@ var $$IMU_EXPORT$$;
 
 		if (!info1 || !info2)
 			return null;
+
+		// needed to avoid constant reloading between /intermediary/ and /f/.*?token
+		// thanks to Wisedrow on discord for reporting
+		// https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/intermediary/f/4ac770c0-c37b-43a0-866f-2a2707ea61c7/d854mkr-cf30cc53-6b99-4651-916d-1703c943255c.jpg
+		if (info1.original && info2.original) {
+			if (info2.has_token) {
+				return url1;
+			} else {
+				return url2;
+			}
+		}
 
 		if (info1.original && (!prefer_size || !info2.preview))
 			return url1;
