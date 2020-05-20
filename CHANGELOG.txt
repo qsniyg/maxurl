@@ -1,3 +1,29 @@
+0.13.5
+
+New features:
+
+ * Option to exclude image maps (enabled by default)
+ * Option to disable pointer events for popup (disabled by default, thanks to thewhiterabbit- on reddit for the idea)
+ * Option to enable pointer events for popup when held (enabled by default)
+ * Key to set popup fullscreen (bound to F by default)
+ * Option to display link in redirection tooltip for userscript (disabled by default, thanks to fireattack on discord for the idea)
+ * Option to specify how long before the redirection tooltip should hide itself (set to 7 seconds by default)
+ * Support for ~15 new websites (using ~10 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including Artstation, Fandom/Wikia, Reddit)
+ * Don't popup for Reddit self posts (thanks to thewhiterabbit- on reddit for reporting)
+
+Bugfixes:
+
+ * Fix "Don't close until mouse leaves" option if mouse hasn't moved (thanks to Rnksts on discord for reporting)
+ * Fix popup not closing after mouse leaves if trigger keys are released before popup opens (thanks to Rnksts on discord for reporting)
+ * Fix popup hold disappearing when moving through a gallery
+ * Fix aspect ratio when video is made fullscreen (#330, thanks to remalp on discord for reporting)
+
+---
+
 0.13.4
 
 New features:

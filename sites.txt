@@ -818,6 +818,7 @@ cdn-media.rtl.fr
 cdn-news30.it
 cdn-obs.line-apps.com
 cdn-photos.extratv.com
+cdn-prod.scalefast.com
 cdn-redfin.com
 cdn-s3.si.com
 cdn-stylehaus-jp.akamaized.net
@@ -954,6 +955,7 @@ cdn.milffox.com
 cdn.moar.exchange
 cdn.moar.network
 cdn.mos.cms.futurecdn.net
+cdn.mp3-lemon.ru
 cdn.muabannhanh.com
 cdn.music-flo.com
 cdn.myanimelist.net
@@ -1101,6 +1103,7 @@ cdnu.porndoe.com
 cdnvideo.ru
 cdnx.natalie.mu
 cdp.pl
+cdprojekt.com
 cds.topdaily.kr
 cds.topstarnews.net
 cduniverse.ws
@@ -1864,6 +1867,7 @@ fanaru.com
 fanatik.com.tr
 fanblogs.jp
 fandimefilmu.cz
+fandom.com
 fanparty.ru
 fanpop.com
 fantasti.cc
@@ -2451,6 +2455,7 @@ hstatic.dk
 htv-prod-media.s3.amazonaws.com
 huangdi5000.com
 huanqiu.cn
+huanqiu.com
 hubstatic.com
 hudobny.sk
 hudong.com
@@ -4304,6 +4309,7 @@ movpins.com
 mozilla.org
 mozishop.cdn.shoprenter.hu
 mp-seoul-image-production-s3.mangoplate.com
+mp3cleo.ru
 mp3va.com
 mpic.haiwainet.cn
 mpics.mgronline.com
@@ -4606,6 +4612,7 @@ okeinfo.net
 okkisokuho.com
 okmusic.jp
 okporn.com
+old-games.ru
 old.fishmedia.info
 oldax.com
 olharalerta.com.br
@@ -5529,6 +5536,7 @@ southbank-ipcmedia-com.s3.amazonaws.com
 soycarmin.com
 soyuz.ru
 spacefucker.com
+spacepub.space
 spacetelescope.org
 spankbang.com
 spapi.searchencrypt.com
@@ -5817,6 +5825,7 @@ storage.withnews.jp.s3.amazonaws.com
 storage.ws.pho.to
 store-images.microsoft.com
 store-images.s-microsoft.com
+store.feralinteractive.com
 store.live.ksmobile.net
 store.pinseyun.com
 store.playstation.com
@@ -6051,6 +6060,7 @@ thrillist.com
 thueringen24.de
 thugarmada.com
 thum.buzzni.com
+thumb-media.vgm.io
 thumb.connect360.vn
 thumb.egloos.net
 thumb.ex-cdn.com
@@ -6082,6 +6092,7 @@ thumborcdn.acast.com
 thumbs-prod.si-cdn.com
 thumbs.booru.org
 thumbs.dfs.ivi.ru
+thumbs.dreamstime.com
 thumbs.filmix.co
 thumbs.gfycat.com
 thumbs.hentai-foundry.com
@@ -6213,6 +6224,7 @@ uecdn.es
 ug-ts.ru
 ugc.kn3.net
 uhd.img.topstarnews.net
+uihere.com
 uimg.ngfiles.com
 ujarani.com
 ujnews.co.kr
@@ -6306,6 +6318,7 @@ vetton.ru
 vettri.net
 vev.ru
 vgamuseum.info
+vgmdb.net
 vgmdownloads.com
 vgtimes.ru
 vgtour.ro
