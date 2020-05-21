@@ -672,12 +672,28 @@ var $$IMU_EXPORT$$;
 						var newresp = resp;
 
 						if (resp.response) {
+							var mime = null;
+							// hack for extension for performance
+							if (is_extension && "_responseEncoded" in resp && resp._responseEncoded.type) {
+								mime = resp._responseEncoded.type
+							} else if (resp.responseHeaders) {
+								var parsed_headers = headers_list_to_dict(parse_headers(resp.responseHeaders));
+								if (parsed_headers["content-type"]) {
+									mime = parsed_headers["content-type"];
+								}
+							}
+
 							newresp = shallowcopy(resp);
-							newresp.response = new native_blob([resp.response]);
+							var blob_options = undefined;
+							if (mime) {
+								blob_options = {type: mime};
+							}
+
+							newresp.response = new native_blob([resp.response], blob_options);
 						}
 
 						if (_nir_debug_) {
-							console_log("do_request's arraybuffer->blob:", resp, newresp);
+							console_log("do_request's arraybuffer->blob:", deepcopy(resp), newresp);
 						}
 
 						real_onload(newresp);
@@ -44868,10 +44884,12 @@ var $$IMU_EXPORT$$;
 							   "$1$2");
 		}
 
-		if (domain_nosub === "ckm.pl" && domain.match(/^static[0-9]*\./)) {
+		if (domain_nosub === "ckm.pl" ) {
 			// https://static2.ckm.pl/files/2017_07/.thumbnails/617x352/glds-7429ef1878ac477695186e934867f717_dc03f0.jpg -- upscaled (nearest)
 			//   https://static2.ckm.pl/files/2017_07/glds-7429ef1878ac477695186e934867f717_dc03f0.jpg
-			return src.replace(/\/\.thumbnails\/+[0-9]+x[0-9]+\/+/, "/");
+			// https://ckm.pl/files/2013_08/.thumbnails/400xX/a8b6e154fe9111e2a46122000a9f09e2-7-d25364a184223362008af3e6e7096288-1_f40a16.jpg
+			//   https://ckm.pl/files/2013_08/a8b6e154fe9111e2a46122000a9f09e2-7-d25364a184223362008af3e6e7096288-1_f40a16.jpg
+			return src.replace(/(\/files\/+[0-9]{4}_[0-9]{2}\/+)\.thumbnails\/+[0-9X]+x[0-9X]+\/+/, "$1");
 		}
 
 		if (domain_nowww === "zurnal.mk" ||
@@ -66478,7 +66496,7 @@ var $$IMU_EXPORT$$;
 
 				var loadcb = function(urldata) {
 					if (_nir_debug_) {
-						console_log("check_object_get's loadcb", urldata, is_video);
+						console_log("check_image_get's loadcb", urldata, is_video);
 					}
 
 					last_objecturl = urldata;
