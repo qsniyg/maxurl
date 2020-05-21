@@ -14212,11 +14212,28 @@ var $$IMU_EXPORT$$;
 					return null;
 				};
 
+				var url_to_tumblr_imageinfo = function(url) {
+					var match = url.match(/:\/\/[^/]+\/+([0-9a-f]{32})\/+([0-9a-f]{16}-[0-9a-f]{2})\/+s([0-9]+)x([0-9]+)(?:_c[0-9]+)?\/+[0-9a-f]{20,}\.([^/.?#]+)(?:[?#].*)?$/);
+					if (match) {
+						return {
+							mediaKey: match[1] + ":" + match[2],
+							url: url,
+							width: match[3],
+							height: match[4]
+						};
+					} else {
+						return null;
+					}
+				};
+
 				var query_tumblr_original = function(url, cb) {
-					var cache_key = "tumblr_original:" + url;
+					// thanks to Regis on discord for letting me know about this trick
+					url = url.replace(/\/s[0-9]+x[0-9]+(?:_c[0-9]+)?\/+([0-9a-f]{20,}\.)/, "/s999999999x999999999/$1");
+
+					var cache_key = "tumblr_image_page:" + url;
 					api_cache.fetch(cache_key, cb, function(done) {
 						options.do_request({
-							url: src,
+							url: url,
 							headers: {
 								Referer: "",
 								"sec-fetch-mode": "navigate",
@@ -14239,7 +14256,15 @@ var $$IMU_EXPORT$$;
 								}
 
 								try {
-									var imageresponse = initialstate.ImageUrlPage.photo.imageResponse;
+									var imageresponse = deepcopy(initialstate.ImageUrlPage.photo.imageResponse);
+
+									var request_imageinfo;
+									if (initialstate.ImageUrlPage.requestedImage) {
+										request_imageinfo = url_to_tumblr_imageinfo(initialstate.ImageUrlPage.requestedImage);
+										if (request_imageinfo)
+											imageresponse.push(request_imageinfo);
+									}
+
 									var page = initialstate.ImageUrlPage.post.postUrl;
 
 									return done({
