@@ -69311,9 +69311,11 @@ var $$IMU_EXPORT$$;
 				newel.setAttribute(attr_name, attrs[i].value);
 			}
 
+
 			var computed_style = get_computed_style(el);
-			if (computed_style.color) {
-				newel.setAttribute("fill", computed_style.color);
+			var fillval = el.getAttribute("fill") || computed_style.fill;
+			if (fillval) {
+				newel.setAttribute("fill", fillval);
 			}
 
 			//var header = '<?xml version="1.0" encoding="UTF-8" standalone="no" ?>\n';
