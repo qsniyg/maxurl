@@ -60472,6 +60472,12 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain_nowww === "banzaj.pl") {
+			// http://www.banzaj.pl/pictures/celebrity/gwiazdy_zagraniczne/candice_swanepoel/candice_swanepoel_seksowna_sesja_w_bikini_sauvage/THUMBS/THUMB_candice_swanepoel_seksowna_sesja_w_bikini_sauvage_12.jpg
+			//   http://www.banzaj.pl/pictures/celebrity/gwiazdy_zagraniczne/candice_swanepoel/candice_swanepoel_seksowna_sesja_w_bikini_sauvage/candice_swanepoel_seksowna_sesja_w_bikini_sauvage_12.jpg
+			return src.replace(/(\/pictures\/.*\/)THUMBS\/+THUMB_/, "$1");
+		}
+
 
 
 
@@ -69310,10 +69316,13 @@ var $$IMU_EXPORT$$;
 				newel.setAttribute("fill", computed_style.color);
 			}
 
-			var header = '<?xml version="1.0" encoding="UTF-8" standalone="no" ?>\n';
+			//var header = '<?xml version="1.0" encoding="UTF-8" standalone="no" ?>\n';
+			var header = ""; // unneeded
 			var svgdoc = header + newel.outerHTML;
 
-			return "data:image/svg+xml;base64," + base64_encode(svgdoc);
+			// thanks to Rnksts on discord for these test images (base64 encode didn't work for unicode characters)
+			// https://codepen.io/Rnksts/full/KKdJWvq
+			return "data:image/svg+xml," + encodeURIComponent(svgdoc);
 		};
 
 		function get_img_src(el) {
