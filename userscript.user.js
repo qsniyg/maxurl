@@ -5645,6 +5645,9 @@ var $$IMU_EXPORT$$;
 		var info1 = common_functions.wix_image_info(url1);
 		var info2 = common_functions.wix_image_info(url2);
 
+		if (_nir_debug_)
+			console_log("wix_compare (info1:", info1, "info2:", info2, ")");
+
 		if (!info1 || !info2)
 			return null;
 
@@ -5715,7 +5718,10 @@ var $$IMU_EXPORT$$;
 
 				try {
 					var deviation = initialstate["@@entities"].deviation[deviationid];
-					//console_log(deviation);
+
+					if (_nir_debug_) {
+						console_log("Deviation object", deviation);
+					}
 
 					if (deviation.title)
 						obj.extra.caption = deviation.title;
@@ -47541,7 +47547,9 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/media\/+[0-9]+\/+[0-9]+\/+(?:images\/+assets\/+)?)[a-z]+\.([0-9a-zA-Z_]+\.[^/.]*)(?:[?#].*)?$/, "$1original.$2");
 		}
 
-		if (domain === "img.manoramaonline.com") {
+		if (domain === "img.manoramaonline.com" ||
+			// https://www.theman.in/content/dam/theman/travel/2018/12/terra-2.jpg.image.732.824.jpg
+			domain_nowww === "theman.in") {
 			// https://img.manoramaonline.com/content/dam/mm/en/entertainment/music/images/2017/5/22/nicki-minaj-india.jpg.image.470.246.jpg
 			//   https://img.manoramaonline.com/content/dam/mm/en/entertainment/music/images/2017/5/22/nicki-minaj-india.jpg
 			return src.replace(/\.image\.[0-9]+\.[0-9]+\.[^/.]*(?:[?#].*)?$/, "");
