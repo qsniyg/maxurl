@@ -22498,7 +22498,7 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if (domain_nosub === "muscdn.com" && /^v[0-9]+\./.test(domain)) {
+		if ((domain_nosub === "muscdn.com" || domain_nosub === "tiktokcdn.com") && /^v[0-9]+m?\./.test(domain)) {
 			var baseobj = {
 				url: src,
 				video: true
@@ -22683,7 +22683,7 @@ var $$IMU_EXPORT$$;
 			return src.replace(/^[a-z]+:\/\/[^/]+\/+china-img\/+/, "https://p0.pstatp.com/");
 		}
 
-		if (domain_nosub === "tiktokcdn.com" && /^v[0-9]*\./.test(domain) && string_indexof(src, "/video/") >= 0) {
+		if (domain_nosub === "tiktokcdn.com" && /^v[0-9]*m?\./.test(domain) && string_indexof(src, "/video/") >= 0) {
 			// https://v21.tiktokcdn.com/video/n/v0102/ab13a0512d41473bb07c555205e2d0b2/
 			return {
 				url: src,
