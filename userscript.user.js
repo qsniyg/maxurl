@@ -9840,6 +9840,11 @@ var $$IMU_EXPORT$$;
 			//   <pyramid_level num_tiles_x="2" num_tiles_y="2" inverse_scale="1" empty_pels_x="416" empty_pels_y="235"/>
 			// </TileInfo>
 			domain === "d2yal1mtmg1ts6.cloudfront.net" ||
+			// thanks to liraqb on github: https://github.com/qsniyg/maxurl/issues/337
+			// https://apps.qoo-app.com/app/6681
+			// https://d2jcw5q7j4vmo4.cloudfront.net/tJs6xu-sNx4SH9Dz7uaH_YAKfAko6F8r30U4v6Q_S-TS-cFlSmK_D472yK4sNMbt=w720-h310
+			//   https://d2jcw5q7j4vmo4.cloudfront.net/tJs6xu-sNx4SH9Dz7uaH_YAKfAko6F8r30U4v6Q_S-TS-cFlSmK_D472yK4sNMbt=s0?imgmax=0
+			domain === "d2jcw5q7j4vmo4.cloudfront.net" ||
 			// http://bp0.blogger.com/_sBBi-c1S7gU/SD5OZiDWDnI/AAAAAAAAFNc/3-cwL7frca0/s400/Copy+of+milla-jovovich-2.jpg
 			//   https://1.bp.blogspot.com/_sBBi-c1S7gU/SD5OZiDWDnI/AAAAAAAAFNc/3-cwL7frca0/s0/Copy+of+milla-jovovich-2.jpg=s0?imgmax=0
 			(domain_nosub === "blogger.com" && domain.match(/^bp[0-9]*\.blogger\.com/)) ||
