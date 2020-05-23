@@ -1889,6 +1889,7 @@ var $$IMU_EXPORT$$;
 		mouseover_ui_opacity: 80,
 		mouseover_ui_imagesize: true,
 		mouseover_ui_zoomlevel: true,
+		mouseover_ui_filesize: false,
 		mouseover_ui_gallerycounter: true,
 		mouseover_ui_gallerymax: 50,
 		// thanks to pacep94616 on github for the idea: https://github.com/qsniyg/maxurl/issues/225
@@ -2738,8 +2739,8 @@ var $$IMU_EXPORT$$;
 			subcategory: "ui"
 		},
 		mouseover_ui_imagesize: {
-			name: "Image size",
-			description: "Displays the image size on top of the UI",
+			name: "Media resolution",
+			description: "Displays the original media dimensions on top of the UI",
 			requires: {
 				mouseover_ui: true
 			},
@@ -2749,6 +2750,15 @@ var $$IMU_EXPORT$$;
 		mouseover_ui_zoomlevel: {
 			name: "Zoom percent",
 			description: "Displays the current zoom level on top of the UI",
+			requires: {
+				mouseover_ui: true
+			},
+			category: "popup",
+			subcategory: "ui"
+		},
+		mouseover_ui_filesize: {
+			name: "File size",
+			description: "Displays the media's file size on top of the UI",
 			requires: {
 				mouseover_ui: true
 			},
@@ -6022,6 +6032,10 @@ var $$IMU_EXPORT$$;
 								}
 							}
 
+							if (_nir_debug_) {
+								console_log("instagram_sharedData", parsed);
+							}
+
 							// TODO: maybe check if parsed is correct before setting to cache?
 							done(parsed, 60 * 60);
 						} catch (e) {
@@ -6153,6 +6167,10 @@ var $$IMU_EXPORT$$;
 						} catch (e) {
 							console_log("instagram_mediainfo", result);
 							console_error("instagram_mediainfo", e);
+						}
+
+						if (_nir_debug_) {
+							console_log("instagram_mediainfo", parsed);
 						}
 
 						if (parsed) {
@@ -6429,6 +6447,7 @@ var $$IMU_EXPORT$$;
 					// width/height corresponds to the image, not the video
 					// apparently not anymore?
 					// https://www.instagram.com/p/CAIJRpshE0z/ (thanks to fireattack on discord)
+					// https://www.instagram.com/p/CAatETTofMK/ graphql returns 640x640 but states it to be 750x750. app api returns 720x720, but is of a lower quality than 640x640 (thanks to remlap and Regis on discord)
 					width = 0;
 					height = 0;
 				}
@@ -63553,6 +63572,17 @@ var $$IMU_EXPORT$$;
 		return text.replace(truncate_regex, "$1…");
 	};
 
+	var size_to_text = function(size) {
+		var sizes = ["", "K", "M", "G", "T", "P"];
+
+		while (size > 1024 && sizes.length > 1) {
+			size /= 1024.;
+			sizes.shift();
+		}
+
+		return size.toFixed(2).replace(/\.00$/, "") + sizes[0] + "B";
+	};
+
 	var check_image = function(obj, err_cb, ok_cb) {
 		if (_nir_debug_)
 			console_log("check_image", deepcopy(obj));
@@ -66324,6 +66354,10 @@ var $$IMU_EXPORT$$;
 					cb(img, resp.finalUrl, obj[0], resp);
 				};
 
+				if (parsed_headers["content-length"] && parseInt(parsed_headers["content-length"]) > 100) {
+					obj[0].filesize = parseInt(parsed_headers["content-length"]);
+				}
+
 				var create_video_el = function() {
 					var video = document.createElement("video");
 
@@ -68194,21 +68228,54 @@ var $$IMU_EXPORT$$;
 
 						var zoom_percent = rect_height / img_naturalHeight;
 						var currentzoom = parseInt(zoom_percent * 100);
+						var filesize = 0;
 
-						if (settings.mouseover_ui_imagesize) {
-							text = img_naturalWidth + "x" + img_naturalHeight;
+						if (newobj && newobj.filesize)
+							filesize = newobj.filesize;
 
-							if (settings.mouseover_ui_zoomlevel && currentzoom !== 100) {
-								text += " (" + currentzoom + "%)"
+						var format = "";
+
+						var formatorder = [
+							{
+								value: img_naturalWidth + "x" + img_naturalHeight,
+								valid: settings.mouseover_ui_imagesize,
+							},
+							{
+								value: currentzoom + "%",
+								valid_paren: currentzoom !== 100 ? true : false,
+								valid: settings.mouseover_ui_zoomlevel
+							},
+							{
+								value: size_to_text(filesize),
+								valid: settings.mouseover_ui_filesize && filesize
 							}
-						} else {
-							text = currentzoom + "%";
+						];
+
+						var entries = [];
+						for (var i = 0; i < formatorder.length; i++) {
+							var our_format = formatorder[i];
+
+							if (!our_format.valid)
+								continue;
+
+							if (entries.length > 0 && our_format.valid_paren === false)
+								continue;
+
+							entries.push(our_format.value);
+						}
+
+						if (entries.length === 0)
+							return "";
+
+						text = entries[0];
+						if (entries.length > 1) {
+							text += " (" + entries.slice(1).join(", ") + ")";
 						}
 
 						return text;
 					}
 
-					if (settings.mouseover_ui_imagesize || settings.mouseover_ui_zoomlevel) {
+					if (settings.mouseover_ui_imagesize || settings.mouseover_ui_zoomlevel || settings.mouseover_ui_filesize) {
 						var imagesize = addbtn(get_imagesizezoom_text(100), "", null, true);
 						set_important_style(imagesize, "font-size", gallerycount_fontsize);
 						topbarel.appendChild(imagesize);
