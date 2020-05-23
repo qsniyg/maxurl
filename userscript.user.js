@@ -70852,15 +70852,26 @@ var $$IMU_EXPORT$$;
 			var get_zindex_raw = function(el) {
 				var zindex = get_computed_style(el).zIndex;
 
+				var parent_zindex = 0;
+				if (el.parentElement) {
+					var parent_zindex = get_zindex(el.parentElement);// + 0.001; // hack: child elements appear above parent elements
+					// don't use the above hack, it breaks z-ordering, the indexOf thing works already
+				}
+
 				if (zindex === "auto") {
-					if (el.parentElement) {
-						return get_zindex(el.parentElement);// + 0.001; // hack: child elements appear above parent elements
-						// don't use the above hack, it breaks z-ordering, the indexOf thing works already
-					} else {
-						return 0;
-					}
+					return parent_zindex;
 				} else {
-					return parseFloat(zindex);
+					zindex = parseFloat(zindex);
+
+					// https://robertsspaceindustries.com/orgs/LUG/members
+					if (zindex < parent_zindex)
+						return parent_zindex + zindex; // hack:
+						// <div style="z-index: 9"></div>
+						// <div style="z-index: 10">
+						//   <div style="z-index: 2">this is above z-index: 9 because it's a child of z-index: 10</div>
+						// </div>
+					else
+						return zindex;
 				}
 			};
 
