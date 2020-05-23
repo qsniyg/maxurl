@@ -2758,7 +2758,7 @@ var $$IMU_EXPORT$$;
 		},
 		mouseover_ui_filesize: {
 			name: "File size",
-			description: "Displays the media's file size on top of the UI",
+			description: "Displays the media's file size on top of the UI. For the moment, this will not work with partially loaded media if 'Avoid HEAD request for partially loaded media' is enabled.",
 			requires: {
 				mouseover_ui: true
 			},
