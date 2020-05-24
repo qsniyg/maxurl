@@ -117,10 +117,15 @@ var base_headers = {
 	"accept-language": "en-US,en;q=0.9"
 };
 
-function getimagesize(url) {
+function getimagesize(url, is_first) {
 	if (typeof (url) === "string") {
 		var headers = JSON.parse(JSON.stringify(base_headers));
 		headers.Referer = "https://www.reddit.com/r/all/";
+
+		// for Tumblr
+		if (is_first)
+			headers.accept = "*/*";
+
 		return probe(url, {
 			// mimic the browser to avoid problems with photobucket or wikia urls
 			headers: headers
@@ -295,7 +300,7 @@ function dourl_inner(big, url, post, options, cb) {
 	console.log(big);
 	console.log("---");
 
-	getimagesize(url).then(
+	getimagesize(url, true).then(
 		(data) => {
 			log_entry.orig_probe = data;
 			if ("headers" in log_entry.orig_probe)
@@ -831,6 +836,7 @@ function dourl(url, post, options, cb) {
 //dourl("https://i.imgur.com/4dLcGhR.gif")
 // tumblr ("br" encoding shouldn't be supported)
 //dourl("https://66.media.tumblr.com/2b129630fe50ae796d9383c5ba6ba35b/9e0fb8a88fdd1bdf-10/s640x960/d1a52d700422d91b37d653867fcadf46e933a1b1.jpg");
+//dourl("https://66.media.tumblr.com/5f828c461e4b7b78246ce02e98c92406/be7c88941cb30a9f-d6/s540x810/f48956b3c78b9bc234a4878221ddf67514d177a9.png");
 // huge image (10652x14204), nsfw!
 //dourl("https://i.imgur.com/zsSsjXJ.jpg");
 //dourl("https://img39.pixhost.to/images/373/138394353_3s3a1fiv9wfy.jpg");
