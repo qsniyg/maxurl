@@ -56538,9 +56538,9 @@ var $$IMU_EXPORT$$;
 				return base64_decode(newsrc);
 		}
 
-		if (domain_nowww === "gfycat.com") {
+		if (domain_nowww === "gfycat.com" || domain_nowww === "redgifs.com") {
 			// https://www.gfycat.com/ko/YellowTornCockatiel
-			match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:[a-z]{2}\/+)?([a-zA-Z]+)(?:[?#].*)?$/, "$1");
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:[a-z]{2}\/+)?(?:watch\/+)?([a-zA-Z]+)(?:[?#].*)?$/, "$1");
 			if (match && options.do_request && options.cb) {
 				var query_gfycat = function(site, id, cb) {
 					var cache_key = site + ":" + id;
@@ -56572,9 +56572,17 @@ var $$IMU_EXPORT$$;
 				};
 
 				var query_gfycat_redgifs = function(id, cb) {
-					query_gfycat("gfycat", id, function(data) {
+					var site1 = "gfycat";
+					var site2 = "redgifs";
+
+					if (domain_nosub === "redgifs.com") {
+						site1 = "redgifs";
+						site2 = "gfycat";
+					}
+
+					query_gfycat(site1, id, function(data) {
 						if (!data) {
-							query_gfycat("redgifs", id, cb);
+							query_gfycat(site2, id, cb);
 						} else {
 							cb(data);
 						}
