@@ -220,7 +220,7 @@ function is_youtube_url(url) {
 	}
 
 	if (!match) {
-		match = url.match(/^[a-z]+:\/\/(?:[^/]+\.)?gfycat\.com\//);
+		match = url.match(/^[a-z]+:\/\/(?:[^/]+\.)?(?:gfycat|redgifs)\.com\//);
 	}
 
 	return !!match;
