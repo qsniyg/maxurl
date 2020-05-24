@@ -14211,6 +14211,12 @@ var $$IMU_EXPORT$$;
 				return obj;
 			}
 
+			newsrc = src.replace(/^[a-z]+:\/\/[0-9]+\.media\./, "https://media.");
+			if (newsrc !== src) {
+				obj.url = newsrc;
+				return obj;
+			}
+
 			// thanks to fireattack on discord for the link + notifying me that this is possible
 			// https://66.media.tumblr.com/da5fa368ca23d24d1bf2cdcddd6c208e/26b38fdc3a5c76b6-57/s540x810/db7a535b967ca998ef133eb833d8cdb24bed5dc8.png
 			//   https://66.media.tumblr.com/da5fa368ca23d24d1bf2cdcddd6c208e/26b38fdc3a5c76b6-57/s75x75_c1/66f3b76d54cd15c6ef7ff1d2f601aaff4c230bdf.png
@@ -14252,7 +14258,10 @@ var $$IMU_EXPORT$$;
 
 				var query_tumblr_original = function(url, cb) {
 					// thanks to Regis on discord for letting me know about this trick
-					url = url.replace(/\/s[0-9]+x[0-9]+(?:_c[0-9]+)?\/+([0-9a-f]{20,}\.)/, "/s999999999x999999999/$1");
+					url = url
+						.replace(/\/s[0-9]+x[0-9]+(?:_c[0-9]+)?\/+([0-9a-f]{20,}\.)/, "/s999999999x999999999/$1")
+						// thanks to Wisedrow on discord: https://github.com/qsniyg/maxurl/issues/340
+						.replace(/:\/\/media\./, "://66.media.");
 
 					var cache_key = "tumblr_image_page:" + url;
 					api_cache.fetch(cache_key, cb, function(done) {
@@ -14328,7 +14337,7 @@ var $$IMU_EXPORT$$;
 						return;
 
 					var obj = {
-						url: largest.url,
+						url: largest.url.replace(/^[a-z]+:\/\/[0-9]+\.media\./, "https://media."),
 						is_original: largest.hasOriginalDimensions
 					};
 
@@ -56473,6 +56482,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "thumbs.gfycat.com" ||
+			domain === "thumbs1.redgifs.com" ||
 			domain === "zippy.gfycat.com" ||
 			domain === "giant.gfycat.com") {
 			// https://thumbs.gfycat.com/YellowTornCockatiel-size_restricted.gif
@@ -56480,7 +56490,7 @@ var $$IMU_EXPORT$$;
 			//   https://zippy.gfycat.com/YellowTornCockatiel.mp4
 			newsrc = src
 				.replace(/:\/\/zippy\.([^/]+\/+[^/]+)(?:-[^/.]+)?\.[^/.]+(?:[?#].*)?$/, "://giant.$1.mp4")
-				.replace(/:\/\/thumbs\.([^/]+\/+[^/]+)-(?:size_restricted\.gif|mobile\.(?:webm|mp4)|(?:mobile|poster)\.jpg)(?:[?#].*)?$/, "://zippy.$1.mp4");
+				.replace(/:\/\/thumbs[0-9]*\.([^/]+\/+[^/]+)-(?:size_restricted\.gif|mobile\.(?:webm|mp4)|(?:mobile|poster)\.jpg)(?:[?#].*)?$/, "://zippy.$1.mp4");
 			obj = {
 				url: newsrc
 			};
