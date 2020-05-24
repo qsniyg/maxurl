@@ -5989,6 +5989,19 @@ var $$IMU_EXPORT$$;
 		return image_url.replace(/.*\/([^/.]*)\.[^/.]*(?:[?#].*)?$/, "$1");
 	};
 
+	common_functions.instagram_norm_url = function(src) {
+		// thanks to remlap on github: https://github.com/qsniyg/maxurl/issues/239
+		return remove_queries(src, ["se", "_nc_cat", "_nc_rid", "efg", "ig_cache_key"]);
+		// these remove_queries calls are separated in case the next one doesn't work.
+		/*newsrc = remove_queries(src, ["se"]);
+		if (newsrc !== src)
+			return newsrc;
+
+		newsrc = remove_queries(src, ["_nc_cat", "_nc_rid", "efg", "ig_cache_key"]);
+		if (newsrc !== src)
+			return newsrc;*/
+	};
+
 	common_functions.instagram_parse_el_info = function(api_cache, do_request, use_app_api, info, cb) {
 		var query_ig = function(url, cb) {
 			// Normalize the URL to reduce duplicate cache checks
@@ -6344,15 +6357,36 @@ var $$IMU_EXPORT$$;
 			return undefined;
 		};
 
-		var image_in_objarr = function(image, objarr) {
-			var imageid = common_functions.instagram_get_imageid(image);
-
+		var imageid_in_objarr = function(imageid, objarr) {
 			for (var i = 0; i < objarr.length; i++) {
 				if (string_indexof(objarr[i].src, imageid) > 0)
 					return objarr[i];
 			}
 
 			return null;
+		}
+
+		var image_in_objarr = function(image, objarr, objarr1) {
+			var imageid = common_functions.instagram_get_imageid(image);
+
+			var largest = imageid_in_objarr(imageid, objarr);
+			if (!largest)
+				return null;
+
+			var smallest = null;
+			if (objarr1) {
+				smallest = imageid_in_objarr(imageid, objarr1);
+			}
+
+			var retobj = {
+				largest: largest
+			};
+
+			if (smallest && smallest !== largest) {
+				retobj.smallest = smallest;
+			}
+
+			return retobj;
 		};
 
 		var get_maxsize_app = function(item) {
@@ -6435,7 +6469,7 @@ var $$IMU_EXPORT$$;
 
 				var found_image = image_in_objarr(image, images);
 				if (found_image) {
-					var found_size = found_image.width * found_image.height;
+					var found_size = found_image.largest.width * found_image.largest.height;
 					var our_size = width * height;
 
 					// fixme: why is this check even here? it breaks width=0, height=0 videos
@@ -6477,22 +6511,37 @@ var $$IMU_EXPORT$$;
 			return images;
 		};
 
-		var image_to_obj = function(image) {
+		var raw_image_to_obj = function(image, obj) {
 			var extra = null;
 			if (image.caption)
 				extra = {caption: image.caption};
 
 			if (image.video) {
-				return [
-					{url: image.video, video: true, extra: extra},
-					{url: image.src, extra: extra}
-				];
+				obj.push({url: common_functions.instagram_norm_url(image.video), video: true, extra: extra});
+				obj.push({url: common_functions.instagram_norm_url(image.src), extra: extra});
 			} else {
-				return {
-					url: image.src,
+				obj.push({
+					url: common_functions.instagram_norm_url(image.src),
 					extra: extra
-				};
+				});
 			}
+
+			return obj;
+		};
+
+		var image_to_obj = function(image) {
+			if (!image)
+				return null;
+
+			var obj = [];
+
+			raw_image_to_obj(image.largest, obj);
+			if (image.smallest)
+				raw_image_to_obj(image.smallest, obj);
+
+			// TODO: maybe put videos before images?
+
+			return obj;
 		};
 
 		var request_post_inner = function(post_url, image_url, cb) {
@@ -6506,31 +6555,39 @@ var $$IMU_EXPORT$$;
 
 					mediainfo_api(media.id + "_" + media.owner.id, function(app_response) {
 						var images = [];
+						var images_small = [];
+
+						var images_app = [];
 
 						if (app_response !== null) {
-							images = get_maxsize_app(app_response.items[0]);
+							images_app = get_maxsize_app(app_response.items[0]);
 						} else if (use_app_api) {
 							console_log("Unable to use API to find Instagram image, you may need to login to Instagram");
 						}
 
 						var images_graphql = get_maxsize_graphql(media);
 
-						if (images && images.length === images_graphql.length) {
-							for (var i = 0; i < images.length; i++) {
-								var app_size = images[i].width * images[i].height;
+						if (images_app && images_app.length === images_graphql.length) {
+							for (var i = 0; i < images_app.length; i++) {
+								var app_size = images_app[i].width * images_app[i].height;
 								var graphql_size = images_graphql[i].width * images_graphql[i].height;
 
 								if (graphql_size > app_size) {
 									//console_log("Using graphql image", images[i], images_graphql[i]);
 									images[i] = images_graphql[i];
+									images_small[i] = images_app[i];
+								} else {
+									images[i] = images_app[i];
+									images_small[i] = images_graphql[i];
 								}
 							}
 						} else {
 							images = images_graphql;
+							images_small = images;
 						}
 
 						if (image_url) {
-							var image = image_in_objarr(image_url, images);
+							var image = image_in_objarr(image_url, images, images_small);
 							if (image)
 								return cb(image_to_obj(image));
 						} else {
