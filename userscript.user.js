@@ -50450,6 +50450,13 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/c\/+[a-z]+_([^/.]*\.[^/.]*)(?:[?#].*)?$/, "/c/$1");
 		}
 
+		if (domain === "m.atcdn.co.uk") {
+			// https://m.atcdn.co.uk/a/media/w816h612pf7f7f5/0ebc06e72cbf4f9c99c3707fa5526820.jpg
+			//   https://m.atcdn.co.uk/a/media/w800h600/0ebc06e72cbf4f9c99c3707fa5526820.jpg
+			//   https://m.atcdn.co.uk/a/media/0ebc06e72cbf4f9c99c3707fa5526820.jpg
+			return src.replace(/\/a\/media\/+(?:[wh][0-9]+|p[0-9a-f]{6}){1,}\/+/, "/a/media/");
+		}
+
 		if (domain_nowww === "you-anime.ru") {
 			// https://you-anime.ru/anime-images/posters/preview/6231.jpg
 			//   https://you-anime.ru/anime-images/posters/6231.jpg
@@ -56564,7 +56571,43 @@ var $$IMU_EXPORT$$;
 					});
 				};
 
-				query_gfycat(match[1], options.cb);
+				var query_gdn = function(id, cb) {
+					var cache_key = "gifdeliverynetwork:" + id;
+
+					api_cache.fetch(cache_key, cb, function(done) {
+						options.do_request({
+							url: "https://www.gifdeliverynetwork.com/" + id,
+							method: "GET",
+							headers: {
+								Referer: ""
+							},
+							onload: function(resp) {
+								if (resp.status !== 200) {
+									console_error(cache_key, resp);
+									return done(null, false);
+								}
+
+								try {
+									var match = resp.responseText.match(/<script type="application\/ld\+json">([[]{.*?}])<\/script>/);
+									if (match) {
+										var json = JSON_parse(match[1]);
+
+										for (var i = 0; i < json.length; i++) {
+											if (json[i].thumbnailUrl)
+												return done(json[i].thumbnailUrl[0], 24*60*60);
+										}
+									}
+								} catch (e) {
+									console_error(e);
+								}
+
+								return done(null, false);
+							}
+						});
+					});
+				};
+
+				query_gdn(match[1], options.cb);
 
 				return {
 					waiting: true
@@ -56572,10 +56615,7 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if (domain === "thumbs.gfycat.com" ||
-			domain === "thumbs1.redgifs.com" ||
-			domain === "zippy.gfycat.com" ||
-			domain === "giant.gfycat.com") {
+		if ((domain_nosub === "gfycat.com" || domain_nosub === "redgifs.com") && (/^(?:thumbs[0-9]*|zippy|giant)\./.test(domain))) {
 			// https://thumbs.gfycat.com/YellowTornCockatiel-size_restricted.gif
 			//   https://thumbs.gfycat.com/YellowTornCockatiel-mobile.mp4
 			//   https://zippy.gfycat.com/YellowTornCockatiel.mp4
