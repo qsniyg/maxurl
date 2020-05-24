@@ -62399,8 +62399,8 @@ var $$IMU_EXPORT$$;
 									var our_data = data[i + add];
 
 									var cb_media = new_media(our_data.video || our_data.src, our_data.video);
-									cb_media.setAttribute("data-imu-info", JSON_stringify(info));
-									cb_media.setAttribute("data-imu-data", JSON_stringify(our_data));
+									cb_media.setAttribute("data-imu-info", JSON_stringify(deepcopy(info, {json: true})));
+									cb_media.setAttribute("data-imu-data", JSON_stringify(deepcopy(our_data, {json: true})));
 
 									return options.cb(cb_media);
 								}
