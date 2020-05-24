@@ -56542,12 +56542,12 @@ var $$IMU_EXPORT$$;
 			// https://www.gfycat.com/ko/YellowTornCockatiel
 			match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:[a-z]{2}\/+)?([a-zA-Z]+)(?:[?#].*)?$/, "$1");
 			if (match && options.do_request && options.cb) {
-				var query_gfycat = function(id, cb) {
-					var cache_key = "gfycat:" + id;
+				var query_gfycat = function(site, id, cb) {
+					var cache_key = site + ":" + id;
 
 					api_cache.fetch(cache_key, cb, function(done) {
 						options.do_request({
-							url: "https://api.gfycat.com/v1/gfycats/" + id,
+							url: "https://api." + site + ".com/v1/gfycats/" + id,
 							method: "GET",
 							headers: {
 								Referer: ""
@@ -56571,6 +56571,17 @@ var $$IMU_EXPORT$$;
 					});
 				};
 
+				var query_gfycat_redgifs = function(id, cb) {
+					query_gfycat("gfycat", id, function(data) {
+						if (!data) {
+							query_gfycat("redgifs", id, cb);
+						} else {
+							cb(data);
+						}
+					});
+				};
+
+				// always returns redgifs urls, even if it's gfycat
 				var query_gdn = function(id, cb) {
 					var cache_key = "gifdeliverynetwork:" + id;
 
@@ -56607,7 +56618,7 @@ var $$IMU_EXPORT$$;
 					});
 				};
 
-				query_gdn(match[1], options.cb);
+				query_gfycat_redgifs(match[1], options.cb);
 
 				return {
 					waiting: true
