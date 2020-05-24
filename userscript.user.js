@@ -6003,6 +6003,10 @@ var $$IMU_EXPORT$$;
 	};
 
 	common_functions.instagram_parse_el_info = function(api_cache, do_request, use_app_api, info, cb) {
+		var shortcode_to_url = function(shortcode) {
+			return "https://www.instagram.com/p/" + shortcode + "/";
+		};
+
 		var query_ig = function(url, cb) {
 			// Normalize the URL to reduce duplicate cache checks
 			url = url
@@ -6357,6 +6361,14 @@ var $$IMU_EXPORT$$;
 			return undefined;
 		};
 
+		var get_page = function(item) {
+			var shortcode = item.shortcode || item.code;
+			if (shortcode)
+				return shortcode_to_url(shortcode);
+
+			return null;
+		};
+
 		var imageid_in_objarr = function(imageid, objarr) {
 			for (var i = 0; i < objarr.length; i++) {
 				if (string_indexof(objarr[i].src, imageid) > 0)
@@ -6409,6 +6421,7 @@ var $$IMU_EXPORT$$;
 					image = {
 						src: maxobj.url,
 						caption: get_caption(item),
+						page: get_page(item),
 						width: maxobj.width,
 						height: maxobj.height
 					};
@@ -6490,6 +6503,7 @@ var $$IMU_EXPORT$$;
 					src: image,
 					video: node.video_url,
 					caption: get_caption(media),
+					page: get_page(media),
 					width: width,
 					height: height
 				});
@@ -6512,9 +6526,11 @@ var $$IMU_EXPORT$$;
 		};
 
 		var raw_image_to_obj = function(image, obj) {
-			var extra = null;
+			var extra = {};
 			if (image.caption)
-				extra = {caption: image.caption};
+				extra.caption = image.caption;
+			if (image.page)
+				extra.page = image.page;
 
 			if (image.video) {
 				obj.push({url: common_functions.instagram_norm_url(image.video), video: true, extra: extra});
@@ -6728,6 +6744,24 @@ var $$IMU_EXPORT$$;
 		var possible_infos = [];
 
 		var element_src = common_functions.instagram_get_image_src_from_el(element);
+
+		if (element.hasAttribute("data-imu-info")) {
+			try {
+				var json = JSON_parse(element.getAttribute("data-imu-info"));
+				for (var i = 0; i < json.length; i++) {
+					json[i].element = element;
+
+					if (!json[i].image)
+						json[i].image = element.src;
+
+					delete json[i].all;
+				}
+
+				return json;
+			} catch (e) {
+				console_error("Unable to parse data-imu-info for", element);
+			}
+		}
 
 		// check for links first
 		var current = element;
@@ -62303,7 +62337,13 @@ var $$IMU_EXPORT$$;
 								}
 
 								if (our_imageid === current_imageid || our_imageid === current_videoid) {
-									return options.cb(new_media(data[i + add].video || data[i + add].src, data[i + add].video));
+									var our_data = data[i + add];
+
+									var cb_media = new_media(our_data.video || our_data.src, our_data.video);
+									cb_media.setAttribute("data-imu-info", JSON_stringify(info));
+									cb_media.setAttribute("data-imu-data", JSON_stringify(our_data));
+
+									return options.cb(cb_media);
 								}
 							}
 
