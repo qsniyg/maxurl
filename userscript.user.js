@@ -6003,8 +6003,8 @@ var $$IMU_EXPORT$$;
 	};
 
 	common_functions.instagram_parse_el_info = function(api_cache, do_request, use_app_api, info, cb) {
-		var shortcode_to_url = function(shortcode) {
-			return "https://www.instagram.com/p/" + shortcode + "/";
+		var shortcode_to_url = function(type, shortcode) {
+			return "https://www.instagram.com/" + type + "/" + shortcode + "/";
 		};
 
 		var query_ig = function(url, cb) {
@@ -6363,10 +6363,14 @@ var $$IMU_EXPORT$$;
 
 		var get_page = function(item) {
 			var shortcode = item.shortcode || item.code;
-			if (shortcode)
-				return shortcode_to_url(shortcode);
+			if (!shortcode)
+				return null;
 
-			return null;
+			if (item.product_type === "igtv") {
+				return shortcode_to_url("tv", shortcode);
+			} else {
+				return shortcode_to_url("p", shortcode);
+			}
 		};
 
 		var imageid_in_objarr = function(imageid, objarr) {
@@ -6490,13 +6494,21 @@ var $$IMU_EXPORT$$;
 						return;
 				}
 
-				if (node.video_url && false) {
+				if (node.video_url) {
 					// width/height corresponds to the image, not the video
 					// apparently not anymore?
 					// https://www.instagram.com/p/CAIJRpshE0z/ (thanks to fireattack on discord)
 					// https://www.instagram.com/p/CAatETTofMK/ graphql returns 640x640 but states it to be 750x750. app api returns 720x720, but is of a lower quality than 640x640 (thanks to remlap and Regis on discord)
-					width = 0;
-					height = 0;
+
+					//width = 0;
+					//height = 0;
+
+					// This is a terrible hack, but it works
+					if (width > 640) {
+						var ratio = 640. / width;
+						width *= ratio;
+						height *= ratio;
+					}
 				}
 
 				images.push({
@@ -6599,7 +6611,7 @@ var $$IMU_EXPORT$$;
 							}
 						} else {
 							images = images_graphql;
-							images_small = images;
+							images_small = images_app;
 						}
 
 						if (image_url) {
@@ -6769,7 +6781,7 @@ var $$IMU_EXPORT$$;
 			if (current.tagName !== "A")
 				continue;
 
-			if (current.href.match(/:\/\/[^/]+\/+(?:[^/]+\/+)?p\//)) {
+			if (current.href.match(/:\/\/[^/]+\/+(?:[^/]+\/+)?(?:p|tv)\//)) {
 				// link to post
 				possible_infos.push({
 					type: "post",
@@ -6870,7 +6882,7 @@ var $$IMU_EXPORT$$;
 			// popup
 			if ((current.tagName === "DIV" && current.getAttribute("role") === "dialog") ||
 				// post page
-				(current.tagName === "BODY" && host_url.match(/:\/\/[^/]*\/+(?:[^/]+\/+)?p\//))) {
+				(current.tagName === "BODY" && host_url.match(/:\/\/[^/]*\/+(?:[^/]+\/+)?(?:p|tv)\//))) {
 				possible_infos.push({
 					type: "post",
 					subtype: current.tagName === "BODY" ? "page" : "popup",
