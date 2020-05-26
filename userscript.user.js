@@ -18475,15 +18475,28 @@ var $$IMU_EXPORT$$;
 			// https://alcdn.img.xiaoka.tv/20161017/a33/379/27774175/a333797899a6aa5d2766de56d58dc7a3.jpg@1e_1c_0o_0l_330h_330w
 			//   https://alcdn.img.xiaoka.tv/20161017/a33/379/27774175/a333797899a6aa5d2766de56d58dc7a3.jpg
 			(domain_nosub === "xiaoka.tv" && domain.match(/alcdn\.img\.xiaoka\.tv/))) {
+			// thanks to liraqb on github for reporting: https://github.com/qsniyg/maxurl/issues/346
+			// https://i0.hdslb.com/bfs/videoshot/47146296.jpg@.webp
+			if (/:\/\/[^/]+\/+bfs\/+videoshot\/+[0-9]+\.[^/]+(?:[?#].*)?$/.test(src)) {
+				return {
+					url: src,
+					bad: "mask"
+				};
+			}
 			// https://i0.hdslb.com/bfs/bangumi/546991a5d3add9b550925b1168abf0a460e5f552.jpg@240w_320h.jpg
 			// https://i2.hdslb.com/bfs/archive/6b1d06f79ec31b6e23e4ecb7eb87c53ccd86f965.jpg@.webp
 			//   https://i2.hdslb.com/bfs/archive/6b1d06f79ec31b6e23e4ecb7eb87c53ccd86f965.jpg
 			// http://i0.hdslb.com/320_180/u_user/a5ab2c18e8e4a62240fad3f0b040ba00.jpg
 			//   http://i0.hdslb.com/u_user/a5ab2c18e8e4a62240fad3f0b040ba00.jpg
+			// https://i2.hdslb.com/bfs/archive/be06808687a0eb892744bc7ec701372fab74357e.jpg@560w_350h_100Q_1c.webp
+			//   https://i2.hdslb.com/bfs/archive/be06808687a0eb892744bc7ec701372fab74357e.jpg
+			// https://i2.hdslb.com/bfs/face/a63f3fb3fd63574ca52e09574fa0f2e4a531746f.jpg_64x64.jpg
+			//   https://i2.hdslb.com/bfs/face/a63f3fb3fd63574ca52e09574fa0f2e4a531746f.jpg
 			return src
 				.replace(/(:\/\/[^/]*\/)[0-9]+_[0-9]+\//, "$1")
 			//.replace(/(\.[^/.]*)@(?:[0-9]*[a-z](?:_[0-9]*[wh])?)?(\.[^/.]*)$/, "$1");
-				.replace(/(\.[^/.]*)@[_0-9a-z]*(?:\.[^/.]*)?$/, "$1");
+				.replace(/(\.[^/.]*)@[_0-9a-zQ]*(?:\.[^/.]*)?$/, "$1")
+				.replace(/(\/[0-9a-f]{20,}\.[^/._]+)_[0-9]+x[0-9]+\.[^/]+(?:[?#].*)?$/, "$1")
 		}
 
 		if (domain === "d.ifengimg.com") {
@@ -60727,6 +60740,19 @@ var $$IMU_EXPORT$$;
 			// http://www.banzaj.pl/pictures/celebrity/gwiazdy_zagraniczne/candice_swanepoel/candice_swanepoel_seksowna_sesja_w_bikini_sauvage/THUMBS/THUMB_candice_swanepoel_seksowna_sesja_w_bikini_sauvage_12.jpg
 			//   http://www.banzaj.pl/pictures/celebrity/gwiazdy_zagraniczne/candice_swanepoel/candice_swanepoel_seksowna_sesja_w_bikini_sauvage/candice_swanepoel_seksowna_sesja_w_bikini_sauvage_12.jpg
 			return src.replace(/(\/pictures\/.*\/)THUMBS\/+THUMB_/, "$1");
+		}
+
+		if (domain === "dyw7ncnq1en5l.cloudfront.net" ||
+			// https://img2.lesnumeriques.com/optim/article/2225/beyond-two-souls__w800.jpg
+			//   https://img2.lesnumeriques.com/article/2225/beyond-two-souls.jpg
+			(domain_nosub === "lesnumeriques.com" && /^img[0-9]*\./.test(domain))) {
+			// https://dyw7ncnq1en5l.cloudfront.net/optim/article/2225/beyond-two-souls__w800.webp
+			//   https://dyw7ncnq1en5l.cloudfront.net/article/2225/beyond-two-souls.jpg
+			// https://dyw7ncnq1en5l.cloudfront.net/optim/article/14/146359/6da6fbee-dr-kawashima-switch-life-is-strange-2-shovel-knight-king-of-cards-boneworks-les-meilleurs-jeux-du-mois_png__312_176__overflow.webp
+			//   https://dyw7ncnq1en5l.cloudfront.net/article/14/146359/6da6fbee-dr-kawashima-switch-life-is-strange-2-shovel-knight-king-of-cards-boneworks-les-meilleurs-jeux-du-mois.png
+			newsrc = src.replace(/\/optim\/+(article\/+[0-9/]+\/+[^/]+?)(?:_png)?__(?:w[0-9]+|[0-9]+_[0-9]+)(?:__overflow)?(\.[^/.]+)(?:[?#].*)?$/, "/$1$2");
+			if (newsrc !== src)
+				return add_full_extensions(newsrc);
 		}
 
 
