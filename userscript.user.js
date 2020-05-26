@@ -1957,6 +1957,8 @@ var $$IMU_EXPORT$$;
 		mouseover_open_new_tab_key: ["o"],
 		mouseover_open_bg_tab_key: ["shift", "o"],
 		mouseover_open_options_key: ["p"],
+		// thanks to Иван Хомяков on greasyfork for the idea: https://greasyfork.org/en/forum/discussion/comment/99404/#Comment_99404
+		mouseover_open_orig_page_key: ["n"],
 		mouseover_rotate_left_key: ["e"],
 		mouseover_rotate_right_key: ["r"],
 		mouseover_flip_horizontal_key: ["h"],
@@ -3465,6 +3467,16 @@ var $$IMU_EXPORT$$;
 			name: "Open options key",
 			description: "Opens this page in a new tab when this key is pressed",
 			hidden: is_userscript && open_in_tab === nullfunc,
+			requires: {
+				mouseover_open_behavior: "popup"
+			},
+			type: "keysequence",
+			category: "popup",
+			subcategory: "behavior"
+		},
+		mouseover_open_orig_page_key: {
+			name: "Open original page key",
+			description: "Opens the original page (if available) when this key is pressed",
 			requires: {
 				mouseover_open_behavior: "popup"
 			},
@@ -72696,6 +72708,13 @@ var $$IMU_EXPORT$$;
 				case "open_options":
 					open_in_tab_imu({url: preferred_options_page}, false);
 					return true;
+				case "open_orig_page":
+					if (popup_obj && popup_obj.extra && popup_obj.extra.page) {
+						open_in_tab_imu({url: popup_obj.extra.page}, false);
+					} else {
+						console_log("Unable to find original page for", popup_obj);
+					}
+					return true;
 				case "hold":
 					update_popup_hold();
 					return true;
@@ -72856,6 +72875,12 @@ var $$IMU_EXPORT$$;
 						// Clear the chord because opening in a new tab will not release the keys
 						clear: true,
 						action: {type: "open_options"}
+					},
+					{
+						key: settings.mouseover_open_orig_page_key,
+						// Clear the chord because opening in a new tab will not release the keys
+						clear: true,
+						action: {type: "open_orig_page"}
 					},
 					{
 						key: settings.mouseover_rotate_left_key,
