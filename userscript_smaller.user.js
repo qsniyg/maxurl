@@ -4,7 +4,7 @@
 // ==UserScript==
 // @name              Image Max URL
 // @namespace         http://tampermonkey.net/
-// @version           0.13.5
+// @version           0.13.6
 // @description       Finds larger or original versions of images for 6700+ websites, including a powerful image popup feature
 // @description:ko    6700개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
 // @description:fr    Trouve des images plus grandes ou originales pour plus de 6700 sites
@@ -675,12 +675,28 @@ var $$IMU_EXPORT$$;
 						var newresp = resp;
 
 						if (resp.response) {
+							var mime = null;
+							// hack for extension for performance
+							if (is_extension && "_responseEncoded" in resp && resp._responseEncoded.type) {
+								mime = resp._responseEncoded.type
+							} else if (resp.responseHeaders) {
+								var parsed_headers = headers_list_to_dict(parse_headers(resp.responseHeaders));
+								if (parsed_headers["content-type"]) {
+									mime = parsed_headers["content-type"];
+								}
+							}
+
 							newresp = shallowcopy(resp);
-							newresp.response = new native_blob([resp.response]);
+							var blob_options = undefined;
+							if (mime) {
+								blob_options = {type: mime};
+							}
+
+							newresp.response = new native_blob([resp.response], blob_options);
 						}
 
 						if (_nir_debug_) {
-							console_log("do_request's arraybuffer->blob:", resp, newresp);
+							console_log("do_request's arraybuffer->blob:", deepcopy(resp), newresp);
 						}
 
 						real_onload(newresp);
@@ -1874,8 +1890,10 @@ var $$IMU_EXPORT$$;
 		mouseover_video_reset_speed_key: ["backspace"],
 		mouseover_ui: true,
 		mouseover_ui_opacity: 80,
+		mouseover_ui_use_safe_glyphs: false,
 		mouseover_ui_imagesize: true,
 		mouseover_ui_zoomlevel: true,
+		mouseover_ui_filesize: false,
 		mouseover_ui_gallerycounter: true,
 		mouseover_ui_gallerymax: 50,
 		// thanks to pacep94616 on github for the idea: https://github.com/qsniyg/maxurl/issues/225
@@ -1943,6 +1961,8 @@ var $$IMU_EXPORT$$;
 		mouseover_open_new_tab_key: ["o"],
 		mouseover_open_bg_tab_key: ["shift", "o"],
 		mouseover_open_options_key: ["p"],
+		// thanks to Иван Хомяков on greasyfork for the idea: https://greasyfork.org/en/forum/discussion/comment/99404/#Comment_99404
+		mouseover_open_orig_page_key: ["n"],
 		mouseover_rotate_left_key: ["e"],
 		mouseover_rotate_right_key: ["r"],
 		mouseover_flip_horizontal_key: ["h"],
@@ -2724,9 +2744,18 @@ var $$IMU_EXPORT$$;
 			category: "popup",
 			subcategory: "ui"
 		},
+		mouseover_ui_use_safe_glyphs: {
+			name: "Use safe glyphs",
+			description: "Uses glyphs that are more likely to be available on all fonts. Enable this option if the following characters render as boxes: \uD83E\uDC47 \ud83e\udc50 \ud83e\udc52",
+			requires: {
+				mouseover_ui: true
+			},
+			category: "popup",
+			subcategory: "ui"
+		},
 		mouseover_ui_imagesize: {
-			name: "Image size",
-			description: "Displays the image size on top of the UI",
+			name: "Media resolution",
+			description: "Displays the original media dimensions on top of the UI",
 			requires: {
 				mouseover_ui: true
 			},
@@ -2736,6 +2765,15 @@ var $$IMU_EXPORT$$;
 		mouseover_ui_zoomlevel: {
 			name: "Zoom percent",
 			description: "Displays the current zoom level on top of the UI",
+			requires: {
+				mouseover_ui: true
+			},
+			category: "popup",
+			subcategory: "ui"
+		},
+		mouseover_ui_filesize: {
+			name: "File size",
+			description: "Displays the media's file size on top of the UI. For the moment, this will not work with partially loaded media if 'Avoid HEAD request for partially loaded media' is enabled.",
 			requires: {
 				mouseover_ui: true
 			},
@@ -3442,6 +3480,16 @@ var $$IMU_EXPORT$$;
 			name: "Open options key",
 			description: "Opens this page in a new tab when this key is pressed",
 			hidden: is_userscript && open_in_tab === nullfunc,
+			requires: {
+				mouseover_open_behavior: "popup"
+			},
+			type: "keysequence",
+			category: "popup",
+			subcategory: "behavior"
+		},
+		mouseover_open_orig_page_key: {
+			name: "Open original page key",
+			description: "Opens the original page (if available) when this key is pressed",
 			requires: {
 				mouseover_open_behavior: "popup"
 			},
@@ -5590,17 +5638,20 @@ var $$IMU_EXPORT$$;
 		// https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/faa48d2d-12c2-43d1-bf23-b5e99857825b/ddo0eau-c742e0f9-07f9-4a22-8d47-933e9fd3fb2b.png/v1/crop/w_244,h_350,x_0,y_0,scl_0.066812705366922,q_70,strp/railway_road_to_the_stars_by_ellysiumn_ddo0eau-350t.jpg
 
 		// https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/intermediary/f/e04c7e93-4504-4dbe-91f9-fd353fc145f2/dcx503r-30c02b72-c26d-4732-9c9f-14fcbc633aaa.jpg
-		var match = url.match(/^[a-z]+:\/\/[^/]+\/+(?:intermediary\/+)?([if])\/+[-0-9a-f]{20,}\/+[^/]+(?:[?#].*)?$/);
+		var match = url.match(/^[a-z]+:\/\/[^/]+\/+(?:intermediary\/+)?([if])\/+[-0-9a-f]{20,}\/+[^/?]+([?#].*)?$/);
 		if (match) {
-			if (match[1] === "i") {
-				return {
-					preview: true
-				};
-			} else {
-				return {
-					original: true
-				};
+			var obj = {};
+			if (match[3] && match[3][0] === "?") {
+				obj.has_token = true;
 			}
+
+			if (match[1] === "i") {
+				obj.preview = true;
+			} else {
+				obj.original = true;
+			}
+
+			return obj;
 		}
 
 		var match = url.match(/^[a-z]+:\/\/[^/]+\/+(?:intermediary\/+)?[if]\/+[-0-9a-f]{20,}\/+[^/]+\/+v1\/+(?:fit|fill|crop)\/+([^/]+)\/+[^/]+(?:[?#].*)?$/);
@@ -5645,8 +5696,22 @@ var $$IMU_EXPORT$$;
 		var info1 = common_functions.wix_image_info(url1);
 		var info2 = common_functions.wix_image_info(url2);
 
+		if (_nir_debug_)
+			console_log("wix_compare (info1:", info1, "info2:", info2, ")");
+
 		if (!info1 || !info2)
 			return null;
+
+		// needed to avoid constant reloading between /intermediary/ and /f/.*?token
+		// thanks to Wisedrow on discord for reporting
+		// https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/intermediary/f/4ac770c0-c37b-43a0-866f-2a2707ea61c7/d854mkr-cf30cc53-6b99-4651-916d-1703c943255c.jpg
+		if (info1.original && info2.original) {
+			if (info2.has_token) {
+				return url1;
+			} else {
+				return url2;
+			}
+		}
 
 		if (info1.original && (!prefer_size || !info2.preview))
 			return url1;
@@ -5704,7 +5769,10 @@ var $$IMU_EXPORT$$;
 
 				try {
 					var deviation = initialstate["@@entities"].deviation[deviationid];
-					//console_log(deviation);
+
+					if (_nir_debug_) {
+						console_log("Deviation object", deviation);
+					}
 
 					if (deviation.title)
 						obj.extra.caption = deviation.title;
@@ -5946,8 +6014,66 @@ var $$IMU_EXPORT$$;
 		return image_url.replace(/.*\/([^/.]*)\.[^/.]*(?:[?#].*)?$/, "$1");
 	};
 
+	common_functions.instagram_norm_url = function(src) {
+		// thanks to remlap on github: https://github.com/qsniyg/maxurl/issues/239
+		return remove_queries(src, ["se", "_nc_cat", "_nc_rid", "efg", "ig_cache_key"]);
+		// these remove_queries calls are separated in case the next one doesn't work.
+		/*newsrc = remove_queries(src, ["se"]);
+		if (newsrc !== src)
+			return newsrc;
+
+		newsrc = remove_queries(src, ["_nc_cat", "_nc_rid", "efg", "ig_cache_key"]);
+		if (newsrc !== src)
+			return newsrc;*/
+	};
+
 	common_functions.instagram_parse_el_info = function(api_cache, do_request, use_app_api, info, cb) {
+		var shortcode_to_url = function(type, shortcode) {
+			return "https://www.instagram.com/" + type + "/" + shortcode + "/";
+		};
+
+		var url_to_shortcode = function(url) {
+			match = url.match(/^[a-z]+:\/\/[^/]+\/+(?:[^/]+\/+)?(?:p|tv)\/+([^/]+)/);
+			if (match)
+				return match[1];
+			return null;
+		};
+
+		var get_sharedData_from_resptext = function(text) {
+			try {
+				var regex1 = /window\._sharedData = *(.*?);?<\/script>/;
+				var regex2 = /window\._sharedData *= *(.*?}) *;[\s]*window\.__initialDataLoaded/;
+
+				var match = text.match(regex1);
+				if (!match) {
+					match = text.match(regex2);
+				}
+
+				var parsed = JSON_parse(match[1]);
+
+				var regex3 = /window\.__additionalDataLoaded\(["'].*?["']\s*,\s*({.*?})\);?\s*<\/script>/;
+				match = text.match(regex3);
+				if (match) {
+					var parsed1 = JSON_parse(match[1]);
+					for (var key in parsed.entry_data) {
+						if (is_array(parsed.entry_data[key])) {
+							parsed.entry_data[key][0] = overlay_object(parsed.entry_data[key][0], parsed1);
+						}
+					}
+				}
+
+				return parsed;
+			} catch (e) {
+				console_error(e);
+			}
+
+			return null;
+		};
+
 		var query_ig = function(url, cb) {
+			if (!do_request)
+				return cb(null);
+
 			// Normalize the URL to reduce duplicate cache checks
 			url = url
 				.replace(/[?#].*/, "")
@@ -5965,36 +6091,12 @@ var $$IMU_EXPORT$$;
 						if (result.readyState !== 4)
 							return;
 
-						try {
-							var text = result.responseText;
-
-							var regex1 = /window\._sharedData = *(.*?);?<\/script>/;
-							var regex2 = /window\._sharedData *= *(.*?}) *;[\s]*window\.__initialDataLoaded/;
-
-							var match = text.match(regex1);
-							if (!match) {
-								match = text.match(regex2);
-							}
-
-							var parsed = JSON_parse(match[1]);
-
-							var regex3 = /window\.__additionalDataLoaded\(["'].*?["']\s*,\s*({.*?})\);?\s*<\/script>/;
-							match = text.match(regex3);
-							if (match) {
-								var parsed1 = JSON_parse(match[1]);
-								for (var key in parsed.entry_data) {
-									if (is_array(parsed.entry_data[key])) {
-										parsed.entry_data[key][0] = overlay_object(parsed.entry_data[key][0], parsed1);
-									}
-								}
-							}
-
-							// TODO: maybe check if parsed is correct before setting to cache?
-							done(parsed, 60 * 60);
-						} catch (e) {
+						var parsed = get_sharedData_from_resptext(result.responseText);
+						if (!parsed) {
 							console_log("instagram_sharedData", result);
-							console_error("instagram_sharedData", e);
-							done(null, false);
+							return done(null, false);
+						} else {
+							return done(parsed, 60*60);
 						}
 					}
 				});
@@ -6037,6 +6139,9 @@ var $$IMU_EXPORT$$;
 			api_cache.fetch(cache_key, cb, function (done) {
 				var url = "https://i.instagram.com/api/v1/users/" + uid + "/info/";
 				app_api_call(url, function (result) {
+					if (!result)
+						return done(null, false);
+
 					if (result.readyState !== 4)
 						return;
 
@@ -6076,6 +6181,10 @@ var $$IMU_EXPORT$$;
 		};
 
 		var app_api_call = function (url, cb) {
+			if (!do_request) {
+				return cb(null);
+			}
+
 			var headers = {
 				//"User-Agent": "Instagram 10.26.0 (iPhone7,2; iOS 10_1_1; en_US; en-US; scale=2.00; gamut=normal; 750x1334) AppleWebKit/420+",
 				"User-Agent": "Instagram 10.26.0 Android (23/6.0.1; 640dpi; 1440x2560; samsung; SM-G930F; herolte; samsungexynos8890; en_US)",
@@ -6109,6 +6218,9 @@ var $$IMU_EXPORT$$;
 			api_cache.fetch(cache_key, cb, function (done) {
 				var url = "https://i.instagram.com/api/v1/media/" + id + "/info/";
 				app_api_call(url, function (result) {
+					if (!result)
+						return done(null, false);
+
 					if (result.readyState !== 4)
 						return;
 
@@ -6120,6 +6232,10 @@ var $$IMU_EXPORT$$;
 						} catch (e) {
 							console_log("instagram_mediainfo", result);
 							console_error("instagram_mediainfo", e);
+						}
+
+						if (_nir_debug_) {
+							console_log("instagram_mediainfo", parsed);
 						}
 
 						if (parsed) {
@@ -6142,6 +6258,9 @@ var $$IMU_EXPORT$$;
 			api_cache.fetch(story_cache_key, cb, function (done) {
 				var url = "https://i.instagram.com/api/v1/feed/user/" + uid + "/reel_media/";
 				app_api_call(url, function(result) {
+					if (!result)
+						return done(null, false);
+
 					if (result.readyState !== 4)
 						return;
 
@@ -6293,15 +6412,48 @@ var $$IMU_EXPORT$$;
 			return undefined;
 		};
 
-		var image_in_objarr = function(image, objarr) {
-			var imageid = common_functions.instagram_get_imageid(image);
+		var get_page = function(item) {
+			var shortcode = item.shortcode || item.code;
+			if (!shortcode)
+				return null;
 
+			if (item.product_type === "igtv") {
+				return shortcode_to_url("tv", shortcode);
+			} else {
+				return shortcode_to_url("p", shortcode);
+			}
+		};
+
+		var imageid_in_objarr = function(imageid, objarr) {
 			for (var i = 0; i < objarr.length; i++) {
 				if (string_indexof(objarr[i].src, imageid) > 0)
 					return objarr[i];
 			}
 
 			return null;
+		}
+
+		var image_in_objarr = function(image, objarr, objarr1) {
+			var imageid = common_functions.instagram_get_imageid(image);
+
+			var largest = imageid_in_objarr(imageid, objarr);
+			if (!largest)
+				return null;
+
+			var smallest = null;
+			if (objarr1) {
+				smallest = imageid_in_objarr(imageid, objarr1);
+			}
+
+			var retobj = {
+				largest: largest
+			};
+
+			if (smallest && smallest !== largest) {
+				retobj.smallest = smallest;
+			}
+
+			return retobj;
 		};
 
 		var get_maxsize_app = function(item) {
@@ -6324,6 +6476,7 @@ var $$IMU_EXPORT$$;
 					image = {
 						src: maxobj.url,
 						caption: get_caption(item),
+						page: get_page(item),
 						width: maxobj.width,
 						height: maxobj.height
 					};
@@ -6384,7 +6537,7 @@ var $$IMU_EXPORT$$;
 
 				var found_image = image_in_objarr(image, images);
 				if (found_image) {
-					var found_size = found_image.width * found_image.height;
+					var found_size = found_image.largest.width * found_image.largest.height;
 					var our_size = width * height;
 
 					// fixme: why is this check even here? it breaks width=0, height=0 videos
@@ -6392,18 +6545,28 @@ var $$IMU_EXPORT$$;
 						return;
 				}
 
-				if (node.video_url && false) {
+				if (node.video_url) {
 					// width/height corresponds to the image, not the video
 					// apparently not anymore?
 					// https://www.instagram.com/p/CAIJRpshE0z/ (thanks to fireattack on discord)
-					width = 0;
-					height = 0;
+					// https://www.instagram.com/p/CAatETTofMK/ graphql returns 640x640 but states it to be 750x750. app api returns 720x720, but is of a lower quality than 640x640 (thanks to remlap and Regis on discord)
+
+					//width = 0;
+					//height = 0;
+
+					// This is a terrible hack, but it works
+					if (width > 640) {
+						var ratio = 640. / width;
+						width *= ratio;
+						height *= ratio;
+					}
 				}
 
 				images.push({
 					src: image,
 					video: node.video_url,
 					caption: get_caption(media),
+					page: get_page(media),
 					width: width,
 					height: height
 				});
@@ -6425,60 +6588,146 @@ var $$IMU_EXPORT$$;
 			return images;
 		};
 
-		var image_to_obj = function(image) {
-			var extra = null;
+		var raw_image_to_obj = function(image, obj) {
+			var extra = {};
 			if (image.caption)
-				extra = {caption: image.caption};
+				extra.caption = image.caption;
+			if (image.page)
+				extra.page = image.page;
 
 			if (image.video) {
-				return [
-					{url: image.video, video: true, extra: extra},
-					{url: image.src, extra: extra}
-				];
+				obj.push({url: common_functions.instagram_norm_url(image.video), video: true, extra: extra});
+				obj.push({url: common_functions.instagram_norm_url(image.src), extra: extra});
 			} else {
-				return {
-					url: image.src,
+				obj.push({
+					url: common_functions.instagram_norm_url(image.src),
 					extra: extra
-				};
+				});
+			}
+
+			return obj;
+		};
+
+		var image_to_obj = function(image) {
+			if (!image)
+				return null;
+
+			var obj = [];
+
+			raw_image_to_obj(image.largest, obj);
+			if (image.smallest)
+				raw_image_to_obj(image.smallest, obj);
+
+			// TODO: maybe put videos before images?
+
+			return obj;
+		};
+
+		var cache_graphql_post = function(edge) {
+			if (edge.shortcode) {
+				api_cache.set("graphql_ig_post:" + edge.shortcode, edge);
 			}
 		};
 
-		var request_post_inner = function(post_url, image_url, cb) {
-			query_ig(post_url, function(json) {
+		var fill_graphql_cache_with_postpage = function(postpage_text) {
+			var shareddata = get_sharedData_from_resptext(postpage_text);
+			if (!shareddata)
+				return;
+
+			try {
+				var entry_data = shareddata.entry_data;
+				if ("ProfilePage" in entry_data) {
+					var edges = entry_data.ProfilePage[0].graphql.user.edge_owner_to_timeline_media.edges;
+
+					for (var i = 0; i < edges.length; i++) {
+						var edge = edges[i].node;
+						cache_graphql_post(edge);
+					}
+				} else if ("PostPage" in entry_data) {
+					var shortcode_media = entry_data.PostPage[0].graphql.shortcode_media;
+					cache_graphql_post(shortcode_media);
+				}
+			} catch (e) {
+				console_error(e, shareddata);
+			}
+		};
+
+		var request_query_ig_post = function(url, cb) {
+			query_ig(url, function(json) {
 				if (!json) {
 					return cb(null);
 				}
 
 				try {
 					var media = json.entry_data.PostPage[0].graphql.shortcode_media;
+					return cb(media);
+				} catch (e) {
+					console_error(e);
+				}
 
+				return cb(null);
+			});
+		};
+
+		var request_ig_post = function(url, code, cb) {
+			if (!code)
+				return cb(null);
+
+			var cache_key = "graphql_ig_post:" + code;
+
+			api_cache.fetch(cache_key, cb, function(done) {
+				request_query_ig_post(url, function(data) {
+					if (data) {
+						return done(data, 60*60);
+					} else {
+						return done(null, false);
+					}
+				});
+			});
+		};
+
+		var request_post_inner = function(post_url, image_url, cb) {
+			request_ig_post(post_url, url_to_shortcode(post_url), function(media) {
+				if (!media) {
+					return cb(null);
+				}
+
+				try {
 					mediainfo_api(media.id + "_" + media.owner.id, function(app_response) {
 						var images = [];
+						var images_small = [];
+
+						var images_app = [];
 
 						if (app_response !== null) {
-							images = get_maxsize_app(app_response.items[0]);
+							images_app = get_maxsize_app(app_response.items[0]);
 						} else if (use_app_api) {
 							console_log("Unable to use API to find Instagram image, you may need to login to Instagram");
 						}
 
 						var images_graphql = get_maxsize_graphql(media);
 
-						if (images && images.length === images_graphql.length) {
-							for (var i = 0; i < images.length; i++) {
-								var app_size = images[i].width * images[i].height;
+						if (images_app && images_app.length === images_graphql.length) {
+							for (var i = 0; i < images_app.length; i++) {
+								var app_size = images_app[i].width * images_app[i].height;
 								var graphql_size = images_graphql[i].width * images_graphql[i].height;
 
 								if (graphql_size > app_size) {
 									//console_log("Using graphql image", images[i], images_graphql[i]);
 									images[i] = images_graphql[i];
+									images_small[i] = images_app[i];
+								} else {
+									images[i] = images_app[i];
+									images_small[i] = images_graphql[i];
 								}
 							}
 						} else {
 							images = images_graphql;
+							images_small = images_app;
 						}
 
 						if (image_url) {
-							var image = image_in_objarr(image_url, images);
+							var image = image_in_objarr(image_url, images, images_small);
 							if (image)
 								return cb(image_to_obj(image));
 						} else {
@@ -6499,6 +6748,8 @@ var $$IMU_EXPORT$$;
 		};
 
 		var request_post = function(post_url, image_url, cb) {
+			fill_graphql_cache_with_postpage(document.documentElement.innerHTML);
+
 			return request_post_inner(post_url, image_url, cb);
 		};
 
@@ -6620,13 +6871,31 @@ var $$IMU_EXPORT$$;
 
 		var element_src = common_functions.instagram_get_image_src_from_el(element);
 
+		if (element.hasAttribute("data-imu-info")) {
+			try {
+				var json = JSON_parse(element.getAttribute("data-imu-info"));
+				for (var i = 0; i < json.length; i++) {
+					json[i].element = element;
+
+					if (!json[i].image)
+						json[i].image = element.src;
+
+					delete json[i].all;
+				}
+
+				return json;
+			} catch (e) {
+				console_error("Unable to parse data-imu-info for", element);
+			}
+		}
+
 		// check for links first
 		var current = element;
 		while ((current = current.parentElement)) {
 			if (current.tagName !== "A")
 				continue;
 
-			if (current.href.match(/:\/\/[^/]+\/+(?:[^/]+\/+)?p\//)) {
+			if (current.href.match(/:\/\/[^/]+\/+(?:[^/]+\/+)?(?:p|tv)\//)) {
 				// link to post
 				possible_infos.push({
 					type: "post",
@@ -6727,7 +6996,7 @@ var $$IMU_EXPORT$$;
 			// popup
 			if ((current.tagName === "DIV" && current.getAttribute("role") === "dialog") ||
 				// post page
-				(current.tagName === "BODY" && host_url.match(/:\/\/[^/]*\/+(?:[^/]+\/+)?p\//))) {
+				(current.tagName === "BODY" && host_url.match(/:\/\/[^/]*\/+(?:[^/]+\/+)?(?:p|tv)\//))) {
 				possible_infos.push({
 					type: "post",
 					subtype: current.tagName === "BODY" ? "page" : "popup",
@@ -6867,6 +7136,40 @@ var $$IMU_EXPORT$$;
 		});
 	};
 
+	common_functions.get_snapchat_storysharing = function(api_cache, do_request, username, cb) {
+		var cache_key = "snapchat_storysharing:" + username;
+		api_cache.fetch(cache_key, cb, function(done) {
+			do_request({
+				method: "GET",
+				url: "https://storysharing.snapchat.com/v1/fetch/" + username + "?request_origin=ORIGIN_WEB_PLAYER",
+				headers: {
+					"sec-fetch-dest": "empty",
+					"sec-fetch-mode": "cors",
+					"sec-fetch-site": "same-site",
+					"Origin": "https://www.snapchat.com",
+					"Referer": "https://www.snapchat.com/add/" + username // maybe use real url instead?
+				},
+				onload: function(resp) {
+					if (resp.readyState !== 4)
+						return;
+
+					if (resp.status !== 200) {
+						console_error(resp);
+						return done(null, false);
+					}
+
+					try {
+						var json = JSON_parse(resp.responseText).story;
+						return done(json, 60); // story can change, so 60 seconds? or less?
+					} catch (e) {
+						console_error(e, resp);
+						return done(null, false);
+					}
+				}
+			});
+		});
+	};
+
 	common_functions.snap_to_obj = function(snap) {
 		var caption = null;
 
@@ -6877,7 +7180,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		return {
-			url: snap.snapUrls.mediaUrl,
+			url: snap.media.mediaUrl,//snap.snapUrls.mediaUrl,
 			extra: {
 				caption: caption || null
 			},
@@ -6942,16 +7245,16 @@ var $$IMU_EXPORT$$;
 			return cb(null);
 		}
 
-		common_functions.get_snapchat_story(api_cache, do_request, info.username, function(data) {
+		common_functions.get_snapchat_storysharing(api_cache, do_request, info.username, function(data) {
 			if (!data) {
 				return cb(null);
 			}
 
 			if (info.pos === -1) {
-				info.pos = data.snapList.length - 1;
+				info.pos = data.snaps.length;//data.snapList.length - 1;
 			}
 
-			return cb(common_functions.snap_to_obj(data.snapList[info.pos]));
+			return cb(common_functions.snap_to_obj(data./*snapList*/snaps[info.pos]));
 		});
 	};
 
@@ -8675,6 +8978,7 @@ var $$IMU_EXPORT$$;
 			  domain.match(/^gp[0-9]\./) ||
 			  domain.match(/^ci[0-9]\./))) ||
 			domain === "d2yal1mtmg1ts6.cloudfront.net" ||
+			domain === "d2jcw5q7j4vmo4.cloudfront.net" ||
 			(domain_nosub === "blogger.com" && domain.match(/^bp[0-9]*\.blogger\.com/)) ||
 			domain_nosub === "ggpht.com") {
 			newsrc = src;
@@ -10927,6 +11231,12 @@ var $$IMU_EXPORT$$;
 				return obj;
 			}
 
+			newsrc = src.replace(/^[a-z]+:\/\/[0-9]+\.media\./, "https://media.");
+			if (newsrc !== src) {
+				obj.url = newsrc;
+				return obj;
+			}
+
 			if (options.do_request && options.cb && /:\/\/[^/]+\/+[0-9a-f]{32}\/+[0-9a-f]{16}-[0-9a-f]{2}\/+s[0-9]+x[0-9]+(?:_c[0-9]+)?\/+[0-9a-f]{20,}\./.test(src)) {
 				var get_initialstate_from_text = function(text) {
 					var match = text.match(/window\['___INITIAL_STATE___'\]\s*=\s*({.*?"ImageUrlPage":.*?})\s*;\s*(?:<\/script>[\s\S]*)?$/);
@@ -10946,11 +11256,29 @@ var $$IMU_EXPORT$$;
 					return null;
 				};
 
+				var url_to_tumblr_imageinfo = function(url) {
+					var match = url.match(/:\/\/[^/]+\/+([0-9a-f]{32})\/+([0-9a-f]{16}-[0-9a-f]{2})\/+s([0-9]+)x([0-9]+)(?:_c[0-9]+)?\/+[0-9a-f]{20,}\.([^/.?#]+)(?:[?#].*)?$/);
+					if (match) {
+						return {
+							mediaKey: match[1] + ":" + match[2],
+							url: url,
+							width: match[3],
+							height: match[4]
+						};
+					} else {
+						return null;
+					}
+				};
+
 				var query_tumblr_original = function(url, cb) {
-					var cache_key = "tumblr_original:" + url;
+					url = url
+						.replace(/\/s[0-9]+x[0-9]+(?:_c[0-9]+)?\/+([0-9a-f]{20,}\.)/, "/s999999999x999999999/$1")
+						.replace(/:\/\/media\./, "://66.media.");
+
+					var cache_key = "tumblr_image_page:" + url;
 					api_cache.fetch(cache_key, cb, function(done) {
 						options.do_request({
-							url: src,
+							url: url,
 							headers: {
 								Referer: "",
 								"sec-fetch-mode": "navigate",
@@ -10973,7 +11301,15 @@ var $$IMU_EXPORT$$;
 								}
 
 								try {
-									var imageresponse = initialstate.ImageUrlPage.photo.imageResponse;
+									var imageresponse = deepcopy(initialstate.ImageUrlPage.photo.imageResponse);
+
+									var request_imageinfo;
+									if (initialstate.ImageUrlPage.requestedImage) {
+										request_imageinfo = url_to_tumblr_imageinfo(initialstate.ImageUrlPage.requestedImage);
+										if (request_imageinfo)
+											imageresponse.push(request_imageinfo);
+									}
+
 									var page = initialstate.ImageUrlPage.post.postUrl;
 
 									return done({
@@ -11013,7 +11349,7 @@ var $$IMU_EXPORT$$;
 						return;
 
 					var obj = {
-						url: largest.url,
+						url: largest.url.replace(/^[a-z]+:\/\/[0-9]+\.media\./, "https://media."),
 						is_original: largest.hasOriginalDimensions
 					};
 
@@ -13347,9 +13683,16 @@ var $$IMU_EXPORT$$;
 		if ((domain_nosub === "hdslb.com" && domain.match(/i[0-9]*\.hdslb\.com/)) ||
 			domain === "img.xiaohongshu.com" ||
 			(domain_nosub === "xiaoka.tv" && domain.match(/alcdn\.img\.xiaoka\.tv/))) {
+			if (/:\/\/[^/]+\/+bfs\/+videoshot\/+[0-9]+\.[^/]+(?:[?#].*)?$/.test(src)) {
+				return {
+					url: src,
+					bad: "mask"
+				};
+			}
 			return src
 				.replace(/(:\/\/[^/]*\/)[0-9]+_[0-9]+\//, "$1")
-				.replace(/(\.[^/.]*)@[_0-9a-z]*(?:\.[^/.]*)?$/, "$1");
+				.replace(/(\.[^/.]*)@[_0-9a-zQ]*(?:\.[^/.]*)?$/, "$1")
+				.replace(/(\/[0-9a-f]{20,}\.[^/._]+)_[0-9]+x[0-9]+\.[^/]+(?:[?#].*)?$/, "$1")
 		}
 
 		if (domain === "d.ifengimg.com") {
@@ -15780,7 +16123,7 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if (domain_nosub === "muscdn.com" && /^v[0-9]+\./.test(domain)) {
+		if ((domain_nosub === "muscdn.com" || domain_nosub === "tiktokcdn.com") && /^v[0-9]+m?\./.test(domain)) {
 			var baseobj = {
 				url: src,
 				video: true
@@ -15867,7 +16210,7 @@ var $$IMU_EXPORT$$;
 			return src.replace(/^[a-z]+:\/\/[^/]+\/+china-img\/+/, "https://p0.pstatp.com/");
 		}
 
-		if (domain_nosub === "tiktokcdn.com" && /^v[0-9]*\./.test(domain) && string_indexof(src, "/video/") >= 0) {
+		if (domain_nosub === "tiktokcdn.com" && /^v[0-9]*m?\./.test(domain) && string_indexof(src, "/video/") >= 0) {
 			return {
 				url: src,
 				video: true
@@ -21008,8 +21351,7 @@ var $$IMU_EXPORT$$;
 
 		if (((domain_nosub === "fbcdn.net" && domain.match(/^instagram\./)) ||
 			 domain_nosub === "cdninstagram.com") &&
-			host_domain_nosub === "instagram.com" && options.element &&
-			options.do_request && options.cb) {
+			host_domain_nosub === "instagram.com" && options.element && options.cb) {
 			newsrc = (function() {
 				var info = common_functions.instagram_find_el_info(document, options.element, options.host_url);
 				return common_functions.instagram_parse_el_info(api_cache, options.do_request, options.rule_specific.instagram_use_app_api, info, options.cb);
@@ -29350,8 +29692,8 @@ var $$IMU_EXPORT$$;
 							   "$1$2");
 		}
 
-		if (domain_nosub === "ckm.pl" && domain.match(/^static[0-9]*\./)) {
-			return src.replace(/\/\.thumbnails\/+[0-9]+x[0-9]+\/+/, "/");
+		if (domain_nosub === "ckm.pl" ) {
+			return src.replace(/(\/files\/+[0-9]{4}_[0-9]{2}\/+)\.thumbnails\/+[0-9X]+x[0-9X]+\/+/, "$1");
 		}
 
 		if (domain_nowww === "zurnal.mk" ||
@@ -30966,7 +31308,8 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/media\/+[0-9]+\/+[0-9]+\/+(?:images\/+assets\/+)?)[a-z]+\.([0-9a-zA-Z_]+\.[^/.]*)(?:[?#].*)?$/, "$1original.$2");
 		}
 
-		if (domain === "img.manoramaonline.com") {
+		if (domain === "img.manoramaonline.com" ||
+			domain_nowww === "theman.in") {
 			return src.replace(/\.image\.[0-9]+\.[0-9]+\.[^/.]*(?:[?#].*)?$/, "");
 		}
 
@@ -32598,6 +32941,10 @@ var $$IMU_EXPORT$$;
 
 		if (domain === "a.atcdn.org") {
 			return src.replace(/\/c\/+[a-z]+_([^/.]*\.[^/.]*)(?:[?#].*)?$/, "/c/$1");
+		}
+
+		if (domain === "m.atcdn.co.uk") {
+			return src.replace(/\/a\/media\/+(?:[wh][0-9]+|p[0-9a-f]{6}){1,}\/+/, "/a/media/");
 		}
 
 		if (domain_nowww === "you-anime.ru") {
@@ -36844,15 +37191,15 @@ var $$IMU_EXPORT$$;
 				return base64_decode(newsrc);
 		}
 
-		if (domain_nowww === "gfycat.com") {
-			match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:[a-z]{2}\/+)?([a-zA-Z]+)(?:[?#].*)?$/, "$1");
+		if (domain_nowww === "gfycat.com" || domain_nowww === "redgifs.com") {
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:[a-z]{2}\/+)?(?:watch\/+)?([a-zA-Z]+)(?:[?#].*)?$/, "$1");
 			if (match && options.do_request && options.cb) {
-				var query_gfycat = function(id, cb) {
-					var cache_key = "gfycat:" + id;
+				var query_gfycat = function(site, id, cb) {
+					var cache_key = site + ":" + id;
 
 					api_cache.fetch(cache_key, cb, function(done) {
 						options.do_request({
-							url: "https://api.gfycat.com/v1/gfycats/" + id,
+							url: "https://api." + site + ".com/v1/gfycats/" + id,
 							method: "GET",
 							headers: {
 								Referer: ""
@@ -36876,7 +37223,61 @@ var $$IMU_EXPORT$$;
 					});
 				};
 
-				query_gfycat(match[1], options.cb);
+				var query_gfycat_redgifs = function(id, cb) {
+					var site1 = "gfycat";
+					var site2 = "redgifs";
+
+					if (domain_nosub === "redgifs.com") {
+						site1 = "redgifs";
+						site2 = "gfycat";
+					}
+
+					query_gfycat(site1, id, function(data) {
+						if (!data) {
+							query_gfycat(site2, id, cb);
+						} else {
+							cb(data);
+						}
+					});
+				};
+
+				var query_gdn = function(id, cb) {
+					var cache_key = "gifdeliverynetwork:" + id;
+
+					api_cache.fetch(cache_key, cb, function(done) {
+						options.do_request({
+							url: "https://www.gifdeliverynetwork.com/" + id,
+							method: "GET",
+							headers: {
+								Referer: ""
+							},
+							onload: function(resp) {
+								if (resp.status !== 200) {
+									console_error(cache_key, resp);
+									return done(null, false);
+								}
+
+								try {
+									var match = resp.responseText.match(/<script type="application\/ld\+json">([[]{.*?}])<\/script>/);
+									if (match) {
+										var json = JSON_parse(match[1]);
+
+										for (var i = 0; i < json.length; i++) {
+											if (json[i].thumbnailUrl)
+												return done(json[i].thumbnailUrl[0], 24*60*60);
+										}
+									}
+								} catch (e) {
+									console_error(e);
+								}
+
+								return done(null, false);
+							}
+						});
+					});
+				};
+
+				query_gfycat_redgifs(match[1], options.cb);
 
 				return {
 					waiting: true
@@ -36884,12 +37285,10 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if (domain === "thumbs.gfycat.com" ||
-			domain === "zippy.gfycat.com" ||
-			domain === "giant.gfycat.com") {
+		if ((domain_nosub === "gfycat.com" || domain_nosub === "redgifs.com") && (/^(?:thumbs[0-9]*|zippy|giant)\./.test(domain))) {
 			newsrc = src
 				.replace(/:\/\/zippy\.([^/]+\/+[^/]+)(?:-[^/.]+)?\.[^/.]+(?:[?#].*)?$/, "://giant.$1.mp4")
-				.replace(/:\/\/thumbs\.([^/]+\/+[^/]+)-(?:size_restricted\.gif|mobile\.(?:webm|mp4)|(?:mobile|poster)\.jpg)(?:[?#].*)?$/, "://zippy.$1.mp4");
+				.replace(/:\/\/thumbs[0-9]*\.([^/]+\/+[^/]+)-(?:size_restricted\.gif|mobile\.(?:webm|mp4)|(?:mobile|poster)\.jpg)(?:[?#].*)?$/, "://zippy.$1.mp4");
 			obj = {
 				url: newsrc
 			};
@@ -39780,6 +40179,17 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain_nowww === "banzaj.pl") {
+			return src.replace(/(\/pictures\/.*\/)THUMBS\/+THUMB_/, "$1");
+		}
+
+		if (domain === "dyw7ncnq1en5l.cloudfront.net" ||
+			(domain_nosub === "lesnumeriques.com" && /^img[0-9]*\./.test(domain))) {
+			newsrc = src.replace(/\/optim\/+(article\/+[0-9/]+\/+[^/]+?)(?:_png)?__(?:w[0-9]+|[0-9]+_[0-9]+)(?:__overflow)?(\.[^/.]+)(?:[?#].*)?$/, "/$1$2");
+			if (newsrc !== src)
+				return add_full_extensions(newsrc);
+		}
+
 
 
 
@@ -40803,9 +41213,6 @@ var $$IMU_EXPORT$$;
 					if (!el)
 						return "default";
 
-					if (!options.do_request)
-						return "default";
-
 					var query_el = el;
 					if (!el.parentElement) { // check if it's a fake element returned by this function
 						query_el = options.element;
@@ -40831,6 +41238,10 @@ var $$IMU_EXPORT$$;
 						var our_imageid = common_functions.instagram_get_imageid(imageid_el_src);
 						var add = nextprev ? 1 : -1;
 						common_functions.instagram_parse_el_info(real_api_cache, options.do_request, options.rule_specific.instagram_use_app_api, info, function(data) {
+							if (!data) {
+								return options.cb("default");
+							}
+
 							for (var i = nextprev ? 0 : 1; i < data.length - (nextprev ? 1 : 0); i++) {
 								var current_imageid = common_functions.instagram_get_imageid(data[i].src);
 								var current_videoid = "null";
@@ -40839,7 +41250,13 @@ var $$IMU_EXPORT$$;
 								}
 
 								if (our_imageid === current_imageid || our_imageid === current_videoid) {
-									return options.cb(new_media(data[i + add].video || data[i + add].src, data[i + add].video));
+									var our_data = data[i + add];
+
+									var cb_media = new_media(our_data.video || our_data.src, our_data.video);
+									cb_media.setAttribute("data-imu-info", JSON_stringify(deepcopy(info, {json: true})));
+									cb_media.setAttribute("data-imu-data", JSON_stringify(deepcopy(our_data, {json: true})));
+
+									return options.cb(cb_media);
 								}
 							}
 
@@ -40969,14 +41386,14 @@ var $$IMU_EXPORT$$;
 
 					var info = common_functions.get_snapchat_info_from_el(el);
 					if (info) {
-						common_functions.get_snapchat_story(real_api_cache, options.do_request, info.username, function(data) {
+						common_functions.get_snapchat_storysharing(real_api_cache, options.do_request, info.username, function(data) {
 							if (!data) {
 								return options.cb(null);
 							}
 
 							if (!("pos" in info)) {
-								for (var i = 0; i < data.snapList.length; i++) {
-									if (data.snapList[i].snapUrls.mediaUrl === info.url) {
+								for (var i = 0; i < data.snaps.length; i++) {
+									if (data.snaps[i].media.mediaUrl === info.url) {
 										info.pos = i;
 										break;
 									}
@@ -40990,10 +41407,10 @@ var $$IMU_EXPORT$$;
 							var diff = nextprev ? 1 : -1;
 							var newpos = info.pos + diff;
 
-							if (newpos < 0 || newpos >= data.snapList.length)
+							if (newpos < 0 || newpos >= data.snaps.length)
 								return options.cb(null);
 
-							var url = data.snapList[newpos].snapUrls.mediaUrl;
+							var url = data.snaps[newpos].media.mediaUrl;
 							var mediael = new_media(url, /\.mp4(?:[?#].*)?$/.test(url) && false);
 							mediael.setAttribute("data-username", info.username);
 							mediael.setAttribute("data-pos", newpos);
@@ -42173,6 +42590,17 @@ var $$IMU_EXPORT$$;
 	var truncate_with_ellipsis = function(text, maxchars) {
 		var truncate_regex = new RegExp("^((?:.{" + maxchars + "}|.{0," + maxchars + "}[\\r\\n]))[\\s\\S]+?$");
 		return text.replace(truncate_regex, "$1…");
+	};
+
+	var size_to_text = function(size) {
+		var sizes = ["", "K", "M", "G", "T", "P"];
+
+		while (size > 1024 && sizes.length > 1) {
+			size /= 1024.;
+			sizes.shift();
+		}
+
+		return size.toFixed(2).replace(/\.00$/, "") + sizes[0] + "B";
 	};
 
 	var check_image = function(obj, err_cb, ok_cb) {
@@ -44946,6 +45374,10 @@ var $$IMU_EXPORT$$;
 					cb(img, resp.finalUrl, obj[0], resp);
 				};
 
+				if (parsed_headers["content-length"] && parseInt(parsed_headers["content-length"]) > 100) {
+					obj[0].filesize = parseInt(parsed_headers["content-length"]);
+				}
+
 				var create_video_el = function() {
 					var video = document.createElement("video");
 
@@ -45148,7 +45580,7 @@ var $$IMU_EXPORT$$;
 
 				var loadcb = function(urldata) {
 					if (_nir_debug_) {
-						console_log("check_object_get's loadcb", urldata, is_video);
+						console_log("check_image_get's loadcb", urldata, is_video);
 					}
 
 					last_objecturl = urldata;
@@ -45308,6 +45740,22 @@ var $$IMU_EXPORT$$;
 	var maxzindex = Number.MAX_SAFE_INTEGER;
 	// sites like topstarnews under Firefox somehow change sans-serif as the default font
 	var sans_serif_font = '"Noto Sans", Arial, Helvetica, sans-serif';
+
+	var get_safe_glyph = function(font, glyphs) {
+		if (settings.mouseover_ui_use_safe_glyphs)
+			return glyphs[glyphs.length - 1];
+
+		try {
+			for (var i = 0; i < glyphs.length; i++) {
+				if (document.fonts.check(font, glyphs[i]))
+					return glyphs[i];
+			}
+		} catch (e) {
+			console_error(e);
+		}
+
+		return glyphs[glyphs.length - 1];
+	};
 
 	function keycode_to_str(event) {
 		var x = event.which;
@@ -46771,6 +47219,8 @@ var $$IMU_EXPORT$$;
 					var gallerycount_fontsize = "13px";
 					var galleryinput_fontsize = "12px";
 
+					var css_fontcheck = "14px " + sans_serif_font;
+
 					var topbarel = create_topbarel();
 					topbarel.style.left = "-" + em1;
 					topbarel.style.top = "-" + em1;
@@ -46816,21 +47266,54 @@ var $$IMU_EXPORT$$;
 
 						var zoom_percent = rect_height / img_naturalHeight;
 						var currentzoom = parseInt(zoom_percent * 100);
+						var filesize = 0;
 
-						if (settings.mouseover_ui_imagesize) {
-							text = img_naturalWidth + "x" + img_naturalHeight;
+						if (newobj && newobj.filesize)
+							filesize = newobj.filesize;
 
-							if (settings.mouseover_ui_zoomlevel && currentzoom !== 100) {
-								text += " (" + currentzoom + "%)"
+						var format = "";
+
+						var formatorder = [
+							{
+								value: img_naturalWidth + "x" + img_naturalHeight,
+								valid: settings.mouseover_ui_imagesize,
+							},
+							{
+								value: currentzoom + "%",
+								valid_paren: currentzoom !== 100 ? true : false,
+								valid: settings.mouseover_ui_zoomlevel
+							},
+							{
+								value: size_to_text(filesize),
+								valid: settings.mouseover_ui_filesize && filesize
 							}
-						} else {
-							text = currentzoom + "%";
+						];
+
+						var entries = [];
+						for (var i = 0; i < formatorder.length; i++) {
+							var our_format = formatorder[i];
+
+							if (!our_format.valid)
+								continue;
+
+							if (entries.length > 0 && our_format.valid_paren === false)
+								continue;
+
+							entries.push(our_format.value);
+						}
+
+						if (entries.length === 0)
+							return "";
+
+						text = entries[0];
+						if (entries.length > 1) {
+							text += " (" + entries.slice(1).join(", ") + ")";
 						}
 
 						return text;
 					}
 
-					if (settings.mouseover_ui_imagesize || settings.mouseover_ui_zoomlevel) {
+					if (settings.mouseover_ui_imagesize || settings.mouseover_ui_zoomlevel || settings.mouseover_ui_filesize) {
 						var imagesize = addbtn(get_imagesizezoom_text(100), "", null, true);
 						set_important_style(imagesize, "font-size", gallerycount_fontsize);
 						topbarel.appendChild(imagesize);
@@ -46930,8 +47413,12 @@ var $$IMU_EXPORT$$;
 					}
 
 					if (settings.mouseover_ui_downloadbtn) {
+						// \u2193 = ↓
+						// \ud83e\udc6b = 🡫
 						// \uD83E\uDC47 = 🡇
-						var downloadbtn = addbtn("\uD83E\uDC47", _("Download (" + get_trigger_key_text(settings.mouseover_download_key) + ")"), download_popup_image, true);
+						var download_glyphs = ["\uD83E\uDC47", "\ud83e\udc6b", "\u2193"];
+						var download_glyph = get_safe_glyph(css_fontcheck, download_glyphs);
+						var downloadbtn = addbtn(download_glyph, _("Download (" + get_trigger_key_text(settings.mouseover_download_key) + ")"), download_popup_image, true);
 						topbarel.appendChild(downloadbtn);
 					}
 
@@ -47043,12 +47530,15 @@ var $$IMU_EXPORT$$;
 
 						var name = leftright ? "Next" : "Previous";
 
-						// \u2192 = →
 						// \u2190 = ←
-						// Using the following arrows as they're more consistent throughout fonts
-						// \ud83e\udc52 = 🡒
 						// \ud83e\udc50 = 🡐
-						var icon = leftright ? "\ud83e\udc52" : "\ud83e\udc50";
+						var left_glyphs = ["\ud83e\udc50", "\u2190"];
+						// \u2192 = →
+						// \ud83e\udc52 = 🡒
+						var right_glyphs = ["\ud83e\udc52", "\u2192"];
+
+						var lr_glyphs = leftright? right_glyphs : left_glyphs;
+						var icon = get_safe_glyph(css_fontcheck, lr_glyphs);
 
 						var keybinding = leftright ? settings.mouseover_gallery_next_key : settings.mouseover_gallery_prev_key;
 						var keybinding_text = get_trigger_key_text(keybinding);
@@ -47981,15 +48471,20 @@ var $$IMU_EXPORT$$;
 				newel.setAttribute(attr_name, attrs[i].value);
 			}
 
+
 			var computed_style = get_computed_style(el);
-			if (computed_style.color) {
-				newel.setAttribute("fill", computed_style.color);
+			var fillval = el.getAttribute("fill") || computed_style.fill;
+			if (fillval) {
+				newel.setAttribute("fill", fillval);
 			}
 
-			var header = '<?xml version="1.0" encoding="UTF-8" standalone="no" ?>\n';
+			//var header = '<?xml version="1.0" encoding="UTF-8" standalone="no" ?>\n';
+			var header = ""; // unneeded
 			var svgdoc = header + newel.outerHTML;
 
-			return "data:image/svg+xml;base64," + base64_encode(svgdoc);
+			// thanks to Rnksts on discord for these test images (base64 encode didn't work for unicode characters)
+			// https://codepen.io/Rnksts/full/KKdJWvq
+			return "data:image/svg+xml," + encodeURIComponent(svgdoc);
 		};
 
 		function get_img_src(el) {
@@ -49402,15 +49897,26 @@ var $$IMU_EXPORT$$;
 			var get_zindex_raw = function(el) {
 				var zindex = get_computed_style(el).zIndex;
 
+				var parent_zindex = 0;
+				if (el.parentElement) {
+					var parent_zindex = get_zindex(el.parentElement);// + 0.001; // hack: child elements appear above parent elements
+					// don't use the above hack, it breaks z-ordering, the indexOf thing works already
+				}
+
 				if (zindex === "auto") {
-					if (el.parentElement) {
-						return get_zindex(el.parentElement);// + 0.001; // hack: child elements appear above parent elements
-						// don't use the above hack, it breaks z-ordering, the indexOf thing works already
-					} else {
-						return 0;
-					}
+					return parent_zindex;
 				} else {
-					return parseFloat(zindex);
+					zindex = parseFloat(zindex);
+
+					// https://robertsspaceindustries.com/orgs/LUG/members
+					if (zindex < parent_zindex)
+						return parent_zindex + zindex; // hack:
+						// <div style="z-index: 9"></div>
+						// <div style="z-index: 10">
+						//   <div style="z-index: 2">this is above z-index: 9 because it's a child of z-index: 10</div>
+						// </div>
+					else
+						return zindex;
 				}
 			};
 
@@ -51057,6 +51563,13 @@ var $$IMU_EXPORT$$;
 				case "open_options":
 					open_in_tab_imu({url: preferred_options_page}, false);
 					return true;
+				case "open_orig_page":
+					if (popup_obj && popup_obj.extra && popup_obj.extra.page) {
+						open_in_tab_imu({url: popup_obj.extra.page}, false);
+					} else {
+						console_log("Unable to find original page for", popup_obj);
+					}
+					return true;
 				case "hold":
 					update_popup_hold();
 					return true;
@@ -51217,6 +51730,12 @@ var $$IMU_EXPORT$$;
 						// Clear the chord because opening in a new tab will not release the keys
 						clear: true,
 						action: {type: "open_options"}
+					},
+					{
+						key: settings.mouseover_open_orig_page_key,
+						// Clear the chord because opening in a new tab will not release the keys
+						clear: true,
+						action: {type: "open_orig_page"}
 					},
 					{
 						key: settings.mouseover_rotate_left_key,
