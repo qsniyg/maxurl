@@ -7034,6 +7034,40 @@ var $$IMU_EXPORT$$;
 		});
 	};
 
+	common_functions.get_snapchat_storysharing = function(api_cache, do_request, username, cb) {
+		var cache_key = "snapchat_storysharing:" + username;
+		api_cache.fetch(cache_key, cb, function(done) {
+			do_request({
+				method: "GET",
+				url: "https://storysharing.snapchat.com/v1/fetch/" + username + "?request_origin=ORIGIN_WEB_PLAYER",
+				headers: {
+					"sec-fetch-dest": "empty",
+					"sec-fetch-mode": "cors",
+					"sec-fetch-site": "same-site",
+					"Origin": "https://www.snapchat.com",
+					"Referer": "https://www.snapchat.com/add/" + username // maybe use real url instead?
+				},
+				onload: function(resp) {
+					if (resp.readyState !== 4)
+						return;
+
+					if (resp.status !== 200) {
+						console_error(resp);
+						return done(null, false);
+					}
+
+					try {
+						var json = JSON_parse(resp.responseText).story;
+						return done(json, 60); // story can change, so 60 seconds? or less?
+					} catch (e) {
+						console_error(e, resp);
+						return done(null, false);
+					}
+				}
+			});
+		});
+	};
+
 	common_functions.snap_to_obj = function(snap) {
 		var caption = null;
 
@@ -7044,7 +7078,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		return {
-			url: snap.snapUrls.mediaUrl,
+			url: snap.media.mediaUrl,//snap.snapUrls.mediaUrl,
 			extra: {
 				caption: caption || null
 			},
@@ -7109,16 +7143,16 @@ var $$IMU_EXPORT$$;
 			return cb(null);
 		}
 
-		common_functions.get_snapchat_story(api_cache, do_request, info.username, function(data) {
+		common_functions.get_snapchat_storysharing(api_cache, do_request, info.username, function(data) {
 			if (!data) {
 				return cb(null);
 			}
 
 			if (info.pos === -1) {
-				info.pos = data.snapList.length - 1;
+				info.pos = data.snaps.length;//data.snapList.length - 1;
 			}
 
-			return cb(common_functions.snap_to_obj(data.snapList[info.pos]));
+			return cb(common_functions.snap_to_obj(data./*snapList*/snaps[info.pos]));
 		});
 	};
 
@@ -62582,14 +62616,14 @@ var $$IMU_EXPORT$$;
 
 					var info = common_functions.get_snapchat_info_from_el(el);
 					if (info) {
-						common_functions.get_snapchat_story(real_api_cache, options.do_request, info.username, function(data) {
+						common_functions.get_snapchat_storysharing(real_api_cache, options.do_request, info.username, function(data) {
 							if (!data) {
 								return options.cb(null);
 							}
 
 							if (!("pos" in info)) {
-								for (var i = 0; i < data.snapList.length; i++) {
-									if (data.snapList[i].snapUrls.mediaUrl === info.url) {
+								for (var i = 0; i < data.snaps.length; i++) {
+									if (data.snaps[i].media.mediaUrl === info.url) {
 										info.pos = i;
 										break;
 									}
@@ -62603,10 +62637,10 @@ var $$IMU_EXPORT$$;
 							var diff = nextprev ? 1 : -1;
 							var newpos = info.pos + diff;
 
-							if (newpos < 0 || newpos >= data.snapList.length)
+							if (newpos < 0 || newpos >= data.snaps.length)
 								return options.cb(null);
 
-							var url = data.snapList[newpos].snapUrls.mediaUrl;
+							var url = data.snaps[newpos].media.mediaUrl;
 							var mediael = new_media(url, /\.mp4(?:[?#].*)?$/.test(url) && false);
 							mediael.setAttribute("data-username", info.username);
 							mediael.setAttribute("data-pos", newpos);
