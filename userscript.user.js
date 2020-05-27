@@ -1086,7 +1086,7 @@ var $$IMU_EXPORT$$;
 				if (false && Blob.name !== "Blob")
 					return false;
 
-				if (!("arrayBuffer" in Blob.prototype) ||
+				if (/*!("arrayBuffer" in Blob.prototype) ||*/ // Not implemented in pale moon
 					!("slice" in Blob.prototype) ||
 					!("size" in Blob.prototype))
 					return false;
@@ -1119,6 +1119,7 @@ var $$IMU_EXPORT$$;
 			iframe.parentElement.removeChild(iframe);
 		};
 
+		// FIXME: this doesn't work under pale moon: https://github.com/qsniyg/maxurl/issues/349
 		if (native_functions_to_get.length > 0) {
 			try {
 				get_native_functions(native_functions_to_get);
