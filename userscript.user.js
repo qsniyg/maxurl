@@ -6029,7 +6029,48 @@ var $$IMU_EXPORT$$;
 			return "https://www.instagram.com/" + type + "/" + shortcode + "/";
 		};
 
+		var url_to_shortcode = function(url) {
+			match = url.match(/^[a-z]+:\/\/[^/]+\/+(?:[^/]+\/+)?(?:p|tv)\/+([^/]+)/);
+			if (match)
+				return match[1];
+			return null;
+		};
+
+		var get_sharedData_from_resptext = function(text) {
+			try {
+				var regex1 = /window\._sharedData = *(.*?);?<\/script>/;
+				var regex2 = /window\._sharedData *= *(.*?}) *;[\s]*window\.__initialDataLoaded/;
+
+				var match = text.match(regex1);
+				if (!match) {
+					match = text.match(regex2);
+				}
+
+				var parsed = JSON_parse(match[1]);
+
+				var regex3 = /window\.__additionalDataLoaded\(["'].*?["']\s*,\s*({.*?})\);?\s*<\/script>/;
+				match = text.match(regex3);
+				if (match) {
+					var parsed1 = JSON_parse(match[1]);
+					for (var key in parsed.entry_data) {
+						if (is_array(parsed.entry_data[key])) {
+							parsed.entry_data[key][0] = overlay_object(parsed.entry_data[key][0], parsed1);
+						}
+					}
+				}
+
+				return parsed;
+			} catch (e) {
+				console_error(e);
+			}
+
+			return null;
+		};
+
 		var query_ig = function(url, cb) {
+			if (!do_request)
+				return cb(null);
+
 			// Normalize the URL to reduce duplicate cache checks
 			url = url
 				.replace(/[?#].*/, "")
@@ -6047,40 +6088,12 @@ var $$IMU_EXPORT$$;
 						if (result.readyState !== 4)
 							return;
 
-						try {
-							var text = result.responseText;
-
-							var regex1 = /window\._sharedData = *(.*?);?<\/script>/;
-							var regex2 = /window\._sharedData *= *(.*?}) *;[\s]*window\.__initialDataLoaded/;
-
-							var match = text.match(regex1);
-							if (!match) {
-								match = text.match(regex2);
-							}
-
-							var parsed = JSON_parse(match[1]);
-
-							var regex3 = /window\.__additionalDataLoaded\(["'].*?["']\s*,\s*({.*?})\);?\s*<\/script>/;
-							match = text.match(regex3);
-							if (match) {
-								var parsed1 = JSON_parse(match[1]);
-								for (var key in parsed.entry_data) {
-									if (is_array(parsed.entry_data[key])) {
-										parsed.entry_data[key][0] = overlay_object(parsed.entry_data[key][0], parsed1);
-									}
-								}
-							}
-
-							if (_nir_debug_) {
-								console_log("instagram_sharedData", parsed);
-							}
-
-							// TODO: maybe check if parsed is correct before setting to cache?
-							done(parsed, 60 * 60);
-						} catch (e) {
+						var parsed = get_sharedData_from_resptext(result.responseText);
+						if (!parsed) {
 							console_log("instagram_sharedData", result);
-							console_error("instagram_sharedData", e);
-							done(null, false);
+							return done(null, false);
+						} else {
+							return done(parsed, 60*60);
 						}
 					}
 				});
@@ -6123,6 +6136,9 @@ var $$IMU_EXPORT$$;
 			api_cache.fetch(cache_key, cb, function (done) {
 				var url = "https://i.instagram.com/api/v1/users/" + uid + "/info/";
 				app_api_call(url, function (result) {
+					if (!result)
+						return done(null, false);
+
 					if (result.readyState !== 4)
 						return;
 
@@ -6162,6 +6178,10 @@ var $$IMU_EXPORT$$;
 		};
 
 		var app_api_call = function (url, cb) {
+			if (!do_request) {
+				return cb(null);
+			}
+
 			var headers = {
 				//"User-Agent": "Instagram 10.26.0 (iPhone7,2; iOS 10_1_1; en_US; en-US; scale=2.00; gamut=normal; 750x1334) AppleWebKit/420+",
 				"User-Agent": "Instagram 10.26.0 Android (23/6.0.1; 640dpi; 1440x2560; samsung; SM-G930F; herolte; samsungexynos8890; en_US)",
@@ -6195,6 +6215,9 @@ var $$IMU_EXPORT$$;
 			api_cache.fetch(cache_key, cb, function (done) {
 				var url = "https://i.instagram.com/api/v1/media/" + id + "/info/";
 				app_api_call(url, function (result) {
+					if (!result)
+						return done(null, false);
+
 					if (result.readyState !== 4)
 						return;
 
@@ -6232,6 +6255,9 @@ var $$IMU_EXPORT$$;
 			api_cache.fetch(story_cache_key, cb, function (done) {
 				var url = "https://i.instagram.com/api/v1/feed/user/" + uid + "/reel_media/";
 				app_api_call(url, function(result) {
+					if (!result)
+						return done(null, false);
+
 					if (result.readyState !== 4)
 						return;
 
@@ -6594,15 +6620,76 @@ var $$IMU_EXPORT$$;
 			return obj;
 		};
 
-		var request_post_inner = function(post_url, image_url, cb) {
-			query_ig(post_url, function(json) {
+		var cache_graphql_post = function(edge) {
+			if (edge.shortcode) {
+				api_cache.set("graphql_ig_post:" + edge.shortcode, edge);
+			}
+		};
+
+		var fill_graphql_cache_with_postpage = function(postpage_text) {
+			var shareddata = get_sharedData_from_resptext(postpage_text);
+			if (!shareddata)
+				return;
+
+			try {
+				var entry_data = shareddata.entry_data;
+				if ("ProfilePage" in entry_data) {
+					var edges = entry_data.ProfilePage[0].graphql.user.edge_owner_to_timeline_media.edges;
+
+					for (var i = 0; i < edges.length; i++) {
+						var edge = edges[i].node;
+						cache_graphql_post(edge);
+					}
+				} else if ("PostPage" in entry_data) {
+					var shortcode_media = entry_data.PostPage[0].graphql.shortcode_media;
+					cache_graphql_post(shortcode_media);
+				}
+			} catch (e) {
+				console_error(e, shareddata);
+			}
+		};
+
+		var request_query_ig_post = function(url, cb) {
+			query_ig(url, function(json) {
 				if (!json) {
 					return cb(null);
 				}
 
 				try {
 					var media = json.entry_data.PostPage[0].graphql.shortcode_media;
+					return cb(media);
+				} catch (e) {
+					console_error(e);
+				}
 
+				return cb(null);
+			});
+		};
+
+		var request_ig_post = function(url, code, cb) {
+			if (!code)
+				return cb(null);
+
+			var cache_key = "graphql_ig_post:" + code;
+
+			api_cache.fetch(cache_key, cb, function(done) {
+				request_query_ig_post(url, function(data) {
+					if (data) {
+						return done(data, 60*60);
+					} else {
+						return done(null, false);
+					}
+				});
+			});
+		};
+
+		var request_post_inner = function(post_url, image_url, cb) {
+			request_ig_post(url, url_to_shortcode(post_url), function(media) {
+				if (!media) {
+					return cb(null);
+				}
+
+				try {
 					mediainfo_api(media.id + "_" + media.owner.id, function(app_response) {
 						var images = [];
 						var images_small = [];
@@ -6658,6 +6745,8 @@ var $$IMU_EXPORT$$;
 		};
 
 		var request_post = function(post_url, image_url, cb) {
+			fill_graphql_cache_with_postpage(document.documentElement.innerHTML);
+
 			return request_post_inner(post_url, image_url, cb);
 		};
 
@@ -31454,8 +31543,7 @@ var $$IMU_EXPORT$$;
 
 		if (((domain_nosub === "fbcdn.net" && domain.match(/^instagram\./)) ||
 			 domain_nosub === "cdninstagram.com") &&
-			host_domain_nosub === "instagram.com" && options.element &&
-			options.do_request && options.cb) {
+			host_domain_nosub === "instagram.com" && options.element && options.cb) {
 			// ig_cache_key, se, _nc_cat, _nc_rid, efg aren't needed
 			// _nt_ht, _nc_ohc is needed
 			// if vs or _nc_vs is missing, "URL signature mismatch"
@@ -62454,9 +62542,6 @@ var $$IMU_EXPORT$$;
 					if (!el)
 						return "default";
 
-					if (!options.do_request)
-						return "default";
-
 					var query_el = el;
 					if (!el.parentElement) { // check if it's a fake element returned by this function
 						query_el = options.element;
@@ -62482,6 +62567,10 @@ var $$IMU_EXPORT$$;
 						var our_imageid = common_functions.instagram_get_imageid(imageid_el_src);
 						var add = nextprev ? 1 : -1;
 						common_functions.instagram_parse_el_info(real_api_cache, options.do_request, options.rule_specific.instagram_use_app_api, info, function(data) {
+							if (!data) {
+								return options.cb("default");
+							}
+
 							for (var i = nextprev ? 0 : 1; i < data.length - (nextprev ? 1 : 0); i++) {
 								var current_imageid = common_functions.instagram_get_imageid(data[i].src);
 								var current_videoid = "null";
