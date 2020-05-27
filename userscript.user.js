@@ -6457,12 +6457,24 @@ var $$IMU_EXPORT$$;
 		var get_maxsize_app = function(item) {
 			var images = [];
 
+			var get_corrected_height = function(img, candidate) {
+				var corrected_height = candidate.height;
+				if (!corrected_height) {
+					corrected_height = (img.original_height / img.original_width) * candidate.width;
+				}
+
+				return corrected_height;
+			};
+
 			var parse_image = function (img) {
 				var candidates = img.image_versions2.candidates;
 				var maxsize = 0;
 				var maxobj = null;
+
 				for (var i = 0; i < candidates.length; i++) {
-					var size = candidates[i].width * candidates[i].height;
+					candidates[i].corrected_height = get_corrected_height(img, candidates[i]);
+
+					var size = candidates[i].width * candidates[i].corrected_height;
 					if (size > maxsize) {
 						maxsize = size;
 						maxobj = candidates[i];
@@ -6486,7 +6498,8 @@ var $$IMU_EXPORT$$;
 					var videos = img.video_versions;
 
 					for (var i = 0; i < videos.length; i++) {
-						var size = videos[i].width * videos[i].height;
+						videos[i].corrected_height = get_corrected_height(img, videos[i]);
+						var size = videos[i].width * videos[i].corrected_height;
 						if (size > maxsize) {
 							maxsize = size;
 							maxobj = videos[i];
@@ -6496,7 +6509,7 @@ var $$IMU_EXPORT$$;
 					if (maxobj !== null) {
 						image.video = maxobj.url;
 						image.width = maxobj.width;
-						image.height = maxobj.height;
+						image.height = maxobj.corrected_height;
 					}
 				}
 
@@ -6718,6 +6731,11 @@ var $$IMU_EXPORT$$;
 
 						var images_graphql = get_maxsize_graphql(media);
 
+						if (_nir_debug_) {
+							console_log("images_app", images_app);
+							console_log("images_graphql", images_graphql);
+						}
+
 						if (images_app && images_app.length === images_graphql.length) {
 							for (var i = 0; i < images_app.length; i++) {
 								var app_size = images_app[i].width * images_app[i].height;
@@ -6735,6 +6753,11 @@ var $$IMU_EXPORT$$;
 						} else {
 							images = images_graphql;
 							images_small = images_app;
+						}
+
+						if (_nir_debug_) {
+							console_log("images_small", images_small);
+							console_log("images", images, image_url);
 						}
 
 						if (image_url) {
@@ -6872,9 +6895,14 @@ var $$IMU_EXPORT$$;
 		if (el.tagName === "VIDEO") {
 			// use the poster instead as the larger video urls differ
 			return el.poster || el.src;
+		} else if (el.tagName === "IMG") {
+			return el.src;
+		} else if (el.tagName === "DIV") {
+			return el.style.backgroundImage.replace(/^url\(["'](.*)["']\)$/, "$1");
 		}
 
-		return el.src;
+		console_error("Unable to find source for", el);
+		return;
 	}
 
 	common_functions.instagram_find_el_info = function(document, element, host_url) {
