@@ -66971,6 +66971,19 @@ var $$IMU_EXPORT$$;
 	// sites like topstarnews under Firefox somehow change sans-serif as the default font
 	var sans_serif_font = '"Noto Sans", Arial, Helvetica, sans-serif';
 
+	var get_safe_glyph = function(font, glyphs) {
+		try {
+			for (var i = 0; i < glyphs.length; i++) {
+				if (document.fonts.check(font, glyphs[i]))
+					return glyphs[i];
+			}
+		} catch (e) {
+			console_error(e);
+		}
+
+		return glyphs[glyphs.length - 1];
+	};
+
 	function keycode_to_str(event) {
 		var x = event.which;
 
@@ -68433,6 +68446,8 @@ var $$IMU_EXPORT$$;
 					var gallerycount_fontsize = "13px";
 					var galleryinput_fontsize = "12px";
 
+					var css_fontcheck = "14px " + sans_serif_font;
+
 					var topbarel = create_topbarel();
 					topbarel.style.left = "-" + em1;
 					topbarel.style.top = "-" + em1;
@@ -68625,8 +68640,12 @@ var $$IMU_EXPORT$$;
 					}
 
 					if (settings.mouseover_ui_downloadbtn) {
+						// \u2193 = ↓
+						// \ud83e\udc6b = 🡫
 						// \uD83E\uDC47 = 🡇
-						var downloadbtn = addbtn("\uD83E\uDC47", _("Download (" + get_trigger_key_text(settings.mouseover_download_key) + ")"), download_popup_image, true);
+						var download_glyphs = ["\uD83E\uDC47", "\ud83e\udc6b", "\u2193"];
+						var download_glyph = get_safe_glyph(css_fontcheck, download_glyphs);
+						var downloadbtn = addbtn(download_glyph, _("Download (" + get_trigger_key_text(settings.mouseover_download_key) + ")"), download_popup_image, true);
 						topbarel.appendChild(downloadbtn);
 					}
 
@@ -68738,12 +68757,15 @@ var $$IMU_EXPORT$$;
 
 						var name = leftright ? "Next" : "Previous";
 
-						// \u2192 = →
 						// \u2190 = ←
-						// Using the following arrows as they're more consistent throughout fonts
-						// \ud83e\udc52 = 🡒
 						// \ud83e\udc50 = 🡐
-						var icon = leftright ? "\ud83e\udc52" : "\ud83e\udc50";
+						var left_glyphs = ["\ud83e\udc50", "\u2190"];
+						// \u2192 = →
+						// \ud83e\udc52 = 🡒
+						var right_glyphs = ["\ud83e\udc52", "\u2192"];
+
+						var lr_glyphs = leftright? right_glyphs : left_glyphs;
+						var icon = get_safe_glyph(css_fontcheck, lr_glyphs);
 
 						var keybinding = leftright ? settings.mouseover_gallery_next_key : settings.mouseover_gallery_prev_key;
 						var keybinding_text = get_trigger_key_text(keybinding);
