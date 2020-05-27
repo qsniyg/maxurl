@@ -1,3 +1,28 @@
+0.13.6
+
+New features:
+
+ * Option to display file size in popup (thanks to Regis on discord for the idea)
+ * Option to use safe glyphs in case the default ones aren't supported by the user's fonts (#347, thanks to liraqb on github for reporting)
+ * Key to open original page for popup if available (bound to N by default, thanks to Иван Хомяков on greasyfork for the idea)
+ * Support for 4 new sites (using 3 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including Bilibili, DeviantArt, Gfycat/Redgifs, Instagram, Snapchat, TikTok, Tumblr)
+ * Tumblr now supports original sizes (thanks to Regis on discord)
+ * IGTV is better supported (thanks to remlap on discord)
+ * Instagram posts will sometimes both load quicker and work without API calls (thanks to Stencil on discord)
+ * Z-index sorting is more correct now
+
+Bugfixes:
+
+ * SVG tags with unicode characters will no longer fail to load (thanks to Rnksts on discord)
+ * SVG tags will no longer be wrongly tinted (thanks to Rnksts on discord)
+ * SVG images will no longer fail to load when arraybuffers are preferred over blob objects (thanks to Rnksts on discord)
+
+---
+
 0.13.5
 
 New features:
@@ -20,7 +45,7 @@ Bugfixes:
  * Fix "Don't close until mouse leaves" option if mouse hasn't moved (thanks to Rnksts on discord for reporting)
  * Fix popup not closing after mouse leaves if trigger keys are released before popup opens (thanks to Rnksts on discord for reporting)
  * Fix popup hold disappearing when moving through a gallery
- * Fix aspect ratio when video is made fullscreen (#330, thanks to remalp on discord for reporting)
+ * Fix aspect ratio when video is made fullscreen (#330, thanks to remlap on discord for reporting)
 
 ---
 

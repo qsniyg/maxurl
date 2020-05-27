@@ -512,6 +512,7 @@ bandt.com.au
 bangkokpost.com
 banktapet.pl
 banneddata.me
+banzaj.pl
 baobaoyuer.com
 baocantho.com.vn
 baonghean.vn
@@ -1406,6 +1407,7 @@ d2fzf9bbqh0om5.cloudfront.net
 d2h1pu99sxkfvn.cloudfront.net
 d2hhj3gz5jljkm.cloudfront.net
 d2isyty7gbnm74.cloudfront.net
+d2jcw5q7j4vmo4.cloudfront.net
 d2jtsb989t238a.cloudfront.net
 d2l930y2yx77uc.cloudfront.net
 d2lpfujvrf17tu.cloudfront.net
@@ -1675,6 +1677,7 @@ dynamic.zacdn.com
 dynamicmedia.zuza.com
 dynasty-scans.com
 dyncdn2.com
+dyw7ncnq1en5l.cloudfront.net
 dzcdn.net
 dzt1km7tv28ex.cloudfront.net
 e-hentai.org
@@ -2192,7 +2195,6 @@ gfx.elle.ci
 gfycat.com
 ggilbo.com
 ggpht.com
-giant.gfycat.com
 gif-favicon.com
 gifposter.com
 gifyu.com
@@ -3793,6 +3795,7 @@ lepoint.fr
 lesarchive.com
 lescinemasaixois.com
 lesinrocks.com
+lesnumeriques.com
 letradamusica.net
 lfi-online.de
 libe.com
@@ -3886,6 +3889,7 @@ m-magazine.photography
 m.aceshowbiz.com
 m.acg.ms
 m.actve.net
+m.atcdn.co.uk
 m.baishixi.com
 m.blog.hu
 m.btdx8.com
@@ -5126,6 +5130,7 @@ redd.it
 reddit.com
 redditmedia.com
 redditstatic.com
+redgifs.com
 redocn.com
 redonline.cdnds.net
 redu.pl
@@ -6023,6 +6028,7 @@ thejewelleryeditor.com
 thejournal.ie
 thekpm.com
 thelineofbestfit.com
+theman.in
 themanwiththehat.de
 themebeta.com
 themepack.me
@@ -6094,7 +6100,6 @@ thumbs.booru.org
 thumbs.dfs.ivi.ru
 thumbs.dreamstime.com
 thumbs.filmix.co
-thumbs.gfycat.com
 thumbs.hentai-foundry.com
 thumbs.uloz.to
 thumbs.vaultsex.com
@@ -6696,7 +6701,6 @@ zhimg.com
 ziaruldeiasi.ro
 zimbio.com
 zine.istyle24.com
-zippy.gfycat.com
 zive.cz
 zizki.com
 zkpm.net
