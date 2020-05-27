@@ -6684,7 +6684,7 @@ var $$IMU_EXPORT$$;
 		};
 
 		var request_post_inner = function(post_url, image_url, cb) {
-			request_ig_post(url, url_to_shortcode(post_url), function(media) {
+			request_ig_post(post_url, url_to_shortcode(post_url), function(media) {
 				if (!media) {
 					return cb(null);
 				}
