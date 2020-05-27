@@ -2743,7 +2743,7 @@ var $$IMU_EXPORT$$;
 		},
 		mouseover_ui_use_safe_glyphs: {
 			name: "Use safe glyphs",
-			description: "Uses glyphs that are more likely to be available on all fonts. Enable this option if the following characters render as boxes: 🡇 🡐 🡒",
+			description: "Uses glyphs that are more likely to be available on all fonts. Enable this option if the following characters render as boxes: \uD83E\uDC47 \ud83e\udc50 \ud83e\udc52",
 			requires: {
 				mouseover_ui: true
 			},
