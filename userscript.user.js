@@ -1887,6 +1887,7 @@ var $$IMU_EXPORT$$;
 		mouseover_video_reset_speed_key: ["backspace"],
 		mouseover_ui: true,
 		mouseover_ui_opacity: 80,
+		mouseover_ui_use_safe_glyphs: false,
 		mouseover_ui_imagesize: true,
 		mouseover_ui_zoomlevel: true,
 		mouseover_ui_filesize: false,
@@ -2737,6 +2738,15 @@ var $$IMU_EXPORT$$;
 			number_max: 100,
 			number_min: 0,
 			number_int: true,
+			category: "popup",
+			subcategory: "ui"
+		},
+		mouseover_ui_use_safe_glyphs: {
+			name: "Use safe glyphs",
+			description: "Uses glyphs that are more likely to be available on all fonts. Enable this option if the following characters render as boxes: 🡇 🡐 🡒",
+			requires: {
+				mouseover_ui: true
+			},
 			category: "popup",
 			subcategory: "ui"
 		},
@@ -66972,6 +66982,9 @@ var $$IMU_EXPORT$$;
 	var sans_serif_font = '"Noto Sans", Arial, Helvetica, sans-serif';
 
 	var get_safe_glyph = function(font, glyphs) {
+		if (settings.mouseover_ui_use_safe_glyphs)
+			return glyphs[glyphs.length - 1];
+
 		try {
 			for (var i = 0; i < glyphs.length; i++) {
 				if (document.fonts.check(font, glyphs[i]))
