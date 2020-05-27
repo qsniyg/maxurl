@@ -6673,7 +6673,20 @@ var $$IMU_EXPORT$$;
 
 			var cache_key = "graphql_ig_post:" + code;
 
-			api_cache.fetch(cache_key, cb, function(done) {
+			api_cache.fetch(cache_key, function(data) {
+				if (data.__typename === "GraphVideo" && !data.video_url && do_request) {
+					request_query_ig_post(url, function(newdata) {
+						if (newdata) {
+							api_cache.set(cache_key, newdata);
+							data = newdata;
+						}
+
+						cb(data);
+					});
+				} else {
+					cb(data);
+				}
+			}, function(done) {
 				request_query_ig_post(url, function(data) {
 					if (data) {
 						return done(data, 60*60);
