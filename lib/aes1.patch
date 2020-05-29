@@ -1,0 +1,41 @@
+--- aes.orig.js	2020-05-28 22:09:23.016828763 -0700
++++ aes.orig1.js	2020-05-28 22:07:48.952696598 -0700
+@@ -757,22 +757,24 @@
+ 		var padCount = 0;
+ 		var padByte = -1;
+ 		var blockSize = 16;
+-		for (var i = data.length - 1; i >= data.length-1 - blockSize; i--) {
+-			if (data[i] <= blockSize) {
+-				if (padByte == -1)
+-					padByte = data[i];
+-				if (data[i] != padByte) {
+-					padCount = 0;
++		if (data.length > 16) {
++			for (var i = data.length - 1; i >= data.length-1 - blockSize; i--) {
++				if (data[i] <= blockSize) {
++					if (padByte == -1)
++						padByte = data[i];
++					if (data[i] != padByte) {
++						padCount = 0;
++						break;
++					}
++					padCount++;
++				} else
+ 					break;
+-				}
+-				padCount++;
+-			} else
+-				break;
+-			if (padCount == padByte)
+-				break;
++				if (padCount == padByte)
++					break;
++			}
++			if (padCount > 0)
++				data.splice(data.length - padCount, padCount);
+ 		}
+-		if (padCount > 0)
+-			data.splice(data.length - padCount, padCount);
+ 	}
+ 	/*
+ 	 * END MODE OF OPERATION SECTION
