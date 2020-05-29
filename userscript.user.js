@@ -60988,6 +60988,15 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (host_domain_nowww === "nintendo.com" && options.element) {
+			if (options.element.tagName.toLowerCase() === "svg" && options.element.classList.toString().match(/^icon-/)) {
+				return {
+					url: origsrc,
+					bad: "mask"
+				};
+			}
+		}
+
 
 
 
