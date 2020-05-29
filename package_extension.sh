@@ -33,7 +33,7 @@ cp userscript_smaller.user.js site/
 echo Building Firefox extension
 
 zipcmd() {
-    zip -r "$1" LICENSE.txt manifest.json userscript.user.js lib/testcookie_slowaes.js lib/hls.js lib/dash.all.debug.js resources/logo_40.png resources/logo_48.png resources/logo_96.png resources/disabled_40.png resources/disabled_48.png resources/disabled_96.png extension -x "*~"
+    zip -r "$1" LICENSE.txt manifest.json userscript.user.js lib/testcookie_slowaes.js lib/hls.js lib/dash.all.debug.js lib/build_libs.sh lib/dash_shim.js lib/hls_shim.js lib/aes_shim.js lib/aes1.patch resources/logo_40.png resources/logo_48.png resources/logo_96.png resources/disabled_40.png resources/disabled_48.png resources/disabled_96.png extension -x "*~"
 }
 
 rm extension.xpi
@@ -49,8 +49,13 @@ extension/options.css
 extension/options.html
 extension/popup.html
 extension/popup.js
+lib/aes1.patch
+lib/aes_shim.js
+lib/build_libs.sh
 lib/dash.all.debug.js
+lib/dash_shim.js
 lib/hls.js
+lib/hls_shim.js
 lib/testcookie_slowaes.js
 LICENSE.txt
 manifest.json
