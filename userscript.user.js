@@ -11979,6 +11979,10 @@ var $$IMU_EXPORT$$;
 			domain === "images.ask.com" ||
 			// https://i.vimeocdn.com/video/875541868.jpg?mw=960&mh=540
 			(domain === "i.vimeocdn.com" && string_indexof(src, "/video/") >= 0) ||
+			// thanks to nimuxoha on github: https://github.com/qsniyg/maxurl/issues/352
+			// https://artwork.jaxsta.com/995/e6c1a3ee-e276-4bd7-8c86-d1784df93b13.png?d=85x85
+			// https://artwork.jaxsta.com/550/18UMGIM52273_T1_cvrart.jpg?d=85x85
+			domain === "artwork.jaxsta.com" ||
 			// http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
 			// https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
 			src.match(/\/demandware\.static\//) ||
