@@ -60933,8 +60933,8 @@ var $$IMU_EXPORT$$;
 				return add_full_extensions(newsrc);
 		}
 
-		if (false && (domain === "dcg0nv7t7dovn.cloudfront.net" ||
-			 domain === "d6ijsqg8e9unz.cloudfront.net") && options.do_request && options.cb) {
+		if (domain === "dcg0nv7t7dovn.cloudfront.net" ||
+			domain === "d6ijsqg8e9unz.cloudfront.net") {
 			var parse_buybox_url = function(url) {
 				// first folder is user id
 				// second is buybox id
@@ -60949,13 +60949,18 @@ var $$IMU_EXPORT$$;
 				return null;
 			};
 
+			var get_buybox_url_from_id = function(boxid) {
+				return "https://bentbox.co/buybox_paysafe?" + boxid;
+			};
+
 			// https://dcg0nv7t7dovn.cloudfront.net/userUploads/2mkEn9AD/93VhcUj1/1590309218-M6t6Sgsq.jpg
 			//   https://d6ijsqg8e9unz.cloudfront.net/userUploads/2mkEn9AD/93VhcUj1/mediumImages/1590309209-scdnmarklc000000.jpg
 			// thumbnails that are also part of a buybox are also an issue, it's difficult to know if the image of the thumbnail or not
+			// i.e. this isn't reliable
 			var query_bentbox_buybox = function(boxid, imgid, cb) {
 				// https://bentbox.co/buybox_paysafe?OO0AzGcy
 				api_query("bentbox_buybox:" + boxid + ":" + imgid, {
-					url: "https://bentbox.co/buybox_paysafe?" + boxid
+					url: get_buybox_url_from_id(boxid)
 				}, cb, function(done, resp, cache_key) {
 					var match = resp.responseText.match(/<link rel="image_src" href="([^"]+)"/);
 					if (match) {
@@ -60981,9 +60986,18 @@ var $$IMU_EXPORT$$;
 
 			var parsed_url = parse_buybox_url(src);
 			if (parsed_url) {
-				query_bentbox_buybox(parsed_url.boxid, parsed_url.imgid, options.cb);
+				if (false) {
+					query_bentbox_buybox(parsed_url.boxid, parsed_url.imgid, options.cb);
+					return {
+						waiting: true
+					};
+				}
+
 				return {
-					waiting: true
+					url: src,
+					extra: {
+						page: get_buybox_url_from_id(parsed_url.boxid)
+					}
 				};
 			}
 		}
