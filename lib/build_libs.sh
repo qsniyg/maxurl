@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cd "`dirname "$0"`"
+
 strip_whitespace() {
 	sed -i -e 's/[ \t]*$//g' -e 's/^ *$//g' "$1"
 }
