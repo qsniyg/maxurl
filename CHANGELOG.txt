@@ -1,3 +1,22 @@
+0.13.7
+
+This is an emergency release to fix Instagram videos, which were broken in the last release.
+
+New features:
+
+ * Support for 4 new sites (using 2 new rules)
+
+Improvements:
+
+ * Videos are fixed under Instagram (thanks to remlap on Discord for reporting)
+ * IGTV is fixed again (thanks to remlap on Discord for reporting)
+
+Bugfixes:
+
+ * Fix popup under pale moon (#349, thanks to Carl-Robert on github for reporting)
+
+---
+
 0.13.6
 
 New features:

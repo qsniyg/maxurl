@@ -346,6 +346,7 @@ artsbj.com
 artspace712.com
 artsphere.fr
 artstation.com
+artwork.jaxsta.com
 ascii.jp
 asia.nikkei.com
 asian-amatuer.com
@@ -1456,6 +1457,7 @@ d4zcrs0v202ys.cloudfront.net
 d53l9d6fqlxs2.cloudfront.net
 d5xydlzdo08s0.cloudfront.net
 d6d2h4gfvy8t8.cloudfront.net
+d6ijsqg8e9unz.cloudfront.net
 d7hftxdivxxvm.cloudfront.net
 d919ce141ef35c47fc40-b9166a60eccf0f83d2d9c63fa65b9129.ssl.cf5.rackcdn.com
 d9j5qtehtodpj.cloudfront.net
@@ -1499,6 +1501,7 @@ dazedimg.dazedgroup.netdna-cdn.com
 db.kookje.co.kr
 dbstatic.no
 dcdn.lt
+dcg0nv7t7dovn.cloudfront.net
 ddaily.co.kr
 ddimg.cn
 dealsanimg.com
@@ -4521,6 +4524,7 @@ nin-nin-game.com
 nineentertainment.com.au
 ning.com
 nintendo-europe.com
+nintendo.com
 nintendoeverything.com
 nintendoworldreport.com
 nisfeldunia.ahram.org.eg
