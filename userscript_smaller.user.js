@@ -4,7 +4,7 @@
 // ==UserScript==
 // @name              Image Max URL
 // @namespace         http://tampermonkey.net/
-// @version           0.13.6
+// @version           0.13.7
 // @description       Finds larger or original versions of images for 6700+ websites, including a powerful image popup feature
 // @description:ko    6700개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
 // @description:fr    Trouve des images plus grandes ou originales pour plus de 6700 sites
@@ -1089,7 +1089,7 @@ var $$IMU_EXPORT$$;
 				if (false && Blob.name !== "Blob")
 					return false;
 
-				if (!("arrayBuffer" in Blob.prototype) ||
+				if (/*!("arrayBuffer" in Blob.prototype) ||*/ // Not implemented in pale moon
 					!("slice" in Blob.prototype) ||
 					!("size" in Blob.prototype))
 					return false;
@@ -1122,6 +1122,7 @@ var $$IMU_EXPORT$$;
 			iframe.parentElement.removeChild(iframe);
 		};
 
+		// FIXME: this doesn't work under pale moon: https://github.com/qsniyg/maxurl/issues/349
 		if (native_functions_to_get.length > 0) {
 			try {
 				get_native_functions(native_functions_to_get);
@@ -6459,12 +6460,24 @@ var $$IMU_EXPORT$$;
 		var get_maxsize_app = function(item) {
 			var images = [];
 
+			var get_corrected_height = function(img, candidate) {
+				var corrected_height = candidate.height;
+				if (!corrected_height) {
+					corrected_height = (img.original_height / img.original_width) * candidate.width;
+				}
+
+				return corrected_height;
+			};
+
 			var parse_image = function (img) {
 				var candidates = img.image_versions2.candidates;
 				var maxsize = 0;
 				var maxobj = null;
+
 				for (var i = 0; i < candidates.length; i++) {
-					var size = candidates[i].width * candidates[i].height;
+					candidates[i].corrected_height = get_corrected_height(img, candidates[i]);
+
+					var size = candidates[i].width * candidates[i].corrected_height;
 					if (size > maxsize) {
 						maxsize = size;
 						maxobj = candidates[i];
@@ -6488,7 +6501,8 @@ var $$IMU_EXPORT$$;
 					var videos = img.video_versions;
 
 					for (var i = 0; i < videos.length; i++) {
-						var size = videos[i].width * videos[i].height;
+						videos[i].corrected_height = get_corrected_height(img, videos[i]);
+						var size = videos[i].width * videos[i].corrected_height;
 						if (size > maxsize) {
 							maxsize = size;
 							maxobj = videos[i];
@@ -6498,7 +6512,7 @@ var $$IMU_EXPORT$$;
 					if (maxobj !== null) {
 						image.video = maxobj.url;
 						image.width = maxobj.width;
-						image.height = maxobj.height;
+						image.height = maxobj.corrected_height;
 					}
 				}
 
@@ -6675,7 +6689,20 @@ var $$IMU_EXPORT$$;
 
 			var cache_key = "graphql_ig_post:" + code;
 
-			api_cache.fetch(cache_key, cb, function(done) {
+			api_cache.fetch(cache_key, function(data) {
+				if (data.__typename === "GraphVideo" && !data.video_url && do_request) {
+					request_query_ig_post(url, function(newdata) {
+						if (newdata) {
+							api_cache.set(cache_key, newdata);
+							data = newdata;
+						}
+
+						cb(data);
+					});
+				} else {
+					cb(data);
+				}
+			}, function(done) {
 				request_query_ig_post(url, function(data) {
 					if (data) {
 						return done(data, 60*60);
@@ -6707,6 +6734,11 @@ var $$IMU_EXPORT$$;
 
 						var images_graphql = get_maxsize_graphql(media);
 
+						if (_nir_debug_) {
+							console_log("images_app", images_app);
+							console_log("images_graphql", images_graphql);
+						}
+
 						if (images_app && images_app.length === images_graphql.length) {
 							for (var i = 0; i < images_app.length; i++) {
 								var app_size = images_app[i].width * images_app[i].height;
@@ -6724,6 +6756,11 @@ var $$IMU_EXPORT$$;
 						} else {
 							images = images_graphql;
 							images_small = images_app;
+						}
+
+						if (_nir_debug_) {
+							console_log("images_small", images_small);
+							console_log("images", images, image_url);
 						}
 
 						if (image_url) {
@@ -6861,9 +6898,14 @@ var $$IMU_EXPORT$$;
 		if (el.tagName === "VIDEO") {
 			// use the poster instead as the larger video urls differ
 			return el.poster || el.src;
+		} else if (el.tagName === "IMG") {
+			return el.src;
+		} else if (el.tagName === "DIV") {
+			return el.style.backgroundImage.replace(/^url\(["'](.*)["']\)$/, "$1");
 		}
 
-		return el.src;
+		console_error("Unable to find source for", el);
+		return;
 	}
 
 	common_functions.instagram_find_el_info = function(document, element, host_url) {
@@ -9990,6 +10032,7 @@ var $$IMU_EXPORT$$;
 			(domain_nowww === "smarthomebeginner.com" && string_indexof(src, "/images/") >= 0) ||
 			domain === "images.ask.com" ||
 			(domain === "i.vimeocdn.com" && string_indexof(src, "/video/") >= 0) ||
+			domain === "artwork.jaxsta.com" ||
 			src.match(/\/demandware\.static\//) ||
 			src.match(/\?i10c=[^/]*$/) ||
 			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|blogs.dir)|\/+uploads)\//.test(src)
@@ -40188,6 +40231,77 @@ var $$IMU_EXPORT$$;
 			newsrc = src.replace(/\/optim\/+(article\/+[0-9/]+\/+[^/]+?)(?:_png)?__(?:w[0-9]+|[0-9]+_[0-9]+)(?:__overflow)?(\.[^/.]+)(?:[?#].*)?$/, "/$1$2");
 			if (newsrc !== src)
 				return add_full_extensions(newsrc);
+		}
+
+		if (domain === "dcg0nv7t7dovn.cloudfront.net" ||
+			domain === "d6ijsqg8e9unz.cloudfront.net") {
+			var parse_buybox_url = function(url) {
+				var match = url.match(/\/userUploads\/+[^/]+\/+([^/]+)\/+(?:(?:[a-zA-Z]+Images|thumbnails)\/+)?(?:[a-z]_)?([0-9]{5,})-[^/.]+\.[^/.]+(?:[?#].*)?$/);
+				if (match) {
+					return {
+						boxid: match[1],
+						imgid: match[2] // incorrect
+					};
+				}
+
+				return null;
+			};
+
+			var get_buybox_url_from_id = function(boxid) {
+				return "https://bentbox.co/buybox_paysafe?" + boxid;
+			};
+
+			var query_bentbox_buybox = function(boxid, imgid, cb) {
+				api_query("bentbox_buybox:" + boxid + ":" + imgid, {
+					url: get_buybox_url_from_id(boxid)
+				}, cb, function(done, resp, cache_key) {
+					var match = resp.responseText.match(/<link rel="image_src" href="([^"]+)"/);
+					if (match) {
+						var newurl = match[1];
+						var parsed = parse_buybox_url(newurl);
+						if (parsed && parsed.boxid === boxid && parsed.imgid === imgid) {
+							return done({
+								url: newurl,
+								extra: {
+									page: resp.finalUrl
+								}
+							}, 60*60);
+						} else {
+							console_warn("Wrong image:", newurl);
+						}
+					} else {
+						console_warn("Unable to find match for", resp);
+					}
+
+					return done(null, false);
+				});
+			};
+
+			var parsed_url = parse_buybox_url(src);
+			if (parsed_url) {
+				if (false) {
+					query_bentbox_buybox(parsed_url.boxid, parsed_url.imgid, options.cb);
+					return {
+						waiting: true
+					};
+				}
+
+				return {
+					url: src,
+					extra: {
+						page: get_buybox_url_from_id(parsed_url.boxid)
+					}
+				};
+			}
+		}
+
+		if (host_domain_nowww === "nintendo.com" && options.element) {
+			if (options.element.tagName.toLowerCase() === "svg" && options.element.classList.toString().match(/^icon-/)) {
+				return {
+					url: origsrc,
+					bad: "mask"
+				};
+			}
 		}
 
 
