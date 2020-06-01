@@ -61011,6 +61011,22 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain_nosub === "vndb.org" && /^s[0-9]*\./.test(domain)) {
+			// https://s2.vndb.org/st/65/81065.jpg
+			//   https://s2.vndb.org/sf/65/81065.jpg
+			return src.replace(/(:\/\/[^/]+\/+)st\/+/, "$1sf/");
+		}
+
+		if (domain_nowww === "gamefabrique.com") {
+			// https://gamefabrique.com/images/video/the-last-of-us.mp4
+			//   https://gamefabrique.com/images/video/original/the-last-of-us.mp4
+			// https://gamefabrique.com/screenshots/ps3/the-last-of-us-02.jpg
+			//   https://gamefabrique.com/storage/screenshots/ps3/the-last-of-us-02.png
+			return src
+				.replace(/(\/images\/+video\/+)([^/]+)(?:[?#].*)?$/, "$1original/$2")
+				.replace(/(:\/\/[^/]+\/+)(screenshots\/.*)\.jpg(?:[?#].*)?$/, "$1storage/$2.png");
+		}
+
 
 
 
