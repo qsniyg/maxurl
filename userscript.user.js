@@ -14516,7 +14516,9 @@ var $$IMU_EXPORT$$;
 			//   https://66.media.tumblr.com/da5fa368ca23d24d1bf2cdcddd6c208e/26b38fdc3a5c76b6-57/s75x75_c1/66f3b76d54cd15c6ef7ff1d2f601aaff4c230bdf.png
 			//   https://66.media.tumblr.com/da5fa368ca23d24d1bf2cdcddd6c208e/26b38fdc3a5c76b6-57/s2048x3072/04accefde073ce214c19e5e3d437755108e737ef.png
 			// https://66.media.tumblr.com/2f1e06be02fe7b7cac4c7f1634a9fcc5/0117045da5da2818-ab/s1280x1920/c2e312c7c204a31974c1a45472a929e5ddc2b7de.jpg
-			if (options.do_request && options.cb && /:\/\/[^/]+\/+[0-9a-f]{32}\/+[0-9a-f]{16}-[0-9a-f]{2}\/+s[0-9]+x[0-9]+(?:_c[0-9]+)?\/+[0-9a-f]{20,}\./.test(src)) {
+			// thanks to modelfe on github: https://github.com/qsniyg/maxurl/issues/88#issuecomment-637202663
+			// https://66.media.tumblr.com/7378b1813629aa8b841f6079ab9303a4/e24e926459952d1b-b1/s64x64u_c1/c7acf4139f2981e5d3ddaa6686e9240f3cf6f98d.jpg
+			if (options.do_request && options.cb && /:\/\/[^/]+\/+[0-9a-f]{32}\/+[0-9a-f]{16}-[0-9a-f]{2}\/+s[0-9]+x[0-9]+u?(?:_c[0-9]+)?\/+[0-9a-f]{20,}\./.test(src)) {
 				var get_initialstate_from_text = function(text) {
 					var match = text.match(/window\['___INITIAL_STATE___'\]\s*=\s*({.*?"ImageUrlPage":.*?})\s*;\s*(?:<\/script>[\s\S]*)?$/);
 					if (match) {
@@ -14537,7 +14539,7 @@ var $$IMU_EXPORT$$;
 				};
 
 				var url_to_tumblr_imageinfo = function(url) {
-					var match = url.match(/:\/\/[^/]+\/+([0-9a-f]{32})\/+([0-9a-f]{16}-[0-9a-f]{2})\/+s([0-9]+)x([0-9]+)(?:_c[0-9]+)?\/+[0-9a-f]{20,}\.([^/.?#]+)(?:[?#].*)?$/);
+					var match = url.match(/:\/\/[^/]+\/+([0-9a-f]{32})\/+([0-9a-f]{16}-[0-9a-f]{2})\/+s([0-9]+)x([0-9]+)u?(?:_c[0-9]+)?\/+[0-9a-f]{20,}\.([^/.?#]+)(?:[?#].*)?$/);
 					if (match) {
 						return {
 							mediaKey: match[1] + ":" + match[2],
@@ -14553,7 +14555,7 @@ var $$IMU_EXPORT$$;
 				var query_tumblr_original = function(url, cb) {
 					// thanks to Regis on discord for letting me know about this trick
 					url = url
-						.replace(/\/s[0-9]+x[0-9]+(?:_c[0-9]+)?\/+([0-9a-f]{20,}\.)/, "/s999999999x999999999/$1")
+						.replace(/\/s[0-9]+x[0-9]+u?(?:_c[0-9]+)?\/+([0-9a-f]{20,}\.)/, "/s999999999x999999999/$1")
 						// thanks to Wisedrow on discord: https://github.com/qsniyg/maxurl/issues/340
 						.replace(/:\/\/media\./, "://66.media.");
 
@@ -14592,14 +14594,18 @@ var $$IMU_EXPORT$$;
 											imageresponse.push(request_imageinfo);
 									}
 
-									var page = initialstate.ImageUrlPage.post.postUrl;
+									// https://66.media.tumblr.com/7378b1813629aa8b841f6079ab9303a4/e24e926459952d1b-b1/s64x64u_c1/c7acf4139f2981e5d3ddaa6686e9240f3cf6f98d.jpg
+									var page = null;
+									if (initialstate.ImageUrlPage.post) {
+										page = initialstate.ImageUrlPage.post.postUrl;
+									}
 
 									return done({
 										images: imageresponse,
 										page: page
 									});
 								} catch (e) {
-									console_error(e);
+									console_error(e, initialstate);
 								}
 
 								return done(null, false);
