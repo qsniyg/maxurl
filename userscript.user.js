@@ -22946,6 +22946,10 @@ var $$IMU_EXPORT$$;
 			//   https://p1-bcy.byteimg.com/img/banciyuan/user/219002/item/web/17al0/62afbfd0deb611e9afe7e78e9c02f7f3.jpg~noop.image
 			//   https://p1-bcy.byteimg.com/origin/banciyuan/user/219002/item/web/17al0/62afbfd0deb611e9afe7e78e9c02f7f3.jpg.jpg
 			domain_nosub === "byteimg.com" ||
+			// thanks to remlap on discord:
+			// https://p16-va-tiktok.ibyteimg.com/img/musically-maliva-obj/42b35206fcf1aa59acd5bcdb2ae82ac8~c5_720x720.jpeg
+			//   https://p16-va-tiktok.ibyteimg.com/origin/musically-maliva-obj/42b35206fcf1aa59acd5bcdb2ae82ac8.jpeg
+			domain_nosub === "ibyteimg.com" ||
 			// https://p16.muscdn.com/img/musically-maliva-obj/1634882550258693~c5_100x100.jpeg
 			//   https://p16.muscdn.com/img/musically-maliva-obj/1634882550258693~noop.jpeg
 			//   https://p16.muscdn.com/origin/musically-maliva-obj/1634882550258693.jpeg
@@ -68467,7 +68471,8 @@ var $$IMU_EXPORT$$;
 					];
 				};
 
-				set_lefttop(popup_update_pos_func(x, y, true));
+				var initialpos = popup_update_pos_func(x, y, true);
+				set_lefttop(initialpos);
 
 				var set_popup_size_helper = function(size, maxsize, widthheight) {
 					if (maxsize === undefined)
