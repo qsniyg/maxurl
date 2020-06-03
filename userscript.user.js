@@ -1947,6 +1947,7 @@ var $$IMU_EXPORT$$;
 		mouseover_gallery_move_after_video: false,
 		// thanks to acid-crash on github for the idea: https://github.com/qsniyg/maxurl/issues/20
 		mouseover_styles: "",
+		mouseover_enable_fade: true,
 		mouseover_fade_time: 100,
 		mouseover_enable_mask_styles: false,
 		mouseover_mask_styles2: "background-color: rgba(0, 0, 0, 0.5)",
@@ -3695,11 +3696,20 @@ var $$IMU_EXPORT$$;
 			category: "popup",
 			subcategory: "popup_other"
 		},
-		mouseover_fade_time: {
-			name: "Popup fade",
-			description: "Fade in/out time (in milliseconds) for the popup, set to 0 to disable",
+		mouseover_enable_fade: {
+			name: "Enable popup fade",
+			description: "Enables a fade in/out effect when the popup is opened/closed",
 			requires: {
 				mouseover_open_behavior: "popup"
+			},
+			category: "popup",
+			subcategory: "popup_other"
+		},
+		mouseover_fade_time: {
+			name: "Popup fade time",
+			description: "Fade in/out time (in milliseconds) for the popup",
+			requires: {
+				mouseover_enable_fade: true
 			},
 			type: "number",
 			number_min: 0,
@@ -15797,6 +15807,9 @@ var $$IMU_EXPORT$$;
 			// http://img21.imageporter.com/i/01522/rcvaaktx2q05_t.jpg
 			//   http://img21.imageporter.com/i/01522/rcvaaktx2q05.jpg
 			(domain_nosub === "imageporter.com" && domain.match(/^img[0-9]*\./)) ||
+			// https://img30.imagedunk.com/i/02072/ws89tkyz5tk3_t.jpg
+			//   https://img30.imagedunk.com/i/02072/ws89tkyz5tk3.jpg
+			(domain_nosub === "imagedunk.com" && domain.match(/^img[0-9]*\./)) ||
 			// http://img150.pixroute.com/i/01807/71x1h0plzn0d_t.jpg
 			//   http://img150.pixroute.com/i/01807/71x1h0plzn0d.jpg
 			(domain_nosub === "pixroute.com" && domain.match(/img[0-9]*\./))) {
@@ -22081,7 +22094,10 @@ var $$IMU_EXPORT$$;
 			//   https://ei.rdtcdn.com/m=/_thumbs/gallery/000/005/150/i_15005151_423291_5150301_9922564.jpg
 			// https://di.rdtcdn.com/m=eVYR8f/_thumbs/gallery/000/005/150/i_15005151_423291_5150281_/Sexy-Big-Booty-Black-Girls-Ebony-Babes-with-Thick-Thighs-And-Fat-Asses-1726828.jpg
 			//   https://di.rdtcdn.com/m=/_thumbs/gallery/000/005/150/i_15005151_423291_5150281_1726828.jpg
+			// https://ei.rdtcdn.com/m=bI4vELVg5p/_thumbs/gallery/000/002/489/i_1768726_132293_2489986_/Selena-enjoying-pump-dildo-143875.webp
+			//   https://ei.rdtcdn.com/m=/_thumbs/gallery/000/002/489/i_1768726_132293_2489986_143875.jpg
 			newsrc = src
+				.replace(/\.webp(?:[?#].*)?$/, ".jpg")
 				.replace(/\/m=[^/]*\/+_thumbs\/+/, "/m=/_thumbs/")
 				.replace(/\/m=[^/]*\/+(_thumbs\/+gallery\/.*_[0-9]+_)\/+[^/]+-([0-9]+\.[^/.]+)(?:[?#].*)?$/, "/m=/$1$2");
 			if (newsrc !== src)
@@ -67653,7 +67669,7 @@ var $$IMU_EXPORT$$;
 			var from_remote = !!options.from_remote;
 
 			popups.forEach(function (popup) {
-				if (settings.mouseover_fade_time > 0) {
+				if (settings.mouseover_enable_fade && settings.mouseover_fade_time > 0) {
 					popup.style.opacity = 0;
 
 					if (!removepopups_timer) {
@@ -68057,7 +68073,7 @@ var $$IMU_EXPORT$$;
 				set_important_style(outerdiv, "position", "fixed");
 				set_important_style(outerdiv, "z-index", maxzindex - 2);
 
-				if (settings.mouseover_fade_time > 0) {
+				if (settings.mouseover_enable_fade && settings.mouseover_fade_time > 0) {
 					set_important_style(outerdiv, "transition", "opacity " + (settings.mouseover_fade_time / 1000.) + "s");
 
 					if (!popup_el_automatic) {
