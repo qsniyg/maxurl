@@ -6025,7 +6025,9 @@ var $$IMU_EXPORT$$;
 			return newsrc;*/
 	};
 
-	common_functions.instagram_parse_el_info = function(api_cache, do_request, use_app_api, info, cb) {
+	common_functions.instagram_parse_el_info = function(api_cache, do_request, use_app_api, info, host_url, cb) {
+		var host_is_ig = /^[a-z]+:\/\/[^/]*\.instagram\.com\//.test(host_url);
+
 		var shortcode_to_url = function(type, shortcode) {
 			return "https://www.instagram.com/" + type + "/" + shortcode + "/";
 		};
@@ -6424,6 +6426,9 @@ var $$IMU_EXPORT$$;
 
 		var imageid_in_objarr = function(imageid, objarr) {
 			for (var i = 0; i < objarr.length; i++) {
+				if (imageid === "first")
+					return objarr[i];
+
 				if (string_indexof(objarr[i].src, imageid) > 0)
 					return objarr[i];
 			}
@@ -6641,6 +6646,9 @@ var $$IMU_EXPORT$$;
 		};
 
 		var fill_graphql_cache_with_postpage = function(postpage_text) {
+			if (!host_is_ig)
+				return;
+
 			var shareddata = get_sharedData_from_resptext(postpage_text);
 			if (!shareddata)
 				return;
@@ -31603,7 +31611,7 @@ var $$IMU_EXPORT$$;
 			// if oh is missing, "Bad URL hash"
 			newsrc = (function() {
 				var info = common_functions.instagram_find_el_info(document, options.element, options.host_url);
-				return common_functions.instagram_parse_el_info(api_cache, options.do_request, options.rule_specific.instagram_use_app_api, info, options.cb);
+				return common_functions.instagram_parse_el_info(api_cache, options.do_request, options.rule_specific.instagram_use_app_api, info, options.host_url, options.cb);
 			})();
 			if (newsrc !== undefined)
 				return newsrc;
@@ -31629,7 +31637,7 @@ var $$IMU_EXPORT$$;
 
 		if (domain_nosub === "instagram.com" &&
 			!(domain_nowww === "instagram.com" &&
-			  (src.match(/:\/\/[^/]*\/p\/[^/]*/) ||
+			  (src.match(/:\/\/[^/]*\/+(?:[^/]+\/+)?p\/+[^/]*/) ||
 			   src.match(/:\/\/[^/]*\/[-a-zA-Z0-9_.]+(?:\?.*)?$/)))) {
 			return {
 				url: src,
@@ -31637,6 +31645,18 @@ var $$IMU_EXPORT$$;
 					"Referer": "https://www.instagram.com"
 				}
 			};
+		}
+
+		if (domain_nowww === "instagram.com" && /^[a-z]+:\/\/[^/]+\/+(?:[^/]+\/+)?p\/+/.test(src) && options.do_request && options.cb) {
+			var info = [{
+				type: "post",
+				subtype: "link",
+				url: src,
+				image: "first",
+				element: options.element
+			}];
+
+			return common_functions.instagram_parse_el_info(api_cache, options.do_request, options.rule_specific.instagram_use_app_api, info, options.host_url, options.cb);
 		}
 
 		if (host_domain_nowww === "discordapp.com" && (domain_nosub === "fbcdn.net" || domain_nosub === "cdninstagram.com") && options.element && options.cb && options.do_request) {
@@ -31661,7 +31681,7 @@ var $$IMU_EXPORT$$;
 										element: options.element
 									}];
 
-									return common_functions.instagram_parse_el_info(api_cache, options.do_request, options.rule_specific.instagram_use_app_api, info, options.cb);
+									return common_functions.instagram_parse_el_info(api_cache, options.do_request, options.rule_specific.instagram_use_app_api, info, options.host_url, options.cb);
 								}
 
 								break;
@@ -62712,7 +62732,7 @@ var $$IMU_EXPORT$$;
 						var imageid_el_src = common_functions.instagram_get_image_src_from_el(imageid_el);
 						var our_imageid = common_functions.instagram_get_imageid(imageid_el_src);
 						var add = nextprev ? 1 : -1;
-						common_functions.instagram_parse_el_info(real_api_cache, options.do_request, options.rule_specific.instagram_use_app_api, info, function(data) {
+						common_functions.instagram_parse_el_info(real_api_cache, options.do_request, options.rule_specific.instagram_use_app_api, info, options.host_url, function(data) {
 							if (!data) {
 								return options.cb("default");
 							}
