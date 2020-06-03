@@ -1948,6 +1948,7 @@ var $$IMU_EXPORT$$;
 		// thanks to acid-crash on github for the idea: https://github.com/qsniyg/maxurl/issues/20
 		mouseover_styles: "",
 		mouseover_enable_fade: true,
+		mouseover_enable_zoom_effect: false,
 		mouseover_fade_time: 100,
 		mouseover_enable_mask_styles: false,
 		mouseover_mask_styles2: "background-color: rgba(0, 0, 0, 0.5)",
@@ -3705,12 +3706,22 @@ var $$IMU_EXPORT$$;
 			category: "popup",
 			subcategory: "popup_other"
 		},
-		mouseover_fade_time: {
-			name: "Popup fade time",
-			description: "Fade in/out time (in milliseconds) for the popup",
+		mouseover_enable_zoom_effect: {
+			name: "Enable zoom effect",
+			description: "Toggles whether the popup should 'zoom' when opened/closed",
 			requires: {
-				mouseover_enable_fade: true
+				mouseover_open_behavior: "popup"
 			},
+			category: "popup",
+			subcategory: "popup_other"
+		},
+		mouseover_fade_time: {
+			name: "Popup animation time",
+			description: "Fade/zoom animation duration (in milliseconds) for the popup",
+			requires: [
+				{mouseover_enable_fade: true},
+				{mouseover_enable_zoomin_effect: true}
+			],
 			type: "number",
 			number_min: 0,
 			number_unit: "ms",
@@ -67669,6 +67680,19 @@ var $$IMU_EXPORT$$;
 			var from_remote = !!options.from_remote;
 
 			popups.forEach(function (popup) {
+				if (settings.mouseover_fade_time > 0) {
+					if (settings.mouseover_enable_fade) {
+						popup.style.opacity = 0;
+					}
+
+					if (settings.mouseover_enable_zoom_effect) {
+						popup.style.transform = "scale(0)";
+					}
+
+					if (!removepopups_timer) {
+						removepopups_timer = setTimeout(removepopups, settings.mouseover_fade_time);
+					}
+				}
 				if (settings.mouseover_enable_fade && settings.mouseover_fade_time > 0) {
 					popup.style.opacity = 0;
 
@@ -68073,19 +68097,30 @@ var $$IMU_EXPORT$$;
 				set_important_style(outerdiv, "position", "fixed");
 				set_important_style(outerdiv, "z-index", maxzindex - 2);
 
-				if (settings.mouseover_enable_fade && settings.mouseover_fade_time > 0) {
-					set_important_style(outerdiv, "transition", "opacity " + (settings.mouseover_fade_time / 1000.) + "s");
+				if (settings.mouseover_fade_time > 0 && !popup_el_automatic) {
+					var transition_effects = [];
+					var fade_s = (settings.mouseover_fade_time / 1000.) + "s";
 
-					if (!popup_el_automatic) {
+					if (settings.mouseover_enable_fade) {
+						transition_effects.push("opacity " + fade_s);
 						set_important_style(outerdiv, "opacity", 0);
-
-						// this is needed in order to make the transition happen
-						setTimeout(function() {
-							set_important_style(outerdiv, "opacity", 1);
-						}, 1);
-					} else {
-						set_important_style(outerdiv, "opacity", 1);
 					}
+
+					if (settings.mouseover_enable_zoom_effect) {
+						transition_effects.push("transform " + fade_s);
+						set_important_style(outerdiv, "transform", "scale(0)");
+						zoomin_effect_enabled = true;
+					}
+
+					if (transition_effects.length > 0) {
+						set_important_style(outerdiv, "transition", transition_effects.join(", "));
+					}
+
+					// setTimeout is needed in order to make the transition happen
+					setTimeout(function() {
+						set_important_style(outerdiv, "opacity", 1);
+						set_important_style(outerdiv, "transform", "scale(1)");
+					}, 1);
 				}
 
 				var div = document.createElement("div");
