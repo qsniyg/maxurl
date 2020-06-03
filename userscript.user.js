@@ -1949,6 +1949,7 @@ var $$IMU_EXPORT$$;
 		mouseover_styles: "",
 		mouseover_enable_fade: true,
 		mouseover_enable_zoom_effect: false,
+		mouseover_zoom_effect_move: false,
 		mouseover_fade_time: 100,
 		mouseover_enable_mask_styles: false,
 		mouseover_mask_styles2: "background-color: rgba(0, 0, 0, 0.5)",
@@ -3711,6 +3712,15 @@ var $$IMU_EXPORT$$;
 			description: "Toggles whether the popup should 'zoom' when opened/closed",
 			requires: {
 				mouseover_open_behavior: "popup"
+			},
+			category: "popup",
+			subcategory: "popup_other"
+		},
+		mouseover_zoom_effect_move: {
+			name: "Move from thumbnail when zooming",
+			description: "Moves the popup from the thumbnail to the final location while zooming. The animation can be a little rough",
+			requires: {
+				mouseover_enable_zoom_effect: true
 			},
 			category: "popup",
 			subcategory: "popup_other"
@@ -68097,8 +68107,10 @@ var $$IMU_EXPORT$$;
 				set_important_style(outerdiv, "position", "fixed");
 				set_important_style(outerdiv, "z-index", maxzindex - 2);
 
+				var zoom_move_effect_enabled = false;
 				if (settings.mouseover_fade_time > 0 && !popup_el_automatic) {
 					var transition_effects = [];
+					var temp_transition_effects = [];
 					var fade_s = (settings.mouseover_fade_time / 1000.) + "s";
 
 					if (settings.mouseover_enable_fade) {
@@ -68109,11 +68121,26 @@ var $$IMU_EXPORT$$;
 					if (settings.mouseover_enable_zoom_effect) {
 						transition_effects.push("transform " + fade_s);
 						set_important_style(outerdiv, "transform", "scale(0)");
-						zoomin_effect_enabled = true;
+
+						if (settings.mouseover_zoom_effect_move) {
+							temp_transition_effects.push("top " + fade_s);
+							temp_transition_effects.push("left " + fade_s);
+							zoom_move_effect_enabled = true;
+						}
 					}
 
 					if (transition_effects.length > 0) {
-						set_important_style(outerdiv, "transition", transition_effects.join(", "));
+						var orig_transition_string = transition_effects.join(", ");
+
+						[].push.apply(transition_effects, temp_transition_effects);
+						var temp_transition_string = transition_effects.join(", ");
+						set_important_style(outerdiv, "transition", temp_transition_string);
+
+						if (temp_transition_effects.length > 0) {
+							setTimeout(function() {
+								set_important_style(outerdiv, "transition", orig_transition_string);
+							}, settings.mouseover_fade_time);
+						}
 					}
 
 					// setTimeout is needed in order to make the transition happen
@@ -68551,7 +68578,16 @@ var $$IMU_EXPORT$$;
 				};
 
 				var initialpos = popup_update_pos_func(x, y, true);
-				set_lefttop(initialpos);
+
+				if (!zoom_move_effect_enabled) {
+					set_lefttop(initialpos);
+				} else {
+					set_lefttop([x - imgw/2, y - imgh/2]);
+
+					setTimeout(function() {
+						set_lefttop(initialpos);
+					}, 1);
+				}
 
 				var set_popup_size_helper = function(size, maxsize, widthheight) {
 					if (maxsize === undefined)
