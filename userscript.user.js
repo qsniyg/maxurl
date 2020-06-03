@@ -2251,11 +2251,20 @@ var $$IMU_EXPORT$$;
 			hidden: is_userscript && open_in_tab === nullfunc,
 			options: {
 				_type: "or",
-				popup: {
-					name: "Popup"
+				_group1: {
+					popup: {
+						name: "Popup"
+					}
 				},
-				newtab: {
-					name: "New tab"
+				_group2: {
+					newtab: {
+						name: "New tab"
+					}
+				},
+				_group3: {
+					download: {
+						name: "Download"
+					}
 				}
 			},
 			requires: {
@@ -3591,8 +3600,8 @@ var $$IMU_EXPORT$$;
 		mouseover_fullscreen_key: {
 			name: "Toggle fullscreen key",
 			description: "Toggles fullscreen mode for the image/video in the popup",
-			reequires: {
-				mouseover_open_behavior: "popup",
+			requires: {
+				mouseover_open_behavior: "popup"
 			},
 			type: "keysequence",
 			category: "popup",
@@ -67960,6 +67969,77 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		var fill_obj_filename = function(newobj, url, respdata) {
+			if (typeof newobj.filename !== "string")
+				newobj.filename = "";
+
+			var newobj_ext = null;
+			if (newobj.filename.length === 0 && respdata) {
+				try {
+					var headers = parse_headers(respdata.responseHeaders);
+					for (var h_i = 0; h_i < headers.length; h_i++) {
+						var header_name = headers[h_i].name.toLowerCase();
+						var header_value = headers[h_i].value;
+
+						if (header_name === "content-disposition") {
+							// http://cfile7.uf.tistory.com/original/227CF24E57ABEC701869E7
+							// Content-Disposition: inline; filename="160731 LA Kcon stage - 15 copy.jpg"; filename*=UTF-8''160731%20LA%20Kcon%20stage%20-%2015%20copy.jpg
+							var loops = 0;
+							while (loops < 100 && typeof header_value === "string" && header_value.length > 0) {
+								var current_value = header_value.replace(/^\s*([^;]*?)\s*(?:;.*)?$/, "$1");
+								//header_value = header_value.replace(/^[^;]*(?:;\s*(.*))?$/, "$1");
+
+								var attr = current_value.replace(/^\s*([^=;]*?)\s*(?:[=;].*)?$/, "$1").toLowerCase();
+								var a_match = header_value.match(/^[^=;]*(?:(?:=\s*(?:(?:["']([^'"]*?)["'])|([^;]*?))\s*(;.*)?\s*)|;\s*(.*))?$/);
+								if (!a_match) {
+									console_error("Header value does not match pattern:", header_value);
+									break;
+								}
+								var a_value = a_match[1] || a_match[2];
+
+								// TODO: implement properly
+								/*if (attr === "filename*") {
+									newobj.filename = a_value;
+								}*/
+
+								if (newobj.filename.length === 0 && attr === "filename" && typeof a_value === "string" && a_value.length > 0) {
+									newobj.filename = a_value;
+								}
+
+								header_value = a_match[3] || a_match[4];
+								loops++;
+							}
+						} else if (header_name === "content-type") {
+							newobj_ext = get_ext_from_contenttype(header_value);
+						}
+
+						if (newobj.filename.length > 0)
+							break;
+					}
+				} catch (e) {
+					console_error(e);
+				}
+
+				if (newobj.filename.length === 0) {
+					newobj.filename = url.replace(/.*\/([^?#/]*)(?:[?#].*)?$/, "$1");
+
+					// Disable as there's no use for this
+					if (false && (newobj.filename.split(".").length - 1) === 1) {
+						newobj.filename = newobj.filename.replace(/(.*)\.[^.]*?$/, "$1");
+					}
+				}
+
+				// e.g. for /?...
+				if (newobj.filename.length === 0) {
+					newobj.filename = "download";
+				}
+
+				if (newobj.filename.indexOf(".") < 0 && newobj_ext) {
+					newobj.filename += "." + newobj_ext;
+				}
+			}
+		};
+
 		function makePopup(obj, orig_url, processing, data) {
 			if (_nir_debug_) {
 				console_log("makePopup", obj, orig_url, processing, data);
@@ -67970,13 +68050,20 @@ var $$IMU_EXPORT$$;
 			}
 
 			var openb = get_single_setting("mouseover_open_behavior");
-			if (openb === "newtab") {
+			if (openb === "newtab" || openb === "download") {
 				stop_waiting();
 
 				var theobj = data.data.obj;
 				theobj.url = data.data.resp.finalUrl;
 
-				open_in_tab_imu(theobj);
+				fill_obj_filename(theobj, theobj.url, data.data.resp);
+				popup_obj = theobj;
+
+				if (openb === "newtab") {
+					open_in_tab_imu(theobj);
+				} else if (openb === "download") {
+					download_popup_image();
+				}
 				return;
 			}
 
@@ -69218,74 +69305,7 @@ var $$IMU_EXPORT$$;
 
 				create_ui();
 
-				if (typeof newobj.filename !== "string")
-					newobj.filename = "";
-
-				var newobj_ext = null;
-				if (newobj.filename.length === 0 && data.data.respdata) {
-					try {
-						var headers = parse_headers(data.data.respdata.responseHeaders);
-						for (var h_i = 0; h_i < headers.length; h_i++) {
-							var header_name = headers[h_i].name.toLowerCase();
-							var header_value = headers[h_i].value;
-
-							if (header_name === "content-disposition") {
-								// http://cfile7.uf.tistory.com/original/227CF24E57ABEC701869E7
-								// Content-Disposition: inline; filename="160731 LA Kcon stage - 15 copy.jpg"; filename*=UTF-8''160731%20LA%20Kcon%20stage%20-%2015%20copy.jpg
-								var loops = 0;
-								while (loops < 100 && typeof header_value === "string" && header_value.length > 0) {
-									var current_value = header_value.replace(/^\s*([^;]*?)\s*(?:;.*)?$/, "$1");
-									//header_value = header_value.replace(/^[^;]*(?:;\s*(.*))?$/, "$1");
-
-									var attr = current_value.replace(/^\s*([^=;]*?)\s*(?:[=;].*)?$/, "$1").toLowerCase();
-									var a_match = header_value.match(/^[^=;]*(?:(?:=\s*(?:(?:["']([^'"]*?)["'])|([^;]*?))\s*(;.*)?\s*)|;\s*(.*))?$/);
-									if (!a_match) {
-										console_error("Header value does not match pattern:", header_value);
-										break;
-									}
-									var a_value = a_match[1] || a_match[2];
-
-									// TODO: implement properly
-									/*if (attr === "filename*") {
-										newobj.filename = a_value;
-									}*/
-
-									if (newobj.filename.length === 0 && attr === "filename" && typeof a_value === "string" && a_value.length > 0) {
-										newobj.filename = a_value;
-									}
-
-									header_value = a_match[3] || a_match[4];
-									loops++;
-								}
-							} else if (header_name === "content-type") {
-								newobj_ext = get_ext_from_contenttype(header_value);
-							}
-
-							if (newobj.filename.length > 0)
-								break;
-						}
-					} catch (e) {
-						console_error(e);
-					}
-
-					if (newobj.filename.length === 0) {
-						newobj.filename = url.replace(/.*\/([^?#/]*)(?:[?#].*)?$/, "$1");
-
-						// Disable as there's no use for this
-						if (false && (newobj.filename.split(".").length - 1) === 1) {
-							newobj.filename = newobj.filename.replace(/(.*)\.[^.]*?$/, "$1");
-						}
-					}
-
-					// e.g. for /?...
-					if (newobj.filename.length === 0) {
-						newobj.filename = "download";
-					}
-
-					if (newobj.filename.indexOf(".") < 0 && newobj_ext) {
-						newobj.filename += "." + newobj_ext;
-					}
-				}
+				fill_obj_filename(newobj, url, data.data.respdata);
 
 				var a = document.createElement("a");
 				set_el_all_initial(a);
@@ -71772,7 +71792,8 @@ var $$IMU_EXPORT$$;
 
 						var usehead = false;
 
-						if (!multi && get_single_setting("mouseover_open_behavior") === "newtab") {
+						var openb = get_single_setting("mouseover_open_behavior");
+						if (!multi && (openb === "newtab" || openb === "download")) {
 							usehead = true;
 						} else if (multi && !get_single_setting("replaceimgs_usedata")) {
 							usehead = true;
