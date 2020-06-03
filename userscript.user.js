@@ -1851,7 +1851,7 @@ var $$IMU_EXPORT$$;
 		mouseover_close_click_outside: false,
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/126
 		mouseover_allow_partial: is_extension ? "media" : "video",
-		mouseover_partial_avoid_head: true,
+		mouseover_partial_avoid_head: false,
 		mouseover_use_blob_over_data: false,
 		mouseover_enable_notallowed: true,
 		// thanks to Rnksts on discord for the idea
@@ -2388,7 +2388,7 @@ var $$IMU_EXPORT$$;
 		},
 		mouseover_partial_avoid_head: {
 			name: "Avoid HEAD request for partially loaded media",
-			description: "Avoids a likely unnecessary HEAD request before displaying partially loaded images, which further decreases the delay before opening the popup. This option is kept in case of regressions",
+			description: "Avoids a possibly unnecessary HEAD request before displaying partially loaded images, which further decreases the delay before opening the popup. This can cause issues if the server returns an error, but still returns an image",
 			requires: [
 				{mouseover_allow_partial: "video"},
 				{mouseover_allow_partial: "media"}
@@ -12784,6 +12784,8 @@ var $$IMU_EXPORT$$;
 			(domain_nowww === "sevelina.ru" && /\/images\/+uploads\//.test(src)) ||
 			// https://www.cdprojekt.com/en/wp-content/uploads-en/2020/04/cyberpunk2077-running_the_show-rgb-1024x576.jpg
 			(domain_nowww === "cdprojekt.com" && string_indexof(src, "/wp-content/") >= 0) ||
+			// http://www.bilgimanya.com/resimler/2011/07/selena-gomez-resimleri-fotograflari-photos-gallery-17-170x170.jpg
+			(domain_nowww === "bilgimanya.com" && string_indexof(src, "/resimler/") >= 0) ||
 			// https://static.acgsoso.com/uploads/2020/02/19bd4f091f03c191195d5e626c3190f9-200x300.jpg
 			(domain === "static.acgsoso.com" && string_indexof(src, "/uploads/") >= 0)
 			) {
@@ -61057,6 +61059,32 @@ var $$IMU_EXPORT$$;
 				.replace(/(:\/\/[^/]+\/+)(screenshots\/.*)\.jpg(?:[?#].*)?$/, "$1storage/$2.png");
 		}
 
+		if (domain_nowww === "rorax.com") {
+			// http://www.rorax.com/img/57/small/35173_selena_gomez08170803_122_158lo.jpg
+			//   http://www.rorax.com/img/57/large/35173_selena_gomez08170803_122_158lo.jpg -- 541x748
+			// http://www.rorax.com/img/57/large/35150_selena_gomez03011004_122_467lo.jpg -- 553x749, upscaled?
+			newsrc = src.replace(/(\/img\/+[0-9]+\/+)(?:small|medium)\/+/, "$1large/");
+			if (newsrc !== src)
+				return {
+					url: newsrc,
+					problems: {
+						possibly_upscaled: true
+					}
+				};
+		}
+
+		if (domain === "img.5nd.com") {
+			// http://img.5nd.com/150/Photo/singer/1/22146.jpg
+			//   http://img.5nd.com/Photo/singer/1/22146.jpg
+			return src.replace(/(:\/\/[^/]+\/+)[0-9]+\/+photo\/+/i, "$1Photo/");
+		}
+
+		if (domain === "d1bm3dmew779uf.cloudfront.net") {
+			// https://d1bm3dmew779uf.cloudfront.net/small/c12fd48bef8c888cb855ccaab2234676.jpg
+			//   https://d1bm3dmew779uf.cloudfront.net/original/c12fd48bef8c888cb855ccaab2234676.jpg
+			return src.replace(/(:\/\/[^/]+\/+)(?:small|medium|large)\/+/, "$1original/");
+		}
+
 
 
 
@@ -66797,7 +66825,7 @@ var $$IMU_EXPORT$$;
 
 			if (resp.readyState == 4 || true) {
 				if (_nir_debug_) {
-					console_log("check_image_get(onload)", resp, resp.readyState);
+					console_log("check_image_get(onload)", deepcopy(resp), resp.readyState);
 				}
 
 				var digit = resp.status.toString()[0];
