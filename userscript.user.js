@@ -1903,6 +1903,7 @@ var $$IMU_EXPORT$$;
 		mouseover_ui_caption: true,
 		mouseover_ui_wrap_caption: true,
 		mouseover_ui_caption_link_page: true,
+		mouseover_ui_link_underline: true,
 		mouseover_use_remote: false,
 		mouseover_zoom_behavior: "fit",
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-531080061
@@ -2875,6 +2876,15 @@ var $$IMU_EXPORT$$;
 			description: "Links the original page (if it exists) in the caption",
 			requires: {
 				mouseover_ui_caption: true
+			},
+			category: "popup",
+			subcategory: "ui"
+		},
+		mouseover_ui_link_underline: {
+			name: "Underline links",
+			description: "Adds an underline to links (such as the original page)",
+			requires: {
+				mouseover_ui: true
 			},
 			category: "popup",
 			subcategory: "ui"
@@ -68757,7 +68767,7 @@ var $$IMU_EXPORT$$;
 						set_important_style(btn, "user-select", "none");
 					}
 
-					if (typeof text === "object" && text.link_underline) {
+					if (typeof text === "object" && text.link_underline && settings.mouseover_ui_link_underline) {
 						set_important_style(btn, "text-decoration", "underline");
 					}
 
