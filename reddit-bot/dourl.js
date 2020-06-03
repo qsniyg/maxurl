@@ -223,6 +223,10 @@ function is_youtube_url(url) {
 		match = url.match(/^[a-z]+:\/\/(?:[^/]+\.)?(?:gfycat|redgifs)\.com\//);
 	}
 
+	if (!match) {
+		match = url.match(/^[a-z]+:\/\/(?:[^/]+\.)?instagram\.com\//);
+	}
+
 	return !!match;
 }
 
