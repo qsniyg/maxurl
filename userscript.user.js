@@ -3730,7 +3730,7 @@ var $$IMU_EXPORT$$;
 			description: "Fade/zoom animation duration (in milliseconds) for the popup",
 			requires: [
 				{mouseover_enable_fade: true},
-				{mouseover_enable_zoomin_effect: true}
+				{mouseover_enable_zoom_effect: true}
 			],
 			type: "number",
 			number_min: 0,
@@ -67690,7 +67690,7 @@ var $$IMU_EXPORT$$;
 			var from_remote = !!options.from_remote;
 
 			popups.forEach(function (popup) {
-				if (settings.mouseover_fade_time > 0) {
+				if (settings.mouseover_fade_time > 0 && (settings.mouseover_enable_fade || settings.mouseover_enable_zoom_effect)) {
 					if (settings.mouseover_enable_fade) {
 						popup.style.opacity = 0;
 					}
@@ -67698,13 +67698,6 @@ var $$IMU_EXPORT$$;
 					if (settings.mouseover_enable_zoom_effect) {
 						popup.style.transform = "scale(0)";
 					}
-
-					if (!removepopups_timer) {
-						removepopups_timer = setTimeout(removepopups, settings.mouseover_fade_time);
-					}
-				}
-				if (settings.mouseover_enable_fade && settings.mouseover_fade_time > 0) {
-					popup.style.opacity = 0;
 
 					if (!removepopups_timer) {
 						removepopups_timer = setTimeout(removepopups, settings.mouseover_fade_time);
