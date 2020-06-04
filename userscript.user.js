@@ -2213,11 +2213,17 @@ var $$IMU_EXPORT$$;
 			name: "Show image URL in tooltip",
 			description: "If the popup is needed to display the larger version of an image, display the image link in the tooltip",
 			category: "redirection",
+			requires: {
+				redirect: true
+			},
 			userscript_only: true // tooltip isn't shown in the extension
 		},
 		redirect_infobox_timeout: {
 			name: "Hide tooltip after",
 			description: "Hides the tooltip after the specified number of seconds (or when the mouse clicks on it). Set to 0 to never hide automatically",
+			requires: {
+				redirect: true
+			},
 			type: "number",
 			number_min: 0,
 			number_unit: "seconds",
@@ -11433,6 +11439,7 @@ var $$IMU_EXPORT$$;
 			// https://images.vice.com/noisey/content-images/article/die-antwoord-gucci-coochie/Screen-Shot-2016-05-18-at-16-32-36.jpg?crop=1xw%3A0.8371478873239436xh%3Bcenter%2Ccenter&resize=650%3A*&output-quality=55
 			(domain_nosub === "vice.com" && domain.match(/images\.vice\.com$/)) ||
 			// https://i.imgur.com/ajsLfCa_d.jpg?maxwidth=520&shape=thumb&fidelity=high
+			// https://i.imgur.com/3FQPndz.jpg?play
 			(domain === "i.imgur.com" && !src.match(/\?[0-9]+$/)) ||
 			// https://media.discordapp.net/attachments/170399623859404800/411963827412795394/CdynalsW4AQYsgy.png?width=223&height=300
 			domain === "media.discordapp.net" ||
