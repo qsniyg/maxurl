@@ -34308,23 +34308,78 @@ var $$IMU_EXPORT$$;
 		if (domain === "statics.cdntrex.com" ||
 			domain_nowww === "anon-v.com" ||
 			// https://www.break.ie/contents/videos_screenshots/2000/2271/320x240/2.jpg
+			//   https://www.break.ie/contents/videos/2000/2271/2271_480p.mp4
 			domain_nowww === "break.ie" ||
 			// https://xcadr.org/contents/videos_screenshots/22000/22743/228x128/1.jpg
 			domain_nowww === "xcadr.org" ||
+			// https://www.fitting-room.com/contents/videos_screenshots/0/231/preview_trailer.mp4.jpg
 			domain_nowww === "fitting-room.com" ||
+			domain_nowww === "camwhoreshd.com" ||
 			// http://cdn.camwhores.tv/contents/videos_screenshots/5869000/5869367/180x135/2.jpg
 			domain_nosub === "camwhores.tv" ||
+			// https://www.camwhoresbay.com/contents/videos_screenshots/243000/243143/preview.mp4.jpg
 			domain_nowww === "camwhoresbay.com" ||
 			domain_nowww === "asianleak.com" ||
 			// https://pr1.zbporn.tv/contents/videos/600000/600573/600573_short_preview.mp4
 			domain_nosub === "zbporn.tv" ||
 			// https://dato.porn/contents/videos_screenshots/104000/104828/320x180/1.jpg
 			domain_nowww === "dato.porn" ||
+			// https://smutr.com/contents/videos_screenshots/33000/33141/241x143/3.jpg
+			domain_nowww === "smutr.com" ||
+			// https://grid.fapster.xxx/contents/videos_screenshots/79000/79064/320x180/1.jpg -- requires referer
+			domain_nosub === "fapster.xxx" ||
+			// https://bogmedia.org/contents/videos_screenshots/11000/11343/320x180/2.jpg
+			domain_nowww === "bogmedia.org" ||
+			// http://www.femdomtb.com/contents/videos_screenshots/21000/21963/180x135/1.jpg
+			domain_nowww === "femdomtb.com" ||
+			// https://www.solopornoitaliani.xxx/contents/videos_screenshots/60000/60096/180x135/1.jpg
+			domain_nowww === "solopornoitaliani.xxx" ||
+			// http://www.mature-porn.xxx/contents/videos_screenshots/0/391/300x225/3.jpg
+			domain_nowww === "mature-porn.xxx" ||
+			// http://www.camhub.cc/contents/videos_screenshots/201000/201343/preview.jpg
+			// uses embed to www.zzpornozz.xyz/embed/[different id], which itself does use flashvars
+			//domain_nowww === "camhub.cc" ||
+			// http://www.caminspector.net/contents/videos_screenshots/111000/111019/180x135/1.jpg
+			// frame to www.cwtvembeds.com/embed/[different id]
+			//domain_nowww === "caminspector.net" ||
+			domain_nowww === "hiddencam.tv" ||
+			// https://www.mypornhere.com/contents/videos_screenshots/142000/142247/320x180/1.jpg
+			domain_nowww === "mypornhere.com" ||
+			// https://www.mvpchannel.net/tube/contents/videos_screenshots/6000/6312/180x135/2.jpg
+			(domain_nowww === "mvpchannel.net" && string_indexof(src, "/tube/") >= 0) ||
+			// https://www.gaythebest.com/contents/videos_screenshots/1000/1242/180x135/1.jpg
+			domain_nowww === "gaythebest.com" ||
+			// https://cdn1.watchmygf.me/contents/videos_screenshots/3000/3073/250x149/1.jpg
+			domain_nosub === "watchmygf.me" ||
+			// https://cdni.yeswegays.com/contents/videos_screenshots/832000/832480/preview.mp4.jpg
+			domain_nosub === "yeswegays.com" ||
+			// http://mytradevideo.com/contents/videos_screenshots/0/647/preview.jpg
+			domain_nowww === "mytradevideo.com" ||
+			// https://cnt.boundhub.com/contents/videos_screenshots/157000/157108/180x135/1.jpg
+			domain_nosub === "boundhub.com" ||
+			// https://youhealthtube.com/contents/videos_screenshots/0/74/496x372/1.jpg
+			domain_nowww === "youhealthtube.com" ||
+			// http://www.mywebgirls.tv/contents/videos_screenshots/104000/104655/347x260/9.jpg
+			domain_nowww === "mywebgirls.tv" ||
+			// https://www.thebestshemalevideos.com/contents/videos_screenshots/39000/39368/180x135/1.jpg
+			domain_nowww === "thebestshemalevideos.com" ||
+			// different system
+			// https://static2.tubepornclassic.com/contents/videos_screenshots/1051000/1051741/240x180/1.jpg
+			//domain_nosub === "tubepornclassic.com" ||
+			// seems like urls from flashvars don't work anymore, they prefer m3u8 instead
+			// https://cdn.mcstatic.com/contents/videos_screenshots/12076000/12076720/140x79/1.jpg
+			//domain === "cdn.mcstatic.com" ||
+			// todo: just uses a normal video tag
+			// https://i.mylust.com/videos_screenshots/412000/412506/200x150/1.jpg
+			//domain === "i.mylust.com" ||
+			// https://endoscop.tv/contents/videos_screenshots/1000/1069/180x135/1.jpg
+			//domain_nowww === "endoscop.tv" ||
 			domain_nowww === "pornrewind.com") {
+			// to find more sites: inurl:videos_screenshots
 			id = null;
 			// https://statics.cdntrex.com/contents/videos_screenshots/1047000/1047563/300x168/1.jpg?v=3
 			// https://statics.cdntrex.com/contents/videos_screenshots/1061000/1061072/preview.mp4.jpg
-			match = src.match(/\/videos_screenshots\/+[0-9]+\/+([0-9]+)\/+(?:[0-9]+x[0-9]+\/+|preview\.)/);
+			match = src.match(/\/videos_screenshots\/+[0-9]+\/+([0-9]+)\/+(?:[0-9]+x[0-9]+\/+|preview(?:_trailer)?\.)/);
 			if (!match) {
 				match = src.match(/\/get_file\/+[0-9a-f]\/+[0-9a-f]{30,}\/+[0-9a-f]\/+([0-9]+)\/+screenshots\/+/);
 			}
@@ -34339,6 +34394,7 @@ var $$IMU_EXPORT$$;
 			var basedomain = "https://www." + domain_nosub + "/";
 			var videos_component = "videos";
 			var addslash = "/";
+			var a_component = "/a";
 			var cache_host = domain_nosub;
 
 			if (domain_nosub === "porntrex.com" || domain_nosub === "cdntrex.com") {
@@ -34347,9 +34403,37 @@ var $$IMU_EXPORT$$;
 				videos_component = "video";
 				addslash = "";
 			} else if (domain_nosub === "porntb.com" ||
-			           domain_nosub === "pornstarsadvice.com") {
+					   domain_nosub === "pornstarsadvice.com" ||
+					   domain_nosub === "fetishburg.com" ||
+					   domain_nosub === "camhub.cc" ||
+					   domain_nosub === "mytradevideo.com" ||
+					   domain_nosub === "mywebgirls.tv") {
 				// doesn't support https
 				basedomain = "http://www." + domain_nosub + "/";
+			} else if (domain_nosub === "smutr.com") {
+				videos_component = "v";
+				a_component = "";
+			} else if (domain_nosub === "mature-porn.xxx") {
+				videos_component = "v";
+				addslash = "";
+				basedomain = "http://www." + domain_nosub + "/";
+			} else if (domain_nosub === "bogmedia.org") {
+				basedomain = "https://bogmedia.org/";
+			} else if (domain_nosub === "solopornoitaliani.xxx") {
+				videos_component = "video";
+				addslash = ".html";
+			} else if (domain_nosub === "mvpchannel.net") {
+				videos_component = "tube/videos";
+			} else if (domain_nosub === "watchmygf.me" ||
+					   domain_nosub === "yeswegays.com" ||
+					   domain_nosub === "thebestshemalevideos.com") {
+				videos_component = "embed";
+				addslash = "";
+				a_component = "";
+			} else if (domain_nosub === "mcstatic.com") {
+				basedomain = "https://www.metacafe.com/";
+				videos_component = "watch";
+				cache_host = "metacafe.com";
 			}
 
 			var fixup_function_url = function(flashvars) {
@@ -34361,7 +34445,12 @@ var $$IMU_EXPORT$$;
 					for (b = 0; b < a.length; b++) {
 						for (c = 0; c < 12; c++) {
 							f = 0;
-							for (d = 0; d < a[b][1].length; d++) e = parseInt(a[b][1][d]) || 0, f += c * e;
+
+							for (d = 0; d < a[b][1].length; d++) {
+								e = parseInt(a[b][1][d]) || 0;
+								f += c * e;
+							}
+
 							f = Math.floor(f / 7);
 							bn = parseInt(bn || 0) - f;
 						}
@@ -34384,10 +34473,12 @@ var $$IMU_EXPORT$$;
 
 						for (c = 0; c < 12; c++) {
 							g = i;
+
 							for (d = 0; d < a[b][1].length; d++) {
 								f = parseInt(a[b][1][d]) || 0;
 								g += c * f;
 							}
+
 							g = Math.floor(g / 6);
 							bn = parseInt(bn || 0) + g;
 						}
@@ -34401,8 +34492,15 @@ var $$IMU_EXPORT$$;
 								h = h.split("/");
 								for (c = 0; c < h[5].length; c++) {
 									g = c;
-									for (d = c; d < f.length; d++) g += parseInt(f[d]);
-									while (g >= h[5].length) g = g - h[5].length;
+
+									for (d = c; d < f.length; d++) {
+										g += parseInt(f[d]);
+									}
+
+									while (g >= h[5].length) {
+										g = g - h[5].length;
+									}
+
 									i = h[5][c];
 									h[5] = h[5].substring(0, c) + h[5][g] + h[5].substring(c + 1);
 									h[5] = h[5].substring(0, g) + (i + "") + h[5].substring(g + 1);
@@ -34427,7 +34525,8 @@ var $$IMU_EXPORT$$;
 					}
 
 					if (d) {
-						for (f = "", g = 1; g < d.length; g++) {
+						f = "";
+						for (g = 1; g < d.length; g++) {
 							f += parseInt(d[g]) ? parseInt(d[g]) : 1;
 						}
 
@@ -34453,9 +34552,8 @@ var $$IMU_EXPORT$$;
 
 						i = parseInt(c) / 2 + 2;
 						m = "";
-						g = 0;
 
-						for (; g < j + 1; g++) {
+						for (g = 0; g < j + 1; g++) {
 							for (h = 1; h <= 4; h++) {
 								n = parseInt(d[g + h]) + parseInt(f[g]);
 
@@ -34478,19 +34576,43 @@ var $$IMU_EXPORT$$;
 					var c = "code";
 					var d = "16px";
 					var e = function_e;
+
 					for (var f in a) {
 						if (0 == a[f].indexOf(b)) {
 							var g = a[f].substring(b.length).split(b[b.length - 1]);
 							if (g[0] > 0) {
-								var h = g[6].substring(0, 2 * parseInt(d)),
-									i = e ? e(a, c, d) : "";
+								var h = g[6].substring(0, 2 * parseInt(d));
+								var i = "";
+
+								if (e) {
+									i = e(a, c, d);
+								}
+
 								if (i && h) {
 									for (var j = h, k = h.length - 1; k >= 0; k--) {
-										for (var l = k, m = k; m < i.length; m++) l += parseInt(i[m]);
-										for (; l >= h.length;) l -= h.length;
-										for (var n = "", o = 0; o < h.length; o++) n += o == k ? h[l] : o == l ? h[k] : h[o];
-										h = n
+										var l = k;
+										for (var m = k; m < i.length; m++) {
+											l += parseInt(i[m]);
+										}
+
+										for (; l >= h.length;) {
+											l -= h.length;
+										}
+
+										var n = "";
+										for (var o = 0; o < h.length; o++) {
+											if (o == k) {
+												n += h[l];
+											} else if (o == l) {
+												n += h[k];
+											} else {
+												n += h[o];
+											}
+										}
+
+										h = n;
 									}
+
 									g[6] = g[6].replace(j, h), g.splice(0, 1), a[f] = g.join(b[b.length - 1])
 								}
 							}
@@ -34525,10 +34647,13 @@ var $$IMU_EXPORT$$;
 
 			if (id && options.do_request && options.cb) {
 				var cache_key = cache_host + ":" + id;
-				api_cache.fetch(cache_key, function(data) {
-					if (!data) {
+				api_cache.fetch(cache_key, function(ourdata) {
+					if (!ourdata || !ourdata.data) {
 						return options.cb(null);
 					}
+
+					var data = ourdata.data;
+					var origpage = ourdata.finalurl;
 
 					var maxurl = null;
 					var maxsize = null;
@@ -34540,11 +34665,23 @@ var $$IMU_EXPORT$$;
 							var oururl = data[key];
 							var oursize = oururl.replace(/.*_([0-9]+)p\.[^/.]+(?:\/*[^/]*)?(?:[?#].*)?$/, "$1");
 							if (oursize === oururl) {
-								if (oururl.match(/\/([0-9]+)\/+\1(?:_trailer)?\.[^/.]+(?:\/*[^/]*)?(?:[?#].*)?$/)) {
-									oursize = 480;
-								} else {
-									console_warn("Unable to detect size from URL: " + oururl);
-									continue;
+								oursize = null;
+
+								if ((key + "_text") in data) {
+									var keytext = data[key + "_text"];
+									var keytext_match = keytext.match(/^([0-9]{3,})p$/);
+									if (keytext_match) {
+										oursize = keytext_match[1];
+									}
+								}
+
+								if (!oursize) {
+									if (oururl.match(/\/([0-9]+)\/+\1(?:_trailer)?\.[^/.]+(?:\/*[^/]*)?(?:[?#].*)?$/)) {
+										oursize = 480;
+									} else {
+										console_warn("Unable to detect size from URL: " + oururl);
+										continue;
+									}
 								}
 							}
 							oursize = parseInt(oursize);
@@ -34557,18 +34694,27 @@ var $$IMU_EXPORT$$;
 					}
 
 					if (maxurl) {
-						return options.cb({
+						var newobj = {
 							url: maxurl,
 							headers: {
-								Referer: basedomain
+								Referer: origpage || basedomain
+							},
+							extra: {
+								page: origpage
 							}
-						});
+						};
+
+						if (string_indexof(maxurl, ".mp4") >= 0) {
+							newobj.video = true;
+						}
+
+						return options.cb(newobj);
 					} else {
 						return options.cb(null);
 					}
 				}, function(done) {
 					options.do_request({
-						url: basedomain + videos_component + "/" + id + "/a" + addslash,
+						url: basedomain + videos_component + "/" + id + a_component + addslash,
 						method: "GET",
 						onload: function(resp) {
 							if (resp.readyState !== 4)
@@ -34585,14 +34731,27 @@ var $$IMU_EXPORT$$;
 								return done(null, false);
 							}
 
+							// https://www.thebestshemalevideos.com/contents/videos_screenshots/39000/39368/180x135/1.jpg
+							// : '...\'....'
+							var jsoned = match[1]
+								.replace(/([{,])\s*([^"'\s:]+)\s*:/g, "$1 \"$2\":")
+								.replace(/(\"[^\s:"]+?\":)\s*'([^']*)'(\s*[,}])/g, "$1 \"$2\"$3")
+								.replace(/,\s*}$/, "}");
+
 							try {
-								var jsoned = match[1]
-									.replace(/([{,])\s*([\S]+)\s*:/g, "$1 \"$2\":")
-									.replace(/(\"[\S]+\":)\s*'([^']*)'/g, "$1 \"$2\"");
 								var json = JSON_parse(jsoned);
-								done(json, 6*60*60);
+
+								// metacafe
+								if (!("video_id" in json) && "flashvars" in json && json.flashvars && "video_id" in json.flashvars) {
+									json = json.flashvars;
+								}
+
+								done({
+									data: json,
+									finalurl: resp.finalUrl
+								}, 6*60*60);
 							} catch (e) {
-								console_error(e);
+								console_error(e, match[1], jsoned);
 								return done(null, false);
 							}
 						}
@@ -34743,9 +34902,11 @@ var $$IMU_EXPORT$$;
 			// https://www.zceleb.com/contents/albums/main/235x350/0/73/4807.jpg
 			//   https://zceleb.com/contents/albums/main/5000x5000/0/73/4807.jpg
 			//   https://www.zceleb.com/contents/albums/sources/0/73/4807.jpg
-			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+remote_control\.php\?(?:.*?&)?file=([^&]*).*?$/, "$1");
-			if (newsrc !== src)
-				return urljoin(src, decodeURIComponent(newsrc), true);
+			if (domain_nosub !== "thebestshemalevideos.com") {
+				newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+remote_control\.php\?(?:.*?&)?file=([^&]*).*?$/, "$1");
+				if (newsrc !== src)
+					return urljoin(src, decodeURIComponent(newsrc), true);
+			}
 
 			// https://www.vjav.com/get_image/2/749399d324d9f4118ef241f8a2d497eb/main/1600x1200/47000/47925/575030.jpg/
 			//   https://www.vjav.com/contents/albums/main/1600x1200/47000/47925/575030.jpg
@@ -61347,6 +61508,14 @@ var $$IMU_EXPORT$$;
 			// https://d1bm3dmew779uf.cloudfront.net/small/c12fd48bef8c888cb855ccaab2234676.jpg
 			//   https://d1bm3dmew779uf.cloudfront.net/original/c12fd48bef8c888cb855ccaab2234676.jpg
 			return src.replace(/(:\/\/[^/]+\/+)(?:small|medium|large)\/+/, "$1original/");
+		}
+
+		if (domain === "cache.hkgolden.media") {
+			// https://cache.hkgolden.media/compress/https://www.mypornhere.com/contents/videos_screenshots/74000/74255/preview.jpg
+			//   https://www.mypornhere.com/contents/videos_screenshots/74000/74255/preview.jpg
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+compress\/+(https?:\/\/)/, "$1");
+			if (newsrc !== src)
+				return newsrc;
 		}
 
 
