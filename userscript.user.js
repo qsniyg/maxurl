@@ -27061,9 +27061,11 @@ var $$IMU_EXPORT$$;
 			// https://cdna.artstation.com/p/assets/images/images/016/242/734/20190301045023/micro_square/zephyr-zheng-terra2.jpg?1551437424
 			//   https://cdna.artstation.com/p/assets/images/images/016/242/734/large/zephyr-zheng-terra2.jpg?1551437424
 			// https://cdnb.artstation.com/p/assets/images/images/008/668/847/large/brady-goldsmith-goddessesofcosplay1lizkatzvariantlow.jpg?1514426043
-			regex = /(\/assets\/+(?:images|covers)\/+images\/+[0-9]{3}\/+[0-9]{3}\/+[0-9]{3}\/+)(?:[0-9]+\/+)?(?:small(?:er)?|micro|medium|large)(?:_square)?\/([^/]*)$/;
+			// https://cdna.artstation.com/p/assets/images/images/027/308/686/4k/lyuba-dashinova-sabrina2.jpg -- thanks to remlap on discord
+			regex = /(\/assets\/+(?:images|covers)\/+images\/+[0-9]{3}\/+[0-9]{3}\/+[0-9]{3}\/+)(?:[0-9]+\/+)?(?:small(?:er)?|micro|medium|large|4k)(?:_square)?\/([^/]*)$/;
 			return [
 				src.replace(regex, "$1original/$2"),
+				src.replace(regex, "$14k/$2"),
 				src.replace(regex, "$1large/$2")
 			];
 		}
@@ -34309,6 +34311,7 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "fitting-room.com" ||
 			// http://cdn.camwhores.tv/contents/videos_screenshots/5869000/5869367/180x135/2.jpg
 			domain_nosub === "camwhores.tv" ||
+			domain_nowww === "camwhoresbay.com" ||
 			domain_nowww === "asianleak.com" ||
 			// https://pr1.zbporn.tv/contents/videos/600000/600573/600573_short_preview.mp4
 			domain_nosub === "zbporn.tv" ||
