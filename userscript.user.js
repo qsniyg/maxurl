@@ -27063,11 +27063,14 @@ var $$IMU_EXPORT$$;
 			// https://cdnb.artstation.com/p/assets/images/images/008/668/847/large/brady-goldsmith-goddessesofcosplay1lizkatzvariantlow.jpg?1514426043
 			// https://cdna.artstation.com/p/assets/images/images/027/308/686/4k/lyuba-dashinova-sabrina2.jpg -- thanks to remlap on discord
 			regex = /(\/assets\/+(?:images|covers)\/+images\/+[0-9]{3}\/+[0-9]{3}\/+[0-9]{3}\/+)(?:[0-9]+\/+)?(?:small(?:er)?|micro|medium|large|4k)(?:_square)?\/([^/]*)$/;
-			return [
-				src.replace(regex, "$1original/$2"),
-				src.replace(regex, "$14k/$2"),
-				src.replace(regex, "$1large/$2")
-			];
+
+			if (regex.test(src)) {
+				return [
+					src.replace(regex, "$1original/$2"),
+					src.replace(regex, "$14k/$2"),
+					src.replace(regex, "$1large/$2")
+				];
+			}
 		}
 
 		if (domain === "static.cosplay-it.com") {
