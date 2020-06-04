@@ -34295,30 +34295,220 @@ var $$IMU_EXPORT$$;
 
 		if (domain === "statics.cdntrex.com" ||
 			domain_nowww === "anon-v.com" ||
+			// https://www.break.ie/contents/videos_screenshots/2000/2271/320x240/2.jpg
+			domain_nowww === "break.ie" ||
+			// https://xcadr.org/contents/videos_screenshots/22000/22743/228x128/1.jpg
+			domain_nowww === "xcadr.org" ||
+			domain_nowww === "fitting-room.com" ||
+			// http://cdn.camwhores.tv/contents/videos_screenshots/5869000/5869367/180x135/2.jpg
+			domain_nosub === "camwhores.tv" ||
+			domain_nowww === "asianleak.com" ||
+			// https://pr1.zbporn.tv/contents/videos/600000/600573/600573_short_preview.mp4
+			domain_nosub === "zbporn.tv" ||
+			// https://dato.porn/contents/videos_screenshots/104000/104828/320x180/1.jpg
+			domain_nowww === "dato.porn" ||
 			domain_nowww === "pornrewind.com") {
 			id = null;
 			// https://statics.cdntrex.com/contents/videos_screenshots/1047000/1047563/300x168/1.jpg?v=3
 			// https://statics.cdntrex.com/contents/videos_screenshots/1061000/1061072/preview.mp4.jpg
 			match = src.match(/\/videos_screenshots\/+[0-9]+\/+([0-9]+)\/+(?:[0-9]+x[0-9]+\/+|preview\.)/);
+			if (!match) {
+				match = src.match(/\/get_file\/+[0-9a-f]\/+[0-9a-f]{30,}\/+[0-9a-f]\/+([0-9]+)\/+screenshots\/+/);
+			}
+			// https://pr1.zbporn.tv/contents/videos/600000/600573/600573_short_preview.mp4
+			if (!match) {
+				match = src.match(/\/contents\/+videos\/+[0-9]+\/+[0-9]+\/+([0-9]+)_short_preview\./);
+			}
 			if (match) {
 				id = match[1];
 			}
 
-			var basedomain = "https://www.porntrex.com/";
-			var videos_component = "video";
-			var addslash = "";
-			var cache_host = "porntrex";
-			if (domain_nosub === "pornrewind.com") {
-				basedomain = "https://www.pornrewind.com/";
-				videos_component = "videos";
-				addslash = "/";
-				cache_host = "pornrewind";
-			} else if (domain_nosub === "anon-v.com") {
-				basedomain = "https://www.anon-v.com/";
-				videos_component = "videos";
-				addslash = "/";
-				cache_host = "anon-v";
+			var basedomain = "https://www." + domain_nosub + "/";
+			var videos_component = "videos";
+			var addslash = "/";
+			var cache_host = domain_nosub;
+
+			if (domain_nosub === "porntrex.com" || domain_nosub === "cdntrex.com") {
+				basedomain = "https://www.porntrex.com/";
+				cache_host = "porntrex.com";
+				videos_component = "video";
+				addslash = "";
+			} else if (domain_nosub === "porntb.com" ||
+			           domain_nosub === "pornstarsadvice.com") {
+				// doesn't support https
+				basedomain = "http://www." + domain_nosub + "/";
 			}
+
+			var fixup_function_url = function(flashvars) {
+				var bn = 0;
+				var e = flashvars;
+
+				function dh(a) {
+					var b, c, d, e, f;
+					for (b = 0; b < a.length; b++) {
+						for (c = 0; c < 12; c++) {
+							f = 0;
+							for (d = 0; d < a[b][1].length; d++) e = parseInt(a[b][1][d]) || 0, f += c * e;
+							f = Math.floor(f / 7);
+							bn = parseInt(bn || 0) - f;
+						}
+					}
+				}
+
+				function dg(a) {
+					var b, c, d, f, g, h, i;
+					for (b = 0; b < a.length; b++) {
+						// i = the number before the url
+						// a[b][1] = original url (after function/)
+						h = a[b][1].indexOf("/");
+						if (h > 0) {
+							i = parseInt(a[b][1].substring(0, h));
+							h = a[b][1].substring(h);
+						} else {
+							i = 0;
+							h = a[b][1];
+						}
+
+						for (c = 0; c < 12; c++) {
+							g = i;
+							for (d = 0; d < a[b][1].length; d++) {
+								f = parseInt(a[b][1][d]) || 0;
+								g += c * f;
+							}
+							g = Math.floor(g / 6);
+							bn = parseInt(bn || 0) + g;
+						}
+
+						if (e[a[b][0]] && e[a[b][0]].substring(0, 8) == "function") {
+							f = parseInt(bn);
+							if (f < 0) {
+								f = "" + -f;
+								for (c = 0; c < 4; c++) f += f;
+								h = h.substring(1);
+								h = h.split("/");
+								for (c = 0; c < h[5].length; c++) {
+									g = c;
+									for (d = c; d < f.length; d++) g += parseInt(f[d]);
+									while (g >= h[5].length) g = g - h[5].length;
+									i = h[5][c];
+									h[5] = h[5].substring(0, c) + h[5][g] + h[5].substring(c + 1);
+									h[5] = h[5].substring(0, g) + (i + "") + h[5].substring(g + 1);
+								}
+								e[a[b][0]] = h.join("/");
+							} else {
+								e[a[b][0]] = "function" + "/" + (f + "") +  (h + "");
+							}
+						}
+					}
+				}
+
+				var function_e = function(a, b, c) {
+					var e, g, h, i, j, k, l, m, n, d = "",
+						f = "";
+
+					for (e in a) {
+						if (e.indexOf(b) > 0 && a[e].length == parseInt(c)) {
+							d = a[e];
+							break;
+						}
+					}
+
+					if (d) {
+						for (f = "", g = 1; g < d.length; g++) {
+							f += parseInt(d[g]) ? parseInt(d[g]) : 1;
+						}
+
+						j = parseInt(f.length / 2);
+						k = parseInt(f.substring(0, j + 1));
+						l = parseInt(f.substring(j));
+
+						g = l - k;
+						if (g < 0) {
+							g = -g;
+						}
+
+						f = g;
+
+						g = k - l;
+						if (g < 0) {
+							g = -g;
+						}
+
+						f += g;
+						f *= 2;
+						f = "" + f;
+
+						i = parseInt(c) / 2 + 2;
+						m = "";
+						g = 0;
+
+						for (; g < j + 1; g++) {
+							for (h = 1; h <= 4; h++) {
+								n = parseInt(d[g + h]) + parseInt(f[g]);
+
+								if (n >= i) {
+									n -= i;
+								}
+
+								m += n;
+							}
+						}
+
+						return m;
+					}
+
+					return d;
+				};
+
+				var fp = function(a) {
+					var b = "function/";
+					var c = "code";
+					var d = "16px";
+					var e = function_e;
+					for (var f in a) {
+						if (0 == a[f].indexOf(b)) {
+							var g = a[f].substring(b.length).split(b[b.length - 1]);
+							if (g[0] > 0) {
+								var h = g[6].substring(0, 2 * parseInt(d)),
+									i = e ? e(a, c, d) : "";
+								if (i && h) {
+									for (var j = h, k = h.length - 1; k >= 0; k--) {
+										for (var l = k, m = k; m < i.length; m++) l += parseInt(i[m]);
+										for (; l >= h.length;) l -= h.length;
+										for (var n = "", o = 0; o < h.length; o++) n += o == k ? h[l] : o == l ? h[k] : h[o];
+										h = n
+									}
+									g[6] = g[6].replace(j, h), g.splice(0, 1), a[f] = g.join(b[b.length - 1])
+								}
+							}
+						}
+					}
+				};
+
+				var main = function() {
+					var a, b, c = [];
+					for (a in e) {
+						if (e[a].substring(0, 8) == "function") {
+							b = e[a].substring(8);
+
+							if (b[0] == "/") {
+								c.push([a, b.substring(1)]);
+							}
+						}
+					}
+
+					if (c.length === 0) {
+						return e;
+					} else {
+						dg(c);
+						dh(c);
+						fp(e);
+						return main();
+					}
+				};
+
+				return main();
+			};
 
 			if (id && options.do_request && options.cb) {
 				var cache_key = cache_host + ":" + id;
@@ -34330,12 +34520,14 @@ var $$IMU_EXPORT$$;
 					var maxurl = null;
 					var maxsize = null;
 
+					fixup_function_url(data);
+
 					for (var key in data) {
 						if (/^video_.*url[0-9]*$/.test(key)) {
 							var oururl = data[key];
 							var oursize = oururl.replace(/.*_([0-9]+)p\.[^/.]+(?:\/*[^/]*)?(?:[?#].*)?$/, "$1");
 							if (oursize === oururl) {
-								if (oururl.match(/\/([0-9]+)\/+\1\.[^/.]+(?:\/*[^/]*)?(?:[?#].*)?$/)) {
+								if (oururl.match(/\/([0-9]+)\/+\1(?:_trailer)?\.[^/.]+(?:\/*[^/]*)?(?:[?#].*)?$/)) {
 									oursize = 480;
 								} else {
 									console_warn("Unable to detect size from URL: " + oururl);
@@ -34525,6 +34717,7 @@ var $$IMU_EXPORT$$;
 			// http://www.porntb.com/contents/albums/main/370x250/2000/2771/111237.jpg
 			//   http://www.porntb.com/contents/albums/main/1920x1920/2000/2771/111237.jpg
 			domain_nowww === "porntb.com" ||
+			domain === "109.206.187.183" ||
 			// http://fetishburg.com/contents/albums/main/370x250/22000/22495/336053.jpg
 			//   http://fetishburg.com/contents/albums/main/1920x1200/22000/22495/336053.jpg
 			domain_nowww === "fetishburg.com" ||
@@ -34580,6 +34773,8 @@ var $$IMU_EXPORT$$;
 			var referer = "http://" + domain_nosub + "/";
 			if (domain_nosub === "p7cdn.com") {
 				referer = "https://www.sex-hd.xxx/";
+			} else if (domain === "109.206.187.183" || domain_nosub === "porntb.com") {
+				referer = "http://www.porntb.com/";
 			} else {
 				obj.referer_ok = {same_domain: true};
 			}
