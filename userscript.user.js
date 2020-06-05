@@ -73,6 +73,7 @@ var $$IMU_EXPORT$$;
 
 	var is_extension = false;
 	var is_webextension = false;
+	var is_extension_bg = false;
 	var is_firefox_webextension = false;
 	var extension_send_message = null;
 	var extension_options_page = null;
@@ -120,8 +121,12 @@ var $$IMU_EXPORT$$;
 			if (!is_extension)
 				return;
 
+			var location = window.location.href;
+
+			is_extension_bg = location.match(/^([-a-z]+)extension:\/\/[^/]+\/+_generated_background_page\.html/);
+
 			extension_options_page = chrome.runtime.getURL("extension/options.html");
-			is_extension_options_page = window.location.href.replace(/[?#].*$/, "") === extension_options_page;
+			is_extension_options_page = location.replace(/[?#].*$/, "") === extension_options_page;
 			is_options_page = is_options_page || is_extension_options_page;
 			//options_page = extension_options_page; // can't load from website
 			preferred_options_page = extension_options_page;
@@ -136,7 +141,12 @@ var $$IMU_EXPORT$$;
 				message = deepcopy(message, {json:true});
 				if (!respond)
 					respond = nullfunc;
-				return chrome.runtime.sendMessage(null, message, null, respond);
+
+				if (is_extension_bg) {
+					return userscript_extension_message_handler(message, respond);
+				} else {
+					return chrome.runtime.sendMessage(null, message, null, respond);
+				}
 			};
 		} catch (e) {
 		};
@@ -170,7 +180,7 @@ var $$IMU_EXPORT$$;
 	var is_in_iframe = check_in_iframe();
 	var is_remote_possible = false;
 
-	var is_interactive = is_extension || is_userscript;
+	var is_interactive = (is_extension || is_userscript) && !is_extension_bg;
 
 	var userscript_manager = "unknown";
 	var userscript_manager_version = "";
@@ -64861,27 +64871,19 @@ var $$IMU_EXPORT$$;
 		}
 	}
 
-	function currenttab_is_image() {
+	function contenttype_can_be_redirected(contentType) {
 		// amazonaws's error page are application/xml
-		return !document.contentType.match(/^(?:text|application)\//);
+		return !contentType.match(/^(?:text|application)\//);
 	}
 
-	function do_redirect() {
-		if (!currenttab_is_image()) {
-			return;
-		}
+	function currenttab_is_image() {
+		return contenttype_can_be_redirected(document.contentType);
+	}
 
-		cursor_wait();
-
-		var force_page = false;
-		if ((settings["redirect_force_page"] + "") === "true")
-			force_page = true;
-
-		bigimage_recursive_loop(window.location.href, {
+	function do_redirect_sub(page_url, force_page, redirect) {
+		var bigimage_obj = {
 			fill_object: true,
 			force_page: force_page,
-			document: document,
-			window: get_window(),
 			cb: function(newhref) {
 				if (_nir_debug_) {
 					console_log("do_redirect (final)", newhref);
@@ -64893,7 +64895,7 @@ var $$IMU_EXPORT$$;
 					return;
 				}
 
-				if (settings.print_imu_obj)
+				if (is_interactive && settings.print_imu_obj)
 					console_log(newhref);
 
 				var newurl = newhref[0].url;
@@ -64902,7 +64904,7 @@ var $$IMU_EXPORT$$;
 					console_log("Original page: " + newhref[0].extra.page);
 				}
 
-				if (newurl === window.location.href)
+				if (newurl === page_url)
 					return;
 
 				if (!newurl)
@@ -64913,7 +64915,14 @@ var $$IMU_EXPORT$$;
 
 				redirect(newurl, newhref);
 			}
-		}, function(newhref, real_finalcb) {
+		};
+
+		if (is_interactive) {
+			bigimage_obj.document = document;
+			bigimage_obj.window = get_window();
+		}
+
+		bigimage_recursive_loop(page_url, bigimage_obj, function(newhref, real_finalcb) {
 			if (_nir_debug_) {
 				console_log("do_redirect", newhref);
 			}
@@ -64961,6 +64970,20 @@ var $$IMU_EXPORT$$;
 			};
 			check_image(new_newhref[0], cb, finalcb);
 		});
+	}
+
+	function do_redirect() {
+		if (!currenttab_is_image()) {
+			return;
+		}
+
+		cursor_wait();
+
+		var force_page = false;
+		if ((settings["redirect_force_page"] + "") === "true")
+			force_page = true;
+
+		do_redirect_sub(window.location.href, force_page, redirect);
 	}
 
 	function onload(cb) {
@@ -67756,6 +67779,96 @@ var $$IMU_EXPORT$$;
 			return [keychord];
 
 		return keychord;
+	}
+
+	function general_extension_message_handler(message, sender, respond) {
+		if (_nir_debug_ || true) {
+			console_log("general_extension_message_handler", message);
+		}
+
+		if (message.type === "settings_update") {
+			//console_log(message);
+			settings_updated_cb(message.data.changes);
+		} else if (message.type === "request") {
+			var response = message.data;
+
+			if (!(response.id in extension_requests)) {
+				// this happens when there's more than one frame per tab
+				if (_nir_debug_) {
+					console_log("Request ID " + response.id + " not in extension_requests");
+				}
+
+				return;
+			}
+
+			if (response.data && response.data.responseType === "blob") {
+				var enc = response.data._responseEncoded;
+
+				if (enc) {
+					var array = new Uint8Array(enc.value.length);
+					for (var i = 0; i < enc.value.length; i++) {
+						array[i] = enc.value.charCodeAt(i);
+					}
+
+					try {
+						response.data.response = new native_blob([array.buffer], { type: enc.type });
+					} catch(e) {
+						console_error(e);
+						response.data.response = null;
+					}
+				} else {
+					response.data.response = null;
+				}
+			} else if (response.data && response.data.responseText && !response.data.response) {
+				response.data.response = response.data.responseText;
+			}
+
+			var reqdata = extension_requests[response.id].data;
+
+			var events = [
+				"onload",
+				"onerror",
+				"onprogress",
+				"onabort"
+			];
+
+			var handled = false;
+			for (var i = 0; i < events.length; i++) {
+				var event = events[i];
+
+				if (response.event === event && reqdata[event]) {
+					if (_nir_debug_) {
+						console_log("Running " + event + " for response", response);
+					}
+
+					reqdata[event](response.data);
+					handled = true;
+				}
+			}
+
+			if (_nir_debug_ && !handled) {
+				console_warn("No event handler for", response);
+			}
+
+			if (response.final) {
+				delete extension_requests[response.id];
+			}
+		} else if (message.type === "bg_redirect") {
+			try {
+				var headers = headers_list_to_dict(message.data.responseHeaders);
+				if (contenttype_can_be_redirected(headers["content-type"])) {
+					do_redirect_sub(message.data.url, false, function(newurl, obj) {
+						send_redirect(obj, function() {
+							chrome.tabs.update(message.data.tabId, {
+								url: newurl
+							});
+						});
+					});
+				}
+			} catch (e) {
+				console_error(e);
+			}
+		}
 	}
 
 	function do_mouseover() {
@@ -74200,75 +74313,10 @@ var $$IMU_EXPORT$$;
 					} else if (message.data.action === "highlight_images") {
 						highlight_images();
 					}
-				} else if (message.type === "settings_update") {
-					//console_log(message);
-					settings_updated_cb(message.data.changes);
-				} else if (message.type === "request") {
-					var response = message.data;
-
-					if (!(response.id in extension_requests)) {
-						// this happens when there's more than one frame per tab
-						if (_nir_debug_) {
-							console_log("Request ID " + response.id + " not in extension_requests");
-						}
-
-						return;
-					}
-
-					if (response.data && response.data.responseType === "blob") {
-						var enc = response.data._responseEncoded;
-
-						if (enc) {
-							var array = new Uint8Array(enc.value.length);
-							for (var i = 0; i < enc.value.length; i++) {
-								array[i] = enc.value.charCodeAt(i);
-							}
-
-							try {
-								response.data.response = new native_blob([array.buffer], { type: enc.type });
-							} catch(e) {
-								console_error(e);
-								response.data.response = null;
-							}
-						} else {
-							response.data.response = null;
-						}
-					} else if (response.data && response.data.responseText && !response.data.response) {
-						response.data.response = response.data.responseText;
-					}
-
-					var reqdata = extension_requests[response.id].data;
-
-					var events = [
-						"onload",
-						"onerror",
-						"onprogress",
-						"onabort"
-					];
-
-					var handled = false;
-					for (var i = 0; i < events.length; i++) {
-						var event = events[i];
-
-						if (response.event === event && reqdata[event]) {
-							if (_nir_debug_) {
-								console_log("Running " + event + " for response", response);
-							}
-
-							reqdata[event](response.data);
-							handled = true;
-						}
-					}
-
-					if (_nir_debug_ && !handled) {
-						console_warn("No event handler for", response);
-					}
-
-					if (response.final) {
-						delete extension_requests[response.id];
-					}
 				} else if (message.type === "remote" || message.type === "remote_reply") {
 					handle_remote_event(message);
+				} else {
+					general_extension_message_handler(message, sender, respond);
 				}
 			});
 		} else {
@@ -74742,7 +74790,7 @@ var $$IMU_EXPORT$$;
 	function start() {
 		do_export();
 
-		if (is_userscript || is_extension) {
+		if (is_interactive) {
 			if (is_maxurl_website || is_options_page) {
 				onload(function() {
 					update_dark_mode();
@@ -74808,6 +74856,8 @@ var $$IMU_EXPORT$$;
 					type: "ready"
 				});
 			}
+		} else if (is_extension_bg) {
+			imu_userscript_message_sender = general_extension_message_handler;
 		}
 	}
 

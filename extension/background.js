@@ -23,6 +23,8 @@ var run_ready = function() {
 	});
 };
 
+var background_userscript_tabid = "::IMU::background_userscript";
+
 var storage = null;
 
 var set_storage_to_local = function() {
@@ -259,7 +261,7 @@ var do_request = function(request, sender) {
 		url: request.url
 	};
 
-	if (!cookie_overridden) {
+	if (!cookie_overridden && sender.tab.cookieStoreId) {
 		get_cookies(request.url, function(cookies) {
 			if (cookies !== null) {
 				xhr.setRequestHeader("IMU--Cookie", create_cookieheader(cookies));
@@ -700,6 +702,14 @@ var onHeadersReceived = function(details) {
 		return {
 			responseHeaders: newheaders
 		};
+	} else if (!details.documentUrl) {
+		// new document replacing page
+		if (typeof imu_userscript_message_sender === "function") {
+			imu_userscript_message_sender({
+				type: "bg_redirect",
+				data: details
+			});
+		}
 	}
 };
 
@@ -820,11 +830,15 @@ var xhr_final_handler = function(_data, obj) {
 		}
 	};
 
-	chrome.tabs.sendMessage(obj.tabid, message_data);
+	if (obj.tabid !== background_userscript_tabid) {
+		chrome.tabs.sendMessage(obj.tabid, message_data);
+	} else {
+		imu_userscript_message_sender(message_data);
+	}
 };
 
 // Message handler
-chrome.runtime.onMessage.addListener((message, sender, respond) => {
+var extension_message_handler = (message, sender, respond) => {
 	debug("onMessage", message, sender, respond);
 
 	if (message.type === "request") {
@@ -1021,7 +1035,15 @@ chrome.runtime.onMessage.addListener((message, sender, respond) => {
 			console.error(e);
 		}
 	}
-});
+};
+
+chrome.runtime.onMessage.addListener(extension_message_handler);
+
+var userscript_extension_message_handler = function(message, respond) {
+	extension_message_handler(message, {tab: {id: background_userscript_tabid}}, respond || function(){});
+};
+
+var imu_userscript_message_sender = null;
 
 function contextmenu_imu(data, tab) {
 	debug("contextMenu", data);
@@ -1112,24 +1134,28 @@ chrome.storage.onChanged.addListener(function(changes, namespace) {
 		}
 	}
 
+	var message = {
+		"type": "settings_update",
+		"data": {
+			"changes": changes
+		}
+	};
+
 	chrome.tabs.query({}, function (tabs) {
 		tabs.forEach((tab) => {
 			try {
-				var message = {
-					"type": "settings_update",
-					"data": {
-						"changes": changes
-					}
-				};
-
 				debug("Sending storage changes to tab", tab.id);
 
-				chrome.tabs.sendMessage(tab.id, message);
+				chrome.tabs.sendMessage(tab.id, JSON.parse(JSON.stringify(message)));
 			} catch (e) {
 				console.error(e);
 			}
 		});
 	});
+
+	if (typeof imu_userscript_message_sender === "function") {
+		imu_userscript_message_sender(message);
+	}
 });
 
 function tabremoved(tabid) {
