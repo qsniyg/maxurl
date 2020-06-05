@@ -371,6 +371,11 @@ function dourl_inner(big, url, post, options, cb) {
 					var wr = newdata.width / data.width;
 					var hr = newdata.height / data.height;
 
+					if (data.type === "gif" && newdata.type !== "gif") {
+						console.log("Would un-gifify image");
+						return;
+					}
+
 					var r;
 
 					if (true) {
@@ -844,5 +849,7 @@ function dourl(url, post, options, cb) {
 // huge image (10652x14204), nsfw!
 //dourl("https://i.imgur.com/zsSsjXJ.jpg");
 //dourl("https://img39.pixhost.to/images/373/138394353_3s3a1fiv9wfy.jpg");
+// ungififying, nsfw!
+//dourl("https://i.imgur.com/MdHTKCp.gif");
 
 module.exports = dourl;
