@@ -27093,7 +27093,7 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if (domain_nosub === "artstation.com" && domain.match(/cdn[a-z]*\.artstation\.com/)) {
+		if (domain_nosub === "artstation.com" && domain.match(/cdn[a-z0-9]*\.artstation\.com/)) {
 			// https://cdnb.artstation.com/p/assets/images/images/001/982/361/small/kevin-lourdel-2012-06-12-09-53-11.jpg?1455539239
 			//   https://cdnb.artstation.com/p/assets/images/images/001/982/361/large/kevin-lourdel-2012-06-12-09-53-11.jpg?1455539239
 			// there's also /original/, but it's forbidden for some?
