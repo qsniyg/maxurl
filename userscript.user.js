@@ -54773,7 +54773,7 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "lovedat.ru") {
 			// http://cfake.com/medias/thumbs/15307934167f319894_cfake.jpg
 			//   http://cfake.com/medias/photos/15307934167f319894_cfake.jpg
-			return src.replace(/\/medias\/+thumbs\/+/, "/medias/photos/");
+			return src.replace(/\/medias\/+(?:thumbs|photos)\/+/, "/medias/ophotos/");
 		}
 
 		if (domain === "images.galleries.pornpros.com") {
