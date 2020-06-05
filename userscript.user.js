@@ -32624,32 +32624,35 @@ var $$IMU_EXPORT$$;
 			//   http://images3.imagebam.com/5f/1e/36/172f56480587760.jpg
 			id = src.replace(/.*\/([0-9a-f]+)\.[^/.]*$/, "$1");
 			if (id !== src) {
-				page = "http://www.imagebam.com/image/" + id;
-				options.do_request({
-					url: page,
-					method: "GET",
-					onload: function(resp) {
-						if (resp.readyState === 4) {
-							var match = resp.responseText.match(/<meta *property="og:image" *content="([^"]*)"/);
-							if (match) {
-								options.cb({
-									url: match[1],
-									is_original: true,
-									headers: {
-										Referer: "https://www.imagebam.com/"
-									},
-									referer_ok: {
-										same_domain_nosub: true
-									},
-									extra: {
-										page: page
-									}
-								});
-							} else {
-								options.cb(null);
+				api_cache.fetch("imagebam:" + id, options.cb, function(done) {
+					page = "http://www.imagebam.com/image/" + id;
+					options.do_request({
+						url: page,
+						method: "GET",
+						onload: function(resp) {
+							if (resp.readyState === 4) {
+								var match = resp.responseText.match(/<meta *property="og:image" *content="([^"]*)"/);
+								if (match) {
+									done({
+										url: match[1],
+										is_original: true,
+										headers: {
+											Referer: "https://www.imagebam.com/"
+										},
+										referer_ok: {
+											same_domain_nosub: true
+										},
+										extra: {
+											page: page
+										}
+									}, 60*60);
+								} else {
+									console_warn("Unable to find match", resp);
+									done(null, false);
+								}
 							}
 						}
-					}
+					});
 				});
 
 				return {
@@ -32692,53 +32695,70 @@ var $$IMU_EXPORT$$;
 			// http://img287.imagevenue.com/loc376/th_645746424_XI5EBS1_122_376lo.JPG
 			//   http://img287.imagevenue.com/img.php?image=645746424_XI5EBS1_122_376lo.JPG
 			//   http://img287.imagevenue.com/aAfkjfp01fo1i-27405/loc376/645746424_XI5EBS1_122_376lo.JPG
+			//   http://www.imagevenue.com/view/o/?i=645746424_XI5EBS1_122_376lo.JPG&h=img287
 			id = src.replace(/.*\/th_([^/]*?)(?:[?#].*)?$/, "$1");
 			if (id !== src) {
 				var requrl = src.replace(/(:\/\/[^/]*\/).*/, "$1img.php?image=" + id);
 
-				// Do it twice to get the cookies
-				var do_req = function (requrl, first) {
-					var headers = {
-						Referer: requrl
-					};
+				var query_imagevenue = function(requrl, cb) {
+					// Do it twice to get the cookies
+					var do_req = function (requrl, first, cb) {
+						var headers = {
+							Referer: requrl
+						};
 
-					options.do_request({
-						url: requrl,
-						method: "GET",
-						headers: headers,
-						onload: function (resp) {
-							if (resp.readyState !== 4) {
-								return;
-							}
+						options.do_request({
+							url: requrl,
+							method: "GET",
+							headers: headers,
+							onload: function (resp) {
+								if (resp.readyState !== 4) {
+									return;
+								}
 
-							if (resp.status !== 200) {
-								console_error("Bad status", resp);
-								return options.cb(null);
-							}
+								if (resp.status !== 200) {
+									console_error("Bad status", resp);
+									return cb(null);
+								}
 
-							var match = resp.responseText.match(/<img *id=['"]thepic['"][^>]* (?:src|SRC)=['"]([^"']*)['"]/);
-							if (match) {
-								options.cb({
-									url: urljoin(resp.finalUrl, match[1], true),
-									is_original: true,
-									extra: {
-										page: requrl
-									}
-								});
-							} else {
-								console_error("Unable to find match", resp);
+								var match = resp.responseText.match(/<img *id=['"]thepic['"][^>]* (?:src|SRC)=['"]([^"']*)['"]/);
+								if (!match) {
+									match = resp.responseText.match(/<a href="https?:\/\/www\.imagevenue\.com\/view\/o\?[\s\S]*?<img src="(https?:\/\/[^/"]+imagevenue\.[^"']+)"/);
+								}
 
-								if (first) {
-									return do_req(resp.finalUrl, false);
+								if (match) {
+									cb({
+										url: urljoin(resp.finalUrl, match[1], true),
+										is_original: true,
+										extra: {
+											page: requrl
+										}
+									});
 								} else {
-									options.cb(null);
+									console_error("Unable to find match", resp);
+
+									if (first) {
+										return do_req(resp.finalUrl, false, cb);
+									} else {
+										cb(null);
+									}
 								}
 							}
-						}
+						});
+					};
+
+					api_cache.fetch("imagevenue:" + requrl, cb, function(done) {
+						do_req(requrl, true, function(data) {
+							if (!data) {
+								return done(null, false);
+							} else {
+								return done(data, 60*60);
+							}
+						});
 					});
 				};
 
-				do_req(requrl, true);
+				query_imagevenue(requrl, options.cb);
 
 				return {
 					waiting: true
