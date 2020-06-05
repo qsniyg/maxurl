@@ -1,3 +1,25 @@
+0.13.8
+
+New features:
+
+ * Option to perform redirects using the extension's background page, significantly increases performance (enabled by default, thanks to fireattack on Discord and Jaden Pleasants on Firefox for reporting)
+ * Option to have the popup zoom in/out on open/close (disabled by default)
+ * Option to toggle underlining links in UI (enabled by default)
+ * Option to download image instead of opening popup (disabled by default)
+ * Support for ~35 new sites (using ~7 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including ArtStation, Instagram, TikTok)
+ * Support for links to Instagram images (thanks to Viserys on reddit for reporting)
+ * TikTok profile images are supported again (thanks to remlap on discord for reporting)
+
+Bugfixes:
+
+ * HEAD requests are no longer avoided by default when loading partially loaded images, due to regressions on certain sites
+
+---
+
 0.13.7
 
 This is an emergency release to fix Instagram videos, which were broken in the last release.
