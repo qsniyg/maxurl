@@ -27660,7 +27660,10 @@ var $$IMU_EXPORT$$;
 				.replace(/_wmk(\.[^/.]*)(?:[?#].*)?$/, "$1");
 		}
 
-		if (domain_nosub === "so-net.ne.jp") {
+		if (domain_nosub === "so-net.ne.jp" ||
+			// https://harrypotter-fun.c.blog.ss-blog.jp/_images/blog/_985/harrypotter-fun/m_lunalovegood.jpg
+			//   https://harrypotter-fun.c.blog.ss-blog.jp/_images/blog/_985/harrypotter-fun/lunalovegood.jpg
+			domain_nosub === "ss-blog.jp") {
 			// http://harrypotter-fun.c.blog.so-net.ne.jp/_images/blog/_985/harrypotter-fun/m_lunalovegood.jpg
 			//   http://harrypotter-fun.c.blog.so-net.ne.jp/_images/blog/_985/harrypotter-fun/lunalovegood.jpg
 			// http://news.so-net.ne.jp/photos/30/365455840452641889/S200_365455840452641889_365547478327575649_origin_1.jpg
@@ -28972,7 +28975,10 @@ var $$IMU_EXPORT$$;
 		if (domain === "images.apester.com") {
 			// https://images.apester.com/user-images%2Faa%2Faaecb0949e6508374487f5f8dc120595.jpg/400/undefined/undefined
 			//   https://images.apester.com/user-images%2Faa%2Faaecb0949e6508374487f5f8dc120595.jpg
-			return src.replace(/(:\/\/[^/]*\/[^/]*\.[^/.]*)\/[/a-z0-9]+$/, "$1");
+			return {
+				url: src.replace(/(:\/\/[^/]*\/[^/]*\.[^/.]*)\/[/a-z0-9]+$/, "$1"),
+				head_wrong_contentlength: true
+			};
 		}
 
 		if (domain === "twt-thumbs.washtimes.com") {
