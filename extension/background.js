@@ -1040,7 +1040,13 @@ var extension_message_handler = (message, sender, respond) => {
 chrome.runtime.onMessage.addListener(extension_message_handler);
 
 var userscript_extension_message_handler = function(message, respond) {
-	extension_message_handler(message, {tab: {id: background_userscript_tabid}}, respond || function(){});
+	if (!respond) {
+		respond = function(){};
+	}
+
+	if (!extension_message_handler(message, {tab: {id: background_userscript_tabid}}, respond)) {
+		respond();
+	}
 };
 
 var imu_userscript_message_sender = null;
