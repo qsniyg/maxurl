@@ -16571,7 +16571,9 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if (domain === "www.welt.de") {
+		if (domain === "www.welt.de" ||
+			// https://img.welt.de/img/kultur/pop/mobile132505066/0972501497-ci102l-w1024/Keith-Richards-mit-Enkel-Otto.jpg
+			domain === "img.welt.de") {
 			// nowww !== www
 			// https://www.welt.de/img/kultur/pop/mobile132505066/0972501497-ci102l-w1024/Keith-Richards-mit-Enkel-Otto.jpg
 			//   https://www.welt.de/img/kultur/pop/mobile132505066/0972501497-ci102l-w0/Keith-Richards-mit-Enkel-Otto.jpg
@@ -64587,9 +64589,9 @@ var $$IMU_EXPORT$$;
 		return size.toFixed(2).replace(/\.00$/, "") + sizes[0] + "B";
 	};
 
-	var check_image = function(obj, err_cb, ok_cb) {
+	var check_image = function(obj, page_url, err_cb, ok_cb) {
 		if (_nir_debug_)
-			console_log("check_image", deepcopy(obj));
+			console_log("check_image", deepcopy(obj), page_url);
 
 		if (is_array(obj)) {
 			obj = obj[0];
@@ -64615,7 +64617,7 @@ var $$IMU_EXPORT$$;
 		var url = obj.url;
 		var err_txt;
 
-		if (url === window.location.href) {
+		if (url === page_url) {
 			print_orig();
 			ok_cb(url);
 		} else  {
@@ -64642,6 +64644,9 @@ var $$IMU_EXPORT$$;
 			}
 
 			var mouseover_text = function(reason) {
+				if (!is_interactive)
+					return;
+
 				var mouseover;
 				if (!settings.mouseover) {
 					mouseover = "disabled";
@@ -64670,7 +64675,8 @@ var $$IMU_EXPORT$$;
 			};
 
 			if (!_nir_debug_ || !_nir_debug_.no_request) {
-				cursor_wait();
+				if (is_interactive)
+					cursor_wait();
 
 				var url_domain = url.replace(/^([a-z]+:\/\/[^/]*).*?$/, "$1");
 
@@ -64682,7 +64688,7 @@ var $$IMU_EXPORT$$;
 					headers = {
 						// Origin is not often added by the browser, and doesn't work for some sites
 						//"Origin": url_domain,
-						"Referer": window.location.href,
+						"Referer": page_url,
 						// e.g. for Tumblr URLs, this is sent by the browser when redirecting
 						"Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9"
 					};
@@ -64691,7 +64697,7 @@ var $$IMU_EXPORT$$;
 				}
 
 				if (customheaders && Object.keys(headers).length === 1 && ("Referer" in headers)) {
-					var domain = window.location.href;
+					var domain = page_url;
 					domain = domain.replace(/^[a-z]+:\/\/([^/]*).*?$/, "$1");
 					var url_domain = url.replace(/^[a-z]+:\/\/([^/]*).*?$/, "$1");
 
@@ -64780,7 +64786,7 @@ var $$IMU_EXPORT$$;
 
 					cursor_default();
 
-					if (resp.finalUrl === window.location.href) {
+					if (resp.finalUrl === page_url) {
 						console_log(resp.finalUrl);
 						console_log("Same URL");
 						return;
@@ -64980,9 +64986,9 @@ var $$IMU_EXPORT$$;
 					console_error(err_txt);
 					return;
 				}
-				check_image(new_newhref[index], cb, finalcb);
+				check_image(new_newhref[index], page_url, cb, finalcb);
 			};
-			check_image(new_newhref[0], cb, finalcb);
+			check_image(new_newhref[0], page_url, cb, finalcb);
 		});
 	}
 
