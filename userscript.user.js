@@ -22174,87 +22174,108 @@ var $$IMU_EXPORT$$;
 				return newsrc;
 		}
 
-		if (domain_nosub === "rdtcdn.com" && /^[a-z]i\./.test(domain)) {
-			match = src.match(/\/m=[^/]+\/+media\/+videos\/+[0-9]{6}\/+[0-9]{2}\/+([0-9]+)\/+/);
-			if (match) {
-				id = match[1];
+		if (domain_nosub === "rdtcdn.com" ||
+			(host_domain_nowww === "redtube.com" && options.element)) {
+			var get_redtube_id_from_url = function(url) {
+				var match = src.match(/:\/\/[^/]+\/+(?:m=[^/]+\/+)?media\/+videos\/+[0-9]{6}\/+[0-9]{2}\/+([0-9]+)\/+/);
+				if (match) {
+					return match[1];
+				} else {
+					return null;
+				}
+			};
 
+			var query_redtube = function(id, cb) {
+				var cache_key = "redtube:" + id;
+				api_cache.fetch(cache_key, cb, function(done) {
+					options.do_request({
+						url: "https://www.redtube.com/" + id,
+						method: "GET",
+						onload: function(resp) {
+							if (resp.status !== 200) {
+								console_error(cache_key, resp);
+								return done(null, false);
+							}
+
+							var match = resp.responseText.match(/page_params\.video_player_setup[\s\S]+playervars:\s*({.*}),/);
+							if (!match) {
+								console_error(cache_key, "Unable to find match for", resp);
+								return done(null, false);
+							}
+
+							try {
+								var json = JSON_parse(match[1])
+								return done(json, 60*60);
+							} catch (e) {
+								console_error(cache_key, e);
+							}
+
+							return done(null, false);
+						}
+					});
+				});
+			};
+
+			var get_obj_from_redtube_info = function(data) {
+				var baseobj = {
+					extra: {
+						page: data.link_url,
+						caption: data.video_title
+					}
+				};
+
+				var max = 0;
+				var maxobj = null;
+				for (var i = 0; i < data.mediaDefinitions.length; i++) {
+					var media = data.mediaDefinitions[i];
+
+					var our_quality = parseInt(media.quality);
+					if (!isNaN(our_quality) && our_quality > max && media.videoUrl) {
+						max = our_quality;
+						maxobj = media;
+					}
+				}
+
+				var urls = [];
+
+				if (maxobj) {
+					urls.push({
+						url: maxobj.videoUrl,
+						video: true,
+						headers: {
+							Referer: baseobj.extra.page,
+							Origin: "https://redtube.com"
+						}
+					});
+				}
+
+				urls.push(data.image_url);
+
+				return fillobj_urls(urls, baseobj);
+			};
+
+			id = get_redtube_id_from_url(src);
+			if (!id && host_domain_nowww === "redtube.com" && options.element) {
+				var current = options.element;
+				while (current) {
+					if (current.tagName === "A") {
+						var match = current.href.match(/^[a-z]+:\/\/(?:www\.)?redtube\.com\/+([0-9]+)(?:[?#].*)?$/);
+						if (match) {
+							id = match[1];
+							break;
+						}
+					}
+					current = current.parentElement;
+				}
+			}
+
+			if (id) {
 				var obj = {
 					url: src,
 					extra: {
 						page: "https://www.redtube.com/" + id
 					}
 				};
-
-				var query_redtube = function(id, cb) {
-					var cache_key = "redtube:" + id;
-					api_cache.fetch(cache_key, cb, function(done) {
-						options.do_request({
-							url: "https://www.redtube.com/" + id,
-							method: "GET",
-							onload: function(resp) {
-								if (resp.status !== 200) {
-									console_error(cache_key, resp);
-									return done(null, false);
-								}
-
-								var match = resp.responseText.match(/page_params\.video_player_setup[\s\S]+playervars:\s*({.*}),/);
-								if (!match) {
-									console_error(cache_key, "Unable to find match for", resp);
-									return done(null, false);
-								}
-
-								try {
-									var json = JSON_parse(match[1])
-									return done(json, 60*60);
-								} catch (e) {
-									console_error(cache_key, e);
-								}
-
-								return done(null, false);
-							}
-						});
-					});
-				};
-
-				var get_obj_from_redtube_info = function(data) {
-					var baseobj = {
-						extra: {
-							page: data.link_url,
-							caption: data.video_title
-						}
-					};
-
-					var max = 0;
-					var maxobj = null;
-					for (var i = 0; i < data.mediaDefinitions.length; i++) {
-						var media = data.mediaDefinitions[i];
-
-						var our_quality = parseInt(media.quality);
-						if (!isNaN(our_quality) && our_quality > max && media.videoUrl) {
-							max = our_quality;
-							maxobj = media;
-						}
-					}
-
-					var urls = [];
-
-					if (maxobj) {
-						urls.push({
-							url: maxobj.videoUrl,
-							video: true,
-							headers: {
-								Referer: baseobj.extra.page,
-								Origin: "https://redtube.com"
-							}
-						});
-					}
-
-					urls.push(data.image_url);
-
-					return fillobj_urls(urls, baseobj);
-				};
-
 				if (options.do_request && options.cb) {
 					query_redtube(id, function(data) {
 						if (!data) {
@@ -34415,6 +34436,14 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "mywebgirls.tv" ||
 			// https://www.thebestshemalevideos.com/contents/videos_screenshots/39000/39368/180x135/1.jpg
 			domain_nowww === "thebestshemalevideos.com" ||
+			// https://cdn.katestube.com/contents/videos/2573000/2573793/2573793_preview.mp4
+			domain_nosub === "katestube.com" ||
+			domain_nosub === "vikiporn.com" ||
+			domain_nosub === "sheshaft.com" ||
+			domain_nosub === "xozilla.com" ||
+			domain_nosub === "xtits.com" ||
+			domain_nosub === "wankoz.com" ||
+			domain_nosub === "fetishshrine.com" ||
 			// different system
 			// https://static2.tubepornclassic.com/contents/videos_screenshots/1051000/1051741/240x180/1.jpg
 			//domain_nosub === "tubepornclassic.com" ||
@@ -34427,6 +34456,13 @@ var $$IMU_EXPORT$$;
 			// https://endoscop.tv/contents/videos_screenshots/1000/1069/180x135/1.jpg
 			//domain_nowww === "endoscop.tv" ||
 			domain_nowww === "pornrewind.com") {
+			// https://www.watchmygf.me/player/skin/img/play_white.png
+			if (/\/player\/+skin\/+img\//.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
+
 			// to find more sites: inurl:videos_screenshots
 			id = null;
 			// https://statics.cdntrex.com/contents/videos_screenshots/1047000/1047563/300x168/1.jpg?v=3
@@ -34437,7 +34473,7 @@ var $$IMU_EXPORT$$;
 			}
 			// https://pr1.zbporn.tv/contents/videos/600000/600573/600573_short_preview.mp4
 			if (!match) {
-				match = src.match(/\/contents\/+videos\/+[0-9]+\/+[0-9]+\/+([0-9]+)_short_preview\./);
+				match = src.match(/\/contents\/+videos\/+[0-9]+\/+[0-9]+\/+([0-9]+)(?:_(?:short|small))?_preview\./);
 			}
 			if (match) {
 				id = match[1];
@@ -34728,7 +34764,7 @@ var $$IMU_EXPORT$$;
 								}
 
 								if (!oursize) {
-									if (oururl.match(/\/([0-9]+)\/+\1(?:_trailer)?\.[^/.]+(?:\/*[^/]*)?(?:[?#].*)?$/)) {
+									if (oururl.match(/\/([0-9]+)\/+\1(?:_(?:trailer|s))?\.[^/.]+(?:\/*[^/]*)?(?:[?#].*)?$/)) {
 										oursize = 480;
 									} else {
 										console_warn("Unable to detect size from URL: " + oururl);
@@ -35889,6 +35925,12 @@ var $$IMU_EXPORT$$;
 					Referer: "https://" + domain + "/"
 				}
 			};
+		}
+
+		if (domain_nowww === "littlemutt.com") {
+			// http://www.littlemutt.com/hosted/kimberspeculum/05_thumb.jpg
+			//   http://www.littlemutt.com/hosted/kimberspeculum/05.jpg
+			return src.replace(/(\/hosted\/+[^/]+\/+[0-9]+)_thumb(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		}
 
 		if ((domain_nosub === "mainbabes.com" && domain.match(/^content[0-9a-z]*\./)) ||
@@ -43773,10 +43815,23 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nosub === "javhd.com" ||
+			// http://cdn.pics.fhg.pussyav.com/33000/1t.jpg
+			//   http://cdn.pics.fhg.pussyav.com/33000/1.jpg
+			domain_nosub === "pussyav.com" ||
+			// http://cdn.pics.fhg.ferame.com/5072/1t.jpg
+			domain_nosub === "ferame.com" ||
 			// http://cdn.pics.fhg.lingerieav.com/42336/1t.jpg
 			//   http://cdn.pics.fhg.lingerieav.com/42336/1.jpg
 			// http://fhg.lingerieav.com/42336/1t.jpg
 			domain_nosub === "lingerieav.com") {
+			// http://fhg.ferame.com/images/th2-border.gif
+			if (/\/images\/+th2-border\.gif/.test(src)) {
+				return {
+					url: src,
+					bad: "mask"
+				};
+			}
+
 			// http://cdn.pics.fhg.javhd.com/5672/1t.jpg
 			//   http://cdn.pics.fhg.javhd.com/5672/1.jpg
 			return src.replace(/(\/[0-9]+\/+[0-9]+)t(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
@@ -44063,6 +44118,9 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "static.ftvgirls.com" ||
+			// https://static.ftvmilfs.com/galleries/rita-angelic-white-lace/10-thumb.jpg
+			//   https://static.ftvmilfs.com/galleries/rita-angelic-white-lace/10.jpg
+			domain === "static.ftvmilfs.com" ||
 			domain === "promo.ftvgirls.com") {
 			// https://static.ftvgirls.com/galleries/alex-and-nina-bi-kinis/15-thumb.jpg
 			//   https://static.ftvgirls.com/galleries/alex-and-nina-bi-kinis/15.jpg
@@ -44073,6 +44131,12 @@ var $$IMU_EXPORT$$;
 			return src
 				.replace(/(\/galleries\/.*\/[0-9]+)-thumb(\.[^/.]*)(?:[?#].*)?$/, "$1$2")
 				.replace(/\/thumbnails\/+[0-9]+x[0-9]+_/, "/pictures/content_");
+		}
+
+		if (domain_nosub === "femjoy.com" && /^n[0-9]*\./.test(domain)) {
+			// http://n6.femjoy.com/free/114718_umh627_ujh337/thumbs/001.jpg
+			//   http://n6.femjoy.com/free/114718_umh627_ujh337/pics/001.jpg
+			return src.replace(/(\/free\/+[^/]+\/+)thumbs\/+([0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1pics/$2");
 		}
 
 		if (domain === "image.istyle24.com") {
@@ -51225,7 +51289,8 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/content\/+[^/]*\/+[0-9a-f]{20,}\/+)thumbs\/+/, "$1files/");
 		}
 
-		if (domain_nowww === "lbfmaddiction.com") {
+		if (domain_nowww === "lbfmaddiction.com" ||
+			domain_nowww === "barfine2cash.com") {
 			// http://www.lbfmaddiction.com/fhg/lbfm/tgpdp52/tida_redlingerie01_small.jpg
 			//   http://www.lbfmaddiction.com/fhg/lbfm/tgpdp52/tida_redlingerie01.jpg
 			return src.replace(/(\/fhg\/+[^/]*\/+[^/]*\/+[^/]*)_small(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
@@ -53837,6 +53902,9 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "static-fhg.metart.com" ||
+			// https://static-fhg.rylskyart.com/media/C6130A457E32A4A4F96CA5E7F0EF5BAA/wt_6AF4B058DB42690481696C4DD0765E0F.jpg
+			//   https://static-fhg.rylskyart.com/media/C6130A457E32A4A4F96CA5E7F0EF5BAA/w_6AF4B058DB42690481696C4DD0765E0F.jpg
+			domain === "static-fhg.rylskyart.com" ||
 			// https://static-fhg.alsscan.com/media/5E5797E04DBD4244ADD5137FBFC994DB/wt_1A982EA10CA6DE846DAF3ED22CFF7708.jpg
 			//   https://static-fhg.alsscan.com/media/5E5797E04DBD4244ADD5137FBFC994DB/w_1A982EA10CA6DE846DAF3ED22CFF7708.jpg
 			domain === "static-fhg.alsscan.com") {
@@ -53847,10 +53915,21 @@ var $$IMU_EXPORT$$;
 				return newsrc;
 		}
 
-		if (domain === "fhg.asiansexdiary.com") {
+		if (domain === "fhg.asiansexdiary.com" ||
+			// https://hosted.trikepatrol.com/fhg/wp-content/uploads/kiana_set_1/kiana_set_1_th_01.jpg
+			//   https://hosted.trikepatrol.com/fhg/wp-content/uploads/kiana_set_1/kiana_set_1_01.jpg
+			domain === "hosted.trikepatrol.com") {
 			// https://fhg.asiansexdiary.com/wp-content/uploads/menchie_set_3/menchie_set_3_th_04.jpg
 			//   https://fhg.asiansexdiary.com/wp-content/uploads/menchie_set_3/menchie_set_3_04.jpg
 			return src.replace(/(\/wp-content\/+uploads\/+[^/]*\/+[^/]+_)th_([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nosub === "tuktukpatrol.com") {
+			// https://tuktukpatrol.com/free-galleries/assets/natalie_set_4/natalie_set_4_th_01.jpg
+			//   https://tuktukpatrol.com/free-galleries/assets/natalie_set_4/natalie_set_4_01.jpg
+			// https://hosted.tuktukpatrol.com/content/som_set_2/som_set_2_th_01.jpg
+			//   https://hosted.tuktukpatrol.com/content/som_set_2/som_set_2_01.jpg
+			return src.replace(/(\/(?:assets|content)\/+[^/]+\/+[^/]+_[0-9]+)_th(_[0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		}
 
 		if (domain_nowww === "lesarchive.com") {
@@ -54697,6 +54776,14 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/medias\/+thumbs\/+/, "/medias/photos/");
 		}
 
+		if (domain === "images.galleries.pornpros.com") {
+			// http://images.galleries.pornpros.com/galleries.pornpros.com/htdocs/pb05/pb05_024/thumbs/girl1/01.jpg
+			//   http://images.galleries.pornpros.com/galleries.pornpros.com/htdocs/pb05/pb05_024/content/girl1/01.jpg
+			return src
+				.replace(/(\/htdocs\/+[^/]+\/+[^/]+\/+)thumbnails\/+([0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1full/$2")
+				.replace(/(\/htdocs\/+[^/]+\/+[^/]+\/+)thumbs\/+([^/]+\/+[0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1content/$2");
+		}
+
 		if (domain_nowww === "sks-52.ru" ||
 			// https://gals.kindgirls.com/d3/melena_10938/m6/melena_10938_1.jpg
 			//   https://gals.kindgirls.com/d3/melena_10938/melena_10938_1.jpg
@@ -54764,9 +54851,11 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/img[0-9]*\/+[^/]*)_small(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
 		}
 
-		if (domain === "cdn.wearehairy.com") {
+		if (domain_nosub === "wearehairy.com" && /^cdn[0-9]*\./.test(domain)) {
 			// http://cdn.wearehairy.com/models/Ocean_Sky/Ocean_Sky_is_rocking_and_rolling/th/OceanSky_LeopardLeggings_001.jpg
 			//   http://cdn.wearehairy.com/models/Ocean_Sky/Ocean_Sky_is_rocking_and_rolling/img/OceanSky_LeopardLeggings_001.jpg
+			// http://cdn10.wearehairy.com/models/Amber_S/Amber_S_shows_off_fall_all_natural_figure/th/AmberS_PinkStockingsPinkLingerie_001.jpg
+			//   http://cdn10.wearehairy.com/models/Amber_S/Amber_S_shows_off_fall_all_natural_figure/img/AmberS_PinkStockingsPinkLingerie_001.jpg
 			return src.replace(/\/th\/+([^/]*\.[^/.]*)(?:[?#].*)?$/, "/img/$1");
 		}
 
@@ -61568,6 +61657,190 @@ var $$IMU_EXPORT$$;
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+compress\/+(https?:\/\/)/, "$1");
 			if (newsrc !== src)
 				return newsrc;
+		}
+
+		if (domain === "hosted.mplstudios.com" ||
+			domain === "www.hosted.mplstudios.com") {
+			// http://www.hosted.mplstudios.com/galleries/15/kiki_come_enjoy/150/001.jpg
+			//   http://hosted.mplstudios.com/galleries/15/kiki_come_enjoy/1200/001.jpg
+			return src.replace(/(\/galleries\/+[0-9]+\/+[^/]+\/+)(?:150)\/+/, "$11200/");
+		}
+
+		if (domain_nowww === "mplstudios.com") {
+			// https://www.mplstudios.com/directory/models/425/samples/5296/sample/5296v1_200.jpg
+			//   https://www.mplstudios.com/directory/models/425/samples/5296/sample/5296v1_1200.jpg
+			//   https://www.mplstudios.com/directory/models/425/samples/5296/sample/5296v1_2000.jpg
+			//   https://www.mplstudios.com/directory/models/425/samples/5296/sample/5296v1_3000.jpg
+			return src.replace(/(\/models\/+[0-9]+\/+samples\/+[0-9]+\/+sample\/+[0-9]+(?:v[0-9]+)?)_[1-2]?[0-9]{3}\./, "$1_3000.");
+		}
+
+		if (domain_nowww === "alscash.com") {
+			// http://www.alscash.com/FHGA/jamaicarema08/alstgpsample09s.jpg
+			//   http://www.alscash.com/FHGA/jamaicarema08/alstgpsample09.jpg
+			return src.replace(/(\/FHGA\/+[^/]+\/+[^/]+[0-9]+)s(\.[^?#].*)?$/, "$1$2");
+		}
+
+		if ((domain_nosub === "iceppsn.com" ||
+			domain_nosub === "nvdst.com" ||
+			// https://p3.vptpsn.com/media/videos/tmb/4117567/240_180/10.jpg
+			domain_nosub === "vptpsn.com") && options.do_request && options.cb) {
+			// https://p9.iceppsn.com/media/videos/tmb/3605717/220_135/11.jpg
+			var query_iceporn_vid = function(domain, aid, id, cb) {
+				api_query(domain + ":" + id, {
+					url: "https://www." + domain + "/player_config_json/?vid=" + id + "&aid=" + aid + "&domain_id=0&embed=0&ref=null&check_speed=0",
+					headers: {
+						Referer: "https://www." + domain + "/"
+					}
+				}, cb, function(done, resp, cache_key) {
+					try {
+						var json = JSON_parse(resp.responseText);
+						done(json, 60*60);
+					} catch (e) {
+						console_error(cache_key, e);
+						done(null, false);
+					}
+				});
+			};
+
+			var get_obj_from_iceporn_vid = function(vidobj) {
+				var baseobj = {
+					headers: {
+						Referer: vidobj.url || "https://www.iceporn.com/"
+					},
+					extra: {}
+				};
+				var urls = [];
+
+				if (vidobj.title) {
+					baseobj.extra.caption = vidobj.title;
+				}
+
+				if (vidobj.url) {
+					baseobj.extra.page  = vidobj.url;
+				}
+
+				if (vidobj.files) {
+					if (vidobj.files.hq) {
+						urls.push({
+							url: vidobj.files.hq,
+							video: true
+						});
+					} else if (vidobj.files.lq) {
+						urls.push({
+							url: vidobj.files.lq,
+							video: true
+						});
+					}
+				}
+
+				if (vidobj.poster) {
+					urls.push(vidobj.poster);
+				}
+
+				return fillobj_urls(urls, baseobj);
+			};
+
+			var get_iceporn_id_from_url = function(url) {
+				var match = url.match(/\/media\/+videos\/+tmb\/+([0-9]+)\/+/);
+				if (match) {
+					return match[1];
+				} else {
+					return null;
+				}
+			};
+
+			var iceporn_domain = "iceporn.com";
+			var iceporn_aid = 6;
+			if (domain_nosub === "vptpsn.com") {
+				iceporn_domain = "viptube.com";
+				iceporn_aid = 2;
+			} else if (domain_nosub === "nvdst.com") {
+				iceporn_domain = "nuvid.com";
+				iceporn_aid = 2;
+			}
+
+			id = get_iceporn_id_from_url(src);
+			if (id) {
+				query_iceporn_vid(iceporn_domain, iceporn_aid, id, function(data) {
+					if (!data)
+						return options.cb(null);
+
+					return options.cb(get_obj_from_iceporn_vid(data));
+				});
+
+				return {
+					waiting: true
+				};
+			}
+		}
+
+		if (domain_nowww === "anime789.com" && options.do_request && options.cb) {
+			var query_anime789_vid = function(id, cb) {
+				api_query("anime789:" + id, {
+					url: "https://anime789.com/api/source/" + id,
+					method: "POST",
+					data: "r=&d=anime789.com",
+					headers: {
+						Origin: "https://anime789.com",
+						Referer: "https://anime789.com/"
+					}
+				}, cb, function(done, resp, cache_key) {
+					try {
+						var json = JSON_parse(resp.responseText);
+						done(json, 60*60);
+					} catch (e) {
+						console_error(cache_key, e);
+						done(null, false);
+					}
+				});
+			};
+
+			var get_obj_from_anime789 = function(json) {
+				if (!json || !json.data)
+					return null;
+
+				var max = 0;
+				var maxobj = null;
+				for (var i = 0; i < json.data.length; i++) {
+					var ourdata = json.data[i];
+					if (!ourdata.label || !ourdata.file)
+						continue;
+
+					var oursize = parseInt(ourdata.label);
+					if (oursize > max) {
+						max = oursize;
+						maxobj = ourdata;
+					}
+				}
+
+				if (maxobj) {
+					return {
+						url: maxobj.file,
+						video: true
+					};
+				} else {
+					return null;
+				}
+			};
+
+			var get_anime789_id_from_url = function(url) {
+				var match = url.match(/\/asset\/+userdata\/+[0-9]+\/+poster\/+.\/+..\/+([^/.]+)\./);
+				if (match)
+					return match[1];
+				else
+					return null;
+			};
+
+			id = get_anime789_id_from_url(src);
+			if (id) {
+				query_anime789_vid(id, function(data) {
+					options.cb(get_obj_from_anime789(data));
+				});
+
+				return {
+					waiting: true
+				};
+			}
 		}
 
 
@@ -68902,6 +69175,7 @@ var $$IMU_EXPORT$$;
 				}
 
 				if (add_link) {
+					// don't !important because it'll override the waiting cursor for automatic (gallery) popups
 					img.style.cursor = "pointer";
 				}
 				// https://stackoverflow.com/questions/7774814/remove-white-space-below-image
