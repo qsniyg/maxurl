@@ -68318,7 +68318,11 @@ var $$IMU_EXPORT$$;
 			}
 
 			stop_processing();
-			stop_waiting();
+
+			if (!options.new_popup || settings.mouseover_wait_use_el) {
+				// don't recalculate style until after the popup is open
+				stop_waiting();
+			}
 
 			if (!delay_mouseonly && delay_handle) {
 				clearTimeout(delay_handle);
@@ -70387,7 +70391,10 @@ var $$IMU_EXPORT$$;
 					can_close_popup[1] = true;
 				}
 
-				stop_waiting();
+				setTimeout(function() {
+					stop_waiting();
+				}, 1);
+
 				popups_active = true;
 				//console_log(div);
 
