@@ -67782,7 +67782,7 @@ var $$IMU_EXPORT$$;
 	}
 
 	function general_extension_message_handler(message, sender, respond) {
-		if (_nir_debug_ || true) {
+		if (_nir_debug_) {
 			console_log("general_extension_message_handler", message);
 		}
 
@@ -67856,7 +67856,7 @@ var $$IMU_EXPORT$$;
 		} else if (message.type === "bg_redirect") {
 			try {
 				var headers = headers_list_to_dict(message.data.responseHeaders);
-				if (contenttype_can_be_redirected(headers["content-type"])) {
+				if (headers["content-type"] && contenttype_can_be_redirected(headers["content-type"])) {
 					do_redirect_sub(message.data.url, false, function(newurl, obj) {
 						send_redirect(obj, function() {
 							chrome.tabs.update(message.data.tabId, {
