@@ -10927,7 +10927,7 @@ var $$IMU_EXPORT$$;
 							return options.cb(obj);
 						} else {
 							// https://www.youtube.com/watch?v=P6dgaXh0K_E
-							if (maxobj.cipher) {
+							if (maxobj.cipher || maxobj.signatureCipher) {
 								console_warn("Encrypted Youtube URLs are currently not supported, sorry");
 							} else {
 								console_error("Unknown streamingData object", maxobj);
