@@ -67854,19 +67854,21 @@ var $$IMU_EXPORT$$;
 				delete extension_requests[response.id];
 			}
 		} else if (message.type === "bg_redirect") {
-			try {
-				var headers = headers_list_to_dict(message.data.responseHeaders);
-				if (headers["content-type"] && contenttype_can_be_redirected(headers["content-type"])) {
-					do_redirect_sub(message.data.url, false, function(newurl, obj) {
-						send_redirect(obj, function() {
-							chrome.tabs.update(message.data.tabId, {
-								url: newurl
+			if (settings.redirect) {
+				try {
+					var headers = headers_list_to_dict(message.data.responseHeaders);
+					if (headers["content-type"] && contenttype_can_be_redirected(headers["content-type"])) {
+						do_redirect_sub(message.data.url, false, function(newurl, obj) {
+							send_redirect(obj, function() {
+								chrome.tabs.update(message.data.tabId, {
+									url: newurl
+								});
 							});
 						});
-					});
+					}
+				} catch (e) {
+					console_error(e);
 				}
-			} catch (e) {
-				console_error(e);
 			}
 		}
 	}
