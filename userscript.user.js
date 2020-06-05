@@ -1821,6 +1821,7 @@ var $$IMU_EXPORT$$;
 		disable_keybind_when_editing: true,
 		redirect: true,
 		redirect_history: true,
+		redirect_extension: true,
 		canhead_get: true,
 		redirect_force_page: false,
 		// thanks to fireattack on discord for the idea: https://github.com/qsniyg/maxurl/issues/324
@@ -2198,6 +2199,16 @@ var $$IMU_EXPORT$$;
 			requires: {
 				redirect: true
 			},
+			category: "redirection"
+		},
+		redirect_extension: {
+			name: "Do redirection in extension",
+			description: "Performs the redirection in the extension instead of the content script. This is significantly faster and shouldn't cause issues in theory, but this option is kept in case of regressions",
+			requires: {
+				redirect: true
+			},
+			extension_only: true,
+			advanced: true,
 			category: "redirection"
 		},
 		canhead_get: {
@@ -32289,7 +32300,10 @@ var $$IMU_EXPORT$$;
 							   "/$1$2$3");
 		}
 
-		if (domain === "up.kpop.re") {
+		if (domain === "up.kpop.re" ||
+			// https://store.kpop.events/thumb/79/79cf99bde9d9902162c07af516f7e855872ac5.jpg
+			//   https://store.kpop.events/src/79/79cf99bde9d9902162c07af516f7e855872ac5.jpg
+			domain === "store.kpop.events") {
 			// https://up.kpop.re/thumb/79/79cf99bde9d9902162c07af516f7e855872ac5.jpg
 			//   https://up.kpop.re/src/79/79cf99bde9d9902162c07af516f7e855872ac5.jpg
 			// https://up.kpop.re/src/19/7240a6e374ba73121b94b1f3e5dcb43fae3efb.jpg/int-136946.jpg
@@ -67854,7 +67868,7 @@ var $$IMU_EXPORT$$;
 				delete extension_requests[response.id];
 			}
 		} else if (message.type === "bg_redirect") {
-			if (settings.redirect) {
+			if (settings.redirect && settings.redirect_extension) {
 				try {
 					var headers = headers_list_to_dict(message.data.responseHeaders);
 					if (headers["content-type"] && contenttype_can_be_redirected(headers["content-type"])) {
