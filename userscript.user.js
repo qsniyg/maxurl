@@ -31,6 +31,8 @@
 // @grant             GM_download
 // @grant             GM_openInTab
 // @grant             GM.openInTab
+// @grant             GM_notification
+// @grant             GM.notification
 // @connect           *
 // api.github.com is used for checking for updates (can be disabled through the "Check Updates" setting)
 // @connect           api.github.com
@@ -87,6 +89,7 @@ var $$IMU_EXPORT$$;
 	var greasyfork_update_url = userscript_update_url;
 	//var greasyfork_update_url = "https://greasyfork.org/scripts/36662-image-max-url/code/Image%20Max%20URL.user.js";
 	var github_issues_page = "https://github.com/qsniyg/maxurl/issues";
+	var imu_icon = "https://raw.githubusercontent.com/qsniyg/maxurl/b5c5488ec05e6e2398d4e0d6e32f1bbad115f6d2/resources/logo_256.png";
 	var current_version = null;
 	var imagetab_ok_override = false;
 
@@ -1807,6 +1810,7 @@ var $$IMU_EXPORT$$;
 		language: browser_language,
 		check_updates: true,
 		check_update_interval: 24,
+		check_update_notify: false,
 		// thanks to forefix on firefox for the idea: https://github.com/qsniyg/maxurl/issues/189
 		dark_mode: false,
 		settings_tabs: false,
@@ -2137,6 +2141,14 @@ var $$IMU_EXPORT$$;
 			number_min: 1,
 			number_int: true,
 			number_unit: "hours",
+		},
+		check_update_notify: {
+			name: "Notify when update is available",
+			description: "Creates a browser notification when an update is available",
+			category: "general",
+			requires: {
+				check_updates: true
+			}
 		},
 		advanced_options: {
 			name: "Show advanced settings",
@@ -4918,6 +4930,30 @@ var $$IMU_EXPORT$$;
 		}
 	}
 
+	var raw_do_notify = null;
+	if (is_userscript) {
+		if (typeof GM_notification !== "undefined") {
+			raw_do_notify = GM_notification;
+		} else if (typeof GM !== "undefined" && GM.notification) {
+			raw_do_notify = GM.notification;
+		}
+	}
+
+	var do_notify = function(details) {
+		if (!raw_do_notify)
+			return;
+
+		if (!details.title) {
+			details.title = _("Image Max URL");
+		}
+
+		if (!details.image) {
+			details.image = imu_icon;
+		}
+
+		raw_do_notify(details, details.ondone || null);
+	};
+
 	function fuzzify_text(str) {
 		return str
 			.replace(/(?:[-=_!?$#"'’‘”“]|\[|])/g, " ")
@@ -5049,6 +5085,21 @@ var $$IMU_EXPORT$$;
 		}
 	};
 
+	var get_update_url = function() {
+		var link = settings.last_update_url;
+		if (!link) {
+			if (is_firefox_webextension) {
+				link = firefox_addon_page;
+			} else if (is_userscript) {
+				link = userscript_update_url;
+			} else {
+				link = null;
+			}
+		}
+
+		return link;
+	};
+
 	var check_updates_if_needed = function() {
 		// if last_update_check == 0, it means for some reason it's not able to store values
 		if (!settings.imu_enabled || !settings.check_updates || !current_version || !settings.last_update_check) {
@@ -5070,6 +5121,21 @@ var $$IMU_EXPORT$$;
 				}
 
 				update_setting("last_update_version", data.version);
+
+				if (settings.check_update_notify && !is_in_iframe && version_compare(current_version, data.version)) {
+					var notify_obj = {
+						text: _("Update available (%%1)", data.version)
+					};
+
+					var downloadurl = get_update_url();
+					if (downloadurl) {
+						notify_obj.onclick = function() {
+							open_in_tab(downloadurl);
+						};
+					}
+
+					do_notify(notify_obj);
+				}
 			});
 		}
 	};
@@ -65689,16 +65755,7 @@ var $$IMU_EXPORT$$;
 			update_available_el.classList.add("update-available");
 			update_available_el.innerHTML = "Update available: v" + current_version + " -&gt; ";
 
-			var link = settings.last_update_url;
-			if (!link) {
-				if (is_firefox_webextension) {
-					link = firefox_addon_page;
-				} else if (is_userscript) {
-					link = userscript_update_url;
-				} else {
-					link = null;
-				}
-			}
+			var link = get_update_url();
 
 			if (link) {
 				update_available_el.innerHTML += "<a href=\"" + link + "\" target=\"_blank\" rel=\"noreferer\">v" + settings.last_update_version + "</a>";
