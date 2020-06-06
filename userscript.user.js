@@ -12990,8 +12990,6 @@ var $$IMU_EXPORT$$;
 			// http://www.sohobluesgallery.com/mm5/graphics/00000001/Rolling_Stones_Keith_Richards_Guitar_God_475x705.jpg
 			//   http://www.sohobluesgallery.com/mm5/graphics/00000001/Rolling_Stones_Keith_Richards_Guitar_God.jpg
 			domain_nowww === "sohobluesgallery.com" ||
-			// https://i.vimeocdn.com/video/530332183_780x439.jpg
-			domain === "i.vimeocdn.com" ||
 			// https://media.indiatimes.in/media/content/2018/Feb/arun_jaitley_allocates_rs_1200_crore_to_promote_bamboo_cultivation_1517487222_100x150.jpg
 			domain === "media.indiatimes.in" ||
 			// https://www.bangkokpost.com/media/content/20180126/c1_1401970_180126042828_620x413.jpg
@@ -17246,6 +17244,14 @@ var $$IMU_EXPORT$$;
 			// https://i.vimeocdn.com/filter/overlay?src0=https%3A%2F%2Fi.vimeocdn.com%2Fvideo%2F504371620_1280x720.jpg&src1=https%3A%2F%2Ff.vimeocdn.com%2Fimages_v6%2Fshare%2Fplay_icon_overlay.png
 			//   https://i.vimeocdn.com/video/504371620_1280x720.jpg
 			return decodeURIComponent(src.replace(/.*\/overlay\?.*?src0=([^&]*).*/, "$1"));
+		}
+
+		if (domain === "i.vimeocdn.com") {
+			// https://i.vimeocdn.com/video/530332183_780x439.jpg
+			//   https://i.vimeocdn.com/video/530332183.jpg
+			// https://i.vimeocdn.com/portrait/7230697_640x640 -- upscaled
+			//   https://i.vimeocdn.com/portrait/7230697
+			return src.replace(/(:\/\/[^/]+\/+(?:video|portrait)\/+[0-9]+)_[0-9]+x[0-9]+(\.[^/.]+)?(?:[?#].*)?$/, "$1$2");
 		}
 
 		if (domain === "imagelab.nownews.com") {
