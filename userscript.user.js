@@ -63297,6 +63297,18 @@ var $$IMU_EXPORT$$;
 				return fillobj_urls([newsrc], obj);
 		}
 
+		if (domain_nowww === "seigura.com" ||
+			// https://nhssf.org/wp-content/uploads/2019/12/IMG_1587-scaled.jpg
+			domain_nowww === "nhssf.org" ||
+			// http://www.larochette-hotel.fr/wp-content/uploads/2020/02/article-dna-001-scaled.jpg
+			domain_nowww === "larochette-hotel.fr" ||
+			/(\/wp-content\/+uploads\/+[0-9]{4}\/+[0-9]{2}\/+[^/]+)-scaled(\.[^/.]+)(?:[?#].*)?$/.test(src)) {
+			// thanks to fireattack on discord
+			// https://seigura.com/wp-content/uploads/2020/05/461979a205baaa10d281de33cc7d2c01-scaled.jpg
+			//   https://seigura.com/wp-content/uploads/2020/05/461979a205baaa10d281de33cc7d2c01.jpg
+			return src.replace(/(\/wp-content\/+uploads\/+[0-9]{4}\/+[0-9]{2}\/+[^/]+)-scaled(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
 
 
 
