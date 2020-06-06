@@ -54773,6 +54773,7 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "lovedat.ru") {
 			// http://cfake.com/medias/thumbs/15307934167f319894_cfake.jpg
 			//   http://cfake.com/medias/photos/15307934167f319894_cfake.jpg
+			//   http://cfake.com/medias/ophotos/15307934167f319894_cfake.jpg
 			return src.replace(/\/medias\/+(?:thumbs|photos)\/+/, "/medias/ophotos/");
 		}
 
@@ -61075,9 +61076,63 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "vidcommons.org" ||
 			// https://spacepub.space/static/thumbnails/691f2bc1-d4bf-4051-a035-035388a059b0.jpg
 			domain_nowww === "spacepub.space" ||
+			// https://video.gafamfree.party/static/thumbnails/e251b01c-2098-426d-86b6-6c85f6602530.jpg
+			domain === "video.gafamfree.party" ||
+			// https://troo.tube/static/thumbnails/1427fcb7-a963-4c2c-b83d-9a04f3ad47b5.jpg
+			domain_nowww === "troo.tube" ||
+			// https://video.ploud.fr/static/thumbnails/1f31fce7-f2b2-48fd-9b58-f1404df7c60c.jpg
+			domain === "video.ploud.fr" ||
+			// https://tube.ac-lyon.fr/static/thumbnails/fa3081f4-e9c3-4d55-ad84-1335b78d8562.jpg
+			domain === "tube.ac-lyon.fr" ||
+			// https://peertube.librelabucm.org/static/thumbnails/cc55e615-d204-417c-9575-7b57674cc6f3.jpg
+			domain === "peertube.librelabucm.org" ||
+			// https://video.writeas.org/static/thumbnails/2b436442-4b18-49dd-831a-90ceb75d4e11.jpg
+			domain === "video.writeas.org" ||
+			// https://conf.tube/static/thumbnails/3137ea36-264b-43c8-929c-145fc48159e5.jpg
+			domain_nowww === "conf.tube" ||
+			// https://peertube.anarchmusicall.net/static/thumbnails/06131ffa-17ab-45dd-a1bf-265009b6a683.jpg
+			domain === "peertube.anarchmusicall.net" ||
+			// https://lostpod.space/static/thumbnails/9c9de5e8-0a1e-484a-b099-e80766180a6d.jpg
+			domain_nowww === "lostpod.space" ||
+			// https://peertube.alter-nativ-voll.de/static/thumbnails/06131ffa-17ab-45dd-a1bf-265009b6a683.jpg
+			domain === "peertube.alter-nativ-voll.de" ||
+			// https://videos.ac-nancy-metz.fr/static/thumbnails/14e9320f-2502-45c8-a4fa-c32e9b7ba76f.jpg
+			domain === "videos.ac-nancy-metz.fr" ||
+			// https://tube.fabrigli.fr/static/thumbnails/1c17f3e8-1013-43a0-acf3-3b69035345f9.jpg
+			domain === "tube.fabrigli.fr" ||
+			// https://videos.domainepublic.net/static/thumbnails/217eefeb-883d-45be-b7fc-a788ad8507d3.jpg
+			domain === "videos.domainepublic.net" ||
+			// https://videos.pueseso.club/static/thumbnails/2d2b48cb-6ac8-4476-8ae9-9b3f86a292b4.jpg
+			domain === "videos.pueseso.club" ||
+			// https://tube.azbyka.ru/static/thumbnails/febed00c-4591-4e70-9d58-50b83d1b3ce7.jpg
+			domain === "tube.azbyka.ru" ||
+			// https://videos.pair2jeux.tube/static/thumbnails/76011c74-2a6c-4da0-b277-3568c4d0f2ad.jpg
+			domain === "videos.pair2jeux.tube" ||
+			// https://www.yiny.org/static/thumbnails/b3e3de5f-7498-47fe-945f-d84a7f293c93.jpg
+			domain_nowww === "yiny.org" ||
+			// https://pony.tube/static/thumbnails/9f699b7c-8b8d-45f6-aa2c-37d9816b56e1.jpg
+			domain_nowww === "pony.tube" ||
+			// https://peertube.dsmouse.net/static/thumbnails/bc181d28-3284-4882-b7a3-314e27d0bdb2.jpg
+			domain === "peertube.dsmouse.net" ||
+			// https://tube-versailles.beta.education.fr/static/thumbnails/0ae974c5-ff91-4ea0-8612-f8088bde7843.jpg
+			domain === "tube-versailles.beta.education.fr" ||
+			// https://video.tedomum.net/static/thumbnails/6baca855-8799-4add-8158-663386f7ee4a.jpg
+			domain === "video.tedomum.net" ||
+			// https://peertube.lyceeconnecte.fr/static/thumbnails/8a121d63-49c7-49d9-aab0-5d823b44b11d.jpg
+			domain === "peertube.lyceeconnecte.fr" ||
+			domain_nowww === "xxxporn.co.uk" ||
+			domain === "peertube.ricostrongxxx.com" ||
+			// https://videos.upr.fr/static/thumbnails/f15b951a-1dbe-485d-beda-8dd2e5436d9f.jpg
+			domain === "videos.upr.fr" ||
+			// https://peertube.uno/static/thumbnails/a5bcc9ab-221c-4e25-afdb-88d837741b61.jpg
+			domain_nowww === "peertube.uno" ||
+			// https://alttube.fr/static/thumbnails/1cc6b4cd-ac16-4300-8adc-d9df3fb4f0af.jpg
+			domain_nowww === "alttube.fr" ||
 			// https://peertube.cpy.re/static/thumbnails/da2b08d4-a242-4170-b32a-4ec8cbdca701.jpg
 			//   https://peertube.cpy.re/static/webseed/da2b08d4-a242-4170-b32a-4ec8cbdca701-1044.mp4
 			domain === "peertube.cpy.re") {
+			// find instances here: https://instances.joinpeertube.org/instances
+
 			// https://peertube.linuxrocks.online/static/previews/caeb68e7-120c-4db5-a44e-5945e09ceb92.jpg
 			//   https://peertube.linuxrocks.online/static/webseed/caeb68e7-120c-4db5-a44e-5945e09ceb92-1080.mp4
 			var query_peertube_api = function(api_url, referer_url, vidid, cb) {
@@ -61126,6 +61181,7 @@ var $$IMU_EXPORT$$;
 
 								if (maxobj) {
 									obj.url = maxobj.fileUrl; // or fileDownloadUrl?
+									obj.video  = true;
 
 									// doesn't seem to have an expiry date
 									return done(obj, 6*60*60);
