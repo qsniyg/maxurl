@@ -11,6 +11,7 @@ var request_headers = {};
 var override_headers = {};
 var override_download = {};
 var reqid_to_redid = {};
+var notifications = {};
 
 var ready_functions = [];
 var on_ready = function(f) {
@@ -998,12 +999,12 @@ var extension_message_handler = (message, sender, respond) => {
 		debug(message.type, message);
 
 		chrome.tabs.sendMessage(sender.tab.id, message);
-	} else if (message.type === "permission") {
+	} else if (message.type === "permission" && false) { // This is unused!
 		debug("permission", message);
 
-		if (message.data.permission === "history") {
+		if (["history", "notifications"].indexOf(message.data.permission) >= 0) {
 			chrome.permissions.request({
-				permissions: ["history"]
+				permissions: [message.data.permission]
 			}, function(granted) {
 				respond({
 					type: "permission",
@@ -1012,6 +1013,10 @@ var extension_message_handler = (message, sender, respond) => {
 						granted: granted
 					}
 				});
+
+				if (granted && message.data.permission === "notifications") {
+					create_notification_handlers();
+				}
 			});
 		} else {
 			respond({
@@ -1024,6 +1029,12 @@ var extension_message_handler = (message, sender, respond) => {
 		}
 
 		return true;
+	} else if (message.type === "permission_handler") {
+		debug("permission_handler", message);
+
+		if (message.data.permission === "notifications") {
+			create_notification_handlers();
+		}
 	} else if (message.type === "add_to_history") {
 		debug("add_to_history", message);
 
@@ -1034,8 +1045,77 @@ var extension_message_handler = (message, sender, respond) => {
 		} catch (e) {
 			console.error(e);
 		}
+	} else if (message.type === "notification") {
+		debug("notification", message);
+
+		try {
+			var notif_id = get_random_id(notifications);
+			chrome.notifications.create(notif_id, {
+				type: "basic",
+				iconUrl: message.data.image || chrome.extension.getURL("/resources/logo_96.png"),
+				title: message.data.title || "Image Max URL",
+				message: message.data.text
+			}, function(notif_id) {
+				notifications[notif_id] = function(action) {
+					// FIXME: since this is a response, only one of clicked/closed can be sent
+					respond({
+						type: "notification",
+						data: {
+							status: "success",
+							action: action
+						}
+					});
+				};
+			});
+
+			// closing won't return
+			if (!message.data.onclick)
+				return;
+		} catch (e) {
+			console.error(e);
+
+			respond({
+				type: "notification",
+				data: {
+					status: "noperm"
+				}
+			});
+		}
+
+		return true;
 	}
 };
+
+var notification_handler = function(notif_id, action, byuser) {
+	debug("notification_handler", notif_id, action, byuser);
+
+	if (!(notif_id in notifications)) {
+		console.error(notif_id, "not in notifications");
+		return;
+	}
+
+	if (action === "clicked") {
+		notifications[notif_id](action);
+	}
+
+	delete notifications[notif_id];
+};
+
+var added_notification_handlers = false;
+var create_notification_handlers = function() {
+	try {
+		chrome.notifications.onClicked.addListener(function(notif_id) {
+			notification_handler(notif_id, "clicked");
+		});
+
+		chrome.notifications.onClosed.addListener(function(notif_id, byuser) {
+			notification_handler(notif_id, "closed", byuser);
+		});
+	} catch (e) {
+		console.warn("Notifications not allowed");
+	}
+};
+create_notification_handlers();
 
 chrome.runtime.onMessage.addListener(extension_message_handler);
 

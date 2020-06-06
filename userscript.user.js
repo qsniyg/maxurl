@@ -2148,7 +2148,8 @@ var $$IMU_EXPORT$$;
 			category: "general",
 			requires: {
 				check_updates: true
-			}
+			},
+			required_permission: "notifications"
 		},
 		advanced_options: {
 			name: "Show advanced settings",
@@ -4937,6 +4938,32 @@ var $$IMU_EXPORT$$;
 		} else if (typeof GM !== "undefined" && GM.notification) {
 			raw_do_notify = GM.notification;
 		}
+	} else if (is_extension) {
+		raw_do_notify = function(details, ondone) {
+			var jsoned_details = deepcopy(details, {json: true});
+			if (details.onclick)
+				jsoned_details.onclick = true;
+
+			extension_send_message({
+				type: "notification",
+				data: jsoned_details
+			}, function(response) {
+				// if there's no onclick
+				if (!response || !response.data)
+					return;
+
+				if (response.data.action === "clicked") {
+					if (details.onclick) {
+						details.onclick();
+					}
+				} else if (response.data.action === "closed") {
+					ondone = details.ondone || ondone;
+					if (ondone) {
+						ondone();
+					}
+				}
+			});
+		};
 	}
 
 	var do_notify = function(details) {
@@ -5128,9 +5155,12 @@ var $$IMU_EXPORT$$;
 					};
 
 					var downloadurl = get_update_url();
+					// FIXME? if !downloadurl, clicking won't close the popup. this might not be a problem though, as it's expected behavior?
 					if (downloadurl) {
 						notify_obj.onclick = function() {
-							open_in_tab(downloadurl);
+							open_in_tab_imu({
+								url: downloadurl
+							});
 						};
 					}
 
@@ -65585,6 +65615,15 @@ var $$IMU_EXPORT$$;
 				chrome.permissions.request({
 					permissions: [permission]
 				}, function(granted) {
+					if (granted) {
+						extension_send_message({
+							type: "permission_handler",
+							data: {
+								permission: permission
+							}
+						});
+					}
+
 					cb(granted);
 				});
 			} catch(e) {
