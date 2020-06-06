@@ -703,7 +703,7 @@ var onHeadersReceived = function(details) {
 		return {
 			responseHeaders: newheaders
 		};
-	} else if (!details.documentUrl) {
+	} else if (!details.documentUrl && details.type === "main_frame") {
 		// new document replacing page
 		if (typeof imu_userscript_message_sender === "function") {
 			imu_userscript_message_sender({
