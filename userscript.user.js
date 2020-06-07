@@ -10993,6 +10993,117 @@ var $$IMU_EXPORT$$;
 			}
 
 			if (id && options && options.do_request && options.cb) {
+				var parse_funcobj = function(funcobj) {
+					var reverse_regexes = [
+						/^\(a\){a\.reverse[(][)];?$/
+					];
+
+					var splice_regexes = [
+						/^\(a,b\){a\.splice[(]0,b[)];?$/
+					];
+
+					var sub_regexes = [
+						/^\(a,b\){var c=a\[0];a\[0]=a\[b%a\.length];a\[b%a\.length]=c;?$/
+					];
+
+					var regexes = {
+						reverse: reverse_regexes,
+						splice: splice_regexes,
+						sub: sub_regexes
+					};
+
+					var singlefunc_regex = /([a-zA-Z]+):\s*function([(].*?)}(?:,|};$)/;
+					var global_singlefunc_regex = new RegExp(singlefunc_regex, "g");
+
+					var match = funcobj.match(global_singlefunc_regex);
+					if (!match) {
+						console_warn("Unable to find functions from", funcobj);
+						return null;
+					}
+
+					var functions = {};
+
+					for (var i = 0; i < match.length; i++) {
+						// should always succeed because it's the same as the global regex
+						var our_match = match[i].match(singlefunc_regex);
+
+						var has_match = false;
+						for (var regex_key in regexes) {
+							for (var j = 0; j < regexes[regex_key].length; j++) {
+								var our_regex = regexes[regex_key][j];
+
+								var regexmatch = our_match[2].match(our_regex);
+								if (regexmatch) {
+									has_match = true;
+									break;
+								}
+							}
+
+							if (has_match) {
+								functions[our_match[1]] = regex_key;
+								break;
+							}
+						}
+
+						if (!has_match) {
+							console_warn("Unable to find function signature for", match[i]);
+							return null;
+						}
+					}
+
+					return functions;
+				};
+
+				var parse_sigdec_ops = function(funcobj_name, parsed_funcobj, maincode) {
+					var regex = funcobj_name + "\\.([a-zA-Z]+)\\(a,([0-9]+)\\);";
+					var single_regex = new RegExp(regex);
+					var global_regex = new RegExp(single_regex, "g");
+
+					var global_match = maincode.match(global_regex);
+					if (!global_match) {
+						console_warn("Unable to find global match for", maincode);
+						return null;
+					}
+
+					var ops = [];
+					for (var i = 0; i < global_match.length; i++) {
+						var single_match = global_match[i].match(single_regex);
+
+						ops.push({
+							name: parsed_funcobj[single_match[1]],
+							arg: parseInt(single_match[2])
+						});
+					}
+
+					return ops;
+				};
+
+				var op_functions = {
+					reverse: function(a, b) {
+						a.reverse();
+					},
+					splice: function(a, b) {
+						a.splice(0, b)
+					},
+					sub: function(a, b) {
+						var first = a[0];
+						a[0] = a[b % a.length];
+						a[b % a.length] = first;
+					}
+				};
+
+				var run_sigdec_ops = function(ops, sig) {
+					var splitted = sig.split("");
+
+					for (var i = 0; i < ops.length; i++) {
+						var op = ops[i];
+
+						op_functions[op.name].call(this, splitted, op.arg);
+					}
+
+					return splitted.join("");
+				};
+
 				var get_sigdec_from_playerjs = function(playerjs) {
 					var match = playerjs.match(/{(a=a\.split[(]""[)];(?:([a-zA-Z]+)\.[a-zA-Z]+[(]a,[0-9]+[)];\s*){1,}return a\.join[(]""[)];?)}/);
 					if (!match) {
@@ -11015,8 +11126,26 @@ var $$IMU_EXPORT$$;
 						return null;
 					}
 
-					var our_function = funcobj_match[1] + "\n" + maincode;
-					return new Function("a", our_function);
+					var parsed_funcobj = parse_funcobj(funcobj_match[1]);
+					if (parsed_funcobj) {
+						console_log(parsed_funcobj);
+						var parsed_ops = parse_sigdec_ops(funcobj, parsed_funcobj, maincode);
+						if (parsed_ops) {
+							console_log(parsed_ops);
+							return function(sig) {
+								return run_sigdec_ops(parsed_ops, sig);
+							};
+						}
+					}
+
+					console_warn("Unable to statically decode signature decoder");
+					if (options.allow_thirdparty_code) {
+						var our_function = funcobj_match[1] + "\n" + maincode;
+						return new Function("a", our_function);
+					} else {
+						console_warn("3rd-party code is disabled, unable to decode signature for youtube");
+						return null;
+					}
 				};
 
 				var fetch_playerjs = function(id, cb) {
@@ -11112,12 +11241,11 @@ var $$IMU_EXPORT$$;
 							var cipher = maxobj.cipher || maxobj.signatureCipher;
 
 							var queries = get_queries("?" + cipher);
-							var sig = "";
 							for (var query in queries) {
 								queries[query] = decodeURIComponent(queries[query]);
 							}
 
-							if (options.allow_thirdparty_code && "url" in queries && queries.s && videoid) {
+							if ("url" in queries && queries.s && videoid) {
 								fetch_playerjs(player_response.videoDetails.videoId, function(playerjs) {
 									if (playerjs) {
 										var sigdec = get_sigdec_from_playerjs(playerjs);
