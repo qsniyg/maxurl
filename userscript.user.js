@@ -62401,6 +62401,103 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain_nowww === "dailymotion.com") {
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+video\/+([a-z0-9]+)(?:[?#].*)?$/);
+			if (match) {
+				id = match[1];
+
+				var query_dm_playermetadata = function(id, cb) {
+					api_query("dailymotion:" + id, {
+						url: "https://www.dailymotion.com/player/metadata/video/" + id,
+						headers: {
+							Referer: "https://www.dailymotion.com/video/" + id,
+							Accept: "application/json, text/plain, */*"
+						}
+					}, cb, function(done, resp, cache_key) {
+						try {
+							var json = JSON_parse(resp.responseText);
+							return done(json, 60*60);
+						} catch (e) {
+							console_error(cache_key, e);
+						}
+
+						return done(null, false);
+					});
+				};
+
+				var page_nullobj = {
+					url: src,
+					is_pagelink: true
+				};
+
+				var get_obj_from_dm_playermeta = function(data) {
+					if (!data)
+						return page_nullobj;
+
+					var obj = {extra: {}};
+					var urls = [];
+
+					if (data.title)
+						obj.extra.caption = data.title;
+
+					if (data.url)
+						obj.extra.page = data.url;
+
+					// FIXME?
+					if (data.qualities && data.qualities.auto && data.qualities.auto[0] && data.qualities.auto[0].type === "application/x-mpegURL") {
+						urls.push({
+							url: data.qualities.auto[0].url,
+							video: "hls",
+							headers: {
+								Referer: obj.extra.page
+							}
+						});
+					}
+
+					if (data.posters) {
+						var max = 0;
+						for (var size in data.posters) {
+							if (size > max) {
+								max = size;
+							}
+						}
+
+						if (max in data.posters) {
+							urls.push(data.posters[max]);
+						}
+					}
+
+					urls.push(page_nullobj);
+
+					return fillobj_urls(urls, obj);
+				};
+
+				if (options.do_request && options.cb) {
+					query_dm_playermetadata(id, function(data) {
+						options.cb(get_obj_from_dm_playermeta(data));
+					});
+
+					return {
+						waiting: true
+					};
+				} else {
+					return page_nullobj;
+				}
+			}
+		}
+
+		if (domain_nosub === "dmcdn.net" && options.element) {
+			// TODO: move to common_functions.get_a_by_regex
+			var current = options.element;
+			do {
+				if (current.tagName === "A" && /^https?:\/\/(?:www\.)?dailymotion\.com\/+video\/+([a-z0-9]+)(?:[?#].*)?$/.test(current.href)) {
+					if (current.href !== src)
+						return current.href;
+					break;
+				}
+			} while (current = current.parentElement);
+		}
+
 
 
 
