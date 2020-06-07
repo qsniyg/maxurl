@@ -10978,6 +10978,26 @@ var $$IMU_EXPORT$$;
 			}
 
 			if (id && options && options.do_request && options.cb) {
+				var decode_signature_sub = function(a, b) {
+					var first = a[0];
+					a[0] = a[b % a.length];
+					a[b % a.length] = first;
+				};
+
+				var decode_signature = function(signature) {
+					var splitted = signature.split("");
+
+					decode_signature_sub(splitted, 11);
+					decode_signature_sub(splitted, 29);
+					splitted.splice(0, 3);
+					decode_signature_sub(splitted, 69);
+					splitted.reverse();
+					splitted.splice(0, 2);
+					splitted.reverse();
+
+					return splitted.join("");
+				};
+
 				var parse_player_response = function(player_response) {
 					// TODO: support streamingData.adaptiveFormats
 					if (!player_response) {
@@ -11013,6 +11033,26 @@ var $$IMU_EXPORT$$;
 					}
 
 					if (maxobj) {
+						// https://i.ytimg.com/vi/axRAL0BXNvw/maxresdefault.jpg
+						if (!maxobj.url && (maxobj.cipher || maxobj.signatureCipher)) {
+							var cipher = maxobj.cipher || maxobj.signatureCipher;
+
+							var queries = get_queries("?" + cipher);
+							var sig = "";
+							for (var query in queries) {
+								queries[query] = decodeURIComponent(queries[query]);
+
+								if (query === "s") {
+									sig = "&sig=" + decode_signature(queries[query]);
+								}
+							}
+
+							if ("url" in queries && sig) {
+								maxobj.url = queries.url + sig;
+								console_warn("Attempting to use decrypted Youtube URL. If this fails, please let me konw!");
+							}
+						}
+
 						if (maxobj.url) {
 							obj.url = maxobj.url;
 							obj.video = true;
@@ -11025,7 +11065,7 @@ var $$IMU_EXPORT$$;
 						} else {
 							// https://www.youtube.com/watch?v=P6dgaXh0K_E
 							if (maxobj.cipher || maxobj.signatureCipher) {
-								console_warn("Encrypted Youtube URLs are currently not supported, sorry");
+								console_warn("Unsupported encrypted URL. Please let me know which video failed so that I can fix it");
 							} else {
 								console_error("Unknown streamingData object", maxobj);
 							}
