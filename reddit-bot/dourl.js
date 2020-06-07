@@ -227,6 +227,10 @@ function is_youtube_url(url) {
 		match = url.match(/^[a-z]+:\/\/(?:[^/]+\.)?instagram\.com\//);
 	}
 
+	if (!match) {
+		match = url.match(/^[a-z]+:\/\/(?:www\.)?vimeo\.com\//);
+	}
+
 	return !!match;
 }
 
