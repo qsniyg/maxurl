@@ -823,6 +823,7 @@ var $$IMU_EXPORT$$;
 		redirects: false,
 		forces_download: false,
 		is_private: false,
+		is_pagelink: false,
 		is_original: false,
 		norecurse: false,
 		forcerecurse: false,
@@ -17251,7 +17252,141 @@ var $$IMU_EXPORT$$;
 			//   https://i.vimeocdn.com/video/530332183.jpg
 			// https://i.vimeocdn.com/portrait/7230697_640x640 -- upscaled
 			//   https://i.vimeocdn.com/portrait/7230697
-			return src.replace(/(:\/\/[^/]+\/+(?:video|portrait)\/+[0-9]+)_[0-9]+x[0-9]+(\.[^/.]+)?(?:[?#].*)?$/, "$1$2");
+			newsrc = src.replace(/(:\/\/[^/]+\/+(?:video|portrait)\/+[0-9]+)_[0-9]+x[0-9]+(\.[^/.?#]+)?(?:[?#].*)?$/, "$1$2");
+			if (newsrc !== src) {
+				return newsrc;
+			}
+		}
+
+		if (domain_nowww === "vimeo.com" && options.do_request && options.cb) {
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+([0-9]+)(?:[?#].*)?$/);
+			if (match) {
+				id = match[1];
+
+				var query_vimeo_clippageconfig = function(id, cb) {
+					api_query("vimeo:" + id, {
+						url: "https://vimeo.com/" + id,
+						headers: {
+							Referer: ""
+						}
+					}, cb, function(done, resp, cache_key) {
+						var match = resp.responseText.match(/window\.vimeo\.clip_page_config\s*=\s*({.*?});\s*\n/);
+						if (!match) {
+							console_warn(cache_key, "Unable to find match for", resp);
+							return done(null, false);
+						}
+
+						try {
+							var json = JSON_parse(match[1]);
+							return done(json, 60*60);
+						} catch (e) {
+							console_error(cache_key, e);
+							return done(null, false);
+						}
+					});
+				};
+
+				var get_id_from_vimeo_playerconfig_url = function(url) {
+					var match = url.match(/^[a-z]+:\/\/player\.vimeo\.com\/+video\/+([0-9]+)\/+config/);
+					if (match)
+						return match[1];
+					return null;
+				};
+
+				var query_vimeo_playerconfig = function(url, cb) {
+					var id = get_id_from_vimeo_playerconfig_url(url);
+					if (!id)
+						return cb(null);
+
+					api_query("vimeo_playerconfig:" + id, {
+						url: url,
+						headers: {
+							Origin: "https://vimeo.com",
+							Referer: "https://vimeo.com/" + id
+						}
+					}, cb, function(done, resp, cache_key) {
+						try {
+							var json = JSON_parse(resp.responseText);
+							return done(json, json.request.expires || 60*60);
+						} catch (e) {
+							console_error(cache_key, e);
+							return done(null, false);
+						}
+					});
+				};
+
+				var page_nullobj = {
+					url: src,
+					is_pagelink: true
+				};
+
+				var get_obj_from_vimeo_playerconfig = function(data) {
+					if (!data || !data.request || !data.video)
+						return page_nullobj;
+
+					var obj = {extra: {}};
+					var urls = [];
+
+					if (data.video.title) {
+						obj.extra.caption = data.video.title;
+					}
+
+					if (data.video.share_url) {
+						obj.extra.page = data.video.share_url;
+					}
+
+					try {
+						var files = data.request.files;
+						var progressive = files.progressive;
+
+						var max = 0;
+						var maxobj = null;
+
+						for (var i = 0; i < progressive.length; i++) {
+							var ourobj = progressive[i];
+							if (!ourobj.url)
+								continue;
+
+							var oursize = ourobj.width * ourobj.height;
+							if (oursize > max) {
+								max = oursize;
+								maxobj = ourobj;
+							}
+						}
+
+						if (maxobj) {
+							urls.push({
+								url: maxobj.url,
+								video: true
+							});
+						}
+
+						urls.push(data.video.thumbs.base);
+					} catch (e) {
+						console_error(e);
+					}
+
+					urls.push(page_nullobj);
+
+					return fillobj_urls(urls, obj);
+				};
+
+				var query_vimeo_for_obj = function(id, cb) {
+					query_vimeo_clippageconfig(id, function(data) {
+						if (!data || !data.player || !data.player.config_url)
+							return cb(page_nullobj);
+
+						query_vimeo_playerconfig(data.player.config_url, function(data) {
+							cb(get_obj_from_vimeo_playerconfig(data));
+						});
+					});
+				};
+
+				query_vimeo_for_obj(id, options.cb);
+				return {
+					waiting: true
+				};
+			}
 		}
 
 		if (domain === "imagelab.nownews.com") {
@@ -65100,6 +65235,8 @@ var $$IMU_EXPORT$$;
 					err_txt = "Bad image";
 				} else if (obj.video && obj.video !== true) {
 					err_txt = "Can't redirect to streaming video type " + obj.video;
+				} else if (obj.is_pagelink) {
+					err_txt = "Can't redirect to page";
 				}
 
 				if (err_txt) {
@@ -67740,6 +67877,10 @@ var $$IMU_EXPORT$$;
 
 		if (obj[0] && obj[0].bad) {
 			console_log("Bad image");
+			return err_cb();
+		}
+
+		if (obj[0] && obj[0].is_pagelink) {
 			return err_cb();
 		}
 
