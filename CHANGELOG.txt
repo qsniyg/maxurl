@@ -1,3 +1,25 @@
+0.13.9
+
+This is an emergency fix release to fix websites (such as Facebook) redirecting to videos/images contained within the page.
+
+New features:
+
+ * Option to notify when update is available (disabled by default)
+ * Support for ~60 new websites (using ~15 new rules), including Dailymotion
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including Vimeo, Wordpress, YouTube)
+ * Vimeo videos are supported
+ * More YouTube videos are now supported
+ * Minor performance improvements
+
+Bugfixes:
+
+ * Browsing Facebook will no longer redirect to videos (thanks to sir.saarim on discord for reporting)
+
+---
+
 0.13.8
 
 New features:
