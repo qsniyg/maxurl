@@ -10978,24 +10978,58 @@ var $$IMU_EXPORT$$;
 			}
 
 			if (id && options && options.do_request && options.cb) {
-				var decode_signature_sub = function(a, b) {
-					var first = a[0];
-					a[0] = a[b % a.length];
-					a[b % a.length] = first;
+				var get_sigdec_from_playerjs = function(playerjs) {
+					var match = playerjs.match(/{(a=a\.split[(]""[)];(?:([a-zA-Z]+)\.[a-zA-Z]+[(]a,[0-9]+[)];\s*){1,}return a\.join[(]""[)];?)}/);
+					if (!match) {
+						console_error("Unable to find signature decoder from youtube's player");
+						return null;
+					}
+
+					var maincode = match[1];
+					var funcobj = match[2];
+
+					var funcobj_regex = new RegExp("(var " + funcobj + "={[a-zA-Z]+:function[\\s\\S]*?};)");
+					var funcobj_match = playerjs.match(funcobj_regex);
+					if (!funcobj_match) {
+						console_error("Unable to find function object for signature decode from youtube's player", {
+							maincode: maincode,
+							funcobj: funcobj,
+							regex: funcobj_regex,
+							playerjs: playerjs
+						});
+						return null;
+					}
+
+					var our_function = funcobj_match[1] + "\n" + maincode;
+					return new Function("a", our_function);
 				};
 
-				var decode_signature = function(signature) {
-					var splitted = signature.split("");
+				var fetch_playerjs = function(id, cb) {
+					var cache_key = "youtube_playerjs";
 
-					decode_signature_sub(splitted, 11);
-					decode_signature_sub(splitted, 29);
-					splitted.splice(0, 3);
-					decode_signature_sub(splitted, 69);
-					splitted.reverse();
-					splitted.splice(0, 2);
-					splitted.reverse();
+					api_cache.fetch(cache_key, cb, function(done) {
+						fetch_youtube_watchpage_raw(id, function(data) {
+							if (!data || !data.assets || !data.assets.js)
+								return done(null, false);
 
-					return splitted.join("");
+							var player_js_url = urljoin("https://www.youtube.com/", data.assets.js, true);
+							options.do_request({
+								url: player_js_url,
+								method: "GET",
+								headers: {
+									Referer: "https://www.youtube.com/"
+								},
+								onload: function(resp) {
+									if (resp.status !== 200) {
+										console_error(cache_key, resp);
+										return done(null, false);
+									}
+
+									return done(resp.responseText, 60*70);
+								}
+							});
+						});
+					});
 				};
 
 				var parse_player_response = function(player_response) {
@@ -11025,7 +11059,9 @@ var $$IMU_EXPORT$$;
 
 					obj.problems.possibly_different = false;
 
+					var videoid = null;
 					if (player_response.videoDetails && player_response.videoDetails.title && player_response.videoDetails.videoId) {
+						videoid = player_response.videoDetails.videoId;
 						obj.extra = {
 							page: "https://www.youtube.com/watch?v=" + player_response.videoDetails.videoId,
 							caption: player_response.videoDetails.title
@@ -11033,6 +11069,29 @@ var $$IMU_EXPORT$$;
 					}
 
 					if (maxobj) {
+						var final = function(maxobj) {
+							if (maxobj.url) {
+								obj.url = maxobj.url;
+								obj.video = true;
+								obj.is_private = true;
+								obj.headers = {
+									Referer: "https://www.youtube.com/"
+								};
+
+								return options.cb(obj);
+							} else {
+								// https://www.youtube.com/watch?v=P6dgaXh0K_E
+								if (maxobj.cipher || maxobj.signatureCipher) {
+									console_warn("Unsupported encrypted URL. Please let me know which video failed so that I can fix it");
+								} else {
+									console_error("Unknown streamingData object", maxobj);
+								}
+
+								return options.cb(obj);
+							}
+						};
+
+						var waiting = false;
 						// https://i.ytimg.com/vi/axRAL0BXNvw/maxresdefault.jpg
 						if (!maxobj.url && (maxobj.cipher || maxobj.signatureCipher)) {
 							var cipher = maxobj.cipher || maxobj.signatureCipher;
@@ -11042,35 +11101,30 @@ var $$IMU_EXPORT$$;
 							for (var query in queries) {
 								queries[query] = decodeURIComponent(queries[query]);
 
-								if (query === "s") {
+								if (false && query === "s") {
 									sig = "&sig=" + decode_signature(queries[query]);
 								}
 							}
 
-							if ("url" in queries && sig) {
-								maxobj.url = queries.url + sig;
-								console_warn("Attempting to use decrypted Youtube URL. If this fails, please let me konw!");
+							if ("url" in queries && queries.s && videoid) {
+								fetch_playerjs(player_response.videoDetails.videoId, function(playerjs) {
+									if (playerjs) {
+										var sigdec = get_sigdec_from_playerjs(playerjs);
+										if (sigdec) {
+											maxobj.url = queries.url + "&sig=" + sigdec(queries.s);
+											console_warn("Attempting to use decrypted Youtube URL. If this fails, please let me know!");
+										}
+									}
+
+									final(maxobj);
+								});
+
+								waiting = true;
 							}
 						}
 
-						if (maxobj.url) {
-							obj.url = maxobj.url;
-							obj.video = true;
-							obj.is_private = true;
-							obj.headers = {
-								Referer: "https://www.youtube.com/"
-							};
-
-							return options.cb(obj);
-						} else {
-							// https://www.youtube.com/watch?v=P6dgaXh0K_E
-							if (maxobj.cipher || maxobj.signatureCipher) {
-								console_warn("Unsupported encrypted URL. Please let me know which video failed so that I can fix it");
-							} else {
-								console_error("Unknown streamingData object", maxobj);
-							}
-
-							return options.cb(obj);
+						if (!waiting) {
+							final(maxobj);
 						}
 					} else {
 						console_error("Unable to find any formats", player_response);
@@ -11127,8 +11181,8 @@ var $$IMU_EXPORT$$;
 					});
 				};
 
-				var fetch_youtube_watchpage = function(id, cb) {
-					var cache_key = "youtube_watchpage:" + id;
+				var fetch_youtube_watchpage_raw = function(id, cb) {
+					var cache_key = "youtube_watchpage_raw:" + id;
 					api_cache.fetch(cache_key, cb, function(done) {
 						options.do_request({
 							method: "GET",
@@ -11138,26 +11192,43 @@ var $$IMU_EXPORT$$;
 									return;
 
 								if (resp.status !== 200) {
-									console_error(resp);
+									console_error(cache_key, resp);
 									return done(null, false);
 								}
 
 								var match = resp.responseText.match(/ytplayer\.config\s*=\s*({.*?});/);
 								if (!match) {
-									console_warn("Unable to find ytplayer.config for", resp);
+									console_warn(cache_key, "Unable to find ytplayer.config for", resp);
 									return done(null, false);
 								}
 
 								try {
 									var json = JSON_parse(match[1]);
-									var player_response = json.args.player_response;
-									var player_response_json = JSON_parse(player_response);
-									done(player_response_json, 5*60*60); // video URLs expire in 6 hours
+									return done(json, 5*60*60);
 								} catch (e) {
-									console_error(e, match[1]);
+									console_error(cache_key, e, match[1]);
 								}
+
+								return done(null, false);
 							}
 						});
+					});
+				};
+
+				var fetch_youtube_watchpage = function(id, cb) {
+					return fetch_youtube_watchpage_raw(id, function(json) {
+						if (!json)
+							return cb(null);
+
+						try {
+							var player_response = json.args.player_response;
+							var player_response_json = JSON_parse(player_response);
+							return cb(player_response_json);
+						} catch (e) {
+							console_error(e, json);
+						}
+
+						return cb(null);
 					});
 				};
 
