@@ -11128,10 +11128,8 @@ var $$IMU_EXPORT$$;
 
 					var parsed_funcobj = parse_funcobj(funcobj_match[1]);
 					if (parsed_funcobj) {
-						console_log(parsed_funcobj);
 						var parsed_ops = parse_sigdec_ops(funcobj, parsed_funcobj, maincode);
 						if (parsed_ops) {
-							console_log(parsed_ops);
 							return function(sig) {
 								return run_sigdec_ops(parsed_ops, sig);
 							};
