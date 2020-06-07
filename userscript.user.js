@@ -787,6 +787,7 @@ var $$IMU_EXPORT$$;
 		force_page: false,
 		allow_thirdparty: false,
 		allow_thirdparty_libs: true,
+		allow_thirdparty_code: false,
 		filter: bigimage_filter,
 
 		rule_specific: {
@@ -2008,6 +2009,7 @@ var $$IMU_EXPORT$$;
 		allow_thirdparty: false,
 		allow_apicalls: true,
 		allow_thirdparty_libs: is_userscript ? false : true,
+		allow_thirdparty_code: false,
 		allow_bruteforce: false,
 		//browser_cookies: true,
 		deviantart_prefer_size: false,
@@ -3988,6 +3990,19 @@ var $$IMU_EXPORT$$;
 			category: "rules",
 			example_websites: [
 				"Sites using testcookie (slowAES)"
+			],
+			onupdate: function() {
+				update_rule_setting();
+				real_api_cache.clear();
+			}
+		},
+		allow_thirdparty_code: {
+			name: "Rules executing 3rd-party code",
+			description: "Enables rules that execute arbitrary 3rd-party code stored on websites.",
+			warning: "This could lead to security risks, please be careful when using this option!",
+			category: "rules",
+			example_websites: [
+				"Encrypted YouTube videos"
 			],
 			onupdate: function() {
 				update_rule_setting();
@@ -11100,13 +11115,9 @@ var $$IMU_EXPORT$$;
 							var sig = "";
 							for (var query in queries) {
 								queries[query] = decodeURIComponent(queries[query]);
-
-								if (false && query === "s") {
-									sig = "&sig=" + decode_signature(queries[query]);
-								}
 							}
 
-							if ("url" in queries && queries.s && videoid) {
+							if (options.allow_thirdparty_code && "url" in queries && queries.s && videoid) {
 								fetch_playerjs(player_response.videoDetails.videoId, function(playerjs) {
 									if (playerjs) {
 										var sigdec = get_sigdec_from_playerjs(playerjs);
@@ -64459,16 +64470,19 @@ var $$IMU_EXPORT$$;
 	};
 
 	var get_bigimage_extoptions_first = function(options) {
-		if (!("allow_thirdparty" in options)) {
-			options.allow_thirdparty = (settings["allow_thirdparty"] + "") === "true";
-		 }
+		var our_settings = [
+			"allow_thirdparty",
+			"allow_apicalls",
+			"allow_thirdparty_libs",
+			"allow_thirdparty_code"
+		];
 
-		 if (!("allow_apicalls" in options)) {
-			 options.allow_apicalls = (settings["allow_apicalls"] + "") === "true";
-		 }
+		for (var i = 0; i < our_settings.length; i++) {
+			var our_setting = our_settings[i];
 
-		 if (!("allow_thirdparty_libs" in options)) {
-			options.allow_thirdparty_libs = (settings["allow_thirdparty_libs"] + "") === "true";
+			if (!(our_setting in options)) {
+				options[our_setting] = (settings[our_setting] + "") === "true";
+			}
 		}
 
 		return options;
