@@ -17258,7 +17258,20 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if (domain_nowww === "vimeo.com" && options.do_request && options.cb) {
+		if (host_domain_nowww === "vimeo.com" && options.element) {
+			var current = options.element;
+			do {
+				if (current.tagName === "A" && current.href.match(/^[a-z]+:\/\/(?:www\.)?vimeo\.com\/+([0-9]+)(?:[?#].*)?$/)) {
+					if (current.href !== src) {
+						return current.href;
+					} else {
+						break;
+					}
+				}
+			} while (current = current.parentElement);
+		}
+
+		if (domain_nowww === "vimeo.com") {
 			match = src.match(/^[a-z]+:\/\/[^/]+\/+([0-9]+)(?:[?#].*)?$/);
 			if (match) {
 				id = match[1];
@@ -17382,10 +17395,14 @@ var $$IMU_EXPORT$$;
 					});
 				};
 
-				query_vimeo_for_obj(id, options.cb);
-				return {
-					waiting: true
-				};
+				if (options.do_request && options.cb) {
+					query_vimeo_for_obj(id, options.cb);
+					return {
+						waiting: true
+					};
+				} else {
+					return page_nullobj;
+				}
 			}
 		}
 
