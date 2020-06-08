@@ -7588,7 +7588,7 @@ var $$IMU_EXPORT$$;
 			var cache_key = "tiktok_watermarkfree:" + vidid;
 			api_cache.fetch(cache_key, cb, function(done) {
 				do_request({
-					url: "https://api2.musical.ly/aweme/v1/playwm/?video_id=" + vidid,
+					url: "https://api2.musical.ly/aweme/v1/playwm/?video_id=" + vidid + "&improve_bitrate=1&ratio=1080p",
 					headers: {
 						Referer: ""
 					},
