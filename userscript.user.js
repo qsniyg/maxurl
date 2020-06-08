@@ -11174,6 +11174,10 @@ var $$IMU_EXPORT$$;
 					});
 				};
 
+				var get_format_cipher = function(format) {
+					return format.cipher || format.signatureCipher;
+				};
+
 				var parse_player_response = function(player_response) {
 					// TODO: support streamingData.adaptiveFormats
 					if (!player_response) {
@@ -11185,12 +11189,19 @@ var $$IMU_EXPORT$$;
 					var maxbitrate = 0;
 					var maxobj = null;
 
+					var available_formats = [];
+					var has_cipher = false;
+
 					// videos about to premiere don't contain the "formats" key: https://github.com/qsniyg/maxurl/issues/326
 					if (player_response.streamingData && player_response.streamingData.formats) {
 						var formats = player_response.streamingData.formats;
 
 						for (var j = 0; j < formats.length; j++) {
 							var our_format = formats[j];
+							available_formats.push(our_format);
+
+							if (!has_cipher && !our_format.url && get_format_cipher(our_format))
+								has_cipher = true;
 
 							if (our_format.bitrate > maxbitrate) {
 								maxbitrate = our_format.bitrate;
@@ -11210,62 +11221,68 @@ var $$IMU_EXPORT$$;
 						};
 					}
 
-					if (maxobj) {
-						var final = function(maxobj) {
-							if (maxobj.url) {
-								obj.url = maxobj.url;
-								obj.video = true;
-								obj.is_private = true;
-								obj.headers = {
-									Referer: "https://www.youtube.com/"
-								};
+					var final = function(maxobj) {
+						if (maxobj.url) {
+							obj.url = maxobj.url;
+							obj.video = true;
+							obj.is_private = true;
+							obj.headers = {
+								Referer: "https://www.youtube.com/"
+							};
 
-								return options.cb(obj);
+							return options.cb(obj);
+						} else {
+							// https://www.youtube.com/watch?v=P6dgaXh0K_E
+							if (get_format_cipher(maxobj)) {
+								console_warn("Unsupported encrypted URL. Please let me know which video failed so that I can fix it");
 							} else {
-								// https://www.youtube.com/watch?v=P6dgaXh0K_E
-								if (maxobj.cipher || maxobj.signatureCipher) {
-									console_warn("Unsupported encrypted URL. Please let me know which video failed so that I can fix it");
-								} else {
-									console_error("Unknown streamingData object", maxobj);
-								}
-
-								return options.cb(obj);
+								console_error("Unknown streamingData object", maxobj);
 							}
-						};
 
-						var waiting = false;
+							return options.cb(obj);
+						}
+					};
+
+					if (maxobj && has_cipher && available_formats.length > 0) {
+						if (!videoid) {
+							return final(maxobj);
+						}
+
 						// https://i.ytimg.com/vi/axRAL0BXNvw/maxresdefault.jpg
-						if (!maxobj.url && (maxobj.cipher || maxobj.signatureCipher)) {
-							var cipher = maxobj.cipher || maxobj.signatureCipher;
+						fetch_playerjs(videoid, function(playerjs) {
+							if (playerjs) {
+								var sigdec = get_sigdec_from_playerjs(playerjs);
+								if (sigdec) {
+									console_warn("Attempting to use decrypted Youtube URL. If this fails, please let me know!");
 
-							var queries = get_queries("?" + cipher);
-							for (var query in queries) {
-								queries[query] = decodeURIComponent(queries[query]);
-							}
+									for (var i = 0; i < available_formats.length; i++) {
+										var cipher = get_format_cipher(available_formats[i]);
 
-							if ("url" in queries && queries.s && videoid) {
-								fetch_playerjs(player_response.videoDetails.videoId, function(playerjs) {
-									if (playerjs) {
-										var sigdec = get_sigdec_from_playerjs(playerjs);
-										if (sigdec) {
-											maxobj.url = queries.url + "&sig=" + sigdec(queries.s);
-											console_warn("Attempting to use decrypted Youtube URL. If this fails, please let me know!");
+										// no cipher?
+										if (formats[i].url || !cipher)
+											continue;
+
+										var queries = get_queries("?" + cipher);
+										for (var query in queries) {
+											queries[query] = decodeURIComponent(queries[query]);
+										}
+
+										if ("url" in queries && queries.s) {
+											formats[i].url = queries.url + "&sig=" + sigdec(queries.s);
 										}
 									}
-
-									final(maxobj);
-								});
-
-								waiting = true;
+								}
 							}
-						}
 
-						if (!waiting) {
 							final(maxobj);
-						}
+						});
 					} else {
-						console_error("Unable to find any formats", player_response);
-						return options.cb(obj);
+						if (maxobj) {
+							final(maxobj)
+						} else {
+							console_error("Unable to find any formats", player_response);
+							return options.cb(obj);
+						}
 					}
 				};
 
@@ -35027,183 +35044,179 @@ var $$IMU_EXPORT$$;
 			}
 
 			var fixup_function_url = function(flashvars) {
-				var bn = 0;
-				var e = flashvars;
+				var global_fn_num = 0;
 
-				function dh(a) {
-					var b, c, d, e, f;
-					for (b = 0; b < a.length; b++) {
-						for (c = 0; c < 12; c++) {
-							f = 0;
+				var first_common_sub = function(url, base, mult, divisor) {
+					for (var i = 0; i < 12; i++) {
+						var num = base;
 
-							for (d = 0; d < a[b][1].length; d++) {
-								e = parseInt(a[b][1][d]) || 0;
-								f += c * e;
-							}
-
-							f = Math.floor(f / 7);
-							bn = parseInt(bn || 0) - f;
+						for (var url_ch_i = 0; url_ch_i < url.length; url_ch_i++) {
+							var current_num = parseInt(url[url_ch_i]) || 0;
+							num += i * current_num;
 						}
+
+						global_fn_num += mult * Math.floor(num / divisor);
+					}
+				};
+
+				function update_fn_num2(urls) {
+					for (var url_i = 0; url_i < urls.length; url_i++) {
+						var url = urls[url_i].url;
+
+						first_common_sub(url, 0, -1, 7);
 					}
 				}
 
-				function dg(a) {
-					var b, c, d, f, g, h, i;
-					for (b = 0; b < a.length; b++) {
-						// i = the number before the url
-						// a[b][1] = original url (after function/)
-						h = a[b][1].indexOf("/");
-						if (h > 0) {
-							i = parseInt(a[b][1].substring(0, h));
-							h = a[b][1].substring(h);
+				function update_fn_num1(urls) {
+					var c, d, f, g, i;
+
+					for (var url_i = 0; url_i < urls.length; url_i++) {
+						var urlobj = urls[url_i];
+						var url_key = urlobj.key;
+						var url = urlobj.url;
+
+						var slash_index = url.indexOf("/");
+						var fn_num, real_url;
+						if (slash_index > 0) {
+							fn_num = parseInt(url.substring(0, slash_index));
+							real_url = url.substring(slash_index);
 						} else {
-							i = 0;
-							h = a[b][1];
+							fn_num = 0;
+							real_url = url;
 						}
 
-						for (c = 0; c < 12; c++) {
-							g = i;
+						first_common_sub(url, fn_num, 1, 6);
 
-							for (d = 0; d < a[b][1].length; d++) {
-								f = parseInt(a[b][1][d]) || 0;
-								g += c * f;
-							}
+						if (flashvars[url_key] && flashvars[url_key].substring(0, 8) === "function") {
+							if (global_fn_num < 0) {
+								// unknown if this works or not, can't find a test case
 
-							g = Math.floor(g / 6);
-							bn = parseInt(bn || 0) + g;
-						}
-
-						if (e[a[b][0]] && e[a[b][0]].substring(0, 8) == "function") {
-							f = parseInt(bn);
-							if (f < 0) {
-								f = "" + -f;
+								f = "" + -global_fn_num;
 								for (c = 0; c < 4; c++) f += f;
-								h = h.substring(1);
-								h = h.split("/");
-								for (c = 0; c < h[5].length; c++) {
+
+								real_url = real_url.substring(1);
+								real_url = real_url.split("/");
+
+								for (c = 0; c < real_url[5].length; c++) {
 									g = c;
 
 									for (d = c; d < f.length; d++) {
 										g += parseInt(f[d]);
 									}
 
-									while (g >= h[5].length) {
-										g = g - h[5].length;
+									while (g >= real_url[5].length) {
+										g = g - real_url[5].length;
 									}
 
-									i = h[5][c];
-									h[5] = h[5].substring(0, c) + h[5][g] + h[5].substring(c + 1);
-									h[5] = h[5].substring(0, g) + (i + "") + h[5].substring(g + 1);
+									i = real_url[5][c];
+									real_url[5] = real_url[5].substring(0, c) + real_url[5][g] + real_url[5].substring(c + 1);
+									real_url[5] = real_url[5].substring(0, g) + (i + "") + real_url[5].substring(g + 1);
 								}
-								e[a[b][0]] = h.join("/");
+								flashvars[url_key] = real_url.join("/");
 							} else {
-								e[a[b][0]] = "function" + "/" + (f + "") +  (h + "");
+								flashvars[url_key] = "function" + "/" + global_fn_num + real_url;
 							}
 						}
 					}
 				}
 
-				var function_e = function(a, b, c) {
-					var e, g, h, i, j, k, l, m, n, d = "",
-						f = "";
-
-					for (e in a) {
-						if (e.indexOf(b) > 0 && a[e].length == parseInt(c)) {
-							d = a[e];
-							break;
+				var get_license_from_flashvars = function(flashvars) {
+					for (var key in flashvars) {
+						if (key.indexOf("code") > 0 && flashvars[key].length == 16) {
+							return flashvars[key];
 						}
 					}
 
-					if (d) {
-						f = "";
-						for (g = 1; g < d.length; g++) {
-							f += parseInt(d[g]) ? parseInt(d[g]) : 1;
-						}
-
-						j = parseInt(f.length / 2);
-						k = parseInt(f.substring(0, j + 1));
-						l = parseInt(f.substring(j));
-
-						g = l - k;
-						if (g < 0) {
-							g = -g;
-						}
-
-						f = g;
-
-						g = k - l;
-						if (g < 0) {
-							g = -g;
-						}
-
-						f += g;
-						f *= 2;
-						f = "" + f;
-
-						i = parseInt(c) / 2 + 2;
-						m = "";
-
-						for (g = 0; g < j + 1; g++) {
-							for (h = 1; h <= 4; h++) {
-								n = parseInt(d[g + h]) + parseInt(f[g]);
-
-								if (n >= i) {
-									n -= i;
-								}
-
-								m += n;
-							}
-						}
-
-						return m;
-					}
-
-					return d;
+					return "";
 				};
 
-				var fp = function(a) {
-					var b = "function/";
-					var c = "code";
-					var d = "16px";
-					var e = function_e;
+				var decrypt_license = function(license_code) {
+					if (!license_code)
+						return license_code;
 
-					for (var f in a) {
-						if (0 == a[f].indexOf(b)) {
-							var g = a[f].substring(b.length).split(b[b.length - 1]);
-							if (g[0] > 0) {
-								var h = g[6].substring(0, 2 * parseInt(d));
-								var i = "";
+					var license_num = "";
+					for (var license_i = 1; license_i < license_code.length; license_i++) {
+						var current_code_n = parseInt(license_code[license_i]);
 
-								if (e) {
-									i = e(a, c, d);
-								}
+						if (current_code_n) {
+							license_num += current_code_n;
+						} else {
+							license_num += 1;
+						}
+					}
 
-								if (i && h) {
-									for (var j = h, k = h.length - 1; k >= 0; k--) {
-										var l = k;
-										for (var m = k; m < i.length; m++) {
-											l += parseInt(i[m]);
+					// 7 = Math.floor(license_num.length / 2)
+					var first_half = parseInt(license_num.substring(0, 8));
+					var second_half = parseInt(license_num.substring(7));
+
+					var license_num1 = (Math.abs(second_half - first_half) + Math.abs(first_half - second_half)) * 2;
+					// turn into string
+					license_num1 = "" + license_num1;
+
+					var decrypted = "";
+
+					// 8 = Math.ceil(license_num.length / 2)
+					for (var i = 0; i < 8; i++) {
+						for (var j = 1; j <= 4; j++) {
+							var n = parseInt(license_code[i + j]) + parseInt(license_num1[i]);
+
+							if (n >= 10) {
+								n -= 10;
+							}
+
+							decrypted += n;
+						}
+					}
+
+					return decrypted;
+				};
+
+				var update_url = function(flashvars) {
+					var function_header = "function" + "/";
+
+					for (var key in flashvars) {
+						var value = flashvars[key];
+
+						if (value.indexOf(function_header) === 0) {
+							var splitted_url = value.substring(function_header.length).split("/");
+
+							// splitted_url[0] is the number after function/
+							if (splitted_url[0] > 0) {
+								var vidid = splitted_url[6].substring(0, 32);
+								var decrypted_license = decrypt_license(get_license_from_flashvars(flashvars));
+
+								if (decrypted_license && vidid) {
+									var old_vidid = vidid;
+
+									for (var vidid_ri = vidid.length - 1; vidid_ri >= 0; vidid_ri--) {
+										var current_key = vidid_ri;
+										for (var i = vidid_ri; i < decrypted_license.length; i++) {
+											current_key += parseInt(decrypted_license[i]);
 										}
 
-										for (; l >= h.length;) {
-											l -= h.length;
+										while (current_key >= vidid.length) {
+											current_key -= vidid.length;
 										}
 
-										var n = "";
-										for (var o = 0; o < h.length; o++) {
-											if (o == k) {
-												n += h[l];
-											} else if (o == l) {
-												n += h[k];
+										var new_vidid = "";
+
+										for (var vidid_i = 0; vidid_i < vidid.length; vidid_i++) {
+											if (vidid_i === vidid_ri) {
+												new_vidid += vidid[current_key];
+											} else if (vidid_i === current_key) {
+												new_vidid += vidid[vidid_ri];
 											} else {
-												n += h[o];
+												new_vidid += vidid[vidid_i];
 											}
 										}
 
-										h = n;
+										vidid = new_vidid;
 									}
 
-									g[6] = g[6].replace(j, h), g.splice(0, 1), a[f] = g.join(b[b.length - 1])
+									splitted_url[6] = splitted_url[6].replace(old_vidid, vidid);
+									splitted_url.splice(0, 1);
+
+									flashvars[key] = splitted_url.join("/");
 								}
 							}
 						}
@@ -35211,23 +35224,22 @@ var $$IMU_EXPORT$$;
 				};
 
 				var main = function() {
-					var a, b, c = [];
-					for (a in e) {
-						if (e[a].substring(0, 8) == "function") {
-							b = e[a].substring(8);
+					var urls = [];
+					var function_header = "function" + "/";
 
-							if (b[0] == "/") {
-								c.push([a, b.substring(1)]);
-							}
+					for (var key in flashvars) {
+						if (flashvars[key].substring(0, 9) === function_header) {
+							var url = flashvars[key].substring(function_header.length);
+							urls.push({key: key, url: url});
 						}
 					}
 
-					if (c.length === 0) {
-						return e;
+					if (urls.length === 0) {
+						return flashvars;
 					} else {
-						dg(c);
-						dh(c);
-						fp(e);
+						update_fn_num1(urls);
+						update_fn_num2(urls);
+						update_url(flashvars);
 						return main();
 					}
 				};
