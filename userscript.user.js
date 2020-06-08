@@ -11336,7 +11336,7 @@ var $$IMU_EXPORT$$;
 							var our_format = available_formats[i];
 
 							if (our_format.is_adaptive) {
-								adaptiveformat_to_dash(our_format, adaptionsets);
+								//adaptiveformat_to_dash(our_format, adaptionsets);
 							} else {
 								if (our_format.bitrate > maxbitrate) {
 									maxbitrate = our_format.bitrate;
