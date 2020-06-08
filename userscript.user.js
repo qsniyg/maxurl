@@ -7605,7 +7605,8 @@ var $$IMU_EXPORT$$;
 
 						// https://www.tiktok.com/@auliicravalho/video/6813323310521224454 - returns 302
 						// sometimes it can return 503 (service unavailable), but still return a video url (thanks to JoshuaCalvert on discord for reporting)
-						if (resp.status !== 200 && resp.status !== 302 && string_indexof(resp.finalUrl, "/video/") <= 0) {
+						//   it still doesn't work though, so let's not check for that?
+						if (resp.status !== 200 && resp.status !== 302 /*&& string_indexof(resp.finalUrl, "/video/") <= 0*/) {
 							console_error(resp);
 							return done(null, false);
 						}
