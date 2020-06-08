@@ -7604,7 +7604,8 @@ var $$IMU_EXPORT$$;
 							return;
 
 						// https://www.tiktok.com/@auliicravalho/video/6813323310521224454 - returns 302
-						if (resp.status !== 200 && resp.status !== 302) {
+						// sometimes it can return 503 (service unavailable), but still return a video url (thanks to JoshuaCalvert on discord for reporting)
+						if (resp.status !== 200 && resp.status !== 302 && string_indexof(resp.finalUrl, "/video/") <= 0) {
 							console_error(resp);
 							return done(null, false);
 						}
@@ -35126,7 +35127,10 @@ var $$IMU_EXPORT$$;
 			// https://statics.cdntrex.com/contents/videos_screenshots/1061000/1061072/preview.mp4.jpg
 			match = src.match(/\/videos_screenshots\/+[0-9]+\/+([0-9]+)\/+(?:[0-9]+x[0-9]+\/+|preview(?:_trailer)?\.)/);
 			if (!match) {
-				match = src.match(/\/get_file\/+[0-9a-f]\/+[0-9a-f]{30,}\/+[0-9a-f]\/+([0-9]+)\/+screenshots\/+/);
+				match = src.match(/\/get_file\/+[0-9a-f]+\/+[0-9a-f]{30,}\/+[0-9a-f]\/+([0-9]+)\/+screenshots\/+/);
+			}
+			if (!match) {
+				match = src.match(/\/get_file\/+[0-9a-f]+\/+[0-9a-f]{30,}\/+[0-9]+\/+[0-9]+\/+([0-9]+)_preview\./);
 			}
 			// https://pr1.zbporn.tv/contents/videos/600000/600573/600573_short_preview.mp4
 			if (!match) {
