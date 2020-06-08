@@ -23575,7 +23575,7 @@ var $$IMU_EXPORT$$;
 					query_tiktok(current.href, function(data) {
 						// some tiktok users' videos return 404 (e.g. geoblock)
 						// thanks to remlap on discord for sharing that videoData doesn't exist for some videos. pageProps gives serverCode: 404
-						if (!data || !data.props || !data.pageProps || !data.videoData) {
+						if (!data || !data.props || !data.props.pageProps || !data.props.pageProps.videoData) {
 							var video_query = current.querySelector("video");
 							if (video_query && video_query.src && /(?:muscdn|tiktokcdn)\.com\//.test(video_query.src)) {
 								var obj = {
