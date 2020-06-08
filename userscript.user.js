@@ -3999,7 +3999,9 @@ var $$IMU_EXPORT$$;
 		allow_thirdparty_code: {
 			name: "Rules executing 3rd-party code",
 			description: "Enables rules that execute arbitrary 3rd-party code stored on websites.",
-			warning: "This could lead to security risks, please be careful when using this option!",
+			warning: {
+				"true": "This could lead to security risks, please be careful when using this option!"
+			},
 			category: "rules",
 			example_websites: [
 				"Encrypted YouTube videos"
