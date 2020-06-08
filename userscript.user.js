@@ -23573,10 +23573,11 @@ var $$IMU_EXPORT$$;
 			while (current) {
 				if (current.tagName === "A" && /\/@[^/]+\/+video\/+[0-9]+\/*(?:[?#].*)?$/.test(current.href)) {
 					query_tiktok(current.href, function(data) {
-						// some tiktok users' videos return 404
-						if (!data) {
+						// some tiktok users' videos return 404 (e.g. geoblock)
+						// thanks to remlap on discord for sharing that videoData doesn't exist for some videos. pageProps gives serverCode: 404
+						if (!data || !data.props || !data.pageProps || !data.videoData) {
 							var video_query = current.querySelector("video");
-							if (video_query && video_query.src && /muscdn\.com\//.test(video_query.src)) {
+							if (video_query && video_query.src && /(?:muscdn|tiktokcdn)\.com\//.test(video_query.src)) {
 								var obj = {
 									url: video_query.src,
 									video: true
