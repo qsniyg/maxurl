@@ -4854,6 +4854,10 @@ var $$IMU_EXPORT$$;
 			.replace(/&amp;/g, "&");
 	}
 
+	function encode_entities(str) {
+		return str.replace(/&/g, "&amp;");
+	}
+
 	function get_queries(url) {
 		// TODO: handle things like: ?a=b&c=b#&d=e
 		var querystring = url.replace(/^[^#]*?\?/, "");
@@ -11178,11 +11182,78 @@ var $$IMU_EXPORT$$;
 					return format.cipher || format.signatureCipher;
 				};
 
+				var adaptiveformat_to_dash = function(format, adaptationsets) {
+					if (!format || !format.is_adaptive || !format.url || !format.mimeType)
+						return;
+
+					var mime_match = format.mimeType.match(/^((?:video|audio)\/[^ /;]+);\s*codecs="([^"]+)"$/);
+					if (!mime_match) {
+						console_error("Unable to parse mime type", format.mimeType);
+						return null;
+					}
+
+					var mime = mime_match[1];
+					var codecs = mime_match[2];
+
+					var rep_head = '<Representation id="' + format.itag + '" codecs="' + codecs + '" startWithSAP="1" bandwidth="' + (format.bitrate || format.averageBitrate) + '" yt:mediaLmt="' + format.lastModified + '" ';
+
+					if (format.audioSampleRate) {
+						rep_head += 'audioSamplingRate="' + format.audioSampleRate + '"';
+					} else if (format.width && format.height) {
+						rep_head += 'width="' + format.width + '" height="' + format.height + '"';
+					}
+
+					rep_head += ">";
+
+					if (format.audioChannels) {
+						rep_head += '<AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="' + format.audioChannels + '2" />';
+					}
+
+					rep_head += '<BaseURL yt:contentLength="' + format.contentLength + '">' + encode_entities(format.url) + "</BaseURL>";
+
+					if (format.indexRange && format.initRange) {
+						rep_head += '<SegmentBase indexRange="' + format.indexRange.start + "-" + format.indexRange.end + '" indexRangeExact="true">';
+						rep_head += '<Initialization range="' + format.initRange.start + "-" + format.initRange.end + '" />';
+						rep_head += "</SegmentBase>";
+					} else {
+						console_log(format);
+					}
+
+					rep_head += "</Representation>";
+
+					if (!(mime in adaptationsets)) {
+						adaptationsets[mime] = [];
+					}
+
+					adaptationsets[mime].push(rep_head);
+				};
+
+				var create_dash_from_adaptionsets = function(adaptationsets) {
+					var dash = '<?xml version="1.0" encoding="UTF-8"?>\n';
+					dash += '<MPD xmlns="urn:mpeg:DASH:schema:MPD:2011" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:yt="http://youtube.com/yt/2012/10/10" xsi:schemaLocation="urn:mpeg:DASH:schema:MPD:2011 DASH-MPD.xsd" minBufferTime="PT1.500S" profiles="urn:mpeg:dash:profile:isoff-on-demand:2011" type="static">\n';
+					dash += '<Period>';
+
+					for (var mime in adaptationsets) {
+						dash += '<AdaptationSet mimeType="' + mime + '" subsegmentAlignment="true">\n';
+						for (var i = 0; i < adaptationsets[mime].length; i++) {
+							dash += adaptationsets[mime][i] + "\n";
+						}
+						dash += "</AdaptationSet>\n";
+					}
+
+					dash += '</Period>';
+					dash += '</MPD>';
+
+					return dash;
+				};
+
 				var parse_player_response = function(player_response) {
 					// TODO: support streamingData.adaptiveFormats
 					if (!player_response) {
 						return options.cb(null);
 					}
+
+					console_log(player_response);
 
 					obj.url = src;
 
@@ -11192,16 +11263,38 @@ var $$IMU_EXPORT$$;
 					var available_formats = [];
 					var has_cipher = false;
 
+					var add_formats = function(formats, is_adaptive) {
+						for (var i = 0; i < formats.length; i++) {
+							var our_format = formats[i];
+
+							available_formats.push(our_format);
+
+							if (is_adaptive) {
+								our_format.is_adaptive = true;
+							}
+
+							if (!has_cipher && !our_format.url && get_format_cipher(our_format)) {
+								has_cipher = true;
+							}
+						}
+					};
+
+					if (player_response.streamingData) {
+						if (player_response.streamingData.formats) {
+							add_formats(player_response.streamingData.formats, false);
+						}
+
+						if (player_response.streamingData.adaptiveFormats) {
+							add_formats(player_response.streamingData.adaptiveFormats, true);
+						}
+					}
+
 					// videos about to premiere don't contain the "formats" key: https://github.com/qsniyg/maxurl/issues/326
 					if (player_response.streamingData && player_response.streamingData.formats) {
 						var formats = player_response.streamingData.formats;
 
 						for (var j = 0; j < formats.length; j++) {
 							var our_format = formats[j];
-							available_formats.push(our_format);
-
-							if (!has_cipher && !our_format.url && get_format_cipher(our_format))
-								has_cipher = true;
 
 							if (our_format.bitrate > maxbitrate) {
 								maxbitrate = our_format.bitrate;
@@ -11221,17 +11314,57 @@ var $$IMU_EXPORT$$;
 						};
 					}
 
-					var final = function(maxobj) {
-						if (maxobj.url) {
-							obj.url = maxobj.url;
-							obj.video = true;
-							obj.is_private = true;
-							obj.headers = {
-								Referer: "https://www.youtube.com/"
-							};
-
+					var final = function() {
+						if (available_formats.length === 0) {
+							console_error("Unable to find any formats", player_response);
 							return options.cb(obj);
-						} else {
+						}
+
+						var adaptionsets = {};
+						var has_adaptive = false;
+
+						var maxbitrate = 0;
+						var maxobj = null;
+
+						var baseobj = deepcopy(obj);
+						baseobj.is_private = true;
+						baseobj.headers = {
+							Referer: "https://www.youtube.com/"
+						};
+
+						for (var i = 0; i < available_formats.length; i++) {
+							var our_format = available_formats[i];
+
+							if (our_format.is_adaptive) {
+								adaptiveformat_to_dash(our_format, adaptionsets);
+							} else {
+								if (our_format.bitrate > maxbitrate) {
+									maxbitrate = our_format.bitrate;
+									maxobj = our_format;
+								}
+							}
+						}
+
+						var urls = [];
+
+						// FIXME: for some reason this doesn't work
+						// VM3784:15616 [899][StreamController] Video Element Error: MEDIA_ERR_SRC_NOT_SUPPORTED (CHUNK_DEMUXER_ERROR_APPEND_FAILED: Append: stream parsing failed. Data size=742 append_window_start=0 append_window_end=9.22337e+12)
+						if (false && Object.keys(adaptionsets).length > 0) {
+							var dash = create_dash_from_adaptionsets(adaptionsets);
+							urls.push({
+								url: "data:application/dash+xml," + encodeURIComponent(dash),
+								video: "dash"
+							});
+						}
+
+						if (maxobj.url) {
+							urls.push({
+								url: maxobj.url,
+								video: true
+							});
+						}
+
+						if (urls.length === 0) {
 							// https://www.youtube.com/watch?v=P6dgaXh0K_E
 							if (get_format_cipher(maxobj)) {
 								console_warn("Unsupported encrypted URL. Please let me know which video failed so that I can fix it");
@@ -11241,6 +11374,8 @@ var $$IMU_EXPORT$$;
 
 							return options.cb(obj);
 						}
+
+						return options.cb(fillobj_urls(urls, baseobj));
 					};
 
 					if (maxobj && has_cipher && available_formats.length > 0) {
@@ -11259,7 +11394,7 @@ var $$IMU_EXPORT$$;
 										var cipher = get_format_cipher(available_formats[i]);
 
 										// no cipher?
-										if (formats[i].url || !cipher)
+										if (available_formats[i].url || !cipher)
 											continue;
 
 										var queries = get_queries("?" + cipher);
@@ -11268,7 +11403,7 @@ var $$IMU_EXPORT$$;
 										}
 
 										if ("url" in queries && queries.s) {
-											formats[i].url = queries.url + "&sig=" + sigdec(queries.s);
+											available_formats[i].url = queries.url + "&sig=" + sigdec(queries.s);
 										}
 									}
 								}
@@ -68219,7 +68354,8 @@ var $$IMU_EXPORT$$;
 			responseType = undefined;
 		}
 
-		if (obj[0].url.match(/^data:/)) {
+		// this is for dash videos, but FIXME for normal videos
+		if (obj[0].url.match(/^data:/) && !obj[0].video) {
 			var img = document.createElement("img");
 			img.src = obj[0].url;
 			img.onload = function() {
