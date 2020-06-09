@@ -62653,6 +62653,16 @@ var $$IMU_EXPORT$$;
 			} while (current = current.parentElement);
 		}
 
+		if (domain_nosub === "alternativeto.net" && /^d[0-9]*\./.test(domain)) {
+			// https://d2.alternativeto.net/dist/s/gimp_469899_full.png?format=jpg&width=94&height=94&mode=crop
+			//   https://d2.alternativeto.net/dist/s/gimp_469899_full.png?format=png
+			// https://d2.alternativeto.net/dist/s/pconplanner_342379_full.jpg?format=jpg&width=94&height=94&mode=crop
+			//   https://d2.alternativeto.net/dist/s/pconplanner_342379_full.jpg?format=jpg
+			// https://d2.alternativeto.net/dist/icons/gimp_154706.png?width=64&height=64&mode=crop&upscale=false
+			//   https://d2.alternativeto.net/dist/icons/gimp_154706.png?format=png
+			return src.replace(/(\/dist\/+[^/]+\/+[^/?#]+\.)([^/.#?]+)\?.*$/, "$1$2?format=$2");
+		}
+
 
 
 
