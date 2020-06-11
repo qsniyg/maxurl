@@ -7401,8 +7401,9 @@ var $$IMU_EXPORT$$;
 					}
 
 					try {
-						var json = JSON_parse(resp.responseText).story;
-						return done(json, 60); // story can change, so 60 seconds? or less?
+						var json = JSON_parse(resp.responseText);
+						var story = json.story;
+						return done(story, 60); // story can change, so 60 seconds? or less?
 					} catch (e) {
 						console_error(e, resp);
 						return done(null, false);
@@ -7493,7 +7494,7 @@ var $$IMU_EXPORT$$;
 			}
 
 			if (info.pos === -1) {
-				info.pos = data.snaps.length;//data.snapList.length - 1;
+				info.pos = data.snaps.length - 1;//data.snapList.length - 1;
 			}
 
 			return cb(common_functions.snap_to_obj(data./*snapList*/snaps[info.pos]));
@@ -23319,6 +23320,8 @@ var $$IMU_EXPORT$$;
 			(domain_nosub === "tag-fox.com" && /^data[0-9]*\./.test(domain)) ||
 			// https://s5.gifyu.com/images/05---frack-you.md.gif
 			(domain_nosub === "gifyu.com" && string_indexof(src, "/images/") >= 0) ||
+			// https://iili.io/J81JIa.md.jpg
+			domain_nowww === "iili.io" ||
 			// http://image-bugs.com/images/2017/09/09/CelebsFlash.com_NP_Harpers_Bazaar_090817__3_.md.jpg
 			domain_nowww === "image-bugs.com") {
 			// http://imgmax.com/images/2017/03/20/0OQhE.th.jpg
@@ -64508,13 +64511,18 @@ var $$IMU_EXPORT$$;
 								return options.cb(null);
 							}
 
-							if (!("pos" in info)) {
+							if (!("pos" in info) || info.pos === -1) {
 								for (var i = 0; i < data.snaps.length; i++) {
 									if (data.snaps[i].media.mediaUrl === info.url) {
 										info.pos = i;
 										break;
 									}
 								}
+							}
+
+							// mirroring to get_obj_from_snap_info
+							if (info.pos === -1) {
+								info.pos = data.snaps.length - 1;
 							}
 
 							if (!("pos" in info)) {
