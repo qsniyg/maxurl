@@ -7413,6 +7413,17 @@ var $$IMU_EXPORT$$;
 		});
 	};
 
+	common_functions.snap_norm_obj = function(obj) {
+		// ids are not very human-readable, maybe add an option?
+		match = obj.url.match(/:\/\/[^/]+\/+[0-9a-f]{2}\/+([^/]{10,})\//);
+		if (match) {
+			// = causes issues with ffmpeg (thanks to remlap on discord for reporting), - can cause issues with command-line args
+			obj.filename = match[1].replace(/[-=]/g, "");
+		}
+
+		return obj;
+	};
+
 	common_functions.snap_to_obj = function(snap) {
 		var caption = null;
 
@@ -7422,13 +7433,17 @@ var $$IMU_EXPORT$$;
 			caption = caption.replace(/^\s*([\s\S]*)\s*$/, "$1");
 		}
 
-		return {
+		var obj = {
 			url: snap.media.mediaUrl,//snap.snapUrls.mediaUrl,
 			extra: {
 				caption: caption || null
 			},
 			need_blob: true
 		};
+
+		common_functions.snap_norm_obj(obj);
+
+		return obj;
 	};
 
 	common_functions.get_snapchat_info_from_el = function(el) {
@@ -60176,11 +60191,7 @@ var $$IMU_EXPORT$$;
 				url: src
 			};
 
-			// ids are not very human-readable, maybe add an option?
-			match = src.match(/:\/\/[^/]+\/+[0-9a-f]{2}\/+([^/]{10,})\//);
-			if (match) {
-				obj.filename = match[1];
-			}
+			common_functions.snap_norm_obj(obj);
 
 			// awful hack but whatever
 			if (host_domain_nosub === "snapchat.com")
