@@ -29,7 +29,7 @@
   "content_scripts": [
     {
       "all_frames": true,
-      "matches": ["*://*/*"],
+      "matches": ["<all_urls>"],
       "js": ["userscript.user.js"]
     }
   ],
