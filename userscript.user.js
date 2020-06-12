@@ -10203,7 +10203,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "imdb.com") {
-			match = src.match(/^[a-z]+:\/\/[^/]+\/+video\/+vi([0-9]+)(?:[?#].*)?$/);
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+video\/+(?:embed\/+)?vi([0-9]+)(?:[?#].*)?$/);
 			if (match) {
 				id = match[1];
 
