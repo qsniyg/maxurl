@@ -10202,6 +10202,150 @@ var $$IMU_EXPORT$$;
 							   "https://ia.media-imdb.com/images/$1/$1$2$3");
 		}
 
+		if (domain_nowww === "imdb.com") {
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+video\/+vi([0-9]+)(?:[?#].*)?$/);
+			if (match) {
+				id = match[1];
+
+				var query_keys_for_imdb_video = function(vidid, cb) {
+					api_query("imdb_keys:" + vidid, {
+						url: "https://www.imdb.com/video/vi" + vidid
+					}, cb, function(done, resp, cache_key) {
+						var match = resp.responseText.match(/var args = \[document\..+?, ({.*?"playbackData":.*?})\];/);
+						if (!match) {
+							console_error(cache_key, "Unable to find match for", resp);
+							return done(null, false);
+						}
+
+						var json = JSON_parse(match[1]);
+						var playbackdata_key = json.playbackDataKey[0];
+						if (json.playbackData[0]) {
+							var playback_data = JSON_parse(json.playbackData[0])[0];
+							api_cache.set("imdb_playbackdata:" + playbackdata_key, playback_data, 6*60*60);
+						}
+
+						var videoinfo_key = json.videoInfoKey[0];
+						var match1 = resp.responseText.match(/args\.push\(({.*?"VIDEO_INFO":{.*})\);/);
+						if (match1) {
+							try {
+								var second_json = JSON_parse(match1[1]);
+
+								if (videoinfo_key in second_json.VIDEO_INFO) {
+									var videoinfo = second_json.VIDEO_INFO[videoinfo_key][0];
+									api_cache.set("imdb_videoinfo:" + videoinfo_key, videoinfo, 6*60*60);
+								}
+
+								// TODO: cache keys in VIDEO_LIST
+							} catch (e) {
+								console_warn(cache_key, e, resp, match1[1]);
+							}
+						} else {
+							console_warn(cache_key, "Unable to find second json", resp);
+						}
+
+						var result = {
+							playbackdata: playbackdata_key,
+							videoinfo: videoinfo_key
+						};
+
+						done(result, 6*60*60);
+					});
+				};
+
+				var query_imdb_playbackdata = function(key, cb) {
+					api_query("imdb_playbackdata:" + key, {
+						url: "https://www.imdb.com/ve/data/VIDEO_PLAYBACK_DATA?key=" + key,
+						headers: {
+							Referer: "https://www.imdb.com/"
+						},
+						json: true
+					}, cb, function(done, json, cache_key) {
+						if (json[0].videoLegacyEncodings) {
+							return done(json[0], 6*60*60);
+						} else {
+							return done(null, false);
+						}
+					});
+				};
+
+				var query_imdb_videoinfo = function(key, cb) {
+					api_query("imdb_videoinfo:" + key, {
+						url: "https://www.imdb.com/ve/data/VIDEO_INFO?key=" + key,
+						headers: {
+							Referer: "https://www.imdb.com/"
+						},
+						json: true
+					}, cb, function(done, json, cache_key) {
+						if (json[0].videoTitle) {
+							return done(json[0], 6*60*60);
+						} else {
+							return done(null, false);
+						}
+					});
+				};
+
+				var page_nullobj = {
+					url: src,
+					is_pagelink: true
+				};
+
+				if (options.do_request && options.cb) {
+					query_keys_for_imdb_video(id, function(keys) {
+						if (!keys)
+							return option.cb(page_nullobj);
+
+						query_imdb_playbackdata(keys.playbackdata, function(playbackdata) {
+							if (!playbackdata) {
+								return option.cb(page_nullobj);
+							}
+
+							query_imdb_videoinfo(keys.videoinfo, function(videoinfo) {
+								if (!videoinfo) {
+									return option.cb(page_nullobj);
+								}
+
+								var baseobj = {
+									extra: {
+										caption: videoinfo.videoTitle
+									}
+								};
+
+								var urls = [];
+								// TODO: sort by size?
+
+								for (var i = 0; i < playbackdata.videoLegacyEncodings.length; i++) {
+									var our_obj = playbackdata.videoLegacyEncodings[i];
+
+									var our_url = {
+										url: our_obj.url
+									};
+
+									if (our_obj.mimeType === "video/mp4") {
+										our_url.video = true;
+									} else if (our_obj.mimeType === "application/x-mpegurl") {
+										our_url.video = "hls";
+									} else {
+										console_warn("Unsupported mime type", our_obj.mimeType);
+										continue;
+									}
+
+									urls.push(our_url);
+								}
+
+								return options.cb(fillobj_urls(urls, baseobj));
+							});
+						});
+					});
+
+					return {
+						waiting: true
+					};
+				} else {
+					return page_nullobj;
+				}
+			}
+		}
+
 		/*if (false && string_indexof(domain, "cdn-img.instyle.com") >= 0) {
 		  return src.replace(/(\/files\/styles\/)[^/]*(\/public)/, "$1original$2");
 		}
