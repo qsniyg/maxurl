@@ -1956,6 +1956,7 @@ var $$IMU_EXPORT$$;
 		mouseover_links: false,
 		// thanks to LoneFenris: https://github.com/qsniyg/maxurl/issues/25#issuecomment-482880122
 		mouseover_only_valid_links: true,
+		mouseover_allow_iframe_el: false,
 		mouseover_allow_canvas_el: false,
 		mouseover_allow_svg_el: false,
 		mouseover_enable_gallery: true,
@@ -3668,6 +3669,15 @@ var $$IMU_EXPORT$$;
 			category: "popup",
 			subcategory: "open_behavior"
 		},
+		mouseover_allow_iframe_el: {
+			name: "Popup for `<iframe>`",
+			description: "Allows `<iframe>` elements to be popped up as well. Storing images/videos in this way is rather uncommon, but it can allow embeds to be supported",
+			requires: {
+				mouseover_links: true
+			},
+			category: "popup",
+			subcategory: "open_behavior"
+		},
 		mouseover_allow_canvas_el: {
 			name: "Popup for `<canvas>`",
 			description: "Allows `<canvas>` elements to be popped up as well. This will likely cause popups with any kind of web-based games, so it's recommended to keep this disabled",
@@ -4563,7 +4573,18 @@ var $$IMU_EXPORT$$;
 					return done(null, false);
 				}
 
-				return process(done, resp, key);
+				try {
+					var out_resp = resp;
+
+					if (request.json) {
+						out_resp = JSON_parse(resp.responseText);
+					}
+
+					return process(done, out_resp, key);
+				} catch (e) {
+					console_error(key, e);
+					return done(null, false);
+				}
 			};
 
 			do_request(request);
@@ -62677,6 +62698,181 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/dist\/+[^/]+\/+[^/?#]+\.)([^/.#?]+)\?.*$/, "$1$2?format=$2");
 		}
 
+		if (domain === "img.vxdn.net") {
+			// https://img.vxdn.net/p-max/200/rise-of-the-black-bat-17275.jpg
+			//   https://img.vxdn.net/p-max/0/rise-of-the-black-bat-17275.jpg
+			// https://img.vxdn.net/c-max/100/rise-of-the-black-bat-17275.jpg
+			//   https://img.vxdn.net/c-max/0/rise-of-the-black-bat-17275.jpg
+			return src.replace(/(:\/\/[^/]+\/+[a-z]-max\/+)[0-9]+\/+/, "$10/");
+		}
+
+		if (domain === "content.adultwork.com") {
+			// https://content.adultwork.com/ci/t/3341223_2.jpg
+			//   https://content.adultwork.com/ci/i/3341223_2.jpg
+			//   https://content.adultwork.com/ci/f/3341223_2.jpg
+			return src.replace(/(:\/\/[^/]+\/+ci\/+)[ti]\/+/, "$1f/");
+		}
+
+		if (domain_nowww === "fembed.com") {
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+v\/+([a-z0-9]{5,})(?:[?#].*)?$/);
+			if (match) {
+				id = match[1];
+
+				var query_fembed_video = function(id, cb) {
+					api_query("fembed:" + id, {
+						method: "POST",
+						url: "https://feurl.com/api/source/" + id,
+						data: "r=https%3A%2F%2Fwww.fembed.com%2F&d=feurl.com",
+						headers: {
+							Accept: "*/*",
+							Origin: "https://feurl.com",
+							Referer: "https://feurl.com/v/" + id,
+							"x-requested-with": "XMLHttpRequest"
+						},
+						json: true
+					}, cb, function(done, json, cache_key) {
+						var maxobj = null;
+						var max = 0;
+
+						for (var i = 0; i < json.data.length; i++) {
+							var our_obj = json.data[i];
+							var our_size = parseInt(our_obj.label);
+
+							if (our_size > max) {
+								max = our_size;
+								maxobj = our_obj;
+							}
+						}
+
+						if (maxobj) {
+							done({
+								url: maxobj.file,
+								video: true,
+								is_private: true
+							}, 60*60);
+						} else {
+							done(null, false);
+						}
+					});
+				};
+
+				var page_nullobj = {
+					url: src,
+					is_pagelink: true
+				};
+
+				if (options.do_request && options.cb) {
+					query_fembed_video(id, function(obj) {
+						if (!obj)
+							return options.cb(page_nullobj);
+
+						return options.cb([obj, page_nullobj]);
+					});
+
+					return {
+						waiting: true
+					};
+				} else {
+					return page_nullobj;
+				}
+			}
+		}
+
+		if (domain_nowww === "tunestream.net") {
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+embed-([a-z0-9]{5,})\.html(?:[?#].*)?$/);
+			if (match) {
+				id = match[1];
+
+				var query_jwplayer = function(url, cb) {
+					api_query("jwplayer:" + url, {
+						url: url
+					}, cb, function(done, resp, cache_key) {
+						var match = resp.responseText.match(/jwplayer\(.*?\)\.setup\({[\s\S]*?sources:\s*(\[.*?\]),/);
+						if (!match) {
+							console_error(cache_key, "Unable to find match for", resp);
+							return done(null, false);
+						}
+
+						var json_text = match[1];
+						json_text = json_text.replace(/([[{,])([a-z]+):/g, "$1\"$2\":");
+						console_log(json_text);
+
+						var json = JSON_parse(json_text);
+
+						var urls = [];
+						for (var i = 0; i < json.length; i++) {
+							if (!json[i].file) {
+								console_warn("Unable to process", json[i]);
+								continue;
+							}
+
+							var our_obj = {
+								url: json[i].file,
+								headers: {
+									Origin: "https://" + domain_nosub,
+									Referer: url,
+									"Sec-Fetch-Dest": "empty",
+									"Sec-Fetch-Site": "same-site",
+									"Sec-Fetch-Mode": "cors",
+									"Accept": "*/*"
+								}
+							};
+
+							if (json[i].label) {
+								our_obj.size = parseInt(json[i].label) || 0;
+							}
+
+							if (/\.m3u8(?:[?#].*)?$/.test(json[i].file)) {
+								our_obj.video = "hls";
+							}
+
+							urls.push(our_obj);
+						}
+
+						urls.sort(function(a, b) {
+							if (a.size && b.size)
+								return a.size - b.size;
+
+							if (a.video === b.video)
+								return 0;
+
+							if (a.video === "hls")
+								return 1;
+							else if (b.video === "hls")
+								return -1;
+
+							return 0;
+						});
+
+						for (var i = 0; i < urls.length; i++) {
+							delete urls[i].size;
+						}
+
+						urls.push({
+							url: url,
+							is_pagelink: true
+						});
+
+						done(urls, 60*60);
+					});
+				};
+
+				var page_nullobj = {
+					url: src,
+					is_pagelink: true
+				};
+
+				if (options.do_request && options.cb) {
+					query_jwplayer(src, options.cb);
+					return {
+						waiting: true
+					};
+				} else {
+					return page_nullobj;
+				}
+			}
+		}
+
 
 
 
@@ -71830,6 +72026,7 @@ var $$IMU_EXPORT$$;
 				return el.currentSrc || el.src || el.poster;
 			}
 
+			// IMG or IFRAME
 			// currentSrc is used if another image is used in the srcset
 			return el.currentSrc || el.src;
 		}
@@ -72244,8 +72441,8 @@ var $$IMU_EXPORT$$;
 					}
 				}
 
-				if (el_tagname === "A") {
-					var src = el.href;
+				if (el_tagname === "A" || (settings.mouseover_allow_iframe_el && el_tagname === "IFRAME")) {
+					var src = el.href || el.src;
 					links[src] = {
 						count: 1,
 						src: src,
@@ -73926,8 +74123,10 @@ var $$IMU_EXPORT$$;
 			if (is_img_pic_vid(el))
 				return true;
 
-			if (settings.mouseover_links && el.tagName === "A")
-				return true;
+			if (settings.mouseover_links) {
+				if (el.tagName === "A")
+					return true;
+			}
 
 			return false;
 		}
@@ -74916,7 +75115,7 @@ var $$IMU_EXPORT$$;
 					}
 				}
 
-				console_log(deepcopy(actions));
+				//console_log(deepcopy(actions));
 				for (var i = 0; i < actions.length; i++) {
 					if (!has_mouse && actions[i].requires_mouse) {
 						actions.splice(i, 1);
