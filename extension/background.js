@@ -416,7 +416,7 @@ var onBeforeSendHeaders_listener = function(details) {
 
 var onBeforeSendHeaders_filter = {
 	urls: ['<all_urls>'],
-	types: ['xmlhttprequest', 'main_frame', 'sub_frame', 'image']
+	types: ['xmlhttprequest', 'main_frame', 'sub_frame', 'image', 'media']
 };
 
 try {
