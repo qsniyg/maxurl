@@ -10203,7 +10203,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "imdb.com") {
-			match = src.match(/^[a-z]+:\/\/[^/]+\/+video\/+(?:embed\/+)?vi([0-9]+)(?:[?#].*)?$/);
+			match = src.match(/\/video(?:player)?\/+(?:embed\/+)?vi([0-9]+)(?:[?#].*)?$/);
 			if (match) {
 				id = match[1];
 
@@ -63015,6 +63015,21 @@ var $$IMU_EXPORT$$;
 					return page_nullobj;
 				}
 			}
+		}
+
+		if (domain === "static.kritikustomeg.org") {
+			// https://static.kritikustomeg.org/pix/tn200x1000/5c4/pa_138649_exbcngzm.jpg
+			//   https://static.kritikustomeg.org/pix/orig/5c4/pa_138649_exbcngzm.jpg
+			return src.replace(/\/pix\/+tn[0-9]+x[0-9]+\/+/, "/pix/orig/");
+		}
+
+		if (amazon_container === "kinorium-images") {
+			// https://s3-eu-west-1.amazonaws.com/kinorium-images/web/blank.png
+			if (/\/web\/+blank\./.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
 		}
 
 
