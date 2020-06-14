@@ -237,6 +237,7 @@ alsscan.com
 altcine.com
 alternatehistory.com
 alternathistory.com
+alternativeto.net
 altervista.org
 alttube.fr
 amando.it
@@ -1290,6 +1291,7 @@ connectgalaxy.com
 connexionfrance.com
 consolefun.fr
 contactmusic.com
+content.adultwork.com
 content.atkingdom.com
 content.brazz-girls.com
 content.eroo.pl
@@ -1930,6 +1932,7 @@ feedme.id
 feelway.com
 fem-img.herokuapp.com
 femanes.ru
+fembed.com
 femdomtb.com
 femjoy.com
 feralinteractive.com
@@ -2663,6 +2666,7 @@ iiif.lib.utexas.edu
 iiif.library.ubc.ca
 iiif.library.utoronto.ca
 iiif.ucd.ie
+iili.io
 iimg.me
 ikea.com
 ikoreadaily.co.kr
@@ -3049,6 +3053,7 @@ imalbum.aufeminin.com
 imb.veooz.com
 imbbsfile.imbc.com
 imcdn.org
+imdb.com
 img-9gag-fun.9cache.com
 img-aws.ehowcdn.com
 img-aws.livestrongcdn.com
@@ -3384,6 +3389,7 @@ img.viyuedu.com
 img.vogue.co.kr
 img.vogue.com.tw
 img.vphotos.cn
+img.vxdn.net
 img.wallpapersafari.com
 img.wanduorou.com
 img.wcdn.co.il
@@ -3721,6 +3727,7 @@ kinogo.by
 kinohron.mskcentrum.sk
 kinokach.com
 kinolift.ru
+kinorium-images.s3.amazonaws.com
 kinoukr.com
 kisax.com
 kizsalsorunlar.com
@@ -5770,6 +5777,7 @@ static.kinoafisha.info
 static.kinokopilka.pro
 static.klix.ba
 static.koreastardaily.com
+static.kritikustomeg.org
 static.kstyle.com
 static.kvraudio.com
 static.langimg.com
@@ -6270,6 +6278,7 @@ tuchong.pstatp.com
 tuktukpatrol.com
 tumblr.com
 tunes.zone
+tunestream.net
 tupian.aladd.net
 turboimagehost.com
 turboimg.net
