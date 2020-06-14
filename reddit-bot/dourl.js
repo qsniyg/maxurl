@@ -228,7 +228,7 @@ function is_youtube_url(url) {
 	}
 
 	if (!match) {
-		match = url.match(/^[a-z]+:\/\/(?:www\.)?vimeo\.com\//);
+		match = url.match(/^[a-z]+:\/\/(?:www\.)?(?:vimeo|dailymotion)\.com\//);
 	}
 
 	return !!match;
@@ -302,6 +302,13 @@ function dourl_inner(big, url, post, options, cb) {
 	if (options.user_blacklist && post && inuserblacklist(post.author.name, options.user_blacklist)) {
 		console.log("User blacklisted: " + post.author.name);
 		return;
+	}
+
+	for (var i = 0; i < big.length; i++) {
+		if (big[i].is_pagelink) {
+			console.log("Page link: ", big[i]);
+			return;
+		}
 	}
 
 	console.log(url);
