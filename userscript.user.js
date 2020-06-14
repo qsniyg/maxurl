@@ -30891,6 +30891,20 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/[0-9]+_)[0-9]+(\.[^/.]*)$/, "$11000$2");
 		}
 
+		if (false && domain_nosub === "cdn13.com") {
+			if (/:\/\/[^/]+\/+(?:[0-9]{3}\/+){3}[^/?#]+\.mp4/.test(src)) {
+				return {
+					url: src,
+					headers: {
+						Origin: "https://xhamster.com",
+						Referer: "https://xhamster.com/",
+						"Sec-Fetch-Dest": "empty"
+					},
+					video: true
+				};
+			}
+		}
+
 		if (domain_nowww === "xhamster.com") {
 			match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:videos|embed)\/+(?:[^/?#.]*-)?([0-9]+)(?:[?#].*)?$/);
 			if (!match) {
@@ -66096,11 +66110,14 @@ var $$IMU_EXPORT$$;
 	};
 	bigimage_recursive.loop = bigimage_recursive_loop;
 
-	var send_redirect = function(obj, cb) {
+	var send_redirect = function(obj, cb, tabId) {
 		if (is_extension) {
 			extension_send_message({
 				type: "redirect",
-				data: obj
+				data: {
+					obj: obj,
+					tabId: tabId
+				}
 			}, function() {
 				cb();
 			});
@@ -69586,7 +69603,7 @@ var $$IMU_EXPORT$$;
 								chrome.tabs.update(message.data.tabId, {
 									url: newurl
 								});
-							});
+							}, message.data.tabId);
 						});
 					}
 				} catch (e) {

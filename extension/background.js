@@ -860,7 +860,8 @@ var extension_message_handler = (message, sender, respond) => {
 
 		requests[message.data].xhr.abort();
 	} else if (message.type === "redirect") {
-		redirects[sender.tab.id] = message.data;
+		var tabid = message.data.tabId || sender.tab.id;
+		redirects[tabid] = message.data.obj;
 	} else if (message.type === "newtab") {
 		var tab_options = {
 			url: message.data.imu.url,
