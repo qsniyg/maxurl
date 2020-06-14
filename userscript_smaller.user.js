@@ -4,7 +4,7 @@
 // ==UserScript==
 // @name              Image Max URL
 // @namespace         http://tampermonkey.net/
-// @version           0.13.9
+// @version           0.13.10
 // @description       Finds larger or original versions of images for 6800+ websites, including a powerful image popup feature
 // @description:ko    6800개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
 // @description:fr    Trouve des images plus grandes ou originales pour plus de 6800 sites
@@ -1959,6 +1959,7 @@ var $$IMU_EXPORT$$;
 		mouseover_links: false,
 		// thanks to LoneFenris: https://github.com/qsniyg/maxurl/issues/25#issuecomment-482880122
 		mouseover_only_valid_links: true,
+		mouseover_allow_iframe_el: false,
 		mouseover_allow_canvas_el: false,
 		mouseover_allow_svg_el: false,
 		mouseover_enable_gallery: true,
@@ -3671,6 +3672,15 @@ var $$IMU_EXPORT$$;
 			category: "popup",
 			subcategory: "open_behavior"
 		},
+		mouseover_allow_iframe_el: {
+			name: "Popup for `<iframe>`",
+			description: "Allows `<iframe>` elements to be popped up as well. Storing images/videos in this way is rather uncommon, but it can allow embeds to be supported",
+			requires: {
+				mouseover_links: true
+			},
+			category: "popup",
+			subcategory: "open_behavior"
+		},
 		mouseover_allow_canvas_el: {
 			name: "Popup for `<canvas>`",
 			description: "Allows `<canvas>` elements to be popped up as well. This will likely cause popups with any kind of web-based games, so it's recommended to keep this disabled",
@@ -4002,7 +4012,9 @@ var $$IMU_EXPORT$$;
 		allow_thirdparty_code: {
 			name: "Rules executing 3rd-party code",
 			description: "Enables rules that execute arbitrary 3rd-party code stored on websites.",
-			warning: "This could lead to security risks, please be careful when using this option!",
+			warning: {
+				"true": "This could lead to security risks, please be careful when using this option!"
+			},
 			category: "rules",
 			example_websites: [
 				"Encrypted YouTube videos"
@@ -4564,7 +4576,18 @@ var $$IMU_EXPORT$$;
 					return done(null, false);
 				}
 
-				return process(done, resp, key);
+				try {
+					var out_resp = resp;
+
+					if (request.json) {
+						out_resp = JSON_parse(resp.responseText);
+					}
+
+					return process(done, out_resp, key);
+				} catch (e) {
+					console_error(key, e);
+					return done(null, false);
+				}
 			};
 
 			do_request(request);
@@ -4855,6 +4878,10 @@ var $$IMU_EXPORT$$;
 			.replace(/&nbsp;/g, " ")
 			.replace(/&#([0-9]+);/g, function (full, num) { return String.fromCharCode(num); })
 			.replace(/&amp;/g, "&");
+	}
+
+	function encode_entities(str) {
+		return str.replace(/&/g, "&amp;");
 	}
 
 	function get_queries(url) {
@@ -7398,8 +7425,9 @@ var $$IMU_EXPORT$$;
 					}
 
 					try {
-						var json = JSON_parse(resp.responseText).story;
-						return done(json, 60); // story can change, so 60 seconds? or less?
+						var json = JSON_parse(resp.responseText);
+						var story = json.story;
+						return done(story, 60); // story can change, so 60 seconds? or less?
 					} catch (e) {
 						console_error(e, resp);
 						return done(null, false);
@@ -7407,6 +7435,17 @@ var $$IMU_EXPORT$$;
 				}
 			});
 		});
+	};
+
+	common_functions.snap_norm_obj = function(obj) {
+		// ids are not very human-readable, maybe add an option?
+		match = obj.url.match(/:\/\/[^/]+\/+[0-9a-f]{2}\/+([^/]{10,})\//);
+		if (match) {
+			// = causes issues with ffmpeg (thanks to remlap on discord for reporting), - can cause issues with command-line args
+			obj.filename = match[1].replace(/[-=]/g, "");
+		}
+
+		return obj;
 	};
 
 	common_functions.snap_to_obj = function(snap) {
@@ -7418,13 +7457,17 @@ var $$IMU_EXPORT$$;
 			caption = caption.replace(/^\s*([\s\S]*)\s*$/, "$1");
 		}
 
-		return {
+		var obj = {
 			url: snap.media.mediaUrl,//snap.snapUrls.mediaUrl,
 			extra: {
 				caption: caption || null
 			},
 			need_blob: true
 		};
+
+		common_functions.snap_norm_obj(obj);
+
+		return obj;
 	};
 
 	common_functions.get_snapchat_info_from_el = function(el) {
@@ -7490,7 +7533,7 @@ var $$IMU_EXPORT$$;
 			}
 
 			if (info.pos === -1) {
-				info.pos = data.snaps.length;//data.snapList.length - 1;
+				info.pos = data.snaps.length - 1;//data.snapList.length - 1;
 			}
 
 			return cb(common_functions.snap_to_obj(data./*snapList*/snaps[info.pos]));
@@ -7591,7 +7634,7 @@ var $$IMU_EXPORT$$;
 			var cache_key = "tiktok_watermarkfree:" + vidid;
 			api_cache.fetch(cache_key, cb, function(done) {
 				do_request({
-					url: "https://api2.musical.ly/aweme/v1/playwm/?video_id=" + vidid,
+					url: "https://api2.musical.ly/aweme/v1/playwm/?video_id=" + vidid + "&improve_bitrate=1&ratio=1080p",
 					headers: {
 						Referer: ""
 					},
@@ -7601,7 +7644,9 @@ var $$IMU_EXPORT$$;
 							return;
 
 						// https://www.tiktok.com/@auliicravalho/video/6813323310521224454 - returns 302
-						if (resp.status !== 200 && resp.status !== 302) {
+						// sometimes it can return 503 (service unavailable), but still return a video url (thanks to JoshuaCalvert on discord for reporting)
+						//   it still doesn't work though, so let's not check for that?
+						if (resp.status !== 200 && resp.status !== 302 /*&& string_indexof(resp.finalUrl, "/video/") <= 0*/) {
 							console_error(resp);
 							return done(null, false);
 						}
@@ -9133,6 +9178,148 @@ var $$IMU_EXPORT$$;
 							   "https://ia.media-imdb.com/images/$1/$1$2$3");
 		}
 
+		if (domain_nowww === "imdb.com") {
+			match = src.match(/\/video(?:player)?\/+(?:embed\/+)?vi([0-9]+)(?:[?#].*)?$/);
+			if (match) {
+				id = match[1];
+
+				var query_keys_for_imdb_video = function(vidid, cb) {
+					api_query("imdb_keys:" + vidid, {
+						url: "https://www.imdb.com/video/vi" + vidid
+					}, cb, function(done, resp, cache_key) {
+						var match = resp.responseText.match(/var args = \[document\..+?, ({.*?"playbackData":.*?})\];/);
+						if (!match) {
+							console_error(cache_key, "Unable to find match for", resp);
+							return done(null, false);
+						}
+
+						var json = JSON_parse(match[1]);
+						var playbackdata_key = json.playbackDataKey[0];
+						if (json.playbackData[0]) {
+							var playback_data = JSON_parse(json.playbackData[0])[0];
+							api_cache.set("imdb_playbackdata:" + playbackdata_key, playback_data, 6*60*60);
+						}
+
+						var videoinfo_key = json.videoInfoKey[0];
+						var match1 = resp.responseText.match(/args\.push\(({.*?"VIDEO_INFO":{.*})\);/);
+						if (match1) {
+							try {
+								var second_json = JSON_parse(match1[1]);
+
+								if (videoinfo_key in second_json.VIDEO_INFO) {
+									var videoinfo = second_json.VIDEO_INFO[videoinfo_key][0];
+									api_cache.set("imdb_videoinfo:" + videoinfo_key, videoinfo, 6*60*60);
+								}
+
+							} catch (e) {
+								console_warn(cache_key, e, resp, match1[1]);
+							}
+						} else {
+							console_warn(cache_key, "Unable to find second json", resp);
+						}
+
+						var result = {
+							playbackdata: playbackdata_key,
+							videoinfo: videoinfo_key
+						};
+
+						done(result, 6*60*60);
+					});
+				};
+
+				var query_imdb_playbackdata = function(key, cb) {
+					api_query("imdb_playbackdata:" + key, {
+						url: "https://www.imdb.com/ve/data/VIDEO_PLAYBACK_DATA?key=" + key,
+						headers: {
+							Referer: "https://www.imdb.com/"
+						},
+						json: true
+					}, cb, function(done, json, cache_key) {
+						if (json[0].videoLegacyEncodings) {
+							return done(json[0], 6*60*60);
+						} else {
+							return done(null, false);
+						}
+					});
+				};
+
+				var query_imdb_videoinfo = function(key, cb) {
+					api_query("imdb_videoinfo:" + key, {
+						url: "https://www.imdb.com/ve/data/VIDEO_INFO?key=" + key,
+						headers: {
+							Referer: "https://www.imdb.com/"
+						},
+						json: true
+					}, cb, function(done, json, cache_key) {
+						if (json[0].videoTitle) {
+							return done(json[0], 6*60*60);
+						} else {
+							return done(null, false);
+						}
+					});
+				};
+
+				var page_nullobj = {
+					url: src,
+					is_pagelink: true
+				};
+
+				if (options.do_request && options.cb) {
+					query_keys_for_imdb_video(id, function(keys) {
+						if (!keys)
+							return option.cb(page_nullobj);
+
+						query_imdb_playbackdata(keys.playbackdata, function(playbackdata) {
+							if (!playbackdata) {
+								return option.cb(page_nullobj);
+							}
+
+							query_imdb_videoinfo(keys.videoinfo, function(videoinfo) {
+								if (!videoinfo) {
+									return option.cb(page_nullobj);
+								}
+
+								var baseobj = {
+									extra: {
+										caption: videoinfo.videoTitle
+									}
+								};
+
+								var urls = [];
+
+								for (var i = 0; i < playbackdata.videoLegacyEncodings.length; i++) {
+									var our_obj = playbackdata.videoLegacyEncodings[i];
+
+									var our_url = {
+										url: our_obj.url
+									};
+
+									if (our_obj.mimeType === "video/mp4") {
+										our_url.video = true;
+									} else if (our_obj.mimeType === "application/x-mpegurl") {
+										our_url.video = "hls";
+									} else {
+										console_warn("Unsupported mime type", our_obj.mimeType);
+										continue;
+									}
+
+									urls.push(our_url);
+								}
+
+								return options.cb(fillobj_urls(urls, baseobj));
+							});
+						});
+					});
+
+					return {
+						waiting: true
+					};
+				} else {
+					return page_nullobj;
+				}
+			}
+		}
+
 
 
 		if (domain === "cdn-img.instyle.com" ||
@@ -9751,15 +9938,115 @@ var $$IMU_EXPORT$$;
 					});
 				};
 
+				var get_format_cipher = function(format) {
+					return format.cipher || format.signatureCipher;
+				};
+
+				var adaptiveformat_to_dash = function(format, adaptationsets) {
+					if (!format || !format.is_adaptive || !format.url || !format.mimeType)
+						return;
+
+					var mime_match = format.mimeType.match(/^((?:video|audio)\/[^ /;]+);\s*codecs="([^"]+)"$/);
+					if (!mime_match) {
+						console_error("Unable to parse mime type", format.mimeType);
+						return null;
+					}
+
+					var mime = mime_match[1];
+					var codecs = mime_match[2];
+
+					var rep_head = '<Representation id="' + format.itag + '" codecs="' + codecs + '" startWithSAP="1" bandwidth="' + (format.bitrate || format.averageBitrate) + '" yt:mediaLmt="' + format.lastModified + '" ';
+
+					if (format.audioSampleRate) {
+						rep_head += 'audioSamplingRate="' + format.audioSampleRate + '"';
+					} else if (format.width && format.height) {
+						rep_head += 'width="' + format.width + '" height="' + format.height + '"';
+					}
+
+					rep_head += ">";
+
+					if (format.audioChannels) {
+						rep_head += '<AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="' + format.audioChannels + '2" />';
+					}
+
+					rep_head += '<BaseURL yt:contentLength="' + format.contentLength + '">' + encode_entities(format.url) + "</BaseURL>";
+
+					if (format.indexRange && format.initRange) {
+						rep_head += '<SegmentBase indexRange="' + format.indexRange.start + "-" + format.indexRange.end + '" indexRangeExact="true">';
+						rep_head += '<Initialization range="' + format.initRange.start + "-" + format.initRange.end + '" />';
+						rep_head += "</SegmentBase>";
+					} else {
+						console_log(format);
+					}
+
+					rep_head += "</Representation>";
+
+					if (!(mime in adaptationsets)) {
+						adaptationsets[mime] = [];
+					}
+
+					adaptationsets[mime].push(rep_head);
+				};
+
+				var create_dash_from_adaptionsets = function(adaptationsets) {
+					var dash = '<?xml version="1.0" encoding="UTF-8"?>\n';
+					dash += '<MPD xmlns="urn:mpeg:DASH:schema:MPD:2011" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:yt="http://youtube.com/yt/2012/10/10" xsi:schemaLocation="urn:mpeg:DASH:schema:MPD:2011 DASH-MPD.xsd" minBufferTime="PT1.500S" profiles="urn:mpeg:dash:profile:isoff-on-demand:2011" type="static">\n';
+					dash += '<Period>';
+
+					for (var mime in adaptationsets) {
+						dash += '<AdaptationSet mimeType="' + mime + '" subsegmentAlignment="true">\n';
+						for (var i = 0; i < adaptationsets[mime].length; i++) {
+							dash += adaptationsets[mime][i] + "\n";
+						}
+						dash += "</AdaptationSet>\n";
+					}
+
+					dash += '</Period>';
+					dash += '</MPD>';
+
+					return dash;
+				};
+
 				var parse_player_response = function(player_response) {
 					if (!player_response) {
 						return options.cb(null);
 					}
 
+					console_log(player_response);
+
 					obj.url = src;
 
 					var maxbitrate = 0;
 					var maxobj = null;
+
+					var available_formats = [];
+					var has_cipher = false;
+
+					var add_formats = function(formats, is_adaptive) {
+						for (var i = 0; i < formats.length; i++) {
+							var our_format = formats[i];
+
+							available_formats.push(our_format);
+
+							if (is_adaptive) {
+								our_format.is_adaptive = true;
+							}
+
+							if (!has_cipher && !our_format.url && get_format_cipher(our_format)) {
+								has_cipher = true;
+							}
+						}
+					};
+
+					if (player_response.streamingData) {
+						if (player_response.streamingData.formats) {
+							add_formats(player_response.streamingData.formats, false);
+						}
+
+						if (player_response.streamingData.adaptiveFormats) {
+							add_formats(player_response.streamingData.adaptiveFormats, true);
+						}
+					}
 
 					if (player_response.streamingData && player_response.streamingData.formats) {
 						var formats = player_response.streamingData.formats;
@@ -9785,60 +10072,104 @@ var $$IMU_EXPORT$$;
 						};
 					}
 
-					if (maxobj) {
-						var final = function(maxobj) {
-							if (maxobj.url) {
-								obj.url = maxobj.url;
-								obj.video = true;
-								obj.is_private = true;
-								obj.headers = {
-									Referer: "https://www.youtube.com/"
-								};
+					var final = function() {
+						if (available_formats.length === 0) {
+							console_error("Unable to find any formats", player_response);
+							return options.cb(obj);
+						}
 
-								return options.cb(obj);
-							} else {
-								if (maxobj.cipher || maxobj.signatureCipher) {
-									console_warn("Unsupported encrypted URL. Please let me know which video failed so that I can fix it");
-								} else {
-									console_error("Unknown streamingData object", maxobj);
-								}
+						var adaptionsets = {};
+						var has_adaptive = false;
 
-								return options.cb(obj);
-							}
+						var maxbitrate = 0;
+						var maxobj = null;
+
+						var baseobj = deepcopy(obj);
+						baseobj.is_private = true;
+						baseobj.headers = {
+							Referer: "https://www.youtube.com/"
 						};
 
-						var waiting = false;
-						if (!maxobj.url && (maxobj.cipher || maxobj.signatureCipher)) {
-							var cipher = maxobj.cipher || maxobj.signatureCipher;
+						for (var i = 0; i < available_formats.length; i++) {
+							var our_format = available_formats[i];
 
-							var queries = get_queries("?" + cipher);
-							for (var query in queries) {
-								queries[query] = decodeURIComponent(queries[query]);
+							if (our_format.is_adaptive) {
+							} else {
+								if (our_format.bitrate > maxbitrate) {
+									maxbitrate = our_format.bitrate;
+									maxobj = our_format;
+								}
+							}
+						}
+
+						var urls = [];
+
+						if (false && Object.keys(adaptionsets).length > 0) {
+							var dash = create_dash_from_adaptionsets(adaptionsets);
+							urls.push({
+								url: "data:application/dash+xml," + encodeURIComponent(dash),
+								video: "dash"
+							});
+						}
+
+						if (maxobj.url) {
+							urls.push({
+								url: maxobj.url,
+								video: true
+							});
+						}
+
+						if (urls.length === 0) {
+							if (get_format_cipher(maxobj)) {
+								console_warn("Unsupported encrypted URL. Please let me know which video failed so that I can fix it");
+							} else {
+								console_error("Unknown streamingData object", maxobj);
 							}
 
-							if ("url" in queries && queries.s && videoid) {
-								fetch_playerjs(player_response.videoDetails.videoId, function(playerjs) {
-									if (playerjs) {
-										var sigdec = get_sigdec_from_playerjs(playerjs);
-										if (sigdec) {
-											maxobj.url = queries.url + "&sig=" + sigdec(queries.s);
-											console_warn("Attempting to use decrypted Youtube URL. If this fails, please let me know!");
+							return options.cb(obj);
+						}
+
+						return options.cb(fillobj_urls(urls, baseobj));
+					};
+
+					if (maxobj && has_cipher && available_formats.length > 0) {
+						if (!videoid) {
+							return final(maxobj);
+						}
+
+						fetch_playerjs(videoid, function(playerjs) {
+							if (playerjs) {
+								var sigdec = get_sigdec_from_playerjs(playerjs);
+								if (sigdec) {
+									console_warn("Attempting to use decrypted Youtube URL. If this fails, please let me know!");
+
+									for (var i = 0; i < available_formats.length; i++) {
+										var cipher = get_format_cipher(available_formats[i]);
+
+										if (available_formats[i].url || !cipher)
+											continue;
+
+										var queries = get_queries("?" + cipher);
+										for (var query in queries) {
+											queries[query] = decodeURIComponent(queries[query]);
+										}
+
+										if ("url" in queries && queries.s) {
+											available_formats[i].url = queries.url + "&sig=" + sigdec(queries.s);
 										}
 									}
-
-									final(maxobj);
-								});
-
-								waiting = true;
+								}
 							}
-						}
 
-						if (!waiting) {
 							final(maxobj);
-						}
+						});
 					} else {
-						console_error("Unable to find any formats", player_response);
-						return options.cb(obj);
+						if (maxobj) {
+							final(maxobj)
+						} else {
+							console_error("Unable to find any formats", player_response);
+							return options.cb(obj);
+						}
 					}
 				};
 
@@ -16570,6 +16901,7 @@ var $$IMU_EXPORT$$;
 			(domain_nowww === "xxximg.art" && string_indexof(src, "/images/") >= 0) ||
 			(domain_nosub === "tag-fox.com" && /^data[0-9]*\./.test(domain)) ||
 			(domain_nosub === "gifyu.com" && string_indexof(src, "/images/") >= 0) ||
+			domain_nowww === "iili.io" ||
 			domain_nowww === "image-bugs.com") {
 			return src.replace(/\.(?:th|md)(\.[^/.]*)$/, "$1");
 		}
@@ -16733,9 +17065,9 @@ var $$IMU_EXPORT$$;
 			while (current) {
 				if (current.tagName === "A" && /\/@[^/]+\/+video\/+[0-9]+\/*(?:[?#].*)?$/.test(current.href)) {
 					query_tiktok(current.href, function(data) {
-						if (!data) {
+						if (!data || !data.props || !data.props.pageProps || !data.props.pageProps.videoData) {
 							var video_query = current.querySelector("video");
-							if (video_query && video_query.src && /muscdn\.com\//.test(video_query.src)) {
+							if (video_query && video_query.src && /(?:muscdn|tiktokcdn)\.com\//.test(video_query.src)) {
 								var obj = {
 									url: video_query.src,
 									video: true
@@ -23691,7 +24023,10 @@ var $$IMU_EXPORT$$;
 			id = null;
 			match = src.match(/\/videos_screenshots\/+[0-9]+\/+([0-9]+)\/+(?:[0-9]+x[0-9]+\/+|preview(?:_trailer)?\.)/);
 			if (!match) {
-				match = src.match(/\/get_file\/+[0-9a-f]\/+[0-9a-f]{30,}\/+[0-9a-f]\/+([0-9]+)\/+screenshots\/+/);
+				match = src.match(/\/get_file\/+[0-9a-f]+\/+[0-9a-f]{30,}\/+[0-9a-f]\/+([0-9]+)\/+screenshots\/+/);
+			}
+			if (!match) {
+				match = src.match(/\/get_file\/+[0-9a-f]+\/+[0-9a-f]{30,}\/+[0-9]+\/+[0-9]+\/+([0-9]+)_preview\./);
 			}
 			if (!match) {
 				match = src.match(/\/contents\/+videos\/+[0-9]+\/+[0-9]+\/+([0-9]+)(?:_(?:short|small))?_preview\./);
@@ -23745,181 +24080,174 @@ var $$IMU_EXPORT$$;
 			}
 
 			var fixup_function_url = function(flashvars) {
-				var bn = 0;
-				var e = flashvars;
+				var global_fn_num = 0;
 
-				function dh(a) {
-					var b, c, d, e, f;
-					for (b = 0; b < a.length; b++) {
-						for (c = 0; c < 12; c++) {
-							f = 0;
+				var first_common_sub = function(url, base, mult, divisor) {
+					for (var i = 0; i < 12; i++) {
+						var num = base;
 
-							for (d = 0; d < a[b][1].length; d++) {
-								e = parseInt(a[b][1][d]) || 0;
-								f += c * e;
-							}
-
-							f = Math.floor(f / 7);
-							bn = parseInt(bn || 0) - f;
+						for (var url_ch_i = 0; url_ch_i < url.length; url_ch_i++) {
+							var current_num = parseInt(url[url_ch_i]) || 0;
+							num += i * current_num;
 						}
+
+						global_fn_num += mult * Math.floor(num / divisor);
+					}
+				};
+
+				function update_fn_num2(urls) {
+					for (var url_i = 0; url_i < urls.length; url_i++) {
+						var url = urls[url_i].url;
+
+						first_common_sub(url, 0, -1, 7);
 					}
 				}
 
-				function dg(a) {
-					var b, c, d, f, g, h, i;
-					for (b = 0; b < a.length; b++) {
-						h = a[b][1].indexOf("/");
-						if (h > 0) {
-							i = parseInt(a[b][1].substring(0, h));
-							h = a[b][1].substring(h);
+				function update_fn_num1(urls) {
+					var c, d, f, g, i;
+
+					for (var url_i = 0; url_i < urls.length; url_i++) {
+						var urlobj = urls[url_i];
+						var url_key = urlobj.key;
+						var url = urlobj.url;
+
+						var slash_index = url.indexOf("/");
+						var fn_num, real_url;
+						if (slash_index > 0) {
+							fn_num = parseInt(url.substring(0, slash_index));
+							real_url = url.substring(slash_index);
 						} else {
-							i = 0;
-							h = a[b][1];
+							fn_num = 0;
+							real_url = url;
 						}
 
-						for (c = 0; c < 12; c++) {
-							g = i;
+						first_common_sub(url, fn_num, 1, 6);
 
-							for (d = 0; d < a[b][1].length; d++) {
-								f = parseInt(a[b][1][d]) || 0;
-								g += c * f;
-							}
+						if (flashvars[url_key] && flashvars[url_key].substring(0, 8) === "function") {
+							if (global_fn_num < 0) {
 
-							g = Math.floor(g / 6);
-							bn = parseInt(bn || 0) + g;
-						}
-
-						if (e[a[b][0]] && e[a[b][0]].substring(0, 8) == "function") {
-							f = parseInt(bn);
-							if (f < 0) {
-								f = "" + -f;
+								f = "" + -global_fn_num;
 								for (c = 0; c < 4; c++) f += f;
-								h = h.substring(1);
-								h = h.split("/");
-								for (c = 0; c < h[5].length; c++) {
+
+								real_url = real_url.substring(1);
+								real_url = real_url.split("/");
+
+								for (c = 0; c < real_url[5].length; c++) {
 									g = c;
 
 									for (d = c; d < f.length; d++) {
 										g += parseInt(f[d]);
 									}
 
-									while (g >= h[5].length) {
-										g = g - h[5].length;
+									while (g >= real_url[5].length) {
+										g = g - real_url[5].length;
 									}
 
-									i = h[5][c];
-									h[5] = h[5].substring(0, c) + h[5][g] + h[5].substring(c + 1);
-									h[5] = h[5].substring(0, g) + (i + "") + h[5].substring(g + 1);
+									i = real_url[5][c];
+									real_url[5] = real_url[5].substring(0, c) + real_url[5][g] + real_url[5].substring(c + 1);
+									real_url[5] = real_url[5].substring(0, g) + (i + "") + real_url[5].substring(g + 1);
 								}
-								e[a[b][0]] = h.join("/");
+								flashvars[url_key] = real_url.join("/");
 							} else {
-								e[a[b][0]] = "function" + "/" + (f + "") +  (h + "");
+								flashvars[url_key] = "function" + "/" + global_fn_num + real_url;
 							}
 						}
 					}
 				}
 
-				var function_e = function(a, b, c) {
-					var e, g, h, i, j, k, l, m, n, d = "",
-						f = "";
-
-					for (e in a) {
-						if (e.indexOf(b) > 0 && a[e].length == parseInt(c)) {
-							d = a[e];
-							break;
+				var get_license_from_flashvars = function(flashvars) {
+					for (var key in flashvars) {
+						if (key.indexOf("code") > 0 && flashvars[key].length == 16) {
+							return flashvars[key];
 						}
 					}
 
-					if (d) {
-						f = "";
-						for (g = 1; g < d.length; g++) {
-							f += parseInt(d[g]) ? parseInt(d[g]) : 1;
-						}
-
-						j = parseInt(f.length / 2);
-						k = parseInt(f.substring(0, j + 1));
-						l = parseInt(f.substring(j));
-
-						g = l - k;
-						if (g < 0) {
-							g = -g;
-						}
-
-						f = g;
-
-						g = k - l;
-						if (g < 0) {
-							g = -g;
-						}
-
-						f += g;
-						f *= 2;
-						f = "" + f;
-
-						i = parseInt(c) / 2 + 2;
-						m = "";
-
-						for (g = 0; g < j + 1; g++) {
-							for (h = 1; h <= 4; h++) {
-								n = parseInt(d[g + h]) + parseInt(f[g]);
-
-								if (n >= i) {
-									n -= i;
-								}
-
-								m += n;
-							}
-						}
-
-						return m;
-					}
-
-					return d;
+					return "";
 				};
 
-				var fp = function(a) {
-					var b = "function/";
-					var c = "code";
-					var d = "16px";
-					var e = function_e;
+				var decrypt_license = function(license_code) {
+					if (!license_code)
+						return license_code;
 
-					for (var f in a) {
-						if (0 == a[f].indexOf(b)) {
-							var g = a[f].substring(b.length).split(b[b.length - 1]);
-							if (g[0] > 0) {
-								var h = g[6].substring(0, 2 * parseInt(d));
-								var i = "";
+					var license_num = "";
+					for (var license_i = 1; license_i < license_code.length; license_i++) {
+						var current_code_n = parseInt(license_code[license_i]);
 
-								if (e) {
-									i = e(a, c, d);
-								}
+						if (current_code_n) {
+							license_num += current_code_n;
+						} else {
+							license_num += 1;
+						}
+					}
 
-								if (i && h) {
-									for (var j = h, k = h.length - 1; k >= 0; k--) {
-										var l = k;
-										for (var m = k; m < i.length; m++) {
-											l += parseInt(i[m]);
+					var first_half = parseInt(license_num.substring(0, 8));
+					var second_half = parseInt(license_num.substring(7));
+
+					var license_num1 = (Math.abs(second_half - first_half) + Math.abs(first_half - second_half)) * 2;
+					license_num1 = "" + license_num1;
+
+					var decrypted = "";
+
+					for (var i = 0; i < 8; i++) {
+						for (var j = 1; j <= 4; j++) {
+							var n = parseInt(license_code[i + j]) + parseInt(license_num1[i]);
+
+							if (n >= 10) {
+								n -= 10;
+							}
+
+							decrypted += n;
+						}
+					}
+
+					return decrypted;
+				};
+
+				var update_url = function(flashvars) {
+					var function_header = "function" + "/";
+
+					for (var key in flashvars) {
+						var value = flashvars[key];
+
+						if (value.indexOf(function_header) === 0) {
+							var splitted_url = value.substring(function_header.length).split("/");
+
+							if (splitted_url[0] > 0) {
+								var vidid = splitted_url[6].substring(0, 32);
+								var decrypted_license = decrypt_license(get_license_from_flashvars(flashvars));
+
+								if (decrypted_license && vidid) {
+									var old_vidid = vidid;
+
+									for (var vidid_ri = vidid.length - 1; vidid_ri >= 0; vidid_ri--) {
+										var current_key = vidid_ri;
+										for (var i = vidid_ri; i < decrypted_license.length; i++) {
+											current_key += parseInt(decrypted_license[i]);
 										}
 
-										for (; l >= h.length;) {
-											l -= h.length;
+										while (current_key >= vidid.length) {
+											current_key -= vidid.length;
 										}
 
-										var n = "";
-										for (var o = 0; o < h.length; o++) {
-											if (o == k) {
-												n += h[l];
-											} else if (o == l) {
-												n += h[k];
+										var new_vidid = "";
+
+										for (var vidid_i = 0; vidid_i < vidid.length; vidid_i++) {
+											if (vidid_i === vidid_ri) {
+												new_vidid += vidid[current_key];
+											} else if (vidid_i === current_key) {
+												new_vidid += vidid[vidid_ri];
 											} else {
-												n += h[o];
+												new_vidid += vidid[vidid_i];
 											}
 										}
 
-										h = n;
+										vidid = new_vidid;
 									}
 
-									g[6] = g[6].replace(j, h), g.splice(0, 1), a[f] = g.join(b[b.length - 1])
+									splitted_url[6] = splitted_url[6].replace(old_vidid, vidid);
+									splitted_url.splice(0, 1);
+
+									flashvars[key] = splitted_url.join("/");
 								}
 							}
 						}
@@ -23927,23 +24255,22 @@ var $$IMU_EXPORT$$;
 				};
 
 				var main = function() {
-					var a, b, c = [];
-					for (a in e) {
-						if (e[a].substring(0, 8) == "function") {
-							b = e[a].substring(8);
+					var urls = [];
+					var function_header = "function" + "/";
 
-							if (b[0] == "/") {
-								c.push([a, b.substring(1)]);
-							}
+					for (var key in flashvars) {
+						if (flashvars[key].substring(0, 9) === function_header) {
+							var url = flashvars[key].substring(function_header.length);
+							urls.push({key: key, url: url});
 						}
 					}
 
-					if (c.length === 0) {
-						return e;
+					if (urls.length === 0) {
+						return flashvars;
 					} else {
-						dg(c);
-						dh(c);
-						fp(e);
+						update_fn_num1(urls);
+						update_fn_num2(urls);
+						update_url(flashvars);
 						return main();
 					}
 				};
@@ -39806,10 +40133,7 @@ var $$IMU_EXPORT$$;
 				url: src
 			};
 
-			match = src.match(/:\/\/[^/]+\/+[0-9a-f]{2}\/+([^/]{10,})\//);
-			if (match) {
-				obj.filename = match[1];
-			}
+			common_functions.snap_norm_obj(obj);
 
 			if (host_domain_nosub === "snapchat.com")
 				obj.need_blob = true;
@@ -41640,6 +41964,190 @@ var $$IMU_EXPORT$$;
 			} while (current = current.parentElement);
 		}
 
+		if (domain_nosub === "alternativeto.net" && /^d[0-9]*\./.test(domain)) {
+			return src.replace(/(\/dist\/+[^/]+\/+[^/?#]+\.)([^/.#?]+)\?.*$/, "$1$2?format=$2");
+		}
+
+		if (domain === "img.vxdn.net") {
+			return src.replace(/(:\/\/[^/]+\/+[a-z]-max\/+)[0-9]+\/+/, "$10/");
+		}
+
+		if (domain === "content.adultwork.com") {
+			return src.replace(/(:\/\/[^/]+\/+ci\/+)[ti]\/+/, "$1f/");
+		}
+
+		if (domain_nowww === "fembed.com") {
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+v\/+([a-z0-9]{5,})(?:[?#].*)?$/);
+			if (match) {
+				id = match[1];
+
+				var query_fembed_video = function(id, cb) {
+					api_query("fembed:" + id, {
+						method: "POST",
+						url: "https://feurl.com/api/source/" + id,
+						data: "r=https%3A%2F%2Fwww.fembed.com%2F&d=feurl.com",
+						headers: {
+							Accept: "*/*",
+							Origin: "https://feurl.com",
+							Referer: "https://feurl.com/v/" + id,
+							"x-requested-with": "XMLHttpRequest"
+						},
+						json: true
+					}, cb, function(done, json, cache_key) {
+						var maxobj = null;
+						var max = 0;
+
+						for (var i = 0; i < json.data.length; i++) {
+							var our_obj = json.data[i];
+							var our_size = parseInt(our_obj.label);
+
+							if (our_size > max) {
+								max = our_size;
+								maxobj = our_obj;
+							}
+						}
+
+						if (maxobj) {
+							done({
+								url: maxobj.file,
+								video: true,
+								is_private: true
+							}, 60*60);
+						} else {
+							done(null, false);
+						}
+					});
+				};
+
+				var page_nullobj = {
+					url: src,
+					is_pagelink: true
+				};
+
+				if (options.do_request && options.cb) {
+					query_fembed_video(id, function(obj) {
+						if (!obj)
+							return options.cb(page_nullobj);
+
+						return options.cb([obj, page_nullobj]);
+					});
+
+					return {
+						waiting: true
+					};
+				} else {
+					return page_nullobj;
+				}
+			}
+		}
+
+		if (domain_nowww === "tunestream.net") {
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+embed-([a-z0-9]{5,})\.html(?:[?#].*)?$/);
+			if (match) {
+				id = match[1];
+
+				var query_jwplayer = function(url, cb) {
+					api_query("jwplayer:" + url, {
+						url: url
+					}, cb, function(done, resp, cache_key) {
+						var match = resp.responseText.match(/jwplayer\(.*?\)\.setup\({[\s\S]*?sources:\s*(\[.*?\]),/);
+						if (!match) {
+							console_error(cache_key, "Unable to find match for", resp);
+							return done(null, false);
+						}
+
+						var json_text = match[1];
+						json_text = json_text.replace(/([[{,])([a-z]+):/g, "$1\"$2\":");
+						console_log(json_text);
+
+						var json = JSON_parse(json_text);
+
+						var urls = [];
+						for (var i = 0; i < json.length; i++) {
+							if (!json[i].file) {
+								console_warn("Unable to process", json[i]);
+								continue;
+							}
+
+							var our_obj = {
+								url: json[i].file,
+								headers: {
+									Origin: "https://" + domain_nosub,
+									Referer: url,
+									"Sec-Fetch-Dest": "empty",
+									"Sec-Fetch-Site": "same-site",
+									"Sec-Fetch-Mode": "cors",
+									"Accept": "*/*"
+								}
+							};
+
+							if (json[i].label) {
+								our_obj.size = parseInt(json[i].label) || 0;
+							}
+
+							if (/\.m3u8(?:[?#].*)?$/.test(json[i].file)) {
+								our_obj.video = "hls";
+							}
+
+							urls.push(our_obj);
+						}
+
+						urls.sort(function(a, b) {
+							if (a.size && b.size)
+								return a.size - b.size;
+
+							if (a.video === b.video)
+								return 0;
+
+							if (a.video === "hls")
+								return 1;
+							else if (b.video === "hls")
+								return -1;
+
+							return 0;
+						});
+
+						for (var i = 0; i < urls.length; i++) {
+							delete urls[i].size;
+						}
+
+						urls.push({
+							url: url,
+							is_pagelink: true
+						});
+
+						done(urls, 60*60);
+					});
+				};
+
+				var page_nullobj = {
+					url: src,
+					is_pagelink: true
+				};
+
+				if (options.do_request && options.cb) {
+					query_jwplayer(src, options.cb);
+					return {
+						waiting: true
+					};
+				} else {
+					return page_nullobj;
+				}
+			}
+		}
+
+		if (domain === "static.kritikustomeg.org") {
+			return src.replace(/\/pix\/+tn[0-9]+x[0-9]+\/+/, "/pix/orig/");
+		}
+
+		if (amazon_container === "kinorium-images") {
+			if (/\/web\/+blank\./.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
+		}
+
 
 
 
@@ -42848,13 +43356,18 @@ var $$IMU_EXPORT$$;
 								return options.cb(null);
 							}
 
-							if (!("pos" in info)) {
+							if (!("pos" in info) || info.pos === -1) {
 								for (var i = 0; i < data.snaps.length; i++) {
 									if (data.snaps[i].media.mediaUrl === info.url) {
 										info.pos = i;
 										break;
 									}
 								}
+							}
+
+							// mirroring to get_obj_from_snap_info
+							if (info.pos === -1) {
+								info.pos = data.snaps.length - 1;
 							}
 
 							if (!("pos" in info)) {
@@ -46712,7 +47225,8 @@ var $$IMU_EXPORT$$;
 			responseType = undefined;
 		}
 
-		if (obj[0].url.match(/^data:/)) {
+		// this is for dash videos, but FIXME for normal videos
+		if (obj[0].url.match(/^data:/) && !obj[0].video) {
 			var img = document.createElement("img");
 			img.src = obj[0].url;
 			img.onload = function() {
@@ -50150,6 +50664,7 @@ var $$IMU_EXPORT$$;
 				return el.currentSrc || el.src || el.poster;
 			}
 
+			// IMG or IFRAME
 			// currentSrc is used if another image is used in the srcset
 			return el.currentSrc || el.src;
 		}
@@ -50564,8 +51079,8 @@ var $$IMU_EXPORT$$;
 					}
 				}
 
-				if (el_tagname === "A") {
-					var src = el.href;
+				if (el_tagname === "A" || (settings.mouseover_allow_iframe_el && el_tagname === "IFRAME")) {
+					var src = el.href || el.src;
 					links[src] = {
 						count: 1,
 						src: src,
@@ -52246,8 +52761,10 @@ var $$IMU_EXPORT$$;
 			if (is_img_pic_vid(el))
 				return true;
 
-			if (settings.mouseover_links && el.tagName === "A")
-				return true;
+			if (settings.mouseover_links) {
+				if (el.tagName === "A")
+					return true;
+			}
 
 			return false;
 		}
@@ -53236,7 +53753,7 @@ var $$IMU_EXPORT$$;
 					}
 				}
 
-				console_log(deepcopy(actions));
+				//console_log(deepcopy(actions));
 				for (var i = 0; i < actions.length; i++) {
 					if (!has_mouse && actions[i].requires_mouse) {
 						actions.splice(i, 1);
