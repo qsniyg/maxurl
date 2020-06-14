@@ -30891,15 +30891,23 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/[0-9]+_)[0-9]+(\.[^/.]*)$/, "$11000$2");
 		}
 
-		if (domain_nosub === "xhcdn.com" && /^thumb-(?:lvlt|v[0-9]*)\./.test(domain)) {
-			// https://thumb-lvlt.xhcdn.com/a/XtFVJhj0T4uGdKxntAsGVw/002/499/117/240x135.2.jpg
-			match = src.match(/\/a\/+[^/.]{20,}\/+((?:[0-9]{3}\/+){3})/);
+		if (domain_nowww === "xhamster.com") {
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:videos|embed)\/+(?:[^/?#.]*-)?([0-9]+)(?:[?#].*)?$/);
+			if (!match) {
+				match = src.match(/^[a-z]+:\/\/[^/]+\/+xembed\.php\?(?:.*&)?video=([0-9]+)(?:&.*)?(?:#.*)?$/);
+			}
+
 			if (match) {
-				id = match[1].replace(/\/+/g, "").replace(/^0+/, "");
+				id = match[1];
 
 				obj = {
 					url: src,
 					extra: {page: "https://www.xhamster.com/videos/" + id}
+				};
+
+				var page_nullobj = {
+					url: src,
+					is_pagelink: true
 				};
 
 				var query_xhamster_video = function(id, cb) {
@@ -30996,6 +31004,8 @@ var $$IMU_EXPORT$$;
 
 					urls.push(videomodel.thumbURL);
 
+					urls.push(page_nullobj);
+
 					return fillobj_urls(urls, baseobj);
 				};
 
@@ -31013,7 +31023,17 @@ var $$IMU_EXPORT$$;
 					};
 				}
 
-				return obj;
+				return page_nullobj;
+			}
+		}
+
+		if (domain_nosub === "xhcdn.com" && /^thumb-(?:lvlt|v[0-9]*)\./.test(domain)) {
+			// https://thumb-lvlt.xhcdn.com/a/XtFVJhj0T4uGdKxntAsGVw/002/499/117/240x135.2.jpg
+			match = src.match(/\/a\/+[^/.]{20,}\/+((?:[0-9]{3}\/+){3})/);
+			if (match) {
+				id = match[1].replace(/\/+/g, "").replace(/^0+/, "");
+
+				return "https://www.xhamster.com/videos/" + id;
 			}
 		}
 
@@ -35286,6 +35306,8 @@ var $$IMU_EXPORT$$;
 			domain_nosub === "xtits.com" ||
 			domain_nosub === "wankoz.com" ||
 			domain_nosub === "fetishshrine.com" ||
+			domain_nowww === "x18.xxx" ||
+			domain_nosub === "mt-static.com" ||
 			// different system
 			// https://static2.tubepornclassic.com/contents/videos_screenshots/1051000/1051741/240x180/1.jpg
 			//domain_nosub === "tubepornclassic.com" ||
@@ -35309,7 +35331,7 @@ var $$IMU_EXPORT$$;
 			id = null;
 			// https://statics.cdntrex.com/contents/videos_screenshots/1047000/1047563/300x168/1.jpg?v=3
 			// https://statics.cdntrex.com/contents/videos_screenshots/1061000/1061072/preview.mp4.jpg
-			match = src.match(/\/videos_screenshots\/+[0-9]+\/+([0-9]+)\/+(?:[0-9]+x[0-9]+\/+|preview(?:_trailer)?\.)/);
+			match = src.match(/\/(?:videos_screenshots|vth)\/+[0-9]+\/+([0-9]+)\/+(?:[0-9]+x[0-9]+\/+|preview(?:_trailer)?\.)/);
 			if (!match) {
 				match = src.match(/\/get_file\/+[0-9a-f]+\/+[0-9a-f]{30,}\/+[0-9a-f]\/+([0-9]+)\/+screenshots\/+/);
 			}
@@ -35359,6 +35381,7 @@ var $$IMU_EXPORT$$;
 				videos_component = "tube/videos";
 			} else if (domain_nosub === "watchmygf.me" ||
 					   domain_nosub === "yeswegays.com" ||
+					   domain_nosub === "x18.xxx" ||
 					   domain_nosub === "thebestshemalevideos.com") {
 				videos_component = "embed";
 				addslash = "";
@@ -35367,6 +35390,8 @@ var $$IMU_EXPORT$$;
 				basedomain = "https://www.metacafe.com/";
 				videos_component = "watch";
 				cache_host = "metacafe.com";
+			} else if (domain_nosub === "mt-static.com") {
+				basedomain = "https://www.megatube.xxx/";
 			}
 
 			var fixup_function_url = function(flashvars) {
@@ -35601,6 +35626,12 @@ var $$IMU_EXPORT$$;
 									if (keytext_match) {
 										oursize = keytext_match[1];
 									}
+								}
+
+								// x18.xxx
+								if ((key + "_redirect") in data) {
+									console_warn("URL appears to redirect: " + oururl);
+									continue;
 								}
 
 								if (!oursize) {
@@ -53084,15 +53115,6 @@ var $$IMU_EXPORT$$;
 			return src.replace(/^([a-z]+:\/\/[^/]*\/+)(?:(?:width|height|crop)\/+[^/]*\/+){0,}([^/]*\.[^/]*\/+)/, "$1$2");
 		}
 
-		if (domain_nowww === "x18.xxx" ||
-			// https://p2.drtst.com/media/photos/tmb_new/2764183.jpg
-			//   https://p2.drtst.com/media/photos/2764183.jpg
-			domain_nosub === "drtst.com") {
-			// https://www.x18.xxx/media/photos/tmb/5763.jpg
-			//   https://www.x18.xxx/media/photos/5763.jpg
-			return src.replace(/\/media\/+photos\/+tmb(?:_new)?\/+/, "/media/photos/");
-		}
-
 		if (domain_nowww === "axtar.org") {
 			// https://axtar.org/thumb.php?t=y&src=aHR0cHM6Ly9lbmNyeXB0ZWQtdGJuMC5nc3RhdGljLmNvbS9pbWFnZXM/cT10Ym46QU5kOUdjVG9uemdiRVBGay03aXZQbHFFZ093bkR4NVYzWGhFSWZIV3diVEdqZ0tWRjJHXzRWcEN2QQ==&w=205&h=205&q=75
 			//   https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTonzgbEPFk-7ivPlqEgOwnDx5V3XhEIfHWwbTGjgKVF2G_4VpCvA
@@ -62572,11 +62594,27 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/FHGA\/+[^/]+\/+[^/]+[0-9]+)s(\.[^?#].*)?$/, "$1$2");
 		}
 
+		if (domain_nowww === "x18.xxx") {
+			// https://www.x18.xxx/media/photos/tmb/5763.jpg
+			//   https://www.x18.xxx/media/photos/5763.jpg
+			return src.replace(/\/media\/+photos\/+tmb(?:_new)?\/+/, "/media/photos/");
+		}
+
 		if ((domain_nosub === "iceppsn.com" ||
 			domain_nosub === "nvdst.com" ||
+			domain_nosub === "tbnpsn.com" ||
+			// https://p2.drtst.com/media/photos/tmb_new/2764183.jpg
+			//   https://p2.drtst.com/media/photos/2764183.jpg
+			domain_nosub === "drtst.com" ||
+			domain_nosub === "hdpsn21.com" ||
+			domain_nosub === "wnppsn.com" ||
 			// https://p3.vptpsn.com/media/videos/tmb/4117567/240_180/10.jpg
 			domain_nosub === "vptpsn.com") && options.do_request && options.cb) {
 			// https://p9.iceppsn.com/media/videos/tmb/3605717/220_135/11.jpg
+			newsrc = src.replace(/\/media\/+photos\/+tmb(?:_new)?\/+/, "/media/photos/");
+			if (newsrc !== src)
+				return newsrc;
+
 			var query_iceporn_vid = function(domain, aid, id, cb) {
 				api_query(domain + ":" + id, {
 					url: "https://www." + domain + "/player_config_json/?vid=" + id + "&aid=" + aid + "&domain_id=0&embed=0&ref=null&check_speed=0",
@@ -62649,6 +62687,18 @@ var $$IMU_EXPORT$$;
 			} else if (domain_nosub === "nvdst.com") {
 				iceporn_domain = "nuvid.com";
 				iceporn_aid = 2;
+			} else if (domain_nosub === "tbnpsn.com") {
+				iceporn_domain = "tubeon.com";
+				iceporn_aid = 591;
+			} else if (domain_nosub === "drtst.com") {
+				iceporn_domain = "drtuber.com";
+				iceporn_aid = 3029;
+			} else if (domain_nosub === "hdpsn21.com") {
+				iceporn_domain = "hd21.com";
+				iceporn_aid = 591;
+			} else if (domain_nosub === "wnppsn.com") {
+				iceporn_domain = "winporn.com";
+				iceporn_aid = 591;
 			}
 
 			id = get_iceporn_id_from_url(src);
@@ -63030,6 +63080,144 @@ var $$IMU_EXPORT$$;
 					url: src,
 					bad: "mask"
 				};
+		}
+
+		if (domain_nowww === "beeg.com") {
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+([0-9]+)(?:[?#].*)?$/);
+			if (match) {
+				id = match[1];
+
+				var get_params_from_beeg_url = function(url) {
+					var match = url.match(/[?&]t=([0-9]+(?:-[0-9]+)?)/);
+					if (!match) {
+						return null;
+					}
+
+					splitted = match[1].split("-");
+					params = {
+						start: splitted[0],
+						end: splitted[1]
+					};
+
+					return params;
+				};
+
+				var get_beeg_url = function(id, params) {
+					var beeg_url = "https://beeg.com/" + id;
+
+					if (params && params.start) {
+						beeg_url += "?t=" + params.start;
+						if (params.end) {
+							beeg_url += "-" + params.end;
+						}
+					}
+
+					return beeg_url;
+				};
+
+				var query_beeg_api = function(id, params, cb) {
+					var api_url = "https://beeg.com/api/v6/" + Date.now() + "/video/" + id + "?v=2";
+					var referer_url = get_beeg_url(id, params);
+					var cache_key = "beeg:" + id;
+
+					if (params && params.start) {
+						api_url += "&s=" + params.start;
+						cache_key += "-" + params.start;
+						if (params.end) {
+							api_url += "&e=" + params.end;
+							cache_key += "-" + params.end;
+						}
+					}
+
+					api_query(cache_key, {
+						url: api_url,
+						headers: {
+							Accept: "*/*",
+							Referer: referer_url,
+							"X-Requested-With": "XMLHttpRequest"
+						},
+						json: true
+					}, cb, function(done, resp, cache_key) {
+						cb(resp);
+					});
+				};
+
+				var page_nullobj = {
+					url: src,
+					is_pagelink: true
+				};
+
+				var get_obj_from_beeg = function(data) {
+					if (!data)
+						return page_nullobj;
+
+					var baseobj = {
+						extra: {
+							page: get_beeg_url(data.id, data),
+							caption: data.title
+						}
+					};
+
+					baseobj.headers = {
+						Referer: baseobj.extra.page,
+						"Sec-Fetch-Dest": "video"
+					};
+
+					var base_urls = [];
+					var data_markers = "data=pc_US__" + data.bundle_version + "_";
+					for (var key in data) {
+						if (!data[key] || string_indexof(data[key], "video.beeg.com") < 0)
+							continue;
+
+						var keymatch = key.match(/^([0-9]+)p$/);
+						if (keymatch) {
+							base_urls.push({
+								size: parseInt(keymatch[1]),
+								url: urljoin("https://beeg.com/", data[key].replace("{DATA_MARKERS}", data_markers), true)
+							});
+						}
+					}
+
+					base_urls.sort(function(a, b) {
+						return b.size - a.size;
+					});
+
+					var urls = [];
+					for (var i = 0; i < base_urls.length; i++) {
+						urls.push(base_urls[i].url);
+					}
+
+					urls.push(page_nullobj);
+
+					return fillobj_urls(urls, baseobj);
+				}
+
+				if (options.do_request && options.cb) {
+					query_beeg_api(id, null, function(data) {
+						if (!data) {
+							query_beeg_api(id, get_params_from_beeg_url(src), function(data) {
+								return options.cb(get_obj_from_beeg(data));
+							});
+						} else {
+							return options.cb(get_obj_from_beeg(data));
+						}
+					});
+
+					return {
+						waiting: true
+					};
+				} else {
+					return page_nullobj;
+				}
+			}
+		}
+
+		if (host_domain_nowww === "beeg.com" && domain === "img.beeg.com" && options.element) {
+			if (options.element.parentElement.tagName === "A") {
+				var href = options.element.parentElement.href;
+				if (/^[a-z]+:\/\/(?:www\.)?beeg\.com\/+[0-9]+/.test(href) && href !== src)
+					return href;
+			}
 		}
 
 
