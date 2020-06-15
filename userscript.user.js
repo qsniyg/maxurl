@@ -873,7 +873,8 @@ var $$IMU_EXPORT$$;
 		// https://www.bing.com/ overrides Blob
 		// https://www.dpreview.com/ overrides URL
 		native_blob, native_URL,
-		our_EventTarget, our_addEventListener, our_removeEventListener;
+		our_EventTarget, our_addEventListener, our_removeEventListener,
+		string_fromcharcode;
 
 	if (is_node) {
 		base64_decode = function(a) {
@@ -934,6 +935,23 @@ var $$IMU_EXPORT$$;
 		// FIXME: why is there no check? is this a bug, or was this intentional?
 		is_array = sanity_test(Array.isArray, function(x) { return x instanceof Array; });
 
+		// kickass.com
+		var get_compat_string_fromcharcode = function() {
+			var string_fromcharcode_orig = String.fromCharCode;
+
+			var fromcharcode_check = function(func) {
+				return func(50) === "2" && func(100) === "d";
+			};
+
+			var fromcharcode_correct = function(x) {
+				var unicode = "\\u" + ("0000" + x.toString(16)).slice(-4);
+				return JSON_parse('"' + unicode + '"');
+			};
+
+			string_fromcharcode = sanity_test(string_fromcharcode_orig, fromcharcode_correct, fromcharcode_check);
+		};
+		get_compat_string_fromcharcode();
+
 		var get_compat_base64 = function() {
 			if (is_node)
 				return;
@@ -942,7 +960,7 @@ var $$IMU_EXPORT$$;
 			// https://stackoverflow.com/a/15016605
 			// unminified version: https://stackoverflow.com/a/3058974
 			var base64_decode_correct = function(s) {
-				var e={},i,b=0,c,x,l=0,a,r='',w=String.fromCharCode,L=s.length;
+				var e={},i,b=0,c,x,l=0,a,r='',w=string_fromcharcode,L=s.length;
 				var A="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 				for(i=0;i<64;i++){e[A.charAt(i)]=i;}
 				for(x=0;x<L;x++){
@@ -4839,7 +4857,7 @@ var $$IMU_EXPORT$$;
 		var hex = str1.toString();
 		var str = '';
 		for (var n = 0; n < hex.length; n += 2) {
-			str += String.fromCharCode(parseInt(hex.substr(n, 2), 16));
+			str += string_fromcharcode(parseInt(hex.substr(n, 2), 16));
 		}
 		return str;
 	}
@@ -4873,7 +4891,7 @@ var $$IMU_EXPORT$$;
 	function decode_entities(str) {
 		return str
 			.replace(/&nbsp;/g, " ")
-			.replace(/&#([0-9]+);/g, function (full, num) { return String.fromCharCode(num); })
+			.replace(/&#([0-9]+);/g, function (full, num) { return string_fromcharcode(num); })
 			.replace(/&amp;/g, "&");
 	}
 
@@ -7840,7 +7858,7 @@ var $$IMU_EXPORT$$;
 			for (i = 0; i < src.length; i++) {
 				if (src[i] == 'x') {
 					var char = parseInt(src[i + 1] + src[i + 2], 16);
-					str += String.fromCharCode(char);
+					str += string_fromcharcode(char);
 					i += 2;
 				} else {
 					str += src[i];
@@ -7865,7 +7883,7 @@ var $$IMU_EXPORT$$;
 						/* lowercase */
 						code = (mod((code - 97 - diff),26) + 97);
 					}
-					str1 += String.fromCharCode(code);
+					str1 += string_fromcharcode(code);
 				}
 
 				var urlparts = str1;
@@ -14477,7 +14495,7 @@ var $$IMU_EXPORT$$;
 			// https://em.wattpad.com/08067e2680eba0d36693e085bc95b85c9c0d8f8b/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f776174747061642d6d656469612d736572766963652f53746f7279496d6167652f3062446c6b2d786e5565654d54673d3d2d32303633363333342e313436393133373236306332313733383233313938393638383435332e6a7067?s=fit&w=720&h=720
 			//   https://s3.amazonaws.com/wattpad-media-service/StoryImage/0bDlk-xnUeeMTg==-20636334.1469137260c21738231989688453.jpg
 			return src.replace(/.*\.wattpad\.com\/[a-f0-9]*\/([a-f0-9]*).*/, "$1").replace(/([0-9A-Fa-f]{2})/g, function() {
-				return String.fromCharCode(parseInt(arguments[1], 16));
+				return string_fromcharcode(parseInt(arguments[1], 16));
 			});
 		}
 
@@ -33999,8 +34017,8 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/pic_[0-9]+)_[a-z]+(\.[^/.]*)$/, "$1_big$2");
 		}
 
-		if ((host_domain_nowww === "xvideos.com" || host_domain_nowww === "xnxx.com") && options.element && options.do_request && options.cb) {
-			var our_host = host_domain_nosub;
+		if (domain_nowww === "xvideos.com" || domain_nowww === "xnxx.com") {
+			var our_host = domain_nosub;
 
 			var full_videourl = function(videourl) {
 				if (our_host === "xvideos.com") {
@@ -34057,6 +34075,8 @@ var $$IMU_EXPORT$$;
 					urls.push(table.VideoUrlLow);
 				}
 
+				urls.push(page_nullobj);
+
 				return fillobj_urls(urls, obj);
 			};
 
@@ -34083,18 +34103,18 @@ var $$IMU_EXPORT$$;
 
 							if (resp.status !== 200) {
 								console_error(cache_key, resp);
-								return done(null, false);
+								return done(page_nullobj, false);
 							}
 
 							var parsed_table = parse_xvideos_page(cache_key, resp);
 							if (!parsed_table) {
-								return done(null, false);
+								return done(page_nullobj, false);
 							}
 
 							var obj = objify_xvideos_table(parsed_table);
 							if (!obj) {
 								console_error(cache_key, "Unable to get URLs from", parsed_table, resp);
-								return done(null, false);
+								return done(page_nullobj, false);
 							}
 
 							return done(obj, 3*60*60);
@@ -34107,7 +34127,7 @@ var $$IMU_EXPORT$$;
 				var regex = null;
 
 				if (our_host === "xvideos.com") {
-					regex = /:\/\/[^/]+\/+video([0-9]+)\//;
+					regex = /:\/\/[^/]+\/+(?:video|embedframe\/+)([0-9]+)\/*(?:[?#].*)?$/;
 				} else if (our_host === "xnxx.com") {
 					regex = /:\/\/[^/]+\/+video-([^-/._]+)\//;
 				}
@@ -34120,12 +34140,59 @@ var $$IMU_EXPORT$$;
 					return null;
 
 				return match[1];
+			};
+
+			page_nullobj = {
+				url: src,
+				is_pagelink: true
+			};
+
+			id = get_videoid_from_url(src);
+			if (id) {
+				if (options.do_request && options.cb) {
+					query_xvideos_page(id, options.cb);
+
+					return {
+						waiting: true
+					};
+				} else {
+					return page_nullobj;
+				}
 			}
+		}
+
+		if ((host_domain_nowww === "xvideos.com" || host_domain_nowww === "xnxx.com") && options.element && options.do_request && options.cb) {
+			var our_host = host_domain_nosub;
+
+			var videoid_to_videourl = function(videoid) {
+				if (our_host === "xvideos.com") {
+					return "https://www.xvideos.com/video" + videoid + "/";
+				} else if (our_host === "xnxx.com") {
+					return "https://www.xnxx.com/video-" + videoid + "/";
+				}
+			};
+
+			var get_videoid_from_url = function(url) {
+				var regex = null;
+
+				if (our_host === "xvideos.com") {
+					regex = /:\/\/[^/]+\/+(?:video|embedframe\/+)([0-9]+)/;
+				} else if (our_host === "xnxx.com") {
+					regex = /:\/\/[^/]+\/+video-([^-/._]+)\//;
+				}
+
+				if (!regex)
+					return null;
+
+				var match = url.match(regex);
+				if (!match)
+					return null;
+
+				return match[1];
+			};
 
 			var get_xvideos_vidid_from_el = function(el) {
-				var current = el;
-
-				for (; current; current = current.parentElement) {
+				for (var current = el; current; current = current.parentElement) {
 					if (current.tagName === "A") {
 						var id = get_videoid_from_url(current.href);
 						if (id) {
@@ -34137,11 +34204,7 @@ var $$IMU_EXPORT$$;
 
 			var vidid = get_xvideos_vidid_from_el(options.element);
 			if (vidid) {
-				query_xvideos_page(vidid, options.cb);
-
-				return {
-					waiting: true
-				};
+				return videoid_to_videourl(vidid);
 			}
 		}
 
@@ -45158,6 +45221,9 @@ var $$IMU_EXPORT$$;
 		}
 
 		if ((domain_nosub === "adult-empire.com" ||
+			// https://pbs.gigapron.com/129/12901/394/pics/thumbs/p1.jpg
+			//   https://pbs.gigapron.com/129/12901/394/pics/p1.jpg
+			domain_nosub === "gigapron.com" ||
 			// http://pbs.cozyxxx.com/95/9598/1455/pics/thumbs/p2.jpg
 			//   http://pbs.cozyxxx.com/95/9598/1455/pics/p2.jpg
 			domain_nosub === "cozyxxx.com") &&
@@ -56763,6 +56829,12 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/galleries\/+[^/]*\/+[^/]*)_t(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
 		}
 
+		if (domain_nosub === "kickass.com") {
+			// http://delivery-f.kickass.com/kickasspays/fhgs/pics/content/9/18/01_t.jpg
+			//   http://delivery-f.kickass.com/kickasspays/fhgs/pics/content/9/18/01_b.jpg
+			return src.replace(/(\/fhgs\/+pics\/+content\/+[0-9]+\/+[0-9]+\/+[0-9]+)_t(\.[^/.]+)(?:[?#].*)?$/, "$1_b$2");
+		}
+
 		if (domain_nowww === "xnudehack.com") {
 			// http://xnudehack.com/imgwp/t_selena_gomez_mouth.jpg
 			//   http://xnudehack.com/imgcache/selena_gomez_mouth.jpg
@@ -63732,6 +63804,11 @@ var $$IMU_EXPORT$$;
 			// https://thumborcdn.acast.com/d8tlFFORdMw5lXAJgMLoGb-5Ypo=/3000x3000/https://mediacdn.acast.com/assets/8f9c2622-921e-4f71-bcad-043c26db5c97/cover-image-k8tyecor-gpww.jpg
 			//   https://mediacdn.acast.com/assets/8f9c2622-921e-4f71-bcad-043c26db5c97/cover-image-k8tyecor-gpww.jpg
 			domain === "thumborcdn.acast.com" ||
+			// https://canvas-bridge.tubitv.com/Av2W6OlULP6V1WQLGUWPqP6xQ4Y=/400x574/smart/img.adrise.tv/645476a8-f140-414a-85ee-b5f1883fbfb2.jpg
+			//   http://img.adrise.tv/645476a8-f140-414a-85ee-b5f1883fbfb2.jpg
+			// https://canvas-bridge02.tubitv.com/3aK622OtdubAPkGLG10S_b_W8Uc=/0x0:3000x1111/1920x676/smart/img.adrise.tv/93ce5dfe-ac5f-404a-9d90-d4ad99ece321.jpg
+			//   http://img.adrise.tv/93ce5dfe-ac5f-404a-9d90-d4ad99ece321.jpg
+			(domain_nosub === "tubitv.com" && /^canvas-bridge[0-9]*\./.test(domain)) ||
 			src.match(/:\/\/[^/]*\/thumbor\/[^/]*=\//) ||
 			// https://www.orlandosentinel.com/resizer/tREpzmUU7LJX1cbkAN-unm7wL0Y=/fit-in/800x600/top/filters:fill(black)/arc-anglerfish-arc2-prod-tronc.s3.amazonaws.com/public/XC6HBG2I4VHTJGGCOYVPLBGVSM.jpg
 			//   http://arc-anglerfish-arc2-prod-tronc.s3.amazonaws.com/public/XC6HBG2I4VHTJGGCOYVPLBGVSM.jpg
@@ -69501,7 +69578,7 @@ var $$IMU_EXPORT$$;
 			return;
 		}
 
-		return String.fromCharCode(x).toLowerCase();
+		return string_fromcharcode(x).toLowerCase();
 	}
 
 	function str_to_keycode(x) {
