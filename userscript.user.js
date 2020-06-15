@@ -63306,6 +63306,64 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain_nosub === "cdn3x.com" && /^[tv][0-9]*\./.test(domain)) {
+			// https://t0.cdn3x.com/xd/320x180/7PZGW/000.jpg
+			// https://v0.cdn3x.com/xd/7PZGW/p_0003267577_240_25_10_1.mp4
+			// https://v0.cdn3x.com/t/0003171037/p_0003171037_240_25_10_1.mp4
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+(xd|t)\/+(?:[0-9]+(?:x[0-9]+)?\/+)?([A-Za-z0-9]+)\/+[^/]+(?:[?#].*)?$/);
+			if (match) {
+				var site = match[1];
+				id = match[2];
+
+				var sites = {
+					xd: "https://www.xxxdan.com/",
+					t: "https://www.jizzbunker.com/"
+				};
+
+				var query_3x = function(site, id, cb) {
+					var url = sites[site] + id + "/a.html";
+					api_query("cdn3x:" + url, {
+						url: url
+					}, cb, function(done, resp, cache_key) {
+						var match = resp.responseText.match(/sources\.push\({(?:.*,)?\s*src:\s*["']([^'"]+)["']/);
+						if (!match) {
+							console_error(cache_key, "Unable to find match for", resp);
+							return done(null, false);
+						}
+
+						var url = match[1];
+
+						var obj = {
+							url: url,
+							headers: {
+								Referer: resp.finalUrl
+							}
+						};
+
+						var our_regex = new RegExp("<a href=\"(https://[^/]+/+" + id + "/+[^/]+\\.html)\".*?title=\"([^\"]+)\"");
+						var match1 = resp.responseText.match(our_regex);
+
+						if (match1) {
+							obj.extra = {
+								page: match1[1],
+								caption: match1[2]
+							};
+						}
+
+						done(obj, 60*60);
+					});
+				};
+
+				if (options.do_request && options.cb) {
+					query_3x(site, id, options.cb);
+
+					return {
+						waiting: true
+					};
+				}
+			}
+		}
+
 
 
 
