@@ -7,17 +7,19 @@
 // @name:fr           Image Max URL
 // @name:es           Image Max URL
 // @name:ru           Image Max URL
+// @name:ja           Image Max URL
 // @name:zh           Image Max URL
 // @name:zh-CN        Image Max URL
 // @name:zh-TW        Image Max URL
 // @name:zh-HK        Image Max URL
 // @namespace         http://tampermonkey.net/
 // @version           0.13.10
-// @description       Finds larger or original versions of images for 6800+ websites, including a powerful image popup feature
+// @description       Finds larger or original versions of images for 6800+ websites, including a powerful media popup feature
 // @description:ko    6800개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
 // @description:fr    Trouve des images plus grandes ou originales pour plus de 6800 sites
 // @description:es    Encuentra imágenes más grandes y originales para más de 6800 sitios
 // @description:ru    Находит увеличенные или оригинальные версии изображений для более чем 6800 веб-сайтов
+// @description:ja    6800以上のウェブサイトで高画質や原本画像を見つけ出します
 // @description:zh    为6800多个网站查找更大或原始图像
 // @description:zh-CN 为6800多个网站查找更大或原始图像
 // @description:zh-TW 為6800多個網站查找更大或原始圖像
