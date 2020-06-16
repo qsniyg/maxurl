@@ -3,6 +3,14 @@
 
 // ==UserScript==
 // @name              Image Max URL
+// @name:ko           Image Max URL
+// @name:fr           Image Max URL
+// @name:es           Image Max URL
+// @name:ru           Image Max URL
+// @name:zh           Image Max URL
+// @name:zh-CN        Image Max URL
+// @name:zh-TW        Image Max URL
+// @name:zh-HK        Image Max URL
 // @namespace         http://tampermonkey.net/
 // @version           0.13.10
 // @description       Finds larger or original versions of images for 6800+ websites, including a powerful image popup feature
@@ -16145,6 +16153,8 @@ var $$IMU_EXPORT$$;
 			//   https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/2c/2c43030ea4900ebfcd3c42a4e665e9d926b488ef_full.jpg
 			// https://steamcdn-a.akamaihd.net/steam/apps/256659790/movie480.webm?t=1452876592
 			//   https://steamcdn-a.akamaihd.net/steam/apps/256659790/movie_max.webm?t=1452876592
+			// https://steamcdn-a.akamaihd.net/steam/apps/256787896/movie480_vp9.webm?t=1592147233
+			//   https://steamcdn-a.akamaihd.net/steam/apps/256787896/movie_max.webm?t=1592147233
 			(domain_nosub === "akamaihd.net" && domain.match(/steamcdn(?:-[a-z]*)?\.akamaihd\.net/))) {
 			// http://cdn.edgecast.steamstatic.com/steam/apps/405710/ss_8555059322d118b6665f1ddde6eaa987c54b2f31.600x338.jpg?t=1516755673
 			//   http://cdn.edgecast.steamstatic.com/steam/apps/405710/ss_8555059322d118b6665f1ddde6eaa987c54b2f31.jpg?t=1516755673
@@ -16152,7 +16162,7 @@ var $$IMU_EXPORT$$;
 			//   http://cdn.akamai.steamstatic.com/steam/apps/678950/ss_cd54f0430e919020ce554f6cfa8d2f3b0d062716.jpg
 			// http://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/c4/c44ec2d22a0c379d697c66b05e5ca8204827ce75.jpg
 			//   http://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/c4/c44ec2d22a0c379d697c66b05e5ca8204827ce75_full.jpg
-			newsrc = src.replace(/(\/steam\/+apps\/+[0-9]+\/+movie)[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1_max$2");
+			newsrc = src.replace(/(\/steam\/+apps\/+[0-9]+\/+movie)[0-9]+(?:_vp9)?(\.[^/.]+)(?:[?#].*)?$/, "$1_max$2");
 			if (newsrc !== src)
 				return newsrc;
 
@@ -61469,9 +61479,19 @@ var $$IMU_EXPORT$$;
 			//   https://m.gjcdn.net/game-header/999999999/479495-euam8zeu-v4.jpg
 			// https://m.gjcdn.net/game-thumbnail/200/451063-crop464_491_1512_1080-cxiru8mh-v4.png
 			//   https://m.gjcdn.net/game-thumbnail/999999999/451063-cxiru8mh-v4.png
-			return src
+			// https://m.gjcdn.net/game-screenshot/300/2262138-wj9ajney-v4.jpg
+			//   https://m.gjcdn.net/game-screenshot/999999999/2262138-wj9ajney-v4.jpg
+			// https://m.gjcdn.net/fireside-post-image/700/2979640-6cv5kbpp-v4.jpg
+			//   https://m.gjcdn.net/fireside-post-image/999999999/2979640-6cv5kbpp-v4.jpg
+			// https://m.gjcdn.net/content/1100/2979625-nqf5g48e-v4.jpg
+			//   https://m.gjcdn.net/content/999999999/2979625-nqf5g48e-v4.jpg
+			newsrc = src
 				.replace(/\/screenshot-thumbnail\/+[0-9]+x[0-9]+\/+/, "/screenshot-thumbnail/999999999x999999999/")
-				.replace(/\/(game-(?:header|thumbnail))\/+[0-9]+\/+([0-9]+-)(?:crop[0-9]+(?:_[0-9]+){3}-)?/, "/$1/999999999/$2");
+				.replace(/\/(game-(?:header|thumbnail|screenshot)|fireside-post-image|content)\/+[0-9]+\/+([0-9]+-)(?:crop[0-9]+(?:_[0-9]+){3}-)?/, "/$1/999999999/$2");
+			return {
+				url: newsrc,
+				head_wrong_contenttype: true
+			};
 		}
 
 		if (domain_nowww === "crosti.ru") {
