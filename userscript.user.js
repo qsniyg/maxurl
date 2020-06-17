@@ -5529,6 +5529,18 @@ var $$IMU_EXPORT$$;
 		return cookies_array.join("; ");
 	};
 
+	var get_resp_finalurl = function(resp) {
+		var parsed = parse_headers(resp.responseHeaders);
+		if (!parsed)
+			return resp.finalUrl;
+
+		var dict = headers_list_to_dict(parsed);
+		if (!dict || !dict.location)
+			return resp.finalUrl;
+
+		return dict.location;
+	};
+
 	var extmap = {
 		"jpeg": "jpg"
 	};
@@ -7659,9 +7671,9 @@ var $$IMU_EXPORT$$;
 			var cache_key = "tiktok_watermarkfree:" + vidid;
 			api_cache.fetch(cache_key, cb, function(done) {
 				do_request({
-					url: "https://api2.musical.ly/aweme/v1/playwm/?video_id=" + vidid + "&improve_bitrate=1&ratio=1080p",
+					url: "https://api2-16-h2.musical.ly/aweme/v1/play/?video_id=" + vidid + "&vr_type=0&is_play_url=1&source=PackSourceEnum_PUBLISH&media_type=4&improve_bitrate=1",
 					headers: {
-						Referer: ""
+						Referer: "https://www.tiktok.com/"
 					},
 					method: "HEAD",
 					onload: function(resp) {
@@ -7676,7 +7688,7 @@ var $$IMU_EXPORT$$;
 							return done(null, false);
 						}
 
-						return done(force_https(resp.finalUrl), 60*60);
+						return done(force_https(get_resp_finalurl(resp)), 60*60);
 					}
 				});
 			});
@@ -30935,7 +30947,9 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if (domain_nowww === "xhamster.com") {
+		if (domain_nowww === "xhamster.com" ||
+			domain_nowww === "xhamster.one" ||
+			domain_nowww === "xhamster.desi") {
 			match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:videos|embed)\/+(?:[^/?#.]*-)?([0-9]+)(?:[?#].*)?$/);
 			if (!match) {
 				match = src.match(/^[a-z]+:\/\/[^/]+\/+xembed\.php\?(?:.*&)?video=([0-9]+)(?:&.*)?(?:#.*)?$/);
@@ -30946,7 +30960,7 @@ var $$IMU_EXPORT$$;
 
 				obj = {
 					url: src,
-					extra: {page: "https://www.xhamster.com/videos/" + id}
+					extra: {page: "https://www." + domain_nowww + "/videos/" + id}
 				};
 
 				var page_nullobj = {
@@ -30958,7 +30972,7 @@ var $$IMU_EXPORT$$;
 					var cache_key = "xhamster:" + id;
 					api_cache.fetch(cache_key, cb, function(done) {
 						options.do_request({
-							url: "https://www.xhamster.com/videos/" + id,
+							url: "https://www." + domain_nowww + "/videos/" + id,
 							method: "GET",
 							onload: function(resp) {
 								if (resp.status !== 200) {
@@ -31031,7 +31045,7 @@ var $$IMU_EXPORT$$;
 							if (max) {
 								var our_obj = {
 									headers: {
-										Origin: "https://xhamster.com",
+										Origin: "https://" + domain_nowww,
 										Referer: obj.extra.page,
 										"Sec-Fetch-Dest": "empty"
 									},
@@ -34029,13 +34043,18 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/pic_[0-9]+)_[a-z]+(\.[^/.]*)$/, "$1_big$2");
 		}
 
-		if (domain_nowww === "xvideos.com" || domain_nowww === "xnxx.com") {
-			var our_host = domain_nosub;
+		if (domain_nowww === "xvideos.com" ||
+			domain_nowww === "xvideos.xxx" ||
+			domain_nowww === "xvideos.net" ||
+			domain_nowww === "xvideos.es" ||
+			domain_nowww === "xnxx.com" ||
+			domain_nowww === "xnxx.es") {
+			var our_host = domain_nosub.replace(/\..*/, "");
 
 			var full_videourl = function(videourl) {
-				if (our_host === "xvideos.com") {
+				if (our_host === "xvideos") {
 					return urljoin("https://www.xvideos.com/", videourl, true);
-				} else if (our_host === "xnxx.com") {
+				} else if (our_host === "xnxx") {
 					return urljoin("https://www.xnxx.com/", videourl, true);
 				}
 			};
@@ -34093,16 +34112,16 @@ var $$IMU_EXPORT$$;
 			};
 
 			var videoid_to_videourl = function(videoid) {
-				if (our_host === "xvideos.com") {
+				if (our_host === "xvideos") {
 					return "https://www.xvideos.com/video" + videoid + "/";
-				} else if (our_host === "xnxx.com") {
+				} else if (our_host === "xnxx") {
 					return "https://www.xnxx.com/video-" + videoid + "/";
 				}
 			};
 
 			var query_xvideos_page = function(videoid, cb) {
 				var cache_key = "xvideos:" + videoid;
-				if (our_host === "xnxx.com")
+				if (our_host === "xnxx")
 					cache_key = "xnxx:" + videoid;
 
 				api_cache.fetch(cache_key, cb, function(done) {
@@ -34138,9 +34157,9 @@ var $$IMU_EXPORT$$;
 			var get_videoid_from_url = function(url) {
 				var regex = null;
 
-				if (our_host === "xvideos.com") {
+				if (our_host === "xvideos") {
 					regex = /:\/\/[^/]+\/+(?:video|embedframe\/+)([0-9]+)\/*(?:[?#].*)?$/;
-				} else if (our_host === "xnxx.com") {
+				} else if (our_host === "xnxx") {
 					regex = /:\/\/[^/]+\/+video-([^-/._]+)\//;
 				}
 
@@ -34173,13 +34192,19 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if ((host_domain_nowww === "xvideos.com" || host_domain_nowww === "xnxx.com") && options.element && options.do_request && options.cb) {
-			var our_host = host_domain_nosub;
+		if ((host_domain_nowww === "xvideos.com" ||
+			 host_domain_nowww === "xvideos.xxx" ||
+			 host_domain_nowww === "xvideos.net" ||
+			 host_domain_nowww === "xvideos.es" ||
+			 host_domain_nowww === "xnxx.com" ||
+			 host_domain_nowww === "xnxx.es") &&
+			options.element && options.do_request && options.cb) {
+			var our_host = host_domain_nosub.replace(/\..*/, "");;
 
 			var videoid_to_videourl = function(videoid) {
-				if (our_host === "xvideos.com") {
+				if (our_host === "xvideos") {
 					return "https://www.xvideos.com/video" + videoid + "/";
-				} else if (our_host === "xnxx.com") {
+				} else if (our_host === "xnxx") {
 					return "https://www.xnxx.com/video-" + videoid + "/";
 				}
 			};
@@ -34187,9 +34212,9 @@ var $$IMU_EXPORT$$;
 			var get_videoid_from_url = function(url) {
 				var regex = null;
 
-				if (our_host === "xvideos.com") {
+				if (our_host === "xvideos") {
 					regex = /:\/\/[^/]+\/+(?:video|embedframe\/+)([0-9]+)/;
-				} else if (our_host === "xnxx.com") {
+				} else if (our_host === "xnxx") {
 					regex = /:\/\/[^/]+\/+video-([^-/._]+)\//;
 				}
 
@@ -38861,6 +38886,19 @@ var $$IMU_EXPORT$$;
 			// https://dev.magzter.com/dynimage/thumb_news.php?src=http://www.dailyexcelsior.com/wp-content/uploads/2017/07/ZULFKAR-30.jpg&h=1787&w=4749&a=t&c=b
 			//   https://dev.magzter.com/dynimage/thumb_news.php?src=http://www.dailyexcelsior.com/wp-content/uploads/2017/07/ZULFKAR-30.jpg&h=1787&w=4749&a=t&c=b
 			return decodeURIComponent(src.replace(/^[a-z]+:\/\/[^/]*\/dynimage\/thumb_news\.php.*?[?&]src=([^&]*).*$/, "$1"));
+		}
+
+		if (domain === "content.haycdn.com" ||
+			// https://images.hayneedle.com/mgen/dynimage.ms?img=inuse:TTLC652.jpg&w=540&h=648&zoom=1.4&posx=-40
+			//   https://images.hayneedle.com/mgen/inuse:TTLC652.jpg
+			domain === "images.hayneedle.com") {
+			// https://content.haycdn.com/mgen/dynimage.ms?img=inuse:TTLC652.jpg&w=540&h=648&zoom=1.4&posx=-40
+			//   https://content.haycdn.com/mgen/inuse:TTLC652.jpg
+			// https://content.haycdn.com/mgen/master:TTLC652.jpg?is=600,600,0xffffff
+			//   https://content.haycdn.com/mgen/master:TTLC652.jpg
+			return src
+				.replace(/\/dynimage\.ms\?(?:.*&)?img=([^&]+).*?$/, "/$1")
+				.replace(/\?is=.*/, "");
 		}
 
 		if (domain === "img.bulawayo24.com") {
