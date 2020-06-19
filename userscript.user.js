@@ -6443,7 +6443,8 @@ var $$IMU_EXPORT$$;
 
 			var headers = {
 				//"User-Agent": "Instagram 10.26.0 (iPhone7,2; iOS 10_1_1; en_US; en-US; scale=2.00; gamut=normal; 750x1334) AppleWebKit/420+",
-				"User-Agent": "Instagram 10.26.0 Android (23/6.0.1; 640dpi; 1440x2560; samsung; SM-G930F; herolte; samsungexynos8890; en_US)",
+				//"User-Agent": "Instagram 10.26.0 Android (23/6.0.1; 640dpi; 1440x2560; samsung; SM-G930F; herolte; samsungexynos8890; en_US)",
+				"User-Agent": "Instagram 146.0.0.27.125 Android (23/6.0.1; 640dpi; 1440x2560; samsung; SM-G930F; herolte; samsungexynos8890; en_US)",
 				"X-IG-Capabilities": "36oD",
 				"Accept": "*/*",
 				"Accept-Language": "en-US,en;q=0.8"
@@ -7671,7 +7672,9 @@ var $$IMU_EXPORT$$;
 			var cache_key = "tiktok_watermarkfree:" + vidid;
 			api_cache.fetch(cache_key, cb, function(done) {
 				do_request({
-					url: "https://api2-16-h2.musical.ly/aweme/v1/play/?video_id=" + vidid + "&vr_type=0&is_play_url=1&source=PackSourceEnum_PUBLISH&media_type=4&improve_bitrate=1",
+					// &ratio=1080p actually lowers the resolution to 480x* (instead of 576x*):
+					// https://www.tiktok.com/@mariamenounos/video/6830547359403937030
+					url: "https://api2-16-h2.musical.ly/aweme/v1/play/?video_id=" + vidid + "&line=0&ratio=720p&media_type=4&vr_type=0&is_play_url=1&quality_type=1&is_support_h265=1&source=PackSourceEnum_AWEME_DETAIL&improve_bitrate=1",
 					headers: {
 						Referer: "https://www.tiktok.com/"
 					},
@@ -35846,6 +35849,97 @@ var $$IMU_EXPORT$$;
 			};
 		}
 
+		if (domain_nowww === "vjav.com") {
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+videos\/+([0-9]+)\/+/);
+			if (match) {
+				id = match[1];
+
+				page_nullobj = {
+					url: src,
+					is_pagelink: true
+				};
+
+				var query_vjav_api = function(vidid, url, signature, cb) {
+					api_query("vjav_api:" + vidid, {
+						url: "https://vjav.com/sn4diyux.php",
+						method: "POST",
+						headers: {
+							"Content-Type": "application/x-www-form-urlencoded",
+							"Origin": "https://vjav.com",
+							"Referer": url,
+							"Sec-Fetch-Dest": "iframe"
+						},
+						data: "param=" + encodeURIComponent(vidid + "," + signature)
+					}, cb, function(done, resp, cache_key) {
+						var obf_b64_decode = function(url) {
+							url = url.replace(/\u041c/g, 'M').replace(/\u0415/g, 'E').replace(/\u0410/g, 'A').replace(/~/g, '=');
+							return base64_decode(url);
+						};
+
+						var match = resp.responseText.match(/var [^\s=]+\s*='(\[[^']+aHR0[^']+\])';/);
+						if (!match) {
+							console_log(cache_key, "Unable to find match for", resp);
+							return done(null, false);
+						}
+
+						var json = JSON_parse(match[1]);
+
+						for (var key in json[0]) {
+							if (/^aHR0/.test(json[0][key])) {
+								json[0][key] = obf_b64_decode(json[0][key]);
+							}
+						}
+
+						return done(json, 60*60);
+					});
+				};
+
+				var query_vjav = function(vidid, cb) {
+					api_query("vjav:" + vidid, {
+						url: "https://vjav.com/videos/" + vidid + "/a/"
+					}, cb, function(done, resp, cache_key) {
+						var match = resp.responseText.match(/window\.jwsettings\s*=\s*{\s*pC3:\s*'([0-9]+\|[0-9]+,[0-9]+)'/);
+						if (!match) {
+							console_error(cache_key, "Unable to find signature for", resp);
+							return done(null, false);
+						}
+
+						var sig = match[1];
+						query_vjav_api(vidid, resp.finalUrl, sig, function(data) {
+							if (!data)
+								return done(null, false);
+
+							return done(data, 60*60);
+						});
+					});
+				};
+
+				var jwplayer_obj_to_imu = function(data) {
+					if (!data)
+						return page_nullobj;
+
+					var urls = [];
+
+					urls.push({url: data[0].video_url, video: true});
+					urls.push(page_nullobj);
+
+					return urls;
+				};
+
+				if (options.do_request && options.cb) {
+					query_vjav(id, function(data) {
+						options.cb(jwplayer_obj_to_imu(data));
+					});
+
+					return {
+						waiting: true
+					};
+				} else {
+					return page_nullobj;
+				}
+			}
+		}
+
 		if (domain_nowww === "zceleb.com" ||
 			// https://cdn.faponix.com/contents/albums/main/300x500/83000/83852/1313934.jpg
 			//   https://cdn.faponix.com/contents/albums/sources/83000/83852/1313934.jpg
@@ -36249,6 +36343,16 @@ var $$IMU_EXPORT$$;
 			// https://media.raccweb.com/__sized__/products/productimage-picture-jennette-mccurdy-signed-autograph-8x10-photo-sexy-sam-8977-thumbnail-1000x1000-100.jpg
 			//   https://media.raccweb.com/products/productimage-picture-jennette-mccurdy-signed-autograph-8x10-photo-sexy-sam-8977.jpg
 			return src.replace(/(:\/\/[^/]*\/)__sized__\/(.*)-thumbnail-[0-9]+x[0-9]+-[0-9]+(\.[^/.]*)$/, "$1$2$3");
+		}
+
+		// funkwhale
+		if (domain === "music.librepunk.club" ||
+			// https://audio.gafamfree.party/media/__sized__/albums/covers/2019/12/25/c863ff96-e7a1-474e-a1bf-a5774b8591cd-crop-c0-5__0-5-200x200-70.jpgd
+			//   https://audio.gafamfree.party/media/albums/covers/2019/12/25/c863ff96-e7a1-474e-a1bf-a5774b8591cd.jpg
+			domain === "audio.gafamfree.party") {
+			// https://music.librepunk.club/media/__sized__/albums/covers/2020/06/17/ba40139f6-b000-44da-b932-68192e154d4b-crop-c0-5__0-5-200x200-70.jpg
+			//   https://music.librepunk.club/media/albums/covers/2020/06/17/ba40139f6-b000-44da-b932-68192e154d4b.jpg
+			return src.replace(/(:\/\/[^/]*\/+media\/+)__sized__\/+(.*)-(?:thumbnail|crop-c[0-9]+-[0-9]+__[0-9]+-[0-9]+)-[0-9]+x[0-9]+-[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2$3");
 		}
 
 		if (domain_nowww === "mormonnewsroom.org") {
