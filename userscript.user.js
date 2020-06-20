@@ -49241,7 +49241,9 @@ var $$IMU_EXPORT$$;
 			//   https://d1jo5b1m9v3ic.cloudfront.net/item/i716887/s823093fa7c4de9e39821d164c74c864b354c590-large.jpg
 			// https://d1jo5b1m9v3ic.cloudfront.net/poster/profile/p6507/d4b5f54dd4a2da05bfc469450ef8655f-small.jpg
 			//   https://d1jo5b1m9v3ic.cloudfront.net/poster/profile/p6507/d4b5f54dd4a2da05bfc469450ef8655f-large.jpg
-			return src.replace(/(\/(?:item|profile)\/+[a-z][0-9]+\/+[a-z][0-9a-f]+)-[a-z]+(\.[^/.]*)(?:[?#].*)?$/, "$1-large$2");
+			// https://d1jo5b1m9v3ic.cloudfront.net/poster/profile/p6507/905a31e4aced3c442cac20c1e634e910-small.jpg
+			//   https://d1jo5b1m9v3ic.cloudfront.net/poster/profile/p6507/905a31e4aced3c442cac20c1e634e910-large.jpg
+			return src.replace(/(\/(?:item|profile)\/+[a-z][0-9]+\/+[a-z]?[0-9a-f]+)-[a-z]+(\.[^/.]*)(?:[?#].*)?$/, "$1-large$2");
 		}
 
 		if (domain === "oshiete.xgoo.jp") {
@@ -64236,6 +64238,29 @@ var $$IMU_EXPORT$$;
 					return page_nullobj;
 				}
 			}
+		}
+
+		if (domain_nowww === "samplerinfos.de") {
+			// thanks to nimuxoha on github: https://github.com/qsniyg/maxurl/issues/361
+			// https://samplerinfos.de/covers/4050/th_40500010f.jpg?1487092251
+			//   https://samplerinfos.de/covers/4050/40500010f.jpg?1487092251
+			// https://samplerinfos.de/covers/4050/40502270b.jpg?1577984564
+			//   https://samplerinfos.de/covers/4050/big_40502270b.jpg?1577984564
+			// https://samplerinfos.de/online_images/artwork/artwork1590742468_small.jpg
+			//   https://samplerinfos.de/online_images/artwork/artwork1590742468.jpg
+			// https://samplerinfos.de/grafiken/spezial/fussballkult/th_az3-b.jpg
+			//   https://samplerinfos.de/grafiken/spezial/fussballkult/az3-b.jpg
+			// https://samplerinfos.de/grafiken/loveparade/th_2003s.jpg
+			//   https://samplerinfos.de/grafiken/loveparade/2003s.jpg
+			newsrc = src
+				.replace(/(\/covers\/+[0-9]+\/+|grafiken\/+(?:spezial\/+)?[^/]+\/+)([^/_.]+\.[^/.]+(?:[?#].*)?)$/, "$1big_$2")
+				.replace(/(\/covers\/+[0-9]+\/+|grafiken\/+(?:spezial\/+)?[^/]+\/+)th_([^/_.]+\.[^/.]+(?:[?#].*)?)$/, "$1$2")
+				.replace(/(\/online_images\/+artwork\/+artwork[0-9]+)_small(\.[^/.]+(?:[?#].*)?)$/, "$1$2");
+
+			return {
+				url: newsrc,
+				can_head: false // 403
+			};
 		}
 
 
