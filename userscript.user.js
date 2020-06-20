@@ -6444,6 +6444,7 @@ var $$IMU_EXPORT$$;
 			var headers = {
 				//"User-Agent": "Instagram 10.26.0 (iPhone7,2; iOS 10_1_1; en_US; en-US; scale=2.00; gamut=normal; 750x1334) AppleWebKit/420+",
 				//"User-Agent": "Instagram 10.26.0 Android (23/6.0.1; 640dpi; 1440x2560; samsung; SM-G930F; herolte; samsungexynos8890; en_US)",
+				// thanks to solplparty on discord for reporting, earlier UAs don't receive stories anymore
 				"User-Agent": "Instagram 146.0.0.27.125 Android (23/6.0.1; 640dpi; 1440x2560; samsung; SM-G930F; herolte; samsungexynos8890; en_US)",
 				"X-IG-Capabilities": "36oD",
 				"Accept": "*/*",
@@ -35417,6 +35418,8 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "thebestshemalevideos.com" ||
 			// https://cdn.katestube.com/contents/videos/2573000/2573793/2573793_preview.mp4
 			domain_nosub === "katestube.com" ||
+			// https://nudogram.com/contents/videos_screenshots/5000/5094/180x135/3.jpg
+			domain_nowww === "nudogram.com" ||
 			domain_nosub === "vikiporn.com" ||
 			domain_nosub === "sheshaft.com" ||
 			domain_nosub === "xozilla.com" ||
@@ -63524,6 +63527,291 @@ var $$IMU_EXPORT$$;
 					return {
 						waiting: true
 					};
+				}
+			}
+		}
+
+		if (domain_nosub === "spankcdn.net" && /spankwire\./.test(domain)) {
+			// https://cdn4-image-spankwire.spankcdn.net/m=eaCaaBFnGw/201804/18/18534522/originals/2.jpg
+			match = src.match(/\/[0-9]{6}\/+[0-9]{1,2}\/+([0-9]+)\/+originals\/+/);
+			if (match) {
+				id = match[1];
+
+				var query_spankwire = function(vid, cb) {
+					api_query("spankwire:" + vid, {
+						url: "https://www.spankwire.com/api/video/" + vid + ".json",
+						headers: {
+							"Accept": "application/json, text/plain, */*, image/webp",
+							"Referer": "https://www.spankwire.com/EmbedPlayer.aspx/?ArticleId=" + vid + "&autostart=true"
+						},
+						json: true
+					}, cb, function(done, resp, cache_key) {
+						if (resp.HLS && resp.title && resp.videos)
+							return done(resp, 60*60);
+
+						console_log(cache_key, "Invalid json", resp);
+						return done(null, false);
+					});
+				};
+
+				var spankwire_to_obj = function(data) {
+					if (!data) {
+						return null;
+					}
+
+					var baseobj = {
+						headers: {
+							"Referer": "https://www.spankwire.com/"
+						},
+						extra: {}
+					};
+
+					if (data.url) {
+						baseobj.extra.page = urljoin("https://www.spankwire.com/", data.url, true);
+					}
+
+					if (data.title) {
+						baseobj.extra.caption = data.title;
+					}
+
+					var urls = [];
+					if (data.HLS) {
+						urls.push({
+							url: data.HLS,
+							video: "hls"
+						});
+					}
+
+					if (data.videos) {
+						var max = 0;
+						var maxobj = null;
+
+						for (var key in data.videos) {
+							var key_match = key.match(/^quality_([0-9]+)p$/);
+							if (!key_match)
+								continue;
+
+							var quality = parseInt(key_match[1]);
+							if (quality > max) {
+								max = quality;
+								maxobj = data.videos[key];
+							}
+						}
+
+						if (maxobj) {
+							urls.push({
+								url: maxobj,
+								video: true
+							});
+						}
+					}
+
+					return fillobj_urls(urls, baseobj);
+				};
+
+				if (options.do_request && options.cb) {
+					query_spankwire(id, function(data) {
+						options.cb(spankwire_to_obj(data));
+					});
+
+					return {
+						waiting: true
+					};
+				}
+			}
+		}
+
+		if (domain_nosub === "spankcdn.net" && /keezmovies\./.test(domain)) {
+			match = src.match(/\/[0-9]{6}\/+[0-9]{1,2}\/+([0-9]+)\/+originals\/+/);
+			if (match) {
+				id = match[1];
+
+				var query_keezmovies = function(id, cb) {
+					api_query("keezmovies:" + id, {
+						url: "https://www.keezmovies.com/video/" + id
+					}, cb, function(done, resp, cb) {
+						var flashvars = resp.responseText.match(/window\.flashvars\s*=\s*({.*?});/);
+						if (!flashvars) {
+							console_error(cache_key, "Unable to find match", resp);
+							return done(null, false);
+						}
+
+						var json = JSON_parse(flashvars[1]);
+						return done(json, 60*60);
+					});
+				};
+
+				var keezmovies_to_obj = function(data) {
+					if (!data)
+						return null;
+
+					var baseobj = {
+						extra: {},
+						headers: {
+							"Referer": "https://www.keezmovies.com/"
+						}
+					};
+
+					if (data.link_url) {
+						baseobj.extra.page = data.link_url;
+					}
+
+					if (data.video_title) {
+						baseobj.extra.caption = data.video_title;
+					}
+
+					var max = 0;
+					var maxobj = null;
+					for (var key in data) {
+						var key_match = key.match(/^quality_([0-9]+)p$/);
+						if (!key_match)
+							continue;
+
+						var quality = parseInt(key_match[1]);
+						if (quality > max) {
+							max = quality;
+							maxobj = data[key];
+						}
+					}
+
+					var urls = [];
+					if (maxobj) {
+						urls.push({
+							url: maxobj,
+							video: true
+						});
+					}
+
+					if (data.image_url) {
+						urls.push(data.image_url);
+					}
+
+					return fillobj_urls(urls, baseobj);
+				};
+
+				if (options.do_request && options.cb) {
+					query_keezmovies(id, function(data) {
+						options.cb(keezmovies_to_obj(data));
+					});
+
+					return {
+						waiting: true
+					};
+				}
+			}
+		}
+
+		if (domain_nosub === "hclips.com") {
+			var match = src.match(/^[a-z]+:\/\/[^/]+\/+videos\/+([0-9]+)\//);
+			if (match) {
+				id = match[1];
+
+				var decode_hclips_base64 = function(data) {
+					var charset = decodeURIComponent("%D0%90%D0%92%D0%A1D%D0%95FGHIJKL%D0%9CNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.%2C~"),
+                        output = "";
+
+					var invalid_regex = new RegExp(decodeURIComponent("%5B%5E%D0%90%D0%92%D0%A1%D0%95%D0%9CA-Za-z0-9.%2C~%5D"), "g");
+					if (invalid_regex.exec(data)) {
+						console_warn("Invalid characters found in", data);
+					}
+
+					data = data.replace(invalid_regex, "");
+
+					for (var i = 0; i < data.length;) {
+                        var c1 = charset.indexOf(data.charAt(i++)),
+                            c2 = charset.indexOf(data.charAt(i++)),
+                            c3 = charset.indexOf(data.charAt(i++)),
+							c4 = charset.indexOf(data.charAt(i++));
+
+                        c1 = c1 << 2 | c2 >> 4;
+                        c2 = (15 & c2) << 4 | c3 >> 2;
+						var last = (3 & c3) << 6 | c4;
+
+						output += String.fromCharCode(c1);
+
+						if (c3 !== 64) {
+							output += String.fromCharCode(c2);
+						}
+
+						if (c4 !== 64) {
+							output += String.fromCharCode(last);
+						}
+					}
+
+					return unescape(output);
+				};
+
+				var query_hclips = function(vid, cb) {
+					api_query("hclips:" + vid, {
+						url: "https://hclips.com/api/videofile.php?video_id=" + vid + "&lifetime=8640000",
+						headers: {
+							"Accept": "application/json, text/plain, */*",
+							"Referer": "https://hclips.com/videos/" + vid + "/"
+						},
+						json: true
+					}, cb, function(done, resp, cache_key) {
+						var formats = ["_hq", "_lq"];
+
+						var get_format_id = function(format) {
+							format = format.replace(/\..*/, "");
+							var index = formats.indexOf(format);
+
+							if (index < 0) {
+								console_warn("Unknown format", format);
+								return formats.length;
+							} else {
+								return index;
+							}
+						};
+
+						resp.sort(function(a, b) {
+							return get_format_id(a) - get_format_id(b);
+						});
+
+						for (var i = 0; i < resp.length; i++) {
+							resp[i].video_url = urljoin("https://hclips.com/", decode_hclips_base64(resp[i].video_url), true);
+						}
+
+						done(resp, 60*60);
+					});
+				};
+
+				var hclips_to_obj = function(data) {
+					if (!data || data.length === 0) {
+						return page_nullobj;
+					}
+
+					var baseobj = {
+						headers: {
+							Referer: "https://hclips.com"
+						}
+					};
+
+					urls = [{
+						url: data[0].video_url,
+						video: true
+					}];
+
+					urls.push(page_nullobj);
+
+					return fillobj_urls(urls, baseobj);
+				};
+
+				page_nullobj = {
+					url: src,
+					is_pagelink: true
+				};
+
+				if (options.do_request && options.cb) {
+					query_hclips(id, function(data) {
+						options.cb(hclips_to_obj(data));
+					});
+
+					return {
+						waiting: true
+					};
+				} else {
+					return page_nullobj;
 				}
 			}
 		}
