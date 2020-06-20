@@ -1,3 +1,20 @@
+0.13.11
+
+New features:
+
+ * Support for ~40 new websites (using ~15 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including Gfycat, IMDB, Instagram, Steam, TikTok)
+
+Bugfixes:
+
+ * Redirects from extension will send proper headers now
+ * Websites that override String.fromCharCode should work again
+
+---
+
 0.13.10
 
 New features:

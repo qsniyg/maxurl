@@ -259,6 +259,7 @@ amp.thisisinsider.com
 ampproject.org
 amuro.fr
 ana.rs
+analdin.com
 analisadaily.com
 anandabazar.com
 anawalls.com
@@ -454,6 +455,7 @@ att2.citysbs.com
 attach.setn.com
 attachments.readmedia.com.s3.amazonaws.com
 attitude.co.uk
+audio.gafamfree.party
 auto.sina.com.cn
 auto.sk
 autoevolution.com
@@ -554,6 +556,7 @@ bebee.com
 bebzol.com
 beckygworld.com
 becteroradio.com
+beeg.com
 behance.net
 behindbigbrother.com
 behindwoods.com
@@ -1093,6 +1096,10 @@ cdn.zoomg.ir
 cdn1.nyt.com
 cdn107.com
 cdn15764270.ahacdn.me
+cdn35854568.ahacdn.me
+cdn39638151.ahacdn.me
+cdn3x.com
+cdn69508963.ahacdn.me
 cdnberry.com
 cdnds.net
 cdni.rbth.com
@@ -1298,6 +1305,7 @@ content.eroo.pl
 content.erooups.com
 content.gulte.com
 content.hardtunes.com
+content.haycdn.com
 content.ngv.vic.gov.au
 content.pornpics.com
 content.pornstarplatinum.com
@@ -1904,6 +1912,7 @@ fappeningbook.com
 fappenist.com
 fappic.com
 fapster.xxx
+fapxl.com
 farfarawaysite.com
 fashion-headline.com
 fashion-press.net
@@ -2231,6 +2240,7 @@ gifyu.com
 giga-images-makeshop-jp.akamaized.net
 gigablast.com
 gigacircle.com
+gigapron.com
 giphy.com
 girabsas.demo.vincolo.com
 girlfolio.com
@@ -2376,12 +2386,14 @@ hbmygm.com
 hbo.com
 hbox.jp
 hc360.cn
+hclips.com
 hdbilder.eu
 hdfondos.eu
 hdfullfilmizle.com
 hdnicewallpapers.com
 hdnux.com
 hdpicsx.com
+hdpsn21.com
 hdqwalls.com
 hdslb.com
 hdwall.us
@@ -2390,6 +2402,7 @@ hdwallpapers.in
 hdwallsource.com
 hdxa.me
 hdxwallpaper.com
+hdzog.com
 heartyhosting.com
 hebeilong.com
 heise.cloudimg.io
@@ -2913,6 +2926,7 @@ images.haaretz.co.il
 images.haiwainet.cn
 images.hamodia.com
 images.harianjogja.com
+images.hayneedle.com
 images.headlines.pw
 images.hgmsites.net
 images.hi67.cn
@@ -3102,6 +3116,7 @@ img.aws.ehowcdn.com
 img.aws.la-croix.com
 img.aws.livestrongcdn.com
 img.beatles.ru
+img.beeg.com
 img.beevar.com
 img.benzspirit.com
 img.beritasatu.com
@@ -3710,6 +3725,7 @@ khabarban.com
 khaskhabar.s3.amazonaws.com
 khmeread.com
 ki.ill.in.ua
+kickass.com
 kickasspays.com
 kickin.info
 kiev.segodnya.ua
@@ -4371,6 +4387,7 @@ mplstudios.com
 mrcapetown.co.za
 mrskincdn.com
 mshreqnews.net
+mt-static.com
 mtdata.ru
 mthai.com
 mtime.cn
@@ -4397,6 +4414,7 @@ muscache.com
 muscdn.com
 music.fetnet.net
 music.hu
+music.librepunk.club
 musicfeeds.com.au
 musicimage.xboxlive.com
 musicmeter.nl
@@ -4636,6 +4654,7 @@ nudejapangirls.com
 nudemodelpics.com
 nudevideovixens.com
 nudiez-production.s3.amazonaws.com
+nudogram.com
 nudography.com
 nujhrcqkiwag1408085.cdn.ntruss.com
 numberoneturk.com.tr
@@ -4996,6 +5015,7 @@ pornalin.com
 pornchampion.com
 porncomix.info
 porncomix.one
+pornerbros.com
 porngals4.com
 porngo.com
 pornhat.com
@@ -5015,6 +5035,7 @@ porntb.com
 porntrex.com
 porntube.com
 porntube.ddns.net
+pornwhite.com
 pornxxxbest.xyz
 pornzee.com
 portal-images.azureedge.net
@@ -5551,11 +5572,13 @@ sl.sbs.com.au
 slant.co
 slate.com
 slatic.net
+sleazyneasy.com
 slender-model.com
 slidely.com
 slideserve.com
 slist.kr
 sloanreview.mit.edu
+slutload-media.com
 sm.askmen.com
 sm.ign.com
 smart.usen.com
@@ -5615,6 +5638,7 @@ spacefucker.com
 spacepub.space
 spacetelescope.org
 spankbang.com
+spankcdn.net
 spapi.searchencrypt.com
 spark.adobe.com
 speakerd.s3.amazonaws.com
@@ -6017,6 +6041,8 @@ tb.ziareromania.ro
 tbcdn.cn
 tbib.org
 tbn.bidorbuy.co.za
+tbnpsn.com
+tcdn.couchsurfing.com
 tchyn.io
 tdjakes.com
 teamupforkansaskids.com
@@ -6206,6 +6232,7 @@ tkfile.yes24.com
 tn.nozomi.la
 tn.pooh.pw
 tn.smilevideo.jp
+tnaflix.com
 tnastatic.com
 tnews.ir
 tnnthailand.com
@@ -6264,6 +6291,7 @@ tsn.ca
 tsundora.com
 tt.inf.ua
 ttgames.com
+tube-bunny.com
 tube-versailles.beta.education.fr
 tube.ac-lyon.fr
 tube.aquilenet.fr
@@ -6274,6 +6302,7 @@ tube.midov.pl
 tube.rebellion.global
 tubepornclassic.com
 tubetubetube.com
+tubitv.com
 tuchong.pstatp.com
 tuktukpatrol.com
 tumblr.com
@@ -6369,6 +6398,7 @@ uploads.cdn.triller.co
 uploads.disquscdn.com
 uploads.rayli.com.cn
 uploads.spiritfanfiction.com
+upornia.com
 upt.xhcdn.com
 urbanbug.net
 urbanhit.fr
@@ -6622,6 +6652,7 @@ wmg.jp
 wmj.ru
 wn.com
 wnacg.net
+wnppsn.com
 wolframcdn.com
 woman-project.com
 woman.at
@@ -6683,6 +6714,10 @@ xdressy.com
 xeeok.com
 xgkoushi.com
 xgn.nl
+xh.video
+xhamster.com
+xhamster.desi
+xhamster.one
 xhcdn.com
 xianweizhu.com
 xiaoka.tv
@@ -6692,6 +6727,7 @@ xiuren.org
 xnostars.com
 xnudehack.com
 xnxx.com
+xnxx.es
 xo.lulus.com
 xochuanime.online
 xoxodigital.com
@@ -6710,6 +6746,9 @@ xuk.mobi
 xuk.one
 xuk.ooo
 xvideos.com
+xvideos.es
+xvideos.net
+xvideos.xxx
 xwetpics.com
 xxlmag.com
 xxx-photo.com
@@ -6790,6 +6829,7 @@ zadn.vn
 zarzarmodels.com
 zastavki.com
 zazzybabes.com
+zbporn.com
 zbporn.tv
 zceleb.com
 zdf.de
