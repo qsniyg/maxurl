@@ -14310,7 +14310,7 @@ var $$IMU_EXPORT$$;
 		if (domain === "imgix.ranker.com") {
 			// https://imgix.ranker.com/user_node_img/50076/1001516851/original/sheldon-and-_39_s-in-an-insane-asylum-and-the-show-only-takes-place-in-his-head-photo-u1?w=600&q=50&fm=jpg
 			//   https://imgix.ranker.com/user_node_img/50076/1001516851/original/sheldon-and-_39_s-in-an-insane-asylum-and-the-show-only-takes-place-in-his-head-photo-u1?fm=png
-			return src.replace(/\?[^/]*$/, "?fm=png");
+			return src.replace(/\?.*$/, "?fm=png");
 		}
 
 		if (domain_nosub === "rnkr-static.com" &&
@@ -58563,13 +58563,13 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if ((domain_nosub === "gfycat.com" || domain_nosub === "redgifs.com") && (/^(?:thumbs[0-9]*|zippy|giant)\./.test(domain))) {
+		if ((domain_nosub === "gfycat.com" || domain_nosub === "redgifs.com") && (/^(?:th(?:umbs|cf)[0-9]*|zippy|giant)\./.test(domain))) {
 			// https://thumbs.gfycat.com/YellowTornCockatiel-size_restricted.gif
 			//   https://thumbs.gfycat.com/YellowTornCockatiel-mobile.mp4
 			//   https://zippy.gfycat.com/YellowTornCockatiel.mp4
 			newsrc = src
 				.replace(/:\/\/zippy\.([^/]+\/+[^/]+)(?:-[^/.]+)?\.[^/.]+(?:[?#].*)?$/, "://giant.$1.mp4")
-				.replace(/:\/\/thumbs[0-9]*\.([^/]+\/+[^/]+)-(?:size_restricted\.gif|mobile\.(?:webm|mp4)|(?:mobile|poster)\.jpg)(?:[?#].*)?$/, "://zippy.$1.mp4");
+				.replace(/:\/\/th(?:umbs|cf)[0-9]*\.([^/]+\/+[^/]+)(?:-(?:(?:size_restricted|small)\.gif|mobile\.(?:webm|mp4)|(?:mobile|poster)\.jpg)|\.webp)(?:[?#].*)?$/, "://zippy.$1.mp4");
 			obj = {
 				url: newsrc
 			};
