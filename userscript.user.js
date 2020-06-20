@@ -10336,16 +10336,16 @@ var $$IMU_EXPORT$$;
 				if (options.do_request && options.cb) {
 					query_keys_for_imdb_video(id, function(keys) {
 						if (!keys)
-							return option.cb(page_nullobj);
+							return options.cb(page_nullobj);
 
 						query_imdb_playbackdata(keys.playbackdata, function(playbackdata) {
 							if (!playbackdata) {
-								return option.cb(page_nullobj);
+								return options.cb(page_nullobj);
 							}
 
 							query_imdb_videoinfo(keys.videoinfo, function(videoinfo) {
 								if (!videoinfo) {
-									return option.cb(page_nullobj);
+									return options.cb(page_nullobj);
 								}
 
 								var baseobj = {
@@ -30953,6 +30953,7 @@ var $$IMU_EXPORT$$;
 
 		if (domain_nowww === "xhamster.com" ||
 			domain_nowww === "xhamster.one" ||
+			domain_nowww === "xh.video" ||
 			domain_nowww === "xhamster.desi") {
 			match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:videos|embed)\/+(?:[^/?#.]*-)?([0-9]+)(?:[?#].*)?$/);
 			if (!match) {
@@ -31034,6 +31035,13 @@ var $$IMU_EXPORT$$;
 						}
 					};
 
+					var origin = "https://www." + domain_nowww;
+					if (domain_nosub === "xh.video") {
+						origin = "https://www.xhamster.com/";
+						baseobj.extra.page = baseobj.extra.page.replace(/xh\.video\//, "xhamster.com/");
+						obj.extra.page = obj.extra.page.replace(/xh\.video\//, "xhamster.com/");
+					}
+
 					var urls = [];
 
 					if ("sources" in videomodel) {
@@ -31049,8 +31057,8 @@ var $$IMU_EXPORT$$;
 							if (max) {
 								var our_obj = {
 									headers: {
-										Origin: "https://" + domain_nowww,
-										Referer: obj.extra.page,
+										Origin: origin,
+										Referer: baseobj.extra.page,
 										"Sec-Fetch-Dest": "empty"
 									},
 									url: max,
@@ -35420,6 +35428,8 @@ var $$IMU_EXPORT$$;
 			domain_nosub === "katestube.com" ||
 			// https://nudogram.com/contents/videos_screenshots/5000/5094/180x135/3.jpg
 			domain_nowww === "nudogram.com" ||
+			// https://i.analdin.com/contents/videos_screenshots/419000/419019/preview.mp4.jpg
+			domain_nosub === "analdin.com" ||
 			domain_nosub === "vikiporn.com" ||
 			domain_nosub === "sheshaft.com" ||
 			domain_nosub === "xozilla.com" ||
@@ -63812,6 +63822,128 @@ var $$IMU_EXPORT$$;
 					};
 				} else {
 					return page_nullobj;
+				}
+			}
+		}
+
+		if (domain_nowww === "fapxl.com") {
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:view\/+movie\/+)?embed\/+([0-9]+)(?:[?#].*)?$/);
+			if (match) {
+				id = match[1];
+
+				var query_fapxl = function(vid, cb) {
+					api_query("fapxl:" + vid, {
+						url: "https://fapxl.com/view/movie/embedconfig/" + vid + "?ModPagespeed=off",
+						headers: {
+							Referer: "https://fapxl.com/"
+						}
+					}, cb, function(done, resp, cache_key) {
+						var match = resp.responseText.match(/clip:\s*{\s*title:\s*("[^"]+"),\s*sources:\s*(\[[\s\S]+?\])\s*},/);
+						if (!match) {
+							console_error(cache_key, "Unable to find match for", resp);
+							return done(null, false);
+						}
+
+						var title = JSON_parse(match[1]);
+						var sources = match[2].replace(/\s([a-z]+)(:\s*")/g, " \"$1\"$2");
+
+						var sources_json = JSON_parse(sources);
+
+						urls = [{
+							url: sources_json[0].src,
+							video: true
+						}];
+
+						var baseobj = {
+							extra: {
+								caption: title
+							},
+							headers: {
+								Referer: "https://fapxl.com/"
+							}
+						};
+
+						urls.push(page_nullobj);
+
+						done(fillobj_urls(urls, baseobj), 60*60);
+					});
+				};
+
+				page_nullobj = {
+					url: src,
+					is_pagelink: true
+				};
+
+				if (options.do_request && options.cb) {
+					query_fapxl(id, options.cb);
+
+					return {
+						waiting: true
+					};
+				} else {
+					return page_nullobj;
+				}
+			}
+		}
+
+		if (domain_nosub === "pornerbros.com" && /^cdn/.test(domain)) {
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+((?:[0-9]\/+){2,})(?:[0-9]+x[0-9]+|preview)\/+/);
+			if (match) {
+				id = match[1].replace(/\/+/g, "");
+
+				var query_pornerbros_url = function(vid, cb) {
+					api_query("pornerbros:" + id, {
+						url: "https://token.pornerbros.com/" + vid + "/desktop/240+360+480+720+1080+1440+2160",
+						method: "POST",
+						headers: {
+							"Accept": "application/json, text/plain, */*",
+							"origin": "https://www.pornerbros.com",
+							"referer": "https://www.pornerbros.com/",
+							"Content-Length": "0"
+						},
+						json: true
+					}, cb, function(done, resp, cache_key) {
+						var urls = [];
+
+						for (var key in resp) {
+							var our_obj = resp[key];
+							if (our_obj.status !== "success" || !our_obj.token)
+								continue;
+
+							var size = parseInt(key);
+							if (!isNaN(size) && size > 0) {
+								urls.push({
+									url: our_obj.token,
+									size: size
+								});
+							}
+						}
+
+						// sometimes the largest size (1080p) doesn't work, but smaller (720p) does
+						urls.sort(function(a, b) {
+							return b.size - a.size;
+						});
+
+						for (var i = 0; i < urls.length; i++) {
+							delete urls[i].size;
+						}
+
+						var baseobj = {
+							headers: {
+								Referer: "https://www.pornerbros.com/"
+							}
+						};
+
+						return done(fillobj_urls(urls, baseobj), 60*60);
+					});
+				};
+
+				if (options.do_request && options.cb) {
+					query_pornerbros_url(id, options.cb);
+
+					return {
+						waiting: true
+					};
 				}
 			}
 		}
