@@ -35430,6 +35430,10 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "nudogram.com" ||
 			// https://i.analdin.com/contents/videos_screenshots/419000/419019/preview.mp4.jpg
 			domain_nosub === "analdin.com" ||
+			// https://mediaserver5.tube-bunny.com/storage1/Jv43/4.jpg
+			domain_nosub === "tube-bunny.com" ||
+			domain_nosub === "pornwhite.com" ||
+			domain_nosub === "sleazyneasy.com" ||
 			domain_nosub === "vikiporn.com" ||
 			domain_nosub === "sheshaft.com" ||
 			domain_nosub === "xozilla.com" ||
@@ -35451,7 +35455,8 @@ var $$IMU_EXPORT$$;
 			//domain_nowww === "endoscop.tv" ||
 			domain_nowww === "pornrewind.com") {
 			// https://www.watchmygf.me/player/skin/img/play_white.png
-			if (/\/player\/+skin\/+img\//.test(src))
+			// https://www.tube-bunny.com/kt_player/skin/img/play_white.png
+			if (/\/(?:kt_)?player\/+skin\/+img\//.test(src))
 				return {
 					url: src,
 					bad: "mask"
@@ -35470,8 +35475,13 @@ var $$IMU_EXPORT$$;
 			}
 			// https://pr1.zbporn.tv/contents/videos/600000/600573/600573_short_preview.mp4
 			if (!match) {
-				match = src.match(/\/contents\/+videos\/+[0-9]+\/+[0-9]+\/+([0-9]+)(?:_(?:short|small))?_preview\./);
+				match = src.match(/\/(?:contents|c1)\/+videos\/+[0-9]+\/+[0-9]+\/+([0-9]+)(?:_(?:short|small))?_(?:preview|tr)\./);
 			}
+			// https://mediaserver5.tube-bunny.com/storage1/Jv43/4.jpg
+			if (!match) {
+				match = src.match(/\/storage[0-9]*\/+([0-9a-zA-Z]+)\/+(?:[0-9]+|default)\./);
+			}
+
 			if (match) {
 				id = match[1];
 			}
@@ -35522,6 +35532,8 @@ var $$IMU_EXPORT$$;
 				cache_host = "metacafe.com";
 			} else if (domain_nosub === "mt-static.com") {
 				basedomain = "https://www.megatube.xxx/";
+			} else if (domain_nosub === "tube-bunny.com") {
+				videos_component = "watch";
 			}
 
 			var fixup_function_url = function(flashvars) {
@@ -35747,6 +35759,10 @@ var $$IMU_EXPORT$$;
 						if (/^video_.*url[0-9]*$/.test(key)) {
 							var oururl = data[key];
 							var oursize = oururl.replace(/.*_([0-9]+)p\.[^/.]+(?:\/*[^/]*)?(?:[?#].*)?$/, "$1");
+							// tube-bunny.com
+							if (oursize === oururl) {
+								oursize = oururl.replace(/.*\/storage[0-9]*\/+[a-zA-Z0-9]+\/+([0-9]+)p\.mp4(?:[?#].*)?$/, "$1");
+							}
 							if (oursize === oururl) {
 								oursize = null;
 
@@ -35862,7 +35878,8 @@ var $$IMU_EXPORT$$;
 			};
 		}
 
-		if (domain_nowww === "vjav.com") {
+		if (domain_nowww === "vjav.com" ||
+			domain_nowww === "hdzog.com") {
 			match = src.match(/^[a-z]+:\/\/[^/]+\/+videos\/+([0-9]+)\/+/);
 			if (match) {
 				id = match[1];
@@ -35872,21 +35889,30 @@ var $$IMU_EXPORT$$;
 					is_pagelink: true
 				};
 
+				var base_domain = domain_nosub;
+
 				var query_vjav_api = function(vidid, url, signature, cb) {
-					api_query("vjav_api:" + vidid, {
-						url: "https://vjav.com/sn4diyux.php",
+					api_query(base_domain + "_api:" + vidid, {
+						url: "https://" + base_domain + "/sn4diyux.php",
 						method: "POST",
 						headers: {
 							"Content-Type": "application/x-www-form-urlencoded",
-							"Origin": "https://vjav.com",
+							"Origin": "https://" + base_domain,
 							"Referer": url,
 							"Sec-Fetch-Dest": "iframe"
 						},
 						data: "param=" + encodeURIComponent(vidid + "," + signature)
 					}, cb, function(done, resp, cache_key) {
 						var obf_b64_decode = function(url) {
-							url = url.replace(/\u041c/g, 'M').replace(/\u0415/g, 'E').replace(/\u0410/g, 'A').replace(/~/g, '=');
-							return base64_decode(url);
+							var origurl = url;
+							url = url.replace(/\u041c/g, 'M').replace(/\u0415/g, 'E').replace(/\u0410/g, 'A').replace(/\u0421/g, 'C').replace(/~/g, '=');
+
+							try {
+								return base64_decode(url);
+							} catch (e) {
+								console_error(cache_key, "Unable to properly decode", url);
+								throw e;
+							}
 						};
 
 						var match = resp.responseText.match(/var [^\s=]+\s*='(\[[^']+aHR0[^']+\])';/);
@@ -35908,8 +35934,8 @@ var $$IMU_EXPORT$$;
 				};
 
 				var query_vjav = function(vidid, cb) {
-					api_query("vjav:" + vidid, {
-						url: "https://vjav.com/videos/" + vidid + "/a/"
+					api_query(base_domain + ":" + vidid, {
+						url: "https://" + base_domain + "/videos/" + vidid + "/a/"
 					}, cb, function(done, resp, cache_key) {
 						var match = resp.responseText.match(/window\.jwsettings\s*=\s*{\s*pC3:\s*'([0-9]+\|[0-9]+,[0-9]+)'/);
 						if (!match) {
@@ -35931,12 +35957,18 @@ var $$IMU_EXPORT$$;
 					if (!data)
 						return page_nullobj;
 
+					var baseobj = {
+						headers: {
+							Referer: "https://" + base_domain + "/"
+						}
+					};
+
 					var urls = [];
 
 					urls.push({url: data[0].video_url, video: true});
 					urls.push(page_nullobj);
 
-					return urls;
+					return fillobj_urls(urls, baseobj);
 				};
 
 				if (options.do_request && options.cb) {
@@ -35950,6 +35982,22 @@ var $$IMU_EXPORT$$;
 				} else {
 					return page_nullobj;
 				}
+			}
+		}
+
+		if (domain === "cdn69508963.ahacdn.me" ||
+			domain === "cdn39638151.ahacdn.me") {
+			var basedomain_map = {
+				"cdn69508963.ahacdn.me": "hdzog.com",
+				"cdn39638151.ahacdn.me": "vjav.com"
+			};
+			var basedomain = basedomain_map[domain];
+			match = src.match(/\/c[0-9]*\/+videos\/+[0-9]+\/+([0-9]+)\/+[0-9]+_tr\./);
+			if (match) {
+				return {
+					url: "https://" + basedomain + "/videos/" + match[1] + "/a/",
+					is_pagelink: true
+				};
 			}
 		}
 
@@ -42146,7 +42194,130 @@ var $$IMU_EXPORT$$;
 			//   http://img.tnastatic.com/q100/pics/alpha/2687237821/510542978/332373910.jpg
 			// https://img.tnastatic.com/a3:2q80w600r/thumbs/b5/31_1029639l.jpg -- stretched
 			//   https://img.tnastatic.com/a3/thumbs/b5/31_1029639l.jpg
-			return src.replace(/(:\/\/[^/]*\/)[^/]*\/(pics|thumbs)\//, "$1q100/$2/");
+			newsrc = src.replace(/(:\/\/[^/]*\/)[^/]*\/(pics|thumbs)\//, "$1q100/$2/");
+			if (newsrc !== src)
+				return newsrc;
+		}
+
+		if (domain_nosub === "tnaflix.com" || domain_nosub === "tnastatic.com") {
+			var is_pagelink = true;
+
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+[^/]+\/+[^/]+\/+video([0-9]+)(?:[?#].*)?$/);
+			if (!match) {
+				is_pagelink = false;
+				match = src.match(/^[a-z]+:\/\/img[0-9]*\.[^/]+\/+[^/]+\/+thumbs\/+[0-9a-f]{2}\/+[0-9a-f]{2}_([0-9]+)l\./);
+			}
+
+			if (match) {
+				id = match[1];
+
+				var page_nullobj = {
+					url: src,
+					is_pagelink: true
+				};
+
+				if (!is_pagelink)
+					page_nullobj = null;
+
+				var query_tnaflix_api = function(data, cb) {
+					if (!data || !data.vkey || !data.nkey || !data.VID || !("thumb" in data) || !data.finalUrl) {
+						console_error("Invalid parameters", data);
+						return cb(null);
+					}
+
+					var url = "https://cdn-fck.tnaflix.com/tnaflix/" + data.vkey + ".fid?key=" + data.nkey + "&VID=" + data.VID + "&startThumb=" + data.thumb + "&nomp4=1&catID=0&rollover=1&embed=0&utm_source=0&multiview=0&premium=1&country=0user=0&vip=1&cd=0&ref=0&alpha"
+					api_query("tnaflix_api:" + data.VID, {
+						url: url,
+						headers: {
+							origin: "https://www.tnaflix.com",
+							Referer: data.finalUrl
+						}
+					}, cb, function(done, resp, cache_key) {
+						var regex = /<item>\s*<res>([^<]+)<\/res>\s*<videoLink><!\[CDATA\[(.*?)\]\]><\/videoLink>/;
+						var global_regex = new RegExp(regex, "g");
+
+						var match = resp.responseText.match(global_regex);
+						if (!match) {
+							console_error(cache_key, "Unable to find items in", resp);
+							return done(page_nullobj, false);
+						}
+
+						var urls = [];
+						for (var i = 0; i < match.length; i++) {
+							var smatch = match[i].match(regex);
+
+							var quality = smatch[1];
+							var url = urljoin("https://www.tnaflix.com/", decode_entities(smatch[2]), true);
+
+							urls.push({
+								url: url,
+								quality: parseInt(quality),
+								video: true
+							});
+						}
+
+						urls.sort(function(a, b) {
+							return b.quality - a.quality;
+						});
+
+						for (var i = 0; i < urls.length; i++) {
+							delete urls[i].quality;
+						}
+
+						var baseobj = {
+							headers: {
+								Referer: "https://www.tnaflix.com/",
+								"Sec-Fetch-Dest": "video"
+							}
+						};
+
+						if (page_nullobj)
+							urls.push(page_nullobj);
+
+						return done(fillobj_urls(urls, baseobj), 60*60);
+					});
+				};
+
+				var query_tnaflix_site = function(vid, cb) {
+					api_query("tnaflix_site:" + vid, {
+						url: "https://www.tnaflix.com/a/a/video" + vid
+					}, cb, function(done, resp, cache_key) {
+						var regex = /<input id="(VID|vkey|nkey|thumb)" type="hidden" value="([^"]+)"/;
+						var global_regex = new RegExp(regex, "g");
+
+						var match = resp.responseText.match(global_regex);
+						if (!match) {
+							console_error(cache_key, "Unable to find match for", resp);
+							return done(null, false);
+						}
+
+						var values = {};
+
+						for (var i = 0; i < match.length; i++) {
+							var smatch = match[i].match(regex);
+
+							var key = smatch[1];
+							var value = smatch[2];
+
+							values[key] = value;
+						}
+
+						values.finalUrl = resp.finalUrl;
+
+						done(values, 60*60);
+					});
+				};
+
+				if (options.do_request && options.cb) {
+					query_tnaflix_site(id, function(data) {
+						query_tnaflix_api(data, options.cb);
+					});
+
+					return {
+						waiting: true
+					};
+				}
+			}
 		}
 
 		if (domain === "image.gala.de") {
@@ -63948,6 +64119,115 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain_nowww === "eporner.com") {
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:hd-porn|embed)\/+([0-9a-zA-Z]+)\/+/);
+			if (match) {
+				id = match[1];
+
+				var eporner_hash_mod = function(hash) {
+					var output = "";
+
+					for (var i = 0; i < 4; i++) {
+						var section = hash.substring(i * 8, (i + 1) * 8);
+						output += parseInt(section, 16).toString(36);
+					}
+
+					return output;
+				};
+
+				var query_eporner_api = function(data, cb) {
+					if (!data) {
+						return cb(page_nullobj);
+					}
+
+					api_query("eporner_api:" + data.vid, {
+						url: "https://www.eporner.com/xhr/video/" + data.vid + "?hash=" + eporner_hash_mod(data.hash) + "&domain=www.eporner.com&fallback=false&embed=false&supportedFormats=dash,mp4",
+						headers: {
+							Referer: "https://www.eporner.com/",
+							Accept: "*/*"
+						},
+						json: true
+					}, cb, function(done, resp, cache_key) {
+						if (resp.code !== 0 || resp.message) {
+							console_error(cache_key, "Failed to load from eporner api", resp);
+							return done(page_nullobj, false);
+						}
+
+						var baseobj = {
+							headers: {
+								Referer: "https://www.eporner.com/"
+							}
+						};
+
+						urls = [];
+
+						if (resp.sources.mp4) {
+							var sources = resp.sources.mp4;
+							var sources_urls = [];
+							for (var key in sources) {
+								if (!sources[key].src)
+									continue;
+
+								sources_urls.push({
+									url: sources[key].src,
+									quality: parseInt(key)
+								});
+							}
+
+							sources_urls.sort(function(a, b) {
+								return b.quality - a.quality;
+							});
+
+							for (var i = 0; i < sources_urls.length; i++) {
+								delete sources_urls[i].quality;
+								urls.push(sources_urls[i]);
+							}
+						}
+
+						urls.push(page_nullobj);
+
+						return done(fillobj_urls(urls, baseobj), 60*60);
+					});
+				};
+
+				var query_eporner_site = function(vid, cb) {
+					api_query("eporner_site:" + vid, {
+						url: "https://www.eporner.com/hd-porn/" + vid + "/"
+					}, cb, function(done, resp, cache_key) {
+						var match = resp.responseText.match(/hash: '([0-9a-f]{10,})',/);
+						if (!match) {
+							console_error(cache_key, "Unable to find hash for", resp);
+							return done(null, false);
+						}
+
+						var hash = match[1];
+
+						return done({
+							hash: hash,
+							vid: vid
+						}, 10*60);
+					});
+				};
+
+				page_nullobj = {
+					url: src,
+					is_pagelink: true
+				};
+
+				if (options.do_request && options.cb) {
+					query_eporner_site(id, function(data) {
+						query_eporner_api(data, options.cb);
+					});
+
+					return {
+						waiting: true
+					};
+				} else {
+					return page_nullobj;
+				}
+			}
+		}
+
 
 
 
@@ -64451,6 +64731,9 @@ var $$IMU_EXPORT$$;
 			// https://canvas-bridge02.tubitv.com/3aK622OtdubAPkGLG10S_b_W8Uc=/0x0:3000x1111/1920x676/smart/img.adrise.tv/93ce5dfe-ac5f-404a-9d90-d4ad99ece321.jpg
 			//   http://img.adrise.tv/93ce5dfe-ac5f-404a-9d90-d4ad99ece321.jpg
 			(domain_nosub === "tubitv.com" && /^canvas-bridge[0-9]*\./.test(domain)) ||
+			// https://tcdn.couchsurfing.com/f5Zrw-e1cOqBKOK0fZEXDr-9Pkw=/200x200/smart/https://s3.amazonaws.com/images.couchsurfing.us/LVDN3RK/12303307_l_6c9bbb28ff499cac870b4a9e9f58c618.jpg
+			//   https://s3.amazonaws.com/images.couchsurfing.us/LVDN3RK/12303307_l_6c9bbb28ff499cac870b4a9e9f58c618.jpg
+			domain === "tcdn.couchsurfing.com" ||
 			src.match(/:\/\/[^/]*\/thumbor\/[^/]*=\//) ||
 			// https://www.orlandosentinel.com/resizer/tREpzmUU7LJX1cbkAN-unm7wL0Y=/fit-in/800x600/top/filters:fill(black)/arc-anglerfish-arc2-prod-tronc.s3.amazonaws.com/public/XC6HBG2I4VHTJGGCOYVPLBGVSM.jpg
 			//   http://arc-anglerfish-arc2-prod-tronc.s3.amazonaws.com/public/XC6HBG2I4VHTJGGCOYVPLBGVSM.jpg
