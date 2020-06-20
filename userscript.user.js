@@ -35383,6 +35383,7 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "asianleak.com" ||
 			// https://pr1.zbporn.tv/contents/videos/600000/600573/600573_short_preview.mp4
 			domain_nosub === "zbporn.tv" ||
+			domain_nosub === "zbporn.com" ||
 			// https://dato.porn/contents/videos_screenshots/104000/104828/320x180/1.jpg
 			domain_nowww === "dato.porn" ||
 			// https://smutr.com/contents/videos_screenshots/33000/33141/241x143/3.jpg
@@ -35442,6 +35443,7 @@ var $$IMU_EXPORT$$;
 			domain_nosub === "fetishshrine.com" ||
 			domain_nowww === "x18.xxx" ||
 			domain_nosub === "mt-static.com" ||
+			domain_nosub === "slutload-media.com" ||
 			// different system
 			// https://static2.tubepornclassic.com/contents/videos_screenshots/1051000/1051741/240x180/1.jpg
 			//domain_nosub === "tubepornclassic.com" ||
@@ -35466,7 +35468,7 @@ var $$IMU_EXPORT$$;
 			id = null;
 			// https://statics.cdntrex.com/contents/videos_screenshots/1047000/1047563/300x168/1.jpg?v=3
 			// https://statics.cdntrex.com/contents/videos_screenshots/1061000/1061072/preview.mp4.jpg
-			match = src.match(/\/(?:videos_screenshots|vth)\/+[0-9]+\/+([0-9]+)\/+(?:[0-9]+x[0-9]+\/+|preview(?:_trailer)?\.)/);
+			match = src.match(/\/(?:videos_screenshots|vth|kvs)\/+[0-9]+\/+([0-9]+)\/+(?:[0-9]+x[0-9]+\/+|preview(?:_trailer)?\.)/);
 			if (!match) {
 				match = src.match(/\/get_file\/+[0-9a-f]+\/+[0-9a-f]{30,}\/+[0-9a-f]\/+([0-9]+)\/+screenshots\/+/);
 			}
@@ -35534,6 +35536,11 @@ var $$IMU_EXPORT$$;
 				basedomain = "https://www.megatube.xxx/";
 			} else if (domain_nosub === "tube-bunny.com") {
 				videos_component = "watch";
+			} else if (domain_nosub === "slutload-media.com") {
+				videos_component = "embed";
+				addslash = "";
+				a_component = "";
+				basedomain = "https://www.slutload.com/";
 			}
 
 			var fixup_function_url = function(flashvars) {
@@ -35879,6 +35886,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "vjav.com" ||
+			domain_nowww === "upornia.com" ||
 			domain_nowww === "hdzog.com") {
 			match = src.match(/^[a-z]+:\/\/[^/]+\/+videos\/+([0-9]+)\/+/);
 			if (match) {
@@ -35986,10 +35994,12 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "cdn69508963.ahacdn.me" ||
+			domain === "cdn35854568.ahacdn.me" ||
 			domain === "cdn39638151.ahacdn.me") {
 			var basedomain_map = {
 				"cdn69508963.ahacdn.me": "hdzog.com",
-				"cdn39638151.ahacdn.me": "vjav.com"
+				"cdn39638151.ahacdn.me": "vjav.com",
+				"cdn35854568.ahacdn.me": "upornia.com"
 			};
 			var basedomain = basedomain_map[domain];
 			match = src.match(/\/c[0-9]*\/+videos\/+[0-9]+\/+([0-9]+)\/+[0-9]+_tr\./);
