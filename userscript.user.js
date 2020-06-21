@@ -7675,7 +7675,7 @@ var $$IMU_EXPORT$$;
 				do_request({
 					// &ratio=1080p actually lowers the resolution to 480x* (instead of 576x*):
 					// https://www.tiktok.com/@mariamenounos/video/6830547359403937030
-					url: "https://api.tiktokv.com/aweme/v1/playwm/?video_id=" + vidid + "&line=0&ratio=1080p&media_type=4&vr_type=0&is_play_url=1&quality_type=1&is_support_h265=1&source=PackSourceEnum_AWEME_DETAIL&improve_bitrate=1",
+					url: "https://api.tiktokv.com/aweme/v1/playwm/?video_id=" + vidid + "&line=0&ratio=720p&media_type=4&vr_type=0&is_play_url=1&quality_type=1&is_support_h265=1&source=PackSourceEnum_AWEME_DETAIL&improve_bitrate=1",
 					headers: {
 						Referer: "https://www.tiktok.com/"
 					},
@@ -41094,6 +41094,9 @@ var $$IMU_EXPORT$$;
 			// https://www.xgn.nl/images/articles/2018/201804/_360x202_crop_center-center_82_line/heel-veel-gta-muziek-verwijdert-uit-de-game-130674.jpg
 			//   https://www.xgn.nl/images/articles/2018/201804/heel-veel-gta-muziek-verwijdert-uit-de-game-130674.jpg
 			domain_nowww === "xgn.nl" ||
+			// https://www.sandinyoureye.co.uk/files/gallery/_306x306_crop_Center-Center_80/professional-ice-sculpture_ice-carving_Bradford.jpg
+			//   https://www.sandinyoureye.co.uk/files/gallery/professional-ice-sculpture_ice-carving_Bradford.jpg
+			domain_nowww === "sandinyoureye.co.uk" ||
 			// https://cache.wizardworld.com/files/wizard/_164xAUTO_fit_center-center_100/rampage-trailer-1-feature.png
 			//   https://cache.wizardworld.com/files/wizard/rampage-trailer-1-feature.png
 			domain === "cache.wizardworld.com") {
@@ -41101,6 +41104,7 @@ var $$IMU_EXPORT$$;
 			//   https://www.elle.co.za/uploads/files/Screen-Shot-2018-03-09-at-11.17.38-AM.png
 			return src.replace(/\/+_[0-9AUTO]+x[0-9AUTO]+_(?:crop|fit)_[^/]+\/+/, "/");
 			//return src.replace(/(\/files\/+wizard\/+)_[AUTOx0-9]+_[^/]*\//, "$1");
+			//return src.replace(/\/files\/+gallery\/+_[0-9]+x[0-9]+_[^/]*\/+/, "/files/gallery/");
 		}
 
 		if (domain_nowww === "kartinnay-galerey.ru") {
@@ -47953,12 +47957,6 @@ var $$IMU_EXPORT$$;
 			// http://www.weddingandpartynetwork.com/gallery/photos/thumb/6530
 			//   http://www.weddingandpartynetwork.com/gallery/photos/6530
 			return src.replace(/\/gallery\/+photos\/+thumb\/+([0-9]+)(?:[?#].*)?$/, "/gallery/photos/$1");
-		}
-
-		if (domain_nowww === "sandinyoureye.co.uk") {
-			// https://www.sandinyoureye.co.uk/files/gallery/_306x306_crop_Center-Center_80/professional-ice-sculpture_ice-carving_Bradford.jpg
-			//   https://www.sandinyoureye.co.uk/files/gallery/professional-ice-sculpture_ice-carving_Bradford.jpg
-			return src.replace(/\/files\/+gallery\/+_[0-9]+x[0-9]+_[^/]*\/+/, "/files/gallery/");
 		}
 
 		if (domain_nowww === "foto4ka.com") {
