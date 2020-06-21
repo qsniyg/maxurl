@@ -7675,7 +7675,7 @@ var $$IMU_EXPORT$$;
 				do_request({
 					// &ratio=1080p actually lowers the resolution to 480x* (instead of 576x*):
 					// https://www.tiktok.com/@mariamenounos/video/6830547359403937030
-					url: "https://api2-16-h2.musical.ly/aweme/v1/play/?video_id=" + vidid + "&line=0&ratio=720p&media_type=4&vr_type=0&is_play_url=1&quality_type=1&is_support_h265=1&source=PackSourceEnum_AWEME_DETAIL&improve_bitrate=1",
+					url: "https://api.tiktokv.com/aweme/v1/playwm/?video_id=" + vidid + "&line=0&ratio=1080p&media_type=4&vr_type=0&is_play_url=1&quality_type=1&is_support_h265=1&source=PackSourceEnum_AWEME_DETAIL&improve_bitrate=1",
 					headers: {
 						Referer: "https://www.tiktok.com/"
 					},
@@ -10934,7 +10934,9 @@ var $$IMU_EXPORT$$;
 			 //   https://pbs.twimg.com/ad_img/1228452474039619584/WZtokGPI?format=jpg&name=orig
 			 // https://pbs.twimg.com/semantic_core_img/1236969872543768578/18vxA6iq?format=jpg&name=240x240
 			 //   https://pbs.twimg.com/semantic_core_img/1236969872543768578/18vxA6iq?format=jpg&name=orig
-			 /:\/\/[^/]+\/+(?:media|(?:card|ad|semantic_core)_img|ext_tw_video_thumb)\//.test(src)) ||
+			 // https://pbs.twimg.com/tweet_video_thumb/EXNl_O1XQAEKPTh.jpg:thumb
+			 //   https://pbs.twimg.com/tweet_video_thumb/EXNl_O1XQAEKPTh.png?name=orig
+			 /:\/\/[^/]+\/+(?:media|(?:card|ad|semantic_core)_img|(?:ext_tw|tweet)_video_thumb)\//.test(src)) ||
 			(domain === "ton.twitter.com" &&
 			 string_indexof(src, "/ton/data/dm/") >= 0)) {
 			// use ?name=orig instead of :orig, see:
@@ -11113,6 +11115,41 @@ var $$IMU_EXPORT$$;
 						caption: caption
 					}
 				};
+			}
+		}
+
+		if ((domain_nowww === "nitter.net" ||
+			 // https://github.com/zedeus/nitter/wiki/Instances
+			 domain === "nitter.nixnet.services" ||
+			 domain === "nitter.13ad.de" ||
+			 domain === "tw.openalgeria.org" ||
+			 domain === "nitter.pussthecat.org" ||
+			 domain === "nitter.mastodont.cat" ||
+			 domain === "nitter.dark.fail" ||
+			 domain === "nitter.tedomum.net" ||
+			 domain === "t.maisputain.ovh" ||
+			 domain === "nitter.cattube.org" ||
+			 domain === "nitter.fdn.fr" ||
+			 domain === "nitter.1d4.us" ||
+			 domain === "nitter.kavin.rocks" ||
+			 domain === "nitter.42l.fr" ||
+			 domain === "nitter.snopyta.org") && string_indexof(src, "/pic/") >= 0) {
+			// thanks to Rnksts on discord
+			// https://nitter.net/pic/profile_images%2F1229633518826901506%2FHEuZ9fcX_400x400.jpg
+			//   https://pbs.twimg.com/profile_images/1229633518826901506/HEuZ9fcX.jpg
+			// https://nitter.net/pic/media%2FEQru8x6WsAIz_eY.jpg%3Fname%3Dsmall
+			//   https://pbs.twimg.com/media/EQru8x6WsAIz_eY.jpg?name=orig
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+pic\/+(.*)$/, "$1");
+			if (newsrc !== src) {
+				newsrc = decodeURIComponent(newsrc);
+
+				// https://nitter.net/pic/video.twimg.com%2Ftweet_video%2FEXNl_O1XQAEKPTh.mp4
+				//   https://video.twimg.com/tweet_video/EXNl_O1XQAEKPTh.mp4
+				if (string_indexof(newsrc, "video.twimg.com") === 0) {
+					return urljoin("https://video.twimg.com/", newsrc.replace(/^[^/]*\//, "/"), true);
+				}
+
+				return urljoin("https://pbs.twimg.com/", "/" + decodeURIComponent(newsrc), true);
 			}
 		}
 
@@ -63901,7 +63938,7 @@ var $$IMU_EXPORT$$;
 
 				var decode_hclips_base64 = function(data) {
 					var charset = decodeURIComponent("%D0%90%D0%92%D0%A1D%D0%95FGHIJKL%D0%9CNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.%2C~"),
-                        output = "";
+						output = "";
 
 					var invalid_regex = new RegExp(decodeURIComponent("%5B%5E%D0%90%D0%92%D0%A1%D0%95%D0%9CA-Za-z0-9.%2C~%5D"), "g");
 					if (invalid_regex.exec(data)) {
@@ -63911,13 +63948,13 @@ var $$IMU_EXPORT$$;
 					data = data.replace(invalid_regex, "");
 
 					for (var i = 0; i < data.length;) {
-                        var c1 = charset.indexOf(data.charAt(i++)),
-                            c2 = charset.indexOf(data.charAt(i++)),
-                            c3 = charset.indexOf(data.charAt(i++)),
+						var c1 = charset.indexOf(data.charAt(i++)),
+							c2 = charset.indexOf(data.charAt(i++)),
+							c3 = charset.indexOf(data.charAt(i++)),
 							c4 = charset.indexOf(data.charAt(i++));
 
-                        c1 = c1 << 2 | c2 >> 4;
-                        c2 = (15 & c2) << 4 | c3 >> 2;
+						c1 = c1 << 2 | c2 >> 4;
+						c2 = (15 & c2) << 4 | c3 >> 2;
 						var last = (3 & c3) << 6 | c4;
 
 						output += String.fromCharCode(c1);
