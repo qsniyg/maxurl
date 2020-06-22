@@ -35924,6 +35924,7 @@ var $$IMU_EXPORT$$;
 
 		if (domain_nowww === "vjav.com" ||
 			domain_nowww === "upornia.com" ||
+			domain_nowww === "tubepornclassic.com" ||
 			domain_nowww === "hdzog.com") {
 			match = src.match(/^[a-z]+:\/\/[^/]+\/+videos\/+([0-9]+)\/+/);
 			if (match) {
@@ -35952,8 +35953,16 @@ var $$IMU_EXPORT$$;
 							var origurl = url;
 							url = url.replace(/\u041c/g, 'M').replace(/\u0415/g, 'E').replace(/\u0410/g, 'A').replace(/\u0421/g, 'C').replace(/~/g, '=');
 
+							// tubepornclassic
+							var splitted = url.split(",");
+
 							try {
-								return base64_decode(url);
+								url = base64_decode(splitted[0]);
+								if (splitted.length > 1) {
+									url += "?" + base64_decode(splitted[1]);
+								}
+
+								return url;
 							} catch (e) {
 								console_error(cache_key, "Unable to properly decode", url);
 								throw e;
@@ -36032,11 +36041,13 @@ var $$IMU_EXPORT$$;
 
 		if (domain === "cdn69508963.ahacdn.me" ||
 			domain === "cdn35854568.ahacdn.me" ||
+			domain === "cdn37699375.ahacdn.me" ||
 			domain === "cdn39638151.ahacdn.me") {
 			var basedomain_map = {
 				"cdn69508963.ahacdn.me": "hdzog.com",
 				"cdn39638151.ahacdn.me": "vjav.com",
-				"cdn35854568.ahacdn.me": "upornia.com"
+				"cdn35854568.ahacdn.me": "upornia.com",
+				"cdn37699375.ahacdn.me": "tubepornclassic.com"
 			};
 			var basedomain = basedomain_map[domain];
 			match = src.match(/\/c[0-9]*\/+videos\/+[0-9]+\/+([0-9]+)\/+[0-9]+_tr\./);
@@ -37184,6 +37195,9 @@ var $$IMU_EXPORT$$;
 			// http://gals.sextronix.com/slovakteensclub/pic/56/tn_01.jpg
 			//   http://gals.sextronix.com/slovakteensclub/pic/56/01.jpg
 			domain === "gals.sextronix.com" ||
+			// https://fhg.baberotica.com/Nia_Nacci/03/hard/baberotica_tn_01.jpg
+			//   https://fhg.baberotica.com/Nia_Nacci/03/hard/baberotica_01.jpg
+			domain === "fhg.baberotica.com" ||
 			// http://pornodontstop.com/gallery/fucasvz/7980/tn_002.jpg
 			//   http://pornodontstop.com/gallery/fucasvz/7980/002.jpg
 			domain_nosub === "pornodontstop.com") {
@@ -64296,6 +64310,20 @@ var $$IMU_EXPORT$$;
 				url: newsrc,
 				can_head: false // 403
 			};
+		}
+
+		if (domain_nosub === "litres.ru") {
+			// https://cv6.litres.ru/pub/c/elektronnaya-kniga/cover_200/18488161-anzhela-marsons-nemoy-krik-18488161.jpg
+			//   https://cv6.litres.ru/pub/c/elektronnaya-kniga/cover_h190/18488161-anzhela-marsons-nemoy-krik-18488161.jpg
+			//   https://cv6.litres.ru/pub/c/elektronnaya-kniga/cover/18488161-anzhela-marsons-nemoy-krik-18488161.jpg
+			return src.replace(/\/cover_[wh]?[0-9]+\/+/, "/cover/");
+		}
+
+		if (domain === "d3el26csp1xekx.cloudfront.net") {
+			// thanks to remlap on discord (cameo.com)
+			// https://d3el26csp1xekx.cloudfront.net/v/wm-o5WwywATT.mp4
+			//   https://d3el26csp1xekx.cloudfront.net/v/no-wm-o5WwywATT.mp4
+			return src.replace(/(\/v\/+)(wm-)/, "$1no-$2");
 		}
 
 
