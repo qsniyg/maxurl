@@ -62283,6 +62283,12 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "imagery.zoogletools.com" ||
+			// https://s3.amazonaws.com/content.sitezoogle.com/u/243801/88f8a590bc091005ed1823c00dca5bc173e97c89/photo/rnr-interview.jpg
+			//   https://s3.amazonaws.com/content.sitezoogle.com/u/243801/88f8a590bc091005ed1823c00dca5bc173e97c89/original/rnr-interview.jpg
+			amazon_container === "content.sitezoogle.com" ||
+			// http://content.sitezoogle.com/u/243801/88f8a590bc091005ed1823c00dca5bc173e97c89/photo/rnr-interview.jpg
+			//   http://content.sitezoogle.com/u/243801/88f8a590bc091005ed1823c00dca5bc173e97c89/original/rnr-interview.jpg
+			domain === "content.sitezoogle.com" ||
 			// https://s3.amazonaws.com/zoogle-imager-production-2020/u/333257/1349c4b77893af624e4e8ca9650d49bfcdeac1ef/original/untitled-1.jpg/!!/b%3AW1siZXh0cmFjdCIseyJsZWZ0IjoxMDMsInRvcCI6NTMsIndpZHRoIjo1NzQ0LCJoZWlnaHQiOjI5NzZ9XSxbInJlc2l6ZSIsMTYwMF0sWyJtYXgiXSxbIndlIl1d.jpg
 			//   https://s3.amazonaws.com/zoogle-imager-production-2020/u/333257/1349c4b77893af624e4e8ca9650d49bfcdeac1ef/original/untitled-1.jpg
 			amazon_container === "zoogle-imager-production-2020") {
@@ -62290,8 +62296,18 @@ var $$IMU_EXPORT$$;
 			//   https://s3.amazonaws.com/zoogle-imager-production-2020/u/333257/1349c4b77893af624e4e8ca9650d49bfcdeac1ef/original/untitled-1.jpg
 			// atob("W1siZXh0cmFjdCIseyJsZWZ0IjoxMDMsInRvcCI6NTMsIndpZHRoIjo1NzQ0LCJoZWlnaHQiOjI5NzZ9XSxbInJlc2l6ZSIsMTYwMF0sWyJtYXgiXSxbIndlIl1d")
 			//   = [["extract",{"left":103,"top":53,"width":5744,"height":2976}],["resize",1600],["max"],["we"]]
+			// thanks to nimuxoha on github: https://github.com/qsniyg/maxurl/issues/363
+			// https://imagery.zoogletools.com/u/243801/88f8a590bc091005ed1823c00dca5bc173e97c89/thumb/rnr-interview.jpg
+			//   https://imagery.zoogletools.com/u/243801/88f8a590bc091005ed1823c00dca5bc173e97c89/thumbnail/rnr-interview.jpg
+			//   https://imagery.zoogletools.com/u/243801/88f8a590bc091005ed1823c00dca5bc173e97c89/small/rnr-interview.jpg
+			//   https://imagery.zoogletools.com/u/243801/88f8a590bc091005ed1823c00dca5bc173e97c89/medium/rnr-interview.jpg
+			//   https://imagery.zoogletools.com/u/243801/88f8a590bc091005ed1823c00dca5bc173e97c89/large/rnr-interview.jpg
+			//   https://imagery.zoogletools.com/u/243801/88f8a590bc091005ed1823c00dca5bc173e97c89/photo/rnr-interview.jpg
+			//   https://imagery.zoogletools.com/u/243801/88f8a590bc091005ed1823c00dca5bc173e97c89/original/rnr-interview.jpg
 			return {
-				url: src.replace(/(\/u\/+[0-9]+\/+[0-9a-f]{10,}\/+[^/]+\/+[^/]+)\/+!!\/.*/, "$1"),
+				url: src
+					.replace(/(\/u\/+[0-9]+\/+[0-9a-f]{10,}\/+)[a-z]+(\/+[^/]+\.[^/.]+)(?:[?#].*)?$/, "$1original$2")
+					.replace(/(\/u\/+[0-9]+\/+[0-9a-f]{10,}\/+[^/]+\/+[^/]+)\/+!!\/.*/, "$1"),
 				can_head: false // 403
 			};
 		}
