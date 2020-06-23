@@ -7639,8 +7639,20 @@ var $$IMU_EXPORT$$;
 					var match = resp.responseText.match(/mdtacomment[\s\S]{10,400}vid:([0-9a-z]{32})/);
 					// after that, it stores 0, 0, 0, 37, with 37 being the length of vid:..., is this related?
 					if (!match) {
-						if (resp.readyState !== 4)
+						if (false) {
+							var is_orig = /mdta[\s\S]{10,400}mdtacom\.apple\.quicktime\.description/.test(resp.responseText);
+							if (is_orig) {
+								request_handle.abort();
+								request_aborted = true;
+
+								console_log("Probably original video, skipping remainder of download", url);
+								return done(null, 60*60);
+							}
+						}
+
+						if (resp.readyState !== 4) {
 							return;
+						}
 
 						if (resp.readyState === 4) {
 							request_handle.abort();
@@ -7676,7 +7688,7 @@ var $$IMU_EXPORT$$;
 					// &ratio=1080p actually lowers the resolution to 480x* (instead of 576x*):
 					// &ratio=default returns the original version (thanks to remlap on discord)
 					// https://www.tiktok.com/@mariamenounos/video/6830547359403937030
-					url: "https://api.tiktokv.com/aweme/v1/playwm/?video_id=" + vidid + "&line=0&ratio=default&media_type=4&vr_type=0&is_play_url=1&quality_type=1&is_support_h265=1&source=PackSourceEnum_AWEME_DETAIL&improve_bitrate=1",
+					url: "https://api.tiktokv.com/aweme/v1/playwm/?video_id=" + vidid + "&ratio=default&improve_bitrate=1",
 					headers: {
 						Referer: "https://www.tiktok.com/"
 					},
@@ -7693,7 +7705,17 @@ var $$IMU_EXPORT$$;
 							return done(null, false);
 						}
 
-						return done(force_https(get_resp_finalurl(resp)), 60*60);
+						var finalurl = force_https(get_resp_finalurl(resp));
+						var finalurl_urlvidid = common_functions.get_tiktok_urlvidid(finalurl);
+						if (finalurl_urlvidid) {
+							var finalurl_cache_key = "tiktok_vidid:" + finalurl_urlvidid;
+
+							if (!api_cache.has(finalurl_cache_key)) {
+								api_cache.set(finalurl_cache_key, vidid, 60*60);
+							}
+						}
+
+						return done(finalurl, 60*60);
 					}
 				});
 			});
