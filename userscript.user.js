@@ -7674,6 +7674,7 @@ var $$IMU_EXPORT$$;
 			api_cache.fetch(cache_key, cb, function(done) {
 				do_request({
 					// &ratio=1080p actually lowers the resolution to 480x* (instead of 576x*):
+					// &ratio=default returns the original version (thanks to remlap on discord)
 					// https://www.tiktok.com/@mariamenounos/video/6830547359403937030
 					url: "https://api.tiktokv.com/aweme/v1/playwm/?video_id=" + vidid + "&line=0&ratio=default&media_type=4&vr_type=0&is_play_url=1&quality_type=1&is_support_h265=1&source=PackSourceEnum_AWEME_DETAIL&improve_bitrate=1",
 					headers: {
