@@ -7684,40 +7684,65 @@ var $$IMU_EXPORT$$;
 		var get_nowatermark_for_vidid = function(vidid, cb) {
 			var cache_key = "tiktok_watermarkfree:" + vidid;
 			api_cache.fetch(cache_key, cb, function(done) {
-				do_request({
-					// &ratio=1080p actually lowers the resolution to 480x* (instead of 576x*):
-					// &ratio=default returns the original version (thanks to remlap on discord)
-					// https://www.tiktok.com/@mariamenounos/video/6830547359403937030
-					url: "https://api.tiktokv.com/aweme/v1/playwm/?video_id=" + vidid + "&ratio=default&improve_bitrate=1",
-					headers: {
-						Referer: "https://www.tiktok.com/"
-					},
-					method: "HEAD",
-					onload: function(resp) {
-						if (resp.readyState !== 4)
-							return;
+				var request_url = "https://api.tiktokv.com/aweme/v1/playwm/?video_id=" + vidid + "&ratio=default&improve_bitrate=1";
 
-						// https://www.tiktok.com/@auliicravalho/video/6813323310521224454 - returns 302
-						// sometimes it can return 503 (service unavailable), but still return a video url (thanks to JoshuaCalvert on discord for reporting)
-						//   it still doesn't work though, so let's not check for that?
-						if (resp.status !== 200 && resp.status !== 302 /*&& string_indexof(resp.finalUrl, "/video/") <= 0*/) {
-							console_error(resp);
-							return done(null, false);
-						}
+				var request_video = function(times) {
+					do_request({
+						// &ratio=1080p actually lowers the resolution to 480x* (instead of 576x*):
+						// &ratio=default returns the original version (thanks to remlap on discord)
+						// https://www.tiktok.com/@mariamenounos/video/6830547359403937030
+						url: request_url,
+						headers: {
+							Referer: "https://www.tiktok.com/",
+							Accept: "text/html"
+						},
+						method: "HEAD",
+						onload: function(resp) {
+							if (resp.readyState !== 4)
+								return;
 
-						var finalurl = force_https(get_resp_finalurl(resp));
-						var finalurl_urlvidid = common_functions.get_tiktok_urlvidid(finalurl);
-						if (finalurl_urlvidid) {
-							var finalurl_cache_key = "tiktok_vidid:" + finalurl_urlvidid;
-
-							if (!api_cache.has(finalurl_cache_key)) {
-								api_cache.set(finalurl_cache_key, vidid, 60*60);
+							// https://www.tiktok.com/@auliicravalho/video/6813323310521224454 - returns 302
+							// sometimes it can return 503 (service unavailable), but still return a video url (thanks to JoshuaCalvert on discord for reporting)
+							//   the video url still doesn't work though, so let's not check for that?
+							if (resp.status === 503) {
+								if (times < 5) {
+									return setTimeout(function() {
+										request_video(times + 1);
+									}, 500);
+								}
 							}
-						}
 
-						return done(finalurl, 60*60);
-					}
-				});
+							if (resp.status !== 200 && resp.status !== 302 /*&& string_indexof(resp.finalUrl, "/video/") <= 0*/) {
+								console_error(resp);
+								return done(null, false);
+							}
+
+							var finalurl = force_https(get_resp_finalurl(resp));
+
+							// probably the application/json, content-length: 0 bug
+							if (finalurl === request_url) {
+								if (times < 5) {
+									return setTimeout(function() {
+										request_video(times + 1);
+									}, 500);
+								}
+							}
+
+							var finalurl_urlvidid = common_functions.get_tiktok_urlvidid(finalurl);
+							if (finalurl_urlvidid) {
+								var finalurl_cache_key = "tiktok_vidid:" + finalurl_urlvidid;
+
+								if (!api_cache.has(finalurl_cache_key)) {
+									api_cache.set(finalurl_cache_key, vidid, 60*60);
+								}
+							}
+
+							return done(finalurl, 60*60);
+						}
+					});
+				};
+
+				request_video(0);
 			});
 		};
 
