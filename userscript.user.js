@@ -7675,7 +7675,7 @@ var $$IMU_EXPORT$$;
 				do_request({
 					// &ratio=1080p actually lowers the resolution to 480x* (instead of 576x*):
 					// https://www.tiktok.com/@mariamenounos/video/6830547359403937030
-					url: "https://api.tiktokv.com/aweme/v1/playwm/?video_id=" + vidid + "&line=0&ratio=720p&media_type=4&vr_type=0&is_play_url=1&quality_type=1&is_support_h265=1&source=PackSourceEnum_AWEME_DETAIL&improve_bitrate=1",
+					url: "https://api.tiktokv.com/aweme/v1/playwm/?video_id=" + vidid + "&line=0&ratio=default&media_type=4&vr_type=0&is_play_url=1&quality_type=1&is_support_h265=1&source=PackSourceEnum_AWEME_DETAIL&improve_bitrate=1",
 					headers: {
 						Referer: "https://www.tiktok.com/"
 					},
@@ -10101,6 +10101,14 @@ var $$IMU_EXPORT$$;
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/v3\/+[a-z]+\/+image\/?.*?[?&]url=(http[^&]*).*/, "$1");
 			if (newsrc !== src)
 				return decodeuri_ifneeded(newsrc);
+		}
+
+		if (domain === "g.foolcdn.com") {
+			// https://g.foolcdn.com/image/?url=https%3A//g.foolcdn.com/editorial/images/579023/wb_hub_1200x678_arkham_city_1_190710-image-1.jpg&w=2000&op=resize
+			//   https://g.foolcdn.com/editorial/images/579023/wb_hub_1200x678_arkham_city_1_190710-image-1.jpg
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+image\/+\?(?:.*&)?url=([^&]+).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeURIComponent(newsrc);
 		}
 
 		/*if (false && string_indexof(domain, ".photoshelter.com") >= 0) {
@@ -54349,14 +54357,63 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if (domain === "static.aryion.com") {
+		if (domain_nosub === "aryion.com") {
 			// https://static.aryion.com/g4/thumb/547402-73531-thumb.auto.jpg
 			//   https://static.aryion.com/g4/thumb/547402-73531-thumb.auto.jpg/test.jpg
 			//   https://static.aryion.com/g4/data/547402-73531.png
 			//   https://aryion.com/g4/view/547402
+			// https://static.aryion.com/g4/thumb/612844-88489-thumb.225-285-571-571.crop.jpg
+			//   https://aryion.com/g4/derivative/612844-88489-1uxsl5a-preview.jpg
+			//   https://aryion.com/g4/data/612844-88489-1uxsl5i.png/doomfister-612844-spitfire_spitroast.png
 			// doesn't work for all:
 			// https://static.aryion.com/g4/thumb/204167-29583-thumb.jpg
 			//   https://aryion.com/g4/view/204167
+
+			match = src.match(/\/(g[0-9]+)\/+(?:thumb|derivative)\/+([0-9]+)-[0-9]+/);
+			if (match && options.do_request && options.cb) {
+				var query_aryion = function(gn, id, cb) {
+					api_query("aryion:" + gn + ":" + id, {
+						url: "https://aryion.com/" + gn + "/view/" + id
+					}, cb, function(done, resp, cache_key) {
+						var match = resp.responseText.match(/var fullData\s*=\s*({.*?});/);
+						if (!match) {
+							console_error(cache_key, "Unable to find match for", resp);
+							return done(null, false);
+						}
+
+						var json = JSON_parse(match[1]);
+
+						if (!json.data_path) {
+							console_error(cache_key, "Unable to find path in", json);
+							return done(null, false);
+						}
+
+						obj = {
+							url: urljoin(resp.finalUrl, json.data_path, true),
+							extra: {
+								page: resp.finalUrl
+							}
+						};
+
+						match = resp.responseText.match(/var itemTitle\s*=\s*(".*?");/);
+						if (match) {
+							try {
+								obj.extra.caption = JSON_parse(match[1]);
+							} catch (e) {
+								console_error(cache_key, e);
+							}
+						}
+
+						return done(obj, 24*60*60);
+					});
+				};
+
+				query_aryion(match[1], match[2], options.cb);
+				return {
+					waiting: true
+				};
+			}
+
 			newsrc = src.replace(/\/thumb\/+([0-9]+-[0-9]+)-thumb(?:\.[^/]*)?(\.[^/.]*)(\/+[^/]*)?(?:[?#].*)?$/, "/data/$1$2");
 			if (newsrc !== src)
 				return add_full_extensions(newsrc);
