@@ -7747,7 +7747,8 @@ var $$IMU_EXPORT$$;
 		var get_nowatermark_for_vidid = function(vidid, cb) {
 			var cache_key = "tiktok_watermarkfree:" + vidid;
 			api_cache.fetch(cache_key, cb, function(done) {
-				var request_url = "https://api.tiktokv.com/aweme/v1/playwm/?video_id=" + vidid + "&ratio=default&improve_bitrate=1";
+				//var request_url = "https://api.tiktokv.com/aweme/v1/playwm/?video_id=" + vidid + "&ratio=default&improve_bitrate=1";
+				var request_url = "https://api2-16-h2.musical.ly/aweme/v1/play/?video_id=" + vidid + "&ratio=default&improve_bitrate=1";
 
 				var request_video = function(times) {
 					do_request({
@@ -7757,7 +7758,11 @@ var $$IMU_EXPORT$$;
 						url: request_url,
 						headers: {
 							Referer: "https://www.tiktok.com/",
-							Accept: "text/html"
+							//Accept: "text/html",
+							Accept: "*/*",
+							"Sec-Fetch-Dest": "video",
+							"Sec-Fetch-Mode": "no-cors",
+							"Sec-Fetch-Site": "cross-site"
 						},
 						method: "HEAD",
 						onload: function(resp) {
