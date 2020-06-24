@@ -6248,6 +6248,69 @@ var $$IMU_EXPORT$$;
 		});
 	};
 
+	common_functions.static_unpack_packer = function(format, base, in_table_length, in_table) {
+		var encode_base62 = function(n) {
+			var output = "";
+
+			if (n >= base) {
+				output = encode_base62(parseInt(n / base));
+			}
+
+			n = n % base;
+
+			if (n > 35) {
+				output += string_fromcharcode(n + 29);
+			} else {
+				output += n.toString(36);
+			}
+
+			return output;
+		};
+
+		var encode_base10 = function(n) {
+			return n + "";
+		};
+
+		var encode_base36 = function(n) {
+			return n.toString(base);
+		};
+
+		var encode;
+		if (base === 62) {
+			encode = encode_base62;
+		} else if (base === 10) {
+			encode = encode_base10;
+		} else {
+			encode = encode_base36;
+		}
+
+		var table = {};
+
+		for (var i = in_table_length; i >= 0; i--) {
+			var encoded = encode(i);
+			table[encoded] = in_table[i] || encoded;
+		}
+
+		return format.replace(/\b\w+\b/g, function(e) {
+			return table[e];
+		});
+	};
+
+	common_functions.unpack_packer = function(packed) {
+		var regex = /eval\(function\(p,a,c,k,e,[rd]\){.*?return p}\('(.*?)',([0-9]+),([0-9]+),'(.*?)'\.split\('[|]'\),0,{}\)\)/;
+		var match = packed.match(regex);
+		if (!match) {
+			return null;
+		}
+
+		var format = match[1];
+		var base = parseInt(match[2]);
+		var table_length = parseInt(match[3]);
+		var table = match[4].split("|");
+
+		return common_functions.static_unpack_packer(format, base, table_length, table);
+	};
+
 	common_functions.instagram_username_from_sharedData = function(json) {
 		if (json.username)
 			return json.username;
@@ -64445,6 +64508,220 @@ var $$IMU_EXPORT$$;
 			// https://d3el26csp1xekx.cloudfront.net/v/wm-o5WwywATT.mp4
 			//   https://d3el26csp1xekx.cloudfront.net/v/no-wm-o5WwywATT.mp4
 			return src.replace(/(\/v\/+)(wm-)/, "$1no-$2");
+		}
+
+		if (domain_nowww === "vidcloud9.com" ||
+			domain_nowww === "vidnode.net") {
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:streaming|load)\.php\?(?:.*&)?id=([^&]+).*?$/);
+			if (match) {
+				id = match[1];
+
+				var query_vidcloud9 = function(vid, cb) {
+					api_query("vidcloud9:" + vid, {
+						url: "https://vidcloud9.com/ajax.php?id=" + vid,
+						headers: {
+							Referer: "https://vidcloud9.com/",
+							"X-Requested-With": "XMLHttpRequest"
+						},
+						json: true
+					}, cb, function(done, resp, cache_key) {
+						var urls = [];
+
+						var baseobj = {
+							headers: {
+								Referer: "https://vidcloud9.com/"
+							}
+						};
+
+						// there's also source_bk (backup?), seems to be the same urls though
+						for (var i = 0; i < resp.source.length; i++) {
+							if (resp.source[i].type !== "hls")
+								continue;
+
+							urls.push({
+								url: resp.source[i].file,
+								video: "hls"
+							});
+						}
+
+						return done(fillobj_urls(urls, baseobj), 60*60);
+					});
+				};
+
+				var page_nullobj = {
+					url: src,
+					is_pagelink: true
+				};
+
+				if (options.cb && options.do_request) {
+					query_vidcloud9(id, function(urls) {
+						if (!urls) {
+							return options.cb(page_nullobj);
+						} else {
+							urls.push(page_nullobj);
+							return options.cb(urls);
+						}
+					});
+
+					return {
+						waiting: true
+					};
+				} else {
+					return page_nullobj;
+				}
+			}
+		}
+
+		if (domain_nowww === "gcloud.live") {
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+v\/+([-a-z0-9]+)(?:[?#].*)?$/);
+			if (match) {
+				id = match[1];
+
+				var query_gcloud_live = function(vid, cb) {
+					api_query("gcloud_live:" + vid, {
+						url: "https://gcloud.live/api/source/" + vid,
+						method: "POST",
+						data: "r=https%3A%2F%2Fgcloud.live%2F&d=gcloud.live",
+						headers: {
+							Origin: "https://gcloud.live",
+							"Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+							"Referer": "https://gcloud.live/v/" + vid,
+							"x-requested-with": "XMLHttpRequest",
+							"Accept": "*/*"
+						},
+						json: true
+					}, cb, function(done, resp, cache_key) {
+						var urls = [];
+
+						var baseobj = {
+							headers: {
+								Referer: "https://gcloud.live.com/"
+							}
+						};
+
+						for (var i = 0; i < resp.data.length; i++) {
+							if (!resp.data[i].file || resp.data[i].type !== "mp4")
+								continue;
+
+							urls.push({url: resp.data[i].file, quality: parseInt(resp.data[i].label)});
+						}
+
+						urls.sort(function(a, b) {
+							return b.quality - a.quality;
+						});
+
+						for (var i = 0; i < urls.length; i++) {
+							delete urls[i].quality;
+						}
+
+						return done(fillobj_urls(urls, baseobj), 60*60);
+					});
+				};
+
+				var page_nullobj = {
+					url: src,
+					is_pagelink: true
+				};
+
+				if (options.cb && options.do_request) {
+					query_gcloud_live(id, function(urls) {
+						if (!urls) {
+							return options.cb(page_nullobj);
+						} else {
+							urls.push(page_nullobj);
+							return options.cb(urls);
+						}
+					});
+
+					return {
+						waiting: true
+					};
+				} else {
+					return page_nullobj;
+				}
+			}
+		}
+
+		if (domain_nowww === "streamvid.co") {
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+player\/+([A-Za-z0-9]+)\/*(?:[?#].*)?$/);
+			if (match) {
+				id = match[1];
+
+				var query_streamvid_co = function(vid, cb) {
+					api_query("streamvid_co:" + vid, {
+						url: "https://streamvid.co/player/" + vid + "/"
+					}, cb, function(done, resp, cache_key) {
+						var match = resp.responseText.match(/<div id="video_player">.*<script[^>]*>JuicyCodes\.Run\((\".*?\")\);<\/script>/);
+						if (!match) {
+							console_error(cache_key, "Unable to find JuicyCodes match for", resp);
+							return done(null, false);
+						}
+
+						var encoded = match[1].replace(/[\s+"]/g, "");
+						var decoded = base64_decode(encoded);
+
+						var unpacked = common_functions.unpack_packer(decoded);
+						if (!unpacked) {
+							console_error(cache_key, "Unable to unpack", decoded, "for", resp);
+							return done(null, false);
+						}
+
+						match = unpacked.match(/sources:(\[{.*?}\]),/);
+						if (!match) {
+							console_error(cache_key, "Unable to find sources in", unpacked);
+							return done(null, false);
+						}
+
+						var sources_json = JSON_parse(match[1]);
+
+						for (var i = 0; i < sources_json.length; i++) {
+							if (sources_json[i].type !== "application/x-mpegURL") {
+								console_warn(cache_key, "Unknown type for", sources_json[i]);
+								continue;
+							}
+
+							if (!sources_json[i].file) {
+								continue;
+							}
+
+							return done([{
+								url: sources_json[i].file,
+								video: "hls",
+								headers: {
+									Origin: "https://streamvid.co",
+									Referer: resp.finalUrl,
+									Accept: "*/*"
+								},
+								can_head: false
+							}], 60*60);
+						}
+
+						return done(null, false);
+					});
+				};
+
+				var page_nullobj = {
+					url: src,
+					is_pagelink: true
+				};
+
+				if (options.cb && options.do_request) {
+					query_streamvid_co(id, function(urls) {
+						if (!urls) {
+							return options.cb(page_nullobj);
+						}
+
+						urls.push(page_nullobj);
+						return options.cb(urls);
+					});
+
+					return {
+						waiting: true
+					};
+				} else {
+					return page_nullobj;
+				}
+			}
 		}
 
 
