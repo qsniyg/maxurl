@@ -4597,7 +4597,8 @@ var $$IMU_EXPORT$$;
 
 			request.onload = function(resp) {
 				if (resp.status !== 200) {
-					console_error(key, resp);
+					if (!request.silent)
+						console_error(key, resp);
 					return done(null, false);
 				}
 
@@ -52179,13 +52180,69 @@ var $$IMU_EXPORT$$;
 			// others:
 			// https://www.famitsu.com/images/000/124/494/5874c0867b874.jpg -- 3000x4500
 			//   https://www.famitsu.com/images/000/124/494/l_5874c0867b874.jpg -- 426x640
+
 			regex = /(\/images\/+(?:[0-9]{3}\/+){3})(?:[tly]_)?([0-9a-f]+\.[^/.]*)(?:[?#].*)?$/;
-			if (regex.test(src)) {
+			var get_larger_famitsu = function(src) {
 				return [
 					src.replace(regex, "$1z_$2"),
 					src.replace(regex, "$1y_$2"),
 					src.replace(regex, "$1l_$2")
 				];
+			};
+
+			if (regex.test(src)) {
+				if (options.do_request && options.cb) {
+					var query_contentlength = function(url, cb) {
+						api_query("contentlength:" + url, {
+							url: url,
+							headers: {
+								Referer: ""
+							},
+							method: "HEAD",
+							silent: true
+						}, cb, function(done, resp, cache_key) {
+							var headers = headers_list_to_dict(parse_headers(resp.responseHeaders));
+
+							if (!("content-length" in headers))
+								return done(null, false);
+
+							return done(parseInt(headers["content-length"]), 60*60);
+						});
+					};
+
+					var larger_urls = get_larger_famitsu(src);
+					var possibly_largest = src.replace(regex, "$1$2");
+					var current_url = possibly_largest;
+
+					query_contentlength(current_url, function(length) {
+						var largest_length = length;
+						var largest_url = current_url;
+
+						var query = function(length) {
+							if (length) {
+								if (length > largest_length) {
+									largest_url = current_url;
+								}
+
+								return options.cb(largest_url);
+							} else if (larger_urls.length > 0) {
+								current_url = larger_urls.shift();
+								query_contentlength(current_url, query);
+							} else {
+								return options.cb(null);
+							}
+						};
+
+						current_url = larger_urls.shift();
+						query_contentlength(current_url, query);
+					});
+
+					return {
+						waiting: true
+					};
+				} else {
+					return get_larger_famitsu(src);
+				}
 			}
 
 			// thanks again to fireattack:
