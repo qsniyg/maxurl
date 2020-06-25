@@ -52181,7 +52181,7 @@ var $$IMU_EXPORT$$;
 			// https://www.famitsu.com/images/000/124/494/5874c0867b874.jpg -- 3000x4500
 			//   https://www.famitsu.com/images/000/124/494/l_5874c0867b874.jpg -- 426x640
 
-			regex = /(\/images\/+(?:[0-9]{3}\/+){3})(?:[tly]_)?([0-9a-f]+\.[^/.]*)(?:[?#].*)?$/;
+			regex = /(\/images\/+(?:[0-9]{3}\/+){3})(?:[tlyz]_)?([0-9a-f]+\.[^/.]*)(?:[?#].*)?$/;
 			var get_larger_famitsu = function(src) {
 				return [
 					src.replace(regex, "$1z_$2"),
