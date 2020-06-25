@@ -23972,7 +23972,8 @@ var $$IMU_EXPORT$$;
 							if (video_query && video_query.src && /(?:muscdn|tiktokcdn)\.com\//.test(video_query.src)) {
 								var obj = {
 									url: video_query.src,
-									video: true
+									video: true,
+									can_head: false
 								};
 
 								return tiktok_finalcb(obj);
@@ -24013,7 +24014,8 @@ var $$IMU_EXPORT$$;
 		if ((domain_nosub === "muscdn.com" || domain_nosub === "tiktokcdn.com") && /^v[0-9]+m?\./.test(domain)) {
 			var baseobj = {
 				url: src,
-				video: true
+				video: true,
+				can_head: false // 503 sometimes
 			};
 
 			common_functions.set_tiktok_vid_filename(baseobj);
@@ -24203,7 +24205,8 @@ var $$IMU_EXPORT$$;
 			// https://v21.tiktokcdn.com/video/n/v0102/ab13a0512d41473bb07c555205e2d0b2/
 			return {
 				url: src,
-				video: true
+				video: true,
+				can_head: false
 			};
 		}
 
