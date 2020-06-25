@@ -4620,8 +4620,26 @@ var $$IMU_EXPORT$$;
 		});
 	};
 
+	// temporary hack for Instagram returning urls with %00
+	// thanks to fireattack on discord for reporting
+	var is_invalid_url = function(url) {
+		for (var i = 0; i < url.length; i++) {
+			if (url.charCodeAt(i) === 0) {
+				return true;
+			}
+		}
+
+		return false;
+	};
+
 	var urlparse = function(x) {
-		return new native_URL(x);
+		// in case of an invalid url, urlparse is rarely used so don't crash the entire bigimage function if not necessary
+		try {
+			return new native_URL(x);
+		} catch (e) {
+			console_error(e);
+			return null;
+		}
 	};
 
 	if (is_node) {
@@ -6898,6 +6916,13 @@ var $$IMU_EXPORT$$;
 						width *= ratio;
 						height *= ratio;
 					}
+				}
+
+				// hack to work around an issue in instagram's servers where they have null characters in their urls
+				// thanks to fireattack on discord for reporting
+				if (is_invalid_url(node.video_url) || is_invalid_url(image)) {
+					width = 0;
+					height = 0;
 				}
 
 				images.push({
@@ -70563,6 +70588,12 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (obj[0] && obj[0].is_pagelink) {
+			console_log("Page link");
+			return err_cb();
+		}
+
+		if (obj[0] && is_invalid_url(obj[0].url)) {
+			console_log("Invalid URL");
 			return err_cb();
 		}
 
