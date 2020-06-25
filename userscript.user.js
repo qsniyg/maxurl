@@ -4623,6 +4623,12 @@ var $$IMU_EXPORT$$;
 	// temporary hack for Instagram returning urls with %00
 	// thanks to fireattack on discord for reporting
 	var is_invalid_url = function(url) {
+		// yes, a null url is technically invalid, but this check is used to detect if it has invalid characters.
+		// it's better to just return false here.
+		// thanks to remlap on discord for noticing that this caused issues for regular instagram posts.
+		if (!url)
+			return false;
+
 		for (var i = 0; i < url.length; i++) {
 			if (url.charCodeAt(i) === 0) {
 				return true;
