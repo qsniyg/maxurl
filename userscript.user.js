@@ -32275,6 +32275,10 @@ var $$IMU_EXPORT$$;
 					}
 
 					request_reddit(id, function(item) {
+						if (!item) {
+							return options.cb(null);
+						}
+
 						if (item.crosspost_parent) {
 							return request(item.crosspost_parent);
 						}
