@@ -52170,10 +52170,13 @@ var $$IMU_EXPORT$$;
 			//   https://www.famitsu.com/images/000/124/494/l_5874c086779f9.jpg -- 640x360, y/z don't work
 			// https://www.famitsu.com/images/000/181/637/5d5a8379e4e00.jpg
 			//   https://www.famitsu.com/images/000/181/637/z_5d5a8379e4e00.jpg
+			// thanks to fireattack on github: https://github.com/qsniyg/maxurl/issues/364
+			// https://www.famitsu.com/images/000/160/712/5b46f32b76a9a.jpg
+			//   https://www.famitsu.com/images/000/160/712/z_5b46f32b76a9a.jpg
 			// others:
 			// https://www.famitsu.com/images/000/124/494/5874c0867b874.jpg -- 3000x4500
 			//   https://www.famitsu.com/images/000/124/494/l_5874c0867b874.jpg -- 426x640
-			regex = /(\/images\/+(?:[0-9]{3}\/+){3})[tly]_([0-9a-f]+\.[^/.]*)(?:[?#].*)?$/;
+			regex = /(\/images\/+(?:[0-9]{3}\/+){3})(?:[tly]_)?([0-9a-f]+\.[^/.]*)(?:[?#].*)?$/;
 			if (regex.test(src)) {
 				return [
 					src.replace(regex, "$1z_$2"),
