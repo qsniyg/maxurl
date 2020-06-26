@@ -19685,6 +19685,13 @@ var $$IMU_EXPORT$$;
 			//return decodeURIComponent(src.replace(/.*\/serveimage.*?[?&]url=([^&]*).*/, "$1"));
 		}
 
+		if (domain_nowww === "startpage.com") {
+			// https://www.startpage.com/av/proxy-image?piurl=http%3A%2F%2Fstatic-fhg.met-art.com%2Fmedia%2F595A60F2826F4B4445659F8AB347DBA3%2Fw_53476867D0B958B499A9CB1AC895C5EF.jpg&sp=1593165866T87208020d8c7ffd8a198d93868ada980660b66f33ca96502713b2b5500da9f75
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+av\/+proxy-image\?(?:.*&)?piurl=([^&]+).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeURIComponent(newsrc);
+		}
+
 		if (host_domain_nowww === "startpage.com" && /\/sp\/+search/.test(options.host_url) && options.element) {
 			if (options.element.parentElement && options.element.parentElement.tagName === "DIV") {
 				if (options.element.parentElement.classList.contains("image-container")) {
@@ -27331,6 +27338,9 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "crnobelo.com" ||
 			// https://myhentaicomics.com/var/thumbs/Corrupted%20Data/002.jpg?m=1579643210
 			domain_nowww === "myhentaicomics.com" ||
+			// https://komodogirls.com/var/thumbs/Pacific_Girls/475%20Hitomi/hitomi-003.jpg?m=1585801632
+			//   https://komodogirls.com/var/albums/Pacific_Girls/475%20Hitomi/hitomi-003.jpg?m=1585801632
+			domain_nowww === "komodogirls.com" ||
 			// http://www.celebritiestown.com/celebritypictures/var/resizes/Celebrity-Street-Style/Jessica-Alba-Best-Street-Style-09.jpg?m=1450092223
 			//   http://www.celebritiestown.com/celebritypictures/var/albums/Celebrity-Street-Style/Jessica-Alba-Best-Street-Style-09.jpg?m=1450092223
 			domain_nowww === "celebritiestown.com") {
@@ -36114,7 +36124,13 @@ var $$IMU_EXPORT$$;
 					}, cb, function(done, resp, cache_key) {
 						var obf_b64_decode = function(url) {
 							var origurl = url;
-							url = url.replace(/\u041c/g, 'M').replace(/\u0415/g, 'E').replace(/\u0410/g, 'A').replace(/\u0421/g, 'C').replace(/~/g, '=');
+							url = url
+								.replace(/\u041c/g, 'M')
+								.replace(/\u0415/g, 'E')
+								.replace(/\u0410/g, 'A')
+								.replace(/\u0421/g, 'C')
+								.replace(/\u0412/g, 'B')
+								.replace(/~/g, '=');
 
 							// tubepornclassic
 							var splitted = url.split(",");
@@ -37479,7 +37495,9 @@ var $$IMU_EXPORT$$;
 			//   https://img.freeones.com/photos/001/7a/97/7A97R5ULZhkDdKwojfW9if/big/7521debd-07a7-49ec-977d-94d878b59e1b.jpg
 			// https://us-img.freeones.com/photos/001/ka/w7/kaw7RaL8Q2wKpTuLzDrU2Q/preview/68d794b5-3a4a-44bf-9cd3-c00eb6fc39fd.jpg
 			//   https://us-img.freeones.com/photos/001/ka/w7/kaw7RaL8Q2wKpTuLzDrU2Q/big/68d794b5-3a4a-44bf-9cd3-c00eb6fc39fd.jpg
-			return src.replace(/(\/photos\/+[0-9]{3}\/+[0-9a-z]{2}\/+[0-9a-z]{2}\/+[^/]{10,}\/+)preview\/+/, "$1big/");
+			// https://img.freeones.com/photos/001/j8/t2/j8T2X9wbtxh6uvWswMKKQT/teaser/b053d9ad-be0b-43c5-a42a-07f5ccc96f89.jpg
+			//   https://img.freeones.com/photos/001/j8/t2/j8T2X9wbtxh6uvWswMKKQT/big/b053d9ad-be0b-43c5-a42a-07f5ccc96f89.jpg
+			return src.replace(/(\/photos\/+[0-9]{3}\/+[0-9a-z]{2}\/+[0-9a-z]{2}\/+[^/]{10,}\/+)(?:preview|teaser)\/+/, "$1big/");
 		}
 
 		if (domain_nowww === "starspics.ru" ||
@@ -45609,8 +45627,122 @@ var $$IMU_EXPORT$$;
 			domain.match(/^s[0-9]*\./)) {
 			// http://s10.trafficdeposit.com/blog/vid/57d2f694dd228/5a4114fc9056e/small.jpg
 			//   http://s10.trafficdeposit.com/blog/vid/57d2f694dd228/5a4114fc9056e/full.jpg
-			return src.replace(/(\/vid\/+[0-9a-f]+\/+[0-9a-f]+\/+)[a-z]+(\.[^/.]*)(?:[?#].*)?$/,
+			var baseobj = {
+				url: src,
+				extra: {}
+			};
+
+			urls = [];
+
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+blog\/+(?:vid|img)\/+(?:[0-9a-f]+|porn-collection)\/+([0-9a-f]{10,})\/+[^/]+$/);
+			if (match) {
+				id = match[1];
+
+				baseobj.extra.page = "https://sxyprn.com/post/" + id + ".html";
+				urls.push({
+					url: baseobj.extra.page,
+					is_pagelink: true
+				});
+			}
+
+			newsrc = src.replace(/(\/vid\/+[0-9a-f]+\/+[0-9a-f]+\/+)[a-z]+(\.[^/.]*)(?:[?#].*)?$/,
 							   "$1full$2");
+			if (newsrc !== src) {
+				urls.push(newsrc);
+			}
+
+			urls.push(src);
+
+			return fillobj_urls(urls, baseobj);
+		}
+
+		if (domain_nosub === "sxyprn.com") {
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+post\/+([0-9a-f]{10,})\.html/);
+			if (match) {
+				id = match[1];
+
+				var get_url_from_sxyprn_vid = function(vid) {
+					return "https://sxyprn.com/post/" + vid + ".html";
+				};
+
+				var query_sxyprn = function(vid, cb) {
+					api_query("sxyprn:" + vid, {
+						url: get_url_from_sxyprn_vid(vid)
+					}, cb, function(done, resp, cache_key) {
+						var match = resp.responseText.match(/data-vnfo='({"[0-9a-f]{10,}":"[^"}]+"})'>/);
+						if (!match) {
+							console_error(cache_key, "Unable to find match for", resp);
+							return done(null, false);
+						}
+
+						var json_text = decode_entities(match[1]);
+						var json = JSON_parse(json_text);
+
+						if (!(vid in json)) {
+							// https://sxyprn.com/post/5ef488825b5ae.html - has 5ef480be32b6a instead, same video though
+							console_warn(cache_key, "Unable to find", vid, "in", json);
+							vid = Object.keys(json)[0];
+							//return done(null, false);
+						}
+
+						var get_added_num = function(str) {
+							str = str.replace(/[^0-9]/g, "");
+
+							var n = 0;
+							for (var i = 0; i < str.length; i++) {
+								n += parseInt(str[i]);
+							}
+
+							return n;
+						};
+
+						var splitted = json[vid].split("/");
+						splitted[1] += "8"; // cdn8
+						splitted[5] -= parseInt(get_added_num(splitted[6])) + parseInt(get_added_num(splitted[7]));
+
+						var url = urljoin(resp.finalUrl, splitted.join("/"), true);
+						return done({
+							url: url,
+							video: true,
+							extra: {
+								page: get_url_from_sxyprn_vid(vid)
+							},
+							headers: {
+								Referer: resp.finalUrl
+							}
+						}, 60*60);
+					});
+				};
+
+				page_nullobj = {
+					url: src,
+					is_pagelink: true
+				};
+
+				if (options.do_request && options.cb) {
+					query_sxyprn(id, function(data) {
+						if (!data)
+							return options.cb(page_nullobj);
+
+						return options.cb(data);
+					});
+
+					return {
+						waiting: true
+					};
+				} else {
+					return page_nullobj;
+				}
+			}
+		}
+
+		if (host_domain_nosub === "sxyprn.com" && options.element) {
+			if (options.element.tagName === "SPAN" && options.element.classList.contains("player_icon")) {
+				return {
+					url: origsrc,
+					bad: "mask"
+				};
+			}
 		}
 
 		if (domain_nowww === "babepedia.com") {
@@ -46770,8 +46902,11 @@ var $$IMU_EXPORT$$;
 		if (domain === "galleries.allover30.com") {
 			// http://galleries.allover30.com/mature/LizSophia/PtA93o/Z03/liz006002006106001.jpg
 			//   http://galleries.allover30.com/mature/LizSophia/PtA93o/liz006002006106001.jpg
-			return src.replace(/\/Z[0-9]+\/+([^/]*)(?:[?#].*)?$/,
-							   "/$1");
+			// http://galleries.allover30.com/mature/melody-cummings-1524779951/mel007188221-thumb.jpg
+			//   http://galleries.allover30.com/mature/melody-cummings-1524779951/mel007188221.jpg
+			return src
+				.replace(/(\/[^/]+-[0-9]+\/+[^/]+[0-9]+)-thumb(\.[^/.]+)(?:[?#].*)?$/, "$1$2")
+				.replace(/\/Z[0-9]+\/+([^/]*)(?:[?#].*)?$/, "/$1");
 		}
 
 		if (domain === "images.sxx.com" ||
@@ -53168,7 +53303,10 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/photos\/+[^/]*\/+)tn_/, "$1");
 		}
 
-		if (domain === "galleries.gloryhole-initiations.com") {
+		if (domain === "galleries.gloryhole-initiations.com" ||
+			// https://galleries.zebragirls.com/content/kate_england_lisa_tiffian/pics/tn/01.jpg
+			//   https://galleries.zebragirls.com/content/kate_england_lisa_tiffian/pics/pic/01.jpg
+			domain === "galleries.zebragirls.com") {
 			// https://galleries.gloryhole-initiations.com/content/nia_nacci/pics/tn/01.jpg
 			//   https://galleries.gloryhole-initiations.com/content/nia_nacci/pics/pic/01.jpg
 			return src.replace(/\/pics\/+tn\/+/, "/pics/pic/");
@@ -54099,6 +54237,9 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "hosted.foxes.com" ||
+			// http://hosted.dreamdolls.com/0-sites/DREAMDOLLS/fhgs/FM2RH9A8LN/t/Lola_01.jpg
+			//   http://hosted.dreamdolls.com/0-sites/DREAMDOLLS/fhgs/FM2RH9A8LN/o/Lola_01.jpg
+			domain === "hosted.dreamdolls.com" ||
 			// http://promo.foxes.com/0-testdata/fhg/Ashley-Payton_-_Big-Breasts-Piano-Lesson-Naked/t_188x282/Ashley-Payton_01.jpg
 			//   http://promo.foxes.com/0-testdata/fhg/Ashley-Payton_-_Big-Breasts-Piano-Lesson-Naked/o/Ashley-Payton_01.jpg
 			domain === "promo.foxes.com") {
@@ -55519,6 +55660,12 @@ var $$IMU_EXPORT$$;
 			// https://static-fhg.rylskyart.com/media/C6130A457E32A4A4F96CA5E7F0EF5BAA/wt_6AF4B058DB42690481696C4DD0765E0F.jpg
 			//   https://static-fhg.rylskyart.com/media/C6130A457E32A4A4F96CA5E7F0EF5BAA/w_6AF4B058DB42690481696C4DD0765E0F.jpg
 			domain === "static-fhg.rylskyart.com" ||
+			// http://static-fhg.met-art.com/media/595A60F2826F4B4445659F8AB347DBA3/wt_53476867D0B958B499A9CB1AC895C5EF.jpg
+			//   http://static-fhg.met-art.com/media/595A60F2826F4B4445659F8AB347DBA3/w_53476867D0B958B499A9CB1AC895C5EF.jpg
+			domain === "static-fhg.met-art.com" ||
+			// https://static-fhg.sexart.com/media/647D21CE27B7B0243D7B9DA5E05A99D7/wt_CFE4B2A78D9E45340D5CF2BB29C9ABDF.jpg
+			//   https://static-fhg.sexart.com/media/647D21CE27B7B0243D7B9DA5E05A99D7/w_CFE4B2A78D9E45340D5CF2BB29C9ABDF.jpg
+			domain === "static-fhg.sexart.com" ||
 			// https://static-fhg.alsscan.com/media/5E5797E04DBD4244ADD5137FBFC994DB/wt_1A982EA10CA6DE846DAF3ED22CFF7708.jpg
 			//   https://static-fhg.alsscan.com/media/5E5797E04DBD4244ADD5137FBFC994DB/w_1A982EA10CA6DE846DAF3ED22CFF7708.jpg
 			domain === "static-fhg.alsscan.com") {
@@ -56211,16 +56358,25 @@ var $$IMU_EXPORT$$;
 
 			// https://a.porngals4.com/media/gals_169x150/1/25/131714-4070946890/6308912-3994080388.jpg
 			//   https://a.porngals4.com/media/galleries/1/25/131714-4070946890/riley-anne-loves-your-attention-6308912-3994080388.jpg
+			//   https://b.porngals4.com/media/galleries/1/25/131714-4070946890/riley-anne-loves-your-attention-6308912-3994080388.jpg
 			id = src.match(/^[a-z]+:\/\/[^/]*\/+media\/+gals_[0-9]+x[0-9]+\/+[0-9]+\/+[0-9]+\/+([0-9]+)-[0-9]+\/+/);
 			if (id && options && options.do_request && options.cb) {
-				console_log(id);
 				api_cache.fetch("porngals4:" + id[1],
-					function (text) {
-						if (!text)
+					function (data) {
+						if (!data)
 							return options.cb(null);
 
-						options.cb(src.replace(/\/media\/+gals_[0-9]+x[0-9]+\/+([0-9]+\/+[0-9]+\/+[0-9]+-[0-9]+\/+)([0-9]+-[0-9]+\.[^/.]*)(?:[?#].*)?$/,
-						           "/media/galleries/$1" + text + "-$2"));
+						var url = src
+							.replace(/\/media\/+gals_[0-9]+x[0-9]+\/+([0-9]+\/+[0-9]+\/+[0-9]+-[0-9]+\/+)([0-9]+-[0-9]+\.[^/.]*)(?:[?#].*)?$/,
+								   "/media/galleries/$1" + data.part + "-$2")
+							.replace(/:\/\/a\./, "://b.");
+
+						options.cb({
+							url: url,
+							extra: {
+								page: data.gallery
+							}
+						});
 					},
 					function (done) {
 						options.do_request({
@@ -56238,7 +56394,10 @@ var $$IMU_EXPORT$$;
 
 								var match = resp.finalUrl.match(/^[a-z]+:\/\/[^/]*\/+([^/]*)-[0-9]+\/+/);
 								if (match) {
-									return done(match[1], 6*60);
+									return done({
+										part: match[1],
+										gallery: resp.finalUrl
+									}, 6*60);
 								} else {
 									return done(null, false);
 								}
@@ -61376,7 +61535,163 @@ var $$IMU_EXPORT$$;
 				return add_extensions(newsrc);
 		}
 
+		if (domain_nowww === "beeg.com") {
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+([0-9]+)(?:[?#].*)?$/);
+			if (match) {
+				id = match[1];
+
+				var get_params_from_beeg_url = function(url) {
+					var match = url.match(/[?&]t=([0-9]+(?:-[0-9]+)?)/);
+					if (!match) {
+						return null;
+					}
+
+					splitted = match[1].split("-");
+					params = {
+						start: splitted[0],
+						end: splitted[1]
+					};
+
+					return params;
+				};
+
+				var get_beeg_url = function(id, params) {
+					var beeg_url = "https://beeg.com/" + id;
+
+					if (params && params.start) {
+						beeg_url += "?t=" + params.start;
+						if (params.end) {
+							beeg_url += "-" + params.end;
+						}
+					}
+
+					return beeg_url;
+				};
+
+				var query_beeg_api = function(id, params, cb) {
+					var api_url = "https://beeg.com/api/v6/" + Date.now() + "/video/" + id + "?v=2";
+					var referer_url = get_beeg_url(id, params);
+					var cache_key = "beeg:" + id;
+
+					if (params && params.start) {
+						api_url += "&s=" + params.start;
+						cache_key += "-" + params.start;
+						if (params.end) {
+							api_url += "&e=" + params.end;
+							cache_key += "-" + params.end;
+						}
+					}
+
+					api_query(cache_key, {
+						url: api_url,
+						headers: {
+							Accept: "*/*",
+							Referer: referer_url,
+							"X-Requested-With": "XMLHttpRequest"
+						},
+						json: true
+					}, cb, function(done, resp, cache_key) {
+						done(resp, 60*60);
+					});
+				};
+
+				var page_nullobj = {
+					url: src,
+					is_pagelink: true
+				};
+
+				var get_obj_from_beeg = function(data) {
+					if (!data)
+						return page_nullobj;
+
+					var baseobj = {
+						extra: {
+							page: get_beeg_url(data.id, data),
+							caption: data.title
+						}
+					};
+
+					baseobj.headers = {
+						Referer: baseobj.extra.page,
+						"Sec-Fetch-Dest": "video"
+					};
+
+					var base_urls = [];
+					var data_markers = "data=pc_US__" + data.bundle_version + "_";
+					for (var key in data) {
+						if (!data[key] || string_indexof(data[key], "video.beeg.com") < 0)
+							continue;
+
+						var keymatch = key.match(/^([0-9]+)p$/);
+						if (keymatch) {
+							base_urls.push({
+								size: parseInt(keymatch[1]),
+								url: urljoin("https://beeg.com/", data[key].replace("{DATA_MARKERS}", data_markers), true)
+							});
+						}
+					}
+
+					base_urls.sort(function(a, b) {
+						return b.size - a.size;
+					});
+
+					var urls = [];
+					for (var i = 0; i < base_urls.length; i++) {
+						urls.push(base_urls[i].url);
+					}
+
+					urls.push(page_nullobj);
+
+					return fillobj_urls(urls, baseobj);
+				}
+
+				if (options.do_request && options.cb) {
+					query_beeg_api(id, null, function(data) {
+						if (!data) {
+							query_beeg_api(id, get_params_from_beeg_url(src), function(data) {
+								return options.cb(get_obj_from_beeg(data));
+							});
+						} else {
+							return options.cb(get_obj_from_beeg(data));
+						}
+					});
+
+					return {
+						waiting: true
+					};
+				} else {
+					return page_nullobj;
+				}
+			}
+		}
+
+		if (host_domain_nowww === "beeg.com" && domain === "img.beeg.com" && options.element) {
+			if (options.element.parentElement.tagName === "A") {
+				var href = options.element.parentElement.href;
+				if (/^[a-z]+:\/\/(?:www\.)?beeg\.com\/+[0-9]+/.test(href) && href !== src)
+					return href;
+			}
+		}
+
 		if (domain === "vp.beeg.com") {
+			match = src.match(/:\/\/[^/]+\/+vp\/+[0-9]{2}\/+([0-9]+)_([0-9]+)_([0-9]+)\.mp4/);
+			if (match) {
+				id = match[1];
+				var url = "https://www.beeg.com/" + match[1];
+
+				if (match[2] !== "0") {
+					url += "?t=" + match[2];
+
+					if (match[3] !== "0") {
+						url += "-" + match[3];
+					}
+				}
+
+				return url;
+			}
+		}
+
+		if (false && domain === "vp.beeg.com") {
 			// https://img.beeg.com/264x198/4x3/99833-0075.jpg
 			// https://vp.beeg.com/vp/19/1989513890_74_0.mp4
 			// https://beeg.com/api/v6/[time]]/video/1989513890?v=2
@@ -61392,7 +61707,7 @@ var $$IMU_EXPORT$$;
 						url: "https://beeg.com/api/v6/" + Date.now() + "/video/" + id + "?v=2",
 						method: "GET",
 						headers: {
-							Referer: "https://beeg.com/1989513890",
+							Referer: "https://beeg.com/" + id,
 							"X-Requested-With": "XMLHttpRequest"
 						},
 						onload: function(resp) {
@@ -63866,144 +64181,6 @@ var $$IMU_EXPORT$$;
 				};
 		}
 
-		if (domain_nowww === "beeg.com") {
-			match = src.match(/^[a-z]+:\/\/[^/]+\/+([0-9]+)(?:[?#].*)?$/);
-			if (match) {
-				id = match[1];
-
-				var get_params_from_beeg_url = function(url) {
-					var match = url.match(/[?&]t=([0-9]+(?:-[0-9]+)?)/);
-					if (!match) {
-						return null;
-					}
-
-					splitted = match[1].split("-");
-					params = {
-						start: splitted[0],
-						end: splitted[1]
-					};
-
-					return params;
-				};
-
-				var get_beeg_url = function(id, params) {
-					var beeg_url = "https://beeg.com/" + id;
-
-					if (params && params.start) {
-						beeg_url += "?t=" + params.start;
-						if (params.end) {
-							beeg_url += "-" + params.end;
-						}
-					}
-
-					return beeg_url;
-				};
-
-				var query_beeg_api = function(id, params, cb) {
-					var api_url = "https://beeg.com/api/v6/" + Date.now() + "/video/" + id + "?v=2";
-					var referer_url = get_beeg_url(id, params);
-					var cache_key = "beeg:" + id;
-
-					if (params && params.start) {
-						api_url += "&s=" + params.start;
-						cache_key += "-" + params.start;
-						if (params.end) {
-							api_url += "&e=" + params.end;
-							cache_key += "-" + params.end;
-						}
-					}
-
-					api_query(cache_key, {
-						url: api_url,
-						headers: {
-							Accept: "*/*",
-							Referer: referer_url,
-							"X-Requested-With": "XMLHttpRequest"
-						},
-						json: true
-					}, cb, function(done, resp, cache_key) {
-						cb(resp);
-					});
-				};
-
-				var page_nullobj = {
-					url: src,
-					is_pagelink: true
-				};
-
-				var get_obj_from_beeg = function(data) {
-					if (!data)
-						return page_nullobj;
-
-					var baseobj = {
-						extra: {
-							page: get_beeg_url(data.id, data),
-							caption: data.title
-						}
-					};
-
-					baseobj.headers = {
-						Referer: baseobj.extra.page,
-						"Sec-Fetch-Dest": "video"
-					};
-
-					var base_urls = [];
-					var data_markers = "data=pc_US__" + data.bundle_version + "_";
-					for (var key in data) {
-						if (!data[key] || string_indexof(data[key], "video.beeg.com") < 0)
-							continue;
-
-						var keymatch = key.match(/^([0-9]+)p$/);
-						if (keymatch) {
-							base_urls.push({
-								size: parseInt(keymatch[1]),
-								url: urljoin("https://beeg.com/", data[key].replace("{DATA_MARKERS}", data_markers), true)
-							});
-						}
-					}
-
-					base_urls.sort(function(a, b) {
-						return b.size - a.size;
-					});
-
-					var urls = [];
-					for (var i = 0; i < base_urls.length; i++) {
-						urls.push(base_urls[i].url);
-					}
-
-					urls.push(page_nullobj);
-
-					return fillobj_urls(urls, baseobj);
-				}
-
-				if (options.do_request && options.cb) {
-					query_beeg_api(id, null, function(data) {
-						if (!data) {
-							query_beeg_api(id, get_params_from_beeg_url(src), function(data) {
-								return options.cb(get_obj_from_beeg(data));
-							});
-						} else {
-							return options.cb(get_obj_from_beeg(data));
-						}
-					});
-
-					return {
-						waiting: true
-					};
-				} else {
-					return page_nullobj;
-				}
-			}
-		}
-
-		if (host_domain_nowww === "beeg.com" && domain === "img.beeg.com" && options.element) {
-			if (options.element.parentElement.tagName === "A") {
-				var href = options.element.parentElement.href;
-				if (/^[a-z]+:\/\/(?:www\.)?beeg\.com\/+[0-9]+/.test(href) && href !== src)
-					return href;
-			}
-		}
-
 		if (domain_nosub === "cdn3x.com" && /^[tv][0-9]*\./.test(domain)) {
 			// https://t0.cdn3x.com/xd/320x180/7PZGW/000.jpg
 			// https://v0.cdn3x.com/xd/7PZGW/p_0003267577_240_25_10_1.mp4
@@ -64827,6 +65004,18 @@ var $$IMU_EXPORT$$;
 					return page_nullobj;
 				}
 			}
+		}
+
+		if (domain === "blackporn.blacklust.com") {
+			// http://blackporn.blacklust.com/113013-3/images/1.jpg
+			//   http://blackporn.blacklust.com/113013-3/large/1.jpg
+			return src.replace(/(:\/\/[^/]+\/+[0-9]+-[0-9]+\/+)images(\/+[0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1large$2");
+		}
+
+		if (domain === "galleries.penthouse.com") {
+			// http://galleries.penthouse.com/galleries/203929/03.jpg
+			//   http://galleries.penthouse.com/galleries/203929/L/03.jpg
+			return src.replace(/(\/galleries\/+[0-9]+\/+)([0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1L/$2");
 		}
 
 
