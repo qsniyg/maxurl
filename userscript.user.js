@@ -1839,6 +1839,11 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		// most strings don't contain %
+		if (string_indexof(str, "%") < 0) {
+			return str;
+		}
+
 		var parts = [];
 		var currentpart = "";
 		for (var i = 0; i < str.length; i++) {
