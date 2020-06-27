@@ -6348,12 +6348,12 @@ var $$IMU_EXPORT$$;
 		};
 
 		var encode;
-		if (base === 62) {
-			encode = encode_base62;
-		} else if (base === 10) {
+		if (base === 10) {
 			encode = encode_base10;
-		} else {
+		} else if (base <= 36) {
 			encode = encode_base36;
+		} else { // base can be things like 14 too
+			encode = encode_base62;
 		}
 
 		var table = {};
@@ -23427,6 +23427,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if ((domain_nosub === "t8cdn.com" || domain_nosub === "ypncdn.com") && options && options.do_request && options.cb) {
+			// todo: split into page link rule
 			// https://ep.t8cdn.com/201305/26/11984001/vl_mp4_ultra_480p_11984001.mp4
 			// https://ev-ph.ypncdn.com/videos/201911/26/264376432/240P_400K_264376432.mp4 -- video ID doesn't work
 			// https://ev.ypncdn.com/202001/19/15807000/240p_240k_15807000/YouPorn_-_swim-sexy-suit-on-the-beach-hot-bikini.mp4
@@ -35690,6 +35691,8 @@ var $$IMU_EXPORT$$;
 			domain_nosub === "analdin.com" ||
 			// https://mediaserver5.tube-bunny.com/storage1/Jv43/4.jpg
 			domain_nosub === "tube-bunny.com" ||
+			// https://blackporn24.com/contents/videos_screenshots/2000/2539/320x180/2.jpg
+			domain_nowww === "blackporn24.com" ||
 			domain_nosub === "pornwhite.com" ||
 			domain_nosub === "sleazyneasy.com" ||
 			domain_nosub === "vikiporn.com" ||
@@ -65063,6 +65066,137 @@ var $$IMU_EXPORT$$;
 			// http://galleries.penthouse.com/galleries/203929/03.jpg
 			//   http://galleries.penthouse.com/galleries/203929/L/03.jpg
 			return src.replace(/(\/galleries\/+[0-9]+\/+)([0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1L/$2");
+		}
+
+		if (domain_nowww === "letmejerk.com") {
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+play\/+([0-9]+)\/+[^/]+\.html(?:[?#].*)?$/);
+			if (match) {
+				id = match[1];
+
+				var query_letmejerk = function(vid, cb) {
+					api_query("letmejerk:" + vid, {
+						url: "https://www.letmejerk.com/play/" + vid + "/a.html"
+					}, cb, function(done, resp, cache_key) {
+						var match = resp.responseText.match(/<script src="[^"]+\/jerkplayer\..*?<\/script>\s*<script type="text\/javascript">\s*var a\s*=\s*\['replace','(.*?)','(.*?)','split'\];.*?\(b\('0x1'\),(0x[0-9a-f]+),(0x[0-9a-f]+),/);
+						if (!match) {
+							console_error(cache_key, "Unable to find match for", resp);
+							return done(null, false);
+						}
+
+						var format = match[1];
+						var table = match[2];
+						var base = parseInt(match[3]);
+						var table_len = parseInt(match[4]);
+
+						var replace_hex = function(str) {
+							return str.replace(/\\x[0-9a-f]{2}/g, function(x) {
+								return string_fromcharcode(parseInt("0x" + x.substr(2)));
+							}).replace(/\\'/g, "'");
+						};
+
+						format = replace_hex(format);
+						table = replace_hex(table).split("|");
+
+						var unpacked = common_functions.static_unpack_packer(format, base, table_len, table);
+						if (!unpacked) {
+							var info = {
+								format: format,
+								table: table,
+								table_len: table_len,
+								base: base
+							};
+
+							console_error(cache_key, "Unable to unpack part 1", resp, match, info);
+							return done(null, false);
+						}
+
+						var unpacked2 = common_functions.unpack_packer(unpacked);
+						if (!unpacked2) {
+							console_error(cache_key, "Unable to unpack part 2", resp, match, unpacked);
+							return done(null, false);
+						}
+
+						match = unpacked2.match(/loadLetMeJerkVideoPlayer\(([0-9]+),'(.*?)'\);/);
+						if (!match) {
+							console_error(cache_key, "Unable to find player code in", resp, unpacked2);
+							return done(null, false);
+						}
+
+						return done({
+							vid: match[1],
+							key: match[2],
+							url: resp.finalUrl
+						}, 60*60);
+					});
+				};
+
+				var query_letmejerk_video = function(data, cb) {
+					api_query("letmejerk_video:" + data.vid + ":" + data.key, {
+						url: "https://www.letmejerk.com/load/video/" + data.key + "/",
+						method: "POST",
+						data: "id=" + data.vid,
+						headers: {
+							Referer: data.url,
+							Origin: "https://www.letmejerk.com",
+							"x-requested-with": "XMLHttpRequest",
+							"Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
+						}
+					}, cb, function(done, resp, cache_key) {
+						var match = resp.responseText.match(/<source src=\"(https?:\/\/lmjvideocdn[^"]+)"/);
+						if (!match) {
+							console_error(cache_key, "Unable to find source for", resp, data);
+							return done(null, false);
+						}
+
+						return done({
+							url: decode_entities(match[1]),
+							headers: {
+								Referer: data.url
+							},
+							extra: {
+								page: data.url
+							}
+						}, 60*60);
+					});
+				};
+
+				var page_nullobj = {
+					url: src,
+					is_pagelink: true
+				};
+
+				if (options.cb && options.do_request) {
+					query_letmejerk(id, function(data) {
+						if (!data) {
+							return options.cb(page_nullobj);
+						}
+
+						query_letmejerk_video(data, function(obj) {
+							if (!obj) {
+								return options.cb(page_nullobj);
+							}
+
+							return options.cb([obj, page_nullobj]);
+						});
+					});
+
+					return {
+						waiting: true
+					};
+				} else {
+					return page_nullobj;
+				}
+			}
+		}
+
+		if (domain === "thumbs.letmejerk.com") {
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+[0-9]+\/+([0-9]+)\.[^/.]+(?:[?#].*)?$/);
+			if (match) {
+				return {
+					url: "https://www.letmejerk.com/play/" + match[1] + "/a.html",
+					is_pagelink: true
+				};
+			}
 		}
 
 
