@@ -1,3 +1,21 @@
+0.13.12
+
+New features:
+
+ * Option to toggle using `GM_download` for the userscript (enabled by default)
+ * Keys to step a video frame-by-frame (bound to , and . for previous and next frames by default, framerate is set to 25fps by default)
+ * Support for ~45 new websites (using ~15 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including Instagram, TikTok, Reddit)
+ * TikTok now supports original videos again (thanks to remlap on discord)
+ * TikTok will now load original videos much quicker
+ * TikTok will fail less frequently (thanks to JoshuaCalvert on discord for reporting)
+ * Work around a server-side issue on Instagram returning invalid URLs (thanks to fireattack on discord for reporting)
+
+---
+
 0.13.11
 
 New features:
