@@ -6408,7 +6408,7 @@ var $$IMU_EXPORT$$;
 	};
 
 	common_functions.unpack_packer = function(packed) {
-		var regex = /eval\(function\(p,a,c,k,e,[rd]\){.*?return p}\('(.*?)',([0-9]+),([0-9]+),'(.*?)'\.split\('[|]'\),0,{}\)\)/;
+		var regex = /eval\(function\(p,a,c,k,e,[rd]\){.*?return p}\('(.*?)',([0-9]+),([0-9]+),'(.*?)'\.split\('[|]'\)(?:,0,{})?\)\)/;
 		var match = packed.match(regex);
 		if (!match) {
 			return null;
@@ -64190,6 +64190,60 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain_nowww === "mightyupload.com") {
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+embed-([a-z0-9]{5,})\.html(?:[?#].*)?$/);
+			if (match) {
+				id = match[1];
+
+				var query_mightyupload = function(url, cb) {
+					api_query("mightyupload:" + url, {
+						url: url
+					}, cb, function(done, resp, cache_key) {
+						var unpacked = common_functions.unpack_packer(resp.responseText);
+						if (!unpacked) {
+							console_error(cache_key, "Unable to find packed data for", resp);
+							return done(null, false);
+						}
+
+						var match = unpacked.match(/jwplayer\(.*?\)\.setup\({[\s\S]*?file:\s*"([^"]+)",/);
+						if (!match) {
+							console_error(cache_key, "Unable to find match for", resp, unpacked);
+							return done(null, false);
+						}
+
+						return done({
+							url: match[1],
+							headers: {
+								Referer: resp.finalUrl
+							},
+							video: true
+						}, 60*60);
+					});
+				};
+
+				var page_nullobj = {
+					url: src,
+					is_pagelink: true
+				};
+
+				if (options.do_request && options.cb) {
+					query_mightyupload(src, function(obj) {
+						if (!obj)
+							return options.cb(page_nullobj);
+
+						var urls = [obj, page_nullobj];
+						options.cb(urls);
+					});
+
+					return {
+						waiting: true
+					};
+				} else {
+					return page_nullobj;
+				}
+			}
+		}
+
 		if (domain === "static.kritikustomeg.org") {
 			// https://static.kritikustomeg.org/pix/tn200x1000/5c4/pa_138649_exbcngzm.jpg
 			//   https://static.kritikustomeg.org/pix/orig/5c4/pa_138649_exbcngzm.jpg
@@ -69425,11 +69479,12 @@ var $$IMU_EXPORT$$;
 						option_name = _(settings_meta[single_reason.setting].name);
 					}
 
-					// TODO: don't check for element, this doesn't work with tabs. Instead, do proper parsing
-					var wanted_value_el = document.querySelector("label[for=\"input_" + single_reason.setting + "_" + single_reason.required_value + "\"]");
+					// TODO: don't check label_texts, this doesn't work with tabs. Instead, do proper parsing
+					//var wanted_value_el = document.querySelector("label[for=\"input_" + single_reason.setting + "_" + single_reason.required_value + "\"]");
 					var wanted_value = single_reason.required_value;
-					if (wanted_value_el) {
-						wanted_value = wanted_value_el.innerText;
+					var input_id = "input_" + single_reason.setting + "_" + single_reason.required_value;
+					if (input_id in label_texts) {
+						wanted_value = label_texts[input_id];
 					}
 
 					var equals = "=";
@@ -69685,6 +69740,7 @@ var $$IMU_EXPORT$$;
 		};
 
 		var category_settings = {};
+		var label_texts = {};
 
 		for (var setting in settings) {
 			(function(setting) {
@@ -69936,7 +69992,9 @@ var $$IMU_EXPORT$$;
 
 						var label = document.createElement("label");
 						label.setAttribute("for", id);
-						label.innerText = _(val.name);
+
+						label_texts[id] = _(val.name);
+						label.innerText = label_texts[id];
 
 						if (val.description) {
 							label.title = _(val.description);
