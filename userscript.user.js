@@ -35704,6 +35704,7 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "x18.xxx" ||
 			domain_nosub === "mt-static.com" ||
 			domain_nosub === "slutload-media.com" ||
+			domain_nowww === "porngem.com" ||
 			// different system
 			// https://static2.tubepornclassic.com/contents/videos_screenshots/1051000/1051741/240x180/1.jpg
 			//domain_nosub === "tubepornclassic.com" ||
@@ -35752,6 +35753,7 @@ var $$IMU_EXPORT$$;
 			var videos_component = "videos";
 			var addslash = "/";
 			var a_component = "/a";
+			var idprefix = "";
 			var cache_host = domain_nosub;
 
 			if (domain_nosub === "porntrex.com" || domain_nosub === "cdntrex.com") {
@@ -35801,6 +35803,10 @@ var $$IMU_EXPORT$$;
 				addslash = "";
 				a_component = "";
 				basedomain = "https://www.slutload.com/";
+			} else if (domain_nosub === "porngem.com") {
+				idprefix = "a-";
+				addslash = "";
+				a_component = "";
 			}
 
 			var fixup_function_url = function(flashvars) {
@@ -36086,7 +36092,7 @@ var $$IMU_EXPORT$$;
 					}
 				}, function(done) {
 					options.do_request({
-						url: basedomain + videos_component + "/" + id + a_component + addslash,
+						url: basedomain + videos_component + "/" + idprefix + id + a_component + addslash,
 						method: "GET",
 						onload: function(resp) {
 							if (resp.readyState !== 4)
@@ -63391,81 +63397,6 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if (domain_nosub === "porntube.com" && /^cdn[0-9]*-thumbnails\./.test(domain)) {
-			var query_porntube_video = function(id, cb) {
-				var cache_key = "porntube:" + id;
-
-				api_cache.fetch(cache_key, cb, function(done) {
-					options.do_request({
-						url: "https://token.porntube.com/" + id + "/desktop/2160+1080+720+480+360+240",
-						method: "POST",
-						headers: {
-							Origin: "https://www.porntube.com",
-							Referer: "https://www.porntube.com/",
-							Accept: "application/json, text/plain, */*"
-						},
-						onload: function(resp) {
-							if (resp.status !== 200) {
-								console_error(cache_key, resp);
-								return done(null, false);
-							}
-
-							try {
-								var json = JSON_parse(resp.responseText);
-
-								var max = 0;
-								var maxobj = null;
-
-								for (var key in json) {
-									var num = parseInt(key);
-									if (!num || isNaN(num) || json[key].status !== "success" || !json[key].token)
-										continue;
-
-									if (num > max) {
-										max = num;
-										maxobj = json[key];
-									}
-								}
-
-								return done(maxobj.token, 60*60);
-							} catch (e) {
-								console_error(cache_key, e);
-							}
-
-							return done(null, false);
-						}
-					});
-				});
-			};
-
-			var get_porntube_id = function(url) {
-				match = src.match(/^[a-z]+:\/\/[^/]+\/+((?:[0-9]\/+){1,})(?:[0-9]+x[0-9]+|preview)\/+[0-9]+\./);
-				if (match) {
-					return match[1].replace(/\/+/g, "");
-				}
-
-				return null;
-			};
-
-			id = get_porntube_id(src);
-			if (id && options.do_request && options.cb) {
-				query_porntube_video(id, function(url) {
-					if (!url) {
-						return options.cb(null);
-					}
-
-					return options.cb({
-						url: url,
-						video: true
-					});
-				});
-
-				return {
-					waiting: true
-				};
-			}
-		}
-
 		if (domain === "thumbs.dreamstime.com") {
 			// https://thumbs.dreamstime.com/z/%D0%BD%D1%8C%D1%8E-%D0%B9%D0%BE%D1%80%D0%BA-%D0%BE%D0%B5-%D1%81%D0%B5%D0%BD%D1%82%D1%8F%D0%B1%D1%80%D1%8F-%D0%BC%D0%BE-%D0%B5-%D1%8C%D0%BD%D1%8B%D0%B9-alessandra-ambrosio-%D0%BF%D1%80%D0%B5-%D1%81%D1%82%D0%B0%D0%B2-%D1%8F%D0%B5%D1%82-%D0%BA%D1%83-%D1%83%D0%B0%D1%80%D0%BD%D0%BE%D0%B5-30755744.jpg
 			//   https://www.dreamstime.com/stock-images-new-york-september-model-alessandra-ambrosio-poses-backstage-cipriani-restaurant-rock-republic-spring-summer-image30755744
@@ -64634,19 +64565,100 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if (domain_nosub === "pornerbros.com" && /^cdn/.test(domain)) {
+		if (false && domain_nosub === "porntube.com" && /^cdn[0-9]*-thumbnails\./.test(domain)) {
+			var query_porntube_video = function(id, cb) {
+				var cache_key = "porntube:" + id;
+
+				api_cache.fetch(cache_key, cb, function(done) {
+					options.do_request({
+						url: "https://token.porntube.com/" + id + "/desktop/2160+1080+720+480+360+240",
+						method: "POST",
+						headers: {
+							Origin: "https://www.porntube.com",
+							Referer: "https://www.porntube.com/",
+							Accept: "application/json, text/plain, */*"
+						},
+						onload: function(resp) {
+							if (resp.status !== 200) {
+								console_error(cache_key, resp);
+								return done(null, false);
+							}
+
+							try {
+								var json = JSON_parse(resp.responseText);
+
+								var max = 0;
+								var maxobj = null;
+
+								for (var key in json) {
+									var num = parseInt(key);
+									if (!num || isNaN(num) || json[key].status !== "success" || !json[key].token)
+										continue;
+
+									if (num > max) {
+										max = num;
+										maxobj = json[key];
+									}
+								}
+
+								return done(maxobj.token, 60*60);
+							} catch (e) {
+								console_error(cache_key, e);
+							}
+
+							return done(null, false);
+						}
+					});
+				});
+			};
+
+			var get_porntube_id = function(url) {
+				match = src.match(/^[a-z]+:\/\/[^/]+\/+((?:[0-9]\/+){1,})(?:[0-9]+x[0-9]+|preview)\/+[0-9]+\./);
+				if (match) {
+					return match[1].replace(/\/+/g, "");
+				}
+
+				return null;
+			};
+
+			id = get_porntube_id(src);
+			if (id && options.do_request && options.cb) {
+				query_porntube_video(id, function(url) {
+					if (!url) {
+						return options.cb(null);
+					}
+
+					return options.cb({
+						url: url,
+						video: true
+					});
+				});
+
+				return {
+					waiting: true
+				};
+			}
+		}
+
+		if ((domain_nosub === "pornerbros.com" ||
+			domain_nosub === "porntube.com" ||
+			domain_nosub === "fux.com" ||
+			domain_nosub === "4tube.com") && /^cdn/.test(domain)) {
 			match = src.match(/^[a-z]+:\/\/[^/]+\/+((?:[0-9]\/+){2,})(?:[0-9]+x[0-9]+|preview)\/+/);
 			if (match) {
 				id = match[1].replace(/\/+/g, "");
 
+				var cache_prefix = domain_nosub + ":";
+				var token_domain = "token." + domain_nosub;
+
 				var query_pornerbros_url = function(vid, cb) {
-					api_query("pornerbros:" + id, {
-						url: "https://token.pornerbros.com/" + vid + "/desktop/240+360+480+720+1080+1440+2160",
+					api_query(cache_prefix + id, {
+						url: "https://" + token_domain + "/" + vid + "/desktop/240+360+480+720+1080+1440+2160",
 						method: "POST",
 						headers: {
 							"Accept": "application/json, text/plain, */*",
-							"origin": "https://www.pornerbros.com",
-							"referer": "https://www.pornerbros.com/",
+							"origin": "https://www." + domain_nosub,
+							"referer": "https://www." + domain_nosub + "/",
 							"Content-Length": "0"
 						},
 						json: true
@@ -64678,7 +64690,7 @@ var $$IMU_EXPORT$$;
 
 						var baseobj = {
 							headers: {
-								Referer: "https://www.pornerbros.com/"
+								Referer: "https://www." + domain_nosub + "/"
 							}
 						};
 
