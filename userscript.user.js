@@ -1927,6 +1927,9 @@ var $$IMU_EXPORT$$;
 		mouseover_video_seek_right_key: ["shift", "right"],
 		mouseover_video_seek_vertical_scroll: false,
 		mouseover_video_seek_horizontal_scroll: false,
+		mouseover_video_frame_prev_key: [","],
+		mouseover_video_frame_next_key: ["."],
+		mouseover_video_framerate: 25,
 		mouseover_video_speed_down_key: ["["],
 		mouseover_video_speed_up_key: ["]"],
 		mouseover_video_speed_amount: 0.25,
@@ -2764,6 +2767,41 @@ var $$IMU_EXPORT$$;
 				mouseover_open_behavior: "popup",
 				allow_video: true
 			},
+			category: "popup",
+			subcategory: "video"
+		},
+		mouseover_video_frame_prev_key: {
+			name: "Previous frame key",
+			description: "Rewinds the video one \"frame\" backward. Due to current limitations, the frame size is static (but configurable), and might not match the video's framerate",
+			requires: {
+				mouseover_open_behavior: "popup",
+				allow_video: true
+			},
+			type: "keysequence",
+			category: "popup",
+			subcategory: "video"
+		},
+		mouseover_video_frame_next_key: {
+			name: "Next frame key",
+			description: "Advances the video one \"frame\" forward. Due to current limitations, the frame size is static (but configurable), and might not match the video's framerate",
+			requires: {
+				mouseover_open_behavior: "popup",
+				allow_video: true
+			},
+			type: "keysequence",
+			category: "popup",
+			subcategory: "video"
+		},
+		mouseover_video_framerate: {
+			name: "Frame rate",
+			description: "Frame rate for videos to seek forward/back with the next/previous frame keys",
+			requires: {
+				mouseover_open_behavior: "popup",
+				allow_video: true
+			},
+			type: "number",
+			number_min: 0,
+			number_unit: "FPS",
 			category: "popup",
 			subcategory: "video"
 		},
@@ -77067,9 +77105,13 @@ var $$IMU_EXPORT$$;
 			return videoel[0];
 		};
 
-		var seek_popup_video = function(leftright) {
+		var seek_popup_video = function(leftright, amount) {
 			var timemul = leftright ? -1 : 1;
-			var time = timemul * settings.mouseover_video_seek_amount;
+
+			if (typeof amount === "undefined")
+				amount = settings.mouseover_video_seek_amount;
+
+			var time = timemul * amount;
 
 			var videoel = get_popup_video();
 			if (!videoel)
@@ -77230,6 +77272,12 @@ var $$IMU_EXPORT$$;
 					return true;
 				case "seek_right":
 					seek_popup_video(false);
+					return true;
+				case "frame_left":
+					seek_popup_video(true, 1.0 / settings.mouseover_video_framerate);
+					return true;
+				case "frame_right":
+					seek_popup_video(false, 1.0 / settings.mouseover_video_framerate);
 					return true;
 				case "speed_down":
 					popup_video_speed(true);
@@ -77469,6 +77517,14 @@ var $$IMU_EXPORT$$;
 					{
 						key: settings.mouseover_video_seek_right_key,
 						action: {type: "seek_right"}
+					},
+					{
+						key: settings.mouseover_video_frame_prev_key,
+						action: {type: "frame_left"}
+					},
+					{
+						key: settings.mouseover_video_frame_next_key,
+						action: {type: "frame_right"}
 					},
 					{
 						key: settings.mouseover_video_speed_down_key,
