@@ -32,17 +32,28 @@ prc.on('close', function(code) {
 
 	var header = null;
 	for (const line of lines) {
+		var is_end_header = false;
 		if (line.indexOf(" ==UserScript==") >= 0) {
 			header = line;
 		} else if (header) {
+			if (line.indexOf(" ==/UserScript==") >= 0) {
+				is_end_header = true;
+				header += "\n" + "//";
+				header += "\n" + "// This script is quickly approaching OpenUserJS's 1MB limit, so the update URL is set to github in order to future-proof updates";
+				header += "\n" + "// @updateURL https://raw.githubusercontent.com/qsniyg/maxurl/master/userscript.meta.js";
+				header += "\n" + "// @downloadURL https://raw.githubusercontent.com/qsniyg/maxurl/master/userscript_smaller.user.js";
+			}
+
 			header += "\n" + line;
 		}
 
-		if (line.indexOf(" ==/UserScript==") >= 0) {
+		if (is_end_header) {
 			header += "\n\n";
 			break;
 		}
 	}
+
+	fs.writeFileSync("userscript.meta.js", header);
 
 	get_uglifyjs_version(function(version) {
 		if (!version) {
