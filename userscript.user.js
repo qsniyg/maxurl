@@ -630,6 +630,8 @@ var $$IMU_EXPORT$$;
 				console_log("do_request", deepcopy(data));
 			}
 
+			var orig_data = deepcopy(data);
+
 			if (!data.onerror)
 				data.onerror = data.onload;
 
@@ -646,6 +648,43 @@ var $$IMU_EXPORT$$;
 					raw_request_do = do_request_browser;
 					delete data.trackingprotection_failsafe;
 				}
+			}
+
+			if (data.retry_503 && data.retry_503 > 0) {
+				if (data.retry_503 === true || typeof data.retry_503 !== "number")
+					data.retry_503 = 3;
+
+				var real_onload_503 = data.onload;
+				var real_onerror_503 = data.onerror;
+
+				var finalcb_503 = function(resp, iserror) {
+					if (_nir_debug_) {
+						console_log("do_request's finalcb_503:", resp, iserror, deepcopy(data));
+					}
+
+					if (resp.status === 503) {
+						console_warn("Received status 503, retrying request", resp, orig_data);
+						orig_data.retry_503 = data.retry_503 - 1;
+
+						setTimeout(function() {
+							do_request(orig_data);
+						}, 2000);
+					} else {
+						if (iserror) {
+							real_onerror_503(resp);
+						} else {
+							real_onload_503(resp);
+						}
+					}
+				};
+
+				data.onload = function(resp) {
+					finalcb_503(resp, false);
+				};
+
+				data.onerror = function(resp) {
+					finalcb_503(resp, true);
+				};
 			}
 
 			if (data.trackingprotection_failsafe && settings.allow_browser_request && do_request_browser) {
@@ -24079,7 +24118,8 @@ var $$IMU_EXPORT$$;
 								extra: {
 									caption: caption
 								},
-								video: true
+								video: true,
+								can_head: false
 							};
 
 							return tiktok_finalcb(obj);
@@ -35705,6 +35745,8 @@ var $$IMU_EXPORT$$;
 			domain_nosub === "mt-static.com" ||
 			domain_nosub === "slutload-media.com" ||
 			domain_nowww === "porngem.com" ||
+			domain_nowww === "uiporn.com" ||
+			domain_nosub === "pornicom.com" ||
 			// different system
 			// https://static2.tubepornclassic.com/contents/videos_screenshots/1051000/1051741/240x180/1.jpg
 			//domain_nosub === "tubepornclassic.com" ||
@@ -35803,7 +35845,8 @@ var $$IMU_EXPORT$$;
 				addslash = "";
 				a_component = "";
 				basedomain = "https://www.slutload.com/";
-			} else if (domain_nosub === "porngem.com") {
+			} else if (domain_nosub === "porngem.com" ||
+					   domain_nosub === "uiporn.com") {
 				idprefix = "a-";
 				addslash = "";
 				a_component = "";
@@ -42507,7 +42550,7 @@ var $$IMU_EXPORT$$;
 			match = src.match(/^[a-z]+:\/\/[^/]+\/+[^/]+\/+[^/]+\/+video([0-9]+)(?:[?#].*)?$/);
 			if (!match) {
 				is_pagelink = false;
-				match = src.match(/^[a-z]+:\/\/img[0-9]*\.[^/]+\/+[^/]+\/+thumbs\/+[0-9a-f]{2}\/+[0-9a-f]{2}_([0-9]+)l\./);
+				match = src.match(/^[a-z]+:\/\/img[0-9]*\.[^/]+\/+[^/]+\/+thumbs\/+[0-9a-f]{2}\/+[0-9a-f]{1,2}_([0-9]+)l\./);
 			}
 
 			if (match) {
@@ -71355,6 +71398,7 @@ var $$IMU_EXPORT$$;
 			headers: headers,
 			trackingprotection_failsafe: true,
 			need_blob_response: method == "GET",
+			retry_503: true,
 			onprogress: function(resp) {
 				var do_abort = function() {
 					if (!req || !req.abort) {
