@@ -1853,6 +1853,7 @@ var $$IMU_EXPORT$$;
 		allow_live_settings_reload: true,
 		allow_remote: true,
 		disable_keybind_when_editing: true,
+		enable_gm_download: true,
 		redirect: true,
 		redirect_history: true,
 		redirect_extension: true,
@@ -2230,6 +2231,14 @@ var $$IMU_EXPORT$$;
 			name: "Disable keybindings when editing text",
 			description: "Disables IMU keybindings when key events are sent to an input area on the page",
 			category: "general",
+			imu_enabled_exempt: true,
+			advanced: true
+		},
+		enable_gm_download: {
+			name: "Use GM_download if available",
+			description: "Prefers using `GM_download` over simple browser-based downloads, if the function is available. Some userscript managers download the entire file before displaying a save dialog, which can be undesirable for large video files",
+			category: "general",
+			userscript_only: true,
 			imu_enabled_exempt: true,
 			advanced: true
 		},
@@ -77013,7 +77022,7 @@ var $$IMU_EXPORT$$;
 					if (cb)
 						cb();
 				});
-			} else if (is_userscript && typeof GM_download !== "undefined") {
+			} else if (is_userscript && typeof GM_download !== "undefined" && settings.enable_gm_download) {
 				var headers;
 
 				if (imu.headers)
