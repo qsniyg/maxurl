@@ -650,41 +650,43 @@ var $$IMU_EXPORT$$;
 				}
 			}
 
-			if (data.retry_503 && data.retry_503 > 0) {
+			if (data.retry_503) {
 				if (data.retry_503 === true || typeof data.retry_503 !== "number")
-					data.retry_503 = 3;
+					data.retry_503 = parseInt(settings.retry_503_times) || 0;
 
-				var real_onload_503 = data.onload;
-				var real_onerror_503 = data.onerror;
+				if (data.retry_503 > 0) {
+					var real_onload_503 = data.onload;
+					var real_onerror_503 = data.onerror;
 
-				var finalcb_503 = function(resp, iserror) {
-					if (_nir_debug_) {
-						console_log("do_request's finalcb_503:", resp, iserror, deepcopy(data));
-					}
-
-					if (resp.status === 503) {
-						console_warn("Received status 503, retrying request", resp, orig_data);
-						orig_data.retry_503 = data.retry_503 - 1;
-
-						setTimeout(function() {
-							do_request(orig_data);
-						}, 2000);
-					} else {
-						if (iserror) {
-							real_onerror_503(resp);
-						} else {
-							real_onload_503(resp);
+					var finalcb_503 = function(resp, iserror) {
+						if (_nir_debug_) {
+							console_log("do_request's finalcb_503:", resp, iserror, deepcopy(data));
 						}
-					}
-				};
 
-				data.onload = function(resp) {
-					finalcb_503(resp, false);
-				};
+						if (resp.status === 503) {
+							console_warn("Received status 503, retrying request", resp, orig_data);
+							orig_data.retry_503 = data.retry_503 - 1;
 
-				data.onerror = function(resp) {
-					finalcb_503(resp, true);
-				};
+							setTimeout(function() {
+								do_request(orig_data);
+							}, parseInt(settings.retry_503_ms) || 1);
+						} else {
+							if (iserror) {
+								real_onerror_503(resp);
+							} else {
+								real_onload_503(resp);
+							}
+						}
+					};
+
+					data.onload = function(resp) {
+						finalcb_503(resp, false);
+					};
+
+					data.onerror = function(resp) {
+						finalcb_503(resp, true);
+					};
+				}
 			}
 
 			if (data.trackingprotection_failsafe && settings.allow_browser_request && do_request_browser) {
@@ -1893,6 +1895,8 @@ var $$IMU_EXPORT$$;
 		settings_show_requirements: true,
 		advanced_options: false,
 		allow_browser_request: true,
+		retry_503_times: 3,
+		retry_503_ms: 2000,
 		use_blob_over_arraybuffer: false,
 		allow_live_settings_reload: true,
 		allow_remote: true,
@@ -2257,6 +2261,28 @@ var $$IMU_EXPORT$$;
 			name: "Allow using browser XHR",
 			description: "This allows XHR requests to be run in the browser's context if they fail in the extension (e.g. when Tracking Protection is set to High)",
 			category: "general",
+			imu_enabled_exempt: true,
+			advanced: true
+		},
+		retry_503_times: {
+			name: "Retry requests with 503 errors",
+			description: "Amount of times to retry a request when 503 (service unavailable) is returned by the server",
+			category: "general",
+			type: "number",
+			number_min: 0,
+			number_int: true,
+			number_unit: "times",
+			imu_enabled_exempt: true,
+			advanced: true
+		},
+		retry_503_ms: {
+			name: "Delay between 503 retries",
+			description: "Time (in milliseconds) to delay between retrying requests that received 503",
+			category: "general",
+			type: "number",
+			number_min: 0,
+			number_int: true,
+			number_unit: "ms",
 			imu_enabled_exempt: true,
 			advanced: true
 		},
