@@ -78615,6 +78615,11 @@ var $$IMU_EXPORT$$;
 
 	var do_greasyfork_page = function() {
 		var imgel = document.querySelector("div.script-author-description > center > img[alt='Image Max URL']");
+
+		// greasyfork redesign
+		if (!imgel)
+			imgel = document.querySelector("#additional-info > center > img[alt='Image Max URL']");
+
 		if (!imgel)
 			return;
 
