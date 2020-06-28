@@ -1925,6 +1925,8 @@ var $$IMU_EXPORT$$;
 		mouseover_jitter_threshold: 30,
 		mouseover_cancel_popup_when_elout: true,
 		mouseover_cancel_popup_with_esc: true,
+		// thanks to cosuwi on github for the idea: https://github.com/qsniyg/maxurl/issues/367
+		mouseover_cancel_popup_when_release: true,
 		// thanks to remlap on discord for the idea: https://github.com/qsniyg/maxurl/issues/250
 		mouseover_auto_close_popup: false,
 		mouseover_auto_close_popup_time: 5,
@@ -3133,6 +3135,16 @@ var $$IMU_EXPORT$$;
 			requires: {
 				mouseover: true
 			},
+			category: "popup",
+			subcategory: "close_behavior"
+		},
+		mouseover_cancel_popup_when_release: {
+			name: "Releasing triggers cancels loading",
+			description: "Cancels the current popup loading if all/any triggers are released (as set by the \"Keep popup open until\" setting)",
+			requires: [
+				{mouseover_close_behavior: "any"},
+				{mouseover_close_behavior: "all"}
+			],
 			category: "popup",
 			subcategory: "close_behavior"
 		},
@@ -77882,7 +77894,14 @@ var $$IMU_EXPORT$$;
 				condition = !trigger_partially_complete(event);
 			}
 
-			if (condition && close_behavior !== "esc" && popup_trigger_reason === "keyboard" && (popups_active || delay_handle_triggering)) {
+			var can_cancel = popups_active;
+			if (!can_cancel) {
+				if (settings.mouseover_cancel_popup_when_release) {
+					can_cancel = true;
+				}
+			}
+
+			if (condition && close_behavior !== "esc" && popup_trigger_reason === "keyboard" && can_cancel) {
 				controlPressed = false;
 
 				if (!settings.mouseover_close_need_mouseout || can_close_popup[1]) {
