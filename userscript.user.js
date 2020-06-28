@@ -70130,15 +70130,26 @@ var $$IMU_EXPORT$$;
 
 					if (value !== undefined)
 						input.value = value;
-					input.oninput = function(x) {
+
+					input.oninput = input.onblur = function(e) {
+						var need_correct = false;
+						var do_update = true;
+						if (e.type === "blur") {
+							need_correct = true;
+							do_update = false;
+						}
+
 						var value = input.value.toString();
 
 						if (type === "number") {
-							var value = parseFloat(value);
+							value = parseFloat(value);
 							var orig_value = value;
 
 							if (isNaN(value)) {
-								return;
+								if (!need_correct)
+									return;
+
+								value = 0;
 							}
 
 							if (meta.number_int) {
@@ -70159,9 +70170,14 @@ var $$IMU_EXPORT$$;
 								input.value = value;
 
 							value = parseFloat(value);
+
+							if (e.type === "blur" && value !== orig_value) {
+								do_update = true;
+							}
 						}
 
-						do_update_setting(setting, value, meta);
+						if (do_update)
+							do_update_setting(setting, value, meta);
 					}
 
 					var sub_units_td = document.createElement("td");
