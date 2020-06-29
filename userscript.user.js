@@ -77427,6 +77427,16 @@ var $$IMU_EXPORT$$;
 			videoel.currentTime += time;
 		};
 
+		var framestep_popup_video = function(leftright) {
+			var videoel = get_popup_video();
+			if (!videoel)
+				return;
+
+			videoel.pause();
+
+			seek_popup_video(leftright, 1.0 / settings.mouseover_video_framerate);
+		};
+
 		var popup_video_speed = function(downup) {
 			var videoel = get_popup_video();
 			if (!videoel)
@@ -77581,10 +77591,10 @@ var $$IMU_EXPORT$$;
 					seek_popup_video(false);
 					return true;
 				case "frame_left":
-					seek_popup_video(true, 1.0 / settings.mouseover_video_framerate);
+					framestep_popup_video(true);
 					return true;
 				case "frame_right":
-					seek_popup_video(false, 1.0 / settings.mouseover_video_framerate);
+					framestep_popup_video(false);
 					return true;
 				case "speed_down":
 					popup_video_speed(true);
