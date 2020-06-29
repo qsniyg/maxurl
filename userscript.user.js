@@ -12311,10 +12311,14 @@ var $$IMU_EXPORT$$;
 			//   https://media.zenfs.com/en/homerun/feed_manager_auto_publish_494/e1f72d9e2dc10d66297f7241501c98bd
 			// https://ct.yimg.com/xd/api/res/1.2/sZNPkU7aHGDv1ysfUUaZHA--/YXBwaWQ9eXR3YXVjdGlvbnNlcnZpY2U7aD04MDA7cT04NTtyb3RhdGU9YXV0bzt3PTgwMA--/https://s.yimg.com/ob/image/4deef77a-5e3b-438b-8024-627e0eed0e72.jpg
 			//   https://s.yimg.com/ob/image/4deef77a-5e3b-438b-8024-627e0eed0e72.jpg
-			return src
-				.replace(/.*\/[^/]*\/api\/res\/[^/]*\/[^/]*\/[^/]*\/(.*?)(?:\.cf\.(?:jpg|webp))?$/, "$1")
+			// https://s.yimg.com/ny/api/res/1.2/4WntAF7kdtkpQHSyXxDQGA--~A/YXBwaWQ9aGlnaGxhbmRlcjtzbT0xO3c9MjA1MDtoPTMwMDA7aWw9cGxhbmU-/http:/l.yimg.com/os/251/2012/11/13/156279341-10-jpg_021614.jpg
+			newsrc = src
+				.replace(/.*\/+..\/+api\/+res\/+1\.2\/+[^/]*\/[^/]*\/(https?:)\/{1,2}(.*?)(?:\.cf\.(?:jpg|webp))?$/, "$1//$2")
+				.replace(/^http:\/\/l\.yimg\.com\//, "https://l.yimg.com/")
 				.replace(/^([a-z]*:\/)([^/])/, "$1/$2")
 				.replace(/(:\/\/[^/]*\/)x\/+r\/+[wh][0-9]+\/+i\/+/, "$1i/");
+			if (newsrc !== src)
+				return newsrc;
 		}
 
 		if (false && domain === "media.zenfs.com") {
@@ -14836,14 +14840,23 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		// vg-images.condecdn.net
-		// gl-images.condecdn.net
 		if (domain_nosub === "condecdn.net" && string_indexof(domain, "images.condecdn.net") >= 0) {
 			// http://vg-images.condecdn.net/image/5LQVw4Pp8rR/crop/1020
 			//   https://vg-images.condecdn.net/image/5LQVw4Pp8rR/original/
 			// https://gl-images.condecdn.net/image/DAwRBl12EGY/crop/810
 			//   https://gl-images.condecdn.net/image/DAwRBl12EGY/original/
-			return src.replace(/(\/image\/[^/]*\/).*/, "$1original/");
+			obj = {url: src};
+
+			match = src.match(/\/image\/+([a-zA-Z0-9]+)\//);
+			if (match) {
+				obj.filename = match[1];
+			}
+
+			newsrc = src.replace(/(\/image\/[^/]*\/).*/, "$1original/");
+			if (newsrc !== src)
+				obj.url = newsrc;
+
+			return obj;
 		}
 
 		if (domain === "media.fromthegrapevine.com" ||
@@ -22105,6 +22118,9 @@ var $$IMU_EXPORT$$;
 			// needs to be updated somehow for this url:
 			// https://d1lfxha3ugu3d4.cloudfront.net/assets/system-images/made/assets/system-images/remote/https_d1lfxha3ugu3d4.cloudfront.net/assets/system-images/made/assets/system-images/remote/https_d1lfxha3ugu3d4.cloudfront.net/exhibitions/images/2020_African_Arts_Global_Conversations_41.222_threequarter_right_PS11_1719w_600_658_220_220_c1_c_t_0_0.jpg
 			(domain === "d1lfxha3ugu3d4.cloudfront.net" && /\/assets\/+system-images\/+remote\/+http/.test(src)) ||
+			// https://ee-harpers-bazaar.s3.amazonaws.com/made/remote/http_assets-prod.harpersbazaar.co.uk/people-and-parties/Best_Dressed/cannes-red-carpet/adrianalima_667_1000_90.jpg
+			//   http://assets-prod.harpersbazaar.co.uk/people-and-parties/Best_Dressed/cannes-red-carpet/adrianalima.jpg
+			amazon_container === "ee-harpers-bazaar" ||
 			// https://cdn2.thelineofbestfit.com/images/remote/https_cdn2.thelineofbestfit.com/galleries/2014/11_clean_bandit-bts_rdn1016_bc.jpg
 			//   https://cdn2.thelineofbestfit.com/galleries/2014/11_clean_bandit-bts_rdn1016_bc.jpg
 			(domain_nosub === "thelineofbestfit.com" && domain.match(/^cdn[0-9]*\.thelineofbestfit\.com/))) {
@@ -22115,7 +22131,7 @@ var $$IMU_EXPORT$$;
 			// https://s3.amazonaws.com/lifesite-cache/images/made/images/remote/https_s3.amazonaws.com/lifesite/man_and_woman_arguing_with_signs_810_500_55_s_c1.jpg
 			//   https://s3.amazonaws.com/lifesite/man_and_woman_arguing_with_signs.jpg
 			return src
-				.replace(/.*\/(?:system-)?images\/+remote\/+(https?)_(.*?)(?:(?:_[0-9]+)?_[0-9]+_[0-9]+(?:_[a-z]_[a-z][0-9])?)?(\.[^/.]*)$/, "$1://$2$3");
+				.replace(/.*\/(?:(?:system-)?images|made)\/+remote\/+(https?)_(.*?)(?:(?:_[0-9]+)?_[0-9]+_[0-9]+(?:_[a-z]_[a-z][0-9])?)?(\.[^/.]*)$/, "$1://$2$3");
 		}
 
 		if (domain === "d1lfxha3ugu3d4.cloudfront.net") {
@@ -23105,6 +23121,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (host_domain_nosub === "pornhub.com" && options.element && options.do_request && options.cb) {
+			// todo: split into pagelink rule
 			var get_pornhub_videodata = function(key, cb) {
 				var cache_key = "pornhub_video:" + key;
 				api_cache.fetch(cache_key, cb, function(done) {
@@ -23552,7 +23569,7 @@ var $$IMU_EXPORT$$;
 			// thumbnail
 			// https://ei2.t8cdn.com/201201/17/2640011/190x143/1.jpg
 			//   https://ep.t8cdn.com/201201/17/2640011/vl_mp4_ultra_480p_2640011.mp4
-			id = src.match(/:\/\/[^/]+\/+[0-9]{6}\/+[0-9]{1,2}\/+([0-9]+)\/+(?:vl_|[0-9]+[pP]_[0-9]+[kK]_|(?:[0-9]+x[0-9]+|originals?)\/+[0-9]+(?:[(][a-z]+=[^/)]*\)){0,}\.)/);
+			id = src.match(/:\/\/[^/]+\/+[0-9]{6}\/+[0-9]{1,2}\/+([0-9]+)\/+(?:vl_|[0-9]+[pP]_[0-9]+[kK]_|(?:[0-9]+x[0-9]+|originals?)\/+(?:[0-9]+\/+[^/]+-[0-9]+|[0-9]+(?:[(][a-z]+=[^/)]*\)){0,})\.)/);
 			if (id) {
 				id = id[1];
 
@@ -35826,6 +35843,15 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "porngem.com" ||
 			domain_nowww === "uiporn.com" ||
 			domain_nosub === "pornicom.com" ||
+			// https://cdn.youx.xxx/videos/th/180000/180971/320x240/18.jpg
+			domain_nosub === "youx.xxx" ||
+			// https://cdn1.pornalin.com/18000/18489/18489_preview.mp4?cdn_key=d9900a678a1dad1d&cdn_expired=1593434942&cdn_speed=0&cdn_buffer=3000000&
+			domain_nosub === "pornalin.com" ||
+			// https://cdn.cartoontube.xxx/th/1000/1871/180x135/1.jpg
+			domain_nosub === "cartoontube.xxx" ||
+			domain_nowww === "amateurporn.me" ||
+			// https://www.hardsexvids.com/contents/videos_screenshots/0/663/336x189/1.jpg
+			domain_nowww === "hardsexvids.com" ||
 			// different system
 			// https://static2.tubepornclassic.com/contents/videos_screenshots/1051000/1051741/240x180/1.jpg
 			//domain_nosub === "tubepornclassic.com" ||
@@ -35835,6 +35861,8 @@ var $$IMU_EXPORT$$;
 			// todo: just uses a normal video tag
 			// https://i.mylust.com/videos_screenshots/412000/412506/200x150/1.jpg
 			//domain === "i.mylust.com" ||
+			//domain === "cdn84436847.ahacdn.me" ||
+			//domain_nowww === "zteenporn.com" ||
 			// https://endoscop.tv/contents/videos_screenshots/1000/1069/180x135/1.jpg
 			//domain_nowww === "endoscop.tv" ||
 			domain_nowww === "pornrewind.com") {
@@ -35850,12 +35878,12 @@ var $$IMU_EXPORT$$;
 			id = null;
 			// https://statics.cdntrex.com/contents/videos_screenshots/1047000/1047563/300x168/1.jpg?v=3
 			// https://statics.cdntrex.com/contents/videos_screenshots/1061000/1061072/preview.mp4.jpg
-			match = src.match(/\/(?:videos_screenshots|vth|kvs)\/+[0-9]+\/+([0-9]+)\/+(?:[0-9]+x[0-9]+\/+|preview(?:_trailer)?\.)/);
+			match = src.match(/\/(?:videos_screenshots|v?th|kvs|videos\/+th)\/+[0-9]+\/+([0-9]+)\/+(?:[0-9]+x[0-9]+\/+|preview(?:_trailer)?\.)/);
 			if (!match) {
 				match = src.match(/\/get_file\/+[0-9a-f]+\/+[0-9a-f]{30,}\/+[0-9a-f]\/+([0-9]+)\/+screenshots\/+/);
 			}
 			if (!match) {
-				match = src.match(/\/get_file\/+[0-9a-f]+\/+[0-9a-f]{30,}\/+[0-9]+\/+[0-9]+\/+([0-9]+)_preview\./);
+				match = src.match(/(?:\/get_file\/+[0-9a-f]+\/+[0-9a-f]{30,}|:\/\/[^/]+)\/+[0-9]+\/+[0-9]+\/+([0-9]+)_preview\./);
 			}
 			// https://pr1.zbporn.tv/contents/videos/600000/600573/600573_short_preview.mp4
 			if (!match) {
@@ -35907,7 +35935,8 @@ var $$IMU_EXPORT$$;
 			} else if (domain_nosub === "watchmygf.me" ||
 					   domain_nosub === "yeswegays.com" ||
 					   domain_nosub === "x18.xxx" ||
-					   domain_nosub === "thebestshemalevideos.com") {
+					   domain_nosub === "thebestshemalevideos.com" ||
+					   domain_nosub === "pornalin.com") {
 				videos_component = "embed";
 				addslash = "";
 				a_component = "";
@@ -35928,6 +35957,18 @@ var $$IMU_EXPORT$$;
 					   domain_nosub === "uiporn.com") {
 				idprefix = "a-";
 				addslash = "";
+				a_component = "";
+			} else if (domain_nosub === "youx.xxx") {
+				videos_component = "videos/embed";
+				a_component = "";
+			} else if (domain_nosub === "cartoontube.xxx") {
+				idprefix = "video";
+				videos_component = "";
+			} else if (domain === "cdn84436847.ahacdn.me" ||
+					   domain_nosub === "zteenporn.com") {
+				basedomain = "https://www.zteenporn.com/";
+				idprefix = "a-";
+				videos_component = "";
 				a_component = "";
 			}
 
@@ -40258,15 +40299,15 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/galleries\/+[^/]+\/+[^/]+)_tn(\.[^/.]+)(?:[?#].*)?$/, "$1_big$2");
 		}
 
-		if (domain === "cdn.eroticbeauties.net" ||
+		if (domain_nosub === "eroticbeauties.net" ||
 			// http://cdn.hometownnudes.com/content/atk-galleria-ashley-stone-253374/auto/5/tn@1x/01.jpg
 			//   http://cdn.hometownnudes.com/content/atk-galleria-ashley-stone-253374/full/01.jpg
-			domain === "cdn.hometownnudes.com" ||
+			domain_nosub === "hometownnudes.com" ||
 			// http://media.pinkworld.com/cms/content/povd_20151221130919_alex-grey-picnic-in-the-park/tn@1x/02.jpg
 			//   http://media.pinkworld.com/cms/content/povd_20151221130919_alex-grey-picnic-in-the-park/full/02.jpg
 			// http://media.pinkworld.com/cms/content/ftvgirls_20150908142022_alexia-a-fresh-nudist/1024/01.jpg
 			//   http://media.pinkworld.com/cms/content/ftvgirls_20150908142022_alexia-a-fresh-nudist/full/01.jpg
-			domain === "media.pinkworld.com") {
+			domain_nosub === "pinkworld.com") {
 			// https://cdn.eroticbeauties.net/content/digital-desire-bree-daniels-11136-1/auto/3/tn@1x/04.jpg
 			//   https://cdn.eroticbeauties.net/content/digital-desire-bree-daniels-11136-1/full/04.jpg
 			newsrc = src.replace(/(\/content\/+[^/]*\/+)(?:[^/]*\/+[^/]*\/+)?(?:tn@[^/]*|[0-9]+)\/+([0-9]+\.[^/.]*)$/, "$1full/$2");
@@ -40274,7 +40315,7 @@ var $$IMU_EXPORT$$;
 				return newsrc;
 		}
 
-		if (domain === "media.pinkworld.com") {
+		if (domain_nosub === "pinkworld.com") {
 			return {
 				url: src,
 				headers: {
@@ -42293,6 +42334,11 @@ var $$IMU_EXPORT$$;
 			//   https://images.sex.com/images/pinporn/2014/10/03/620/8333897.jpg -- watermark
 			// https://images.sex.com/images/pinporn/2018/10/09/126x126/20066749.jpg -- no watermark
 			//   https://images.sex.com/images/pinporn/2018/10/09/620/20066749.jpg -- watermark
+			match = src.match(/(\/images\/pinporn\/[0-9]{4}\/[0-9]{2}\/[0-9]{2}\/)[0-9]+(?:x[0-9]+)?\/([0-9]+\.[^/.?#]+)(?:[?#],*)?$/);
+			if (match) {
+				return "https://cdn.sex.com" + match[1] + match[2];
+			}
+
 			return {
 				url: src.replace(/(\/images\/pinporn\/[0-9]{4}\/[0-9]{2}\/[0-9]{2}\/)(?:300|460|126x126)\//, "$1620/"),
 				headers: {
@@ -42300,6 +42346,17 @@ var $$IMU_EXPORT$$;
 				},
 				referer_ok: {
 					same_domain_nosub: true
+				}
+			};
+		}
+
+		if (domain === "cdn.sex.com") {
+			// https://cdn.sex.com/images/pinporn/2019/02/28/20758139.jpg?width=300
+			//   https://cdn.sex.com/images/pinporn/2019/02/28/20758139.jpg
+			return {
+				url: src.replace(/\?.*/, ""),
+				headers: {
+					Referer: "https://www.sex.com/" // no referer doesn't work
 				}
 			};
 		}
@@ -49137,7 +49194,10 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/image\/+[0-9]+\/+[0-9]+)[^/]*?(,pd=[0-9]+)[^/]*\/+/, "$1$2/");
 		}
 
-		if (domain === "img.culturacolectiva.com") {
+		if (domain === "img.culturacolectiva.com" ||
+			// https://images.psmcdn.net/cdn-cgi/image/width=205,quality=100//tsv4/model/profiles/luna_daniels.jpg
+			//   https://images.psmcdn.net/tsv4/model/profiles/luna_daniels.jpg
+			domain === "images.psmcdn.net") {
 			// https://img.culturacolectiva.com/cdn-cgi/image/f=auto,w=auto,q=80,fit=contain/content_image/2019/8/27/1566916692259-los-mejores-looks-de-los-vma-de-mtv.jpg
 			//   https://img.culturacolectiva.com/content_image/2019/8/27/1566916692259-los-mejores-looks-de-los-vma-de-mtv.jpg
 			return src.replace(/\/cdn-cgi\/+image\/+[^/]*\/+/, "/");
@@ -60620,6 +60680,10 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "cdnu.porndoe.com") {
+			newsrc = src.replace(/\/image\/+movie\/+crop\/+[0-9]+x[0-9]+\/+((?:[0-9]\/+){1,}[^/]+)\.(?:jpg|webp)(?:[?#].*)?$/, "/image/movie/$1.jpg");
+			if (newsrc !== src)
+				return newsrc;
+
 			return src.replace(/(\/movie\/+(?:[0-9]\/+){5,}[^/]+-)(?:preview|240p-400|480p-1000)\./, "$1720p-hd-2500.");
 		}
 
@@ -65387,6 +65451,13 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain === "cdn.nakedgirls.xxx") {
+			// https://cdn.nakedgirls.xxx/galleries/311/b34936569e79a64db532ef669a7d6bfb-1.jpg
+			//   https://www.nakedgirls.xxx/content/galleries/311/b34936569e79a64db532ef669a7d6bfb-1-full.jpg
+			// https://www.nakedgirls.xxx/content/galleries/45/de72e6bb4e702f2c6021cb0257266a48-1-full.jpg
+			return src.replace(/:\/\/cdn\.([^/]+)\/+(galleries\/+[0-9]+\/+[0-9a-f]{20,}-[0-9]+)(\.[^/.]+)(?:[?#].*)?$/, "://www.$1/content/$2-full$3");
+		}
+
 
 
 
@@ -68560,19 +68631,33 @@ var $$IMU_EXPORT$$;
 
 				var customheaders = true;
 				if (!headers || Object.keys(headers).length === 0) {
+					headers = {};
 					customheaders = false;
-					headers = {
-						// Origin is not often added by the browser, and doesn't work for some sites
-						//"Origin": url_domain,
-						"Referer": page_url,
-						// e.g. for Tumblr URLs, this is sent by the browser when redirecting
-						"Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9"
-					};
-				} else if (!headers.Origin && !headers.origin) {
-					//headers.Origin = url_domain;
 				}
 
-				if (customheaders && Object.keys(headers).length === 1 && ("Referer" in headers)) {
+				var specified_headers = new_set();
+				for (var header in headers) {
+					set_add(specified_headers, header.toLowerCase());
+				}
+
+				var base_headers = {
+					// Origin is not often added by the browser, and doesn't work for some sites
+					//"origin": url_domain,
+					"referer": page_url,
+					// e.g. for Tumblr URLs, this is sent by the browser when redirecting
+					"accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+					"sec-fetch-dest": "document",
+					"sec-fetch-mode": "navigate",
+					"sec-fetch-site": "cross-site"
+				};
+
+				for (var header in base_headers) {
+					if (!set_has(specified_headers, header)) {
+						headers[header] = base_headers[header];
+					}
+				}
+
+				if (customheaders && Object.keys(origheaders).length === 1 && ("Referer" in origheaders)) {
 					var domain = page_url;
 					domain = domain.replace(/^[a-z]+:\/\/([^/]*).*?$/, "$1");
 					var url_domain = url.replace(/^[a-z]+:\/\/([^/]*).*?$/, "$1");
