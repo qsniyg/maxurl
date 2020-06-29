@@ -11401,34 +11401,30 @@ var $$IMU_EXPORT$$;
 			return obj;
 		}
 
-		if (domain === "pbs.twimg.com" &&
-			string_indexof(src, "pbs.twimg.com/profile_images/") >= 0) {
-			// https://pbs.twimg.com/profile_images/539057632435122178/1_MUcoAZ_bigger.jpeg
-			// https://pbs.twimg.com/profile_images/642139282325417984/uXOHdmTV_mini.png
-			// https://pbs.twimg.com/profile_images/1079712585186852864/l9IiWuzk_reasonably_small.jpg
-			//   https://pbs.twimg.com/profile_images/1079712585186852864/l9IiWuzk.jpg
-			//return src.replace(/_[a-zA-Z0-9]+\.([^/_]*)$/, "\.$1");
-			newsrc = src
-				.replace(/[?#].*$/, "")
-				.replace(/_bigger\.([^/_]*)$/, "\.$1")
-				.replace(/_normal\.([^/_]*)$/, "\.$1")
-				.replace(/_mini\.([^/_]*)$/, "\.$1")
-				.replace(/_reasonably_small\.([^/_]*)$/, "\.$1")
-				.replace(/_[0-9]+x[0-9]+\.([^/_]*)$/, "\.$1");
-			if (newsrc !== src)
-				return newsrc;
-		}
+		if (domain === "pbs.twimg.com") {
+			if (string_indexof(src, "/profile_images/") >= 0) {
+				// https://pbs.twimg.com/profile_images/539057632435122178/1_MUcoAZ_bigger.jpeg
+				// https://pbs.twimg.com/profile_images/642139282325417984/uXOHdmTV_mini.png
+				// https://pbs.twimg.com/profile_images/1079712585186852864/l9IiWuzk_reasonably_small.jpg
+				//   https://pbs.twimg.com/profile_images/1079712585186852864/l9IiWuzk.jpg
+				//return src.replace(/_[a-zA-Z0-9]+\.([^/_]*)$/, "\.$1");
+				newsrc = src
+					.replace(/[?#].*$/, "")
+					.replace(/_(?:bigger|normal|mini|reasonably_small|[0-9]+x[0-9]+)(\.[^/_]*)$/, "$1");
+				if (newsrc !== src)
+					return newsrc;
+			}
 
-		if (domain === "pbs.twimg.com" &&
-			string_indexof(src, "pbs.twimg.com/profile_banners/") >= 0) {
-			// https://pbs.twimg.com/profile_banners/811769379020947458/1503413326/1500x500 -- stretched
-			//   https://pbs.twimg.com/profile_banners/811769379020947458/1503413326
-			// thanks to Gyuri on discord:
-			// https://pbs.twimg.com/profile_banners/4746636714/1520928319/1500x500 -- possibly not stretched?
-			//   https://pbs.twimg.com/profile_banners/4746636714/1520928319
-			newsrc = src.replace(/\/[0-9]+x[0-9]+$/, "");
-			if (newsrc !== src)
-				return newsrc;
+			if (string_indexof(src, "/profile_banners/") >= 0) {
+				// https://pbs.twimg.com/profile_banners/811769379020947458/1503413326/1500x500 -- stretched
+				//   https://pbs.twimg.com/profile_banners/811769379020947458/1503413326
+				// thanks to Gyuri on discord:
+				// https://pbs.twimg.com/profile_banners/4746636714/1520928319/1500x500 -- possibly not stretched?
+				//   https://pbs.twimg.com/profile_banners/4746636714/1520928319
+				newsrc = src.replace(/\/[0-9]+x[0-9]+(?:[?#].*)?$/, "");
+				if (newsrc !== src)
+					return newsrc;
+			}
 		}
 
 		if (host_domain_nosub === "twitter.com" && options && options.element) {
