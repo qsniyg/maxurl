@@ -1971,6 +1971,9 @@ var $$IMU_EXPORT$$;
 		mouseover_video_muted: false,
 		mouseover_video_mute_key: ["m"],
 		mouseover_video_volume: 100,
+		mouseover_video_volume_down_key: ["9"],
+		mouseover_video_volume_up_key: ["0"],
+		mouseover_video_volume_change_amt: 5,
 		mouseover_video_resume_from_source: false,
 		mouseover_video_seek_amount: 10,
 		mouseover_video_seek_left_key: ["shift", "left"],
@@ -2768,6 +2771,43 @@ var $$IMU_EXPORT$$;
 			description: "Default volume for the video",
 			requires: {
 				mouseover_video_muted: false
+			},
+			type: "number",
+			number_min: 0,
+			number_max: 100,
+			number_int: true,
+			number_unit: "%",
+			category: "popup",
+			subcategory: "video"
+		},
+		mouseover_video_volume_up_key: {
+			name: "Volume up key",
+			description: "Key to increase the volume for the video",
+			requires: {
+				mouseover_open_behavior: "popup",
+				allow_video: true
+			},
+			type: "keysequence",
+			category: "popup",
+			subcategory: "video"
+		},
+		mouseover_video_volume_down_key: {
+			name: "Volume down key",
+			description: "Key to decrease the volume for the video",
+			requires: {
+				mouseover_open_behavior: "popup",
+				allow_video: true
+			},
+			type: "keysequence",
+			category: "popup",
+			subcategory: "video"
+		},
+		mouseover_video_volume_change_amt: {
+			name: "Volume change amount",
+			description: "Percent for volume to increase/decrease when using the volume up/down keys",
+			requires: {
+				mouseover_open_behavior: "popup",
+				allow_video: true
 			},
 			type: "number",
 			number_min: 0,
@@ -71263,9 +71303,10 @@ var $$IMU_EXPORT$$;
 					if (settings.mouseover_video_loop && !settings.mouseover_gallery_move_after_video)
 						video.setAttribute("loop", true);
 
-					if (settings.mouseover_video_muted)
+					if (settings.mouseover_video_muted) {
 						video.muted = true;
-					else {
+					} else {
+						// TODO: always set the volume, so that when the video is unmuted, it'll be at the wanted volume
 						var volume = parseInt(settings.mouseover_video_volume);
 						volume = Math.max(Math.min(volume, 100), 0);
 						video.volume = volume / 100.;
@@ -77453,6 +77494,25 @@ var $$IMU_EXPORT$$;
 			}
 		};
 
+		var popup_video_volume = function(downup) {
+			var videoel = get_popup_video();
+			if (!videoel)
+				return;
+
+			if (typeof downup !== "number") {
+				var amount = settings.mouseover_video_volume_change_amt;
+				if (downup === true)
+					amount = -amount;
+
+				var new_volume = videoel.volume + (amount / 100.);
+				new_volume = Math.min(Math.max(new_volume, 0), 1);
+
+				videoel.volume = new_volume;
+			} else {
+				videoel.volume = downup;
+			}
+		};
+
 		var toggle_video_muted = function() {
 			var videoel = get_popup_video();
 			if (!videoel)
@@ -77604,6 +77664,12 @@ var $$IMU_EXPORT$$;
 					return true;
 				case "reset_speed":
 					popup_video_speed(1);
+					return true;
+				case "volume_up":
+					popup_video_volume(false);
+					return true;
+				case "volume_down":
+					popup_video_volume(true);
 					return true;
 				case "toggle_mute":
 					toggle_video_muted();
@@ -77854,6 +77920,14 @@ var $$IMU_EXPORT$$;
 					{
 						key: settings.mouseover_video_reset_speed_key,
 						action: {type: "reset_speed"}
+					},
+					{
+						key: settings.mouseover_video_volume_up_key,
+						action: {type: "volume_up"}
+					},
+					{
+						key: settings.mouseover_video_volume_down_key,
+						action: {type: "volume_down"}
 					},
 					{
 						key: settings.mouseover_video_mute_key,
