@@ -13258,6 +13258,10 @@ var $$IMU_EXPORT$$;
 			// https://artwork.jaxsta.com/995/e6c1a3ee-e276-4bd7-8c86-d1784df93b13.png?d=85x85
 			// https://artwork.jaxsta.com/550/18UMGIM52273_T1_cvrart.jpg?d=85x85
 			domain === "artwork.jaxsta.com" ||
+			// https://www.tisamipo.co.il/s3/prod.beprotravel/182/BeTop/CMSGALLERY/show/billie-eilish/399px-billie_eilish_2019_by_glenn_francis_20ef0b37.jpg?width=360&height=260&mode=crop&
+			(domain_nowww === "tisamipo.co.il" && string_indexof(src, "/CMSGALLERY/") >= 0) ||
+			// https://images.shakespearesglobe.com/uploads/2020/05/Lysander-and-Hermnia-A-Midsummer-Nights-Dream-Shakespeares-Globe-2019.jpg?w=1600&gravity
+			(domain === "images.shakespearesglobe.com" && string_indexof(src, "/uploads/") >= 0) ||
 			// http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
 			// https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
 			src.match(/\/demandware\.static\//) ||
@@ -32254,7 +32258,7 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/image\/upload\/[wh]_[0-9]+\//, "/image/upload/");
 		}
 
-		if (domain === "www.shakespearesglobe.com") {
+		if (domain_nowww === "shakespearesglobe.com") {
 			// http://www.shakespearesglobe.com/images/8610/normal
 			//   http://www.shakespearesglobe.com/images/8610
 			return src.replace(/(\/images\/[0-9]+)\/[a-z]+(?:\?.*)?$/, "$1");
@@ -33085,7 +33089,7 @@ var $$IMU_EXPORT$$;
 			};
 		}
 
-		if (domain === "www.anewsa.com") {
+		if (domain_nowww === "anewsa.com") {
 			// http://www.anewsa.com/news_images/2016/07/14/mark/20160714163711-1.jpg
 			//   http://www.anewsa.com/news_images/2016/07/14/original/20160714163711-1.jpg
 			// page:
@@ -33115,9 +33119,11 @@ var $$IMU_EXPORT$$;
 				.replace(/(\/magazine\/+[0-9]{4}\/+[0-9]{2}\/+[0-9]+_[0-9a-f]+)_thumb(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
 		}
 
-		if (domain === "www.insectidentification.org") {
+		if (domain_nowww === "insectidentification.org") {
 			// https://www.insectidentification.org/imgs/insects/thumbnails/eastern-hercules-beetle_19.jpg
 			//   https://www.insectidentification.org/imgs/insects/eastern-hercules-beetle_19.jpg
+			// https://insectidentification.org/imgs/insects/thumbnails/abbotts-sphinx-moth.jpg
+			//   https://www.insectidentification.org/imgs/insects/abbotts-sphinx-moth.jpg
 			return src.replace(/(\/imgs\/[a-z]+\/)thumbnails\//, "$1");
 		}
 
@@ -33315,7 +33321,7 @@ var $$IMU_EXPORT$$;
 							   "http://lzimages.lazygirls.info/$1");
 		}
 
-		if (domain === "www.mobtada.com") {
+		if (domain_nowww === "mobtada.com") {
 			// https://www.mobtada.com/resize?src=uploads/images/2017/06/447549.jpg&w=190&h=110&zc=1&q=65
 			//   https://www.mobtada.com/uploads/images/2017/06/447549.jpg
 			return src.replace(/(:\/\/[^/]*\/)resize.*?[?&]src=([^&]*).*?$/, "$1$2");
@@ -33652,7 +33658,7 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/images\/[0-9]+\/)[^/]*\//, "$1original/");
 		}
 
-		if (domain === "www.mypokecard.com") {
+		if (domain_nowww === "mypokecard.com") {
 			// http://www.mypokecard.com/my/galery/thumbs/tRLELnxn16sc.jpg?1530649984
 			//   http://www.mypokecard.com/my/galery/tRLELnxn16sc.jpg?1530649984
 			return src.replace(/\/galery\/thumbs\//, "/galery/");
@@ -34259,7 +34265,7 @@ var $$IMU_EXPORT$$;
 			return decodeURIComponent(src.replace(/^[a-z]+:\/\/[^/]*\/crop\/crop\.php.*?[?&]img=([^&]*).*?$/, "$1"));
 		}
 
-		if (domain === "www.tasoeur.biz") {
+		if (domain_nowww === "tasoeur.biz") {
 			// http://www.tasoeur.biz/images/2018/01/06/thumbs/CC-2.thumb.jpg
 			//   http://www.tasoeur.biz/images/2018/01/06/CC-2.jpg
 			return src.replace(/\/thumbs\/([^/]*)\.thumb(\.[^/.]*)$/, "/$1$2");
@@ -34437,7 +34443,7 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(?:\?.*)?$/, "?alias=original");
 		}
 
-		if (domain === "www.incimages.com" ||
+		if (domain_nowww === "incimages.com" ||
 			// https://firenewsfeed.com/image/728x410/aHR0cHM6Ly9pbWFnZXMuYXhpb3MuY29tL2NJQm1aS2xyZ0hiRFhpZDNsQklEdkcyUXdZOD0vMHgwOjE5MjB4MTA4MC8xOTIweDEwODAvMjAxOC8wNy8xNS8xNTMxNjg4MTkyMjg3LmpwZw==
 			//   https://firenewsfeed.com/image/aHR0cHM6Ly9pbWFnZXMuYXhpb3MuY29tL2NJQm1aS2xyZ0hiRFhpZDNsQklEdkcyUXdZOD0vMHgwOjE5MjB4MTA4MC8xOTIweDEwODAvMjAxOC8wNy8xNS8xNTMxNjg4MTkyMjg3LmpwZw==
 			domain_nowww === "firenewsfeed.com") {
@@ -34776,7 +34782,7 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/thumbs\//, "/picsup/");
 		}
 
-		if (domain === "www.wallpapermaiden.com") {
+		if (domain_nowww === "wallpapermaiden.com") {
 			// http://www.wallpapermaiden.com/image/2017/06/17/model-brown-eyes-short-hair-earring-face-portrait-girls-16379-resized.jpg
 			//   http://www.wallpapermaiden.com/image/2017/06/17/model-brown-eyes-short-hair-earring-face-portrait-girls-16379.jpg
 			// http://www.wallpapermaiden.com/wallpaper/542/download/1700x1020/ciri-cosplay-the-witcher-3.jpg -- 1700x1020
@@ -37410,10 +37416,24 @@ var $$IMU_EXPORT$$;
 			//   http://assets-news-bcdn.dailyhunt.in/rx/fetchdata13/images/84/8f/55/848f55be707b5d4cc1e5177728105a36.jpg
 			// http://assets-news-bcdn-ll.dailyhunt.in/cmd/resize/400x400_60/fetchdata13/images/2b/c8/06/2bc8064bc8af1d65f79882d018b1e094.jpg
 			//   http://assets-news-bcdn-ll.dailyhunt.in/rx/fetchdata13/images/2b/c8/06/2bc8064bc8af1d65f79882d018b1e094.jpg
+			// http://assets-news-bcdn.dailyhunt.in/cmd/resize/400x400_60/fetchdata15/images/69/02/64/690264611ab2b114ec9c0598e0336da7.jpg
+			//   http://assets-news-bcdn.dailyhunt.in/fetchdata15/images/69/02/64/690264611ab2b114ec9c0598e0336da7.jpg
+			// https://assets-news-bcdn.dailyhunt.in/cmd/resize/400x400_80/fetchdata16/images/41/8c/1f/418c1f22c99fb8dea49d90333c8efbc23c82f1e94c7418812886418668e4cb5f.webp
+			//   https://assets-news-bcdn.dailyhunt.in/fetchdata16/images/41/8c/1f/418c1f22c99fb8dea49d90333c8efbc23c82f1e94c7418812886418668e4cb5f.jpg
 			(domain_nosub === "dailyhunt.in" && domain.match(/bcdn[-.]/))) {
 			// http://bcdn.newshunt.com/cmd/resize/400x400_60/fetchdata13/images/dc/b1/27/dcb1279a206713ea6342291e9f268f42.jpg
 			//   http://bcdn.newshunt.com/rx/fetchdata13/images/dc/b1/27/dcb1279a206713ea6342291e9f268f42.jpg
-			return src.replace(/\/cmd\/[a-z]+\/[^/]*\/(fetchdata[0-9]*\/images\/)/, "/rx/$1");
+			obj = {
+				url: src,
+				head_wrong_contentlength: true
+			};
+
+			newsrc = src.replace(/\/cmd\/[a-z]+\/[^/]*\/(fetchdata[0-9]*\/images\/)/, "/$1");
+			if (newsrc !== src) {
+				obj.url = newsrc.replace(/\.webp(?:[?#].*)?$/, ".jpg");
+			}
+
+			return obj;
 		}
 
 		if (domain === "media.search.lt") {
@@ -48672,7 +48692,9 @@ var $$IMU_EXPORT$$;
 		if (domain_nowww === "wsws.org") {
 			// https://www.wsws.org/asset/466e8907-fa57-48a4-a47e-5bf256cbc18I/image.jpg?rendition=image480
 			//   https://www.wsws.org/asset/466e8907-fa57-48a4-a47e-5bf256cbc18I/image.jpg
-			return src.replace(/(\/asset\/+[-0-9a-f]+I?\/+[^/]*?)(?:[?#].*)?$/, "$1");
+			// https://www.wsws.org/asset/34762bf1-8e20-4de9-b0b2-ad9cb3e7434C/image.jpg?rendition=image480
+			//   https://www.wsws.org/asset/34762bf1-8e20-4de9-b0b2-ad9cb3e7434C/image.jpg
+			return src.replace(/(\/asset\/+[-0-9a-f]+[A-Z]?\/+[^/]*?)(?:[?#].*)?$/, "$1");
 		}
 
 		if (domain === "media.apnarm.net.au") {
@@ -65557,6 +65579,12 @@ var $$IMU_EXPORT$$;
 			//   https://www.nakedgirls.xxx/content/galleries/311/b34936569e79a64db532ef669a7d6bfb-1-full.jpg
 			// https://www.nakedgirls.xxx/content/galleries/45/de72e6bb4e702f2c6021cb0257266a48-1-full.jpg
 			return src.replace(/:\/\/cdn\.([^/]+)\/+(galleries\/+[0-9]+\/+[0-9a-f]{20,}-[0-9]+)(\.[^/.]+)(?:[?#].*)?$/, "://www.$1/content/$2-full$3");
+		}
+
+		if (domain === "proxy.topixcdn.com") {
+			// https://proxy.topixcdn.com/ipicimg/26IMVMTK9MHNCGCQ-cp0x300x1200x1500-rsz232x232
+			//   https://proxy.topixcdn.com/ipicimg/26IMVMTK9MHNCGCQ
+			return src.replace(/(\/ipicimg\/+[0-9A-Z]+)(?:-(?:cp|rsz)[0-9x]+){0,}(?:[?#].*)?$/, "$1");
 		}
 
 
