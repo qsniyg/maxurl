@@ -846,6 +846,7 @@ var $$IMU_EXPORT$$;
 			imgur_source: true,
 			imgur_nsfw_headers: null,
 			instagram_use_app_api: true,
+			instagram_dont_use_web: false,
 			instagram_gallery_postlink: false,
 			snapchat_orig_media: true,
 			tiktok_no_watermarks: true,
@@ -2101,6 +2102,7 @@ var $$IMU_EXPORT$$;
 		deviantart_prefer_size: false,
 		imgur_source: true,
 		instagram_use_app_api: true,
+		instagram_dont_use_web: false,
 		instagram_gallery_postlink: false,
 		snapchat_orig_media: true,
 		tiktok_no_watermarks: true,
@@ -4256,6 +4258,13 @@ var $$IMU_EXPORT$$;
 		instagram_use_app_api: {
 			name: "Instagram: Use native API",
 			description: "Uses Instagram's native API if possible, requires you to be logged into Instagram",
+			category: "rule_specific",
+			onupdate: update_rule_setting
+		},
+		instagram_dont_use_web: {
+			name: "Instagram: Don't use web API",
+			description: "Avoids using Instagram's web API if possible, which increases performance, but will occasionally sacrifice quality for videos",
+			requires: [{instagram_use_app_api: true}],
 			category: "rule_specific",
 			onupdate: update_rule_setting
 		},
@@ -6538,7 +6547,7 @@ var $$IMU_EXPORT$$;
 			return newsrc;*/
 	};
 
-	common_functions.instagram_parse_el_info = function(api_cache, do_request, use_app_api, info, host_url, cb) {
+	common_functions.instagram_parse_el_info = function(api_cache, do_request, use_app_api, dont_use_web, info, host_url, cb) {
 		var host_is_ig = /^[a-z]+:\/\/[^/]*\.instagram\.com\//.test(host_url);
 
 		var shortcode_to_url = function(type, shortcode) {
@@ -6551,6 +6560,44 @@ var $$IMU_EXPORT$$;
 				return match[1];
 			return null;
 		};
+
+		var id_to_shortcode, shortcode_to_id;
+
+		try {
+			var shortcode_table = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+			var sixtyfour = BigInt(64);
+
+			// TODO: don't use recursion
+			var _id_to_shortcode = function(id) {
+				if (id < sixtyfour) {
+					return shortcode_table[parseInt(id)];
+				} else {
+					return id_to_shortcode(id / sixtyfour) + shortcode_table[id % sixtyfour];
+				}
+			};
+
+			id_to_shortcode = function(id) {
+				return _id_to_shortcode(BigInt(id));
+			};
+
+			var shortcode_to_id = function(shortcode) {
+				shortcode = shortcode.substring(0, 11); // truncate for private ids
+				var base = BigInt(0);
+
+				for (var i = 0; i < shortcode.length; i++) {
+					var index = BigInt(shortcode_table.indexOf(shortcode[i]));
+					base *= sixtyfour;
+					base += index;
+				}
+
+				return base.toString();
+			};
+		} catch (e) {
+			id_to_shortcode = shortcode_to_id = function() {
+				console_warn("BigInt is not supported in your browser");
+				return null;
+			};
+		}
 
 		var get_sharedData_from_resptext = function(text) {
 			try {
@@ -7240,65 +7287,116 @@ var $$IMU_EXPORT$$;
 			});
 		};
 
+		var get_shortcode_to_id = function(post_url, shortcode, cb) {
+			api_cache.fetch("ig_shortcode_to_id:" + shortcode, cb, function(done) {
+				var id = shortcode_to_id(shortcode);
+				if (id) {
+					return done(id, 24*60*60);
+				} else {
+					request_ig_post(post_url, shortcode, function(media) {
+						if (!media || !media.id) {
+							return done(null, false);
+						}
+
+						return done(media.id, 24*60*60);
+					});
+				}
+			});
+		};
+
 		var request_post_inner = function(post_url, image_url, cb) {
-			request_ig_post(post_url, url_to_shortcode(post_url), function(media) {
-				if (!media) {
+			var shortcode = url_to_shortcode(post_url);
+
+			get_shortcode_to_id(post_url, shortcode, function(media_id) {
+				if (!media_id) {
 					return cb(null);
 				}
 
 				try {
-					mediainfo_api(media.id + "_" + media.owner.id, function(app_response) {
+					//media.id + "_" + media.owner.id
+					mediainfo_api(media_id, function(app_response) {
 						var images = [];
 						var images_small = [];
 
 						var images_app = [];
+						var images_graphql = [];
+
+						var need_graphql = !dont_use_web;
 
 						if (app_response !== null) {
 							images_app = get_maxsize_app(app_response.items[0]);
 						} else if (use_app_api) {
-							console_log("Unable to use API to find Instagram image, you may need to login to Instagram");
+							console_warn("Unable to use API to find Instagram image, you may need to login to Instagram");
+							need_graphql = true;
 						}
 
-						var images_graphql = get_maxsize_graphql(media);
+						var final = function() {
+							if (_nir_debug_) {
+								console_log("images_app", images_app);
+								console_log("images_graphql", images_graphql);
+							}
 
-						if (_nir_debug_) {
-							console_log("images_app", images_app);
-							console_log("images_graphql", images_graphql);
-						}
+							if (!images_app || !images_app.length)
+								images_app = null;
 
-						if (images_app && images_app.length === images_graphql.length) {
-							for (var i = 0; i < images_app.length; i++) {
-								var app_size = images_app[i].width * images_app[i].height;
-								var graphql_size = images_graphql[i].width * images_graphql[i].height;
+							if (!images_graphql || !images_graphql.length)
+								images_graphql = null;
 
-								if (graphql_size > app_size) {
-									//console_log("Using graphql image", images[i], images_graphql[i]);
-									images[i] = images_graphql[i];
-									images_small[i] = images_app[i];
+							if (!images_app && !images_graphql) {
+								return cb(null);
+							}
+
+							if (images_app && images_graphql && images_app.length === images_graphql.length) {
+								for (var i = 0; i < images_app.length; i++) {
+									var app_size = images_app[i].width * images_app[i].height;
+									var graphql_size = images_graphql[i].width * images_graphql[i].height;
+
+									if (graphql_size > app_size) {
+										//console_log("Using graphql image", images[i], images_graphql[i]);
+										images[i] = images_graphql[i];
+										images_small[i] = images_app[i];
+									} else {
+										images[i] = images_app[i];
+										images_small[i] = images_graphql[i];
+									}
+								}
+							} else {
+								if (images_app) {
+									images = images_app;
+									images_small = images_graphql;
 								} else {
-									images[i] = images_app[i];
-									images_small[i] = images_graphql[i];
+									images = images_graphql;
+									images_small = images_app;
 								}
 							}
+
+							if (_nir_debug_) {
+								console_log("images_small", images_small);
+								console_log("images", images, image_url);
+							}
+
+							if (image_url) {
+								var image = image_in_objarr(image_url, images, images_small);
+								if (image)
+									return cb(image_to_obj(image));
+							} else {
+								return cb(images);
+							}
+
+							cb(null);
+						};
+
+						if (need_graphql) {
+							request_ig_post(post_url, shortcode, function(media) {
+								if (media) {
+									images_graphql = get_maxsize_graphql(media);
+								}
+
+								final();
+							});
 						} else {
-							images = images_graphql;
-							images_small = images_app;
+							final();
 						}
-
-						if (_nir_debug_) {
-							console_log("images_small", images_small);
-							console_log("images", images, image_url);
-						}
-
-						if (image_url) {
-							var image = image_in_objarr(image_url, images, images_small);
-							if (image)
-								return cb(image_to_obj(image));
-						} else {
-							return cb(images);
-						}
-
-						cb(null);
 					});
 				} catch (e) {
 					console_error(e);
@@ -33061,7 +33159,7 @@ var $$IMU_EXPORT$$;
 			// if oh is missing, "Bad URL hash"
 			newsrc = (function() {
 				var info = common_functions.instagram_find_el_info(document, options.element, options.host_url);
-				return common_functions.instagram_parse_el_info(api_cache, options.do_request, options.rule_specific.instagram_use_app_api, info, options.host_url, options.cb);
+				return common_functions.instagram_parse_el_info(api_cache, options.do_request, options.rule_specific.instagram_use_app_api, options.rule_specific.instagram_dont_use_web, info, options.host_url, options.cb);
 			})();
 			if (newsrc !== undefined)
 				return newsrc;
@@ -33106,7 +33204,7 @@ var $$IMU_EXPORT$$;
 				element: options.element
 			}];
 
-			return common_functions.instagram_parse_el_info(api_cache, options.do_request, options.rule_specific.instagram_use_app_api, info, options.host_url, options.cb);
+			return common_functions.instagram_parse_el_info(api_cache, options.do_request, options.rule_specific.instagram_use_app_api, options.rule_specific.instagram_dont_use_web, info, options.host_url, options.cb);
 		}
 
 		if (host_domain_nowww === "discordapp.com" && (domain_nosub === "fbcdn.net" || domain_nosub === "cdninstagram.com") && options.element && options.cb && options.do_request) {
@@ -33131,7 +33229,7 @@ var $$IMU_EXPORT$$;
 										element: options.element
 									}];
 
-									return common_functions.instagram_parse_el_info(api_cache, options.do_request, options.rule_specific.instagram_use_app_api, info, options.host_url, options.cb);
+									return common_functions.instagram_parse_el_info(api_cache, options.do_request, options.rule_specific.instagram_use_app_api, options.rule_specific.instagram_dont_use_web, info, options.host_url, options.cb);
 								}
 
 								break;
@@ -67157,7 +67255,7 @@ var $$IMU_EXPORT$$;
 						var imageid_el_src = common_functions.instagram_get_image_src_from_el(imageid_el);
 						var our_imageid = common_functions.instagram_get_imageid(imageid_el_src);
 						var add = nextprev ? 1 : -1;
-						common_functions.instagram_parse_el_info(real_api_cache, options.do_request, options.rule_specific.instagram_use_app_api, info, options.host_url, function(data) {
+						common_functions.instagram_parse_el_info(real_api_cache, options.do_request, options.rule_specific.instagram_use_app_api, options.rule_specific.instagram_dont_use_web, info, options.host_url, function(data) {
 							if (!data) {
 								return options.cb("default");
 							}
@@ -67711,6 +67809,7 @@ var $$IMU_EXPORT$$;
 				"deviantart_prefer_size": true,
 				"imgur_source": true,
 				"instagram_use_app_api": true,
+				"instagram_dont_use_web": true,
 				"instagram_gallery_postlink": true,
 				"snapchat_orig_media": true,
 				"tiktok_no_watermarks": true,
