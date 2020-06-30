@@ -7325,8 +7325,11 @@ var $$IMU_EXPORT$$;
 
 						if (app_response !== null) {
 							images_app = get_maxsize_app(app_response.items[0]);
-						} else if (use_app_api) {
-							console_warn("Unable to use API to find Instagram image, you may need to login to Instagram");
+						} else {
+							if (use_app_api) {
+								console_warn("Unable to use API to find Instagram image, you may need to login to Instagram");
+							}
+
 							need_graphql = true;
 						}
 
