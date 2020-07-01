@@ -13262,6 +13262,9 @@ var $$IMU_EXPORT$$;
 			(domain_nowww === "tisamipo.co.il" && string_indexof(src, "/CMSGALLERY/") >= 0) ||
 			// https://images.shakespearesglobe.com/uploads/2020/05/Lysander-and-Hermnia-A-Midsummer-Nights-Dream-Shakespeares-Globe-2019.jpg?w=1600&gravity
 			(domain === "images.shakespearesglobe.com" && string_indexof(src, "/uploads/") >= 0) ||
+			// thanks to f2005 on discord
+			// https://cdn-contents-web.weverse.io/user/f908599f1d3f4be09741e7774b93d0e8671.jpg?d=xl&download=weverse_moment_f908599f1d3f4be09741e7774b93d0e8671.jpg
+			domain === "cdn-contents-web.weverse.io" ||
 			// http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
 			// https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
 			src.match(/\/demandware\.static\//) ||
@@ -64105,15 +64108,23 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if (domain_nowww === "anime789.com" && options.do_request && options.cb) {
+		if ((domain_nowww === "anime789.com" ||
+			 domain_nowww === "javto.stream" ||
+			 domain_nowww === "javcl.me" ||
+			 domain_nowww === "cdn-myhdjav.info" ||
+			 domain_nowww === "ffem.club" ||
+			 domain_nowww === "javhub.pro" ||
+			 domain_nowww === "iframejav.com" ||
+			 domain_nowww === "playvideo.best") && options.do_request && options.cb) {
+			var base_domain = domain_nosub;
 			var query_anime789_vid = function(id, cb) {
 				api_query("anime789:" + id, {
-					url: "https://anime789.com/api/source/" + id,
+					url: "https://" + base_domain + "/api/source/" + id,
 					method: "POST",
-					data: "r=&d=anime789.com",
+					data: "r=&d=" + base_domain,
 					headers: {
-						Origin: "https://anime789.com",
-						Referer: "https://anime789.com/"
+						Origin: "https://" + base_domain,
+						Referer: "https://" + base_domain + "/"
 					}
 				}, cb, function(done, resp, cache_key) {
 					try {
@@ -64147,7 +64158,8 @@ var $$IMU_EXPORT$$;
 				if (maxobj) {
 					return {
 						url: maxobj.file,
-						video: true
+						video: true,
+						is_private: true // linked to ip range
 					};
 				} else {
 					return null;
@@ -64155,17 +64167,34 @@ var $$IMU_EXPORT$$;
 			};
 
 			var get_anime789_id_from_url = function(url) {
-				var match = url.match(/\/asset\/+userdata\/+[0-9]+\/+poster\/+.\/+..\/+([^/.]+)\./);
+				var match = url.match(/^[a-z]+:\/\/[^/]+\/+(?:asset\/+userdata\/+[0-9]+\/+poster\/+.\/+..\/+|v\/+)([^/.?#]+)(?:\.[^/.]+)?(?:[?#].*)?$/);
 				if (match)
 					return match[1];
 				else
 					return null;
 			};
 
+			var page_nullobj = src;
+
 			id = get_anime789_id_from_url(src);
 			if (id) {
+				if (/:\/\/[^/]+\/+v\/+/.test(src)) {
+					page_nullobj = {
+						url: src,
+						is_pagelink: true
+					};
+				}
+
 				query_anime789_vid(id, function(data) {
-					options.cb(get_obj_from_anime789(data));
+					var obj = get_obj_from_anime789(data);
+					if (!obj)
+						return options.cb(page_nullobj);
+
+					if (page_nullobj) {
+						obj = [obj, page_nullobj];
+					}
+
+					options.cb(obj);
 				});
 
 				return {
