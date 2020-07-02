@@ -66132,6 +66132,9 @@ var $$IMU_EXPORT$$;
 			// https://tcdn.couchsurfing.com/f5Zrw-e1cOqBKOK0fZEXDr-9Pkw=/200x200/smart/https://s3.amazonaws.com/images.couchsurfing.us/LVDN3RK/12303307_l_6c9bbb28ff499cac870b4a9e9f58c618.jpg
 			//   https://s3.amazonaws.com/images.couchsurfing.us/LVDN3RK/12303307_l_6c9bbb28ff499cac870b4a9e9f58c618.jpg
 			domain === "tcdn.couchsurfing.com" ||
+			// https://dyn.media.forbiddenplanet.com/_k-r4_QqqHsO2hkzbxuzwoJvmno=/fit-in/600x600/filters:format(webp):fill(white)/https://media.forbiddenplanet.com/products/20/9c/781b87caf25189d66f6f0014dfdc77bdb045.jpg
+			//   https://media.forbiddenplanet.com/products/20/9c/781b87caf25189d66f6f0014dfdc77bdb045.jpg
+			domain === "dyn.media.forbiddenplanet.com" ||
 			src.match(/:\/\/[^/]*\/thumbor\/[^/]*=\//) ||
 			// https://www.orlandosentinel.com/resizer/tREpzmUU7LJX1cbkAN-unm7wL0Y=/fit-in/800x600/top/filters:fill(black)/arc-anglerfish-arc2-prod-tronc.s3.amazonaws.com/public/XC6HBG2I4VHTJGGCOYVPLBGVSM.jpg
 			//   http://arc-anglerfish-arc2-prod-tronc.s3.amazonaws.com/public/XC6HBG2I4VHTJGGCOYVPLBGVSM.jpg
@@ -74542,9 +74545,16 @@ var $$IMU_EXPORT$$;
 			cb(data.data.img, data.data.newurl, obj);
 		}
 
+		var getunit_el = null;
+		var getunit_cache = new Cache();
+		// getUnit is really slow, e.g. on forbiddenplanet.com (max-width: 39em)
 		function getUnit(unit) {
 			if (unit.match(/^ *([0-9]+)px *$/)) {
 				return unit.replace(/^ *([0-9]+)px *$/, "$1");
+			}
+
+			if (getunit_cache.has(unit)) {
+				return getunit_cache.get(unit);
 			}
 
 			// https://github.com/tysonmatanich/getEmPixels/blob/master/getEmPixels.js
@@ -74553,7 +74563,7 @@ var $$IMU_EXPORT$$;
 
 			var extraBody;
 
-			var unitel;
+			var unitel = document.body;
 			if (!unitel) {
 				// Emulate the documentElement to get rem value (documentElement does not work in IE6-7)
 				unitel = extraBody = document.createElement("body");
@@ -74562,12 +74572,22 @@ var $$IMU_EXPORT$$;
 			}
 
 			// Create and style a test element
-			var testElement = document.createElement("i");
-			testElement.style.cssText = style;
-			unitel.appendChild(testElement);
+			if (!getunit_el) {
+				getunit_el = document.createElement("i");
+				set_el_all_initial(getunit_el);
+				set_important_style(getunit_el, "position", "absolute");
+				set_important_style(getunit_el, "visibility", "hidden");
+				set_important_style(getunit_el, "padding", "0");
+			}
+
+			set_important_style(getunit_el, "width", unit);
+			set_important_style(getunit_el, "font-size", unit);
+			//getunit_el.style.cssText = style;
+			unitel.appendChild(getunit_el);
 
 			// Get the client width of the test element
-			var value = testElement.clientWidth;
+			var value = getunit_el.clientWidth;
+			getunit_cache.set(unit, value, 5*60);
 
 			if (extraBody) {
 				// Remove the extra body element
@@ -74575,7 +74595,7 @@ var $$IMU_EXPORT$$;
 			}
 			else {
 				// Remove the test element
-				unitel.removeChild(testElement);
+				unitel.removeChild(getunit_el);
 			}
 
 			// Return the em value in pixels
