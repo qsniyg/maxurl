@@ -22248,6 +22248,115 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/exhibitions\/+images\/+[^/]+)_[0-9]+w(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		}
 
+		if (domain_nowww === "imagefap.com") {
+			// https://www.imagefap.com/video.php?vid=571632
+			match = src.match(/:\/\/[^/]+\/+video\.php\?(?:.*?&)?vid=([0-9]+)/);
+			if (match) {
+				id = match[1];
+
+				var query_moviefap_flvurl = function(vid, cb) {
+					api_query("moviefap_flvurl:" + vid, {
+						url: "https://www.imagefap.com/video.php?vid=" + vid
+					}, cb, function(done, resp, cache_key) {
+						var match = resp.responseText.match(/url: '(https?:\/\/cdn-fck\.moviefap.com\/+moviefap\/+[0-9a-f]{10,}\.flv\?(?:.*&)?VID=.*?)',/);
+						if (!match) {
+							console_error(cache_key, "Unable to find info flv URL for", resp);
+							return done(null, false);
+						}
+
+						return done(match[1], 60*60);
+					});
+				};
+
+				var query_moviefap_flv = function(flvurl, cb) {
+					api_query("moviefap_flv:" + flvurl, {
+						url: flvurl,
+						headers: {
+							Origin: "https://www.imagefap.com",
+							Referer: "https://cdn-fck.moviefap.com/",
+							"Content-Type": "application/x-www-form-urlencoded"
+						}
+					}, cb, function(done, resp, cache_key) {
+						// TODO: merge this with fnaflix rule
+						var regex = /<item>\s*<res>([^<]+)<\/res>\s*<videoLink>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/videoLink>/;
+						var global_regex = new RegExp(regex, "g");
+
+						var match = resp.responseText.match(global_regex);
+						if (!match) {
+							console_error(cache_key, "Unable to find items in", resp);
+							return done(page_nullobj, false);
+						}
+
+						var urls = [];
+						for (var i = 0; i < match.length; i++) {
+							var smatch = match[i].match(regex);
+
+							var quality = smatch[1];
+							var url = decode_entities(smatch[2]);
+
+							urls.push({
+								url: url,
+								quality: parseInt(quality),
+								video: true
+							});
+						}
+
+						urls.sort(function(a, b) {
+							return b.quality - a.quality;
+						});
+
+						for (var i = 0; i < urls.length; i++) {
+							delete urls[i].quality;
+						}
+
+						var baseobj = {
+							headers: {
+								Referer: "https://www.imagefap.com/",
+								"Sec-Fetch-Dest": "video"
+							},
+							is_private: true // linked to ip
+						};
+
+						if (page_nullobj)
+							urls.push(page_nullobj);
+
+						return done(fillobj_urls(urls, baseobj), 60*60);
+					});
+				};
+
+				page_nullobj = {
+					url: src,
+					is_pagelink: true
+				};
+
+				if (options.do_request && options.cb) {
+					query_moviefap_flvurl(id, function(flvurl) {
+						if (!flvurl) {
+							return options.cb(page_nullobj);
+						}
+
+						query_moviefap_flv(flvurl, options.cb);
+					});
+
+					return {
+						waiting: true
+					};
+				} else {
+					return page_nullobj;
+				}
+			}
+		}
+
+		if (domain === "img.moviefap.com") {
+			// https://img.moviefap.com/a3:2q80w160r/thumbs/86/571632-1l.jpg
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+[^/]+\/+thumbs\/+[0-9a-f]{2}\/+([0-9]+)-[0-9]+l\.[^/.]+/, "https://www.imagefap.com/video.php?vid=$1");
+			if (newsrc !== src)
+				return {
+					url: newsrc,
+					is_pagelink: true
+				};
+		}
+
 		if (domain_nosub === "fap.to" ||
 			// http://images.imagefap.com/images/thumb/62/114/1146416891.jpg
 			//   http://images.imagefap.com/images/full/62/114/1146416891.jpg
