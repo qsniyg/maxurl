@@ -11797,7 +11797,7 @@ var $$IMU_EXPORT$$;
 				};
 
 				var get_sigdec_from_playerjs = function(playerjs) {
-					var match = playerjs.match(/{(a=a\.split[(]""[)];(?:([a-zA-Z]+)\.[a-zA-Z]+[(]a,[0-9]+[)];\s*){1,}return a\.join[(]""[)];?)}/);
+					var match = playerjs.match(/{(a=a\.split[(]""[)];(?:([a-zA-Z][a-zA-Z0-9]{1,2})\.[a-zA-Z][a-zA-Z0-9]{1,2}[(]a,[0-9]+[)];\s*){1,}return a\.join[(]""[)];?)}/);
 					if (!match) {
 						console_error("Unable to find signature decoder from youtube's player");
 						return null;
@@ -11806,7 +11806,7 @@ var $$IMU_EXPORT$$;
 					var maincode = match[1];
 					var funcobj = match[2];
 
-					var funcobj_regex = new RegExp("(var " + funcobj + "={[a-zA-Z]+:function[\\s\\S]*?};)");
+					var funcobj_regex = new RegExp("(var " + funcobj + "={[a-zA-Z][a-zA-Z0-9]+:function[\\s\\S]*?};)");
 					var funcobj_match = playerjs.match(funcobj_regex);
 					if (!funcobj_match) {
 						console_error("Unable to find function object for signature decode from youtube's player", {
@@ -12101,7 +12101,7 @@ var $$IMU_EXPORT$$;
 						});
 					} else {
 						if (maxobj) {
-							final(maxobj)
+							final(maxobj);
 						} else {
 							console_error("Unable to find any formats", player_response);
 							return options.cb(obj);
