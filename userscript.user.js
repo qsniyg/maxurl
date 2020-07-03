@@ -11704,7 +11704,7 @@ var $$IMU_EXPORT$$;
 						sub: sub_regexes
 					};
 
-					var singlefunc_regex = /([a-zA-Z]+):\s*function([(].*?)}(?:,|};$)/;
+					var singlefunc_regex = /([a-zA-Z][a-zA-Z0-9]+):\s*function([(].*?)}(?:,|};$)/;
 					var global_singlefunc_regex = new RegExp(singlefunc_regex, "g");
 
 					var match = funcobj.match(global_singlefunc_regex);
@@ -11747,7 +11747,7 @@ var $$IMU_EXPORT$$;
 				};
 
 				var parse_sigdec_ops = function(funcobj_name, parsed_funcobj, maincode) {
-					var regex = funcobj_name + "\\.([a-zA-Z]+)\\(a,([0-9]+)\\);";
+					var regex = funcobj_name + "\\.([a-zA-Z][a-zA-Z0-9]+)\\(a,([0-9]+)\\);";
 					var single_regex = new RegExp(regex);
 					var global_regex = new RegExp(single_regex, "g");
 
