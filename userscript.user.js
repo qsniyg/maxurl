@@ -68243,6 +68243,20 @@ var $$IMU_EXPORT$$;
 							endhref.push(deepcopy(pastobjs[i]));
 					}
 				}
+
+				if (options.filter) {
+					var new_endhref = [];
+					for (var i = 0; i < endhref.length; i++) {
+						if (!options.filter(endhref[i].url)) {
+							console_log("Blacklisted: " + endhref[i].url);
+							continue;
+						} else {
+							new_endhref.push(endhref[i]);
+						}
+					}
+
+					endhref = new_endhref;
+				}
 			} else {
 				if (_nir_debug_)
 					console_log("finalize (newhref)", deepcopy(newhref));
