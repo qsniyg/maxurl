@@ -8142,6 +8142,41 @@ var $$IMU_EXPORT$$;
 		});
 	};
 
+	common_functions.parse_flixv2 = function(resp, cache_key) {
+		var regex = /<item>\s*<res>([^<]+)<\/res>\s*<videoLink>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/videoLink>/;
+		var global_regex = new RegExp(regex, "g");
+
+		var match = resp.responseText.match(global_regex);
+		if (!match) {
+			console_error(cache_key, "Unable to find items in", resp);
+			return null;
+		}
+
+		var urls = [];
+		for (var i = 0; i < match.length; i++) {
+			var smatch = match[i].match(regex);
+
+			var quality = smatch[1];
+			var url = decode_entities(smatch[2]);
+
+			urls.push({
+				url: url,
+				quality: parseInt(quality),
+				video: true
+			});
+		}
+
+		urls.sort(function(a, b) {
+			return b.quality - a.quality;
+		});
+
+		for (var i = 0; i < urls.length; i++) {
+			delete urls[i].quality;
+		}
+
+		return urls;
+	};
+
 	var get_domain_nosub = function(domain) {
 		var domain_nosub = domain.replace(/^.*\.([^.]*\.[^.]*)$/, "$1");
 		if (domain_nosub.match(/^co\.[a-z]{2}$/) ||
@@ -22248,14 +22283,229 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/exhibitions\/+images\/+[^/]+)_[0-9]+w(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		}
 
-		if (domain_nowww === "imagefap.com") {
-			// https://www.imagefap.com/video.php?vid=571632
-			match = src.match(/:\/\/[^/]+\/+video\.php\?(?:.*?&)?vid=([0-9]+)/);
+		if (domain === "mosaic.tnaflix.com" ||
+			// https://img.empstatic.com/a16:8q80w300/thumbs/70/2695871-8l.jpg
+			domain === "img.empstatic.com" ||
+			// https://img.moviefap.com/a16:9w990r/thumbs/86/571632-1l.jpg
+			//   https://img.moviefap.com/a16/thumbs/86/571632-1l.jpg -- unstretched
+			// https://img.moviefap.com/a3:2q80w278r/thumbs/30/238814-1l.jpg
+			domain === "img.moviefap.com") {
+			// https://mosaic.tnaflix.com/1883746/a16:8q10w300/22.jpg
+			//   https://mosaic.tnaflix.com/1883746/a16/22.jpg
+			newsrc = src.replace(/(\/a[0-9]+):[0-9a-z]+(\/|\.[^/.]*)/, "$1$2");
+			if (newsrc !== src)
+				return newsrc;
+		}
+
+		if (domain_nosub === "tnastatic.com" && domain.match(/^img[0-9]*\./)) {
+			// http://img.tnastatic.com/q80w200r/pics/alpha/2687237821/510542978/332373910.jpg
+			//   http://img.tnastatic.com/q100/pics/alpha/2687237821/510542978/332373910.jpg
+			// https://img.tnastatic.com/a3:2q80w600r/thumbs/b5/31_1029639l.jpg -- stretched
+			//   https://img.tnastatic.com/a3/thumbs/b5/31_1029639l.jpg
+			newsrc = src.replace(/(:\/\/[^/]*\/)[^/]*\/(pics|thumbs)\//, "$1q100/$2/");
+			if (newsrc !== src)
+				return newsrc;
+		}
+
+		if (domain_nosub === "tnaflix.com" || domain_nosub === "tnastatic.com" ||
+			domain_nosub === "empflix.com" || domain_nosub === "empstatic.com") {
+			var is_pagelink = true;
+			var is_vkey = false;
+
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+[^/]+\/+[^/]+\/+video([0-9]+)(?:[?#].*)?$/);
+			if (!match) {
+				match = src.match(/^[a-z]+:\/\/[^/]+\/+view_video\.php\?(?:.*&)?viewkey=([0-9a-f]+)/);
+				if (match)
+					is_vkey = true;
+			}
+			if (!match) {
+				is_pagelink = false;
+				match = src.match(/^[a-z]+:\/\/img[0-9]*\.[^/]+\/+[^/]+\/+thumbs\/+[0-9a-f]{2}\/+[0-9a-f]{1,2}_([0-9]+)l\./);
+			}
+			if (!match) {
+				// https://img.empstatic.com/a16:8q80w300/thumbs/70/2695871-8l.jpg
+				is_pagelink = false;
+				match = src.match(/^[a-z]+:\/\/img[0-9]*\.[^/]+\/+[^/]+\/+thumbs\/+[0-9a-f]{2}\/+([0-9]+)-[0-9]+l\./);
+			}
+			if (!match) {
+				is_pagelink = false;
+				// https://mosaic.tnaflix.com/1883746/a16:8q10w300/22.jpg
+				match = src.match(/^[a-z]+:\/\/mosaic\.[^/]+\/+([0-9]+)\/+a[0-9]+(?::[^/]+)?\/+/);
+			}
+			if (!match) {
+				is_pagelink = false;
+				match = src.match(/\/trailer\/+empflix\/+(?:[0-9a-f]\/+){3}([0-9a-f]+)\./);
+				if (match)
+					is_vkey = true;
+			}
+
+			var base_domain = domain_nosub.replace(/static\./, "flix.");
+			var base_domain_noext = base_domain.replace(/\..*/, "");
+			var vid_suffix = "";
+
+			if (base_domain_noext === "empflix") {
+				vid_suffix = "-1";
+			}
+
 			if (match) {
 				id = match[1];
 
-				var query_moviefap_flvurl = function(vid, cb) {
-					api_query("moviefap_flvurl:" + vid, {
+				var page_nullobj = {
+					url: src,
+					is_pagelink: true
+				};
+
+				if (!is_pagelink)
+					page_nullobj = null;
+
+				var query_tnaflix_api = function(data, cb) {
+					if (!data || !data.vkey || !data.nkey || !data.VID || !("thumb" in data) || !data.finalUrl) {
+						console_error("Invalid parameters", data);
+						return cb(null);
+					}
+
+					var url = "https://cdn-fck." + base_domain + "/" + base_domain_noext + "/" + data.vkey + vid_suffix + ".fid?key=" + data.nkey + "&VID=" + data.VID + "&startThumb=" + data.thumb + "&nomp4=1&catID=0&rollover=1&embed=0&utm_source=0&multiview=0&premium=1&country=0user=0&vip=1&cd=0&ref=0&alpha"
+					api_query(base_domain + "_api:" + data.VID, {
+						url: url,
+						headers: {
+							origin: "https://www." + base_domain,
+							Referer: data.finalUrl
+						}
+					}, cb, function(done, resp, cache_key) {
+						var urls = common_functions.parse_flixv2(resp, cache_key);
+						if (!urls || urls.length === 0) {
+							urls = [];
+						}
+
+						if (page_nullobj)
+							urls.push(page_nullobj);
+
+						if (!urls.length) {
+							return done(null, false);
+						} else {
+							for (var i = 0; i < urls.length; i++) {
+								urls[i].url = urljoin("https://www." + base_domain + "/", urls[i].url, true);
+							}
+
+							var baseobj = {
+								headers: {
+									Referer: "https://www." + base_domain + "/",
+									"Sec-Fetch-Dest": "video"
+								}
+							};
+
+							if (page_nullobj)
+								urls.push(page_nullobj);
+
+							return done(fillobj_urls(urls, baseobj), 60*60);
+						}
+					});
+				};
+
+				var process_tnaflix_site = function(done, resp, cache_key) {
+					var regex = /<input id="(VID|vkey|nkey|thumb)" type="hidden" value="([^"]+)"/;
+					var global_regex = new RegExp(regex, "g");
+
+					var match = resp.responseText.match(global_regex);
+					if (!match) {
+						console_error(cache_key, "Unable to find match for", resp);
+						return done(null, false);
+					}
+
+					var values = {};
+
+					for (var i = 0; i < match.length; i++) {
+						var smatch = match[i].match(regex);
+
+						var key = smatch[1];
+						var value = smatch[2];
+
+						values[key] = value;
+					}
+
+					values.finalUrl = resp.finalUrl;
+
+					done(values, 60*60);
+				};
+
+				var query_tnaflix_site_by_vid = function(vid, cb) {
+					api_query(base_domain + "_site_vid:" + vid, {
+						url: "https://www." + base_domain + "/a/a/video" + vid
+					}, cb, process_tnaflix_site);
+				};
+
+				var query_tnaflix_site_by_vkey = function(vkey, cb) {
+					api_query(base_domain + "_site_vkey:" + vkey, {
+						url: "https://www." + base_domain + "/view_video.php?viewkey=" + vkey
+					}, cb, process_tnaflix_site);
+				};
+
+				if (options.do_request && options.cb) {
+					var final = function(data) {
+						query_tnaflix_api(data, options.cb);
+					};
+
+					if (!is_vkey) {
+						query_tnaflix_site_by_vid(id, final);
+					} else {
+						query_tnaflix_site_by_vkey(id, final);
+					}
+
+					return {
+						waiting: true
+					};
+				}
+			}
+		}
+
+		if (domain_nowww === "imagefap.com" ||
+			// https://www.moviefap.com/videos/308d6807378358e7727c/firm-tits-teen-stacie-andrews-public-sex.html
+			// or: https://www.imagefap.com/video.php?vid=238814?vid=238814
+			domain_nowww === "moviefap.com") {
+			var query_moviefap_flv = function(flvurl, cb) {
+				api_query("moviefap_flv:" + flvurl, {
+					url: flvurl,
+					headers: {
+						Origin: "https://www.imagefap.com",
+						Referer: "https://cdn-fck.moviefap.com/",
+						"Content-Type": "application/x-www-form-urlencoded"
+					}
+				}, cb, function(done, resp, cache_key) {
+					var urls = common_functions.parse_flixv2(resp, cache_key);
+					if (!urls || urls.length === 0) {
+						urls = [];
+					}
+
+					if (page_nullobj)
+						urls.push(page_nullobj);
+
+					if (!urls.length) {
+						return done(null, false);
+					} else {
+						var baseobj = {
+							headers: {
+								Referer: "https://www.imagefap.com/",
+								"Sec-Fetch-Dest": "video"
+							}
+						};
+
+						if (page_nullobj)
+							urls.push(page_nullobj);
+
+						return done(fillobj_urls(urls, baseobj), 60*60);
+					}
+				});
+			};
+
+			var get_flvurl = null;
+
+			// https://www.imagefap.com/video.php?vid=571632
+			match = src.match(/:\/\/[^/]*imagefap\.com\/+video\.php\?(?:.*?&)?vid=([0-9]+)/);
+			if (match) {
+				id = match[1];
+
+				var query_imagefap_flvurl = function(vid, cb) {
+					api_query("imagefap_flvurl:" + vid, {
 						url: "https://www.imagefap.com/video.php?vid=" + vid
 					}, cb, function(done, resp, cache_key) {
 						var match = resp.responseText.match(/url: '(https?:\/\/cdn-fck\.moviefap.com\/+moviefap\/+[0-9a-f]{10,}\.flv\?(?:.*&)?VID=.*?)',/);
@@ -22268,69 +22518,42 @@ var $$IMU_EXPORT$$;
 					});
 				};
 
-				var query_moviefap_flv = function(flvurl, cb) {
-					api_query("moviefap_flv:" + flvurl, {
-						url: flvurl,
-						headers: {
-							Origin: "https://www.imagefap.com",
-							Referer: "https://cdn-fck.moviefap.com/",
-							"Content-Type": "application/x-www-form-urlencoded"
-						}
-					}, cb, function(done, resp, cache_key) {
-						// TODO: merge this with fnaflix rule
-						var regex = /<item>\s*<res>([^<]+)<\/res>\s*<videoLink>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/videoLink>/;
-						var global_regex = new RegExp(regex, "g");
-
-						var match = resp.responseText.match(global_regex);
-						if (!match) {
-							console_error(cache_key, "Unable to find items in", resp);
-							return done(page_nullobj, false);
-						}
-
-						var urls = [];
-						for (var i = 0; i < match.length; i++) {
-							var smatch = match[i].match(regex);
-
-							var quality = smatch[1];
-							var url = decode_entities(smatch[2]);
-
-							urls.push({
-								url: url,
-								quality: parseInt(quality),
-								video: true
-							});
-						}
-
-						urls.sort(function(a, b) {
-							return b.quality - a.quality;
-						});
-
-						for (var i = 0; i < urls.length; i++) {
-							delete urls[i].quality;
-						}
-
-						var baseobj = {
-							headers: {
-								Referer: "https://www.imagefap.com/",
-								"Sec-Fetch-Dest": "video"
-							},
-							is_private: true // linked to ip
-						};
-
-						if (page_nullobj)
-							urls.push(page_nullobj);
-
-						return done(fillobj_urls(urls, baseobj), 60*60);
-					});
+				get_flvurl = function(cb) {
+					query_imagefap_flvurl(id, cb);
 				};
+			} else {
+				match = src.match(/:\/\/[^/]+\/+videos\/+([0-9a-f]{10,})\/+[^/]*\.html(?:[?#].*)?$/);
+				if (match) {
+					id = match[1];
 
+					var query_moviefap_flvurl = function(vid, cb) {
+						api_query("moviefap_flvurl:" + vid, {
+							url: "https://www.moviefap.com/videos/" + vid + "/a.html"
+						}, cb, function(done, resp, cache_key) {
+							var match = resp.responseText.match(/<input type="hidden" id="config1" name="config1" value="(https?:\/\/cdn-fck\.moviefap.com\/+moviefap\/+[0-9a-f]{10,}\.flv\?(?:.*(?:&|%26))?VID=.*?)" \/>/);
+							if (!match) {
+								console_error(cache_key, "Unable to find info flv URL for", resp);
+								return done(null, false);
+							}
+
+							return done(match[1], 60*60);
+						});
+					};
+
+					get_flvurl = function(cb) {
+						query_moviefap_flvurl(id, cb);
+					};
+				}
+			}
+
+			if (get_flvurl) {
 				page_nullobj = {
 					url: src,
 					is_pagelink: true
 				};
 
 				if (options.do_request && options.cb) {
-					query_moviefap_flvurl(id, function(flvurl) {
+					get_flvurl(function(flvurl) {
 						if (!flvurl) {
 							return options.cb(page_nullobj);
 						}
@@ -22461,6 +22684,9 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "girlscene.nl" ||
+			// https://www.beautyscene.nl/thumb/200x200/ckfinder/userfiles/images/Beautyscene/Artikelen/December%202015/021215/IMG_5074.jpg
+			//   https://www.beautyscene.nl/ckfinder/userfiles/images/Beautyscene/Artikelen/December%202015/021215/IMG_5074.jpg
+			domain_nowww === "beautyscene.nl" ||
 			// https://www.trendalert.nl/thumb/200x200/ckfinder/userfiles/images/Fashionscene/Beelden%202016/April%202016/Cara%20Delevingne%20Fashionscene14.jpg
 			//   https://www.trendalert.nl/ckfinder/userfiles/images/Fashionscene/Beelden%202016/April%202016/Cara%20Delevingne%20Fashionscene14.jpg
 			domain_nowww === "trendalert.nl") {
@@ -22470,9 +22696,36 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "hdfullfilmizle.com" ||
+			// http://www.hdfilmcix.net/thumb/183x284/uploads/film/2019/09/kum-adam-fragman-izle-597.jpg
+			//   http://www.hdfilmcix.net/uploads/film/2019/09/kum-adam-fragman-izle-597.jpg
+			domain_nowww === "hdfilmcix.net" ||
+			// https://www.fullhdfilmizletio.com/thumb/183x284/uploads/film/2020/04/ajanlar-is-basinda-spies-in-disguise-izle-508.jpg
+			//   https://www.fullhdfilmizletio.com/uploads/film/2020/04/ajanlar-is-basinda-spies-in-disguise-izle-508.jpg
+			domain_nowww === "fullhdfilmizletio.com" ||
+			// https://sinefun.com/thumb/183x284/uploads/film/2017/02/jolly-llb-turkce-dublaj-izle-161.jpg
+			//   https://sinefun.com/uploads/film/2017/02/jolly-llb-turkce-dublaj-izle-161.jpg
+			domain_nowww === "sinefun.com" ||
+			// https://www.1080hdfilmizle.com/thumb/183x284/uploads/film/2019/09/madness-in-the-method-izle-304.jpg
+			//   https://www.1080hdfilmizle.com/uploads/film/2019/09/madness-in-the-method-izle-304.jpg
+			domain_nowww === "1080hdfilmizle.com" ||
+			// https://www.sinemagecesi.com/thumb/183x284/uploads/film/2017/03/logan-118.jpg
+			//   https://www.sinemagecesi.com/uploads/film/2017/03/logan-118.jpg
+			domain_nowww === "sinemagecesi.com" ||
+			// http://www.fullfilmburada.com/thumb/183x284/uploads/film/2017/03/hizli-ve-ofkeli-the-fast-and-the-furious-720p-2001-turkce-dublaj-full-hd-izle-745.jpg
+			//   http://www.fullfilmburada.com/uploads/film/2017/03/hizli-ve-ofkeli-the-fast-and-the-furious-720p-2001-turkce-dublaj-full-hd-izle-745.jpg
+			domain_nowww === "fullfilmburada.com" ||
+			// https://www.evrenselfilmizle.net/thumb/183x284/uploads/film/2016/10/homeland-2sezon-turkce-dublaj-720p-hd-izle-865.jpg
+			//   https://www.evrenselfilmizle.net/uploads/film/2016/10/homeland-2sezon-turkce-dublaj-720p-hd-izle-865.jpg -- smaller
+			// https://www.evrenselfilmizle.net/thumb/170x225/uploads/oyuncu/2017/07simone-kessell-ana.jpg
+			//   https://www.evrenselfilmizle.net/uploads/oyuncu/2017/07simone-kessell-ana.jpg
+			domain_nowww === "evrenselfilmizle.net" ||
+			// http://www.vizyonfilmlerizle.com/thumb/183x284/uploads/film/2017/03/caki-gibi-turkce-dublaj-full-izle-436.jpg
+			//   http://www.vizyonfilmlerizle.com/uploads/film/2017/03/caki-gibi-turkce-dublaj-full-izle-436.jpg
+			domain_nowww === "vizyonfilmlerizle.com" ||
 			// https://www.sinemangoo.org/thumb/183x284/uploads/film/2017/01/arrival-gelis-turkce-altyazili-izle-255.jpg
 			//   https://www.sinemangoo.org/uploads/film/2017/01/arrival-gelis-turkce-altyazili-izle-255.jpg
-			domain_nowww === "sinemangoo.org") {
+			domain_nowww === "sinemangoo.org" ||
+			/^[a-z]+:\/\/[^/]+\/+thumb\/+[0-9]+x[0-9]+\/+uploads\/+(?:film|oyuncu)\/+[0-9]{4}\/+(?:[0-9]{2}\/+[^/]+-[0-9]{3}|[0-9]{2}[^/]+)\.[^/.]+(?:[?#].*)?$/.test(src)) {
 			// http://www.hdfullfilmizle.com/thumb/131x150/uploads/oyuncu/2018/04/milla-jovovich-744.jpg
 			//   http://www.hdfullfilmizle.com/uploads/oyuncu/2018/04/milla-jovovich-744.jpg
 			return src.replace(/\/thumb\/+[0-9]+x[0-9]+\/+uploads\//, "/uploads/");
@@ -22533,7 +22786,7 @@ var $$IMU_EXPORT$$;
 			return src.replace(/.*?[?&]url=(.*)/, "$1").replace(/z-z/g, ".").replace(/^/, "http://");
 		}
 
-		if (domain === "www.viewsofia.com") {
+		if (domain_nowww === "viewsofia.com") {
 			// https://www.viewsofia.com/upload/fck_editor_thumb/fck_editor/Image/LV18/_VUI0653.jpg
 			//   https://www.viewsofia.com/upload/fck_editor/fck_editor/Image/LV18/_VUI0653.jpg
 			return src.replace("/fck_editor_thumb/", "/fck_editor/");
@@ -22546,10 +22799,10 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/[a-z][0-9]*(?:x[0-9]+)?$/, "/w99999999");
 		}
 
-		if (domain === "www.vogue.co.jp") {
+		if (domain_nowww === "vogue.co.jp") {
 			// https://www.vogue.co.jp/uploads/media/2017/01/25/ALEXANDRE_VAUTHIER_2017SS_Haute_Couture_Collection_runway_gallery-26-171-256.jpg
 			//   https://www.vogue.co.jp/uploads/media/2017/01/25/ALEXANDRE_VAUTHIER_2017SS_Haute_Couture_Collection_runway_gallery-26.jpg
-			return src.replace(/-[0-9]+-[0-9]+(\.[^/.]*)$/, "$1");
+			return src.replace(/(\/uploads\/+media\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}[^/]+)-[0-9]+-[0-9]+(\.[^/.]*)$/, "$1$2");
 		}
 
 		if (domain_nosub === "vogue.mx" ||
@@ -42895,143 +43148,6 @@ var $$IMU_EXPORT$$;
 			// https://static.japanhdv.com/cache/actress/airi-tachibana.270x480.jpg
 			//   https://static.japanhdv.com/actress/airi-tachibana.jpg
 			return src.replace(/(:\/\/[^/]*\/)cache\/(.*)\.[0-9]+x[0-9]+(\.[^/.]*)$/, "$1$2$3");
-		}
-
-		if (domain === "mosaic.tnaflix.com") {
-			// https://mosaic.tnaflix.com/1883746/a16:8q10w300/22.jpg
-			//   https://mosaic.tnaflix.com/1883746/a16/22.jpg
-			return src.replace(/(\/[0-9a-z]+):[0-9a-z]+(\/|\.[^/.]*)/, "$1$2");
-		}
-
-		if (domain_nosub === "tnastatic.com" && domain.match(/^img[0-9]*\./)) {
-			// http://img.tnastatic.com/q80w200r/pics/alpha/2687237821/510542978/332373910.jpg
-			//   http://img.tnastatic.com/q100/pics/alpha/2687237821/510542978/332373910.jpg
-			// https://img.tnastatic.com/a3:2q80w600r/thumbs/b5/31_1029639l.jpg -- stretched
-			//   https://img.tnastatic.com/a3/thumbs/b5/31_1029639l.jpg
-			newsrc = src.replace(/(:\/\/[^/]*\/)[^/]*\/(pics|thumbs)\//, "$1q100/$2/");
-			if (newsrc !== src)
-				return newsrc;
-		}
-
-		if (domain_nosub === "tnaflix.com" || domain_nosub === "tnastatic.com") {
-			var is_pagelink = true;
-
-			match = src.match(/^[a-z]+:\/\/[^/]+\/+[^/]+\/+[^/]+\/+video([0-9]+)(?:[?#].*)?$/);
-			if (!match) {
-				is_pagelink = false;
-				match = src.match(/^[a-z]+:\/\/img[0-9]*\.[^/]+\/+[^/]+\/+thumbs\/+[0-9a-f]{2}\/+[0-9a-f]{1,2}_([0-9]+)l\./);
-			}
-
-			if (match) {
-				id = match[1];
-
-				var page_nullobj = {
-					url: src,
-					is_pagelink: true
-				};
-
-				if (!is_pagelink)
-					page_nullobj = null;
-
-				var query_tnaflix_api = function(data, cb) {
-					if (!data || !data.vkey || !data.nkey || !data.VID || !("thumb" in data) || !data.finalUrl) {
-						console_error("Invalid parameters", data);
-						return cb(null);
-					}
-
-					var url = "https://cdn-fck.tnaflix.com/tnaflix/" + data.vkey + ".fid?key=" + data.nkey + "&VID=" + data.VID + "&startThumb=" + data.thumb + "&nomp4=1&catID=0&rollover=1&embed=0&utm_source=0&multiview=0&premium=1&country=0user=0&vip=1&cd=0&ref=0&alpha"
-					api_query("tnaflix_api:" + data.VID, {
-						url: url,
-						headers: {
-							origin: "https://www.tnaflix.com",
-							Referer: data.finalUrl
-						}
-					}, cb, function(done, resp, cache_key) {
-						var regex = /<item>\s*<res>([^<]+)<\/res>\s*<videoLink><!\[CDATA\[(.*?)\]\]><\/videoLink>/;
-						var global_regex = new RegExp(regex, "g");
-
-						var match = resp.responseText.match(global_regex);
-						if (!match) {
-							console_error(cache_key, "Unable to find items in", resp);
-							return done(page_nullobj, false);
-						}
-
-						var urls = [];
-						for (var i = 0; i < match.length; i++) {
-							var smatch = match[i].match(regex);
-
-							var quality = smatch[1];
-							var url = urljoin("https://www.tnaflix.com/", decode_entities(smatch[2]), true);
-
-							urls.push({
-								url: url,
-								quality: parseInt(quality),
-								video: true
-							});
-						}
-
-						urls.sort(function(a, b) {
-							return b.quality - a.quality;
-						});
-
-						for (var i = 0; i < urls.length; i++) {
-							delete urls[i].quality;
-						}
-
-						var baseobj = {
-							headers: {
-								Referer: "https://www.tnaflix.com/",
-								"Sec-Fetch-Dest": "video"
-							}
-						};
-
-						if (page_nullobj)
-							urls.push(page_nullobj);
-
-						return done(fillobj_urls(urls, baseobj), 60*60);
-					});
-				};
-
-				var query_tnaflix_site = function(vid, cb) {
-					api_query("tnaflix_site:" + vid, {
-						url: "https://www.tnaflix.com/a/a/video" + vid
-					}, cb, function(done, resp, cache_key) {
-						var regex = /<input id="(VID|vkey|nkey|thumb)" type="hidden" value="([^"]+)"/;
-						var global_regex = new RegExp(regex, "g");
-
-						var match = resp.responseText.match(global_regex);
-						if (!match) {
-							console_error(cache_key, "Unable to find match for", resp);
-							return done(null, false);
-						}
-
-						var values = {};
-
-						for (var i = 0; i < match.length; i++) {
-							var smatch = match[i].match(regex);
-
-							var key = smatch[1];
-							var value = smatch[2];
-
-							values[key] = value;
-						}
-
-						values.finalUrl = resp.finalUrl;
-
-						done(values, 60*60);
-					});
-				};
-
-				if (options.do_request && options.cb) {
-					query_tnaflix_site(id, function(data) {
-						query_tnaflix_api(data, options.cb);
-					});
-
-					return {
-						waiting: true
-					};
-				}
-			}
 		}
 
 		if (domain === "image.gala.de") {
