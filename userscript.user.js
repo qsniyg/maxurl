@@ -1913,6 +1913,7 @@ var $$IMU_EXPORT$$;
 		redirect_infobox_timeout: 7,
 		print_imu_obj: false,
 		redirect_disable_for_responseheader: false,
+		redirect_to_no_infobox: false,
 		mouseover: true,
 		// thanks to blue-lightning on github for the idea: https://github.com/qsniyg/maxurl/issues/16
 		mouseover_open_behavior: "popup",
@@ -2398,6 +2399,12 @@ var $$IMU_EXPORT$$;
 			hidden: true, // Doesn't seem to be needed?
 			category: "redirection",
 			advanced: true
+		},
+		redirect_to_no_infobox: {
+			name: "Redirect to largest without issues",
+			description: "Redirects to the largest image found that doesn't require custom headers or forces download",
+			userscript_only: true,
+			category: "redirection"
 		},
 		mouseover: {
 			name: "Enable mouseover popup",
@@ -68945,9 +68952,9 @@ var $$IMU_EXPORT$$;
 		return size.toFixed(2).replace(/\.00$/, "") + sizes[0] + "B";
 	};
 
-	var check_image = function(obj, page_url, err_cb, ok_cb) {
+	var check_image = function(obj, page_url, err_cb, ok_cb, no_infobox) {
 		if (_nir_debug_)
-			console_log("check_image", deepcopy(obj), page_url);
+			console_log("check_image", deepcopy(obj), page_url, no_infobox);
 
 		if (is_array(obj)) {
 			obj = obj[0];
@@ -69004,6 +69011,10 @@ var $$IMU_EXPORT$$;
 			var mouseover_text = function(reason) {
 				if (!is_interactive)
 					return;
+
+				if (no_infobox) {
+					return err_cb(reason, true);
+				}
 
 				var mouseover;
 				if (!settings.mouseover) {
@@ -69350,17 +69361,48 @@ var $$IMU_EXPORT$$;
 				}
 			}
 
+			var no_infobox = settings.redirect_to_no_infobox;
+			var infobox_urls = [];
+			var use_infobox = false;
+
+			// TODO: avoid requesting again for second round after no_infobox (e.g. for force_download errors)
 			var index = 0;
-			var cb = function(err_txt) {
-				index++;
-				if (index >= new_newhref.length) {
-					cursor_default();
-					console_error(err_txt);
-					return;
+			var cb = function(err_txt, is_infobox) {
+				if (_nir_debug_) {
+					console_log("do_redirect_sub's err_cb:", err_txt, is_infobox);
 				}
-				check_image(new_newhref[index], page_url, cb, finalcb);
+
+				if (is_infobox)
+					infobox_urls.push(new_newhref[index]);
+
+				index++;
+
+				var array = new_newhref;
+				if (use_infobox)
+					array = infobox_urls;
+
+				if (index >= array.length) {
+					if (no_infobox && infobox_urls.length > 0) {
+						use_infobox = true;
+						no_infobox = false;
+						index = 0;
+					} else {
+						cursor_default();
+						console_error(err_txt);
+						return;
+					}
+				}
+
+				// FIXME: deduplicate
+				if (same_url(window.location.href, array[index]) && no_infobox && infobox_urls.length > 0) {
+					use_infobox = true;
+					no_infobox = false;
+					index = 0;
+				}
+
+				check_image(array[index], page_url, cb, finalcb, no_infobox);
 			};
-			check_image(new_newhref[0], page_url, cb, finalcb);
+			check_image(new_newhref[0], page_url, cb, finalcb, no_infobox);
 		});
 	}
 
