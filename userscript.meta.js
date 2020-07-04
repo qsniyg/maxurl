@@ -10,7 +10,7 @@
 // @name:zh-TW        Image Max URL
 // @name:zh-HK        Image Max URL
 // @namespace         http://tampermonkey.net/
-// @version           0.13.12
+// @version           0.13.13
 // @description       Finds larger or original versions of images for 6900+ websites, including a powerful media popup feature
 // @description:ko    6900개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
 // @description:fr    Trouve des images plus grandes ou originales pour plus de 6900 sites

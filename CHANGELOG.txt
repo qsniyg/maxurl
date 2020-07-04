@@ -1,3 +1,29 @@
+0.13.13
+
+New features:
+
+ * Option to toggle cancel loading the popup when triggers are released, if popup is set to close when triggers are released (enabled by default, thanks to cosuwi on github for the idea)
+ * Options to specify the amount of times (and the delay) to retry media that fails to load due to a 503 error (set to 3 retries and a delay of 2 seconds by default)
+ * Keys to increase/decrease the volume of a video (bound to 0 and 9 to increase/decrease the volume by default, volume change amount is set to 5% by default)
+ * Option to avoid using Instagram's web API (disabled by default)
+ * Option for the userscript to redirect to the largest image that doesn't require custom headers or forces download (disabled by default)
+ * Support for ~40 new websites (using ~5 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including Instagram, YouTube)
+ * Options page load speed is improved
+ * Update for greasyfork redesign
+ * Number fields in settings will no longer accept non-numbers
+ * Framestepping will pause the video (thanks to remlap on discord for the idea)
+ * Significantly improve performance for sites that use non-pixel units for srcsets
+
+Bugfixes:
+
+ * Blacklist works more consistently now
+
+---
+
 0.13.12
 
 New features:
