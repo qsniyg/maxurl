@@ -68472,7 +68472,7 @@ var $$IMU_EXPORT$$;
 				if (options.filter) {
 					var new_endhref = [];
 					for (var i = 0; i < endhref.length; i++) {
-						if (!options.filter(endhref[i].url)) {
+						if (endhref[i].url && !options.filter(endhref[i].url)) {
 							console_log("Blacklisted: " + endhref[i].url);
 							continue;
 						} else {
