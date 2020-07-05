@@ -71436,16 +71436,20 @@ var $$IMU_EXPORT$$;
 					return cb();
 				}
 
-				for (var setting in settings) {
-					GM_addValueChangeListener(setting, function(name, oldValue, newValue, remote) {
-						if (remote === false)
-							return;
+				// run in timeout to prevent this from further delaying initial page load times
+				// takes ~2-3ms. not huge, but still significant
+				setTimeout(function() {
+					for (var setting in settings) {
+						GM_addValueChangeListener(setting, function(name, oldValue, newValue, remote) {
+							if (remote === false)
+								return;
 
-						var updated = {};
-						updated[name] = {newValue: newValue};
-						settings_updated_cb(updated);
-					});
-				}
+							var updated = {};
+							updated[name] = {newValue: newValue};
+							settings_updated_cb(updated);
+						});
+					}
+				}, 1);
 
 				cb();
 			};
