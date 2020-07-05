@@ -708,6 +708,10 @@ input:checked + label, button, .button, .dark .button, .button:visited, .dark .b
   margin-top: 1em;
 }
 
+.hidden {
+  display: none;
+}
+
 
 /* Popup */
 #popup {
