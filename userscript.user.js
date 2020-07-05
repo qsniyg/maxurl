@@ -69292,7 +69292,7 @@ var $$IMU_EXPORT$$;
 
 	function contenttype_can_be_redirected(contentType) {
 		// amazonaws's error page are application/xml
-		return !contentType.match(/^(?:text|application)\//);
+		return !(/^(?:text|application)\//.test(contentType));
 	}
 
 	function currenttab_is_image() {
