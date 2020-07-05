@@ -986,8 +986,22 @@ var $$IMU_EXPORT$$;
 			return correct;
 		};
 
-		// FIXME: why is there no check? is this a bug, or was this intentional?
-		is_array = sanity_test(Array.isArray, function(x) { return x instanceof Array; });
+		var get_is_array = function() {
+			var is_array_orig = Array.isArray;
+			var is_array_correct = function(x) {
+				return x instanceof Array;
+			};
+
+			if (is_array_orig) {
+				is_array = is_array_orig;
+			} else {
+				is_array = is_array_correct;
+			}
+
+			// FIXME: why is there no check? is this a bug, or was this intentional?
+			//is_array = sanity_test(is_array_orig, is_array_correct);
+		};
+		get_is_array();
 
 		// kickass.com
 		var get_compat_string_fromcharcode = function() {
