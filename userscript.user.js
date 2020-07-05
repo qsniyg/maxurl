@@ -92,6 +92,7 @@ var $$IMU_EXPORT$$;
 	var is_extension_options_page = false;
 	var is_options_page = false;
 	var is_maxurl_website = false;
+	var window_location = null;
 	var options_page = "https://qsniyg.github.io/maxurl/options.html";
 	var preferred_options_page = options_page;
 	var firefox_addon_page = "https://addons.mozilla.org/en-US/firefox/addon/image-max-url/";
@@ -111,13 +112,14 @@ var $$IMU_EXPORT$$;
 	};
 
 	try {
-		if (window.location.href.match(/^https?:\/\/qsniyg\.github\.io\/+maxurl\/+options\.html/) ||
-			window.location.href.match(/^file:\/\/.*\/maxurl\/site\/options\.html/)) {
-			is_options_page = true;
-		}
+		window_location = window.location.href;
 
-		if (window.location.href.match(/^https?:\/\/qsniyg\.github\.io\/+maxurl\/+/) ||
-			window.location.href.match(/^file:\/\/.*\/maxurl\/site\/(?:index|about|options)\.html/)) {
+		if (/^https?:\/\/qsniyg\.github\.io\/+maxurl\/+options\.html/.test(window_location) ||
+			/^file:\/\/.*\/maxurl\/site\/options\.html/.test(window_location)) {
+			is_options_page = true;
+			is_maxurl_website = true;
+		} else if (/^https?:\/\/qsniyg\.github\.io\/+maxurl\/+/.test(window_location) ||
+			/^file:\/\/.*\/maxurl\/site\/(?:index|about|options)\.html/.test(window_location)) {
 			is_maxurl_website = true;
 		}
 	} catch(e) {
