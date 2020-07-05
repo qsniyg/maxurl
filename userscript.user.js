@@ -70251,6 +70251,13 @@ var $$IMU_EXPORT$$;
 				parent.appendChild(current_el);
 			}
 
+			// fast path
+			if (text.indexOf("`") < 0) {
+				current_text = text;
+				apply_tag();
+				return;
+			}
+
 			for (var i = 0; i < text.length; i++) {
 				if (text[i] === current_tag) {
 					apply_tag();
