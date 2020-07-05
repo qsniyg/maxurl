@@ -70148,7 +70148,7 @@ var $$IMU_EXPORT$$;
 					options[i].classList.remove("disabled");
 					options[i].classList.remove("disabled-hidden");
 
-					options[i].getElementsByClassName("requirements")[0].style.display = "none";
+					options[i].getElementsByClassName("requirements")[0].classList.add("hidden");
 
 					var meta = settings_meta[setting];
 					var meta_options = meta.options;
@@ -70185,7 +70185,8 @@ var $$IMU_EXPORT$$;
 					}
 
 					var requirements_div = options[i].getElementsByClassName("requirements")[0];
-					requirements_div.style.display = "block";
+					//requirements_div.style.display = "block";
+					requirements_div.classList.remove("hidden");
 					fill_requirements(reason_map[setting], requirements_div);
 				}
 			}
@@ -71001,8 +71002,9 @@ var $$IMU_EXPORT$$;
 				}
 
 				var requirements = document.createElement("div");
-				requirements.style.display = "none";
+				//requirements.style.display = "none";
 				requirements.classList.add("requirements");
+				requirements.classList.add("hidden");
 				option.appendChild(requirements);
 
 				if (meta.example_websites) {
