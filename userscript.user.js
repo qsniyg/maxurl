@@ -64064,10 +64064,13 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if (domain === "thumb-media.vgm.io") {
+		if (domain_nosub === "vgm.io" && /^(?:thumb|medium)-media\./.test(domain)) {
 			// https://thumb-media.vgm.io/albums/21/98912/98912-1589538670.png -- 100x100
 			//   https://media.vgm.io/albums/21/98912/98912-1589538670.png -- 571x572
-			return src.replace(/:\/\/thumb-(media\.[^/]+\/+)/, "://$1");
+			// thanks to DesertStars on github: https://github.com/qsniyg/maxurl/issues/371
+			// https://medium-media.vgm.io/albums/32/36823/36823-1357394776.jpg
+			//   https://media.vgm.io/albums/32/36823/36823-1357394776.jpg
+			return src.replace(/:\/\/[a-z]+-(media\.[^/]+\/+)/, "://$1");
 		}
 
 		if (domain_nowww === "vgmdb.net") {
