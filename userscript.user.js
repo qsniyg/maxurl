@@ -36347,6 +36347,8 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "amateurporn.me" ||
 			// https://www.hardsexvids.com/contents/videos_screenshots/0/663/336x189/1.jpg
 			domain_nowww === "hardsexvids.com" ||
+			// https://cdn5.sexvid.xxx/contents/videos_screenshots/8000/8318/284x160/1.jpg
+			domain_nosub === "sexvid.xxx" ||
 			// different system
 			// https://static2.tubepornclassic.com/contents/videos_screenshots/1051000/1051741/240x180/1.jpg
 			//domain_nosub === "tubepornclassic.com" ||
@@ -38184,6 +38186,9 @@ var $$IMU_EXPORT$$;
 			// http://hornybabepics.com/gallery/ade4e8/th_01.jpg
 			//   http://hornybabepics.com/gallery/ade4e8/01.jpg
 			domain_nowww === "hornybabepics.com" ||
+			// http://hosted.showybeauty.com/nakedcutieheadphones/3449/th_001.jpg
+			//   http://hosted.showybeauty.com/nakedcutieheadphones/3449/001.jpg
+			domain === "hosted.showybeauty.com" ||
 			// http://teengalleries.mobi/g/d55bf2/th_02.jpg
 			//   http://teengalleries.mobi/g/d55bf2/02.jpg
 			domain_nowww === "teengalleries.mobi") {
@@ -38657,7 +38662,14 @@ var $$IMU_EXPORT$$;
 			domain.match(/^i[0-9]*\.fastpic\.ru/)) {
 			// http://i42.fastpic.ru/thumb/2012/0923/e8/f6e016d1ec53db2c82a762961f1051e8.jpeg
 			//   http://i42.fastpic.ru/big/2012/0923/e8/f6e016d1ec53db2c82a762961f1051e8.jpg?noht=1
-			return src.replace(/(:\/\/[^/]*\/)thumb(\/.*\.)jpeg/, "$1big$2jpg?noht=1");
+			return {
+				url: src.replace(/(:\/\/[^/]*\/)thumb(\/.*\.)jpeg/, "$1big$2jpg?noht=1"),
+				headers: {
+					Referer: "https://fastpic.ru/",
+					"Sec-Fetch-Dest": "image",
+					"Accept": "image/webp,image/apng,image/*,*/*;q=0.8"
+				}
+			};
 		}
 
 		if (domain === "i.nahraj.to") {
@@ -39520,6 +39532,7 @@ var $$IMU_EXPORT$$;
 			//   https://cdnwg.youx.xxx/galleries/content/3/918/3918216_20a9a01.jpg
 			// https://cdnxw1.youx.xxx/gthumb/2/499/2499910_384d521_320x_.jpg
 			//   https://cdnxw1.youx.xxx/content/2/499/2499910_384d521.jpg
+			// https://cdnxw1.youx.xxx/gthumb/2/110/2110809_7e55865_1200x1200.jpg
 			domain_nosub === "youx.xxx" ||
 			// https://cdncontent.xxxwaffle.com/gthumb/1/812/1812867_9141b65_300x_.jpg
 			//   https://cdncontent.xxxwaffle.com/content/1/812/1812867_9141b65.jpg
@@ -39529,7 +39542,10 @@ var $$IMU_EXPORT$$;
 			domain === "cdn.pornpictureshq.com") {
 			// https://content.wafflegirl.com/galleries/gthumb/4/372/4372786_feeb209__x180.jpg
 			//   https://content.wafflegirl.com/galleries/content/4/372/4372786_feeb209.jpg
-			return src.replace(/\/gthumb\/(.*)(?:__x[0-9]+|_[0-9]+x(?:[0-9]+)?_?)(\.[^/.]*)$/, "/content/$1$2");
+			return {
+				url: src.replace(/\/gthumb\/(.*)(?:__x[0-9]+|_[0-9]+x(?:[0-9]+)?_?)(\.[^/.]*)$/, "/content/$1$2"),
+				can_head: false // youx.xxx returns 404
+			};
 		}
 
 		if (domain_nowww === "anawalls.com") {
@@ -42454,11 +42470,11 @@ var $$IMU_EXPORT$$;
 
 		}
 
-		if (domain === "d.backbook.me") {
+		if (domain_nosub === "backbook.me" && /^[a-z]\./.test(domain)) {
 			// https://d.backbook.me/file/2019/01/05/04/preview_rect_5258dc82d2.jpg
 			//   https://d.backbook.me/file/2019/01/05/04/full_5258dc82d2.jpg
 			return src
-				.replace(/(\/file\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}[0-9]+\/+)[a-z_]+_([0-9a-f]+\.[^/.]*)(?:[?#].*)?$/,
+				.replace(/(\/file\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}[0-9a-f]{2}\/+)[a-z_]+_([0-9a-f]+\.[^/.]*)(?:[?#].*)?$/,
 						 "$1full_$2");
 		}
 
@@ -44570,16 +44586,37 @@ var $$IMU_EXPORT$$;
 							   "://cdn.pornpics.com/" + folder + "/$1big$2");
 		}
 
-		if (domain === "images.pornpics.com") {
+		if (domain === "images.pornpics.com" ||
+			// https://cdni.pornpics.com/300/5/167/30752091/30752091_001_2e7f.jpg
+			//   https://cdni.pornpics.com/1280/5/167/30752091/30752091_001_2e7f.jpg
+			domain === "cdni.pornpics.com") {
 			// https://images.pornpics.com/300/201801/16/9671015/9671015_002_9104.jpg
 			//   https://images.pornpics.com/1280/201801/16/9671015/9671015_002_9104.jpg
-			return src.replace(/(:\/\/[^/]*\/)(?:300|460)\/+/, "$11280/");
+			obj = {
+				url: src
+			};
+
+			match = src.match(/\/([0-9]{5,})\/\1_[0-9]{3}_[0-9a-f]+\./);
+			// doesn't work for all
+			if (false && match) {
+				obj.extra = {
+					page: "https://www.pornpics.com/galleries/" + match[1] + "/"
+				};
+			}
+
+			newsrc = src.replace(/(:\/\/[^/]*\/)(?:300|460)\/+/, "$11280/");
+			if (newsrc !== src)
+				obj.url = newsrc;
+
+			return obj;
 		}
 
 		if (domain_nowww === "vipissy.com" ||
 			// https://media.fistertwister.com/fhg/26289f49024be011b1b32fae4e825a84/thumbs/1.jpg
 			//   https://media.fistertwister.com/fhg/26289f49024be011b1b32fae4e825a84/files/1.jpg
 			domain === "media.fistertwister.com" ||
+			// https://www.peeonher.com/media/fhg/032c423028c1db9d50064e88dc942d60/thumbs/1.jpg
+			domain_nowww === "peeonher.com" ||
 			// https://media.puffynetwork.com/fhg/5d5e24cd82224dff6987e152fe0e54db/thumbs/1.jpg
 			//   https://media.puffynetwork.com/fhg/5d5e24cd82224dff6987e152fe0e54db/files/1.jpg
 			domain === "media.puffynetwork.com") {
@@ -52624,12 +52661,10 @@ var $$IMU_EXPORT$$;
 			// https://www.mweb.co.za/DesktopModules/DigArticle/MediaHandler.ashx?portalid=20&moduleid=5259&mediaid=47052&width=800&height=600
 			//   https://www.mweb.co.za/DesktopModules/DigArticle/MediaHandler.ashx?portalid=20&moduleid=5259&mediaid=47052
 			if (/\/MediaHandler\.ashx\?/.test(src)) {
-				var portalid = url.searchParams.get("portalid");
-				var moduleid = url.searchParams.get("moduleid");
-				var mediaid = url.searchParams.get("mediaid");
+				var queries = get_queries(src);
 
-				if (portalid && moduleid && mediaid) {
-					return src.replace(/\?.*/, "?portalid=" + portalid + "&moduleid=" + moduleid + "&mediaid=" + mediaid);
+				if (queries.portalid && queries.moduleid && queries.mediaid) {
+					return src.replace(/\?.*/, "?portalid=" + queries.portalid + "&moduleid=" + queries.moduleid + "&mediaid=" + queries.mediaid);
 				}
 			}
 		}
@@ -53916,6 +53951,9 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "galleries.gloryhole-initiations.com" ||
+			// https://galleries.blacksonblondes.com/content/lexi_lore/pics/tn/02.jpg
+			//   https://galleries.blacksonblondes.com/content/lexi_lore/pics/pic/02.jpg
+			domain === "galleries.blacksonblondes.com" ||
 			// https://galleries.zebragirls.com/content/kate_england_lisa_tiffian/pics/tn/01.jpg
 			//   https://galleries.zebragirls.com/content/kate_england_lisa_tiffian/pics/pic/01.jpg
 			domain === "galleries.zebragirls.com") {
@@ -59277,6 +59315,12 @@ var $$IMU_EXPORT$$;
 			// https://www.pinkfineart.com/galleries/hot-legs-and-feet/9857-nikki_fox-sultry_sauna-082818/pthumbs/001.jpg
 			//   https://www.pinkfineart.com/galleries/hot-legs-and-feet/9857-nikki_fox-sultry_sauna-082818/full/001.jpg
 			return src.replace(/(\/galleries\/+.*\/)pthumbs\/+/, "$1full/");
+		}
+
+		if (domain === "galleries.manojob.com") {
+			// http://galleries.manojob.com/scenes/rebecca_blue/tn/001.jpg
+			//   http://galleries.manojob.com/scenes/rebecca_blue/full/001.jpg
+			return src.replace(/(\/scenes\/+[^/]+\/+)tn\/+([0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1full/$2");
 		}
 
 		if (domain_nosub === "x69.biz") {
@@ -65872,6 +65916,18 @@ var $$IMU_EXPORT$$;
 			// https://d0.momapix.com/legionmedia/22a7fc77f97fa9f25975f3a247626d3578f06236b0a47e47de43c33785b104b743/Image48883293.jpg/LGN48883293.jpg?v.0.aa68c75c4a77c87f97fb686b2f068676&w=924&h=531
 			//   https://d0.momapix.com/legionmedia/22a7fc77f97fa9f25975f3a247626d3578f06236b0a47e47de43c33785b104b743/Preview48883293.jpg/LGN48883293.jpg
 			return src.replace(/(:\/\/[^/]+\/+[a-z]+\/+(?:[0-9a-f]{20,}\/+)?)Image([0-9]+\.[^/.?#]+)(\/+[^/?#]+)?(?:[?#].*)?$/, "$1Preview$2$3");
+		}
+
+		if (domain === "galleries.tease-pics.com") {
+			// https://galleries.tease-pics.com/onlysecretaries/2716r-p/images/01.jpg
+			//   https://galleries.tease-pics.com/onlysecretaries/2716r-p/pics/01.jpg
+			return src.replace(/(\/[0-9]+[a-z]-p\/+)images\/+/, "$1pics/");
+		}
+
+		if (domain_nosub === "lodef.net" && /^img[0-9]*\./.test(domain)) {
+			// https://img2.lodef.net/imgs/e/7/5/d/e75d6c4f6081611b49889b222ca98172_s.jpg
+			//   https://img2.lodef.net/imgs/e/7/5/d/e75d6c4f6081611b49889b222ca98172_f.jpg
+			return src.replace(/(\/imgs\/+(?:[0-9a-f]\/+){1,}[0-9a-f]{10,})_s(\.[^/.]+)(?:[?#].*)?$/, "$1_f$2");
 		}
 
 
