@@ -12268,7 +12268,7 @@ var $$IMU_EXPORT$$;
 				};
 
 				fetch_youtube_embed(id, function(data) {
-					if (!data) {
+					if (!data || !data.playabilityStatus || data.playabilityStatus.status === "UNPLAYABLE") {
 						fetch_youtube_watchpage(id, parse_player_response);
 					} else {
 						parse_player_response(data);
