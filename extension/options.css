@@ -443,6 +443,11 @@ input:checked + label, button, .button, .dark .button, .button:visited, .dark .b
 .option {
   padding: .8em;
 }
+
+.option table.option-table {
+  border: 0;
+}
+
 .option strong {
   font-weight: 400;
   display: inline-block;
@@ -454,6 +459,11 @@ input:checked + label, button, .button, .dark .button, .button:visited, .dark .b
 .option .name_td {
   width: 22em;
   padding-right: .5em;
+}
+
+/* this class is added for backwards compatibility */
+.option .name_td_va_middle {
+  vertical-align: middle;
 }
 
 .option .name_td.value_modified strong {

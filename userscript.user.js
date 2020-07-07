@@ -70475,7 +70475,7 @@ var $$IMU_EXPORT$$;
 			option.id = "option_" + setting;
 
 			var table = document.createElement("table");
-			table.style.border = "0";
+			table.classList.add("option-table");
 
 			var tr = document.createElement("tr");
 			table.appendChild(tr);
@@ -70490,8 +70490,8 @@ var $$IMU_EXPORT$$;
 			name.title = description;
 
 			var name_td = document.createElement("td");
-			name_td.style.verticalAlign = "middle";
 			name_td.classList.add("name_td");
+			name_td.classList.add("name_td_va_middle");
 
 			var check_value_orig_different = function(value) {
 				var value_norm = normalize_value(value);
