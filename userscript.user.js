@@ -8200,6 +8200,49 @@ var $$IMU_EXPORT$$;
 		return urls;
 	};
 
+	common_functions.parse_mediadefinition = function(src, data, cache_key) {
+		if (!data) {
+			return null;
+		}
+
+		try {
+			var maxdef = 0;
+			var maxobj = null;
+			for (var i = 0; i < data.mediaDefinition.length; i++) {
+				// e.g. 1080p videos for non-logged in members
+				if (!data.mediaDefinition[i].videoUrl)
+					continue;
+
+				if (data.mediaDefinition[i].quality > maxdef) {
+					maxdef = data.mediaDefinition[i].quality;
+					maxobj = data.mediaDefinition[i];
+				}
+			}
+
+			// the queries constantly change, so to avoid constantly refreshing, let's make sure the base URL is different
+			// the domain can also change (cv/ev) so remove that as well
+			var newsrc = maxobj.videoUrl;
+			var noq = src.replace(/[?#].*$/, "").replace(/^[a-z]+:\/\/[^/]+\/+/, "");
+			var newnoq = newsrc.replace(/[?#].*$/, "").replace(/^[a-z]+:\/\/[^/]+\/+/, "");
+
+			if (noq === newnoq)
+				newsrc = src;
+
+			return {
+				url: newsrc,
+				extra: {
+					page: data.link_url
+				},
+				video: true,
+				is_private: true // linked to IP
+			};
+		} catch(e) {
+			console_error(cache_key, e);
+		}
+
+		return null;
+	};
+
 	var get_domain_nosub = function(domain) {
 		var domain_nosub = domain.replace(/^.*\.([^.]*\.[^.]*)$/, "$1");
 		if (domain_nosub.match(/^co\.[a-z]{2}$/) ||
@@ -24056,8 +24099,196 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain_nowww === "tube8.com") {
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+[^/]+\/+[^/]+\/+([0-9]+)\/*(?:[?#].*)?$/);
+			if (match) {
+				id = match[1];
+
+				var fetch_tube8_flashvars = function(id, cb) {
+					api_query("tube8_flashvars:" + id, {
+						url: "https://www.tube8.com/a/a/" + id + "/"
+					}, cb, function(done, resp, cache_key) {
+						var match = resp.responseText.match(/var\s+flashvars\s*=\s*({.*?})\s*; *\n/);
+						if (!match) {
+							console_error(cache_key, "Unable to find match", resp);
+							return done(null, false);
+						}
+
+						try {
+							var json = JSON_parse(match[1]);
+							done(json, 6*60*60);
+						} catch (e) {
+							console_error(cache_key, e);
+							return done(null, false);
+						}
+					});
+				};
+
+				var page_nullobj = {
+					url: src,
+					is_pagelink: true
+				};
+
+				if (options.cb && options.do_request) {
+					fetch_tube8_flashvars(id, function(data) {
+						var origsrc = src;
+						if (options._internal_info && options._internal_info.mediadefinition_src) {
+							origsrc = options._internal_info.mediadefinition_src;
+						}
+
+						var parsed = common_functions.parse_mediadefinition(origsrc, data, cache_key);
+						if (!parsed) {
+							return options.cb(page_nullobj);
+						} else {
+							return options.cb(parsed);
+						}
+					});
+
+					return {
+						waiting: true
+					};
+				} else {
+					return page_nullobj;
+				}
+			}
+		}
+
+		if (domain_nowww === "youporn.com") {
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+watch\/+([0-9]+)(?:\/+(?:[^/]+\/*)?)?(?:[?#].*)?$/);
+			if (match) {
+				id = match[1];
+
+				var fetch_youporn_flashvars = function(id, cb) {
+					api_query("youporn_flashvars:" + id, {
+						url: "https://www.youporn.com/watch/" + id + "/"
+					}, cb, function(done, resp, cache_key) {
+						var match = resp.responseText.match(/page_params.video.mediaDefinition\s*=\s*(\[{.*?}\])\s*; *\n/);
+						if (!match) {
+							console_error(cache_key, "Unable to find match", resp);
+							return done(null, false);
+						}
+
+						try {
+							var mediaDefinition = JSON_parse(match[1]);
+							var json = {
+								link_url: resp.finalUrl,
+								mediaDefinition: mediaDefinition
+							};
+							done(json, 6*60*60);
+						} catch (e) {
+							console_error(cache_key, e);
+							return done(null, false);
+						}
+					});
+				};
+
+				var page_nullobj = {
+					url: src,
+					is_pagelink: true
+				};
+
+				if (options.cb && options.do_request) {
+					fetch_youporn_flashvars(id, function(data) {
+						var origsrc = src;
+						if (options._internal_info && options._internal_info.mediadefinition_src) {
+							origsrc = options._internal_info.mediadefinition_src;
+						}
+
+						var parsed = common_functions.parse_mediadefinition(origsrc, data, cache_key);
+						if (!parsed) {
+							return options.cb(page_nullobj);
+						} else {
+							return options.cb(parsed);
+						}
+					});
+
+					return {
+						waiting: true
+					};
+				} else {
+					return page_nullobj;
+				}
+			}
+		}
+
+		if (domain_nowww === "xtube.com") {
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+video-watch\/+[^/]+-([0-9]+)\/*(?:[?#].*)?$/);
+			if (match) {
+				id = match[1];
+
+				var fetch_xtube_flashvars = function(id, cb) {
+					api_query("xtube_flashvars:" + id, {
+						url: "https://www.xtube.com/video-watch/a-" + id
+					}, cb, function(done, resp, cache_key) {
+						var match = resp.responseText.match(/var playerConf = ({.*?}), *\n/);
+						if (!match) {
+							console_error(cache_key, "Unable to find match", resp);
+							return done(null, false);
+						}
+
+						try {
+							var playerconf = JSON_parse(match[1]);
+							var json = playerconf.mainRoll;
+							json.link_url = json.videoUrl;
+							done(json, 6*60*60);
+						} catch (e) {
+							console_error(cache_key, e);
+							return done(null, false);
+						}
+					});
+				};
+
+				var page_nullobj = {
+					url: src,
+					is_pagelink: true
+				};
+
+				if (options.cb && options.do_request) {
+					fetch_xtube_flashvars(id, function(data) {
+						var origsrc = src;
+						if (options._internal_info && options._internal_info.mediadefinition_src) {
+							origsrc = options._internal_info.mediadefinition_src;
+						}
+
+						var parsed = common_functions.parse_mediadefinition(origsrc, data, cache_key);
+						if (!parsed) {
+							return options.cb(page_nullobj);
+						} else {
+							return options.cb(parsed);
+						}
+					});
+
+					return {
+						waiting: true
+					};
+				} else {
+					return page_nullobj;
+				}
+			}
+		}
+
+		if (domain_nosub === "xtube.com" && /^cdn[0-9]*-/.test(domain)) {
+			// https://cdn7-s-hw-e5.xtube.com/m=eoeM8f/videos/202006/19/44281942/xtube_original/1.jpg
+			// paid: // https://cdn10-s-hw-e5.xtube.com/m=e6AaKyFb/videos/202003/27/43379161/xtube_original/12.jpg
+			// doesn't work for all:
+			// https://cdn7-s-hw-e5.xtube.com/m=eoeM8f/video_thumb/2009/20090220pm/5626SBd5OTF_0000.jpg
+			//   https://www.xtube.com/video-watch/video-sexperts-interracial-807230
+			// https://cdn2-s-ha-e5.xtube.com/m=eSuQ8f/videos/201804/27/PsexV-S836-/original/1.jpg
+			//   https://www.xtube.com/video-watch/cute-nerdy-ukrainian-camslut-550cams-com-35002521
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+m=[^/]+\/+videos\/+[0-9]{6}\/+[0-9]{1,2}\/+([0-9]+)\/+/);
+			if (match) {
+				id = match[1];
+
+				options._internal_info.mediadefinition_src = src;
+
+				return {
+					url: "https://www.xtube.com/video-watch/a-" + id,
+					is_pagelink: true
+				};
+			}
+		}
+
 		if ((domain_nosub === "t8cdn.com" || domain_nosub === "ypncdn.com") && options && options.do_request && options.cb) {
-			// todo: split into page link rule
 			// https://ep.t8cdn.com/201305/26/11984001/vl_mp4_ultra_480p_11984001.mp4
 			// https://ev-ph.ypncdn.com/videos/201911/26/264376432/240P_400K_264376432.mp4 -- video ID doesn't work
 			// https://ev.ypncdn.com/202001/19/15807000/240p_240k_15807000/YouPorn_-_swim-sexy-suit-on-the-beach-hot-bikini.mp4
@@ -24068,127 +24299,19 @@ var $$IMU_EXPORT$$;
 			if (id) {
 				id = id[1];
 
-				var fetch_tube8 = function(done) {
-					options.do_request({
-						url: "https://www.tube8.com/a/a/" + id + "/",
-						method: "GET",
-						onload: function(resp) {
-							if (resp.readyState < 4)
-								return;
-
-							if (resp.status !== 200) {
-								console_error(resp);
-								return done(null, false);
-							}
-
-							var match = resp.responseText.match(/var\s+flashvars\s*=\s*({.*?})\s*; *\n/);
-							if (!match) {
-								console_error("Unable to find match", resp);
-								return done(null, false);
-							}
-
-							try {
-								var json = JSON_parse(match[1]);
-								done(json, 6*60*60);
-							} catch (e) {
-								console_error(e);
-								return done(null, false);
-							}
-						}
-					});
-				};
-
-				var fetch_ypn = function(done) {
-					options.do_request({
-						url: "https://www.youporn.com/watch/" + id + "/",
-						method: "GET",
-						onload: function(resp) {
-							if (resp.readyState < 4)
-								return;
-
-							if (resp.status !== 200) {
-								console_error(resp);
-								return done(null, false);
-							}
-
-							var match = resp.responseText.match(/page_params.video.mediaDefinition\s*=\s*(\[{.*?}\])\s*; *\n/);
-							if (!match) {
-								console_error("Unable to find match", resp);
-								return done(null, false);
-							}
-
-							try {
-								var mediaDefinition = JSON_parse(match[1]);
-								var json = {
-									link_url: resp.finalUrl,
-									mediaDefinition: mediaDefinition
-								};
-								done(json, 6*60*60);
-							} catch (e) {
-								console_error(e);
-								return done(null, false);
-							}
-						}
-					});
-				};
-
-				var cache_key = id;
-				var fetch = null;
+				options._internal_info.mediadefinition_src = src;
 
 				if (domain_nosub === "t8cdn.com") {
-					cache_key = "tube8:" + id;
-					fetch = fetch_tube8;
+					return {
+						url: "https://www.tube8.com/a/a/" + id + "/",
+						is_pagelink: true
+					};
 				} else if (domain_nosub === "ypncdn.com") {
-					cache_key = "ypn:" + id;
-					fetch = fetch_ypn;
+					return {
+						url: "https://www.youporn.com/watch/" + id + "/",
+						is_pagelink: true
+					};
 				}
-
-				api_cache.fetch(cache_key, function(data) {
-					if (!data) {
-						return options.cb(null);
-					}
-
-					try {
-						var maxdef = 0;
-						var maxobj = null;
-						for (var i = 0; i < data.mediaDefinition.length; i++) {
-							// e.g. 1080p videos for non-logged in members
-							if (!data.mediaDefinition[i].videoUrl)
-								continue;
-
-							if (data.mediaDefinition[i].quality > maxdef) {
-								maxdef = data.mediaDefinition[i].quality;
-								maxobj = data.mediaDefinition[i];
-							}
-						}
-
-						// the queries constantly change, so to avoid constantly refreshing, let's make sure the base URL is different
-						// the domain can also change (cv/ev) so remove that as well
-						var newsrc = maxobj.videoUrl;
-						var noq = src.replace(/[?#].*$/, "").replace(/^[a-z]+:\/\/[^/]+\/+/, "");
-						var newnoq = newsrc.replace(/[?#].*$/, "").replace(/^[a-z]+:\/\/[^/]+\/+/, "");
-
-						if (noq === newnoq)
-							newsrc = src;
-
-						return options.cb({
-							url: newsrc,
-							extra: {
-								page: data.link_url
-							},
-							video: true,
-							is_private: true // linked to IP
-						});
-					} catch(e) {
-						console_error(e);
-					}
-
-					options.cb(null);
-				}, fetch);
-
-				return {
-					waiting: true
-				};
 			}
 		}
 
@@ -64412,6 +64535,8 @@ var $$IMU_EXPORT$$;
 			 domain_nowww === "ffem.club" ||
 			 domain_nowww === "javhub.pro" ||
 			 domain_nowww === "iframejav.com" ||
+			 domain_nowww === "xvideosrss.com"||
+			 domain_nowww === "feurl.com" ||
 			 domain_nowww === "playvideo.best") && options.do_request && options.cb) {
 			var base_domain = domain_nosub;
 			var query_anime789_vid = function(id, cb) {
@@ -65933,6 +66058,23 @@ var $$IMU_EXPORT$$;
 			// https://img2.lodef.net/imgs/e/7/5/d/e75d6c4f6081611b49889b222ca98172_s.jpg
 			//   https://img2.lodef.net/imgs/e/7/5/d/e75d6c4f6081611b49889b222ca98172_f.jpg
 			return src.replace(/(\/imgs\/+(?:[0-9a-f]\/+){1,}[0-9a-f]{10,})_s(\.[^/.]+)(?:[?#].*)?$/, "$1_f$2");
+		}
+
+		if (domain_nowww === "porn.com") {
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+out\/+n\/+[^/]+\/+([^/]{30,})(?:\/+(?:0|[^/]{30,})\/+(?:0|[^/]{30,}))?(?:[?#].*)?$/);
+			if (match) {
+				var splitted = decodeURIComponent(match[1]).split("_");
+
+				var splitted1 = [];
+				for (var i = 0; i < splitted.length; i++) {
+					splitted1.push(base64_decode(splitted[i]));
+				}
+
+				return {
+					url: splitted1.join("?"),
+					is_pagelink: true
+				};
+			}
 		}
 
 
