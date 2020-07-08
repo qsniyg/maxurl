@@ -14275,6 +14275,8 @@ var $$IMU_EXPORT$$;
 			// https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2018/01/GTA-6-Female-Protag-796x417.jpg -- does work
 			// https://dreamix.eu/blog/wp-content/uploads/2017/05/20150224test644-1508x706_c.jpg
 			//   https://dreamix.eu/blog/wp-content/uploads/2017/05/20150224test644.jpg
+			// https://rimworldbase.com/wp-content/uploads/2017/05/star-wars-the-force-3-150x150.jpg.webp
+			//   https://rimworldbase.com/wp-content/uploads/2017/05/star-wars-the-force-3.jpg.webp
 			// don't run it for query args:
 			// https://she12.com/wp-content/plugins/seo-alrp/php/thumb.php?src=http://she12.com/uploads/2012/09/Emo-Hairstyles-for-girls.jpg&h=90&w=114&q=90&zc=1
 			/^[a-z]+:\/\/[^?]+\/wp(?:-content\/+(?:uploads|images|photos|blogs.dir)|\/+uploads)\/[^?]+-[0-9]+x[0-9]+(?:_c)?\./.test(src)
@@ -14288,7 +14290,7 @@ var $$IMU_EXPORT$$;
 			//src.indexOf("/wp-content/uploads/") >= 0 ||
 			//src.indexOf("/wp/uploads/") >= 0
 			) {
-			src = src.replace(/-[0-9]+x[0-9]+(?:_c)?(\.[^/.]*)(?:[?#].*)?$/, "$1");
+			src = src.replace(/-[0-9]+x[0-9]+(?:_c)?(\.[^/.]*(?:\.webp)?)(?:[?#].*)?$/, "$1");
 		}
 
 		// http://felipepitta.com/blog/wp-content/uploads/2014/08/Harry-Potter-Hogwarts-Express-Jacobite-Fort-William-Scotland-Train(pp_w970_h646).jpg
