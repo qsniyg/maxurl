@@ -1919,6 +1919,9 @@ var $$IMU_EXPORT$$;
 		allow_remote: true,
 		disable_keybind_when_editing: true,
 		enable_gm_download: true,
+		// thanks to pax romana on discord for the idea: https://github.com/qsniyg/maxurl/issues/372
+		// this must be false, because it requires a permission
+		enable_webextension_download: false,
 		redirect: true,
 		redirect_history: true,
 		redirect_extension: true,
@@ -2338,6 +2341,14 @@ var $$IMU_EXPORT$$;
 			userscript_only: true,
 			imu_enabled_exempt: true,
 			advanced: true
+		},
+		enable_webextension_download: {
+			name: "Force save dialog when downloading",
+			description: "Tries to ensure the 'save as' dialog displays when downloading. This requires the 'downloads' permission to work, and will sometimes not work when custom headers are required.",
+			category: "general",
+			extension_only: true,
+			imu_enabled_exempt: true,
+			required_permission: "downloads"
 		},
 		redirect: {
 			name: "Enable redirection",
@@ -78197,7 +78208,8 @@ var $$IMU_EXPORT$$;
 				extension_send_message({
 					type: "download",
 					data: {
-						imu: imu
+						imu: imu,
+						force_saveas: !!settings.enable_webextension_download
 					}
 				}, function() {
 					if (cb)

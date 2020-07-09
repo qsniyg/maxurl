@@ -336,8 +336,12 @@ var onBeforeSendHeaders_listener = function(details) {
 			});
 		} else if (header.name === "IMU-Verify") {
 			verify_ok = header.value in requests;
-			if (verify_ok)
+			if (verify_ok) {
 				request_id = header.value;
+			} else {
+				if (nir_debug)
+					console.warn("Invalid verification: ", header.value);
+			}
 
 			reqid_to_redid[details.requestId] = header.value;
 		} else {
@@ -838,9 +842,26 @@ var xhr_final_handler = function(_data, obj) {
 	}
 };
 
+var download_with_tabs = function(tab_options, imu, respond) {
+	chrome.tabs.create(tab_options, function (tab) {
+		debug("newTab (download)", tab);
+		redirects[tab.id] = imu;
+
+		override_download[tab.id] = {
+			filename: imu.filename
+		};
+
+		respond({
+			type: "download"
+		});
+	});
+};
+
 // Message handler
 var extension_message_handler = (message, sender, respond) => {
-	debug("onMessage", message, sender, respond);
+	if (message && message.type !== "getvalue") {
+		debug("onMessage", message, sender, respond);
+	}
 
 	if (message.type === "request") {
 		var reqid;
@@ -982,18 +1003,57 @@ var extension_message_handler = (message, sender, respond) => {
 			active: false
 		};
 
-		chrome.tabs.create(tab_options, function (tab) {
-			debug("newTab (download)", tab);
-			redirects[tab.id] = message.data.imu;
+		var do_download_with_tabs = function() {
+			download_with_tabs(tab_options, message.data.imu, respond);
+		}
 
-			override_download[tab.id] = {
-				filename: message.data.imu.filename
-			};
+		if (!message.data.force_saveas) {
+			do_download_with_tabs();
+		} else {
+			try {
+				var download_headers = [];
+				if (message.data.imu.headers) {
+					for (const header in message.data.imu.headers) {
+						const header_obj = {name: header, value: message.data.imu.headers[header] || ""};
+						download_headers.push(header_obj);
+					}
+				}
 
-			respond({
-				type: "download"
-			});
-		});
+				chrome.downloads.download({
+					url: message.data.imu.url,
+					headers: download_headers,
+					saveAs: true
+				}, function(id) {
+					var do_with_tabs = false;
+
+					if (chrome.runtime.lastError) {
+						console.error(chrome.runtime.lastError.message);
+
+						// under Chrome:  Unsafe request header name
+						// under Firefox: Forbidden request header name
+						if (chrome.runtime.lastError.message.indexOf("request header name") >= 0) {
+							do_with_tabs = true;
+						}
+
+						// under Firefox, cancelling the download will result in: Download canceled by the user
+						// therefore, we must check the lastError's message instead of just 'id === "undefined"', as it also returns an undefined id for that too.
+					}
+
+					if (typeof id === "undefined" && do_with_tabs) {
+						return do_download_with_tabs();
+					}
+				});
+
+				if (chrome.runtime.lastError) {
+					console.log(chrome.runtime.lastError);
+				}
+			} catch (e) {
+				console.error(e);
+
+				// fall back to non-downloads if we don't have the permission
+				do_download_with_tabs();
+			}
+		}
 
 		return true;
 	} else if (message.type === "remote" || message.type === "remote_reply") {
