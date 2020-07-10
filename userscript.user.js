@@ -73133,6 +73133,11 @@ var $$IMU_EXPORT$$;
 				waitingel.style.display = "none";
 		}
 
+		// camhub.cc (ublock origin blocks any setTimeout'd function with 'stop' in the name)
+		function dont_wait_anymore() {
+			stop_waiting();
+		}
+
 		var not_allowed_timer = null;
 		function cursor_not_allowed() {
 			if (_nir_debug_) {
@@ -73149,7 +73154,7 @@ var $$IMU_EXPORT$$;
 				not_allowed_timer = null;
 
 				if (waitingel_cursor === "not-allowed")
-					stop_waiting();
+					dont_wait_anymore();
 			}, settings.mouseover_notallowed_duration);
 		}
 
@@ -75389,11 +75394,6 @@ var $$IMU_EXPORT$$;
 				if (false && popup_trigger_reason !== "mouse") {
 					can_close_popup[1] = true;
 				}
-
-				// camhub.cc (ublock origin blocks any setTimeout'd function with 'stop' in the name)
-				var dont_wait_anymore = function() {
-					stop_waiting();
-				};
 
 				setTimeout(function() {
 					dont_wait_anymore();
