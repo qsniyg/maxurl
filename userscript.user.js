@@ -8301,6 +8301,9 @@ var $$IMU_EXPORT$$;
 				extra: {
 					page: data.link_url
 				},
+				headers: {
+					Referer: data.link_url
+				},
 				video: true,
 				is_private: true // linked to IP
 			};
@@ -23727,7 +23730,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "pornhub.com") {
-			match = src.match(/^[a-z]+:\/\/[^/]+\/+view_video\.php\?(?:.*&)?viewkey=([^&]+).*$/);
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:view_video\.php\?(?:.*&)?viewkey=|embed\/+)([^&]+).*$/);
 			if (match) {
 				id = match[1];
 
@@ -23952,6 +23955,9 @@ var $$IMU_EXPORT$$;
 				var get_max_pornhub_video = function(data) {
 					var obj = {
 						url: null,
+						headers: {
+							Referer: "https://www.pornhub.com/"
+						},
 						extra: {}
 					};
 
@@ -24068,14 +24074,26 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nosub === "rdtcdn.com" ||
-			(host_domain_nowww === "redtube.com" && options.element)) {
+			domain_nowww === "redtube.com" ||
+			domain === "embed.redtube.com") {
+			var page_nullobj = null;
 			var get_redtube_id_from_url = function(url) {
-				var match = src.match(/:\/\/[^/]+\/+(?:m=[^/]+\/+)?media\/+videos\/+[0-9]{6}\/+[0-9]{2}\/+([0-9]+)\/+/);
+				var match = url.match(/:\/\/[^/]+\/+(?:m=[^/]+\/+)?media\/+videos\/+[0-9]{6}\/+[0-9]{2}\/+([0-9]+)\/+/);
 				if (match) {
 					return match[1];
-				} else {
-					return null;
 				}
+
+				match = url.match(/:\/\/embed\.[^/]+\/+\?(?:.*&)?id=([0-9]+)/);
+				if (match) {
+					page_nullobj = {
+						url: url,
+						is_pagelink: true
+					};
+
+					return match[1];
+				}
+
+				return null;
 			};
 
 			var query_redtube = function(id, cb) {
@@ -24148,20 +24166,6 @@ var $$IMU_EXPORT$$;
 			};
 
 			id = get_redtube_id_from_url(src);
-			if (!id && host_domain_nowww === "redtube.com" && options.element) {
-				var current = options.element;
-				while (current) {
-					if (current.tagName === "A") {
-						var match = current.href.match(/^[a-z]+:\/\/(?:www\.)?redtube\.com\/+([0-9]+)(?:[?#].*)?$/);
-						if (match) {
-							id = match[1];
-							break;
-						}
-					}
-					current = current.parentElement;
-				}
-			}
-
 			if (id) {
 				var obj = {
 					url: src,
@@ -24169,13 +24173,22 @@ var $$IMU_EXPORT$$;
 						page: "https://www.redtube.com/" + id
 					}
 				};
+
+				if (page_nullobj)
+					obj.is_pagelink = true;
+
 				if (options.do_request && options.cb) {
 					query_redtube(id, function(data) {
 						if (!data) {
-							return options.cb(null);
+							return options.cb(obj);
 						}
 
-						return options.cb(get_obj_from_redtube_info(data));
+						var newobj = get_obj_from_redtube_info(data);
+						if (!is_array(newobj))
+							newobj = [newobj];
+
+						newobj.push(obj);
+						return options.cb(newobj);
 					});
 
 					return {
@@ -24242,7 +24255,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "youporn.com") {
-			match = src.match(/^[a-z]+:\/\/[^/]+\/+watch\/+([0-9]+)(?:\/+(?:[^/]+\/*)?)?(?:[?#].*)?$/);
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:watch|embed)\/+([0-9]+)(?:\/+(?:[^/]+\/*)?)?(?:[?#].*)?$/);
 			if (match) {
 				id = match[1];
 
@@ -32034,7 +32047,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (false && domain_nosub === "cdn13.com") {
-			if (/:\/\/[^/]+\/+(?:[0-9]{3}\/+){3}[^/?#]+\.mp4/.test(src)) {
+			if (/:\/\/[^/]+\/+(?:[0-9]{3}\/+){3}[^/?#]+\.(?:mp4|m3u8)/.test(src)) {
 				return {
 					url: src,
 					headers: {
@@ -32153,8 +32166,9 @@ var $$IMU_EXPORT$$;
 							if (max) {
 								var our_obj = {
 									headers: {
+										Accept: "*/*",
 										Origin: origin,
-										Referer: baseobj.extra.page,
+										Referer: obj.extra.page,
 										"Sec-Fetch-Dest": "empty"
 									},
 									url: max,
@@ -35194,7 +35208,12 @@ var $$IMU_EXPORT$$;
 			};
 
 			var objify_xvideos_table = function(table) {
-				var obj = {extra: {}};
+				var obj = {
+					headers: {
+						Referer: "https://www.xvideos.com/"
+					},
+					extra: {}
+				};
 
 				if (table.VideoTitle) {
 					obj.extra.caption = table.VideoTitle;
@@ -36568,6 +36587,71 @@ var $$IMU_EXPORT$$;
 			// https://www.its.porn/contents/videos_screenshots/44000/44089/400x225/1.jpg
 			domain_nosub === "its.porn" ||
 			domain === "itsporn.woxcdn.com" ||
+			domain_nosub === "frprn.com" ||
+			// http://japan-whores.com/contents/videos_screenshots/247000/247030/175x131/1.jpg
+			domain_nosub === "japan-whores.com" ||
+			domain_nosub === "hardmoms.co" ||
+			domain === "hardmoms.b-cdn.net" ||
+			domain_nosub === "d1ck.co" ||
+			domain === "d1ck.b-cdn.net" ||
+			domain_nosub === "twistednuts.com" ||
+			domain === "twistednuts.b-cdn.net" ||
+			domain_nosub === "f1ix.com" ||
+			domain === "f1ix.b-cdn.net" ||
+			domain_nosub === "18yos.co" ||
+			domain === "18yos.b-cdn.net" ||
+			domain_nosub === "amateurporngirlfriends.com" ||
+			domain === "amateurporngirlfriends.b-cdn.net" ||
+			domain_nosub === "amateurporntape.com" ||
+			domain === "amateurporntape.b-cdn.net" ||
+			domain_nosub === "amateurpornvidz.com" ||
+			domain === "amateurpornvidz.b-cdn.net" ||
+			domain_nosub === "analcuties.co" ||
+			domain === "analcuties.b-cdn.net" ||
+			domain_nosub === "asian-cuties.com" ||
+			domain === "asiancuties.b-cdn.net" ||
+			domain_nosub === "asian-teens.co" ||
+			domain === "asianteens.b-cdn.net" ||
+			domain_nosub === "boombj.com" ||
+			domain === "boombj.b-cdn.net" ||
+			domain_nosub === "brosislove.com" ||
+			domain === "brosislove.b-cdn.net" ||
+			domain_nosub === "cuteasians.co" ||
+			domain === "cuteasians.b-cdn.net" ||
+			domain_nosub === "d1rty.com" ||
+			domain === "d1rty.b-cdn.net" ||
+			domain_nosub === "extremejapanese.co" ||
+			domain === "extremejapanese.b-cdn.net" ||
+			domain_nosub === "faphard.co" ||
+			domain === "faphard.b-cdn.net" ||
+			domain_nosub === "fapharder.com" ||
+			domain === "fapharder.b-cdn.net" ||
+			domain_nosub === "fi1thy.com" ||
+			domain === "fi1thy.b-cdn.net" ||
+			domain_nosub === "fl1rt.com" ||
+			domain === "fl1rt.b-cdn.net" ||
+			domain_nosub === "freexxxhardcore.com" ||
+			domain === "freexxxhardcore.b-cdn.net" ||
+			domain_nosub === "hardcoreteens.co" ||
+			domain === "hardcoreteens.b-cdn.net" ||
+			domain_nosub === "hardfamily.co" ||
+			domain === "hardfamily.b-cdn.net" ||
+			domain_nosub === "hardjap.co" ||
+			domain === "hardjap.b-cdn.net" ||
+			domain_nosub === "hardmilfs.co" ||
+			domain === "hardmilfs.b-cdn.net" ||
+			domain_nosub === "hardteens.co" ||
+			domain === "hardteens.b-cdn.net" ||
+			domain_nosub === "hotmature.co" ||
+			domain === "hotmature.b-cdn.net" ||
+			domain_nosub === "japteens.co" ||
+			domain === "japteens.b-cdn.net" ||
+			domain_nosub === "k1nk.co" ||
+			domain === "k1nk.b-cdn.net" ||
+			domain_nosub === "milfz.co" ||
+			domain === "milfz.b-cdn.net" ||
+			domain_nosub === "pornouploads.com" ||
+			domain === "pornouploads.b-cdn.net" ||
 			// different system
 			// https://static2.tubepornclassic.com/contents/videos_screenshots/1051000/1051741/240x180/1.jpg
 			//domain_nosub === "tubepornclassic.com" ||
@@ -36616,7 +36700,7 @@ var $$IMU_EXPORT$$;
 			if (match) {
 				id = match[1];
 			} else {
-				match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:(?:videos?|embed)\/+([0-9]+)(?:\/+[^/]+)?\/*)(?:[?#].*)?$/);
+				match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:(?:videos?|embed)\/+([0-9]+)(?:\/+[^/]+)?\/*)?(?:[?#].*)?$/);
 				if (match) {
 					id = match[1];
 					is_pagelink = true;
@@ -36644,6 +36728,7 @@ var $$IMU_EXPORT$$;
 					   domain_nosub === "fetishburg.com" ||
 					   domain_nosub === "camhub.cc" ||
 					   domain_nosub === "mytradevideo.com" ||
+					   domain_nosub === "japan-whores.com" ||
 					   domain_nosub === "mywebgirls.tv") {
 				// doesn't support https
 				basedomain = "http://www." + domain_nosub + "/";
@@ -36705,6 +36790,35 @@ var $$IMU_EXPORT$$;
 				videos_component = "embed";
 				addslash = "";
 				a_component = "";
+			} else if (domain === "frprn.com") {
+				a_component = "";
+			} else if (domain_nosub === "b-cdn.net") {
+				var bcdn_basedomain_map = {
+					"hardmoms": "hardmoms.co",
+					"d1ck": "d1ck.co",
+					"18yos": "18yos.co",
+					"analcuties": "analcuties.co",
+					"asiancuties": "asian-cuties.com",
+					"asianteens": "asian-teens.co",
+					"cuteasians": "cuteasians.co",
+					"extremejapanese": "extremejapanese.co",
+					"faphard": "faphard.co",
+					"hardcoreteens": "hardcoreteens.co",
+					"hardfamily": "hardfamily.co",
+					"hardjap": "hardjap.co",
+					"hardmilfs": "hardmilfs.co",
+					"hardteens": "hardteens.co",
+					"hotmature": "hotmature.co",
+					"japteens": "japteens.co",
+					"k1nk": "k1nk.co",
+					"milfz": "milfz.co"
+				};
+				var bcdn_subdomain = domain.replace(/\.b-cdn\.net$/, "");
+				if (bcdn_subdomain in bcdn_basedomain_map) {
+					basedomain = "https://" + bcdn_basedomain_map[bcdn_subdomain] + "/";
+				} else {
+					basedomain = "https://" + bcdn_subdomain + ".com/";
+				}
 			}
 
 			cache_host = basedomain.replace(/^[a-z]+:\/\/(?:www\.)?([^/]+)\/*$/, "$1");
@@ -37053,7 +37167,7 @@ var $$IMU_EXPORT$$;
 				};
 
 				var find_embed = function(resp) {
-					var match = resp.responseText.match(/"player-holder">\s*<div class="embed-wrap"[^>]*><iframe\s[^>]*src="([^"]+)"/);
+					var match = resp.responseText.match(/"player-holder">\s*<div class="embed-wrap"[^>]*><iframe\s[^>]*src=['"]([^'"]+)['"]/);
 					if (!match) {
 						console_warn(cache_key, "Unable to find iframe embed for", resp);
 						return null;
@@ -37162,7 +37276,7 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "tubepornclassic.com" ||
 			domain_nowww === "hotmovs.com" ||
 			domain_nowww === "hdzog.com") {
-			match = src.match(/^[a-z]+:\/\/[^/]+\/+videos\/+([0-9]+)\/+/);
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:videos|embed)\/+([0-9]+)(?:\/+.*)?(?:[?#].*)?$/);
 			if (match) {
 				id = match[1];
 
@@ -41200,16 +41314,10 @@ var $$IMU_EXPORT$$;
 			domain_nosub === "pinkworld.com") {
 			// https://cdn.eroticbeauties.net/content/digital-desire-bree-daniels-11136-1/auto/3/tn@1x/04.jpg
 			//   https://cdn.eroticbeauties.net/content/digital-desire-bree-daniels-11136-1/full/04.jpg
-			newsrc = src.replace(/(\/content\/+[^/]*\/+)(?:[^/]*\/+[^/]*\/+)?(?:tn@[^/]*|[0-9]+)\/+([0-9]+\.[^/.]*)$/, "$1full/$2");
-			if (newsrc !== src)
-				return newsrc;
-		}
-
-		if (domain_nosub === "pinkworld.com") {
 			return {
-				url: src,
+				url: src.replace(/(\/content\/+[^/]*\/+)(?:[^/]*\/+[^/]*\/+)?(?:tn@[^/]*|[0-9]+)\/+([0-9]+\.[^/.]*)$/, "$1full/$2"),
 				headers: {
-					Referer: "http://pinkworld.com/"
+					Referer: "http://" + domain_nosub + "/"
 				}
 			};
 		}
@@ -64653,15 +64761,28 @@ var $$IMU_EXPORT$$;
 		}
 
 		if ((domain_nosub === "iceppsn.com" ||
+			domain_nosub === "iceporn.com" ||
+
 			domain_nosub === "nvdst.com" ||
+			domain_nosub === "nuvid.com" ||
+
 			domain_nosub === "tbnpsn.com" ||
+			domain_nosub === "tubeon.com" ||
+
 			// https://p2.drtst.com/media/photos/tmb_new/2764183.jpg
 			//   https://p2.drtst.com/media/photos/2764183.jpg
 			domain_nosub === "drtst.com" ||
+			domain_nowww === "drtuber.com" ||
+
 			domain_nosub === "hdpsn21.com" ||
+			domain_nowww === "hd21.com" ||
+
 			domain_nosub === "wnppsn.com" ||
+			domain_nowww === "winporn.com" ||
+
 			// https://p3.vptpsn.com/media/videos/tmb/4117567/240_180/10.jpg
-			domain_nosub === "vptpsn.com") && options.do_request && options.cb) {
+			domain_nosub === "vptpsn.com" ||
+			domain_nosub === "viptube.com") && options.do_request && options.cb) {
 			// https://p9.iceppsn.com/media/videos/tmb/3605717/220_135/11.jpg
 			newsrc = src.replace(/\/media\/+photos\/+tmb(?:_new)?\/+/, "/media/photos/");
 			if (newsrc !== src)
@@ -64722,33 +64843,46 @@ var $$IMU_EXPORT$$;
 				return fillobj_urls(urls, baseobj);
 			};
 
+			var page_nullobj = null;
 			var get_iceporn_id_from_url = function(url) {
 				var match = url.match(/\/media\/+videos\/+tmb\/+([0-9]+)\/+/);
 				if (match) {
 					return match[1];
-				} else {
-					return null;
 				}
+
+				match = url.match(/^[a-z]+:\/\/[^/]+\/+(?:embed|video)\/+([0-9]+)(?:\/+[^/]*)?(?:[?#].*)?$/);
+				if (match) {
+					page_nullobj = {
+						url: src,
+						is_pagelink: true
+					};
+
+					return match[1];
+				}
+
+				return null;
 			};
 
-			var iceporn_domain = "iceporn.com";
-			var iceporn_aid = 6;
-			if (domain_nosub === "vptpsn.com") {
+			var iceporn_domain, iceporn_aid;
+			if (domain_nosub === "iceppsn.com" || domain_nosub === "iceporn.com") {
+				iceporn_domain = "iceporn.com";
+				iceporn_aid = 6;
+			} else if (domain_nosub === "vptpsn.com" || domain_nosub === "viptube.com") {
 				iceporn_domain = "viptube.com";
 				iceporn_aid = 2;
-			} else if (domain_nosub === "nvdst.com") {
+			} else if (domain_nosub === "nvdst.com" || domain_nosub === "nuvid.com") {
 				iceporn_domain = "nuvid.com";
 				iceporn_aid = 2;
-			} else if (domain_nosub === "tbnpsn.com") {
+			} else if (domain_nosub === "tbnpsn.com" || domain_nosub === "tubeon.com") {
 				iceporn_domain = "tubeon.com";
 				iceporn_aid = 591;
-			} else if (domain_nosub === "drtst.com") {
+			} else if (domain_nosub === "drtst.com" || domain_nosub === "drtuber.com") {
 				iceporn_domain = "drtuber.com";
 				iceporn_aid = 3029;
-			} else if (domain_nosub === "hdpsn21.com") {
+			} else if (domain_nosub === "hdpsn21.com" || domain_nosub === "hd21.com") {
 				iceporn_domain = "hd21.com";
 				iceporn_aid = 591;
-			} else if (domain_nosub === "wnppsn.com") {
+			} else if (domain_nosub === "wnppsn.com" || domain_nosub === "winporn.com") {
 				iceporn_domain = "winporn.com";
 				iceporn_aid = 591;
 			}
@@ -64757,9 +64891,16 @@ var $$IMU_EXPORT$$;
 			if (id) {
 				query_iceporn_vid(iceporn_domain, iceporn_aid, id, function(data) {
 					if (!data)
-						return options.cb(null);
+						return options.cb(page_nullobj);
 
-					return options.cb(get_obj_from_iceporn_vid(data));
+					var obj = get_obj_from_iceporn_vid(data);
+					if (!is_array(obj))
+						obj = [obj];
+
+					if (page_nullobj)
+						obj.push(page_nullobj);
+
+					return options.cb(obj);
 				});
 
 				return {
@@ -65789,7 +65930,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "eporner.com") {
-			match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:hd-porn|embed)\/+([0-9a-zA-Z]+)\/+/);
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:hd-porn|embed)\/+([0-9a-zA-Z]+)(?:\/+.*)?(?:[?#].*)?$/);
 			if (match) {
 				id = match[1];
 
@@ -66537,6 +66678,33 @@ var $$IMU_EXPORT$$;
 					return page_nullobj;
 				}
 			}
+		}
+
+		if (domain === "video.nudevista.com") {
+			// https://video.nudevista.com/video/MTMxODIwNDAwMi0zLS8tMC1odHRwczovL2YxaXguY29tL3ZpZGVvcy8xMTM0OTkvdmVyeSN6b29tI2luI2FzcyNmdWNrI2FuYWwjc2V4I3Zlcnkjc21vb3RoI2FzcyNhbmQjbmljZSNwb3Yv-very-zoom-in-ass-fuck-anal-sex-very-smooth-ass-and-nice-pov.html
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+video\/+(?:[^/]+\/+)?([^-/.]{30,})/);
+			if (match) {
+				try {
+					var decoded = base64_decode(match[1]);
+					newsrc = decoded.replace(/^.*?(https?:\/\/)/, "$1");
+					if (newsrc !== decoded)
+						return {
+							url: newsrc,
+							is_pagelink: true
+						};
+				} catch (e) {
+					console_error(e);
+				}
+			}
+		}
+
+		if (domain_nosub === "nudevista.com") {
+			// https://x99.nudevista.com/_/curr.gif
+			if (/\/_\/+curr\.gif/.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
 		}
 
 
@@ -69303,8 +69471,20 @@ var $$IMU_EXPORT$$;
 		var newobj_simple = obj_to_simplelist(newobj);
 
 		for (var i = 0; i < oldobj.length; i++) {
-			if (array_indexof(newobj_simple, oldobj[i].url) >= 0)
+			var index = array_indexof(newobj_simple, oldobj[i].url);
+			if (index >= 0) {
+				for (var key in oldobj[i]) {
+					var old_value = oldobj[i][key];
+					var new_value = newobj[index][key];
+
+					// e.g. for headers, extra, etc.
+					if (new_value !== old_value && JSON_stringify(new_value) === JSON_stringify(default_object[key])) {
+						newobj[index][key]= old_value;
+					}
+				}
+
 				continue;
+			}
 			newobj.push(oldobj[i]);
 		}
 
