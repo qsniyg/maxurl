@@ -79648,7 +79648,8 @@ var $$IMU_EXPORT$$;
 						var jitter_threshx = 40;
 						var jitter_threshy = jitter_threshx;
 
-						var img = popups[0].getElementsByTagName("img")[0];
+						//var img = popups[0].getElementsByTagName("img")[0];
+						var img = get_popup_media_el();
 						var imgmiddleX = null;
 						var imgmiddleY = null;
 						var in_img_jitter = false;
