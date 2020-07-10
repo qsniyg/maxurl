@@ -35232,11 +35232,17 @@ var $$IMU_EXPORT$$;
 				}
 
 				if (table.VideoUrlHigh) {
-					urls.push(table.VideoUrlHigh);
+					urls.push({
+						url: table.VideoUrlHigh,
+						video: true
+					});
 				}
 
 				if (table.VideoUrlLow) {
-					urls.push(table.VideoUrlLow);
+					urls.push({
+						url: table.VideoUrlLow,
+						video: true
+					});
 				}
 
 				urls.push(page_nullobj);
@@ -36652,6 +36658,8 @@ var $$IMU_EXPORT$$;
 			domain === "milfz.b-cdn.net" ||
 			domain_nosub === "pornouploads.com" ||
 			domain === "pornouploads.b-cdn.net" ||
+			domain_nosub === "pornn.co" ||
+			domain === "pornn.b-cdn.net" ||
 			// different system
 			// https://static2.tubepornclassic.com/contents/videos_screenshots/1051000/1051741/240x180/1.jpg
 			//domain_nosub === "tubepornclassic.com" ||
@@ -36811,7 +36819,8 @@ var $$IMU_EXPORT$$;
 					"hotmature": "hotmature.co",
 					"japteens": "japteens.co",
 					"k1nk": "k1nk.co",
-					"milfz": "milfz.co"
+					"milfz": "milfz.co",
+					"pornn": "pornn.co"
 				};
 				var bcdn_subdomain = domain.replace(/\.b-cdn\.net$/, "");
 				if (bcdn_subdomain in bcdn_basedomain_map) {
@@ -72819,6 +72828,7 @@ var $$IMU_EXPORT$$;
 						} else if (video_type === "hls") {
 							get_library("hls", settings, do_request, function(hls_wrap) {
 								if (!hls_wrap || !hls_wrap.Hls || !hls_wrap.Hls.isSupported()) {
+									console_warn("HLS isn't supported");
 									// this will work if (video.canPlayType('application/vnd.apple.mpegurl'))
 									// if not, it will fail, then go to the next URL
 									video.src = src;
@@ -72831,7 +72841,7 @@ var $$IMU_EXPORT$$;
 								hls.loadSource(src);
 								hls.attachMedia(video);
 								hls.on(Hls.Events.MANIFEST_PARSED, function() {
-									//console_log(hls.levels);
+									console_log(hls.levels);
 									var maxlevel = -1;
 									var maxbitrate = -1;
 									for (var i = 0; i < hls.levels.length; i++) {
@@ -72849,7 +72859,7 @@ var $$IMU_EXPORT$$;
 								});
 
 								hls.on(Hls.Events.ERROR, function(e) {
-									console_error(e);
+									console_error("Error loading HLS", e);
 									// TODO: run error handler
 								});
 							});
