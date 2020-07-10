@@ -72831,6 +72831,19 @@ var $$IMU_EXPORT$$;
 								hls.loadSource(src);
 								hls.attachMedia(video);
 								hls.on(Hls.Events.MANIFEST_PARSED, function() {
+									//console_log(hls.levels);
+									var maxlevel = -1;
+									var maxbitrate = -1;
+									for (var i = 0; i < hls.levels.length; i++) {
+										if (hls.levels[i].bitrate > maxbitrate) {
+											maxlevel = i;
+											maxbitrate = hls.levels[i].bitrate;
+										}
+									}
+
+									if (maxlevel >= 0)
+										hls.nextLevel = maxlevel;
+
 									hls.startLoad(-1);
 									video.play();
 								});
