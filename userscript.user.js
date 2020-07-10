@@ -2062,6 +2062,8 @@ var $$IMU_EXPORT$$;
 		mouseover_zoom_behavior: "fit",
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-531080061
 		mouseover_zoom_custom_percent: 100,
+		mouseover_zoom_max_width: 0,
+		mouseover_zoom_max_height: 0,
 		mouseover_pan_behavior: "drag",
 		mouseover_movement_inverted: true,
 		mouseover_drag_min: 5,
@@ -3478,6 +3480,30 @@ var $$IMU_EXPORT$$;
 			number_unit: "%",
 			requires: {
 				mouseover_zoom_behavior: "custom"
+			},
+			category: "popup",
+			subcategory: "open_behavior"
+		},
+		mouseover_zoom_max_width: {
+			name: "Maximum width",
+			description: "Maximum width for the initial popup size. Set to `0` for unlimited.",
+			type: "number",
+			number_min: 0,
+			number_unit: "px",
+			requires: {
+				mouseover_open_behavior: "popup"
+			},
+			category: "popup",
+			subcategory: "open_behavior"
+		},
+		mouseover_zoom_max_height: {
+			name: "Maximum height",
+			description: "Maximum height for the initial popup size. Set to `0` for unlimited.",
+			type: "number",
+			number_min: 0,
+			number_unit: "px",
+			requires: {
+				mouseover_open_behavior: "popup"
 			},
 			category: "popup",
 			subcategory: "open_behavior"
@@ -74027,6 +74053,12 @@ var $$IMU_EXPORT$$;
 
 				if (initial_zoom_behavior === "fit" || initial_zoom_behavior === "fill") {
 					calc_imghw_for_fit();
+				}
+
+				var max_width = settings.mouseover_zoom_max_width || undefined;
+				var max_height = settings.mouseover_zoom_max_height || undefined;
+				if (max_width || max_height) {
+					calc_imghw_for_fit(max_width, max_height);
 				}
 
 				popup_update_pos_func = function(x, y, resize) {
