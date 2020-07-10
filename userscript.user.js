@@ -2132,7 +2132,7 @@ var $$IMU_EXPORT$$;
 		mouseover_apply_blacklist: true,
 		apply_blacklist_host: false,
 		mouseover_matching_media_types: false,
-		mouseover_support_pointerevents_none: true,
+		mouseover_support_pointerevents_none: false,
 		website_inject_imu: true,
 		website_image: true,
 		extension_contextmenu: true,
@@ -11737,9 +11737,9 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if (domain_nowww === "youtube.com" || domain_nowww === "youtu.be") {
+		if (domain_nowww === "youtube.com" || domain === "m.youtube.com" || domain_nowww === "youtu.be") {
 			// for thumbnails
-			match = src.match(/^[a-z]+:\/\/(?:www\.)?youtube\.com\/+watch\?(?:.*&)?v=([^&#]*)/);
+			match = src.match(/^[a-z]+:\/\/(?:(?:www|m)\.)?youtube\.com\/+watch\?(?:.*&)?v=([^&#]*)/);
 			if (!match) {
 				match = src.match(/^[a-z]+:\/\/(?:www\.)?youtu\.be\/+([^?&#]*)/);
 			}
@@ -36478,6 +36478,8 @@ var $$IMU_EXPORT$$;
 			// uses embed to www.zzpornozz.xyz/embed/[different id], which itself does use flashvars
 			// or camhub.world
 			domain_nowww === "camhub.cc" ||
+			domain_nowww === "camhub.world" ||
+			domain_nowww === "zzpornozz.xyz" ||
 			// http://www.caminspector.net/contents/videos_screenshots/111000/111019/180x135/1.jpg
 			// frame to www.cwtvembeds.com/embed/[different id]
 			//domain_nowww === "caminspector.net" ||
@@ -36562,6 +36564,9 @@ var $$IMU_EXPORT$$;
 					bad: "mask"
 				};
 
+			var page_nullobj = null;
+			var is_pagelink = false;
+
 			// to find more sites: inurl:videos_screenshots
 			id = null;
 			// https://statics.cdntrex.com/contents/videos_screenshots/1047000/1047563/300x168/1.jpg?v=3
@@ -36584,6 +36589,16 @@ var $$IMU_EXPORT$$;
 
 			if (match) {
 				id = match[1];
+			} else {
+				match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:(?:videos?|embed)\/+([0-9]+)(?:\/+[^/]+)?\/*)(?:[?#].*)?$/);
+				if (match) {
+					id = match[1];
+					is_pagelink = true;
+					page_nullobj = {
+						url: src,
+						is_pagelink: true
+					};
+				}
 			}
 
 			var basedomain = "https://www." + domain_nosub + "/";
@@ -37023,11 +37038,19 @@ var $$IMU_EXPORT$$;
 
 				api_cache.fetch(cache_key, function(obj) {
 					if (!obj)
-						return options.cb(null);
+						return options.cb(page_nullobj);
+
+					if (!is_array(obj))
+						obj = [obj];
+
+					if (page_nullobj)
+						obj.push(page_nullobj);
 
 					return options.cb(obj);
 				}, function(done) {
 					var url = basedomain + videos_component + "/" + idprefix + id + a_component + addslash;
+					if (is_pagelink)
+						url = src;
 
 					var fetch_video = function(url, can_refetch) {
 						options.do_request({
@@ -37074,7 +37097,10 @@ var $$IMU_EXPORT$$;
 
 								var embed_url = find_embed(resp);
 								if (embed_url) {
-									return fetch_video(embed_url, true);
+									return done({
+										url: embed_url,
+										is_pagelink: true
+									}, 60*60);
 								}
 
 								// its.porn
@@ -70385,10 +70411,13 @@ var $$IMU_EXPORT$$;
 				settings_version = 1;
 			}
 
-			upgrade_settings_with_version(settings_version, new_settings, function(changed) {
-				if (changed) {
+			upgrade_settings_with_version(settings_version, new_settings, function(new_changed) {
+				if (changed || new_changed) {
 					console_log("Settings imported");
-					do_options();
+
+					setTimeout(function() {
+						do_options();
+					}, 1);
 				} else {
 					console_log("No settings changed");
 				}
@@ -77081,6 +77110,8 @@ var $$IMU_EXPORT$$;
 					}
 				}
 
+				// youtube links on: https://old.reddit.com/r/anime/comments/btlmky/wt_mushishi_a_beautifully_melancholic_take_on_the/
+				// they pop up outside of the cursor
 				var rect = get_bounding_client_rect(el, zoom_cache);
 				if (rect && rect.width > 0 && rect.height > 0 &&
 					rect.left <= xy[0] && rect.right >= xy[0] &&
