@@ -75390,8 +75390,13 @@ var $$IMU_EXPORT$$;
 					can_close_popup[1] = true;
 				}
 
-				setTimeout(function() {
+				// camhub.cc (ublock origin blocks any setTimeout'd function with 'stop' in the name)
+				var dont_wait_anymore = function() {
 					stop_waiting();
+				};
+
+				setTimeout(function() {
+					dont_wait_anymore();
 				}, 1);
 
 				popups_active = true;
