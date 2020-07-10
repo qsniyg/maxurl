@@ -66685,6 +66685,130 @@ var $$IMU_EXPORT$$;
 				};
 		}
 
+		if (domain_nosub === "streamable.com") {
+			page_nullobj = null;
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:image|video\/+mp4(?:-mobile))\/+([a-z0-9]+)(?:_first)?\./);
+			if (match) {
+				id = match[1];
+			} else {
+				match = src.match(/^[a-z]+:\/\/(?:www\.)?streamable\.com\/+([a-z0-9]+)(?:[?#].*)?$/);
+				if (match) {
+					page_nullobj = {
+						url: src,
+						is_pagelink: true
+					};
+
+					id = match[1];
+				}
+			}
+
+			if (id) {
+				var baseobj = {
+					url: src,
+					extra: {
+						page: "https://www.streamable.com/" + id
+					}
+				};
+
+				if (page_nullobj)
+					page_nullobj.extra = baseobj.extra;
+
+				var query_streamable = function(id, cb) {
+					api_query("streamable:" + id, {
+						url: "https://www.streamable.com/" + id
+					}, cb, function(done, resp, cache_key) {
+						var match = resp.responseText.match(/var videoObject\s*=\s*({.*?}); *\r?\n/);
+						if (!match) {
+							console_error(cache_key, "Unable to find match for", resp);
+							return done(null, false);
+						}
+
+						var json = JSON_parse(match[1]);
+
+						var title = json.title || json.reddit_title;
+						if (title) {
+							baseobj.extra.caption = title;
+						}
+
+						var urls = [];
+						if (json.files) {
+							var files = [];
+							for (var key in json.files) {
+								files.push(json.files[key]);
+							}
+
+							files.sort(function(a, b) {
+								return b.bitrate - a.bitrate;
+							});
+
+							var src_noquery = src.replace(/[?#].*/, "");
+							for (var i = 0; i < files.length; i++) {
+								if (!files[i].url)
+									continue;
+
+								// to avoid infinite loops
+								if (files[i].url.replace(/[?#].*/) === src_noquery) {
+									files[i].url = src_noquery;
+								}
+
+								var videoobj = {
+									url: urljoin(resp.finalUrl, files[i].url, true),
+									headers: {
+										Referer: resp.finalUrl
+									},
+									video: true
+								};
+
+								// fixme: might be a different extension
+								if (false && json.original_name) {
+									videoobj.filename = json.original_name;
+								}
+
+								urls.push(videoobj);
+							}
+						}
+
+						var thumbnails = [
+							json.poster_url,
+							json.thumbnail_url,
+							json.dynamic_thumbnail_url
+						];
+
+						for (var i = 0; i < thumbnails; i++) {
+							if (thumbnails[i]) {
+								urls.push(urljoin(resp.finalUrl, thumbnails[i], true));
+							}
+						}
+
+						return done(urls, 60*60);
+					});
+				};
+
+				if (options.cb && options.do_request) {
+					query_streamable(id, function(obj) {
+						if (!obj) {
+							return options.cb(page_nullobj || baseobj);
+						}
+
+						if (!is_array(obj)) {
+							obj = [obj];
+						}
+
+						if (page_nullobj)
+							obj.push(page_nullobj);
+
+						return options.cb(fillobj_urls(obj, baseobj));
+					});
+
+					return {
+						waiting: true
+					}
+				} else {
+					return page_nullobj || baseobj;
+				}
+			}
+		}
+
 
 
 
