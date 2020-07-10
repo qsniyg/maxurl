@@ -32051,9 +32051,9 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "xhamster.one" ||
 			domain_nowww === "xh.video" ||
 			domain_nowww === "xhamster.desi") {
-			match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:videos|embed)\/+(?:[^/?#.]*-)?([0-9]+)(?:[?#].*)?$/);
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:videos|embed|x)\/+(?:[^/?#.]*-)?([0-9]+|xh[0-9a-zA-Z]+)(?:[?#].*)?$/);
 			if (!match) {
-				match = src.match(/^[a-z]+:\/\/[^/]+\/+xembed\.php\?(?:.*&)?video=([0-9]+)(?:&.*)?(?:#.*)?$/);
+				match = src.match(/^[a-z]+:\/\/[^/]+\/+xembed\.php\?(?:.*&)?video=([0-9]+|xh[0-9a-zA-Z]+)(?:&.*)?(?:#.*)?$/);
 			}
 
 			if (match) {
@@ -35272,7 +35272,7 @@ var $$IMU_EXPORT$$;
 				var regex = null;
 
 				if (our_host === "xvideos") {
-					regex = /:\/\/[^/]+\/+(?:video|embedframe\/+)([0-9]+)\/*(?:[?#].*)?$/;
+					regex = /:\/\/[^/]+\/+(?:video|embedframe\/+)([0-9]+)(?:\/+[^/]*)?(?:[?#].*)?$/;
 				} else if (our_host === "xnxx") {
 					regex = /:\/\/[^/]+\/+video-([^-/._]+)\//;
 				}
@@ -65701,14 +65701,27 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if ((domain_nosub === "pornerbros.com" ||
+		if (domain_nosub === "pornerbros.com" ||
 			domain_nosub === "porntube.com" ||
 			domain_nosub === "fux.com" ||
-			domain_nosub === "4tube.com") && /^cdn/.test(domain)) {
-			match = src.match(/^[a-z]+:\/\/[^/]+\/+((?:[0-9]\/+){2,})(?:[0-9]+x[0-9]+|preview)\/+/);
+			domain_nosub === "4tube.com") {
+			id = null;
+			page_nullobj = null;
+			match = src.match(/^[a-z]+:\/\/cdn[^/]+\/+((?:[0-9]\/+){2,})(?:[0-9]+x[0-9]+|preview)\/+/);
 			if (match) {
 				id = match[1].replace(/\/+/g, "");
+			} else {
+				match = src.match(/^[a-z]+:\/\/[^/]+\/+embed\/+([0-9]+)(?:[?#].*)?$/);
+				if (match) {
+					id = match[1];
+					page_nullobj = {
+						url: src,
+						is_pagelink: true
+					};
+				}
+			}
 
+			if (id) {
 				var cache_prefix = domain_nosub + ":";
 				var token_domain = "token." + domain_nosub;
 
@@ -65755,7 +65768,11 @@ var $$IMU_EXPORT$$;
 							}
 						};
 
-						return done(fillobj_urls(urls, baseobj), 60*60);
+						var newurls = fillobj_urls(urls, baseobj);
+						if (page_nullobj)
+							newurls.push(page_nullobj);
+
+						return done(newurls, 60*60);
 					});
 				};
 
@@ -65765,6 +65782,8 @@ var $$IMU_EXPORT$$;
 					return {
 						waiting: true
 					};
+				} else if (page_nullobj) {
+					return page_nullobj;
 				}
 			}
 		}
@@ -66459,6 +66478,64 @@ var $$IMU_EXPORT$$;
 					url: "http://www.pandora.tv/view/" + match[1] + "/" + match[2],
 					is_pagelink: true
 				};
+			}
+		}
+
+		if (domain_nowww === "imagefap.site" ||
+			domain_nowww === "tube.bz" ||
+			domain === "embed.mp4.center") {
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:player(?:\/+(?:xvideos|goto))?|embed\/+mp4)\/+\?(?:.*&)?u=([^&]+).*?$/);
+			if (match) {
+				// TODO: maybe support thumbnail too? &t=...
+				return {
+					url: decodeURIComponent(match[1]),
+					is_pagelink: true
+				};
+			}
+		}
+
+		if (domain_nowww === "porndex.com") {
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:out\/+go|view_video)\.php\?(?:.*&)?go=([0-9]+).*?$/);
+			if (match) {
+				id = match[1];
+
+				var query_porndex_outlink = function(id, cb) {
+					api_query("porndex:" + id, {
+						url: "https://www.porndex.com/out/go.php?go=" + id
+					}, cb, function(done, resp, cache_key) {
+						var match = resp.responseText.match(/<meta\s+http-equiv="refresh"\s+content="[0-9]+;URL='([^'"]+)'"/);
+						if (!match) {
+							console_error(cache_key, "Unable to find match for", resp);
+							return done(null, false);
+						}
+
+						return done(decode_entities(match[1]), 6*60*60);
+					});
+				};
+
+				page_nullobj = {
+					url: src,
+					is_pagelink: true
+				};
+
+				if (options.do_request && options.cb) {
+					query_porndex_outlink(id, function(url) {
+						if (!url) {
+							return options.cb(page_nullobj);
+						} else {
+							return options.cb([
+								{url: url, is_pagelink: true},
+								page_nullobj
+							]);
+						}
+					});
+
+					return {
+						waiting: true
+					};
+				} else {
+					return page_nullobj;
+				}
 			}
 		}
 
