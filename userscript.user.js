@@ -36596,70 +36596,39 @@ var $$IMU_EXPORT$$;
 			domain_nosub === "frprn.com" ||
 			// http://japan-whores.com/contents/videos_screenshots/247000/247030/175x131/1.jpg
 			domain_nosub === "japan-whores.com" ||
+			(domain_nosub === "b-cdn.net" && /^(18yos|amateurporn(?:girlfriends|tape|vidz)|analcuties|asian(?:cuties|teens)|boombj|brosislove|cuteasians|d1ck|d1rty|extremejapanese|faphard(?:er)?|fi1thy|fl1(?:x|rt)|freexxxhardcore|hard(?:(?:core)?teens|family|jap|milfs|moms)|hotmature|japteens|k1nk|milfz|porn(?:ouploads|n)|twistednuts)\./.test(domain)) ||
 			domain_nosub === "hardmoms.co" ||
-			domain === "hardmoms.b-cdn.net" ||
 			domain_nosub === "d1ck.co" ||
-			domain === "d1ck.b-cdn.net" ||
 			domain_nosub === "twistednuts.com" ||
-			domain === "twistednuts.b-cdn.net" ||
 			domain_nosub === "f1ix.com" ||
-			domain === "f1ix.b-cdn.net" ||
 			domain_nosub === "18yos.co" ||
-			domain === "18yos.b-cdn.net" ||
 			domain_nosub === "amateurporngirlfriends.com" ||
-			domain === "amateurporngirlfriends.b-cdn.net" ||
 			domain_nosub === "amateurporntape.com" ||
-			domain === "amateurporntape.b-cdn.net" ||
 			domain_nosub === "amateurpornvidz.com" ||
-			domain === "amateurpornvidz.b-cdn.net" ||
 			domain_nosub === "analcuties.co" ||
-			domain === "analcuties.b-cdn.net" ||
 			domain_nosub === "asian-cuties.com" ||
-			domain === "asiancuties.b-cdn.net" ||
 			domain_nosub === "asian-teens.co" ||
-			domain === "asianteens.b-cdn.net" ||
 			domain_nosub === "boombj.com" ||
-			domain === "boombj.b-cdn.net" ||
 			domain_nosub === "brosislove.com" ||
-			domain === "brosislove.b-cdn.net" ||
 			domain_nosub === "cuteasians.co" ||
-			domain === "cuteasians.b-cdn.net" ||
 			domain_nosub === "d1rty.com" ||
-			domain === "d1rty.b-cdn.net" ||
 			domain_nosub === "extremejapanese.co" ||
-			domain === "extremejapanese.b-cdn.net" ||
 			domain_nosub === "faphard.co" ||
-			domain === "faphard.b-cdn.net" ||
 			domain_nosub === "fapharder.com" ||
-			domain === "fapharder.b-cdn.net" ||
 			domain_nosub === "fi1thy.com" ||
-			domain === "fi1thy.b-cdn.net" ||
 			domain_nosub === "fl1rt.com" ||
-			domain === "fl1rt.b-cdn.net" ||
 			domain_nosub === "freexxxhardcore.com" ||
-			domain === "freexxxhardcore.b-cdn.net" ||
 			domain_nosub === "hardcoreteens.co" ||
-			domain === "hardcoreteens.b-cdn.net" ||
 			domain_nosub === "hardfamily.co" ||
-			domain === "hardfamily.b-cdn.net" ||
 			domain_nosub === "hardjap.co" ||
-			domain === "hardjap.b-cdn.net" ||
 			domain_nosub === "hardmilfs.co" ||
-			domain === "hardmilfs.b-cdn.net" ||
 			domain_nosub === "hardteens.co" ||
-			domain === "hardteens.b-cdn.net" ||
 			domain_nosub === "hotmature.co" ||
-			domain === "hotmature.b-cdn.net" ||
 			domain_nosub === "japteens.co" ||
-			domain === "japteens.b-cdn.net" ||
 			domain_nosub === "k1nk.co" ||
-			domain === "k1nk.b-cdn.net" ||
 			domain_nosub === "milfz.co" ||
-			domain === "milfz.b-cdn.net" ||
 			domain_nosub === "pornouploads.com" ||
-			domain === "pornouploads.b-cdn.net" ||
 			domain_nosub === "pornn.co" ||
-			domain === "pornn.b-cdn.net" ||
 			// different system
 			// https://static2.tubepornclassic.com/contents/videos_screenshots/1051000/1051741/240x180/1.jpg
 			//domain_nosub === "tubepornclassic.com" ||
