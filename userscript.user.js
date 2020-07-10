@@ -66774,9 +66774,9 @@ var $$IMU_EXPORT$$;
 							json.dynamic_thumbnail_url
 						];
 
-						for (var i = 0; i < thumbnails; i++) {
+						for (var i = 0; i < thumbnails.length; i++) {
 							if (thumbnails[i]) {
-								urls.push(urljoin(resp.finalUrl, thumbnails[i], true));
+								urls.push(urljoin(resp.finalUrl, thumbnails[i], true).replace(/[?#].*/, ""));
 							}
 						}
 
