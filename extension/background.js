@@ -292,12 +292,12 @@ var onBeforeSendHeaders_listener = function(details) {
 		verify_ok = true;
 
 		var redirect = redirects[details.tabId];
-		delete redirects[details.tabId];
+		//delete redirects[details.tabId];
 
 		if (!(redirect instanceof Array))
 			redirect = [redirect];
 
-		debug("Redirect", details.tabId);
+		debug("Redirect", details.tabId, redirect);
 
 		loading_urls[details.tabId] = details.url;
 
@@ -315,7 +315,7 @@ var onBeforeSendHeaders_listener = function(details) {
 		}
 
 		if (!rheaders) {
-			return;
+			//return;
 		}
 
 		for (var header in rheaders) {
@@ -1328,6 +1328,10 @@ function tabremoved(tabid) {
 
 	if (tabid in override_download) {
 		delete override_download[tabid];
+	}
+
+	if (tabid in redirects) {
+		delete redirects[tabid];
 	}
 }
 
