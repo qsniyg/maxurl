@@ -36476,7 +36476,8 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "mature-porn.xxx" ||
 			// http://www.camhub.cc/contents/videos_screenshots/201000/201343/preview.jpg
 			// uses embed to www.zzpornozz.xyz/embed/[different id], which itself does use flashvars
-			//domain_nowww === "camhub.cc" ||
+			// or camhub.world
+			domain_nowww === "camhub.cc" ||
 			// http://www.caminspector.net/contents/videos_screenshots/111000/111019/180x135/1.jpg
 			// frame to www.cwtvembeds.com/embed/[different id]
 			//domain_nowww === "caminspector.net" ||
@@ -36536,6 +36537,9 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "hardsexvids.com" ||
 			// https://cdn5.sexvid.xxx/contents/videos_screenshots/8000/8318/284x160/1.jpg
 			domain_nosub === "sexvid.xxx" ||
+			// https://www.its.porn/contents/videos_screenshots/44000/44089/400x225/1.jpg
+			domain_nosub === "its.porn" ||
+			domain === "itsporn.woxcdn.com" ||
 			// different system
 			// https://static2.tubepornclassic.com/contents/videos_screenshots/1051000/1051741/240x180/1.jpg
 			//domain_nosub === "tubepornclassic.com" ||
@@ -36562,7 +36566,7 @@ var $$IMU_EXPORT$$;
 			id = null;
 			// https://statics.cdntrex.com/contents/videos_screenshots/1047000/1047563/300x168/1.jpg?v=3
 			// https://statics.cdntrex.com/contents/videos_screenshots/1061000/1061072/preview.mp4.jpg
-			match = src.match(/\/(?:videos_screenshots|v?th|kvs|videos\/+th)\/+[0-9]+\/+([0-9]+)\/+(?:[0-9]+x[0-9]+\/+|preview(?:_trailer)?\.)/);
+			match = src.match(/\/(?:videos_(?:screenshots|sources)|v?th|kvs|videos\/+th)\/+[0-9]+\/+([0-9]+)\/+(?:(?:[0-9]+x[0-9]+|screenshots)\/+|preview(?:_trailer)?\.)/);
 			if (!match) {
 				match = src.match(/\/get_file\/+[0-9a-f]+\/+[0-9a-f]{30,}\/+[0-9a-f]\/+([0-9]+)\/+screenshots\/+/);
 			}
@@ -36620,6 +36624,7 @@ var $$IMU_EXPORT$$;
 					   domain_nosub === "yeswegays.com" ||
 					   domain_nosub === "x18.xxx" ||
 					   domain_nosub === "thebestshemalevideos.com" ||
+					   domain_nosub === "its.porn" ||
 					   domain_nosub === "pornalin.com") {
 				videos_component = "embed";
 				addslash = "";
@@ -36654,7 +36659,14 @@ var $$IMU_EXPORT$$;
 				idprefix = "a-";
 				videos_component = "";
 				a_component = "";
+			} else if (domain === "itsporn.woxcdn.com") {
+				basedomain = "https://www.its.porn/";
+				videos_component = "embed";
+				addslash = "";
+				a_component = "";
 			}
+
+			cache_host = basedomain.replace(/^[a-z]+:\/\/(?:www\.)?([^/]+)\/*$/, "$1");
 
 			var fixup_function_url = function(flashvars) {
 				var global_fn_num = 0;
@@ -36862,9 +36874,10 @@ var $$IMU_EXPORT$$;
 
 			if (id && options.do_request && options.cb) {
 				var cache_key = cache_host + ":" + id;
-				api_cache.fetch(cache_key, function(ourdata) {
+
+				var parse_flashvars = function(ourdata) {
 					if (!ourdata || !ourdata.data) {
-						return options.cb(null);
+						return null;
 					}
 
 					var data = ourdata.data;
@@ -36933,54 +36946,148 @@ var $$IMU_EXPORT$$;
 							newobj.video = true;
 						}
 
-						return options.cb(newobj);
+						return newobj;
 					} else {
-						return options.cb(null);
+						return null;
 					}
+				};
+
+				var find_flashvars_from_page = function(resp) {
+					var match = resp.responseText.match(/var\s+flashvars\s*=\s*({[\s\S]+?});/);
+					if (!match) {
+						console_warn(cache_key, "Unable to find flashvars match", resp);
+						return null;
+					}
+
+					// https://www.thebestshemalevideos.com/contents/videos_screenshots/39000/39368/180x135/1.jpg
+					// : '...\'....'
+					var jsoned = match[1]
+						.replace(/([{,])\s*([^"'\s:]+)\s*:/g, "$1 \"$2\":")
+						.replace(/(\"[^\s:"]+?\":)\s*'([^']*)'(\s*[,}])/g, "$1 \"$2\"$3")
+						.replace(/,\s*}$/, "}");
+
+					try {
+						var json = JSON_parse(jsoned);
+
+						// metacafe
+						if (!("video_id" in json) && "flashvars" in json && json.flashvars && "video_id" in json.flashvars) {
+							json = json.flashvars;
+						}
+
+						return json;
+					} catch (e) {
+						console_error(cache_key, e, match[1], jsoned);
+						return null;
+					}
+				};
+
+				var find_itsporn_video = function(resp) {
+					var match = resp.responseText.match(/<video\s([^>]+data-src-(?:hls|dash|mp4)="https?:[^"]+".*?)>\s*<\/video>/);
+					if (!match) {
+						console_warn(cache_key, "Unable to find data-src-(hls|dash|mp4) match", resp);
+						return null;
+					}
+
+					var regex = /data-src-(hls|dash|mp4)="(https?:[^"]+)"/;
+					match = match[1].match(new RegExp(regex, "g"));
+
+					var obj = [];
+					for (var i = 0; i < match.length; i++) {
+						var submatch = match[i].match(regex);
+						var videotype = submatch[1];
+						if (videotype === "mp4")
+							videotype = true;
+
+						obj.push({
+							url: submatch[2],
+							video: videotype
+						});
+					}
+
+					if (obj.length > 0)
+						return obj;
+
+					console_error(cache_key, "Unable to find sources for data-src match", resp);
+					return null;
+				};
+
+				var find_embed = function(resp) {
+					var match = resp.responseText.match(/"player-holder">\s*<div class="embed-wrap"[^>]*><iframe\s[^>]*src="([^"]+)"/);
+					if (!match) {
+						console_warn(cache_key, "Unable to find iframe embed for", resp);
+						return null;
+					}
+
+					return decode_entities(match[1]);
+				};
+
+				api_cache.fetch(cache_key, function(obj) {
+					if (!obj)
+						return options.cb(null);
+
+					return options.cb(obj);
 				}, function(done) {
-					options.do_request({
-						url: basedomain + videos_component + "/" + idprefix + id + a_component + addslash,
-						method: "GET",
-						onload: function(resp) {
-							if (resp.readyState !== 4)
-								return;
+					var url = basedomain + videos_component + "/" + idprefix + id + a_component + addslash;
 
-							if (resp.status !== 200) {
-								console_error(resp);
-								return done(null, false);
-							}
+					var fetch_video = function(url, can_refetch) {
+						options.do_request({
+							url: url,
+							method: "GET",
+							onload: function(resp) {
+								if (resp.readyState !== 4)
+									return;
 
-							var match = resp.responseText.match(/var\s+flashvars\s*=\s*({[\s\S]+?});/);
-							if (!match) {
-								console_error("Unable to find match", resp);
-								return done(null, false);
-							}
-
-							// https://www.thebestshemalevideos.com/contents/videos_screenshots/39000/39368/180x135/1.jpg
-							// : '...\'....'
-							var jsoned = match[1]
-								.replace(/([{,])\s*([^"'\s:]+)\s*:/g, "$1 \"$2\":")
-								.replace(/(\"[^\s:"]+?\":)\s*'([^']*)'(\s*[,}])/g, "$1 \"$2\"$3")
-								.replace(/,\s*}$/, "}");
-
-							try {
-								var json = JSON_parse(jsoned);
-
-								// metacafe
-								if (!("video_id" in json) && "flashvars" in json && json.flashvars && "video_id" in json.flashvars) {
-									json = json.flashvars;
+								if (resp.status !== 200) {
+									console_error(resp);
+									return done(null, false);
 								}
 
-								done({
-									data: json,
-									finalurl: resp.finalUrl
-								}, 6*60*60);
-							} catch (e) {
-								console_error(e, match[1], jsoned);
-								return done(null, false);
+								var finalurl = resp.finalUrl;
+								var match = resp.responseText.match(/<link href="(https?:\/\/[^"]+)" rel="canonical"\s*\/>/);
+								if (match) {
+									finalurl = decode_entities(match[1]);
+								}
+
+								var baseobj = {
+									headers: {
+										Referer: finalurl || basedomain
+									},
+									extra: {
+										page: finalurl
+									}
+								};
+
+								var flashvars = find_flashvars_from_page(resp);
+								if (flashvars) {
+									var dataobj = {
+										data: flashvars,
+										finalurl: finalurl
+									};
+
+									return done(parse_flashvars(dataobj), 60*60);
+								}
+
+								var obj = find_itsporn_video(resp);
+								if (obj) {
+									return done(fillobj_urls(obj, baseobj), 60*60);
+								}
+
+								var embed_url = find_embed(resp);
+								if (embed_url) {
+									return fetch_video(embed_url, true);
+								}
+
+								// its.porn
+								if (can_refetch && finalurl !== resp.finalUrl) {
+									return fetch_video(finalurl, false);
+								} else {
+									return done(null, false);
+								}
 							}
-						}
-					});
+						});
+					};
+
+					fetch_video(url, true);
 				});
 
 				return {
@@ -37001,6 +37108,7 @@ var $$IMU_EXPORT$$;
 		if (domain_nowww === "vjav.com" ||
 			domain_nowww === "upornia.com" ||
 			domain_nowww === "tubepornclassic.com" ||
+			domain_nowww === "hotmovs.com" ||
 			domain_nowww === "hdzog.com") {
 			match = src.match(/^[a-z]+:\/\/[^/]+\/+videos\/+([0-9]+)\/+/);
 			if (match) {
@@ -37122,17 +37230,35 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "cdn69508963.ahacdn.me" ||
+
 			domain === "cdn35854568.ahacdn.me" ||
+			// https://cdn60563788.ahacdn.me/contents/videos_sources/592000/592577/screenshots/1.jpg
+			domain === "cdn60563788.ahacdn.me" ||
+			// https://12111549.pix-cdn.org/contents/videos_screenshots/592000/592577/268x201/1.jpg
+			domain === "12111549.pix-cdn.org" ||
+
+			// https://cdn56191079.ahacdn.me/c8/videos/3604000/3604699/3604699_tr.mp4
+			domain === "cdn56191079.ahacdn.me" ||
+			// https://cdn25122858.ahacdn.me/contents/videos_sources/1259000/1259001/screenshots/1.jpg
+			domain === "cdn25122858.ahacdn.me" ||
+			// https://12111553.pix-cdn.org/contents/videos_screenshots/1259000/1259001/268x200/1.jpg
+			domain === "12111553.pix-cdn.org" ||
+
 			domain === "cdn37699375.ahacdn.me" ||
 			domain === "cdn39638151.ahacdn.me") {
 			var basedomain_map = {
 				"cdn69508963.ahacdn.me": "hdzog.com",
 				"cdn39638151.ahacdn.me": "vjav.com",
 				"cdn35854568.ahacdn.me": "upornia.com",
+				"cdn60563788.ahacdn.me": "upornia.com",
+				"12111549.pix-cdn.org":  "upornia.com",
+				"cdn56191079.ahacdn.me": "hotmovs.com",
+				"cdn25122858.ahacdn.me": "hotmovs.com",
+				"12111553.pix-cdn.org":  "hotmovs.com",
 				"cdn37699375.ahacdn.me": "tubepornclassic.com"
 			};
 			var basedomain = basedomain_map[domain];
-			match = src.match(/\/c[0-9]*\/+videos\/+[0-9]+\/+([0-9]+)\/+[0-9]+_tr\./);
+			match = src.match(/\/(?:c[0-9]*|contents)\/+videos(?:_(?:sources|screenshots))?\/+[0-9]+\/+([0-9]+)\/+(?:[0-9]+_tr\.|(?:screenshots|[0-9]+x[0-9]+)\/)/);
 			if (match) {
 				return {
 					url: "https://" + basedomain + "/videos/" + match[1] + "/a/",
@@ -65266,10 +65392,16 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if (domain_nosub === "hclips.com") {
+		if (domain_nosub === "hclips.com" ||
+			domain_nowww === "txxx.com" ||
+			domain_nosub === "videotxxx.com") {
 			var match = src.match(/^[a-z]+:\/\/[^/]+\/+videos\/+([0-9]+)\//);
 			if (match) {
 				id = match[1];
+
+				var base_domain = domain_nosub;
+				if (domain_nosub === "videotxxx.com")
+					base_domain = "txxx.com";
 
 				var decode_hclips_base64 = function(data) {
 					var charset = decodeURIComponent("%D0%90%D0%92%D0%A1D%D0%95FGHIJKL%D0%9CNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.%2C~"),
@@ -65307,11 +65439,11 @@ var $$IMU_EXPORT$$;
 				};
 
 				var query_hclips = function(vid, cb) {
-					api_query("hclips:" + vid, {
-						url: "https://hclips.com/api/videofile.php?video_id=" + vid + "&lifetime=8640000",
+					api_query(base_domain + ":" + vid, {
+						url: "https://" + base_domain + "/api/videofile.php?video_id=" + vid + "&lifetime=8640000",
 						headers: {
 							"Accept": "application/json, text/plain, */*",
-							"Referer": "https://hclips.com/videos/" + vid + "/"
+							"Referer": "https://" + base_domain + "/videos/" + vid + "/"
 						},
 						json: true
 					}, cb, function(done, resp, cache_key) {
@@ -65329,12 +65461,13 @@ var $$IMU_EXPORT$$;
 							}
 						};
 
+						// resp is {error: 1, msg: "not_found"} if 404
 						resp.sort(function(a, b) {
 							return get_format_id(a) - get_format_id(b);
 						});
 
 						for (var i = 0; i < resp.length; i++) {
-							resp[i].video_url = urljoin("https://hclips.com/", decode_hclips_base64(resp[i].video_url), true);
+							resp[i].video_url = urljoin("https://" + base_domain + "/", decode_hclips_base64(resp[i].video_url), true);
 						}
 
 						done(resp, 60*60);
@@ -65348,7 +65481,7 @@ var $$IMU_EXPORT$$;
 
 					var baseobj = {
 						headers: {
-							Referer: "https://hclips.com"
+							Referer: "https://" + base_domain
 						}
 					};
 
@@ -66123,7 +66256,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "porn.com") {
-			match = src.match(/^[a-z]+:\/\/[^/]+\/+out\/+n\/+[^/]+\/+([^/]{30,})(?:\/+(?:0|[^/]{30,})\/+(?:0|[^/]{30,}))?(?:[?#].*)?$/);
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+out\/+[nt]\/+[^/]+\/+([^/]{30,})(?:\/+(?:[0-9]+|[^/]{30,})\/+(?:[0-9]+|[^/]{30,}))?(?:[?#].*)?$/);
 			if (match) {
 				var splitted = decodeURIComponent(match[1]).split("_");
 
@@ -66136,6 +66269,17 @@ var $$IMU_EXPORT$$;
 					url: splitted1.join("?"),
 					is_pagelink: true
 				};
+			}
+		}
+
+		if (host_domain_nowww === "porn.com" && domain_nosub === "porn.com" && /^media/.test(domain) && options.element) {
+			if (options.element.parentElement && options.element.parentElement.parentElement) {
+				var dparent = options.element.parentElement.parentElement;
+				if (dparent.tagName === "A" && /porn\.com\/+out\//.test(dparent.href))
+					return {
+						url: dparent.href,
+						is_pagelink: true
+					};
 			}
 		}
 
