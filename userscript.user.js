@@ -928,7 +928,7 @@ var $$IMU_EXPORT$$;
 		// https://www.dpreview.com/ overrides URL
 		native_blob, native_URL,
 		our_EventTarget, our_addEventListener, our_removeEventListener,
-		string_fromcharcode;
+		string_fromcharcode, string_charat;
 
 	if (is_node) {
 		base64_decode = function(a) {
@@ -1020,6 +1020,37 @@ var $$IMU_EXPORT$$;
 		};
 		get_compat_string_fromcharcode();
 
+		// porn.com (ublock)
+		var get_compat_string_charat = function() {
+			var string_prototype_charat = String.prototype.charAt;
+			var string_charat_orig = function(string, x) {
+				return string_prototype_charat.call(string, x);
+			};
+
+			var string_charat_correct = function(string, x) {
+				var result = string[x];
+				if (result === undefined)
+					result = "";
+
+				return result;
+			};
+
+			var string_charat_check = function(func) {
+				var test_string = "abc";
+				if (func(test_string, 0) === "a" &&
+					func(test_string, 1) === "b" &&
+					func(test_string, -1) === "" &&
+					func(test_string, 3) === "") {
+					return true;
+				}
+
+				return false;
+			};
+
+			string_charat = sanity_test(string_charat_orig, string_charat_correct, string_charat_check);
+		};
+		get_compat_string_charat();
+
 		var get_compat_base64 = function() {
 			if (is_node)
 				return;
@@ -1030,9 +1061,9 @@ var $$IMU_EXPORT$$;
 			var base64_decode_correct = function(s) {
 				var e={},i,b=0,c,x,l=0,a,r='',w=string_fromcharcode,L=s.length;
 				var A="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-				for(i=0;i<64;i++){e[A.charAt(i)]=i;}
+				for(i=0;i<64;i++){e[string_charat(A, i)]=i;}
 				for(x=0;x<L;x++){
-					c=e[s.charAt(x)];b=(b<<6)+c;l+=6;
+					c=e[string_charat(s, x)];b=(b<<6)+c;l+=6;
 					while(l>=8){((a=(b>>>(l-=8))&0xff)||(x<(L-2)))&&(r+=w(a));}
 				}
 				return r;
@@ -1119,7 +1150,7 @@ var $$IMU_EXPORT$$;
 
 				var x_i = 0;
 				for (var i = 0; i < string.length; i++) {
-					if (string.charAt(i) === x.charAt(x_i)) {
+					if (string_charat(string, i) === string_charat(x, x_i)) {
 						if (x_i + 1 === x.length) {
 							return i - x_i;
 						} else {
@@ -23669,137 +23700,193 @@ var $$IMU_EXPORT$$;
 				return newsrc;
 		}
 
-		if (host_domain_nosub === "pornhub.com" && options.element && options.do_request && options.cb) {
-			// todo: split into pagelink rule
-			var get_pornhub_videodata = function(key, cb) {
-				var cache_key = "pornhub_video:" + key;
-				api_cache.fetch(cache_key, cb, function(done) {
-					options.do_request({
-						url: "https://www.pornhub.com/view_video.php?viewkey=" + key,
-						method: "GET",
-						onload: function(resp) {
-							if (resp.readyState !== 4) {
-								return;
-							}
+		if (domain_nowww === "pornhub.com") {
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+view_video\.php\?(?:.*&)?viewkey=([^&]+).*$/);
+			if (match) {
+				id = match[1];
 
-							if (resp.status !== 200) {
-								console_error(resp);
-								return done(null, false);
-							}
-
-							var match = resp.responseText.match(/<script[^>]*>\s*var (flashvars_[0-9]+) = ({.*});\s*var player_mp4_seek\s*=\s*\S+;\s*(var ra[0-9a-z]{10,}\s*=.*;)/);
-							if (!match) {
-								console_error("Unable to find flashvars match", resp);
-								return done(null, false);
-							}
-
-							var vartable = {};
-
-							try {
-								vartable[match[1]] = JSON_parse(match[2]);
-							} catch (e) {
-								console_error(e, resp);
-								return done(null, false);
-							}
-
-							var main_name = match[1];
-							var obfuscated = match[3];
-							var tokens = [];
-							var current_token = "";
-							var in_comment = false;
-							var escaping = false;
-							var in_string = false;
-
-							var commit_token = function() {
-								if (current_token.length > 0) {
-									tokens.push(current_token);
-									current_token = "";
+				var get_pornhub_videodata = function(key, cb) {
+					var cache_key = "pornhub_video:" + key;
+					api_cache.fetch(cache_key, cb, function(done) {
+						options.do_request({
+							url: "https://www.pornhub.com/view_video.php?viewkey=" + key,
+							method: "GET",
+							onload: function(resp) {
+								if (resp.readyState !== 4) {
+									return;
 								}
-							};
 
-							for (var i = 0; i < obfuscated.length; i++) {
-								var c = obfuscated[i];
+								if (resp.status !== 200) {
+									console_error(resp);
+									return done(null, false);
+								}
 
-								if (in_comment) {
-									if (c === "/" && obfuscated[i - 1] === "*") {
-										in_comment = false;
-										continue;
-									} else {
+								var match = resp.responseText.match(/<script[^>]*>\s*var (flashvars_[0-9]+) = ({.*});\s*var player_mp4_seek\s*=\s*\S+;\s*(var ra[0-9a-z]{10,}\s*=.*;)/);
+								if (!match) {
+									console_error("Unable to find flashvars match", resp);
+									return done(null, false);
+								}
+
+								var vartable = {};
+
+								try {
+									vartable[match[1]] = JSON_parse(match[2]);
+								} catch (e) {
+									console_error(e, resp);
+									return done(null, false);
+								}
+
+								var main_name = match[1];
+								var obfuscated = match[3];
+								var tokens = [];
+								var current_token = "";
+								var in_comment = false;
+								var escaping = false;
+								var in_string = false;
+
+								var commit_token = function() {
+									if (current_token.length > 0) {
+										tokens.push(current_token);
+										current_token = "";
+									}
+								};
+
+								for (var i = 0; i < obfuscated.length; i++) {
+									var c = obfuscated[i];
+
+									if (in_comment) {
+										if (c === "/" && obfuscated[i - 1] === "*") {
+											in_comment = false;
+											continue;
+										} else {
+											continue;
+										}
+									}
+
+									if (escaping) {
+										current_token += c;
+										escaping = false;
 										continue;
 									}
-								}
 
-								if (escaping) {
-									current_token += c;
-									escaping = false;
-									continue;
-								}
+									if (in_string) {
+										current_token += c;
 
-								if (in_string) {
-									current_token += c;
+										if (c === in_string) {
+											in_string = false;
+											commit_token();
+										}
 
-									if (c === in_string) {
-										in_string = false;
+										continue;
+									}
+
+									if (/\s/.test(c)) {
 										commit_token();
+										continue;
 									}
 
-									continue;
-								}
+									if (/["']/.test(c)) {
+										commit_token();
 
-								if (/\s/.test(c)) {
-									commit_token();
-									continue;
-								}
+										current_token += c;
+										in_string = c;
+										continue;
+									}
 
-								if (/["']/.test(c)) {
-									commit_token();
+									if (/[\[\]=;+:,{}]/.test(c)) {
+										commit_token();
+
+										current_token = c;
+										commit_token();
+										continue;
+									}
+
+									if (c === "\\") {
+										escaping = true;
+										continue;
+									}
+
+									if (c === "/" && obfuscated[i + 1] === "*") {
+										in_comment = true;
+										i++;
+										continue;
+									}
 
 									current_token += c;
-									in_string = c;
-									continue;
 								}
 
-								if (/[\[\]=;+:,{}]/.test(c)) {
-									commit_token();
+								var eval_varvalue = function(varvalue) {
+									var newvalues = [];
 
-									current_token = c;
-									commit_token();
-									continue;
-								}
+									for (var i = 0; i < varvalue.length; i++) {
+										var currentvalue = varvalue[i];
 
-								if (c === "\\") {
-									escaping = true;
-									continue;
-								}
+										currentvalue = currentvalue.replace(/^'(.*)'$/, '"$1"'); // TODO: handle "
 
-								if (c === "/" && obfuscated[i + 1] === "*") {
-									in_comment = true;
-									i++;
-									continue;
-								}
+										if (currentvalue === "+")
+											continue;
 
-								current_token += c;
-							}
+										if (varvalue[i] in vartable) {
+											currentvalue = vartable[varvalue[i]];
 
-							var eval_varvalue = function(varvalue) {
-								var newvalues = [];
+											var currentname = null;
+											var startbracket = -1;
+											var had_startbracket = false;
+											for (; (i + 1) < varvalue.length; i++) {
+												if (varvalue[i] === "[") {
+													startbracket = i;
+													had_startbracket = true;
+													continue;
+												} else if (!had_startbracket) {
+													break;
+												}
 
-								for (var i = 0; i < varvalue.length; i++) {
-									var currentvalue = varvalue[i];
+												if (varvalue[i] === "]") {
+													had_startbracket = false;
 
-									currentvalue = currentvalue.replace(/^'(.*)'$/, '"$1"'); // TODO: handle "
+													currentname = varvalue.slice(startbracket + 1, i);
+													currentvalue = currentvalue[eval_varvalue(currentname)];
+													continue;
+												}
+											}
 
-									if (currentvalue === "+")
-										continue;
+											currentvalue = JSON_stringify(currentvalue);
+										}
 
-									if (varvalue[i] in vartable) {
-										currentvalue = vartable[varvalue[i]];
+										if (i > 1 && varvalue[i-1] === "+") {
+											var lastvalue = JSON_parse(newvalues[newvalues.length-1]);
+											newvalues[newvalues.length-1] = JSON_stringify(lastvalue + JSON_parse(currentvalue));
+										} else {
+											newvalues.push(currentvalue);
+										}
+									}
 
-										var currentname = null;
+									return JSON_parse(newvalues.join(" "));
+								};
+
+								for (var i = 0; i < tokens.length; i++) {
+									var token = tokens[i];
+									if (token === "var") {
+										var varname = tokens[i + 1];
+										i += 3; // =
+										var begin = i;
+										for (; i < tokens.length; i++) {
+											if (tokens[i] === ";")
+												break;
+										}
+
+										var varvalue = tokens.slice(begin, i);
+										vartable[varname] = eval_varvalue(varvalue);
+									} else if (token in vartable) {
+										// TODO: refactor this and eval_varvalue
+										var parent_table = vartable;
+										var currentname = token;
 										var startbracket = -1;
 										var had_startbracket = false;
-										for (; (i + 1) < varvalue.length; i++) {
-											if (varvalue[i] === "[") {
+
+										i++;
+										for (; (i + 1) < tokens.length; i++) {
+											if (tokens[i] === "[") {
 												startbracket = i;
 												had_startbracket = true;
 												continue;
@@ -23807,154 +23894,118 @@ var $$IMU_EXPORT$$;
 												break;
 											}
 
-											if (varvalue[i] === "]") {
+											if (tokens[i] === "]") {
 												had_startbracket = false;
 
-												currentname = varvalue.slice(startbracket + 1, i);
-												currentvalue = currentvalue[eval_varvalue(currentname)];
+												parent_table = parent_table[currentname];
+												currentname = tokens.slice(startbracket + 1, i);
+												currentname = eval_varvalue(currentname);
 												continue;
 											}
 										}
 
-										currentvalue = JSON_stringify(currentvalue);
-									}
+										i++; // =
 
-									if (i > 1 && varvalue[i-1] === "+") {
-										var lastvalue = JSON_parse(newvalues[newvalues.length-1]);
-										newvalues[newvalues.length-1] = JSON_stringify(lastvalue + JSON_parse(currentvalue));
-									} else {
-										newvalues.push(currentvalue);
+										var begin = i;
+										for (; i < tokens.length; i++) {
+											if (tokens[i] === ";")
+												break;
+										}
+
+										var varvalue = tokens.slice(begin, i);
+										parent_table[currentname] = eval_varvalue(varvalue);
 									}
 								}
 
-								return JSON_parse(newvalues.join(" "));
-							};
-
-							for (var i = 0; i < tokens.length; i++) {
-								var token = tokens[i];
-								if (token === "var") {
-									var varname = tokens[i + 1];
-									i += 3; // =
-									var begin = i;
-									for (; i < tokens.length; i++) {
-										if (tokens[i] === ";")
-											break;
-									}
-
-									var varvalue = tokens.slice(begin, i);
-									vartable[varname] = eval_varvalue(varvalue);
-								} else if (token in vartable) {
-									// TODO: refactor this and eval_varvalue
-									var parent_table = vartable;
-									var currentname = token;
-									var startbracket = -1;
-									var had_startbracket = false;
-
-									i++;
-									for (; (i + 1) < tokens.length; i++) {
-										if (tokens[i] === "[") {
-											startbracket = i;
-											had_startbracket = true;
-											continue;
-										} else if (!had_startbracket) {
-											break;
-										}
-
-										if (tokens[i] === "]") {
-											had_startbracket = false;
-
-											parent_table = parent_table[currentname];
-											currentname = tokens.slice(startbracket + 1, i);
-											currentname = eval_varvalue(currentname);
-											continue;
-										}
-									}
-
-									i++; // =
-
-									var begin = i;
-									for (; i < tokens.length; i++) {
-										if (tokens[i] === ";")
-											break;
-									}
-
-									var varvalue = tokens.slice(begin, i);
-									parent_table[currentname] = eval_varvalue(varvalue);
-								}
+								done(vartable[main_name], 3*60*60);
 							}
-
-							done(vartable[main_name], 3*60*60);
-						}
+						});
 					});
-				});
-			};
-
-			var get_max_pornhub_video = function(data) {
-				var obj = {
-					url: null,
-					extra: {}
 				};
 
-				if (data.link_url) {
-					obj.extra.page = data.link_url;
-				}
+				var get_max_pornhub_video = function(data) {
+					var obj = {
+						url: null,
+						extra: {}
+					};
 
-				if (data.video_title) {
-					obj.extra.caption = data.video_title;
-				}
-
-				if (!data.mediaDefinitions) {
-					return obj;
-				}
-
-				var maxquality = null;
-				var maxobj = null;
-				for (var i = 0; i < data.mediaDefinitions.length; i++) {
-					if (data.mediaDefinitions[i].format === "hls")
-						continue;
-
-					var ourquality = data.mediaDefinitions[i].quality;
-					if (!ourquality) {
-						console_warn("Unable to find quality for ", data.mediaDefinitions[i]);
-						continue;
-					}
-					ourquality = parseInt(ourquality);
-
-					if (!data.mediaDefinitions[i].videoUrl) {
-						// for >1080p when not logged in
-						continue;
+					if (data.link_url) {
+						obj.extra.page = data.link_url;
 					}
 
-					if (!maxquality || ourquality > maxquality) {
-						maxquality = ourquality;
-						maxobj = data.mediaDefinitions[i];
+					if (data.video_title) {
+						obj.extra.caption = data.video_title;
 					}
-				}
 
-				if (maxobj && maxobj.videoUrl) {
-					obj.url = maxobj.videoUrl;
-					return obj;
-				} else {
-					obj.url = null;
-					return obj;
-				}
-			};
+					if (!data.mediaDefinitions) {
+						return obj;
+					}
 
-			if (options.element.parentElement && options.element.parentElement.tagName === "A") {
-				var match = options.element.parentElement.href.match(/\/view_video\.php\?viewkey=([^&]+)/);
-				if (match) {
-					get_pornhub_videodata(match[1], function(data) {
+					var maxquality = null;
+					var maxobj = null;
+					for (var i = 0; i < data.mediaDefinitions.length; i++) {
+						if (data.mediaDefinitions[i].format === "hls")
+							continue;
+
+						var ourquality = data.mediaDefinitions[i].quality;
+						if (!ourquality) {
+							console_warn("Unable to find quality for ", data.mediaDefinitions[i]);
+							continue;
+						}
+						ourquality = parseInt(ourquality);
+
+						if (!data.mediaDefinitions[i].videoUrl) {
+							// for >1080p when not logged in
+							continue;
+						}
+
+						if (!maxquality || ourquality > maxquality) {
+							maxquality = ourquality;
+							maxobj = data.mediaDefinitions[i];
+						}
+					}
+
+					if (maxobj && maxobj.videoUrl) {
+						obj.url = maxobj.videoUrl;
+						return obj;
+					} else {
+						obj.url = null;
+						return obj;
+					}
+				};
+
+				var page_nullobj = {
+					url: src,
+					is_pagelink: true
+				};
+
+				if (options.do_request && options.cb) {
+					get_pornhub_videodata(id, function(data) {
 						//console_log(data);
 
 						if (!data) {
-							return options.cb(null);
+							return options.cb(page_nullobj);
 						}
 
-						return options.cb(get_max_pornhub_video(data));
+						return options.cb([get_max_pornhub_video(data), page_nullobj]);
 					});
 
 					return {
 						waiting: true
+					};
+				} else {
+					return page_nullobj;
+				}
+			}
+		}
+
+		if (host_domain_nosub === "pornhub.com" && options.element) {
+			if (options.element.parentElement && options.element.parentElement.tagName === "A") {
+				var match = options.element.parentElement.href.match(/\/view_video\.php\?viewkey=([^&]+)/);
+				if (match) {
+					return {
+						url: options.element.parentElement.href,
+						is_pagelink: true
 					};
 				}
 			}
@@ -58854,7 +58905,7 @@ var $$IMU_EXPORT$$;
 								for (var i = 0; i < splitted.length; i++) {
 									var charid = splitted[i].replace(/.*(?:\[|\()\s*([0-9]+).*?$/, "$1");
 									if (charid !== splitted[i])
-										chars += match[2].charAt(charid);
+										chars += string_charat(match[2], charid);
 								}
 
 								if (chars.length !== 3) {
@@ -65232,10 +65283,10 @@ var $$IMU_EXPORT$$;
 					data = data.replace(invalid_regex, "");
 
 					for (var i = 0; i < data.length;) {
-						var c1 = charset.indexOf(data.charAt(i++)),
-							c2 = charset.indexOf(data.charAt(i++)),
-							c3 = charset.indexOf(data.charAt(i++)),
-							c4 = charset.indexOf(data.charAt(i++));
+						var c1 = charset.indexOf(string_charat(data, i++)),
+							c2 = charset.indexOf(string_charat(data, i++)),
+							c3 = charset.indexOf(string_charat(data, i++)),
+							c4 = charset.indexOf(string_charat(data, i++));
 
 						c1 = c1 << 2 | c2 >> 4;
 						c2 = (15 & c2) << 4 | c3 >> 2;
@@ -69264,7 +69315,7 @@ var $$IMU_EXPORT$$;
 
 		var newlist = [];
 		for (var i = 0; i < list.length; i++) {
-			var capitalized = list[i].charAt(0).toUpperCase() + list[i].slice(1);
+			var capitalized = string_charat(list[i], 0).toUpperCase() + list[i].slice(1);
 			if (list.length === 1 && (capitalized === "Left" || capitalized === "Right" || capitalized === "Up" || capitalized === "Down")) {
 				capitalized += " Arrow";
 			}
