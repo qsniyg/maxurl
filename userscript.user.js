@@ -36596,7 +36596,7 @@ var $$IMU_EXPORT$$;
 			domain_nosub === "frprn.com" ||
 			// http://japan-whores.com/contents/videos_screenshots/247000/247030/175x131/1.jpg
 			domain_nosub === "japan-whores.com" ||
-			(domain_nosub === "b-cdn.net" && /^(18yos|amateurporn(?:girlfriends|tape|vidz)|analcuties|asian(?:cuties|teens)|boombj|brosislove|cuteasians|d1ck|d1rty|extremejapanese|faphard(?:er)?|fi1thy|fl1(?:x|rt)|freexxxhardcore|hard(?:(?:core)?teens|family|jap|milfs|moms)|hotmature|japteens|k1nk|milfz|porn(?:ouploads|n)|twistednuts)\./.test(domain)) ||
+			(domain_nosub === "b-cdn.net" && /^(18yos|amateurporn(?:girlfriends|tape|vidz)|analcuties|asian(?:cuties|teens)|boombj|brosislove|cuteasians|d1ck|d1rty|extremejapanese|faphard(?:er)?|fi1thy|fl1(?:x|rt)|freexxxhardcore|hard(?:(?:core)?teens|family|jap|milfs|moms)|hotmature|japteens|k1nk|milfz|porn(?:ouploads|n|r[yz])|roleplayers|taboofamily|teenanal|twistednuts|wanktank)\./.test(domain)) ||
 			domain_nosub === "hardmoms.co" ||
 			domain_nosub === "d1ck.co" ||
 			domain_nosub === "twistednuts.com" ||
@@ -36629,6 +36629,12 @@ var $$IMU_EXPORT$$;
 			domain_nosub === "milfz.co" ||
 			domain_nosub === "pornouploads.com" ||
 			domain_nosub === "pornn.co" ||
+			domain_nosub === "pornry.com" ||
+			domain_nosub === "pornrz.com" ||
+			domain_nosub === "roleplayers.co" ||
+			domain_nosub === "taboofamily.co" ||
+			domain_nosub === "teenanal.co" ||
+			domain_nosub === "wanktank.co" ||
 			// different system
 			// https://static2.tubepornclassic.com/contents/videos_screenshots/1051000/1051741/240x180/1.jpg
 			//domain_nosub === "tubepornclassic.com" ||
@@ -36677,9 +36683,9 @@ var $$IMU_EXPORT$$;
 			if (match) {
 				id = match[1];
 			} else {
-				match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:(?:videos?|embed)\/+([0-9]+)(?:\/+[^/]+)?\/*)?(?:[?#].*)?$/);
+				match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:(?:videos?|embed)\/+(?:([0-9]+)(?:\/+[^/]+)?|([^/]+))\/*)?(?:[?#].*)?$/);
 				if (match) {
-					id = match[1];
+					id = match[1] || match[2];
 					is_pagelink = true;
 					page_nullobj = {
 						url: src,
@@ -36789,7 +36795,11 @@ var $$IMU_EXPORT$$;
 					"japteens": "japteens.co",
 					"k1nk": "k1nk.co",
 					"milfz": "milfz.co",
-					"pornn": "pornn.co"
+					"pornn": "pornn.co",
+					"roleplayers": "roleplayers.co",
+					"taboofamily": "taboofamily.co",
+					"teenanal": "teenanal.co",
+					"wanktank": "wanktank.co"
 				};
 				var bcdn_subdomain = domain.replace(/\.b-cdn\.net$/, "");
 				if (bcdn_subdomain in bcdn_basedomain_map) {
