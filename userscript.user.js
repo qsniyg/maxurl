@@ -66977,6 +66977,41 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain_nowww === "laracroftonline.com") {
+			// https://laracroftonline.com/media_gallery/image/tr11/box-art/SOTTRDE_Boxshot_XB1-1-thumb.png
+			//   https://laracroftonline.com/media_gallery/image/tr11/box-art/SOTTRDE_Boxshot_XB1-1.png
+			return src.replace(/(\/media_gallery\/+image\/+.*\/[^/]+)-thumb(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "noble-caledonia.co.uk") {
+			// https://www.noble-caledonia.co.uk/thumb.php?source_type=media_gallery&source_info=70425&action=A.1000.750
+			//   https://www.noble-caledonia.co.uk/thumb.php?source_type=media_gallery&source_info=70425&action=A -- significantly desaturated
+			if (/\/thumb\.php\?/.test(src)) {
+				var queries = get_queries(src);
+				if (queries.action) {
+					queries.action = "A";
+				}
+
+				return src.replace(/[?#].*/, "?" + stringify_queries(queries));
+			}
+		}
+
+		// atobiz cms (http://www.atobiz.com/)
+		if (domain === "fundraise.globalbrigades.org" ||
+			// http://hekkersmannen.nl/media_gallery/thumb/500/500/395_image.jpeg
+			//   http://hekkersmannen.nl/media_gallery/thumb/0/0/395_image.jpeg
+			domain_nowww === "hekkersmannen.nl" ||
+			// https://www.4lazylegs.com/media_gallery/thumb/320/0/Foto_1.jpg
+			//   https://www.4lazylegs.com/media_gallery/thumb/0/0/Foto_1.jpg
+			domain_nowww === "4lazylegs.com" ||
+			// http://www.hertoghendrik.com/media_gallery/thumb/320/0/M31224_29_voller_Einzug_1_komp.jpg
+			//   http://www.hertoghendrik.com/media_gallery/thumb/0/0/M31224_29_voller_Einzug_1_komp.jpg
+			domain_nowww === "hertoghendrik.com") {
+			// https://fundraise.globalbrigades.org/media_gallery/thumb/320/0/CAM00348.jpg
+			//   https://fundraise.globalbrigades.org/media_gallery/thumb/0/0/CAM00348.jpg
+			return src.replace(/(\/media_gallery\/+thumb\/+)[0-9]+\/+[0-9]+\/+/, "$10/0/");
+		}
+
 
 
 
