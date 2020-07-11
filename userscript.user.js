@@ -13,7 +13,7 @@
 // @name:zh-TW        Image Max URL
 // @name:zh-HK        Image Max URL
 // @namespace         http://tampermonkey.net/
-// @version           0.13.13
+// @version           0.13.14
 // @description       Finds larger or original versions of images for 7000+ websites, including a powerful media popup feature
 // @description:ko    7000개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
 // @description:fr    Trouve des images plus grandes ou originales pour plus de 7000 sites
@@ -24084,6 +24084,9 @@ var $$IMU_EXPORT$$;
 				}
 
 				match = url.match(/:\/\/embed\.[^/]+\/+\?(?:.*&)?id=([0-9]+)/);
+				if (!match) {
+					match = url.match(/:\/\/(?:www\.)redtube\.com\/+([0-9]+)(?:[?#].*)?$/);
+				}
 				if (match) {
 					page_nullobj = {
 						url: url,
@@ -36596,7 +36599,7 @@ var $$IMU_EXPORT$$;
 			domain_nosub === "frprn.com" ||
 			// http://japan-whores.com/contents/videos_screenshots/247000/247030/175x131/1.jpg
 			domain_nosub === "japan-whores.com" ||
-			(domain_nosub === "b-cdn.net" && /^(18yos|amateurporn(?:girlfriends|tape|vidz)|analcuties|asian(?:cuties|teens)|boombj|brosislove|cuteasians|d1ck|d1rty|extremejapanese|faphard(?:er)?|fi1thy|fl1(?:x|rt)|freexxxhardcore|hard(?:(?:core)?teens|family|jap|milfs|moms)|hotmature|japteens|k1nk|milfz|porn(?:ouploads|n|r[yz])|roleplayers|taboofamily|teenanal|twistednuts|wanktank)\./.test(domain)) ||
+			(domain_nosub === "b-cdn.net" && /^(18yos|amateurporn(?:girlfriends|tape|vidz)|analcuties|asian(?:cuties|teens)|boombj|brosislove|cuteasians|d1ck|d1rty|extremejapanese|faphard(?:er)?|fi1thy|f1ix|fl1rt|freexxxhardcore|hard(?:(?:core)?teens|family|jap|milfs|moms)|hotmature|japteens|k1nk|milfz|porn(?:ouploads|n|r[yz])|roleplayers|taboofamily|teenanal|twistednuts|wanktank)\./.test(domain)) ||
 			domain_nosub === "hardmoms.co" ||
 			domain_nosub === "d1ck.co" ||
 			domain_nosub === "twistednuts.com" ||
@@ -66677,7 +66680,7 @@ var $$IMU_EXPORT$$;
 					newsrc = decoded.replace(/^.*?(https?:\/\/)/, "$1");
 					if (newsrc !== decoded)
 						return {
-							url: newsrc,
+							url: newsrc.replace(/#/g, "-"),
 							is_pagelink: true
 						};
 				} catch (e) {
