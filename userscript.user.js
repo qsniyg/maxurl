@@ -68877,6 +68877,11 @@ var $$IMU_EXPORT$$;
 						return true;
 					}
 
+					if (el.tagName === "DIV" && el.children.length === 1 && el.children[0].tagName === "VIDEO") {
+						// to fix the pointer-events: none issue (thanks to remlap on discord for reporting)
+						return el.children[0];
+					}
+
 					return "default";
 				}
 			};
@@ -76581,14 +76586,22 @@ var $$IMU_EXPORT$$;
 
 			function addTagElement(el, layer) {
 				if (helpers && helpers.element_ok) {
-					if (helpers.element_ok(el) === true) {
-						ok_els.push({
-							count: 1,
-							src: null,
-							el: el,
-							id: id++,
-							is_ok_el: true
-						});
+					var element_ok_result = helpers.element_ok(el);
+					var ok_el_obj = {
+						count: 1,
+						src: null,
+						el: el,
+						id: id++,
+						is_ok_el: true
+					};
+
+					if (element_ok_result === true) {
+						ok_els.push(ok_el_obj);
+					} else {
+						if (is_element(element_ok_result)) {
+							ok_el_obj.el = element_ok_result;
+							ok_els.push(ok_el_obj);
+						}
 					}
 				}
 
