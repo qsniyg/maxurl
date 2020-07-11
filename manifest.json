@@ -69,6 +69,7 @@
 
   "optional_permissions": [
     "history",
-    "notifications"
+    "notifications",
+    "downloads"
   ]
 }
