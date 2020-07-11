@@ -13,7 +13,7 @@
 // @name:zh-TW        Image Max URL
 // @name:zh-HK        Image Max URL
 // @namespace         http://tampermonkey.net/
-// @version           0.13.14
+// @version           0.13.13
 // @description       Finds larger or original versions of images for 7000+ websites, including a powerful media popup feature
 // @description:ko    7000개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
 // @description:fr    Trouve des images plus grandes ou originales pour plus de 7000 sites
@@ -36599,6 +36599,9 @@ var $$IMU_EXPORT$$;
 			domain_nosub === "frprn.com" ||
 			// http://japan-whores.com/contents/videos_screenshots/247000/247030/175x131/1.jpg
 			domain_nosub === "japan-whores.com" ||
+			domain_nosub === "pornid.xxx" ||
+			// https://www.mypornhere.com/contents/videos_screenshots/122000/122813/320x180/1.jpg
+			domain_nosub === "mypornhere.com" ||
 			(domain_nosub === "b-cdn.net" && /^(18yos|amateurporn(?:girlfriends|tape|vidz)|analcuties|asian(?:cuties|teens)|boombj|brosislove|cuteasians|d1ck|d1rty|extremejapanese|faphard(?:er)?|fi1thy|f1ix|fl1rt|freexxxhardcore|hard(?:(?:core)?teens|family|jap|milfs|moms)|hotmature|japteens|k1nk|milfz|porn(?:ouploads|n|r[yz])|roleplayers|taboofamily|teenanal|twistednuts|wanktank)\./.test(domain)) ||
 			domain_nosub === "hardmoms.co" ||
 			domain_nosub === "d1ck.co" ||
@@ -36687,6 +36690,9 @@ var $$IMU_EXPORT$$;
 				id = match[1];
 			} else {
 				match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:(?:videos?|embed)\/+(?:([0-9]+)(?:\/+[^/]+)?|([^/]+))\/*)?(?:[?#].*)?$/);
+				if (!match && domain_nowww === "pornid.xxx") {
+					match = src.match(/^[a-z]+:\/\/[^/]+\/+([^/.]{20,})\.html(?:[?#].*)?$/);
+				}
 				if (match) {
 					id = match[1] || match[2];
 					is_pagelink = true;
@@ -36702,6 +36708,7 @@ var $$IMU_EXPORT$$;
 			var addslash = "/";
 			var a_component = "/a";
 			var idprefix = "";
+			var can_detect_videourl = true;
 			var cache_host = domain_nosub;
 
 			if (domain_nosub === "porntrex.com" || domain_nosub === "cdntrex.com") {
@@ -36810,6 +36817,16 @@ var $$IMU_EXPORT$$;
 				} else {
 					basedomain = "https://" + bcdn_subdomain + ".com/";
 				}
+			} else if (domain_nosub === "pornid.xxx") {
+				can_detect_videourl = false;
+			}
+
+			var detected_url = null;
+			if (can_detect_videourl) {
+				detected_url = basedomain + videos_component + "/" + idprefix + id + a_component + addslash;
+			}
+			if (is_pagelink) {
+				detected_url = src;
 			}
 
 			cache_host = basedomain.replace(/^[a-z]+:\/\/(?:www\.)?([^/]+)\/*$/, "$1");
@@ -37179,9 +37196,7 @@ var $$IMU_EXPORT$$;
 
 					return options.cb(obj);
 				}, function(done) {
-					var url = basedomain + videos_component + "/" + idprefix + id + a_component + addslash;
-					if (is_pagelink)
-						url = src;
+					var url = detected_url;
 
 					var fetch_video = function(url, can_refetch) {
 						options.do_request({
@@ -64443,6 +64458,13 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (false && domain_nowww === "mercinudes.com") {
+			// snapchat-like site, basically:
+			// POST https://mercinudes.com/api_front/ephemes/view
+			// {id: "mediaid"} (/ephemes/..., /media/...)
+			// but you can only do so once. to bypass this, we can remove the cookie, but then it overwrites the cookie
+		}
+
 		if (domain === "cdn.spinrilla.com") {
 			// https://cdn.spinrilla.com/albums/217990/large/b11917568079a31c4697.JPEG?1589066250
 			//   https://cdn.spinrilla.com/albums/217990/original/b11917568079a31c4697.JPEG?1589066250
@@ -66818,6 +66840,139 @@ var $$IMU_EXPORT$$;
 					}
 				} else {
 					return page_nullobj || baseobj;
+				}
+			}
+		}
+
+		if (domain_nowww === "jacquieetmicheltv.net" ||
+			domain_nowww === "jacquieetmicheltv2.net" ||
+			domain_nowww === "jacquieetmichelelite.com" ||
+			domain_nowww === "desinhibition.com" ||
+			domain_nowww === "lavideodujourjetm.net" ||
+			domain_nowww === "tonpornodujour.com" ||
+			// https://www.tyjam.com/en/videos/64-its-time-for-the-double-penetration-for-claire-de-lune-x.html
+			domain_nowww === "tyjam.com" ||
+			domain_nowww === "colmax.com" ||
+			domain_nowww === "hotvideo.fr" ||
+			domain_nowww === "pornovoisines.com") {
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:([a-z]{2})\/+)?(?:(?:videos\/+show|film-porno(?:\/+elite)?)\/+([0-9]+)(?:\/+[^/]*)|videos\/+([0-9]+)(?:-[^/]+)?)(?:[?#].*)?$/);
+			if (match) {
+				var lang = match[1] || null;
+				id = match[2] || match[3];
+
+				var basedomain = domain_nosub;
+
+				var query_jacquieetmichel_json = function(jsonurl, cb) {
+					var id = jsonurl.replace(/.*\/player\/([0-9a-f]{10,})\/\?.*/, "$1");
+					if (id === jsonurl) {
+						console_log("Unsupported URL", jsonurl);
+						return cb(null);
+					}
+
+					api_query(basedomain + "_json:" + id, {
+						url: jsonurl,
+						headers: {
+							Accept: "*/*",
+							Origin: "https://www." + domain_nosub,
+							Referer: "https://www." + domain_nosub + "/"
+						},
+						json: true
+					}, cb, function(done, resp, cache_key) {
+						var baseobj = {
+							headers: {
+								Referer: "https://www." + domain_nosub + "/"
+							}
+						};
+
+						var urls = [];
+
+						if (resp.sources.dash) {
+							urls.push({
+								url: resp.sources.dash,
+								video: "dash"
+							});
+						}
+
+						if (resp.sources.hls) {
+							urls.push({
+								url: resp.sources.hls,
+								video: "hls"
+							});
+						}
+
+						if (resp.sources.mp4) {
+							resp.sources.mp4.sort(function(a, b) {
+								return parseInt(b.label) - parseInt(a.label);
+							});
+
+							for (var i = 0; i < resp.sources.mp4.length; i++) {
+								var ourlink = resp.sources.mp4[i];
+
+								if (ourlink.file) {
+									urls.push({
+										url: ourlink.file,
+										video: true
+									});
+								}
+							}
+						}
+
+						return done(fillobj_urls(urls, baseobj), 60*60);
+					});
+				};
+
+				var query_jacquieetmichel = function(id, cb) {
+					var langurl = "";
+					if (lang)
+						langurl = lang + "/";
+
+					if (domain_nosub === "tyjam.com" || domain_nosub === "colmax.com")
+						langurl += "videos/";
+
+					api_query(basedomain + ":" + id, {
+						url: " https://www." + domain_nosub + "/" + langurl + "api/video/" + id + "/getplayerurl/",
+						headers: {
+							Referer: "https://www." + domain_nosub + "/",
+							"Accept": "application/json, text/javascript, */*; q=0.01",
+							"x-requested-with": "XMLHttpRequest"
+						},
+						json: true
+					}, cb, function(done, resp, cache_key) {
+						if (!resp.video_settings_url || !resp.video_settings_url.match(/^https?:\/\//)) {
+							console_error(cache_key, "Unable to find video url in", resp);
+							return done(null, false);
+						}
+
+						query_jacquieetmichel_json(resp.video_settings_url, function(data) {
+							if (!data)
+								return done(null, false);
+
+							done(data, 60*60);
+						});
+					});
+				};
+
+				page_nullobj = {
+					url: src,
+					is_pagelink: true
+				};
+
+				if (options.do_request && options.cb) {
+					query_jacquieetmichel(id, function(urls) {
+						if (!urls) {
+							return options.cb(page_nullobj);
+						} else {
+							urls.push(page_nullobj);
+
+							return options.cb(urls);
+						}
+					});
+
+					return {
+						waiting: true
+					};
+				} else {
+					return page_nullobj;
 				}
 			}
 		}
@@ -72947,7 +73102,7 @@ var $$IMU_EXPORT$$;
 								hls.loadSource(src);
 								hls.attachMedia(video);
 								hls.on(Hls.Events.MANIFEST_PARSED, function() {
-									console_log(hls.levels);
+									//console_log(hls.levels);
 									var maxlevel = -1;
 									var maxbitrate = -1;
 									for (var i = 0; i < hls.levels.length; i++) {
