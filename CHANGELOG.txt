@@ -1,3 +1,28 @@
+0.13.14
+
+New features:
+
+ * Option to use webextension downloads to force using the save as dialog (#372, thanks to Pax Romana on discord for the idea)
+ * Options to control maximum width/height for the initial popup size (#208)
+ * Support for ~100 new websites, including Streamable (using ~20 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including Wordpress, YouTube)
+ * Load time is decreased
+ * Performance improvements for options page
+ * Support for `pointer-events: none` is disabled by default, due to how buggy and cpu-intensive it can occasionally be
+ * HLS will automatically play the largest size available
+
+Bugfixes:
+
+ * Websites that override String.prototype.charAt will no longer fail for the userscript (extension is unaffected)
+ * When using uBlock Origin, some pages that would continually show the waiting cursor even after the popup had opened are now fixed for the userscript (extension is unaffected)
+ * Importing settings will no longer require reloading the page in order to view the new settings
+ * 'Close when leaving Popup/Both' now works for video elements as well
+
+---
+
 0.13.13
 
 New features:
