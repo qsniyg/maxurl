@@ -11834,6 +11834,9 @@ var $$IMU_EXPORT$$;
 					"mq"
 				];
 
+				// an = animated, replace to vi for this to work
+				src = src.replace(/\/an(_webp)?\/+/, "/vi$1/");
+
 				var urls = []
 				for (var i = 0; i < sizes.length; i++) {
 					var match = src.match(regex);
