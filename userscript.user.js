@@ -7355,7 +7355,31 @@ var $$IMU_EXPORT$$;
 			var cache_key = "graphql_ig_post:" + code;
 
 			api_cache.fetch(cache_key, function(data) {
-				if (data.__typename === "GraphVideo" && !data.video_url && do_request) {
+				var needs_ig_query = false;
+
+				if (data.__typename === "GraphVideo" && !data.video_url) {
+					needs_ig_query = true;
+				} else if (data.__typename === "GraphSidecar") {
+					if (data.edge_sidecar_to_children && data.edge_sidecar_to_children.edges && data.edge_sidecar_to_children.edges.length > 0) {
+						var edges = data.edge_sidecar_to_children.edges;
+
+						for (var i = 0; i < edges.length; i++) {
+							if (!edges[i] || !edges[i].node) {
+								needs_ig_query = true;
+								break;
+							}
+
+							if (edges[i].node.__typename === "GraphVideo" && !edges[i].node.video_url) {
+								needs_ig_query = true;
+								break;
+							}
+						}
+					} else {
+						needs_ig_query = true;
+					}
+				}
+
+				if (needs_ig_query && do_request) {
 					request_query_ig_post(url, function(newdata) {
 						if (newdata) {
 							api_cache.set(cache_key, newdata);
@@ -36605,7 +36629,9 @@ var $$IMU_EXPORT$$;
 			domain_nosub === "pornid.xxx" ||
 			// https://www.mypornhere.com/contents/videos_screenshots/122000/122813/320x180/1.jpg
 			domain_nosub === "mypornhere.com" ||
-			(domain_nosub === "b-cdn.net" && /^(18yos|amateurporn(?:girlfriends|tape|vidz)|analcuties|asian(?:cuties|teens)|boombj|brosislove|cuteasians|d1ck|d1rty|extremejapanese|faphard(?:er)?|fi1thy|f1ix|fl1rt|freexxxhardcore|hard(?:(?:core)?teens|family|jap|milfs|moms)|hotmature|japteens|k1nk|milfz|porn(?:ouploads|n|r[yz])|roleplayers|taboofamily|teenanal|twistednuts|wanktank)\./.test(domain)) ||
+			// https://static.pornhat.com/contents/videos_screenshots/24000/24278/640x360/1.jpg1
+			domain_nosub === "pornhat.com" ||
+			(domain_nosub === "b-cdn.net" && /^(18yos|amateurporn(?:girlfriends|tape|vidz)|analcuties|asian(?:cuties|teens)|boombj|brosislove|cuteasians|d1ck|d1rty|extremejapanese|faphard(?:er)?|fi1thy|f1ix|fl1rt|freexxxhardcore|hard(?:(?:core)?teens|family|jap|milfs|moms)|hotmature|japteens|k1nk|milfz|porn(?:ouploads|n|r[yz])|roleplayers|taboofamily|teenanal|twistednuts|wanktank|extremeteens)\./.test(domain)) ||
 			domain_nosub === "hardmoms.co" ||
 			domain_nosub === "d1ck.co" ||
 			domain_nosub === "twistednuts.com" ||
@@ -36644,6 +36670,7 @@ var $$IMU_EXPORT$$;
 			domain_nosub === "taboofamily.co" ||
 			domain_nosub === "teenanal.co" ||
 			domain_nosub === "wanktank.co" ||
+			domain_nosub === "extremeteens.co" ||
 			// different system
 			// https://static2.tubepornclassic.com/contents/videos_screenshots/1051000/1051741/240x180/1.jpg
 			//domain_nosub === "tubepornclassic.com" ||
@@ -36692,7 +36719,7 @@ var $$IMU_EXPORT$$;
 			if (match) {
 				id = match[1];
 			} else {
-				match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:(?:videos?|embed)\/+(?:([0-9]+)(?:\/+[^/]+)?|([^/]+))\/*)?(?:[?#].*)?$/);
+				match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:(?:v(?:ideos?)?|embed)\/+(?:([0-9]+)(?:\/+[^/]+)?|([^/]+))\/*)?(?:[?#].*)?$/);
 				if (!match && domain_nowww === "pornid.xxx") {
 					match = src.match(/^[a-z]+:\/\/[^/]+\/+([^/.]{20,})\.html(?:[?#].*)?$/);
 				}
@@ -36812,7 +36839,8 @@ var $$IMU_EXPORT$$;
 					"roleplayers": "roleplayers.co",
 					"taboofamily": "taboofamily.co",
 					"teenanal": "teenanal.co",
-					"wanktank": "wanktank.co"
+					"wanktank": "wanktank.co",
+					"extremeteens": "extremeteens.co"
 				};
 				var bcdn_subdomain = domain.replace(/\.b-cdn\.net$/, "");
 				if (bcdn_subdomain in bcdn_basedomain_map) {
@@ -36822,6 +36850,8 @@ var $$IMU_EXPORT$$;
 				}
 			} else if (domain_nosub === "pornid.xxx") {
 				can_detect_videourl = false;
+			} else if (domain_nosub === "pornhat.com") {
+				videos_component = "video";
 			}
 
 			var detected_url = null;
@@ -37571,7 +37601,7 @@ var $$IMU_EXPORT$$;
 			// https://www.zceleb.com/contents/albums/main/235x350/0/73/4807.jpg
 			//   https://zceleb.com/contents/albums/main/5000x5000/0/73/4807.jpg
 			//   https://www.zceleb.com/contents/albums/sources/0/73/4807.jpg
-			if (domain_nosub !== "thebestshemalevideos.com") {
+			if (domain_nosub !== "thebestshemalevideos.com" && domain_nosub !== "smutr.com") {
 				newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+remote_control\.php\?(?:.*?&)?file=([^&]*).*?$/, "$1");
 				if (newsrc !== src)
 					return urljoin(src, decodeURIComponent(newsrc), true);
@@ -65602,6 +65632,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nosub === "hclips.com" ||
+			domain_nosub === "voyeurhit.com" ||
 			domain_nowww === "txxx.com" ||
 			domain_nosub === "videotxxx.com") {
 			var match = src.match(/^[a-z]+:\/\/[^/]+\/+videos\/+([0-9]+)\//);
@@ -66698,16 +66729,43 @@ var $$IMU_EXPORT$$;
 
 		if (domain === "video.nudevista.com") {
 			// https://video.nudevista.com/video/MTMxODIwNDAwMi0zLS8tMC1odHRwczovL2YxaXguY29tL3ZpZGVvcy8xMTM0OTkvdmVyeSN6b29tI2luI2FzcyNmdWNrI2FuYWwjc2V4I3Zlcnkjc21vb3RoI2FzcyNhbmQjbmljZSNwb3Yv-very-zoom-in-ass-fuck-anal-sex-very-smooth-ass-and-nice-pov.html
-			match = src.match(/^[a-z]+:\/\/[^/]+\/+video\/+(?:[^/]+\/+)?([^-/.]{30,})/);
+			// https://video.nudevista.com/video/MTE0OTk0NzIyLTE1LS8tMC1odHRwczovL3d3dy50dWJlOC5jb20vYW1hdGV1ci9zZXgjaW4jYW4jZWxldmF0b3IvMjM0NzI2MS8/dXRtX3NvdXJjZT1udWRldmlzdGEmdXRtX21lZGl1bT1QVCZ1dG1fY2FtcGFpZ249bnVkZXZpc3Rh-sex-in-an-elevator.html
+			// https://video.nudevista.com/video/NzMwOTM4NjgyLTE1LS8/cT1hc2lhbiZzPXQtMC1odHRwOi8vamFwYW4jd2hvcmVzLmNvbS92aWRlb3MvMzA0NjM3L3QjcCNmdWxsI3BwcGQjMzM3I3NpbmNlI2Fic29sdXRlbHkjd2FzI2EjYmlnI3RpdHMjYW5kI3RvI3RoZSNvdGhlciNwYXJ0eSN0aGF0I3lvdSNkbyNub3QjZGFiI2hhLw==-tp-full-pppd-since-absolutely-was-a-big-tits-and-to-the-other-party-that-you-do-not-dab-ha.html
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+video\/+([^-/.]{10,})(?:\/+([^-/.]{20,}))?(?:-[^/]+)\./);
 			if (match) {
 				try {
+					var strings = [];
+
 					var decoded = base64_decode(match[1]);
-					newsrc = decoded.replace(/^.*?(https?:\/\/)/, "$1");
-					if (newsrc !== decoded)
+					strings.push(decoded);
+
+					if (match[2]) {
+						var decoded2 = base64_decode(match[2]);
+						strings.push(decoded2);
+					}
+
+					var found = false;
+					for (var i = 0; i < strings.length; i++) {
+						strings[i] = strings[i].replace(/#/g, "-");
+						var newsrc = strings[i].replace(/^.*?(https?:\/\/)/, "$1");
+						if (newsrc !== strings[i]) {
+							found = true;
+							strings[i] = newsrc;
+
+							if (i > 0) {
+								strings.splice(0, i);
+							}
+
+							break;
+						}
+					}
+
+					if (found && strings.length > 0) {
 						return {
-							url: newsrc.replace(/#/g, "-"),
+							url: strings.join("?"),
 							is_pagelink: true
 						};
+					}
 				} catch (e) {
 					console_error(e);
 				}
@@ -67013,6 +67071,22 @@ var $$IMU_EXPORT$$;
 			// https://fundraise.globalbrigades.org/media_gallery/thumb/320/0/CAM00348.jpg
 			//   https://fundraise.globalbrigades.org/media_gallery/thumb/0/0/CAM00348.jpg
 			return src.replace(/(\/media_gallery\/+thumb\/+)[0-9]+\/+[0-9]+\/+/, "$10/0/");
+		}
+
+		if (domain === "media.nonktube.com") {
+			// https://media.nonktube.com/videos/tmb_2/109598/thumb.jpg
+			match = src.match(/\/videos\/+tmb_[0-9]+\/+([0-9]+)\/+thumb\./);
+			if (match) {
+				id = match[1];
+
+				return {
+					url: "https://cdn.nonktube.com/" + id + ".mp4",
+					headers: {
+						Referer: "https://www.nonktube.com/"
+					},
+					video: true
+				};
+			}
 		}
 
 
