@@ -69553,6 +69553,12 @@ var $$IMU_EXPORT$$;
 					}
 				}
 
+				if (options.filter && !options.filter(obj.url)) {
+					console_log("Blacklisted:", obj.url);
+					remove_obj();
+					continue;
+				}
+
 				if (options.exclude_videos && obj.video) {
 					remove_obj();
 					continue;
@@ -69711,20 +69717,6 @@ var $$IMU_EXPORT$$;
 							endhref.push(deepcopy(pastobjs[i]));
 					}
 				}
-
-				if (options.filter) {
-					var new_endhref = [];
-					for (var i = 0; i < endhref.length; i++) {
-						if (endhref[i].url && !options.filter(endhref[i].url)) {
-							console_log("Blacklisted: " + endhref[i].url);
-							continue;
-						} else {
-							new_endhref.push(endhref[i]);
-						}
-					}
-
-					endhref = new_endhref;
-				}
 			} else {
 				if (_nir_debug_)
 					console_log("finalize (newhref)", deepcopy(newhref));
@@ -69772,6 +69764,9 @@ var $$IMU_EXPORT$$;
 					} else if (is_array(endhref) && endhref[0] && !endhref[0].url) {
 						endhref[0].url = blankurl;
 					}
+
+					if (_nir_debug_)
+						console_log("do_end (endhref, pasthrefs, pastobjs)", endhref, pasthrefs, pastobjs);
 
 					orig_cb(endhref);
 				};
