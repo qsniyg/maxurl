@@ -4889,6 +4889,48 @@ var $$IMU_EXPORT$$;
 		});
 	};
 
+	var real_website_query = function(options) {
+		var domain = options.url.replace(/^[a-z]+:\/\/([^/]+)\/+/);
+		var domain_nosub = get_domain_nosub(domain);
+
+		if (!options.cache_key) {
+			options.cache_key = domain_nosub;
+		}
+
+		var website_match = options.url.match(options.website_regex);
+		if (!website_match)
+			return null;
+
+		var id = website_match[1];
+
+		var page_nullobj = {
+			url: options.url,
+			is_pagelink: true
+		};
+
+		if (!options.do_request || !options.cb) {
+			return page_nullobj;
+		}
+
+		real_api_query(options.api_cache, options.do_request, options.cache_key + ":" + id, options.query_for_id(id), function(data) {
+			if (!data) {
+				return options.cb(page_nullobj);
+			} else {
+				if (!is_array(data)) {
+					data = [data];
+				}
+
+				data.push(page_nullobj);
+
+				return options.cb(data);
+			}
+		}, options.process);
+
+		return {
+			waiting: true
+		};
+	};
+
 	// temporary hack for Instagram returning urls with %00
 	// thanks to fireattack on discord for reporting
 	var is_invalid_url = function(url) {
@@ -8465,6 +8507,19 @@ var $$IMU_EXPORT$$;
 
 		var api_query = function(key, request, cb, process) {
 			return real_api_query(api_cache, options.do_request, key, request, cb, process);
+		};
+
+		var website_query = function(_options) {
+			_options.do_request = options.do_request;
+			_options.api_cache = api_cache;
+
+			if (!_options.cb)
+				_options.cb = options.cb;
+
+			if (!_options.url)
+				_options.url = src;
+
+			return real_website_query(_options);
 		};
 
 		var newsrc, i, id, size, origsize, regex, match;
@@ -36631,6 +36686,8 @@ var $$IMU_EXPORT$$;
 			domain_nosub === "mypornhere.com" ||
 			// https://static.pornhat.com/contents/videos_screenshots/24000/24278/640x360/1.jpg1
 			domain_nosub === "pornhat.com" ||
+			// https://screenshots.anysex.com/videos_screenshots/360000/360936/170x128/3.jpg
+			domain_nosub === "anysex.com" ||
 			(domain_nosub === "b-cdn.net" && /^(18yos|amateurporn(?:girlfriends|tape|vidz)|analcuties|asian(?:cuties|teens)|boombj|brosislove|cuteasians|d1ck|d1rty|extremejapanese|faphard(?:er)?|fi1thy|f1ix|fl1rt|freexxxhardcore|hard(?:(?:core)?teens|family|jap|milfs|moms)|hotmature|japteens|k1nk|milfz|porn(?:ouploads|n|r[yz])|roleplayers|taboofamily|teenanal|twistednuts|wanktank|extremeteens)\./.test(domain)) ||
 			domain_nosub === "hardmoms.co" ||
 			domain_nosub === "d1ck.co" ||
@@ -36852,6 +36909,9 @@ var $$IMU_EXPORT$$;
 				can_detect_videourl = false;
 			} else if (domain_nosub === "pornhat.com") {
 				videos_component = "video";
+			} else if (domain_nosub === "anysex.com") {
+				videos_component = "";
+				a_component = "";
 			}
 
 			var detected_url = null;
@@ -37217,6 +37277,17 @@ var $$IMU_EXPORT$$;
 					return decode_entities(match[1]);
 				};
 
+				// anysex.com
+				var find_plainvid = function(resp) {
+					var match = resp.responseText.match(/<div id="kt_player"[^>]*>\s*<video id="main_video"[^>]+>\s*<source\s[^>]*src="([^"]+)"/);
+					if (!match) {
+						console_warn(cache_key, "Unable to find plain video for", resp);
+						return null;
+					}
+
+					return [decode_entities(match[1])];
+				}
+
 				api_cache.fetch(cache_key, function(obj) {
 					if (!obj)
 						return options.cb(page_nullobj);
@@ -37269,7 +37340,7 @@ var $$IMU_EXPORT$$;
 									return done(parse_flashvars(dataobj), 60*60);
 								}
 
-								var obj = find_itsporn_video(resp);
+								var obj = find_itsporn_video(resp) || find_plainvid(resp);
 								if (obj) {
 									return done(fillobj_urls(obj, baseobj), 60*60);
 								}
@@ -67087,6 +67158,90 @@ var $$IMU_EXPORT$$;
 					video: true
 				};
 			}
+		}
+
+		if (domain === "snusercontent.global.ssl.fastly.net") {
+			// https://snusercontent.global.ssl.fastly.net/member-headshot-square/63/1800363_9211532.jpg
+			//   https://snusercontent.global.ssl.fastly.net/member-headshot-square-large/63/1800363_9211532.jpg
+			//   https://snusercontent.global.ssl.fastly.net/member-profile-full/63/1800363_9211532.jpg
+			// https://snusercontent.global.ssl.fastly.net/member-profile-featured/63/1800363_10944747.jpg
+			//   https://snusercontent.global.ssl.fastly.net/member-profile-full/63/1800363_10944747.jpg
+			return src.replace(/(:\/\/[^/]+\/+)(?:member-(?:headshot-square(?:-large)?|profile-featured))\/+/, "$1member-profile-full/");
+		}
+
+		if (domain_nowww === "gotporn.com") {
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+gvf\/+[^-_/.]{10,}\.([^-/.]{50,})\.$/);
+			if (match) {
+				try {
+					var splitted = match[1].split("_");
+					for (var i = 0; i < splitted.length; i++) {
+						splitted[i] = base64_decode(splitted[i]);
+					}
+
+					var jsonstr = splitted.join("?");
+					var json = JSON_parse(jsonstr);
+					return {
+						url: json.url,
+						headers: {
+							Referer: "https://www.gotporn.com/"
+						},
+						video: true
+					};
+				} catch (e) {
+					console_error(e);
+				}
+			}
+		}
+
+		if (domain_nosub === "gotporn.com" && /^cdn[0-9]*-pic-cf\./.test(domain)) {
+			// https://cdn2-pic-cf.gotporn.com/2018/09/24/9922426.1.240.180.jpg
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}([0-9]+)\./);
+			if (match) {
+				return {
+					url: "https://www.gotporn.com/a/video-" + match[1],
+					is_pagelink: true
+				};
+			}
+		}
+
+		if (domain_nowww === "gotporn.com") {
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+[^/]+\/+video-([0-9]+)(?:\/+[^/]*)?(?:[?#].*)?$/,
+				query_for_id: function(id) {
+					return {
+						url: "https://www.gotporn.com/a/video-" + id
+					}
+				},
+				process: function(done, resp, cache_key) {
+					var match = resp.responseText.match(/<div class="video-object-container">\s*<video.*?>\s<source\s*src="(https?:\/\/www\.gotporn\.com\/+gvf\/+[^"]+)"/);
+					if (!match) {
+						console_error(cache_key, "Unable to find match for", resp);
+						return done(null, false);
+					}
+
+					var baseobj = {
+						headers: {
+							Referer: "https://www.gotporn.com/"
+						},
+						extra: {}
+					};
+
+					var canonical = resp.responseText.match(/<link rel="canonical" href="([^"]+)">/);
+					if (canonical) {
+						baseobj.extra.page = decode_entities(canonical[1]);
+						baseobj.headers.Referer = baseobj.extra.page;
+					}
+
+					var url = {
+						url: decode_entities(match[1]),
+						video: true
+					};
+
+					return done(fillobj_urls([url], baseobj), 60*60);
+				}
+			});
+			if (newsrc)
+				return newsrc;
 		}
 
 
