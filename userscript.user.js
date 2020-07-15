@@ -45859,18 +45859,45 @@ var $$IMU_EXPORT$$;
 			var page = "https://500px.com/photo/" + id + "/";
 			if (id !== src) {
 				// TODO: add x-csrf-token as a header, needed when logged in. It comes from the cookie, needs GM_Cookie support
-				options.do_request({
-					url: "https://api.500px.com/v1/photos?image_size%5B%5D=1&image_size%5B%5D=2&image_size%5B%5D=32&image_size%5B%5D=31&image_size%5B%5D=33&image_size%5B%5D=34&image_size%5B%5D=35&image_size%5B%5D=36&image_size%5B%5D=2048&image_size%5B%5D=4&image_size%5B%5D=14&expanded_user_info=true&include_tags=true&include_geo=true&include_equipment_info=true&vendor_photos=true&include_licensing=true&include_releases=true&liked_by=1&following_sample=100&ids=" + id,
-					method: "GET",
-					onload: function(resp) {
-						if (resp.readyState !== 4)
-							return;
+				var query_500px_api = function(url, cb) {
+					var query_obj = {
+						url: url,
+						json: true
+					};
 
-						if (resp.status !== 200) {
-							console_error(resp);
-							return options.cb(null);
-						}
+					var do_query = function() {
+						api_query("500px_api:" + url, query_obj, cb, function(done, resp, cache_key) {
+							if (!resp) {
+								return done(null, false);
+							} else {
+								return done(resp, 60*60);
+							}
+						});
+					};
 
+					if (options.get_cookies) {
+						options.get_cookies(url, function(cookies) {
+							if (cookies) {
+								var cookies_dict = headers_list_to_dict(cookies);
+								if (cookies_dict && cookies_dict["x-csrf-token"]) {
+									query_obj.headers = {
+										"x-csrf-token": cookies_dict["x-csrf-token"]
+									};
+								}
+							}
+
+							do_query();
+						});
+					} else {
+						do_query();
+					}
+				};
+
+
+				var query_500px_photo = function(id, cb) {
+					var query_url =
+						"https://api.500px.com/v1/photos?image_size%5B%5D=1&image_size%5B%5D=2&image_size%5B%5D=32&image_size%5B%5D=31&image_size%5B%5D=33&image_size%5B%5D=34&image_size%5B%5D=35&image_size%5B%5D=36&image_size%5B%5D=2048&image_size%5B%5D=4&image_size%5B%5D=14&expanded_user_info=true&include_tags=true&include_geo=true&include_equipment_info=true&vendor_photos=true&include_licensing=true&include_releases=true&liked_by=1&following_sample=100&ids=" + id
+					query_500px_api(query_url, function(data) {
 						var obj = {
 							url: src,
 							extra: {
@@ -45892,7 +45919,6 @@ var $$IMU_EXPORT$$;
 						};
 
 						try {
-							var data = JSON_parse(resp.responseText);
 							var images = data.photos[id].images;
 							page = urljoin(page, data.photos[id].url, true);
 							obj.extra.page = page;
@@ -45911,12 +45937,14 @@ var $$IMU_EXPORT$$;
 								obj.url = largesturl;
 						} catch (e) {
 							console_error(e);
-							return options.cb(null);
+							return cb(null);
 						}
 
-						return options.cb(obj);
-					}
-				});
+						return cb(obj);
+					});
+				};
+
+				query_500px_photo(id, options.cb);
 
 				return {
 					waiting: true
