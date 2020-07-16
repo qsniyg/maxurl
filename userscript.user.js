@@ -928,7 +928,8 @@ var $$IMU_EXPORT$$;
 		// https://www.dpreview.com/ overrides URL
 		native_blob, native_URL,
 		our_EventTarget, our_addEventListener, our_removeEventListener,
-		string_fromcharcode, string_charat;
+		string_fromcharcode, string_charat,
+		document_createElement;
 
 	if (is_node) {
 		base64_decode = function(a) {
@@ -959,7 +960,12 @@ var $$IMU_EXPORT$$;
 				if (element === window && element.unsafeWindow)
 					element = element.unsafeWindow;
 
-				EventTarget_addEventListener.call(element, event, handler, options);
+				// i??.fastpic.ru: needles are 'click' and 'popMagic'
+				var new_handler = function(e) {
+					return handler(e);
+				};
+
+				EventTarget_addEventListener.call(element, event, new_handler, options);
 			};
 
 			our_removeEventListener = function(element, event, handler, options) {
@@ -967,6 +973,20 @@ var $$IMU_EXPORT$$;
 			};
 		};
 		get_orig_eventtarget();
+
+		// i??.fastpic.ru with violentmonkey
+		var get_orig_createelement = function() {
+			var HTMLDocument_createElement;
+
+			if (is_interactive) {
+				HTMLDocument_createElement = HTMLDocument.prototype.createElement;
+			}
+
+			document_createElement = function(element) {
+				return HTMLDocument_createElement.call(document, element);
+			};
+		};
+		get_orig_createelement();
 
 		var sanity_test = function(orig, correct, check, native_func) {
 			if (!orig)
@@ -1238,7 +1258,7 @@ var $$IMU_EXPORT$$;
 		var native_functions = {};
 		var get_native_functions = function(functions) {
 			// thanks to tophf here: https://github.com/violentmonkey/violentmonkey/issues/944
-			var iframe = document.createElement("iframe");
+			var iframe = document_createElement("iframe");
 			iframe.srcdoc = ""; //"javascript:0"
 			document.documentElement.appendChild(iframe);
 			var frame_window = iframe.contentWindow;
@@ -5059,7 +5079,7 @@ var $$IMU_EXPORT$$;
 		if (x === undefined || x === null)
 			return x;
 
-		var a = document.createElement(a);
+		var a = document_createElement(a);
 		a.href = x;
 		return a.href;
 	};
@@ -5927,7 +5947,7 @@ var $$IMU_EXPORT$$;
 			return new Function(fdata + ";return lib_export;")();
 		} else {
 			// doesn't work unfortunately
-			var frame = document.createElement('iframe');
+			var frame = document_createElement('iframe');
 			frame.srcdoc = ""; //"javascript:0"
 			document.body.appendChild(frame);
 			var result = frame.contentWindow.Function(fdata + ";return lib_export;")();
@@ -47040,6 +47060,12 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/free\/+[^/]+\/+)thumbs\/+([0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1pics/$2");
 		}
 
+		if (domain_nowww === "candidsplash.com") {
+			// http://www.candidsplash.com/candid-galleries-04/shinygf-1/thumbs/06.jpg
+			//   http://www.candidsplash.com/candid-galleries-04/shinygf-1/pics/06.jpg
+			return src.replace(/(\/candid-galleries-[0-9]+\/+[^/]+\/+)thumbs\/+([0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1pics/$2");
+		}
+
 		if (domain === "image.istyle24.com") {
 			// http://image.istyle24.com/upload/ProductImage//0000004552/20190325/12859891_M.jpg
 			//   http://image.istyle24.com/upload/ProductImage//0000004552/20190325/12859891_L.jpg
@@ -67272,6 +67298,31 @@ var $$IMU_EXPORT$$;
 				return newsrc;
 		}
 
+		if (domain === "static.freedownloadmanager.org") {
+			// programid_screenshotid_resolutionid
+			// https://static.freedownloadmanager.org/s/3123/3123837_3_2.png
+			//   https://static.freedownloadmanager.org/s/3123/3123837_3.png
+			// https://static.freedownloadmanager.org/s/3123/3123837_2_2.png
+			//   https://static.freedownloadmanager.org/s/3123/3123837_2.jpg
+			obj = {
+				url: src,
+				bad_if: [{
+					headers: {
+						"last-modified": "Fri, 24 Aug 2018 10:15:51 GMT",
+						"content-length": "5743",
+						"content-type": "image/jpeg"
+					}
+				}]
+			};
+
+			newsrc = src.replace(/(\/s\/+[0-9]+\/+[0-9]+_[0-9]+)_[0-9](\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+			if (newsrc !== src) {
+				return fillobj_urls(add_extensions(newsrc), obj);
+			} else {
+				return obj;
+			}
+		}
+
 
 
 
@@ -68812,13 +68863,13 @@ var $$IMU_EXPORT$$;
 
 
 		var new_image = function(src) {
-			var img = document.createElement("img");
+			var img = document_createElement("img");
 			img.src = src;
 			return img;
 		};
 
 		var new_video = function(src) {
-			var video = document.createElement("video");
+			var video = document_createElement("video");
 			video.src = src;
 			return video;
 		};
@@ -68903,7 +68954,7 @@ var $$IMU_EXPORT$$;
 									if (options.exclude_videos && (ext === ".mp4" || ext === ".webm"))
 										ext = ".jpg";
 
-									var newel = document.createElement("img");
+									var newel = document_createElement("img");
 									newel.src = "https://i.imgur.com/" + images[image_id].hash + ext;
 									return newel;
 								}
@@ -70243,7 +70294,7 @@ var $$IMU_EXPORT$$;
 
 	var infobox_timer = null;
 	var show_image_infobox = function(text) {
-		var div = document.createElement("div");
+		var div = document_createElement("div");
 		div.style.backgroundColor = "#fffabb";
 		div.style.position = "absolute";
 		div.style.top = "0px";
@@ -70458,7 +70509,7 @@ var $$IMU_EXPORT$$;
 				var infobox_text = _("Mouseover popup (%%1) is needed to display the original version", trigger_options_link) + " (" + _(reason) + ")";
 
 				if (settings.redirect_infobox_url) {
-					var link = document.createElement("a");
+					var link = document_createElement("a");
 					link.href = url;
 					link.innerText = truncate_with_ellipsis(url, 80);
 					link.setAttribute("target", "_blank");
@@ -70466,7 +70517,11 @@ var $$IMU_EXPORT$$;
 					infobox_text += "<br />" + link.outerHTML;
 				}
 
-				show_image_infobox(infobox_text);
+				try {
+					show_image_infobox(infobox_text);
+				} catch (e) {
+					console_error(e);
+				}
 			};
 
 			if (!_nir_debug_ || !_nir_debug_.no_request) {
@@ -71151,7 +71206,7 @@ var $$IMU_EXPORT$$;
 
 		var saved_el = document.getElementById("saved");
 		if (!saved_el) {
-			saved_el = document.createElement("div");
+			saved_el = document_createElement("div");
 			saved_el.style.visibility = "hidden";
 			saved_el.id = "saved";
 			saved_el.classList.add("topsaved");
@@ -71179,7 +71234,7 @@ var $$IMU_EXPORT$$;
 		var saved_timeout = null;
 
 		var create_update_available = function() {
-			var update_available_el = document.createElement("div");
+			var update_available_el = document_createElement("div");
 			update_available_el.classList.add("update-available");
 			update_available_el.innerHTML = "Update available: v" + current_version + " -&gt; ";
 
@@ -71198,24 +71253,24 @@ var $$IMU_EXPORT$$;
 			options_el.appendChild(create_update_available());
 		}
 
-		var topbtns_holder = document.createElement("div");
+		var topbtns_holder = document_createElement("div");
 		topbtns_holder.id = "topbtns";
 		options_el.appendChild(topbtns_holder);
 
-		var importexport_ocontainer = document.createElement("div");
+		var importexport_ocontainer = document_createElement("div");
 		importexport_ocontainer.id = "importexport";
 		importexport_ocontainer.classList.add("center-outer");
 		importexport_ocontainer.style.display = "none";
 		options_el.appendChild(importexport_ocontainer);
 
-		var importexport_container = document.createElement("div");
+		var importexport_container = document_createElement("div");
 		importexport_container.classList.add("center-inner");
 		importexport_ocontainer.appendChild(importexport_container);
 
-		var importexport_text = document.createElement("textarea");
+		var importexport_text = document_createElement("textarea");
 		importexport_container.appendChild(importexport_text);
 
-		var importexport_btn = document.createElement("button");
+		var importexport_btn = document_createElement("button");
 		importexport_btn.innerText = _("Import");
 		importexport_btn.onclick = function() {
 			var value;
@@ -71299,7 +71354,7 @@ var $$IMU_EXPORT$$;
 
 		var importexport_state = null;
 
-		var import_btn = document.createElement("button");
+		var import_btn = document_createElement("button");
 		import_btn.id = "importbtn";
 		import_btn.innerText = _("Import");
 		import_btn.title = _("Import settings");
@@ -71313,7 +71368,7 @@ var $$IMU_EXPORT$$;
 		};
 		topbtns_holder.appendChild(import_btn);
 
-		var export_btn = document.createElement("button");
+		var export_btn = document_createElement("button");
 		export_btn.id = "exportbtn";
 		export_btn.innerText = _("Export");
 		export_btn.title = _("Export settings");
@@ -71504,7 +71559,7 @@ var $$IMU_EXPORT$$;
 			if (!goodbad)
 				return;
 
-			var requires_p = document.createElement("p");
+			var requires_p = document_createElement("p");
 			requires_p.innerText = _("Requires:");
 			div.appendChild(requires_p);
 
@@ -71515,7 +71570,7 @@ var $$IMU_EXPORT$$;
 				if (array[i].length === 0)
 					continue;
 
-				var ul = document.createElement("ul");
+				var ul = document_createElement("ul");
 
 				for (var j = 0; j < array[i].length; j++) {
 					var single_reason = array[i][j];
@@ -71537,7 +71592,7 @@ var $$IMU_EXPORT$$;
 					if (goodbad === "good")
 						equals = "!=";
 
-					var li = document.createElement("li");
+					var li = document_createElement("li");
 					li.innerText = option_name + " " + equals + " " + wanted_value;
 					ul.appendChild(li);
 				}
@@ -71550,7 +71605,7 @@ var $$IMU_EXPORT$$;
 				newels.push(els[i]);
 
 				// FIXME: this should be 'and' for disabled_if
-				var or_p = document.createElement("p");
+				var or_p = document_createElement("p");
 				or_p.innerText = _("Or:");
 
 				newels.push(or_p);
@@ -71671,9 +71726,9 @@ var $$IMU_EXPORT$$;
 					return;
 
 				if (current_tag === "`") {
-					current_el = document.createElement("code");
+					current_el = document_createElement("code");
 				} else {
-					current_el = document.createElement("span");
+					current_el = document_createElement("span");
 				}
 
 				current_el.innerText = current_text;
@@ -71709,7 +71764,7 @@ var $$IMU_EXPORT$$;
 
 		var tabscontainer;
 		if (settings.settings_tabs) {
-			tabscontainer = document.createElement("div");
+			tabscontainer = document_createElement("div");
 			tabscontainer.id = "tabs";
 			options_el.appendChild(tabscontainer);
 		}
@@ -71720,7 +71775,7 @@ var $$IMU_EXPORT$$;
 		for (var category in categories) {
 			var catname = _(categories[category]);
 
-			var div = document.createElement("div");
+			var div = document_createElement("div");
 			div.id = "cat_" + category;
 			div.classList.add("category");
 
@@ -71729,7 +71784,7 @@ var $$IMU_EXPORT$$;
 			if (settings.settings_tabs) {
 				div.classList.add("tabbed");
 
-				var tab = document.createElement("span");
+				var tab = document_createElement("span");
 				tab.classList.add("tab");
 				//tab.href = "#cat_" + category;
 				tab.id = "tab_cat_" + category;
@@ -71752,12 +71807,12 @@ var $$IMU_EXPORT$$;
 
 				tabscontainer.appendChild(tab);
 			} else {
-				var h2 = document.createElement("h2");
+				var h2 = document_createElement("h2");
 				h2.innerText = catname;
 				div.appendChild(h2);
 			}
 
-			var subdiv = document.createElement("div");
+			var subdiv = document_createElement("div");
 			subdiv.id = "subcat_" + category;
 			subdiv.classList.add("subcat");
 			subdiv.classList.add("frame");
@@ -71766,12 +71821,12 @@ var $$IMU_EXPORT$$;
 
 			if (category in subcategories) {
 				for (var subcat in subcategories[category]) {
-					var newsubdiv = document.createElement("div");
+					var newsubdiv = document_createElement("div");
 					newsubdiv.id = "subcat_" + subcat;
 					newsubdiv.classList.add("subcat");
 					newsubdiv.classList.add("frame");
 
-					var h3 = document.createElement("h3");
+					var h3 = document_createElement("h3");
 					h3.innerText = _(subcategories[category][subcat]);
 					newsubdiv.appendChild(h3);
 
@@ -71824,17 +71879,17 @@ var $$IMU_EXPORT$$;
 			if (settings.settings_tabs && meta.category !== current_options_tab)
 				return;
 
-			var option = document.createElement("div");
+			var option = document_createElement("div");
 			option.classList.add("option");
 			option.id = "option_" + setting;
 
-			var table = document.createElement("table");
+			var table = document_createElement("table");
 			table.classList.add("option-table");
 
-			var tr = document.createElement("tr");
+			var tr = document_createElement("tr");
 			table.appendChild(tr);
 
-			var name = document.createElement("strong");
+			var name = document_createElement("strong");
 			md_to_html(name, _(meta.name));
 
 			var description = _(meta.description);
@@ -71843,7 +71898,7 @@ var $$IMU_EXPORT$$;
 
 			name.title = description;
 
-			var name_td = document.createElement("td");
+			var name_td = document_createElement("td");
 			name_td.classList.add("name_td");
 			name_td.classList.add("name_td_va_middle");
 
@@ -71892,7 +71947,7 @@ var $$IMU_EXPORT$$;
 			name_td.appendChild(name);
 			tr.appendChild(name_td);
 
-			var value_td = document.createElement("td");
+			var value_td = document_createElement("td");
 			value_td.classList.add("value_td");
 
 			var type = "options";
@@ -71952,7 +72007,7 @@ var $$IMU_EXPORT$$;
 					if (group && group_type === "and")
 						name += "_" + group;
 
-					var input = document.createElement("input");
+					var input = document_createElement("input");
 					if (option_type === "or" && false)
 						input.setAttribute("type", "radio");
 					else if (option_type === "and" || true)
@@ -72043,7 +72098,7 @@ var $$IMU_EXPORT$$;
 
 					parent.appendChild(input);
 
-					var label = document.createElement("label");
+					var label = document_createElement("label");
 					label.setAttribute("for", id);
 
 					label_texts[id] = _(val.name);
@@ -72065,7 +72120,7 @@ var $$IMU_EXPORT$$;
 						if (!option_type1)
 							option_type1 = "or";
 
-						var sub = document.createElement("div");
+						var sub = document_createElement("div");
 						sub.classList.add("group");
 						sub.id = setting + op;
 						for (var op1 in option_list[op]) {
@@ -72078,22 +72133,22 @@ var $$IMU_EXPORT$$;
 					}
 				}
 			} else if (type === "textarea") {
-				var sub = document.createElement("table");
-				var sub_tr = document.createElement("tr");
-				var sub_ta_td = document.createElement("td");
+				var sub = document_createElement("table");
+				var sub_tr = document_createElement("tr");
+				var sub_ta_td = document_createElement("td");
 				sub_ta_td.style.verticalAlign = "middle";
 				//sub_ta_td.style.height = "1px";
-				var sub_button_tr = document.createElement("tr");
-				var sub_button_td = document.createElement("td");
+				var sub_button_tr = document_createElement("tr");
+				var sub_button_td = document_createElement("td");
 				sub_button_td.style.textAlign = "center";
 				//sub_button_td.style.verticalAlign = "middle";
 				//sub_button_td.style.height = "1px";
-				var textarea = document.createElement("textarea");
+				var textarea = document_createElement("textarea");
 				textarea.style.height = "5em";
 				textarea.style.width = "20em";
 				if (value)
 					textarea.value = value;
-				var savebutton = document.createElement("button");
+				var savebutton = document_createElement("button");
 				savebutton.innerText = _("save");
 				savebutton.onclick = function() {
 					do_update_setting(setting, textarea.value, meta);
@@ -72112,11 +72167,11 @@ var $$IMU_EXPORT$$;
 
 				value_td.appendChild(sub);
 			} else if (type === "number" || type === "lineedit") {
-				var sub = document.createElement("table");
-				var sub_tr = document.createElement("tr");
-				var sub_in_td = document.createElement("td");
+				var sub = document_createElement("table");
+				var sub_tr = document_createElement("tr");
+				var sub_in_td = document_createElement("td");
 				sub_in_td.style = "display:inline";
-				var input = document.createElement("input");
+				var input = document_createElement("input");
 
 				if (false && type === "number") {
 					// doesn't work properly on Waterfox, most of the functionality is implemented here anyways
@@ -72190,7 +72245,7 @@ var $$IMU_EXPORT$$;
 						do_update_setting(setting, value, meta);
 				}
 
-				var sub_units_td = document.createElement("td");
+				var sub_units_td = document_createElement("td");
 				//sub_units_td.style = "display:inline";
 				sub_units_td.classList.add("number_units");
 				if (meta.number_unit)
@@ -72201,7 +72256,7 @@ var $$IMU_EXPORT$$;
 				sub.appendChild(sub_tr);
 				value_td.appendChild(sub);
 			} else if (type === "keysequence") {
-				var sub = document.createElement("table");
+				var sub = document_createElement("table");
 
 				var values = deepcopy(value);
 
@@ -72253,20 +72308,20 @@ var $$IMU_EXPORT$$;
 				};
 
 				var add_keyseq_tr = function(index, start_recording) {
-					var sub_tr = document.createElement("tr");
+					var sub_tr = document_createElement("tr");
 					sub_tr.classList.add("keyseq");
 
-					var sub_key_td = document.createElement("td");
+					var sub_key_td = document_createElement("td");
 					//sub_key_td.style = "display:inline;font-family:monospace";
 					sub_key_td.classList.add("record_keybinding");
 					if (value) {
 						sub_key_td.innerText = get_trigger_key_texts(values)[index];
 					}
 
-					var sub_record_td = document.createElement("td");
+					var sub_record_td = document_createElement("td");
 					sub_record_td.style = "display:inline";
 
-					var sub_record_btn = document.createElement("button");
+					var sub_record_btn = document_createElement("button");
 					sub_record_btn.innerText = _("record");
 
 					var do_record = function() {
@@ -72301,7 +72356,7 @@ var $$IMU_EXPORT$$;
 					};
 					sub_record_btn.onmousedown = do_record;
 
-					var sub_cancel_btn = document.createElement("button");
+					var sub_cancel_btn = document_createElement("button");
 					sub_cancel_btn.innerText = _("cancel");
 					sub_cancel_btn.style = "display:none";
 
@@ -72314,7 +72369,7 @@ var $$IMU_EXPORT$$;
 					};
 					sub_cancel_btn.onmousedown = do_cancel;
 
-					var sub_remove_btn = document.createElement("button");
+					var sub_remove_btn = document_createElement("button");
 					//sub_remove_btn.innerText = "—";
 					sub_remove_btn.innerText = "\xD7";
 					sub_remove_btn.title = _("Remove");
@@ -72358,9 +72413,9 @@ var $$IMU_EXPORT$$;
 					sub.appendChild(add_keyseq_tr(i));
 				}
 
-				var sub_add_tr = document.createElement("tr");
-				var sub_add_td = document.createElement("td");
-				var sub_add_btn = document.createElement("button");
+				var sub_add_tr = document_createElement("tr");
+				var sub_add_td = document_createElement("td");
+				var sub_add_btn = document_createElement("button");
 				sub_add_btn.innerText = "+";
 				sub_add_btn.title = _("Add keybinding");
 				sub_add_btn.classList.add("small");
@@ -72386,13 +72441,13 @@ var $$IMU_EXPORT$$;
 				sub.appendChild(sub_add_tr);
 				value_td.appendChild(sub);
 			} else if (type === "combo") {
-				var sub = document.createElement("select");
+				var sub = document_createElement("select");
 
 				for (var coption in meta.options) {
 					if (!coption || coption[0] === '_')
 						continue;
 
-					var optionel = document.createElement("option");
+					var optionel = document_createElement("option");
 					optionel.innerText = _(meta.options[coption].name);
 					optionel.value = coption;
 
@@ -72413,7 +72468,7 @@ var $$IMU_EXPORT$$;
 			option.appendChild(table);
 
 			if (settings.settings_visible_description) {
-				var description_el = document.createElement("p");
+				var description_el = document_createElement("p");
 				md_to_html(description_el, description);
 				//description_el.innerText = description;
 				description_el.classList.add("description");
@@ -72422,25 +72477,25 @@ var $$IMU_EXPORT$$;
 			}
 
 			if (meta.warning) {
-				var warning = document.createElement("p");
+				var warning = document_createElement("p");
 				warning.style.display = "none";
 				warning.classList.add("warning");
 
 				option.appendChild(warning);
 			}
 
-			var requirements = document.createElement("div");
+			var requirements = document_createElement("div");
 			//requirements.style.display = "none";
 			requirements.classList.add("requirements");
 			requirements.classList.add("hidden");
 			option.appendChild(requirements);
 
 			if (meta.example_websites) {
-				var examples = document.createElement("ul");
+				var examples = document_createElement("ul");
 				examples.classList.add("examples");
 				for (var example_i = 0; example_i < meta.example_websites.length; example_i++) {
 					var example_text = meta.example_websites[example_i];
-					var example_el = document.createElement("li");
+					var example_el = document_createElement("li");
 					example_el.innerText = _(example_text);
 					examples.appendChild(example_el);
 				}
@@ -72460,7 +72515,7 @@ var $$IMU_EXPORT$$;
 
 				var text = get_title(false);
 
-				var spoiler_title = document.createElement("span");
+				var spoiler_title = document_createElement("span");
 				spoiler_title.classList.add("spoiler-title");
 				spoiler_title.innerText = text;
 
@@ -72477,7 +72532,7 @@ var $$IMU_EXPORT$$;
 					spoiler_title.innerText = get_title(expanded);
 				};
 
-				var spoiler_contents = document.createElement("div");
+				var spoiler_contents = document_createElement("div");
 				spoiler_contents.classList.add("spoiler-contents");
 				spoiler_contents.style.display = "none";
 				spoiler_contents.innerHTML = meta.documentation.value;
@@ -72486,7 +72541,7 @@ var $$IMU_EXPORT$$;
 				option.appendChild(spoiler_contents);
 			}
 
-			var errordiv = document.createElement("div");
+			var errordiv = document_createElement("div");
 			errordiv.classList.add("error");
 			option.appendChild(errordiv);
 
@@ -73023,7 +73078,7 @@ var $$IMU_EXPORT$$;
 	}
 
 	function deserialize_img(obj, cb) {
-		var el = document.createElement(obj.tag);
+		var el = document_createElement(obj.tag);
 		if (obj.tag === "video") {
 			if (obj.autoplay)
 				video.setAttribute("autoplay", obj.autoplay);
@@ -73126,7 +73181,7 @@ var $$IMU_EXPORT$$;
 
 		// this is for dash videos, but FIXME for normal videos
 		if (obj[0].url.match(/^data:/) && !obj[0].video) {
-			var img = document.createElement("img");
+			var img = document_createElement("img");
 			img.src = obj[0].url;
 			img.onload = function() {
 				cb(img, obj[0].url, obj[0]);
@@ -73281,7 +73336,7 @@ var $$IMU_EXPORT$$;
 				}
 
 				var create_video_el = function() {
-					var video = document.createElement("video");
+					var video = document_createElement("video");
 
 					video.setAttribute("autoplay", "autoplay");
 
@@ -73428,7 +73483,7 @@ var $$IMU_EXPORT$$;
 
 					if (!is_video) {
 						load_image = function () {
-							var img = document.createElement("img");
+							var img = document_createElement("img");
 							img.src = resp.finalUrl;
 
 							var end_cbs = function () {
@@ -73507,7 +73562,7 @@ var $$IMU_EXPORT$$;
 					}
 
 					if (!is_video) {
-						var img = document.createElement("img");
+						var img = document_createElement("img");
 						img.src = urldata;
 						img.onload = function() {
 							// Firefox thinks SVGs have an empty naturalWidth/naturalHeight
@@ -73963,14 +74018,14 @@ var $$IMU_EXPORT$$;
 					stop_waiting();
 				}
 
-				waitingstyleel = document.createElement("style");
+				waitingstyleel = document_createElement("style");
 				waitingstyleel.innerText = "* {cursor: " + cursor + "!important}";
 				document.documentElement.appendChild(waitingstyleel);
 				return;
 			}
 
 			if (!waitingel) {
-				waitingel = document.createElement("div");
+				waitingel = document_createElement("div");
 				set_el_all_initial(waitingel);
 				waitingel.style.zIndex = maxzindex;
 				waitingel.style.cursor = cursor;
@@ -74624,11 +74679,11 @@ var $$IMU_EXPORT$$;
 				remove_mask();
 
 				if (settings.mouseover_close_click_outside || settings.mouseover_enable_mask_styles) {
-					mask_el = document.createElement("div");
+					mask_el = document_createElement("div");
 					setup_mask_el(mask_el);
 				}
 
-				var outerdiv = document.createElement("div");
+				var outerdiv = document_createElement("div");
 				set_el_all_initial(outerdiv);
 				set_important_style(outerdiv, "position", "fixed");
 				set_important_style(outerdiv, "z-index", maxzindex - 2);
@@ -74676,7 +74731,7 @@ var $$IMU_EXPORT$$;
 					}, 1);
 				}
 
-				var div = document.createElement("div");
+				var div = document_createElement("div");
 				var popupshown = false;
 				set_el_all_initial(div);
 				set_important_style(div, "box-shadow", "0 0 15px " + shadowcolor);
@@ -75193,7 +75248,7 @@ var $$IMU_EXPORT$$;
 					if (typeof action === "string")
 						tagname = "a";
 
-					var btn = document.createElement(tagname);
+					var btn = document_createElement(tagname);
 
 					if (action) {
 						var do_action = function() {
@@ -75340,7 +75395,7 @@ var $$IMU_EXPORT$$;
 				}
 
 				function create_topbarel() {
-					var topbarel = document.createElement("div");
+					var topbarel = document_createElement("div");
 					set_el_all_initial(topbarel);
 					set_important_style(topbarel, "position", "absolute");
 					set_important_style(topbarel, "opacity", defaultopacity);
@@ -75524,7 +75579,7 @@ var $$IMU_EXPORT$$;
 						set_important_style(images_total, "font-size", gallerycount_fontsize);
 						set_important_style(images_total, "display", "none");
 
-						var images_total_input = document.createElement("input");
+						var images_total_input = document_createElement("input");
 						var images_total_input_active = false;
 						set_el_all_initial(images_total_input);
 						set_important_style(images_total_input, "display", "none");
@@ -75635,7 +75690,7 @@ var $$IMU_EXPORT$$;
 						if (lrheight < 10)
 							return;
 
-						var lrhover = document.createElement("div");
+						var lrhover = document_createElement("div");
 						set_el_all_initial(lrhover);
 						lrhover.title = title;
 						if (isleft) {
@@ -75750,7 +75805,7 @@ var $$IMU_EXPORT$$;
 
 				fill_obj_filename(newobj, url, data.data.respdata);
 
-				var a = document.createElement("a");
+				var a = document_createElement("a");
 				set_el_all_initial(a);
 
 				if (add_link) {
@@ -76326,14 +76381,14 @@ var $$IMU_EXPORT$$;
 			var unitel = document.body;
 			if (!unitel) {
 				// Emulate the documentElement to get rem value (documentElement does not work in IE6-7)
-				unitel = extraBody = document.createElement("body");
+				unitel = extraBody = document_createElement("body");
 				extraBody.style.cssText = "font-size:" + unit + "!important;";
 				document.documentElement.insertBefore(extraBody, document.body);
 			}
 
 			// Create and style a test element
 			if (!getunit_el) {
-				getunit_el = document.createElement("i");
+				getunit_el = document_createElement("i");
 				set_el_all_initial(getunit_el);
 				set_important_style(getunit_el, "position", "absolute");
 				set_important_style(getunit_el, "visibility", "hidden");
@@ -78636,14 +78691,14 @@ var $$IMU_EXPORT$$;
 		};
 
 		function create_progress_el() {
-			var progressc_el = document.createElement("div");
+			var progressc_el = document_createElement("div");
 			set_el_all_initial(progressc_el);
 			progressc_el.style.backgroundColor = "rgba(0,0,0,0.7)";
 			//progressc_el.style.padding = "1em";
 			progressc_el.style.height = "2em";
 			progressc_el.style.zIndex = maxzindex - 2;
 
-			var progressb_el = document.createElement("div");
+			var progressb_el = document_createElement("div");
 			set_el_all_initial(progressb_el);
 			progressb_el.style.position = "absolute";
 			progressb_el.style.top = "0px";
@@ -78861,7 +78916,7 @@ var $$IMU_EXPORT$$;
 								}
 
 								if (!current) {
-									current = document.createElement("a");
+									current = document_createElement("a");
 
 									el.parentElement.insertBefore(current, el);
 									current.appendChild(el);
@@ -79003,7 +79058,7 @@ var $$IMU_EXPORT$$;
 		var highlightimgs_classname = generate_random_class("highlight");
 		var update_highlight_styleel = function() {
 			if (!highlightimgs_styleel) {
-				highlightimgs_styleel = document.createElement("style");
+				highlightimgs_styleel = document_createElement("style");
 				document.documentElement.appendChild(highlightimgs_styleel);
 			}
 
@@ -79011,7 +79066,11 @@ var $$IMU_EXPORT$$;
 		}
 
 		onload(function() {
-			update_highlight_styleel();
+			try {
+				update_highlight_styleel();
+			} catch (e) {
+				console_error(e);
+			}
 		});
 
 		(function() {
@@ -79404,7 +79463,7 @@ var $$IMU_EXPORT$$;
 				console_log("do_browser_download", imu, filename, cb);
 			}
 
-			var a = document.createElement("a");
+			var a = document_createElement("a");
 
 			a.href = imu.url;
 
@@ -80756,10 +80815,10 @@ var $$IMU_EXPORT$$;
 	}
 
 	var do_userscript_page = function(imgel, latest_version) {
-		var status_container_el = document.createElement("div");
+		var status_container_el = document_createElement("div");
 		status_container_el.style.marginBottom = "2em";
 
-		var version_el = document.createElement("span");
+		var version_el = document_createElement("span");
 		version_el.style.fontSize = "90%";
 		version_el.style.fontWeight = 800;
 		version_el.style.marginRight = "2em";
@@ -80785,7 +80844,7 @@ var $$IMU_EXPORT$$;
 			version_el.innerText += ")";
 		}
 
-		options_el = document.createElement("a");
+		options_el = document_createElement("a");
 		options_el.innerText = "Options";
 		options_el.style.background = "#0af";
 		options_el.style.padding = "0.5em 1em";
@@ -80865,12 +80924,12 @@ var $$IMU_EXPORT$$;
 					} catch (e) {
 						console_error(e);
 
-						var error_pre = document.createElement("pre");
+						var error_pre = document_createElement("pre");
 						error_pre.style.fontFamily = "monospace";
 						error_pre.style.margin = "1em";
 						error_pre.innerText = get_crashlog_info() + "\n" + e.toString() + "\n" + e.stack;
 
-						var error_div = document.createElement("div");
+						var error_div = document_createElement("div");
 						var error_div_text = "Error loading options page, please report this to <a href='" + github_issues_page + "'>" + github_issues_page + "</a>, ";
 						error_div_text += "and include the following information in the report:";
 						error_div.innerHTML = error_div_text;
