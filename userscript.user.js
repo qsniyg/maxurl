@@ -955,6 +955,13 @@ var $$IMU_EXPORT$$;
 				EventTarget_removeEventListener = our_EventTarget.prototype.removeEventListener;
 			}
 
+			var eventhandler_map = null;
+
+			var init_eventhandler_map = function() {
+				if (!eventhandler_map)
+					eventhandler_map = new_map();
+			};
+
 			our_addEventListener = function(element, event, handler, options) {
 				// VM compatibility
 				if (element === window && element.unsafeWindow)
@@ -965,11 +972,23 @@ var $$IMU_EXPORT$$;
 					return handler(e);
 				};
 
+				init_eventhandler_map();
+				map_set(eventhandler_map, handler, new_handler);
+
 				EventTarget_addEventListener.call(element, event, new_handler, options);
 			};
 
 			our_removeEventListener = function(element, event, handler, options) {
-				EventTarget_removeEventListener.call(element, event, handler, options);
+				init_eventhandler_map();
+				var new_handler = map_get(eventhandler_map, handler);
+				if (!new_handler) {
+					console_warn("Modified handler not found, defaulting to specified handler");
+					new_handler = handler;
+				} else {
+					map_remove(eventhandler_map, new_handler);
+				}
+
+				EventTarget_removeEventListener.call(element, event, new_handler, options);
 			};
 		};
 		get_orig_eventtarget();
