@@ -32187,38 +32187,86 @@ var $$IMU_EXPORT$$;
 					is_pagelink: true
 				};
 
+				var query_xhamster_hashslug_by_id = function(id, cb) {
+					if (/^xh/.test(id))
+						return cb(id);
+
+					api_query("xhamster_hashslug:" + id, {
+						url: "https://xhamster.com/api/flash.php?/video/info&video_id=" + id,
+						headers: {
+							Referer: "https://www.xhamster.com/"
+						},
+						json: true
+					}, cb, function(done, resp, cache_key) {
+						if (!resp.shareUrl) {
+							console_error(cache_key, "Unable to find shareUrl in", resp);
+							return done(null, false);
+						}
+
+						// TODO: refactor
+						var match = resp.shareUrl.match(/^[a-z]+:\/\/[^/]+\/+(?:videos|embed|x)\/+(?:[^/?#.]*-)?([0-9]+|xh[0-9a-zA-Z]+)(?:[?#].*)?$/);
+						if (!match) {
+							console_error(cache_key, "Unsupported shareUrl", resp.shareUrl);
+							return done(null, false);
+						}
+
+						return done(match[1], 6*60*60);
+					});
+				};
+
 				var query_xhamster_video = function(id, cb) {
 					var cache_key = "xhamster:" + id;
 					api_cache.fetch(cache_key, cb, function(done) {
-						options.do_request({
-							url: "https://www." + domain_nowww + "/videos/" + id,
-							method: "GET",
-							onload: function(resp) {
-								if (resp.status !== 200) {
-									console_error(cache_key, resp);
-									return done(null, false);
-								}
+						var tested_hashslug = false;
+						var do_query = function() {
+							options.do_request({
+								url: "https://www." + domain_nowww + "/videos/" + id,
+								method: "GET",
+								onload: function(resp) {
+									if (resp.status !== 200) {
+										if (/^[0-9]+$/.test(id) && !tested_hashslug) {
+											query_xhamster_hashslug_by_id(id, function(hashslug) {
+												if (!hashslug || hashslug === id) {
+													console_error(cache_key, resp);
+													return done(null, false);
+												} else {
+													tested_hashslug = true;
+													id = hashslug;
 
-								var match = resp.responseText.match(/window\.initials\s*=\s*({.*});/);
-								if (!match) {
-									console_log(cache_key, "Unable to find match for", resp);
-									return done(null, false);
-								}
+													do_query();
+												}
+											});
 
-								try {
-									var json = JSON_parse(match[1]);
-									var videomodel = json.videoModel;
-
-									if (videomodel.title && videomodel.pageURL) {
-										return done(videomodel, 60*60);
+											return;
+										} else {
+											console_error(cache_key, resp);
+											return done(null, false);
+										}
 									}
-								} catch(e) {
-									console_error(cache_key, e);
-								}
 
-								return done(null, false);
-							}
-						});
+									var match = resp.responseText.match(/window\.initials\s*=\s*({.*});/);
+									if (!match) {
+										console_log(cache_key, "Unable to find match for", resp);
+										return done(null, false);
+									}
+
+									try {
+										var json = JSON_parse(match[1]);
+										var videomodel = json.videoModel;
+
+										if (videomodel.title && videomodel.pageURL) {
+											return done(videomodel, 60*60);
+										}
+									} catch(e) {
+										console_error(cache_key, e);
+									}
+
+									return done(null, false);
+								}
+							});
+						};
+
+						do_query();
 					});
 				};
 
@@ -74019,7 +74067,7 @@ var $$IMU_EXPORT$$;
 				}
 
 				waitingstyleel = document_createElement("style");
-				waitingstyleel.innerText = "* {cursor: " + cursor + "!important}";
+				waitingstyleel.innerText = "*,a,img,video {cursor: " + cursor + "!important}";
 				document.documentElement.appendChild(waitingstyleel);
 				return;
 			}
