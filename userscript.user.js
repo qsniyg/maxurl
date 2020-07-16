@@ -69787,7 +69787,7 @@ var $$IMU_EXPORT$$;
 					}
 				}
 
-				if (options.filter && !options.filter(obj.url)) {
+				if (obj.url && options.filter && !options.filter(obj.url)) {
 					console_log("Blacklisted:", obj.url);
 					remove_obj();
 					continue;
