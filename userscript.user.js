@@ -74923,7 +74923,29 @@ var $$IMU_EXPORT$$;
 				}
 				// https://stackoverflow.com/questions/7774814/remove-white-space-below-image
 				img.style.verticalAlign = "bottom";
-				img.style.setProperty("display", "block", "important");
+
+				// on pornhub, uBlock Origin blocks video[style*="display: block !important;"]
+				set_important_style(img, "display", "block");
+
+				var styles = [
+					["block"],
+					["initial", "important"]
+				];
+
+				var check_img_visibility = function() {
+					setTimeout(function() {
+						var computed = get_computed_style(img);
+						if (computed.display === "none") {
+							var current_style = styles.shift();
+
+							img.style.setProperty("display", current_style[0], current_style[1]);
+
+							if (styles.length > 0)
+								check_img_visibility();
+						}
+					}, 100);
+				};
+				check_img_visibility();
 
 				// https://github.com/qsniyg/maxurl/issues/330
 				set_important_style(img, "object-fit", "contain");
