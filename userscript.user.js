@@ -32188,6 +32188,7 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "xhamster.one" ||
 			domain_nowww === "xh.video" ||
 			domain_nowww === "xhamster.desi") {
+			// TODO: support xh.video/v/... (redirect, adding xh to the beginning doesn't work)
 			match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:videos|embed|x)\/+(?:[^/?#.]*-)?([0-9]+|xh[0-9a-zA-Z]+)(?:[?#].*)?$/);
 			if (!match) {
 				match = src.match(/^[a-z]+:\/\/[^/]+\/+xembed\.php\?(?:.*&)?video=([0-9]+|xh[0-9a-zA-Z]+)(?:&.*)?(?:#.*)?$/);
@@ -36775,7 +36776,7 @@ var $$IMU_EXPORT$$;
 			domain_nosub === "pornhat.com" ||
 			// https://screenshots.anysex.com/videos_screenshots/360000/360936/170x128/3.jpg
 			domain_nosub === "anysex.com" ||
-			(domain_nosub === "b-cdn.net" && /^(18yos|amateurporn(?:girlfriends|tape|vidz)|analcuties|asian(?:cuties|teens)|boombj|brosislove|cuteasians|d1ck|d1rty|extremejapanese|faphard(?:er)?|fi1thy|f1ix|fl1rt|freexxxhardcore|hard(?:(?:core)?teens|family|jap|milfs|moms)|hotmature|japteens|k1nk|milfz|porn(?:ouploads|n|r[yz])|roleplayers|taboofamily|teenanal|twistednuts|wanktank|extremeteens)\./.test(domain)) ||
+			(domain_nosub === "b-cdn.net" && /^(18yos|amateurporn(?:girlfriends|tape|vidz|wives)|analcuties|asian(?:cuties|teens)|boombj|brosislove|cuteasians|d1ck|d1rty|extremejapanese|faphard(?:er)?|fi1thy|f1ix|fl1rt|freexxxhardcore|hard(?:(?:core)?teens|family|jap|milfs|moms)|hotmature|japteens|k1nk|milfz|porn(?:ouploads|n|r[yz])|roleplayers|taboofamily|teenanal|twistednuts|wanktank|extremeteens)\./.test(domain)) ||
 			domain_nosub === "hardmoms.co" ||
 			domain_nosub === "d1ck.co" ||
 			domain_nosub === "twistednuts.com" ||
@@ -36784,6 +36785,7 @@ var $$IMU_EXPORT$$;
 			domain_nosub === "amateurporngirlfriends.com" ||
 			domain_nosub === "amateurporntape.com" ||
 			domain_nosub === "amateurpornvidz.com" ||
+			domain_nosub === "amateurpornwives.com" ||
 			domain_nosub === "analcuties.co" ||
 			domain_nosub === "asian-cuties.com" ||
 			domain_nosub === "asian-teens.co" ||
@@ -37472,6 +37474,7 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "upornia.com" ||
 			domain_nowww === "tubepornclassic.com" ||
 			domain_nowww === "hotmovs.com" ||
+			domain_nowww === "shemalez.com" ||
 			domain_nowww === "hdzog.com") {
 			match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:videos|embed)\/+([0-9]+)(?:\/+.*)?(?:[?#].*)?$/);
 			if (match) {
@@ -37608,19 +37611,56 @@ var $$IMU_EXPORT$$;
 			domain === "12111553.pix-cdn.org" ||
 
 			domain === "cdn37699375.ahacdn.me" ||
-			domain === "cdn39638151.ahacdn.me") {
+			(domain_nosub === "tubepornclassic.com" && /^static[0-9]*\./.test(domain)) ||
+
+			domain === "cdn39638151.ahacdn.me" ||
+			domain === "vjav1.hclips.net" ||
+			domain === "vjav2.hclips.net" ||
+			domain === "vjav3.hclips.net" ||
+
+			domain === "cdn61283513.ahacdn.me" ||
+			// https://cdn42705446.ahacdn.me/contents/videos_screenshots/7530000/7530843/240x180/1.jpg
+			domain === "cdn42705446.ahacdn.me" ||
+
+			// https://cdn49752055.ahacdn.me/contents/videos_screenshots//2000/2877/300x169/1.jpg
+			domain === "cdn49752055.ahacdn.me" ||
+			domain === "cdn12694176.ahacdn.me" ||
+
+			domain === "cdn27185998.ahacdn.me" ||
+			domain === "cdn52810799.ahacdn.me" ||
+
+			domain === "cdn47590165.ahacdn.me" ||
+			(domain_nosub === "shemalez.com" && /^tn[0-9]*\./.test(domain)) ||
+
+			// https://cdn37804682.ahacdn.me/contents/videos_screenshots/16484000/16484039/288x162/1.jpg
+			domain === "cdn37804682.ahacdn.me") {
 			var basedomain_map = {
 				"cdn69508963.ahacdn.me": "hdzog.com",
 				"cdn39638151.ahacdn.me": "vjav.com",
+				"vjav1.hclips.net":      "vjav.com",
+				"vjav2.hclips.net":      "vjav.com",
+				"vjav3.hclips.net":      "vjav.com",
 				"cdn35854568.ahacdn.me": "upornia.com",
 				"cdn60563788.ahacdn.me": "upornia.com",
 				"12111549.pix-cdn.org":  "upornia.com",
 				"cdn56191079.ahacdn.me": "hotmovs.com",
 				"cdn25122858.ahacdn.me": "hotmovs.com",
 				"12111553.pix-cdn.org":  "hotmovs.com",
-				"cdn37699375.ahacdn.me": "tubepornclassic.com"
+				"cdn37699375.ahacdn.me": "tubepornclassic.com",
+				"cdn61283513.ahacdn.me": "hclips.com",
+				"cdn42705446.ahacdn.me": "hclips.com",
+				"cdn49752055.ahacdn.me": "hdzog.com",
+				"cdn12694176.ahacdn.me": "hdzog.com",
+				"cdn27185998.ahacdn.me": "thegay.com",
+				"cdn52810799.ahacdn.me": "thegay.com",
+				"cdn47590165.ahacdn.me": "shemalez.com",
+				"cdn37804682.ahacdn.me": "txxx.com"
 			};
+
 			var basedomain = basedomain_map[domain];
+			if (!basedomain)
+				basedomain = domain_nosub;
+
 			match = src.match(/\/(?:c[0-9]*|contents)\/+videos(?:_(?:sources|screenshots))?\/+[0-9]+\/+([0-9]+)\/+(?:[0-9]+_tr\.|(?:screenshots|[0-9]+x[0-9]+)\/)/);
 			if (match) {
 				return {
@@ -65826,6 +65866,7 @@ var $$IMU_EXPORT$$;
 		if (domain_nosub === "hclips.com" ||
 			domain_nosub === "voyeurhit.com" ||
 			domain_nowww === "txxx.com" ||
+			domain_nowww === "thegay.com" ||
 			domain_nosub === "videotxxx.com") {
 			var match = src.match(/^[a-z]+:\/\/[^/]+\/+videos\/+([0-9]+)\//);
 			if (match) {
@@ -66923,7 +66964,7 @@ var $$IMU_EXPORT$$;
 			// https://video.nudevista.com/video/MTMxODIwNDAwMi0zLS8tMC1odHRwczovL2YxaXguY29tL3ZpZGVvcy8xMTM0OTkvdmVyeSN6b29tI2luI2FzcyNmdWNrI2FuYWwjc2V4I3Zlcnkjc21vb3RoI2FzcyNhbmQjbmljZSNwb3Yv-very-zoom-in-ass-fuck-anal-sex-very-smooth-ass-and-nice-pov.html
 			// https://video.nudevista.com/video/MTE0OTk0NzIyLTE1LS8tMC1odHRwczovL3d3dy50dWJlOC5jb20vYW1hdGV1ci9zZXgjaW4jYW4jZWxldmF0b3IvMjM0NzI2MS8/dXRtX3NvdXJjZT1udWRldmlzdGEmdXRtX21lZGl1bT1QVCZ1dG1fY2FtcGFpZ249bnVkZXZpc3Rh-sex-in-an-elevator.html
 			// https://video.nudevista.com/video/NzMwOTM4NjgyLTE1LS8/cT1hc2lhbiZzPXQtMC1odHRwOi8vamFwYW4jd2hvcmVzLmNvbS92aWRlb3MvMzA0NjM3L3QjcCNmdWxsI3BwcGQjMzM3I3NpbmNlI2Fic29sdXRlbHkjd2FzI2EjYmlnI3RpdHMjYW5kI3RvI3RoZSNvdGhlciNwYXJ0eSN0aGF0I3lvdSNkbyNub3QjZGFiI2hhLw==-tp-full-pppd-since-absolutely-was-a-big-tits-and-to-the-other-party-that-you-do-not-dab-ha.html
-			match = src.match(/^[a-z]+:\/\/[^/]+\/+video\/+([^-/.]{10,})(?:\/+([^-/.]{20,}))?(?:-[^/]+)\./);
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+video\/+([^-/.]{10,})(?:\/+([^-/.]{10,})(?:\/+([^-/.]{10,}))?)?(?:-[^/]+)\./);
 			if (match) {
 				try {
 					var strings = [];
@@ -66933,6 +66974,11 @@ var $$IMU_EXPORT$$;
 
 					if (match[2]) {
 						var decoded2 = base64_decode(match[2]);
+						strings.push(decoded2);
+					}
+
+					if (match[3]) {
+						var decoded2 = base64_decode(match[3]);
 						strings.push(decoded2);
 					}
 
@@ -67388,6 +67434,30 @@ var $$IMU_EXPORT$$;
 			} else {
 				return obj;
 			}
+		}
+
+		if (domain_nowww === "nastyvideotube.com") {
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+o\.php\?(?:.*)?u=([^-&?#]{10,})/);
+			if (match) {
+				newsrc = match[1].replace(/~/g, "=");
+
+				try {
+					newsrc = base64_decode(newsrc);
+
+					return {
+						url: newsrc,
+						is_pagelink: true
+					};
+				} catch (e) {
+					console_error(e);
+				}
+			}
+		}
+
+		if (domain === "gallery.armyofselenagomez.com") {
+			// http://gallery.armyofselenagomez.com/cache/Awards/24-November-2019-Selena-on-the-red-carpet-of-American-Music-Awards-2019-at-the-Microsoft-Theater-in-Los-Angeles-California/001_100_w100_h100_thumb.jpg?cached=1574844161
+			//   http://gallery.armyofselenagomez.com/albums/Awards/24-November-2019-Selena-on-the-red-carpet-of-American-Music-Awards-2019-at-the-Microsoft-Theater-in-Los-Angeles-California/001.jpg?cached=1574844161
+			return src.replace(/\/cache\/+([^/]+\/+[^/]+\/+[^/]+)_[0-9]+(?:_[wh][0-9]+){0,2}(?:_thumb)?(\.[^/.]+)(?:[?#].*)?$/, "/albums/$1$2");
 		}
 
 
@@ -73017,8 +73087,19 @@ var $$IMU_EXPORT$$;
 		}
 	}
 
+	var can_use_subzindex = true;
+
+	try {
+		// uBlock Origin: div > div[style*="z-index:"]
+		if (/^[a-z]+:\/\/[^/]*txxx\.com\//.test(window.location.href)) {
+			can_use_subzindex = false;
+		}
+	} catch (e) {}
+
 	function set_el_all_initial(el) {
-		el.style.all = "initial";
+		if (can_use_subzindex) {
+			el.style.all = "initial";
+		} // removing zIndex doesn't work if all = "initial";
 
 		// Under Waterfox, if offsetInlineStart is set to anything (even unset), it'll set the left to 0
 		// Thanks to decembre on github for reporting this: https://github.com/qsniyg/maxurl/issues/14#issuecomment-531080061
@@ -75488,7 +75569,8 @@ var $$IMU_EXPORT$$;
 					set_el_all_initial(topbarel);
 					set_important_style(topbarel, "position", "absolute");
 					set_important_style(topbarel, "opacity", defaultopacity);
-					set_important_style(topbarel, "z-index", maxzindex - 1);
+					if (can_use_subzindex)
+						set_important_style(topbarel, "z-index", maxzindex - 1);
 					set_important_style(topbarel, "white-space", "nowrap");
 
 					// test: https://www.yeshiva.org.il/
