@@ -1,3 +1,23 @@
+0.13.15
+
+New features:
+
+ * Support for ~25 new websites (using ~10 new rules)
+
+Improvements
+
+ * Various improvements/fixes to existing rules (including 500px, Instagram, YouTube)
+ * 500px is now supported when logged in for the extension (#305)
+
+Bugfixes:
+
+ * Blacklist should be properly implemented now
+ * When using adblockers, some pages that would refuse to open the popup are now fixed (extension is unaffected)
+ * When using adblockers, some pages that would open a blank video are now fixed
+ * Waiting cursor works more consistently on pages that use a `!important` cursor
+
+---
+
 0.13.14
 
 New features:
