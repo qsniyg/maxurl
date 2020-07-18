@@ -45985,7 +45985,6 @@ var $$IMU_EXPORT$$;
 			id = src.replace(/^[a-z]+:\/\/[^/]*\/photo\/+([0-9]+)\/.*$/, "$1");
 			var page = "https://500px.com/photo/" + id + "/";
 			if (id !== src) {
-				// TODO: add x-csrf-token as a header, needed when logged in. It comes from the cookie, needs GM_Cookie support
 				var query_500px_api = function(url, cb) {
 					var query_obj = {
 						url: url,
