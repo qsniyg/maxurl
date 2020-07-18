@@ -6125,8 +6125,8 @@ var $$IMU_EXPORT$$;
 				y = null;
 			}
 
-			x = parseInt(image.naturalHeight);
-			y = parseInt(image.naturalWidth);
+			x = parseInt(image.naturalWidth);
+			y = parseInt(image.naturalHeight);
 
 			image.src = ""; // stop loading
 
@@ -67457,6 +67457,56 @@ var $$IMU_EXPORT$$;
 			// http://gallery.armyofselenagomez.com/cache/Awards/24-November-2019-Selena-on-the-red-carpet-of-American-Music-Awards-2019-at-the-Microsoft-Theater-in-Los-Angeles-California/001_100_w100_h100_thumb.jpg?cached=1574844161
 			//   http://gallery.armyofselenagomez.com/albums/Awards/24-November-2019-Selena-on-the-red-carpet-of-American-Music-Awards-2019-at-the-Microsoft-Theater-in-Los-Angeles-California/001.jpg?cached=1574844161
 			return src.replace(/\/cache\/+([^/]+\/+[^/]+\/+[^/]+)_[0-9]+(?:_[wh][0-9]+){0,2}(?:_thumb)?(\.[^/.]+)(?:[?#].*)?$/, "/albums/$1$2");
+		}
+
+		if (domain === "d3rwyinxzcqr6y.cloudfront.net") {
+			// https://d3rwyinxzcqr6y.cloudfront.net/Assets/res/imgs/button/lightbox-btn-prev.gif
+			// https://d3rwyinxzcqr6y.cloudfront.net/Assets/res/imgs/addonBar.png
+			// https://d3rwyinxzcqr6y.cloudfront.net/Assets/res/imgs/creative/20wk30/rhs_1092826395.jpg -- not mask
+			if (/\/Assets\/+res\/+imgs\/+(?:button\/+)?[^/]+\.(?:gif|png)(?:[?#].*)?$/.test(src)) {
+				return {
+					url: src,
+					bad: "mask"
+				};
+			}
+
+			// thanks to Gyuri on discord:
+			// https://www.yesasia.com/us/kara-star-collection-card-vol-2/1025029262-0-0-0-en/info.html
+			// https://d3rwyinxzcqr6y.cloudfront.net/Assets/GalleryImage/36/852/g0017885236.jpg
+			//   https://d3rwyinxzcqr6y.cloudfront.net/Assets/GalleryImage/36/852/L_g0017885236.jpg
+			// https://d3rwyinxzcqr6y.cloudfront.net/Assets/31/852/p0017885231.jpg
+			//   https://d3rwyinxzcqr6y.cloudfront.net/Assets/31/852/L_p0017885231.jpg
+			// https://d3rwyinxzcqr6y.cloudfront.net/Assets/89/927/S_p0020492789.jpg
+			//   https://d3rwyinxzcqr6y.cloudfront.net/Assets/89/927/L_p0020492789.jpg
+			// doesn't work for all:
+			// https://www.yesasia.com/us/kara-star-collection-card-10-pack-set-vol-1/1023742758-0-0-0-en/info.html
+			// https://d3rwyinxzcqr6y.cloudfront.net/Assets/GalleryImage/79/430/g0014343079.jpg -- 140x1397
+			//   https://d3rwyinxzcqr6y.cloudfront.net/Assets/GalleryImage/79/430/L_g0014343079.jpg -- 72x720
+			newsrc = src.replace(/(\/Assets\/+(?:GalleryImage\/+)?[0-9]+\/+[0-9]+\/+)(?:S_)?([gp][0-9]+\.)/, "$1L_$2");
+			if (newsrc !== src) {
+				if (get_image_size && options.cb) {
+					get_image_size(newsrc, function(x, y) {
+						if (!x || !y)
+							return options.cb(null);
+
+						if (y === 720) {
+							get_image_size(src, function(oldx, oldy) {
+								if (oldx*oldy < x*y) {
+									return options.cb(newsrc);
+								} else {
+									return options.cb(null);
+								}
+							});
+						} else {
+							return options.cb(newsrc);
+						}
+					});
+
+					return {
+						waiting: true
+					};
+				}
+			}
 		}
 
 
