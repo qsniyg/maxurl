@@ -70049,6 +70049,19 @@ var $$IMU_EXPORT$$;
 			};
 		}
 
+		if (host_domain_nosub === "booth.pm") {
+			return {
+				element_ok: function(el) {
+					// https://hawawa-temple.booth.pm/
+					if (el.tagName === "DIV" && el.classList.contains("swap-image") && el.children.length === 1 && el.children[0].tagName === "IMG") {
+						return el.children[0];
+					}
+
+					return "default";
+				}
+			};
+		}
+
 		return null;
 	}
 
@@ -77580,6 +77593,8 @@ var $$IMU_EXPORT$$;
 						if (is_element(element_ok_result)) {
 							ok_el_obj.el = element_ok_result;
 							ok_els.push(ok_el_obj);
+
+							el = element_ok_result;
 						}
 					}
 				}
@@ -78057,6 +78072,7 @@ var $$IMU_EXPORT$$;
 				//console_log(els);
 				console_log("_find_source (sources)", deepcopy(sources));
 				console_log("_find_source (layers)", deepcopy(layers));
+				console_log("_find_source (ok_els)", deepcopy(ok_els));
 			}
 
 			// remove sources that aren't used
