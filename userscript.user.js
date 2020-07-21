@@ -42417,6 +42417,12 @@ var $$IMU_EXPORT$$;
 
 		// LookBooks
 		if (amazon_container === "kateryan" ||
+			// https://totalworld.s3.amazonaws.com/lg_51cafb88-bbf8-4942-ba24-63f80aa613db.jpg
+			//   https://totalworld.s3.amazonaws.com/gxxl_51cafb88-bbf8-4942-ba24-63f80aa613db.jpg -- 2148x1440
+			// thanks to Regis on discord:
+			// https://totalworld.s3.amazonaws.com/lg_5f13e29a-3c50-44d7-83b9-0d06ac110003.jpg
+			//   https://totalworld.s3.amazonaws.com/gxxl_5f13e29a-3c50-44d7-83b9-0d06ac110003.jpg -- 1080x1080
+			amazon_container === "totalworld" ||
 			// https://assets.lookbookspro.com/streeters/gs_5ae394cf-be4c-4cfd-8257-764eac110002.jpg
 			//   https://assets.lookbookspro.com/streeters/gxxl_5ae394cf-be4c-4cfd-8257-764eac110002.jpg
 			// https://clmlkbks.assets.lookbookspro.com/gxl_5c59a9a9-17c4-4015-a8b6-0b07ac110004.jpg
