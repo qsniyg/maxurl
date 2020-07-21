@@ -36675,7 +36675,10 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "xcadr.org" ||
 			// https://www.fitting-room.com/contents/videos_screenshots/0/231/preview_trailer.mp4.jpg
 			domain_nowww === "fitting-room.com" ||
+			// http://www.camwhoreshd.com/contents/videos_screenshots/51000/51460/496x372/1.jpg
 			domain_nowww === "camwhoreshd.com" ||
+			// http://www.cwtvembeds.com/embed/69644
+			domain_nowww === "cwtvembeds.com" ||
 			// http://cdn.camwhores.tv/contents/videos_screenshots/5869000/5869367/180x135/2.jpg
 			domain_nosub === "camwhores.tv" ||
 			// https://www.camwhoresbay.com/contents/videos_screenshots/243000/243143/preview.mp4.jpg
@@ -36774,6 +36777,12 @@ var $$IMU_EXPORT$$;
 			domain_nosub === "mypornhere.com" ||
 			// https://static.pornhat.com/contents/videos_screenshots/24000/24278/640x360/1.jpg1
 			domain_nosub === "pornhat.com" ||
+			// http://www.camshooker.com/contents/videos_screenshots/188000/188740/180x135/1.jpg
+			domain_nosub === "camshooker.com" ||
+			domain_nosub === "cambro.tv" ||
+			domain_nosub === "camseek.tv" ||
+			// http://www.camvideos.tv/contents/videos_screenshots/94000/94538/180x135/1.jpg
+			domain_nowww === "camvideos.tv" ||
 			// https://screenshots.anysex.com/videos_screenshots/360000/360936/170x128/3.jpg
 			domain_nosub === "anysex.com" ||
 			(domain_nosub === "b-cdn.net" && /^(18yos|amateurporn(?:girlfriends|tape|vidz|wives)|analcuties|asian(?:cuties|teens)|boombj|brosislove|cuteasians|d1ck|d1rty|extremejapanese|faphard(?:er)?|fi1thy|f1ix|fl1rt|freexxxhardcore|hard(?:(?:core)?teens|family|jap|milfs|moms)|hotmature|japteens|k1nk|milfz|porn(?:ouploads|n|r[yz])|roleplayers|taboofamily|teenanal|twistednuts|wanktank|extremeteens)\./.test(domain)) ||
@@ -36898,6 +36907,7 @@ var $$IMU_EXPORT$$;
 					   domain_nosub === "camhub.cc" ||
 					   domain_nosub === "mytradevideo.com" ||
 					   domain_nosub === "japan-whores.com" ||
+					   domain_nosub === "camshooker.com" ||
 					   domain_nosub === "mywebgirls.tv") {
 				// doesn't support https
 				basedomain = "http://www." + domain_nosub + "/";
@@ -37001,6 +37011,11 @@ var $$IMU_EXPORT$$;
 			} else if (domain_nosub === "anysex.com") {
 				videos_component = "";
 				a_component = "";
+			} else if (domain_nosub === "cambro.tv") {
+				videos_component = "";
+			} else if (domain_nosub === "camvideos.tv") {
+				videos_component = "";
+				basedomain = "http://www." + domain_nosub + "/";
 			}
 
 			var detected_url = null;
@@ -37621,6 +37636,7 @@ var $$IMU_EXPORT$$;
 			domain === "cdn61283513.ahacdn.me" ||
 			// https://cdn42705446.ahacdn.me/contents/videos_screenshots/7530000/7530843/240x180/1.jpg
 			domain === "cdn42705446.ahacdn.me" ||
+			domain === "cdn85419624.ahacdn.me" ||
 
 			// https://cdn49752055.ahacdn.me/contents/videos_screenshots//2000/2877/300x169/1.jpg
 			domain === "cdn49752055.ahacdn.me" ||
@@ -37649,6 +37665,7 @@ var $$IMU_EXPORT$$;
 				"cdn37699375.ahacdn.me": "tubepornclassic.com",
 				"cdn61283513.ahacdn.me": "hclips.com",
 				"cdn42705446.ahacdn.me": "hclips.com",
+				"cdn85419624.ahacdn.me": "hclips.com",
 				"cdn49752055.ahacdn.me": "hdzog.com",
 				"cdn12694176.ahacdn.me": "hdzog.com",
 				"cdn27185998.ahacdn.me": "thegay.com",
@@ -65867,6 +65884,9 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "txxx.com" ||
 			domain_nowww === "thegay.com" ||
 			domain_nosub === "videotxxx.com") {
+			// https://hclips.com/videos/ashe-maree-excellent-show-made-28-july-2017/?promo=10376
+			//   redirects to:
+			//   https://hclips.com/videos/2114722/ashe-maree-excellent-show-made-28-july-2017/?promo=10376
 			var match = src.match(/^[a-z]+:\/\/[^/]+\/+videos\/+([0-9]+)\//);
 			if (match) {
 				id = match[1];
@@ -69196,7 +69216,7 @@ var $$IMU_EXPORT$$;
 					var can_apply = false;
 					var use_default_after = false;
 					for (var i = 0; i < info.length; i++) {
-						if ((info[i].type === "post" && (info[i].subtype === "popup" || info[i].subtype === "page" || info[i].subtype === "home" || (info[i].subtype === "link" && options.rule_specific.instagram_gallery_postlink && !options.is_counting))) ||
+						if ((info[i].type === "post" && (info[i].subtype === "popup" || info[i].subtype === "page"|| info[i].subtype === "home" || (info[i].subtype === "link" && options.rule_specific.instagram_gallery_postlink && !options.is_counting))) ||
 						     info[i].type === "story") {
 							info[i].all = true;
 							can_apply = true;
@@ -75991,7 +76011,7 @@ var $$IMU_EXPORT$$;
 
 								update_imagestotal();
 							} else {
-								count_gallery(leftright, undefined, undefined, undefined, function(total) {
+								count_gallery(leftright, undefined, true, undefined, undefined, function(total) {
 									if (!leftright) {
 										prev_images = total;
 										cached_previmages = prev_images;
@@ -78699,7 +78719,7 @@ var $$IMU_EXPORT$$;
 			return !!find_source([el]);
 		}
 
-		function count_gallery(nextprev, max, origel, el, cb) {
+		function count_gallery(nextprev, max, is_counting, origel, el, cb) {
 			var count = 0;
 
 			if (max === undefined)
@@ -78713,7 +78733,9 @@ var $$IMU_EXPORT$$;
 				return remote_send_message(popup_el_remote, {
 					type: "count_gallery",
 					data: {
-						nextprev: nextprev
+						nextprev: nextprev,
+						is_counting: is_counting,
+						max: max
 					}
 				}, function(count) {
 					cb(count);
@@ -78732,7 +78754,7 @@ var $$IMU_EXPORT$$;
 
 					el = newel;
 					loop();
-				}, {is_counting: true, counting_firstel: firstel});
+				}, {is_counting: is_counting, counting_firstel: firstel});
 			};
 
 			loop();
@@ -78752,10 +78774,10 @@ var $$IMU_EXPORT$$;
 				max = -dir;
 			}
 
-			count_gallery(nextprev, max, origel, el, function(count, newel) {
+			count_gallery(nextprev, max, false, origel, el, function(count, newel) {
 				if (count < max) {
 					if (settings.mouseover_gallery_cycle) {
-						count_gallery(!nextprev, undefined, origel, el, function(count, newel) {
+						count_gallery(!nextprev, undefined, true, origel, el, function(count, newel) {
 							cb(newel);
 						});
 					} else {
@@ -80572,7 +80594,7 @@ var $$IMU_EXPORT$$;
 					});
 				}
 			} else if (message.type === "count_gallery") {
-				count_gallery(message.data.nextprev, undefined, undefined, undefined, function(count) {
+				count_gallery(message.data.nextprev, message.data.max, message.data.is_counting, undefined, undefined, function(count) {
 					respond(count);
 				});
 			} else if (message.type === "is_nextprev_valid") {
