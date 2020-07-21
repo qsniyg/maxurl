@@ -70053,7 +70053,8 @@ var $$IMU_EXPORT$$;
 			return {
 				element_ok: function(el) {
 					// https://hawawa-temple.booth.pm/
-					if (el.tagName === "DIV" && el.classList.contains("swap-image") && el.children.length === 1 && el.children[0].tagName === "IMG") {
+					// thumbnails on https://hawawa-temple.booth.pm/items/1219489
+					if (el.tagName === "DIV" && (el.classList.contains("swap-image") || el.classList.contains("thumb")) && el.children.length > 0 && el.children[0].tagName === "IMG") {
 						return el.children[0];
 					}
 
