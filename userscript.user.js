@@ -42423,6 +42423,33 @@ var $$IMU_EXPORT$$;
 			// https://totalworld.s3.amazonaws.com/lg_5f13e29a-3c50-44d7-83b9-0d06ac110003.jpg
 			//   https://totalworld.s3.amazonaws.com/gxxl_5f13e29a-3c50-44d7-83b9-0d06ac110003.jpg -- 1080x1080
 			amazon_container === "totalworld" ||
+			// https://s3.amazonaws.com/lkbkspro/steve-giralt/video_5f15d293-3f60-4a6b-a47b-043dac110002.mp4
+			//   https://s3.amazonaws.com/lkbkspro/steve-giralt/hd_5f15d293-3f60-4a6b-a47b-043dac110002.mp4
+			//   https://s3.amazonaws.com/lkbkspro/steve-giralt/fullhd_5f15d293-3f60-4a6b-a47b-043dac110002.mp4
+			amazon_container === "lkbkspro" ||
+			// thanks to Regis on discord:
+			// https://clmlkbks.s3.amazonaws.com/lg_5f0f5c52-f498-4935-a082-3b67ac110005.jpg
+			//   https://clmlkbks.s3.amazonaws.com/gxxl_5f0f5c52-f498-4935-a082-3b67ac110005.jpg
+			amazon_container === "clmlkbks" ||
+			// https://defacto.s3.amazonaws.com/lg_5f10bb76-22ec-4802-9f4b-1035ac110006.jpg
+			//   https://defacto.s3.amazonaws.com/gm_5f10bb76-22ec-4802-9f4b-1035ac110006.jpg
+			//   https://defacto.s3.amazonaws.com/gl_5f10bb76-22ec-4802-9f4b-1035ac110006.jpg
+			//   https://defacto.s3.amazonaws.com/gxxl_5f10bb76-22ec-4802-9f4b-1035ac110006.jpg
+			amazon_container === "defacto" ||
+			// https://apostrophelookbooks.s3.amazonaws.com/lg_5f10cb16-6490-406c-9ddd-1125ac110002.jpg
+			//   https://apostrophelookbooks.s3.amazonaws.com/gxxl_5f10cb16-6490-406c-9ddd-1125ac110002.jpg
+			amazon_container === "apostrophelookbooks" ||
+			// https://thegardenparty.s3.amazonaws.com/lg_5e41cd99-480c-4510-9f0e-7e18ac110004.jpg
+			//   https://thegardenparty.s3.amazonaws.com/gxxl_5e41cd99-480c-4510-9f0e-7e18ac110004.jpg
+			amazon_container === "thegardenparty" ||
+			// https://exposureny.s3.amazonaws.com/lg_5ef4ad67-3e34-4ab9-9e45-0bccac110006.jpg
+			amazon_container === "exposureny" ||
+			// https://atomo-management.s3.amazonaws.com/lg_5c9254e3-1248-4463-b3ba-001fac110005.jpg
+			amazon_container === "atomo-management" ||
+			// https://traceymattingly.s3.amazonaws.com/lg_5deaf7da-8d0c-453f-ad32-0bb4ac110008.jpg
+			amazon_container === "traceymattingly" ||
+			// https://jmireps.s3.amazonaws.com/lg_5ef3957e-68e8-4d79-b616-6725ac110003.jpg
+			amazon_container === "jmireps" ||
 			// https://assets.lookbookspro.com/streeters/gs_5ae394cf-be4c-4cfd-8257-764eac110002.jpg
 			//   https://assets.lookbookspro.com/streeters/gxxl_5ae394cf-be4c-4cfd-8257-764eac110002.jpg
 			// https://clmlkbks.assets.lookbookspro.com/gxl_5c59a9a9-17c4-4015-a8b6-0b07ac110004.jpg
@@ -42430,7 +42457,13 @@ var $$IMU_EXPORT$$;
 			(domain_nosub === "lookbookspro.com" && domain.match(/assets\.lookbookspro\.com$/))) {
 			// https://kateryan.s3.amazonaws.com/lg_54c2cdfa-5a58-46c5-ba51-1a270a771fd0.jpg
 			//   https://kateryan.s3.amazonaws.com/gxxl_54c2cdfa-5a58-46c5-ba51-1a270a771fd0.jpg
-			return src.replace(/\/[a-z]+_/, "/gxxl_");
+			// to find more sites: https://lookbooks.com/ (thanks to Regis on discord)
+			if (/\/[a-z]+_[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}\.[^/.]+(?:[?#].*)?$/) {
+				return src
+					.replace(/\/(?:lg|g(?:[sm]|x?l))_([-0-9a-f]{20,}\.)/, "/gxxl_$1")
+					.replace(/\/hd_([-0-9a-f]{20,}\.)/, "/fullhd_$1")
+					.replace(/\/video_([-0-9a-f]{20,}\.)/, "/hd_$1");
+			}
 		}
 
 		if (domain_nowww === "havepussy.com") {
