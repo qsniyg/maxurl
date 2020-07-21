@@ -4951,7 +4951,16 @@ var $$IMU_EXPORT$$;
 			return page_nullobj;
 		}
 
-		real_api_query(options.api_cache, options.do_request, options.cache_key + ":" + id, options.query_for_id(id), function(data) {
+		var query;
+		if (typeof options.query_for_id === "string") {
+			query = {
+				url: options.query_for_id.replace(/\${id}/g, id)
+			};
+		} else {
+			query = options.query_for_id(id);
+		}
+
+		real_api_query(options.api_cache, options.do_request, options.cache_key + ":" + id, query, function(data) {
 			if (!data) {
 				return options.cb(page_nullobj);
 			} else {
@@ -6146,6 +6155,28 @@ var $$IMU_EXPORT$$;
 	if (is_node || typeof "Image" === "undefined") {
 		get_image_size = null;
 	}
+
+	var sort_by_key = function(array, key) {
+		return array.sort(function(a, b) {
+			return (parseFloat(a[key]) || 0) - (parseFloat(b[key]) || 0);
+		});
+	};
+
+	var get_meta = function(text, property) {
+		var regex = new RegExp("<meta\\s+(?:(?:property|name)=[\"']" + property + "[\"']\\s+content=[\"']([^'\"]+)[\"']|content=[\"']([^'\"]+)[\"']\\s+(?:property|name)=[\"']" + property + "[\"'])\\s*\/?>");
+		var match = text.match(regex);
+		if (!match)
+			return null;
+
+		return decode_entities(match[1] || match[2]);
+	};
+
+	var fixup_js_obj = function(objtext) {
+		return objtext
+			.replace(/([{,])\s*([^"'\s:]+)\s*:/g, "$1 \"$2\":")
+			.replace(/(\"[^\s:"]+?\":)\s*'([^']*)'(\s*[,}])/g, "$1 \"$2\"$3")
+			.replace(/,\s*}$/, "}");
+	};
 
 	var common_functions = {};
 	common_functions.fetch_imgur_webpage = function(do_request, api_cache, headers, url, cb) {
@@ -14367,6 +14398,8 @@ var $$IMU_EXPORT$$;
 			(domain_nowww === "cdprojekt.com" && string_indexof(src, "/wp-content/") >= 0) ||
 			// http://www.bilgimanya.com/resimler/2011/07/selena-gomez-resimleri-fotograflari-photos-gallery-17-170x170.jpg
 			(domain_nowww === "bilgimanya.com" && string_indexof(src, "/resimler/") >= 0) ||
+			// https://storage.googleapis.com/unlimitedcnd.appspot.com/2020/06/439453-200x300.jpg
+			googlestorage_container === "unlimitedcnd.appspot.com" ||
 			// https://static.acgsoso.com/uploads/2020/02/19bd4f091f03c191195d5e626c3190f9-200x300.jpg
 			(domain === "static.acgsoso.com" && string_indexof(src, "/uploads/") >= 0)
 			) {
@@ -23208,10 +23241,14 @@ var $$IMU_EXPORT$$;
 				}
 			});
 			if (newsrc) return newsrc;
+		}
 
+		if (host_domain_nowww === "derpibooru.org" ||
+			host_domain_nowww === "furbooru.org") {
 			var link = common_functions.get_link_el_matching(options.element, function(a) {
 				return /^[a-z]+:\/\/[^/]+\/+(?:images\/+)?([0-9]+)\/*(?:[?#].*)?$/.test(a);
 			});
+
 			if (link) {
 				return {
 					url: link.href,
@@ -36842,6 +36879,7 @@ var $$IMU_EXPORT$$;
 			domain_nosub === "mrdeepfakes.com" ||
 			// https://i.pornktu.be/contents/videos_screenshots/16000/16668/600x338/1.jpg
 			domain_nosub === "pornktu.be" ||
+			domain_nosub === "3movs.com" ||
 			(domain_nosub === "b-cdn.net" && /^(18yos|amateurporn(?:girlfriends|tape|vidz|wives)|analcuties|asian(?:cuties|teens)|boombj|brosislove|cuteasians|d1ck|d1rty|extremejapanese|faphard(?:er)?|fi1thy|f1ix|fl1rt|freexxxhardcore|hard(?:(?:core)?teens|family|jap|milfs|moms)|hotmature|japteens|k1nk|milfz|porn(?:ouploads|n|r[yz])|roleplayers|taboofamily|teenanal|twistednuts|wanktank|extremeteens)\./.test(domain)) ||
 			domain_nosub === "hardmoms.co" ||
 			domain_nosub === "d1ck.co" ||
@@ -65703,13 +65741,14 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if (domain_nowww === "mightyupload.com") {
+		if (domain_nowww === "mightyupload.com" ||
+			domain_nowww === "streamsb.net") {
 			match = src.match(/^[a-z]+:\/\/[^/]+\/+embed-([a-z0-9]{5,})\.html(?:[?#].*)?$/);
 			if (match) {
 				id = match[1];
 
 				var query_mightyupload = function(url, cb) {
-					api_query("mightyupload:" + url, {
+					api_query(domain_nosub + ":" + url, {
 						url: url
 					}, cb, function(done, resp, cache_key) {
 						var unpacked = common_functions.unpack_packer(resp.responseText);
@@ -65718,18 +65757,23 @@ var $$IMU_EXPORT$$;
 							return done(null, false);
 						}
 
-						var match = unpacked.match(/jwplayer\(.*?\)\.setup\({[\s\S]*?file:\s*"([^"]+)",/);
+						var match = unpacked.match(/jwplayer\(.*?\)\.setup\({[\s\S]*?file:\s*"([^"]+)"[,}]/);
 						if (!match) {
 							console_error(cache_key, "Unable to find match for", resp, unpacked);
 							return done(null, false);
 						}
 
+						var videotype = true;
+						var videourl = match[1];
+						if (/\.m3u8/.test(videourl))
+							videotype = "hls";
+
 						return done({
-							url: match[1],
+							url: videourl,
 							headers: {
 								Referer: resp.finalUrl
 							},
-							video: true
+							video: videotype
 						}, 60*60);
 					});
 				};
@@ -65755,6 +65799,46 @@ var $$IMU_EXPORT$$;
 					return page_nullobj;
 				}
 			}
+		}
+
+		if (domain_nowww === "gounlimited.to") {
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+embed-([0-9a-z]{5,})\.html(?:[?#].*)?$/,
+				query_for_id: "https://gounlimited.to/embed-${id}.html",
+				process: function(done, resp, cache_key) {
+					var unpacked = common_functions.unpack_packer(resp.responseText);
+					if (!unpacked) {
+						console_error(cache_key, "Unable to find packed data for", resp);
+						return done(null, false);
+					}
+
+					var match = unpacked.match(/{player\.src\((\[{.*?}\])\)}/);
+					if (!match) {
+						console_error(cache_key, "Unable to find match for", resp, unpacked);
+						return done(null, false);
+					}
+
+					var json = JSON_parse(fixup_js_obj(match[1]));
+					sort_by_key(json, "res");
+
+					var baseobj = {
+						headers: {
+							Referer: resp.finalUrl
+						}
+					};
+
+					var urls = [];
+					for (var i = 0; i < json.length; i++) {
+						urls.push({
+							url: json[i].src,
+							video: true
+						});
+					}
+
+					return done(fillobj_urls(urls, baseobj), 60*60);
+				}
+			});
+			if (newsrc) return newsrc;
 		}
 
 		if (domain === "static.kritikustomeg.org") {
@@ -67648,6 +67732,156 @@ var $$IMU_EXPORT$$;
 					};
 				}
 			}
+		}
+
+		if (domain_nowww === "youjizz.com") {
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+videos\/+[^/]*-([0-9]+)\.html(?:[?#].*)?$/,
+				query_for_id: function(id) {
+					return {
+						url: "https://www.youjizz.com/videos/-" + id + ".html"
+					};
+				},
+				process: function(done, resp, cache_key) {
+					var match = resp.responseText.match(/var dataEncodings\s*=\s*(\[{.*?}\]);\s*var encodings/);
+					if (!match) {
+						console_error(cache_key, "Unable to find match for", resp);
+						return done(null, false);
+					}
+
+					var json = JSON_parse(match[1]);
+					sort_by_key(json, "quality");
+
+					var baseobj = {
+						extra: {},
+						headers: {
+							Referer: resp.finalUrl
+						}
+					};
+
+					var url = get_meta(resp.responseText, "og:url");
+					if (url)
+						baseobj.extra.page = url;
+
+					var title = get_meta(resp.responseText, "og:title");
+					if (title)
+						baseobj.extra.caption = title;
+
+					var urls = [];
+					for (var i = 0; i < json.length; i++) {
+						var newurl = urljoin(resp.finalUrl, json[i].filename, true);
+						var obj = {url: newurl, video: true};
+
+						if (string_indexof(newurl, "_hls") >= 0) {
+							obj.video = "hls";
+						}
+
+						urls.push(obj);
+					}
+
+					return done(fillobj_urls(urls, baseobj), 60*60);
+				}
+			});
+			if (newsrc) return newsrc;
+		}
+
+		if (host_domain_nowww === "youjizz.com" && domain_nosub === "youjizz.com" && /^cdne-(?:pics|mobile)\./.test(domain) && options.element) {
+			var el = common_functions.get_link_el_matching(options.element, function(el) {
+				return /^[a-z]+:\/\/[^/]+\/+videos\/+[^/]*-([0-9]+)\.html(?:[?#].*)?$/.test(el.href);
+			});
+
+			if (el) {
+				return {
+					url: el.href,
+					is_pagelink: true
+				};
+			}
+		}
+
+		if (domain_nosub === "vporn.com" && /^vm[0-9]*\./.test(domain)) {
+			// https://vm1.vporn.com/t/99/277135199/d3.jpg
+			//   https://vm1.vporn.com/t/99/277135199/b3.jpg
+			return src.replace(/(\/t\/+[0-9]+\/+[0-9]+\/+)d([0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1b$2");
+		}
+
+		if (domain_nowww === "dood.to") {
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+e\/+([0-9a-z]{10,})(?:[?#].*)?$/,
+				query_for_id: "https://dood.to/e/${id}",
+				process: function(done, resp, cache_key) {
+					var match = resp.responseText.match(/\$\.get\('(\/pass_md5\/[^']+)', function/);
+					if (!match) {
+						console_error(cache_key, "Unable to find match for", resp);
+						return done(null, false);
+					}
+
+					var token = resp.responseText.match(/\?token=([0-9a-z]{10,})&expiry=/);
+					if (!token) {
+						console_error(cache_key, "Unable to find token for", resp);
+						return done(null, false);
+					} else {
+						token = token[1];
+					}
+
+					var baseobj = {
+						extra: {}
+					};
+
+					var title = get_meta(resp.responseText, "og:title");
+					if (title) {
+						baseobj.extra.caption = title;
+					}
+
+					baseobj.extra.page = resp.finalUrl;
+
+					var md5_url = urljoin(resp.finalUrl, match[1], true);
+					var get_videourl_from_md5url = function(md5url, cb) {
+						api_query("dood.to_md5url:" + md5url, {
+							url: md5url,
+							headers: {
+								Referer: resp.finalUrl,
+								"x-requested-with": "XMLHttpRequest"
+							}
+						}, cb, function(done, resp, cache_key) {
+							if (!resp.responseText.match(/^(https?:\/\/.*~)$/)) {
+								console_error(cache_key, "Invalid URL for", resp);
+								return done(null, false);
+							}
+
+							return done(resp.responseText, 60*60);
+						});
+					};
+
+					get_videourl_from_md5url(md5_url, function(vidurl) {
+						if (!vidurl) {
+							return done(null, false);
+						}
+
+						var alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+						for (var i = 0; i < 10; i++) {
+							vidurl += alpha.charAt(Math.floor(Math.random() * alpha.length));
+						}
+
+						vidurl += "?token=" + token + "&expiry=" + Date.now();
+
+						return done({
+							url: vidurl,
+							extra: baseobj.extra,
+							headers: {
+								Referer: vidurl.replace(/(:\/\/[^/]+\/+).*/, "$1"),
+								"Accept": "*/*",
+								"Accept-Encoding": "identity;q=1, *;q=0",
+								"Sec-Fetch-Site": "cross-site",
+								"Sec-Fetch-Mode": "no-cors",
+								"Sec-Fetch-Dest": "video"
+							},
+							can_head: false,
+							video: true
+						}, 60*60);
+					});
+				}
+			});
+			if (newsrc) return newsrc;
 		}
 
 
