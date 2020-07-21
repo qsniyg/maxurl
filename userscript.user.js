@@ -36840,6 +36840,8 @@ var $$IMU_EXPORT$$;
 			domain_nosub === "anysex.com" ||
 			// https://mrdeepfakes.com/contents/videos_screenshots/8000/8148/320x180/1.jpg
 			domain_nosub === "mrdeepfakes.com" ||
+			// https://i.pornktu.be/contents/videos_screenshots/16000/16668/600x338/1.jpg
+			domain_nosub === "pornktu.be" ||
 			(domain_nosub === "b-cdn.net" && /^(18yos|amateurporn(?:girlfriends|tape|vidz|wives)|analcuties|asian(?:cuties|teens)|boombj|brosislove|cuteasians|d1ck|d1rty|extremejapanese|faphard(?:er)?|fi1thy|f1ix|fl1rt|freexxxhardcore|hard(?:(?:core)?teens|family|jap|milfs|moms)|hotmature|japteens|k1nk|milfz|porn(?:ouploads|n|r[yz])|roleplayers|taboofamily|teenanal|twistednuts|wanktank|extremeteens)\./.test(domain)) ||
 			domain_nosub === "hardmoms.co" ||
 			domain_nosub === "d1ck.co" ||
@@ -36910,7 +36912,7 @@ var $$IMU_EXPORT$$;
 			id = null;
 			// https://statics.cdntrex.com/contents/videos_screenshots/1047000/1047563/300x168/1.jpg?v=3
 			// https://statics.cdntrex.com/contents/videos_screenshots/1061000/1061072/preview.mp4.jpg
-			match = src.match(/\/(?:videos_(?:screenshots|sources)|v?th|kvs|videos\/+th)\/+[0-9]+\/+([0-9]+)\/+(?:(?:[0-9]+x[0-9]+|screenshots)\/+|preview(?:_trailer)?\.)/);
+			match = src.match(/\/(?:videos_(?:screenshots|sources)|v?th|kvs|videos\/+th)\/+[0-9]+\/+([0-9]+)\/+(?:(?:[0-9]+x[0-9]+|screenshots)\/+|preview(?:_(?:trailer|[0-9]+p))?\.)/);
 			if (!match) {
 				match = src.match(/\/get_file\/+[0-9a-f]+\/+[0-9a-f]{30,}\/+[0-9a-f]\/+([0-9]+)\/+screenshots\/+/);
 			}
@@ -37448,6 +37450,53 @@ var $$IMU_EXPORT$$;
 					return [decode_entities(match[1])];
 				}
 
+				var find_pornktube = function(resp) {
+					var match = resp.responseText.match(/<div id="player"(?:\s+data-(?:id|[sqnt])="[^"]+?"){5}\s*>/);
+					if (!match) {
+						console_warn(cache_key, "Unable to find player div for", resp);
+						return null;
+					}
+
+					var playerdiv = match[0];
+					var subregex = /data-(id|[sqnt])="([^"]+?)"/;
+					var subregex_global = new RegExp(subregex, "g");
+
+					var matches = playerdiv.match(subregex_global);
+					var attrs = {};
+					for (var i = 0; i < matches.length; i++) {
+						var submatch = matches[i].match(subregex);
+
+						attrs[submatch[1]] = decode_entities(submatch[2]);
+					}
+
+					var qualities = attrs.q.split(",");
+					qualities.sort(function(a, b) {
+						return parseInt(b) - parseInt(a);
+					});
+
+					var http_prefix = "https://s" + attrs.n + ".fapmedia.com/" + "cq" + "p" + "vid/";
+					var folder = 1000 * Math.floor(attrs.id/1000);
+					var tfolder = folder + "/" + attrs.id;
+
+					var urls = [];
+					for (var i = 0; i < qualities.length; i++) {
+						var quality = qualities[i].split(";");
+						var suffix = "";
+
+						if (quality[0] !== "720p") {
+							if (quality[0] === "2160p") {
+								suffix = "_4k";
+							} else {
+								suffix = "_" + quality[0];
+							}
+						}
+
+						urls.push(http_prefix + quality[4] + "/" + quality[5] + "/" + tfolder + "/" + attrs.id + suffix + ".mp4");
+					}
+
+					return urls;
+				};
+
 				api_cache.fetch(cache_key, function(obj) {
 					if (!obj)
 						return options.cb(page_nullobj);
@@ -37469,6 +37518,17 @@ var $$IMU_EXPORT$$;
 							onload: function(resp) {
 								if (resp.readyState !== 4)
 									return;
+
+								if (resp.status === 404) {
+									// pornktu.be
+									var match = resp.responseText.match(/<meta http-equiv="Refresh" content="[0-9]+; URL=(https?:\/\/[^"]+)">/);
+									if (match) {
+										finalurl = decode_entities(match[1]);
+										if (finalurl !== resp.finalUrl) {
+											return fetch_video(finalurl, false);
+										}
+									}
+								}
 
 								if (resp.status !== 200) {
 									console_error(resp);
@@ -37511,6 +37571,11 @@ var $$IMU_EXPORT$$;
 										url: embed_url,
 										is_pagelink: true
 									}, 60*60);
+								}
+
+								obj = find_pornktube(resp);
+								if (obj) {
+									return done(fillobj_urls(obj, baseobj), 60*60);
 								}
 
 								// its.porn
