@@ -4929,7 +4929,7 @@ var $$IMU_EXPORT$$;
 	};
 
 	var real_website_query = function(options) {
-		var domain = options.url.replace(/^[a-z]+:\/\/([^/]+)\/+/);
+		var domain = options.url.replace(/^[a-z]+:\/\/([^/]+)\/+.*$/, "$1");
 		var domain_nosub = get_domain_nosub(domain);
 
 		if (!options.cache_key) {
@@ -8414,6 +8414,20 @@ var $$IMU_EXPORT$$;
 			};
 		} catch(e) {
 			console_error(cache_key, e);
+		}
+
+		return null;
+	};
+
+	common_functions.get_link_el_matching = function(el, func) {
+		var current = el;
+
+		while (current) {
+			if (current.tagName === "A" && func(current)) {
+				return current;
+			}
+
+			current = current.parentElement;
 		}
 
 		return null;
@@ -23174,7 +23188,41 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(:\/\/[^/]*\/)[^/]*\//, "$1orig/");
 		}
 
-		if (domain_nowww === "derpicdn.net") {
+		if (domain_nowww === "derpibooru.org" ||
+			domain_nowww === "furbooru.org") {
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+(?:images\/+)?([0-9]+)\/*(?:[?#].*)?$/,
+				query_for_id: function(id) {
+					return {
+						url: "https://" + domain_nosub + "/" + id
+					};
+				},
+				process: function(done, resp, cache_key) {
+					var ogimage = resp.responseText.match(/<meta content="([^"]+)" property="og:image">/);
+					if (!ogimage) {
+						console_error(cache_key, "Unable to find og:image match for", resp);
+						return done(null, false);
+					}
+
+					return done(decode_entities(ogimage[1]), 6*60*60);
+				}
+			});
+			if (newsrc) return newsrc;
+
+			var link = common_functions.get_link_el_matching(options.element, function(a) {
+				return /^[a-z]+:\/\/[^/]+\/+(?:images\/+)?([0-9]+)\/*(?:[?#].*)?$/.test(a);
+			});
+			if (link) {
+				return {
+					url: link.href,
+					is_pagelink: true
+				};
+			}
+		}
+
+		if (domain_nowww === "derpicdn.net" ||
+			// https://furrycdn.org/img/2020/7/20/10078/thumb.jpg
+			domain_nowww === "furrycdn.org") {
 			// https://derpicdn.net/img/2018/2/24/1664344/thumb.png
 			//   https://derpicdn.net/img/2018/2/24/1664344/large.png
 			//   https://derpicdn.net/img/2018/2/24/1664344/full.png
@@ -23193,11 +23241,16 @@ var $$IMU_EXPORT$$;
 			if (newsrc !== src)
 				return newsrc;
 
+			var basedomain = "derpibooru.org";
+			if (domain_nosub === "furrycdn.org")
+				basedomain = "furbooru.org";
+
 			match = src.match(/\/img\/+(?:view\/+)?[0-9]{4}\/+(?:[0-9]{1,2}\/+){2}([0-9]+)[./]/);
 			if (match) {
+				// https://furbooru.org/10078 or https://furbooru.org/images/10078
 				return {
 					url: src,
-					extra: {page: "https://derpibooru.org/" + match[1]}
+					extra: {page: "https://" + basedomain + "/" + match[1]}
 				};
 			}
 		}
@@ -36785,6 +36838,8 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "camvideos.tv" ||
 			// https://screenshots.anysex.com/videos_screenshots/360000/360936/170x128/3.jpg
 			domain_nosub === "anysex.com" ||
+			// https://mrdeepfakes.com/contents/videos_screenshots/8000/8148/320x180/1.jpg
+			domain_nosub === "mrdeepfakes.com" ||
 			(domain_nosub === "b-cdn.net" && /^(18yos|amateurporn(?:girlfriends|tape|vidz|wives)|analcuties|asian(?:cuties|teens)|boombj|brosislove|cuteasians|d1ck|d1rty|extremejapanese|faphard(?:er)?|fi1thy|f1ix|fl1rt|freexxxhardcore|hard(?:(?:core)?teens|family|jap|milfs|moms)|hotmature|japteens|k1nk|milfz|porn(?:ouploads|n|r[yz])|roleplayers|taboofamily|teenanal|twistednuts|wanktank|extremeteens)\./.test(domain)) ||
 			domain_nosub === "hardmoms.co" ||
 			domain_nosub === "d1ck.co" ||
@@ -37006,7 +37061,8 @@ var $$IMU_EXPORT$$;
 				}
 			} else if (domain_nosub === "pornid.xxx") {
 				can_detect_videourl = false;
-			} else if (domain_nosub === "pornhat.com") {
+			} else if (domain_nosub === "pornhat.com" ||
+					   domain_nosub === "mrdeepfakes.com") {
 				videos_component = "video";
 			} else if (domain_nosub === "anysex.com") {
 				videos_component = "";
@@ -69216,7 +69272,7 @@ var $$IMU_EXPORT$$;
 					var can_apply = false;
 					var use_default_after = false;
 					for (var i = 0; i < info.length; i++) {
-						if ((info[i].type === "post" && (info[i].subtype === "popup" || info[i].subtype === "page"|| info[i].subtype === "home" || (info[i].subtype === "link" && options.rule_specific.instagram_gallery_postlink && !options.is_counting))) ||
+						if ((info[i].type === "post" && (info[i].subtype === "popup" || info[i].subtype === "page" || info[i].subtype === "home" || (info[i].subtype === "link" && options.rule_specific.instagram_gallery_postlink && !options.is_counting))) ||
 						     info[i].type === "story") {
 							info[i].all = true;
 							can_apply = true;
