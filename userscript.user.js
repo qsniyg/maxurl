@@ -8435,7 +8435,8 @@ var $$IMU_EXPORT$$;
 			return {
 				url: newsrc,
 				extra: {
-					page: data.link_url
+					page: data.link_url,
+					caption: data.video_title
 				},
 				headers: {
 					Referer: data.link_url
@@ -24545,6 +24546,7 @@ var $$IMU_EXPORT$$;
 							var playerconf = JSON_parse(match[1]);
 							var json = playerconf.mainRoll;
 							json.link_url = json.videoUrl;
+							json.video_title = json.title;
 							done(json, 6*60*60);
 						} catch (e) {
 							console_error(cache_key, e);
