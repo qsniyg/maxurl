@@ -26,7 +26,10 @@ sed '/\/\/# sourceMappingURL=hls.js.map/d' hls.orig.js > hls.patched.js
 cat hls.patched.js hls_shim.js > hls.js
 strip_whitespace hls.js
 
+wget https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js -O cryptojs_aes.orig.js
+cat cryptojs_aes.orig.js cryptojs_aes_shim.js > cryptojs_aes.js
+
 CLEANUP=1
 if [ $CLEANUP -eq 1 ]; then
-	rm dash.all.debug.orig.js aes.orig.js aes.patched.js hls.patched.js hls.orig.js
+	rm dash.all.debug.orig.js aes.orig.js aes.patched.js hls.patched.js hls.orig.js cryptojs_aes.orig.js
 fi
