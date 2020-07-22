@@ -14401,6 +14401,8 @@ var $$IMU_EXPORT$$;
 			(domain_nowww === "bilgimanya.com" && string_indexof(src, "/resimler/") >= 0) ||
 			// https://storage.googleapis.com/unlimitedcnd.appspot.com/2020/06/439453-200x300.jpg
 			googlestorage_container === "unlimitedcnd.appspot.com" ||
+			// https://okdiario.com/img/2020/05/20/billie-eilish-143x89.jpg
+			(domain_nowww === "okdiario.com" && string_indexof(src, "/img/") >= 0) ||
 			// https://static.acgsoso.com/uploads/2020/02/19bd4f091f03c191195d5e626c3190f9-200x300.jpg
 			(domain === "static.acgsoso.com" && string_indexof(src, "/uploads/") >= 0)
 			) {
@@ -43765,6 +43767,15 @@ var $$IMU_EXPORT$$;
 			// Xx0 seems to return the last image done with the same name/tags, no matter X
 		}
 
+		if (domain_nowww === "wallpapershome.com" ||
+			domain_nowww === "wallpapershome.ru") {
+			// https://wallpapershome.com/images/pages/ico_h/16892.jpg
+			//   https://wallpapershome.com/images/pages/pic_h/16892.jpg
+			// https://wallpapershome.com/images/pages/ico_v/16892.jpg
+			//   https://wallpapershome.com/images/pages/pic_v/16892.jpg
+			return src.replace(/(\/images\/+pages\/+)ico_([hv]\/)/, "$1pic_$2");
+		}
+
 		if (domain === "envivoblog.estrellatv.com" ||
 			// https://www.gamegrin.com/assets/Uploads/_resampled/resizedimage640360-Deus-Ex-Mankind-Divided-20161016143151.jpg
 			//   https://www.gamegrin.com/assets/Uploads/Deus-Ex-Mankind-Divided-20161016143151.jpg
@@ -59815,6 +59826,14 @@ var $$IMU_EXPORT$$;
 				return base64_decode(newsrc);
 		}
 
+		if (domain_nowww === "wallpapercave.com") {
+			// https://wallpapercave.com/fwp/wp6977255.jpg
+			//   https://wallpapercave.com/wp/wp6977255.jpg
+			// https://wallpapercave.com/wpt/wp5213175.jpg
+			//   https://wallpapercave.com/wp/wp5213175.jpg
+			return src.replace(/\/(?:fwp|wpt)\/+(wp[0-9]+\.)/, "/wp/$1");
+		}
+
 		if (domain === "cdnimage.ebn.co.kr" ||
 			// http://file.ebn.co.kr/news/201911/news_1573112213_1008380_thumbs.jpg
 			//   http://file.ebn.co.kr/news/201911/news_1573112213_1008380_main1.jpg
@@ -65197,6 +65216,7 @@ var $$IMU_EXPORT$$;
 			// http://www.rorax.com/img/57/small/35173_selena_gomez08170803_122_158lo.jpg
 			//   http://www.rorax.com/img/57/large/35173_selena_gomez08170803_122_158lo.jpg -- 541x748
 			// http://www.rorax.com/img/57/large/35150_selena_gomez03011004_122_467lo.jpg -- 553x749, upscaled?
+			// https://www.rorax.com/img/57/small/110470074_sg.jpg
 			newsrc = src.replace(/(\/img\/+[0-9]+\/+)(?:small|medium)\/+/, "$1large/");
 			if (newsrc !== src)
 				return {
@@ -67923,6 +67943,21 @@ var $$IMU_EXPORT$$;
 				}
 			});
 			if (newsrc) return newsrc;
+		}
+
+		if (domain === "img.ivsky.com") {
+			// https://www.ivsky.com/bizhi/selena_gomez_v31607/pic_548615.html
+			// https://img.ivsky.com/img/bizhi/t/201510/13/selena_gomez.jpg
+			//   https://img.ivsky.com/img/bizhi/pre/201510/13/selena_gomez.jpg
+			//   https://img.ivsky.com/img/bizhi/pic/201510/13/selena_gomez.jpg?download
+			// https://img.ivsky.com/img/tupian/li/202003/02/yetu-017.jpg
+			//   https://img.ivsky.com/img/tupian/co/202003/02/yetu-017.jpg
+			//   https://img.ivsky.com/img/tupian/pre/202003/02/yetu-017.jpg
+			// https://img.ivsky.com/img/tupian/slides/202002/28/daxiongmao-001.jpg
+			//   https://img.ivsky.com/img/tupian/pre/202002/28/daxiongmao-001.jpg
+			return src
+				.replace(/\/img\/+([^/]+)\/+pre\/+([^?#]*)(?:[?#].*)?$/, "/img/$1/pic/$2?download")
+				.replace(/\/img\/+([^/]+)\/+(?:[mt]|li|co|slides)\/+/, "/img/$1/pre/");
 		}
 
 
