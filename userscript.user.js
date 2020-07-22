@@ -10973,6 +10973,8 @@ var $$IMU_EXPORT$$;
 			// https://images-na.ssl-images-amazon.com/images/G/01/aplusautomation/vendorimages/73da407a-f7e0-4d9a-8943-178d8838be48.jpg._CB329731638_.jpg -- 3744x5616
 			//   https://images-na.ssl-images-amazon.com/images/G/01/aplusautomation/vendorimages/73da407a-f7e0-4d9a-8943-178d8838be48.jpg.jpg -- same size
 			//   https://images-na.ssl-images-amazon.com/images/G/01/aplusautomation/vendorimages/73da407a-f7e0-4d9a-8943-178d8838be48.jpg -- works too
+			// https://images-na.ssl-images-amazon.com/images/I/71a+-4NCCzL.SR160,240_BG243,243,243.jpg
+			//   https://images-na.ssl-images-amazon.com/images/I/71a+-4NCCzL.jpg
 			domain_nosub === "ssl-images-amazon.com" ||
 			// https://m.media-amazon.com/images/I/61rtKO6VrUL._SL500_.jpg
 			//   https://m.media-amazon.com/images/I/61rtKO6VrUL.jpg
@@ -10997,7 +10999,7 @@ var $$IMU_EXPORT$$;
 				//url: src.replace(/\._[^/]*\.([^./]*)$/, "._.$1"),
 				url: src
 					.replace(/(\.[^/.]*)(?:\.[^/.]*_){1,}\1(?:[?#].*)?$/, "$1") // is this needed?
-					.replace(/\.(?:[^/.]*_|_[^/.]+)\.([^./]*)$/, ".$1"), // for now this seems to work for all images
+					.replace(/\.[^/.]*_[^/.]*\.([^./]*)$/, ".$1"), // for now this seems to work for all images
 				//always_ok: true,
 				is_original: true,
 				can_head: false
@@ -68012,7 +68014,8 @@ var $$IMU_EXPORT$$;
 				.replace(/\/img\/+([^/]+)\/+(?:[mt]|li|co|slides)\/+/, "/img/$1/pre/");
 		}
 
-		if (domain_nowww === "databasegdriveplayer.me") {
+		if (domain_nowww === "databasegdriveplayer.me" ||
+			domain === "database.gdriveplayer.us") {
 			newsrc = website_query({
 				website_regex: /^([a-z]+:\/\/[^/]+\/+player\.php\?.*)$/,
 				query_for_id: "${id}",
