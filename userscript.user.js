@@ -59831,7 +59831,30 @@ var $$IMU_EXPORT$$;
 			//   https://wallpapercave.com/wp/wp6977255.jpg
 			// https://wallpapercave.com/wpt/wp5213175.jpg
 			//   https://wallpapercave.com/wp/wp5213175.jpg
-			return src.replace(/\/(?:fwp|wpt)\/+(wp[0-9]+\.)/, "/wp/$1");
+			obj = {
+				extra: {}
+			};
+
+			match = src.match(/\/wp([0-9]+)(?:\.[^/.]+)?(?:[?#].*)?$/);
+			if (match)
+				obj.extra.page = "https://wallpapercave.com/w/wp" + match[1];
+
+			if (/:\/\/[^/]+\/+w\/+wp[0-9]+(?:[?#].*)?$/.test(src)) {
+				var page_nullobj = {
+					url: src,
+					is_pagelink: true
+				};
+
+				var urls = add_extensions(src.replace(/\/w\/+(wp[0-9]+)(?:[?#].*)?$/, "/wp/$1.jpg"));
+				urls.push(page_nullobj);
+
+				return fillobj_urls(urls, obj);
+			}
+
+			newsrc = src.replace(/\/(?:fwp|wpt)\/+(wp[0-9]+\.)/, "/wp/$1");
+			obj.url = newsrc;
+
+			return obj;
 		}
 
 		if (domain === "cdnimage.ebn.co.kr" ||
