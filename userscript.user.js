@@ -1047,11 +1047,16 @@ var $$IMU_EXPORT$$;
 			var string_fromcharcode_orig = String.fromCharCode;
 
 			var fromcharcode_check = function(func) {
-				return func(50) === "2" && func(100) === "d";
+				return func(50) === "2" && func(100) === "d" && func("50", "100") === "2d";
 			};
 
-			var fromcharcode_correct = function(x) {
-				var unicode = "\\u" + ("0000" + x.toString(16)).slice(-4);
+			var fromcharcode_correct = function() {
+				var unicode = "";
+
+				for (var i = 0; i < arguments.length; i++) {
+					unicode += "\\u" + ("0000" + parseInt(arguments[i]).toString(16)).slice(-4);
+				}
+
 				return JSON_parse('"' + unicode + '"');
 			};
 
@@ -6006,6 +6011,13 @@ var $$IMU_EXPORT$$;
 			size: 694990,
 			crc32: 1683555956,
 			crc32_size: 1065995231
+		},
+		"cryptojs_aes": {
+			name: "cryptojs_aes",
+			url: "https://raw.githubusercontent.com/qsniyg/maxurl/22df70495741c2f90092f4cc0c504a1a2f6e6259/lib/cryptojs_aes.js",
+			size: 13453,
+			crc32: 4282597182,
+			crc32_size: 2723866838
 		}
 	};
 
@@ -6709,7 +6721,7 @@ var $$IMU_EXPORT$$;
 			return null;
 		}
 
-		var format = match[1];
+		var format = match[1].replace(/([^\\])\\'/g, "$1'");
 		var base = parseInt(match[2]);
 		var table_length = parseInt(match[3]);
 		var table = match[4].split("|");
@@ -11239,6 +11251,9 @@ var $$IMU_EXPORT$$;
 			// https://rcf.fr/sites/default/static.rcf.fr/imagecache/vignette_diffusion_small/radios/rcf72/visuels/adastra.jpg
 			//   https://rcf.fr/sites/default/static.rcf.fr/radios/rcf72/visuels/adastra.jpg
 			(domain_nowww === "rcf.fr" && string_indexof(src, "/sites/") >= 0) ||
+			// https://images.pagina12.com.ar/styles/focal_3_2_960x640/public/2020-07/whatsapp-20image-202020-07-03-20at-2013-18-37.jpeg?itok=-X6G-0N_
+			//   https://images.pagina12.com.ar/2020-07/whatsapp-20image-202020-07-03-20at-2013-18-37.jpeg
+			domain === "images.pagina12.com.ar" ||
 			// http://cdn.whodoyouthinkyouaremagazine.com/sites/default/files/imagecache/623px_wide/episode/hewer500.jpg
 			//   http://cdn.whodoyouthinkyouaremagazine.com/sites/default/files/episode/hewer500.jpg
 			// https://www.telugucinema.com/sites/default/files2/styles/media_gallery_thumbnail/public/amy-jackson-instagram1.jpg?itok=nwFhV2Iy
@@ -59916,7 +59931,10 @@ var $$IMU_EXPORT$$;
 		if (domain === "media.distractify.com") {
 			// https://media.distractify.com/brand-img/HW7h6r69g/480x252/bebe-rexha-the-voice-1551206853311-1551206855317.jpg
 			//   https://media.distractify.com/brand-img/HW7h6r69g/0x0/bebe-rexha-the-voice-1551206853311-1551206855317.jpg
-			return src.replace(/(\/brand-img\/+[^/]+\/+)[0-9]+x[0-9]+\/+/, "$10x0/");
+			return {
+				url: src.replace(/(\/brand-img\/+[^/]+\/+)[0-9]+x[0-9]+\/+/, "$10x0/"),
+				can_head: false // 403
+			};
 		}
 
 		if (domain_nosub === "unblocked-sites.pro" ||
@@ -59960,7 +59978,10 @@ var $$IMU_EXPORT$$;
 		if (domain === "cdn.btportail.0pb.org") {
 			// http://cdn.btportail.0pb.org/d263e11db9ed620c8311d062680d31a5/127/480/200/1195892.jpg
 			//   http://cdn.btportail.0pb.org/d263e11db9ed620c8311d062680d31a5/127/0/0/1195892.jpg
-			return src.replace(/(\/[0-9a-f]{20,}\/+[0-9]+\/+)[0-9]+\/+[0-9]+\/+([^/]+\.[^/.]*)(?:[?#].*)?$/, "$10/0/$2");
+			return {
+				url: src.replace(/(\/[0-9a-f]{20,}\/+[0-9]+\/+)[0-9]+\/+[0-9]+\/+([^/]+\.[^/.]*)(?:[?#].*)?$/, "$10/0/$2"),
+				head_wrong_contentlength: true
+			};
 		}
 
 		if (domain_nowww === "cosmopolitan.hr" ||
@@ -59986,7 +60007,15 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/images\/+posts\/+[^/]+-[0-9]+)-medium(\.[^/.]*)(?:[?#].*)?$/, "$1-large$2");
 		}
 
-		if (domain_nosub === "muzmob.org") {
+		if (domain_nosub === "muzmob.org" ||
+			// https://en.muzmo.org/news/read.php?id=24332
+			// https://en.muzmo.org/news/i/24332_150.jpg
+			//   https://en.muzmo.org/news/i/24332.jpg
+			// other:
+			// https://en.muzmo.org/collection?id=10109
+			// https://en.muzmo.org/collection_images/10109/s50.jpg
+			//   https://en.muzmo.org/collection_images/10109/176x.jpg
+			domain_nosub === "muzmo.org") {
 			// https://ru.muzmob.org/news/i/21293_300.jpg
 			//   https://ru.muzmob.org/news/i/21293.jpg
 			return src.replace(/(\/news\/+i\/+[0-9]+)_[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
@@ -66205,14 +66234,14 @@ var $$IMU_EXPORT$$;
 						c2 = (15 & c2) << 4 | c3 >> 2;
 						var last = (3 & c3) << 6 | c4;
 
-						output += String.fromCharCode(c1);
+						output += string_fromcharcode(c1);
 
 						if (c3 !== 64) {
-							output += String.fromCharCode(c2);
+							output += string_fromcharcode(c2);
 						}
 
 						if (c4 !== 64) {
-							output += String.fromCharCode(last);
+							output += string_fromcharcode(last);
 						}
 					}
 
@@ -67981,6 +68010,167 @@ var $$IMU_EXPORT$$;
 			return src
 				.replace(/\/img\/+([^/]+)\/+pre\/+([^?#]*)(?:[?#].*)?$/, "/img/$1/pic/$2?download")
 				.replace(/\/img\/+([^/]+)\/+(?:[mt]|li|co|slides)\/+/, "/img/$1/pre/");
+		}
+
+		if (domain_nowww === "databasegdriveplayer.me") {
+			newsrc = website_query({
+				website_regex: /^([a-z]+:\/\/[^/]+\/+player\.php\?.*)$/,
+				query_for_id: "${id}",
+				process: function(done, resp, cache_key) {
+					var unpacked1 = common_functions.unpack_packer(resp.responseText);
+					if (!unpacked1) {
+						console_error(cache_key, "Unable to find packed data #1 for", resp);
+						return done(null, false);
+					}
+
+					var data_match = unpacked1.match(/^var data='({.*?})';[[]'sojson\.v4'/);
+					if (!data_match) {
+						console_error(cache_key, "Unable to find data json for", resp, {unpacked1:unpacked1});
+						return done(null, false);
+					}
+
+					var data_json = data_match[1];
+
+					// to replace \\/ etc.
+					// ugly but it works
+					var data = JSON_parse(data_json);
+					data.ct = JSON_parse('"' + data.ct + '"');
+					data_json = JSON_stringify(data);
+
+					var sojson_payload = unpacked1.match(/[[]'sojson\.v4'\].*?\(null,'([0-9a-zA-Z]{100,})'[[]/);
+					if (!sojson_payload) {
+						console_error(cache_key, "Unable to find sojson packed data for", resp, {unpacked1:unpacked1});
+						return done(null, false);
+					}
+
+					var sojson_splitted = sojson_payload[1].split(/[a-zA-Z]{1,}/);
+					var sojson_unpacked = string_fromcharcode.apply(null, sojson_splitted);
+
+					var pass = sojson_unpacked.match(/var pass\s*=\s*"([^"]+)";/);
+					if (!pass) {
+						console_error(cache_key, "Unable to find AES key from", resp, {sojson_unpacked:sojson_unpacked});
+						return done(null, false);
+					} else {
+						pass = pass[1];
+					}
+
+					get_library("cryptojs_aes", options, options.do_request, function(CryptoJS) {
+						if (!CryptoJS) {
+							console_error(cache_key, "Unable to fetch CryptoJS");
+							return done(null, false);
+						}
+
+						var JsonFormatter = {
+							stringify: function(cipherParams) {
+								var jsonObj = { ct: cipherParams.ciphertext.toString(CryptoJS.enc.Base64) };
+
+								if (cipherParams.iv) {
+									jsonObj.iv = cipherParams.iv.toString();
+								}
+
+								if (cipherParams.salt) {
+									jsonObj.s = cipherParams.salt.toString();
+								}
+
+								return JSON_stringify(jsonObj);
+							},
+							parse: function(jsonStr) {
+								var jsonObj = JSON_parse(jsonStr);
+
+								var cipherParams = CryptoJS.lib.CipherParams.create({
+									ciphertext: CryptoJS.enc.Base64.parse(jsonObj.ct)
+								});
+
+								if (jsonObj.iv) {
+									cipherParams.iv = CryptoJS.enc.Hex.parse(jsonObj.iv);
+								}
+
+								if (jsonObj.s) {
+									cipherParams.salt = CryptoJS.enc.Hex.parse(jsonObj.s);
+								}
+
+								return cipherParams;
+							}
+						};
+
+						var decrypted_raw = CryptoJS.AES.decrypt(data_json, pass, {format: JsonFormatter});
+
+						try {
+							var decrypted = decrypted_raw.toString(CryptoJS.enc.Utf8);
+						} catch (e) {
+							console_error(cache_key, e, {
+								decrypted_raw: decrypted_raw,
+								data_json: data_json,
+								pass: pass,
+								format: JsonFormatter,
+								CryptoJS: CryptoJS
+							});
+
+							return done(null, false);
+						}
+
+						var unpacked2 = common_functions.unpack_packer(decrypted);
+						if (!unpacked2) {
+							console_error(cache_key, "Unable to find packed data #2 for", resp, {
+								data_json: data_json,
+								pass: pass,
+								decrypted_raw: decrypted_raw,
+								decrypted: decrypted,
+								CryptoJS: CryptoJS,
+								format: JsonFormatter
+							});
+							return done(null, false);
+						}
+
+						// .*? is needed because there are actually two matches for this
+						var sources_match = unpacked2.match(/{sources:(\[{.*?}\]),image:/);
+						if (!sources_match) {
+							console_error(cache_key, "Unable to find sources for", resp, {unpacked2:unpacked2});
+							return done(null, false);
+						}
+
+						// to get rid of \"
+						var sources_json = JSON_parse('"' + sources_match[1] + '"');
+						var sources = JSON_parse(sources_json);
+
+						// &res=original, &res=default, &res=360
+						var sortorder = ["Original", "Default", "360p"];
+						sources.sort(function(a, b) {
+							var a_label = a.label;
+							var b_label = b.label;
+
+							var a_sortorder = array_indexof(sortorder, a_label);
+							var b_sortorder = array_indexof(sortorder, b_label);
+
+							if (a_sortorder >= 0) {
+								if (b_sortorder >= 0) {
+									return a_sortorder - b_sortorder;
+								} else {
+									return -1;
+								}
+							} else if (b_sortorder >= 0) {
+								return 1;
+							} else {
+								return parseInt(b_label) - parseInt(a_label);
+							}
+						});
+
+						// TODO: unshift one that replaces a url with &res=original (and deduplicate)
+						var baseobj = {
+							is_private: true,
+							video: true
+						};
+
+						var urls = [];
+						for (var i = 0; i < sources.length; i++) {
+							urls.push(urljoin(resp.finalUrl, sources[i].file, true));
+						}
+
+						return done(fillobj_urls(urls, baseobj), 60*60);
+					});
+				}
+			});
+			if (newsrc) return newsrc;
 		}
 
 
