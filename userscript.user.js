@@ -4977,7 +4977,9 @@ var $$IMU_EXPORT$$;
 
 				return options.cb(data);
 			}
-		}, options.process);
+		}, function(done, resp, cache_key) {
+			return options.process(done, resp, cache_key, website_match)
+		});
 
 		return {
 			waiting: true
@@ -8475,6 +8477,11 @@ var $$IMU_EXPORT$$;
 		}
 
 		return null;
+	};
+
+	common_functions.is_pinterest_domain = function(domain) {
+		var domain_nosub = get_domain_nosub(domain);
+		return !!(/^pinterest\./.test(domain_nosub));
 	};
 
 	var get_domain_nosub = function(domain) {
@@ -15276,6 +15283,158 @@ var $$IMU_EXPORT$$;
 			// https://img.rasset.ie/000a704c-440.jpg
 			//   https://img.rasset.ie/000a704c-9999.jpg -- wildly stretched (4096x6144)
 			return src.replace(/(\/[^/]*)-[0-9]*(\.[^/.]*)$/, "$1-9999$2");
+		}
+
+		if (common_functions.is_pinterest_domain(domain)) {
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+pin\/+([0-9]+)\/*(?:[?#].*)?$/,
+				query_for_id: "https://www.pinterest.com/pin/${id}/",
+				process: function(done, resp, cache_key, website_match) {
+					var match = resp.responseText.match(/<script id="initial-state" type="application\/json">({.*?})<\/script>/);
+					if (!match) {
+						console_error(cache_key, "Unable to find initial state for", resp);
+						return done(null, false);
+					}
+
+					var initial_state = JSON_parse(match[1]);
+					//console_log(initial_state);
+
+					var id = website_match[1];
+					var responses = initial_state.resourceResponses;
+					var response = null;
+
+					for (var i = 0; i < responses.length; i++) {
+						if (responses[i].options.id !== id)
+							continue;
+
+						response = responses[i];
+						break;
+					}
+
+					if (!response) {
+						console_error(cache_key, "Unable to find response for id", id, " in", resp, initial_state);
+						return done(null, false);
+					}
+
+					response = response.response.data;
+
+					var urls = [];
+
+					var baseobj = {
+						extra: {
+							page: resp.finalUrl
+						}
+					};
+
+					if (response.title) {
+						baseobj.extra.caption = response.title;
+					}
+
+					if (response.videos) {
+						var videolist = [];
+						var deduplicated_urls = {};
+
+						for (var video_id in response.videos.video_list) {
+							var video = response.videos.video_list[video_id];
+							if (video.url in deduplicated_urls)
+								continue;
+
+							video.id = video_id;
+							deduplicated_urls[video.url] = video;
+							videolist.push(video);
+						}
+
+						videolist.sort(function(a, b) {
+							var a_wh = a.width * a.height;
+							var b_wh = b.width * b.height;
+
+							if (a_wh !== b_wh) {
+								return b_wh - a_wh;
+							}
+
+							var a_id = a.id.replace(/^V_/, "");
+							var b_id = b.id.replace(/^V_/, "");
+
+							var a_hls = string_indexof(a_id, "HLS") === 0;
+							var b_hls = string_indexof(b_id, "HLS") === 0;
+
+							if (a_hls) {
+								if (b_hls) {
+									// TODO: compare _MOBILE, _WEB, and _V[34]
+									return 0;
+								} else {
+									return -1;
+								}
+							} else {
+								if (b_hls) {
+									return 1;
+								} else {
+									return parseInt(b_id) - parseInt(a_id);
+								}
+							}
+						});
+
+						var videourls = [];
+						for (var i = 0; i < videolist.length; i++) {
+							var video = videolist[i];
+
+							var video_hls = string_indexof(video.id, "V_HLS") === 0;
+							videourls.push({
+								url: video.url,
+								video: video_hls ? "hls" : true
+							});
+						}
+
+						[].push.apply(urls, videourls);
+					}
+
+					if (response.images) {
+						urls.push(response.images.orig);
+					}
+
+					var obj = fillobj_urls(urls, baseobj);
+
+					if (response.link) {
+						obj.unshift({
+							url: response.link,
+							is_pagelink: true
+						});
+					}
+
+					return done(obj, 6*60*60);
+				}
+			});
+			if (newsrc) return newsrc;
+		}
+
+		if (common_functions.is_pinterest_domain(host_domain) && options.element) {
+			var current = options.element;
+			do {
+				if (current.tagName === "A" && /^[a-z]+:\/\/[^/]+\/+pin\/+[0-9]{5,}/.test(current.href)) {
+					return {
+						url: current.href,
+						is_pagelink: true
+					};
+				}
+
+				if (current.tagName === "DIV" && current.getAttribute("data-test-id") === "pin-closeup-image") {
+					var script = current.querySelector("script[type=\"application/ld+json\"]");
+					if (!script)
+						continue;
+
+					try {
+						var parsed = JSON_parse(script.innerHTML);
+						if (parsed["@id"]) {
+							return {
+								url: parsed["@id"],
+								is_pagelink: true
+							};
+						}
+					} catch (e){
+						console_error(e);
+					}
+				}
+			} while (current = current.parentElement);
 		}
 
 		if (domain === "i.pinimg.com" ||
@@ -70316,6 +70475,15 @@ var $$IMU_EXPORT$$;
 			};
 		}
 
+		if (common_functions.is_pinterest_domain(host_domain)) {
+			return {
+				element_ok: function(el) {
+					if (el.tagName === "VIDEO")
+						return true;
+				}
+			};
+		}
+
 		return null;
 	}
 
@@ -74348,8 +74516,8 @@ var $$IMU_EXPORT$$;
 								});
 
 								hls.on(Hls.Events.ERROR, function(e) {
-									console_error("Error loading HLS", e);
-									// TODO: run error handler
+									console_error("Error loading HLS", e, e.toString());
+									err_cb();
 								});
 							});
 						}
