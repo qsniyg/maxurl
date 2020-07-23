@@ -77789,15 +77789,22 @@ var $$IMU_EXPORT$$;
 
 				if (imucheck === true) {
 					// do this after imu_check, for lazy loaded images that have 1x1 images
-					if (newsrc && (newsrc.match(/^data:/) && !(/^data:image\/svg\+xml;/.test(newsrc)) && newsrc.length <= 500) ||
-						// https://www.smugmug.com/
-						// https://www.vogue.com/article/lady-gaga-met-gala-2019-entrance-behind-the-scenes-video
-						!check_visible(el)) {
+					if (src && (src.match(/^data:/) && !(/^data:image\/svg\+xml;/.test(src)) && src.length <= 500)) {
 						if (_nir_debug_)
-							console_log("Invisible or tiny data: image");
+							console_log("Tiny data: image");
 
 						return false;
 					}
+				}
+
+				// https://www.smugmug.com/
+				// https://www.vogue.com/article/lady-gaga-met-gala-2019-entrance-behind-the-scenes-video
+				// https://www.pinterest.com/
+				if (!check_visible(el)) {
+					if (_nir_debug_)
+						console_log("Invisible: image");
+
+					return false;
 				}
 
 				if (settings.mouseover_only_links) {
