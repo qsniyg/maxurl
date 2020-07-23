@@ -12124,13 +12124,13 @@ var $$IMU_EXPORT$$;
 				};
 
 				var parse_sigdec_ops = function(funcobj_name, parsed_funcobj, maincode) {
-					var regex = funcobj_name + "\\.([a-zA-Z][a-zA-Z0-9]+)\\(a,([0-9]+)\\);";
+					var regex = funcobj_name + "\\.([$a-zA-Z][$a-zA-Z0-9]+)\\(a,([0-9]+)\\);";
 					var single_regex = new RegExp(regex);
 					var global_regex = new RegExp(single_regex, "g");
 
 					var global_match = maincode.match(global_regex);
 					if (!global_match) {
-						console_warn("Unable to find global match for", maincode);
+						console_warn("Unable to find global match for", {maincode: maincode, regex: regex, global_regex: global_regex});
 						return null;
 					}
 
@@ -12174,16 +12174,17 @@ var $$IMU_EXPORT$$;
 				};
 
 				var get_sigdec_from_playerjs = function(playerjs) {
-					var match = playerjs.match(/{(a=a\.split[(]""[)];(?:([a-zA-Z][a-zA-Z0-9]{1,2})\.[a-zA-Z][a-zA-Z0-9]{1,2}[(]a,[0-9]+[)];\s*){1,}return a\.join[(]""[)];?)}/);
+					var match = playerjs.match(/{(a=a\.split[(]""[)];(?:([$a-zA-Z][$a-zA-Z0-9]{1,2})\.[$a-zA-Z][$a-zA-Z0-9]{1,2}[(]a,[0-9]+[)];\s*){1,}return a\.join[(]""[)];?)}/);
 					if (!match) {
-						console_error("Unable to find signature decoder from youtube's player");
+						console_error("Unable to find signature decoder from youtube's player", {playerjs: playerjs});
 						return null;
 					}
 
 					var maincode = match[1];
 					var funcobj = match[2];
+					var funcobj_safe = funcobj.replace(/\$/g, "[$]");
 
-					var funcobj_regex = new RegExp("(var " + funcobj + "={[a-zA-Z][a-zA-Z0-9]+:function[\\s\\S]*?};)");
+					var funcobj_regex = new RegExp("(var " + funcobj_safe + "={[$a-zA-Z][$a-zA-Z0-9]+:function[\\s\\S]*?};)");
 					var funcobj_match = playerjs.match(funcobj_regex);
 					if (!funcobj_match) {
 						console_error("Unable to find function object for signature decode from youtube's player", {
@@ -12197,7 +12198,7 @@ var $$IMU_EXPORT$$;
 
 					var parsed_funcobj = parse_funcobj(funcobj_match[1]);
 					if (parsed_funcobj) {
-						var parsed_ops = parse_sigdec_ops(funcobj, parsed_funcobj, maincode);
+						var parsed_ops = parse_sigdec_ops(funcobj_safe, parsed_funcobj, maincode);
 						if (parsed_ops) {
 							return function(sig) {
 								return run_sigdec_ops(parsed_ops, sig);
@@ -68230,6 +68231,8 @@ var $$IMU_EXPORT$$;
 						pass = pass[1];
 					}
 
+					//console_log(sojson_unpacked);
+
 					get_library("cryptojs_aes", options, options.do_request, function(CryptoJS) {
 						if (!CryptoJS) {
 							console_error(cache_key, "Unable to fetch CryptoJS");
@@ -68297,6 +68300,8 @@ var $$IMU_EXPORT$$;
 							});
 							return done(null, false);
 						}
+
+						//console_log(unpacked2);
 
 						// .*? is needed because there are actually two matches for this
 						var sources_match = unpacked2.match(/{sources:(\[{.*?}\]),image:/);
