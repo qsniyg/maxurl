@@ -56,10 +56,24 @@
 //     * You can control this with the "Rules using API calls" setting
 //   * Downloading the image for the popup
 //   * Querying a third-party library
-//     * You can control this with the "Rules using 3rd-party libraries" setting
-// Search for do_request if you want to see what the code does exactly.
+//     * You can control this with the "Rules using 3rd-party libraries" setting.
+//       3rd-party libraries are disabled by default for security reasons.
+// Search for do_request, api_query, and website_query if you want to see what the code does exactly.
 //
-// Please let me know if you have any questions or concerns regarding the script.
+// Please contact me if you have any questions or concerns regarding the script.
+//
+// Project links:
+//
+//   * Github:          https://github.com/qsniyg/maxurl
+//   * Discord:         https://discord.gg/fH9Pf54
+//   * Reddit:          https://www.reddit.com/r/MaxImage/
+//   * Website:         https://qsniyg.github.io/maxurl/
+//   * Guide:           https://qsniyg.github.io/maxurl/guide.html
+//   * Userscript:
+//     * Greasyfork:    https://greasyfork.org/scripts/36662-image-max-url
+//     * OpenUserJS:    https://openuserjs.org/scripts/qsniyg/Image_Max_URL
+//   * Firefox addon:   https://addons.mozilla.org/firefox/addon/image-max-url/
+//   * Opera extension: https://addons.opera.com/en/extensions/details/image-max-url/
 
 
 
