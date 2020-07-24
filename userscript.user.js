@@ -11974,6 +11974,9 @@ var $$IMU_EXPORT$$;
 			if (!match) {
 				match = src.match(/^[a-z]+:\/\/(?:www\.)?youtu\.be\/+([^?&#]*)/);
 			}
+			if (!match) {
+				match = src.match(/^[a-z]+:\/\/(?:(?:www|m)\.)?youtube\.com\/+embed\/+([^?/]+)\/*(?:[?#].*)?$/);
+			}
 
 			if (match) {
 				return "https://i.ytimg.com/vi/" + match[1] + "/mqdefault.jpg";
@@ -62091,6 +62094,13 @@ var $$IMU_EXPORT$$;
 
 						newurls.push(obj);
 					}
+				}
+
+				if (idmatch && baseobj.extra && baseobj.extra.page) {
+					newurls.unshift({
+						url: baseobj.extra.page,
+						is_pagelink: true
+					});
 				}
 
 				if (newurls.length > 0) {
