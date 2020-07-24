@@ -59389,7 +59389,9 @@ var $$IMU_EXPORT$$;
 			// https://www.mobygames.com/images/shots/s/352934-saints-row-2-windows-screenshot-saints-row-2-isn-t-for-pussies.jpg
 			//   https://www.mobygames.com/images/shots/t/352934-saints-row-2-windows-screenshot-saints-row-2-isn-t-for-pussies.jpg
 			//   https://www.mobygames.com/images/shots/l/352934-saints-row-2-windows-screenshot-saints-row-2-isn-t-for-pussies.jpg
-			return src.replace(/(\/images\/+shots\/+)[st]\/+/, "$1l/");
+			// https://www.mobygames.com/images/covers/s/376394-lost-eden-linux-front-cover.jpg
+			//   https://www.mobygames.com/images/covers/l/376394-lost-eden-linux-front-cover.jpg
+			return src.replace(/(\/images\/+(?:shots|covers)\/+)[st]\/+/, "$1l/");
 		}
 
 		if (domain === "img.bhs4.com") {
