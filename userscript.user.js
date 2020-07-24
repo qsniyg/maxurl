@@ -62016,6 +62016,39 @@ var $$IMU_EXPORT$$;
 			return src.replace(/:\/\/images-[^/.]+\.prd\.dlivecdn\.com\/+fit-in\/+[0-9]+x[0-9]+\/+filters:[^/]+\/+([-a-z]+\/+[^/]+)(?:[?#].*)?$/, "://images.prd.dlivecdn.com/$1");
 		}
 
+		if (domain_nowww === "bitchute.com") {
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+(?:embed|video)\/+([a-zA-Z0-9]+)\/*(?:[?#].*)?$/,
+				query_for_id: "https://www.bitchute.com/video/${id}/",
+				process: function(done, resp, cache_key) {
+					var match = resp.responseText.match(/<video id="player".*?>\s*<source src="(https?:\/\/seed[0-9]+\.bitchute\.com\/+[^/]+\/+[a-zA-Z0-9]+\.mp4)"/);
+					if (!match) {
+						console_error(cache_key, "Unable to find video player match for", resp);
+						return done(null, false);
+					}
+
+					var videourl = match[1];
+
+					var baseobj = {
+						extra: {
+							page: resp.finalUrl
+						}
+					};
+
+					var og_description = get_meta(resp.responseText, "og:description");
+					if (og_description) {
+						baseobj.extra.caption = og_description;
+					}
+
+					baseobj.url = videourl;
+					baseobj.video = true;
+
+					return done(baseobj, 6*60*60);
+				}
+			});
+			if (newsrc) return newsrc;
+		}
+
 		if (domain_nosub === "bitchute.com" && /^static/.test(domain)) {
 			// https://static-3.bitchute.com/live/channel_images/1T4G52B7I3Ox/lVnrpenvlHcQESeGbooLmeqY_small.jpg
 			//   https://static-3.bitchute.com/live/channel_images/1T4G52B7I3Ox/lVnrpenvlHcQESeGbooLmeqY_large.jpg
