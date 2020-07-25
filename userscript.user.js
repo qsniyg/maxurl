@@ -68486,6 +68486,24 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain_nowww === "terragame.com") {
+			// http://www.terragame.com/downloadable/shooting/westward/thumb_1.gif
+			//   http://www.terragame.com/downloadable/shooting/westward/screen_1.jpg
+			return src.replace(/\/thumb_([0-9]+)\.gif(?:[?#].*)?$/, "/screen_$1.jpg");
+		}
+
+		if (domain_nowww === "oldgames.sk") {
+			// https://www.oldgames.sk/images/oldgames/3d_action/No.One.Lives.Forever/.thumbs/_gallery_nolf-title.png
+			//   https://www.oldgames.sk/images/oldgames/3d_action/No.One.Lives.Forever/nolf-title.png
+			return src.replace(/(\/images\/.*\/)\.thumbs\/+_gallery_/, "$1");
+		}
+
+		if (domain === "static.gamersgate.com") {
+			// https://static.gamersgate.com/media/products/product/14749964/screenshot_640_480_KNNYFPS.jpg/w122/
+			//   https://static.gamersgate.com/media/products/product/14749964/screenshot_640_480_KNNYFPS.jpg
+			return src.replace(/(\/media\/+products\/+product\/+[0-9]+\/+[^/]+)\/+[wh][0-9]+\/+(?:[?#].*)?$/, "$1");
+		}
+
 
 
 
