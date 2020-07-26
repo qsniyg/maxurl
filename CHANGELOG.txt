@@ -1,3 +1,22 @@
+0.13.16
+
+New features:
+
+ * Support for ~50 new websites (using ~25 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including Amazon, Bitchute, Pinterest, YouTube)
+
+Bugfixes:
+
+ * Fix `Instagram: Use albums for post thumbnails` (thanks to remlap on discord for reporting)
+ * Fix opacity checks failing, occasionally returning the wrong image
+ * HLS failures will no longer fail loading the popup entirely if a backup is available
+ * Fix redirects to bad images
+
+---
+
 0.13.15
 
 New features:
