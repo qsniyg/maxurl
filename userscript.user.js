@@ -17227,7 +17227,8 @@ var $$IMU_EXPORT$$;
 			// https://steamstore-a.akamaihd.net/public/images/v6/app/game_page_background_shadow.png?v=2
 			// https://steamstore-a.akamaihd.net/public/images/v5/ico_game_highlight_video.png
 			// https://steamstore-a.akamaihd.net/public/images/v5/game_highlight_activethumb.png
-			if (/\/public\/+images\/+v[0-9]*\/+(?:app\/+game_page|(?:ico_)?game_).*/.test(src))
+			// https://steamstore-a.akamaihd.net/public/images/v6/arrows.png
+			if (/\/public\/+images\/+v[0-9]*\/+(?:app\/+game_page|(?:(?:ico_)?game_|arrows\.)).*/.test(src))
 				return {
 					url: src,
 					bad: "mask"
