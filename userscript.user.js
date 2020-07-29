@@ -5085,6 +5085,11 @@ var $$IMU_EXPORT$$;
 		return true;
 	};
 
+	var norm_url = function(url) {
+		// https://www.test.com?test -> https://www.test.com/?test
+		return url.replace(/^([a-z]+:\/\/[^/]+)(\?.*)/, "$1/$2");
+	};
+
 	function urljoin(a, b, browser) {
 		if (b.length === 0)
 			return a;
@@ -8523,6 +8528,7 @@ var $$IMU_EXPORT$$;
 			return src;
 
 		var origsrc = src;
+		src = norm_url(src);
 
 		var url = urlparse(src);
 
@@ -29446,11 +29452,6 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "img.ruliweb.com" ||
-			// http://20.dtiblog.com/s/sstommy2/file/0701-5-7s.jpg
-			//   http://20.dtiblog.com/s/sstommy2/file/0701-5-7.jpg
-			// http://2.dtiblog.com/t/trackbackhonsya/file/eric-charlizes.jpg
-			//   http://2.dtiblog.com/t/trackbackhonsya/file/eric-charlize.jpg
-			(domain_nosub === "dtiblog.com" && domain.match(/[0-9]*\.dtiblog\.com/)) ||
 			// http://img.korewaeroi.com/imgs07/1533651606/1_3s.jpg
 			//   http://img.korewaeroi.com/imgs07/1533651606/1_3.jpg
 			domain === "img.korewaeroi.com" ||
@@ -29467,6 +29468,16 @@ var $$IMU_EXPORT$$;
 			// http://img.ruliweb.com/data/news18/06m/12/multi/mai01s.jpg
 			//   http://img.ruliweb.com/data/news18/06m/12/multi/mai01.jpg
 			return src.replace(/s(\.[^/.]*)(?:[?#].*)?$/, "$1");
+		}
+
+		if (domain_nosub === "dtiblog.com" && /^[0-9]*\./.test(domain)) {
+			// http://20.dtiblog.com/s/sstommy2/file/0701-5-7s.jpg
+			//   http://20.dtiblog.com/s/sstommy2/file/0701-5-7.jpg
+			// http://2.dtiblog.com/t/trackbackhonsya/file/eric-charlizes.jpg
+			//   http://2.dtiblog.com/t/trackbackhonsya/file/eric-charlize.jpg
+			// https://101.dtiblog.com/s/scarlett/file/Caribbeancom_111913-482_01_thumb.jpg
+			//   https://101.dtiblog.com/s/scarlett/file/Caribbeancom_111913-482_01.jpg
+			return src.replace(/(?:_thumb|s)(\.[^/.]+)(?:[?#].*)?$/, "$1");
 		}
 
 		if (domain === "img2.ruliweb.com") {
@@ -32476,11 +32487,24 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain_nowww === "xh.video") {
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+[ve]\/+([-_a-zA-Z0-9]{2,5})\/*(?:[?#].*)?$/,
+				query_for_id: "https://xh.video/v/${id}",
+				process: function(done, resp, cache_key) {
+					done({
+						url: resp.finalUrl,
+						is_pagelink: true
+					}, 60*60);
+				}
+			});
+			if (newsrc) return newsrc;
+		}
+
 		if (domain_nowww === "xhamster.com" ||
 			domain_nowww === "xhamster.one" ||
 			domain_nowww === "xh.video" ||
 			domain_nowww === "xhamster.desi") {
-			// TODO: support xh.video/v/... (redirect, adding xh to the beginning doesn't work)
 			match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:videos|embed|x)\/+(?:[^/?#.]*-)?([0-9]+|xh[0-9a-zA-Z]+)(?:[?#].*)?$/);
 			if (!match) {
 				match = src.match(/^[a-z]+:\/\/[^/]+\/+xembed\.php\?(?:.*&)?video=([0-9]+|xh[0-9a-zA-Z]+)(?:&.*)?(?:#.*)?$/);
@@ -37092,6 +37116,7 @@ var $$IMU_EXPORT$$;
 			// https://i.pornktu.be/contents/videos_screenshots/16000/16668/600x338/1.jpg
 			domain_nosub === "pornktu.be" ||
 			domain_nosub === "3movs.com" ||
+			domain_nosub === "sunporno.com" ||
 			(domain_nosub === "b-cdn.net" && /^(18yos|amateurporn(?:girlfriends|tape|vidz|wives)|analcuties|asian(?:cuties|teens)|boombj|brosislove|cuteasians|d1ck|d1rty|extremejapanese|faphard(?:er)?|fi1thy|f1ix|fl1rt|freexxxhardcore|hard(?:(?:core)?teens|family|jap|milfs|moms)|hotmature|japteens|k1nk|milfz|porn(?:ouploads|n|r[yz])|roleplayers|taboofamily|teenanal|twistednuts|wanktank|extremeteens)\./.test(domain)) ||
 			domain_nosub === "hardmoms.co" ||
 			domain_nosub === "d1ck.co" ||
@@ -37331,6 +37356,10 @@ var $$IMU_EXPORT$$;
 				detected_url = basedomain + videos_component + "/" + idprefix + id + a_component + addslash;
 			}
 			if (is_pagelink) {
+				if (domain === "embeds.sunporno.com") {
+					src = src.replace(/^[a-z]+:\/\/[^/]+\/+embed\/+/, "https://www.sunporno.com/videos/");
+				}
+
 				detected_url = src;
 			}
 
@@ -37564,6 +37593,14 @@ var $$IMU_EXPORT$$;
 							if (oursize === oururl) {
 								oursize = oururl.replace(/.*\/storage[0-9]*\/+[a-zA-Z0-9]+\/+([0-9]+)p\.mp4(?:[?#].*)?$/, "$1");
 							}
+							// sunporno.com
+							if (oursize === oururl) {
+								oursize = oururl.replace(/.*\/key=.*\/+([0-9]+)x[0-9]+_[0-9]+k(?:_h264)?_[0-9]+\.mp4(?:[?#].*)?$/, "$1");
+							}
+							// sunporno.com
+							if (oursize === oururl) {
+								oursize = oururl.replace(/.*\/key=.*\/+mobile_[0-9]+\.mp4(?:[?#].*)?$/, "480");
+							}
 							if (oursize === oururl) {
 								oursize = null;
 
@@ -37630,9 +37667,11 @@ var $$IMU_EXPORT$$;
 					// https://www.thebestshemalevideos.com/contents/videos_screenshots/39000/39368/180x135/1.jpg
 					// : '...\'....'
 					var jsoned = match[1]
-						.replace(/([{,])\s*([^"'\s:]+)\s*:/g, "$1 \"$2\":")
+						.replace(/([{,]\s*)([^"'\s:]+)\s*:/g, "$1\"$2\":")
 						.replace(/(\"[^\s:"]+?\":)\s*'([^']*)'(\s*[,}])/g, "$1 \"$2\"$3")
-						.replace(/,\s*}$/, "}");
+						.replace(/,\s*}$/, "}")
+						// rudimentary comment removal
+						.replace(/((?:[0-9]|")\s*,)\s*\/\/[^\n]*/, "$1");
 
 					try {
 						var json = JSON_parse(jsoned);
@@ -37644,7 +37683,7 @@ var $$IMU_EXPORT$$;
 
 						return json;
 					} catch (e) {
-						console_error(cache_key, e, match[1], jsoned);
+						console_error(cache_key, e, {match: match[1], jsoned: jsoned});
 						return null;
 					}
 				};
@@ -37693,7 +37732,7 @@ var $$IMU_EXPORT$$;
 				var find_plainvid = function(resp) {
 					var match = resp.responseText.match(/<div id="kt_player"[^>]*>\s*<video id="main_video"[^>]+>\s*<source\s[^>]*src="([^"]+)"/);
 					if (!match) {
-						console_warn(cache_key, "Unable to find plain video for", resp);
+						console_warn(cache_key, "Unable to find plain kt video for", resp);
 						return null;
 					}
 
@@ -42911,6 +42950,9 @@ var $$IMU_EXPORT$$;
 			// https://picsninja.com/pics/2607/_leather-lingerie-and-gloves.jpg
 			//   https://picsninja.com/pics/2607/leather-lingerie-and-gloves.jpg
 			domain_nowww === "picsninja.com" ||
+			// http://nuslut.com/pics/1207/_alyson-hannigan-boob-morphs.jpg
+			//   http://nuslut.com/pics/1207/alyson-hannigan-boob-morphs.jpg
+			domain_nowww === "nuslut.com" ||
 			// https://repicsx.com/pics/1342/_steampunk-girl.jpg
 			//   https://repicsx.com/pics/1342/steampunk-girl.jpg
 			domain_nowww === "repicsx.com") {
@@ -47163,12 +47205,26 @@ var $$IMU_EXPORT$$;
 				.replace(/(\/assets\/+sample\/+[0-9]+_[0-9]+\/+)thum_[0-9]+(\/+[0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1popu$2");
 		}
 
+		if (host_domain_nosub === "javhd.com" && options.element) {
+			if (options.element.tagName === "I" && options.element.classList.contains("border")) {
+				return {
+					url: origsrc,
+					bad: "mask"
+				};
+			}
+		}
+
 		if (domain_nosub === "javhd.com" ||
 			// http://cdn.pics.fhg.pussyav.com/33000/1t.jpg
 			//   http://cdn.pics.fhg.pussyav.com/33000/1.jpg
 			domain_nosub === "pussyav.com" ||
 			// http://cdn.pics.fhg.ferame.com/5072/1t.jpg
 			domain_nosub === "ferame.com" ||
+			// http://cdn.pics.fhg.shiofuky.com/25763/1t.jpg
+			//   http://cdn.pics.fhg.shiofuky.com/25763/1.jpg
+			domain_nosub === "shiofuky.com" ||
+			// http://cdn.pics.fhg.av69.tv/29015/10t.jpg
+			domain_nosub === "av69.tv" ||
 			// http://cdn.pics.fhg.lingerieav.com/42336/1t.jpg
 			//   http://cdn.pics.fhg.lingerieav.com/42336/1.jpg
 			// http://fhg.lingerieav.com/42336/1t.jpg
@@ -51620,13 +51676,19 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/galleries\/+[0-9]{4}\/+[0-9]{2}\/+[^/]*\/+)thumbs\/+/, "$1");
 		}
 
-		if (domain_nowww === "caribbeancompr.com") {
+		if (domain_nowww === "caribbeancompr.com" ||
+			// https://www.caribbeancom.com/moviepages/111913-482/images/s/001.jpg
+			//   https://www.caribbeancom.com/moviepages/111913-482/images/l/001.jpg
+			domain_nowww === "caribbeancom.com") {
 			// https://www.caribbeancompr.com/moviepages/012619_002/images/s/001.jpg
 			//   https://www.caribbeancompr.com/moviepages/012619_002/images/l/001.jpg
 			return {
 				url: src.replace(/\/images\/+s\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/images/l/$1"),
 				headers: {
-					Referer: "https://www.caribbeancompr.com/"
+					Referer: "https://" + domain + "/"
+				},
+				referer_ok: {
+					same_domain_nosub: true
 				}
 			};
 		}
@@ -57495,6 +57557,9 @@ var $$IMU_EXPORT$$;
 			// https://static-fhg.sexart.com/media/647D21CE27B7B0243D7B9DA5E05A99D7/wt_CFE4B2A78D9E45340D5CF2BB29C9ABDF.jpg
 			//   https://static-fhg.sexart.com/media/647D21CE27B7B0243D7B9DA5E05A99D7/w_CFE4B2A78D9E45340D5CF2BB29C9ABDF.jpg
 			domain === "static-fhg.sexart.com" ||
+			// https://static-fhg.vivthomas.com/media/FC524EEBF1F459E44155D774EE3D9A04/wt_B31410A1E3264AB45529DA67CD46852E.jpg
+			//   https://static-fhg.vivthomas.com/media/FC524EEBF1F459E44155D774EE3D9A04/w_B31410A1E3264AB45529DA67CD46852E.jpg
+			domain === "static-fhg.vivthomas.com" ||
 			// https://static-fhg.alsscan.com/media/5E5797E04DBD4244ADD5137FBFC994DB/wt_1A982EA10CA6DE846DAF3ED22CFF7708.jpg
 			//   https://static-fhg.alsscan.com/media/5E5797E04DBD4244ADD5137FBFC994DB/w_1A982EA10CA6DE846DAF3ED22CFF7708.jpg
 			domain === "static-fhg.alsscan.com") {
@@ -57678,13 +57743,17 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/[^/]+-img\/+[^/]*\/+[0-9]+\/+[0-9]+\/+)mini\/+/, "$1large/");
 		}
 
-		if (domain_nowww === "kinghost.com") {
+		if (domain_nosub === "kinghost.com" && /^www[0-9]*\./.test(domain)) {
 			// http://www.kinghost.com/asian/manpe/pacific/594/s02.jpg
 			//   http://www.kinghost.com/asian/manpe/pacific/594/02.jpg
+			// http://www12.kinghost.com/asian/prettygirls/shavea/sa/thumbnails/tn206.jpg
+			//   http://www12.kinghost.com/asian/prettygirls/shavea/sa/images/206.jpg
 			return {
-				url: src.replace(/(\/+[0-9]+\/+)s([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2"),
+				url: src
+					.replace(/\/thumbnails\/+tn([0-9]+\.(?:jpg|png))(?:[?#].*)?$/, "/images/$1")
+					.replace(/\/(?:s|tn)([a-z]?[0-9]+(?:[a-z]{2})?\.(?:jpg|png))(?:[?#].*)?$/, "/$1"),
 				headers: {
-					Referer: "http://www.kinghost.com/asian/"
+					Referer: "http://" + domain + "/asian/"
 				},
 				referer_ok: {
 					same_domain: true
@@ -65727,6 +65796,7 @@ var $$IMU_EXPORT$$;
 			 domain_nowww === "iframejav.com" ||
 			 domain_nowww === "xvideosrss.com"||
 			 domain_nowww === "feurl.com" ||
+			 domain_nowww === "luxubu.review" ||
 			 domain_nowww === "playvideo.best") && options.do_request && options.cb) {
 			var base_domain = domain_nosub;
 			var query_anime789_vid = function(id, cb) {
@@ -68505,6 +68575,162 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/media\/+products\/+product\/+[0-9]+\/+[^/]+)\/+[wh][0-9]+\/+(?:[?#].*)?$/, "$1");
 		}
 
+		if (domain_nowww === "ai-love.com") {
+			// http://www.ai-love.com/avphoto/himekawa_rei/photo/02s2.jpg
+			//   http://www.ai-love.com/avphoto/himekawa_rei/photo/02.jpg
+			return src.replace(/(\/photo\/+[0-9]+)s[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain === "static.namethatporn.com") {
+			// https://static.namethatporn.com/media/tinies/2019/09/24/9KBVK6R324BG4_anyone-know-the-video-or-the-name-of-these-japan-pornstar-squirting-on-her-bed.webp
+			//   https://static.namethatporn.com/media/displays/2019/09/24/9KBVK6R324BG4_anyone-know-the-video-or-the-name-of-these-japan-pornstar-squirting-on-her-bed.webp
+			//   https://static.namethatporn.com/media/displays/2019/09/24/9KBVK6R324BG4_anyone-know-the-video-or-the-name-of-these-japan-pornstar-squirting-on-her-bed.mp4
+			newsrc = src.replace(/\/media\/+tinies\/+/, "/media/displays/");
+			if (newsrc !== src)
+				return newsrc;
+
+			return add_full_extensions(src, ["mp4", "webp"], true);
+		}
+
+		if (domain === "tn.squirtingclips.com") {
+			// http://tn.squirtingclips.com/img/25/all_bg.png
+			if (/\/img\/+[0-9]+\/+all_bg\./.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
+		}
+
+		if (domain_nowww === "kimcartoon.to") {
+			// https://kimcartoon.to/Content/images/body_bg.gif
+			if (/\/images\/+body_bg.gif(?:[?#].*)?$/.test(src)) {
+				return {
+					url: src,
+					bad: "mask"
+				};
+			}
+		}
+
+		if (domain_nowww === "asianpussyhub.com" ||
+			domain_nowww === "wetjapaneseporn.com" ||
+			// http://www.okasianxxxtube.com/hd.php?movie=asiantube/kaori-kirara-5-2.php&brick=NXgxNng1Mjg0OTU=
+			domain_nowww === "okasianxxxtube.com") {
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:play|(?:hd|s).php)\?(?:.*&)?(?:video|movie|select)=([^&]+).*?$/);
+			if (match) {
+				try {
+					newsrc = match[1];
+
+					if (string_indexof(newsrc, "/") < 0)
+						newsrc = base64_decode(newsrc);
+
+					return [
+						{
+							url: urljoin(src, newsrc, true),
+							is_pagelink: true
+						},
+						{
+							url: src,
+							is_pagelink: true
+						}
+					];
+				} catch (e) {
+					console_error(e);
+				}
+			}
+
+			newsrc = website_query({
+				website_regex: /^([a-z]+:\/\/[^/]+\/+(?:asian(?:vids|tube)|movie)\/+[^/.?#]+\.(?:html|php)(?:[?#].*)?)$/,
+				query_for_id: "${id}",
+				process: function(done, resp, cache_key) {
+					var match = resp.responseText.match(/<div class="video-holder">\s*<div class="player">[\s\S]*?<iframe\s+(?:(?:width|height)="[0-9]+"\s+){0,}src="(https?:\/\/[^"]+)"/);
+					if (!match) {
+						console_error(cache_key, "Unable to find embed match for", resp);
+						return done(null, false);
+					}
+
+					return done(decode_entities(match[1]), 6*60*60);
+				}
+			});
+			if (newsrc) return newsrc;
+		}
+
+		if (domain_nowww === "nakedsexyasians.com") {
+			// http://www.nakedsexyasians.com/hph.php?naked=mov/ai-shinozaki-bikini-motor-vehicle-detersive.php&asian=5!1.4.2!636299
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+hph.php\?(?:.*&)?naked=([^&]+).*?$/);
+			if (match) {
+				try {
+					newsrc = decodeURIComponent(match[1]);
+
+					return [
+						{
+							url: urljoin(src, newsrc, true),
+							is_pagelink: true
+						},
+						{
+							url: src,
+							is_pagelink: true
+						}
+					];
+				} catch (e) {
+					console_error(e);
+				}
+			}
+
+			newsrc = website_query({
+				website_regex: /^([a-z]+:\/\/[^/]+\/+mov\/+[^/.?#]+\.php(?:[?#].*)?)$/,
+				query_for_id: "${id}",
+				process: function(done, resp, cache_key) {
+					var match = resp.responseText.match(/<div class="wrap_player">\s*<iframe\s+(?:(?:width|height)="[0-9]+"\s+){0,}src="(https?:\/\/[^"]+)"/);
+					if (!match) {
+						console_error(cache_key, "Unable to find embed match for", resp);
+						return done(null, false);
+					}
+
+					return done(decode_entities(match[1]), 6*60*60);
+				}
+			});
+			if (newsrc) return newsrc;
+		}
+
+		if (domain_nowww === "asiantubevid.com" ||
+			domain_nowww === "xxxfilm.pro") {
+			newsrc = website_query({
+				website_regex: /^([a-z]+:\/\/[^/]+\/+embed\/+[0-9a-z]+\?.*)$/,
+				query_for_id: "${id}",
+				process: function(done, resp, cache_key) {
+					var match = resp.responseText.match(/<video [^>]+>\s*<source\s+src="(https?:\/\/[^"]+)"/);
+					if (!match) {
+						console_error(cache_key, "Unable to find video match for", resp);
+						return done(null, false);
+					}
+
+					return done({
+						url: decode_entities(match[1]),
+						headers: {
+							Referer: resp.finalUrl
+						},
+						video: true
+					}, 60*60);
+				}
+			});
+			if (newsrc) return newsrc;
+
+			newsrc = website_query({
+				website_regex: /^([a-z]+:\/\/[^/]+\/+(?:[0-9a-zA-Z]+\?.*|\?(?:[^&]*&)?video=[0-9a-zA-Z]+(?:&.*)?))$/,
+				query_for_id: "${id}",
+				process: function(done, resp, cache_key) {
+					var match = resp.responseText.match(/<div class='asg-hover'\s*style='[^']+'>.*?<iframe src='(\/embed\/+[^']+)'/);
+					if (!match) {
+						console_error(cache_key, "Unable to find embed match for", resp);
+						return done(null, false);
+					}
+
+					return done(urljoin(resp.finalUrl, decode_entities(match[1]), true), 60*60);
+				}
+			});
+			if (newsrc) return newsrc;
+		}
+
 
 
 
@@ -68978,6 +69204,8 @@ var $$IMU_EXPORT$$;
 			//   https://blogs-images.forbes.com/robertanaas/files/2017/04/Rihanna-wearing-the-RIHANNA-LOVES-CHOPARD-Joaillerie-collection-copy.jpg
 			// https://thumbor.forbes.com/thumbor/960x0/https%3A%2F%2Fblogs-images.forbes.com%2Fjoresablount%2Ffiles%2F2019%2F05%2Fhitesh-choudhary-666985-unsplash-1200x675.jpg
 			//   https://blogs-images.forbes.com/joresablount/files/2019/05/hitesh-choudhary-666985-unsplash-1200x675.jpg
+			// https://thumbor.forbes.com/thumbor/fit-in/1200x0/filters%3Aformat%28jpg%29/https%3A%2F%2Fspecials-images.forbesimg.com%2Fimageserve%2F5f1ada1a4fd1b15858011d07%2F0x0.jpg
+			//   https://specials-images.forbesimg.com/imageserve/5f1ada1a4fd1b15858011d07/0x0.jpg
 			domain === "thumbor.forbes.com" ||
 			// https://thumbor.f3.cool/BGpVZveO6bAVctCZ7aGCsL3-iPA=/360x360/smart/profile0.f3.cool/xRGcA9JA/KRpUDdn7_360x360.jpg
 			//   http://profile0.f3.cool/xRGcA9JA/KRpUDdn7_360x360.jpg
@@ -69036,11 +69264,11 @@ var $$IMU_EXPORT$$;
 			// https://thumbor-static.factorymedia.com/qBeNkBSFgEWpq0AbpElby6YyNTs=/1920x1080/smart/http%3A%2F%2Fcoresites-cdn.factorymedia.com%2Fmpora_new%2Fwp-content%2Fuploads%2F2015%2F12%2FSea-Life-Aquariums-Animal-Captivity-Beluga-Whale.jpg
 			//   http://coresites-cdn.factorymedia.com/mpora_new/wp-content/uploads/2015/12/Sea-Life-Aquariums-Animal-Captivity-Beluga-Whale.jpg
 			//return src.replace(/.*\/thumbor\/.*?\/([^/]*\..*)/, "http://$1");
-			newsrc = src.replace(/.*\/(?:thumb(?:or)?|(?:new-)?resizer)\/.*?\/(?:filters:[^/]*\/)?([a-z]*:\/\/.*)/, "$1");
+			newsrc = src.replace(/.*\/(?:thumb(?:or)?|(?:new-)?resizer)\/.*?\/(?:filters(?::|%3A)[^/]*\/)?([a-z]*(?::|%3A)(?:\/|%2F){2}.*)/, "$1");
 			if (newsrc !== src)
-				return newsrc;
+				return decodeuri_ifneeded(newsrc);
 
-			newsrc = src.replace(/.*\/(?:thumb(?:or)?|(?:new-)?resizer)\/.*?\/(?:filters:[^/]*\/)?([^%/]*\..*)/, "http://$1");
+			newsrc = src.replace(/.*\/(?:thumb(?:or)?|(?:new-)?resizer)\/.*?\/(?:filters(?::|%3A)[^/]*\/)?([^%/]*\..*)/, "http://$1");
 			if (newsrc !== src)
 				return newsrc;
 
@@ -69052,7 +69280,7 @@ var $$IMU_EXPORT$$;
 			if (newsrc !== src)
 				return decodeuri_ifneeded(newsrc);
 
-			newsrc = src.replace(/.*\/(?:[-_A-Za-z0-9]+=|unsafe)\/(?:(?:full-)?fit-in\/)?(?:[0-9x:]+\/)?(?:[0-9x:]+\/)?(?:(?:smart|top|center|middle)\/)?(?:(?:smart|top|center|middle)\/)?(?:filters:[^/]*\/)?(?:v[0-9]+\/)?((?:https?(?::\/\/|%3[aA]%2[fF]%2[fF]))?[^/%]*\..*)/, "$1");
+			newsrc = src.replace(/.*\/(?:[-_A-Za-z0-9]+=|unsafe)\/(?:(?:full-)?fit-in\/)?(?:[0-9x:]+\/)?(?:[0-9x:]+\/)?(?:(?:smart|top|center|middle)\/)?(?:(?:smart|top|center|middle)\/)?(?:filters(?::|%3A)[^/]*\/)?(?:v[0-9]+\/)?((?:https?(?::\/\/|%3[aA]%2[fF]%2[fF]))?[^/%]*\..*)/, "$1");
 			if (newsrc.match(/^[^/]*%2/))
 				newsrc = decodeURIComponent(newsrc);
 
