@@ -2008,6 +2008,7 @@ var $$IMU_EXPORT$$;
 		allow_remote: true,
 		disable_keybind_when_editing: true,
 		enable_gm_download: true,
+		gm_download_max: 15,
 		// thanks to pax romana on discord for the idea: https://github.com/qsniyg/maxurl/issues/372
 		// this must be false, because it requires a permission
 		enable_webextension_download: false,
@@ -2426,11 +2427,25 @@ var $$IMU_EXPORT$$;
 			advanced: true
 		},
 		enable_gm_download: {
-			name: "Use GM_download if available",
+			name: "Use `GM_download` if available",
 			description: "Prefers using `GM_download` over simple browser-based downloads, if the function is available. Some userscript managers download the entire file before displaying a save dialog, which can be undesirable for large video files",
 			category: "general",
 			userscript_only: true,
 			imu_enabled_exempt: true,
+			advanced: true
+		},
+		gm_download_max: {
+			name: "Maximum size to `GM_download`",
+			description: "If a file is larger than this size, use a simple browser-based download instead. Set to `0` for unlimited.",
+			category: "general",
+			userscript_only: true,
+			imu_enabled_exempt: true,
+			requires: {
+				enable_gm_download: true
+			},
+			type: "number",
+			number_min: 0,
+			number_unit: "MB",
 			advanced: true
 		},
 		enable_webextension_download: {
@@ -68731,6 +68746,12 @@ var $$IMU_EXPORT$$;
 			if (newsrc) return newsrc;
 		}
 
+		if (domain === "cdn.17app.co") {
+			// https://cdn.17app.co/THUMBNAIL_DDAB5683-917F-48FD-BE96-DC80838E7752.jpg
+			//   https://cdn.17app.co/DDAB5683-917F-48FD-BE96-DC80838E7752.jpg
+			return src.replace(/(:\/\/[^/]+\/+)THUMBNAIL_/, "$1");
+		}
+
 
 
 
@@ -75349,6 +75370,7 @@ var $$IMU_EXPORT$$;
 		var mask_el = null;
 		var popup_obj = null;
 		var popup_objecturl = null;
+		var popup_contentlength = null;
 		var popup_el = null;
 		var popup_el_is_video = false;
 		var popup_orig_url = null;
@@ -77800,7 +77822,15 @@ var $$IMU_EXPORT$$;
 				removepopups();
 				popups.push(outerdiv);
 				popupshown = true;
+
 				popup_obj = newobj;
+				if (data.data.respdata && data.data.respdata.responseHeaders) {
+					var parsed_headers = headers_list_to_dict(parse_headers(data.data.respdata.responseHeaders));
+					if ("content-length" in parsed_headers) {
+						popup_contentlength = parseInt(parsed_headers["content-length"]) || 0;
+					}
+				}
+
 				//can_close_popup = [false, false];
 				// don't set [0] to false, in case "Keep popup open until" == Any/All and keys are released before popup opens
 				can_close_popup[1] = false;
@@ -80974,9 +81004,17 @@ var $$IMU_EXPORT$$;
 				cb();
 		};
 
-		var do_download = function(imu, filename, cb) {
+		var do_download = function(imu, filename, size, cb) {
 			if (_nir_debug_) {
-				console_log("do_download", imu, filename, cb);
+				console_log("do_download", imu, filename, size, cb);
+			}
+
+			var use_gm_download = is_userscript && typeof GM_download !== "undefined" && settings.enable_gm_download;
+			var gm_download_max = parseFloat(settings.gm_download_max) || 0;
+			if (use_gm_download && size && gm_download_max) {
+				if ((gm_download_max * 1024 * 1024) < size) {
+					use_gm_download = false;
+				}
 			}
 
 			if (is_extension) {
@@ -80990,7 +81028,7 @@ var $$IMU_EXPORT$$;
 					if (cb)
 						cb();
 				});
-			} else if (is_userscript && typeof GM_download !== "undefined" && settings.enable_gm_download) {
+			} else if (use_gm_download) {
 				var headers;
 
 				if (imu.headers)
@@ -81024,7 +81062,7 @@ var $$IMU_EXPORT$$;
 		};
 
 		var download_popup_image = function() {
-			do_download(popup_obj, popup_obj.filename);
+			do_download(popup_obj, popup_obj.filename, popup_contentlength);
 		};
 
 		var get_popup_video = function() {
