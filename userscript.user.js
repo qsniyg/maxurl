@@ -16356,10 +16356,13 @@ var $$IMU_EXPORT$$;
 				return obj;
 			}
 
-			newsrc = src.replace(/^[a-z]+:\/\/[0-9]+\.media\./, "https://media.");
-			if (newsrc !== src) {
-				obj.url = newsrc;
-				return obj;
+			// thanks to Wisedrow on discord for reporting that the media trick doesn't work anymore
+			if (false) {
+				newsrc = src.replace(/^[a-z]+:\/\/[0-9]+\.media\./, "https://media.");
+				if (newsrc !== src) {
+					obj.url = newsrc;
+					return obj;
+				}
 			}
 
 			// thanks to fireattack on discord for the link + notifying me that this is possible
@@ -16487,8 +16490,12 @@ var $$IMU_EXPORT$$;
 					if (!largest)
 						return;
 
+					// thanks to Wisedrow on discord for reporting that the media trick doesn't work anymore
 					var obj = {
-						url: largest.url.replace(/^[a-z]+:\/\/[0-9]+\.media\./, "https://media."),
+						url: largest.url,//.replace(/^[a-z]+:\/\/[0-9]+\.media\./, "https://media."),
+						headers: {
+							"Accept": "*/*" // otherwise it can return an HTML
+						},
 						is_original: largest.hasOriginalDimensions
 					};
 
