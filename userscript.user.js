@@ -11996,7 +11996,7 @@ var $$IMU_EXPORT$$;
 				match = src.match(/^[a-z]+:\/\/(?:www\.)?youtu\.be\/+([^?&#]*)/);
 			}
 			if (!match) {
-				match = src.match(/^[a-z]+:\/\/(?:(?:www|m)\.)?youtube\.com\/+embed\/+([^?/]+)\/*(?:[?#].*)?$/);
+				match = src.match(/^[a-z]+:\/\/(?:(?:www|m)\.)?youtube\.com\/+embed\/+([^?#/]+)\/*(?:[?#].*)?$/);
 			}
 
 			if (match) {
@@ -62663,6 +62663,37 @@ var $$IMU_EXPORT$$;
 					video: true
 				};
 			}
+		}
+
+		if (domain === "v.triller.co") {
+			// new style: https://v.triller.co/eYmQq5
+			// old style (+no description, only #trillerlife): https://v.triller.co/RA0J76
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+([a-zA-Z0-9]+)(?:[?#].*)?$/,
+				query_for_id: "https://v.triller.co/${id}",
+				process: function(done, resp, cache_key) {
+					var match = resp.responseText.match(/<video\s+class="no-js"\s+controls\s+preload="metadata"\s+poster="(\/\/[^"]+)"\s+src="(\/\/[^"]+)"/);
+					if (!match) {
+						console_error(cache_key, "Unable to find match for", resp);
+						return done(null, false);
+					}
+
+					var baseobj = {
+						extra: {
+							page: resp.finalUrl
+						}
+					};
+
+					// TODO: caption (og:description??)
+
+					var poster = urljoin(resp.finalUrl, decode_entities(match[1]), true);
+					var video = urljoin(resp.finalUrl, decode_entities(match[2]), true);
+
+					var urls = [{url: video, video: true}, poster];
+					return done(fillobj_urls(urls, baseobj), 6*60*60);
+				}
+			});
+			if (newsrc) return newsrc;
 		}
 
 		if (domain_nowww === "kinolift.ru") {
