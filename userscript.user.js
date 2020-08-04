@@ -24039,6 +24039,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "images.underskog.no") {
+			// thanks to kjetilho on github: https://github.com/qsniyg/maxurl/issues/384
 			// https://images.underskog.no/620x100/https://underskog.no/image/get/972480
 			//   https://images.underskog.no/620x/https://underskog.no/image/get/972480
 			//   https://images.underskog.no/x100/https://underskog.no/image/get/972480
