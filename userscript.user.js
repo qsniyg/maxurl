@@ -24038,6 +24038,15 @@ var $$IMU_EXPORT$$;
 			return src.replace(/^[a-z]+:\/\/[^/]*\/+[0-9]+x[0-9]+\/+(https?:)/, "$1");
 		}
 
+		if (domain === "images.underskog.no") {
+			// https://images.underskog.no/620x100/https://underskog.no/image/get/972480
+			//   https://images.underskog.no/620x/https://underskog.no/image/get/972480
+			//   https://images.underskog.no/x100/https://underskog.no/image/get/972480
+			//   https://images.underskog.no/x/https://underskog.no/image/get/972480
+			//   https://underskog.no/image/get/972480
+			return src.replace(/^[a-z]+:\/\/[^/]+\/+[0-9]*x[0-9]*\/+(https?:\/\/)/, "$1");
+		}
+
 		if (domain === "i.postimg.cc" && options && options.do_request && options.cb) {
 			// https://i.postimg.cc/s1W2ZvYC/Alina-Kim1-20190825-140824-mp4-20190826-215449-482.jpg
 			match = src.match(/:\/\/[^/]*\/+([^/]+)\/+/);
