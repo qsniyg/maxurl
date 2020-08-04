@@ -888,6 +888,7 @@ var $$IMU_EXPORT$$;
 		head_wrong_contenttype: false,
 		head_wrong_contentlength: false,
 		need_blob: false,
+		need_data_url: false,
 		waiting: false,
 		redirects: false,
 		forces_download: false,
@@ -34315,7 +34316,20 @@ var $$IMU_EXPORT$$;
 			// https://www.instagram.com/p/BkArbRJBpNS/media?size=m
 			//   https://www.instagram.com/p/BkArbRJBpNS/media?size=l
 			//   https://instagram.fyvr2-1.fna.fbcdn.net/vp/6d735911bc97047c9b65a842b7cb3547/5D963B3E/t51.2885-15/e35/34777339_389407841565200_4095040588460589056_n.jpg?_nc_ht=instagram.fyvr2-1.fna.fbcdn.net
-			return src.replace(/\/media.*?[?&]size=[a-z].*?$/, "/media?size=l");
+			newsrc = {
+				url: src.replace(/\/media.*?[?&]size=[a-z].*?$/, "/media?size=l"),
+				can_head: false
+			};
+
+			match = src.match(/\/p\/+([^/]+)\/+media/);
+			if (match) {
+				return [
+					{url: "https://www.instagram.com/p/" + match[1] + "/", is_pagelink: true},
+					newsrc
+				];
+			} else {
+				return newsrc;
+			}
 		}
 
 		if (domain_nosub === "instagram.com" &&
@@ -34342,7 +34356,7 @@ var $$IMU_EXPORT$$;
 			return common_functions.instagram_parse_el_info(api_cache, options.do_request, options.rule_specific.instagram_use_app_api, options.rule_specific.instagram_dont_use_web, info, options.host_url, options.cb);
 		}
 
-		if (host_domain_nowww === "discordapp.com" && (domain_nosub === "fbcdn.net" || domain_nosub === "cdninstagram.com") && options.element && options.cb && options.do_request) {
+		if (false && host_domain_nowww === "discordapp.com" && (domain_nosub === "fbcdn.net" || domain_nosub === "cdninstagram.com") && options.element && options.cb && options.do_request) {
 			if (options.element.tagName === "IMG" && options.element.parentElement && options.element.parentElement.tagName === "A") {
 				var aparent = options.element.parentElement;
 				var aparent_class = aparent.getAttribute("class");
@@ -62624,9 +62638,11 @@ var $$IMU_EXPORT$$;
 			//   https://www.myabandonware.com/media/screenshots/0-9/007-nightfire-ilw/007-nightfire_13.png
 			// https://www.myabandonware.com/media/screenshots/m/max-payne-jig/thumbs/max-payne_1.png
 			//   https://www.myabandonware.com/media/screenshots/m/max-payne-jig/max-payne_1.jpg
+			// https://www.myabandonware.com/media/screenshots/s/strike-fleet-j2/thumbs/strike-fleet_1.png
+			//   https://www.myabandonware.com/media/screenshots/s/strike-fleet-j2/strike-fleet_1.gif
 			newsrc = src.replace(/(\/media\/+screenshots\/.*\/)thumbs\/+/, "$1");
 			if (newsrc !== src)
-				return add_extensions(newsrc);
+				return add_full_extensions(newsrc, ["png", "jpg", "gif"]);
 		}
 
 		if (domain_nowww === "d-gram.co.kr") {
@@ -70287,6 +70303,13 @@ var $$IMU_EXPORT$$;
 			};
 		}
 
+		if (host_domain_nowww === "discordapp.com" || host_domain_nowww === "discord.com") {
+			return {
+				url: src,
+				need_data_url: true
+			};
+		}
+
 
 
 
@@ -74672,7 +74695,7 @@ var $$IMU_EXPORT$$;
 		if (processing.incomplete_image || (obj_is_probably_video && processing.incomplete_video))
 			incomplete_request = true;
 
-		if (obj[0].need_blob)
+		if (obj[0].need_blob || obj[0].need_data_url)
 			incomplete_request = false;
 
 		if (processing.head || incomplete_request) {
@@ -75090,7 +75113,7 @@ var $$IMU_EXPORT$$;
 					}
 				};
 
-				if (!settings.mouseover_use_blob_over_data && !obj[0].need_blob) {
+				if (obj[0].need_data_url || (!settings.mouseover_use_blob_over_data && !obj[0].need_blob)) {
 					create_dataurl(resp.response, loadcb);
 				} else {
 					var objecturl = create_objecturl(resp.response);
