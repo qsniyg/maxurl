@@ -70334,6 +70334,13 @@ var $$IMU_EXPORT$$;
 			};
 		}
 
+		if (domain === "media.graphcms.com"
+			// https://media.graphcms.com/resize=w:1280,fit:crop/quality=value:75/flop/crop=dim:[0,0,800,600]/flip/compress/svyKyGYERiiGp4V9Z6w0
+		) {
+			newsrc = src.replace(/((compress|resize|crop|quality)(=[^\/]+)?\/)+/, "");
+			if (newsrc !== src)
+				return newsrc;
+		}
 
 
 
