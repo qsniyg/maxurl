@@ -34303,7 +34303,8 @@ var $$IMU_EXPORT$$;
 
 		if (domain_nowww === "instagram.com") {
 			// https://www.instagram.com/static/bundles/es6/sprite_video_...
-			if (/\/static\/+bundles\/+[^/]+\/+sprite_/.test(src)) {
+			// https://www.instagram.com/static/images/ico/favicon.svg/[hex].svg
+			if (/\/static\/+(?:bundles\/+[^/]+\/+sprite_|images\/+ico\/+)/.test(src)) {
 				return {
 					url: src,
 					bad: "mask"
@@ -34345,15 +34346,28 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "instagram.com" && /^[a-z]+:\/\/[^/]+\/+(?:[^/]+\/+)?p\/+/.test(src) && options.do_request && options.cb) {
+			newsrc = src.replace(/(\/p\/+[^/]+)(?:\/+(?:(?:media|embed).*)?)?(?:[?#].*)?$/, "$1/");
+
 			var info = [{
 				type: "post",
 				subtype: "link",
-				url: src,
+				url: newsrc,
 				image: "first",
 				element: options.element
 			}];
 
 			return common_functions.instagram_parse_el_info(api_cache, options.do_request, options.rule_specific.instagram_use_app_api, options.rule_specific.instagram_dont_use_web, info, options.host_url, options.cb);
+		}
+
+		if (domain === "s9e.github.io") {
+			// https://s9e.github.io/iframe/2/instagram.min.html#CA_k1BvgRsA
+			match = src.match(/\/iframe\/+[0-9]+\/+instagram\.min\.html#(.*)$/);
+			if (match) {
+				return {
+					url: "https://www.instagram.com/p/" + match[1] + "/",
+					is_pagelink: true
+				};
+			}
 		}
 
 		if (false && host_domain_nowww === "discordapp.com" && (domain_nosub === "fbcdn.net" || domain_nosub === "cdninstagram.com") && options.element && options.cb && options.do_request) {
