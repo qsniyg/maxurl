@@ -30616,16 +30616,23 @@ var $$IMU_EXPORT$$;
 			};
 		}
 
-		if (domain === "cdn.filestackcontent.com") {
+		if (domain === "cdn.filestackcontent.com" ||
+			// thanks to dym-sh on github: https://github.com/qsniyg/maxurl/pull/385
+			// https://media.graphcms.com/resize=w:1280,fit:crop/quality=value:75/flop/crop=dim:[0,0,800,600]/flip/compress/svyKyGYERiiGp4V9Z6w0
+			//   https://media.graphcms.com/svyKyGYERiiGp4V9Z6w0
+			domain === "media.graphcms.com") {
 			// https://cdn.filestackcontent.com/PHbgOwLhTWG8g4xfsFu8/convert?cache=true&crop=46%2C24%2C2468%2C1234
 			//   https://cdn.filestackcontent.com/PHbgOwLhTWG8g4xfsFu8
 			// https://cdn.filestackcontent.com/resize=height:200/v8x4EUOKRS6OowxpkY8i
 			//   https://cdn.filestackcontent.com/v8x4EUOKRS6OowxpkY8i
 			// https://cdn.filestackcontent.com/resize=height:200/resize=width:100/v8x4EUOKRS6OowxpkY8i
 			//   https://cdn.filestackcontent.com/v8x4EUOKRS6OowxpkY8i
+			// https://cdn.filestackcontent.com/resize=w:1280,fit:crop/quality=value:75/flop/crop=dim:[0,0,800,600]/flip/compress/v8x4EUOKRS6OowxpkY8i
+			//   https://cdn.filestackcontent.com/v8x4EUOKRS6OowxpkY8i
 			// https://cdn.filestackcontent.com/api/file/IKM4hngTeadpScVNjbD6?signature=888b9ea3eb997a4d59215bfbe2983c636df3c7da0ff8c6f85811ff74c8982e34&policy=eyJjYWxsIjogWyJyZWFkIiwgInN0YXQiLCAiY29udmVydCJdLCAiZXhwaXJ5IjogNDYyMDM3NzAzMX0%3D
 			//   https://cdn.filestackcontent.com/IKM4hngTeadpScVNjbD6
-			return src.replace(/(:\/\/[^/]*\/)(?:(?:[a-z]+=[^/]*\/+)+|api\/+file\/+)?([^/?]*)(?:\/+(?:convert.*)?|\/*\?.*)?$/, "$1$2");
+			// more info (thanks to dym-sh on github): https://github.com/GraphCMS/docs/tree/master/docs/assets
+			return src.replace(/(:\/\/[^/]*\/)(?:(?:(?:[a-z]+=[^/]*|(?:fl[io]p|compress))\/+)+|api\/+file\/+)?([^/?]*)(?:\/+(?:convert.*)?|\/*\?.*)?$/, "$1$2");
 		}
 
 		if (domain === "cdn.teenidols4you.com" ||
