@@ -49791,6 +49791,7 @@ var $$IMU_EXPORT$$;
 
 		if (domain_nosub === "vsco.co" && domain.match(/^image(?:-aws)?.*/) ||
 			// https://im.vsco.co/aws-us-west-2/b68580/74476754/5c7624c5ef3068500ce138b2/vsco5c7624c5c4814.jpg
+			// https://im.vsco.co/aws-us-west-2/c57038/3396531/5e23fa18f16df80b105598a9/vsco5e23fa23d502a.jpg?w=260
 			domain === "im.vsco.co") {
 			// https://im.vsco.co/aws-us-west-2/f7e1c6/20638915/5cc9a1ed32fea5392de5c0e7/vsco5cc9a1ee9e4b5.jpg?w=360 -- gets automatically redirected
 			//   https://image-aws-us-west-2.vsco.co/f7e1c6/20638915/5cc9a1ed32fea5392de5c0e7/vsco5cc9a1ee9e4b5.jpg
@@ -49801,8 +49802,9 @@ var $$IMU_EXPORT$$;
 			//   https://image.vsco.co/1/552f8734525d23396531/5603ae65d3dca50b0760e937/vsco_092415.jpg
 			// https://image-aws-us-west-2.vsco.co/c69ba2/8053058/5c9d80d33722ba472b0dd822/105x105/92bb3b19587edeb604d5dde82167a9ac/vsco5c9d80d3bc610.jpg
 			//   https://image-aws-us-west-2.vsco.co/c69ba2/8053058/5c9d80d33722ba472b0dd822/vsco5c9d80d3bc610.jpg
-			newsrc = src.replace(/(\/[0-9a-f]{20,}\/+)[0-9]+x[0-9]+\/+(?:[0-9a-f]+\/+)?(vsco_?[0-9a-f]+\.[^/.]*)(?:[?#].*)?$/,
-							   "$1$2");
+			newsrc = src
+				.replace(/(vsco_?[0-9a-f]+\.[^/.?#]*)(?:[?#].*)?$/, "$1")
+				.replace(/(\/[0-9a-f]{20,}\/+)[0-9]+x[0-9]+\/+(?:[0-9a-f]+\/+)?(vsco_?[0-9a-f]+\.[^/.?#]*)(?:[?#].*)?$/, "$1$2");
 			if (newsrc !== src)
 				return newsrc;
 
