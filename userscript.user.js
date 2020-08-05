@@ -6807,7 +6807,7 @@ var $$IMU_EXPORT$$;
 		};
 
 		var url_to_shortcode = function(url) {
-			match = url.match(/^[a-z]+:\/\/[^/]+\/+(?:[^/]+\/+)?(?:p|tv)\/+([^/]+)/);
+			match = url.match(/^[a-z]+:\/\/[^/]+\/+(?:[^/]+\/+)?(?:p|tv|reel)\/+([^/]+)/);
 			if (match)
 				return match[1];
 			return null;
@@ -7233,6 +7233,8 @@ var $$IMU_EXPORT$$;
 
 			if (item.product_type === "igtv") {
 				return shortcode_to_url("tv", shortcode);
+			} else if (item.product_type === "clips") {
+				return shortcode_to_url("reel", shortcode);
 			} else {
 				return shortcode_to_url("p", shortcode);
 			}
@@ -7841,7 +7843,7 @@ var $$IMU_EXPORT$$;
 			if (current.tagName !== "A")
 				continue;
 
-			if (current.href.match(/:\/\/[^/]+\/+(?:[^/]+\/+)?(?:p|tv)\//)) {
+			if (current.href.match(/:\/\/[^/]+\/+(?:[^/]+\/+)?(?:p|tv|reel)\//)) {
 				// link to post
 				possible_infos.push({
 					type: "post",
@@ -7942,7 +7944,7 @@ var $$IMU_EXPORT$$;
 			// popup
 			if ((current.tagName === "DIV" && current.getAttribute("role") === "dialog") ||
 				// post page
-				(current.tagName === "BODY" && host_url.match(/:\/\/[^/]*\/+(?:[^/]+\/+)?(?:p|tv)\//))) {
+				(current.tagName === "BODY" && host_url.match(/:\/\/[^/]*\/+(?:[^/]+\/+)?(?:p|tv|reel)\//))) {
 				possible_infos.push({
 					type: "post",
 					subtype: current.tagName === "BODY" ? "page" : "popup",
@@ -36960,6 +36962,12 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(:\/\/[^/]*\/)xxx(\/.*\/)(?:u?hd|pin)-([^/]*)$/, "$1images$2$3");
 		}
 
+		if (domain_nowww === "jav.photos") {
+			// https://jav.photos/pics/japanese/mirei-kurosawa/59/hd-mirei-kurosawa-1.jpg
+			//   https://jav.photos/pictures/japanese/mirei-kurosawa/59/mirei-kurosawa-1.jpg
+			return src.replace(/(:\/\/[^/]*\/)pics(\/.*\/)(?:u?hd|pin)-([^/]*)$/, "$1pictures$2$3");
+		}
+
 		if (domain_nowww === "purejapanese.com" ||
 			// http://www.jjgirls.com/uncensored/caribbeancompr/nao-kojima/042514_828/cute-nao-kojima-4.jpg
 			//   http://www.jjgirls.com/uncensored/caribbeancompr/nao-kojima/042514_828/nao-kojima-4.jpg
@@ -45872,12 +45880,21 @@ var $$IMU_EXPORT$$;
 			domain === "media.fistertwister.com" ||
 			// https://www.peeonher.com/media/fhg/032c423028c1db9d50064e88dc942d60/thumbs/1.jpg
 			domain_nowww === "peeonher.com" ||
+			// https://media.wetandpissy.com/fhg/fd6fd77a09f6490fa30f902b65123ae5/thumbs/1.jpg
+			//   https://media.wetandpissy.com/fhg/fd6fd77a09f6490fa30f902b65123ae5/files/1.jpg
+			domain === "media.wetandpissy.com" ||
 			// https://media.puffynetwork.com/fhg/5d5e24cd82224dff6987e152fe0e54db/thumbs/1.jpg
 			//   https://media.puffynetwork.com/fhg/5d5e24cd82224dff6987e152fe0e54db/files/1.jpg
 			domain === "media.puffynetwork.com") {
 			// https://www.vipissy.com/media/fhg/8408cd3ceddfa43466a37384c718dfe8/thumbs/1.jpg
 			//   https://www.vipissy.com/media/fhg/8408cd3ceddfa43466a37384c718dfe8/files/1.jpg
 			return src.replace(/(\/fhg\/+[0-9a-f]+\/+)thumbs\//, "$1files/");
+		}
+
+		if (domain_nosub === "explicithd.com" && /^static-cdn/.test(domain)) {
+			// https://static-cdn-perfectgonzo.explicithd.com/content/fhg/bfb87c5d9ed25b043794bf0735fab0ea/thumbs/1.jpg
+			//   https://static-cdn-perfectgonzo.explicithd.com/content/fhg/bfb87c5d9ed25b043794bf0735fab0ea/files/1.jpg
+			return src.replace(/(\/content\/+[^/]*\/+[0-9a-f]{20,}\/+)thumbs\/+/, "$1files/");
 		}
 
 		if (domain === "images.porninspector.com") {
@@ -47415,6 +47432,12 @@ var $$IMU_EXPORT$$;
 				url: src.replace(/(\/img\/+[0-9]{4}-[0-9]{2}-[0-9]{2}\/+)tn_([^/]*)(?:[?#].*)?$/, "$1$2"),
 				can_head: false // 404
 			};
+		}
+
+		if (domain_nowww === "pissblog.com") {
+			// http://www.pissblog.com/img/blackchick-pissing/tn01.jpg
+			//   http://www.pissblog.com/img/blackchick-pissing/01.jpg
+			return src.replace(/(\/img\/+[^/]+\/+)tn([0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		}
 
 		if (domain_nowww === "haxprofiles.com") {
@@ -54947,12 +54970,6 @@ var $$IMU_EXPORT$$;
 			// https://cdn.legsjapan.com/photo/data/126_KisakiAya_20B7/LegsJapan-AyaKisaki-126-01s.jpg
 			//   https://cdn.legsjapan.com/photo/data/126_KisakiAya_20B7/LegsJapan-AyaKisaki-126-01.jpg
 			return src.replace(/(\/photo\/+data\/+[^/]*\/+[^/]*-[0-9]+)s(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
-		}
-
-		if (domain_nosub === "explicithd.com" && /^static-cdn/.test(domain)) {
-			// https://static-cdn-perfectgonzo.explicithd.com/content/fhg/bfb87c5d9ed25b043794bf0735fab0ea/thumbs/1.jpg
-			//   https://static-cdn-perfectgonzo.explicithd.com/content/fhg/bfb87c5d9ed25b043794bf0735fab0ea/files/1.jpg
-			return src.replace(/(\/content\/+[^/]*\/+[0-9a-f]{20,}\/+)thumbs\/+/, "$1files/");
 		}
 
 		if (domain_nowww === "lbfmaddiction.com" ||
@@ -68837,6 +68854,19 @@ var $$IMU_EXPORT$$;
 			// https://cdn.17app.co/THUMBNAIL_DDAB5683-917F-48FD-BE96-DC80838E7752.jpg
 			//   https://cdn.17app.co/DDAB5683-917F-48FD-BE96-DC80838E7752.jpg
 			return src.replace(/(:\/\/[^/]+\/+)THUMBNAIL_/, "$1");
+		}
+
+		if (domain_nowww === "porn-gif.net") {
+			// http://porn-gif.net/img/bunnyblondy/bunnyblondy_1mini.gif
+			//   http://porn-gif.net/img/bunnyblondy/bunnyblondy_1miniki.gif
+			//   http://porn-gif.net/img/bunnyblondy/bunnyblondy_1.gif
+			return src.replace(/(\/img\/+[^/]+\/+[^/]+_[0-9]+)mini(?:ki)?(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "xofeed.com") {
+			// http://xofeed.com/content/models/savannah-sixx/pictures/passionhd/seduction-of-a-tutor/thumbs/SeductionOfATutor_PHD-01.jpg
+			//   http://xofeed.com/content/models/savannah-sixx/pictures/passionhd/seduction-of-a-tutor/preview/SeductionOfATutor_PHD-01.jpg
+			return src.replace(/(\/content\/.*\/pictures\/.*\/)thumbs\/+/, "$1preview/");
 		}
 
 
