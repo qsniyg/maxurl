@@ -68869,6 +68869,17 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/content\/.*\/pictures\/.*\/)thumbs\/+/, "$1preview/");
 		}
 
+		if (domain_nowww === "omny.fm") {
+			// thanks to fireattack on github: https://github.com/qsniyg/maxurl/issues/386
+			// https://omny.fm/shows/douse/ep-153/image.jpg?t=1596591781&size=Small -- 256x256
+			//   https://omny.fm/shows/douse/ep-153/image.jpg?t=1596591781 -- 1080x1080
+			//   https://omny.fm/shows/douse/ep-153/image.jpg?t=1596591781&size=Original -- 1080x1080
+			// https://omny.fm/shows/the-kieno-kammies-show/saa-to-appoint-ceo-by-end-march/image.jpg?t=1490334380&size=Large -- 2048x2048, upscaled
+			//   https://omny.fm/shows/the-kieno-kammies-show/saa-to-appoint-ceo-by-end-march/image.jpg?t=1490334380&size=Original -- 150x200
+			// https://omny.fm/shows/am640-the-morning-show/image.jpg?t=1544205962 -- 3000x3000
+			return src.replace(/([?&]size=)[^&]+/, "$1Original");
+		}
+
 
 
 
