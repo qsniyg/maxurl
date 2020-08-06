@@ -71994,6 +71994,90 @@ var $$IMU_EXPORT$$;
 	};
 	bigimage_recursive.loop = bigimage_recursive_loop;
 
+	var get_tagname = function(el) {
+		return el.tagName.toUpperCase();
+	};
+
+	var get_img_src = function(el) {
+		if (get_tagname(el) === "A")
+			return el.href;
+
+		if (get_tagname(el) === "CANVAS") {
+			try {
+				return el.toDataURL();
+			} catch (e) {
+				// "Tainted canvases may not be exported", CORS error in some pages
+				return;
+			}
+		}
+
+		if (get_tagname(el) === "SVG") {
+			if (settings.mouseover_allow_svg_el) {
+				return get_svg_src(el);
+			} else {
+				return null;
+			}
+		}
+
+		if (get_tagname(el) === "VIDEO") {
+			return el.currentSrc || el.src || el.poster;
+		}
+
+		// IMG or IFRAME
+		// currentSrc is used if another image is used in the srcset
+		return el.currentSrc || el.src;
+	}
+
+	var check_highlightimgs_supported_image = function(el) {
+		var src = get_img_src(el);
+
+		var imu_output = bigimage_recursive(src, {
+			fill_object: true,
+			exclude_problems: [], // todo: use settings' exclude_problems instead
+			use_cache: "read",
+			//use_cache: false,
+			use_api_cache: false,
+			host_url: window.location.href,
+			element: el,
+			document: document,
+			window: get_window(),
+			cb: function() {},
+			do_request: function() {}
+		});
+
+		// TODO: consolidate into its own routine
+		if (imu_output.length !== 1)
+			return true;
+
+		var imu_obj = imu_output[0];
+		if (imu_obj.url !== src)
+			return true;
+
+		for (var key in imu_obj) {
+			if (key === "url")
+				continue;
+
+			if (!(key in default_object))
+				return true;
+
+			// e.g. for []
+			if (JSON_stringify(default_object[key]) !== JSON_stringify(imu_obj[key]))
+				return true;
+		}
+
+		return false;
+	};
+
+	var looks_like_valid_link = function(src, el) {
+		if (/\.(?:jpe?g|png|web[mp]|gif|mp4|mkv|og[gv]|svg)(?:[?#].*)?$/i.test(src))
+			return true;
+
+		if (el && check_highlightimgs_supported_image(el))
+			return true;
+
+		return false;
+	};
+
 	var send_redirect = function(obj, cb, tabId) {
 		if (is_extension) {
 			extension_send_message({
@@ -76196,10 +76280,6 @@ var $$IMU_EXPORT$$;
 			return null;
 		}
 
-		var get_tagname = function(el) {
-			return el.tagName.toUpperCase();
-		};
-
 		function get_el_dimensions(el) {
 			if (get_tagname(el) === "VIDEO") {
 				return [
@@ -78449,36 +78529,6 @@ var $$IMU_EXPORT$$;
 			return "data:image/svg+xml," + encodeURIComponent(svgdoc);
 		};
 
-		function get_img_src(el) {
-			if (get_tagname(el) === "A")
-				return el.href;
-
-			if (get_tagname(el) === "CANVAS") {
-				try {
-					return el.toDataURL();
-				} catch (e) {
-					// "Tainted canvases may not be exported", CORS error in some pages
-					return;
-				}
-			}
-
-			if (get_tagname(el) === "SVG") {
-				if (settings.mouseover_allow_svg_el) {
-					return get_svg_src(el);
-				} else {
-					return null;
-				}
-			}
-
-			if (get_tagname(el) === "VIDEO") {
-				return el.currentSrc || el.src || el.poster;
-			}
-
-			// IMG or IFRAME
-			// currentSrc is used if another image is used in the srcset
-			return el.currentSrc || el.src;
-		}
-
 		function is_valid_src(src, isvideo) {
 			return src && (!(/^blob:/.test(src)) || !isvideo);
 		}
@@ -80575,16 +80625,6 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		var looks_like_valid_link = function(src, el) {
-			if (/\.(?:jpe?g|png|web[mp]|gif|mp4|mkv|og[gv]|svg)(?:[?#].*)?$/i.test(src))
-				return true;
-
-			if (el && check_highlightimgs_supported_image(el))
-				return true;
-
-			return false;
-		}
-
 		var is_img_pic_vid = function(el) {
 			return el.tagName === "IMG" || el.tagName === "PICTURE" || el.tagName === "VIDEO";
 		};
@@ -80925,46 +80965,6 @@ var $$IMU_EXPORT$$;
 			var valid = check_highlightimgs_valid_image(el);
 			el.setAttribute("data-imu-valid", valid + "");
 			return valid;
-		};
-
-		var check_highlightimgs_supported_image = function(el) {
-			var src = get_img_src(el);
-
-			var imu_output = bigimage_recursive(src, {
-				fill_object: true,
-				exclude_problems: [], // todo: use settings' exclude_problems instead
-				use_cache: "read",
-				//use_cache: false,
-				use_api_cache: false,
-				host_url: window.location.href,
-				element: el,
-				document: document,
-				window: get_window(),
-				cb: function() {},
-				do_request: function() {}
-			});
-
-			// TODO: consolidate into its own routine
-			if (imu_output.length !== 1)
-				return true;
-
-			var imu_obj = imu_output[0];
-			if (imu_obj.url !== src)
-				return true;
-
-			for (var key in imu_obj) {
-				if (key === "url")
-					continue;
-
-				if (!(key in default_object))
-					return true;
-
-				// e.g. for []
-				if (JSON_stringify(default_object[key]) !== JSON_stringify(imu_obj[key]))
-					return true;
-			}
-
-			return false;
 		};
 
 		var get_highlightimgs_supported_image = function(el) {
