@@ -1,3 +1,18 @@
+0.13.17
+
+New features:
+
+ * Option to control using `GM_download` based on the file size for the userscript (set to a maximum of 15MB by default)
+ * Support for ~30 new websites (using ~20 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including Discord, Instagram, Tumblr)
+ * Improvements to GraphCMS rule (thanks to dym-sh on github)
+ * Support for Instagram reels (thanks to remlap on discord for reporting)
+
+---
+
 0.13.16
 
 New features:
