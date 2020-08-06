@@ -14483,6 +14483,8 @@ var $$IMU_EXPORT$$;
 			googlestorage_container === "unlimitedcnd.appspot.com" ||
 			// https://okdiario.com/img/2020/05/20/billie-eilish-143x89.jpg
 			(domain_nowww === "okdiario.com" && string_indexof(src, "/img/") >= 0) ||
+			// https://s3-us-west-1.amazonaws.com/static-spin-com/files/2020/08/PaulMescal_RollingStones_Scarlet-1596657752-768x511.jpg
+			(amazon_container === "static-spin-com" && string_indexof(src, "/files/") >= 0) ||
 			// https://static.acgsoso.com/uploads/2020/02/19bd4f091f03c191195d5e626c3190f9-200x300.jpg
 			(domain === "static.acgsoso.com" && string_indexof(src, "/uploads/") >= 0)
 			) {
