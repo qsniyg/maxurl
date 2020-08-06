@@ -71185,6 +71185,16 @@ var $$IMU_EXPORT$$;
 			};
 		}
 
+		if (host_domain_nosub === "instyle.com") {
+			// thanks to remlap on discord for reporting: https://www.instyle.com/celebrity/zendaya-september-2020-cover
+			return {
+				element_ok: function(el) {
+					if (el.tagName === "DIV" && el.classList.contains("lazy-image"))
+						return el.querySelector(".image-overlay > img");
+				}
+			}
+		}
+
 		return null;
 	}
 
