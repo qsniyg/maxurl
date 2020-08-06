@@ -12902,6 +12902,15 @@ var $$IMU_EXPORT$$;
 			];
 		}
 
+		if (domain === "static.onecms.io") {
+			// thanks to remlap on discord for reporting
+			// https://static.onecms.io/wp-content/uploads/sites/14/2020/07/31/InStyle-September-Zendaya-2-2000.jpg
+			//   https://static.onecms.io/wp-content/uploads/sites/14/2020/07/31/InStyle-September-Zendaya-2.jpg
+			newsrc = src.replace(/(\/wp-content\/+uploads\/+sites\/+[0-9]+\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}[^/]+)-2000(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+			if (newsrc !== src)
+				return newsrc;
+		}
+
 		// /wp/uploads:
 		// http://ksassets.timeincuk.net/wp/uploads/sites/46/2017/02/oscars.jpg
 		if ((domain_nosub === "wordpress.com" && string_indexof(domain, ".files.wordpress.com") >= 0) ||
