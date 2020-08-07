@@ -860,7 +860,6 @@ var $$IMU_EXPORT$$;
 		allow_thirdparty: false,
 		allow_thirdparty_libs: true,
 		allow_thirdparty_code: false,
-		linked_image: false,
 		filter: bigimage_filter,
 
 		rule_specific: {
@@ -872,7 +871,8 @@ var $$IMU_EXPORT$$;
 			instagram_gallery_postlink: false,
 			snapchat_orig_media: true,
 			tiktok_no_watermarks: true,
-			tumblr_api_key: null
+			tumblr_api_key: null,
+			linked_image: false,
 		},
 
 		do_request: do_request,
@@ -70376,7 +70376,7 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/wp-content\/+uploads\/+[0-9]{4}\/+[0-9]{2}\/+[^/]+)-scaled(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		}
 
-		if (options.linked_image && options.element) {
+		if (options.rule_specific && options.rule_specific.linked_image && options.element) {
 			var link_el = common_functions.get_link_el_matching(options.element, function(el) {
 				if (el.href && looks_like_valid_link(el.href, el))
 					return true;
@@ -71321,8 +71321,7 @@ var $$IMU_EXPORT$$;
 			"allow_thirdparty",
 			"allow_apicalls",
 			"allow_thirdparty_libs",
-			"allow_thirdparty_code",
-			{our: "linked_image", settings: "mouseover_linked_image"}
+			"allow_thirdparty_code"
 		];
 
 		for (var i = 0; i < our_settings.length; i++) {
@@ -71377,7 +71376,8 @@ var $$IMU_EXPORT$$;
 				"instagram_gallery_postlink": true,
 				"snapchat_orig_media": true,
 				"tiktok_no_watermarks": true,
-				"tumblr_api_key": true
+				"tumblr_api_key": true,
+				"mouseover_linked_image": "linked_image"
 			};
 
 			for (var rule_specific in rule_specific_map) {
@@ -72031,6 +72031,9 @@ var $$IMU_EXPORT$$;
 	};
 
 	var get_img_src = function(el) {
+		if (typeof el === "string")
+			return el;
+
 		if (get_tagname(el) === "A")
 			return el.href;
 
