@@ -33526,6 +33526,9 @@ var $$IMU_EXPORT$$;
 			// http://zonadelta.net/deltachan/thumb/1494318792278.png
 			//   http://zonadelta.net/deltachan/src/1494318792278.png
 			(domain_nowww === "zonadelta.net" && string_indexof(src, "/deltachan/") >= 0) ||
+			// https://wikieat.club/cel/thumb/1589848210316.png
+			//   https://wikieat.club/cel/src/1589848210316.jpg
+			domain_nowww === "wikieat.club" ||
 			// https://lolcow.farm/ot/thumb/1530053186253.jpg
 			//   https://lolcow.farm/ot/thumb/1530053186253.jpg
 			domain_nowww === "lolcow.farm") {
@@ -43459,7 +43462,10 @@ var $$IMU_EXPORT$$;
 											.replace(/\/[0-9]+x[0-9]+\/([^/]*)$/, "/$1"));
 		}
 
-		if (domain_nowww === "mewch.net") {
+		if (domain_nowww === "mewch.net" ||
+			// https://endchan.net/.media/t_6f5844314aa95928051985f8c161c0c4-imagejpeg
+			//   https://endchan.net/.media/6f5844314aa95928051985f8c161c0c4-imagejpeg.jpg
+			domain_nowww === "endchan.net") {
 			// https://mewch.net/.media/t_d2831e5aac58339eb9799388464fc9df-imagejpeg
 			//   https://mewch.net/.media/d2831e5aac58339eb9799388464fc9df-imagejpeg.jpg
 			return src.replace(/\/\.media\/t_([0-9a-f]+-imagejpeg)(?:[?#].*)?$/, "/.media/$1.jpg");
@@ -63287,6 +63293,14 @@ var $$IMU_EXPORT$$;
 				return decodeuri_ifneeded(newsrc);
 		}
 
+		if (domain === "cdn.minds.com") {
+			// https://cdn.minds.com/api/v2/media/proxy?size=1920&src=https%3A%2F%2Fpbs.twimg.com%2Ftweet_video_thumb%2FERFEzNCWAAMToRx.jpg
+			//   https://pbs.twimg.com/tweet_video_thumb/ERFEzNCWAAMToRx.png?name=orig
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+api\/+v2\/+media\/+proxy\?(?:.*&)?src=([^&]+).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeURIComponent(newsrc);
+		}
+
 		if (domain === "carbonmade-media.accelerator.net" ||
 			// https://carbon-media.accelerator.net/00000000001/lbPC7JlrUbCbBqxAIlu79M;960x540.mp4
 			//   https://carbon-media.accelerator.net/00000000001/lbPC7JlrUbCbBqxAIlu79M;0x.mp4
@@ -69047,6 +69061,12 @@ var $$IMU_EXPORT$$;
 					is_pagelink: true
 				};
 			}
+		}
+
+		if (domain_nosub === "tgstat.ru" && /^static[0-9]*\./.test(domain)) {
+			// https://static10.tgstat.ru/channels/_100/14/1419befbfcf2b239e3bde2f144e0d707.jpg
+			//   https://static10.tgstat.ru/channels/_0/14/1419befbfcf2b239e3bde2f144e0d707.jpg
+			return src.replace(/\/channels\/+_[0-9]+\//, "/channels/_0/");
 		}
 
 
