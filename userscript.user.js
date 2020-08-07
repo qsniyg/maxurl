@@ -860,6 +860,7 @@ var $$IMU_EXPORT$$;
 		allow_thirdparty: false,
 		allow_thirdparty_libs: true,
 		allow_thirdparty_code: false,
+		linked_image: false,
 		filter: bigimage_filter,
 
 		rule_specific: {
@@ -2079,6 +2080,7 @@ var $$IMU_EXPORT$$;
 		mouseover_exclude_imagemaps: true,
 		// thanks to Jin on discord for the idea
 		mouseover_only_links: false,
+		mouseover_linked_image: false,
 		mouseover_exclude_sameimage: false,
 		mouseover_exclude_imagetab: true,
 		mouseover_video_controls: false,
@@ -2833,6 +2835,15 @@ var $$IMU_EXPORT$$;
 		mouseover_only_links: {
 			name: "Only popup for linked images",
 			description: "Don't pop up if the image isn't hyperlinked",
+			requires: {
+				mouseover: true
+			},
+			category: "popup",
+			subcategory: "open_behavior"
+		},
+		mouseover_linked_image: {
+			name: "Popup link for linked images",
+			description: "If the linked image cannot be made larger, pop up for the link instead of the image",
 			requires: {
 				mouseover: true
 			},
@@ -23494,7 +23505,7 @@ var $$IMU_EXPORT$$;
 		if (host_domain_nowww === "derpibooru.org" ||
 			host_domain_nowww === "furbooru.org") {
 			var link = common_functions.get_link_el_matching(options.element, function(a) {
-				return /^[a-z]+:\/\/[^/]+\/+(?:images\/+)?([0-9]+)\/*(?:[?#].*)?$/.test(a);
+				return /^[a-z]+:\/\/[^/]+\/+(?:images\/+)?([0-9]+)\/*(?:[?#].*)?$/.test(a.href);
 			});
 
 			if (link) {
@@ -70365,6 +70376,16 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/wp-content\/+uploads\/+[0-9]{4}\/+[0-9]{2}\/+[^/]+)-scaled(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		}
 
+		if (options.linked_image && options.element) {
+			var link_el = common_functions.get_link_el_matching(options.element, function(el) {
+				if (el.href && looks_like_valid_link(el.href, el))
+					return true;
+			});
+
+			if (link_el)
+				return link_el.href;
+		}
+
 
 
 
@@ -71300,14 +71321,25 @@ var $$IMU_EXPORT$$;
 			"allow_thirdparty",
 			"allow_apicalls",
 			"allow_thirdparty_libs",
-			"allow_thirdparty_code"
+			"allow_thirdparty_code",
+			{our: "linked_image", settings: "mouseover_linked_image"}
 		];
 
 		for (var i = 0; i < our_settings.length; i++) {
-			var our_setting = our_settings[i];
+			var our_setting_obj = our_settings[i];
+
+			var our_setting;
+			var settings_setting;
+			if (typeof our_setting_obj === "string") {
+				our_setting = our_setting_obj;
+				settings_setting = our_setting;
+			} else {
+				our_setting = our_setting_obj.our;
+				settings_setting = our_setting_obj.settings;
+			}
 
 			if (!(our_setting in options)) {
-				options[our_setting] = (settings[our_setting] + "") === "true";
+				options[our_setting] = (settings[settings_setting] + "") === "true";
 			}
 		}
 
