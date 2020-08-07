@@ -34385,16 +34385,27 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if (domain_nosub === "instagram.com" &&
-			!(domain_nowww === "instagram.com" &&
+		// what was this rule even for?
+		// it was probably useful for something, but it's causing issues
+		if (false && domain_nosub === "instagram.com" &&
+			!((domain_nowww === "instagram.com" ||
+			   domain === "about.instagram.com" ||
+			   domain === "help.instagram.com") &&
 			  (src.match(/:\/\/[^/]*\/+(?:[^/]+\/+)?p\/+[^/]*/) ||
-			   src.match(/:\/\/[^/]*\/[-a-zA-Z0-9_.]+(?:\?.*)?$/)))) {
+			   src.match(/:\/\/[^/]*\/+(?:accounts|directory|explore|legal|developer|blog|about)\//) ||
+			   src.match(/:\/\/[^/]*(?:\/+[-a-zA-Z0-9_.]*)?(?:[?#].*)?$/)))) {
 			return {
 				url: src,
 				headers: {
 					"Referer": "https://www.instagram.com"
 				}
 			};
+		}
+
+		if (domain === "l.instagram.com") {
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+\?(?:.*&)?u=([^&]+).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeURIComponent(newsrc);
 		}
 
 		if (domain_nowww === "instagram.com" && /^[a-z]+:\/\/[^/]+\/+(?:[^/]+\/+)?p\/+/.test(src) && options.do_request && options.cb) {
