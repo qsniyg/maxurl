@@ -33528,13 +33528,15 @@ var $$IMU_EXPORT$$;
 			(domain_nowww === "zonadelta.net" && string_indexof(src, "/deltachan/") >= 0) ||
 			// https://wikieat.club/cel/thumb/1589848210316.png
 			//   https://wikieat.club/cel/src/1589848210316.jpg
+			// https://wikieat.club/cel/thumb/1596756327267.jpg
+			//   https://wikieat.club/cel/src/1596756327267.mp4
 			domain_nowww === "wikieat.club" ||
 			// https://lolcow.farm/ot/thumb/1530053186253.jpg
 			//   https://lolcow.farm/ot/thumb/1530053186253.jpg
 			domain_nowww === "lolcow.farm") {
 			// https://crystal.cafe/hb/thumb/1497657761080.jpeg
 			//   https://crystal.cafe/hb/src/1497657761080.jpeg
-			return add_extensions(src.replace(/\/thumb\//, "/src/"));
+			return add_full_extensions(src.replace(/\/thumb\//, "/src/"), ["mp4", "png", "jpg", "jpeg"]);
 		}
 
 		if (domain_nowww === "neochan.ru") {
@@ -40846,16 +40848,21 @@ var $$IMU_EXPORT$$;
 			// https://simsettlements.com/site/data/avatars/m/0/288.jpg?1521204948
 			//   https://simsettlements.com/site/data/avatars/l/0/288.jpg?1521204948 -- o doesn't work
 			domain_nowww === "simsettlements.com" ||
+			// https://www.resetera.com/data/avatar/1508889945/s/0/28.jpg
+			//   https://www.resetera.com/data/avatar/1508889945/o/0/28.jpg
+			domain_nowww === "resetera.com" ||
 			// https://www.skinnygossip.com/community/data/avatars/m/0/172.jpg?1559693885
 			//   https://www.skinnygossip.com/community/data/avatars/o/0/172.jpg?1559693885
 			src.match(/^[a-z]+:\/\/[^/]*\/+(?:community\/+)?data\/+avatars\/+[sml]\/+[0-9]+\/+[0-9]+\.[a-z]+(?:\?[0-9]+)?$/)) {
 			// https://d3ofq03apmfb8c.cloudfront.net/data/avatars/m/121/121702.jpg?1514486539
 			//   https://d3ofq03apmfb8c.cloudfront.net/data/avatars/o/121/121702.jpg?1514486539
-			var regex = /\/data\/+avatars\/+[a-z]\/+([0-9]+\/+[0-9]+\.[^/.]*)$/;
-			return [
-				src.replace(regex, "/data/avatars/o/$1"),
-				src.replace(regex, "/data/avatars/l/$1")
-			];
+			var regex = /(\/data\/+avatar(?:s|\/+[0-9]{5,}))\/+[a-z]\/+([0-9]+\/+[0-9]+\.[^/.]*)$/;
+			if (regex.test(src)) {
+				return [
+					src.replace(regex, "$1/o/$2"),
+					src.replace(regex, "$1/l/$2")
+				];
+			}
 		}
 
 		if (domain === "img-cache.cdn.gaiaonline.com") {
@@ -50242,6 +50249,10 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (amazon_container === "gallerist" ||
+			// https://assets.boomkat.com/spree/products/657705/product/5054429141849_T11_Image.jpg
+			//   https://assets.boomkat.com/spree/products/657705/large/5054429141849_T11_Image.jpg
+			//   https://assets.boomkat.com/spree/products/657705/original/5054429141849_T11_Image.jpg
+			domain === "assets.boomkat.com" ||
 			// https://fireflowergames.com/spree/products/1621/small/Whispering_Willows_DE_Boxart.jpg?1554613058
 			//   https://fireflowergames.com/spree/products/1621/original/Whispering_Willows_DE_Boxart.jpg?1554613058
 			domain_nowww === "fireflowergames.com") {
@@ -69080,6 +69091,16 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/channels\/+_[0-9]+\//, "/channels/_0/");
 		}
 
+		if (domain === "fhg.houseoftaboo.com") {
+			// http://fhg.houseoftaboo.com/tpls/fhg3/images/show.png
+			if (/\/images\/+show\.png(?:[?#].*)?$/.test(src)) {
+				return {
+					url: src,
+					bad: "mask"
+				};
+			}
+		}
+
 
 
 
@@ -72068,6 +72089,10 @@ var $$IMU_EXPORT$$;
 		if (get_tagname(el) === "A")
 			return el.href;
 
+		if (get_tagname(el) === "IFRAME") {
+			return el.src.replace(/^javascript:window\.location\.replace\(["']([^"']+)["']\)$/, "$1");
+		}
+
 		if (get_tagname(el) === "CANVAS") {
 			try {
 				return el.toDataURL();
@@ -72092,7 +72117,7 @@ var $$IMU_EXPORT$$;
 		// IMG or IFRAME
 		// currentSrc is used if another image is used in the srcset
 		return el.currentSrc || el.src;
-	}
+	};
 
 	var check_highlightimgs_supported_image = function(el) {
 		var src = get_img_src(el);
@@ -79023,7 +79048,7 @@ var $$IMU_EXPORT$$;
 				}
 
 				if (el_tagname === "A" || (settings.mouseover_allow_iframe_el && el_tagname === "IFRAME")) {
-					var src = el.href || el.src;
+					var src = get_img_src(el);
 					links[src] = {
 						count: 1,
 						src: src,
