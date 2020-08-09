@@ -26933,8 +26933,16 @@ var $$IMU_EXPORT$$;
 			domain === "c9w8v3m5.ssl.hwcdn.net") {
 			// https://k5x5n5g8.ssl.hwcdn.net/content/181035/0013-03_w400.jpg
 			//   https://k5x5n5g8.ssl.hwcdn.net/content/181035/0013-03.jpg
-			return src.replace(/(\/content\/+[0-9]+\/+[^/]+-[0-9]+)_[wh][0-9]+(\.[^/.]*)(?:[?#].*)?$/,
+			newsrc = src.replace(/(\/content\/+[0-9]+\/+[^/]+-[0-9]+)_[wh][0-9]+(\.[^/.]*)(?:[?#].*)?$/,
 							   "$1$2");
+			if (newsrc !== src)
+				return newsrc;
+		}
+
+		if (domain_nowww === "xjapanese.com") {
+			// https://xjapanese.com/pornpics/azusa-misaki/bgg00003/azusa-misaki-12-pin.jpg
+			//   https://xjapanese.com/pornpics/azusa-misaki/bgg00003/azusa-misaki-12.jpg
+			return src.replace(/(\/pornpics\/.*)-pin(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		}
 
 		if (domain === "hwcdn.funbags.com" ||
@@ -31197,14 +31205,6 @@ var $$IMU_EXPORT$$;
 			}
 
 			return obj;
-		}
-
-		if (domain === "pics.dmm.com" ||
-			domain === "pics.dmm.co.jp") {
-			// http://pics.dmm.com/mono/movie/n_612fxbr80160r/n_612fxbr80160rps.jpg
-			//   http://pics.dmm.com/mono/movie/n_612fxbr80160r/n_612fxbr80160rpl.jpg
-			// https://pics.dmm.co.jp/livechat/00776976/profile_s.jpg
-			return src.replace(/s(\.[^/.]*)$/, "l$1");
 		}
 
 		if (domain === "www.showgle.co.kr" && string_indexof(src, "/uploads/") >= 0) {
@@ -37037,6 +37037,9 @@ var $$IMU_EXPORT$$;
 			// https://japanesethumbs.com/jav/airi-nakajima/2/cute-airi-nakajima-2.jpg
 			//   https://japanesethumbs.com/jav/airi-nakajima/2/airi-nakajima-2.jpg
 			domain_nowww === "japanesethumbs.com" ||
+			// https://img.yavtube.com/japanese/nao-kojima/1/cute-nao-kojima-3.jpg
+			//   https://img.yavtube.com/japanese/nao-kojima/1/nao-kojima-3.jpg
+			domain === "img.yavtube.com" ||
 			// http://www.javtube.com/tokyopic/caribbeancom/nao-kojima/062511-734/cute-nao-kojima-2.jpg
 			//   http://www.javtube.com/tokyopic/caribbeancom/nao-kojima/062511-734/nao-kojima-2.jpg
 			domain_nowww === "javtube.com") {
@@ -47419,6 +47422,31 @@ var $$IMU_EXPORT$$;
 			// http://asianthumbs.org/gallery/r18/pppd00722/tn/pppd00722jp-10.jpg
 			//   http://asianthumbs.org/gallery/r18/pppd00722/pppd00722jp-10.jpg
 			return src.replace(/(\/gallery\/+.*\/+)tn\/+([^/]*\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain === "pics.r18.com" ||
+			// https://pics.dmm.co.jp/digital/video/bgg00003/bgg00003-12.jpg
+			//  https://pics.dmm.co.jp/digital/video/bgg00003/bgg00003jp-12.jpg
+			domain === "pics.dmm.co.jp" ||
+			// https://pics.avdmm.top/digital/video/bgg00003/bgg00003-12.jpg
+			//   https://pics.avdmm.top/digital/video/bgg00003/bgg00003jp-12.jpg
+			domain === "pics.avdmm.top") {
+			// https://pics.r18.com/digital/video/118sksk00031/118sksk00031-1.jpg
+			//   https://pics.r18.com/digital/video/118sksk00031/118sksk00031jp-1.jpg
+			// https://pics.r18.com/digital/video/miaa00301/miaa00301-5.jpg
+			//   https://pics.r18.com/digital/video/miaa00301/miaa00301jp-5.jpg
+			newsrc = src.replace(/(\/digital\/+video\/+[0-9a-z]+[0-9]+\/+[0-9a-z]+[0-9]+)(-[0-9]+\.[^/.]+)(?:[?#].*)?$/,
+								"$1jp$2");
+			if (newsrc !== src)
+				return newsrc;
+		}
+
+		if (domain === "pics.dmm.com" ||
+			domain === "pics.dmm.co.jp") {
+			// http://pics.dmm.com/mono/movie/n_612fxbr80160r/n_612fxbr80160rps.jpg
+			//   http://pics.dmm.com/mono/movie/n_612fxbr80160r/n_612fxbr80160rpl.jpg
+			// https://pics.dmm.co.jp/livechat/00776976/profile_s.jpg
+			return src.replace(/s(\.[^/.]*)$/, "l$1");
 		}
 
 		if (domain === "images.anilos.com" ||
