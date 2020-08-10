@@ -5297,6 +5297,40 @@ var $$IMU_EXPORT$$;
 		return url;
 	};
 
+	var replace_sizes = function(src, sizes) {
+		var current_problems = null;
+		for (var i = 0; i < sizes.length; i++) {
+			var url = sizes[i];
+			if (typeof url === "object")
+				url = url.url;
+
+			if (url === src) {
+				if (typeof sizes[i] === "object" && sizes[i].problems)
+					current_problems = sizes[i].problems;
+
+				sizes.splice(i, sizes.length);
+				break;
+			}
+		}
+
+		if (current_problems) {
+			for (var i = 0; i < sizes.length; i++) {
+				if (typeof sizes[i] !== "object")
+					continue;
+
+				if (sizes[i].problems) {
+					for (var problem in sizes[i].problems) {
+						if (sizes[i].problems[problem] === current_problems[problem]) {
+							delete sizes[i].problems[problem];
+						}
+					}
+				}
+			}
+		}
+
+		return sizes;
+	};
+
 	// https://stackoverflow.com/a/10073788
 	var zpadnum = function(n, width, z) {
 		z = z || '0';
@@ -69126,6 +69160,39 @@ var $$IMU_EXPORT$$;
 					url: src,
 					bad: "mask"
 				};
+			}
+		}
+
+		if (domain_nosub === "shbdn.com" && /^s[0-9]*\./.test(domain)) {
+			// thanks to esdemirei on reddit for reporting: https://www.reddit.com/r/MaxImage/comments/i6uriw/suggestion/
+			// https://s0.shbdn.com/assets/images/right-arrow:[hex].png
+			if (/\/assets\/+images\/+[a-z]+-arrow:[0-9a-f]{10,}\./.test(src)) {
+				return {
+					url: src,
+					bad: "mask"
+				};
+			}
+		}
+
+		if (domain_nosub === "shbdn.com" && /^i[0-9]*\./.test(domain)) {
+			// https://i0.shbdn.com/photos/65/48/13/837654813rm5.jpg -- watermark
+			//   https://i0.shbdn.com/photos/65/48/13/x16_837654813rm5.jpg -- watermark
+			// https://i0.shbdn.com/photos/65/48/13/x16_83765481330w.jpg -- 1600x1200
+			// https://i0.shbdn.com/photos/65/48/13/x16_837654813rir.jpg -- 900x1200
+			// https://i0.shbdn.com/photos/65/48/13/x16_837654813src.jpg -- 1600x1079
+			// https://i0.shbdn.com/photos/58/72/35/x5_838587235pm5.jpg -- 528x396
+			//   https://i0.shbdn.com/photos/58/72/35/big_838587235pm5.jpg -- 800x600, not upscaled
+			//   x16 doesn't work
+			match = src.match(/^([a-z]+:\/\/[^/]+\/+photos\/+(?:[0-9]{2}\/+){3})(?:[a-z0-9]+_)?([0-9]{4,}[a-z0-9]{3}\.[^/.]+)(?:[?#].*)?$/);
+			if (match) {
+				return replace_sizes(src, [
+					{url: match[1] + "x16_" + match[2], problems: {watermark: true, possibly_upscaled: true}},
+					{url: match[1] + "big_" + match[2], problems: {watermark: true, possibly_upscaled: true}},
+					{url: match[1] + "x5_" + match[2], problems: {watermark: true, possibly_upscaled: true}},
+					{url: match[1] + match[2], problems: {watermark: true}},
+					{url: match[1] + "lthmb_" + match[2], problems: {smaller: true}},
+					{url: match[1] + "thmb_" + match[2], problems: {smaller: true}}
+				]);
 			}
 		}
 
