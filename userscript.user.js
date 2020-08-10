@@ -72079,10 +72079,10 @@ var $$IMU_EXPORT$$;
 							i--;
 
 							for (var j = 0; j < tried_urls.length; j++) {
-								if (tried_urls[j][2] === obj_url) {
-									var orig_url = tried_urls[j][3].url;
+								if (tried_urls[j].newurl === obj_url) {
+									var orig_url = tried_urls[j].newobj.url;
 									var index = array_indexof(images, orig_url);
-									tried_urls[j][4] = true;
+									tried_urls[j].unk = true;
 
 									if (index >= 0) {
 										obj.splice(index, 1);
@@ -72108,27 +72108,36 @@ var $$IMU_EXPORT$$;
 					}
 
 					for (var i = 0; i < fine_urls.length; i++) {
-						var index = array_indexof(images, fine_urls[i][0]);
+						var index = array_indexof(images, fine_urls[i].url);
 						if (index >= 0) {
 							obj = [obj[index]];
-							return options.cb(obj, fine_urls[i][1]);
+							if (_nir_debug_) {
+								console_log("bigimage_recursive_loop's cb: returning fine_url", deepcopy(obj), deepcopy(fine_urls[i]));
+							}
+							return options.cb(obj, fine_urls[i].data);
 						}
 					}
 
 					var try_any = false;
 					for (var i = 0; i < tried_urls.length; i++) {
-						if (tried_urls[i][0] === url || try_any) {
-							if (tried_urls[i][4] === true) {
+						if (tried_urls[i].url === url || try_any) {
+							if (tried_urls[i].unk === true) {
 								try_any = true;
 								continue;
 							}
 
-							var index = array_indexof(images, tried_urls[i][2]);
+							var index = array_indexof(images, tried_urls[i].newurl);
 							if (index >= 0) {
 								obj = [obj[index]];
-								return options.cb(obj, tried_urls[i][1]);
+								if (_nir_debug_) {
+									console_log("bigimage_recursive_loop's cb: returning tried_url", deepcopy(obj), deepcopy(tried_urls[i]), try_any);
+								}
+								return options.cb(obj, tried_urls[i].data);
 							} else {
-								return options.cb(null, tried_urls[i][1]);
+								if (_nir_debug_) {
+									console_log("bigimage_recursive_loop's cb: returning null tried_url", deepcopy(tried_urls[i]), try_any);
+								}
+								return options.cb(null, tried_urls[i].data);
 							}
 						}
 					}
@@ -72139,15 +72148,31 @@ var $$IMU_EXPORT$$;
 
 					query(obj, function (newurl, newobj, data) {
 						if (_nir_debug_) {
-							console_log("bigimage_recursive_loop (query):", deepcopy(newurl), deepcopy(newobj), data);
+							console_log("bigimage_recursive_loop (query: newurl, newobj, data):", deepcopy(newurl), deepcopy(newobj), data);
 						}
 
 						if (!newurl) {
+							if (_nir_debug_) {
+								console_log("bigimage_recursive_loop (query): returning null", data);
+							}
 							return options.cb(null, data);
 						}
 
-						fine_urls.push([newurl, data]);
-						tried_urls.push([url, data, newurl, deepcopy(newobj), false]);
+						fine_urls.push({
+							url: newurl,
+							data: data
+						});
+
+						tried_urls.push({
+							url: url,
+							data: data,
+							newurl: newurl,
+							newobj: deepcopy(newobj),
+
+							// This is why you use objects instead of arrays
+							// I forgot what exactly this variable was supposed to accomplish
+							unk: false
+						});
 
 						//if (array_indexof(images, newurl) < 0 && newurl !== url || true) {
 						var newurl_index = array_indexof(images, newurl);
@@ -72156,6 +72181,10 @@ var $$IMU_EXPORT$$;
 						} else {
 							//obj = obj.slice(array_indexof(images, newurl));
 							obj = [obj[newurl_index]];
+
+							if (_nir_debug_) {
+								console_log("bigimage_recursive_loop (query): returning", deepcopy(obj), data);
+							}
 							options.cb(obj, data);
 						}
 					});
@@ -72486,6 +72515,10 @@ var $$IMU_EXPORT$$;
 
 		if (url === page_url) {
 			print_orig();
+
+			if (_nir_debug_)
+				console_log("(check_image) url == page_url", url, page_url);
+
 			ok_cb(url);
 		} else  {
 			var headers = obj.headers;
@@ -72611,8 +72644,13 @@ var $$IMU_EXPORT$$;
 					console_log("(check_image) headers", headers);
 
 				if (obj.always_ok ||
-					(!obj.can_head && !settings.canhead_get))
+					(!obj.can_head && !settings.canhead_get)) {
+					if (_nir_debug_) {
+						console_log("(check_image) always_ok || !can_head", url, deepcopy(obj));
+					}
+
 					return ok_cb(url);
+				}
 
 				var method = "HEAD";
 				if (!obj.can_head && settings.canhead_get) {
@@ -72749,10 +72787,15 @@ var $$IMU_EXPORT$$;
 						return err_cb("bad image");
 					}
 
-					if (!customheaders || is_extension)
+					if (!customheaders || is_extension) {
+						if (_nir_debug_) {
+							console_log("(check_image) finalUrl", resp.finalUrl || url, resp, deepcopy(obj));
+						}
+
 						ok_cb(resp.finalUrl || url);
-					else
+					} else {
 						console_log("Custom headers needed, currently unhandled");
+					}
 				};
 
 				var req = do_request({
