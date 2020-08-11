@@ -2156,6 +2156,7 @@ var $$IMU_EXPORT$$;
 		mouseover_download: false,
 		mouseover_hide_cursor: false,
 		mouseover_hide_cursor_after: 0,
+		mouseover_mouse_inactivity_jitter: 5,
 		// thanks to thewhiterabbit- on reddit for the idea: https://github.com/qsniyg/maxurl/issues/331
 		mouseover_clickthrough: false,
 		// also thanks to 07416: https://github.com/qsniyg/maxurl/issues/25
@@ -3839,6 +3840,19 @@ var $$IMU_EXPORT$$;
 			},
 			type: "number",
 			number_unit: "ms",
+			number_int: true,
+			number_min: 0,
+			category: "popup",
+			subcategory: "behavior"
+		},
+		mouseover_mouse_inactivity_jitter: {
+			name: "Mouse jitter threshold",
+			description: "Threshold for mouse movement before the mouse cursor is shown again, 0 always shows the cursor after any movement",
+			requires: {
+				mouseover_hide_cursor: true
+			},
+			type: "number",
+			number_unit: "px",
 			number_int: true,
 			number_min: 0,
 			category: "popup",
@@ -76010,6 +76024,8 @@ var $$IMU_EXPORT$$;
 		var popup_update_pos_func = null;
 		var popup_hidecursor_func = nullfunc;
 		var popup_hidecursor_timer = null;
+		var popup_cursorjitterX = 0;
+		var popup_cursorjitterY = 0;
 		var popup_client_rect_cache = null;
 		var last_popup_client_rect_cache = 0;
 		var dragstart = false;
@@ -77990,6 +78006,8 @@ var $$IMU_EXPORT$$;
 				var orig_a_cursor = a.style.cursor;
 				var orig_img_cursor = img.style.cursor;
 				popup_hidecursor_func = function(hide) {
+					popup_cursorjitterX = mouseX;
+					popup_cursorjitterY = mouseY;
 					if (settings.mouseover_hide_cursor && hide) {
 						a.style.cursor = "none";
 						img.style.cursor = "none";
@@ -78004,11 +78022,19 @@ var $$IMU_EXPORT$$;
 					}
 				};
 
+				popup_cursorjitterX = Infinity;
+				popup_cursorjitterY = Infinity;
+
 				if (settings.mouseover_hide_cursor && settings.mouseover_hide_cursor_after <= 0) {
 					popup_hidecursor_func(true);
 				}
 
 				div.onmouseover = div.onmousemove = function(e) {
+					if ((Math.abs(mouseX - popup_cursorjitterX) < settings.mouseover_mouse_inactivity_jitter) &&
+						(Math.abs(mouseY - popup_cursorjitterY) < settings.mouseover_mouse_inactivity_jitter)) {
+						return;
+					}
+
 					if (settings.mouseover_hide_cursor_after > 0 || !settings.mouseover_hide_cursor) {
 						popup_hidecursor_func(false);
 
