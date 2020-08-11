@@ -5710,7 +5710,7 @@ var $$IMU_EXPORT$$;
 
 				update_setting("last_update_version", data.version);
 
-				if (settings.check_update_notify && !is_in_iframe && version_compare(current_version, data.version)) {
+				if (settings.check_update_notify && !is_in_iframe && version_compare(current_version, data.version) === 1) {
 					var notify_obj = {
 						text: _("Update available (%%1)", data.version)
 					};
@@ -69208,6 +69208,25 @@ var $$IMU_EXPORT$$;
 					{url: match[1] + "thmb_" + match[2], problems: {smaller: true}}
 				]);
 			}
+		}
+
+		if (amazon_container === "orebtvnsretjvneokqmefoiunm") {
+			// https://orebtvnsretjvneokqmefoiunm.s3.amazonaws.com/uploads/img-tiny/community-featured-mask-v2-114d76.png
+			// https://orebtvnsretjvneokqmefoiunm.s3.amazonaws.com/uploads/img/60prc/community-article-mask-v2-3940f5.png
+			if (/\/uploads\/+img(?:-[a-z]+)?\/+(?:[0-9]+prc\/+)?community-(?:featured|article)-mask-v2/.test(src)) {
+				return {
+					url: src,
+					bad: "mask"
+				};
+			}
+
+			// https://orebtvnsretjvneokqmefoiunm.s3.amazonaws.com/uploads/img/40prc/image07-1f92bf.jpg
+			//   https://orebtvnsretjvneokqmefoiunm.s3.amazonaws.com/uploads/img/image07-1f92bf.jpg
+			// https://orebtvnsretjvneokqmefoiunm.s3.amazonaws.com/uploads/img-tiny/aurora-interior-small-dc18c1.png
+			//   https://orebtvnsretjvneokqmefoiunm.s3.amazonaws.com/uploads/img/aurora-interior-small-dc18c1.png
+			newsrc = src.replace(/(\/uploads\/+img)(?:-[a-z]+)?\/+(?:[0-9]+prc\/+)?/, "$1/");
+			if (newsrc !== src)
+				return newsrc;
 		}
 
 
