@@ -8304,6 +8304,128 @@ var $$IMU_EXPORT$$;
 		return false;
 	};
 
+	common_functions.get_tiktok_weburl_parts = function(url) {
+		var match = url.match(/^[a-z]+:\/\/[^/]+\/+@([^/]+)\/+video\/+([0-9]+)(?:[?#].*)?$/);
+		if (!match) {
+			return null;
+		}
+
+		return {
+			username: match[1],
+			web_vid: match[2]
+		};
+	};
+
+	common_functions.get_tiktok_from_ttloader = function(site, api_cache, do_request, url, cb) {
+		// https://codecanyon.net/item/tiktok-video-downloader-wordpress-plugin/26370715
+		// returns hd (720p)
+		// ttloader.com, onlinetik.com, demo.wppress.net, tiktokdownloader.in, savevideo.ninja
+		// uses older versions (watermarked):
+		// tiktoktoolstation.com (video.src)
+		site = site.replace(/:.*/, "");
+		var cache_key = site + ":" + url;
+		real_api_query(api_cache, do_request, cache_key, {
+			url: "https://" + site + "/wp-json/wppress/tiktok-downloader/videos?search=" + encodeURIComponent(url) + "&type=video_url&max=0",
+			headers: {
+				Referer: "https://" + site + "/?tiktok-search=" + encodeURIComponent(url),
+				"X-Requested-With": "XMLHttpRequest",
+				"Sec-Fetch-Dest": "empty",
+				"Sec-Fetch-Mode": "cors",
+				"Sec-Fetch-Site": "same-origin",
+				"Accept": "application/json, text/javascript, */*; q=0.01"
+			},
+			json: true
+		}, cb, function(done, resp, cache_key) {
+			var nowm = resp.items[0].video.noWatermark;
+			if (!nowm) {
+				console_error(cache_key, "Unable to find noWatermark from", resp);
+				return done(null, false);
+			}
+
+			return done(nowm, 60*60);
+		});
+	};
+
+	common_functions.get_tiktok_from_socialvideodownloader = function(site, api_cacahe, do_request, url, cb) {
+		// https://codecanyon.net/item/social-video-downloader-wordpress-plugin/26563734?s_rank=3
+		// https://demo.wppress.net/social-video-downloader/
+		// hd:
+		// savevideo.ninja (thanks to remlap on discord)
+		site = site.replace(/:.*/, "");
+		var cache_key = site + ":" + url;
+		real_api_query(api_cache, do_request, cache_key, {
+			url: "https://" + site + "/wp-json/wppress/video-downloader/videos?url=" + encodeURIComponent(url),
+			headers: {
+				Referer: "https://" + site + "/",
+				"Sec-Fetch-Dest": "empty",
+				"Sec-Fetch-Mode": "cors",
+				"Sec-Fetch-Site": "same-origin",
+				"Accept": "application/json, text/javascript, */*"
+			},
+			json: true
+		}, cb, function(done, resp, cache_key) {
+			var urls = resp[0].urls;
+			var ids = {};
+			for (var i = 0; i < urls.length; i++) {
+				ids[urls[i].id] = urls[i];
+			}
+
+			if (!("vid-no-watermark" in ids)) {
+				console_error(cache_key, "Unable to find vid-no-watermark in", {ids: ids, resp: resp});
+				return done(null, false);
+			}
+
+			return done(ids["vid-no-watermark"]["src"], 60*60);
+		});
+	};
+
+	common_functions.get_tiktok_from_keeptiktok = function(site, api_cache, do_request, url, cb) {
+		var urlparts = common_functions.get_tiktok_weburl_parts(url);
+		if (!urlparts) {
+			console_error("Invalid url", url);
+			return cb(null);
+		}
+
+		var cache_key = site + ":" + url;
+		real_api_query(api_cache, do_request, cache_key, {
+			url: "https://" + site + "/" + urlparts[1] + "/" + urlparts[2]
+		}, cb, function(done, resp, cache_key) {
+			var match = resp.responseText.match(/<video[^>]+>\s*<source src="(https?:\/\/[^/]*tiktokcdn\.[^"]+)"/);
+			if (!match) {
+				console_error(cache_key, "Unable to find match for", resp);
+				return done(null, false);
+			}
+
+			return done(decode_entities(match[1]), 60*60);
+		});
+	};
+
+	// This is a terrible duct-tape solution, but required until I can find a proper way to fix get_best_tiktok_url
+	// Note that this will NOT be called unless "Rules using 3rd-party websites" is enabled (it's disabled by default)
+	common_functions.get_tiktok_from_3rdparty = function(site, api_cache, do_request, url, cb) {
+		var sites = {
+			// hd
+			"ttloader.com": common_functions.get_tiktok_from_ttloader,
+			"onlinetik.com": common_functions.get_tiktok_from_ttloader,
+			"demo.wppress.net:tt": common_functions.get_tiktok_from_ttloader,
+			"tiktokdownloader.in": common_functions.get_tiktok_from_ttloader,
+			"savevideo.ninja:tt": common_functions.get_tiktok_from_socialvideodownloader,
+
+			"demo.wppress.net:svd": common_functions.get_tiktok_from_socialvideodownloader,
+			"savevideo.ninja:svd": common_functions.get_tiktok_from_socialvideodownloader,
+
+			// not hd
+			"keeptiktok.com": common_functions.get_tiktok_from_keeptiktok
+		};
+
+		if (!(site in sites)) {
+			console_error("Invalid site", site, sites);
+			return cb(null);
+		}
+
+		sites[site](site, api_cache, do_request, url, cb);
+	};
+
 	common_functions.get_best_tiktok_url = function(api_cache, do_request, src, cb) {
 		var get_tiktok_vidid_key = function(url) {
 			var urlvidid = common_functions.get_tiktok_urlvidid(url);
