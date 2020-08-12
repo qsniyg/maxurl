@@ -25438,6 +25438,8 @@ var $$IMU_EXPORT$$;
 			(domain_nosub === "gifyu.com" && string_indexof(src, "/images/") >= 0) ||
 			// https://iili.io/J81JIa.md.jpg
 			domain_nowww === "iili.io" ||
+			// https://privacypic.com/images/2020/01/18/0a24f9d469a758cac.md.png
+			domain_nowww === "privacypic.com" ||
 			// http://image-bugs.com/images/2017/09/09/CelebsFlash.com_NP_Harpers_Bazaar_090817__3_.md.jpg
 			domain_nowww === "image-bugs.com") {
 			// http://imgmax.com/images/2017/03/20/0OQhE.th.jpg
@@ -69641,6 +69643,65 @@ var $$IMU_EXPORT$$;
 
 			return fillobj_urls(urls, obj);
 		}
+
+		if (host_domain_nosub === "sankakucomplex.com") {
+			var el = common_functions.get_link_el_matching(options.element, function(el) {
+				if (/:\/\/[^/]+\/+post\/+show\/+[0-9]+(?:[?#].*)?$/.test(el.href)) {
+					return true;
+				}
+			});
+
+			if (el && el.href !== src) {
+				return {
+					url: el.href,
+					is_pagelink: true
+				};
+			}
+		}
+
+		if (domain === "is.sankakucomplex.com") {
+			return {
+				url: src,
+				headers: {
+					Referer: "https://www.sankakucomplex.com/" // or ""
+				}
+			};
+		}
+
+		if (domain_nosub === "sankakucomplex.com") {
+			newsrc = website_query({
+				website_regex: /^([a-z]+:\/\/[^/]+\/+post\/+show\/+[0-9]+)(?:[?#].)?$/,
+				query_for_id: "${id}",
+				process: function(done, resp, cache_key) {
+					var match = resp.responseText.match(/<a id=image-link class=sample href="(\/\/is\.[^"]+)"/);
+					if (!match) {
+						match = resp.responseText.match(/<video id=image (?:(?:width|height)=[0-9]+\s+){0,}src="(\/\/is\.[^"]+)"/);
+					}
+					if (!match) {
+						match = resp.responseText.match(/<a id=image-link class=full>\s*<img[^>]+ src="(\/\/is\.[^"]+)"/);
+					}
+
+					if (!match) {
+						console_error(cache_key, "Unable to find match for", resp);
+						return done(null, false);
+					}
+
+					var newsrc = urljoin(resp.finalUrl, decode_entities(match[1]), true);
+					done({
+						url: newsrc,
+						extra: {
+							page: resp.finalUrl
+						},
+						headers: {
+							Referer: resp.finalUrl
+						}
+					}, 60*60);
+				}
+			});
+			if (newsrc) return newsrc;
+		}
+
+
 
 
 
