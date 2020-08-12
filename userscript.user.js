@@ -69465,6 +69465,13 @@ var $$IMU_EXPORT$$;
 				return newsrc;
 		}
 
+		if (domain_nowww === "asiansister.com") {
+			// thanks to Urkchar on discord
+			// https://asiansister.com/images/items/67/2011_0_svPZVtOlE0n9BUIv3Mo2_t.jpg
+			//   https://asiansister.com/images/items/67/2011_0_svPZVtOlE0n9BUIv3Mo2.jpg
+			return src.replace(/(\/images\/+items\/+[0-9]+\/+[0-9]+_[0-9]+_[0-9a-zA-Z]+)_t(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
 
 
 
@@ -71640,7 +71647,18 @@ var $$IMU_EXPORT$$;
 					if (el.tagName === "DIV" && el.classList.contains("lazy-image"))
 						return el.querySelector(".image-overlay > img");
 				}
-			}
+			};
+		}
+
+		if (host_domain_nosub === "asiansister.com") {
+			// thanks to Urkchar on discord for reporting
+			return {
+				element_ok: function(el) {
+					if (el.tagName === "DIV" && el.id === "myModal") {
+						return el.querySelector("img.modalTest-content");
+					}
+				}
+			};
 		}
 
 		return null;
