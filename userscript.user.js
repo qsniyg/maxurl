@@ -25812,6 +25812,14 @@ var $$IMU_EXPORT$$;
 
 				current = current.parentElement;
 			}
+
+			var params = common_functions.get_tiktok_weburl_parts(options.host_url);
+			if (params) {
+				return {
+					url: options.host_url,
+					is_pagelink: true
+				};
+			}
 		}
 
 		if ((domain_nosub === "muscdn.com" || domain_nosub === "tiktokcdn.com") && /^v[0-9]+m?\./.test(domain)) {
