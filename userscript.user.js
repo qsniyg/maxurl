@@ -871,6 +871,7 @@ var $$IMU_EXPORT$$;
 			instagram_gallery_postlink: false,
 			snapchat_orig_media: true,
 			tiktok_no_watermarks: true,
+			tiktok_thirdparty: null,
 			tumblr_api_key: null,
 			linked_image: false,
 		},
@@ -2227,6 +2228,7 @@ var $$IMU_EXPORT$$;
 		instagram_gallery_postlink: false,
 		snapchat_orig_media: true,
 		tiktok_no_watermarks: true,
+		tiktok_thirdparty: null,
 		// just a very small protection against github scraping bots :)
 		tumblr_api_key: base64_decode("IHhyTXBMTThuMWVDZUwzb1JZU1pHN0NMQUx3NkVIaFlEZFU2V3E1ZUQxUGJNa2xkN1kx").substr(1),
 		// thanks to LukasThyWalls on github for the idea: https://github.com/qsniyg/maxurl/issues/75
@@ -4476,6 +4478,35 @@ var $$IMU_EXPORT$$;
 		tiktok_no_watermarks: {
 			name: "TikTok: Don't use watermarked videos",
 			description: "Uses non-watermarked videos for TikTok if possible. This will introduce an extra delay when loading the video as two extra requests need to be performed.",
+			category: "rule_specific",
+			onupdate: update_rule_setting
+		},
+		tiktok_thirdparty: {
+			name: "TikTok: 3rd-party watermark removal",
+			description: "Uses a 3rd-party watermark removal site for TikTok.\nI do not endorse any of the sites supported. They may log your IP address and videos you submit. Use this option with caution.",
+			requires: [{
+				allow_thirdparty: true
+			}],
+			options: {
+				_type: "combo",
+				_randomize: true,
+				"null": {
+					name: "(none)",
+					is_null: true
+				},
+				"ttloader.com": {
+					name: "ttloader.com"
+				},
+				"onlinetik.com": {
+					name: "onlinetik.com"
+				},
+				"tiktokdownloader.in": {
+					name: "tiktokdownloader.in"
+				},
+				"savevideo.ninja:tt": {
+					name: "savevideo.ninja"
+				}
+			},
 			category: "rule_specific",
 			onupdate: update_rule_setting
 		},
@@ -8346,7 +8377,7 @@ var $$IMU_EXPORT$$;
 		});
 	};
 
-	common_functions.get_tiktok_from_socialvideodownloader = function(site, api_cacahe, do_request, url, cb) {
+	common_functions.get_tiktok_from_socialvideodownloader = function(site, api_cache, do_request, url, cb) {
 		// https://codecanyon.net/item/social-video-downloader-wordpress-plugin/26563734?s_rank=3
 		// https://demo.wppress.net/social-video-downloader/
 		// hd:
@@ -8409,7 +8440,7 @@ var $$IMU_EXPORT$$;
 			"onlinetik.com": common_functions.get_tiktok_from_ttloader,
 			"demo.wppress.net:tt": common_functions.get_tiktok_from_ttloader,
 			"tiktokdownloader.in": common_functions.get_tiktok_from_ttloader,
-			"savevideo.ninja:tt": common_functions.get_tiktok_from_socialvideodownloader,
+			"savevideo.ninja:tt": common_functions.get_tiktok_from_ttloader,
 
 			"demo.wppress.net:svd": common_functions.get_tiktok_from_socialvideodownloader,
 			"savevideo.ninja:svd": common_functions.get_tiktok_from_socialvideodownloader,
@@ -8488,7 +8519,12 @@ var $$IMU_EXPORT$$;
 							request_aborted = true;
 
 							console_warn("Unable to find video ID for", url);
-							done(null, false);
+
+							if (resp.status !== 200) {
+								done(null, false);
+							} else {
+								done(null, 60);
+							}
 						}
 					} else {
 						request_handle.abort();
@@ -8604,6 +8640,49 @@ var $$IMU_EXPORT$$;
 				cb(get_newurl_if_changed(newsrc, src));
 			});
 		});
+	};
+
+	common_functions.tiktok_remove_watermark = function(api_cache, options, url, weburl, cb) {
+		if (!options.rule_specific) {
+			return cb(null);
+		}
+
+		var funcs = [];
+
+		if (options.rule_specific.tiktok_no_watermarks) {
+			funcs.push("[local]");
+		}
+
+		if (options.rule_specific.tiktok_thirdparty && weburl) {
+			var thirdparty = options.rule_specific.tiktok_thirdparty;
+
+			// fixme (once/if multiple third party sites are supported)
+			if (is_array(thirdparty))
+				thirdparty = thirdparty[0];
+
+			funcs.push(thirdparty);
+		}
+
+		var process_func = function(newurl) {
+			if (newurl) {
+				return cb(newurl);
+			}
+
+			if (funcs.length === 0) {
+				return cb(null);
+			}
+
+			var func = funcs[0];
+			funcs.shift();
+
+			if (func === "[local]") {
+				common_functions.get_best_tiktok_url(api_cache, options.do_request, url, process_func);
+			} else {
+				common_functions.get_tiktok_from_3rdparty(func, api_cache, options.do_request, weburl, process_func);
+			}
+		};
+
+		process_func();
 	};
 
 	common_functions.parse_flixv2 = function(resp, cache_key) {
@@ -25582,6 +25661,20 @@ var $$IMU_EXPORT$$;
 				}
 			};
 
+			var remove_tiktok_watermark = function(obj, cb) {
+				common_functions.tiktok_remove_watermark(api_cache, options, obj.url, obj.extra.page, function(newurl) {
+					if (newurl) {
+						obj.url = newurl;
+					}
+
+					if (!common_functions.set_tiktok_vid_filename(obj)) {
+						delete obj.filename;
+					}
+
+					return cb(obj);
+				});
+			};
+
 			var params = common_functions.get_tiktok_weburl_parts(src);
 			if (params) {
 				var page_nullobj = {
@@ -25590,7 +25683,6 @@ var $$IMU_EXPORT$$;
 				};
 
 				query_tiktok1(params, function(data) {
-					console_log(data);
 					if (!data) {
 						return options.cb(page_nullobj);
 					}
@@ -25600,8 +25692,9 @@ var $$IMU_EXPORT$$;
 						return options.cb(page_nullobj);
 					}
 
-					// TODO: finish! add tiktok_finalcb functionality (watermark removal) here
-					return options.cb([obj, page_nullobj]);
+					remove_tiktok_watermark(obj, function(obj) {
+						options.cb([obj, page_nullobj]);
+					});
 				});
 
 				return {
@@ -71822,6 +71915,7 @@ var $$IMU_EXPORT$$;
 				"instagram_gallery_postlink": true,
 				"snapchat_orig_media": true,
 				"tiktok_no_watermarks": true,
+				"tiktok_thirdparty": true,
 				"tumblr_api_key": true,
 				"mouseover_linked_image": "linked_image"
 			};
@@ -74334,6 +74428,31 @@ var $$IMU_EXPORT$$;
 				else
 					option_list["false"].checked = true;
 			} else if (meta.options) {
+				if (meta.options._randomize) {
+					var keys = Object.keys(meta.options);
+
+					var new_options = {};
+					// prepend options that do need to be properly sorted
+					for (var option_name in meta.options) {
+						if (option_name[0] == "_" || meta.options[option_name].is_null) {
+							new_options[option_name] = meta.options[option_name];
+						}
+					}
+
+					keys.sort(function() {
+						return (Math.floor(Math.random() * 2) ? 1 : -1);
+					});
+
+					for (var i = 0; i < keys.length; i++) {
+						if (keys[i] in new_options)
+							continue;
+
+						new_options[keys[i]] = meta.options[keys[i]];
+					}
+
+					meta.options = new_options;
+				}
+
 				if (meta.options._type === "combo") {
 					type = "combo";
 				} else {
@@ -74829,7 +74948,12 @@ var $$IMU_EXPORT$$;
 				sub.value = settings[setting];
 
 				sub.onchange = function() {
-					do_update_setting(setting, sub.value, meta);
+					var value = sub.value;
+					if (value in meta.options && meta.options[value].is_null) {
+						value = null;
+					}
+
+					do_update_setting(setting, value, meta);
 				};
 
 				value_td.appendChild(sub);
