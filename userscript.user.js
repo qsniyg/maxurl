@@ -69579,10 +69579,12 @@ var $$IMU_EXPORT$$;
 				obj.extra.page = "https://asiansister.com/viewImg.php?code=" + match[1] + "&id=" + match[2];
 			}
 
+			var urls = [src];
 			newsrc = src.replace(/(\/images\/+items\/+[0-9]+\/+[0-9]+_[0-9]+_[0-9a-zA-Z]+)_t(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
-			obj.url = newsrc;
+			if (newsrc !== src)
+				urls = add_extensions(newsrc);
 
-			return obj;
+			return fillobj_urls(urls, obj);
 		}
 
 
