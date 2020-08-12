@@ -8431,6 +8431,58 @@ var $$IMU_EXPORT$$;
 		});
 	};
 
+	common_functions.get_tiktok_from_ssstiktok = function(site, api_cache, do_request, url, cb) {
+		var get_token = function(cb) {
+			real_api_query(api_cache, do_request, "ssstiktok:token", {
+				url: "https://ssstiktok.io"
+			}, cb, function(done, resp, cache_key) {
+				var match = resp.responseText.match(/<input id="token" name="token" type="hidden" value="([0-9a-f]{10,})"/);
+				if (!match) {
+					console_error(cache_key, "Unable to find token from", resp);
+					return done(null, false);
+				}
+
+				return done(match[1], 10*60);
+			});
+		};
+
+		var query_ssstiktok = function(url, token, cb) {
+			var cache_key = site + ":" + url;
+			real_api_query(api_cache, do_request, cache_key, {
+				url: "https://ssstiktok.io/api/1/fetch",
+				method: "POST",
+				headers: {
+					"HX-Active-Element": "submit",
+					"HX-Current-URL": "https://ssstiktok.io/",
+					"HX-Request": "true",
+					"HX-Target": "target",
+					"Origin": "https://ssstiktok.io",
+					"Sec-Fetch-Dest": "empty",
+					"Sec-Fetch-Mode": "cors",
+					"Sec-Fetch-Site": "same-origin",
+					"Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+					"Accept": "*/*"
+				},
+				data: "id=" + encodeURIComponent(url) + "&token=" + token + "&locale=en"
+			}, cb, function(done, resp, cache_key) {
+				var match = resp.responseText.match(/<a href="(https?:\/\/[^/]*tiktokcdn\.com\/[^"]+)"[^>]*>Without watermark/);
+				if (!match) {
+					console_error(cache_key, "Unable to find match for", resp);
+					return done(null, false);
+				}
+
+				return done(decode_entities(match[1]), 60*60);
+			});
+		};
+
+		get_token(function(token) {
+			if (!token)
+				return cb(null);
+
+			query_ssstiktok(url, token, cb);
+		});
+	};
+
 	// This is a terrible duct-tape solution, but required until I can find a proper way to fix get_best_tiktok_url
 	// Note that this will NOT be called unless "Rules using 3rd-party websites" is enabled (it's disabled by default)
 	common_functions.get_tiktok_from_3rdparty = function(site, api_cache, do_request, url, cb) {
@@ -8446,7 +8498,8 @@ var $$IMU_EXPORT$$;
 			"savevideo.ninja:svd": common_functions.get_tiktok_from_socialvideodownloader,
 
 			// not hd
-			"keeptiktok.com": common_functions.get_tiktok_from_keeptiktok
+			"keeptiktok.com": common_functions.get_tiktok_from_keeptiktok,
+			"ssstiktok.io": common_functions.get_tiktok_from_ssstiktok
 		};
 
 		if (!(site in sites)) {
@@ -17981,6 +18034,8 @@ var $$IMU_EXPORT$$;
 			 domain_nosub === "imagenpic.com" ||
 			 // http://img26.picshick.com/th/13110/2ab7lhypu3l2.jpg
 			 //   http://img26.picshick.com/i/13110/2ab7lhypu3l2.jpg -- forces download
+			 // https://img164.picshick.com/th/31938/athcsocrumor.jpg
+			 //   https://img164.imagetwist.com/i/31938/athcsocrumor.jpg/1.jpg -- forces download
 			 // some images return an error image with 200
 			 // there are many headers that could help identify (last-modified, content-length)
 			 domain_nosub === "picshick.com") &&
@@ -17996,23 +18051,23 @@ var $$IMU_EXPORT$$;
 							 "$1$2$3/$4");
 			//console_log(id);
 			if (id !== src && options && options.cb && options.do_request) {
-				options.do_request({
-					method: "GET",
-					url: id,
-					onload: function(resp) {
-						//console_log(resp);
-						if (resp.readyState === 4) {
-							var match = resp.responseText.match(/<a\s+href=["'](https?:\/\/i(?:mg)?[0-9]*\.[^/]+\/+.*?)["'][^>]*\sdownload>/);
-							if (match) {
-								options.cb({
-									url: match[1],
-									is_original: true
-								});
-							} else {
-								options.cb(null);
-							}
-						}
+				api_query(domain_nosub + ":" + id, {
+					url: id
+				}, options.cb, function(done, resp, cache_key) {
+					//console_log(resp);
+					var match = resp.responseText.match(/<a\s+href=["'](https?:\/\/i(?:mg)?[0-9]*\.[^/]+\/+.*?)["'][^>]*\sdownload>/);
+					if (!match) {
+						match = resp.responseText.match(/<p[^>]*>\s*<img\s+src=["'](https?:\/\/i(?:mg)?[0-9]*\.[^/]+\/+[^"']+)["'][^>]*\sclass="[^"]*pic[^"]*"/);
 					}
+					if (!match) {
+						console_error("Unable to find match for", resp);
+						return done(null, false);
+					}
+
+					done({
+						url: decode_entities(match[1]),
+						is_original: true
+					}, 60*60);
 				});
 
 				return {
