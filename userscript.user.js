@@ -69469,7 +69469,19 @@ var $$IMU_EXPORT$$;
 			// thanks to Urkchar on discord
 			// https://asiansister.com/images/items/67/2011_0_svPZVtOlE0n9BUIv3Mo2_t.jpg
 			//   https://asiansister.com/images/items/67/2011_0_svPZVtOlE0n9BUIv3Mo2.jpg
-			return src.replace(/(\/images\/+items\/+[0-9]+\/+[0-9]+_[0-9]+_[0-9a-zA-Z]+)_t(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+			obj = {
+				extra: {}
+			};
+
+			match = src.match(/\/images\/+items\/+[0-9]+\/+([0-9]+)_([0-9]+)_[^/]+$/);
+			if (match) {
+				obj.extra.page = "https://asiansister.com/viewImg.php?code=" + match[1] + "&id=" + match[2];
+			}
+
+			newsrc = src.replace(/(\/images\/+items\/+[0-9]+\/+[0-9]+_[0-9]+_[0-9a-zA-Z]+)_t(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+			obj.url = newsrc;
+
+			return obj;
 		}
 
 
