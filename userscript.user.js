@@ -8322,8 +8322,8 @@ var $$IMU_EXPORT$$;
 		// ttloader.com, onlinetik.com, demo.wppress.net, tiktokdownloader.in, savevideo.ninja
 		// uses older versions (watermarked):
 		// tiktoktoolstation.com (video.src)
-		site = site.replace(/:.*/, "");
 		var cache_key = site + ":" + url;
+		site = site.replace(/:.*/, "");
 		real_api_query(api_cache, do_request, cache_key, {
 			url: "https://" + site + "/wp-json/wppress/tiktok-downloader/videos?search=" + encodeURIComponent(url) + "&type=video_url&max=0",
 			headers: {
@@ -8351,8 +8351,8 @@ var $$IMU_EXPORT$$;
 		// https://demo.wppress.net/social-video-downloader/
 		// hd:
 		// savevideo.ninja (thanks to remlap on discord)
-		site = site.replace(/:.*/, "");
 		var cache_key = site + ":" + url;
+		site = site.replace(/:.*/, "");
 		real_api_query(api_cache, do_request, cache_key, {
 			url: "https://" + site + "/wp-json/wppress/video-downloader/videos?url=" + encodeURIComponent(url),
 			headers: {
@@ -25496,6 +25496,120 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain_nowww === "tiktok.com") {
+			var query_tiktok = function(url, cb) {
+				var normalized_url = url
+					.replace(/^[a-z]+:\/\//, "https://")
+					.replace(/:\/\/[^/]*tiktok\.com\/+/, "://www.tiktok.com/")
+					.replace(/\/*(?:[?#].*)?$/, "");
+				var cache_key = "tiktok_nextdata:" + normalized_url;
+				api_cache.fetch(cache_key, cb, function(done) {
+					options.do_request({
+						url: url,
+						method: "GET",
+						onload: function(resp) {
+							if (resp.readyState < 4)
+								return;
+
+							if (resp.status !== 200) {
+								console_error(resp);
+								return done(null, false);
+							}
+
+							var match = resp.responseText.match(/<script[^>]+id="__NEXT_DATA__"[^>]*>({.*?})\s*<\/script>/);
+							if (!match) {
+								console_error("Unable to find match", resp);
+								return done(null, false);
+							}
+
+							try {
+								var json = JSON_parse(match[1]);
+								json = json.props.pageProps;
+
+								return done(json, 60*60);
+							} catch (e) {
+								console_error(e);
+								return done(null, false);
+							}
+						}
+					});
+				});
+			};
+
+			var query_tiktok1 = function(params, cb) {
+				var url = "https://www.tiktok.com/node/share/video/@" + params.username + "/" + params.web_vid + "?request_from=server";
+				var cache_key = "tiktok_node:" + params.username + "/" + params.web_vid;
+
+				api_query(cache_key, {
+					url: url,
+					json: true
+				}, cb, function(done, resp) {
+					done(resp.body, 60*60);
+				});
+			};
+
+			var tiktok_api_to_obj = function(data) {
+				// some tiktok users' videos return 404 (e.g. geoblock)
+				// thanks to remlap on discord for sharing that videoData doesn't exist for some videos. pageProps gives serverCode: 404
+				if (!data || !data.videoData) {
+					return null;
+				}
+
+				try {
+					var item = data.videoData.itemInfos;
+					var videourl = item.video.urls[0];
+					var caption = item.text;
+
+					var obj = {
+						url: videourl,
+						extra: {
+							caption: caption
+						},
+						video: true,
+						can_head: false
+					};
+
+					if (data.metaParams && data.metaParams.canonicalHref) {
+						obj.extra.page = data.metaParams.canonicalHref;
+					}
+
+					common_functions.set_tiktok_vid_filename(obj);
+
+					return obj;
+				} catch (e) {
+					console_error(e);
+					return null;
+				}
+			};
+
+			var params = common_functions.get_tiktok_weburl_parts(src);
+			if (params) {
+				var page_nullobj = {
+					url: src,
+					is_pagelink: true
+				};
+
+				query_tiktok1(params, function(data) {
+					console_log(data);
+					if (!data) {
+						return options.cb(page_nullobj);
+					}
+
+					var obj = tiktok_api_to_obj(data);
+					if (!obj) {
+						return options.cb(page_nullobj);
+					}
+
+					// TODO: finish! add tiktok_finalcb functionality (watermark removal) here
+					return options.cb([obj, page_nullobj]);
+				});
+
+				return {
+					waiting: true
+				};
+			}
+		}
+
 		if (host_domain_nosub === "tiktok.com" && options && options.cb && options.do_request && options.element) {
 			var query_tiktok = function(url, cb) {
 				var normalized_url = url
@@ -25536,7 +25650,7 @@ var $$IMU_EXPORT$$;
 
 			var tiktok_finalcb = function(obj) {
 				var videourl = obj.url;
-				common_functions.set_tiktok_vid_filename(obj)
+				common_functions.set_tiktok_vid_filename(obj);
 
 				if (options.rule_specific && options.rule_specific.tiktok_no_watermarks) {
 					common_functions.get_best_tiktok_url(api_cache, do_request, videourl, function(newurl) {
