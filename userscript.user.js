@@ -25704,6 +25704,8 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (host_domain_nosub === "tiktok.com" && options && options.cb && options.do_request && options.element) {
+			// TODO: find a way to simplify and redirect to pagelink rule
+			// blocker is the geoblock thing, we don't want to query twice for watermark removal of the same url if not needed
 			var query_tiktok = function(url, cb) {
 				var normalized_url = url
 					.replace(/^[a-z]+:\/\//, "https://")
@@ -25742,25 +25744,19 @@ var $$IMU_EXPORT$$;
 			};
 
 			var tiktok_finalcb = function(obj) {
-				var videourl = obj.url;
 				common_functions.set_tiktok_vid_filename(obj);
 
-				if (options.rule_specific && options.rule_specific.tiktok_no_watermarks) {
-					common_functions.get_best_tiktok_url(api_cache, do_request, videourl, function(newurl) {
-						if (newurl) {
-							videourl = newurl;
-							obj.url = videourl;
-						}
+				common_functions.tiktok_remove_watermark(api_cache, options, obj.url, obj.extra.page, function(newurl) {
+					if (newurl) {
+						obj.url = newurl;
+					}
 
-						if (!common_functions.set_tiktok_vid_filename(obj)) {
-							delete obj.filename;
-						}
+					if (!common_functions.set_tiktok_vid_filename(obj)) {
+						delete obj.filename;
+					}
 
-						return options.cb(obj);
-					});
-				} else {
 					return options.cb(obj);
-				}
+				});
 			};
 
 			var current = options.element;
@@ -25797,6 +25793,10 @@ var $$IMU_EXPORT$$;
 								video: true,
 								can_head: false
 							};
+
+							if (data.props.pageProps.metaParams && data.props.pageProps.metaParams.canonicalHref) {
+								obj.extra.page = data.props.pageProps.metaParams.canonicalHref;
+							}
 
 							return tiktok_finalcb(obj);
 						} catch (e) {
