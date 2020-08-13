@@ -4514,7 +4514,10 @@ var $$IMU_EXPORT$$;
 				},
 				"musicallydown.com": {
 					name: "musicallydown.com (LQ/PL)"
-				}
+				},
+				/*"snaptik.app": {
+					name: "snaptik.app (LQ)"
+				}*/
 			},
 			category: "rule_specific",
 			onupdate: update_rule_setting
@@ -8440,6 +8443,57 @@ var $$IMU_EXPORT$$;
 		});
 	};
 
+	common_functions.get_tiktok_from_snaptik = function(site, api_cache, do_request, url, cb) {
+		var urlparts = common_functions.get_tiktok_weburl_parts(url);
+		if (!urlparts) {
+			console_error("Invalid url", url);
+			return cb(null);
+		}
+
+		// doesn't work, because cookie is invalid
+		var query_snaptik_1 = function(url) {
+			var cache_key = site + ":" + url;
+			api_cache.fetch(cache_key, cb, function(done) {
+				do_request({
+					url: "https://snaptik.app/pre_download.php?aweme_id=" + urlparts.web_vid,
+					method: "GET",
+					onload: function(resp) {
+						if (resp.status !== 200) {
+							console_error(cache_key, resp);
+							return done(null, false)
+						}
+
+						do_request({
+							method: "GET",
+							url: "https://" + site + "/action-v9.php?aweme_id=" + urlparts.web_vid + "&act=download",
+							headers: {
+								Referer: "https://snaptik.app/pre_download.php?aweme_id=" + urlparts.web_vid,
+								"Sec-Fetch-Dest": "empty",
+								"Sec-Fetch-Mode": "cors",
+								"Sec-Fetch-Site": "same-origin",
+								"Accept": "*/*"
+							},
+							onload: function(resp) {
+								if (resp.status !== 200) {
+									console_error(cache_key, resp);
+									return done(null, false)
+								}
+
+								var match = resp.responseText.match(/<a[^>]*\s+href="https?:\/\/sv[0-9]*\.snaptik.app\/+dl\.php\?token=([^&]+)/);
+								if (!match) {
+									console_error(cache_key, "Unable to find match for", resp);
+									return done(null, false);
+								}
+
+								return done(base64_decode(decode_entities(match[1])), 60*60);
+							}
+						});
+					}
+				});
+			});
+		};
+	};
+
 	common_functions.get_tiktok_from_musicallydown = function(site, api_cache, do_request, url, cb) {
 		var get_vtoken = function(cb) {
 			// using real_api_query even if we don't cache because it's just less code than do_request
@@ -8559,7 +8613,8 @@ var $$IMU_EXPORT$$;
 			// not hd
 			"keeptiktok.com": common_functions.get_tiktok_from_keeptiktok,
 			"ssstiktok.io": common_functions.get_tiktok_from_ssstiktok,
-			"musicallydown.com": common_functions.get_tiktok_from_musicallydown
+			"musicallydown.com": common_functions.get_tiktok_from_musicallydown,
+			"snaptik.app": common_functions.get_tiktok_from_snaptik
 		};
 
 		if (!(site in sites)) {
@@ -37744,6 +37799,7 @@ var $$IMU_EXPORT$$;
 			domain_nosub === "pornktu.be" ||
 			domain_nosub === "3movs.com" ||
 			domain_nosub === "sunporno.com" ||
+			domain_nosub === "xcafe.com" ||
 			// http://h2porn.com/contents/videos_screenshots/267000/267851/240x180/3.jpg
 			// doesn't work with video ids, /embed/ returns 500 with no response
 			//domain_nosub === "h2porn.com" ||
@@ -37819,7 +37875,8 @@ var $$IMU_EXPORT$$;
 			id = null;
 			// https://statics.cdntrex.com/contents/videos_screenshots/1047000/1047563/300x168/1.jpg?v=3
 			// https://statics.cdntrex.com/contents/videos_screenshots/1061000/1061072/preview.mp4.jpg
-			match = src.match(/\/(?:videos_(?:screenshots|sources)|v?th|kvs|videos\/+th)\/+[0-9]+\/+([0-9]+)\/+(?:(?:[0-9]+x[0-9]+|screenshots)\/+|preview(?:_(?:trailer|[0-9]+p))?\.)/);
+			// https://i.xcafe.com/videos_screenshots/29000/29005/preview_n.mp4.jpg
+			match = src.match(/\/(?:videos_(?:screenshots|sources)|v?th|kvs|videos\/+th)\/+[0-9]+\/+([0-9]+)\/+(?:(?:[0-9]+x[0-9]+|screenshots)\/+|preview(?:_(?:trailer|[0-9]+p|n))?\.)/);
 			if (!match) {
 				match = src.match(/\/get_file\/+[0-9a-f]+\/+[0-9a-f]{30,}\/+[0-9a-f]\/+([0-9]+)\/+screenshots\/+/);
 			}
@@ -37982,6 +38039,9 @@ var $$IMU_EXPORT$$;
 			} else if (domain_nosub === "camvideos.tv") {
 				videos_component = "";
 				basedomain = "http://www." + domain_nosub + "/";
+			} else if (domain_nosub === "xcafe.com") {
+				videos_component = "";
+				a_component = "";
 			}
 
 			var detected_url = null;
@@ -69704,7 +69764,7 @@ var $$IMU_EXPORT$$;
 			return fillobj_urls(urls, obj);
 		}
 
-		if (host_domain_nosub === "sankakucomplex.com") {
+		if (host_domain_nosub === "sankakucomplex.com" && options.element) {
 			var el = common_functions.get_link_el_matching(options.element, function(el) {
 				if (/:\/\/[^/]+\/+post\/+show\/+[0-9]+(?:[?#].*)?$/.test(el.href)) {
 					return true;
@@ -69716,6 +69776,19 @@ var $$IMU_EXPORT$$;
 					url: el.href,
 					is_pagelink: true
 				};
+			}
+
+			// return full version for sample images
+			if (/\/data\/+sample\//.test(src) && options.element.tagName === "IMG") {
+				el = common_functions.get_link_el_matching(options.element, function(el) {
+					if (/^(?:[a-z]+:)?\/\/[^/]+\/+data\/+[0-9a-f]{2}\/+/.test(el.href)) {
+						return true;
+					}
+				});
+
+				if (el) {
+					return el.href;
+				}
 			}
 		}
 
@@ -69759,6 +69832,59 @@ var $$IMU_EXPORT$$;
 				}
 			});
 			if (newsrc) return newsrc;
+		}
+
+		if (domain_nowww === "dobbyporn.com" ||
+			domain_nowww === "colliderporn.com") {
+			newsrc = src.replace(/^([a-z]+:\/\/[^/]+\/+)video\/+([0-9]+)\.html(?:[?#].*)?$/, "$1best/babe/?video=$2");
+			if (newsrc !== src) {
+				return {
+					url: newsrc,
+					is_pagelink: true
+				};
+			}
+
+			newsrc = website_query({
+				website_regex: /^([a-z]+:\/\/[^/]+\/+v\/+[0-9]+\.html)(?:[?#].*)?$/,
+				query_for_id: "${id}",
+				process: function(done, resp, cache_key) {
+					var match = resp.responseText.match(/window\.location\.href = "(\/[^"]+\?video=[0-9]+)";/);
+					if (!match) {
+						console_error(cache_key, "Unable to find redirect match for", resp);
+						return done(null, false);
+					}
+
+					return done({
+						url: urljoin(resp.finalUrl, match[1], true),
+						is_pagelink: true
+					}, 60);
+				}
+			});
+			if (newsrc) return newsrc;
+
+			newsrc = website_query({
+				website_regex: /^([a-z]+:\/\/[^/]+\/+[a-z]+\/+[a-z]+\/+\?(?:.*&)?video=[0-9]+.*?)$/,
+				query_for_id: "${id}",
+				process: function(done, resp, cache_key) {
+					var match = resp.responseText.match(/<iframe id="extvidx" src="(?:javascript:window\.location\.replace\(')?(https?:\/\/[^"']+)(?:'\))?"/);
+					if (!match) {
+						console_error(cache_key, "Unable to find iframe match for", resp);
+						return done(null, false);
+					}
+
+					return done({
+						url: decode_entities(match[1]),
+						is_pagelink: true
+					}, 6*60*60);
+				}
+			});
+			if (newsrc) return newsrc;
+		}
+
+		if (domain_nowww === "freedroid.org") {
+			// https://www.freedroid.org/images/screenshots/underground.thumb_default_w320h180q85.png
+			//   https://www.freedroid.org/images/screenshots/underground.png
+			return src.replace(/(\/images\/+screenshots\/+[^/]+)\.thumb_default_(?:[whq][0-9]+){1,}\./, "$1.");
 		}
 
 
