@@ -4483,7 +4483,7 @@ var $$IMU_EXPORT$$;
 		},
 		tiktok_thirdparty: {
 			name: "TikTok: 3rd-party watermark removal",
-			description: "Uses a 3rd-party watermark removal site for TikTok.\nI do not endorse any of the sites supported. They may log your IP address and videos you submit. Use this option with caution.",
+			description: "Uses a 3rd-party watermark removal site for TikTok.\nI do not endorse any of the sites supported. They may log your IP address and videos you submit. Use this option with caution.\n`LQ` = Low quality, `PL` = Public log",
 			requires: [{
 				allow_thirdparty: true
 			}],
@@ -4505,6 +4505,15 @@ var $$IMU_EXPORT$$;
 				},
 				"savevideo.ninja:tt": {
 					name: "savevideo.ninja"
+				},
+				"keeptiktok.com": {
+					name: "keeptiktok.com (LQ)"
+				},
+				"ssstiktok.io": {
+					name: "ssstiktok.io (LQ)"
+				},
+				"musicallydown.com": {
+					name: "musicallydown.com (LQ/PL)"
 				}
 			},
 			category: "rule_specific",
@@ -8419,7 +8428,7 @@ var $$IMU_EXPORT$$;
 
 		var cache_key = site + ":" + url;
 		real_api_query(api_cache, do_request, cache_key, {
-			url: "https://" + site + "/" + urlparts[1] + "/" + urlparts[2]
+			url: "https://" + site + "/" + urlparts.username + "/" + urlparts.web_vid
 		}, cb, function(done, resp, cache_key) {
 			var match = resp.responseText.match(/<video[^>]+>\s*<source src="(https?:\/\/[^/]*tiktokcdn\.[^"]+)"/);
 			if (!match) {
@@ -8428,6 +8437,56 @@ var $$IMU_EXPORT$$;
 			}
 
 			return done(decode_entities(match[1]), 60*60);
+		});
+	};
+
+	common_functions.get_tiktok_from_musicallydown = function(site, api_cache, do_request, url, cb) {
+		var get_vtoken = function(cb) {
+			// using real_api_query even if we don't cache because it's just less code than do_request
+			real_api_query(api_cache, do_request, "musicallydown:vtoken", {
+				url: "https://musicallydown.com"
+			}, cb, function(done, resp, cache_key) {
+				var match = resp.responseText.match(/<input type="hidden" name="vtoken" value="([0-9a-f]{5,})" \/>/);
+				if (!match) {
+					console_error(cache_key, "Unable to find vtoken from", resp);
+					return done(null, false);
+				}
+
+				return done(match[1], false);
+			});
+		};
+
+		var query_musicallydown = function(url, token, cb) {
+			var cache_key = site + ":" + url;
+			real_api_query(api_cache, do_request, cache_key, {
+				url: "https://musicallydown.com/download",
+				method: "POST",
+				headers: {
+					"Content-Type": "application/x-www-form-urlencoded",
+					"Origin": "https://musicallydown.com",
+					"Referer": "https://musicallydown.com/",
+					"Sec-Fetch-Dest": "document",
+					"Sec-Fetch-Mode": "navigate",
+					"Sec-Fetch-Site": "same-origin",
+					"Sec-Fetch-User": "?1"
+				},
+				data: "url=" + encodeURIComponent(url) + "&vtoken=" + token
+			}, cb, function(done, resp, cache_key) {
+				var match = resp.responseText.match(/<a target="_blank" rel="noreferrer" href="(https?:\/\/[^/]*tiktokcdn\.com\/[^"]+)"[^>]*>\s*<i[^>]*>\s*<\/i>\s*Download MP4/);
+				if (!match) {
+					console_error(cache_key, "Unable to find match from", resp);
+					return done(null, false);
+				}
+
+				return done(decode_entities(match[1]), 60*60);
+			});
+		};
+
+		get_vtoken(function(token) {
+			if (!token)
+				return cb(null);
+
+			query_musicallydown(url, token, cb);
 		});
 	};
 
@@ -8499,7 +8558,8 @@ var $$IMU_EXPORT$$;
 
 			// not hd
 			"keeptiktok.com": common_functions.get_tiktok_from_keeptiktok,
-			"ssstiktok.io": common_functions.get_tiktok_from_ssstiktok
+			"ssstiktok.io": common_functions.get_tiktok_from_ssstiktok,
+			"musicallydown.com": common_functions.get_tiktok_from_musicallydown
 		};
 
 		if (!(site in sites)) {
