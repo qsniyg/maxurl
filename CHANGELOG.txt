@@ -1,3 +1,23 @@
+0.13.18
+
+New features:
+
+ * Option to display the link rather than the image for a linked image (#306, disabled by default)
+ * Option to customize the mouse jitter threshold for hiding the cursor (set to 5px by default)
+ * Option to use a 3rd-party watermark removal tool for TikTok (disabled by default)
+ * Support for ~30 new websites (using ~20 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules
+
+Bugfixes:
+
+ * When using adblockers, some pages that refused to load the userscript entirely due to throwing an exception are now fixed
+ * Fix notification being shown for a downgraded version (thanks to Cuba on discord for reporting)
+
+---
+
 0.13.17
 
 New features:
