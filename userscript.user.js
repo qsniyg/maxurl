@@ -5200,7 +5200,7 @@ var $$IMU_EXPORT$$;
 		if (!browser) {
 			// simple path join
 			// urljoin("http://site.com/index.html", "file.png") = "http://site.com/index.html/file.png"
-			return a + "/" + b.replace(/^\/*/, "");
+			return a.replace(/\/*$/, "") + "/" + b.replace(/^\/*/, "");
 		} else {
 			if (b.length >= 2 && b.slice(0, 2) === "//")
 				return protocol + ":" + b;
@@ -69888,6 +69888,16 @@ var $$IMU_EXPORT$$;
 			// https://www.freedroid.org/images/screenshots/underground.thumb_default_w320h180q85.png
 			//   https://www.freedroid.org/images/screenshots/underground.png
 			return src.replace(/(\/images\/+screenshots\/+[^/]+)\.thumb_default_(?:[whq][0-9]+){1,}\./, "$1.");
+		}
+
+		if (domain === "shop.new-art.nl") {
+			// thanks to anonyno on github: https://github.com/qsniyg/maxurl/issues/390
+			// https://shop.new-art.nl/assets/image.php?width=800&image=/content/img/new_products_queue/1581692709.jpg
+			//   https://shop.new-art.nl/content/img/new_products_queue/1581692709.jpg
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+assets\/+image\.php\?(?:.*&)?image=([^&]+)(?:[&#].*)?$/, "$1");
+			if (newsrc !== src) {
+				return urljoin("https://shop.new-art.nl/", decodeURIComponent(newsrc), false);
+			}
 		}
 
 
