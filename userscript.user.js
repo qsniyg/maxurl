@@ -61798,7 +61798,10 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if (domain_nowww === "gamingonlinux.com") {
+		if (domain_nowww === "gamingonlinux.com" ||
+			// https://uploads.golmedia.net/uploads/articles/article_media/thumbs/582056391597327409gol1.jpg
+			//   https://uploads.golmedia.net/uploads/articles/article_media/582056391597327409gol1.jpg
+			domain === "uploads.golmedia.net") {
 			// https://www.gamingonlinux.com/uploads/articles/article_media/thumbs/4837050791576835482gol1.jpg
 			//   https://www.gamingonlinux.com/uploads/articles/article_media/4837050791576835482gol1.jpg
 			newsrc = src.replace(/(\/uploads\/+articles\/+article_media\/+)thumbs\/+/, "$1");
