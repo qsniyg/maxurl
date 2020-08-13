@@ -220,6 +220,10 @@ function is_youtube_url(url) {
 	}
 
 	if (!match) {
+		match = url.match(/^[a-z]+:\/\/i\.ytimg\.com\/+([^?&#]*)/);
+	}
+
+	if (!match) {
 		match = url.match(/^[a-z]+:\/\/(?:[^/]+\.)?(?:gfycat|redgifs)\.com\//);
 	}
 
@@ -862,5 +866,7 @@ function dourl(url, post, options, cb) {
 //dourl("https://img39.pixhost.to/images/373/138394353_3s3a1fiv9wfy.jpg");
 // ungififying, nsfw!
 //dourl("https://i.imgur.com/MdHTKCp.gif");
+// youtube url
+//dourl("https://i.ytimg.com/vi/q8skXJreN2Y/mqdefault.jpg");
 
 module.exports = dourl;
