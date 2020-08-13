@@ -77,8 +77,8 @@ separator EXTENSION_README.txt
 echo
 echo Building Firefox extension
 
-BASEFILES="LICENSE.txt manifest.json userscript.user.js lib/testcookie_slowaes.js lib/hls.js lib/dash.all.debug.js resources/logo_40.png resources/logo_48.png resources/logo_96.png resources/disabled_40.png resources/disabled_48.png resources/disabled_96.png extension"
-SOURCEFILES="lib/aes1.patch lib/aes_shim.js lib/dash_shim.js lib/hls_shim.js lib/build_libs.sh EXTENSION_README.txt package_extension.sh"
+BASEFILES="LICENSE.txt manifest.json userscript.user.js lib/testcookie_slowaes.js lib/cryptojs_aes.js lib/hls.js lib/dash.all.debug.js resources/logo_40.png resources/logo_48.png resources/logo_96.png resources/disabled_40.png resources/disabled_48.png resources/disabled_96.png extension"
+SOURCEFILES="lib/aes1.patch lib/aes_shim.js lib/cryptojs_aes_shim.js lib/dash_shim.js lib/hls_shim.js lib/build_libs.sh EXTENSION_README.txt package_extension.sh"
 
 zipcmd() {
     echo
@@ -117,6 +117,8 @@ extension/popup.js
 #-lib/aes1.patch
 #-lib/aes_shim.js
 #-lib/build_libs.sh
+lib/cryptojs_aes.js
+#-lib/cryptojs_aes_shim.js
 lib/dash.all.debug.js
 #-lib/dash_shim.js
 lib/hls.js
