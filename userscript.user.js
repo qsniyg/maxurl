@@ -37800,6 +37800,13 @@ var $$IMU_EXPORT$$;
 			domain_nosub === "3movs.com" ||
 			domain_nosub === "sunporno.com" ||
 			domain_nosub === "xcafe.com" ||
+			// https://www.18fuck.me/contents/videos_screenshots/0/668/240x180/2.jpg
+			domain_nowww === "18fuck.me" ||
+			// https://www.my18pussy.com/contents/videos_screenshots/3000/3581/284x160/2.jpg
+			domain_nowww === "my18pussy.com" ||
+			// https://www.freepornvideo.sex/contents/videos_screenshots/16000/16140/240x180/2.jpg
+			domain_nowww === "freepornvideo.sex" ||
+			domain_nosub === "sexroom.xxx" ||
 			// http://h2porn.com/contents/videos_screenshots/267000/267851/240x180/3.jpg
 			// doesn't work with video ids, /embed/ returns 500 with no response
 			//domain_nosub === "h2porn.com" ||
@@ -37952,6 +37959,7 @@ var $$IMU_EXPORT$$;
 					   domain_nosub === "thebestshemalevideos.com" ||
 					   domain_nosub === "its.porn" ||
 					   domain_nosub === "yourlust.com" ||
+					   domain_nosub === "sexroom.xxx" ||
 					   domain_nosub === "pornalin.com") {
 				videos_component = "embed";
 				addslash = "";
@@ -38042,6 +38050,11 @@ var $$IMU_EXPORT$$;
 			} else if (domain_nosub === "xcafe.com") {
 				videos_component = "";
 				a_component = "";
+			} else if (domain_nosub === "18fuck.me") {
+				a_component = "/a.tube";
+				addslash = "";
+			} else if (domain_nosub === "freepornvideo.sex") {
+				videos_component = "xxx";
 			}
 
 			var detected_url = null;
@@ -69900,11 +69913,27 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if (domain_nowww === "asianpussy.fun") {
+		if (domain_nowww === "asianpussy.fun" ||
+			domain_nowww === "teencumpot.com" ||
+			domain_nowww === "babesxcam.com" ||
+			domain_nowww === "collegehdsex.com" ||
+			domain_nowww === "18girlssex.com" ||
+			domain_nowww === "xxx-hd-tube.com" ||
+			domain_nowww === "teenporn19.com") {
 			// https://asianpussy.fun/flplayer.php?id=293498
 			newsrc = website_query({
 				website_regex: /^([a-z]+:\/\/[^/]+\/+flplayer\.php\?id=[0-9]+)/,
-				query_for_id: "${id}",
+				query_for_id: function(id) {
+					return {
+						url: id,
+						headers: {
+							"Sec-Fetch-Dest": "iframe",
+							"Sec-Fetch-Mode": "navigate",
+							"Sec-Fetch-Site": "cross-site",
+							"Referer": "https://" + domain + "/"
+						}
+					};
+				},
 				process: function(done, resp, cache_key) {
 					var match = resp.responseText.match(/document\.write\(atob\(atob\("([^"]+)"\)\)\);/);
 					if (!match) {
@@ -69939,17 +69968,25 @@ var $$IMU_EXPORT$$;
 
 			// https://asianpussy.fun/gallery/malayalam-kambikatha-peculiarity-pottikkal-narrated.html
 			newsrc = website_query({
-				website_regex: /^([a-z]+:\/\/[^/]+\/+gallery\/+[^/.]*\.html)(?:[?#].*)?$/,
+				website_regex: /^([a-z]+:\/\/[^/]+\/+(?:gallery|teen(?:video)?s|(?:hd)?videos)\/+[^/.]*\.html)(?:[?#].*)?$/,
 				query_for_id: "${id}",
 				process: function(done, resp, cache_key) {
-					var match = resp.responseText.match(/document\.write\(atob\([^)]+\)\.replace\('#+', '([0-9]+)'\)/);
+					var match = resp.responseText.match(/document\.write\(atob\([^)]+\)\.replace\('#+',\s*'([0-9]+)'\)/);
 					if (!match) {
 						console_error(cache_key, "Unable to find match for", resp);
 						return done(null, false);
 					}
 
+					var subdomain = domain;
+					if (domain_nosub === "teenporn19.com" ||
+						domain_nosub === "18girlssex.com" ||
+						domain_nosub === "xxx-hd-tube.com" ||
+						domain_nosub === "collegehdsex.com") {
+						subdomain = "teencumpot.com";
+					}
+
 					return done({
-						url: "https://" + domain + "/flplayer.php?id=" + match[1],
+						url: "https://" + subdomain + "/flplayer.php?id=" + match[1],
 						is_pagelink: true
 					}, 6*60*60);
 				}
