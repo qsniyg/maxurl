@@ -25824,6 +25824,8 @@ var $$IMU_EXPORT$$;
 
 					if (data.metaParams && data.metaParams.canonicalHref) {
 						obj.extra.page = data.metaParams.canonicalHref;
+					} else {
+						obj.extra.page = src; // fixme?
 					}
 
 					common_functions.set_tiktok_vid_filename(obj);
@@ -25836,7 +25838,10 @@ var $$IMU_EXPORT$$;
 			};
 
 			var remove_tiktok_watermark = function(obj, cb) {
-				common_functions.tiktok_remove_watermark(api_cache, options, obj.url, obj.extra.page, function(newurl) {
+				var page = null;
+				if (obj.extra && obj.extra.page) page = obj.extra.page;
+
+				common_functions.tiktok_remove_watermark(api_cache, options, obj.url, page, function(newurl) {
 					if (newurl) {
 						obj.url = newurl;
 					}
@@ -25920,7 +25925,10 @@ var $$IMU_EXPORT$$;
 			var tiktok_finalcb = function(obj) {
 				common_functions.set_tiktok_vid_filename(obj);
 
-				common_functions.tiktok_remove_watermark(api_cache, options, obj.url, obj.extra.page, function(newurl) {
+				var page = null;
+				if (obj.extra && obj.extra.page) page = obj.extra.page;
+
+				common_functions.tiktok_remove_watermark(api_cache, options, obj.url, page, function(newurl) {
 					if (newurl) {
 						obj.url = newurl;
 					}
@@ -25970,6 +25978,8 @@ var $$IMU_EXPORT$$;
 
 							if (data.props.pageProps.metaParams && data.props.pageProps.metaParams.canonicalHref) {
 								obj.extra.page = data.props.pageProps.metaParams.canonicalHref;
+							} else {
+								obj.extra.page = current.href;
 							}
 
 							return tiktok_finalcb(obj);
