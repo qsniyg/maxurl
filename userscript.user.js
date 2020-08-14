@@ -16613,7 +16613,16 @@ var $$IMU_EXPORT$$;
 			// http://a3.mzstatic.com/us/r30/Music5/v4/2e/0d/6d/2e0d6d8f-bd38-9240-b150-0e989f00374e/cover170x170.jpeg
 			// http://a4.mzstatic.com/us/r30/Music62/v4/fe/61/54/fe6154f6-b064-d788-d114-4b544def3d30/cover1400x1400.jpeg
 			// add -999 to always set the quality to the max value (https://github.com/qsniyg/maxurl/issues/164)
-			return src.replace(/\/[0-9]*x[0-9]*[a-z]*(?:-[0-9]+)?(\.[^/.]*)$/, "/999999999x0w-999$1");
+			obj = {};
+
+			match = src.match(/\/([-0-9a-f]{20,}(?:_[^/]+)?)\/+source\/+[^/]+(?:[?#].*)?$/);
+			if (!match)
+				match = src.match(/\/[-0-9a-f]{20,}\/+([^/]+\.[^/.]+)\/+[^/]+(?:[?#].*)?$/);
+			if (match)
+				obj.filename = match[1];
+
+			obj.url = src.replace(/\/[0-9]*x[0-9]*[a-z]*(?:-[0-9]+)?(\.[^/.]*)$/, "/999999999x0w-999$1");
+			return obj;
 		}
 
 		if (domain === "img-tmdetail.alicdn.com") {
