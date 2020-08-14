@@ -795,8 +795,8 @@ var $$IMU_EXPORT$$;
 
 			return raw_request_do(data);
 		};
-	} else {
-		console_warn("Unable to initialize do_request, most functions will likely fail");
+	} else if (is_interactive) {
+		console.warn("Unable to initialize do_request, most functions will likely fail");
 	}
 
 	var get_cookies = null;
