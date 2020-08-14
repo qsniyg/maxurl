@@ -69900,6 +69900,63 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain_nowww === "asianpussy.fun") {
+			// https://asianpussy.fun/flplayer.php?id=293498
+			newsrc = website_query({
+				website_regex: /^([a-z]+:\/\/[^/]+\/+flplayer\.php\?id=[0-9]+)/,
+				query_for_id: "${id}",
+				process: function(done, resp, cache_key) {
+					var match = resp.responseText.match(/document\.write\(atob\(atob\("([^"]+)"\)\)\);/);
+					if (!match) {
+						console_error(cache_key, "Unable to find match for", resp);
+						return done(null, false);
+					}
+
+					var decoded = base64_decode(base64_decode(match[1]));
+					match = decoded.match(/<source src="([^"]+)" type="([^"]+)"/);
+					if (!match) {
+						console_error("Unable to find source match from", {resp: resp, decoded: decoded});
+						return done(null, false);
+					}
+
+					var video;
+					if (match[2] === "video/mp4") {
+						video = true;
+					} else if (match[2] === "application/x-mpegURL") {
+						video = "hls";
+					} else {
+						console_error("Unknown video type", {resp: resp, decoded: decoded, match: match});
+						return done(null, false);
+					}
+
+					return done({
+						url: match[1],
+						video: video
+					}, 60*60);
+				}
+			});
+			if (newsrc) return newsrc;
+
+			// https://asianpussy.fun/gallery/malayalam-kambikatha-peculiarity-pottikkal-narrated.html
+			newsrc = website_query({
+				website_regex: /^([a-z]+:\/\/[^/]+\/+gallery\/+[^/.]*\.html)(?:[?#].*)?$/,
+				query_for_id: "${id}",
+				process: function(done, resp, cache_key) {
+					var match = resp.responseText.match(/document\.write\(atob\([^)]+\)\.replace\('#+', '([0-9]+)'\)/);
+					if (!match) {
+						console_error(cache_key, "Unable to find match for", resp);
+						return done(null, false);
+					}
+
+					return done({
+						url: "https://" + domain + "/flplayer.php?id=" + match[1],
+						is_pagelink: true
+					}, 6*60*60);
+				}
+			});
+			if (newsrc) return newsrc;
+		}
+
 
 
 
@@ -71231,7 +71288,7 @@ var $$IMU_EXPORT$$;
 
 		if (options.rule_specific && options.rule_specific.linked_image && options.element) {
 			var link_el = common_functions.get_link_el_matching(options.element, function(el) {
-				if (el.href && looks_like_valid_link(el.href, el))
+				if (el.href && el.href !== src && looks_like_valid_link(el.href, el))
 					return true;
 			});
 
@@ -81025,7 +81082,7 @@ var $$IMU_EXPORT$$;
 			//console_log(els);
 
 			if (_nir_debug_)
-				console_log("trigger_popup: els =", els);
+				console_log("trigger_popup: els =", els, "point =", point);
 
 			var source = find_source(els);
 
