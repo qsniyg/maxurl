@@ -78960,8 +78960,16 @@ var $$IMU_EXPORT$$;
 							imgw = img_naturalWidth;
 							calc_imghw_for_fit();
 
+							var oldwidth = parseFloat(img.style.width);
+							var oldheight = parseFloat(img.style.height);
+
 							set_popup_width(imgw, vw);
 							set_popup_height(imgh, vh);
+
+							if (zoom_out_to_close && parseFloat(img.style.width) === oldwidth && parseFloat(img.style.height) === oldheight) {
+								resetpopups();
+								return false;
+							}
 
 							currentmode = "fit";
 							changed = true;
