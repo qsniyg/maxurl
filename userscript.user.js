@@ -795,6 +795,8 @@ var $$IMU_EXPORT$$;
 
 			return raw_request_do(data);
 		};
+	} else {
+		console_warn("Unable to initialize do_request, most functions will likely fail");
 	}
 
 	var get_cookies = null;
@@ -8330,7 +8332,7 @@ var $$IMU_EXPORT$$;
 	};
 
 	common_functions.get_tiktok_urlvidid = function(url) {
-		var match = url.match(/^[a-z]+:\/\/[^/]+\/+(?:[0-9a-f]{32}\/+[0-9a-f]{8}\/+)?video\/+[^/]+\/+[^/]+\/+[^/]+\/+([0-9a-f]{32})\/*\?/);
+		var match = url.match(/^[a-z]+:\/\/[^/]+\/+(?:[0-9a-f]{32}\/+[0-9a-f]{8}\/+)?video\/+(?:[^/]+\/+)?[^/]+\/+[^/]+\/+([0-9a-f]{32})\/*\?/);
 		if (match)
 			return match[1];
 
