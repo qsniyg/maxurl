@@ -16617,12 +16617,13 @@ var $$IMU_EXPORT$$;
 
 			match = src.match(/\/([-0-9a-f]{20,}(?:_[^/]+)?)\/+source\/+[^/]+(?:[?#].*)?$/);
 			if (!match)
-				match = src.match(/\/[-0-9a-f]{20,}\/+([^/]+\.[^/.]+)\/+[^/]+(?:[?#].*)?$/);
+				match = src.match(/\/[-0-9a-f]{20,}\/+([^/]+)\.[^/.]+\/+[^/]+(?:[?#].*)?$/);
 			if (match)
 				obj.filename = match[1];
 
 			obj.url = src.replace(/\/[0-9]*x[0-9]*[a-z]*(?:-[0-9]+)?(\.[^/.]*)$/, "/999999999x0w-999$1");
-			return obj;
+			// thanks to a-vrma on github for the idea to convert jpg to png: https://github.com/qsniyg/maxurl/issues/393
+			return fillobj_urls(add_full_extensions(obj.url, ["png", "jpg"], true), obj);
 		}
 
 		if (domain === "img-tmdetail.alicdn.com") {
