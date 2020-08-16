@@ -11816,16 +11816,22 @@ var $$IMU_EXPORT$$;
 			// https://geo1.ggpht.com/cbk?panoid=G27yBPFPohgfkiutzyysbg&output=thumbnail&cb_client=search.gws-prod.gps&thumb=2&w=408&h=240&yaw=108.68918&pitch=0&thumbfov=100
 			//   https://geo1.ggpht.com/cbk?panoid=G27yBPFPohgfkiutzyysbg&output=thumbnail&cb_client=search.gws-prod.gps&thumb=2&w=1000&h=588&yaw=108.68918&pitch=0&thumbfov=100
 			queries = get_queries(src);
-			if (queries.w && queries.h) {
-				var w = parseInt(queries.w);
-				var h = parseInt(queries.h);
+			if (queries.panoid) {
+				var w = parseInt(queries.w) || 0;
+				var h = parseInt(queries.h) || 0;
 
 				var largest = Math.max(w, h);
 				var smallest = Math.min(w, h);
-				var ratio = largest / smallest;
+				var ratio;
 
-				if (largest < 1000) {
-					largest = 1000;
+				if (!smallest || !largest) {
+					ratio = 1;
+				} else {
+					ratio = largest / smallest;
+				}
+
+				if (largest < 9999) {
+					largest = 9999;
 					smallest = parseInt(largest / ratio);
 
 					if (w > h) {
