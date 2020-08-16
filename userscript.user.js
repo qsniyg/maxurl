@@ -11811,6 +11811,36 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/[0-9]*\/[0-9]*x[0-9]*\/*$/, "/").replace(/\/[0-9]*\/*$/, "/");
 		}
 
+		if (domain_nosub === "ggpht.com" && /^geo[0-9]*\./.test(domain) && /:\/\/[^/]+\/+cbk\?/.test(src)) {
+			// thanks to llacb47 on github for reporting: https://github.com/qsniyg/maxurl/issues/394
+			// https://geo1.ggpht.com/cbk?panoid=G27yBPFPohgfkiutzyysbg&output=thumbnail&cb_client=search.gws-prod.gps&thumb=2&w=408&h=240&yaw=108.68918&pitch=0&thumbfov=100
+			//   https://geo1.ggpht.com/cbk?panoid=G27yBPFPohgfkiutzyysbg&output=thumbnail&cb_client=search.gws-prod.gps&thumb=2&w=1000&h=588&yaw=108.68918&pitch=0&thumbfov=100
+			queries = get_queries(src);
+			if (queries.w && queries.h) {
+				var w = parseInt(queries.w);
+				var h = parseInt(queries.h);
+
+				var largest = Math.max(w, h);
+				var smallest = Math.min(w, h);
+				var ratio = largest / smallest;
+
+				if (largest < 1000) {
+					largest = 1000;
+					smallest = parseInt(largest / ratio);
+
+					if (w > h) {
+						queries.w = largest;
+						queries.h = smallest;
+					} else {
+						queries.h = largest;
+						queries.w = smallest;
+					}
+
+					return add_queries(src, queries);
+				}
+			}
+		}
+
 		if ((domain_nosub === "blogspot.com" && string_indexof(domain, ".bp.blogspot.com") >= 0) ||
 			// https://4.bp.blogspot.com/-1ndmEdQX3AM/Tv04FWJ3kTI/AAAAAAAAAzg/P-WNaJRST6Q/s400/Bookworm%2B3.jpg?ssl=1
 			//   https://4.bp.blogspot.com/-1ndmEdQX3AM/Tv04FWJ3kTI/AAAAAAAAAzg/P-WNaJRST6Q/s0/Bookworm%2B3.jpg=s0?imgmax=0
