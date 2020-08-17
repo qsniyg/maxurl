@@ -5046,7 +5046,18 @@ var $$IMU_EXPORT$$;
 			options.cache_key = domain_nosub;
 		}
 
-		var website_match = options.url.match(options.website_regex);
+		if (!is_array(options.website_regex)) {
+			options.website_regex = [options.website_regex];
+		}
+
+		var website_match = null;
+
+		for (var i = 0 ; i < options.website_regex.length; i++) {
+			website_match = options.url.match(options.website_regex[i]);
+			if (website_match)
+				break;
+		}
+
 		if (!website_match)
 			return null;
 
@@ -30547,45 +30558,109 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "facebook.com") {
-			var parse_newstyle_fb = function(cache_key, resp) {
-				var match = resp.responseText.match(/\(new ServerJS\(\)\)\.handleWithCustomApplyEach\(ScheduledApplyEach,({"define":\[\["cr:[0-9]+",.*?\]\]})\);\}/);
+			var find_from_serverjs = function(obj, requireid) {
+				if (!obj.require)
+					return null;
+
+				var result = [];
+				for (var i = 0; i < obj.require.length; i++) {
+					if (obj.require[i][0] === requireid) {
+						result.push(obj.require[i]);
+					}
+				}
+
+				if (result.length === 0)
+					return null;
+
+				return result;
+			};
+
+			var find_prefetched_from_serverjs = function(obj, find) {
+				var prefetched = find_from_serverjs(obj, "RelayPrefetchedStreamCache");
+				if (!prefetched)
+					return null;
+
+				var result = [];
+				for (var i = 0; i < prefetched.length; i++) {
+					var pre = prefetched[i];
+					var data = pre[3];
+
+					if (find && !find.test(data[0]))
+						continue;
+
+					result.push(data);
+				}
+
+				if (result.length === 0)
+					return null;
+
+				return result;
+			};
+
+			var get_fb_serverjs = function(cache_key, resp, find) {
+				var regex = /\(new ServerJS\(\)\)\.handleWithCustomApplyEach\(ScheduledApplyEach,({"(?:define|require)":.*?\]\]})\);\}/;
+				var global = new RegExp(regex, "g");
+
+				var match = resp.responseText.match(global);
 				if (!match) {
-					console_error(cache_key, "Unable to find match for", resp);
+					console_error(cache_key, "Unable to find matches for", resp);
 					return null;
 				}
 
-				var json = JSON_parse(match[1]);
+				var jsons = [];
 
-				for (var i = 0; i < json.require.length; i++) {
-					if (json.require[i][0] !== "RelayPrefetchedStreamCache")
-						continue;
+				for (var i = 0; i < match.length; i++) {
+					var m = match[i];
 
-					if (!/^adp_CometPhotoRootQueryRelayPreloader_/.test(json.require[i][3][0])) {
-						console_warn(cache_key, "Invalid RelayPrefetchedStreamCache", json.require[i]);
-						continue;
-					}
+					var submatch = m.match(regex);
 
-					var data = json.require[i][3][1].__bbox.result.data;
+					try {
+						var json = JSON_parse(submatch[1]);
 
-					var currMedia = data.currMedia;
+						var prefetched = find_prefetched_from_serverjs(json, find);
+						if (!prefetched)
+							continue;
 
-					var obj = {
-						extra: {
-							page: resp.finalUrl
+						for (var j = 0; j < prefetched.length; j++) {
+							jsons.push(prefetched[j]);
 						}
-					};
-
-					if (currMedia.message.text) {
-						obj.extra.caption = currMedia.message.text;
+					} catch (e) {
+						console_error(cache_key, e, {match: m, submatch: submatch, resp: resp});
 					}
-
-					obj.url = common_functions.instagram_norm_url(currMedia.image.uri);
-
-					return obj;
 				}
 
-				console_warn(cache_key, "Unable to find RelayPrefetchedStreamCache for", {resp: resp, json: json});
-				return null;
+				if (jsons.length === 0)
+					return null;
+
+				return jsons;
+			};
+
+			var parse_newstyle_fb = function(cache_key, resp) {
+				var serverjs = get_fb_serverjs(cache_key, resp, /^adp_CometPhotoRootQueryRelayPreloader_/);
+				if (!serverjs) {
+					console_error(cache_key, "Unable to find serverjs match for", resp);
+					return null;
+				}
+
+				//console_log(serverjs);
+				var json = serverjs[0];
+				var data = json[1].__bbox.result.data;
+
+				var currMedia = data.currMedia;
+
+				var obj = {
+					extra: {
+						page: resp.finalUrl
+					}
+				};
+
+				if (currMedia.message.text) {
+					obj.extra.caption = currMedia.message.text;
+				}
+
+				obj.url = common_functions.instagram_norm_url(currMedia.image.uri);
+
+				return obj;
 			};
 
 			var parse_oldstyle_fb = function(cache_key, resp) {
@@ -30630,6 +30705,77 @@ var $$IMU_EXPORT$$;
 					} else {
 						return done(null, false);
 					}
+				}
+			});
+			if (newsrc) return newsrc;
+
+			newsrc = website_query({
+				website_regex: [
+					/^[a-z]+:\/\/[^/]+\/+watch\/+\?(?:.*&)?v=([0-9]+)(?:&.*)?(?:[?#].*)?$/,
+					/^[a-z]+:\/\/[^/]+\/+[^/]+\/+videos\/+([0-9]+)\/*(?:[?#].*)?$/
+				],
+				query_for_id: function(id) {
+					return {
+						url: "https://www.facebook.com/watch/?v=" + id,
+						headers: {
+							Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+							"Sec-Fetch-Dest": "document",
+							"Sec-Fetch-Mode": "navigate",
+							"Sec-Fetch-Site": "none"
+						}
+					};
+				},
+				process: function(done, resp, cache_key) {
+					var results = get_fb_serverjs(cache_key, resp, /^adp_CometVideoHomeInjectedFeedUnitQueryRelayPreloader_/);
+					if (!results) {
+						console_error(cache_key, "Unable to find serverjs match for", resp);
+						return done(null, false);
+					}
+
+					for (var i = 0; i < results.length; i++) {
+						var data = results[i][1].__bbox.result.data;
+						if (!data.video || !data.video.story || !data.video.story.attachments)
+							continue;
+
+						var media = data.video.story.attachments[0].media;
+
+						var obj = {
+							extra: {
+								page: media.permalink_url || resp.finalUrl
+							}
+						};
+
+						var urls = [];
+						if (media.playable_url_dash) {
+							urls.push({
+								url: media.playable_url_dash,
+								video: "dash"
+							});
+						}
+
+						if (media.playable_url_quality_hd) {
+							urls.push({
+								url: media.playable_url_quality_hd,
+								video: true
+							});
+						}
+
+						if (media.playable_url) {
+							urls.push({
+								url: media.playable_url,
+								video: true
+							});
+						}
+
+						if (media.thumbnailImage && media.thumbnailImage.uri) {
+							urls.push(media.thumbnailImage.uri);
+						}
+
+						return done(fillobj_urls(urls, obj), 60*60);
+					}
+
+					console_error(cache_key, "Unable to find media from", {resp: resp, serverjs: results});
+					return done(null, false);
 				}
 			});
 			if (newsrc) return newsrc;
