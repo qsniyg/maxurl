@@ -31054,6 +31054,17 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/[^/.]*-[0-9]{8,})-[^/.]*(\.[^/.]*)$/, "$1$2");
 		}
 
+		if (domain === "imgproc.airliners.net") {
+			// thanks to llacb47 on github: https://github.com/qsniyg/maxurl/issues/396
+			// https://imgproc.airliners.net/photos/airliners/9/1/7/6122719-v4993c2438bb-6.jpg
+			//   https://imgproc.airliners.net/photos/airliners/9/1/7/6122719.jpg
+			// https://imgproc.airliners.net/photos/airliners/9/7/5/2367579-v40-15.jpg
+			//   https://imgproc.airliners.net/photos/airliners/9/7/5/2367579.jpg
+			// https://imgproc.airliners.net/photos/user/7/0/8/profile-photo-2807-v4207cbf0367-5.jpg
+			//   https://imgproc.airliners.net/photos/user/7/0/8/profile-photo-2807.jpg
+			return src.replace(/(\/photos\/+[^/]+\/+(?:[0-9]\/+){3}[^/]+)-v[0-9a-f]+-[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
 		if (domain_nowww === "ukmix.org") {
 			// https://www.ukmix.org/proxy.php?code=3b69a1220d68c617d6dbba93ccf0ace35a34abf823b8a6e17ae123a692765a43&url=aHR0cDovL2NkbmkuY29uZGVuYXN0LmNvLnVrLzQxMHg1NDAva19uL25vdi0yMDA1X2NvdmVyczIwMDVfZ2xfMjJkZWMxMF9iLmpwZw%3D%3D
 			//   https://cdni.condenast.co.uk/410x540/k_n/nov-2005_covers2005_gl_22dec10_b.jpg
@@ -48152,6 +48163,15 @@ var $$IMU_EXPORT$$;
 			// http://classypussy.com/gallery/000173_whitney_conroy_a_glass_dick_container/thumbs/thumbs_957_002.jpg
 			//   http://classypussy.com/gallery/000173_whitney_conroy_a_glass_dick_container/957_002.jpg
 			return src.replace(/\/thumbs\/+thumbs_/, "/");
+		}
+
+		if (domain_nowww === "airlinerphotos.com") {
+			// thanks to llacb47 on github: https://github.com/qsniyg/maxurl/issues/396
+			// https://www.airlinerphotos.com/gallery/zurich-2013/thumbs/thumbs_n171dn.jpg
+			//   https://www.airlinerphotos.com/gallery/zurich-2013/n171dn.jpg
+			newsrc = src.replace(/(:\/\/[^/]+\/+gallery\/+[^/]+\/+)thumbs\/+thumbs_/, "$1");
+			if (newsrc !== src)
+				return newsrc;
 		}
 
 		if (domain_nowww === "hiqqu.xxx" ||
@@ -70080,6 +70100,56 @@ var $$IMU_EXPORT$$;
 			return src.replace(/:\/\/[^/]+\/+cbr\/+[0-9]+x[0-9]+\/+[a-z]+\/+([0-9]{10,}(?:-o)?\.[^/.]+)(?:[?#].*)?$/, "://cdn.photos.sparkplatform.com/cbr/$1");
 		}
 
+		if (domain_nowww === "jetphotos.com") {
+			// thanks to llacb47 on github: https://github.com/qsniyg/maxurl/issues/396
+			// https://www.jetphotos.com/api/json/heroimg.php?src=https://cdn.jetphotos.com/full/5/74588_1596711927.jpg&width=882
+			//   https://cdn.jetphotos.com/full/5/74588_1596711927.jpg
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+api\/+json\/+heroimg\.php\?(?:.*&)?src=([^&]+).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+		}
+
+		if (domain === "cdn.jetphotos.com") {
+			// thanks to llacb47 on github: https://github.com/qsniyg/maxurl/issues/396
+			// https://cdn.jetphotos.com/400/1/56183_1200233430.jpg
+			//   https://cdn.jetphotos.com/full/1/56183_1200233430.jpg
+			// https://cdn.jetphotos.com/400/6/72480_1565399439.jpg
+			//   https://cdn.jetphotos.com/full/6/72480_1565399439.jpg
+			return src.replace(/(:\/\/[^/]+\/+)[0-9]+(\/+[0-9]+\/+[0-9]+_[0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1full$2");
+		}
+
+		if (domain === "cdn.airplane-pictures.net") {
+			// thanks to llacb47 on github: https://github.com/qsniyg/maxurl/issues/396
+			// https://cdn.airplane-pictures.net/images/uploaded-images/2020/7/2/1322296mm.jpg
+			//   https://cdn.airplane-pictures.net/images/uploaded-images/2020/7/2/1322296.jpg
+			// https://cdn.airplane-pictures.net/images/uploaded-images/2020/7/27/1328206m.jpg
+			//   https://cdn.airplane-pictures.net/images/uploaded-images/2020/7/27/1328206.jpg
+			// https://cdn.airplane-pictures.net/images/uploaded-images/2020/8/9/1331456s.jpg
+			//   https://cdn.airplane-pictures.net/images/uploaded-images/2020/8/9/1331456.jpg
+			return src.replace(/(\/images\/+uploaded-images\/+[0-9]{4}\/+(?:[0-9]{1,2}\/+){2}[0-9]+)[ms]+(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "airteamimages.com") {
+			// thanks to llacb47 on github: https://github.com/qsniyg/maxurl/issues/396
+			// https://www.airteamimages.com/pics/366/366481_200.jpg
+			//   https://www.airteamimages.com/pics/366/366481_big.jpg
+			// https://www.airteamimages.com/pics/366/366353_800.jpg
+			//   https://www.airteamimages.com/pics/366/366353_big.jpg
+			return src.replace(/(\/pics\/+[0-9]+\/+[0-9]+)_[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1_big$2");
+		}
+
+		if (domain === "freighter.flyteam.jp") {
+			// thanks to llacb47 on github: https://github.com/qsniyg/maxurl/issues/396
+			// https://freighter.flyteam.jp/photo/3124509/260x260.jpg
+			//   https://freighter.flyteam.jp/photo/3124509/960x960.jpg
+			//   https://freighter.flyteam.jp/photo/3124509/src.jpg
+			// https://freighter.flyteam.jp/newsphoto/39129/w1200.jpg
+			//   https://freighter.flyteam.jp/newsphoto/39129/src.jpg
+			return src.replace(/(\/(?:news)?photo\/+[0-9]+\/+)(?:[0-9]+x[0-9]+|[wh][0-9]+)(\.[^/.]+)(?:[?#].*)?$/, "$1src$2");
+		}
+
+
+
 
 
 
@@ -70859,7 +70929,8 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/img\/posts\/photos\/[0-9]+_[0-9a-f]+)_[a-z](\.[^/.]*)$/, "$1$2");
 		}
 
-		if (src.match(/\/wp-content\/+(?:uploads\/(?:.*?\/)?nggallery|[gG]allery)\/(?:.*?\/)?(?:cache|dynamic)\/+[^/]+\.[^-_/.]*-nggid[0-9]+-ngg0dyn-[^/]*$/)) {
+		if (domain_nowww === "airlinerphotos.com" ||
+			src.match(/\/wp-content\/+(?:uploads\/(?:.*?\/)?nggallery|[gG]allery)\/(?:.*?\/)?(?:cache|dynamic)\/+[^/]+\.[^-_/.]*-nggid[0-9]+-ngg0dyn-[^/]*$/)) {
 			// https://ojp8zqasz32qat8n13om56p4-wpengine.netdna-ssl.com/wp-content/uploads/sites/1/nggallery/billboard-music-awards-2018/dynamic/NUP_183094_0909.JPG-nggid0515516-ngg0dyn-100x150x100-00f0w010c011r110f110r010t010.JPG
 			//   https://ojp8zqasz32qat8n13om56p4-wpengine.netdna-ssl.com/wp-content/uploads/sites/1/nggallery/billboard-music-awards-2018/NUP_183094_0909.JPG
 			// http://bndasupamark.com/wp-content/gallery/review-of-beccas-knockout-secret-v/cache/FWR-BECCAS-KNOCKOUT-SECRET-V-23.jpg-nggid06191421-ngg0dyn-160x90x100-00f0w010c011r110f110r010t010.jpg
@@ -70868,6 +70939,9 @@ var $$IMU_EXPORT$$;
 			//   http://www.boobjunkie.com/wp-content/gallery/ariel-rebel-natural-light/Natural_Light-100-lg.jpg
 			// http://paparazzioops.com/wp-content/Gallery/amanda-seyfried-photoshoot-in-miami/dynamic/Amanda-Seyfried-38.JPG-nggid046093-ngg0dyn-250x250x100-00f0w010c011r110f110r010t010.JPG
 			//   http://paparazzioops.com/wp-content/Gallery/amanda-seyfried-photoshoot-in-miami/Amanda-Seyfried-38.JPG
+			// thanks to llacb47 on github: https://github.com/qsniyg/maxurl/issues/396
+			// https://www.airlinerphotos.com/gallery/photo-blog-2020/cache/TC-SNU_9.jpg-nggid046820-ngg0dyn-0x250-00f0w010c010r110f110r010t010.jpg
+			//   https://www.airlinerphotos.com/gallery/photo-blog-2020/TC-SNU_9.jpg
 			return src.replace(/\/(?:cache|dynamic)(\/+[^/]+\.[^-_/.]+)-[^/]*$/, "$1");
 			//return src.replace(/(\/wp-content\/+gallery\/+[^/]+\/+)(?:cache|dynamic)\/+([^/]*?\.[^/.-]+)-[^/]*\.[^/.]*(?:[?#].*)?$/, "$1$2");
 		}
