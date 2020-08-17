@@ -30683,6 +30683,7 @@ var $$IMU_EXPORT$$;
 
 			newsrc = website_query({
 				website_regex: /^[a-z]+:\/\/[^/]+\/+[^/]+\/+photos\/+a\.[0-9]+\/+([0-9]+)\/*(?:[?#].*)?$/,
+				cache_key: "facebook_photo",
 				query_for_id: function(id) {
 					return {
 						url: "https://lookaside.fbsbx.com/lookaside/crawler/media/?media_id=" + id,
@@ -30714,6 +30715,7 @@ var $$IMU_EXPORT$$;
 					/^[a-z]+:\/\/[^/]+\/+watch\/+\?(?:.*&)?v=([0-9]+)(?:&.*)?(?:[?#].*)?$/,
 					/^[a-z]+:\/\/[^/]+\/+[^/]+\/+videos\/+([0-9]+)\/*(?:[?#].*)?$/
 				],
+				cache_key: "facebook_video",
 				query_for_id: function(id) {
 					return {
 						url: "https://www.facebook.com/watch/?v=" + id,
