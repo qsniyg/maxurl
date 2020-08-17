@@ -30546,6 +30546,64 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain_nowww === "facebook.com") {
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+[^/]+\/+photos\/+a\.[0-9]+\/+([0-9]+)\/*(?:[?#].*)?$/,
+				query_for_id: function(id) {
+					return {
+						url: "https://lookaside.fbsbx.com/lookaside/crawler/media/?media_id=" + id,
+						headers: {
+							Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+							"Sec-Fetch-Dest": "document",
+							"Sec-Fetch-Mode": "navigate",
+							"Sec-Fetch-Site": "none"
+						}
+					};
+				},
+				process: function(done, resp, cache_key, match) {
+					var match = resp.responseText.match(/\(new ServerJS\(\)\)\.handleWithCustomApplyEach\(ScheduledApplyEach,({"define":\[\["cr:[0-9]+",.*?\]\]})\);\}/);
+					if (!match) {
+						console_error(cache_key, "Unable to find match for", resp);
+						return done(null, false);
+					}
+
+					var json = JSON_parse(match[1]);
+
+					for (var i = 0; i < json.require.length; i++) {
+						if (json.require[i][0] !== "RelayPrefetchedStreamCache")
+							continue;
+
+						if (!/^adp_CometPhotoRootQueryRelayPreloader_/.test(json.require[i][3][0])) {
+							console_warn(cache_key, "Invalid RelayPrefetchedStreamCache", json.require[i]);
+							continue;
+						}
+
+						var data = json.require[i][3][1].__bbox.result.data;
+
+						var currMedia = data.currMedia;
+
+						var obj = {
+							extra: {
+								page: resp.finalUrl
+							}
+						};
+
+						if (currMedia.message.text) {
+							obj.extra.caption = currMedia.message.text;
+						}
+
+						obj.url = common_functions.instagram_norm_url(currMedia.image.uri);
+
+						return done(obj, 60*60);
+					}
+
+					console_warn(cache_key, "Unable to find RelayPrefetchedStreamCache for", {resp: resp, json: json});
+					return done(null, false);
+				}
+			});
+			if (newsrc) return newsrc;
+		}
+
 		if (false && domain === "www.the-a.jp") {
 			// don't really plan on implementing this one unless a better way is found
 			// http://www.the-a.jp/event.cgi?eventnum=071215 -- album
