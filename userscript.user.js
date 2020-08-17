@@ -30547,6 +30547,65 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "facebook.com") {
+			var parse_newstyle_fb = function(cache_key, resp) {
+				var match = resp.responseText.match(/\(new ServerJS\(\)\)\.handleWithCustomApplyEach\(ScheduledApplyEach,({"define":\[\["cr:[0-9]+",.*?\]\]})\);\}/);
+				if (!match) {
+					console_error(cache_key, "Unable to find match for", resp);
+					return null;
+				}
+
+				var json = JSON_parse(match[1]);
+
+				for (var i = 0; i < json.require.length; i++) {
+					if (json.require[i][0] !== "RelayPrefetchedStreamCache")
+						continue;
+
+					if (!/^adp_CometPhotoRootQueryRelayPreloader_/.test(json.require[i][3][0])) {
+						console_warn(cache_key, "Invalid RelayPrefetchedStreamCache", json.require[i]);
+						continue;
+					}
+
+					var data = json.require[i][3][1].__bbox.result.data;
+
+					var currMedia = data.currMedia;
+
+					var obj = {
+						extra: {
+							page: resp.finalUrl
+						}
+					};
+
+					if (currMedia.message.text) {
+						obj.extra.caption = currMedia.message.text;
+					}
+
+					obj.url = common_functions.instagram_norm_url(currMedia.image.uri);
+
+					return obj;
+				}
+
+				console_warn(cache_key, "Unable to find RelayPrefetchedStreamCache for", {resp: resp, json: json});
+				return null;
+			};
+
+			var parse_oldstyle_fb = function(cache_key, resp) {
+				var match = resp.responseText.match(/\<div\s+class=\"hidden_elem\"\s*>.*?data-ploi=\"(https?:\/\/[^"]*?)\"/);
+				if (!match) {
+					console_error(cache_key, "Unable to find match for", resp);
+					return null;
+				}
+
+				var obj = {
+					extra: {
+						page: resp.finalUrl
+					}
+				};
+
+				obj.url = decode_entities(match[1]);
+
+				return obj;
+			};
+
 			newsrc = website_query({
 				website_regex: /^[a-z]+:\/\/[^/]+\/+[^/]+\/+photos\/+a\.[0-9]+\/+([0-9]+)\/*(?:[?#].*)?$/,
 				query_for_id: function(id) {
@@ -30560,45 +30619,17 @@ var $$IMU_EXPORT$$;
 						}
 					};
 				},
-				process: function(done, resp, cache_key, match) {
-					var match = resp.responseText.match(/\(new ServerJS\(\)\)\.handleWithCustomApplyEach\(ScheduledApplyEach,({"define":\[\["cr:[0-9]+",.*?\]\]})\);\}/);
-					if (!match) {
-						console_error(cache_key, "Unable to find match for", resp);
+				process: function(done, resp, cache_key) {
+					var obj = parse_newstyle_fb(cache_key, resp);
+					if (!obj) {
+						obj = parse_oldstyle_fb(cache_key, resp);
+					}
+
+					if (obj) {
+						return done(obj, 60*60);
+					} else {
 						return done(null, false);
 					}
-
-					var json = JSON_parse(match[1]);
-
-					for (var i = 0; i < json.require.length; i++) {
-						if (json.require[i][0] !== "RelayPrefetchedStreamCache")
-							continue;
-
-						if (!/^adp_CometPhotoRootQueryRelayPreloader_/.test(json.require[i][3][0])) {
-							console_warn(cache_key, "Invalid RelayPrefetchedStreamCache", json.require[i]);
-							continue;
-						}
-
-						var data = json.require[i][3][1].__bbox.result.data;
-
-						var currMedia = data.currMedia;
-
-						var obj = {
-							extra: {
-								page: resp.finalUrl
-							}
-						};
-
-						if (currMedia.message.text) {
-							obj.extra.caption = currMedia.message.text;
-						}
-
-						obj.url = common_functions.instagram_norm_url(currMedia.image.uri);
-
-						return done(obj, 60*60);
-					}
-
-					console_warn(cache_key, "Unable to find RelayPrefetchedStreamCache for", {resp: resp, json: json});
-					return done(null, false);
 				}
 			});
 			if (newsrc) return newsrc;
