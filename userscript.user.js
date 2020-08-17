@@ -14,16 +14,16 @@
 // @name:zh-HK        Image Max URL
 // @namespace         http://tampermonkey.net/
 // @version           0.13.18
-// @description       Finds larger or original versions of images and videos for 7100+ websites, including a powerful media popup feature
-// @description:ko    7100개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
-// @description:fr    Trouve des images plus grandes ou originales pour plus de 7100 sites
-// @description:es    Encuentra imágenes más grandes y originales para más de 7100 sitios
-// @description:ru    Находит увеличенные или оригинальные версии изображений для более чем 7100 веб-сайтов
-// @description:ja    7100以上のウェブサイトで高画質や原本画像を見つけ出します
-// @description:zh    为7100多个网站查找更大或原始图像
-// @description:zh-CN 为7100多个网站查找更大或原始图像
-// @description:zh-TW 為7100多個網站查找更大或原始圖像
-// @description:zh-HK 為7100多個網站查找更大或原始圖像
+// @description       Finds larger or original versions of images and videos for 7200+ websites, including a powerful media popup feature
+// @description:ko    7200개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
+// @description:fr    Trouve des images plus grandes ou originales pour plus de 7200 sites
+// @description:es    Encuentra imágenes más grandes y originales para más de 7200 sitios
+// @description:ru    Находит увеличенные или оригинальные версии изображений для более чем 7200 веб-сайтов
+// @description:ja    7200以上のウェブサイトで高画質や原本画像を見つけ出します
+// @description:zh    为7200多个网站查找更大或原始图像
+// @description:zh-CN 为7200多个网站查找更大或原始图像
+// @description:zh-TW 為7200多個網站查找更大或原始圖像
+// @description:zh-HK 為7200多個網站查找更大或原始圖像
 // @author            qsniyg
 // @homepageURL       https://qsniyg.github.io/maxurl/options.html
 // @supportURL        https://github.com/qsniyg/maxurl/issues
@@ -48834,6 +48834,9 @@ var $$IMU_EXPORT$$;
 			//   https://admin.mashable.com/uploads/card/image/192862/GettyImages-597565772.jpg -- doesn't work
 			// wip
 			//   https://pgnpbhn8ce.execute-api.us-east-1.amazonaws.com/default/mondrianImages/create-image/uploads/card/image/192862/GettyImages-597565772.jpg
+			// other:
+			// https://mondrian.mashable.com/uploads%252Fstory%252Fthumbnail%252F117931%252F26961a4d-081f-4f81-911f-160cb5a1752e.jpg%252F390x219.jpg?signature=HZfx_gKsmTskbJ5ZUbWzM64Uy_g=&source=https%3A%2F%2Fblueprint-api-production.s3.amazonaws.com
+			// source + base - [0-9]+x[0-9]+.jpg
 			newsrc = src.replace(/(:\/\/[^/]*\/[^/?]*%252F[^/?]*)\?.*$/, "$1");
 			if (newsrc !== src)
 				return decodeURIComponent(decodeURIComponent(newsrc));
