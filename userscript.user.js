@@ -30580,13 +30580,29 @@ var $$IMU_EXPORT$$;
 				if (!prefetched)
 					return null;
 
+				if (!find)
+					find = [];
+
+				if (!is_array(find))
+					find = [find];
+
 				var result = [];
 				for (var i = 0; i < prefetched.length; i++) {
 					var pre = prefetched[i];
 					var data = pre[3];
 
-					if (find && !find.test(data[0]))
-						continue;
+					if (find.length > 0) {
+						var found = false;
+						for (var j = 0; j < find.length; j++) {
+							if (find[j].test(data[0])) {
+								found = true;
+								break;
+							}
+						}
+
+						if (!found)
+							continue;
+					}
 
 					result.push(data);
 				}
@@ -30708,11 +30724,15 @@ var $$IMU_EXPORT$$;
 						story = story.attached_story;
 
 					var attachments = story.attachments;
+					//console_log(attachments);
 					for (var i = 0; i < attachments.length; i++) {
 						try {
-							var media = attachments[i].style_type_renderer.attachment.media;
+							var attachment = attachments[i].style_type_renderer.attachment;
+
+							// videos contain the actual data in the media option itself (and the url is in attachment.url, not media.url), maybe cache?
+							var url = attachment.url || attachment.media.url;
 							return done({
-								url: media.url,
+								url: url,
 								is_pagelink: true
 							}, 6*60*60);
 						} catch (e) {
@@ -30727,7 +30747,7 @@ var $$IMU_EXPORT$$;
 			var parse_facebook_post_url = function(url) {
 				// https://www.facebook.com/permalink.php?story_fbid={post_id}&id={uid} (uid has to be a number here)
 				// https://www.facebook.com/{uid}/posts/{post_id}
-				var match = url.match(/^[a-z]+:\/\/[^/]+\/+([^/]+)\/+posts\/+([^/]+)\/*(?:[?#].*)?$/);
+				var match = url.match(/^[a-z]+:\/\/[^/]+\/+([^/]+)\/+posts\/+([0-9]+)(?::[0-9]+)?\/*(?:[?#].*)?$/);
 				if (match) {
 					return {
 						uid: match[1],
@@ -30800,18 +30820,30 @@ var $$IMU_EXPORT$$;
 					};
 				},
 				process: function(done, resp, cache_key) {
-					var results = get_fb_serverjs(cache_key, resp, /^adp_CometVideoHomeInjectedFeedUnitQueryRelayPreloader_/);
+					var results = get_fb_serverjs(cache_key, resp, [
+						/^adp_CometVideoHomeInjectedFeedUnitQueryRelayPreloader_/,
+						/^adp_CometTahoeRootQueryRelayPreloader_/
+					]);
+
 					if (!results) {
 						console_error(cache_key, "Unable to find serverjs match for", resp);
+						//console_log(get_fb_serverjs(cache_key, resp));
 						return done(null, false);
 					}
 
 					for (var i = 0; i < results.length; i++) {
 						var data = results[i][1].__bbox.result.data;
-						if (!data.video || !data.video.story || !data.video.story.attachments)
+						if (!data.video)
 							continue;
 
-						var media = data.video.story.attachments[0].media;
+						if ((!data.video.story || !data.video.story.attachments) &&
+							(!data.video.videoId || !data.video.id || !data.video.permalink_url)) {
+							continue;
+						}
+
+						var media = data.video;
+						if (media.story && media.story.attachments && media.story.attachments.length && media.story.attachments[0].media)
+							media = data.video.story.attachments[0].media;
 
 						var obj = {
 							extra: {
