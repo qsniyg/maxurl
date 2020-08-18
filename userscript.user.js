@@ -36385,11 +36385,17 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/images\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2})thumbs\/+/, "$1");
 		}
 
-		if (domain === "imageproxy.ifcdn.com") {
+		if (domain === "imageproxy.ifcdn.com" ||
+			// example urls thanks to llacb47 on github: https://github.com/qsniyg/maxurl/issues/397
+			// https://imageproxy.ifunny.co/crop:x-20,resize:320x,crop:x800,quality:90x75/images/bb3c85ed35d9f0c17e58bfa51b4ae95efc64514e4cf7d21b9685f4bbb461bba4_1.jpg
+			//   https://img.ifcdn.com/images/bb3c85ed35d9f0c17e58bfa51b4ae95efc64514e4cf7d21b9685f4bbb461bba4_1.jpg
+			// https://imageproxy.ifunny.co/crop:square,resize:100x,quality:90x75/user_photos/0f08c70e5a2442904c09c85375891918f63f2872_0.jpg
+			//   https://img.ifunny.co/user_photos/0f08c70e5a2442904c09c85375891918f63f2872_0.jpg
+			domain === "imageproxy.ifunny.co") {
 			// https://imageproxy.ifcdn.com/crop:x-20,resize:320x,crop:x800,quality:90x75/images/e9b3c27e6252634d8d55b3936b6d8d1104ffc4fddae247e4bd6188de8f61ef92_1.jpg
 			//   https://imageproxy.ifcdn.com/crop:x,resize:x,crop:x,quality:x/images/e9b3c27e6252634d8d55b3936b6d8d1104ffc4fddae247e4bd6188de8f61ef92_1.jpg
 			//   https://img.ifcdn.com/images/e9b3c27e6252634d8d55b3936b6d8d1104ffc4fddae247e4bd6188de8f61ef92_1.jpg
-			return src.replace(/:\/\/[^/]*\/[^/]*(\/images\/[^/]*)$/, "://img.ifcdn.com$1");
+			return src.replace(/:\/\/[^/]*\/+[^/]*(\/(?:images|user_photos)\/+[^/]*)(?:[?#].*)?$/, "://img." + domain_nosub + "$1");
 		}
 
 		if (domain === "resource.mingweekly.com") {
@@ -80326,8 +80332,13 @@ var $$IMU_EXPORT$$;
 
 					if (settings.mouseover_exclude_imagemaps && el_tagname === "IMG" && el.hasAttribute("usemap")) {
 						var mapel = document.querySelector("map[name=\"" + el.getAttribute("usemap").replace(/^#/, "") + "\"]");
-						if (mapel)
+						if (mapel) {
+							if (_nir_debug_) {
+								console_log("_find_source skipping", el, "due to image map", mapel);
+							}
+
 							return;
+						}
 					}
 
 					var el_src = get_img_src(el);
@@ -80747,6 +80758,9 @@ var $$IMU_EXPORT$$;
 			}
 
 			function addElement(el, layer) {
+				if (_nir_debug_)
+					console_log("_find_source (addElement)", el, layer);
+
 				if (settings.mouseover_exclude_page_bg && el.tagName === "BODY") {
 					return;
 				}
