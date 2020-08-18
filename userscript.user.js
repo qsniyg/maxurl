@@ -30729,6 +30729,11 @@ var $$IMU_EXPORT$$;
 						try {
 							var attachment = attachments[i].style_type_renderer.attachment;
 
+							if (attachment.all_subattachments) {
+								// fixme!!! album support
+								attachment = attachment.all_subattachments.nodes[0];
+							}
+
 							// videos contain the actual data in the media option itself (and the url is in attachment.url, not media.url), maybe cache?
 							var url = attachment.url || attachment.media.url;
 							return done({
@@ -30772,7 +30777,7 @@ var $$IMU_EXPORT$$;
 			newsrc = website_query({
 				website_regex: [
 					/^[a-z]+:\/\/[^/]+\/+[^/]+\/+photos\/+a\.[0-9]+\/+([0-9]+)\/*(?:[?#].*)?$/,
-					/^[a-z]+:\/\/[^/]+\/+photo\/+\?(?:.*&)?fbid=([0-9]+)(?:[&#].*)?$/
+					/^[a-z]+:\/\/[^/]+\/+photo(?:\/+|\.php)\?(?:.*&)?fbid=([0-9]+)(?:[&#].*)?$/
 				],
 				cache_key: "facebook_photo",
 				query_for_id: function(id) {
@@ -30907,6 +30912,24 @@ var $$IMU_EXPORT$$;
 					};
 				} else {
 					return page_nullobj;
+				}
+			}
+		}
+
+		if (false && host_domain_nowww === "facebook.com" && options.element) {
+			// need some sort of album support before doing this (otherwise, it's likely it'll get the wrong image)
+			var current = options.element;
+
+			while ((current = current.parentElement)) {
+				if (current.tagName === "DIV" && current.getAttribute("role") === "article") {
+					// date timestamp (permalink to post)
+					var permalink = current.querySelector("div > span > span > span > span > a[role=\"link\"]");
+					if (permalink) {
+						return {
+							url: permalink.href,
+							is_pagelink: true
+						};
+					}
 				}
 			}
 		}
