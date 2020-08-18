@@ -110,7 +110,7 @@ var $$IMU_EXPORT$$;
 	var options_page = "https://qsniyg.github.io/maxurl/options.html";
 	var preferred_options_page = options_page;
 	var firefox_addon_page = "https://addons.mozilla.org/en-US/firefox/addon/image-max-url/";
-	var userscript_update_url = "https://github.com/qsniyg/maxurl/blob/master/userscript_smaller.user.js?raw=true";
+	var userscript_update_url = "https://raw.githubusercontent.com/qsniyg/maxurl/master/userscript_smaller.user.js";
 	var greasyfork_update_url = userscript_update_url;
 	//var greasyfork_update_url = "https://greasyfork.org/scripts/36662-image-max-url/code/Image%20Max%20URL.user.js";
 	var github_issues_page = "https://github.com/qsniyg/maxurl/issues";
@@ -36389,6 +36389,7 @@ var $$IMU_EXPORT$$;
 			// example urls thanks to llacb47 on github: https://github.com/qsniyg/maxurl/issues/397
 			// https://imageproxy.ifunny.co/crop:x-20,resize:320x,crop:x800,quality:90x75/images/bb3c85ed35d9f0c17e58bfa51b4ae95efc64514e4cf7d21b9685f4bbb461bba4_1.jpg
 			//   https://img.ifcdn.com/images/bb3c85ed35d9f0c17e58bfa51b4ae95efc64514e4cf7d21b9685f4bbb461bba4_1.jpg
+			//   https://img.ifunny.co/images/bb3c85ed35d9f0c17e58bfa51b4ae95efc64514e4cf7d21b9685f4bbb461bba4_1.jpg
 			// https://imageproxy.ifunny.co/crop:square,resize:100x,quality:90x75/user_photos/0f08c70e5a2442904c09c85375891918f63f2872_0.jpg
 			//   https://img.ifunny.co/user_photos/0f08c70e5a2442904c09c85375891918f63f2872_0.jpg
 			domain === "imageproxy.ifunny.co") {
