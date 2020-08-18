@@ -30654,7 +30654,7 @@ var $$IMU_EXPORT$$;
 					}
 				};
 
-				if (currMedia.message.text) {
+				if (currMedia.message && currMedia.message.text) {
 					obj.extra.caption = currMedia.message.text;
 				}
 
@@ -30681,12 +30681,84 @@ var $$IMU_EXPORT$$;
 				return obj;
 			};
 
+			var query_facebook_post = function(uid, post_id, cb) {
+				var cache_key = "facebook_post:" + uid + ":" + post_id;
+
+				api_query(cache_key, {
+					url: "https://www.facebook.com/" + uid + "/posts/" + post_id,
+					headers: {
+						Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+						"Sec-Fetch-Dest": "document",
+						"Sec-Fetch-Mode": "navigate",
+						"Sec-Fetch-Site": "none"
+					}
+				}, cb, function(done, resp, cache_key) {
+					var serverjs = get_fb_serverjs(cache_key, resp, /^adp_CometSinglePostRootQueryRelayPreloader_/);
+					if (!serverjs) {
+						console_error(cache_key, "Unable to find serverjs match for", resp);
+						return done(null, false);
+					}
+
+					var json = serverjs[0];
+					var data = json[1].__bbox.result.data;
+					var node = data.node;
+
+					var story = node.comet_sections.content.story;
+					if (story.attached_story)
+						story = story.attached_story;
+
+					var attachments = story.attachments;
+					for (var i = 0; i < attachments.length; i++) {
+						try {
+							var media = attachments[i].style_type_renderer.attachment.media;
+							return done({
+								url: media.url,
+								is_pagelink: true
+							}, 6*60*60);
+						} catch (e) {
+							console_error(cache_key, e);
+						}
+					}
+
+					return done(null, false);
+				});
+			};
+
+			var parse_facebook_post_url = function(url) {
+				// https://www.facebook.com/permalink.php?story_fbid={post_id}&id={uid} (uid has to be a number here)
+				// https://www.facebook.com/{uid}/posts/{post_id}
+				var match = url.match(/^[a-z]+:\/\/[^/]+\/+([^/]+)\/+posts\/+([^/]+)\/*(?:[?#].*)?$/);
+				if (match) {
+					return {
+						uid: match[1],
+						post_id: match[2]
+					};
+				}
+
+				match = url.match(/^[a-z]+:\/\/[^/]+\/+permalink\.php\?/);
+				if (match) {
+					var queries = get_queries(url);
+					if (queries.story_fbid && queries.id) {
+						return {
+							uid: queries.id,
+							post_id: queries.story_fbid
+						};
+					}
+				}
+
+				return null;
+			};
+
 			newsrc = website_query({
-				website_regex: /^[a-z]+:\/\/[^/]+\/+[^/]+\/+photos\/+a\.[0-9]+\/+([0-9]+)\/*(?:[?#].*)?$/,
+				website_regex: [
+					/^[a-z]+:\/\/[^/]+\/+[^/]+\/+photos\/+a\.[0-9]+\/+([0-9]+)\/*(?:[?#].*)?$/,
+					/^[a-z]+:\/\/[^/]+\/+photo\/+\?(?:.*&)?fbid=([0-9]+)(?:[&#].*)?$/
+				],
 				cache_key: "facebook_photo",
 				query_for_id: function(id) {
 					return {
-						url: "https://lookaside.fbsbx.com/lookaside/crawler/media/?media_id=" + id,
+						//url: "https://lookaside.fbsbx.com/lookaside/crawler/media/?media_id=" + id,
+						url: "https://www.facebook.com/photo/?fbid=" + id, // needed for private photos
 						headers: {
 							Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
 							"Sec-Fetch-Dest": "document",
@@ -30781,6 +30853,30 @@ var $$IMU_EXPORT$$;
 				}
 			});
 			if (newsrc) return newsrc;
+
+			var parsed_url = parse_facebook_post_url(src);
+			if (parsed_url) {
+				var page_nullobj = {
+					url: src,
+					is_pagelink: true
+				};
+
+				if (options.do_request && options.cb) {
+					query_facebook_post(parsed_url.uid, parsed_url.post_id, function(obj) {
+						if (!obj) {
+							return options.cb(page_nullobj);
+						}
+
+						return options.cb([obj, page_nullobj]);
+					});
+
+					return {
+						waiting: true
+					};
+				} else {
+					return page_nullobj;
+				}
+			}
 		}
 
 		if (false && domain === "www.the-a.jp") {
@@ -70337,14 +70433,15 @@ var $$IMU_EXPORT$$;
 
 		if (domain === "cdn.photos.sparkplatform.com") {
 			// https://cdn.photos.sparkplatform.com/cbr/20200812210527098392000000.jpg
+			//   https://cdn.photos.sparkplatform.com/cbr/20200812210527098392000000-t.jpg
 			//   https://cdn.photos.sparkplatform.com/cbr/20200812210527098392000000-o.jpg
-			return src.replace(/(\/cbr\/+[0-9]{10,})(\.[^/.]+)(?:[?#].*)?$/, "$1-o$2");
+			return src.replace(/(\/cbr\/+[0-9]{10,})(?:-t)?(\.[^/.]+)(?:[?#].*)?$/, "$1-o$2");
 		}
 
 		if (domain === "cdn.resize.sparkplatform.com") {
 			// https://cdn.resize.sparkplatform.com/cbr/1280x1024/true/20200812210527098392000000-o.jpg
 			//   https://cdn.photos.sparkplatform.com/cbr/20200812210527098392000000-o.jpg
-			return src.replace(/:\/\/[^/]+\/+cbr\/+[0-9]+x[0-9]+\/+[a-z]+\/+([0-9]{10,}(?:-o)?\.[^/.]+)(?:[?#].*)?$/, "://cdn.photos.sparkplatform.com/cbr/$1");
+			return src.replace(/:\/\/[^/]+\/+cbr\/+[0-9]+x[0-9]+\/+[a-z]+\/+([0-9]{10,}(?:-[a-z])?\.[^/.]+)(?:[?#].*)?$/, "://cdn.photos.sparkplatform.com/cbr/$1");
 		}
 
 		if (domain_nowww === "jetphotos.com") {
@@ -70393,6 +70490,14 @@ var $$IMU_EXPORT$$;
 			// https://freighter.flyteam.jp/newsphoto/39129/w1200.jpg
 			//   https://freighter.flyteam.jp/newsphoto/39129/src.jpg
 			return src.replace(/(\/(?:news)?photo\/+[0-9]+\/+)(?:[0-9]+x[0-9]+|[wh][0-9]+)(\.[^/.]+)(?:[?#].*)?$/, "$1src$2");
+		}
+
+		if (domain_nowww === "game-ost.com") {
+			// https://www.game-ost.com/static/covers_soundtracks/1/6/16383_444203_small.jpg
+			//   https://www.game-ost.com/static/covers_soundtracks/1/6/16383_444203_thumb.jpg
+			//   https://www.game-ost.com/static/covers_soundtracks/1/6/16383_444203_medium.jpg
+			//   https://www.game-ost.com/static/covers_soundtracks/1/6/16383_444203.jpg
+			return src.replace(/(\/static\/+[^/]+\/+[0-9]\/+[0-9]\/+[0-9]+_[0-9]+)_(?:thumb|small|medium)(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		}
 
 
