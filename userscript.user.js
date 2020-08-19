@@ -73651,14 +73651,16 @@ var $$IMU_EXPORT$$;
 		if (typeof el === "string")
 			return el;
 
-		if (get_tagname(el) === "A")
+		var el_tagname = get_tagname(el);
+
+		if (el_tagname === "A")
 			return el.href;
 
-		if (get_tagname(el) === "IFRAME") {
+		if (el_tagname === "IFRAME") {
 			return el.src.replace(/^javascript:window\.location\.replace\(["']([^"']+)["']\)$/, "$1");
 		}
 
-		if (get_tagname(el) === "CANVAS") {
+		if (el_tagname === "CANVAS") {
 			try {
 				return el.toDataURL();
 			} catch (e) {
@@ -73667,7 +73669,7 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if (get_tagname(el) === "SVG") {
+		if (el_tagname === "SVG") {
 			if (settings.mouseover_allow_svg_el) {
 				return get_svg_src(el);
 			} else {
@@ -73675,8 +73677,18 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if (get_tagname(el) === "VIDEO") {
+		if (el_tagname === "VIDEO") {
 			return el.currentSrc || el.src || el.poster;
+		}
+
+		if (el_tagname === "IMAGE") {
+			var xlink_href = el.getAttribute("xlink:href");
+
+			if (xlink_href) {
+				return xlink_href;
+			} else {
+				return null;
+			}
 		}
 
 		// IMG or IFRAME
@@ -80542,7 +80554,7 @@ var $$IMU_EXPORT$$;
 					}
 				}
 
-				if (el_tagname === "SOURCE" || el_tagname === "IMG" || el_tagname === "VIDEO" ||
+				if (el_tagname === "SOURCE" || el_tagname === "IMG" || el_tagname === "IMAGE" || el_tagname === "VIDEO" ||
 					(settings.mouseover_allow_canvas_el && el_tagname === "CANVAS") ||
 					(settings.mouseover_allow_svg_el && el_tagname === "SVG")) {
 
