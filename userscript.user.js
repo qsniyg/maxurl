@@ -11128,6 +11128,10 @@ var $$IMU_EXPORT$$;
 			// https://images.jpost.com/image/upload/f_auto,fl_lossy/t_JD_MostReadFaceDetect/454445
 			//   https://images.jpost.com/image/upload/454445
 			domain === "images.jpost.com" ||
+			// thanks to llacb47 on github: https://github.com/qsniyg/maxurl/issues/399
+			// https://img.hellofresh.com/f_auto,fl_lossy,q_auto,w_360/hellofresh_s3/image/5f0619e1899ede042d77d003-0d509f38.jpg
+			//   https://img.hellofresh.com/hellofresh_s3/image/5f0619e1899ede042d77d003-0d509f38.jpg
+			domain === "img.hellofresh.com" ||
 			// https://images.moviepilot.com/images/c_limit,q_auto:good,w_600/uom2udz4ogmkncouu83q/beauty-and-the-beast-credit-disney.jpg
 			// https://images.moviepilot.com/image/upload/c_fill,h_64,q_auto,w_64/lpgwdrrgc3m8duvg7zt2.jpg
 			domain === "images.moviepilot.com") {
