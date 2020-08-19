@@ -11940,10 +11940,11 @@ var $$IMU_EXPORT$$;
 			// thanks to llacb47 on github: https://github.com/qsniyg/maxurl/issues/394
 			// https://www.google.com/maps/vt/data=Leddz2aqp_Mk825wP5mcK9LgV2vB9rrZ-gvvKK-Ugecwh1qQHGzTEEgosor4epP7N6Pe3z-RrkL5-HRw0yd3pLvxHB-MYAVoZKvZosa5pcpSuLl6tGPm3VCJy5EXcUWkIrJoWRteRk88o0FHcAJJA0bT43kNr6lDe8EFLf-zCe8GnQdHl1pCqIOP5FFttLmsi_qxdTEdIf3iW8Q4846B7Ll3d_wt&w=226&h=160
 			//   https://www.google.com/maps/vt/data=Leddz2aqp_Mk825wP5mcK9LgV2vB9rrZ-gvvKK-Ugecwh1qQHGzTEEgosor4epP7N6Pe3z-RrkL5-HRw0yd3pLvxHB-MYAVoZKvZosa5pcpSuLl6tGPm3VCJy5EXcUWkIrJoWRteRk88o0FHcAJJA0bT43kNr6lDe8EFLf-zCe8GnQdHl1pCqIOP5FFttLmsi_qxdTEdIf3iW8Q4846B7Ll3d_wt&w=1000&h=1000
+			//   https://www.google.com/maps/vt/data=Leddz2aqp_Mk825wP5mcK9LgV2vB9rrZ-gvvKK-Ugecwh1qQHGzTEEgosor4epP7N6Pe3z-RrkL5-HRw0yd3pLvxHB-MYAVoZKvZosa5pcpSuLl6tGPm3VCJy5EXcUWkIrJoWRteRk88o0FHcAJJA0bT43kNr6lDe8EFLf-zCe8GnQdHl1pCqIOP5FFttLmsi_qxdTEdIf3iW8Q4846B7Ll3d_wt&w=1000&h=1000
 			var queries = get_queries(src.replace(/.*\/maps\/+vt\/+/, "?"));
 			if (queries.data) {
-				queries.w = 1000;
-				queries.h = 1000;
+				queries.w = 1024;
+				queries.h = 1024;
 
 				newsrc = src.replace(/\/maps\/+vt\/+.*/, "/maps/vt/") + stringify_queries(queries);
 				return newsrc;
@@ -30672,6 +30673,8 @@ var $$IMU_EXPORT$$;
 
 				if (currMedia.message && currMedia.message.text) {
 					obj.extra.caption = currMedia.message.text;
+				} else if (currMedia.accessibility_caption) {
+					obj.extra.caption = currMedia.accessibility_caption;
 				}
 
 				obj.url = common_functions.instagram_norm_url(currMedia.image.uri);
@@ -30913,6 +30916,32 @@ var $$IMU_EXPORT$$;
 				} else {
 					return page_nullobj;
 				}
+			}
+
+			// todo
+			if (false) {
+				newsrc = website_query({
+					website_regex: [
+						/^[a-z]+:\/\/[^/]+\/+stories\/([0-9]+)\/+([^/]+)\/*(?:[?#].*)?$/
+					],
+					cache_key: "facebook_story",
+					query_for_id: function(id) {
+						return {
+							url: "https://www.facebook.com/stories/" + id,
+							headers: {
+								Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+								"Sec-Fetch-Dest": "document",
+								"Sec-Fetch-Mode": "navigate",
+								"Sec-Fetch-Site": "none"
+							}
+						};
+					},
+					process: function(done, resp, cache_key) {
+						var results = get_fb_serverjs(cache_key, resp);
+						console_log(results);
+					}
+				});
+				if (newsrc) return newsrc;
 			}
 		}
 
@@ -72104,7 +72133,7 @@ var $$IMU_EXPORT$$;
 	}
 	// -- end bigimage --
 
-	function get_helpers(options) {
+	var get_helpers = function(options) {
 		var host_domain = "";
 		var host_domain_nowww = "";
 		var host_domain_nosub = "";
@@ -72760,7 +72789,25 @@ var $$IMU_EXPORT$$;
 		}
 
 		return null;
-	}
+	};
+
+	var get_album_info_gallery = function(el, nextprev) {
+		var album_info = popup_obj.album_info;
+
+		if (el) {
+			var album_info_json = el.getAttribute("imu-album-info");
+			if (album_info_json) {
+				try {
+					album_info = JSON_parse(album_info_json);
+				} catch (e) {
+					console_error(e);
+				}
+			}
+		}
+
+		if (!album_info)
+			return null;
+	};
 
 	var get_next_in_gallery = null;
 
