@@ -11946,6 +11946,7 @@ var $$IMU_EXPORT$$;
 			// https://www.google.com/maps/vt/data=Leddz2aqp_Mk825wP5mcK9LgV2vB9rrZ-gvvKK-Ugecwh1qQHGzTEEgosor4epP7N6Pe3z-RrkL5-HRw0yd3pLvxHB-MYAVoZKvZosa5pcpSuLl6tGPm3VCJy5EXcUWkIrJoWRteRk88o0FHcAJJA0bT43kNr6lDe8EFLf-zCe8GnQdHl1pCqIOP5FFttLmsi_qxdTEdIf3iW8Q4846B7Ll3d_wt&w=226&h=160
 			//   https://www.google.com/maps/vt/data=Leddz2aqp_Mk825wP5mcK9LgV2vB9rrZ-gvvKK-Ugecwh1qQHGzTEEgosor4epP7N6Pe3z-RrkL5-HRw0yd3pLvxHB-MYAVoZKvZosa5pcpSuLl6tGPm3VCJy5EXcUWkIrJoWRteRk88o0FHcAJJA0bT43kNr6lDe8EFLf-zCe8GnQdHl1pCqIOP5FFttLmsi_qxdTEdIf3iW8Q4846B7Ll3d_wt&w=1000&h=1000
 			//   https://www.google.com/maps/vt/data=Leddz2aqp_Mk825wP5mcK9LgV2vB9rrZ-gvvKK-Ugecwh1qQHGzTEEgosor4epP7N6Pe3z-RrkL5-HRw0yd3pLvxHB-MYAVoZKvZosa5pcpSuLl6tGPm3VCJy5EXcUWkIrJoWRteRk88o0FHcAJJA0bT43kNr6lDe8EFLf-zCe8GnQdHl1pCqIOP5FFttLmsi_qxdTEdIf3iW8Q4846B7Ll3d_wt&w=1000&h=1000
+			// https://github.com/qsniyg/maxurl/issues/398
 			// https://mts0.google.com/vt/data=fB930u99vngQ2MCsdPo2oSQoizsXMum6D-4nzuEkr6xUC8IJ1xWkmESiAERYiTpKhSSS6QcRAwmTkm72lD3MPL7zWJcLrtePu22X4U4DfOOVzs17f4plW1s5dJrwvlAavy0kAs9AdRC1aG5rhpZ0q4-bIn2TORZNk5hff1dTImOPXVhCqzcNMcYFNXlcDc2je3nGTRN81lS63ZMlY-yBegOUDA?w=1024&h=199
 			//   https://mts0.google.com/vt/data=fB930u99vngQ2MCsdPo2oSQoizsXMum6D-4nzuEkr6xUC8IJ1xWkmESiAERYiTpKhSSS6QcRAwmTkm72lD3MPL7zWJcLrtePu22X4U4DfOOVzs17f4plW1s5dJrwvlAavy0kAs9AdRC1aG5rhpZ0q4-bIn2TORZNk5hff1dTImOPXVhCqzcNMcYFNXlcDc2je3nGTRN81lS63ZMlY-yBegOUDA&w=1024&h=1024
 			var queries = get_queries(src.replace(/^[a-z]+:\/\/[^/]+\/+(?:maps\/+)?vt\/+/, "?").replace(/(\?.*)\?/, "$1&"));
