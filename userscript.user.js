@@ -63539,6 +63539,51 @@ var $$IMU_EXPORT$$;
 				return newsrc;
 		}
 
+		if (domain_nosub === "likee.video") {
+			// example url thanks to remlap on discord:
+			// https://l.likee.video/v/J38TY0
+			// https://likee.video/v/J38TY0
+			// http://mobile.likee.video/s/88yy1FwVjrU
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+([sv]\/+[0-9a-zA-Z]+)(?:[?#].*)?$/,
+				query_for_id: "https://likee.video/${id}",
+				process: function(done, resp, cache_key) {
+					var match = resp.responseText.match(/<script>\s*window\.data\s*=\s*({.*?})\s*;\s*<\/script/);
+					if (!match) {
+						console_error(cache_key, "Unable to find match for", resp);
+						return done(null, false);
+					}
+
+					var json = JSON_parse(match[1]);
+
+					var obj = {
+						extra: {
+							page: resp.finalUrl
+						}
+					};
+
+					if (json.msg_text)
+						obj.extra.caption = json.msg_text;
+
+					var urls = [];
+					if (json.video_url) {
+						urls.push({
+							url: json.video_url.replace(/(\/[-_0-9A-Za-z]+)_[0-9](\.[^/.]+)(?:[?#].*)?$/, "$1$2"),
+							video: true
+						});
+					}
+
+					// image2 is the unwatermarked one
+					if (json.image2) {
+						urls.push(json.image2.replace(/(\/[0-9A-Za-z]+)_[12](\.[^/.]+)(?:[?#].*)?$/, "$1_4$2"));
+					}
+
+					return done(fillobj_urls(urls, obj), 6*60*60);
+				}
+			});
+			if (newsrc) return newsrc;
+		}
+
 		if (host_domain_nowww === "likee.com" && options && options.element && options.do_request && options.cb && !options.exclude_videos) {
 			if (options.element.tagName === "A" && /:\/\/[^/]+\/+s\/+[0-9A-Za-z]+$/.test(options.element.href)) {
 				var cache_key = "likee:" + options.element.href.replace(/.*\/([^/]+)$/, "$1");
