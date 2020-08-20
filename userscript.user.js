@@ -72402,6 +72402,39 @@ var $$IMU_EXPORT$$;
 			}
 		};
 
+		var get_nextprev_from_list = function(el, list, nextprev) {
+			var el_src = get_img_src(el);
+			var index = -1;
+			for (var i = 0; i < list.length; i++) {
+				if (typeof list[i] === "string") {
+					if (el_src === list[i]) {
+						index = i;
+						break;
+					}
+				} else {
+					if (el === list[i]) {
+						index = i;
+						break;
+					}
+				}
+			}
+
+			if (index === -1)
+				return null;
+
+			if (nextprev) {
+				if (index >= list.length)
+					return false;
+				else
+					return list[index + 1];
+			} else {
+				if (index < 0)
+					return false;
+				else
+					return list[index - 1];
+			}
+		};
+
 
 		if (host_domain_nosub === "imgur.com" && host_domain !== "i.imgur.com") {
 			return {
@@ -73002,6 +73035,30 @@ var $$IMU_EXPORT$$;
 					if (el.tagName === "DIV" && el.id === "myModal") {
 						return el.querySelector("img.modalTest-content");
 					}
+				}
+			};
+		}
+
+		if (host_domain_nosub === "naver.com" && /\/viewer\/+postView\.nhn\?/.test(options.host_url)) {
+			// thanks to Urkchar on discord for reporting
+			return {
+				gallery: function(el, nextprev) {
+					var current = el;
+
+					if (current.tagName === "IMG" && current.classList.contains("se_mediaImage")) {
+						while ((current = current.parentElement)) {
+							if (current.tagName === "DIV" && current.classList.contains("sect_dsc")) {
+								var all_els = current.querySelectorAll("img.se_mediaImage");
+
+								var nextprev_el = get_nextprev_from_list(el, all_els, nextprev);
+								if (nextprev_el !== null) {
+									return nextprev_el || null;
+								}
+							}
+						}
+					}
+
+					return "default";
 				}
 			};
 		}
