@@ -9472,7 +9472,8 @@ var $$IMU_EXPORT$$;
 				},
 				referer_ok: {
 					same_domain_nosub: true
-				}
+				},
+				head_wrong_contenttype: true // no content-type
 			};
 		}
 
