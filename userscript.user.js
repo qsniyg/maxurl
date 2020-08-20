@@ -7,6 +7,7 @@
 // @name:fr           Image Max URL
 // @name:es           Image Max URL
 // @name:ru           Image Max URL
+// @name:de           Image Max URL
 // @name:ja           Image Max URL
 // @name:zh           Image Max URL
 // @name:zh-CN        Image Max URL
@@ -19,6 +20,7 @@
 // @description:fr    Trouve des images plus grandes ou originales pour plus de 7200 sites
 // @description:es    Encuentra imágenes más grandes y originales para más de 7200 sitios
 // @description:ru    Находит увеличенные или оригинальные версии изображений для более чем 7200 веб-сайтов
+// @description:de    Sucht nach größeren oder originalen Versionen von Bildern und Videos für mehr als 7200 Websites
 // @description:ja    7200以上のウェブサイトで高画質や原本画像を見つけ出します
 // @description:zh    为7200多个网站查找更大或原始图像
 // @description:zh-CN 为7200多个网站查找更大或原始图像
