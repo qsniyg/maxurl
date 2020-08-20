@@ -255,11 +255,73 @@ var $$IMU_EXPORT$$;
 		};
 	}
 
+	// ublock blocks accessing Math on sites like gfycat
+	var Math_floor, Math_round, Math_random, Math_max, Math_min, Math_abs;
+	var get_compat_math = function() {
+		if (is_node)
+			return;
+
+		try {
+			Math_floor = Math.floor;
+			Math_round = Math.round;
+			Math_random = Math.random;
+			Math_max = Math.max;
+			Math_min = Math.min;
+			Math_abs = Math.abs;
+		} catch (e) {
+			Math_floor = function(x) {
+				return x || 0;
+			};
+
+			Math_round = function(x) {
+				return Math_floor(x + 0.5);
+			};
+
+			// good enough
+			var math_seed = Date.now();
+			Math_random = function() {
+				math_seed += Date.now();
+				math_seed %= 1e6;
+				return math_seed / 1e6;
+			};
+
+			Math_max = function() {
+				var max = -Infinity;
+
+				for (var i = 0; i < arguments.length; i++) {
+					if (arguments[i] > max)
+						max = arguments[i];
+				}
+
+				return max;
+			};
+
+			Math_min = function() {
+				var min = Infinity;
+
+				for (var i = 0; i < arguments.length; i++) {
+					if (arguments[i] < min)
+						min = arguments[i];
+				}
+
+				return min;
+			};
+
+			Math_abs = function(x) {
+				if (x < 0)
+					return -x;
+
+				return x;
+			};
+		}
+	};
+	get_compat_math();
+
 	var get_random_text = function(length) {
 		var text = "";
 
 		while (text.length < length) {
-			var newtext = Math.floor(Math.random() * 10e8).toString(26);
+			var newtext = Math_floor(Math_random() * 10e8).toString(26);
 			text += newtext;
 		}
 
@@ -413,13 +475,7 @@ var $$IMU_EXPORT$$;
 
 	if (is_remote_possible) {
 		current_frame_url = window.location.href;
-
-		try {
-			current_frame_id = get_random_id() + " " + current_frame_url;
-		} catch (e) {
-			// ublock blocks math functions on gfycat.com
-			current_frame_id = "??? " + current_frame_url;
-		}
+		current_frame_id = get_random_id() + " " + current_frame_url;
 
 		if (!is_in_iframe)
 			current_frame_id = "top";
@@ -11847,8 +11903,8 @@ var $$IMU_EXPORT$$;
 				var w = parseInt(queries.w) || 0;
 				var h = parseInt(queries.h) || 0;
 
-				var largest = Math.max(w, h);
-				var smallest = Math.min(w, h);
+				var largest = Math_max(w, h);
+				var smallest = Math_min(w, h);
 				var ratio;
 
 				if (!smallest || !largest) {
@@ -22959,7 +23015,7 @@ var $$IMU_EXPORT$$;
 									minbad = current_x;
 								}
 							} else {
-								var largest = Math.max(x, y);
+								var largest = Math_max(x, y);
 								if (x === 1200 || y === 1200) {
 									if (!minbad || current_x < minbad) {
 										minbad = current_x;
@@ -22983,7 +23039,7 @@ var $$IMU_EXPORT$$;
 										current_x = 4000;
 								}
 							} else if ((minbad - mingood) > 1) {
-								current_x = (mingood + Math.floor((minbad - mingood) / 2)) | 0;
+								current_x = (mingood + Math_floor((minbad - mingood) / 2)) | 0;
 							}
 
 							//console_log(mingood, minbad, current_x);
@@ -38612,7 +38668,7 @@ var $$IMU_EXPORT$$;
 							num += i * current_num;
 						}
 
-						global_fn_num += mult * Math.floor(num / divisor);
+						global_fn_num += mult * Math_floor(num / divisor);
 					}
 				};
 
@@ -38706,7 +38762,7 @@ var $$IMU_EXPORT$$;
 					var first_half = parseInt(license_num.substring(0, 8));
 					var second_half = parseInt(license_num.substring(7));
 
-					var license_num1 = (Math.abs(second_half - first_half) + Math.abs(first_half - second_half)) * 2;
+					var license_num1 = (Math_abs(second_half - first_half) + Math_abs(first_half - second_half)) * 2;
 					// turn into string
 					license_num1 = "" + license_num1;
 
@@ -38999,7 +39055,7 @@ var $$IMU_EXPORT$$;
 					});
 
 					var http_prefix = "https://s" + attrs.n + ".fapmedia.com/" + "cq" + "p" + "vid/";
-					var folder = 1000 * Math.floor(attrs.id/1000);
+					var folder = 1000 * Math_floor(attrs.id/1000);
 					var tfolder = folder + "/" + attrs.id;
 
 					var urls = [];
@@ -69808,7 +69864,7 @@ var $$IMU_EXPORT$$;
 
 						var alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 						for (var i = 0; i < 10; i++) {
-							vidurl += alpha.charAt(Math.floor(Math.random() * alpha.length));
+							vidurl += alpha.charAt(Math_floor(Math_random() * alpha.length));
 						}
 
 						vidurl += "?token=" + token + "&expiry=" + Date.now();
@@ -75644,7 +75700,7 @@ var $$IMU_EXPORT$$;
 					}
 
 					keys.sort(function() {
-						return (Math.floor(Math.random() * 2) ? 1 : -1);
+						return (Math_floor(Math_random() * 2) ? 1 : -1);
 					});
 
 					for (var i = 0; i < keys.length; i++) {
@@ -75917,9 +75973,9 @@ var $$IMU_EXPORT$$;
 						}
 
 						if (meta.number_max !== undefined)
-							value = Math.min(value, meta.number_max);
+							value = Math_min(value, meta.number_max);
 						if (meta.number_min !== undefined)
-							value = Math.max(value, meta.number_min);
+							value = Math_max(value, meta.number_min);
 
 						if (isNaN(value)) {
 							console_error("Error: number is NaN after min/max");
@@ -77066,7 +77122,7 @@ var $$IMU_EXPORT$$;
 					} else {
 						// TODO: always set the volume, so that when the video is unmuted, it'll be at the wanted volume
 						var volume = parseInt(settings.mouseover_video_volume);
-						volume = Math.max(Math.min(volume, 100), 0);
+						volume = Math_max(Math_min(volume, 100), 0);
 						video.volume = volume / 100.;
 					}
 
@@ -78508,8 +78564,8 @@ var $$IMU_EXPORT$$;
 				var vw;
 				var vh;
 
-				var v_mx = Math.max(x - border_thresh, 0);
-				var v_my = Math.max(y - top_thresh, 0);
+				var v_mx = Math_max(x - border_thresh, 0);
+				var v_my = Math_max(y - top_thresh, 0);
 
 				/*if (window.visualViewport) {
 					vw = window.visualViewport.width;
@@ -78528,8 +78584,8 @@ var $$IMU_EXPORT$$;
 					vh -= border_thresh + top_thresh;
 
 					if (typeof x !== "undefined") {
-						v_mx = Math.min(vw, Math.max(x - border_thresh, 0));
-						v_my = Math.min(vh, Math.max(y - top_thresh, 0));
+						v_mx = Math_min(vw, Math_max(x - border_thresh, 0));
+						v_my = Math_min(vh, Math_max(y - top_thresh, 0));
 					}
 				};
 
@@ -78630,8 +78686,8 @@ var $$IMU_EXPORT$$;
 					}
 				} else if (initial_zoom_behavior === "custom") {
 					var zoom_percent = settings.mouseover_zoom_custom_percent / 100;
-					imgw = Math.max(imgw * zoom_percent, 20);
-					imgh = Math.max(imgh * zoom_percent, 20);
+					imgw = Math_max(imgw * zoom_percent, 20);
+					imgh = Math_max(imgh * zoom_percent, 20);
 					img.style.maxWidth = imgw + "px";
 					img.style.width = img.style.maxWidth;
 					img.style.maxHeight = imgh + "px";
@@ -78705,11 +78761,11 @@ var $$IMU_EXPORT$$;
 						mouseover_position = "center";
 
 					if (mouseover_position === "cursor") {
-						popup_top =  sct + Math.min(Math.max(v_my - (imgh / 2), 0), Math.max(vh - imgh, 0));
-						popup_left = scl + Math.min(Math.max(v_mx - (imgw / 2), 0), Math.max(vw - imgw, 0));
+						popup_top =  sct + Math_min(Math_max(v_my - (imgh / 2), 0), Math_max(vh - imgh, 0));
+						popup_left = scl + Math_min(Math_max(v_mx - (imgw / 2), 0), Math_max(vw - imgw, 0));
 					} else if (mouseover_position === "center") {
-						popup_top =  sct + Math.min(Math.max((vh / 2) - (imgh / 2), 0), Math.max(vh - imgh, 0));
-						popup_left = scl + Math.min(Math.max((vw / 2) - (imgw / 2), 0), Math.max(vw - imgw, 0));
+						popup_top =  sct + Math_min(Math_max((vh / 2) - (imgh / 2), 0), Math_max(vh - imgh, 0));
+						popup_left = scl + Math_min(Math_max((vw / 2) - (imgw / 2), 0), Math_max(vw - imgw, 0));
 					} else if (mouseover_position === "beside_cursor") {
 						var update_imghw;
 						if (resize) {
@@ -78743,11 +78799,11 @@ var $$IMU_EXPORT$$;
 
 							switch (info) {
 								case -1:
-									return Math.min(vd - popupd, Math.max(0, moused - (popupd / 2)));
+									return Math_min(vd - popupd, Math_max(0, moused - (popupd / 2)));
 								case 0:
-									return Math.max(0, moused - popupd - cursor_thresh);
+									return Math_max(0, moused - popupd - cursor_thresh);
 								case 1:
-									return Math.min(vd - popupd, moused + cursor_thresh);
+									return Math_min(vd - popupd, moused + cursor_thresh);
 							}
 						};
 
@@ -78878,7 +78934,7 @@ var $$IMU_EXPORT$$;
 									update_imghw(ovw, ovh - v_my);
 									//continue;
 								} else {
-									popupy = Math.max(vh - imgh - cursor_thresh, 0);
+									popupy = Math_max(vh - imgh - cursor_thresh, 0);
 								}
 							}
 
@@ -78887,7 +78943,7 @@ var $$IMU_EXPORT$$;
 									update_imghw(ovw - v_mx, ovh);
 									//continue;
 								} else {
-									popupx = Math.max(vw - imgw - cursor_thresh, 0);
+									popupx = Math_max(vw - imgw - cursor_thresh, 0);
 								}
 							}
 
@@ -79392,7 +79448,7 @@ var $$IMU_EXPORT$$;
 
 							if (settings.mouseover_ui_wrap_caption) {
 								// /10 is arbitrary, but seems to work well
-								var chars = parseInt(Math.max(10, Math.min(60, (popup_width - topbarel.clientWidth) / 10)));
+								var chars = parseInt(Math_max(10, Math_min(60, (popup_width - topbarel.clientWidth) / 10)));
 
 								btntext = {
 									truncated: truncate_with_ellipsis(caption, chars),
@@ -79647,8 +79703,8 @@ var $$IMU_EXPORT$$;
 				}
 
 				div.onmouseover = div.onmousemove = function(e) {
-					if ((Math.abs(mouseX - popup_cursorjitterX) < settings.mouseover_mouse_inactivity_jitter) &&
-						(Math.abs(mouseY - popup_cursorjitterY) < settings.mouseover_mouse_inactivity_jitter)) {
+					if ((Math_abs(mouseX - popup_cursorjitterX) < settings.mouseover_mouse_inactivity_jitter) &&
+						(Math_abs(mouseY - popup_cursorjitterY) < settings.mouseover_mouse_inactivity_jitter)) {
 						return;
 					}
 
@@ -79802,11 +79858,11 @@ var $$IMU_EXPORT$$;
 						//x = mouseAbsX;
 						//y = mouseAbsY;
 
-						var visible_left = Math.max(popup_left, 0);
-						var visible_top = Math.max(popup_top, 0);
+						var visible_left = Math_max(popup_left, 0);
+						var visible_top = Math_max(popup_top, 0);
 
-						var visible_right = Math.min(visible_left + popup_width, vw);
-						var visible_bottom = Math.min(visible_top + popup_height, vh);
+						var visible_right = Math_min(visible_left + popup_width, vw);
+						var visible_bottom = Math_min(visible_top + popup_height, vh);
 
 						// get the middle of the visible portion of the popup
 						x = visible_left + (visible_right - visible_left) / 2;
@@ -79876,7 +79932,7 @@ var $$IMU_EXPORT$$;
 
 						var increment = settings.scroll_incremental_mult - 1;
 
-						mult = Math.round(mult / increment);
+						mult = Math_round(mult / increment);
 						mult *= increment;
 
 						if (imgwidth < img_naturalWidth) {
@@ -79924,27 +79980,27 @@ var $$IMU_EXPORT$$;
 						newx = (vw / 2) - percentX * imgwidth;
 						var endx = newx + imgwidth;
 						if (newx > border_thresh && endx > (vw - border_thresh))
-							newx = Math.max(border_thresh, (vw + border_thresh) - imgwidth);
+							newx = Math_max(border_thresh, (vw + border_thresh) - imgwidth);
 
 						if (newx < border_thresh && endx < (vw - border_thresh))
-							newx = Math.min(border_thresh, (vw + border_thresh) - imgwidth);
+							newx = Math_min(border_thresh, (vw + border_thresh) - imgwidth);
 
 						newy = (vh / 2) - percentY * imgheight;
 						var endy = newy + imgheight;
 						if (newy > border_thresh && endy > (vh - border_thresh))
-							newy = Math.max(border_thresh, (vh + border_thresh) - imgheight);
+							newy = Math_max(border_thresh, (vh + border_thresh) - imgheight);
 
 						if (newy < border_thresh && endy < (vh - border_thresh))
-							newy = Math.min(border_thresh, (vh + border_thresh) - imgheight);
+							newy = Math_min(border_thresh, (vh + border_thresh) - imgheight);
 					}
 
 					if (imgwidth <= vw && imgheight <= vh) {
-						newx = Math.max(newx, border_thresh);
+						newx = Math_max(newx, border_thresh);
 						if (newx + imgwidth > (vw - border_thresh)) {
 							newx = (vw + border_thresh) - imgwidth;
 						}
 
-						newy = Math.max(newy, border_thresh);
+						newy = Math_max(newy, border_thresh);
 						if (newy + imgheight > (vh - border_thresh)) {
 							newy = (vh + border_thresh) - imgheight;
 						}
@@ -83319,7 +83375,7 @@ var $$IMU_EXPORT$$;
 					amount = -amount;
 
 				var new_volume = videoel.volume + (amount / 100.);
-				new_volume = Math.min(Math.max(new_volume, 0), 1);
+				new_volume = Math_min(Math_max(new_volume, 0), 1);
 
 				videoel.volume = new_volume;
 			} else {
@@ -83933,7 +83989,7 @@ var $$IMU_EXPORT$$;
 				var current = mousepos - dragoffset;
 
 				if (current !== orig) {
-					if (dragged || Math.abs(current - orig) >= min_move_amt) {
+					if (dragged || Math_abs(current - orig) >= min_move_amt) {
 						var newlast = current - (orig - last);
 
 						if (lefttop) {
@@ -83966,7 +84022,7 @@ var $$IMU_EXPORT$$;
 					mousepos = viewportD - mousepos;
 
 				if (offsetD > viewportD) {
-					var mouse_edge = Math.min(Math.max((mousepos - edge_buffer), 0), viewportD - edge_buffer * 2);
+					var mouse_edge = Math_min(Math_max((mousepos - edge_buffer), 0), viewportD - edge_buffer * 2);
 					var percent = mouse_edge / (viewportD - (edge_buffer * 2));
 
 					var newpos = (percent * (viewportD - offsetD - border_thresh * 2) + border_thresh) + "px";
@@ -83995,7 +84051,7 @@ var $$IMU_EXPORT$$;
 						var offsetD = lefttop ? popup.offsetHeight : popup.offsetWidth;
 						var viewportD = lefttop ? viewport[1] : viewport[0];
 
-						current = Math.max(current, border_thresh);
+						current = Math_max(current, border_thresh);
 
 						if (current + offsetD > (viewportD - border_thresh)) {
 							current = viewportD - border_thresh - offsetD;
@@ -84309,16 +84365,16 @@ var $$IMU_EXPORT$$;
 							in_img_jitter = in_clientrect(mouseX, mouseY, rect, jitter_base);
 
 							// why this instead of getBoundingClientRect?
-							//var w = Math.min(parseInt(img.style.maxWidth), img.naturalWidth);
-							//var h = Math.min(parseInt(img.style.maxHeight), img.naturalHeight);
+							//var w = Math_min(parseInt(img.style.maxWidth), img.naturalWidth);
+							//var h = Math_min(parseInt(img.style.maxHeight), img.naturalHeight);
 							var w = rect.width;
 							var h = rect.height;
 
 							imgmiddleX = rect.x + rect.width / 2;
 							imgmiddleY = rect.y + rect.height / 2;
 
-							jitter_threshx = Math.max(jitter_threshx, w / 2);
-							jitter_threshy = Math.max(jitter_threshy, h / 2);
+							jitter_threshx = Math_max(jitter_threshx, w / 2);
+							jitter_threshy = Math_max(jitter_threshy, h / 2);
 
 							jitter_threshx += jitter_base;
 							jitter_threshy += jitter_base;
@@ -84390,8 +84446,8 @@ var $$IMU_EXPORT$$;
 						can_close_popup[1] = false;
 						if (mouse_in_image_yet && (!close_on_leave_el || outside_of_popup_el || popup_el_hidden)) {
 							if (imgmiddleX && imgmiddleY &&
-								(Math.abs(mouseX - imgmiddleX) > jitter_threshx ||
-								 Math.abs(mouseY - imgmiddleY) > jitter_threshy)) {
+								(Math_abs(mouseX - imgmiddleX) > jitter_threshx ||
+								 Math_abs(mouseY - imgmiddleY) > jitter_threshy)) {
 								//console_log(mouseX, imgmiddleX, jitter_threshx);
 								//console_log(mouseY, imgmiddleY, jitter_threshy);
 
@@ -84417,8 +84473,8 @@ var $$IMU_EXPORT$$;
 					if (delay_handle && !settings.mouseover_trigger_mouseover) {
 						var trigger_mouse_jitter_thresh = 10;
 
-						if (Math.abs(mouseX - mouseDelayX) < trigger_mouse_jitter_thresh &&
-							Math.abs(mouseY - mouseDelayY) < trigger_mouse_jitter_thresh)
+						if (Math_abs(mouseX - mouseDelayX) < trigger_mouse_jitter_thresh &&
+							Math_abs(mouseY - mouseDelayY) < trigger_mouse_jitter_thresh)
 							return;
 
 						clearTimeout(delay_handle);
