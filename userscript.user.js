@@ -56891,7 +56891,10 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\.md(\.[^/.]*)(?:[?#].*)?$/, "$1");
 		}
 
-		if (domain_nowww === "rin-city.com") {
+		if (domain_nowww === "rin-city.com" ||
+			// https://stylerotica.com/images/previews/Wild/thumb_01.jpg
+			//   https://stylerotica.com/images/previews/Wild/full_01.jpg
+			domain_nowww === "stylerotica.com") {
 			// https://rin-city.com/images/previews/Immortal/thumb_Immortal_37.jpg
 			//   https://rin-city.com/images/previews/Immortal/full_Immortal_37.jpg
 			return src.replace(/(\/images\/+previews\/+[^/]*\/+)thumb_/, "$1full_");
@@ -70790,6 +70793,12 @@ var $$IMU_EXPORT$$;
 			//   https://www.game-ost.com/static/covers_soundtracks/1/6/16383_444203_medium.jpg
 			//   https://www.game-ost.com/static/covers_soundtracks/1/6/16383_444203.jpg
 			return src.replace(/(\/static\/+[^/]+\/+[0-9]\/+[0-9]\/+[0-9]+_[0-9]+)_(?:thumb|small|medium)(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "imgdist.net") {
+			// https://imgdist.net/p/w300/673/ab6/940/69c9bdb57b99494695ae24c.jpg
+			//   https://imgdist.net/p/1280/673/ab6/940/69c9bdb57b99494695ae24c.jpg
+			return src.replace(/(\/p\/+)w300\/+/, "$11280/");
 		}
 
 
