@@ -97,6 +97,8 @@ var $$IMU_EXPORT$$;
 			no_recurse: false,
 			no_redirect: true
 		};
+
+		console.log("Loaded");
 	}
 
 	var nullfunc = function(){};
@@ -411,7 +413,13 @@ var $$IMU_EXPORT$$;
 
 	if (is_remote_possible) {
 		current_frame_url = window.location.href;
-		current_frame_id = get_random_id() + " " + current_frame_url;
+
+		try {
+			current_frame_id = get_random_id() + " " + current_frame_url;
+		} catch (e) {
+			// ublock blocks math functions on gfycat.com
+			current_frame_id = "??? " + current_frame_url;
+		}
 
 		if (!is_in_iframe)
 			current_frame_id = "top";
@@ -76589,6 +76597,10 @@ var $$IMU_EXPORT$$;
 	}
 
 	function do_config() {
+		if (_nir_debug_) {
+			console_log("do_config");
+		}
+
 		if (is_userscript || is_extension) {
 			var settings_done = 0;
 			var total_settings = Object.keys(settings).length + old_settings_keys.length;
