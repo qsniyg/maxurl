@@ -63539,13 +63539,83 @@ var $$IMU_EXPORT$$;
 				return newsrc;
 		}
 
-		if (domain_nosub === "likee.video") {
+		if (domain_nosub === "likee.video" || domain_nosub === "likee.com") {
+			var get_json_from_likee = function(resp, cache_key) {
+				var match = resp.responseText.match(/<script>\s*window\.data\s*=\s*({.*?})\s*;\s*<\/script/);
+				if (!match) {
+					console_error(cache_key, "Unable to find match for", resp);
+					return null;
+				}
+
+				try {
+					var json = JSON_parse(match[1]);
+					return json;
+				} catch (e) {
+					console_error(cache_key, e);
+					return null;
+				}
+			};
+
+			var query_likee = function(yyuid, post_id, cb) {
+				api_query("likee_api:" + yyuid + "/" + post_id, {
+					url: "https://likee.video/@" + yyuid + "/video/" + post_id
+				}, cb, function(done, resp, cache_key) {
+					var json = get_json_from_likee(resp, cache_key);
+
+					if (!json) {
+						done(null, false);
+					} else {
+						done(json, 60*60);
+					}
+				});
+			};
+
+			var likee_json_to_obj = function(resp, json) {
+				var obj = {
+					extra: {
+						page: resp ? resp.finalUrl : null
+					}
+				};
+
+				if (json.share_url) {
+					if (!obj.extra.page)
+						obj.extra.page = json.share_url;
+				}
+
+				if (json.post_yyuid && json.post_id) {
+					obj.extra.page = "https://likee.com/@" + json.post_yyuid + "/video/" + json.post_id;
+
+					var cache_key = "likee_api:" + json.post_yyuid + "/" + json.post_id;
+					if (!api_cache.has(cache_key))
+						api_cache.set(cache_key, json, 60*60);
+				}
+
+				if (json.msg_text)
+					obj.extra.caption = json.msg_text;
+
+				var urls = [];
+				if (json.video_url) {
+					urls.push({
+						url: json.video_url.replace(/(\/[-_0-9A-Za-z]+)_[0-9](\.[^/.]+)(?:[?#].*)?$/, "$1$2"),
+						video: true
+					});
+				}
+
+				// image2 is the unwatermarked one
+				if (json.image2) {
+					urls.push(json.image2.replace(/(\/[0-9A-Za-z]+)_[12](\.[^/.]+)(?:[?#].*)?$/, "$1_4$2"));
+				}
+
+				return fillobj_urls(urls, obj);
+			};
+
 			// example url thanks to remlap on discord:
 			// https://l.likee.video/v/J38TY0
 			// https://likee.video/v/J38TY0
 			// http://mobile.likee.video/s/88yy1FwVjrU
 			newsrc = website_query({
 				website_regex: /^[a-z]+:\/\/[^/]+\/+([sv]\/+[0-9a-zA-Z]+)(?:[?#].*)?$/,
+				cache_key: "likee_share_api",
 				query_for_id: "https://likee.video/${id}",
 				process: function(done, resp, cache_key) {
 					var match = resp.responseText.match(/<script>\s*window\.data\s*=\s*({.*?})\s*;\s*<\/script/);
@@ -63556,32 +63626,46 @@ var $$IMU_EXPORT$$;
 
 					var json = JSON_parse(match[1]);
 
-					var obj = {
-						extra: {
-							page: resp.finalUrl
-						}
-					};
-
-					if (json.msg_text)
-						obj.extra.caption = json.msg_text;
-
-					var urls = [];
-					if (json.video_url) {
-						urls.push({
-							url: json.video_url.replace(/(\/[-_0-9A-Za-z]+)_[0-9](\.[^/.]+)(?:[?#].*)?$/, "$1$2"),
-							video: true
-						});
+					var obj = likee_json_to_obj(resp, json);
+					if (!obj) {
+						return done(null, false);
+					} else {
+						return done(obj, 6*60*60);
 					}
-
-					// image2 is the unwatermarked one
-					if (json.image2) {
-						urls.push(json.image2.replace(/(\/[0-9A-Za-z]+)_[12](\.[^/.]+)(?:[?#].*)?$/, "$1_4$2"));
-					}
-
-					return done(fillobj_urls(urls, obj), 6*60*60);
 				}
 			});
 			if (newsrc) return newsrc;
+
+			// https://likee.com/@52791510/video/6830235012651511654
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+@([^/]+)\/+video\/+([0-9]+)(?:[?#].*)?$/);
+			if (match) {
+				var page_nullobj = {
+					url: src,
+					is_pagelink: true
+				};
+
+				if (options.do_request && options.cb) {
+					query_likee(match[1], match[2], function(json) {
+						if (!json) {
+							return options.cb(page_nullobj);
+						}
+
+						var obj = likee_json_to_obj(null, json);
+						if (!obj) {
+							return options.cb(page_nullobj);
+						} else {
+							obj.push(page_nullobj);
+							return options.cb(obj);
+						}
+					});
+
+					return {
+						waiting: true
+					};
+				} else {
+					return page_nullobj;
+				}
+			}
 		}
 
 		if (host_domain_nowww === "likee.com" && options && options.element && options.do_request && options.cb && !options.exclude_videos) {
