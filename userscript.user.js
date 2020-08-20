@@ -63523,7 +63523,10 @@ var $$IMU_EXPORT$$;
 		if (domain === "video.like.video") {
 			// https://video.like.video/eu_live/5ug/10PPly_4.mp4?crc=4192414585&type=5
 			//   https://video.like.video/eu_live/5ug/10PPly.mp4?crc=4192414585&type=5
-			newsrc = src.replace(/(\/[0-9A-Za-z]+)_[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+			// thanks to remlap on discord:
+			// https://video.like.video/asia_live/7h3/M0A/4B/67/MPsbAF7J3mWEX_9uAAAAAFaIr-Q366_4.mp4?crc=2088457347&type=5
+			//   https://video.like.video/asia_live/7h3/M0A/4B/67/MPsbAF7J3mWEX_9uAAAAAFaIr-Q366.mp4?crc=2088457347&type=5
+			newsrc = src.replace(/(\/[-_0-9A-Za-z]+)_[0-9](\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 			if (newsrc !== src)
 				return newsrc;
 		}
