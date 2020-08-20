@@ -4,7 +4,7 @@
      <img src="https://raw.githubusercontent.com/qsniyg/maxurl/master/resources/imu_opera_banner_transparent.png" alt="Image Max URL" title="Image Max URL" />
    </p>
 
-Image Max URL is a program that will try to find larger/original versions of images, usually by replacing URL patterns.
+Image Max URL is a program that will try to find larger/original versions of images and videos, usually by replacing URL patterns.
 
 It currently contains support for >7000 hardcoded websites (full list in `sites.txt <https://github.com/qsniyg/maxurl/blob/master/sites.txt>`__),
 but it also supports a number of generic engines (such as Wordpress and MediaWiki), which means it can work for many other websites as well.
