@@ -3,27 +3,31 @@
 
 // ==UserScript==
 // @name              Image Max URL
+// @name:en           Image Max URL
 // @name:ko           Image Max URL
 // @name:fr           Image Max URL
 // @name:es           Image Max URL
 // @name:ru           Image Max URL
+// @name:de           Image Max URL
 // @name:ja           Image Max URL
 // @name:zh           Image Max URL
 // @name:zh-CN        Image Max URL
 // @name:zh-TW        Image Max URL
 // @name:zh-HK        Image Max URL
 // @namespace         http://tampermonkey.net/
-// @version           0.13.18
-// @description       Finds larger or original versions of images and videos for 7100+ websites, including a powerful media popup feature
-// @description:ko    7100개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
-// @description:fr    Trouve des images plus grandes ou originales pour plus de 7100 sites
-// @description:es    Encuentra imágenes más grandes y originales para más de 7100 sitios
-// @description:ru    Находит увеличенные или оригинальные версии изображений для более чем 7100 веб-сайтов
-// @description:ja    7100以上のウェブサイトで高画質や原本画像を見つけ出します
-// @description:zh    为7100多个网站查找更大或原始图像
-// @description:zh-CN 为7100多个网站查找更大或原始图像
-// @description:zh-TW 為7100多個網站查找更大或原始圖像
-// @description:zh-HK 為7100多個網站查找更大或原始圖像
+// @version           0.13.19
+// @description       Finds larger or original versions of images and videos for 7200+ websites, including a powerful media popup feature
+// @description:en    Finds larger or original versions of images and videos for 7200+ websites, including a powerful media popup feature
+// @description:ko    7200개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
+// @description:fr    Trouve des images plus grandes ou originales pour plus de 7200 sites
+// @description:es    Encuentra imágenes más grandes y originales para más de 7200 sitios
+// @description:ru    Находит увеличенные или оригинальные версии изображений для более чем 7200 веб-сайтов
+// @description:de    Sucht nach größeren oder originalen Versionen von Bildern und Videos für mehr als 7200 Websites
+// @description:ja    7200以上のウェブサイトで高画質や原本画像を見つけ出します
+// @description:zh    为7200多个网站查找更大或原始图像
+// @description:zh-CN 为7200多个网站查找更大或原始图像
+// @description:zh-TW 為7200多個網站查找更大或原始圖像
+// @description:zh-HK 為7200多個網站查找更大或原始圖像
 // @author            qsniyg
 // @homepageURL       https://qsniyg.github.io/maxurl/options.html
 // @supportURL        https://github.com/qsniyg/maxurl/issues
@@ -96,6 +100,8 @@ var $$IMU_EXPORT$$;
 			no_recurse: false,
 			no_redirect: true
 		};
+
+		console.log("Loaded");
 	}
 
 	var nullfunc = function(){};
@@ -113,7 +119,7 @@ var $$IMU_EXPORT$$;
 	var options_page = "https://qsniyg.github.io/maxurl/options.html";
 	var preferred_options_page = options_page;
 	var firefox_addon_page = "https://addons.mozilla.org/en-US/firefox/addon/image-max-url/";
-	var userscript_update_url = "https://github.com/qsniyg/maxurl/blob/master/userscript_smaller.user.js?raw=true";
+	var userscript_update_url = "https://raw.githubusercontent.com/qsniyg/maxurl/master/userscript_smaller.user.js";
 	var greasyfork_update_url = userscript_update_url;
 	//var greasyfork_update_url = "https://greasyfork.org/scripts/36662-image-max-url/code/Image%20Max%20URL.user.js";
 	var github_issues_page = "https://github.com/qsniyg/maxurl/issues";
@@ -252,11 +258,73 @@ var $$IMU_EXPORT$$;
 		};
 	}
 
+	// ublock blocks accessing Math on sites like gfycat
+	var Math_floor, Math_round, Math_random, Math_max, Math_min, Math_abs;
+	var get_compat_math = function() {
+		if (is_node)
+			return;
+
+		try {
+			Math_floor = Math.floor;
+			Math_round = Math.round;
+			Math_random = Math.random;
+			Math_max = Math.max;
+			Math_min = Math.min;
+			Math_abs = Math.abs;
+		} catch (e) {
+			Math_floor = function(x) {
+				return x || 0;
+			};
+
+			Math_round = function(x) {
+				return Math_floor(x + 0.5);
+			};
+
+			// good enough
+			var math_seed = Date.now();
+			Math_random = function() {
+				math_seed += Date.now();
+				math_seed %= 1e6;
+				return math_seed / 1e6;
+			};
+
+			Math_max = function() {
+				var max = -Infinity;
+
+				for (var i = 0; i < arguments.length; i++) {
+					if (arguments[i] > max)
+						max = arguments[i];
+				}
+
+				return max;
+			};
+
+			Math_min = function() {
+				var min = Infinity;
+
+				for (var i = 0; i < arguments.length; i++) {
+					if (arguments[i] < min)
+						min = arguments[i];
+				}
+
+				return min;
+			};
+
+			Math_abs = function(x) {
+				if (x < 0)
+					return -x;
+
+				return x;
+			};
+		}
+	};
+	get_compat_math();
+
 	var get_random_text = function(length) {
 		var text = "";
 
 		while (text.length < length) {
-			var newtext = Math.floor(Math.random() * 10e8).toString(26);
+			var newtext = Math_floor(Math_random() * 10e8).toString(26);
 			text += newtext;
 		}
 
@@ -798,6 +866,8 @@ var $$IMU_EXPORT$$;
 
 			return raw_request_do(data);
 		};
+	} else if (is_interactive) {
+		console.warn("Unable to initialize do_request, most functions will likely fail");
 	}
 
 	var get_cookies = null;
@@ -5047,7 +5117,18 @@ var $$IMU_EXPORT$$;
 			options.cache_key = domain_nosub;
 		}
 
-		var website_match = options.url.match(options.website_regex);
+		if (!is_array(options.website_regex)) {
+			options.website_regex = [options.website_regex];
+		}
+
+		var website_match = null;
+
+		for (var i = 0 ; i < options.website_regex.length; i++) {
+			website_match = options.url.match(options.website_regex[i]);
+			if (website_match)
+				break;
+		}
+
 		if (!website_match)
 			return null;
 
@@ -5203,7 +5284,7 @@ var $$IMU_EXPORT$$;
 		if (!browser) {
 			// simple path join
 			// urljoin("http://site.com/index.html", "file.png") = "http://site.com/index.html/file.png"
-			return a + "/" + b.replace(/^\/*/, "");
+			return a.replace(/\/*$/, "") + "/" + b.replace(/^\/*/, "");
 		} else {
 			if (b.length >= 2 && b.slice(0, 2) === "//")
 				return protocol + ":" + b;
@@ -8333,7 +8414,7 @@ var $$IMU_EXPORT$$;
 	};
 
 	common_functions.get_tiktok_urlvidid = function(url) {
-		var match = url.match(/^[a-z]+:\/\/[^/]+\/+(?:[0-9a-f]{32}\/+[0-9a-f]{8}\/+)?video\/+[^/]+\/+[^/]+\/+[^/]+\/+([0-9a-f]{32})\/*\?/);
+		var match = url.match(/^[a-z]+:\/\/[^/]+\/+(?:[0-9a-f]{32}\/+[0-9a-f]{8}\/+)?video\/+(?:[^/]+\/+)?[^/]+\/+[^/]+\/+([0-9a-f]{32})\/*\?/);
 		if (match)
 			return match[1];
 
@@ -9302,7 +9383,8 @@ var $$IMU_EXPORT$$;
 				},
 				referer_ok: {
 					same_domain_nosub: true
-				}
+				},
+				head_wrong_contenttype: true // no content-type
 			};
 		}
 
@@ -10266,6 +10348,7 @@ var $$IMU_EXPORT$$;
 			domain === "c.bellesa.co" ||
 			domain === "img.ssensemedia.com" ||
 			domain === "images.jpost.com" ||
+			domain === "img.hellofresh.com" ||
 			domain === "images.moviepilot.com") {
 			return src
 				.replace(/%2C/g, ",")
@@ -10691,6 +10774,39 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/[0-9]*\/[0-9]*x[0-9]*\/*$/, "/").replace(/\/[0-9]*\/*$/, "/");
 		}
 
+		if (domain_nosub === "ggpht.com" && /^geo[0-9]*\./.test(domain) && /:\/\/[^/]+\/+cbk\?/.test(src)) {
+			queries = get_queries(src);
+			if (queries.panoid) {
+				var w = parseInt(queries.w) || 0;
+				var h = parseInt(queries.h) || 0;
+
+				var largest = Math_max(w, h);
+				var smallest = Math_min(w, h);
+				var ratio;
+
+				if (!smallest || !largest) {
+					ratio = 1;
+				} else {
+					ratio = largest / smallest;
+				}
+
+				if (largest < 9999) {
+					largest = 9999;
+					smallest = parseInt(largest / ratio);
+
+					if (w > h) {
+						queries.w = largest;
+						queries.h = smallest;
+					} else {
+						queries.h = largest;
+						queries.w = smallest;
+					}
+
+					return add_queries(src, queries);
+				}
+			}
+		}
+
 		if ((domain_nosub === "blogspot.com" && string_indexof(domain, ".bp.blogspot.com") >= 0) ||
 
 			((domain_nosub === "googleusercontent.com" ||
@@ -10716,6 +10832,18 @@ var $$IMU_EXPORT$$;
 				url: newsrc,
 				can_head: false // 404
 			};
+		}
+
+		if ((/^google\./.test(domain_nosub) || domain_nosub === "googleapis.com") &&
+			(/:\/\/[^/]+\/+maps\/+vt\//.test(src) || (/^mts[0-9]*\./.test(domain) && /:\/\/[^/]+\/+vt\//.test(src)))) {
+			var queries = get_queries(src.replace(/^[a-z]+:\/\/[^/]+\/+(?:maps\/+)?vt\/+/, "?").replace(/(\?.*)\?/, "$1&"));
+			if (queries.data) {
+				queries.w = 1024;
+				queries.h = 1024;
+
+				newsrc = src.replace(/^([a-z]+:\/\/[^/]+\/+(?:maps\/+)?vt\/+).*/, "$1") + stringify_queries(queries);
+				return newsrc;
+			}
 		}
 
 		if (domain === "ssl.gstatic.com") {
@@ -12128,6 +12256,7 @@ var $$IMU_EXPORT$$;
 			(domain_nowww === "tisamipo.co.il" && string_indexof(src, "/CMSGALLERY/") >= 0) ||
 			(domain === "images.shakespearesglobe.com" && string_indexof(src, "/uploads/") >= 0) ||
 			domain === "cdn-contents-web.weverse.io" ||
+			domain === "cdn.hashnode.com" ||
 			src.match(/\/demandware\.static\//) ||
 			src.match(/\?i10c=[^/]*$/) ||
 			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|blogs.dir)|\/+uploads)\//.test(src)
@@ -13451,7 +13580,16 @@ var $$IMU_EXPORT$$;
 
 		if (domain_nosub === "mzstatic.com" && domain.match(/is[0-9](-ssl)?\.mzstatic\.com/) &&
 			string_indexof(src, "/image/thumb/") >= 0) {
-			return src.replace(/\/[0-9]*x[0-9]*[a-z]*(?:-[0-9]+)?(\.[^/.]*)$/, "/999999999x0w-999$1");
+			obj = {};
+
+			match = src.match(/\/([-0-9a-f]{20,}(?:_[^/]+)?)\/+source\/+[^/]+(?:[?#].*)?$/);
+			if (!match)
+				match = src.match(/\/[-0-9a-f]{20,}\/+([^/]+)\.[^/.]+\/+[^/]+(?:[?#].*)?$/);
+			if (match)
+				obj.filename = match[1];
+
+			obj.url = src.replace(/\/[0-9]*x[0-9]*[a-z]*(?:-[0-9]+)?(\.[^/.]*)$/, "/999999999x0w-999$1");
+			return fillobj_urls(add_full_extensions(obj.url, ["png", "jpg"], true), obj);
 		}
 
 		if (domain === "img-tmdetail.alicdn.com") {
@@ -17031,7 +17169,7 @@ var $$IMU_EXPORT$$;
 									minbad = current_x;
 								}
 							} else {
-								var largest = Math.max(x, y);
+								var largest = Math_max(x, y);
 								if (x === 1200 || y === 1200) {
 									if (!minbad || current_x < minbad) {
 										minbad = current_x;
@@ -17055,7 +17193,7 @@ var $$IMU_EXPORT$$;
 										current_x = 4000;
 								}
 							} else if ((minbad - mingood) > 1) {
-								current_x = (mingood + Math.floor((minbad - mingood) / 2)) | 0;
+								current_x = (mingood + Math_floor((minbad - mingood) / 2)) | 0;
 							}
 
 
@@ -19036,6 +19174,8 @@ var $$IMU_EXPORT$$;
 
 					if (data.metaParams && data.metaParams.canonicalHref) {
 						obj.extra.page = data.metaParams.canonicalHref;
+					} else {
+						obj.extra.page = src; // fixme?
 					}
 
 					common_functions.set_tiktok_vid_filename(obj);
@@ -19048,7 +19188,10 @@ var $$IMU_EXPORT$$;
 			};
 
 			var remove_tiktok_watermark = function(obj, cb) {
-				common_functions.tiktok_remove_watermark(api_cache, options, obj.url, obj.extra.page, function(newurl) {
+				var page = null;
+				if (obj.extra && obj.extra.page) page = obj.extra.page;
+
+				common_functions.tiktok_remove_watermark(api_cache, options, obj.url, page, function(newurl) {
 					if (newurl) {
 						obj.url = newurl;
 					}
@@ -19130,7 +19273,10 @@ var $$IMU_EXPORT$$;
 			var tiktok_finalcb = function(obj) {
 				common_functions.set_tiktok_vid_filename(obj);
 
-				common_functions.tiktok_remove_watermark(api_cache, options, obj.url, obj.extra.page, function(newurl) {
+				var page = null;
+				if (obj.extra && obj.extra.page) page = obj.extra.page;
+
+				common_functions.tiktok_remove_watermark(api_cache, options, obj.url, page, function(newurl) {
 					if (newurl) {
 						obj.url = newurl;
 					}
@@ -19178,6 +19324,8 @@ var $$IMU_EXPORT$$;
 
 							if (data.props.pageProps.metaParams && data.props.pageProps.metaParams.canonicalHref) {
 								obj.extra.page = data.props.pageProps.metaParams.canonicalHref;
+							} else {
+								obj.extra.page = current.href;
 							}
 
 							return tiktok_finalcb(obj);
@@ -21808,6 +21956,385 @@ var $$IMU_EXPORT$$;
 		}
 
 
+		if (domain_nowww === "facebook.com") {
+			var find_from_serverjs = function(obj, requireid) {
+				if (!obj.require)
+					return null;
+
+				var result = [];
+				for (var i = 0; i < obj.require.length; i++) {
+					if (obj.require[i][0] === requireid) {
+						result.push(obj.require[i]);
+					}
+				}
+
+				if (result.length === 0)
+					return null;
+
+				return result;
+			};
+
+			var find_prefetched_from_serverjs = function(obj, find) {
+				var prefetched = find_from_serverjs(obj, "RelayPrefetchedStreamCache");
+				if (!prefetched)
+					return null;
+
+				if (!find)
+					find = [];
+
+				if (!is_array(find))
+					find = [find];
+
+				var result = [];
+				for (var i = 0; i < prefetched.length; i++) {
+					var pre = prefetched[i];
+					var data = pre[3];
+
+					if (find.length > 0) {
+						var found = false;
+						for (var j = 0; j < find.length; j++) {
+							if (find[j].test(data[0])) {
+								found = true;
+								break;
+							}
+						}
+
+						if (!found)
+							continue;
+					}
+
+					result.push(data);
+				}
+
+				if (result.length === 0)
+					return null;
+
+				return result;
+			};
+
+			var get_fb_serverjs = function(cache_key, resp, find) {
+				var regex = /\(new ServerJS\(\)\)\.handleWithCustomApplyEach\(ScheduledApplyEach,({"(?:define|require)":.*?\]\]})\);\}/;
+				var global = new RegExp(regex, "g");
+
+				var match = resp.responseText.match(global);
+				if (!match) {
+					console_error(cache_key, "Unable to find matches for", resp);
+					return null;
+				}
+
+				var jsons = [];
+
+				for (var i = 0; i < match.length; i++) {
+					var m = match[i];
+
+					var submatch = m.match(regex);
+
+					try {
+						var json = JSON_parse(submatch[1]);
+
+						var prefetched = find_prefetched_from_serverjs(json, find);
+						if (!prefetched)
+							continue;
+
+						for (var j = 0; j < prefetched.length; j++) {
+							jsons.push(prefetched[j]);
+						}
+					} catch (e) {
+						console_error(cache_key, e, {match: m, submatch: submatch, resp: resp});
+					}
+				}
+
+				if (jsons.length === 0)
+					return null;
+
+				return jsons;
+			};
+
+			var parse_newstyle_fb = function(cache_key, resp) {
+				var serverjs = get_fb_serverjs(cache_key, resp, /^adp_CometPhotoRootQueryRelayPreloader_/);
+				if (!serverjs) {
+					console_error(cache_key, "Unable to find serverjs match for", resp);
+					return null;
+				}
+
+				var json = serverjs[0];
+				var data = json[1].__bbox.result.data;
+
+				var currMedia = data.currMedia;
+
+				var obj = {
+					extra: {
+						page: resp.finalUrl
+					}
+				};
+
+				if (currMedia.message && currMedia.message.text) {
+					obj.extra.caption = currMedia.message.text;
+				} else if (currMedia.accessibility_caption) {
+					obj.extra.caption = currMedia.accessibility_caption;
+				}
+
+				obj.url = common_functions.instagram_norm_url(currMedia.image.uri);
+
+				return obj;
+			};
+
+			var parse_oldstyle_fb = function(cache_key, resp) {
+				var match = resp.responseText.match(/\<div\s+class=\"hidden_elem\"\s*>.*?data-ploi=\"(https?:\/\/[^"]*?)\"/);
+				if (!match) {
+					console_error(cache_key, "Unable to find match for", resp);
+					return null;
+				}
+
+				var obj = {
+					extra: {
+						page: resp.finalUrl
+					}
+				};
+
+				obj.url = decode_entities(match[1]);
+
+				return obj;
+			};
+
+			var query_facebook_post = function(uid, post_id, cb) {
+				var cache_key = "facebook_post:" + uid + ":" + post_id;
+
+				api_query(cache_key, {
+					url: "https://www.facebook.com/" + uid + "/posts/" + post_id,
+					headers: {
+						Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+						"Sec-Fetch-Dest": "document",
+						"Sec-Fetch-Mode": "navigate",
+						"Sec-Fetch-Site": "none"
+					}
+				}, cb, function(done, resp, cache_key) {
+					var serverjs = get_fb_serverjs(cache_key, resp, /^adp_CometSinglePostRootQueryRelayPreloader_/);
+					if (!serverjs) {
+						console_error(cache_key, "Unable to find serverjs match for", resp);
+						return done(null, false);
+					}
+
+					var json = serverjs[0];
+					var data = json[1].__bbox.result.data;
+					var node = data.node;
+
+					var story = node.comet_sections.content.story;
+					if (story.attached_story)
+						story = story.attached_story;
+
+					var attachments = story.attachments;
+					for (var i = 0; i < attachments.length; i++) {
+						try {
+							var attachment = attachments[i].style_type_renderer.attachment;
+
+							if (attachment.all_subattachments) {
+								attachment = attachment.all_subattachments.nodes[0];
+							}
+
+							var url = attachment.url || attachment.media.url;
+							return done({
+								url: url,
+								is_pagelink: true
+							}, 6*60*60);
+						} catch (e) {
+							console_error(cache_key, e);
+						}
+					}
+
+					return done(null, false);
+				});
+			};
+
+			var parse_facebook_post_url = function(url) {
+				var match = url.match(/^[a-z]+:\/\/[^/]+\/+([^/]+)\/+posts\/+([0-9]+)(?::[0-9]+)?\/*(?:[?#].*)?$/);
+				if (match) {
+					return {
+						uid: match[1],
+						post_id: match[2]
+					};
+				}
+
+				match = url.match(/^[a-z]+:\/\/[^/]+\/+permalink\.php\?/);
+				if (match) {
+					var queries = get_queries(url);
+					if (queries.story_fbid && queries.id) {
+						return {
+							uid: queries.id,
+							post_id: queries.story_fbid
+						};
+					}
+				}
+
+				return null;
+			};
+
+			newsrc = website_query({
+				website_regex: [
+					/^[a-z]+:\/\/[^/]+\/+[^/]+\/+photos\/+a\.[0-9]+\/+([0-9]+)\/*(?:[?#].*)?$/,
+					/^[a-z]+:\/\/[^/]+\/+photo(?:\/+|\.php)\?(?:.*&)?fbid=([0-9]+)(?:[&#].*)?$/
+				],
+				cache_key: "facebook_photo",
+				query_for_id: function(id) {
+					return {
+						url: "https://www.facebook.com/photo/?fbid=" + id, // needed for private photos
+						headers: {
+							Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+							"Sec-Fetch-Dest": "document",
+							"Sec-Fetch-Mode": "navigate",
+							"Sec-Fetch-Site": "none"
+						}
+					};
+				},
+				process: function(done, resp, cache_key) {
+					var obj = parse_newstyle_fb(cache_key, resp);
+					if (!obj) {
+						obj = parse_oldstyle_fb(cache_key, resp);
+					}
+
+					if (obj) {
+						return done(obj, 60*60);
+					} else {
+						return done(null, false);
+					}
+				}
+			});
+			if (newsrc) return newsrc;
+
+			newsrc = website_query({
+				website_regex: [
+					/^[a-z]+:\/\/[^/]+\/+watch\/+\?(?:.*&)?v=([0-9]+)(?:&.*)?(?:[?#].*)?$/,
+					/^[a-z]+:\/\/[^/]+\/+[^/]+\/+videos\/+([0-9]+)\/*(?:[?#].*)?$/
+				],
+				cache_key: "facebook_video",
+				query_for_id: function(id) {
+					return {
+						url: "https://www.facebook.com/watch/?v=" + id,
+						headers: {
+							Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+							"Sec-Fetch-Dest": "document",
+							"Sec-Fetch-Mode": "navigate",
+							"Sec-Fetch-Site": "none"
+						}
+					};
+				},
+				process: function(done, resp, cache_key) {
+					var results = get_fb_serverjs(cache_key, resp, [
+						/^adp_CometVideoHomeInjectedFeedUnitQueryRelayPreloader_/,
+						/^adp_CometTahoeRootQueryRelayPreloader_/
+					]);
+
+					if (!results) {
+						console_error(cache_key, "Unable to find serverjs match for", resp);
+						return done(null, false);
+					}
+
+					for (var i = 0; i < results.length; i++) {
+						var data = results[i][1].__bbox.result.data;
+						if (!data.video)
+							continue;
+
+						if ((!data.video.story || !data.video.story.attachments) &&
+							(!data.video.videoId || !data.video.id || !data.video.permalink_url)) {
+							continue;
+						}
+
+						var media = data.video;
+						if (media.story && media.story.attachments && media.story.attachments.length && media.story.attachments[0].media)
+							media = data.video.story.attachments[0].media;
+
+						var obj = {
+							extra: {
+								page: media.permalink_url || resp.finalUrl
+							}
+						};
+
+						var urls = [];
+						if (media.playable_url_dash) {
+							urls.push({
+								url: media.playable_url_dash,
+								video: "dash"
+							});
+						}
+
+						if (media.playable_url_quality_hd) {
+							urls.push({
+								url: media.playable_url_quality_hd,
+								video: true
+							});
+						}
+
+						if (media.playable_url) {
+							urls.push({
+								url: media.playable_url,
+								video: true
+							});
+						}
+
+						if (media.thumbnailImage && media.thumbnailImage.uri) {
+							urls.push(media.thumbnailImage.uri);
+						}
+
+						return done(fillobj_urls(urls, obj), 60*60);
+					}
+
+					console_error(cache_key, "Unable to find media from", {resp: resp, serverjs: results});
+					return done(null, false);
+				}
+			});
+			if (newsrc) return newsrc;
+
+			var parsed_url = parse_facebook_post_url(src);
+			if (parsed_url) {
+				var page_nullobj = {
+					url: src,
+					is_pagelink: true
+				};
+
+				if (options.do_request && options.cb) {
+					query_facebook_post(parsed_url.uid, parsed_url.post_id, function(obj) {
+						if (!obj) {
+							return options.cb(page_nullobj);
+						}
+
+						return options.cb([obj, page_nullobj]);
+					});
+
+					return {
+						waiting: true
+					};
+				} else {
+					return page_nullobj;
+				}
+			}
+
+			if (false) {
+				newsrc = website_query({
+					website_regex: [
+						/^[a-z]+:\/\/[^/]+\/+stories\/([0-9]+)\/+([^/]+)\/*(?:[?#].*)?$/
+					],
+					cache_key: "facebook_story",
+					query_for_id: function(id) {
+						return {
+							url: "https://www.facebook.com/stories/" + id,
+							headers: {
+								Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+								"Sec-Fetch-Dest": "document",
+								"Sec-Fetch-Mode": "navigate",
+								"Sec-Fetch-Site": "none"
+							}
+						};
+					},
+					process: function(done, resp, cache_key) {
+						var results = get_fb_serverjs(cache_key, resp);
+						console_log(results);
+					}
+				});
+				if (newsrc) return newsrc;
+			}
+		}
+
+
 
 		if (domain === "waichi.sakura.ne.jp") {
 			return src.replace(/(\/[^/_.]*)(\.(?:jpg|JPG|jpeg|png|PNG))$/, "$1_L$2");
@@ -22064,6 +22591,10 @@ var $$IMU_EXPORT$$;
 
 		if (domain === "assets.capitalxtra.com") {
 			return src.replace(/(\/[^/.]*-[0-9]{8,})-[^/.]*(\.[^/.]*)$/, "$1$2");
+		}
+
+		if (domain === "imgproc.airliners.net") {
+			return src.replace(/(\/photos\/+[^/]+\/+(?:[0-9]\/+){3}[^/]+)-v[0-9a-f]+-[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		}
 
 		if (domain_nowww === "ukmix.org") {
@@ -25258,8 +25789,9 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/images\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2})thumbs\/+/, "$1");
 		}
 
-		if (domain === "imageproxy.ifcdn.com") {
-			return src.replace(/:\/\/[^/]*\/[^/]*(\/images\/[^/]*)$/, "://img.ifcdn.com$1");
+		if (domain === "imageproxy.ifcdn.com" ||
+			domain === "imageproxy.ifunny.co") {
+			return src.replace(/:\/\/[^/]*\/+[^/]*(\/(?:images|user_photos)\/+[^/]*)(?:[?#].*)?$/, "://img." + domain_nosub + "$1");
 		}
 
 		if (domain === "resource.mingweekly.com") {
@@ -26328,6 +26860,10 @@ var $$IMU_EXPORT$$;
 			domain_nosub === "3movs.com" ||
 			domain_nosub === "sunporno.com" ||
 			domain_nosub === "xcafe.com" ||
+			domain_nowww === "18fuck.me" ||
+			domain_nowww === "my18pussy.com" ||
+			domain_nowww === "freepornvideo.sex" ||
+			domain_nosub === "sexroom.xxx" ||
 			(domain_nosub === "b-cdn.net" && /^(18yos|amateurporn(?:girlfriends|tape|vidz|wives)|analcuties|asian(?:cuties|teens)|boombj|brosislove|cuteasians|d1ck|d1rty|extremejapanese|faphard(?:er)?|fi1thy|f1ix|fl1rt|freexxxhardcore|hard(?:(?:core)?teens|family|jap|milfs|moms)|hotmature|japteens|k1nk|milfz|porn(?:ouploads|n|r[yz])|roleplayers|taboofamily|teenanal|twistednuts|wanktank|extremeteens)\./.test(domain)) ||
 			domain_nosub === "hardmoms.co" ||
 			domain_nosub === "d1ck.co" ||
@@ -26455,6 +26991,7 @@ var $$IMU_EXPORT$$;
 					   domain_nosub === "thebestshemalevideos.com" ||
 					   domain_nosub === "its.porn" ||
 					   domain_nosub === "yourlust.com" ||
+					   domain_nosub === "sexroom.xxx" ||
 					   domain_nosub === "pornalin.com") {
 				videos_component = "embed";
 				addslash = "";
@@ -26545,6 +27082,11 @@ var $$IMU_EXPORT$$;
 			} else if (domain_nosub === "xcafe.com") {
 				videos_component = "";
 				a_component = "";
+			} else if (domain_nosub === "18fuck.me") {
+				a_component = "/a.tube";
+				addslash = "";
+			} else if (domain_nosub === "freepornvideo.sex") {
+				videos_component = "xxx";
 			}
 
 			var detected_url = null;
@@ -26573,7 +27115,7 @@ var $$IMU_EXPORT$$;
 							num += i * current_num;
 						}
 
-						global_fn_num += mult * Math.floor(num / divisor);
+						global_fn_num += mult * Math_floor(num / divisor);
 					}
 				};
 
@@ -26665,7 +27207,7 @@ var $$IMU_EXPORT$$;
 					var first_half = parseInt(license_num.substring(0, 8));
 					var second_half = parseInt(license_num.substring(7));
 
-					var license_num1 = (Math.abs(second_half - first_half) + Math.abs(first_half - second_half)) * 2;
+					var license_num1 = (Math_abs(second_half - first_half) + Math_abs(first_half - second_half)) * 2;
 					license_num1 = "" + license_num1;
 
 					var decrypted = "";
@@ -26946,7 +27488,7 @@ var $$IMU_EXPORT$$;
 					});
 
 					var http_prefix = "https://s" + attrs.n + ".fapmedia.com/" + "cq" + "p" + "vid/";
-					var folder = 1000 * Math.floor(attrs.id/1000);
+					var folder = 1000 * Math_floor(attrs.id/1000);
 					var tfolder = folder + "/" + attrs.id;
 
 					var urls = [];
@@ -32855,6 +33397,12 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/thumbs\/+thumbs_/, "/");
 		}
 
+		if (domain_nowww === "airlinerphotos.com") {
+			newsrc = src.replace(/(:\/\/[^/]+\/+gallery\/+[^/]+\/+)thumbs\/+thumbs_/, "$1");
+			if (newsrc !== src)
+				return newsrc;
+		}
+
 		if (domain_nowww === "hiqqu.xxx" ||
 			domain_nowww === "hiqqu.com") {
 			return src.replace(/\/files\/+[0-9]+x[0-9]+\/+/, "/files/");
@@ -37896,7 +38444,8 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\.md(\.[^/.]*)(?:[?#].*)?$/, "$1");
 		}
 
-		if (domain_nowww === "rin-city.com") {
+		if (domain_nowww === "rin-city.com" ||
+			domain_nowww === "stylerotica.com") {
 			return src.replace(/(\/images\/+previews\/+[^/]*\/+)thumb_/, "$1full_");
 		}
 
@@ -41822,7 +42371,8 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if (domain_nowww === "gamingonlinux.com") {
+		if (domain_nowww === "gamingonlinux.com" ||
+			domain === "uploads.golmedia.net") {
 			newsrc = src.replace(/(\/uploads\/+articles\/+article_media\/+)thumbs\/+/, "$1");
 			if (newsrc !== src)
 				return newsrc;
@@ -42701,7 +43251,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "video.like.video") {
-			newsrc = src.replace(/(\/[0-9A-Za-z]+)_[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+			newsrc = src.replace(/(\/[-_0-9A-Za-z]+)_[0-9](\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 			if (newsrc !== src)
 				return newsrc;
 		}
@@ -42710,6 +43260,129 @@ var $$IMU_EXPORT$$;
 			newsrc = src.replace(/(\/[0-9A-Za-z]+)_[12](\.[^/.]+)(?:[?#].*)?$/, "$1_4$2");
 			if (newsrc !== src)
 				return newsrc;
+		}
+
+		if (domain_nosub === "likee.video" || domain_nosub === "likee.com") {
+			var get_json_from_likee = function(resp, cache_key) {
+				var match = resp.responseText.match(/<script>\s*window\.data\s*=\s*({.*?})\s*;\s*<\/script/);
+				if (!match) {
+					console_error(cache_key, "Unable to find match for", resp);
+					return null;
+				}
+
+				try {
+					var json = JSON_parse(match[1]);
+					return json;
+				} catch (e) {
+					console_error(cache_key, e);
+					return null;
+				}
+			};
+
+			var query_likee = function(yyuid, post_id, cb) {
+				api_query("likee_api:" + yyuid + "/" + post_id, {
+					url: "https://likee.video/@" + yyuid + "/video/" + post_id
+				}, cb, function(done, resp, cache_key) {
+					var json = get_json_from_likee(resp, cache_key);
+
+					if (!json) {
+						done(null, false);
+					} else {
+						done(json, 60*60);
+					}
+				});
+			};
+
+			var likee_json_to_obj = function(resp, json) {
+				var obj = {
+					extra: {
+						page: resp ? resp.finalUrl : null
+					}
+				};
+
+				if (json.share_url) {
+					if (!obj.extra.page)
+						obj.extra.page = json.share_url;
+				}
+
+				if (json.post_yyuid && json.post_id) {
+					obj.extra.page = "https://likee.com/@" + json.post_yyuid + "/video/" + json.post_id;
+
+					var cache_key = "likee_api:" + json.post_yyuid + "/" + json.post_id;
+					if (!api_cache.has(cache_key))
+						api_cache.set(cache_key, json, 60*60);
+				}
+
+				if (json.msg_text)
+					obj.extra.caption = json.msg_text;
+
+				var urls = [];
+				if (json.video_url) {
+					urls.push({
+						url: json.video_url.replace(/(\/[-_0-9A-Za-z]+)_[0-9](\.[^/.]+)(?:[?#].*)?$/, "$1$2"),
+						video: true
+					});
+				}
+
+				if (json.image2) {
+					urls.push(json.image2.replace(/(\/[0-9A-Za-z]+)_[12](\.[^/.]+)(?:[?#].*)?$/, "$1_4$2"));
+				}
+
+				return fillobj_urls(urls, obj);
+			};
+
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+([sv]\/+[0-9a-zA-Z]+)(?:[?#].*)?$/,
+				cache_key: "likee_share_api",
+				query_for_id: "https://likee.video/${id}",
+				process: function(done, resp, cache_key) {
+					var match = resp.responseText.match(/<script>\s*window\.data\s*=\s*({.*?})\s*;\s*<\/script/);
+					if (!match) {
+						console_error(cache_key, "Unable to find match for", resp);
+						return done(null, false);
+					}
+
+					var json = JSON_parse(match[1]);
+
+					var obj = likee_json_to_obj(resp, json);
+					if (!obj) {
+						return done(null, false);
+					} else {
+						return done(obj, 6*60*60);
+					}
+				}
+			});
+			if (newsrc) return newsrc;
+
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+@([^/]+)\/+video\/+([0-9]+)(?:[?#].*)?$/);
+			if (match) {
+				var page_nullobj = {
+					url: src,
+					is_pagelink: true
+				};
+
+				if (options.do_request && options.cb) {
+					query_likee(match[1], match[2], function(json) {
+						if (!json) {
+							return options.cb(page_nullobj);
+						}
+
+						var obj = likee_json_to_obj(null, json);
+						if (!obj) {
+							return options.cb(page_nullobj);
+						} else {
+							obj.push(page_nullobj);
+							return options.cb(obj);
+						}
+					});
+
+					return {
+						waiting: true
+					};
+				} else {
+					return page_nullobj;
+				}
+			}
 		}
 
 		if (host_domain_nowww === "likee.com" && options && options.element && options.do_request && options.cb && !options.exclude_videos) {
@@ -47596,7 +48269,7 @@ var $$IMU_EXPORT$$;
 
 						var alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 						for (var i = 0; i < 10; i++) {
-							vidurl += alpha.charAt(Math.floor(Math.random() * alpha.length));
+							vidurl += alpha.charAt(Math_floor(Math_random() * alpha.length));
 						}
 
 						vidurl += "?token=" + token + "&expiry=" + Date.now();
@@ -48284,6 +48957,132 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/images\/+screenshots\/+[^/]+)\.thumb_default_(?:[whq][0-9]+){1,}\./, "$1.");
 		}
 
+		if (domain === "shop.new-art.nl") {
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+assets\/+image\.php\?(?:.*&)?image=([^&]+)(?:[&#].*)?$/, "$1");
+			if (newsrc !== src) {
+				return urljoin("https://shop.new-art.nl/", decodeURIComponent(newsrc), false);
+			}
+		}
+
+		if (domain_nowww === "asianpussy.fun" ||
+			domain_nowww === "teencumpot.com" ||
+			domain_nowww === "babesxcam.com" ||
+			domain_nowww === "collegehdsex.com" ||
+			domain_nowww === "18girlssex.com" ||
+			domain_nowww === "xxx-hd-tube.com" ||
+			domain_nowww === "teenporn19.com") {
+			newsrc = website_query({
+				website_regex: /^([a-z]+:\/\/[^/]+\/+flplayer\.php\?id=[0-9]+)/,
+				query_for_id: function(id) {
+					return {
+						url: id,
+						headers: {
+							"Sec-Fetch-Dest": "iframe",
+							"Sec-Fetch-Mode": "navigate",
+							"Sec-Fetch-Site": "cross-site",
+							"Referer": "https://" + domain + "/"
+						}
+					};
+				},
+				process: function(done, resp, cache_key) {
+					var match = resp.responseText.match(/document\.write\(atob\(atob\("([^"]+)"\)\)\);/);
+					if (!match) {
+						console_error(cache_key, "Unable to find match for", resp);
+						return done(null, false);
+					}
+
+					var decoded = base64_decode(base64_decode(match[1]));
+					match = decoded.match(/<source src="([^"]+)" type="([^"]+)"/);
+					if (!match) {
+						console_error("Unable to find source match from", {resp: resp, decoded: decoded});
+						return done(null, false);
+					}
+
+					var video;
+					if (match[2] === "video/mp4") {
+						video = true;
+					} else if (match[2] === "application/x-mpegURL") {
+						video = "hls";
+					} else {
+						console_error("Unknown video type", {resp: resp, decoded: decoded, match: match});
+						return done(null, false);
+					}
+
+					return done({
+						url: match[1],
+						video: video
+					}, 60*60);
+				}
+			});
+			if (newsrc) return newsrc;
+
+			newsrc = website_query({
+				website_regex: /^([a-z]+:\/\/[^/]+\/+(?:gallery|teen(?:video)?s|(?:hd)?videos)\/+[^/.]*\.html)(?:[?#].*)?$/,
+				query_for_id: "${id}",
+				process: function(done, resp, cache_key) {
+					var match = resp.responseText.match(/document\.write\(atob\([^)]+\)\.replace\('#+',\s*'([0-9]+)'\)/);
+					if (!match) {
+						console_error(cache_key, "Unable to find match for", resp);
+						return done(null, false);
+					}
+
+					var subdomain = domain;
+					if (domain_nosub === "teenporn19.com" ||
+						domain_nosub === "18girlssex.com" ||
+						domain_nosub === "xxx-hd-tube.com" ||
+						domain_nosub === "collegehdsex.com") {
+						subdomain = "teencumpot.com";
+					}
+
+					return done({
+						url: "https://" + subdomain + "/flplayer.php?id=" + match[1],
+						is_pagelink: true
+					}, 6*60*60);
+				}
+			});
+			if (newsrc) return newsrc;
+		}
+
+		if (domain === "cdn.photos.sparkplatform.com") {
+			return src.replace(/(\/cbr\/+[0-9]{10,})(?:-t)?(\.[^/.]+)(?:[?#].*)?$/, "$1-o$2");
+		}
+
+		if (domain === "cdn.resize.sparkplatform.com") {
+			return src.replace(/:\/\/[^/]+\/+cbr\/+[0-9]+x[0-9]+\/+[a-z]+\/+([0-9]{10,}(?:-[a-z])?\.[^/.]+)(?:[?#].*)?$/, "://cdn.photos.sparkplatform.com/cbr/$1");
+		}
+
+		if (domain_nowww === "jetphotos.com") {
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+api\/+json\/+heroimg\.php\?(?:.*&)?src=([^&]+).*?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
+		}
+
+		if (domain === "cdn.jetphotos.com") {
+			return src.replace(/(:\/\/[^/]+\/+)[0-9]+(\/+[0-9]+\/+[0-9]+_[0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1full$2");
+		}
+
+		if (domain === "cdn.airplane-pictures.net") {
+			return src.replace(/(\/images\/+uploaded-images\/+[0-9]{4}\/+(?:[0-9]{1,2}\/+){2}[0-9]+)[ms]+(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "airteamimages.com") {
+			return src.replace(/(\/pics\/+[0-9]+\/+[0-9]+)_[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1_big$2");
+		}
+
+		if (domain === "freighter.flyteam.jp") {
+			return src.replace(/(\/(?:news)?photo\/+[0-9]+\/+)(?:[0-9]+x[0-9]+|[wh][0-9]+)(\.[^/.]+)(?:[?#].*)?$/, "$1src$2");
+		}
+
+		if (domain_nowww === "game-ost.com") {
+			return src.replace(/(\/static\/+[^/]+\/+[0-9]\/+[0-9]\/+[0-9]+_[0-9]+)_(?:thumb|small|medium)(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "imgdist.net") {
+			return src.replace(/(\/p\/+)w300\/+/, "$11280/");
+		}
+
+
+
 
 
 
@@ -48716,7 +49515,8 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/img\/posts\/photos\/[0-9]+_[0-9a-f]+)_[a-z](\.[^/.]*)$/, "$1$2");
 		}
 
-		if (src.match(/\/wp-content\/+(?:uploads\/(?:.*?\/)?nggallery|[gG]allery)\/(?:.*?\/)?(?:cache|dynamic)\/+[^/]+\.[^-_/.]*-nggid[0-9]+-ngg0dyn-[^/]*$/)) {
+		if (domain_nowww === "airlinerphotos.com" ||
+			src.match(/\/wp-content\/+(?:uploads\/(?:.*?\/)?nggallery|[gG]allery)\/(?:.*?\/)?(?:cache|dynamic)\/+[^/]+\.[^-_/.]*-nggid[0-9]+-ngg0dyn-[^/]*$/)) {
 			return src.replace(/\/(?:cache|dynamic)(\/+[^/]+\.[^-_/.]+)-[^/]*$/, "$1");
 		}
 
@@ -49013,12 +49813,16 @@ var $$IMU_EXPORT$$;
 
 		if (options.rule_specific && options.rule_specific.linked_image && options.element) {
 			var link_el = common_functions.get_link_el_matching(options.element, function(el) {
-				if (el.href && looks_like_valid_link(el.href, el))
+				if (el.href && el.href !== src && looks_like_valid_link(el.href, el))
 					return true;
 			});
 
 			if (link_el)
 				return link_el.href;
+		}
+
+		if (/^[a-z]+:\/\/[^/]+\/+storage\/+m\/+_v2\/+[0-9]{5,}\/+[0-9a-f]+-[0-9a-f]+\/+[0-9a-zA-Z]+\/+[0-9a-zA-Z]+_thumb\./.test(src)) {
+			return src.replace(/(\/storage\/+m\/+_v2\/+[0-9]{5,}\/+[0-9a-f]+-[0-9a-f]+\/+[0-9a-zA-Z]+\/+[0-9a-zA-Z]+)_thumb\./, "$1.");
 		}
 
 
@@ -49173,7 +49977,7 @@ var $$IMU_EXPORT$$;
 	}
 	// -- end bigimage --
 
-	function get_helpers(options) {
+	var get_helpers = function(options) {
 		var host_domain = "";
 		var host_domain_nowww = "";
 		var host_domain_nosub = "";
@@ -49221,6 +50025,39 @@ var $$IMU_EXPORT$$;
 				return el.nextElementSibling;
 			} else {
 				return el.previousElementSibling;
+			}
+		};
+
+		var get_nextprev_from_list = function(el, list, nextprev) {
+			var el_src = get_img_src(el);
+			var index = -1;
+			for (var i = 0; i < list.length; i++) {
+				if (typeof list[i] === "string") {
+					if (el_src === list[i]) {
+						index = i;
+						break;
+					}
+				} else {
+					if (el === list[i]) {
+						index = i;
+						break;
+					}
+				}
+			}
+
+			if (index === -1)
+				return null;
+
+			if (nextprev) {
+				if (index >= list.length)
+					return false;
+				else
+					return list[index + 1];
+			} else {
+				if (index < 0)
+					return false;
+				else
+					return list[index - 1];
 			}
 		};
 
@@ -49828,8 +50665,50 @@ var $$IMU_EXPORT$$;
 			};
 		}
 
+		if (host_domain_nosub === "naver.com" && /\/viewer\/+postView\.nhn\?/.test(options.host_url)) {
+			// thanks to Urkchar on discord for reporting
+			return {
+				gallery: function(el, nextprev) {
+					var current = el;
+
+					if (current.tagName === "IMG" && current.classList.contains("se_mediaImage")) {
+						while ((current = current.parentElement)) {
+							if (current.tagName === "DIV" && current.classList.contains("sect_dsc")) {
+								var all_els = current.querySelectorAll("img.se_mediaImage");
+
+								var nextprev_el = get_nextprev_from_list(el, all_els, nextprev);
+								if (nextprev_el !== null) {
+									return nextprev_el || null;
+								}
+							}
+						}
+					}
+
+					return "default";
+				}
+			};
+		}
+
 		return null;
-	}
+	};
+
+	var get_album_info_gallery = function(el, nextprev) {
+		var album_info = popup_obj.album_info;
+
+		if (el) {
+			var album_info_json = el.getAttribute("imu-album-info");
+			if (album_info_json) {
+				try {
+					album_info = JSON_parse(album_info_json);
+				} catch (e) {
+					console_error(e);
+				}
+			}
+		}
+
+		if (!album_info)
+			return null;
+	};
 
 	var get_next_in_gallery = null;
 
@@ -50665,14 +51544,16 @@ var $$IMU_EXPORT$$;
 		if (typeof el === "string")
 			return el;
 
-		if (get_tagname(el) === "A")
+		var el_tagname = get_tagname(el);
+
+		if (el_tagname === "A")
 			return el.href;
 
-		if (get_tagname(el) === "IFRAME") {
+		if (el_tagname === "IFRAME") {
 			return el.src.replace(/^javascript:window\.location\.replace\(["']([^"']+)["']\)$/, "$1");
 		}
 
-		if (get_tagname(el) === "CANVAS") {
+		if (el_tagname === "CANVAS") {
 			try {
 				return el.toDataURL();
 			} catch (e) {
@@ -50681,7 +51562,7 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if (get_tagname(el) === "SVG") {
+		if (el_tagname === "SVG") {
 			if (settings.mouseover_allow_svg_el) {
 				return get_svg_src(el);
 			} else {
@@ -50689,8 +51570,18 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if (get_tagname(el) === "VIDEO") {
+		if (el_tagname === "VIDEO") {
 			return el.currentSrc || el.src || el.poster;
+		}
+
+		if (el_tagname === "IMAGE") {
+			var xlink_href = el.getAttribute("xlink:href");
+
+			if (xlink_href) {
+				return xlink_href;
+			} else {
+				return null;
+			}
 		}
 
 		// IMG or IFRAME
@@ -52502,7 +53393,7 @@ var $$IMU_EXPORT$$;
 					}
 
 					keys.sort(function() {
-						return (Math.floor(Math.random() * 2) ? 1 : -1);
+						return (Math_floor(Math_random() * 2) ? 1 : -1);
 					});
 
 					for (var i = 0; i < keys.length; i++) {
@@ -52775,9 +53666,9 @@ var $$IMU_EXPORT$$;
 						}
 
 						if (meta.number_max !== undefined)
-							value = Math.min(value, meta.number_max);
+							value = Math_min(value, meta.number_max);
 						if (meta.number_min !== undefined)
-							value = Math.max(value, meta.number_min);
+							value = Math_max(value, meta.number_min);
 
 						if (isNaN(value)) {
 							console_error("Error: number is NaN after min/max");
@@ -53455,6 +54346,10 @@ var $$IMU_EXPORT$$;
 	}
 
 	function do_config() {
+		if (_nir_debug_) {
+			console_log("do_config");
+		}
+
 		if (is_userscript || is_extension) {
 			var settings_done = 0;
 			var total_settings = Object.keys(settings).length + old_settings_keys.length;
@@ -53920,7 +54815,7 @@ var $$IMU_EXPORT$$;
 					} else {
 						// TODO: always set the volume, so that when the video is unmuted, it'll be at the wanted volume
 						var volume = parseInt(settings.mouseover_video_volume);
-						volume = Math.max(Math.min(volume, 100), 0);
+						volume = Math_max(Math_min(volume, 100), 0);
 						video.volume = volume / 100.;
 					}
 
@@ -55362,8 +56257,8 @@ var $$IMU_EXPORT$$;
 				var vw;
 				var vh;
 
-				var v_mx = Math.max(x - border_thresh, 0);
-				var v_my = Math.max(y - top_thresh, 0);
+				var v_mx = Math_max(x - border_thresh, 0);
+				var v_my = Math_max(y - top_thresh, 0);
 
 				/*if (window.visualViewport) {
 					vw = window.visualViewport.width;
@@ -55382,8 +56277,8 @@ var $$IMU_EXPORT$$;
 					vh -= border_thresh + top_thresh;
 
 					if (typeof x !== "undefined") {
-						v_mx = Math.min(vw, Math.max(x - border_thresh, 0));
-						v_my = Math.min(vh, Math.max(y - top_thresh, 0));
+						v_mx = Math_min(vw, Math_max(x - border_thresh, 0));
+						v_my = Math_min(vh, Math_max(y - top_thresh, 0));
 					}
 				};
 
@@ -55484,8 +56379,8 @@ var $$IMU_EXPORT$$;
 					}
 				} else if (initial_zoom_behavior === "custom") {
 					var zoom_percent = settings.mouseover_zoom_custom_percent / 100;
-					imgw = Math.max(imgw * zoom_percent, 20);
-					imgh = Math.max(imgh * zoom_percent, 20);
+					imgw = Math_max(imgw * zoom_percent, 20);
+					imgh = Math_max(imgh * zoom_percent, 20);
 					img.style.maxWidth = imgw + "px";
 					img.style.width = img.style.maxWidth;
 					img.style.maxHeight = imgh + "px";
@@ -55559,11 +56454,11 @@ var $$IMU_EXPORT$$;
 						mouseover_position = "center";
 
 					if (mouseover_position === "cursor") {
-						popup_top =  sct + Math.min(Math.max(v_my - (imgh / 2), 0), Math.max(vh - imgh, 0));
-						popup_left = scl + Math.min(Math.max(v_mx - (imgw / 2), 0), Math.max(vw - imgw, 0));
+						popup_top =  sct + Math_min(Math_max(v_my - (imgh / 2), 0), Math_max(vh - imgh, 0));
+						popup_left = scl + Math_min(Math_max(v_mx - (imgw / 2), 0), Math_max(vw - imgw, 0));
 					} else if (mouseover_position === "center") {
-						popup_top =  sct + Math.min(Math.max((vh / 2) - (imgh / 2), 0), Math.max(vh - imgh, 0));
-						popup_left = scl + Math.min(Math.max((vw / 2) - (imgw / 2), 0), Math.max(vw - imgw, 0));
+						popup_top =  sct + Math_min(Math_max((vh / 2) - (imgh / 2), 0), Math_max(vh - imgh, 0));
+						popup_left = scl + Math_min(Math_max((vw / 2) - (imgw / 2), 0), Math_max(vw - imgw, 0));
 					} else if (mouseover_position === "beside_cursor") {
 						var update_imghw;
 						if (resize) {
@@ -55597,11 +56492,11 @@ var $$IMU_EXPORT$$;
 
 							switch (info) {
 								case -1:
-									return Math.min(vd - popupd, Math.max(0, moused - (popupd / 2)));
+									return Math_min(vd - popupd, Math_max(0, moused - (popupd / 2)));
 								case 0:
-									return Math.max(0, moused - popupd - cursor_thresh);
+									return Math_max(0, moused - popupd - cursor_thresh);
 								case 1:
-									return Math.min(vd - popupd, moused + cursor_thresh);
+									return Math_min(vd - popupd, moused + cursor_thresh);
 							}
 						};
 
@@ -55732,7 +56627,7 @@ var $$IMU_EXPORT$$;
 									update_imghw(ovw, ovh - v_my);
 									//continue;
 								} else {
-									popupy = Math.max(vh - imgh - cursor_thresh, 0);
+									popupy = Math_max(vh - imgh - cursor_thresh, 0);
 								}
 							}
 
@@ -55741,7 +56636,7 @@ var $$IMU_EXPORT$$;
 									update_imghw(ovw - v_mx, ovh);
 									//continue;
 								} else {
-									popupx = Math.max(vw - imgw - cursor_thresh, 0);
+									popupx = Math_max(vw - imgw - cursor_thresh, 0);
 								}
 							}
 
@@ -56246,7 +57141,7 @@ var $$IMU_EXPORT$$;
 
 							if (settings.mouseover_ui_wrap_caption) {
 								// /10 is arbitrary, but seems to work well
-								var chars = parseInt(Math.max(10, Math.min(60, (popup_width - topbarel.clientWidth) / 10)));
+								var chars = parseInt(Math_max(10, Math_min(60, (popup_width - topbarel.clientWidth) / 10)));
 
 								btntext = {
 									truncated: truncate_with_ellipsis(caption, chars),
@@ -56501,8 +57396,8 @@ var $$IMU_EXPORT$$;
 				}
 
 				div.onmouseover = div.onmousemove = function(e) {
-					if ((Math.abs(mouseX - popup_cursorjitterX) < settings.mouseover_mouse_inactivity_jitter) &&
-						(Math.abs(mouseY - popup_cursorjitterY) < settings.mouseover_mouse_inactivity_jitter)) {
+					if ((Math_abs(mouseX - popup_cursorjitterX) < settings.mouseover_mouse_inactivity_jitter) &&
+						(Math_abs(mouseY - popup_cursorjitterY) < settings.mouseover_mouse_inactivity_jitter)) {
 						return;
 					}
 
@@ -56656,11 +57551,11 @@ var $$IMU_EXPORT$$;
 						//x = mouseAbsX;
 						//y = mouseAbsY;
 
-						var visible_left = Math.max(popup_left, 0);
-						var visible_top = Math.max(popup_top, 0);
+						var visible_left = Math_max(popup_left, 0);
+						var visible_top = Math_max(popup_top, 0);
 
-						var visible_right = Math.min(visible_left + popup_width, vw);
-						var visible_bottom = Math.min(visible_top + popup_height, vh);
+						var visible_right = Math_min(visible_left + popup_width, vw);
+						var visible_bottom = Math_min(visible_top + popup_height, vh);
 
 						// get the middle of the visible portion of the popup
 						x = visible_left + (visible_right - visible_left) / 2;
@@ -56697,8 +57592,16 @@ var $$IMU_EXPORT$$;
 							imgw = img_naturalWidth;
 							calc_imghw_for_fit();
 
+							var oldwidth = parseFloat(img.style.width);
+							var oldheight = parseFloat(img.style.height);
+
 							set_popup_width(imgw, vw);
 							set_popup_height(imgh, vh);
+
+							if (zoom_out_to_close && parseFloat(img.style.width) === oldwidth && parseFloat(img.style.height) === oldheight) {
+								resetpopups();
+								return false;
+							}
 
 							currentmode = "fit";
 							changed = true;
@@ -56722,7 +57625,7 @@ var $$IMU_EXPORT$$;
 
 						var increment = settings.scroll_incremental_mult - 1;
 
-						mult = Math.round(mult / increment);
+						mult = Math_round(mult / increment);
 						mult *= increment;
 
 						if (imgwidth < img_naturalWidth) {
@@ -56770,27 +57673,27 @@ var $$IMU_EXPORT$$;
 						newx = (vw / 2) - percentX * imgwidth;
 						var endx = newx + imgwidth;
 						if (newx > border_thresh && endx > (vw - border_thresh))
-							newx = Math.max(border_thresh, (vw + border_thresh) - imgwidth);
+							newx = Math_max(border_thresh, (vw + border_thresh) - imgwidth);
 
 						if (newx < border_thresh && endx < (vw - border_thresh))
-							newx = Math.min(border_thresh, (vw + border_thresh) - imgwidth);
+							newx = Math_min(border_thresh, (vw + border_thresh) - imgwidth);
 
 						newy = (vh / 2) - percentY * imgheight;
 						var endy = newy + imgheight;
 						if (newy > border_thresh && endy > (vh - border_thresh))
-							newy = Math.max(border_thresh, (vh + border_thresh) - imgheight);
+							newy = Math_max(border_thresh, (vh + border_thresh) - imgheight);
 
 						if (newy < border_thresh && endy < (vh - border_thresh))
-							newy = Math.min(border_thresh, (vh + border_thresh) - imgheight);
+							newy = Math_min(border_thresh, (vh + border_thresh) - imgheight);
 					}
 
 					if (imgwidth <= vw && imgheight <= vh) {
-						newx = Math.max(newx, border_thresh);
+						newx = Math_max(newx, border_thresh);
 						if (newx + imgwidth > (vw - border_thresh)) {
 							newx = (vw + border_thresh) - imgwidth;
 						}
 
-						newy = Math.max(newy, border_thresh);
+						newy = Math_max(newy, border_thresh);
 						if (newy + imgheight > (vh - border_thresh)) {
 							newy = (vh + border_thresh) - imgheight;
 						}
@@ -57548,14 +58451,19 @@ var $$IMU_EXPORT$$;
 					}
 				}
 
-				if (el_tagname === "SOURCE" || el_tagname === "IMG" || el_tagname === "VIDEO" ||
+				if (el_tagname === "SOURCE" || el_tagname === "IMG" || el_tagname === "IMAGE" || el_tagname === "VIDEO" ||
 					(settings.mouseover_allow_canvas_el && el_tagname === "CANVAS") ||
 					(settings.mouseover_allow_svg_el && el_tagname === "SVG")) {
 
 					if (settings.mouseover_exclude_imagemaps && el_tagname === "IMG" && el.hasAttribute("usemap")) {
 						var mapel = document.querySelector("map[name=\"" + el.getAttribute("usemap").replace(/^#/, "") + "\"]");
-						if (mapel)
+						if (mapel) {
+							if (_nir_debug_) {
+								console_log("_find_source skipping", el, "due to image map", mapel);
+							}
+
 							return;
+						}
 					}
 
 					var el_src = get_img_src(el);
@@ -57975,6 +58883,9 @@ var $$IMU_EXPORT$$;
 			}
 
 			function addElement(el, layer) {
+				if (_nir_debug_)
+					console_log("_find_source (addElement)", el, layer);
+
 				if (settings.mouseover_exclude_page_bg && el.tagName === "BODY") {
 					return;
 				}
@@ -58754,7 +59665,7 @@ var $$IMU_EXPORT$$;
 			//console_log(els);
 
 			if (_nir_debug_)
-				console_log("trigger_popup: els =", els);
+				console_log("trigger_popup: els =", els, "point =", point);
 
 			var source = find_source(els);
 
@@ -60157,7 +61068,7 @@ var $$IMU_EXPORT$$;
 					amount = -amount;
 
 				var new_volume = videoel.volume + (amount / 100.);
-				new_volume = Math.min(Math.max(new_volume, 0), 1);
+				new_volume = Math_min(Math_max(new_volume, 0), 1);
 
 				videoel.volume = new_volume;
 			} else {
@@ -60771,7 +61682,7 @@ var $$IMU_EXPORT$$;
 				var current = mousepos - dragoffset;
 
 				if (current !== orig) {
-					if (dragged || Math.abs(current - orig) >= min_move_amt) {
+					if (dragged || Math_abs(current - orig) >= min_move_amt) {
 						var newlast = current - (orig - last);
 
 						if (lefttop) {
@@ -60804,7 +61715,7 @@ var $$IMU_EXPORT$$;
 					mousepos = viewportD - mousepos;
 
 				if (offsetD > viewportD) {
-					var mouse_edge = Math.min(Math.max((mousepos - edge_buffer), 0), viewportD - edge_buffer * 2);
+					var mouse_edge = Math_min(Math_max((mousepos - edge_buffer), 0), viewportD - edge_buffer * 2);
 					var percent = mouse_edge / (viewportD - (edge_buffer * 2));
 
 					var newpos = (percent * (viewportD - offsetD - border_thresh * 2) + border_thresh) + "px";
@@ -60833,7 +61744,7 @@ var $$IMU_EXPORT$$;
 						var offsetD = lefttop ? popup.offsetHeight : popup.offsetWidth;
 						var viewportD = lefttop ? viewport[1] : viewport[0];
 
-						current = Math.max(current, border_thresh);
+						current = Math_max(current, border_thresh);
 
 						if (current + offsetD > (viewportD - border_thresh)) {
 							current = viewportD - border_thresh - offsetD;
@@ -61147,16 +62058,16 @@ var $$IMU_EXPORT$$;
 							in_img_jitter = in_clientrect(mouseX, mouseY, rect, jitter_base);
 
 							// why this instead of getBoundingClientRect?
-							//var w = Math.min(parseInt(img.style.maxWidth), img.naturalWidth);
-							//var h = Math.min(parseInt(img.style.maxHeight), img.naturalHeight);
+							//var w = Math_min(parseInt(img.style.maxWidth), img.naturalWidth);
+							//var h = Math_min(parseInt(img.style.maxHeight), img.naturalHeight);
 							var w = rect.width;
 							var h = rect.height;
 
 							imgmiddleX = rect.x + rect.width / 2;
 							imgmiddleY = rect.y + rect.height / 2;
 
-							jitter_threshx = Math.max(jitter_threshx, w / 2);
-							jitter_threshy = Math.max(jitter_threshy, h / 2);
+							jitter_threshx = Math_max(jitter_threshx, w / 2);
+							jitter_threshy = Math_max(jitter_threshy, h / 2);
 
 							jitter_threshx += jitter_base;
 							jitter_threshy += jitter_base;
@@ -61228,8 +62139,8 @@ var $$IMU_EXPORT$$;
 						can_close_popup[1] = false;
 						if (mouse_in_image_yet && (!close_on_leave_el || outside_of_popup_el || popup_el_hidden)) {
 							if (imgmiddleX && imgmiddleY &&
-								(Math.abs(mouseX - imgmiddleX) > jitter_threshx ||
-								 Math.abs(mouseY - imgmiddleY) > jitter_threshy)) {
+								(Math_abs(mouseX - imgmiddleX) > jitter_threshx ||
+								 Math_abs(mouseY - imgmiddleY) > jitter_threshy)) {
 								//console_log(mouseX, imgmiddleX, jitter_threshx);
 								//console_log(mouseY, imgmiddleY, jitter_threshy);
 
@@ -61255,8 +62166,8 @@ var $$IMU_EXPORT$$;
 					if (delay_handle && !settings.mouseover_trigger_mouseover) {
 						var trigger_mouse_jitter_thresh = 10;
 
-						if (Math.abs(mouseX - mouseDelayX) < trigger_mouse_jitter_thresh &&
-							Math.abs(mouseY - mouseDelayY) < trigger_mouse_jitter_thresh)
+						if (Math_abs(mouseX - mouseDelayX) < trigger_mouse_jitter_thresh &&
+							Math_abs(mouseY - mouseDelayY) < trigger_mouse_jitter_thresh)
 							return;
 
 						clearTimeout(delay_handle);

@@ -1,3 +1,25 @@
+0.13.19
+
+New features:
+
+ * Support for direct images in SVGs
+ * Initial support for Facebook (currently only links)
+ * Support for ~30 new websites (using ~20 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including Likee, iTunes, Naver, TikTok)
+
+Bugfixes:
+
+ * When using fit/full and "zoom out fully to close", zooming out will now close the popup if the popup size hasn't changed (thanks to Runakanta on discord for reporting)
+ * Fix for infinite loop when using the option to use link rather than the image is enabled
+ * Fix for userscript failing on sites like Gfycat where `Math` is overridden when adblockers are used (extension is unaffected)
+
+Special thanks to llacb47, remlap, dym-sh, Urkchar, anonyno, and a-vrma for their contributions to this release
+
+---
+
 0.13.18
 
 New features:

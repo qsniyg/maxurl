@@ -1,26 +1,30 @@
 // ==UserScript==
 // @name              Image Max URL
+// @name:en           Image Max URL
 // @name:ko           Image Max URL
 // @name:fr           Image Max URL
 // @name:es           Image Max URL
 // @name:ru           Image Max URL
+// @name:de           Image Max URL
 // @name:ja           Image Max URL
 // @name:zh           Image Max URL
 // @name:zh-CN        Image Max URL
 // @name:zh-TW        Image Max URL
 // @name:zh-HK        Image Max URL
 // @namespace         http://tampermonkey.net/
-// @version           0.13.18
-// @description       Finds larger or original versions of images and videos for 7100+ websites, including a powerful media popup feature
-// @description:ko    7100개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
-// @description:fr    Trouve des images plus grandes ou originales pour plus de 7100 sites
-// @description:es    Encuentra imágenes más grandes y originales para más de 7100 sitios
-// @description:ru    Находит увеличенные или оригинальные версии изображений для более чем 7100 веб-сайтов
-// @description:ja    7100以上のウェブサイトで高画質や原本画像を見つけ出します
-// @description:zh    为7100多个网站查找更大或原始图像
-// @description:zh-CN 为7100多个网站查找更大或原始图像
-// @description:zh-TW 為7100多個網站查找更大或原始圖像
-// @description:zh-HK 為7100多個網站查找更大或原始圖像
+// @version           0.13.19
+// @description       Finds larger or original versions of images and videos for 7200+ websites, including a powerful media popup feature
+// @description:en    Finds larger or original versions of images and videos for 7200+ websites, including a powerful media popup feature
+// @description:ko    7200개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
+// @description:fr    Trouve des images plus grandes ou originales pour plus de 7200 sites
+// @description:es    Encuentra imágenes más grandes y originales para más de 7200 sitios
+// @description:ru    Находит увеличенные или оригинальные версии изображений для более чем 7200 веб-сайтов
+// @description:de    Sucht nach größeren oder originalen Versionen von Bildern und Videos für mehr als 7200 Websites
+// @description:ja    7200以上のウェブサイトで高画質や原本画像を見つけ出します
+// @description:zh    为7200多个网站查找更大或原始图像
+// @description:zh-CN 为7200多个网站查找更大或原始图像
+// @description:zh-TW 為7200多個網站查找更大或原始圖像
+// @description:zh-HK 為7200多個網站查找更大或原始圖像
 // @author            qsniyg
 // @homepageURL       https://qsniyg.github.io/maxurl/options.html
 // @supportURL        https://github.com/qsniyg/maxurl/issues
