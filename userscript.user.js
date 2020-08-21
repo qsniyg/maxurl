@@ -5107,13 +5107,6 @@ var $$IMU_EXPORT$$;
 	};
 
 	var real_website_query = function(options) {
-		var domain = options.url.replace(/^[a-z]+:\/\/([^/]+)\/+.*$/, "$1");
-		var domain_nosub = get_domain_nosub(domain);
-
-		if (!options.cache_key) {
-			options.cache_key = domain_nosub;
-		}
-
 		if (!is_array(options.website_regex)) {
 			options.website_regex = [options.website_regex];
 		}
@@ -5129,8 +5122,6 @@ var $$IMU_EXPORT$$;
 		if (!website_match)
 			return null;
 
-		var id = website_match[1];
-
 		var page_nullobj = {
 			url: options.url,
 			is_pagelink: true
@@ -5140,16 +5131,13 @@ var $$IMU_EXPORT$$;
 			return page_nullobj;
 		}
 
-		var query;
-		if (typeof options.query_for_id === "string") {
-			query = {
-				url: options.query_for_id.replace(/\${id}/g, id)
-			};
-		} else {
-			query = options.query_for_id(id);
+		var domain = options.url.replace(/^[a-z]+:\/\/([^/]+)\/+.*$/, "$1");
+		var domain_nosub = get_domain_nosub(domain);
+		if (!options.cache_key) {
+			options.cache_key = domain_nosub;
 		}
 
-		real_api_query(options.api_cache, options.do_request, options.cache_key + ":" + id, query, function(data) {
+		var cb = function(data) {
 			if (!data) {
 				return options.cb(page_nullobj);
 			} else {
@@ -5161,9 +5149,28 @@ var $$IMU_EXPORT$$;
 
 				return options.cb(data);
 			}
-		}, function(done, resp, cache_key) {
-			return options.process(done, resp, cache_key, website_match)
-		});
+		};
+
+		if (!options.run) {
+			options.run = function(cb, website_match) {
+				var id = website_match[1];
+
+				var query;
+				if (typeof options.query_for_id === "string") {
+					query = {
+						url: options.query_for_id.replace(/\${id}/g, id)
+					};
+				} else {
+					query = options.query_for_id(id);
+				}
+
+				real_api_query(options.api_cache, options.do_request, options.cache_key + ":" + id, query, cb, function(done, resp, cache_key) {
+					return options.process(done, resp, cache_key, website_match)
+				});
+			};
+		}
+
+		options.run(cb, website_match);
 
 		return {
 			waiting: true
@@ -68979,125 +68986,103 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (host_domain_nowww === "porn.com" && domain_nosub === "porn.com" && /^media/.test(domain) && options.element) {
-			if (options.element.parentElement && options.element.parentElement.parentElement) {
-				var dparent = options.element.parentElement.parentElement;
-				if (dparent.tagName === "A" && /porn\.com\/+out\//.test(dparent.href))
-					return {
-						url: dparent.href,
-						is_pagelink: true
-					};
-			}
+			newsrc = common_functions.get_pagelink_el_matching(options.element, /porn\.com\/+out\//);
+			if (newsrc) return newsrc;
 		}
 
 		if (domain_nowww === "pandora.tv") {
 			// http://www.pandora.tv/view/proshocker/60419315
-			match = src.match(/\/view\/+([^/]+)\/+([0-9]+)\/*(?:[?#].*)?$/);
-			if (match) {
-				var query_pandora_site = function(uid, vid, cb) {
-					api_query("pandora_site:" + uid + ":" + vid, {
-						url: "http://www.pandora.tv/view/" + uid + "/" + vid
-					}, cb, function(done, resp, cache_key) {
-						var varsregex = /var (str(?:ResolType|Fid|ChUserId|ResolArr)|n(?:PrgId|VodSvr|Info)|runtime)\s*= ([[0-9'].*?); *\r?\n/;
-						var match = resp.responseText.match(new RegExp(varsregex, "g"));
-						if (!match) {
-							console_error(cache_key, "Unable to find vars for", resp);
-							return done(null, false);
-						}
-
-						var vars = {
-							"strResolArr": '["1","2","3","4","5"]',
-							"strResolType": "'2'"
-						};
-
-						for (var i = 0; i < match.length; i++) {
-							var submatch = match[i].match(varsregex);
-							var varname = submatch[1];
-							var varvalue = submatch[2];
-
-							vars[varname] = varvalue.replace(/^'(.*)'$/, "$1");
-						}
-
-						return done(vars, 60*60);
-					});
-				};
-
-				var query_pandora_vodurl = function(data, cb) {
-					if (!data || !data.strFid || !data.strChUserId || !data.nPrgId || !data.nInfo) {
-						console_error("Invalid data", data);
-						return cb(null);
+			var query_pandora_site = function(uid, vid, cb) {
+				api_query("pandora_site:" + uid + ":" + vid, {
+					url: "http://www.pandora.tv/view/" + uid + "/" + vid
+				}, cb, function(done, resp, cache_key) {
+					var varsregex = /var (str(?:ResolType|Fid|ChUserId|ResolArr)|n(?:PrgId|VodSvr|Info)|runtime)\s*= ([[0-9'].*?); *\r?\n/;
+					var match = resp.responseText.match(new RegExp(varsregex, "g"));
+					if (!match) {
+						console_error(cache_key, "Unable to find vars for", resp);
+						return done(null, false);
 					}
 
-					var resolutions = JSON_parse(data.nInfo);
-					var resolution = resolutions.sort()[resolutions.length - 1];
-
-					var queries = [];
-					queries.push("userId=" + data.strChUserId);
-					queries.push("prgId=" + data.nPrgId);
-					queries.push("fid=" + data.strFid);
-					queries.push("resolType=" + data.strResolType);
-					queries.push("resolArr=" + encodeURIComponent(data.strResolArr.replace(/[\]['"]/g, "")));
-					queries.push("vodSvr=" + data.nVodSvr);
-					queries.push("resol=" + resolution);
-					queries.push("runtime=" + data.runtime);
-					queries.push("tvbox=false");
-					queries.push("defResol=false");
-					queries.push("embed=false");
-
-					var referer = "http://www.pandora.tv/view/" + data.strChUserId + "/" + data.nPrgId;
-
-					api_query("pandora_vodurl:" + data.strFid, {
-						url: "http://www.pandora.tv/external/getExternalApi/getVodUrl/",
-						method: "POST",
-						headers: {
-							"Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-							Origin: "http://www.pandora.tv",
-							Referer: referer
-						},
-						data: queries.join("&"),
-						json: true
-					}, cb, function(done, resp, cache_key) {
-						if (!resp.src) {
-							console_error(cache_key, "Unable to find src", resp);
-							return done(null, false);
-						}
-
-						var obj = {
-							url: resp.src,
-							is_private: true
-						};
-
-						obj.extra = {
-							page: referer
-						};
-
-						return done(obj, 60*60);
-					});
-				};
-
-				var page_nullobj = {
-					url: src,
-					is_pagelink: true
-				};
-
-				if (options.do_request && options.cb) {
-					query_pandora_site(match[1], match[2], function(data) {
-						query_pandora_vodurl(data, function(obj) {
-							if (!obj) {
-								return options.cb(page_nullobj);
-							} else {
-								var urls = [obj, page_nullobj];
-								return options.cb(urls);
-							}
-						});
-					});
-
-					return {
-						waiting: true
+					var vars = {
+						"strResolArr": '["1","2","3","4","5"]',
+						"strResolType": "'2'"
 					};
-				} else {
-					return page_nullobj;
+
+					for (var i = 0; i < match.length; i++) {
+						var submatch = match[i].match(varsregex);
+						var varname = submatch[1];
+						var varvalue = submatch[2];
+
+						vars[varname] = varvalue.replace(/^'(.*)'$/, "$1");
+					}
+
+					return done(vars, 60*60);
+				});
+			};
+
+			var query_pandora_vodurl = function(data, cb) {
+				if (!data || !data.strFid || !data.strChUserId || !data.nPrgId || !data.nInfo) {
+					console_error("Invalid data", data);
+					return cb(null);
 				}
-			}
+
+				var resolutions = JSON_parse(data.nInfo);
+				var resolution = resolutions.sort()[resolutions.length - 1];
+
+				var queries = [
+					"userId=" + data.strChUserId,
+					"prgId=" + data.nPrgId,
+					"fid=" + data.strFid,
+					"resolType=" + data.strResolType,
+					"resolArr=" + encodeURIComponent(data.strResolArr.replace(/[\]['"]/g, "")),
+					"vodSvr=" + data.nVodSvr,
+					"resol=" + resolution,
+					"runtime=" + data.runtime,
+					"tvbox=false",
+					"defResol=false",
+					"embed=false"
+				];
+
+				var referer = "http://www.pandora.tv/view/" + data.strChUserId + "/" + data.nPrgId;
+
+				api_query("pandora_vodurl:" + data.strFid, {
+					url: "http://www.pandora.tv/external/getExternalApi/getVodUrl/",
+					method: "POST",
+					headers: {
+						"Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+						Origin: "http://www.pandora.tv",
+						Referer: referer
+					},
+					data: queries.join("&"),
+					json: true
+				}, cb, function(done, resp, cache_key) {
+					if (!resp.src) {
+						console_error(cache_key, "Unable to find src", resp);
+						return done(null, false);
+					}
+
+					var obj = {
+						url: resp.src,
+						is_private: true
+					};
+
+					obj.extra = {
+						page: referer
+					};
+
+					return done(obj, 60*60);
+				});
+			};
+
+			newsrc = website_query({
+				website_regex: /\/view\/+([^/]+)\/+([0-9]+)\/*(?:[?#].*)?$/,
+				run: function(cb, match) {
+					query_pandora_site(match[1], match[2], function(data) {
+						query_pandora_vodurl(data, cb);
+					});
+				}
+			});
+			if (newsrc) return newsrc;
 		}
 
 		if (domain_nosub === "pandora.tv" && /^imguser[0-9]*\./.test(domain)) {
