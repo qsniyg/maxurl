@@ -69115,48 +69115,23 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "porndex.com") {
-			match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:out\/+go|view_video)\.php\?(?:.*&)?go=([0-9]+).*?$/);
-			if (match) {
-				id = match[1];
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+(?:out\/+go|view_video)\.php\?(?:.*&)?go=([0-9]+).*?$/,
+				query_for_id: "https://www.porndex.com/out/go.php?go=${id}",
+				process: function(done, resp, cache_key) {
+					var match = resp.responseText.match(/<meta\s+http-equiv="refresh"\s+content="[0-9]+;URL='([^'"]+)'"/);
+					if (!match) {
+						console_error(cache_key, "Unable to find match for", resp);
+						return done(null, false);
+					}
 
-				var query_porndex_outlink = function(id, cb) {
-					api_query("porndex:" + id, {
-						url: "https://www.porndex.com/out/go.php?go=" + id
-					}, cb, function(done, resp, cache_key) {
-						var match = resp.responseText.match(/<meta\s+http-equiv="refresh"\s+content="[0-9]+;URL='([^'"]+)'"/);
-						if (!match) {
-							console_error(cache_key, "Unable to find match for", resp);
-							return done(null, false);
-						}
-
-						return done(decode_entities(match[1]), 6*60*60);
-					});
-				};
-
-				page_nullobj = {
-					url: src,
-					is_pagelink: true
-				};
-
-				if (options.do_request && options.cb) {
-					query_porndex_outlink(id, function(url) {
-						if (!url) {
-							return options.cb(page_nullobj);
-						} else {
-							return options.cb([
-								{url: url, is_pagelink: true},
-								page_nullobj
-							]);
-						}
-					});
-
-					return {
-						waiting: true
-					};
-				} else {
-					return page_nullobj;
+					return done({
+						url: decode_entities(match[1]),
+						is_pagelink: true
+					}, 6*60*60);
 				}
-			}
+			});
+			if (newsrc) return newsrc;
 		}
 
 		if (domain === "video.nudevista.com") {
@@ -69732,11 +69707,7 @@ var $$IMU_EXPORT$$;
 		if (domain_nowww === "youjizz.com") {
 			newsrc = website_query({
 				website_regex: /^[a-z]+:\/\/[^/]+\/+videos\/+[^/]*-([0-9]+)\.html(?:[?#].*)?$/,
-				query_for_id: function(id) {
-					return {
-						url: "https://www.youjizz.com/videos/-" + id + ".html"
-					};
-				},
+				query_for_id: "https://www.youjizz.com/videos/-${id}.html",
 				process: function(done, resp, cache_key) {
 					var match = resp.responseText.match(/var dataEncodings\s*=\s*(\[{.*?}\]);\s*var encodings/);
 					if (!match) {
@@ -69781,16 +69752,8 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (host_domain_nowww === "youjizz.com" && domain_nosub === "youjizz.com" && /^cdne-(?:pics|mobile)\./.test(domain) && options.element) {
-			var el = common_functions.get_link_el_matching(options.element, function(el) {
-				return /^[a-z]+:\/\/[^/]+\/+videos\/+[^/]*-([0-9]+)\.html(?:[?#].*)?$/.test(el.href);
-			});
-
-			if (el) {
-				return {
-					url: el.href,
-					is_pagelink: true
-				};
-			}
+			newsrc = common_functions.get_pagelink_el_matching(options.element, /^[a-z]+:\/\/[^/]+\/+videos\/+[^/]*-([0-9]+)\.html(?:[?#].*)?$/);
+			if (newsrc) return newsrc;
 		}
 
 		if (domain_nosub === "vporn.com" && /^vm[0-9]*\./.test(domain)) {
