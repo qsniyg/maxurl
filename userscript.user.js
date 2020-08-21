@@ -68728,85 +68728,59 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "streamvid.co") {
-			match = src.match(/^[a-z]+:\/\/[^/]+\/+player\/+([A-Za-z0-9]+)\/*(?:[?#].*)?$/);
-			if (match) {
-				id = match[1];
-
-				var query_streamvid_co = function(vid, cb) {
-					api_query("streamvid_co:" + vid, {
-						url: "https://streamvid.co/player/" + vid + "/"
-					}, cb, function(done, resp, cache_key) {
-						var match = resp.responseText.match(/<div id="video_player">.*<script[^>]*>JuicyCodes\.Run\((\".*?\")\);<\/script>/);
-						if (!match) {
-							console_error(cache_key, "Unable to find JuicyCodes match for", resp);
-							return done(null, false);
-						}
-
-						var encoded = match[1].replace(/[\s+"]/g, "");
-						var decoded = base64_decode(encoded);
-
-						var unpacked = common_functions.unpack_packer(decoded);
-						if (!unpacked) {
-							console_error(cache_key, "Unable to unpack", decoded, "for", resp);
-							return done(null, false);
-						}
-
-						match = unpacked.match(/sources:(\[{.*?}\]),/);
-						if (!match) {
-							console_error(cache_key, "Unable to find sources in", unpacked);
-							return done(null, false);
-						}
-
-						var sources_json = JSON_parse(match[1]);
-
-						for (var i = 0; i < sources_json.length; i++) {
-							if (sources_json[i].type !== "application/x-mpegURL") {
-								console_warn(cache_key, "Unknown type for", sources_json[i]);
-								continue;
-							}
-
-							if (!sources_json[i].file) {
-								continue;
-							}
-
-							return done([{
-								url: sources_json[i].file,
-								video: "hls",
-								headers: {
-									Origin: "https://streamvid.co",
-									Referer: resp.finalUrl,
-									Accept: "*/*"
-								},
-								can_head: false
-							}], 60*60);
-						}
-
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+player\/+([A-Za-z0-9]+)\/*(?:[?#].*)?$/,
+				query_for_id: "https://streamvid.co/player/${id}/",
+				process: function(done, resp, cache_key) {
+					var match = resp.responseText.match(/<div id="video_player">.*<script[^>]*>JuicyCodes\.Run\((\".*?\")\);<\/script>/);
+					if (!match) {
+						console_error(cache_key, "Unable to find JuicyCodes match for", resp);
 						return done(null, false);
-					});
-				};
+					}
 
-				var page_nullobj = {
-					url: src,
-					is_pagelink: true
-				};
+					var encoded = match[1].replace(/[\s+"]/g, "");
+					var decoded = base64_decode(encoded);
 
-				if (options.cb && options.do_request) {
-					query_streamvid_co(id, function(urls) {
-						if (!urls) {
-							return options.cb(page_nullobj);
+					var unpacked = common_functions.unpack_packer(decoded);
+					if (!unpacked) {
+						console_error(cache_key, "Unable to unpack", decoded, "for", resp);
+						return done(null, false);
+					}
+
+					match = unpacked.match(/sources:(\[{.*?}\]),/);
+					if (!match) {
+						console_error(cache_key, "Unable to find sources in", unpacked);
+						return done(null, false);
+					}
+
+					var sources_json = JSON_parse(match[1]);
+
+					for (var i = 0; i < sources_json.length; i++) {
+						if (sources_json[i].type !== "application/x-mpegURL") {
+							console_warn(cache_key, "Unknown type for", sources_json[i]);
+							continue;
 						}
 
-						urls.push(page_nullobj);
-						return options.cb(urls);
-					});
+						if (!sources_json[i].file) {
+							continue;
+						}
 
-					return {
-						waiting: true
-					};
-				} else {
-					return page_nullobj;
+						return done([{
+							url: sources_json[i].file,
+							video: "hls",
+							headers: {
+								Origin: "https://streamvid.co",
+								Referer: resp.finalUrl,
+								Accept: "*/*"
+							},
+							can_head: false
+						}], 60*60);
+					}
+
+					return done(null, false);
 				}
-			}
+			});
+			if (newsrc) return newsrc;
 		}
 
 		if (domain === "blackporn.blacklust.com") {
