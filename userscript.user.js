@@ -73012,6 +73012,23 @@ var $$IMU_EXPORT$$;
 			};
 		}
 
+		if (host_domain_nosub === "fetlife.com") {
+			return {
+				element_ok: function(el) {
+					// a = profile link (image)
+					if (el.tagName === "DIV" || el.tagName === "A") {
+						for (var i = 0; i < el.children.length; i++) {
+							var child = el.children[i];
+							// .fl-disable-interaction is used for the profile pic when on the profile
+							if (child.tagName === "IMG" && (child.classList.contains("ipp") || child.classList.contains("fl-disable-interaction"))) {
+								return el.children[i];
+							}
+						}
+					}
+				}
+			};
+		}
+
 		return null;
 	};
 
