@@ -14255,6 +14255,8 @@ var $$IMU_EXPORT$$;
 			domain === "cdn-contents-web.weverse.io" ||
 			// https://cdn.hashnode.com/res/hashnode/image/upload/v1597244649420/jX9JzFN5o.png?w=1600&h=840&fit=crop&crop=entropy&auto=format&q=60
 			domain === "cdn.hashnode.com" ||
+			// https://d31wcbk3iidrjq.cloudfront.net/SiseXevjk_gl05K7umA.jpg?w=300&h=300
+			domain === "d31wcbk3iidrjq.cloudfront.net" ||
 			// http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
 			// https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
 			src.match(/\/demandware\.static\//) ||
@@ -68561,11 +68563,25 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/cover_[wh]?[0-9]+\/+/, "/cover/");
 		}
 
-		if (domain === "d3el26csp1xekx.cloudfront.net") {
+		if (domain === "d3el26csp1xekx.cloudfront.net" ||
+			// https://starboard-media.s3.amazonaws.com/v/no-wm-thumb-XHRVi-XHP-00001.jpg
+			//   https://starboard-media.s3.amazonaws.com/v/wm-XHRVi-XHP.mp4 -- watermarked
+			//   https://starboard-media.s3.amazonaws.com/v/no-wm-XHRVi-XHP.mp4
+			// https://starboard-media.s3.amazonaws.com/v/no-wm-thumb-lDOcM9sdH-00001.jpg
+			//   https://starboard-media.s3.amazonaws.com/v/no-wm-lDOcM9sdH.mp4
+			// https://starboard-media.s3.amazonaws.com/v/no-wm-thumb-iP0TmPq_Q-00001.jpg
+			//   https://starboard-media.s3.amazonaws.com/v/no-wm-iP0TmPq_Q.mp4
+			amazon_container === "starboard-media") {
 			// thanks to remlap on discord (cameo.com)
 			// https://d3el26csp1xekx.cloudfront.net/v/wm-o5WwywATT.mp4
 			//   https://d3el26csp1xekx.cloudfront.net/v/no-wm-o5WwywATT.mp4
-			return src.replace(/(\/v\/+)(wm-)/, "$1no-$2");
+			// https://www.cameo.com/v/5d53255a3f9c0e0124646192
+			// https://d3el26csp1xekx.cloudfront.net/v/no-wm-thumb-obyCY9NVZ-00001.jpg
+			//   https://d3el26csp1xekx.cloudfront.net/v/no-wm-obyCY9NVZ.mp4
+			return src
+				.replace(/(\/v\/+)(wm-[-_a-zA-Z0-9]+\.mp4)/, "$1no-$2")
+				.replace(/(\/v\/+)(?:no-)?wm-thumb-([-_a-zA-Z0-9]+)-[0-9]+\.jpg(?:[?#].*)?$/, "$1no-wm-$2.mp4");
+			//return src.replace(/(\/v\/+)(wm-)/, "$1no-$2");
 		}
 
 		if (domain_nowww === "vidcloud9.com" ||
