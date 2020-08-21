@@ -38395,6 +38395,9 @@ var $$IMU_EXPORT$$;
 			// https://www.freepornvideo.sex/contents/videos_screenshots/16000/16140/240x180/2.jpg
 			domain_nowww === "freepornvideo.sex" ||
 			domain_nosub === "sexroom.xxx" ||
+			// https://porno666.cam/contents/videos_screenshots/6000/6815/505x297/1.jpg
+			domain_nosub === "porno666.cam" ||
+			domain_nosub === "pornfappy.com" ||
 			// http://h2porn.com/contents/videos_screenshots/267000/267851/240x180/3.jpg
 			// doesn't work with video ids, /embed/ returns 500 with no response
 			//domain_nosub === "h2porn.com" ||
@@ -38548,7 +38551,8 @@ var $$IMU_EXPORT$$;
 					   domain_nosub === "its.porn" ||
 					   domain_nosub === "yourlust.com" ||
 					   domain_nosub === "sexroom.xxx" ||
-					   domain_nosub === "pornalin.com") {
+					   domain_nosub === "pornalin.com" ||
+					   domain_nosub === "pornfappy.com") {
 				videos_component = "embed";
 				addslash = "";
 				a_component = "";
@@ -38625,7 +38629,8 @@ var $$IMU_EXPORT$$;
 			} else if (domain_nosub === "pornid.xxx") {
 				can_detect_videourl = false;
 			} else if (domain_nosub === "pornhat.com" ||
-					   domain_nosub === "mrdeepfakes.com") {
+					   domain_nosub === "mrdeepfakes.com" ||
+					   domain_nosub === "porno666.cam") {
 				videos_component = "video";
 			} else if (domain_nosub === "anysex.com") {
 				videos_component = "";
@@ -67452,16 +67457,10 @@ var $$IMU_EXPORT$$;
 						headers: {
 							Referer: "https://www.dailymotion.com/video/" + id,
 							Accept: "application/json, text/plain, */*"
-						}
-					}, cb, function(done, resp, cache_key) {
-						try {
-							var json = JSON_parse(resp.responseText);
-							return done(json, 60*60);
-						} catch (e) {
-							console_error(cache_key, e);
-						}
-
-						return done(null, false);
+						},
+						json: true
+					}, cb, function(done, resp) {
+						return done(resp, 60*60);
 					});
 				};
 
