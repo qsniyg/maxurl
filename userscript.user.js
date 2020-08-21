@@ -9016,8 +9016,16 @@ var $$IMU_EXPORT$$;
 		return null;
 	};
 
-	common_functions.get_link_el_matching = function(el, func) {
+	common_functions.get_link_el_matching = function(el, match) {
 		var current = el;
+
+		var func = match;
+		if (typeof func === "object" && func instanceof RegExp) {
+			var regex = func;
+			func = function(x) {
+				return regex.test(x.href);
+			};
+		}
 
 		while (current) {
 			if (current.tagName === "A" && func(current)) {
@@ -9028,6 +9036,17 @@ var $$IMU_EXPORT$$;
 		}
 
 		return null;
+	};
+
+	common_functions.get_pagelink_el_matching = function(el, match) {
+		var link_el = common_functions.get_link_el_matching(el, match);
+		if (!link_el)
+			return null;
+
+		return {
+			url: link_el.href,
+			is_pagelink: true
+		};
 	};
 
 	common_functions.is_pinterest_domain = function(domain) {
@@ -67526,15 +67545,8 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nosub === "dmcdn.net" && options.element) {
-			// TODO: move to common_functions.get_a_by_regex
-			var current = options.element;
-			do {
-				if (current.tagName === "A" && /^https?:\/\/(?:www\.)?dailymotion\.com\/+video\/+([a-z0-9]+)(?:[?#].*)?$/.test(current.href)) {
-					if (current.href !== src)
-						return current.href;
-					break;
-				}
-			} while (current = current.parentElement);
+			newsrc = common_functions.get_pagelink_el_matching(options.element, /^https?:\/\/(?:www\.)?dailymotion\.com\/+video\/+([a-z0-9]+)(?:[?#].*)?$/);
+			if (newsrc) return newsrc;
 		}
 
 		if (domain_nosub === "alternativeto.net" && /^d[0-9]*\./.test(domain)) {
