@@ -18688,6 +18688,7 @@ var $$IMU_EXPORT$$;
 
 		if (domain_nosub === "shopify.com" && /^cdn[0-9]*\./.test(domain)) {
 			// https://cdn.shopify.com/s/files/1/0947/6410/products/a2178934757_10_1024x1024.jpeg?v=1458824230
+			//   https://cdn.shopify.com/s/files/1/0947/6410/products/a2178934757_10_x1024.jpeg?v=1458824230
 			//   https://cdn.shopify.com/s/files/1/0947/6410/products/a2178934757_10.jpeg?v=1458824230
 			// https://cdn.shopify.com/s/files/1/0947/6410/products/Om-Sweet-Om_1024x1024.png?v=1450196316
 			//   https://cdn.shopify.com/s/files/1/0947/6410/products/Om-Sweet-Om.png?v=1450196316
@@ -18709,7 +18710,7 @@ var $$IMU_EXPORT$$;
 			//   https://cdn.shopify.com/s/files/1/2656/7538/files/de-mining.jpg
 			// https://cdn2.shopify.com/s/files/1/0875/3268/products/Max-Payne-3-Sony-PlayStation-3-PS3-Game-Screenshot-4_1024x1024.jpg?v=1501206616
 			//   https://cdn2.shopify.com/s/files/1/0875/3268/products/Max-Payne-3-Sony-PlayStation-3-PS3-Game-Screenshot-4.jpg?v=1501206616
-			return src.replace(/_(?:large|medium|small|grande|compact|[0-9]+x(?:[0-9]+)?)(?:@[0-9]+x)?(?:_crop_[a-z]+)?(?:\.progressive)?(\.[^/.]*)(?:[?#].*)?$/, "$1");
+			return src.replace(/_(?:large|medium|small|grande|compact|[0-9]+x(?:[0-9]+)?|x[0-9]+)(?:@[0-9]+x)?(?:_crop_[a-z]+)?(?:\.progressive)?(\.[^/.]*)(?:[?#].*)?$/, "$1");
 		}
 
 		if (domain === "cdn.itv.com") {
