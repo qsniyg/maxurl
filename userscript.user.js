@@ -11908,7 +11908,10 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "trbimg.com") {
-			return src.replace(/\/[0-9]*\/[0-9]*x[0-9]*\/*$/, "/").replace(/\/[0-9]*\/*$/, "/");
+			// http://www.trbimg.com/img-53eeca18/turbine/la-1930791-me-adv-street-signs-001-jpg-20140815/700/700x394
+			//   https://www.trbimg.com/img-53eeca18/turbine/la-1930791-me-adv-street-signs-001-jpg-20140815/
+			return src.replace(/(\/img-[0-9a-f]+\/+[^/]+\/+[^/]+\/+)[0-9]+(?:\/+[0-9]+x[0-9]+\/*)?(?:[?#],*)?$/, "$1");
+			//return src.replace(/\/[0-9]*\/[0-9]*x[0-9]*\/*$/, "/").replace(/\/[0-9]*\/*$/, "/");
 		}
 
 		if (domain_nosub === "ggpht.com" && /^geo[0-9]*\./.test(domain) && /:\/\/[^/]+\/+(?:cbk|maps\/+photothumb\/+fd\/+v1)\?/.test(src)) {
