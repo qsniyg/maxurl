@@ -2157,6 +2157,8 @@ var $$IMU_EXPORT$$;
 		mouseover_video_controls: false,
 		mouseover_video_controls_key: ["c"],
 		mouseover_video_loop: true,
+		// thanks to Runakanta on discord for the idea: https://github.com/qsniyg/maxurl/issues/403
+		mouseover_video_autoloop_max: 0,
 		mouseover_video_playpause_key: ["space"],
 		mouseover_video_muted: false,
 		mouseover_video_mute_key: ["m"],
@@ -2963,6 +2965,18 @@ var $$IMU_EXPORT$$;
 			disabled_if: {
 				mouseover_gallery_move_after_video: true
 			},
+			category: "popup",
+			subcategory: "video"
+		},
+		mouseover_video_autoloop_max: {
+			name: "Max duration for looping",
+			description: "Videos longer than the specified duration will not be automatically looped. Setting this to `0` will always enable looping, regardless of duration.",
+			requires: {
+				mouseover_video_loop: true
+			},
+			type: "number",
+			number_min: 0,
+			number_unit: "seconds",
 			category: "popup",
 			subcategory: "video"
 		},
@@ -77186,6 +77200,11 @@ var $$IMU_EXPORT$$;
 
 						video.removeEventListener("error", errorhandler, true);
 						remove_loaded_metadata_listener();
+
+						if (video.hasAttribute("loop")) {
+							if (settings.mouseover_video_autoloop_max && settings.mouseover_video_autoloop_max < video.duration)
+								video.removeAttribute("loop");
+						}
 
 						if (settings.mouseover_video_resume_from_source && processing.source && processing.source.el) {
 							var sourceel = processing.source.el;
