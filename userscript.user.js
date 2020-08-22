@@ -11911,14 +11911,22 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/[0-9]*\/[0-9]*x[0-9]*\/*$/, "/").replace(/\/[0-9]*\/*$/, "/");
 		}
 
-		if (domain_nosub === "ggpht.com" && /^geo[0-9]*\./.test(domain) && /:\/\/[^/]+\/+cbk\?/.test(src)) {
+		if (domain_nosub === "ggpht.com" && /^geo[0-9]*\./.test(domain) && /:\/\/[^/]+\/+(?:cbk|maps\/+photothumb\/+fd\/+v1)\?/.test(src)) {
 			// thanks to llacb47 on github for reporting: https://github.com/qsniyg/maxurl/issues/394
 			// https://geo1.ggpht.com/cbk?panoid=G27yBPFPohgfkiutzyysbg&output=thumbnail&cb_client=search.gws-prod.gps&thumb=2&w=408&h=240&yaw=108.68918&pitch=0&thumbfov=100
 			//   https://geo1.ggpht.com/cbk?panoid=G27yBPFPohgfkiutzyysbg&output=thumbnail&cb_client=search.gws-prod.gps&thumb=2&w=1000&h=588&yaw=108.68918&pitch=0&thumbfov=100
+			// https://geo3.ggpht.com/maps/photothumb/fd/v1?bpb=ChEKD3NlYXJjaC5nd3MtcHJvZBJJCjsJaY1X_rEsDogRET7KWKQfP2UaJwsQ04W4QhoeGhwKFgoUChIJaY1X_rEsDogRTWY07U5B9GMSAjVXDCoKDQAAAAAVAAAAABoGCPABEJgD&gl=US
+			//   https://geo3.ggpht.com/maps/photothumb/fd/v1?bpb=ChEKD3NlYXJjaC5nd3MtcHJvZBJJCjsJaY1X_rEsDogRET7KWKQfP2UaJwsQ04W4QhoeGhwKFgoUChIJaY1X_rEsDogRTWY07U5B9GMSAjVXDCoKDQAAAAAVAAAAABoGCPABEJgD&gl=US&w=2048&h=1228
 			queries = get_queries(src);
-			if (queries.panoid) {
+			if (queries.panoid || queries.bpb) {
 				var w = parseInt(queries.w) || 0;
 				var h = parseInt(queries.h) || 0;
+
+				// FIXME: only accurate for photothumb, not cbk
+				if (!w && !h) {
+					w = 2000;
+					h = 1200;
+				}
 
 				var largest = Math_max(w, h);
 				var smallest = Math_min(w, h);
@@ -11930,8 +11938,12 @@ var $$IMU_EXPORT$$;
 					ratio = largest / smallest;
 				}
 
-				if (largest < 9999) {
-					largest = 9999;
+				var mostlarge = 9999;
+				if (!queries.panoid && queries.bpb)
+					mostlarge = 2048;
+
+				if (largest < mostlarge) {
+					largest = mostlarge;
 					smallest = parseInt(largest / ratio);
 
 					if (w > h) {
@@ -11944,6 +11956,25 @@ var $$IMU_EXPORT$$;
 
 					return add_queries(src, queries);
 				}
+			}
+		}
+
+		if ((/^google\./.test(domain_nosub) || domain_nosub === "googleapis.com") &&
+			(/:\/\/[^/]+\/+maps\/+vt\//.test(src) || (/^mts[0-9]*\./.test(domain) && /:\/\/[^/]+\/+vt\//.test(src)))) {
+			// thanks to llacb47 on github: https://github.com/qsniyg/maxurl/issues/394
+			// https://www.google.com/maps/vt/data=Leddz2aqp_Mk825wP5mcK9LgV2vB9rrZ-gvvKK-Ugecwh1qQHGzTEEgosor4epP7N6Pe3z-RrkL5-HRw0yd3pLvxHB-MYAVoZKvZosa5pcpSuLl6tGPm3VCJy5EXcUWkIrJoWRteRk88o0FHcAJJA0bT43kNr6lDe8EFLf-zCe8GnQdHl1pCqIOP5FFttLmsi_qxdTEdIf3iW8Q4846B7Ll3d_wt&w=226&h=160
+			//   https://www.google.com/maps/vt/data=Leddz2aqp_Mk825wP5mcK9LgV2vB9rrZ-gvvKK-Ugecwh1qQHGzTEEgosor4epP7N6Pe3z-RrkL5-HRw0yd3pLvxHB-MYAVoZKvZosa5pcpSuLl6tGPm3VCJy5EXcUWkIrJoWRteRk88o0FHcAJJA0bT43kNr6lDe8EFLf-zCe8GnQdHl1pCqIOP5FFttLmsi_qxdTEdIf3iW8Q4846B7Ll3d_wt&w=1000&h=1000
+			//   https://www.google.com/maps/vt/data=Leddz2aqp_Mk825wP5mcK9LgV2vB9rrZ-gvvKK-Ugecwh1qQHGzTEEgosor4epP7N6Pe3z-RrkL5-HRw0yd3pLvxHB-MYAVoZKvZosa5pcpSuLl6tGPm3VCJy5EXcUWkIrJoWRteRk88o0FHcAJJA0bT43kNr6lDe8EFLf-zCe8GnQdHl1pCqIOP5FFttLmsi_qxdTEdIf3iW8Q4846B7Ll3d_wt&w=1000&h=1000
+			// https://github.com/qsniyg/maxurl/issues/398
+			// https://mts0.google.com/vt/data=fB930u99vngQ2MCsdPo2oSQoizsXMum6D-4nzuEkr6xUC8IJ1xWkmESiAERYiTpKhSSS6QcRAwmTkm72lD3MPL7zWJcLrtePu22X4U4DfOOVzs17f4plW1s5dJrwvlAavy0kAs9AdRC1aG5rhpZ0q4-bIn2TORZNk5hff1dTImOPXVhCqzcNMcYFNXlcDc2je3nGTRN81lS63ZMlY-yBegOUDA?w=1024&h=199
+			//   https://mts0.google.com/vt/data=fB930u99vngQ2MCsdPo2oSQoizsXMum6D-4nzuEkr6xUC8IJ1xWkmESiAERYiTpKhSSS6QcRAwmTkm72lD3MPL7zWJcLrtePu22X4U4DfOOVzs17f4plW1s5dJrwvlAavy0kAs9AdRC1aG5rhpZ0q4-bIn2TORZNk5hff1dTImOPXVhCqzcNMcYFNXlcDc2je3nGTRN81lS63ZMlY-yBegOUDA&w=1024&h=1024
+			var queries = get_queries(src.replace(/^[a-z]+:\/\/[^/]+\/+(?:maps\/+)?vt\/+/, "?").replace(/(\?.*)\?/, "$1&"));
+			if (queries.data) {
+				queries.w = 1024;
+				queries.h = 1024;
+
+				newsrc = src.replace(/^([a-z]+:\/\/[^/]+\/+(?:maps\/+)?vt\/+).*/, "$1") + stringify_queries(queries);
+				return newsrc;
 			}
 		}
 
@@ -12023,25 +12054,6 @@ var $$IMU_EXPORT$$;
 				url: newsrc,
 				can_head: false // 404
 			};
-		}
-
-		if ((/^google\./.test(domain_nosub) || domain_nosub === "googleapis.com") &&
-			(/:\/\/[^/]+\/+maps\/+vt\//.test(src) || (/^mts[0-9]*\./.test(domain) && /:\/\/[^/]+\/+vt\//.test(src)))) {
-			// thanks to llacb47 on github: https://github.com/qsniyg/maxurl/issues/394
-			// https://www.google.com/maps/vt/data=Leddz2aqp_Mk825wP5mcK9LgV2vB9rrZ-gvvKK-Ugecwh1qQHGzTEEgosor4epP7N6Pe3z-RrkL5-HRw0yd3pLvxHB-MYAVoZKvZosa5pcpSuLl6tGPm3VCJy5EXcUWkIrJoWRteRk88o0FHcAJJA0bT43kNr6lDe8EFLf-zCe8GnQdHl1pCqIOP5FFttLmsi_qxdTEdIf3iW8Q4846B7Ll3d_wt&w=226&h=160
-			//   https://www.google.com/maps/vt/data=Leddz2aqp_Mk825wP5mcK9LgV2vB9rrZ-gvvKK-Ugecwh1qQHGzTEEgosor4epP7N6Pe3z-RrkL5-HRw0yd3pLvxHB-MYAVoZKvZosa5pcpSuLl6tGPm3VCJy5EXcUWkIrJoWRteRk88o0FHcAJJA0bT43kNr6lDe8EFLf-zCe8GnQdHl1pCqIOP5FFttLmsi_qxdTEdIf3iW8Q4846B7Ll3d_wt&w=1000&h=1000
-			//   https://www.google.com/maps/vt/data=Leddz2aqp_Mk825wP5mcK9LgV2vB9rrZ-gvvKK-Ugecwh1qQHGzTEEgosor4epP7N6Pe3z-RrkL5-HRw0yd3pLvxHB-MYAVoZKvZosa5pcpSuLl6tGPm3VCJy5EXcUWkIrJoWRteRk88o0FHcAJJA0bT43kNr6lDe8EFLf-zCe8GnQdHl1pCqIOP5FFttLmsi_qxdTEdIf3iW8Q4846B7Ll3d_wt&w=1000&h=1000
-			// https://github.com/qsniyg/maxurl/issues/398
-			// https://mts0.google.com/vt/data=fB930u99vngQ2MCsdPo2oSQoizsXMum6D-4nzuEkr6xUC8IJ1xWkmESiAERYiTpKhSSS6QcRAwmTkm72lD3MPL7zWJcLrtePu22X4U4DfOOVzs17f4plW1s5dJrwvlAavy0kAs9AdRC1aG5rhpZ0q4-bIn2TORZNk5hff1dTImOPXVhCqzcNMcYFNXlcDc2je3nGTRN81lS63ZMlY-yBegOUDA?w=1024&h=199
-			//   https://mts0.google.com/vt/data=fB930u99vngQ2MCsdPo2oSQoizsXMum6D-4nzuEkr6xUC8IJ1xWkmESiAERYiTpKhSSS6QcRAwmTkm72lD3MPL7zWJcLrtePu22X4U4DfOOVzs17f4plW1s5dJrwvlAavy0kAs9AdRC1aG5rhpZ0q4-bIn2TORZNk5hff1dTImOPXVhCqzcNMcYFNXlcDc2je3nGTRN81lS63ZMlY-yBegOUDA&w=1024&h=1024
-			var queries = get_queries(src.replace(/^[a-z]+:\/\/[^/]+\/+(?:maps\/+)?vt\/+/, "?").replace(/(\?.*)\?/, "$1&"));
-			if (queries.data) {
-				queries.w = 1024;
-				queries.h = 1024;
-
-				newsrc = src.replace(/^([a-z]+:\/\/[^/]+\/+(?:maps\/+)?vt\/+).*/, "$1") + stringify_queries(queries);
-				return newsrc;
-			}
 		}
 
 		if (domain === "ssl.gstatic.com") {
