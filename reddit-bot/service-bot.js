@@ -243,8 +243,8 @@ if (true) {
 		}
 
 		// for testing purposes
+		var post_subreddit = post.subreddit.display_name.toLowerCase();
 		if (false) {
-			var post_subreddit = post.subreddit.display_name.toLowerCase();
 			if (whitelisted_subreddits.indexOf(post_subreddit) < 0)
 				return;
 		}
