@@ -2167,6 +2167,7 @@ var $$IMU_EXPORT$$;
 		mouseover_video_volume_up_key: ["0"],
 		mouseover_video_volume_change_amt: 5,
 		mouseover_video_resume_from_source: false,
+		mouseover_video_resume_if_different: false,
 		mouseover_video_seek_amount: 10,
 		mouseover_video_seek_left_key: ["shift", "left"],
 		mouseover_video_seek_right_key: ["shift", "right"],
@@ -3069,6 +3070,15 @@ var $$IMU_EXPORT$$;
 			requires: {
 				mouseover_open_behavior: "popup",
 				allow_video: true
+			},
+			category: "popup",
+			subcategory: "video"
+		},
+		mouseover_video_resume_if_different: {
+			name: "Resume if different length",
+			description: "If disabled, it will not resume if the source video has a different length from the video in the popup (from a preview video to a full one)",
+			requires: {
+				mouseover_video_resume_from_source: true
 			},
 			category: "popup",
 			subcategory: "video"
@@ -77217,7 +77227,8 @@ var $$IMU_EXPORT$$;
 
 							if (sourceel.tagName === "VIDEO" && sourceel.currentTime) {
 								// https://github.com/qsniyg/maxurl/issues/256
-								if (Math_abs(sourceel.duration - video.duration) < 1 || Math_abs(1 - (sourceel.duration / video.duration)) < 0.01) {
+								if (settings.mouseover_video_resume_if_different ||
+									Math_abs(sourceel.duration - video.duration) < 1 || Math_abs(1 - (sourceel.duration / video.duration)) < 0.01) {
 									video.currentTime = sourceel.currentTime;
 								}
 							}
