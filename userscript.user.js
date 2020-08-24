@@ -31653,6 +31653,7 @@ var $$IMU_EXPORT$$;
 			 // http://img0.reactor.cc/pics/post/art-Anime-nil-293006.jpeg
 			 //   http://img0.reactor.cc/pics/post/full/art-Anime-nil-293006.jpeg
 			 domain_nosub === "reactor.cc" ||
+			 domain_nosub === "thatpervert.com" ||
 			 domain_nosub === "joyreactor.cc") &&
 			domain.match(/^img[0-9]*\./)) {
 			// http://img0.joyreactor.com/pics/post/art-shingeki-no-kyojin-anime-anime-art-2196554.jpeg
@@ -69878,6 +69879,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "databasegdriveplayer.me" ||
+			domain_nowww === "databasegdriveplayer.xyz" ||
 			domain === "database.gdriveplayer.us") {
 			newsrc = website_query({
 				website_regex: /^([a-z]+:\/\/[^/]+\/+player\.php\?.*)$/,
@@ -77214,7 +77216,10 @@ var $$IMU_EXPORT$$;
 							}
 
 							if (sourceel.tagName === "VIDEO" && sourceel.currentTime) {
-								video.currentTime = sourceel.currentTime;
+								// https://github.com/qsniyg/maxurl/issues/256
+								if (Math_abs(sourceel.duration - video.duration) < 1 || Math_abs(1 - (sourceel.duration / video.duration)) < 0.01) {
+									video.currentTime = sourceel.currentTime;
+								}
 							}
 						}
 
