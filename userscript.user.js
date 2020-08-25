@@ -24543,44 +24543,81 @@ var $$IMU_EXPORT$$;
 			var retobj = fillobj_urls(urls, obj);
 
 			if (illust_id && options && options.force_page && options.cb && options.do_request) {
-				options.do_request({
-					url: referer_url,
-					method: "GET",
-					headers: {
-						Referer: ""
-					},
-					onload: function(resp) {
-						if (resp.readyState !== 4)
-							return;
-
-						if (resp.status !== 200) {
-							return options.cb(retobj);
-						}
-
-						var match = resp.responseText.match(/<meta\s+name=\"preload-data\"\s+id=\"meta-preload-data\"\s+content='(.*?)'>/);
-						if (!match) {
-							console_error("Unable to find match", resp);
-							return options.cb(retobj);
-						}
-
-						try {
-							var json = JSON_parse(decode_entities(match[1]));
-
-							obj.extra.caption = json.illust[illust_id].illustTitle;
-							return options.cb(fillobj_urls(urls, obj));
-						} catch(e) {
-							console_error(e);
-							return options.cb(retobj);
-						}
-					}
-				});
-
-				return {
-					waiting: true
-				};
+				retobj.unshift({url: referer_url, is_pagelink: true});
 			}
 
 			return retobj;
+		}
+
+		if (domain_nowww === "pixiv.net") {
+			newsrc = website_query({
+				website_regex: [
+					/^[a-z]+:\/\/[^/]+\/+(?:[^/]+\/+)?artworks\/+([0-9]+)\/*(?:[?#].*)?$/,
+					/^[a-z]+:\/\/[^/]+\/+member_illust\.php\?(?:.*&)?illust_id=([0-9]+)/
+				],
+				query_for_id: "https://www.pixiv.net/artworks/${id}",
+				process: function(done, resp, cache_key, urlmatch) {
+					var illust_id = urlmatch[1];
+
+					var match = resp.responseText.match(/<meta\s+name=\"preload-data\"\s+id=\"meta-preload-data\"\s+content='(.*?)'>/);
+					if (!match) {
+						console_error(cache_key, "Unable to find match", resp);
+						return done(null, false);
+					}
+
+					var json = JSON_parse(decode_entities(match[1]));
+					var illust = json.illust[illust_id];
+
+					//console_log(json, json.illust, illust);
+
+					var obj = {
+						extra: {
+							page: resp.finalUrl
+						},
+						headers: {
+							Referer: resp.finalUrl
+						}
+					};
+
+					if (illust.illustTitle) {
+						obj.extra.caption = illust.illustTitle;
+					}
+
+					var urls = [];
+					var urltypes = ["original", "regular", "small", "thumb", "mini"];
+
+					var unsorted_urls = [];
+					for (var type in illust.urls) {
+						unsorted_urls.push({type: type, url: illust.urls[type]});
+					}
+
+					unsorted_urls.sort(function(a, b) {
+						var a_index = array_indexof(urltypes, a);
+						var b_index = array_indexof(urltypes, b);
+
+						if (a_index < 0)
+							return 1;
+
+						if (b_index < 0)
+							return -1;
+
+						return a_index - b_index;
+					});
+
+					for (var i = 0; i < unsorted_urls.length; i++) {
+						if (array_indexof(urltypes, unsorted_urls[i].type) >= 0)
+							urls.push(unsorted_urls[i].url);
+					}
+
+					if (urls.length === 0) {
+						console_error(cache_key, "Unable to find valid urls from", json, illust);
+						return done(null, false);
+					}
+
+					return done(fillobj_urls([urls[0]], obj), 60*60);
+				}
+			});
+			if (newsrc) return newsrc;
 		}
 
 		if (domain_nosub === "booth.pm" && domain.match(/s[0-9]*\.booth\.pm/) ||
