@@ -76,6 +76,8 @@
 //   * Userscript:
 //     * Greasyfork:    https://greasyfork.org/scripts/36662-image-max-url
 //     * OpenUserJS:    https://openuserjs.org/scripts/qsniyg/Image_Max_URL
+//     * Github:        https://raw.githubusercontent.com/qsniyg/maxurl/master/userscript_smaller.user.js
+//     * Github (beta): https://raw.githubusercontent.com/qsniyg/maxurl/master/userscript.user.js
 //   * Firefox addon:   https://addons.mozilla.org/firefox/addon/image-max-url/
 //   * Opera extension: https://addons.opera.com/en/extensions/details/image-max-url/
 
