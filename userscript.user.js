@@ -14325,6 +14325,8 @@ var $$IMU_EXPORT$$;
 			domain === "cdn.hashnode.com" ||
 			// https://d31wcbk3iidrjq.cloudfront.net/SiseXevjk_gl05K7umA.jpg?w=300&h=300
 			domain === "d31wcbk3iidrjq.cloudfront.net" ||
+			// https://marketplace-screenshots.githubusercontent.com/4085/08623180-5fd0-11e9-9f82-d8feafbd9057?auto=webp&format=jpeg&width=670&dpr=1.5
+			domain === "marketplace-screenshots.githubusercontent.com" ||
 			// http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
 			// https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
 			src.match(/\/demandware\.static\//) ||
