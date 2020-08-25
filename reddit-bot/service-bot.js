@@ -202,6 +202,8 @@ function get_wikioptions_for_subreddit(subreddit, cb) {
 
 //var lastchecked = Date.now();
 
+var started = Date.now();
+
 var whitelisted_subreddits = [
 	"maximagetest"
 ];
@@ -254,8 +256,13 @@ if (true) {
 		}
 
 		var current_time = Date.now();
-		if ((current_time - (post.created_utc * 1000)) > 60*1000) {
-			console.log("Post is too old", post.permalink, current_time, post.created_utc);
+		var created_millis = post.created_utc * 1000;
+		/*if ((current_time - created_millis) > 60*1000) {
+			console.log("Post is too old", post.permalink, current_time, created_millis, current_time - created_millis);
+			return;
+		}*/
+		if (created_millis < started) {
+			console.log("Post is too old", post.permalink, started, created_millis, started - created_millis);
 			return;
 		}
 
