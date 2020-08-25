@@ -2168,6 +2168,7 @@ var $$IMU_EXPORT$$;
 		mouseover_video_volume_change_amt: 5,
 		mouseover_video_resume_from_source: false,
 		mouseover_video_resume_if_different: false,
+		mouseover_video_pause_source: true,
 		mouseover_video_seek_amount: 10,
 		mouseover_video_seek_left_key: ["shift", "left"],
 		mouseover_video_seek_right_key: ["shift", "right"],
@@ -3076,9 +3077,19 @@ var $$IMU_EXPORT$$;
 		},
 		mouseover_video_resume_if_different: {
 			name: "Resume if different length",
-			description: "If disabled, it will not resume if the source video has a different length from the video in the popup (from a preview video to a full one)",
+			description: "If disabled, it will not resume if the source video has a different length from the video in the popup (e.g. from a preview video to a full one)",
 			requires: {
 				mouseover_video_resume_from_source: true
+			},
+			category: "popup",
+			subcategory: "video"
+		},
+		mouseover_video_pause_source: {
+			name: "Pause source video",
+			description: "Pauses the source video once the popup has opened",
+			requires: {
+				mouseover_open_behavior: "popup",
+				allow_video: true
 			},
 			category: "popup",
 			subcategory: "video"
@@ -77219,19 +77230,29 @@ var $$IMU_EXPORT$$;
 								video.removeAttribute("loop");
 						}
 
-						if (settings.mouseover_video_resume_from_source && processing.source && processing.source.el) {
+						var source_video = null;
+
+						if (processing.source && processing.source.el) {
 							var sourceel = processing.source.el;
 							if (sourceel.tagName === "SOURCE") {
 								sourceel = sourceel.parentElement;
 							}
 
-							if (sourceel.tagName === "VIDEO" && sourceel.currentTime) {
-								// https://github.com/qsniyg/maxurl/issues/256
-								if (settings.mouseover_video_resume_if_different ||
-									Math_abs(sourceel.duration - video.duration) < 1 || Math_abs(1 - (sourceel.duration / video.duration)) < 0.01) {
-									video.currentTime = sourceel.currentTime;
-								}
+							if (sourceel.tagName === "VIDEO") {
+								source_video = sourceel;
 							}
+						}
+
+						if (settings.mouseover_video_resume_from_source && source_video && source_video.currentTime) {
+							// https://github.com/qsniyg/maxurl/issues/256
+							if (settings.mouseover_video_resume_if_different ||
+								Math_abs(source_video.duration - video.duration) < 1 || Math_abs(1 - (source_video.duration / video.duration)) < 0.01) {
+								video.currentTime = source_video.currentTime;
+							}
+						}
+
+						if (settings.mouseover_video_pause_source && source_video) {
+							source_video.pause();
 						}
 
 						run_soon(function() {
