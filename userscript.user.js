@@ -5150,7 +5150,7 @@ var $$IMU_EXPORT$$;
 
 		var website_match = null;
 
-		for (var i = 0 ; i < options.website_regex.length; i++) {
+		for (var i = 0; i < options.website_regex.length; i++) {
 			website_match = options.url.match(options.website_regex[i]);
 			if (website_match)
 				break;
@@ -38505,6 +38505,11 @@ var $$IMU_EXPORT$$;
 			// https://porno666.cam/contents/videos_screenshots/6000/6815/505x297/1.jpg
 			domain_nosub === "porno666.cam" ||
 			domain_nosub === "pornfappy.com" ||
+			// http://www.aporn.xxx/contents/videos_screenshots/0/798/240x180/2.jpg
+			domain_nosub === "aporn.xxx" ||
+			// https://fapteentube.net/contents/videos_screenshots/2000/2179/301x170/1.jpg
+			domain_nosub === "fapteentube.net" ||
+			domain_nosub === "xxxsextube.tv" ||
 			// http://h2porn.com/contents/videos_screenshots/267000/267851/240x180/3.jpg
 			// doesn't work with video ids, /embed/ returns 500 with no response
 			//domain_nosub === "h2porn.com" ||
@@ -38634,6 +38639,7 @@ var $$IMU_EXPORT$$;
 					   domain_nosub === "mytradevideo.com" ||
 					   domain_nosub === "japan-whores.com" ||
 					   domain_nosub === "camshooker.com" ||
+					   domain_nosub === "aporn.xxx" ||
 					   domain_nosub === "mywebgirls.tv") {
 				// doesn't support https
 				basedomain = "http://www." + domain_nosub + "/";
@@ -38659,10 +38665,16 @@ var $$IMU_EXPORT$$;
 					   domain_nosub === "yourlust.com" ||
 					   domain_nosub === "sexroom.xxx" ||
 					   domain_nosub === "pornalin.com" ||
+					   domain_nosub === "fapteentube.net" ||
 					   domain_nosub === "pornfappy.com") {
 				videos_component = "embed";
 				addslash = "";
 				a_component = "";
+			} else if (domain_nosub === "xxxsextube.tv") {
+				videos_component = "embed";
+				addslash = "";
+				a_component = "";
+				basedomain = "https://" + domain + "/";
 			} else if (domain_nosub === "mcstatic.com") {
 				basedomain = "https://www.metacafe.com/";
 				videos_component = "watch";
@@ -70683,7 +70695,15 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "collegehdsex.com" ||
 			domain_nowww === "18girlssex.com" ||
 			domain_nowww === "xxx-hd-tube.com" ||
+			domain_nowww === "nakedteens.fun" ||
 			domain_nowww === "teenporn19.com") {
+			// https://18girlssex.com/d/[...]_gs.png
+			if (/^[a-z]+:\/\/[^/]+\/+d\/+[0-9a-z]{8}_gs\.png(?:[?#].*)?$/.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
+
 			// https://asianpussy.fun/flplayer.php?id=293498
 			newsrc = website_query({
 				website_regex: /^([a-z]+:\/\/[^/]+\/+flplayer\.php\?id=[0-9]+)/,
@@ -70732,7 +70752,7 @@ var $$IMU_EXPORT$$;
 
 			// https://asianpussy.fun/gallery/malayalam-kambikatha-peculiarity-pottikkal-narrated.html
 			newsrc = website_query({
-				website_regex: /^([a-z]+:\/\/[^/]+\/+(?:gallery|teen(?:video)?s|(?:hd)?videos)\/+[^/.]*\.html)(?:[?#].*)?$/,
+				website_regex: /^([a-z]+:\/\/[^/]+\/+(?:gallery|teen(?:video)?s|(?:hd)?videos?)\/+[^/.]*\.html)(?:[?#].*)?$/,
 				query_for_id: "${id}",
 				process: function(done, resp, cache_key) {
 					var match = resp.responseText.match(/document\.write\(atob\([^)]+\)\.replace\('#+',\s*'([0-9]+)'\)/);
