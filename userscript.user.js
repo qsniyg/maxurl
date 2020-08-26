@@ -70698,6 +70698,7 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "18girlssex.com" ||
 			domain_nowww === "xxx-hd-tube.com" ||
 			domain_nowww === "nakedteens.fun" ||
+			domain_nowww === "xxx-porn.video" ||
 			domain_nowww === "teenporn19.com") {
 			// https://18girlssex.com/d/[...]_gs.png
 			if (/^[a-z]+:\/\/[^/]+\/+d\/+[0-9a-z]{8}_gs\.png(?:[?#].*)?$/.test(src))
@@ -70853,6 +70854,22 @@ var $$IMU_EXPORT$$;
 			// https://imgdist.net/p/w300/673/ab6/940/69c9bdb57b99494695ae24c.jpg
 			//   https://imgdist.net/p/1280/673/ab6/940/69c9bdb57b99494695ae24c.jpg
 			return src.replace(/(\/p\/+)w300\/+/, "$11280/");
+		}
+
+		if (domain_nowww === "gamersgallery.com") {
+			// https://gamersgallery.com/gallery/showphoto.php/photo/44381/size/big/cat/
+			// https://gamersgallery.com/gallery/data/6071/thumbs/wallpaper2lg.jpg
+			//   https://gamersgallery.com/gallery/data/6071/wallpaper2lg.jpg
+			//   https://gamersgallery.com/gallery/watermark.php?file=44381
+			return src.replace(/(\/gallery\/+data\/+[0-9]+\/+)thumbs\/+/, "$1");
+		}
+
+		if (domain_nowww === "defunctgames.com") {
+			// http://www.defunctgames.com/includes/shows/reviewimage.php?i=/pic/reviewpics/reviewc1477-2.jpg&w=175&h=131
+			//   http://www.defunctgames.com/pic/reviewpics/reviewc1477-2.jpg
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+includes\/+shows\/+reviewimage\.php\?(?:.*&)?i=([^&]+)(?:[&#].*)?$/, "$1");
+			if (newsrc !== src)
+				return urljoin(src, decodeURIComponent(newsrc), true);
 		}
 
 
