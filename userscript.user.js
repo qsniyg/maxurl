@@ -4622,9 +4622,9 @@ var $$IMU_EXPORT$$;
 				"musicallydown.com": {
 					name: "musicallydown.com (LQ/PL)"
 				},
-				/*"snaptik.app": {
+				"snaptik.app": {
 					name: "snaptik.app (LQ)"
-				}*/
+				}
 			},
 			category: "rule_specific",
 			onupdate: update_rule_setting
@@ -8575,7 +8575,7 @@ var $$IMU_EXPORT$$;
 			return cb(null);
 		}
 
-		// doesn't work, because cookie is invalid
+		// todo: fix invalid cookie
 		var query_snaptik_1 = function(url) {
 			var cache_key = site + ":" + url;
 			api_cache.fetch(cache_key, cb, function(done) {
@@ -8604,19 +8604,21 @@ var $$IMU_EXPORT$$;
 									return done(null, false)
 								}
 
-								var match = resp.responseText.match(/<a[^>]*\s+href="https?:\/\/sv[0-9]*\.snaptik.app\/+dl\.php\?token=([^&]+)/);
+								var match = resp.responseText.match(/<a[^>]*\s+href=["']https?:\/\/sv[0-9]*\.snaptik.app\/+dl\.php\?token=([^&]+)/);
 								if (!match) {
 									console_error(cache_key, "Unable to find match for", resp);
 									return done(null, false);
 								}
 
-								return done(base64_decode(decode_entities(match[1])), 60*60);
+								return done(base64_decode(decodeURIComponent(decode_entities(match[1]))), 60*60);
 							}
 						});
 					}
 				});
 			});
-		};
+		}
+
+		query_snaptik_1(url);
 	};
 
 	common_functions.get_tiktok_from_musicallydown = function(site, api_cache, do_request, url, cb) {
