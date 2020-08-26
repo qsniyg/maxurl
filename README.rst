@@ -107,7 +107,7 @@ As mentioned above, userscript.user.js also functions as a node module.
 
       // Helper function to perform HTTP requests, used for sites like Flickr
       //  The API is expected to be like GM_xmlHTTPRequest's API.
-      // An implementation using node's request module can be found in bot.js
+      // An implementation using node's request module can be found in reddit-bot/dourl.js
       do_request: function(options) {
         // options = {
         //   url: "",
