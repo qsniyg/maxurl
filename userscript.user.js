@@ -14356,8 +14356,6 @@ var $$IMU_EXPORT$$;
 			(domain === "images.mubi.com" && string_indexof(src, "/images/") >= 0) ||
 			// https://i.obozrevatel.com/gallery/2011/4/1/840669.jpg?size=400x400
 			domain === "i.obozrevatel.com" ||
-			// https://1624909224.rsc.cdn77.org/data/images/full/20509/singer-taylor-swift-c-and-selena-gomez-r-attend-the-58th-grammy-awards-at-staples-center-on-february-15-2016-in-los-angeles-california.jpg?w=600&h=300
-			domain === "1624909224.rsc.cdn77.org" ||
 			// https://assetscdn1.paytm.com/images/catalog/product/K/KI/KIDPRIYA-COLLECPRIY20786186F9A127/1564605875711_0..jpg?imwidth=320&impolicy=hq
 			(domain_nosub === "paytm.com" && /^assetscdn[0-9]*\./.test(domain)) ||
 			// https://images.perthnow.com.au/publication/B881248267Z/1562057175392_GKT29TC6J.2-2.jpg?imwidth=668&impolicy=pn_v3
@@ -31872,6 +31870,11 @@ var $$IMU_EXPORT$$;
 			// http://image.en.yibada.com/data/thumbs/full/100716/248/165/50/40/bradley-cooper-will-co-star-lady-gaga-in-the-upcoming-american-horror-story-season-6.png
 			//   http://image.en.yibada.com/data/images/full/100716/bradley-cooper-will-co-star-lady-gaga-in-the-upcoming-american-horror-story-season-6.png
 			(domain_nosub === "yibada.com" && /^image\./.test(domain)) ||
+			// https://1624909224.rsc.cdn77.org/data/images/full/20509/singer-taylor-swift-c-and-selena-gomez-r-attend-the-58th-grammy-awards-at-staples-center-on-february-15-2016-in-los-angeles-california.jpg?w=600&h=300
+			//   https://1624909224.rsc.cdn77.org/data/images/full/20509/singer-taylor-swift-c-and-selena-gomez-r-attend-the-58th-grammy-awards-at-staples-center-on-february-15-2016-in-los-angeles-california.jpg
+			// https://1734811051.rsc.cdn77.org/data/thumbs/full/370552/150/150/50/40/e3-the-worlds-premier-event-for-video-games-e3-coliseum-day-3.jpg
+			//   https://1734811051.rsc.cdn77.org/data/images/full/370552/e3-the-worlds-premier-event-for-video-games-e3-coliseum-day-3.jpg
+			(domain_nosub === "cdn77.org" && /^[0-9]+\.rsc\./.test(domain)) ||
 			// https://kdrimages-1tmxd3aba43noa.stackpathdns.com/data/thumbs/full/229217/120/100/50/40/mystery-queen.jpg
 			//   https://kdrimages-1tmxd3aba43noa.stackpathdns.com/data/images/full/229217/mystery-queen.jpg
 			//domain === "kdrimages-1tmxd3aba43noa.stackpathdns.com" ||
@@ -70951,6 +70954,15 @@ var $$IMU_EXPORT$$;
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+includes\/+shows\/+reviewimage\.php\?(?:.*&)?i=([^&]+)(?:[&#].*)?$/, "$1");
 			if (newsrc !== src)
 				return urljoin(src, decodeURIComponent(newsrc), true);
+		}
+
+		if (domain === "forum.donanimhaber.com") {
+			// thanks to esdemirei on reddit: https://www.reddit.com/r/MaxImage/comments/ihfe5x/suggestion/
+			// https://forum.donanimhaber.com/cache-v2/?path=http%3a%2f%2fstore.donanimhaber.com%2f10%2fa3%2f6f%2f10a36f8023decd4b1dedb1af7f76a1da.jpeg&t=145239983&width=240&text=1
+			//   https://store.donanimhaber.com/10/a3/6f/10a36f8023decd4b1dedb1af7f76a1da.jpeg
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+cache-v2\/+\?(?:.*&)?path=([^&]+)(?:[&#].*)?$/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
 		}
 
 
