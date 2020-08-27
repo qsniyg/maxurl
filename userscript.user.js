@@ -70609,6 +70609,9 @@ var $$IMU_EXPORT$$;
 					if (!match) {
 						match = resp.responseText.match(/<a id=image-link class=full>\s*<img[^>]+ src="(\/\/is\.[^"]+)"/);
 					}
+					if (!match) {
+						match = resp.responseText.match(/<a href="(\/\/is\.[^"]+)" id=highres itemprop=contentUrl/);
+					}
 
 					if (!match) {
 						console_error(cache_key, "Unable to find match for", resp);
@@ -70757,13 +70760,26 @@ var $$IMU_EXPORT$$;
 
 			// https://asianpussy.fun/gallery/malayalam-kambikatha-peculiarity-pottikkal-narrated.html
 			newsrc = website_query({
-				website_regex: /^([a-z]+:\/\/[^/]+\/+(?:gallery|teen(?:video)?s|(?:hd)?videos?)\/+[^/.]*\.html)(?:[?#].*)?$/,
+				website_regex: /^([a-z]+:\/\/[^/]+\/+(?:gallery|teen(?:video)?s|(?:hd)?videos?)\/+[^/.]*(?:\/+index)?\.html)(?:[?#].*)?$/,
 				query_for_id: "${id}",
 				process: function(done, resp, cache_key) {
-					var match = resp.responseText.match(/document\.write\(atob\([^)]+\)\.replace\('#+',\s*'([0-9]+)'\)/);
+					// contentId is used in teencumpot
+					var match = resp.responseText.match(/document\.write\(atob\([^)]+\)\.replace\('#+',\s*(?:'([0-9]+)'|(contentId))\)/);
 					if (!match) {
 						console_error(cache_key, "Unable to find match for", resp);
 						return done(null, false);
+					}
+
+					var content_id = match[1];
+					if (!content_id && match[2]) {
+						var varname = match[2];
+						match = resp.responseText.match(new RegExp("var " + varname + " = ([0-9]+);"));
+						if (!match) {
+							console_error(cache_key, "Unable to find varname match for", {resp: resp, varname: varname});
+							return done(null, false);
+						}
+
+						content_id = match[1];
 					}
 
 					var subdomain = domain;
@@ -70775,7 +70791,7 @@ var $$IMU_EXPORT$$;
 					}
 
 					return done({
-						url: "https://" + subdomain + "/flplayer.php?id=" + match[1],
+						url: "https://" + subdomain + "/flplayer.php?id=" + content_id,
 						is_pagelink: true
 					}, 6*60*60);
 				}
