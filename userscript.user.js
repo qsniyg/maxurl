@@ -8730,14 +8730,11 @@ var $$IMU_EXPORT$$;
 			real_api_query(api_cache, do_request, cache_key, {
 				url: "https://musicallydown.com/download",
 				method: "POST",
+				imu_mode: "document",
 				headers: {
 					"Content-Type": "application/x-www-form-urlencoded",
 					"Origin": "https://musicallydown.com",
 					"Referer": "https://musicallydown.com/",
-					"Sec-Fetch-Dest": "document",
-					"Sec-Fetch-Mode": "navigate",
-					"Sec-Fetch-Site": "same-origin",
-					"Sec-Fetch-User": "?1"
 				},
 				data: "url=" + encodeURIComponent(url) + "&vtoken=" + token
 			}, cb, function(done, resp, cache_key) {
@@ -8779,17 +8776,13 @@ var $$IMU_EXPORT$$;
 			real_api_query(api_cache, do_request, cache_key, {
 				url: "https://ssstiktok.io/api/1/fetch",
 				method: "POST",
+				imu_mode: "xhr",
 				headers: {
 					"HX-Active-Element": "submit",
 					"HX-Current-URL": "https://ssstiktok.io/",
 					"HX-Request": "true",
 					"HX-Target": "target",
-					"Origin": "https://ssstiktok.io",
-					"Sec-Fetch-Dest": "empty",
-					"Sec-Fetch-Mode": "cors",
-					"Sec-Fetch-Site": "same-origin",
-					"Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-					"Accept": "*/*"
+					"Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
 				},
 				data: "id=" + encodeURIComponent(url) + "&token=" + token + "&locale=en"
 			}, cb, function(done, resp, cache_key) {
@@ -26811,12 +26804,10 @@ var $$IMU_EXPORT$$;
 							options.do_request({
 								method: "GET",
 								url: "https://video.fc2.com/api/v3/videoplaylist/" + id + "?sh=1&fs=0",
+								imu_mode: "xhr",
 								headers: {
 									Referer: resp.finalUrl,
-									"X-FC2-Video-Access-Token": match[1],
-									"Sec-Fetch-Site": "same-origin",
-									"Sec-Fetch-Dest": "empty",
-									"Sec-Fetch-Mode": "cors"
+									"X-FC2-Video-Access-Token": match[1]
 								},
 								onload: function(resp) {
 									if (resp.readyState !== 4)
@@ -30986,12 +30977,7 @@ var $$IMU_EXPORT$$;
 
 				api_query(cache_key, {
 					url: "https://www.facebook.com/" + uid + "/posts/" + post_id,
-					headers: {
-						Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
-						"Sec-Fetch-Dest": "document",
-						"Sec-Fetch-Mode": "navigate",
-						"Sec-Fetch-Site": "none"
-					}
+					imu_mode: "document"
 				}, cb, function(done, resp, cache_key) {
 					var serverjs = get_fb_serverjs(cache_key, resp, /^adp_CometSinglePostRootQueryRelayPreloader_/);
 					if (!serverjs) {
@@ -31068,12 +31054,7 @@ var $$IMU_EXPORT$$;
 					return {
 						//url: "https://lookaside.fbsbx.com/lookaside/crawler/media/?media_id=" + id,
 						url: "https://www.facebook.com/photo/?fbid=" + id, // needed for private photos
-						headers: {
-							Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
-							"Sec-Fetch-Dest": "document",
-							"Sec-Fetch-Mode": "navigate",
-							"Sec-Fetch-Site": "none"
-						}
+						imu_mode: "document"
 					};
 				},
 				process: function(done, resp, cache_key) {
@@ -31100,12 +31081,7 @@ var $$IMU_EXPORT$$;
 				query_for_id: function(id) {
 					return {
 						url: "https://www.facebook.com/watch/?v=" + id,
-						headers: {
-							Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
-							"Sec-Fetch-Dest": "document",
-							"Sec-Fetch-Mode": "navigate",
-							"Sec-Fetch-Site": "none"
-						}
+						imu_mode: "document"
 					};
 				},
 				process: function(done, resp, cache_key) {
@@ -31209,12 +31185,7 @@ var $$IMU_EXPORT$$;
 					query_for_id: function(id) {
 						return {
 							url: "https://www.facebook.com/stories/" + id,
-							headers: {
-								Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
-								"Sec-Fetch-Dest": "document",
-								"Sec-Fetch-Mode": "navigate",
-								"Sec-Fetch-Site": "none"
-							}
+							imu_mode: "document"
 						};
 					},
 					process: function(done, resp, cache_key) {
