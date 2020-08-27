@@ -12374,6 +12374,10 @@ var $$IMU_EXPORT$$;
 			 //   https://lh3.googleusercontent.com/j7RWveJMFLh5TNHWRRvQnTpwFF3Xzz-mZd8ff-2PmKGIycRxZkUaOmf14g7wIj7D5x2ci1d6DbstteRtb9GN5OXF6ozB32KIY0HUtXFKnN48A1DaxnV-7Nk3YoGbI5ITVJiHA6HyN1cGo_djsw=s0?imgmax=0
 			 // https://lh3.googleusercontent.com/C6yBYozE1sXc9o_jsrh29_AYQ6ffCKO-fpooQ5nwuu7FSgQvdGtfSbcJVBUGSDi1VXE9TqYT2g=s0?imgmax=s0 -- "imgmax=s0"
 			 (domain.match(/^lh[0-9]\./) ||
+			  // thanks to Elliot Alderson on discord for reporting
+			  // https://play-lh.googleusercontent.com/DfAVURLgv0F8OZxFds3vLqd6o7dW9hbe9AUPgvVi4kzY5qb7Y-VRitHYA8_9W8edidI=w1440-h620-rw
+			  //   https://play-lh.googleusercontent.com/DfAVURLgv0F8OZxFds3vLqd6o7dW9hbe9AUPgvVi4kzY5qb7Y-VRitHYA8_9W8edidI=s0?imgmax=0
+			  /^play-lh\./.test(domain) ||
 			  // https://gp3.googleusercontent.com/a/AGF-l79M_XGVECzZZjz0fjvLRQ2F12vPycaGh4QLpKNN=s32-p-no
 			  //   https://gp3.googleusercontent.com/a/AGF-l79M_XGVECzZZjz0fjvLRQ2F12vPycaGh4QLpKNN=s0?imgmax=0
 			  domain.match(/^gp[0-9]\./) ||
