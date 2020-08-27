@@ -8645,11 +8645,11 @@ var $$IMU_EXPORT$$;
 			return cb(null);
 		}
 
-		// todo: fix invalid cookie
 		var query_snaptik_1 = function(url) {
 			url = url.replace(/[?#].*/, "");
 			var cache_key = site + ":" + url;
 			api_cache.fetch(cache_key, cb, function(done) {
+				// first query is to populate the cookies
 				do_request({
 					url: "https://snaptik.app/", //pre_download.php?aweme_id=" + urlparts.web_vid,
 					imu_mode: "document",
@@ -8660,6 +8660,7 @@ var $$IMU_EXPORT$$;
 							return done(null, false);
 						}
 
+						// this query is needed for the third to work
 						do_request({
 							method: "POST",
 							url: "https://snaptik.app/check_user.php",
@@ -15209,6 +15210,8 @@ var $$IMU_EXPORT$$;
 			(domain_nowww === "bilgimanya.com" && string_indexof(src, "/resimler/") >= 0) ||
 			// https://storage.googleapis.com/unlimitedcnd.appspot.com/2020/06/439453-200x300.jpg
 			googlestorage_container === "unlimitedcnd.appspot.com" ||
+			// http://cdn.newlineporn.com/thumbs/orgy-cash/tyrannized/femdom/36724/00-74x74.jpg
+			domain === "cdn.newlineporn.com" ||
 			// https://okdiario.com/img/2020/05/20/billie-eilish-143x89.jpg
 			(domain_nowww === "okdiario.com" && string_indexof(src, "/img/") >= 0) ||
 			// https://s3-us-west-1.amazonaws.com/static-spin-com/files/2020/08/PaulMescal_RollingStones_Scarlet-1596657752-768x511.jpg
@@ -39385,7 +39388,7 @@ var $$IMU_EXPORT$$;
 
 		if (domain_nowww === "vjav.com" ||
 			domain_nowww === "upornia.com" ||
-			domain_nowww === "tubepornclassic.com" ||
+			//domain_nowww === "tubepornclassic.com" ||
 			domain_nowww === "hotmovs.com" ||
 			domain_nowww === "shemalez.com" ||
 			domain_nowww === "hdzog.com") {
@@ -39508,6 +39511,134 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain_nosub === "hclips.com" ||
+			domain_nosub === "voyeurhit.com" ||
+			domain_nowww === "txxx.com" ||
+			domain_nowww === "thegay.com" ||
+			domain_nowww === "tubepornclassic.com" ||
+			domain_nosub === "videotxxx.com") {
+			// https://hclips.com/videos/ashe-maree-excellent-show-made-28-july-2017/?promo=10376
+			//   redirects to:
+			//   https://hclips.com/videos/2114722/ashe-maree-excellent-show-made-28-july-2017/?promo=10376
+			var match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:videos|embed)\/+([0-9]+)\//);
+			if (match) {
+				id = match[1];
+
+				var base_domain = domain_nosub;
+				if (domain_nosub === "videotxxx.com")
+					base_domain = "txxx.com";
+
+				var decode_hclips_base64 = function(data) {
+					var charset = decodeURIComponent("%D0%90%D0%92%D0%A1D%D0%95FGHIJKL%D0%9CNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.%2C~"),
+						output = "";
+
+					var invalid_regex = new RegExp(decodeURIComponent("%5B%5E%D0%90%D0%92%D0%A1%D0%95%D0%9CA-Za-z0-9.%2C~%5D"), "g");
+					if (invalid_regex.exec(data)) {
+						console_warn("Invalid characters found in", data);
+					}
+
+					data = data.replace(invalid_regex, "");
+
+					for (var i = 0; i < data.length;) {
+						var c1 = charset.indexOf(string_charat(data, i++)),
+							c2 = charset.indexOf(string_charat(data, i++)),
+							c3 = charset.indexOf(string_charat(data, i++)),
+							c4 = charset.indexOf(string_charat(data, i++));
+
+						c1 = c1 << 2 | c2 >> 4;
+						c2 = (15 & c2) << 4 | c3 >> 2;
+						var last = (3 & c3) << 6 | c4;
+
+						output += string_fromcharcode(c1);
+
+						if (c3 !== 64) {
+							output += string_fromcharcode(c2);
+						}
+
+						if (c4 !== 64) {
+							output += string_fromcharcode(last);
+						}
+					}
+
+					return unescape(output);
+				};
+
+				var query_hclips = function(vid, cb) {
+					api_query(base_domain + ":" + vid, {
+						url: "https://" + base_domain + "/api/videofile.php?video_id=" + vid + "&lifetime=8640000",
+						headers: {
+							"Accept": "application/json, text/plain, */*",
+							"Referer": "https://" + base_domain + "/videos/" + vid + "/"
+						},
+						json: true
+					}, cb, function(done, resp, cache_key) {
+						var formats = ["_hq", "_lq"];
+
+						var get_format_id = function(format) {
+							format = format.replace(/\..*/, "");
+							var index = formats.indexOf(format);
+
+							if (index < 0) {
+								console_warn("Unknown format", format);
+								return formats.length;
+							} else {
+								return index;
+							}
+						};
+
+						// resp is {error: 1, msg: "not_found"} if 404
+						resp.sort(function(a, b) {
+							return get_format_id(a) - get_format_id(b);
+						});
+
+						for (var i = 0; i < resp.length; i++) {
+							resp[i].video_url = urljoin("https://" + base_domain + "/", decode_hclips_base64(resp[i].video_url), true);
+						}
+
+						done(resp, 60*60);
+					});
+				};
+
+				var hclips_to_obj = function(data) {
+					if (!data || data.length === 0) {
+						return page_nullobj;
+					}
+
+					var baseobj = {
+						headers: {
+							Referer: "https://" + base_domain
+						}
+					};
+
+					urls = [{
+						url: data[0].video_url,
+						video: true
+					}];
+
+					urls.push(page_nullobj);
+
+					return fillobj_urls(urls, baseobj);
+				};
+
+				page_nullobj = {
+					url: src,
+					is_pagelink: true
+				};
+
+				if (options.do_request && options.cb) {
+					query_hclips(id, function(data) {
+						options.cb(hclips_to_obj(data));
+					});
+
+					return {
+						waiting: true
+					};
+				} else {
+					return page_nullobj;
+				}
+			}
+		}
+
 		if (domain === "cdn69508963.ahacdn.me" ||
 
 			domain === "cdn35854568.ahacdn.me" ||
@@ -39523,6 +39654,7 @@ var $$IMU_EXPORT$$;
 			// https://12111553.pix-cdn.org/contents/videos_screenshots/1259000/1259001/268x200/1.jpg
 			domain === "12111553.pix-cdn.org" ||
 
+			domain === "cdn22821955.ahacdn.me" ||
 			domain === "cdn37699375.ahacdn.me" ||
 			(domain_nosub === "tubepornclassic.com" && /^static[0-9]*\./.test(domain)) ||
 
@@ -39560,6 +39692,7 @@ var $$IMU_EXPORT$$;
 				"cdn56191079.ahacdn.me": "hotmovs.com",
 				"cdn25122858.ahacdn.me": "hotmovs.com",
 				"12111553.pix-cdn.org":  "hotmovs.com",
+				"cdn22821955.ahacdn.me": "tubepornclassic.com",
 				"cdn37699375.ahacdn.me": "tubepornclassic.com",
 				"cdn61283513.ahacdn.me": "hclips.com",
 				"cdn42705446.ahacdn.me": "hclips.com",
@@ -39576,7 +39709,7 @@ var $$IMU_EXPORT$$;
 			if (!basedomain)
 				basedomain = domain_nosub;
 
-			match = src.match(/\/(?:c[0-9]*|contents)\/+videos(?:_(?:sources|screenshots))?\/+[0-9]+\/+([0-9]+)\/+(?:[0-9]+_tr\.|(?:screenshots|[0-9]+x[0-9]+)\/)/);
+			match = src.match(/\/(?:c[0-9]*|contents)\/+videos(?:_(?:sources|screenshots))?\/+[0-9]+\/+([0-9]+)\/+(?:(?:[0-9]+_tr|preview)\.|(?:screenshots|[0-9]+x[0-9]+)\/)/);
 			if (match) {
 				return {
 					url: "https://" + basedomain + "/videos/" + match[1] + "/a/",
@@ -40840,14 +40973,6 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/thumbs\/+[0-9]+px_([^/]*)$/, "/$1");
 		}
 
-		if (domain === "img.freeones.com") {
-			// https://img.freeones.com/images/freeones/pinned_pictures/pin/0429/55117.gif
-			//   https://img.freeones.com/images/freeones/pinned_pictures/original/0429/55117.gif
-			newsrc = src.replace(/\/pinned_pictures\/pin\//, "/pinned_pictures/original/");
-			if (newsrc !== src)
-				return newsrc;
-		}
-
 		if (domain === "photos.freeones.com") {
 			// https://photos.freeones.com/v_various/FTV_Girls/Alex_Grey_001/Alex-Grey-nude-in-public(1).jpg
 			//   https://photos.freeones.com/v_various/FTV_Girls/Alex_Grey_001/images/Alex-Grey-nude-in-public(1).jpg
@@ -40855,13 +40980,38 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nosub === "freeones.com" && /img\./.test(domain)) {
+			// https://img.freeones.com/images/freeones/pinned_pictures/pin/0429/55117.gif
+			//   https://img.freeones.com/images/freeones/pinned_pictures/original/0429/55117.gif
+			newsrc = src.replace(/\/pinned_pictures\/pin\//, "/pinned_pictures/original/");
+			if (newsrc !== src)
+				return newsrc;
+
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+videos\/+([0-9]{3}\/+[0-9a-zA-Z]{2}\/+[0-9a-zA-Z]{2}\/+[^/]{10,}\/+)(?:poster)\/+/);
+			if (match) {
+				return {
+					url: "https://videolb.freeones.com/fo/" + match[1] + "list.smil/playlist.m3u8",
+					video: "hls"
+				};
+			}
+
 			// https://img.freeones.com/photos/001/7a/97/7A97R5ULZhkDdKwojfW9if/preview/7521debd-07a7-49ec-977d-94d878b59e1b.jpg
 			//   https://img.freeones.com/photos/001/7a/97/7A97R5ULZhkDdKwojfW9if/big/7521debd-07a7-49ec-977d-94d878b59e1b.jpg
 			// https://us-img.freeones.com/photos/001/ka/w7/kaw7RaL8Q2wKpTuLzDrU2Q/preview/68d794b5-3a4a-44bf-9cd3-c00eb6fc39fd.jpg
 			//   https://us-img.freeones.com/photos/001/ka/w7/kaw7RaL8Q2wKpTuLzDrU2Q/big/68d794b5-3a4a-44bf-9cd3-c00eb6fc39fd.jpg
 			// https://img.freeones.com/photos/001/j8/t2/j8T2X9wbtxh6uvWswMKKQT/teaser/b053d9ad-be0b-43c5-a42a-07f5ccc96f89.jpg
 			//   https://img.freeones.com/photos/001/j8/t2/j8T2X9wbtxh6uvWswMKKQT/big/b053d9ad-be0b-43c5-a42a-07f5ccc96f89.jpg
-			return src.replace(/(\/photos\/+[0-9]{3}\/+[0-9a-z]{2}\/+[0-9a-z]{2}\/+[^/]{10,}\/+)(?:preview|teaser)\/+/, "$1big/");
+			return src.replace(/(\/photos\/+[0-9]{3}\/+[0-9a-zA-Z]{2}\/+[0-9a-zA-Z]{2}\/+[^/]{10,}\/+)(?:preview|teaser)\/+/, "$1big/");
+		}
+
+		if (domain === "videolb.freeones.com") {
+			// https://videolb.freeones.com/fo//003/yt/8n/yt8nwwAK3yudL5T2fzRJiW/trailerWebM.webm
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+fo\/+([0-9]{3}\/+[0-9a-zA-Z]{2}\/+[0-9a-zA-Z]{2}\/+[^/]{10,}\/+)(?:trailerWebM)\./);
+			if (match) {
+				return {
+					url: "https://videolb.freeones.com/fo/" + match[1] + "list.smil/playlist.m3u8",
+					video: "hls"
+				};
+			}
 		}
 
 		if (domain_nowww === "starspics.ru" ||
@@ -43471,10 +43621,14 @@ var $$IMU_EXPORT$$;
 			domain_nosub === "pinkworld.com") {
 			// https://cdn.eroticbeauties.net/content/digital-desire-bree-daniels-11136-1/auto/3/tn@1x/04.jpg
 			//   https://cdn.eroticbeauties.net/content/digital-desire-bree-daniels-11136-1/full/04.jpg
+			//   https://cdn.eroticbeauties.net/content/digital-desire-bree-daniels-11136-1/full/test_04.jpg
 			return {
-				url: src.replace(/(\/content\/+[^/]*\/+)(?:[^/]*\/+[^/]*\/+)?(?:tn@[^/]*|[0-9]+)\/+([0-9]+\.[^/.]*)$/, "$1full/$2"),
+				url: src.replace(/(\/content\/+[^/]*\/+)(?:[^/]*\/+[^/]*\/+)?(?:tn@[^/]*|[0-9]+)\/+((?:[^/.]+_)?[0-9]+\.[^/.]*)$/, "$1full/$2"),
 				headers: {
 					Referer: "http://" + domain_nosub + "/"
+				},
+				referer_ok: {
+					same_domain_nosub: true
 				}
 			};
 		}
@@ -56991,7 +57145,13 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/[0-9]{6}\/+[0-9]+\/+)[a-z]\/+([0-9]+[0-9a-f]+\.[^/.]*)(?:[?#].*)?$/, "$1f/$2");
 		}
 
-		if (domain === "img.cactusboy.com") {
+		if (domain === "img.cactusboy.com" ||
+			// http://pictures.bigtittedteens.com/b/be/be53ee61104935234b174e62a07e53cf/tn_1.jpg
+			//   http://pictures.bigtittedteens.com/b/be/be53ee61104935234b174e62a07e53cf/1.jpg
+			domain === "pictures.bigtittedteens.com" ||
+			// http://pictures.petitebabespics.com/e/ee/ee600797ef18eabe7f2ebb7d864a0df2/tn_1.jpg
+			//   http://pictures.petitebabespics.com/e/ee/ee600797ef18eabe7f2ebb7d864a0df2/1.jpg
+			domain === "pictures.petitebabespics.com") {
 			// http://img.cactusboy.com/3/3e/3ed1be6891233bdf909b1290a1550ba9/tn_1.jpg
 			//   http://img.cactusboy.com/3/3e/3ed1be6891233bdf909b1290a1550ba9/1.jpg
 			return src.replace(/(\/[0-9a-f]\/+[0-9a-f]{2}\/+[0-9a-f]{10,}\/+)tn_([0-9]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
@@ -65660,7 +65820,7 @@ var $$IMU_EXPORT$$;
 			//   https://i.ebayimg.com/images/g/nXwAAOSwtCNeFF3B/s-l9999.jpg
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+productimg\/+\?(?:.*&)?image=([^&.]+)(?:\.[^/.&]+)?.*?$/, "$1");
 			if (newsrc !== src)
-				return atob(decodeURIComponent(newsrc));
+				return base64_decode(decodeURIComponent(newsrc));
 		}
 
 		if (domain === "web.rds.it") {
@@ -68256,133 +68416,6 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if (domain_nosub === "hclips.com" ||
-			domain_nosub === "voyeurhit.com" ||
-			domain_nowww === "txxx.com" ||
-			domain_nowww === "thegay.com" ||
-			domain_nosub === "videotxxx.com") {
-			// https://hclips.com/videos/ashe-maree-excellent-show-made-28-july-2017/?promo=10376
-			//   redirects to:
-			//   https://hclips.com/videos/2114722/ashe-maree-excellent-show-made-28-july-2017/?promo=10376
-			var match = src.match(/^[a-z]+:\/\/[^/]+\/+videos\/+([0-9]+)\//);
-			if (match) {
-				id = match[1];
-
-				var base_domain = domain_nosub;
-				if (domain_nosub === "videotxxx.com")
-					base_domain = "txxx.com";
-
-				var decode_hclips_base64 = function(data) {
-					var charset = decodeURIComponent("%D0%90%D0%92%D0%A1D%D0%95FGHIJKL%D0%9CNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.%2C~"),
-						output = "";
-
-					var invalid_regex = new RegExp(decodeURIComponent("%5B%5E%D0%90%D0%92%D0%A1%D0%95%D0%9CA-Za-z0-9.%2C~%5D"), "g");
-					if (invalid_regex.exec(data)) {
-						console_warn("Invalid characters found in", data);
-					}
-
-					data = data.replace(invalid_regex, "");
-
-					for (var i = 0; i < data.length;) {
-						var c1 = charset.indexOf(string_charat(data, i++)),
-							c2 = charset.indexOf(string_charat(data, i++)),
-							c3 = charset.indexOf(string_charat(data, i++)),
-							c4 = charset.indexOf(string_charat(data, i++));
-
-						c1 = c1 << 2 | c2 >> 4;
-						c2 = (15 & c2) << 4 | c3 >> 2;
-						var last = (3 & c3) << 6 | c4;
-
-						output += string_fromcharcode(c1);
-
-						if (c3 !== 64) {
-							output += string_fromcharcode(c2);
-						}
-
-						if (c4 !== 64) {
-							output += string_fromcharcode(last);
-						}
-					}
-
-					return unescape(output);
-				};
-
-				var query_hclips = function(vid, cb) {
-					api_query(base_domain + ":" + vid, {
-						url: "https://" + base_domain + "/api/videofile.php?video_id=" + vid + "&lifetime=8640000",
-						headers: {
-							"Accept": "application/json, text/plain, */*",
-							"Referer": "https://" + base_domain + "/videos/" + vid + "/"
-						},
-						json: true
-					}, cb, function(done, resp, cache_key) {
-						var formats = ["_hq", "_lq"];
-
-						var get_format_id = function(format) {
-							format = format.replace(/\..*/, "");
-							var index = formats.indexOf(format);
-
-							if (index < 0) {
-								console_warn("Unknown format", format);
-								return formats.length;
-							} else {
-								return index;
-							}
-						};
-
-						// resp is {error: 1, msg: "not_found"} if 404
-						resp.sort(function(a, b) {
-							return get_format_id(a) - get_format_id(b);
-						});
-
-						for (var i = 0; i < resp.length; i++) {
-							resp[i].video_url = urljoin("https://" + base_domain + "/", decode_hclips_base64(resp[i].video_url), true);
-						}
-
-						done(resp, 60*60);
-					});
-				};
-
-				var hclips_to_obj = function(data) {
-					if (!data || data.length === 0) {
-						return page_nullobj;
-					}
-
-					var baseobj = {
-						headers: {
-							Referer: "https://" + base_domain
-						}
-					};
-
-					urls = [{
-						url: data[0].video_url,
-						video: true
-					}];
-
-					urls.push(page_nullobj);
-
-					return fillobj_urls(urls, baseobj);
-				};
-
-				page_nullobj = {
-					url: src,
-					is_pagelink: true
-				};
-
-				if (options.do_request && options.cb) {
-					query_hclips(id, function(data) {
-						options.cb(hclips_to_obj(data));
-					});
-
-					return {
-						waiting: true
-					};
-				} else {
-					return page_nullobj;
-				}
-			}
-		}
-
 		if (domain_nowww === "fapxl.com") {
 			match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:view\/+movie\/+)?embed\/+([0-9]+)(?:[?#].*)?$/);
 			if (match) {
@@ -69096,11 +69129,16 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if (domain === "cdn.nakedgirls.xxx") {
+		if (domain === "cdn.nakedgirls.xxx" ||
+			// https://cdn.nudexxx.pics/content/galleries/83/4fbd7f0f5e013e5958f0e048914c28f2-1.jpg
+			//   https://cdn.nudexxx.pics/content/galleries/83/4fbd7f0f5e013e5958f0e048914c28f2-1-full.jpg
+			domain === "cdn.nudexxx.pics") {
 			// https://cdn.nakedgirls.xxx/galleries/311/b34936569e79a64db532ef669a7d6bfb-1.jpg
 			//   https://www.nakedgirls.xxx/content/galleries/311/b34936569e79a64db532ef669a7d6bfb-1-full.jpg
 			// https://www.nakedgirls.xxx/content/galleries/45/de72e6bb4e702f2c6021cb0257266a48-1-full.jpg
-			return src.replace(/:\/\/cdn\.([^/]+)\/+(galleries\/+[0-9]+\/+[0-9a-f]{20,}-[0-9]+)(\.[^/.]+)(?:[?#].*)?$/, "://www.$1/content/$2-full$3");
+			return src
+				.replace(/(:\/\/[^/]+\/+content\/+galleries\/+[0-9]+\/+[0-9a-f]{20,}-[0-9]+)(\.[^/.]+)(?:[?#].*)?$/, "$1-full$2")
+				.replace(/:\/\/cdn\.([^/]+)\/+(galleries\/+[0-9]+\/+[0-9a-f]{20,}-[0-9]+)(\.[^/.]+)(?:[?#].*)?$/, "://www.$1/content/$2-full$3");
 		}
 
 		if (domain === "proxy.topixcdn.com") {
@@ -70963,6 +71001,12 @@ var $$IMU_EXPORT$$;
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+cache-v2\/+\?(?:.*&)?path=([^&]+)(?:[&#].*)?$/, "$1");
 			if (newsrc !== src)
 				return decodeuri_ifneeded(newsrc);
+		}
+
+		if (domain === "static-cdn.qmov.com") {
+			// https://static-cdn.qmov.com/content/movies/this-is-a-true-deep-anal-romance/photos_thumbs/this-is-a-true-deep-anal-romance_pic2.jpg
+			//   https://static-cdn.qmov.com/content/movies/this-is-a-true-deep-anal-romance/photos/this-is-a-true-deep-anal-romance_pic2.jpg
+			return src.replace(/\/photos_thumbs\//, "/photos/");
 		}
 
 
