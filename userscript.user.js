@@ -1468,6 +1468,10 @@ var $$IMU_EXPORT$$;
 	};
 	get_compat_functions();
 
+	var array_extend = function(array, other) {
+		[].push.apply(array, other);
+	};
+
 	function is_element(x) {
 		if (!x || typeof x !== "object")
 			return false;
@@ -6524,9 +6528,260 @@ var $$IMU_EXPORT$$;
 
 	var fixup_js_obj = function(objtext) {
 		return objtext
-			.replace(/([{,])\s*([^"'\s:]+)\s*:/g, "$1 \"$2\":")
+			.replace(/([{,])\s*([^[{,"'\s:]+)\s*:/g, "$1 \"$2\":")
 			.replace(/(\"[^\s:"]+?\":)\s*'([^']*)'(\s*[,}])/g, "$1 \"$2\"$3")
 			.replace(/,\s*}$/, "}");
+	};
+
+	var parse_js_obj = function(objtext) {
+		// for testing purposes
+		/*var is_array = function(x) {
+			return Array.isArray(x);
+		};
+
+		var array_extend = function(array, other) {
+			[].push.apply(array, other);
+		};*/
+
+		// note: this is technically incorrect (too loose), as it'll allow things like:
+		// {x: {} y: {}}
+		// this is intentional, as otherwise it grows with exponential complexity ("kvcw*", "kvw?")
+		var token_types = {
+			whitespace: /\s+/,
+			jvarname: /[$_a-zA-Z][$_a-zA-Z0-9]*/,
+			number: /-?(?:[0-9]*\.[0-9]+|[0-9]+|[0-9]+\.)/,
+			objstart: /{/,
+			objend: /}/,
+			object: ["objstart", "whitespace?", "kvcw*", "objend"],
+			arrstart: /\[/,
+			arrend: /]/,
+			array: ["arrstart", "whitespace?", "valuecw*", "arrend"],
+			true: /true/,
+			false: /false/,
+			null: /null/,
+			value: [["array"], ["object"], ["sstring"], ["dstring"], ["number"], ["true"], ["false"], ["null"]],
+			valuew: ["value", "whitespace?"],
+			valuec: ["valuew", "comma?"],
+			valuecw: ["valuec", "whitespace?"],
+			comma: /,/,
+			colon: /:/,
+			squote: /'/,
+			dquote: /"/,
+			sstring: ["squote", "sliteral", "squote"],
+			dstring: ["dquote", "dliteral", "dquote"],
+			varname: [["jvarname"], ["sstring"], ["dstring"]],
+			kv: ["varname", "whitespace?", "colon", "whitespace?", "value"],
+			kvw: ["kv", "whitespace?"],
+			kvc: ["kvw", "comma?"],
+			kvcw: ["kvc", "whitespace?"],
+			doc: [["object"], ["array"]]
+		};
+
+		for (var key in token_types) {
+			var value = token_types[key];
+
+			if (value instanceof RegExp) {
+				token_types[key] = {
+					type: "regex",
+					value: new RegExp("^" + value.source)
+				};
+			} else if (is_array(value)) {
+				if (is_array(value[0])) {
+					token_types[key] = {
+						type: "or",
+						value: value
+					};
+				} else {
+					token_types[key] = {
+						type: "and",
+						value: value
+					};
+				}
+			}
+		}
+
+		//console_log(token_types);
+		var times_ran = 0;
+		var token_frequency = {};
+		var stack_frequency = {};
+
+		var find_token_regex = function(token_type, tt, i) {
+			var text = objtext.substring(i);
+			//console.log(text, tt, i);
+			var match = text.match(tt);
+			if (!match || match.index !== 0) {
+				return null;
+			} else {
+				return [{
+					name: token_type,
+					i: i,
+					ni: i + match[0].length,
+					value: match[0],
+					length: match[0].length
+				}];
+			}
+		};
+
+		var find_token_sliteral = function(token_type, i) {
+			var quote = token_type === "dliteral" ? '"' : "'";
+			var text = "";
+			var escaping = false;
+			var j;
+			for (j = i; j < objtext.length; j++) {
+				var ch = objtext[j];
+
+				if (escaping) {
+					escaping = false;
+					if (ch === "x") {
+						text += "\\u00" + objtext.substr(j+1, 2);
+						j += 2;
+					} else if (ch !== '"' && ch !== '"') {
+						text += "\\" + ch;
+					}
+					continue;
+				}
+
+				if (ch === quote) {
+					break;
+				} else if (ch === "\\") {
+					escaping = true;
+				} else {
+					text += ch;
+				}
+			}
+
+			return [{
+				name: token_type,
+				i: i,
+				ni: j,
+				value: text,
+				length: j - i
+			}];
+		}
+
+		var find_token = function(token_type, i, stack) {
+			//console_log(token_type, i);
+			times_ran++;
+
+			if (!(token_type in token_frequency))
+				token_frequency[token_type] = 0;
+			token_frequency[token_type]++;
+
+			if (!(stack in stack_frequency))
+				stack_frequency[stack] = 0;
+			stack_frequency[stack]++;
+
+			if (token_type === "sliteral" || token_type === "dliteral") {
+				return find_token_sliteral(token_type, i);
+			}
+
+			var tt = token_types[token_type];
+			//console.log(token_type, tt);
+
+			if (tt.type === "and") {
+				return find_token_array_and(tt, i, stack);
+			} else if (tt.type === "or") {
+				return find_token_array_or(tt, i, stack);
+			} else {
+				return find_token_regex(token_type, tt.value, i);
+			}
+		};
+
+		var find_token_array = function(array, i, stack) {
+			var tokens = [];
+
+			for (var j = 0; j < array.length; j++) {
+				var token_type = array[j];
+				var lastchar = token_type[token_type.length - 1];
+				var minuslast = token_type.substring(0, token_type.length - 1);
+
+				if (lastchar === "?") {
+					//console.log("[START ?]", token_type, i, stack);
+					var token = find_token(minuslast, i, stack+1);
+					//console.log("[END ?]", token_type, i, stack, token);
+					if (!token || token.length === 0)
+						continue;
+
+					array_extend(tokens, token);
+					i = token[token.length - 1].ni;
+				} else if (lastchar === "*") {
+					while (true) {
+						//console.log("[START *]", token_type, i, stack);
+						var token = find_token(minuslast, i, stack+1);
+						//console.log("[END *]", token_type, i, stack, token);
+						if (!token || token.length === 0)
+							break;
+
+						array_extend(tokens, token);
+						i = token[token.length - 1].ni;
+					}
+				} else {
+					var token = find_token(token_type, i, stack+1);
+					if (!token || token.length === 0) {
+						if (tokens.length > 10 && false)
+							console.log(tokens, token_type, i);
+						return null;
+					}
+
+					array_extend(tokens, token);
+					i = token[token.length - 1].ni;
+				}
+			}
+
+			return tokens;
+		};
+
+		var find_token_array_and = function(tt, i, stack) {
+			return find_token_array(tt.value, i, stack);
+		};
+
+		var find_token_array_or = function(tt, i, stack) {
+			for (var j = 0; j < tt.value.length; j++) {
+				var token = find_token_array(tt.value[j], i, stack);
+				if (token && token.length) {
+					return token;
+				}
+			}
+
+			return null;
+		};
+
+		var outer_tokens = find_token("doc", 0, 0);
+		return outer_tokens;
+	};
+
+	var fixup_js_obj_proper = function(objtext) {
+		var parsed = parse_js_obj(objtext);
+		//console.log(parsed);
+		if (!parsed)
+			throw "unable to parse";
+
+		var token_types = {
+			whitespace: " ",
+			jvarname: function(x) { return '"' + x + '"'; },
+			squote: "\"",
+			sliteral: function(x) { return x.replace(/"/g, "\\\""); },
+			dliteral: function(x) { return x.replace(/"/g, "\\\""); }
+		};
+
+		var stringified = "";
+		for (var i = 0; i < parsed.length; i++) {
+			var token = parsed[i];
+
+			if (token.name in token_types) {
+				var tt = token_types[token.name];
+
+				if (typeof tt === "function") {
+					stringified += tt(token.value);
+				} else {
+					stringified += tt;
+				}
+			} else {
+				stringified += token.value;
+			}
+		}
+
+		return stringified;
 	};
 
 	var common_functions = {};
@@ -30925,6 +31180,44 @@ var $$IMU_EXPORT$$;
 				return jsons;
 			};
 
+			var get_fb_bigpipe = function(cache_key, resp, find) {
+				var regex = /requireLazy\(\["__bigPipe"\],\(function\(bigPipe\){bigPipe\.onPageletArrive\(({.*?})\);}\)\);/;
+				var global = new RegExp(regex, "g");
+
+				var match = resp.responseText.match(global);
+				if (!match) {
+					console_error(cache_key, "Unable to find matches for", resp);
+					return null;
+				}
+
+				var jsons = [];
+
+				for (var i = 0; i < match.length; i++) {
+					var m = match[i];
+
+					var submatch = m.match(regex);
+
+					try {
+						//var start = Date.now();
+						var fixedup = fixup_js_obj_proper(submatch[1]);
+						//console_log({
+						//	submatch: submatch[1],
+						//	fixup: fixedup,
+						//	time: Date.now() - start
+						//});
+						var json = JSON_parse(fixedup);
+						console_log(json);
+					} catch (e) {
+						console_error(cache_key, e, {match: m, submatch: submatch, resp: resp});
+					}
+				}
+
+				if (jsons.length === 0)
+					return null;
+
+				return jsons;
+			};
+
 			var parse_newstyle_fb = function(cache_key, resp) {
 				var serverjs = get_fb_serverjs(cache_key, resp, /^adp_CometPhotoRootQueryRelayPreloader_/);
 				if (!serverjs) {
@@ -31092,6 +31385,8 @@ var $$IMU_EXPORT$$;
 					]);
 
 					if (!results) {
+						results = get_fb_bigpipe(cache_key, resp);
+						console_log(results);
 						console_error(cache_key, "Unable to find serverjs match for", resp);
 						//console_log(get_fb_serverjs(cache_key, resp));
 						return done(null, false);
