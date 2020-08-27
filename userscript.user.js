@@ -721,15 +721,67 @@ var $$IMU_EXPORT$$;
 				console_log("do_request", deepcopy(data));
 			}
 
-			var orig_data = deepcopy(data);
-
-			if (!data.onerror)
-				data.onerror = data.onload;
-
 			// For cross-origin cookies
 			if (!("withCredentials" in data)) {
 				data.withCredentials = true;
 			}
+
+			if (!("headers" in data)) {
+				data.headers = {};
+			}
+
+			if (data.imu_mode) {
+				var headers_to_set = {};
+
+				if (data.imu_mode === "document") {
+					headers_to_set.accept = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9";
+					headers_to_set["Sec-Fetch-Dest"] = "document";
+					headers_to_set["Sec-Fetch-Mode"] = "navigate";
+					headers_to_set["Sec-Fetch-Site"] = "none";
+					headers_to_set["Sec-Fetch-User"] = "?1";
+				} else if (data.imu_mode === "xhr") {
+					headers_to_set.accept = "*/*";
+					headers_to_set["Sec-Fetch-Dest"] = "empty";
+					headers_to_set["Sec-Fetch-Mode"] = "cors";
+					headers_to_set["Sec-Fetch-Site"] = "same-origin";
+
+					headers_to_set.origin = data.url.replace(/^([a-z]+:\/\/[^/]+)(?:\/+.*)?$/, "$1");
+				}
+
+				delete data.imu_mode;
+
+				for (var header in headers_to_set) {
+					if (headerobj_get(data.headers, header) === undefined) {
+						headerobj_set(data.headers, header, headers_to_set[header]);
+					}
+				}
+			}
+
+			if (data.imu_multipart) {
+				//var boundary = "-----------------------------" + get_random_text(20);
+				var boundary = "----WebKitFormBoundary" + get_random_text(16);
+
+				// TODO: fix? only tested for one key
+				var postdata = "";
+				for (var key in data.imu_multipart) {
+					var value = data.imu_multipart[key];
+
+					postdata += "--" + boundary + "\r\nContent-Disposition: form-data; name=\"" + key + "\"\r\n\r\n";
+					postdata += value + "\r\n";
+				}
+
+				postdata += "--" + boundary + "--\r\n";
+
+				headerobj_set(data.headers, "Content-Type", "multipart/form-data; boundary=" + boundary);
+				data.data = postdata;
+
+				delete data.imu_multipart;
+			}
+
+			var orig_data = deepcopy(data);
+
+			if (!data.onerror)
+				data.onerror = data.onload;
 
 			var raw_request_do = do_request_raw;
 			if (is_userscript && settings.allow_browser_request) {
@@ -6187,6 +6239,24 @@ var $$IMU_EXPORT$$;
 		return cookies_array.join("; ");
 	};
 
+	var headerobj_get = function(headerobj, header) {
+		for (var key in headerobj) {
+			if (key.toLowerCase() === header.toLowerCase()) {
+				return headerobj[key];
+			}
+		}
+	};
+
+	var headerobj_set = function(headerobj, header, value) {
+		for (var key in headerobj) {
+			if (key.toLowerCase() === header.toLowerCase()) {
+				return headerobj[key] = value;
+			}
+		}
+
+		return headerobj[header] = value;
+	};
+
 	var get_resp_finalurl = function(resp) {
 		var parsed = parse_headers(resp.responseHeaders);
 		if (!parsed)
@@ -8577,40 +8647,58 @@ var $$IMU_EXPORT$$;
 
 		// todo: fix invalid cookie
 		var query_snaptik_1 = function(url) {
+			url = url.replace(/[?#].*/, "");
 			var cache_key = site + ":" + url;
 			api_cache.fetch(cache_key, cb, function(done) {
 				do_request({
-					url: "https://snaptik.app/pre_download.php?aweme_id=" + urlparts.web_vid,
+					url: "https://snaptik.app/", //pre_download.php?aweme_id=" + urlparts.web_vid,
+					imu_mode: "document",
 					method: "GET",
 					onload: function(resp) {
 						if (resp.status !== 200) {
 							console_error(cache_key, resp);
-							return done(null, false)
+							return done(null, false);
 						}
 
 						do_request({
-							method: "GET",
-							url: "https://" + site + "/action-v9.php?aweme_id=" + urlparts.web_vid + "&act=download",
+							method: "POST",
+							url: "https://snaptik.app/check_user.php",
+							imu_mode: "xhr",
 							headers: {
-								Referer: "https://snaptik.app/pre_download.php?aweme_id=" + urlparts.web_vid,
-								"Sec-Fetch-Dest": "empty",
-								"Sec-Fetch-Mode": "cors",
-								"Sec-Fetch-Site": "same-origin",
-								"Accept": "*/*"
+								Referer: "https://" + site + "/"
 							},
+							imu_multipart: {},
 							onload: function(resp) {
 								if (resp.status !== 200) {
 									console_error(cache_key, resp);
-									return done(null, false)
-								}
-
-								var match = resp.responseText.match(/<a[^>]*\s+href=["']https?:\/\/sv[0-9]*\.snaptik.app\/+dl\.php\?token=([^&]+)/);
-								if (!match) {
-									console_error(cache_key, "Unable to find match for", resp);
 									return done(null, false);
 								}
 
-								return done(base64_decode(decodeURIComponent(decode_entities(match[1]))), 60*60);
+								do_request({
+									method: "POST",
+									url: "https://" + site + "/action-v9.php",
+									imu_mode: "xhr",
+									imu_multipart: {
+										url: url
+									},
+									headers: {
+										Referer: "https://snaptik.app/", //pre_download.php?aweme_id=" + urlparts.web_vid,
+									},
+									onload: function(resp) {
+										if (resp.status !== 200) {
+											console_error(cache_key, resp);
+											return done(null, false)
+										}
+
+										var match = resp.responseText.match(/<a[^>]*\s+href=["']https?:\/\/sv[0-9]*\.snaptik.app\/+dl\.php\?token=([^&]+)/);
+										if (!match) {
+											console_error(cache_key, "Unable to find match for", resp);
+											return done(null, false);
+										}
+
+										return done(base64_decode(decodeURIComponent(decode_entities(match[1]))), 60*60);
+									}
+								});
 							}
 						});
 					}
@@ -9098,6 +9186,10 @@ var $$IMU_EXPORT$$;
 	common_functions.is_pinterest_domain = function(domain) {
 		var domain_nosub = get_domain_nosub(domain);
 		return !!(/^pinterest\./.test(domain_nosub));
+	};
+
+	var get_domain_from_url = function(url) {
+		return url.replace(/^[a-z]+:\/\/([^/]+)(?:\/+.*)?$/, "$1");
 	};
 
 	var get_domain_nosub = function(domain) {
