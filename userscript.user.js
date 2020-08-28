@@ -17160,6 +17160,48 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain_nowww === "melon.com") {
+			// thanks to solplparty on discord for reporting
+			// https://www.melon.com/video/player.htm?mvId=50224837&menuId=&autoPlay=Y -- livestream (link given by solplparty)
+			// https://www.melon.com/video/player.htm?mvId=50206531&menuId=&autoPlay=Y -- short video (35 seconds)
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+video\/+player\.htm\?(?:.*&)?mvId=([0-9]+)/,
+				run: function(cb, match) {
+					var id = match[1];
+					var cache_key = "melon_video:" + id;
+					api_query(cache_key, {
+						url: "https://www.melon.com/delivery/streamingInfo.json?contsId=" + id + "&contsType=VIDEO&bitrate=HD&stRight=N&_=" + Date.now(),
+						imu_mode: "xhr",
+						headers: {
+							Referer: "https://www.melon.com/video/player.htm?mvId=" + id,
+							"X-Requested-With": "XMLHttpRequest",
+							"Content-Type": "application/json",
+							"Accept": "application/json, text/javascript, */*; q=0.01"
+						},
+						json: true
+					}, cb, function(done, resp, cache_key) {
+						var videourl = resp.streamingInfo.encUrl;
+						if (!videourl) {
+							console_error(cache_key, "Unable to find video url in", resp);
+							return done(null, false);
+						}
+
+						// fixme?
+						if (!/\.m3u8\?/.test(videourl)) {
+							console_error(cache_key, "Unknown video url type", {videourl: videourl, json: resp});
+							return done(null, false);
+						}
+
+						return done({
+							url: videourl,
+							video: "hls"
+						}, 60*60);
+					});
+				}
+			});
+			if (newsrc) return newsrc;
+		}
+
 		// itunes, is4-ssl.mzstatic.com
 		if (domain_nosub === "mzstatic.com" && domain.match(/is[0-9](-ssl)?\.mzstatic\.com/) &&
 			string_indexof(src, "/image/thumb/") >= 0) {
@@ -30635,10 +30677,28 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(:\/\/[^/]*\/)[^/]*[a-z]=[0-9][^/]*\//, "$1");
 		}
 
-		if (domain_nosub === "imageflux.jp") {
+		if (domain_nosub === "imageflux.jp" ||
+			domain === "img-comic.pximg.net" ||
+			// https://public-img-comic.pximg.net/c!/q=90,f=webp%3Ajpeg/images/story_thumbnail/3JqLicKWlCHhXpGYXl1N/79984.jpg?20200827121813
+			//   https://public-img-comic.pximg.net/images/story_thumbnail/3JqLicKWlCHhXpGYXl1N/79984.jpg?20200827121813
+			domain === "public-img-comic.pximg.net") {
 			// https://p1-e6eeae93.imageflux.jp/c!/a=2,w=460,h=460/mytown/6761e7b2ef74bca9a858.jpeg
 			//   https://p1-e6eeae93.imageflux.jp/mytown/6761e7b2ef74bca9a858.jpeg
-			return src.replace(/\/c!\/[^/]*[a-z]=[0-9][^/]*\//, "/");
+			newsrc = src.replace(/\/c!\/+[^/]*[a-z]=[0-9a-z%A-Z]+[^/]*\/+/, "/");
+			if (newsrc !== src)
+				return newsrc;
+		}
+
+		if (domain === "img-comic.pximg.net") {
+			// from: https://comic.pixiv.net/viewer/stories/79984
+			return {
+				url: src,
+				imu_mode: "xhr",
+				headers: {
+					Referer: "https://comic.pixiv.net/",
+					Origin: "https://comic.pixiv.net"
+				}
+			};
 		}
 
 		if (domain_nosub === "bloguru.com" &&
