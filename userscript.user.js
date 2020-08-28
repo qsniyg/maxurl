@@ -30531,7 +30531,8 @@ var $$IMU_EXPORT$$;
 						if (video) {
 							urls.push({
 								url: resp.videoLocation.url,
-								video: video
+								video: video,
+								can_head: false // 404
 							});
 						}
 
