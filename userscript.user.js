@@ -404,12 +404,15 @@ var $$IMU_EXPORT$$;
 		if (!(id in id_to_iframe))
 			return null;
 
-		try {
-			if (id_to_iframe[id].contentWindow)
-				return id_to_iframe[id].contentWindow;
-		} catch (e) {
-			// not allowed
-			return false;
+		// no need for contentWindow in top
+		if (id !== "top") {
+			try {
+				if (id_to_iframe[id].contentWindow)
+					return id_to_iframe[id].contentWindow;
+			} catch (e) {
+				// not allowed
+				return false;
+			}
 		}
 
 		return id_to_iframe[id];
@@ -444,8 +447,13 @@ var $$IMU_EXPORT$$;
 			var specified_window;
 			if (to && to in id_to_iframe) {
 				specified_window = id_to_iframe_window(to);
-				if (!specified_window) // not allowed
+				if (!specified_window) {
+					if (_nir_debug_) {
+						console_warn("Unable to find window for", to, {is_in_iframe: is_in_iframe, id_to_iframe: id_to_iframe});
+					}
+					// not allowed
 					return;
+				}
 			}
 
 			message.imu = true;
@@ -458,6 +466,9 @@ var $$IMU_EXPORT$$;
 					try {
 						window.frames[i].postMessage(wrapped_message, "*");
 					} catch (e) {
+						if (_nir_debug_) {
+							console_warn("Unable to send message to", window.frames[i], e);
+						}
 						// not allowed
 						continue;
 					}
@@ -9903,8 +9914,9 @@ var $$IMU_EXPORT$$;
 			// https://t1.daumcdn.net/kakaotv/2016/pw/new/slider_mask_v2.png
 			// https://img1.daumcdn.net/kakaotv/2016/player/web/pc/bg_box.png -- thanks to ambler on discord for reporting
 			// https://t1.daumcdn.net/kakaotv/2016/pw/img_backlogo.png
+			// https://t1.daumcdn.net/kakaotv/2016/pw/img_backcover.jpg
 			if (/\/cafe_image\/+fancafe\/+[0-9]+\/+fancafe-cheer-color-bg\./.test(src) ||
-				/\/kakaotv\/+[0-9]+\/+(?:pw|player\/+web)\/+(?:new|pc)\/+(?:slider_mask|bg_box|img_backlogo)/.test(src)) {
+				/\/kakaotv\/+[0-9]+\/+(?:pw|player\/+web)\/+(?:(?:new|pc)\/+)?(?:slider_mask|bg_box|img_back(?:logo|cover))/.test(src)) {
 				return {
 					url: src,
 					bad: "mask"
@@ -85038,6 +85050,10 @@ var $$IMU_EXPORT$$;
 			});
 		} else {
 			our_addEventListener(window, "message", function(event) {
+				if (_nir_debug_) {
+					console_log("window.onMessage", event);
+				}
+
 				if (!can_use_remote() || !event.data || typeof event.data !== "object" || !(imu_message_key in event.data))
 					return;
 
