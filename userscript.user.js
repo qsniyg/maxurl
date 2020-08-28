@@ -30383,6 +30383,68 @@ var $$IMU_EXPORT$$;
 				.replace(/\/img_[a-z]+(\.[^/.]*)$/, "/img$1");
 		}
 
+		if (domain === "tv.kakao.com") {
+			// https://tv.kakao.com/channel/3527229/cliplink/411915208
+			// https://tv.kakao.com/channel/2669634/livelink/8629498
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+channel\/+[0-9]+\/+cliplink\/+([0-9]+)(?:[?#].*)?$/,
+				run: function(cb, match) {
+					var id = match[1];
+
+					var cache_key = "kakao_video:" + id;
+					var queries = {
+						player: "monet_html5",
+						referer: "https://tv.kakao.com/",
+						uuid: "",
+						profile: "HIGH4", // 1080p ... is there anything larger?
+						service: "kakao_tv",
+						//section: "channel", or "kakao_tv" for livelink instead of cliplink
+						fields: "seekUrl,abrVideoLocationList",
+						playerVersion: "3.7.1",
+						startPosition: 0,
+						tid: "",
+						dteType: "PC",
+						contentType: ""
+					};
+
+					queries[Date.now()] = "";
+
+					api_query(cache_key, {
+						url: "https://tv.kakao.com/katz/v1/ft/cliplink/" + id + "/readyNplay?" + stringify_queries(queries),
+						imu_mode: "xhr",
+						headers: {
+							"Content-Type": "application/x-www-form-urlencoded",
+							Referer: "https://tv.kakao.com/"
+						},
+						json: true
+					}, cb, function(done, resp, cache_key) {
+						//console_log(resp);
+						if (!resp.videoLocation || !resp.videoLocation.url) {
+							console_error(cache_key, "Unable to find video URL for", resp);
+							return done(null, false);
+						}
+
+						var contenttype = resp.videoLocation.contentType;
+						if (contenttype && contenttype !== "HLS") {
+							console_error(cache_key, "Unknown contentType:", {contenttype: contenttype, json: resp});
+							return done(null, false);
+						}
+
+						var video = true;
+						if (contenttype === "HLS") {
+							video = "hls";
+						}
+
+						return done({
+							url: resp.videoLocation.url,
+							video: video
+						}, 60*60);
+					});
+				}
+			});
+			if (newsrc) return newsrc;
+		}
+
 		if (domain === "obs.line-scdn.net") {
 			// https://obs.line-scdn.net/0hHuiuzxHgF1pUDDvjJ95oDSBRETUtbw1SPnQAYCFaHXQhYABaPHYebDRcFjoqaAxUNzoQYm0OGQwONQBwIDgIQjpSPCl8YBUFNBxcfQleMT0BQQpJOHZYOHIJTWh4NVMMaGIKaXcLQW48PVkMODpcOnU/small
 			//   https://obs.line-scdn.net/0hHuiuzxHgF1pUDDvjJ95oDSBRETUtbw1SPnQAYCFaHXQhYABaPHYebDRcFjoqaAxUNzoQYm0OGQwONQBwIDgIQjpSPCl8YBUFNBxcfQleMT0BQQpJOHZYOHIJTWh4NVMMaGIKaXcLQW48PVkMODpcOnU
