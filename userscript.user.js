@@ -470,7 +470,7 @@ var $$IMU_EXPORT$$;
 		is_remote_possible = true;
 
 		if (window.location.hostname === "cafe.daum.net") {
-			// unfortunately they interpret all message events, leading to bugs in their website. thanks to solplparty on discord for noticing
+			// unfortunately they interpret all message events, leading to bugs in their website. thanks to ambler on discord for noticing
 			is_remote_possible = false;
 		}
 	}
@@ -7557,7 +7557,7 @@ var $$IMU_EXPORT$$;
 			var headers = {
 				//"User-Agent": "Instagram 10.26.0 (iPhone7,2; iOS 10_1_1; en_US; en-US; scale=2.00; gamut=normal; 750x1334) AppleWebKit/420+",
 				//"User-Agent": "Instagram 10.26.0 Android (23/6.0.1; 640dpi; 1440x2560; samsung; SM-G930F; herolte; samsungexynos8890; en_US)",
-				// thanks to solplparty on discord for reporting, earlier UAs don't receive stories anymore
+				// thanks to ambler on discord for reporting, earlier UAs don't receive stories anymore
 				"User-Agent": "Instagram 146.0.0.27.125 Android (23/6.0.1; 640dpi; 1440x2560; samsung; SM-G930F; herolte; samsungexynos8890; en_US)",
 				"X-IG-Capabilities": "36oD",
 				"Accept": "*/*",
@@ -17161,8 +17161,8 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "melon.com") {
-			// thanks to solplparty on discord for reporting
-			// https://www.melon.com/video/player.htm?mvId=50224837&menuId=&autoPlay=Y -- livestream (link given by solplparty)
+			// thanks to ambler on discord for reporting
+			// https://www.melon.com/video/player.htm?mvId=50224837&menuId=&autoPlay=Y -- livestream (link given by ambler)
 			// https://www.melon.com/video/player.htm?mvId=50206531&menuId=&autoPlay=Y -- short video (35 seconds)
 			newsrc = website_query({
 				website_regex: /^[a-z]+:\/\/[^/]+\/+video\/+player\.htm\?(?:.*&)?mvId=([0-9]+)/,
