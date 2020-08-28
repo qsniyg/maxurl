@@ -9900,7 +9900,9 @@ var $$IMU_EXPORT$$;
 
 		if (domain_nosub === "daumcdn.net" && /^t[0-9]*\./.test(domain)) {
 			// http://t1.daumcdn.net/cafe_image/fancafe/2018/fancafe-cheer-color-bg.png
-			if (/\/cafe_image\/+fancafe\/+[0-9]+\/+fancafe-cheer-color-bg\./.test(src)) {
+			// https://t1.daumcdn.net/kakaotv/2016/pw/new/slider_mask_v2.png
+			if (/\/cafe_image\/+fancafe\/+[0-9]+\/+fancafe-cheer-color-bg\./.test(src) ||
+				/\/kakaotv\/+[0-9]+\/+pw\/+new\/+slider_mask/.test(src)) {
 				return {
 					url: src,
 					bad: "mask"
@@ -30387,6 +30389,7 @@ var $$IMU_EXPORT$$;
 			// https://tv.kakao.com/channel/3527229/cliplink/411915208
 			// https://tv.kakao.com/embed/player/cliplink/411915208?service=kakao_tv&section=channel&autoplay=1&profile=HIGH&wmode=transparent
 			// https://tv.kakao.com/channel/2669634/livelink/8629498
+			// https://tv.kakao.com/channel/3629101/cliplink/411920988 -- requires ABR (video urls are provided, but return 404)
 			newsrc = website_query({
 				website_regex: /^[a-z]+:\/\/[^/]+\/+(?:channel\/+[0-9]+|embed\/+player)\/+cliplink\/+([0-9]+)(?:[?#].*)?$/,
 				run: function(cb, match) {
@@ -30419,27 +30422,73 @@ var $$IMU_EXPORT$$;
 						},
 						json: true
 					}, cb, function(done, resp, cache_key) {
-						//console_log(resp);
+						console_log(resp);
 						if (!resp.videoLocation || !resp.videoLocation.url) {
 							console_error(cache_key, "Unable to find video URL for", resp);
 							return done(null, false);
 						}
 
+						var baseobj = {
+							headers: {
+								Referer: "https://tv.kakao.com/",
+								Origin: "https://tv.kakao.com"
+							}
+						};
+
+						var urls = [];
+
+						var abr_urls = resp.abrVideoLocationList;
+						if (abr_urls) {
+							for (var i = 0; i < abr_urls.length; i++) {
+								var url = abr_urls[i].url;
+								if (abr_urls[i].params) {
+									url += "?" + abr_urls[i].params;
+								}
+
+								var videotype = null;
+								if (abr_urls[i].type === "DASH") {
+									videotype = "dash";
+								} else if (abr_urls[i].type === "HLS") {
+									videotype = "hls";
+								}
+
+								if (!videotype) {
+									console_warn(cache_key, "Unknown ABR content type", abr_urls[i].type, "for", abr_urls[i], resp);
+									continue;
+								}
+
+								urls.push({
+									url: url,
+									video: videotype
+								});
+							}
+						}
+
 						var contenttype = resp.videoLocation.contentType;
-						if (contenttype && contenttype !== "HLS") {
-							console_error(cache_key, "Unknown contentType:", {contenttype: contenttype, json: resp});
-							return done(null, false);
-						}
-
 						var video = true;
-						if (contenttype === "HLS") {
-							video = "hls";
+
+						if (contenttype) {
+							if (contenttype === "HLS") {
+								video = "hls";
+							} else if (contenttype === "DASH") {
+								video = "dash";
+							} else {
+								console_warn(cache_key, "Unknown contentType:", {contenttype: contenttype, json: resp});
+								video = null;
+							}
 						}
 
-						return done({
-							url: resp.videoLocation.url,
-							video: video
-						}, 60*60);
+						if (video) {
+							urls.push({
+								url: resp.videoLocation.url,
+								video: video
+							});
+						}
+
+						if (urls.length === 0)
+							return done(null, false);
+
+						return done(fillobj_urls(urls, baseobj), 60*60);
 					});
 				}
 			});
