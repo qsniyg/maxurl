@@ -30385,9 +30385,10 @@ var $$IMU_EXPORT$$;
 
 		if (domain === "tv.kakao.com") {
 			// https://tv.kakao.com/channel/3527229/cliplink/411915208
+			// https://tv.kakao.com/embed/player/cliplink/411915208?service=kakao_tv&section=channel&autoplay=1&profile=HIGH&wmode=transparent
 			// https://tv.kakao.com/channel/2669634/livelink/8629498
 			newsrc = website_query({
-				website_regex: /^[a-z]+:\/\/[^/]+\/+channel\/+[0-9]+\/+cliplink\/+([0-9]+)(?:[?#].*)?$/,
+				website_regex: /^[a-z]+:\/\/[^/]+\/+(?:channel\/+[0-9]+|embed\/+player)\/+cliplink\/+([0-9]+)(?:[?#].*)?$/,
 				run: function(cb, match) {
 					var id = match[1];
 
