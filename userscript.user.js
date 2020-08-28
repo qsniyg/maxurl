@@ -9898,11 +9898,12 @@ var $$IMU_EXPORT$$;
 			// https://search3.kakaocdn.net/argon/0x200_85_hr/CdIaPo4lsew
 		}*/
 
-		if (domain_nosub === "daumcdn.net" && /^t[0-9]*\./.test(domain)) {
+		if (domain_nosub === "daumcdn.net" && /^(?:t|img)[0-9]*\./.test(domain)) {
 			// http://t1.daumcdn.net/cafe_image/fancafe/2018/fancafe-cheer-color-bg.png
 			// https://t1.daumcdn.net/kakaotv/2016/pw/new/slider_mask_v2.png
+			// https://img1.daumcdn.net/kakaotv/2016/player/web/pc/bg_box.png -- thanks to ambler on discord for reporting
 			if (/\/cafe_image\/+fancafe\/+[0-9]+\/+fancafe-cheer-color-bg\./.test(src) ||
-				/\/kakaotv\/+[0-9]+\/+pw\/+new\/+slider_mask/.test(src)) {
+				/\/kakaotv\/+[0-9]+\/+(?:pw|player\/+web)\/+(?:new|pc)\/+(?:slider_mask|bg_box)/.test(src)) {
 				return {
 					url: src,
 					bad: "mask"
