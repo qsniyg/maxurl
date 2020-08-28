@@ -13434,7 +13434,8 @@ var $$IMU_EXPORT$$;
 							var our_format = available_formats[i];
 
 							if (our_format.is_adaptive) {
-								//adaptiveformat_to_dash(our_format, adaptionsets);
+								//console_log(our_format, adaptionsets);
+								adaptiveformat_to_dash(our_format, adaptionsets);
 							} else {
 								if (our_format.bitrate > maxbitrate) {
 									maxbitrate = our_format.bitrate;
@@ -13449,8 +13450,9 @@ var $$IMU_EXPORT$$;
 						// VM3784:15616 [899][StreamController] Video Element Error: MEDIA_ERR_SRC_NOT_SUPPORTED (CHUNK_DEMUXER_ERROR_APPEND_FAILED: Append: stream parsing failed. Data size=742 append_window_start=0 append_window_end=9.22337e+12)
 						if (false && Object.keys(adaptionsets).length > 0) {
 							var dash = create_dash_from_adaptionsets(adaptionsets);
+							var dashurl = "data:application/dash+xml," + encodeURIComponent(dash);
 							urls.push({
-								url: "data:application/dash+xml," + encodeURIComponent(dash),
+								url: dashurl,
 								video: "dash"
 							});
 						}
@@ -17131,7 +17133,8 @@ var $$IMU_EXPORT$$;
 			 string_indexof(src, "/user_images/") >= 0)*/) {
 			// thanks to soplparty on discord
 			// https://cdnimg.melon.co.kr/resource/image/web/artist/bg_atist_frame.png
-			if (/\/resource\/+image\/+web\/+artist\/+/.test(src)) {
+			// https://cdnimg.melon.co.kr/resource/image/web/main/bg_frame.png
+			if (/\/resource\/+image\/+web\/+(?:artist|main)\/+/.test(src)) {
 				return {
 					url: src,
 					bad: "mask"
@@ -17148,6 +17151,7 @@ var $$IMU_EXPORT$$;
 
 			// http://cdnimg.melon.co.kr/cm/mv/images/43/501/78/990/50178990_1_640.jpg/melon/quality/80/resize/144/optimize
 			//   http://cdnimg.melon.co.kr/cm/mv/images/43/501/78/990/50178990_1_org.jpg
+			// https://cdnimg.melon.co.kr/cm2/mv/images/wide/502/25/281/50225281_20200828140018_org.jpg
 
 			// http://cdnimg.melon.co.kr/svc/images/main/imgUrl20180123110250.jpg/melon/quality/80
 			//   http://cdnimg.melon.co.kr/svc/images/main/imgUrl20180123110250.jpg
@@ -17160,9 +17164,20 @@ var $$IMU_EXPORT$$;
 				return newsrc;
 
 			if (string_indexof(src, "/images/main/") >= 0) {
-				return src.replace(/(images\/.*\/[^/_]*)((_[^/.]*)_)?(_?[^/._]*)?(\.[^/.?]*)(?:[?/].*)?$/, "$1$3$5");
+				newsrc = src.replace(/(images\/.*\/[^/_]*)((_[^/.]*)_)?(_?[^/._]*)?(\.[^/.?]*)(?:[?/].*)?$/, "$1$3$5");
 			} else {
-				return src.replace(/(images\/.*\/[^/_]*)((_[^/.]*)_)?(_?[^/._]*)?(\.[^/.?]*)(?:[?/].*)?$/, "$1$3_org$5");
+				newsrc = src.replace(/(images\/.*\/[^/_]*)((_[^/.]*)_)?(_?[^/._]*)?(\.[^/.?]*)(?:[?/].*)?$/, "$1$3_org$5");
+			}
+
+			if (newsrc !== src)
+				return newsrc;
+
+			match = src.match(/\/cm[0-9]*\/+mv\/+images\/+.*\/([0-9]+)_[0-9]+_(?:[0-9]+|org)\.[^/.]+(?:[?#].*)?$/);
+			if (match) {
+				return {
+					url: "https://www.melon.com/video/player.htm?mvId=" + match[1],
+					is_pagelink: true
+				};
 			}
 		}
 
@@ -17180,8 +17195,9 @@ var $$IMU_EXPORT$$;
 			// thanks to ambler on discord for reporting
 			// https://www.melon.com/video/player.htm?mvId=50224837&menuId=&autoPlay=Y -- livestream (link given by ambler)
 			// https://www.melon.com/video/player.htm?mvId=50206531&menuId=&autoPlay=Y -- short video (35 seconds)
+			// https://www.melon.com/video/detail2.htm?mvId=50225043&menuId=27120101
 			newsrc = website_query({
-				website_regex: /^[a-z]+:\/\/[^/]+\/+video\/+player\.htm\?(?:.*&)?mvId=([0-9]+)/,
+				website_regex: /^[a-z]+:\/\/[^/]+\/+video\/+(?:player|detail2)\.htm\?(?:.*&)?mvId=([0-9]+)/,
 				run: function(cb, match) {
 					var id = match[1];
 					var cache_key = "melon_video:" + id;
@@ -17207,6 +17223,8 @@ var $$IMU_EXPORT$$;
 							console_error(cache_key, "Unknown video url type", {videourl: videourl, json: resp});
 							return done(null, false);
 						}
+
+						videourl = force_https(videourl);
 
 						return done({
 							url: videourl,
