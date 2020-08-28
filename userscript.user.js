@@ -1953,7 +1953,7 @@ var $$IMU_EXPORT$$;
 			"fr": "Images possiblement brisée"
 		},
 		"Rules using 3rd-party websites": {
-			"ko": "3파티 사이트를 사용하는 규칙",
+			"ko": "서드파티 사이트를 사용하는 규칙",
 			"fr": "Règles utilisant des sites 3rd-party"
 		},
 		"Newsen": {
