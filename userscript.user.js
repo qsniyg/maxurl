@@ -30390,6 +30390,25 @@ var $$IMU_EXPORT$$;
 			// https://tv.kakao.com/embed/player/cliplink/411915208?service=kakao_tv&section=channel&autoplay=1&profile=HIGH&wmode=transparent
 			// https://tv.kakao.com/channel/2669634/livelink/8629498
 			// https://tv.kakao.com/channel/3629101/cliplink/411920988 -- requires ABR (video urls are provided, but return 404)
+			var query_dash_with_params = function(req, params, cb) {
+				req.method = "GET";
+				req.onload = function(resp) {
+					if (resp.status !== 200) {
+						console_error("Unable to request", req, resp);
+						return cb(null);
+					}
+
+					var text = resp.responseText;
+					var baseurl = req.url.replace(/\/[^/]+(?:[?#].*)?$/, "/");
+					params = encode_entities(params);
+					text = text.replace(/((?:initialization|media)=")([^"]+)(")/g, "$1" + baseurl + "$2?" + params + "$3");
+
+					cb(text);
+				};
+
+				options.do_request(req);
+			};
+
 			newsrc = website_query({
 				website_regex: /^[a-z]+:\/\/[^/]+\/+(?:channel\/+[0-9]+|embed\/+player)\/+cliplink\/+([0-9]+)(?:[?#].*)?$/,
 				run: function(cb, match) {
@@ -30422,7 +30441,7 @@ var $$IMU_EXPORT$$;
 						},
 						json: true
 					}, cb, function(done, resp, cache_key) {
-						console_log(resp);
+						//console_log(resp);
 						if (!resp.videoLocation || !resp.videoLocation.url) {
 							console_error(cache_key, "Unable to find video URL for", resp);
 							return done(null, false);
@@ -30438,13 +30457,9 @@ var $$IMU_EXPORT$$;
 						var urls = [];
 
 						var abr_urls = resp.abrVideoLocationList;
+						var waiting = false;
 						if (abr_urls) {
 							for (var i = 0; i < abr_urls.length; i++) {
-								var url = abr_urls[i].url;
-								if (abr_urls[i].params) {
-									url += "?" + abr_urls[i].params;
-								}
-
 								var videotype = null;
 								if (abr_urls[i].type === "DASH") {
 									videotype = "dash";
@@ -30457,10 +30472,36 @@ var $$IMU_EXPORT$$;
 									continue;
 								}
 
-								urls.push({
-									url: url,
+								var obj = {
 									video: videotype
-								});
+								};
+
+								var url = abr_urls[i].url;
+								obj.url = url;
+								if (abr_urls[i].params) {
+									url += "?" + abr_urls[i].params;
+									obj.url = url;
+
+									if (abr_urls[i].type === "DASH") {
+										query_dash_with_params({
+											url: url,
+											headers: {
+												Referer: "https://tv.kakao.com/",
+												Origin: "https://tv.kakao.com"
+											}
+										}, abr_urls[i].params, function(dash) {
+											if (dash) {
+												obj.url = "data:application/dash+xml," + encodeURIComponent(dash);
+											}
+
+											return done(fillobj_urls(urls, baseobj), 60*60);
+										});
+
+										waiting = true;
+									}
+								}
+
+								urls.push(obj);
 							}
 						}
 
@@ -30488,7 +30529,8 @@ var $$IMU_EXPORT$$;
 						if (urls.length === 0)
 							return done(null, false);
 
-						return done(fillobj_urls(urls, baseobj), 60*60);
+						if (!waiting)
+							return done(fillobj_urls(urls, baseobj), 60*60);
 					});
 				}
 			});
