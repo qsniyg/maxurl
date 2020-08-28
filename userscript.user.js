@@ -9902,8 +9902,9 @@ var $$IMU_EXPORT$$;
 			// http://t1.daumcdn.net/cafe_image/fancafe/2018/fancafe-cheer-color-bg.png
 			// https://t1.daumcdn.net/kakaotv/2016/pw/new/slider_mask_v2.png
 			// https://img1.daumcdn.net/kakaotv/2016/player/web/pc/bg_box.png -- thanks to ambler on discord for reporting
+			// https://t1.daumcdn.net/kakaotv/2016/pw/img_backlogo.png
 			if (/\/cafe_image\/+fancafe\/+[0-9]+\/+fancafe-cheer-color-bg\./.test(src) ||
-				/\/kakaotv\/+[0-9]+\/+(?:pw|player\/+web)\/+(?:new|pc)\/+(?:slider_mask|bg_box)/.test(src)) {
+				/\/kakaotv\/+[0-9]+\/+(?:pw|player\/+web)\/+(?:new|pc)\/+(?:slider_mask|bg_box|img_backlogo)/.test(src)) {
 				return {
 					url: src,
 					bad: "mask"
@@ -30381,9 +30382,16 @@ var $$IMU_EXPORT$$;
 			//   http://dn-l1-story.kakao.co.kr/dn/bpU40i/hyglUiBxbK/TgKflthO9wKjHf1TemKnx0/img_l.jpg
 			//   http://dn-l1-story.kakao.co.kr/dn/bpU40i/hyglUiBxbK/TgKflthO9wKjHf1TemKnx0/img_xl.jpg -- stretched?
 			//   http://dn-l1-story.kakao.co.kr/dn/bpU40i/hyglUiBxbK/TgKflthO9wKjHf1TemKnx0/img.jpg -- 404
-			return src
+			newsrc = src
 				.replace(/(\/img(?:_[a-z]+)?\.[^/.?#]*)(?:[?#].*)?$/, "$1")
 				.replace(/\/img_[a-z]+(\.[^/.]*)$/, "/img$1");
+			if (newsrc !== src)
+				return newsrc;
+		}
+
+		if (host_domain === "tv.kakao.com" && domain_nosub === "kakaocdn.net" && /\/vod_thumbnail\//.test(src) && options.element) {
+			newsrc = common_functions.get_pagelink_el_matching(options.element, /\/channel\/+[0-9]+\/+cliplink\/+[0-9]+/);
+			if (newsrc) return newsrc;
 		}
 
 		if (domain === "tv.kakao.com") {
