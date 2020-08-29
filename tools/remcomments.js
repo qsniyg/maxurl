@@ -1,6 +1,9 @@
 const fs = require("fs");
 // git clone the gh-pages branch into site
-const about = require("./site/about.js");
+const about = require("../site/about.js");
+
+const process = require("process");
+process.chdir(__dirname + "/..");
 
 function update() {
 	console.log("Updating...");
