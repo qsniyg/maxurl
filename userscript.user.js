@@ -68388,6 +68388,8 @@ var $$IMU_EXPORT$$;
 			 domain_nowww === "cdn-myhdjav.info" ||
 			 domain_nowww === "ffem.club" ||
 			 domain_nowww === "javhub.pro" ||
+			 domain_nowww === "javlove.club" ||
+			 domain_nowww === "mm9841.com" ||
 			 domain_nowww === "iframejav.com" ||
 			 domain_nowww === "xvideosrss.com"||
 			 domain_nowww === "feurl.com" ||
