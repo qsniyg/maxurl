@@ -214,9 +214,9 @@ function is_googlephotos(domain, url) {
 }
 
 function is_youtube_url(url) {
-	match = url.match(/^[a-z]+:\/\/(?:www\.)?youtube\.com\/+watch\?(?:.*&)?v=([^&#]*)/);
+	match = url.match(/^[a-z]+:\/\/(?:(?:www|m)\.)?youtube\.com\/+watch\?(?:.*&)?v=([^&#]*)/);
 	if (!match) {
-		match = url.match(/^[a-z]+:\/\/(?:www\.)?youtu\.be\/+([^?&#]*)/);
+		match = url.match(/^[a-z]+:\/\/(?:(?:www|m)\.)?youtu\.be\/+([^?&#]*)/);
 	}
 
 	if (!match) {
