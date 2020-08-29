@@ -6646,9 +6646,12 @@ var $$IMU_EXPORT$$;
 					if (ch === "x") {
 						text += "\\u00" + objtext.substr(j+1, 2);
 						j += 2;
-					} else if (ch !== '"' && ch !== '"') {
+					} else if (ch !== '"' && ch !== "'") {
 						text += "\\" + ch;
+					} else {
+						text += ch;
 					}
+
 					continue;
 				}
 
@@ -31349,13 +31352,23 @@ var $$IMU_EXPORT$$;
 
 		if (domain_nowww === "facebook.com") {
 			var find_from_serverjs = function(obj, requireid) {
-				if (!obj.require)
-					return null;
+				var require = [];
+
+				// bigpipe
+				if (obj.pre_display_requires) {
+					require = obj.pre_display_requires;
+				} else {
+					if (obj.require) {
+						require = obj.require;
+					} else {
+						return null;
+					}
+				}
 
 				var result = [];
-				for (var i = 0; i < obj.require.length; i++) {
-					if (obj.require[i][0] === requireid) {
-						result.push(obj.require[i]);
+				for (var i = 0; i < require.length; i++) {
+					if (require[i][0] === requireid) {
+						result.push(require[i]);
 					}
 				}
 
@@ -31441,6 +31454,50 @@ var $$IMU_EXPORT$$;
 				return jsons;
 			};
 
+			var find_prefetched_from_bigpipe = function(bigpipe, find) {
+				if (!bigpipe.jsmods || !bigpipe.jsmods.pre_display_requires)
+					return;
+
+				return find_prefetched_from_serverjs(bigpipe.jsmods, find);
+			};
+
+			var find_jsmods_instances_from_bigpipe = function(bigpipe, find) {
+				if (!bigpipe.jsmods || !bigpipe.jsmods.instances)
+					return;
+
+				var instances = bigpipe.jsmods.instances;
+				//console_log(instances);
+
+				var retinstances = [];
+
+				for (var i = 0; i < instances.length; i++) {
+					if (find.length > 0 && false) {
+						var type = instances[i][1];
+						var found = false;
+						for (var j = 0; j < find.length; j++) {
+							for (var k = 0; k < type.length; k++) {
+								console_log(type[k]);
+								if (find[j].test(type[k])) {
+									found = true;
+									break;
+								}
+							}
+							if (found) break;
+						}
+
+						if (!found)
+							continue;
+					}
+
+					retinstances.push(instances[i]);
+				}
+
+				if (retinstances.length === 0)
+					return null;
+
+				return retinstances;
+			};
+
 			var get_fb_bigpipe = function(cache_key, resp, find) {
 				var regex = /requireLazy\(\["__bigPipe"\],\(function\(bigPipe\){bigPipe\.onPageletArrive\(({.*?})\);}\)\);/;
 				var global = new RegExp(regex, "g");
@@ -31451,12 +31508,39 @@ var $$IMU_EXPORT$$;
 					return null;
 				}
 
+				if (!find)
+					find = [];
+
+				if (!is_array(find))
+					find = [find];
+
+				var ourfind = [];
+				for (var i = 0; i < find.length; i++) {
+					ourfind.push(new RegExp(find[i].source.replace(/[$^]/g, "")));
+				}
+
 				var jsons = [];
 
 				for (var i = 0; i < match.length; i++) {
 					var m = match[i];
 
 					var submatch = m.match(regex);
+
+					// since fixup_js_obj_proper is very expensive, we do a preliminary run here
+					if (ourfind.length > 0 && false) {
+						var found = false;
+
+						for (var j = 0; j < ourfind.length; j++) {
+							console_log(ourfind[j]);
+							if (ourfind[j].test(submatch[1])) {
+								found = true;
+								break;
+							}
+						}
+
+						if (!found)
+							break;
+					}
 
 					try {
 						//var start = Date.now();
@@ -31467,7 +31551,15 @@ var $$IMU_EXPORT$$;
 						//	time: Date.now() - start
 						//});
 						var json = JSON_parse(fixedup);
-						console_log(json);
+						//console_log(json);
+
+						//var instances = find_jsmods_instances_from_bigpipe(json, find);
+						//console_log(instances);
+
+						var prefetched = find_prefetched_from_bigpipe(json, find);
+						//console_log(prefetched);
+						if (prefetched)
+							array_extend(jsons, prefetched);
 					} catch (e) {
 						console_error(cache_key, e, {match: m, submatch: submatch, resp: resp});
 					}
@@ -31646,32 +31738,52 @@ var $$IMU_EXPORT$$;
 					]);
 
 					if (!results) {
-						results = get_fb_bigpipe(cache_key, resp);
-						console_log(results);
-						console_error(cache_key, "Unable to find serverjs match for", resp);
-						//console_log(get_fb_serverjs(cache_key, resp));
-						return done(null, false);
+						results = get_fb_bigpipe(cache_key, resp, [
+							/^adp_CometVideoHomeFeedRootQueryRelayPreloader_/,
+							/^adp_CometVideoHomeInjectedFeedUnitQueryRelayPreloader_/
+							// todo: when not logged in (jsmods.instances)
+							///^VideoConfig$/
+						]);
+
+						if (!results) {
+							console_error(cache_key, "Unable to find serverjs match for", resp);
+							//console_log(get_fb_serverjs(cache_key, resp));
+							return done(null, false);
+						}
 					}
 
 					for (var i = 0; i < results.length; i++) {
 						var data = results[i][1].__bbox.result.data;
-						if (!data.video)
+						if (!data.video && !data.story)
 							continue;
 
-						if ((!data.video.story || !data.video.story.attachments) &&
-							(!data.video.videoId || !data.video.id || !data.video.permalink_url)) {
+						var media;
+
+						if (data.video)
+							media = data.video;
+						else if (data.story) // bigpipe
+							media = data;
+
+						if (media.story && media.story.attachments && media.story.attachments.length && media.story.attachments[0].media) {
+							media = media.story.attachments[0].media;
+						}
+
+						if (!media.videoId && !media.id && !media.permalink_url) {
 							continue;
 						}
 
-						var media = data.video;
-						if (media.story && media.story.attachments && media.story.attachments.length && media.story.attachments[0].media)
-							media = data.video.story.attachments[0].media;
-
 						var obj = {
 							extra: {
-								page: media.permalink_url || resp.finalUrl
+								page: media.permalink_url || media.url || resp.finalUrl
 							}
 						};
+
+						var video_data = {};
+						try {
+							var json_video_data = media.video_player_component_renderer.video.video_player_dash_module_renderer.json_encoded_video_data;
+							video_data = JSON_parse(json_video_data);
+						} catch(e) {
+						}
 
 						var urls = [];
 						if (media.playable_url_dash) {
@@ -31681,22 +31793,31 @@ var $$IMU_EXPORT$$;
 							});
 						}
 
-						if (media.playable_url_quality_hd) {
+						if (video_data.dash_manifest) {
 							urls.push({
-								url: media.playable_url_quality_hd,
+								url: "data:application/dash+xml," + encodeURIComponent(video_data.dash_manifest),
+								video: "dash"
+							});
+						}
+
+						if (media.playable_url_quality_hd || video_data.hd_src) {
+							urls.push({
+								url: media.playable_url_quality_hd || video_data.hd_src,
 								video: true
 							});
 						}
 
-						if (media.playable_url) {
+						if (media.playable_url || video_data.sd_src_no_ratelimit || video_data.sd_src) {
 							urls.push({
-								url: media.playable_url,
+								url: media.playable_url || video_data.sd_src_no_ratelimit || video_data.sd_src,
 								video: true
 							});
 						}
 
-						if (media.thumbnailImage && media.thumbnailImage.uri) {
-							urls.push(media.thumbnailImage.uri);
+						// image = bigpipe
+						var thumbnail = media.thumbnailImage || media.image;
+						if (thumbnail && thumbnail.uri) {
+							urls.push(thumbnail.uri);
 						}
 
 						return done(fillobj_urls(urls, obj), 60*60);
