@@ -10241,7 +10241,7 @@ var $$IMU_EXPORT$$;
 		return strings;
 	};
 
-	console_log(process_strings());
+	//console_log(process_strings());
 	// imu:end_exclude
 
 	for (var option in option_to_problems) {
