@@ -25322,6 +25322,9 @@ var $$IMU_EXPORT$$;
 
 		if (domain_nowww === "pornhub.com") {
 			match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:view_video\.php\?(?:.*&)?viewkey=|embed\/+)([^&]+).*$/);
+			if (!match) {
+				match = src.match(/^[a-z]+:\/\/[^/]+\/+embed\/+([^?&#]+)(?:[?#].*)?$/);
+			}
 			if (match) {
 				id = match[1];
 
@@ -52302,7 +52305,12 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/tnx?(sn[0-9]+\.[^/.]*)(?:[?#].*)?$/, "/$1");
 		}
 
-		if (domain === "cdn15764270.ahacdn.me") {
+		if (domain === "cdn15764270.ahacdn.me" ||
+			// http://pornopicshub.com/galleries/digitaldesire.com/5db0b3727a72776b59d08aa804a36380b31895f9/300x400/001.jpg
+			domain_nowww === "pornopicshub.com" ||
+			// http://cdn26375495.ahacdn.me/galleries/digitaldesire.com/5db0b3727a72776b59d08aa804a36380b31895f9/300x400/001.jpg
+			//   http://cdn26375495.ahacdn.me/galleries/digitaldesire.com/5db0b3727a72776b59d08aa804a36380b31895f9/origin/001.jpg
+			domain === "cdn26375495.ahacdn.me") {
 			// https://cdn15764270.ahacdn.me/galleries/idols69.com/4f2d07becc91a9d0be33a26cd35da531d7ad7f7e/300x400/002.jpg
 			//   https://cdn15764270.ahacdn.me/galleries/idols69.com/4f2d07becc91a9d0be33a26cd35da531d7ad7f7e/origin/002.jpg
 			return src.replace(/(\/galleries\/+[^/]*\/+[0-9a-f]+\/+)[0-9]+x[0-9]+(\/+[^/]*\.[^/.]*)(?:[?#].*)?$/,
@@ -63483,7 +63491,7 @@ var $$IMU_EXPORT$$;
 
 		if (domain_nowww === "gfycat.com" || domain_nowww === "redgifs.com") {
 			// https://www.gfycat.com/ko/YellowTornCockatiel
-			match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:[a-z]{2}\/+)?(?:watch\/+)?([a-zA-Z]+)(?:[?#].*)?$/, "$1");
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:(?:[a-z]{2}|ifr)\/+)?(?:watch\/+)?([a-zA-Z]+)(?:[?#].*)?$/, "$1");
 			if (match && options.do_request && options.cb) {
 				var query_gfycat = function(site, id, cb) {
 					var cache_key = site + ":" + id;
@@ -71458,7 +71466,16 @@ var $$IMU_EXPORT$$;
 					};
 				},
 				process: function(done, resp, cache_key) {
-					var match = resp.responseText.match(/window\.location\.href = "(\/[^"]+\?video=[0-9]+)";/);
+					var match = resp.responseText.match(/window\.open\("\/video\/[0-9]+\.html&rand=/);
+					// it needs to be queried twice
+					if (match && !/&rand=/.test(resp.finalUrl)) {
+						return done({
+							url: resp.finalUrl + "&rand=" + get_random_text(10),
+							is_pagelink: true
+						}, false);
+					}
+
+					match = resp.responseText.match(/window\.location\.href = "(\/[^"]+\?video=[0-9]+)";/);
 					if (!match) {
 						console_error(cache_key, "Unable to find redirect match for", resp);
 						return done(null, false);
@@ -71724,6 +71741,18 @@ var $$IMU_EXPORT$$;
 			// https://static-cdn.qmov.com/content/movies/this-is-a-true-deep-anal-romance/photos_thumbs/this-is-a-true-deep-anal-romance_pic2.jpg
 			//   https://static-cdn.qmov.com/content/movies/this-is-a-true-deep-anal-romance/photos/this-is-a-true-deep-anal-romance_pic2.jpg
 			return src.replace(/\/photos_thumbs\//, "/photos/");
+		}
+
+		if (domain === "m.sprashivalka.com") {
+			// https://m.sprashivalka.com/128x128/136/5c4/21d/8b967.jpg
+			//   https://m.sprashivalka.com/orig/136/5c4/21d/8b967.jpg
+			return src.replace(/(:\/\/[^/]+\/+)[0-9]+x[0-9]+(\/+(?:[0-9a-f]{3}\/+){3})/, "$1orig$2");
+		}
+
+		if (domain_nowww === "babesjoy.com") {
+			// http://www.babesjoy.com/galleries/metart-x/thumbs/kay-j-by-alex-lynn-in-quiet-passion-1/1th.jpg
+			//   http://www.babesjoy.com/galleries/metart-x/thumbs/kay-j-by-alex-lynn-in-quiet-passion-1/1.jpg
+			return src.replace(/(\/galleries\/+[^/]+\/+thumbs\/+[^/]+\/+[0-9]+)th(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		}
 
 
