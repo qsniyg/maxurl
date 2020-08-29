@@ -4947,7 +4947,8 @@ var $$IMU_EXPORT$$;
 						"field": "description_userscript"
 					}
 				]
-			}
+			},
+			"ko": "창의 프레임 간 통신을 허용하여 키 바인딩에 대한 지원을 개선합니다. 다만, 유저스크립트를 통해 사용 시, 보안에 위협이 있을 수 있습니다."
 		},
 		"Pop out of frames": {
 			"_info": {
