@@ -122,10 +122,6 @@ msgstr "imágenes"
 msgid "Options Button"
 msgstr "Botón de Opciones"
 
-#. mouseover_ui_rotationbtns.name
-msgid "Rotation Buttons"
-msgstr ""
-
 #. mouseover_allow_partial.options.video.name
 msgid "Video"
 msgstr "Video"
@@ -444,6 +440,14 @@ msgstr ""
 
 #. settings_tabs.description
 msgid "If disabled, all settings will be shown on a single page"
+msgstr ""
+
+#. settings_alphabetical_order.name
+msgid "Alphabetical order"
+msgstr ""
+
+#. settings_alphabetical_order.description
+msgid "Lists options in alphabetical order"
 msgstr ""
 
 #. allow_browser_request.name
@@ -1072,6 +1076,10 @@ msgstr ""
 
 #. mouseover_ui_downloadbtn.description
 msgid "Enables a button to download the image"
+msgstr ""
+
+#. mouseover_ui_rotationbtns.name
+msgid "Rotation Buttons"
 msgstr ""
 
 #. mouseover_ui_rotationbtns.description
