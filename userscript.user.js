@@ -3424,6 +3424,16 @@ var $$IMU_EXPORT$$;
 				]
 			}
 		},
+		"This will allow the popup to open for partially loaded media, but this might break some images": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_allow_partial",
+						"field": "description_userscript"
+					}
+				]
+			}
+		},
 		"Avoid HEAD request for partially loaded media": {
 			"_info": {
 				"instances": [
@@ -4928,6 +4938,16 @@ var $$IMU_EXPORT$$;
 				]
 			}
 		},
+		"Allows communication between frames in windows, improving support for keybindings. Can pose a fingerprinting risk when used through the userscript": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_remote",
+						"field": "description_userscript"
+					}
+				]
+			}
+		},
 		"Pop out of frames": {
 			"_info": {
 				"instances": [
@@ -6364,6 +6384,16 @@ var $$IMU_EXPORT$$;
 				]
 			}
 		},
+		"Allows playback of DASH video streams. Some videos may not work with other websites due to hotlinking protection, and it may even break video playback for some websites. Use with caution.": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_dash_video",
+						"field": "description_userscript"
+					}
+				]
+			}
+		},
 		"Allow HLS videos": {
 			"_info": {
 				"instances": [
@@ -6380,6 +6410,16 @@ var $$IMU_EXPORT$$;
 					{
 						"setting": "allow_hls_video",
 						"field": "description"
+					}
+				]
+			}
+		},
+		"Allows playback of HLS video streams. Some videos may not work with other websites due to hotlinking protection, and it may even break video playback for some websites. Use with caution.": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_hls_video",
+						"field": "description_userscript"
 					}
 				]
 			}
@@ -6520,6 +6560,16 @@ var $$IMU_EXPORT$$;
 					{
 						"setting": "allow_thirdparty_libs",
 						"field": "description"
+					}
+				]
+			}
+		},
+		"Enables rules that use 3rd-party libraries. There is a possible (but unlikely) security risk for the userscript version": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_thirdparty_libs",
+						"field": "description_userscript"
 					}
 				]
 			}
@@ -10216,6 +10266,7 @@ var $$IMU_EXPORT$$;
 
 			add_info_field(setting, "name", meta.name);
 			add_info_field(setting, "description", meta.description);
+			add_info_field(setting, "description_userscript", meta.description_userscript);
 			add_info_field(setting, "number_unit", meta.number_unit);
 
 			if (meta.warning) {

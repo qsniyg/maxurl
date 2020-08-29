@@ -14,7 +14,7 @@ msgid "Export"
 msgstr "내보내기"
 
 msgid "Requires:"
-msgstr "요구사항"
+msgstr "요구사항:"
 
 msgid "category_redirection"
 msgstr "리디렉션"
@@ -677,6 +677,10 @@ msgstr ""
 msgid "This will allow the popup to open for partially loaded media"
 msgstr ""
 
+#. mouseover_allow_partial.description_userscript
+msgid "This will allow the popup to open for partially loaded media, but this might break some images"
+msgstr ""
+
 #. mouseover_partial_avoid_head.name
 msgid "Avoid HEAD request for partially loaded media"
 msgstr ""
@@ -1269,6 +1273,10 @@ msgstr ""
 msgid "Allows communication between frames in windows, improving support for keybindings"
 msgstr ""
 
+#. allow_remote.description_userscript
+msgid "Allows communication between frames in windows, improving support for keybindings. Can pose a fingerprinting risk when used through the userscript"
+msgstr ""
+
 #. mouseover_use_remote.name
 msgid "Pop out of frames"
 msgstr ""
@@ -1837,12 +1845,20 @@ msgstr ""
 msgid "Allows playback of DASH video streams. Some videos may not work with other websites due to hotlinking protection."
 msgstr ""
 
+#. allow_dash_video.description_userscript
+msgid "Allows playback of DASH video streams. Some videos may not work with other websites due to hotlinking protection, and it may even break video playback for some websites. Use with caution."
+msgstr ""
+
 #. allow_hls_video.name
 msgid "Allow HLS videos"
 msgstr ""
 
 #. allow_hls_video.description
 msgid "Allows playback of HLS video streams. Some videos may not work with other websites due to hotlinking protection."
+msgstr ""
+
+#. allow_hls_video.description_userscript
+msgid "Allows playback of HLS video streams. Some videos may not work with other websites due to hotlinking protection, and it may even break video playback for some websites. Use with caution."
 msgstr ""
 
 #. allow_watermark.description
@@ -1899,6 +1915,10 @@ msgstr ""
 
 #. allow_thirdparty_libs.description
 msgid "Enables rules that use 3rd-party libraries"
+msgstr ""
+
+#. allow_thirdparty_libs.description_userscript
+msgid "Enables rules that use 3rd-party libraries. There is a possible (but unlikely) security risk for the userscript version"
 msgstr ""
 
 #. allow_thirdparty_libs.example_websites[0]
