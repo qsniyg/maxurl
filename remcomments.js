@@ -13,6 +13,9 @@ function update() {
 	}
 
 	var newlines = [];
+	var strings = {};
+	var strings_raw = [];
+	var in_strings = false;
 	var in_bigimage = false;
 	var in_falserule = false;
 	var in_exclude = false;
@@ -32,6 +35,36 @@ function update() {
 			continue;
 		}
 
+		if (in_strings) {
+			if (/^\t};$/.test(line)) {
+				in_strings = false;
+				var strings_json = JSON.parse("{" + strings_raw.join("\n") + "}");
+
+				for (var string in strings_json) {
+					delete strings_json[string]._info;
+					if (Object.keys(strings_json[string]).length === 0) {
+						delete strings_json[string];
+					}
+				}
+
+				var stringified_lines = JSON.stringify(strings_json, null, "\t").split("\n");
+				for (var stringified_line of stringified_lines) {
+					if (stringified_line === "{") {
+						stringified_line = "var strings = {";
+					} else if (stringified_line === "}") {
+						stringified_line = "};";
+					}
+
+					stringified_line = "\t" + stringified_line;
+					newlines.push(stringified_line);
+				}
+				continue;
+			}
+
+			strings_raw.push(line);
+			continue;
+		}
+
 		if (!in_bigimage) {
 			if (firstcomment) {
 				if (line.match(/^\s*\/\//)) {
@@ -46,6 +79,12 @@ function update() {
 					newlines.push("// Due to Greasyfork's 2MB limit, all comments within bigimage() had to be removed");
 					newlines.push("// You can view the original source code here: https://github.com/qsniyg/maxurl/blob/master/userscript.user.js");
 				}
+			}
+
+			// todo: maybe make a little more strict? for now it works though
+			if (line.match(/^\tvar strings = {$/)) {
+				in_strings = true;
+				continue;
 			}
 
 			if (line.match(/^\s+\/\/ -- start bigimage --/))
