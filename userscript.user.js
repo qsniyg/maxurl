@@ -1700,60 +1700,108 @@ var $$IMU_EXPORT$$;
 	var strings = {
 		"options_header": {
 			"en": "Options",
-			"ko": "설정",
-			"es": "Opciones"
+			"es": "Opciones",
+			"ko": "설정"
 		},
 		"yes": {
 			"en": "Yes",
-			"ko": "예",
+			"es": "Sí",
 			"fr": "Oui",
-			"es": "Sí"
+			"ko": "예"
 		},
 		"no": {
 			"en": "No",
-			"ko": "아니오",
+			"es": "No",
 			"fr": "Non",
-			"es": "No"
+			"ko": "아니오"
 		},
 		"category_redirection": {
 			"en": "Redirection",
-			"ko": "리디렉션",
-			"es": "Redirección"
+			"es": "Redirección",
+			"ko": "리디렉션"
 		},
 		"Enable redirection": {
-			"ko": "리디렉션 사용",
+			"_info": {
+				"instances": [
+					{
+						"setting": "redirect",
+						"field": "name"
+					}
+				]
+			},
+			"es": "Habilitar redirección",
 			"fr": "Activer la redirection",
-			"es": "Habilitar redirección"
+			"ko": "리디렉션 사용"
 		},
 		"Add to history": {
-			"ko": "브라우저 기록에 추가",
+			"_info": {
+				"instances": [
+					{
+						"setting": "redirect_history",
+						"field": "name"
+					}
+				]
+			},
+			"es": "Agregar al historial",
 			"fr": "Ajouter à l'historique",
-			"es": "Agregar al historial"
+			"ko": "브라우저 기록에 추가"
 		},
 		"Use GET if HEAD is unsupported": {
-			"ko": "HEAD 지원되지 않으면 GET 사용",
+			"_info": {
+				"instances": [
+					{
+						"setting": "canhead_get",
+						"field": "name"
+					}
+				]
+			},
+			"es": "Utilizar GET si HEAD no es soportado",
 			"fr": "Utiliser GET si HEAD n'est pas supporté",
-			"es": "Utilizar GET si HEAD no es soportado"
+			"ko": "HEAD 지원되지 않으면 GET 사용"
 		},
 		"Try finding original page/caption": {
-			"fr": "Essayer de trouver la page d'origine/sous-titre",
-			"es": "Intentar de encontrar la página original/título"
+			"_info": {
+				"instances": [
+					{
+						"setting": "redirect_force_page",
+						"field": "name"
+					}
+				]
+			},
+			"es": "Intentar de encontrar la página original/título",
+			"fr": "Essayer de trouver la page d'origine/sous-titre"
 		},
 		"Enable mouseover popup": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover",
+						"field": "name"
+					}
+				]
+			},
 			"en": "Enable image popup",
-			"ko": "이미지 팝업 사용",
+			"es": "Activar popup de la imagen",
 			"fr": "Activer le popup",
-			"es": "Activar popup de la imagen"
+			"ko": "이미지 팝업 사용"
 		},
 		"Mouseover popup action": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_open_behavior",
+						"field": "name"
+					}
+				]
+			},
 			"en": "Popup action",
-			"ko": "이미지 팝업 작업",
-			"es": "Acción del popup"
+			"es": "Acción del popup",
+			"ko": "이미지 팝업 작업"
 		},
 		"category_popup": {
 			"en": "Popup",
-			"ko": "팝업",
-			"es": "Popup" // same as en
+			"es": "Popup",
+			"ko": "팝업"
 		},
 		"subcategory_settings": {
 			"en": "Settings",
@@ -1765,9 +1813,9 @@ var $$IMU_EXPORT$$;
 		},
 		"subcategory_trigger": {
 			"en": "Trigger",
-			"ko": "트리거",
+			"es": "Acciones del popup",
 			"fr": "Déclencheur",
-			"es": "Acciones del popup" // TODO: More appropriate translation for string es
+			"ko": "트리거"
 		},
 		"subcategory_open_behavior": {
 			"en": "Open Behavior",
@@ -1783,8 +1831,8 @@ var $$IMU_EXPORT$$;
 		},
 		"subcategory_video": {
 			"en": "Video",
-			"ko": "영상",
-			"es": "Video" // same as en
+			"es": "Video",
+			"ko": "영상"
 		},
 		"subcategory_gallery": {
 			"en": "Gallery",
@@ -1792,184 +1840,557 @@ var $$IMU_EXPORT$$;
 		},
 		"subcategory_popup_other": {
 			"en": "Other",
-			"fr": "Autre",
-			"es": "Otro"
+			"es": "Otro",
+			"fr": "Autre"
 		},
 		"New tab": {
-			"ko": "새 탭",
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_open_behavior",
+						"field": "options.newtab.name"
+					}
+				]
+			},
+			"es": "Nueva pestaña",
 			"fr": "Nouvel onglet",
-			"es": "Nueva pestaña"
+			"ko": "새 탭"
 		},
 		"Mouseover popup trigger": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_trigger_behavior",
+						"field": "name"
+					}
+				]
+			},
 			"en": "Popup trigger",
-			// FIXME is 트리거 correct?
-			"ko": "팝업 트리거",
+			"es": "Acción del popup al mover el ratón encima",
 			"fr": "Déclencheur du popup",
-			"es": "Acción del popup al mover el ratón encima"
+			"ko": "팝업 트리거"
 		},
 		"Mouseover": {
-			"ko": "마우스", // FIXME
-			"es": "Mover ratón encima"
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_trigger_behavior",
+						"field": "options.mouse.name"
+					}
+				]
+			},
+			"es": "Mover ratón encima",
+			"ko": "마우스"
 		},
 		"Key trigger": {
-			"ko": "키 바인딩",
-			"es": "Tecla de acción"
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_trigger_behavior",
+						"field": "options.keyboard.name"
+					}
+				]
+			},
+			"es": "Tecla de acción",
+			"ko": "키 바인딩"
 		},
 		"Popup trigger key": {
-			"ko": "팝업 키 바인딩",
-			"es": "Tecla de acción del popup"
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_trigger_key",
+						"field": "name"
+					}
+				]
+			},
+			"es": "Tecla de acción del popup",
+			"ko": "팝업 키 바인딩"
 		},
 		"Popup trigger delay": {
-			"ko": "팝업 작업 지연 시간", // FIXME?
-			"es": "Retraso de acción del popup"
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_trigger_delay",
+						"field": "name"
+					}
+				]
+			},
+			"es": "Retraso de acción del popup",
+			"ko": "팝업 작업 지연 시간"
 		},
 		"seconds": {
-			"ko": "초",
+			"_info": {
+				"instances": [
+					{
+						"setting": "redirect_infobox_timeout",
+						"field": "number_unit"
+					},
+					{
+						"setting": "mouseover_trigger_delay",
+						"field": "number_unit"
+					},
+					{
+						"setting": "mouseover_video_autoloop_max",
+						"field": "number_unit"
+					},
+					{
+						"setting": "mouseover_video_seek_amount",
+						"field": "number_unit"
+					},
+					{
+						"setting": "mouseover_auto_close_popup_time",
+						"field": "number_unit"
+					}
+				]
+			},
 			"es": "segundos",
+			"ko": "초"
 		},
 		"Popup UI": {
-			"ko": "팝업 UI",
-			"es": "Interfaz del Popup"
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_ui",
+						"field": "name"
+					}
+				]
+			},
+			"es": "Interfaz del Popup",
+			"ko": "팝업 UI"
 		},
 		"Opacity": {
-			"ko": "불투명",
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_ui_opacity",
+						"field": "name"
+					}
+				]
+			},
+			"es": "Opacidad",
 			"fr": "Opacité",
-			"es": "Opacidad"
+			"ko": "불투명"
 		},
 		"Gallery counter": {
-			"ko": "갤러리 이미지 수",
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_ui_gallerycounter",
+						"field": "name"
+					}
+				]
+			},
+			"es": "Número de imágenes a contar en la galería",
 			"fr": "Nombre d'images dans la galerie",
-			"es": "Número de imágenes a contar en la galería"
+			"ko": "갤러리 이미지 수"
 		},
 		"Gallery counter max": {
-			"ko": "갤러리 이미지 수의 최대값",
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_ui_gallerymax",
+						"field": "name"
+					}
+				]
+			},
+			"es": "Número máximo de imágenes a contar para la galería",
 			"fr": "Nombre max d'images a compter pour la galerie",
-			"es": "Número máximo de imágenes a contar para la galería"
+			"ko": "갤러리 이미지 수의 최대값"
 		},
 		"images": {
-			"ko": "이미지",
-			"es": "imágenes"
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_ui_gallerymax",
+						"field": "number_unit"
+					},
+					{
+						"setting": "replaceimgs_totallimit",
+						"field": "number_unit"
+					},
+					{
+						"setting": "replaceimgs_domainlimit",
+						"field": "number_unit"
+					}
+				]
+			},
+			"es": "imágenes",
+			"ko": "이미지"
 		},
 		"Options Button": {
-			"ko": "설정 링크",
-			"es": "Botón de Opciones"
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_ui_optionsbtn",
+						"field": "name"
+					}
+				]
+			},
+			"es": "Botón de Opciones",
+			"ko": "설정 링크"
 		},
-		"Rotation Buttons": {},
+		"Rotation Buttons": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_ui_rotationbtns",
+						"field": "name"
+					}
+				]
+			}
+		},
 		"Video": {
-			"ko": "영상",
-			"es": "Video"
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_allow_partial",
+						"field": "options.video.name"
+					}
+				]
+			},
+			"es": "Video",
+			"ko": "영상"
 		},
 		"Media": {
-			"ko": "미디어",
-			"es": "Medios"
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_allow_partial",
+						"field": "options.media.name"
+					}
+				]
+			},
+			"es": "Medios",
+			"ko": "미디어"
 		},
 		"Both images and video": {
-			"ko": "사진+영상",
-			"es": "Imágenes y video"
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_allow_partial",
+						"field": "options.media.description"
+					}
+				]
+			},
+			"es": "Imágenes y video",
+			"ko": "사진+영상"
 		},
 		"Keep popup open until": {
-			"ko": "팝업 닫으려면",
-			"es": "Mantener popup abierto hasta que"
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_close_behavior",
+						"field": "name"
+					}
+				]
+			},
+			"es": "Mantener popup abierto hasta que",
+			"ko": "팝업 닫으려면"
 		},
 		"Any trigger is released": {
-			"ko": "아무 키 놓습니다",
-			"es": "Cualquier acción se deja ir"
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_close_behavior",
+						"field": "options.any.name"
+					}
+				]
+			},
+			"es": "Cualquier acción se deja ir",
+			"ko": "아무 키 놓습니다"
 		},
 		"All triggers are released": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_close_behavior",
+						"field": "options.all.name"
+					}
+				]
+			},
 			"ko": "키 다 놓습니다"
 		},
 		"ESC/Close is pressed": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_close_behavior",
+						"field": "options.esc.name"
+					}
+				]
+			},
 			"ko": "ESC/닫기 누릅니다"
 		},
 		"Popup default zoom": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_zoom_behavior",
+						"field": "name"
+					}
+				]
+			},
 			"ko": "확대/축소 기본값"
 		},
 		"Fit to screen": {
-			"ko": "화면 크기에 맞춤",
-			"fr": "Adapter a l'ecran"
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_zoom_behavior",
+						"field": "options.fit.name"
+					}
+				]
+			},
+			"fr": "Adapter a l'ecran",
+			"ko": "화면 크기에 맞춤"
 		},
 		"Full size": {
-			"ko": "전체 크기",
-			"fr": "Taille réelle"
-			//"fr": "Pleine grandeur" // should it be this instead?
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_zoom_behavior",
+						"field": "options.full.name"
+					}
+				]
+			},
+			"fr": "Taille réelle",
+			"ko": "전체 크기"
 		},
 		"Popup panning method": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_pan_behavior",
+						"field": "name"
+					}
+				]
+			},
 			"ko": "이미지 이동하려면"
 		},
 		"Movement": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_pan_behavior",
+						"field": "options.movement.name"
+					}
+				]
+			},
 			"ko": "마우스 움직입니다"
 		},
 		"Drag": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_pan_behavior",
+						"field": "options.drag.name"
+					}
+				]
+			},
 			"ko": "끕니다"
 		},
-		// replaced with horizontal/vertical scroll action
-		/*"Popup scroll action": {
-			"ko": "마우스 휠 작업"
-		},*/
 		"Zoom": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_scrolly_behavior",
+						"field": "options.zoom.name"
+					}
+				]
+			},
 			"ko": "줌"
 		},
 		"Pan": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_scrolly_behavior",
+						"field": "options.pan.name"
+					},
+					{
+						"setting": "mouseover_scrollx_behavior",
+						"field": "options.pan.name"
+					}
+				]
+			},
 			"ko": "이동"
 		},
 		"None": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_trigger_behavior",
+						"field": "options.none.name"
+					},
+					{
+						"setting": "mouseover_allow_partial",
+						"field": "options.none.name"
+					},
+					{
+						"setting": "mouseover_scrolly_behavior",
+						"field": "options.nothing.name"
+					},
+					{
+						"setting": "mouseover_scrollx_behavior",
+						"field": "options.nothing.name"
+					}
+				]
+			},
 			"ko": "없다"
 		},
 		"Zoom behavior": {
-			// FIXME?
+			"_info": {
+				"instances": [
+					{
+						"setting": "scroll_zoom_behavior",
+						"field": "name"
+					}
+				]
+			},
 			"ko": "줌 동작"
 		},
 		"Fit/Full": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "scroll_zoom_behavior",
+						"field": "options.fitfull.name"
+					}
+				]
+			},
 			"ko": "화면맞춤/전체"
 		},
 		"Incremental": {
-			"ko": "증분",
-			"fr": "Incrémentale"
+			"_info": {
+				"instances": [
+					{
+						"setting": "scroll_zoom_behavior",
+						"field": "options.incremental.name"
+					}
+				]
+			},
+			"fr": "Incrémentale",
+			"ko": "증분"
 		},
 		"Popup position": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_position",
+						"field": "name"
+					}
+				]
+			},
 			"ko": "팝업 위치"
 		},
 		"Mouse cursor": {
 			"ko": "마우스 커서"
 		},
 		"Page middle": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_position",
+						"field": "options.center.name"
+					}
+				]
+			},
 			"ko": "페이지 중간"
 		},
-		// replaced with "Clicking link downloads"
-		/*"Clicking image downloads": {
-			"ko": "이미지 클릭하면 다운로드",
-			"fr": "Cliquer l'image le télécharge"
-		},*/
 		"Popup for plain hyperlinks": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_links",
+						"field": "name"
+					}
+				]
+			},
 			"ko": "일반적인 링크에도 팝업"
 		},
 		"Popup CSS style": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_styles",
+						"field": "name"
+					}
+				]
+			},
 			"ko": "팝업 CSS"
 		},
 		"category_rules": {
 			"en": "Rules",
-			"ko": "규칙",
-			"fr": "Règles"
+			"fr": "Règles",
+			"ko": "규칙"
 		},
 		"Larger watermarked images": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_watermark",
+						"field": "name"
+					}
+				]
+			},
 			"ko": "더 크지만 워터마크 있는 이미지"
 		},
 		"Smaller non-watermarked images": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_smaller",
+						"field": "name"
+					}
+				]
+			},
 			"ko": "더 작지만 워터마크 없는 이미지"
 		},
 		"Possibly different images": {
-			"ko": "다를 수 있는 이미지",
-			"fr": "Images possiblement différentes"
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_possibly_different",
+						"field": "name"
+					}
+				]
+			},
+			"fr": "Images possiblement différentes",
+			"ko": "다를 수 있는 이미지"
 		},
 		"Possibly broken images": {
-			"ko": "손상될 수 있는 이미지",
-			"fr": "Images possiblement brisée"
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_possibly_broken",
+						"field": "name"
+					}
+				]
+			},
+			"fr": "Images possiblement brisée",
+			"ko": "손상될 수 있는 이미지"
 		},
 		"Rules using 3rd-party websites": {
-			"ko": "서드파티 사이트를 사용하는 규칙",
-			"fr": "Règles utilisant des sites 3rd-party"
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_thirdparty",
+						"field": "name"
+					}
+				]
+			},
+			"fr": "Règles utilisant des sites 3rd-party",
+			"ko": "서드파티 사이트를 사용하는 규칙"
 		},
 		"Newsen": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_thirdparty",
+						"field": "example_websites[0]"
+					}
+				]
+			},
 			"ko": "뉴스엔"
 		},
 		"subcategory_rule_specific": {
@@ -1977,79 +2398,126 @@ var $$IMU_EXPORT$$;
 		},
 		"category_website": {
 			"en": "Website",
-			"ko": "웹사이트",
-			"fr": "Site"
+			"fr": "Site",
+			"ko": "웹사이트"
 		},
 		"Use userscript": {
-			"ko": "유저스크립트 사용하기",
-			"fr": "Utiliser ce userscript"
+			"_info": {
+				"instances": [
+					{
+						"setting": "website_inject_imu",
+						"field": "name"
+					}
+				]
+			},
+			"fr": "Utiliser ce userscript",
+			"ko": "유저스크립트 사용하기"
 		},
 		"Website image preview": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "website_image",
+						"field": "name"
+					}
+				]
+			},
 			"ko": "링크 붙인 후 이미지 미리보기"
 		},
 		"saved_refresh_target": {
 			"en": "Saved! Refresh the target page for changes to take effect",
-			"ko": "저장됩니다. 번경사항 적용하려면 대상 웹페이지 다시 로드하십시오",
-			"fr": "Enregistré! Actualiser la page que vous visitez pour que les changements prennent effet" // FIXME: this is a terrible translation
+			"fr": "Enregistré! Actualiser la page que vous visitez pour que les changements prennent effet",
+			"ko": "저장됩니다. 번경사항 적용하려면 대상 웹페이지 다시 로드하십시오"
 		},
 		"saved_no_refresh": {
 			"en": "Saved!",
-			"ko": "저장됩니다",
-			"fr": "Enregistré!"
+			"fr": "Enregistré!",
+			"ko": "저장됩니다"
 		},
 		"save": {
 			"en": "Save",
-			"ko": "저장",
-			"fr": "Enregistrer"
+			"fr": "Enregistrer",
+			"ko": "저장"
 		},
 		"record": {
 			"en": "Record"
-			// "Enregistrer" also means "Record"
 		},
 		"cancel": {
 			"en": "Cancel",
-			"ko": "취소",
-			"fr": "Annuler"
+			"fr": "Annuler",
+			"ko": "취소"
 		},
 		"Mouseover popup (%%1) is needed to display the original version": {
-			"ko": "원본 이미지 보려면 팝업 (%%1) 필요합니다",
-			"fr": "Popup (%%1) est nécessaire pour trouver la version originale"
+			"fr": "Popup (%%1) est nécessaire pour trouver la version originale",
+			"ko": "원본 이미지 보려면 팝업 (%%1) 필요합니다"
 		},
 		"custom headers": {
-			"ko": "특정 헤더",
-			"fr": "en-têtes spéciales"
+			"fr": "en-têtes spéciales",
+			"ko": "특정 헤더"
 		},
-		"forces download": {}, // TODO
+		"forces download": {},
 		"Close": {
-			"ko": "닫기",
-			"fr": "Fermer"
+			"fr": "Fermer",
+			"ko": "닫기"
 		},
 		"Previous": {
-			"ko": "이전",
-			"fr": "Image précédente"
+			"fr": "Image précédente",
+			"ko": "이전"
 		},
 		"Next": {
-			"ko": "다음",
-			"fr": "Image suivante"
+			"fr": "Image suivante",
+			"ko": "다음"
 		},
 		"Left Arrow": {
-			"ko": "왼쪽 화살표",
-			"fr": "Flèche gauche"
+			"fr": "Flèche gauche",
+			"ko": "왼쪽 화살표"
 		},
 		"Right Arrow": {
-			"ko": "오른쪽 화살표",
-			"fr": "Flèche droite"
+			"fr": "Flèche droite",
+			"ko": "오른쪽 화살표"
 		},
 		"Blacklist": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "bigimage_blacklist",
+						"field": "name"
+					}
+				]
+			},
 			"ko": "블랙리스트"
 		},
 		"Blacklist engine": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "bigimage_blacklist_engine",
+						"field": "name"
+					}
+				]
+			},
 			"ko": "블랙리스트 엔진"
 		},
 		"Simple (glob)": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "bigimage_blacklist_engine",
+						"field": "options.glob.name"
+					}
+				]
+			},
 			"ko": "단순 (glob)"
 		},
 		"Regex": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "bigimage_blacklist_engine",
+						"field": "options.regex.name"
+					}
+				]
+			},
 			"ko": "정규식"
 		},
 		"category_extension": {
@@ -2072,12 +2540,4694 @@ var $$IMU_EXPORT$$;
 		},
 		"category_general": {
 			"en": "General",
-			"ko": "일반",
-			"es": "General"
+			"es": "General",
+			"ko": "일반"
 		},
 		"Language": {
-			"ko": "언어",
-			"es": "Lenguaje"
+			"_info": {
+				"instances": [
+					{
+						"setting": "language",
+						"field": "name"
+					}
+				]
+			},
+			"es": "Lenguaje",
+			"ko": "언어"
+		},
+		"Enable extension": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "imu_enabled",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Globally enables or disables the extension": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "imu_enabled",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Language for this extension": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "language",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"English": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "language",
+						"field": "options.en.name"
+					}
+				]
+			}
+		},
+		"한국어": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "language",
+						"field": "options.ko.name"
+					}
+				]
+			}
+		},
+		"Français": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "language",
+						"field": "options.fr.name"
+					}
+				]
+			}
+		},
+		"Español": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "language",
+						"field": "options.es.name"
+					}
+				]
+			}
+		},
+		"Dark mode": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "dark_mode",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Changes the colors to have light text on a dark background": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "dark_mode",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Description below options": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "settings_visible_description",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Shows the description below the options (otherwise the description is only shown when you hover over the option's name)": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "settings_visible_description",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Show disabled options": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "settings_show_disabled",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"If disabled, options that are disabled due to their requirements being unmet will not be displayed": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "settings_show_disabled",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Requirements below disabled options": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "settings_show_requirements",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"If an option is disabled, the requirements to enable the option will be displayed below it": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "settings_show_requirements",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Check for updates": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "check_updates",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Periodically checks for updates. If a new update is available, it will be shown at the top of the options page": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "check_updates",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Update check interval": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "check_update_interval",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"How often to check for updates": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "check_update_interval",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"hours": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "check_update_interval",
+						"field": "number_unit"
+					}
+				]
+			}
+		},
+		"Notify when update is available": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "check_update_notify",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Creates a browser notification when an update is available": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "check_update_notify",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Show advanced settings": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "advanced_options",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"If disabled, settings that might be harder to understand will be hidden": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "advanced_options",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Use tabs": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "settings_tabs",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"If disabled, all settings will be shown on a single page": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "settings_tabs",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Allow using browser XHR": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_browser_request",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"This allows XHR requests to be run in the browser's context if they fail in the extension (e.g. when Tracking Protection is set to High)": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_browser_request",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Retry requests with 503 errors": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "retry_503_times",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Amount of times to retry a request when 503 (service unavailable) is returned by the server": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "retry_503_times",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"times": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "retry_503_times",
+						"field": "number_unit"
+					}
+				]
+			}
+		},
+		"Delay between 503 retries": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "retry_503_ms",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Time (in milliseconds) to delay between retrying requests that received 503": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "retry_503_ms",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"ms": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "retry_503_ms",
+						"field": "number_unit"
+					},
+					{
+						"setting": "mouseover_notallowed_duration",
+						"field": "number_unit"
+					},
+					{
+						"setting": "mouseover_hide_cursor_after",
+						"field": "number_unit"
+					},
+					{
+						"setting": "mouseover_fade_time",
+						"field": "number_unit"
+					},
+					{
+						"setting": "mouseover_mask_fade_time",
+						"field": "number_unit"
+					}
+				]
+			}
+		},
+		"Use `Blob` over `ArrayBuffer`": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "use_blob_over_arraybuffer",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Uses `Blob`s for XHRs instead of `ArrayBuffer`s. Keep this enabled unless your userscript manager doesn't support blob requests": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "use_blob_over_arraybuffer",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Live settings reloading": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_live_settings_reload",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Enables/disables live settings reloading. There shouldn't be a reason to disable this unless you're experiencing issues with this feature": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_live_settings_reload",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Disable keybindings when editing text": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "disable_keybind_when_editing",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Disables IMU keybindings when key events are sent to an input area on the page": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "disable_keybind_when_editing",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Use `GM_download` if available": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "enable_gm_download",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Prefers using `GM_download` over simple browser-based downloads, if the function is available. Some userscript managers download the entire file before displaying a save dialog, which can be undesirable for large video files": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "enable_gm_download",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Maximum size to `GM_download`": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "gm_download_max",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"If a file is larger than this size, use a simple browser-based download instead. Set to `0` for unlimited.": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "gm_download_max",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"MB": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "gm_download_max",
+						"field": "number_unit"
+					}
+				]
+			}
+		},
+		"Force save dialog when downloading": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "enable_webextension_download",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Tries to ensure the 'save as' dialog displays when downloading. This requires the 'downloads' permission to work, and will sometimes not work when custom headers are required.": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "enable_webextension_download",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Redirect images opened in their own tab": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "redirect",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Redirection will add a new entry to the browser's history": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "redirect_history",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Do redirection in extension": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "redirect_extension",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Performs the redirection in the extension instead of the content script. This is significantly faster and shouldn't cause issues in theory, but this option is kept in case of regressions": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "redirect_extension",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Use a GET request to check an image's availability, if the server does not support HEAD requests": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "canhead_get",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Enables methods that use API calls for finding the original page or caption": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "redirect_force_page",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Flickr": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "redirect_force_page",
+						"field": "example_websites[0]"
+					},
+					{
+						"setting": "allow_apicalls",
+						"field": "example_websites[1]"
+					}
+				]
+			}
+		},
+		"SmugMug": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "redirect_force_page",
+						"field": "example_websites[1]"
+					}
+				]
+			}
+		},
+		"...": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "redirect_force_page",
+						"field": "example_websites[2]"
+					},
+					{
+						"setting": "allow_apicalls",
+						"field": "example_websites[2]"
+					}
+				]
+			}
+		},
+		"Show image URL in tooltip": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "redirect_infobox_url",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"If the popup is needed to display the larger version of an image, display the image link in the tooltip": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "redirect_infobox_url",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Hide tooltip after": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "redirect_infobox_timeout",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Hides the tooltip after the specified number of seconds (or when the mouse clicks on it). Set to 0 to never hide automatically": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "redirect_infobox_timeout",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Log IMU object to console": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "print_imu_obj",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Prints the full IMU object to the console whenever a popup/redirect is found": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "print_imu_obj",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Disable when response headers need modifying": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "redirect_disable_for_responseheader",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"This option works around Chrome's migration to manifest v3, redirecting some images to being force-downloaded": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "redirect_disable_for_responseheader",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Redirect to largest without issues": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "redirect_to_no_infobox",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Redirects to the largest image found that doesn't require custom headers or forces download": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "redirect_to_no_infobox",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Show a popup with the larger image when you mouseover an image with the trigger key held (if applicable)": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Determines how the mouseover popup will open": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_open_behavior",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Popup": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_open_behavior",
+						"field": "options.popup.name"
+					},
+					{
+						"setting": "mouseover_close_el_policy",
+						"field": "options.popup.name"
+					}
+				]
+			}
+		},
+		"Download": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_open_behavior",
+						"field": "options.download.name"
+					}
+				]
+			}
+		},
+		"How the popup will get triggered": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_trigger_behavior",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Triggers when your mouse is over the image": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_trigger_behavior",
+						"field": "options.mouse.description"
+					}
+				]
+			}
+		},
+		"Triggers when you press a key sequence when your mouse is over an image": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_trigger_behavior",
+						"field": "options.keyboard.description"
+					}
+				]
+			}
+		},
+		"Disables the popup from being triggered (useful if you only want to use the context menu item)": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_trigger_behavior",
+						"field": "options.none.description"
+					}
+				]
+			}
+		},
+		"Key sequence to trigger the popup": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_trigger_key",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Delay (in seconds) before the popup shows": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_trigger_delay",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Use mouseover event": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_trigger_mouseover",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Uses the mouseover event instead of mousemove to figure out where to trigger the popup. This more closely matches the way other image popup addons work, at the cost of configurability": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_trigger_mouseover",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Popup prevention key": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_trigger_prevent_key",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Holding down this key will prevent the popup from being opened": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_trigger_prevent_key",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Allow showing partially loaded": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_allow_partial",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"This will allow the popup to open for partially loaded media": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_allow_partial",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Avoid HEAD request for partially loaded media": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_partial_avoid_head",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Avoids a possibly unnecessary HEAD request before displaying partially loaded images, which further decreases the delay before opening the popup. This can cause issues if the server returns an error, but still returns an image": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_partial_avoid_head",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Use `blob:` over `data:` URLs": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_use_blob_over_data",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Blob URLs are more efficient, but aren't supported by earlier browsers. Some websites also block `blob:` URLs": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_use_blob_over_data",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Use `not-allowed` cursor when unsupported": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_enable_notallowed",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"If the image isn't supported, the mouse cursor will change to a `not-allowed` cursor for a brief duration": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_enable_notallowed",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Use `not-allowed` cursor when unable to load": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_enable_notallowed_cant_load",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"If the image fails to load, the mouse cursor will change to a `not-allowed` cursor for a brief duration": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_enable_notallowed_cant_load",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"`not-allowed` cursor duration": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_notallowed_duration",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"How long the `not-allowed` cursor should last": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_notallowed_duration",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Exclude page background": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_exclude_page_bg",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Excludes the page background for the popup": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_exclude_page_bg",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Minimum image size": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_minimum_size",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Smallest size acceptable for the popup to open (this option is ignored for background images)": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_minimum_size",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"pixels": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_minimum_size",
+						"field": "number_unit"
+					},
+					{
+						"setting": "mouseover_jitter_threshold",
+						"field": "number_unit"
+					},
+					{
+						"setting": "mouseover_drag_min",
+						"field": "number_unit"
+					}
+				]
+			}
+		},
+		"Exclude `background-image`s": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_exclude_backgroundimages",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Excludes `background-image`s for the popup. Might prevent the popup from working on many images": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_exclude_backgroundimages",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Exclude image tabs": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_exclude_imagetab",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Excludes images that are opened in their own tabs": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_exclude_imagetab",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Exclude if image URL is unchanged": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_exclude_sameimage",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Don't pop up if the new image is the same as the thumbnail image": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_exclude_sameimage",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Only popup for linked images": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_only_links",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Don't pop up if the image isn't hyperlinked": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_only_links",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Popup link for linked images": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_linked_image",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"If the linked image cannot be made larger, pop up for the link instead of the image": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_linked_image",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Exclude image maps": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_exclude_imagemaps",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Don't pop up if the image is an image map (image with multiple clickable areas)": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_exclude_imagemaps",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Show video controls": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_controls",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Shows native video controls. Note that this prevents dragging under Firefox": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_controls",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Toggle video controls": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_controls_key",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Key to toggle whether the video controls are shown": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_controls_key",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Loop video": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_loop",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Allows the video to automatically restart to the beginning after finishing playing": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_loop",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Max duration for looping": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_autoloop_max",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Videos longer than the specified duration will not be automatically looped. Setting this to `0` will always enable looping, regardless of duration.": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_autoloop_max",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Play/pause key": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_playpause_key",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Key to toggle whether the video is playing or paused": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_playpause_key",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Mute video": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_muted",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Mutes the video by default": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_muted",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Toggle mute key": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_mute_key",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Key to toggle whether the video is muted or unmuted": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_mute_key",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Default volume": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_volume",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Default volume for the video": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_volume",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"%": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_volume",
+						"field": "number_unit"
+					},
+					{
+						"setting": "mouseover_video_volume_change_amt",
+						"field": "number_unit"
+					},
+					{
+						"setting": "mouseover_ui_opacity",
+						"field": "number_unit"
+					},
+					{
+						"setting": "mouseover_zoom_custom_percent",
+						"field": "number_unit"
+					}
+				]
+			}
+		},
+		"Volume up key": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_volume_up_key",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Key to increase the volume for the video": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_volume_up_key",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Volume down key": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_volume_down_key",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Key to decrease the volume for the video": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_volume_down_key",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Volume change amount": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_volume_change_amt",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Percent for volume to increase/decrease when using the volume up/down keys": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_volume_change_amt",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Resume playback from source": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_resume_from_source",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"If enabled, playback will resume from where the source video left off": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_resume_from_source",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Resume if different length": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_resume_if_different",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"If disabled, it will not resume if the source video has a different length from the video in the popup (e.g. from a preview video to a full one)": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_resume_if_different",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Pause source video": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_pause_source",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Pauses the source video once the popup has opened": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_pause_source",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Seek amount": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_seek_amount",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Amount of time to seek forward/back when using the seek keys": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_seek_amount",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Seek left key": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_seek_left_key",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Key to seek backwards in a video by the specified amount": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_seek_left_key",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Seek right key": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_seek_right_key",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Key to seek forwards in a video by the specified amount": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_seek_right_key",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Vertical scroll seeks": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_seek_vertical_scroll",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Scrolling vertically will seek the video forward/backward": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_seek_vertical_scroll",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Horizontal scroll seeks": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_seek_horizontal_scroll",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Scrolling horizontally will seek the video forward/backward": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_seek_horizontal_scroll",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Previous frame key": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_frame_prev_key",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Rewinds the video one \"frame\" backward. Due to current limitations, the frame size is static (but configurable), and might not match the video's framerate": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_frame_prev_key",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Next frame key": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_frame_next_key",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Advances the video one \"frame\" forward. Due to current limitations, the frame size is static (but configurable), and might not match the video's framerate": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_frame_next_key",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Frame rate": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_framerate",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Frame rate for videos to seek forward/back with the next/previous frame keys": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_framerate",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"FPS": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_framerate",
+						"field": "number_unit"
+					}
+				]
+			}
+		},
+		"Speed down key": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_speed_down_key",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Key to speed the video down by a specified amount": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_speed_down_key",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Speed up key": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_speed_up_key",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Key to speed the video up by a specified amount": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_speed_up_key",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Speed up/down amount": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_speed_amount",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"How many times faster/slower to speed the video up/down": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_speed_amount",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"x": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_speed_amount",
+						"field": "number_unit"
+					},
+					{
+						"setting": "scroll_incremental_mult",
+						"field": "number_unit"
+					}
+				]
+			}
+		},
+		"Reset speed key": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_reset_speed_key",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Resets the video playback to normal speed": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_reset_speed_key",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Enables a UI on top of the popup": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_ui",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Opacity of the UI on top of the popup": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_ui_opacity",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Use safe glyphs": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_ui_use_safe_glyphs",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Uses glyphs that are more likely to be available on all fonts. Enable this option if the following characters render as boxes: 🡇 🡐 🡒": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_ui_use_safe_glyphs",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Media resolution": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_ui_imagesize",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Displays the original media dimensions on top of the UI": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_ui_imagesize",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Zoom percent": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_ui_zoomlevel",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Displays the current zoom level on top of the UI": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_ui_zoomlevel",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"File size": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_ui_filesize",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Displays the media's file size on top of the UI. For the moment, this will not work with partially loaded media if 'Avoid HEAD request for partially loaded media' is enabled.": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_ui_filesize",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Enables a gallery counter on top of the UI": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_ui_gallerycounter",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Maximum amount of images to check in the counter (this can be slightly CPU-intensive)": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_ui_gallerymax",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Gallery buttons": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_ui_gallerybtns",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Enables buttons to go left/right in the gallery": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_ui_gallerybtns",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Close Button": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_ui_closebtn",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Enables a button to close the popup": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_ui_closebtn",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Enables a button to go to this page": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_ui_optionsbtn",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Download Button": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_ui_downloadbtn",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Enables a button to download the image": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_ui_downloadbtn",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Enables buttons on the UI to rotate the image by 90 degrees": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_ui_rotationbtns",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Caption": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_ui_caption",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Shows the image's caption (if available) at the top": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_ui_caption",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Wrap caption text": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_ui_wrap_caption",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Wraps the caption if it's too long": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_ui_wrap_caption",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Link original page in caption": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_ui_caption_link_page",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Links the original page (if it exists) in the caption": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_ui_caption_link_page",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Underline links": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_ui_link_underline",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Adds an underline to links (such as the original page)": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_ui_link_underline",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Closes the popup when the selected condition is met": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_close_behavior",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Don't close until mouse leaves": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_close_need_mouseout",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"If true, this keeps the popup open even if all triggers are released if the mouse is still over the image": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_close_need_mouseout",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Threshold to leave image": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_jitter_threshold",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"How many pixels outside of the image before the cursor is considered to have left the image": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_jitter_threshold",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Leaving thumbnail cancels loading": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_cancel_popup_when_elout",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Cancels the current popup loading when the cursor has left the thumbnail image": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_cancel_popup_when_elout",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"ESC cancels loading": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_cancel_popup_with_esc",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Cancels the current popup loading if ESC is pressed": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_cancel_popup_with_esc",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Releasing triggers cancels loading": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_cancel_popup_when_release",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Cancels the current popup loading if all/any triggers are released (as set by the \"Keep popup open until\" setting)": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_cancel_popup_when_release",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Automatically close after timeout": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_auto_close_popup",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Closes the popup automatically after a specified period of time has elapsed": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_auto_close_popup",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Timeout to close popup": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_auto_close_popup_time",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Amount of time to elapse before automatically closing the popup": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_auto_close_popup_time",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Use hold key": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_use_hold_key",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Enables the use of a hold key that, when pressed, will keep the popup open": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_use_hold_key",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Hold key": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_hold_key",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Hold key that, when pressed, will keep the popup open": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_hold_key",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Center popup on hold": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_hold_position_center",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Centers the popup to the middle of the page when the popup is held": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_hold_position_center",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Close popup on unhold": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_hold_close_unhold",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Closes the popup when the hold key is pressed again, after having previously held the popup": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_hold_close_unhold",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Enable pointer events on hold": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_hold_unclickthrough",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Enables previously disabled pointer events when the popup is held": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_hold_unclickthrough",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Clicking outside the popup closes": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_close_click_outside",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Closes the popup when the mouse clicks outside of it": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_close_click_outside",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Close when leaving": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_close_el_policy",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Closes the popup when the mouse leaves the thumbnail element, the popup, or either": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_close_el_policy",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Thumbnail": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_close_el_policy",
+						"field": "options.thumbnail.name"
+					}
+				]
+			}
+		},
+		"Both": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_close_el_policy",
+						"field": "options.both.name"
+					}
+				]
+			}
+		},
+		"Use invisible element when waiting": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_wait_use_el",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Creates an invisible element under the cursor when waiting for the popup instead of a style element (can improve performance on websites with many elements, but prevents the cursor from clicking anything while loading the popup)": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_wait_use_el",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Add popup link to history": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_add_to_history",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Adds the image/video link opened through the popup to the browser's history": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_add_to_history",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Allow inter-frame communication": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_remote",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Allows communication between frames in windows, improving support for keybindings": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_remote",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Pop out of frames": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_use_remote",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Opens the popup on the top frame instead of within iframes. Still in beta": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_use_remote",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"How the popup should be initially sized": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_zoom_behavior",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Fill screen": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_zoom_behavior",
+						"field": "options.fill.name"
+					}
+				]
+			}
+		},
+		"Custom size": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_zoom_behavior",
+						"field": "options.custom.name"
+					}
+				]
+			}
+		},
+		"Custom zoom percent": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_zoom_custom_percent",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Custom percent to initially size the popup": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_zoom_custom_percent",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Maximum width": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_zoom_max_width",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Maximum width for the initial popup size. Set to `0` for unlimited.": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_zoom_max_width",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"px": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_zoom_max_width",
+						"field": "number_unit"
+					},
+					{
+						"setting": "mouseover_zoom_max_height",
+						"field": "number_unit"
+					},
+					{
+						"setting": "mouseover_mouse_inactivity_jitter",
+						"field": "number_unit"
+					}
+				]
+			}
+		},
+		"Maximum height": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_zoom_max_height",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Maximum height for the initial popup size. Set to `0` for unlimited.": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_zoom_max_height",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"How the popup should be panned when larger than the screen": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_pan_behavior",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"The popup pans as you move your mouse": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_pan_behavior",
+						"field": "options.movement.description"
+					}
+				]
+			}
+		},
+		"Clicking and dragging pans the popup": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_pan_behavior",
+						"field": "options.drag.description"
+					}
+				]
+			}
+		},
+		"Invert movement": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_movement_inverted",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Inverts the movement of the mouse. For example, if the mouse moves left, the popup moves right. If disabled, it feels more like the popup is being invisibly dragged.": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_movement_inverted",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Minimum drag amount": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_drag_min",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"How many pixels the mouse should move to start a drag": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_drag_min",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Vertical scroll action": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_scrolly_behavior",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"How the popup reacts to a vertical scroll/mouse wheel event": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_scrolly_behavior",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Gallery": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_scrolly_behavior",
+						"field": "options.gallery.name"
+					},
+					{
+						"setting": "mouseover_scrollx_behavior",
+						"field": "options.gallery.name"
+					}
+				]
+			}
+		},
+		"Horizontal scroll action": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_scrollx_behavior",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"How the popup reacts to a horizontal scroll/mouse wheel event": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_scrollx_behavior",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Override scroll outside of popup": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "scroll_override_page",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Scroll events performed outside of the popup are still acted on": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "scroll_override_page",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Zoom origin": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "scroll_zoom_origin",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"The point on the image it's zoomed in/out from": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "scroll_zoom_origin",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Cursor": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "scroll_zoom_origin",
+						"field": "options.cursor.name"
+					}
+				]
+			}
+		},
+		"Center": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "scroll_zoom_origin",
+						"field": "options.center.name"
+					}
+				]
+			}
+		},
+		"How zooming should work": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "scroll_zoom_behavior",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Toggles between the full size, and fit-to-screen": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "scroll_zoom_behavior",
+						"field": "options.fitfull.description"
+					}
+				]
+			}
+		},
+		"Incremental zoom multiplier": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "scroll_incremental_mult",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"How much to zoom in/out by (for incremental zooming)": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "scroll_incremental_mult",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Move with cursor": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_move_with_cursor",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Moves the popup as the cursor moves": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_move_with_cursor",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Move within page": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_move_within_page",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Ensures the popup doesn't leave the page": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_move_within_page",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Zoom out fully to close": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "zoom_out_to_close",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Closes the popup if you zoom out past the minimum zoom": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "zoom_out_to_close",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Where the popup will appear": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_position",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Cursor middle": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_position",
+						"field": "options.cursor.name"
+					}
+				]
+			}
+		},
+		"Underneath the mouse cursor": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_position",
+						"field": "options.cursor.description"
+					}
+				]
+			}
+		},
+		"Beside cursor": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_position",
+						"field": "options.beside_cursor.name"
+					}
+				]
+			}
+		},
+		"Prevent cursor overlap": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_prevent_cursor_overlap",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Prevents the image from overlapping with the cursor": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_prevent_cursor_overlap",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Hide cursor over popup": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_hide_cursor",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Hides the cursor when the mouse is over the popup": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_hide_cursor",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Hide cursor after": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_hide_cursor_after",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Hides the cursor over the popup after a specified period of time (in milliseconds), 0 always hides the cursor": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_hide_cursor_after",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Mouse jitter threshold": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_mouse_inactivity_jitter",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Threshold for mouse movement before the mouse cursor is shown again, 0 always shows the cursor after any movement": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_mouse_inactivity_jitter",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Disable pointer events": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_clickthrough",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Enabling this option will allow you to click on links underneath the popup": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_clickthrough",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Link image": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_add_link",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Adds a link to the image in the popup": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_add_link",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Link video": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_add_video_link",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Adds a link to the video in the popup": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_add_video_link",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Clicking link downloads": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_download",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Instead of opening the link in a new tab, it will download the image/video instead": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_download",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Download key": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_download_key",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Downloads the image in the popup when this key is pressed": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_download_key",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Open in new tab key": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_open_new_tab_key",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Opens the image in the popup in a new tab when this key is pressed": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_open_new_tab_key",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Open in background tab key": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_open_bg_tab_key",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Opens the image in the popup in a new tab without switching to it when this key is pressed": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_open_bg_tab_key",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Open options key": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_open_options_key",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Opens this page in a new tab when this key is pressed": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_open_options_key",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Open original page key": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_open_orig_page_key",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Opens the original page (if available) when this key is pressed": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_open_orig_page_key",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Rotate left key": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_rotate_left_key",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Rotates the popup 90 degrees to the left": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_rotate_left_key",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Rotate right key": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_rotate_right_key",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Rotates the popup 90 degrees to the right": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_rotate_right_key",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Horizontal flip key": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_flip_horizontal_key",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Flips the image horizontally": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_flip_horizontal_key",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Vertical flip key": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_flip_vertical_key",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Flips the image vertically": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_flip_vertical_key",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Zoom in key": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_zoom_in_key",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Incrementally zooms into the image": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_zoom_in_key",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Zoom out key": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_zoom_out_key",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Incrementally zooms out of the image": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_zoom_out_key",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Full zoom key": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_zoom_full_key",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Sets the image to be at a 100% zoom, even if it overflows the screen": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_zoom_full_key",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Fit screen key": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_zoom_fit_key",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Sets the image to either be at a 100% zoom, or to fit the screen, whichever is smaller": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_zoom_fit_key",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Toggle fullscreen key": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_fullscreen_key",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Toggles fullscreen mode for the image/video in the popup": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_fullscreen_key",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Whether or not the popup should also open for plain hyperlinks": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_links",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Only for links that look valid": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_only_valid_links",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Enabling this option will only allow links to be popped up if they look valid (such as if they have a known image/video extension, or are explicitly supported)": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_only_valid_links",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Popup for `<iframe>`": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_allow_iframe_el",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Allows `<iframe>` elements to be popped up as well. Storing images/videos in this way is rather uncommon, but it can allow embeds to be supported": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_allow_iframe_el",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Popup for `<canvas>`": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_allow_canvas_el",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Allows `<canvas>` elements to be popped up as well. This will likely cause popups with any kind of web-based games, so it's recommended to keep this disabled": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_allow_canvas_el",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Popup for `<svg>`": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_allow_svg_el",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Allows `<svg>` elements to be popped up as well. These are usually used for icons, and can occasionally cause problems for websites that overlay icons on top of images": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_allow_svg_el",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Enable gallery": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_enable_gallery",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Toggles whether gallery detection support should be enabled": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_enable_gallery",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Cycle gallery": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_gallery_cycle",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Going to the previous image for the first image will lead to the last image and vice-versa": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_gallery_cycle",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Previous gallery item": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_gallery_prev_key",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Key to trigger the previous gallery item": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_gallery_prev_key",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Next gallery item": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_gallery_next_key",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Key to trigger the next gallery item": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_gallery_next_key",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Move to next when video finishes": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_gallery_move_after_video",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Moves to the next gallery item when a video finishes playing": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_gallery_move_after_video",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Custom CSS styles for the popup": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_styles",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Documentation": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_styles",
+						"field": "documentation.title"
+					},
+					{
+						"setting": "bigimage_blacklist",
+						"field": "documentation.title"
+					}
+				]
+			}
+		},
+		"Most valid CSS is supported, with these differences:\n<ul><li>Multiline comments (<code>/* ... */</code>) are currently not supported</li>\n<li>Single comments (<code>// ...</code>) are supported, but only at the beginning of a line</li>\n<li><code>%thumburl%</code> is the URL of the thumbnail image. For example, you could use it like this: <code>background-image: url(%thumburl%)</code><br />\nThe URL is properly encoded, so quotes are not necessary (but not harmful either)</li>\n<li><code>%fullurl%</code> is the URL of the full image. If IMU fails to find a larger image, it will be the same as <code>%thumburl%</code></li>\n<li>Styles are <code>!important</code> by default</li></ul>": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_styles",
+						"field": "documentation.value"
+					}
+				]
+			}
+		},
+		"Enable popup fade": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_enable_fade",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Enables a fade in/out effect when the popup is opened/closed": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_enable_fade",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Enable zoom effect": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_enable_zoom_effect",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Toggles whether the popup should 'zoom' when opened/closed": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_enable_zoom_effect",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Move from thumbnail when zooming": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_zoom_effect_move",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Moves the popup from the thumbnail to the final location while zooming. The animation can be a little rough": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_zoom_effect_move",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Popup animation time": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_fade_time",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Fade/zoom animation duration (in milliseconds) for the popup": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_fade_time",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Enable background CSS": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_enable_mask_styles",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Toggles whether CSS styles for the background when the popup is active is enabled": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_enable_mask_styles",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Background CSS style": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_mask_styles2",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"CSS style for the background when the popup is active. See the documentation for Popup CSS style for more information (the thumb/full URL variables aren't supported here)": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_mask_styles2",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Background fade": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_mask_fade_time",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Fade in/out time (in milliseconds) for the page background, set to 0 to disable": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_mask_fade_time",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Button CSS style": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_ui_styles",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Custom CSS styles for the popup's UI buttons. See the documentation for Popup CSS style for more information (the thumb/full URL variables aren't supported here)": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_ui_styles",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Don't popup blacklisted images": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_apply_blacklist",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"This option prevents a popup from appearing altogether for blacklisted images": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_apply_blacklist",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Apply blacklist for host websites": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "apply_blacklist_host",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"This option prevents the script from applying any popups to host websites that are in the blacklist. For example, adding `twitter.com` to the blacklist would prevent any popup from opening on twitter.com. If disabled, this option only applies to image URLs (such as twimg.com), not host URLs": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "apply_blacklist_host",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Don't popup video for image": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_matching_media_types",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"This option prevents the popup from loading a video when the source was an image. Vice-versa is also applied": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_matching_media_types",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Support `pointer-events:none`": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_support_pointerevents_none",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Manually looks through every element on the page to see if the cursor is beneath them. Supports more images, but also results in a higher CPU load for websites such as Facebook.": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_support_pointerevents_none",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Replaces the website's IMU instance with the userscript": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "website_inject_imu",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Enables a preview of the image on the Image Max URL website": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "website_image",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"IMU entry in context menu": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "extension_contextmenu",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Enables a custom entry for this extension in the right click/context menu": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "extension_contextmenu",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Videos": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_video",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Allows videos to be returned": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_video",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Allow DASH videos": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_dash_video",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Allows playback of DASH video streams. Some videos may not work with other websites due to hotlinking protection.": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_dash_video",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Allow HLS videos": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_hls_video",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Allows playback of HLS video streams. Some videos may not work with other websites due to hotlinking protection.": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_hls_video",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Enables rules that return larger images that include watermarks": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_watermark",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Stock photo websites": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_watermark",
+						"field": "example_websites[0]"
+					}
+				]
+			}
+		},
+		"Enables rules that return smaller images without watermarks": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_smaller",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Enables rules that return images that possibly differ": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_possibly_different",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"YouTube video thumbnails": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_possibly_different",
+						"field": "example_websites[0]"
+					}
+				]
+			}
+		},
+		"Enables rules that return images that are possibly broken": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_possibly_broken",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Possibly upscaled images": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_possibly_upscaled",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Enables rules that return images that are possibly upscaled": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_possibly_upscaled",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Enables rules that use 3rd-party websites": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_thirdparty",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Rules using API calls": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_apicalls",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Enables rules that use API calls. Strongly recommended to keep this enabled": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_apicalls",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Instagram": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_apicalls",
+						"field": "example_websites[0]"
+					}
+				]
+			}
+		},
+		"Rules using 3rd-party libraries": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_thirdparty_libs",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Enables rules that use 3rd-party libraries": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_thirdparty_libs",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Sites using testcookie (slowAES)": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_thirdparty_libs",
+						"field": "example_websites[0]"
+					}
+				]
+			}
+		},
+		"Rules executing 3rd-party code": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_thirdparty_code",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Enables rules that execute arbitrary 3rd-party code stored on websites.": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_thirdparty_code",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"This could lead to security risks, please be careful when using this option!": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_thirdparty_code",
+						"field": "warning.true"
+					}
+				]
+			}
+		},
+		"Encrypted YouTube videos": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_thirdparty_code",
+						"field": "example_websites[0]"
+					}
+				]
+			}
+		},
+		"Rules using brute-force": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_bruteforce",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Enables rules that require using brute force (through binary search) to find the original image": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_bruteforce",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"This could lead to rate limiting or IP bans": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_bruteforce",
+						"field": "warning.true"
+					},
+					{
+						"setting": "replaceimgs_auto",
+						"field": "warning.true"
+					}
+				]
+			}
+		},
+		"Deezer": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_bruteforce",
+						"field": "example_websites[0]"
+					}
+				]
+			}
+		},
+		"DeviantArt: Prefer size over original": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "deviantart_prefer_size",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Prefers a larger (but not upscaled) thumbnail image over a smaller original animated image": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "deviantart_prefer_size",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Imgur: Use source image": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "imgur_source",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"If a source image is found for Imgur, try using it instead": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "imgur_source",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Instagram: Use native API": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "instagram_use_app_api",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Uses Instagram's native API if possible, requires you to be logged into Instagram": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "instagram_use_app_api",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Instagram: Don't use web API": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "instagram_dont_use_web",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Avoids using Instagram's web API if possible, which increases performance, but will occasionally sacrifice quality for videos": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "instagram_dont_use_web",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Instagram: Use albums for post thumbnails": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "instagram_gallery_postlink",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Queries Instagram for albums when using the popup on a post thumbnail": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "instagram_gallery_postlink",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Snapchat: Use original media without captions": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "snapchat_orig_media",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Prefers using original media instead of media with captions and tags overlayed": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "snapchat_orig_media",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"TikTok: Don't use watermarked videos": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "tiktok_no_watermarks",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Uses non-watermarked videos for TikTok if possible. This will introduce an extra delay when loading the video as two extra requests need to be performed.": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "tiktok_no_watermarks",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"TikTok: 3rd-party watermark removal": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "tiktok_thirdparty",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Uses a 3rd-party watermark removal site for TikTok.\nI do not endorse any of the sites supported. They may log your IP address and videos you submit. Use this option with caution.\n`LQ` = Low quality, `PL` = Public log": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "tiktok_thirdparty",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"(none)": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "tiktok_thirdparty",
+						"field": "options.null.name"
+					}
+				]
+			}
+		},
+		"ttloader.com": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "tiktok_thirdparty",
+						"field": "options.ttloader.com.name"
+					}
+				]
+			}
+		},
+		"onlinetik.com": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "tiktok_thirdparty",
+						"field": "options.onlinetik.com.name"
+					}
+				]
+			}
+		},
+		"tiktokdownloader.in": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "tiktok_thirdparty",
+						"field": "options.tiktokdownloader.in.name"
+					}
+				]
+			}
+		},
+		"savevideo.ninja": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "tiktok_thirdparty",
+						"field": "options.savevideo.ninja:tt.name"
+					}
+				]
+			}
+		},
+		"keeptiktok.com (LQ)": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "tiktok_thirdparty",
+						"field": "options.keeptiktok.com.name"
+					}
+				]
+			}
+		},
+		"ssstiktok.io (LQ)": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "tiktok_thirdparty",
+						"field": "options.ssstiktok.io.name"
+					}
+				]
+			}
+		},
+		"musicallydown.com (LQ/PL)": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "tiktok_thirdparty",
+						"field": "options.musicallydown.com.name"
+					}
+				]
+			}
+		},
+		"snaptik.app (LQ)": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "tiktok_thirdparty",
+						"field": "options.snaptik.app.name"
+					}
+				]
+			}
+		},
+		"Tumblr: API key": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "tumblr_api_key",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"API key for finding larger images on Tumblr": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "tumblr_api_key",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"A list of URLs that are blacklisted from being processed": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "bigimage_blacklist",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"The examples below are written for the simple (glob) engine, not the regex engine. The glob engine is generally based on the UNIX glob syntax.<br />\n<ul><br />\n<li><code>google.com</code> will block https://google.com/, https://www.google.com/, https://abcdef.google.com/, https://def.abc.google.com/, etc.</li>\n<li><code>abc.google.com</code> will block https://abc.google.com/, https://def.abc.google.com/, etc.</li>\n<li><code>*.google.com</code> will block https://www.google.com/, https://def.abc.google.com/, etc. but not https://google.com/</li>\n<li><code>google.*/</code> will block https://google.com/, https://www.google.co.uk, etc.</li>\n<li><code>http://google.com</code> will block http://google.com/, but not https://google.com/, http://www.google.com/, etc.</li>\n<li><code>google.com/test</code> will block https://google.com/test, https://www.google.com/test/abcdef, but not https://google.com/, etc.</li>\n<li><code>google.com/*/test</code> will block https://google.com/abc/test, but not https://google.com/test or https://google.com/abc/def/test</li>\n<li><code>google.com/**/test</code> will block https://google.com/abc/test, https://google.com/abc/def/test, https://google.com/abc/def/ghi/test, etc. but not https://google.com/test</li>\n<li><code>g??gle.com</code> will block https://google.com/, https://gaagle.com/, https://goagle.com/, etc.</li>\n<li><code>google.{com,co.uk}</code> will block https://google.com/ and https://google.co.uk/</li>\n<li><code>g[oau]ogle.com</code> will block https://google.com/, https://gaogle.com/, and http://www.guogle.com/</li>\n<li><code>g[0-9]ogle.com</code> will block https://g0ogle.com/, https://g1ogle.com/, etc. (up to https://g9ogle.com/)</li>\n</ul>": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "bigimage_blacklist",
+						"field": "documentation.value"
+					}
+				]
+			}
+		},
+		"How the blacklist should be processed": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "bigimage_blacklist_engine",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Enable trigger key": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "replaceimgs_enable_keybinding",
+						"field": "name"
+					},
+					{
+						"setting": "highlightimgs_enable_keybinding",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Enables the use of the trigger key to run it without needing to use the menu": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "replaceimgs_enable_keybinding",
+						"field": "description"
+					},
+					{
+						"setting": "highlightimgs_enable_keybinding",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Trigger key": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "replaceimgs_keybinding",
+						"field": "name"
+					},
+					{
+						"setting": "highlightimgs_keybinding",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Trigger keybinding that will run the Replace Images function": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "replaceimgs_keybinding",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Automatically replace images": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "replaceimgs_auto",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Automatically replace images to larger versions on pages you view": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "replaceimgs_auto",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Use data URLs": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "replaceimgs_usedata",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Uses data:// URLs instead of image links. Disabling this may improve compatibility with some bulk image downloader extensions": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "replaceimgs_usedata",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Wait until image is fully loaded": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "replaceimgs_wait_fullyloaded",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Waits until the image being replaced is fully loaded before moving on to the next image": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "replaceimgs_wait_fullyloaded",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Max images to process at once": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "replaceimgs_totallimit",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"The maximum amount of images to process at once": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "replaceimgs_totallimit",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Max images per domain at once": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "replaceimgs_domainlimit",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"The maximum amount of images per domain to process at once": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "replaceimgs_domainlimit",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Replace images": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "replaceimgs_replaceimgs",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Replaces images to their larger versions when the button is pressed": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "replaceimgs_replaceimgs",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Add links": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "replaceimgs_addlinks",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Adds links around images if a link doesn't already exist": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "replaceimgs_addlinks",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Replace links": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "replaceimgs_replacelinks",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Replaces links if they already exist": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "replaceimgs_replacelinks",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Trigger keybinding that will run the Highlight Images function": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "highlightimgs_keybinding",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Enable button": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "highlightimgs_enable",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Enables the 'Highlight Images' button": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "highlightimgs_enable",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Automatically highlight images": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "highlightimgs_auto",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Automatically highlights images as you view pages": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "highlightimgs_auto",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Always": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "highlightimgs_auto",
+						"field": "options.always.name"
+					}
+				]
+			}
+		},
+		"Hover": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "highlightimgs_auto",
+						"field": "options.hover.name"
+					}
+				]
+			}
+		},
+		"When hovering over an image": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "highlightimgs_auto",
+						"field": "options.hover.description"
+					}
+				]
+			}
+		},
+		"Never": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "highlightimgs_auto",
+						"field": "options.never.name"
+					}
+				]
+			}
+		},
+		"Only explicitly supported images": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "highlightimgs_onlysupported",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Only highlights images that can be made larger or the original version can be found": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "highlightimgs_onlysupported",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Highlight CSS": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "highlightimgs_css",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"CSS style to apply for highlight. See the documentation for Popup CSS style for more information (the thumb/full URL variables aren't supported here)": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "highlightimgs_css",
+						"field": "description"
+					}
+				]
+			}
 		}
 	};
 
