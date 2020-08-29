@@ -30,8 +30,7 @@ var start = function(userscript) {
         pofiles[supported_language].push("\"MIME-Version: 1.0\\n\"");
         pofiles[supported_language].push("\"Content-Type: text/plain; charset=UTF-8\\n\"");
         pofiles[supported_language].push("\"Content-Transfer-Encoding: 8bit\\n\"");
-        if (supported_language in supported_language_names)
-            pofiles[supported_language].push("\"Language: " + language_name + "\\n\"");
+        pofiles[supported_language].push("\"Language: " + supported_language + "\\n\"");
 
         pofiles[supported_language].push("");
     }
