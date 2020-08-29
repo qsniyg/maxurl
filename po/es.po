@@ -1,3 +1,13 @@
+# Spanish translation of Image Max URL
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Image Max URL\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: Spanish\n"
+
 msgid "options_header"
 msgstr "Opciones"
 

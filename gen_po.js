@@ -3,6 +3,13 @@ const fs = require("fs");
 var start = function(userscript) {
     var pofiles = {};
 
+    var supported_language_names = {
+        "en": "English",
+        "es": "Spanish",
+        "fr": "French",
+        "ko": "Korean"
+    };
+
     var supported_languages = userscript.match(/\n\tvar supported_languages = (\[.*?\]);\n/);
     if (!supported_languages) {
         console.error("Unable to find supported languages match in userscript");
@@ -13,6 +20,20 @@ var start = function(userscript) {
         if (supported_language === "en")
             continue;
         pofiles[supported_language] = [];
+
+        var language_name = supported_language_names[supported_language] || supported_language;
+        pofiles[supported_language].push("# " + language_name + " translation of Image Max URL");
+        pofiles[supported_language].push("#");
+        pofiles[supported_language].push("msgid \"\"");
+        pofiles[supported_language].push("msgstr \"\"");
+        pofiles[supported_language].push("\"Project-Id-Version: Image Max URL\\n\"");
+        pofiles[supported_language].push("\"MIME-Version: 1.0\\n\"");
+        pofiles[supported_language].push("\"Content-Type: text/plain; charset=UTF-8\\n\"");
+        pofiles[supported_language].push("\"Content-Transfer-Encoding: 8bit\\n\"");
+        if (supported_language in supported_language_names)
+            pofiles[supported_language].push("\"Language: " + language_name + "\\n\"");
+
+        pofiles[supported_language].push("");
     }
 
     var strings = userscript.match(/\n\tvar strings = ({[\s\S]+?});\n/);
