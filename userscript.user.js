@@ -1701,7 +1701,7 @@ var $$IMU_EXPORT$$;
 		"options_header": {
 			"en": "Options",
 			"es": "Opciones",
-			"ko": "설정"
+			"ko": "옵션"
 		},
 		"yes": {
 			"en": "Yes",
@@ -1828,11 +1828,13 @@ var $$IMU_EXPORT$$;
 		},
 		"subcategory_open_behavior": {
 			"en": "Open Behavior",
-			"es": "Comportamiento al Abrir"
+			"es": "Comportamiento al Abrir",
+			"ko": "열기 동작"
 		},
 		"subcategory_close_behavior": {
 			"en": "Close Behavior",
-			"es": "Comportamiento al Cerrar"
+			"es": "Comportamiento al Cerrar",
+			"ko": "닫기 동작"
 		},
 		"subcategory_behavior": {
 			"en": "Popup Behavior",
@@ -2096,7 +2098,7 @@ var $$IMU_EXPORT$$;
 				]
 			},
 			"es": "Cualquier acción se deja ir",
-			"ko": "아무 키 놓습니다"
+			"ko": "어떤 동작에도 닫힘"
 		},
 		"All triggers are released": {
 			"_info": {
@@ -2107,7 +2109,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "키 다 놓습니다"
+			"ko": "모든 동작에서 닫힘"
 		},
 		"ESC/Close is pressed": {
 			"_info": {
@@ -2118,7 +2120,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "ESC/닫기 누릅니다"
+			"ko": "ESC/닫기 누르기"
 		},
 		"Popup default zoom": {
 			"_info": {
@@ -2634,7 +2636,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "다크 모드"
 		},
 		"Changes the colors to have light text on a dark background": {
 			"_info": {
@@ -2644,7 +2647,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "어두운 배경, 밝은 텍스트가 표시되도록 변경합니다."
 		},
 		"Description below options": {
 			"_info": {
@@ -2654,7 +2658,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "옵션 아래에 설명 표시"
 		},
 		"Shows the description below the options (otherwise the description is only shown when you hover over the option's name)": {
 			"_info": {
@@ -2664,7 +2669,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "옵션 아래에 설명 표시 (비활성화 시, 옵션 이름 위에 마우스를 올려 놓을 때만 설명이 표시됨)"
 		},
 		"Show disabled options": {
 			"_info": {
@@ -2674,7 +2680,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "비활성화된 설정 표시"
 		},
 		"If disabled, options that are disabled due to their requirements being unmet will not be displayed": {
 			"_info": {
@@ -2694,7 +2701,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "비활성화된 옵션 아래의 요구 사항"
 		},
 		"If an option is disabled, the requirements to enable the option will be displayed below it": {
 			"_info": {
@@ -2704,7 +2712,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "옵션이 비활성화되면 옵션을 활성화하기 위한 요구 사항이 아래에 표시됨"
 		},
 		"Check for updates": {
 			"_info": {
@@ -2714,7 +2723,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "업데이트 확인"
 		},
 		"Periodically checks for updates. If a new update is available, it will be shown at the top of the options page": {
 			"_info": {
@@ -2734,7 +2744,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "업데이트 확인 간격"
 		},
 		"How often to check for updates": {
 			"_info": {
@@ -2744,7 +2755,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "업데이트 확인 빈도"
 		},
 		"hours": {
 			"_info": {
@@ -2754,7 +2766,8 @@ var $$IMU_EXPORT$$;
 						"field": "number_unit"
 					}
 				]
-			}
+			},
+			"ko": "시간"
 		},
 		"Notify when update is available": {
 			"_info": {
@@ -2764,7 +2777,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "업데이트가 있을 때 알림"
 		},
 		"Creates a browser notification when an update is available": {
 			"_info": {
@@ -2774,7 +2788,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "업데이트가 있을 때 브라우저 알림을 받습니다."
 		},
 		"Show advanced settings": {
 			"_info": {
@@ -2784,7 +2799,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "고급 설정 표시"
 		},
 		"If disabled, settings that might be harder to understand will be hidden": {
 			"_info": {
@@ -2794,7 +2810,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "비활성화 시, 이해하기 어려울 수 있는 설정이 숨겨짐"
 		},
 		"Use tabs": {
 			"_info": {
@@ -2804,7 +2821,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "탭 사용"
 		},
 		"If disabled, all settings will be shown on a single page": {
 			"_info": {
@@ -2814,7 +2832,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "비활성화 시, 모든 설정이 한 페이지에 표시됩니다."
 		},
 		"Alphabetical order": {
 			"_info": {
@@ -3070,7 +3089,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "자신의 탭에서 열린 이미지 리디렉션"
 		},
 		"Redirection will add a new entry to the browser's history": {
 			"_info": {
@@ -3080,7 +3100,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "리디렉션 시, 브라우저의 기록에 새 항목이 추가됨"
 		},
 		"Do redirection in extension": {
 			"_info": {
@@ -3168,7 +3189,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "툴팁에 이미지 URL 표시"
 		},
 		"If the popup is needed to display the larger version of an image, display the image link in the tooltip": {
 			"_info": {
@@ -3178,7 +3200,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "더 큰 버전의 이미지를 표시하기 위해 팝업이 필요한 경우 이미지 링크를 툴팁에 표시함"
 		},
 		"Hide tooltip after": {
 			"_info": {
@@ -3188,7 +3211,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "툴팁 숨기기"
 		},
 		"Hides the tooltip after the specified number of seconds (or when the mouse clicks on it). Set to 0 to never hide automatically": {
 			"_info": {
@@ -3198,7 +3222,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "지정된 시간(초) 후에(또는 마우스가 툴팁을 클릭할 때) 툴팁을 숨긴다. 자동으로 숨기지 않으려면 0으로 설정"
 		},
 		"Log IMU object to console": {
 			"_info": {
@@ -3248,7 +3273,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "문제없이 최대로 리디렉션"
 		},
 		"Redirects to the largest image found that doesn't require custom headers or forces download": {
 			"_info": {
@@ -3258,7 +3284,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "사용자 지정 헤더나 강제 다운로드가 필요 없는 가장 큰 이미지로 리디렉션"
 		},
 		"Show a popup with the larger image when you mouseover an image with the trigger key held (if applicable)": {
 			"_info": {
@@ -3268,7 +3295,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "트리거 키를 누른 상태로 영상을 마우스로 가리킬 때 더 큰 이미지로 팝업 표시 (가능한 경우)"
 		},
 		"Determines how the mouseover popup will open": {
 			"_info": {
@@ -3278,7 +3306,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "마우스오버 팝업이 열리는 방식"
 		},
 		"Popup": {
 			"_info": {
@@ -3292,7 +3321,8 @@ var $$IMU_EXPORT$$;
 						"field": "options.popup.name"
 					}
 				]
-			}
+			},
+			"ko": "팝업"
 		},
 		"Download": {
 			"_info": {
@@ -3312,7 +3342,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "팝업 작동 방법"
 		},
 		"Triggers when your mouse is over the image": {
 			"_info": {
@@ -3352,7 +3383,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "팝업이 작동하는 키"
 		},
 		"Delay (in seconds) before the popup shows": {
 			"_info": {
@@ -3362,7 +3394,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "팝업이 표시될 때까지 지연 (초)"
 		},
 		"Use mouseover event": {
 			"_info": {
@@ -3392,7 +3425,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "팝업 방지 키"
 		},
 		"Holding down this key will prevent the popup from being opened": {
 			"_info": {
@@ -3402,7 +3436,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "이 키를 누르면 팝업이 열리지 않음"
 		},
 		"Allow showing partially loaded": {
 			"_info": {
@@ -3412,7 +3447,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "부분적으로 로드된 상태로 표시 허용"
 		},
 		"This will allow the popup to open for partially loaded media": {
 			"_info": {
@@ -3483,7 +3519,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "지원되지 않을 때 허용되지 않는 커서를 사용"
 		},
 		"If the image isn't supported, the mouse cursor will change to a `not-allowed` cursor for a brief duration": {
 			"_info": {
@@ -3493,7 +3530,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "이미지가 지원되지 않으면 마우스 커서가 잠시 동안 허용되지 않는 커서로 변경됨"
 		},
 		"Use `not-allowed` cursor when unable to load": {
 			"_info": {
@@ -3513,7 +3551,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "이미지를 불러올 수 없으면 마우스 커서가 잠시 동안 허용되지 않는 커서로 변경됨"
 		},
 		"`not-allowed` cursor duration": {
 			"_info": {
@@ -3543,7 +3582,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "페이지 배경 제외"
 		},
 		"Excludes the page background for the popup": {
 			"_info": {
@@ -3553,7 +3593,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "팝업에 대한 페이지 배경 제외"
 		},
 		"Minimum image size": {
 			"_info": {
@@ -3563,7 +3604,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "최소 이미지 크기"
 		},
 		"Smallest size acceptable for the popup to open (this option is ignored for background images)": {
 			"_info": {
@@ -3573,7 +3615,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "팝업이 열릴 수 있는 최소 크기 (백그라운드 이미지에서는 이 옵션이 무시됨)"
 		},
 		"pixels": {
 			"_info": {
@@ -3601,7 +3644,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "배경 이미지 제외"
 		},
 		"Excludes `background-image`s for the popup. Might prevent the popup from working on many images": {
 			"_info": {
@@ -3611,7 +3655,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "팝업의 배경 이미지 제외. 팝업이 많은 이미지에서 작동하지 않을 수 있음"
 		},
 		"Exclude image tabs": {
 			"_info": {
@@ -3621,7 +3666,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "이미지 탭 제외"
 		},
 		"Excludes images that are opened in their own tabs": {
 			"_info": {
@@ -3631,7 +3677,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "자신의 탭에서 열린 이미지 제외"
 		},
 		"Exclude if image URL is unchanged": {
 			"_info": {
@@ -3641,7 +3688,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "이미지 URL이 변경되지 않은 경우 제외"
 		},
 		"Don't pop up if the new image is the same as the thumbnail image": {
 			"_info": {
@@ -3651,7 +3699,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "새 이미지가 미리보기(thumbnail) 이미지와 동일한 경우 팝업 안 함"
 		},
 		"Only popup for linked images": {
 			"_info": {
@@ -3661,7 +3710,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "링크된 이미지의 팝업만"
 		},
 		"Don't pop up if the image isn't hyperlinked": {
 			"_info": {
@@ -3671,7 +3721,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "이미지가 하이퍼링크되지 않은 경우 팝업 안 함"
 		},
 		"Popup link for linked images": {
 			"_info": {
@@ -3681,7 +3732,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "링크된 이미지에 대한 팝업 링크"
 		},
 		"If the linked image cannot be made larger, pop up for the link instead of the image": {
 			"_info": {
@@ -3691,7 +3743,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "링크된 이미지를 더 크게 만들 수 없는 경우 이미지 대신 링크 팝업"
 		},
 		"Exclude image maps": {
 			"_info": {
@@ -3701,7 +3754,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "이미지 맵 제외"
 		},
 		"Don't pop up if the image is an image map (image with multiple clickable areas)": {
 			"_info": {
@@ -3711,7 +3765,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "이미지가 이미지 맵(클릭 가능한 영역이 여러 개를 가진 이미지)인 경우 팝업 표시 안 함"
 		},
 		"Show video controls": {
 			"_info": {
@@ -4577,7 +4632,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "선택한 조건이 충족되면 팝업 닫기"
 		},
 		"Don't close until mouse leaves": {
 			"_info": {
@@ -4587,7 +4643,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "마우스가 떠날 때까지 닫지 마십시오."
 		},
 		"If true, this keeps the popup open even if all triggers are released if the mouse is still over the image": {
 			"_info": {
@@ -4597,7 +4654,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "활성화 시, 마우스가 이미지 위에 있는 경우 모든 동작에서 닫힘을 선택했더라도 팝업이 계속 열린 상태로 유지됨"
 		},
 		"Threshold to leave image": {
 			"_info": {
@@ -4607,7 +4665,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "이미지를 떠나기 위한 임계값"
 		},
 		"How many pixels outside of the image before the cursor is considered to have left the image": {
 			"_info": {
@@ -4617,7 +4676,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "커서가 이미지를 떠난 것으로 파악할 수 있는 이미지 픽셀 수"
 		},
 		"Leaving thumbnail cancels loading": {
 			"_info": {
@@ -4627,7 +4687,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "미리보기를 남기면 로딩이 취소됨"
 		},
 		"Cancels the current popup loading when the cursor has left the thumbnail image": {
 			"_info": {
@@ -4637,7 +4698,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "커서가 축소 이미지에서 벗어날 때 현재 팝업 로딩 취소"
 		},
 		"ESC cancels loading": {
 			"_info": {
@@ -4647,7 +4709,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "ESC 로딩 취소"
 		},
 		"Cancels the current popup loading if ESC is pressed": {
 			"_info": {
@@ -4657,7 +4720,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "ESC를 누르면 현재 팝업 로딩이 취소됨"
 		},
 		"Releasing triggers cancels loading": {
 			"_info": {
@@ -4667,7 +4731,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "트리거를 해제하면 로딩이 취소됨"
 		},
 		"Cancels the current popup loading if all/any triggers are released (as set by the \"Keep popup open until\" setting)": {
 			"_info": {
@@ -4677,7 +4742,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "어떤/모든 동작에 닫힘을 선택한 경우 현재 팝업 로딩 취소 (\"팝업을 닫으려면\" 설정에 의존함)"
 		},
 		"Automatically close after timeout": {
 			"_info": {
@@ -4687,7 +4753,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "시간 초과 후 자동으로 닫기"
 		},
 		"Closes the popup automatically after a specified period of time has elapsed": {
 			"_info": {
@@ -4697,7 +4764,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "지정된 시간이 경과한 후 팝업 자동 닫기"
 		},
 		"Timeout to close popup": {
 			"_info": {
@@ -4707,7 +4775,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "팝업을 닫기 위한 시간 초과 시간(초)"
 		},
 		"Amount of time to elapse before automatically closing the popup": {
 			"_info": {
@@ -4717,7 +4786,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "팝업을 자동으로 닫기 전 경과 시간"
 		},
 		"Use hold key": {
 			"_info": {
@@ -4727,7 +4797,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "고정 키 사용"
 		},
 		"Enables the use of a hold key that, when pressed, will keep the popup open": {
 			"_info": {
@@ -4737,7 +4808,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "누르면 팝업이 열린 상태로 유지되는 고정 키 사용"
 		},
 		"Hold key": {
 			"_info": {
@@ -4747,7 +4819,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "고정 키"
 		},
 		"Hold key that, when pressed, will keep the popup open": {
 			"_info": {
@@ -4757,7 +4830,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "고정 키를 누르면 팝업이 열린 상태로 유지됨"
 		},
 		"Center popup on hold": {
 			"_info": {
@@ -4767,7 +4841,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "중앙 팝업 고정"
 		},
 		"Centers the popup to the middle of the page when the popup is held": {
 			"_info": {
@@ -4777,7 +4852,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "팝업이 열릴 때 팝업을 페이지 중앙에 배치"
 		},
 		"Close popup on unhold": {
 			"_info": {
@@ -4787,7 +4863,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "고정 해제 시, 팝업 닫기"
 		},
 		"Closes the popup when the hold key is pressed again, after having previously held the popup": {
 			"_info": {
@@ -4797,7 +4874,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "팝업을 고정한 후 고정 키를 다시 누르면 팝업이 닫힘"
 		},
 		"Enable pointer events on hold": {
 			"_info": {
@@ -4807,7 +4885,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "포인터 이벤트 고정 사용"
 		},
 		"Enables previously disabled pointer events when the popup is held": {
 			"_info": {
@@ -4817,7 +4896,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "팝업이 고정될 때 이전에 비활성화된 포인터 이벤트 활성화"
 		},
 		"Clicking outside the popup closes": {
 			"_info": {
@@ -4827,7 +4907,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "팝업 바깥쪽을 클릭하면 닫힘"
 		},
 		"Closes the popup when the mouse clicks outside of it": {
 			"_info": {
@@ -4837,7 +4918,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "마우스가 팝업 바깥쪽을 클릭할 때 팝업 닫기"
 		},
 		"Close when leaving": {
 			"_info": {
@@ -4847,7 +4929,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "떠날 때 닫기"
 		},
 		"Closes the popup when the mouse leaves the thumbnail element, the popup, or either": {
 			"_info": {
@@ -4857,7 +4940,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "마우스가 미리보기(썸네일), 팝업 또는 둘 중 하나를 떠날 때 팝업 닫기"
 		},
 		"Thumbnail": {
 			"_info": {
@@ -4867,7 +4951,8 @@ var $$IMU_EXPORT$$;
 						"field": "options.thumbnail.name"
 					}
 				]
-			}
+			},
+			"ko": "미리보기(썸네일)"
 		},
 		"Both": {
 			"_info": {
@@ -4877,7 +4962,8 @@ var $$IMU_EXPORT$$;
 						"field": "options.both.name"
 					}
 				]
-			}
+			},
+			"ko": "둘 다"
 		},
 		"Use invisible element when waiting": {
 			"_info": {
@@ -4927,7 +5013,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "프레임 간 통신 허용"
 		},
 		"Allows communication between frames in windows, improving support for keybindings": {
 			"_info": {
@@ -4937,7 +5024,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "창의 프레임 간 통신을 허용하여 키 바인딩에 대한 지원을 개선한다."
 		},
 		"Allows communication between frames in windows, improving support for keybindings. Can pose a fingerprinting risk when used through the userscript": {
 			"_info": {
@@ -4958,7 +5046,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "프레임에서 팝업"
 		},
 		"Opens the popup on the top frame instead of within iframes. Still in beta": {
 			"_info": {
@@ -4968,7 +5057,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "iframes 대신 상단 프레임의 팝업 열기 ─ 베타 상태"
 		},
 		"How the popup should be initially sized": {
 			"_info": {
@@ -4978,7 +5068,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "팝업의 초기 크기 조정 방법"
 		},
 		"Fill screen": {
 			"_info": {
@@ -4988,7 +5079,8 @@ var $$IMU_EXPORT$$;
 						"field": "options.fill.name"
 					}
 				]
-			}
+			},
+			"ko": "화면 채우기"
 		},
 		"Custom size": {
 			"_info": {
@@ -4998,7 +5090,8 @@ var $$IMU_EXPORT$$;
 						"field": "options.custom.name"
 					}
 				]
-			}
+			},
+			"ko": "맞춤 크기"
 		},
 		"Custom zoom percent": {
 			"_info": {
@@ -5008,7 +5101,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "사용자 지정 확대/축소 비율"
 		},
 		"Custom percent to initially size the popup": {
 			"_info": {
@@ -5018,7 +5112,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "팝업 설정 시, 초기 사용자 지정 확대/축소 비율"
 		},
 		"Maximum width": {
 			"_info": {
@@ -5028,7 +5123,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "최대 가로 길이"
 		},
 		"Maximum width for the initial popup size. Set to `0` for unlimited.": {
 			"_info": {
@@ -5038,7 +5134,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "초기 팝업 크기의 최대 가로 길이. 무제한의 경우 0으로 설정하십시오."
 		},
 		"px": {
 			"_info": {
@@ -5066,7 +5163,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "최대 세로 길이"
 		},
 		"Maximum height for the initial popup size. Set to `0` for unlimited.": {
 			"_info": {
@@ -5076,7 +5174,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "초기 팝업 크기의 최대 세로 길이. 무제한으로 '0'으로 설정한다."
 		},
 		"How the popup should be panned when larger than the screen": {
 			"_info": {
@@ -5250,7 +5349,8 @@ var $$IMU_EXPORT$$;
 						"field": "options.cursor.name"
 					}
 				]
-			}
+			},
+			"ko": "커서"
 		},
 		"Center": {
 			"_info": {
@@ -5350,7 +5450,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "닫기 위해 완전히 축소"
 		},
 		"Closes the popup if you zoom out past the minimum zoom": {
 			"_info": {
@@ -5360,7 +5461,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "최소 크기로 축소할 경우 팝업 닫기"
 		},
 		"Where the popup will appear": {
 			"_info": {
@@ -5370,7 +5472,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "팝업이 표시되는 위치"
 		},
 		"Cursor middle": {
 			"_info": {
@@ -5380,7 +5483,8 @@ var $$IMU_EXPORT$$;
 						"field": "options.cursor.name"
 					}
 				]
-			}
+			},
+			"ko": "커서 중간"
 		},
 		"Underneath the mouse cursor": {
 			"_info": {
@@ -5390,7 +5494,8 @@ var $$IMU_EXPORT$$;
 						"field": "options.cursor.description"
 					}
 				]
-			}
+			},
+			"ko": "마우스 커서 아래"
 		},
 		"Beside cursor": {
 			"_info": {
@@ -5400,7 +5505,8 @@ var $$IMU_EXPORT$$;
 						"field": "options.beside_cursor.name"
 					}
 				]
-			}
+			},
+			"ko": "커서 옆"
 		},
 		"Prevent cursor overlap": {
 			"_info": {
@@ -5850,7 +5956,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "일반 하이퍼링크의 팝업 열기 여부"
 		},
 		"Only for links that look valid": {
 			"_info": {
@@ -5860,7 +5967,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "유효해 보이는 링크에만 해당"
 		},
 		"Enabling this option will only allow links to be popped up if they look valid (such as if they have a known image/video extension, or are explicitly supported)": {
 			"_info": {
@@ -5870,7 +5978,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "이 옵션을 활성화하면 링크가 유효한 것으로 보이는 경우에만(예: 알려진 이미지/비디오 확장명이 있거나 명시적으로 지원되는 경우) 링크가 팝업될 수 있음"
 		},
 		"Popup for `<iframe>`": {
 			"_info": {
@@ -5880,7 +5989,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "<iframe>에 대한 팝업"
 		},
 		"Allows `<iframe>` elements to be popped up as well. Storing images/videos in this way is rather uncommon, but it can allow embeds to be supported": {
 			"_info": {
@@ -5890,7 +6000,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "<iframe>의 요소들도 팝업이 작동하도록 허용. 이런 식으로 이미지/비디오를 저장하는 것은 다소 드문 일이지만, embeds를 지원할 수 있음"
 		},
 		"Popup for `<canvas>`": {
 			"_info": {
@@ -5900,7 +6011,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "<canvas>에 대한 팝업\n"
 		},
 		"Allows `<canvas>` elements to be popped up as well. This will likely cause popups with any kind of web-based games, so it's recommended to keep this disabled": {
 			"_info": {
@@ -5910,7 +6022,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "<canvas>의 요소들도 팝업이 작동하도록 허용. 이것은 어떤 종류의 웹 기반 게임이라도 팝업을 유발할 가능성이 높으므로, 이 기능을 사용하지 않도록 유지하는 것이 좋음"
 		},
 		"Popup for `<svg>`": {
 			"_info": {
@@ -5920,7 +6033,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "<svg>에 대한 팝업"
 		},
 		"Allows `<svg>` elements to be popped up as well. These are usually used for icons, and can occasionally cause problems for websites that overlay icons on top of images": {
 			"_info": {
@@ -5930,7 +6044,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "<canvas>의 요소들도 팝업이 작동하도록 허용. 이것은 보통 아이콘에 사용되며, 때때로 이미지 위에 아이콘을 오버레이하는 웹 사이트에 문제를 일으킬 수 있음"
 		},
 		"Enable gallery": {
 			"_info": {
@@ -6234,7 +6349,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "블랙리스트에 있는 이미지 팝업 안 함"
 		},
 		"This option prevents a popup from appearing altogether for blacklisted images": {
 			"_info": {
@@ -6244,7 +6360,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "이 옵션을 선택하면 블랙리스트에 있는 이미지에 대한 팝업이 모두 표시되지 않음"
 		},
 		"Apply blacklist for host websites": {
 			"_info": {
@@ -6254,7 +6371,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "호스트 웹 사이트에 블랙리스트 적용"
 		},
 		"This option prevents the script from applying any popups to host websites that are in the blacklist. For example, adding `twitter.com` to the blacklist would prevent any popup from opening on twitter.com. If disabled, this option only applies to image URLs (such as twimg.com), not host URLs": {
 			"_info": {
@@ -6264,7 +6382,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "이 옵션은 스크립트가 블랙리스트에 있는 호스트 웹 사이트에 팝업을 적용하는 것을 방지한다. 예를 들어 twitter.com을 블랙리스트에 추가하면 twitter.com에서 어떤 팝업도 열리지 않게 된다. 비활성화된 경우 이 옵션은 호스트 URL이 아닌 이미지 URL(예: twimg.com)에만 적용됨"
 		},
 		"Don't popup video for image": {
 			"_info": {
@@ -6274,7 +6393,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "이미지에 대한 비디오 팝업 안 함"
 		},
 		"This option prevents the popup from loading a video when the source was an image. Vice-versa is also applied": {
 			"_info": {
@@ -6284,7 +6404,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "원본이 이미지일 때 팝업이 비디오를 로드하는 것을 방지함.  반대의 경우도 적용함."
 		},
 		"Support `pointer-events:none`": {
 			"_info": {
@@ -6294,7 +6415,8 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			}
+			},
+			"ko": "`포인터 이벤트 : 없음` 지원"
 		},
 		"Manually looks through every element on the page to see if the cursor is beneath them. Supports more images, but also results in a higher CPU load for websites such as Facebook.": {
 			"_info": {
@@ -6304,7 +6426,8 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			}
+			},
+			"ko": "커서 아래 있는 페이지의 모든 요소를 수동으로 확인합니다. 더 많은 이미지를 지원하지만, Facebook과 같은 웹사이트의 CPU 부하가 더 높아진다."
 		},
 		"Replaces the website's IMU instance with the userscript": {
 			"_info": {
