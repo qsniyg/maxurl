@@ -1715,6 +1715,12 @@ var $$IMU_EXPORT$$;
 			"fr": "Non",
 			"ko": "아니오"
 		},
+		"Import": {
+			"ko": "가져오기"
+		},
+		"Export": {
+			"ko": "내보내기"
+		},
 		"category_redirection": {
 			"en": "Redirection",
 			"es": "Redirección",

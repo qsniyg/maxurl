@@ -7,6 +7,12 @@ msgstr "예"
 msgid "no"
 msgstr "아니오"
 
+msgid "Import"
+msgstr "가져오기"
+
+msgid "Export"
+msgstr "내보내기"
+
 msgid "category_redirection"
 msgstr "리디렉션"
 

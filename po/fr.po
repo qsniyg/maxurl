@@ -7,6 +7,12 @@ msgstr "Oui"
 msgid "no"
 msgstr "Non"
 
+msgid "Import"
+msgstr ""
+
+msgid "Export"
+msgstr ""
+
 msgid "category_redirection"
 msgstr ""
 
