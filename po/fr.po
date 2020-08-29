@@ -13,6 +13,9 @@ msgstr ""
 msgid "Export"
 msgstr ""
 
+msgid "Requires:"
+msgstr ""
+
 msgid "category_redirection"
 msgstr ""
 

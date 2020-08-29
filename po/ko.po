@@ -13,6 +13,9 @@ msgstr "가져오기"
 msgid "Export"
 msgstr "내보내기"
 
+msgid "Requires:"
+msgstr "요구사항"
+
 msgid "category_redirection"
 msgstr "리디렉션"
 

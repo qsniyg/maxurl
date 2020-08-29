@@ -1721,6 +1721,9 @@ var $$IMU_EXPORT$$;
 		"Export": {
 			"ko": "내보내기"
 		},
+		"Requires:": {
+			"ko": "요구사항:"
+		},
 		"category_redirection": {
 			"en": "Redirection",
 			"es": "Redirección",
