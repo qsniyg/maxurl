@@ -679,7 +679,7 @@ msgstr ""
 
 #. mouseover_allow_partial.description_userscript
 msgid "This will allow the popup to open for partially loaded media, but this might break some images"
-msgstr ""
+msgstr "부분적으로 불러온 미디어에 대해 팝업이 열릴 수 있지만 이로 인해 일부 이미지가 손상될 수 있음"
 
 #. mouseover_partial_avoid_head.name
 msgid "Avoid HEAD request for partially loaded media"

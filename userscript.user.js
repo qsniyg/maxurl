@@ -3432,7 +3432,8 @@ var $$IMU_EXPORT$$;
 						"field": "description_userscript"
 					}
 				]
-			}
+			},
+			"ko": "부분적으로 불러온 미디어에 대해 팝업이 열릴 수 있지만 이로 인해 일부 이미지가 손상될 수 있음"
 		},
 		"Avoid HEAD request for partially loaded media": {
 			"_info": {
