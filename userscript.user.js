@@ -5090,7 +5090,7 @@ var $$IMU_EXPORT$$;
 		return strings;
 	};
 
-	console_log(process_strings());
+	//console_log(process_strings());
 
 	for (var option in option_to_problems) {
 		var problem = option_to_problems[option];
