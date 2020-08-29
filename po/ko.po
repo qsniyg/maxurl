@@ -1661,7 +1661,7 @@ msgstr "<iframe>의 요소들도 팝업이 작동하도록 허용. 이런 식으
 
 #. mouseover_allow_canvas_el.name
 msgid "Popup for `<canvas>`"
-msgstr "<canvas>에 대한 팝업\n"
+msgstr "<canvas>에 대한 팝업"
 
 #. mouseover_allow_canvas_el.description
 msgid "Allows `<canvas>` elements to be popped up as well. This will likely cause popups with any kind of web-based games, so it's recommended to keep this disabled"

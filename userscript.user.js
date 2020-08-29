@@ -6012,7 +6012,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "<canvas>에 대한 팝업\n"
+			"ko": "<canvas>에 대한 팝업"
 		},
 		"Allows `<canvas>` elements to be popped up as well. This will likely cause popups with any kind of web-based games, so it's recommended to keep this disabled": {
 			"_info": {
