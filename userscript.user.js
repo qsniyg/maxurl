@@ -4595,7 +4595,7 @@ var $$IMU_EXPORT$$;
 			name: "Rules using brute-force",
 			description: "Enables rules that require using brute force (through binary search) to find the original image",
 			warning: {
-				"true": "This can lead to rate limiting or IP bans"
+				"true": "This could lead to rate limiting or IP bans"
 			},
 			category: "rules",
 			example_websites: [
@@ -4965,6 +4965,99 @@ var $$IMU_EXPORT$$;
 			"highlightimages": "subcategory_highlightimages"
 		}
 	};
+
+	var process_strings = function() {
+		/*for (var string in strings) {
+			if (!("en" in strings[string])) {
+				strings[string]["en"] = string;
+			}
+		}
+
+		var string_order = ["_info", "en"];
+		for (var string in strings) {
+			var value = strings[string];
+			var copied = deepcopy(value);
+
+			strings[string] = {};
+			var keys = Object.keys(value).sort(function(a, b) {
+				var a_index = array_indexof(string_order, a);
+				var b_index = array_indexof(string_order, b);
+
+				if (a_index < 0) {
+					if (b_index >= 0)
+						return 1;
+					else
+						return a.localeCompare(b);
+				} else {
+					if (b_index < 0)
+						return -1;
+					else
+						return a_index - b_index;
+				}
+			});
+
+			if (keys[0] !== "en") {
+				console_error("'en' should be first", string, keys);
+			}
+
+			for (var i = 0; i < keys.length; i++) {
+				strings[string][keys[i]] = value[keys[i]];
+			}
+		}*/
+
+		for (var setting in settings_meta) {
+			var meta = settings_meta[setting];
+
+			var add_info_field = function(setting, fieldname, value) {
+				if (!value)
+					return;
+
+				if (!(value in strings)) {
+					strings[value] = {};
+				}
+
+				if (!("_info" in strings[value])) {
+					strings[value]._info = {};
+				}
+
+				if (!("instances" in strings[value]._info)) {
+					strings[value]._info.instances = [];
+				}
+
+				var instance = {
+					setting: setting,
+					field: fieldname
+				};
+
+				var instancejson = JSON_stringify(instance);
+
+				var instances = strings[value]._info.instances;
+				var found = false;
+				for (var i = 0; i < instances.length; i++) {
+					if (JSON_stringify(instances[i]) === instancejson) {
+						found = true;
+						break;
+					}
+				}
+
+				if (!found)
+					instances.push(instance);
+			};
+
+			add_info_field(setting, "name", meta.name);
+			add_info_field(setting, "description", meta.description);
+
+			if (meta.warning) {
+				for (var key in meta.warning) {
+					add_info_field(setting, "warning." + key, meta.warning[key]);
+				}
+			}
+		}
+
+		return strings;
+	};
+
+	//console_log(process_strings());
 
 	for (var option in option_to_problems) {
 		var problem = option_to_problems[option];
