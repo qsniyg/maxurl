@@ -7301,6 +7301,8 @@ var $$IMU_EXPORT$$;
 		// thanks to forefix on firefox for the idea: https://github.com/qsniyg/maxurl/issues/189
 		dark_mode: false,
 		settings_tabs: false,
+		// thanks to ambler on discord for the idea
+		settings_alphabetical_order: false,
 		settings_visible_description: true,
 		settings_show_disabled: true,
 		settings_show_requirements: true,
@@ -7679,6 +7681,16 @@ var $$IMU_EXPORT$$;
 		settings_tabs: {
 			name: "Use tabs",
 			description: "If disabled, all settings will be shown on a single page",
+			category: "general",
+			subcategory: "settings",
+			onedit: function() {
+				run_soon(do_options);
+			},
+			imu_enabled_exempt: true
+		},
+		settings_alphabetical_order: {
+			name: "Alphabetical order",
+			description: "Lists options in alphabetical order",
 			category: "general",
 			subcategory: "settings",
 			onedit: function() {
@@ -82650,8 +82662,22 @@ var $$IMU_EXPORT$$;
 			}
 		};
 
-		for (var setting in settings) {
-			add_setting_dom(setting);
+		var settingslist = Object.keys(settings);
+		if (settings.settings_alphabetical_order) {
+			settingslist.sort(function(a, b) {
+				var a_meta = settings_meta[a];
+				var b_meta = settings_meta[b];
+
+				if (!a_meta || !b_meta || !a_meta.name || !b_meta.name) {
+					return a.localeCompare(b);
+				}
+
+				return _(a_meta.name).localeCompare(_(b_meta.name));
+			});
+		}
+
+		for (var i = 0; i < settingslist.length; i++) {
+			add_setting_dom(settingslist[i]);
 		}
 
 		check_disabled_options();
