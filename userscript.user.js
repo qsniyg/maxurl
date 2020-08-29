@@ -1701,33 +1701,33 @@ var $$IMU_EXPORT$$;
 		"options_header": {
 			"en": "Options",
 			"es": "Opciones",
-			"ko": "옵션"
+			"ko": "\uC635\uC158"
 		},
 		"yes": {
 			"en": "Yes",
-			"es": "Sí",
+			"es": "S\u00ED",
 			"fr": "Oui",
-			"ko": "예"
+			"ko": "\uC608"
 		},
 		"no": {
 			"en": "No",
 			"es": "No",
 			"fr": "Non",
-			"ko": "아니오"
+			"ko": "\uC544\uB2C8\uC624"
 		},
 		"Import": {
-			"ko": "가져오기"
+			"ko": "\uAC00\uC838\uC624\uAE30"
 		},
 		"Export": {
-			"ko": "내보내기"
+			"ko": "\uB0B4\uBCF4\uB0B4\uAE30"
 		},
 		"Requires:": {
-			"ko": "요구사항:"
+			"ko": "\uC694\uAD6C\uC0AC\uD56D:"
 		},
 		"category_redirection": {
 			"en": "Redirection",
-			"es": "Redirección",
-			"ko": "리디렉션"
+			"es": "Redirecci\u00F3n",
+			"ko": "\uB9AC\uB514\uB809\uC158"
 		},
 		"Enable redirection": {
 			"_info": {
@@ -1738,9 +1738,9 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"es": "Habilitar redirección",
+			"es": "Habilitar redirecci\u00F3n",
 			"fr": "Activer la redirection",
-			"ko": "리디렉션 사용"
+			"ko": "\uB9AC\uB514\uB809\uC158 \uC0AC\uC6A9"
 		},
 		"Add to history": {
 			"_info": {
@@ -1752,8 +1752,8 @@ var $$IMU_EXPORT$$;
 				]
 			},
 			"es": "Agregar al historial",
-			"fr": "Ajouter à l'historique",
-			"ko": "브라우저 기록에 추가"
+			"fr": "Ajouter \u00E0 l'historique",
+			"ko": "\uBE0C\uB77C\uC6B0\uC800 \uAE30\uB85D\uC5D0 \uCD94\uAC00"
 		},
 		"Use GET if HEAD is unsupported": {
 			"_info": {
@@ -1765,8 +1765,8 @@ var $$IMU_EXPORT$$;
 				]
 			},
 			"es": "Utilizar GET si HEAD no es soportado",
-			"fr": "Utiliser GET si HEAD n'est pas supporté",
-			"ko": "HEAD 지원되지 않으면 GET 사용"
+			"fr": "Utiliser GET si HEAD n'est pas support\u00E9",
+			"ko": "HEAD \uC9C0\uC6D0\uB418\uC9C0 \uC54A\uC73C\uBA74 GET \uC0AC\uC6A9"
 		},
 		"Try finding original page/caption": {
 			"_info": {
@@ -1777,7 +1777,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"es": "Intentar de encontrar la página original/título",
+			"es": "Intentar de encontrar la p\u00E1gina original/t\u00EDtulo",
 			"fr": "Essayer de trouver la page d'origine/sous-titre"
 		},
 		"Enable mouseover popup": {
@@ -1792,7 +1792,7 @@ var $$IMU_EXPORT$$;
 			"en": "Enable image popup",
 			"es": "Activar popup de la imagen",
 			"fr": "Activer le popup",
-			"ko": "이미지 팝업 사용"
+			"ko": "\uC774\uBBF8\uC9C0 \uD31D\uC5C5 \uC0AC\uC6A9"
 		},
 		"Mouseover popup action": {
 			"_info": {
@@ -1804,13 +1804,13 @@ var $$IMU_EXPORT$$;
 				]
 			},
 			"en": "Popup action",
-			"es": "Acción del popup",
-			"ko": "이미지 팝업 작업"
+			"es": "Acci\u00F3n del popup",
+			"ko": "\uC774\uBBF8\uC9C0 \uD31D\uC5C5 \uC791\uC5C5"
 		},
 		"category_popup": {
 			"en": "Popup",
 			"es": "Popup",
-			"ko": "팝업"
+			"ko": "\uD31D\uC5C5"
 		},
 		"subcategory_settings": {
 			"en": "Settings",
@@ -1823,18 +1823,18 @@ var $$IMU_EXPORT$$;
 		"subcategory_trigger": {
 			"en": "Trigger",
 			"es": "Acciones del popup",
-			"fr": "Déclencheur",
-			"ko": "트리거"
+			"fr": "D\u00E9clencheur",
+			"ko": "\uD2B8\uB9AC\uAC70"
 		},
 		"subcategory_open_behavior": {
 			"en": "Open Behavior",
 			"es": "Comportamiento al Abrir",
-			"ko": "열기 동작"
+			"ko": "\uC5F4\uAE30 \uB3D9\uC791"
 		},
 		"subcategory_close_behavior": {
 			"en": "Close Behavior",
 			"es": "Comportamiento al Cerrar",
-			"ko": "닫기 동작"
+			"ko": "\uB2EB\uAE30 \uB3D9\uC791"
 		},
 		"subcategory_behavior": {
 			"en": "Popup Behavior",
@@ -1843,7 +1843,7 @@ var $$IMU_EXPORT$$;
 		"subcategory_video": {
 			"en": "Video",
 			"es": "Video",
-			"ko": "영상"
+			"ko": "\uC601\uC0C1"
 		},
 		"subcategory_gallery": {
 			"en": "Gallery",
@@ -1863,9 +1863,9 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"es": "Nueva pestaña",
+			"es": "Nueva pesta\u00F1a",
 			"fr": "Nouvel onglet",
-			"ko": "새 탭"
+			"ko": "\uC0C8 \uD0ED"
 		},
 		"Mouseover popup trigger": {
 			"_info": {
@@ -1877,9 +1877,9 @@ var $$IMU_EXPORT$$;
 				]
 			},
 			"en": "Popup trigger",
-			"es": "Acción del popup al mover el ratón encima",
-			"fr": "Déclencheur du popup",
-			"ko": "팝업 트리거"
+			"es": "Acci\u00F3n del popup al mover el rat\u00F3n encima",
+			"fr": "D\u00E9clencheur du popup",
+			"ko": "\uD31D\uC5C5 \uD2B8\uB9AC\uAC70"
 		},
 		"Mouseover": {
 			"_info": {
@@ -1890,8 +1890,8 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"es": "Mover ratón encima",
-			"ko": "마우스"
+			"es": "Mover rat\u00F3n encima",
+			"ko": "\uB9C8\uC6B0\uC2A4"
 		},
 		"Key trigger": {
 			"_info": {
@@ -1902,8 +1902,8 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"es": "Tecla de acción",
-			"ko": "키 바인딩"
+			"es": "Tecla de acci\u00F3n",
+			"ko": "\uD0A4 \uBC14\uC778\uB529"
 		},
 		"Popup trigger key": {
 			"_info": {
@@ -1914,8 +1914,8 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"es": "Tecla de acción del popup",
-			"ko": "팝업 키 바인딩"
+			"es": "Tecla de acci\u00F3n del popup",
+			"ko": "\uD31D\uC5C5 \uD0A4 \uBC14\uC778\uB529"
 		},
 		"Popup trigger delay": {
 			"_info": {
@@ -1926,8 +1926,8 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"es": "Retraso de acción del popup",
-			"ko": "팝업 작업 지연 시간"
+			"es": "Retraso de acci\u00F3n del popup",
+			"ko": "\uD31D\uC5C5 \uC791\uC5C5 \uC9C0\uC5F0 \uC2DC\uAC04"
 		},
 		"seconds": {
 			"_info": {
@@ -1955,7 +1955,7 @@ var $$IMU_EXPORT$$;
 				]
 			},
 			"es": "segundos",
-			"ko": "초"
+			"ko": "\uCD08"
 		},
 		"Popup UI": {
 			"_info": {
@@ -1967,7 +1967,7 @@ var $$IMU_EXPORT$$;
 				]
 			},
 			"es": "Interfaz del Popup",
-			"ko": "팝업 UI"
+			"ko": "\uD31D\uC5C5 UI"
 		},
 		"Opacity": {
 			"_info": {
@@ -1979,8 +1979,8 @@ var $$IMU_EXPORT$$;
 				]
 			},
 			"es": "Opacidad",
-			"fr": "Opacité",
-			"ko": "불투명"
+			"fr": "Opacit\u00E9",
+			"ko": "\uBD88\uD22C\uBA85"
 		},
 		"Gallery counter": {
 			"_info": {
@@ -1991,9 +1991,9 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"es": "Número de imágenes a contar en la galería",
+			"es": "N\u00FAmero de im\u00E1genes a contar en la galer\u00EDa",
 			"fr": "Nombre d'images dans la galerie",
-			"ko": "갤러리 이미지 수"
+			"ko": "\uAC24\uB7EC\uB9AC \uC774\uBBF8\uC9C0 \uC218"
 		},
 		"Gallery counter max": {
 			"_info": {
@@ -2004,9 +2004,9 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"es": "Número máximo de imágenes a contar para la galería",
+			"es": "N\u00FAmero m\u00E1ximo de im\u00E1genes a contar para la galer\u00EDa",
 			"fr": "Nombre max d'images a compter pour la galerie",
-			"ko": "갤러리 이미지 수의 최대값"
+			"ko": "\uAC24\uB7EC\uB9AC \uC774\uBBF8\uC9C0 \uC218\uC758 \uCD5C\uB300\uAC12"
 		},
 		"images": {
 			"_info": {
@@ -2025,8 +2025,8 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"es": "imágenes",
-			"ko": "이미지"
+			"es": "im\u00E1genes",
+			"ko": "\uC774\uBBF8\uC9C0"
 		},
 		"Options Button": {
 			"_info": {
@@ -2037,8 +2037,8 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"es": "Botón de Opciones",
-			"ko": "설정 링크"
+			"es": "Bot\u00F3n de Opciones",
+			"ko": "\uC124\uC815 \uB9C1\uD06C"
 		},
 		"Video": {
 			"_info": {
@@ -2050,7 +2050,7 @@ var $$IMU_EXPORT$$;
 				]
 			},
 			"es": "Video",
-			"ko": "영상"
+			"ko": "\uC601\uC0C1"
 		},
 		"Media": {
 			"_info": {
@@ -2062,7 +2062,7 @@ var $$IMU_EXPORT$$;
 				]
 			},
 			"es": "Medios",
-			"ko": "미디어"
+			"ko": "\uBBF8\uB514\uC5B4"
 		},
 		"Both images and video": {
 			"_info": {
@@ -2073,8 +2073,8 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"es": "Imágenes y video",
-			"ko": "사진+영상"
+			"es": "Im\u00E1genes y video",
+			"ko": "\uC0AC\uC9C4+\uC601\uC0C1"
 		},
 		"Keep popup open until": {
 			"_info": {
@@ -2086,7 +2086,7 @@ var $$IMU_EXPORT$$;
 				]
 			},
 			"es": "Mantener popup abierto hasta que",
-			"ko": "팝업 닫으려면"
+			"ko": "\uD31D\uC5C5 \uB2EB\uC73C\uB824\uBA74"
 		},
 		"Any trigger is released": {
 			"_info": {
@@ -2097,8 +2097,8 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"es": "Cualquier acción se deja ir",
-			"ko": "어떤 동작에도 닫힘"
+			"es": "Cualquier acci\u00F3n se deja ir",
+			"ko": "\uC5B4\uB5A4 \uB3D9\uC791\uC5D0\uB3C4 \uB2EB\uD798"
 		},
 		"All triggers are released": {
 			"_info": {
@@ -2109,7 +2109,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "모든 동작에서 닫힘"
+			"ko": "\uBAA8\uB4E0 \uB3D9\uC791\uC5D0\uC11C \uB2EB\uD798"
 		},
 		"ESC/Close is pressed": {
 			"_info": {
@@ -2120,7 +2120,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "ESC/닫기 누르기"
+			"ko": "ESC/\uB2EB\uAE30 \uB204\uB974\uAE30"
 		},
 		"Popup default zoom": {
 			"_info": {
@@ -2131,7 +2131,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "확대/축소 기본값"
+			"ko": "\uD655\uB300/\uCD95\uC18C \uAE30\uBCF8\uAC12"
 		},
 		"Fit to screen": {
 			"_info": {
@@ -2143,7 +2143,7 @@ var $$IMU_EXPORT$$;
 				]
 			},
 			"fr": "Adapter a l'ecran",
-			"ko": "화면 크기에 맞춤"
+			"ko": "\uD654\uBA74 \uD06C\uAE30\uC5D0 \uB9DE\uCDA4"
 		},
 		"Full size": {
 			"_info": {
@@ -2154,8 +2154,8 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"fr": "Taille réelle",
-			"ko": "전체 크기"
+			"fr": "Taille r\u00E9elle",
+			"ko": "\uC804\uCCB4 \uD06C\uAE30"
 		},
 		"Popup panning method": {
 			"_info": {
@@ -2166,7 +2166,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "이미지 이동하려면"
+			"ko": "\uC774\uBBF8\uC9C0 \uC774\uB3D9\uD558\uB824\uBA74"
 		},
 		"Movement": {
 			"_info": {
@@ -2177,7 +2177,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "마우스 움직입니다"
+			"ko": "\uB9C8\uC6B0\uC2A4 \uC6C0\uC9C1\uC785\uB2C8\uB2E4"
 		},
 		"Drag": {
 			"_info": {
@@ -2188,7 +2188,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "끕니다"
+			"ko": "\uB055\uB2C8\uB2E4"
 		},
 		"Zoom": {
 			"_info": {
@@ -2199,7 +2199,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "줌"
+			"ko": "\uC90C"
 		},
 		"Pan": {
 			"_info": {
@@ -2214,7 +2214,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "이동"
+			"ko": "\uC774\uB3D9"
 		},
 		"None": {
 			"_info": {
@@ -2237,7 +2237,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "없다"
+			"ko": "\uC5C6\uB2E4"
 		},
 		"Zoom behavior": {
 			"_info": {
@@ -2248,7 +2248,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "줌 동작"
+			"ko": "\uC90C \uB3D9\uC791"
 		},
 		"Fit/Full": {
 			"_info": {
@@ -2259,7 +2259,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "화면맞춤/전체"
+			"ko": "\uD654\uBA74\uB9DE\uCDA4/\uC804\uCCB4"
 		},
 		"Incremental": {
 			"_info": {
@@ -2270,8 +2270,8 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"fr": "Incrémentale",
-			"ko": "증분"
+			"fr": "Incr\u00E9mentale",
+			"ko": "\uC99D\uBD84"
 		},
 		"Popup position": {
 			"_info": {
@@ -2282,10 +2282,10 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "팝업 위치"
+			"ko": "\uD31D\uC5C5 \uC704\uCE58"
 		},
 		"Mouse cursor": {
-			"ko": "마우스 커서"
+			"ko": "\uB9C8\uC6B0\uC2A4 \uCEE4\uC11C"
 		},
 		"Page middle": {
 			"_info": {
@@ -2296,7 +2296,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "페이지 중간"
+			"ko": "\uD398\uC774\uC9C0 \uC911\uAC04"
 		},
 		"Popup for plain hyperlinks": {
 			"_info": {
@@ -2307,7 +2307,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "일반적인 링크에도 팝업"
+			"ko": "\uC77C\uBC18\uC801\uC778 \uB9C1\uD06C\uC5D0\uB3C4 \uD31D\uC5C5"
 		},
 		"Popup CSS style": {
 			"_info": {
@@ -2318,12 +2318,12 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "팝업 CSS"
+			"ko": "\uD31D\uC5C5 CSS"
 		},
 		"category_rules": {
 			"en": "Rules",
-			"fr": "Règles",
-			"ko": "규칙"
+			"fr": "R\u00E8gles",
+			"ko": "\uADDC\uCE59"
 		},
 		"Larger watermarked images": {
 			"_info": {
@@ -2334,7 +2334,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "더 크지만 워터마크 있는 이미지"
+			"ko": "\uB354 \uD06C\uC9C0\uB9CC \uC6CC\uD130\uB9C8\uD06C \uC788\uB294 \uC774\uBBF8\uC9C0"
 		},
 		"Smaller non-watermarked images": {
 			"_info": {
@@ -2345,7 +2345,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "더 작지만 워터마크 없는 이미지"
+			"ko": "\uB354 \uC791\uC9C0\uB9CC \uC6CC\uD130\uB9C8\uD06C \uC5C6\uB294 \uC774\uBBF8\uC9C0"
 		},
 		"Possibly different images": {
 			"_info": {
@@ -2356,8 +2356,8 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"fr": "Images possiblement différentes",
-			"ko": "다를 수 있는 이미지"
+			"fr": "Images possiblement diff\u00E9rentes",
+			"ko": "\uB2E4\uB97C \uC218 \uC788\uB294 \uC774\uBBF8\uC9C0"
 		},
 		"Possibly broken images": {
 			"_info": {
@@ -2368,8 +2368,8 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"fr": "Images possiblement brisée",
-			"ko": "손상될 수 있는 이미지"
+			"fr": "Images possiblement bris\u00E9e",
+			"ko": "\uC190\uC0C1\uB420 \uC218 \uC788\uB294 \uC774\uBBF8\uC9C0"
 		},
 		"Rules using 3rd-party websites": {
 			"_info": {
@@ -2380,8 +2380,8 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"fr": "Règles utilisant des sites 3rd-party",
-			"ko": "서드파티 사이트를 사용하는 규칙"
+			"fr": "R\u00E8gles utilisant des sites 3rd-party",
+			"ko": "\uC11C\uB4DC\uD30C\uD2F0 \uC0AC\uC774\uD2B8\uB97C \uC0AC\uC6A9\uD558\uB294 \uADDC\uCE59"
 		},
 		"Newsen": {
 			"_info": {
@@ -2392,7 +2392,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "뉴스엔"
+			"ko": "\uB274\uC2A4\uC5D4"
 		},
 		"subcategory_rule_specific": {
 			"en": "Rule-specific"
@@ -2400,7 +2400,7 @@ var $$IMU_EXPORT$$;
 		"category_website": {
 			"en": "Website",
 			"fr": "Site",
-			"ko": "웹사이트"
+			"ko": "\uC6F9\uC0AC\uC774\uD2B8"
 		},
 		"Use userscript": {
 			"_info": {
@@ -2412,7 +2412,7 @@ var $$IMU_EXPORT$$;
 				]
 			},
 			"fr": "Utiliser ce userscript",
-			"ko": "유저스크립트 사용하기"
+			"ko": "\uC720\uC800\uC2A4\uD06C\uB9BD\uD2B8 \uC0AC\uC6A9\uD558\uAE30"
 		},
 		"Website image preview": {
 			"_info": {
@@ -2423,22 +2423,22 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "링크 붙인 후 이미지 미리보기"
+			"ko": "\uB9C1\uD06C \uBD99\uC778 \uD6C4 \uC774\uBBF8\uC9C0 \uBBF8\uB9AC\uBCF4\uAE30"
 		},
 		"saved_refresh_target": {
 			"en": "Saved! Refresh the target page for changes to take effect",
-			"fr": "Enregistré! Actualiser la page que vous visitez pour que les changements prennent effet",
-			"ko": "저장됩니다. 번경사항 적용하려면 대상 웹페이지 다시 로드하십시오"
+			"fr": "Enregistr\u00E9! Actualiser la page que vous visitez pour que les changements prennent effet",
+			"ko": "\uC800\uC7A5\uB429\uB2C8\uB2E4. \uBC88\uACBD\uC0AC\uD56D \uC801\uC6A9\uD558\uB824\uBA74 \uB300\uC0C1 \uC6F9\uD398\uC774\uC9C0 \uB2E4\uC2DC \uB85C\uB4DC\uD558\uC2ED\uC2DC\uC624"
 		},
 		"saved_no_refresh": {
 			"en": "Saved!",
-			"fr": "Enregistré!",
-			"ko": "저장됩니다"
+			"fr": "Enregistr\u00E9!",
+			"ko": "\uC800\uC7A5\uB429\uB2C8\uB2E4"
 		},
 		"save": {
 			"en": "Save",
 			"fr": "Enregistrer",
-			"ko": "저장"
+			"ko": "\uC800\uC7A5"
 		},
 		"record": {
 			"en": "Record"
@@ -2446,38 +2446,38 @@ var $$IMU_EXPORT$$;
 		"cancel": {
 			"en": "Cancel",
 			"fr": "Annuler",
-			"ko": "취소"
+			"ko": "\uCDE8\uC18C"
 		},
 		"Mouseover popup (%%1) is needed to display the original version": {
-			"fr": "Popup (%%1) est nécessaire pour trouver la version originale",
-			"ko": "원본 이미지 보려면 팝업 (%%1) 필요합니다"
+			"fr": "Popup (%%1) est n\u00E9cessaire pour trouver la version originale",
+			"ko": "\uC6D0\uBCF8 \uC774\uBBF8\uC9C0 \uBCF4\uB824\uBA74 \uD31D\uC5C5 (%%1) \uD544\uC694\uD569\uB2C8\uB2E4"
 		},
 		"custom headers": {
-			"fr": "en-têtes spéciales",
-			"ko": "특정 헤더"
+			"fr": "en-t\u00EAtes sp\u00E9ciales",
+			"ko": "\uD2B9\uC815 \uD5E4\uB354"
 		},
 		"forces download": {
 			"en": "forces download"
 		},
 		"Close": {
 			"fr": "Fermer",
-			"ko": "닫기"
+			"ko": "\uB2EB\uAE30"
 		},
 		"Previous": {
-			"fr": "Image précédente",
-			"ko": "이전"
+			"fr": "Image pr\u00E9c\u00E9dente",
+			"ko": "\uC774\uC804"
 		},
 		"Next": {
 			"fr": "Image suivante",
-			"ko": "다음"
+			"ko": "\uB2E4\uC74C"
 		},
 		"Left Arrow": {
-			"fr": "Flèche gauche",
-			"ko": "왼쪽 화살표"
+			"fr": "Fl\u00E8che gauche",
+			"ko": "\uC67C\uCABD \uD654\uC0B4\uD45C"
 		},
 		"Right Arrow": {
-			"fr": "Flèche droite",
-			"ko": "오른쪽 화살표"
+			"fr": "Fl\u00E8che droite",
+			"ko": "\uC624\uB978\uCABD \uD654\uC0B4\uD45C"
 		},
 		"Blacklist": {
 			"_info": {
@@ -2488,7 +2488,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "블랙리스트"
+			"ko": "\uBE14\uB799\uB9AC\uC2A4\uD2B8"
 		},
 		"Blacklist engine": {
 			"_info": {
@@ -2499,7 +2499,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "블랙리스트 엔진"
+			"ko": "\uBE14\uB799\uB9AC\uC2A4\uD2B8 \uC5D4\uC9C4"
 		},
 		"Simple (glob)": {
 			"_info": {
@@ -2510,7 +2510,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "단순 (glob)"
+			"ko": "\uB2E8\uC21C (glob)"
 		},
 		"Regex": {
 			"_info": {
@@ -2521,7 +2521,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "정규식"
+			"ko": "\uC815\uADDC\uC2DD"
 		},
 		"category_extension": {
 			"en": "Extension"
@@ -2544,7 +2544,7 @@ var $$IMU_EXPORT$$;
 		"category_general": {
 			"en": "General",
 			"es": "General",
-			"ko": "일반"
+			"ko": "\uC77C\uBC18"
 		},
 		"Language": {
 			"_info": {
@@ -2556,7 +2556,7 @@ var $$IMU_EXPORT$$;
 				]
 			},
 			"es": "Lenguaje",
-			"ko": "언어"
+			"ko": "\uC5B8\uC5B4"
 		},
 		"Enable extension": {
 			"_info": {
@@ -2598,7 +2598,7 @@ var $$IMU_EXPORT$$;
 				]
 			}
 		},
-		"한국어": {
+		"\uD55C\uAD6D\uC5B4": {
 			"_info": {
 				"instances": [
 					{
@@ -2608,7 +2608,7 @@ var $$IMU_EXPORT$$;
 				]
 			}
 		},
-		"Français": {
+		"Fran\u00E7ais": {
 			"_info": {
 				"instances": [
 					{
@@ -2618,7 +2618,7 @@ var $$IMU_EXPORT$$;
 				]
 			}
 		},
-		"Español": {
+		"Espa\u00F1ol": {
 			"_info": {
 				"instances": [
 					{
@@ -2637,7 +2637,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "다크 모드"
+			"ko": "\uB2E4\uD06C \uBAA8\uB4DC"
 		},
 		"Changes the colors to have light text on a dark background": {
 			"_info": {
@@ -2648,7 +2648,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "어두운 배경, 밝은 텍스트가 표시되도록 변경합니다."
+			"ko": "\uC5B4\uB450\uC6B4 \uBC30\uACBD, \uBC1D\uC740 \uD14D\uC2A4\uD2B8\uAC00 \uD45C\uC2DC\uB418\uB3C4\uB85D \uBCC0\uACBD\uD569\uB2C8\uB2E4."
 		},
 		"Description below options": {
 			"_info": {
@@ -2659,7 +2659,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "옵션 아래에 설명 표시"
+			"ko": "\uC635\uC158 \uC544\uB798\uC5D0 \uC124\uBA85 \uD45C\uC2DC"
 		},
 		"Shows the description below the options (otherwise the description is only shown when you hover over the option's name)": {
 			"_info": {
@@ -2670,7 +2670,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "옵션 아래에 설명 표시 (비활성화 시, 옵션 이름 위에 마우스를 올려 놓을 때만 설명이 표시됨)"
+			"ko": "\uC635\uC158 \uC544\uB798\uC5D0 \uC124\uBA85 \uD45C\uC2DC (\uBE44\uD65C\uC131\uD654 \uC2DC, \uC635\uC158 \uC774\uB984 \uC704\uC5D0 \uB9C8\uC6B0\uC2A4\uB97C \uC62C\uB824 \uB193\uC744 \uB54C\uB9CC \uC124\uBA85\uC774 \uD45C\uC2DC\uB428)"
 		},
 		"Show disabled options": {
 			"_info": {
@@ -2681,7 +2681,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "비활성화된 설정 표시"
+			"ko": "\uBE44\uD65C\uC131\uD654\uB41C \uC124\uC815 \uD45C\uC2DC"
 		},
 		"If disabled, options that are disabled due to their requirements being unmet will not be displayed": {
 			"_info": {
@@ -2702,7 +2702,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "비활성화된 옵션 아래의 요구 사항"
+			"ko": "\uBE44\uD65C\uC131\uD654\uB41C \uC635\uC158 \uC544\uB798\uC758 \uC694\uAD6C \uC0AC\uD56D"
 		},
 		"If an option is disabled, the requirements to enable the option will be displayed below it": {
 			"_info": {
@@ -2713,7 +2713,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "옵션이 비활성화되면 옵션을 활성화하기 위한 요구 사항이 아래에 표시됨"
+			"ko": "\uC635\uC158\uC774 \uBE44\uD65C\uC131\uD654\uB418\uBA74 \uC635\uC158\uC744 \uD65C\uC131\uD654\uD558\uAE30 \uC704\uD55C \uC694\uAD6C \uC0AC\uD56D\uC774 \uC544\uB798\uC5D0 \uD45C\uC2DC\uB428"
 		},
 		"Check for updates": {
 			"_info": {
@@ -2724,7 +2724,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "업데이트 확인"
+			"ko": "\uC5C5\uB370\uC774\uD2B8 \uD655\uC778"
 		},
 		"Periodically checks for updates. If a new update is available, it will be shown at the top of the options page": {
 			"_info": {
@@ -2745,7 +2745,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "업데이트 확인 간격"
+			"ko": "\uC5C5\uB370\uC774\uD2B8 \uD655\uC778 \uAC04\uACA9"
 		},
 		"How often to check for updates": {
 			"_info": {
@@ -2756,7 +2756,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "업데이트 확인 빈도"
+			"ko": "\uC5C5\uB370\uC774\uD2B8 \uD655\uC778 \uBE48\uB3C4"
 		},
 		"hours": {
 			"_info": {
@@ -2767,7 +2767,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "시간"
+			"ko": "\uC2DC\uAC04"
 		},
 		"Notify when update is available": {
 			"_info": {
@@ -2778,7 +2778,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "업데이트가 있을 때 알림"
+			"ko": "\uC5C5\uB370\uC774\uD2B8\uAC00 \uC788\uC744 \uB54C \uC54C\uB9BC"
 		},
 		"Creates a browser notification when an update is available": {
 			"_info": {
@@ -2789,7 +2789,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "업데이트가 있을 때 브라우저 알림을 받습니다."
+			"ko": "\uC5C5\uB370\uC774\uD2B8\uAC00 \uC788\uC744 \uB54C \uBE0C\uB77C\uC6B0\uC800 \uC54C\uB9BC\uC744 \uBC1B\uC2B5\uB2C8\uB2E4."
 		},
 		"Show advanced settings": {
 			"_info": {
@@ -2800,7 +2800,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "고급 설정 표시"
+			"ko": "\uACE0\uAE09 \uC124\uC815 \uD45C\uC2DC"
 		},
 		"If disabled, settings that might be harder to understand will be hidden": {
 			"_info": {
@@ -2811,7 +2811,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "비활성화 시, 이해하기 어려울 수 있는 설정이 숨겨짐"
+			"ko": "\uBE44\uD65C\uC131\uD654 \uC2DC, \uC774\uD574\uD558\uAE30 \uC5B4\uB824\uC6B8 \uC218 \uC788\uB294 \uC124\uC815\uC774 \uC228\uACA8\uC9D0"
 		},
 		"Use tabs": {
 			"_info": {
@@ -2822,7 +2822,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "탭 사용"
+			"ko": "\uD0ED \uC0AC\uC6A9"
 		},
 		"If disabled, all settings will be shown on a single page": {
 			"_info": {
@@ -2833,7 +2833,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "비활성화 시, 모든 설정이 한 페이지에 표시됩니다."
+			"ko": "\uBE44\uD65C\uC131\uD654 \uC2DC, \uBAA8\uB4E0 \uC124\uC815\uC774 \uD55C \uD398\uC774\uC9C0\uC5D0 \uD45C\uC2DC\uB429\uB2C8\uB2E4."
 		},
 		"Alphabetical order": {
 			"_info": {
@@ -3090,7 +3090,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "자신의 탭에서 열린 이미지 리디렉션"
+			"ko": "\uC790\uC2E0\uC758 \uD0ED\uC5D0\uC11C \uC5F4\uB9B0 \uC774\uBBF8\uC9C0 \uB9AC\uB514\uB809\uC158"
 		},
 		"Redirection will add a new entry to the browser's history": {
 			"_info": {
@@ -3101,7 +3101,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "리디렉션 시, 브라우저의 기록에 새 항목이 추가됨"
+			"ko": "\uB9AC\uB514\uB809\uC158 \uC2DC, \uBE0C\uB77C\uC6B0\uC800\uC758 \uAE30\uB85D\uC5D0 \uC0C8 \uD56D\uBAA9\uC774 \uCD94\uAC00\uB428"
 		},
 		"Do redirection in extension": {
 			"_info": {
@@ -3190,7 +3190,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "툴팁에 이미지 URL 표시"
+			"ko": "\uD234\uD301\uC5D0 \uC774\uBBF8\uC9C0 URL \uD45C\uC2DC"
 		},
 		"If the popup is needed to display the larger version of an image, display the image link in the tooltip": {
 			"_info": {
@@ -3201,7 +3201,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "더 큰 버전의 이미지를 표시하기 위해 팝업이 필요한 경우 이미지 링크를 툴팁에 표시함"
+			"ko": "\uB354 \uD070 \uBC84\uC804\uC758 \uC774\uBBF8\uC9C0\uB97C \uD45C\uC2DC\uD558\uAE30 \uC704\uD574 \uD31D\uC5C5\uC774 \uD544\uC694\uD55C \uACBD\uC6B0 \uC774\uBBF8\uC9C0 \uB9C1\uD06C\uB97C \uD234\uD301\uC5D0 \uD45C\uC2DC\uD568"
 		},
 		"Hide tooltip after": {
 			"_info": {
@@ -3212,7 +3212,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "툴팁 숨기기"
+			"ko": "\uD234\uD301 \uC228\uAE30\uAE30"
 		},
 		"Hides the tooltip after the specified number of seconds (or when the mouse clicks on it). Set to 0 to never hide automatically": {
 			"_info": {
@@ -3223,7 +3223,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "지정된 시간(초) 후에(또는 마우스가 툴팁을 클릭할 때) 툴팁을 숨긴다. 자동으로 숨기지 않으려면 0으로 설정"
+			"ko": "\uC9C0\uC815\uB41C \uC2DC\uAC04(\uCD08) \uD6C4\uC5D0(\uB610\uB294 \uB9C8\uC6B0\uC2A4\uAC00 \uD234\uD301\uC744 \uD074\uB9AD\uD560 \uB54C) \uD234\uD301\uC744 \uC228\uAE34\uB2E4. \uC790\uB3D9\uC73C\uB85C \uC228\uAE30\uC9C0 \uC54A\uC73C\uB824\uBA74 0\uC73C\uB85C \uC124\uC815"
 		},
 		"Log IMU object to console": {
 			"_info": {
@@ -3274,7 +3274,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "문제없이 최대로 리디렉션"
+			"ko": "\uBB38\uC81C\uC5C6\uC774 \uCD5C\uB300\uB85C \uB9AC\uB514\uB809\uC158"
 		},
 		"Redirects to the largest image found that doesn't require custom headers or forces download": {
 			"_info": {
@@ -3285,7 +3285,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "사용자 지정 헤더나 강제 다운로드가 필요 없는 가장 큰 이미지로 리디렉션"
+			"ko": "\uC0AC\uC6A9\uC790 \uC9C0\uC815 \uD5E4\uB354\uB098 \uAC15\uC81C \uB2E4\uC6B4\uB85C\uB4DC\uAC00 \uD544\uC694 \uC5C6\uB294 \uAC00\uC7A5 \uD070 \uC774\uBBF8\uC9C0\uB85C \uB9AC\uB514\uB809\uC158"
 		},
 		"Show a popup with the larger image when you mouseover an image with the trigger key held (if applicable)": {
 			"_info": {
@@ -3296,7 +3296,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "트리거 키를 누른 상태로 영상을 마우스로 가리킬 때 더 큰 이미지로 팝업 표시 (가능한 경우)"
+			"ko": "\uD2B8\uB9AC\uAC70 \uD0A4\uB97C \uB204\uB978 \uC0C1\uD0DC\uB85C \uC601\uC0C1\uC744 \uB9C8\uC6B0\uC2A4\uB85C \uAC00\uB9AC\uD0AC \uB54C \uB354 \uD070 \uC774\uBBF8\uC9C0\uB85C \uD31D\uC5C5 \uD45C\uC2DC (\uAC00\uB2A5\uD55C \uACBD\uC6B0)"
 		},
 		"Determines how the mouseover popup will open": {
 			"_info": {
@@ -3307,7 +3307,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "마우스오버 팝업이 열리는 방식"
+			"ko": "\uB9C8\uC6B0\uC2A4\uC624\uBC84 \uD31D\uC5C5\uC774 \uC5F4\uB9AC\uB294 \uBC29\uC2DD"
 		},
 		"Popup": {
 			"_info": {
@@ -3322,7 +3322,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "팝업"
+			"ko": "\uD31D\uC5C5"
 		},
 		"Download": {
 			"_info": {
@@ -3343,7 +3343,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "팝업 작동 방법"
+			"ko": "\uD31D\uC5C5 \uC791\uB3D9 \uBC29\uBC95"
 		},
 		"Triggers when your mouse is over the image": {
 			"_info": {
@@ -3384,7 +3384,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "팝업이 작동하는 키"
+			"ko": "\uD31D\uC5C5\uC774 \uC791\uB3D9\uD558\uB294 \uD0A4"
 		},
 		"Delay (in seconds) before the popup shows": {
 			"_info": {
@@ -3395,7 +3395,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "팝업이 표시될 때까지 지연 (초)"
+			"ko": "\uD31D\uC5C5\uC774 \uD45C\uC2DC\uB420 \uB54C\uAE4C\uC9C0 \uC9C0\uC5F0 (\uCD08)"
 		},
 		"Use mouseover event": {
 			"_info": {
@@ -3426,7 +3426,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "팝업 방지 키"
+			"ko": "\uD31D\uC5C5 \uBC29\uC9C0 \uD0A4"
 		},
 		"Holding down this key will prevent the popup from being opened": {
 			"_info": {
@@ -3437,7 +3437,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "이 키를 누르면 팝업이 열리지 않음"
+			"ko": "\uC774 \uD0A4\uB97C \uB204\uB974\uBA74 \uD31D\uC5C5\uC774 \uC5F4\uB9AC\uC9C0 \uC54A\uC74C"
 		},
 		"Allow showing partially loaded": {
 			"_info": {
@@ -3448,7 +3448,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "부분적으로 로드된 상태로 표시 허용"
+			"ko": "\uBD80\uBD84\uC801\uC73C\uB85C \uB85C\uB4DC\uB41C \uC0C1\uD0DC\uB85C \uD45C\uC2DC \uD5C8\uC6A9"
 		},
 		"This will allow the popup to open for partially loaded media": {
 			"_info": {
@@ -3469,7 +3469,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "부분적으로 불러온 미디어에 대해 팝업이 열릴 수 있지만 이로 인해 일부 이미지가 손상될 수 있음"
+			"ko": "\uBD80\uBD84\uC801\uC73C\uB85C \uBD88\uB7EC\uC628 \uBBF8\uB514\uC5B4\uC5D0 \uB300\uD574 \uD31D\uC5C5\uC774 \uC5F4\uB9B4 \uC218 \uC788\uC9C0\uB9CC \uC774\uB85C \uC778\uD574 \uC77C\uBD80 \uC774\uBBF8\uC9C0\uAC00 \uC190\uC0C1\uB420 \uC218 \uC788\uC74C"
 		},
 		"Avoid HEAD request for partially loaded media": {
 			"_info": {
@@ -3520,7 +3520,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "지원되지 않을 때 허용되지 않는 커서를 사용"
+			"ko": "\uC9C0\uC6D0\uB418\uC9C0 \uC54A\uC744 \uB54C \uD5C8\uC6A9\uB418\uC9C0 \uC54A\uB294 \uCEE4\uC11C\uB97C \uC0AC\uC6A9"
 		},
 		"If the image isn't supported, the mouse cursor will change to a `not-allowed` cursor for a brief duration": {
 			"_info": {
@@ -3531,7 +3531,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "이미지가 지원되지 않으면 마우스 커서가 잠시 동안 허용되지 않는 커서로 변경됨"
+			"ko": "\uC774\uBBF8\uC9C0\uAC00 \uC9C0\uC6D0\uB418\uC9C0 \uC54A\uC73C\uBA74 \uB9C8\uC6B0\uC2A4 \uCEE4\uC11C\uAC00 \uC7A0\uC2DC \uB3D9\uC548 \uD5C8\uC6A9\uB418\uC9C0 \uC54A\uB294 \uCEE4\uC11C\uB85C \uBCC0\uACBD\uB428"
 		},
 		"Use `not-allowed` cursor when unable to load": {
 			"_info": {
@@ -3552,7 +3552,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "이미지를 불러올 수 없으면 마우스 커서가 잠시 동안 허용되지 않는 커서로 변경됨"
+			"ko": "\uC774\uBBF8\uC9C0\uB97C \uBD88\uB7EC\uC62C \uC218 \uC5C6\uC73C\uBA74 \uB9C8\uC6B0\uC2A4 \uCEE4\uC11C\uAC00 \uC7A0\uC2DC \uB3D9\uC548 \uD5C8\uC6A9\uB418\uC9C0 \uC54A\uB294 \uCEE4\uC11C\uB85C \uBCC0\uACBD\uB428"
 		},
 		"`not-allowed` cursor duration": {
 			"_info": {
@@ -3583,7 +3583,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "페이지 배경 제외"
+			"ko": "\uD398\uC774\uC9C0 \uBC30\uACBD \uC81C\uC678"
 		},
 		"Excludes the page background for the popup": {
 			"_info": {
@@ -3594,7 +3594,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "팝업에 대한 페이지 배경 제외"
+			"ko": "\uD31D\uC5C5\uC5D0 \uB300\uD55C \uD398\uC774\uC9C0 \uBC30\uACBD \uC81C\uC678"
 		},
 		"Minimum image size": {
 			"_info": {
@@ -3605,7 +3605,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "최소 이미지 크기"
+			"ko": "\uCD5C\uC18C \uC774\uBBF8\uC9C0 \uD06C\uAE30"
 		},
 		"Smallest size acceptable for the popup to open (this option is ignored for background images)": {
 			"_info": {
@@ -3616,7 +3616,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "팝업이 열릴 수 있는 최소 크기 (백그라운드 이미지에서는 이 옵션이 무시됨)"
+			"ko": "\uD31D\uC5C5\uC774 \uC5F4\uB9B4 \uC218 \uC788\uB294 \uCD5C\uC18C \uD06C\uAE30 (\uBC31\uADF8\uB77C\uC6B4\uB4DC \uC774\uBBF8\uC9C0\uC5D0\uC11C\uB294 \uC774 \uC635\uC158\uC774 \uBB34\uC2DC\uB428)"
 		},
 		"pixels": {
 			"_info": {
@@ -3645,7 +3645,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "배경 이미지 제외"
+			"ko": "\uBC30\uACBD \uC774\uBBF8\uC9C0 \uC81C\uC678"
 		},
 		"Excludes `background-image`s for the popup. Might prevent the popup from working on many images": {
 			"_info": {
@@ -3656,7 +3656,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "팝업의 배경 이미지 제외. 팝업이 많은 이미지에서 작동하지 않을 수 있음"
+			"ko": "\uD31D\uC5C5\uC758 \uBC30\uACBD \uC774\uBBF8\uC9C0 \uC81C\uC678. \uD31D\uC5C5\uC774 \uB9CE\uC740 \uC774\uBBF8\uC9C0\uC5D0\uC11C \uC791\uB3D9\uD558\uC9C0 \uC54A\uC744 \uC218 \uC788\uC74C"
 		},
 		"Exclude image tabs": {
 			"_info": {
@@ -3667,7 +3667,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "이미지 탭 제외"
+			"ko": "\uC774\uBBF8\uC9C0 \uD0ED \uC81C\uC678"
 		},
 		"Excludes images that are opened in their own tabs": {
 			"_info": {
@@ -3678,7 +3678,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "자신의 탭에서 열린 이미지 제외"
+			"ko": "\uC790\uC2E0\uC758 \uD0ED\uC5D0\uC11C \uC5F4\uB9B0 \uC774\uBBF8\uC9C0 \uC81C\uC678"
 		},
 		"Exclude if image URL is unchanged": {
 			"_info": {
@@ -3689,7 +3689,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "이미지 URL이 변경되지 않은 경우 제외"
+			"ko": "\uC774\uBBF8\uC9C0 URL\uC774 \uBCC0\uACBD\uB418\uC9C0 \uC54A\uC740 \uACBD\uC6B0 \uC81C\uC678"
 		},
 		"Don't pop up if the new image is the same as the thumbnail image": {
 			"_info": {
@@ -3700,7 +3700,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "새 이미지가 미리보기(thumbnail) 이미지와 동일한 경우 팝업 안 함"
+			"ko": "\uC0C8 \uC774\uBBF8\uC9C0\uAC00 \uBBF8\uB9AC\uBCF4\uAE30(thumbnail) \uC774\uBBF8\uC9C0\uC640 \uB3D9\uC77C\uD55C \uACBD\uC6B0 \uD31D\uC5C5 \uC548 \uD568"
 		},
 		"Only popup for linked images": {
 			"_info": {
@@ -3711,7 +3711,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "링크된 이미지의 팝업만"
+			"ko": "\uB9C1\uD06C\uB41C \uC774\uBBF8\uC9C0\uC758 \uD31D\uC5C5\uB9CC"
 		},
 		"Don't pop up if the image isn't hyperlinked": {
 			"_info": {
@@ -3722,7 +3722,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "이미지가 하이퍼링크되지 않은 경우 팝업 안 함"
+			"ko": "\uC774\uBBF8\uC9C0\uAC00 \uD558\uC774\uD37C\uB9C1\uD06C\uB418\uC9C0 \uC54A\uC740 \uACBD\uC6B0 \uD31D\uC5C5 \uC548 \uD568"
 		},
 		"Popup link for linked images": {
 			"_info": {
@@ -3733,7 +3733,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "링크된 이미지에 대한 팝업 링크"
+			"ko": "\uB9C1\uD06C\uB41C \uC774\uBBF8\uC9C0\uC5D0 \uB300\uD55C \uD31D\uC5C5 \uB9C1\uD06C"
 		},
 		"If the linked image cannot be made larger, pop up for the link instead of the image": {
 			"_info": {
@@ -3744,7 +3744,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "링크된 이미지를 더 크게 만들 수 없는 경우 이미지 대신 링크 팝업"
+			"ko": "\uB9C1\uD06C\uB41C \uC774\uBBF8\uC9C0\uB97C \uB354 \uD06C\uAC8C \uB9CC\uB4E4 \uC218 \uC5C6\uB294 \uACBD\uC6B0 \uC774\uBBF8\uC9C0 \uB300\uC2E0 \uB9C1\uD06C \uD31D\uC5C5"
 		},
 		"Exclude image maps": {
 			"_info": {
@@ -3755,7 +3755,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "이미지 맵 제외"
+			"ko": "\uC774\uBBF8\uC9C0 \uB9F5 \uC81C\uC678"
 		},
 		"Don't pop up if the image is an image map (image with multiple clickable areas)": {
 			"_info": {
@@ -3766,7 +3766,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "이미지가 이미지 맵(클릭 가능한 영역이 여러 개를 가진 이미지)인 경우 팝업 표시 안 함"
+			"ko": "\uC774\uBBF8\uC9C0\uAC00 \uC774\uBBF8\uC9C0 \uB9F5(\uD074\uB9AD \uAC00\uB2A5\uD55C \uC601\uC5ED\uC774 \uC5EC\uB7EC \uAC1C\uB97C \uAC00\uC9C4 \uC774\uBBF8\uC9C0)\uC778 \uACBD\uC6B0 \uD31D\uC5C5 \uD45C\uC2DC \uC548 \uD568"
 		},
 		"Show video controls": {
 			"_info": {
@@ -4364,7 +4364,7 @@ var $$IMU_EXPORT$$;
 				]
 			}
 		},
-		"Uses glyphs that are more likely to be available on all fonts. Enable this option if the following characters render as boxes: 🡇 🡐 🡒": {
+		"Uses glyphs that are more likely to be available on all fonts. Enable this option if the following characters render as boxes: \uD83E\uDC47 \uD83E\uDC50 \uD83E\uDC52": {
 			"_info": {
 				"instances": [
 					{
@@ -4633,7 +4633,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "선택한 조건이 충족되면 팝업 닫기"
+			"ko": "\uC120\uD0DD\uD55C \uC870\uAC74\uC774 \uCDA9\uC871\uB418\uBA74 \uD31D\uC5C5 \uB2EB\uAE30"
 		},
 		"Don't close until mouse leaves": {
 			"_info": {
@@ -4644,7 +4644,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "마우스가 떠날 때까지 닫지 마십시오."
+			"ko": "\uB9C8\uC6B0\uC2A4\uAC00 \uB5A0\uB0A0 \uB54C\uAE4C\uC9C0 \uB2EB\uC9C0 \uB9C8\uC2ED\uC2DC\uC624."
 		},
 		"If true, this keeps the popup open even if all triggers are released if the mouse is still over the image": {
 			"_info": {
@@ -4655,7 +4655,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "활성화 시, 마우스가 이미지 위에 있는 경우 모든 동작에서 닫힘을 선택했더라도 팝업이 계속 열린 상태로 유지됨"
+			"ko": "\uD65C\uC131\uD654 \uC2DC, \uB9C8\uC6B0\uC2A4\uAC00 \uC774\uBBF8\uC9C0 \uC704\uC5D0 \uC788\uB294 \uACBD\uC6B0 \uBAA8\uB4E0 \uB3D9\uC791\uC5D0\uC11C \uB2EB\uD798\uC744 \uC120\uD0DD\uD588\uB354\uB77C\uB3C4 \uD31D\uC5C5\uC774 \uACC4\uC18D \uC5F4\uB9B0 \uC0C1\uD0DC\uB85C \uC720\uC9C0\uB428"
 		},
 		"Threshold to leave image": {
 			"_info": {
@@ -4666,7 +4666,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "이미지를 떠나기 위한 임계값"
+			"ko": "\uC774\uBBF8\uC9C0\uB97C \uB5A0\uB098\uAE30 \uC704\uD55C \uC784\uACC4\uAC12"
 		},
 		"How many pixels outside of the image before the cursor is considered to have left the image": {
 			"_info": {
@@ -4677,7 +4677,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "커서가 이미지를 떠난 것으로 파악할 수 있는 이미지 픽셀 수"
+			"ko": "\uCEE4\uC11C\uAC00 \uC774\uBBF8\uC9C0\uB97C \uB5A0\uB09C \uAC83\uC73C\uB85C \uD30C\uC545\uD560 \uC218 \uC788\uB294 \uC774\uBBF8\uC9C0 \uD53D\uC140 \uC218"
 		},
 		"Leaving thumbnail cancels loading": {
 			"_info": {
@@ -4688,7 +4688,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "미리보기를 남기면 로딩이 취소됨"
+			"ko": "\uBBF8\uB9AC\uBCF4\uAE30\uB97C \uB0A8\uAE30\uBA74 \uB85C\uB529\uC774 \uCDE8\uC18C\uB428"
 		},
 		"Cancels the current popup loading when the cursor has left the thumbnail image": {
 			"_info": {
@@ -4699,7 +4699,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "커서가 축소 이미지에서 벗어날 때 현재 팝업 로딩 취소"
+			"ko": "\uCEE4\uC11C\uAC00 \uCD95\uC18C \uC774\uBBF8\uC9C0\uC5D0\uC11C \uBC97\uC5B4\uB0A0 \uB54C \uD604\uC7AC \uD31D\uC5C5 \uB85C\uB529 \uCDE8\uC18C"
 		},
 		"ESC cancels loading": {
 			"_info": {
@@ -4710,7 +4710,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "ESC 로딩 취소"
+			"ko": "ESC \uB85C\uB529 \uCDE8\uC18C"
 		},
 		"Cancels the current popup loading if ESC is pressed": {
 			"_info": {
@@ -4721,7 +4721,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "ESC를 누르면 현재 팝업 로딩이 취소됨"
+			"ko": "ESC\uB97C \uB204\uB974\uBA74 \uD604\uC7AC \uD31D\uC5C5 \uB85C\uB529\uC774 \uCDE8\uC18C\uB428"
 		},
 		"Releasing triggers cancels loading": {
 			"_info": {
@@ -4732,7 +4732,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "트리거를 해제하면 로딩이 취소됨"
+			"ko": "\uD2B8\uB9AC\uAC70\uB97C \uD574\uC81C\uD558\uBA74 \uB85C\uB529\uC774 \uCDE8\uC18C\uB428"
 		},
 		"Cancels the current popup loading if all/any triggers are released (as set by the \"Keep popup open until\" setting)": {
 			"_info": {
@@ -4743,7 +4743,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "어떤/모든 동작에 닫힘을 선택한 경우 현재 팝업 로딩 취소 (\"팝업을 닫으려면\" 설정에 의존함)"
+			"ko": "\uC5B4\uB5A4/\uBAA8\uB4E0 \uB3D9\uC791\uC5D0 \uB2EB\uD798\uC744 \uC120\uD0DD\uD55C \uACBD\uC6B0 \uD604\uC7AC \uD31D\uC5C5 \uB85C\uB529 \uCDE8\uC18C (\"\uD31D\uC5C5\uC744 \uB2EB\uC73C\uB824\uBA74\" \uC124\uC815\uC5D0 \uC758\uC874\uD568)"
 		},
 		"Automatically close after timeout": {
 			"_info": {
@@ -4754,7 +4754,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "시간 초과 후 자동으로 닫기"
+			"ko": "\uC2DC\uAC04 \uCD08\uACFC \uD6C4 \uC790\uB3D9\uC73C\uB85C \uB2EB\uAE30"
 		},
 		"Closes the popup automatically after a specified period of time has elapsed": {
 			"_info": {
@@ -4765,7 +4765,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "지정된 시간이 경과한 후 팝업 자동 닫기"
+			"ko": "\uC9C0\uC815\uB41C \uC2DC\uAC04\uC774 \uACBD\uACFC\uD55C \uD6C4 \uD31D\uC5C5 \uC790\uB3D9 \uB2EB\uAE30"
 		},
 		"Timeout to close popup": {
 			"_info": {
@@ -4776,7 +4776,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "팝업을 닫기 위한 시간 초과 시간(초)"
+			"ko": "\uD31D\uC5C5\uC744 \uB2EB\uAE30 \uC704\uD55C \uC2DC\uAC04 \uCD08\uACFC \uC2DC\uAC04(\uCD08)"
 		},
 		"Amount of time to elapse before automatically closing the popup": {
 			"_info": {
@@ -4787,7 +4787,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "팝업을 자동으로 닫기 전 경과 시간"
+			"ko": "\uD31D\uC5C5\uC744 \uC790\uB3D9\uC73C\uB85C \uB2EB\uAE30 \uC804 \uACBD\uACFC \uC2DC\uAC04"
 		},
 		"Use hold key": {
 			"_info": {
@@ -4798,7 +4798,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "고정 키 사용"
+			"ko": "\uACE0\uC815 \uD0A4 \uC0AC\uC6A9"
 		},
 		"Enables the use of a hold key that, when pressed, will keep the popup open": {
 			"_info": {
@@ -4809,7 +4809,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "누르면 팝업이 열린 상태로 유지되는 고정 키 사용"
+			"ko": "\uB204\uB974\uBA74 \uD31D\uC5C5\uC774 \uC5F4\uB9B0 \uC0C1\uD0DC\uB85C \uC720\uC9C0\uB418\uB294 \uACE0\uC815 \uD0A4 \uC0AC\uC6A9"
 		},
 		"Hold key": {
 			"_info": {
@@ -4820,7 +4820,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "고정 키"
+			"ko": "\uACE0\uC815 \uD0A4"
 		},
 		"Hold key that, when pressed, will keep the popup open": {
 			"_info": {
@@ -4831,7 +4831,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "고정 키를 누르면 팝업이 열린 상태로 유지됨"
+			"ko": "\uACE0\uC815 \uD0A4\uB97C \uB204\uB974\uBA74 \uD31D\uC5C5\uC774 \uC5F4\uB9B0 \uC0C1\uD0DC\uB85C \uC720\uC9C0\uB428"
 		},
 		"Center popup on hold": {
 			"_info": {
@@ -4842,7 +4842,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "중앙 팝업 고정"
+			"ko": "\uC911\uC559 \uD31D\uC5C5 \uACE0\uC815"
 		},
 		"Centers the popup to the middle of the page when the popup is held": {
 			"_info": {
@@ -4853,7 +4853,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "팝업이 열릴 때 팝업을 페이지 중앙에 배치"
+			"ko": "\uD31D\uC5C5\uC774 \uC5F4\uB9B4 \uB54C \uD31D\uC5C5\uC744 \uD398\uC774\uC9C0 \uC911\uC559\uC5D0 \uBC30\uCE58"
 		},
 		"Close popup on unhold": {
 			"_info": {
@@ -4864,7 +4864,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "고정 해제 시, 팝업 닫기"
+			"ko": "\uACE0\uC815 \uD574\uC81C \uC2DC, \uD31D\uC5C5 \uB2EB\uAE30"
 		},
 		"Closes the popup when the hold key is pressed again, after having previously held the popup": {
 			"_info": {
@@ -4875,7 +4875,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "팝업을 고정한 후 고정 키를 다시 누르면 팝업이 닫힘"
+			"ko": "\uD31D\uC5C5\uC744 \uACE0\uC815\uD55C \uD6C4 \uACE0\uC815 \uD0A4\uB97C \uB2E4\uC2DC \uB204\uB974\uBA74 \uD31D\uC5C5\uC774 \uB2EB\uD798"
 		},
 		"Enable pointer events on hold": {
 			"_info": {
@@ -4886,7 +4886,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "포인터 이벤트 고정 사용"
+			"ko": "\uD3EC\uC778\uD130 \uC774\uBCA4\uD2B8 \uACE0\uC815 \uC0AC\uC6A9"
 		},
 		"Enables previously disabled pointer events when the popup is held": {
 			"_info": {
@@ -4897,7 +4897,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "팝업이 고정될 때 이전에 비활성화된 포인터 이벤트 활성화"
+			"ko": "\uD31D\uC5C5\uC774 \uACE0\uC815\uB420 \uB54C \uC774\uC804\uC5D0 \uBE44\uD65C\uC131\uD654\uB41C \uD3EC\uC778\uD130 \uC774\uBCA4\uD2B8 \uD65C\uC131\uD654"
 		},
 		"Clicking outside the popup closes": {
 			"_info": {
@@ -4908,7 +4908,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "팝업 바깥쪽을 클릭하면 닫힘"
+			"ko": "\uD31D\uC5C5 \uBC14\uAE65\uCABD\uC744 \uD074\uB9AD\uD558\uBA74 \uB2EB\uD798"
 		},
 		"Closes the popup when the mouse clicks outside of it": {
 			"_info": {
@@ -4919,7 +4919,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "마우스가 팝업 바깥쪽을 클릭할 때 팝업 닫기"
+			"ko": "\uB9C8\uC6B0\uC2A4\uAC00 \uD31D\uC5C5 \uBC14\uAE65\uCABD\uC744 \uD074\uB9AD\uD560 \uB54C \uD31D\uC5C5 \uB2EB\uAE30"
 		},
 		"Close when leaving": {
 			"_info": {
@@ -4930,7 +4930,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "떠날 때 닫기"
+			"ko": "\uB5A0\uB0A0 \uB54C \uB2EB\uAE30"
 		},
 		"Closes the popup when the mouse leaves the thumbnail element, the popup, or either": {
 			"_info": {
@@ -4941,7 +4941,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "마우스가 미리보기(썸네일), 팝업 또는 둘 중 하나를 떠날 때 팝업 닫기"
+			"ko": "\uB9C8\uC6B0\uC2A4\uAC00 \uBBF8\uB9AC\uBCF4\uAE30(\uC378\uB124\uC77C), \uD31D\uC5C5 \uB610\uB294 \uB458 \uC911 \uD558\uB098\uB97C \uB5A0\uB0A0 \uB54C \uD31D\uC5C5 \uB2EB\uAE30"
 		},
 		"Thumbnail": {
 			"_info": {
@@ -4952,7 +4952,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "미리보기(썸네일)"
+			"ko": "\uBBF8\uB9AC\uBCF4\uAE30(\uC378\uB124\uC77C)"
 		},
 		"Both": {
 			"_info": {
@@ -4963,7 +4963,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "둘 다"
+			"ko": "\uB458 \uB2E4"
 		},
 		"Use invisible element when waiting": {
 			"_info": {
@@ -5014,7 +5014,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "프레임 간 통신 허용"
+			"ko": "\uD504\uB808\uC784 \uAC04 \uD1B5\uC2E0 \uD5C8\uC6A9"
 		},
 		"Allows communication between frames in windows, improving support for keybindings": {
 			"_info": {
@@ -5025,7 +5025,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "창의 프레임 간 통신을 허용하여 키 바인딩에 대한 지원을 개선한다."
+			"ko": "\uCC3D\uC758 \uD504\uB808\uC784 \uAC04 \uD1B5\uC2E0\uC744 \uD5C8\uC6A9\uD558\uC5EC \uD0A4 \uBC14\uC778\uB529\uC5D0 \uB300\uD55C \uC9C0\uC6D0\uC744 \uAC1C\uC120\uD55C\uB2E4."
 		},
 		"Allows communication between frames in windows, improving support for keybindings. Can pose a fingerprinting risk when used through the userscript": {
 			"_info": {
@@ -5036,7 +5036,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "창의 프레임 간 통신을 허용하여 키 바인딩에 대한 지원을 개선합니다. 유저스크립트를 통해 사용 시, 보안에 위협이 있을 수 있습니다"
+			"ko": "\uCC3D\uC758 \uD504\uB808\uC784 \uAC04 \uD1B5\uC2E0\uC744 \uD5C8\uC6A9\uD558\uC5EC \uD0A4 \uBC14\uC778\uB529\uC5D0 \uB300\uD55C \uC9C0\uC6D0\uC744 \uAC1C\uC120\uD569\uB2C8\uB2E4. \uC720\uC800\uC2A4\uD06C\uB9BD\uD2B8\uB97C \uD1B5\uD574 \uC0AC\uC6A9 \uC2DC, \uBCF4\uC548\uC5D0 \uC704\uD611\uC774 \uC788\uC744 \uC218 \uC788\uC2B5\uB2C8\uB2E4"
 		},
 		"Pop out of frames": {
 			"_info": {
@@ -5047,7 +5047,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "프레임에서 팝업"
+			"ko": "\uD504\uB808\uC784\uC5D0\uC11C \uD31D\uC5C5"
 		},
 		"Opens the popup on the top frame instead of within iframes. Still in beta": {
 			"_info": {
@@ -5058,7 +5058,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "iframes 대신 상단 프레임의 팝업 열기 ─ 베타 상태"
+			"ko": "iframes \uB300\uC2E0 \uC0C1\uB2E8 \uD504\uB808\uC784\uC758 \uD31D\uC5C5 \uC5F4\uAE30 \u2500 \uBCA0\uD0C0 \uC0C1\uD0DC"
 		},
 		"How the popup should be initially sized": {
 			"_info": {
@@ -5069,7 +5069,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "팝업의 초기 크기 조정 방법"
+			"ko": "\uD31D\uC5C5\uC758 \uCD08\uAE30 \uD06C\uAE30 \uC870\uC815 \uBC29\uBC95"
 		},
 		"Fill screen": {
 			"_info": {
@@ -5080,7 +5080,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "화면 채우기"
+			"ko": "\uD654\uBA74 \uCC44\uC6B0\uAE30"
 		},
 		"Custom size": {
 			"_info": {
@@ -5091,7 +5091,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "맞춤 크기"
+			"ko": "\uB9DE\uCDA4 \uD06C\uAE30"
 		},
 		"Custom zoom percent": {
 			"_info": {
@@ -5102,7 +5102,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "사용자 지정 확대/축소 비율"
+			"ko": "\uC0AC\uC6A9\uC790 \uC9C0\uC815 \uD655\uB300/\uCD95\uC18C \uBE44\uC728"
 		},
 		"Custom percent to initially size the popup": {
 			"_info": {
@@ -5113,7 +5113,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "팝업 설정 시, 초기 사용자 지정 확대/축소 비율"
+			"ko": "\uD31D\uC5C5 \uC124\uC815 \uC2DC, \uCD08\uAE30 \uC0AC\uC6A9\uC790 \uC9C0\uC815 \uD655\uB300/\uCD95\uC18C \uBE44\uC728"
 		},
 		"Maximum width": {
 			"_info": {
@@ -5124,7 +5124,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "최대 가로 길이"
+			"ko": "\uCD5C\uB300 \uAC00\uB85C \uAE38\uC774"
 		},
 		"Maximum width for the initial popup size. Set to `0` for unlimited.": {
 			"_info": {
@@ -5135,7 +5135,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "초기 팝업 크기의 최대 가로 길이. 무제한의 경우 0으로 설정하십시오."
+			"ko": "\uCD08\uAE30 \uD31D\uC5C5 \uD06C\uAE30\uC758 \uCD5C\uB300 \uAC00\uB85C \uAE38\uC774. \uBB34\uC81C\uD55C\uC758 \uACBD\uC6B0 0\uC73C\uB85C \uC124\uC815\uD558\uC2ED\uC2DC\uC624."
 		},
 		"px": {
 			"_info": {
@@ -5164,7 +5164,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "최대 세로 길이"
+			"ko": "\uCD5C\uB300 \uC138\uB85C \uAE38\uC774"
 		},
 		"Maximum height for the initial popup size. Set to `0` for unlimited.": {
 			"_info": {
@@ -5175,7 +5175,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "초기 팝업 크기의 최대 세로 길이. 무제한으로 '0'으로 설정한다."
+			"ko": "\uCD08\uAE30 \uD31D\uC5C5 \uD06C\uAE30\uC758 \uCD5C\uB300 \uC138\uB85C \uAE38\uC774. \uBB34\uC81C\uD55C\uC73C\uB85C '0'\uC73C\uB85C \uC124\uC815\uD55C\uB2E4."
 		},
 		"How the popup should be panned when larger than the screen": {
 			"_info": {
@@ -5350,7 +5350,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "커서"
+			"ko": "\uCEE4\uC11C"
 		},
 		"Center": {
 			"_info": {
@@ -5451,7 +5451,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "닫기 위해 완전히 축소"
+			"ko": "\uB2EB\uAE30 \uC704\uD574 \uC644\uC804\uD788 \uCD95\uC18C"
 		},
 		"Closes the popup if you zoom out past the minimum zoom": {
 			"_info": {
@@ -5462,7 +5462,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "최소 크기로 축소할 경우 팝업 닫기"
+			"ko": "\uCD5C\uC18C \uD06C\uAE30\uB85C \uCD95\uC18C\uD560 \uACBD\uC6B0 \uD31D\uC5C5 \uB2EB\uAE30"
 		},
 		"Where the popup will appear": {
 			"_info": {
@@ -5473,7 +5473,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "팝업이 표시되는 위치"
+			"ko": "\uD31D\uC5C5\uC774 \uD45C\uC2DC\uB418\uB294 \uC704\uCE58"
 		},
 		"Cursor middle": {
 			"_info": {
@@ -5484,7 +5484,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "커서 중간"
+			"ko": "\uCEE4\uC11C \uC911\uAC04"
 		},
 		"Underneath the mouse cursor": {
 			"_info": {
@@ -5495,7 +5495,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "마우스 커서 아래"
+			"ko": "\uB9C8\uC6B0\uC2A4 \uCEE4\uC11C \uC544\uB798"
 		},
 		"Beside cursor": {
 			"_info": {
@@ -5506,7 +5506,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "커서 옆"
+			"ko": "\uCEE4\uC11C \uC606"
 		},
 		"Prevent cursor overlap": {
 			"_info": {
@@ -5957,7 +5957,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "일반 하이퍼링크의 팝업 열기 여부"
+			"ko": "\uC77C\uBC18 \uD558\uC774\uD37C\uB9C1\uD06C\uC758 \uD31D\uC5C5 \uC5F4\uAE30 \uC5EC\uBD80"
 		},
 		"Only for links that look valid": {
 			"_info": {
@@ -5968,7 +5968,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "유효해 보이는 링크에만 해당"
+			"ko": "\uC720\uD6A8\uD574 \uBCF4\uC774\uB294 \uB9C1\uD06C\uC5D0\uB9CC \uD574\uB2F9"
 		},
 		"Enabling this option will only allow links to be popped up if they look valid (such as if they have a known image/video extension, or are explicitly supported)": {
 			"_info": {
@@ -5979,7 +5979,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "이 옵션을 활성화하면 링크가 유효한 것으로 보이는 경우에만(예: 알려진 이미지/비디오 확장명이 있거나 명시적으로 지원되는 경우) 링크가 팝업될 수 있음"
+			"ko": "\uC774 \uC635\uC158\uC744 \uD65C\uC131\uD654\uD558\uBA74 \uB9C1\uD06C\uAC00 \uC720\uD6A8\uD55C \uAC83\uC73C\uB85C \uBCF4\uC774\uB294 \uACBD\uC6B0\uC5D0\uB9CC(\uC608: \uC54C\uB824\uC9C4 \uC774\uBBF8\uC9C0/\uBE44\uB514\uC624 \uD655\uC7A5\uBA85\uC774 \uC788\uAC70\uB098 \uBA85\uC2DC\uC801\uC73C\uB85C \uC9C0\uC6D0\uB418\uB294 \uACBD\uC6B0) \uB9C1\uD06C\uAC00 \uD31D\uC5C5\uB420 \uC218 \uC788\uC74C"
 		},
 		"Popup for `<iframe>`": {
 			"_info": {
@@ -5990,7 +5990,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "<iframe>에 대한 팝업"
+			"ko": "<iframe>\uC5D0 \uB300\uD55C \uD31D\uC5C5"
 		},
 		"Allows `<iframe>` elements to be popped up as well. Storing images/videos in this way is rather uncommon, but it can allow embeds to be supported": {
 			"_info": {
@@ -6001,7 +6001,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "<iframe>의 요소들도 팝업이 작동하도록 허용. 이런 식으로 이미지/비디오를 저장하는 것은 다소 드문 일이지만, embeds를 지원할 수 있음"
+			"ko": "<iframe>\uC758 \uC694\uC18C\uB4E4\uB3C4 \uD31D\uC5C5\uC774 \uC791\uB3D9\uD558\uB3C4\uB85D \uD5C8\uC6A9. \uC774\uB7F0 \uC2DD\uC73C\uB85C \uC774\uBBF8\uC9C0/\uBE44\uB514\uC624\uB97C \uC800\uC7A5\uD558\uB294 \uAC83\uC740 \uB2E4\uC18C \uB4DC\uBB38 \uC77C\uC774\uC9C0\uB9CC, embeds\uB97C \uC9C0\uC6D0\uD560 \uC218 \uC788\uC74C"
 		},
 		"Popup for `<canvas>`": {
 			"_info": {
@@ -6012,7 +6012,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "<canvas>에 대한 팝업"
+			"ko": "<canvas>\uC5D0 \uB300\uD55C \uD31D\uC5C5"
 		},
 		"Allows `<canvas>` elements to be popped up as well. This will likely cause popups with any kind of web-based games, so it's recommended to keep this disabled": {
 			"_info": {
@@ -6023,7 +6023,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "<canvas>의 요소들도 팝업이 작동하도록 허용. 이것은 어떤 종류의 웹 기반 게임이라도 팝업을 유발할 가능성이 높으므로, 이 기능을 사용하지 않도록 유지하는 것이 좋음"
+			"ko": "<canvas>\uC758 \uC694\uC18C\uB4E4\uB3C4 \uD31D\uC5C5\uC774 \uC791\uB3D9\uD558\uB3C4\uB85D \uD5C8\uC6A9. \uC774\uAC83\uC740 \uC5B4\uB5A4 \uC885\uB958\uC758 \uC6F9 \uAE30\uBC18 \uAC8C\uC784\uC774\uB77C\uB3C4 \uD31D\uC5C5\uC744 \uC720\uBC1C\uD560 \uAC00\uB2A5\uC131\uC774 \uB192\uC73C\uBBC0\uB85C, \uC774 \uAE30\uB2A5\uC744 \uC0AC\uC6A9\uD558\uC9C0 \uC54A\uB3C4\uB85D \uC720\uC9C0\uD558\uB294 \uAC83\uC774 \uC88B\uC74C"
 		},
 		"Popup for `<svg>`": {
 			"_info": {
@@ -6034,7 +6034,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "<svg>에 대한 팝업"
+			"ko": "<svg>\uC5D0 \uB300\uD55C \uD31D\uC5C5"
 		},
 		"Allows `<svg>` elements to be popped up as well. These are usually used for icons, and can occasionally cause problems for websites that overlay icons on top of images": {
 			"_info": {
@@ -6045,7 +6045,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "<canvas>의 요소들도 팝업이 작동하도록 허용. 이것은 보통 아이콘에 사용되며, 때때로 이미지 위에 아이콘을 오버레이하는 웹 사이트에 문제를 일으킬 수 있음"
+			"ko": "<canvas>\uC758 \uC694\uC18C\uB4E4\uB3C4 \uD31D\uC5C5\uC774 \uC791\uB3D9\uD558\uB3C4\uB85D \uD5C8\uC6A9. \uC774\uAC83\uC740 \uBCF4\uD1B5 \uC544\uC774\uCF58\uC5D0 \uC0AC\uC6A9\uB418\uBA70, \uB54C\uB54C\uB85C \uC774\uBBF8\uC9C0 \uC704\uC5D0 \uC544\uC774\uCF58\uC744 \uC624\uBC84\uB808\uC774\uD558\uB294 \uC6F9 \uC0AC\uC774\uD2B8\uC5D0 \uBB38\uC81C\uB97C \uC77C\uC73C\uD0AC \uC218 \uC788\uC74C"
 		},
 		"Enable gallery": {
 			"_info": {
@@ -6350,7 +6350,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "블랙리스트에 있는 이미지 팝업 안 함"
+			"ko": "\uBE14\uB799\uB9AC\uC2A4\uD2B8\uC5D0 \uC788\uB294 \uC774\uBBF8\uC9C0 \uD31D\uC5C5 \uC548 \uD568"
 		},
 		"This option prevents a popup from appearing altogether for blacklisted images": {
 			"_info": {
@@ -6361,7 +6361,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "이 옵션을 선택하면 블랙리스트에 있는 이미지에 대한 팝업이 모두 표시되지 않음"
+			"ko": "\uC774 \uC635\uC158\uC744 \uC120\uD0DD\uD558\uBA74 \uBE14\uB799\uB9AC\uC2A4\uD2B8\uC5D0 \uC788\uB294 \uC774\uBBF8\uC9C0\uC5D0 \uB300\uD55C \uD31D\uC5C5\uC774 \uBAA8\uB450 \uD45C\uC2DC\uB418\uC9C0 \uC54A\uC74C"
 		},
 		"Apply blacklist for host websites": {
 			"_info": {
@@ -6372,7 +6372,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "호스트 웹 사이트에 블랙리스트 적용"
+			"ko": "\uD638\uC2A4\uD2B8 \uC6F9 \uC0AC\uC774\uD2B8\uC5D0 \uBE14\uB799\uB9AC\uC2A4\uD2B8 \uC801\uC6A9"
 		},
 		"This option prevents the script from applying any popups to host websites that are in the blacklist. For example, adding `twitter.com` to the blacklist would prevent any popup from opening on twitter.com. If disabled, this option only applies to image URLs (such as twimg.com), not host URLs": {
 			"_info": {
@@ -6383,7 +6383,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "이 옵션은 스크립트가 블랙리스트에 있는 호스트 웹 사이트에 팝업을 적용하는 것을 방지한다. 예를 들어 twitter.com을 블랙리스트에 추가하면 twitter.com에서 어떤 팝업도 열리지 않게 된다. 비활성화된 경우 이 옵션은 호스트 URL이 아닌 이미지 URL(예: twimg.com)에만 적용됨"
+			"ko": "\uC774 \uC635\uC158\uC740 \uC2A4\uD06C\uB9BD\uD2B8\uAC00 \uBE14\uB799\uB9AC\uC2A4\uD2B8\uC5D0 \uC788\uB294 \uD638\uC2A4\uD2B8 \uC6F9 \uC0AC\uC774\uD2B8\uC5D0 \uD31D\uC5C5\uC744 \uC801\uC6A9\uD558\uB294 \uAC83\uC744 \uBC29\uC9C0\uD55C\uB2E4. \uC608\uB97C \uB4E4\uC5B4 twitter.com\uC744 \uBE14\uB799\uB9AC\uC2A4\uD2B8\uC5D0 \uCD94\uAC00\uD558\uBA74 twitter.com\uC5D0\uC11C \uC5B4\uB5A4 \uD31D\uC5C5\uB3C4 \uC5F4\uB9AC\uC9C0 \uC54A\uAC8C \uB41C\uB2E4. \uBE44\uD65C\uC131\uD654\uB41C \uACBD\uC6B0 \uC774 \uC635\uC158\uC740 \uD638\uC2A4\uD2B8 URL\uC774 \uC544\uB2CC \uC774\uBBF8\uC9C0 URL(\uC608: twimg.com)\uC5D0\uB9CC \uC801\uC6A9\uB428"
 		},
 		"Don't popup video for image": {
 			"_info": {
@@ -6394,7 +6394,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "이미지에 대한 비디오 팝업 안 함"
+			"ko": "\uC774\uBBF8\uC9C0\uC5D0 \uB300\uD55C \uBE44\uB514\uC624 \uD31D\uC5C5 \uC548 \uD568"
 		},
 		"This option prevents the popup from loading a video when the source was an image. Vice-versa is also applied": {
 			"_info": {
@@ -6405,7 +6405,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "원본이 이미지일 때 팝업이 비디오를 로드하는 것을 방지함.  반대의 경우도 적용함."
+			"ko": "\uC6D0\uBCF8\uC774 \uC774\uBBF8\uC9C0\uC77C \uB54C \uD31D\uC5C5\uC774 \uBE44\uB514\uC624\uB97C \uB85C\uB4DC\uD558\uB294 \uAC83\uC744 \uBC29\uC9C0\uD568.  \uBC18\uB300\uC758 \uACBD\uC6B0\uB3C4 \uC801\uC6A9\uD568."
 		},
 		"Support `pointer-events:none`": {
 			"_info": {
@@ -6416,7 +6416,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "`포인터 이벤트 : 없음` 지원"
+			"ko": "`\uD3EC\uC778\uD130 \uC774\uBCA4\uD2B8 : \uC5C6\uC74C` \uC9C0\uC6D0"
 		},
 		"Manually looks through every element on the page to see if the cursor is beneath them. Supports more images, but also results in a higher CPU load for websites such as Facebook.": {
 			"_info": {
@@ -6427,7 +6427,7 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			},
-			"ko": "커서 아래 있는 페이지의 모든 요소를 수동으로 확인합니다. 더 많은 이미지를 지원하지만, Facebook과 같은 웹사이트의 CPU 부하가 더 높아진다."
+			"ko": "\uCEE4\uC11C \uC544\uB798 \uC788\uB294 \uD398\uC774\uC9C0\uC758 \uBAA8\uB4E0 \uC694\uC18C\uB97C \uC218\uB3D9\uC73C\uB85C \uD655\uC778\uD569\uB2C8\uB2E4. \uB354 \uB9CE\uC740 \uC774\uBBF8\uC9C0\uB97C \uC9C0\uC6D0\uD558\uC9C0\uB9CC, Facebook\uACFC \uAC19\uC740 \uC6F9\uC0AC\uC774\uD2B8\uC758 CPU \uBD80\uD558\uAC00 \uB354 \uB192\uC544\uC9C4\uB2E4."
 		},
 		"Replaces the website's IMU instance with the userscript": {
 			"_info": {
