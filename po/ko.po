@@ -1285,7 +1285,7 @@ msgstr ""
 
 #. allow_remote.description_userscript
 msgid "Allows communication between frames in windows, improving support for keybindings. Can pose a fingerprinting risk when used through the userscript"
-msgstr "창의 프레임 간 통신을 허용하여 키 바인딩에 대한 지원을 개선합니다. 다만, 유저스크립트를 통해 사용 시, 보안에 위협이 있을 수 있습니다."
+msgstr "창의 프레임 간 통신을 허용하여 키 바인딩에 대한 지원을 개선합니다. 유저스크립트를 통해 사용 시, 보안에 위협이 있을 수 있습니다"
 
 #. mouseover_use_remote.name
 msgid "Pop out of frames"
