@@ -1935,10 +1935,11 @@ var $$IMU_EXPORT$$;
 		"Page middle": {
 			"ko": "페이지 중간"
 		},
-		"Clicking image downloads": {
+		// replaced with "Clicking link downloads"
+		/*"Clicking image downloads": {
 			"ko": "이미지 클릭하면 다운로드",
 			"fr": "Cliquer l'image le télécharge"
-		},
+		},*/
 		"Popup for plain hyperlinks": {
 			"ko": "일반적인 링크에도 팝업"
 		},
