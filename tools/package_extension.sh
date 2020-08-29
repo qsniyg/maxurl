@@ -73,6 +73,9 @@ patch --version >> EXTENSION_README.txt
 separator EXTENSION_README.txt
 sed --version >> EXTENSION_README.txt
 separator EXTENSION_README.txt
+echo -n "Node.js " >> EXTENSION_README.txt
+node --version >> EXTENSION_README.txt
+separator EXTENSION_README.txt
 
 echo
 echo Building Firefox extension
