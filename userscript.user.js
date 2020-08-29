@@ -10118,6 +10118,7 @@ var $$IMU_EXPORT$$;
 		}
 	};
 
+	// imu:begin_exclude
 	var process_strings = function() {
 		/*for (var string in strings) {
 			if (!("en" in strings[string])) {
@@ -10240,7 +10241,8 @@ var $$IMU_EXPORT$$;
 		return strings;
 	};
 
-	//console_log(process_strings());
+	console_log(process_strings());
+	// imu:end_exclude
 
 	for (var option in option_to_problems) {
 		var problem = option_to_problems[option];

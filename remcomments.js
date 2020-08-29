@@ -15,11 +15,23 @@ function update() {
   var newlines = [];
   var in_bigimage = false;
   var in_falserule = false;
+  var in_exclude = false;
 
   var firstcomment = true;
   var within_header = true;
   var within_firstcomment = false;
   for (const line of lines) {
+    if (in_exclude) {
+      if (/^\s+\/\/\s*imu:end_exclude/.test(line))
+        in_exclude = false;
+      continue;
+    }
+
+    if (/^\s+\/\/\s*imu:begin_exclude/.test(line)) {
+      in_exclude = true;
+      continue;
+    }
+
     if (!in_bigimage) {
       if (firstcomment) {
         if (line.match(/^\s*\/\//)) {
