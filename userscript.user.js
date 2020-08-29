@@ -71414,19 +71414,49 @@ var $$IMU_EXPORT$$;
 			if (newsrc) return newsrc;
 		}
 
+		if (domain === "vid.dobbyporn.com") {
+			// http://vid.dobbyporn.com/s/thumbs/d/djp/31228046.jpg
+			newsrc = src.replace(/:\/\/[^/]+\/+s\/+thumbs\/+[^/]\/+[^/]{3}\/+([0-9]+)\.[^/.]+(?:[?#].*)?$/, "://dobbyporn.com/video/$1.html");
+			if (newsrc)
+				return {
+					url: newsrc,
+					is_pagelink: true
+				};
+		}
+
 		if (domain_nowww === "dobbyporn.com" ||
 			domain_nowww === "colliderporn.com") {
-			newsrc = src.replace(/^([a-z]+:\/\/[^/]+\/+)video\/+([0-9]+)\.html(?:[?#].*)?$/, "$1best/babe/?video=$2");
-			if (newsrc !== src) {
+			// http://dobbyporn.com/video/31228046.html -> http://dobbyporn.com/best/shoes/?video=31228046
+			newsrc = src.replace(/^([a-z]+:\/\/[^/]+\/+)video\/+([0-9]+)\.html(?:[?&#].*)?$/, "$1best/babe/?video=$2");
+			if (false && newsrc !== src) {
 				return {
 					url: newsrc,
 					is_pagelink: true
 				};
 			}
 
+			match = src.match(/^([a-z]+:\/\/[^/]+\/+video\/+[0-9]+\.html)(?:[?&#].*)?$/);
+			if (false && match && !/[?&]rand=/.test(src)) {
+				return {
+					url: src.replace(/(\.html)(?:[?#].*)?$/, "$1&rand=" + get_random_text(10)),
+					is_pagelink: true
+				};
+			}
+
 			newsrc = website_query({
-				website_regex: /^([a-z]+:\/\/[^/]+\/+v\/+[0-9]+\.html)(?:[?#].*)?$/,
-				query_for_id: "${id}",
+				website_regex: [
+					/^([a-z]+:\/\/[^/]+\/+v\/+[0-9]+\.html)(?:[?#].*)?$/,
+					/^([a-z]+:\/\/[^/]+\/+video\/+[0-9]+\.html(?:[?&#].*)?)$/
+				],
+				query_for_id: function(id) {
+					return {
+						url: id,
+						imu_mode: "document",
+						headers: {
+							Referer: id
+						}
+					};
+				},
 				process: function(done, resp, cache_key) {
 					var match = resp.responseText.match(/window\.location\.href = "(\/[^"]+\?video=[0-9]+)";/);
 					if (!match) {
@@ -71443,8 +71473,18 @@ var $$IMU_EXPORT$$;
 			if (newsrc) return newsrc;
 
 			newsrc = website_query({
-				website_regex: /^([a-z]+:\/\/[^/]+\/+[a-z]+\/+[a-z]+\/+\?(?:.*&)?video=[0-9]+.*?)$/,
-				query_for_id: "${id}",
+				website_regex: [
+					/^([a-z]+:\/\/[^/]+\/+[a-z]+\/+[a-z]+\/+\?(?:.*&)?video=[0-9]+.*?)$/
+				],
+				query_for_id: function(id) {
+					return {
+						url: id,
+						imu_mode: "document",
+						headers: {
+							Referer: id
+						}
+					};
+				},
 				process: function(done, resp, cache_key) {
 					var match = resp.responseText.match(/<iframe id="extvidx" src="(?:javascript:window\.location\.replace\(')?(https?:\/\/[^"']+)(?:'\))?"/);
 					if (!match) {
@@ -73959,6 +73999,21 @@ var $$IMU_EXPORT$$;
 								return el.children[i];
 							}
 						}
+					}
+				}
+			};
+		}
+
+		if (host_domain_nosub === "youtube.com") {
+			return {
+				element_ok: function(el) {
+					// thanks to ambler on discord for reporting
+					//console_log(el, el.tagName, el.id);
+					if (el.tagName === "DIV" && el.id === "background") {
+						var newel = el.querySelector("div#backgroundFrontLayer");
+						//console_log("NEW", newel);
+						if (newel)
+							return newel;
 					}
 				}
 			};
@@ -82231,15 +82286,23 @@ var $$IMU_EXPORT$$;
 				}
 			}
 
+			var ok_els_sources = [];
 			for (var source in sources) {
 				for (var i = 0; i < ok_els.length; i++) {
 					if (sources[source].el === ok_els[i].el) {
 						ok_els[i] = sources[source];
+						ok_els_sources[i] = true;
 					}
 				}
 
 				if (array_indexof(activesources, source) < 0)
 					delete sources[source];
+			}
+
+			for (var i = 0; i < ok_els.length; i++) {
+				if (!ok_els_sources[i] && !ok_els[i].src) {
+					addElement(ok_els[i].el);
+				}
 			}
 
 			if ((source = getsource()) !== undefined) {
