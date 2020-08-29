@@ -6,7 +6,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: French\n"
+"Language: fr\n"
 
 msgid "options_header"
 msgstr ""
@@ -1724,7 +1724,14 @@ msgid "Documentation"
 msgstr ""
 
 #. mouseover_styles.documentation.value
-msgid "Most valid CSS is supported, with these differences:\n<ul><li>Multiline comments (<code>/* ... */</code>) are currently not supported</li>\n<li>Single comments (<code>// ...</code>) are supported, but only at the beginning of a line</li>\n<li><code>%thumburl%</code> is the URL of the thumbnail image. For example, you could use it like this: <code>background-image: url(%thumburl%)</code><br />\nThe URL is properly encoded, so quotes are not necessary (but not harmful either)</li>\n<li><code>%fullurl%</code> is the URL of the full image. If IMU fails to find a larger image, it will be the same as <code>%thumburl%</code></li>\n<li>Styles are <code>!important</code> by default</li></ul>"
+msgid ""
+"Most valid CSS is supported, with these differences:\n"
+"<ul><li>Multiline comments (<code>/* ... */</code>) are currently not supported</li>\n"
+"<li>Single comments (<code>// ...</code>) are supported, but only at the beginning of a line</li>\n"
+"<li><code>%thumburl%</code> is the URL of the thumbnail image. For example, you could use it like this: <code>background-image: url(%thumburl%)</code><br />\n"
+"The URL is properly encoded, so quotes are not necessary (but not harmful either)</li>\n"
+"<li><code>%fullurl%</code> is the URL of the full image. If IMU fails to find a larger image, it will be the same as <code>%thumburl%</code></li>\n"
+"<li>Styles are <code>!important</code> by default</li></ul>"
 msgstr ""
 
 #. mouseover_enable_fade.name
@@ -2028,7 +2035,10 @@ msgid "TikTok: 3rd-party watermark removal"
 msgstr ""
 
 #. tiktok_thirdparty.description
-msgid "Uses a 3rd-party watermark removal site for TikTok.\nI do not endorse any of the sites supported. They may log your IP address and videos you submit. Use this option with caution.\n`LQ` = Low quality, `PL` = Public log"
+msgid ""
+"Uses a 3rd-party watermark removal site for TikTok.\n"
+"I do not endorse any of the sites supported. They may log your IP address and videos you submit. Use this option with caution.\n"
+"`LQ` = Low quality, `PL` = Public log"
 msgstr ""
 
 #. tiktok_thirdparty.options.null.name
@@ -2080,7 +2090,22 @@ msgid "A list of URLs that are blacklisted from being processed"
 msgstr ""
 
 #. bigimage_blacklist.documentation.value
-msgid "The examples below are written for the simple (glob) engine, not the regex engine. The glob engine is generally based on the UNIX glob syntax.<br />\n<ul><br />\n<li><code>google.com</code> will block https://google.com/, https://www.google.com/, https://abcdef.google.com/, https://def.abc.google.com/, etc.</li>\n<li><code>abc.google.com</code> will block https://abc.google.com/, https://def.abc.google.com/, etc.</li>\n<li><code>*.google.com</code> will block https://www.google.com/, https://def.abc.google.com/, etc. but not https://google.com/</li>\n<li><code>google.*/</code> will block https://google.com/, https://www.google.co.uk, etc.</li>\n<li><code>http://google.com</code> will block http://google.com/, but not https://google.com/, http://www.google.com/, etc.</li>\n<li><code>google.com/test</code> will block https://google.com/test, https://www.google.com/test/abcdef, but not https://google.com/, etc.</li>\n<li><code>google.com/*/test</code> will block https://google.com/abc/test, but not https://google.com/test or https://google.com/abc/def/test</li>\n<li><code>google.com/**/test</code> will block https://google.com/abc/test, https://google.com/abc/def/test, https://google.com/abc/def/ghi/test, etc. but not https://google.com/test</li>\n<li><code>g??gle.com</code> will block https://google.com/, https://gaagle.com/, https://goagle.com/, etc.</li>\n<li><code>google.{com,co.uk}</code> will block https://google.com/ and https://google.co.uk/</li>\n<li><code>g[oau]ogle.com</code> will block https://google.com/, https://gaogle.com/, and http://www.guogle.com/</li>\n<li><code>g[0-9]ogle.com</code> will block https://g0ogle.com/, https://g1ogle.com/, etc. (up to https://g9ogle.com/)</li>\n</ul>"
+msgid ""
+"The examples below are written for the simple (glob) engine, not the regex engine. The glob engine is generally based on the UNIX glob syntax.<br />\n"
+"<ul><br />\n"
+"<li><code>google.com</code> will block https://google.com/, https://www.google.com/, https://abcdef.google.com/, https://def.abc.google.com/, etc.</li>\n"
+"<li><code>abc.google.com</code> will block https://abc.google.com/, https://def.abc.google.com/, etc.</li>\n"
+"<li><code>*.google.com</code> will block https://www.google.com/, https://def.abc.google.com/, etc. but not https://google.com/</li>\n"
+"<li><code>google.*/</code> will block https://google.com/, https://www.google.co.uk, etc.</li>\n"
+"<li><code>http://google.com</code> will block http://google.com/, but not https://google.com/, http://www.google.com/, etc.</li>\n"
+"<li><code>google.com/test</code> will block https://google.com/test, https://www.google.com/test/abcdef, but not https://google.com/, etc.</li>\n"
+"<li><code>google.com/*/test</code> will block https://google.com/abc/test, but not https://google.com/test or https://google.com/abc/def/test</li>\n"
+"<li><code>google.com/**/test</code> will block https://google.com/abc/test, https://google.com/abc/def/test, https://google.com/abc/def/ghi/test, etc. but not https://google.com/test</li>\n"
+"<li><code>g??gle.com</code> will block https://google.com/, https://gaagle.com/, https://goagle.com/, etc.</li>\n"
+"<li><code>google.{com,co.uk}</code> will block https://google.com/ and https://google.co.uk/</li>\n"
+"<li><code>g[oau]ogle.com</code> will block https://google.com/, https://gaogle.com/, and http://www.guogle.com/</li>\n"
+"<li><code>g[0-9]ogle.com</code> will block https://g0ogle.com/, https://g1ogle.com/, etc. (up to https://g9ogle.com/)</li>\n"
+"</ul>"
 msgstr ""
 
 #. bigimage_blacklist_engine.description

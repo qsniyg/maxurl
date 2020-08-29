@@ -1,5 +1,31 @@
 const fs = require("fs");
 
+var split_value = function(lines, cmd, value) {
+    var splitted = value.split("\n");
+
+    for (var i = 0; i < splitted.length; i++) {
+        var header = "";
+        var line = splitted[i];
+
+        if (i === 0) {
+            header = cmd + " ";
+
+            if (splitted.length > 1) {
+                lines.push(header + '""');
+                header = "";
+            }
+        }
+
+        if ((i + 1) < splitted.length)
+            line += "\n";
+
+        if (line.length === 0)
+            continue;
+
+        lines.push(header + JSON.stringify(line));
+    }
+};
+
 var start = function(userscript) {
     var pofiles = {};
 
@@ -63,10 +89,10 @@ var start = function(userscript) {
                 pofiles[pofile].push(comment);
             }
 
-            pofiles[pofile].push("msgid " + JSON.stringify(string));
+            split_value(pofiles[pofile], "msgid", string);
 
             if (pofile in string_data) {
-                pofiles[pofile].push("msgstr " + JSON.stringify(string_data[pofile]));
+                split_value(pofiles[pofile], "msgstr", string_data[pofile]);
             } else {
                 pofiles[pofile].push("msgstr \"\"");
             }
