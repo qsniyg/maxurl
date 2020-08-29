@@ -1,5 +1,8 @@
 const fs = require("fs");
 
+const process = require("process");
+process.chdir(__dirname + "/..");
+
 var parse = function(lines) {
 	var strings = {};
 
