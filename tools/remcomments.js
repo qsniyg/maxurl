@@ -1,4 +1,5 @@
 const fs = require("fs");
+const util = require("./util.js");
 // git clone the gh-pages branch into site
 const about = require("../site/about.js");
 
@@ -50,7 +51,9 @@ function update() {
 					}
 				}
 
-				var stringified_lines = JSON.stringify(strings_json, null, "\t").split("\n");
+				var stringified = JSON.stringify(strings_json, null, "\t");
+				stringified = util.json_escape_unicode(stringified);
+				var stringified_lines = stringified.split("\n");
 				for (var stringified_line of stringified_lines) {
 					if (stringified_line === "{") {
 						stringified_line = "var strings = {";

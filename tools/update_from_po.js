@@ -1,4 +1,5 @@
 const fs = require("fs");
+const util = require("./util.js");
 
 const process = require("process");
 process.chdir(__dirname + "/..");
@@ -88,11 +89,7 @@ var update_userscript = function(newstrings) {
 	}
 
 	var stringified = JSON.stringify(strings_json, null, "\t").replace(/\n/g, "\n\t");
-
-	// https://stackoverflow.com/a/31652607/13255485
-	stringified = stringified.replace(/[\u007F-\uFFFF]/g, function(chr) {
-		return "\\u" + ("0000" + chr.charCodeAt(0).toString(16).toUpperCase()).substr(-4)
-	});
+	stringified = util.json_escape_unicode(stringified);
 
 	userscript = userscript.replace(strings_regex, "$1" + stringified + "$3");
 
