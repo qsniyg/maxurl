@@ -15493,6 +15493,9 @@ var $$IMU_EXPORT$$;
 			(domain_nowww === "okdiario.com" && string_indexof(src, "/img/") >= 0) ||
 			// https://s3-us-west-1.amazonaws.com/static-spin-com/files/2020/08/PaulMescal_RollingStones_Scarlet-1596657752-768x511.jpg
 			(amazon_container === "static-spin-com" && string_indexof(src, "/files/") >= 0) ||
+			// thanks to jloqfjgk on github: https://github.com/qsniyg/maxurl/issues/408
+			// https://www.lapisrelights.com/assets/img/uploads/2020/08/lapis_crossword_thumb2-1024x576.jpg
+			(domain_nowww === "lapisrelights.com" && /\/assets\/+img\/+uploads\//.test(src)) ||
 			// https://static.acgsoso.com/uploads/2020/02/19bd4f091f03c191195d5e626c3190f9-200x300.jpg
 			(domain === "static.acgsoso.com" && string_indexof(src, "/uploads/") >= 0)
 			) {
