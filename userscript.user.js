@@ -2035,16 +2035,6 @@ var $$IMU_EXPORT$$;
 			"es": "Botón de Opciones",
 			"ko": "설정 링크"
 		},
-		"Rotation Buttons": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_ui_rotationbtns",
-						"field": "name"
-					}
-				]
-			}
-		},
 		"Video": {
 			"_info": {
 				"instances": [
@@ -2461,7 +2451,9 @@ var $$IMU_EXPORT$$;
 			"fr": "en-têtes spéciales",
 			"ko": "특정 헤더"
 		},
-		"forces download": {},
+		"forces download": {
+			"en": "forces download"
+		},
 		"Close": {
 			"fr": "Fermer",
 			"ko": "닫기"
@@ -2816,6 +2808,26 @@ var $$IMU_EXPORT$$;
 				"instances": [
 					{
 						"setting": "settings_tabs",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Alphabetical order": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "settings_alphabetical_order",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Lists options in alphabetical order": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "settings_alphabetical_order",
 						"field": "description"
 					}
 				]
@@ -4439,6 +4451,16 @@ var $$IMU_EXPORT$$;
 					{
 						"setting": "mouseover_ui_downloadbtn",
 						"field": "description"
+					}
+				]
+			}
+		},
+		"Rotation Buttons": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_ui_rotationbtns",
+						"field": "name"
 					}
 				]
 			}
@@ -10137,6 +10159,7 @@ var $$IMU_EXPORT$$;
 	};
 
 	// imu:begin_exclude
+	var do_process_strings = false;
 	var process_strings = function() {
 		/*for (var string in strings) {
 			if (!("en" in strings[string])) {
@@ -10259,7 +10282,8 @@ var $$IMU_EXPORT$$;
 		return strings;
 	};
 
-	//console_log(process_strings());
+	if (do_process_strings)
+		console_log(process_strings());
 	// imu:end_exclude
 
 	for (var option in option_to_problems) {
