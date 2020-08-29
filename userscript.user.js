@@ -1902,9 +1902,10 @@ var $$IMU_EXPORT$$;
 		"Drag": {
 			"ko": "끕니다"
 		},
-		"Popup scroll action": {
+		// replaced with horizontal/vertical scroll action
+		/*"Popup scroll action": {
 			"ko": "마우스 휠 작업"
-		},
+		},*/
 		"Zoom": {
 			"ko": "줌"
 		},
@@ -4971,42 +4972,15 @@ var $$IMU_EXPORT$$;
 			if (!("en" in strings[string])) {
 				strings[string]["en"] = string;
 			}
-		}
-
-		var string_order = ["_info", "en"];
-		for (var string in strings) {
-			var value = strings[string];
-			var copied = deepcopy(value);
-
-			strings[string] = {};
-			var keys = Object.keys(value).sort(function(a, b) {
-				var a_index = array_indexof(string_order, a);
-				var b_index = array_indexof(string_order, b);
-
-				if (a_index < 0) {
-					if (b_index >= 0)
-						return 1;
-					else
-						return a.localeCompare(b);
-				} else {
-					if (b_index < 0)
-						return -1;
-					else
-						return a_index - b_index;
-				}
-			});
-
-			if (keys[0] !== "en") {
-				console_error("'en' should be first", string, keys);
-			}
-
-			for (var i = 0; i < keys.length; i++) {
-				strings[string][keys[i]] = value[keys[i]];
-			}
 		}*/
 
 		for (var setting in settings_meta) {
 			var meta = settings_meta[setting];
+
+			// don't add dead settings to translate
+			if (!(setting in settings)) {
+				continue;
+			}
 
 			var add_info_field = function(setting, fieldname, value) {
 				if (!value)
@@ -5046,18 +5020,76 @@ var $$IMU_EXPORT$$;
 
 			add_info_field(setting, "name", meta.name);
 			add_info_field(setting, "description", meta.description);
+			add_info_field(setting, "number_unit", meta.number_unit);
 
 			if (meta.warning) {
 				for (var key in meta.warning) {
 					add_info_field(setting, "warning." + key, meta.warning[key]);
 				}
 			}
+
+			if (meta.options) {
+				var process_options = function(options) {
+					for (var key in options) {
+						if (/^_group/.test(key)) {
+							process_options(options[key]);
+						} else if (key[0] !== "_") {
+							add_info_field(setting, "options." + key + ".name", options[key].name);
+							add_info_field(setting, "options." + key + ".description", options[key].description);
+						}
+					};
+				}
+
+				process_options(meta.options);
+			}
+
+			if (meta.documentation) {
+				add_info_field(setting, "documentation.title", meta.documentation.title);
+				add_info_field(setting, "documentation.value", meta.documentation.value);
+			}
+
+			if (meta.example_websites) {
+				for (var i = 0; i < meta.example_websites.length; i++) {
+					add_info_field(setting, "example_websites[" + i + "]", meta.example_websites[i]);
+				}
+			}
+		}
+
+		var string_order = ["_info", "en"];
+		for (var string in strings) {
+			var value = strings[string];
+
+			strings[string] = {};
+			var keys = Object.keys(value).sort(function(a, b) {
+				var a_index = array_indexof(string_order, a);
+				var b_index = array_indexof(string_order, b);
+
+				if (a_index < 0) {
+					if (b_index >= 0)
+						return 1;
+					else
+						return a.localeCompare(b);
+				} else {
+					if (b_index < 0)
+						return -1;
+					else
+						return a_index - b_index;
+				}
+			});
+
+			if (keys[0] !== "_info") {
+				console_error("'_info' should be first", string, keys);
+			}
+
+			for (var i = 0; i < keys.length; i++) {
+				strings[string][keys[i]] = value[keys[i]];
+			}
 		}
 
 		return strings;
 	};
 
-	//console_log(process_strings());
+	console_log(process_strings());
 
 	for (var option in option_to_problems) {
 		var problem = option_to_problems[option];
