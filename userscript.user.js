@@ -83623,6 +83623,7 @@ var $$IMU_EXPORT$$;
 
 		// TODO: maybe check to make sure it's a blob? according to the spec, this will silently fail, but browsers may print an error
 		revoke_objecturl(image.src);
+		image.setAttribute("imu-destroyed", "true");
 	};
 
 	// TODO: maybe move to a generic reference class, like Cache?
@@ -83685,12 +83686,21 @@ var $$IMU_EXPORT$$;
 					console_log("check_image_get(cached):", cached_result.img, cached_result.resp, obj[0]);
 				}
 
-				if (cached_result.img && cached_result.img.tagName === "VIDEO" && !settings.popup_cache_resume_video) {
-					cached_result.img.currentTime = cached_result.currentTime || 0;
+				var img = cached_result.img;
+				var destroyed = false;
+				if (img) {
+					if (img.tagName === "VIDEO" && !settings.popup_cache_resume_video) {
+						img.currentTime = cached_result.currentTime || 0;
+					}
+
+					if (img.hasAttribute("imu-destroyed"))
+						destroyed = true;
 				}
 
-				cb(cached_result.img, cached_result.resp.finalUrl, obj[0], cached_result.resp);
-				return;
+				if (!destroyed) {
+					cb(cached_result.img, cached_result.resp.finalUrl, obj[0], cached_result.resp);
+					return;
+				}
 			}
 		}
 
