@@ -64672,12 +64672,6 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/IMG\/+)crop\/+([0-9]{6}\/+[^/]+)_[0-9]+x[0-9]+[wh](\.[^/.]+)(?:[?#].*)?$/, "$1jpg/$2$3");
 		}
 
-		if (false && domain_nosub === "imgiz.com" && /^i[0-9]*\./.test(domain)) {
-			// https://i1.imgiz.com/ramazan/camiler/bayburt.jpg -- 3264x2448
-			// https://i1.imgiz.com/data/videoshots/7164/7164388-91520.jpg -- 2730x1536
-			// https://i1.imgiz.com/rshots/8444/dusbaz-yuregim-yanginlarda_8444102-27150_640x360.jpg -- /data/ works too, but removing _640x360 doesn't, even if text before id is removed
-		}
-
 		if (domain === "monsite.woopic.com") {
 			// https://monsite.woopic.com/383/f/500x/p/Roselyange/img/254891230c9211073de0b2ed7970d28f.jpg
 			//   https://monsite.woopic.com/383/p/Roselyange/img/254891230c9211073de0b2ed7970d28f.jpg
@@ -77254,6 +77248,88 @@ var $$IMU_EXPORT$$;
 			// http://www.babesjoy.com/galleries/metart-x/thumbs/kay-j-by-alex-lynn-in-quiet-passion-1/1th.jpg
 			//   http://www.babesjoy.com/galleries/metart-x/thumbs/kay-j-by-alex-lynn-in-quiet-passion-1/1.jpg
 			return src.replace(/(\/galleries\/+[^/]+\/+thumbs\/+[^/]+\/+[0-9]+)th(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "izlesene.com") {
+			// https://www.izlesene.com/video/irem-derici-yazsin-bana/10473966
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+video\/+(?:[^/]+\/+)?([0-9]+).*$/,
+				query_for_id: "https://www.izlesene.com/video/${id}",
+				process: function(done, resp, cache_key) {
+					var match = resp.responseText.match(/window\._videoObj = ({.*});/);
+					if (!match) {
+						console_error(cache_key, "Unable to find match for", resp);
+						return done(null, false);
+					}
+
+					var json = JSON_parse(match[1]);
+					var levels = json.media.level;
+					levels.sort(function(a, b) {
+						return parseInt(b.value) - parseInt(a.value);
+					});
+
+					var obj = {
+						extra: {}
+					};
+
+					if (json.videoTitle)
+						obj.extra.caption = json.videoTitle;
+
+					if (json.videoPageURL)
+						obj.extra.page = json.videoPageURL;
+
+					var urls = [];
+					urls.push({
+						url: levels[0].source,
+						video: true,
+						headers: {
+							Referer: resp.finalUrl
+						}
+					});
+
+					// todo: maybe use the /data/ rule below?
+					if (false && json.posterURL)
+						urls.push(json.posterURL);
+
+					return done(fillobj_urls(urls, obj), 60*60);
+				}
+			});
+			if (newsrc) return newsrc;
+		}
+
+		if (false && domain_nosub === "imgiz.com" && /^i[0-9]*\./.test(domain)) {
+			// https://i1.imgiz.com/ramazan/camiler/bayburt.jpg -- 3264x2448
+			// https://i1.imgiz.com/data/videoshots/7164/7164388-91520.jpg -- 2730x1536
+			// https://i1.imgiz.com/rshots/8444/dusbaz-yuregim-yanginlarda_8444102-27150_640x360.jpg -- /data/ works too, but removing _640x360 doesn't, even if text before id is removed
+		}
+
+		if (domain_nosub === "imgiz.com" && /^i[0-9]*\./.test(domain)) {
+			// https://i1.imgiz.com/rshots/8444/dusbaz-yuregim-yanginlarda_8444102-27150_640x360.jpg
+			//   https://i1.imgiz.com/data/videoshots/8444/8444102-27150.jpg
+			// https://i1.imgiz.com/rshots/10470/serdar-ortac-biz-istemezsek_10470082-1330_100x62.jpg
+
+			newsrc = src.replace(/\/rshots\/+([0-9]+)\/+[^/]+_([0-9]+-[0-9]+)_[0-9]+x[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "/data/videoshots/$1/$2$3");
+			if (newsrc !== src)
+				return newsrc;
+
+			match = src.match(/\/rshots\/+[0-9]+\/+[^/]+_([0-9]+)-[0-9]+_[0-9]+x[0-9]+\.[^/.]+(?:[?#].*)?$/);
+			if (!match)
+				match = src.match(/\/data\/+videoshots\/+[0-9]+\/+([0-9]+)-[0-9]+\.[^/.]+(?:[?#].*)?$/);
+			if (match) {
+				return {
+					url: "https://www.izlesene.com/video/" + match[1],
+					is_pagelink: true
+				};
+			}
+		}
+
+		if (domain === "cloudimagesstg.storyfire.com") {
+			// https://cloudimagesstg.storyfire.com/?url=https%3A%2F%2Fweb-stories.s3.us-west-2.amazonaws.com%2F1C8p44rA7NWFX680vxDxi1PWRY83%2F5f499c8cd0c16b81b4346ef1%2FstoryImage_4f4b1d9b-00b9-4144-87fb-ee5063709799.jpg&type=webp&height=322
+			//   https://web-stories.s3.us-west-2.amazonaws.com/1C8p44rA7NWFX680vxDxi1PWRY83/5f499c8cd0c16b81b4346ef1/storyImage_4f4b1d9b-00b9-4144-87fb-ee5063709799.jpg
+			//   https://storyfire.com/video-details/5f499c8cd0c16b81b4346ef1
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+\?(?:.*&)?url=([^&]+).*/, "$1");
+			if (newsrc !== src)
+				return decodeuri_ifneeded(newsrc);
 		}
 
 
