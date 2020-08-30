@@ -1483,6 +1483,13 @@ var $$IMU_EXPORT$$;
 		[].push.apply(array, other);
 	};
 
+	var array_foreach = function(array, cb) {
+		for (var i = 0; i < array.length; i++) {
+			if (cb(array[i], i) === false)
+				return;
+		}
+	};
+
 	function is_element(x) {
 		if (!x || typeof x !== "object")
 			return false;
