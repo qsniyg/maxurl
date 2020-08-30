@@ -10509,17 +10509,34 @@ var $$IMU_EXPORT$$;
 
 	var settings_history = {};
 
-	var js_map_available = false;
 	var new_map = function() {
-		var map = {};
+		var map;
 
 		try {
 			map = new Map();
-			js_map_available = true;
 		} catch (e) {
+			map = {
+				imu_map: true,
+				object: {},
+				array: []
+			};
 		}
 
 		return map;
+	};
+
+	var _map_is_key_primitive = function(key) {
+		return typeof key === "string" || typeof key === "number";
+	};
+
+	var _map_indexof = function(map, key) {
+		for (var i = 0; i < map.array.length; i++) {
+			if (map.array[i].key === key) {
+				return i;
+			}
+		}
+
+		return -1;
 	};
 
 	var map_set = function(map, key, value) {
@@ -10527,81 +10544,100 @@ var $$IMU_EXPORT$$;
 			console_log("map_set", map, deepcopy(key), deepcopy(value));
 		}
 
-		if (js_map_available) {
+		if (!map.imu_map) {
 			map.set(key, value);
 		} else {
-			map[key] = value;
+			if (_map_is_key_primitive(key)) {
+				map.object[key] = value;
+			} else {
+				var index = _map_indexof(map, key);
+				if (index < 0) {
+					map.array.push({key: key, value: value});
+				} else {
+					map.array[index].value = value;
+				}
+			}
 		}
 
 		return value;
 	};
 
 	var map_get = function(map, key) {
-		if (js_map_available) {
+		if (!map.imu_map) {
 			return map.get(key);
 		} else {
-			return map[key];
+			if (_map_is_key_primitive(key)) {
+				return map.object[key];
+			} else {
+				var index = _map_indexof(map, key);
+				if (index >= 0) {
+					return map.array[index].value;
+				} else {
+					return undefined;
+				}
+			}
 		}
 	};
 
 	var map_has = function(map, key) {
-		if (js_map_available) {
+		if (!map.imu_map) {
 			return map.has(key);
 		} else {
-			return key in map;
+			if (_map_is_key_primitive(key)) {
+				return key in map.object;
+			} else {
+				return _map_indexof(map, key) >= 0;
+			}
 		}
 	};
 
 	var map_remove = function(map, key) {
-		if (js_map_available) {
+		if (!map.imu_map) {
 			map.delete(key);
 		} else {
-			delete map[key];
+			if (_map_is_key_primitive(key)) {
+				delete map.object[key];
+			} else {
+				var index = _map_indexof(map, key);
+				if (index >= 0) {
+					map.array.splice(index, 1);
+				}
+			}
 		}
 	};
 
 	var map_foreach = function(map, cb) {
-		if (js_map_available) {
+		if (!map.imu_map) {
 			var keys = map.keys();
-			for (var i = 0; i < keys.length; i++) {
-				cb(keys[i], map.get(keys[i]));
+			while (true) {
+				var key_it = keys.next();
+				if (key_it.done)
+					break;
+
+				var key = key_it.value;
+				cb(key, map.get(key));
 			}
 		} else {
-			for (var key in map) {
-				cb(key, map[key]);
+			for (var key in map.object) {
+				cb(key, map.object[key]);
+			}
+
+			for (var i = 0; i < map.array.length; i++) {
+				cb(map.array[i].key, map.array[i].value);
 			}
 		}
 	};
 
-	var js_set_available = false;
 	var new_set = function() {
-		var set = [];
-
-		try {
-			set = new Set();
-			js_set_available = true;
-		} catch (e) {
-		}
-
-		return set;
+		return new_map();
 	};
 
 	var set_add = function(set, key) {
-		if (js_set_available) {
-			set.add(key);
-		} else {
-			if (!set_has(set, key)) {
-				set.push(key);
-			}
-		}
+		return map_set(set, key, true);
 	};
 
 	var set_has = function(set, key) {
-		if (js_set_available) {
-			return set.has(key);
-		} else {
-			return array_indexof(set, key) >= 0;
-		}
+		return map_has(set, key);
 	};
 
 	function Cache(options) {
