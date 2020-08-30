@@ -7712,6 +7712,7 @@ var $$IMU_EXPORT$$;
 		mouseover_support_pointerevents_none: false,
 		popup_allow_cache: true,
 		popup_cache_duration: 30,
+		popup_cache_resume_video: true,
 		website_inject_imu: true,
 		website_image: true,
 		extension_contextmenu: true,
@@ -9852,6 +9853,15 @@ var $$IMU_EXPORT$$;
 			type: "number",
 			number_min: 0,
 			number_unit: "minutes",
+			category: "popup",
+			subcategory: "cache"
+		},
+		popup_cache_resume_video: {
+			name: "Resume videos",
+			description: "If a video popup was closed then reopened, the video will resume from where it left off",
+			requires: {
+				popup_allow_cache: true
+			},
 			category: "popup",
 			subcategory: "cache"
 		},
@@ -83675,6 +83685,10 @@ var $$IMU_EXPORT$$;
 					console_log("check_image_get(cached):", cached_result.img, cached_result.resp, obj[0]);
 				}
 
+				if (cached_result.img && cached_result.img.tagName === "VIDEO" && !settings.popup_cache_resume_video) {
+					cached_result.img.currentTime = cached_result.currentTime || 0;
+				}
+
 				cb(cached_result.img, cached_result.resp.finalUrl, obj[0], cached_result.resp);
 				return;
 			}
@@ -83852,10 +83866,15 @@ var $$IMU_EXPORT$$;
 					}
 
 					if (processing.set_cache) {
-						check_image_cache.set(obj[0].url, {
+						var cache_obj = {
 							img: img,
 							resp: resp
-						}, (parseFloat(settings.popup_cache_duration) || 0) * 60);
+						};
+
+						if (img.tagName === "VIDEO")
+							cache_obj.currentTime = img.currentTime;
+
+						check_image_cache.set(obj[0].url, cache_obj, (parseFloat(settings.popup_cache_duration) || 0) * 60);
 					}
 
 					if (img)
@@ -86923,8 +86942,9 @@ var $$IMU_EXPORT$$;
 				check_image_ref(img);
 
 				// even if autoplay is enabled, if the element is cached, it won't play automatically
-				if (is_video)
+				if (is_video) {
 					img.play();
+				}
 
 				popups.push(outerdiv);
 				popupshown = true;
