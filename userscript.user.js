@@ -36385,6 +36385,10 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nosub === "imageflux.jp" ||
+			// thanks to jloqfjgk on github: https://github.com/qsniyg/maxurl/issues/413
+			// https://static.mercdn.net/c!/w=240/item/detail/orig/photos/m81805157460_1.jpg?1598779743
+			//   https://static.mercdn.net/item/detail/orig/photos/m81805157460_1.jpg?1598779743
+			domain === "static.mercdn.net" ||
 			domain === "img-comic.pximg.net" ||
 			// https://public-img-comic.pximg.net/c!/q=90,f=webp%3Ajpeg/images/story_thumbnail/3JqLicKWlCHhXpGYXl1N/79984.jpg?20200827121813
 			//   https://public-img-comic.pximg.net/images/story_thumbnail/3JqLicKWlCHhXpGYXl1N/79984.jpg?20200827121813
