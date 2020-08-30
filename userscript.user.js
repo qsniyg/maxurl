@@ -80179,13 +80179,8 @@ var $$IMU_EXPORT$$;
 
 			// Prepend objified to pastobjs
 			var current_pastobjs = [];
-			for (var i = 0; i < objified.length; i++) {
-				current_pastobjs.push(objified[i]);
-			}
-
-			for (var i = 0; i < pastobjs.length; i++) {
-				current_pastobjs.push(pastobjs[i]);
-			}
+			array_extend(current_pastobjs, objified);
+			array_extend(current_pastobjs, pastobjs);
 
 			pastobjs = current_pastobjs;
 
