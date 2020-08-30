@@ -84382,7 +84382,6 @@ var $$IMU_EXPORT$$;
 		var popupOpenLastX = null;
 		var popupOpenLastY = null;
 		var dragged = false;
-		var controlPressed = false;
 		var waiting = false;
 
 		var waitingel = null;
@@ -85020,12 +85019,6 @@ var $$IMU_EXPORT$$;
 			var seekstart = false;
 
 			function cb(img, url) {
-				if (!controlPressed && false) {
-					if (processing.running)
-						stop_waiting();
-					return;
-				}
-
 				if (!img) {
 					delay_handle_triggering = false;
 
@@ -88632,7 +88625,6 @@ var $$IMU_EXPORT$$;
 			if (_nir_debug_)
 				console_log("trigger_popup (is_contextmenu=" + is_contextmenu + ")", current_frame_id);
 
-			controlPressed = true;
 			delay_handle_triggering = true;
 			//var els = document.elementsFromPoint(mouseX, mouseY);
 			var point = null;
@@ -90577,8 +90569,6 @@ var $$IMU_EXPORT$$;
 			}
 
 			if (condition && close_behavior !== "esc" && popup_trigger_reason === "keyboard" && can_cancel) {
-				controlPressed = false;
-
 				if (!settings.mouseover_close_need_mouseout || can_close_popup[1]) {
 					stop_waiting();
 					resetpopups();
