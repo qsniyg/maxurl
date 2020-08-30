@@ -22049,7 +22049,7 @@ var $$IMU_EXPORT$$;
 							});
 						}
 
-						[].push.apply(urls, videourls);
+						array_extend(urls, videourls);
 					}
 
 					if (response.images) {
@@ -23359,7 +23359,7 @@ var $$IMU_EXPORT$$;
 
 							if (post.trail) {
 								for (var i = 0; i < post.trail.length; i++) {
-									[].push.apply(content, post.trail[i].content);
+									array_extend(content, post.trail[i].content);
 								}
 							}
 
@@ -41147,7 +41147,7 @@ var $$IMU_EXPORT$$;
 			if (newsrc !== src) {
 				obj = add_extensions_gif(newsrc);
 
-				[].push.apply(obj, add_extensions_gif(src.replace(/\/thumb\//, "/src/")));
+				array_extend(obj, add_extensions_gif(src.replace(/\/thumb\//, "/src/")));
 				return obj;
 			}
 		}
@@ -85334,7 +85334,7 @@ var $$IMU_EXPORT$$;
 					if (transition_effects.length > 0) {
 						var orig_transition_string = transition_effects.join(", ");
 
-						[].push.apply(transition_effects, temp_transition_effects);
+						array_extend(transition_effects, temp_transition_effects);
 						var temp_transition_string = transition_effects.join(", ");
 						set_important_style(outerdiv, "transition", temp_transition_string);
 
@@ -87968,7 +87968,7 @@ var $$IMU_EXPORT$$;
 					} else if (funcname === "-webkit-image-set" || funcname === "image-set") {
 						var newurls = get_imageset_urls(our_func);
 						if (newurls) {
-							[].push.apply(urls, newurls);
+							array_extend(urls, newurls);
 						}
 					}
 				}
