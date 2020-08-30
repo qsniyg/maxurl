@@ -1704,6 +1704,9 @@ var $$IMU_EXPORT$$;
 		console_error(e);
 	}
 
+	// This section is automatically generated using tools/update_from_po.js.
+	// To modify translations, edit the respective .po file under the po subdirectory.
+	// Refer to the Translations section in CONTRIBUTING.md for more information.
 	var strings = {
 		"options_header": {
 			"en": "Options",
