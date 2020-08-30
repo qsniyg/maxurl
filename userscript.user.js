@@ -90736,7 +90736,9 @@ var $$IMU_EXPORT$$;
 
 			var can_cancel = popups_active;
 			if (!can_cancel) {
-				if (settings.mouseover_cancel_popup_when_release) {
+				if (settings.mouseover_cancel_popup_when_release ||
+					// this probably makes the most sense (#417, thanks to lnp5131 on github for reporting)
+					(settings.mouseover_close_need_mouseout && !can_close_popup[1])) {
 					can_cancel = true;
 				}
 			}
