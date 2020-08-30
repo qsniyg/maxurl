@@ -34080,7 +34080,12 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if (domain === "leonardo.osnova.io") {
+		if (domain === "leonardo.osnova.io" ||
+			// thanks to llacb47 on github: https://github.com/qsniyg/maxurl/issues/412
+			// https://uploadcare.com/
+			// https://images.universe.com/87135321-9b85-480d-a4f1-8d526b879789/-/scale_crop/972x389/-/quality/lightest/-/progressive/yes/-/format/webp/-/inline/yes/
+			//   https://images.universe.com/87135321-9b85-480d-a4f1-8d526b879789/
+			domain === "images.universe.com") {
 			// https://leonardo.osnova.io/f90ba5cd-3995-4708-f20f-312472809618/-/scale_crop/590x881/center/
 			//   https://leonardo.osnova.io/f90ba5cd-3995-4708-f20f-312472809618/
 			return src.replace(/(:\/\/[^/]*\/[-a-f0-9]*\/)-\/.*/, "$1");
