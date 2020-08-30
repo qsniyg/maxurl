@@ -1,9 +1,28 @@
+
+
+Translations
+============
+
+Translations are done through standard .po (gettext) files, located in the [po subdirectory](https://github.com/qsniyg/maxurl/tree/master/po).
+You can either translate it manually using a text editor, or use one of the numerous .po translation tools, such as [poedit](https://poedit.net/) or [poeditor](https://poeditor.com/) (online).
+
+To test a modified translation, run: `node tools/update_from_po.js`. This will update userscript.user.js with the translations from the po subdirectory.
+
+Note: when submitting a pull request for a translation, please do not include the modified userscript.user.js, as it will increase the risk of merge conflicts.
+
+To add support for a new language:
+
+ - Add the language code to the `supported_languages` array in userscript.user.js
+ - Add the language as a new option under the `language` setting in userscript.user.js (search for `language: {`)
+ - Add the English name for the language under the `supported_language_names` object in tools/gen_po.js
+ - Run: `node tools/gen_po.js`
+
 Website/rule contributions
 ==========================
 
 If you spot any issue with existing rules, or want to suggest a new websites, **the easiest way for the moment is if you file an issue**.
 
-Pull requests are also accepted (especially if the rule you want to submit is complex), but as  everything is currently stored in one file (userscript.user.js),
+Pull requests are also accepted (especially if the rule you want to submit is complex), but since everything is currently stored in one file (userscript.user.js),
 it can lead to merge conflicts.
 
 ------------
