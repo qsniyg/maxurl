@@ -90287,6 +90287,10 @@ var $$IMU_EXPORT$$;
 		};
 
 		var action_handler = function(action) {
+			if (_nir_debug_) {
+				console_log("action_handler", action);
+			}
+
 			if (action.needs_popup && !popup_active())
 				return;
 
@@ -90437,6 +90441,10 @@ var $$IMU_EXPORT$$;
 		};
 
 		var keydown_cb = function(event) {
+			if (_nir_debug_) {
+				console_log("keydown_cb", event);
+			}
+
 			if (!mouseover_enabled())
 				return;
 
@@ -90708,6 +90716,10 @@ var $$IMU_EXPORT$$;
 		our_addEventListener(document, 'wheel', keydown_cb, eventlistener_opts);
 
 		var keyup_cb = function(event) {
+			if (_nir_debug_) {
+				console_log("keyup_cb", event);
+			}
+
 			if (!mouseover_enabled())
 				return;
 
