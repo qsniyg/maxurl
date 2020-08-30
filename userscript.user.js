@@ -84708,6 +84708,9 @@ var $$IMU_EXPORT$$;
 			popups.forEach(function (popup) {
 				var els = popup.querySelectorAll("img, video");
 				for (var i = 0; i < els.length; i++) {
+					if (els[i].tagName === "VIDEO")
+						els[i].pause();
+
 					check_image_unref(els[i]);
 				}
 
@@ -85390,6 +85393,7 @@ var $$IMU_EXPORT$$;
 				set_el_all_initial(img);
 
 				var add_link = false;
+				// FIXME: why not just if (settings.mouseover_add_link) add_link = true?
 				if (!is_video && settings.mouseover_add_link) {
 					add_link = true;
 				} else if (is_video && settings.mouseover_add_video_link) {
@@ -86917,6 +86921,11 @@ var $$IMU_EXPORT$$;
 				removepopups();
 
 				check_image_ref(img);
+
+				// even if autoplay is enabled, if the element is cached, it won't play automatically
+				if (is_video)
+					img.play();
+
 				popups.push(outerdiv);
 				popupshown = true;
 
