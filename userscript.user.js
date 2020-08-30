@@ -1854,6 +1854,9 @@ var $$IMU_EXPORT$$;
 			"es": "Otro",
 			"fr": "Autre"
 		},
+		"subcategory_cache": {
+			"en": "Cache"
+		},
 		"New tab": {
 			"_info": {
 				"instances": [
@@ -7707,6 +7710,8 @@ var $$IMU_EXPORT$$;
 		apply_blacklist_host: false,
 		mouseover_matching_media_types: false,
 		mouseover_support_pointerevents_none: false,
+		popup_allow_cache: true,
+		popup_cache_duration: 30,
 		website_inject_imu: true,
 		website_image: true,
 		extension_contextmenu: true,
@@ -9829,6 +9834,27 @@ var $$IMU_EXPORT$$;
 			category: "popup",
 			subcategory: "open_behavior"
 		},
+		popup_allow_cache: {
+			name: "Use cache",
+			description: "Allows use of a media cache for the popup",
+			requires: {
+				mouseover_open_behavior: "popup"
+			},
+			category: "popup",
+			subcategory: "cache"
+		},
+		popup_cache_duration: {
+			name: "Cache duration",
+			description: "How long for media to remain cached. Set to `0` for unlimited.",
+			requires: {
+				popup_allow_cache: true
+			},
+			type: "number",
+			number_min: 0,
+			number_unit: "minutes",
+			category: "popup",
+			subcategory: "cache"
+		},
 		website_inject_imu: {
 			name: "Use userscript",
 			description: "Replaces the website's IMU instance with the userscript",
@@ -10322,6 +10348,7 @@ var $$IMU_EXPORT$$;
 			"open_behavior": "subcategory_open_behavior",
 			"close_behavior": "subcategory_close_behavior",
 			"behavior": "subcategory_behavior",
+			"cache": "subcategory_cache",
 			"gallery": "subcategory_gallery",
 			"video": "subcategory_video",
 			"ui": "subcategory_ui",
@@ -10567,7 +10594,10 @@ var $$IMU_EXPORT$$;
 		}
 	};
 
-	function Cache() {
+	function Cache(options) {
+		if (!options)
+			options = {};
+
 		this.data = new_map();
 		this.times = new_map();
 
@@ -10657,6 +10687,10 @@ var $$IMU_EXPORT$$;
 				clearTimeout(map_get(this.times, key).timer);
 			}
 
+			if (options.destructor && map_has(this.data, key)) {
+				options.destructor(key, map_get(this.data, key));
+			}
+
 			map_remove(this.times, key);
 			map_remove(this.data, key);
 		};
@@ -10668,6 +10702,12 @@ var $$IMU_EXPORT$$;
 			map_foreach(this.times, function(key, value) {
 				clearTimeout(value);
 			});
+
+			if (options.destructor) {
+				map_foreach(this.data, function(key, value) {
+					options.destructor(key, value);
+				});
+			}
 
 			this.times = new_map();
 			this.data = new_map();
@@ -83565,8 +83605,44 @@ var $$IMU_EXPORT$$;
 		if (el.parentElement && el.parentElement.tagName === "VIDEO")
 			return true;
 		return false;
-	}
+	};
 
+	var destroy_image = function(image) {
+		if (_nir_debug_)
+			console_log("destroy_image", image);
+
+		// TODO: maybe check to make sure it's a blob? according to the spec, this will silently fail, but browsers may print an error
+		revoke_objecturl(image.src);
+	};
+
+	// TODO: maybe move to a generic reference class, like Cache?
+	var check_image_refs = new_map();
+	var check_image_ref = function(image) {
+		if (map_has(check_image_refs, image)) {
+			var refs = map_get(check_image_refs, image);
+			refs++;
+			map_set(check_image_refs, image, refs);
+		} else {
+			map_set(check_image_refs, image, 1);
+		}
+	};
+
+	var check_image_unref = function(image) {
+		if (!map_has(check_image_refs, image))
+			return;
+
+		var refs = map_get(check_image_refs, image);
+		refs--;
+
+		if (refs <= 0) {
+			destroy_image(image);
+			map_remove(check_image_refs, image);
+		} else {
+			map_set(check_image_refs, image, refs);
+		}
+	};
+
+	var check_image_cache = null;
 	function check_image_get(obj, cb, processing) {
 		if (_nir_debug_) {
 			console_log("check_image_get", deepcopy(obj), cb, deepcopy(processing));
@@ -83578,6 +83654,30 @@ var $$IMU_EXPORT$$;
 
 		if (!processing.running) {
 			return cb(null);
+		}
+
+		if (processing.set_cache || processing.use_cache) {
+			if (!check_image_cache) {
+				check_image_cache = new Cache({
+					destructor: function(key, value) {
+						if (value && value.img)
+							check_image_unref(value.img);
+					}
+				});
+			}
+		}
+
+		if (processing.use_cache) {
+			if (check_image_cache.has(obj[0].url)) {
+				var cached_result = check_image_cache.get(obj[0].url);
+
+				if (_nir_debug_) {
+					console_log("check_image_get(cached):", cached_result.img, cached_result.resp, obj[0]);
+				}
+
+				cb(cached_result.img, cached_result.resp.finalUrl, obj[0], cached_result.resp);
+				return;
+			}
 		}
 
 		var method = "GET";
@@ -83750,6 +83850,16 @@ var $$IMU_EXPORT$$;
 						console_log("check_image_get(good_cb):", img, resp.finalUrl, obj[0], resp);
 						console_trace();
 					}
+
+					if (processing.set_cache) {
+						check_image_cache.set(obj[0].url, {
+							img: img,
+							resp: resp
+						}, (parseFloat(settings.popup_cache_duration) || 0) * 60);
+					}
+
+					if (img)
+						check_image_ref(img);
 
 					cb(img, resp.finalUrl, obj[0], resp);
 				};
@@ -84598,8 +84708,7 @@ var $$IMU_EXPORT$$;
 			popups.forEach(function (popup) {
 				var els = popup.querySelectorAll("img, video");
 				for (var i = 0; i < els.length; i++) {
-					// TODO: maybe check to make sure it's a blob? according to the spec, this will silently fail, but browsers may print an error
-					revoke_objecturl(els[i].src);
+					check_image_unref(els[i]);
 				}
 
 				if (popup.parentNode)
@@ -86806,6 +86915,8 @@ var $$IMU_EXPORT$$;
 				document.documentElement.appendChild(outerdiv);
 
 				removepopups();
+
+				check_image_ref(img);
 				popups.push(outerdiv);
 				popupshown = true;
 
@@ -88831,6 +88942,11 @@ var $$IMU_EXPORT$$;
 
 						if (usehead) {
 							processing.head = true;
+						}
+
+						if (settings.popup_allow_cache) {
+							processing.set_cache = true;
+							processing.use_cache = true;
 						}
 
 						processing.source = source;
@@ -91222,7 +91338,7 @@ var $$IMU_EXPORT$$;
 							fill_object: true,
 							do_request: do_request,
 							cb: function(obj) {
-								revoke_objecturl(img);
+								check_image_unref(img);
 								loop_url(obj, cb, options, finalurl);
 							}
 						});
