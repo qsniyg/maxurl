@@ -12490,6 +12490,57 @@ var $$IMU_EXPORT$$;
 		api_cache.fetch(cache_key, cb, real_fetch);
 	};
 
+	common_functions.imgur_image_to_obj = function(baseobj, json) {
+		var retobj = [];
+
+		try {
+			if (json.description || json.title) {
+				baseobj.extra.caption = json.description || json.title;
+			}
+
+			var realfilename = null;
+			if (json.hash && json.ext) {
+				realfilename = json.hash + json.ext;
+
+				var obj = deepcopy(baseobj);
+				obj.url = "https://i.imgur.com/" + realfilename;
+
+				if (/^video\//.test(json.mimetype)) {
+					obj.video = true;
+					retobj.push(obj);
+
+					var obj = deepcopy(baseobj);
+					obj.url = "https://i.imgur.com/" + json.hash + ".jpg"
+					retobj.push(obj);
+				} else {
+					// Prefer video if possible
+					if (json.animated && json.prefer_video) {
+						var newobj = deepcopy(baseobj);
+						newobj.url = "https://i.imgur.com/" + json.hash + ".mp4";
+						newobj.video = true;
+
+						retobj.push(newobj);
+					}
+
+					retobj.push(obj);
+				}
+			}
+
+			if (json.source && /^https?:\/\//.test(json.source)) {
+				if (!("rule_specific" in options) || !("imgur_source" in options.rule_specific) || options.rule_specific.imgur_source === true) {
+					var newobj = {url: json.source};
+					retobj.unshift(newobj);
+				}
+			}
+		} catch (e) {
+			console_error(e);
+
+			retobj = [];
+		}
+
+		return retobj;
+	};
+
 	common_functions.deviantart_page_from_id = function(do_request, api_cache, id, cb) {
 		var cache_key = "deviantart_page_from_id:" + id;
 
@@ -25908,6 +25959,52 @@ var $$IMU_EXPORT$$;
 			//
 			// https://m.netinfo.bg/media/images/32735/32735274/80-49-obuvki-cherven-kilim-znamenitosti.jpg
 			return src.replace(/([/=]media\/images\/[0-9]*\/[0-9]*\/)(?:r-)?[^-/.]*-[^-/.]*/, "$1orig-orig");
+		}
+
+		if (domain_nowww === "imgur.com") {
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+a\/+([a-zA-Z0-9]+)(?:[?#].*)?$/,
+				run: function(cb, match) {
+					common_functions.fetch_imgur_webpage(options.do_request, api_cache, nsfw_headers, "https://imgur.com/a/" + match[1], function(data) {
+						if (!data)
+							cb(null);
+
+						var images = data.imageinfo.album_images.images;
+						var imageobjs = [];
+
+						array_foreach(images, function(image) {
+							var baseobj = {extra: {}};
+							var obj = common_functions.imgur_image_to_obj(baseobj, image);
+							imageobjs.push(fillobj_urls(obj, baseobj));
+						});
+
+						var obj = {
+							extra: {
+								page: "https://imgur.com/a/" + match[1],
+								caption: data.imageinfo.title
+							}
+						};
+
+						if (imageobjs.length > 1) {
+							obj.album_info = {
+								type: "links",
+								links: []
+							};
+
+							for (var i = 0; i < imageobjs.length; i++) {
+								obj.album_info.links.push({
+									url: imageobjs[i][0].url,
+									is_current: i === 0
+								});
+							}
+						}
+
+						var newobj = fillobj_urls(imageobjs[0], obj);
+						return cb(newobj);
+					});
+				}
+			});
+			if (newsrc) return newsrc;
 		}
 
 		if (domain === "i.imgur.com") {
