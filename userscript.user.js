@@ -12490,7 +12490,7 @@ var $$IMU_EXPORT$$;
 		api_cache.fetch(cache_key, cb, real_fetch);
 	};
 
-	common_functions.imgur_image_to_obj = function(baseobj, json) {
+	common_functions.imgur_image_to_obj = function(options, baseobj, json) {
 		var retobj = [];
 
 		try {
@@ -25974,7 +25974,7 @@ var $$IMU_EXPORT$$;
 
 						array_foreach(images, function(image) {
 							var baseobj = {extra: {}};
-							var obj = common_functions.imgur_image_to_obj(baseobj, image);
+							var obj = common_functions.imgur_image_to_obj(options, baseobj, image);
 							imageobjs.push(fillobj_urls(obj, baseobj));
 						});
 
@@ -26002,6 +26002,14 @@ var $$IMU_EXPORT$$;
 						var newobj = fillobj_urls(imageobjs[0], obj);
 						return cb(newobj);
 					});
+				}
+			});
+			if (newsrc) return newsrc;
+
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+([a-zA-Z0-9]+)(?:[?#].*)?$/,
+				run: function(cb, match) {
+					return cb("https://i.imgur.com/" + match[1] + ".jpg");
 				}
 			});
 			if (newsrc) return newsrc;
@@ -26059,7 +26067,7 @@ var $$IMU_EXPORT$$;
 			if (options && options.cb && options.do_request && baseobj.extra) {
 				var imageinfo = api_cache.get("imgur_imageinfo:" + idhash);
 				if (imageinfo) {
-					var retobj = common_functions.imgur_image_to_obj(baseobj, imageinfo);
+					var retobj = common_functions.imgur_image_to_obj(options, baseobj, imageinfo);
 
 					if (retobj.length > 0) {
 						return retobj;
@@ -26100,7 +26108,7 @@ var $$IMU_EXPORT$$;
 					}
 
 					if (data.imageinfo) {
-						var newretobj = common_functions.imgur_image_to_obj(baseobj, data.imageinfo);
+						var newretobj = common_functions.imgur_image_to_obj(options, baseobj, data.imageinfo);
 
 						if (newretobj.length > 0) {
 							retobj = newretobj;
