@@ -79818,7 +79818,7 @@ var $$IMU_EXPORT$$;
 
 			current_link_id += nextprev ? 1 : -1;
 			if (current_link_id < 0 || current_link_id >= album_info.links.length)
-				return false;
+				return null;
 
 			album_info.links[current_link_id].is_current = true;
 
