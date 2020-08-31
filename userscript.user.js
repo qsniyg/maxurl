@@ -26057,61 +26057,9 @@ var $$IMU_EXPORT$$;
 			}
 
 			if (options && options.cb && options.do_request && baseobj.extra) {
-				var parse_imageinfo = function(baseobj, json) {
-					var retobj = [];
-
-					try {
-						if (json.description || json.title) {
-							baseobj.extra.caption = json.description || json.title;
-						}
-
-						var realfilename = null;
-						if (json.hash && json.ext) {
-							realfilename = json.hash + json.ext;
-
-							var obj = deepcopy(baseobj);
-							obj.url = "https://i.imgur.com/" + realfilename;
-
-							if (/^video\//.test(json.mimetype)) {
-								obj.video = true;
-								retobj.push(obj);
-
-								var obj = deepcopy(baseobj);
-								obj.url = "https://i.imgur.com/" + json.hash + ".jpg"
-								retobj.push(obj);
-							} else {
-								// Prefer video if possible
-								if (json.animated && json.prefer_video) {
-									var newobj = deepcopy(baseobj);
-									newobj.url = "https://i.imgur.com/" + json.hash + ".mp4";
-									newobj.video = true;
-
-									retobj.push(newobj);
-								}
-
-								retobj.push(obj);
-							}
-						}
-
-						if (json.source && /^https?:\/\//.test(json.source)) {
-							if (!("rule_specific" in options) || !("imgur_source" in options.rule_specific) || options.rule_specific.imgur_source === true) {
-								var newobj = {url: json.source};
-								retobj.unshift(newobj);
-							}
-						}
-					} catch (e) {
-						console_error(e);
-						console_log(match);
-
-						retobj = [];
-					}
-
-					return retobj;
-				};
-
 				var imageinfo = api_cache.get("imgur_imageinfo:" + idhash);
 				if (imageinfo) {
-					var retobj = parse_imageinfo(baseobj, imageinfo);
+					var retobj = common_functions.imgur_image_to_obj(baseobj, imageinfo);
 
 					if (retobj.length > 0) {
 						return retobj;
@@ -26152,7 +26100,7 @@ var $$IMU_EXPORT$$;
 					}
 
 					if (data.imageinfo) {
-						var newretobj = parse_imageinfo(baseobj, data.imageinfo);
+						var newretobj = common_functions.imgur_image_to_obj(baseobj, data.imageinfo);
 
 						if (newretobj.length > 0) {
 							retobj = newretobj;
