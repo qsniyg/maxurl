@@ -13909,7 +13909,8 @@ var $$IMU_EXPORT$$;
 		};
 
 		var request_post = function(post_url, image_url, cb) {
-			fill_graphql_cache_with_postpage(document.documentElement.innerHTML);
+			if (typeof document !== "undefined")
+				fill_graphql_cache_with_postpage(document.documentElement.innerHTML);
 
 			return request_post_inner(post_url, image_url, cb);
 		};
