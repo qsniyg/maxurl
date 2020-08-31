@@ -716,6 +716,7 @@ function dourl(url, post, options, cb) {
 	var bigimage_options = {
 		fill_object: true,
 		force_page: true,
+		rule_specific: {},
 		//exclude_videos: true,
 		//allow_thirdparty: true,
 		filter: function (url) {
@@ -794,17 +795,18 @@ function dourl(url, post, options, cb) {
 	};
 
 	if (options.imgur_cookie) {
-		bigimage_options.rule_specific = {
-			imgur_nsfw_headers: {
-				cookie: options.imgur_cookie
-				//"User-Agent": options.imgur_ua
-			}
+		bigimage_options.rule_specific.imgur_nsfw_headers = {
+			cookie: options.imgur_cookie
+			//"User-Agent": options.imgur_ua
 		};
 
 		if (options.imgur_ua) {
 			bigimage_options.rule_specific.imgur_nsfw_headers["user-agent"] = options.imgur_ua;
 		}
 	}
+
+	// no video support, so this is useless
+	bigimage_options.rule_specific.tiktok_no_watermarks = false;
 
 	bigimage(url, bigimage_options);
 }
