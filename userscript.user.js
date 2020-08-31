@@ -1044,6 +1044,7 @@ var $$IMU_EXPORT$$;
 		bad_if: [],
 		fake: false,
 		video: false,
+		album_info: null,
 		headers: {},
 		referer_ok: {
 			same_domain: false,
@@ -20921,6 +20922,8 @@ var $$IMU_EXPORT$$;
 			domain === "cdn.zoomg.ir" ||
 			// https://wikiofthrones.com/static/uploads/2019/05/Emilia-Clarke-tells-parents-who-named-their-daughters-Khaleesi-not-to-worry-900x600.jpg
 			(domain_nowww === "wikiofthrones.com" && src.match(/\/static\/+uploads\//)) ||
+			// https://www.hitc.com/static/uploads/2020/08/What-time-does-Madden-NFL-21-come-out-Standard-Edition-release-time-on-PS4-Xbox-One-and-Origin-1-768x473.jpg
+			(domain_nowww === "hitc.com" && src.match(/\/static\/+uploads\//)) ||
 			// https://files.theblemish.com/images/2014/06/kate-upton-body-paint-640x853.jpg
 			(domain === "files.theblemish.com" && string_indexof(src, "/images/") >= 0) ||
 			// http://i2.esmas.com/galerias/fotos/2016/08/30/screams_960d5e11_acaf_b76f_82c9_a2e0d581e47b-468x624.jpg
@@ -37253,17 +37256,35 @@ var $$IMU_EXPORT$$;
 						try {
 							var attachment = attachments[i].style_type_renderer.attachment;
 
+							var album_info = null;
+
 							if (attachment.all_subattachments) {
-								// fixme!!! album support
-								attachment = attachment.all_subattachments.nodes[0];
+								var nodes = attachment.all_subattachments.nodes;
+								var current_id = 0;
+								attachment = nodes[current_id];
+
+								album_info = {
+									type: "links",
+									links: []
+								};
+								for (var j = 0; j < nodes.length; j++) {
+									var node = nodes[j];
+									var node_url = node.url || node.media.url;
+									album_info.links.push({
+										url: node_url,
+										is_current: j === current_id
+									});
+								}
 							}
 
 							// videos contain the actual data in the media option itself (and the url is in attachment.url, not media.url), maybe cache?
 							var url = attachment.url || attachment.media.url;
-							return done({
+							var obj = {
 								url: url,
-								is_pagelink: true
-							}, 6*60*60);
+								is_pagelink: true,
+								album_info: album_info
+							};
+							return done(obj, 6*60*60);
 						} catch (e) {
 							console_error(cache_key, e);
 						}
@@ -79733,8 +79754,41 @@ var $$IMU_EXPORT$$;
 		return null;
 	};
 
-	var get_album_info_gallery = function(el, nextprev) {
-		var album_info = popup_obj.album_info;
+	var _get_album_info_gallery = function(album_info, el, nextprev) {
+		if (album_info.type === "links") {
+			var current_link_id = -1;
+
+			array_foreach(album_info.links, function(link, i) {
+				if (link.is_current) {
+					current_link_id = i;
+					return false;
+				}
+			});
+
+			// unable to find current link
+			if (current_link_id < 0)
+				return null;
+
+			delete album_info.links[current_link_id].is_current;
+
+			current_link_id += nextprev ? 1 : -1;
+			if (current_link_id < 0 || current_link_id >= album_info.links.length)
+				return false;
+
+			album_info.links[current_link_id].is_current = true;
+
+			return album_info.links[current_link_id].url;
+		}
+
+		// unsupported type
+		return null;
+	};
+
+	var get_album_info_gallery = function(popup_obj, el, nextprev) {
+		var album_info;
+
+		if (popup_obj)
+			album_info = popup_obj.album_info;
 
 		if (el) {
 			var album_info_json = el.getAttribute("imu-album-info");
@@ -79749,6 +79803,24 @@ var $$IMU_EXPORT$$;
 
 		if (!album_info)
 			return null;
+
+		album_info = deepcopy(album_info);
+		var result = _get_album_info_gallery(album_info, el, nextprev);
+		if (!result)
+			return result;
+
+		if (typeof result === "string") {
+			var url = result;
+			result = document_createElement("img");
+			result.src = url;
+		}
+
+		if (!result.hasAttribute("imu-album-info")) {
+			// album_info can be modified by _get_album_info_gallery, so we must re-stringify it
+			result.setAttribute("imu-album-info", JSON_stringify(album_info));
+		}
+
+		return result;
 	};
 
 	var get_next_in_gallery = null;
@@ -79799,6 +79871,8 @@ var $$IMU_EXPORT$$;
 		if (is_array(baseobj))
 			baseobj = baseobj[0];
 
+		//var oldobj = deepcopy(obj);
+
 		for (var i = 0; i < obj.length; i++) {
 			if (typeof(obj[i]) === "undefined") {
 				continue;
@@ -79825,6 +79899,7 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		//console_log("fillobj", deepcopy(oldobj), deepcopy(obj));
 		return obj;
 	};
 
@@ -80053,6 +80128,8 @@ var $$IMU_EXPORT$$;
 				return false;
 			}
 
+			var copy_props = ["extra", "album_info"];
+
 			// Copy important old properties
 			var important_properties = {};
 			if (pastobjs.length > 0) {
@@ -80060,6 +80137,13 @@ var $$IMU_EXPORT$$;
 					important_properties.likely_broken = pastobjs[0].likely_broken;
 				if (pastobjs[0].fake)
 					important_properties.fake = pastobjs[0].fake;
+
+				array_foreach(copy_props, function(prop) {
+					//console_log(prop, deepcopy(pastobjs[0]));
+					if (prop in pastobjs[0]) {
+						important_properties[prop] = deepcopy(pastobjs[0][prop]);
+					}
+				});
 			}
 
 			var objified = fillobj(deepcopy(newhref1), important_properties);
@@ -80109,10 +80193,12 @@ var $$IMU_EXPORT$$;
 					continue;
 				}
 
-				if (obj._copy_old_props && pastobjs[0]) {
-					for (var j = 0; j < obj._copy_old_props.length; j++) {
-						var prop = obj._copy_old_props[j];
-						obj[prop] = deepcopy(pastobjs[0][prop]);
+				if (pastobjs[0]) {
+					if (obj._copy_old_props) {
+						for (var j = 0; j < obj._copy_old_props.length; j++) {
+							var prop = obj._copy_old_props[j];
+							obj[prop] = deepcopy(pastobjs[0][prop]);
+						}
 					}
 				}
 			}
@@ -80152,11 +80238,21 @@ var $$IMU_EXPORT$$;
 
 			if (same_url(currenthref, objified) && !forcerecurse) {
 				if (_nir_debug_)
-					console_log("parse_bigimage: sameurl(currenthref, objified) == true", deepcopy(currenthref), deepcopy(objified));
+					console_log("parse_bigimage: sameurl(currenthref, objified) == true", deepcopy(currenthref), deepcopy(objified), deepcopy(newhref));
 
 				// FIXME: this is a terrible hack
 				try {
-					if (!options.fill_object || (newhref[0].waiting === true && !objified[0].waiting))
+					var cond = !options.fill_object || (newhref[0].waiting === true && !objified[0].waiting);
+					if (!cond) {
+						array_foreach(copy_props, function(prop) {
+							if (!(prop in newhref[0]) && (prop in important_properties)) {
+								cond = true;
+								return false;
+							}
+						});
+					}
+
+					if (cond)
 						newhref = objified;
 				} catch (e) {}
 
@@ -85217,6 +85313,8 @@ var $$IMU_EXPORT$$;
 				if (!newobj)
 					newobj = {};
 
+				popup_obj = newobj;
+
 				var estop = function(e) {
 					e.stopPropagation();
 					e.stopImmediatePropagation();
@@ -87000,7 +87098,6 @@ var $$IMU_EXPORT$$;
 				popups.push(outerdiv);
 				popupshown = true;
 
-				popup_obj = newobj;
 				if (data.data.respdata && data.data.respdata.responseHeaders) {
 					var parsed_headers = headers_list_to_dict(parse_headers(data.data.respdata.responseHeaders));
 					if ("content-length" in parsed_headers) {
@@ -88314,7 +88411,7 @@ var $$IMU_EXPORT$$;
 				return getfirstsource(sources);
 		}
 
-		get_next_in_gallery = function(el, nextprev) {
+		var get_next_in_gallery_generic = function(el, nextprev) {
 			if (!el)
 				return null;
 
@@ -88379,7 +88476,15 @@ var $$IMU_EXPORT$$;
 			}
 
 			return null;
-		}
+		};
+
+		get_next_in_gallery = function(el, nextprev) {
+			var value = get_album_info_gallery(popup_obj, el, nextprev);
+			if (value || value === false)
+				return value;
+
+			return get_next_in_gallery_generic(el, nextprev);
+		};
 
 		/*function normalize_trigger() {
 			if (!is_array(settings.mouseover_trigger)) {
