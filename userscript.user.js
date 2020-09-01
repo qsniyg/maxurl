@@ -25972,6 +25972,7 @@ var $$IMU_EXPORT$$;
 
 						if (!("imageinfo" in data)) {
 							console_error("Unable to find imageinfo in", data);
+
 							var newurl = data.ogvideo || data.ogimage;
 							if (newurl)
 								return cb(newurl);
@@ -91005,8 +91006,8 @@ var $$IMU_EXPORT$$;
 			return ret;
 		};
 
-		our_addEventListener(document, 'keyup', keyup_cb, true);
-		our_addEventListener(document, 'mouseup', keyup_cb, true);
+		our_addEventListener(document, 'keyup', keyup_cb, eventlistener_opts);
+		our_addEventListener(document, 'mouseup', keyup_cb, eventlistener_opts);
 
 		function scrollLeft() {
 			var doc = document.documentElement;
