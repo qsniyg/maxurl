@@ -7553,6 +7553,8 @@ var $$IMU_EXPORT$$;
 		mouseover_trigger_key: ["shift", "alt", "i"],
 		mouseover_trigger_delay: 1,
 		mouseover_trigger_mouseover: false,
+		// thanks to lnp5131 on github for the idea: https://github.com/qsniyg/maxurl/issues/421
+		mouseover_trigger_enabledisable_toggle: "disable",
 		mouseover_trigger_prevent_key: ["shift"],
 		// also thanks to blue-lightning: https://github.com/qsniyg/maxurl/issues/16
 		mouseover_close_behavior: "esc",
@@ -8206,9 +8208,26 @@ var $$IMU_EXPORT$$;
 			category: "popup",
 			subcategory: "trigger"
 		},
+		mouseover_trigger_enabledisable_toggle: {
+			name: "Enable/disable toggle",
+			description: "Controls whether the 'Popup enable/disable key' will enable or disable the popup from opening",
+			options: {
+				enable: {
+					name: "Enable"
+				},
+				disable: {
+					name: "Disable"
+				}
+			},
+			requires: {
+				mouseover_trigger_behavior: "mouse"
+			},
+			category: "popup",
+			subcategory: "trigger"
+		},
 		mouseover_trigger_prevent_key: {
-			name: "Popup prevention key",
-			description: "Holding down this key will prevent the popup from being opened",
+			name: "Popup enable/disable key",
+			description: "Holding down this key will enable or disable the popup from being opened, depending on the 'Enable/disable toggle' setting",
 			requires: {
 				mouseover: true,
 				mouseover_trigger_behavior: "mouse"
@@ -90041,8 +90060,17 @@ var $$IMU_EXPORT$$;
 		})();
 
 		var popup_mouse_head = function() {
-			if (delay_handle_triggering || trigger_complete(settings.mouseover_trigger_prevent_key))
+			if (delay_handle_triggering)
 				return false;
+
+			var enabledisable_toggle = get_single_setting("mouseover_trigger_enabledisable_toggle");
+			if (trigger_complete(settings.mouseover_trigger_prevent_key)) {
+				if (enabledisable_toggle === "disable")
+					return false;
+			} else {
+				if (enabledisable_toggle === "enable")
+					return false;
+			}
 
 			popup_trigger_reason = "mouse";
 			return true;
