@@ -90652,6 +90652,11 @@ var $$IMU_EXPORT$$;
 				return;
 
 			if (event.type === "keydown") {
+				// thanks to lnp5131 on github: https://github.com/qsniyg/maxurl/issues/415#issuecomment-684847125
+				// it seems that even keys like control will cause a repeat under certain configurations
+				if (event.repeat)
+					return;
+
 				if (editing_text)
 					return;
 
