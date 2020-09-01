@@ -10552,7 +10552,7 @@ var $$IMU_EXPORT$$;
 
 	var map_set = function(map, key, value) {
 		if (_nir_debug_) {
-			console_log("map_set", map, deepcopy(key), deepcopy(value));
+			console_log("map_set", deepcopy(key), deepcopy(value));
 		}
 
 		if (!map.imu_map) {
@@ -25970,7 +25970,13 @@ var $$IMU_EXPORT$$;
 						if (!data)
 							cb(null);
 
-						var images = data.imageinfo.album_images.images;
+						var imageinfo = data.imageinfo;
+						if (!("album_images" in imageinfo)) {
+							console_error("Unable to find album_images in", data);
+							return cb(null);
+						}
+
+						var images = imageinfo.album_images.images;
 						var imageobjs = [];
 
 						array_foreach(images, function(image) {
