@@ -29,30 +29,6 @@ msgstr ""
 msgid "category_redirection"
 msgstr ""
 
-#. redirect.name
-msgid "Enable redirection"
-msgstr "Activer la redirection"
-
-#. redirect_history.name
-msgid "Add to history"
-msgstr "Ajouter à l'historique"
-
-#. canhead_get.name
-msgid "Use GET if HEAD is unsupported"
-msgstr "Utiliser GET si HEAD n'est pas supporté"
-
-#. redirect_force_page.name
-msgid "Try finding original page/caption"
-msgstr "Essayer de trouver la page d'origine/sous-titre"
-
-#. mouseover.name
-msgid "Enable mouseover popup"
-msgstr "Activer le popup"
-
-#. mouseover_open_behavior.name
-msgid "Mouseover popup action"
-msgstr ""
-
 msgid "category_popup"
 msgstr ""
 
@@ -83,193 +59,20 @@ msgstr ""
 msgid "subcategory_popup_other"
 msgstr "Autre"
 
-#. mouseover_open_behavior.options.newtab.name
-msgid "New tab"
-msgstr "Nouvel onglet"
-
-#. mouseover_trigger_behavior.name
-msgid "Mouseover popup trigger"
-msgstr "Déclencheur du popup"
-
-#. mouseover_trigger_behavior.options.mouse.name
-msgid "Mouseover"
-msgstr ""
-
-#. mouseover_trigger_behavior.options.keyboard.name
-msgid "Key trigger"
-msgstr ""
-
-#. mouseover_trigger_key.name
-msgid "Popup trigger key"
-msgstr ""
-
-#. mouseover_trigger_delay.name
-msgid "Popup trigger delay"
-msgstr ""
-
-#. redirect_infobox_timeout.number_unit, mouseover_trigger_delay.number_unit, mouseover_video_autoloop_max.number_unit, mouseover_video_seek_amount.number_unit, mouseover_auto_close_popup_time.number_unit
-msgid "seconds"
-msgstr ""
-
-#. mouseover_ui.name
-msgid "Popup UI"
-msgstr ""
-
-#. mouseover_ui_opacity.name
-msgid "Opacity"
-msgstr "Opacité"
-
-#. mouseover_ui_gallerycounter.name
-msgid "Gallery counter"
-msgstr "Nombre d'images dans la galerie"
-
-#. mouseover_ui_gallerymax.name
-msgid "Gallery counter max"
-msgstr "Nombre max d'images a compter pour la galerie"
-
-#. mouseover_ui_gallerymax.number_unit, replaceimgs_totallimit.number_unit, replaceimgs_domainlimit.number_unit
-msgid "images"
-msgstr ""
-
-#. mouseover_ui_optionsbtn.name
-msgid "Options Button"
-msgstr ""
-
-#. mouseover_allow_partial.options.video.name
-msgid "Video"
-msgstr ""
-
-#. mouseover_allow_partial.options.media.name
-msgid "Media"
-msgstr ""
-
-#. mouseover_allow_partial.options.media.description
-msgid "Both images and video"
-msgstr ""
-
-#. mouseover_close_behavior.name
-msgid "Keep popup open until"
-msgstr ""
-
-#. mouseover_close_behavior.options.any.name
-msgid "Any trigger is released"
-msgstr ""
-
-#. mouseover_close_behavior.options.all.name
-msgid "All triggers are released"
-msgstr ""
-
-#. mouseover_close_behavior.options.esc.name
-msgid "ESC/Close is pressed"
-msgstr ""
-
-#. mouseover_zoom_behavior.name
-msgid "Popup default zoom"
-msgstr ""
-
-#. mouseover_zoom_behavior.options.fit.name
-msgid "Fit to screen"
-msgstr "Adapter a l'ecran"
-
-#. mouseover_zoom_behavior.options.full.name
-msgid "Full size"
-msgstr "Taille réelle"
-
-#. mouseover_pan_behavior.name
-msgid "Popup panning method"
-msgstr ""
-
-#. mouseover_pan_behavior.options.movement.name
-msgid "Movement"
-msgstr ""
-
-#. mouseover_pan_behavior.options.drag.name
-msgid "Drag"
-msgstr ""
-
-#. mouseover_scrolly_behavior.options.zoom.name
-msgid "Zoom"
-msgstr ""
-
-#. mouseover_scrolly_behavior.options.pan.name, mouseover_scrollx_behavior.options.pan.name
-msgid "Pan"
-msgstr ""
-
-#. mouseover_trigger_behavior.options.none.name, mouseover_allow_partial.options.none.name, mouseover_scrolly_behavior.options.nothing.name, mouseover_scrollx_behavior.options.nothing.name
-msgid "None"
-msgstr ""
-
-#. scroll_zoom_behavior.name
-msgid "Zoom behavior"
-msgstr ""
-
-#. scroll_zoom_behavior.options.fitfull.name
-msgid "Fit/Full"
-msgstr ""
-
-#. scroll_zoom_behavior.options.incremental.name
-msgid "Incremental"
-msgstr "Incrémentale"
-
-#. mouseover_position.name
-msgid "Popup position"
+msgid "subcategory_cache"
 msgstr ""
 
 msgid "Mouse cursor"
 msgstr ""
 
-#. mouseover_position.options.center.name
-msgid "Page middle"
-msgstr ""
-
-#. mouseover_links.name
-msgid "Popup for plain hyperlinks"
-msgstr ""
-
-#. mouseover_styles.name
-msgid "Popup CSS style"
-msgstr ""
-
 msgid "category_rules"
 msgstr "Règles"
-
-#. allow_watermark.name
-msgid "Larger watermarked images"
-msgstr ""
-
-#. allow_smaller.name
-msgid "Smaller non-watermarked images"
-msgstr ""
-
-#. allow_possibly_different.name
-msgid "Possibly different images"
-msgstr "Images possiblement différentes"
-
-#. allow_possibly_broken.name
-msgid "Possibly broken images"
-msgstr "Images possiblement brisée"
-
-#. allow_thirdparty.name
-msgid "Rules using 3rd-party websites"
-msgstr "Règles utilisant des sites 3rd-party"
-
-#. allow_thirdparty.example_websites[0]
-msgid "Newsen"
-msgstr ""
 
 msgid "subcategory_rule_specific"
 msgstr ""
 
 msgid "category_website"
 msgstr "Site"
-
-#. website_inject_imu.name
-msgid "Use userscript"
-msgstr "Utiliser ce userscript"
-
-#. website_image.name
-msgid "Website image preview"
-msgstr ""
 
 msgid "saved_refresh_target"
 msgstr "Enregistré! Actualiser la page que vous visitez pour que les changements prennent effet"
@@ -310,22 +113,6 @@ msgstr "Flèche gauche"
 msgid "Right Arrow"
 msgstr "Flèche droite"
 
-#. bigimage_blacklist.name
-msgid "Blacklist"
-msgstr ""
-
-#. bigimage_blacklist_engine.name
-msgid "Blacklist engine"
-msgstr ""
-
-#. bigimage_blacklist_engine.options.glob.name
-msgid "Simple (glob)"
-msgstr ""
-
-#. bigimage_blacklist_engine.options.regex.name
-msgid "Regex"
-msgstr ""
-
 msgid "category_extension"
 msgstr ""
 
@@ -347,16 +134,16 @@ msgstr ""
 msgid "category_general"
 msgstr ""
 
-#. language.name
-msgid "Language"
-msgstr ""
-
 #. imu_enabled.name
 msgid "Enable extension"
 msgstr ""
 
 #. imu_enabled.description
 msgid "Globally enables or disables the extension"
+msgstr ""
+
+#. language.name
+msgid "Language"
 msgstr ""
 
 #. language.description
@@ -491,10 +278,6 @@ msgstr ""
 msgid "Time (in milliseconds) to delay between retrying requests that received 503"
 msgstr ""
 
-#. retry_503_ms.number_unit, mouseover_notallowed_duration.number_unit, mouseover_hide_cursor_after.number_unit, mouseover_fade_time.number_unit, mouseover_mask_fade_time.number_unit
-msgid "ms"
-msgstr ""
-
 #. use_blob_over_arraybuffer.name
 msgid "Use `Blob` over `ArrayBuffer`"
 msgstr ""
@@ -547,9 +330,17 @@ msgstr ""
 msgid "Tries to ensure the 'save as' dialog displays when downloading. This requires the 'downloads' permission to work, and will sometimes not work when custom headers are required."
 msgstr ""
 
+#. redirect.name
+msgid "Enable redirection"
+msgstr "Activer la redirection"
+
 #. redirect.description
 msgid "Redirect images opened in their own tab"
 msgstr ""
+
+#. redirect_history.name
+msgid "Add to history"
+msgstr "Ajouter à l'historique"
 
 #. redirect_history.description
 msgid "Redirection will add a new entry to the browser's history"
@@ -563,24 +354,24 @@ msgstr ""
 msgid "Performs the redirection in the extension instead of the content script. This is significantly faster and shouldn't cause issues in theory, but this option is kept in case of regressions"
 msgstr ""
 
+#. canhead_get.name
+msgid "Use GET if HEAD is unsupported"
+msgstr "Utiliser GET si HEAD n'est pas supporté"
+
 #. canhead_get.description
 msgid "Use a GET request to check an image's availability, if the server does not support HEAD requests"
 msgstr ""
+
+#. redirect_force_page.name
+msgid "Try finding original page/caption"
+msgstr "Essayer de trouver la page d'origine/sous-titre"
 
 #. redirect_force_page.description
 msgid "Enables methods that use API calls for finding the original page or caption"
 msgstr ""
 
-#. redirect_force_page.example_websites[0], allow_apicalls.example_websites[1]
-msgid "Flickr"
-msgstr ""
-
 #. redirect_force_page.example_websites[1]
 msgid "SmugMug"
-msgstr ""
-
-#. redirect_force_page.example_websites[2], allow_apicalls.example_websites[2]
-msgid "..."
 msgstr ""
 
 #. redirect_infobox_url.name
@@ -623,28 +414,48 @@ msgstr ""
 msgid "Redirects to the largest image found that doesn't require custom headers or forces download"
 msgstr ""
 
+#. mouseover.name
+msgid "Enable mouseover popup"
+msgstr "Activer le popup"
+
 #. mouseover.description
 msgid "Show a popup with the larger image when you mouseover an image with the trigger key held (if applicable)"
+msgstr ""
+
+#. mouseover_open_behavior.name
+msgid "Mouseover popup action"
 msgstr ""
 
 #. mouseover_open_behavior.description
 msgid "Determines how the mouseover popup will open"
 msgstr ""
 
-#. mouseover_open_behavior.options.popup.name, mouseover_close_el_policy.options.popup.name
-msgid "Popup"
-msgstr ""
+#. mouseover_open_behavior.options.newtab.name
+msgid "New tab"
+msgstr "Nouvel onglet"
 
 #. mouseover_open_behavior.options.download.name
 msgid "Download"
 msgstr ""
 
+#. mouseover_trigger_behavior.name
+msgid "Mouseover popup trigger"
+msgstr "Déclencheur du popup"
+
 #. mouseover_trigger_behavior.description
 msgid "How the popup will get triggered"
 msgstr ""
 
+#. mouseover_trigger_behavior.options.mouse.name
+msgid "Mouseover"
+msgstr ""
+
 #. mouseover_trigger_behavior.options.mouse.description
 msgid "Triggers when your mouse is over the image"
+msgstr ""
+
+#. mouseover_trigger_behavior.options.keyboard.name
+msgid "Key trigger"
 msgstr ""
 
 #. mouseover_trigger_behavior.options.keyboard.description
@@ -655,8 +466,16 @@ msgstr ""
 msgid "Disables the popup from being triggered (useful if you only want to use the context menu item)"
 msgstr ""
 
+#. mouseover_trigger_key.name
+msgid "Popup trigger key"
+msgstr ""
+
 #. mouseover_trigger_key.description
 msgid "Key sequence to trigger the popup"
+msgstr ""
+
+#. mouseover_trigger_delay.name
+msgid "Popup trigger delay"
 msgstr ""
 
 #. mouseover_trigger_delay.description
@@ -671,12 +490,28 @@ msgstr ""
 msgid "Uses the mouseover event instead of mousemove to figure out where to trigger the popup. This more closely matches the way other image popup addons work, at the cost of configurability"
 msgstr ""
 
+#. mouseover_trigger_enabledisable_toggle.name
+msgid "Enable/disable toggle"
+msgstr ""
+
+#. mouseover_trigger_enabledisable_toggle.description
+msgid "Controls whether the 'Popup enable/disable key' will enable or disable the popup from opening"
+msgstr ""
+
+#. mouseover_trigger_enabledisable_toggle.options.enable.name
+msgid "Enable"
+msgstr ""
+
+#. mouseover_trigger_enabledisable_toggle.options.disable.name
+msgid "Disable"
+msgstr ""
+
 #. mouseover_trigger_prevent_key.name
-msgid "Popup prevention key"
+msgid "Popup enable/disable key"
 msgstr ""
 
 #. mouseover_trigger_prevent_key.description
-msgid "Holding down this key will prevent the popup from being opened"
+msgid "Holding down this key will enable or disable the popup from being opened, depending on the 'Enable/disable toggle' setting"
 msgstr ""
 
 #. mouseover_allow_partial.name
@@ -689,6 +524,18 @@ msgstr ""
 
 #. mouseover_allow_partial.description_userscript
 msgid "This will allow the popup to open for partially loaded media, but this might break some images"
+msgstr ""
+
+#. mouseover_allow_partial.options.video.name
+msgid "Video"
+msgstr ""
+
+#. mouseover_allow_partial.options.media.name
+msgid "Media"
+msgstr ""
+
+#. mouseover_allow_partial.options.media.description
+msgid "Both images and video"
 msgstr ""
 
 #. mouseover_partial_avoid_head.name
@@ -745,10 +592,6 @@ msgstr ""
 
 #. mouseover_minimum_size.description
 msgid "Smallest size acceptable for the popup to open (this option is ignored for background images)"
-msgstr ""
-
-#. mouseover_minimum_size.number_unit, mouseover_jitter_threshold.number_unit, mouseover_drag_min.number_unit
-msgid "pixels"
 msgstr ""
 
 #. mouseover_exclude_backgroundimages.name
@@ -861,10 +704,6 @@ msgstr ""
 
 #. mouseover_video_volume.description
 msgid "Default volume for the video"
-msgstr ""
-
-#. mouseover_video_volume.number_unit, mouseover_video_volume_change_amt.number_unit, mouseover_ui_opacity.number_unit, mouseover_zoom_custom_percent.number_unit
-msgid "%"
 msgstr ""
 
 #. mouseover_video_volume_up_key.name
@@ -1007,10 +846,6 @@ msgstr ""
 msgid "How many times faster/slower to speed the video up/down"
 msgstr ""
 
-#. mouseover_video_speed_amount.number_unit, scroll_incremental_mult.number_unit
-msgid "x"
-msgstr ""
-
 #. mouseover_video_reset_speed_key.name
 msgid "Reset speed key"
 msgstr ""
@@ -1019,9 +854,17 @@ msgstr ""
 msgid "Resets the video playback to normal speed"
 msgstr ""
 
+#. mouseover_ui.name
+msgid "Popup UI"
+msgstr ""
+
 #. mouseover_ui.description
 msgid "Enables a UI on top of the popup"
 msgstr ""
+
+#. mouseover_ui_opacity.name
+msgid "Opacity"
+msgstr "Opacité"
 
 #. mouseover_ui_opacity.description
 msgid "Opacity of the UI on top of the popup"
@@ -1059,9 +902,17 @@ msgstr ""
 msgid "Displays the media's file size on top of the UI. For the moment, this will not work with partially loaded media if 'Avoid HEAD request for partially loaded media' is enabled."
 msgstr ""
 
+#. mouseover_ui_gallerycounter.name
+msgid "Gallery counter"
+msgstr "Nombre d'images dans la galerie"
+
 #. mouseover_ui_gallerycounter.description
 msgid "Enables a gallery counter on top of the UI"
 msgstr ""
+
+#. mouseover_ui_gallerymax.name
+msgid "Gallery counter max"
+msgstr "Nombre max d'images a compter pour la galerie"
 
 #. mouseover_ui_gallerymax.description
 msgid "Maximum amount of images to check in the counter (this can be slightly CPU-intensive)"
@@ -1081,6 +932,10 @@ msgstr ""
 
 #. mouseover_ui_closebtn.description
 msgid "Enables a button to close the popup"
+msgstr ""
+
+#. mouseover_ui_optionsbtn.name
+msgid "Options Button"
 msgstr ""
 
 #. mouseover_ui_optionsbtn.description
@@ -1135,8 +990,24 @@ msgstr ""
 msgid "Adds an underline to links (such as the original page)"
 msgstr ""
 
+#. mouseover_close_behavior.name
+msgid "Keep popup open until"
+msgstr ""
+
 #. mouseover_close_behavior.description
 msgid "Closes the popup when the selected condition is met"
+msgstr ""
+
+#. mouseover_close_behavior.options.any.name
+msgid "Any trigger is released"
+msgstr ""
+
+#. mouseover_close_behavior.options.all.name
+msgid "All triggers are released"
+msgstr ""
+
+#. mouseover_close_behavior.options.esc.name
+msgid "ESC/Close is pressed"
 msgstr ""
 
 #. mouseover_close_need_mouseout.name
@@ -1195,6 +1066,10 @@ msgstr ""
 msgid "Amount of time to elapse before automatically closing the popup"
 msgstr ""
 
+#. redirect_infobox_timeout.number_unit, mouseover_trigger_delay.number_unit, mouseover_video_autoloop_max.number_unit, mouseover_video_seek_amount.number_unit, mouseover_auto_close_popup_time.number_unit
+msgid "seconds"
+msgstr ""
+
 #. mouseover_use_hold_key.name
 msgid "Use hold key"
 msgstr ""
@@ -1248,11 +1123,15 @@ msgid "Close when leaving"
 msgstr ""
 
 #. mouseover_close_el_policy.description
-msgid "Closes the popup when the mouse leaves the thumbnail element, the popup, or either"
+msgid "Closes the popup when the mouse leaves the thumbnail element, the popup, or both"
 msgstr ""
 
 #. mouseover_close_el_policy.options.thumbnail.name
 msgid "Thumbnail"
+msgstr ""
+
+#. mouseover_open_behavior.options.popup.name, mouseover_close_el_policy.options.popup.name
+msgid "Popup"
 msgstr ""
 
 #. mouseover_close_el_policy.options.both.name
@@ -1295,13 +1174,25 @@ msgstr ""
 msgid "Opens the popup on the top frame instead of within iframes. Still in beta"
 msgstr ""
 
+#. mouseover_zoom_behavior.name
+msgid "Popup default zoom"
+msgstr ""
+
 #. mouseover_zoom_behavior.description
 msgid "How the popup should be initially sized"
 msgstr ""
 
+#. mouseover_zoom_behavior.options.fit.name
+msgid "Fit to screen"
+msgstr "Adapter a l'ecran"
+
 #. mouseover_zoom_behavior.options.fill.name
 msgid "Fill screen"
 msgstr ""
+
+#. mouseover_zoom_behavior.options.full.name
+msgid "Full size"
+msgstr "Taille réelle"
 
 #. mouseover_zoom_behavior.options.custom.name
 msgid "Custom size"
@@ -1315,16 +1206,16 @@ msgstr ""
 msgid "Custom percent to initially size the popup"
 msgstr ""
 
+#. mouseover_video_volume.number_unit, mouseover_video_volume_change_amt.number_unit, mouseover_ui_opacity.number_unit, mouseover_zoom_custom_percent.number_unit
+msgid "%"
+msgstr ""
+
 #. mouseover_zoom_max_width.name
 msgid "Maximum width"
 msgstr ""
 
 #. mouseover_zoom_max_width.description
 msgid "Maximum width for the initial popup size. Set to `0` for unlimited."
-msgstr ""
-
-#. mouseover_zoom_max_width.number_unit, mouseover_zoom_max_height.number_unit, mouseover_mouse_inactivity_jitter.number_unit
-msgid "px"
 msgstr ""
 
 #. mouseover_zoom_max_height.name
@@ -1335,12 +1226,24 @@ msgstr ""
 msgid "Maximum height for the initial popup size. Set to `0` for unlimited."
 msgstr ""
 
+#. mouseover_pan_behavior.name
+msgid "Popup panning method"
+msgstr ""
+
 #. mouseover_pan_behavior.description
 msgid "How the popup should be panned when larger than the screen"
 msgstr ""
 
+#. mouseover_pan_behavior.options.movement.name
+msgid "Movement"
+msgstr ""
+
 #. mouseover_pan_behavior.options.movement.description
 msgid "The popup pans as you move your mouse"
+msgstr ""
+
+#. mouseover_pan_behavior.options.drag.name
+msgid "Drag"
 msgstr ""
 
 #. mouseover_pan_behavior.options.drag.description
@@ -1363,6 +1266,10 @@ msgstr ""
 msgid "How many pixels the mouse should move to start a drag"
 msgstr ""
 
+#. mouseover_minimum_size.number_unit, mouseover_jitter_threshold.number_unit, mouseover_drag_min.number_unit
+msgid "pixels"
+msgstr ""
+
 #. mouseover_scrolly_behavior.name
 msgid "Vertical scroll action"
 msgstr ""
@@ -1371,8 +1278,8 @@ msgstr ""
 msgid "How the popup reacts to a vertical scroll/mouse wheel event"
 msgstr ""
 
-#. mouseover_scrolly_behavior.options.gallery.name, mouseover_scrollx_behavior.options.gallery.name
-msgid "Gallery"
+#. mouseover_scrolly_behavior.options.zoom.name
+msgid "Zoom"
 msgstr ""
 
 #. mouseover_scrollx_behavior.name
@@ -1381,6 +1288,18 @@ msgstr ""
 
 #. mouseover_scrollx_behavior.description
 msgid "How the popup reacts to a horizontal scroll/mouse wheel event"
+msgstr ""
+
+#. mouseover_scrolly_behavior.options.pan.name, mouseover_scrollx_behavior.options.pan.name
+msgid "Pan"
+msgstr ""
+
+#. mouseover_scrolly_behavior.options.gallery.name, mouseover_scrollx_behavior.options.gallery.name
+msgid "Gallery"
+msgstr ""
+
+#. mouseover_trigger_behavior.options.none.name, mouseover_allow_partial.options.none.name, mouseover_scrolly_behavior.options.nothing.name, mouseover_scrollx_behavior.options.nothing.name
+msgid "None"
 msgstr ""
 
 #. scroll_override_page.name
@@ -1407,13 +1326,25 @@ msgstr ""
 msgid "Center"
 msgstr ""
 
+#. scroll_zoom_behavior.name
+msgid "Zoom behavior"
+msgstr ""
+
 #. scroll_zoom_behavior.description
 msgid "How zooming should work"
+msgstr ""
+
+#. scroll_zoom_behavior.options.fitfull.name
+msgid "Fit/Full"
 msgstr ""
 
 #. scroll_zoom_behavior.options.fitfull.description
 msgid "Toggles between the full size, and fit-to-screen"
 msgstr ""
+
+#. scroll_zoom_behavior.options.incremental.name
+msgid "Incremental"
+msgstr "Incrémentale"
 
 #. scroll_incremental_mult.name
 msgid "Incremental zoom multiplier"
@@ -1421,6 +1352,10 @@ msgstr ""
 
 #. scroll_incremental_mult.description
 msgid "How much to zoom in/out by (for incremental zooming)"
+msgstr ""
+
+#. mouseover_video_speed_amount.number_unit, scroll_incremental_mult.number_unit
+msgid "x"
 msgstr ""
 
 #. mouseover_move_with_cursor.name
@@ -1447,6 +1382,10 @@ msgstr ""
 msgid "Closes the popup if you zoom out past the minimum zoom"
 msgstr ""
 
+#. mouseover_position.name
+msgid "Popup position"
+msgstr ""
+
 #. mouseover_position.description
 msgid "Where the popup will appear"
 msgstr ""
@@ -1461,6 +1400,10 @@ msgstr ""
 
 #. mouseover_position.options.beside_cursor.name
 msgid "Beside cursor"
+msgstr ""
+
+#. mouseover_position.options.center.name
+msgid "Page middle"
 msgstr ""
 
 #. mouseover_prevent_cursor_overlap.name
@@ -1493,6 +1436,10 @@ msgstr ""
 
 #. mouseover_mouse_inactivity_jitter.description
 msgid "Threshold for mouse movement before the mouse cursor is shown again, 0 always shows the cursor after any movement"
+msgstr ""
+
+#. mouseover_zoom_max_width.number_unit, mouseover_zoom_max_height.number_unit, mouseover_mouse_inactivity_jitter.number_unit
+msgid "px"
 msgstr ""
 
 #. mouseover_clickthrough.name
@@ -1639,6 +1586,10 @@ msgstr ""
 msgid "Toggles fullscreen mode for the image/video in the popup"
 msgstr ""
 
+#. mouseover_links.name
+msgid "Popup for plain hyperlinks"
+msgstr ""
+
 #. mouseover_links.description
 msgid "Whether or not the popup should also open for plain hyperlinks"
 msgstr ""
@@ -1715,12 +1666,12 @@ msgstr ""
 msgid "Moves to the next gallery item when a video finishes playing"
 msgstr ""
 
-#. mouseover_styles.description
-msgid "Custom CSS styles for the popup"
+#. mouseover_styles.name
+msgid "Popup CSS style"
 msgstr ""
 
-#. mouseover_styles.documentation.title, bigimage_blacklist.documentation.title
-msgid "Documentation"
+#. mouseover_styles.description
+msgid "Custom CSS styles for the popup"
 msgstr ""
 
 #. mouseover_styles.documentation.value
@@ -1790,6 +1741,10 @@ msgstr ""
 msgid "Fade in/out time (in milliseconds) for the page background, set to 0 to disable"
 msgstr ""
 
+#. retry_503_ms.number_unit, mouseover_notallowed_duration.number_unit, mouseover_hide_cursor_after.number_unit, mouseover_fade_time.number_unit, mouseover_mask_fade_time.number_unit
+msgid "ms"
+msgstr ""
+
 #. mouseover_ui_styles.name
 msgid "Button CSS style"
 msgstr ""
@@ -1830,8 +1785,44 @@ msgstr ""
 msgid "Manually looks through every element on the page to see if the cursor is beneath them. Supports more images, but also results in a higher CPU load for websites such as Facebook."
 msgstr ""
 
+#. popup_allow_cache.name
+msgid "Use cache"
+msgstr ""
+
+#. popup_allow_cache.description
+msgid "Allows use of a media cache for the popup"
+msgstr ""
+
+#. popup_cache_duration.name
+msgid "Cache duration"
+msgstr ""
+
+#. popup_cache_duration.description
+msgid "How long for media to remain cached. Set to `0` for unlimited."
+msgstr ""
+
+#. popup_cache_duration.number_unit
+msgid "minutes"
+msgstr ""
+
+#. popup_cache_resume_video.name
+msgid "Resume videos"
+msgstr ""
+
+#. popup_cache_resume_video.description
+msgid "If a video popup was closed then reopened, the video will resume from where it left off"
+msgstr ""
+
+#. website_inject_imu.name
+msgid "Use userscript"
+msgstr "Utiliser ce userscript"
+
 #. website_inject_imu.description
 msgid "Replaces the website's IMU instance with the userscript"
+msgstr ""
+
+#. website_image.name
+msgid "Website image preview"
 msgstr ""
 
 #. website_image.description
@@ -1878,6 +1869,10 @@ msgstr ""
 msgid "Allows playback of HLS video streams. Some videos may not work with other websites due to hotlinking protection, and it may even break video playback for some websites. Use with caution."
 msgstr ""
 
+#. allow_watermark.name
+msgid "Larger watermarked images"
+msgstr ""
+
 #. allow_watermark.description
 msgid "Enables rules that return larger images that include watermarks"
 msgstr ""
@@ -1886,9 +1881,17 @@ msgstr ""
 msgid "Stock photo websites"
 msgstr ""
 
+#. allow_smaller.name
+msgid "Smaller non-watermarked images"
+msgstr ""
+
 #. allow_smaller.description
 msgid "Enables rules that return smaller images without watermarks"
 msgstr ""
+
+#. allow_possibly_different.name
+msgid "Possibly different images"
+msgstr "Images possiblement différentes"
 
 #. allow_possibly_different.description
 msgid "Enables rules that return images that possibly differ"
@@ -1897,6 +1900,10 @@ msgstr ""
 #. allow_possibly_different.example_websites[0]
 msgid "YouTube video thumbnails"
 msgstr ""
+
+#. allow_possibly_broken.name
+msgid "Possibly broken images"
+msgstr "Images possiblement brisée"
 
 #. allow_possibly_broken.description
 msgid "Enables rules that return images that are possibly broken"
@@ -1910,8 +1917,16 @@ msgstr ""
 msgid "Enables rules that return images that are possibly upscaled"
 msgstr ""
 
+#. allow_thirdparty.name
+msgid "Rules using 3rd-party websites"
+msgstr "Règles utilisant des sites 3rd-party"
+
 #. allow_thirdparty.description
 msgid "Enables rules that use 3rd-party websites"
+msgstr ""
+
+#. allow_thirdparty.example_websites[0]
+msgid "Newsen"
 msgstr ""
 
 #. allow_apicalls.name
@@ -1924,6 +1939,14 @@ msgstr ""
 
 #. allow_apicalls.example_websites[0]
 msgid "Instagram"
+msgstr ""
+
+#. redirect_force_page.example_websites[0], allow_apicalls.example_websites[1]
+msgid "Flickr"
+msgstr ""
+
+#. redirect_force_page.example_websites[2], allow_apicalls.example_websites[2]
+msgid "..."
 msgstr ""
 
 #. allow_thirdparty_libs.name
@@ -1964,10 +1987,6 @@ msgstr ""
 
 #. allow_bruteforce.description
 msgid "Enables rules that require using brute force (through binary search) to find the original image"
-msgstr ""
-
-#. allow_bruteforce.warning.true, replaceimgs_auto.warning.true
-msgid "This could lead to rate limiting or IP bans"
 msgstr ""
 
 #. allow_bruteforce.example_websites[0]
@@ -2085,8 +2104,16 @@ msgstr ""
 msgid "API key for finding larger images on Tumblr"
 msgstr ""
 
+#. bigimage_blacklist.name
+msgid "Blacklist"
+msgstr ""
+
 #. bigimage_blacklist.description
 msgid "A list of URLs that are blacklisted from being processed"
+msgstr ""
+
+#. mouseover_styles.documentation.title, bigimage_blacklist.documentation.title
+msgid "Documentation"
 msgstr ""
 
 #. bigimage_blacklist.documentation.value
@@ -2108,20 +2135,20 @@ msgid ""
 "</ul>"
 msgstr ""
 
+#. bigimage_blacklist_engine.name
+msgid "Blacklist engine"
+msgstr ""
+
 #. bigimage_blacklist_engine.description
 msgid "How the blacklist should be processed"
 msgstr ""
 
-#. replaceimgs_enable_keybinding.name, highlightimgs_enable_keybinding.name
-msgid "Enable trigger key"
+#. bigimage_blacklist_engine.options.glob.name
+msgid "Simple (glob)"
 msgstr ""
 
-#. replaceimgs_enable_keybinding.description, highlightimgs_enable_keybinding.description
-msgid "Enables the use of the trigger key to run it without needing to use the menu"
-msgstr ""
-
-#. replaceimgs_keybinding.name, highlightimgs_keybinding.name
-msgid "Trigger key"
+#. bigimage_blacklist_engine.options.regex.name
+msgid "Regex"
 msgstr ""
 
 #. replaceimgs_keybinding.description
@@ -2134,6 +2161,10 @@ msgstr ""
 
 #. replaceimgs_auto.description
 msgid "Automatically replace images to larger versions on pages you view"
+msgstr ""
+
+#. allow_bruteforce.warning.true, replaceimgs_auto.warning.true
+msgid "This could lead to rate limiting or IP bans"
 msgstr ""
 
 #. replaceimgs_usedata.name
@@ -2168,6 +2199,10 @@ msgstr ""
 msgid "The maximum amount of images per domain to process at once"
 msgstr ""
 
+#. mouseover_ui_gallerymax.number_unit, replaceimgs_totallimit.number_unit, replaceimgs_domainlimit.number_unit
+msgid "images"
+msgstr ""
+
 #. replaceimgs_replaceimgs.name
 msgid "Replace images"
 msgstr ""
@@ -2190,6 +2225,18 @@ msgstr ""
 
 #. replaceimgs_replacelinks.description
 msgid "Replaces links if they already exist"
+msgstr ""
+
+#. replaceimgs_enable_keybinding.name, highlightimgs_enable_keybinding.name
+msgid "Enable trigger key"
+msgstr ""
+
+#. replaceimgs_enable_keybinding.description, highlightimgs_enable_keybinding.description
+msgid "Enables the use of the trigger key to run it without needing to use the menu"
+msgstr ""
+
+#. replaceimgs_keybinding.name, highlightimgs_keybinding.name
+msgid "Trigger key"
 msgstr ""
 
 #. highlightimgs_keybinding.description
