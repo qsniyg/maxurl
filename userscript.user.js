@@ -1740,84 +1740,6 @@ var $$IMU_EXPORT$$;
 			"es": "Redirecci\u00F3n",
 			"ko": "\uB9AC\uB514\uB809\uC158"
 		},
-		"Enable redirection": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "redirect",
-						"field": "name"
-					}
-				]
-			},
-			"es": "Habilitar redirecci\u00F3n",
-			"fr": "Activer la redirection",
-			"ko": "\uB9AC\uB514\uB809\uC158 \uC0AC\uC6A9"
-		},
-		"Add to history": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "redirect_history",
-						"field": "name"
-					}
-				]
-			},
-			"es": "Agregar al historial",
-			"fr": "Ajouter \u00E0 l'historique",
-			"ko": "\uBE0C\uB77C\uC6B0\uC800 \uAE30\uB85D\uC5D0 \uCD94\uAC00"
-		},
-		"Use GET if HEAD is unsupported": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "canhead_get",
-						"field": "name"
-					}
-				]
-			},
-			"es": "Utilizar GET si HEAD no es soportado",
-			"fr": "Utiliser GET si HEAD n'est pas support\u00E9",
-			"ko": "HEAD \uC9C0\uC6D0\uB418\uC9C0 \uC54A\uC73C\uBA74 GET \uC0AC\uC6A9"
-		},
-		"Try finding original page/caption": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "redirect_force_page",
-						"field": "name"
-					}
-				]
-			},
-			"es": "Intentar de encontrar la p\u00E1gina original/t\u00EDtulo",
-			"fr": "Essayer de trouver la page d'origine/sous-titre"
-		},
-		"Enable mouseover popup": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover",
-						"field": "name"
-					}
-				]
-			},
-			"en": "Enable image popup",
-			"es": "Activar popup de la imagen",
-			"fr": "Activer le popup",
-			"ko": "\uC774\uBBF8\uC9C0 \uD31D\uC5C5 \uC0AC\uC6A9"
-		},
-		"Mouseover popup action": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_open_behavior",
-						"field": "name"
-					}
-				]
-			},
-			"en": "Popup action",
-			"es": "Acci\u00F3n del popup",
-			"ko": "\uC774\uBBF8\uC9C0 \uD31D\uC5C5 \uC791\uC5C5"
-		},
 		"category_popup": {
 			"en": "Popup",
 			"es": "Popup",
@@ -1868,545 +1790,13 @@ var $$IMU_EXPORT$$;
 		"subcategory_cache": {
 			"en": "Cache"
 		},
-		"New tab": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_open_behavior",
-						"field": "options.newtab.name"
-					}
-				]
-			},
-			"es": "Nueva pesta\u00F1a",
-			"fr": "Nouvel onglet",
-			"ko": "\uC0C8 \uD0ED"
-		},
-		"Mouseover popup trigger": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_trigger_behavior",
-						"field": "name"
-					}
-				]
-			},
-			"en": "Popup trigger",
-			"es": "Acci\u00F3n del popup al mover el rat\u00F3n encima",
-			"fr": "D\u00E9clencheur du popup",
-			"ko": "\uD31D\uC5C5 \uD2B8\uB9AC\uAC70"
-		},
-		"Mouseover": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_trigger_behavior",
-						"field": "options.mouse.name"
-					}
-				]
-			},
-			"es": "Mover rat\u00F3n encima",
-			"ko": "\uB9C8\uC6B0\uC2A4"
-		},
-		"Key trigger": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_trigger_behavior",
-						"field": "options.keyboard.name"
-					}
-				]
-			},
-			"es": "Tecla de acci\u00F3n",
-			"ko": "\uD0A4 \uBC14\uC778\uB529"
-		},
-		"Popup trigger key": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_trigger_key",
-						"field": "name"
-					}
-				]
-			},
-			"es": "Tecla de acci\u00F3n del popup",
-			"ko": "\uD31D\uC5C5 \uD0A4 \uBC14\uC778\uB529"
-		},
-		"Popup trigger delay": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_trigger_delay",
-						"field": "name"
-					}
-				]
-			},
-			"es": "Retraso de acci\u00F3n del popup",
-			"ko": "\uD31D\uC5C5 \uC791\uC5C5 \uC9C0\uC5F0 \uC2DC\uAC04"
-		},
-		"seconds": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "redirect_infobox_timeout",
-						"field": "number_unit"
-					},
-					{
-						"setting": "mouseover_trigger_delay",
-						"field": "number_unit"
-					},
-					{
-						"setting": "mouseover_video_autoloop_max",
-						"field": "number_unit"
-					},
-					{
-						"setting": "mouseover_video_seek_amount",
-						"field": "number_unit"
-					},
-					{
-						"setting": "mouseover_auto_close_popup_time",
-						"field": "number_unit"
-					}
-				]
-			},
-			"es": "segundos",
-			"ko": "\uCD08"
-		},
-		"Popup UI": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_ui",
-						"field": "name"
-					}
-				]
-			},
-			"es": "Interfaz del Popup",
-			"ko": "\uD31D\uC5C5 UI"
-		},
-		"Opacity": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_ui_opacity",
-						"field": "name"
-					}
-				]
-			},
-			"es": "Opacidad",
-			"fr": "Opacit\u00E9",
-			"ko": "\uBD88\uD22C\uBA85"
-		},
-		"Gallery counter": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_ui_gallerycounter",
-						"field": "name"
-					}
-				]
-			},
-			"es": "N\u00FAmero de im\u00E1genes a contar en la galer\u00EDa",
-			"fr": "Nombre d'images dans la galerie",
-			"ko": "\uAC24\uB7EC\uB9AC \uC774\uBBF8\uC9C0 \uC218"
-		},
-		"Gallery counter max": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_ui_gallerymax",
-						"field": "name"
-					}
-				]
-			},
-			"es": "N\u00FAmero m\u00E1ximo de im\u00E1genes a contar para la galer\u00EDa",
-			"fr": "Nombre max d'images a compter pour la galerie",
-			"ko": "\uAC24\uB7EC\uB9AC \uC774\uBBF8\uC9C0 \uC218\uC758 \uCD5C\uB300\uAC12"
-		},
-		"images": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_ui_gallerymax",
-						"field": "number_unit"
-					},
-					{
-						"setting": "replaceimgs_totallimit",
-						"field": "number_unit"
-					},
-					{
-						"setting": "replaceimgs_domainlimit",
-						"field": "number_unit"
-					}
-				]
-			},
-			"es": "im\u00E1genes",
-			"ko": "\uC774\uBBF8\uC9C0"
-		},
-		"Options Button": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_ui_optionsbtn",
-						"field": "name"
-					}
-				]
-			},
-			"es": "Bot\u00F3n de Opciones",
-			"ko": "\uC124\uC815 \uB9C1\uD06C"
-		},
-		"Video": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_allow_partial",
-						"field": "options.video.name"
-					}
-				]
-			},
-			"es": "Video",
-			"ko": "\uC601\uC0C1"
-		},
-		"Media": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_allow_partial",
-						"field": "options.media.name"
-					}
-				]
-			},
-			"es": "Medios",
-			"ko": "\uBBF8\uB514\uC5B4"
-		},
-		"Both images and video": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_allow_partial",
-						"field": "options.media.description"
-					}
-				]
-			},
-			"es": "Im\u00E1genes y video",
-			"ko": "\uC0AC\uC9C4+\uC601\uC0C1"
-		},
-		"Keep popup open until": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_close_behavior",
-						"field": "name"
-					}
-				]
-			},
-			"es": "Mantener popup abierto hasta que",
-			"ko": "\uD31D\uC5C5 \uB2EB\uC73C\uB824\uBA74"
-		},
-		"Any trigger is released": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_close_behavior",
-						"field": "options.any.name"
-					}
-				]
-			},
-			"es": "Cualquier acci\u00F3n se deja ir",
-			"ko": "\uC5B4\uB5A4 \uB3D9\uC791\uC5D0\uB3C4 \uB2EB\uD798"
-		},
-		"All triggers are released": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_close_behavior",
-						"field": "options.all.name"
-					}
-				]
-			},
-			"ko": "\uBAA8\uB4E0 \uB3D9\uC791\uC5D0\uC11C \uB2EB\uD798"
-		},
-		"ESC/Close is pressed": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_close_behavior",
-						"field": "options.esc.name"
-					}
-				]
-			},
-			"ko": "ESC/\uB2EB\uAE30 \uB204\uB974\uAE30"
-		},
-		"Popup default zoom": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_zoom_behavior",
-						"field": "name"
-					}
-				]
-			},
-			"ko": "\uD655\uB300/\uCD95\uC18C \uAE30\uBCF8\uAC12"
-		},
-		"Fit to screen": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_zoom_behavior",
-						"field": "options.fit.name"
-					}
-				]
-			},
-			"fr": "Adapter a l'ecran",
-			"ko": "\uD654\uBA74 \uD06C\uAE30\uC5D0 \uB9DE\uCDA4"
-		},
-		"Full size": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_zoom_behavior",
-						"field": "options.full.name"
-					}
-				]
-			},
-			"fr": "Taille r\u00E9elle",
-			"ko": "\uC804\uCCB4 \uD06C\uAE30"
-		},
-		"Popup panning method": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_pan_behavior",
-						"field": "name"
-					}
-				]
-			},
-			"ko": "\uC774\uBBF8\uC9C0 \uC774\uB3D9\uD558\uB824\uBA74"
-		},
-		"Movement": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_pan_behavior",
-						"field": "options.movement.name"
-					}
-				]
-			},
-			"ko": "\uB9C8\uC6B0\uC2A4 \uC6C0\uC9C1\uC785\uB2C8\uB2E4"
-		},
-		"Drag": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_pan_behavior",
-						"field": "options.drag.name"
-					}
-				]
-			},
-			"ko": "\uB055\uB2C8\uB2E4"
-		},
-		"Zoom": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_scrolly_behavior",
-						"field": "options.zoom.name"
-					}
-				]
-			},
-			"ko": "\uC90C"
-		},
-		"Pan": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_scrolly_behavior",
-						"field": "options.pan.name"
-					},
-					{
-						"setting": "mouseover_scrollx_behavior",
-						"field": "options.pan.name"
-					}
-				]
-			},
-			"ko": "\uC774\uB3D9"
-		},
-		"None": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_trigger_behavior",
-						"field": "options.none.name"
-					},
-					{
-						"setting": "mouseover_allow_partial",
-						"field": "options.none.name"
-					},
-					{
-						"setting": "mouseover_scrolly_behavior",
-						"field": "options.nothing.name"
-					},
-					{
-						"setting": "mouseover_scrollx_behavior",
-						"field": "options.nothing.name"
-					}
-				]
-			},
-			"ko": "\uC5C6\uB2E4"
-		},
-		"Zoom behavior": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "scroll_zoom_behavior",
-						"field": "name"
-					}
-				]
-			},
-			"ko": "\uC90C \uB3D9\uC791"
-		},
-		"Fit/Full": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "scroll_zoom_behavior",
-						"field": "options.fitfull.name"
-					}
-				]
-			},
-			"ko": "\uD654\uBA74\uB9DE\uCDA4/\uC804\uCCB4"
-		},
-		"Incremental": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "scroll_zoom_behavior",
-						"field": "options.incremental.name"
-					}
-				]
-			},
-			"fr": "Incr\u00E9mentale",
-			"ko": "\uC99D\uBD84"
-		},
-		"Popup position": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_position",
-						"field": "name"
-					}
-				]
-			},
-			"ko": "\uD31D\uC5C5 \uC704\uCE58"
-		},
 		"Mouse cursor": {
 			"ko": "\uB9C8\uC6B0\uC2A4 \uCEE4\uC11C"
-		},
-		"Page middle": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_position",
-						"field": "options.center.name"
-					}
-				]
-			},
-			"ko": "\uD398\uC774\uC9C0 \uC911\uAC04"
-		},
-		"Popup for plain hyperlinks": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_links",
-						"field": "name"
-					}
-				]
-			},
-			"ko": "\uC77C\uBC18\uC801\uC778 \uB9C1\uD06C\uC5D0\uB3C4 \uD31D\uC5C5"
-		},
-		"Popup CSS style": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_styles",
-						"field": "name"
-					}
-				]
-			},
-			"ko": "\uD31D\uC5C5 CSS"
 		},
 		"category_rules": {
 			"en": "Rules",
 			"fr": "R\u00E8gles",
 			"ko": "\uADDC\uCE59"
-		},
-		"Larger watermarked images": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "allow_watermark",
-						"field": "name"
-					}
-				]
-			},
-			"ko": "\uB354 \uD06C\uC9C0\uB9CC \uC6CC\uD130\uB9C8\uD06C \uC788\uB294 \uC774\uBBF8\uC9C0"
-		},
-		"Smaller non-watermarked images": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "allow_smaller",
-						"field": "name"
-					}
-				]
-			},
-			"ko": "\uB354 \uC791\uC9C0\uB9CC \uC6CC\uD130\uB9C8\uD06C \uC5C6\uB294 \uC774\uBBF8\uC9C0"
-		},
-		"Possibly different images": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "allow_possibly_different",
-						"field": "name"
-					}
-				]
-			},
-			"fr": "Images possiblement diff\u00E9rentes",
-			"ko": "\uB2E4\uB97C \uC218 \uC788\uB294 \uC774\uBBF8\uC9C0"
-		},
-		"Possibly broken images": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "allow_possibly_broken",
-						"field": "name"
-					}
-				]
-			},
-			"fr": "Images possiblement bris\u00E9e",
-			"ko": "\uC190\uC0C1\uB420 \uC218 \uC788\uB294 \uC774\uBBF8\uC9C0"
-		},
-		"Rules using 3rd-party websites": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "allow_thirdparty",
-						"field": "name"
-					}
-				]
-			},
-			"fr": "R\u00E8gles utilisant des sites 3rd-party",
-			"ko": "\uC11C\uB4DC\uD30C\uD2F0 \uC0AC\uC774\uD2B8\uB97C \uC0AC\uC6A9\uD558\uB294 \uADDC\uCE59"
-		},
-		"Newsen": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "allow_thirdparty",
-						"field": "example_websites[0]"
-					}
-				]
-			},
-			"ko": "\uB274\uC2A4\uC5D4"
 		},
 		"subcategory_rule_specific": {
 			"en": "Rule-specific"
@@ -2415,29 +1805,6 @@ var $$IMU_EXPORT$$;
 			"en": "Website",
 			"fr": "Site",
 			"ko": "\uC6F9\uC0AC\uC774\uD2B8"
-		},
-		"Use userscript": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "website_inject_imu",
-						"field": "name"
-					}
-				]
-			},
-			"fr": "Utiliser ce userscript",
-			"ko": "\uC720\uC800\uC2A4\uD06C\uB9BD\uD2B8 \uC0AC\uC6A9\uD558\uAE30"
-		},
-		"Website image preview": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "website_image",
-						"field": "name"
-					}
-				]
-			},
-			"ko": "\uB9C1\uD06C \uBD99\uC778 \uD6C4 \uC774\uBBF8\uC9C0 \uBBF8\uB9AC\uBCF4\uAE30"
 		},
 		"saved_refresh_target": {
 			"en": "Saved! Refresh the target page for changes to take effect",
@@ -2493,50 +1860,6 @@ var $$IMU_EXPORT$$;
 			"fr": "Fl\u00E8che droite",
 			"ko": "\uC624\uB978\uCABD \uD654\uC0B4\uD45C"
 		},
-		"Blacklist": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "bigimage_blacklist",
-						"field": "name"
-					}
-				]
-			},
-			"ko": "\uBE14\uB799\uB9AC\uC2A4\uD2B8"
-		},
-		"Blacklist engine": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "bigimage_blacklist_engine",
-						"field": "name"
-					}
-				]
-			},
-			"ko": "\uBE14\uB799\uB9AC\uC2A4\uD2B8 \uC5D4\uC9C4"
-		},
-		"Simple (glob)": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "bigimage_blacklist_engine",
-						"field": "options.glob.name"
-					}
-				]
-			},
-			"ko": "\uB2E8\uC21C (glob)"
-		},
-		"Regex": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "bigimage_blacklist_engine",
-						"field": "options.regex.name"
-					}
-				]
-			},
-			"ko": "\uC815\uADDC\uC2DD"
-		},
 		"category_extension": {
 			"en": "Extension"
 		},
@@ -2560,17 +1883,38 @@ var $$IMU_EXPORT$$;
 			"es": "General",
 			"ko": "\uC77C\uBC18"
 		},
-		"Language": {
+		"Popup prevention key": {
 			"_info": {
 				"instances": [
 					{
-						"setting": "language",
+						"setting": "mouseover_trigger_prevent_key",
 						"field": "name"
 					}
 				]
 			},
-			"es": "Lenguaje",
-			"ko": "\uC5B8\uC5B4"
+			"ko": "\uD31D\uC5C5 \uBC29\uC9C0 \uD0A4"
+		},
+		"Holding down this key will prevent the popup from being opened": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_trigger_prevent_key",
+						"field": "description"
+					}
+				]
+			},
+			"ko": "\uC774 \uD0A4\uB97C \uB204\uB974\uBA74 \uD31D\uC5C5\uC774 \uC5F4\uB9AC\uC9C0 \uC54A\uC74C"
+		},
+		"Closes the popup when the mouse leaves the thumbnail element, the popup, or either": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_close_el_policy",
+						"field": "description"
+					}
+				]
+			},
+			"ko": "\uB9C8\uC6B0\uC2A4\uAC00 \uBBF8\uB9AC\uBCF4\uAE30(\uC378\uB124\uC77C), \uD31D\uC5C5 \uB610\uB294 \uB458 \uC911 \uD558\uB098\uB97C \uB5A0\uB0A0 \uB54C \uD31D\uC5C5 \uB2EB\uAE30"
 		},
 		"Enable extension": {
 			"_info": {
@@ -2591,6 +1935,18 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			}
+		},
+		"Language": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "language",
+						"field": "name"
+					}
+				]
+			},
+			"es": "Lenguaje",
+			"ko": "\uC5B8\uC5B4"
 		},
 		"Language for this extension": {
 			"_info": {
@@ -2939,32 +2295,6 @@ var $$IMU_EXPORT$$;
 				]
 			}
 		},
-		"ms": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "retry_503_ms",
-						"field": "number_unit"
-					},
-					{
-						"setting": "mouseover_notallowed_duration",
-						"field": "number_unit"
-					},
-					{
-						"setting": "mouseover_hide_cursor_after",
-						"field": "number_unit"
-					},
-					{
-						"setting": "mouseover_fade_time",
-						"field": "number_unit"
-					},
-					{
-						"setting": "mouseover_mask_fade_time",
-						"field": "number_unit"
-					}
-				]
-			}
-		},
 		"Use `Blob` over `ArrayBuffer`": {
 			"_info": {
 				"instances": [
@@ -3095,6 +2425,19 @@ var $$IMU_EXPORT$$;
 				]
 			}
 		},
+		"Enable redirection": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "redirect",
+						"field": "name"
+					}
+				]
+			},
+			"es": "Habilitar redirecci\u00F3n",
+			"fr": "Activer la redirection",
+			"ko": "\uB9AC\uB514\uB809\uC158 \uC0AC\uC6A9"
+		},
 		"Redirect images opened in their own tab": {
 			"_info": {
 				"instances": [
@@ -3105,6 +2448,19 @@ var $$IMU_EXPORT$$;
 				]
 			},
 			"ko": "\uC790\uC2E0\uC758 \uD0ED\uC5D0\uC11C \uC5F4\uB9B0 \uC774\uBBF8\uC9C0 \uB9AC\uB514\uB809\uC158"
+		},
+		"Add to history": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "redirect_history",
+						"field": "name"
+					}
+				]
+			},
+			"es": "Agregar al historial",
+			"fr": "Ajouter \u00E0 l'historique",
+			"ko": "\uBE0C\uB77C\uC6B0\uC800 \uAE30\uB85D\uC5D0 \uCD94\uAC00"
 		},
 		"Redirection will add a new entry to the browser's history": {
 			"_info": {
@@ -3137,6 +2493,19 @@ var $$IMU_EXPORT$$;
 				]
 			}
 		},
+		"Use GET if HEAD is unsupported": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "canhead_get",
+						"field": "name"
+					}
+				]
+			},
+			"es": "Utilizar GET si HEAD no es soportado",
+			"fr": "Utiliser GET si HEAD n'est pas support\u00E9",
+			"ko": "HEAD \uC9C0\uC6D0\uB418\uC9C0 \uC54A\uC73C\uBA74 GET \uC0AC\uC6A9"
+		},
 		"Use a GET request to check an image's availability, if the server does not support HEAD requests": {
 			"_info": {
 				"instances": [
@@ -3146,6 +2515,18 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			}
+		},
+		"Try finding original page/caption": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "redirect_force_page",
+						"field": "name"
+					}
+				]
+			},
+			"es": "Intentar de encontrar la p\u00E1gina original/t\u00EDtulo",
+			"fr": "Essayer de trouver la page d'origine/sous-titre"
 		},
 		"Enables methods that use API calls for finding the original page or caption": {
 			"_info": {
@@ -3157,40 +2538,12 @@ var $$IMU_EXPORT$$;
 				]
 			}
 		},
-		"Flickr": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "redirect_force_page",
-						"field": "example_websites[0]"
-					},
-					{
-						"setting": "allow_apicalls",
-						"field": "example_websites[1]"
-					}
-				]
-			}
-		},
 		"SmugMug": {
 			"_info": {
 				"instances": [
 					{
 						"setting": "redirect_force_page",
 						"field": "example_websites[1]"
-					}
-				]
-			}
-		},
-		"...": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "redirect_force_page",
-						"field": "example_websites[2]"
-					},
-					{
-						"setting": "allow_apicalls",
-						"field": "example_websites[2]"
 					}
 				]
 			}
@@ -3301,6 +2654,20 @@ var $$IMU_EXPORT$$;
 			},
 			"ko": "\uC0AC\uC6A9\uC790 \uC9C0\uC815 \uD5E4\uB354\uB098 \uAC15\uC81C \uB2E4\uC6B4\uB85C\uB4DC\uAC00 \uD544\uC694 \uC5C6\uB294 \uAC00\uC7A5 \uD070 \uC774\uBBF8\uC9C0\uB85C \uB9AC\uB514\uB809\uC158"
 		},
+		"Enable mouseover popup": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover",
+						"field": "name"
+					}
+				]
+			},
+			"en": "Enable image popup",
+			"es": "Activar popup de la imagen",
+			"fr": "Activer le popup",
+			"ko": "\uC774\uBBF8\uC9C0 \uD31D\uC5C5 \uC0AC\uC6A9"
+		},
 		"Show a popup with the larger image when you mouseover an image with the trigger key held (if applicable)": {
 			"_info": {
 				"instances": [
@@ -3311,6 +2678,19 @@ var $$IMU_EXPORT$$;
 				]
 			},
 			"ko": "\uD2B8\uB9AC\uAC70 \uD0A4\uB97C \uB204\uB978 \uC0C1\uD0DC\uB85C \uC601\uC0C1\uC744 \uB9C8\uC6B0\uC2A4\uB85C \uAC00\uB9AC\uD0AC \uB54C \uB354 \uD070 \uC774\uBBF8\uC9C0\uB85C \uD31D\uC5C5 \uD45C\uC2DC (\uAC00\uB2A5\uD55C \uACBD\uC6B0)"
+		},
+		"Mouseover popup action": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_open_behavior",
+						"field": "name"
+					}
+				]
+			},
+			"en": "Popup action",
+			"es": "Acci\u00F3n del popup",
+			"ko": "\uC774\uBBF8\uC9C0 \uD31D\uC5C5 \uC791\uC5C5"
 		},
 		"Determines how the mouseover popup will open": {
 			"_info": {
@@ -3323,20 +2703,18 @@ var $$IMU_EXPORT$$;
 			},
 			"ko": "\uB9C8\uC6B0\uC2A4\uC624\uBC84 \uD31D\uC5C5\uC774 \uC5F4\uB9AC\uB294 \uBC29\uC2DD"
 		},
-		"Popup": {
+		"New tab": {
 			"_info": {
 				"instances": [
 					{
 						"setting": "mouseover_open_behavior",
-						"field": "options.popup.name"
-					},
-					{
-						"setting": "mouseover_close_el_policy",
-						"field": "options.popup.name"
+						"field": "options.newtab.name"
 					}
 				]
 			},
-			"ko": "\uD31D\uC5C5"
+			"es": "Nueva pesta\u00F1a",
+			"fr": "Nouvel onglet",
+			"ko": "\uC0C8 \uD0ED"
 		},
 		"Download": {
 			"_info": {
@@ -3347,6 +2725,20 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			}
+		},
+		"Mouseover popup trigger": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_trigger_behavior",
+						"field": "name"
+					}
+				]
+			},
+			"en": "Popup trigger",
+			"es": "Acci\u00F3n del popup al mover el rat\u00F3n encima",
+			"fr": "D\u00E9clencheur du popup",
+			"ko": "\uD31D\uC5C5 \uD2B8\uB9AC\uAC70"
 		},
 		"How the popup will get triggered": {
 			"_info": {
@@ -3359,6 +2751,18 @@ var $$IMU_EXPORT$$;
 			},
 			"ko": "\uD31D\uC5C5 \uC791\uB3D9 \uBC29\uBC95"
 		},
+		"Mouseover": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_trigger_behavior",
+						"field": "options.mouse.name"
+					}
+				]
+			},
+			"es": "Mover rat\u00F3n encima",
+			"ko": "\uB9C8\uC6B0\uC2A4"
+		},
 		"Triggers when your mouse is over the image": {
 			"_info": {
 				"instances": [
@@ -3368,6 +2772,18 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			}
+		},
+		"Key trigger": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_trigger_behavior",
+						"field": "options.keyboard.name"
+					}
+				]
+			},
+			"es": "Tecla de acci\u00F3n",
+			"ko": "\uD0A4 \uBC14\uC778\uB529"
 		},
 		"Triggers when you press a key sequence when your mouse is over an image": {
 			"_info": {
@@ -3389,6 +2805,18 @@ var $$IMU_EXPORT$$;
 				]
 			}
 		},
+		"Popup trigger key": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_trigger_key",
+						"field": "name"
+					}
+				]
+			},
+			"es": "Tecla de acci\u00F3n del popup",
+			"ko": "\uD31D\uC5C5 \uD0A4 \uBC14\uC778\uB529"
+		},
 		"Key sequence to trigger the popup": {
 			"_info": {
 				"instances": [
@@ -3399,6 +2827,18 @@ var $$IMU_EXPORT$$;
 				]
 			},
 			"ko": "\uD31D\uC5C5\uC774 \uC791\uB3D9\uD558\uB294 \uD0A4"
+		},
+		"Popup trigger delay": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_trigger_delay",
+						"field": "name"
+					}
+				]
+			},
+			"es": "Retraso de acci\u00F3n del popup",
+			"ko": "\uD31D\uC5C5 \uC791\uC5C5 \uC9C0\uC5F0 \uC2DC\uAC04"
 		},
 		"Delay (in seconds) before the popup shows": {
 			"_info": {
@@ -3431,7 +2871,47 @@ var $$IMU_EXPORT$$;
 				]
 			}
 		},
-		"Popup prevention key": {
+		"Enable/disable toggle": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_trigger_enabledisable_toggle",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Controls whether the 'Popup enable/disable key' will enable or disable the popup from opening": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_trigger_enabledisable_toggle",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Enable": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_trigger_enabledisable_toggle",
+						"field": "options.enable.name"
+					}
+				]
+			}
+		},
+		"Disable": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_trigger_enabledisable_toggle",
+						"field": "options.disable.name"
+					}
+				]
+			}
+		},
+		"Popup enable/disable key": {
 			"_info": {
 				"instances": [
 					{
@@ -3439,10 +2919,9 @@ var $$IMU_EXPORT$$;
 						"field": "name"
 					}
 				]
-			},
-			"ko": "\uD31D\uC5C5 \uBC29\uC9C0 \uD0A4"
+			}
 		},
-		"Holding down this key will prevent the popup from being opened": {
+		"Holding down this key will enable or disable the popup from being opened, depending on the 'Enable/disable toggle' setting": {
 			"_info": {
 				"instances": [
 					{
@@ -3450,8 +2929,7 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			},
-			"ko": "\uC774 \uD0A4\uB97C \uB204\uB974\uBA74 \uD31D\uC5C5\uC774 \uC5F4\uB9AC\uC9C0 \uC54A\uC74C"
+			}
 		},
 		"Allow showing partially loaded": {
 			"_info": {
@@ -3484,6 +2962,42 @@ var $$IMU_EXPORT$$;
 				]
 			},
 			"ko": "\uBD80\uBD84\uC801\uC73C\uB85C \uBD88\uB7EC\uC628 \uBBF8\uB514\uC5B4\uC5D0 \uB300\uD574 \uD31D\uC5C5\uC774 \uC5F4\uB9B4 \uC218 \uC788\uC9C0\uB9CC \uC774\uB85C \uC778\uD574 \uC77C\uBD80 \uC774\uBBF8\uC9C0\uAC00 \uC190\uC0C1\uB420 \uC218 \uC788\uC74C"
+		},
+		"Video": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_allow_partial",
+						"field": "options.video.name"
+					}
+				]
+			},
+			"es": "Video",
+			"ko": "\uC601\uC0C1"
+		},
+		"Media": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_allow_partial",
+						"field": "options.media.name"
+					}
+				]
+			},
+			"es": "Medios",
+			"ko": "\uBBF8\uB514\uC5B4"
+		},
+		"Both images and video": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_allow_partial",
+						"field": "options.media.description"
+					}
+				]
+			},
+			"es": "Im\u00E1genes y video",
+			"ko": "\uC0AC\uC9C4+\uC601\uC0C1"
 		},
 		"Avoid HEAD request for partially loaded media": {
 			"_info": {
@@ -3631,24 +3145,6 @@ var $$IMU_EXPORT$$;
 				]
 			},
 			"ko": "\uD31D\uC5C5\uC774 \uC5F4\uB9B4 \uC218 \uC788\uB294 \uCD5C\uC18C \uD06C\uAE30 (\uBC31\uADF8\uB77C\uC6B4\uB4DC \uC774\uBBF8\uC9C0\uC5D0\uC11C\uB294 \uC774 \uC635\uC158\uC774 \uBB34\uC2DC\uB428)"
-		},
-		"pixels": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_minimum_size",
-						"field": "number_unit"
-					},
-					{
-						"setting": "mouseover_jitter_threshold",
-						"field": "number_unit"
-					},
-					{
-						"setting": "mouseover_drag_min",
-						"field": "number_unit"
-					}
-				]
-			}
 		},
 		"Exclude `background-image`s": {
 			"_info": {
@@ -3938,28 +3434,6 @@ var $$IMU_EXPORT$$;
 					{
 						"setting": "mouseover_video_volume",
 						"field": "description"
-					}
-				]
-			}
-		},
-		"%": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_video_volume",
-						"field": "number_unit"
-					},
-					{
-						"setting": "mouseover_video_volume_change_amt",
-						"field": "number_unit"
-					},
-					{
-						"setting": "mouseover_ui_opacity",
-						"field": "number_unit"
-					},
-					{
-						"setting": "mouseover_zoom_custom_percent",
-						"field": "number_unit"
 					}
 				]
 			}
@@ -4314,20 +3788,6 @@ var $$IMU_EXPORT$$;
 				]
 			}
 		},
-		"x": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_video_speed_amount",
-						"field": "number_unit"
-					},
-					{
-						"setting": "scroll_incremental_mult",
-						"field": "number_unit"
-					}
-				]
-			}
-		},
 		"Reset speed key": {
 			"_info": {
 				"instances": [
@@ -4348,6 +3808,18 @@ var $$IMU_EXPORT$$;
 				]
 			}
 		},
+		"Popup UI": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_ui",
+						"field": "name"
+					}
+				]
+			},
+			"es": "Interfaz del Popup",
+			"ko": "\uD31D\uC5C5 UI"
+		},
 		"Enables a UI on top of the popup": {
 			"_info": {
 				"instances": [
@@ -4357,6 +3829,19 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			}
+		},
+		"Opacity": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_ui_opacity",
+						"field": "name"
+					}
+				]
+			},
+			"es": "Opacidad",
+			"fr": "Opacit\u00E9",
+			"ko": "\uBD88\uD22C\uBA85"
 		},
 		"Opacity of the UI on top of the popup": {
 			"_info": {
@@ -4448,6 +3933,19 @@ var $$IMU_EXPORT$$;
 				]
 			}
 		},
+		"Gallery counter": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_ui_gallerycounter",
+						"field": "name"
+					}
+				]
+			},
+			"es": "N\u00FAmero de im\u00E1genes a contar en la galer\u00EDa",
+			"fr": "Nombre d'images dans la galerie",
+			"ko": "\uAC24\uB7EC\uB9AC \uC774\uBBF8\uC9C0 \uC218"
+		},
 		"Enables a gallery counter on top of the UI": {
 			"_info": {
 				"instances": [
@@ -4457,6 +3955,19 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			}
+		},
+		"Gallery counter max": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_ui_gallerymax",
+						"field": "name"
+					}
+				]
+			},
+			"es": "N\u00FAmero m\u00E1ximo de im\u00E1genes a contar para la galer\u00EDa",
+			"fr": "Nombre max d'images a compter pour la galerie",
+			"ko": "\uAC24\uB7EC\uB9AC \uC774\uBBF8\uC9C0 \uC218\uC758 \uCD5C\uB300\uAC12"
 		},
 		"Maximum amount of images to check in the counter (this can be slightly CPU-intensive)": {
 			"_info": {
@@ -4507,6 +4018,18 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			}
+		},
+		"Options Button": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_ui_optionsbtn",
+						"field": "name"
+					}
+				]
+			},
+			"es": "Bot\u00F3n de Opciones",
+			"ko": "\uC124\uC815 \uB9C1\uD06C"
 		},
 		"Enables a button to go to this page": {
 			"_info": {
@@ -4638,6 +4161,18 @@ var $$IMU_EXPORT$$;
 				]
 			}
 		},
+		"Keep popup open until": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_close_behavior",
+						"field": "name"
+					}
+				]
+			},
+			"es": "Mantener popup abierto hasta que",
+			"ko": "\uD31D\uC5C5 \uB2EB\uC73C\uB824\uBA74"
+		},
 		"Closes the popup when the selected condition is met": {
 			"_info": {
 				"instances": [
@@ -4648,6 +4183,40 @@ var $$IMU_EXPORT$$;
 				]
 			},
 			"ko": "\uC120\uD0DD\uD55C \uC870\uAC74\uC774 \uCDA9\uC871\uB418\uBA74 \uD31D\uC5C5 \uB2EB\uAE30"
+		},
+		"Any trigger is released": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_close_behavior",
+						"field": "options.any.name"
+					}
+				]
+			},
+			"es": "Cualquier acci\u00F3n se deja ir",
+			"ko": "\uC5B4\uB5A4 \uB3D9\uC791\uC5D0\uB3C4 \uB2EB\uD798"
+		},
+		"All triggers are released": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_close_behavior",
+						"field": "options.all.name"
+					}
+				]
+			},
+			"ko": "\uBAA8\uB4E0 \uB3D9\uC791\uC5D0\uC11C \uB2EB\uD798"
+		},
+		"ESC/Close is pressed": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_close_behavior",
+						"field": "options.esc.name"
+					}
+				]
+			},
+			"ko": "ESC/\uB2EB\uAE30 \uB204\uB974\uAE30"
 		},
 		"Don't close until mouse leaves": {
 			"_info": {
@@ -4803,6 +4372,34 @@ var $$IMU_EXPORT$$;
 			},
 			"ko": "\uD31D\uC5C5\uC744 \uC790\uB3D9\uC73C\uB85C \uB2EB\uAE30 \uC804 \uACBD\uACFC \uC2DC\uAC04"
 		},
+		"seconds": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "redirect_infobox_timeout",
+						"field": "number_unit"
+					},
+					{
+						"setting": "mouseover_trigger_delay",
+						"field": "number_unit"
+					},
+					{
+						"setting": "mouseover_video_autoloop_max",
+						"field": "number_unit"
+					},
+					{
+						"setting": "mouseover_video_seek_amount",
+						"field": "number_unit"
+					},
+					{
+						"setting": "mouseover_auto_close_popup_time",
+						"field": "number_unit"
+					}
+				]
+			},
+			"es": "segundos",
+			"ko": "\uCD08"
+		},
 		"Use hold key": {
 			"_info": {
 				"instances": [
@@ -4946,7 +4543,7 @@ var $$IMU_EXPORT$$;
 			},
 			"ko": "\uB5A0\uB0A0 \uB54C \uB2EB\uAE30"
 		},
-		"Closes the popup when the mouse leaves the thumbnail element, the popup, or either": {
+		"Closes the popup when the mouse leaves the thumbnail element, the popup, or both": {
 			"_info": {
 				"instances": [
 					{
@@ -4954,8 +4551,7 @@ var $$IMU_EXPORT$$;
 						"field": "description"
 					}
 				]
-			},
-			"ko": "\uB9C8\uC6B0\uC2A4\uAC00 \uBBF8\uB9AC\uBCF4\uAE30(\uC378\uB124\uC77C), \uD31D\uC5C5 \uB610\uB294 \uB458 \uC911 \uD558\uB098\uB97C \uB5A0\uB0A0 \uB54C \uD31D\uC5C5 \uB2EB\uAE30"
+			}
 		},
 		"Thumbnail": {
 			"_info": {
@@ -4967,6 +4563,21 @@ var $$IMU_EXPORT$$;
 				]
 			},
 			"ko": "\uBBF8\uB9AC\uBCF4\uAE30(\uC378\uB124\uC77C)"
+		},
+		"Popup": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_open_behavior",
+						"field": "options.popup.name"
+					},
+					{
+						"setting": "mouseover_close_el_policy",
+						"field": "options.popup.name"
+					}
+				]
+			},
+			"ko": "\uD31D\uC5C5"
 		},
 		"Both": {
 			"_info": {
@@ -5074,6 +4685,17 @@ var $$IMU_EXPORT$$;
 			},
 			"ko": "iframes \uB300\uC2E0 \uC0C1\uB2E8 \uD504\uB808\uC784\uC758 \uD31D\uC5C5 \uC5F4\uAE30 \u2500 \uBCA0\uD0C0 \uC0C1\uD0DC"
 		},
+		"Popup default zoom": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_zoom_behavior",
+						"field": "name"
+					}
+				]
+			},
+			"ko": "\uD655\uB300/\uCD95\uC18C \uAE30\uBCF8\uAC12"
+		},
 		"How the popup should be initially sized": {
 			"_info": {
 				"instances": [
@@ -5085,6 +4707,18 @@ var $$IMU_EXPORT$$;
 			},
 			"ko": "\uD31D\uC5C5\uC758 \uCD08\uAE30 \uD06C\uAE30 \uC870\uC815 \uBC29\uBC95"
 		},
+		"Fit to screen": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_zoom_behavior",
+						"field": "options.fit.name"
+					}
+				]
+			},
+			"fr": "Adapter a l'ecran",
+			"ko": "\uD654\uBA74 \uD06C\uAE30\uC5D0 \uB9DE\uCDA4"
+		},
 		"Fill screen": {
 			"_info": {
 				"instances": [
@@ -5095,6 +4729,18 @@ var $$IMU_EXPORT$$;
 				]
 			},
 			"ko": "\uD654\uBA74 \uCC44\uC6B0\uAE30"
+		},
+		"Full size": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_zoom_behavior",
+						"field": "options.full.name"
+					}
+				]
+			},
+			"fr": "Taille r\u00E9elle",
+			"ko": "\uC804\uCCB4 \uD06C\uAE30"
 		},
 		"Custom size": {
 			"_info": {
@@ -5129,6 +4775,28 @@ var $$IMU_EXPORT$$;
 			},
 			"ko": "\uD31D\uC5C5 \uC124\uC815 \uC2DC, \uCD08\uAE30 \uC0AC\uC6A9\uC790 \uC9C0\uC815 \uD655\uB300/\uCD95\uC18C \uBE44\uC728"
 		},
+		"%": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_volume",
+						"field": "number_unit"
+					},
+					{
+						"setting": "mouseover_video_volume_change_amt",
+						"field": "number_unit"
+					},
+					{
+						"setting": "mouseover_ui_opacity",
+						"field": "number_unit"
+					},
+					{
+						"setting": "mouseover_zoom_custom_percent",
+						"field": "number_unit"
+					}
+				]
+			}
+		},
 		"Maximum width": {
 			"_info": {
 				"instances": [
@@ -5150,24 +4818,6 @@ var $$IMU_EXPORT$$;
 				]
 			},
 			"ko": "\uCD08\uAE30 \uD31D\uC5C5 \uD06C\uAE30\uC758 \uCD5C\uB300 \uAC00\uB85C \uAE38\uC774. \uBB34\uC81C\uD55C\uC758 \uACBD\uC6B0 0\uC73C\uB85C \uC124\uC815\uD558\uC2ED\uC2DC\uC624."
-		},
-		"px": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_zoom_max_width",
-						"field": "number_unit"
-					},
-					{
-						"setting": "mouseover_zoom_max_height",
-						"field": "number_unit"
-					},
-					{
-						"setting": "mouseover_mouse_inactivity_jitter",
-						"field": "number_unit"
-					}
-				]
-			}
 		},
 		"Maximum height": {
 			"_info": {
@@ -5191,6 +4841,17 @@ var $$IMU_EXPORT$$;
 			},
 			"ko": "\uCD08\uAE30 \uD31D\uC5C5 \uD06C\uAE30\uC758 \uCD5C\uB300 \uC138\uB85C \uAE38\uC774. \uBB34\uC81C\uD55C\uC73C\uB85C '0'\uC73C\uB85C \uC124\uC815\uD55C\uB2E4."
 		},
+		"Popup panning method": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_pan_behavior",
+						"field": "name"
+					}
+				]
+			},
+			"ko": "\uC774\uBBF8\uC9C0 \uC774\uB3D9\uD558\uB824\uBA74"
+		},
 		"How the popup should be panned when larger than the screen": {
 			"_info": {
 				"instances": [
@@ -5201,6 +4862,17 @@ var $$IMU_EXPORT$$;
 				]
 			}
 		},
+		"Movement": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_pan_behavior",
+						"field": "options.movement.name"
+					}
+				]
+			},
+			"ko": "\uB9C8\uC6B0\uC2A4 \uC6C0\uC9C1\uC785\uB2C8\uB2E4"
+		},
 		"The popup pans as you move your mouse": {
 			"_info": {
 				"instances": [
@@ -5210,6 +4882,17 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			}
+		},
+		"Drag": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_pan_behavior",
+						"field": "options.drag.name"
+					}
+				]
+			},
+			"ko": "\uB055\uB2C8\uB2E4"
 		},
 		"Clicking and dragging pans the popup": {
 			"_info": {
@@ -5261,6 +4944,24 @@ var $$IMU_EXPORT$$;
 				]
 			}
 		},
+		"pixels": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_minimum_size",
+						"field": "number_unit"
+					},
+					{
+						"setting": "mouseover_jitter_threshold",
+						"field": "number_unit"
+					},
+					{
+						"setting": "mouseover_drag_min",
+						"field": "number_unit"
+					}
+				]
+			}
+		},
 		"Vertical scroll action": {
 			"_info": {
 				"instances": [
@@ -5281,19 +4982,16 @@ var $$IMU_EXPORT$$;
 				]
 			}
 		},
-		"Gallery": {
+		"Zoom": {
 			"_info": {
 				"instances": [
 					{
 						"setting": "mouseover_scrolly_behavior",
-						"field": "options.gallery.name"
-					},
-					{
-						"setting": "mouseover_scrollx_behavior",
-						"field": "options.gallery.name"
+						"field": "options.zoom.name"
 					}
 				]
-			}
+			},
+			"ko": "\uC90C"
 		},
 		"Horizontal scroll action": {
 			"_info": {
@@ -5314,6 +5012,58 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			}
+		},
+		"Pan": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_scrolly_behavior",
+						"field": "options.pan.name"
+					},
+					{
+						"setting": "mouseover_scrollx_behavior",
+						"field": "options.pan.name"
+					}
+				]
+			},
+			"ko": "\uC774\uB3D9"
+		},
+		"Gallery": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_scrolly_behavior",
+						"field": "options.gallery.name"
+					},
+					{
+						"setting": "mouseover_scrollx_behavior",
+						"field": "options.gallery.name"
+					}
+				]
+			}
+		},
+		"None": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_trigger_behavior",
+						"field": "options.none.name"
+					},
+					{
+						"setting": "mouseover_allow_partial",
+						"field": "options.none.name"
+					},
+					{
+						"setting": "mouseover_scrolly_behavior",
+						"field": "options.nothing.name"
+					},
+					{
+						"setting": "mouseover_scrollx_behavior",
+						"field": "options.nothing.name"
+					}
+				]
+			},
+			"ko": "\uC5C6\uB2E4"
 		},
 		"Override scroll outside of popup": {
 			"_info": {
@@ -5376,6 +5126,17 @@ var $$IMU_EXPORT$$;
 				]
 			}
 		},
+		"Zoom behavior": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "scroll_zoom_behavior",
+						"field": "name"
+					}
+				]
+			},
+			"ko": "\uC90C \uB3D9\uC791"
+		},
 		"How zooming should work": {
 			"_info": {
 				"instances": [
@@ -5386,6 +5147,17 @@ var $$IMU_EXPORT$$;
 				]
 			}
 		},
+		"Fit/Full": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "scroll_zoom_behavior",
+						"field": "options.fitfull.name"
+					}
+				]
+			},
+			"ko": "\uD654\uBA74\uB9DE\uCDA4/\uC804\uCCB4"
+		},
 		"Toggles between the full size, and fit-to-screen": {
 			"_info": {
 				"instances": [
@@ -5395,6 +5167,18 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			}
+		},
+		"Incremental": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "scroll_zoom_behavior",
+						"field": "options.incremental.name"
+					}
+				]
+			},
+			"fr": "Incr\u00E9mentale",
+			"ko": "\uC99D\uBD84"
 		},
 		"Incremental zoom multiplier": {
 			"_info": {
@@ -5412,6 +5196,20 @@ var $$IMU_EXPORT$$;
 					{
 						"setting": "scroll_incremental_mult",
 						"field": "description"
+					}
+				]
+			}
+		},
+		"x": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_video_speed_amount",
+						"field": "number_unit"
+					},
+					{
+						"setting": "scroll_incremental_mult",
+						"field": "number_unit"
 					}
 				]
 			}
@@ -5478,6 +5276,17 @@ var $$IMU_EXPORT$$;
 			},
 			"ko": "\uCD5C\uC18C \uD06C\uAE30\uB85C \uCD95\uC18C\uD560 \uACBD\uC6B0 \uD31D\uC5C5 \uB2EB\uAE30"
 		},
+		"Popup position": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_position",
+						"field": "name"
+					}
+				]
+			},
+			"ko": "\uD31D\uC5C5 \uC704\uCE58"
+		},
 		"Where the popup will appear": {
 			"_info": {
 				"instances": [
@@ -5521,6 +5330,17 @@ var $$IMU_EXPORT$$;
 				]
 			},
 			"ko": "\uCEE4\uC11C \uC606"
+		},
+		"Page middle": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_position",
+						"field": "options.center.name"
+					}
+				]
+			},
+			"ko": "\uD398\uC774\uC9C0 \uC911\uAC04"
 		},
 		"Prevent cursor overlap": {
 			"_info": {
@@ -5598,6 +5418,24 @@ var $$IMU_EXPORT$$;
 					{
 						"setting": "mouseover_mouse_inactivity_jitter",
 						"field": "description"
+					}
+				]
+			}
+		},
+		"px": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_zoom_max_width",
+						"field": "number_unit"
+					},
+					{
+						"setting": "mouseover_zoom_max_height",
+						"field": "number_unit"
+					},
+					{
+						"setting": "mouseover_mouse_inactivity_jitter",
+						"field": "number_unit"
 					}
 				]
 			}
@@ -5962,6 +5800,17 @@ var $$IMU_EXPORT$$;
 				]
 			}
 		},
+		"Popup for plain hyperlinks": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_links",
+						"field": "name"
+					}
+				]
+			},
+			"ko": "\uC77C\uBC18\uC801\uC778 \uB9C1\uD06C\uC5D0\uB3C4 \uD31D\uC5C5"
+		},
 		"Whether or not the popup should also open for plain hyperlinks": {
 			"_info": {
 				"instances": [
@@ -6161,26 +6010,23 @@ var $$IMU_EXPORT$$;
 				]
 			}
 		},
+		"Popup CSS style": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_styles",
+						"field": "name"
+					}
+				]
+			},
+			"ko": "\uD31D\uC5C5 CSS"
+		},
 		"Custom CSS styles for the popup": {
 			"_info": {
 				"instances": [
 					{
 						"setting": "mouseover_styles",
 						"field": "description"
-					}
-				]
-			}
-		},
-		"Documentation": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_styles",
-						"field": "documentation.title"
-					},
-					{
-						"setting": "bigimage_blacklist",
-						"field": "documentation.title"
 					}
 				]
 			}
@@ -6335,6 +6181,32 @@ var $$IMU_EXPORT$$;
 				]
 			}
 		},
+		"ms": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "retry_503_ms",
+						"field": "number_unit"
+					},
+					{
+						"setting": "mouseover_notallowed_duration",
+						"field": "number_unit"
+					},
+					{
+						"setting": "mouseover_hide_cursor_after",
+						"field": "number_unit"
+					},
+					{
+						"setting": "mouseover_fade_time",
+						"field": "number_unit"
+					},
+					{
+						"setting": "mouseover_mask_fade_time",
+						"field": "number_unit"
+					}
+				]
+			}
+		},
 		"Button CSS style": {
 			"_info": {
 				"instances": [
@@ -6443,6 +6315,88 @@ var $$IMU_EXPORT$$;
 			},
 			"ko": "\uCEE4\uC11C \uC544\uB798 \uC788\uB294 \uD398\uC774\uC9C0\uC758 \uBAA8\uB4E0 \uC694\uC18C\uB97C \uC218\uB3D9\uC73C\uB85C \uD655\uC778\uD569\uB2C8\uB2E4. \uB354 \uB9CE\uC740 \uC774\uBBF8\uC9C0\uB97C \uC9C0\uC6D0\uD558\uC9C0\uB9CC, Facebook\uACFC \uAC19\uC740 \uC6F9\uC0AC\uC774\uD2B8\uC758 CPU \uBD80\uD558\uAC00 \uB354 \uB192\uC544\uC9C4\uB2E4."
 		},
+		"Use cache": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "popup_allow_cache",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Allows use of a media cache for the popup": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "popup_allow_cache",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Cache duration": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "popup_cache_duration",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"How long for media to remain cached. Set to `0` for unlimited.": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "popup_cache_duration",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"minutes": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "popup_cache_duration",
+						"field": "number_unit"
+					}
+				]
+			}
+		},
+		"Resume videos": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "popup_cache_resume_video",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"If a video popup was closed then reopened, the video will resume from where it left off": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "popup_cache_resume_video",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Use userscript": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "website_inject_imu",
+						"field": "name"
+					}
+				]
+			},
+			"fr": "Utiliser ce userscript",
+			"ko": "\uC720\uC800\uC2A4\uD06C\uB9BD\uD2B8 \uC0AC\uC6A9\uD558\uAE30"
+		},
 		"Replaces the website's IMU instance with the userscript": {
 			"_info": {
 				"instances": [
@@ -6452,6 +6406,17 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			}
+		},
+		"Website image preview": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "website_image",
+						"field": "name"
+					}
+				]
+			},
+			"ko": "\uB9C1\uD06C \uBD99\uC778 \uD6C4 \uC774\uBBF8\uC9C0 \uBBF8\uB9AC\uBCF4\uAE30"
 		},
 		"Enables a preview of the image on the Image Max URL website": {
 			"_info": {
@@ -6563,6 +6528,17 @@ var $$IMU_EXPORT$$;
 				]
 			}
 		},
+		"Larger watermarked images": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_watermark",
+						"field": "name"
+					}
+				]
+			},
+			"ko": "\uB354 \uD06C\uC9C0\uB9CC \uC6CC\uD130\uB9C8\uD06C \uC788\uB294 \uC774\uBBF8\uC9C0"
+		},
 		"Enables rules that return larger images that include watermarks": {
 			"_info": {
 				"instances": [
@@ -6583,6 +6559,17 @@ var $$IMU_EXPORT$$;
 				]
 			}
 		},
+		"Smaller non-watermarked images": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_smaller",
+						"field": "name"
+					}
+				]
+			},
+			"ko": "\uB354 \uC791\uC9C0\uB9CC \uC6CC\uD130\uB9C8\uD06C \uC5C6\uB294 \uC774\uBBF8\uC9C0"
+		},
 		"Enables rules that return smaller images without watermarks": {
 			"_info": {
 				"instances": [
@@ -6592,6 +6579,18 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			}
+		},
+		"Possibly different images": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_possibly_different",
+						"field": "name"
+					}
+				]
+			},
+			"fr": "Images possiblement diff\u00E9rentes",
+			"ko": "\uB2E4\uB97C \uC218 \uC788\uB294 \uC774\uBBF8\uC9C0"
 		},
 		"Enables rules that return images that possibly differ": {
 			"_info": {
@@ -6612,6 +6611,18 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			}
+		},
+		"Possibly broken images": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_possibly_broken",
+						"field": "name"
+					}
+				]
+			},
+			"fr": "Images possiblement bris\u00E9e",
+			"ko": "\uC190\uC0C1\uB420 \uC218 \uC788\uB294 \uC774\uBBF8\uC9C0"
 		},
 		"Enables rules that return images that are possibly broken": {
 			"_info": {
@@ -6643,6 +6654,18 @@ var $$IMU_EXPORT$$;
 				]
 			}
 		},
+		"Rules using 3rd-party websites": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_thirdparty",
+						"field": "name"
+					}
+				]
+			},
+			"fr": "R\u00E8gles utilisant des sites 3rd-party",
+			"ko": "\uC11C\uB4DC\uD30C\uD2F0 \uC0AC\uC774\uD2B8\uB97C \uC0AC\uC6A9\uD558\uB294 \uADDC\uCE59"
+		},
 		"Enables rules that use 3rd-party websites": {
 			"_info": {
 				"instances": [
@@ -6652,6 +6675,17 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			}
+		},
+		"Newsen": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_thirdparty",
+						"field": "example_websites[0]"
+					}
+				]
+			},
+			"ko": "\uB274\uC2A4\uC5D4"
 		},
 		"Rules using API calls": {
 			"_info": {
@@ -6679,6 +6713,34 @@ var $$IMU_EXPORT$$;
 					{
 						"setting": "allow_apicalls",
 						"field": "example_websites[0]"
+					}
+				]
+			}
+		},
+		"Flickr": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "redirect_force_page",
+						"field": "example_websites[0]"
+					},
+					{
+						"setting": "allow_apicalls",
+						"field": "example_websites[1]"
+					}
+				]
+			}
+		},
+		"...": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "redirect_force_page",
+						"field": "example_websites[2]"
+					},
+					{
+						"setting": "allow_apicalls",
+						"field": "example_websites[2]"
 					}
 				]
 			}
@@ -6779,20 +6841,6 @@ var $$IMU_EXPORT$$;
 					{
 						"setting": "allow_bruteforce",
 						"field": "description"
-					}
-				]
-			}
-		},
-		"This could lead to rate limiting or IP bans": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "allow_bruteforce",
-						"field": "warning.true"
-					},
-					{
-						"setting": "replaceimgs_auto",
-						"field": "warning.true"
 					}
 				]
 			}
@@ -7077,12 +7125,37 @@ var $$IMU_EXPORT$$;
 				]
 			}
 		},
+		"Blacklist": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "bigimage_blacklist",
+						"field": "name"
+					}
+				]
+			},
+			"ko": "\uBE14\uB799\uB9AC\uC2A4\uD2B8"
+		},
 		"A list of URLs that are blacklisted from being processed": {
 			"_info": {
 				"instances": [
 					{
 						"setting": "bigimage_blacklist",
 						"field": "description"
+					}
+				]
+			}
+		},
+		"Documentation": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_styles",
+						"field": "documentation.title"
+					},
+					{
+						"setting": "bigimage_blacklist",
+						"field": "documentation.title"
 					}
 				]
 			}
@@ -7097,6 +7170,17 @@ var $$IMU_EXPORT$$;
 				]
 			}
 		},
+		"Blacklist engine": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "bigimage_blacklist_engine",
+						"field": "name"
+					}
+				]
+			},
+			"ko": "\uBE14\uB799\uB9AC\uC2A4\uD2B8 \uC5D4\uC9C4"
+		},
 		"How the blacklist should be processed": {
 			"_info": {
 				"instances": [
@@ -7107,47 +7191,27 @@ var $$IMU_EXPORT$$;
 				]
 			}
 		},
-		"Enable trigger key": {
+		"Simple (glob)": {
 			"_info": {
 				"instances": [
 					{
-						"setting": "replaceimgs_enable_keybinding",
-						"field": "name"
-					},
-					{
-						"setting": "highlightimgs_enable_keybinding",
-						"field": "name"
+						"setting": "bigimage_blacklist_engine",
+						"field": "options.glob.name"
 					}
 				]
-			}
+			},
+			"ko": "\uB2E8\uC21C (glob)"
 		},
-		"Enables the use of the trigger key to run it without needing to use the menu": {
+		"Regex": {
 			"_info": {
 				"instances": [
 					{
-						"setting": "replaceimgs_enable_keybinding",
-						"field": "description"
-					},
-					{
-						"setting": "highlightimgs_enable_keybinding",
-						"field": "description"
+						"setting": "bigimage_blacklist_engine",
+						"field": "options.regex.name"
 					}
 				]
-			}
-		},
-		"Trigger key": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "replaceimgs_keybinding",
-						"field": "name"
-					},
-					{
-						"setting": "highlightimgs_keybinding",
-						"field": "name"
-					}
-				]
-			}
+			},
+			"ko": "\uC815\uADDC\uC2DD"
 		},
 		"Trigger keybinding that will run the Replace Images function": {
 			"_info": {
@@ -7175,6 +7239,20 @@ var $$IMU_EXPORT$$;
 					{
 						"setting": "replaceimgs_auto",
 						"field": "description"
+					}
+				]
+			}
+		},
+		"This could lead to rate limiting or IP bans": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "allow_bruteforce",
+						"field": "warning.true"
+					},
+					{
+						"setting": "replaceimgs_auto",
+						"field": "warning.true"
 					}
 				]
 			}
@@ -7259,6 +7337,26 @@ var $$IMU_EXPORT$$;
 				]
 			}
 		},
+		"images": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_ui_gallerymax",
+						"field": "number_unit"
+					},
+					{
+						"setting": "replaceimgs_totallimit",
+						"field": "number_unit"
+					},
+					{
+						"setting": "replaceimgs_domainlimit",
+						"field": "number_unit"
+					}
+				]
+			},
+			"es": "im\u00E1genes",
+			"ko": "\uC774\uBBF8\uC9C0"
+		},
 		"Replace images": {
 			"_info": {
 				"instances": [
@@ -7315,6 +7413,48 @@ var $$IMU_EXPORT$$;
 					{
 						"setting": "replaceimgs_replacelinks",
 						"field": "description"
+					}
+				]
+			}
+		},
+		"Enable trigger key": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "replaceimgs_enable_keybinding",
+						"field": "name"
+					},
+					{
+						"setting": "highlightimgs_enable_keybinding",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Enables the use of the trigger key to run it without needing to use the menu": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "replaceimgs_enable_keybinding",
+						"field": "description"
+					},
+					{
+						"setting": "highlightimgs_enable_keybinding",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Trigger key": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "replaceimgs_keybinding",
+						"field": "name"
+					},
+					{
+						"setting": "highlightimgs_keybinding",
+						"field": "name"
 					}
 				]
 			}
@@ -7444,146 +7584,6 @@ var $$IMU_EXPORT$$;
 				"instances": [
 					{
 						"setting": "highlightimgs_css",
-						"field": "description"
-					}
-				]
-			}
-		},
-		"Enable/disable toggle": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_trigger_enabledisable_toggle",
-						"field": "name"
-					}
-				]
-			}
-		},
-		"Controls whether the 'Popup enable/disable key' will enable or disable the popup from opening": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_trigger_enabledisable_toggle",
-						"field": "description"
-					}
-				]
-			}
-		},
-		"Enable": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_trigger_enabledisable_toggle",
-						"field": "options.enable.name"
-					}
-				]
-			}
-		},
-		"Disable": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_trigger_enabledisable_toggle",
-						"field": "options.disable.name"
-					}
-				]
-			}
-		},
-		"Popup enable/disable key": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_trigger_prevent_key",
-						"field": "name"
-					}
-				]
-			}
-		},
-		"Holding down this key will enable or disable the popup from being opened, depending on the 'Enable/disable toggle' setting": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_trigger_prevent_key",
-						"field": "description"
-					}
-				]
-			}
-		},
-		"Closes the popup when the mouse leaves the thumbnail element, the popup, or both": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_close_el_policy",
-						"field": "description"
-					}
-				]
-			}
-		},
-		"Use cache": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "popup_allow_cache",
-						"field": "name"
-					}
-				]
-			}
-		},
-		"Allows use of a media cache for the popup": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "popup_allow_cache",
-						"field": "description"
-					}
-				]
-			}
-		},
-		"Cache duration": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "popup_cache_duration",
-						"field": "name"
-					}
-				]
-			}
-		},
-		"How long for media to remain cached. Set to `0` for unlimited.": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "popup_cache_duration",
-						"field": "description"
-					}
-				]
-			}
-		},
-		"minutes": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "popup_cache_duration",
-						"field": "number_unit"
-					}
-				]
-			}
-		},
-		"Resume videos": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "popup_cache_resume_video",
-						"field": "name"
-					}
-				]
-			}
-		},
-		"If a video popup was closed then reopened, the video will resume from where it left off": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "popup_cache_resume_video",
 						"field": "description"
 					}
 				]
