@@ -228,11 +228,15 @@ function is_youtube_url(url) {
 	}
 
 	if (!match) {
-		match = url.match(/^[a-z]+:\/\/(?:[^/]+\.)?instagram\.com\//);
+		match = url.match(/^[a-z]+:\/\/(?:[^/]+\.)?(?:instagram|facebook)\.com\//);
 	}
 
 	if (!match) {
 		match = url.match(/^[a-z]+:\/\/(?:www\.)?(?:vimeo|dailymotion)\.com\//);
+	}
+
+	if (!match) {
+		match = url.match(/^[a-z]+:\/\/(?:www\.)?imgur\.com\/+(?:a\/+)?[^/.]+(?:[?#].*)?$/);
 	}
 
 	return !!match;
