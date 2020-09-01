@@ -7448,6 +7448,146 @@ var $$IMU_EXPORT$$;
 					}
 				]
 			}
+		},
+		"Enable/disable toggle": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_trigger_enabledisable_toggle",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Controls whether the 'Popup enable/disable key' will enable or disable the popup from opening": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_trigger_enabledisable_toggle",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Enable": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_trigger_enabledisable_toggle",
+						"field": "options.enable.name"
+					}
+				]
+			}
+		},
+		"Disable": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_trigger_enabledisable_toggle",
+						"field": "options.disable.name"
+					}
+				]
+			}
+		},
+		"Popup enable/disable key": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_trigger_prevent_key",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Holding down this key will enable or disable the popup from being opened, depending on the 'Enable/disable toggle' setting": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_trigger_prevent_key",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Closes the popup when the mouse leaves the thumbnail element, the popup, or both": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_close_el_policy",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Use cache": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "popup_allow_cache",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Allows use of a media cache for the popup": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "popup_allow_cache",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Cache duration": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "popup_cache_duration",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"How long for media to remain cached. Set to `0` for unlimited.": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "popup_cache_duration",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"minutes": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "popup_cache_duration",
+						"field": "number_unit"
+					}
+				]
+			}
+		},
+		"Resume videos": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "popup_cache_resume_video",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"If a video popup was closed then reopened, the video will resume from where it left off": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "popup_cache_resume_video",
+						"field": "description"
+					}
+				]
+			}
 		}
 	};
 
