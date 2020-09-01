@@ -87710,7 +87710,7 @@ var $$IMU_EXPORT$$;
 				var imucheck = imu_check(src, el);
 				if (imucheck === false) {
 					if (_nir_debug_)
-						console_log("Bad image");
+						console_log("Bad image", el);
 
 					return false;
 				}
@@ -87723,7 +87723,7 @@ var $$IMU_EXPORT$$;
 					// do this after imu_check, for lazy loaded images that have 1x1 images
 					if (src && (src.match(/^data:/) && !(/^data:image\/svg\+xml;/.test(src)) && src.length <= 500)) {
 						if (_nir_debug_)
-							console_log("Tiny data: image");
+							console_log("Tiny data: image", el, src);
 
 						return false;
 					}
@@ -87734,7 +87734,7 @@ var $$IMU_EXPORT$$;
 				// https://www.pinterest.com/
 				if (!check_visible(el)) {
 					if (_nir_debug_)
-						console_log("Invisible: image");
+						console_log("Invisible: image", el);
 
 					return false;
 				}
@@ -90095,6 +90095,8 @@ var $$IMU_EXPORT$$;
 
 			if (mouseover_mouse_enabled() && settings.mouseover_trigger_mouseover && !delay_handle && !should_exclude_imagetab()) {
 				delay_el = e.target;
+				update_mouse_from_event(e);
+
 				delay_handle = setTimeout(function() {
 					delay_el = null;
 
@@ -90106,10 +90108,15 @@ var $$IMU_EXPORT$$;
 					if (!popup_mouse_head())
 						return;
 
-					var source = find_source([e.target]);
+					// TODO: make configurable
+					if (false) {
+						var source = find_source([e.target]);
 
-					if (source && get_physical_popup_el(source.el) !== last_popup_el) {
-						trigger_popup_with_source(source);
+						if (source && get_physical_popup_el(source.el) !== last_popup_el) {
+							trigger_popup_with_source(source);
+						}
+					} else {
+						trigger_popup();
 					}
 				}, delay * 1000);
 			}
@@ -91333,12 +91340,7 @@ var $$IMU_EXPORT$$;
 			passive: false
 		});
 
-		var mousemove_cb = function(event) {
-			mousepos_initialized = true;
-
-			// https://stackoverflow.com/a/7790764
-			event = event || window.event;
-
+		var update_mouse_from_event = function(event) {
 			if (event.pageX === null && event.clientX !== null) {
 				eventDoc = (event.target && event.target.ownerDocument) || document;
 				doc = eventDoc.documentElement;
@@ -91402,6 +91404,15 @@ var $$IMU_EXPORT$$;
 
 			mouseAbsX = event.pageX;
 			mouseAbsY = event.pageY;
+		};
+
+		var mousemove_cb = function(event) {
+			mousepos_initialized = true;
+
+			// https://stackoverflow.com/a/7790764
+			event = event || window.event;
+
+			update_mouse_from_event(event);
 
 			if (waiting) {
 				update_waiting();
