@@ -66809,10 +66809,13 @@ var $$IMU_EXPORT$$;
 				return decodeuri_ifneeded(newsrc);
 		}
 
-		if (domain_nowww === "darkmovie.info") {
+		if (domain_nowww === "darkmovie.info" ||
+			// http://www.darkmovie.org/upload/poster/tt7550000_small.jpg
+			//   http://www.darkmovie.org/upload/poster/tt7550000.jpg
+			domain_nowww === "darkmovie.org") {
 			// http://www.darkmovie.info/upload/cast/nm2244205_small.jpg -- upscaled
 			//   http://www.darkmovie.info/upload/cast/nm2244205.jpg
-			return src.replace(/(\/upload\/+cast\/+nm[0-9]+)_[a-z]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
+			return src.replace(/(\/upload\/+(?:cast|poster)\/+(?:nm|tt)[0-9]+)_[a-z]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
 		}
 
 		if (domain_nosub === "shutterstock.com" && /^editorial[0-9]*\./.test(domain)) {
@@ -67235,58 +67238,47 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/uploads\/+images\/+(?:[^/]{3}\/+){2}[^/.]*)-(?:sm|md)(\.[^/.]*)(?:[?#].*)?$/, "$1-lg$2");
 		}
 
-		if (domain_nowww === "todofondos.com" && options && options.cb && options.do_request) {
+		if (domain_nowww === "todofondos.com") {
+			// http://todofondos.com/f/12874
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+f\/+([0-9]+(?:\/+[0-9]+x[0-9]+)?)(?:[?#].*)?$/,
+				query_for_id: "http://todofondos.com/f/${id}",
+				process: function(done, resp, cache_key) {
+					// download link (/[0-9]+/[0-9]+x[0-9]+$)
+					var match = resp.responseText.match(/<a href="([^"']*\/bin\/descargas\/.*?)"/);
+					if (match) {
+						return done({
+							url: decode_entities(match[1]),
+							extra: {
+								page: resp.finalUrl
+							}
+						}, 6*60*60);
+					}
+
+					// index (/[0-9]+$)
+					var match = resp.responseText.match(/<button[^>]*onclick="\s*javascript:location.href='(https?:\/\/todofondos\.com\/+f\/+[0-9]+\/+[0-9]+x[0-9]+)'"[^>]*>\s*<span[^>]*>\s*<\/span>\s*resoluci.n\s+original/);
+					if (match) {
+						return done({
+							url: decode_entities(match[1]),
+							is_pagelink: true
+						}, 6*60*60);
+					}
+
+					console_log(cache_key, "Unable to find download or index match for", resp);
+					return done(null, false);
+				}
+			});
+			if (newsrc) return newsrc;
+		}
+
+		if (domain_nowww === "todofondos.com") {
 			// http://todofondos.com/bin/fondos/01/28/74c.jpg
 			//   http://todofondos.com/bin/descargas/33860012168527551150389631443677963064281133889904.jpg
 			id = src.replace(/.*\/bin\/+fondos\/+((?:[0-9]{2}\/+){2}[0-9]+)[a-z]\.[^/.]*(?:[?#].*)?$/, "$1");
 			if (id !== src) {
-				options.do_request({
-					url: "http://todofondos.com/f/" + id.replace(/\/+/g, "").replace(/^0*/, ""),
-					method: "GET",
-					headers: {
-						Referer: ""
-					},
-					onload: function(result) {
-						if (result.readyState !== 4)
-							return;
-
-						if (result.status !== 200)
-							return options.cb(null);
-
-						var match = result.responseText.match(/<button[^>]*onclick="\s*javascript:location.href='(https?:\/\/todofondos\.com\/+f\/+[0-9]+\/+[0-9]+x[0-9]+)'"[^>]*>\s*<span[^>]*>\s*<\/span>\s*resoluci.n\s+original/);
-						if (!match)
-							return options.cb(null);
-
-						options.do_request({
-							url: match[1],
-							method: "GET",
-							headers: {
-								Referer: ""
-							},
-							onload: function(result) {
-								if (result.readyState !== 4)
-									return;
-
-								if (result.status !== 200)
-									return options.cb(null);
-
-								var match = result.responseText.match(/<a href="([^"']*\/bin\/descargas\/.*?)"/);
-								if (!match)
-									return options.cb(null);
-
-								return options.cb({
-									url: match[1],
-									extra: {
-										page: result.finalUrl
-									}
-								});
-							}
-						});
-					}
-				});
-
 				return {
-					waiting: true
+					url: "http://todofondos.com/f/" + id.replace(/\/+/g, "").replace(/^0*/, ""),
+					is_pagelink: true
 				};
 			}
 		}
