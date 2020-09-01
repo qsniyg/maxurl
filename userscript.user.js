@@ -25970,6 +25970,11 @@ var $$IMU_EXPORT$$;
 						if (!data)
 							cb(null);
 
+						if (!("imageinfo" in data)) {
+							console_error("Unable to find imageinfo in", data);
+							return cb(null);
+						}
+
 						var imageinfo = data.imageinfo;
 						if (!("album_images" in imageinfo)) {
 							console_error("Unable to find album_images in", data);
