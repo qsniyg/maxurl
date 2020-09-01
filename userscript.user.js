@@ -68067,8 +68067,7 @@ var $$IMU_EXPORT$$;
 				};
 		}
 
-		if (domain === "content.ray-web.jp" && options && options.cb && options.do_request && options.element &&
-			host_domain_nowww === "ray-web.jp") {
+		if (domain_nowww === "ray-web.jp") {
 			// thanks to vick2 on greasyfork: https://greasyfork.org/en/forum/discussion/65328/add-support-for-ray-web-jp
 			// https://ray-web.jp/50370/photos/47668
 			// https://content.ray-web.jp/photos/pictures/47668/medium/d51ee4a492a483a6606aa407015527ae1b9f986d.jpg?1550540662
@@ -68076,64 +68075,33 @@ var $$IMU_EXPORT$$;
 			// other:
 			// https://ray-web.jp/series/riho
 			//   https://content.ray-web.jp/series/images/17/original/a2695c70afbe13d62003e7d8f38291247e853e64.png?1568888397
-
-			regex = /\/photos\/+pictures\/+([0-9]+)\/+([a-z]+)\/+[0-9a-f]{20,}\./;
-			match = src.match(regex);
-
-			if (match) {
-				var get_og_image = function(data) {
-					var url = data.match(/<meta\s+property=["']og:image["']\s+content=["'](https?:.*?)["']/);
-					if (url)
-						return decode_entities(url[1]);
-					return null;
-				};
-
-				var fetch_image_page = function(albumid, pictureid, cb) {
-					var cache_key = "ray-web:" + albumid + "-" + pictureid;
-					api_cache.fetch(cache_key, cb, function(done) {
-						options.do_request({
-							url: "https://ray-web.jp/" + albumid + "/photos/" + pictureid,
-							method: "GET",
-							onload: function(result) {
-								if (result.readyState !== 4)
-									return;
-
-								if (result.status !== 200) {
-									console_error(cache_key, result);
-									return done(null, false);
-								}
-
-								return done(result.responseText, 6*60*60);
-							}
-						});
-					});
-				};
-
-				var rayweb_url_to_parts = function(url) {
-					var match = url.match(/:\/\/[^/]*\/+([0-9]+)\/+photos\/+([0-9]+)(?:[?#].*)?$/);
-					if (match) {
-						return [match[1], match[2]];
-					} else {
-						return null;
+			newsrc = website_query({
+				website_regex: /^([a-z]+:\/\/[^/]+\/+[0-9]+\/+photos\/+[0-9]+)(?:[?#].*)?$/,
+				query_for_id: "${id}",
+				process: function(done, resp, cache_key) {
+					var url = get_meta(resp.responseText, "og:image");
+					if (!url) {
+						console_error(cache_key, "Unable to find og:image from", resp);
+						return done(null, false);
 					}
-				};
 
-				var parts = null;
-				if (options.element.parentElement.tagName === "A") {
-					parts = rayweb_url_to_parts(options.element.parentElement.href);
-				} else {
-					parts = rayweb_url_to_parts(options.host_url);
-					if (!parts || match[1] !== parts[1])
-						parts = null;
+					return done(url, 6*60*60);
 				}
+			});
+			if (newsrc) return newsrc;
+		}
 
-				if (parts) {
-					fetch_image_page(parts[0], parts[1], function (data) {
-						options.cb(get_og_image(data));
-					});
+		if (host_domain_nowww === "ray-web.jp" && domain === "content.ray-web.jp" && options.element) {
+			newsrc = common_functions.get_pagelink_el_matching(options.element, /^[a-z]+:\/\/[^/]+\/+[0-9]+\/+photos\/+[0-9]+/);
+			if (newsrc) return newsrc;
 
+			if (options.element.tagName === "IMG" &&
+				options.element.parentElement && options.element.parentElement.classList.contains("current_photo")) {
+				var match = options.host_url.match(/\/([0-9]+)\/+photos\/+([0-9]+)/);
+				if (match) {
 					return {
-						waiting: true
+						url: options.host_url,
+						is_pagelink: true
 					};
 				}
 			}
@@ -79926,13 +79894,32 @@ var $$IMU_EXPORT$$;
 			return {
 				element_ok: function(el) {
 					// thanks to ambler on discord for reporting
-					//console_log(el, el.tagName, el.id);
 					if (el.tagName === "DIV" && el.id === "background") {
 						var newel = el.querySelector("div#backgroundFrontLayer");
-						//console_log("NEW", newel);
 						if (newel)
 							return newel;
 					}
+				}
+			};
+		}
+
+		if (host_domain_nowww === "ray-web.jp") {
+			return {
+				element_ok: function(el) {
+					if (!el.children)
+						return;
+
+					var imgchild = null;
+					array_foreach(el.children, function(child) {
+						// all imgs are pointer-events: none
+						if (child.tagName === "IMG") {
+							imgchild = child;
+							return false;
+						}
+					});
+
+					if (imgchild)
+						return imgchild;
 				}
 			};
 		}
