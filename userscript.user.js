@@ -1883,39 +1883,6 @@ var $$IMU_EXPORT$$;
 			"es": "General",
 			"ko": "\uC77C\uBC18"
 		},
-		"Popup prevention key": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_trigger_prevent_key",
-						"field": "name"
-					}
-				]
-			},
-			"ko": "\uD31D\uC5C5 \uBC29\uC9C0 \uD0A4"
-		},
-		"Holding down this key will prevent the popup from being opened": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_trigger_prevent_key",
-						"field": "description"
-					}
-				]
-			},
-			"ko": "\uC774 \uD0A4\uB97C \uB204\uB974\uBA74 \uD31D\uC5C5\uC774 \uC5F4\uB9AC\uC9C0 \uC54A\uC74C"
-		},
-		"Closes the popup when the mouse leaves the thumbnail element, the popup, or either": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_close_el_policy",
-						"field": "description"
-					}
-				]
-			},
-			"ko": "\uB9C8\uC6B0\uC2A4\uAC00 \uBBF8\uB9AC\uBCF4\uAE30(\uC378\uB124\uC77C), \uD31D\uC5C5 \uB610\uB294 \uB458 \uC911 \uD558\uB098\uB97C \uB5A0\uB0A0 \uB54C \uD31D\uC5C5 \uB2EB\uAE30"
-		},
 		"Enable extension": {
 			"_info": {
 				"instances": [
