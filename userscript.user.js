@@ -9053,7 +9053,7 @@ var $$IMU_EXPORT$$;
 		},
 		mouseover_close_el_policy: {
 			name: "Close when leaving",
-			description: "Closes the popup when the mouse leaves the thumbnail element, the popup, or either",
+			description: "Closes the popup when the mouse leaves the thumbnail element, the popup, or both",
 			requires: {
 				mouseover_open_behavior: "popup",
 				mouseover_trigger_behavior: "mouse"
@@ -91531,12 +91531,15 @@ var $$IMU_EXPORT$$;
 						var outside_of_popup_el = false;
 						var popup_el_hidden = false;
 
+						// check if we should check if the mouse has left popup_el (the source/thumbnail that was popped up from, _not_ the element of the popup)
 						if (close_on_leave_el) {
 							var popup_el_rect = get_bounding_client_rect(popup_el);
+
+							// check if the source element is visible
 							if (popup_el_rect && popup_el_rect.width > 0 && popup_el_rect.height > 0) {
 								var our_in_img_jitter = in_img_jitter;
 								if (close_el_policy === "thumbnail")
-									our_in_img_jitter = false;
+									our_in_img_jitter = false; // if not "both", we don't care if the mouse is still in the popup, only if it has left the thumbnail
 
 								if (!in_clientrect(mouseX, mouseY, popup_el_rect) && !our_in_img_jitter) {
 									outside_of_popup_el = true;
