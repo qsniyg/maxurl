@@ -25972,6 +25972,10 @@ var $$IMU_EXPORT$$;
 
 						if (!("imageinfo" in data)) {
 							console_error("Unable to find imageinfo in", data);
+							var newurl = data.ogvideo || data.ogimage;
+							if (newurl)
+								return cb(newurl);
+
 							return cb(null);
 						}
 
