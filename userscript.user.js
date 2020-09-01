@@ -80536,6 +80536,12 @@ var $$IMU_EXPORT$$;
 	};
 	bigimage_recursive.default_options = default_options;
 
+	bigimage_recursive.internal = {
+		settings: settings,
+		settings_meta: settings_meta,
+		strings: strings
+	};
+
 	function is_internet_url(url) {
 		if (!url || typeof url !== "string")
 			return false;
