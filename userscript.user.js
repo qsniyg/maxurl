@@ -102,7 +102,8 @@ var $$IMU_EXPORT$$;
 			// channels
 			map: true,
 			cache: true,
-			bigimage_recursive: true
+			bigimage_recursive: true,
+			input: true
 		};
 
 		console.log("Loaded");
@@ -90872,9 +90873,7 @@ var $$IMU_EXPORT$$;
 		};
 
 		var keydown_cb = function(event) {
-			if (_nir_debug_) {
-				console_log("keydown_cb", event);
-			}
+			nir_debug("input", "keydown_cb", event);
 
 			if (!mouseover_enabled())
 				return;
@@ -91152,9 +91151,7 @@ var $$IMU_EXPORT$$;
 		our_addEventListener(document, 'wheel', keydown_cb, eventlistener_opts);
 
 		var keyup_cb = function(event) {
-			if (_nir_debug_) {
-				console_log("keyup_cb", event);
-			}
+			nir_debug("input", "keyup_cb", event);
 
 			if (!mouseover_enabled())
 				return;
