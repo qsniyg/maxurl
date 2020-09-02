@@ -100,6 +100,7 @@ var $$IMU_EXPORT$$;
 			no_redirect: true,
 
 			// channels
+			map: true,
 			cache: true,
 			bigimage_recursive: true
 		};
@@ -10698,9 +10699,7 @@ var $$IMU_EXPORT$$;
 	};
 
 	var map_set = function(map, key, value) {
-		if (_nir_debug_) {
-			console_log("map_set", deepcopy(key), deepcopy(value));
-		}
+		nir_debug("map", "map_set", deepcopy(key), deepcopy(value));
 
 		if (!map.imu_map) {
 			map.set(key, value);
