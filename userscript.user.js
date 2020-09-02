@@ -32539,6 +32539,16 @@ var $$IMU_EXPORT$$;
 			// https://p16.tiktokcdn.com/aweme/100x100/tiktok-obj/1647151559190530.jpeg
 			//   https://p16.tiktokcdn.com/origin/tiktok-obj/1647151559190530.jpeg
 			domain === "p16.tiktokcdn.com" ||
+			// thanks to llacb47 on github: https://github.com/qsniyg/maxurl/issues/426
+			// https://p16-amd-va.tiktokcdn.com/img/musically-maliva-obj/d8bcd7b974df059dd548e98a39b705d9~c5_100x100.jpeg
+			//   https://p16-amd-va.tiktokcdn.com/origin/musically-maliva-obj/d8bcd7b974df059dd548e98a39b705d9.jpeg -- upscaled?
+			// https://p16-amd-va.tiktokcdn.com/tos-maliva-p-0068/3cc29b70b9ed45d1b86f5a525da02f13_1598931018~noop.image
+			//   https://p16-amd-va.tiktokcdn.com/tos-maliva-p-0068/3cc29b70b9ed45d1b86f5a525da02f13_1598931018~noop.jpg
+			//   https://p16-amd-va.tiktokcdn.com/img/tos-maliva-p-0068/3cc29b70b9ed45d1b86f5a525da02f13_1598931018~noop.jpg
+			//   https://p16-amd-va.tiktokcdn.com/origin/tos-maliva-p-0068/3cc29b70b9ed45d1b86f5a525da02f13_1598931018.jpg
+			// other:
+			// https://p16-amd-va.tiktokcdn.com/origin/tos-maliva-p-0068/3c666aa393714922b10def1ee39ad780_1599009621
+			domain === "p16-amd-va.tiktokcdn.com" ||
 			// http://p16-hypstarcdn-com.akamaized.net/img/hpimg/db21de51a5c58250bfc4daa08c218e936ba721100afcabf845ba99e09a69c409~100x100.jpg
 			//   http://p16-hypstarcdn-com.akamaized.net/img/hpimg/db21de51a5c58250bfc4daa08c218e936ba721100afcabf845ba99e09a69c409~noop.jpg
 			//   http://p16-hypstarcdn-com.akamaized.net/origin/hpimg/db21de51a5c58250bfc4daa08c218e936ba721100afcabf845ba99e09a69c409.jpg
@@ -32580,6 +32590,7 @@ var $$IMU_EXPORT$$;
 			// https://p1-bcy.byteimg.com/img/banciyuan/77e60afabbab42278d6240620154cbfb~tplv-banciyuan-w650.image
 			//   https://p1-bcy.byteimg.com/img/banciyuan/77e60afabbab42278d6240620154cbfb~noop.image
 			//   https://p1-bcy.byteimg.com/origin/banciyuan/77e60afabbab42278d6240620154cbfb.jpg
+			//   https://p1-bcy.byteimg.com/origin/banciyuan/77e60afabbab42278d6240620154cbfb.png
 			// https://p9-bcy.byteimg.com/img/banciyuan/Public/Upload/avatar/4146977575282589/a51aeadaa7d44fd481084e79f27b0cad/fat.jpg~tplv-banciyuan-abig.image
 			//   https://p9-bcy.byteimg.com/img/banciyuan/Public/Upload/avatar/4146977575282589/a51aeadaa7d44fd481084e79f27b0cad/fat.jpg~noop.image
 			//   https://p9-bcy.byteimg.com/origin/banciyuan/Public/Upload/avatar/4146977575282589/a51aeadaa7d44fd481084e79f27b0cad/fat.jpg.jpg
@@ -32587,11 +32598,21 @@ var $$IMU_EXPORT$$;
 			// https://p1-bcy.byteimg.com/img/banciyuan/user/219002/item/web/17al0/62afbfd0deb611e9afe7e78e9c02f7f3.jpg~tplv-banciyuan-w650.image
 			//   https://p1-bcy.byteimg.com/img/banciyuan/user/219002/item/web/17al0/62afbfd0deb611e9afe7e78e9c02f7f3.jpg~noop.image
 			//   https://p1-bcy.byteimg.com/origin/banciyuan/user/219002/item/web/17al0/62afbfd0deb611e9afe7e78e9c02f7f3.jpg.jpg
+			// thanks to llacb47 on github: https://github.com/qsniyg/maxurl/issues/426
+			// https://p1-hera.byteimg.com/tos-cn-i-jbbdkfciu3/753f819c23db45ca9c505a4d073657f6~tplv-jbbdkfciu3-webp:720:436.webp
+			//   https://p1-hera.byteimg.com/tos-cn-i-jbbdkfciu3/753f819c23db45ca9c505a4d073657f6~tplv-jbbdkfciu3-webp:0:0.webp
 			domain_nosub === "byteimg.com" ||
 			// thanks to remlap on discord:
 			// https://p16-va-tiktok.ibyteimg.com/img/musically-maliva-obj/42b35206fcf1aa59acd5bcdb2ae82ac8~c5_720x720.jpeg
 			//   https://p16-va-tiktok.ibyteimg.com/origin/musically-maliva-obj/42b35206fcf1aa59acd5bcdb2ae82ac8.jpeg
 			domain_nosub === "ibyteimg.com" ||
+			// https://sf-tb-sg.ibytedtos.com/img/ttfe-malisg/tiktok_web/store-badge/en.png~296x0.webp
+			//   https://sf-tb-sg.ibytedtos.com/origin/ttfe-malisg/tiktok_web/store-badge/en.png.webp
+			//   https://sf-tb-sg.ibytedtos.com/origin/ttfe-malisg/tiktok_web/store-badge/en.png
+			// thanks to lnp5131 on github: https://github.com/qsniyg/maxurl/issues/426#issuecomment-685697086
+			// http://sf16-muse-va.ibytedtos.com/img/tos-maliva-p-0000/e5cd91966a794433a1f0f846b12fb0df~500x500.image
+			//   http://sf16-muse-va.ibytedtos.com/origin/tos-maliva-p-0000/e5cd91966a794433a1f0f846b12fb0df.png
+			domain_nosub === "ibytedtos.com" ||
 			// https://p16.muscdn.com/img/musically-maliva-obj/1634882550258693~c5_100x100.jpeg
 			//   https://p16.muscdn.com/img/musically-maliva-obj/1634882550258693~noop.jpeg
 			//   https://p16.muscdn.com/origin/musically-maliva-obj/1634882550258693.jpeg
@@ -32611,14 +32632,23 @@ var $$IMU_EXPORT$$;
 			//   http://i0.pstatp.com/origin/6ebf0008169e56582256
 			// http://p0.sgpstatp.com/large/tos-alisg-i-0000/6a3d2ee4939f47b09704d1463c0440f0
 			//   http://p0.sgpstatp.com/origin/tos-alisg-i-0000/6a3d2ee4939f47b09704d1463c0440f0 -- without /tos-alisg-i-000/ works too
+			newsrc = src
+				.replace(/\?imageView2.*/, "")
+				.replace(/(~[^/.]+-webp):[0-9]+:[0-9]+(\.webp)(?:[?#].*)?$/, "$1:0:0$2")
+				.replace(/(:\/\/[^/]+\/+origin\/.*\.[a-z]+)\.[a-z]+(?:[?#].*)?$/, "$1")
+				.replace(/(:\/\/[^/]+\/+)(?:medium|large|obj|img|aweme|list)\/+(?:[0-9]+x[0-9]+\/+)?((?:.*?\/+)?[^/~]+)(?:~noop)?(\.[^/.]+)?(?:[?#].*)?$/, "$1origin/$2$3")
+				.replace(/(:\/\/[^/]+\/+)(tos-maliva-[^/]+\/+.*)$/, "$1img/$2")
+				.replace(/(:\/\/[^/]+\/+.*?)\.image(?:[?#].*)?$/, "$1.png")
+				.replace(/(:\/\/[^/]+\/+(?:medium|large|obj|img|aweme|list)\/+.*)~[^/.?#]+(\.[^/.?#]+)?(?:[?#].*)?$/, "$1~noop$2");
 			obj = {
-				url: src
+				url: newsrc, /*src
 					.replace(/(:\/\/[^/]*\/+)(?:medium|large|obj|aweme|list)\/+(?:[0-9]+x[0-9]+\/+)?/, "$1origin/")
-					.replace(/(:\/\/[^/]+\/+origin\/+.*?)\.image(?:[?$].*)?$/, "$1.jpg")
-					.replace(/\/img\/+(.+\/+[0-9a-f]{10,}(?:\/+[^/]+|\.[^/.~?#]+)?)~noop(\.[^/.]*)(?:[?#].*)?$/, "/origin/$1$2")
+					.replace(/(:\/\/[^/]+\/+.*?)\.image(?:[?$].*)?$/, "$1.jpg")
+					.replace(/\/img\/+(.+\/+[0-9a-f]{10,}(?:_[0-9]+)?(?:\/+[^/]+|\.[^/.~?#]+)?)~noop(\.[^/.]*)(?:[?#].*)?$/, "/origin/$1$2")
 					.replace(/(\/origin\/+.+\/+[0-9a-f]{10,}\/+[^/.]+\.[^/.]+)\.[^/.]+$/, "$1")
 					.replace(/(\/img\/+.+\/+[0-9a-f]{10,}(?:\/+[^/]+|\.[^/.~?#]+)?~)[^/.]*?(\.[^/.]*)(?:[?#].*)?$/, "$1noop$2")
-					.replace(/\?imageView2.*/, ""),
+					.replace(/(:\/\/[^/]+\/+)(tos-[^/]+\/+.*)/, "$1img/$2")
+					.replace(/\?imageView2.*$/, ""),*/
 				can_head: false // 404
 			};
 
@@ -32652,6 +32682,33 @@ var $$IMU_EXPORT$$;
 			// https://p16-tiktokcdn-com.akamaized.net/large/v0201/a4d90921ec0947ed959b757497367d9e.jpg
 			//   https://p16-tiktokcdn-com.akamaized.net/obj/v0201/a4d90921ec0947ed959b757497367d9e.jpg
 			return src.replace(/(:\/\/[^/]*\/)[a-z]+\//, "$1obj/");
+		}
+
+		if (domain === "p16-sign-va.tiktokcdn.com" ||
+			domain === "p16-sign-sg.tiktokcdn.com") {
+			// thanks to llacb47 on github: https://github.com/qsniyg/maxurl/issues/426
+			// https://p16-sign-va.tiktokcdn.com/tos-maliva-p-0068/3cc29b70b9ed45d1b86f5a525da02f13_1598931018~tplv-tiktokx-360p.image?x-expires=1599033600&x-signature=%2BJAF%2BVz2hXai0gjnYm6R97lLk7c%3D
+			//   https://p16-amd-va.tiktokcdn.com/tos-maliva-p-0068/3cc29b70b9ed45d1b86f5a525da02f13_1598931018~noop.image
+			//   https://p16-amd-va.tiktokcdn.com/origin/tos-maliva-p-0068/3cc29b70b9ed45d1b86f5a525da02f13_1598931018.jpg
+			//   https://p16-amd-va.tiktokcdn.com/origin/tos-maliva-p-0068/3cc29b70b9ed45d1b86f5a525da02f13_1598931018.png
+			// https://p16-sign-va.tiktokcdn.com/obj/tos-maliva-p-0068/af3de2fba1d14be1acec66e680ace0f0?x-expires=1599188400&x-signature=46nLVCmcHczpmYo4rev%2FJRILYso%3D
+			//   https://p16-amd-va.tiktokcdn.com/origin/tos-maliva-p-0068/af3de2fba1d14be1acec66e680ace0f0.jpeg
+			// https://p16-sign-sg.tiktokcdn.com/aweme/300x400/v0201/351a548f244242b083bd25ad4694f1fa.jpeg?x-expires=1599037200&x-signature=zWvZpPwroz0zMoF%2Fu5amBRicWEI%3D
+			//   https://p16-amd-va.tiktokcdn.com/origin/v0201/351a548f244242b083bd25ad4694f1fa.jpeg
+			match = src.match(/:\/\/[^/]+\/+((?:(?:img|obj|origin|aweme)\/+(?:[0-9]+x[0-9]+\/+)?)?)((?:tos-[^/]+|v[0-9]+)\/+[0-9a-f]+(?:_[0-9]+)?)(?:~[^/.]+)?(\.[^/.?#]+)?(?:[?#].*)?$/);
+			if (match) {
+				var add_noop = "";
+				if (!match[1]) {
+					add_noop = "~noop"
+				}
+
+				var extension = match[3];
+				if (!extension) {
+					extension = ".png"; // FIXME?
+				}
+
+				return "https://p16-amd-va.tiktokcdn.com/" + (match[1] || "") + match[2] + add_noop + extension;
+			}
 		}
 
 		if (domain === "img-bcy-qn.pstatp.com") {
