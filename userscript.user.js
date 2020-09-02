@@ -32608,6 +32608,8 @@ var $$IMU_EXPORT$$;
 			//   https://p16-amd-va.tiktokcdn.com/tos-maliva-p-0068/3cc29b70b9ed45d1b86f5a525da02f13_1598931018~noop.jpg
 			//   https://p16-amd-va.tiktokcdn.com/img/tos-maliva-p-0068/3cc29b70b9ed45d1b86f5a525da02f13_1598931018~noop.jpg
 			//   https://p16-amd-va.tiktokcdn.com/origin/tos-maliva-p-0068/3cc29b70b9ed45d1b86f5a525da02f13_1598931018.jpg
+			// https://p16-amd-va.tiktokcdn.com/musically-maliva-obj/1663656694255621~noop.jpeg
+			//   https://p16-amd-va.tiktokcdn.com/origin/musically-maliva-obj/1663656694255621.jpeg
 			// other:
 			// https://p16-amd-va.tiktokcdn.com/origin/tos-maliva-p-0068/3c666aa393714922b10def1ee39ad780_1599009621
 			domain === "p16-amd-va.tiktokcdn.com" ||
@@ -32699,7 +32701,7 @@ var $$IMU_EXPORT$$;
 				.replace(/(~[^/.]+-webp):[0-9]+:[0-9]+(\.webp)(?:[?#].*)?$/, "$1:0:0$2")
 				.replace(/(:\/\/[^/]+\/+origin\/.*\.[a-z]+)\.[a-z]+(?:[?#].*)?$/, "$1")
 				.replace(/(:\/\/[^/]+\/+)(?:medium|large|obj|img|aweme|list)\/+(?:[0-9]+x[0-9]+\/+)?((?:.*?\/+)?[^/~]+)(?:~noop)?(\.[^/.]+)?(?:[?#].*)?$/, "$1origin/$2$3")
-				.replace(/(:\/\/[^/]+\/+)(tos-maliva-[^/]+\/+.*)$/, "$1img/$2")
+				.replace(/(:\/\/[^/]+\/+)((?:tos|musically)-maliva-[^/]+\/+.*)$/, "$1img/$2")
 				.replace(/(:\/\/[^/]+\/+.*?)\.image(?:[?#].*)?$/, "$1.png")
 				.replace(/(:\/\/[^/]+\/+(?:medium|large|obj|img|aweme|list)\/+.*)~[^/.?#]+(\.[^/.?#]+)?(?:[?#].*)?$/, "$1~noop$2");
 			obj = {
@@ -32757,7 +32759,8 @@ var $$IMU_EXPORT$$;
 			//   https://p16-amd-va.tiktokcdn.com/origin/tos-maliva-p-0068/af3de2fba1d14be1acec66e680ace0f0.jpeg
 			// https://p16-sign-sg.tiktokcdn.com/aweme/300x400/v0201/351a548f244242b083bd25ad4694f1fa.jpeg?x-expires=1599037200&x-signature=zWvZpPwroz0zMoF%2Fu5amBRicWEI%3D
 			//   https://p16-amd-va.tiktokcdn.com/origin/v0201/351a548f244242b083bd25ad4694f1fa.jpeg
-			match = src.match(/:\/\/[^/]+\/+((?:(?:img|obj|origin|aweme)\/+(?:[0-9]+x[0-9]+\/+)?)?)((?:tos-[^/]+|v[0-9]+)\/+[0-9a-f]+(?:_[0-9]+)?)(?:~[^/.]+)?(\.[^/.?#]+)?(?:[?#].*)?$/);
+			// https://p16-sign-va.tiktokcdn.com/musically-maliva-obj/1663656694255621~c5_100x100.jpeg?x-expires=1599156000&x-signature=nStsWM6ZtewLuGlGbLp5N9o6MTg%3D
+			match = src.match(/:\/\/[^/]+\/+((?:(?:img|obj|origin|aweme)\/+(?:[0-9]+x[0-9]+\/+)?)?)((?:(?:tos|musically)-[^/]+|v[0-9]+)\/+[0-9a-f]+(?:_[0-9]+)?)(?:~[^/.]+)?(\.[^/.?#]+)?(?:[?#].*)?$/);
 			if (match) {
 				var add_noop = "";
 				if (!match[1]) {
