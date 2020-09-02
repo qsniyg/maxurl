@@ -97,7 +97,10 @@ var $$IMU_EXPORT$$;
 		_nir_debug_ = {
 			no_request: false,
 			no_recurse: false,
-			no_redirect: true
+			no_redirect: true,
+
+			// channels
+			cache: true
 		};
 
 		console.log("Loaded");
@@ -1077,6 +1080,18 @@ var $$IMU_EXPORT$$;
 	var console_error = console.error;
 	var console_warn = console.warn;
 	var console_trace = console.trace;
+
+	var nir_debug = function() {};
+	if (_nir_debug_) {
+		nir_debug = function() {
+			var channel = arguments[0];
+			if (!_nir_debug_[channel])
+				return;
+
+			console_log(arguments.slice(1));
+		};
+	}
+
 	var JSON_stringify = JSON.stringify;
 	var JSON_parse = JSON.parse;
 
@@ -10765,6 +10780,14 @@ var $$IMU_EXPORT$$;
 		}
 	};
 
+	var map_size = function(map) {
+		if (!map.imu_map) {
+			return map.size;
+		} else {
+			return Object.keys(map.object).length + map.array.length;
+		}
+	};
+
 	var new_set = function() {
 		return new_map();
 	};
@@ -10787,13 +10810,46 @@ var $$IMU_EXPORT$$;
 		this.fetches = new_map();
 
 		this.set = function(key, value, time) {
-			if (_nir_debug_)
-				console_log("Cache.set key:", key, ", time=" + time + ", value:", deepcopy(value));
+			nir_debug("cache", "Cache.set key:", key, ", time=" + time + ", value:", deepcopy(value));
 
 			this.remove(key);
 
+			if (options.max_keys) {
+				var current_size = map_size(this.data);
+				if (current_size > options.max_keys) {
+					var all_keys = [];
+
+					map_foreach(this.times, function(key, value) {
+						all_keys.push({key: key, end_time: value.end_time, added_time: value.added_time});
+					});
+
+					// we prioritize removing the key closest to expiry before the oldest key
+					all_keys.sort(function(a, b) {
+						if (a.end_time) {
+							if (!b.end_time)
+								return -1;
+
+							return a.end_time - b.end_time;
+						} else {
+							if (b.end_time)
+								return 1;
+
+							return a.added_time - b.added_time;
+						}
+					});
+
+					var keys_to_remove = current_size - options.max_keys;
+					var key_id = 0;
+					while (i < all_keys.length && keys_to_remove > 0) {
+						this.remove(all_keys[key_id++].key);
+						keys_to_remove--;
+					}
+				}
+			}
+
 			map_set(this.data, key, value);
 
+			var added_time = Date.now();
 			if (typeof time === "number" && time > 0) {
 				var cache = this;
 				var timer = setTimeout(function() {
@@ -10807,7 +10863,13 @@ var $$IMU_EXPORT$$;
 
 				map_set(this.times, key, {
 					timer: timer,
-					time: time
+					time: time,
+					added_time: added_time,
+					end_time: added_time + time
+				});
+			} else {
+				map_set(this.times, key, {
+					added_time: added_time
 				});
 			}
 		};
@@ -10815,18 +10877,16 @@ var $$IMU_EXPORT$$;
 		this.has = function(key) {
 			var has_key = map_has(this.data, key);
 
-			if (_nir_debug_)
-				console_log("Cache.has key:", key, has_key);
+			nir_debug("cache", "Cache.has key:", key, has_key);
 
 			return has_key;
 		};
 
 		this.get = function(key) {
+			// TODO: maybe renew timeout per-get?
 			var value = map_get(this.data, key);
 
-			// TODO: maybe renew timeout per-get?
-			if (_nir_debug_)
-				console_log("Cache.get key:", key, deepcopy(value));
+			nir_debug("cache", "Cache.get key:", key, deepcopy(value));
 
 			return value;
 		};
@@ -10834,8 +10894,7 @@ var $$IMU_EXPORT$$;
 		this.fetch = function(key, done, fetcher) {
 			var exists = map_has(this.data, key);
 
-			if (_nir_debug_)
-				console_log("Cache.fetch key:", key, ", exists=" + exists);
+			nir_debug("cache", "Cache.fetch key:", key, ", exists=" + exists);
 
 			if (!exists) {
 				if (map_has(this.fetches, key)) {
@@ -10863,11 +10922,13 @@ var $$IMU_EXPORT$$;
 		};
 
 		this.remove = function(key) {
-			if (_nir_debug_)
-				console_log("Cache.remove key:", key);
+			nir_debug("cache", "Cache.remove key:", key);
 
 			if (map_has(this.times, key)) {
-				clearTimeout(map_get(this.times, key).timer);
+				var timeobj = map_get(this.times, key);
+
+				if ("timer" in timeobj);
+					clearTimeout(timeobj.timer);
 			}
 
 			if (options.destructor && map_has(this.data, key)) {
@@ -10879,11 +10940,12 @@ var $$IMU_EXPORT$$;
 		};
 
 		this.clear = function() {
-			if (_nir_debug_)
-				console_log("Cache.clear");
+			nir_debug("cache", "Cache.clear");
 
 			map_foreach(this.times, function(key, value) {
-				clearTimeout(value);
+				if ("timer" in value) {
+					clearTimeout(value.timer);
+				}
 			});
 
 			if (options.destructor) {
