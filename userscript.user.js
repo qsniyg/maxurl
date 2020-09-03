@@ -10896,7 +10896,7 @@ var $$IMU_EXPORT$$;
 
 					var keys_to_remove = current_size - options.max_keys;
 					var key_id = 0;
-					while (i < all_keys.length && keys_to_remove > 0) {
+					while (key_id < all_keys.length && keys_to_remove > 0) {
 						this.remove(all_keys[key_id++].key);
 						keys_to_remove--;
 					}
