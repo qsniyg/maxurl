@@ -32611,7 +32611,7 @@ var $$IMU_EXPORT$$;
 			domain === "p16-va-default.akamaized.net" ||
 			// https://p16.tiktokcdn.com/aweme/100x100/tiktok-obj/1647151559190530.jpeg
 			//   https://p16.tiktokcdn.com/origin/tiktok-obj/1647151559190530.jpeg
-			domain === "p16.tiktokcdn.com" ||
+			//domain === "p16.tiktokcdn.com" ||
 			// thanks to llacb47 on github: https://github.com/qsniyg/maxurl/issues/426
 			// https://p16-amd-va.tiktokcdn.com/img/musically-maliva-obj/d8bcd7b974df059dd548e98a39b705d9~c5_100x100.jpeg
 			//   https://p16-amd-va.tiktokcdn.com/origin/musically-maliva-obj/d8bcd7b974df059dd548e98a39b705d9.jpeg -- upscaled?
@@ -32621,9 +32621,21 @@ var $$IMU_EXPORT$$;
 			//   https://p16-amd-va.tiktokcdn.com/origin/tos-maliva-p-0068/3cc29b70b9ed45d1b86f5a525da02f13_1598931018.jpg
 			// https://p16-amd-va.tiktokcdn.com/musically-maliva-obj/1663656694255621~noop.jpeg
 			//   https://p16-amd-va.tiktokcdn.com/origin/musically-maliva-obj/1663656694255621.jpeg
+			// thanks to llacb47 on github: https://github.com/qsniyg/maxurl/issues/431
+			// https://p16-amd-va.tiktokcdn.com/tiktok-obj/1628900944743426~c5_168x168.webp
+			//   https://p16-amd-va.tiktokcdn.com/origin/tiktok-obj/1628900944743426.webp
+			// https://p61-sg.tiktokcdn.com/img/tos-maliva-avt-0068/6786738264c09fd4f4e959b1b384f768~c5_100x100.webp
+			// https://p61-va.tiktokcdn.com/img/tos-maliva-avt-0068/6786738264c09fd4f4e959b1b384f768~c5_100x100.webp
 			// other:
 			// https://p16-amd-va.tiktokcdn.com/origin/tos-maliva-p-0068/3c666aa393714922b10def1ee39ad780_1599009621
-			domain === "p16-amd-va.tiktokcdn.com" ||
+			//domain === "p16-amd-va.tiktokcdn.com" ||
+			// http://p16.hypstarcdn.com/img/hpimg/db21de51a5c58250bfc4daa08c218e936ba721100afcabf845ba99e09a69c409~100x100.jpg
+			//   http://p16.hypstarcdn.com/origin/hpimg/db21de51a5c58250bfc4daa08c218e936ba721100afcabf845ba99e09a69c409.jpg
+			// http://p16-va.hypstarcdn.com/img/hpimg/db21de51a5c58250bfc4daa08c218e936ba721100afcabf845ba99e09a69c409~100x100.jpg
+			//   http://p16-va.hypstarcdn.com/origin/hpimg/db21de51a5c58250bfc4daa08c218e936ba721100afcabf845ba99e09a69c409.jpg
+			((domain_nosub === "tiktokcdn.com" ||
+			  domain_nosub === "hypstarcdn.com") &&
+			  (/^p[0-9]+(?:-[^/]+)\./.test(domain) && !/-sign[-.]/.test(domain))) ||
 			// http://p16-hypstarcdn-com.akamaized.net/img/hpimg/db21de51a5c58250bfc4daa08c218e936ba721100afcabf845ba99e09a69c409~100x100.jpg
 			//   http://p16-hypstarcdn-com.akamaized.net/img/hpimg/db21de51a5c58250bfc4daa08c218e936ba721100afcabf845ba99e09a69c409~noop.jpg
 			//   http://p16-hypstarcdn-com.akamaized.net/origin/hpimg/db21de51a5c58250bfc4daa08c218e936ba721100afcabf845ba99e09a69c409.jpg
@@ -32631,9 +32643,6 @@ var $$IMU_EXPORT$$;
 			//   http://p16-hypstarcdn-com.akamaized.net/img/tos-alisg-i-0000/81caebe48e7a45ca87e6ec57322294c7~noop.jpg
 			//   http://p16-hypstarcdn-com.akamaized.net/origin/tos-alisg-i-0000/81caebe48e7a45ca87e6ec57322294c7.jpg
 			domain === "p16-hypstarcdn-com.akamaized.net" ||
-			// http://p16.hypstarcdn.com/img/hpimg/db21de51a5c58250bfc4daa08c218e936ba721100afcabf845ba99e09a69c409~100x100.jpg
-			//   http://p16.hypstarcdn.com/origin/hpimg/db21de51a5c58250bfc4daa08c218e936ba721100afcabf845ba99e09a69c409.jpg
-			domain === "p16.hypstarcdn.com" ||
 			// https://p3-tt.bytecdn.cn/img/pgc-image/f16e7bd2daf14850a8509015e6a45d71~noop_1913x1080.jpeg
 			//   https://p3-tt.bytecdn.cn/img/pgc-image/f16e7bd2daf14850a8509015e6a45d71~noop.jpeg
 			//   https://p3-tt.bytecdn.cn/origin/pgc-image/f16e7bd2daf14850a8509015e6a45d71.jpeg
@@ -32712,7 +32721,7 @@ var $$IMU_EXPORT$$;
 				.replace(/(~[^/.]+-webp):[0-9]+:[0-9]+(\.webp)(?:[?#].*)?$/, "$1:0:0$2")
 				.replace(/(:\/\/[^/]+\/+origin\/.*\.[a-z]+)\.[a-z]+(?:[?#].*)?$/, "$1")
 				.replace(/(:\/\/[^/]+\/+)(?:medium|large|obj|img|aweme|list)\/+(?:[0-9]+x[0-9]+\/+)?((?:.*?\/+)?[^/~]+)(?:~noop)?(\.[^/.]+)?(?:[?#].*)?$/, "$1origin/$2$3")
-				.replace(/(:\/\/[^/]+\/+)((?:tos|musically)-maliva-[^/]+\/+.*)$/, "$1img/$2")
+				.replace(/(:\/\/[^/]+\/+)((?:(?:tos|musically)-maliva-[^/]+|tiktok-obj)\/+.*)$/, "$1img/$2")
 				.replace(/(:\/\/[^/]+\/+.*?)\.image(?:[?#].*)?$/, "$1.png")
 				.replace(/(:\/\/[^/]+\/+(?:medium|large|obj|img|aweme|list)\/+.*)~[^/.?#]+(\.[^/.?#]+)?(?:[?#].*)?$/, "$1~noop$2");
 			obj = {
@@ -32771,20 +32780,12 @@ var $$IMU_EXPORT$$;
 			// https://p16-sign-sg.tiktokcdn.com/aweme/300x400/v0201/351a548f244242b083bd25ad4694f1fa.jpeg?x-expires=1599037200&x-signature=zWvZpPwroz0zMoF%2Fu5amBRicWEI%3D
 			//   https://p16-amd-va.tiktokcdn.com/origin/v0201/351a548f244242b083bd25ad4694f1fa.jpeg
 			// https://p16-sign-va.tiktokcdn.com/musically-maliva-obj/1663656694255621~c5_100x100.jpeg?x-expires=1599156000&x-signature=nStsWM6ZtewLuGlGbLp5N9o6MTg%3D
-			match = src.match(/:\/\/[^/]+\/+((?:(?:img|obj|origin|aweme)\/+(?:[0-9]+x[0-9]+\/+)?)?)((?:(?:tos|musically)-[^/]+|v[0-9]+)\/+[0-9a-f]+(?:_[0-9]+)?)(?:~[^/.]+)?(\.[^/.?#]+)?(?:[?#].*)?$/);
-			if (match) {
-				var add_noop = "";
-				if (!match[1]) {
-					add_noop = "~noop"
-				}
-
-				var extension = match[3];
-				if (!extension) {
-					extension = ".png"; // FIXME?
-				}
-
-				return "https://p16-amd-va.tiktokcdn.com/" + (match[1] || "") + match[2] + add_noop + extension;
-			}
+			// thanks to llacb47 on github: https://github.com/qsniyg/maxurl/issues/431
+			// https://p16-sign-sg.tiktokcdn.com/aweme/100x100/tiktok-obj/1628900944743426.webp?x-expires=1599253200&x-signature=xrIQhCpLscEARw5wUqQB5Nk1Tg8%3D
+			//   https://p16-amd-va.tiktokcdn.com/origin/tiktok-obj/1628900944743426.webp
+			// https://p16-amd-va.tiktokcdn.com/tiktok-obj/1628900944743426~c5_168x168.webp
+			//   https://p16-amd-va.tiktokcdn.com/tiktok-obj/1628900944743426~c5_168x168.webp
+			return src.replace(/:\/\/[^/]+\/+([^?#&]+)(?:[?#].*)?$/, "://p16-amd-va.tiktokcdn.com/$1");
 		}
 
 		if (domain === "img-bcy-qn.pstatp.com") {
