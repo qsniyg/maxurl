@@ -103,7 +103,8 @@ var $$IMU_EXPORT$$;
 			map: true,
 			cache: true,
 			bigimage_recursive: true,
-			input: true
+			input: true,
+			check_image_get: true
 		};
 
 		console.log("Loaded");
@@ -84129,9 +84130,7 @@ var $$IMU_EXPORT$$;
 
 	var check_image_cache = null;
 	function check_image_get(obj, cb, processing) {
-		if (_nir_debug_) {
-			console_log("check_image_get", deepcopy(obj), cb, deepcopy(processing));
-		}
+		nir_debug("check_image_get", "check_image_get", deepcopy(obj), cb, deepcopy(processing));
 
 		if (!obj || !obj[0] || !obj[0].url) {
 			return cb(null);
@@ -84161,9 +84160,7 @@ var $$IMU_EXPORT$$;
 			if (check_image_cache.has(obj[0].url)) {
 				var cached_result = check_image_cache.get(obj[0].url);
 
-				if (_nir_debug_) {
-					console_log("check_image_get(cached):", cached_result.img, cached_result.resp, obj[0]);
-				}
+				nir_debug("check_image_get", "check_image_get(cached):", cached_result.img, cached_result.resp, obj[0]);
 
 				var img = cached_result.img;
 				var destroyed = false;
@@ -84223,9 +84220,7 @@ var $$IMU_EXPORT$$;
 			revoke_objecturl(last_objecturl);
 			obj.shift();
 
-			if (_nir_debug_) {
-				console_log("check_image_get(err_cb):", obj, processing);
-			}
+			nir_debug("check_image_get", "check_image_get(err_cb):", obj, processing);
 
 			return check_image_get(obj, cb, processing);
 		}
@@ -84280,9 +84275,7 @@ var $$IMU_EXPORT$$;
 			}
 
 			if (resp.readyState == 4 || true) {
-				if (_nir_debug_) {
-					console_log("check_image_get(onload)", deepcopy(resp), resp.readyState);
-				}
+				nir_debug("check_image_get", "check_image_get(onload)", deepcopy(resp), resp.readyState);
 
 				var digit = resp.status.toString()[0];
 
@@ -84349,10 +84342,7 @@ var $$IMU_EXPORT$$;
 				}
 
 				var good_cb = function(img) {
-					if (_nir_debug_) {
-						console_log("check_image_get(good_cb):", img, resp.finalUrl, obj[0], resp);
-						console_trace();
-					}
+					nir_debug("check_image_get", "check_image_get(good_cb):", img, resp.finalUrl, obj[0], resp);
 
 					if (processing.set_cache) {
 						var cache_obj = {
