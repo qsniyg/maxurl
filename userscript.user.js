@@ -77732,6 +77732,18 @@ var $$IMU_EXPORT$$;
 				return decodeuri_ifneeded(newsrc);
 		}
 
+		if (domain === "s.ecrater.com") {
+			// thanks to llacb47 on github: https://github.com/qsniyg/maxurl/issues/428
+			// https://s.ecrater.com/stores/50746/50e104b29b24b_50746f.jpg
+			//   https://s.ecrater.com/stores/50746/50e104b29b24b_50746b.jpg -- 1123x1500
+			// https://s.ecrater.com/stores/403772/5a02f8870538a_403772s.jpg
+			//   https://s.ecrater.com/stores/403772/5a02f8870538a_403772b.jpg -- 920x1280
+			// other:
+			// https://s.ecrater.com/stores/50746/47af50b4789de_50746.jpg
+			//   https://s.ecrater.com/stores/50746/47af4f97172b4_50746b.jpg
+			return src.replace(/(\/stores\/+[0-9]+\/+[0-9a-f]{5,}_[0-9]+)[a-z](\.[^/.]+)(?:[?#].*)?$/, "$1b$2");
+		}
+
 
 
 
