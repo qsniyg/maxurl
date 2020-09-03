@@ -86882,6 +86882,7 @@ var $$IMU_EXPORT$$;
 
 				if (add_link) {
 					a.href = url;
+					a.target = "_blank";
 					if (settings.mouseover_download) {
 						if (false) {
 							a.href = img.src;
@@ -86905,7 +86906,6 @@ var $$IMU_EXPORT$$;
 					}
 				}
 
-				a.target = "_blank";
 				a.appendChild(img);
 				div.appendChild(a);
 
