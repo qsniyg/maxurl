@@ -7860,6 +7860,7 @@ var $$IMU_EXPORT$$;
 		mouseover_support_pointerevents_none: false,
 		popup_allow_cache: true,
 		popup_cache_duration: 30,
+		popup_cache_itemlimit: 20,
 		popup_cache_resume_video: true,
 		website_inject_imu: true,
 		website_image: true,
@@ -10018,6 +10019,18 @@ var $$IMU_EXPORT$$;
 			type: "number",
 			number_min: 0,
 			number_unit: "minutes",
+			category: "popup",
+			subcategory: "cache"
+		},
+		popup_cache_itemlimit: {
+			name: "Cache item limit",
+			description: "Maximum number of individual media to remain cached. Set to `0` for unlimited.",
+			requires: {
+				popup_allow_cache: true
+			},
+			type: "number",
+			number_min: 0,
+			number_unit: "items",
 			category: "popup",
 			subcategory: "cache"
 		},
@@ -84100,7 +84113,12 @@ var $$IMU_EXPORT$$;
 
 		if (processing.set_cache || processing.use_cache) {
 			if (!check_image_cache) {
+				var maximum_items = settings.popup_cache_itemlimit;
+				if (maximum_items <= 0)
+					maximum_items = null;
+
 				check_image_cache = new Cache({
+					max_keys: maximum_items,
 					destructor: function(key, value) {
 						if (value && value.img)
 							check_image_unref(value.img);
