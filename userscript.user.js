@@ -77744,6 +77744,13 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/stores\/+[0-9]+\/+[0-9a-f]{5,}_[0-9]+)[a-z](\.[^/.]+)(?:[?#].*)?$/, "$1b$2");
 		}
 
+		if (domain === "img.discogs.com") {
+			// thanks to Gertcha on github: https://github.com/qsniyg/maxurl/issues/429
+			// https://img.discogs.com/MjmbFRJJih89NH1vTPzlL4hV-8Q=/fit-in/600x600/filters:strip_icc():format(jpeg):mode_rgb():quality(90)/discogs-images/R-12801670-1542565929-6791.jpeg.jpg
+			//   https://www.discogs.com/image/R-12801670-1542565929-6791.jpeg
+			return src.replace(/^[a-z]+:\/\/[^/]+\/[^/]+=\/.*\/discogs-images\/([^/?#]+)\.[^/.]+(?:[?#].*)?$/, "https://www.discogs.com/image/$1");
+		}
+
 
 
 
