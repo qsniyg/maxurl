@@ -763,6 +763,11 @@ var $$IMU_EXPORT$$;
 					headers_to_set["Sec-Fetch-Site"] = "same-origin";
 
 					headers_to_set.origin = data.url.replace(/^([a-z]+:\/\/[^/]+)(?:\/+.*)?$/, "$1");
+				} else if (data.imu_mode === "image") {
+					headers_to_set.accept = "image/webp,image/apng,image/*,*/*;q=0.8";
+					headers_to_set["Sec-Fetch-Dest"] = "image";
+					headers_to_set["Sec-Fetch-Mode"] = "no-cors";
+					headers_to_set["Sec-Fetch-Site"] = "same-site";
 				}
 
 				delete data.imu_mode;
@@ -36138,11 +36143,10 @@ var $$IMU_EXPORT$$;
 			// no referer is needed: http://www.reddit.com/r/traphentai/comments/fv608m/punish_the_king_of_the_fairies/fmgsi1d/?context=3
 			obj = {
 				url: src,
+				can_head: false,
+				imu_mode: "image",
 				headers: {
-					Referer: ""
-				},
-				referer_ok: {
-					same_domain_nosub: true
+					Referer: "https://www.gelbooru.com/"
 				}
 			};
 
@@ -86882,6 +86886,8 @@ var $$IMU_EXPORT$$;
 
 				if (add_link) {
 					a.href = url;
+
+					// set this here instead of outside this block for gelbooru: https://github.com/qsniyg/maxurl/issues/430
 					a.target = "_blank";
 					if (settings.mouseover_download) {
 						if (false) {
