@@ -104,7 +104,8 @@ var $$IMU_EXPORT$$;
 			cache: true,
 			bigimage_recursive: true,
 			input: true,
-			check_image_get: true
+			check_image_get: true,
+			find_source: true
 		};
 
 		console.log("Loaded");
@@ -87760,8 +87761,7 @@ var $$IMU_EXPORT$$;
 			var ok_els = [];
 			var result = _find_source(els, ok_els);
 
-			if (_nir_debug_)
-				console_log("find_source: result =", result, "ok_els =", ok_els);
+			nir_debug("find_source", "find_source: result =", result, "ok_els =", ok_els);
 
 			if (!result)
 				return result;
@@ -87774,17 +87774,13 @@ var $$IMU_EXPORT$$;
 
 			if (result.el) {
 				if (is_popup_el(result.el)) {
-					if (_nir_debug_)
-						console_log("find_source: result.el is popup el", result.el);
-
+					nir_debug("find_source", "find_source: result.el is popup el", result.el);
 					return ret_bad();
 				}
 			}
 
 			if (!result.is_ok_el && !is_valid_src(result.src, is_video_el(result.el))) {
-				if (_nir_debug_)
-					console_log("find_source: invalid src", result);
-
+				nir_debug("find_source", "find_source: invalid src", result);
 				return ret_bad();
 			}
 
@@ -87795,8 +87791,7 @@ var $$IMU_EXPORT$$;
 
 			if ((!isNaN(result.width) && result.width > 0 && result.width < thresh) ||
 				(!isNaN(result.height) && result.height > 0 && result.height < thresh)) {
-				if (_nir_debug_)
-					console_log("find_source: result size is too small");
+				nir_debug("find_source", "find_source: result size is too small");
 
 				return ret_bad();
 			}
@@ -87809,8 +87804,7 @@ var $$IMU_EXPORT$$;
 			/*if (popups_active)
 				return;*/
 
-			if (_nir_debug_)
-				console_log("_find_source (els)", els);
+			nir_debug("find_source", "_find_source (els)", els);
 
 			var sources = {};
 			//var picture_sources = {};
@@ -87914,17 +87908,13 @@ var $$IMU_EXPORT$$;
 			}
 
 			function addImage(src, el, options) {
-				if (_nir_debug_) {
-					console_log("_find_source (addImage)", src, el, check_visible(el), options);
-				}
+				nir_debug("find_source", "_find_source (addImage)", src, el, check_visible(el), options);
 
 				if (!is_valid_resource_url(src))
 					return false;
 
 				if (src && settings.mouseover_apply_blacklist && !bigimage_filter(src)) {
-					if (_nir_debug_)
-						console_log("blacklisted");
-
+					nir_debug("find_source", "blacklisted");
 					return false;
 				}
 
@@ -87954,9 +87944,7 @@ var $$IMU_EXPORT$$;
 
 				var imucheck = imu_check(src, el);
 				if (imucheck === false) {
-					if (_nir_debug_)
-						console_log("Bad image", el);
-
+					nir_debug("find_source", "Bad image", el);
 					return false;
 				}
 
@@ -87967,9 +87955,7 @@ var $$IMU_EXPORT$$;
 				if (imucheck === true) {
 					// do this after imu_check, for lazy loaded images that have 1x1 images
 					if (src && (src.match(/^data:/) && !(/^data:image\/svg\+xml;/.test(src)) && src.length <= 500)) {
-						if (_nir_debug_)
-							console_log("Tiny data: image", el, src);
-
+						nir_debug("find_source", "Tiny data: image", el, src);
 						return false;
 					}
 				}
@@ -87978,9 +87964,7 @@ var $$IMU_EXPORT$$;
 				// https://www.vogue.com/article/lady-gaga-met-gala-2019-entrance-behind-the-scenes-video
 				// https://www.pinterest.com/
 				if (!check_visible(el)) {
-					if (_nir_debug_)
-						console_log("Invisible: image", el);
-
+					nir_debug("find_source", "Invisible: image", el);
 					return false;
 				}
 
@@ -88051,10 +88035,7 @@ var $$IMU_EXPORT$$;
 					if (settings.mouseover_exclude_imagemaps && el_tagname === "IMG" && el.hasAttribute("usemap")) {
 						var mapel = document.querySelector("map[name=\"" + el.getAttribute("usemap").replace(/^#/, "") + "\"]");
 						if (mapel) {
-							if (_nir_debug_) {
-								console_log("_find_source skipping", el, "due to image map", mapel);
-							}
-
+							nir_debug("find_source", "_find_source skipping", el, "due to image map", mapel);
 							return;
 						}
 					}
@@ -88476,8 +88457,7 @@ var $$IMU_EXPORT$$;
 			}
 
 			function addElement(el, layer) {
-				if (_nir_debug_)
-					console_log("_find_source (addElement)", el, layer);
+				nir_debug("find_source", "_find_source (addElement)", el, layer);
 
 				if (settings.mouseover_exclude_page_bg && el.tagName === "BODY") {
 					return;
@@ -88516,9 +88496,9 @@ var $$IMU_EXPORT$$;
 
 			if (_nir_debug_) {
 				//console_log(els);
-				console_log("_find_source (sources)", deepcopy(sources));
-				console_log("_find_source (layers)", deepcopy(layers));
-				console_log("_find_source (ok_els)", deepcopy(ok_els));
+				nir_debug("find_source", "_find_source (sources)", deepcopy(sources));
+				nir_debug("find_source", "_find_source (layers)", deepcopy(layers));
+				nir_debug("find_source", "_find_source (ok_els)", deepcopy(ok_els));
 			}
 
 			// remove sources that aren't used
@@ -88550,8 +88530,7 @@ var $$IMU_EXPORT$$;
 			}
 
 			if ((source = getsource()) !== undefined) {
-				if (_nir_debug_)
-					console_log("_find_source (getsource())", source);
+				nir_debug("find_source", "_find_source (getsource())", source);
 
 				if (source === null) {
 					if (ok_els.length > 0) {
@@ -88716,13 +88695,9 @@ var $$IMU_EXPORT$$;
 				layers = newlayers;
 			}
 
-			if (_nir_debug_)
-				console_log("_find_source (new layers)", deepcopy(layers));
-
+			nir_debug("find_source", "_find_source (new layers)", deepcopy(layers));
 			rebuildlayers();
-
-			if (_nir_debug_)
-				console_log("_find_source (rebuilt layers)", deepcopy(layers));
+			nir_debug("find_source", "_find_source (rebuilt layers)", deepcopy(layers));
 
 			// If there are background images ahead of an image, it's likely to be masks
 			// Maybe check if there's more than one element of ancestry between them?
