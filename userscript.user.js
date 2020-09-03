@@ -6360,6 +6360,36 @@ var $$IMU_EXPORT$$;
 				]
 			}
 		},
+		"Cache item limit": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "popup_cache_itemlimit",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Maximum number of individual media to remain cached. Set to `0` for unlimited.": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "popup_cache_itemlimit",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"items": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "popup_cache_itemlimit",
+						"field": "number_unit"
+					}
+				]
+			}
+		},
 		"Resume videos": {
 			"_info": {
 				"instances": [

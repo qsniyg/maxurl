@@ -1805,6 +1805,18 @@ msgstr ""
 msgid "minutes"
 msgstr ""
 
+#. popup_cache_itemlimit.name
+msgid "Cache item limit"
+msgstr ""
+
+#. popup_cache_itemlimit.description
+msgid "Maximum number of individual media to remain cached. Set to `0` for unlimited."
+msgstr ""
+
+#. popup_cache_itemlimit.number_unit
+msgid "items"
+msgstr ""
+
 #. popup_cache_resume_video.name
 msgid "Resume videos"
 msgstr ""
