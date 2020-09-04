@@ -205,6 +205,9 @@ function is_googlephotos(domain, url) {
 	//   https://lh3.googleusercontent.com/ET-I3WGzylf5h2QIpdyuRrWGoTb3C3DVRow4oAOpt7VuOccWLjyUoWb2iW0kmgle-mN8yTYCZkYJvM6w-FLDuo7Yp7TpTi1YzldjX1Y2qzAfWQ_0Yd0LlGwS18gpYUpROhnmEBO6CeqjuTvBPZTtrf-eTnqCgTaOLNL0ENOgW0EUS1ZxJsdZ_TYHznqUveHD8hcko93CETrh2IeGXKYDGzM0wDmfD836jgroWJTHOXKUr7wFbKghZmmudMfsU4EEn8WrkU_8GJYaDCRnxj_aGtIWBXn1wh4gqOY7OnTR7BQXp7I0eH06B6Cy3C9sTFWuJU5NBoZORLlSs5zCJ-b3Bbc_BEB0xbsHJ_mAziE6bsHCcniOdJ8SNqNQgW9uoW38tY5MKFg-knhfSNxAk2sGBTQ2wczQV6uTUll5ZVOWAPVkwYCX9Ky6gjd-s9ymx-pR7Ray10mDv1KZ1NeqAXdbVAV30tPYv6HnCe1n4C9y_PnuBI688t9k0NNqBjDj-h8pEVdmCjUx2ZEFp5mTBxJCau2sgI59HGrE_6D7XaUWm294kWlOfGrkPeTE_S8ssaCE7DV-CBmtRoWQFHXlZOa9AL750j9dgMurdn4PjpROUALhl7bHpim9o8jc_vOrAc_ZJdAVmcXigFx8KD_ltLq8MbwNpCoMKZr-uQ=s0?imgmax=0
 	if (domain.match(/\.googleusercontent\.com$/) ||
 		domain.match(/\.ggpht\.com$/)) {
+		if (/\/proxy\//.test(url))
+			return true;
+
 		var p1 = url.replace(/^[a-z]+:\/\/[^/]*\/([^/]*).*?$/, "$1");
 		console.log(p1.length);
 		return p1.length > 450;
@@ -214,32 +217,22 @@ function is_googlephotos(domain, url) {
 }
 
 function is_youtube_url(url) {
-	match = url.match(/^[a-z]+:\/\/(?:(?:www|m)\.)?youtube\.com\/+watch\?(?:.*&)?v=([^&#]*)/);
-	if (!match) {
-		match = url.match(/^[a-z]+:\/\/(?:(?:www|m)\.)?youtu\.be\/+([^?&#]*)/);
+	var regexes = [
+		/^[a-z]+:\/\/(?:(?:www|m)\.)?youtube\.com\/+watch\?(?:.*&)?v=([^&#]*)/,
+		/^[a-z]+:\/\/(?:(?:www|m)\.)?youtu\.be\/+([^?&#]*)/,
+		/^[a-z]+:\/\/i\.ytimg\.com\/+([^?&#]*)/,
+		/^[a-z]+:\/\/(?:[^/]+\.)?(?:gfycat|redgifs)\.com\//,
+		/^[a-z]+:\/\/(?:[^/]+\.)?(?:instagram|facebook|patreon)\.com\//,
+		/^[a-z]+:\/\/(?:www\.)?(?:vimeo|dailymotion)\.com\//,
+		/^[a-z]+:\/\/(?:www\.)?imgur\.com\/+(?:a\/+)?[^/.]+(?:[?#].*)?$/
+	];
+
+	for (var regex of regexes) {
+		if (regex.test(url))
+			return true;
 	}
 
-	if (!match) {
-		match = url.match(/^[a-z]+:\/\/i\.ytimg\.com\/+([^?&#]*)/);
-	}
-
-	if (!match) {
-		match = url.match(/^[a-z]+:\/\/(?:[^/]+\.)?(?:gfycat|redgifs)\.com\//);
-	}
-
-	if (!match) {
-		match = url.match(/^[a-z]+:\/\/(?:[^/]+\.)?(?:instagram|facebook)\.com\//);
-	}
-
-	if (!match) {
-		match = url.match(/^[a-z]+:\/\/(?:www\.)?(?:vimeo|dailymotion)\.com\//);
-	}
-
-	if (!match) {
-		match = url.match(/^[a-z]+:\/\/(?:www\.)?imgur\.com\/+(?:a\/+)?[^/.]+(?:[?#].*)?$/);
-	}
-
-	return !!match;
+	return false;
 }
 
 function npify(text) {
