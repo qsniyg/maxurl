@@ -32805,6 +32805,9 @@ var $$IMU_EXPORT$$;
 			//   https://p16-amd-va.tiktokcdn.com/origin/tiktok-obj/1628900944743426.webp
 			// https://p61-sg.tiktokcdn.com/img/tos-maliva-avt-0068/6786738264c09fd4f4e959b1b384f768~c5_100x100.webp
 			// https://p61-va.tiktokcdn.com/img/tos-maliva-avt-0068/6786738264c09fd4f4e959b1b384f768~c5_100x100.webp
+			// thanks to llacb47 on github: https://github.com/qsniyg/maxurl/issues/433
+			// https://p16.tiktokcdn.com/aweme/200x200/tos-alisg-i-0000/735a1666aed24306ad91380ac6b05c6a.jpeg
+			//   https://p16.tiktokcdn.com/origin/tos-alisg-i-0000/735a1666aed24306ad91380ac6b05c6a.jpeg
 			// other:
 			// https://p16-amd-va.tiktokcdn.com/origin/tos-maliva-p-0068/3c666aa393714922b10def1ee39ad780_1599009621
 			//domain === "p16-amd-va.tiktokcdn.com" ||
@@ -32814,7 +32817,7 @@ var $$IMU_EXPORT$$;
 			//   http://p16-va.hypstarcdn.com/origin/hpimg/db21de51a5c58250bfc4daa08c218e936ba721100afcabf845ba99e09a69c409.jpg
 			((domain_nosub === "tiktokcdn.com" ||
 			  domain_nosub === "hypstarcdn.com") &&
-			  (/^p[0-9]+(?:-[^/]+)\./.test(domain) && !/-sign[-.]/.test(domain))) ||
+			  (/^p[0-9]+(?:-[^/]+)?\./.test(domain) && !/-sign[-.]/.test(domain))) ||
 			// http://p16-hypstarcdn-com.akamaized.net/img/hpimg/db21de51a5c58250bfc4daa08c218e936ba721100afcabf845ba99e09a69c409~100x100.jpg
 			//   http://p16-hypstarcdn-com.akamaized.net/img/hpimg/db21de51a5c58250bfc4daa08c218e936ba721100afcabf845ba99e09a69c409~noop.jpg
 			//   http://p16-hypstarcdn-com.akamaized.net/origin/hpimg/db21de51a5c58250bfc4daa08c218e936ba721100afcabf845ba99e09a69c409.jpg
