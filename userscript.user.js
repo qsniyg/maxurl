@@ -21822,6 +21822,19 @@ var $$IMU_EXPORT$$;
 				.replace(/(\/slideshows\/.*\/[^/]*)\.[a-z](\.[^/.]*)\/[^/]*(?:[?#].*)?$/, "$1$2");
 		}
 
+		if (domain === "pyxis.nymag.com") {
+			// thanks to llacb47 on github: https://github.com/qsniyg/maxurl/issues/432
+			// https://pyxis.nymag.com/v1/imgs/729/cc9/040edf97c4ef041ec1f48829be69842eed-24-Doja-Cat.rsquare.w330.jpg
+			//   https://pyxis.nymag.com/v1/imgs/729/cc9/040edf97c4ef041ec1f48829be69842eed-24-Doja-Cat.rvertical.jpg
+			//   https://pyxis.nymag.com/v1/imgs/729/cc9/040edf97c4ef041ec1f48829be69842eed-24-Doja-Cat.w330.jpg
+			//   https://pyxis.nymag.com/v1/imgs/729/cc9/040edf97c4ef041ec1f48829be69842eed-24-Doja-Cat.jpg
+			// https://pyxis.nymag.com/v1/imgs/92c/88f/d4a2dede7120bc943ed95943b6ac5fe212-trump.rsquare-zoom.w100.jpg
+			//   https://pyxis.nymag.com/v1/imgs/92c/88f/d4a2dede7120bc943ed95943b6ac5fe212-trump.jpg
+			// https://pyxis.nymag.com/v1/imgs/5d3/ba9/44036335bf752271c445cd3ed12bf0c20d-02-LL-cool-J--WICLW-NEW.rhorizontal.w700.jpg
+			//   https://pyxis.nymag.com/v1/imgs/5d3/ba9/44036335bf752271c445cd3ed12bf0c20d-02-LL-cool-J--WICLW-NEW.jpg
+			return src.replace(/(\/v1\/+imgs\/+[0-9a-f]{3}\/+[0-9a-f]{3}\/+[0-9a-f]{10,}[^/.?#]*\.)(?:(?:r(?:square|horizontal|vertical)(?:-[a-z]+)?|[wh][0-9]+)\.){0,}([a-z]+)(?:[?#].*)?$/, "$1$2");
+		}
+
 		if (domain === "assets.nydailynews.com" ||
 			// http://assets.nydailynews.com/polopoly_fs/1.1756087.1397507807!/img/httpImage/image.jpg_gen/derivatives/article_750/ccweb15s-2-web.jpg
 			//   http://assets.nydailynews.com/polopoly_fs/1.1756087.1397507807!/img/httpImage/ccweb15s-2-web.jpg
