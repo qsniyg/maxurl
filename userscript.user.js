@@ -12639,6 +12639,7 @@ var $$IMU_EXPORT$$;
 	};
 
 	var common_functions = {};
+	// cookie: postpagebeta=0; postpagebetalogged=0
 	common_functions.fetch_imgur_webpage = function(do_request, api_cache, headers, url, cb) {
 		var cache_key = "imgur_webpage:" + url.replace(/^https?:\/\/(?:www\.)?imgur/, "imgur").replace(/[?#].*/, "");
 
@@ -12692,11 +12693,14 @@ var $$IMU_EXPORT$$;
 					var imageinfo;
 					var match = resp.responseText.match(/\.\s*mergeConfig\s*\(\s*["']gallery["']\s*,\s*{[\s\S]+?image\s*:\s*({.*?})\s*,\s*\n/);
 					if (!match) {
+						retobj.found_match = false;
+
 						var nsfwmatch = resp.responseText.match(/<a.*?btn-wall--yes.*?\.(?:signin|cookie)\(/);
 						var msg = "Unable to find match for Imgur page";
 
 						if (nsfwmatch) {
 							msg += " (it's probably NSFW and you aren't logged in)";
+							retobj.nsfw = true;
 						}
 
 						console_warn(msg);
@@ -12710,6 +12714,8 @@ var $$IMU_EXPORT$$;
 						// Only cache it for 15 seconds (helpful if the user logs in)
 						done(retobj, 15);
 					} else {
+						retobj.found_match = true;
+
 						imageinfo = match[1];
 
 						try {
@@ -12734,12 +12740,144 @@ var $$IMU_EXPORT$$;
 		api_cache.fetch(cache_key, cb, real_fetch);
 	};
 
+	common_functions.imgur_run_api = function(do_request, api_cache, endpoint, query, cb) {
+		if (!query)
+			query = {};
+
+		query.client_id = base64_decode("IDU0NmMyNWE1OWM1OGFkNw==").slice(1);
+
+		url = endpoint + "?" + stringify_queries(query);
+
+		real_api_query(api_cache, do_request, "imgur_api:" + url, {
+			url: url,
+			imu_mode: "xhr",
+			headers: {
+				Referer: "https://imgur.com/"
+			},
+			json: true
+		}, cb,
+		function(done, resp) {
+			return done(resp, 60*60);
+		});
+	};
+
+	common_functions.imgur_api_fetch_album_media = function(do_request, api_cache, type, id, cb) {
+		// another option: https://api.imgur.com/3/image/id?client_id=...
+		//                 https://api.imgur.com/3/album/id?client_id=...
+		// works for logged in accounts, does it work for anonymous accounts too? is there a reason to use this instead?
+
+		if (type === "album")
+			type = "albums";
+		else if (type === "image")
+			type = "media";
+
+		var endpoint = "https://api.imgur.com/post/v1/" + type + "/" + id;
+		// FIXME: is adconfig,account required?
+		var query = {include: "media,adconfig,account"};
+
+		return common_functions.imgur_run_api(do_request, api_cache, endpoint, query, cb);
+	};
+
+	common_functions.imgur_fetch_album_media = function(options, api_cache, type, id, cb) {
+		if (type !== "album" && type !== "image") {
+			console_error("Bug! Invalid type:", type);
+			return cb(null);
+		}
+
+		var finalcb = function(data) {
+			if (!data)
+				return cb(data);
+
+			var normalized = common_functions.imgur_normalize(data);
+			return cb(normalized);
+		};
+
+		if (("rule_specific" in options) && ("imgur_source" in options.rule_specific) && options.rule_specific.imgur_source) {
+			var url = "https://imgur.com/";
+			if (type === "album")
+				url += "a/";
+
+			url += id;
+
+			common_functions.fetch_imgur_webpage(options.do_request, api_cache, null, url, function(data) {
+				// either new webpage or nsfw
+				console_log(data);
+				if (!data || !data.found_match || !data.imageinfo) {
+					return common_functions.imgur_api_fetch_album_media(options.do_request, api_cache, type, id, finalcb);
+				} else {
+					return finalcb(data.imageinfo);
+				}
+			});
+		} else {
+			return common_functions.imgur_api_fetch_album_media(options.do_request, api_cache, type, id, finalcb);
+		}
+	};
+
+	common_functions.imgur_normalize = function(obj) {
+		// v1
+		if (!("media" in obj)) {
+			if (obj.album_images) {
+				// old web
+				obj.media = obj.album_images.images;
+			} else if (obj.images) {
+				// v3
+				obj.media = obj.images;
+			}
+		}
+
+		// v1
+		if (!("is_album" in obj)) {
+			// old web
+			if ("album_images" in obj)
+				obj.is_album = true;
+		}
+
+		// v1
+		if (!("url" in obj)) {
+			if (obj.link) {
+				// v3
+				obj.url = obj.link;
+			} else if (obj.hash) {
+				// old web
+				var prefix = "https://imgur.com/";
+				if (obj.is_album) {
+					prefix += "a/";
+				}
+
+				obj.url = prefix + obj.hash
+			}
+		}
+		return obj;
+	};
+
 	common_functions.imgur_image_to_obj = function(options, baseobj, json) {
 		var retobj = [];
 
 		try {
-			if (json.description || json.title) {
-				baseobj.extra.caption = json.description || json.title;
+			//if (!json.is_album && json.media && json.media.length === 1)
+			//	json = json.media[0];
+
+			var metadata = json;
+
+			// api
+			if (json.metadata)
+				metadata = json.metadata;
+
+			if (metadata.description || metadata.title) {
+				baseobj.extra.caption = metadata.description || metadata.title;
+			}
+
+			if (!json.hash) {
+				// v1?
+				if (json.id) {
+					json.hash = json.id;
+				}
+			}
+
+			if (json.ext) {
+				// v1?
+				if (json.ext[0] !== ".")
+					json.ext = "." + json.ext;
 			}
 
 			var realfilename = null;
@@ -12749,7 +12887,12 @@ var $$IMU_EXPORT$$;
 				var obj = deepcopy(baseobj);
 				obj.url = "https://i.imgur.com/" + realfilename;
 
-				if (/^video\//.test(json.mimetype)) {
+				// v1
+				if (json.name)
+					obj.filename = json.name;
+
+				var mimetype = json.mimetype || json.mime_type;
+				if (/^video\//.test(mimetype)) {
 					obj.video = true;
 					retobj.push(obj);
 
@@ -12758,7 +12901,9 @@ var $$IMU_EXPORT$$;
 					retobj.push(obj);
 				} else {
 					// Prefer video if possible
-					if (json.animated && json.prefer_video) {
+					var animated = metadata.is_animated || json.animated;
+					// fixme: prefer_video isn't in the api version
+					if (animated && json.prefer_video) {
 						var newobj = deepcopy(baseobj);
 						newobj.url = "https://i.imgur.com/" + json.hash + ".mp4";
 						newobj.video = true;
@@ -12770,6 +12915,7 @@ var $$IMU_EXPORT$$;
 				}
 			}
 
+			// (old) webpage
 			if (json.source && /^https?:\/\//.test(json.source)) {
 				if (!("rule_specific" in options) || !("imgur_source" in options.rule_specific) || options.rule_specific.imgur_source === true) {
 					var newobj = {url: json.source};
@@ -26210,30 +26356,18 @@ var $$IMU_EXPORT$$;
 			newsrc = website_query({
 				website_regex: /^[a-z]+:\/\/[^/]+\/+a\/+([a-zA-Z0-9]+)(?:[?#].*)?$/,
 				run: function(cb, match) {
-					common_functions.fetch_imgur_webpage(options.do_request, api_cache, nsfw_headers, "https://imgur.com/a/" + match[1], function(data) {
+					common_functions.imgur_fetch_album_media(options, api_cache, "album", match[1], function(data) {
 						if (!data)
-							cb(null);
+							return cb(null);
 
-						if (!("imageinfo" in data)) {
-							console_error("Unable to find imageinfo in", data);
-
-							var newurl = data.ogvideo || data.ogimage;
-							if (newurl)
-								return cb(newurl);
-
+						if (!data.media || data.media.length === 0) {
+							console_error("Unable to find images in", data);
 							return cb(null);
 						}
 
-						var imageinfo = data.imageinfo;
-						if (!("album_images" in imageinfo)) {
-							console_error("Unable to find album_images in", data);
-							return cb(null);
-						}
-
-						var images = imageinfo.album_images.images;
 						var imageobjs = [];
 
-						array_foreach(images, function(image) {
+						array_foreach(data.media, function(image) {
 							var baseobj = {extra: {}};
 							var obj = common_functions.imgur_image_to_obj(options, baseobj, image);
 							imageobjs.push(fillobj_urls(obj, baseobj));
@@ -26241,23 +26375,23 @@ var $$IMU_EXPORT$$;
 
 						var obj = {
 							extra: {
-								page: "https://imgur.com/a/" + match[1],
-								caption: data.imageinfo.title
+								page: data.url,
+								caption: data.title || null
 							}
 						};
 
-						if (imageobjs.length > 1) {
+						if (data.media.length > 1) {
 							obj.album_info = {
 								type: "links",
 								links: []
 							};
 
-							for (var i = 0; i < imageobjs.length; i++) {
+							array_foreach(imageobjs, function(imageobj, i) {
 								obj.album_info.links.push({
-									url: imageobjs[i][0].url,
+									url: imageobj[0].url,
 									is_current: i === 0
 								});
-							}
+							});
 						}
 
 						var newobj = fillobj_urls(imageobjs[0], obj);
