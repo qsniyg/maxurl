@@ -21832,7 +21832,11 @@ var $$IMU_EXPORT$$;
 			//   https://pyxis.nymag.com/v1/imgs/92c/88f/d4a2dede7120bc943ed95943b6ac5fe212-trump.jpg
 			// https://pyxis.nymag.com/v1/imgs/5d3/ba9/44036335bf752271c445cd3ed12bf0c20d-02-LL-cool-J--WICLW-NEW.rhorizontal.w700.jpg
 			//   https://pyxis.nymag.com/v1/imgs/5d3/ba9/44036335bf752271c445cd3ed12bf0c20d-02-LL-cool-J--WICLW-NEW.jpg
-			return src.replace(/(\/v1\/+imgs\/+[0-9a-f]{3}\/+[0-9a-f]{3}\/+[0-9a-f]{10,}[^/.?#]*\.)(?:(?:r(?:square|horizontal|vertical)(?:-[a-z]+)?|[wh][0-9]+)\.){0,}([a-z]+)(?:[?#].*)?$/, "$1$2");
+			// https://pyxis.nymag.com/v1/imgs/8b0/b62/f1212d7c71c261c4d2582d4e9bcbc155c4-steve-underwood.2x.rhorizontal.w700.jpg
+			//   https://pyxis.nymag.com/v1/imgs/8b0/b62/f1212d7c71c261c4d2582d4e9bcbc155c4-steve-underwood.jpg
+			// https://pyxis.nymag.com/v1/imgs/0ce/fd4/5fb0f096041f7bdbc2395f36c1f56ecf00-Sept30-Oct13-Testimonies.2x.rsocial.w600.jpg
+			//   https://pyxis.nymag.com/v1/imgs/0ce/fd4/5fb0f096041f7bdbc2395f36c1f56ecf00-Sept30-Oct13-Testimonies.jpg
+			return src.replace(/(\/v1\/+imgs\/+[0-9a-f]{3}\/+[0-9a-f]{3}\/+[0-9a-f]{10,}[^/.?#]*\.)(?:(?:r(?:square|horizontal|vertical|social)(?:-[a-z]+)?|[wh][0-9]+|[0-9]+x)\.){0,}([a-z]+)(?:[?#].*)?$/, "$1$2");
 		}
 
 		if (domain === "assets.nydailynews.com" ||
