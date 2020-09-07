@@ -21559,6 +21559,7 @@ var $$IMU_EXPORT$$;
 				domain_nowww === "channel3000.com" ||
 				// https://www.9and10news.com/content/uploads/2020/07/BOAT-3-553x360.jpg
 				domain_nowww === "9and10news.com" ||
+				(domain_nosub === "tn-cloud.net" && /^wpcdn\./.test(domain)) ||
 				// https://www.kxly.com/content/uploads/2020/09/computer-keyboard-Cropped-1024x576-640x360.jpg
 				domain_nowww === "kxly.com") && /\/content\/+uploads\//.test(src)) ||
 			// https://static.acgsoso.com/uploads/2020/02/19bd4f091f03c191195d5e626c3190f9-200x300.jpg
