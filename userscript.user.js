@@ -21546,6 +21546,15 @@ var $$IMU_EXPORT$$;
 			// thanks to jloqfjgk on github: https://github.com/qsniyg/maxurl/issues/408
 			// https://www.lapisrelights.com/assets/img/uploads/2020/08/lapis_crossword_thumb2-1024x576.jpg
 			(domain_nowww === "lapisrelights.com" && /\/assets\/+img\/+uploads\//.test(src)) ||
+			// thanks to llacb47 on github: https://github.com/qsniyg/maxurl/issues/439
+			// https://www.wbbjtv.com/content/uploads/2020/03/MGN_1280x960_00321B00-INZQY-1024x768.jpg
+			((domain_nowww === "wbbjtv.com" ||
+				// https://www.channel3000.com/content/uploads/2020/09/Drink-1024x576.jpg
+				domain_nowww === "channel3000.com" ||
+				// https://www.9and10news.com/content/uploads/2020/07/BOAT-3-553x360.jpg
+				domain_nowww === "9and10news.com" ||
+				// https://www.kxly.com/content/uploads/2020/09/computer-keyboard-Cropped-1024x576-640x360.jpg
+				domain_nowww === "kxly.com") && /\/content\/+uploads\//.test(src)) ||
 			// https://static.acgsoso.com/uploads/2020/02/19bd4f091f03c191195d5e626c3190f9-200x300.jpg
 			(domain === "static.acgsoso.com" && string_indexof(src, "/uploads/") >= 0)
 			) {
@@ -77960,6 +77969,59 @@ var $$IMU_EXPORT$$;
 			// https://img.discogs.com/MjmbFRJJih89NH1vTPzlL4hV-8Q=/fit-in/600x600/filters:strip_icc():format(jpeg):mode_rgb():quality(90)/discogs-images/R-12801670-1542565929-6791.jpeg.jpg
 			//   https://www.discogs.com/image/R-12801670-1542565929-6791.jpeg
 			return src.replace(/^[a-z]+:\/\/[^/]+\/[^/]+=\/.*\/discogs-images\/([^/?#]+)\.[^/.]+(?:[?#].*)?$/, "https://www.discogs.com/image/$1");
+		}
+
+		if (domain === "geo-media.beatsource.com") {
+			// thanks to llacb47 on github: https://github.com/qsniyg/maxurl/issues/439
+			// https://geo-media.beatsource.com/image_size/500x500/8/c/6/8c608f85-4018-4657-91c6-8037169ec9b3.jpg
+			//   https://geo-media.beatsource.com/8/c/6/8c608f85-4018-4657-91c6-8037169ec9b3.jpg -- 1400x1400
+			// https://geo-media.beatsource.com/image_size/500x500/0/9/f/09f5cedc-496a-4058-a383-a7f6916fea3b.jpg
+			//   https://geo-media.beatsource.com/0/9/f/09f5cedc-496a-4058-a383-a7f6916fea3b.jpg -- 1400x1400 (upscaled?)
+			// https://geo-media.beatsource.com/image_size/500x500/f/9/5/f95bcc58-f2f3-4acb-959d-44caffa08444.jpg
+			//   https://geo-media.beatsource.com/f/9/5/f95bcc58-f2f3-4acb-959d-44caffa08444.jpg -- 1400x1400
+			// https://geo-media.beatsource.com/image_size/2160x864/4/8/6/486b594c-eb2d-4f64-980c-7bd53bd55c04.jpg
+			//   https://geo-media.beatsource.com/4/8/6/486b594c-eb2d-4f64-980c-7bd53bd55c04.jpg -- 2160x864
+			return src.replace(/\/image_size\/+[0-9]+x[0-9]+\/+/, "/");
+		}
+
+		if (domain_nowww === "meijer.com") {
+			// thanks to llacb47 on github: https://github.com/qsniyg/maxurl/issues/439
+			// https://www.meijer.com/content/dam/meijer/product/0007/04/7000/30/0007047000300_2_A1C1_0200.png
+			//   https://www.meijer.com/content/dam/meijer/product/0007/04/7000/30/0007047000300_2_A1C1_1200.png
+			// https://www.meijer.com/content/dam/meijer/product/0071/37/3301/85/0071373301850_4_A1C1_0600.png
+			//   https://www.meijer.com/content/dam/meijer/product/0071/37/3301/85/0071373301850_4_A1C1_1200.png
+			return src.replace(/(\/content\/+dam\/+[^/]+\/+product\/+.*?\/[0-9]+_[0-9]+_[0-9A-Z]+_)(?:0[0-9]{3}|11[0-9]{2})\./, "$11200.");
+		}
+
+		if (domain_nowww === "kroger.com") {
+			// thanks to llacb47 on github: https://github.com/qsniyg/maxurl/issues/439
+			// https://www.kroger.com/product/images/thumbnail/left/0003338320027
+			//   https://www.kroger.com/product/images/xlarge/left/0003338320027
+			// https://www.kroger.com/product/images/medium/front/0004900000044
+			//   https://www.kroger.com/product/images/xlarge/front/0004900000044
+			// https://www.kroger.com/product/images/small/back/0003800019904
+			//   https://www.kroger.com/product/images/xlarge/back/0003800019904
+			// https://www.kroger.com/product/images/large/right/0008768400095
+			//   https://www.kroger.com/product/images/xlarge/right/0008768400095
+			// xlarge doesn't upscale:
+			// https://www.kroger.com/product/images/medium/front/0003338320027
+			//   https://www.kroger.com/product/images/xlarge/front/0003338320027 -- same size
+			return src.replace(/(\/product\/+images\/+)(?:thumbnail|medium|small|large)(\/+[a-z]+\/+[0-9]+)(?:[?#].*)?$/, "$1xlarge$2");
+		}
+
+		if (domain_nosub === "tn-cloud.net" && /^wpcdn\./.test(domain)) {
+			// thanks to llacb47 on github: https://github.com/qsniyg/maxurl/issues/439
+			// https://wpcdn.us-east-1.vip.tn-cloud.net/www.channel3000.com/content/uploads/2020/09/Drink-1024x576.jpg
+			//   https://www.channel3000.com/content/uploads/2020/09/Drink-1024x576.jpg
+			// https://wpcdn.us-midwest-1.vip.tn-cloud.net/www.9and10news.com/content/uploads/2020/07/BOAT-3-553x360.jpg
+			//   https://www.9and10news.com/content/uploads/2020/07/BOAT-3-553x360.jpg
+			// https://wpcdn.us-east-1.vip.tn-cloud.net/www.wbbjtv.com/content/uploads/2020/03/MGN_1280x960_00321B00-INZQY-1024x768.jpg
+			//   https://www.wbbjtv.com/content/uploads/2020/03/MGN_1280x960_00321B00-INZQY-1024x768.jpg
+			// https://wpcdn.us-east-1.vip.tn-cloud.net/www.kxly.com/content/uploads/2020/09/computer-keyboard-Cropped-1024x576-640x360.jpg
+			//   https://www.kxly.com/content/uploads/2020/09/computer-keyboard-Cropped-1024x576-640x360.jpg
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+([^/]+\.[^/]+\/+content\/+uploads\/)/, "https://$1");
+			if (newsrc !== src)
+				return newsrc;
 		}
 
 
