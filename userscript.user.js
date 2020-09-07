@@ -17482,6 +17482,13 @@ var $$IMU_EXPORT$$;
 		//   https://res.cloudinary.com/beamly/image/upload/v1/news/sites/6/2013/12/o-katie-hopkins-570.jpg
 		// http://thefader-res.cloudinary.com/private_images/w_1440,c_limit,f_auto,q_auto:best/Badgyal5RGB_wbgyon/bad-gyal-nicest-cocky-interview-dancehall-catalan.jpg
 		//   http://thefader-res.cloudinary.com/private_images/c_limit/Badgyal5RGB_wbgyon/bad-gyal-nicest-cocky-interview-dancehall-catalan.jpg
+		// thanks to llacb47 on github: https://github.com/qsniyg/maxurl/issues/440
+		// https://thefader-res.cloudinary.com/private_images/c_limit,w_1024/c_crop,h_576,w_1024,x_0,y_0/h_100,w_100,c_fill,g_face,f_auto,q_auto:eco/maxresdefault_8_izscqi/watch-lil-durks-new-video-the-voice.jpg
+		//   https://thefader-res.cloudinary.com/private_images/c_limit/maxresdefault_8_izscqi/watch-lil-durks-new-video-the-voice.jpg
+		// https://thefader-res.cloudinary.com/private_images/c_limit,w_1024/c_crop,h_587,w_1017,x_7,y_37/w_300,c_limit,f_auto,q_auto:eco/GettyImages-946045380_dg6mdo/GettyImages-946045380_dg6mdo.jpg
+		//   https://thefader-res.cloudinary.com/private_images/c_limit/GettyImages-946045380_dg6mdo/GettyImages-946045380_dg6mdo.jpg
+		// https://thefader-res.cloudinary.com/private_images/c_limit,w_1024/c_crop,h_591,w_1017,x_7,y_35/w_300,c_limit,f_auto,q_auto:eco/GettyImages-1180497945_4_xkstxf/GettyImages-1180497945_4_xkstxf.jpg
+		//   https://thefader-res.cloudinary.com/private_images/c_limit/GettyImages-1180497945_4_xkstxf/GettyImages-1180497945_4_xkstxf.jpg
 		// https://res.cloudinary.com/dk-find-out/image/upload/q_80,w_1920,f_auto/MA_00079563_yvu84f.jpg
 		// https://res.cloudinary.com/jerrick/image/upload/p7jbqvi0aoxm4mdn3x6x
 		// https://talenthouse-res.cloudinary.com/image/upload/c_limit,f_auto,fl_progressive,h_2048,w_2048/v1457507984/user-555017/submissions/a1kqddzzmsoyjxh2mkks.jpg
@@ -17494,9 +17501,7 @@ var $$IMU_EXPORT$$;
 		// http://res-4.cloudinary.com/uan/image/private/c_fill,d_event_default.jpg,g_north,h_640,q_80,w_1280/jzigjdloajy6wzbzqjk1.jpg
 		//   http://res-4.cloudinary.com/uan/image/private/c_limit/jzigjdloajy6wzbzqjk1.jpg
 		// https://res.cloudinary.com/teepublic/image/private/s--AcQdRwqc--/t_Resized%20Artwork/c_fit,g_north_west,h_1054,w_1054/co_ffffff,e_outline:53/co_ffffff,e_outline:inner_fill:53/co_bbbbbb,e_outline:3:1000/c_mpad,g_center,h_1260,w_1260/b_rgb:eeeeee/c_limit,f_jpg,h_630,q_90,w_630/v1518936493/production/designs/2373946_0.jpg
-		if ((domain_nosub === "cloudinary.com" &&
-			 (string_indexof(domain, "res.cloudinary.com") >= 0 ||
-			  domain.match(/res-[0-9]*\.cloudinary\.com/))) ||
+		if ((domain_nosub === "cloudinary.com" && /res(?:-[0-9]+)?\./.test(domain)) ||
 			// https://i.kinja-img.com/gawker-media/image/upload/s--aj1fB409--/c_fill,f_auto,fl_progressive,g_center,h_675,q_80,w_1200/181f6al0l60gjjpg.jpg -- stretched, cropped
 			//   https://i.kinja-img.com/gawker-media/image/upload/181f6al0l60gjjpg.jpg
 			domain === "i.kinja-img.com") {
@@ -17507,7 +17512,8 @@ var $$IMU_EXPORT$$;
 				.replace(/\/image\/upload\/[^/]*_[^/]*\//, "/image/upload/")
 				.replace(/\/image\/upload\/v[0-9]+\//, "/image/upload/")
 				//.replace(/(\/image\/upload\/)(?:(?:.*?\/?(v1\/))|(?:[^/]*\/))/, "$1$2")
-				.replace(/(\/private_images\/)[^/]*\//, "$1c_limit/")
+				//.replace(/(\/private_images\/)[^/]*\//, "$1c_limit/")
+				.replace(/(\/private_images\/+)(?:c_limit\/+)?[chwxyfq]_[^/]*\//, "$1c_limit/")
 				.replace(/(\/image\/private\/)[^s][^-][^/]*\//, "$1c_limit/")
 				.replace(/(:\/\/[^/]*\/)[^/]*\/(ch\/images\/[0-9]+\/[^/]*$)/, "$1$2");
 			if (newsrc !== src) {
