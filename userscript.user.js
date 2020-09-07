@@ -18841,6 +18841,11 @@ var $$IMU_EXPORT$$;
 			// https://pbs.twimg.com/media/EUEKr-gUYAMrXt_?format=jpg&name=900x900
 			// https://pbs.twimg.com/media/EWHdLzNUwAIy7Ik.jpg:orig -- works (1368x2048) -- no longer, probably a cache error?
 			//   https://pbs.twimg.com/media/EWHdLzNUwAIy7Ik.jpg?name=orig -- doesn't work (404)
+			// thanks to llacb47 on github: https://pbs.twimg.com/media/EhML7FPXkAEK4GZ?format=webp&name=tiny
+			// https://pbs.twimg.com/media/EhML7FPXkAEK4GZ?format=webp&name=tiny
+			//   https://pbs.twimg.com/media/EhML7FPXkAEK4GZ.jpg?name=orig
+			// https://pbs.twimg.com/media/EhMO9OhU0AA6vZv?format=webp&name=tiny
+			//   https://pbs.twimg.com/media/EhMO9OhU0AA6vZv.jpg?name=orig
 			// 4096x4096 is also a valid "name"
 			// medium == null?
 
@@ -18870,6 +18875,8 @@ var $$IMU_EXPORT$$;
 					.replace(/(\/[^/.?]+)\?(.*?&)?format=([^&]*)(.*?$)?/, "$1.$3?$2$4")
 					.replace(/\?&/, "?")
 					.replace(/[?&]+$/, "");
+
+				newsrc = newsrc.replace(/\.webp([?#].*)?$/, ".jpg$1");
 
 				if (newsrc !== src) {
 					obj.url = newsrc;
