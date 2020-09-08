@@ -6902,6 +6902,26 @@ var $$IMU_EXPORT$$;
 				]
 			}
 		},
+		"Imgur: Use original filename": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "imgur_filename",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"If the original filename (the one used to upload the image) is found, use it instead of the image ID": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "imgur_filename",
+						"field": "description"
+					}
+				]
+			}
+		},
 		"Imgur: Use source image": {
 			"_info": {
 				"instances": [
@@ -6912,7 +6932,7 @@ var $$IMU_EXPORT$$;
 				]
 			}
 		},
-		"If a source image is found for Imgur, try using it instead": {
+		"If a source image is found for Imgur, try using it instead. Only works for old-style Imgur webpages (set `postpagebeta=0; postpagebetalogged=0` as cookies)": {
 			"_info": {
 				"instances": [
 					{
