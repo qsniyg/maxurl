@@ -7912,6 +7912,7 @@ var $$IMU_EXPORT$$;
 		allow_bruteforce: false,
 		//browser_cookies: true,
 		deviantart_prefer_size: false,
+		imgur_filename: false,
 		imgur_source: true,
 		instagram_use_app_api: true,
 		instagram_dont_use_web: false,
@@ -10233,6 +10234,12 @@ var $$IMU_EXPORT$$;
 		deviantart_prefer_size: {
 			name: "DeviantArt: Prefer size over original",
 			description: "Prefers a larger (but not upscaled) thumbnail image over a smaller original animated image",
+			category: "rule_specific",
+			onupdate: update_rule_setting
+		},
+		imgur_filename: {
+			name: "Imgur: Use original filename",
+			description: "If the original filename (the one used to upload the image) is found, use it instead of the image ID",
 			category: "rule_specific",
 			onupdate: update_rule_setting
 		},
@@ -12884,19 +12891,23 @@ var $$IMU_EXPORT$$;
 			if (json.hash && json.ext) {
 				realfilename = json.hash + json.ext;
 
-				var obj = deepcopy(baseobj);
-				obj.url = "https://i.imgur.com/" + realfilename;
+				var base1obj = deepcopy(baseobj);
 
 				// v1
-				if (json.name)
-					obj.filename = json.name;
+				if (("rule_specific" in options) && ("imgur_filename" in options.rule_specific) && options.rule_specific.imgur_filename) {
+					if (json.name)
+						base1obj.filename = json.name;
+				}
+
+				var obj = deepcopy(base1obj);
+				obj.url = "https://i.imgur.com/" + realfilename;
 
 				var mimetype = json.mimetype || json.mime_type;
 				if (/^video\//.test(mimetype)) {
 					obj.video = true;
 					retobj.push(obj);
 
-					var obj = deepcopy(baseobj);
+					var obj = deepcopy(base1obj);
 					obj.url = "https://i.imgur.com/" + json.hash + ".jpg"
 					retobj.push(obj);
 				} else {
@@ -12904,7 +12915,7 @@ var $$IMU_EXPORT$$;
 					var animated = metadata.is_animated || json.animated;
 					// fixme: prefer_video isn't in the api version
 					if (animated && json.prefer_video) {
-						var newobj = deepcopy(baseobj);
+						var newobj = deepcopy(base1obj);
 						newobj.url = "https://i.imgur.com/" + json.hash + ".mp4";
 						newobj.video = true;
 
@@ -80558,6 +80569,7 @@ var $$IMU_EXPORT$$;
 		if ("rule_specific" in options) {
 			var rule_specific_map = {
 				"deviantart_prefer_size": true,
+				"imgur_filename": true,
 				"imgur_source": true,
 				"instagram_use_app_api": true,
 				"instagram_dont_use_web": true,
