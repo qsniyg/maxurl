@@ -80819,6 +80819,19 @@ var $$IMU_EXPORT$$;
 					for (var i = 0; i < pasthrefs.length; i++) {
 						if (same_url(pasthrefs[i], objified)) {
 							nir_debug("bigimage_recursive", "parse_bigimage: sameurl(pasthrefs[" + i + "], objified) == true", deepcopy(pasthrefs[i]), deepcopy(objified));
+
+							// FIXME: is this even correct?
+							var cond = false;
+							array_foreach(copy_props, function(prop) {
+								if (!(prop in newhref[0]) && (prop in important_properties)) {
+									cond = true;
+									return false;
+								}
+							});
+
+							if (cond)
+								newhref = objified;
+
 							return false;
 						}
 					}
