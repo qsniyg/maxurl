@@ -7913,7 +7913,7 @@ var $$IMU_EXPORT$$;
 		//browser_cookies: true,
 		deviantart_prefer_size: false,
 		imgur_filename: false,
-		imgur_source: true,
+		imgur_source: false,
 		instagram_use_app_api: true,
 		instagram_dont_use_web: false,
 		instagram_gallery_postlink: false,
