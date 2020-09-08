@@ -12881,6 +12881,8 @@ var $$IMU_EXPORT$$;
 				}
 			}
 
+			baseobj.extra.page = "https://imgur.com/" + json.hash;
+
 			if (json.ext) {
 				// v1?
 				if (json.ext[0] !== ".")
@@ -26439,7 +26441,7 @@ var $$IMU_EXPORT$$;
 
 							array_foreach(imageobjs, function(imageobj, i) {
 								obj.album_info.links.push({
-									url: imageobj[0].url,
+									url: imageobj[0].extra.page,
 									is_current: i === 0
 								});
 							});
