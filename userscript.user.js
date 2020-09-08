@@ -26405,7 +26405,7 @@ var $$IMU_EXPORT$$;
 
 		if (domain_nowww === "imgur.com") {
 			newsrc = website_query({
-				website_regex: /^[a-z]+:\/\/[^/]+\/+a\/+([a-zA-Z0-9]+)(?:[?#].*)?$/,
+				website_regex: /^[a-z]+:\/\/[^/]+\/+(?:a|gallery)\/+([a-zA-Z0-9]+)(?:[?#].*)?$/,
 				run: function(cb, match) {
 					common_functions.imgur_fetch_album_media(options, api_cache, "album", match[1], function(data) {
 						if (!data)
