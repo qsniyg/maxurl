@@ -11177,18 +11177,20 @@ var $$IMU_EXPORT$$;
 	};
 
 	if (is_node) {
-		var url = require("url");
-		urlparse = function(x) {
-			var parsed = url.parse(x);
-			parsed.searchParams = new Map();
-			if (parsed.query) {
-				parsed.query.split("&").forEach(function (query) {
-					var splitted = query.split("=");
-					parsed.searchParams.set(splitted[0], splitted[1]);
-				});
-			}
-			return parsed;
-		};
+		(function() {
+			var url = require("url");
+			urlparse = function(x) {
+				var parsed = url.parse(x);
+				parsed.searchParams = new Map();
+				if (parsed.query) {
+					parsed.query.split("&").forEach(function (query) {
+						var splitted = query.split("=");
+						parsed.searchParams.set(splitted[0], splitted[1]);
+					});
+				}
+				return parsed;
+			};
+		})();
 	}
 
 	// https://stackoverflow.com/a/17323608
