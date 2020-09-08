@@ -12914,7 +12914,7 @@ var $$IMU_EXPORT$$;
 					// Prefer video if possible
 					var animated = metadata.is_animated || json.animated;
 					// fixme: prefer_video isn't in the api version
-					if (animated && json.prefer_video) {
+					if (animated && (json.prefer_video || true)) {
 						var newobj = deepcopy(base1obj);
 						newobj.url = "https://i.imgur.com/" + json.hash + ".mp4";
 						newobj.video = true;
@@ -26455,7 +26455,31 @@ var $$IMU_EXPORT$$;
 			newsrc = website_query({
 				website_regex: /^[a-z]+:\/\/[^/]+\/+([a-zA-Z0-9]+)(?:[?#].*)?$/,
 				run: function(cb, match) {
-					return cb("https://i.imgur.com/" + match[1] + ".jpg");
+					common_functions.imgur_fetch_album_media(options, api_cache, "image", match[1], function(data) {
+						if (!data)
+							return cb(null);
+
+						if (!data.media || data.media.length !== 1) {
+							console_error("Unable to find images in", data);
+							return cb(null);
+						}
+
+						var baseobj = {
+							extra: {
+								page: data.url,
+								caption: data.title || null
+							}
+						};
+
+						var obj = common_functions.imgur_image_to_obj(options, baseobj, data.media[0]);
+
+						if (!obj) {
+							console_error("Unable to parse obj from", data);
+							return cb(null);
+						}
+
+						return cb(obj);
+					});
 				}
 			});
 			if (newsrc) return newsrc;
@@ -26508,67 +26532,11 @@ var $$IMU_EXPORT$$;
 			if (match) {
 				idhash = match[1];
 				baseobj.extra = {page: "https://imgur.com/" + idhash};
-			}
 
-			if (options && options.cb && options.do_request && baseobj.extra) {
-				var imageinfo = api_cache.get("imgur_imageinfo:" + idhash);
-				if (imageinfo) {
-					var retobj = common_functions.imgur_image_to_obj(options, baseobj, imageinfo);
-
-					if (retobj.length > 0) {
-						return retobj;
-					}
-				}
-
-				var nsfw_headers = undefined;
-				if (options.rule_specific && options.rule_specific.imgur_nsfw_headers) {
-					nsfw_headers = options.rule_specific.imgur_nsfw_headers;
-				}
-
-				common_functions.fetch_imgur_webpage(options.do_request, api_cache, nsfw_headers, baseobj.extra.page, function(data) {
-					if (!data) {
-						return options.cb(obj);
-					}
-
-					if (data.bad) {
-						var obj = deepcopy(baseobj);
-						obj.bad = true;
-						return options.cb(obj);
-					}
-
-					var retobj = [];
-
-					if (data.ogvideo) {
-						var obj = deepcopy(baseobj);
-						obj.url = data.ogvideo;
-						obj.video = true;
-
-						retobj.push(obj);
-					}
-
-					if (data.ogimage) {
-						var obj = deepcopy(baseobj);
-						obj.url = data.ogimage;
-
-						retobj.push(obj);
-					}
-
-					if (data.imageinfo) {
-						var newretobj = common_functions.imgur_image_to_obj(options, baseobj, data.imageinfo);
-
-						if (newretobj.length > 0) {
-							retobj = newretobj;
-						}
-
-						return options.cb(retobj);
-					} else {
-						return options.cb(retobj);
-					}
-				});
-
-				return {
-					waiting: true
-				};
+				return [
+					{url: baseobj.extra.page, is_pagelink: true},
+					baseobj
+				];
 			}
 
 			return baseobj;
