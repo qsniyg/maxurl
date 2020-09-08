@@ -89017,6 +89017,12 @@ var $$IMU_EXPORT$$;
 			if (value || value === false)
 				return value;
 
+			if (!el.parentElement) {
+				if (el.hasAttribute("imu-album-info")) {
+					el = popup_orig_el;
+				}
+			}
+
 			return get_next_in_gallery_generic(el, nextprev);
 		};
 
