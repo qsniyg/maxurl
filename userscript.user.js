@@ -12828,7 +12828,7 @@ var $$IMU_EXPORT$$;
 
 			common_functions.fetch_imgur_webpage(options.do_request, api_cache, null, url, function(data) {
 				// either new webpage or nsfw
-				console_log(data);
+				//console_log(data);
 				if (!data || !data.found_match || !data.imageinfo) {
 					return common_functions.imgur_api_fetch_album_media(options.do_request, api_cache, type, id, finalcb);
 				} else {
@@ -26481,11 +26481,6 @@ var $$IMU_EXPORT$$;
 						if (!data)
 							return cb(null);
 
-						if (!data.media || data.media.length !== 1) {
-							console_error("Unable to find images in", data);
-							return cb(null);
-						}
-
 						var baseobj = {
 							extra: {
 								page: data.url,
@@ -26493,7 +26488,11 @@ var $$IMU_EXPORT$$;
 							}
 						};
 
-						var obj = common_functions.imgur_image_to_obj(options, baseobj, data.media[0]);
+						var media = data;
+						if (media.media && media.media[0])
+							media = media.media[0];
+
+						var obj = common_functions.imgur_image_to_obj(options, baseobj, media);
 
 						if (!obj) {
 							console_error("Unable to parse obj from", data);
