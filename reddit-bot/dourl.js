@@ -307,6 +307,12 @@ function dourl_inner(big, url, post, options, cb) {
 
 	for (var i = 0; i < big.length; i++) {
 		if (big[i].is_pagelink) {
+			// allow imgur pagelinks
+			if (/^[a-z]+:\/\/(?:www\.)?imgur\.com\//.test(big[i].url)) {
+				big.splice(i, 1);
+				break;
+			}
+
 			console.log("Page link: ", big[i]);
 			return;
 		}
@@ -480,7 +486,9 @@ function dourl_inner(big, url, post, options, cb) {
 						}
 
 						if (options.original_page && big.extra && big.extra.page) {
-							comment += "*****\n\nOriginal page: " + big.extra.page + "\n\n";
+							// this would just be spammy
+							if (new_domain !== "i.imgur.com")
+								comment += "*****\n\nOriginal page: " + big.extra.page + "\n\n";
 						}
 
 						//var faq_link = "https://www.reddit.com/r/MaxImage/comments/8znfgw/faq/";
@@ -699,6 +707,22 @@ function dourl(url, post, options, cb) {
 	}
 
 	var jar = request.jar();
+
+	var imgurcookies = {
+		//"frontpagebetav2": "1",
+		"retina": "0",
+		"over18": "1",
+		"postpagebeta": "0",
+		"postpagebetalogged": "0"
+	};
+
+	for (var cookiename in imgurcookies) {
+		var cookievalue = imgurcookies[cookiename];
+		jar.setCookie(request.cookie(cookiename + "=" + cookievalue), "https://www.imgur.com");
+		jar.setCookie(request.cookie(cookiename + "=" + cookievalue), "https://imgur.com");
+	}
+
+	//console.log(jar);
 
 	if (!options) {
 		options = {};
