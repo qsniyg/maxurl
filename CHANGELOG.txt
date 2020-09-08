@@ -1,3 +1,36 @@
+0.14.0
+
+New features:
+
+ * Option to cache media (#416, enabled by default, thanks to lnp5131 on github for reporting)
+ * Option to control the time for media to remain cached (30 minutes by default)
+ * Option to resume cached videos (enabled by default)
+ * Option to only enable looping videos if they're smaller than a certain duration (disabled by default, thanks to Runakanta on discord for the idea)
+ * Option to enable resuming from source, even if the source is different (disabled by default)
+ * Option to pause the source video when the popup's video has loaded (enabled by default)
+ * Option to list settings in alphabetical order (disabled by default, thanks to Ambler on discord for the idea)
+ * Option to toggle an enabler/disabler key for the mouseover trigger (thanks to lnp5131 on github for the idea)
+ * Support for ~55 new websites (using ~30 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including Bytedance, Imgur, Kakao, Facebook, Melon, Pixiv, TikTok, Twitter, YouTube)
+ * Cross-frame support should work better for the userscript (e.g. popping up for iframes)
+ * Much better Korean translation, thanks to Ambler on discord
+ * Better support for translations, through use of `.po` files
+ * The wording of a number of options have been clarified
+
+Bugfixes:
+
+ * Fixed a bug where pressing any key would cancel closing the popup for "Keep popup open until all triggers are released" (#410, thanks to lnp5131 on github for reporting)
+ * Fixed a bug where releasing a trigger key before the popup has finished opening with "Keep popup open until any/all triggers are released" (#417, thanks to lnp5131 on github for reporting)
+ * Fixed a bug where holding down the trigger key under some configurations would cause the popup to continually open (#415, thanks to lnp5131 on github)
+ * Fixed a bug where the mouseover option would fail for Twitter (#422, thanks to lnp5131 on github for reporting)
+
+Special thanks to Ambler, llacb47, lnp5131, dym-sh, jloqfjgk, Gertcha, Runakanta, esdemirei, Elliot Alderson for their contributions to this release
+
+---
+
 0.13.19
 
 New features:
