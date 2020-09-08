@@ -10245,7 +10245,7 @@ var $$IMU_EXPORT$$;
 		},
 		imgur_source: {
 			name: "Imgur: Use source image",
-			description: "If a source image is found for Imgur, try using it instead",
+			description: "If a source image is found for Imgur, try using it instead. Only works for old-style Imgur webpages (set `postpagebeta=0; postpagebetalogged=0` as cookies)",
 			category: "rule_specific",
 			onupdate: update_rule_setting
 		},
