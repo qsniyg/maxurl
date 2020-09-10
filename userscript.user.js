@@ -78033,6 +78033,102 @@ var $$IMU_EXPORT$$;
 				return newsrc;
 		}
 
+		if (domain_nowww === "imago-images.de") {
+			// https://www.imago-images.de/st/0104162664
+			// https://www.imago-images.de/bild/st/0104162664/l.jpg -- 128x192
+			//   https://www.imago-images.de/bild/st/0104162664/s.jpg -- 280x420
+			//   https://www.imago-images.de/bild/st/0104162664/w.jpg -- 667x1000 (h == w, m redirects to w)
+			// https://www.imago-images.de/bild/st/0104175382/w.jpg -- 1000x667
+			//   https://www.imago-images.de/bild/st/0104175382/h.jpg -- 1000x667
+
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+st\/+([0-9]+)(?:[?#].*)?$/);
+			if (match) {
+				return [
+					"https://www.imago-images.de/bild/st/" + match[1] + "/s.jpg",
+					{url: src, is_pagelink: true}
+				];
+			}
+
+			// this intentionally excludes ?
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+bild\/+st\/+([0-9]+)\/+([slwmh])(\.[^/.?#]+)(?:#.*)?$/);
+			if (match) {
+				var prefix = "https://www.imago-images.de/bild/st/" + match[1] + "/";
+				var ext = match[3];
+				var oururl = prefix + match[2] + ext;
+				var images = {
+					smaller: [
+						prefix + "s" + ext,
+						prefix + "l" + ext
+					],
+					watermark: [
+						prefix + "w" + ext,
+						{url: prefix + "m" + ext, hidden: true},
+						{url: prefix + "h" + ext, hidden: true}
+					]
+				};
+
+				// todo: make generic for other sites like this
+				var objs = {};
+				for (var key in images) {
+					var our_images = images[key];
+					var our_obj = [];
+
+					var problemobj = {};
+					problemobj[key] = true;
+
+					array_foreach(our_images, function(image, i) {
+						if (typeof image === "string") {
+							our_images[i] = {url: image};
+							image = our_images[i];
+						}
+
+						if (image.url === oururl) {
+							// add earlier urls as non-problematic
+							for (var j = 0; j < i; j++) {
+								if (!our_images[j].hidden)
+									our_obj.push(our_images[j].url);
+							}
+
+
+							our_obj.push({
+								url: our_images[i].url,
+								problems: deepcopy(problemobj)
+							});
+
+							return false;
+						}
+					});
+
+					if (our_obj.length === 0) {
+						array_foreach(our_images, function(image) {
+							if (!image.hidden) {
+								our_obj.push({
+									url: image.url,
+									problems: deepcopy(problemobj)
+								});
+
+								return false;
+							}
+						});
+					}
+
+					objs[key] = our_obj;
+				}
+
+				var urls = [];
+				array_extend(urls, objs.watermark);
+				array_extend(urls, objs.smaller);
+
+				var baseobj = {
+					extra: {
+						page: "https://www.imago-images.de/st/" + match[1]
+					}
+				};
+
+				return fillobj_urls(urls, baseobj);
+			}
+		}
+
 
 
 
@@ -80760,6 +80856,7 @@ var $$IMU_EXPORT$$;
 				for (var problem in obj.problems) {
 					if (obj.problems[problem] &&
 						array_indexof(options.exclude_problems, problem) >= 0) {
+						nir_debug("bigimage_recursive", "Removing problematic:", obj.url, "because of", problem);
 						remove_obj();
 						continue;
 					}
