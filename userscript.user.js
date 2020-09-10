@@ -33707,7 +33707,13 @@ var $$IMU_EXPORT$$;
 			return src.replace(/-[0-9]+-[0-9]+x[0-9]+(\.[^/.]*)$/, "$1");
 		}
 
-		if (domain_nosub === "reutersmedia.net") {
+		if (domain_nosub === "reutersmedia.net" ||
+			// thanks to llacb47 on github: https://github.com/qsniyg/maxurl/issues/442
+			// https://static.reuters.com/resources/r/?m=02&d=20200910&t=2&i=1532848169&r=LYNXMPEG8902P&w=120
+			//   https://static.reuters.com/resources/r/?d=20200910&t=2&i=1532848169
+			// https://static.reuters.com/resources/r/?m=02&d=20200910&t=2&i=1532898275&r=LYNXMPEG89165&w=120
+			//   https://static.reuters.com/resources/r/?d=20200910&t=2&i=1532898275
+			domain === "static.reuters.com") {
 			// https://s1.reutersmedia.net/resources/r/?m=02&d=20140708&t=2&i=924720732&r=LYNXMPEA670U0&w=900
 			//   https://s1.reutersmedia.net/resources/r/?d=20140708&t=2&i=924720732
 			// https://pictures.reuters.com/Doc/RTR/Media/TR3_UNWATERMARKED/d/5/8/2/RTS1NLQY.jpg
