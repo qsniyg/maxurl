@@ -33718,11 +33718,11 @@ var $$IMU_EXPORT$$;
 			//   https://s1.reutersmedia.net/resources/r/?d=20140708&t=2&i=924720732
 			// https://pictures.reuters.com/Doc/RTR/Media/TR3_UNWATERMARKED/d/5/8/2/RTS1NLQY.jpg
 			// https://s3.reutersmedia.net/resources/r/?d=20180418&t=2&i=1252629147
-			var querystr = src.replace(/.*\/r\/\?/, "&");
-			var d = querystr.replace(/.*&d=([^&]*).*/, "$1");
-			var t = "2";//querystr.replace(/.*&t=([^&]*).*/, "$1");
-			i = querystr.replace(/.*&i=([^&]*).*/, "$1");
-			return src.replace(/\/r\/\?.*/, "/r/?d=" + d + "&t=" + t + "&i=" + i);
+			var queries = get_queries(src);
+
+			if (queries.d && queries.i) {
+				return src.replace(/\/r\/\?.*/, "/r/?d=" + queries.d + "&t=2&i=" + queries.i);
+			}
 		}
 
 		if (domain === "r.fod4.com") {
