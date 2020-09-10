@@ -86189,7 +86189,7 @@ var $$IMU_EXPORT$$;
 							if (visibility_workarounds.length > 0)
 								check_img_visibility();
 						}
-					}, 100);
+					}, 50);
 				};
 				check_img_visibility();
 
