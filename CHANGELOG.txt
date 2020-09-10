@@ -1,3 +1,19 @@
+0.14.1
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including Imgur)
+
+Bugfixes:
+
+ * Fixed a major regression in 0.14.0 where many images would fail to redirect or popup (thanks to mcOrmenos on discord for reporting)
+ * Fixed a bug where the popup media would fail to load for certain sites with adblock enabled (#430, thanks to lnp5131 on github for reporting)
+ * Fixed a bug where the node.js version would fail to load
+
+Special thanks to llacb47, lnp5131, mcOrmenos for their contributions to this release
+
+---
+
 0.14.0
 
 New features:

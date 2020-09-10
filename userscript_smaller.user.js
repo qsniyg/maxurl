@@ -15,7 +15,7 @@
 // @name:zh-TW        Image Max URL
 // @name:zh-HK        Image Max URL
 // @namespace         http://tampermonkey.net/
-// @version           0.14.0
+// @version           0.14.1
 // @description       Finds larger or original versions of images and videos for 7200+ websites, including a powerful media popup feature
 // @description:en    Finds larger or original versions of images and videos for 7200+ websites, including a powerful media popup feature
 // @description:ko    7200개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
@@ -5898,18 +5898,20 @@ var $$IMU_EXPORT$$;
 	};
 
 	if (is_node) {
-		var url = require("url");
-		urlparse = function(x) {
-			var parsed = url.parse(x);
-			parsed.searchParams = new Map();
-			if (parsed.query) {
-				parsed.query.split("&").forEach(function (query) {
-					var splitted = query.split("=");
-					parsed.searchParams.set(splitted[0], splitted[1]);
-				});
-			}
-			return parsed;
-		};
+		(function() {
+			var url = require("url");
+			urlparse = function(x) {
+				var parsed = url.parse(x);
+				parsed.searchParams = new Map();
+				if (parsed.query) {
+					parsed.query.split("&").forEach(function (query) {
+						var splitted = query.split("=");
+						parsed.searchParams.set(splitted[0], splitted[1]);
+					});
+				}
+				return parsed;
+			};
+		})();
 	}
 
 	// https://stackoverflow.com/a/17323608
@@ -7549,7 +7551,7 @@ var $$IMU_EXPORT$$;
 
 			common_functions.fetch_imgur_webpage(options.do_request, api_cache, null, url, function(data) {
 				// either new webpage or nsfw
-				console_log(data);
+				//console_log(data);
 				if (!data || !data.found_match || !data.imageinfo) {
 					return common_functions.imgur_api_fetch_album_media(options.do_request, api_cache, type, id, finalcb);
 				} else {
@@ -16802,11 +16804,6 @@ var $$IMU_EXPORT$$;
 						if (!data)
 							return cb(null);
 
-						if (!data.media || data.media.length !== 1) {
-							console_error("Unable to find images in", data);
-							return cb(null);
-						}
-
 						var baseobj = {
 							extra: {
 								page: data.url,
@@ -16814,7 +16811,11 @@ var $$IMU_EXPORT$$;
 							}
 						};
 
-						var obj = common_functions.imgur_image_to_obj(options, baseobj, data.media[0]);
+						var media = data;
+						if (media.media && media.media[0])
+							media = media.media[0];
+
+						var obj = common_functions.imgur_image_to_obj(options, baseobj, media);
 
 						if (!obj) {
 							console_error("Unable to parse obj from", data);
@@ -21116,12 +21117,13 @@ var $$IMU_EXPORT$$;
 			return src.replace(/-[0-9]+-[0-9]+x[0-9]+(\.[^/.]*)$/, "$1");
 		}
 
-		if (domain_nosub === "reutersmedia.net") {
-			var querystr = src.replace(/.*\/r\/\?/, "&");
-			var d = querystr.replace(/.*&d=([^&]*).*/, "$1");
-			var t = "2";//querystr.replace(/.*&t=([^&]*).*/, "$1");
-			i = querystr.replace(/.*&i=([^&]*).*/, "$1");
-			return src.replace(/\/r\/\?.*/, "/r/?d=" + d + "&t=" + t + "&i=" + i);
+		if (domain_nosub === "reutersmedia.net" ||
+			domain === "static.reuters.com") {
+			var queries = get_queries(src);
+
+			if (queries.d && queries.i) {
+				return src.replace(/\/r\/\?.*/, "/r/?d=" + queries.d + "&t=2&i=" + queries.i);
+			}
 		}
 
 		if (domain === "r.fod4.com") {
@@ -50784,6 +50786,93 @@ var $$IMU_EXPORT$$;
 				return newsrc;
 		}
 
+		if (domain_nowww === "imago-images.de") {
+
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+st\/+([0-9]+)(?:[?#].*)?$/);
+			if (match) {
+				return [
+					"https://www.imago-images.de/bild/st/" + match[1] + "/s.jpg",
+					{url: src, is_pagelink: true}
+				];
+			}
+
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+bild\/+st\/+([0-9]+)\/+([slwmh])(\.[^/.?#]+)(?:#.*)?$/);
+			if (match) {
+				var prefix = "https://www.imago-images.de/bild/st/" + match[1] + "/";
+				var ext = match[3];
+				var oururl = prefix + match[2] + ext;
+				var images = {
+					smaller: [
+						prefix + "s" + ext,
+						prefix + "l" + ext
+					],
+					watermark: [
+						prefix + "w" + ext,
+						{url: prefix + "m" + ext, hidden: true},
+						{url: prefix + "h" + ext, hidden: true}
+					]
+				};
+
+				var objs = {};
+				for (var key in images) {
+					var our_images = images[key];
+					var our_obj = [];
+
+					var problemobj = {};
+					problemobj[key] = true;
+
+					array_foreach(our_images, function(image, i) {
+						if (typeof image === "string") {
+							our_images[i] = {url: image};
+							image = our_images[i];
+						}
+
+						if (image.url === oururl) {
+							for (var j = 0; j < i; j++) {
+								if (!our_images[j].hidden)
+									our_obj.push(our_images[j].url);
+							}
+
+
+							our_obj.push({
+								url: our_images[i].url,
+								problems: deepcopy(problemobj)
+							});
+
+							return false;
+						}
+					});
+
+					if (our_obj.length === 0) {
+						array_foreach(our_images, function(image) {
+							if (!image.hidden) {
+								our_obj.push({
+									url: image.url,
+									problems: deepcopy(problemobj)
+								});
+
+								return false;
+							}
+						});
+					}
+
+					objs[key] = our_obj;
+				}
+
+				var urls = [];
+				array_extend(urls, objs.watermark);
+				array_extend(urls, objs.smaller);
+
+				var baseobj = {
+					extra: {
+						page: "https://www.imago-images.de/st/" + match[1]
+					}
+				};
+
+				return fillobj_urls(urls, baseobj);
+			}
+		}
+
 
 
 
@@ -52858,6 +52947,7 @@ var $$IMU_EXPORT$$;
 				for (var problem in obj.problems) {
 					if (obj.problems[problem] &&
 						array_indexof(options.exclude_problems, problem) >= 0) {
+						nir_debug("bigimage_recursive", "Removing problematic:", obj.url, "because of", problem);
 						remove_obj();
 						continue;
 					}
@@ -52940,16 +53030,18 @@ var $$IMU_EXPORT$$;
 							nir_debug("bigimage_recursive", "parse_bigimage: sameurl(pasthrefs[" + i + "], objified) == true", deepcopy(pasthrefs[i]), deepcopy(objified));
 
 							// FIXME: is this even correct?
-							var cond = false;
-							array_foreach(copy_props, function(prop) {
-								if (!(prop in newhref[0]) && (prop in important_properties)) {
-									cond = true;
-									return false;
-								}
-							});
+							if (newhref && newhref.length) {
+								var cond = false;
+								array_foreach(copy_props, function(prop) {
+									if (!(prop in newhref[0]) && (prop in important_properties)) {
+										cond = true;
+										return false;
+									}
+								});
 
-							if (cond)
-								newhref = objified;
+								if (cond)
+									newhref = objified;
+							}
 
 							return false;
 						}
@@ -58252,26 +58344,40 @@ var $$IMU_EXPORT$$;
 				// https://stackoverflow.com/questions/7774814/remove-white-space-below-image
 				img.style.verticalAlign = "bottom";
 
-				// on pornhub, uBlock Origin blocks video[style*="display: block !important;"]
 				set_important_style(img, "display", "block");
 
-				var styles = [
-					["block"],
-					["initial", "important"]
+				var update_img_display = function(style) {
+					img.style.setProperty("display", style[0], style[1]);
+				};
+
+				var visibility_workarounds = [
+					// uBlock Origin on pornhub blocks: video[style*="display: block !important;"]
+					function() {update_img_display(["block"]);},
+					function() {update_img_display(["initial", "important"]);},
+
+					// uBlock Origin on gelbooru blocks:
+					//   a[target="_blank"] > img
+					//   a[target="_blank"] > div
+					// https://github.com/qsniyg/maxurl/issues/430#issuecomment-686768694
+					function() {
+						var span_el = document_createElement("span");
+						span_el.appendChild(img);
+						a.appendChild(span_el);
+					}
 				];
 
 				var check_img_visibility = function() {
 					setTimeout(function() {
 						var computed = get_computed_style(img);
 						if (computed.display === "none") {
-							var current_style = styles.shift();
+							var current_workaround = visibility_workarounds.shift();
 
-							img.style.setProperty("display", current_style[0], current_style[1]);
+							current_workaround();
 
-							if (styles.length > 0)
+							if (visibility_workarounds.length > 0)
 								check_img_visibility();
 						}
-					}, 100);
+					}, 50);
 				};
 				check_img_visibility();
 

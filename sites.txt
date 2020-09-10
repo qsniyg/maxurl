@@ -3245,6 +3245,7 @@ imagevenue.com
 imageweb.ws
 imagexport.com
 imagez.tmz.com
+imago-images.de
 imagozone.com
 imagozone.ro
 imalbum.aufeminin.com
@@ -6166,6 +6167,7 @@ static.pulsk.com
 static.puzzlefactory.pl
 static.qobuz.com
 static.reservationvacances.com
+static.reuters.com
 static.rogerebert.com
 static.santruyen.com
 static.scientificamerican.com
