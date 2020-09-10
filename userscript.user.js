@@ -86156,23 +86156,37 @@ var $$IMU_EXPORT$$;
 				// https://stackoverflow.com/questions/7774814/remove-white-space-below-image
 				img.style.verticalAlign = "bottom";
 
-				// on pornhub, uBlock Origin blocks video[style*="display: block !important;"]
 				set_important_style(img, "display", "block");
 
-				var styles = [
-					["block"],
-					["initial", "important"]
+				var update_img_display = function(style) {
+					img.style.setProperty("display", style[0], style[1]);
+				};
+
+				var visibility_workarounds = [
+					// uBlock Origin on pornhub blocks: video[style*="display: block !important;"]
+					function() {update_img_display(["block"]);},
+					function() {update_img_display(["initial", "important"]);},
+
+					// uBlock Origin on gelbooru blocks:
+					//   a[target="_blank"] > img
+					//   a[target="_blank"] > div
+					// https://github.com/qsniyg/maxurl/issues/430#issuecomment-686768694
+					function() {
+						var span_el = document_createElement("span");
+						span_el.appendChild(img);
+						a.appendChild(span_el);
+					}
 				];
 
 				var check_img_visibility = function() {
 					setTimeout(function() {
 						var computed = get_computed_style(img);
 						if (computed.display === "none") {
-							var current_style = styles.shift();
+							var current_workaround = visibility_workarounds.shift();
 
-							img.style.setProperty("display", current_style[0], current_style[1]);
+							current_workaround();
 
-							if (styles.length > 0)
+							if (visibility_workarounds.length > 0)
 								check_img_visibility();
 						}
 					}, 100);
