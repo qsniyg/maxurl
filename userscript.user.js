@@ -78135,6 +78135,85 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain_nowww === "banned.video") {
+			// this is copied from the website
+			var getvideo_query = "query GetVideo($id: String!) {\n  getVideo(id: $id) {\n    ...DisplayVideoFields\n    streamUrl\n    directUrl\n    audio\n    unlisted\n    live\n    tags {\n      _id\n      name\n      __typename\n    }\n    sale {\n      _id\n      text\n      __typename\n    }\n    __typename\n  }\n}\n\nfragment DisplayVideoFields on Video {\n  _id\n  title\n  summary\n  playCount\n  largeImage\n  embedUrl\n  published\n  videoDuration\n  channel {\n    _id\n    title\n    avatar\n    __typename\n  }\n  createdAt\n  __typename\n}\n";
+			var getvideo_opname = "GetVideo";
+
+			var query_banned_graphql = function(opname, query, vars, cb) {
+				api_query("banned_graphql:" + opname + ":" + JSON_stringify(vars), {
+					method: "POST",
+					url: "https://api.banned.video/graphql",
+					imu_mode: "xhr",
+					headers: {
+						"Content-Type": "application/json",
+						"Origin": "https://banned.video",
+						"Referer": "https://banned.video/",
+						"apollographql-client-name": "banned-web",
+						"apollographql-client-version": "1.3"
+					},
+					json: true,
+					data: JSON_stringify({
+						operationName: opname,
+						query: query,
+						variables: vars
+					})
+				}, cb, function(done, resp) {
+					done(resp, 60*60);
+				});
+			};
+
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+watch\?(?:.*&)?id=([0-9a-f]{10,})/,
+				run: function(cb, match) {
+					var id = match[1];
+
+					query_banned_graphql(getvideo_opname, getvideo_query, {id: id}, function(data) {
+						if (!data) {
+							return cb(null);
+						}
+
+						data = data.data.getVideo;
+
+						var urls = [];
+
+						if (data.streamUrl) {
+							urls.push({
+								url: data.streamUrl,
+								video: "hls"
+							});
+						}
+
+						if (data.directUrl) {
+							urls.push({
+								url: data.directUrl,
+								video: true
+							});
+						}
+
+						if (data.largeImage) {
+							urls.push({
+								url: data.largeImage
+							});
+						}
+
+						var baseobj = {
+							extra: {}
+						};
+
+						if (data.title || data.summary) {
+							baseobj.extra.caption = data.tile || data.summary
+						}
+
+						baseobj.extra.page = "https://banned.video/watch?id=" + id;
+
+						return cb(fillobj_urls(urls, baseobj));
+					});
+				}
+			});
+			if (newsrc) return newsrc;
+		}
+
 
 
 
