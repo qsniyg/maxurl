@@ -78135,7 +78135,8 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if (domain_nowww === "banned.video") {
+		if (domain_nowww === "banned.video" ||
+			domain === "api.banned.video") {
 			// this is copied from the website
 			var getvideo_query = "query GetVideo($id: String!) {\n  getVideo(id: $id) {\n    ...DisplayVideoFields\n    streamUrl\n    directUrl\n    audio\n    unlisted\n    live\n    tags {\n      _id\n      name\n      __typename\n    }\n    sale {\n      _id\n      text\n      __typename\n    }\n    __typename\n  }\n}\n\nfragment DisplayVideoFields on Video {\n  _id\n  title\n  summary\n  playCount\n  largeImage\n  embedUrl\n  published\n  videoDuration\n  channel {\n    _id\n    title\n    avatar\n    __typename\n  }\n  createdAt\n  __typename\n}\n";
 			var getvideo_opname = "GetVideo";
@@ -78164,7 +78165,10 @@ var $$IMU_EXPORT$$;
 			};
 
 			newsrc = website_query({
-				website_regex: /^[a-z]+:\/\/[^/]+\/+watch\?(?:.*&)?id=([0-9a-f]{10,})/,
+				website_regex: [
+					/^[a-z]+:\/\/[^/]+\/+watch\?(?:.*&)?id=([0-9a-f]{10,})/,
+					/^[a-z]+:\/\/[^/]+\/+embed\/+([0-9a-f]{10,})(?:[?#].*)?$/
+				],
 				run: function(cb, match) {
 					var id = match[1];
 
