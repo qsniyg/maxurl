@@ -42,21 +42,29 @@ var start = function(userscript) {
         return;
     }
     var supported_languages_json = JSON.parse(supported_languages[1]);
-    for (const supported_language of supported_languages_json) {
-        if (supported_language === "en")
-            continue;
+    for (var supported_language of supported_languages_json) {
+        if (supported_language === "en") {
+            supported_language = "imu";
+        }
+
         pofiles[supported_language] = [];
 
-        var language_name = supported_language_names[supported_language] || supported_language;
-        pofiles[supported_language].push("# " + language_name + " translation of Image Max URL");
-        pofiles[supported_language].push("#");
+        if (supported_language !== "imu") {
+            var language_name = supported_language_names[supported_language] || supported_language;
+            pofiles[supported_language].push("# " + language_name + " translations for Image Max URL");
+            pofiles[supported_language].push("#");
+        }
+
         pofiles[supported_language].push("msgid \"\"");
         pofiles[supported_language].push("msgstr \"\"");
         pofiles[supported_language].push("\"Project-Id-Version: Image Max URL\\n\"");
         pofiles[supported_language].push("\"MIME-Version: 1.0\\n\"");
         pofiles[supported_language].push("\"Content-Type: text/plain; charset=UTF-8\\n\"");
         pofiles[supported_language].push("\"Content-Transfer-Encoding: 8bit\\n\"");
-        pofiles[supported_language].push("\"Language: " + supported_language + "\\n\"");
+
+        if (supported_language !== "imu") {
+            pofiles[supported_language].push("\"Language: " + supported_language + "\\n\"");
+        }
 
         pofiles[supported_language].push("");
     }
@@ -91,7 +99,7 @@ var start = function(userscript) {
 
             split_value(pofiles[pofile], "msgid", string);
 
-            if (pofile in string_data) {
+            if (pofile !== "imu" && pofile in string_data) {
                 split_value(pofiles[pofile], "msgstr", string_data[pofile]);
             } else {
                 pofiles[pofile].push("msgstr \"\"");
@@ -102,7 +110,11 @@ var start = function(userscript) {
     }
 
     for (const pofile in pofiles) {
-        var filename = "po/" + pofile + ".po";
+        var ext = "po";
+        if (pofile === "imu")
+            ext = "pot";
+
+        var filename = "po/" + pofile + "." + ext;
         fs.writeFileSync(filename, pofiles[pofile].join("\n"));
     }
 };

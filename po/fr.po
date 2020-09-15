@@ -1,4 +1,4 @@
-# French translation of Image Max URL
+# French translations for Image Max URL
 #
 msgid ""
 msgstr ""

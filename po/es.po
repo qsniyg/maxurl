@@ -1,4 +1,4 @@
-# Spanish translation of Image Max URL
+# Spanish translations for Image Max URL
 #
 msgid ""
 msgstr ""

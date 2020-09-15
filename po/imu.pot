@@ -1,36 +1,33 @@
-# Korean translations for Image Max URL
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: Image Max URL\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: ko\n"
 
 msgid "options_header"
-msgstr "옵션"
+msgstr ""
 
 msgid "yes"
-msgstr "예"
+msgstr ""
 
 msgid "no"
-msgstr "아니오"
+msgstr ""
 
 msgid "Import"
-msgstr "가져오기"
+msgstr ""
 
 msgid "Export"
-msgstr "내보내기"
+msgstr ""
 
 msgid "Requires:"
-msgstr "요구사항:"
+msgstr ""
 
 msgid "category_redirection"
-msgstr "리디렉션"
+msgstr ""
 
 msgid "category_popup"
-msgstr "팝업"
+msgstr ""
 
 msgid "subcategory_settings"
 msgstr ""
@@ -39,19 +36,19 @@ msgid "subcategory_ui"
 msgstr ""
 
 msgid "subcategory_trigger"
-msgstr "트리거"
+msgstr ""
 
 msgid "subcategory_open_behavior"
-msgstr "열기 동작"
+msgstr ""
 
 msgid "subcategory_close_behavior"
-msgstr "닫기 동작"
+msgstr ""
 
 msgid "subcategory_behavior"
 msgstr ""
 
 msgid "subcategory_video"
-msgstr "영상"
+msgstr ""
 
 msgid "subcategory_gallery"
 msgstr ""
@@ -63,55 +60,55 @@ msgid "subcategory_cache"
 msgstr ""
 
 msgid "Mouse cursor"
-msgstr "마우스 커서"
+msgstr ""
 
 msgid "category_rules"
-msgstr "규칙"
+msgstr ""
 
 msgid "subcategory_rule_specific"
 msgstr ""
 
 msgid "category_website"
-msgstr "웹사이트"
+msgstr ""
 
 msgid "saved_refresh_target"
-msgstr "저장됩니다. 번경사항 적용하려면 대상 웹페이지 다시 로드하십시오"
+msgstr ""
 
 msgid "saved_no_refresh"
-msgstr "저장됩니다"
+msgstr ""
 
 msgid "save"
-msgstr "저장"
+msgstr ""
 
 msgid "record"
 msgstr ""
 
 msgid "cancel"
-msgstr "취소"
+msgstr ""
 
 msgid "Mouseover popup (%%1) is needed to display the original version"
-msgstr "원본 이미지 보려면 팝업 (%%1) 필요합니다"
+msgstr ""
 
 msgid "custom headers"
-msgstr "특정 헤더"
+msgstr ""
 
 msgid "forces download"
 msgstr ""
 
 msgid "Close"
-msgstr "닫기"
+msgstr ""
 
 msgid "Previous"
-msgstr "이전"
+msgstr ""
 
 msgid "Next"
-msgstr "다음"
+msgstr ""
 
 msgid "Left Arrow"
-msgstr "왼쪽 화살표"
+msgstr ""
 
 msgid "Right Arrow"
-msgstr "오른쪽 화살표"
+msgstr ""
 
 msgid "category_extension"
 msgstr ""
@@ -132,7 +129,7 @@ msgid "subcategory_highlightimages"
 msgstr ""
 
 msgid "category_general"
-msgstr "일반"
+msgstr ""
 
 #. imu_enabled.name
 msgid "Enable extension"
@@ -144,7 +141,7 @@ msgstr ""
 
 #. language.name
 msgid "Language"
-msgstr "언어"
+msgstr ""
 
 #. language.description
 msgid "Language for this extension"
@@ -168,23 +165,23 @@ msgstr ""
 
 #. dark_mode.name
 msgid "Dark mode"
-msgstr "다크 모드"
+msgstr ""
 
 #. dark_mode.description
 msgid "Changes the colors to have light text on a dark background"
-msgstr "어두운 배경, 밝은 텍스트가 표시되도록 변경합니다."
+msgstr ""
 
 #. settings_visible_description.name
 msgid "Description below options"
-msgstr "옵션 아래에 설명 표시"
+msgstr ""
 
 #. settings_visible_description.description
 msgid "Shows the description below the options (otherwise the description is only shown when you hover over the option's name)"
-msgstr "옵션 아래에 설명 표시 (비활성화 시, 옵션 이름 위에 마우스를 올려 놓을 때만 설명이 표시됨)"
+msgstr ""
 
 #. settings_show_disabled.name
 msgid "Show disabled options"
-msgstr "비활성화된 설정 표시"
+msgstr ""
 
 #. settings_show_disabled.description
 msgid "If disabled, options that are disabled due to their requirements being unmet will not be displayed"
@@ -192,15 +189,15 @@ msgstr ""
 
 #. settings_show_requirements.name
 msgid "Requirements below disabled options"
-msgstr "비활성화된 옵션 아래의 요구 사항"
+msgstr ""
 
 #. settings_show_requirements.description
 msgid "If an option is disabled, the requirements to enable the option will be displayed below it"
-msgstr "옵션이 비활성화되면 옵션을 활성화하기 위한 요구 사항이 아래에 표시됨"
+msgstr ""
 
 #. check_updates.name
 msgid "Check for updates"
-msgstr "업데이트 확인"
+msgstr ""
 
 #. check_updates.description
 msgid "Periodically checks for updates. If a new update is available, it will be shown at the top of the options page"
@@ -208,39 +205,39 @@ msgstr ""
 
 #. check_update_interval.name
 msgid "Update check interval"
-msgstr "업데이트 확인 간격"
+msgstr ""
 
 #. check_update_interval.description
 msgid "How often to check for updates"
-msgstr "업데이트 확인 빈도"
+msgstr ""
 
 #. check_update_interval.number_unit
 msgid "hours"
-msgstr "시간"
+msgstr ""
 
 #. check_update_notify.name
 msgid "Notify when update is available"
-msgstr "업데이트가 있을 때 알림"
+msgstr ""
 
 #. check_update_notify.description
 msgid "Creates a browser notification when an update is available"
-msgstr "업데이트가 있을 때 브라우저 알림을 받습니다."
+msgstr ""
 
 #. advanced_options.name
 msgid "Show advanced settings"
-msgstr "고급 설정 표시"
+msgstr ""
 
 #. advanced_options.description
 msgid "If disabled, settings that might be harder to understand will be hidden"
-msgstr "비활성화 시, 이해하기 어려울 수 있는 설정이 숨겨짐"
+msgstr ""
 
 #. settings_tabs.name
 msgid "Use tabs"
-msgstr "탭 사용"
+msgstr ""
 
 #. settings_tabs.description
 msgid "If disabled, all settings will be shown on a single page"
-msgstr "비활성화 시, 모든 설정이 한 페이지에 표시됩니다."
+msgstr ""
 
 #. settings_alphabetical_order.name
 msgid "Alphabetical order"
@@ -332,19 +329,19 @@ msgstr ""
 
 #. redirect.name
 msgid "Enable redirection"
-msgstr "리디렉션 사용"
+msgstr ""
 
 #. redirect.description
 msgid "Redirect images opened in their own tab"
-msgstr "자신의 탭에서 열린 이미지 리디렉션"
+msgstr ""
 
 #. redirect_history.name
 msgid "Add to history"
-msgstr "브라우저 기록에 추가"
+msgstr ""
 
 #. redirect_history.description
 msgid "Redirection will add a new entry to the browser's history"
-msgstr "리디렉션 시, 브라우저의 기록에 새 항목이 추가됨"
+msgstr ""
 
 #. redirect_extension.name
 msgid "Do redirection in extension"
@@ -356,7 +353,7 @@ msgstr ""
 
 #. canhead_get.name
 msgid "Use GET if HEAD is unsupported"
-msgstr "HEAD 지원되지 않으면 GET 사용"
+msgstr ""
 
 #. canhead_get.description
 msgid "Use a GET request to check an image's availability, if the server does not support HEAD requests"
@@ -376,19 +373,19 @@ msgstr ""
 
 #. redirect_infobox_url.name
 msgid "Show image URL in tooltip"
-msgstr "툴팁에 이미지 URL 표시"
+msgstr ""
 
 #. redirect_infobox_url.description
 msgid "If the popup is needed to display the larger version of an image, display the image link in the tooltip"
-msgstr "더 큰 버전의 이미지를 표시하기 위해 팝업이 필요한 경우 이미지 링크를 툴팁에 표시함"
+msgstr ""
 
 #. redirect_infobox_timeout.name
 msgid "Hide tooltip after"
-msgstr "툴팁 숨기기"
+msgstr ""
 
 #. redirect_infobox_timeout.description
 msgid "Hides the tooltip after the specified number of seconds (or when the mouse clicks on it). Set to 0 to never hide automatically"
-msgstr "지정된 시간(초) 후에(또는 마우스가 툴팁을 클릭할 때) 툴팁을 숨긴다. 자동으로 숨기지 않으려면 0으로 설정"
+msgstr ""
 
 #. print_imu_obj.name
 msgid "Log IMU object to console"
@@ -408,31 +405,31 @@ msgstr ""
 
 #. redirect_to_no_infobox.name
 msgid "Redirect to largest without issues"
-msgstr "문제없이 최대로 리디렉션"
+msgstr ""
 
 #. redirect_to_no_infobox.description
 msgid "Redirects to the largest image found that doesn't require custom headers or forces download"
-msgstr "사용자 지정 헤더나 강제 다운로드가 필요 없는 가장 큰 이미지로 리디렉션"
+msgstr ""
 
 #. mouseover.name
 msgid "Enable mouseover popup"
-msgstr "이미지 팝업 사용"
+msgstr ""
 
 #. mouseover.description
 msgid "Show a popup with the larger image when you mouseover an image with the trigger key held (if applicable)"
-msgstr "트리거 키를 누른 상태로 영상을 마우스로 가리킬 때 더 큰 이미지로 팝업 표시 (가능한 경우)"
+msgstr ""
 
 #. mouseover_open_behavior.name
 msgid "Mouseover popup action"
-msgstr "이미지 팝업 작업"
+msgstr ""
 
 #. mouseover_open_behavior.description
 msgid "Determines how the mouseover popup will open"
-msgstr "마우스오버 팝업이 열리는 방식"
+msgstr ""
 
 #. mouseover_open_behavior.options.newtab.name
 msgid "New tab"
-msgstr "새 탭"
+msgstr ""
 
 #. mouseover_open_behavior.options.download.name
 msgid "Download"
@@ -440,15 +437,15 @@ msgstr ""
 
 #. mouseover_trigger_behavior.name
 msgid "Mouseover popup trigger"
-msgstr "팝업 트리거"
+msgstr ""
 
 #. mouseover_trigger_behavior.description
 msgid "How the popup will get triggered"
-msgstr "팝업 작동 방법"
+msgstr ""
 
 #. mouseover_trigger_behavior.options.mouse.name
 msgid "Mouseover"
-msgstr "마우스"
+msgstr ""
 
 #. mouseover_trigger_behavior.options.mouse.description
 msgid "Triggers when your mouse is over the image"
@@ -456,7 +453,7 @@ msgstr ""
 
 #. mouseover_trigger_behavior.options.keyboard.name
 msgid "Key trigger"
-msgstr "키 바인딩"
+msgstr ""
 
 #. mouseover_trigger_behavior.options.keyboard.description
 msgid "Triggers when you press a key sequence when your mouse is over an image"
@@ -468,19 +465,19 @@ msgstr ""
 
 #. mouseover_trigger_key.name
 msgid "Popup trigger key"
-msgstr "팝업 키 바인딩"
+msgstr ""
 
 #. mouseover_trigger_key.description
 msgid "Key sequence to trigger the popup"
-msgstr "팝업이 작동하는 키"
+msgstr ""
 
 #. mouseover_trigger_delay.name
 msgid "Popup trigger delay"
-msgstr "팝업 작업 지연 시간"
+msgstr ""
 
 #. mouseover_trigger_delay.description
 msgid "Delay (in seconds) before the popup shows"
-msgstr "팝업이 표시될 때까지 지연 (초)"
+msgstr ""
 
 #. mouseover_trigger_mouseover.name
 msgid "Use mouseover event"
@@ -516,7 +513,7 @@ msgstr ""
 
 #. mouseover_allow_partial.name
 msgid "Allow showing partially loaded"
-msgstr "부분적으로 로드된 상태로 표시 허용"
+msgstr ""
 
 #. mouseover_allow_partial.description
 msgid "This will allow the popup to open for partially loaded media"
@@ -524,19 +521,19 @@ msgstr ""
 
 #. mouseover_allow_partial.description_userscript
 msgid "This will allow the popup to open for partially loaded media, but this might break some images"
-msgstr "부분적으로 불러온 미디어에 대해 팝업이 열릴 수 있지만 이로 인해 일부 이미지가 손상될 수 있음"
+msgstr ""
 
 #. mouseover_allow_partial.options.video.name
 msgid "Video"
-msgstr "영상"
+msgstr ""
 
 #. mouseover_allow_partial.options.media.name
 msgid "Media"
-msgstr "미디어"
+msgstr ""
 
 #. mouseover_allow_partial.options.media.description
 msgid "Both images and video"
-msgstr "사진+영상"
+msgstr ""
 
 #. mouseover_partial_avoid_head.name
 msgid "Avoid HEAD request for partially loaded media"
@@ -556,11 +553,11 @@ msgstr ""
 
 #. mouseover_enable_notallowed.name
 msgid "Use `not-allowed` cursor when unsupported"
-msgstr "지원되지 않을 때 허용되지 않는 커서를 사용"
+msgstr ""
 
 #. mouseover_enable_notallowed.description
 msgid "If the image isn't supported, the mouse cursor will change to a `not-allowed` cursor for a brief duration"
-msgstr "이미지가 지원되지 않으면 마우스 커서가 잠시 동안 허용되지 않는 커서로 변경됨"
+msgstr ""
 
 #. mouseover_enable_notallowed_cant_load.name
 msgid "Use `not-allowed` cursor when unable to load"
@@ -568,7 +565,7 @@ msgstr ""
 
 #. mouseover_enable_notallowed_cant_load.description
 msgid "If the image fails to load, the mouse cursor will change to a `not-allowed` cursor for a brief duration"
-msgstr "이미지를 불러올 수 없으면 마우스 커서가 잠시 동안 허용되지 않는 커서로 변경됨"
+msgstr ""
 
 #. mouseover_notallowed_duration.name
 msgid "`not-allowed` cursor duration"
@@ -580,67 +577,67 @@ msgstr ""
 
 #. mouseover_exclude_page_bg.name
 msgid "Exclude page background"
-msgstr "페이지 배경 제외"
+msgstr ""
 
 #. mouseover_exclude_page_bg.description
 msgid "Excludes the page background for the popup"
-msgstr "팝업에 대한 페이지 배경 제외"
+msgstr ""
 
 #. mouseover_minimum_size.name
 msgid "Minimum image size"
-msgstr "최소 이미지 크기"
+msgstr ""
 
 #. mouseover_minimum_size.description
 msgid "Smallest size acceptable for the popup to open (this option is ignored for background images)"
-msgstr "팝업이 열릴 수 있는 최소 크기 (백그라운드 이미지에서는 이 옵션이 무시됨)"
+msgstr ""
 
 #. mouseover_exclude_backgroundimages.name
 msgid "Exclude `background-image`s"
-msgstr "배경 이미지 제외"
+msgstr ""
 
 #. mouseover_exclude_backgroundimages.description
 msgid "Excludes `background-image`s for the popup. Might prevent the popup from working on many images"
-msgstr "팝업의 배경 이미지 제외. 팝업이 많은 이미지에서 작동하지 않을 수 있음"
+msgstr ""
 
 #. mouseover_exclude_imagetab.name
 msgid "Exclude image tabs"
-msgstr "이미지 탭 제외"
+msgstr ""
 
 #. mouseover_exclude_imagetab.description
 msgid "Excludes images that are opened in their own tabs"
-msgstr "자신의 탭에서 열린 이미지 제외"
+msgstr ""
 
 #. mouseover_exclude_sameimage.name
 msgid "Exclude if image URL is unchanged"
-msgstr "이미지 URL이 변경되지 않은 경우 제외"
+msgstr ""
 
 #. mouseover_exclude_sameimage.description
 msgid "Don't pop up if the new image is the same as the thumbnail image"
-msgstr "새 이미지가 미리보기(thumbnail) 이미지와 동일한 경우 팝업 안 함"
+msgstr ""
 
 #. mouseover_only_links.name
 msgid "Only popup for linked images"
-msgstr "링크된 이미지의 팝업만"
+msgstr ""
 
 #. mouseover_only_links.description
 msgid "Don't pop up if the image isn't hyperlinked"
-msgstr "이미지가 하이퍼링크되지 않은 경우 팝업 안 함"
+msgstr ""
 
 #. mouseover_linked_image.name
 msgid "Popup link for linked images"
-msgstr "링크된 이미지에 대한 팝업 링크"
+msgstr ""
 
 #. mouseover_linked_image.description
 msgid "If the linked image cannot be made larger, pop up for the link instead of the image"
-msgstr "링크된 이미지를 더 크게 만들 수 없는 경우 이미지 대신 링크 팝업"
+msgstr ""
 
 #. mouseover_exclude_imagemaps.name
 msgid "Exclude image maps"
-msgstr "이미지 맵 제외"
+msgstr ""
 
 #. mouseover_exclude_imagemaps.description
 msgid "Don't pop up if the image is an image map (image with multiple clickable areas)"
-msgstr "이미지가 이미지 맵(클릭 가능한 영역이 여러 개를 가진 이미지)인 경우 팝업 표시 안 함"
+msgstr ""
 
 #. mouseover_video_controls.name
 msgid "Show video controls"
@@ -840,7 +837,7 @@ msgstr ""
 
 #. mouseover_ui.name
 msgid "Popup UI"
-msgstr "팝업 UI"
+msgstr ""
 
 #. mouseover_ui.description
 msgid "Enables a UI on top of the popup"
@@ -848,7 +845,7 @@ msgstr ""
 
 #. mouseover_ui_opacity.name
 msgid "Opacity"
-msgstr "불투명"
+msgstr ""
 
 #. mouseover_ui_opacity.description
 msgid "Opacity of the UI on top of the popup"
@@ -888,7 +885,7 @@ msgstr ""
 
 #. mouseover_ui_gallerycounter.name
 msgid "Gallery counter"
-msgstr "갤러리 이미지 수"
+msgstr ""
 
 #. mouseover_ui_gallerycounter.description
 msgid "Enables a gallery counter on top of the UI"
@@ -896,7 +893,7 @@ msgstr ""
 
 #. mouseover_ui_gallerymax.name
 msgid "Gallery counter max"
-msgstr "갤러리 이미지 수의 최대값"
+msgstr ""
 
 #. mouseover_ui_gallerymax.description
 msgid "Maximum amount of images to check in the counter (this can be slightly CPU-intensive)"
@@ -920,7 +917,7 @@ msgstr ""
 
 #. mouseover_ui_optionsbtn.name
 msgid "Options Button"
-msgstr "설정 링크"
+msgstr ""
 
 #. mouseover_ui_optionsbtn.description
 msgid "Enables a button to go to this page"
@@ -976,135 +973,135 @@ msgstr ""
 
 #. mouseover_close_behavior.name
 msgid "Keep popup open until"
-msgstr "팝업 닫으려면"
+msgstr ""
 
 #. mouseover_close_behavior.description
 msgid "Closes the popup when the selected condition is met"
-msgstr "선택한 조건이 충족되면 팝업 닫기"
+msgstr ""
 
 #. mouseover_close_behavior.options.any.name
 msgid "Any trigger is released"
-msgstr "어떤 동작에도 닫힘"
+msgstr ""
 
 #. mouseover_close_behavior.options.all.name
 msgid "All triggers are released"
-msgstr "모든 동작에서 닫힘"
+msgstr ""
 
 #. mouseover_close_behavior.options.esc.name
 msgid "ESC/Close is pressed"
-msgstr "ESC/닫기 누르기"
+msgstr ""
 
 #. mouseover_close_need_mouseout.name
 msgid "Don't close until mouse leaves"
-msgstr "마우스가 떠날 때까지 닫지 마십시오."
+msgstr ""
 
 #. mouseover_close_need_mouseout.description
 msgid "If true, this keeps the popup open even if all triggers are released if the mouse is still over the image"
-msgstr "활성화 시, 마우스가 이미지 위에 있는 경우 모든 동작에서 닫힘을 선택했더라도 팝업이 계속 열린 상태로 유지됨"
+msgstr ""
 
 #. mouseover_jitter_threshold.name
 msgid "Threshold to leave image"
-msgstr "이미지를 떠나기 위한 임계값"
+msgstr ""
 
 #. mouseover_jitter_threshold.description
 msgid "How many pixels outside of the image before the cursor is considered to have left the image"
-msgstr "커서가 이미지를 떠난 것으로 파악할 수 있는 이미지 픽셀 수"
+msgstr ""
 
 #. mouseover_cancel_popup_when_elout.name
 msgid "Leaving thumbnail cancels loading"
-msgstr "미리보기를 남기면 로딩이 취소됨"
+msgstr ""
 
 #. mouseover_cancel_popup_when_elout.description
 msgid "Cancels the current popup loading when the cursor has left the thumbnail image"
-msgstr "커서가 축소 이미지에서 벗어날 때 현재 팝업 로딩 취소"
+msgstr ""
 
 #. mouseover_cancel_popup_with_esc.name
 msgid "ESC cancels loading"
-msgstr "ESC 로딩 취소"
+msgstr ""
 
 #. mouseover_cancel_popup_with_esc.description
 msgid "Cancels the current popup loading if ESC is pressed"
-msgstr "ESC를 누르면 현재 팝업 로딩이 취소됨"
+msgstr ""
 
 #. mouseover_cancel_popup_when_release.name
 msgid "Releasing triggers cancels loading"
-msgstr "트리거를 해제하면 로딩이 취소됨"
+msgstr ""
 
 #. mouseover_cancel_popup_when_release.description
 msgid "Cancels the current popup loading if all/any triggers are released (as set by the \"Keep popup open until\" setting)"
-msgstr "어떤/모든 동작에 닫힘을 선택한 경우 현재 팝업 로딩 취소 (\"팝업을 닫으려면\" 설정에 의존함)"
+msgstr ""
 
 #. mouseover_auto_close_popup.name
 msgid "Automatically close after timeout"
-msgstr "시간 초과 후 자동으로 닫기"
+msgstr ""
 
 #. mouseover_auto_close_popup.description
 msgid "Closes the popup automatically after a specified period of time has elapsed"
-msgstr "지정된 시간이 경과한 후 팝업 자동 닫기"
+msgstr ""
 
 #. mouseover_auto_close_popup_time.name
 msgid "Timeout to close popup"
-msgstr "팝업을 닫기 위한 시간 초과 시간(초)"
+msgstr ""
 
 #. mouseover_auto_close_popup_time.description
 msgid "Amount of time to elapse before automatically closing the popup"
-msgstr "팝업을 자동으로 닫기 전 경과 시간"
+msgstr ""
 
 #. redirect_infobox_timeout.number_unit, mouseover_trigger_delay.number_unit, mouseover_video_autoloop_max.number_unit, mouseover_video_seek_amount.number_unit, mouseover_auto_close_popup_time.number_unit
 msgid "seconds"
-msgstr "초"
+msgstr ""
 
 #. mouseover_use_hold_key.name
 msgid "Use hold key"
-msgstr "고정 키 사용"
+msgstr ""
 
 #. mouseover_use_hold_key.description
 msgid "Enables the use of a hold key that, when pressed, will keep the popup open"
-msgstr "누르면 팝업이 열린 상태로 유지되는 고정 키 사용"
+msgstr ""
 
 #. mouseover_hold_key.name
 msgid "Hold key"
-msgstr "고정 키"
+msgstr ""
 
 #. mouseover_hold_key.description
 msgid "Hold key that, when pressed, will keep the popup open"
-msgstr "고정 키를 누르면 팝업이 열린 상태로 유지됨"
+msgstr ""
 
 #. mouseover_hold_position_center.name
 msgid "Center popup on hold"
-msgstr "중앙 팝업 고정"
+msgstr ""
 
 #. mouseover_hold_position_center.description
 msgid "Centers the popup to the middle of the page when the popup is held"
-msgstr "팝업이 열릴 때 팝업을 페이지 중앙에 배치"
+msgstr ""
 
 #. mouseover_hold_close_unhold.name
 msgid "Close popup on unhold"
-msgstr "고정 해제 시, 팝업 닫기"
+msgstr ""
 
 #. mouseover_hold_close_unhold.description
 msgid "Closes the popup when the hold key is pressed again, after having previously held the popup"
-msgstr "팝업을 고정한 후 고정 키를 다시 누르면 팝업이 닫힘"
+msgstr ""
 
 #. mouseover_hold_unclickthrough.name
 msgid "Enable pointer events on hold"
-msgstr "포인터 이벤트 고정 사용"
+msgstr ""
 
 #. mouseover_hold_unclickthrough.description
 msgid "Enables previously disabled pointer events when the popup is held"
-msgstr "팝업이 고정될 때 이전에 비활성화된 포인터 이벤트 활성화"
+msgstr ""
 
 #. mouseover_close_click_outside.name
 msgid "Clicking outside the popup closes"
-msgstr "팝업 바깥쪽을 클릭하면 닫힘"
+msgstr ""
 
 #. mouseover_close_click_outside.description
 msgid "Closes the popup when the mouse clicks outside of it"
-msgstr "마우스가 팝업 바깥쪽을 클릭할 때 팝업 닫기"
+msgstr ""
 
 #. mouseover_close_el_policy.name
 msgid "Close when leaving"
-msgstr "떠날 때 닫기"
+msgstr ""
 
 #. mouseover_close_el_policy.description
 msgid "Closes the popup when the mouse leaves the thumbnail element, the popup, or both"
@@ -1112,15 +1109,15 @@ msgstr ""
 
 #. mouseover_close_el_policy.options.thumbnail.name
 msgid "Thumbnail"
-msgstr "미리보기(썸네일)"
+msgstr ""
 
 #. mouseover_open_behavior.options.popup.name, mouseover_close_el_policy.options.popup.name
 msgid "Popup"
-msgstr "팝업"
+msgstr ""
 
 #. mouseover_close_el_policy.options.both.name
 msgid "Both"
-msgstr "둘 다"
+msgstr ""
 
 #. mouseover_wait_use_el.name
 msgid "Use invisible element when waiting"
@@ -1140,55 +1137,55 @@ msgstr ""
 
 #. allow_remote.name
 msgid "Allow inter-frame communication"
-msgstr "프레임 간 통신 허용"
+msgstr ""
 
 #. allow_remote.description
 msgid "Allows communication between frames in windows, improving support for keybindings"
-msgstr "창의 프레임 간 통신을 허용하여 키 바인딩에 대한 지원을 개선한다."
+msgstr ""
 
 #. allow_remote.description_userscript
 msgid "Allows communication between frames in windows, improving support for keybindings. Can pose a fingerprinting risk when used through the userscript"
-msgstr "창의 프레임 간 통신을 허용하여 키 바인딩에 대한 지원을 개선합니다. 유저스크립트를 통해 사용 시, 보안에 위협이 있을 수 있습니다"
+msgstr ""
 
 #. mouseover_use_remote.name
 msgid "Pop out of frames"
-msgstr "프레임에서 팝업"
+msgstr ""
 
 #. mouseover_use_remote.description
 msgid "Opens the popup on the top frame instead of within iframes. Still in beta"
-msgstr "iframes 대신 상단 프레임의 팝업 열기 ─ 베타 상태"
+msgstr ""
 
 #. mouseover_zoom_behavior.name
 msgid "Popup default zoom"
-msgstr "확대/축소 기본값"
+msgstr ""
 
 #. mouseover_zoom_behavior.description
 msgid "How the popup should be initially sized"
-msgstr "팝업의 초기 크기 조정 방법"
+msgstr ""
 
 #. mouseover_zoom_behavior.options.fit.name
 msgid "Fit to screen"
-msgstr "화면 크기에 맞춤"
+msgstr ""
 
 #. mouseover_zoom_behavior.options.fill.name
 msgid "Fill screen"
-msgstr "화면 채우기"
+msgstr ""
 
 #. mouseover_zoom_behavior.options.full.name
 msgid "Full size"
-msgstr "전체 크기"
+msgstr ""
 
 #. mouseover_zoom_behavior.options.custom.name
 msgid "Custom size"
-msgstr "맞춤 크기"
+msgstr ""
 
 #. mouseover_zoom_custom_percent.name
 msgid "Custom zoom percent"
-msgstr "사용자 지정 확대/축소 비율"
+msgstr ""
 
 #. mouseover_zoom_custom_percent.description
 msgid "Custom percent to initially size the popup"
-msgstr "팝업 설정 시, 초기 사용자 지정 확대/축소 비율"
+msgstr ""
 
 #. mouseover_video_volume.number_unit, mouseover_video_volume_change_amt.number_unit, mouseover_ui_opacity.number_unit, mouseover_zoom_custom_percent.number_unit
 msgid "%"
@@ -1196,23 +1193,23 @@ msgstr ""
 
 #. mouseover_zoom_max_width.name
 msgid "Maximum width"
-msgstr "최대 가로 길이"
+msgstr ""
 
 #. mouseover_zoom_max_width.description
 msgid "Maximum width for the initial popup size. Set to `0` for unlimited."
-msgstr "초기 팝업 크기의 최대 가로 길이. 무제한의 경우 0으로 설정하십시오."
+msgstr ""
 
 #. mouseover_zoom_max_height.name
 msgid "Maximum height"
-msgstr "최대 세로 길이"
+msgstr ""
 
 #. mouseover_zoom_max_height.description
 msgid "Maximum height for the initial popup size. Set to `0` for unlimited."
-msgstr "초기 팝업 크기의 최대 세로 길이. 무제한으로 '0'으로 설정한다."
+msgstr ""
 
 #. mouseover_pan_behavior.name
 msgid "Popup panning method"
-msgstr "이미지 이동하려면"
+msgstr ""
 
 #. mouseover_pan_behavior.description
 msgid "How the popup should be panned when larger than the screen"
@@ -1220,7 +1217,7 @@ msgstr ""
 
 #. mouseover_pan_behavior.options.movement.name
 msgid "Movement"
-msgstr "마우스 움직입니다"
+msgstr ""
 
 #. mouseover_pan_behavior.options.movement.description
 msgid "The popup pans as you move your mouse"
@@ -1228,7 +1225,7 @@ msgstr ""
 
 #. mouseover_pan_behavior.options.drag.name
 msgid "Drag"
-msgstr "끕니다"
+msgstr ""
 
 #. mouseover_pan_behavior.options.drag.description
 msgid "Clicking and dragging pans the popup"
@@ -1264,7 +1261,7 @@ msgstr ""
 
 #. mouseover_scrolly_behavior.options.zoom.name
 msgid "Zoom"
-msgstr "줌"
+msgstr ""
 
 #. mouseover_scrollx_behavior.name
 msgid "Horizontal scroll action"
@@ -1276,7 +1273,7 @@ msgstr ""
 
 #. mouseover_scrolly_behavior.options.pan.name, mouseover_scrollx_behavior.options.pan.name
 msgid "Pan"
-msgstr "이동"
+msgstr ""
 
 #. mouseover_scrolly_behavior.options.gallery.name, mouseover_scrollx_behavior.options.gallery.name
 msgid "Gallery"
@@ -1316,7 +1313,7 @@ msgstr ""
 
 #. mouseover_trigger_behavior.options.none.name, mouseover_allow_partial.options.none.name, mouseover_scrolly_behavior.options.nothing.name, mouseover_scrollx_behavior.options.nothing.name, mouseover_scrolly_video_behavior.options.nothing.name, mouseover_scrollx_video_behavior.options.nothing.name
 msgid "None"
-msgstr "없다"
+msgstr ""
 
 #. scroll_override_page.name
 msgid "Override scroll outside of popup"
@@ -1336,7 +1333,7 @@ msgstr ""
 
 #. scroll_zoom_origin.options.cursor.name
 msgid "Cursor"
-msgstr "커서"
+msgstr ""
 
 #. scroll_zoom_origin.options.center.name
 msgid "Center"
@@ -1344,7 +1341,7 @@ msgstr ""
 
 #. scroll_zoom_behavior.name
 msgid "Zoom behavior"
-msgstr "줌 동작"
+msgstr ""
 
 #. scroll_zoom_behavior.description
 msgid "How zooming should work"
@@ -1352,7 +1349,7 @@ msgstr ""
 
 #. scroll_zoom_behavior.options.fitfull.name
 msgid "Fit/Full"
-msgstr "화면맞춤/전체"
+msgstr ""
 
 #. scroll_zoom_behavior.options.fitfull.description
 msgid "Toggles between the full size, and fit-to-screen"
@@ -1360,7 +1357,7 @@ msgstr ""
 
 #. scroll_zoom_behavior.options.incremental.name
 msgid "Incremental"
-msgstr "증분"
+msgstr ""
 
 #. scroll_incremental_mult.name
 msgid "Incremental zoom multiplier"
@@ -1392,35 +1389,35 @@ msgstr ""
 
 #. zoom_out_to_close.name
 msgid "Zoom out fully to close"
-msgstr "닫기 위해 완전히 축소"
+msgstr ""
 
 #. zoom_out_to_close.description
 msgid "Closes the popup if you zoom out past the minimum zoom"
-msgstr "최소 크기로 축소할 경우 팝업 닫기"
+msgstr ""
 
 #. mouseover_position.name
 msgid "Popup position"
-msgstr "팝업 위치"
+msgstr ""
 
 #. mouseover_position.description
 msgid "Where the popup will appear"
-msgstr "팝업이 표시되는 위치"
+msgstr ""
 
 #. mouseover_position.options.cursor.name
 msgid "Cursor middle"
-msgstr "커서 중간"
+msgstr ""
 
 #. mouseover_position.options.cursor.description
 msgid "Underneath the mouse cursor"
-msgstr "마우스 커서 아래"
+msgstr ""
 
 #. mouseover_position.options.beside_cursor.name
 msgid "Beside cursor"
-msgstr "커서 옆"
+msgstr ""
 
 #. mouseover_position.options.center.name
 msgid "Page middle"
-msgstr "페이지 중간"
+msgstr ""
 
 #. mouseover_prevent_cursor_overlap.name
 msgid "Prevent cursor overlap"
@@ -1604,43 +1601,43 @@ msgstr ""
 
 #. mouseover_links.name
 msgid "Popup for plain hyperlinks"
-msgstr "일반적인 링크에도 팝업"
+msgstr ""
 
 #. mouseover_links.description
 msgid "Whether or not the popup should also open for plain hyperlinks"
-msgstr "일반 하이퍼링크의 팝업 열기 여부"
+msgstr ""
 
 #. mouseover_only_valid_links.name
 msgid "Only for links that look valid"
-msgstr "유효해 보이는 링크에만 해당"
+msgstr ""
 
 #. mouseover_only_valid_links.description
 msgid "Enabling this option will only allow links to be popped up if they look valid (such as if they have a known image/video extension, or are explicitly supported)"
-msgstr "이 옵션을 활성화하면 링크가 유효한 것으로 보이는 경우에만(예: 알려진 이미지/비디오 확장명이 있거나 명시적으로 지원되는 경우) 링크가 팝업될 수 있음"
+msgstr ""
 
 #. mouseover_allow_iframe_el.name
 msgid "Popup for `<iframe>`"
-msgstr "<iframe>에 대한 팝업"
+msgstr ""
 
 #. mouseover_allow_iframe_el.description
 msgid "Allows `<iframe>` elements to be popped up as well. Storing images/videos in this way is rather uncommon, but it can allow embeds to be supported"
-msgstr "<iframe>의 요소들도 팝업이 작동하도록 허용. 이런 식으로 이미지/비디오를 저장하는 것은 다소 드문 일이지만, embeds를 지원할 수 있음"
+msgstr ""
 
 #. mouseover_allow_canvas_el.name
 msgid "Popup for `<canvas>`"
-msgstr "<canvas>에 대한 팝업"
+msgstr ""
 
 #. mouseover_allow_canvas_el.description
 msgid "Allows `<canvas>` elements to be popped up as well. This will likely cause popups with any kind of web-based games, so it's recommended to keep this disabled"
-msgstr "<canvas>의 요소들도 팝업이 작동하도록 허용. 이것은 어떤 종류의 웹 기반 게임이라도 팝업을 유발할 가능성이 높으므로, 이 기능을 사용하지 않도록 유지하는 것이 좋음"
+msgstr ""
 
 #. mouseover_allow_svg_el.name
 msgid "Popup for `<svg>`"
-msgstr "<svg>에 대한 팝업"
+msgstr ""
 
 #. mouseover_allow_svg_el.description
 msgid "Allows `<svg>` elements to be popped up as well. These are usually used for icons, and can occasionally cause problems for websites that overlay icons on top of images"
-msgstr "<canvas>의 요소들도 팝업이 작동하도록 허용. 이것은 보통 아이콘에 사용되며, 때때로 이미지 위에 아이콘을 오버레이하는 웹 사이트에 문제를 일으킬 수 있음"
+msgstr ""
 
 #. mouseover_enable_gallery.name
 msgid "Enable gallery"
@@ -1684,7 +1681,7 @@ msgstr ""
 
 #. mouseover_styles.name
 msgid "Popup CSS style"
-msgstr "팝업 CSS"
+msgstr ""
 
 #. mouseover_styles.description
 msgid "Custom CSS styles for the popup"
@@ -1771,35 +1768,35 @@ msgstr ""
 
 #. mouseover_apply_blacklist.name
 msgid "Don't popup blacklisted images"
-msgstr "블랙리스트에 있는 이미지 팝업 안 함"
+msgstr ""
 
 #. mouseover_apply_blacklist.description
 msgid "This option prevents a popup from appearing altogether for blacklisted images"
-msgstr "이 옵션을 선택하면 블랙리스트에 있는 이미지에 대한 팝업이 모두 표시되지 않음"
+msgstr ""
 
 #. apply_blacklist_host.name
 msgid "Apply blacklist for host websites"
-msgstr "호스트 웹 사이트에 블랙리스트 적용"
+msgstr ""
 
 #. apply_blacklist_host.description
 msgid "This option prevents the script from applying any popups to host websites that are in the blacklist. For example, adding `twitter.com` to the blacklist would prevent any popup from opening on twitter.com. If disabled, this option only applies to image URLs (such as twimg.com), not host URLs"
-msgstr "이 옵션은 스크립트가 블랙리스트에 있는 호스트 웹 사이트에 팝업을 적용하는 것을 방지한다. 예를 들어 twitter.com을 블랙리스트에 추가하면 twitter.com에서 어떤 팝업도 열리지 않게 된다. 비활성화된 경우 이 옵션은 호스트 URL이 아닌 이미지 URL(예: twimg.com)에만 적용됨"
+msgstr ""
 
 #. mouseover_matching_media_types.name
 msgid "Don't popup video for image"
-msgstr "이미지에 대한 비디오 팝업 안 함"
+msgstr ""
 
 #. mouseover_matching_media_types.description
 msgid "This option prevents the popup from loading a video when the source was an image. Vice-versa is also applied"
-msgstr "원본이 이미지일 때 팝업이 비디오를 로드하는 것을 방지함.  반대의 경우도 적용함."
+msgstr ""
 
 #. mouseover_support_pointerevents_none.name
 msgid "Support `pointer-events:none`"
-msgstr "`포인터 이벤트 : 없음` 지원"
+msgstr ""
 
 #. mouseover_support_pointerevents_none.description
 msgid "Manually looks through every element on the page to see if the cursor is beneath them. Supports more images, but also results in a higher CPU load for websites such as Facebook."
-msgstr "커서 아래 있는 페이지의 모든 요소를 수동으로 확인합니다. 더 많은 이미지를 지원하지만, Facebook과 같은 웹사이트의 CPU 부하가 더 높아진다."
+msgstr ""
 
 #. popup_allow_cache.name
 msgid "Use cache"
@@ -1843,7 +1840,7 @@ msgstr ""
 
 #. website_inject_imu.name
 msgid "Use userscript"
-msgstr "유저스크립트 사용하기"
+msgstr ""
 
 #. website_inject_imu.description
 msgid "Replaces the website's IMU instance with the userscript"
@@ -1851,7 +1848,7 @@ msgstr ""
 
 #. website_image.name
 msgid "Website image preview"
-msgstr "링크 붙인 후 이미지 미리보기"
+msgstr ""
 
 #. website_image.description
 msgid "Enables a preview of the image on the Image Max URL website"
@@ -1899,7 +1896,7 @@ msgstr ""
 
 #. allow_watermark.name
 msgid "Larger watermarked images"
-msgstr "더 크지만 워터마크 있는 이미지"
+msgstr ""
 
 #. allow_watermark.description
 msgid "Enables rules that return larger images that include watermarks"
@@ -1911,7 +1908,7 @@ msgstr ""
 
 #. allow_smaller.name
 msgid "Smaller non-watermarked images"
-msgstr "더 작지만 워터마크 없는 이미지"
+msgstr ""
 
 #. allow_smaller.description
 msgid "Enables rules that return smaller images without watermarks"
@@ -1919,7 +1916,7 @@ msgstr ""
 
 #. allow_possibly_different.name
 msgid "Possibly different images"
-msgstr "다를 수 있는 이미지"
+msgstr ""
 
 #. allow_possibly_different.description
 msgid "Enables rules that return images that possibly differ"
@@ -1931,7 +1928,7 @@ msgstr ""
 
 #. allow_possibly_broken.name
 msgid "Possibly broken images"
-msgstr "손상될 수 있는 이미지"
+msgstr ""
 
 #. allow_possibly_broken.description
 msgid "Enables rules that return images that are possibly broken"
@@ -1947,7 +1944,7 @@ msgstr ""
 
 #. allow_thirdparty.name
 msgid "Rules using 3rd-party websites"
-msgstr "서드파티 사이트를 사용하는 규칙"
+msgstr ""
 
 #. allow_thirdparty.description
 msgid "Enables rules that use 3rd-party websites"
@@ -1955,7 +1952,7 @@ msgstr ""
 
 #. allow_thirdparty.example_websites[0]
 msgid "Newsen"
-msgstr "뉴스엔"
+msgstr ""
 
 #. allow_apicalls.name
 msgid "Rules using API calls"
@@ -2142,7 +2139,7 @@ msgstr ""
 
 #. bigimage_blacklist.name
 msgid "Blacklist"
-msgstr "블랙리스트"
+msgstr ""
 
 #. bigimage_blacklist.description
 msgid "A list of URLs that are blacklisted from being processed"
@@ -2173,7 +2170,7 @@ msgstr ""
 
 #. bigimage_blacklist_engine.name
 msgid "Blacklist engine"
-msgstr "블랙리스트 엔진"
+msgstr ""
 
 #. bigimage_blacklist_engine.description
 msgid "How the blacklist should be processed"
@@ -2181,11 +2178,11 @@ msgstr ""
 
 #. bigimage_blacklist_engine.options.glob.name
 msgid "Simple (glob)"
-msgstr "단순 (glob)"
+msgstr ""
 
 #. bigimage_blacklist_engine.options.regex.name
 msgid "Regex"
-msgstr "정규식"
+msgstr ""
 
 #. replaceimgs_keybinding.description
 msgid "Trigger keybinding that will run the Replace Images function"
@@ -2237,7 +2234,7 @@ msgstr ""
 
 #. mouseover_ui_gallerymax.number_unit, replaceimgs_totallimit.number_unit, replaceimgs_domainlimit.number_unit
 msgid "images"
-msgstr "이미지"
+msgstr ""
 
 #. replaceimgs_replaceimgs.name
 msgid "Replace images"
