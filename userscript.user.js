@@ -7845,6 +7845,7 @@ var $$IMU_EXPORT$$;
 		mouseover_drag_min: 5,
 		mouseover_scrolly_behavior: "zoom",
 		mouseover_scrollx_behavior: "gallery",
+		// thanks to Runakanta on discord for the idea
 		mouseover_scrolly_video_behavior: "default",
 		mouseover_scrollx_video_behavior: "default",
 		// thanks to regis on discord for the idea
