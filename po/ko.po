@@ -778,22 +778,6 @@ msgstr ""
 msgid "Key to seek forwards in a video by the specified amount"
 msgstr ""
 
-#. mouseover_video_seek_vertical_scroll.name
-msgid "Vertical scroll seeks"
-msgstr ""
-
-#. mouseover_video_seek_vertical_scroll.description
-msgid "Scrolling vertically will seek the video forward/backward"
-msgstr ""
-
-#. mouseover_video_seek_horizontal_scroll.name
-msgid "Horizontal scroll seeks"
-msgstr ""
-
-#. mouseover_video_seek_horizontal_scroll.description
-msgid "Scrolling horizontally will seek the video forward/backward"
-msgstr ""
-
 #. mouseover_video_frame_prev_key.name
 msgid "Previous frame key"
 msgstr ""
@@ -1298,7 +1282,39 @@ msgstr "이동"
 msgid "Gallery"
 msgstr ""
 
-#. mouseover_trigger_behavior.options.none.name, mouseover_allow_partial.options.none.name, mouseover_scrolly_behavior.options.nothing.name, mouseover_scrollx_behavior.options.nothing.name
+#. mouseover_scrolly_video_behavior.name
+msgid "Vertical video scroll action"
+msgstr ""
+
+#. mouseover_scrolly_video_behavior.description
+msgid "Overrides the vertical scroll action for videos. Set to `Default` to avoid overriding the behavior."
+msgstr ""
+
+#. mouseover_scrolly_video_invert.name
+msgid "Invert vertical scroll seek"
+msgstr ""
+
+#. mouseover_scrolly_video_invert.description
+msgid "Inverts the seek direction when scrolling vertically: Scrolling up will seek right, scrolling down will seek left."
+msgstr ""
+
+#. mouseover_scrollx_video_behavior.name
+msgid "Horizontal video scroll action"
+msgstr ""
+
+#. mouseover_scrollx_video_behavior.description
+msgid "Overrides the horizontal scroll action for videos. Set to `Default` to avoid overriding the behavior."
+msgstr ""
+
+#. mouseover_scrolly_video_behavior.options.default.name, mouseover_scrollx_video_behavior.options.default.name
+msgid "Default"
+msgstr ""
+
+#. mouseover_scrolly_video_behavior.options.seek.name, mouseover_scrollx_video_behavior.options.seek.name
+msgid "Seek"
+msgstr ""
+
+#. mouseover_trigger_behavior.options.none.name, mouseover_allow_partial.options.none.name, mouseover_scrolly_behavior.options.nothing.name, mouseover_scrollx_behavior.options.nothing.name, mouseover_scrolly_video_behavior.options.nothing.name, mouseover_scrollx_video_behavior.options.nothing.name
 msgid "None"
 msgstr "없다"
 
