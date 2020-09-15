@@ -1733,9 +1733,12 @@ var $$IMU_EXPORT$$;
 
 	var browser_language = "en";
 	try {
-		browser_language = get_language().replace(/-.*/, "").toLowerCase();
-		if (array_indexof(supported_languages, browser_language) < 0)
-			browser_language = "en";
+		browser_language = get_language().toLowerCase();
+		if (array_indexof(supported_languages, browser_language) < 0) {
+			browser_language = browser_language.replace(/-.*/, "");
+			if (array_indexof(supported_languages, browser_language) < 0)
+				browser_language = en;
+		}
 	} catch (e) {
 		console_error(e);
 	}
