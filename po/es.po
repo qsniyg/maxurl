@@ -8,6 +8,10 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: es\n"
 
+# Native language name (e.g. Français for French, 한국어 for Korean)
+msgid "$language_native$"
+msgstr "Español"
+
 msgid "options_header"
 msgstr "Opciones"
 

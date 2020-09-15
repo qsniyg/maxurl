@@ -1,4 +1,5 @@
 const fs = require("fs");
+const maximage = require("../userscript.user.js");
 
 var split_value = function(lines, cmd, value) {
     var splitted = value.split("\n");
@@ -42,6 +43,7 @@ var start = function(userscript) {
         return;
     }
     var supported_languages_json = JSON.parse(supported_languages[1]);
+    const language_options = maximage.internal.settings_meta.language.options;
     for (var supported_language of supported_languages_json) {
         if (supported_language === "en") {
             supported_language = "imu";
@@ -64,6 +66,16 @@ var start = function(userscript) {
 
         if (supported_language !== "imu") {
             pofiles[supported_language].push("\"Language: " + supported_language + "\\n\"");
+        }
+
+        pofiles[supported_language].push("");
+
+        pofiles[supported_language].push("# Native language name (e.g. Français for French, 한국어 for Korean)")
+        pofiles[supported_language].push("msgid \"$language_native$\"");
+        if (supported_language in language_options) {
+            split_value(pofiles[supported_language], "msgstr", language_options[supported_language].name);
+        } else {
+            pofiles[supported_language].push("msgstr \"\"");
         }
 
         pofiles[supported_language].push("");

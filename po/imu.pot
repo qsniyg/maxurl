@@ -5,6 +5,10 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+# Native language name (e.g. Français for French, 한국어 for Korean)
+msgid "$language_native$"
+msgstr ""
+
 msgid "options_header"
 msgstr ""
 
