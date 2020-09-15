@@ -159,7 +159,7 @@ var get_all_strings = function() {
 				return;
 
 			var langcode = match[1];
-			var real_langcode = langcode.replace(/_/, "-"); // en_US -> en-US
+			var real_langcode = langcode.replace(/_/, "-").toLowerCase(); // en_US -> en-us
 			var langstrings = read_po("./po/" + file);
 
 			for (var string in langstrings) {

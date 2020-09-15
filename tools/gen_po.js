@@ -50,6 +50,11 @@ var start = function(userscript) {
             supported_language = "imu";
         } else {
             supported_language = supported_language.replace(/-/, "_");
+            var splitted = supported_language.split("_");
+            if (splitted.length === 2) {
+                splited[1] = splitted[1].toUpperCase();
+                supported_language = splitted.join("_");
+            }
         }
 
         pofiles[supported_language] = [];
