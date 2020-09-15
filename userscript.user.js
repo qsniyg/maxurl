@@ -36416,6 +36416,12 @@ var $$IMU_EXPORT$$;
 			};
 		}
 
+		if (domain_nowww === "gelbooru.me") {
+			// https://gelbooru.me/cdnimg1/thumbnails/0a/52/thumbnail_0a52177e255e054abffd59b20620e964.jpg
+			//   https://img1.gelbooru.com/thumbnails/0a/52/thumbnail_0a52177e255e054abffd59b20620e964.jpg
+			return src.replace(/^[a-z]+:\/\/[^/]+\/+cdn(img[0-9]+)\/+/, "https://$1.gelbooru.com/");
+		}
+
 		if (domain_nowww === "gelbooru.com") {
 			// https://gelbooru.com/thumbnails/56/24/thumbnail_562420ec66ff68dd8e31a8f651283e0d.jpg
 			//   https://img2.gelbooru.com/thumbnails/56/24/thumbnail_562420ec66ff68dd8e31a8f651283e0d.jpg
