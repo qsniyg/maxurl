@@ -1,5 +1,6 @@
 const fs = require("fs");
 const util = require("./util.js");
+const maximage = require("../userscript.user.js");
 
 const process = require("process");
 process.chdir(__dirname + "/..");
@@ -57,7 +58,7 @@ var read_po = function(filename) {
 	return parse(pofile.split("\n"));
 };
 
-var update_userscript = function(newstrings) {
+var update_userscript_strings = function(newstrings) {
 	var filename = "userscript.user.js"
 	var userscript = fs.readFileSync(filename).toString();
 	var strings_regex = /(\n\tvar strings = )({[\s\S]+?})(;\n)/;
@@ -96,8 +97,31 @@ var update_userscript = function(newstrings) {
 	fs.writeFileSync(filename, userscript);
 };
 
+var update_userscript_supported_languages = function(supported_languages) {
+	var filename = "userscript.user.js"
+	var userscript = fs.readFileSync(filename).toString();
+	var strings_regex = /(\n\tvar supported_languages = )(\[[\s\S]+?\])(;\n)/;
+
+	var match = userscript.match(strings_regex);
+	if (!match) {
+		console.error("Unable to find supported languages match in userscript");
+		return;
+	}
+
+	util.sort_by_array(supported_languages, ["en"]);
+
+	var stringified = JSON.stringify(supported_languages, null, "\t").replace(/\n/g, "\n\t");
+	stringified = util.json_escape_unicode(stringified);
+
+	userscript = userscript.replace(strings_regex, "$1" + stringified + "$3");
+
+	fs.writeFileSync(filename, userscript);
+};
+
 var get_all_strings = function() {
 	var strings = {};
+
+	var supported_languages = ["en"];
 
 	fs.readdir("./po", function (err, files) {
 		files.forEach(function(file) {
@@ -109,14 +133,20 @@ var get_all_strings = function() {
 			var langstrings = read_po("./po/" + file);
 
 			for (var string in langstrings) {
+				if (string === "$language_native$")
+					continue;
+
 				if (!(string in strings))
 					strings[string] = {};
 
 				strings[string][langcode] = langstrings[string];
 			}
+
+			supported_languages.push(langcode);
 		});
 
-		update_userscript(strings);
+		update_userscript_strings(strings);
+		update_userscript_supported_languages(supported_languages);
 	});
 };
 

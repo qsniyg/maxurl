@@ -30,3 +30,24 @@ module.exports.update_userscript_strings = function(strings, userscript) {
 
     fs.writeFileSync(userscript_filename, userscript);
 };
+
+module.exports.sort_by_array = function(array, key) {
+    array.sort(function(a, b) {
+        var a_index = key.indexOf(a);
+        var b_index = key.indexOf(b);
+
+        if (a_index < 0) {
+            if (b_index >= 0)
+                return 1;
+            else
+                return a.localeCompare(b);
+        } else {
+            if (b_index < 0)
+                return -1;
+            else
+                return a_index - b_index;
+        }
+    });
+
+    return array;
+};

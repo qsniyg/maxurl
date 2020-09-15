@@ -1724,7 +1724,12 @@ var $$IMU_EXPORT$$;
 		return navigator.language || navigator.userLanguage;
 	}
 
-	var supported_languages = ["en", "ko", "fr", "es"];
+	var supported_languages = [
+		"en",
+		"es",
+		"fr",
+		"ko"
+	];
 
 	var browser_language = "en";
 	try {
