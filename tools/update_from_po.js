@@ -118,10 +118,39 @@ var update_userscript_supported_languages = function(supported_languages) {
 	fs.writeFileSync(filename, userscript);
 };
 
+var update_userscript_language_options = function(languages) {
+	var filename = "userscript.user.js"
+	var userscript = fs.readFileSync(filename).toString();
+	var strings_regex = /(\n\t\tlanguage: {\n[^}]+?\n\t\t\toptions: )(\{\n\t{4}_type: "combo",(?:\n\t{4}(?:"[^"]+"|[_a-z]+): \{\n\t{5}name: "[^"]+"\n\t{4}\},?)*\n\t{3}\})(,\n)/;
+
+	var match = userscript.match(strings_regex);
+	if (!match) {
+		console.error("Unable to find language options match in userscript");
+		return;
+	}
+
+	languages = util.sort_keys_by_array(languages, ["_type", "en"]);
+
+	for (var key in languages) {
+		if (key === "_type")
+			continue;
+		languages[key] = {name: languages[key]};
+	}
+
+	var stringified = JSON.stringify(languages, null, "\t").replace(/\n/g, "\n\t\t\t");
+	stringified = util.json_escape_unicode(stringified);
+	stringified = stringified.replace(/(\t)"([_a-z]+)":/g, "$1$2:");
+
+	userscript = userscript.replace(strings_regex, "$1" + stringified + "$3");
+
+	fs.writeFileSync(filename, userscript);
+};
+
 var get_all_strings = function() {
 	var strings = {};
 
 	var supported_languages = ["en"];
+	var language_options = {"_type": "combo", "en": "English"};
 
 	fs.readdir("./po", function (err, files) {
 		files.forEach(function(file) {
@@ -133,8 +162,10 @@ var get_all_strings = function() {
 			var langstrings = read_po("./po/" + file);
 
 			for (var string in langstrings) {
-				if (string === "$language_native$")
+				if (string === "$language_native$") {
+					language_options[langcode] = langstrings[string];
 					continue;
+				}
 
 				if (!(string in strings))
 					strings[string] = {};
@@ -147,6 +178,7 @@ var get_all_strings = function() {
 
 		update_userscript_strings(strings);
 		update_userscript_supported_languages(supported_languages);
+		update_userscript_language_options(language_options);
 	});
 };
 

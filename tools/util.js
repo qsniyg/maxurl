@@ -31,7 +31,7 @@ module.exports.update_userscript_strings = function(strings, userscript) {
     fs.writeFileSync(userscript_filename, userscript);
 };
 
-module.exports.sort_by_array = function(array, key) {
+var sort_by_array = module.exports.sort_by_array = function(array, key) {
     array.sort(function(a, b) {
         var a_index = key.indexOf(a);
         var b_index = key.indexOf(b);
@@ -50,4 +50,16 @@ module.exports.sort_by_array = function(array, key) {
     });
 
     return array;
+};
+
+module.exports.sort_keys_by_array = function(object, key) {
+    var keys = Object.keys(object);
+    sort_by_array(keys, key);
+
+    var newobj = {};
+    for (const key of keys) {
+        newobj[key] = object[key];
+    }
+
+    return newobj;
 };

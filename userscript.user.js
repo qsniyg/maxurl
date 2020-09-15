@@ -8061,14 +8061,14 @@ var $$IMU_EXPORT$$;
 				en: {
 					name: "English"
 				},
-				ko: {
-					name: "한국어"
+				es: {
+					name: "Espa\u00F1ol"
 				},
 				fr: {
-					name: "Français"
+					name: "Fran\u00E7ais"
 				},
-				es: {
-					name: "Español"
+				ko: {
+					name: "\uD55C\uAD6D\uC5B4"
 				}
 			},
 			onedit: function() {
