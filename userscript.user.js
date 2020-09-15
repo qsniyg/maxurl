@@ -85522,6 +85522,10 @@ var $$IMU_EXPORT$$;
 		var release_ignore = [];
 		var editing_text = false;
 
+		var host_location = window.location.href;
+		var host_domain = get_domain_from_url(host_location);
+		var host_domain_nosub = get_domain_nosub(host_domain);
+
 		function resetifout(e) {
 			// doesn't work, as e doesn't contain ctrlKey etc.
 			if (!trigger_complete(settings.mouseover_trigger_key)) {
@@ -86433,30 +86437,65 @@ var $$IMU_EXPORT$$;
 
 				var visibility_workarounds = [
 					// uBlock Origin on pornhub blocks: video[style*="display: block !important;"]
-					function() {update_img_display(["block"]);},
-					function() {update_img_display(["initial", "important"]);},
+					{
+						domain_nosub: /^pornhub(?:premium)?\./,
+						img_display: ["block"]
+					},
+					{
+						domain_nosub: /^pornhub(?:premium)?\./,
+						img_display: ["initial", "important"]
+					},
 
 					// uBlock Origin on gelbooru blocks:
 					//   a[target="_blank"] > img
 					//   a[target="_blank"] > div
 					// https://github.com/qsniyg/maxurl/issues/430#issuecomment-686768694
-					function() {
-						var span_el = document_createElement("span");
-						span_el.appendChild(img);
-						a.appendChild(span_el);
+					{
+						domain_nosub: /^gelbooru\./,
+						func: function() {
+							var span_el = document_createElement("span");
+							span_el.appendChild(img);
+							a.appendChild(span_el);
+						}
 					}
 				];
+
+				var check_visibility_workaround = function(workaround) {
+					if (workaround.domain_nosub) {
+						if (!workaround.domain_nosub.test(host_domain_nosub))
+							return false;
+					}
+
+					return true;
+				};
+
+				var apply_visibility_workaround = function(workaround) {
+					if (workaround.img_display) {
+						update_img_display(workaround.img_display);
+					} else if (workaround.func) {
+						workaround.func();
+					}
+				};
 
 				var check_img_visibility = function() {
 					setTimeout(function() {
 						var computed = get_computed_style(img);
-						if (computed.display === "none") {
+						if (computed.display !== "none") {
+							return;
+						}
+
+						while (visibility_workarounds.length > 0) {
 							var current_workaround = visibility_workarounds.shift();
 
-							current_workaround();
+							if (!check_visibility_workaround(current_workaround))
+								continue;
+
+							apply_visibility_workaround(current_workaround);
 
 							if (visibility_workarounds.length > 0)
 								check_img_visibility();
+
+							break;
 						}
 					}, 50);
 				};
