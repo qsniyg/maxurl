@@ -7847,6 +7847,7 @@ var $$IMU_EXPORT$$;
 		mouseover_scrollx_behavior: "gallery",
 		// thanks to Runakanta on discord for the idea
 		mouseover_scrolly_video_behavior: "default",
+		mouseover_scrolly_video_invert: false,
 		mouseover_scrollx_video_behavior: "default",
 		// thanks to regis on discord for the idea
 		scroll_override_page: false,
@@ -9493,6 +9494,15 @@ var $$IMU_EXPORT$$;
 			},
 			requires: {
 				mouseover_open_behavior: "popup"
+			},
+			category: "popup",
+			subcategory: "behavior"
+		},
+		mouseover_scrolly_video_invert: {
+			name: "Invert vertical scroll seek",
+			description: "Inverts the seek direction when scrolling vertically: Scrolling up will seek right, scrolling down will seek left.",
+			requires: {
+				mouseover_scrolly_video_behavior: "seek"
 			},
 			category: "popup",
 			subcategory: "behavior"
@@ -87838,6 +87848,9 @@ var $$IMU_EXPORT$$;
 							else if (e.deltaY > 0)
 								isright = true;
 							else return;
+
+							if (settings.mouseover_scrolly_video_invert)
+								isright = !isright;
 						}
 
 						seek_popup_video(!isright);
