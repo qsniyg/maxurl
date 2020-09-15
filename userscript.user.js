@@ -78218,6 +78218,17 @@ var $$IMU_EXPORT$$;
 			if (newsrc) return newsrc;
 		}
 
+		if (domain_nowww === "auntjudys.com") {
+			// Thanks to an anonymous tip
+			// https://www.auntjudys.com/tour/content//upload/a/and100/20191010001//thumbs/abc_4578.jpg -- 370x460
+			//   https://www.auntjudys.com/tour/content//upload/a/and100/20191010001//fullwatermarked/abc_4578.jpg -- 4912x7360
+			// https://auntjudys.com/content/r/reb033/20200319004/0.jpg
+			//   https://auntjudys.com/content/r/reb033/20200319004/0-large.jpg
+			return src
+				.replace(/(\/tour\/+content\/+upload\/.*\/)thumbs\/+/, "$1fullwatermarked/")
+				.replace(/(:\/\/[^/]+\/+content\/+[a-z]\/+[a-z]{3}[0-9]{3}\/+[0-9]+\/+[0-9]+)(\.[^/.]+)(?:[?#].*)?$/, "$1-large$2");
+		}
+
 
 
 
