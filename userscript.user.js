@@ -83886,6 +83886,9 @@ var $$IMU_EXPORT$$;
 					}
 
 					do_update_setting(setting, value, meta);
+
+					check_disabled_options();
+					show_warnings();
 				};
 
 				value_td.appendChild(sub);
