@@ -10,7 +10,8 @@ To test a modified translation, run: `node tools/update_from_po.js`. This will u
 
 Note: when submitting a pull request for a translation, please do not include the modified userscript.user.js, as it will increase the risk of merge conflicts.
 
-To add support for a new language, simply create a new .po file for the language code from [po/imu.pot](https://github.com/qsniyg/maxurl/blob/master/po/imu.pot).
+To add support for a new language, create a new .po file for the language code from [po/imu.pot](https://github.com/qsniyg/maxurl/blob/master/po/imu.pot),
+and make sure to translate `$language_native$` (the native word for your language, such as Français for French, or 한국어 for Korean).
 
 Website/rule contributions
 ==========================
