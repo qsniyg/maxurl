@@ -3615,46 +3615,6 @@ var $$IMU_EXPORT$$;
 				]
 			}
 		},
-		"Vertical scroll seeks": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_video_seek_vertical_scroll",
-						"field": "name"
-					}
-				]
-			}
-		},
-		"Scrolling vertically will seek the video forward/backward": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_video_seek_vertical_scroll",
-						"field": "description"
-					}
-				]
-			}
-		},
-		"Horizontal scroll seeks": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_video_seek_horizontal_scroll",
-						"field": "name"
-					}
-				]
-			}
-		},
-		"Scrolling horizontally will seek the video forward/backward": {
-			"_info": {
-				"instances": [
-					{
-						"setting": "mouseover_video_seek_horizontal_scroll",
-						"field": "description"
-					}
-				]
-			}
-		},
 		"Previous frame key": {
 			"_info": {
 				"instances": [
@@ -5039,6 +4999,94 @@ var $$IMU_EXPORT$$;
 				]
 			}
 		},
+		"Vertical video scroll action": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_scrolly_video_behavior",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Overrides the vertical scroll action for videos. Set to `Default` to avoid overriding the behavior.": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_scrolly_video_behavior",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Invert vertical scroll seek": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_scrolly_video_invert",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Inverts the seek direction when scrolling vertically: Scrolling up will seek right, scrolling down will seek left.": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_scrolly_video_invert",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Horizontal video scroll action": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_scrollx_video_behavior",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Overrides the horizontal scroll action for videos. Set to `Default` to avoid overriding the behavior.": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_scrollx_video_behavior",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Default": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_scrolly_video_behavior",
+						"field": "options.default.name"
+					},
+					{
+						"setting": "mouseover_scrollx_video_behavior",
+						"field": "options.default.name"
+					}
+				]
+			}
+		},
+		"Seek": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "mouseover_scrolly_video_behavior",
+						"field": "options.seek.name"
+					},
+					{
+						"setting": "mouseover_scrollx_video_behavior",
+						"field": "options.seek.name"
+					}
+				]
+			}
+		},
 		"None": {
 			"_info": {
 				"instances": [
@@ -5056,6 +5104,14 @@ var $$IMU_EXPORT$$;
 					},
 					{
 						"setting": "mouseover_scrollx_behavior",
+						"field": "options.nothing.name"
+					},
+					{
+						"setting": "mouseover_scrolly_video_behavior",
+						"field": "options.nothing.name"
+					},
+					{
+						"setting": "mouseover_scrollx_video_behavior",
 						"field": "options.nothing.name"
 					}
 				]
