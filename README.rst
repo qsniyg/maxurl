@@ -242,15 +242,7 @@ The result is a list of objects that contain properties that may be useful in us
 Contributing
 ************
 
-Contributions are always greatly appreciated! If you have any bug reports, feature requests, or new websites you want supported,
-please file an issue here.
+Any contribution is greatly appreciated! If you have any bug reports, feature requests, or new websites you want supported, please file an issue here.
 
-Translations
-============
-
-Currently translations are stored inside the source code (userscript.user.js). I'm planning to move this into a separate
-file in order to make this easier for translators, but for now:
-
-* All message strings are stored as a JS object as ``strings`` (search for ``var strings =`` in the source code, it's near the top)
-* Each translated language is specified under a message ID.
-* Language subtags are currently ignored. For example, "en" is used instead of "en-US".
+If you wish to contribute to the repository itself, please check `CONTRIBUTING.md <https://github.com/qsniyg/maxurl/blob/master/CONTRIBUTING.md>`__
+for more information.
