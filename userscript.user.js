@@ -7689,7 +7689,9 @@ var $$IMU_EXPORT$$;
 		"mouseover_use_fully_loaded_image",
 		"mouseover_close_on_leave_el",
 		"mouseover_scroll_behavior",
-		"mouseover_mask_styles"
+		"mouseover_mask_styles",
+		"mouseover_video_seek_vertical_scroll",
+		"mouseover_video_seek_horizontal_scroll"
 	];
 
 	var settings = {
@@ -7804,8 +7806,8 @@ var $$IMU_EXPORT$$;
 		mouseover_video_seek_amount: 10,
 		mouseover_video_seek_left_key: ["shift", "left"],
 		mouseover_video_seek_right_key: ["shift", "right"],
-		mouseover_video_seek_vertical_scroll: false,
-		mouseover_video_seek_horizontal_scroll: false,
+		//mouseover_video_seek_vertical_scroll: false,
+		//mouseover_video_seek_horizontal_scroll: false,
 		mouseover_video_frame_prev_key: [","],
 		mouseover_video_frame_next_key: ["."],
 		mouseover_video_framerate: 25,
@@ -7843,6 +7845,8 @@ var $$IMU_EXPORT$$;
 		mouseover_drag_min: 5,
 		mouseover_scrolly_behavior: "zoom",
 		mouseover_scrollx_behavior: "gallery",
+		mouseover_scrolly_video_behavior: "default",
+		mouseover_scrollx_video_behavior: "default",
 		// thanks to regis on discord for the idea
 		scroll_override_page: false,
 		// thanks to regis on discord for the idea
@@ -9463,6 +9467,48 @@ var $$IMU_EXPORT$$;
 					nothing: {
 						name: "None"
 					}
+				}
+			},
+			requires: {
+				mouseover_open_behavior: "popup"
+			},
+			category: "popup",
+			subcategory: "behavior"
+		},
+		mouseover_scrolly_video_behavior: {
+			name: "Vertical video scroll action",
+			description: "Overrides the vertical scroll action for videos. Set to `Default` to avoid overriding the behavior.",
+			options: {
+				_type: "combo",
+				default: {
+					name: "Default"
+				},
+				seek: {
+					name: "Seek"
+				},
+				nothing: {
+					name: "None"
+				}
+			},
+			requires: {
+				mouseover_open_behavior: "popup"
+			},
+			category: "popup",
+			subcategory: "behavior"
+		},
+		mouseover_scrollx_video_behavior: {
+			name: "Horizontal video scroll action",
+			description: "Overrides the horizontal scroll action for videos. Set to `Default` to avoid overriding the behavior.",
+			options: {
+				_type: "combo",
+				default: {
+					name: "Default"
+				},
+				seek: {
+					name: "Seek"
+				},
+				nothing: {
+					name: "None"
 				}
 			},
 			requires: {
@@ -84236,6 +84282,21 @@ var $$IMU_EXPORT$$;
 			version = 5;
 		}
 
+		if (version === 5) {
+			if ("mouseover_video_seek_vertical_scroll" in new_settings && new_settings.mouseover_video_seek_vertical_scroll) {
+				update_setting("mouseover_scrolly_video_behavior", "seek");
+			}
+
+			if ("mouseover_video_seek_horizontal_scroll" in new_settings && new_settings.mouseover_video_seek_horizontal_scroll) {
+				update_setting("mouseover_scrollx_video_behavior", "seek");
+			}
+
+			update_setting("settings_version", 6);
+			changed = true;
+
+			version = 6;
+		}
+
 		cb(changed);
 	}
 
@@ -87783,32 +87844,36 @@ var $$IMU_EXPORT$$;
 						return true;
 					};
 
+					var actionx = true;
+					var actiony = true;
+
 					if (is_video) {
-						if (!handledx && settings.mouseover_video_seek_horizontal_scroll) {
-							if (handle_seek(true)) {
-								handledx = true;
+						var video_scrollx = get_single_setting("mouseover_scrollx_video_behavior");
+						var video_scrolly = get_single_setting("mouseover_scrolly_video_behavior");
+
+						if (!handledx && video_scrollx !== "default") {
+							if (video_scrollx === "seek") {
+								if (handle_seek(true)) {
+									handledx = true;
+								}
+							} else if (video_scrollx === "nothing") {
+								actionx = false;
 							}
 						}
 
-						if (!handledy && settings.mouseover_video_seek_vertical_scroll) {
-							if (handle_seek(false)) {
-								handledy = true;
+						if (!handledy && video_scrolly !== "default") {
+							if (video_scrolly === "seek") {
+								if (handle_seek(false)) {
+									handledy = true;
+								}
+							} else if (video_scrollx === "nothing") {
+								actiony = false;
 							}
 						}
 					}
 
 					var scrollx_behavior = get_single_setting("mouseover_scrollx_behavior");
 					var scrolly_behavior = get_single_setting("mouseover_scrolly_behavior");
-
-					if (scrollx_behavior === "pan" && !handledx) {
-						outerdiv.style.left = (parseInt(outerdiv.style.left) + e.deltaX) + "px";
-						handledx = true;
-					}
-
-					if (scrolly_behavior === "pan" && !handledy) {
-						outerdiv.style.top = (parseInt(outerdiv.style.top) + e.deltaY) + "px";
-						handledy = true;
-					}
 
 					var handle_gallery = function(xy) {
 						if (!settings.mouseover_enable_gallery)
@@ -87835,20 +87900,30 @@ var $$IMU_EXPORT$$;
 						return true;
 					};
 
-					if (scrollx_behavior === "gallery" && !handledx) {
-						if (handle_gallery(true)) {
-							return;
-						}
+					if (actionx && !handledx) {
+						if (scrollx_behavior === "pan") {
+							outerdiv.style.left = (parseInt(outerdiv.style.left) + e.deltaX) + "px";
+							handledx = true;
+						} else if (scrollx_behavior === "gallery") {
+							if (handle_gallery(true)) {
+								return;
+							}
 
-						handledx = true;
+							handledx = true;
+						}
 					}
 
-					if (scrolly_behavior === "gallery" && !handledy) {
-						if (handle_gallery(false)) {
-							return;
-						}
+					if (actiony && !handledy) {
+						if (scrolly_behavior === "pan") {
+							outerdiv.style.top = (parseInt(outerdiv.style.top) + e.deltaY) + "px";
+							handledy = true;
+						} else if (scrolly_behavior === "gallery") {
+							if (handle_gallery(false)) {
+								return;
+							}
 
-						handledy = true;
+							handledy = true;
+						}
 					}
 
 					if (handledy) {
@@ -87856,7 +87931,7 @@ var $$IMU_EXPORT$$;
 						return false;
 					}
 
-					if (scrolly_behavior !== "zoom" || e.deltaY === 0) {
+					if (!actiony || scrolly_behavior !== "zoom" || e.deltaY === 0) {
 						return;
 					}
 
