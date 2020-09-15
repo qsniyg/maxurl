@@ -37,7 +37,7 @@ var start = function(userscript) {
         "ko": "Korean"
     };
 
-    var supported_languages = userscript.match(/\n\tvar supported_languages = (\[.*?\]);\n/);
+    var supported_languages = userscript.match(/\n\tvar supported_languages = (\[(?:\n\t{2}"[-a-zA-Z]+",?)*\n\t\]);\n/);
     if (!supported_languages) {
         console.error("Unable to find supported languages match in userscript");
         return;
@@ -45,8 +45,11 @@ var start = function(userscript) {
     var supported_languages_json = JSON.parse(supported_languages[1]);
     const language_options = maximage.internal.settings_meta.language.options;
     for (var supported_language of supported_languages_json) {
+        var old_supported_language = supported_language;
         if (supported_language === "en") {
             supported_language = "imu";
+        } else {
+            supported_language = supported_language.replace(/-/, "_");
         }
 
         pofiles[supported_language] = [];
@@ -72,8 +75,8 @@ var start = function(userscript) {
 
         pofiles[supported_language].push("# Native language name (e.g. Français for French, 한국어 for Korean)")
         pofiles[supported_language].push("msgid \"$language_native$\"");
-        if (supported_language in language_options) {
-            split_value(pofiles[supported_language], "msgstr", language_options[supported_language].name);
+        if (supported_language !== "imu" && old_supported_language in language_options) {
+            split_value(pofiles[supported_language], "msgstr", language_options[old_supported_language].name);
         } else {
             pofiles[supported_language].push("msgstr \"\"");
         }

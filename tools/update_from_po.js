@@ -159,11 +159,12 @@ var get_all_strings = function() {
 				return;
 
 			var langcode = match[1];
+			var real_langcode = langcode.replace(/_/, "-"); // en_US -> en-US
 			var langstrings = read_po("./po/" + file);
 
 			for (var string in langstrings) {
 				if (string === "$language_native$") {
-					language_options[langcode] = langstrings[string];
+					language_options[real_langcode] = langstrings[string];
 					continue;
 				}
 
@@ -173,7 +174,7 @@ var get_all_strings = function() {
 				strings[string][langcode] = langstrings[string];
 			}
 
-			supported_languages.push(langcode);
+			supported_languages.push(real_langcode);
 		});
 
 		update_userscript_strings(strings);
