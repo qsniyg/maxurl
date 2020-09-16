@@ -40332,22 +40332,129 @@ var $$IMU_EXPORT$$;
 			return decodeURIComponent(src.replace(/.*\/Utils\/ImageResizer\.ashx.*?[?&]n=([^&]*).*?$/, "$1"));
 		}
 
-		if (domain_nosub === "heritagestatic.com" && domain.match(/dyn[0-9]*\.heritagestatic\.com/)) {
+		// liquifire os: https://www.liquidpixels.com/liquifire-os
+		if ((domain_nosub === "heritagestatic.com" && /^dyn[0-9]*\.heritagestatic\.com/.test(domain)) ||
+			// thanks to llacb47 on github: https://github.com/qsniyg/maxurl/issues/445
+			// https://images.biglots.com/images?set=key%5Bresolve.pixelRatio%5D,value%5B1%5D&set=key%5Bresolve.width%5D,value%5B400%5D&set=key%5Bresolve.height%5D,value%5B10000%5D&set=key%5Bresolve.imageFit%5D,value%5Bcontainerwidth%5D&set=key%5Bresolve.allowImageUpscaling%5D,value%5B0%5D&set=env%5Bprod%5D,imageURL%5B%252Fimages%252Fmarketing%252F2020%252F08082020%252Fnewhp%252F080720-Homepage-FinancingCards-BLCC.jpg%5D&call=url%5Bfile:resolve/resolve.chain%5D
+			//   https://images.biglots.com/images?set=key%5Bresolve.pixelRatio%5D%2Cvalue%5B1%5D&set=key%5Bresolve.width%5D%2Cvalue%5B99999%5D&set=key%5Bresolve.height%5D%2Cvalue%5B99999%5D&set=key%5Bresolve.imageFit%5D%2Cvalue%5Bcontainerwidth%5D&set=key%5Bresolve.allowImageUpscaling%5D%2Cvalue%5B0%5D&set=env%5Bprod%5D%2CimageURL%5B%252Fimages%252Fmarketing%252F2020%252F08082020%252Fnewhp%252F080720-Homepage-FinancingCards-BLCC.jpg%5D&call=url%5Bfile:resolve/resolve.chain%5D
+			//   https://www.biglots.com/images/marketing/2020/08082020/newhp/080720-Homepage-FinancingCards-BLCC.jpg
+			// https://images.biglots.com/images?set=key%5Bresolve.pixelRatio%5D,value%5B1%5D&set=key%5Bresolve.width%5D,value%5B200%5D&set=key%5Bresolve.height%5D,value%5B10000%5D&set=key%5Bresolve.imageFit%5D,value%5Bcontainerwidth%5D&set=key%5Bresolve.allowImageUpscaling%5D,value%5B0%5D&set=env%5Bprod%5D,imageURL%5B%252Fimages%252Fmarketing%252F2020%252F09132020%252Fhomepage%252F091320-site-hp-indoor-fall_360x302.jpg%5D&call=url%5Bfile:resolve/resolve.chain%5D
+			//   https://images.biglots.com/images?set=key%5Bresolve.pixelRatio%5D,value%5B1%5D&set=key%5Bresolve.width%5D,value%5B200%5D&set=key%5Bresolve.height%5D,value%5B10000%5D&set=key%5Bresolve.imageFit%5D,value%5Bcontainerwidth%5D&set=key%5Bresolve.allowImageUpscaling%5D,value%5B0%5D&set=env%5Bprod%5D,imageURL%5B%252Fimages%252Fmarketing%252F2020%252F09132020%252Fhomepage%252F091320-site-hp-indoor-fall_360x302.jpg%5D&call=url%5Bfile:resolve/resolve.chain%5D
+			//   https://www.biglots.com/images/marketing/2020/09132020/homepage/091320-site-hp-indoor-fall_360x302.jpg
+			// https://images.biglots.com/images?set=key%5Bresolve.pixelRatio%5D,value%5B1%5D&set=key%5Bresolve.width%5D,value%5B400%5D&set=key%5Bresolve.height%5D,value%5B10000%5D&set=key%5Bresolve.imageFit%5D,value%5Bcontainerwidth%5D&set=key%5Bresolve.allowImageUpscaling%5D,value%5B0%5D&set=env%5Bprod%5D,imageURL%5B%252Fimages%252Fproduct%252F110%252F810427233.jpg%5D,ver%5B1%5D&call=url%5Bfile:resolve/resolve.chain%5D
+			//   https://images.biglots.com/images?set=key%5Bresolve.pixelRatio%5D%2Cvalue%5B1%5D&set=key%5Bresolve.width%5D%2Cvalue%5B99999%5D&set=key%5Bresolve.height%5D%2Cvalue%5B99999%5D&set=key%5Bresolve.imageFit%5D%2Cvalue%5Bcontainerwidth%5D&set=key%5Bresolve.allowImageUpscaling%5D%2Cvalue%5B0%5D&set=env%5Bprod%5D%2CimageURL%5B%252Fimages%252Fproduct%252F110%252F810427233.jpg%5D%2Cver%5B1%5D&call=url%5Bfile:resolve/resolve.chain%5D
+			//   https://www.biglots.com/images/product/110/810427233.jpg
+			domain === "images.biglots.com") {
 			// https://dyn1.heritagestatic.com/lf?set=path%5B1%2F5%2F3%2F6%2F2%2F15362544%5D%2Csizedata%5B850x600%5D&call=url%5Bfile%3Aproduct.chain%5D
 			//   ?set=path[1/5/3/6/2/15362544],sizedata[850x600]&call=url[file:product.chain]
 			//
 			//   https://dyn1.heritagestatic.com/lf?set=path%5B1%2F5%2F3%2F6%2F2%2F15362544%5D&call=url%5Bfile%3Aproduct.chain%5D
 			// https://dyn1.heritagestatic.com/lf?set=path%5B1%2F5%2F3%2F6%2F2%2F15362543%5D&call=url%5Bfile%3Aproduct.chain%5D
 			//   ?set=path[1/5/3/6/2/15362543]&call=url[file:product.chain]
-			var set = url.searchParams.get("set");
-			if (!set)
-				return src;
+			if (/[?&]set=/.test(src)) {
+				var querystring = src.replace(/.*\?/, "");
+				var splitted = querystring.split("&");
 
-			set = decodeURIComponent(set)
-				.replace(/,sizedata\[[^,]*\]/, "")
-				.replace(/,$/, "");
+				var newqueries = [];
+				var imageurls = [];
+				var kvs = {};
+				array_foreach(splitted, function(query) {
+					var key = query.replace(/=.*$/, "");
+					var value = decodeURIComponent(query.replace(/^.*?=/, ""));
 
-			return src.replace(/(.*[?&]set=)[^&]*(.*?)$/, "$1" + encodeURIComponent(set) + "$2");
+					if (key !== "set") {
+						newqueries.push(query);
+						return;
+					}
+
+					var commands = value.split(",");
+					var newcommands = [];
+					var command_key = null;
+					array_foreach(commands, function(command) {
+						var match = command.match(/^([a-zA-Z]+)\[([^\]]+)\]$/);
+						if (!match) {
+							console_error("Unable to parse command:", command, commands);
+							newcommands = null
+							return false;
+						}
+
+						var cmd = match[1];
+						var arg = decodeURIComponent(match[2]);
+
+						if (cmd === "sizedata")
+							return;
+
+						if (cmd === "key") {
+							command_key = arg;
+							return;
+						}
+
+						if (cmd === "value") {
+							if (command_key)
+								kvs[command_key] = arg;
+							return;
+						}
+
+						if (cmd === "imageURL") {
+							if (domain === "images.biglots.com")
+								arg = urljoin("https://www.biglots.com/", arg, true);
+
+							imageurls.push(arg);
+						}
+
+						newcommands.push(command);
+					});
+
+					if (!newcommands || !newcommands.length)
+						return;
+
+					newqueries.push(key + "=" + encodeURIComponent(newcommands.join(",")));
+				});
+
+				if (Object.keys(kvs).length) {
+					var modified_size = false;
+
+					if ("resolve.width" in kvs)
+						kvs["resolve.width"] = 99999;
+
+					if ("resolve.height" in kvs)
+						kvs["resolve.height"] = 99999;
+
+					if (modified_size)
+						kvs["resolve.allowImageUpscaling"] = 0;
+
+					if ("resolve.pixelRatio" in kvs)
+						kvs["resolve.pixelRatio"] = 1;
+
+					var kv_queries = [];
+					for (var key in kvs) {
+						var key_cmd = "key[" + encodeURIComponent(key) + "]";
+						var value_cmd = "value[" + encodeURIComponent(kvs[key]) + "]";
+
+						kv_queries.push("set=" + encodeURIComponent(key_cmd + "," + value_cmd));
+					}
+
+					array_extend(kv_queries, newqueries);
+					newqueries = kv_queries;
+				}
+
+				querystring = newqueries.join("&");
+				newsrc = src.replace(/\?.*/, "?" + querystring);
+
+				if (newsrc !== src)
+					return {
+						url: newsrc,
+						can_head: false
+					};
+
+				if (imageurls.length > 0)
+					return imageurls;
+
+				return {
+					url: src,
+					can_head: false
+				};
+			}
 		}
 
 		if (domain_nowww === "natedsanders.com" && string_indexof(src, "/ItemImages/") >= 0) {
