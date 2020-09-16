@@ -78390,6 +78390,31 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(:\/\/[^/]+\/+[0-9]{4}-[0-9]{2}-[0-9]{2})_[a-z]+(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 		}
 
+		if (domain === "d2d8wwwkmhfcva.cloudfront.net") {
+			// instacart
+			// thanks to llacb47 on github: https://github.com/qsniyg/maxurl/issues/445
+			// some sort of thumbor modification, looks to be more trouble than it's worth to integrate it with the main thumbor rule
+			// https://d2d8wwwkmhfcva.cloudfront.net/155x/filters:fill(FFF,true):format(jpg)/d2lnr5mha7bycj.cloudfront.net/product-image/file/large_e2b5f1e8-39c2-410a-a00c-84d9cb908f5b.jpeg
+			//   https://d2lnr5mha7bycj.cloudfront.net/product-image/file/large_e2b5f1e8-39c2-410a-a00c-84d9cb908f5b.jpeg
+			//   https://d2lnr5mha7bycj.cloudfront.net/product-image/file/e2b5f1e8-39c2-410a-a00c-84d9cb908f5b.jpeg
+			// https://d2d8wwwkmhfcva.cloudfront.net/391x/d2lnr5mha7bycj.cloudfront.net/warehouse/background_image/299/fd799186-32d2-47d1-ac44-3e97093c1f79.jpg
+			//   https://d2lnr5mha7bycj.cloudfront.net/warehouse/background_image/299/fd799186-32d2-47d1-ac44-3e97093c1f79.jpg
+			// https://d2d8wwwkmhfcva.cloudfront.net/1920x/filters:quality(50)/d2lnr5mha7bycj.cloudfront.net/warehouse/background_image/57/97ed02ba-fabe-4b88-9682-c29262597f28.jpg
+			//   https://d2lnr5mha7bycj.cloudfront.net/warehouse/background_image/57/97ed02ba-fabe-4b88-9682-c29262597f28.jpg
+			return add_http(src.replace(/^[a-z]+:\/\/[^/]+\/+[0-9]+x[0-9]*\/+(?:filters:[^/]+\/+)?([^/]+\.[^/]+\/+)/, "$1"));
+		}
+
+		if (domain === "d2lnr5mha7bycj.cloudfront.net") {
+			// instacart
+			// thanks to llacb47 on github: https://github.com/qsniyg/maxurl/issues/445
+			// https://d2lnr5mha7bycj.cloudfront.net/product-image/file/primary_f337ef80-c5a5-4698-bbbb-160ab6f1db7a.jpg
+			//   https://d2lnr5mha7bycj.cloudfront.net/product-image/file/large_f337ef80-c5a5-4698-bbbb-160ab6f1db7a.jpg
+			//   https://d2lnr5mha7bycj.cloudfront.net/product-image/file/f337ef80-c5a5-4698-bbbb-160ab6f1db7a.jpg
+			newsrc = src.replace(/(\/product-image\/+file\/+)[a-z]+_/, "$1");
+			// hack because of the previous rule returning http
+			return force_https(newsrc);
+		}
+
 
 
 
