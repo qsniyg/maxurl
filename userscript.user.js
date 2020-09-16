@@ -36527,6 +36527,10 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain === "cali.rule34.xxx") {
+			return src.replace(/^[a-z]+:\/\/[^/]+\/+/, "https://us.rule34.xxx/");
+		}
+
 		if (domain_nowww === "safebooru.org" ||
 			// https://tbib.org/thumbnails/6318/thumbnail_bc6c3a6300b51966c444c1de7c882c9fe9d0e853.jpg?6830612
 			//   https://tbib.org/images/6318/bc6c3a6300b51966c444c1de7c882c9fe9d0e853.png?6830612
@@ -77918,6 +77922,7 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "xxx-hd-tube.com" ||
 			domain_nowww === "nakedteens.fun" ||
 			domain_nowww === "xxx-porn.video" ||
+			domain_nowww === "asianporn.life" ||
 			domain_nowww === "teenporn19.com") {
 			// https://18girlssex.com/d/[...]_gs.png
 			if (/^[a-z]+:\/\/[^/]+\/+d\/+[0-9a-z]{8}_gs\.png(?:[?#].*)?$/.test(src))
@@ -78575,6 +78580,171 @@ var $$IMU_EXPORT$$;
 					};
 
 					return done(obj, 6*60*60);
+				}
+			});
+			if (newsrc) return newsrc;
+		}
+
+		if (domain_nowww === "feet9.com") {
+			var parse_source_from_ciphered_json = function(CryptoJS, json) {
+				// todo: merge with other
+				var JsonFormatter = {
+					stringify: function(cipherParams) {
+						var jsonObj = { ct: cipherParams.ciphertext.toString(CryptoJS.enc.Base64) };
+
+						if (cipherParams.iv) {
+							jsonObj.iv = cipherParams.iv.toString();
+						}
+
+						if (cipherParams.salt) {
+							jsonObj.s = cipherParams.salt.toString();
+						}
+
+						return JSON_stringify(jsonObj);
+					},
+					parse: function(jsonStr) {
+						var jsonObj = JSON_parse(jsonStr);
+
+						var cipherParams = CryptoJS.lib.CipherParams.create({
+							ciphertext: CryptoJS.enc.Base64.parse(jsonObj.ct)
+						});
+
+						if (jsonObj.iv) {
+							cipherParams.iv = CryptoJS.enc.Hex.parse(jsonObj.iv);
+						}
+
+						if (jsonObj.s) {
+							cipherParams.salt = CryptoJS.enc.Hex.parse(jsonObj.s);
+						}
+
+						return cipherParams;
+					}
+				};
+
+				json = JSON_parse(json);
+				json.ct = json.ct.split("").reverse().join("");
+				var stringified = JSON_stringify(json);
+				var source = JSON_parse(CryptoJS.AES.decrypt(stringified, "0x23", {
+					'format': JsonFormatter
+				}).toString(CryptoJS.enc.Utf8));
+
+				return source;
+			};
+
+			var get_source_from_ciphered_json = function(cache_key, json, cb) {
+				get_library("cryptojs_aes", options, options.do_request, function(CryptoJS) {
+					if (!CryptoJS) {
+						console_error(cache_key, "Unable to fetch CryptoJS");
+						return cb(null);
+					}
+
+					var source;
+					try {
+						source = parse_source_from_ciphered_json(CryptoJS, json);
+					} catch (e) {
+						console_error(cache_key, e);
+						return cb(null);
+					}
+
+					return cb(source);
+				});
+			};
+
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+([0-9]+)(?:\/+[^/]+\/*)?(?:[?#].*)?$/,
+				query_for_id: "https://www.feet9.com/${id}",
+				process: function(done, resp, cache_key) {
+					var match = resp.responseText.match(/inivideo\('[0-9]+','({".*?"})',/);
+					if (!match) {
+						console_error(cache_key, "Unable to find inivideo match for", resp);
+						return done(null, false);
+					}
+
+					var title = get_meta(resp.responseText, "og:title");
+
+					get_source_from_ciphered_json(cache_key, match[1], function(source) {
+						if (!source)
+							return done(null, false);
+
+						var obj = {
+							url: source,
+							extra: {
+								page: resp.finalUrl
+							},
+							headers: {
+								Accept: "*/*",
+								Referer: "https://www." + domain_nosub + "/",
+								"Sec-Fetch-Dest": "video",
+								"Sec-Fetch-Mode": "no-cors",
+								"Sec-Fetch-Site": "same-site"
+							},
+							video: true
+						};
+
+						if (title)
+							obj.extra.caption = title;
+
+						return done(obj, 60*60);
+					});
+				}
+			});
+			if (newsrc) return newsrc;
+		}
+
+		if (domain === "10363-2.s.cdn13.com") {
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+media\/+videos\/+tmb\/+((?:[0-9]+\/+){3})/);
+			if (match) {
+				id = match[1].replace(/\//g, "");
+				return {url: "https://www.feet9.com/" + id, is_pagelink: true};
+			}
+		}
+
+		if (domain_nowww === "absolugirl.com") {
+			var do_md5 = function(text, cb) {
+				get_library("cryptojs_aes", options, options.do_request, function(CryptoJS) {
+					if (!CryptoJS) {
+						console_error("Unable to fetch CryptoJS");
+						return cb(null);
+					}
+
+					try {
+						return cb(CryptoJS.MD5(text));
+					} catch (e) {
+						console_error(e);
+						return cb(null);
+					}
+				});
+			};
+
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+video([0-9]*-[0-9a-zA-Z]+)\.html(?:[?#].*)?$/,
+				query_for_id: "http://www.absolugirl.com/video${id}.html",
+				process: function(done, resp, cache_key) {
+					var match = resp.responseText.match(/<script[\s\S]+?servervideo = '([^']+)';\s*path = '([^']+)';\s*repp = codage\('([^']+)'\);\s*filee = '([^']+)';/);
+					if (!match) {
+						console_error(cache_key, "Unable to find match for", resp);
+						return done(null, false);
+					}
+
+					var servervideo = match[1];
+					var path = match[2];
+					var repp = match[3];
+					var filee = match[4];
+
+					do_md5(repp, function(repp) {
+						if (!repp)
+							return done(null, false);
+
+						var obj = {
+							url: servervideo + path + repp + filee,
+							headers: {
+								Referer: "http://www.absolugirl.com/"
+							},
+							video: true
+						};
+
+						return done(obj, 6*60*60);
+					});
 				}
 			});
 			if (newsrc) return newsrc;
