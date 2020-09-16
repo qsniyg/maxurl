@@ -31029,7 +31029,14 @@ var $$IMU_EXPORT$$;
 			// http://ww2.hdnux.com/photos/70/63/07/14889457/3/1024x1024.jpg
 			//   https://s.hdnux.com/photos/70/63/07/14889457/3/rawImage.jpg
 			// https://s.hdnux.com/photos/70/63/07/14889457/3/1024x1024.jpg
-			return src.replace(/\/[0-9]+x[0-9]+(\.[^/.]*)$/, "/rawImage$1");
+			// thanks to llacb47 on github: https://github.com/qsniyg/maxurl/issues/445
+			// https://s.hdnux.com/photos/01/14/11/70/19963411/3/core_breaking_now_medium.jpg
+			//   https://s.hdnux.com/photos/01/14/11/70/19963411/3/rawImage.jpg
+			// https://s.hdnux.com/photos/01/13/31/60/19766273/3/core_thumbnail_list_small.jpg
+			//   https://s.hdnux.com/photos/01/13/31/60/19766273/3/rawImage.jpg
+			// https://s.hdnux.com/photos/01/14/05/62/19946629/3/core_centerpiece_tab_small.jpg
+			//   https://s.hdnux.com/photos/01/14/05/62/19946629/3/rawImage.jpg
+			return src.replace(/(\/photos\/+(?:[0-9]{2}\/+){4}[0-9]+\/+[0-9]+\/+)(?:[0-9]+x[0-9]+|core_[^/.]+)(\.[^/.]*)$/, "$1rawImage$2");
 		}
 
 		if (domain_nosub === "busan.com" && domain.match(/^news[0-9]*\./)) {
