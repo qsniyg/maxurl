@@ -78381,6 +78381,15 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(:\/\/[^/]+\/+)img\/+(?:-?(?:c[0-9]+x[0-9]+|[whq][0-9]+))+\/+uploads\/+/, "$1wp-content/uploads/");
 		}
 
+		if (amazon_container === "reasonmagazine-covers") {
+			// thanks to llacb47 on github: https://github.com/qsniyg/maxurl/issues/445
+			// https://reasonmagazine-covers.s3.amazonaws.com/2019-12-01_sm.jpg
+			//   https://reasonmagazine-covers.s3.amazonaws.com/2019-12-01.jpg -- 2400x3150
+			// https://reasonmagazine-covers.s3.amazonaws.com/2020-10-01_sm.jpg
+			//   https://reasonmagazine-covers.s3.amazonaws.com/2020-10-01.jpg -- 2400x3150
+			return src.replace(/(:\/\/[^/]+\/+[0-9]{4}-[0-9]{2}-[0-9]{2})_[a-z]+(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
 
 
 
