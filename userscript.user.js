@@ -78368,6 +78368,19 @@ var $$IMU_EXPORT$$;
 				.replace(/(:\/\/[^/]+\/+content\/+[a-z]\/+[a-z]{3}[0-9]{3}\/+[0-9]+\/+[0-9]+)(\.[^/.]+)(?:[?#].*)?$/, "$1-large$2");
 		}
 
+		if (domain === "d2eehagpk5cl65.cloudfront.net" ||
+			domain_nowww === "reason.com") {
+			// thanks to llacb47 on github: https://github.com/qsniyg/maxurl/issues/445
+			// https://d2eehagpk5cl65.cloudfront.net/img/c2400x1350-w2400-q60/uploads/2020/09/rtrltwelve189314-2400x1350.jpg
+			//   https://d2eehagpk5cl65.cloudfront.net/wp-content/uploads/2020/09/rtrltwelve189314.jpg
+			// https://d2eehagpk5cl65.cloudfront.net/img/c331x186-w331-q60/uploads/2020/09/reason-wolf-331x186.jpg
+			//   https://d2eehagpk5cl65.cloudfront.net/wp-content/uploads/2020/09/reason-wolf.jpg
+			// https://d2eehagpk5cl65.cloudfront.net/img/q60/uploads/2020/05/COVIDvaccineDreamstime-600x338.jpg
+			//   https://d2eehagpk5cl65.cloudfront.net/wp-content/uploads/2020/05/COVIDvaccineDreamstime.jpg
+			// d2eehagpk5cl65.cloudfront.net = reason.com
+			return src.replace(/(:\/\/[^/]+\/+)img\/+(?:-?(?:c[0-9]+x[0-9]+|[whq][0-9]+))+\/+uploads\/+/, "$1wp-content/uploads/");
+		}
+
 
 
 
