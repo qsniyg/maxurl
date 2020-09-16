@@ -78522,6 +78522,64 @@ var $$IMU_EXPORT$$;
 			return force_https(newsrc);
 		}
 
+		if (domain_nowww === "hizliresim.com") {
+			// thanks to esdemirei on reddit: https://www.reddit.com/r/MaxImage/comments/itfp91/suggestion/
+			// https://hizliresim.com/yueXLm
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+([a-zA-Z]+)(?:[?#].*)?$/,
+				query_for_id: "https://hizliresim.com/${id}",
+				process: function(done, resp, cache_key) {
+					var imagelink = resp.responseText.match(/<a class="fancybox"[\s\S]*?<img src="(https?:\/\/i\.hizliresim\.com\/[^"/]+\.[^/."]+)"/);
+					if (!imagelink) {
+						console_error(cache_key, "Unable to find match for", resp);
+						return done(null, false);
+					}
+					imagelink = decode_entities(imagelink[1]);
+
+					var obj = {
+						url: imagelink,
+						extra: {
+							page: resp.finalUrl
+						}
+					};
+
+					var caption = get_meta(resp.responseText, "description");
+					if (caption)
+						obj.extra.caption = caption;
+
+					return done(obj, 6*60*60);
+				}
+			});
+			if (newsrc) return newsrc;
+		}
+
+		if (domain_nowww === "eksisozluk.com") {
+			// thanks to esdemirei on reddit: https://www.reddit.com/r/MaxImage/comments/itfp91/suggestion/
+			// https://eksisozluk.com/img/kdqxjmy6
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+img\/+([a-zA-Z0-9]+)(?:[?#].*)?$/,
+				query_for_id: "https://eksisozluk.com/img/${id}",
+				process: function(done, resp, cache_key) {
+					var imagelink = resp.responseText.match(/<a id="image-zoom"[^>]* href="(https?:\/\/cdn\.eksisozluk.com\/[^"]+)"/);
+					if (!imagelink) {
+						console_error(cache_key, "Unable to find match for", resp);
+						return done(null, false);
+					}
+					imagelink = decode_entities(imagelink[1]);
+
+					var obj = {
+						url: imagelink,
+						extra: {
+							page: resp.finalUrl
+						}
+					};
+
+					return done(obj, 6*60*60);
+				}
+			});
+			if (newsrc) return newsrc;
+		}
+
 
 
 
