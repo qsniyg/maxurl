@@ -20900,6 +20900,11 @@ var $$IMU_EXPORT$$;
 			domain === "d31wcbk3iidrjq.cloudfront.net" ||
 			// https://marketplace-screenshots.githubusercontent.com/4085/08623180-5fd0-11e9-9f82-d8feafbd9057?auto=webp&format=jpeg&width=670&dpr=1.5
 			domain === "marketplace-screenshots.githubusercontent.com" ||
+			// thanks to llacb47 on github: https://github.com/qsniyg/maxurl/issues/445
+			// https://stmedia.stimg.co/1595204480_15483561+George+Floyd+Minneapolis+Police.jpg?h=244&w=396&fit=crop&bg=999&crop=faces
+			// https://stmedia.stimg.co/ows_64b11dc5-5e8b-4fa7-9d8d-e1e6e30cdf9b.jpg?h=150&w=300&fit=crop&bg=999&crop=faces
+			// https://stmedia.stimg.co/08_1011593363_03DOCK091320_59786311.JPG?auto=compress&crop=faces&dpr=1&w=525
+			domain === "stmedia.stimg.co" ||
 			// http://us.jimmychoo.com/dw/image/v2/AAWE_PRD/on/demandware.static/-/Sites-jch-master-product-catalog/default/dw70b1ebd2/images/rollover/LIZ100MPY_120004_MODEL.jpg?sw=245&sh=245&sm=fit
 			// https://www.aritzia.com/on/demandware.static/-/Library-Sites-Aritzia_Shared/default/dw3a7fef87/seasonal/ss18/ss18-springsummercampaign/ss18-springsummercampaign-homepage/hptiles/tile-wilfred-lrg.jpg
 			src.match(/\/demandware\.static\//) ||
