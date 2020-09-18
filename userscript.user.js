@@ -79046,9 +79046,16 @@ var $$IMU_EXPORT$$;
 			//   https://www.articlelike.com/manage/0/product/17589/334/17589_0.jpg
 			// https://api.sextpanther.com/public/timthumb.php?w=300&h=300&a=t&zc=1&src=https://api.sextpanther.com/pre?fk=https://media.sextpanther.com/images/lrg_images/1581196066_7RCAO.jpeg
 			//   https://api.sextpanther.com/pre?fk=https://media.sextpanther.com/images/lrg_images/1581196066_7RCAO.jpeg -- doesn't work
+			// thanks to llacb47 on github: https://github.com/qsniyg/maxurl/issues/446
+			// https://www.foundation-media.com/wp-content/themes/minuet/functions/timthumb.php?src=wp-content/uploads/2020/09/rayven.jpg&w=432&h=432&zc=1&q=90
+			//   https://www.foundation-media.com/wp-content/uploads/2020/09/rayven.jpg
+			var baseurl = src;
+			if (domain_nowww === "foundation-media.com")
+				baseurl = "https://www.foundation-media.com/";
+
 			newsrc = src.replace(/.*\/timthumb(?:\/index)?\.php\?(?:.*&)?src=([^&]+).*$/, "$1");
 			if (newsrc !== src) {
-				return urljoin(src, decodeURIComponent(newsrc), true);
+				return urljoin(baseurl, decodeURIComponent(newsrc), true);
 			}
 		}
 
