@@ -127,6 +127,9 @@ function update() {
 	}
 
 	var newcontents = newlines.join("\n");
+
+	newcontents = newcontents.replace(/(\n\t\tif \(domain(?:_[a-z]+)? === "[^"]+"\)) {\n\t\t\t(return src\.replace\(\/[\S]+\/, "[^"]+"\);)\n\t\t}\n/g, "$1 $2\n");
+
 	fs.writeFileSync("userscript_smaller.user.js", newcontents);
 
 	about.get_userscript_stats(newcontents);
