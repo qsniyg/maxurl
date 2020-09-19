@@ -31806,7 +31806,7 @@ var $$IMU_EXPORT$$;
 									return done(null, false);
 								}
 
-								var match = resp.responseText.match(/<script[^>]*>\s*var (flashvars_[0-9]+) = ({.*});\s*var player_mp4_seek\s*=\s*\S+;\s*(var ra[0-9a-z]{10,}\s*=.*;)/);
+								var match = resp.responseText.match(/<script[^>]*>\s*var (flashvars_[0-9]+) = ({.*});\s*var player_mp4_seek\s*=\s*\S+;(?:\s*\/\/.*)?\s*(var ra[0-9a-z]{10,}\s*=.*;)/);
 								if (!match) {
 									console_error("Unable to find flashvars match", resp);
 									return done(null, false);
@@ -71566,14 +71566,14 @@ var $$IMU_EXPORT$$;
 						url: "https://api.k2s.cc/v1/files/" + id,
 						imu_mode: "xhr",
 						headers: {
-							Referer: "https://k2s.cc/file/" + fileid,
+							Referer: "https://k2s.cc/file/" + id,
 							Accept: "application/json, text/plain, */*"
 						},
 						json: true
 					}, cb, function(done, json) {
 						var obj = {
 							extra: {
-								page: "https://k2s.cc/file/" + fileid + "/" + json.name,
+								page: "https://k2s.cc/file/" + id + "/" + json.name,
 								caption: json.name
 							}
 						};
