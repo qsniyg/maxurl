@@ -74259,23 +74259,47 @@ var $$IMU_EXPORT$$;
 			};
 
 			var get_peertube_urlinfo = function(url) {
-				var match = url.match(/(.*)\/static\/+(?:previews|thumbnails|webseed)\/+([0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12})(?:-[0-9]+)?\.[^/.]+(?:[/#].*)?$/);
+				var pagelink = false;
+				var match = url.match(/(.*)\/static\/+(?:previews|thumbnails|webseed)\/+([0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12})(?:-[0-9]+)?\.[^/.]+(?:[?#].*)?$/);
+				if (!match) {
+					match = url.match(/(.*)\/videos\/+watch\/+([0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12})(?:[?#].*)?$/);
+					pagelink = true;
+				}
 				if (!match)
 					return null;
 
 				return {
 					id: match[2],
 					referer: match[1],
-					api: match[1] + "/api/v1/"
+					api: match[1] + "/api/v1/",
+					pagelink: pagelink
 				};
 			};
 
 			var info = get_peertube_urlinfo(src);
-			if (info && options.do_request && options.cb) {
-				query_peertube_api(info.api, info.referer, info.id, options.cb);
-				return {
-					waiting: true
+			if (info) {
+				var cb = function(data) {
+					if (!data)
+						return options.cb(data);
+
+					if (info.pagelink) {
+						data = [data, {url: src, is_pagelink: true}];
+					}
+
+					return options.cb(data);
 				};
+
+				if (options.do_request && options.cb) {
+					query_peertube_api(info.api, info.referer, info.id, cb);
+					return {
+						waiting: true
+					};
+				} else if (info.pagelink) {
+					return {
+						url: src,
+						is_pagelink: true
+					};
+				}
 			}
 		}
 
