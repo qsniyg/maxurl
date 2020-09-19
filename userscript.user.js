@@ -10441,7 +10441,7 @@ var $$IMU_EXPORT$$;
 				"tiktokdownloader.in": {
 					name: "tiktokdownloader.in"
 				},
-				"savevideo.ninja:tt": {
+				"savevideo.ninja:ttt": {
 					name: "savevideo.ninja"
 				},
 				"keeptiktok.com": {
@@ -14987,6 +14987,22 @@ var $$IMU_EXPORT$$;
 		});
 	};
 
+	common_functions.get_md5 = function(options, text, cb) {
+		get_library("cryptojs_aes", options, options.do_request, function(CryptoJS) {
+			if (!CryptoJS) {
+				console_error("Unable to fetch CryptoJS");
+				return cb(null);
+			}
+
+			try {
+				return cb(CryptoJS.MD5(text).toString());
+			} catch (e) {
+				console_error(e);
+				return cb(null);
+			}
+		});
+	};
+
 	common_functions.get_tiktok_urlvidid = function(url) {
 		var match = url.match(/^[a-z]+:\/\/[^/]+\/+(?:[0-9a-f]{32}\/+[0-9a-f]{8}\/+)?video\/+(?:[^/]+\/+)?[^/]+\/+[^/]+\/+([0-9a-f]{32})\/*\?/);
 		if (match)
@@ -15044,6 +15060,82 @@ var $$IMU_EXPORT$$;
 			}
 
 			return done(nowm, 60*60);
+		});
+	};
+
+	common_functions.get_tiktok_from_ttloader_token = function(site, api_cache, do_request, url, cb, options) {
+		url = url.replace(/\?.*/, "");
+
+		var cache_key = site + ":" + url;
+		site = site.replace(/:.*/, "");
+
+		var referer = "https://" + site + "/?tiktok-search=" + encodeURIComponent(url);
+		if (site === "savevideo.ninja")
+			referer = "https://" + site + "/tiktok-no-watermark-video-downloader/?tiktok-search=" + encodeURIComponent(url);
+
+		var get_raw_token = function(cb) {
+			real_api_query(api_cache, do_request, site + ":token", {
+				method: "POST",
+				url: "https://" + site + "/wp-json/wppress/tiktok-downloader/token",
+				imu_mode: "xhr",
+				data: "",
+				headers: {
+					Origin: "https://" + site,
+					Referer: referer,
+					"x-requested-with": "XMLHttpRequest"
+				},
+				json: true
+			}, cb, function(done, resp, cache_key) {
+				if (resp.token)
+					return done(resp.token, 60*60);
+
+				console_error(cache_key, "Unable to find token from", resp);
+				return done(null, false);
+			});
+		};
+
+		var parse_raw_token = function(raw_token, url, useragent, cb) {
+			var catted = raw_token + ":" + url + "0:" + useragent;
+			var encoded = unescape(encodeURIComponent(catted));
+
+			//console_log(encoded);
+			common_functions.get_md5(options, encoded, cb);
+		};
+
+		var get_video_api = function(token, url, cb) {
+			real_api_query(api_cache, do_request, cache_key, {
+				method: "POST",
+				url: "https://" + site + "/wp-json/wppress/tiktok-downloader/videos",
+				data: "search=" + encodeURIComponent(url) + "&type=video_url&max=0&token=" + token,
+				imu_mode: "xhr",
+				headers: {
+					Referer: referer,
+					"Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+					"x-requested-with": "XMLHttpRequest"
+				},
+				json: true
+			}, cb, function(done, resp, cache_key) {
+				var nowm = resp.items[0].video.noWatermark;
+				if (!nowm) {
+					console_error(cache_key, "Unable to find noWatermark from", resp);
+					return done(null, false);
+				}
+
+				return done(nowm, 60*60);
+			});
+		};
+
+		get_raw_token(function(raw_token) {
+			if (!raw_token)
+				return cb(null);
+
+			parse_raw_token(raw_token, url, navigator.userAgent, function(token) {
+				if (!token)
+					return cb(null);
+
+				//console_log(token);
+				get_video_api(token, url, cb);
+			});
 		});
 	};
 
@@ -15270,14 +15362,14 @@ var $$IMU_EXPORT$$;
 
 	// This is a terrible duct-tape solution, but required until I can find a proper way to fix get_best_tiktok_url
 	// Note that this will NOT be called unless "Rules using 3rd-party websites" is enabled (it's disabled by default)
-	common_functions.get_tiktok_from_3rdparty = function(site, api_cache, do_request, url, cb) {
+	common_functions.get_tiktok_from_3rdparty = function(site, api_cache, options, url, cb) {
 		var sites = {
 			// hd
 			"ttloader.com": common_functions.get_tiktok_from_ttloader,
 			"onlinetik.com": common_functions.get_tiktok_from_ttloader,
 			"demo.wppress.net:tt": common_functions.get_tiktok_from_ttloader,
 			"tiktokdownloader.in": common_functions.get_tiktok_from_ttloader,
-			"savevideo.ninja:tt": common_functions.get_tiktok_from_ttloader,
+			"savevideo.ninja:ttt": common_functions.get_tiktok_from_ttloader_token,
 
 			"demo.wppress.net:svd": common_functions.get_tiktok_from_socialvideodownloader,
 			"savevideo.ninja:svd": common_functions.get_tiktok_from_socialvideodownloader,
@@ -15294,7 +15386,7 @@ var $$IMU_EXPORT$$;
 			return cb(null);
 		}
 
-		sites[site](site, api_cache, do_request, url, cb);
+		sites[site](site, api_cache, options.do_request, url, cb, options);
 	};
 
 	common_functions.get_best_tiktok_url = function(api_cache, do_request, src, cb) {
@@ -15518,7 +15610,7 @@ var $$IMU_EXPORT$$;
 			if (func === "[local]") {
 				common_functions.get_best_tiktok_url(api_cache, options.do_request, url, process_func);
 			} else {
-				common_functions.get_tiktok_from_3rdparty(func, api_cache, options.do_request, weburl, process_func);
+				common_functions.get_tiktok_from_3rdparty(func, api_cache, options, weburl, process_func);
 			}
 		};
 
@@ -78760,6 +78852,17 @@ var $$IMU_EXPORT$$;
 			// https://photos5.appleinsider.com/gallery/26602-38131-apple-maps-sports-building-parking-xl.jpg
 			//   https://photos5.appleinsider.com/gallery/26602-38131-apple-maps-sports-building-parking-o.jpg
 			return src.replace(/(\/gallery\/+[0-9]+-[0-9]+-[^/]+)-(?:[sml]|xl)(\.[^/.]+)(?:[?#].*)?$/, "$1-o$2");
+		}
+
+		if (domain === "file.veryzhun.com") {
+			// thanks to llacb47 on github: https://github.com/qsniyg/maxurl/issues/448
+			// https://file.veryzhun.com/buckets/adsb-dm/keys/20190913-151152-ni4u68qrkgf3ic1j.jpg!600!480
+			//   https://file.veryzhun.com/buckets/adsb-dm/keys/20190913-151152-ni4u68qrkgf3ic1j.jpg
+			// https://file.veryzhun.com/buckets/adsb-dm/keys/20181219-213832-85035c1a49d88a527.JPG!400!300
+			//   https://file.veryzhun.com/buckets/adsb-dm/keys/20181219-213832-85035c1a49d88a527.JPG
+			// https://file.veryzhun.com/buckets/wxapp/keys/20181018-163004-e9c11x9dcs48onts.jpg!400!300
+			//   https://file.veryzhun.com/buckets/wxapp/keys/20181018-163004-e9c11x9dcs48onts.jpg
+			return src.replace(/(\/buckets\/+[^/]+\/+keys\/+[0-9]{8}-[0-9]+-[a-zA-Z0-9]+\.[^/.!?#]+)(?:[!?#].*)?$/, "$1");
 		}
 
 
