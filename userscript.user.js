@@ -68895,7 +68895,7 @@ var $$IMU_EXPORT$$;
 									return done(null, false);
 								}
 
-								var match = result.responseText.match(/<script(?:\s+type=["']text\/javascript["'])?>[\s\S]*?var\s+(\S+)\s*=\s*["'](.*?)["'][\s\S]*?["']\+((?:\1(?:\s*\.\s*charAt\s*\(\s*|\s*\[\s*)([0-9]+)\s*(?:\)|\])\s*\+\s*){1,})\s*['"][\s\S]*?<\/script>/);
+								var match = result.responseText.match(/<script(?:\s+type=["']text\/javascript["'])?>\s*?var\s+(\S+)\s*=\s*["'](.*?)["'][\s\S]*?["']\+(?:[a-z]\+)?((?:\1(?:\s*\.\s*charAt\s*\(\s*|\s*\[\s*)([0-9]+)\s*(?:\)|\])\s*\+\s*){1,})\s*['"][\s\S]*?<\/script>/);
 								if (!match) {
 									console_error(cache_key, "Invalid match", result);
 									return done(null, false);
