@@ -74212,62 +74212,49 @@ var $$IMU_EXPORT$$;
 				// FIXME: are video ids the same between peertube sites?
 				var cache_key = "peertube:" + vidid;
 
-				api_cache.fetch(cache_key, cb, function(done) {
-					options.do_request({
-						url: urljoin(api_url, "/videos/" + vidid, false),
-						method: "GET",
-						headers: {
-							Referer: referer_url
-						},
-						onload: function(resp) {
-							if (resp.status !== 200) {
-								console_error(cache_key, resp);
-								return done(null, false);
-							}
+				api_query(cache_key, {
+					url: urljoin(api_url, "/videos/" + vidid, false),
+					headers: {
+						Referer: referer_url
+					},
+					json: true
+				}, cb, function(done, json, cache_key) {
+					var obj = {};
 
-							try {
-								var json = JSON_parse(resp.responseText);
-								var obj = {};
+					obj.extra = {
+						page: urljoin(api_url, json.embedPath,true),
+						caption: json.name
+					};
 
-								obj.extra = {
-									page: urljoin(api_url, json.embedPath,true),
-									caption: json.name
-								};
+					var maxobj_size = 0;
+					var maxobj = null;
 
-								var maxobj_size = 0;
-								var maxobj = null;
+					var files = json.files;
 
-								var files = json.files;
-
-								if (files.length === 0) {
-									if ("streamingPlaylists" in json && json.streamingPlaylists.length > 0 && json.streamingPlaylists[0].files.length > 0) {
-										files = json.streamingPlaylists[0].files;
-									}
-								}
-
-								for (var i = 0; i < files.length; i++) {
-									if (files[i].size > maxobj_size) {
-										maxobj_size = files[i].size;
-										maxobj = files[i];
-									}
-								}
-
-								if (maxobj) {
-									obj.url = maxobj.fileUrl; // or fileDownloadUrl?
-									obj.video  = true;
-
-									// doesn't seem to have an expiry date
-									return done(obj, 6*60*60);
-								} else {
-									console_warn(cache_key, "Unable to find files from", json);
-								}
-							} catch (e) {
-								console_log(cache_key, e, resp);
-							}
-
-							return done(null, false);
+					if (files.length === 0) {
+						if ("streamingPlaylists" in json && json.streamingPlaylists.length > 0 && json.streamingPlaylists[0].files.length > 0) {
+							files = json.streamingPlaylists[0].files;
 						}
-					});
+					}
+
+					for (var i = 0; i < files.length; i++) {
+						if (files[i].size > maxobj_size) {
+							maxobj_size = files[i].size;
+							maxobj = files[i];
+						}
+					}
+
+					if (maxobj) {
+						obj.url = maxobj.fileUrl; // or fileDownloadUrl?
+						obj.video  = true;
+
+						// doesn't seem to have an expiry date
+						return done(obj, 6*60*60);
+					} else {
+						console_warn(cache_key, "Unable to find files from", json);
+					}
+
+					return done(null, false);
 				});
 			};
 
