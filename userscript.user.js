@@ -15779,6 +15779,104 @@ var $$IMU_EXPORT$$;
 		return JsonFormatter;
 	};
 
+	common_functions.create_dash_stream = function(data) {
+		var header = "<?xml version=\"1.0\"?>\n"
+		header += "<MPD xmlns=\"urn:mpeg:dash:schema:mpd:2011\" type=\"static\"";
+
+		var get_attrib = function(attrib, value) {
+			if (value === undefined)
+				return "";
+
+			return " " + attrib + "=\"" + encode_entities(value + "") + "\"";
+		};
+
+		if (data.duration) {
+			var hours = (data.duration / 60 / 60) | 0;
+			var minutes = ((data.duration / 60) | 0) % 60;
+			var seconds = data.duration % 60;
+
+			header += get_attrib("mediaPresentationDuration", "PT" + hours + "H" + minutes + "M" + seconds + "S");
+		}
+
+		header += " profiles=\"urn:mpeg:dash:profile:isoff-main:2011\">\n";
+		header += "<Period>\n";
+
+		var create_representation = function(representation) {
+			var rep = "<Representation";
+
+			rep += get_attrib("mimeType", representation.mime);
+			rep += get_attrib("codecs", representation.codecs);
+			rep += get_attrib("bandwidth", representation.bandwidth);
+			rep += get_attrib("width", representation.width);
+			rep += get_attrib("height", representation.height);
+
+			rep += ">\n";
+			rep += "  <BaseURL>" + encode_entities(representation.url) + "</BaseURL>\n";
+			rep += "</Representation>";
+
+			return rep;
+		};
+
+		var create_adaptationset = function(mime, items) {
+			var as = "<AdaptationSet mimeType=\"" + mime + "\">\n";
+
+			array_foreach(items, function(item) {
+				as += create_representation(item) + "\n";
+			});
+
+			as += "</AdaptationSet>";
+
+			return as;
+		};
+
+		if (!data.mimes) {
+			data.mimes = {};
+
+			var add_video_audio = function(audiovideo) {
+				var array = audiovideo === "audio" ? data.audios : data.videos;
+
+				array_foreach(array, function(item) {
+					if (!item.mime) {
+						// todo: create common_function for getting the extension
+						var ext = item.url.replace(/^[^?#]+\.([^/.?#]+)(?:[?#].*)?$/, "$1");
+
+						if (ext !== item.url) {
+							if (!item.codecs) {
+								if (ext === "mp4")
+									item.codecs = "avc1.640028";
+								else if (ext === "mp3")
+									item.codecs = "mp3";
+							}
+
+							if (ext === "mp3") ext = "mp4";
+
+							item.mime = audiovideo + "/" + ext;
+						} else {
+							console_warn("Unable to get mime for", item);
+							return;
+						}
+					}
+
+					if (!(item.mime in data.mimes))
+						data.mimes[item.mime] = [];
+
+					data.mimes[item.mime].push(item);
+				});
+			};
+
+			add_video_audio("video");
+			add_video_audio("audio");
+		}
+
+		for (var mime in data.mimes) {
+			header += create_adaptationset(mime, data.mimes[mime]) + "\n";
+		}
+
+		header += "</Period>\n</MPD>\n";
+
+		return header;
+	};
+
 	var get_domain_from_url = function(url) {
 		return url.replace(/^[a-z]+:\/\/([^/]+)(?:\/+.*)?$/, "$1");
 	};
@@ -19762,7 +19860,10 @@ var $$IMU_EXPORT$$;
 							return options.cb(obj);
 						}
 
-						var adaptionsets = {};
+						//var adaptionsets = {};
+						var dashdata = {
+							mimes: {}
+						};
 						var has_adaptive = false;
 
 						var maxbitrate = 0;
@@ -19771,6 +19872,7 @@ var $$IMU_EXPORT$$;
 						var baseobj = deepcopy(obj);
 						baseobj.is_private = true;
 						baseobj.headers = {
+							Origin: "https://www.youtube.com",
 							Referer: "https://www.youtube.com/"
 						};
 
@@ -19778,8 +19880,27 @@ var $$IMU_EXPORT$$;
 							var our_format = available_formats[i];
 
 							if (our_format.is_adaptive) {
-								//console_log(our_format, adaptionsets);
-								adaptiveformat_to_dash(our_format, adaptionsets);
+								var formatdash = {
+									url: our_format.url,
+									width: our_format.width,
+									height: our_format.width,
+									bandwidth: our_format.bitrate
+								};
+
+								var mime_match = our_format.mimeType.match(/^((?:video|audio)\/[^ /;]+);\s*codecs="([^"]+)"$/);
+								if (!mime_match) {
+									console_error("Unable to parse mime type", our_format.mimeType);
+									continue;
+								}
+
+								formatdash.mime = mime_match[1];
+								formatdash.codecs = mime_match[2];
+
+								if (!(formatdash.mime in dashdata.mimes))
+									dashdata.mimes[formatdash.mime] = [];
+
+								dashdata.mimes[formatdash.mime].push(formatdash);
+								//adaptiveformat_to_dash(our_format, adaptionsets);
 							} else {
 								if (our_format.bitrate > maxbitrate) {
 									maxbitrate = our_format.bitrate;
@@ -19790,10 +19911,10 @@ var $$IMU_EXPORT$$;
 
 						var urls = [];
 
-						// FIXME: for some reason this doesn't work
-						// VM3784:15616 [899][StreamController] Video Element Error: MEDIA_ERR_SRC_NOT_SUPPORTED (CHUNK_DEMUXER_ERROR_APPEND_FAILED: Append: stream parsing failed. Data size=742 append_window_start=0 append_window_end=9.22337e+12)
-						if (false && Object.keys(adaptionsets).length > 0) {
-							var dash = create_dash_from_adaptionsets(adaptionsets);
+						// need custom url loader, because origin: null for some reason
+						if (false && Object.keys(dashdata.mimes).length > 0) {
+							//var dash = create_dash_from_adaptionsets(adaptionsets);
+							var dash = common_functions.create_dash_stream(dashdata);
 							var dashurl = "data:application/dash+xml," + encodeURIComponent(dash);
 							urls.push({
 								url: dashurl,
@@ -78915,7 +79036,7 @@ var $$IMU_EXPORT$$;
 			//   https://coubsecure-s.akamaihd.net/get/b122/p/background/cw_banner_image/56450746aaf/17158e9712920bacd00cc/1592499919_1xfy750_1585770187_00032.jpg
 			// https://coubsecure-s.akamaihd.net/get/b155/p/coub/simple/cw_image/07a039f24cc/847b9cef49a7c61176524/tiny_1600150101_00032.jpg
 			//   https://coubsecure-s.akamaihd.net/get/b155/p/coub/simple/cw_image/07a039f24cc/847b9cef49a7c61176524/1600150101_00032.jpg
-			return src.replace(/^([a-z]+:\/\/[^/]+\/+get\/.*\/[0-9a-f]{5,}\/+[0-9a-f]{10,}\/+)[_a-z]+_([0-9]+_[^/]+)(?:[?#].*)?$/, "$1$2");
+			return src.replace(/^([a-z]+:\/\/[^/]+\/+get\/.*\/[0-9a-f]{5,}\/+[0-9a-f]{10,}\/+)(?:(?:[a-z]+|[0-9]+x)_){1,}([0-9]+_[^/]+)(?:[?#].*)?$/, "$1$2");
 			//return src.replace(/\/[a-z]+_([0-9]+_image\.[^/.]*)$/, "/$1");
 		}
 
@@ -78936,103 +79057,6 @@ var $$IMU_EXPORT$$;
 			};
 
 			// todo: move to common_functions
-			var create_dash_stream = function(data) {
-				var header = "<?xml version=\"1.0\"?>\n"
-				header += "<MPD xmlns=\"urn:mpeg:dash:schema:mpd:2011\" type=\"static\"";
-
-				var get_attrib = function(attrib, value) {
-					if (value === undefined)
-						return "";
-
-					return " " + attrib + "=\"" + encode_entities(value + "") + "\"";
-				};
-
-				if (data.duration) {
-					var hours = (data.duration / 60 / 60) | 0;
-					var minutes = ((data.duration / 60) | 0) % 60;
-					var seconds = data.duration % 60;
-
-					header += get_attrib("mediaPresentationDuration", "PT" + hours + "H" + minutes + "M" + seconds + "S");
-				}
-
-				header += " profiles=\"urn:mpeg:dash:profile:isoff-main:2011\">\n";
-				header += "<Period>\n";
-
-				var create_representation = function(representation) {
-					var rep = "<Representation";
-
-					rep += get_attrib("mimeType", representation.mime);
-					rep += get_attrib("codecs", representation.codecs);
-					rep += get_attrib("bandwidth", representation.bandwidth);
-					rep += get_attrib("width", representation.width);
-					rep += get_attrib("height", representation.height);
-
-					rep += ">\n";
-					rep += "  <BaseURL>" + encode_entities(representation.url) + "</BaseURL>\n";
-					rep += "</Representation>";
-
-					return rep;
-				};
-
-				var create_adaptationset = function(mime, items) {
-					var as = "<AdaptationSet mimeType=\"" + mime + "\">\n";
-
-					array_foreach(items, function(item) {
-						as += create_representation(item) + "\n";
-					});
-
-					as += "</AdaptationSet>";
-
-					return as;
-				};
-
-				if (!data.mimes) {
-					data.mimes = {};
-
-					var add_video_audio = function(audiovideo) {
-						var array = audiovideo === "audio" ? data.audios : data.videos;
-
-						array_foreach(array, function(item) {
-							if (!item.mime) {
-								// todo: create common_function for getting the extension
-								var ext = item.url.replace(/^[^?#]+\.([^/.?#]+)(?:[?#].*)?$/, "$1");
-
-								if (ext !== item.url) {
-									if (!item.codecs) {
-										if (ext === "mp4")
-											item.codecs = "avc1.640028";
-										else if (ext === "mp3")
-											item.codecs = "mp3";
-									}
-
-									if (ext === "mp3") ext = "mp4";
-
-									item.mime = audiovideo + "/" + ext;
-								} else {
-									console_warn("Unable to get mime for", item);
-									return;
-								}
-							}
-
-							if (!(item.mime in data.mimes))
-								data.mimes[item.mime] = [];
-
-							data.mimes[item.mime].push(item);
-						});
-					};
-
-					add_video_audio("video");
-					add_video_audio("audio");
-				}
-
-				for (var mime in data.mimes) {
-					header += create_adaptationset(mime, data.mimes[mime]) + "\n";
-				}
-
-				header += "</Period>\n</MPD>\n";
-
-				return header;
-			};
 
 			newsrc = website_query({
 				website_regex: /^[a-z]+:\/\/[^/]+\/+view\/+([0-9a-z]+)(?:[?#].*)?$/,
@@ -79084,7 +79108,7 @@ var $$IMU_EXPORT$$;
 								});
 							}
 
-							var dash_stream = create_dash_stream(dash);
+							var dash_stream = common_functions.create_dash_stream(dash);
 
 							urls.push({
 								url: "data:application/dash+xml," + encodeURIComponent(dash_stream),
