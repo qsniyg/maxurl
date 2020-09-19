@@ -68858,10 +68858,73 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain_nowww === "imgsrc.ru") {
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+([^/]+\/+[0-9]+)\.html(?:[?#].*)?$/,
+				query_for_id: {
+					url: "https://imgsrc.ru/${id}.html",
+					headers: {
+						Referer: ""
+					}
+				},
+				process: function(done, resp, cache_key) {
+					var match = resp.responseText.match(/<img class='big' src='(\/\/s[0-9]+\.[^'"]+)' alt='([^'"]+)'/);
+					if (!match) {
+						console_error(cache_key, "Unable to find image match for", resp);
+						return done(null, false);
+					}
+
+					var imgsrc = urljoin(resp.finalUrl, decode_entities(match[1]), true);
+					var caption = decode_entities(match[2]);
+
+					match = resp.responseText.match(/<script(?:\s+type=["']text\/javascript["'])?>\s*?var\s+(\S+)\s*=\s*["'](.*?)["'][\s\S]*?["']\+(?:[a-z]\+)?((?:\1(?:\s*\.\s*charAt\s*\(\s*|\s*\[\s*)([0-9]+)\s*(?:\)|\])\s*\+\s*){1,})\s*['"][\s\S]*?<\/script>/);
+					if (!match) {
+						// todo: don't fail, fallback to imgsrc
+						console_error(cache_key, "Unable to find cipher match for", resp);
+						return done(null, false);
+					}
+
+					var splitted = match[3].split("+");
+					var chars = "";
+					for (var i = 0; i < splitted.length; i++) {
+						var charid = splitted[i].replace(/.*(?:\[|\()\s*([0-9]+).*?$/, "$1");
+						if (charid !== splitted[i])
+							chars += string_charat(match[2], charid);
+					}
+
+					if (chars.length !== 3) {
+						console_error(cache_key, "Invalid chars:", chars, result);
+						return done(null, false);
+					}
+
+					var newsrc = imgsrc.replace(/:\/\/s([0-9]+.*_[0-9]+)...(\.[^/.]*)(?:[?#].*)?$/, "://b$1" + chars + "$2");
+
+					var obj = {
+						extra: {
+							page: resp.finalUrl,
+							caption: caption
+						}
+					};
+
+					var urls = [];
+
+					if (newsrc) urls.push(newsrc);
+					urls.push(imgsrc);
+
+					console_log(urls);
+
+					done(fillobj_urls(urls, obj), 6*60*60);
+				}
+			});
+			if (newsrc) return newsrc;
+		}
+
 		if (domain_nosub === "icdn.ru") {
 			// https://s8.us.icdn.ru/m/mocojopo/4/imgsrc.ru_65724094lHp.jpg
 			//   https://b8.us.icdn.ru/m/mocojopo/4/imgsrc.ru_65724094lGa.jpg
-			regex = /:\/\/s[0-9]+\.[^/]+\/+.\/+([^/]+)\/+[0-9]+\/+imgsrc\.ru_([0-9]+)...(\.[^/.]*)(?:[?#].*)?$/;
+			// https://s8.us.icdn.ru/m/mocojopo/6/65724076VkL.jpg
+			//   https://b8.us.icdn.ru/m/mocojopo/6/imgsrc.ru_65724076XjG.jpg
+			regex = /:\/\/s[0-9]+\.[^/]+\/+.\/+([^/]+)\/+[0-9]+\/+(?:imgsrc\.ru_)?([0-9]+)...(\.[^/.]*)(?:[?#].*)?$/;
 
 			match = src.match(regex);
 			if (match) {
@@ -68872,57 +68935,13 @@ var $$IMU_EXPORT$$;
 					}
 				};
 
-				if (options && options.do_request && options.cb) {
-					var cache_key = "imgsrc.ru:" + match[1] + "/" + match[2];
-					api_cache.fetch(cache_key, function(url) {
-						if (!url)
-							return options.cb(null);
-						obj.url = url;
-						options.cb(obj);
-					}, function(done) {
-						options.do_request({
-							url: obj.extra.page,
-							method: "GET",
-							headers: {
-								Referer: ""
-							},
-							onload: function(result) {
-								if (result.readyState !== 4)
-									return;
-
-								if (result.status !== 200) {
-									console_error(cache_key, "Bad status (" + result.status + ":", result);
-									return done(null, false);
-								}
-
-								var match = result.responseText.match(/<script(?:\s+type=["']text\/javascript["'])?>\s*?var\s+(\S+)\s*=\s*["'](.*?)["'][\s\S]*?["']\+(?:[a-z]\+)?((?:\1(?:\s*\.\s*charAt\s*\(\s*|\s*\[\s*)([0-9]+)\s*(?:\)|\])\s*\+\s*){1,})\s*['"][\s\S]*?<\/script>/);
-								if (!match) {
-									console_error(cache_key, "Invalid match", result);
-									return done(null, false);
-								}
-
-								var splitted = match[3].split("+");
-								var chars = "";
-								for (var i = 0; i < splitted.length; i++) {
-									var charid = splitted[i].replace(/.*(?:\[|\()\s*([0-9]+).*?$/, "$1");
-									if (charid !== splitted[i])
-										chars += string_charat(match[2], charid);
-								}
-
-								if (chars.length !== 3) {
-									console_error(cache_key, "Invalid chars:", chars, result);
-									return done(null, false);
-								}
-
-								done(src.replace(/:\/\/s([0-9]+.*_[0-9]+)...(\.[^/.]*)(?:[?#].*)?$/, "://b$1" + chars + "$2"), 6*60*60);
-							}
-						});
-					});
-
-					return {
-						waiting: true
-					};
-				}
+				return [
+					{
+						url: obj.extra.page,
+						is_pagelink: true
+					},
+					obj
+				];
 			}
 		}
 
