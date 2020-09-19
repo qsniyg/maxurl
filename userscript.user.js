@@ -53223,12 +53223,6 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/resize\/[0-9]+\/[0-9]+\/[0-9]+(\/[0-9a-f]+\.[^/.]*)$/, "$1");
 		}
 
-		if (domain === "coubsecure-s.akamaihd.net") {
-			// https://coubsecure-s.akamaihd.net/get/b172/p/coub/simple/cw_timeline_pic/17b16f52a33/6c1b462c16515880e38f7/med_1497507210_image.jpg
-			//   https://coubsecure-s.akamaihd.net/get/b172/p/coub/simple/cw_timeline_pic/17b16f52a33/6c1b462c16515880e38f7/1497507210_image.jpg
-			return src.replace(/\/[a-z]+_([0-9]+_image\.[^/.]*)$/, "/$1");
-		}
-
 		if (domain_nowww === "wallpapersmug.com" ||
 			// https://picstatio.com/wallpaper/download/1600x900/barbara-palvin-cute-face--m3kz3
 			// https://picstatio.com/download/1600x900/-m3kz3/barbara-palvin-cute-face.jpg
@@ -78904,6 +78898,215 @@ var $$IMU_EXPORT$$;
 			// https://file.veryzhun.com/buckets/wxapp/keys/20181018-163004-e9c11x9dcs48onts.jpg!400!300
 			//   https://file.veryzhun.com/buckets/wxapp/keys/20181018-163004-e9c11x9dcs48onts.jpg
 			return src.replace(/(\/buckets\/+[^/]+\/+keys\/+[0-9]{8}-[0-9]+-[a-zA-Z0-9]+\.[^/.!?#]+)(?:[!?#].*)?$/, "$1");
+		}
+
+		if (domain === "attachments.f95zone.to") {
+			// https://attachments.f95zone.to/2019/10/thumb/433195_wiab-01.gif
+			//   https://attachments.f95zone.to/2019/10/433195_wiab-01.gif
+			return src.replace(/(:\/\/[^/]+\/+[0-9]{4}\/+[0-9]{2}\/+)thumb\/+/, "$1");
+		}
+
+		if (domain === "coubsecure-s.akamaihd.net") {
+			// https://coubsecure-s.akamaihd.net/get/b172/p/coub/simple/cw_timeline_pic/17b16f52a33/6c1b462c16515880e38f7/med_1497507210_image.jpg
+			//   https://coubsecure-s.akamaihd.net/get/b172/p/coub/simple/cw_timeline_pic/17b16f52a33/6c1b462c16515880e38f7/1497507210_image.jpg
+			// https://coubsecure-s.akamaihd.net/get/b154/p/channel/cw_avatar/b544dc94156/b059f02253677b1fcb5b0/profile_pic_new_1483487821_devushka-sci-fi-kostyum-gorod.jpg
+			//   https://coubsecure-s.akamaihd.net/get/b154/p/channel/cw_avatar/b544dc94156/b059f02253677b1fcb5b0/1483487821_devushka-sci-fi-kostyum-gorod.jpg
+			// https://coubsecure-s.akamaihd.net/get/b122/p/background/cw_banner_image/56450746aaf/17158e9712920bacd00cc/big_channel_1592499919_1xfy750_1585770187_00032.jpg
+			//   https://coubsecure-s.akamaihd.net/get/b122/p/background/cw_banner_image/56450746aaf/17158e9712920bacd00cc/1592499919_1xfy750_1585770187_00032.jpg
+			// https://coubsecure-s.akamaihd.net/get/b155/p/coub/simple/cw_image/07a039f24cc/847b9cef49a7c61176524/tiny_1600150101_00032.jpg
+			//   https://coubsecure-s.akamaihd.net/get/b155/p/coub/simple/cw_image/07a039f24cc/847b9cef49a7c61176524/1600150101_00032.jpg
+			return src.replace(/^([a-z]+:\/\/[^/]+\/+get\/.*\/[0-9a-f]{5,}\/+[0-9a-f]{10,}\/+)[_a-z]+_([0-9]+_[^/]+)(?:[?#].*)?$/, "$1$2");
+			//return src.replace(/\/[a-z]+_([0-9]+_image\.[^/.]*)$/, "/$1");
+		}
+
+		if (domain_nowww === "coub.com") {
+			var query_coub_api = function(csrf, vid, cb) {
+				api_query("coub_video:" + vid, {
+					url: "https://coub.com/api/v2/coubs/" + vid,
+					imu_mode: "xhr",
+					headers: {
+						Referer: "https://coub.com/view/" + vid,
+						"X-Requested-With": "XMLHttpRequest",
+						"X-CSRF-Token": csrf
+					},
+					json: true
+				}, cb, function(done, resp, cache_key) {
+					return done(resp, 60*60);
+				});
+			};
+
+			// todo: move to common_functions
+			var create_dash_stream = function(data) {
+				var header = "<?xml version=\"1.0\"?>\n"
+				header += "<MPD xmlns=\"urn:mpeg:dash:schema:mpd:2011\" type=\"static\"";
+
+				var get_attrib = function(attrib, value) {
+					if (value === undefined)
+						return "";
+
+					return " " + attrib + "=\"" + encode_entities(value + "") + "\"";
+				};
+
+				if (data.duration) {
+					var hours = (data.duration / 60 / 60) | 0;
+					var minutes = ((data.duration / 60) | 0) % 60;
+					var seconds = data.duration % 60;
+
+					header += get_attrib("mediaPresentationDuration", "PT" + hours + "H" + minutes + "M" + seconds + "S");
+				}
+
+				header += " profiles=\"urn:mpeg:dash:profile:isoff-main:2011\">\n";
+				header += "<Period>\n";
+
+				var create_representation = function(representation) {
+					var rep = "<Representation";
+
+					rep += get_attrib("mimeType", representation.mime);
+					rep += get_attrib("codecs", representation.codecs);
+					rep += get_attrib("bandwidth", representation.bandwidth);
+					rep += get_attrib("width", representation.width);
+					rep += get_attrib("height", representation.height);
+
+					rep += ">\n";
+					rep += "  <BaseURL>" + encode_entities(representation.url) + "</BaseURL>\n";
+					rep += "</Representation>";
+
+					return rep;
+				};
+
+				var create_adaptationset = function(mime, items) {
+					var as = "<AdaptationSet mimeType=\"" + mime + "\">\n";
+
+					array_foreach(items, function(item) {
+						as += create_representation(item) + "\n";
+					});
+
+					as += "</AdaptationSet>";
+
+					return as;
+				};
+
+				if (!data.mimes) {
+					data.mimes = {};
+
+					var add_video_audio = function(audiovideo) {
+						var array = audiovideo === "audio" ? data.audios : data.videos;
+
+						array_foreach(array, function(item) {
+							if (!item.mime) {
+								// todo: create common_function for getting the extension
+								var ext = item.url.replace(/^[^?#]+\.([^/.?#]+)(?:[?#].*)?$/, "$1");
+
+								if (ext !== item.url) {
+									if (!item.codecs) {
+										if (ext === "mp4")
+											item.codecs = "avc1.640028";
+										else if (ext === "mp3")
+											item.codecs = "mp3";
+									}
+
+									if (ext === "mp3") ext = "mp4";
+
+									item.mime = audiovideo + "/" + ext;
+								} else {
+									console_warn("Unable to get mime for", item);
+									return;
+								}
+							}
+
+							if (!(item.mime in data.mimes))
+								data.mimes[item.mime] = [];
+
+							data.mimes[item.mime].push(item);
+						});
+					};
+
+					add_video_audio("video");
+					add_video_audio("audio");
+				}
+
+				for (var mime in data.mimes) {
+					header += create_adaptationset(mime, data.mimes[mime]) + "\n";
+				}
+
+				header += "</Period>\n</MPD>\n";
+
+				return header;
+			};
+
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+view\/+([0-9a-z]+)(?:[?#].*)?$/,
+				query_for_id: "https://coub.com/view/${id}",
+				process: function(done, resp, cache_key, match) {
+					var csrf_token = get_meta(resp.responseText, "csrf-token");
+					if (!csrf_token) {
+						console_error(cache_key, "Unable to get CSRF token from", resp);
+						return done(null, false);
+					}
+
+					var vid = match[1];
+
+					query_coub_api(csrf_token, vid, function(data) {
+						if (!data)
+							return done(null, false);
+
+						//console_log(data);
+
+						var obj = {
+							extra: {
+								page: "https://coub.com/view/" + vid,
+								caption: data.title
+							}
+						};
+
+						var urls = [];
+
+						if (data.file_versions.html5) {
+							var dash = {
+								duration: data.duration,
+								audios: [],
+								videos: []
+							};
+
+							var versions = data.file_versions.html5;
+
+							for (var key in versions.audio) {
+								dash.audios.push({
+									bandwidth: versions.audio[key].size,
+									url: versions.audio[key].url
+								});
+							}
+
+							for (var key in versions.video) {
+								dash.videos.push({
+									bandwidth: versions.video[key].size,
+									url: versions.video[key].url
+								});
+							}
+
+							var dash_stream = create_dash_stream(dash);
+
+							urls.push({
+								url: "data:application/dash+xml," + encodeURIComponent(dash_stream),
+								video: "dash"
+							});
+						}
+
+						if (data.file_versions.share && data.file_versions.share.default)
+							urls.push({
+								url: data.file_versions.share.default,
+								video: true
+							});
+
+						// todo: make larger
+						if (data.picture)
+							urls.push(data.picture)
+
+						return done(fillobj_urls(urls, obj), 60*60);
+					});
+				}
+			});
+			if (newsrc) return newsrc;
 		}
 
 
