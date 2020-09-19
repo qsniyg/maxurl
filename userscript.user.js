@@ -20700,8 +20700,6 @@ var $$IMU_EXPORT$$;
 			(domain_nosub === "stackpathdns.com" && string_indexof(domain, "-grlk5lagedl.stackpathdns.com") >= 0) ||
 			// https://www.beautycrew.com.au/media/12866/jessica-alba-portrait.jpg?width=200
 			(domain_nowww === "beautycrew.com.au" && string_indexof(src, "/media/") >= 0) ||
-			// http://vh1.mtvnimages.com/uri/mgid:file:http:shared:vh1.com/news/uploads/sites/2/2018/03/GettyImages-873076880-1522090083.jpg?quality=0.85&format=jpg&width=480
-			domain_nosub === "mtvnimages.com" ||
 			// https://dsx.weather.com/util/image/w/greenaldnberg.jpg?v=at&w=320&h=180&api=7db9fe61-7414-47b5-9871-e17d87b8b6a0
 			(domain === "dsx.weather.com" && string_indexof(src, "/util/image/") >= 0) ||
 			// https://img.r7.com/images/iceberg-gigante-14072018102456056?dimensions=600x315
@@ -21121,11 +21119,8 @@ var $$IMU_EXPORT$$;
 			src = src.replace(/\?.*$/, "");
 		}
 
-		if (domain === "mtv.mtvnimages.com" ||
+		if (domain_nosub === "tradesy.com" && domain.match(/^item[0-9]*\.tradesy/) && string_indexof(src, "/images/") >= 0) {
 			// https://item4.tradesy.com/images/miu-miu-cut-off-cat-eye-marble-havana-retro-funky-sunnies-sunglasses-1063438-5-0.jpg?width=720&height=960 -- stretched, 406 for head
-			(domain_nosub === "tradesy.com" && domain.match(/^item[0-9]*\.tradesy/) && string_indexof(src, "/images/") >= 0)) {
-			// http://mtv.mtvnimages.com/uri/mgid:file:gsp:scenic:/international/mtvema/2017/images/nominees/Taylor_Swift_1940x720.jpg?quality=0.85&width=1024&height=450&crop=true -- 400
-			// https://mtv.mtvnimages.com/uri/mgid:file:http:shared:mtv.com/news/wp-content/uploads/2017/03/GettyImages-661260604-1490974103.jpg?quality=.8&height=1221.3740458015266&width=800 -- 400
 			return {
 				url: src.replace(/\?.*$/, ""),
 				can_head: false
@@ -28014,12 +28009,6 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/s3\/content\/[0-9]+x[0-9]+\//, "/s3/content/");
 		}
 
-		if (domain === "mtv-intl.mtvnimages.com") {
-			// http://mtv-intl.mtvnimages.com/uri/mgid:arc:content:mtvasia.com:cdeab016-8964-423d-96ae-8ec187190fef?ep=mtvasia.com&stage=live&format=jpg&quality=0.8&quality=0.85&width=656&height=369&crop=true
-			//   http://mtv-intl.mtvnimages.com/uri/mgid:arc:content:mtvasia.com:cdeab016-8964-423d-96ae-8ec187190fef
-			return src.replace(/(\?ep=[^&]*).*/, "$1");
-		}
-
 		if (domain === "gaia.adage.com") {
 			// http://gaia.adage.com/images/bin/image/x-large/GettyImages90319988832.jpg?1515686676
 			//   http://gaia.adage.com/images/bin/image/GettyImages90319988832.jpg?1515686676
@@ -34392,13 +34381,22 @@ var $$IMU_EXPORT$$;
 		if (domain === "img.purch.com") {
 			// https://img.purch.com/w/660/aHR0cDovL3d3dy5saXZlc2NpZW5jZS5jb20vaW1hZ2VzL2kvMDAwLzAwMy8xMjQvb3JpZ2luYWwvMDkwNjA4LWNvcm4tc25ha2UtMDIuanBn -- mildly stretched
 			//   https://img.purch.com/o/aHR0cDovL3d3dy5saXZlc2NpZW5jZS5jb20vaW1hZ2VzL2kvMDAwLzAwMy8xMjQvb3JpZ2luYWwvMDkwNjA4LWNvcm4tc25ha2UtMDIuanBn
+			//   http://www.livescience.com/images/i/000/003/124/original/090608-corn-snake-02.jpg
 			// https://img.purch.com/rc/317x177/aHR0cDovL3d3dy5saXZlc2NpZW5jZS5jb20vaW1hZ2VzL2kvMDAwLzA2MC84MzQvb3JpZ2luYWwvYW5jaWVudC1mYWJyaWMzLmpwZw==
 			//   https://img.purch.com/o/aHR0cDovL3d3dy5saXZlc2NpZW5jZS5jb20vaW1hZ2VzL2kvMDAwLzA2MC84MzQvb3JpZ2luYWwvYW5jaWVudC1mYWJyaWMzLmpwZw==
+			//   http://www.livescience.com/images/i/000/060/834/original/ancient-fabric3.jpg
 			// https://img.purch.com/nxgl7xz4-400x400-jpg/o/aHR0cDovL21lZGlhLmJlc3RvZm1pY3JvLmNvbS81L0IvODA3NTk5L29yaWdpbmFsL054Z2w3eHo0XzQwMHg0MDAuanBn
 			//   https://img.purch.com/o/aHR0cDovL21lZGlhLmJlc3RvZm1pY3JvLmNvbS81L0IvODA3NTk5L29yaWdpbmFsL054Z2w3eHo0XzQwMHg0MDAuanBn
-			return src
+			//   http://media.bestofmicro.com/5/B/807599/original/Nxgl7xz4_400x400.jpg
+			newsrc = src
 				.replace(/\/[a-z]+\/[0-9]+(?:x[0-9]+)?\//, "/o/")
 				.replace(/\/[a-z0-9]+-[0-9]+x[0-9]+(?:-[^/]*)?\/o\//, "/o/");
+			if (newsrc !== src)
+				return newsrc;
+
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+.*?\/(aHR0c[^?#/.]+)(?:[?#.].*)?$/, "$1");
+			if (newsrc !== src)
+				return base64_decode(newsrc);
 		}
 
 		if ((domain_nosub === "taobaocdn.com" ||
@@ -44257,7 +44255,17 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "firenewsfeed.com") {
 			// https://www.incimages.com/uploaded_files/image/300x200/getty_930534182_200014312000928078_362581.jpg
 			//   https://www.incimages.com/uploaded_files/image/getty_930534182_200014312000928078_362581.jpg
-			return src.replace(/\/image\/[0-9]+x[0-9]+\//, "/image/");
+			newsrc = src.replace(/\/image\/[0-9]+x[0-9]+\//, "/image/");
+			if (newsrc !== src)
+				return newsrc;
+		}
+
+		if (domain_nowww === "firenewsfeed.com") {
+			// https://firenewsfeed.com/image/aHR0cHM6Ly9pbWFnZXMuYXhpb3MuY29tL2NJQm1aS2xyZ0hiRFhpZDNsQklEdkcyUXdZOD0vMHgwOjE5MjB4MTA4MC8xOTIweDEwODAvMjAxOC8wNy8xNS8xNTMxNjg4MTkyMjg3LmpwZw==
+			//   https://images.axios.com/cIBmZKlrgHbDXid3lBIDvG2QwY8=/0x0:1920x1080/1920x1080/2018/07/15/1531688192287.jpg
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+image\/+(?:[0-9]+x[0-9]+\/+)?(aHR0c[^?#./]+)(?:[?#].*)?$/, "$1");
+			if (newsrc !== src)
+				return base64_decode(newsrc);
 		}
 
 		if (domain === "cached.imagescaler.hbpl.co.uk") {
@@ -45001,6 +45009,22 @@ var $$IMU_EXPORT$$;
 			// https://ss.metronews.ru/userfiles/materials/116/1160022/858x540.jpg
 			//   https://ss.metronews.ru/userfiles/materials/116/1160022/origin.jpg
 			return src.replace(/(\/userfiles\/materials\/[0-9]+\/[0-9]+\/)(?:[0-9]+x[0-9]+|[a-z]+)(\.[^/.]*)$/, "$1origin$2");
+		}
+
+		if (domain_nosub === "mtvnimages.com") {
+			// http://mtv.mtvnimages.com/uri/mgid:file:gsp:scenic:/international/mtvema/2017/images/nominees/Taylor_Swift_1940x720.jpg?quality=0.85&width=1024&height=450&crop=true -- 400
+			// https://mtv.mtvnimages.com/uri/mgid:file:http:shared:mtv.com/news/wp-content/uploads/2017/03/GettyImages-661260604-1490974103.jpg?quality=.8&height=1221.3740458015266&width=800 -- 400
+			// http://vh1.mtvnimages.com/uri/mgid:file:http:shared:vh1.com/news/uploads/sites/2/2018/03/GettyImages-873076880-1522090083.jpg?quality=0.85&format=jpg&width=480
+			// http://mtv-intl.mtvnimages.com/uri/mgid:arc:content:mtvasia.com:cdeab016-8964-423d-96ae-8ec187190fef?ep=mtvasia.com&stage=live&format=jpg&quality=0.8&quality=0.85&width=656&height=369&crop=true
+			//   http://mtv-intl.mtvnimages.com/uri/mgid:arc:content:mtvasia.com:cdeab016-8964-423d-96ae-8ec187190fef
+			//return src.replace(/(\?ep=[^&]*).*/, "$1");
+			newsrc = src.replace(/\?.*$/, "");
+			if (newsrc !== src) {
+				return {
+					url: newsrc,
+					can_head: false
+				};
+			}
 		}
 
 		if (domain_nosub === "mtvnimages.com") {
@@ -53982,8 +54006,16 @@ var $$IMU_EXPORT$$;
 			//   https://s.isanook.com/sp/0/ui/15/77629/36.jpg
 			// http://p3.isanook.com/wo/0/rp/r/w580/ya0xa0m1/aHR0cDovL3AzLnMxc2YuY29tL3dvLzAvdWkvMTIvNjA4NjUvc2VsZW5hX2dvbWV6X2luX2NvYWNoX2FuZF90aWZmYW55X2pld2VscnkuanBn.jpg
 			//   http://p3.isanook.com/wo/0/rp/r/w9999999/ya0xa0m1/aHR0cDovL3AzLnMxc2YuY29tL3dvLzAvdWkvMTIvNjA4NjUvc2VsZW5hX2dvbWV6X2luX2NvYWNoX2FuZF90aWZmYW55X2pld2VscnkuanBn.jpg
+			//   http://p3.isanook.com/wo/0/ui/12/60865/selena_gomez_in_coach_and_tiffany_jewelry.jpg
 			// http://p3.s1sf.com/wo/0/rp/r/w580/ya0xa0m1/aHR0cDovL3AzLnMxc2YuY29tL3dvLzAvdWkvMTIvNjA4NjUvc2VsZW5hX2dvbWV6X2luX2NvYWNoX2FuZF90aWZmYW55X2pld2VscnkuanBn.jpg
-			return src.replace(/\/+rp\/+r\/+[wh][0-9]+\/+/, "/rp/r/w9999999/");
+			//   http://p3.isanook.com/wo/0/ui/12/60865/selena_gomez_in_coach_and_tiffany_jewelry.jpg
+			newsrc = src.replace(/\/+rp\/+r\/+[wh][0-9]+\/+/, "/rp/r/w9999999/");
+			if (newsrc !== src)
+				return newsrc;
+
+			newsrc = src.replace(/.*\/(aHR0c[^?#/.]+)\.[^/.]+(?:[?#].)?$/, "$1");
+			if (newsrc !== src)
+				return base64_decode(newsrc);
 		}
 
 		if (domain_nosub === "caping.co.id" &&
@@ -54771,6 +54803,7 @@ var $$IMU_EXPORT$$;
 			};
 		}
 
+		// server is down
 		if (domain_nowww === "wallhalla.com" &&
 			options && options.cb && options.do_request) {
 			// https://wallhalla.com/wallpaper/BLyranBfQGP
@@ -60684,8 +60717,10 @@ var $$IMU_EXPORT$$;
 		if (domain_nosub === "blovcdn.com" && domain.match(/^cdn[0-9]*\./)) {
 			// https://cdn2.blovcdn.com/bloglovin/aHR0cHMlM0ElMkYlMkZpMC53cC5jb20lMkZ3d3cubG92ZW9saWEuY29tJTJGd3AtY29udGVudCUyRnVwbG9hZHMlMkYyMDE4JTJGMTAlMkZEU0NfMzEwMC5qcGclM0ZyZXNpemUlM0QxMzAwJTI1MkMxMDQw?checksum=122165603b317bb84022b49894ed883d9b2e4af8&format=j
 			//   https://cdn2.blovcdn.com/bloglovin/aHR0cHMlM0ElMkYlMkZpMC53cC5jb20lMkZ3d3cubG92ZW9saWEuY29tJTJGd3AtY29udGVudCUyRnVwbG9hZHMlMkYyMDE4JTJGMTAlMkZEU0NfMzEwMC5qcGclM0ZyZXNpemUlM0QxMzAwJTI1MkMxMDQw?checksum=122165603b317bb84022b49894ed883d9b2e4af8&format=s
+			//   http://www.loveolia.com/wp-content/uploads/2018/10/DSC_3100.jpg
 			// https://cdn3.blovcdn.com/bloglovin/aHR0cCUzQSUyRiUyRjIuYnAuYmxvZ3Nwb3QuY29tJTJGLUs4Wm10YXZvVERjJTJGVkhPcldiYmZEcEklMkZBQUFBQUFBQUNHYyUyRkUySjh2V180cnJjJTJGczE2MDAlMkZtbGxlLW1hZGVtb2lzZWxsZS1zcy0yMDE1LWNhaWxpbi1ydXNzby1ieS1oZW5yaWstcHVyaWVubmUtMTAuanBn?checksum=c449ce61d806860f88a385b1090aada8e1973925&format=o
 			//   https://cdn3.blovcdn.com/bloglovin/aHR0cCUzQSUyRiUyRjIuYnAuYmxvZ3Nwb3QuY29tJTJGLUs4Wm10YXZvVERjJTJGVkhPcldiYmZEcEklMkZBQUFBQUFBQUNHYyUyRkUySjh2V180cnJjJTJGczE2MDAlMkZtbGxlLW1hZGVtb2lzZWxsZS1zcy0yMDE1LWNhaWxpbi1ydXNzby1ieS1oZW5yaWstcHVyaWVubmUtMTAuanBn?checksum=c449ce61d806860f88a385b1090aada8e1973925&format=s
+			//   https://2.bp.blogspot.com/-K8ZmtavoTDc/VHOrWbbfDpI/AAAAAAAACGc/E2J8vW_4rrc/s0/mlle-mademoiselle-ss-2015-cailin-russo-by-henrik-purienne-10.jpg=s0?imgmax=0
 			// https://cdn1.blovcdn.com/bloglovin/aHR0cHMlM0ElMkYlMkZzMy5hbWF6b25hd3MuY29tJTJGYmxvZ2xvdmluLXVzZXItaW1hZ2VzLXByb2QlMkZuYXRpdmUtcG9zdC1pbWctMS02MzgzNS01OTA2OGUyNDRiMGY1?checksum=0513b8a2e97721416b71352297e4acc1c93ce123&format=s
 			//   https://s3.amazonaws.com/bloglovin-user-images-prod/native-post-img-1-63835-59068e244b0f5
 			//   https://blog.bloglovin.com/blog/10-perfect-blush-shades-for-every-skin-tone
@@ -60693,7 +60728,13 @@ var $$IMU_EXPORT$$;
 			//   https://s3.amazonaws.com/bloglovin-user-images-prod/native-post-img-1-53519-58f5f0e2bb76c
 			//   https://blog.bloglovin.com/blog/how-to-begin-to-love-mondays
 			// s, q, t, r, j, h, d, n, l, o, c, g, f, m, i, e, b, p, k
-			return src.replace(/([?&]format=)[^&]*/, "$1s");
+			newsrc = src.replace(/([?&]format=)[^&]*/, "$1s");
+			if (newsrc !== src)
+				return newsrc;
+
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+bloglovin\/+(aHR0c[^?#/.]+)(?:[?#].*)?$/, "$1");
+			if (newsrc !== src)
+				return decodeURIComponent(base64_decode(newsrc));
 		}
 
 		if (domain === "img.nimo.tv" ||
