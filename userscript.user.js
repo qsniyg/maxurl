@@ -36412,8 +36412,17 @@ var $$IMU_EXPORT$$;
 				return add_extensions_gif(newsrc);
 		}
 
-		if ((domain_nosub === "e621.net" &&
-			 domain.match(/static[0-9]*\.e621\.net/)) ||
+		if (domain === "yukkuri.shii.org") {
+			// https://yukkuri.shii.org/data/preview/c5a91701bceedfe76b6090d6a54db244.jpg
+			//   https://yukkuri.shii.org/data/sample/sample-c5a91701bceedfe76b6090d6a54db244.jpg
+			//   https://yukkuri.shii.org/data/c5a91701bceedfe76b6090d6a54db244.png
+			newsrc = src.replace(/\/data\/+(?:preview|sample)\/+(?:sample-)?([0-9a-f]{20,}\.[^/.]*)(?:[?#].*)?$/, "/data/$1");
+			if (newsrc !== src) {
+				return add_extensions(newsrc);
+			}
+		}
+
+		if ((domain_nosub === "e621.net" && /^static[0-9]*\./.test(domain)) ||
 			// http://behoimi.org/data/preview/ee/b0/eeb0a41dc90c7861d5ca0fb200e06847.jpg
 			//   http://behoimi.org/data/ee/b0/eeb0a41dc90c7861d5ca0fb200e06847.jpg
 			domain_nowww === "behoimi.org") {
@@ -36421,7 +36430,7 @@ var $$IMU_EXPORT$$;
 			//   https://static1.e621.net/data/5b/77/5b775b9fbcff339ce15fef7b85b1f9b9.png
 			// https://static1.e621.net/data/sample/de/b8/deb8350027c2edb949486319c1f78256.jpg
 			//   https://static1.e621.net/data/de/b8/deb8350027c2edb949486319c1f78256.png
-			newsrc = src.replace(/(:\/\/[^/]*\/)data\/(?:preview|sample)\//, "$1data/");
+			newsrc = src.replace(/(:\/\/[^/]+\/+data\/+)(?:preview|sample)\/+([0-9a-f]{2}\/+)/, "$1$2");
 			if (newsrc !== src) {
 				return add_extensions(newsrc);
 			}
@@ -36431,7 +36440,7 @@ var $$IMU_EXPORT$$;
 			// http://hypnohub.net//data/preview/ce4154eb5de93edeae9389e5e1c5a31e.jpg
 			//   http://hypnohub.net//data/sample/ce4154eb5de93edeae9389e5e1c5a31e.jpg
 			//   http://hypnohub.net//data/image/ce4154eb5de93edeae9389e5e1c5a31e.jpg
-			newsrc = src.replace(/\/data\/(?:preview|sample)\/([0-9a-f]+\.[^/.]*)(?:[?#].*)?$/, "/data/image/$1");
+			newsrc = src.replace(/\/data\/+(?:preview|sample)\/+([0-9a-f]{20,}\.[^/.]*)(?:[?#].*)?$/, "/data/image/$1");
 			if (newsrc !== src) {
 				return add_extensions(newsrc);
 			}
@@ -47021,8 +47030,10 @@ var $$IMU_EXPORT$$;
 		if (domain === "image.jeuxvideo.com") {
 			// http://image.jeuxvideo.com/medias-md/153181/1531806400-2401-card.jpg
 			//   http://image.jeuxvideo.com/medias/153181/1531806400-2401-card.jpg
+			// https://image.jeuxvideo.com/images-sm/ga/t/o/tospga016.jpg
+			//   https://image.jeuxvideo.com/images/ga/t/o/tospga016.jpg
 			return {
-				url: src.replace(/(:\/\/[^/]*\/medias)-[a-z]+(\/[0-9]+\/)/, "$1$2"),
+				url: src.replace(/(:\/\/[^/]+\/+(?:medias|images))-[a-z]+\//, "$1/"),
 				can_head: false
 			};
 		}
@@ -78748,6 +78759,20 @@ var $$IMU_EXPORT$$;
 				}
 			});
 			if (newsrc) return newsrc;
+		}
+
+		if (domain === "api.tipeee.com") {
+			// https://api.tipeee.com/cache/20200212132453/media/100/100/zoom/1630961/237ca4af27fe10e5685d45633c237fa51e7380dd.jpg
+			//   https://api.tipeee.com/cache/20200212132453/media/1630961/237ca4af27fe10e5685d45633c237fa51e7380dd.jpg -- upscaled?
+			return src.replace(/(\/cache\/+[0-9]+\/+media\/+)[0-9]+\/+[0-9]+\/+zoom\/+([0-9]+\/+[0-9a-f]{20,}\.)/, "$1$2");
+		}
+
+		if (amazon_container === "games.med") {
+			// https://s3-eu-west-1.amazonaws.com/games.med/6566/74223-TombRaider.jpg
+			//   https://s3-eu-west-1.amazonaws.com/games.snapshot/6566/74223-TombRaider.jpg
+			// http://games.med.s3-eu-west-1.amazonaws.com/6566/74223-TombRaider.jpg
+			//   http://games.snapshot.s3-eu-west-1.amazonaws.com/6566/74223-TombRaider.jpg
+			return src.replace(/(:\/\/(?:[^/]+\/+)?)games\.med([/.])/, "$1games.snapshot$2");
 		}
 
 
