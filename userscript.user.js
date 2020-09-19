@@ -52467,6 +52467,7 @@ var $$IMU_EXPORT$$;
 		if (domain === "media.game8.vn") {
 			// http://media.game8.vn/media2/game8/2015/09/23/c5-3.jpg.310.233.cache
 			//   http://media.game8.vn/srv_thumb.ashx?w=jpg&h=310&f=/media2/game8/2015/09/23/c5-3
+			//   http://media.game8.vn/srv_thumb.ashx?h=310&f=/media2/game8/2015/09/23/c5-3
 			//   http://media.game8.vn/media2/game8/2015/09/23/c5-3 -- works, but has no content type (displays as text)
 			//   http://media.game8.vn/media2/game8/2015/09/23/c5-3.jpg
 			newsrc = src.replace(/\.[0-9]+\.(?:[0-9]+\.)?cache(?:[?#].*)?$/, "");
@@ -52474,7 +52475,9 @@ var $$IMU_EXPORT$$;
 				return newsrc;
 
 			if (string_indexof(src, "/srv_thumb.ashx") >= 0) {
-				return urljoin("http://media.game8.vn/", url.searchParams.get("f"), true) + "." + url.searchParams.get("w");
+				var queries = get_queries(src);
+				var ext = queries.w || "jpg";
+				return urljoin("http://media.game8.vn/", queries.f, true) + "." + ext;
 			}
 		}
 
@@ -53680,10 +53683,9 @@ var $$IMU_EXPORT$$;
 		if (domain === "engine.numatek.netuse.gr") {
 			// http://engine.numatek.netuse.gr/?imgid=107674428&srcid=209761&type=11490
 			//   http://engine.numatek.netuse.gr/?imgid=107674428&srcid=209761&type=2
-			var imgid = url.searchParams.get("imgid");
-			var srcid = url.searchParams.get("srcid");
-			if (imgid && srcid) {
-				return "http://engine.numatek.netuse.gr/?imgid=" + imgid + "&srcid=" + srcid + "&type=2";
+			var queries = get_queries(src);
+			if (queries.imgid && queries.srcid) {
+				return "http://engine.numatek.netuse.gr/?imgid=" + queries.imgid + "&srcid=" + queries.srcid + "&type=2";
 			}
 		}
 
@@ -62014,7 +62016,8 @@ var $$IMU_EXPORT$$;
 			//   http://thumbnail.image.rakuten.co.jp/@0_mall/ponycanyon/cabinet/pccy/pccy000001946.jpg?_ex=300x300
 			//   http://shop.r10s.jp/ponycanyon/cabinet/pccy/pccy000001946.jpg
 			if (src.match(/^[a-z]+:\/\/[^/]*\/hgp\/+\?/)) {
-				newsrc = url.searchParams.get("pc") || url.searchParams.get("m");
+				var queries = get_queries(src);
+				newsrc = queries.pc || queries.m;
 				if (newsrc)
 					return decodeuri_ifneeded(newsrc);
 			}
