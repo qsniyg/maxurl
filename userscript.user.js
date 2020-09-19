@@ -11247,7 +11247,7 @@ var $$IMU_EXPORT$$;
 			options.run = function(cb, website_match) {
 				var id = website_match[1];
 
-				var query;
+				var query = options.query_for_id;
 
 				if (typeof options.query_for_id === "string") {
 					query = {
@@ -11255,11 +11255,10 @@ var $$IMU_EXPORT$$;
 					};
 				}
 
-				if (typeof options.query_for_id === "object" && options.query_for_id.url) {
-					query = options.query_for_id;
+				if (typeof query === "object" && query.url) {
 					query.url = query.url.replace(/\${id}/g, id);
 				} else {
-					query = options.query_for_id(id);
+					query = query(id);
 				}
 
 				real_api_query(options.api_cache, options.do_request, options.cache_key + ":" + id, query, cb, function(done, resp, cache_key) {
