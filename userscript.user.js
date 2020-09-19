@@ -20010,12 +20010,9 @@ var $$IMU_EXPORT$$;
 			//   https://zeroinger.herokuapp.com/thumbnail.php?vid=BQ0mxQXmLsk
 			//   https://i.ytimg.com/vi/BQ0mxQXmLsk/maxresdefault.jpg
 			if (/^[a-z]+:\/\/[^/]*\/+thumbnail\.php\?/.test(src)) {
-				var vid = url.searchParams.get("vid");
-				var type = url.searchParams.get("type");
-				if (!type)
-					type = "mqdefault";
-
-				return "https://i.ytimg.com/vi/" + vid + "/" + type + ".jpg";
+				var queries = get_queries(src);
+				var type = queries.type || "mqdefault";
+				return "https://i.ytimg.com/vi/" + queries.vid + "/" + type + ".jpg";
 			}
 		}
 
@@ -20226,26 +20223,26 @@ var $$IMU_EXPORT$$;
 			// https://images.squarespace-cdn.com/content/589e834eff7c50486de031c3/1587075064704-H0L0WI13DJ5V81WAIVQ5/https%25253A%25252F%25252Fstatic.onecms.io%25252Fwp-content%25252Fuploads%25252Fsites%25252F28%25252F2020%25252F02%25252Fqatar-qsuites-seat-FREEQATAR0519.jpg?content-type=image%2Fjpeg
 			//   triple URI encoded, decodes to: https://static.onecms.io/wp-content/uploads/sites/28/2020/02/qatar-qsuites-seat-FREEQATAR0519.jpg
 
-			var contenttype = url.searchParams.get("content-type");
-			var append = "";
-			if (contenttype) {
-				append = "content-type=" + encodeURIComponent(decodeURIComponent(contenttype));
-			} else {
-				append = "";
-			}
-
-			var aappend = append ? "&" + append : "";
-			var qappend = append ? "?" + append : "";
+			var contenttype = get_queries(src)["content-type"];
+			var queries = {};
+			if (contenttype) queries["content-type"] = contenttype;
 
 			newsrc = src
 				.replace(/\?.*/, "")
 				.replace(/\/+[0-9]+w$/, "");
 
-			return [
-				newsrc + "?format=original" + aappend,
-				newsrc + "?format=2500w" + aappend,
-				newsrc + qappend
-			];
+			var urls = [];
+
+			queries.format = "original";
+			urls.push(add_queries(newsrc, queries));
+
+			queries.format = "2500w";
+			urls.push(add_queries(newsrc, queries));
+
+			delete queries.format;
+			urls.push(add_queries(newsrc, queries));
+
+			return urls;
 		}
 
 		if (domain === "static.onecms.io") {
