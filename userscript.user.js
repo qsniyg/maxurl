@@ -78775,6 +78775,20 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(:\/\/(?:[^/]+\/+)?)games\.med([/.])/, "$1games.snapshot$2");
 		}
 
+		if (domain_nosub === "appleinsider.com" && /^photos[0-9]*\./.test(domain)) {
+			// thanks to llacb47 on github: https://github.com/qsniyg/maxurl/issues/447
+			// https://photos5.appleinsider.com/gallery/37669-70867-not-ergonomic-pexels-s.jpg
+			//   https://photos5.appleinsider.com/gallery/37669-70867-not-ergonomic-pexels-o.jpg
+			// https://photos5.appleinsider.com/gallery/37771-71194-50066003407_6e30474576_k-m.jpg
+			//   https://photos5.appleinsider.com/gallery/37771-71194-50066003407_6e30474576_k-o.jpg
+			// https://photos5.appleinsider.com/gallery/37756-71156-200917-India-l.jpg
+			//   https://photos5.appleinsider.com/gallery/37756-71156-200917-India-xl.jpg
+			//   https://photos5.appleinsider.com/gallery/37756-71156-200917-India-o.jpg
+			// https://photos5.appleinsider.com/gallery/26602-38131-apple-maps-sports-building-parking-xl.jpg
+			//   https://photos5.appleinsider.com/gallery/26602-38131-apple-maps-sports-building-parking-o.jpg
+			return src.replace(/(\/gallery\/+[0-9]+-[0-9]+-[^/]+)-(?:[sml]|xl)(\.[^/.]+)(?:[?#].*)?$/, "$1-o$2");
+		}
+
 
 
 
