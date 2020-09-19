@@ -15645,6 +15645,43 @@ var $$IMU_EXPORT$$;
 		return !!(/^pinterest\./.test(domain_nosub));
 	};
 
+	common_functions.get_jsonformatter_for_cryptojs = function(CryptoJS) {
+		var JsonFormatter = {
+			stringify: function(cipherParams) {
+				var jsonObj = { ct: cipherParams.ciphertext.toString(CryptoJS.enc.Base64) };
+
+				if (cipherParams.iv) {
+					jsonObj.iv = cipherParams.iv.toString();
+				}
+
+				if (cipherParams.salt) {
+					jsonObj.s = cipherParams.salt.toString();
+				}
+
+				return JSON_stringify(jsonObj);
+			},
+			parse: function(jsonStr) {
+				var jsonObj = JSON_parse(jsonStr);
+
+				var cipherParams = CryptoJS.lib.CipherParams.create({
+					ciphertext: CryptoJS.enc.Base64.parse(jsonObj.ct)
+				});
+
+				if (jsonObj.iv) {
+					cipherParams.iv = CryptoJS.enc.Hex.parse(jsonObj.iv);
+				}
+
+				if (jsonObj.s) {
+					cipherParams.salt = CryptoJS.enc.Hex.parse(jsonObj.s);
+				}
+
+				return cipherParams;
+			}
+		};
+
+		return JsonFormatter;
+	};
+
 	var get_domain_from_url = function(url) {
 		return url.replace(/^[a-z]+:\/\/([^/]+)(?:\/+.*)?$/, "$1");
 	};
@@ -77186,39 +77223,7 @@ var $$IMU_EXPORT$$;
 							return done(null, false);
 						}
 
-						var JsonFormatter = {
-							stringify: function(cipherParams) {
-								var jsonObj = { ct: cipherParams.ciphertext.toString(CryptoJS.enc.Base64) };
-
-								if (cipherParams.iv) {
-									jsonObj.iv = cipherParams.iv.toString();
-								}
-
-								if (cipherParams.salt) {
-									jsonObj.s = cipherParams.salt.toString();
-								}
-
-								return JSON_stringify(jsonObj);
-							},
-							parse: function(jsonStr) {
-								var jsonObj = JSON_parse(jsonStr);
-
-								var cipherParams = CryptoJS.lib.CipherParams.create({
-									ciphertext: CryptoJS.enc.Base64.parse(jsonObj.ct)
-								});
-
-								if (jsonObj.iv) {
-									cipherParams.iv = CryptoJS.enc.Hex.parse(jsonObj.iv);
-								}
-
-								if (jsonObj.s) {
-									cipherParams.salt = CryptoJS.enc.Hex.parse(jsonObj.s);
-								}
-
-								return cipherParams;
-							}
-						};
-
+						var JsonFormatter = common_functions.get_jsonformatter_for_cryptojs(CryptoJS);
 						var decrypted_raw = CryptoJS.AES.decrypt(data_json, pass, {format: JsonFormatter});
 
 						try {
@@ -78598,39 +78603,7 @@ var $$IMU_EXPORT$$;
 
 		if (domain_nowww === "feet9.com") {
 			var parse_source_from_ciphered_json = function(CryptoJS, json) {
-				// todo: merge with other
-				var JsonFormatter = {
-					stringify: function(cipherParams) {
-						var jsonObj = { ct: cipherParams.ciphertext.toString(CryptoJS.enc.Base64) };
-
-						if (cipherParams.iv) {
-							jsonObj.iv = cipherParams.iv.toString();
-						}
-
-						if (cipherParams.salt) {
-							jsonObj.s = cipherParams.salt.toString();
-						}
-
-						return JSON_stringify(jsonObj);
-					},
-					parse: function(jsonStr) {
-						var jsonObj = JSON_parse(jsonStr);
-
-						var cipherParams = CryptoJS.lib.CipherParams.create({
-							ciphertext: CryptoJS.enc.Base64.parse(jsonObj.ct)
-						});
-
-						if (jsonObj.iv) {
-							cipherParams.iv = CryptoJS.enc.Hex.parse(jsonObj.iv);
-						}
-
-						if (jsonObj.s) {
-							cipherParams.salt = CryptoJS.enc.Hex.parse(jsonObj.s);
-						}
-
-						return cipherParams;
-					}
-				};
+				var JsonFormatter = common_functions.get_jsonformatter_for_cryptojs(CryptoJS);
 
 				json = JSON_parse(json);
 				json.ct = json.ct.split("").reverse().join("");
