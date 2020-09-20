@@ -15946,6 +15946,7 @@ var $$IMU_EXPORT$$;
 			rep += get_attrib("bandwidth", representation.bandwidth);
 			rep += get_attrib("width", representation.width);
 			rep += get_attrib("height", representation.height);
+			rep += get_attrib("id", representation.id);
 
 			rep += ">\n";
 			rep += "  <BaseURL>" + encode_entities(representation.url) + "</BaseURL>\n";
@@ -20031,7 +20032,8 @@ var $$IMU_EXPORT$$;
 									url: our_format.url,
 									width: our_format.width,
 									height: our_format.width,
-									bandwidth: our_format.bitrate
+									bandwidth: our_format.bitrate,
+									id: our_format.itag
 								};
 
 								var mime_match = our_format.mimeType.match(/^((?:video|audio)\/[^ /;]+);\s*codecs="([^"]+)"$/);
@@ -20042,6 +20044,11 @@ var $$IMU_EXPORT$$;
 
 								formatdash.mime = mime_match[1];
 								formatdash.codecs = mime_match[2];
+
+								// hack, av1 causes issues for some reason
+								// test: https://www.youtube.com/watch?v=BlhLQzV1uPg
+								if (/^av[0-9]+\./.test(formatdash.codecs))
+									continue;
 
 								if (!(formatdash.mime in dashdata.mimes))
 									dashdata.mimes[formatdash.mime] = [];
