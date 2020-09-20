@@ -15982,6 +15982,7 @@ var $$IMU_EXPORT$$;
 
 						if (ext !== item.url) {
 							if (!item.codecs) {
+								// https://cconcolato.github.io/media-mime-support/
 								if (ext === "mp4")
 									item.codecs = "avc1.640028";
 								else if (ext === "mp3")
@@ -19862,71 +19863,6 @@ var $$IMU_EXPORT$$;
 					return format.cipher || format.signatureCipher;
 				};
 
-				var adaptiveformat_to_dash = function(format, adaptationsets) {
-					if (!format || !format.is_adaptive || !format.url || !format.mimeType)
-						return;
-
-					var mime_match = format.mimeType.match(/^((?:video|audio)\/[^ /;]+);\s*codecs="([^"]+)"$/);
-					if (!mime_match) {
-						console_error("Unable to parse mime type", format.mimeType);
-						return null;
-					}
-
-					var mime = mime_match[1];
-					var codecs = mime_match[2];
-
-					var rep_head = '<Representation id="' + format.itag + '" codecs="' + codecs + '" startWithSAP="1" bandwidth="' + (format.bitrate || format.averageBitrate) + '" yt:mediaLmt="' + format.lastModified + '" ';
-
-					if (format.audioSampleRate) {
-						rep_head += 'audioSamplingRate="' + format.audioSampleRate + '"';
-					} else if (format.width && format.height) {
-						rep_head += 'width="' + format.width + '" height="' + format.height + '"';
-					}
-
-					rep_head += ">";
-
-					if (format.audioChannels) {
-						rep_head += '<AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="' + format.audioChannels + '2" />';
-					}
-
-					rep_head += '<BaseURL yt:contentLength="' + format.contentLength + '">' + encode_entities(format.url) + "</BaseURL>";
-
-					if (format.indexRange && format.initRange) {
-						rep_head += '<SegmentBase indexRange="' + format.indexRange.start + "-" + format.indexRange.end + '" indexRangeExact="true">';
-						rep_head += '<Initialization range="' + format.initRange.start + "-" + format.initRange.end + '" />';
-						rep_head += "</SegmentBase>";
-					} else {
-						console_log(format);
-					}
-
-					rep_head += "</Representation>";
-
-					if (!(mime in adaptationsets)) {
-						adaptationsets[mime] = [];
-					}
-
-					adaptationsets[mime].push(rep_head);
-				};
-
-				var create_dash_from_adaptionsets = function(adaptationsets) {
-					var dash = '<?xml version="1.0" encoding="UTF-8"?>\n';
-					dash += '<MPD xmlns="urn:mpeg:DASH:schema:MPD:2011" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:yt="http://youtube.com/yt/2012/10/10" xsi:schemaLocation="urn:mpeg:DASH:schema:MPD:2011 DASH-MPD.xsd" minBufferTime="PT1.500S" profiles="urn:mpeg:dash:profile:isoff-on-demand:2011" type="static">\n';
-					dash += '<Period>';
-
-					for (var mime in adaptationsets) {
-						dash += '<AdaptationSet mimeType="' + mime + '" subsegmentAlignment="true">\n';
-						for (var i = 0; i < adaptationsets[mime].length; i++) {
-							dash += adaptationsets[mime][i] + "\n";
-						}
-						dash += "</AdaptationSet>\n";
-					}
-
-					dash += '</Period>';
-					dash += '</MPD>';
-
-					return dash;
-				};
-
 				var parse_player_response = function(player_response) {
 					// TODO: support streamingData.adaptiveFormats
 					if (!player_response) {
@@ -20010,7 +19946,6 @@ var $$IMU_EXPORT$$;
 							return options.cb(obj);
 						}
 
-						//var adaptionsets = {};
 						var dashdata = {
 							mimes: {}
 						};
@@ -20056,7 +19991,6 @@ var $$IMU_EXPORT$$;
 									dashdata.mimes[formatdash.mime] = [];
 
 								dashdata.mimes[formatdash.mime].push(formatdash);
-								//adaptiveformat_to_dash(our_format, adaptionsets);
 							} else {
 								if (our_format.bitrate > maxbitrate) {
 									maxbitrate = our_format.bitrate;
@@ -20069,7 +20003,6 @@ var $$IMU_EXPORT$$;
 
 						// need custom url loader, because origin: null for some reason
 						if (Object.keys(dashdata.mimes).length > 0) {
-							//var dash = create_dash_from_adaptionsets(adaptionsets);
 							dashdata.duration = duration;
 							var dash = common_functions.create_dash_stream(dashdata);
 							var dashurl = "data:application/dash+xml," + encodeURIComponent(dash);
