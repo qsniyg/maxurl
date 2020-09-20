@@ -155,16 +155,16 @@ msgstr ""
 msgid "English"
 msgstr ""
 
-#. language.options.ko.name
-msgid "한국어"
+#. language.options.es.name
+msgid "Español"
 msgstr ""
 
 #. language.options.fr.name
 msgid "Français"
 msgstr ""
 
-#. language.options.es.name
-msgid "Español"
+#. language.options.ko.name
+msgid "한국어"
 msgstr ""
 
 #. dark_mode.name
@@ -1898,6 +1898,22 @@ msgstr ""
 msgid "Allows playback of HLS video streams. Some videos may not work with other websites due to hotlinking protection, and it may even break video playback for some websites. Use with caution."
 msgstr ""
 
+#. custom_xhr_for_lib.name
+msgid "Custom XHR for libraries"
+msgstr ""
+
+#. custom_xhr_for_lib.description
+msgid "Allows the use of more powerful XHR for 3rd-party libraries. This allows for certain DASH streams to work."
+msgstr ""
+
+#. custom_xhr_for_lib.description_userscript
+msgid "Allows the use of more powerful XHR for 3rd-party libraries. This allows for certain DASH streams to work. Using this with the userscript version currently poses a potential security risk."
+msgstr ""
+
+#. custom_xhr_for_lib.example_websites[0]
+msgid "YouTube (DASH)"
+msgstr ""
+
 #. allow_watermark.name
 msgid "Larger watermarked images"
 msgstr ""
@@ -2113,7 +2129,7 @@ msgstr ""
 msgid "tiktokdownloader.in"
 msgstr ""
 
-#. tiktok_thirdparty.options.savevideo.ninja:tt.name
+#. tiktok_thirdparty.options.savevideo.ninja:ttt.name
 msgid "savevideo.ninja"
 msgstr ""
 

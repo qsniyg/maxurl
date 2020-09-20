@@ -6621,6 +6621,46 @@ var $$IMU_EXPORT$$;
 				]
 			}
 		},
+		"Custom XHR for libraries": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "custom_xhr_for_lib",
+						"field": "name"
+					}
+				]
+			}
+		},
+		"Allows the use of more powerful XHR for 3rd-party libraries. This allows for certain DASH streams to work.": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "custom_xhr_for_lib",
+						"field": "description"
+					}
+				]
+			}
+		},
+		"Allows the use of more powerful XHR for 3rd-party libraries. This allows for certain DASH streams to work. Using this with the userscript version currently poses a potential security risk.": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "custom_xhr_for_lib",
+						"field": "description_userscript"
+					}
+				]
+			}
+		},
+		"YouTube (DASH)": {
+			"_info": {
+				"instances": [
+					{
+						"setting": "custom_xhr_for_lib",
+						"field": "example_websites[0]"
+					}
+				]
+			}
+		},
 		"Larger watermarked images": {
 			"_info": {
 				"instances": [
