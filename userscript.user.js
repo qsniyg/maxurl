@@ -7990,7 +7990,7 @@ var $$IMU_EXPORT$$;
 		allow_video: true,
 		allow_dash_video: false,
 		allow_hls_video: false,
-		custom_xhr_for_lib: false,
+		custom_xhr_for_lib: is_extension ? true : false,
 		allow_watermark: false,
 		allow_smaller: false,
 		allow_possibly_different: false,
