@@ -134,6 +134,10 @@ var do_request = function(request, sender) {
 		xhr.responseType = request.responseType;
 	}
 
+	if (request.timeout) {
+		xhr.timeout = request.timeout;
+	}
+
 	var headers = request.headers || {};
 	var cookie_overridden = false;
 	for (var header in headers) {
@@ -255,6 +259,7 @@ var do_request = function(request, sender) {
 	add_handler("onerror", true);
 	add_handler("onprogress", false);
 	add_handler("onabort", true, true);
+	add_handler("ontimeout", true, true);
 
 	requests[id] = {
 		id: id,
@@ -966,7 +971,7 @@ var extension_message_handler = (message, sender, respond) => {
 			});
 		};
 
-		xhr.onerror = function(result) {
+		xhr.onerror = function() {
 			respond({
 				type: "get_lib",
 				data: null
