@@ -11106,19 +11106,21 @@ var $$IMU_EXPORT$$;
 				} else {
 					map_set(this.fetches, key, []);
 
+					var _this = this;
+
 					fetcher(function(data, time) {
 						if (time !== false)
-							this.set(key, data, time);
+							_this.set.bind(_this)(key, data, time);
 
 						done(data);
 
-						var our_fetches = map_get(this.fetches, key);
+						var our_fetches = map_get(_this.fetches, key);
 						for (var i = 0; i < our_fetches.length; i++) {
 							our_fetches[i](data);
 						}
 
-						map_remove(this.fetches, key);
-					}.bind(this));
+						map_remove(_this.fetches, key);
+					});
 				}
 			} else {
 				done(map_get(this.data, key));
@@ -12324,9 +12326,119 @@ var $$IMU_EXPORT$$;
 		return (crc ^ (-1)) >>> 0;
 	};
 
-	var run_sandboxed_lib = function(fdata) {
+	var custom_xhr = function() {
+		this._headers = {};
+		this._response_headers = {};
+		this._reqobj = null;
+
+		this.open = function(method, url, synchronous) {
+			this._method = method;
+			this._url = url;
+		};
+
+		this.setRequestHeader = function(headername, headervalue) {
+			headerobj_set(this._headers, headername, headervalue);
+		};
+
+		this.getResponseHeader = function(headername) {
+			return headerobj_get(this._response_headers, headername);
+		};
+
+		this.getAllResponseHeaders = function() {
+			return this._response_headers_raw;
+		};
+
+		this._handle_event = function(name, data) {
+			this.status = data.status || 0;
+			this.statusText = data.statusText;
+			this.response = data.response;
+			this.readyState = data.readyState;
+			this.responseText = data.responseText;
+			this.responseType = data.responseType;
+			this.responseURL = data.finalUrl;
+			this._response_headers_raw = data.responseHeaders;
+
+			var event = {
+				loaded: this.loaded,
+				lengthComputable: this.lengthComputable,
+				total: this.total
+			};
+
+			if (data.responseHeaders) {
+				this._response_headers = headers_list_to_dict(parse_headers(data.responseHeaders));
+			} else {
+				this._response_headers = null;
+			}
+
+			if (name === "load") {
+				if (this.onload) this.onload.bind(this)(event);
+				if (this.onloadend) this.onloadend.bind(this)(event);
+			}
+
+			if (name === "error") {
+				if (this.onerror) this.onerror.bind(this)(event);
+				if (this.onloadend) this.onloadend.bind(this)(event);
+			}
+
+			if (name === "abort") {
+				if (this.onabort) this.onabort.bind(this)(event);
+				if (this.onloadend) this.onloadend.bind(this)(event);
+			}
+
+			if (name === "progress") {
+				if (this.onprogress) this.onprogress.bind(this)(event);
+			}
+
+			if (name === "timeout") {
+				if (this.ontimeout) this.ontimeout.bind(this)(event);
+			}
+		};
+
+		this.send = function(data) {
+			var reqobj = {
+				method: this._method,
+				url: this._url,
+				data: data,
+				timeout: this.timeout || 0,
+				withCredentials: this.withCredentials || true,
+				responseType: this.responseType
+			};
+
+			if (Object.keys(this._headers).length > 0)
+				reqobj.headers = this._headers;
+
+			var add_listener = function(_this, event) {
+				reqobj["on" + event] = function(resp) {
+					_this._handle_event.bind(_this)(event, resp);
+				};
+			};
+
+			add_listener(this, "load");
+			add_listener(this, "error");
+			add_listener(this, "abort");
+			add_listener(this, "progress");
+			add_listener(this, "timeout");
+
+			this._reqobj = custom_xhr.do_request(reqobj);
+		};
+
+		this.abort = function() {
+			if (!this._reqobj)
+				return;
+
+			this._reqobj.abort();
+		};
+	};
+
+	custom_xhr.do_request = do_request;
+
+	var run_sandboxed_lib = function(fdata, xhr) {
 		if (true) {
-			return new Function(fdata + ";return lib_export;")();
+			if (!xhr) {
+				return new Function(fdata + ";return lib_export;")();
+			} else {
+				return new Function("XMLHttpRequest", fdata + ";return {lib: lib_export, xhr: XMLHttpRequest};")(custom_xhr);
+			}
 		} else {
 			// doesn't work unfortunately
 			var frame = document_createElement('iframe');
@@ -12352,7 +12464,8 @@ var $$IMU_EXPORT$$;
 			url: "https://github.com/qsniyg/maxurl/blob/c18941c401c344a9db868a41899cdc4522eebd64/lib/dash.all.debug.js?raw=true",
 			size: 2192274,
 			crc32: 3434155307,
-			crc32_size: 2440872286
+			crc32_size: 2440872286,
+			xhr: true
 		},
 		"hls": {
 			name: "hls",
@@ -12411,7 +12524,7 @@ var $$IMU_EXPORT$$;
 							return done(null, 0); // 0 instead of false because it will never be available
 
 						//done(new Function(response.data.text + ";return lib_export;")(), 0);
-						done(run_sandboxed_lib(response.data.text), 0);
+						done(run_sandboxed_lib(response.data.text, lib_obj.xhr), 0);
 					});
 				} else {
 					// For the userscript, we have no other choice than to query and run arbitrary JS.
@@ -12452,7 +12565,7 @@ var $$IMU_EXPORT$$;
 								return done(null, false);
 							}
 
-							done(run_sandboxed_lib(result.responseText), 0);
+							done(run_sandboxed_lib(result.responseText, lib_obj.xhr), 0);
 							//done(new Function(result.responseText + ";return lib_export;")(), 0);
 						}
 					});
@@ -45982,6 +46095,8 @@ var $$IMU_EXPORT$$;
 			// https://fapteentube.net/contents/videos_screenshots/2000/2179/301x170/1.jpg
 			domain_nosub === "fapteentube.net" ||
 			domain_nosub === "xxxsextube.tv" ||
+			// https://cdn.pervclips.com/tube/contents/videos_screenshots/1063289000/1063289719/240x180/1.jpg?ver=3
+			//domain_nosub === "pervclips.com" ||
 			// http://h2porn.com/contents/videos_screenshots/267000/267851/240x180/3.jpg
 			// doesn't work with video ids, /embed/ returns 500 with no response
 			//domain_nosub === "h2porn.com" ||
@@ -46092,6 +46207,7 @@ var $$IMU_EXPORT$$;
 			}
 
 			var basedomain = "https://www." + domain_nosub + "/";
+			var base_component = "";
 			var videos_component = "videos";
 			var addslash = "/";
 			var a_component = "/a";
@@ -46239,11 +46355,16 @@ var $$IMU_EXPORT$$;
 				addslash = "";
 			} else if (domain_nosub === "freepornvideo.sex") {
 				videos_component = "xxx";
+			} else if (domain_nosub === "pervclips.com") {
+				base_component = "tube/";
+				videos_component = "embed";
+				addslash = "";
+				a_component = "";
 			}
 
 			var detected_url = null;
 			if (can_detect_videourl) {
-				detected_url = basedomain + videos_component + "/" + idprefix + id + a_component + addslash;
+				detected_url = basedomain + base_component + videos_component + "/" + idprefix + id + a_component + addslash;
 			}
 			if (is_pagelink) {
 				if (domain === "embeds.sunporno.com") {
@@ -75626,6 +75747,9 @@ var $$IMU_EXPORT$$;
 		if (domain_nosub === "spankcdn.net" && /spankwire\./.test(domain)) {
 			// https://cdn4-image-spankwire.spankcdn.net/m=eaCaaBFnGw/201804/18/18534522/originals/2.jpg
 			match = src.match(/\/[0-9]{6}\/+[0-9]{1,2}\/+([0-9]+)\/+originals\/+/);
+			if (!match) {
+				match = src.match(/:\/\/[^/]+\/+[0-9]{6}\/+[0-9]{2}\/+([0-9]+)\/+preview_[0-9]+\./);
+			}
 			if (match) {
 				id = match[1];
 
@@ -79130,6 +79254,20 @@ var $$IMU_EXPORT$$;
 					});
 				}
 			});
+			if (newsrc) return newsrc;
+		}
+
+		if (domain_nowww === "18qt.com") {
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+go\/+\?(?:.*&)?url=([^&]+).*?$/, "$1");
+			if (newsrc !== src)
+				return {
+					url: decodeURIComponent(newsrc),
+					is_pagelink: true
+				};
+		}
+
+		if (host_domain_nowww === "18qt.com") {
+			var newsrc = common_functions.get_pagelink_el_matching(options.element, /^[a-z]+:\/\/(?:www\.)?18qt\.com\/+go\/+\?(?:.*&)?url=/);
 			if (newsrc) return newsrc;
 		}
 
@@ -85838,11 +85976,26 @@ var $$IMU_EXPORT$$;
 						video.src = src;
 					} else {
 						if (video_type === "dash") {
-							get_library("dash", settings, do_request, function(dashjs) {
-								if (!dashjs) {
+							get_library("dash", settings, do_request, function(_dashjs) {
+								if (!_dashjs) {
 									video.src = src;
 									return;
 								}
+
+								var dashjs = _dashjs.lib;
+
+								_dashjs.xhr.do_request = function(data) {
+									if (!data.headers) data.headers = {};
+
+									if (obj[0].headers) {
+										for (var header in obj[0].headers) {
+											headerobj_set(data.headers, header, obj[0].headers[header]);
+										}
+									}
+
+									console_log(data);
+									return do_request(data);
+								};
 
 								var player = dashjs.MediaPlayer().create();
 								player.updateSettings({
