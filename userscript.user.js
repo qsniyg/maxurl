@@ -61782,6 +61782,17 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain_nowww === "sharecg.com") {
+			// https://www.sharecg.com/images/thumb/175454.jpg
+			//   https://sharecg.com/images/medium/175454.jpg
+			//   https://sharecg.com/images/original/175454.jpg
+			// https://sharecg.com/get_image.php?type=large&upload_image_id=175454
+			//   https://sharecg.com/images/original/175454.jpg
+			return src
+				.replace(/\/images\/+[a-z]+\/+([0-9]+\.[^/.]+)(?:[?#].*)?$/, "/images/original/$1")
+				.replace(/\/get_image\.php\?(?:.*&)?upload_image_id=([0-9]+).*?$/, "/images/original/$1.jpg");
+		}
+
 		if (domain_nowww === "softline.com.bd" ||
 			// https://softline.uz/uploads/resizer/i/ab/66/f5/b1/66/62/0a/b7/1f/origin_png-mode2-198x89.png
 			//   https://softline.uz/uploads/i/ab/66/f5/b1/66/62/0a/b7/1f/origin.png
