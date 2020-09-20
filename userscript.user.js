@@ -19912,6 +19912,7 @@ var $$IMU_EXPORT$$;
 
 					var maxbitrate = 0;
 					var maxobj = null;
+					var duration = 0;
 
 					var available_formats = [];
 					var has_cipher = false;
@@ -19924,6 +19925,15 @@ var $$IMU_EXPORT$$;
 
 							if (is_adaptive) {
 								our_format.is_adaptive = true;
+							}
+
+							// this is awful
+							if (our_format.approxDurationMs) {
+								var ms = parseFloat(our_format.approxDurationMs);
+								ms /= 1000;
+
+								if (ms > duration)
+									duration = ms;
 							}
 
 							if (!has_cipher && !our_format.url && get_format_cipher(our_format)) {
@@ -20025,8 +20035,9 @@ var $$IMU_EXPORT$$;
 						var urls = [];
 
 						// need custom url loader, because origin: null for some reason
-						if (false && Object.keys(dashdata.mimes).length > 0) {
+						if (Object.keys(dashdata.mimes).length > 0) {
 							//var dash = create_dash_from_adaptionsets(adaptionsets);
+							dashdata.duration = duration;
 							var dash = common_functions.create_dash_stream(dashdata);
 							var dashurl = "data:application/dash+xml," + encodeURIComponent(dash);
 							urls.push({
