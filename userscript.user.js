@@ -566,7 +566,8 @@ var $$IMU_EXPORT$$;
 				responseHeaders: xhr.getAllResponseHeaders(),
 				responseType: xhr.responseType,
 				status: xhr.status, // file:// returns 0, tracking protection also returns 0
-				statusText: xhr.statusText
+				statusText: xhr.statusText,
+				timeout: xhr.timeout
 			};
 
 			resp.response = xhr.response;
@@ -594,6 +595,7 @@ var $$IMU_EXPORT$$;
 		add_handler("onerror");
 		add_handler("onprogress");
 		add_handler("onabort", true);
+		add_handler("ontimeout", true);
 
 		xhr.send(request.data);
 
