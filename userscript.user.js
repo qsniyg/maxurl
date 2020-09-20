@@ -7990,6 +7990,7 @@ var $$IMU_EXPORT$$;
 		allow_video: true,
 		allow_dash_video: false,
 		allow_hls_video: false,
+		custom_xhr_for_lib: false,
 		allow_watermark: false,
 		allow_smaller: false,
 		allow_possibly_different: false,
@@ -10263,6 +10264,20 @@ var $$IMU_EXPORT$$;
 				allow_thirdparty_libs: true
 			}
 		},
+		custom_xhr_for_lib: {
+			name: "Custom XHR for libraries",
+			description: "Allows the use of more powerful XHR for 3rd-party libraries. This allows for certain DASH streams to work.",
+			description_userscript: "Allows the use of more powerful XHR for 3rd-party libraries. This allows for certain DASH streams to work. Using this with the userscript version currently poses a potential security risk.",
+			category: "rules",
+			example_websites: [
+				"YouTube (DASH)"
+			],
+			requires: {
+				allow_thirdparty_libs: true
+			},
+			advanced: true,
+			needrefresh: true // todo: clear the library cache (or only for xhr ones)
+		},
 		allow_watermark: {
 			name: "Larger watermarked images",
 			description: "Enables rules that return larger images that include watermarks",
@@ -12437,7 +12452,16 @@ var $$IMU_EXPORT$$;
 			if (!xhr) {
 				return new Function(fdata + ";return lib_export;")();
 			} else {
-				return new Function("XMLHttpRequest", fdata + ";return {lib: lib_export, xhr: XMLHttpRequest};")(custom_xhr);
+				var overridden_xhr = true;
+				if (!settings.custom_xhr_for_lib)
+					overridden_xhr = false;
+
+				var endshim = ";return {lib: lib_export, xhr: XMLHttpRequest, overridden_xhr: " + overridden_xhr + "};";
+				if (overridden_xhr) {
+					return new Function("XMLHttpRequest", fdata + endshim)(custom_xhr);
+				} else {
+					return new Function(fdata + endshim)();
+				}
 			}
 		} else {
 			// doesn't work unfortunately
@@ -85995,18 +86019,20 @@ var $$IMU_EXPORT$$;
 
 								var dashjs = _dashjs.lib;
 
-								_dashjs.xhr.do_request = function(data) {
-									if (!data.headers) data.headers = {};
+								if (_dashjs.overridden_xhr) {
+									_dashjs.xhr.do_request = function(data) {
+										if (!data.headers) data.headers = {};
 
-									if (obj[0].headers) {
-										for (var header in obj[0].headers) {
-											headerobj_set(data.headers, header, obj[0].headers[header]);
+										if (obj[0].headers) {
+											for (var header in obj[0].headers) {
+												headerobj_set(data.headers, header, obj[0].headers[header]);
+											}
 										}
-									}
 
-									console_log(data);
-									return do_request(data);
-								};
+										console_log(data);
+										return do_request(data);
+									};
+								}
 
 								var player = dashjs.MediaPlayer().create();
 								player.updateSettings({
