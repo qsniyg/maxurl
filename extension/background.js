@@ -128,8 +128,10 @@ var do_request = function(request, sender) {
 	xhr.open(method, request.url, true);
 
 	if (request.responseType) {
-		if (request.responseType === "arraybuffer")
+		if (request.responseType === "arraybuffer") {
 			request.responseType = "blob";
+			request.wanted_responseType = "arraybuffer";
+		}
 
 		xhr.responseType = request.responseType;
 	}
@@ -201,6 +203,9 @@ var do_request = function(request, sender) {
 			}
 
 			if (resp.responseType === "blob") {
+				if (request.wanted_responseType)
+					resp._wanted_responseType = request.wanted_responseType;
+
 				var body = xhr.response;
 				if (!body) {
 					resp.status = xhr.status;

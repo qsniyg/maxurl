@@ -86440,11 +86440,19 @@ var $$IMU_EXPORT$$;
 						array[i] = enc.value.charCodeAt(i);
 					}
 
-					try {
-						response.data.response = new native_blob([array.buffer], { type: enc.type });
-					} catch(e) {
-						console_error(e);
-						response.data.response = null;
+					var wanted_responseType = "blob";
+					if (response.data._wanted_responseType === "arraybuffer")
+						wanted_responseType = "arraybuffer";
+
+					if (wanted_responseType === "blob") {
+						try {
+							response.data.response = new native_blob([array.buffer], { type: enc.type });
+						} catch(e) {
+							console_error(e);
+							response.data.response = null;
+						}
+					} else {
+						response.data.response = array.buffer;
 					}
 				} else {
 					response.data.response = null;
