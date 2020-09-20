@@ -20066,7 +20066,10 @@ var $$IMU_EXPORT$$;
 							var dashurl = "data:application/dash+xml," + encodeURIComponent(dash);
 							urls.push({
 								url: dashurl,
-								video: "dash"
+								video: {
+									type: "dash",
+									need_custom_xhr: true
+								}
 							});
 						}
 
@@ -82876,7 +82879,7 @@ var $$IMU_EXPORT$$;
 				if (obj.bad) {
 					err_txt = "Bad image";
 				} else if (obj.video && obj.video !== true) {
-					err_txt = "Can't redirect to streaming video type " + obj.video;
+					err_txt = "Can't redirect to streaming video type " + JSON_stringify(obj.video);
 				} else if (obj.is_pagelink) {
 					err_txt = "Can't redirect to page";
 				}
@@ -85527,15 +85530,26 @@ var $$IMU_EXPORT$$;
 	}
 
 	var is_video_type_supported = function(videotype) {
-		if (videotype === true || videotype === "direct") {
+		if (videotype === true)
+			return true;
+
+		if (typeof videotype === "string")
+			videotype = {type: videotype};
+
+		if (videotype.type === "direct") {
 			return true;
 		}
 
-		if (videotype === "dash") {
+		if (videotype.need_custom_xhr) {
+			if (!settings.custom_xhr_for_lib)
+				return false;
+		}
+
+		if (videotype.type === "dash") {
 			return settings.allow_thirdparty_libs && settings.allow_dash_video;
 		}
 
-		if (videotype === "hls") {
+		if (videotype.type === "hls") {
 			return settings.allow_thirdparty_libs && settings.allow_hls_video;
 		}
 
@@ -85854,7 +85868,7 @@ var $$IMU_EXPORT$$;
 
 				var parsed_headers = headers_list_to_dict(parse_headers(resp.responseHeaders));
 				var is_video = false;
-				var video_type = "direct";
+				var video_type = {type: "direct"};
 
 				// TODO: improve
 				if (obj[0].video || parsed_headers["content-type"] && is_video_contenttype(parsed_headers["content-type"])) {
@@ -85862,6 +85876,8 @@ var $$IMU_EXPORT$$;
 
 					if (obj[0].video && obj[0].video !== true) {
 						video_type = obj[0].video;
+						if (typeof video_type === "string")
+							video_type = {type: video_type};
 					}
 
 					if (!is_video_type_supported(video_type)) {
@@ -86007,10 +86023,10 @@ var $$IMU_EXPORT$$;
 				};
 
 				var set_video_src = function(video, src) {
-					if (video_type === "direct") {
+					if (video_type.type === "direct") {
 						video.src = src;
 					} else {
-						if (video_type === "dash") {
+						if (video_type.type === "dash") {
 							get_library("dash", settings, do_request, function(_dashjs) {
 								if (!_dashjs) {
 									video.src = src;
@@ -86051,7 +86067,7 @@ var $$IMU_EXPORT$$;
 								});
 								player.initialize(video, src, true);
 							});
-						} else if (video_type === "hls") {
+						} else if (video_type.type === "hls") {
 							get_library("hls", settings, do_request, function(hls_wrap) {
 								if (!hls_wrap || !hls_wrap.Hls || !hls_wrap.Hls.isSupported()) {
 									console_warn("HLS isn't supported");
