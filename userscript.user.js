@@ -345,6 +345,7 @@ var $$IMU_EXPORT$$;
 
 	var id_to_iframe = {};
 
+	// todo: move to do_mouseover
 	var get_frame_info = function() {
 		return {
 			id: current_frame_id,
@@ -357,6 +358,7 @@ var $$IMU_EXPORT$$;
 		};
 	};
 
+	// todo: move to do_mouseover
 	var find_iframe_for_info = function(info) {
 		if (info.id in id_to_iframe)
 			return id_to_iframe[info.id];
@@ -11383,6 +11385,7 @@ var $$IMU_EXPORT$$;
 		return ((n % m) + m) % m;
 	}
 
+	// unused, but likely useful
 	function urlsplit(a) {
 		var protocol_split = a.split("://");
 		var protocol = protocol_split[0];
@@ -15980,6 +15983,10 @@ var $$IMU_EXPORT$$;
 		header += " profiles=\"urn:mpeg:dash:profile:isoff-main:2011\">\n";
 		header += "<Period>\n";
 
+		var get_range_str = function(range) {
+			return range.start + "-" + range.end;
+		}
+
 		var create_representation = function(representation) {
 			var rep = "<Representation";
 
@@ -15992,6 +15999,21 @@ var $$IMU_EXPORT$$;
 
 			rep += ">\n";
 			rep += "  <BaseURL>" + encode_entities(representation.url) + "</BaseURL>\n";
+
+			if (representation.index_range || representation.init_range) {
+				rep += "  <SegmentBase";
+				rep += get_attrib("indexRange", get_range_str(representation.index_range));
+				rep += ">\n";
+
+				if (representation.init_range) {
+					rep += "    <Initialization"
+					rep += get_attrib("range", get_range_str(representation.init_range));
+					rep += " />\n";
+				}
+
+				rep += "  </SegmentBase>\n";
+			}
+
 			rep += "</Representation>";
 
 			return rep;
@@ -20010,7 +20032,9 @@ var $$IMU_EXPORT$$;
 									width: our_format.width,
 									height: our_format.width,
 									bandwidth: our_format.bitrate,
-									id: our_format.itag
+									id: our_format.itag,
+									init_range: our_format.initRange,
+									index_range: our_format.indexRange
 								};
 
 								var mime_match = our_format.mimeType.match(/^((?:video|audio)\/[^ /;]+);\s*codecs="([^"]+)"$/);
@@ -74893,7 +74917,7 @@ var $$IMU_EXPORT$$;
 				try {
 					newsrc = base64_decode(match[1]);
 					newsrc = newsrc.replace(/(\/\/:s?ptth)[^/]{0,10}$/, "$1");
-					return newsrc.split("").reverse().join("");
+					return reverse_str(newsrc);
 				} catch (e) {
 					console_error(e);
 				}
@@ -79025,7 +79049,7 @@ var $$IMU_EXPORT$$;
 				var JsonFormatter = common_functions.get_jsonformatter_for_cryptojs(CryptoJS);
 
 				json = JSON_parse(json);
-				json.ct = json.ct.split("").reverse().join("");
+				json.ct = reverse_str(json.ct);
 				var stringified = JSON_stringify(json);
 				var source = JSON_parse(CryptoJS.AES.decrypt(stringified, "0x23", {
 					'format': JsonFormatter
