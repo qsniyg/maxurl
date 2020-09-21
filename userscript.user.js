@@ -13612,7 +13612,7 @@ var $$IMU_EXPORT$$;
 						}
 
 						var matches = result.responseText.match(/[a-z]=\s*toNumbers\(["'][0-9a-f]+["']/g);
-						if (matches.length === 0) {
+						if (!matches) {
 							console_log(cache_key, "Unable to find toNumbers match", result);
 							return done(null, false);
 						}
@@ -25542,10 +25542,12 @@ var $$IMU_EXPORT$$;
 			};
 		}
 
-		if (domain_nosub === "imgflare.com" ||
+		if (domain_nosub === "imgflare.com" //||
 			// http://i.imgbabes.com/i/00403/r0hjwo7rnsr4_t.jpg
 			//   http://i.imgbabes.com/files/7/nxxbauvvaqq5ud/beyonce%20pubes.jpg
-			domain_nosub === "imgbabes.com") {
+			// doesn't work anymore
+			//domain_nosub === "imgbabes.com") {
+		) {
 			// http://www.imgflare.com/i/00026/u6j8ulxub2su_t.jpg
 			//   http://www.imgflare.com/files/9/mug5ve6613zk84/403.jpg
 			id = src.replace(/^([a-z]+:\/\/)(?:[^/.]*\.)?([^/.]+\.[^/.]+\/+)i\/+[0-9]+\/+([0-9a-z]+)(?:_t)?(\.[^/.]*)?$/,
@@ -25553,16 +25555,19 @@ var $$IMU_EXPORT$$;
 			//console_log(id);
 			if (id !== src && options && options.cb && options.do_request) {
 				common_functions.get_testcookie_cookie(options, api_cache, "http://www." + domain_nosub + "/", function (cookie) {
-					if (!cookie) {
+					var headers = {
+						Referer: ""
+					};
+
+					if (cookie) {
+						headers.Cookie = cookie;
+					} else {
 						return options.cb(null);
 					}
 
 					options.do_request({
 						method: "GET",
-						headers: {
-							Referer: "",
-							Cookie: cookie
-						},
+						headers: headers,
 						url: id + ".html",
 						onload: function (resp) {
 							//console_log(resp);
@@ -25574,6 +25579,7 @@ var $$IMU_EXPORT$$;
 										is_original: true
 									});
 								} else {
+									console_error("Unable to find match for", resp);
 									options.cb(null);
 								}
 							}
@@ -75076,7 +75082,12 @@ var $$IMU_EXPORT$$;
 			domain === "www.hosted.mplstudios.com") {
 			// http://www.hosted.mplstudios.com/galleries/15/kiki_come_enjoy/150/001.jpg
 			//   http://hosted.mplstudios.com/galleries/15/kiki_come_enjoy/1200/001.jpg
-			return src.replace(/(\/galleries\/+[0-9]+\/+[^/]+\/+)(?:150)\/+/, "$11200/");
+			// http://www.hosted.mplstudios.com/galleries/09/anya_shoot_day_behind_the_scenes/150/001.jpg
+			//   http://www.hosted.mplstudios.com/galleries/09/anya_shoot_day_behind_the_scenes/1024/001.jpg
+			return [
+				src.replace(/(\/galleries\/+[0-9]+\/+[^/]+\/+)(?:150|1024)\/+/, "$11200/"),
+				src.replace(/(\/galleries\/+[0-9]+\/+[^/]+\/+)(?:150)\/+/, "$11024/")
+			];
 		}
 
 		if (domain_nowww === "mplstudios.com") {
@@ -77755,6 +77766,12 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/[0-9]+\/+content\/+)th([0-9]+\.)/, "$1$2");
 		}
 
+		if (domain_nosub === "ftvcash.com" && /^galleries[0-9]*\./.test(domain)) {
+			// http://galleries2.ftvcash.com/V20_gals/ftvgirlsphoto/294d/th1.jpg
+			//   http://galleries2.ftvcash.com/V20_gals/ftvgirlsphoto/294d/1.jpg
+			return src.replace(/(_gals\/+[^/]+\/+[^/]+\/+)th([0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
 		if (domain_nosub === "modelmanagement.com" && /^asset[0-9]*\./.test(domain)) {
 			// https://asset1.modelmanagement.com/mm-eyJ0Ijp7ImsiOnsibCI6/IjU1IiwiaCI6IjU1In19/LCJpZCI6Imk2OTAxNTA1/IiwiZiI6ImpwZyJ9.jpg
 			//   https://asset1.modelmanagement.com/mm-eyJmIjoianBnIiwiaWQi/OiJpNjkwMTUwNSIsInQi/Ont9fQ.jpg
@@ -78105,7 +78122,9 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/channels\/+_[0-9]+\//, "/channels/_0/");
 		}
 
-		if (domain === "fhg.houseoftaboo.com") {
+		if (domain === "fhg.houseoftaboo.com" ||
+			// http://fhg.1by-day.com/tpls/fhg3/images/show.png
+			domain === "fhg.1by-day.com") {
 			// http://fhg.houseoftaboo.com/tpls/fhg3/images/show.png
 			if (/\/images\/+show\.png(?:[?#].*)?$/.test(src)) {
 				return {
@@ -79324,6 +79343,41 @@ var $$IMU_EXPORT$$;
 		if (host_domain_nowww === "18qt.com") {
 			var newsrc = common_functions.get_pagelink_el_matching(options.element, /^[a-z]+:\/\/(?:www\.)?18qt\.com\/+go\/+\?(?:.*&)?url=/);
 			if (newsrc) return newsrc;
+		}
+
+		if (domain_nowww === "neongalleries.com") {
+			// http://neongalleries.com/ftv/sophia-knight-dress/TN_06.jpg
+			//   http://neongalleries.com/ftv/sophia-knight-dress/06.jpg
+			return {
+				url: src.replace(/\/TN_([0-9]+\.[^/.]+)(?:[?#].*)?$/, "/$1"),
+				headers: {
+					Referer: ""
+				},
+				referer_ok: {
+					same_domain_nosub: true
+				}
+			};
+		}
+
+		if (domain === "images.sexy-beauties.com") {
+			// https://images.sexy-beauties.com/pics/ftvgirls201/thumbs/01.jpg
+			//   https://images.sexy-beauties.com/pics/ftvgirls201/01.jpg
+			return src.replace(/(\/pics\/+[^/]+\/+)thumbs\/+([0-9]+\.)/, "$1$2");
+		}
+
+		if (false && domain === "f3b4x6b2.ssl.hwcdn.net") {
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+production\/+([0-9]{8}-[^/.?#]+)-(?:480|640|960|1280|1920)(\.[^/.?#]+)(?:[?#].*)?$/);
+			if (match) {
+				// todo: find album_pictures_amount
+				return {
+					url: "https://www.watch4beauty.com/api" + base64_decode("LzRqR2RUR1kyMHZreVZjeC8=") + match[1] + "-" + album_pictures_amount + "-2560" + match[2],
+					headers: {
+						Referer: "https://www.watch4beauty.com/"
+					},
+					redirects: true,
+					can_head: false
+				};
+			}
 		}
 
 
