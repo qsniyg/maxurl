@@ -19,6 +19,7 @@
 00news.co.kr
 1.f.ix.de
 100posto.hr
+10363-2.s.cdn13.com
 1079ishot.com
 1080hdfilmizle.com
 109.206.187.183
@@ -40,6 +41,7 @@
 1818lao.com
 18fuck.me
 18girlssex.com
+18qt.com
 18yos.co
 1d31c772ec21a65b0a71-0707aae3004193da193e1ad4a942592d.ssl.cf2.rackcdn.com
 1freewallpapers.com
@@ -154,6 +156,7 @@ abcnews.com
 abload.de
 ablwang.com
 absfreepic.com
+absolugirl.com
 aceshowbiz.com
 acg.ms
 acgn-cdn.sunteorum.com
@@ -321,6 +324,7 @@ apachan.net
 apclips.com
 apherald.com
 api.97bike.com
+api.banned.video
 api.creativecommons.engineering
 api.europeana.eu
 api.fidji.lefigaro.fr
@@ -330,6 +334,7 @@ api.parkseason.ru
 api.pddataservices.com
 api.superguidatv.it
 api.theweek.com
+api.tipeee.com
 apk-dl.com
 apollo-frankfurt.akamaized.net
 apollo-singapore.akamaized.net
@@ -338,6 +343,7 @@ aporn.xxx
 apostrophelookbooks.s3.amazonaws.com
 appdata.hungryapp.co.kr
 appdb.winehq.org
+appleinsider.com
 appspot.com
 apsk.co.kr
 aqua.komica.org
@@ -386,6 +392,7 @@ asianews.cc
 asianfuckpics.com
 asiangalleries.net
 asianleak.com
+asianporn.life
 asianpornmovies.com
 asianpussy.fun
 asianpussyhub.com
@@ -484,9 +491,11 @@ atomo-management.s3.amazonaws.com
 atpress.ne.jp
 att2.citysbs.com
 attach.setn.com
+attachments.f95zone.to
 attachments.readmedia.com.s3.amazonaws.com
 attitude.co.uk
 audio.gafamfree.party
+auntjudys.com
 auto.sina.com.cn
 auto.sk
 autoevolution.com
@@ -556,6 +565,7 @@ banana1015.com
 bandt.com.au
 bangkokpost.com
 banktapet.pl
+banned.video
 banneddata.me
 banzaj.pl
 baobaoyuer.com
@@ -818,6 +828,7 @@ cafemom.com
 cafemomstatic.com
 cajalwinterconference.es
 calgaryherald.com
+cali.rule34.xxx
 cambro.tv
 camhub.cc
 camhub.world
@@ -1421,6 +1432,7 @@ cosmopolitan.rs
 cosp.jp
 cosplaytime.pl
 cosplaywon.com
+coub.com
 coubsecure-s.akamaihd.net
 coupangcdn.com
 courrier.jp
@@ -1517,7 +1529,9 @@ d27t0qkxhe4r68.cloudfront.net
 d2adpaynhf6x63.cloudfront.net
 d2bq4ntp986cty.cloudfront.net
 d2c4tvdc1w38dj.cloudfront.net
+d2d8wwwkmhfcva.cloudfront.net
 d2e7nuz2r6mjca.cloudfront.net
+d2eehagpk5cl65.cloudfront.net
 d2fzf9bbqh0om5.cloudfront.net
 d2h1pu99sxkfvn.cloudfront.net
 d2hhj3gz5jljkm.cloudfront.net
@@ -1525,6 +1539,7 @@ d2isyty7gbnm74.cloudfront.net
 d2jcw5q7j4vmo4.cloudfront.net
 d2jtsb989t238a.cloudfront.net
 d2l930y2yx77uc.cloudfront.net
+d2lnr5mha7bycj.cloudfront.net
 d2lpfujvrf17tu.cloudfront.net
 d2n4wb9orp1vta.cloudfront.net
 d2nzqyyfd6k6c7.cloudfront.net
@@ -1767,6 +1782,7 @@ dramaqueen.com.tw
 draw.acharts.net
 dreamercdn.com
 dreamline.com
+dreamstime.com
 dreamwiz.net
 drop.ndtv.com
 dropbox.com
@@ -1860,6 +1876,7 @@ ehow.com
 eiga-board.com
 eiga.k-img.com
 ekladata.com
+eksisozluk.com
 ekstrabladet.dk
 elbalad.news
 eldarioncloud.com
@@ -2061,6 +2078,7 @@ fdncms.com
 fee.org
 feedme.id
 feelway.com
+feet9.com
 fem-img.herokuapp.com
 femanes.ru
 fembed.com
@@ -2106,6 +2124,7 @@ file.starnnews.com
 file.thisisgame.com
 file.tinnhac.com
 file.tintuckpop.net
+file.veryzhun.com
 filepicker.io
 files.all-free-download.com
 files.d20.io.s3.amazonaws.com
@@ -2217,6 +2236,7 @@ fotoshoots.be
 fotostate.ru
 fototo.blox.pl
 fotoventasdigital.com
+foundation-media.com
 foxhq.com
 foxnews.com
 foxyporn.com
@@ -2333,6 +2353,7 @@ gamers-onlineshop.jp
 gamersgallery.com
 gamersky.com
 games.mail.ru
+games.med.s3.amazonaws.com
 games.renpy.org
 gamesbras.com
 gamesite.zoznam.sk
@@ -2365,6 +2386,7 @@ gdb.voanews.com
 gdsit.cdn-immedia.net
 geeksofdoom.com
 gelbooru.com
+gelbooru.me
 generasia.com
 generations.fr
 genius.com
@@ -2610,6 +2632,7 @@ hiqqu.xxx
 hitc.com
 hitek.fr
 hitomi.la
+hizliresim.com
 hmg-prod.s3.amazonaws.com
 hmv.com.hk
 hobby.dengeki.com
@@ -3042,6 +3065,7 @@ images.askmen.com
 images.asmhentai.com
 images.assettype.com
 images.attvideo.com
+images.biglots.com
 images.blazingmovies.com
 images.boosty.to
 images.britishart.yale.edu
@@ -3679,6 +3703,7 @@ imgsmail.ru
 imgsnap.com
 imgspice.com
 imgsrc.baidu.com
+imgsrc.ru
 imgsrv.piclick.me
 imgstudio.org
 imgtaxi.com
@@ -3888,6 +3913,7 @@ jyii.com
 jyllands-posten.dk
 k.kakaocdn.net
 k1nk.co
+k2s.cc
 k4b8k3x5.ssl.hwcdn.net
 k5x5n5g8.ssl.hwcdn.net
 k99.com
@@ -4633,8 +4659,6 @@ mtdata.ru
 mthai.com
 mtime.cn
 mtmemory.org
-mtv-intl.mtvnimages.com
-mtv.mtvnimages.com
 mtvnimages.com
 mtvwe.com
 mu-mo.net
@@ -5081,6 +5105,7 @@ pensorosa.com
 peoplite.com
 perfect-girls-net.com
 perfectnaked.com
+pervclips.com
 pervertedmilfs.com
 petapixel.com
 petrotimes.vn
@@ -5246,6 +5271,7 @@ pixls-discuss.s3.amazonaws.com
 pixpo.net
 pixroute.com
 pixsell.hr
+pixxxels.cc
 pl.scdn.co
 planetary.s3.amazonaws.com
 planetongames.com
@@ -5508,6 +5534,8 @@ realbooru.com
 realestate.com.au
 realistgold.com
 realitytvworld.com
+reason.com
+reasonmagazine-covers.s3.amazonaws.com
 recbook.com
 record.pt
 recordeli.com
@@ -5816,6 +5844,7 @@ shalala.ru
 shamelesscelebrities.com
 shamra.sy
 share-ero.pics
+sharecg.com
 sharedmedia.grahamdigital.com
 shbdn.com
 she12.com
@@ -6230,6 +6259,7 @@ sticker.bahuma.org
 stickershop.line-scdn.net
 stickpng.com
 stilo.es
+stmedia.stimg.co
 stnsports.co.kr
 stockingvideos.com
 stopga.me
@@ -7221,6 +7251,7 @@ ytimg.com
 ytimg.googleusercontent.com
 yufit.co.kr
 yukite.ru
+yukkuri.shii.org
 yx7088.com
 yxdown.com
 yytcdn.com

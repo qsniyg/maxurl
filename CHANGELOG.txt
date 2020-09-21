@@ -1,3 +1,23 @@
+0.14.2
+
+New features:
+
+ * Options to override horizontal/vertical scroll behavior for videos (thanks to Runakanta on discord for the idea)
+ * Option to invert the video seek direction (disabled by default)
+ * Option to use custom XHR for 3rd-party libraries (default: enabled for extension, disabled for userscript)
+ * Support for ~30 new websites (using ~30 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including YouTube)
+ * Adblock visibility workarounds are now only applied on the sites that are known to benefit.
+   This increases performance, but may cause regressions with unknown sites that were also affected. Please report any broken site you find!
+ * Improved translation framework to more easily add new languages, and support language subcodes
+
+Special thanks to llacb47, Runakanta, remlap, esdemirei for their contributions to this release
+
+---
+
 0.14.1
 
 Improvements:
