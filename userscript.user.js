@@ -134,6 +134,10 @@ var $$IMU_EXPORT$$;
 	var current_version = null;
 	var imagetab_ok_override = false;
 
+	// This is only set for the Greasyfork/OUJS versions if it fails to @require the rules (contents of bigimage).
+	// The likely causes would be either a CDN failure, or that the userscript manager doesn't support @require
+	var require_rules_failed = false;
+
 	var get_window = function() {
 		if (typeof(unsafeWindow) !== "undefined")
 			return unsafeWindow || this.window || window;
@@ -93661,33 +93665,45 @@ var $$IMU_EXPORT$$;
 		} catch (e) {
 		}
 
-		version_el.innerText = "Installed";
+		if (require_rules_failed) {
+			version_el.style.color = "#ff3333";
 
-		if (version !== null) {
-			version_el.innerText += " (v" + version;
+			version_el.innerText = "Error: Rules cannot be loaded.\nPlease either try reinstalling the script, or ";
 
-			if (latest_version) {
-				var compared = version_compare(latest_version, version);
-				if (compared === -1) {
-					version_el.innerText += ", update available";
+			var github_link = document.createElement("a");
+			github_link.href = userscript_update_url;
+			github_link.target = "_blank";
+			github_link.innerText = "install the github version";
+			version_el.appendChild(github_link);
+		} else {
+			version_el.innerText = "Installed";
+
+			if (version !== null) {
+				version_el.innerText += " (v" + version;
+
+				if (latest_version) {
+					var compared = version_compare(latest_version, version);
+					if (compared === -1) {
+						version_el.innerText += ", update available";
+					}
 				}
+
+				version_el.innerText += ")";
 			}
 
-			version_el.innerText += ")";
+			options_el = document_createElement("a");
+			options_el.innerText = "Options";
+			options_el.style.background = "#0af";
+			options_el.style.padding = "0.5em 1em";
+			options_el.style.color = "white";
+			options_el.style.display = "inline-block";
+			options_el.style.textDecoration = "none";
+			options_el.target = "_blank";
+			options_el.href = "https://qsniyg.github.io/maxurl/options.html";
 		}
 
-		options_el = document_createElement("a");
-		options_el.innerText = "Options";
-		options_el.style.background = "#0af";
-		options_el.style.padding = "0.5em 1em";
-		options_el.style.color = "white";
-		options_el.style.display = "inline-block";
-		options_el.style.textDecoration = "none";
-		options_el.target = "_blank";
-		options_el.href = "https://qsniyg.github.io/maxurl/options.html";
-
 		status_container_el.appendChild(version_el);
-		status_container_el.appendChild(options_el);
+		if (!require_rules_failed) status_container_el.appendChild(options_el);
 		imgel.parentElement.appendChild(status_container_el);
 	};
 
@@ -93721,7 +93737,7 @@ var $$IMU_EXPORT$$;
 			return;
 
 		// make sure it's the same general layout
-		if (imgel.parentElement.previousElementSibling ||
+		if ((imgel.parentElement.previousElementSibling && imgel.parentElement.previousElementSibling.tagName !== "HR") ||
 			imgel.parentElement.nextElementSibling.tagName !== "UL")
 			return;
 
