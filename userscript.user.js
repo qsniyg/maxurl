@@ -1529,6 +1529,13 @@ var $$IMU_EXPORT$$;
 		}
 	};
 
+	var array_or_null = function(array) {
+		if (!array || !array.length)
+			return null;
+
+		return array;
+	};
+
 	function is_element(x) {
 		if (!x || typeof x !== "object")
 			return false;
@@ -11463,6 +11470,9 @@ var $$IMU_EXPORT$$;
 			if (b.length >= 1 && b.slice(0, 1) === "/")
 				return start + b;
 
+			if (b.length >= 2 && b.slice(0, 2) === "./")
+				b = b.substring(2);
+
 			// to emulate the browser's behavior instead
 			// urljoin("http://site.com/index.html", "file.png") = "http://site.com/file.png"
 			if (!a.match(/\/$/))
@@ -12710,6 +12720,45 @@ var $$IMU_EXPORT$$;
 		return array.sort(function(a, b) {
 			return (parseFloat(a[key]) || 0) - (parseFloat(b[key]) || 0);
 		});
+	};
+
+	var parse_tag_def = function(tag) {
+		var match = tag.match(/^<([-a-zA-Z0-9]+)((?:\s+[-a-z0-9A-Z]+(?:=(?:"[^"]+"|'[^']+'|[-_a-zA-Z0-9]+))?)*)\s*(\/?)>/);
+
+		if (!match) {
+			return null;
+		}
+
+		var parsed = {
+			tagname: match[1],
+			selfclosing: !!match[3],
+			args: {},
+			args_array: []
+		};
+
+		var args_regex = /\s+([-a-z0-9A-Z]+)(?:=("[^"]+"|'[^']+'|[-_a-zA-Z0-9]+))?/;
+		var args = match[2];
+		match = args.match(new RegExp(args_regex, "g"));
+		if (!match)
+			return parsed;
+
+		for (var i = 0; i < match.length; i++) {
+			var submatch = match[i].match(args_regex);
+
+			var argname = submatch[1].toLowerCase();
+			var argvalue = submatch[2];
+
+			if (!argvalue) {
+				argvalue = "";
+			} else {
+				argvalue = decode_entities(argvalue.replace(/^["'](.*)["']$/, "$1"));
+			}
+
+			parsed.args[argname] = argvalue;
+			parsed.args_array.push({name: submatch[1], value: argvalue});
+		}
+
+		return parsed;
 	};
 
 	var get_meta = function(text, property) {
@@ -16085,6 +16134,45 @@ var $$IMU_EXPORT$$;
 		header += "</Period>\n</MPD>\n";
 
 		return header;
+	};
+
+	common_functions.get_videotag_sources = function(text) {
+		var videomatch = text.match(/<video[\s\S]+?<\/video>/i);
+		if (!videomatch)
+			return null;
+
+		var video_parsed = parse_tag_def(videomatch[0]);
+		if (!video_parsed) {
+			console_error("Unable to parse <video> tag", videomatch[0]);
+			return null;
+		}
+
+		var add_source = function(parsed) {
+			parsed.url = parsed.args.src;
+			sources.push(parsed);
+		};
+
+		var sources = [];
+		if (video_parsed.args.src)
+			add_source(video_parsed);
+
+		var sources_match = videomatch[0].match(/<source.*?\/>/g);
+		if (!sources_match) {
+			return array_or_null(sources);
+		}
+
+		array_foreach(sources_match, function(source) {
+			var parsed = parse_tag_def(source);
+			if (!parsed) {
+				console_warn("Unable to parse <source> tag", source);
+				return;
+			}
+
+			if (parsed.args.src)
+				add_source(parsed);
+		});
+
+		return array_or_null(sources);
 	};
 
 	var get_domain_from_url = function(url) {
@@ -79385,6 +79473,33 @@ var $$IMU_EXPORT$$;
 					can_head: false
 				};
 			}
+		}
+
+		if (domain_nowww === "streamye.com") {
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+([a-z0-9]+)(?:[?#].*)?$/,
+				query_for_id: "https://www.streamye.com/${id}",
+				process: function(done, resp) {
+					var sources = common_functions.get_videotag_sources(resp.responseText);
+					if (!sources)
+						return done(null, false);
+
+					return done({
+						// https://streamye.b-cdn.net./media/video/-{timestamp}.mp4
+						// or:
+						// ./media/video/-{timestamp}.mp4
+						url: norm_url(urljoin(resp.finalUrl, sources[0].url, true)),
+						extra: {
+							page: resp.finalUrl
+						},
+						headers: {
+							Referer: resp.finalUrl
+						},
+						video: true
+					}, 6*60*60);
+				}
+			});
+			if (newsrc) return newsrc;
 		}
 
 
