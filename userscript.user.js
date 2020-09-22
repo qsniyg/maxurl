@@ -53643,7 +53643,7 @@ var $$IMU_EXPORT$$;
 			//return src.replace(/:\/\/[^/]+\/+spaceimages\/+images\/+[^/]+\/+(PIA[0-9]+)(?:_[^/]+|-[0-9]+x[0-9]+)(\.[^/.]*)(?:[?#].*)?$/,
 			//				   "://images-assets.nasa.gov/image/$1/$1~orig$2");
 			return src.replace(/:\/\/[^/]+\/+spaceimages\/+images\/+[^/]+\/+(PIA[0-9]+)(?:_[^/]+|-[0-9]+(?:x[0-9]+|[wh]))(\.(?:jpg|jpeg|JPG|JPEG))(?:[?#].*)?$/,
-				               "://photojournal.jpl.nasa.gov/jpeg/$1$2");
+							   "://photojournal.jpl.nasa.gov/jpeg/$1$2");
 		}
 
 		if (domain === "imagecache.jpl.nasa.gov") {
@@ -56201,7 +56201,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (host_domain_nosub === "onlyfans.com" &&
-		     (domain_nosub === "onlyfans.com" ||
+			 (domain_nosub === "onlyfans.com" ||
 			  domain === "media.onlyfans.com" ||
 			  amazon_container === "of2media") && options && options.element && options.do_request && options.cb) {
 			// https://onlyfans.com/files/thumbs/w760/1/15/154/154381d588ce8b86f8fa86325ef17efa/header.jpg
@@ -81142,7 +81142,7 @@ var $$IMU_EXPORT$$;
 					var use_default_after = false;
 					for (var i = 0; i < info.length; i++) {
 						if ((info[i].type === "post" && (info[i].subtype === "popup" || info[i].subtype === "page" || info[i].subtype === "home" || (info[i].subtype === "link" && options.rule_specific.instagram_gallery_postlink && !options.is_counting))) ||
-						     info[i].type === "story") {
+							 info[i].type === "story") {
 							info[i].all = true;
 							can_apply = true;
 
