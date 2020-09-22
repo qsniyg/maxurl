@@ -135,7 +135,7 @@ var $$IMU_EXPORT$$;
 	var imagetab_ok_override = false;
 
 	// This is only set for the Greasyfork/OUJS versions if it fails to @require the rules (contents of bigimage).
-	// The likely causes would be either a CDN failure, or that the userscript manager doesn't support @require
+	// The likely causes would be either a CDN failure, or that the userscript manager doesn't support @require.
 	var require_rules_failed = false;
 
 	var get_window = function() {
@@ -11428,8 +11428,11 @@ var $$IMU_EXPORT$$;
 	};
 
 	var norm_url = function(url) {
+		return url
 		// https://www.test.com?test -> https://www.test.com/?test
-		return url.replace(/^([a-z]+:\/\/[^/]+)(\?.*)/, "$1/$2");
+			.replace(/^([a-z]+:\/\/[^/]+)(\?.*)/, "$1/$2")
+		// https://www.test.com./ -> https://www.test.com/
+			.replace(/^([a-z]+:\/\/[^/]+\.[^/]+)\.([?#/].*)?$/, "$1$2");
 	};
 
 	function urljoin(a, b, browser) {
