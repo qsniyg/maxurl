@@ -66062,7 +66062,7 @@ var $$IMU_EXPORT$$;
 						if (result.status !== 200)
 							return options.cb(null);
 
-						var match = result.responseText.match(/<a\s+href=["'](.*?)["']\s*>Download<\/a>/);
+						var match = result.responseText.match(/<a\s+href=["'](.*?)["']\s*>Download(?: Submission)?<\/a>/);
 						if (match) {
 							return options.cb({
 								url: urljoin(src, match[1], true),
@@ -66071,6 +66071,7 @@ var $$IMU_EXPORT$$;
 								}
 							});
 						} else {
+							console_error("Unable to find match in", result);
 							return options.cb(null);
 						}
 					}
