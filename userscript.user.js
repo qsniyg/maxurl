@@ -30811,6 +30811,64 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain_nowww === "imagefap.com") {
+			var query_imagefap_photo = function(id, cb) {
+				api_query("imagefap_photo:" + id, {
+					url: "https://www.imagefap.com/photo/" + id + "/"
+				}, cb, function(done, resp, cache_key) {
+					var link_regex = /<a href="(https?:\/\/cdn\.imagefap\.com\/+images\/+full[^"]+)"[^>]+?imageid="([0-9]+)"/;
+					var links = resp.responseText.match(new RegExp(link_regex, "g"));
+
+					if (!links) {
+						console_error(cache_key, "Unable to find image links for", resp);
+						return done(null, false)
+					}
+
+					var url = null;
+					array_foreach(links, function(link) {
+						var submatch = link.match(link_regex);
+						var our_url = decode_entities(submatch[1]);
+						var our_id = submatch[2];
+
+						// == to compare int/string
+						if (our_id != id) {
+							api_cache.set("imagefap_photo:" + our_id, our_url, 60*60);
+						} else {
+							url = our_url;
+						}
+					});
+
+					if (!url) {
+						console_error("Unable to find", id, "in", links, resp);
+						return done(null, false);
+					}
+
+					return done(url, 60*60);
+				});
+			};
+
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+photo\/+([0-9]+)\/*(?:[?#].*)?$/,
+				run: function(done, match) {
+					var id = match[1];
+
+					query_imagefap_photo(id, function(url) {
+						if (!url) {
+							return done(null, false);
+						} else {
+							return done({
+								url: url,
+								extra: {
+									page: "https://www.imagefap.com/photo/" + id + "/"
+								}
+							}, 60*60);
+						}
+					});
+				}
+			});
+			if (newsrc) return newsrc;
+		}
+
 		if (domain_nowww === "imagefap.com" ||
 			// https://www.moviefap.com/videos/308d6807378358e7727c/firm-tits-teen-stacie-andrews-public-sex.html
 			// or: https://www.imagefap.com/video.php?vid=238814?vid=238814
@@ -30949,9 +31007,20 @@ var $$IMU_EXPORT$$;
 				.replace(/\/images\/[a-z]*\//, "/images/full/");
 		}
 
-		if (domain === "cdn.imagefap.com") {
+		if (false && domain === "cdn.imagefap.com") {
 			// cdn.* contains a required signature (?end=...&secure=...), but images.* works
+			// no longer working, however https://www.imagefap.com/photo/{id}/ contains the info needed
 			return src.replace(/:\/\/cdn\.(.*?)(?:[?#].*)?$/, "://images.$1");
+		}
+
+		if (domain === "cdn.imagefap.com") {
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+images\/+(?:mini|thumb)\/+[0-9]+\/+[0-9]+\/+([0-9]+)\./);
+			if (match) {
+				return {
+					url: "https://www.imagefap.com/photo/" + match[1] + "/",
+					is_pagelink: true
+				};
+			}
 		}
 
 		if (domain === "www.gannett-cdn.com" &&
