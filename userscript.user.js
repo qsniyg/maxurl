@@ -79838,6 +79838,62 @@ var $$IMU_EXPORT$$;
 				};
 		}
 
+		if (domain_nowww === "wilddream.net") {
+			// http://wilddream.net/art/view/16007
+			// todo: http://wilddream.net/art/view/3367 (no fullview available, maybe just stick with artwork_img_full?)
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+art\/+view\/+([0-9]+)(?:[?#].*)?$/i,
+				query_for_id: "https://wilddream.net/art/view/${id}",
+				process: function(done, resp, cache_key) {
+					var match = resp.responseText.match(/onClick="fullview\('([0-9]+_[0-9]+\.[a-zA-Z0-9]+)'\);?"/i);
+					if (!match) {
+						console_error(cache_key, "Unable to find filename match for", resp);
+						return done(null, false);
+					}
+
+					var filename = match[1];
+
+					match = resp.responseText.match(/\s\.attr\("src", "(\/Public\/uploads\/artwork\/[0-9]+\/full\/)"/i);
+					if (!match) {
+						console_error(cache_key, "Unable to find path match for", resp);
+						return done(null, false);
+					}
+
+					var path = match[1];
+
+					var obj = {
+						extra: {
+							page: resp.finalUrl
+						}
+					};
+
+					var description = get_meta(resp.responseText, "description");
+					if (description) obj.extra.caption = description;
+
+					var final = urljoin(urljoin(resp.finalUrl, path, true), filename);
+					obj.url = final;
+
+					return done(obj, 6*60*60);
+				}
+			});
+			if (newsrc) return newsrc;
+
+			// http://wilddream.net/Public/uploads/artwork/3367/thumb/16007.jpg
+			//   http://wilddream.net/Public/uploads/artwork/3367/preview/16007.jpg
+			newsrc = src.replace(/\/Public\/+uploads\/+artwork\/+([0-9]+)\/+thumb\/+([0-9]+\.[^/.]+(?:[?#].*)?)$/i,
+				"/Public/uploads/artwork/$1/preview/$2");
+			if (newsrc !== src)
+				return newsrc;
+
+			match = src.match(/\/Public\/+uploads\/+artwork\/+[0-9]+\/+(?:thumb|preview)\/+([0-9]+)\.[^/.]+(?:[?#].*)?$/i);
+			if (match) {
+				return {
+					url: "http://wilddream.net/art/view/" + match[1],
+					is_pagelink: true
+				};
+			}
+		}
+
 
 
 
