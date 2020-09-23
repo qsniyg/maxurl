@@ -1536,6 +1536,11 @@ var $$IMU_EXPORT$$;
 		return array;
 	};
 
+	var array_upush = function(array, item) {
+		if (array_indexof(array, item) < 0)
+			array.push(item);
+	};
+
 	function is_element(x) {
 		if (!x || typeof x !== "object")
 			return false;
@@ -11513,7 +11518,7 @@ var $$IMU_EXPORT$$;
 				currentobj.url = urls[i];
 			} else {
 				for (var key in urls[i]) {
-					currentobj[key] = urls[i][key]
+					currentobj[key] = urls[i][key];
 				}
 			}
 
@@ -16166,20 +16171,34 @@ var $$IMU_EXPORT$$;
 
 		var add_source = function(parsed) {
 			parsed.url = parsed.args.src;
-			sources.push(parsed);
+			sources.video.push(parsed);
 		};
 
-		var sources = [];
+		var sources = {
+			video: [],
+			image: []
+		};
 		if (video_parsed.args.src)
 			add_source(video_parsed);
 
-		var sources_match = videomatch[0].match(/<source.*?\/?>\s*(?:<\/source>)?/g);
-		if (!sources_match) {
-			if (!sources.length) {
-				console_warn("Unable to find sources (no <source> tag found)");
+		if (video_parsed.args.poster) {
+			sources.image.push(video_parsed.args.poster);
+		}
+
+		var sources_or_null = function() {
+			if (!sources.video.length) {
+				if (!sources.image.length) {
+					console_warn("Unable to find video sources");
+					return null;
+				}
 			}
 
-			return array_or_null(sources);
+			return sources;
+		};
+
+		var sources_match = videomatch[0].match(/<source.*?\/?>\s*(?:<\/source>)?/g);
+		if (!sources_match) {
+			return sources_or_null();
 		}
 
 		array_foreach(sources_match, function(source) {
@@ -16193,11 +16212,56 @@ var $$IMU_EXPORT$$;
 				add_source(parsed);
 		});
 
-		if (!sources.length) {
-			console_warn("Unable to find sources");
-		}
+		return sources_or_null();
+	};
 
-		return array_or_null(sources);
+	common_functions.get_videotag_obj = function(resp) {
+		var sources = common_functions.get_videotag_sources(resp.responseText);
+		if (!sources)
+			return null;
+
+		var page = get_meta(resp.responseText, "og:url");
+		if (page)
+			page = urljoin(resp.finalUrl, page, true);
+		else
+			page = resp.finalUrl;
+
+		var obj = {
+			headers: {
+				Referer: page
+			},
+			extra: {
+				page: page
+			}
+		};
+
+		var caption = get_meta(resp.responseText, "og:title");
+		if (caption) obj.extra.caption = caption;
+
+		var video_urls = [];
+		array_foreach(sources.video, function(source) {
+			video_urls.push(urljoin(page, source.url, true));
+		});
+
+		var image_urls = [];
+		array_foreach(sources.image, function(image) {
+			image_urls.push(urljoin(page, image, true));
+		});
+
+		var ogimage = get_meta(resp.responseText, "og:image");
+		array_upush(image_urls, urljoin(page, ogimage, true));
+
+		var urls = [];
+		array_foreach(video_urls, function(url) {
+			urls.push({
+				url: url,
+				video: true
+			});
+		});
+
+		array_extend(urls, image_urls);
+
+		return fillobj_urls(urls, obj);
 	};
 
 	var get_domain_from_url = function(url) {
@@ -79623,7 +79687,7 @@ var $$IMU_EXPORT$$;
 						// https://streamye.b-cdn.net./media/video/-{timestamp}.mp4
 						// or:
 						// ./media/video/-{timestamp}.mp4
-						url: norm_url(urljoin(resp.finalUrl, sources[0].url, true)),
+						url: norm_url(urljoin(resp.finalUrl, sources.video[0].url, true)),
 						extra: {
 							page: resp.finalUrl
 						},
@@ -79644,48 +79708,44 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "homemoviestube.com") {
-			// youramateurporn.com uses the same system (though the url form is different
 			newsrc = website_query({
 				website_regex: /^[a-z]+:\/\/[^/]+\/+videos\/+([0-9]+)\/+[^/?#]*\.html/,
 				query_for_id: "https://www.homemoviestube.com/videos/${id}/.html",
-				process: function(done, resp, cache_key) {
-					// todo: maybe move to common_functions?
-					var sources = common_functions.get_videotag_sources(resp.responseText);
-					if (!sources) return done(null, false);
-
-					var page = get_meta(resp.responseText, "og:url");
-					if (page)
-						page = urljoin(resp.finalUrl, page, true);
-					else
-						page = resp.finalUrl;
-
-					var obj = {
-						url: urljoin(page, sources[0].url, true),
-						headers: {
-							Referer: page
-						},
-						extra: {
-							page: page
-						},
-						video: true
-					};
-
-					var caption = get_meta(resp.responseText, "og:title");
-					if (caption) obj.extra.caption = caption;
-
-					return done(obj, 60*60);
+				process: function(done, resp) {
+					var obj = common_functions.get_videotag_obj(resp);
+					done(obj, obj ? 60*60 : false);
 				}
 			});
 			if (newsrc) return newsrc;
 		}
 
-		if (domain_nowww === "lovehomeporn.com") {
-			var query_lovehomeporn_config = function(vid, cb) {
+		if (domain_nowww === "youramateurporn.com") {
+			// youramateurporn.com uses the same system (though the url form is different
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+video\/+[^/]+-([0-9]+)\.html/,
+				query_for_id: "https://www.youramateurporn.com/video/a-${id}.html",
+				process: function(done, resp) {
+					var obj = common_functions.get_videotag_obj(resp);
+					done(obj, obj ? 60*60 : false);
+				}
+			});
+			if (newsrc) return newsrc;
+		}
+
+		if (domain_nowww === "lovehomeporn.com" ||
+			domain_nowww === "fuqer.com") {
+			var query_lovehomeporn_config = function(site, vid, cb) {
+				var baseurl = "";
+				if (site === "lovehomeporn.com")
+					baseurl = "https://lovehomeporn.com/media/nuevo/config.php";
+				else if (site === "fuqer.com")
+					baseurl = "https://www.fuqer.com/nuevo/player/config5.php";
+
 				api_query("lovehomeporn_video:" + vid, {
-					url: "https://lovehomeporn.com/media/nuevo/config.php?key=" + vid,
+					url: baseurl + "?key=" + vid,
 					imu_mode: "xhr",
 					headers: {
-						Referer: "https://lovehomeporn.com/"
+						Referer: "https://www." + site + "/"
 					}
 				}, cb, function(done, resp, cache_key) {
 					var get_xml = function(tag) {
@@ -79699,7 +79759,8 @@ var $$IMU_EXPORT$$;
 
 					var file = get_xml("file");
 					var filehd = get_xml("filehd");
-					var title = get_xml("title");
+					// <![CDATA[can&#039;t]]>
+					var title = decode_entities(get_xml("title"));
 					var thumb = get_xml("thumb");
 					var image = get_xml("image");
 					var url = get_xml("url");
@@ -79741,12 +79802,26 @@ var $$IMU_EXPORT$$;
 			};
 
 			newsrc = website_query({
-				website_regex: /^[a-z]+:\/\/[^/]+\/+video\/+([0-9]+)(?:\/+[^/]+)?(?:[?#].*)?$/,
+				website_regex: [
+					/^[a-z]+:\/\/[^/]+\/+video\/+([0-9]+)(?:\/+[^/]+)?(?:[?#].*)?$/,
+					// fuqer.com
+					/^[a-z]+:\/\/[^/]+\/+videos\/+[^/?#.]+-([0-9]+)\.html(?:[?#].*)?$/,
+					/^[a-z]+:\/\/[^/]+\/+nuevo\/+player\/+embed\.php\?(?:.*&)?key=([0-9]+)/
+				],
 				run: function(cb, match) {
-					query_lovehomeporn_config(match[1], cb);
+					query_lovehomeporn_config(domain_nosub, match[1], cb);
 				}
 			});
 			if (newsrc) return newsrc;
+		}
+
+		if (domain_nowww === "fuqer.com") {
+			// https://www.fuqer.com/templates/default/images/content.gif
+			if (/\/templates\/+default\/+images\/+/.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
 		}
 
 		if (domain === "cdn.static.lovehomeporn.com" || domain_nowww === "lovehomeporn.com") {
@@ -82565,7 +82640,7 @@ var $$IMU_EXPORT$$;
 					var cond = !options.fill_object || (newhref[0].waiting === true && !objified[0].waiting);
 					if (!cond) {
 						array_foreach(copy_props, function(prop) {
-							if (!(prop in newhref[0]) && (prop in important_properties)) {
+							if (!(prop in newhref[0]) && (prop in important_properties) && (prop in objified)) {
 								cond = true;
 								return false;
 							}
@@ -82587,7 +82662,7 @@ var $$IMU_EXPORT$$;
 							if (newhref && newhref.length) {
 								var cond = false;
 								array_foreach(copy_props, function(prop) {
-									if (!(prop in newhref[0]) && (prop in important_properties)) {
+									if (!(prop in newhref[0]) && (prop in important_properties) && (prop in objified)) {
 										cond = true;
 										return false;
 									}
