@@ -9304,6 +9304,10 @@ var $$IMU_EXPORT$$;
 					mouseover_auto_close_popup: true,
 					mouseover_open_behavior: "popup"
 				},
+				{
+					mouseover_close_need_mouseout: true,
+					mouseover_open_behavior: "popup"
+				},
 			],
 			category: "popup",
 			subcategory: "close_behavior"
@@ -9369,10 +9373,17 @@ var $$IMU_EXPORT$$;
 		mouseover_close_el_policy: {
 			name: "Close when leaving",
 			description: "Closes the popup when the mouse leaves the thumbnail element, the popup, or both",
-			requires: {
-				mouseover_open_behavior: "popup",
-				mouseover_trigger_behavior: "mouse"
-			},
+			requires: [
+				{
+					mouseover_open_behavior: "popup",
+					mouseover_trigger_behavior: "mouse"
+				},
+				{
+					mouseover_open_behavior: "popup",
+					mouseover_trigger_behavior: "keyboard",
+					mouseover_close_need_mouseout: true
+				}
+			],
 			options: {
 				_type: "or",
 				thumbnail: {
@@ -92665,8 +92676,12 @@ var $$IMU_EXPORT$$;
 			if (!popups_active)
 				return false;
 
-			if (popup_trigger_reason !== "mouse" && (!settings.mouseover_auto_close_popup || !settings.mouseover_auto_close_popup_time))
-				return false;
+			if (popup_trigger_reason !== "mouse") {
+				var auto_close = settings.mouseover_auto_close_popup && settings.mouseover_auto_close_popup_time;
+				var close_mouseout = get_close_need_mouseout();
+
+				if (!auto_close && !close_mouseout) return false;
+			}
 
 			return settings.mouseover_use_hold_key;
 		};
@@ -93567,161 +93582,119 @@ var $$IMU_EXPORT$$;
 
 			var jitter_base = settings.mouseover_jitter_threshold;
 
-			if (settings.mouseover_trigger_behavior === "keyboard" && get_close_need_mouseout() && popups_active &&
-				popup_trigger_reason === "keyboard") {
-				var img = popups[0].getElementsByTagName("img")[0];
-				if (img) {
-					var rect = get_popup_client_rect();
+			var do_mouse_close_kbd = popup_trigger_reason === "keyboard" && get_close_need_mouseout() && popups_active;
+			var do_mouse_close_mouse = popup_trigger_reason === "mouse";
 
-					var our_jitter = jitter_base;
+			if (do_mouse_close_kbd || do_mouse_close_mouse) {
+				if (popups_active) {
+					// FIXME: why was this not in if (popups_active)?
+					// The reason for putting it here is that if the mouse moves (even within jitter thresh) after a single popup is open, it will cancel the popup request
+					if (delay_handle) {
+						clearTimeout(delay_handle);
+						delay_handle = null;
 
-					if (in_clientrect(mouseX, mouseY, rect, our_jitter)) {
-						can_close_popup[1] = false;
-					} else {
-						if (can_close_popup[0]) {
+						if (false && waiting)
 							stop_waiting();
-							resetpopups();
-						} else {
+					}
+
+					var jitter_threshx = 40;
+					var jitter_threshy = jitter_threshx;
+
+					//var img = popups[0].getElementsByTagName("img")[0];
+					var img = get_popup_media_el();
+					var imgmiddleX = null;
+					var imgmiddleY = null;
+					var in_img_jitter = false;
+					if (img) {
+						// TODO: call this less often
+						var rect = img.getBoundingClientRect();
+						//var rect = get_popup_client_rect();
+
+						in_img_jitter = in_clientrect(mouseX, mouseY, rect, jitter_base);
+
+						var w = rect.width;
+						var h = rect.height;
+
+						imgmiddleX = rect.x + rect.width / 2;
+						imgmiddleY = rect.y + rect.height / 2;
+
+						jitter_threshx = Math_max(jitter_threshx, w / 2);
+						jitter_threshy = Math_max(jitter_threshy, h / 2);
+
+						jitter_threshx += jitter_base;
+						jitter_threshy += jitter_base;
+
+						/*console_log(jitter_threshx, img.naturalWidth, w);
+						console_log(jitter_threshy, img.naturalHeight, h);*/
+						if (mouse_in_image_yet === false) {
+							if (in_clientrect(mouseX, mouseY, rect)) {
+								mouse_in_image_yet = true;
+							}
+						}
+					}
+
+					var do_mouse_reset = function() {
+						if (popup_hold) {
 							can_close_popup[1] = true;
+						} else {
+							resetpopups();
+						}
+					};
+
+					var close_el_policy = get_single_setting("mouseover_close_el_policy");
+					var close_on_leave_el = (close_el_policy === "thumbnail" || close_el_policy === "both") && popup_el && !popup_el_automatic;
+					var outside_of_popup_el = false;
+					var popup_el_hidden = false;
+
+					// check if we should check if the mouse has left popup_el (the source/thumbnail that was popped up from, _not_ the element of the popup)
+					if (close_on_leave_el) {
+						var popup_el_rect = get_bounding_client_rect(popup_el);
+
+						// check if the source element is visible
+						if (popup_el_rect && popup_el_rect.width > 0 && popup_el_rect.height > 0) {
+							var our_in_img_jitter = in_img_jitter;
+							if (close_el_policy === "thumbnail")
+								our_in_img_jitter = false; // if not "both", we don't care if the mouse is still in the popup, only if it has left the thumbnail
+
+							if (!in_clientrect(mouseX, mouseY, popup_el_rect) && !our_in_img_jitter) {
+								outside_of_popup_el = true;
+
+								if (close_el_policy === "thumbnail") {
+									return do_mouse_reset();
+								}
+							}
+						} else {
+							// the element must be hidden
+							popup_el_hidden = true;
+						}
+					}
+
+					can_close_popup[1] = false;
+					if (mouse_in_image_yet && (!close_on_leave_el || outside_of_popup_el || popup_el_hidden)) {
+						if (imgmiddleX && imgmiddleY &&
+							(Math_abs(mouseX - imgmiddleX) > jitter_threshx ||
+							 Math_abs(mouseY - imgmiddleY) > jitter_threshy)) {
+							//console_log(mouseX, imgmiddleX, jitter_threshx);
+							//console_log(mouseY, imgmiddleY, jitter_threshy);
+
+							do_mouse_reset();
+						}
+					} else if (close_on_leave_el) {
+						if (outside_of_popup_el) {
+							do_mouse_reset();
+						}
+					}
+				} else if (do_mouse_close_mouse && delay_handle_triggering) {
+					if (next_popup_el && settings.mouseover_cancel_popup_when_elout) {
+						var popup_el_rect = get_bounding_client_rect(next_popup_el);
+						if (!in_clientrect(mouseX, mouseY, popup_el_rect)) {
+							resetpopups();
 						}
 					}
 				}
 			}
 
 			if (mouseover_mouse_enabled()) {
-				if (popup_trigger_reason === "mouse") {
-					if (popups_active) {
-						// FIXME: why was this not in if (popups_active)?
-						// The reason for putting it here is that if the mouse moves (even within jitter thresh) after a single popup is open, it will cancel the popup request
-						if (delay_handle) {
-							clearTimeout(delay_handle);
-							delay_handle = null;
-
-							if (false && waiting)
-								stop_waiting();
-						}
-
-						var jitter_threshx = 40;
-						var jitter_threshy = jitter_threshx;
-
-						//var img = popups[0].getElementsByTagName("img")[0];
-						var img = get_popup_media_el();
-						var imgmiddleX = null;
-						var imgmiddleY = null;
-						var in_img_jitter = false;
-						if (img) {
-							// TODO: call this less often
-							var rect = img.getBoundingClientRect();
-
-							in_img_jitter = in_clientrect(mouseX, mouseY, rect, jitter_base);
-
-							// why this instead of getBoundingClientRect?
-							//var w = Math_min(parseInt(img.style.maxWidth), img.naturalWidth);
-							//var h = Math_min(parseInt(img.style.maxHeight), img.naturalHeight);
-							var w = rect.width;
-							var h = rect.height;
-
-							imgmiddleX = rect.x + rect.width / 2;
-							imgmiddleY = rect.y + rect.height / 2;
-
-							jitter_threshx = Math_max(jitter_threshx, w / 2);
-							jitter_threshy = Math_max(jitter_threshy, h / 2);
-
-							jitter_threshx += jitter_base;
-							jitter_threshy += jitter_base;
-
-							/*console_log(jitter_threshx, img.naturalWidth, w);
-							console_log(jitter_threshy, img.naturalHeight, h);*/
-							if (mouse_in_image_yet === false) {
-								if (in_clientrect(mouseX, mouseY, rect)) {
-									mouse_in_image_yet = true;
-									//mouseDelayX = mouseX;
-									//mouseDelayY = mouseY;
-
-									//mouseDelayX = imgmiddleX;
-									//mouseDelayY = imgmiddleY;
-
-									if (false) {
-										var viewport = get_viewport();
-										if ((mouseDelayX + jitter_threshx) > viewport[0]) {
-											mouseDelayX = viewport[0] - jitter_threshx;
-										}
-										if ((mouseDelayX - jitter_threshx) < 0) {
-											mouseDelayX = jitter_threshx;
-										}
-
-										if ((mouseDelayY + jitter_threshy) > viewport[1]) {
-											mouseDelayY = viewport[1] - jitter_threshy;
-										}
-										if ((mouseDelayY - jitter_threshy) < 0) {
-											mouseDelayY = jitter_threshy;
-										}
-									}
-								}
-							}
-						}
-
-						var do_mouse_reset = function() {
-							if (popup_hold) {
-								can_close_popup[1] = true;
-							} else {
-								resetpopups();
-							}
-						};
-
-						var close_el_policy = get_single_setting("mouseover_close_el_policy");
-						var close_on_leave_el = (close_el_policy === "thumbnail" || close_el_policy === "both") && popup_el && !popup_el_automatic;
-						var outside_of_popup_el = false;
-						var popup_el_hidden = false;
-
-						// check if we should check if the mouse has left popup_el (the source/thumbnail that was popped up from, _not_ the element of the popup)
-						if (close_on_leave_el) {
-							var popup_el_rect = get_bounding_client_rect(popup_el);
-
-							// check if the source element is visible
-							if (popup_el_rect && popup_el_rect.width > 0 && popup_el_rect.height > 0) {
-								var our_in_img_jitter = in_img_jitter;
-								if (close_el_policy === "thumbnail")
-									our_in_img_jitter = false; // if not "both", we don't care if the mouse is still in the popup, only if it has left the thumbnail
-
-								if (!in_clientrect(mouseX, mouseY, popup_el_rect) && !our_in_img_jitter) {
-									outside_of_popup_el = true;
-
-									if (close_el_policy === "thumbnail") {
-										return do_mouse_reset();
-									}
-								}
-							} else {
-								// the element must be hidden
-								popup_el_hidden = true;
-							}
-						}
-
-						can_close_popup[1] = false;
-						if (mouse_in_image_yet && (!close_on_leave_el || outside_of_popup_el || popup_el_hidden)) {
-							if (imgmiddleX && imgmiddleY &&
-								(Math_abs(mouseX - imgmiddleX) > jitter_threshx ||
-								 Math_abs(mouseY - imgmiddleY) > jitter_threshy)) {
-								//console_log(mouseX, imgmiddleX, jitter_threshx);
-								//console_log(mouseY, imgmiddleY, jitter_threshy);
-
-								do_mouse_reset();
-							}
-						} else if (close_on_leave_el) {
-							if (outside_of_popup_el) {
-								do_mouse_reset();
-							}
-						}
-					} else if (delay_handle_triggering) {
-						if (next_popup_el && settings.mouseover_cancel_popup_when_elout) {
-							var popup_el_rect = get_bounding_client_rect(next_popup_el);
-							if (!in_clientrect(mouseX, mouseY, popup_el_rect)) {
-								resetpopups();
-							}
-						}
-					}
-				}
-
 				// FIXME: this is rather weird. Less CPU usage, but doesn't behave in the way one would expect
 				if ((!popups_active || popup_el_automatic) && !should_exclude_imagetab()) {
 					if (delay_handle && !settings.mouseover_trigger_mouseover) {
