@@ -26892,6 +26892,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "vimeo.com") {
+			// TODO: support player.vimeo.com, and set the correct referer header
 			match = src.match(/^[a-z]+:\/\/[^/]+\/+([0-9]+)(?:[?#].*)?$/);
 			if (match) {
 				id = match[1];
@@ -68166,70 +68167,66 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/upload\/+(?:cast|poster)\/+(?:nm|tt)[0-9]+)_[a-z]+(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
 		}
 
+		if (domain_nowww === "shutterstock.com") {
+			// https://www.shutterstock.com/editorial/image-editorial/jarel-zhang-runway-paris-fashion-week-women-ss-2020-france-01-oct-2019-10432664m
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+editorial\/+image-editorial\/+(?:[^/?#]+-)?([0-9]+[a-z]+)(?:[?#].*)?$/,
+				query_for_id: "https://www.shutterstock.com/editorial/image-editorial/${id}",
+				process: function(done, resp, cache_key) {
+					var obj = {
+						extra: {
+							page: resp.finalUrl
+						}
+					};
+
+					var urls = [];
+
+					var ogimage = get_meta(resp.responseText, "og:image");
+					if (ogimage) {
+						urls.push({
+							url: ogimage,
+							problems: { watermark: true }
+						});
+					}
+
+					var match = resp.responseText.match(/<script\s+type=["']application\/ld\+json["']>\s*(\[.*?\])\s*<\/script>/);
+					if (match) {
+						try {
+							var json_obj = JSON_parse(match[1]);
+
+							var thumbnail = json_obj[1].thumbnail;
+							if (thumbnail) {
+								urls.push({
+									url: thumbnail,
+									problems: { smaller: true }
+								});
+							}
+
+							if (json_obj[1].name || json_obj[1].description) {
+								obj.extra.caption = json_obj[1].name || json_obj[1].description;
+							}
+						} catch (e) {
+							console_error(cache_key, e);
+						}
+					}
+
+					if (!urls.length)
+						return done(null, false);
+
+					return done(fillobj_urls(urls, obj), 6*60*60);
+				}
+			});
+			if (newsrc) return newsrc;
+		}
+
 		if (domain_nosub === "shutterstock.com" && /^editorial[0-9]*\./.test(domain)) {
 			// https://www.shutterstock.com/editorial/image-editorial/jarel-zhang-runway-paris-fashion-week-women-ss-2020-france-01-oct-2019-10432664m
 			// https://editorial01.shutterstock.com/wm-preview-1500/10432664m/aeb26858/jarel-zhang-runway-paris-fashion-week-women-s-s-2020-france-shutterstock-editorial-10432664m.jpg
 			id = src.replace(/^[a-z]+:\/\/[^/]*\/+[^/]*\/+([0-9]+[a-z])\/+.*/, "$1");
-			if (id !== src && options.do_request && options.cb) {
-				api_cache.fetch("shutterstock_editorial:" + id, function(data) {
-					options.cb(data);
-				}, function (done) {
-					page = "https://shutterstock.com/editorial/image-editorial/" + id;
-
-					options.do_request({
-						method: "GET",
-						url: page,
-						headers: {
-							Referer: ""
-						},
-						onload: function (result) {
-							if (result.readyState !== 4)
-								return;
-
-							if (result.status !== 200)
-								return done(null, false);
-
-							var base_obj = {
-								url: src,
-								extra: {
-									page: result.finalUrl
-								}
-							};
-
-							var orig_obj = base_obj;
-
-							var obj = [];
-
-							var match = result.responseText.match(/<meta\s+property=["']og:image["']\s+content=["'](.*?)["']/);
-							if (match) {
-								base_obj = deepcopy(base_obj);
-								base_obj.url = decode_entities(match[1]);
-								base_obj.problems = { watermark: true };
-								obj.push(base_obj);
-							}
-
-							var match = result.responseText.match(/<script\s+type=["']application\/ld\+json["']>\s*(\[.*?\])\s*<\/script>/);
-							if (match) {
-								var json_obj = JSON_parse(match[1]);
-								var url = json_obj[1].thumbnail;
-								base_obj = deepcopy(base_obj);
-								base_obj.url = url;
-								base_obj.problems = { smaller: true };
-								obj.push(base_obj);
-							}
-
-							obj.push(orig_obj);
-
-							if (obj.length > 0)
-								return done(obj, 6*60*60);
-							else
-								return done(null, false);
-						}
-					});
-				});
-
+			if (id !== src) {
 				return {
-					waiting: true
+					url: "https://shutterstock.com/editorial/image-editorial/" + id,
+					is_pagelink: true
 				};
 			}
 		}
@@ -79720,7 +79717,6 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain_nowww === "youramateurporn.com") {
-			// youramateurporn.com uses the same system (though the url form is different
 			newsrc = website_query({
 				website_regex: /^[a-z]+:\/\/[^/]+\/+video\/+[^/]+-([0-9]+)\.html/,
 				query_for_id: "https://www.youramateurporn.com/video/a-${id}.html",
