@@ -86843,6 +86843,8 @@ var $$IMU_EXPORT$$;
 		var popup_cursorjitterY = 0;
 		var popup_client_rect_cache = null;
 		var last_popup_client_rect_cache = 0;
+		var popup_media_client_rect_cache = null;
+		var last_popup_media_client_rect_cache = 0;
 		var dragstart = false;
 		var dragstartX = null;
 		var dragstartY = null;
@@ -87181,6 +87183,8 @@ var $$IMU_EXPORT$$;
 			popup_update_pos_func = null;
 			popup_client_rect_cache = null;
 			last_popup_client_rect_cache = 0;
+			popup_media_client_rect_cache = null;
+			last_popup_media_client_rect_cache = 0;
 
 			if (!options.automatic) {
 				popup_hold = false;
@@ -89630,6 +89634,23 @@ var $$IMU_EXPORT$$;
 			}
 
 			return popup_client_rect_cache;
+		};
+
+		function get_popup_media_client_rect() {
+			if (!popups || !popups[0])
+				return null;
+
+			var img = get_popup_media_el();
+			if (!img)
+				return null;
+
+			var current_date = Date.now();
+			if (!popup_media_client_rect_cache || (current_date - last_popup_media_client_rect_cache) > 30) {
+				popup_media_client_rect_cache = img.getBoundingClientRect();
+				last_popup_media_client_rect_cache = current_date;
+			}
+
+			return popup_media_client_rect_cache;
 		};
 
 		function is_popup_el(el) {
@@ -93606,9 +93627,7 @@ var $$IMU_EXPORT$$;
 					var imgmiddleY = null;
 					var in_img_jitter = false;
 					if (img) {
-						// TODO: call this less often
-						var rect = img.getBoundingClientRect();
-						//var rect = get_popup_client_rect();
+						var rect = get_popup_media_client_rect();
 
 						in_img_jitter = in_clientrect(mouseX, mouseY, rect, jitter_base);
 
