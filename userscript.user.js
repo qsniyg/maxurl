@@ -79894,6 +79894,22 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain === "img.monaffy.jp") {
+			// https://monappy.jp/picture_places/view/41872
+			// https://img.monaffy.jp/img/picture_place/normal/41872.png
+			//   https://img.monaffy.jp/img/picture_place/original/41872.png
+			// https://img.monaffy.jp/img/profile/small/19178.png?1600876068
+			//   https://img.monaffy.jp/img/profile/original/19178.png?1600876068
+			var obj = {
+				url: src.replace(/(\/img\/+(?:picture_place|profile)\/+)[a-z]+\/+([0-9]+\.)/, "$1original/$2")
+			};
+
+			match = src.match(/\/img\/+picture_place\/+[a-z]+\/+([0-9]+)\./);
+			if (match) obj.extra = {page: "https://monappy.jp/picture_places/view/" + match[1]};
+
+			return obj;
+		}
+
 
 
 
