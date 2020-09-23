@@ -11709,6 +11709,10 @@ var $$IMU_EXPORT$$;
 	}
 
 	function decode_entities(str) {
+		var match = str.match(/^\s*<!\[CDATA\[([\s\S]+)\]\]>\s*$/);
+		if (match)
+			return match[1];
+
 		return str
 			.replace(/&nbsp;/g, " ")
 			.replace(/&#([0-9]+);/g, function (full, num) { return string_fromcharcode(num); })
@@ -16149,8 +16153,10 @@ var $$IMU_EXPORT$$;
 
 	common_functions.get_videotag_sources = function(text) {
 		var videomatch = text.match(/<video[\s\S]+?<\/video>/i);
-		if (!videomatch)
+		if (!videomatch) {
+			console_error("Unable to find video tag from", {text: text});
 			return null;
+		}
 
 		var video_parsed = parse_tag_def(videomatch[0]);
 		if (!video_parsed) {
@@ -16167,8 +16173,12 @@ var $$IMU_EXPORT$$;
 		if (video_parsed.args.src)
 			add_source(video_parsed);
 
-		var sources_match = videomatch[0].match(/<source.*?\/>/g);
+		var sources_match = videomatch[0].match(/<source.*?\/?>\s*(?:<\/source>)?/g);
 		if (!sources_match) {
+			if (!sources.length) {
+				console_warn("Unable to find sources (no <source> tag found)");
+			}
+
 			return array_or_null(sources);
 		}
 
@@ -16182,6 +16192,10 @@ var $$IMU_EXPORT$$;
 			if (parsed.args.src)
 				add_source(parsed);
 		});
+
+		if (!sources.length) {
+			console_warn("Unable to find sources");
+		}
 
 		return array_or_null(sources);
 	};
@@ -45114,18 +45128,29 @@ var $$IMU_EXPORT$$;
 			return add_extensions(src.replace(/\/thumb\/([0-9]+\/[0-9]+)s(\.[^/.]*)$/, "/src/$1$2"));
 		}
 
-		if (domain === "s.heavenlynudes.net" ||
-			// http://s.nufap.com/194/953/194953594a03e39d850/thumbs/3222369594a03e3a023b.jpg
-			domain === "s.nufap.com" ||
-			// https://s.fapsex.com/059/968/0599685567ec1e8bc31/thumbs/14936165567ec1f278d0.jpg
-			domain === "s.fapsex.com" ||
-			// https://s.clickmyboobs.com/074/636/07463655752c4fa8e79/thumbs/172574455752c50169ea.jpg
-			domain === "s.clickmyboobs.com" ||
-			// http://s.papajizz.com/227/096/22709658c972619c356/thumbs/353469058c972619efaa.jpg
-			domain === "s.papajizz.com") {
-			// http://s.heavenlynudes.net/085/279/085279556b1e0a7f645/thumbs/1620146556b1e0aa118c.jpg
-			//   http://s.heavenlynudes.net/085/279/085279556b1e0a7f645/1620146556b1e0aa118c.jpg
-			return src.replace(/\/thumbs\/([0-9a-f]+\.[^/.]*)$/, "/$1");
+		if ((domain_nosub === "pictoa.com" ||
+			 // https://s.lilitube.com/068/695/0686955565570053c59/thumbs/137493255655700ac8bd.jpg
+			 //   https://s.lilitube.com/068/695/0686955565570053c59/137493255655700ac8bd.jpg
+			 domain_nosub === "lilitube.com" ||
+			 // http://s.heavenlynudes.net/085/279/085279556b1e0a7f645/thumbs/1620146556b1e0aa118c.jpg
+			 //   http://s.heavenlynudes.net/085/279/085279556b1e0a7f645/1620146556b1e0aa118c.jpg
+			 domain_nosub === "heavenlynudes.net" ||
+			 // http://s.nufap.com/194/953/194953594a03e39d850/thumbs/3222369594a03e3a023b.jpg
+			 domain_nosub === "nufap.com" ||
+			 // https://s.fapsex.com/059/968/0599685567ec1e8bc31/thumbs/14936165567ec1f278d0.jpg
+			 domain_nosub === "fapsex.com" ||
+			 // https://s.clickmyboobs.com/074/636/07463655752c4fa8e79/thumbs/172574455752c50169ea.jpg
+			 domain_nosub === "clickmyboobs.com" ||
+			 // http://s.papajizz.com/227/096/22709658c972619c356/thumbs/353469058c972619efaa.jpg
+			 domain_nosub === "papajizz.com" ||
+			 // https://s.babaporn.com/180/740/180740594bf165c6cd1/thumbs/3262186594bf165da740.jpg
+			 //   https://s.babaporn.com/180/740/180740594bf165c6cd1/3262186594bf165da740.jpg
+			 domain_nosub === "babaporn.com")
+			&& domain.match(/^s[0-9]*\./)) {
+			// https://s2.pictoa.com/media/galleries/058/990/058990556bf9f7d10b8/thumbs/1650366556bf9f89826e.jpg
+			//   https://s2.pictoa.com/media/galleries/058/990/058990556bf9f7d10b8/1650366556bf9f89826e.jpg
+			return src.replace(/(\/[0-9a-f]{3}\/+[0-9a-f]{3}\/+[0-9a-f]+\/+)thumbs\/+([^/]*)(?:[?#].*)?$/, "$1$2");
+			//return src.replace(/\/thumbs\/([0-9a-f]+\.[^/.]*)$/, "/$1");
 		}
 
 		if (domain_nosub === "bbend.net" ||
@@ -49819,19 +49844,6 @@ var $$IMU_EXPORT$$;
 					waiting: true
 				};
 			}
-		}
-
-		if ((domain_nosub === "pictoa.com" ||
-			 // https://s.lilitube.com/068/695/0686955565570053c59/thumbs/137493255655700ac8bd.jpg
-			 //   https://s.lilitube.com/068/695/0686955565570053c59/137493255655700ac8bd.jpg
-			 domain === "s.lilitube.com" ||
-			 // https://s.babaporn.com/180/740/180740594bf165c6cd1/thumbs/3262186594bf165da740.jpg
-			 //   https://s.babaporn.com/180/740/180740594bf165c6cd1/3262186594bf165da740.jpg
-			 domain_nosub === "babaporn.com")
-			&& domain.match(/^s[0-9]*\./)) {
-			// https://s2.pictoa.com/media/galleries/058/990/058990556bf9f7d10b8/thumbs/1650366556bf9f89826e.jpg
-			//   https://s2.pictoa.com/media/galleries/058/990/058990556bf9f7d10b8/1650366556bf9f89826e.jpg
-			return src.replace(/(\/[0-9a-f]{3}\/+[0-9a-f]{3}\/+[0-9a-f]+\/+)thumbs\/+([^/]*)(?:[?#].*)?$/, "$1$2");
 		}
 
 		if (domain_nosub === "vcg.com" &&
@@ -79541,18 +79553,60 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/pics\/+[^/]+\/+)thumbs\/+([0-9]+\.)/, "$1$2");
 		}
 
-		if (false && domain === "f3b4x6b2.ssl.hwcdn.net") {
+		if (domain_nowww === "watch4beauty.com") {
+			newsrc = src.replace(/(:\/\/[^/]+\/+api\/+[^/]+\/+[0-9]{8}-[^/.?#]+-[0-9]+-[0-9]{3})-(?:480|640|960|1280|1920)(\.[^/.?#]+)(?:[?#].*)?$/, "$1-2560$2");
+			if (newsrc !== src) return newsrc;
+		}
+
+		if (host_domain_nowww === "watch4beauty.com" && domain === "f3b4x6b2.ssl.hwcdn.net") {
+			var get_preloaded_state = function() {
+				var scripts = document.getElementsByTagName("script");
+				var state = null;
+				array_foreach(scripts, function(script) {
+					var match = script.innerHTML.match(/^\s*window\.__PRELOADED_STATE__\s*=\s*({.*});\s*$/);
+					if (!match)
+						return;
+
+					try {
+						state = JSON_parse(match[1]);
+					} catch (e) {
+						console_error(e);
+						return false;
+					}
+				});
+				return state;
+			};
+
+			var get_album_id_from_state = function(state) {
+				return state.watch.issues.currentIssueDetail.id;
+			};
+
+			var get_album_info = function(state, id) {
+				return state.watch.issues.magazinesMergeTitle[id];
+			};
+
 			match = src.match(/^[a-z]+:\/\/[^/]+\/+production\/+([0-9]{8}-[^/.?#]+)-(?:480|640|960|1280|1920)(\.[^/.?#]+)(?:[?#].*)?$/);
 			if (match) {
-				// todo: find album_pictures_amount
-				return {
-					url: "https://www.watch4beauty.com/api" + base64_decode("LzRqR2RUR1kyMHZreVZjeC8=") + match[1] + "-" + album_pictures_amount + "-2560" + match[2],
+				var obj = {
 					headers: {
 						Referer: "https://www.watch4beauty.com/"
 					},
 					redirects: true,
 					can_head: false
 				};
+
+				var state = get_preloaded_state();
+				if (state) {
+					try {
+						var album_id = get_album_id_from_state(state);
+						var album_info = get_album_info(state, album_id);
+						var album_size = zpadnum(album_info.issue_size, 3);
+					} catch (e) {
+						console_error(e, state);
+					}
+
+					obj.url = "https://www.watch4beauty.com/api" + base64_decode("LzRqR2RUR1kyMHZreVZjeC8=") + match[1] + "-" + album_size + "-2560" + match[2];
+				}
 			}
 		}
 
@@ -79581,6 +79635,136 @@ var $$IMU_EXPORT$$;
 				}
 			});
 			if (newsrc) return newsrc;
+		}
+
+		if (domain === "galleries.cdn.homemoviestube.com") {
+			// https://galleries.cdn.homemoviestube.com/2404965f5cc43ad5b31/thumbs/5f5cc4735cd12.jpg
+			//   https://galleries.cdn.homemoviestube.com/2404965f5cc43ad5b31/5f5cc4735cd12.jpg
+			return src.replace(/(:\/\/[^/]+\/+[0-9a-f]{5,}\/+)thumbs\/+([0-9a-f]{5,}\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "homemoviestube.com") {
+			// youramateurporn.com uses the same system (though the url form is different
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+videos\/+([0-9]+)\/+[^/?#]*\.html/,
+				query_for_id: "https://www.homemoviestube.com/videos/${id}/.html",
+				process: function(done, resp, cache_key) {
+					// todo: maybe move to common_functions?
+					var sources = common_functions.get_videotag_sources(resp.responseText);
+					if (!sources) return done(null, false);
+
+					var page = get_meta(resp.responseText, "og:url");
+					if (page)
+						page = urljoin(resp.finalUrl, page, true);
+					else
+						page = resp.finalUrl;
+
+					var obj = {
+						url: urljoin(page, sources[0].url, true),
+						headers: {
+							Referer: page
+						},
+						extra: {
+							page: page
+						},
+						video: true
+					};
+
+					var caption = get_meta(resp.responseText, "og:title");
+					if (caption) obj.extra.caption = caption;
+
+					return done(obj, 60*60);
+				}
+			});
+			if (newsrc) return newsrc;
+		}
+
+		if (domain_nowww === "lovehomeporn.com") {
+			var query_lovehomeporn_config = function(vid, cb) {
+				api_query("lovehomeporn_video:" + vid, {
+					url: "https://lovehomeporn.com/media/nuevo/config.php?key=" + vid,
+					imu_mode: "xhr",
+					headers: {
+						Referer: "https://lovehomeporn.com/"
+					}
+				}, cb, function(done, resp, cache_key) {
+					var get_xml = function(tag) {
+						var regex = new RegExp("<" + tag + ">(.*?)</" + tag + ">");
+						var match = resp.responseText.match(regex);
+						if (!match)
+							return null;
+
+						return decode_entities(match[1]);
+					};
+
+					var file = get_xml("file");
+					var filehd = get_xml("filehd");
+					var title = get_xml("title");
+					var thumb = get_xml("thumb");
+					var image = get_xml("image");
+					var url = get_xml("url");
+
+					if (!thumb)	thumb = image;
+
+					var urls = [];
+
+					if (filehd) {
+						urls.push({
+							url: filehd,
+							video: true
+						});
+					}
+
+					if (file) {
+						urls.push({
+							url: file,
+							video: true
+						});
+					}
+
+					if (thumb) {
+						urls.push(thumb);
+					}
+
+					var obj = {
+						headers: {
+							Referer: url
+						},
+						extra: {
+							page: url,
+							caption: title
+						}
+					};
+
+					return done(fillobj_urls(urls, obj), 60*60);
+				});
+			};
+
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+video\/+([0-9]+)(?:\/+[^/]+)?(?:[?#].*)?$/,
+				run: function(cb, match) {
+					query_lovehomeporn_config(match[1], cb);
+				}
+			});
+			if (newsrc) return newsrc;
+		}
+
+		if (domain === "cdn.static.lovehomeporn.com" || domain_nowww === "lovehomeporn.com") {
+			// https://cdn.static.lovehomeporn.com/templates/frontend/purple/new_images/player-panel.gif
+			if (/\/templates\/+frontend\/+purple\/+new_images\//.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
+
+			// https://cdn.static.lovehomeporn.com/media/videos/main_thumbs/260%D1%85195/{id0..2}/{id}/??.webp
+			// https://lovehomeporn.com/media/videos/tmb/{id}/??.jpg
+			match = src.match(/\/media\/+videos\/+(?:main_thumbs\/+[^/]+\/+[0-9]{2}|tmb)\/+([0-9]+)\/+[0-9]+\.[^/.]+(?:[?#].*)?$/);
+			if (match)
+				return {
+					url: "https://www.lovehomeporn.com/video/" + match[1],
+					is_pagelink: true
+				};
 		}
 
 
