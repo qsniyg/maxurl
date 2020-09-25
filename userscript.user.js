@@ -33786,8 +33786,7 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(:\/\/[^/]*\/)[a-z]+\//, "$1obj/");
 		}
 
-		if (domain === "p16-sign-va.tiktokcdn.com" ||
-			domain === "p16-sign-sg.tiktokcdn.com") {
+		if (domain_nosub === "tiktokcdn.com" && /^p[0-9]*-sign-(?:va|sg)\./.test(domain)) {
 			// thanks to llacb47 on github: https://github.com/qsniyg/maxurl/issues/426
 			// https://p16-sign-va.tiktokcdn.com/tos-maliva-p-0068/3cc29b70b9ed45d1b86f5a525da02f13_1598931018~tplv-tiktokx-360p.image?x-expires=1599033600&x-signature=%2BJAF%2BVz2hXai0gjnYm6R97lLk7c%3D
 			//   https://p16-amd-va.tiktokcdn.com/tos-maliva-p-0068/3cc29b70b9ed45d1b86f5a525da02f13_1598931018~noop.image
@@ -33803,6 +33802,9 @@ var $$IMU_EXPORT$$;
 			//   https://p16-amd-va.tiktokcdn.com/origin/tiktok-obj/1628900944743426.webp
 			// https://p16-amd-va.tiktokcdn.com/tiktok-obj/1628900944743426~c5_168x168.webp
 			//   https://p16-amd-va.tiktokcdn.com/tiktok-obj/1628900944743426~c5_168x168.webp
+			// thanks to llacb47 on github: https://github.com/qsniyg/maxurl/issues/454
+			// https://p77-sign-sg.tiktokcdn.com/musically-maliva-obj/1640051850297350~c5_100x100.jpeg?x-expires=1601161200&x-signature=bCErvp6OtiUTB9NRl4nqNTaiob0%3D
+			//   https://p16-amd-va.tiktokcdn.com/origin/musically-maliva-obj/1640051850297350.jpeg
 			return src.replace(/:\/\/[^/]+\/+([^?#&]+)(?:[?#].*)?$/, "://p16-amd-va.tiktokcdn.com/$1");
 		}
 
