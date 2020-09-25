@@ -22301,6 +22301,9 @@ var $$IMU_EXPORT$$;
 			// thanks to jloqfjgk on github: https://github.com/qsniyg/maxurl/issues/408
 			// https://www.lapisrelights.com/assets/img/uploads/2020/08/lapis_crossword_thumb2-1024x576.jpg
 			(domain_nowww === "lapisrelights.com" && /\/assets\/+img\/+uploads\//.test(src)) ||
+			// thanks to fireattack on github: https://github.com/qsniyg/maxurl/issues/453
+			// https://linkstorage.linkfire.com/medialinks/images/875d8b6d-5238-4f5c-8b71-4599cd3030c0/artwork-440x440.jpg
+			(domain === "linkstorage.linkfire.com" && /\/medialinks\/+images\//.test(src)) ||
 			// thanks to llacb47 on github: https://github.com/qsniyg/maxurl/issues/439
 			// https://www.wbbjtv.com/content/uploads/2020/03/MGN_1280x960_00321B00-INZQY-1024x768.jpg
 			((domain_nowww === "wbbjtv.com" ||
@@ -79331,7 +79334,7 @@ var $$IMU_EXPORT$$;
 			};
 
 			newsrc = website_query({
-				website_regex: /^[a-z]+:\/\/[^/]+\/+([0-9]+)(?:\/+[^/]+\/*)?(?:[?#].*)?$/,
+				website_regex: /^[a-z]+:\/\/[^/]+\/+([0-9]+)(?:\/+(?:[^/]+\/*)?)?(?:[?#].*)?$/,
 				query_for_id: "https://www.feet9.com/${id}",
 				process: function(done, resp, cache_key) {
 					var match = resp.responseText.match(/inivideo\('[0-9]+','({".*?"})',/);
