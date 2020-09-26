@@ -50634,6 +50634,16 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/data\/upload\/[0-9]+\//, "/data/upload/");
 		}
 
+		if (domain === "img.hmv.co.jp") {
+			// thanks to Urkchar on discord
+			// https://img.hmv.co.jp/image/backimage.gif
+			if (/\/image\/+backimage\.gif(?:[?#].*)?$/.test(src))
+				return {
+					url: src,
+					bad: "mask"
+				};
+		}
+
 		if (domain_nowww === "buysmartjapan.com") {
 			// https://www.buysmartjapan.com/images/a59a9d8e5bfb26d558780441a0ad1152?original=https%3A%2F%2Fmelonbooks.akamaized.net%2Fuser_data%2Fpackages%2Fresize_image.php%3Fimage%3D213001024963.jpg%26width%3D450%26height%3D450
 			//   https://melonbooks.akamaized.net/user_data/packages/resize_image.php?image=213001024963.jpg&width=450&height=450
