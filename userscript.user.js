@@ -29525,13 +29525,23 @@ var $$IMU_EXPORT$$;
 
 		if (domain_nosub === "thrillist.com" && domain.match(/assets[0-9]*\.thrillist\.com/)) {
 			// https://assets3.thrillist.com/v1/image/2642818/size/tmg-article_default_mobile.jpg
-			// https://assets3.thrillist.com/v1/image/2642818/size/tl-horizontal_main.jpg
+			//   https://assets3.thrillist.com/v1/image/2642818/size/tl-horizontal_main.jpg
+			//   https://assets3.thrillist.com/v1/image/2642818
 			// https://assets3.thrillist.com/v1/image/2729043/size/tl-right_rail_short.jpg
 			// https://assets3.thrillist.com/v1/image/2728632/size/gn-gift_guide_variable_c.jpg
 			// https://assets3.thrillist.com/v1/image/2442399/size/tmg-article_tall.jpg
 			//   https://assets3.thrillist.com/v1/image/2442399
 			// http://assets3.thrillist.com/v1/image/1210040
-			return src.replace(/\/size\/[^/]*$/, "");
+			// thanks to llacb47 on github: https://github.com/qsniyg/maxurl/issues/455
+			// https://assets3.thrillist.com/v1/image/2895526/280x374/flatten;crop;jpeg_quality=60.jpg
+			//   https://assets3.thrillist.com/v1/image/2895526
+			// https://assets3.thrillist.com/v1/image/2874558/1584x1054/crop;jpeg_quality=60.jpg
+			//   https://assets3.thrillist.com/v1/image/2874558
+			// https://assets3.thrillist.com/v1/image/2895205/444x250/flatten;crop;jpeg_quality=60.jpg
+			//   https://assets3.thrillist.com/v1/image/2895205
+			// https://assets3.thrillist.com/v1/image/2893902/1200x600/scale;
+			//   https://assets3.thrillist.com/v1/image/2893902
+			return src.replace(/(:\/\/[^/]+\/+v1\/+image\/+[0-9]+)(?:\/.*)?(?:[?#].*)?$/, "$1");
 		}
 
 		if (domain_nowww === "vacationidea.com" &&
@@ -41187,6 +41197,12 @@ var $$IMU_EXPORT$$;
 			// https://image.tmdb.org/t/p/w220_and_h330_bestv2/9AMeuhQn99W6deTt6cVemCy6nKe.jpg -- 220x330
 			//   https://image.tmdb.org/t/p/original/9AMeuhQn99W6deTt6cVemCy6nKe.jpg -- 1400x2100
 			return src.replace(/\/[wh][0-9]+(?:_and[^/]*)?\/([0-9a-zA-Z]+\.[^/.]*)$/, "/original/$1");
+		}
+
+		if (domain_nowww === "lookmovie.ag") {
+			// https://lookmovie.ag/images/b/w780/d1977d1e6588a57934bcb4ce54ee438e.jpg
+			//   https://lookmovie.ag/images/b/original/d1977d1e6588a57934bcb4ce54ee438e.jpg
+			return src.replace(/(\/images\/+[bpf]\/+)[wh][0-9]+\/+([0-9a-f]{10,}\.)/, "$1original/$2");
 		}
 
 		if (false && (domain_nosub === "nbcuni.com" &&
