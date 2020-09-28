@@ -12,19 +12,19 @@
 // @name:zh-TW        Image Max URL
 // @name:zh-HK        Image Max URL
 // @namespace         http://tampermonkey.net/
-// @version           0.14.2
-// @description       Finds larger or original versions of images and videos for 7200+ websites, including a powerful media popup feature
-// @description:en    Finds larger or original versions of images and videos for 7200+ websites, including a powerful media popup feature
-// @description:ko    7200개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
-// @description:fr    Trouve des images plus grandes ou originales pour plus de 7200 sites
-// @description:es    Encuentra imágenes más grandes y originales para más de 7200 sitios
-// @description:ru    Находит увеличенные или оригинальные версии изображений для более чем 7200 веб-сайтов
-// @description:de    Sucht nach größeren oder originalen Versionen von Bildern und Videos für mehr als 7200 Websites
-// @description:ja    7200以上のウェブサイトで高画質や原本画像を見つけ出します
-// @description:zh    为7200多个网站查找更大或原始图像
-// @description:zh-CN 为7200多个网站查找更大或原始图像
-// @description:zh-TW 為7200多個網站查找更大或原始圖像
-// @description:zh-HK 為7200多個網站查找更大或原始圖像
+// @version           0.14.3
+// @description       Finds larger or original versions of images and videos for 7300+ websites, including a powerful media popup feature
+// @description:en    Finds larger or original versions of images and videos for 7300+ websites, including a powerful media popup feature
+// @description:ko    7300개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
+// @description:fr    Trouve des images plus grandes ou originales pour plus de 7300 sites
+// @description:es    Encuentra imágenes más grandes y originales para más de 7300 sitios
+// @description:ru    Находит увеличенные или оригинальные версии изображений для более чем 7300 веб-сайтов
+// @description:de    Sucht nach größeren oder originalen Versionen von Bildern und Videos für mehr als 7300 Websites
+// @description:ja    7300以上のウェブサイトで高画質や原本画像を見つけ出します
+// @description:zh    为7300多个网站查找更大或原始图像
+// @description:zh-CN 为7300多个网站查找更大或原始图像
+// @description:zh-TW 為7300多個網站查找更大或原始圖像
+// @description:zh-HK 為7300多個網站查找更大或原始圖像
 // @author            qsniyg
 // @homepageURL       https://qsniyg.github.io/maxurl/options.html
 // @supportURL        https://github.com/qsniyg/maxurl/issues

@@ -1,3 +1,24 @@
+0.14.3
+
+New features:
+
+ * Support for ~25 new websites (using ~30 new rules)
+ * Option to toggle using DeviantART downloads (enabled by default)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including DeviantART, Reddit, YouTube)
+ * "Hold key" and "Close when leaving" can now be used for the keyboard trigger if "Don't close until mouse leaves" is enabled
+ * Minor performance improvements for popup mouseover feature
+
+Bugfixes:
+
+ * Fixed a bug where the userscript would fail to load for certain sites with adblock enabled due to access to `String.fromCharCode` being blocked
+
+Special thanks to llacb47, fireattack, Urkchar, Runakanta, Lerortle, MrSeyker for their contributions and reports for this release
+
+---
+
 0.14.2
 
 New features:
