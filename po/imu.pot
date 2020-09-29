@@ -2039,11 +2039,19 @@ msgid "Deezer"
 msgstr ""
 
 #. deviantart_prefer_size.name
-msgid "DeviantArt: Prefer size over original"
+msgid "DeviantART: Prefer size over original"
 msgstr ""
 
 #. deviantart_prefer_size.description
 msgid "Prefers a larger (but not upscaled) thumbnail image over a smaller original animated image"
+msgstr ""
+
+#. deviantart_support_download.name
+msgid "DeviantART: Use download links"
+msgstr ""
+
+#. deviantart_support_download.description
+msgid "Prefers using the download link (if available) by default"
 msgstr ""
 
 #. imgur_filename.name
