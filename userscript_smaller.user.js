@@ -81,7 +81,7 @@
 //   * Firefox addon:   https://addons.mozilla.org/firefox/addon/image-max-url/
 //   * Opera extension: https://addons.opera.com/en/extensions/details/image-max-url/
 
-// Due to Greasyfork's 2MB limit, all comments within bigimage() had to be removed
+// All comments within bigimage() have been removed to ensure the file remains within Greasyfork and AMO limits
 // You can view the original source code here: https://github.com/qsniyg/maxurl/blob/master/userscript.user.js
 
 

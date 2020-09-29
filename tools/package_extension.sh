@@ -19,7 +19,14 @@ if [ "$USERVERSION" != "$MANIFESTVERSION" ]; then
     exit 1
 fi
 
-if [ -f ./tools/gen_minified.js ]; then
+if [ -f ./tools/remcomments.js ]; then
+    echo "Generating userscript_smaller.user.js"
+    node ./tools/remcomments.js userscript.user.js nowatch
+else
+    echo "Warning: gen_minified.js not available, skipping OpenUserJS minified version of the userscript"
+fi
+
+if [ -f ./tools/gen_minified.jsf ]; then
     node ./tools/gen_minified.js
     MINVERSION=`get_userscript_version userscript_min.user.js`
 
@@ -43,9 +50,17 @@ echo
 echo Creating extension readme file
 
 cat << EOF > EXTENSION_README.txt
-The only machine-generated part of this extension is in 3rd-party libraries.
+3rd-party libraries are machine-generated.
 To build them, run ./lib/build_libs.sh
-To build the extension, run ./package_extension.sh
+
+The userscript has the following changes applied (to conserve space):
+  * All comments within bigimage() have been removed (comments are nearly always test cases, and currently comprise ~2MB of the userscript's size)
+  * Unneeded strings within the strings object have been removed
+
+This is performed by: node ./tools/remcomments.js userscript.user.js nowatch
+
+To build the extension, run: ./package_extension.sh
+  * This also runs the remcomments command above.
 
 Below are the versions of the programs used to generate this extension:
 
@@ -80,15 +95,37 @@ separator EXTENSION_README.txt
 echo
 echo Building Firefox extension
 
-BASEFILES="LICENSE.txt manifest.json userscript.user.js lib/testcookie_slowaes.js lib/cryptojs_aes.js lib/hls.js lib/dash.all.debug.js resources/logo_40.png resources/logo_48.png resources/logo_96.png resources/disabled_40.png resources/disabled_48.png resources/disabled_96.png extension"
-SOURCEFILES="lib/aes1.patch lib/aes_shim.js lib/cryptojs_aes_shim.js lib/dash_shim.js lib/hls_shim.js lib/build_libs.sh EXTENSION_README.txt tools/package_extension.sh"
+BASEFILES="LICENSE.txt manifest.json userscript.user.js lib/testcookie_slowaes.js lib/cryptojs_aes.js lib/hls.js lib/dash.all.debug.js resources/logo_40.png resources/logo_48.png resources/logo_96.png resources/disabled_40.png resources/disabled_48.png resources/disabled_96.png extension/background.js extension/options.css extension/options.html extension/popup.js extension/popup.html"
+SOURCEFILES="lib/aes1.patch lib/aes_shim.js lib/cryptojs_aes_shim.js lib/dash_shim.js lib/hls_shim.js lib/build_libs.sh EXTENSION_README.txt tools/package_extension.sh tools/remcomments.js tools/util.js"
+DIRS="extension lib resources tools"
+
+zip_tempcreate() {
+    mkdir tempzip
+
+    for dir in $DIRS; do
+        mkdir tempzip/$dir
+    done
+
+    for file in $BASEFILES $SOURCEFILES; do
+        sourcefile="$file"
+        if [ "$file" == "userscript.user.js" ]; then
+            sourcefile=userscript_smaller.user.js
+        fi
+
+        cp "$sourcefile" tempzip/"$file"
+    done
+}
+
+zip_tempcreate
 
 zipcmd() {
     echo
     echo "Building extension package: $1"
     echo
 
-    zip -r "$1" $BASEFILES -x "*~"
+    cd tempzip
+    zip -r ../"$1" $BASEFILES -x "*~"
+    cd ..
 }
 
 zipsourcecmd() {
@@ -96,7 +133,9 @@ zipsourcecmd() {
     echo "Building source package: $1"
     echo
 
-    zip -r "$1" $BASEFILES $SOURCEFILES -x "*~"
+    cd tempzip
+    zip -r ../"$1" $BASEFILES $SOURCEFILES -x "*~"
+    cd ..
 }
 
 rm extension.xpi
@@ -110,7 +149,6 @@ FILES=$(getzipfiles extension.xpi)
 echo "$FILES" > files.txt
 
 cat <<EOF > files1.txt
-extension/
 extension/background.js
 extension/options.css
 extension/options.html
@@ -136,6 +174,8 @@ resources/logo_40.png
 resources/logo_48.png
 resources/logo_96.png
 #-tools/package_extension.sh
+#-tools/remcomments.js
+#-tools/util.js
 userscript.user.js
 EOF
 
@@ -152,6 +192,10 @@ if [ ! -z "$DIFF" ]; then
     echo 'Wrong files for firefox extension'
     exit 1
 fi
+
+rm -rf tempzip
+zip_tempcreate
+cp userscript.user.js tempzip/userscript.user.js
 
 rm extension_source.zip
 zipsourcecmd extension_source.zip
@@ -170,6 +214,7 @@ rm files.txt
 rm files1.txt
 rm files1_source.txt
 
+rm -rf tempzip
 
 if [ -f ./maxurl.pem ]; then
     echo
@@ -184,7 +229,10 @@ if [ -f ./maxurl.pem ]; then
     key="$name.pem"
 
     rm $zip $pub $sig
+
+    zip_tempcreate
     zipcmd $zip
+    rm -rf tempzip
 
     # signature
     openssl sha1 -sha1 -binary -sign "$key" < "$zip" > "$sig"

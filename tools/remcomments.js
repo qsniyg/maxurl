@@ -1,7 +1,13 @@
 const fs = require("fs");
 const util = require("./util.js");
-// git clone the gh-pages branch into site
-const about = require("../site/about.js");
+
+var about = null;
+try {
+	// git clone the gh-pages branch into site
+	var about = require("../site/about.js");
+} catch (e) {
+	console.warn("about.js not found, not generating sites.txt");
+}
 
 const process = require("process");
 process.chdir(__dirname + "/..");
@@ -82,7 +88,7 @@ function update() {
 				} else if (within_firstcomment) {
 					firstcomment = false;
 					newlines.push("");
-					newlines.push("// Due to Greasyfork's 2MB limit, all comments within bigimage() had to be removed");
+					newlines.push("// All comments within bigimage() have been removed to ensure the file remains within Greasyfork and AMO limits");
 					newlines.push("// You can view the original source code here: https://github.com/qsniyg/maxurl/blob/master/userscript.user.js");
 				}
 			}
@@ -132,39 +138,46 @@ function update() {
 
 	fs.writeFileSync("userscript_smaller.user.js", newcontents);
 
-	about.get_userscript_stats(newcontents);
-	var sites = about.get_sites();
+	if (about) {
+		about.get_userscript_stats(newcontents);
+		var sites = about.get_sites();
 
-	var sites_header = [
-		"# This is an automatically generated list of every hardcoded website currently supported by the script.",
-		"#",
-		"# Hardcoded websites are (usually) websites that need custom logic that cannot be represented",
-		"#  in a generic rule.",
-		"#",
-		"# The script supports many generic rules (such as for Wordpress, MediaWiki, and Drupal),",
-		"#  which means that even if a website is not this list, the script may still support it.",
-		"#",
-		"# The script also (usually) only cares about the domain containing images, not the host website.",
-		"#  For example, 'pinterest.com' is not in this list, but 'pinimg.com' (where Pinterest's images are stored) is.",
-		"#",
-		"# I usually don't visit the host websites (only the image links themselves), so there are sometimes cases",
-		"#  where rules don't work for all images under the website.",
-		"#  If you spot any issues, please leave an issue on Github, and I will try to fix it as soon as I can.",
-		"#",
-		"# There is currently no automatic testing, which means it's possible some of these don't work anymore.",
-		"#  Please let me know if you find a website that doesn't work!",
-		""
-	];
+		var sites_header = [
+			"# This is an automatically generated list of every hardcoded website currently supported by the script.",
+			"#",
+			"# Hardcoded websites are (usually) websites that need custom logic that cannot be represented",
+			"#  in a generic rule.",
+			"#",
+			"# The script supports many generic rules (such as for Wordpress, MediaWiki, and Drupal),",
+			"#  which means that even if a website is not this list, the script may still support it.",
+			"#",
+			"# The script also (usually) only cares about the domain containing images, not the host website.",
+			"#  For example, 'pinterest.com' is not in this list, but 'pinimg.com' (where Pinterest's images are stored) is.",
+			"#",
+			"# I usually don't visit the host websites (only the image links themselves), so there are sometimes cases",
+			"#  where rules don't work for all images under the website.",
+			"#  If you spot any issues, please leave an issue on Github, and I will try to fix it as soon as I can.",
+			"#",
+			"# There is currently no automatic testing, which means it's possible some of these don't work anymore.",
+			"#  Please let me know if you find a website that doesn't work!",
+			""
+		];
 
-	[].push.apply(sites_header, sites);
-	sites_header.push("");
+		[].push.apply(sites_header, sites);
+		sites_header.push("");
 
-	fs.writeFileSync("sites.txt", sites_header.join("\n"));
+		fs.writeFileSync("sites.txt", sites_header.join("\n"));
+	}
 
 	console.log("Done");
 }
 
 update();
 console.log("");
+
+if (process.argv[3] === "nowatch") {
+	process.exit();
+}
+
 console.log("Watching");
 fs.watchFile("userscript.user.js", update);
