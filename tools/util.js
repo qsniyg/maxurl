@@ -1,5 +1,7 @@
 const fs = require("fs");
 
+var userscript_filename = module.exports.userscript_filename = __dirname + "/../userscript.user.js";;
+
 // https://stackoverflow.com/a/31652607/13255485
 var json_escape_unicode = function(stringified) {
     return stringified.replace(/[\u007F-\uFFFF]/g, function(chr) {
@@ -20,8 +22,6 @@ module.exports.stringify_strings = stringify_strings;
 
 module.exports.update_userscript_strings = function(strings, userscript) {
     var stringified = stringify_strings(strings);
-
-    var userscript_filename = __dirname + "/../userscript.user.js";
 
     if (!userscript)
         userscript = fs.readFileSync(userscript_filename).toString();
@@ -62,4 +62,9 @@ module.exports.sort_keys_by_array = function(object, key) {
     }
 
     return newobj;
+};
+
+module.exports.read_as_lines = function(file) {
+    var read = fs.readFileSync(file).toString();
+    return read.split("\n");
 };
