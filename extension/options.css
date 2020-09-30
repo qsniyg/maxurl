@@ -396,6 +396,10 @@ label, button, .button, select, .tab {
   border-color: #c00;
 }
 
+button.revert-button {
+  padding: 4px 4px;
+}
+
 button:active, .button:active {
   background: #08c;
   border-color: #08c;
