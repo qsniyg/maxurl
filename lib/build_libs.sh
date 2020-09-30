@@ -22,8 +22,8 @@ strip_whitespace testcookie_slowaes.js
 unix2dos testcookie_slowaes.js
 
 wget https://github.com/video-dev/hls.js/releases/download/v0.14.13/hls.js -O hls.orig.js
-# 1: don't use window.XMLHttpRequest, in order to allow overriding it
-# 2: avoids some warnings in devtools
+# 1/2: don't use window.XMLHttpRequest, in order to allow overriding it
+# 3: avoids some warnings in devtools
 sed -e 's/xhr_loader_window\.XMLHttpRequest/XMLHttpRequest/g' -e 's/window\.XMLHttpRequest/XMLHttpRequest/g' -e '/\/\/# sourceMappingURL=hls.js.map/d' hls.orig.js > hls.patched.js
 cat hls.patched.js hls_shim.js > hls.js
 strip_whitespace hls.js
