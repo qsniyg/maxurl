@@ -12,7 +12,7 @@
 // @name:zh-TW        Image Max URL
 // @name:zh-HK        Image Max URL
 // @namespace         http://tampermonkey.net/
-// @version           0.14.3
+// @version           0.14.4
 // @description       Finds larger or original versions of images and videos for 7300+ websites, including a powerful media popup feature
 // @description:en    Finds larger or original versions of images and videos for 7300+ websites, including a powerful media popup feature
 // @description:ko    7300개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다

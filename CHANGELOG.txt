@@ -1,3 +1,26 @@
+0.14.4
+
+New features:
+
+ * Button to reset option to the default value in options
+ * Support for ~40 new websites (using ~10 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including DeviantART)
+ * Support for custom XHR for HLS
+ * Unsupported video types (HLS/DASH when disabled) will no longer be needlessly requested (#460)
+ * Beginning to work towards more powerful CSS styling
+
+Bugfixes:
+
+ * Fix rule-specific settings not showing up when using tabbed settings (thanks to Иван Хомяков on greasyfork for reporting)
+ * Fix XHR abort() not being properly handled under extension if run before the request was initialized
+
+Special thanks to llacb47, MrSeyker, Иван Хомяков, remlap for their contributions and reports for this release
+
+---
+
 0.14.3
 
 New features:

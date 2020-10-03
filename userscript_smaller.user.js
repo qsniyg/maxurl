@@ -15,7 +15,7 @@
 // @name:zh-TW        Image Max URL
 // @name:zh-HK        Image Max URL
 // @namespace         http://tampermonkey.net/
-// @version           0.14.3
+// @version           0.14.4
 // @description       Finds larger or original versions of images and videos for 7300+ websites, including a powerful media popup feature
 // @description:en    Finds larger or original versions of images and videos for 7300+ websites, including a powerful media popup feature
 // @description:ko    7300개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
@@ -631,6 +631,7 @@ var $$IMU_EXPORT$$;
 	if (is_extension) {
 		do_request_raw = function(data) {
 			var reqid;
+			var do_abort = false;
 
 			extension_send_message({
 				type: "request",
@@ -647,12 +648,22 @@ var $$IMU_EXPORT$$;
 					id: reqid,
 					data: data
 				};
+
+				if (do_abort) {
+					extension_send_message({
+						type: "abort_request",
+						data: reqid
+					});
+
+					return;
+				}
 			});
 
 			return {
 				abort: function() {
 					if (reqid === undefined) {
-						console_error("abort() was called before the request was initialized");
+						console_warn("abort() was called before the request was initialized");
+						do_abort = true;
 						return;
 					}
 
@@ -5221,54 +5232,63 @@ var $$IMU_EXPORT$$;
 		deviantart_prefer_size: {
 			name: "DeviantART: Prefer size over original",
 			description: "Prefers a larger (but not upscaled) thumbnail image over a smaller original animated image",
-			category: "rule_specific",
+			category: "rules",
+			subcategory: "rule_specific",
 			onupdate: update_rule_setting
 		},
 		deviantart_support_download: {
 			name: "DeviantART: Use download links",
 			description: "Prefers using the download link (if available) by default",
-			category: "rule_specific",
+			category: "rules",
+			subcategory: "rule_specific",
 			onupdate: update_rule_setting
 		},
 		imgur_filename: {
 			name: "Imgur: Use original filename",
 			description: "If the original filename (the one used to upload the image) is found, use it instead of the image ID",
-			category: "rule_specific",
+			category: "rules",
+			subcategory: "rule_specific",
 			onupdate: update_rule_setting
 		},
 		imgur_source: {
 			name: "Imgur: Use source image",
 			description: "If a source image is found for Imgur, try using it instead. Only works for old-style Imgur webpages (set `postpagebeta=0; postpagebetalogged=0` as cookies)",
-			category: "rule_specific",
+			category: "rules",
+			subcategory: "rule_specific",
 			onupdate: update_rule_setting
 		},
 		instagram_use_app_api: {
 			name: "Instagram: Use native API",
 			description: "Uses Instagram's native API if possible, requires you to be logged into Instagram",
-			category: "rule_specific",
+			category: "rules",
+			subcategory: "rule_specific",
 			onupdate: update_rule_setting
 		},
 		instagram_dont_use_web: {
 			name: "Instagram: Don't use web API",
 			description: "Avoids using Instagram's web API if possible, which increases performance, but will occasionally sacrifice quality for videos",
 			requires: [{instagram_use_app_api: true}],
-			category: "rule_specific",
+			category: "rules",
+			subcategory: "rule_specific",
 			onupdate: update_rule_setting
 		},
 		instagram_gallery_postlink: {
 			name: "Instagram: Use albums for post thumbnails",
 			description: "Queries Instagram for albums when using the popup on a post thumbnail",
-			category: "rule_specific"
+			category: "rules",
+			subcategory: "rule_specific"
 		},
 		snapchat_orig_media: {
 			name: "Snapchat: Use original media without captions",
 			description: "Prefers using original media instead of media with captions and tags overlayed",
-			category: "rule_specific"
+			category: "rules",
+			subcategory: "rule_specific"
 		},
 		tiktok_no_watermarks: {
 			name: "TikTok: Don't use watermarked videos",
 			description: "Uses non-watermarked videos for TikTok if possible. This will introduce an extra delay when loading the video as two extra requests need to be performed.",
-			category: "rule_specific",
+			category: "rules",
+			subcategory: "rule_specific",
 			onupdate: update_rule_setting
 		},
 		tiktok_thirdparty: {
@@ -5290,7 +5310,7 @@ var $$IMU_EXPORT$$;
 				"onlinetik.com": {
 					name: "onlinetik.com"
 				},
-				"tiktokdownloader.in": {
+				"tiktokdownloader.in:ttt": {
 					name: "tiktokdownloader.in"
 				},
 				"savevideo.ninja:ttt": {
@@ -5309,13 +5329,15 @@ var $$IMU_EXPORT$$;
 					name: "snaptik.app (LQ)"
 				}
 			},
-			category: "rule_specific",
+			category: "rules",
+			subcategory: "rule_specific",
 			onupdate: update_rule_setting
 		},
 		tumblr_api_key: {
 			name: "Tumblr: API key",
 			description: "API key for finding larger images on Tumblr",
-			category: "rule_specific",
+			category: "rules",
+			subcategory: "rule_specific",
 			type: "lineedit",
 			onupdate: update_rule_setting
 		},
@@ -7065,6 +7087,7 @@ var $$IMU_EXPORT$$;
 		this._headers = {};
 		this._response_headers = {};
 		this._reqobj = null;
+		this._last_readyState = null;
 
 		this.open = function(method, url, synchronous) {
 			this._method = method;
@@ -7084,25 +7107,34 @@ var $$IMU_EXPORT$$;
 		};
 
 		this._handle_event = function(name, data) {
-			this.status = data.status || 0;
-			this.statusText = data.statusText;
-			this.response = data.response;
-			this.readyState = data.readyState;
-			this.responseText = data.responseText;
-			this.responseType = data.responseType;
-			this.responseURL = data.finalUrl;
-			this._response_headers_raw = data.responseHeaders;
+			if (data) {
+				this.status = data.status || 0;
+				this.statusText = data.statusText;
+				this.response = data.response;
+				this.readyState = data.readyState;
+				this.responseText = data.responseText;
+				this.responseType = data.responseType;
+				this.responseURL = data.finalUrl;
+				this._response_headers_raw = data.responseHeaders;
+			}
 
 			var event = {
+				currentTarget: this,
+
 				loaded: this.loaded,
 				lengthComputable: this.lengthComputable,
 				total: this.total
 			};
 
-			if (data.responseHeaders) {
+			if (data && data.responseHeaders) {
 				this._response_headers = headers_list_to_dict(parse_headers(data.responseHeaders));
-			} else {
+			} else if (data) {
 				this._response_headers = null;
+			}
+
+			if (this.readyState !== this._last_readyState) {
+				if (this.onreadystatechange) this.onreadystatechange.bind(this)(event);
+				this._last_readyState = this.readyState;
 			}
 
 			if (name === "load") {
@@ -7205,18 +7237,19 @@ var $$IMU_EXPORT$$;
 		},
 		"dash": {
 			name: "dash.all.debug",
-			url: "https://github.com/qsniyg/maxurl/blob/c18941c401c344a9db868a41899cdc4522eebd64/lib/dash.all.debug.js?raw=true",
-			size: 2192274,
-			crc32: 3434155307,
-			crc32_size: 2440872286,
+			url: "https://raw.githubusercontent.com/qsniyg/maxurl/d6b89e2c026591bf4bbbd7bd19572d3a3a2d24a7/lib/dash.all.debug.js",
+			size: 2232106,
+			crc32: 4237499449,
+			crc32_size: 4266779363,
 			xhr: true
 		},
 		"hls": {
 			name: "hls",
-			url: "https://github.com/qsniyg/maxurl/raw/0ec7ead029e967854d839c0ee0f0fa30de3848d3/lib/hls.js",
-			size: 694990,
-			crc32: 1683555956,
-			crc32_size: 1065995231
+			url: "https://raw.githubusercontent.com/qsniyg/maxurl/86ac4687d49aaf888674d4216cdbacd3b2e701e6/lib/hls.js",
+			size: 711701,
+			crc32: 3250521667,
+			crc32_size: 1595934044,
+			xhr: true
 		},
 		"cryptojs_aes": {
 			name: "cryptojs_aes",
@@ -7276,6 +7309,7 @@ var $$IMU_EXPORT$$;
 					// Unfortunately this still cannot prevent a very dedicated hostile takeover.
 					// This is why we use the dual CRC32 check. Not bulletproof, but much better than nothing.
 					// On my system it takes 6ms to do both CRC32 checks, so performance isn't an issue.
+					// FIXME: Perhaps this is unnecessary? The commit hash should change if the commit changes
 
 					do_request({
 						method: "GET",
@@ -8110,6 +8144,48 @@ var $$IMU_EXPORT$$;
 		return null;
 	};
 
+	common_functions._wix_bigimage_inner = function(src) {
+		newsrc = src.replace(/(:\/\/[^/]*\/)(f\/+[-0-9a-f]{36}\/+[0-9a-z]+-[-0-9a-f]{20,}(?:\.[^/.]*)?\/+v1\/+fill\/+w_[0-9]+,h_[0-9]+)(?:,[^/]+)?(\/+.*[?&]token=.*)$/, "$1$2,q_100$3");
+		if (newsrc !== src) {
+			return newsrc;
+		}
+
+		// thanks to MrSeyker on greasyfork: https://greasyfork.org/en/scripts/36662-image-max-url/discussions/34976#comment-160842
+		newsrc = src.replace(/(:\/\/[^/]*\/f\/+[-0-9a-f]{36}\/+[0-9a-z]+-[-0-9a-f]{20,}\.(?:png|PNG)\/+v1\/+fill\/+[^/]+\/+[^/?#]+)\.[^/.?#]+(\?.*)?$/, "$1.png$2");
+		if (newsrc !== src) {
+			return newsrc;
+		}
+
+		newsrc = src.replace(/(:\/\/[^/]*\/)(f\/+[-0-9a-f]{36}\/+.*?)[?&]token=.*$/, "$1intermediary/$2");
+		if (newsrc !== src) {
+			return newsrc;
+		}
+
+		if (!src.match(/[?&]token=.{30,}/)) {
+			newsrc = src
+				.replace(/(\.[^/.]*)\/v1\/.*/, "$1")
+				.replace(/(\/[^/.]*\.[^/.]*?)_[_0-9.a-z]*$/, "$1");
+
+			if (newsrc !== src) {
+				return newsrc;
+			}
+		}
+
+		return null;
+	};
+
+	// FIXME: this is basically replicating bigimage_recursive
+	common_functions.wix_bigimage = function(src) {
+		var urls = [];
+
+		while (src) {
+			urls.unshift(src);
+			src = common_functions._wix_bigimage_inner(src);
+		}
+
+		return urls;
+	};
+
 	common_functions.deviantart_fullimage = function(options, api_cache, src, id, cb) {
 		// animated:
 		// https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/i/db0d85b1-b8b9-4790-bef0-121edb2dce7d/ddabn1h-5342115a-06a6-4f89-9c54-a2843719553a.jpg/v1/fit/w_150,h_150,q_70,strp/spaghetti_high_by_f1x_2_ddabn1h-150.jpg
@@ -8131,7 +8207,7 @@ var $$IMU_EXPORT$$;
 			var urls = [];
 
 			if (!src.match(/:\/\/[^/]*\/fake_image\//)) {
-				urls.push(src);
+				array_extend(urls, common_functions.wix_bigimage(src));
 			}
 
 			var deviationid = result.finalUrl.replace(/.*-([0-9]+)(?:[?#].*)?$/, "$1");
@@ -8209,13 +8285,19 @@ var $$IMU_EXPORT$$;
 						}
 					}
 
-					var oururl = {
-						url: maxurl
-					};
+					var suburls = [];
+					var ourobj = {};
 
-					urls.unshift(oururl);
+					suburls = common_functions.wix_bigimage(maxurl);
 
-					var can_shortcircuit = false;
+					var image_info = common_functions.wix_image_info(maxurl);
+					if (false && image_info && image_info.original) {
+						ourobj.is_original = true;
+					}
+
+					// basically: array_prepend(urls, suburls);
+					array_extend(suburls, urls);
+					urls = suburls;
 
 					if (deviationExtended) {
 						if (options.rule_specific.deviantart_support_download && deviationExtended.download && deviationExtended.download.url) {
@@ -8223,117 +8305,29 @@ var $$IMU_EXPORT$$;
 								url: deviationExtended.download.url,
 								is_private: true
 							});
-							can_shortcircuit = true;
 						}
-					}
-
-					var image_info = common_functions.wix_image_info(oururl.url);
-					if (can_shortcircuit || (image_info && image_info.original)) {
-						oururl.is_original = true;
-						return cb(fillobj_urls(urls, obj));
 					}
 				} catch (e) {
 					console_error(e);
 				}
 			}
 
-			// TODO: should we keep this?
-			var get_download = function() {
-				var hrefre = /href=["'](https?:\/\/www\.deviantart\.com\/+download\/+[0-9]+\/+[^/>'"]*?)["']/;
-				var match = result.responseText.match(hrefre);
-				if (!match) {
-					console_error("No public download for " + src);
-
-					// This will occasionally scale down the image
-					// Broken for the site redesign
-					if (false) {
-						try {
-							var hrefre = /<img[^>]*?src=["'](https?:\/\/(?:images-wixmp)[^>'"]*?)["'][^>]*class=["']dev-content-/g;
-							var match = result.responseText.match(hrefre);
-							if (match) {
-								var maxres = 0;
-								var maxurl = null;
-								for (var i = 0; i < match.length; i++) {
-									var whmatch = match[i].match(/width=["']?([0-9]+)/);
-									var oururl = match[i].match(/\ssrc=['"](http[^'"]*)/);
-									if (!oururl)
-										continue;
-									oururl = oururl[1];
-									var base = 0;
-									if (!whmatch)
-										continue;
-									base = parseInt(whmatch[1]);
-									whmatch = match[i].match(/height=["']?([0-9]+)/);
-									if (!whmatch)
-										continue;
-									base *= parseInt(whmatch[1]);
-
-									if (base > maxres) {
-										maxres = maxres;
-										maxurl = oururl;
-									}
-								}
-
-								if (maxurl &&
-									maxurl.replace(/\?.*/) !== src.replace(/\?.*/)) {
-									var compare = common_functions.wix_compare(maxurl, src);
-
-									if (compare === maxurl) {
-										obj.url = maxurl;
-										obj.likely_broken = false;
-										return cb(obj);
-									}
-								}
-							} else {
-								console_error("No image found (this is likely a bug)");
-							}
-
-							return cb(obj)
-						} catch (e) {
-							console_error(e);
-							return cb(obj);
-						}
+			if (false) {
+				// remove duplicates (todo: factor this out?)
+				var prevurls = new_set();
+				for (var i = 0; i < urls.length; i++) {
+					if (set_has(prevurls, urls[i].url)) {
+						urls.splice(i, 1);
+						i--;
 					} else {
-						return cb(fillobj_urls(urls, obj));
+						set_add(prevurls, urls[i].url);
 					}
-					return;
 				}
-
-				var href = match[1].replace("&amp;", "&");
-
-				options.do_request({
-					method: "HEAD",
-					url: href,
-					onload: function (result) {
-						if (result.status !== 200 && result.status !== 405) {
-							console_log("Error fetching DeviantArt download link:");
-							console_log(result);
-							return cb(fillobj_urls(urls, obj));
-						}
-
-						var finalurl = result.finalUrl;
-						if (finalurl.match(/^[a-z]+:\/\/(?:www\.)?deviantart\.com\/+users\/+outgoing\?/)) {
-							finalurl = finalurl.replace(/^[a-z]+:\/\/(?:www\.)?deviantart\.com\/+users\/+outgoing\?/, "");
-						}
-
-						urls.unshift(finalurl);
-						return cb(fillobj_urls(urls, obj));
-					}
-				});
-			};
-
-			if (options.rule_specific.deviantart_support_download) {
-				try {
-					get_download();
-				} catch (e) {
-					console_error(e);
-					return cb(fillobj_urls(urls, obj));
-				}
-			} else {
-				return cb(fillobj_urls(urls, obj));
 			}
+
+			return cb(fillobj_urls(urls, obj));
 		});
-	}
+	};
 
 	common_functions.get_testcookie_cookie = function(options, api_cache, site, cb) {
 		var cache_key = "testcookie_cookie:" + site;
@@ -10032,8 +10026,12 @@ var $$IMU_EXPORT$$;
 			});
 		};
 
-		var parse_raw_token = function(raw_token, url, useragent, cb) {
-			var catted = raw_token + ":" + url + "0:" + useragent;
+		var parse_raw_token = function(raw_token, url, requesttype, useragent, cb) {
+			var urladd = "";
+			if (requesttype === "videos")
+				urladd = "0";
+
+			var catted = raw_token + ":" + url + urladd + ":" + useragent;
 			var encoded = unescape(encodeURIComponent(catted));
 
 			//console_log(encoded);
@@ -10055,25 +10053,60 @@ var $$IMU_EXPORT$$;
 			}, cb, function(done, resp, cache_key) {
 				var nowm = resp.items[0].video.noWatermark;
 				if (!nowm) {
-					console_error(cache_key, "Unable to find noWatermark from", resp);
-					return done(null, false);
+					console_warn(cache_key, "Unable to find noWatermark from", resp);
+
+					if (false) {
+						nowm = resp.items[0].video.playAddr;
+						if (!nowm) {
+							console_error(cache_key, "Unable to find downloadAddr from", resp);
+							return done(null, false);
+						}
+					} else {
+						return done(null, false);
+					}
 				}
 
 				return done(nowm, 60*60);
 			});
 		};
 
+		var get_nowatermark_videourl = function(token, url) {
+			var url = "https://" + site + "/wp-admin/admin-ajax.php?action=wppress_tt_download&url=" + encodeURIComponent(url) + "&key=no-watermark&token=" + token;
+			return {
+				url: url,
+				headers: {
+					Referer: "https://" + site + "/?tiktok-search=" + encodeURIComponent(url),
+					Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+					"Sec-Fetch-Dest": "document",
+					"Sec-Fetch-Mode": "navigate",
+					"Sec-Fetch-Site": "same-origin",
+					"Sec-Fetch-User": "?1"
+				},
+				// linked to user-agent
+				is_private: true
+			};
+		};
+
 		get_raw_token(function(raw_token) {
 			if (!raw_token)
 				return cb(null);
 
-			parse_raw_token(raw_token, url, navigator.userAgent, function(token) {
-				if (!token)
-					return cb(null);
+			if (false) {
+				parse_raw_token(raw_token, url, "videos", navigator.userAgent, function(token) {
+					if (!token)
+						return cb(null);
 
-				//console_log(token);
-				get_video_api(token, url, cb);
-			});
+					//console_log(token);
+					get_video_api(token, url, cb);
+				});
+			} else {
+				parse_raw_token(raw_token, url, "nowatermark", navigator.userAgent, function(token) {
+					if (!token)
+						return cb(null);
+
+					return cb(get_nowatermark_videourl(token, url));
+				});
+			}
 		});
 	};
 
@@ -10306,7 +10339,7 @@ var $$IMU_EXPORT$$;
 			"ttloader.com": common_functions.get_tiktok_from_ttloader,
 			"onlinetik.com": common_functions.get_tiktok_from_ttloader,
 			"demo.wppress.net:tt": common_functions.get_tiktok_from_ttloader,
-			"tiktokdownloader.in": common_functions.get_tiktok_from_ttloader,
+			"tiktokdownloader.in:ttt": common_functions.get_tiktok_from_ttloader_token,
 			"savevideo.ninja:ttt": common_functions.get_tiktok_from_ttloader_token,
 
 			"demo.wppress.net:svd": common_functions.get_tiktok_from_socialvideodownloader,
@@ -10831,6 +10864,17 @@ var $$IMU_EXPORT$$;
 		return header;
 	};
 
+	var _sources_or_null = function(sources) {
+		if (!sources.video.length) {
+			if (!sources.image.length) {
+				console_warn("Unable to find video sources");
+				return null;
+			}
+		}
+
+		return sources;
+	};
+
 	common_functions.get_videotag_sources = function(text) {
 		var videomatch = text.match(/<video[\s\S]+?<\/video>/i);
 		if (!videomatch) {
@@ -10860,20 +10904,9 @@ var $$IMU_EXPORT$$;
 			sources.image.push(video_parsed.args.poster);
 		}
 
-		var sources_or_null = function() {
-			if (!sources.video.length) {
-				if (!sources.image.length) {
-					console_warn("Unable to find video sources");
-					return null;
-				}
-			}
-
-			return sources;
-		};
-
 		var sources_match = videomatch[0].match(/<source.*?\/?>\s*(?:<\/source>)?/g);
 		if (!sources_match) {
-			return sources_or_null();
+			return _sources_or_null(sources);
 		}
 
 		array_foreach(sources_match, function(source) {
@@ -10887,7 +10920,77 @@ var $$IMU_EXPORT$$;
 				add_source(parsed);
 		});
 
-		return sources_or_null();
+		return _sources_or_null(sources);
+	};
+
+	common_functions.get_holaplayer_sources = function(objtext) {
+		if (objtext[0] !== "{") {
+			var match = objtext.match(/window\.hola_player\(({.*?}),\s*function/);
+			if (match) {
+				objtext = match[1];
+			} else {
+				console_error("Unable to find hola_player match from", {text: objtext});
+				return null;
+			}
+		}
+
+		match = objtext.match(/sources["']?:\s*(\[{.*?}\]),/);
+		if (!match) {
+			console_error("Unable to find sources match for", {text: objtext});
+			return null;
+		}
+
+		var video_sources = JSON_parse(fixup_js_obj(match[1]));
+
+		var poster = null;
+		match = objtext.match(/poster["']?:\s*["'](https?:\/\/[^"']+)["'],/);
+		if (!match) {
+			console_warn("Unable to find poster match for", {text: objtext});
+		} else {
+			poster = match[1];
+		}
+
+		var sources = {
+			video: [],
+			image: []
+		};
+
+		if (poster) {
+			sources.image.push(poster);
+		}
+
+		array_foreach(video_sources, function(source) {
+			sources.video.push({
+				src: source.src,
+				type: source.type,
+				url: source.src
+			});
+		});
+
+		return _sources_or_null(sources);
+	};
+
+	common_functions.get_obj_from_videosources = function(page, sources) {
+		var urls = [];
+		array_foreach(sources.video, function(source) {
+			var video = true;
+			if (source.type === "application/x-mpegURL" || string_indexof(source.url, ".m3u8") >= 0) {
+				video = "hls";
+			}
+
+			// TODO: DASH
+
+			urls.push({
+				url: urljoin(page, source.url, true),
+				video: video
+			});
+		});
+
+		array_foreach(sources.image, function(image) {
+			urls.push(urljoin(page, image, true));
+		});
+
+		return urls;
 	};
 
 	common_functions.get_videotag_obj = function(resp) {
@@ -14554,7 +14657,6 @@ var $$IMU_EXPORT$$;
 			(domain === "d4zcrs0v202ys.cloudfront.net" && string_indexof(src, "/images/") >= 0) ||
 			(domain_nosub === "sornamag.com" && src.match(/\/files\/+images\//)) ||
 			(domain === "arhiva.nacional.hr" && string_indexof(src, "/img/") >= 0) ||
-			(domain === "media.cbs8.com" && string_indexof(src, "/assets/") >= 0) ||
 			(domain === "img.myvideo.net.tw" && string_indexof(src, "/images/") >= 0) ||
 			(domain === "image.apost.com" && string_indexof(src, "/media/") >= 0) ||
 			(domain === "im.indiatimes.in" && string_indexof(src, "/content/") >= 0) ||
@@ -16425,29 +16527,12 @@ var $$IMU_EXPORT$$;
 				obj._copy_old_props = ["extra"];
 			}
 
-			newsrc = src.replace(/(:\/\/[^/]*\/)(f\/+[-0-9a-f]{36}\/+[0-9a-z]+-[-0-9a-f]{20,}(?:\.[^/.]*)?\/+v1\/+fill\/+w_[0-9]+,h_[0-9]+)(?:,[^/]+)?(\/+.*[?&]token=.*)$/, "$1$2,q_100$3");
-			if (newsrc !== src) {
+			newsrc = common_functions._wix_bigimage_inner(src);
+			if (newsrc) {
 				obj.url = newsrc;
-				return obj;
 			}
 
-			newsrc = src.replace(/(:\/\/[^/]*\/)(f\/+[-0-9a-f]{36}\/+.*?)[?&]token=.*$/, "$1intermediary/$2");
-			if (newsrc !== src) {
-				obj.likely_broken = true;
-				obj.url = newsrc;
-				return obj;
-			}
-
-			if (!src.match(/[?&]token=.{30,}/)) {
-				newsrc = src
-					.replace(/(\.[^/.]*)\/v1\/.*/, "$1")
-					.replace(/(\/[^/.]*\.[^/.]*?)_[_0-9.a-z]*$/, "$1");
-
-				if (newsrc !== src) {
-					obj.url = newsrc;
-					return obj;
-				}
-			}
+			return obj;
 		}
 
 		if (domain_nosub === "kukinews.com" ||
@@ -16482,6 +16567,7 @@ var $$IMU_EXPORT$$;
 			(domain_nosub === "imgspice.com" && domain.match(/^img[0-9]*\./)) ||
 			(domain_nosub === "imageporter.com" && domain.match(/^img[0-9]*\./)) ||
 			(domain_nosub === "imagedunk.com" && domain.match(/^img[0-9]*\./)) ||
+			domain === "main.imgclick.net" ||
 			(domain_nosub === "pixroute.com" && domain.match(/img[0-9]*\./))) {
 			newsrc = src.replace(/(\/i\/.*\/[^/.]*)_t(\.[^/.]*)$/, "$1$2");
 
@@ -20620,7 +20706,7 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if ((domain_nosub === "t8cdn.com" || domain_nosub === "ypncdn.com") && options && options.do_request && options.cb) {
+		if (domain_nosub === "t8cdn.com" || domain_nosub === "ypncdn.com") {
 			id = src.match(/:\/\/[^/]+\/+[0-9]{6}\/+[0-9]{1,2}\/+([0-9]+)\/+(?:vl_|[0-9]+[pP]_[0-9]+[kK]_|(?:[0-9]+x[0-9]+|originals?)\/+(?:[0-9]+\/+[^/]+-[0-9]+|[0-9]+(?:[(][a-z]+=[^/)]*\)){0,})\.)/);
 			if (id) {
 				id = id[1];
@@ -20906,7 +20992,7 @@ var $$IMU_EXPORT$$;
 
 				common_functions.tiktok_remove_watermark(api_cache, options, obj.url, page, function(newurl) {
 					if (newurl) {
-						obj.url = newurl;
+						obj = fillobj_urls([newurl], obj)[0];
 					}
 
 					if (!common_functions.set_tiktok_vid_filename(obj)) {
@@ -20991,7 +21077,7 @@ var $$IMU_EXPORT$$;
 
 				common_functions.tiktok_remove_watermark(api_cache, options, obj.url, page, function(newurl) {
 					if (newurl) {
-						obj.url = newurl;
+						obj = fillobj_urls([newurl], obj)[0];
 					}
 
 					if (!common_functions.set_tiktok_vid_filename(obj)) {
@@ -21167,11 +21253,14 @@ var $$IMU_EXPORT$$;
 
 		if (domain === "p16-sg-default.akamaized.net") return src.replace(/^[a-z]+:\/\/[^/]+\/+china-img\/+/, "https://p0.pstatp.com/");
 
-		if (domain_nosub === "tiktokcdn.com" && /^v[0-9]*m?\./.test(domain) && string_indexof(src, "/video/") >= 0) {
+		if (domain_nosub === "tiktokcdn.com" && /^v[0-9]*m?(?:-[^.]+)?\./.test(domain) && string_indexof(src, "/video/") >= 0) {
 			return {
 				url: src,
 				video: true,
-				can_head: false
+				can_head: false,
+				headers: {
+					Referer: "https://www.tiktok.com/"
+				}
 			};
 		}
 
@@ -22350,47 +22439,62 @@ var $$IMU_EXPORT$$;
 			return src.replace(/\/thumb(?:-[0-9]*)?-([0-9]*\.[^/.]*)$/, "/$1");
 		}
 
-		if (domain === "mfiles.alphacoders.com" &&
-			options && options.cb && options.do_request) {
+		if (domain === "wall.alphacoders.com") {
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+big\.php\?(?:.*&)?i=([0-9]+)(?:[&#].*)?$/,
+				query_for_id: "https://wall.alphacoders.com/big.php?i=${id}",
+				process: function(done, resp, cache_key) {
+					var image = get_meta(resp.responseText, "og:image");
+					if (!image) {
+						console_error(cache_key, "Unable to find og:image for", resp);
+						return done(null, false);
+					}
+
+					var obj = {
+						url: image,
+						extra: {
+							page: resp.finalUrl,
+						}
+					};
+
+					var wallpaper_name = resp.responseText.match(/<h1 class="[^"]+wallpaper-name">([^<]+)<\/h1>/);
+					if (wallpaper_name) {
+						wallpaper_name = decode_entities(wallpaper_name[1]);
+						obj.extra.caption = wallpaper_name;
+					}
+
+					return done(obj, 6*60*60);
+				}
+			});
+			if (newsrc) return newsrc;
+		}
+
+		if (domain === "mobile.alphacoders.com") {
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+wallpapers\/+view\/+([0-9]+)(?:\/+[^/]*\/*)?(?:[?#].*)?$/,
+				query_for_id: "https://mobile.alphacoders.com/wallpapers/view/${id}/",
+				process: function(done, resp, cache_key) {
+					var match = resp.responseText.match(/href="([a-z]+:\/\/wall\.alphacoders\.com\/big\.php\?i=[0-9]+)"/);
+					if (!match) {
+						console_error(cache_key, "Unable to find big.php match for", resp);
+						return done(null, false);
+					}
+
+					return done({
+						url: match[1],
+						is_pagelink: true
+					}, 6*60*60);
+				}
+			});
+			if (newsrc) return newsrc;
+		}
+
+		if (domain === "mfiles.alphacoders.com") {
 			id = src.replace(/.*\/(?:thumb(?:-[0-9]*)?-)?([0-9]+)\.[^/.]*$/, "$1");
 			if (id !== src) {
-				options.do_request({
-					url: "https://mobile.alphacoders.com/wallpapers/view/" + id + "/",
-					method: "GET",
-					onload: function(resp) {
-						if (resp.readyState === 4) {
-							var page = resp.finalUrl;
-							var match = resp.responseText.match(/"([a-z]+:\/\/wall\.alphacoders\.com\/big\.php\?i=[0-9]+)"/);
-							if (match) {
-								options.do_request({
-									url: match[1],
-									method: "GET",
-									onload: function(resp) {
-										if (resp.readyState === 4) {
-											var match = resp.responseText.match(/<meta *property="og:image" *content="([^"]*)"/);
-											if (match) {
-												options.cb({
-													url: match[1],
-													is_original: true,
-													extra: {
-														page: page
-													}
-												});
-											} else {
-												options.cb(null);
-											}
-										}
-									}
-								});
-							} else {
-								options.cb(null);
-							}
-						}
-					}
-				});
-
 				return {
-					waiting: true
+					url: "https://mobile.alphacoders.com/wallpapers/view/" + id + "/",
+					is_pagelink: true
 				};
 			}
 		}
@@ -26955,37 +27059,44 @@ var $$IMU_EXPORT$$;
 		}
 
 
-		if ((domain === "i.ibb.co" ||
+		if (domain_nowww === "ibb.co") {
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+([a-zA-Z0-9]+)(?:[?#].*)?$/,
+				query_for_id: "https://ibb.co/${id}",
+				process: function(done, resp, cache_key) {
+					var match = resp.responseText.match(/CHV\.obj\.image_viewer\.image\s*=\s*{.*?[^a-zA-Z0-9_]url:["'](.*?)["']/);
+					if (!match) {
+						console_error(cache_key, "Unable to find match for", resp);
+						return done(null, false);
+					}
+
+					var obj = {
+						url: match[1],
+						extra: {
+							page: urljoin(resp.finalUrl + "/", match[1].replace(/.*\/([^/.]*).*?$/, "$1"), true)
+						}
+					};
+
+					var title = get_meta(resp.responseText, "og:title");
+					if (title)
+						obj.extra.caption = title;
+
+					return done(obj, 6*60*60);
+				}
+			});
+		}
+
+		if (domain === "i.ibb.co" ||
 			domain === "image.ibb.co" ||
 			domain === "thumb.ibb.co" ||
-			domain === "preview.ibb.co") &&
-			options && options.cb && options.do_request) {
+			domain === "preview.ibb.co") {
+
 			match = src.match(/^[a-z]+:\/\/[^/]*\/+([-_A-Za-z0-9=]+)\/+([^?#]*?)(\.[^/.]*)?(?:[?#].*)?$/);
 			if (match) {
-				options.do_request({
-					method: "GET",
-					url: "https://ibb.co/" + match[1],
-					onload: function(result) {
-						if (result.readyState === 4) {
-							var tmatch = result.responseText.match(/CHV\.obj\.image_viewer\.image\s*=\s*{.*?[^a-zA-Z0-9_]url:["'](.*?)["']/);
-							if (tmatch) {
-								return options.cb({
-									url: tmatch[1],
-									is_original: true,
-									extra: {
-										page: urljoin(result.finalUrl + "/", tmatch[1].replace(/.*\/([^/.]*).*?$/, "$1"), true)
-									}
-								});
-							}
-
-							options.cb(null);
-						}
-					}
-				});
-
 				return {
-					waiting: true
-				};
+					url: "https://ibb.co/" + match[1],
+					is_pagelink: true
+				}
 			}
 		}
 
@@ -33401,12 +33512,51 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if (domain_nowww === "wfmynews2.com" ||
-			domain_nowww === "wusa9.com" ||
-			domain_nowww === "11alive.com") {
-			newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+img\/+resize\/+([^/]*\.[^/]*\/.*?)(?:[?#].*)?$/, "$1");
-			if (newsrc !== src)
-				return add_http(newsrc);
+		if (domain_nosub === "11alive.com" ||
+			domain_nosub === "12news.com" ||
+			domain_nosub === "12newsnow.com" ||
+			domain_nosub === "13newsnow.com" ||
+			domain_nosub === "13wmaz.com" ||
+			domain_nosub === "9news.com" ||
+			domain_nosub === "abc10.com" ||
+			domain_nosub === "cbs8.com" ||
+			domain_nosub === "cbs19.tv" ||
+			domain_nosub === "firstcoastnews.com" ||
+			domain_nosub === "kagstv.com" ||
+			domain_nosub === "kare11.com" ||
+			domain_nosub === "kcentv.com" ||
+			domain_nosub === "kens5.com" ||
+			domain_nosub === "kgw.com" ||
+			domain_nosub === "khou.com" ||
+			domain_nosub === "kiiitv.com" ||
+			domain_nosub === "king5.com" ||
+			domain_nosub === "krem.com" ||
+			domain_nosub === "ksdk.com" ||
+			domain_nosub === "ktvb.com" ||
+			domain_nosub === "kvue.com" ||
+			domain_nosub === "myfoxzone.com" ||
+			domain_nosub === "newscentermaine.com" ||
+			domain_nosub === "thv11.com" ||
+			domain_nosub === "wbir.com" ||
+			domain_nosub === "wcnc.com" ||
+			domain_nosub === "wfaa.com" ||
+			domain_nosub === "wfmynews2.com" ||
+			domain_nosub === "wgrz.com" ||
+			domain_nosub === "whas11.com" ||
+			domain_nosub === "wltx.com" ||
+			domain_nosub === "wtsp.com" ||
+			domain_nosub === "wusa9.com" ||
+			domain_nosub === "wwltv.com" ||
+			domain_nosub === "wzzm13.com") {
+			if (/^media\./.test(domain)) {
+				return src.replace(/(\/assets\/+[A-Z]+\/+images\/+[-0-9a-f]{20,}\/+[-0-9a-f]{20,})_[0-9]+x[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+			}
+
+			if (domain_nowww === domain_nosub) {
+				newsrc = src.replace(/^[a-z]+:\/\/[^/]*\/+img\/+resize\/+([^/]*\.[^/]*\/.*?)(?:[?#].*)?$/, "$1");
+				if (newsrc !== src)
+					return add_http(newsrc);
+			}
 		}
 
 		if (domain_nowww === "celeb6free.com" ||
@@ -40085,6 +40235,55 @@ var $$IMU_EXPORT$$;
 
 		if (domain === "image.pornyl.com") return src.replace(/(\/content\/+[0-9]+-[0-9]+\/+)tn\/+/, "$1");
 
+		if (/^gettyimages\./.test(domain_nosub) && domain_nowww === domain_nosub) {
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+detail\/+[^/]+\/+[^/]+\/+([0-9]+)(?:[?#].*)?$/,
+				query_for_id: "https://www.gettyimages.com/detail/a/a/${id}",
+				process: function(done, resp, cache_key) {
+					var obj = {
+						extra: {
+							page: resp.finalUrl.replace(/(:\/\/www\.gettyimages\.)[^/]+\//, "://www.gettyimages.com/")
+						},
+						head_wrong_contenttype: true,
+						head_wrong_contentlength: true
+					};
+
+					var description = get_meta(resp.responseText, "og:description");
+					if (description)
+						obj.extra.caption = description;
+
+					var urls = [];
+
+					var baseurl = get_meta(resp.responseText, "og:image");
+					if (!baseurl) {
+						console_error(cache_key, "Unable to find base image URL for", resp);
+						return done(null, false);
+					}
+
+					var largerurl = baseurl.replace(/(-id[0-9]+)(?:[?#].*)?$/, "$1?s=2048x2048");
+					urls.push({
+						url: largerurl,
+						problems: {
+							watermark: true
+						}
+					});
+
+					var smallerurl = resp.responseText.match(/"thumb612Url":\s*(["']https?:\/\/media\.gettyimages\.com\/+photos\/+[^/]*-id[0-9]+\?k=6.*?["'])/);
+					if (smallerurl) {
+						urls.push({
+							url: JSON_parse(smallerurl[1]),
+							problems: {
+								smaller: true
+							}
+						});
+					}
+
+					return done(fillobj_urls(urls, obj), 60*60);
+				}
+			});
+			if (newsrc) return newsrc;
+		}
+
 		if (domain === "media.gettyimages.com") {
 			if (src.match(/\/photos\/+[^/?]*-id[0-9]+(?:#.*)?$/)) {
 				return {
@@ -40094,78 +40293,12 @@ var $$IMU_EXPORT$$;
 				};
 			}
 
-			obj = [];
 			id = src.replace(/^[a-z]+:\/\/[^/]*\/+photos\/+[^/?#]+-id([0-9]+)(?:[?#].*)?$/, "$1");
-			if (id !== src && !problem_excluded("watermark")) {
-				obj.push({
-					url: src.replace(/(-id[0-9]+)(?:[?#].*)?$/, "$1?s=2048x2048"),
-					problems: {
-						watermark: true
-					},
-					head_wrong_contenttype: true,
-					head_wrong_contentlength: true
-				});
-			}
-
-			if (id !== src && options && options.do_request && options.cb && (options.force_page || !problem_excluded("smaller"))) {
-				options.do_request({
-					method: "GET",
-					url: "https://www.gettyimages.com/detail/a/a/" + id,
-					headers: {
-						Referer: ""
-					},
-					onload: function(result) {
-						if (result.readyState !== 4)
-							return;
-
-						if (result.status !== 200)
-							return options.cb(obj || null);
-
-						var extra = {page: result.finalUrl.replace(/(:\/\/www\.gettyimages\.)[^/]+\//, "://www.gettyimages.com/")};
-
-						var caption = result.responseText.match(/<meta\s+content=["']([^'"]+?)["']\s+property=["']og:description["']/);
-						if (caption) {
-							extra.caption = decode_entities(caption[1]);
-						} else {
-							console_warn("Unable to find caption", result);
-						}
-
-						var smallerurl = result.responseText.match(/"thumb612Url":\s*(["']https?:\/\/media\.gettyimages\.com\/+photos\/+[^/]*-id[0-9]+\?k=6.*?["'])/);
-						if (smallerurl && !problem_excluded("smaller")) {
-							obj.push({
-								url: JSON_parse(smallerurl[1]),
-								problems: {
-									smaller: true
-								},
-								head_wrong_contenttype: true,
-								head_wrong_contentlength: true
-							});
-						}
-
-						if (obj.length > 0) {
-							for (var i = 0; i < obj.length; i++) {
-								obj[i].extra = extra;
-							}
-						} else {
-							obj = {
-								url: src,
-								extra: extra,
-								head_wrong_contenttype: true,
-								head_wrong_contentlength: true
-							};
-						}
-
-						options.cb(obj);
-					}
-				});
-
+			if (id !== src)
 				return {
-					waiting: true
+					url: "https://www.gettyimages.com/detail/a/a/" + id,
+					is_pagelink: true
 				};
-			}
-
-			if (obj.length > 0)
-				return obj;
 		}
 
 		if (domain_nowww === "distrowatch.com") return src.replace(/(\/images\/+(?:screenshots|slinks)\/+[^/]*)-small(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
@@ -45743,6 +45876,40 @@ var $$IMU_EXPORT$$;
 			if (newsrc) return newsrc;
 		}
 
+		if (domain_nowww === "videyo.net") {
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+embed-([0-9a-z]{12})\.html(?:[?#].*)?$/,
+				query_for_id: "https://videyo.net/embed-${id}.html",
+				process: function(done, resp, cache_key) {
+					var unpacked = common_functions.unpack_packer(resp.responseText);
+					if (!unpacked) {
+						console_error(cache_key, "Unable to find packed data for", resp);
+						return done(null, false);
+					}
+
+					var hola_sources = common_functions.get_holaplayer_sources(unpacked);
+					if (!hola_sources) {
+						console_error(cache_key, "Unable to find sources for", resp, unpacked);
+						return done(null, false);
+					}
+
+					var obj = common_functions.get_obj_from_videosources(resp.finalUrl, hola_sources);
+					return done(obj, 60*60);
+				}
+			});
+			if (newsrc) return newsrc;
+		}
+
+		if (domain === "i.videyo.net") {
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+([a-z0-9]{12})[0-9]{4}\.[^/.]+(?:[?#].*)?$/);
+			if (match) {
+				return {
+					url: "https://videyo.net/embed-" + match[1] + ".html",
+					is_pagelink: true
+				};
+			}
+		}
+
 		if (domain === "static.kritikustomeg.org") return src.replace(/\/pix\/+tn[0-9]+x[0-9]+\/+/, "/pix/orig/");
 
 		if (amazon_container === "kinorium-images") {
@@ -49278,6 +49445,12 @@ var $$IMU_EXPORT$$;
 					is_pagelink: true
 				};
 			}
+		}
+
+		if (domain_nosub === "0dayporno.com" && /^s[0-9]*\./.test(domain)) {
+			return src
+				.replace(/(\/videos\/+[0-9]+)_vga(\.[^/.]+)(?:[?#].*)?$/, "$1$2")
+				.replace(/(\/(?:photos|video_images)\/+[0-9]+\/+[0-9]+)(?:_[0-9]+)?(\.[^/.]+)(?:[?#].*)?$/, "$1_o$2");
 		}
 
 
@@ -53643,6 +53816,20 @@ var $$IMU_EXPORT$$;
 			name_td.classList.add("name_td");
 			name_td.classList.add("name_td_va_middle");
 
+			var revert_btn = document.createElement("button");
+			// \u2b8c = ⮌
+			revert_btn.innerText = "\u2b8c";
+			revert_btn.classList.add("revert-button");
+			revert_btn.title = _("Revert");
+
+			revert_btn.onclick = function() {
+				if (revert_btn.disabled) return;
+
+				do_update_setting(setting, orig_value, meta);
+
+				run_soon(do_options);
+			};
+
 			var check_value_orig_different = function(value) {
 				var value_norm = normalize_value(value);
 				var orig_norm = normalize_value(orig_value);
@@ -53655,11 +53842,14 @@ var $$IMU_EXPORT$$;
 				var value_orig_different = value_norm !== orig_norm;
 				if (value_orig_different) {
 					name_td.classList.add("value_modified");
+					name_td.appendChild(revert_btn);
 				} else {
 					name_td.classList.remove("value_modified");
+
+					if (revert_btn.parentElement === name_td)
+						name_td.removeChild(revert_btn);
 				}
 			};
-			check_value_orig_different(value);
 
 			var do_update_setting_real = function(setting, new_value, meta) {
 				update_setting(setting, new_value);
@@ -53686,6 +53876,7 @@ var $$IMU_EXPORT$$;
 			};
 
 			name_td.appendChild(name);
+			check_value_orig_different(value);
 			tr.appendChild(name_td);
 
 			var value_td = document_createElement("td");
@@ -55110,9 +55301,16 @@ var $$IMU_EXPORT$$;
 
 		console_log("Trying " + url);
 
-		if (obj[0] && obj[0].video && !settings.allow_video) {
-			console_log("Video, skipping due to user setting");
-			return err_cb();
+		if (obj[0] && obj[0].video) {
+			if (!settings.allow_video) {
+				console_log("Video, skipping due to user setting");
+				return err_cb();
+			}
+
+			if (!is_video_type_supported(obj[0].video)) {
+				console_warn("Video type", obj[0].video, "is not supported");
+				return err_cb();
+			}
 		}
 
 		if (obj[0] && obj[0].bad) {
@@ -55342,6 +55540,23 @@ var $$IMU_EXPORT$$;
 				};
 
 				var set_video_src = function(video, src) {
+					var add_xhr_hook = function(lib) {
+						if (lib.overridden_xhr) {
+							lib.xhr.do_request = function(data) {
+								if (!data.headers) data.headers = {};
+
+								if (obj[0].headers) {
+									for (var header in obj[0].headers) {
+										headerobj_set(data.headers, header, obj[0].headers[header]);
+									}
+								}
+
+								//console_log(data);
+								return do_request(data);
+							};
+						}
+					};
+
 					if (video_type.type === "direct") {
 						video.src = src;
 					} else {
@@ -55354,20 +55569,7 @@ var $$IMU_EXPORT$$;
 
 								var dashjs = _dashjs.lib;
 
-								if (_dashjs.overridden_xhr) {
-									_dashjs.xhr.do_request = function(data) {
-										if (!data.headers) data.headers = {};
-
-										if (obj[0].headers) {
-											for (var header in obj[0].headers) {
-												headerobj_set(data.headers, header, obj[0].headers[header]);
-											}
-										}
-
-										//console_log(data);
-										return do_request(data);
-									};
-								}
+								add_xhr_hook(_dashjs);
 
 								var player = dashjs.MediaPlayer().create();
 								player.updateSettings({
@@ -55387,7 +55589,13 @@ var $$IMU_EXPORT$$;
 								player.initialize(video, src, true);
 							});
 						} else if (video_type.type === "hls") {
-							get_library("hls", settings, do_request, function(hls_wrap) {
+							get_library("hls", settings, do_request, function(_hls_wrap) {
+								if (!_hls_wrap) {
+									video.src = src;
+									return;
+								}
+
+								var hls_wrap = _hls_wrap.lib;
 								if (!hls_wrap || !hls_wrap.Hls || !hls_wrap.Hls.isSupported()) {
 									console_warn("HLS isn't supported");
 									// this will work if (video.canPlayType('application/vnd.apple.mpegurl'))
@@ -55395,6 +55603,8 @@ var $$IMU_EXPORT$$;
 									video.src = src;
 									return;
 								}
+
+								add_xhr_hook(_hls_wrap);
 
 								var Hls = hls_wrap.Hls;
 								var hls = new Hls();
@@ -56266,6 +56476,78 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		var parse_styles = function(str) {
+			if (typeof str !== "string")
+				return;
+
+			str = strip_whitespace(str);
+			if (!str)
+				return;
+
+			var blocks = {};
+			var current_block = "default";
+
+			var splitted = str.split(/[;\n]/);
+			for (var i = 0; i < splitted.length; i++) {
+				var current = strip_whitespace(splitted[i]);
+				if (!current)
+					continue;
+
+				// note: c/css multiline comments (/* */) aren't supported yet
+				// c++-style comments
+				if (/^\/\//.test(current))
+					continue;
+
+				var match = current.match(/^(#[-a-zA-Z0-9]+)\s*{/);
+				if (match) {
+					if (current_block !== "default") {
+						console_error("Nested blocks aren't supported");
+						return;
+					}
+
+					current_block = match[1];
+					splitted[i--] = current.substr(match[0].length);
+					continue;
+				}
+
+				if (current[0] === "}") {
+					if (current_block === "default") {
+						console_error("No block to escape from");
+						return;
+					}
+
+					current_block = "default";
+					continue;
+				}
+
+				if (string_indexof(current, ":") < 0)
+					continue;
+
+				var next_block = current_block;
+				if (current_block !== "default" && /}$/.test(current)) {
+					current = strip_whitespace(current.replace(/}$/, ""));
+					next_block = "default";
+				}
+
+				var property = strip_whitespace(current.replace(/^(.*?)\s*:.*/, "$1"));
+				var value = strip_whitespace(current.replace(/^.*?:\s*(.*)$/, "$1"));
+
+				var important = false;
+				if (value.match(/!important$/)) {
+					important = true;
+					value = strip_whitespace(value.replace(/!important$/, ""));
+				}
+
+				if (!(current_block in blocks))
+					blocks[current_block] = {};
+				blocks[current_block][property] = {value: value, important: important};
+
+				current_block = next_block;
+			}
+
+			return blocks;
+		};
+
 		function get_processed_styles(str) {
 			if (!str || typeof str !== "string" || !strip_whitespace(str))
 				return;
@@ -56299,6 +56581,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		function get_styletag_styles(str) {
+			// TODO: use parse_styles instead
 			var styles = get_processed_styles(str);
 			if (!styles)
 				return;
@@ -56316,14 +56599,25 @@ var $$IMU_EXPORT$$;
 			return styles_array.join("; ");
 		}
 
-		function apply_styles(el, str, force_important, variables) {
-			var styles = get_processed_styles(str);
-			if (!styles)
+		function apply_styles(el, str, options) {
+			var style_blocks = parse_styles(str);
+			if (!style_blocks)
 				return;
 
 			var oldstyle = el.getAttribute("style");
 			if (oldstyle) {
 				el.setAttribute("data-imu-oldstyle", oldstyle);
+			}
+
+			var styles = {};
+
+			if ("default" in style_blocks)
+				styles = style_blocks["default"];
+
+			if (options.id && ("#" + options.id) in style_blocks) {
+				var block = style_blocks["#" + options.id];
+				for (var property in block)
+					styles[property] = block[property];
 			}
 
 			for (var property in styles) {
@@ -56335,13 +56629,19 @@ var $$IMU_EXPORT$$;
 					value = value.replace(/^["'](.*)["']$/, "$1");
 				}
 
-				if (variables) {
-					for (var variable in variables) {
-						value = value.split(variable).join(variables[variable]);
+				if (options.variables) {
+					for (var variable in options.variables) {
+						value = value.split(variable).join(options.variables[variable]);
 					}
 				}
 
-				if (obj.important || force_important) {
+				if (options.properties) {
+					if (property in options.properties) {
+						options.properties[property](value, property);
+					}
+				}
+
+				if (obj.important || options.force_important) {
 					el.style.setProperty(property, value, "important");
 				} else {
 					el.style.setProperty(property, value);
@@ -56600,7 +56900,9 @@ var $$IMU_EXPORT$$;
 
 					set_important_style(mask, "opacity", 1);
 					if (settings.mouseover_enable_mask_styles)
-						apply_styles(mask, settings.mouseover_mask_styles2, true);
+						apply_styles(mask, settings.mouseover_mask_styles2, {
+							force_important: true
+						});
 
 					if (!settings.mouseover_close_click_outside) {
 						set_important_style(mask, "pointer-events", "none");
@@ -56733,7 +57035,10 @@ var $$IMU_EXPORT$$;
 					styles_variables["%fullurl%"] = transparent_gif;
 				}
 
-				apply_styles(div, settings.mouseover_styles, true, styles_variables);
+				apply_styles(div, settings.mouseover_styles, {
+					force_important: true,
+					variables: styles_variables
+				});
 				outerdiv.appendChild(div);
 
 				//div.style.position = "fixed"; // instagram has top: -...px
@@ -57280,19 +57585,19 @@ var $$IMU_EXPORT$$;
 				}
 
 				var btndown = false;
-				function addbtn(text, title, action, istop) {
+				function addbtn(options) {
 					var tagname = "span";
-					if (typeof action === "string")
+					if (typeof options.action === "string")
 						tagname = "a";
 
 					var btn = document_createElement(tagname);
 
-					if (action) {
+					if (options.action) {
 						var do_action = function() {
 							return !btn.hasAttribute("data-btn-noaction");
 						};
 
-						if (typeof action === "function") {
+						if (typeof options.action === "function") {
 							our_addEventListener(btn, "click", function(e) {
 								if (!do_action())
 									return;
@@ -57301,11 +57606,11 @@ var $$IMU_EXPORT$$;
 								e.stopPropagation();
 								e.stopImmediatePropagation();
 								e.preventDefault();
-								action();
+								options.action();
 								return false;
 							}, true);
-						} else if (typeof action === "string") {
-							btn.href = action;
+						} else if (typeof options.action === "string") {
+							btn.href = options.action;
 							btn.target = "_blank";
 							btn.setAttribute("rel", "noreferrer");
 
@@ -57330,25 +57635,25 @@ var $$IMU_EXPORT$$;
 					our_addEventListener(btn, "mouseup", function(e) {
 						btndown = false;
 					}, true);
-					if (!istop) {
+					if (!options.istop) {
 						opacity_hover(btn, undefined, true);
-					} else if (typeof text === "object" && text.truncated !== text.full) {
+					} else if (typeof options.text === "object" && options.text.truncated !== options.text.full) {
 						our_addEventListener(btn, "mouseover", function(e) {
 							var computed_style = get_computed_style(btn);
 							set_important_style(btn, "width", computed_style.width || (btn.clientWidth + "px"));
 
-							btn.innerText = text.full;
+							btn.innerText = options.text.full;
 
 						}, true);
 
 						our_addEventListener(btn, "mouseout", function(e) {
-							btn.innerText = text.truncated;
+							btn.innerText = options.text.truncated;
 							btn.style.width = "initial";
 						}, true);
 					}
 
 					set_el_all_initial(btn);
-					if (action) {
+					if (options.action) {
 						set_important_style(btn, "cursor", "pointer");
 					}
 
@@ -57359,7 +57664,7 @@ var $$IMU_EXPORT$$;
 					set_important_style(btn, "direction", text_direction);
 
 					// workaround for emojis: https://stackoverflow.com/a/39776303
-					if (typeof text === "string" && text.length === 1 && text.charCodeAt(0) > 256) {
+					if (typeof options.text === "string" && options.text.length === 1 && options.text.charCodeAt(0) > 256) {
 						set_important_style(btn, "color", "transparent");
 						set_important_style(btn, "text-shadow", "0 0 0 " + textcolor);
 					} else {
@@ -57371,10 +57676,24 @@ var $$IMU_EXPORT$$;
 					//btn.style.whiteSpace = "nowrap";
 					set_important_style(btn, "font-size", "14px");
 					set_important_style(btn, "font-family", sans_serif_font);
-					apply_styles(btn, settings.mouseover_ui_styles, true);
+
+					// TODO: cache the styles
+					apply_styles(btn, settings.mouseover_ui_styles, {
+						id: options.id,
+						force_important: true,
+						properties: {
+							"-imu-text": function(value) {
+								// TODO: support emojis properly
+								if (typeof options.text === "object")
+									options.text.truncated = value;
+								else
+									options.text = value;
+							}
+						}
+					});
 
 					set_important_style(btn, "z-index", maxzindex - 1);
-					if (!istop) {
+					if (!options.istop) {
 						set_important_style(btn, "position", "absolute");
 						set_important_style(btn, "opacity", defaultopacity);
 					} else {
@@ -57385,22 +57704,22 @@ var $$IMU_EXPORT$$;
 					//btn.style.maxWidth = "50%";
 					set_important_style(btn, "white-space", "pre-wrap");
 					set_important_style(btn, "display", "inline-block");
-					if (action) {
+					if (options.action) {
 						set_important_style(btn, "user-select", "none");
 					}
 
-					if (typeof text === "object" && text.link_underline && settings.mouseover_ui_link_underline) {
+					if (typeof options.text === "object" && options.text.link_underline && settings.mouseover_ui_link_underline) {
 						set_important_style(btn, "text-decoration", "underline");
 					}
 
-					if (typeof text === "string") {
-						btn.innerText = text;
+					if (typeof options.text === "string") {
+						btn.innerText = options.text;
 					} else {
-						btn.innerText = text.truncated;
+						btn.innerText = options.text.truncated;
 					}
 
-					if (title)
-						btn.title = title;
+					if (options.title)
+						btn.title = options.title;
 
 					return btn;
 				}
@@ -57475,10 +57794,16 @@ var $$IMU_EXPORT$$;
 					opacity_hover(topbarel);
 
 					if (settings.mouseover_ui_closebtn) {
-						// \xD7 = ×
-						var closebtn = addbtn("\xD7", _("Close") + " (" + _("ESC") + ")", function() {
-							resetpopups();
-						}, true);
+						var closebtn = addbtn({
+							id: "closebtn",
+							// \xD7 = ×
+							text: "\xD7",
+							title: _("Close") + " (" + _("ESC") + ")",
+							action: function() {
+								resetpopups();
+							},
+							istop: true
+						});
 						topbarel.appendChild(closebtn);
 					}
 
@@ -57555,7 +57880,11 @@ var $$IMU_EXPORT$$;
 					}
 
 					if (settings.mouseover_ui_imagesize || settings.mouseover_ui_zoomlevel || settings.mouseover_ui_filesize) {
-						var imagesize = addbtn(get_imagesizezoom_text(100), "", null, true);
+						var imagesize = addbtn({
+							id: "sizeinfo",
+							text: get_imagesizezoom_text(100),
+							istop: true
+						});
 						set_important_style(imagesize, "font-size", gallerycount_fontsize);
 						topbarel.appendChild(imagesize);
 					}
@@ -57613,7 +57942,11 @@ var $$IMU_EXPORT$$;
 					var popup_width = (popupshown && outerdiv.clientWidth) || imgw;
 
 					if (settings.mouseover_enable_gallery && settings.mouseover_ui_gallerycounter) {
-						var images_total = addbtn(get_imagestotal_text(), "", imagestotal_input_enable, true);
+						var images_total = addbtn({
+							text: get_imagestotal_text(),
+							action: imagestotal_input_enable,
+							istop: true
+						});
 						set_important_style(images_total, "font-size", gallerycount_fontsize);
 						set_important_style(images_total, "display", "none");
 
@@ -57649,7 +57982,12 @@ var $$IMU_EXPORT$$;
 
 					if (settings.mouseover_ui_optionsbtn) {
 						// \u2699 = ⚙
-						var optionsbtn = addbtn("\u2699", _("Options"), options_page, true);
+						var optionsbtn = addbtn({
+							text: "\u2699",
+							title: _("Options"),
+							options: options_page,
+							istop: true
+						});
 						topbarel.appendChild(optionsbtn);
 					}
 
@@ -57659,7 +57997,12 @@ var $$IMU_EXPORT$$;
 						// \uD83E\uDC47 = 🡇
 						var download_glyphs = ["\uD83E\uDC47", "\ud83e\udc6b", "\u2193"];
 						var download_glyph = get_safe_glyph(css_fontcheck, download_glyphs);
-						var downloadbtn = addbtn(download_glyph, _("Download (" + get_trigger_key_text(settings.mouseover_download_key) + ")"), download_popup_image, true);
+						var downloadbtn = addbtn({
+							text: download_glyph,
+							title: _("Download (" + get_trigger_key_text(settings.mouseover_download_key) + ")"),
+							action: download_popup_image,
+							istop: true
+						});
 						topbarel.appendChild(downloadbtn);
 					}
 
@@ -57669,9 +58012,19 @@ var $$IMU_EXPORT$$;
 						};
 
 						// \u21B6 = ↶
-						var rotateleftbtn = addbtn("\u21B6", get_rotate_title("left"), function() {rotate_gallery(-90)}, true);
+						var rotateleftbtn = addbtn({
+							text: "\u21B6",
+							title: get_rotate_title("left"),
+							action: function() {rotate_gallery(-90)},
+							istop: true
+						});
 						// \u21B7 = ↷
-						var rotaterightbtn = addbtn("\u21B7", get_rotate_title("right"), function() {rotate_gallery(90)}, true);
+						var rotaterightbtn = addbtn({
+							text: "\u21B7",
+							title: get_rotate_title("right"),
+							action: function() {rotate_gallery(90)},
+							istop: true
+						});
 
 						topbarel.appendChild(rotateleftbtn);
 						topbarel.appendChild(rotaterightbtn);
@@ -57704,7 +58057,12 @@ var $$IMU_EXPORT$$;
 								caption_link = newobj.extra.page;
 							}
 
-							var caption_btn = addbtn(btntext, caption, caption_link, true);
+							var caption_btn = addbtn({
+								text: btntext,
+								title: caption,
+								action: caption_link,
+								istop: true
+							});
 							topbarel.appendChild(caption_btn);
 						}
 					}
@@ -57786,7 +58144,11 @@ var $$IMU_EXPORT$$;
 
 						var title = _(name) + " (" + _(keybinding_text) + ")";
 
-						var btn = addbtn(icon, title, action);
+						var btn = addbtn({
+							text: icon,
+							title: title,
+							action: action
+						});
 						btn.style.top = "calc(50% - 7px - " + emhalf + ")";
 						if (!leftright) {
 							btn.style.left = "-" + em1;
