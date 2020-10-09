@@ -1,3 +1,24 @@
+0.14.5
+
+New features:
+
+ * Option to add a delay between requests for images in Replace Images (set to 0 seconds/disabled by default)
+ * Support for ~50 new websites (using ~10 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including Pixiv)
+ * PNG files within the extension have been optimized, and are now much smaller (#465, thanks to Magnus Boman for the PR)
+ * Filenames are automatically decoded (thanks to fireattack on discord for reporting)
+
+Bugfixes:
+
+ * Fix options button not working (regression from 0.14.4, thanks to fireattack on discord for reporting)
+
+Special thanks to llacb47, Magnus Boman, fireattack, StarCrunchMuncher for their contributions and reports for this release
+
+---
+
 0.14.4
 
 New features:
