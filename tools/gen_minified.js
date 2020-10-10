@@ -38,10 +38,12 @@ prc.on('close', function(code) {
 		} else if (header) {
 			if (line.indexOf(" ==/UserScript==") >= 0) {
 				is_end_header = true;
-				header += "\n" + "//";
+
+				// present in userscript.user.js now, no need to keep this
+				/*header += "\n" + "//";
 				header += "\n" + "// This script is quickly approaching OpenUserJS's 1MB limit, so the update URL is set to github in order to future-proof updates";
 				header += "\n" + "// @updateURL https://raw.githubusercontent.com/qsniyg/maxurl/master/userscript.meta.js";
-				header += "\n" + "// @downloadURL https://raw.githubusercontent.com/qsniyg/maxurl/master/userscript_smaller.user.js";
+				header += "\n" + "// @downloadURL https://raw.githubusercontent.com/qsniyg/maxurl/master/userscript_smaller.user.js";*/
 			}
 
 			header += "\n" + line;
