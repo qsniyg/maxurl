@@ -16,7 +16,7 @@
 // @description       Finds larger or original versions of images and videos for 7400+ websites, including a powerful media popup feature
 // @description:en    Finds larger or original versions of images and videos for 7400+ websites, including a powerful media popup feature
 // @description:ko    7400개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
-// @description:fr    Trouve des images plus grandes ou originales pour plus de 7400 sites
+// @description:fr    Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 7 400 sites web, y compris une puissante fonction de popup média
 // @description:es    Encuentra imágenes más grandes y originales para más de 7400 sitios
 // @description:ru    Находит увеличенные или оригинальные версии изображений для более чем 7400 веб-сайтов
 // @description:de    Sucht nach größeren oder originalen Versionen von Bildern und Videos für mehr als 7400 Websites
