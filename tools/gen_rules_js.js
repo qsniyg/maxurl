@@ -340,10 +340,10 @@ function start(userscript_filename) {
 			"//",
 			"//  Greasyfork and OpenUserJS have 2MB and 1MB limits for userscripts (respectively).",
 			"//  Because of this, the rules (~" + get_mb(rules_js) + "MB) have been split into a separate file, linked below.",
-			"//  Note that gitcdn.xyz is unfortunately not very reliable, but (AFAIK) this is the only reasonable option from what greasyfork allows.",
+			"//  Note that jsdelivr.net might not always be reliable, but (AFAIK) this is the only reasonable option from what greasyfork allows.",
 			"//  I'd recommend using the Github version of the script if you encounter any issues (linked in the 'Project links' section below).",
 			"//",
-			"// @require https://gitcdn.xyz/qsniyg/maxurl/" + commit + "/build/rules.js"
+			"// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@" + commit + "/build/rules.js"
 		].join("\n");
 		userscript_require = userscript_require
 			.replace(/^\/\/\s*imu:require_rules.*/m, require_statement)
