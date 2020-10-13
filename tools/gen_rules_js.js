@@ -96,7 +96,8 @@ var variables_list = [
 	"fixup_js_obj_proper",
 	"common_functions",
 	"get_domain_nosub",
-	"looks_like_valid_link"
+	"looks_like_valid_link",
+	"Cache"
 ];
 
 var get_random_text = function(length) {
@@ -298,6 +299,8 @@ function start(userscript_filename) {
 	var userscript_js = userscript_lines.join("\n");
 	// extr = external rules
 	fs.writeFileSync("build/userscript_extr.user.js", userscript_js);
+
+	fs.writeFileSync("build/userscript_extr_cat.user.js", rules_js + "\n\n" + userscript_js);
 }
 
 start("userscript_smaller.user.js");
