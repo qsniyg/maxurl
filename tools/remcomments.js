@@ -12,6 +12,8 @@ try {
 const process = require("process");
 process.chdir(__dirname + "/..");
 
+const child_process = require("child_process");
+
 function update() {
 	console.log("Updating...");
 	var userscript = fs.readFileSync(process.argv[2] || "userscript.user.js").toString();
@@ -137,6 +139,10 @@ function update() {
 	newcontents = newcontents.replace(/(\n\t\tif \(domain(?:_[a-z]+)? === "[^"]+"\)) {\n\t\t\t(return src\.replace\(\/[\S]+\/, "[^"]+"\);)\n\t\t}\n/g, "$1 $2\n");
 
 	fs.writeFileSync("userscript_smaller.user.js", newcontents);
+
+	child_process.spawnSync("node", ["tools/gen_rules_js.js"], {
+		stdio: [process.stdin, process.stdout, process.stderr]
+	});
 
 	if (about) {
 		about.get_userscript_stats(newcontents);
