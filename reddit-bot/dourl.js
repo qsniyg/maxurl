@@ -437,6 +437,7 @@ function dourl_inner(big, url, post, options, cb) {
 							.replace(/\\/g, "\\\\")
 							.replace(/_/g, "\\_")
 							.replace(/\*/g, "\\*")
+							.replace(/[[]/g, "\\[")
 							.replace(/]/g, "\\]") + "](" + newdata.url.replace(/[)]/g, "\\)") + ")" + linkcomment + "\n\n";
 
 						if (new_domain === "pbs.twimg.com" &&
