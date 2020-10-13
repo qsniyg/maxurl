@@ -1,6 +1,7 @@
 var process = require("process");
 var util = require("./util.js");
 var fs = require("fs");
+const child_process = require("child_process");
 process.chdir(__dirname + "/..");
 
 var variables_list = [
@@ -266,6 +267,29 @@ function rem_nonce(text) {
 	return text.replace(/nonce: "[0-9a-z]+" \/\/ imu:nonce = .*/, "");
 }
 
+function get_commit_for(file) {
+	var proc_result = child_process.spawnSync("git", ["log", "-1", file]);
+
+	var stdout = proc_result.stdout.toString();
+
+	var commit = stdout.match(/^commit ([0-9a-f]{20,})/);
+	if (!commit) {
+		return null;
+	}
+
+	return commit[1];
+}
+
+function modified_from_git(file) {
+	var proc_result = child_process.spawnSync("git", ["diff-index", "HEAD", file]);
+
+	return proc_result.stdout.length > 0;
+}
+
+function get_mb(text) {
+	return parseInt((text.length / 1024 / 1024) * 10) / 10;
+}
+
 function start(userscript_filename) {
 	var userscript_lines = util.read_as_lines(userscript_filename);
 	var rules_lines = util.read_as_lines("tools/rules_template.js");
@@ -290,15 +314,44 @@ function start(userscript_filename) {
 		console.error(e);
 	}
 
-	if (changed)
+	var modified = true;
+	var commit = null;
+
+	if (changed) {
 		fs.writeFileSync("build/rules.js", replace_vars(rules_js));
+	} else {
+		modified = modified_from_git("build/rules.js");
+		if (!modified) {
+			commit = get_commit_for("build/rules.js");
+			if (!commit) {
+				console.error("Unable to get commit for build/rules.js");
+			}
+		}
+	}
 
 	nonce = JSON.parse(rules_js.match(/\/\/ imu:nonce = ("[0-9a-z]+")/)[1]);
 
 	userscript_lines = gen_userscript(bigimage_lines, userscript_lines, startend);
 	var userscript_js = userscript_lines.join("\n");
+
+	var userscript_require = userscript_js;
+	if (commit) {
+		var require_statement = [
+			"//",
+			"//  Greasyfork and OpenUserJS have 2MB and 1MB limits for userscripts (respectively).",
+			"//  Because of this, the rules (~" + get_mb(rules_js) + "MB) have been split into a separate file, linked below.",
+			"//  Note that gitcdn.xyz is unfortunately not very reliable, but (AFAIK) this is the only reasonable option from what greasyfork allows.",
+			"//  I'd recommend using the Github version of the script if you encounter any issues (linked in the 'Project links' section below).",
+			"//",
+			"// @require https://gitcdn.xyz/qsniyg/maxurl/" + commit + "/build/rules.js"
+		].join("\n");
+		userscript_require = userscript_require
+			.replace(/^\/\/\s*imu:require_rules.*/m, require_statement)
+			.replace(/\n\n\/\/\/ All comments within bigimage.*\n\/\/\/ You can view.*/, "\n");
+	}
+
 	// extr = external rules
-	fs.writeFileSync("build/userscript_extr.user.js", userscript_js);
+	fs.writeFileSync("build/userscript_extr.user.js", userscript_require);
 
 	fs.writeFileSync("build/userscript_extr_cat.user.js", rules_js + "\n\n" + userscript_js);
 }

@@ -90,8 +90,8 @@ function update() {
 				} else if (within_firstcomment) {
 					firstcomment = false;
 					newlines.push("");
-					newlines.push("// All comments within bigimage() have been removed to ensure the file remains within Greasyfork and AMO limits");
-					newlines.push("// You can view the original source code here: https://github.com/qsniyg/maxurl/blob/master/userscript.user.js");
+					newlines.push("/// All comments within bigimage() have been removed to ensure the file remains within Greasyfork and AMO limits");
+					newlines.push("/// You can view the original source code here: https://github.com/qsniyg/maxurl/blob/master/userscript.user.js");
 				}
 			}
 
