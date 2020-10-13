@@ -33,6 +33,8 @@ var _get_bigimage = function() {
                     data: bigimage_obj.nonce,
                     message: "Bad nonce, expected: " + __IMU_NONCE__
                 };
+            } else {
+                bigimage = bigimage_obj.bigimage;
             }
 
             if (require_rules_failed) {
