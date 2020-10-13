@@ -17,7 +17,7 @@ var _get_bigimage = function() {
         };
     } else {
         try {
-            var bigimage_obj = __IMU_GETBIGIMAGE__(functions);
+            var bigimage_obj = __IMU_GETBIGIMAGE__(shared_variables);
 
             if (!bigimage_obj || !bigimage_obj.bigimage) {
                 require_rules_failed = {
