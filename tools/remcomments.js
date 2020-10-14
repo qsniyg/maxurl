@@ -140,9 +140,11 @@ function update() {
 
 	fs.writeFileSync("userscript_smaller.user.js", newcontents);
 
-	child_process.spawnSync("node", ["tools/gen_rules_js.js"], {
-		stdio: [process.stdin, process.stdout, process.stderr]
-	});
+	if (fs.existsSync("tools/gen_rules_js.js")) {
+		child_process.spawnSync("node", ["tools/gen_rules_js.js"], {
+			stdio: [process.stdin, process.stdout, process.stderr]
+		});
+	}
 
 	if (about) {
 		about.get_userscript_stats(newcontents);
