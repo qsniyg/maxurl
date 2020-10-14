@@ -52,6 +52,31 @@ perfect though, I often get it wrong myself :) I can fix it up if you make a mis
   - For example, `array_indexof` or `string_indexof` instead of `foo.indexOf()`, `base64_decode` instead of `atob`, `JSON_parse` instead of `JSON.parse`, etc.
     This is because some websites (or adblock) override these functions with broken implementations.
     IMU will use its own implementation of these functions if the browser's version fails a few sanity checks.
+    - Search for `var JSON_parse` in the userscript to find a list of them.
+
+- The script has a lot of helper functions that may be useful (you can find a list of them in `variables_list` in [tools/gen_rules_js.js](https://github.com/qsniyg/maxurl/blob/master/tools/gen_rules_js.js)). They're currently undocumented, but here is a list of commonly used ones:
+
+  - `get_queries`: Returns the queries as an object:
+    - `get_queries("https://example.com/?a=5&b=10")` -> `{a: 5, b: 10}`
+
+  - `remove_queries`: Removes the specified queries:
+    - `remove_queries("https://example.com/?a=5&b=10&c=20", ["b, c"])` -> `"https://example.com/?a=5"`
+    - `remove_queries("https://example.com/?a=5&b=10&c=20", "b")` -> `"https://example.com/?a=5&c=20"`
+
+  - `keep_queries`: Removes every query except for the specified queries:
+    - `keep_queries("https://example.com/?a=5&b=10&c=20", ["b", c"])` -> `"https://example.com/?b=10&c=20"`
+    - `keep_queries("https://example.com/?a=5&b=10&c=20", "b")` -> `"https://example.com/?b=10"`
+    - `keep_queries("https://example.com/?a=5&b=10&c=20", ["b", "c"], {overwrite: {"c": 1, "d": 2}})` -> `"https://example.com/?b=10&c=1&d=2"`
+    - `keep_queries("https://example.com/?a=5&b=10", ["b", "c"], {required: ["c"]})` -> `"https://example.com/?a=5&b=10"`
+
+  - `add_queries`: Adds or overwrites queries:
+    - `add_queries("https://example.com/?a=5&b=10", {b: 20, c: 30})` -> `"https://example.com/?a=5&b=20&c=30"`
+
+  - `decodeuri_ifneeded`: Runs `decodeURIComponent` only if a url looks encoded:
+    - `decodeuri_ifneeded("https%3A%2F%2Fexample.com%2F")` -> `"https://example.com/"`
+    - `decodeuri_ifneeded("https%253A%252F%252Fexample.com%252F")` -> `"https://example.com/"` (it supports decoding more than one time)
+    - `decodeuri_ifneeded("https://example.com/?a=5%20")` -> `"https://example.com/?a=5%20"` (unchanged because `https://` is not encoded)
+    - Use this function if you want to return a URL from a query (e.g. `https://example.com/thumb.php?img=https%3A%2F%2Fexample.com%2Ftest.png`)
 
 - Add test cases
 
@@ -85,7 +110,19 @@ perfect though, I often get it wrong myself :) I can fix it up if you make a mis
 - You'll probably see that a lot of the rules don't follow the guidelines above. More recent rules tend to follow the guidelines better, but older
   rules haven't been updated, and are often either too specific or too generic as a result. I try to update them as I see them, but since there are literally thousands
   of rules, and each update often breaks something (meaning at least a few edits are required to update a single rule), I haven't been able to update the
-  majority of the script yet. The wonders of organically written software! :)
+  majority of the script yet. The wonders of organically written software!
+
+As mentioned earlier, these are just guidelines, and you don't have to get it to be perfect to submit a rule :)
+
+If you're testing the userscript, I'd recommend running `node tools/remcomments.js`. This will generate userscript_smaller.user.js and the files under the
+build/ subdirectory. It will watch for changes to userscript.user.js in the background and automatically update the files as it changes.
+
+Personally I install build/userscript_extr_cat.js as a userscript under Violentmonkey, with the "Track local file..." setting enabled. This allows the userscript
+to be automatically updated within ~5 seconds after saving. Using the built file instead of userscript.user.js also has a few advantages:
+
+ - Due to the size of the userscript, your editor might take a while to save the entire script, which can lead to a race condition where Violentmonkey will
+   update an incomplete version of the userscript. While it's still possible when using a built version, it's significantly less likely.
+ - Since the built version is the one that is published on Greasyfork/OUJS, in case there are any issues with it (such as if a shared variable is missing),
+   this allows one to catch the issues much quicker.
 
 Thank you very much for whatever contribution you wish to give to this script, it's really appreciated!
-As mentioned earlier, these are just guidelines, and you don't have to get it to be perfect to submit a rule :)
