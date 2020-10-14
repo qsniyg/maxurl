@@ -26,16 +26,18 @@ else
     echo "Warning: gen_minified.js not available, skipping OpenUserJS minified version of the userscript"
 fi
 
-if [ -f ./tools/gen_minified.js ]; then
-    node ./tools/gen_minified.js
-    MINVERSION=`get_userscript_version userscript_min.user.js`
+if false; then
+    if [ -f ./tools/gen_minified.js ]; then
+        node ./tools/gen_minified.js
+        MINVERSION=`get_userscript_version userscript_min.user.js`
 
-    if [ "$MINVERSION" != "$USERVERSION" ]; then
-        echo 'Conflicting versions (userscript and minified)'
-        exit 1
+        if [ "$MINVERSION" != "$USERVERSION" ]; then
+            echo 'Conflicting versions (userscript and minified)'
+            exit 1
+        fi
+    else
+        echo "Warning: gen_minified.js not available, skipping OpenUserJS minified version of the userscript"
     fi
-else
-    echo "Warning: gen_minified.js not available, skipping OpenUserJS minified version of the userscript"
 fi
 
 if [ -f ./build/userscript_extr.user.js ]; then
