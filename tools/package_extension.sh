@@ -38,6 +38,14 @@ else
     echo "Warning: gen_minified.js not available, skipping OpenUserJS minified version of the userscript"
 fi
 
+if [ -f ./build/userscript_extr.user.js ]; then
+    grep '// imu:require_rules' ./build/userscript_extr.user.js 2>&1 >/dev/null
+    if [ $? -ne 0 ]; then
+        echo 'require_rules present in extr.user.js'
+        exit 1
+    fi
+fi
+
 if [ -d site ]; then
     echo "Updating website files"
     cp site/style.css extension/options.css
