@@ -871,7 +871,9 @@ msgid "Media resolution"
 msgstr ""
 
 #. mouseover_ui_imagesize.description
-msgid "Displays the original media dimensions on top of the UI"
+msgid ""
+"Displays the original media dimensions on top of the UI.\n"
+"CSS ID: `#sizeinfo`"
 msgstr ""
 
 #. mouseover_ui_zoomlevel.name
@@ -879,7 +881,9 @@ msgid "Zoom percent"
 msgstr ""
 
 #. mouseover_ui_zoomlevel.description
-msgid "Displays the current zoom level on top of the UI"
+msgid ""
+"Displays the current zoom level on top of the UI.\n"
+"CSS ID: `#sizeinfo`"
 msgstr ""
 
 #. mouseover_ui_filesize.name
@@ -887,7 +891,9 @@ msgid "File size"
 msgstr ""
 
 #. mouseover_ui_filesize.description
-msgid "Displays the media's file size on top of the UI. For the moment, this will not work with partially loaded media if 'Avoid HEAD request for partially loaded media' is enabled."
+msgid ""
+"Displays the media's file size on top of the UI. For the moment, this will not work with partially loaded media if 'Avoid HEAD request for partially loaded media' is enabled.\n"
+"CSS ID: `#sizeinfo`"
 msgstr ""
 
 #. mouseover_ui_gallerycounter.name
@@ -895,7 +901,9 @@ msgid "Gallery counter"
 msgstr "갤러리 이미지 수"
 
 #. mouseover_ui_gallerycounter.description
-msgid "Enables a gallery counter on top of the UI"
+msgid ""
+"Enables a gallery counter on top of the UI.\n"
+"CSS ID: `#gallerycounter`"
 msgstr ""
 
 #. mouseover_ui_gallerymax.name
@@ -911,7 +919,9 @@ msgid "Gallery buttons"
 msgstr ""
 
 #. mouseover_ui_gallerybtns.description
-msgid "Enables buttons to go left/right in the gallery"
+msgid ""
+"Enables buttons to go left/right in the gallery.\n"
+"CSS IDs: `#galleryprevbtn`, `#gallerynextbtn`"
 msgstr ""
 
 #. mouseover_ui_closebtn.name
@@ -919,7 +929,9 @@ msgid "Close Button"
 msgstr ""
 
 #. mouseover_ui_closebtn.description
-msgid "Enables a button to close the popup"
+msgid ""
+"Enables a button to close the popup.\n"
+"CSS ID: `#closebtn`"
 msgstr ""
 
 #. mouseover_ui_optionsbtn.name
@@ -927,7 +939,9 @@ msgid "Options Button"
 msgstr "설정 링크"
 
 #. mouseover_ui_optionsbtn.description
-msgid "Enables a button to go to this page"
+msgid ""
+"Enables a button to go to this page.\n"
+"CSS ID: `#optionsbtn`"
 msgstr ""
 
 #. mouseover_ui_downloadbtn.name
@@ -935,7 +949,9 @@ msgid "Download Button"
 msgstr ""
 
 #. mouseover_ui_downloadbtn.description
-msgid "Enables a button to download the image"
+msgid ""
+"Enables a button to download the image.\n"
+"CSS ID: `#downloadbtn`"
 msgstr ""
 
 #. mouseover_ui_rotationbtns.name
@@ -943,7 +959,9 @@ msgid "Rotation Buttons"
 msgstr ""
 
 #. mouseover_ui_rotationbtns.description
-msgid "Enables buttons on the UI to rotate the image by 90 degrees"
+msgid ""
+"Enables buttons on the UI to rotate the image by 90 degrees.\n"
+"CSS IDs: `#rotleftbtn`, `#rotrightbtn`"
 msgstr ""
 
 #. mouseover_ui_caption.name
@@ -951,7 +969,9 @@ msgid "Caption"
 msgstr ""
 
 #. mouseover_ui_caption.description
-msgid "Shows the image's caption (if available) at the top"
+msgid ""
+"Shows the image's caption (if available) at the top.\n"
+"CSS ID: `#caption`"
 msgstr ""
 
 #. mouseover_ui_wrap_caption.name
