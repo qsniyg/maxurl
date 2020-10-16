@@ -1054,10 +1054,6 @@ msgstr ""
 msgid "Amount of time to elapse before automatically closing the popup"
 msgstr ""
 
-#. redirect_infobox_timeout.number_unit, mouseover_trigger_delay.number_unit, mouseover_video_autoloop_max.number_unit, mouseover_video_seek_amount.number_unit, mouseover_auto_close_popup_time.number_unit
-msgid "seconds"
-msgstr "segundos"
-
 #. mouseover_use_hold_key.name
 msgid "Use hold key"
 msgstr ""
@@ -2110,7 +2106,7 @@ msgid "TikTok: Don't use watermarked videos"
 msgstr ""
 
 #. tiktok_no_watermarks.description
-msgid "Uses non-watermarked videos for TikTok if possible. This will introduce an extra delay when loading the video as two extra requests need to be performed."
+msgid "Uses non-watermarked videos for TikTok if possible. This will introduce an extra delay when loading the video as two extra requests need to be performed. It will also fail for any videos uploaded after ~late July 2020"
 msgstr ""
 
 #. tiktok_thirdparty.name
@@ -2136,7 +2132,7 @@ msgstr ""
 msgid "onlinetik.com"
 msgstr ""
 
-#. tiktok_thirdparty.options.tiktokdownloader.in.name
+#. tiktok_thirdparty.options.tiktokdownloader.in:ttt.name
 msgid "tiktokdownloader.in"
 msgstr ""
 
@@ -2266,6 +2262,18 @@ msgstr ""
 #. mouseover_ui_gallerymax.number_unit, replaceimgs_totallimit.number_unit, replaceimgs_domainlimit.number_unit
 msgid "images"
 msgstr "imágenes"
+
+#. replaceimgs_delay.name
+msgid "Delay between same-domain images"
+msgstr ""
+
+#. replaceimgs_delay.description
+msgid "New requests for images in the same domain will be delayed by this amount of seconds. Useful for bypassing rate limits."
+msgstr ""
+
+#. redirect_infobox_timeout.number_unit, mouseover_trigger_delay.number_unit, mouseover_video_autoloop_max.number_unit, mouseover_video_seek_amount.number_unit, mouseover_auto_close_popup_time.number_unit, replaceimgs_delay.number_unit
+msgid "seconds"
+msgstr "segundos"
 
 #. replaceimgs_replaceimgs.name
 msgid "Replace images"
