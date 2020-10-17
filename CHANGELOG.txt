@@ -1,3 +1,23 @@
+0.14.6
+
+New features:
+
+ * You can now style individual UI buttons through CSS IDs
+ * Support for ~25 new websites (using ~20 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including Patreon)
+ * Improved French description (thanks to Machou on github for translating)
+
+Bugfixes:
+
+ * Don't redirect to text/plain images (thanks to Ambler on discord for reporting)
+
+Special thanks to llacb47, dym-sh, Machou, SlugMan336, Ambler for their contributions and reports for this release
+
+---
+
 0.14.5
 
 New features:

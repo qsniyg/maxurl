@@ -241,6 +241,7 @@ aljanh.net
 aljazeera.com
 all-stars.su
 all4desktop.com
+allafrica.com
 allbox.tv
 allcelebs.club
 allday2.com
@@ -285,6 +286,7 @@ amorq.com
 amp.businessinsider.com
 amp.insider.com
 amp.thisisinsider.com
+amplience.net
 ampproject.org
 amuro.fr
 ana.rs
@@ -491,6 +493,7 @@ astro-image-resizer.s3.amazonaws.com
 astro.com.my
 astro.cz
 astrofactor.com
+asus.com
 at.ua
 athensmagazine.gr
 athinorama.gr
@@ -543,6 +546,7 @@ az616578.vo.msecnd.net
 az743702.vo.msecnd.net
 az877327.vo.msecnd.net
 az879543.vo.msecnd.net
+aznude.com
 azquotes.com
 b-cdn.net
 b.fssta.com
@@ -693,6 +697,7 @@ bliasak.bg
 blick.ch
 blob.freent.de
 blog-news.it
+blog.adobe.com
 blog.chron.com
 blog.hola.com
 blog.jinbo.net
@@ -845,7 +850,9 @@ cajalwinterconference.es
 calgaryherald.com
 cali.rule34.xxx
 cambro.tv
+camclips.cc
 camclips.to
+camclips.tv
 camfz.com
 camhub.cc
 camhub.world
@@ -874,6 +881,7 @@ carbonmade-media.accelerator.net
 cargocollective.com
 caribbeancom.com
 caribbeancompr.com
+caricos.com
 carltonstaffing.info
 carlyslayjepsen.com
 carphotoshow.com
@@ -1528,6 +1536,7 @@ d1bm3dmew779uf.cloudfront.net
 d1cizyvjjqnss7.cloudfront.net
 d1ck.co
 d1dojdv0rym6r6.cloudfront.net
+d1e3z2jco40k3v.cloudfront.net
 d1g.com
 d1iiivw74516uk.cloudfront.net
 d1in1v57myx5v.cloudfront.net
@@ -1854,6 +1863,7 @@ dyn.media.titanbooks.com
 dynaimage.cdn.cnn.com
 dynamic.indigoimages.ca
 dynamic.zacdn.com
+dynamicmedia.livenationinternational.com
 dynamicmedia.zuza.com
 dynasty-scans.com
 dyncdn2.com
@@ -2331,6 +2341,7 @@ funtime.ge
 funtime.gr
 funweek.it
 fuqer.com
+furaffinity.net
 furbooru.org
 furrycdn.org
 fuse.tv
@@ -2618,6 +2629,7 @@ hc360.cn
 hclips.com
 hd21.com
 hdbilder.eu
+hdcarwallpapers.in
 hdfilmcix.net
 hdfondos.eu
 hdfullfilmizle.com
@@ -2646,6 +2658,7 @@ henchan.me
 hentai-animes.com
 hentai-comic.com
 hentai-cosplay.com
+hentai-foundry.com
 hentai-image.com
 hentaicdn.com
 hentaidude.com
@@ -2956,6 +2969,7 @@ image-bankingf25.com
 image-bugs.com
 image-cdn.hypb.st
 image-gd.inews24.com
+image-prod.iol.co.za
 image-share.com
 image-store.slidesharecdn.com
 image.afcdn.com
@@ -3402,6 +3416,7 @@ img.buymeacoffee.com
 img.buzzfeed.com
 img.cache.vevo.com
 img.cactusboy.com
+img.camclips.cc
 img.camclips.to
 img.cancai.net
 img.cdandlp.com
@@ -3638,6 +3653,7 @@ img.skysports.com
 img.smlounge.co.kr
 img.sosanhgia.com
 img.sportsv.net
+img.srgcdn.com
 img.ssensemedia.com
 img.star.iecity.com
 img.static-rmg.be
@@ -3741,6 +3757,7 @@ imgpic.org
 imgpile.com
 imgpost.co.uk
 imgproc.airliners.net
+imgproxy.camclips.cc
 imgproxy.camclips.to
 imgproxy.geocaching.com
 imgr.es
@@ -4012,6 +4029,7 @@ kb4images.com
 kbbs.jp
 kcentv.com
 keep2share.cc
+keezmovies.com
 kendam-148811.appspot.com.storage.googleapis.com
 kenh14cdn.com
 kens5.com
@@ -4104,6 +4122,7 @@ kroger.com
 ksa-press.com
 ksdk.com
 kstarfashion.com
+kstp.com
 ktvb.com
 kubrick.htvapps.com
 kukinews.com
@@ -4350,6 +4369,7 @@ maximum.fm
 maxpapendieck.com
 mb.cision.com
 mbcsportsplus.com
+mccormick.com
 mcdn.wallpapersafari.com
 mcstatic.com
 mdaily.net
@@ -4414,6 +4434,7 @@ media.fistertwister.com
 media.fox29.com
 media.foxla.com
 media.fromthegrapevine.com
+media.fstatic.com
 media.funradio.fr
 media.game8.vn
 media.gettyimages.com
@@ -4435,6 +4456,7 @@ media.immediate.co.uk
 media.indiatimes.in
 media.indiedb.com
 media.istockphoto.com
+media.jdsports.com
 media.jpegworld.com
 media.karousell.com
 media.karups.com
@@ -4598,7 +4620,6 @@ mensxp.com
 menu.mt.co.kr
 meowg.com
 mercari-images.global.ssl.fastly.net
-mercifans.com
 merokhabar.net
 metager.org
 metapix.net
@@ -5149,6 +5170,7 @@ pastefs.com
 pat.primecdn.net
 patch.com
 patrasevents.gr
+patreon.com
 patreonusercontent.com
 pauza.sk
 paytm.com
@@ -6073,6 +6095,7 @@ spacepub.space
 spacetelescope.org
 spankbang.com
 spankcdn.net
+spankwire.com
 spapi.searchencrypt.com
 spark.adobe.com
 speakerd.s3.amazonaws.com
@@ -6314,6 +6337,7 @@ static.timesofisrael.com
 static.toiimg.com
 static.trendme.net
 static.tvgcdn.net
+static.tvmaze.com
 static.vesti.rs
 static.vfiles.com
 static.vibe.com
@@ -6671,7 +6695,6 @@ thumbs.filmix.co
 thumbs.hentai-foundry.com
 thumbs.letmejerk.com
 thumbs.oldgf.com
-thumbs.uloz.to
 thumbs.vaultsex.com
 thumbs.videogamer.com
 thumbs.wikifeet.com
@@ -6714,6 +6737,7 @@ tokkoro.com
 tokopedia.net
 tokyopopline.com
 tokyoteenies.com
+toledoblade.com
 tolknews.ru
 tomatazos.buscafs.com
 ton.twitter.com
@@ -7077,6 +7101,7 @@ wallpapers.jami.lt
 wallpapers.net
 wallpapers.wallhaven.cc
 wallpapers4screen.com
+wallpapers76.com
 wallpaperscave.ru
 wallpapersdig.com
 wallpaperset.com
@@ -7127,6 +7152,7 @@ wearehairy.com
 web-ace.jp
 web.de
 web.rds.it
+webcamrips.com
 webcollage.net
 webnews.bg
 webnewtype.com
@@ -7207,6 +7233,7 @@ wp.com
 wp.eldeber.com.bo
 wpr-public.s3.amazonaws.com
 wr3mii5n.rocketcdn.com
+write-img.srgcdn.com
 write.dcinside.com
 wsimg.com
 wspicsa.vod.nimo.tv

@@ -15,7 +15,7 @@
 // @name:zh-TW        Image Max URL
 // @name:zh-HK        Image Max URL
 // @namespace         http://tampermonkey.net/
-// @version           0.14.5
+// @version           0.14.6
 // @description       Finds larger or original versions of images and videos for 7400+ websites, including a powerful media popup feature
 // @description:en    Finds larger or original versions of images and videos for 7400+ websites, including a powerful media popup feature
 // @description:ko    7400개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
@@ -56,11 +56,11 @@
 // @downloadURL       https://raw.githubusercontent.com/qsniyg/maxurl/master/userscript_smaller.user.js
 //
 //  Greasyfork and OpenUserJS have 2MB and 1MB limits for userscripts (respectively).
-//  Because of this, the rules (~1.2MB) have been split into a separate file, linked below.
+//  Because of this, the rules (~1.3MB) have been split into a separate file, linked below.
 //  Note that jsdelivr.net might not always be reliable, but (AFAIK) this is the only reasonable option from what greasyfork allows.
 //  I'd recommend using the Github version of the script if you encounter any issues (linked in the 'Project links' section below).
 //
-// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@b38fd3f362e7a70391a7880f1b4d443ec10afebf/build/rules.js
+// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@fa8391ee2e816ed84ea050935f39dc72ac66d1a2/build/rules.js
 // ==/UserScript==
 
 // If you see "A userscript wants to access a cross-origin resource.", it's used for:
@@ -1049,7 +1049,7 @@ var $$IMU_EXPORT$$;
 			instagram_dont_use_web: false,
 			instagram_gallery_postlink: false,
 			snapchat_orig_media: true,
-			tiktok_no_watermarks: true,
+			tiktok_no_watermarks: false,
 			tiktok_thirdparty: null,
 			tumblr_api_key: null,
 			linked_image: false,
@@ -2276,10 +2276,6 @@ var $$IMU_EXPORT$$;
 		"Amount of time to elapse before automatically closing the popup": {
 			"ko": "\uD31D\uC5C5\uC744 \uC790\uB3D9\uC73C\uB85C \uB2EB\uAE30 \uC804 \uACBD\uACFC \uC2DC\uAC04"
 		},
-		"seconds": {
-			"es": "segundos",
-			"ko": "\uCD08"
-		},
 		"Use hold key": {
 			"ko": "\uACE0\uC815 \uD0A4 \uC0AC\uC6A9"
 		},
@@ -2536,6 +2532,10 @@ var $$IMU_EXPORT$$;
 		"images": {
 			"es": "im\u00E1genes",
 			"ko": "\uC774\uBBF8\uC9C0"
+		},
+		"seconds": {
+			"es": "segundos",
+			"ko": "\uCD08"
 		}
 	};
 
@@ -2847,7 +2847,7 @@ var $$IMU_EXPORT$$;
 		instagram_dont_use_web: false,
 		instagram_gallery_postlink: false,
 		snapchat_orig_media: true,
-		tiktok_no_watermarks: true,
+		tiktok_no_watermarks: false,
 		tiktok_thirdparty: null,
 		// just a very small protection against github scraping bots :)
 		tumblr_api_key: base64_decode("IHhyTXBMTThuMWVDZUwzb1JZU1pHN0NMQUx3NkVIaFlEZFU2V3E1ZUQxUGJNa2xkN1kx").substr(1),
@@ -3838,7 +3838,7 @@ var $$IMU_EXPORT$$;
 		},
 		mouseover_ui_imagesize: {
 			name: "Media resolution",
-			description: "Displays the original media dimensions on top of the UI",
+			description: "Displays the original media dimensions on top of the UI.\nCSS ID: `#sizeinfo`",
 			requires: {
 				mouseover_ui: true
 			},
@@ -3847,7 +3847,7 @@ var $$IMU_EXPORT$$;
 		},
 		mouseover_ui_zoomlevel: {
 			name: "Zoom percent",
-			description: "Displays the current zoom level on top of the UI",
+			description: "Displays the current zoom level on top of the UI.\nCSS ID: `#sizeinfo`",
 			requires: {
 				mouseover_ui: true
 			},
@@ -3856,7 +3856,7 @@ var $$IMU_EXPORT$$;
 		},
 		mouseover_ui_filesize: {
 			name: "File size",
-			description: "Displays the media's file size on top of the UI. For the moment, this will not work with partially loaded media if 'Avoid HEAD request for partially loaded media' is enabled.",
+			description: "Displays the media's file size on top of the UI. For the moment, this will not work with partially loaded media if 'Avoid HEAD request for partially loaded media' is enabled.\nCSS ID: `#sizeinfo`",
 			requires: {
 				mouseover_ui: true
 			},
@@ -3865,7 +3865,7 @@ var $$IMU_EXPORT$$;
 		},
 		mouseover_ui_gallerycounter: {
 			name: "Gallery counter",
-			description: "Enables a gallery counter on top of the UI",
+			description: "Enables a gallery counter on top of the UI.\nCSS ID: `#gallerycounter`",
 			requires: {
 				mouseover_ui: true,
 				mouseover_enable_gallery: true
@@ -3888,7 +3888,7 @@ var $$IMU_EXPORT$$;
 		},
 		mouseover_ui_gallerybtns: {
 			name: "Gallery buttons",
-			description: "Enables buttons to go left/right in the gallery",
+			description: "Enables buttons to go left/right in the gallery.\nCSS IDs: `#galleryprevbtn`, `#gallerynextbtn`",
 			requires: {
 				mouseover_ui: true,
 				mouseover_enable_gallery: true
@@ -3898,7 +3898,7 @@ var $$IMU_EXPORT$$;
 		},
 		mouseover_ui_closebtn: {
 			name: "Close Button",
-			description: "Enables a button to close the popup",
+			description: "Enables a button to close the popup.\nCSS ID: `#closebtn`",
 			requires: {
 				mouseover_ui: true
 			},
@@ -3907,7 +3907,7 @@ var $$IMU_EXPORT$$;
 		},
 		mouseover_ui_optionsbtn: {
 			name: "Options Button",
-			description: "Enables a button to go to this page",
+			description: "Enables a button to go to this page.\nCSS ID: `#optionsbtn`",
 			requires: {
 				mouseover_ui: true
 			},
@@ -3918,7 +3918,7 @@ var $$IMU_EXPORT$$;
 		},
 		mouseover_ui_downloadbtn: {
 			name: "Download Button",
-			description: "Enables a button to download the image",
+			description: "Enables a button to download the image.\nCSS ID: `#downloadbtn`",
 			requires: {
 				mouseover_ui: true
 			},
@@ -3927,7 +3927,7 @@ var $$IMU_EXPORT$$;
 		},
 		mouseover_ui_rotationbtns: {
 			name: "Rotation Buttons",
-			description: "Enables buttons on the UI to rotate the image by 90 degrees",
+			description: "Enables buttons on the UI to rotate the image by 90 degrees.\nCSS IDs: `#rotleftbtn`, `#rotrightbtn`",
 			requires: {
 				mouseover_ui: true
 			},
@@ -3936,7 +3936,7 @@ var $$IMU_EXPORT$$;
 		},
 		mouseover_ui_caption: {
 			name: "Caption",
-			description: "Shows the image's caption (if available) at the top",
+			description: "Shows the image's caption (if available) at the top.\nCSS ID: `#caption`",
 			requires: {
 				mouseover_ui: true
 			},
@@ -4897,7 +4897,18 @@ var $$IMU_EXPORT$$;
 					"<li><code>%thumburl%</code> is the URL of the thumbnail image. For example, you could use it like this: <code>background-image: url(%thumburl%)</code><br />",
 					"The URL is properly encoded, so quotes are not necessary (but not harmful either)</li>",
 					"<li><code>%fullurl%</code> is the URL of the full image. If IMU fails to find a larger image, it will be the same as <code>%thumburl%</code></li>",
-					"<li>Styles are <code>!important</code> by default</li></ul>"
+					"<li>Styles are <code>!important</code> by default</li></ul>",
+					"<p>For Button CSS style, you can also customize the CSS for individual buttons through their IDs. For example:</p>",
+					"<pre>",
+					"#closebtn {",
+					"  background-color: red;",
+					"  // -imu-text allows you to set the text inside the button",
+					"  -imu-text: \"Close\";",
+					"}",
+					"#galleryprevbtn, #gallerynextbtn {",
+					"  border-radius: 100px;",
+					"}",
+					"</pre>"
 				].join("\n")
 			},
 			type: "textarea",
@@ -5294,7 +5305,7 @@ var $$IMU_EXPORT$$;
 		},
 		tiktok_no_watermarks: {
 			name: "TikTok: Don't use watermarked videos",
-			description: "Uses non-watermarked videos for TikTok if possible. This will introduce an extra delay when loading the video as two extra requests need to be performed.",
+			description: "Uses non-watermarked videos for TikTok if possible. This will introduce an extra delay when loading the video as two extra requests need to be performed. It will also fail for any videos uploaded after ~late July 2020",
 			category: "rules",
 			subcategory: "rule_specific",
 			onupdate: update_rule_setting
@@ -6009,6 +6020,12 @@ var $$IMU_EXPORT$$;
 			}
 		};
 
+		if (!options.override_cb) {
+			options.override_cb = function(cb, data) {
+				cb(data);
+			};
+		}
+
 		if (!options.run) {
 			options.run = function(cb, website_match, options) {
 				var id = website_match[1];
@@ -6033,7 +6050,9 @@ var $$IMU_EXPORT$$;
 			};
 		}
 
-		options.run(cb, website_match, options);
+		options.run(function(data) {
+			options.override_cb(cb, data);
+		}, website_match, options);
 
 		return {
 			waiting: true
@@ -11235,13 +11254,13 @@ var $$IMU_EXPORT$$;
 	                    data: bigimage_obj,
 	                    message: "Unable to get bigimage function"
 	                };
-	            } else if (bigimage_obj.nonce !== "2h0nfcm1952p50em") {
+	            } else if (bigimage_obj.nonce !== "2mcn5ea2pca1li9b") {
 	                // This could happen if for some reason the userscript manager updates the userscript,
 	                // but not the required libraries.
 	                require_rules_failed = {
 	                    type: "bad_nonce",
 	                    data: bigimage_obj.nonce,
-	                    message: "Bad nonce, expected: " + "2h0nfcm1952p50em"
+	                    message: "Bad nonce, expected: " + "2mcn5ea2pca1li9b"
 	                };
 	            } else {
 	                bigimage = bigimage_obj.bigimage;
@@ -12057,7 +12076,7 @@ var $$IMU_EXPORT$$;
 
 			current_link_id += nextprev ? 1 : -1;
 			if (current_link_id < 0 || current_link_id >= album_info.links.length)
-				return null;
+				return false; // or null if we want to be able to move past the current gallery
 
 			album_info.links[current_link_id].is_current = true;
 
@@ -12388,6 +12407,22 @@ var $$IMU_EXPORT$$;
 			return currenthref;
 		};
 
+		var prop_in_objified = function(prop, objified) {
+			if (!is_array(objified)) {
+				objified = [objified];
+			}
+
+			var found_prop = false;
+			array_foreach(objified, function(obj) {
+				if (prop in obj) {
+					found_prop = true;
+					return false;
+				}
+			});
+
+			return found_prop;
+		}
+
 		var parse_bigimage = function(big) {
 			nir_debug("bigimage_recursive", "parse_bigimage (big)", deepcopy(big));
 
@@ -12507,6 +12542,7 @@ var $$IMU_EXPORT$$;
 				currentobj = null;
 			}
 
+			// check if objified (our object) has the same url/href as the last url (currenthref)
 			if (same_url(currenthref, objified) && !forcerecurse) {
 				nir_debug("bigimage_recursive", "parse_bigimage: sameurl(currenthref, objified) == true", deepcopy(currenthref), deepcopy(objified), deepcopy(newhref));
 
@@ -12515,7 +12551,8 @@ var $$IMU_EXPORT$$;
 					var cond = !options.fill_object || (newhref[0].waiting === true && !objified[0].waiting);
 					if (!cond) {
 						array_foreach(copy_props, function(prop) {
-							if (!(prop in newhref[0]) && (prop in important_properties) && (prop in objified)) {
+							// using newhref1 instead of objified because otherwise it'll always be true (objified is the filled object, all props are in it)
+							if (!(prop in newhref[0]) && (prop in important_properties) && prop_in_objified(prop, newhref1)) {
 								cond = true;
 								return false;
 							}
@@ -12531,13 +12568,14 @@ var $$IMU_EXPORT$$;
 				if (!forcerecurse) {
 					for (var i = 0; i < pasthrefs.length; i++) {
 						if (same_url(pasthrefs[i], objified)) {
-							nir_debug("bigimage_recursive", "parse_bigimage: sameurl(pasthrefs[" + i + "], objified) == true", deepcopy(pasthrefs[i]), deepcopy(objified));
+							nir_debug("bigimage_recursive", "parse_bigimage: sameurl(pasthrefs[" + i + "], objified) == true", deepcopy(pasthrefs[i]), deepcopy(objified), deepcopy(newhref));
 
 							// FIXME: is this even correct?
 							if (newhref && newhref.length) {
 								var cond = false;
 								array_foreach(copy_props, function(prop) {
-									if (!(prop in newhref[0]) && (prop in important_properties) && (prop in objified)) {
+									// using newhref1 instead of objified because otherwise it'll always be true? (objified is the filled object, all props are in it)
+									if (!(prop in newhref[0]) && (prop in important_properties) && prop_in_objified(prop, newhref1)) {
 										cond = true;
 										return false;
 									}
@@ -14572,7 +14610,7 @@ var $$IMU_EXPORT$$;
 			}
 
 			// fast path
-			if (string_indexof(text, "`") < 0) {
+			if (string_indexof(text, "`") < 0 && string_indexof(text, "\n") < 0) {
 				current_text = text;
 				apply_tag();
 				return;
@@ -14588,6 +14626,12 @@ var $$IMU_EXPORT$$;
 				if (text[i] === "`") {
 					apply_tag();
 					current_tag = text[i];
+					continue;
+				}
+
+				if (text[i] === "\n") {
+					apply_tag();
+					parent.appendChild(document_createElement("br"));
 					continue;
 				}
 
@@ -17084,18 +17128,6 @@ var $$IMU_EXPORT$$;
 		var delay_mouseonly = true;
 		var delay_el = null;
 
-		var get_nonwaitingel = function(x, y) {
-			var els = document.elementsFromPoint(x, y);
-
-			for (var i = 0; i < els.length; i++) {
-				if (els[i] === waitingel)
-					continue;
-				return els[i];
-			}
-
-			return document.body;
-		};
-
 		function update_waiting() {
 			if (!waitingel)
 				return;
@@ -17420,14 +17452,14 @@ var $$IMU_EXPORT$$;
 				if (/^\/\//.test(current))
 					continue;
 
-				var match = current.match(/^(#[-a-zA-Z0-9]+)\s*{/);
+				var match = current.match(/^(#[-a-zA-Z0-9]+(?:\s*,\s*#[-a-zA-Z0-9]+){0,})\s*{/);
 				if (match) {
 					if (current_block !== "default") {
 						console_error("Nested blocks aren't supported");
 						return;
 					}
 
-					current_block = match[1];
+					current_block = match[1].split(/\s*,\s*/);
 					splitted[i--] = current.substr(match[0].length);
 					continue;
 				}
@@ -17460,9 +17492,14 @@ var $$IMU_EXPORT$$;
 					value = strip_whitespace(value.replace(/!important$/, ""));
 				}
 
-				if (!(current_block in blocks))
-					blocks[current_block] = {};
-				blocks[current_block][property] = {value: value, important: important};
+				var c_blocks = current_block;
+				if (!is_array(c_blocks)) c_blocks = [c_blocks];
+
+				array_foreach(c_blocks, function(block) {
+					if (!(block in blocks))
+						blocks[block] = {};
+					blocks[block][property] = {value: value, important: important};
+				});
 
 				current_block = next_block;
 			}
@@ -18874,6 +18911,7 @@ var $$IMU_EXPORT$$;
 
 					if (settings.mouseover_enable_gallery && settings.mouseover_ui_gallerycounter) {
 						var images_total = addbtn({
+							id: "gallerycounter",
 							text: get_imagestotal_text(),
 							action: imagestotal_input_enable,
 							istop: true
@@ -18914,6 +18952,7 @@ var $$IMU_EXPORT$$;
 					if (settings.mouseover_ui_optionsbtn) {
 						// \u2699 = ⚙
 						var optionsbtn = addbtn({
+							id: "optionsbtn",
 							text: "\u2699",
 							title: _("Options"),
 							action: options_page,
@@ -18929,6 +18968,7 @@ var $$IMU_EXPORT$$;
 						var download_glyphs = ["\uD83E\uDC47", "\ud83e\udc6b", "\u2193"];
 						var download_glyph = get_safe_glyph(css_fontcheck, download_glyphs);
 						var downloadbtn = addbtn({
+							id: "downloadbtn",
 							text: download_glyph,
 							title: _("Download (" + get_trigger_key_text(settings.mouseover_download_key) + ")"),
 							action: download_popup_image,
@@ -18944,6 +18984,7 @@ var $$IMU_EXPORT$$;
 
 						// \u21B6 = ↶
 						var rotateleftbtn = addbtn({
+							id: "rotleftbtn",
 							text: "\u21B6",
 							title: get_rotate_title("left"),
 							action: function() {rotate_gallery(-90)},
@@ -18951,6 +18992,7 @@ var $$IMU_EXPORT$$;
 						});
 						// \u21B7 = ↷
 						var rotaterightbtn = addbtn({
+							id: "rotrightbtn",
 							text: "\u21B7",
 							title: get_rotate_title("right"),
 							action: function() {rotate_gallery(90)},
@@ -18989,6 +19031,7 @@ var $$IMU_EXPORT$$;
 							}
 
 							var caption_btn = addbtn({
+								id: "caption",
 								text: btntext,
 								title: caption,
 								action: caption_link,
@@ -19075,7 +19118,12 @@ var $$IMU_EXPORT$$;
 
 						var title = _(name) + " (" + _(keybinding_text) + ")";
 
+						var id = "gallery";
+						id += leftright ? "next" : "prev";
+						id += "btn";
+
 						var btn = addbtn({
+							id: id,
 							text: icon,
 							title: title,
 							action: action
