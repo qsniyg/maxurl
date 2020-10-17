@@ -42,10 +42,12 @@ fi
 
 if [ -f ./build/userscript_extr.user.js ]; then
     grep '// imu:require_rules' ./build/userscript_extr.user.js 2>&1 >/dev/null
-    if [ $? -ne 0 ]; then
+    if [ $? -eq 0 ]; then
         echo 'require_rules present in extr.user.js'
         exit 1
     fi
+else
+    echo "Warning: userscript_extr.user.js not available"
 fi
 
 if [ -d site ]; then
