@@ -23,10 +23,10 @@ if [ -f ./tools/remcomments.js ]; then
     echo "Generating userscript_smaller.user.js"
     node ./tools/remcomments.js userscript.user.js nowatch
 else
-    echo "Warning: gen_minified.js not available, skipping OpenUserJS minified version of the userscript"
+    echo "Warning: remcomments.js not available, skipping generating userscript_smaller.user.js"
 fi
 
-if false; then
+if true; then
     if [ -f ./tools/gen_minified.js ]; then
         node ./tools/gen_minified.js
         MINVERSION=`get_userscript_version userscript_min.user.js`
