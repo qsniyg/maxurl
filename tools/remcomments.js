@@ -19,7 +19,7 @@ function update() {
 	var userscript = fs.readFileSync(process.argv[2] || "userscript.user.js").toString();
 	var lines = userscript.split("\n");
 
-	if (lines.length < 65000) {
+	if (lines.length < 90000) {
 		console.log("Incomplete");
 		return;
 	}
