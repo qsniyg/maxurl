@@ -10,6 +10,7 @@ strip_whitespace() {
 wget http://cdn.dashjs.org/v3.1.1/dash.all.debug.js -O dash.all.debug.orig.js
 cat dash.all.debug.orig.js dash_shim.js > dash.all.debug.js
 dos2unix dash.all.debug.js
+sed -i -e '/\/\/# sourceMappingURL=/d' dash.all.debug.js
 strip_whitespace dash.all.debug.js
 
 wget https://raw.githubusercontent.com/escolarea-labs/slowaes/f53404fb0aba47fcd336ae32623033bffa1dab41/js/aes.js -O aes.orig.js
