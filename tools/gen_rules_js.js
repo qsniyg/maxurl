@@ -33,6 +33,8 @@ var variables_list = [
 	"array_foreach",
 	"array_or_null",
 	"array_upush",
+	"string_replaceall",
+	"match_all",
 	"shallowcopy",
 	"deepcopy",
 	"_",
