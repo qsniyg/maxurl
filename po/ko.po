@@ -1502,12 +1502,36 @@ msgstr ""
 msgid "Adds a link to the video in the popup"
 msgstr ""
 
+#. mouseover_click_image_close.name
+msgid "Clicking image closes"
+msgstr ""
+
+#. mouseover_click_image_close.description
+msgid "Clicking the popup image closes the popup"
+msgstr ""
+
+#. mouseover_click_video_close.name
+msgid "Clicking video closes"
+msgstr ""
+
+#. mouseover_click_video_close.description
+msgid "Clicking the popup video closes the popup"
+msgstr ""
+
 #. mouseover_download.name
 msgid "Clicking link downloads"
 msgstr ""
 
 #. mouseover_download.description
 msgid "Instead of opening the link in a new tab, it will download the image/video instead"
+msgstr ""
+
+#. mouseover_close_key.name
+msgid "Close key"
+msgstr ""
+
+#. mouseover_close_key.description
+msgid "Closes the popup when this key is pressed. Currently, ESC will also close the popup regardless of the value of this setting."
 msgstr ""
 
 #. mouseover_download_key.name
@@ -1718,7 +1742,18 @@ msgid ""
 "<li><code>%thumburl%</code> is the URL of the thumbnail image. For example, you could use it like this: <code>background-image: url(%thumburl%)</code><br />\n"
 "The URL is properly encoded, so quotes are not necessary (but not harmful either)</li>\n"
 "<li><code>%fullurl%</code> is the URL of the full image. If IMU fails to find a larger image, it will be the same as <code>%thumburl%</code></li>\n"
-"<li>Styles are <code>!important</code> by default</li></ul>"
+"<li>Styles are <code>!important</code> by default</li></ul>\n"
+"<p>For Button CSS style, you can also customize the CSS for individual buttons through their IDs. For example:</p>\n"
+"<pre>\n"
+"#closebtn {\n"
+"  background-color: red;\n"
+"  // -imu-text allows you to set the text inside the button\n"
+"  -imu-text: \"Close\";\n"
+"}\n"
+"#galleryprevbtn, #gallerynextbtn {\n"
+"  border-radius: 100px;\n"
+"}\n"
+"</pre>"
 msgstr ""
 
 #. mouseover_enable_fade.name
@@ -1930,7 +1965,7 @@ msgid "Allows the use of more powerful XHR for 3rd-party libraries. This allows 
 msgstr ""
 
 #. custom_xhr_for_lib.example_websites[0]
-msgid "YouTube (DASH)"
+msgid "Kakao"
 msgstr ""
 
 #. allow_watermark.name
@@ -2039,10 +2074,6 @@ msgstr ""
 
 #. allow_thirdparty_code.warning.true
 msgid "This could lead to security risks, please be careful when using this option!"
-msgstr ""
-
-#. allow_thirdparty_code.example_websites[0]
-msgid "Encrypted YouTube videos"
 msgstr ""
 
 #. allow_bruteforce.name
