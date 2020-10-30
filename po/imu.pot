@@ -2172,11 +2172,11 @@ msgstr ""
 msgid "(none)"
 msgstr ""
 
-#. tiktok_thirdparty.options.ttloader.com.name
+#. tiktok_thirdparty.options.ttloader.com:ttt.name
 msgid "ttloader.com"
 msgstr ""
 
-#. tiktok_thirdparty.options.onlinetik.com.name
+#. tiktok_thirdparty.options.onlinetik.com:ttt.name
 msgid "onlinetik.com"
 msgstr ""
 
@@ -2192,11 +2192,11 @@ msgstr ""
 msgid "keeptiktok.com (LQ)"
 msgstr ""
 
-#. tiktok_thirdparty.options.ssstiktok.io.name
+#. tiktok_thirdparty.options.ssstiktok.io:1.name
 msgid "ssstiktok.io (LQ)"
 msgstr ""
 
-#. tiktok_thirdparty.options.musicallydown.com.name
+#. tiktok_thirdparty.options.musicallydown.com:1.name
 msgid "musicallydown.com (LQ/PL)"
 msgstr ""
 
