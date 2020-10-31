@@ -34,8 +34,14 @@ cat cryptojs_aes.orig.js cryptojs_aes_shim.js > cryptojs_aes.js
 
 wget https://ajax.googleapis.com/ajax/libs/shaka-player/3.0.5/shaka-player.compiled.debug.js -O shaka.debug.orig.js
 cat shaka.debug.orig.js shaka_shim.js > shaka.debug.js
+# XHR is same as above, to allow overriding
+# the other window.* changes fixes it failing under the firefox addon
+# disable fetch in order to force XHR
+# remove sourcemapping to avoid warnings under devtools
 sed -i \
     -e 's/window\.XMLHttpRequest/XMLHttpRequest/g' \
+	-e 's/window\.decodeURIComponent/decodeURIComponent/g' \
+	-e 's/window\.parseInt/parseInt/g' \
 	-e 's/goog\.global\.XMLHttpRequest/XMLHttpRequest/g' \
 	-e 's/\(HttpFetchPlugin.isSupported=function..{\)/\1return false;/g' \
 	-e '/\/\/# sourceMappingURL=/d' shaka.debug.js
