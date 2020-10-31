@@ -52,6 +52,7 @@
 // @connect           api.github.com
 // @run-at            document-start
 // @license           Apache-2.0
+// non-greasyfork/oujs versions need updateURL and downloadURL to auto-update for certain userscript managers
 // @updateURL         https://raw.githubusercontent.com/qsniyg/maxurl/master/userscript.meta.js
 // @downloadURL       https://raw.githubusercontent.com/qsniyg/maxurl/master/userscript_smaller.user.js
 //
@@ -60,7 +61,7 @@
 //  Note that jsdelivr.net might not always be reliable, but (AFAIK) this is the only reasonable option from what greasyfork allows.
 //  I'd recommend using the Github version of the script if you encounter any issues (linked in the 'Project links' section below).
 //
-// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@fa8391ee2e816ed84ea050935f39dc72ac66d1a2/build/rules.js
+// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@0e4061a13203b479ad53405c60193da963ab9334/build/rules.js
 // ==/UserScript==
 
 // If you see "A userscript wants to access a cross-origin resource.", it's used for:
@@ -279,837 +280,6 @@ var $$IMU_EXPORT$$;
 			current_version = null;
 		};
 	}
-
-	// ublock blocks accessing Math on sites like gfycat
-	var Math_floor, Math_round, Math_random, Math_max, Math_min, Math_abs;
-	var get_compat_math = function() {
-		if (is_node)
-			return;
-
-		try {
-			Math_floor = Math.floor;
-			Math_round = Math.round;
-			Math_random = Math.random;
-			Math_max = Math.max;
-			Math_min = Math.min;
-			Math_abs = Math.abs;
-		} catch (e) {
-			Math_floor = function(x) {
-				return x || 0;
-			};
-
-			Math_round = function(x) {
-				return Math_floor(x + 0.5);
-			};
-
-			// good enough
-			var math_seed = Date.now();
-			Math_random = function() {
-				math_seed += Date.now();
-				math_seed %= 1e6;
-				return math_seed / 1e6;
-			};
-
-			Math_max = function() {
-				var max = -Infinity;
-
-				for (var i = 0; i < arguments.length; i++) {
-					if (arguments[i] > max)
-						max = arguments[i];
-				}
-
-				return max;
-			};
-
-			Math_min = function() {
-				var min = Infinity;
-
-				for (var i = 0; i < arguments.length; i++) {
-					if (arguments[i] < min)
-						min = arguments[i];
-				}
-
-				return min;
-			};
-
-			Math_abs = function(x) {
-				if (x < 0)
-					return -x;
-
-				return x;
-			};
-		}
-	};
-	get_compat_math();
-
-	var get_random_text = function(length) {
-		var text = "";
-
-		while (text.length < length) {
-			var newtext = Math_floor(Math_random() * 10e8).toString(26);
-			text += newtext;
-		}
-
-		text = text.substr(0, length);
-		return text;
-	};
-
-	var get_random_id = function() {
-		return get_random_text(10) + Date.now();
-	};
-
-	var id_to_iframe = {};
-
-	// todo: move to do_mouseover
-	var get_frame_info = function() {
-		return {
-			id: current_frame_id,
-			//url: window.location.href, // doesn't get updated for the iframe src's attribute?
-			url: current_frame_url,
-			size: [
-				document.documentElement.scrollWidth,
-				document.documentElement.scrollHeight
-			]
-		};
-	};
-
-	// todo: move to do_mouseover
-	var find_iframe_for_info = function(info) {
-		if (info.id in id_to_iframe)
-			return id_to_iframe[info.id];
-
-		var finish = function(iframe) {
-			if (!iframe)
-				return iframe;
-
-			id_to_iframe[info.id] = iframe;
-			return iframe;
-		}
-
-		var iframes = document.getElementsByTagName("iframe");
-		var newiframes = [];
-		for (var i = 0; i < iframes.length; i++) {
-			if (iframes[i].src !== info.url)
-				continue;
-
-			newiframes.push(iframes[i]);
-		}
-
-		if (newiframes.length <= 1)
-			return finish(newiframes[0]);
-
-		iframes = newiframes;
-		newiframes = [];
-		for (var i = 0; i < iframes.length; i++) {
-			if (iframes[i].scrollWidth !== info.size[0] ||
-				iframes[i].scrollHeight !== info.size[1]) {
-				continue;
-			}
-
-			newiframes.push(iframes[i]);
-		}
-
-		if (newiframes.length <= 1)
-			return finish(newiframes[0]);
-
-		// TODO: check cursor too
-		return null;
-	};
-
-	var iframe_to_id = function(iframe) {
-		for (var id in id_to_iframe) {
-			if (id_to_iframe[id] === iframe)
-				return id;
-		}
-
-		return null;
-	};
-
-	var id_to_iframe_window = function(id) {
-		if (!(id in id_to_iframe))
-			return null;
-
-		// no need for contentWindow in top
-		if (id !== "top") {
-			try {
-				if (id_to_iframe[id].contentWindow)
-					return id_to_iframe[id].contentWindow;
-			} catch (e) {
-				// not allowed
-				return false;
-			}
-		}
-
-		return id_to_iframe[id];
-	};
-
-	var remote_send_message = null;
-	var remote_send_reply = null;
-	var remote_reply_ids = {};
-	var current_frame_id = null;
-	var current_frame_url = null;
-
-	var raw_remote_send_message = null;
-	var remote_send_message = nullfunc;
-	var remote_send_reply = nullfunc;
-	var imu_message_key = "__IMU_MESSAGE__";
-
-	if (is_extension) {
-		raw_remote_send_message = function(to, message) {
-			extension_send_message(message)
-		};
-
-		is_remote_possible = true;
-	} else if (is_interactive) {
-		if (is_in_iframe && window.parent) {
-			id_to_iframe["top"] = window.parent;
-		}
-
-		raw_remote_send_message = function(to, message) {
-			if (!to && is_in_iframe)
-				to = "top"; // fixme?
-
-			var specified_window;
-			if (to && to in id_to_iframe) {
-				specified_window = id_to_iframe_window(to);
-				if (!specified_window) {
-					if (_nir_debug_) {
-						console_warn("Unable to find window for", to, {is_in_iframe: is_in_iframe, id_to_iframe: id_to_iframe});
-					}
-					// not allowed
-					return;
-				}
-			}
-
-			message.imu = true;
-
-			var wrapped_message = {};
-			wrapped_message[imu_message_key] = message;
-
-			if (!specified_window) {
-				for (var i = 0; i < window.frames.length; i++) {
-					try {
-						window.frames[i].postMessage(wrapped_message, "*");
-					} catch (e) {
-						if (_nir_debug_) {
-							console_warn("Unable to send message to", window.frames[i], e);
-						}
-						// not allowed
-						continue;
-					}
-				}
-			} else {
-				specified_window.postMessage(wrapped_message, "*");
-			}
-		};
-
-		is_remote_possible = true;
-
-		if (window.location.hostname === "cafe.daum.net") {
-			// unfortunately they interpret all message events, leading to bugs in their website. thanks to ambler on discord for noticing
-			is_remote_possible = false;
-		}
-	}
-
-	if (is_remote_possible) {
-		current_frame_url = window.location.href;
-		current_frame_id = get_random_id() + " " + current_frame_url;
-
-		if (!is_in_iframe)
-			current_frame_id = "top";
-
-		remote_send_message = function(to, data, cb) {
-			var id = undefined;
-
-			if (cb) {
-				id = get_random_id();
-				remote_reply_ids[id] = cb;
-			}
-
-			var message = {
-				type: "remote",
-				data: data,
-				to: to,
-				from: current_frame_id,
-				response_id: id
-			};
-
-			if (_nir_debug_) {
-				console_log("remote_send_message", to, message);
-			}
-
-			//console_log("remote", data);
-			raw_remote_send_message(to, message);
-		};
-
-		remote_send_reply = function(to, response_id, data) {
-			raw_remote_send_message(to, {
-				type: "remote_reply",
-				data: data,
-				response_id: response_id
-			});
-		};
-	}
-
-	var can_use_remote = function() {
-		return is_remote_possible && settings.allow_remote;
-	};
-
-	var can_iframe_popout = function() {
-		return can_use_remote() && settings.mouseover_use_remote;
-	};
-
-	var do_request_browser = function (request) {
-		if (_nir_debug_) {
-			console_log("do_request_browser", request);
-		}
-
-		var method = request.method || "GET";
-
-		var xhr = new XMLHttpRequest();
-		xhr.open(method, request.url, true);
-
-		if (request.responseType)
-			xhr.responseType = request.responseType;
-
-		var do_final = function(override, cb) {
-			if (_nir_debug_) {
-				console_log("do_request_browser's do_final", xhr, cb);
-			}
-
-			var resp = {
-				readyState: xhr.readyState,
-				finalUrl: xhr.responseURL,
-				responseHeaders: xhr.getAllResponseHeaders(),
-				responseType: xhr.responseType,
-				status: xhr.status, // file:// returns 0, tracking protection also returns 0
-				statusText: xhr.statusText,
-				timeout: xhr.timeout
-			};
-
-			resp.response = xhr.response;
-
-			try {
-				resp.responseText = xhr.responseText;
-			} catch (e) {}
-
-			cb(resp);
-		};
-
-		var add_handler = function(event, empty) {
-			xhr[event] = function() {
-				if (empty) {
-					return request[event](null);
-				}
-
-				do_final({}, function(resp) {
-					request[event](resp);
-				});
-			};
-		};
-
-		add_handler("onload");
-		add_handler("onerror");
-		add_handler("onprogress");
-		add_handler("onabort", true);
-		add_handler("ontimeout", true);
-
-		xhr.send(request.data);
-
-		return {
-			abort: function() {
-				xhr.abort();
-			}
-		};
-	};
-
-	try {
-		if (typeof XMLHttpRequest !== "function") {
-			do_request_browser = null;
-		}
-	} catch (e) {
-		// adblock on jizzbunker.com, sends an exception with a random magic string if XMLHttpRequest is accessed
-		do_request_browser = null;
-	}
-
-	var extension_requests = {};
-
-	var do_request_raw = null;
-	if (is_extension) {
-		do_request_raw = function(data) {
-			var reqid;
-			var do_abort = false;
-
-			extension_send_message({
-				type: "request",
-				data: data
-			}, function (response) {
-				if (response.type !== "id") {
-					console_error("Internal error: Wrong response", response);
-					return;
-				}
-
-				reqid = response.data;
-
-				extension_requests[reqid] = {
-					id: reqid,
-					data: data
-				};
-
-				if (do_abort) {
-					extension_send_message({
-						type: "abort_request",
-						data: reqid
-					});
-
-					return;
-				}
-			});
-
-			return {
-				abort: function() {
-					if (reqid === undefined) {
-						console_warn("abort() was called before the request was initialized");
-						do_abort = true;
-						return;
-					}
-
-					extension_send_message({
-						type: "abort_request",
-						data: reqid
-					});
-				}
-			};
-		};
-	} else if (typeof(GM_xmlhttpRequest) !== "undefined") {
-		do_request_raw = GM_xmlhttpRequest;
-	} else if (typeof(GM) !== "undefined" && typeof(GM.xmlHttpRequest) !== "undefined") {
-		do_request_raw = GM.xmlHttpRequest;
-	}
-
-	var register_menucommand = nullfunc;
-	var unregister_menucommand = nullfunc;
-	var num_menucommands = 0;
-
-	if (is_userscript) {
-		if (typeof(GM_registerMenuCommand) !== "undefined") {
-			register_menucommand = function(name, func) {
-				num_menucommands++;
-
-				var caption = "[" + num_menucommands + "] " + name;
-				var id = GM_registerMenuCommand(caption, func);
-
-				if (id === undefined || id === null)
-					id = caption;
-				return id;
-			};
-		}
-
-		if (typeof(GM_unregisterMenuCommand) !== "undefined") {
-			unregister_menucommand = function(id) {
-				num_menucommands--;
-
-				return GM_unregisterMenuCommand(id);
-			};
-		}
-	}
-
-	var open_in_tab = nullfunc;
-
-	if (is_userscript) {
-		if (typeof(GM_openInTab) !== "undefined") {
-			open_in_tab = GM_openInTab;
-		} else if (typeof(GM) !== "undefined" && typeof(GM.openInTab) !== "undefined") {
-			open_in_tab = GM.openInTab;
-		}
-
-		if (open_in_tab !== nullfunc) {
-			register_menucommand("Options", function() {
-				// this gets run for every frame the script is injected in
-				if (is_in_iframe)
-					return;
-
-				open_in_tab(options_page);
-			});
-		}
-	}
-
-	var open_in_tab_imu = function(imu, bg, cb) {
-		if (is_extension) {
-			extension_send_message({
-				type: "newtab",
-				data: {
-					imu: imu,
-					background: bg
-				}
-			}, cb);
-		} else if (is_userscript && open_in_tab) {
-			open_in_tab(imu.url, bg);
-			if (cb) {
-				cb();
-			}
-		}
-	};
-
-	var check_tracking_blocked = function(result) {
-		// FireMonkey returns null for result if blocked
-		// GreaseMonkey returns null for status if blocked
-		if (!result || result.status === 0 || result.status === null) {
-			if (result && result.finalUrl && /^file:\/\//.test(result.finalUrl))
-				return false;
-
-			return true;
-		}
-		return false;
-	};
-
-	var do_request = null;
-	if (do_request_raw) {
-		do_request = function(data) {
-			if (_nir_debug_) {
-				console_log("do_request", deepcopy(data));
-			}
-
-			// For cross-origin cookies
-			if (!("withCredentials" in data)) {
-				data.withCredentials = true;
-			}
-
-			if (!("headers" in data)) {
-				data.headers = {};
-			}
-
-			if (data.imu_mode) {
-				var headers_to_set = {};
-
-				if (data.imu_mode === "document") {
-					headers_to_set.accept = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9";
-					headers_to_set["Sec-Fetch-Dest"] = "document";
-					headers_to_set["Sec-Fetch-Mode"] = "navigate";
-					headers_to_set["Sec-Fetch-Site"] = "none";
-					headers_to_set["Sec-Fetch-User"] = "?1";
-				} else if (data.imu_mode === "xhr") {
-					headers_to_set.accept = "*/*";
-					headers_to_set["Sec-Fetch-Dest"] = "empty";
-					headers_to_set["Sec-Fetch-Mode"] = "cors";
-					headers_to_set["Sec-Fetch-Site"] = "same-origin";
-
-					headers_to_set.origin = data.url.replace(/^([a-z]+:\/\/[^/]+)(?:\/+.*)?$/, "$1");
-				} else if (data.imu_mode === "image") {
-					headers_to_set.accept = "image/webp,image/apng,image/*,*/*;q=0.8";
-					headers_to_set["Sec-Fetch-Dest"] = "image";
-					headers_to_set["Sec-Fetch-Mode"] = "no-cors";
-					headers_to_set["Sec-Fetch-Site"] = "same-site";
-				}
-
-				delete data.imu_mode;
-
-				for (var header in headers_to_set) {
-					if (headerobj_get(data.headers, header) === undefined) {
-						headerobj_set(data.headers, header, headers_to_set[header]);
-					}
-				}
-			}
-
-			if (data.imu_multipart) {
-				//var boundary = "-----------------------------" + get_random_text(20);
-				var boundary = "----WebKitFormBoundary" + get_random_text(16);
-
-				// TODO: fix? only tested for one key
-				var postdata = "";
-				for (var key in data.imu_multipart) {
-					var value = data.imu_multipart[key];
-
-					postdata += "--" + boundary + "\r\nContent-Disposition: form-data; name=\"" + key + "\"\r\n\r\n";
-					postdata += value + "\r\n";
-				}
-
-				postdata += "--" + boundary + "--\r\n";
-
-				headerobj_set(data.headers, "Content-Type", "multipart/form-data; boundary=" + boundary);
-				data.data = postdata;
-
-				delete data.imu_multipart;
-			}
-
-			var orig_data = deepcopy(data);
-
-			if (!data.onerror)
-				data.onerror = data.onload;
-
-			var raw_request_do = do_request_raw;
-			if (is_userscript && settings.allow_browser_request) {
-				if (userscript_manager === "Falkon GreaseMonkey" ||
-					// USI doesn't properly support blob responses: https://bitbucket.org/usi-dev/usi/issues/13/various-problems-with-gm_xmlhttprequest
-					(userscript_manager === "USI" && data.need_blob_response)) {
-					raw_request_do = do_request_browser;
-					delete data.trackingprotection_failsafe;
-				}
-			}
-
-			if (data.retry_503) {
-				if (data.retry_503 === true || typeof data.retry_503 !== "number")
-					data.retry_503 = parseInt(settings.retry_503_times) || 0;
-
-				if (data.retry_503 > 0) {
-					var real_onload_503 = data.onload;
-					var real_onerror_503 = data.onerror;
-
-					var finalcb_503 = function(resp, iserror) {
-						if (_nir_debug_) {
-							console_log("do_request's finalcb_503:", resp, iserror, deepcopy(data));
-						}
-
-						if (resp.status === 503) {
-							console_warn("Received status 503, retrying request", resp, orig_data);
-							orig_data.retry_503 = data.retry_503 - 1;
-
-							setTimeout(function() {
-								do_request(orig_data);
-							}, parseInt(settings.retry_503_ms) || 1);
-						} else {
-							if (iserror) {
-								real_onerror_503(resp);
-							} else {
-								real_onload_503(resp);
-							}
-						}
-					};
-
-					data.onload = function(resp) {
-						finalcb_503(resp, false);
-					};
-
-					data.onerror = function(resp) {
-						finalcb_503(resp, true);
-					};
-				}
-			}
-
-			if (data.trackingprotection_failsafe && settings.allow_browser_request && do_request_browser) {
-				var real_onload = data.onload;
-				var real_onerror = data.onerror;
-
-				var finalcb = function(resp, iserror) {
-					if (_nir_debug_) {
-						console_log("do_request's finalcb:", resp, iserror);
-					}
-
-					if (check_tracking_blocked(resp)) {
-						// Workaround for a bug in FireMonkey where it calls both onload and onerror: https://github.com/erosman/support/issues/134
-						data.onload = null;
-						data.onerror = null;
-
-						var newdata = shallowcopy(data);
-						newdata.onload = real_onload;
-						newdata.onerror = real_onerror;
-
-						if (newdata.imu_responseType === "blob") {
-							newdata.responseType = "blob";
-						}
-
-						return do_request_browser(newdata);
-					} else {
-						if (iserror) {
-							real_onerror(resp);
-						} else {
-							real_onload(resp);
-						}
-					}
-				};
-
-				data.onload = function(resp) {
-					finalcb(resp, false);
-				};
-
-				data.onerror = function(resp) {
-					finalcb(resp, true);
-				};
-			}
-
-			if (data.responseType === "blob" && !settings.use_blob_over_arraybuffer) {
-				(function(real_onload) {
-					data.onload = function(resp) {
-						var newresp = resp;
-
-						if (resp.response) {
-							var mime = null;
-							// hack for extension for performance
-							if (is_extension && "_responseEncoded" in resp && resp._responseEncoded.type) {
-								mime = resp._responseEncoded.type
-							} else if (resp.responseHeaders) {
-								var parsed_headers = headers_list_to_dict(parse_headers(resp.responseHeaders));
-								if (parsed_headers["content-type"]) {
-									mime = parsed_headers["content-type"];
-								}
-							}
-
-							newresp = shallowcopy(resp);
-							var blob_options = undefined;
-							if (mime) {
-								blob_options = {type: mime};
-							}
-
-							newresp.response = new native_blob([resp.response], blob_options);
-						}
-
-						if (_nir_debug_) {
-							console_log("do_request's arraybuffer->blob:", deepcopy(resp), newresp);
-						}
-
-						real_onload(newresp);
-					};
-				})(data.onload);
-
-				data.responseType = "arraybuffer";
-				data.imu_responseType = "blob";
-			}
-
-			if (_nir_debug_) {
-				console_log("do_request (modified data):", deepcopy(data));
-			}
-
-			return raw_request_do(data);
-		};
-	} else if (is_interactive) {
-		console.warn("Unable to initialize do_request, most functions will likely fail");
-	}
-
-	var get_cookies = null;
-	if (is_extension) {
-		get_cookies = function(url, cb) {
-			if (settings.browser_cookies === false) {
-				return cb(null);
-			}
-
-			extension_send_message({
-				type: "getcookies",
-				data: {url: url}
-			}, function(message) {
-				cb(message.data);
-			});
-		};
-	}
-
-	var cookies_to_httpheader = function(cookies) {
-		// deduplication apparently isn't necessary (browser duplicates them too)
-
-		var strs = [];
-		for (var i = 0; i < cookies.length; i++) {
-			var str = cookies[i].name + "=" + cookies[i].value;
-			strs.push(str);
-		}
-
-		return strs.join("; ");
-	};
-
-	var bigimage_filter = function() {
-		return true;
-	};
-
-	if (is_interactive) {
-		bigimage_filter = function(url) {
-			for (var i = 0; i < blacklist_regexes.length; i++) {
-				if (blacklist_regexes[i].test(url))
-					return false;
-			}
-
-			return true;
-		}
-	}
-
-	var default_options = {
-		fill_object: true,
-		null_if_no_change: false,
-		catch_errors: true,
-		use_cache: true,
-		use_api_cache: true,
-		urlcache_time: 60*60,
-		iterations: 200,
-		exclude_problems: [
-			"watermark",
-			"smaller",
-			"possibly_different",
-			"possibly_broken"
-		],
-		exclude_videos: false,
-		include_pastobjs: true,
-		force_page: false,
-		allow_thirdparty: false,
-		allow_thirdparty_libs: true,
-		allow_thirdparty_code: false,
-		filter: bigimage_filter,
-
-		rule_specific: {
-			deviantart_prefer_size: false,
-			deviantart_support_download: true,
-			imgur_source: true,
-			imgur_nsfw_headers: null,
-			instagram_use_app_api: true,
-			instagram_dont_use_web: false,
-			instagram_gallery_postlink: false,
-			snapchat_orig_media: true,
-			tiktok_no_watermarks: false,
-			tiktok_thirdparty: null,
-			tumblr_api_key: null,
-			linked_image: false,
-		},
-
-		do_request: do_request,
-		get_cookies: get_cookies,
-		host_url: null,
-		document: null,
-		window: null,
-		element: null,
-
-		cb: null
-	};
-
-	var default_object = {
-		url: null,
-		always_ok: false,
-		likely_broken: false,
-		can_head: true,
-		head_ok_errors: [],
-		head_wrong_contenttype: false,
-		head_wrong_contentlength: false,
-		need_blob: false,
-		need_data_url: false,
-		waiting: false,
-		redirects: false,
-		forces_download: false,
-		is_private: false,
-		is_pagelink: false,
-		is_original: false,
-		norecurse: false,
-		forcerecurse: false,
-		can_cache: true,
-		bad: false,
-		bad_if: [],
-		fake: false,
-		video: false,
-		album_info: null,
-		headers: {},
-		referer_ok: {
-			same_domain: false,
-			same_domain_nosub: false
-		},
-		extra: {
-			page: null,
-			caption: null
-		},
-		filename: "",
-		problems: {
-			watermark: false,
-			smaller: false,
-			possibly_different: false,
-			possibly_broken: false,
-			possibly_upscaled: false,
-			bruteforce: false
-		}
-	};
-
-	//var options_page = "https://qsniyg.github.io/maxurl/options.html";
 
 	// restore console.log for websites that remove it (twitter)
 	// https://gist.github.com/Ivanca/4586071
@@ -1568,6 +738,1059 @@ var $$IMU_EXPORT$$;
 			array.push(item);
 	};
 
+	var string_replaceall = function(str, find, replace) {
+		// TODO: make faster
+		return str.split(find).join(replace);
+	};
+
+	var match_all = function(str, regex) {
+		var global_regex = new RegExp(regex, "g");
+
+		var matches = str.match(global_regex);
+		if (!matches)
+			return null;
+
+		var result = [];
+		array_foreach(matches, function(match) {
+			result.push(match.match(regex));
+		});
+
+		return result;
+	};
+
+	var obj_foreach = function(obj, cb) {
+		for (var key in obj) {
+			if (cb(key, obj[key]) === false)
+				return;
+		}
+	};
+
+	var common_functions = {};
+
+	common_functions.nullfunc = function() {};
+
+	common_functions.nullobjfunc = function() {
+		var x = {
+			func: function() {}
+		};
+
+		return x;
+	};
+
+	common_functions.run_arrayd_string = function(str, options) {
+		str = str.split("");
+		options.cb(str);
+		return str.join("");
+	};
+
+	common_functions.new_vm = function() {
+		// si[n] = nth stack item (last = 0)
+		var vm_arch = [
+			// 0: Push data to the stack
+			function(vm) {
+				vm.stack.unshift(vm.data);
+			},
+			// 1: Push arg to the stack
+			function(vm) {
+				vm.stack.unshift(vm.arg);
+			},
+			// 2: Pop si[0] .. si[arg]
+			function(vm) {
+				for (var i = 0; i < vm.arg; i++) {
+					vm.stack.shift();
+				}
+			},
+			// 3: Push si[arg] to si[0]
+			function(vm) {
+				vm.stack.unshift(vm.stack[vm.arg]);
+			},
+			// 4: Append si[1] to si[0]
+			function(vm) {
+				vm.stack[0].push(vm.stack[1]);
+			},
+			// 5: Prepend si[1] to si[0]
+			function(vm) {
+				vm.stack[0].unshift(vm.stack[1]);
+			},
+			// 6: Reverse si[0]
+			function(vm) {
+				vm.stack[0].reverse();
+			},
+			// 7: Swaps the values at si[1] and si[2] in si[0]
+			function(vm) {
+				var register = vm.stack[0][vm.stack[2]];
+				vm.stack[0][vm.stack[2]] = vm.stack[0][vm.stack[1] % vm.stack[0].length];
+				vm.stack[0][vm.stack[1] % vm.stack[0].length] = register;
+			},
+			// 8: Removes si[1] (id) from si[0]
+			function(vm) {
+				vm.stack[0].splice(vm.stack[1], 1);
+			},
+			// 9: Removes everything from the beginning of si[0] to si[1]
+			function(vm) {
+				vm.stack[0].splice(0, vm.stack[1]);
+			},
+			// 10: Removes everything from si[1] to the end of si[0]
+			function(vm) {
+				vm.stack[0].splice(vm.stack[1], vm.stack[0].length);
+			},
+			// 11: Adds si[2] to the value at si[1] in si[0]
+			function(vm) {
+				vm.stack[0][vm.stack[1]] += vm.stack[2];
+			},
+			// 12: Multiplies si[2] with the value at si[1] in si[0]
+			function(vm) {
+				vm.stack[0][vm.stack[1]] *= vm.stack[2];
+			},
+			// 13: Negates the value at si[1] in si[0]
+			function(vm) {
+				vm.stack[0][vm.stack[1]] *= -1;
+			},
+		];
+
+		var _run_vm = function(ops, data) {
+			var vm = {
+				stack: [],
+				data: data
+			};
+
+			for (var i = 0; i < ops.length; i += 2) {
+				var inst = ops[i];
+				var arg = ops[i + 1];
+
+				vm.arg = arg;
+				vm_arch[inst](vm);
+			}
+
+			return data;
+		};
+
+		var run_vm = function(ops, data) {
+			if (typeof data === "string") {
+				return common_functions.run_arrayd_string(data, {
+					cb: function(data) {
+						return _run_vm(ops, data);
+					}
+				});
+			} else {
+				return _run_vm(ops, data);
+			}
+		};
+
+		return {
+			arch: vm_arch,
+			op_start: 4, // first 4 are push/pop
+			total_instrs: Object.keys(vm_arch).length,
+			run: run_vm
+		};
+	};
+
+	common_functions.create_vm_ops = function(instructions) {
+		var ops = [];
+
+		// initialize stack
+		for (var i = 0; i < 3; i++) {
+			ops.push(1, 0);
+		}
+
+		array_foreach(instructions, function(inst) {
+			var opcode = inst[0];
+
+			// push arguments
+			for (var i = 1; i < inst.length; i++) {
+				ops.push(1, inst[i]);
+			}
+			var args_count = inst.length - 1;
+
+			ops.push(
+				// push data
+				0, null,
+
+				// run operation
+				opcode, null,
+
+				// pop data+args
+				2, 1 + args_count
+			);
+		});
+
+		// cleanup
+		ops.push(2, 3);
+
+		return ops;
+	};
+
+	// ublock blocks accessing Math on sites like gfycat
+	var Math_floor, Math_round, Math_random, Math_max, Math_min, Math_abs;
+	var get_compat_math = function() {
+		if (is_node)
+			return;
+
+		try {
+			Math_floor = Math.floor;
+			Math_round = Math.round;
+			Math_random = Math.random;
+			Math_max = Math.max;
+			Math_min = Math.min;
+			Math_abs = Math.abs;
+		} catch (e) {
+			Math_floor = function(x) {
+				return x || 0;
+			};
+
+			Math_round = function(x) {
+				return Math_floor(x + 0.5);
+			};
+
+			var math_seed = Date.now();
+			var math_vm = null;
+			Math_random = function() {
+				if (!math_vm) {
+					math_vm = common_functions.new_vm();
+				}
+
+				if (math_vm) {
+					var total_instrs = math_vm.total_instrs - math_vm.op_start;
+					var bad_instrs = [8, 9, 10, 13];
+
+					var instructions = [];
+
+					var times = math_seed & 0xf;
+					if (!times)
+						times = 4;
+					for (var i = 0; i < times; i++) {
+						var instr = (((math_seed >> 4) & 0xf) + ((math_seed >> (i%8)) & 0xf)) % total_instrs + math_vm.op_start;
+
+						if (array_indexof(bad_instrs, instr) >= 0) {
+							times++;
+							continue;
+						}
+
+						instructions.push([
+							instr,
+
+							(math_seed & 0xff) + i,
+							((math_seed & 0xf) + i) % 5
+						]);
+					}
+
+					var ops = common_functions.create_vm_ops(instructions);
+
+					try {
+						var new_math_seed = parseFloat(math_vm.run(ops, math_seed + ""));
+
+						if (!isNaN(new_math_seed))
+							math_seed += new_math_seed;
+					} catch (e) {
+						//console_warn(e);
+					}
+				}
+
+				math_seed += Date.now();
+				math_seed %= 1e8;
+				return math_seed / 1e8;
+			};
+
+			Math_max = function() {
+				var max = -Infinity;
+
+				for (var i = 0; i < arguments.length; i++) {
+					if (arguments[i] > max)
+						max = arguments[i];
+				}
+
+				return max;
+			};
+
+			Math_min = function() {
+				var min = Infinity;
+
+				for (var i = 0; i < arguments.length; i++) {
+					if (arguments[i] < min)
+						min = arguments[i];
+				}
+
+				return min;
+			};
+
+			Math_abs = function(x) {
+				if (x < 0)
+					return -x;
+
+				return x;
+			};
+		}
+	};
+	get_compat_math();
+
+	var get_random_text = function(length) {
+		var text = "";
+
+		while (text.length < length) {
+			var newtext = Math_floor(Math_random() * 10e8).toString(26);
+			text += newtext;
+		}
+
+		text = text.substr(0, length);
+		return text;
+	};
+
+	var get_random_id = function() {
+		return get_random_text(10) + Date.now();
+	};
+
+	var id_to_iframe = {};
+
+	// todo: move to do_mouseover
+	var get_frame_info = function() {
+		return {
+			id: current_frame_id,
+			//url: window.location.href, // doesn't get updated for the iframe src's attribute?
+			url: current_frame_url,
+			size: [
+				document.documentElement.scrollWidth,
+				document.documentElement.scrollHeight
+			]
+		};
+	};
+
+	// todo: move to do_mouseover
+	var find_iframe_for_info = function(info) {
+		if (info.id in id_to_iframe)
+			return id_to_iframe[info.id];
+
+		var finish = function(iframe) {
+			if (!iframe)
+				return iframe;
+
+			id_to_iframe[info.id] = iframe;
+			return iframe;
+		}
+
+		var iframes = document.getElementsByTagName("iframe");
+		var newiframes = [];
+		for (var i = 0; i < iframes.length; i++) {
+			if (iframes[i].src !== info.url)
+				continue;
+
+			newiframes.push(iframes[i]);
+		}
+
+		if (newiframes.length <= 1)
+			return finish(newiframes[0]);
+
+		iframes = newiframes;
+		newiframes = [];
+		for (var i = 0; i < iframes.length; i++) {
+			if (iframes[i].scrollWidth !== info.size[0] ||
+				iframes[i].scrollHeight !== info.size[1]) {
+				continue;
+			}
+
+			newiframes.push(iframes[i]);
+		}
+
+		if (newiframes.length <= 1)
+			return finish(newiframes[0]);
+
+		// TODO: check cursor too
+		return null;
+	};
+
+	var iframe_to_id = function(iframe) {
+		for (var id in id_to_iframe) {
+			if (id_to_iframe[id] === iframe)
+				return id;
+		}
+
+		return null;
+	};
+
+	var id_to_iframe_window = function(id) {
+		if (!(id in id_to_iframe))
+			return null;
+
+		// no need for contentWindow in top
+		if (id !== "top") {
+			try {
+				if (id_to_iframe[id].contentWindow)
+					return id_to_iframe[id].contentWindow;
+			} catch (e) {
+				// not allowed
+				return false;
+			}
+		}
+
+		return id_to_iframe[id];
+	};
+
+	var remote_send_message = null;
+	var remote_send_reply = null;
+	var remote_reply_ids = {};
+	var current_frame_id = null;
+	var current_frame_url = null;
+
+	var raw_remote_send_message = null;
+	var remote_send_message = common_functions.nullfunc;
+	var remote_send_reply = common_functions.nullfunc;
+	var imu_message_key = "__IMU_MESSAGE__";
+
+	if (is_extension) {
+		raw_remote_send_message = function(to, message) {
+			extension_send_message(message)
+		};
+
+		is_remote_possible = true;
+	} else if (is_interactive) {
+		if (is_in_iframe && window.parent) {
+			id_to_iframe["top"] = window.parent;
+		}
+
+		raw_remote_send_message = function(to, message) {
+			if (!to && is_in_iframe)
+				to = "top"; // fixme?
+
+			var specified_window;
+			if (to && to in id_to_iframe) {
+				specified_window = id_to_iframe_window(to);
+				if (!specified_window) {
+					if (_nir_debug_) {
+						console_warn("Unable to find window for", to, {is_in_iframe: is_in_iframe, id_to_iframe: id_to_iframe});
+					}
+					// not allowed
+					return;
+				}
+			}
+
+			message.imu = true;
+
+			var wrapped_message = {};
+			wrapped_message[imu_message_key] = message;
+
+			if (!specified_window) {
+				for (var i = 0; i < window.frames.length; i++) {
+					try {
+						window.frames[i].postMessage(wrapped_message, "*");
+					} catch (e) {
+						if (_nir_debug_) {
+							console_warn("Unable to send message to", window.frames[i], e);
+						}
+						// not allowed
+						continue;
+					}
+				}
+			} else {
+				specified_window.postMessage(wrapped_message, "*");
+			}
+		};
+
+		is_remote_possible = true;
+
+		if (window.location.hostname === "cafe.daum.net") {
+			// unfortunately they interpret all message events, leading to bugs in their website. thanks to ambler on discord for noticing
+			is_remote_possible = false;
+		}
+	}
+
+	if (is_remote_possible) {
+		current_frame_url = window.location.href;
+		current_frame_id = get_random_id() + " " + current_frame_url;
+
+		if (!is_in_iframe)
+			current_frame_id = "top";
+
+		remote_send_message = function(to, data, cb) {
+			var id = undefined;
+
+			if (cb) {
+				id = get_random_id();
+				remote_reply_ids[id] = cb;
+			}
+
+			var message = {
+				type: "remote",
+				data: data,
+				to: to,
+				from: current_frame_id,
+				response_id: id
+			};
+
+			if (_nir_debug_) {
+				console_log("remote_send_message", to, message);
+			}
+
+			//console_log("remote", data);
+			raw_remote_send_message(to, message);
+		};
+
+		remote_send_reply = function(to, response_id, data) {
+			raw_remote_send_message(to, {
+				type: "remote_reply",
+				data: data,
+				response_id: response_id
+			});
+		};
+	}
+
+	var can_use_remote = function() {
+		return is_remote_possible && settings.allow_remote;
+	};
+
+	var can_iframe_popout = function() {
+		return can_use_remote() && settings.mouseover_use_remote;
+	};
+
+	var do_request_browser = function (request) {
+		if (_nir_debug_) {
+			console_log("do_request_browser", request);
+		}
+
+		var method = request.method || "GET";
+
+		var xhr = new XMLHttpRequest();
+		xhr.open(method, request.url, true);
+
+		if (request.responseType)
+			xhr.responseType = request.responseType;
+
+		var do_final = function(override, cb) {
+			if (_nir_debug_) {
+				console_log("do_request_browser's do_final", xhr, cb);
+			}
+
+			var resp = {
+				readyState: xhr.readyState,
+				finalUrl: xhr.responseURL,
+				responseHeaders: xhr.getAllResponseHeaders(),
+				responseType: xhr.responseType,
+				status: xhr.status, // file:// returns 0, tracking protection also returns 0
+				statusText: xhr.statusText,
+				timeout: xhr.timeout
+			};
+
+			resp.response = xhr.response;
+
+			try {
+				resp.responseText = xhr.responseText;
+			} catch (e) {}
+
+			cb(resp);
+		};
+
+		var add_handler = function(event, empty) {
+			xhr[event] = function() {
+				if (empty) {
+					return request[event](null);
+				}
+
+				do_final({}, function(resp) {
+					request[event](resp);
+				});
+			};
+		};
+
+		add_handler("onload");
+		add_handler("onerror");
+		add_handler("onprogress");
+		add_handler("onabort", true);
+		add_handler("ontimeout", true);
+
+		xhr.send(request.data);
+
+		return {
+			abort: function() {
+				xhr.abort();
+			}
+		};
+	};
+
+	try {
+		if (typeof XMLHttpRequest !== "function") {
+			do_request_browser = null;
+		}
+	} catch (e) {
+		// adblock on jizzbunker.com, sends an exception with a random magic string if XMLHttpRequest is accessed
+		do_request_browser = null;
+	}
+
+	var extension_requests = {};
+
+	var do_request_raw = null;
+	if (is_extension) {
+		do_request_raw = function(data) {
+			var reqid;
+			var do_abort = false;
+
+			extension_send_message({
+				type: "request",
+				data: data
+			}, function (response) {
+				if (response.type !== "id") {
+					console_error("Internal error: Wrong response", response);
+					return;
+				}
+
+				reqid = response.data;
+
+				extension_requests[reqid] = {
+					id: reqid,
+					data: data
+				};
+
+				if (do_abort) {
+					extension_send_message({
+						type: "abort_request",
+						data: reqid
+					});
+
+					return;
+				}
+			});
+
+			return {
+				abort: function() {
+					if (reqid === undefined) {
+						console_warn("abort() was called before the request was initialized");
+						do_abort = true;
+						return;
+					}
+
+					extension_send_message({
+						type: "abort_request",
+						data: reqid
+					});
+				}
+			};
+		};
+	} else if (typeof(GM_xmlhttpRequest) !== "undefined") {
+		do_request_raw = GM_xmlhttpRequest;
+	} else if (typeof(GM) !== "undefined" && typeof(GM.xmlHttpRequest) !== "undefined") {
+		do_request_raw = GM.xmlHttpRequest;
+	}
+
+	var register_menucommand = common_functions.nullfunc;
+	var unregister_menucommand = common_functions.nullfunc;
+	var num_menucommands = 0;
+
+	if (is_userscript) {
+		if (typeof(GM_registerMenuCommand) !== "undefined") {
+			register_menucommand = function(name, func) {
+				num_menucommands++;
+
+				var caption = "[" + num_menucommands + "] " + name;
+				var id = GM_registerMenuCommand(caption, func);
+
+				if (id === undefined || id === null)
+					id = caption;
+				return id;
+			};
+		}
+
+		if (typeof(GM_unregisterMenuCommand) !== "undefined") {
+			unregister_menucommand = function(id) {
+				num_menucommands--;
+
+				return GM_unregisterMenuCommand(id);
+			};
+		}
+	}
+
+	var open_in_tab = common_functions.nullfunc;
+
+	if (is_userscript) {
+		if (typeof(GM_openInTab) !== "undefined") {
+			open_in_tab = GM_openInTab;
+		} else if (typeof(GM) !== "undefined" && typeof(GM.openInTab) !== "undefined") {
+			open_in_tab = GM.openInTab;
+		}
+
+		if (open_in_tab !== common_functions.nullfunc) {
+			register_menucommand("Options", function() {
+				// this gets run for every frame the script is injected in
+				if (is_in_iframe)
+					return;
+
+				open_in_tab(options_page);
+			});
+		}
+	}
+
+	var open_in_tab_imu = function(imu, bg, cb) {
+		if (is_extension) {
+			extension_send_message({
+				type: "newtab",
+				data: {
+					imu: imu,
+					background: bg
+				}
+			}, cb);
+		} else if (is_userscript && open_in_tab) {
+			open_in_tab(imu.url, bg);
+			if (cb) {
+				cb();
+			}
+		}
+	};
+
+	var check_tracking_blocked = function(result) {
+		// FireMonkey returns null for result if blocked
+		// GreaseMonkey returns null for status if blocked
+		if (!result || result.status === 0 || result.status === null) {
+			if (result && result.finalUrl && /^file:\/\//.test(result.finalUrl))
+				return false;
+
+			return true;
+		}
+		return false;
+	};
+
+	var do_request = null;
+	if (do_request_raw) {
+		do_request = function(data) {
+			if (_nir_debug_) {
+				console_log("do_request", deepcopy(data));
+			}
+
+			// For cross-origin cookies
+			if (!("withCredentials" in data)) {
+				data.withCredentials = true;
+			}
+
+			if (!("headers" in data)) {
+				data.headers = {};
+			}
+
+			if (data.imu_mode) {
+				var headers_to_set = {};
+
+				if (data.imu_mode === "document") {
+					headers_to_set.accept = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9";
+					headers_to_set["Sec-Fetch-Dest"] = "document";
+					headers_to_set["Sec-Fetch-Mode"] = "navigate";
+					headers_to_set["Sec-Fetch-Site"] = "none";
+					headers_to_set["Sec-Fetch-User"] = "?1";
+				} else if (data.imu_mode === "xhr") {
+					headers_to_set.accept = "*/*";
+					headers_to_set["Sec-Fetch-Dest"] = "empty";
+					headers_to_set["Sec-Fetch-Mode"] = "cors";
+					headers_to_set["Sec-Fetch-Site"] = "same-origin";
+
+					headers_to_set.origin = data.url.replace(/^([a-z]+:\/\/[^/]+)(?:\/+.*)?$/, "$1");
+				} else if (data.imu_mode === "image") {
+					headers_to_set.accept = "image/webp,image/apng,image/*,*/*;q=0.8";
+					headers_to_set["Sec-Fetch-Dest"] = "image";
+					headers_to_set["Sec-Fetch-Mode"] = "no-cors";
+					headers_to_set["Sec-Fetch-Site"] = "same-site";
+				}
+
+				delete data.imu_mode;
+
+				for (var header in headers_to_set) {
+					if (headerobj_get(data.headers, header) === undefined) {
+						headerobj_set(data.headers, header, headers_to_set[header]);
+					}
+				}
+			}
+
+			if (data.imu_multipart) {
+				//var boundary = "-----------------------------" + get_random_text(20);
+				var boundary = "----WebKitFormBoundary" + get_random_text(16);
+
+				// TODO: fix? only tested for one key
+				var postdata = "";
+				for (var key in data.imu_multipart) {
+					var value = data.imu_multipart[key];
+
+					postdata += "--" + boundary + "\r\nContent-Disposition: form-data; name=\"" + key + "\"\r\n\r\n";
+					postdata += value + "\r\n";
+				}
+
+				postdata += "--" + boundary + "--\r\n";
+
+				headerobj_set(data.headers, "Content-Type", "multipart/form-data; boundary=" + boundary);
+				data.data = postdata;
+
+				delete data.imu_multipart;
+			}
+
+			var orig_data = deepcopy(data);
+
+			if (!data.onerror)
+				data.onerror = data.onload;
+
+			var raw_request_do = do_request_raw;
+			if (is_userscript && settings.allow_browser_request) {
+				if (userscript_manager === "Falkon GreaseMonkey" ||
+					// USI doesn't properly support blob responses: https://bitbucket.org/usi-dev/usi/issues/13/various-problems-with-gm_xmlhttprequest
+					(userscript_manager === "USI" && data.need_blob_response)) {
+					raw_request_do = do_request_browser;
+					delete data.trackingprotection_failsafe;
+				}
+			}
+
+			if (data.retry_503) {
+				if (data.retry_503 === true || typeof data.retry_503 !== "number")
+					data.retry_503 = parseInt(settings.retry_503_times) || 0;
+
+				if (data.retry_503 > 0) {
+					var real_onload_503 = data.onload;
+					var real_onerror_503 = data.onerror;
+
+					var finalcb_503 = function(resp, iserror) {
+						if (_nir_debug_) {
+							console_log("do_request's finalcb_503:", resp, iserror, deepcopy(data));
+						}
+
+						if (resp.status === 503) {
+							console_warn("Received status 503, retrying request", resp, orig_data);
+							orig_data.retry_503 = data.retry_503 - 1;
+
+							setTimeout(function() {
+								do_request(orig_data);
+							}, parseInt(settings.retry_503_ms) || 1);
+						} else {
+							if (iserror) {
+								real_onerror_503(resp);
+							} else {
+								real_onload_503(resp);
+							}
+						}
+					};
+
+					data.onload = function(resp) {
+						finalcb_503(resp, false);
+					};
+
+					data.onerror = function(resp) {
+						finalcb_503(resp, true);
+					};
+				}
+			}
+
+			if (data.trackingprotection_failsafe && settings.allow_browser_request && do_request_browser) {
+				var real_onload = data.onload;
+				var real_onerror = data.onerror;
+
+				var finalcb = function(resp, iserror) {
+					if (_nir_debug_) {
+						console_log("do_request's finalcb:", resp, iserror);
+					}
+
+					if (check_tracking_blocked(resp)) {
+						// Workaround for a bug in FireMonkey where it calls both onload and onerror: https://github.com/erosman/support/issues/134
+						data.onload = null;
+						data.onerror = null;
+
+						var newdata = shallowcopy(data);
+						newdata.onload = real_onload;
+						newdata.onerror = real_onerror;
+
+						if (newdata.imu_responseType === "blob") {
+							newdata.responseType = "blob";
+						}
+
+						return do_request_browser(newdata);
+					} else {
+						if (iserror) {
+							real_onerror(resp);
+						} else {
+							real_onload(resp);
+						}
+					}
+				};
+
+				data.onload = function(resp) {
+					finalcb(resp, false);
+				};
+
+				data.onerror = function(resp) {
+					finalcb(resp, true);
+				};
+			}
+
+			if (data.responseType === "blob" && !settings.use_blob_over_arraybuffer) {
+				(function(real_onload) {
+					data.onload = function(resp) {
+						var newresp = resp;
+
+						if (resp.response) {
+							var mime = null;
+							// hack for extension for performance
+							if (is_extension && "_responseEncoded" in resp && resp._responseEncoded.type) {
+								mime = resp._responseEncoded.type
+							} else if (resp.responseHeaders) {
+								var parsed_headers = headers_list_to_dict(parse_headers(resp.responseHeaders));
+								if (parsed_headers["content-type"]) {
+									mime = parsed_headers["content-type"];
+								}
+							}
+
+							newresp = shallowcopy(resp);
+							var blob_options = undefined;
+							if (mime) {
+								blob_options = {type: mime};
+							}
+
+							newresp.response = new native_blob([resp.response], blob_options);
+						}
+
+						if (_nir_debug_) {
+							console_log("do_request's arraybuffer->blob:", deepcopy(resp), newresp);
+						}
+
+						real_onload(newresp);
+					};
+				})(data.onload);
+
+				data.responseType = "arraybuffer";
+				data.imu_responseType = "blob";
+			}
+
+			if (_nir_debug_) {
+				console_log("do_request (modified data):", deepcopy(data));
+			}
+
+			return raw_request_do(data);
+		};
+	} else if (is_interactive) {
+		console.warn("Unable to initialize do_request, most functions will likely fail");
+	}
+
+	var get_cookies = null;
+	if (is_extension) {
+		get_cookies = function(url, cb) {
+			if (settings.browser_cookies === false) {
+				return cb(null);
+			}
+
+			extension_send_message({
+				type: "getcookies",
+				data: {url: url}
+			}, function(message) {
+				cb(message.data);
+			});
+		};
+	}
+
+	var cookies_to_httpheader = function(cookies) {
+		// deduplication apparently isn't necessary (browser duplicates them too)
+
+		var strs = [];
+		for (var i = 0; i < cookies.length; i++) {
+			var str = cookies[i].name + "=" + cookies[i].value;
+			strs.push(str);
+		}
+
+		return strs.join("; ");
+	};
+
+	var bigimage_filter = function() {
+		return true;
+	};
+
+	if (is_interactive) {
+		bigimage_filter = function(url) {
+			for (var i = 0; i < blacklist_regexes.length; i++) {
+				if (blacklist_regexes[i].test(url))
+					return false;
+			}
+
+			return true;
+		}
+	}
+
+	var default_options = {
+		fill_object: true,
+		null_if_no_change: false,
+		catch_errors: true,
+		use_cache: true,
+		use_api_cache: true,
+		urlcache_time: 60*60,
+		iterations: 200,
+		exclude_problems: [
+			"watermark",
+			"smaller",
+			"possibly_different",
+			"possibly_broken"
+		],
+		exclude_videos: false,
+		include_pastobjs: true,
+		force_page: false,
+		allow_thirdparty: false,
+		allow_thirdparty_libs: true,
+		allow_thirdparty_code: false,
+		process_format: {},
+		filter: bigimage_filter,
+
+		rule_specific: {
+			deviantart_prefer_size: false,
+			deviantart_support_download: true,
+			imgur_source: true,
+			imgur_nsfw_headers: null,
+			instagram_use_app_api: true,
+			instagram_dont_use_web: false,
+			instagram_gallery_postlink: false,
+			snapchat_orig_media: true,
+			tiktok_no_watermarks: false,
+			tiktok_thirdparty: null,
+			tumblr_api_key: null,
+			linked_image: false,
+		},
+
+		do_request: do_request,
+		get_cookies: get_cookies,
+		host_url: null,
+		document: null,
+		window: null,
+		element: null,
+
+		cb: null
+	};
+
+	var default_object = {
+		url: null,
+		always_ok: false,
+		likely_broken: false,
+		can_head: true,
+		head_ok_errors: [],
+		head_wrong_contenttype: false,
+		head_wrong_contentlength: false,
+		need_blob: false,
+		need_data_url: false,
+		waiting: false,
+		redirects: false,
+		forces_download: false,
+		is_private: false,
+		is_pagelink: false,
+		is_original: false,
+		norecurse: false,
+		forcerecurse: false,
+		can_cache: true,
+		bad: false,
+		bad_if: [],
+		fake: false,
+		video: false,
+		album_info: null,
+		headers: {},
+		referer_ok: {
+			same_domain: false,
+			same_domain_nosub: false
+		},
+		extra: {
+			page: null,
+			caption: null
+		},
+		filename: "",
+		problems: {
+			watermark: false,
+			smaller: false,
+			possibly_different: false,
+			possibly_broken: false,
+			possibly_upscaled: false,
+			bruteforce: false
+		}
+	};
+
 	function is_element(x) {
 		if (!x || typeof x !== "object")
 			return false;
@@ -1784,10 +2007,14 @@ var $$IMU_EXPORT$$;
 		if (array_indexof(supported_languages, browser_language) < 0) {
 			browser_language = browser_language.replace(/-.*/, "");
 			if (array_indexof(supported_languages, browser_language) < 0)
-				browser_language = en;
+				browser_language = "en";
 		}
 	} catch (e) {
 		console_error(e);
+
+		// just in case
+		if (array_indexof(supported_languages, browser_language) < 0)
+			browser_language = "en";
 	}
 
 	// This section is automatically generated using tools/update_from_po.js.
@@ -2767,6 +2994,9 @@ var $$IMU_EXPORT$$;
 		mouseover_prevent_cursor_overlap: true,
 		mouseover_add_link: true,
 		mouseover_add_video_link: false,
+		// thanks to bitst0rm on greasyfork for the idea: https://github.com/qsniyg/maxurl/issues/498
+		mouseover_click_image_close: false,
+		mouseover_click_video_close: false,
 		mouseover_download: false,
 		mouseover_hide_cursor: false,
 		mouseover_hide_cursor_after: 0,
@@ -2798,6 +3028,7 @@ var $$IMU_EXPORT$$;
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-541065461
 		mouseover_wait_use_el: false,
 		mouseover_add_to_history: false,
+		mouseover_close_key: ["esc"],
 		mouseover_download_key: [["s"], ["ctrl", "s"]],
 		mouseover_open_new_tab_key: ["o"],
 		mouseover_open_bg_tab_key: ["shift", "o"],
@@ -2828,6 +3059,8 @@ var $$IMU_EXPORT$$;
 		allow_dash_video: false,
 		allow_hls_video: false,
 		custom_xhr_for_lib: is_extension ? true : false,
+		hls_dash_use_max: true,
+		max_video_quality: null,
 		allow_watermark: false,
 		allow_smaller: false,
 		allow_possibly_different: false,
@@ -2838,6 +3071,7 @@ var $$IMU_EXPORT$$;
 		allow_thirdparty_libs: is_userscript ? false : true,
 		allow_thirdparty_code: false,
 		allow_bruteforce: false,
+		process_format: {},
 		//browser_cookies: true,
 		deviantart_prefer_size: false,
 		deviantart_support_download: true,
@@ -3191,7 +3425,7 @@ var $$IMU_EXPORT$$;
 			description: "Determines how the mouseover popup will open",
 			// While it won't work for some images without the extension, let's not disable it outright either
 			//extension_only: true,
-			hidden: is_userscript && open_in_tab === nullfunc,
+			hidden: is_userscript && open_in_tab === common_functions.nullfunc,
 			options: {
 				_type: "or",
 				_group1: {
@@ -4629,6 +4863,32 @@ var $$IMU_EXPORT$$;
 			category: "popup",
 			subcategory: "behavior"
 		},
+		mouseover_click_image_close: {
+			name: "Clicking image closes",
+			description: "Clicking the popup image closes the popup",
+			requires: {
+				mouseover_open_behavior: "popup"
+			},
+			disabled_if: [
+				{mouseover_add_link: true},
+				{mouseover_clickthrough: true}
+			],
+			category: "popup",
+			subcategory: "behavior"
+		},
+		mouseover_click_video_close: {
+			name: "Clicking video closes",
+			description: "Clicking the popup video closes the popup",
+			requires: {
+				mouseover_open_behavior: "popup"
+			},
+			disabled_if: [
+				{mouseover_add_video_link: true},
+				{mouseover_clickthrough: true}
+			],
+			category: "popup",
+			subcategory: "behavior"
+		},
 		mouseover_download: {
 			name: "Clicking link downloads",
 			description: "Instead of opening the link in a new tab, it will download the image/video instead",
@@ -4645,6 +4905,16 @@ var $$IMU_EXPORT$$;
 			category: "popup",
 			subcategory: "behavior"
 		},
+		mouseover_close_key: {
+			name: "Close key",
+			description: "Closes the popup when this key is pressed. Currently, ESC will also close the popup regardless of the value of this setting.",
+			requires: {
+				mouseover_open_behavior: "popup"
+			},
+			type: "keysequence",
+			category: "popup",
+			subcategory: "behavior"
+		},
 		mouseover_download_key: {
 			name: "Download key",
 			description: "Downloads the image in the popup when this key is pressed",
@@ -4658,7 +4928,7 @@ var $$IMU_EXPORT$$;
 		mouseover_open_new_tab_key: {
 			name: "Open in new tab key",
 			description: "Opens the image in the popup in a new tab when this key is pressed",
-			hidden: is_userscript && open_in_tab === nullfunc,
+			hidden: is_userscript && open_in_tab === common_functions.nullfunc,
 			requires: {
 				mouseover_open_behavior: "popup"
 			},
@@ -4669,7 +4939,7 @@ var $$IMU_EXPORT$$;
 		mouseover_open_bg_tab_key: {
 			name: "Open in background tab key",
 			description: "Opens the image in the popup in a new tab without switching to it when this key is pressed",
-			hidden: is_userscript && open_in_tab === nullfunc,
+			hidden: is_userscript && open_in_tab === common_functions.nullfunc,
 			requires: {
 				mouseover_open_behavior: "popup"
 			},
@@ -4680,7 +4950,7 @@ var $$IMU_EXPORT$$;
 		mouseover_open_options_key: {
 			name: "Open options key",
 			description: "Opens this page in a new tab when this key is pressed",
-			hidden: is_userscript && open_in_tab === nullfunc,
+			hidden: is_userscript && open_in_tab === common_functions.nullfunc,
 			requires: {
 				mouseover_open_behavior: "popup"
 			},
@@ -5131,13 +5401,53 @@ var $$IMU_EXPORT$$;
 			description_userscript: "Allows the use of more powerful XHR for 3rd-party libraries. This allows for certain DASH streams to work. Using this with the userscript version currently poses a potential security risk.",
 			category: "rules",
 			example_websites: [
-				"YouTube (DASH)"
+				"Kakao"
 			],
 			requires: {
 				allow_thirdparty_libs: true
 			},
 			advanced: true,
 			needrefresh: true // todo: clear the library cache (or only for xhr ones)
+		},
+		hls_dash_use_max: {
+			name: "HLS/DASH maximum quality",
+			description: "Uses the maximum quality for HLS/DASH videos",
+			requires: [
+				{allow_dash_video: true},
+				{allow_hls_video: true}
+			],
+			category: "rules"
+		},
+		max_video_quality: {
+			name: "Maximum video quality",
+			description: "Maximum quality for videos",
+			requires: {
+				allow_video: true
+			},
+			options: {
+				_type: "combo",
+				"unlimited": {
+					name: "(unlimited)",
+					is_null: true
+				},
+				// h prefix is important to keep the order
+				"h2160": {
+					name: "4K"
+				},
+				"h1440": {
+					name: "1440p"
+				},
+				"h1080": {
+					name: "1080p"
+				},
+				"h720": {
+					name: "720p"
+				},
+				"h480": {
+					name: "480p"
+				}
+			},
+			category: "rules"
 		},
 		allow_watermark: {
 			name: "Larger watermarked images",
@@ -5217,13 +5527,11 @@ var $$IMU_EXPORT$$;
 				"true": "This could lead to security risks, please be careful when using this option!"
 			},
 			category: "rules",
-			example_websites: [
-				"Encrypted YouTube videos"
-			],
 			onupdate: function() {
 				update_rule_setting();
 				real_api_cache.clear();
-			}
+			},
+			hidden: true // not currently used
 		},
 		allow_bruteforce: {
 			name: "Rules using brute-force",
@@ -5323,10 +5631,10 @@ var $$IMU_EXPORT$$;
 					name: "(none)",
 					is_null: true
 				},
-				"ttloader.com": {
+				"ttloader.com:ttt": {
 					name: "ttloader.com"
 				},
-				"onlinetik.com": {
+				"onlinetik.com:ttt": {
 					name: "onlinetik.com"
 				},
 				"tiktokdownloader.in:ttt": {
@@ -5335,13 +5643,14 @@ var $$IMU_EXPORT$$;
 				"savevideo.ninja:ttt": {
 					name: "savevideo.ninja"
 				},
+				// removing watermark doesn't work
 				"keeptiktok.com": {
 					name: "keeptiktok.com (LQ)"
 				},
-				"ssstiktok.io": {
+				"ssstiktok.io:1": {
 					name: "ssstiktok.io (LQ)"
 				},
-				"musicallydown.com": {
+				"musicallydown.com:1": {
 					name: "musicallydown.com (LQ/PL)"
 				},
 				"snaptik.app": {
@@ -6380,7 +6689,11 @@ var $$IMU_EXPORT$$;
 	}
 
 	function reverse_str(str) {
-		return str.split("").reverse().join("");
+		return run_arrayd_string(str, {
+			cb: function(arr) {
+				return arr.reverse();
+			}
+		});
 	}
 
 	function decode_entities(str) {
@@ -6398,11 +6711,19 @@ var $$IMU_EXPORT$$;
 		return str.replace(/&/g, "&amp;");
 	}
 
-	function get_queries(url) {
+	function encode_regex(str) {
+		return str.replace(/([\^$])/g, "\\$1");
+	}
+
+	function get_queries(url, options) {
 		// TODO: handle things like: ?a=b&c=b#&d=e
 		var querystring = url.replace(/^[^#]*?\?/, "");
 		if (!querystring || querystring === url)
 			return {};
+
+		if (!options) {
+			options = {};
+		}
 
 		var queries = {};
 
@@ -6419,6 +6740,10 @@ var $$IMU_EXPORT$$;
 
 			if (name.length === 0)
 				continue;
+
+			if (options.decode) {
+				value = decodeURIComponent(value);
+			}
 
 			queries[name] = value;
 		}
@@ -7192,6 +7517,7 @@ var $$IMU_EXPORT$$;
 
 			var event = {
 				currentTarget: this,
+				target: this,
 
 				loaded: this.loaded,
 				lengthComputable: this.lengthComputable,
@@ -7305,14 +7631,14 @@ var $$IMU_EXPORT$$;
 			url: "https://raw.githubusercontent.com/qsniyg/maxurl/5af5c0e8bd18fb0ae716aac04ac42992d2ddc2e5/lib/testcookie_slowaes.js",
 			size: 31248,
 			crc32: 2955697328,
-			crc32_size: 4174899014
+			crc32_size: 2558359850
 		},
 		"dash": {
 			name: "dash.all.debug",
-			url: "https://raw.githubusercontent.com/qsniyg/maxurl/d6b89e2c026591bf4bbbd7bd19572d3a3a2d24a7/lib/dash.all.debug.js",
-			size: 2232106,
-			crc32: 4237499449,
-			crc32_size: 4266779363,
+			url: "https://raw.githubusercontent.com/qsniyg/maxurl/adbd983cf2982c4fc048c4aac9a2faa4ef35bed0/lib/dash.all.debug.js",
+			size: 2232063,
+			crc32: 73842610,
+			crc32_size: 2151727295,
 			xhr: true
 		},
 		"hls": {
@@ -7320,7 +7646,15 @@ var $$IMU_EXPORT$$;
 			url: "https://raw.githubusercontent.com/qsniyg/maxurl/86ac4687d49aaf888674d4216cdbacd3b2e701e6/lib/hls.js",
 			size: 711701,
 			crc32: 3250521667,
-			crc32_size: 1595934044,
+			crc32_size: 2585153,
+			xhr: true
+		},
+		"shaka": {
+			name: "shaka.debug",
+			url: "https://raw.githubusercontent.com/qsniyg/maxurl/92181434d66e43c70fdbb3e0660364b5e7e4cb14/lib/shaka.debug.js",
+			size: 725133,
+			crc32: 4071792531,
+			crc32_size: 321129409,
 			xhr: true
 		},
 		"cryptojs_aes": {
@@ -7328,7 +7662,7 @@ var $$IMU_EXPORT$$;
 			url: "https://raw.githubusercontent.com/qsniyg/maxurl/22df70495741c2f90092f4cc0c504a1a2f6e6259/lib/cryptojs_aes.js",
 			size: 13453,
 			crc32: 4282597182,
-			crc32_size: 2723866838
+			crc32_size: 3521118067
 		}
 	};
 
@@ -7380,7 +7714,7 @@ var $$IMU_EXPORT$$;
 					// The commit is specified in lib_urls in order to prevent possible incompatibilities.
 					// Unfortunately this still cannot prevent a very dedicated hostile takeover.
 					// This is why we use the dual CRC32 check. Not bulletproof, but much better than nothing.
-					// On my system it takes 6ms to do both CRC32 checks, so performance isn't an issue.
+					// On my system it takes 6-30ms to do both CRC32 checks, so performance isn't really an issue.
 					// FIXME: Perhaps this is unnecessary? The commit hash should change if the commit changes
 
 					do_request({
@@ -7398,6 +7732,7 @@ var $$IMU_EXPORT$$;
 								return done(null, false);
 							}
 
+
 							if (result.responseText.length !== lib_obj.size) {
 								console_error("Wrong response length for " + name + ": " + result.responseText.length + " (expected " + lib_obj.size + ")");
 								return done(null, false);
@@ -7409,11 +7744,12 @@ var $$IMU_EXPORT$$;
 								return done(null, false);
 							}
 
-							crc = crc32(result.reponseText + (lib_obj.size + ""));
+							crc = crc32(result.responseText + (lib_obj.size + ""));
 							if (crc !== lib_obj.crc32_size) {
 								console_error("Wrong crc32 #2 for " + name + ": " + crc + " (expected " + lib_obj.crc32_size + ")");
 								return done(null, false);
 							}
+
 
 							done(run_sandboxed_lib(result.responseText, lib_obj.xhr), 0);
 							//done(new Function(result.responseText + ";return lib_export;")(), 0);
@@ -7426,6 +7762,7 @@ var $$IMU_EXPORT$$;
 		}
 	};
 
+
 	var normalize_whitespace = function(str) {
 		// https://stackoverflow.com/a/11305926
 		return str
@@ -7433,14 +7770,22 @@ var $$IMU_EXPORT$$;
 			.replace(/[\u2800]/g, ' ');
 	};
 
+	var strip_whitespace_simple = function(str) {
+		if (!str || typeof str !== "string") {
+			return str;
+		}
+
+		return str
+			.replace(/^\s+/, "")
+			.replace(/\s+$/, "");
+	};
+
 	var strip_whitespace = function(str) {
 		if (!str || typeof str !== "string") {
 			return str;
 		}
 
-		return normalize_whitespace(str)
-			.replace(/^\s+/, "")
-			.replace(/\s+$/, "");
+		return strip_whitespace_simple(normalize_whitespace(str));
 	};
 
 	var get_image_size = function(url, cb) {
@@ -7541,6 +7886,40 @@ var $$IMU_EXPORT$$;
 			.replace(/,\s*}$/, "}");
 	};
 
+	// note: this is technically incorrect (too loose), as it'll allow things like:
+	// {x: {} y: {}}
+	// this is intentional, as otherwise it grows with exponential complexity ("kvcw*", "kvw?")
+	var js_obj_token_types = {
+		whitespace: /\s+/,
+		jvarname: /[$_a-zA-Z][$_a-zA-Z0-9]*/,
+		number: /-?(?:[0-9]*\.[0-9]+|[0-9]+|[0-9]+\.)/,
+		objstart: /{/,
+		objend: /}/,
+		object: ["objstart", "whitespace?", "kvcw*", "objend"],
+		arrstart: /\[/,
+		arrend: /]/,
+		array: ["arrstart", "whitespace?", "valuecw*", "arrend"],
+		true: /true/,
+		false: /false/,
+		null: /null/,
+		value: [["array"], ["object"], ["sstring"], ["dstring"], ["number"], ["true"], ["false"], ["null"]],
+		valuew: ["value", "whitespace?"],
+		valuec: ["valuew", "comma?"],
+		valuecw: ["valuec", "whitespace?"],
+		comma: /,/,
+		colon: /:/,
+		squote: /'/,
+		dquote: /"/,
+		sstring: ["squote", "sliteral", "squote"],
+		dstring: ["dquote", "dliteral", "dquote"],
+		varname: [["jvarname"], ["sstring"], ["dstring"]],
+		kv: ["varname", "whitespace?", "colon", "whitespace?", "value"],
+		kvw: ["kv", "whitespace?"],
+		kvc: ["kvw", "comma?"],
+		kvcw: ["kvc", "whitespace?"],
+		doc: [["object"], ["array"]]
+	};
+
 	var parse_js_obj = function(objtext) {
 		// for testing purposes
 		/*var is_array = function(x) {
@@ -7551,56 +7930,22 @@ var $$IMU_EXPORT$$;
 			[].push.apply(array, other);
 		};*/
 
-		// note: this is technically incorrect (too loose), as it'll allow things like:
-		// {x: {} y: {}}
-		// this is intentional, as otherwise it grows with exponential complexity ("kvcw*", "kvw?")
-		var token_types = {
-			whitespace: /\s+/,
-			jvarname: /[$_a-zA-Z][$_a-zA-Z0-9]*/,
-			number: /-?(?:[0-9]*\.[0-9]+|[0-9]+|[0-9]+\.)/,
-			objstart: /{/,
-			objend: /}/,
-			object: ["objstart", "whitespace?", "kvcw*", "objend"],
-			arrstart: /\[/,
-			arrend: /]/,
-			array: ["arrstart", "whitespace?", "valuecw*", "arrend"],
-			true: /true/,
-			false: /false/,
-			null: /null/,
-			value: [["array"], ["object"], ["sstring"], ["dstring"], ["number"], ["true"], ["false"], ["null"]],
-			valuew: ["value", "whitespace?"],
-			valuec: ["valuew", "comma?"],
-			valuecw: ["valuec", "whitespace?"],
-			comma: /,/,
-			colon: /:/,
-			squote: /'/,
-			dquote: /"/,
-			sstring: ["squote", "sliteral", "squote"],
-			dstring: ["dquote", "dliteral", "dquote"],
-			varname: [["jvarname"], ["sstring"], ["dstring"]],
-			kv: ["varname", "whitespace?", "colon", "whitespace?", "value"],
-			kvw: ["kv", "whitespace?"],
-			kvc: ["kvw", "comma?"],
-			kvcw: ["kvc", "whitespace?"],
-			doc: [["object"], ["array"]]
-		};
-
-		for (var key in token_types) {
-			var value = token_types[key];
+		for (var key in js_obj_token_types) {
+			var value = js_obj_token_types[key];
 
 			if (value instanceof RegExp) {
-				token_types[key] = {
+				js_obj_token_types[key] = {
 					type: "regex",
 					value: new RegExp("^" + value.source)
 				};
 			} else if (is_array(value)) {
 				if (is_array(value[0])) {
-					token_types[key] = {
+					js_obj_token_types[key] = {
 						type: "or",
 						value: value
 					};
 				} else {
-					token_types[key] = {
+					js_obj_token_types[key] = {
 						type: "and",
 						value: value
 					};
@@ -7608,7 +7953,7 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		//console_log(token_types);
+		//console_log(js_obj_token_types);
 		var times_ran = 0;
 		var token_frequency = {};
 		var stack_frequency = {};
@@ -7686,7 +8031,7 @@ var $$IMU_EXPORT$$;
 				return find_token_sliteral(token_type, i);
 			}
 
-			var tt = token_types[token_type];
+			var tt = js_obj_token_types[token_type];
 			//console.log(token_type, tt);
 
 			if (tt.type === "and") {
@@ -7795,7 +8140,6 @@ var $$IMU_EXPORT$$;
 		return stringified;
 	};
 
-	var common_functions = {};
 	// cookie: postpagebeta=0; postpagebetalogged=0
 	common_functions.fetch_imgur_webpage = function(do_request, api_cache, headers, url, cb) {
 		var cache_key = "imgur_webpage:" + url.replace(/^https?:\/\/(?:www\.)?imgur/, "imgur").replace(/[?#].*/, "");
@@ -10309,18 +10653,31 @@ var $$IMU_EXPORT$$;
 	};
 
 	common_functions.get_tiktok_from_musicallydown = function(site, api_cache, do_request, url, cb) {
-		var get_vtoken = function(cb) {
+		var get_token_data = function(cb) {
 			// using real_api_query even if we don't cache because it's just less code than do_request
 			real_api_query(api_cache, do_request, "musicallydown:vtoken", {
 				url: "https://musicallydown.com"
 			}, cb, function(done, resp, cache_key) {
-				var match = resp.responseText.match(/<input type="hidden" name="vtoken" value="([0-9a-f]{5,})" \/>/);
+				var match = resp.responseText.match(/<input name="(_[a-zA-Z0-9]+)" type="hidden" value="([0-9a-f]{5,})" \/>/);
 				if (!match) {
-					console_error(cache_key, "Unable to find vtoken from", resp);
+					console_error(cache_key, "Unable to find token from", resp);
 					return done(null, false);
 				}
 
-				return done(match[1], false);
+				var obj = {
+					token_name: match[1],
+					token_value: match[2]
+				};
+
+				match = resp.responseText.match(/<input name="(_[a-zA-Z0-9]+)" type="text"[^/]+id="link_url"/);
+				if (!match) {
+					console_error(cache_key, "Unable to find link name from", resp);
+					return done(null, false);
+				}
+
+				obj.link_name = match[1];
+
+				return done(obj, false);
 			});
 		};
 
@@ -10335,9 +10692,9 @@ var $$IMU_EXPORT$$;
 					"Origin": "https://musicallydown.com",
 					"Referer": "https://musicallydown.com/",
 				},
-				data: "url=" + encodeURIComponent(url) + "&vtoken=" + token
+				data: token.link_name + "=" + encodeURIComponent(url) + "&" + token.token_name + "=" + token.token_value
 			}, cb, function(done, resp, cache_key) {
-				var match = resp.responseText.match(/<a target="_blank" rel="noreferrer" href="(https?:\/\/[^/]*tiktokcdn\.com\/[^"]+)"[^>]*>\s*<i[^>]*>\s*<\/i>\s*Download MP4/);
+				var match = resp.responseText.match(/<a\s+(?:style="[^"]+"\s+)?target="_blank" rel="noreferrer" href="(https?:\/\/[^/]*tiktokcdn\.com\/[^"]+)"[^>]*>\s*<i[^>]*>\s*<\/i>\s*Download MP4/);
 				if (!match) {
 					console_error(cache_key, "Unable to find match from", resp);
 					return done(null, false);
@@ -10347,7 +10704,7 @@ var $$IMU_EXPORT$$;
 			});
 		};
 
-		get_vtoken(function(token) {
+		get_token_data(function(token) {
 			if (!token)
 				return cb(null);
 
@@ -10360,20 +10717,43 @@ var $$IMU_EXPORT$$;
 			real_api_query(api_cache, do_request, "ssstiktok:token", {
 				url: "https://ssstiktok.io"
 			}, cb, function(done, resp, cache_key) {
-				var match = resp.responseText.match(/<input id="token" name="token" type="hidden" value="([0-9a-f]{10,})"/);
+				var match = resp.responseText.match(/<form.*?data-hx-post=".*?>/);
 				if (!match) {
-					console_error(cache_key, "Unable to find token from", resp);
+					console_error(cache_key, "Unable to find match from", resp);
 					return done(null, false);
 				}
 
-				return done(match[1], 10*60);
+				var parsed = parse_tag_def(match[0]);
+				var url = urljoin("https://ssstiktok.io/", parsed.args["data-hx-post"], true);
+
+				try {
+					var include_vals = JSON_parse(fixup_js_obj("{" + parsed.args["include-vals"] + "}"));
+				} catch (e) {
+					console_error(cache_key, e);
+					return done(null, false);
+				}
+
+				match = resp.responseText.match(/<input id="locale".*?>/);
+				if (!match) {
+					console_error(cache_key, "Unable to find locale", resp);
+					return done(null, false);
+				}
+
+				parsed = parse_tag_def(match[0]);
+				include_vals.locale = parsed.args.value;
+
+				return done({
+					url: url,
+					queries: include_vals
+				}, false);
 			});
 		};
 
 		var query_ssstiktok = function(url, token, cb) {
 			var cache_key = site + ":" + url;
+			token.queries.id = encodeURIComponent(url);
 			real_api_query(api_cache, do_request, cache_key, {
-				url: "https://ssstiktok.io/api/1/fetch",
+				url: token.url,
 				method: "POST",
 				imu_mode: "xhr",
 				headers: {
@@ -10383,7 +10763,7 @@ var $$IMU_EXPORT$$;
 					"HX-Target": "target",
 					"Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
 				},
-				data: "id=" + encodeURIComponent(url) + "&token=" + token + "&locale=en"
+				data: stringify_queries(token.queries)
 			}, cb, function(done, resp, cache_key) {
 				var match = resp.responseText.match(/<a href="(https?:\/\/[^/]*tiktokcdn\.com\/[^"]+)"[^>]*>Without watermark/);
 				if (!match) {
@@ -10408,8 +10788,8 @@ var $$IMU_EXPORT$$;
 	common_functions.get_tiktok_from_3rdparty = function(site, api_cache, options, url, cb) {
 		var sites = {
 			// hd
-			"ttloader.com": common_functions.get_tiktok_from_ttloader,
-			"onlinetik.com": common_functions.get_tiktok_from_ttloader,
+			"ttloader.com:ttt": common_functions.get_tiktok_from_ttloader_token,
+			"onlinetik.com:ttt": common_functions.get_tiktok_from_ttloader_token,
 			"demo.wppress.net:tt": common_functions.get_tiktok_from_ttloader,
 			"tiktokdownloader.in:ttt": common_functions.get_tiktok_from_ttloader_token,
 			"savevideo.ninja:ttt": common_functions.get_tiktok_from_ttloader_token,
@@ -10419,8 +10799,8 @@ var $$IMU_EXPORT$$;
 
 			// not hd
 			"keeptiktok.com": common_functions.get_tiktok_from_keeptiktok,
-			"ssstiktok.io": common_functions.get_tiktok_from_ssstiktok,
-			"musicallydown.com": common_functions.get_tiktok_from_musicallydown,
+			"ssstiktok.io:1": common_functions.get_tiktok_from_ssstiktok,
+			"musicallydown.com:1": common_functions.get_tiktok_from_musicallydown,
 			"snaptik.app": common_functions.get_tiktok_from_snaptik
 		};
 
@@ -10660,6 +11040,155 @@ var $$IMU_EXPORT$$;
 		process_func();
 	};
 
+	common_functions.youtube_fetch_watchpage_raw = function(api_cache, options, id, cb) {
+		real_api_query(api_cache, options.do_request, "youtube_watchpage_raw:" + id, {
+			url: "https://www.youtube.com/watch?v=" + id
+		}, cb, function(done, resp, cache_key) {
+			return done(resp.responseText, 60*60);
+		});
+	};
+
+	common_functions.youtube_fetch_watchpage_config = function(api_cache, options, id, context, cb) {
+		var cache_key = "youtube_watchpage_config:" + id + ":" + context;
+		api_cache.fetch(cache_key, cb, function(done) {
+			common_functions.youtube_fetch_watchpage_raw(api_cache, options, id, function(data) {
+				if (!data)
+					return done(null, false);
+
+				var contexts = [context];
+				if (context !== "config")
+					contexts.push("config");
+
+				var match;
+				array_foreach(contexts, function(context) {
+					var regex = new RegExp("ytplayer\\." + context + "\\s*=\\s*({.*?});");
+					match = data.match(regex);
+					if (match) {
+						return false;
+					}
+				});
+
+				if (!match) {
+					console_warn(cache_key, "Unable to find ytplayer." + context + " for", resp);
+					return done(null, false);
+				}
+
+				try {
+					var json = JSON_parse(match[1]);
+					return done(json, 5*60*60);
+				} catch (e) {
+					console_error(cache_key, e, match[1]);
+				}
+
+				return done(null, false);
+			});
+		});
+	};
+
+	common_functions.youtube_fetch_watchpage = function(api_cache, options, id, cb) {
+		return common_functions.youtube_fetch_watchpage_config(api_cache, options, id, "config", function(json) {
+			if (!json)
+				return cb(null);
+
+			try {
+				var player_response = json.args.player_response;
+				var player_response_json = JSON_parse(player_response);
+				return cb(player_response_json);
+			} catch (e) {
+				console_error(e, json);
+			}
+
+			return cb(null);
+		});
+	};
+
+	common_functions.youtube_fetch_asset = function(api_cache, options, id, asset, cb) {
+		var cache_key = "youtube_asset:" + asset;
+
+		api_cache.fetch(cache_key, cb, function(done) {
+			common_functions.youtube_fetch_watchpage_config(api_cache, options, id, "web_player_context_config", function(data) {
+				if (!data) return done(null, false);
+
+				var asseturl = null;
+
+				// old (within "config")
+				if (data.assets) {
+					asseturl = data.assets[asset];
+				} else if ((asset + "Url") in data) {
+					asseturl = data[asset + "Url"];
+				}
+
+				if (!asseturl)
+					return done(null, false);
+
+				var asset_url = urljoin("https://www.youtube.com/", asseturl, true);
+				options.do_request({
+					url: asset_url,
+					method: "GET",
+					headers: {
+						Referer: "https://www.youtube.com/"
+					},
+					onload: function(resp) {
+						if (resp.status !== 200) {
+							console_error(cache_key, resp);
+							return done(null, false);
+						}
+
+						return done(resp.responseText, 60*60);
+					}
+				});
+			});
+		});
+	};
+
+	common_functions.youtube_fetch_embed = function(api_cache, options, id, cb) {
+		var cache_key = "youtube_embed_info:" + id;
+		api_cache.fetch(cache_key, cb, function(done) {
+			options.do_request({
+				url: "https://www.youtube.com/get_video_info?video_id=" + id,
+				method: "GET",
+				onload: function(resp) {
+					if (resp.readyState !== 4)
+						return;
+
+					if (resp.status !== 200) {
+						console_error(resp);
+						return done(null, false);
+					}
+
+					// todo: use get_queries instead
+					var splitted = resp.responseText.split("&");
+					var found_player_response = false;
+					for (var i = 0; i < splitted.length; i++) {
+						if (/^player_response=/.test(splitted[i])) {
+							found_player_response = true;
+							var data = decodeURIComponent(splitted[i].replace(/^[^=]+=/, "").replace(/\+/g, "%20"));
+
+							try {
+								var json = JSON_parse(data);
+
+								// sometimes fails with: playabilityStatus { status: UNPLAYABLE, reason: Video+unavailable }
+								// also fails when video is about to premiere
+								//var formats = json.streamingData.formats; // just to make sure it exists
+								return done(json, 5*60*60); // video URLs expire in 6 hours
+							} catch (e) {
+								console_error(e, resp, splitted[i], data);
+							}
+
+							break;
+						}
+					}
+
+					if (!found_player_response) {
+						console_error("Unable to find player_response in", splitted[i]);
+					}
+
+					done(null, false);
+				}
+			});
+		});
+	};
+
 	common_functions.parse_flixv2 = function(resp, cache_key) {
 		var regex = /<item>\s*<res>([^<]+)<\/res>\s*<videoLink>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/videoLink>/;
 		var global_regex = new RegExp(regex, "g");
@@ -10844,7 +11373,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		var create_representation = function(representation) {
-			var rep = "<Representation";
+			var rep = "  <Representation";
 
 			rep += get_attrib("mimeType", representation.mime);
 			rep += get_attrib("codecs", representation.codecs);
@@ -10854,23 +11383,23 @@ var $$IMU_EXPORT$$;
 			rep += get_attrib("id", representation.id);
 
 			rep += ">\n";
-			rep += "  <BaseURL>" + encode_entities(representation.url) + "</BaseURL>\n";
+			rep += "    <BaseURL>" + encode_entities(representation.url) + "</BaseURL>\n";
 
 			if (representation.index_range || representation.init_range) {
-				rep += "  <SegmentBase";
+				rep += "    <SegmentBase";
 				rep += get_attrib("indexRange", get_range_str(representation.index_range));
 				rep += ">\n";
 
 				if (representation.init_range) {
-					rep += "    <Initialization"
+					rep += "      <Initialization"
 					rep += get_attrib("range", get_range_str(representation.init_range));
 					rep += " />\n";
 				}
 
-				rep += "  </SegmentBase>\n";
+				rep += "    </SegmentBase>\n";
 			}
 
-			rep += "</Representation>";
+			rep += "  </Representation>";
 
 			return rep;
 		};
@@ -11116,22 +11645,527 @@ var $$IMU_EXPORT$$;
 		return fillobj_urls(urls, obj);
 	};
 
+	common_functions.update_album_info_links = function(obj, cmp) {
+		var links = obj.album_info.links;
+
+		var found = false;
+		array_foreach(links, function(link, i) {
+			if (!found && cmp(link.url)) {
+				links[i].is_current = true;
+				obj.url = links[i].url;
+				found = true;
+			} else {
+				links[i].is_current = false;
+			}
+		});
+
+		return obj;
+	};
+
+	common_functions.run_msml_op = function(state, process_data, cb) {
+		var matches = state.matches;
+		var op = process_data.op;
+		var waiting = false;
+
+		//console_log(process_data);
+
+		if (op === "obj_set") {
+			var value;
+
+			if (process_data.value) {
+				value = process_data.value;
+			} else if (process_data.match) {
+				value = matches[process_data.match];
+			}
+
+			if (process_data.subkey) {
+				value = value[process_data.subkey];
+			}
+
+			var outfolder = matches;
+			var outvar = process_data.out;
+
+			if (process_data.out_subkey) {
+				outfolder = matches[process_data.out];
+				outvar = process_data.out_subkey;
+			}
+
+			outfolder[outvar] = value;
+		} else if (op === "run") {
+			var args = [];
+			array_foreach(process_data.args, function(arg) {
+				var value;
+
+				if (typeof arg !== "object")
+					arg = {value: arg};
+
+				if (arg.value) {
+					value = arg.value;
+				} else if (arg.match) {
+					value = matches[arg.match];
+				} else if (arg.self) {
+					value = state.ms_data[arg.self];
+				}
+
+				if (arg.subkey) {
+					value = value[arg.subkey];
+				}
+
+				if (arg.regex)
+					value = encode_regex(value);
+
+				if (arg.cb) {
+					value = function(data) {
+						if (process_data.out) {
+							matches[process_data.out] = data;
+						}
+
+						if ("bad" in process_data && data === process_data.bad) {
+							cb(false);
+						} else {
+							cb(true);
+						}
+					};
+
+					waiting = true;
+				}
+
+				args.push(value);
+			});
+
+			var obj = common_functions;
+			if (process_data.match) {
+				obj = matches[process_data.match];
+			}
+
+			var result = obj[process_data.key].apply(this, args);
+
+			if ("bad" in process_data && result === process_data.bad) {
+				console_error("Error running", process_data);
+				return false;
+			}
+
+			if (process_data.out) {
+				matches[process_data.out] = result;
+			}
+		} else if (op === "regex") {
+			var flags = deepcopy(state.ms_data[process_data.flags]);
+
+			obj_foreach(flags, function(key, data) {
+				if (typeof data === "object") {
+					if (data.replace_match) {
+						delete flags[key];
+
+						obj_foreach(data.replace_match, function(key1, value1) {
+							key = string_replaceall(key, "%" + key1 + "%", encode_regex(matches[value1]));
+						});
+
+						flags[key] = data.source;
+					}
+				}
+			});
+
+			var regex_str = common_functions[process_data.key](common_functions[process_data.base], flags, state.ms_dadta);
+
+			var in_match = process_data.in || "in";
+			var match = matches[in_match].match(new RegExp(regex_str));
+			if (!match) {
+				console_error("Unable to find match from", {
+					str: matches[in_match],
+					regex: regex_str
+				});
+				return false;
+			}
+
+			matches[process_data.out] = match[process_data.save];
+		} else if (op === "parse_queries") {
+			var url = matches[process_data.match];
+			if (!/^(?:https?:)?\//.test(url))
+				url = "?" + url;
+
+			var queries = get_queries(url, {decode: true});
+
+			if (is_array(process_data.out)) {
+				var keys = Object.keys(queries).sort();
+				array_foreach(keys, function(key, i) {
+					if (i in process_data.out) {
+						matches[process_data.out[i]] = queries[key];
+					} else {
+						return false;
+					}
+				});
+			} else {
+				obj_foreach(process_data.out, function(key, value) {
+					if (key in queries)
+						matches[value] = queries[key];
+				});
+			}
+		} else if (op === "add_queries") {
+			url = matches[process_data.match];
+			var queries = {};
+
+			array_foreach(process_data.queries, function(query_obj) {
+				var query = query_obj.query;
+				var value = query_obj.value;
+
+				if (typeof query === "object") query = matches[query.match];
+				if (typeof value === "object") value = matches[value.match];
+
+				queries[query] = value;
+			});
+
+			matches[process_data.out] = add_queries(url, queries);
+		} else if (op === "parse_match") {
+			var out = [];
+
+			array_foreach(matches[process_data.match], function(sdata) {
+				var subarr = [];
+
+				obj_foreach(sdata, function(key, value) {
+					if (typeof value === "string") {
+						subarr.push(matches[process_data.subkey][value]);
+					} else if (is_array(value)) {
+						subarr.push(value[value.length - 1]);
+					} else {
+						subarr.push(value);
+					}
+				});
+
+				out.push(deepcopy(subarr));
+			});
+
+			matches[process_data.out] = out;
+		} else if (op === "final") {
+			state.ok = true;
+		} else {
+			console_error("Unknown operation", process_data);
+		}
+
+		if (waiting)
+			return "waiting";
+	};
+
+	common_functions.run_msml_oplist = function(state, oplist, cb) {
+		state.ok = false;
+		var waiting = false;
+		try {
+			array_foreach(oplist, function(op, i) {
+				var result = common_functions.run_msml_op(state, op, function(success) {
+					if (!success) {
+						state.ok = false;
+						return cb(state.ok);
+					} else {
+						common_functions.run_msml_oplist(state, oplist.slice(i + 1), cb);
+					}
+				});
+				if (!result) return result;
+
+				if (result === "waiting") {
+					waiting = true;
+					return false;
+				}
+			});
+		} catch (e) {
+			console_error("Error running oplist", state.matches);
+			throw e;
+		}
+
+		if (!waiting) cb(state.ok);
+	};
+
+	common_functions.run_msml = function(ms_data, in_data, cb) {
+		if (!ms_data || !in_data) {
+			return cb(null);
+		}
+
+		var state = {
+			matches: {},
+			ms_data: ms_data
+		};
+
+		var our_run = function(data, cb) {
+			var our_state = {
+				matches: deepcopy(state.matches),
+				ms_data: ms_data
+			};
+
+			our_state.matches.in = data;
+			common_functions.run_msml_oplist(our_state, our_state.ms_data.run, function(ok) {
+				if (!ok) {
+					return cb(null);
+				}
+
+				cb(our_state.matches.out);
+			});
+		};
+
+		if (state.ms_data.bootstrap) {
+			state.matches.in = in_data;
+			common_functions.run_msml_oplist(state, state.ms_data.bootstrap, function(ok) {
+				if (!ok) {
+					return cb(null);
+				}
+
+				cb(our_run);
+			});
+		} else {
+			cb(our_run);
+		}
+	};
+
+	common_functions.process_formats = function(api_cache, options, formats, cb) {
+		var total = 0;
+		var processed = 0;
+		var msmls = {};
+
+		var do_cb = function() {
+			//console_log(processed, total);
+
+			if (processed >= total) {
+				cb(formats);
+				processed = -1; // don't run final twice
+			}
+		};
+
+		//console_log(deepcopy(formats));
+
+		array_foreach(formats, function(format) {
+			obj_foreach(format, function(key) {
+				if (!format[key] || !options.process_format || !(key in options.process_format)) {
+					return;
+				}
+
+				total++;
+
+				if (!(key in msmls)) {
+					msmls[key] = [];
+				}
+
+				msmls[key].push(format);
+			});
+		});
+
+		obj_foreach(msmls, function(key) {
+			msmls[key][0].imu_msml_options = options;
+			msmls[key][0].imu_msml_api_cache = api_cache;
+
+			common_functions.run_msml(options.process_format[key], msmls[key][0], function(msml) {
+				if (!msml) {
+					processed++;
+					do_cb();
+					return;
+				}
+
+				array_foreach(msmls[key], function(format) {
+					msml(format, function() {
+						processed++;
+						do_cb();
+					});
+				});
+			});
+		});
+
+		do_cb();
+	};
+
+	common_functions.normalize_function = function(func, vars) {
+		var body = func.toString()
+			.replace(/\/\/.*/g, "") // fixme: this would break "//"
+			.replace(/(return|var)\s+/g, "$1##") // awful hack
+			.replace(/\s*/g, "")
+			.replace(/(return|var)##/g, "$1 ")
+			.replace(/^(?:function\([^)]*\))?{(.*?);*}$/, "{$1}");
+
+		if (vars) {
+			for (var out_var in vars) {
+				var values = vars[out_var];
+				if (!is_array(values))
+					values = [values];
+
+				array_foreach(values, function(our_var) {
+					if (typeof our_var === "string") {
+						our_var = {source: our_var};
+					}
+
+					if (our_var.regex) {
+						body = body.replace(new RegExp(our_var.source, "g"), out_var);
+					} else {
+						body = string_replaceall(body, our_var.source, out_var);
+					}
+				});
+			}
+		}
+
+		return body;
+	};
+
+	common_functions.get_mappings_for_objstr = function(funcs, objstr, vars) {
+		var debug_info = {
+			funcs: funcs,
+			objstr: objstr,
+			vars: vars
+		};
+
+		var funcmapping_regex = new RegExp("(" + js_obj_token_types.jvarname.source + ")[\"']?\\s*:\\s*function\\s*[(][^)]*[)]\\s*({.*?})(?:,|};?$)");
+		var matches = match_all(objstr, funcmapping_regex);
+		if (!matches) {
+			console_error("Unable to find mappings", debug_info);
+			return null;
+		}
+
+		var mappings = {};
+		var mappings_ok = true;
+
+		var func_norm = [];
+		array_foreach(funcs, function(func) {
+			func_norm.push(common_functions.normalize_function(func, vars));
+		});
+
+		array_foreach(matches, function(match) {
+			var func_name = match[1];
+			var func_body = common_functions.normalize_function(match[2]);
+
+			array_foreach(func_norm, function(our_body, i) {
+				if (our_body === func_body) {
+					mappings[func_name] = i;
+					return false;
+				}
+			});
+
+			if (!mappings[func_name]) {
+				debug_info.matches = matches;
+				debug_info.match = match;
+				console_error("Unable to find mapping", debug_info);
+				mappings_ok = false;
+				return false;
+			}
+		});
+
+		if (!mappings_ok) {
+			return null;
+		} else {
+			return mappings;
+		}
+	};
+
+	common_functions.parse_js_calls = function(namespace, code) {
+		var regex = "";
+
+		if (namespace) {
+			regex = namespace + "\\.";
+		} else {
+			regex = "[^$_a-zA-Z0-9]";
+		}
+
+		regex += "(" + js_obj_token_types.jvarname.source + ")[(]([^)]*)[)][;\\s}]";
+
+		var matches = match_all(code, new RegExp(regex));
+		if (!matches) {
+			return null;
+		}
+
+		var calls = [];
+
+		array_foreach(matches, function(match) {
+			var call = {
+				name: match[1],
+				args: []
+			};
+
+			var arg_matches = match_all(match[2], /([$_a-zA-Z0-9.]+)\s*(?:,|$)/);
+			if (!arg_matches) {
+				return;
+			}
+			array_foreach(arg_matches, function(argmatch) {
+				var argval = argmatch[1];
+
+				if (js_obj_token_types.number.test(argval)) {
+					argval = parseFloat(argval);
+				}
+
+				call.args.push(argval);
+			});
+
+			calls.push(call);
+		});
+
+		return calls;
+	};
+
+	common_functions.find_actual_largest_image = function(current, images, cb, cache) {
+		if (images.length < 2) {
+			return cb(images[0]);
+		}
+
+		if (!cache) {
+			cache = {};
+		}
+
+		var nullcb = function(i) {
+			if (images[i] === current) {
+				cb(null);
+			} else {
+				images.splice(i, 1);
+				common_functions.find_actual_largest_image(current, images, cb, cache);
+			}
+		};
+
+		var our_get_image_size = function(src, cb) {
+			if (src in cache) {
+				return cb(cache[src][0], cache[src][1]);
+			}
+
+			get_image_size(src, function(x, y) {
+				if (!x || !y) {
+					return cb(x, y);
+				}
+
+				cache[src] = [x, y];
+				cb(x, y);
+			});
+		};
+
+		our_get_image_size(images[0], function(x, y) {
+			if (!x || !y) {
+				return nullcb(0);
+			}
+
+			our_get_image_size(images[1], function(ox, oy) {
+				if (!ox || !oy) {
+					return nullcb(1);
+				}
+
+				if (x*y > ox*oy) {
+					return cb(images[0]);
+				} else {
+					return cb(images[1]);
+				}
+			});
+		});
+	};
+
 	var get_domain_from_url = function(url) {
 		return url.replace(/^[a-z]+:\/\/([^/]+)(?:\/+.*)?$/, "$1");
 	};
 
 	var get_domain_nosub = function(domain) {
 		var domain_nosub = domain.replace(/^.*\.([^.]*\.[^.]*)$/, "$1");
-		if (domain_nosub.match(/^co\.[a-z]{2}$/) ||
-			domain_nosub.match(/^ne\.jp$/) || // stream.ne.jp
-			domain_nosub.match(/^or\.jp$/) ||
-			domain_nosub.match(/^com\.[a-z]{2}$/) ||
-			domain_nosub.match(/^org\.[a-z]{2}$/) ||
-			domain_nosub.match(/^net\.[a-z]{2}$/)) {
+		// stream.ne.jp
+		if (/^(?:(?:com?|org|net)\.[a-z]{2}|(?:ne|or)\.jp)$/.test(domain_nosub)) {
 			domain_nosub = domain.replace(/^.*\.([^.]*\.[^.]*\.[^.]*)$/, "$1");
 		}
 
 		return domain_nosub;
+	};
+
+	var looks_like_valid_link = function(src, el) {
+		if (/\.(?:jpe?g|png|web[mp]|gif|mp4|mkv|og[gv]|svg)(?:[?#].*)?$/i.test(src))
+			return true;
+
+		if (el && check_highlightimgs_supported_image(el))
+			return true;
+
+		return false;
 	};
 
 	var bigimage = function(src, options) {
@@ -11169,6 +12203,9 @@ var $$IMU_EXPORT$$;
 	    	'array_foreach': array_foreach,
 	    	'array_or_null': array_or_null,
 	    	'array_upush': array_upush,
+	    	'string_replaceall': string_replaceall,
+	    	'match_all': match_all,
+	    	'obj_foreach': obj_foreach,
 	    	'shallowcopy': shallowcopy,
 	    	'deepcopy': deepcopy,
 	    	'_': _,
@@ -11210,6 +12247,7 @@ var $$IMU_EXPORT$$;
 	    	'reverse_str': reverse_str,
 	    	'decode_entities': decode_entities,
 	    	'encode_entities': encode_entities,
+	    	'encode_regex': encode_regex,
 	    	'get_queries': get_queries,
 	    	'stringify_queries': stringify_queries,
 	    	'remove_queries': remove_queries,
@@ -11254,13 +12292,13 @@ var $$IMU_EXPORT$$;
 	                    data: bigimage_obj,
 	                    message: "Unable to get bigimage function"
 	                };
-	            } else if (bigimage_obj.nonce !== "2mcn5ea2pca1li9b") {
+	            } else if (bigimage_obj.nonce !== "eek11e20kii572ck") {
 	                // This could happen if for some reason the userscript manager updates the userscript,
 	                // but not the required libraries.
 	                require_rules_failed = {
 	                    type: "bad_nonce",
 	                    data: bigimage_obj.nonce,
-	                    message: "Bad nonce, expected: " + "2mcn5ea2pca1li9b"
+	                    message: "Bad nonce, expected: " + "eek11e20kii572ck"
 	                };
 	            } else {
 	                bigimage = bigimage_obj.bigimage;
@@ -11834,18 +12872,16 @@ var $$IMU_EXPORT$$;
 										return done(null, false);
 									}
 
-									var regex = /<li>\s*<a href=\"https:\/\/[^/.]+\.imagefap\.com\/+images\/[^"]+".*?>\s*<img border=0 src2="(https:\/\/[^/.]+\.imagefap\.com\/[^"]+)"/;
-									var matches = resp.responseText.match(new RegExp(regex, "g"));
+									var matches = match_all(resp.responseText, /<li>\s*<a href=\"https:\/\/[^/.]+\.imagefap\.com\/+images\/[^"]+".*?>\s*<img border=0 src2="(https:\/\/[^/.]+\.imagefap\.com\/[^"]+)"/);
 									if (!matches) {
 										console_warn(cache_key, "Unable to find album matches for", resp);
 										return done(null, false);
 									}
 
 									var albumentries = [];
-									for (var i = 0; i < matches.length; i++) {
-										var match = matches[i].match(regex);
+									array_foreach(matches, function(match) {
 										albumentries.push(decode_entities(match[1]));
-									}
+									});
 
 									return done(albumentries, 60*60);
 								}
@@ -12137,7 +13173,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		var newobj = [];
-		obj.forEach(function (url) {
+		array_foreach(obj, function(url) {
 			if (typeof(url) === "string") {
 				newobj.push(fullurl(currenturl, url));
 			} else {
@@ -12155,6 +13191,24 @@ var $$IMU_EXPORT$$;
 		});
 
 		return newobj;
+	};
+
+	var basic_fillobj = function(obj) {
+		if (!obj) {
+			obj = {};
+		}
+
+		if (!is_array(obj)) {
+			obj = [obj];
+		}
+
+		array_foreach(obj, function(sobj, i) {
+			if (typeof sobj === "string") {
+				obj[i] = {url: sobj};
+			}
+		});
+
+		return obj;
 	};
 
 	var fillobj = function(obj, baseobj) {
@@ -12220,7 +13274,12 @@ var $$IMU_EXPORT$$;
 			"allow_thirdparty",
 			"allow_apicalls",
 			"allow_thirdparty_libs",
-			"allow_thirdparty_code"
+			"allow_thirdparty_code",
+			{
+				our: "process_format",
+				settings: "process_format",
+				obj: true
+			}
 		];
 
 		for (var i = 0; i < our_settings.length; i++) {
@@ -12228,16 +13287,30 @@ var $$IMU_EXPORT$$;
 
 			var our_setting;
 			var settings_setting;
+			var is_obj = false;
 			if (typeof our_setting_obj === "string") {
 				our_setting = our_setting_obj;
 				settings_setting = our_setting;
 			} else {
 				our_setting = our_setting_obj.our;
 				settings_setting = our_setting_obj.settings;
+				is_obj = !!our_setting_obj.obj;
 			}
 
-			if (!(our_setting in options)) {
-				options[our_setting] = (settings[settings_setting] + "") === "true";
+			if (!is_obj) {
+				if (!(our_setting in options)) {
+					options[our_setting] = (settings[settings_setting] + "") === "true";
+				}
+			} else {
+				if (!(our_setting in options)) {
+					options[our_setting] = {};
+				}
+
+				obj_foreach(settings[settings_setting], function(key, value) {
+					if (!(key in options[our_setting])) {
+						options[our_setting][key] = value;
+					}
+				});
 			}
 		}
 
@@ -12544,23 +13617,66 @@ var $$IMU_EXPORT$$;
 
 			// check if objified (our object) has the same url/href as the last url (currenthref)
 			if (same_url(currenthref, objified) && !forcerecurse) {
-				nir_debug("bigimage_recursive", "parse_bigimage: sameurl(currenthref, objified) == true", deepcopy(currenthref), deepcopy(objified), deepcopy(newhref));
+				nir_debug("bigimage_recursive", "parse_bigimage: sameurl(currenthref, objified) == true (newhref, nh1, pastobjs)", deepcopy(currenthref), deepcopy(objified), deepcopy(newhref), deepcopy(newhref1), deepcopy(pastobjs));
 
 				// FIXME: this is a terrible hack
 				try {
 					var cond = !options.fill_object || (newhref[0].waiting === true && !objified[0].waiting);
-					if (!cond) {
-						array_foreach(copy_props, function(prop) {
-							// using newhref1 instead of objified because otherwise it'll always be true (objified is the filled object, all props are in it)
-							if (!(prop in newhref[0]) && (prop in important_properties) && prop_in_objified(prop, newhref1)) {
-								cond = true;
-								return false;
-							}
-						});
+					if (cond) {
+						newhref = objified;
+					} else {
+						// TODO: refactor
+						var _apply = function(newobj) {
+							array_foreach(basic_fillobj(newobj), function(sobj, i) {
+								sobj = deepcopy(sobj);
+
+								// FIXME? untested (url should resolve to the one right below it)
+								if (!sobj.url) {
+									sobj.url = currenthref;
+								}
+
+								array_foreach(pastobjs, function(psobj) {
+									if (psobj.url === sobj.url) {
+										for (prop in sobj) {
+											psobj[prop] = sobj[prop];
+										}
+
+										return false;
+									}
+								});
+							});
+						};
+
+						apply(newhref);
+						// strikinglycdn needs newhref1 to be applied, because it has two rules, the cloudinary one, then the {url: src, can_head: false} one
+						// the second one is only set in newhref1, not newhref
+						apply(newhref1);
+
+						newhref = null;
+						currentobj = pastobjs[0];
 					}
 
-					if (cond)
-						newhref = objified;
+					if (false) {
+						if (!cond) {
+							array_foreach(copy_props, function(prop) {
+								// using newhref1 instead of objified because otherwise it'll always be true (objified is the filled object, all props are in it)
+								// the prop_in_objified check breaks facebook albums
+								// [photo.php, post] -> [url+extra, photo.php] (album_info is missing because url is just a url, doesn't have album_info)
+								//   but newhref = [url+extra, photo.php]
+								//   we don't want to disregard newhref, as it contains new information (extra)
+								//   newhref1 = [url]
+								// but removing it breaks normal photos, e.g. mixdrop:
+								// mp4(+headers) -> return src (.mp4 without headers)
+								if (!(prop in newhref[0]) && (prop in important_properties) /*&& prop_in_objified(prop, newhref1)*/) {
+									cond = true;
+									return false;
+								}
+							});
+						}
+
+						if (cond)
+							newhref = objified;
+					}
 				} catch (e) {}
 
 				return false;
@@ -12570,6 +13686,7 @@ var $$IMU_EXPORT$$;
 						if (same_url(pasthrefs[i], objified)) {
 							nir_debug("bigimage_recursive", "parse_bigimage: sameurl(pasthrefs[" + i + "], objified) == true", deepcopy(pasthrefs[i]), deepcopy(objified), deepcopy(newhref));
 
+							// TODO: copy changes above here, or better yet, refactor
 							// FIXME: is this even correct?
 							if (newhref && newhref.length) {
 								var cond = false;
@@ -13079,16 +14196,6 @@ var $$IMU_EXPORT$$;
 			if (JSON_stringify(default_object[key]) !== JSON_stringify(imu_obj[key]))
 				return true;
 		}
-
-		return false;
-	};
-
-	var looks_like_valid_link = function(src, el) {
-		if (/\.(?:jpe?g|png|web[mp]|gif|mp4|mkv|og[gv]|svg)(?:[?#].*)?$/i.test(src))
-			return true;
-
-		if (el && check_highlightimgs_supported_image(el))
-			return true;
 
 		return false;
 	};
@@ -14126,6 +15233,11 @@ var $$IMU_EXPORT$$;
 			options_el.appendChild(create_update_available());
 		}
 
+		var rules_failed_el = document.createElement("p");
+		if (set_require_rules_failed_el(rules_failed_el)) {
+			options_el.appendChild(rules_failed_el);
+		}
+
 		var topbtns_holder = document_createElement("div");
 		topbtns_holder.id = "topbtns";
 		options_el.appendChild(topbtns_holder);
@@ -14147,9 +15259,18 @@ var $$IMU_EXPORT$$;
 		importexport_btn.innerText = _("Import");
 		importexport_btn.onclick = function() {
 			var value;
+			var append = false;
+
+			var import_text = importexport_text.value;
+			import_text = strip_whitespace_simple(import_text);
+
+			if (import_text[0] === "+") {
+				append = true;
+				import_text = import_text.substring(1);
+			}
 
 			try {
-				value = JSON_parse(importexport_text.value);
+				value = JSON_parse(import_text);
 			} catch (e) {
 				console_error(e);
 				importexport_text.value = "Error!";
@@ -14159,17 +15280,22 @@ var $$IMU_EXPORT$$;
 			var changed = false;
 
 			var current_settings = deepcopy(settings);
-			var new_settings = deepcopy(orig_settings);
+
+			var new_settings;
+			if (!append)
+				new_settings = deepcopy(orig_settings);
+			else
+				new_settings = deepcopy(settings);
+
 			var settings_version;
 			for (var key in value) {
 				if (!(key in settings)) {
 					if (key === "settings_version") {
 						settings_version = value[key];
+						continue;
 					} else {
-						console_log("Unknown key in imported settings: ", key);
+						console_warn("Unknown key in imported settings:", key);
 					}
-
-					continue;
 				}
 
 				new_settings[key] = value[key];
@@ -15365,6 +16491,7 @@ var $$IMU_EXPORT$$;
 			} else if (type === "combo") {
 				var sub = document_createElement("select");
 
+				var null_option = null;
 				for (var coption in meta.options) {
 					if (!coption || coption[0] === '_')
 						continue;
@@ -15373,10 +16500,17 @@ var $$IMU_EXPORT$$;
 					optionel.innerText = _(meta.options[coption].name);
 					optionel.value = coption;
 
+					if (meta.options[coption].is_null)
+						null_option = coption;
+
 					sub.appendChild(optionel);
 				}
 
-				sub.value = settings[setting];
+				var sub_value = settings[setting];
+				if (sub_value === null && null_option) {
+					sub_value = null_option;
+				}
+				sub.value = sub_value;
 
 				sub.onchange = function() {
 					var value = sub.value;
@@ -16525,7 +17659,101 @@ var $$IMU_EXPORT$$;
 					if (video_type.type === "direct") {
 						video.src = src;
 					} else {
+						var max_video_quality = get_single_setting("max_video_quality");
+						if (max_video_quality) {
+							max_video_quality = parseInt(max_video_quality.substr(1));
+						}
+
+						var get_wanted_variant = function(variants) {
+							var wanted_variant = -1;
+							array_foreach(variants, function(variant, i) {
+								if (variant.height === max_video_quality) {
+									wanted_variant = i;
+									return false;
+								}
+
+								if (variant.height > max_video_quality) {
+									if (i === 0) {
+										wanted_variant = i;
+									} else {
+										wanted_variant = i - 1;
+									}
+
+									return false;
+								}
+							});
+
+							return wanted_variant;
+						};
+
 						if (video_type.type === "dash") {
+							// don't use shaka for hls yet, as mux.js is needed
+							get_library("shaka", settings, do_request, function(_shaka) {
+								if (!_shaka) {
+									video.src = src;
+									return;
+								}
+
+								var shaka = _shaka.lib;
+
+								if (true) {
+									shaka.log.setLevel(shaka.log.Level.ERROR);
+								} else {
+									shaka.log.setLevel(shaka.log.Level.DEBUG);
+								}
+
+								//shaka.polyfill.installAll();
+								if (!shaka.Player.isBrowserSupported()) {
+									console_warn("Unsupported browser for Shaka");
+									video.src = src;
+									return;
+								}
+
+								add_xhr_hook(_shaka);
+
+								var player = new shaka.Player(video);
+
+								var shaka_error_handler = function(e) {
+									console_error(e);
+
+									video.src = src;
+									return;
+								};
+
+								player.addEventListener("error", shaka_error_handler);
+
+								player.load(src).then(function() {
+									var variants = player.getVariantTracks();
+
+									if (settings.hls_dash_use_max) {
+										variants.sort(function(a, b) {
+											return b.bandwidth - a.bandwidth;
+										});
+										//console_log(variants);
+
+										player.configure("abr.enabled", false);
+										player.selectVariantTrack(variants[0], true, 0);
+									}
+
+									if (max_video_quality) {
+										variants.sort(function(a, b) {
+											var diff = a.height - b.height;
+											if (diff) return diff;
+
+											return a.bandwidth - b.bandwidth;
+										});
+
+										var wanted_variant = get_wanted_variant(variants);
+
+										if (wanted_variant >= 0) {
+											player.configure("abr.enabled", false);
+											player.selectVariantTrack(variants[wanted_variant], true, 0);
+										}
+									}
+								}, shaka_error_handler);
+							});
+						}
+						else if (false && video_type.type === "dash") {
 							get_library("dash", settings, do_request, function(_dashjs) {
 								if (!_dashjs) {
 									video.src = src;
@@ -16537,20 +17765,24 @@ var $$IMU_EXPORT$$;
 								add_xhr_hook(_dashjs);
 
 								var player = dashjs.MediaPlayer().create();
-								player.updateSettings({
-									streaming: {
-										abr: {
-											initialBitrate: {
-												audio: Number.MAX_SAFE_INTEGER,
-												video: Number.MAX_SAFE_INTEGER
-											},
-											autoSwitchBitrate: {
-												audio: false,
-												video: false
+
+								if (settings.hls_dash_use_max) {
+									player.updateSettings({
+										streaming: {
+											abr: {
+												initialBitrate: {
+													audio: Number.MAX_SAFE_INTEGER,
+													video: Number.MAX_SAFE_INTEGER
+												},
+												autoSwitchBitrate: {
+													audio: false,
+													video: false
+												}
 											}
 										}
-									}
-								});
+									});
+								}
+
 								player.initialize(video, src, true);
 							});
 						} else if (video_type.type === "hls") {
@@ -16577,18 +17809,34 @@ var $$IMU_EXPORT$$;
 								hls.loadSource(src);
 								hls.attachMedia(video);
 								hls.on(Hls.Events.MANIFEST_PARSED, function() {
-									//console_log(hls.levels);
-									var maxlevel = -1;
-									var maxbitrate = -1;
-									for (var i = 0; i < hls.levels.length; i++) {
-										if (hls.levels[i].bitrate > maxbitrate) {
-											maxlevel = i;
-											maxbitrate = hls.levels[i].bitrate;
+									if (settings.hls_dash_use_max) {
+										//console_log(hls.levels);
+										var maxlevel = -1;
+										var maxbitrate = -1;
+										for (var i = 0; i < hls.levels.length; i++) {
+											if (hls.levels[i].bitrate > maxbitrate) {
+												maxlevel = i;
+												maxbitrate = hls.levels[i].bitrate;
+											}
 										}
+
+										if (maxlevel >= 0)
+											hls.nextLevel = maxlevel;
 									}
 
-									if (maxlevel >= 0)
-										hls.nextLevel = maxlevel;
+									if (max_video_quality) {
+										var levels = deepcopy(hls.levels);
+										levels.sort(function(a, b) {
+											var diff = a.height - b.height;
+											if (diff) return diff;
+
+											return a.bitrate - b.bitrate;
+										});
+
+										var level = get_wanted_variant(levels);
+										if (level >= 0)
+											hls.nextLevel = level;
+									}
 
 									hls.startLoad(-1);
 									video.play();
@@ -16767,7 +18015,8 @@ var $$IMU_EXPORT$$;
 		enter: 13,
 		shift: 16,
 		ctrl: 17,
-		alt: 19,
+		alt: 18,
+		esc: 27,
 		space: 32,
 		left: 37,
 		up: 38,
@@ -16793,6 +18042,7 @@ var $$IMU_EXPORT$$;
 		16: "shift",
 		17: "ctrl",
 		18: "alt",
+		27: "esc",
 		32: "space",
 
 		37: "left",
@@ -17054,11 +18304,11 @@ var $$IMU_EXPORT$$;
 		var popup_trigger_reason = null;
 		var can_close_popup = [false, false];
 		var popup_hold = false;
-		var popup_hold_func = nullfunc;
-		var popup_zoom_func = nullfunc;
+		var popup_hold_func = common_functions.nullfunc;
+		var popup_zoom_func = common_functions.nullfunc;
 		var popup_wheel_cb = null;
 		var popup_update_pos_func = null;
-		var popup_hidecursor_func = nullfunc;
+		var popup_hidecursor_func = common_functions.nullfunc;
 		var popup_hidecursor_timer = null;
 		var popup_cursorjitterX = 0;
 		var popup_cursorjitterY = 0;
@@ -17386,8 +18636,8 @@ var $$IMU_EXPORT$$;
 			popup_el_remote = false;
 			popup_el_is_video = false;
 			popup_orig_url = null;
-			popup_hold_func = nullfunc;
-			popup_zoom_func = nullfunc;
+			popup_hold_func = common_functions.nullfunc;
+			popup_zoom_func = common_functions.nullfunc;
 			popup_wheel_cb = null;
 			popup_update_pos_func = null;
 			popup_client_rect_cache = null;
@@ -17590,7 +18840,7 @@ var $$IMU_EXPORT$$;
 
 				if (options.variables) {
 					for (var variable in options.variables) {
-						value = value.split(variable).join(options.variables[variable]);
+						value = string_replaceall(value, variable, options.variables[variable]);
 					}
 				}
 
@@ -17977,17 +19227,6 @@ var $$IMU_EXPORT$$;
 				set_important_style(div, "display", "block");
 				set_important_style(div, "background-color", "rgba(255,255,255,.5)");
 
-				/*var styles = settings.mouseover_styles.replace("\n", ";");
-				div.setAttribute("style", styles);
-				if (!styles.match(/^\s*box-shadow\s*:/) &&
-					!styles.match(/;\s*box-shadow\s*:/)) {
-					div.style.boxShadow = "0 0 15px rgba(0,0,0,.5)";
-				}
-				if (!styles.match(/^\s*border(?:-[a-z]+)?\s*:/) &&
-					!styles.match(/;\s*border(?:-[a-z]+)?\s*:/)) {
-					div.style.border = "3px solid white";
-					}*/
-
 				// http://png-pixel.com/
 				var transparent_gif = "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==";
 				var styles_variables = {};
@@ -18032,14 +19271,6 @@ var $$IMU_EXPORT$$;
 				var v_mx = Math_max(x - border_thresh, 0);
 				var v_my = Math_max(y - top_thresh, 0);
 
-				/*if (window.visualViewport) {
-					vw = window.visualViewport.width;
-					vh = window.visualViewport.height;
-				} else {
-					vw = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-					vh = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-					}*/
-
 				var update_vwh = function(x, y) {
 					viewport = get_viewport();
 					vw = viewport[0];
@@ -18055,12 +19286,10 @@ var $$IMU_EXPORT$$;
 				};
 
 				var set_top = function(x) {
-					//outerdiv.style.top = (x + top_thresh) + "px";
 					outerdiv.style.top = x + "px";
 				};
 
 				var set_left = function(x) {
-					//outerdiv.style.left = (x + border_thresh) + "px";
 					outerdiv.style.left = x + "px";
 				};
 
@@ -18082,7 +19311,6 @@ var $$IMU_EXPORT$$;
 				set_el_all_initial(img);
 
 				var add_link = false;
-				// FIXME: why not just if (settings.mouseover_add_link) add_link = true?
 				if (!is_video && settings.mouseover_add_link) {
 					add_link = true;
 				} else if (is_video && settings.mouseover_add_video_link) {
@@ -18288,7 +19516,7 @@ var $$IMU_EXPORT$$;
 								calc_imghw_for_fit(w, h);
 							};
 						} else {
-							update_imghw = nullfunc;
+							update_imghw = common_functions.nullfunc;
 						}
 
 						var calc_imgrect = function(w, h) {
@@ -18408,7 +19636,7 @@ var $$IMU_EXPORT$$;
 								calc_imghw_for_fit(w, h);
 							};
 						} else {
-							update_imghw = nullfunc;
+							update_imghw = common_functions.nullfunc;
 						}
 
 						update_imghw(ovw, ovh);
@@ -18552,6 +19780,13 @@ var $$IMU_EXPORT$$;
 					}, true);
 				}
 
+				var get_popup_dimensions = function() {
+					return [
+						(popupshown && outerdiv.clientWidth) || imgw,
+						(popupshown && outerdiv.clientHeight) || imgh
+					];
+				};
+
 				var btndown = false;
 				function addbtn(options) {
 					var tagname = "span";
@@ -18603,7 +19838,7 @@ var $$IMU_EXPORT$$;
 					our_addEventListener(btn, "mouseup", function(e) {
 						btndown = false;
 					}, true);
-					if (!options.istop) {
+					if (false && !options.istop) {
 						opacity_hover(btn, undefined, true);
 					} else if (typeof options.text === "object" && options.text.truncated !== options.text.full) {
 						our_addEventListener(btn, "mouseover", function(e) {
@@ -18656,12 +19891,22 @@ var $$IMU_EXPORT$$;
 									options.text.truncated = value;
 								else
 									options.text = value;
+							},
+							"-imu-pos": function(value) {
+								options.pos = value;
+
+								if (array_indexof(["top-left", "top-middle", "top-right",
+									               "left", "middle", "right",
+									               "bottom-left", "bottom-middle", "bottom-right"], value) < 0) {
+									console_warn("Invalid pos", value);
+									options.pos = "top-left";
+								}
 							}
 						}
 					});
 
 					set_important_style(btn, "z-index", maxzindex - 1);
-					if (!options.istop) {
+					if (false && !options.istop) {
 						set_important_style(btn, "position", "absolute");
 						set_important_style(btn, "opacity", defaultopacity);
 					} else {
@@ -18688,6 +19933,22 @@ var $$IMU_EXPORT$$;
 
 					if (options.title)
 						btn.title = options.title;
+
+					if (options.containers && options.pos) {
+						var container = options.containers[options.pos];
+
+						container.appendChild(btn);
+
+						// FIXME: container.clientWidth is 0 until it's visible
+						var dimensions = get_popup_dimensions();
+						if (container.hasAttribute("data-imu-middle_x")) {
+							set_important_style(container, "left", ((dimensions[0] - container.clientWidth) / 2) + "px");
+						}
+
+						if (container.hasAttribute("data-imu-middle_y")) {
+							set_important_style(container, "top", ((dimensions[1] - container.clientHeight) / 2) + "px");
+						}
+					}
 
 					return btn;
 				}
@@ -18718,7 +19979,7 @@ var $$IMU_EXPORT$$;
 					});
 				}
 
-				function create_topbarel() {
+				var create_containerel = function(x, y, margin) {
 					var topbarel = document_createElement("div");
 					set_el_all_initial(topbarel);
 					set_important_style(topbarel, "position", "absolute");
@@ -18730,8 +19991,38 @@ var $$IMU_EXPORT$$;
 					// test: https://www.yeshiva.org.il/
 					// otherwise, the buttons are in the wrong order
 					set_important_style(topbarel, "direction", "ltr");
+
+					var left = null;
+					var top = null;
+					var bottom = null;
+					var right = null;
+
+					if (x === "left") {
+						left = "-" + margin;
+					} else if (x === "middle") {
+						left = "calc(50%)";
+						topbarel.setAttribute("data-imu-middle_x", "true");
+					} else if (x === "right") {
+						right = "-" + margin;
+					}
+
+					if (y === "top") {
+						top = "-" + margin;
+					} else if (y === "middle") {
+						// TODO: add buttons vertically, not horizontally
+						top = "calc(50%)";
+						topbarel.setAttribute("data-imu-middle_y", "true");
+					} else if (y === "bottom") {
+						bottom = "-" + margin;
+					}
+
+					if (left) set_important_style(topbarel, "left", left);
+					if (right) set_important_style(topbarel, "right", right);
+					if (top) set_important_style(topbarel, "top", top);
+					if (bottom) set_important_style(topbarel, "bottom", bottom);
+
 					return topbarel;
-				}
+				};
 
 				function create_ui(use_cached_gallery) {
 					for (var el_i = 0; el_i < ui_els.length; el_i++) {
@@ -18749,17 +20040,29 @@ var $$IMU_EXPORT$$;
 
 					var css_fontcheck = "14px " + sans_serif_font;
 
-					var topbarel = create_topbarel();
-					topbarel.style.left = "-" + em1;
-					topbarel.style.top = "-" + em1;
+					var containers = {};
+
+					containers["top-left"] = create_containerel("left", "top", em1);
+					containers["top-middle"] = create_containerel("middle", "top", em1);
+					containers["top-right"] = create_containerel("right", "top", em1);
+					containers["left"] = create_containerel("left", "middle", em1);
+					containers["middle"] = create_containerel("middle", "middle", em1);
+					containers["right"] = create_containerel("right", "middle", em1);
+					containers["bottom-left"] = create_containerel("left", "bottom", em1);
+					containers["bottom-middle"] = create_containerel("middle", "bottom", em1);
+					containers["bottom-right"] = create_containerel("right", "bottom", em1);
 
 					if (!settings.mouseover_ui) {
 						// Not sure why this is needed, but without it, clicking and dragging images doesn't work under Firefox (#78)
-						outerdiv.appendChild(topbarel);
+						outerdiv.appendChild(containers["top-left"]);
 						return;
 					}
 
-					opacity_hover(topbarel);
+					for (var pos in containers) {
+						opacity_hover(containers[pos]);
+						outerdiv.appendChild(containers[pos]);
+						ui_els.push(containers[pos]);
+					}
 
 					if (settings.mouseover_ui_closebtn) {
 						var closebtn = addbtn({
@@ -18770,13 +20073,10 @@ var $$IMU_EXPORT$$;
 							action: function() {
 								resetpopups();
 							},
-							istop: true
+							pos: "top-left",
+							containers: containers
 						});
-						topbarel.appendChild(closebtn);
 					}
-
-					outerdiv.appendChild(topbarel);
-					ui_els.push(topbarel);
 
 					var get_img_height = function() {
 						var rect = img.getBoundingClientRect();
@@ -18851,10 +20151,10 @@ var $$IMU_EXPORT$$;
 						var imagesize = addbtn({
 							id: "sizeinfo",
 							text: get_imagesizezoom_text(100),
-							istop: true
+							pos: "top-left",
+							containers: containers
 						});
 						set_important_style(imagesize, "font-size", gallerycount_fontsize);
-						topbarel.appendChild(imagesize);
 					}
 
 					var get_imagestotal_text = function() {
@@ -18914,7 +20214,8 @@ var $$IMU_EXPORT$$;
 							id: "gallerycounter",
 							text: get_imagestotal_text(),
 							action: imagestotal_input_enable,
-							istop: true
+							pos: "top-left",
+							containers: containers
 						});
 						set_important_style(images_total, "font-size", gallerycount_fontsize);
 						set_important_style(images_total, "display", "none");
@@ -18945,8 +20246,6 @@ var $$IMU_EXPORT$$;
 								return false;
 							}
 						}, true);
-
-						topbarel.appendChild(images_total);
 					}
 
 					if (settings.mouseover_ui_optionsbtn) {
@@ -18956,9 +20255,9 @@ var $$IMU_EXPORT$$;
 							text: "\u2699",
 							title: _("Options"),
 							action: options_page,
-							istop: true
+							pos: "top-left",
+							containers: containers
 						});
-						topbarel.appendChild(optionsbtn);
 					}
 
 					if (settings.mouseover_ui_downloadbtn) {
@@ -18972,9 +20271,9 @@ var $$IMU_EXPORT$$;
 							text: download_glyph,
 							title: _("Download (" + get_trigger_key_text(settings.mouseover_download_key) + ")"),
 							action: download_popup_image,
-							istop: true
+							pos: "top-left",
+							containers: containers
 						});
-						topbarel.appendChild(downloadbtn);
 					}
 
 					if (settings.mouseover_ui_rotationbtns) {
@@ -18988,7 +20287,8 @@ var $$IMU_EXPORT$$;
 							text: "\u21B6",
 							title: get_rotate_title("left"),
 							action: function() {rotate_gallery(-90)},
-							istop: true
+							pos: "top-left",
+							containers: containers
 						});
 						// \u21B7 = ↷
 						var rotaterightbtn = addbtn({
@@ -18996,11 +20296,9 @@ var $$IMU_EXPORT$$;
 							text: "\u21B7",
 							title: get_rotate_title("right"),
 							action: function() {rotate_gallery(90)},
-							istop: true
+							pos: "top-left",
+							containers: containers
 						});
-
-						topbarel.appendChild(rotateleftbtn);
-						topbarel.appendChild(rotaterightbtn);
 					}
 
 					if (settings.mouseover_ui_caption) {
@@ -19016,7 +20314,8 @@ var $$IMU_EXPORT$$;
 
 							if (settings.mouseover_ui_wrap_caption) {
 								// /10 is arbitrary, but seems to work well
-								var chars = parseInt(Math_max(10, Math_min(60, (popup_width - topbarel.clientWidth) / 10)));
+								// TODO: make top-left dynamic
+								var chars = parseInt(Math_max(10, Math_min(60, (popup_width - containers["top-left"].clientWidth) / 10)));
 
 								btntext = {
 									truncated: truncate_with_ellipsis(caption, chars),
@@ -19035,9 +20334,9 @@ var $$IMU_EXPORT$$;
 								text: btntext,
 								title: caption,
 								action: caption_link,
-								istop: true
+								pos: "top-left",
+								containers: containers
 							});
-							topbarel.appendChild(caption_btn);
 						}
 					}
 
@@ -19126,17 +20425,19 @@ var $$IMU_EXPORT$$;
 							id: id,
 							text: icon,
 							title: title,
-							action: action
+							action: action,
+							containers: containers,
+							pos: leftright ? "right" : "left"
 						});
-						btn.style.top = "calc(50% - 7px - " + emhalf + ")";
+						/*btn.style.top = "calc(50% - 7px - " + emhalf + ")";
 						if (!leftright) {
 							btn.style.left = "-" + em1;
 						} else {
 							btn.style.left = "initial";
 							btn.style.right = "-" + em1;
-						}
-						outerdiv.appendChild(btn);
-						ui_els.push(btn);
+						}*/
+						//outerdiv.appendChild(btn);
+						//ui_els.push(btn);
 
 						add_lrhover(!leftright, btn, action, title);
 
@@ -19254,6 +20555,27 @@ var $$IMU_EXPORT$$;
 								return false;
 							}, true);
 						}
+					}
+				} else {
+					var click_close = false;
+
+					if (!is_video && settings.mouseover_click_image_close) {
+						click_close = true;
+					} else if (is_video && settings.mouseover_click_video_close) {
+						click_close = true;
+					}
+
+					if (click_close) {
+						our_addEventListener(a, "click", function(e) {
+							if (dragged)
+								return;
+
+							resetpopups();
+
+							e.preventDefault()
+							e.stopPropagation();
+							return false;
+						});
 					}
 				}
 
@@ -21631,7 +22953,7 @@ var $$IMU_EXPORT$$;
 		function trigger_popup_with_source(source, automatic, use_last_pos, cb) {
 			next_popup_el = get_physical_popup_el(source.el);
 
-			if (!cb) cb = nullfunc;
+			if (!cb) cb = common_functions.nullfunc;
 
 			var use_head = false;
 			var openb = get_single_setting("mouseover_open_behavior");
@@ -22032,7 +23354,7 @@ var $$IMU_EXPORT$$;
 
 		trigger_gallery = function(dir, cb) {
 			if (!cb) {
-				cb = nullfunc;
+				cb = common_functions.nullfunc;
 			}
 
 			if (popup_el_remote && can_iframe_popout() && !is_in_iframe) {
@@ -22545,6 +23867,9 @@ var $$IMU_EXPORT$$;
 		var highlightimgs_styleel = null;
 		var highlightimgs_classname = generate_random_class("highlight");
 		var update_highlight_styleel = function() {
+			if (!/^text\//.test(document.contentType))
+				return;
+
 			if (!highlightimgs_styleel) {
 				highlightimgs_styleel = document_createElement("style");
 				document.documentElement.appendChild(highlightimgs_styleel);
@@ -23315,6 +24640,10 @@ var $$IMU_EXPORT$$;
 		};
 
 		var keydown_cb = function(event) {
+			// otherwise rebinding the trigger key will fail
+			if (is_options_page)
+				return;
+
 			nir_debug("input", "keydown_cb", event);
 
 			if (!mouseover_enabled())
@@ -23402,10 +24731,15 @@ var $$IMU_EXPORT$$;
 			}
 
 
-			if (true) {
+			// don't run if another function above was already triggered (e.g. when close is bound to the same key as trigger)
+			if (ret !== false) {
 				var is_popup_active = popup_el_remote || (popup_active());
 
 				var keybinds = [
+					{
+						key: settings.mouseover_close_key,
+						action: {type: "resetpopups"}
+					},
 					{
 						key: settings.mouseover_gallery_prev_key,
 						action: {type: "gallery_prev"},
@@ -24194,6 +25528,9 @@ var $$IMU_EXPORT$$;
 	}
 
 	function do_websitehome() {
+		if (require_rules_failed)
+			return;
+
 		unsafeWindow.imu_variable = bigimage_recursive;
 		unsafeWindow.imu_inject = 1;
 		unsafeWindow.do_imu = function(url, cb) {
@@ -24270,6 +25607,40 @@ var $$IMU_EXPORT$$;
 		};
 	}
 
+	var set_require_rules_failed_el = function(el) {
+		if (!require_rules_failed)
+			return false;
+
+		el.style.color = "#ff3333";
+
+		el.innerText = "Error: Rules cannot be loaded.\nPlease either try reinstalling the script, or ";
+
+		var github_link = document.createElement("a");
+		github_link.href = userscript_update_url;
+		github_link.target = "_blank";
+		github_link.innerText = "install the github version";
+		el.appendChild(github_link);
+
+		var reason_el = document.createElement("p");
+		reason_el.innerText = "Error reason:";
+		reason_el.style.color = "#000";
+		reason_el.style.marginTop = "1em";
+		reason_el.style.marginBottom = "1em";
+
+		try {
+			var error_message = document.createElement("pre");
+			error_message.style.color = "#000";
+			error_message.innerText = require_rules_failed.message;
+
+			el.appendChild(reason_el);
+			el.appendChild(error_message);
+		} catch (e) {
+			console_error(e);
+		}
+
+		return true;
+	}
+
 	var do_userscript_page = function(imgel, latest_version) {
 		var status_container_el = document_createElement("div");
 		status_container_el.style.marginBottom = "2em";
@@ -24285,17 +25656,7 @@ var $$IMU_EXPORT$$;
 		} catch (e) {
 		}
 
-		if (require_rules_failed) {
-			version_el.style.color = "#ff3333";
-
-			version_el.innerText = "Error: Rules cannot be loaded.\nPlease either try reinstalling the script, or ";
-
-			var github_link = document.createElement("a");
-			github_link.href = userscript_update_url;
-			github_link.target = "_blank";
-			github_link.innerText = "install the github version";
-			version_el.appendChild(github_link);
-		} else {
+		if (!set_require_rules_failed_el(version_el)) {
 			version_el.innerText = "Installed";
 
 			if (version !== null) {
