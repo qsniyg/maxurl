@@ -12,7 +12,7 @@
 // @name:zh-TW        Image Max URL
 // @name:zh-HK        Image Max URL
 // @namespace         http://tampermonkey.net/
-// @version           0.14.6
+// @version           0.14.7
 // @description       Finds larger or original versions of images and videos for 7400+ websites, including a powerful media popup feature
 // @description:en    Finds larger or original versions of images and videos for 7400+ websites, including a powerful media popup feature
 // @description:ko    7400개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
@@ -49,6 +49,7 @@
 // @connect           api.github.com
 // @run-at            document-start
 // @license           Apache-2.0
+// non-greasyfork/oujs versions need updateURL and downloadURL to auto-update for certain userscript managers
 // @updateURL         https://raw.githubusercontent.com/qsniyg/maxurl/master/userscript.meta.js
 // @downloadURL       https://raw.githubusercontent.com/qsniyg/maxurl/master/userscript_smaller.user.js
 // imu:require_rules  (this is replaced by the build system for userscript versions that require external rules)

@@ -15,7 +15,7 @@
 // @name:zh-TW        Image Max URL
 // @name:zh-HK        Image Max URL
 // @namespace         http://tampermonkey.net/
-// @version           0.14.6
+// @version           0.14.7
 // @description       Finds larger or original versions of images and videos for 7400+ websites, including a powerful media popup feature
 // @description:en    Finds larger or original versions of images and videos for 7400+ websites, including a powerful media popup feature
 // @description:ko    7400개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
@@ -61,7 +61,7 @@
 //  Note that jsdelivr.net might not always be reliable, but (AFAIK) this is the only reasonable option from what greasyfork allows.
 //  I'd recommend using the Github version of the script if you encounter any issues (linked in the 'Project links' section below).
 //
-// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@0e4061a13203b479ad53405c60193da963ab9334/build/rules.js
+// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@e1499d17b59b9ad874d26baca98ecdff77460a0f/build/rules.js
 // ==/UserScript==
 
 // If you see "A userscript wants to access a cross-origin resource.", it's used for:
@@ -1867,7 +1867,7 @@ var $$IMU_EXPORT$$;
 
 		if (typeof x === "string" || x === null || typeof x === "undefined") {
 			return x;
-		} else if (is_element(x)) {
+		} else if (is_element(x) || x instanceof RegExp) {
 			if (options.json) {
 				return undefined;
 			} else {
@@ -6348,7 +6348,11 @@ var $$IMU_EXPORT$$;
 				}
 
 				if (typeof query === "object" && query.url) {
-					query.url = query.url.replace(/\${id}/g, id);
+					query.url = query.url
+						.replace(/\${id}/g, id)
+						.replace(/\${([0-9]+)}/g, function(_, x) {
+							return website_match[x];
+						});
 				} else {
 					query = query(id);
 				}
@@ -7892,7 +7896,8 @@ var $$IMU_EXPORT$$;
 	var js_obj_token_types = {
 		whitespace: /\s+/,
 		jvarname: /[$_a-zA-Z][$_a-zA-Z0-9]*/,
-		number: /-?(?:[0-9]*\.[0-9]+|[0-9]+|[0-9]+\.)/,
+		jpropname: /[$_a-zA-Z0-9]+/,
+		number: /-?(?:[0-9]*\.[0-9]+|[0-9]+|[0-9]+\.)(?:e[0-9]+)?/,
 		objstart: /{/,
 		objend: /}/,
 		object: ["objstart", "whitespace?", "kvcw*", "objend"],
@@ -7912,15 +7917,15 @@ var $$IMU_EXPORT$$;
 		dquote: /"/,
 		sstring: ["squote", "sliteral", "squote"],
 		dstring: ["dquote", "dliteral", "dquote"],
-		varname: [["jvarname"], ["sstring"], ["dstring"]],
-		kv: ["varname", "whitespace?", "colon", "whitespace?", "value"],
+		propname: [["jpropname"], ["sstring"], ["dstring"]],
+		kv: ["propname", "whitespace?", "colon", "whitespace?", "value"],
 		kvw: ["kv", "whitespace?"],
 		kvc: ["kvw", "comma?"],
 		kvcw: ["kvc", "whitespace?"],
 		doc: [["object"], ["array"]]
 	};
 
-	var parse_js_obj = function(objtext) {
+	var parse_js_obj = function(objtext, js_obj_token_types) {
 		// for testing purposes
 		/*var is_array = function(x) {
 			return Array.isArray(x);
@@ -7929,6 +7934,8 @@ var $$IMU_EXPORT$$;
 		var array_extend = function(array, other) {
 			[].push.apply(array, other);
 		};*/
+
+		js_obj_token_types = deepcopy(js_obj_token_types);
 
 		for (var key in js_obj_token_types) {
 			var value = js_obj_token_types[key];
@@ -8107,7 +8114,7 @@ var $$IMU_EXPORT$$;
 	};
 
 	var fixup_js_obj_proper = function(objtext) {
-		var parsed = parse_js_obj(objtext);
+		var parsed = parse_js_obj(objtext, js_obj_token_types);
 		//console.log(parsed);
 		if (!parsed)
 			throw "unable to parse";
@@ -8115,6 +8122,7 @@ var $$IMU_EXPORT$$;
 		var token_types = {
 			whitespace: " ",
 			jvarname: function(x) { return '"' + x + '"'; },
+			jpropname: function(x) { return '"' + x + '"'; },
 			squote: "\"",
 			sliteral: function(x) { return x.replace(/"/g, "\\\""); },
 			dliteral: function(x) { return x.replace(/"/g, "\\\""); }
@@ -12292,13 +12300,13 @@ var $$IMU_EXPORT$$;
 	                    data: bigimage_obj,
 	                    message: "Unable to get bigimage function"
 	                };
-	            } else if (bigimage_obj.nonce !== "eek11e20kii572ck") {
+	            } else if (bigimage_obj.nonce !== "47fjda1i68n44131") {
 	                // This could happen if for some reason the userscript manager updates the userscript,
 	                // but not the required libraries.
 	                require_rules_failed = {
 	                    type: "bad_nonce",
 	                    data: bigimage_obj.nonce,
-	                    message: "Bad nonce, expected: " + "eek11e20kii572ck"
+	                    message: "Bad nonce, expected: " + "47fjda1i68n44131"
 	                };
 	            } else {
 	                bigimage = bigimage_obj.bigimage;
@@ -14378,7 +14386,8 @@ var $$IMU_EXPORT$$;
 
 	var truncate_with_ellipsis = function(text, maxchars) {
 		var truncate_regex = new RegExp("^((?:.{" + maxchars + "}|.{0," + maxchars + "}[\\r\\n]))[\\s\\S]+?$");
-		return text.replace(truncate_regex, "$1…");
+		// "$1…"
+		return text.replace(truncate_regex, decodeURIComponent("%241%E2%80%A6"));
 	};
 
 	var size_to_text = function(size) {
@@ -16569,12 +16578,14 @@ var $$IMU_EXPORT$$;
 
 			if (meta.documentation) {
 				var get_title = function(expanded) {
-					var arrow = "⯈";
+					// ⯈
+					var arrow = "%E2%AF%88";
 					if (expanded) {
-						arrow = "⯆";
+						// ⯆
+						arrow = "%E2%AF%86";
 					}
 
-					return arrow + " " + _(meta.documentation.title);
+					return decodeURIComponent(arrow) + " " + _(meta.documentation.title);
 				};
 
 				var text = get_title(false);

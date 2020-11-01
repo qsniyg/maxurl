@@ -1,3 +1,27 @@
+0.14.7
+
+New features:
+
+ * You can now move buttons to different positions on the popup (#247)
+ * Option to close the popup when the media is clicked (#498, thanks to bitst0rm on greasyfork for the idea)
+ * Option to customize the close popup key (#511, thanks to cosuwi on github for the idea)
+ * Option to toggle using the maximum quality for HLS/DASH videos (enabled by default)
+ * Option to control maximum quality for (currently) HLS/DASH videos (set to unlimited by default, thanks to Runakanta on discord for the idea)
+ * Support for ~40 new websites (using ~20 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including Kakao, Patreon, TikTok, Twitch, Wikia)
+
+Bugfixes:
+
+ * XML documents should now display properly under Firefox when the addon is active (#507, thanks to alexolog on github for reporting)
+ * Browsers with untranslated languages should no longer have translation failures due to a reference error (thanks to bitst0rm on greasyfork for reporting)
+
+Special thanks to keophcp, llacb47, dym-sh, AnhNhan, gtumanyan, remlap, Michael18751, bitst0rm, Ambler, alexolog, cosuwi, Runakanta for their contributions and reports for this release
+
+---
+
 0.14.6
 
 New features:
