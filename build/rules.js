@@ -9469,20 +9469,22 @@ var $__imu_get_bigimage = function(shared_variables) {
 						api_query("xtube_flashvars:" + id, {
 							url: "https://www.xtube.com/video-watch/a-" + id
 						}, cb, function(done, resp, cache_key) {
-							var match = resp.responseText.match(/var playerConf = ({.*?}), *\n/);
+							var match = resp.responseText.match(/var playerConf\s*=\s*({.*?}),\s*loaderConf/);
 							if (!match) {
 								console_error(cache_key, "Unable to find match", resp);
 								return done(null, false);
 							}
 
 							try {
-								var playerconf = JSON_parse(match[1]);
+								var match1 = match[1].replace(/![01]/g, "\"true\"");
+								var fixup = fixup_js_obj_proper(match1);
+								var playerconf = JSON_parse(fixup);
 								var json = playerconf.mainRoll;
 								json.link_url = json.videoUrl;
 								json.video_title = json.title;
 								done(json, 6*60*60);
 							} catch (e) {
-								console_error(cache_key, e);
+								console_error(cache_key, e, match);
 								return done(null, false);
 							}
 						});
@@ -15640,9 +15642,8 @@ var $__imu_get_bigimage = function(shared_variables) {
 
 			if (domain_nowww === "a-z-animals.com") return src.replace(/\/images\/[0-9]+x[0-9]+\//, "/images/original/");
 
-			if (domain_nosub === "nicematin.com" &&
-				domain.match(/cdn\.static[0-9]*\.nicematin\.com/)) {
-				return src.replace(/(:\/\/[^/]*\/media\/[^/]*\/)[^/]*(\/[0-9]+\/[0-9]+\/[^/]*)$/, "$1original$2");
+			if (domain_nosub === "nicematin.com" && /^cdn\.static[0-9]*\./.test(domain)) {
+				return src.replace(/(:\/\/[^/]*\/+media\/+[^/]*\/+)[^/]*(\/+[0-9]+\/+[0-9]+\/+[^/]*)(?:[?#].*)?$/, "$1original$2");
 			}
 
 			if (domain_nosub === "fbcdn.net" || domain_nosub === "cdninstagram.com") {
@@ -15736,26 +15737,16 @@ var $__imu_get_bigimage = function(shared_variables) {
 					.replace(/\/t\/+([^/]*\.[^/.]*)(?:[?#].*)?$/, "/$1");
 			}
 
-			if (domain_nosub === "nintendo-europe.com" &&
-				domain.match(/^cdn[0-9]*\./)) {
+			if (domain_nosub === "nintendo-europe.com" && /^cdn[0-9]*\./.test(domain)) {
 				return src.replace(/_image[0-9]*[wh](\.[^/.]*)$/, "$1");
 			}
 
-			if (domain_nosub === "15min.lt" &&
-				domain.match(/s[0-9]*\.15min\.lt/) &&
-				string_indexof(src, "/images/") >= 0) {
-				return src.replace(/\/[a-z]+(\/[^/]*)$/, "/original$1");
+			if (domain_nosub === "15min.lt" && /^s[0-9]*\./.test(domain)) {
+				return src.replace(/(\/images\/+photos\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2})[a-z]+(\/+[^/]+\.[^/.]+)(?:[?#].*)?$/, "$1original$2");
 			}
 
 
-			if (domain_nosub === "lazygirls.info" &&
-				domain.match(/^img[0-9]*\.lazygirls\.info/)) {
-				return src.replace(/:\/\/.*\/([^/.]*)\.[^/]*$/, "://lzimages.lazygirls.info/$1");
-			}
 
-			if (domain === "lzimages.lazygirls.info") {
-				return src.replace(/\.(?:thumb|sized)$/, "");
-			}
 
 			if (domain === "image.way2enjoy.com") {
 				return src.replace(/^[a-z]+:\/\/[^/]*\/misc\/lazyg\/.*?\/([^/]*)\.[^/.]*\.[^/.]*$/,
@@ -15814,14 +15805,16 @@ var $__imu_get_bigimage = function(shared_variables) {
 				return src.replace(/\/images[0-9]+_([0-9]+)?\//, "/images/");
 			}
 
-			if (domain_nosub === "anidb.net" &&
-				domain.match(/img[0-9]*(?:-[a-z]+)?\.anidb\.net/)) {
-				return src.replace(/\/thumbs\/[0-9]+x[0-9]+(\/[0-9]+\.[^/.-]*)-thumb\.[^/.]*$/, "$1");
+			if (domain_nosub === "anidb.net" && /^cdn[0-9]*(?:-[a-z]+)?\./.test(domain)) {
+				return src.replace(/\/(thumbs|images)\/+[0-9]+x[0-9]+\/+([0-9]+\.[^/.-?#]*)-thumb\.[^/.]+$/, "/$1/main/$2");
 			}
 
 			if (domain === "web-ace.jp") return src.replace(/\/rp\/[0-9_]+\/[0-9]+_[0-9]+\/img\//, "/img/");
 
-			if (domain_nowww === "classy-girls.com") return src.replace(/\/images\/+thumbnails\//, "/images/");
+			if (domain_nowww === "classy-girls.com" ||
+				domain_nowww === "dillonmarsh.com") {
+				return src.replace(/\/images\/+thumbnails\//, "/images/");
+			}
 
 			if (domain === "staticdelivery.nexusmods.com") return src.replace(/(\/images\/+(?:[0-9]+\/+)?)thumbnails\//, "$1");
 
@@ -15934,10 +15927,12 @@ var $__imu_get_bigimage = function(shared_variables) {
 
 			if (domain === "media.tag24.de") return src.replace(/(:\/\/[^/]*\/)[0-9]+\//, "$10/");
 
-			if ((amazon_container && amazon_container.match(/^customink-iotw/)) ||
+			if (amazon_container === "customink-iotw-east-prod" ||
 				domain === "d2fzf9bbqh0om5.cloudfront.net") {
 				return src.replace(/(\/images\/[0-9]+\/)[^/]*\//, "$1original/");
 			}
+
+			if (domain === "customink-prod.imgix.net") return src.replace(/^[a-z]+:\/\/[^/]+\/+photos\/+system\/+(images\/+[0-9]+\/+[a-z]+\/+[^/?#]+)(?:[?#].*)?$/, "https://s3.amazonaws.com/customink-iotw-east-prod/$1");
 
 			if (domain_nowww === "mypokecard.com") return src.replace(/\/galery\/thumbs\//, "/galery/");
 
@@ -15954,27 +15949,21 @@ var $__imu_get_bigimage = function(shared_variables) {
 			}
 
 			if (domain_nowww === "mtvwe.com") {
-				return src
-					.replace(/\/vpic\.php.*?[?&]f=([^&]*).*?$/, "/$1")
-					.replace(/(:\/\/[^/]*\/)\/*/, "$1");
+				newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+vpic\.php\?(?:.*&)?f=([^&]+).*?$/, "$1");
+				if (newsrc !== src)
+					return urljoin(src, newsrc, true);
 			}
 
 			if (domain === "yahoo.tw.weibo.com") return src.replace(/(:\/\/[^/]+\/)[a-z]+\//, "$1large/");
 
-			if (domain === "mobile.pic.people.com.cn") return src.replace(/\/thumbs\/[0-9]+\/[0-9]+\//, "/");
+			if (domain === "mobile.pic.people.com.cn") return src.replace(/\/thumbs\/+[0-9]+\/+[0-9]+\/+/, "/");
 
 			if (domain === "images.asianstar.cz") return src.replace(/\/[a-z]+_([^/]*)$/, "/$1");
 
 			if (domain === "images-cache.asianstar.cz") return src.replace(/:\/\/[^/]*\//, "://images.asianstar.cz/");
 
-			if (domain === "picservice.qimai.cn") {
-				return src.replace(/^[a-z]+:\/\/[^/]*\/get\//, "");
-			}
+			if (domain === "picservice.qimai.cn") return src.replace(/^[a-z]+:\/\/[^/]*\/+get\/+(https?:)/, "$1");
 
-			if (domain_nowww === "wxzixun.com" ||
-				domain_nowww === "zhihutai.com") {
-				return src.replace(/^[a-z]+:\/\/[^/]*\/p\//, "");
-			}
 
 			if (domain === "mediaday.co.kr" ||
 				domain_nowww === "secretvt.com" ||
@@ -16004,7 +15993,6 @@ var $__imu_get_bigimage = function(shared_variables) {
 
 			if (domain_nowww === "twatis.com") return src.replace(/\/thumb(\.[^/.]*)$/, "/photo$1");
 
-			if (domain === "images.starlets.photos") return src.replace(/(\/[0-9]+-)[a-z]+(\.[^/.]*)$/, "$1original$2");
 
 			if (domain === "s.smutty.com") return src.replace(/\/[a-z]\/+([^/]*)(?:[?#].*)?$/, "/b/$1");
 
@@ -18444,7 +18432,7 @@ var $__imu_get_bigimage = function(shared_variables) {
 				domain_nowww === "xcadr.com" ||
 				domain_nowww === "anon-v.com" ||
 				domain_nosub === "okporn.com" ||
-				(domain_nosub === "cdntrex.com" && /^album[0-9]*\./.test(domain)) ||
+				(domain_nosub === "cdntrex.com" && /^albums?[0-9]*\./.test(domain)) ||
 				domain_nosub === "p7cdn.com" ||
 				domain_nosub === "pornoreino.com" ||
 				domain_nowww === "mylust.com" ||
@@ -18513,6 +18501,8 @@ var $__imu_get_bigimage = function(shared_variables) {
 				var referer = "http://" + domain_nosub + "/";
 				if (domain_nosub === "p7cdn.com") {
 					referer = "https://www.sex-hd.xxx/";
+				} else if (domain_nosub === "cdntrex.com") {
+					referer = "";
 				} else if (domain === "109.206.187.183" || domain_nosub === "porntb.com") {
 					referer = "http://www.porntb.com/";
 				} else {
@@ -22667,39 +22657,46 @@ var $__imu_get_bigimage = function(shared_variables) {
 				}
 			}
 
-			if ((domain === "pw.artfile.me" ||
-				 domain === "i.artfile.me") &&
-				options && options.cb && options.do_request) {
+			if (domain_nowww === "artfile.me") {
+				newsrc = website_query({
+					website_regex: /^[a-z]+:\/\/[^/]+\/+wallpaper\/+((?:[^/?#]+-)?[0-9]+)\.[^/.]+(?:[?#].*)?$/,
+					query_for_id: "https://artfile.me/wallpaper/${id}.html",
+					process: function(done, resp, cache_key) {
+						var match = resp.responseText.match(/<a href="\/download\/[^/]+\/([0-9]+x[0-9]+)"/);
+						if (!match) {
+							console_error(cache_key, "Unable to find match for", resp);
+							return done(null, false);
+						}
+						var size = match[1];
+
+						var image = get_meta(resp.responseText, "og:image");
+						if (!image) {
+							console_error(cache_key, "Unable to find image from", resp);
+							return done(null, false);
+						}
+
+						image = urljoin(resp.finalUrl, image, true);
+
+						image = image.replace(/\/[0-9]+x[0-9]+\//, "/" + size + "/")
+									 .replace(/:\/\/pw\.artfile/, "://i.artfile");
+
+						return done({
+							url: image,
+							extra: {
+								page: resp.finalUrl
+							}
+						}, 6*60*60);
+					}
+				});
+				if (newsrc) return newsrc;
+			}
+
+			if (domain === "pw.artfile.me" || domain === "i.artfile.me") {
 				id = src.replace(/.*\/wallpaper\/+[0-9]+-[0-9]+-[0-9]{4}\/+[0-9]+x[0-9]+\/+([^/.?#]*).*?$/, "$1");
 				if (id !== src) {
-					options.do_request({
-						url: "https://artfile.me/wallpaper/" + id + ".html",
-						method: "GET",
-						onload: function(resp) {
-							if (resp.readyState === 4) {
-								var match = resp.responseText.match(/<meta *property="og:description" *content="([^"]*)"/);
-								if (match) {
-									var size = match[1].replace(/.*?размер: ([0-9]+x[0-9]+).*?$/, "$1");
-									if (size !== match[1]) {
-										newsrc = src.replace(/\/[0-9]+x[0-9]+\//, "/" + size + "/")
-													.replace(/:\/\/pw\.artfile/, "://i.artfile");
-
-										options.cb({
-											url: newsrc,
-											extra: {
-												page: resp.finalUrl
-											}
-										});
-									}
-								}
-
-								options.cb(null);
-							}
-						}
-					});
-
 					return {
-						waiting: true
+						url: "https://artfile.me/wallpaper/" + id + ".html",
+						is_pagelink: true
 					};
 				}
 			}
@@ -27101,6 +27098,7 @@ var $__imu_get_bigimage = function(shared_variables) {
 			if (domain_nowww === "isecretarylegs.com" ||
 				domain_nowww === "pussynclit.com" ||
 				domain_nowww === "ulingerie.com" ||
+				domain_nowww === "digitalminx.com" ||
 				domain_nowww === "vaginavulva.com") {
 				return src.replace(/\/thumbs\/+tn_([^/]+)(?:[?#].*)?$/, "/$1");
 			}
@@ -27837,7 +27835,10 @@ var $__imu_get_bigimage = function(shared_variables) {
 				return src.replace(/(\/images\/+previews\/+[^/]*\/+)thumb_/, "$1full_");
 			}
 
-			if (domain_nowww === "mypornstarbook.net") return src.replace(/\/thumbnails\/+tn([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/images/$1");
+			if (domain_nowww === "mypornstarbook.net" ||
+				domain_nowww === "milf-pics.net") {
+				return src.replace(/\/thumbnails\/+tn([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/images/$1");
+			}
 
 			if (domain_nowww === "picgym.net") {
 				match = src.match(/^[a-z]+:\/\/[^/]*\/+img\/+[^/?]*\?([^-/._]{30,})(?:#.*)?$/);
@@ -28797,107 +28798,73 @@ var $__imu_get_bigimage = function(shared_variables) {
 				return src.replace(/(\/icons\/+[0-9]+\/+[0-9]+_)(?:small|medium)\./, "$1large.")
 			}
 
+			if (domain_nowww === "newgrounds.com") {
+				newsrc = website_query({
+					website_regex: /^[a-z]+:\/\/[^/]+\/+content\/+share\/+([0-9]+)\/+([0-9]+)(?:[?#].*)?$/,
+					query_for_id: "https://www.newgrounds.com/content/share/${1}/${2}",
+					process: function(done, resp, cache_key) {
+						var match = resp.responseText.match(/<div\s+class=["']embed-link["'][\s\S]{10,100}<input\s+type="text"\s+value=["']([^"']+)/);
+						if (!match) {
+							console_error(cache_key, "Unable to find match for", resp);
+							return done(null, false);
+						}
+
+						return done({
+							url: decode_entities(match[1]),
+							is_pagelink: true
+						}, 12*60*60);
+					}
+				});
+				if (newsrc) return newsrc;
+
+				newsrc = website_query({
+					website_regex: /^[a-z]+:\/\/[^/]+\/+art\/+view\/+([^/]+)\/+([^/?#]+)(?:[?#].*)?$/,
+					query_for_id: "https://www.newgrounds.com/art/view/${1}/${2}",
+					process: function(done, resp, cache_key) {
+						var match = resp.responseText.match(/PHP\.merge\(({.*?"full_image_text":.*?})\);/);
+						if (!match) {
+							console_error(cache_key, "Unable to find match for", resp);
+							return done(null, false);
+						}
+
+						var obj = {
+							extra: {
+								page: resp.finalUrl
+							}
+						};
+
+						try {
+							var json = JSON_parse(match[1]);
+							var img = json.full_image_text;
+
+							match = img.match(/src="([^"]+)"/);
+							if (!match) {
+								console_error(cache_key, "Unable to find img match for", img);
+							} else {
+								obj.url = decode_entities(match[1]);
+								return done(obj, 12*60*60);
+							}
+						} catch (e) {
+							console_error(cache_key, e);
+						}
+
+						return done(null, false);
+					}
+				});
+				if (newsrc) return newsrc;
+			}
+
 			if (domain === "art.ngfiles.com") {
 
 				newsrc = src.replace(/(\/thumbnails\/+[0-9]+\/+[0-9]+)\./, "$1_full.");
 				if (newsrc !== src)
 					return newsrc;
 
-				var get_origpage_for_ngart = function(id, cb) {
-					var cache_key = "ngart_page:" + id;
-					api_cache.fetch(cache_key, cb, function(done) {
-						options.do_request({
-							url: "https://www.newgrounds.com/content/share/" + id + "/4", // 4 = art?, 3 = audio
-							method: "GET",
-							onload: function(resp) {
-								if (resp.readyState !== 4)
-									return;
-
-								if (resp.status !== 200) {
-									console_error(cache_key, resp);
-									return done(null, false);
-								}
-
-								var match = resp.responseText.match(/<div\s+class=["']embed-link["'][\s\S]{10,100}<input\s+type="text"\s+value=["']([^"']+)/);
-								if (!match) {
-									console_error(cache_key, "Unable to find match for", resp);
-									return done(null, false);
-								}
-
-								return done(decode_entities(match[1]), 12*60*60);
-							}
-						});
-					});
-				};
-
-				var get_orig_from_ngartpage = function(pageurl, cb) {
-					var cache_key = "ngart_orig:" + pageurl;
-					api_cache.fetch(cache_key, cb, function(done) {
-						options.do_request({
-							url: pageurl,
-							method: "GET",
-							onload: function(resp) {
-								if (resp.readyState !== 4)
-									return;
-
-								if (resp.status !== 200) {
-									console_error(cache_key, resp);
-									return done(null, false);
-								}
-
-								var match = resp.responseText.match(/PHP\.merge\(({.*?"full_image_text":.*?})\);/);
-								if (!match) {
-									console_error(cache_key, "Unable to find match for", resp);
-									return done(null, false);
-								}
-
-								try {
-									var json = JSON_parse(match[1]);
-									var img = json.full_image_text;
-
-									match = img.match(/src="([^"]+)"/);
-									if (!match) {
-										console_error(cache_key, "Unable to find img match for", img);
-									} else {
-										return done(decode_entities(match[1]), 12*60*60);
-									}
-								} catch (e) {
-									console_error(cache_key, e);
-								}
-
-								return done(null, false);
-							}
-						});
-					});
-				};
-
-				id = src.match(/\/(?:thumbnails|images)\/+[0-9]+\/+([0-9]+)/);
-				if (id && options.do_request && options.cb) {
-					id = id[1];
-					get_origpage_for_ngart(id, function(page) {
-						var obj = {
-							url: src
-						};
-
-						if (page) {
-							obj.extra = {page: page};
-
-							if (string_indexof(src, "/thumbnails/") >= 0) {
-								return get_orig_from_ngartpage(page, function(url) {
-									if (url) {
-										obj.url = url;
-									}
-
-									return options.cb(obj);
-								});
-							}
-						}
-
-						return options.cb(obj);
-					});
-
+				match = src.match(/\/(?:thumbnails|images)\/+[0-9]+\/+([0-9]+)/);
+				if (match) {
 					return {
-						waiting: true
+						url: "https://www.newgrounds.com/content/share/" + match[1] + "/4",
+						is_pagelink: true
 					};
 				}
 			}
@@ -30574,7 +30541,7 @@ var $__imu_get_bigimage = function(shared_variables) {
 				if (newsrc) return newsrc;
 			}
 
-			if (domain_nosub === "patreonusercontent.com" && options && options.do_request && options.cb) {
+			if (domain_nosub === "patreonusercontent.com") {
 				match = src.match( /\/([^/]*)\/+patreon-media\/+p\/+post\/+([0-9]+)\/([0-9a-f]{20,})\/+/);
 				if (match) {
 					var posthash = match[3];
@@ -31933,46 +31900,77 @@ var $__imu_get_bigimage = function(shared_variables) {
 
 			if (domain === "images.myhentaigrid.com") return src.replace(/(\/imagesgallery\/+images\/+[^/]+\/+)thumbnail\/+/, "$1original/");
 
-			if (domain === "content.tsumino.com") {
-				match = src.match(/\/thumbs\/+([0-9]+)\/+([0-9]+)(?:[?#].*)?$/);
-				if (match && options && options.cb && options.do_request) {
-					page = "https://www.tsumino.com/Read/Index/" + match[1] + "?page=" + match[2];
+			if (domain_nowww === "tsumino.com") {
+				newsrc = website_query({
+					website_regex: /^[a-z]+:\/\/[^/]+\/+Read\/+Index\/+([0-9]+)(?:[?#].*)?$/,
+					query_for_id: "https://www.tsumino.com/Read/Index/${id}",
+					override_cb: function(cb, data) {
+						var page = 1;
+						var queries = get_queries(src);
+						if (queries.page) page = queries.page;
 
-					var cache_key = "tsumino:" + match[1] + ":" + match[2];
-					var book_page = match[2];
-					api_cache.fetch(cache_key, options.cb, function(done) {
-						options.do_request({
-							url: page,
-							method: "GET",
-							onload: function(resp) {
-								if (resp.readyState !== 4)
-									return;
-
-								if (resp.status !== 200) {
-									return done(null, false);
-								}
-
-								var match = resp.responseText.match(/<div[^>]+data-cdn=["'](https:\/\/content\.tsumino[^'"]+\/\[PAGE\][^'"]+)["']/);
-								if (!match) {
-									console_warn("Unable to find match for", resp);
-									return done(null, false);
-								}
-
-								options.cb({
-									url: decode_entities(match[1]).replace("[PAGE]", book_page),
-									headers: {
-										Referer: resp.finalUrl
-									},
-									extra: {
-										page: resp.finalUrl
-									}
-								}, 6*60*60);
+						common_functions.update_album_info_links(data, function(x) {
+							var match = x.match(/\/[0-9]+\/+([0-9]+)\?/);
+							if (!match) {
+								console_warn("Unable to find page match");
+								return false;
 							}
-						});
-					});
 
+							return match[1] == page;
+						});
+
+						cb(data);
+					},
+					process: function(done, resp, cache_key) {
+						var match = resp.responseText.match(/<div[^>]+data-cdn=["'](https:\/\/content\.tsumino[^'"]+\/\[PAGE\][^'"]+)["']/);
+						if (!match) {
+							console_error(cache_key, "Unable to find match for", resp);
+							return done(null, false);
+						}
+
+						var baseurl = decode_entities(match[1]);
+
+						match = resp.responseText.match(/<h1[^>]*>\s*Page\s*<span.*?\/span>\s*of\s+([0-9]+)\s*<\/h1>/);
+						if (!match) {
+							console_error(cache_key, "Unable to find total pages from", resp);
+							return done(null, false);
+						}
+
+						var pagecount = match[1];
+
+						var album_info = {
+							type: "links",
+							links: []
+						};
+
+						for (var i = 0; i < pagecount; i++) {
+							album_info.links.push({
+								url: baseurl.replace("[PAGE]", i + 1),
+								is_current: false
+							});
+						}
+
+						done({
+							url: album_info.links[0].url,
+							album_info: album_info,
+							headers: {
+								Referer: resp.finalUrl
+							},
+							extra: {
+								page: resp.finalUrl
+							}
+						}, 6*60*60);
+					}
+				});
+				if (newsrc) return newsrc;
+			}
+
+			if (domain === "content.tsumino.com") {
+				match = src.match(/\/(?:thumbs|parts)\/+([0-9]+)\/+([0-9]+)(?:[?#].*)?$/);
+				if (match) {
 					return {
-						waiting: true
+						url: "https://www.tsumino.com/Read/Index/" + match[1] + "?page=" + match[2],
+						is_pagelink: true
 					};
 				}
 			}
@@ -39819,6 +39817,6 @@ var $__imu_get_bigimage = function(shared_variables) {
 
 			return src;
 		},
-		nonce: "eek11e20kii572ck" // imu:nonce = "eek11e20kii572ck"
+		nonce: "47fjda1i68n44131" // imu:nonce = "47fjda1i68n44131"
 	};
 };
