@@ -1415,6 +1415,14 @@ msgstr ""
 msgid "Closes the popup if you zoom out past the minimum zoom"
 msgstr ""
 
+#. scroll_past_gallery_end_to_close.name
+msgid "Scroll past gallery end to close"
+msgstr ""
+
+#. scroll_past_gallery_end_to_close.description
+msgid "Closes the popup if you scroll past the end of the gallery"
+msgstr ""
+
 #. mouseover_position.name
 msgid "Popup position"
 msgstr ""
@@ -1963,6 +1971,46 @@ msgstr ""
 
 #. custom_xhr_for_lib.example_websites[0]
 msgid "Kakao"
+msgstr ""
+
+#. hls_dash_use_max.name
+msgid "HLS/DASH maximum quality"
+msgstr ""
+
+#. hls_dash_use_max.description
+msgid "Uses the maximum quality for HLS/DASH videos"
+msgstr ""
+
+#. max_video_quality.name
+msgid "Maximum video quality"
+msgstr ""
+
+#. max_video_quality.description
+msgid "Maximum quality for videos"
+msgstr ""
+
+#. max_video_quality.options.unlimited.name
+msgid "(unlimited)"
+msgstr ""
+
+#. max_video_quality.options.h2160.name
+msgid "4K"
+msgstr ""
+
+#. max_video_quality.options.h1440.name
+msgid "1440p"
+msgstr ""
+
+#. max_video_quality.options.h1080.name
+msgid "1080p"
+msgstr ""
+
+#. max_video_quality.options.h720.name
+msgid "720p"
+msgstr ""
+
+#. max_video_quality.options.h480.name
+msgid "480p"
 msgstr ""
 
 #. allow_watermark.name
