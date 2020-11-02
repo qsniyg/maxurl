@@ -278,6 +278,7 @@ fi
 echo
 echo "Release checklist:"
 echo
+echo ' * Ensure translation strings are updated'
 echo ' * Ensure xx00+ count is updated (userscript - greasyfork/oujs, reddit post, mozilla/opera, website)'
 echo ' * Update greasyfork, oujs, firefox, opera, changelog.txt'
 echo ' * git tag v'$USERVERSION
