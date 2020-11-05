@@ -225,7 +225,8 @@ function is_youtube_url(url) {
 		/^[a-z]+:\/\/(?:[^/]+\.)?(?:instagram|facebook|patreon)\.com\//,
 		/^[a-z]+:\/\/(?:www\.)?(?:vimeo|dailymotion)\.com\//,
 		/^[a-z]+:\/\/(?:www\.)?twitter\.com\//,
-		/^[a-z]+:\/\/(?:www\.)?imgur\.com\/+(?:a\/+)?[^/.]+(?:[?#].*)?$/
+		/^[a-z]+:\/\/(?:www\.)?imgur\.com\/+(?:a\/+)?[^/.]+(?:[?#].*)?$/,
+		/^[a-z]+:\/\/(?:(?:www|v)\.)?reddit\.com\//
 	];
 
 	for (var regex of regexes) {
