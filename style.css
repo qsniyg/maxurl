@@ -638,6 +638,7 @@ input:checked + label, button, .button, .dark .button, .button:visited, .dark .b
   font-style: italic;
   margin-top: 1em;
   margin-left: 2em;
+  max-width: 30em;
 }
 
 .center-outer {
