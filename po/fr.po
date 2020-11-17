@@ -1856,12 +1856,42 @@ msgstr ""
 msgid "This option prevents the popup from loading a video when the source was an image. Vice-versa is also applied"
 msgstr ""
 
-#. mouseover_support_pointerevents_none.name
-msgid "Support `pointer-events:none`"
+#. mouseover_find_els_mode.name
+msgid "Element finding mode"
 msgstr ""
 
-#. mouseover_support_pointerevents_none.description
-msgid "Manually looks through every element on the page to see if the cursor is beneath them. Supports more images, but also results in a higher CPU load for websites such as Facebook."
+#. mouseover_find_els_mode.description
+msgid "How IMU should find the media element on the page."
+msgstr ""
+
+#. mouseover_find_els_mode.warning.full
+msgid ""
+"This will result in a much higher CPU load for websites such as Facebook, and will occasionally return the wrong element.\n"
+"Use this option with caution."
+msgstr ""
+
+#. mouseover_find_els_mode.options.full.name
+msgid "Full"
+msgstr ""
+
+#. mouseover_find_els_mode.options.full.description
+msgid "Manually looks through every element on the page to see if the cursor is above them. This will result in a higher CPU load for websites such as Facebook, and may return the wrong element"
+msgstr ""
+
+#. mouseover_find_els_mode.options.hybrid.name
+msgid "Hybrid"
+msgstr ""
+
+#. mouseover_find_els_mode.options.hybrid.description
+msgid "Looks manually through every child element of the last element found by `getElementsAtPoint`. Use this option if in doubt, it'll work on most sites"
+msgstr ""
+
+#. mouseover_find_els_mode.options.simple.name
+msgid "Simple"
+msgstr ""
+
+#. mouseover_find_els_mode.options.simple.description
+msgid "This is the fastest option, which uses the value of `getElementsAtPoint` without modification. Works for sites that don't use pointer-events:none and shadow DOM"
 msgstr ""
 
 #. popup_allow_cache.name

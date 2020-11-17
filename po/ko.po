@@ -1856,13 +1856,43 @@ msgstr "이미지에 대한 비디오 팝업 안 함"
 msgid "This option prevents the popup from loading a video when the source was an image. Vice-versa is also applied"
 msgstr "원본이 이미지일 때 팝업이 비디오를 로드하는 것을 방지함.  반대의 경우도 적용함."
 
-#. mouseover_support_pointerevents_none.name
-msgid "Support `pointer-events:none`"
-msgstr "`포인터 이벤트 : 없음` 지원"
+#. mouseover_find_els_mode.name
+msgid "Element finding mode"
+msgstr ""
 
-#. mouseover_support_pointerevents_none.description
-msgid "Manually looks through every element on the page to see if the cursor is beneath them. Supports more images, but also results in a higher CPU load for websites such as Facebook."
-msgstr "커서 아래 있는 페이지의 모든 요소를 수동으로 확인합니다. 더 많은 이미지를 지원하지만, Facebook과 같은 웹사이트의 CPU 부하가 더 높아진다."
+#. mouseover_find_els_mode.description
+msgid "How IMU should find the media element on the page."
+msgstr ""
+
+#. mouseover_find_els_mode.warning.full
+msgid ""
+"This will result in a much higher CPU load for websites such as Facebook, and will occasionally return the wrong element.\n"
+"Use this option with caution."
+msgstr ""
+
+#. mouseover_find_els_mode.options.full.name
+msgid "Full"
+msgstr ""
+
+#. mouseover_find_els_mode.options.full.description
+msgid "Manually looks through every element on the page to see if the cursor is above them. This will result in a higher CPU load for websites such as Facebook, and may return the wrong element"
+msgstr ""
+
+#. mouseover_find_els_mode.options.hybrid.name
+msgid "Hybrid"
+msgstr ""
+
+#. mouseover_find_els_mode.options.hybrid.description
+msgid "Looks manually through every child element of the last element found by `getElementsAtPoint`. Use this option if in doubt, it'll work on most sites"
+msgstr ""
+
+#. mouseover_find_els_mode.options.simple.name
+msgid "Simple"
+msgstr ""
+
+#. mouseover_find_els_mode.options.simple.description
+msgid "This is the fastest option, which uses the value of `getElementsAtPoint` without modification. Works for sites that don't use pointer-events:none and shadow DOM"
+msgstr ""
 
 #. popup_allow_cache.name
 msgid "Use cache"
