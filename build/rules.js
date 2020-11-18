@@ -2159,7 +2159,7 @@ var $__imu_get_bigimage = function(shared_variables) {
 				var query_twitter_webapi = function(url, cb) {
 					if (options.get_cookies) {
 						options.get_cookies("https://www.twitter.com/", function(cookies) {
-							cookies = headers_list_to_dict(cookies);
+							if (cookies) cookies = headers_list_to_dict(cookies);
 							_query_twitter_webapi(url, cookies, cb);
 						});
 					} else {
@@ -40632,6 +40632,6 @@ var $__imu_get_bigimage = function(shared_variables) {
 
 			return src;
 		},
-		nonce: "13hjcb82ocj8o66p" // imu:nonce = "13hjcb82ocj8o66p"
+		nonce: "10abgaj1km4ld924" // imu:nonce = "10abgaj1km4ld924"
 	};
 };
