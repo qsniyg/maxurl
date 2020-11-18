@@ -1995,7 +1995,8 @@ var $__imu_get_bigimage = function(shared_variables) {
 
 
 				obj = {
-					url: src
+					url: src,
+					can_head: false // 503 sometimes
 				};
 
 				if (options && options.element && host_domain_nosub === "twitter.com") {
@@ -2205,6 +2206,7 @@ var $__imu_get_bigimage = function(shared_variables) {
 
 				var get_baseobj_from_tweet = function(tweet, users) {
 					var obj = {
+						can_head: false, // returns 503 sometimes
 						extra: {}
 					};
 
@@ -2328,7 +2330,7 @@ var $__imu_get_bigimage = function(shared_variables) {
 									if (!singleobj)
 										return;
 
-									var is_current = i === media_id;
+									var is_current = i == media_id;
 									if (imu_url_id) {
 										var firstobj = singleobj[0];
 										var firsturl = firstobj.url || firstobj;
@@ -40632,6 +40634,6 @@ var $__imu_get_bigimage = function(shared_variables) {
 
 			return src;
 		},
-		nonce: "10abgaj1km4ld924" // imu:nonce = "10abgaj1km4ld924"
+		nonce: "1deoc5lfcd2f5ek3" // imu:nonce = "1deoc5lfcd2f5ek3"
 	};
 };
