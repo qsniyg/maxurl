@@ -15,19 +15,19 @@
 // @name:zh-TW        Image Max URL
 // @name:zh-HK        Image Max URL
 // @namespace         http://tampermonkey.net/
-// @version           0.14.7
-// @description       Finds larger or original versions of images and videos for 7400+ websites, including a powerful media popup feature
-// @description:en    Finds larger or original versions of images and videos for 7400+ websites, including a powerful media popup feature
-// @description:ko    7400개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
-// @description:fr    Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 7 400 sites web, y compris une puissante fonction de popup média
-// @description:es    Encuentra imágenes más grandes y originales para más de 7400 sitios
-// @description:ru    Находит увеличенные или оригинальные версии изображений для более чем 7400 веб-сайтов
-// @description:de    Sucht nach größeren oder originalen Versionen von Bildern und Videos für mehr als 7400 Websites
-// @description:ja    7400以上のウェブサイトで高画質や原本画像を見つけ出します
-// @description:zh    为7400多个网站查找更大或原始图像
-// @description:zh-CN 为7400多个网站查找更大或原始图像
-// @description:zh-TW 為7400多個網站查找更大或原始圖像
-// @description:zh-HK 為7400多個網站查找更大或原始圖像
+// @version           0.14.8
+// @description       Finds larger or original versions of images and videos for 7500+ websites, including a powerful media popup feature
+// @description:en    Finds larger or original versions of images and videos for 7500+ websites, including a powerful media popup feature
+// @description:ko    7500개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
+// @description:fr    Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 7 500 sites web, y compris une puissante fonction de popup média
+// @description:es    Encuentra imágenes más grandes y originales para más de 7500 sitios
+// @description:ru    Находит увеличенные или оригинальные версии изображений для более чем 7500 веб-сайтов
+// @description:de    Sucht nach größeren oder originalen Versionen von Bildern und Videos für mehr als 7500 Websites
+// @description:ja    7500以上のウェブサイトで高画質や原本画像を見つけ出します
+// @description:zh    为7500多个网站查找更大或原始图像
+// @description:zh-CN 为7500多个网站查找更大或原始图像
+// @description:zh-TW 為7500多個網站查找更大或原始圖像
+// @description:zh-HK 為7500多個網站查找更大或原始圖像
 // @author            qsniyg
 // @homepageURL       https://qsniyg.github.io/maxurl/options.html
 // @supportURL        https://github.com/qsniyg/maxurl/issues
@@ -61,7 +61,7 @@
 //  Note that jsdelivr.net might not always be reliable, but (AFAIK) this is the only reasonable option from what greasyfork allows.
 //  I'd recommend using the Github version of the script if you encounter any issues (linked in the 'Project links' section below).
 //
-// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@e1499d17b59b9ad874d26baca98ecdff77460a0f/build/rules.js
+// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@7b59a97a7b811ed3b0eaff1f3c9749cd6d5971ce/build/rules.js
 // ==/UserScript==
 
 // If you see "A userscript wants to access a cross-origin resource.", it's used for:
@@ -160,14 +160,18 @@ var $$IMU_EXPORT$$;
 	try {
 		window_location = window.location.href;
 
-		if (/^https?:\/\/qsniyg\.github\.io\/+maxurl\/+options\.html/.test(window_location) ||
-			/^file:\/\/.*\/maxurl\/site\/options\.html/.test(window_location)) {
-			is_options_page = true;
-			is_maxurl_website = true;
-		} else if (/^https?:\/\/qsniyg\.github\.io\/+maxurl\/+/.test(window_location) ||
-			/^file:\/\/.*\/maxurl\/site\/(?:index|about|options)\.html/.test(window_location)) {
-			is_maxurl_website = true;
-		}
+		(function() {
+			var our_url = window_location.replace(/^[a-z]+:\/\/web\.archive\.org\/+web\/+[0-9]+\/+(https?:\/\/)/, "$1");
+
+			if (/^https?:\/\/qsniyg\.github\.io\/+maxurl\/+options\.html/.test(our_url) ||
+				/^file:\/\/.*\/maxurl\/site\/options\.html/.test(window_location)) {
+				is_options_page = true;
+				is_maxurl_website = true;
+			} else if (/^https?:\/\/qsniyg\.github\.io\/+maxurl\/+/.test(our_url) ||
+				/^file:\/\/.*\/maxurl\/site\/(?:index|about|options)\.html/.test(window_location)) {
+				is_maxurl_website = true;
+			}
+		})();
 	} catch(e) {
 	}
 
@@ -719,7 +723,17 @@ var $$IMU_EXPORT$$;
 		[].push.apply(array, other);
 	};
 
-	var array_foreach = function(array, cb) {
+	var array_foreach = function(array, cb, do_shallow_copy) {
+		if (do_shallow_copy) {
+			var newarray = [];
+
+			for (var i = 0; i < array.length; i++) {
+				newarray.push(array[i]);
+			}
+
+			array = newarray;
+		}
+
 		for (var i = 0; i < array.length; i++) {
 			if (cb(array[i], i) === false)
 				return;
@@ -1023,11 +1037,19 @@ var $$IMU_EXPORT$$;
 	};
 	get_compat_math();
 
-	var get_random_text = function(length) {
+	var get_random_text = function(length, num) {
 		var text = "";
 
 		while (text.length < length) {
-			var newtext = Math_floor(Math_random() * 10e8).toString(26);
+			var newnum = Math_floor(Math_random() * 10e8);
+
+			var newtext;
+			if (!num) {
+				newtext = newnum.toString(26);
+			} else {
+				newtext = newnum.toString(10);
+			}
+
 			text += newtext;
 		}
 
@@ -1048,8 +1070,11 @@ var $$IMU_EXPORT$$;
 			//url: window.location.href, // doesn't get updated for the iframe src's attribute?
 			url: current_frame_url,
 			size: [
-				document.documentElement.scrollWidth,
-				document.documentElement.scrollHeight
+				//document.documentElement.scrollWidth,
+				//document.documentElement.scrollHeight
+				// indavideo.hu has iframes with more height than what is displayed
+				window.innerWidth,
+				window.innerHeight
 			]
 		};
 	};
@@ -1076,8 +1101,16 @@ var $$IMU_EXPORT$$;
 			newiframes.push(iframes[i]);
 		}
 
-		if (newiframes.length <= 1)
+		// useful for later if we don't have the length <= 1 check
+		var ignored_src = false;
+
+		if (newiframes.length === 0) {
+			// e.g. indavideo, frame's src != iframe src because it gets redirected (/ at the end is removed)
+			newiframes = iframes;
+			ignored_src = true;
+		} else if (newiframes.length <= 1) {
 			return finish(newiframes[0]);
+		}
 
 		iframes = newiframes;
 		newiframes = [];
@@ -1670,7 +1703,44 @@ var $$IMU_EXPORT$$;
 				cb(message.data);
 			});
 		};
+	} else if (is_userscript) {
+		// TODO: support GM_cookie
+		get_cookies = function(url, cb) {
+			if (settings.browser_cookies === false) {
+				return cb(null);
+			}
+
+			var host_domain = get_domain_from_url(window_location);
+			var host_domain_nosub = get_domain_nosub(host_domain);
+
+			var url_domain = get_domain_from_url(url);
+			var url_domain_nosub = get_domain_nosub(url_domain);
+
+			// this is ugly
+			if (host_domain_nosub === url_domain_nosub) {
+				cb(cookies_str_to_list(document.cookie));
+			} else {
+				cb(null);
+			}
+		};
 	}
+
+	var cookies_str_to_list = function(cookiesstr) {
+		var cookies = [];
+
+		var splitted = cookiesstr.split(/;\s*/);
+		array_foreach(splitted, function(kv) {
+			var match = kv.match(/^\s*([^=\s]+)\s*=\s*(?:"([^"]+)"|([^"]\S*))\s*$/);
+			if (!match) {
+				console_warn("Unable to parse cookie", kv);
+				return;
+			}
+
+			cookies.push({name: match[1], value: match[2] || match[3]});
+		});
+
+		return cookies;
+	};
 
 	var cookies_to_httpheader = function(cookies) {
 		// deduplication apparently isn't necessary (browser duplicates them too)
@@ -1778,7 +1848,8 @@ var $$IMU_EXPORT$$;
 		},
 		extra: {
 			page: null,
-			caption: null
+			caption: null,
+			created_date: null
 		},
 		filename: "",
 		problems: {
@@ -2710,12 +2781,6 @@ var $$IMU_EXPORT$$;
 		"This option prevents the popup from loading a video when the source was an image. Vice-versa is also applied": {
 			"ko": "\uC6D0\uBCF8\uC774 \uC774\uBBF8\uC9C0\uC77C \uB54C \uD31D\uC5C5\uC774 \uBE44\uB514\uC624\uB97C \uB85C\uB4DC\uD558\uB294 \uAC83\uC744 \uBC29\uC9C0\uD568.  \uBC18\uB300\uC758 \uACBD\uC6B0\uB3C4 \uC801\uC6A9\uD568."
 		},
-		"Support `pointer-events:none`": {
-			"ko": "`\uD3EC\uC778\uD130 \uC774\uBCA4\uD2B8 : \uC5C6\uC74C` \uC9C0\uC6D0"
-		},
-		"Manually looks through every element on the page to see if the cursor is beneath them. Supports more images, but also results in a higher CPU load for websites such as Facebook.": {
-			"ko": "\uCEE4\uC11C \uC544\uB798 \uC788\uB294 \uD398\uC774\uC9C0\uC758 \uBAA8\uB4E0 \uC694\uC18C\uB97C \uC218\uB3D9\uC73C\uB85C \uD655\uC778\uD569\uB2C8\uB2E4. \uB354 \uB9CE\uC740 \uC774\uBBF8\uC9C0\uB97C \uC9C0\uC6D0\uD558\uC9C0\uB9CC, Facebook\uACFC \uAC19\uC740 \uC6F9\uC0AC\uC774\uD2B8\uC758 CPU \uBD80\uD558\uAC00 \uB354 \uB192\uC544\uC9C4\uB2E4."
-		},
 		"Use userscript": {
 			"fr": "Utiliser ce userscript",
 			"ko": "\uC720\uC800\uC2A4\uD06C\uB9BD\uD2B8 \uC0AC\uC6A9\uD558\uAE30"
@@ -2819,7 +2884,8 @@ var $$IMU_EXPORT$$;
 		"mouseover_scroll_behavior",
 		"mouseover_mask_styles",
 		"mouseover_video_seek_vertical_scroll",
-		"mouseover_video_seek_horizontal_scroll"
+		"mouseover_video_seek_horizontal_scroll",
+		"mouseover_support_pointerevents_none"
 	];
 
 	var settings = {
@@ -2988,6 +3054,8 @@ var $$IMU_EXPORT$$;
 		// thanks to regis on discord for the idea
 		mouseover_move_within_page: true,
 		zoom_out_to_close: false,
+		// thanks to Runakanta on discord for the idea: https://github.com/qsniyg/maxurl/issues/471
+		scroll_past_gallery_end_to_close: false,
 		// thanks to 07416 on github for the idea: https://github.com/qsniyg/maxurl/issues/20#issuecomment-439599984
 		mouseover_position: "cursor",
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-531549043
@@ -3047,7 +3115,8 @@ var $$IMU_EXPORT$$;
 		mouseover_apply_blacklist: true,
 		apply_blacklist_host: false,
 		mouseover_matching_media_types: false,
-		mouseover_support_pointerevents_none: false,
+		//mouseover_support_pointerevents_none: false,
+		mouseover_find_els_mode: "hybrid",
 		popup_allow_cache: true,
 		popup_cache_duration: 30,
 		popup_cache_itemlimit: 20,
@@ -4762,6 +4831,16 @@ var $$IMU_EXPORT$$;
 			category: "popup",
 			subcategory: "close_behavior"
 		},
+		scroll_past_gallery_end_to_close: {
+			name: "Scroll past gallery end to close",
+			description: "Closes the popup if you scroll past the end of the gallery",
+			requires: [
+				{mouseover_scrollx_behavior: "gallery"},
+				{mouseover_scrolly_behavior: "gallery"}
+			],
+			category: "popup",
+			subcategory: "close_behavior"
+		},
 		mouseover_position: {
 			name: "Popup position",
 			description: "Where the popup will appear",
@@ -5302,6 +5381,34 @@ var $$IMU_EXPORT$$;
 			description: "Manually looks through every element on the page to see if the cursor is beneath them. Supports more images, but also results in a higher CPU load for websites such as Facebook.",
 			requires: {
 				mouseover: true
+			},
+			//advanced: true, // Commenting this out because the option is important
+			category: "popup",
+			subcategory: "open_behavior"
+		},
+		mouseover_find_els_mode: {
+			name: "Element finding mode",
+			description: "How IMU should find the media element on the page.",
+			requires: {
+				mouseover: true
+			},
+			options: {
+				_type: "combo",
+				full: {
+					name: "Full",
+					description: "Manually looks through every element on the page to see if the cursor is above them. This will result in a higher CPU load for websites such as Facebook, and may return the wrong element"
+				},
+				hybrid: {
+					name: "Hybrid",
+					description: "Looks manually through every child element of the last element found by `getElementsAtPoint`. Use this option if in doubt, it'll work on most sites"
+				},
+				simple: {
+					name: "Simple",
+					description: "This is the fastest option, which uses the value of `getElementsAtPoint` without modification. Works for sites that don't use pointer-events:none and shadow DOM"
+				}
+			},
+			warning: {
+				"full": "This will result in a much higher CPU load for websites such as Facebook, and will occasionally return the wrong element.\nUse this option with caution."
 			},
 			//advanced: true, // Commenting this out because the option is important
 			category: "popup",
@@ -6269,13 +6376,18 @@ var $$IMU_EXPORT$$;
 				try {
 					var out_resp = resp;
 
-					if (request.json) {
-						out_resp = JSON_parse(resp.responseText);
+					var resptext = resp.responseText;
+					if (request.jsonp) {
+						resptext = resptext.replace(/^[$_a-zA-Z][$_a-zA-Z0-9]+\(({[\s\S]*})\);?$/, "$1");
+					}
+
+					if (request.json || request.jsonp) {
+						out_resp = JSON_parse(resptext);
 					}
 
 					return process(done, out_resp, key);
 				} catch (e) {
-					console_error(key, e);
+					console_error(key, e, resp);
 					return done(null, false);
 				}
 			};
@@ -6492,6 +6604,73 @@ var $$IMU_EXPORT$$;
 		return a.href;
 	};
 
+	var basic_fillobj = function(obj) {
+		if (!obj) {
+			obj = {};
+		}
+
+		if (!is_array(obj)) {
+			obj = [obj];
+		}
+
+		array_foreach(obj, function(sobj, i) {
+			if (typeof sobj === "string") {
+				obj[i] = {url: sobj};
+			}
+		});
+
+		return obj;
+	};
+
+	var fillobj = function(obj, baseobj) {
+		//if (typeof obj === "undefined")
+		if (!obj) {
+			//return [];
+			obj = {};
+		}
+
+		if (!is_array(obj)) {
+			obj = [obj];
+		}
+
+		if (!baseobj)
+			baseobj = {};
+
+		if (is_array(baseobj))
+			baseobj = baseobj[0];
+
+		//var oldobj = deepcopy(obj);
+
+		for (var i = 0; i < obj.length; i++) {
+			if (typeof(obj[i]) === "undefined") {
+				continue;
+			}
+
+			if (typeof(obj[i]) === "string") {
+				obj[i] = {url: obj[i]};
+			}
+
+			var item;
+			// Only copy from baseobj if the urls are the same (or n/a)
+			if (!obj[i].url || !baseobj.url || baseobj.url === obj[i].url)  {
+				for (item in baseobj) {
+					if (!(item in obj[i])) {
+						obj[i][item] = baseobj[item];
+					}
+				}
+			}
+
+			for (item in default_object) {
+				if (!(item in obj[i])) {
+					obj[i][item] = default_object[item];
+				}
+			}
+		}
+
+		//console_log("fillobj", deepcopy(oldobj), deepcopy(obj));
+		return obj;
+	};
+
 	var fillobj_urls = function(urls, obj) {
 		var newobj = [];
 		for (var i = 0; i < urls.length; i++) {
@@ -6693,7 +6872,7 @@ var $$IMU_EXPORT$$;
 	}
 
 	function reverse_str(str) {
-		return run_arrayd_string(str, {
+		return common_functions.run_arrayd_string(str, {
 			cb: function(arr) {
 				return arr.reverse();
 			}
@@ -7629,6 +7808,16 @@ var $$IMU_EXPORT$$;
 		}
 	};
 
+	var run_sandboxed_lib_safe = function(fdata, xhr) {
+		try {
+			var result = run_sandboxed_lib(fdata, xhr);
+			return result;
+		} catch (e) {
+			console_error(e);
+			return null;
+		}
+	};
+
 	var lib_urls = {
 		"testcookie_slowaes": {
 			name: "testcookie_slowaes",
@@ -7755,7 +7944,7 @@ var $$IMU_EXPORT$$;
 							}
 
 
-							done(run_sandboxed_lib(result.responseText, lib_obj.xhr), 0);
+							done(run_sandboxed_lib_safe(result.responseText, lib_obj.xhr), 0);
 							//done(new Function(result.responseText + ";return lib_export;")(), 0);
 						}
 					});
@@ -8389,6 +8578,9 @@ var $$IMU_EXPORT$$;
 				// v1?
 				if (json.ext[0] !== ".")
 					json.ext = "." + json.ext;
+
+				if (json.ext.toLowerCase() === ".jpeg")
+					json.ext = ".jpg";
 			}
 
 			var realfilename = null;
@@ -8908,7 +9100,13 @@ var $$IMU_EXPORT$$;
 
 	common_functions.instagram_norm_url = function(src) {
 		// thanks to remlap on github: https://github.com/qsniyg/maxurl/issues/239
-		return remove_queries(src, ["se", "_nc_cat", "_nc_rid", "efg", "ig_cache_key"]);
+		// https://github.com/qsniyg/maxurl/issues/522
+		// some info: https://sorsnce.com/2020/04/15/the-truth-about-social-media-content-delivery-networks/
+		// _nc_cat is useless, but doesn't appear to change anything, so let's not remove it to avoid useless redirects
+		// no idea if ig_cache_key does anything or not, but since we're changing the url, perhaps, from the name, this could lead to issues?
+		// no idea what efg or _nc_rid do, haven't seen them change anything yet
+		return remove_queries(src, ["se", "ig_cache_key"]);
+		//return remove_queries(src, ["se", "_nc_cat", "_nc_rid", "efg", "ig_cache_key"]);
 		// these remove_queries calls are separated in case the next one doesn't work.
 		/*newsrc = remove_queries(src, ["se"]);
 		if (newsrc !== src)
@@ -9449,8 +9647,8 @@ var $$IMU_EXPORT$$;
 
 					if (maxobj !== null) {
 						image.video = maxobj.url;
-						image.width = maxobj.width;
-						image.height = maxobj.corrected_height;
+						image.video_width = maxobj.width;
+						image.video_height = maxobj.corrected_height;
 					}
 				}
 
@@ -9479,6 +9677,7 @@ var $$IMU_EXPORT$$;
 					image = node.display_url;
 
 				var width = 0, height = 0;
+				var vwidth = 0, vheight = 0;
 				if (node.dimensions) {
 					width = node.dimensions.width;
 					height = node.dimensions.height;
@@ -9509,8 +9708,8 @@ var $$IMU_EXPORT$$;
 					// This is a terrible hack, but it works
 					if (width > 640) {
 						var ratio = 640. / width;
-						width *= ratio;
-						height *= ratio;
+						vwidth = width * ratio;
+						vheight = height * ratio;
 					}
 				}
 
@@ -9521,13 +9720,20 @@ var $$IMU_EXPORT$$;
 					height = 0;
 				}
 
+				if (!vwidth && !vheight) {
+					vwidth = width;
+					vheight = height;
+				}
+
 				images.push({
 					src: image,
 					video: node.video_url,
 					caption: get_caption(media),
 					page: get_page(media),
 					width: width,
-					height: height
+					height: height,
+					video_width: vwidth,
+					video_height: vheight
 				});
 			};
 
@@ -9567,11 +9773,45 @@ var $$IMU_EXPORT$$;
 			return obj;
 		};
 
+		var image_meld_largest = function(image) {
+			if (!image.smallest) return image;
+
+			//console_log(image.largest, image.smallest);
+			image = deepcopy(image);
+
+			var largest = image.largest;
+			var smallest = image.smallest;
+
+			var largest_vb = largest.video_width * largest.video_height;
+			var smallest_vb = smallest.video_width * smallest.video_height;
+
+			if (smallest_vb > largest_vb) {
+				var largest_url = largest.video_url;
+				largest.video_url = smallest.video_url;
+				smallest.video_url = largest_url;
+
+				var largest_vw = largest.video_width, largest_vh = largest.video_height;
+				largest.video_width = smallest.video_width;
+				largest.video_height = smallest.video_height;
+				smallest.video_width = largest_vw;
+				smallest.video_height = largest_vh;
+			}
+
+			//console_log(largest, smallest);
+
+			return {
+				largest: largest,
+				smallest: smallest
+			};
+		};
+
 		var image_to_obj = function(image) {
 			if (!image)
 				return null;
 
 			var obj = [];
+
+			image = image_meld_largest(image);
 
 			raw_image_to_obj(image.largest, obj);
 			if (image.smallest)
@@ -9844,7 +10084,8 @@ var $$IMU_EXPORT$$;
 							return cb(null);
 						}
 
-						return cb(image_to_obj(image));
+						var obj = image_to_obj(image);
+						return cb(obj);
 					} else {
 						return cb(images);
 					}
@@ -9924,11 +10165,18 @@ var $$IMU_EXPORT$$;
 	common_functions.instagram_get_image_src_from_el = function(el) {
 		if (el.tagName === "VIDEO") {
 			// use the poster instead as the larger video urls differ
-			return el.poster || el.src;
+			return el.poster || el.currentSrc || el.src;
 		} else if (el.tagName === "IMG") {
 			return el.src;
 		} else if (el.tagName === "DIV") {
 			return el.style.backgroundImage.replace(/^url\(["'](.*)["']\)$/, "$1");
+		} else if (el.tagName === "SOURCE") {
+			if (el.parentElement) {
+				var newsrc = common_functions.instagram_get_image_src_from_el(el.parentElement);
+				if (newsrc) return newsrc;
+			}
+
+			return el.src;
 		}
 
 		console_error("Unable to find source for", el);
@@ -10108,6 +10356,40 @@ var $$IMU_EXPORT$$;
 		}
 
 		return possible_infos;
+	};
+
+	common_functions.twitter_normalize_status_link = function(link) {
+		var match = link.match(/\/status\/+([0-9]+)(?:\/+(?:retweets|likes|photo|video)(?:\/+.*)?|\/*)(?:[?#].*)?$/);
+		if (match) {
+			return link.replace(/(\/status\/+[0-9]+)\/*.*(?:[?#].*)?$/, "$1");
+		}
+
+		return null;
+	};
+
+	common_functions.get_twitter_tweet_link = function(el) {
+		var currentel = el;
+		while ((currentel = currentel.parentElement)) {
+			if (currentel.tagName === "A") {
+				var norm = common_functions.twitter_normalize_status_link(currentel.href);
+				if (norm) return norm;
+			}
+
+			if (currentel.tagName === "ARTICLE") {
+				var our_as = currentel.querySelectorAll("a[role='link']");
+				for (var i = 0; i < our_as.length; i++) {
+					var our_href = our_as[i].href;
+					if (!our_href)
+						continue;
+
+					var norm = common_functions.twitter_normalize_status_link(our_href);
+					if (norm) return norm;
+				}
+				break;
+			}
+		}
+
+		return null;
 	};
 
 	common_functions.get_twitter_caption = function(el) {
@@ -11658,7 +11940,7 @@ var $$IMU_EXPORT$$;
 
 		var found = false;
 		array_foreach(links, function(link, i) {
-			if (!found && cmp(link.url)) {
+			if (!found && cmp(link.x_id || link.url)) {
 				links[i].is_current = true;
 				obj.url = links[i].url;
 				found = true;
@@ -11666,6 +11948,10 @@ var $$IMU_EXPORT$$;
 				links[i].is_current = false;
 			}
 		});
+
+		if (!found && links.length > 0) {
+			links[0].is_current = true;
+		}
 
 		return obj;
 	};
@@ -12152,6 +12438,10 @@ var $$IMU_EXPORT$$;
 		});
 	};
 
+	common_functions.gen_jquery_callback = function() {
+		return "jQuery" + get_random_text(20) + "_" + Date.now();
+	};
+
 	var get_domain_from_url = function(url) {
 		return url.replace(/^[a-z]+:\/\/([^/]+)(?:\/+.*)?$/, "$1");
 	};
@@ -12159,7 +12449,8 @@ var $$IMU_EXPORT$$;
 	var get_domain_nosub = function(domain) {
 		var domain_nosub = domain.replace(/^.*\.([^.]*\.[^.]*)$/, "$1");
 		// stream.ne.jp
-		if (/^(?:(?:com?|org|net)\.[a-z]{2}|(?:ne|or)\.jp)$/.test(domain_nosub)) {
+		// *.edu.tr
+		if (/^(?:(?:com?|org|net|edu)\.[a-z]{2}|(?:ne|or)\.jp)$/.test(domain_nosub)) {
 			domain_nosub = domain.replace(/^.*\.([^.]*\.[^.]*\.[^.]*)$/, "$1");
 		}
 
@@ -12235,6 +12526,7 @@ var $$IMU_EXPORT$$;
 	    	'mod': mod,
 	    	'norm_url': norm_url,
 	    	'urljoin': urljoin,
+	    	'fillobj': fillobj,
 	    	'fillobj_urls': fillobj_urls,
 	    	'add_full_extensions': add_full_extensions,
 	    	'add_extensions': add_extensions,
@@ -12300,13 +12592,13 @@ var $$IMU_EXPORT$$;
 	                    data: bigimage_obj,
 	                    message: "Unable to get bigimage function"
 	                };
-	            } else if (bigimage_obj.nonce !== "47fjda1i68n44131") {
+	            } else if (bigimage_obj.nonce !== "1deoc5lfcd2f5ek3") {
 	                // This could happen if for some reason the userscript manager updates the userscript,
 	                // but not the required libraries.
 	                require_rules_failed = {
 	                    type: "bad_nonce",
 	                    data: bigimage_obj.nonce,
-	                    message: "Bad nonce, expected: " + "47fjda1i68n44131"
+	                    message: "Bad nonce, expected: " + "1deoc5lfcd2f5ek3"
 	                };
 	            } else {
 	                bigimage = bigimage_obj.bigimage;
@@ -12527,6 +12819,14 @@ var $$IMU_EXPORT$$;
 
 		if (host_domain_nosub === "instagram.com") {
 			return {
+				element_ok: function(el) {
+					// TODO: improve
+					if (el.tagName === "VIDEO") {
+						return true;
+					}
+
+					return "default";
+				},
 				gallery: function(el, nextprev) {
 					if (!el)
 						return "default";
@@ -12672,10 +12972,12 @@ var $$IMU_EXPORT$$;
 					return "default";
 				},
 				element_ok: function(el) {
-					var tweet = common_functions.get_twitter_video_tweet(el, window);
-					// disable for now as this method needs to be implemented
-					if (tweet && false) {
-						return true;
+					//var tweet = common_functions.get_twitter_video_tweet(el, window);
+					if (el.tagName === "VIDEO") {
+						var tweet = common_functions.get_twitter_tweet_link(el);
+						if (tweet) {
+							return true;
+						}
 					}
 
 					return "default";
@@ -13201,73 +13503,6 @@ var $$IMU_EXPORT$$;
 		return newobj;
 	};
 
-	var basic_fillobj = function(obj) {
-		if (!obj) {
-			obj = {};
-		}
-
-		if (!is_array(obj)) {
-			obj = [obj];
-		}
-
-		array_foreach(obj, function(sobj, i) {
-			if (typeof sobj === "string") {
-				obj[i] = {url: sobj};
-			}
-		});
-
-		return obj;
-	};
-
-	var fillobj = function(obj, baseobj) {
-		//if (typeof obj === "undefined")
-		if (!obj) {
-			//return [];
-			obj = {};
-		}
-
-		if (!is_array(obj)) {
-			obj = [obj];
-		}
-
-		if (!baseobj)
-			baseobj = {};
-
-		if (is_array(baseobj))
-			baseobj = baseobj[0];
-
-		//var oldobj = deepcopy(obj);
-
-		for (var i = 0; i < obj.length; i++) {
-			if (typeof(obj[i]) === "undefined") {
-				continue;
-			}
-
-			if (typeof(obj[i]) === "string") {
-				obj[i] = {url: obj[i]};
-			}
-
-			var item;
-			// Only copy from baseobj if the urls are the same (or n/a)
-			if (!obj[i].url || !baseobj.url || baseobj.url === obj[i].url)  {
-				for (item in baseobj) {
-					if (!(item in obj[i])) {
-						obj[i][item] = baseobj[item];
-					}
-				}
-			}
-
-			for (item in default_object) {
-				if (!(item in obj[i])) {
-					obj[i][item] = default_object[item];
-				}
-			}
-		}
-
-		//console_log("fillobj", deepcopy(oldobj), deepcopy(obj));
-		return obj;
-	};
-
 	var same_url = function(url, obj) {
 		obj = fillobj(obj);
 
@@ -13495,6 +13730,8 @@ var $$IMU_EXPORT$$;
 
 			var found_prop = false;
 			array_foreach(objified, function(obj) {
+				if (typeof obj !== "object") return;
+
 				if (prop in obj) {
 					found_prop = true;
 					return false;
@@ -13700,7 +13937,7 @@ var $$IMU_EXPORT$$;
 								var cond = false;
 								array_foreach(copy_props, function(prop) {
 									// using newhref1 instead of objified because otherwise it'll always be true? (objified is the filled object, all props are in it)
-									if (!(prop in newhref[0]) && (prop in important_properties) && prop_in_objified(prop, newhref1)) {
+									if (!(typeof newhref[0] === "object" && (prop in newhref[0])) && (prop in important_properties) && prop_in_objified(prop, newhref1)) {
 										cond = true;
 										return false;
 									}
@@ -14148,6 +14385,16 @@ var $$IMU_EXPORT$$;
 			return el.currentSrc || el.src || el.poster;
 		}
 
+		if (el_tagname === "SOURCE") {
+			if (el.parentElement) {
+				var newsrc = get_img_src(el.parentElement);
+				if (newsrc)
+					return newsrc;
+			}
+
+			return el.currentSrc || el.src;
+		}
+
 		if (el_tagname === "IMAGE") {
 			var xlink_href = el.getAttribute("xlink:href");
 
@@ -14422,6 +14669,10 @@ var $$IMU_EXPORT$$;
 
 				if (obj.extra.caption) {
 					console_log("Caption: " + obj.extra.caption);
+				}
+
+				if (obj.extra.created_date) {
+					console_log("Created date: " + new Date(obj.extra.created_date));
 				}
 			}
 		};
@@ -15697,7 +15948,7 @@ var $$IMU_EXPORT$$;
 						continue;
 
 					if (warning) {
-						el.innerHTML = warning;
+						el.innerText = warning;
 						el.style.display = "block";
 					} else {
 						el.style.display = "none";
@@ -16705,26 +16956,57 @@ var $$IMU_EXPORT$$;
 		return JSON_stringify(value);
 	}
 
-	function get_value(key, cb) {
+	function get_values(keys, cb) {
 		if (is_extension) {
 			extension_send_message({
 				type: "getvalue",
-				data: [key]
+				data: keys
 			}, function(response) {
 				response = response.data;
-				cb(parse_value(response[key]));
+
+				obj_foreach(response, function(key, value) {
+					response[key] = parse_value(value);
+				});
+
+				cb(response);
 			});
 		} else if (typeof GM_getValue !== "undefined" &&
 				   // Unfortunately FireMonkey currently implements GM_getValue as a mapping to GM.getValue for some reason
 				   //   https://github.com/erosman/support/issues/98
 				   // Until this is fixed, we cannot use GM_getValue for FireMonkey
 				   userscript_manager !== "FireMonkey") {
-			return cb(parse_value(GM_getValue(key, undefined)));
+			var response = {};
+			array_foreach(keys, function(key) {
+				response[key] = parse_value(GM_getValue(key, undefined));
+			});
+
+			return cb(response);
 		} else if (typeof GM !== "undefined" && GM.getValue) {
-			GM.getValue(key, undefined).then(function (value) {
-				cb(parse_value(value));
+			var total_keys = 0;
+			var response = {};
+
+			array_foreach(keys, function(key) {
+				GM.getValue(key, undefined).then(function(value) {
+					response[key] = parse_value(value);
+
+					if (++total_keys >= keys.length) {
+						cb(response);
+					}
+				}, function(error) {
+					console_error(error);
+
+					if (++total_keys >= keys.length) {
+						cb(response);
+					}
+				});
 			});
 		}
+	}
+
+	function get_value(key, cb) {
+		return get_values([key], function(data) {
+			return cb(data[key]);
+		});
 	}
 
 	var updating_options = 0;
@@ -16961,6 +17243,17 @@ var $$IMU_EXPORT$$;
 			version = 6;
 		}
 
+		if (version === 6) {
+			if ("mouseover_support_pointerevents_none" in new_settings && new_settings.mouseover_support_pointerevents_none) {
+				update_seetting("mouseover_find_els_mode", "full");
+			}
+
+			update_setting("settings_version", 7);
+			changed = true;
+
+			version = 7;
+		}
+
 		cb(changed);
 	}
 
@@ -17032,27 +17325,27 @@ var $$IMU_EXPORT$$;
 				cb();
 			};
 
-			var process_setting = function(setting) {
-				get_value(setting, function(value) {
-					settings_done++;
-					update_setting_from_host(setting, value);
+			var process_settings = function(settings) {
+				get_values(settings, function(values) {
+					// not Object.keys(values).length, because it may be smaller
+					settings_done += settings.length;
 
-					if (settings_done >= total_settings)
+					obj_foreach(values, function(key, value) {
+						update_setting_from_host(key, value);
+					});
+
+					if (settings_done >= total_settings) {
 						upgrade_settings(function(value) {
 							add_value_change_listeners(function() {
 								start(value);
 							});
 						});
+					}
 				});
 			};
 
-			for (var setting in settings) {
-				process_setting(setting);
-			}
-
-			for (var i = 0; i < old_settings_keys.length; i++) {
-				process_setting(old_settings_keys[i]);
-			}
+			process_settings(Object.keys(settings));
+			process_settings(old_settings_keys);
 		} else {
 			start();
 		}
@@ -17356,6 +17649,10 @@ var $$IMU_EXPORT$$;
 				}
 
 				if (!destroyed) {
+					if (cached_result.filesize && !obj[0].filesize) {
+						obj[0].filesize = cached_result.filesize;
+					}
+
 					cb(cached_result.img, cached_result.resp.finalUrl, obj[0], cached_result.resp);
 					return;
 				}
@@ -17538,7 +17835,8 @@ var $$IMU_EXPORT$$;
 					if (processing.set_cache) {
 						var cache_obj = {
 							img: img,
-							resp: resp
+							resp: resp,
+							filesize: obj[0].filesize
 						};
 
 						if (img.tagName === "VIDEO")
@@ -17599,6 +17897,10 @@ var $$IMU_EXPORT$$;
 
 						video.removeEventListener("error", errorhandler, true);
 						remove_loaded_metadata_listener();
+
+						if (!processing.running) {
+							return cb(null);
+						}
 
 						if (video.hasAttribute("loop")) {
 							if (settings.mouseover_video_autoloop_max && settings.mouseover_video_autoloop_max < video.duration)
@@ -18238,7 +18540,7 @@ var $$IMU_EXPORT$$;
 				delete extension_requests[response.id];
 			}
 		} else if (message.type === "bg_redirect") {
-			if (settings.redirect && settings.redirect_extension) {
+			if (settings.redirect && settings.redirect_extension && settings.imu_enabled) {
 				try {
 					var headers = headers_list_to_dict(message.data.responseHeaders);
 					if (headers["content-type"] && contenttype_can_be_redirected(headers["content-type"])) {
@@ -18317,6 +18619,7 @@ var $$IMU_EXPORT$$;
 		var popup_hold = false;
 		var popup_hold_func = common_functions.nullfunc;
 		var popup_zoom_func = common_functions.nullfunc;
+		var popup_createui_func = common_functions.nullfunc;
 		var popup_wheel_cb = null;
 		var popup_update_pos_func = null;
 		var popup_hidecursor_func = common_functions.nullfunc;
@@ -18351,7 +18654,7 @@ var $$IMU_EXPORT$$;
 		var release_ignore = [];
 		var editing_text = false;
 
-		var host_location = window.location.href;
+		var host_location = window_location;
 		var host_domain = get_domain_from_url(host_location);
 		var host_domain_nosub = get_domain_nosub(host_domain);
 
@@ -18649,6 +18952,7 @@ var $$IMU_EXPORT$$;
 			popup_orig_url = null;
 			popup_hold_func = common_functions.nullfunc;
 			popup_zoom_func = common_functions.nullfunc;
+			popup_createui_func = common_functions.nullfunc;
 			popup_wheel_cb = null;
 			popup_update_pos_func = null;
 			popup_client_rect_cache = null;
@@ -19982,15 +20286,22 @@ var $$IMU_EXPORT$$;
 				var cached_previmages = 0;
 				var cached_nextimages = 0;
 
-				function lraction(isright) {
+				function lraction(isright, is_scroll) {
 					trigger_gallery(isright ? 1 : -1, function(changed) {
 						if (!changed) {
+							if (is_scroll) {
+								if (isright && settings.scroll_past_gallery_end_to_close) {
+									resetpopups();
+									return;
+								}
+							}
+
 							create_ui();
 						}
 					});
 				}
 
-				var create_containerel = function(x, y, margin) {
+				var create_containerel = function(x, y, margin, boundingclientrect) {
 					var topbarel = document_createElement("div");
 					set_el_all_initial(topbarel);
 					set_important_style(topbarel, "position", "absolute");
@@ -20008,24 +20319,34 @@ var $$IMU_EXPORT$$;
 					var bottom = null;
 					var right = null;
 
+					var original_width = imgw || img_naturalWidth;
+					var bounding_width = boundingclientrect.width || original_width;
+					var bounding_wadd = (bounding_width - original_width) / 2;
+
+					var original_height = imgh || img_naturalHeight;
+					var bounding_height = boundingclientrect.height || original_height;
+					var bounding_hadd = (bounding_height - original_height) / 2;
+
 					if (x === "left") {
-						left = "-" + margin;
+						left = -(margin + bounding_wadd) + "px";
 					} else if (x === "middle") {
 						left = "calc(50%)";
 						topbarel.setAttribute("data-imu-middle_x", "true");
 					} else if (x === "right") {
-						right = "-" + margin;
+						right = -(margin + bounding_wadd) + "px";
 					}
 
 					if (y === "top") {
-						top = "-" + margin;
+						top = -(margin + bounding_hadd) + "px";
 					} else if (y === "middle") {
 						// TODO: add buttons vertically, not horizontally
 						top = "calc(50%)";
 						topbarel.setAttribute("data-imu-middle_y", "true");
 					} else if (y === "bottom") {
-						bottom = "-" + margin;
+						bottom = -(margin + bounding_hadd) + "px";
 					}
+
+					//console_log(left, right, top, bottom);
 
 					if (left) set_important_style(topbarel, "left", left);
 					if (right) set_important_style(topbarel, "right", right);
@@ -20049,19 +20370,27 @@ var $$IMU_EXPORT$$;
 					var gallerycount_fontsize = "13px";
 					var galleryinput_fontsize = "12px";
 
+					var img_boundingClientRect = img.getBoundingClientRect();
+
 					var css_fontcheck = "14px " + sans_serif_font;
 
 					var containers = {};
 
-					containers["top-left"] = create_containerel("left", "top", em1);
-					containers["top-middle"] = create_containerel("middle", "top", em1);
-					containers["top-right"] = create_containerel("right", "top", em1);
-					containers["left"] = create_containerel("left", "middle", em1);
-					containers["middle"] = create_containerel("middle", "middle", em1);
-					containers["right"] = create_containerel("right", "middle", em1);
-					containers["bottom-left"] = create_containerel("left", "bottom", em1);
-					containers["bottom-middle"] = create_containerel("middle", "bottom", em1);
-					containers["bottom-right"] = create_containerel("right", "bottom", em1);
+					var container_metas = {
+						"top-left": ["left", "top"],
+						"top-middle": ["middle", "top"],
+						"top-right": ["right", "top"],
+						"left": ["left", "middle"],
+						"middle": ["middle", "middle"],
+						"right": ["right", "middle"],
+						"bottom-left": ["left", "bottom"],
+						"bottom-middle": ["middle", "bottom"],
+						"bottom-right": ["right", "bottom"]
+					};
+
+					obj_foreach(container_metas, function(key, data) {
+						containers[key] = create_containerel(data[0], data[1], emi, img_boundingClientRect);
+					});
 
 					if (!settings.mouseover_ui) {
 						// Not sure why this is needed, but without it, clicking and dragging images doesn't work under Firefox (#78)
@@ -20087,17 +20416,34 @@ var $$IMU_EXPORT$$;
 							pos: "top-left",
 							containers: containers
 						});
-					}
+					};
+
+					var get_img_orientation = function() {
+						var rotation = get_popup_rotation();
+
+						if (Math_abs(rotation) % 180 == 90) {
+							return true;
+						} else {
+							return false;
+						}
+					};
+
+					var get_img_width = function() {
+						// This is needed if img isn't displayed yet
+						return img_boundingClientRect.width || imgw || img_naturalWidth;
+					};
 
 					var get_img_height = function() {
-						var rect = img.getBoundingClientRect();
-						// This is needed if img isn't displayed yet
-						var rect_height = rect.height || imgh;
+						return img_boundingClientRect.height || imgh || img_naturalHeight;
+					};
 
-						if (isNaN(rect_height))
-							rect_height = img_naturalHeight;
-
-						return rect_height;
+					// TODO: improve
+					var get_img_disp_height = function() {
+						if (get_img_orientation()) {
+							return get_img_width();
+						} else {
+							return get_img_height();
+						}
 					};
 
 
@@ -20107,7 +20453,7 @@ var $$IMU_EXPORT$$;
 					function get_imagesizezoom_text() {
 						var text = "";
 
-						var rect_height = get_img_height();
+						var rect_height = get_img_disp_height();
 
 						var zoom_percent = rect_height / img_naturalHeight;
 						var currentzoom = parseInt(zoom_percent * 100);
@@ -20355,7 +20701,7 @@ var $$IMU_EXPORT$$;
 						if (!settings.mouseover_enable_gallery || popup_width < 200)
 							return;
 
-						var img_height = get_img_height();
+						var img_height = get_img_disp_height();
 						var bottom_heights = 0;
 						var top_heights = 20;
 						if (is_video) {
@@ -20491,6 +20837,8 @@ var $$IMU_EXPORT$$;
 					add_leftright_gallery_button_if_valid(false);
 					add_leftright_gallery_button_if_valid(true);
 				}
+
+				popup_createui_func = create_ui;
 
 				create_ui();
 
@@ -20834,6 +21182,9 @@ var $$IMU_EXPORT$$;
 							set_popup_width(img_naturalWidth, "initial");
 							set_popup_height(img_naturalHeight, "initial");
 
+							imgw = img_naturalWidth;
+							imgh = img_naturalHeight;
+
 							currentmode = "full";
 							changed = true;
 						}
@@ -21016,7 +21367,7 @@ var $$IMU_EXPORT$$;
 							else return;
 						}
 
-						lraction(isright);
+						lraction(isright, true);
 						estop_pd(e);
 						return true;
 					};
@@ -21483,6 +21834,8 @@ var $$IMU_EXPORT$$;
 			var links = {};
 			var layers = [];
 
+			var ok_els_set = new_set();
+
 			var id = 0;
 
 			var thresh = parseInt(settings.mouseover_minimum_size);
@@ -21672,23 +22025,27 @@ var $$IMU_EXPORT$$;
 
 			function addTagElement(el, layer) {
 				if (helpers && helpers.element_ok) {
-					var element_ok_result = helpers.element_ok(el);
-					var ok_el_obj = {
-						count: 1,
-						src: null,
-						el: el,
-						id: id++,
-						is_ok_el: true
-					};
+					if (!set_has(ok_els_set, el)) {
+						var element_ok_result = helpers.element_ok(el);
+						var ok_el_obj = {
+							count: 1,
+							src: null,
+							el: el,
+							id: id++,
+							is_ok_el: true
+						};
 
-					if (element_ok_result === true) {
-						ok_els.push(ok_el_obj);
-					} else {
-						if (is_element(element_ok_result)) {
-							ok_el_obj.el = element_ok_result;
+						if (element_ok_result === true) {
 							ok_els.push(ok_el_obj);
+							set_add(ok_els_set, el);
+						} else {
+							if (is_element(element_ok_result)) {
+								ok_el_obj.el = element_ok_result;
+								ok_els.push(ok_el_obj);
+								set_add(ok_els_set, el);
 
-							el = element_ok_result;
+								el = element_ok_result;
+							}
 						}
 					}
 				}
@@ -22745,8 +23102,10 @@ var $$IMU_EXPORT$$;
 			if (false && _nir_debug_)
 				console_log("find_els_at_point", deepcopy(xy), deepcopy(els), deepcopy(prev));
 
+			var first_run = false;
 			if (!prev) {
 				prev = new_set();
+				first_run = true;
 			}
 
 			if (zoom_cache === undefined) {
@@ -22760,15 +23119,26 @@ var $$IMU_EXPORT$$;
 			var ret = [];
 			var afterret = [];
 
+			var els_mode = get_single_setting("mouseover_find_els_mode");
+
 			if (!els) {
 				els = document.elementsFromPoint(xy[0], xy[1]);
 				afterret = els;
 
-				if (!settings.mouseover_support_pointerevents_none)
+				if (_nir_debug_) {
+					console_log("find_els_at_point (elsfrompoint)", deepcopy(els));
+				}
+
+				if (els_mode === "simple")
 					return els;
 			}
 
 			for (var i = 0; i < els.length; i++) {
+				if (i > 0 && first_run && els_mode === "hybrid") {
+					ret.push(els[i]);
+					continue;
+				}
+
 				var el = els[i];
 
 				if (set_has(prev, el))
@@ -22839,6 +23209,10 @@ var $$IMU_EXPORT$$;
 
 			if (_nir_debug_ && ret.length > 0) {
 				console_log("find_els_at_point (unsorted ret)", shallowcopy(ret));
+			}
+
+			if (first_run && els_mode === "hybrid") {
+				return ret;
 			}
 
 			var get_zindex_raw = function(el) {
@@ -22919,9 +23293,13 @@ var $$IMU_EXPORT$$;
 			return el;
 		}
 
-		function trigger_popup(is_contextmenu) {
+		function trigger_popup(options) {
+			if (!options) {
+				options = {}
+			}
+
 			if (_nir_debug_)
-				console_log("trigger_popup (is_contextmenu=" + is_contextmenu + ")", current_frame_id);
+				console_log("trigger_popup (options:", options, ")", current_frame_id);
 
 			delay_handle_triggering = true;
 			//var els = document.elementsFromPoint(mouseX, mouseY);
@@ -22929,7 +23307,7 @@ var $$IMU_EXPORT$$;
 
 			if (mousepos_initialized)
 				point = [mouseX, mouseY];
-			if (is_contextmenu)
+			if (options.is_contextmenu)
 				point = [mouseContextX, mouseContextY];
 
 			if (point === null) {
@@ -23420,8 +23798,16 @@ var $$IMU_EXPORT$$;
 		};
 
 		var get_popup_transforms = function() {
-			var style = popups[0].querySelector("img").parentElement.parentElement.style;
-			if (style.transform) {
+			var style = null;
+
+			if (popups && popups[0]) {
+				var media = get_popup_media_el();
+				if (media) {
+					style = media.parentElement.parentElement.style;
+				}
+			}
+
+			if (style && style.transform) {
 				return parse_transforms(style.transform);
 			} else {
 				return {transforms: [], types: {}};
@@ -23433,15 +23819,14 @@ var $$IMU_EXPORT$$;
 		};
 
 		var set_popup_transforms = function(transforms) {
-			popups[0].querySelector("img").parentElement.parentElement.style.transform = stringify_transforms(transforms);
+			var media = get_popup_media_el();
+
+			if (media) {
+				media.parentElement.parentElement.style.transform = stringify_transforms(transforms);
+			}
 		};
 
-		function rotate_gallery(dir) {
-			if (!popups_active)
-				return;
-
-			var transforms = get_popup_transforms();
-
+		var get_rotation_data_from_transforms = function(transforms) {
 			var index = 0;
 			if ("rotate" in transforms.types) {
 				index = transforms.types.rotate[0];
@@ -23455,8 +23840,29 @@ var $$IMU_EXPORT$$;
 				deg = parseInt(match[1]);
 			}
 
-			transforms.transforms[index] = "rotate(" + (deg + dir) + "deg)";
+			return {
+				deg: deg,
+				index: index
+			};
+		};
+
+		var get_popup_rotation = function() {
+			var transforms = get_popup_transforms();
+			var rotation_data = get_rotation_data_from_transforms(transforms);
+			return rotation_data.deg;
+		};
+
+		function rotate_gallery(dir) {
+			if (!popups_active)
+				return;
+
+			var transforms = get_popup_transforms();
+			var rotation_data = get_rotation_data_from_transforms(transforms);
+
+			transforms.transforms[rotation_data.index] = "rotate(" + (rotation_data.deg + dir) + "deg)";
 			set_popup_transforms(transforms);
+
+			popup_createui_func(true);
 		}
 
 		// hv: vertical = true, horizontal = false
@@ -25206,6 +25612,7 @@ var $$IMU_EXPORT$$;
 				mousemove_cb(message.data);
 			} else if (message.type === "action") {
 				for (var i = 0; i < message.data.length; i++) {
+					message.data[i].remote_origin = sender;
 					action_handler(message.data[i]);
 				}
 			} else if (message.type === "popup_open") {
@@ -25253,8 +25660,13 @@ var $$IMU_EXPORT$$;
 				}
 
 				if (message.type === "context_imu") {
+					// https://github.com/qsniyg/maxurl/issues/517
+					// TODO: also set mouse_frame_id in oncontextmenu
+					if (mouse_frame_id !== current_frame_id)
+						return;
+
 					popup_trigger_reason = "contextmenu";
-					trigger_popup(true);
+					trigger_popup({is_contextmenu: true});
 				} else if (message.type === "popupaction") {
 					if (message.data.action === "replace_images") {
 						replace_images_full();

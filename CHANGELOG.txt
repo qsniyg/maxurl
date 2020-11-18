@@ -1,3 +1,35 @@
+0.14.8
+
+New features:
+
+ * Option to close the popup after scrolling past the end of a gallery (#471, thanks to Runakanta on discord for the idea)
+ * Support for ~40 new websites (using ~30 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including Facebook, Imgur, Instagram, Patreon, Reddit, Tumblr, Twitter)
+ * Support for Twitter videos
+ * Videos can now be rotated too
+ * Settings are batch-loaded now, decreasing initial page load CPU usage and delay for the extension (#205)
+ * "Support pointer-events: none" has been replaced with "Element finding mode", which allows a new "Hybrid" option (set by default), to allow combining the speed of "Simple" and the thoroughness of "Full"
+ * Improved support for frames on certain websites
+
+Bugfixes:
+
+ * Triggering the popup through the context menu will now work for pages with multiple frames, such as DeviantART (thanks to KyuJuEX099 on discord for reporting)
+ * Redirection under the extension now respects when the extension is disabled, if "do redirection in extension" is enabled (#523, thanks to keophcp on github for reporting)
+ * Popups will no longer crash if using 3rd-party libraries on webpages that forbid eval for the userscript
+ * Zoom percent is no longer incorrect when rotating
+ * UI position is updated when rotating (#218)
+ * Certain rare infinite loops for host rules should now be fixed
+ * Pressing ESC while loading a video should now always cancel the popup from loading
+ * Fix crashes for certain rules
+ * Filesize is no longer forgotten with cached media
+
+Special thanks to keophcp, fireattack, Runakanta, synthtech, Melih Şirin, jloqfjgk, KyuJuEX099, YaBoiBurner, Yosh for their contributions and reports for this release
+
+---
+
 0.14.7
 
 New features:
