@@ -57,6 +57,7 @@ var variables_list = [
 	"mod",
 	"norm_url",
 	"urljoin",
+	"fillobj",
 	"fillobj_urls",
 	"add_full_extensions",
 	"add_extensions",
