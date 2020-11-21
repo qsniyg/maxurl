@@ -107,7 +107,12 @@ perfect though, I often get it wrong myself :) I can fix it up if you make a mis
   - While not a strict rule, I don't use `\d` or `\w` as I find that specifying exactly which characters are allowed allows it to be easier
     to understand and modify. Your choice though :)
 
-- You'll probably see that a lot of the rules don't follow the guidelines above. More recent rules tend to follow the guidelines better, but older
+- Ensure that no modern JS (ES2015+) is used, at least without a fallback that should work on all browsers.
+
+  - The only exception to this that comes to mind is requiring `BigInt` for certain calculations. However, note that the `n` suffix is not used, and it is surrounded by a try/catch block. This is to ensure the rest of the script will work, even if that one particular section doesn't.
+    - Note that implementing a `BigInt` fallback for older browsers isn't out of scope, just low priority.
+
+- You'll probably see that a lot of the rules don't follow many of the guidelines above. More recent rules tend to follow the guidelines better, but older
   rules haven't been updated, and are often either too specific or too generic as a result. I try to update them as I see them, but since there are literally thousands
   of rules, and each update often breaks something (meaning at least a few edits are required to update a single rule), I haven't been able to update the
   majority of the script yet. The wonders of organically written software!
@@ -124,5 +129,107 @@ to be automatically updated within ~5 seconds after saving. Using the built file
    update an incomplete version of the userscript. While it's still possible when using a built version, it's significantly less likely.
  - Since the built version is the one that is published on Greasyfork/OUJS, in case there are any issues with it (such as if a shared variable is missing),
    this allows one to catch the issues much quicker.
+
+### API calls/Pagelink rules
+
+There are a few considerations for implementing rules that use API calls:
+
+- Check for `options.do_request` and `options.cb`
+
+  - There are a few parts of the script that call `bigimage` without `do_request`, which will cause API calls to crash if the check isn't present.
+  - This isn't required if you use `website_query`, it will do this automatically for you.
+
+- Return `{waiting: true}` at the end of the function if the result will be returned in a callback (`options.cb`).
+
+  - Otherwise it will result in inconsistent behavior (such as multiple popups).
+
+- Use `api_cache` wherever possible in order to reduce duplicate API calls.
+
+  - Unless there's a good reason not to, prefer `api_cache.fetch` over `api_cache.has/get` + `api_cache.set`. This allows for much simpler logic, as well as avoiding races.
+  - You (likely) don't need to interact with `api_cache` if using `api_query` or `website_query` (more on that later)
+  - For cache duration, my general (though admittedly rather arbitrary) rule is an hour (`60*60`) for data that has been generated (or is otherwise expected to change within a day or so), and 6 hours (`6*60*60`) for permanent data, unless it's huge (e.g. html pages, scripts, or images).
+
+- Use `api_query` over `api_cache.fetch` + `options.do_request` if possible.
+
+  - This allows for much simpler code with less indentation. Note that even though `options.do_request` is called implicitly, you must still check for it.
+
+- Use pagelink rules (`website_query`) over `api_query` or direct `options.do_request` if possible.
+
+  - Pagelink rules are relatively new to the script, but allow for (usually) simpler code, access to the main media embedded in a page from only the link, and for code deduplication without relying on `common_functions`.
+
+The idea behind pagelink rules is to support a public-facing URL, generally (always?) an HTML page, then return the main media (or an album).
+
+To document it, I'll give an example with an imaginary social network:
+
+```
+if (domain_nowww === "mysocialnetwork.com") {
+  // https://mysocialnetwork.com/post/123
+
+  // Note that newsrc is defined at the beginning of bigimage, so no need to `var newsrc = ...`.
+  newsrc = website_query({
+    // Regex(es) for the supported URLs.
+    // The capture group is the ID, which will internally be used for the cache key (mysocialnetwork.com:ID),
+    //  as well as externally to query the page or API call.
+    // This can also be an array (for multiple different patterns) if needed.
+    website_regex: /^[a-z]+:\/\/[^/]+\/+post\/+([0-9]+)(?:[?#].*)?$/,
+
+    // ${id} is replaced to the first capture. You can also use ${1}, ${2}, etc. for the first, second, ... capture group.
+    // This will query the page, then run `process`.
+    query_for_id: "https://mysocialnetwork.com/post/${id}",
+
+    // Same arguments as for api_query, with "match" added, which is the regex match.
+    process: function(done, resp, cache_key, match) {
+      var img_match = resp.responseText.match(/<img id="main-image" src="([^"]+)" \/>/);
+      if (!img_match) {
+        // An error to make it easier to debug if it fails
+        console_error(cache_key, "Unable to find image match for", resp);
+
+        // First argument is the result (null) and the second is how long to store it (false means not to store it)
+        return done(null, false);
+      }
+
+      var title = get_meta(resp.responseText, "og:description");
+
+      // Remember that the inside of tags may also use html entities (such as &quot;).
+      // While unlikely for image sources, it also never hurts to add this.
+      var src = decode_entities(img_match[1]);
+
+      return done({
+        url: src,
+        extra: {
+          caption: title
+        }
+      }, 6*60*60);
+    }
+  });
+
+  // newsrc will either be undefined (if the URL doesn't match, or if options.do_request doesn't exist), or {waiting: true}
+  if (newsrc) return newsrc;
+}
+
+if (domain === "image.mysocialnetwork.com") {
+  // https://image.mysocialnetwork.com/postimage/123.jpg?width=500
+
+  newsrc = src.replace(/(\/postimage\/+[0-9]+\.[^/.?#]+)(?:[?#].*)?$/, "$1$2");
+  // This allows us to fall through to the next portion of the rule if the URL hasn't been replaced.
+  // Since bigimage is (generally) run more than once, this will result in a history,
+  //  which allows it to fall back to this URL (or the previous) if the next one fails.
+  if (newsrc !== src)
+    return newsrc;
+
+  match = src.match(/\/postimage\/+([0-9]+)\./);
+  if (match) {
+    return {
+      url: "https://mysocialnetwork.com/post/" + match[1],
+
+      // In case bigimage isn't run again for whatever reason, this will prevent it from wrongfully
+      //  redirecting to/querying the page in the popup.
+      is_pagelink: true
+    };
+  }
+}
+```
+
+---
 
 Thank you very much for whatever contribution you wish to give to this script, it's really appreciated!
