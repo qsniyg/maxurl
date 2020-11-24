@@ -850,6 +850,14 @@ msgstr "Interfaz del Popup"
 msgid "Enables a UI on top of the popup"
 msgstr ""
 
+#. mouseover_ui_toggle_key.name
+msgid "UI Toggle key"
+msgstr ""
+
+#. mouseover_ui_toggle_key.description
+msgid "Toggles the display of the UI"
+msgstr ""
+
 #. mouseover_ui_opacity.name
 msgid "Opacity"
 msgstr "Opacidad"
