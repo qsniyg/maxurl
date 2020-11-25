@@ -35,7 +35,7 @@ function update() {
 	var firstcomment = true;
 	var within_header = true;
 	var within_firstcomment = false;
-	for (const line of lines) {
+	for (var line of lines) {
 		if (in_exclude) {
 			if (/^\s+\/\/\s*imu:end_exclude/.test(line))
 				in_exclude = false;
@@ -78,6 +78,9 @@ function update() {
 			strings_raw.push(line);
 			continue;
 		}
+
+		// Slight performance improvement, because of e.g. nir_debug(..., deepcopy(...))
+		line = line.replace(/^(\s*)(nir_debug\()/, "$1if (_nir_debug_) $2");
 
 		if (!in_bigimage) {
 			if (firstcomment) {
