@@ -43,7 +43,7 @@ fi
 if [ -f ./build/userscript_extr.user.js ]; then
     grep '// imu:require_rules' ./build/userscript_extr.user.js 2>&1 >/dev/null
     if [ $? -eq 0 ]; then
-        echo 'require_rules present in extr.user.js'
+        echo 'require_rules present in extr.user.js (commit build/rules.js)'
         exit 1
     fi
 else
