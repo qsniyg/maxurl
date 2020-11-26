@@ -15,7 +15,7 @@
 // @name:zh-TW        Image Max URL
 // @name:zh-HK        Image Max URL
 // @namespace         http://tampermonkey.net/
-// @version           0.14.8
+// @version           0.14.9
 // @description       Finds larger or original versions of images and videos for 7500+ websites, including a powerful media popup feature
 // @description:en    Finds larger or original versions of images and videos for 7500+ websites, including a powerful media popup feature
 // @description:ko    7500개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
@@ -1685,6 +1685,97 @@ var $$IMU_EXPORT$$;
 		console.warn("Unable to initialize do_request, most functions will likely fail");
 	}
 
+	var do_browser_download = function(imu, filename, cb) {
+		if (_nir_debug_) {
+			console_log("do_browser_download", imu, filename, cb);
+		}
+
+		var a = document_createElement("a");
+
+		a.href = imu.url;
+
+		if (filename && filename.length > 0) {
+			a.setAttribute("download", filename);
+		} else {
+			var attr = document.createAttribute("download");
+			a.setAttributeNode(attr);
+		}
+
+		a.style.display = "none";
+		a.onclick = function(e) {
+			e.stopPropagation();
+			e.stopImmediatePropagation();
+			return true;
+		};
+
+		document.body.appendChild(a);
+		a.click();
+
+		setTimeout(function() {
+			document.body.removeChild(a);
+		}, 500);
+
+		if (cb)
+			cb();
+	};
+
+	var do_download = function(imu, filename, size, cb) {
+		if (true||_nir_debug_) {
+			console_log("do_download", imu, filename, size, cb);
+		}
+
+		var use_gm_download = is_userscript && typeof GM_download !== "undefined" && settings.enable_gm_download;
+		var gm_download_max = parseFloat(settings.gm_download_max) || 0;
+		if (use_gm_download && size && gm_download_max) {
+			if ((gm_download_max * 1024 * 1024) < size) {
+				use_gm_download = false;
+			}
+		}
+
+		if (is_extension) {
+			extension_send_message({
+				type: "download",
+				data: {
+					imu: imu,
+					force_saveas: !!settings.enable_webextension_download
+				}
+			}, function() {
+				if (cb)
+					cb();
+			});
+		} else if (use_gm_download) {
+			var headers;
+
+			if (imu.headers)
+				headers = headers_dict_to_list(imu.headers);
+
+			var download_obj = {
+				url: imu.url,
+				headers: headers,
+				saveAs: true,
+				onerror: function(error) {
+					if (error && error.error && error.error !== "not_succeeded") {
+						do_browser_download(imu, filename, cb);
+					}
+				}
+			};
+
+			if (filename) {
+				download_obj.name = filename;
+			} else {
+				download_obj.name = "download"; // it can't be blank
+			}
+
+			if (_nir_debug_) {
+				console_log("GM_download", deepcopy(download_obj));
+			}
+
+			GM_download(download_obj);
+		} else {
+			do_browser_download(imu, filename, cb);
+		}
+	};
+
 	var get_cookies = null;
 	if (is_extension) {
 		get_cookies = function(url, cb) {
@@ -3007,6 +3098,8 @@ var $$IMU_EXPORT$$;
 		// thanks to Rnksts on discord for the idea
 		mouseover_video_reset_speed_key: ["backspace"],
 		mouseover_ui: true,
+		// thanks to Runakanta on discord for the idea
+		mouseover_ui_toggle_key: ["u"],
 		mouseover_ui_opacity: 80,
 		mouseover_ui_use_safe_glyphs: false,
 		mouseover_ui_imagesize: true,
@@ -4106,6 +4199,16 @@ var $$IMU_EXPORT$$;
 		mouseover_ui: {
 			name: "Popup UI",
 			description: "Enables a UI on top of the popup",
+			requires: {
+				mouseover_open_behavior: "popup"
+			},
+			category: "popup",
+			subcategory: "ui"
+		},
+		mouseover_ui_toggle_key: {
+			name: "UI Toggle key",
+			description: "Toggles the display of the UI",
+			type: "keysequence",
 			requires: {
 				mouseover_open_behavior: "popup"
 			},
@@ -6085,7 +6188,7 @@ var $$IMU_EXPORT$$;
 	};
 
 	var map_set = function(map, key, value) {
-		nir_debug("map", "map_set", deepcopy(key), deepcopy(value));
+		if (_nir_debug_) nir_debug("map", "map_set", deepcopy(key), deepcopy(value));
 
 		if (!map.imu_map) {
 			map.set(key, value);
@@ -6201,7 +6304,7 @@ var $$IMU_EXPORT$$;
 		this.fetches = new_map();
 
 		this.set = function(key, value, time) {
-			nir_debug("cache", "Cache.set key:", key, ", time=" + time + ", value:", deepcopy(value));
+			if (_nir_debug_) nir_debug("cache", "Cache.set key:", key, ", time=" + time + ", value:", deepcopy(value));
 
 			this.remove(key);
 
@@ -6268,7 +6371,7 @@ var $$IMU_EXPORT$$;
 		this.has = function(key) {
 			var has_key = map_has(this.data, key);
 
-			nir_debug("cache", "Cache.has key:", key, has_key);
+			if (_nir_debug_) nir_debug("cache", "Cache.has key:", key, has_key);
 
 			return has_key;
 		};
@@ -6277,7 +6380,7 @@ var $$IMU_EXPORT$$;
 			// TODO: maybe renew timeout per-get?
 			var value = map_get(this.data, key);
 
-			nir_debug("cache", "Cache.get key:", key, deepcopy(value));
+			if (_nir_debug_) nir_debug("cache", "Cache.get key:", key, deepcopy(value));
 
 			return value;
 		};
@@ -6285,7 +6388,7 @@ var $$IMU_EXPORT$$;
 		this.fetch = function(key, done, fetcher) {
 			var exists = map_has(this.data, key);
 
-			nir_debug("cache", "Cache.fetch key:", key, ", exists=" + exists);
+			if (_nir_debug_) nir_debug("cache", "Cache.fetch key:", key, ", exists=" + exists);
 
 			if (!exists) {
 				if (map_has(this.fetches, key)) {
@@ -6315,7 +6418,7 @@ var $$IMU_EXPORT$$;
 		};
 
 		this.remove = function(key) {
-			nir_debug("cache", "Cache.remove key:", key);
+			if (_nir_debug_) nir_debug("cache", "Cache.remove key:", key);
 
 			if (map_has(this.times, key)) {
 				var timeobj = map_get(this.times, key);
@@ -6333,7 +6436,7 @@ var $$IMU_EXPORT$$;
 		};
 
 		this.clear = function() {
-			nir_debug("cache", "Cache.clear");
+			if (_nir_debug_) nir_debug("cache", "Cache.clear");
 
 			map_foreach(this.times, function(key, value) {
 				if ("timer" in value) {
@@ -6883,6 +6986,7 @@ var $$IMU_EXPORT$$;
 		return str
 			.replace(/&nbsp;/g, " ")
 			.replace(/&#([0-9]+);/g, function (full, num) { return string_fromcharcode(num); })
+			.replace(/&quot;/g, '"')
 			.replace(/&amp;/g, "&");
 	}
 
@@ -8020,6 +8124,27 @@ var $$IMU_EXPORT$$;
 		});
 	};
 
+	var sort_by_array = function(array, key) {
+		array.sort(function(a, b) {
+			var a_index = key.indexOf(a);
+			var b_index = key.indexOf(b);
+
+			if (a_index < 0) {
+				if (b_index >= 0)
+					return 1;
+				else
+					return a.localeCompare(b);
+			} else {
+				if (b_index < 0)
+					return -1;
+				else
+					return a_index - b_index;
+			}
+		});
+
+		return array;
+	};
+
 	var parse_tag_def = function(tag) {
 		var match = tag.match(/^<([-a-zA-Z0-9]+)((?:\s+[-a-z0-9A-Z]+(?:=(?:"[^"]+"|'[^']+'|[-_a-zA-Z0-9]+))?)*)\s*(\/?)>/);
 
@@ -8310,7 +8435,14 @@ var $$IMU_EXPORT$$;
 			jpropname: function(x) { return '"' + x + '"'; },
 			squote: "\"",
 			sliteral: function(x) { return x.replace(/"/g, "\\\""); },
-			dliteral: function(x) { return x.replace(/"/g, "\\\""); }
+			dliteral: function(x) { return x.replace(/"/g, "\\\""); },
+			comma: function(x, next) {
+				if (!next || next.name === "objend" || next.name === "arrend") {
+					return "";
+				} else {
+					return x;
+				}
+			}
 		};
 
 		var stringified = "";
@@ -8321,7 +8453,13 @@ var $$IMU_EXPORT$$;
 				var tt = token_types[token.name];
 
 				if (typeof tt === "function") {
-					stringified += tt(token.value);
+					var n = 1;
+					var next_token = parsed[i+(n++)];
+					while (next_token && next_token.name === "whitespace") {
+						next_token = parsed[i+(n++)];
+					}
+
+					stringified += tt(token.value, next_token);
 				} else {
 					stringified += tt;
 				}
@@ -9782,9 +9920,9 @@ var $$IMU_EXPORT$$;
 			var smallest_vb = smallest.video_width * smallest.video_height;
 
 			if (smallest_vb > largest_vb) {
-				var largest_url = largest.video_url;
-				largest.video_url = smallest.video_url;
-				smallest.video_url = largest_url;
+				var largest_url = largest.video;
+				largest.video = smallest.video;
+				smallest.video = largest_url;
 
 				var largest_vw = largest.video_width, largest_vh = largest.video_height;
 				largest.video_width = smallest.video_width;
@@ -10008,8 +10146,8 @@ var $$IMU_EXPORT$$;
 							}
 
 							if (_nir_debug_) {
-								console_log("images_small", images_small);
-								console_log("images", images, image_url);
+								console_log("images_small", deepcopy(images_small));
+								console_log("images", deepcopy(images), image_url);
 							}
 
 							if (image_url) {
@@ -11557,9 +11695,21 @@ var $$IMU_EXPORT$$;
 		return null;
 	};
 
-	common_functions.get_link_el_matching = function(el, match) {
+	common_functions.get_parent_el_matching = function(el, match) {
 		var current = el;
 
+		while (current) {
+			if (match(current)) {
+				return current;
+			}
+
+			current = current.parentElement;
+		}
+
+		return null;
+	};
+
+	var _get_match_func = function(match) {
 		var func = match;
 		if (typeof func === "object" && func instanceof RegExp) {
 			var regex = func;
@@ -11568,15 +11718,15 @@ var $$IMU_EXPORT$$;
 			};
 		}
 
-		while (current) {
-			if (current.tagName === "A" && func(current)) {
-				return current;
-			}
+		return func;
+	};
 
-			current = current.parentElement;
-		}
+	common_functions.get_link_el_matching = function(el, match) {
+		var func = _get_match_func(match);
 
-		return null;
+		return common_functions.get_parent_el_matching(el, function(x) {
+			return x.tagName === "A" && func(x);
+		});
 	};
 
 	common_functions.get_pagelink_el_matching = function(el, match) {
@@ -11588,6 +11738,26 @@ var $$IMU_EXPORT$$;
 			url: link_el.href,
 			is_pagelink: true
 		};
+	};
+
+	common_functions.get_host_el_matching = function(el, host_url, el_match) {
+		el = common_functions.get_parent_el_matching(el, el_match);
+		if (!el) return null;
+
+		return {
+			url: host_url,
+			is_pagelink: true
+		};
+	};
+
+	common_functions.get_pagelink_host_el_matching = function(options, our_options) {
+		var newsrc = common_functions.get_pagelink_el_matching(options.element, our_options.url_match);
+		if (newsrc) return newsrc;
+
+		if (!our_options.url_match.test(options.host_url)) return null;
+
+		newsrc = common_functions.get_host_el_matching(options.element, options.host_url, our_options.el_match);
+		if (newsrc) return newsrc;
 	};
 
 	common_functions.is_pinterest_domain = function(domain) {
@@ -13682,7 +13852,10 @@ var $$IMU_EXPORT$$;
 				.replace(/(\/image\/private\/)[^s][^-][^/]*\//, "$1c_limit/")
 				.replace(/(:\/\/[^/]*\/)[^/]*\/(ch\/images\/[0-9]+\/[^/]*$)/, "$1$2");
 			if (newsrc !== src) {
-				return newsrc;
+				return {
+					url: newsrc,
+					head_wrong_contentlength: true
+				};
 			}
 
 		}
@@ -14465,18 +14638,27 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "pbs.twimg.com") {
+			obj = {
+				url: src,
+				can_head: false
+			};
+
 			if (string_indexof(src, "/profile_images/") >= 0) {
 				newsrc = src
 					.replace(/[?#].*$/, "")
 					.replace(/_(?:bigger|normal|mini|reasonably_small|[0-9]+x[0-9]+)(\.[^/_]*)$/, "$1");
-				if (newsrc !== src)
-					return newsrc;
+				if (newsrc !== src) {
+					obj.url = newsrc;
+					return obj;
+				}
 			}
 
 			if (string_indexof(src, "/profile_banners/") >= 0) {
 				newsrc = src.replace(/\/[0-9]+x[0-9]+(?:[?#].*)?$/, "");
-				if (newsrc !== src)
-					return newsrc;
+				if (newsrc !== src) {
+					obj.url = newsrc;
+					return obj;
+				}
 			}
 		}
 
@@ -15287,6 +15469,7 @@ var $$IMU_EXPORT$$;
 			  domain === "images.assettype.com" ||
 			  domain === "images.seoghoer.dk" ||
 			  (domain === "static.camp-fire.jp" && string_indexof(src, "/uploads/") >= 0) ||
+			  domain === "media.popculture.com" ||
 			  domain === "imgix.romper.com") &&
 			 !src.match(/[?&]s=[^/]*$/)) ||
 			domain === "stream-cloud-uploads.imgix.net" ||
@@ -15398,6 +15581,7 @@ var $$IMU_EXPORT$$;
 			(domain_nowww === "screencrush.com" && string_indexof(src, "/files/") >= 0) ||
 			(domain_nosub === "nineentertainment.com.au" && domain.match(/assets\.[^.]*\.nineentertainment\.com\.au/)) ||
 			(domain_nowww === "thenational.ae" && string_indexof(src, "/image/") >= 0) ||
+			(domain_nowww === "dagsavisen.no" && string_indexof(src, "/image/") >= 0) ||
 			(domain_nosub === "kh1.co" && domain.match(/s[0-9]*\.kh1\.co/)) ||
 			domain === "uploads.disquscdn.com" ||
 			(domain_nowww === "voidu.com" && string_indexof(src, "/gallery/") >= 0) ||
@@ -15649,6 +15833,7 @@ var $$IMU_EXPORT$$;
 			(domain === "dynamicmedia.livenationinternational.com" && /:\/\/[^/]+\/+media\//i.test(src)) ||
 			(domain === "cdn.sanity.io" && string_indexof(src, "/images/") >= 0) ||
 			(domain_nowww === "e-outdoor.co.uk" && string_indexof(src, "/pi/") >= 0) ||
+			(domain_nosub === "disco-api.com" && /images\./.test(domain)) ||
 			src.match(/\/demandware\.static\//) ||
 			src.match(/\?i10c=[^/]*$/) ||
 			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|blogs.dir)|\/+uploads)\//.test(src)
@@ -15756,7 +15941,6 @@ var $$IMU_EXPORT$$;
 			domain === "static.vibe.com" ||
 			(domain_nowww === "rightsinfo.org" && string_indexof(src, "/uploads/") >= 0) ||
 			(domain_nowww === "spotted.tv" && string_indexof(src, "/uploads/") >= 0) ||
-			domain === "img.marieclairekorea.com" ||
 			(domain_nowww === "tokyopopline.com" && string_indexof(src, "/images/") >= 0) ||
 			domain === "px1img.getnews.jp" ||
 			domain === "media.thetab.com" ||
@@ -18672,16 +18856,8 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (host_domain_nowww === "vimeo.com" && options.element) {
-			var current = options.element;
-			do {
-				if (current.tagName === "A" && current.href.match(/^[a-z]+:\/\/(?:www\.)?vimeo\.com\/+([0-9]+)(?:[?#].*)?$/)) {
-					if (current.href !== src) {
-						return current.href;
-					} else {
-						break;
-					}
-				}
-			} while (current = current.parentElement);
+			newsrc = common_functions.get_pagelink_el_matching(options.element, /^[a-z]+:\/\/(?:www\.)?vimeo\.com\/+([0-9]+)(?:[?#].*)?$/);
+			if (newsrc) return newsrc;
 		}
 
 		if (domain_nowww === "vimeo.com") {
@@ -22814,6 +22990,67 @@ var $$IMU_EXPORT$$;
 			return src.replace(/s(\.[^/.]*)$/, "$1");
 		}
 
+		if (domain === "video.fc2.com") {
+			var query_fc2 = function(pageurl, token, id, cb) {
+				api_query("fc2_api:" + id, {
+					url: "https://video.fc2.com/api/v3/videoplaylist/" + id + "?sh=1&fs=0",
+					imu_mode: "xhr",
+					headers: {
+						Referer: pageurl,
+						"X-FC2-Video-Access-Token": token
+					},
+					json: true
+				}, cb, function(done, json, cache_key) {
+					var playlist = json.playlist;
+
+					var newurl = playlist.nq || playlist.sample;
+
+					if (!newurl) {
+						console_error(cache_key, "Unable to find playlist URL", json);
+						return done(null, false);
+					}
+
+					var obj = {
+						url: urljoin(pageurl, newurl, true),
+						extra: {
+							page: pageurl
+						},
+						headers: {
+							Referer: pageurl
+						},
+						referer_ok: {
+							same_domain_nosub: true
+						},
+						video: true
+					};
+
+					return done(obj, 6*60*60);
+				});
+			};
+
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+(?:a\/+)?content\/+([0-9a-zA-Z]+)(?:[?#&].*)?$/,
+				query_for_id: "https://video.fc2.com/content/${id}",
+				process: function(done, resp, cache_key, match) {
+					var id = match[1];
+
+					var match = resp.responseText.match(/window\.FC2VideoObject\.push\(\['..',\s*'([0-9a-f]{10,})'/);
+					if (!match) {
+						console_error(cache_key, "Unable to find access token for", resp);
+						return done(null, false);
+					}
+
+					var token = match[1];
+					query_fc2(resp.finalUrl, token, id, function(data) {
+						if (!data) return done(null, false);
+
+						return done(data, 6*60*60);
+					});
+				}
+			});
+			if (newsrc) return newsrc;
+		}
+
 		if (domain_nosub === "fc2.com" && /^(?:vip-)?video[0-9]*-thumbnail[0-9]*\./.test(domain)) {
 			obj = {
 				url: src
@@ -22839,81 +23076,10 @@ var $$IMU_EXPORT$$;
 			if (newsrc !== src)
 				return fillobj_urls([newsrc, src], obj);
 
-			if (id && options.do_request && options.cb) {
-				var cache_key = "fc2_video:" + id;
-				api_cache.fetch(cache_key, function(data) {
-					options.cb(data);
-				}, function(done) {
-					options.do_request({
-						method: "GET",
-						url: obj.extra.page,
-						headers: {
-							Referer: ""
-						},
-						onload: function(resp) {
-							if (resp.readyState !== 4)
-								return;
-
-							if (resp.status !== 200) {
-								console_error(resp);
-								return done(null, false);
-							}
-
-							var match = resp.responseText.match(/window\.FC2VideoObject\.push\(\['..',\s*'([0-9a-f]{10,})'/);
-							if (!match) {
-								console_error("Unable to find match", resp);
-								return done(null, false);
-							}
-
-							obj.extra.page = resp.finalUrl;
-
-							options.do_request({
-								method: "GET",
-								url: "https://video.fc2.com/api/v3/videoplaylist/" + id + "?sh=1&fs=0",
-								imu_mode: "xhr",
-								headers: {
-									Referer: resp.finalUrl,
-									"X-FC2-Video-Access-Token": match[1]
-								},
-								onload: function(resp) {
-									if (resp.readyState !== 4)
-										return;
-
-									if (resp.status !== 200) {
-										console_error(resp);
-										return done(null, false);
-									}
-
-									try {
-										var json = JSON_parse(resp.responseText);
-										var playlist = json.playlist;
-
-										var newurl = playlist.nq || playlist.sample;
-
-										if (!url) {
-											console_warn("Unable to find playlist URL", json);
-											return done(obj, false);
-										} else {
-											obj.url = urljoin(obj.extra.page, newurl, true);
-											obj.headers = {
-												Referer: obj.extra.page
-											};
-											obj.referer_ok = {same_domain_nosub: true};
-											obj.video = true;
-											return done(obj, 6*60*60);
-										}
-									} catch(e) {
-										console_error(e);
-										return done(null, false);
-									}
-								}
-							});
-						}
-					});
-				});
-
+			if (id) {
 				return {
-					waiting: true
+					url: obj.extra.page,
+					is_pagelink: true
 				};
 			}
 
@@ -22971,11 +23137,13 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "www.cdn.tv2.no" ||
+			domain === "image.klikk.no" ||
+			domain === "image.side2.no" ||
 			domain === "image.side3.no" ||
 			domain_nowww === "dbstatic.no") {
 			newsrc = src
 				.replace(/(:\/\/[^/]*\/[0-9]+\.[^/.?#]*)(?:[?#].*)?$/, "$1?width=-1&height=-1")
-				.replace(/\/images.*?[?&]imageId=([0-9]+).*/, "/images?imageId=$1&height=-1");
+				.replace(/\/(?:images)?\?(?:.*&)?imageId=([0-9]+).*/, "/?imageId=$1&height=-1");
 			if (newsrc !== src)
 				return newsrc;
 		}
@@ -28620,6 +28788,7 @@ var $$IMU_EXPORT$$;
 					return done(obj, 6*60*60);
 				}
 			});
+			if (newsrc) return newsrc;
 		}
 
 		if (domain === "i.ibb.co" ||
@@ -30192,6 +30361,7 @@ var $$IMU_EXPORT$$;
 					   domain_nosub === "japan-whores.com" ||
 					   domain_nosub === "camshooker.com" ||
 					   domain_nosub === "aporn.xxx" ||
+					   domain_nosub === "camwhoreshd.com" ||
 					   domain_nosub === "mywebgirls.tv") {
 				basedomain = "http://www." + domain_nosub + "/";
 			} else if (domain_nosub === "smutr.com") {
@@ -38237,8 +38407,9 @@ var $$IMU_EXPORT$$;
 
 		if (domain === "img.culturacolectiva.com" ||
 			domain_nowww === "daz3d.com" ||
+			domain === "images.dailycaller.com" ||
 			domain === "images.psmcdn.net") {
-			newsrc = urljoin("https://" + domain + "/", src.replace(/^[a-z]+:\/\/[^/]+\/+cdn-cgi\/+image\/+[^/]*\/+/, ""), true);
+			newsrc = urljoin("https://" + domain + "/", src.replace(/^[a-z]+:\/\/[^/]+\/+(?:cdn-cgi\/+)?image\/+[^/]*=[^/]*\/+/, ""), true);
 			if (newsrc !== src)
 				return newsrc;
 		}
@@ -39281,9 +39452,6 @@ var $$IMU_EXPORT$$;
 				delete queries.format;
 
 			return keep_queries(add_queries(src.replace(/\/[^/]+(?:[?#].*)?$/, "/" + newsplitted.join(".")), queries), ["q", "quality", "format"]);
-			return src
-				.replace(/(\/[^/.]+)(?:\.(?:[hwqv]|width|height|quality|ttl|headercache|fit|background|format)-?[0-9a-z]+)*(\.(?:jpe?g|png|webp|gif))?([?#].*)?$/, "$1$2$3")
-				.replace(/(:\/\/[^/]+\/+[^/]+\/+.*?)(?:[?#].*)?$/, "$1?q=100&quality=100");
 		}
 
 		if (domain === "d13krdvwknzmgv.cloudfront.net" ||
@@ -40776,6 +40944,16 @@ var $$IMU_EXPORT$$;
 
 						return done(data, 60*60);
 					});
+				}
+			});
+			if (newsrc) return newsrc;
+		}
+
+		if (host_domain_nowww === "milffox.com" && options.element) {
+			newsrc = common_functions.get_pagelink_host_el_matching(options, {
+				url_match: /^[a-z]+:\/\/[^/]+\/+porn-movies\//,
+				el_match: function(x) {
+					return x.tagName === "DIV" && x.classList.contains("player")
 				}
 			});
 			if (newsrc) return newsrc;
@@ -45805,6 +45983,7 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "okporn.com" ||
 			domain === "storage.hegre.com" ||
 			domain_nowww === "pornalin.com" ||
+			domain_nowww === "milffox.com" ||
 			domain_nowww === "pornrewind.com") {
 			if (/\/skin\/+img\/+play_/.test(src))
 				return {
@@ -45982,10 +46161,6 @@ var $$IMU_EXPORT$$;
 					api_query("beeg_finalurl:" + src, {
 						url: src
 					}, cb, function(done, resp, cache_key) {
-						if (resp.status !== 200) {
-							return done(null, false);
-						}
-
 						api_cache.set("beeg_finalurl:" + resp.finalUrl, resp.finalUrl, 6*60*60);
 						done(resp.finalUrl, 6*60*60);
 					});
@@ -46098,11 +46273,8 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (host_domain_nowww === "beeg.com" && domain === "img.beeg.com" && options.element) {
-			if (options.element.parentElement.tagName === "A") {
-				var href = options.element.parentElement.href;
-				if (/^[a-z]+:\/\/(?:www\.)?beeg\.com\/+[0-9]+/.test(href) && href !== src)
-					return href;
-			}
+			newsrc = common_functions.get_pagelink_el_matching(options.element, /^[a-z]+:\/\/(?:www\.)?beeg\.com\/+[0-9]+/);
+			if (newsrc) return newsrc;
 		}
 
 		if (domain === "vp.beeg.com") {
@@ -46119,7 +46291,10 @@ var $$IMU_EXPORT$$;
 					}
 				}
 
-				return url;
+				return {
+					url: url,
+					is_pagelink: true
+				};
 			}
 		}
 
@@ -47516,6 +47691,16 @@ var $$IMU_EXPORT$$;
 
 		if (domain_nosub === "dmcdn.net" && options.element) {
 			newsrc = common_functions.get_pagelink_el_matching(options.element, /^https?:\/\/(?:www\.)?dailymotion\.com\/+video\/+([a-z0-9]+)(?:[?#].*)?$/);
+			if (newsrc) return newsrc;
+		}
+
+		if (host_domain_nowww === "dailymotion.com") {
+			newsrc = common_functions.get_pagelink_host_el_matching(options, {
+				url_match: /^https?:\/\/(?:www\.)?dailymotion\.com\/+video\/+([a-z0-9]+)(?:[?#].*)?$/,
+				el_match: function(x) {
+					return x.id === "player-body"
+				}
+			});
 			if (newsrc) return newsrc;
 		}
 
@@ -52085,6 +52270,421 @@ var $$IMU_EXPORT$$;
 			if (newsrc) return newsrc;
 		}
 
+		if (domain === "a.simbi.com") {
+			newsrc = src.replace(/(\/(?:images|users)\/+[0-9]+\/+(?:images|avatars)\/+)[a-z]+-([0-9a-f]{20,}\.[^/.]+)(?:[?#].*)?$/, "$1original-$2");
+			if (newsrc !== src)
+				return add_full_extensions(newsrc);
+		}
+
+		if (domain_nowww === "vlive.tv") {
+			var vlive_token = base64_decode("IDhjNmNjN2I0NWQyNTY4ZmI2NjhiZTZlMDViNmU1YTNi").substr(1);
+			var get_vlive_inkey = function(vid, cb) {
+				api_query("vlive_inkey:" + vid, {
+					url: "https://www.vlive.tv/globalv-web/vam-web/video/v1.0/vod/" + vid + "/inkey?appId=" + vlive_token + "&platformType=PC",
+					imu_mode: "xhr",
+					json: true,
+					headers: {
+						Accept: "application/json, text/plain, */*",
+						Referer: "https://www.vlive.tv/video/" + vid
+					}
+				}, cb, function(done, resp, cache_key) {
+					if (!resp.inkey) {
+						console_error(cache_key, "Unable to find inkey for", vid);
+						return done(null, false);
+					}
+
+					return done(resp.inkey, 60*60);
+				});
+			};
+
+			var get_vlive_vodinfo = function(inkey, vid, cb) {
+				var url = "https://apis.naver.com/rmcnmv/rmcnmv/vod/play/v2.0/";
+				url += vid;
+				url += "?key=" + inkey;
+				url += "&ver=2.0&devt=html5_mo&doct=json&ptc=https&sptc=https&cpt=vtt";
+				url += "&videoId=" + vid;
+
+				api_query("vlive_inkey:" + vid, {
+					url: url,
+					imu_mode: "xhr",
+					json: true,
+					headers: {
+						Accept: "*/*",
+						Origin: "https://www.vlive.tv",
+						Referer: "https://www.vlive.tv/",
+						"sec-fetch-site": "cross-site"
+					}
+				}, cb, function(done, resp, cache_key) {
+					var vids = resp.videos.list;
+
+					vids.sort(function(a, b) {
+						return b.bitrate.video - a.bitrate.video;
+					});
+
+					var urls = [];
+
+					var obj = {
+						extra: {
+							page: resp.meta.url
+						}
+					};
+
+					array_foreach(vids, function(vid) {
+						urls.push({
+							url: vid.source,
+							height: vid.encodingOption.height,
+							width: vid.encodingOption.width,
+							video: true
+						});
+					});
+
+					return done(fillobj_urls(urls, obj), 60*60);
+				});
+			};
+
+			var get_vlive_vidinfo_from_url = function(url, cb) {
+				api_query("vlive_vidinfo:" + url, {
+					url: url,
+					imu_mode: "document"
+				}, cb, function(done, resp, cache_key) {
+					var match = resp.responseText.match(/<script type="text\/javascript">window\.__PRELOADED_STATE__=({.*?})<\/script>/);
+					if (!match) {
+						console_error(cache_key, "Unable to find match for", resp);
+						return done(null, false);
+					}
+
+					var json = JSON_parse(match[1]);
+					var vidinfo = json.postDetail.post.officialVideo;
+
+					if (!vidinfo) {
+						console_error(cache_key, "Unable to find video info in", json);
+						return done(null, false);
+					}
+
+					return done(vidinfo, 60*60);
+				});
+			};
+
+			var get_vlive_vodid_from_vid = function(vid, cb) {
+				api_cache.fetch("vlive_vodid:" + vid, cb, function(done) {
+					get_vlive_vidinfo_from_url("https://www.vlive.tv/video/" + vid, function(vidinfo) {
+						var vodid = vidinfo.vodId;
+						return done(vodid, 6*60*60);
+					});
+				});
+			};
+
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+video\/+([0-9]+)(?:[?#].*)?$/,
+				run: function(cb, match) {
+					var vid = match[1];
+
+					get_vlive_vodid_from_vid(vid, function(vodid) {
+						if (!vodid) return cb(null);
+
+						get_vlive_inkey(vid, function(key) {
+							if (!key) return cb(null);
+
+							get_vlive_vodinfo(key, vodid, cb);
+						});
+					});
+				}
+			});
+			if (newsrc) return newsrc;
+
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+post\/+([0-9]+-[0-9]+)(?:[?#].*)?$/,
+				run: function(cb, match) {
+					var postid = match[1];
+
+					get_vlive_vidinfo_from_url("https://www.vlive.tv/post/" + postid, function(vidinfo) {
+						if (!vidinfo) return cb(null);
+
+						var vid = vidinfo.videoSeq;
+						var vodid = vidinfo.vodId;
+
+						get_vlive_inkey(vid, function(key) {
+							if (!key) return cb(null);
+
+							get_vlive_vodinfo(key, vodid, cb);
+						});
+					});
+				}
+			});
+			if (newsrc) return newsrc;
+		}
+
+		if (domain === "img.marieclairekorea.com") return src.replace(/(\/mck_[0-9a-f]+)-(?:[0-9]+x[0-9]+|scaled)(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+
+		if (domain_nowww === "nrk.no") {
+			var query_nrk = function(vid, cb) {
+				api_query("nrk:" + vid, {
+					url: "https://psapi.nrk.no/playback/manifest/clip/" + vid,
+					imu_mode: "xhr",
+					headers: {
+						Accept: "application/vnd.nrk.psapi+json; version=9; ludo-client=true; psapi=snapshot",
+						Referer: "https://www.nrk.no/"
+					},
+					json: true
+				}, cb, function(done, resp, cache_key) {
+					var asset = resp.playable.assets[0];
+					if (asset.format !== "HLS") {
+						console_error(cache_key, "Unknown format for", asset);
+						return done(null, false);
+					}
+
+					return done({
+						url: asset.url,
+						video: "hls"
+					}, 70*60);
+				});
+			};
+
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+video\/+(?:embed\/+)?(?:[^/.?#]+_)?([-0-9a-f]{20,})(?:[?#].*)?$/,
+				run: function(cb, match) {
+					query_nrk(match[1], cb);
+				}
+			});
+			if (newsrc) return newsrc;
+		}
+
+		if (host_domain_nowww === "nrk.no" && options.element) {
+			if (options.element.tagName === "VIDEO" && !src) {
+				var current = options.element;
+				while (current = current.parentElement) {
+					if (current.tagName === "FIGURE" && current.hasAttribute("data-canonical-url")) {
+						return {
+							url: current.getAttribute("data-canonical-url"),
+							is_pagelink: true
+						};
+					}
+				}
+			}
+		}
+
+		if (domain_nowww === "local12.com") {
+			newsrc = src.replace(/(\/resources\/+media\/+[-0-9a-f]{20,})-(?:large|medium|small)(?:[0-9]+x[0-9]+|Blur|Scale)_/, "$1-");
+			if (newsrc !== src)
+				return newsrc;
+		}
+
+		if (host_domain_nowww === "local12.com") {
+			var get_info_from_local12_text = function(text) {
+				var match = text.match(/\nsinclairDigital\.pageData = ({.*});\r?\n/);
+				if (!match) return null;
+
+				try {
+					var json = JSON_parse(match[1]);
+					return json;
+				} catch (e) {
+					console_error(e);
+				}
+
+				return null;
+			};
+
+			var get_info_from_local12_url = function(url, cb) {
+				url = url.replace(/[?#].*/, "");
+
+				api_cache.fetch("local12:" + url, cb, function(done) {
+					if (url === options.host_url.replace(/[?#].*/, "")) {
+						return done(get_info_from_local12_text(document.documentElement.innerHTML), 60*60);
+					} else {
+						options.do_request({
+							url: url,
+							method: "GET",
+							imu_mode: "document",
+							onload: function(resp) {
+								if (resp.status !== 200) {
+									console_error(cache_key, resp);
+									return done(null, false);
+								}
+
+								return done(get_info_from_local12_text(resp.responseText), 60*60);
+							}
+						});
+					}
+				});
+			};
+
+			var get_id_from_local12_url = function(url) {
+				var match = url.match(/\/resources\/+media\/+([0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12})-/);
+				if (!match) return null;
+
+				return match[1].toLowerCase();
+			};
+
+			var info_matches_local12_id = function(id, info) {
+				var keys = ["brandUuid", "externalId", "uuid", "versionSetUuid"];
+
+				var found = false;
+				array_foreach(keys, function(key) {
+					if (!(key in info)) return;
+
+					if (info[key].toLowerCase() === id) {
+						found = true;
+						return false;
+					}
+				});
+
+				return found;
+			};
+
+			var get_id_in_local12_info = function(id, info) {
+				var infos = [];
+
+				if (info.story.images) array_extend(infos, info.story.images);
+				if (info.story.videos) array_extend(infos, info.story.videos);
+
+				var foundobj = null;
+				array_foreach(infos, function(info) {
+					if (info_matches_local12_id(id, info)) {
+						foundobj = info;
+						return false;
+					}
+				});
+
+				return foundobj;
+			};
+
+			var get_obj_for_local12_info = function(info) {
+				if (!info) return null;
+
+				var urls = [];
+
+				var baseobj = {
+					extra: {}
+				};
+
+				if (info.created) {
+					baseobj.extra.created_date = info.created;
+				}
+
+				baseobj.extra.caption = info.caption || info.title;
+
+				baseobj.filename = info.alt || info.description;
+
+				if (info.type === "Video") {
+					if (info.url) {
+						urls.push({
+							url: info.url,
+							video: "hls" // fixme?
+						});
+					}
+
+					if (info.mp4Url) {
+						urls.push({
+							url: info.mp4Url,
+							video: true
+						});
+					}
+
+					if (info.thumbUrl) {
+						urls.push(info.thumbUrl);
+					}
+				} else if (info.type === "Image") {
+					if (info.originalUrl) urls.push(info.originalUrl);
+				}
+
+				return fillobj_urls(urls, baseobj);
+			};
+
+			if ((!src || host_domain_nowww === domain_nosub) && options.do_request && options.cb) {
+				get_info_from_local12_url(options.host_url, function(our_info) {
+					if (!our_info) return options.cb(null);
+
+					var id = get_id_from_local12_url(src);
+					if (id) {
+						var info_obj = get_id_in_local12_info(id, our_info);
+						if (info_obj) {
+							return options.cb(get_obj_for_local12_info(info_obj));
+						} else {
+							return options.cb(null);
+						}
+					} else if (!src && options.element && options.element.tagName === "VIDEO") {
+						return options.cb(get_obj_for_local12_info(our_info.story.videos[0]));
+					}
+				});
+
+				return {
+					waiting: true
+				};
+			}
+		}
+
+		if (domain_nowww === "scanpix.no") {
+			if (/\/images\/+icons_[0-9]+\/+moreInfo/.test(src)) {
+				return {
+					url: src,
+					bad: "mask"
+				};
+			}
+
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+spWebApp\/+preview\/+editorial\/+([-_a-zA-Z0-9]+)(?:[?#].*)?$/,
+				query_for_id: {
+					url: "https://scanpix.no/spWebApp/preview/editorial/${id}?json=",
+					imu_mode: "xhr",
+					json: true,
+					headers: {
+						"X-Requested-With": "XMLHttpRequest",
+						"X-SpAjaxRequest": "true"
+					}
+				},
+				process: function(done, resp, cache_key) {
+					var previewobj = {};
+
+					array_foreach(resp.previewList, function(x) {
+						previewobj[x.type] = x.url;
+					});
+
+					urls = [];
+
+					if (previewobj.preview_big) {
+						urls.push({
+							url: previewobj.preview_big,
+							problems: {watermark: true}
+						});
+					}
+
+					if (resp.previewLocation) {
+						urls.push(resp.previewLocation);
+					}
+
+					if (previewobj.preview) {
+						urls.push({
+							url: previewobj.preview,
+							problems: {watermark: true}
+						});
+					}
+
+					var obj = {
+						extra: {
+							caption: resp.headline || resp.caption
+						}
+					};
+
+					return done(fillobj_urls(urls, obj), 6*60*60);
+				}
+			});
+			if (newsrc) return newsrc;
+		}
+
+		if (domain === "preview.sdl.no") {
+			match = src.match(/\/v1\/+[^/]+\/+[^/]+\/+([-_a-zA-Z0-9]+)(?:[?#].*)?$/);
+			if (match) {
+				return {
+					url: "https://scanpix.no/spWebApp/preview/editorial/" + match[1],
+					is_pagelink: true
+				};
+			}
+		}
+
+		if (domain_nowww === "celebritongue.com") return src.replace(/(\/album\/+[^/]+\/+)(?:thumbnail|medium-photo)\/+([^/]+-[0-9a-f]{10,})-(?:thumbnail|medium)(\.[^/.]+)(?:[?#].*)?$/, "$1photo/$2$3");
+
+		if (domain === "extra-images.akamaized.net") return src.replace(/(\/[0-9a-f]{20,})_(?:md|lg)(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+
 
 
 
@@ -53667,7 +54267,10 @@ var $$IMU_EXPORT$$;
 			};
 		}
 
-		if (common_functions.is_pinterest_domain(host_domain)) {
+		if (common_functions.is_pinterest_domain(host_domain) ||
+			host_domain_nowww === "nrk.no" ||
+			host_domain_nowww === "local12.com" ||
+			host_domain_nowww === "dailymotion.com") {
 			return {
 				element_ok: function(el) {
 					if (el.tagName === "VIDEO")
@@ -54045,7 +54648,7 @@ var $$IMU_EXPORT$$;
 		var loop_i = 0;
 
 		var do_cache = function() {
-			nir_debug("bigimage_recursive", "do_cache (endhref, currentobj):", deepcopy(endhref), deepcopy(currentobj));
+			if (_nir_debug_) nir_debug("bigimage_recursive", "do_cache (endhref, currentobj):", deepcopy(endhref), deepcopy(currentobj));
 
 			if (!endhref)
 				return;
@@ -54056,7 +54659,7 @@ var $$IMU_EXPORT$$;
 			var cache_endhref = fillobj(endhref, currentobj);
 
 			if (!cache_endhref || !cache_endhref.can_cache) {
-				nir_debug("bigimage_recursive", "do_cache: skipping cache because cache_endhref.can_cache == false");
+				if (_nir_debug_) nir_debug("bigimage_recursive", "do_cache: skipping cache because cache_endhref.can_cache == false");
 				return;
 			}
 
@@ -54069,7 +54672,7 @@ var $$IMU_EXPORT$$;
 					var href = pasthrefs[i];
 
 					if (href) {
-						nir_debug("bigimage_recursive", "do_cache:", href, "=", deepcopy(cache_endhref));
+						if (_nir_debug_) nir_debug("bigimage_recursive", "do_cache:", href, "=", deepcopy(cache_endhref));
 
 						url_cache.set(href, deepcopy(cache_endhref), options.urlcache_time);
 					}
@@ -54116,7 +54719,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		var parse_bigimage = function(big) {
-			nir_debug("bigimage_recursive", "parse_bigimage (big)", deepcopy(big));
+			if (_nir_debug_) nir_debug("bigimage_recursive", "parse_bigimage (big)", deepcopy(big));
 
 			if (!big) {
 				if (newhref === url && options.null_if_no_change)
@@ -54125,7 +54728,7 @@ var $$IMU_EXPORT$$;
 			}
 
 			var newhref1 = fullurl_obj(currenthref, big);
-			nir_debug("bigimage_recursive", "parse_bigimage (newhref1)", deepcopy(newhref1));
+			if (_nir_debug_) nir_debug("bigimage_recursive", "parse_bigimage (newhref1)", deepcopy(newhref1));
 
 			if (!newhref1) {
 				return false;
@@ -54150,7 +54753,7 @@ var $$IMU_EXPORT$$;
 			}
 
 			var objified = fillobj(deepcopy(newhref1), important_properties);
-			nir_debug("bigimage_recursive", "parse_bigimage (objified)", deepcopy(objified));
+			if (_nir_debug_) nir_debug("bigimage_recursive", "parse_bigimage (objified)", deepcopy(objified));
 
 			for (var i = 0; i < objified.length; i++) {
 				var obj = objified[i];
@@ -54178,7 +54781,7 @@ var $$IMU_EXPORT$$;
 				for (var problem in obj.problems) {
 					if (obj.problems[problem] &&
 						array_indexof(options.exclude_problems, problem) >= 0) {
-						nir_debug("bigimage_recursive", "Removing problematic:", obj.url, "because of", problem);
+						if (_nir_debug_) nir_debug("bigimage_recursive", "Removing problematic:", obj.url, "because of", problem);
 						remove_obj();
 						continue;
 					}
@@ -54205,10 +54808,10 @@ var $$IMU_EXPORT$$;
 				}
 			}
 
-			nir_debug("bigimage_recursive", "parse_bigimage (objified, processed)", deepcopy(objified));
+			if (_nir_debug_) nir_debug("bigimage_recursive", "parse_bigimage (objified, processed)", deepcopy(objified));
 
 			if (objified.length === 0) {
-				nir_debug("bigimage_recursive", "parse_bigimage: objified.length == 0");
+				if (_nir_debug_) nir_debug("bigimage_recursive", "parse_bigimage: objified.length == 0");
 				return false;
 			}
 
@@ -54236,7 +54839,7 @@ var $$IMU_EXPORT$$;
 
 			// check if objified (our object) has the same url/href as the last url (currenthref)
 			if (same_url(currenthref, objified) && !forcerecurse) {
-				nir_debug("bigimage_recursive", "parse_bigimage: sameurl(currenthref, objified) == true (newhref, nh1, pastobjs)", deepcopy(currenthref), deepcopy(objified), deepcopy(newhref), deepcopy(newhref1), deepcopy(pastobjs));
+				if (_nir_debug_) nir_debug("bigimage_recursive", "parse_bigimage: sameurl(currenthref, objified) == true (newhref, nh1, pastobjs)", deepcopy(currenthref), deepcopy(objified), deepcopy(newhref), deepcopy(newhref1), deepcopy(pastobjs));
 
 				// FIXME: this is a terrible hack
 				try {
@@ -54303,7 +54906,7 @@ var $$IMU_EXPORT$$;
 				if (!forcerecurse) {
 					for (var i = 0; i < pasthrefs.length; i++) {
 						if (same_url(pasthrefs[i], objified)) {
-							nir_debug("bigimage_recursive", "parse_bigimage: sameurl(pasthrefs[" + i + "], objified) == true", deepcopy(pasthrefs[i]), deepcopy(objified), deepcopy(newhref));
+							if (_nir_debug_) nir_debug("bigimage_recursive", "parse_bigimage: sameurl(pasthrefs[" + i + "], objified) == true", deepcopy(pasthrefs[i]), deepcopy(objified), deepcopy(newhref));
 
 							// TODO: copy changes above here, or better yet, refactor
 							// FIXME: is this even correct?
@@ -54326,7 +54929,7 @@ var $$IMU_EXPORT$$;
 					}
 				}
 
-				nir_debug("bigimage_recursive", "parse_bigimage: setting currenthref and newhref");
+				if (_nir_debug_) nir_debug("bigimage_recursive", "parse_bigimage: setting currenthref and newhref");
 				currenthref = get_currenthref(objified);
 				newhref = newhref1;
 			}
@@ -54356,10 +54959,10 @@ var $$IMU_EXPORT$$;
 		};
 
 		var do_bigimage = function() {
-			nir_debug("bigimage_recursive", "do_bigimage", currenthref, deepcopy(options));
+			if (_nir_debug_) nir_debug("bigimage_recursive", "do_bigimage", currenthref, deepcopy(options));
 
 			if (options.use_cache && url_cache.has(currenthref) && !forcerecurse) {
-				nir_debug("bigimage_recursive", "do_bigimage: newhref = url_cache[" + currenthref + "]", deepcopy(url_cache.get(currenthref)));
+				if (_nir_debug_) nir_debug("bigimage_recursive", "do_bigimage: newhref = url_cache[" + currenthref + "]", deepcopy(url_cache.get(currenthref)));
 
 				newhref = url_cache.get(currenthref);
 				used_cache = true;
@@ -54391,7 +54994,7 @@ var $$IMU_EXPORT$$;
 
 		var finalize = function() {
 			if (options.fill_object) {
-				nir_debug("bigimage_recursive", "finalize (fillobj(newhref, currentobj))", deepcopy(newhref), deepcopy(currentobj));
+				if (_nir_debug_) nir_debug("bigimage_recursive", "finalize (fillobj(newhref, currentobj))", deepcopy(newhref), deepcopy(currentobj));
 
 				if (used_cache && newhref === null) {
 					endhref = deepcopy(currentobj);
@@ -54407,11 +55010,11 @@ var $$IMU_EXPORT$$;
 					}
 				}
 			} else {
-				nir_debug("bigimage_recursive", "finalize (newhref)", deepcopy(newhref));
+				if (_nir_debug_) nir_debug("bigimage_recursive", "finalize (newhref)", deepcopy(newhref));
 				endhref = deepcopy(newhref);
 			}
 
-			nir_debug("bigimage_recursive", "endhref =", deepcopy(endhref));
+			if (_nir_debug_) nir_debug("bigimage_recursive", "endhref =", deepcopy(endhref));
 		};
 
 		var cb = null;
@@ -54428,10 +55031,10 @@ var $$IMU_EXPORT$$;
 					};
 				}
 
-				nir_debug("bigimage_recursive", "options.cb", deepcopy(x));
+				if (_nir_debug_) nir_debug("bigimage_recursive", "options.cb", deepcopy(x));
 
 				var do_end = function() {
-					nir_debug("bigimage_recursive", "do_end");
+					if (_nir_debug_) nir_debug("bigimage_recursive", "do_end");
 
 					finalize();
 					do_cache();
@@ -54450,7 +55053,7 @@ var $$IMU_EXPORT$$;
 						endhref[0].url = blankurl;
 					}
 
-					nir_debug("bigimage_recursive", "do_end (endhref, pasthrefs, pastobjs)", endhref, pasthrefs, pastobjs);
+					if (_nir_debug_) nir_debug("bigimage_recursive", "do_end (endhref, pasthrefs, pastobjs)", endhref, pasthrefs, pastobjs);
 
 					orig_cb(endhref);
 				};
@@ -54479,7 +55082,7 @@ var $$IMU_EXPORT$$;
 				break;
 		}
 
-		nir_debug("bigimage_recursive", "return finalize");
+		if (_nir_debug_) nir_debug("bigimage_recursive", "return finalize");
 
 		finalize();
 		do_cache();
@@ -55889,9 +56492,9 @@ var $$IMU_EXPORT$$;
 		var importexport_text = document_createElement("textarea");
 		importexport_container.appendChild(importexport_text);
 
-		var importexport_btn = document_createElement("button");
-		importexport_btn.innerText = _("Import");
-		importexport_btn.onclick = function() {
+		var real_import_btn = document_createElement("button");
+		real_import_btn.innerText = _("Import");
+		real_import_btn.onclick = function() {
 			var value;
 			var append = false;
 
@@ -55961,9 +56564,28 @@ var $$IMU_EXPORT$$;
 				show_importexport(false);
 			});
 		};
-		importexport_container.appendChild(importexport_btn);
+		importexport_container.appendChild(real_import_btn);
 
-		var show_importexport = function(show, btn) {
+		var export_container = document_createElement("div");
+
+		var export_txt_btn = document_createElement("button");
+		export_txt_btn.innerText = _("Save");
+		export_txt_btn.onclick = function() {
+			var data = importexport_text.value;
+			var url = "data:text/plain," + encodeURIComponent(data);
+
+			var obj = {
+				url: url,
+				filename: "settings.txt"
+			};
+
+			do_download(obj, obj.filename, data.length);
+		};
+		export_container.appendChild(export_txt_btn);
+
+		importexport_container.appendChild(export_container);
+
+		var show_importexport = function(show, importexport) {
 			if (show) {
 				importexport_ocontainer.style.display = "block";
 			} else {
@@ -55972,16 +56594,18 @@ var $$IMU_EXPORT$$;
 				importexport_ocontainer.style.display = "none";
 			}
 
-			if (btn) {
+			if (importexport) {
 				if (show)
 					importexport_state = "import";
 
-				importexport_btn.style.display = "inline-block";
+				real_import_btn.style.display = "inline-block";
+				export_container.style.display = "none";
 			} else {
 				if (show)
 					importexport_state = "export";
 
-				importexport_btn.style.display = "none";
+				real_import_btn.style.display = "none";
+				export_container.style.display = "block";
 			}
 		};
 
@@ -57619,7 +58243,7 @@ var $$IMU_EXPORT$$;
 
 		if (version === 6) {
 			if ("mouseover_support_pointerevents_none" in new_settings && new_settings.mouseover_support_pointerevents_none) {
-				update_seetting("mouseover_find_els_mode", "full");
+				update_setting("mouseover_find_els_mode", "full");
 			}
 
 			update_setting("settings_version", 7);
@@ -57979,7 +58603,7 @@ var $$IMU_EXPORT$$;
 
 	var check_image_cache = null;
 	function check_image_get(obj, cb, processing) {
-		nir_debug("check_image_get", "check_image_get", deepcopy(obj), cb, deepcopy(processing));
+		if (_nir_debug_) nir_debug("check_image_get", "check_image_get", deepcopy(obj), cb, deepcopy(processing));
 
 		if (!obj || !obj[0] || !obj[0].url) {
 			return cb(null);
@@ -58009,7 +58633,7 @@ var $$IMU_EXPORT$$;
 			if (check_image_cache.has(obj[0].url)) {
 				var cached_result = check_image_cache.get(obj[0].url);
 
-				nir_debug("check_image_get", "check_image_get(cached):", cached_result.img, cached_result.resp, obj[0]);
+				if (_nir_debug_) nir_debug("check_image_get", "check_image_get(cached):", cached_result.img, cached_result.resp, obj[0]);
 
 				var img = cached_result.img;
 				var destroyed = false;
@@ -58073,7 +58697,7 @@ var $$IMU_EXPORT$$;
 			revoke_objecturl(last_objecturl);
 			obj.shift();
 
-			nir_debug("check_image_get", "check_image_get(err_cb):", obj, processing);
+			if (_nir_debug_) nir_debug("check_image_get", "check_image_get(err_cb):", obj, processing);
 
 			return check_image_get(obj, cb, processing);
 		}
@@ -58134,522 +58758,521 @@ var $$IMU_EXPORT$$;
 				return cb(null);
 			}
 
-			if (resp.readyState == 4 || true) {
-				nir_debug("check_image_get", "check_image_get(onload)", deepcopy(resp), resp.readyState);
+			if (false && resp.readyState !== 4) return;
 
-				var digit = resp.status.toString()[0];
+			if (_nir_debug_) nir_debug("check_image_get", "check_image_get(onload)", deepcopy(resp), resp.readyState);
 
-				var ok_error = check_ok_error(obj[0].head_ok_errors, resp.status);
+			var digit = resp.status.toString()[0];
 
-				if (((digit === "4" || digit === "5") &&
-					 resp.status !== 405) && obj[0].can_head &&
-					ok_error !== true) {
-					if (err_cb) {
-						console_log("Bad status: " + resp.status + " ( " + url + " )");
-						err_cb();
-					} else {
-						console_error("Error: " + resp.status);
-					}
+			var ok_error = check_ok_error(obj[0].head_ok_errors, resp.status);
 
-					return;
+			if ((digit === "4" || digit === "5") &&
+				resp.status !== 405 && ok_error !== true) {
+				if (err_cb) {
+					console_log("Bad status: " + resp.status + " ( " + url + " )");
+					err_cb();
+				} else {
+					console_error("Error: " + resp.status);
 				}
 
-				if (check_bad_if(obj[0].bad_if, resp)) {
-					console_log("Bad image (bad_if)", resp, obj[0].bad_if);
+				return;
+			}
+
+			if (check_bad_if(obj[0].bad_if, resp)) {
+				console_log("Bad image (bad_if)", resp, obj[0].bad_if);
+				return err_cb();
+			}
+
+			if (processing.head) {
+				cb(resp, obj[0]);
+				return;
+			}
+
+			var parsed_headers = headers_list_to_dict(parse_headers(resp.responseHeaders));
+			var is_video = false;
+			var video_type = {type: "direct"};
+
+			// TODO: improve
+			if (obj[0].video || parsed_headers["content-type"] && is_video_contenttype(parsed_headers["content-type"])) {
+				is_video = true;
+
+				if (obj[0].video && obj[0].video !== true) {
+					video_type = obj[0].video;
+					if (typeof video_type === "string")
+						video_type = {type: video_type};
+				}
+
+				if (!is_video_type_supported(video_type)) {
+					console_warn("Video type", video_type, "is not supported");
 					return err_cb();
 				}
+			}
 
-				if (processing.head) {
-					cb(resp, obj[0]);
-					return;
-				}
+			if (is_video && !settings.allow_video) {
+				console_log("Video, skipping due to user setting");
+				return err_cb();
+			}
 
-				var parsed_headers = headers_list_to_dict(parse_headers(resp.responseHeaders));
-				var is_video = false;
-				var video_type = {type: "direct"};
-
-				// TODO: improve
-				if (obj[0].video || parsed_headers["content-type"] && is_video_contenttype(parsed_headers["content-type"])) {
-					is_video = true;
-
-					if (obj[0].video && obj[0].video !== true) {
-						video_type = obj[0].video;
-						if (typeof video_type === "string")
-							video_type = {type: video_type};
+			if (settings.mouseover_matching_media_types && processing && processing.source && processing.source.el) {
+				if (is_video_el(processing.source.el)) {
+					if (!is_video) {
+						console_log("!video, source was video, skipping");
+						return err_cb();
 					}
-
-					if (!is_video_type_supported(video_type)) {
-						console_warn("Video type", video_type, "is not supported");
+				} else {
+					if (is_video) {
+						console_log("video, source was image, skipping");
 						return err_cb();
 					}
 				}
+			}
 
-				if (is_video && !settings.allow_video) {
-					console_log("Video, skipping due to user setting");
-					return err_cb();
+			var good_cb = function(img) {
+				if (_nir_debug_) nir_debug("check_image_get", "check_image_get(good_cb):", img, resp.finalUrl, obj[0], resp);
+
+				if (processing.set_cache) {
+					var cache_obj = {
+						img: img,
+						resp: resp,
+						filesize: obj[0].filesize
+					};
+
+					if (img.tagName === "VIDEO")
+						cache_obj.currentTime = img.currentTime;
+
+					check_image_cache.set(obj[0].url, cache_obj, (parseFloat(settings.popup_cache_duration) || 0) * 60);
 				}
 
-				if (settings.mouseover_matching_media_types && processing && processing.source && processing.source.el) {
-					if (is_video_el(processing.source.el)) {
-						if (!is_video) {
-							console_log("!video, source was video, skipping");
-							return err_cb();
-						}
-					} else {
-						if (is_video) {
-							console_log("video, source was image, skipping");
-							return err_cb();
-						}
-					}
+				if (img)
+					check_image_ref(img);
+
+				cb(img, resp.finalUrl, obj[0], resp);
+			};
+
+			if (parsed_headers["content-length"] && parseInt(parsed_headers["content-length"]) > 100) {
+				obj[0].filesize = parseInt(parsed_headers["content-length"]);
+			}
+
+			var create_video_el = function() {
+				var video = document_createElement("video");
+
+				video.setAttribute("autoplay", "autoplay");
+
+				if (settings.mouseover_video_controls)
+					video.setAttribute("controls", "controls");
+
+				if (settings.mouseover_video_loop && !settings.mouseover_gallery_move_after_video)
+					video.setAttribute("loop", true);
+
+				if (settings.mouseover_video_muted) {
+					video.muted = true;
+				} else {
+					// TODO: always set the volume, so that when the video is unmuted, it'll be at the wanted volume
+					var volume = parseInt(settings.mouseover_video_volume);
+					volume = Math_max(Math_min(volume, 100), 0);
+					video.volume = volume / 100.;
 				}
 
-				var good_cb = function(img) {
-					nir_debug("check_image_get", "check_image_get(good_cb):", img, resp.finalUrl, obj[0], resp);
-
-					if (processing.set_cache) {
-						var cache_obj = {
-							img: img,
-							resp: resp,
-							filesize: obj[0].filesize
-						};
-
-						if (img.tagName === "VIDEO")
-							cache_obj.currentTime = img.currentTime;
-
-						check_image_cache.set(obj[0].url, cache_obj, (parseFloat(settings.popup_cache_duration) || 0) * 60);
-					}
-
-					if (img)
-						check_image_ref(img);
-
-					cb(img, resp.finalUrl, obj[0], resp);
+				var remove_loaded_metadata_listener = function() {
+					video.onloadedmetadata = null;
+					video.removeEventListener("loadedmetadata", loaded_metadata_listener);
 				};
 
-				if (parsed_headers["content-length"] && parseInt(parsed_headers["content-length"]) > 100) {
-					obj[0].filesize = parseInt(parsed_headers["content-length"]);
-				}
+				var errorhandler = function(e) {
+					console_error("Error loading video", get_event_error(e));
 
-				var create_video_el = function() {
-					var video = document_createElement("video");
-
-					video.setAttribute("autoplay", "autoplay");
-
-					if (settings.mouseover_video_controls)
-						video.setAttribute("controls", "controls");
-
-					if (settings.mouseover_video_loop && !settings.mouseover_gallery_move_after_video)
-						video.setAttribute("loop", true);
-
-					if (settings.mouseover_video_muted) {
-						video.muted = true;
-					} else {
-						// TODO: always set the volume, so that when the video is unmuted, it'll be at the wanted volume
-						var volume = parseInt(settings.mouseover_video_volume);
-						volume = Math_max(Math_min(volume, 100), 0);
-						video.volume = volume / 100.;
-					}
-
-					var remove_loaded_metadata_listener = function() {
-						video.onloadedmetadata = null;
-						video.removeEventListener("loadedmetadata", loaded_metadata_listener);
-					};
-
-					var errorhandler = function(e) {
-						console_error("Error loading video", get_event_error(e));
-
-						remove_loaded_metadata_listener();
-						err_cb();
-					};
-
-					var ran_loadedmetadata_listener = false;
-					var loaded_metadata_listener = function() {
-						if (!ran_loadedmetadata_listener) {
-							ran_loadedmetadata_listener = true;
-						} else {
-							return;
-						}
-
-						video.removeEventListener("error", errorhandler, true);
-						remove_loaded_metadata_listener();
-
-						if (!processing.running) {
-							return cb(null);
-						}
-
-						if (video.hasAttribute("loop")) {
-							if (settings.mouseover_video_autoloop_max && settings.mouseover_video_autoloop_max < video.duration)
-								video.removeAttribute("loop");
-						}
-
-						var source_video = null;
-
-						if (processing.source && processing.source.el) {
-							var sourceel = processing.source.el;
-							if (sourceel.tagName === "SOURCE") {
-								sourceel = sourceel.parentElement;
-							}
-
-							if (sourceel.tagName === "VIDEO") {
-								source_video = sourceel;
-							}
-						}
-
-						if (settings.mouseover_video_resume_from_source && source_video && source_video.currentTime) {
-							// https://github.com/qsniyg/maxurl/issues/256
-							if (settings.mouseover_video_resume_if_different ||
-								Math_abs(source_video.duration - video.duration) < 1 || Math_abs(1 - (source_video.duration / video.duration)) < 0.01) {
-								video.currentTime = source_video.currentTime;
-							}
-						}
-
-						if (settings.mouseover_video_pause_source && source_video) {
-							source_video.pause();
-						}
-
-						run_soon(function() {
-							good_cb(video)
-						});
-					};
-
-					video.onloadedmetadata = loaded_metadata_listener;
-					video.addEventListener("loadedmetadata", loaded_metadata_listener);
-
-					video.onended = function() {
-						if (settings.mouseover_enable_gallery && settings.mouseover_gallery_move_after_video) {
-							trigger_gallery(1);
-						}
-					};
-
-					video.addEventListener("error", errorhandler, true);
-
-					return video;
+					remove_loaded_metadata_listener();
+					err_cb();
 				};
 
-				var set_video_src = function(video, src) {
-					var add_xhr_hook = function(lib) {
-						if (lib.overridden_xhr) {
-							lib.xhr.do_request = function(data) {
-								if (!data.headers) data.headers = {};
+				var ran_loadedmetadata_listener = false;
+				var loaded_metadata_listener = function() {
+					if (!ran_loadedmetadata_listener) {
+						ran_loadedmetadata_listener = true;
+					} else {
+						return;
+					}
 
-								if (obj[0].headers) {
-									for (var header in obj[0].headers) {
-										headerobj_set(data.headers, header, obj[0].headers[header]);
-									}
+					video.removeEventListener("error", errorhandler, true);
+					remove_loaded_metadata_listener();
+
+					if (!processing.running) {
+						return cb(null);
+					}
+
+					if (video.hasAttribute("loop")) {
+						if (settings.mouseover_video_autoloop_max && settings.mouseover_video_autoloop_max < video.duration)
+							video.removeAttribute("loop");
+					}
+
+					var source_video = null;
+
+					if (processing.source && processing.source.el) {
+						var sourceel = processing.source.el;
+						if (sourceel.tagName === "SOURCE") {
+							sourceel = sourceel.parentElement;
+						}
+
+						if (sourceel.tagName === "VIDEO") {
+							source_video = sourceel;
+						}
+					}
+
+					if (settings.mouseover_video_resume_from_source && source_video && source_video.currentTime) {
+						// https://github.com/qsniyg/maxurl/issues/256
+						if (settings.mouseover_video_resume_if_different ||
+							Math_abs(source_video.duration - video.duration) < 1 || Math_abs(1 - (source_video.duration / video.duration)) < 0.01) {
+							video.currentTime = source_video.currentTime;
+						}
+					}
+
+					if (settings.mouseover_video_pause_source && source_video) {
+						source_video.pause();
+					}
+
+					run_soon(function() {
+						good_cb(video)
+					});
+				};
+
+				video.onloadedmetadata = loaded_metadata_listener;
+				video.addEventListener("loadedmetadata", loaded_metadata_listener);
+
+				video.onended = function() {
+					if (settings.mouseover_enable_gallery && settings.mouseover_gallery_move_after_video) {
+						trigger_gallery(1);
+					}
+				};
+
+				video.addEventListener("error", errorhandler, true);
+
+				return video;
+			};
+
+			var set_video_src = function(video, src) {
+				var add_xhr_hook = function(lib) {
+					if (lib.overridden_xhr) {
+						lib.xhr.do_request = function(data) {
+							if (!data.headers) data.headers = {};
+
+							if (obj[0].headers) {
+								for (var header in obj[0].headers) {
+									headerobj_set(data.headers, header, obj[0].headers[header]);
 								}
+							}
 
-								//console_log(data);
-								return do_request(data);
-							};
-						}
-					};
+							//console_log(data);
+							return do_request(data);
+						};
+					}
+				};
 
-					if (video_type.type === "direct") {
-						video.src = src;
-					} else {
-						var max_video_quality = get_single_setting("max_video_quality");
-						if (max_video_quality) {
-							max_video_quality = parseInt(max_video_quality.substr(1));
-						}
+				if (video_type.type === "direct") {
+					video.src = src;
+				} else {
+					var max_video_quality = get_single_setting("max_video_quality");
+					if (max_video_quality) {
+						max_video_quality = parseInt(max_video_quality.substr(1));
+					}
 
-						var get_wanted_variant = function(variants) {
-							var wanted_variant = -1;
-							array_foreach(variants, function(variant, i) {
-								if (variant.height === max_video_quality) {
+					var get_wanted_variant = function(variants) {
+						var wanted_variant = -1;
+						array_foreach(variants, function(variant, i) {
+							if (variant.height === max_video_quality) {
+								wanted_variant = i;
+								return false;
+							}
+
+							if (variant.height > max_video_quality) {
+								if (i === 0) {
 									wanted_variant = i;
-									return false;
-								}
-
-								if (variant.height > max_video_quality) {
-									if (i === 0) {
-										wanted_variant = i;
-									} else {
-										wanted_variant = i - 1;
-									}
-
-									return false;
-								}
-							});
-
-							return wanted_variant;
-						};
-
-						if (video_type.type === "dash") {
-							// don't use shaka for hls yet, as mux.js is needed
-							get_library("shaka", settings, do_request, function(_shaka) {
-								if (!_shaka) {
-									video.src = src;
-									return;
-								}
-
-								var shaka = _shaka.lib;
-
-								if (true) {
-									shaka.log.setLevel(shaka.log.Level.ERROR);
 								} else {
-									shaka.log.setLevel(shaka.log.Level.DEBUG);
+									wanted_variant = i - 1;
 								}
 
-								//shaka.polyfill.installAll();
-								if (!shaka.Player.isBrowserSupported()) {
-									console_warn("Unsupported browser for Shaka");
-									video.src = src;
-									return;
-								}
+								return false;
+							}
+						});
 
-								add_xhr_hook(_shaka);
+						return wanted_variant;
+					};
 
-								var player = new shaka.Player(video);
+					if (video_type.type === "dash") {
+						// don't use shaka for hls yet, as mux.js is needed
+						get_library("shaka", settings, do_request, function(_shaka) {
+							if (!_shaka) {
+								video.src = src;
+								return;
+							}
 
-								var shaka_error_handler = function(e) {
-									console_error(e);
+							var shaka = _shaka.lib;
 
-									video.src = src;
-									return;
-								};
+							if (true) {
+								shaka.log.setLevel(shaka.log.Level.ERROR);
+							} else {
+								shaka.log.setLevel(shaka.log.Level.DEBUG);
+							}
 
-								player.addEventListener("error", shaka_error_handler);
+							//shaka.polyfill.installAll();
+							if (!shaka.Player.isBrowserSupported()) {
+								console_warn("Unsupported browser for Shaka");
+								video.src = src;
+								return;
+							}
 
-								player.load(src).then(function() {
-									var variants = player.getVariantTracks();
+							add_xhr_hook(_shaka);
 
-									if (settings.hls_dash_use_max) {
-										variants.sort(function(a, b) {
-											return b.bandwidth - a.bandwidth;
-										});
-										//console_log(variants);
+							var player = new shaka.Player(video);
 
-										player.configure("abr.enabled", false);
-										player.selectVariantTrack(variants[0], true, 0);
-									}
+							var shaka_error_handler = function(e) {
+								console_error(e);
 
-									if (max_video_quality) {
-										variants.sort(function(a, b) {
-											var diff = a.height - b.height;
-											if (diff) return diff;
+								video.src = src;
+								return;
+							};
 
-											return a.bandwidth - b.bandwidth;
-										});
+							player.addEventListener("error", shaka_error_handler);
 
-										var wanted_variant = get_wanted_variant(variants);
-
-										if (wanted_variant >= 0) {
-											player.configure("abr.enabled", false);
-											player.selectVariantTrack(variants[wanted_variant], true, 0);
-										}
-									}
-								}, shaka_error_handler);
-							});
-						}
-						else if (false && video_type.type === "dash") {
-							get_library("dash", settings, do_request, function(_dashjs) {
-								if (!_dashjs) {
-									video.src = src;
-									return;
-								}
-
-								var dashjs = _dashjs.lib;
-
-								add_xhr_hook(_dashjs);
-
-								var player = dashjs.MediaPlayer().create();
+							player.load(src).then(function() {
+								var variants = player.getVariantTracks();
 
 								if (settings.hls_dash_use_max) {
-									player.updateSettings({
-										streaming: {
-											abr: {
-												initialBitrate: {
-													audio: Number.MAX_SAFE_INTEGER,
-													video: Number.MAX_SAFE_INTEGER
-												},
-												autoSwitchBitrate: {
-													audio: false,
-													video: false
-												}
-											}
-										}
+									variants.sort(function(a, b) {
+										return b.bandwidth - a.bandwidth;
 									});
+									//console_log(variants);
+
+									player.configure("abr.enabled", false);
+									player.selectVariantTrack(variants[0], true, 0);
 								}
 
-								player.initialize(video, src, true);
-							});
-						} else if (video_type.type === "hls") {
-							get_library("hls", settings, do_request, function(_hls_wrap) {
-								if (!_hls_wrap) {
-									video.src = src;
-									return;
+								if (max_video_quality) {
+									variants.sort(function(a, b) {
+										var diff = a.height - b.height;
+										if (diff) return diff;
+
+										return a.bandwidth - b.bandwidth;
+									});
+
+									var wanted_variant = get_wanted_variant(variants);
+
+									if (wanted_variant >= 0) {
+										player.configure("abr.enabled", false);
+										player.selectVariantTrack(variants[wanted_variant], true, 0);
+									}
 								}
+							}, shaka_error_handler);
+						});
+					}
+					else if (false && video_type.type === "dash") {
+						get_library("dash", settings, do_request, function(_dashjs) {
+							if (!_dashjs) {
+								video.src = src;
+								return;
+							}
 
-								var hls_wrap = _hls_wrap.lib;
-								if (!hls_wrap || !hls_wrap.Hls || !hls_wrap.Hls.isSupported()) {
-									console_warn("HLS isn't supported");
-									// this will work if (video.canPlayType('application/vnd.apple.mpegurl'))
-									// if not, it will fail, then go to the next URL
-									video.src = src;
-									return;
-								}
+							var dashjs = _dashjs.lib;
 
-								add_xhr_hook(_hls_wrap);
+							add_xhr_hook(_dashjs);
 
-								var Hls = hls_wrap.Hls;
-								var hls = new Hls();
+							var player = dashjs.MediaPlayer().create();
 
-								hls.loadSource(src);
-								hls.attachMedia(video);
-								hls.on(Hls.Events.MANIFEST_PARSED, function() {
-									if (settings.hls_dash_use_max) {
-										//console_log(hls.levels);
-										var maxlevel = -1;
-										var maxbitrate = -1;
-										for (var i = 0; i < hls.levels.length; i++) {
-											if (hls.levels[i].bitrate > maxbitrate) {
-												maxlevel = i;
-												maxbitrate = hls.levels[i].bitrate;
+							if (settings.hls_dash_use_max) {
+								player.updateSettings({
+									streaming: {
+										abr: {
+											initialBitrate: {
+												audio: Number.MAX_SAFE_INTEGER,
+												video: Number.MAX_SAFE_INTEGER
+											},
+											autoSwitchBitrate: {
+												audio: false,
+												video: false
 											}
 										}
-
-										if (maxlevel >= 0)
-											hls.nextLevel = maxlevel;
 									}
-
-									if (max_video_quality) {
-										var levels = deepcopy(hls.levels);
-										levels.sort(function(a, b) {
-											var diff = a.height - b.height;
-											if (diff) return diff;
-
-											return a.bitrate - b.bitrate;
-										});
-
-										var level = get_wanted_variant(levels);
-										if (level >= 0)
-											hls.nextLevel = level;
-									}
-
-									hls.startLoad(-1);
-									video.play();
 								});
-
-								hls.on(Hls.Events.ERROR, function(e) {
-									console_error("Error loading HLS", e, e.toString());
-									err_cb();
-								});
-							});
-						}
-					}
-				};
-
-				if (incomplete_request) {
-					var load_image;
-
-					if (!is_video) {
-						load_image = function () {
-							var img = document_createElement("img");
-							img.src = resp.finalUrl;
-
-							var end_cbs = function () {
-								clearInterval(height_interval);
-								img.onload = null;
-								img.onerror = null;
-							};
-
-							img.onload = function () {
-								end_cbs();
-
-								if (img.naturalWidth === 0 || img.naturalHeight === 0) {
-									if (_nir_debug_)
-										console_log("naturalWidth or naturalHeight == 0", img);
-
-									return err_cb();
-								}
-
-								good_cb(img);
-							};
-
-							img.onerror = function (e) {
-								if (_nir_debug_)
-									console_log("Error loading image", img, e);
-
-								end_cbs();
-								err_cb();
-							};
-
-							var height_interval = setInterval(function () {
-								if (img.naturalWidth !== 0 && img.naturalHeight !== 0) {
-									end_cbs();
-									good_cb(img);
-								}
-							}, 15);
-						};
-					} else {
-						load_image = function () {
-							var video = create_video_el();
-							set_video_src(video, resp.finalUrl);
-						};
-					}
-
-					if (is_extension) {
-						extension_send_message({
-							type: "override_next_headers",
-							data: {
-								url: resp.finalUrl,
-								method: "GET",
-								headers: headers
 							}
-						}, function() {
-							load_image();
+
+							player.initialize(video, src, true);
 						});
-					} else {
-						load_image();
-					}
+					} else if (video_type.type === "hls") {
+						get_library("hls", settings, do_request, function(_hls_wrap) {
+							if (!_hls_wrap) {
+								video.src = src;
+								return;
+							}
 
-					return;
+							var hls_wrap = _hls_wrap.lib;
+							if (!hls_wrap || !hls_wrap.Hls || !hls_wrap.Hls.isSupported()) {
+								console_warn("HLS isn't supported");
+								// this will work if (video.canPlayType('application/vnd.apple.mpegurl'))
+								// if not, it will fail, then go to the next URL
+								video.src = src;
+								return;
+							}
+
+							add_xhr_hook(_hls_wrap);
+
+							var Hls = hls_wrap.Hls;
+							var hls = new Hls();
+
+							hls.loadSource(src);
+							hls.attachMedia(video);
+							hls.on(Hls.Events.MANIFEST_PARSED, function() {
+								if (settings.hls_dash_use_max) {
+									//console_log(hls.levels);
+									var maxlevel = -1;
+									var maxbitrate = -1;
+									for (var i = 0; i < hls.levels.length; i++) {
+										if (hls.levels[i].bitrate > maxbitrate) {
+											maxlevel = i;
+											maxbitrate = hls.levels[i].bitrate;
+										}
+									}
+
+									if (maxlevel >= 0)
+										hls.nextLevel = maxlevel;
+								}
+
+								if (max_video_quality) {
+									var levels = deepcopy(hls.levels);
+									levels.sort(function(a, b) {
+										var diff = a.height - b.height;
+										if (diff) return diff;
+
+										return a.bitrate - b.bitrate;
+									});
+
+									var level = get_wanted_variant(levels);
+									if (level >= 0)
+										hls.nextLevel = level;
+								}
+
+								hls.startLoad(-1);
+								video.play();
+							});
+
+							hls.on(Hls.Events.ERROR, function(e) {
+								console_error("Error loading HLS", e, e.toString());
+								err_cb();
+							});
+						});
+					}
 				}
+			};
 
-				if (!resp.response) {
-					err_cb();
-					return;
-				}
+			if (incomplete_request) {
+				var load_image;
 
-				var loadcb = function(urldata) {
-					if (_nir_debug_) {
-						console_log("check_image_get's loadcb", urldata, is_video);
-					}
-
-					last_objecturl = urldata;
-
-					if (!urldata) {
-						return err_cb();
-					}
-
-					if (!is_video) {
+				if (!is_video) {
+					load_image = function () {
 						var img = document_createElement("img");
-						img.src = urldata;
-						img.onload = function() {
-							// Firefox thinks SVGs have an empty naturalWidth/naturalHeight
+						img.src = resp.finalUrl;
+
+						var end_cbs = function () {
+							clearInterval(height_interval);
+							img.onload = null;
+							img.onerror = null;
+						};
+
+						img.onload = function () {
+							end_cbs();
+
 							if (img.naturalWidth === 0 || img.naturalHeight === 0) {
+								if (_nir_debug_)
+									console_log("naturalWidth or naturalHeight == 0", img);
+
 								return err_cb();
 							}
 
 							good_cb(img);
 						};
-						img.onerror = function(e) {
+
+						img.onerror = function (e) {
 							if (_nir_debug_)
 								console_log("Error loading image", img, e);
 
+							end_cbs();
 							err_cb();
 						};
-					} else {
-						var video = create_video_el();
-						set_video_src(video, urldata);
-					}
-				};
 
-				if (obj[0].need_data_url || (!settings.mouseover_use_blob_over_data && !obj[0].need_blob)) {
-					create_dataurl(resp.response, loadcb);
+						var height_interval = setInterval(function () {
+							if (img.naturalWidth !== 0 && img.naturalHeight !== 0) {
+								end_cbs();
+								good_cb(img);
+							}
+						}, 15);
+					};
 				} else {
-					var objecturl = create_objecturl(resp.response);
-					loadcb(objecturl);
+					load_image = function () {
+						var video = create_video_el();
+						set_video_src(video, resp.finalUrl);
+					};
 				}
+
+				if (is_extension) {
+					extension_send_message({
+						type: "override_next_headers",
+						data: {
+							url: resp.finalUrl,
+							method: "GET",
+							headers: headers
+						}
+					}, function() {
+						load_image();
+					});
+				} else {
+					load_image();
+				}
+
+				return;
+			}
+
+			if (!resp.response) {
+				err_cb();
+				return;
+			}
+
+			var loadcb = function(urldata) {
+				if (_nir_debug_) {
+					console_log("check_image_get's loadcb", urldata, is_video);
+				}
+
+				last_objecturl = urldata;
+
+				if (!urldata) {
+					return err_cb();
+				}
+
+				if (!is_video) {
+					var img = document_createElement("img");
+					img.src = urldata;
+					img.onload = function() {
+						// Firefox thinks SVGs have an empty naturalWidth/naturalHeight
+						if (img.naturalWidth === 0 || img.naturalHeight === 0) {
+							return err_cb();
+						}
+
+						good_cb(img);
+					};
+					img.onerror = function(e) {
+						if (_nir_debug_)
+							console_log("Error loading image", img, e);
+
+						err_cb();
+					};
+				} else {
+					var video = create_video_el();
+					set_video_src(video, urldata);
+				}
+			};
+
+			if (obj[0].need_data_url || (!settings.mouseover_use_blob_over_data && !obj[0].need_blob)) {
+				create_dataurl(resp.response, loadcb);
+			} else {
+				var objecturl = create_objecturl(resp.response);
+				loadcb(objecturl);
 			}
 		};
 
@@ -59721,7 +60344,14 @@ var $$IMU_EXPORT$$;
 				stop_waiting();
 
 				var theobj = data.data.obj;
-				theobj.url = data.data.resp.finalUrl;
+
+				// TODO: improve fix (for data: urls)
+				if (typeof theobj === "string") {
+					theobj = {url: theobj};
+				}
+
+				if (data.data.resp.finalUrl)
+					theobj.url = data.data.resp.finalUrl;
 
 				fill_obj_filename(theobj, theobj.url, data.data.resp);
 				popup_obj = theobj;
@@ -60730,7 +61360,8 @@ var $$IMU_EXPORT$$;
 					return topbarel;
 				};
 
-				function create_ui(use_cached_gallery) {
+				var ui_visible = !!settings.mouseover_ui;
+				function create_ui(use_cached_gallery, hide_ui) {
 					for (var el_i = 0; el_i < ui_els.length; el_i++) {
 						var ui_el = ui_els[el_i];
 						ui_el.parentNode.removeChild(ui_el);
@@ -60766,10 +61397,22 @@ var $$IMU_EXPORT$$;
 						containers[key] = create_containerel(data[0], data[1], emi, img_boundingClientRect);
 					});
 
-					if (!settings.mouseover_ui) {
+					var do_hide = !settings.mouseover_ui;
+					if (hide_ui) {
+						if (hide_ui === "toggle") {
+							do_hide = ui_visible;
+						} else if (hide_ui === true) {
+							do_hide = true;
+						}
+					}
+
+					if (do_hide) {
 						// Not sure why this is needed, but without it, clicking and dragging images doesn't work under Firefox (#78)
 						outerdiv.appendChild(containers["top-left"]);
+						ui_visible = false;
 						return;
+					} else {
+						ui_visible = true;
 					}
 
 					for (var pos in containers) {
@@ -62158,7 +62801,7 @@ var $$IMU_EXPORT$$;
 			var ok_els = [];
 			var result = _find_source(els, ok_els);
 
-			nir_debug("find_source", "find_source: result =", result, "ok_els =", ok_els);
+			if (_nir_debug_) nir_debug("find_source", "find_source: result =", result, "ok_els =", ok_els);
 
 			if (!result)
 				return result;
@@ -62171,13 +62814,13 @@ var $$IMU_EXPORT$$;
 
 			if (result.el) {
 				if (is_popup_el(result.el)) {
-					nir_debug("find_source", "find_source: result.el is popup el", result.el);
+					if (_nir_debug_) nir_debug("find_source", "find_source: result.el is popup el", result.el);
 					return ret_bad();
 				}
 			}
 
 			if (!result.is_ok_el && !is_valid_src(result.src, is_video_el(result.el))) {
-				nir_debug("find_source", "find_source: invalid src", result);
+				if (_nir_debug_) nir_debug("find_source", "find_source: invalid src", result);
 				return ret_bad();
 			}
 
@@ -62188,7 +62831,7 @@ var $$IMU_EXPORT$$;
 
 			if ((!isNaN(result.width) && result.width > 0 && result.width < thresh) ||
 				(!isNaN(result.height) && result.height > 0 && result.height < thresh)) {
-				nir_debug("find_source", "find_source: result size is too small");
+				if (_nir_debug_) nir_debug("find_source", "find_source: result size is too small");
 
 				return ret_bad();
 			}
@@ -62201,7 +62844,7 @@ var $$IMU_EXPORT$$;
 			/*if (popups_active)
 				return;*/
 
-			nir_debug("find_source", "_find_source (els)", els);
+			if (_nir_debug_) nir_debug("find_source", "_find_source (els)", els);
 
 			var sources = {};
 			//var picture_sources = {};
@@ -62221,6 +62864,8 @@ var $$IMU_EXPORT$$;
 			var source;
 
 			function check_visible(el) {
+				var visible_valid = true;
+
 				do {
 					if (!el)
 						break;
@@ -62229,10 +62874,16 @@ var $$IMU_EXPORT$$;
 					if (!style)
 						break;
 
-					if (style.opacity.toString().match(/^0(?:\.0*)?$/))
+					if (style.opacity.toString().match(/^0(?:\.0*)?$/) ||
+						(visible_valid && style.visibility === "hidden")) {
 						return false;
-					if (style.visibility === "hidden")
-						return false;
+					}
+
+					// https://www.msn.com/en-us/music/news/the-weeknd-calls-grammys-corrupt-slams-lack-of-transparency-after-nominations-shutout/ar-BB1bkAHH ("more for you" section)
+					// a higher element has visibility: hidden, but a lower one has visibility: visible
+					if (visible_valid && style.visibility === "visible") {
+						visible_valid = false;
+					}
 				} while (el = el.parentElement);
 
 				return true;
@@ -62307,13 +62958,13 @@ var $$IMU_EXPORT$$;
 			}
 
 			function addImage(src, el, options) {
-				nir_debug("find_source", "_find_source (addImage)", src, el, check_visible(el), options);
+				if (_nir_debug_) nir_debug("find_source", "_find_source (addImage)", src, el, check_visible(el), options);
 
 				if (!is_valid_resource_url(src))
 					return false;
 
 				if (src && settings.mouseover_apply_blacklist && !bigimage_filter(src)) {
-					nir_debug("find_source", "blacklisted");
+					if (_nir_debug_) nir_debug("find_source", "blacklisted");
 					return false;
 				}
 
@@ -62343,7 +62994,7 @@ var $$IMU_EXPORT$$;
 
 				var imucheck = imu_check(src, el);
 				if (imucheck === false) {
-					nir_debug("find_source", "Bad image", el);
+					if (_nir_debug_) nir_debug("find_source", "Bad image", el);
 					return false;
 				}
 
@@ -62354,7 +63005,7 @@ var $$IMU_EXPORT$$;
 				if (imucheck === true) {
 					// do this after imu_check, for lazy loaded images that have 1x1 images
 					if (src && (src.match(/^data:/) && !(/^data:image\/svg\+xml;/.test(src)) && src.length <= 500)) {
-						nir_debug("find_source", "Tiny data: image", el, src);
+						if (_nir_debug_) nir_debug("find_source", "Tiny data: image", el, src);
 						return false;
 					}
 				}
@@ -62363,7 +63014,7 @@ var $$IMU_EXPORT$$;
 				// https://www.vogue.com/article/lady-gaga-met-gala-2019-entrance-behind-the-scenes-video
 				// https://www.pinterest.com/
 				if (!check_visible(el)) {
-					nir_debug("find_source", "Invisible: image", el);
+					if (_nir_debug_) nir_debug("find_source", "Invisible: image", el);
 					return false;
 				}
 
@@ -62438,7 +63089,7 @@ var $$IMU_EXPORT$$;
 					if (settings.mouseover_exclude_imagemaps && el_tagname === "IMG" && el.hasAttribute("usemap")) {
 						var mapel = document.querySelector("map[name=\"" + el.getAttribute("usemap").replace(/^#/, "") + "\"]");
 						if (mapel) {
-							nir_debug("find_source", "_find_source skipping", el, "due to image map", mapel);
+							if (_nir_debug_) nir_debug("find_source", "_find_source skipping", el, "due to image map", mapel);
 							return;
 						}
 					}
@@ -62860,7 +63511,7 @@ var $$IMU_EXPORT$$;
 			}
 
 			function addElement(el, layer) {
-				nir_debug("find_source", "_find_source (addElement)", el, layer);
+				if (_nir_debug_) nir_debug("find_source", "_find_source (addElement)", el, layer);
 
 				if (settings.mouseover_exclude_page_bg && el.tagName === "BODY") {
 					return;
@@ -62899,9 +63550,9 @@ var $$IMU_EXPORT$$;
 
 			if (_nir_debug_) {
 				//console_log(els);
-				nir_debug("find_source", "_find_source (sources)", deepcopy(sources));
-				nir_debug("find_source", "_find_source (layers)", deepcopy(layers));
-				nir_debug("find_source", "_find_source (ok_els)", deepcopy(ok_els));
+				if (_nir_debug_) nir_debug("find_source", "_find_source (sources)", deepcopy(sources));
+				if (_nir_debug_) nir_debug("find_source", "_find_source (layers)", deepcopy(layers));
+				if (_nir_debug_) nir_debug("find_source", "_find_source (ok_els)", deepcopy(ok_els));
 			}
 
 			// remove sources that aren't used
@@ -62933,7 +63584,7 @@ var $$IMU_EXPORT$$;
 			}
 
 			if ((source = getsource()) !== undefined) {
-				nir_debug("find_source", "_find_source (getsource())", source);
+				if (_nir_debug_) nir_debug("find_source", "_find_source (getsource())", source);
 
 				if (source === null) {
 					if (ok_els.length > 0) {
@@ -63098,9 +63749,9 @@ var $$IMU_EXPORT$$;
 				layers = newlayers;
 			}
 
-			nir_debug("find_source", "_find_source (new layers)", deepcopy(layers));
+			if (_nir_debug_) nir_debug("find_source", "_find_source (new layers)", deepcopy(layers));
 			rebuildlayers();
-			nir_debug("find_source", "_find_source (rebuilt layers)", deepcopy(layers));
+			if (_nir_debug_) nir_debug("find_source", "_find_source (rebuilt layers)", deepcopy(layers));
 
 			// If there are background images ahead of an image, it's likely to be masks
 			// Maybe check if there's more than one element of ancestry between them?
@@ -65038,97 +65689,6 @@ var $$IMU_EXPORT$$;
 				return null;
 		};
 
-		var do_browser_download = function(imu, filename, cb) {
-			if (_nir_debug_) {
-				console_log("do_browser_download", imu, filename, cb);
-			}
-
-			var a = document_createElement("a");
-
-			a.href = imu.url;
-
-			if (filename && filename.length > 0) {
-				a.setAttribute("download", filename);
-			} else {
-				var attr = document.createAttribute("download");
-				a.setAttributeNode(attr);
-			}
-
-			a.style.display = "none";
-			a.onclick = function(e) {
-				e.stopPropagation();
-				e.stopImmediatePropagation();
-				return true;
-			};
-
-			document.body.appendChild(a);
-			a.click();
-
-			setTimeout(function() {
-				document.body.removeChild(a);
-			}, 500);
-
-			if (cb)
-				cb();
-		};
-
-		var do_download = function(imu, filename, size, cb) {
-			if (_nir_debug_) {
-				console_log("do_download", imu, filename, size, cb);
-			}
-
-			var use_gm_download = is_userscript && typeof GM_download !== "undefined" && settings.enable_gm_download;
-			var gm_download_max = parseFloat(settings.gm_download_max) || 0;
-			if (use_gm_download && size && gm_download_max) {
-				if ((gm_download_max * 1024 * 1024) < size) {
-					use_gm_download = false;
-				}
-			}
-
-			if (is_extension) {
-				extension_send_message({
-					type: "download",
-					data: {
-						imu: imu,
-						force_saveas: !!settings.enable_webextension_download
-					}
-				}, function() {
-					if (cb)
-						cb();
-				});
-			} else if (use_gm_download) {
-				var headers;
-
-				if (imu.headers)
-					headers = headers_dict_to_list(imu.headers);
-
-				var download_obj = {
-					url: imu.url,
-					headers: headers,
-					saveAs: true,
-					onerror: function(error) {
-						if (error && error.error && error.error !== "not_succeeded") {
-							do_browser_download(imu, filename, cb);
-						}
-					}
-				};
-
-				if (filename) {
-					download_obj.name = filename;
-				} else {
-					download_obj.name = "download"; // it can't be blank
-				}
-
-				if (_nir_debug_) {
-					console_log("GM_download", deepcopy(download_obj));
-				}
-
-				GM_download(download_obj);
-			} else {
-				do_browser_download(imu, filename, cb);
-			}
-		};
-
 		var download_popup_image = function() {
 			do_download(popup_obj, popup_obj.filename, popup_contentlength);
 		};
@@ -65231,6 +65791,10 @@ var $$IMU_EXPORT$$;
 			} else {
 				videoel.pause();
 			}
+		};
+
+		var toggle_popup_ui = function() {
+			popup_createui_func(true, "toggle");
 		};
 
 		var is_fullscreen = function() {
@@ -65389,6 +65953,9 @@ var $$IMU_EXPORT$$;
 				case "hold":
 					update_popup_hold();
 					return true;
+				case "toggle_ui":
+					toggle_popup_ui();
+					return true;
 			}
 
 			return false;
@@ -65435,7 +66002,7 @@ var $$IMU_EXPORT$$;
 			if (is_options_page)
 				return;
 
-			nir_debug("input", "keydown_cb", event);
+			if (_nir_debug_) nir_debug("input", "keydown_cb", event);
 
 			if (!mouseover_enabled())
 				return;
@@ -65652,6 +66219,10 @@ var $$IMU_EXPORT$$;
 					{
 						key: settings.mouseover_video_playpause_key,
 						action: {type: "toggle_play_pause"}
+					},
+					{
+						key: settings.mouseover_ui_toggle_key,
+						action: {type: "toggle_ui"}
 					}
 				];
 
@@ -65718,7 +66289,7 @@ var $$IMU_EXPORT$$;
 		our_addEventListener(document, 'wheel', keydown_cb, eventlistener_opts);
 
 		var keyup_cb = function(event) {
-			nir_debug("input", "keyup_cb", event);
+			if (_nir_debug_) nir_debug("input", "keyup_cb", event);
 
 			if (!mouseover_enabled())
 				return;
