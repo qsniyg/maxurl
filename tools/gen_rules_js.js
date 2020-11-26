@@ -96,6 +96,7 @@ var variables_list = [
 	"strip_whitespace",
 	"get_image_size",
 	"sort_by_key",
+	"sort_by_array",
 	"parse_tag_def",
 	"get_meta",
 	"fixup_js_obj",
