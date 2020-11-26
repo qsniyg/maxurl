@@ -1,3 +1,27 @@
+0.14.9
+
+New features:
+
+ * Key to toggle displaying the popup UI (#387, bound to U by default, thanks to Runakanta on discord for the idea)
+ * Button to export settings to file (#529, thanks to fedesk on discord for the idea)
+ * Support for ~15 new websites (using ~15 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including Cloudinary, Instagram, Twitter)
+ * Minor performance improvements
+
+Bugfixes:
+
+ * "New tab" popup action shouldn't crash on data:// URLs anymore (thanks to fedesk on discord for reporting)
+ * Images from sites that didn't properly handle HEAD requests will no longer ignore HTTP errors when popup action is set to "new tab" (#533, thanks to eldobhatox on github for reporting)
+ * Fix certain sites failing to load the popup due to the script incorrectly believing the media to be invisible
+ * Fix userscript failing to load if "Support pointer-events: none" was previously modified (#541, thanks to PietroPizzi69 on github for reporting)
+
+Special thanks to fedesk, rEnr3n, remlap, eldobhatox, Runakanta, PietroPizzi69 for their contributions and reports for this release
+
+---
+
 0.14.8
 
 New features:

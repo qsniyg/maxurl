@@ -149,6 +149,7 @@ a.fsdn.com
 a.jeu.cc
 a.ksd-i.com
 a.ltrbxd.com
+a.simbi.com
 a2h6m3w6.ssl.hwcdn.net
 a2w8r2x2.ssl.hwcdn.net
 a69.g.akamai.net
@@ -1274,6 +1275,7 @@ celebphotos.club
 celebredcarpetdresses.com
 celebriot.com
 celebritiestown.com
+celebritongue.com
 celebritydresses.shop
 celebritygalls.com
 celebritying.com
@@ -1654,6 +1656,7 @@ d9nvuahg4xykp.cloudfront.net
 da4pli3l5vc0d.cloudfront.net
 daejonilbo.com
 dagospia.com
+dagsavisen.no
 daguaw.com
 daily-celebvideos.com
 dailybruin.com
@@ -1776,6 +1779,7 @@ dingo.care2.com
 dingyue.ws.126.net
 diode.zone
 directgardening.com
+disco-api.com
 discord.com
 discordapp.com
 discordapp.net
@@ -2075,6 +2079,7 @@ expressen.se
 extension.zone
 external-content.duckduckgo.com
 external.polskieradio.pl
+extra-images.akamaized.net
 extra.cz
 extraimage.net
 extremejapanese.co
@@ -3065,6 +3070,7 @@ image.kbsm.net
 image.keeng.com.kh
 image.kilimall.com
 image.kkday.com
+image.klikk.no
 image.kmib.co.kr
 image.kpopstarz.com
 image.kurier.at
@@ -3091,6 +3097,7 @@ image.photocnc.com
 image.photohito.k-img.com
 image.pornyl.com
 image.qianye88.com
+image.side2.no
 image.side3.no
 image.spreadshirtmedia.com
 image.stirileprotv.ro
@@ -3199,6 +3206,7 @@ images.costcobusinesscentre.ca
 images.csmonitor.com
 images.ctfassets.net
 images.curved.de
+images.dailycaller.com
 images.dailykos.com
 images.dappei.com
 images.dbnaked.com
@@ -4296,6 +4304,7 @@ lizhi.fm
 lkbkspro.s3.amazonaws.com
 llnwd.net
 lmstube.com
+local12.com
 lockerdome.com
 lodef.net
 logincdn.msauth.net
@@ -5069,6 +5078,7 @@ novilist.hr
 novoporn.com
 novostrong.com
 nowtoronto.com
+nrk.no
 nrt.ysc123.com.cn
 nrwkino.de
 ns.hitcreative.com.s3.amazonaws.com
@@ -5548,6 +5558,7 @@ prettyzone.net
 preview.gotinder.com
 preview.ibb.co
 preview.redd.it
+preview.sdl.no
 previiew.com
 prezly.com
 prikolno.cc
@@ -5931,6 +5942,7 @@ saywho.fr
 sb-cd.com
 sbs.co.kr
 scache.vevo.com
+scanpix.no
 sccdn.chosun.com
 scdn.line-apps.com
 scene7.com
@@ -7041,6 +7053,7 @@ vidcloud9.com
 vidcommons.org
 video.antopie.org
 video.colibris-outilslibres.org
+video.fc2.com
 video.gafamfree.party
 video.lewd.host
 video.like.video
@@ -7097,6 +7110,7 @@ vk.com
 vkanketa.ru
 vkpeople.ru
 vkuservideo.net
+vlive.tv
 vln.school.nz
 vmg.yonhapnews.co.kr
 vndb.org
