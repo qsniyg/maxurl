@@ -29,7 +29,7 @@ const client = new Snoostorm(r);
 
 var dourl = require("./dourl.js");
 
-const links = new NodeCache({ stdTTL: 600, checkperiod: 100 });
+const links = new NodeCache({ stdTTL: 0, checkperiod: 100 });
 
 function is_number(n) {
 	if (typeof n === "number")
@@ -290,12 +290,12 @@ if (true) {
 			}
 		}
 
-		if (links.get(post.permalink) === true) {
+		if (links.get(post.id) === true) {
 			//console.log("Already processed " + post.permalink + ", skipping");
 			return;
 		}
 
-		links.set(post.permalink, true);
+		links.set(post.id, true);
 
 		var url = post.url;
 
