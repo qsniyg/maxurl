@@ -15,7 +15,7 @@
 // @name:zh-TW        Image Max URL
 // @name:zh-HK        Image Max URL
 // @namespace         http://tampermonkey.net/
-// @version           0.14.9
+// @version           0.14.10
 // @description       Finds larger or original versions of images and videos for 7500+ websites, including a powerful media popup feature
 // @description:en    Finds larger or original versions of images and videos for 7500+ websites, including a powerful media popup feature
 // @description:ko    7500개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
@@ -61,7 +61,7 @@
 //  Note that jsdelivr.net might not always be reliable, but (AFAIK) this is the only reasonable option from what greasyfork allows.
 //  I'd recommend using the Github version of the script if you encounter any issues (linked in the 'Project links' section below).
 //
-// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@bb1a365b336d8d10a016a9d27c04fe2967781464/build/rules.js
+// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@4ee74abe7a813c799ecc35fc5f6bb7d10a4f2a55/build/rules.js
 // ==/UserScript==
 
 // If you see "A userscript wants to access a cross-origin resource.", it's used for:
@@ -322,6 +322,7 @@ var $$IMU_EXPORT$$;
 		native_blob, native_URL,
 		our_EventTarget, our_addEventListener, our_removeEventListener,
 		string_fromcharcode, string_charat,
+		array_reduce, array_reduce_prototype,
 		document_createElement;
 
 	if (is_node) {
@@ -579,6 +580,69 @@ var $$IMU_EXPORT$$;
 		};
 		get_compat_array_indexof();
 
+		// idol.sankakucomplex.com overrides this with a broken one
+		var get_compat_array_reduce = function() {
+			var array_prototype_reduce = Array.prototype.reduce;
+			var array_reduce_orig = function(array, cb, initial) {
+				if (typeof initial !== "undefined")
+					return array_prototype_reduce.call(array, cb, initial);
+				else
+					return array_prototype_reduce.call(array, cb);
+			};
+
+			var array_reduce_correct = function(array, cb, initial) {
+				var firstindex = 0;
+
+				if (typeof initial === "undefined") {
+					if (!array.length) {
+						throw new TypeError("Reduce of empty array with no initial value");
+					}
+
+					initial = array[0];
+					firstindex = 1;
+				}
+
+				var acc = initial;
+				for (var i = firstindex; i < array.length; i++) {
+					acc = cb(acc, array[i], i, array);
+				}
+
+				return acc;
+			};
+
+			var array_reduce_check = function(func) {
+				// should throw 'undefined is not a function'
+				try {
+					func([]);
+					return false;
+				} catch (e) {}
+
+				// should throw 'Reduce of empty array with no initial value'
+				try {
+					func([], function(){});
+					return false;
+				} catch (e) {}
+
+				var reducer = function(acc, cur, i) {return acc.x + cur.x + i};
+
+				if (isNaN(func([{x:2},{x:2},{x:2}], reducer)) &&
+					func([{x:2},{x:6}], reducer) === 9 &&
+					func([{x:2}], reducer).x === 2 &&
+					func([{x:2}], reducer, {x:6}) === 8) {
+					return true;
+				}
+
+				return false;
+			};
+
+			array_reduce = sanity_test(array_reduce_orig, array_reduce_correct, array_reduce_check);
+
+			array_reduce_prototype = function(cb, initial) {
+				return array_reduce(this, cb, initial);
+			};
+		};
+		get_compat_array_reduce();
+
 		var get_compat_string_indexof = function() {
 			var string_prototype_indexof = String.prototype.indexOf;
 			var string_indexof_orig = function(string, x) {
@@ -720,6 +784,7 @@ var $$IMU_EXPORT$$;
 	get_compat_functions();
 
 	var array_extend = function(array, other) {
+		if (!is_array(other)) other = [other];
 		[].push.apply(array, other);
 	};
 
@@ -1396,7 +1461,63 @@ var $$IMU_EXPORT$$;
 			};
 		};
 	} else if (typeof(GM_xmlhttpRequest) !== "undefined") {
-		do_request_raw = GM_xmlhttpRequest;
+		// idol.sankakucomplex.com overrides array.prototype.reduce
+		// not an issue for newer Violentmonkey versions
+		if (userscript_manager === "Violentmonkey" && version_compare(userscript_manager_version, "2.12.7") <= 0) {
+			do_request_raw = function(data) {
+				var orig_cbs = {};
+
+				var is_native = function(x) {
+					var x_str = x.toString();
+
+					if (x_str.length < 80 && string_indexof(x_str, "native code") > 0) {
+						return true;
+					} else {
+						return false;
+					}
+				}
+
+				var revert = [];
+
+				if (Array.prototype.reduce !== array_reduce_prototype && !is_native(Array.prototype.reduce)) {
+					var old_reduce = Array.prototype.reduce;
+
+					Array.prototype.reduce = array_reduce_prototype;
+
+					revert.push(function() {
+						Array.prototype.reduce = old_reduce;
+					});
+				}
+
+				var reverted = false;
+				var onfinal = function(x, args) {
+					if (!reverted) {
+						array_foreach(revert, function(revert_func) {
+							revert_func();
+						});
+						reverted = true;
+					}
+
+					return orig_cbs[x].apply(this, args);
+				};
+
+				if (revert.length) {
+					var replace = ["onload", "onabort", "onerror", "ontimeout"];
+					array_foreach(replace, function(x) {
+						if (x in data) {
+							orig_cbs[x] = data[x];
+							data[x] = function() {
+								return onfinal(x, arguments);
+							};
+						}
+					});
+				}
+
+				return GM_xmlhttpRequest(data);
+			};
+		} else {
+			do_request_raw = GM_xmlhttpRequest;
+		}
 	} else if (typeof(GM) !== "undefined" && typeof(GM.xmlHttpRequest) !== "undefined") {
 		do_request_raw = GM.xmlHttpRequest;
 	}
@@ -1796,8 +1917,16 @@ var $$IMU_EXPORT$$;
 		};
 	} else if (is_userscript) {
 		// TODO: support GM_cookie
-		get_cookies = function(url, cb) {
+		get_cookies = function(url, cb, options) {
 			if (settings.browser_cookies === false) {
+				return cb(null);
+			}
+
+			if (!options) {
+				options = {};
+			}
+
+			if (options.need_full) {
 				return cb(null);
 			}
 
@@ -1913,6 +2042,7 @@ var $$IMU_EXPORT$$;
 		always_ok: false,
 		likely_broken: false,
 		can_head: true,
+		can_multiple_request: true,
 		head_ok_errors: [],
 		head_wrong_contenttype: false,
 		head_wrong_contentlength: false,
@@ -1933,6 +2063,8 @@ var $$IMU_EXPORT$$;
 		video: false,
 		album_info: null,
 		headers: {},
+		// host url to copy cookies from
+		cookie_url: null,
 		referer_ok: {
 			same_domain: false,
 			same_domain_nosub: false
@@ -8122,9 +8254,20 @@ var $$IMU_EXPORT$$;
 		get_image_size = null;
 	}
 
-	var sort_by_key = function(array, key) {
+	var sort_by_key = function(array, key, indexer) {
 		return array.sort(function(a, b) {
-			return (parseFloat(a[key]) || 0) - (parseFloat(b[key]) || 0);
+			var a_key = a[key];
+			var b_key = b[key];
+
+			if (indexer) {
+				a_key = indexer(a_key);
+				b_key = indexer(b_key);
+			} else {
+				a_key = parseFloat(a_key) || 0;
+				b_key = parseFloat(b_key) || 0;
+			}
+
+			return a_key - b_key;
 		});
 	};
 
@@ -12612,6 +12755,176 @@ var $$IMU_EXPORT$$;
 		return "jQuery" + get_random_text(20) + "_" + Date.now();
 	};
 
+	common_functions.get_largest_twimg = function(url) {
+		var fill_obj_filename = function(obj, url) {
+			var format = get_queries(url).format;
+			if (format) {
+				var basename = url.match(/\/([^/.?#]+)(?:\.[^/.]+)?(?:[?#].*)?$/);
+				obj.filename = basename[1] + "." + format;
+			}
+		};
+
+		var obj = {
+			url: url,
+			can_head: false // 503 sometimes
+		};
+
+		var newsrc, match;
+
+		if (string_indexof(obj.url, "/profile_images/") >= 0) {
+			// https://pbs.twimg.com/profile_images/539057632435122178/1_MUcoAZ_bigger.jpeg
+			// https://pbs.twimg.com/profile_images/642139282325417984/uXOHdmTV_mini.png
+			// https://pbs.twimg.com/profile_images/1079712585186852864/l9IiWuzk_reasonably_small.jpg
+			//   https://pbs.twimg.com/profile_images/1079712585186852864/l9IiWuzk.jpg
+			//return src.replace(/_[a-zA-Z0-9]+\.([^/_]*)$/, "\.$1");
+			newsrc = obj.url
+				.replace(/[?#].*$/, "")
+				.replace(/_(?:bigger|normal|mini|reasonably_small|[0-9]+x[0-9]+)(\.[^/_]*)$/, "$1");
+			if (newsrc !== obj.url) {
+				obj.url = newsrc;
+				return obj;
+			} else {
+				return;
+			}
+		}
+
+		if (string_indexof(obj.url, "/profile_banners/") >= 0) {
+			// https://pbs.twimg.com/profile_banners/811769379020947458/1503413326/1500x500 -- stretched
+			//   https://pbs.twimg.com/profile_banners/811769379020947458/1503413326
+			// thanks to Gyuri on discord:
+			// https://pbs.twimg.com/profile_banners/4746636714/1520928319/1500x500 -- possibly not stretched?
+			//   https://pbs.twimg.com/profile_banners/4746636714/1520928319
+			newsrc = obj.url.replace(/\/[0-9]+x[0-9]+(?:[?#].*)?$/, "");
+			if (newsrc !== obj.url) {
+				obj.url = newsrc;
+				return obj;
+			} else {
+				return;
+			}
+		}
+
+		fill_obj_filename(obj, obj.url);
+
+		// replace :orig to name=orig, should always work?
+		newsrc = obj.url
+			.replace(/:([^/?]+)(.*)?$/, "$2?name=$1")
+			.replace(/(\?.*)\?name=/, "$1&name=");
+		if (newsrc !== obj.url) {
+			obj.url = newsrc;
+		}
+
+		if (false && !(/\/(?:card|ad|semantic_core)_img\//.test(obj.url))) {
+			// replace format=jpg to .jpg, doesn't work for /card_img/
+			// doesn't work for some tweet images too (thanks to llacb47 on github for reporting: https://github.com/qsniyg/maxurl/issues/545)
+			// https://pbs.twimg.com/media/EnlTOuPVkAEVFcG?format=jpg&name=medium
+			//   https://pbs.twimg.com/media/EnlTOuPVkAEVFcG?format=jpg&name=orig
+			if (false) {
+				newsrc = obj.url
+					.replace(/(\/[^/.?]+)\?(.*?&)?format=([^&]*)(.*?$)?/, "$1.$3?$2$4")
+					.replace(/\?&/, "?")
+					.replace(/[?&]+$/, "");
+			}
+		}
+
+		if (/:\/\/[^/]+\/+media\//.test(obj.url)) {
+			match = obj.url.match(/^([^?#]+\/[^/.?#]+)\.([^/.?#]+)([?#].*)?$/);
+			if (match) {
+				// todo: check if format already exists and don't overwrite?
+				newsrc = add_queries(match[1] + (match[3]||""), {format: match[2]});
+			}
+
+			newsrc = newsrc.replace(/([?&]format=)webp(&.*)?$/, "$1jpg$2");
+
+			// should always work?
+			if (newsrc !== obj.url) {
+				fill_obj_filename(obj, newsrc);
+				obj.url = newsrc;
+			}
+		}
+
+		// http://pbs.twimg.com/tweet_video_thumb/EmCgOz9U4AA0bib.jpg
+		//   https://pbs.twimg.com/tweet_video/EmCgOz9U4AA0bib.mp4
+		match = obj.url.match(/\/tweet_video_thumb\/+([^/.?#]+)\./);
+		if (match) {
+			return {
+				url: obj.url.replace(/\/tweet_video_thumb\/+[^/]+\.[^/.]+(?:[?#].*)?$/, "/tweet_video/" + match[1] + ".mp4"),
+				video: true
+			};
+		}
+
+		// try various names (thanks to rEnr3n for reporting): https://github.com/qsniyg/maxurl/issues/165
+		// https://pbs.twimg.com/media/Bu4G7k3CcAA6Nx7.jpg
+		//   https://pbs.twimg.com/media/Bu4G7k3CcAA6Nx7.jpg?name=medium -- same size, anything higher doesn't work
+		var names = ["orig", "4096x4096", "large", "medium"];
+		var baseobj = obj;
+		obj = [];
+
+		var name = baseobj.url.match(/[?&]name=([^&]+)/);
+		if (name)
+			name = name[1];
+		else
+			name = null;
+
+		// don't downscale
+		var end = array_indexof(names, name);
+		if (end < 0)
+			end = names.length;
+
+		var obj_add = function(x) {
+			var newobj = deepcopy(baseobj);
+			newobj.url = x;
+			fill_obj_filename(newobj, newobj.url);
+
+			obj.push(newobj);
+		};
+
+		for (var i = 0; i < end; i++) {
+			newsrc = baseobj.url
+				.replace(/(\.[a-z]+)\?(?:(.*)&)?format=[^&]+/, "$1?$2&")
+				.replace(/&$/, "");
+
+			newsrc = add_queries(newsrc, {name: names[i]});
+			//var newsrc_colon = newsrc.replace(/\?name=([^&]+)$/, ":$1");
+
+			// don't do this, this doesn't work for .jpg?format=jpg&name=...
+			if (false) {
+				newsrc = src.replace(/([?&]name=)[^&]+(&.*)?$/, "$1" + names[i] + "$2");
+				if (newsrc === src)
+					newsrc = src
+						.replace(/(\?.*)?$/, "$1?name=" + names[i])
+						.replace(/(\?.*)\?name=/, "$1&name=");
+			}
+
+			var queries = get_queries(newsrc);
+
+			if (queries.format === "png") {
+				obj_add(newsrc);
+				obj_add(add_queries(newsrc, {format: "jpg"}));
+
+				/*if (newsrc_colon !== newsrc) {
+					obj_add(newsrc_colon);
+					obj_add(newsrc_colon.replace(/\.png(\?.*)?$/, ".jpg$1"));
+				}*/
+			} else if (queries.format === "jpg") {
+				// Prefer png over jpg (compression)
+				obj_add(add_queries(newsrc, {format: "png"}));
+				obj_add(newsrc);
+
+				/*if (newsrc_colon !== newsrc) {
+					obj_add(newsrc_colon.replace(/\.jpg(\?.*)?$/, ".png$1"));
+					obj_add(newsrc_colon);
+				}*/
+			} else {
+				obj_add(newsrc);
+			}
+		}
+
+		obj_add(baseobj.url);
+
+		if (obj.length > 1)
+			return obj;
+	};
+
 	var get_domain_from_url = function(url) {
 		return url.replace(/^[a-z]+:\/\/([^/]+)(?:\/+.*)?$/, "$1");
 	};
@@ -12763,13 +13076,13 @@ var $$IMU_EXPORT$$;
 	                    data: bigimage_obj,
 	                    message: "Unable to get bigimage function"
 	                };
-	            } else if (bigimage_obj.nonce !== "g3h63k262on99n75") {
+	            } else if (bigimage_obj.nonce !== "1p12iij99861db5m") {
 	                // This could happen if for some reason the userscript manager updates the userscript,
 	                // but not the required libraries.
 	                require_rules_failed = {
 	                    type: "bad_nonce",
 	                    data: bigimage_obj.nonce,
-	                    message: "Bad nonce, expected: " + "g3h63k262on99n75"
+	                    message: "Bad nonce, expected: " + "1p12iij99861db5m"
 	                };
 	            } else {
 	                bigimage = bigimage_obj.bigimage;
@@ -13467,7 +13780,8 @@ var $$IMU_EXPORT$$;
 		if (common_functions.is_pinterest_domain(host_domain) ||
 			host_domain_nowww === "nrk.no" ||
 			host_domain_nowww === "local12.com" ||
-			host_domain_nowww === "dailymotion.com") {
+			host_domain_nowww === "dailymotion.com" ||
+			host_domain_nowww === "ok.ru") {
 			return {
 				element_ok: function(el) {
 					if (el.tagName === "VIDEO")
@@ -18475,7 +18789,8 @@ var $$IMU_EXPORT$$;
 
 		var req = null;
 
-		if (settings.mouseover_partial_avoid_head && incomplete_request && (!obj[0].bad_if || obj[0].bad_if.length === 0)) {
+		if ((!obj[0].can_multiple_request || settings.mouseover_partial_avoid_head) && incomplete_request
+			&& (!obj[0].bad_if || obj[0].bad_if.length === 0)) {
 			onload_cb({
 				status: 200,
 				responseHeaders: "Content-Type: " + (obj_is_probably_video ? "video/mp4" : "image/jpeg"),
@@ -18486,35 +18801,50 @@ var $$IMU_EXPORT$$;
 			return;
 		}
 
-		req = do_request({
-			method: method,
-			url: url,
-			responseType: responseType,
-			headers: headers,
-			trackingprotection_failsafe: true,
-			need_blob_response: method == "GET",
-			retry_503: true,
-			onprogress: function(resp) {
-				var do_abort = function() {
-					if (!req || !req.abort) {
-						console_warn("Unable to abort request");
-						return;
+		var start_req = function() {
+			req = do_request({
+				method: method,
+				url: url,
+				responseType: responseType,
+				headers: headers,
+				trackingprotection_failsafe: true,
+				need_blob_response: method == "GET",
+				retry_503: true,
+				onprogress: function(resp) {
+					var do_abort = function() {
+						if (!req || !req.abort) {
+							console_warn("Unable to abort request");
+							return;
+						}
+
+						req.abort();
+					};
+
+					if (!processing.running) {
+						do_abort();
 					}
 
-					req.abort();
-				};
+					if (incomplete_request && resp.readyState >= 2 && resp.responseHeaders) {
+						do_abort();
+						onload_cb(resp);
+					}
+				},
+				onload: onload_cb
+			});
+		};
 
-				if (!processing.running) {
-					do_abort();
+		if (obj[0].cookie_url && get_cookies) {
+			get_cookies(obj[0].cookie_url, function(cookies) {
+				if (!cookies) {
+					return start_req();
 				}
 
-				if (incomplete_request && resp.readyState >= 2 && resp.responseHeaders) {
-					do_abort();
-					onload_cb(resp);
-				}
-			},
-			onload: onload_cb
-		});
+				headerobj_set(headers, "cookie", cookies_to_httpheader(cookies));
+				start_req();
+			}, {need_full: true});
+		} else {
+			start_req();
+		}
 	}
 
 	var str_to_keycode_table = {

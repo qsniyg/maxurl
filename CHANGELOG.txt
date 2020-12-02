@@ -1,3 +1,21 @@
+0.14.10
+
+New features:
+
+ * Support for ~20 new websites (using ~10 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including Amazon, Nitter, TikTok, Twitter)
+
+Bugfixes:
+
+ * Work around an issue with older Violentmonkey versions where XHR could fail if Array.prototype.reduce was invalid (thanks to Urkchar on discord for reporting)
+
+Special thanks to fedesk, dym-sh, llacb47, Urkchar for their contributions and reports for this release
+
+---
+
 0.14.9
 
 New features:

@@ -78,6 +78,7 @@
 2chmatome2.jp
 2dgalleries.com
 2e0a24317f4a9294563f-26c3b154822345d9dde0204930c49e9c.ssl.cf1.rackcdn.com
+2img.net
 2photo.ru
 2sao.vietnamnetjsc.vn
 34.ua
@@ -97,6 +98,7 @@
 49qmz.com
 4everstatic.com
 4fzone.com
+4gamer.net
 4girls.co.il
 4icdn.com
 4kw.in
@@ -457,6 +459,7 @@ assets.infowars.com
 assets.infowarsmedia.com
 assets.instyle.co.uk
 assets.jalantikus.com
+assets.lifesitenews.com
 assets.lybrate.com
 assets.marthastewart.com
 assets.media-platform.com
@@ -489,6 +492,7 @@ assets.teenvogue.com
 assets.upflix.pl
 assets.vg247.com
 assets.vogue.com
+assets.website-files.com
 assets.whatson.cityofsydney.nsw.gov.au.s3.amazonaws.com
 assets.whicdn.com
 assets.wonderlandmagazine.com
@@ -1322,6 +1326,7 @@ cgeimage.commutil.kr
 cgtrader.com
 chacuncherchesonfilm.fr
 channel3000.com
+chartsinfrance.net
 chat1102.com
 chathour.com
 chathourmobile.com
@@ -1581,6 +1586,7 @@ d26672rfe314dk.cloudfront.net
 d26oc3sg82pgk3.cloudfront.net
 d279m997dpfwgl.cloudfront.net
 d27t0qkxhe4r68.cloudfront.net
+d28hgpri8am2if.cloudfront.net
 d2a2wjuuf1c30f.cloudfront.net
 d2adpaynhf6x63.cloudfront.net
 d2bq4ntp986cty.cloudfront.net
@@ -1740,6 +1746,7 @@ desu-usergeneratedcontent.xyz
 dev.invidio.us
 dev.magzter.com
 deviantart.net
+devold.com
 devote.se
 devtube.dev-wiki.de
 dg31sz3gwrwan.cloudfront.net
@@ -2499,6 +2506,7 @@ getty.edu
 getwallpapers.com
 gfinity-img.s3.amazonaws.com
 gfx.elle.ci
+gfx.nrk.no
 gfycat.com
 gfycatporntube.com
 ggilbo.com
@@ -2910,7 +2918,6 @@ i.pipec.info
 i.pixxxels.cc
 i.playground.ru
 i.pornsexer.com
-i.postimg.cc
 i.pximg.net
 i.qumd.gr
 i.redd.it
@@ -4225,12 +4232,14 @@ latimesblogs.latimes.com
 latinacelebrities.com
 lattepic.s3.amazonaws.com
 laughspark.info
+laut.de
 laverdadnoticias.com
 lavideodujourjetm.net
 laweekly.com
 layfielddesign.com
 layla-lingerie.com
 lbfmaddiction.com
+lc-imageresizer-live-s.legocdn.com
 leadceleb.com
 leafimg-a.akamaihd.net
 leathercelebrities.com
@@ -5038,6 +5047,7 @@ nitter.13ad.de
 nitter.1d4.us
 nitter.42l.fr
 nitter.cattube.org
+nitter.cc
 nitter.dark.fail
 nitter.fdn.fr
 nitter.kavin.rocks
@@ -5047,6 +5057,8 @@ nitter.nixnet.services
 nitter.pussthecat.org
 nitter.snopyta.org
 nitter.tedomum.net
+nitter.vxempire.xyz
+nitter.weaponizedhumiliation.com
 niuerdata.donews.com
 niuerdata.g.com.cn
 nmbimg.fastmirror.org
@@ -5142,6 +5154,7 @@ oi5mmhyk8.qnssl.com
 oir.mobi
 ojosdecafe.com
 ojsfile.ohmynews.com
+ok.ru
 okasianxxxtube.com
 okccdn.com
 okdiario.com
@@ -5544,6 +5557,7 @@ posterhd.ru
 posterswholesale.com
 postervdom.ru
 postila.ru
+postimg.cc
 povarenok.ru
 powr-media.com
 ppe.pl
@@ -5988,6 +6002,7 @@ sensescans.com
 sensualgirls.org
 seoul.co.kr
 seoulilbo.com
+sephora.com
 serey.io
 seriouseats.com
 sesso-escort.com
@@ -6362,6 +6377,7 @@ static.netlife.vn
 static.new-magazine.co.uk
 static.noticiasaominuto.com
 static.noticiasaominuto.com.br
+static.nrk.no
 static.nulled.to
 static.ok.co.uk
 static.ok.co.uk.s3.amazonaws.com
@@ -6908,6 +6924,7 @@ tvdeav.com
 tvperson.ru
 tw.openalgeria.org
 twatis.com
+tweet.lambda.dance
 twistednuts.com
 twitch.tv
 twitpic.com
@@ -6998,6 +7015,7 @@ upt.xhcdn.com
 urbanbug.net
 urbanhit.fr
 ure.pia.co.jp
+urlebird.com
 usa-grlk5lagedl.stackpathdns.com
 user-assets.sxlcdn.com
 user-images.strikinglycdn.com
@@ -7035,6 +7053,7 @@ vetton.ru
 vettri.net
 vev.ru
 vgamuseum.info
+vgc.no
 vgm.io
 vgmdb.net
 vgmdownloads.com
