@@ -70,6 +70,7 @@
   "optional_permissions": [
     "history",
     "notifications",
-    "downloads"
+    "downloads",
+    "clipboardWrite"
   ]
 }
