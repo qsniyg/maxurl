@@ -457,6 +457,10 @@ msgstr ""
 msgid "New tab"
 msgstr ""
 
+#. mouseover_open_behavior.options.newtab_bg.name
+msgid "New background tab"
+msgstr ""
+
 #. mouseover_open_behavior.options.download.name
 msgid "Download"
 msgstr ""

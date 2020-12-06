@@ -460,6 +460,10 @@ msgstr "마우스오버 팝업이 열리는 방식"
 msgid "New tab"
 msgstr "새 탭"
 
+#. mouseover_open_behavior.options.newtab_bg.name
+msgid "New background tab"
+msgstr ""
+
 #. mouseover_open_behavior.options.download.name
 msgid "Download"
 msgstr ""
