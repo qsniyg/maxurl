@@ -423,6 +423,20 @@ msgstr ""
 msgid "Redirects to the largest image found that doesn't require custom headers or forces download"
 msgstr ""
 
+#. redirect_host_html.name
+msgid "Redirect for HTML pages too"
+msgstr ""
+
+#. redirect_host_html.description
+msgid "Tries redirection even if the host page is HTML. This option might be useful for dead links. However, this will also result in many normal pages being redirected to images/video, so please avoid enabling this by default!"
+msgstr ""
+
+#. redirect_host_html.warning.true
+msgid ""
+"This will result in many pages being redirected to images/videos.\n"
+"I'd recommend only enabling this for the media you need it for, then disabling it after."
+msgstr ""
+
 #. mouseover.name
 msgid "Enable mouseover popup"
 msgstr ""

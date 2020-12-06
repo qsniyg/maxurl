@@ -426,6 +426,20 @@ msgstr "문제없이 최대로 리디렉션"
 msgid "Redirects to the largest image found that doesn't require custom headers or forces download"
 msgstr "사용자 지정 헤더나 강제 다운로드가 필요 없는 가장 큰 이미지로 리디렉션"
 
+#. redirect_host_html.name
+msgid "Redirect for HTML pages too"
+msgstr ""
+
+#. redirect_host_html.description
+msgid "Tries redirection even if the host page is HTML. This option might be useful for dead links. However, this will also result in many normal pages being redirected to images/video, so please avoid enabling this by default!"
+msgstr ""
+
+#. redirect_host_html.warning.true
+msgid ""
+"This will result in many pages being redirected to images/videos.\n"
+"I'd recommend only enabling this for the media you need it for, then disabling it after."
+msgstr ""
+
 #. mouseover.name
 msgid "Enable mouseover popup"
 msgstr "이미지 팝업 사용"
