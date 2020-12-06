@@ -504,6 +504,14 @@ input:checked + label, button, .button, .dark .button, .button:visited, .dark .b
 }
 
 .tab {
+  border-color: #ccc;
+}
+
+.dark .tab {
+  border-color: #777;
+}
+
+.tab.active {
   border-color: transparent;
 }
 
@@ -582,7 +590,7 @@ input:checked + label, button, .button, .dark .button, .button:visited, .dark .b
 #options .subcat.frame {
   border: 1px solid #ccc;
   margin-top: 1.5em;
-  margin-bottom: 1em;
+  margin-bottom: 1.5em;
 }
 
 .dark #options .subcat.frame {
