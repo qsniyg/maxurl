@@ -334,6 +334,14 @@ msgstr ""
 msgid "Tries to ensure the 'save as' dialog displays when downloading. This requires the 'downloads' permission to work, and will sometimes not work when custom headers are required."
 msgstr ""
 
+#. write_to_clipboard.name
+msgid "Enable writing to clipboard"
+msgstr ""
+
+#. write_to_clipboard.description
+msgid "This option does nothing on its own, but enabling it allows other functionality that require writing to the clipboard to work"
+msgstr ""
+
 #. redirect.name
 msgid "Enable redirection"
 msgstr "리디렉션 사용"
@@ -1574,6 +1582,14 @@ msgstr ""
 msgid "Opens the image in the popup in a new tab without switching to it when this key is pressed"
 msgstr ""
 
+#. mouseover_copy_link_key.name
+msgid "Copy link key"
+msgstr ""
+
+#. mouseover_copy_link_key.description
+msgid "Copies the link of the media to the clipboard when this key is pressed"
+msgstr ""
+
 #. mouseover_open_options_key.name
 msgid "Open options key"
 msgstr ""
@@ -2222,6 +2238,14 @@ msgstr ""
 msgid "Avoids using Instagram's web API if possible, which increases performance, but will occasionally sacrifice quality for videos"
 msgstr ""
 
+#. instagram_prefer_video_quality.name
+msgid "Instagram: Prefer quality over resolution"
+msgstr ""
+
+#. instagram_prefer_video_quality.description
+msgid "Prefers lower resolution videos that use a higher bitrate over higher resolution images. This adds a slight performance cost as it needs to fetch headers for multiple videos"
+msgstr ""
+
 #. instagram_gallery_postlink.name
 msgid "Instagram: Use albums for post thumbnails"
 msgstr ""
@@ -2434,6 +2458,14 @@ msgstr ""
 
 #. replaceimgs_replacelinks.description
 msgid "Replaces links if they already exist"
+msgstr ""
+
+#. replaceimgs_links_newtab.name
+msgid "Links open in new tab"
+msgstr ""
+
+#. replaceimgs_links_newtab.description
+msgid "Clicking on a link will open the image in a new tab"
 msgstr ""
 
 #. replaceimgs_enable_keybinding.name, highlightimgs_enable_keybinding.name
