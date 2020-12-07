@@ -32,8 +32,15 @@ strip_whitespace hls.js
 wget https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js -O cryptojs_aes.orig.js
 cat cryptojs_aes.orig.js cryptojs_aes_shim.js > cryptojs_aes.js
 
-wget https://ajax.googleapis.com/ajax/libs/shaka-player/3.0.5/shaka-player.compiled.debug.js -O shaka.debug.orig.js
-cat shaka.debug.orig.js shaka_shim.js > shaka.debug.js
+wget https://unpkg.com/mux.js@5.7.0/dist/mux.js -O mux.orig.js
+echo 'var muxjs=null;' > mux.lib.js
+cat mux.orig.js >> mux.lib.js
+# don't store in window
+sed -i 's/g\.muxjs *=/muxjs =/' mux.lib.js
+
+wget https://ajax.googleapis.com/ajax/libs/shaka-player/3.0.6/shaka-player.compiled.debug.js -O shaka.debug.orig.js
+echo 'var _fakeGlobal={};' > shaka_global.js
+cat mux.lib.js shaka_global.js shaka.debug.orig.js shaka_shim.js > shaka.debug.js
 # XHR is same as above, to allow overriding
 # the other window.* changes fixes it failing under the firefox addon
 # disable fetch in order to force XHR
@@ -42,11 +49,13 @@ sed -i \
     -e 's/window\.XMLHttpRequest/XMLHttpRequest/g' \
 	-e 's/window\.decodeURIComponent/decodeURIComponent/g' \
 	-e 's/window\.parseInt/parseInt/g' \
+	-e 's/window\.muxjs/muxjs/g' \
+	-e 's/innerGlobal\.shaka/_fakeGlobal.shaka/g' \
 	-e 's/goog\.global\.XMLHttpRequest/XMLHttpRequest/g' \
 	-e 's/\(HttpFetchPlugin.isSupported=function..{\)/\1return false;/g' \
 	-e '/\/\/# sourceMappingURL=/d' shaka.debug.js
 
 CLEANUP=1
 if [ $CLEANUP -eq 1 ]; then
-	rm dash.all.debug.orig.js aes.orig.js aes.patched.js hls.patched.js hls.orig.js cryptojs_aes.orig.js shaka.debug.orig.js
+	rm dash.all.debug.orig.js aes.orig.js aes.patched.js hls.patched.js hls.orig.js cryptojs_aes.orig.js shaka.debug.orig.js shaka_global.js mux.orig.js mux.lib.js
 fi
