@@ -36,7 +36,8 @@ wget https://unpkg.com/mux.js@5.7.0/dist/mux.js -O mux.orig.js
 echo 'var muxjs=null;' > mux.lib.js
 cat mux.orig.js >> mux.lib.js
 # don't store in window
-sed -i 's/g\.muxjs *=/muxjs =/' mux.lib.js
+#sed -i 's/g\.muxjs *=/muxjs =/' mux.lib.js
+sed -i 's/^(function(f){if(typeof exports/(function(f){muxjs = f();return;if(typeof exports/' mux.lib.js
 
 wget https://ajax.googleapis.com/ajax/libs/shaka-player/3.0.6/shaka-player.compiled.debug.js -O shaka.debug.orig.js
 # move exportTo outside the anonymous function scope
