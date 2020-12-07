@@ -39,7 +39,9 @@ cat mux.orig.js >> mux.lib.js
 sed -i 's/g\.muxjs *=/muxjs =/' mux.lib.js
 
 wget https://ajax.googleapis.com/ajax/libs/shaka-player/3.0.6/shaka-player.compiled.debug.js -O shaka.debug.orig.js
-echo 'var _fakeGlobal={};' > shaka_global.js
+# move exportTo outside the anonymous function scope
+echo 'var _fakeGlobal={};var exportTo={};' > shaka_global.js
+sed -i 's/var exportTo={};//g' shaka.debug.orig.js
 cat mux.lib.js shaka_global.js shaka.debug.orig.js shaka_shim.js > shaka.debug.js
 # XHR is same as above, to allow overriding
 # the other window.* changes fixes it failing under the firefox addon
