@@ -468,6 +468,10 @@ msgstr ""
 msgid "Download"
 msgstr ""
 
+#. mouseover_open_behavior.options.copylink.name
+msgid "Copy link"
+msgstr ""
+
 #. mouseover_trigger_behavior.name
 msgid "Mouseover popup trigger"
 msgstr "Déclencheur du popup"
