@@ -36,6 +36,7 @@ var variables_list = [
 	"string_replaceall",
 	"match_all",
 	"obj_foreach",
+	"obj_extend",
 	"shallowcopy",
 	"deepcopy",
 	"_",
