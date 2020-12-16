@@ -191,6 +191,14 @@ msgstr ""
 msgid "If disabled, options that are disabled due to their requirements being unmet will not be displayed"
 msgstr ""
 
+#. settings_show_disabled_profiles.name
+msgid "Show disabled trigger profiles"
+msgstr ""
+
+#. settings_show_disabled_profiles.description
+msgid "If disabled, options for alternate trigger profiles (options with `(#2)` after them) will not be shown if the relevant trigger isn't active"
+msgstr ""
+
 #. settings_show_requirements.name
 msgid "Requirements below disabled options"
 msgstr ""
@@ -445,27 +453,27 @@ msgstr ""
 msgid "Show a popup with the larger image when you mouseover an image with the trigger key held (if applicable)"
 msgstr ""
 
-#. mouseover_open_behavior.name
+#. mouseover_open_behavior.name, t2_mouseover_open_behavior.name
 msgid "Mouseover popup action"
 msgstr ""
 
-#. mouseover_open_behavior.description
+#. mouseover_open_behavior.description, t2_mouseover_open_behavior.description
 msgid "Determines how the mouseover popup will open"
 msgstr ""
 
-#. mouseover_open_behavior.options.newtab.name
+#. mouseover_open_behavior.options.newtab.name, t2_mouseover_open_behavior.options.newtab.name
 msgid "New tab"
 msgstr ""
 
-#. mouseover_open_behavior.options.newtab_bg.name
+#. mouseover_open_behavior.options.newtab_bg.name, t2_mouseover_open_behavior.options.newtab_bg.name
 msgid "New background tab"
 msgstr ""
 
-#. mouseover_open_behavior.options.download.name
+#. mouseover_open_behavior.options.download.name, t2_mouseover_open_behavior.options.download.name
 msgid "Download"
 msgstr ""
 
-#. mouseover_open_behavior.options.copylink.name
+#. mouseover_open_behavior.options.copylink.name, t2_mouseover_open_behavior.options.copylink.name
 msgid "Copy link"
 msgstr ""
 
@@ -503,6 +511,14 @@ msgstr ""
 
 #. mouseover_trigger_key.description
 msgid "Key sequence to trigger the popup"
+msgstr ""
+
+#. mouseover_trigger_key_t2.name
+msgid "Popup trigger key (#2)"
+msgstr ""
+
+#. mouseover_trigger_key_t2.description
+msgid "Key sequence to trigger the popup with alternate options. Search for `(#2)` to find the relevant options"
 msgstr ""
 
 #. mouseover_trigger_delay.name
@@ -898,7 +914,7 @@ msgid "Use safe glyphs"
 msgstr ""
 
 #. mouseover_ui_use_safe_glyphs.description
-msgid "Uses glyphs that are more likely to be available on all fonts. Enable this option if the following characters render as boxes: 🡇 🡐 🡒"
+msgid "Uses glyphs that are more likely to be available on all fonts. Enable this option if the following characters render as boxes: 🡇 🡐 🡒. The 'Noto Sans Symbols2' font contains these characters."
 msgstr ""
 
 #. mouseover_ui_imagesize.name
@@ -1169,7 +1185,7 @@ msgstr ""
 msgid "Thumbnail"
 msgstr ""
 
-#. mouseover_open_behavior.options.popup.name, mouseover_close_el_policy.options.popup.name
+#. mouseover_open_behavior.options.popup.name, mouseover_close_el_policy.options.popup.name, t2_mouseover_open_behavior.options.popup.name
 msgid "Popup"
 msgstr ""
 
@@ -1527,6 +1543,14 @@ msgstr ""
 
 #. mouseover_clickthrough.description
 msgid "Enabling this option will allow you to click on links underneath the popup"
+msgstr ""
+
+#. mouseover_mask_ignore_clicks.name
+msgid "Ignore clicks outside popup"
+msgstr ""
+
+#. mouseover_mask_ignore_clicks.description
+msgid "Any mouse event outside the popup will be discarded with this option"
 msgstr ""
 
 #. mouseover_add_link.name
@@ -2225,6 +2249,14 @@ msgstr ""
 msgid "Prefers using the download link (if available) by default"
 msgstr ""
 
+#. ehentai_full_image.name
+msgid "E-Hentai: Use full image"
+msgstr ""
+
+#. ehentai_full_image.description
+msgid "Prefers using full/original images if available (logged in). This is more likely to get you rate limited"
+msgstr ""
+
 #. imgur_filename.name
 msgid "Imgur: Use original filename"
 msgstr ""
@@ -2352,10 +2384,6 @@ msgstr ""
 msgid "A list of URLs that are blacklisted from being processed"
 msgstr ""
 
-#. mouseover_styles.documentation.title, bigimage_blacklist.documentation.title
-msgid "Documentation"
-msgstr ""
-
 #. bigimage_blacklist.documentation.value
 msgid ""
 "The examples below are written for the simple (glob) engine, not the regex engine. The glob engine is generally based on the UNIX glob syntax.<br />\n"
@@ -2389,6 +2417,52 @@ msgstr ""
 
 #. bigimage_blacklist_engine.options.regex.name
 msgid "Regex"
+msgstr ""
+
+#. filename_format.name
+msgid "Filename format"
+msgstr ""
+
+#. filename_format.description
+msgid "Format string(s) for the filename"
+msgstr ""
+
+#. mouseover_styles.documentation.title, bigimage_blacklist.documentation.title, filename_format.documentation.title
+msgid "Documentation"
+msgstr ""
+
+#. filename_format.documentation.value
+msgid ""
+"<p>Variables are specified between curly brackets (<code>{}</code>).</p>\n"
+"<p>Below is a list of valid variables:</p>\n"
+"<ul><br />\n"
+"<li><code>filename</code> - Original filename (with extension, if applicable)</li>\n"
+"<li><code>filename_noext</code> - Original filename (without extension, if applicable)</li>\n"
+"<li><code>ext</code> - Extension (with <code>.</code> prefixed)</li>\n"
+"<li><code>caption</code> - Popup caption</li>\n"
+"<li><code>author_username</code> - Author's username</li>\n"
+"<li><code>created_...</code> - Created date (see note on Date objects below)</li>\n"
+"<li><code>download_...</code> - Download date (see note on Date objects below)</li>\n"
+"</ul><br />\n"
+"<p>You can truncate the value of a variable by adding <code>:(number)</code> before the end bracket (<code>}</code>). For example:</p>\n"
+"<code>{caption:10}</code> - Truncates the caption to be at most 10 characters long\n"
+"<p>If a variable doesn't exist, by default it will ignore the current format string and use the one on the next line, unless <code>?</code> is added before the end bracket. For example:</p>\n"
+"<ul><br />\n"
+"<li><code>{ext?}</code> - Will be replaced with nothing if <code>ext</code> doesn't exist</li>\n"
+"<li><code>{caption?no caption}</code> - Will be replaced with <code>no caption</code> if <code>caption</code> doesn't exist</li>\n"
+"</ul><br />\n"
+"<p>Date objects are accessible through a number of properties. Each property can be suffixed with <code>_utc</code> to get the UTC/GMT equivalent.</p>\n"
+"<ul><br />\n"
+"<li><code>..._iso</code> - Returns the date in ISO format (e.g. <code>2019-12-31T23-30-56</code>). Note that <code>:</code> is replaced with <code>-</code> to avoid issues with paths under NTFS.</li>\n"
+"<li><code>..._yyyymmdd</code> - Returns the date in YYYYMMDD format (e.g. <code>20191230</code>)</li>\n"
+"<li><code>..._hhmmss</code> - Returns the date's time in HHMMSS format (e.g. <code>233056</code>)</li>\n"
+"<li><code>..._year</code> - Returns the full year (e.g. <code>2019</code>)</li>\n"
+"<li><code>..._month</code> - Returns the (zero-padded) month (e.g. <code>12</code>)</li>\n"
+"<li><code>..._day</code> - Returns the zero-padded day (e.g. <code>31</code>)</li>\n"
+"<li><code>..._hours</code> - Returns zero-padded hours in military/24-hour format (e.g. <code>23</code>)</li>\n"
+"<li><code>..._minute</code> - Returns zero-padded minutes (e.g. <code>30</code>)</li>\n"
+"<li><code>..._seconds</code> - Returns zero-padded seconds (e.g. <code>56</code>)</li>\n"
+"</ul>"
 msgstr ""
 
 #. replaceimgs_keybinding.description
