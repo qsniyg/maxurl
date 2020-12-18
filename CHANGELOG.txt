@@ -1,3 +1,38 @@
+0.15.0
+
+New features:
+
+ * A second keyboard trigger is available, currently to support using a different popup action (#556, thanks to Hlsgs on github for the idea)
+ * Option to customize filename format (#409, thanks to mcOrmenos on discord for the idea)
+ * Option to prefer using higher quality videos over resolution for Instagram (enabled by default, thanks to Regis and fedesk on discord for their reports)
+ * Key to copy the media link to the clipboard (bound to Shift+C by default)
+ * Option to redirect even if the host page is HTML (#557, thanks to nijaz-lab on github for the idea)
+ * Option for "Popup Action" to open in background tab (#556, thanks to Hlsgs on github for the idea)
+ * Option for "Popup Action" to copy media link to clipboard (#435, thanks to lnp5131 on github for the idea)
+ * Option to discard clicks outside popup (disabled by default)
+ * Option to show disabled settings for alternate triggers (#561, disabled by default)
+ * Support for ~30 new websites (using ~25 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including Facebook, Instagram, Pixiv, Twitter, YouTube)
+ * Tabs are now used by default for settings (#553, thanks to rEnr3n on github for reporting)
+ * Reloading the options page will now stay on the same tab instead of reverting to General
+ * Filenames for data URLs are now set to "download" (#559, thanks to remlap on discord for reporting)
+
+Bugfixes:
+
+ * HLS works under Firefox now (#514)
+ * Most websites that failed with HLS/DASH under the userscript should work now (due to better sandboxing)
+ * Fix UI positioning when zooming incrementally (thanks to Rnksts on discord for reporting)
+ * Subsequent trigger presses when Popup Action is set to New tab now work properly
+ * Editable divs (rich text editors, including most modern chat services) are now also properly handled in "Disable keybindings when editing text" (thanks to Melih Şirin on discord for reporting)
+ * SVG tags should work again without crashing
+
+Special thanks to nijaz-lab, llacb47, Regis, fedesk, rEnr3n, Hlsgs, Rnksts, lnp5131, remlap, mcOrmenos, coo11, Melih Şirin for their contributions and reports for this release
+
+---
+
 0.14.10
 
 New features:
