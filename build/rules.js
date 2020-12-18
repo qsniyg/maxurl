@@ -28,6 +28,7 @@ var $__imu_get_bigimage = function(shared_variables) {
 	var string_replaceall = shared_variables['string_replaceall'];
 	var match_all = shared_variables['match_all'];
 	var obj_foreach = shared_variables['obj_foreach'];
+	var obj_extend = shared_variables['obj_extend'];
 	var shallowcopy = shared_variables['shallowcopy'];
 	var deepcopy = shared_variables['deepcopy'];
 	var _ = shared_variables['_'];
@@ -1889,6 +1890,8 @@ var $__imu_get_bigimage = function(shared_variables) {
 				}
 			}
 
+			if (domain === "gimg.quizlet.com") return src.replace(/^[a-z]+:\/\/[^/]+\/+((?:a-|-[-A-Za-z0-9]+)\/.*)/, "https://lh3.googleusercontent.com/$1");
+
 			if (domain_nowww === "star-tool.ru") return src.replace(/^[a-z]+:\/\/[^/]+\/+([^/]+\/+[^/]+\/+[^/]+\/+[^/]+\/+[swh][0-9]*(?:-[^/]*]*)?\/+)/, "https://lh3.googleusercontent.com/$1");
 
 			if (domain_nowww === "thehackernews.com") return src.replace(/^[a-z]+:\/\/[^/]+\/+images\/+((?:[^/]+\/+){4}[^/]+\/+[^/]+)(?:[?#].*)?$/, "https://1.bp.blogspot.com/$1");
@@ -2103,11 +2106,13 @@ var $__imu_get_bigimage = function(shared_variables) {
 					};
 
 					if (tweet.created_at) {
-						obj.extra.created_date = new Date(tweet.created_at);
+						obj.extra.created_date = new Date(tweet.created_at).getTime();
 					}
 
 					if (users && tweet.id_str && tweet.user_id_str) {
-						obj.extra.page = "https://twitter.com/" + users[tweet.user_id_str].screen_name + "/status/" + tweet.id_str;
+						var username = users[tweet.user_id_str].screen_name;
+						obj.extra.author_username = username;
+						obj.extra.page = "https://twitter.com/" + username + "/status/" + tweet.id_str;
 					}
 
 					if (tweet.full_text) {
@@ -2215,7 +2220,7 @@ var $__imu_get_bigimage = function(shared_variables) {
 							var imu_url_match = src.match(/#imu-url=(.*)$/);
 							if (imu_url_match) {
 								var imu_url = imu_url_match[1];
-								imu_url_match = imu_url.match(/.*\/([^/.?#]+)\.[^/]+$/);
+								imu_url_match = imu_url.match(/.*\/([^/.?#]+)(?:\.[^/]+)?(?:[?#].*)?$/);
 								if (imu_url_match) {
 									imu_url_id = imu_url_match[1];
 								}
@@ -2234,7 +2239,7 @@ var $__imu_get_bigimage = function(shared_variables) {
 									if (imu_url_id) {
 										var firstobj = singleobj[0];
 										var firsturl = firstobj.url || firstobj;
-										var our_id = firsturl.match(/.*\/([^/.?#]+)\.[^/]+$/)[1];
+										var our_id = firsturl.match(/.*\/([^/.?#]+)(?:\.[^/]+)?(?:[?#].*)?$/)[1];
 										is_current = our_id === imu_url_id;
 									}
 
@@ -2840,6 +2845,7 @@ var $__imu_get_bigimage = function(shared_variables) {
 				  domain === "images.seoghoer.dk" ||
 				  (domain === "static.camp-fire.jp" && string_indexof(src, "/uploads/") >= 0) ||
 				  domain === "media.popculture.com" ||
+				  (domain === "img.urbania.ca" && string_indexof(src, "/media/") >= 0) ||
 				  domain === "imgix.romper.com") &&
 				 !src.match(/[?&]s=[^/]*$/)) ||
 				domain === "stream-cloud-uploads.imgix.net" ||
@@ -3206,6 +3212,7 @@ var $__imu_get_bigimage = function(shared_variables) {
 				(domain_nowww === "e-outdoor.co.uk" && string_indexof(src, "/pi/") >= 0) ||
 				(domain_nosub === "disco-api.com" && /images\./.test(domain)) ||
 				(domain_nowww === "devold.com" && /\/globalassets\/+catalog-images\//.test(src)) ||
+				domain === "contents.mediadecathlon.com" ||
 				src.match(/\/demandware\.static\//) ||
 				src.match(/\?i10c=[^/]*$/) ||
 				/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|blogs.dir)|\/+uploads)\//.test(src)
@@ -3302,6 +3309,7 @@ var $__imu_get_bigimage = function(shared_variables) {
 				(domain_nosub === "hankyung.com" && domain.match(/img\..*?\.hankyung\.com$/)) ||
 				domain_nowww === "traveltipy.com" ||
 				domain_nowww === "coveteur.com" ||
+				amazon_container === "gaffa-prod" ||
 				(domain_nosub === "ehow.com" && string_indexof(domain, ".blog.ehow.com") >= 0) ||
 				(domain_nosub === "theheartysoul.com" && domain.match(/cdn[0-9]*\.theheartysoul\.com/)) ||
 				domain_nowww === "bandt.com.au" ||
@@ -4598,8 +4606,9 @@ var $__imu_get_bigimage = function(shared_variables) {
 				(domain.match(/[0-9]*\.alicdn\.com/) ||
 				 domain === "img.alicdn.com")) {
 				return src
-					.replace(/_[0-9]+x[0-9]+[^/]*?$/, "")
 					.replace(/\.[0-9]+x[0-9]+(\.[^/.]*)(?:[?#].*)?$/, "$1")
+					.replace(/(\.[^/._?#]+)_(?:[0-9]+x[0-9]+|Q[0-9]+)\.[^/.]+$/, "$1")
+					.replace(/(\.[^/._?#]+)_\.webp(?:[?#].*)?$/, "$1")
 					.replace(/\?.*/, "");
 			}
 
@@ -5622,6 +5631,7 @@ var $__imu_get_bigimage = function(shared_variables) {
 			if ((domain_nosub === "imagetwist.com" ||
 				 domain_nosub === "imagexport.com" ||
 				 domain_nosub === "imagenpic.com" ||
+				 domain_nosub === "vipr.im" ||
 				 domain_nosub === "picshick.com") &&
 				domain.match(/[iu](?:mg)?[0-9]*(?:[a-z]+)?\./)) {
 
@@ -8521,17 +8531,23 @@ var $__imu_get_bigimage = function(shared_variables) {
 					};
 			}
 
-			if (domain_nosub === "fap.to" ||
-				(domain_nosub === "imagefap.com" && /^(?:www|images)\./.test(domain))) {
-				return src
-					.replace(/:\/\/x[0-9]*\./, "://x.") // temporary error?
-					.replace(/(:\/\/[^/]*\/)[a-z0-9.]+\/images\//, "$1images/")
-					.replace(/\/images\/[a-z]*\//, "/images/full/");
+
+
+			if (domain === "cdn.imagefap.com" ||
+				domain_nowww === "imagefap.com" ||
+				domain === "images.imagefap.com" ||
+				domain_nosub === "fap.to") {
+				match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:[a-z][a-z0-9.]+\/+)?images\/+(?:mini|thumb|full)\/+[0-9]+\/+[0-9]+\/+([0-9]+)\./);
+				if (match) {
+					return {
+						url: "https://www.imagefap.com/photo/" + match[1] + "/",
+						is_pagelink: true
+					};
+				}
 			}
 
-
-			if (domain === "cdn.imagefap.com") {
-				match = src.match(/^[a-z]+:\/\/[^/]+\/+images\/+(?:mini|thumb)\/+[0-9]+\/+[0-9]+\/+([0-9]+)\./);
+			if (domain_nosub === "imagefapusercontent.com" && /^x[0-9]*\./.test(domain)) {
+				match = src.match(/^[a-z]+:\/\/[^/]+\/+u\/+[^/]+\/+[0-9]+\/+([0-9]+)\/+[^/]+\./);
 				if (match) {
 					return {
 						url: "https://www.imagefap.com/photo/" + match[1] + "/",
@@ -8867,7 +8883,7 @@ var $__imu_get_bigimage = function(shared_variables) {
 				newsrc = src
 					.replace(/(\/user-profile\/+img\/.*\/[0-9]+_[0-9a-f]{20,})_[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1$2")
 					.replace(/\/c\/[0-9]+x[0-9]+(?:_[0-9]+)?(?:_[a-z]+[0-9]+)?\//, "/")
-					.replace(/\/img-master\//, "/img-original/")
+					.replace(/\/(?:img-master|custom-thumb)\//, "/img-original/")
 					.replace(/(\/[0-9]+_p[0-9]+)_[^/]*(\.[^/.]*)$/, "$1$2");
 
 				var referer_url = "https://www.pixiv.net/";
@@ -9607,174 +9623,129 @@ var $__imu_get_bigimage = function(shared_variables) {
 			}
 
 			if (domain_nowww === "tube8.com") {
-				match = src.match(/^[a-z]+:\/\/[^/]+\/+[^/]+\/+[^/]+\/+([0-9]+)\/*(?:[?#].*)?$/);
-				if (match) {
-					id = match[1];
+				var fetch_tube8_flashvars = function(id, cb) {
+					api_query("tube8_flashvars:" + id, {
+						url: "https://www.tube8.com/a/a/" + id + "/"
+					}, cb, function(done, resp, cache_key) {
+						var match = resp.responseText.match(/var\s+flashvars\s*=\s*({.*?})\s*; *\n/);
+						if (!match) {
+							console_error(cache_key, "Unable to find match", resp);
+							return done(null, false);
+						}
 
-					var fetch_tube8_flashvars = function(id, cb) {
-						api_query("tube8_flashvars:" + id, {
-							url: "https://www.tube8.com/a/a/" + id + "/"
-						}, cb, function(done, resp, cache_key) {
-							var match = resp.responseText.match(/var\s+flashvars\s*=\s*({.*?})\s*; *\n/);
-							if (!match) {
-								console_error(cache_key, "Unable to find match", resp);
-								return done(null, false);
-							}
+						try {
+							var json = JSON_parse(match[1]);
+							done(json, 6*60*60);
+						} catch (e) {
+							console_error(cache_key, e);
+							return done(null, false);
+						}
+					});
+				};
 
-							try {
-								var json = JSON_parse(match[1]);
-								done(json, 6*60*60);
-							} catch (e) {
-								console_error(cache_key, e);
-								return done(null, false);
-							}
-						});
-					};
+				newsrc = website_query({
+					website_regex: /^[a-z]+:\/\/[^/]+\/+[^/]+\/+[^/]+\/+([0-9]+)\/*(?:[?#].*)?$/,
+					run: function(cb, match) {
+						var id = match[1];
 
-					var page_nullobj = {
-						url: src,
-						is_pagelink: true
-					};
-
-					if (options.cb && options.do_request) {
 						fetch_tube8_flashvars(id, function(data) {
 							var origsrc = src;
 							if (options._internal_info && options._internal_info.mediadefinition_src) {
 								origsrc = options._internal_info.mediadefinition_src;
 							}
 
-							var parsed = common_functions.parse_mediadefinition(origsrc, data, cache_key);
-							if (!parsed) {
-								return options.cb(page_nullobj);
-							} else {
-								return options.cb(parsed);
-							}
+							cb(common_functions.parse_mediadefinition(origsrc, data, cache_key));
 						});
-
-						return {
-							waiting: true
-						};
-					} else {
-						return page_nullobj;
 					}
-				}
+				});
+				if (newsrc) return newsrc;
 			}
 
 			if (domain_nowww === "youporn.com") {
-				match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:watch|embed)\/+([0-9]+)(?:\/+(?:[^/]+\/*)?)?(?:[?#].*)?$/);
-				if (match) {
-					id = match[1];
+				var fetch_youporn_flashvars = function(id, cb) {
+					api_query("youporn_flashvars:" + id, {
+						url: "https://www.youporn.com/watch/" + id + "/"
+					}, cb, function(done, resp, cache_key) {
+						var match = resp.responseText.match(/page_params.video.mediaDefinition\s*=\s*(\[{.*?}\])\s*; *\n/);
+						if (!match) {
+							console_error(cache_key, "Unable to find match", resp);
+							return done(null, false);
+						}
 
-					var fetch_youporn_flashvars = function(id, cb) {
-						api_query("youporn_flashvars:" + id, {
-							url: "https://www.youporn.com/watch/" + id + "/"
-						}, cb, function(done, resp, cache_key) {
-							var match = resp.responseText.match(/page_params.video.mediaDefinition\s*=\s*(\[{.*?}\])\s*; *\n/);
-							if (!match) {
-								console_error(cache_key, "Unable to find match", resp);
-								return done(null, false);
-							}
+						try {
+							var mediaDefinition = JSON_parse(match[1]);
+							var json = {
+								link_url: resp.finalUrl,
+								mediaDefinition: mediaDefinition
+							};
+							done(json, 6*60*60);
+						} catch (e) {
+							console_error(cache_key, e);
+							return done(null, false);
+						}
+					});
+				};
 
-							try {
-								var mediaDefinition = JSON_parse(match[1]);
-								var json = {
-									link_url: resp.finalUrl,
-									mediaDefinition: mediaDefinition
-								};
-								done(json, 6*60*60);
-							} catch (e) {
-								console_error(cache_key, e);
-								return done(null, false);
-							}
-						});
-					};
+				newsrc = website_query({
+					website_regex: /^[a-z]+:\/\/[^/]+\/+(?:watch|embed)\/+([0-9]+)(?:\/+(?:[^/]+\/*)?)?(?:[?#].*)?$/,
+					run: function(cb, match) {
+						var id = match[1];
 
-					var page_nullobj = {
-						url: src,
-						is_pagelink: true
-					};
-
-					if (options.cb && options.do_request) {
 						fetch_youporn_flashvars(id, function(data) {
 							var origsrc = src;
 							if (options._internal_info && options._internal_info.mediadefinition_src) {
 								origsrc = options._internal_info.mediadefinition_src;
 							}
 
-							var parsed = common_functions.parse_mediadefinition(origsrc, data, cache_key);
-							if (!parsed) {
-								return options.cb(page_nullobj);
-							} else {
-								return options.cb(parsed);
-							}
+							cb(common_functions.parse_mediadefinition(origsrc, data, cache_key));
 						});
-
-						return {
-							waiting: true
-						};
-					} else {
-						return page_nullobj;
 					}
-				}
+				});
+				if (newsrc) return newsrc;
 			}
 
 			if (domain_nowww === "xtube.com") {
-				match = src.match(/^[a-z]+:\/\/[^/]+\/+video-watch\/+[^/]+-([0-9]+)\/*(?:[?#].*)?$/);
-				if (match) {
-					id = match[1];
+				var fetch_xtube_flashvars = function(id, cb) {
+					api_query("xtube_flashvars:" + id, {
+						url: "https://www.xtube.com/video-watch/a-" + id
+					}, cb, function(done, resp, cache_key) {
+						var match = resp.responseText.match(/var playerConf\s*=\s*({.*?}),\s*loaderConf/);
+						if (!match) {
+							console_error(cache_key, "Unable to find match", resp);
+							return done(null, false);
+						}
 
-					var fetch_xtube_flashvars = function(id, cb) {
-						api_query("xtube_flashvars:" + id, {
-							url: "https://www.xtube.com/video-watch/a-" + id
-						}, cb, function(done, resp, cache_key) {
-							var match = resp.responseText.match(/var playerConf\s*=\s*({.*?}),\s*loaderConf/);
-							if (!match) {
-								console_error(cache_key, "Unable to find match", resp);
-								return done(null, false);
-							}
+						try {
+							var match1 = match[1].replace(/![01]/g, "\"true\"");
+							var fixup = fixup_js_obj_proper(match1);
+							var playerconf = JSON_parse(fixup);
+							var json = playerconf.mainRoll;
+							json.link_url = json.videoUrl;
+							json.video_title = json.title;
+							done(json, 6*60*60);
+						} catch (e) {
+							console_error(cache_key, e, match);
+							return done(null, false);
+						}
+					});
+				};
 
-							try {
-								var match1 = match[1].replace(/![01]/g, "\"true\"");
-								var fixup = fixup_js_obj_proper(match1);
-								var playerconf = JSON_parse(fixup);
-								var json = playerconf.mainRoll;
-								json.link_url = json.videoUrl;
-								json.video_title = json.title;
-								done(json, 6*60*60);
-							} catch (e) {
-								console_error(cache_key, e, match);
-								return done(null, false);
-							}
-						});
-					};
+				newsrc = website_query({
+					website_regex: /^[a-z]+:\/\/[^/]+\/+video-watch\/+[^/]+-([0-9]+)\/*(?:[?#].*)?$/,
+					run: function(cb, match) {
+						var id = match[1];
 
-					var page_nullobj = {
-						url: src,
-						is_pagelink: true
-					};
-
-					if (options.cb && options.do_request) {
 						fetch_xtube_flashvars(id, function(data) {
 							var origsrc = src;
 							if (options._internal_info && options._internal_info.mediadefinition_src) {
 								origsrc = options._internal_info.mediadefinition_src;
 							}
 
-							var parsed = common_functions.parse_mediadefinition(origsrc, data, cache_key);
-							if (!parsed) {
-								return options.cb(page_nullobj);
-							} else {
-								return options.cb(parsed);
-							}
+							cb(common_functions.parse_mediadefinition(origsrc, data, cache_key));
 						});
-
-						return {
-							waiting: true
-						};
-					} else {
-						return page_nullobj;
 					}
-				}
+				});
+				if (newsrc) return newsrc;
 			}
 
 			if (domain_nosub === "xtube.com" && /^cdn[0-9]*-/.test(domain)) {
@@ -10553,9 +10524,10 @@ var $__imu_get_bigimage = function(shared_variables) {
 				domain === "image.klikk.no" ||
 				domain === "image.side2.no" ||
 				domain === "image.side3.no" ||
+				domain_nowww === "dagbladet.no" ||
 				domain_nowww === "dbstatic.no") {
 				newsrc = src
-					.replace(/(:\/\/[^/]*\/[0-9]+\.[^/.?#]*)(?:[?#].*)?$/, "$1?width=-1&height=-1")
+					.replace(/(:\/\/[^/]+\/+(?:images\/+)?[0-9]+\.[^/.?#]*)(?:[?#].*)?$/, "$1?width=-1&height=-1")
 					.replace(/\/(?:images)?\?(?:.*&)?imageId=([0-9]+).*/, "/?imageId=$1&height=-1");
 				if (newsrc !== src)
 					return newsrc;
@@ -10587,10 +10559,18 @@ var $__imu_get_bigimage = function(shared_variables) {
 				domain_nowww === "planetongames.com" ||
 				domain_nowww === "baba.es" ||
 				domain_nowww === "teamworldshop.it" ||
+				domain_nowww === "donnemetropolitane.it" ||
 				domain_nowww === "flyhighstore.pl") {
-				return src
-					.replace(/(\/img\/+p\/+(?:[0-9]\/+){1,}[0-9]+)[-_][^/.]*(\.[^/.]*)$/, "$1$2")
-					.replace(/(:\/\/[^/]*\/+[0-9]+(?:-[0-9]+)?)(?:[-_][^/]*?)?(\/[^/]*)$/, "$1$2");
+				newsrc = src.replace(/(\/img\/+p\/+(?:[0-9]\/+){1,}[0-9]+)[-_][^/.]*(\.[^/.]*)$/, "$1$2");
+				if (newsrc !== src) return newsrc;
+
+				var prefix = "(://[^/]+/+";
+				if (domain_nowww === "donnemetropolitane.it") {
+					prefix += "shop/+";
+				}
+
+				newsrc = src.replace(new RegExp(prefix + "[0-9]+(?:-[0-9]+)?)(?:[-_][^/]*?)?(\/[^/]*)$"), "$1$2");
+				if (newsrc !== src) return newsrc;
 			}
 
 			if (domain === "skinzwearphotography.com") return src.replace(/\/prod[A-Z][a-z]*\//, "/prodImages/");
@@ -13126,7 +13106,10 @@ var $__imu_get_bigimage = function(shared_variables) {
 						url: "https://www.facebook.com/" + uid + "/posts/" + post_id,
 						imu_mode: "document"
 					}, cb, function(done, resp, cache_key) {
-						var serverjs = get_fb_serverjs(cache_key, resp, /^adp_CometSinglePostRootQueryRelayPreloader_/);
+						var serverjs = get_fb_serverjs(cache_key, resp, [
+							/^adp_CometSinglePostRootQueryRelayPreloader_/,
+							/^adp_CometPagePostsRootHoistedStoryQueryRelayPreloader_/ // xpost
+						]);
 						if (!serverjs) {
 							console_error(cache_key, "Unable to find serverjs match for", resp);
 							return done(null, false);
@@ -13134,7 +13117,16 @@ var $__imu_get_bigimage = function(shared_variables) {
 
 						var json = serverjs[0];
 						var data = json[1].__bbox.result.data;
-						var node = data.node;
+						var node;
+
+						if ("node" in data) {
+							node = data.node;
+						} else if ("nodes" in data) { // hoisted story
+							node = data.nodes[0];
+						} else {
+							console_error(cache_key, "Unable to find node from", data, json, resp);
+							return done(null, false);
+						}
 
 						var story = node.comet_sections.content.story;
 						if (story.attached_story)
@@ -13303,10 +13295,11 @@ var $__imu_get_bigimage = function(shared_variables) {
 								var json_video_data = media.video_player_component_renderer.video.video_player_dash_module_renderer.json_encoded_video_data;
 								video_data = JSON_parse(json_video_data);
 							} catch(e) {
+								video_data = media;
 							}
 
 							var urls = [];
-							if (media.playable_url_dash) {
+							if (false && media.playable_url_dash) {
 								urls.push({
 									url: media.playable_url_dash,
 									video: "dash"
@@ -15986,7 +15979,7 @@ var $__imu_get_bigimage = function(shared_variables) {
 				host_domain_nosub === "instagram.com" && options.element && options.cb) {
 				newsrc = (function() {
 					var info = common_functions.instagram_find_el_info(document, options.element, options.host_url);
-					return common_functions.instagram_parse_el_info(api_cache, options.do_request, options.rule_specific.instagram_use_app_api, options.rule_specific.instagram_dont_use_web, info, options.host_url, options.cb);
+					return common_functions.instagram_parse_el_info(api_cache, options.do_request, options.rule_specific.instagram_use_app_api, options.rule_specific.instagram_dont_use_web, options.rule_specific.instagram_prefer_video_quality, info, options.host_url, options.cb);
 				})();
 				if (newsrc !== undefined)
 					return newsrc;
@@ -16037,7 +16030,7 @@ var $__imu_get_bigimage = function(shared_variables) {
 					element: options.element
 				}];
 
-				return common_functions.instagram_parse_el_info(api_cache, options.do_request, options.rule_specific.instagram_use_app_api, options.rule_specific.instagram_dont_use_web, info, options.host_url, options.cb);
+				return common_functions.instagram_parse_el_info(api_cache, options.do_request, options.rule_specific.instagram_use_app_api, options.rule_specific.instagram_dont_use_web, options.rule_specific.instagram_prefer_video_quality, info, options.host_url, options.cb);
 			}
 
 			if (domain === "s9e.github.io") {
@@ -16930,7 +16923,7 @@ var $__imu_get_bigimage = function(shared_variables) {
 					var regex = null;
 
 					if (our_host === "xvideos") {
-						regex = /:\/\/[^/]+\/+(?:video|embedframe\/+)([0-9]+)(?:\/+[^/]*)?(?:[?#].*)?$/;
+						regex = /:\/\/[^/]+\/+(?:video|embedframe\/+)([0-9]+)(?:\/+.*)?(?:[?#].*)?$/;
 					} else if (our_host === "xnxx") {
 						regex = /:\/\/[^/]+\/+video-([^-/._]+)\//;
 					}
@@ -17259,7 +17252,17 @@ var $__imu_get_bigimage = function(shared_variables) {
 			if (domain === "user-uploads.aznude.com") return src.replace(/(:\/\/[^/]*\/data\/)thumbs\//, "$1azncdn/");
 
 			if (domain_nosub === "aznude.com" && /^cdn[0-9]*\./.test(domain)) {
-				return src.replace(/\/antibandit\/+([^/]+\/+[^/]+\/+)thumb[0-9]+_/, "/$1");
+				newsrc = src.replace(/\/antibandit\/+([^/]+\/+[^/]+\/+)thumb[0-9]+_/, "/$1");
+				if (newsrc !== src)
+					return newsrc;
+
+				regex = /(:\/\/[^/]+\/+(?:[^/]+\/+){2}[^/]+)-(?:lo|hi)(\.[^/.]+)(?:[?#].*)?$/;
+				if (regex.test(src)) {
+					return [
+						src.replace(regex, "$1-hd$2"),
+						src.replace(regex, "$1-hi$2")
+					];
+				}
 			}
 
 			if (domain_nowww === "bstars.eu" ||
@@ -22331,94 +22334,81 @@ var $__imu_get_bigimage = function(shared_variables) {
 
 			if (domain === "c.fantia.jp") return src.replace(/(\/uploads\/.*\/)[a-z]+_((?:[0-9a-f]+-){4}[0-9a-f]+\.[^/.]*)(?:[?#].*)?$/, "$1$2");
 
-			if (host_domain_nowww === "e-hentai.org" &&
-				options.host_url.match(/:\/\/[^/]*\/s\//) &&
-				options && options.element && options.document && options.cb && options.do_request) {
-				if (options.element.tagName === "IMG" && options.element.id === "img" &&
-					options.element.src === src) {
+			if (domain_nowww === "ehgt.org") {
+				if (/\/g\/+blank\.gif(?:[?#].*)?$/.test(src)) {
+					return {
+						url: src,
+						bad: "mask"
+					};
+				}
+			}
+
+			if (domain_nowww === "e-hentai.org") {
+
+				newsrc = website_query({
+					website_regex: /^[a-z]+:\/\/[^/]+\/+(?:lofi\/+)?(s\/+[0-9a-f]+\/+[0-9]+-[0-9]+)(?:[?#].*)?$/,
+					query_for_id: "https://e-hentai.org/${id}",
+					process: function(done, resp, cache_key) {
+						var match = resp.responseText.match(/<img id="(?:sm|img)" src="(https?:\/\/[^"]+)"/);
+						if (!match) {
+							console_error(cache_key, "Unable to find regular image match for", resp);
+							return done(null, false);
+						}
+
+						var mainimage = match[1];
+
+						match = null;
+						if (options.rule_specific && options.rule_specific.ehentai_full_image)
+							match = resp.responseText.match(/href=["'](https?:\/\/(?:www\.)?e-hentai\.org\/fullimg\.php.*?)["']/);
+
+						if (match) {
+							return done([decode_entities(match[1]), mainimage], 60*60);
+						} else {
+							return done(mainimage, 60*60);
+						}
+					}
+				});
+				if (newsrc) return newsrc;
+			}
+
+			if (host_domain_nowww === "e-hentai.org" &&	/:\/\/[^/]+\/+s\//.test(options.host_url) &&
+				options.element && options.document &&
+				options.rule_specific && options.rule_specific.ehentai_full_image) {
+				if (options.element.tagName === "IMG" && options.element.id === "img" && options.element.src === src) {
 					var els = options.document.getElementsByTagName("a");
 					for (var i = 0; i < els.length; i++) {
 						var el = els[i];
-						if (!el.href.match(/https?:\/\/(?:www\.)?e-hentai\.org\/fullimg\.php/))
+
+						if (!/^https?:\/\/(?:www\.)?e-hentai\.org\/fullimg\.php/.test(els[i].href))
 							continue;
 
-						options.do_request({
-							url: el.href,
-							method: "HEAD",
-							headers: {
-								Cookie: document.cookie
-							},
-							onload: function(resp) {
-								if (resp.readyState === 4) {
-									if (resp.status === 200) {
-										options.cb(resp.finalUrl.replace(/[?#].*$/, ""));
-									}
-								}
-							}
-						});
-
-						return {
-							waiting: true
-						};
+						return els[i].href;
 					}
 				}
 			}
 
-			if (host_domain_nowww === "e-hentai.org" &&
-				options.host_url.match(/:\/\/[^/]*\/g\//) &&
-				domain_nowww === "ehgt.org" &&
-				options && options.element && options.document && options.cb && options.do_request) {
-				var el = options.element.children[0];
-				if (el && el.tagName === "A") {
-					options.do_request({
-						url: el.href,
-						method: "GET",
-						onload: function(resp) {
-							if (resp.readyState === 4) {
-								if (resp.status !== 200) {
-									options.cb(null);
-									return;
-								}
-
-								var mainurl = null;
-								var match = resp.responseText.match(/<img *id=["']img["'] *src=["'](.*?)["']/);
-								if (match) {
-									mainurl = match[1];
-								} else {
-									return options.cb(null);
-								}
-
-								match = resp.responseText.match(/href=["'](https?:\/\/(?:www\.)?e-hentai\.org\/fullimg\.php.*?)["']/);
-								if (match) {
-									var url = match[1]
-										.replace(/&amp;/g, "&");
-
-									options.do_request({
-										url: url,
-										method: "HEAD",
-										headers: {
-											Cookie: document.cookie
-										},
-										onload: function(resp) {
-											if (resp.readyState === 4) {
-												if (resp.status === 200) {
-													options.cb(resp.finalUrl.replace(/[?#].*$/, ""));
-												} else {
-													options.cb(mainurl);
-												}
-											}
-										}
-									});
-								} else {
-									options.cb(mainurl);
-								}
-							}
-						}
-					});
-
+			if (host_domain_nowww === "e-hentai.org" && /:\/\/[^/]+\/+lofi\/+s\//.test(options.host_url) && options.element &&
+				options.rule_specific && options.rule_specific.ehentai_full_image) {
+				if (options.element.tagName === "IMG" && options.element.id === "sm" &&	options.element.src === src) {
 					return {
-						waiting: true
+						url: options.host_url,
+						is_pagelink: true
 					};
+				}
+			}
+
+			if (host_domain_nowww === "e-hentai.org" &&	/:\/\/[^/]*\/+(?:lofi\/+)?g\//.test(options.host_url) && options.element) {
+				newsrc = common_functions.get_pagelink_el_matching(options.element, /^[a-z]+:\/\/[^/]+\/+(?:lofi\/+)?s\/+/);
+				if (newsrc) return newsrc;
+
+				if (options.element.tagName === "DIV" && options.element.children.length === 1 && options.element.children[0].tagName === "A") {
+					var childel = options.element.children[0];
+					if (/^[a-z]+:\/\/[^/]+\/+(?:lofi\/+)?s\/+/.test(childel.href)) {
+						return {
+							url: childel.href,
+							is_pagelink: true
+						};
+					}
 				}
 			}
 
@@ -24586,6 +24576,10 @@ var $__imu_get_bigimage = function(shared_variables) {
 
 			if (domain === "static.klix.ba") {
 
+				newsrc = src.replace(/(\/media\/+images\/+vijesti\/+)m[0-9]+_([0-9]{8,}\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+				if (newsrc != src)
+					return newsrc;
+
 				regex = /(\/media\/+images\/+vijesti\/+[0-9]+\.[0-9]+)(\.[^/.]+)(?:[?#].*)?$/;
 				if (regex.test(src)) {
 					return [
@@ -25062,6 +25056,7 @@ var $__imu_get_bigimage = function(shared_variables) {
 
 						obj.extra.caption = media.description;
 						obj.extra.created_date = media.uploadDate;
+						obj.extra.author_username = media.permaSubdomain; // or gridName
 						obj.url = force_https(add_http(media.responsiveUrl));
 
 						return done(obj, 6*60*60);
@@ -25155,7 +25150,13 @@ var $__imu_get_bigimage = function(shared_variables) {
 
 			if (domain === "images.nubilefilms.com") return src.replace(/\/photos\/+tn\/+([0-9]+\.[^/.]*)(?:[?#].*)?$/, "/photos/$1");
 
-			if (domain === "g.bnrslks.com") return src.replace(/\/tn\/+([^/]*\.[^/.]*)(?:[?#].*)?$/, "/full/$1");
+			if (domain === "g.bnrslks.com" ||
+				domain === "g.dombnrs.com" ||
+				domain === "g.misslk.com" ||
+				domain === "gallery.virtuagirl.com" ||
+				domain === "gallery.virtuagirlhd.com") {
+				return src.replace(/\/tn\/+([^/]*\.[^/.]*)(?:[?#].*)?$/, "/full/$1");
+			}
 
 			if (domain_nosub === "joymii.com" && domain.match(/^n[0-9]*\./)) {
 				return src.replace(/\/thumbs-[0-9]+x[0-9]+\//, "/fhg/");
@@ -27557,50 +27558,15 @@ var $__imu_get_bigimage = function(shared_variables) {
 				};
 
 				if (regex.test(src)) {
+					var larger_urls = get_larger_famitsu(src);
+
 					if (options.do_request && options.cb) {
-						var query_contentlength = function(url, cb) {
-							api_query("contentlength:" + url, {
-								url: url,
-								headers: {
-									Referer: ""
-								},
-								method: "HEAD",
-								silent: true
-							}, cb, function(done, resp, cache_key) {
-								var headers = headers_list_to_dict(parse_headers(resp.responseHeaders));
+						larger_urls.unshift(src.replace(regex, "$1$2"));
 
-								if (!("content-length" in headers))
-									return done(null, false);
-
-								return done(parseInt(headers["content-length"]), 60*60);
-							});
-						};
-
-						var larger_urls = get_larger_famitsu(src);
-						var possibly_largest = src.replace(regex, "$1$2");
-						var current_url = possibly_largest;
-
-						query_contentlength(current_url, function(length) {
-							var largest_length = length;
-							var largest_url = current_url;
-
-							var query = function(length) {
-								if (length) {
-									if (length > largest_length) {
-										largest_url = current_url;
-									}
-
-									return options.cb(largest_url);
-								} else if (larger_urls.length > 0) {
-									current_url = larger_urls.shift();
-									query_contentlength(current_url, query);
-								} else {
-									return options.cb(null);
-								}
-							};
-
-							current_url = larger_urls.shift();
-							query_contentlength(current_url, query);
+						common_functions.find_actual_largest_image(src, larger_urls, options.cb, {
+							check_length: true,
+							api_cache: api_cache,
+							do_request: options.do_request
 						});
 
 						return {
@@ -28043,7 +28009,12 @@ var $__imu_get_bigimage = function(shared_variables) {
 				domain === "img.resized.co") {
 				match = src.match(/^[a-z]+:\/\/[^/]*\/[^/]*\/+([^/]{50,})(?:\/+[^/]*)?(?:[?#].*)?$/);
 				if (match) {
-					var json = JSON_parse(base64_decode(match[1]));
+					var splitted = match[1].split("_");
+					var json_text = [];
+					array_foreach(splitted, function(x) {
+						json_text.push(base64_decode(x));
+					});
+					var json = JSON_parse(json_text.join("?"));
 					if (json.data) {
 						var data = JSON_parse(json.data);
 						if (data.url)
@@ -28557,7 +28528,8 @@ var $__imu_get_bigimage = function(shared_variables) {
 				return src.replace(/(\/fhgs?\/+[^/]*\/+)t(?:_[0-9]+x[0-9]+)?\/+/, "$1o/");
 			}
 
-			if (domain_nosub === "justjared.com" && /^cdn[0-9]*\.cdn\./.test(domain)) {
+			if ((domain_nosub === "justjared.com" ||
+				 domain_nosub === "justjaredjr.com") && /^cdn[0-9]*\.cdn\./.test(domain)) {
 				return src.replace(/(\/wp-content\/+uploads\/+[0-9]{4}\/+[0-9]{2}\/+[^/]*\/+)thumbs\/+/, "$1");
 			}
 
@@ -28628,6 +28600,107 @@ var $__imu_get_bigimage = function(shared_variables) {
 					};
 			}
 
+			if (domain_nowww === "vk.com") {
+				var vk_request_video = function(id, list, cb) {
+					var cache_key = "vk_video:" + id;
+					api_cache.fetch(cache_key, cb, function(done) {
+						var listkey = "";
+						if (list) {
+							listkey = "&playlist_id=" + list;
+						} else {
+							listkey = "&playlist_id=" + id.replace(/_[0-9]+$/, "_-2");
+						}
+
+						options.do_request({
+							method: "POST",
+							url: "https://vk.com/al_video.php?act=show",
+							data: "act=show&al=1&module=direct" + listkey + "&video=" + id,
+							imu_mode: "xhr",
+							headers: {
+								"Content-Type": "application/x-www-form-urlencoded",
+								"X-Requested-With": "XMLHttpRequest",
+								"Referer": "https://vk.com/",
+								"Origin": "https://vk.com"
+							},
+							onload: function(result) {
+								if (result.readyState !== 4)
+									return;
+
+								try {
+									var json = JSON_parse(result.responseText);
+
+									var params = json.payload[1][4].player;
+									return done(params, 3*60*60);
+								} catch (e) {
+									console_error("vk_video", e);
+								}
+
+								return done(null, false);
+							}
+						});
+					});
+				};
+
+				var vk_process_video = function(player) {
+					var params = player.params[0];
+
+					if (player.type === "youtube") {
+						if (params.extra_data) {
+							return "https://i.ytimg.com/vi/" + params.extra_data + "/mqdefault.jpg";
+						}
+					}
+
+					var urls = [];
+
+					if (params.hls_raw) {
+						var hlsurl = "data:application/vnd.apple.mpegurl," + encodeURIComponent(params.hls_raw);
+						urls.push({
+							url: hlsurl,
+							video: "hls"
+						});
+					}
+
+					var maxsize = 0;
+					for (var key in params) {
+						var match = key.match(/^url([0-9]+)$/);
+						if (match) {
+							var size = parseInt(match[1]);
+							if (size > maxsize)
+								maxsize = size;
+						}
+					}
+
+					if (maxsize !== 0) {
+						urls.push({
+							url: params["url" + maxsize],
+							video: true
+						});
+					}
+
+					if (urls.length >= 0) return urls;
+
+					console_log("Unable to find video for", deepcopy(params));
+					return null;
+				};
+
+				newsrc = website_query({
+					website_regex: /^[a-z]+:\/\/[^/]+\/+video(-[0-9]+_[0-9]+)(?:[?#].*)?$/,
+					run: function(cb, match) {
+						var queries = common_functions.parse_imu_hash(src);
+
+						var list = null;
+						if (queries) list = queries.playlist;
+
+						vk_request_video(match[1], list, function(data) {
+							if (!data) return cb(null);
+
+							return cb(vk_process_video(data));
+						});
+					}
+				});
+				if (newsrc) return newsrc;
+			}
+
 			if (domain_nosub === "userapi.com" &&
 				host_domain_nosub === "vk.com" && options.element &&
 				options.do_request && options.cb) {
@@ -28636,12 +28709,16 @@ var $__imu_get_bigimage = function(shared_variables) {
 						var cache_key = "vk_video:" + id;
 						api_cache.fetch(cache_key, cb, function(done) {
 							var listkey = "";
-							if (list)
-								listkey = "&list=" + list;
+							if (list) {
+								listkey = "&playlist_id=" + list;
+							} else {
+								listkey = "&playlist_id=" + id.replace(/_[0-9]+$/, "_-2");
+							}
+
 							options.do_request({
 								method: "POST",
 								url: "https://vk.com/al_video.php?act=show",
-								data: "act=show&al=1&al_ad=0&video=" + id + listkey,
+								data: "act=show&al=1&al=1&module=direct&video=" + id + listkey,
 								headers: {
 									"Content-Type": "application/x-www-form-urlencoded",
 									"X-Requested-With": "XMLHttpRequest",
@@ -31751,97 +31828,82 @@ var $__imu_get_bigimage = function(shared_variables) {
 			}
 
 			if (domain_nowww === "gfycat.com" || domain_nowww === "redgifs.com") {
-				match = src.match(/^[a-z]+:\/\/[^/]+\/+(?:(?:[a-z]{2}|ifr)\/+)?(?:watch\/+)?([a-zA-Z]+)(?:[?#].*)?$/, "$1");
-				if (match && options.do_request && options.cb) {
-					var query_gfycat = function(site, id, cb) {
-						var cache_key = site + ":" + id;
+				var query_gfycat = function(site, id, cb) {
+					var cache_key = site + ":" + id;
 
-						api_cache.fetch(cache_key, cb, function(done) {
-							options.do_request({
-								url: "https://api." + site + ".com/v1/gfycats/" + id,
-								method: "GET",
-								headers: {
-									Referer: ""
-								},
-								onload: function(resp) {
-									if (resp.status !== 200) {
-										console_error(cache_key, resp);
-										return done(null, false);
-									}
+					api_query(cache_key, {
+						url: "https://api." + site + ".com/v1/gfycats/" + id,
+						method: "GET",
+						headers: {
+							Referer: ""
+						},
+						json: true
+					}, cb, function(done, json, cache_key) {
+						return done(json.gfyItem.posterUrl, 24*60*60);
+					});
+				};
 
-									try {
-										var json = JSON_parse(resp.responseText);
-										return done(json.gfyItem.posterUrl, 24*60*60);
-									} catch (e) {
-										console_error(e);
-									}
+				var query_gfycat_redgifs = function(id, cb) {
+					var site1 = "gfycat";
+					var site2 = "redgifs";
 
+					if (domain_nosub === "redgifs.com") {
+						site1 = "redgifs";
+						site2 = "gfycat";
+					}
+
+					query_gfycat(site1, id, function(data) {
+						if (!data) {
+							query_gfycat(site2, id, cb);
+						} else {
+							cb(data);
+						}
+					});
+				};
+
+				var query_gdn = function(id, cb) {
+					var cache_key = "gifdeliverynetwork:" + id;
+
+					api_cache.fetch(cache_key, cb, function(done) {
+						options.do_request({
+							url: "https://www.gifdeliverynetwork.com/" + id,
+							method: "GET",
+							headers: {
+								Referer: ""
+							},
+							onload: function(resp) {
+								if (resp.status !== 200) {
+									console_error(cache_key, resp);
 									return done(null, false);
 								}
-							});
-						});
-					};
 
-					var query_gfycat_redgifs = function(id, cb) {
-						var site1 = "gfycat";
-						var site2 = "redgifs";
+								try {
+									var match = resp.responseText.match(/<script type="application\/ld\+json">([[]{.*?}])<\/script>/);
+									if (match) {
+										var json = JSON_parse(match[1]);
 
-						if (domain_nosub === "redgifs.com") {
-							site1 = "redgifs";
-							site2 = "gfycat";
-						}
+										for (var i = 0; i < json.length; i++) {
+											if (json[i].thumbnailUrl)
+												return done(json[i].thumbnailUrl[0], 24*60*60);
+										}
+									}
+								} catch (e) {
+									console_error(e);
+								}
 
-						query_gfycat(site1, id, function(data) {
-							if (!data) {
-								query_gfycat(site2, id, cb);
-							} else {
-								cb(data);
+								return done(null, false);
 							}
 						});
-					};
+					});
+				};
 
-					var query_gdn = function(id, cb) {
-						var cache_key = "gifdeliverynetwork:" + id;
-
-						api_cache.fetch(cache_key, cb, function(done) {
-							options.do_request({
-								url: "https://www.gifdeliverynetwork.com/" + id,
-								method: "GET",
-								headers: {
-									Referer: ""
-								},
-								onload: function(resp) {
-									if (resp.status !== 200) {
-										console_error(cache_key, resp);
-										return done(null, false);
-									}
-
-									try {
-										var match = resp.responseText.match(/<script type="application\/ld\+json">([[]{.*?}])<\/script>/);
-										if (match) {
-											var json = JSON_parse(match[1]);
-
-											for (var i = 0; i < json.length; i++) {
-												if (json[i].thumbnailUrl)
-													return done(json[i].thumbnailUrl[0], 24*60*60);
-											}
-										}
-									} catch (e) {
-										console_error(e);
-									}
-
-									return done(null, false);
-								}
-							});
-						});
-					};
-
-					query_gfycat_redgifs(match[1], options.cb);
-
-					return {
-						waiting: true
-					};
-				}
+				newsrc = website_query({
+					website_regex: /^[a-z]+:\/\/[^/]+\/+(?:(?:[a-z]{2}|ifr)\/+)?(?:watch\/+)?([a-zA-Z]+)(?:[?#].*)?$/,
+					run: function(cb, match) {
+						query_gfycat_redgifs(match[1], cb);
+					}
+				});
+				if (newsrc) return newsrc;
 			}
 
 			if ((domain_nosub === "gfycat.com" || domain_nosub === "redgifs.com") && (/^(?:th(?:umbs|cf)[0-9]*|zippy|giant)\./.test(domain))) {
@@ -37097,7 +37159,7 @@ var $__imu_get_bigimage = function(shared_variables) {
 
 							var alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 							for (var i = 0; i < 10; i++) {
-								vidurl += alpha.charAt(Math_floor(Math_random() * alpha.length));
+								vidurl += string_charat(alpha, Math_floor(Math_random() * alpha.length));
 							}
 
 							vidurl += "?token=" + token + "&expiry=" + Date.now();
@@ -40254,6 +40316,350 @@ var $__imu_get_bigimage = function(shared_variables) {
 
 			if (domain_nowww === "4gamer.net") return src.replace(/(\/[0-9]{8,}\/+)TN(\/+[0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1SS$2");
 
+			if (domain_nowww === "bibliogram.art") {
+				newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+imageproxy\?(?:.*&)?url=(http[^&#]+)(?:[&#].*)?$/, "$1");
+				if (newsrc !== src)
+					return decodeuri_ifneeded(newsrc);
+			}
+
+			if (host_domain_nowww === "biqle.com" && options.element) {
+				if (!src && options.element.classList.contains("video-play")) {
+					return {
+						url: origsrc,
+						bad: "mask"
+					};
+				}
+			}
+
+			if (domain_nowww === "teddit.net") {
+				newsrc = src.replace(/(\/pics\/+)thumb_[wh]:[0-9]+_/, "$1w:null_");
+				if (newsrc !== src) return newsrc;
+
+				newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+pics\/+(?:thumb_)?(?:[wh]:[^/._]+_)?([a-z0-9]{10,15}\.[^/.]+)(?:[?#].*)?$/, "https://i.redd.it/$1");
+				if (newsrc !== src) return newsrc;
+			}
+
+			if (host_domain_nowww === "teddit.net" && options.element && options.do_request && options.cb) {
+				if (domain_nowww === "teddit.net" && /\/pics\//.test(src)) {
+					var linkdiv = common_functions.get_parent_el_matching(options.element, function(el) {
+						return el.tagName === "DIV" && el.classList.contains("link");
+					});
+
+					if (linkdiv) {
+						var link = linkdiv.querySelector(".comments > a.comments");
+
+						if (link) {
+							api_query("teddit:" + link.href, {
+								url: link.href,
+								imu_mode: "document"
+							}, function() { options.cb(src); }, function(done) {
+								return done(null, 60);
+							});
+
+							return {
+								waiting: true
+							};
+						}
+					}
+				}
+			}
+
+			if (domain_nowww === "rumble.com") {
+
+				var get_rumble_page = function(url, cb) {
+					api_query("rumble:" + url, {
+						url: url,
+						method: "GET",
+						imu_mode: "document"
+					}, cb, function(done, resp, cache_key) {
+						return done(resp, 10*60);
+					});
+				}
+
+				var get_rumble_embedjs_path = function(url, cb) {
+					api_cache.fetch("rumble_embedjs", cb, function(done) {
+						get_rumble_page(url, function(resp) {
+							if (!resp) {
+								return done(null, false);
+							}
+
+							var match = resp.responseText.match(/"(\/embedJS\/[a-z0-9]{3,})";/);
+							if (!match) {
+								console_error(cache_key, "Unable to find embedJS path from", resp);
+								return done(null, false);
+							}
+
+							return done(urljoin("https://rumble.com/", match[1], true), 60*60);
+						});
+					});
+				};
+
+				var rumble_normalize_url = function(url) {
+					var match = url.match(/^[a-z]+:\/\/[^/]+\/+([a-z0-9]+)-[^/?#.]*\.html(?:[?#].*)?$/);
+					if (match) {
+						return "https://rumble.com/" + match[1] + "-.html";
+					}
+
+					return url;
+				};
+
+				var rumble_url_to_videoid = function(url, cb) {
+					var match = url.match(/^[a-z]+:\/\/[^/]+\/+embed\/+v([0-9a-z]+)\/*(?:[?#].*)?$/);
+					if (match) {
+						return cb(match[1]);
+					}
+
+					api_cache.fetch("rumble_url_videoid:" + url, cb, function(done) {
+						get_rumble_page(url, function(resp) {
+							if (!resp) return done(null, false);
+
+							var match = resp.responseText.match(/Rumble\("play", {.*?"video":"v([0-9a-z]+)"/);
+							if (!match) {
+								console_error(cache_key, "Unable to find video id from", resp);
+								return done(null, false);
+							}
+
+							return done(match[1], 6*60*60);
+						});
+					});
+				};
+
+				var query_rumble = function(vid, embedjs, cb) {
+					api_query("rumble_api:" + vid, {
+						url: embedjs + "/?request=video&v=v" + vid + "&ext=%7B%22ad_count%22%3Anull%7D",
+						imu_mode: "xhr",
+						referer: "https://rumble.com/embed/v" + vid + "/",
+						json: true
+					}, cb, function(done, resp, cache_key) {
+						var obj = {
+							extra: {
+								page: "https://rumble.com/embed/v" + vid + "/"
+							}
+						};
+
+						if (resp.l) {
+							obj.extra.page = urljoin("https://rumble.com/", resp.l, true);
+						}
+
+						if (resp.title) obj.extra.caption = resp.title;
+
+						var urls = [];
+
+						var keys = Object.keys(resp.ua);
+						keys.sort();
+						array_foreach(keys, function(key) {
+							urls.push({
+								url: resp.ua[key][0],
+								video: true,
+							});
+						});
+
+						if (resp.i) {
+							urls.push(resp.i);
+						}
+
+						return done(fillobj_urls(urls, obj), 6*60*60);
+					});
+				};
+
+				newsrc = website_query({
+					website_regex: [
+						/^[a-z]+:\/\/[^/]+\/+([a-z0-9]+)-[^/?#.]*\.html(?:[?#].*)?$/,
+						/^[a-z]+:\/\/[^/]+\/+embed\/+v([0-9a-z]+)\/*(?:[?#].*)?$/
+					],
+					run: function(cb, match) {
+						var vurl = rumble_normalize_url(src);
+
+						rumble_url_to_videoid(vurl, function(vid) {
+							if (!vid) {
+								return cb(null);
+							}
+
+							get_rumble_embedjs_path(vurl, function(embedjs) {
+								if (!embedjs) {
+									return cb(null);
+								}
+
+								query_rumble(vid, embedjs, cb);
+							});
+						});
+					}
+				});
+				if (newsrc) return newsrc;
+			}
+
+			if (domain === "images.parler.com") return src.replace(/^([a-z]+:\/\/[^/]+\/+[a-f0-9]{10,})_(?:32|64|128|256)(?:[?#].*)?$/, "$1");
+
+			if (domain_nowww === "blaqsbi.com") {
+				newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+social\/+file\/+file\/+getremoteimage\/+url\/+(https?[^/]+)(?:[?#].*)?$/, "$1");
+				if (newsrc !== src)
+					return decodeuri_ifneeded(newsrc);
+
+				newsrc = src.replace(/(\/social\/+site\/+viewheaderimage\?(?:.*&)?filename=)([-a-z0-9]{20,})(\.[^/.?&#]+)/, "$1$2_org$3");
+				if (newsrc !== src)
+					return newsrc;
+			}
+
+			if (domain === "imshopping.rediff.com") {
+				return {
+					url: src.replace(/\/imgshop\/+[0-9]*-[0-9]*\/+/, "/imgshop/-/"),
+					head_wrong_contentlength: true
+				};
+			}
+
+			if (domain_nowww === "neoprenesupplier.com") return src.replace(/(\/uploads\/+[0-9]{4,}\/+)small\/+/, "$1");
+
+			if (domain === "www.bergen.kommune.no" ||
+				domain === "bergen.kommune.no") {
+				return src.replace(/(\/publisering\/+api\/+bilder\/+[^?#]+)\?scaleWidth=.*$/, "$1");
+			}
+
+			if (domain_nosub === "infomaker.io" && /^imengine(?:\.public)?\.prod/.test(domain)) {
+				newsrc = add_queries(src, {"function": "original", "q": "100", "source": "true", "type": "primary"});
+				newsrc = keep_queries(newsrc, ["uuid", "function", "type", "source", "q"]);
+				return newsrc;
+			}
+
+			if (domain === "d3rm30gbu5aixc.cloudfront.net") {
+				return src
+					.replace(/(\/media\/+)(?:rc|l)\/+[0-9]+x[0-9]+\/+/, "$1")
+					.replace(/\?.*/, "");
+			}
+
+			if (domain === "img.hotcelebzz.com") {
+				return src
+					.replace(/(\/photos\/+.*-[0-9]+)[0-9]{3}-thumbnail(\.[^/.]+)(?:[?#].*)?$/, "$1$2")
+					.replace(/(\/thumbnails\/.*)-300w-([0-9]{8,}\.[^/.]+)(?:[?#].*)?$/, "$1-zip-$2");
+			}
+
+			if (domain_nowww === "rule34.xyz") {
+				newsrc = src.replace(/(\/files\/+)thumbnail\/+/, "$1");
+				if (newsrc !== src) {
+					return add_extensions_jpeg(newsrc);
+				}
+			}
+
+			if (domain_nosub === "brazzers.com" && /^stage[0-9]*\./.test(domain)) {
+				if (/\/assets\/+compiledAssets\/+build\/+Brazzers\/+BrazzersCom\/+Tour\/+assets\/+pages\/+img\/+spritesmith\//.test(src)) {
+					return {
+						url: src,
+						bad: "mask"
+					};
+				}
+
+				newsrc = website_query({
+					website_regex: /^[a-z]+:\/\/[^/]+\/+scenes\/+view\/+id\/+([0-9]+)(?:\/+[^/]*\/*)?(?:[?#].*)?$/,
+					query_for_id: "https://" + domain + "/scenes/view/id/${id}/",
+					process: function(done, resp, cache_key) {
+						var match = resp.responseText.match(/,\s+streams\s*:\s*({"stream_info".*}),/);
+						if (!match) {
+							console_error(cache_key, "Unable to find match for", resp);
+							return done(null, false);
+						}
+
+						var json = JSON_parse(match[1]);
+						var stream_info = json.stream_info;
+
+						var paths = {};
+
+						if (stream_info.downloadHttp.paths) {
+							paths = deepcopy(stream_info.downloadHttp.paths);
+						}
+
+						if (stream_info.http.paths) {
+							paths = obj_extend(paths, stream_info.http.paths);
+						}
+
+						var keys = Object.keys(paths);
+						keys.sort(function(a, b) {
+							var a_match = a.match(/^[a-z0-9]+_[0-9]+_([0-9]+)$/);
+							var b_match = b.match(/^[a-z0-9]+_[0-9]+_([0-9]+)$/);
+
+							if (!a_match || !b_match) {
+								return b.localeCompare(a);
+							}
+
+							return parseInt(b_match[1]) - parseInt(a_match[1]);
+						});
+
+						var urls = [];
+						array_foreach(keys, function(key) {
+							console_log(key);
+							var path = paths[key];
+
+							urls.push({
+								url: urljoin(resp.finalUrl, path, true),
+								video: true
+							});
+						});
+
+						urls.push(urljoin(resp.finalUrl, json.poster, true));
+
+						var obj = {
+							extra: {
+								page: resp.finalUrl
+							}
+						};
+
+						match = resp.responseText.match(/<h1 class="scene-title"[^>]*>\s*([^<]+?)\s*</);
+						if (match) {
+							obj.extra.caption = decode_entities(match[1]);
+						}
+
+						return done(fillobj_urls(urls, obj), 6*60*60);
+					}
+				});
+				if (newsrc) return newsrc;
+			}
+
+			if (domain === "static-vz.brazzerscontent.com") {
+				obj = {
+					url: src,
+					extra: {}
+				};
+
+				match = src.match(/:\/\/[^/]+\/+scenes\/+([0-9]+)\/+/);
+				if (!match) {
+					match = src.match(/\/bzv2\/+brazzerscom\/+landing\/+assets\/+pages\/+img\/+tgp5\/+gallery\/+jpg\/+([0-9]+)-[0-9]+\./);
+				}
+				if (match) {
+					obj.extra.page = "https://stage4.brazzers.com/scenes/view/id/" + match[1] + "/";
+				}
+				newsrc = src.replace(/(\/scenes\/+[0-9]+\/+preview\/+)thm\/+([0-9]+\.[^/.]+)(?:[?#].*)?$/, "$1img/$2");
+				if (newsrc !== src) {
+					obj.url = newsrc;
+					return obj;
+				}
+
+				if (obj.extra.page && /\/scenes\/+[0-9]+\/+[0-9]+x[0-9]+\./.test(src)) {
+					return {
+						url: obj.extra.page,
+						is_pagelink: true
+					};
+				}
+
+				return obj;
+			}
+
+			if (domain_nowww === "pinkqueen.com") return src.replace(/\/upload\/+thumb\/+[0-9]+x[0-9]+\/+/, "/upload/");
+
+			if (host_domain_nowww === "fig.co" && options.element) {
+				if (options.element.classList.contains("media-box__selector__selector-thumbnail__overlay")) {
+					return {
+						url: origsrc,
+						bad: "mask"
+					};
+				}
+			}
+
+			if (domain === "cdn.locals.com") {
+				return src
+					.replace(/(\/images\/+(?:avatars|posts|groups)\/+)([0-9]+\/+[0-9]+_[0-9a-z]+)_full(\.[^/.]+)(?:[?#].*)?$/, "$1originals/$2$3")
+					.replace(/(\/images\/+(?:avatars|posts|groups)\/+[0-9]+\/+[0-9]+_[0-9a-z]+_)(?:thumb|big)(\.[^/.]+)(?:[?#].*)?$/, "$1full$2");
+			}
+
+			if (domain === "matrix-client.matrix.org") return src.replace(/(\/_matrix\/+media\/+r[0-9]+\/+)thumbnail\/+([^/]+\/+[a-zA-Z0-9]+)\?.*$/, "$1download/$2");
+
 
 
 
@@ -41018,6 +41424,14 @@ var $__imu_get_bigimage = function(shared_variables) {
 				return src.replace(/(\/storage\/+m\/+_v2\/+[0-9]{5,}\/+[0-9a-f]+-[0-9a-f]+\/+[0-9a-zA-Z]+\/+[0-9a-zA-Z]+)_thumb\./, "$1.");
 			}
 
+			if (/^[a-z]+:\/\/[^/]+\/+send_imgs\.php\?(?:.*&)?img=abe91d36bea45a343609fca197da54079/.test(src)) {
+				match = src.match(/^[a-z]+:\/\/[^/]+\/+send_imgs\.php\?(?:.*&)?img=([^&]+)/);
+				if (match) {
+					newsrc = match[1].replace(/be91d36bea45a343609fca197da54079/g, "");
+					return base64_decode(newsrc);
+				}
+			}
+
 
 
 
@@ -41169,6 +41583,6 @@ var $__imu_get_bigimage = function(shared_variables) {
 
 			return src;
 		},
-		nonce: "1p12iij99861db5m" // imu:nonce = "1p12iij99861db5m"
+		nonce: "33i40831nk2mg497" // imu:nonce = "33i40831nk2mg497"
 	};
 };
