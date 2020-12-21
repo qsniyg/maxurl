@@ -15,7 +15,7 @@
 // @name:zh-TW        Image Max URL
 // @name:zh-HK        Image Max URL
 // @namespace         http://tampermonkey.net/
-// @version           0.15.0
+// @version           0.15.1
 // @description       Finds larger or original versions of images and videos for 7500+ websites, including a powerful media popup feature
 // @description:en    Finds larger or original versions of images and videos for 7500+ websites, including a powerful media popup feature
 // @description:ko    7500개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
@@ -63,7 +63,7 @@
 //  Note that jsdelivr.net might not always be reliable, but (AFAIK) this is the only reasonable option from what greasyfork allows.
 //  I'd recommend using the Github version of the script if you encounter any issues (linked in the 'Project links' section below).
 //
-// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@5d5ad9190c03e93a4a5435ac7c52899633dfb4ba/build/rules.js
+// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@2f810d1b29f771b9a6cd7f6f7bea2c3b110572fd/build/rules.js
 // ==/UserScript==
 
 // If you see "A userscript wants to access a cross-origin resource.", it's used for:
@@ -9995,6 +9995,7 @@ var $$IMU_EXPORT$$;
 				//"User-Agent": "Instagram 10.26.0 Android (23/6.0.1; 640dpi; 1440x2560; samsung; SM-G930F; herolte; samsungexynos8890; en_US)",
 				// thanks to ambler on discord for reporting, earlier UAs don't receive stories anymore
 				"User-Agent": "Instagram 146.0.0.27.125 Android (23/6.0.1; 640dpi; 1440x2560; samsung; SM-G930F; herolte; samsungexynos8890; en_US)",
+				//"User-Agent": "Mozilla/5.0 (Linux; Android 10; SM-T860 Build/QP1A.190711.020; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/87.0.4280.101 Mobile Safari/537.36 Instagram 168.0.0.40.355 Android (29/10; 360dpi; 2560x1492; samsung; SM-T860; gts6lwifi; qcom; en_US; 261079769)",
 				"X-IG-Capabilities": "36oD",
 				"Accept": "*/*",
 				"Accept-Language": "en-US,en;q=0.8"
@@ -13647,13 +13648,13 @@ var $$IMU_EXPORT$$;
 	                    data: bigimage_obj,
 	                    message: "Unable to get bigimage function"
 	                };
-	            } else if (bigimage_obj.nonce !== "33i40831nk2mg497") {
+	            } else if (bigimage_obj.nonce !== "a5ihck29kce0b559") {
 	                // This could happen if for some reason the userscript manager updates the userscript,
 	                // but not the required libraries.
 	                require_rules_failed = {
 	                    type: "bad_nonce",
 	                    data: bigimage_obj.nonce,
-	                    message: "Bad nonce, expected: " + "33i40831nk2mg497"
+	                    message: "Bad nonce, expected: " + "a5ihck29kce0b559"
 	                };
 	            } else {
 	                bigimage = bigimage_obj.bigimage;
@@ -15142,7 +15143,13 @@ var $$IMU_EXPORT$$;
 						endhref[0].url = blankurl;
 					}
 
-					if (_nir_debug_) nir_debug("bigimage_recursive", "do_end (endhref, pasthrefs, pastobjs)", endhref, pasthrefs, pastobjs);
+					// hacky workaround for https://github.com/qsniyg/maxurl/issues/583
+					// fails with fill_object, but that option hasn't worked properly for a very long time anyways
+					if (!is_array(endhref)) {
+						endhref = [endhref];
+					}
+
+					if (_nir_debug_) nir_debug("bigimage_recursive", "do_end (endhref, pasthrefs, pastobjs)", deepcopy(endhref), deepcopy(pasthrefs), deepcopy(pastobjs));
 
 					orig_cb(endhref);
 				};
@@ -26519,18 +26526,18 @@ var $$IMU_EXPORT$$;
 							ret = false;
 							release_ignore = trigger;
 						}
+
+						trigger_id = i ? (i + 1) : null;
+
+						if (get_tprofile_setting("mouseover_open_behavior") !== "popup") {
+							// especially relevant for new tab
+							clear_chord();
+						}
 					}
 
 					var close_behavior = get_close_behavior();
 					if (close_behavior === "all" || (close_behavior === "any" && trigger_complete(trigger))) {
 						can_close_popup[0] = false;
-					}
-
-					trigger_id = i ? (i + 1) : null;
-
-					if (get_tprofile_setting("mouseover_open_behavior") !== "popup") {
-						// especially relevant for new tab
-						clear_chord();
 					}
 				});
 			}

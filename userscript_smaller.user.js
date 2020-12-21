@@ -15,7 +15,7 @@
 // @name:zh-TW        Image Max URL
 // @name:zh-HK        Image Max URL
 // @namespace         http://tampermonkey.net/
-// @version           0.15.0
+// @version           0.15.1
 // @description       Finds larger or original versions of images and videos for 7500+ websites, including a powerful media popup feature
 // @description:en    Finds larger or original versions of images and videos for 7500+ websites, including a powerful media popup feature
 // @description:ko    7500개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
@@ -9991,6 +9991,7 @@ var $$IMU_EXPORT$$;
 				//"User-Agent": "Instagram 10.26.0 Android (23/6.0.1; 640dpi; 1440x2560; samsung; SM-G930F; herolte; samsungexynos8890; en_US)",
 				// thanks to ambler on discord for reporting, earlier UAs don't receive stories anymore
 				"User-Agent": "Instagram 146.0.0.27.125 Android (23/6.0.1; 640dpi; 1440x2560; samsung; SM-G930F; herolte; samsungexynos8890; en_US)",
+				//"User-Agent": "Mozilla/5.0 (Linux; Android 10; SM-T860 Build/QP1A.190711.020; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/87.0.4280.101 Mobile Safari/537.36 Instagram 168.0.0.40.355 Android (29/10; 360dpi; 2560x1492; samsung; SM-T860; gts6lwifi; qcom; en_US; 261079769)",
 				"X-IG-Capabilities": "36oD",
 				"Accept": "*/*",
 				"Accept-Language": "en-US,en;q=0.8"
@@ -16973,7 +16974,6 @@ var $$IMU_EXPORT$$;
 			(domain_nosub === "dtslb.com" && /^i[0-9]*\./.test(domain)) ||
 			domain === "static.otvfoco.com.br" ||
 			(domain_nosub === "diariouno.com.ar" && /^static[0-9]*\./.test(domain) && string_indexof(src, "/media/") >= 0) ||
-			(domain === "static-cdn.jtvnw.net" && /\/(s3_vods|previews-ttv|ttv-boxart)\//.test(src)) ||
 			(domain_nowww === "thugarmada.com" && string_indexof(src, "/ta-files/") >= 0) ||
 			(domain_nowww === "flipwallpapers.com" && string_indexof(src, "/wallpapers/") >= 0) ||
 			(domain_nowww === "hanamaru-photo.com" && /\/common\/+images\//.test(src)) ||
@@ -24862,7 +24862,11 @@ var $$IMU_EXPORT$$;
 			return src.replace(/,[^/.]*(\.[^/.]*)$/, "$1");
 		}
 
-		if (domain_nowww === "phoronix.net") return src.replace(/(\/image\.php.*?[?&]image=[^&]*)_med/, "$1");
+		if (domain_nowww === "phoronix.net") {
+			return src
+				.replace(/(\/image\.php.*?[?&]image=[^&]*)_show/, "$1")
+				.replace(/(\/image\.php.*?[?&]image=[^&]*)_med/, "$1_show");
+		}
 
 		if (domain === "image.diyidan.net") {
 			return {
@@ -38695,7 +38699,15 @@ var $$IMU_EXPORT$$;
 
 		if (domain === "d2adpaynhf6x63.cloudfront.net") return src.replace(/\/image\/+thumbs\/+thumb[0-9]+_/, "/image/");
 
-		if (domain === "static-cdn.jtvnw.net") return src.replace(/(\/emoticons\/+v1\/+[0-9]+\/+)[012][0-9.]*(?:[?#].*)?$/, "$13.0");
+		if (domain === "static-cdn.jtvnw.net") {
+			newsrc = src.replace(/-(?:50x50|70x70)(\.[^/.]+)(?:[?#].*)?$/, "-300x300$1");
+			if (newsrc !== src) return newsrc;
+
+			newsrc = src.replace(/(\/emoticons\/+v1\/+[0-9]+\/+)[012][0-9.]*(?:[?#].*)?$/, "$13.0");
+			if (newsrc !== src) return newsrc;
+
+			return src.replace(/-[0-9]+x[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1");
+		}
 
 		if (domain_nowww === "patch.com") {
 			newsrc = src.replace(/(\/img\/+cdn[0-9]*\/+.*\/+(?:[0-9]{4}\/+[0-9]{2}|[0-9]{8}\/+[0-9]+)\/+)(?:T[0-9]+x[0-9]+\/+)?((?:styles\/+[^/]+\/+public\/+[^/]+\/+)?[^/]*?)(?:[?#].*)?$/,
@@ -45401,7 +45413,10 @@ var $$IMU_EXPORT$$;
 		}
 
 
-		if (domain === "thumbs.oldgf.com") return src.replace(/:\/\/[^/]+\/+/, "://pics.oldgf.com/");
+		if (domain === "thumbs.oldgf.com" ||
+			domain === "thumbs.jerkoffer.com") {
+			return src.replace(/:\/\/[^/]+\/+/, "://pics." + domain_nosub + "/");
+		}
 
 		if (domain_nowww === "meituyuan.com") return src.replace(/(\/data\/+share\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}[0-9a-f]{10,})_[smb](\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 
@@ -54076,6 +54091,68 @@ var $$IMU_EXPORT$$;
 
 		if (domain === "matrix-client.matrix.org") return src.replace(/(\/_matrix\/+media\/+r[0-9]+\/+)thumbnail\/+([^/]+\/+[a-zA-Z0-9]+)\?.*$/, "$1download/$2");
 
+		if (domain_nowww === "pornssd.com") {
+			match = src.match(/\/wp-content\/+plugins\/+clean-tube-player\/+public\/+player-x.php\?q=([^&]{50,})/);
+			if (match) {
+				var decoded = base64_decode(match[1]);
+				var queries = get_queries("?" + decoded);
+				return parse_tag_def(decodeURIComponent(queries.tag)).args.src;
+			}
+		}
+
+		if (domain_nowww === "pornedup.com") return src.replace(/\/media\/+pics\/+thumbs_[a-z]+\/+/, "/media/pics/orig/");
+
+		if (domain === "media.mstdn.io") return src.replace(/(\/mstdn-media\/+cache\/+media_attachments\/+files\/+(?:[0-9]{3}\/+)+)[a-z]+\/+/, "$1original/");
+
+		if (domain_nosub === "avaz.ba") {
+
+			newsrc = src.replace(/(\/media\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}[0-9]+\/+thumbs\/+)873x400(\.[^/.]+)(?:[?#].*)?$/, "$1w873$2");
+			if (newsrc !== src) return newsrc;
+
+			newsrc = src
+				.replace(/(\/media\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}[0-9]+\/+thumbs\/+)cover_small(\.[^/.]+)(?:[?#].*)?$/, "$1cover_big$2")
+				.replace(/(\/media\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}[0-9]+\/+thumbs\/+)240x225(\.[^/.]+)(?:[?#].*)?$/, "$1873x400$2");
+			if (newsrc !== src) {
+				return {
+					url: newsrc,
+					problems: {
+						possibly_upscaled: true
+					}
+				};
+			}
+
+			regex = /(\/media\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}[0-9]+\/+thumbs\/+)(?:[0-9]+x[0-9]+|[wh][0-9]+)(\.[^/.]+)(?:[?#].*)?$/;
+			if (regex && options.do_request && options.cb && !problem_excluded("possibly_upscaled")) {
+				var larger_urls = [
+					src.replace(regex, "$11200x700$2"),
+					src.replace(regex, "$11005x635$2"),
+					src.replace(regex, "$1h550$2"),
+					src.replace(regex, "$1800x450$2"),
+					src.replace(regex, "$1w873$2"),
+					src.replace(regex, "$1873x400$2")
+				];
+
+				array_upush(larger_urls, src);
+
+				common_functions.find_actual_largest_image(src, larger_urls, function(src) {
+					return options.cb({
+						url: src,
+						problems: {
+							possibly_upscaled: true
+						}
+					});
+				}, {
+					check_length: true,
+					api_cache: api_cache,
+					do_request: options.do_request
+				});
+
+				return {
+					waiting: true
+				};
+			}
+		}
+
 
 
 
@@ -56461,7 +56538,13 @@ var $$IMU_EXPORT$$;
 						endhref[0].url = blankurl;
 					}
 
-					if (_nir_debug_) nir_debug("bigimage_recursive", "do_end (endhref, pasthrefs, pastobjs)", endhref, pasthrefs, pastobjs);
+					// hacky workaround for https://github.com/qsniyg/maxurl/issues/583
+					// fails with fill_object, but that option hasn't worked properly for a very long time anyways
+					if (!is_array(endhref)) {
+						endhref = [endhref];
+					}
+
+					if (_nir_debug_) nir_debug("bigimage_recursive", "do_end (endhref, pasthrefs, pastobjs)", deepcopy(endhref), deepcopy(pasthrefs), deepcopy(pastobjs));
 
 					orig_cb(endhref);
 				};
@@ -67838,18 +67921,18 @@ var $$IMU_EXPORT$$;
 							ret = false;
 							release_ignore = trigger;
 						}
+
+						trigger_id = i ? (i + 1) : null;
+
+						if (get_tprofile_setting("mouseover_open_behavior") !== "popup") {
+							// especially relevant for new tab
+							clear_chord();
+						}
 					}
 
 					var close_behavior = get_close_behavior();
 					if (close_behavior === "all" || (close_behavior === "any" && trigger_complete(trigger))) {
 						can_close_popup[0] = false;
-					}
-
-					trigger_id = i ? (i + 1) : null;
-
-					if (get_tprofile_setting("mouseover_open_behavior") !== "popup") {
-						// especially relevant for new tab
-						clear_chord();
 					}
 				});
 			}

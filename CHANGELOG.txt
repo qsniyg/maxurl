@@ -1,3 +1,24 @@
+0.15.1
+
+This is an emergency bugfix release for the issue where blacklisted sites redirect to "h".
+
+New features:
+
+ * Support for 5 new websites (using 4 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including Twitch)
+
+Bugfixes:
+
+ * Fix invalid behavior with similar triggers (#556, thanks to Hlsgs on github for reporting)
+ * Fix images on sites added to blacklist redirecting to "h" (#583, thanks to nimuxoha in github for reporting)
+
+Special thanks to Hlsgs, Ox, nimuxoha, nijaz-lab, Urkchar, dtndmd for their contributions and reports for this release
+
+---
+
 0.15.0
 
 New features:
