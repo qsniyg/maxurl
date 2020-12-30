@@ -118,6 +118,10 @@ var same_cookie_domain = function(url1, url2) {
 	return get_domain(url1) === get_domain(url2);
 };
 
+var use_header = function(value) {
+	return value !== "" && value !== null;
+};
+
 var do_request = function(request, sender) {
 	debug("do_request", request, sender);
 
@@ -145,7 +149,13 @@ var do_request = function(request, sender) {
 	for (var header in headers) {
 		if (header.toLowerCase() == "cookie")
 			cookie_overridden = true;
-		xhr.setRequestHeader("IMU--" + header, headers[header]);
+
+		var value = headers[header];
+		if (use_header(value)) {
+			xhr.setRequestHeader("IMU--" + header, headers[header]);
+		} else {
+			xhr.setRequestHeader("IMU-D-" + header, "true");
+		}
 	}
 
 	xhr.setRequestHeader("IMU-Verify", id);
@@ -295,6 +305,7 @@ var onBeforeSendHeaders_listener = function(details) {
 	var headers = details.requestHeaders;
 	var new_headers = [];
 	var imu_headers = [];
+	var remove_headers = [];
 	var verify_ok = false;
 	var request_id;
 
@@ -344,6 +355,8 @@ var onBeforeSendHeaders_listener = function(details) {
 				name: header.name.slice(5),
 				value: header.value
 			});
+		} else if (header.name.startsWith("IMU-D-")) {
+			remove_headers.push(header.name.slice(6).toLowerCase());
 		} else if (header.name === "IMU-Verify") {
 			verify_ok = header.value in requests;
 			if (verify_ok) {
@@ -399,25 +412,36 @@ var onBeforeSendHeaders_listener = function(details) {
 		request_headers[details.requestId] = imu_headers;
 	}
 
-	var use_header = function(value) {
-		return value !== "" && value !== null;
-	};
+	for (const remove of remove_headers) {
+		for (var i = 0; i < new_headers.length; i++) {
+			if (new_headers[i].name.toLowerCase() === remove) {
+				new_headers.splice(i, 1);
+				break;
+			}
+		}
+	}
 
 	for (var i = 0; i < imu_headers.length; i++) {
+		var use_this = use_header(imu_headers[i].value);
+		if (use_this)
+			imu_headers[i].value = imu_headers[i].value.toString(); // e.g. for numbers
+
 		var found = false;
 		for (var j = 0; j < new_headers.length; j++) {
 			if (new_headers[j].name === imu_headers[i].name) {
-				if (use_header(imu_headers[i].value))
+
+				if (use_this) {
 					new_headers[j] = imu_headers[i];
-				else
+				} else {
 					new_headers.splice(j, 1);
+				}
 
 				found = true;
 				break;
 			}
 		}
 
-		if (!found && use_header(imu_headers[i].value))
+		if (!found && use_this)
 			new_headers.push(imu_headers[i]);
 	}
 
