@@ -31,6 +31,23 @@ module.exports.update_userscript_strings = function(strings, userscript) {
     fs.writeFileSync(userscript_filename, userscript);
 };
 
+var read_userscript = module.exports.read_userscript = function(filename) {
+    if (!filename) filename = userscript_filename;
+    var userscript = fs.readFileSync(filename).toString();
+
+    return userscript;
+};
+
+module.exports.get_userscript_lines = function(filename) {
+	return read_userscript(filename).split("\n");
+};
+
+module.exports.write_userscript_lines = function(lines, filename) {
+    if (!filename) filename = userscript_filename;
+
+	fs.writeFileSync(filename, lines.join("\n"));
+};
+
 var sort_by_array = module.exports.sort_by_array = function(array, key) {
     array.sort(function(a, b) {
         var a_index = key.indexOf(a);
