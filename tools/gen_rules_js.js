@@ -105,7 +105,8 @@ var variables_list = [
 	"common_functions",
 	"get_domain_nosub",
 	"looks_like_valid_link",
-	"Cache"
+	"Cache",
+	"url_basename"
 ];
 
 var get_random_text = function(length) {
