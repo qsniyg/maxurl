@@ -354,6 +354,7 @@ function start(userscript_filename) {
 			"// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@" + commit + "/build/rules.js"
 		].join("\n");
 		userscript_require = userscript_require
+			.replace(/^\/\/\s*@(?:name|description):en.*/m, "") // greasyfork no longer allows this
 			.replace(/^\/\/\s*imu:require_rules.*/m, require_statement)
 			.replace(/\n\n\/\/\/ All comments within bigimage.*\n\/\/\/ You can view.*/, "\n");
 	}
