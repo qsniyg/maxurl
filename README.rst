@@ -34,6 +34,8 @@ Community:
 
 - `Discord Server <https://discord.gg/fH9Pf54>`__
 
+- `Matrix <https://matrix.to/#/#image-max-url:tedomum.net?via=tedomum.net>`__ (``#image-max-url:tedomum.net``)
+
 - `Subreddit <http://reddit.com/r/MaxImage>`__
 
 *************************
