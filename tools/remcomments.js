@@ -23,7 +23,10 @@ var get_multidomain = function(name, userscript) {
 	return match[1];
 };
 
-var replace_multidomain = function(call, line, userscript) {
+var replace_multidomain = function(call, prevchar, line, userscript) {
+	// comment
+	if (prevchar === "/") return null;
+
 	var multidomain_name = call.replace(/^common_functions\.(.*?)\(.*/, "$1");
 	var is_host = /\(\s*host_domain/.test(call);
 
@@ -37,6 +40,8 @@ var replace_multidomain = function(call, line, userscript) {
 	multidomain_text = multidomain_text.replace(/^(.*?\n(\s+))/, "$2$1");
 
 	var indentation = util.get_line_indentation(line);
+	if (prevchar === "(") indentation += "\t";
+
 	multidomain_text = util.indent(multidomain_text.split("\n"), indentation).join("\n").replace(/^\s*/, "");
 
 	return "(" + multidomain_text + ")";
@@ -110,13 +115,13 @@ function update() {
 		// Slight performance improvement, because of e.g. nir_debug(..., deepcopy(...))
 		line = line.replace(/^(\s*)(nir_debug\()/, "$1if (_nir_debug_) $2");
 
-		var multidomain_match = line.match(/(common_functions\.multidomain__[_a-z]+\(.*?\))/);
+		var multidomain_match = line.match(/(.)(common_functions\.multidomain__[_a-z]+\(.*?\))/);
 		if (multidomain_match) {
-			var new_text = replace_multidomain(multidomain_match[1], line, userscript);
+			var new_text = replace_multidomain(multidomain_match[2], multidomain_match[1], line, userscript);
 			if (new_text) {
 				line = line.replace(/common_functions\.multidomain__[_a-z]+\(.*?\)/, new_text);
 			} else {
-				console.log("error replacing", line);
+				console.log("not replacing", line);
 			}
 		}
 
