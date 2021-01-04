@@ -85,3 +85,33 @@ module.exports.read_as_lines = function(file) {
     var read = fs.readFileSync(file).toString();
     return read.split("\n");
 };
+
+module.exports.get_line_indentation = function(line) {
+	return line.replace(/^(\s+).*$/, "$1");
+};
+
+module.exports.indent = function(lines, indentation) {
+	var base_indent_regex = null;
+
+	for (var i = 0; i < lines.length; i++) {
+		var line = lines[i];
+
+		if (!base_indent_regex && line.length > 0) {
+			var our_indentation = line.replace(/^(\t*).*$/, "$1");
+			if (our_indentation !== line && our_indentation.length > 0) {
+				base_indent_regex = new RegExp("^\t{" + our_indentation.length + "}")
+			} else {
+				base_indent_regex = /^/;
+			}
+		}
+
+		if (base_indent_regex) {
+			line = line.replace(base_indent_regex, "");
+		}
+
+		if (line.length > 0)
+			lines[i] = indentation + line;
+	}
+
+	return lines;
+};
