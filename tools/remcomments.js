@@ -14,6 +14,34 @@ process.chdir(__dirname + "/..");
 
 const child_process = require("child_process");
 
+var get_multidomain = function(name, userscript) {
+	var multidomain_text = "common_functions\\." + name + "\\s*=\\s*function\\(.*?\\)\\s*{\\s*return\\s+([\\s\\S]*?);\\s*};";
+	var multidomain_regex = new RegExp(multidomain_text);
+	var match = userscript.match(multidomain_regex);
+	if (!match) return null;
+
+	return match[1];
+};
+
+var replace_multidomain = function(call, line, userscript) {
+	var multidomain_name = call.replace(/^common_functions\.(.*?)\(.*/, "$1");
+	var is_host = /\(\s*host_domain/.test(call);
+
+	var multidomain_text = get_multidomain(multidomain_name, userscript);
+	if (!multidomain_text) return null;
+
+	if (is_host) {
+		multidomain_text = multidomain_text.replace(/domain([_\s])/g, "host_domain$1");
+	}
+
+	multidomain_text = multidomain_text.replace(/^(.*?\n(\s+))/, "$2$1");
+
+	var indentation = util.get_line_indentation(line);
+	multidomain_text = util.indent(multidomain_text.split("\n"), indentation).join("\n").replace(/^\s*/, "");
+
+	return "(" + multidomain_text + ")";
+};
+
 function update() {
 	console.log("Updating...");
 	var userscript = fs.readFileSync(process.argv[2] || "userscript.user.js").toString();
@@ -81,6 +109,16 @@ function update() {
 
 		// Slight performance improvement, because of e.g. nir_debug(..., deepcopy(...))
 		line = line.replace(/^(\s*)(nir_debug\()/, "$1if (_nir_debug_) $2");
+
+		var multidomain_match = line.match(/(common_functions\.multidomain__[_a-z]+\(.*?\))/);
+		if (multidomain_match) {
+			var new_text = replace_multidomain(multidomain_match[1], line, userscript);
+			if (new_text) {
+				line = line.replace(/common_functions\.multidomain__[_a-z]+\(.*?\)/, new_text);
+			} else {
+				console.log("error replacing", line);
+			}
+		}
 
 		if (!in_bigimage) {
 			if (firstcomment) {
