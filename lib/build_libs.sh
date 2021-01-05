@@ -10,7 +10,7 @@ strip_whitespace() {
 wget http://cdn.dashjs.org/v3.1.1/dash.all.debug.js -O dash.all.debug.js
 echo "" >> dash.all.debug.js
 echo "var lib_export = dashjs;" >> dash.all.debug.js
-cat generic_shim.js >> dash.all.debug.js
+cat shim.js >> dash.all.debug.js
 dos2unix dash.all.debug.js
 sed -i -e '/\/\/# sourceMappingURL=/d' dash.all.debug.js
 strip_whitespace dash.all.debug.js
@@ -22,7 +22,7 @@ patch -p0 aes.patched.js < aes1.patch
 cat aes.patched.js > testcookie_slowaes.js
 echo "" >> testcookie_slowaes.js
 echo "var lib_export = slowAES;" >> testcookie_slowaes.js
-cat generic_shim.js >> testcookie_slowaes.js
+cat shim.js >> testcookie_slowaes.js
 dos2unix testcookie_slowaes.js
 strip_whitespace testcookie_slowaes.js
 unix2dos testcookie_slowaes.js
@@ -41,7 +41,7 @@ strip_whitespace hls.js
 wget https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js -O cryptojs_aes.js
 echo "" >> cryptojs_aes.js
 echo "var lib_export = CryptoJS;" >> cryptojs_aes.js
-cat generic_shim.js >> cryptojs_aes.js
+cat shim.js >> cryptojs_aes.js
 
 wget https://unpkg.com/mux.js@5.7.0/dist/mux.js -O mux.orig.js
 echo 'var muxjs=null;' > mux.lib.js
@@ -86,7 +86,7 @@ echo "var FFMPEG_CORE_WORKER_SCRIPT;var _fakeGlobal={window:window};" > ffmpeg.j
 cat ffmpeg-core.orig.js ffmpeg.min.orig.js >> ffmpeg.js
 echo "" >> ffmpeg.js
 echo "var lib_export = _fakeGlobal.FFmpeg;" >> ffmpeg.js
-cat generic_shim.js >> stream_parser.js
+cat shim.js >> stream_parser.js
 
 # untested
 wget https://unpkg.com/mpd-parser@0.15.0/dist/mpd-parser.js -O mpd-parser.orig.js
@@ -97,7 +97,7 @@ echo "var _fakeGlobal={window: window};" > stream_parser.js
 cat mpd-parser.orig.js m3u8-parser.orig.js >> stream_parser.js
 echo "" >> stream_parser.js
 echo "var lib_export = { dash: _fakeGlobal.mpdParser, hls: _fakeGlobal.m3u8Parser };" >> stream_parser.js
-cat generic_shim.js >> stream_parser.js
+cat shim.js >> stream_parser.js
 
 CLEANUP=1
 if [ $CLEANUP -eq 1 ]; then
