@@ -89,12 +89,12 @@ echo "var lib_export = _fakeGlobal.FFmpeg;" >> ffmpeg.js
 cat shim.js >> stream_parser.js
 
 # untested
-wget https://unpkg.com/mpd-parser@0.15.0/dist/mpd-parser.js -O mpd-parser.orig.js
-sed -i 's/}(this, (function (exports/}(_fakeGlobal, (function (exports/' mpd-parser.orig.js
-wget https://unpkg.com/m3u8-parser@4.5.0/dist/m3u8-parser.js -O m3u8-parser.orig.js
-sed -i 's/}(this, (function (exports/}(_fakeGlobal, (function (exports/' m3u8-parser.orig.js
+wget https://unpkg.com/mpd-parser@0.15.0/dist/mpd-parser.js -O mpd-parser.js
+sed -i 's/}(this, (function (exports/}(_fakeGlobal, (function (exports/' mpd-parser.js
+wget https://unpkg.com/m3u8-parser@4.5.0/dist/m3u8-parser.js -O m3u8-parser.js
+sed -i 's/}(this, function (exports/}(_fakeGlobal, function (exports/' m3u8-parser.js
 echo "var _fakeGlobal={window: window};" > stream_parser.js
-cat mpd-parser.orig.js m3u8-parser.orig.js >> stream_parser.js
+cat mpd-parser.js m3u8-parser.js >> stream_parser.js
 echo "" >> stream_parser.js
 echo "var lib_export = { dash: _fakeGlobal.mpdParser, hls: _fakeGlobal.m3u8Parser };" >> stream_parser.js
 cat shim.js >> stream_parser.js
@@ -106,5 +106,5 @@ if [ $CLEANUP -eq 1 ]; then
 		shaka.debug.orig.js shaka_global.js \
 		mux.orig.js mux.lib.js \
 		ffmpeg.min.orig.js ffmpeg-core.orig.js \
-		mpd-parser.orig.js m3u8-parser.orig.js
+		mpd-parser.js m3u8-parser.js
 fi
