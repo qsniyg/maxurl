@@ -15,7 +15,7 @@ process.chdir(__dirname + "/..");
 const child_process = require("child_process");
 
 var get_multidomain = function(name, userscript) {
-	var multidomain_text = "common_functions\\." + name + "\\s*=\\s*function\\(.*?\\)\\s*{\\s*return\\s+([\\s\\S]*?);\\s*};";
+	var multidomain_text = "common_functions\\." + name + "\\s*=\\s*function\\(.*?\\)\\s*{\\s*(?://.*\\n\\s*)*return\\s+([\\s\\S]*?);\\s*};";
 	var multidomain_regex = new RegExp(multidomain_text);
 	var match = userscript.match(multidomain_regex);
 	if (!match) return null;
