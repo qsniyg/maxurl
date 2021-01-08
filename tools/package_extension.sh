@@ -2,6 +2,11 @@
 
 cd "$(dirname "$(readlink -f "$0")")/.."
 
+RELEASE=
+if [ "$1" == "release" ]; then
+    RELEASE=1
+fi
+
 get_userscript_version() {
     cat $1 | grep '@version *[0-9.]* *$' | sed 's/.*@version *\([0-9.]*\) *$/\1/g'
 }
@@ -26,7 +31,7 @@ else
     echo "Warning: remcomments.js not available, skipping generating userscript_smaller.user.js"
 fi
 
-if true; then
+if [ ! -z $RELEASE ]; then
     if [ -f ./tools/gen_minified.js ]; then
         node ./tools/gen_minified.js
         MINVERSION=`get_userscript_version userscript_min.user.js`
@@ -40,7 +45,7 @@ if true; then
     fi
 fi
 
-if [ -f ./build/userscript_extr.user.js ]; then
+if [ ! -z $RELEASE ] && [ -f ./build/userscript_extr.user.js ]; then
     grep '// imu:require_rules' ./build/userscript_extr.user.js 2>&1 >/dev/null
     if [ $? -eq 0 ]; then
         echo 'require_rules present in extr.user.js (commit build/rules.js)'
@@ -112,7 +117,7 @@ echo
 echo Building Firefox extension
 
 BASEFILES="LICENSE.txt manifest.json userscript.user.js lib/testcookie_slowaes.js lib/cryptojs_aes.js lib/hls.js lib/dash.all.debug.js lib/shaka.debug.js resources/logo_40.png resources/logo_48.png resources/logo_96.png resources/disabled_40.png resources/disabled_48.png resources/disabled_96.png extension/background.js extension/options.css extension/options.html extension/popup.js extension/popup.html"
-SOURCEFILES="lib/aes1.patch lib/aes_shim.js lib/cryptojs_aes_shim.js lib/dash_shim.js lib/hls_shim.js lib/shaka_shim.js lib/build_libs.sh EXTENSION_README.txt tools/package_extension.sh tools/remcomments.js tools/util.js"
+SOURCEFILES="lib/aes1.patch lib/shim.js lib/build_libs.sh EXTENSION_README.txt tools/package_extension.sh tools/remcomments.js tools/util.js"
 DIRS="extension lib resources tools"
 
 zip_tempcreate() {
@@ -172,16 +177,12 @@ extension/popup.html
 extension/popup.js
 #-EXTENSION_README.txt
 #-lib/aes1.patch
-#-lib/aes_shim.js
 #-lib/build_libs.sh
 lib/cryptojs_aes.js
-#-lib/cryptojs_aes_shim.js
 lib/dash.all.debug.js
-#-lib/dash_shim.js
 lib/hls.js
-#-lib/hls_shim.js
 lib/shaka.debug.js
-#-lib/shaka_shim.js
+#-lib/shim.js
 lib/testcookie_slowaes.js
 LICENSE.txt
 manifest.json
@@ -275,15 +276,20 @@ else
     echo "Warning: skipping chrome extension build"
 fi
 
-echo
-echo "Release checklist:"
-echo
-echo ' * Ensure translation strings are updated'
-echo ' * Ensure xx00+ count is updated (userscript - greasyfork/oujs, reddit post, mozilla/opera, website)'
-echo ' * Ensure CHANGELOG.txt is updated'
-echo ' * git add userscript.user.js userscript_smaller.user.js userscript.meta.js CHANGELOG.txt build/userscript_extr.user.js manifest.json sites.txt'
-echo ' * git commit ('$USERVERSION')'
-echo ' * Update greasyfork, oujs, firefox, opera, changelog.txt'
-echo ' * git tag v'$USERVERSION
-echo ' * Update userscript.user.js for site (but check about.js for site count before)'
-echo ' * Update Discord changelog'
+if [ ! -z $RELEASE ]; then
+    echo
+    echo "Release checklist:"
+    echo
+    echo ' * Ensure translation strings are updated'
+    echo ' * Ensure xx00+ count is updated (userscript - greasyfork/oujs, reddit post, mozilla/opera, website)'
+    echo ' * Ensure CHANGELOG.txt is updated'
+    echo ' * git add userscript.user.js userscript_smaller.user.js userscript.meta.js CHANGELOG.txt build/userscript_extr.user.js manifest.json sites.txt'
+    echo ' * git commit ('$USERVERSION')'
+    echo ' * Update greasyfork, oujs, firefox, opera, changelog.txt'
+    echo ' * git tag v'$USERVERSION
+    echo ' * Update userscript.user.js for site (but check about.js for site count before)'
+    echo ' * Update Discord changelog'
+else
+    echo
+    echo "Non-development build finished"
+fi
