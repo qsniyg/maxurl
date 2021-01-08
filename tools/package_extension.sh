@@ -2,6 +2,8 @@
 
 cd "$(dirname "$(readlink -f "$0")")/.."
 
+# This option enables extra consistency checks and generates extra files (sites.txt and those under build/)
+# The resulting extension builds are identical, so there's little reason to use this if you're not a maintainer
 RELEASE=
 if [ "$1" == "release" ]; then
     RELEASE=1
@@ -55,7 +57,7 @@ else
     echo "Warning: userscript_extr.user.js not available"
 fi
 
-if [ -d site ]; then
+if [ ! -z $RELEASE ] && [ -d site ]; then
     echo "Updating website files"
     cp site/style.css extension/options.css
     cp userscript_smaller.user.js site/
