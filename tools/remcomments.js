@@ -14,6 +14,16 @@ process.chdir(__dirname + "/..");
 
 const child_process = require("child_process");
 
+var do_watch = true;
+var do_rulesjs = true;
+
+for (var i = 3; i < process.argv.length; i++) {
+	var arg = process.argv[i];
+
+	if (arg === "nowatch") do_watch = false;
+	else if (arg === "norules") do_rulesjs = false;
+}
+
 var get_multidomain = function(name, userscript) {
 	var multidomain_text = "common_functions\\." + name + "\\s*=\\s*function\\(.*?\\)\\s*{\\s*(?://.*\\n\\s*)*return\\s+([\\s\\S]*?);\\s*};";
 	var multidomain_regex = new RegExp(multidomain_text);
@@ -186,7 +196,7 @@ function update() {
 
 	fs.writeFileSync("userscript_smaller.user.js", newcontents);
 
-	if (fs.existsSync("tools/gen_rules_js.js")) {
+	if (do_rulesjs && fs.existsSync("tools/gen_rules_js.js")) {
 		child_process.spawnSync("node", ["tools/gen_rules_js.js"], {
 			stdio: [process.stdin, process.stdout, process.stderr]
 		});
@@ -229,7 +239,7 @@ function update() {
 update();
 console.log("");
 
-if (process.argv[3] === "nowatch") {
+if (!do_watch) {
 	process.exit();
 }
 
