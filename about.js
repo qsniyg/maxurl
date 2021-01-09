@@ -53,7 +53,7 @@ function reqListener() {
 }
 
 function get_sites() {
-  var sites = userscript_rcontents.match(/[^/](?:(?:host_)?domain(?:_[a-z]+)?|amazon_container|googlestorage_container) *=== *["'](?:.*?)["']/g);
+  var sites = userscript_rcontents.match(/[^/](?:(?:host_)?domain(?:_[a-z]+)?|(?:amazon|googlestorage|digitalocean)_container) *=== *["'](?:.*?)["']/g);
   var siteslist = [];
   for (var i = 0; i < sites.length; i++) {
     var origsite = sites[i];
@@ -63,6 +63,8 @@ function get_sites() {
       site = site + ".s3.amazonaws.com";
     if (sites[i].match(/^googlestorage_/))
       site = site + ".storage.googleapis.com";
+    if (sites[i].match(/^digitalocean_/))
+      site = site + ".?.digitaloceanspaces.com";
     if (siteslist.indexOf(site) < 0) {
       if (site.length > 0)
         siteslist.push(site);
