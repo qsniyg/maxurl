@@ -52,6 +52,17 @@ but you can sideload this repository if you wish to use the extension instead of
 You'll probably want to keep "Check for updates" enabled (it's enabled by default) as sideloaded extensions aren't automatically updated.
 Any new updates will be displayed at the top of the options page.
 
+************
+Contributing
+************
+
+Any contribution is greatly appreciated! If you have any bug reports, feature requests, or new websites you want supported, please file an issue here.
+
+If you don't have a Github account, feel free to either use one of the community links above or `contact me directly <https://qsniyg.github.io/>`__.
+
+If you wish to contribute to the repository itself (code contributions, translations, etc.), please check `CONTRIBUTING.md <https://github.com/qsniyg/maxurl/blob/master/CONTRIBUTING.md>`__
+for more information.
+
 *******************************
 Integrating IMU in your program
 *******************************
@@ -239,12 +250,3 @@ The result is a list of objects that contain properties that may be useful in us
         possibly_broken: false
       }
     }]
-
-************
-Contributing
-************
-
-Any contribution is greatly appreciated! If you have any bug reports, feature requests, or new websites you want supported, please file an issue here.
-
-If you wish to contribute to the repository itself, please check `CONTRIBUTING.md <https://github.com/qsniyg/maxurl/blob/master/CONTRIBUTING.md>`__
-for more information.
