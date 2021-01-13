@@ -1,3 +1,39 @@
+0.16.0
+
+New features:
+
+ * Initial support for audio
+ * Profiled option to toggle videos in popup (#573, thanks to many people for suggesting this feature, directly or indirectly)
+ * Profiled option to toggle HLS/DASH in popup (#582, thanks to fedesk on discord for the idea)
+ * "Report issue" is added as a menu command for the userscript
+ * Option to remove size constraints for replaced images (#593, thanks to elvisef on github for reporting)
+ * Option to set custom CSS for replaced images (#614, thanks to elvisef on github for reporting)
+ * Support for `_unix` and `_unix_ms` for date formatting for filenames (thanks to remlap on discord for the idea)
+ * Support for ~95 new websites (using ~40 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including BBC, Flickr, Instagram, Nitter)
+ * Context menu now works for video and audio elements too
+ * Performance improvements for options page, particularly under Firefox
+
+Bugfixes:
+
+ * Fix no extension on non-JPEG images when saving when the original filename doesn't have an extension (thanks to remlap on discord for reporting)
+ * Fix no extension for rules that specify a custom filename (thanks to remlap on discord for reporting)
+ * Fix a few minor header-related issues in the extension
+ * Fix crashing on sendvid.com for the userscript
+ * Avoid sending head requests to DASH/HLS streams that can't handle head requests
+ * Fix `author_username` and `caption` not being able to be used in filename formats (thanks to GoblinLegislator on github for reporting)
+
+Developer notes:
+
+ * The `video` property has been replaced with `media_info`. While the `video` property is not removed, rules are no longer guaranteed to use the property.
+
+Special thanks to TheLastZombie, remlap, GoblinLegislator, elvisef, fedesk, Noodlers, fireattack, Anamon, kernoeb, dym-sh, arovane, nimuxoha, fireattack for their contributions and reports for this release
+
+---
+
 0.15.1
 
 This is an emergency bugfix release for the issue where blacklisted sites redirect to "h".
