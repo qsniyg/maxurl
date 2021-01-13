@@ -3,7 +3,6 @@
 
 // ==UserScript==
 // @name              Image Max URL
-
 // @name:ar           Image Max URL
 // @name:de           Image Max URL
 // @name:es           Image Max URL
@@ -18,7 +17,6 @@
 // @name:zh-TW        Image Max URL
 // @name:zh-HK        Image Max URL
 // @description       Finds larger or original versions of images and videos for 7600+ websites, including a powerful media popup feature
-// @description:en    Finds larger or original versions of images and videos for 7600+ websites, including a powerful media popup feature
 // @description:ar    البحث عن نسخ أكبر أو أصلية من الصور لأكثر من 7600 موقع ويب
 // @description:de    Sucht nach größeren oder originalen Versionen von Bildern und Videos für mehr als 7600 Websites
 // @description:es    Encuentra imágenes más grandes y originales para más de 7600 sitios
