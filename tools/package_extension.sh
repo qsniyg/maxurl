@@ -295,5 +295,5 @@ if [ ! -z $RELEASE ]; then
     echo ' * Update Discord changelog'
 else
     echo
-    echo "Non-development build finished"
+    echo "Non-maintainer build finished"
 fi
