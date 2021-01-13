@@ -456,30 +456,6 @@ msgstr "Activer le popup"
 msgid "Show a popup with the larger image when you mouseover an image with the trigger key held (if applicable)"
 msgstr ""
 
-#. mouseover_open_behavior.name, t2_mouseover_open_behavior.name
-msgid "Mouseover popup action"
-msgstr ""
-
-#. mouseover_open_behavior.description, t2_mouseover_open_behavior.description
-msgid "Determines how the mouseover popup will open"
-msgstr ""
-
-#. mouseover_open_behavior.options.newtab.name, t2_mouseover_open_behavior.options.newtab.name
-msgid "New tab"
-msgstr "Nouvel onglet"
-
-#. mouseover_open_behavior.options.newtab_bg.name, t2_mouseover_open_behavior.options.newtab_bg.name
-msgid "New background tab"
-msgstr ""
-
-#. mouseover_open_behavior.options.download.name, t2_mouseover_open_behavior.options.download.name
-msgid "Download"
-msgstr ""
-
-#. mouseover_open_behavior.options.copylink.name, t2_mouseover_open_behavior.options.copylink.name
-msgid "Copy link"
-msgstr ""
-
 #. mouseover_trigger_behavior.name
 msgid "Mouseover popup trigger"
 msgstr "Déclencheur du popup"
@@ -577,7 +553,11 @@ msgid "This will allow the popup to open for partially loaded media, but this mi
 msgstr ""
 
 #. mouseover_allow_partial.options.video.name
-msgid "Video"
+msgid "Streams"
+msgstr ""
+
+#. mouseover_allow_partial.options.video.description
+msgid "Audio and video"
 msgstr ""
 
 #. mouseover_allow_partial.options.media.name
@@ -585,7 +565,7 @@ msgid "Media"
 msgstr ""
 
 #. mouseover_allow_partial.options.media.description
-msgid "Both images and video"
+msgid "Images, audio, and video"
 msgstr ""
 
 #. mouseover_partial_avoid_head.name
@@ -1186,10 +1166,6 @@ msgstr ""
 
 #. mouseover_close_el_policy.options.thumbnail.name
 msgid "Thumbnail"
-msgstr ""
-
-#. mouseover_open_behavior.options.popup.name, mouseover_close_el_policy.options.popup.name, t2_mouseover_open_behavior.options.popup.name
-msgid "Popup"
 msgstr ""
 
 #. mouseover_close_el_policy.options.both.name
@@ -2036,28 +2012,36 @@ msgstr ""
 msgid "Allows videos to be returned"
 msgstr ""
 
+#. allow_audio.name
+msgid "Audio"
+msgstr ""
+
+#. allow_audio.description
+msgid "Allows audio to be returned. Note that this is currently highly alpha, please do not expect a good user experience with this yet!"
+msgstr ""
+
 #. allow_dash_video.name
-msgid "Allow DASH videos"
+msgid "Allow DASH streams"
 msgstr ""
 
 #. allow_dash_video.description
-msgid "Allows playback of DASH video streams. Some videos may not work with other websites due to hotlinking protection."
+msgid "Allows playback of DASH streams. Some media may not work with other websites due to hotlinking protection."
 msgstr ""
 
 #. allow_dash_video.description_userscript
-msgid "Allows playback of DASH video streams. Some videos may not work with other websites due to hotlinking protection, and it may even break video playback for some websites. Use with caution."
+msgid "Allows playback of DASH streams. Some media may not work with other websites due to hotlinking protection, and it may even break media playback for some websites. Use with caution."
 msgstr ""
 
 #. allow_hls_video.name
-msgid "Allow HLS videos"
+msgid "Allow HLS streams"
 msgstr ""
 
 #. allow_hls_video.description
-msgid "Allows playback of HLS video streams. Some videos may not work with other websites due to hotlinking protection."
+msgid "Allows playback of HLS streams. Some media may not work with other websites due to hotlinking protection."
 msgstr ""
 
 #. allow_hls_video.description_userscript
-msgid "Allows playback of HLS video streams. Some videos may not work with other websites due to hotlinking protection, and it may even break video playback for some websites. Use with caution."
+msgid "Allows playback of HLS streams. Some media may not work with other websites due to hotlinking protection, and it may even break media playback for some websites. Use with caution."
 msgstr ""
 
 #. custom_xhr_for_lib.name
@@ -2081,7 +2065,7 @@ msgid "HLS/DASH maximum quality"
 msgstr ""
 
 #. hls_dash_use_max.description
-msgid "Uses the maximum quality for HLS/DASH videos"
+msgid "Uses the maximum quality for HLS/DASH streams"
 msgstr ""
 
 #. max_video_quality.name
@@ -2457,6 +2441,8 @@ msgid ""
 "<p>Date objects are accessible through a number of properties. Each property can be suffixed with <code>_utc</code> to get the UTC/GMT equivalent.</p>\n"
 "<ul><br />\n"
 "<li><code>..._iso</code> - Returns the date in ISO format (e.g. <code>2019-12-31T23-30-56</code>). Note that <code>:</code> is replaced with <code>-</code> to avoid issues with paths under NTFS.</li>\n"
+"<li><code>..._unix</code> - Returns the date represented as a unix timestamp (e.g. <code>1577912345</code>)</li>\n"
+"<li><code>..._unix_ms</code> - Returns the date represented as a unix timestamp, with millisecond accuracy (e.g. <code>1577912345678</code>)</li>\n"
 "<li><code>..._yyyymmdd</code> - Returns the date in YYYYMMDD format (e.g. <code>20191230</code>)</li>\n"
 "<li><code>..._hhmmss</code> - Returns the date's time in HHMMSS format (e.g. <code>233056</code>)</li>\n"
 "<li><code>..._year</code> - Returns the full year (e.g. <code>2019</code>)</li>\n"
@@ -2564,6 +2550,22 @@ msgstr ""
 msgid "Clicking on a link will open the image in a new tab"
 msgstr ""
 
+#. replaceimgs_remove_size_constraints.name
+msgid "Remove size constraints"
+msgstr ""
+
+#. replaceimgs_remove_size_constraints.description
+msgid "Removes height/width specifiers for replaced images"
+msgstr ""
+
+#. replaceimgs_css.name
+msgid "Replacement CSS"
+msgstr ""
+
+#. replaceimgs_css.description
+msgid "CSS styles to apply to replaced media. See the documentation for Popup CSS style for more information (the thumb/full URL variables aren't yet supported here)"
+msgstr ""
+
 #. replaceimgs_enable_keybinding.name, highlightimgs_enable_keybinding.name
 msgid "Enable trigger key"
 msgstr ""
@@ -2626,4 +2628,48 @@ msgstr ""
 
 #. highlightimgs_css.description
 msgid "CSS style to apply for highlight. See the documentation for Popup CSS style for more information (the thumb/full URL variables aren't supported here)"
+msgstr ""
+
+#. mouseover_open_behavior.name, t2_mouseover_open_behavior.name
+msgid "Mouseover popup action"
+msgstr ""
+
+#. mouseover_open_behavior.description, t2_mouseover_open_behavior.description
+msgid "Determines how the mouseover popup will open"
+msgstr ""
+
+#. mouseover_open_behavior.options.popup.name, mouseover_close_el_policy.options.popup.name, t2_mouseover_open_behavior.options.popup.name
+msgid "Popup"
+msgstr ""
+
+#. mouseover_open_behavior.options.newtab.name, t2_mouseover_open_behavior.options.newtab.name
+msgid "New tab"
+msgstr "Nouvel onglet"
+
+#. mouseover_open_behavior.options.newtab_bg.name, t2_mouseover_open_behavior.options.newtab_bg.name
+msgid "New background tab"
+msgstr ""
+
+#. mouseover_open_behavior.options.download.name, t2_mouseover_open_behavior.options.download.name
+msgid "Download"
+msgstr ""
+
+#. mouseover_open_behavior.options.copylink.name, t2_mouseover_open_behavior.options.copylink.name
+msgid "Copy link"
+msgstr ""
+
+#. mouseover_allow_video.name, t2_mouseover_allow_video.name
+msgid "Popup videos"
+msgstr ""
+
+#. mouseover_allow_video.description, t2_mouseover_allow_video.description
+msgid "Allows videos to be popped up"
+msgstr ""
+
+#. mouseover_allow_hlsdash.name, t2_mouseover_allow_hlsdash.name
+msgid "Popup HLS/DASH streams"
+msgstr ""
+
+#. mouseover_allow_hlsdash.description, t2_mouseover_allow_hlsdash.description
+msgid "Allows HLS/DASH streams to be popped up"
 msgstr ""
