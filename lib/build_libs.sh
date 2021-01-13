@@ -83,12 +83,13 @@ wget https://unpkg.com/@ffmpeg/core@0.8.5/dist/ffmpeg-core.js -O ffmpeg-core.ori
 # note that the unpkg url is used instead of integrating it in the repo. this is for cache reasons, as all other scripts using ffmpeg.js will use the same url
 sed -i 's/{return [a-z]*\.locateFile\?[a-z]*\.locateFile(a,[^}]*}var/{return "https:\/\/unpkg.com\/@ffmpeg\/core@0.8.5\/dist\/" + a}var/' ffmpeg-core.orig.js
 echo "var FFMPEG_CORE_WORKER_SCRIPT;var _fakeGlobal={window:window};" > ffmpeg.js
-cat ffmpeg-core.orig.js ffmpeg.min.orig.js >> ffmpeg.js
+cat ffmpeg-core.orig.js >> ffmpeg.js
+echo "" >> ffmpeg.js
+cat ffmpeg.min.orig.js >> ffmpeg.js
 echo "" >> ffmpeg.js
 echo "var lib_export = _fakeGlobal.FFmpeg;" >> ffmpeg.js
-cat shim.js >> stream_parser.js
+cat shim.js >> ffmpeg.js
 
-# untested
 wget https://unpkg.com/mpd-parser@0.15.0/dist/mpd-parser.js -O mpd-parser.js
 # location.href is to avoid resolving to the local href (breaks v.redd.it dash streams)
 sed -i \
