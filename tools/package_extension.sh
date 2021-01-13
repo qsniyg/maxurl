@@ -77,7 +77,7 @@ The userscript has the following changes applied:
   * It removes useless rules, such as: if (false && ...
   * It removes pieces of code only used for development, marked by imu:begin_exclude and imu:end_exclude
   * Debug calls (nir_debug) are modified to only run when debugging is enabled (which requires editing the source code). This is for performance.
-  * `common_functions.multidomain__` functions are inlined for performance
+  * common_functions.multidomain__* functions are inlined for performance
   * Unneeded strings within the strings object have been removed
 
 This version is identical to the version offered on Greasyfork (or userscript_smaller.user.js in the Github repository).
