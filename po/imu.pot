@@ -2528,7 +2528,7 @@ msgid "Add links"
 msgstr ""
 
 #. replaceimgs_addlinks.description
-msgid "Adds links around images if a link doesn't already exist"
+msgid "Adds links around replaced media if a link doesn't already exist"
 msgstr ""
 
 #. replaceimgs_replacelinks.name
@@ -2539,12 +2539,32 @@ msgstr ""
 msgid "Replaces links if they already exist"
 msgstr ""
 
+#. replaceimgs_plainlinks.name
+msgid "Plain hyperlinks"
+msgstr ""
+
+#. replaceimgs_plainlinks.description
+msgid "How to treat plain (non-media) hyperlinks that link to potential media"
+msgstr ""
+
+#. replaceimgs_plainlinks.options.none.name
+msgid "Ignore"
+msgstr ""
+
+#. replaceimgs_plainlinks.options.replace_link_text.name
+msgid "Replace link+text"
+msgstr ""
+
+#. replaceimgs_plainlinks.options.replace_media.name
+msgid "Replace media"
+msgstr ""
+
 #. replaceimgs_links_newtab.name
 msgid "Links open in new tab"
 msgstr ""
 
 #. replaceimgs_links_newtab.description
-msgid "Clicking on a link will open the image in a new tab"
+msgid "Clicking on a replaced link will open the media in a new tab"
 msgstr ""
 
 #. replaceimgs_remove_size_constraints.name
@@ -2552,7 +2572,7 @@ msgid "Remove size constraints"
 msgstr ""
 
 #. replaceimgs_remove_size_constraints.description
-msgid "Removes height/width specifiers for replaced images"
+msgid "Removes height/width specifiers for replaced media"
 msgstr ""
 
 #. replaceimgs_css.name
