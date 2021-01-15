@@ -9545,11 +9545,16 @@ var $__imu_get_bigimage = function(shared_variables) {
 						});
 					};
 
-					var get_max_pornhub_video = function(data) {
+					var get_pornhub_obj = function(data) {
 						var obj = {
 							url: null,
 							headers: {
-								Referer: "https://www.pornhub.com/"
+								Accept: "*/*",
+								Origin: "https://www.pornhub.com",
+								Referer: "https://www.pornhub.com/",
+								"sec-fetch-dest": "empty",
+								"sec-fetch-mode": "cors",
+								"sec-fetch-site": "cross-site"
 							},
 							extra: {}
 						};
@@ -9566,36 +9571,55 @@ var $__imu_get_bigimage = function(shared_variables) {
 							return obj;
 						}
 
-						var maxquality = null;
-						var maxobj = null;
-						for (var i = 0; i < data.mediaDefinitions.length; i++) {
-							if (data.mediaDefinitions[i].format === "hls")
-								continue;
-
-							var ourquality = data.mediaDefinitions[i].quality;
-							if (!ourquality) {
-								console_warn("Unable to find quality for ", data.mediaDefinitions[i]);
-								continue;
-							}
-							ourquality = parseInt(ourquality);
-
-							if (!data.mediaDefinitions[i].videoUrl) {
-								continue;
+						var mediadefs = [];
+						array_foreach(data.mediaDefinitions, function(def) {
+							if (typeof def.quality === "string") def.quality = parseInt(def.quality);
+							if (typeof def.quality === "number") def.quality = [def.quality];
+							if (!is_array(def.quality) || !def.quality.length) {
+								console_warn("Unable to find quality for", def);
+								return;
 							}
 
-							if (!maxquality || ourquality > maxquality) {
-								maxquality = ourquality;
-								maxobj = data.mediaDefinitions[i];
-							}
-						}
+							mediadefs.push(def);
+						});
 
-						if (maxobj && maxobj.videoUrl) {
-							obj.url = maxobj.videoUrl;
-							return obj;
-						} else {
-							obj.url = null;
-							return obj;
-						}
+						var get_largest_quality = function(x) {
+							return x.sort().reverse()[0];
+						};
+
+						mediadefs.sort(function(a, b) {
+							var a_quality = get_largest_quality(a.quality);
+							var b_quality = get_largest_quality(b.quality);
+
+							if (!a_quality || !b_quality) return 0;
+
+							var diff = b_quality - a_quality;
+							if (diff) return diff;
+
+							return b.quality.length - a.quality.length;
+						});
+
+
+						var urls = [];
+						array_foreach(mediadefs, function(def) {
+							var video = true;
+							if (def.format === "hls") {
+								video = "hls";
+							}
+
+							if (!def.videoUrl) {
+								return;
+							}
+
+							urls.push({
+								url: def.videoUrl,
+								video: video
+							});
+						});
+
+						if (data.image_url) urls.push(data.image_url);
+
+						return fillobj_urls(urls, obj);
 					};
 
 					var page_nullobj = {
@@ -9610,7 +9634,12 @@ var $__imu_get_bigimage = function(shared_variables) {
 								return options.cb(page_nullobj);
 							}
 
-							return options.cb([get_max_pornhub_video(data), page_nullobj]);
+							var obj = get_pornhub_obj(data);
+							console_log(obj);
+							if (!obj) return options.cb(page_nullobj);
+
+							obj.push(page_nullobj);
+							return options.cb(obj);
 						});
 
 						return {
@@ -9632,6 +9661,16 @@ var $__imu_get_bigimage = function(shared_variables) {
 						};
 					}
 				}
+			}
+
+			if (host_domain_nowww === "youporn.com") {
+				newsrc = common_functions.get_pagelink_host_el_matching(options, {
+					url_match: /^[a-z]+:\/\/[^/]+\/+(?:watch|embed)\/+([0-9]+)(?:\/+(?:[^/]+\/*)?)?(?:[?#].*)?$/,
+					el_match: function(x) {
+						return x.tagName === "DIV" && x.id === "videoContainer"
+					}
+				});
+				if (newsrc && newsrc.url !== src) return newsrc;
 			}
 
 			if (domain_nosub === "t8cdn.com" ||
@@ -9826,7 +9865,7 @@ var $__imu_get_bigimage = function(shared_variables) {
 					api_query("youporn_flashvars:" + id, {
 						url: "https://www.youporn.com/watch/" + id + "/"
 					}, cb, function(done, resp, cache_key) {
-						var match = resp.responseText.match(/page_params.video.mediaDefinition\s*=\s*(\[{.*?}\])\s*; *\n/);
+						var match = resp.responseText.match(/(?:page_params.video.mediaDefinition\s*=|\s+mediaDefinition:)\s*(\[{.*?}\])\s*[;,] *\n/);
 						if (!match) {
 							console_error(cache_key, "Unable to find match", resp);
 							return done(null, false);
@@ -15292,7 +15331,10 @@ var $__imu_get_bigimage = function(shared_variables) {
 				};
 
 				newsrc = website_query({
-					website_regex: /^[a-z]+:\/\/[^/]+\/+photos\/+gallery\/+(?<gallery>[0-9]+)\/+(?<id>[0-9]+)\/*(?:[?#].*)?$/,
+					website_regex: {
+						regex: /^[a-z]+:\/\/[^/]+\/+photos\/+gallery\/+([0-9]+)\/+([0-9]+)\/*(?:[?#].*)?$/,
+						groups: ["gallery", "id"]
+					},
 					run: function(cb, match) {
 						get_xhamster_photomodel(match.groups.gallery, match.groups.id, function(data) {
 							return cb(get_obj_from_xhamster_model(data));
@@ -22757,6 +22799,11 @@ var $__imu_get_bigimage = function(shared_variables) {
 
 			if (domain_nowww === "fortstore.net" ||
 				domain_nowww === "imgfrost.net" ||
+				domain_nowww === "imgblaze.net" ||
+				domain_nowww === "imgair.net" ||
+				domain_nowww === "imgweng.xyz" ||
+				domain_nowww === "imgkes.xyz" ||
+				domain_nowww === "venpix.xyz" ||
 				domain_nosub === "fiyar.live") {
 				newsrc = src.replace(/(\/data_server_(?:[0-9]+|new)\/+[0-9]+\/+)[a-z]+\/+[a-z]+_([^/]*\.[^/.]*)(?:[?#].*)?$/,
 									   "$1big/$2");
@@ -29778,6 +29825,7 @@ var $__imu_get_bigimage = function(shared_variables) {
 			if ((domain_nowww === "imgbaron.com" ||
 				 domain_nowww === "kropic.com" ||
 				 domain_nowww === "kvador.com" ||
+				 domain_nowww === "imgsen.com" ||
 				 domain_nowww === "picbaron.com")
 				&& options.do_request && options.cb) {
 				match = src.match(/\/i\/+[0-9]+\/+([0-9a-z]+)_t\./);
@@ -37734,7 +37782,10 @@ var $__imu_get_bigimage = function(shared_variables) {
 				};
 
 				newsrc = website_query({
-					website_regex: /^[a-z]+:\/\/[^/]+\/+shows\/+(?<showname>[^/]+)\/+(?<clipname>[^/?#.]+)(?:\/+embed)?(?:[?#].*)?$/,
+					website_regex: {
+						regex: /^[a-z]+:\/\/[^/]+\/+shows\/+([^/]+)\/+([^/?#.]+)(?:\/+embed)?(?:[?#].*)?$/,
+						groups: ["showname", "clipname"]
+					},
 					run: function(cb, match) {
 						query_omny_api(match.groups.showname, match.groups.clipname, function(data) {
 							if (!data) return cb(null);
@@ -40584,7 +40635,8 @@ var $__imu_get_bigimage = function(shared_variables) {
 				}
 			}
 
-			if (domain_nowww === "biqle.com") {
+			if (domain_nowww === "biqle.com" ||
+				domain_nowww === "daftsex.com") {
 				if (/\/img\/+no-image\./.test(src))
 					return {
 						url: src,
@@ -40593,16 +40645,16 @@ var $__imu_get_bigimage = function(shared_variables) {
 
 				newsrc = website_query({
 					website_regex: /^[a-z]+:\/\/[^/]+\/+watch\/+(-[0-9]+_[0-9]+)(?:[?#].*)?$/,
-					query_for_id: "https://biqle.com/watch/${id}",
+					query_for_id: "https://" + domain_nosub + "/watch/${id}",
 					process: function(done, resp, cache_key) {
-						var match = resp.responseText.match(/<iframe[^>]* src="(https:\/\/dxb.to\/+player\/+[^/".?#]+)"/);
+						var match = resp.responseText.match(/<iframe[^>]* src="(https:\/\/(?:dxb.to|daxab.com)\/+player\/+[^/".]+)"/);
 						if (!match) {
 							console_error(cache_key, "Unable to find match for", resp);
 							return done(null, false);
 						}
 
 						return done({
-							url: decode_entities(match[1]),
+							url: decode_entities(match[1]) + "#imu-referer=" + resp.finalUrl.replace(/(:\/\/[^/]+\/).*$/, "$1"),
 							is_pagelink: true
 						}, 60*60);
 					}
@@ -40610,15 +40662,86 @@ var $__imu_get_bigimage = function(shared_variables) {
 				if (newsrc) return newsrc;
 			}
 
-			if (domain_nowww === "dxb.to") {
-				newsrc = website_query({
-					website_regex: /^[a-z]+:\/\/[^/]+\/+player\/+([^/.?#]+)(?:[?#].*)?$/,
-					query_for_id: {
-						url: "https://dxb.to/player/${id}",
-						imu_mode: "iframe",
+			if (domain_nowww === "dxb.to" ||
+				domain_nowww === "daxab.com") {
+				var query_daxab = function(data, cb) {
+					var server = data.server;
+					var sub = server.replace(/\..*/, "");
+					var fp = sub.replace(/-.*/, "");
+					if (fp === "psv83") {
+						sub = "psv85-3";
+					} else if (fp === "psv60") {
+						sub = "psv69-4";
+					}
+					server = server.replace(/^[^.]+\./, sub + ".");
+
+					api_query(domain_nowww + ":" + data.id, {
+						url: "https://" + server + "/method/video.get/" + data.id + "?token=" + data.token + "&videos=" + data.id + "&ckey=" + data.ckey + "&credentials=" + data.credentials,
+						imu_mode: "xhr",
 						headers: {
-							Referer: "https://biqle.com/"
+							Accept: "application/json, text/javascript, */*; q=0.01",
+							Origin: "https://" + domain_nowww,
+							Referer: "https://" + domain_nowww + "/",
+							Cookie: "",
+							"sec-fetch-site": "same-site"
+						},
+						json: true
+					}, cb, function(done, resp, cache_key) {
+						var item = resp.response.items[0];
+
+						var photos = {};
+						var largest_photo = null;
+						for (var key in item) {
+							var match = key.match(/^photo_([0-9]+)$/);
+							if (!match) continue;
+
+							var our_size = parseInt(match[1]);
+							if (!largest_photo || our_size > largest_photo) largest_photo = our_size;
+							photos[our_size] = item[key];
 						}
+
+						var urls = [];
+
+						var files = Object.keys(item.files);
+						files.sort(function(a, b) {
+							var a_match = a.match(/_([0-9]+)$/);
+							var b_match = b.match(/_([0-9]+)$/);
+
+							if (!a_match || !b_match) return 0;
+
+							return b_match[1] - a_match[1];
+						});
+
+						array_foreach(files, function(key) {
+							var file = item.files[key];
+							urls.push({
+								url: file,
+								video: true
+							});
+						});
+
+						if (largest_photo) {
+							urls.push(photos[largest_photo]);
+						}
+
+						return done(urls, 60*60);
+					});
+				};
+
+				newsrc = website_query({
+					website_regex: /^[a-z]+:\/\/[^/]+\/+player\/+([^/.#]+)(?:#.*)?$/,
+					query_for_id: function(id) {
+						var referer = "https://biqle.com/";
+						var queries = common_functions.parse_imu_hash(src);
+						if (queries && queries.referer) referer = queries.referer;
+
+						return {
+							url: "https://" + domain_nowww + "/player/" + id,
+							imu_mode: "iframe",
+							headers: {
+								Referer: referer
+							}
+						};
 					},
 					process: function(done, resp, cache_key) {
 						var match = resp.responseText.match(/window\.globParams\s*=\s*({[\s\S]+?});\s*<\/script>/);
@@ -40629,58 +40752,82 @@ var $__imu_get_bigimage = function(shared_variables) {
 
 						var fixedup = fixup_js_obj(match[1]);
 
-						var json = JSON_parse(fixedup);
-						var server = base64_decode(reverse_str(json.server));
-						var splitted_id = json.video.cdn_id.split("_");
-						var headpath = "https://" + server + "/videos/" + splitted_id[0] + "/" + splitted_id[1] + "/";
-
-						var resolutions = [];
-						var resolutions_map = {};
-
-						obj_foreach(json.video.cdn_files, function(key, baseurl) {
-							var splitted_key = key.split("_");
-
-							var ext = splitted_key[0];
-							var res = splitted_key[1];
-							array_upush(resolutions, res);
-
-							if (!(res in resolutions_map)) {
-								resolutions_map[res] = [];
-							}
-							resolutions_map[res].push(key);
-
-							baseurl = baseurl.replace(/\./, "." + ext + "?extra=");
-							var url = headpath + baseurl;
-							json.video.cdn_files[key] = url;
-						});
-
-						var thumb = urljoin(resp.finalUrl, base64_decode(json.video.thumb), true);
-
-						resolutions = resolutions.sort().reverse();
-
 						var urls = [];
 
-						var baseobj = {
-							headers: {
-								Referer: "https://dxb.to/",
-								"sec-fetch-site": "cross-site"
-							}
-						};
+						var json = JSON_parse(fixedup);
+						var server = base64_decode(reverse_str(json.server));
+						var id = json.video.cdn_id || json.video.id; // mp4 has both cdn_id and id (same?), hls only has id
 
-						array_foreach(resolutions, function(res) {
-							array_foreach(resolutions_map[res], function(key) {
-								urls.push({
-									url: json.video.cdn_files[key],
-									video: true
+						var waiting = false;
+
+						if (json.video.cdn_files) {
+							var splitted_id = id.split("_");
+							var headpath = "https://" + server + "/videos/" + splitted_id[0] + "/" + splitted_id[1] + "/";
+
+							var resolutions = [];
+							var resolutions_map = {};
+
+							obj_foreach(json.video.cdn_files, function(key, baseurl) {
+								var splitted_key = key.split("_");
+
+								var ext = splitted_key[0];
+								var res = splitted_key[1];
+								array_upush(resolutions, res);
+
+								if (!(res in resolutions_map)) {
+									resolutions_map[res] = [];
+								}
+								resolutions_map[res].push(key);
+
+								baseurl = baseurl.replace(/\./, "." + ext + "?extra=");
+								var url = headpath + baseurl;
+								json.video.cdn_files[key] = url;
+							});
+
+							resolutions = resolutions.sort().reverse();
+
+							array_foreach(resolutions, function(res) {
+								array_foreach(resolutions_map[res], function(key) {
+									urls.push({
+										url: json.video.cdn_files[key],
+										video: true
+									});
 								});
 							});
-						});
+						} else if (json.video.partial) { // partial isn't needed, it seems to be the same as cdn_files, but it's only on hls
+							query_daxab({
+								id: id,
+								server: server,
+								token: json.video.access_token,
+								ckey: json.c_key,
+								credentials: json.video.credentials
+							}, function(urls) {
+								final(urls);
+							});
+							waiting = true;
+						}
 
-						urls.push(thumb);
+						var final = function(urls) {
+							var baseobj = {
+								headers: {
+									Referer: "https://" + domain_nowww + "/",
+									"sec-fetch-site": "cross-site"
+								}
+							};
 
-						console_log(urls, json);
+							console_log(urls, json);
 
-						return done(fillobj_urls(urls, baseobj), 60*60);
+							return done(fillobj_urls(urls, baseobj), 60*60);
+						};
+
+						if (!waiting) {
+							if (json.video.thumb) {
+								var thumb = urljoin(resp.finalUrl, base64_decode(json.video.thumb), true);
+								urls.push(thumb);
+							}
+
+							final(urls);
+						}
 					}
 				});
 				if (newsrc) return newsrc;
@@ -41310,7 +41457,10 @@ var $__imu_get_bigimage = function(shared_variables) {
 
 			if (domain_nowww === "tv.gab.com") {
 				newsrc = website_query({
-					website_regex: /^[a-z]+:\/\/[^/]+\/+channel\/+(?<channel>[^/]+)\/+(?:embed|view)\/+(?<id>[^/?#]+-[0-9a-f]{10,})(?:[?#].*)?$/,
+					website_regex: {
+						regex: /^[a-z]+:\/\/[^/]+\/+channel\/+([^/]+)\/+(?:embed|view)\/+([^/?#]+-[0-9a-f]{10,})(?:[?#].*)?$/,
+						groups: ["channel", "id"]
+					},
 					query_for_id: "https://tv.gab.com/channel/${channel}/embed/${id}",
 					process: function(done, resp, cache_key, match) {
 						var channel = match.groups.channel;
@@ -41553,6 +41703,21 @@ var $__imu_get_bigimage = function(shared_variables) {
 					return src.replace(/\?.*/, "");
 				}
 			}
+
+			if (domain_nowww === "indigowhitetv.com") {
+				if (/\/assets\/+heart-circle-pink\./.test(src)) {
+					return {
+						url: src,
+						bad: "mask"
+					};
+				}
+			}
+
+			if (domain_nosub === "dgtle.com" && /^s[0-9]*\./.test(domain)) {
+				return src.replace(/(\/dgtle_img\/+[^/]+\/+[0-9]{4}\/+[0-9]{2}\/+[0-9a-f]{20,})_[0-9]+_[0-9]+(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+			}
+
+			if (domain_nowww === "trumbhost.com") return src.replace(/(\/images\/+[0-9]{4}\/+[0-9]{2}\/+[0-9a-z]{10,})_tn(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
 
 
 
@@ -42479,6 +42644,6 @@ var $__imu_get_bigimage = function(shared_variables) {
 
 			return src;
 		},
-		nonce: "1bdldpgl335o52d2" // imu:nonce = "1bdldpgl335o52d2"
+		nonce: "222d0h0fagn831m1" // imu:nonce = "222d0h0fagn831m1"
 	};
 };
