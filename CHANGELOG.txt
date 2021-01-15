@@ -1,3 +1,25 @@
+0.16.1
+
+This is an emergency bugfix release for the script failing to load under older browsers.
+
+New features:
+
+ * Support for 6 new websites (using 4 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules
+
+Bugfixes:
+
+ * Fix crash on browsers that don't support named capture groups (#618, #616, thanks to snottyone and MrSeyker on github for reporting)
+ * Fix Replace/Highlight Images keybindings not working if popup is disabled (#619, thanks to elvisef on github for reporting)
+ * Fix settings not being dynamically updated
+
+Special thanks to elvisef, snottyone, MrSeyker, doio for their contributions and reports for this release
+
+---
+
 0.16.0
 
 New features:

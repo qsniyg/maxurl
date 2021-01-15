@@ -31,7 +31,7 @@
 // @description:zh-TW 為7600多個網站查找更大或原始圖像
 // @description:zh-HK 為7600多個網站查找更大或原始圖像
 // @namespace         http://tampermonkey.net/
-// @version           0.16.0
+// @version           0.16.1
 // @author            qsniyg
 // @homepageURL       https://qsniyg.github.io/maxurl/options.html
 // @supportURL        https://github.com/qsniyg/maxurl/issues
@@ -67,7 +67,7 @@
 //  Note that jsdelivr.net might not always be reliable, but (AFAIK) this is the only reasonable option from what greasyfork allows.
 //  I'd recommend using the Github version of the script if you encounter any issues (linked in the 'Project links' section below).
 //
-// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@e63ed5b6f43be10af7d40b0ddc4c951fef5045f1/build/rules.js
+// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@6ab6c586e39bf39ff281f4d2e26e6514a8b06587/build/rules.js
 // ==/UserScript==
 
 // If you see "A userscript wants to access a cross-origin resource.", it's used for:
@@ -7096,6 +7096,26 @@ var $$IMU_EXPORT$$;
 		});
 	};
 
+	var compat_match = function(str, regex) {
+		var real_regex = regex;
+		if (regex.regex && regex.groups) {
+			real_regex = regex.regex;
+		}
+
+		var matched = str.match(real_regex);
+		if (!matched) return matched;
+
+		if (real_regex !== regex) {
+			if (!matched.groups) matched.groups = {};
+
+			array_foreach(regex.groups, function(group, i) {
+				matched.groups[group] = matched[i + 1];
+			});
+		}
+
+		return matched;
+	};
+
 	var real_website_query = function(options) {
 		if (!is_array(options.website_regex)) {
 			options.website_regex = [options.website_regex];
@@ -7104,7 +7124,7 @@ var $$IMU_EXPORT$$;
 		var website_match = null;
 
 		for (var i = 0; i < options.website_regex.length; i++) {
-			website_match = options.url.match(options.website_regex[i]);
+			website_match = compat_match(options.url, options.website_regex[i]);
 			if (website_match)
 				break;
 		}
@@ -7154,6 +7174,20 @@ var $$IMU_EXPORT$$;
 					id = website_match.groups.id;
 				}
 
+				var fill_string_vars = function(str) {
+					return str
+						.replace(/\${id}/g, id)
+						.replace(/\${([^/]+)}/g, function(_, x) {
+							if (/^[0-9]+$/.test(x))
+								return website_match[x];
+							return website_match.groups[x];
+						});
+				};
+
+				if (options.id) {
+					id = fill_string_vars(options.id);
+				}
+
 				var query = options.query_for_id;
 
 				if (typeof options.query_for_id === "string") {
@@ -7163,15 +7197,9 @@ var $$IMU_EXPORT$$;
 				}
 
 				if (typeof query === "object" && query.url) {
-					query.url = query.url
-						.replace(/\${id}/g, id)
-						.replace(/\${([^/]+)}/g, function(_, x) {
-							if (/^[0-9]+$/.test(x))
-								return website_match[x];
-							return website_match.groups[x];
-						});
+					query.url = fill_string_vars(query.url);
 				} else {
-					query = query(id);
+					query = query(id, website_match);
 				}
 
 				real_api_query(options.api_cache, options.do_request, options.cache_key + ":" + id, query, cb, function(done, resp, cache_key) {
@@ -12441,13 +12469,15 @@ var $$IMU_EXPORT$$;
 			var maxdef = 0;
 			var maxobj = null;
 			for (var i = 0; i < data.mediaDefinition.length; i++) {
-				// e.g. 1080p videos for non-logged in members
-				if (!data.mediaDefinition[i].videoUrl)
+				var def = data.mediaDefinition[i];
+				// e.g. 2160/1440p videos for non-logged in members
+				if (!def.videoUrl)
 					continue;
 
-				if (data.mediaDefinition[i].quality > maxdef) {
-					maxdef = data.mediaDefinition[i].quality;
-					maxobj = data.mediaDefinition[i];
+				def.quality = parseInt(def.quality);
+				if (def.quality > maxdef) {
+					maxdef = def.quality;
+					maxobj = def;
 				}
 			}
 
@@ -13840,13 +13870,13 @@ var $$IMU_EXPORT$$;
 	                    data: bigimage_obj,
 	                    message: "Unable to get bigimage function"
 	                };
-	            } else if (bigimage_obj.nonce !== "1bdldpgl335o52d2") {
+	            } else if (bigimage_obj.nonce !== "222d0h0fagn831m1") {
 	                // This could happen if for some reason the userscript manager updates the userscript,
 	                // but not the required libraries.
 	                require_rules_failed = {
 	                    type: "bad_nonce",
 	                    data: bigimage_obj.nonce,
-	                    message: "Bad nonce, expected: " + "1bdldpgl335o52d2"
+	                    message: "Bad nonce, expected: " + "222d0h0fagn831m1"
 	                };
 	            } else {
 	                bigimage = bigimage_obj.bigimage;
@@ -18358,6 +18388,7 @@ var $$IMU_EXPORT$$;
 
 		document.body.appendChild(saved_el);
 		options_el_real.appendChild(options_el);
+		options_el = options_el_real;
 	}
 
 	function get_single_setting_raw(value) {
@@ -20279,13 +20310,17 @@ var $$IMU_EXPORT$$;
 		if (_nir_debug_)
 			console_log("do_mouseover ran");
 
-		var mouseover_enabled = function() {
-			var base_enabled = settings.imu_enabled && settings.mouseover;
+		var mouseover_base_enabled = function() {
+			if (!settings.imu_enabled) return false;
 
 			if (settings.apply_blacklist_host && !bigimage_filter(window.location.href))
 				return false;
 
-			return base_enabled;
+			return true;
+		};
+
+		var mouseover_enabled = function() {
+			return mouseover_base_enabled() && settings.mouseover;
 		};
 
 		var mouseover_mouse_enabled = function() {
@@ -27088,7 +27123,7 @@ var $$IMU_EXPORT$$;
 
 			if (_nir_debug_) nir_debug("input", "keydown_cb", event);
 
-			if (!mouseover_enabled())
+			if (!mouseover_base_enabled())
 				return;
 
 			if (event.type === "wheel" && chord_is_only_wheel(current_chord))
@@ -27121,57 +27156,58 @@ var $$IMU_EXPORT$$;
 
 			update_chord(event, true);
 
-			if (settings.mouseover_trigger_behavior === "keyboard") {
-				var triggers = [
-					settings.mouseover_trigger_key,
-					settings.mouseover_trigger_key_t2
-				];
+			if (settings.mouseover) {
+				if (settings.mouseover_trigger_behavior === "keyboard") {
+					var triggers = [
+						settings.mouseover_trigger_key,
+						settings.mouseover_trigger_key_t2
+					];
 
-				array_foreach(triggers, function(trigger, i) {
-					if (!event_in_chord(event, trigger)) return;
+					array_foreach(triggers, function(trigger, i) {
+						if (!event_in_chord(event, trigger)) return;
 
-					if (trigger_complete(trigger) && !popups_active) {
-						// clear timeout so that all/any close behavior works
-						current_chord_timeout = {};
-						if (!delay_handle) {
-							actions.push({
-								requires_mouse: true,
-								type: "trigger_popup",
-								trigger: "keyboard"
-							});
+						if (trigger_complete(trigger) && !popups_active) {
+							// clear timeout so that all/any close behavior works
+							current_chord_timeout = {};
+							if (!delay_handle) {
+								actions.push({
+									requires_mouse: true,
+									type: "trigger_popup",
+									trigger: "keyboard"
+								});
 
-							ret = false;
-							release_ignore = trigger;
+								ret = false;
+								release_ignore = trigger;
+							}
+
+							trigger_id = i ? (i + 1) : null;
+
+							if (get_tprofile_setting("mouseover_open_behavior") !== "popup") {
+								// especially relevant for new tab
+								clear_chord();
+							}
 						}
 
-						trigger_id = i ? (i + 1) : null;
-
-						if (get_tprofile_setting("mouseover_open_behavior") !== "popup") {
-							// especially relevant for new tab
-							clear_chord();
+						var close_behavior = get_close_behavior();
+						if (close_behavior === "all" || (close_behavior === "any" && trigger_complete(trigger))) {
+							can_close_popup[0] = false;
 						}
-					}
+					});
+				}
 
-					var close_behavior = get_close_behavior();
-					if (close_behavior === "all" || (close_behavior === "any" && trigger_complete(trigger))) {
-						can_close_popup[0] = false;
-					}
-				});
-			}
+				if (can_use_hold_key() && event_in_chord(event, settings.mouseover_hold_key)) {
+					if (trigger_complete(settings.mouseover_hold_key)) {
+						popup_hold = !popup_hold;
+						clear_resetpopup_timeout();
 
-			if (can_use_hold_key() && event_in_chord(event, settings.mouseover_hold_key)) {
-				if (trigger_complete(settings.mouseover_hold_key)) {
-					popup_hold = !popup_hold;
-					clear_resetpopup_timeout();
-
-					if (!popup_hold && (can_close_popup[1] || settings.mouseover_hold_close_unhold)) {
-						actions.push({type: "resetpopups"});
-					} else {
-						actions.push({type: "hold"});
+						if (!popup_hold && (can_close_popup[1] || settings.mouseover_hold_close_unhold)) {
+							actions.push({type: "resetpopups"});
+						} else {
+							actions.push({type: "hold"});
+						}
 					}
 				}
 			}
-
 
 			if (settings.replaceimgs_enable_keybinding && trigger_complete(settings.replaceimgs_keybinding)) {
 				actions.push({type: "replace_images"});
@@ -27189,7 +27225,7 @@ var $$IMU_EXPORT$$;
 
 
 			// don't run if another function above was already triggered (e.g. when close is bound to the same key as trigger)
-			if (ret !== false) {
+			if (settings.mouseover && ret !== false) {
 				var is_popup_active = popup_el_remote || (popup_active());
 
 				var keybinds = [
@@ -27395,8 +27431,12 @@ var $$IMU_EXPORT$$;
 		var keyup_cb = function(event) {
 			if (_nir_debug_) nir_debug("input", "keyup_cb", event);
 
-			if (!mouseover_enabled())
+			if (!mouseover_base_enabled())
 				return;
+
+			update_chord(event, false);
+
+			if (!settings.mouseover) return;
 
 			var ret = undefined;
 
@@ -27404,8 +27444,6 @@ var $$IMU_EXPORT$$;
 			if (trigger_id) current_trigger = settings["mouseover_trigger_key_t" + trigger_id];
 
 			var condition = event_would_modify_chord(event, false, current_trigger);
-
-			update_chord(event, false);
 
 			var close_behavior = get_close_behavior();
 			if (condition && close_behavior === "all") {
