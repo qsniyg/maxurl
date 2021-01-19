@@ -352,7 +352,7 @@ msgid "Enable redirection"
 msgstr ""
 
 #. redirect.description
-msgid "Redirect images opened in their own tab"
+msgid "Automatically redirect media opened in their own tab to their larger/original versions"
 msgstr ""
 
 #. redirect_history.name
@@ -1849,12 +1849,20 @@ msgstr ""
 msgid "Fade/zoom animation duration (in milliseconds) for the popup"
 msgstr ""
 
-#. mouseover_enable_mask_styles.name
+#. mouseover_enable_mask_styles2.name
 msgid "Enable background CSS"
 msgstr ""
 
-#. mouseover_enable_mask_styles.description
+#. mouseover_enable_mask_styles2.description
 msgid "Toggles whether CSS styles for the background when the popup is active is enabled"
+msgstr ""
+
+#. mouseover_enable_mask_styles2.options.hold.name
+msgid "On hold"
+msgstr ""
+
+#. mouseover_enable_mask_styles2.options.never.name
+msgid "No"
 msgstr ""
 
 #. mouseover_mask_styles2.name
@@ -2240,7 +2248,7 @@ msgid "DeviantART: Use download links"
 msgstr ""
 
 #. deviantart_support_download.description
-msgid "Prefers using the download link (if available) by default"
+msgid "Prefers using the download link (if available) by default. Note that this only works if you're logged in to DeviantART"
 msgstr ""
 
 #. ehentai_full_image.name
@@ -2627,7 +2635,7 @@ msgstr ""
 msgid "Automatically highlights images as you view pages"
 msgstr ""
 
-#. highlightimgs_auto.options.always.name
+#. highlightimgs_auto.options.always.name, mouseover_enable_mask_styles2.options.always.name
 msgid "Always"
 msgstr ""
 
