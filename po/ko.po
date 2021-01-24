@@ -545,12 +545,16 @@ msgid "Allow showing partially loaded"
 msgstr "부분적으로 로드된 상태로 표시 허용"
 
 #. mouseover_allow_partial.description
-msgid "This will allow the popup to open for partially loaded media"
+msgid ""
+"This will allow the popup to open for partially loaded media.\n"
+"Partially loaded media will contain the source URL directly (where possible), whereas fully loaded media will use a blob or data URL."
 msgstr ""
 
 #. mouseover_allow_partial.description_userscript
-msgid "This will allow the popup to open for partially loaded media, but this might break some images"
-msgstr "부분적으로 불러온 미디어에 대해 팝업이 열릴 수 있지만 이로 인해 일부 이미지가 손상될 수 있음"
+msgid ""
+"This will allow the popup to open for partially loaded media, but this might break images that require custom headers to display properly.\n"
+"Partially loaded media will contain the source URL directly (where possible), whereas fully loaded media will use a blob or data URL."
+msgstr ""
 
 #. mouseover_allow_partial.options.video.name
 msgid "Streams"

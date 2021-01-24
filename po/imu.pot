@@ -542,11 +542,15 @@ msgid "Allow showing partially loaded"
 msgstr ""
 
 #. mouseover_allow_partial.description
-msgid "This will allow the popup to open for partially loaded media"
+msgid ""
+"This will allow the popup to open for partially loaded media.\n"
+"Partially loaded media will contain the source URL directly (where possible), whereas fully loaded media will use a blob or data URL."
 msgstr ""
 
 #. mouseover_allow_partial.description_userscript
-msgid "This will allow the popup to open for partially loaded media, but this might break some images"
+msgid ""
+"This will allow the popup to open for partially loaded media, but this might break images that require custom headers to display properly.\n"
+"Partially loaded media will contain the source URL directly (where possible), whereas fully loaded media will use a blob or data URL."
 msgstr ""
 
 #. mouseover_allow_partial.options.video.name
