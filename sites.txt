@@ -485,6 +485,7 @@ assets.nydailynews.com
 assets.pcmag.com
 assets.perfecte.ro
 assets.petco.com
+assets.pikiran-rakyat.com
 assets.planetradio.co.uk
 assets.popbuzz.com
 assets.primagames.com.s3.amazonaws.com
@@ -798,6 +799,7 @@ boutreview.com
 boxerdergisi.com.tr
 boxofficeturkiye.com
 bpic.588ku.com
+brandnewtube.com
 braunschweiger-zeitung.de
 bravo.de
 bravoerotica.com
@@ -1002,6 +1004,7 @@ cdn.awsli.com.br
 cdn.axar.az
 cdn.baeblemusic.com
 cdn.benishop.co
+cdn.betterttv.net
 cdn.bibi-star.jp.s3.amazonaws.com
 cdn.blogimage2.crooz.jp
 cdn.breathecast.com
@@ -1046,6 +1049,7 @@ cdn.filestackcontent.com
 cdn.firstshowing.net
 cdn.fishki.net
 cdn.fortune-girl.com
+cdn.frankerfacez.com
 cdn.funpic.us
 cdn.furiffic.com
 cdn.futura-sciences.com
@@ -1122,6 +1126,7 @@ cdn.newsen.com
 cdn.newsfreezone.co.kr
 cdn.newsinside.kr
 cdn.newsserve.net
+cdn.nivoli.com
 cdn.nsfw.exchange
 cdn.nudexxx.pics
 cdn.nwmgroups.hu
@@ -2076,6 +2081,7 @@ erotikom.com
 erotopper.nl
 erowall.com
 esa.int
+esahubble.org
 eshop.fayaque.com.tw
 eski.mobi
 eskipaper.com
@@ -2208,6 +2214,7 @@ feelway.com
 feet9.com
 fem-img.herokuapp.com
 femanes.ru
+femax20.com
 fembed.com
 femdomtb.com
 femjoy.com
@@ -2362,6 +2369,7 @@ fotogora.ru
 fotografias.antena3.com
 fotografroku.ifotovideo.cz
 fotogramas.es
+fotokiz.com
 fotokto.ru
 fotorgia.com
 fotos.caras.uol.com.br
@@ -2559,6 +2567,8 @@ gfycatporntube.com
 ggilbo.com
 ggpht.com
 gif-favicon.com
+gifdeliverynetwork.com
+gifer.com
 gifposter.com
 gifyu.com
 giga-images-makeshop-jp.akamaized.net
@@ -2829,6 +2839,7 @@ hot-celebs.co
 hot-korea.net
 hot-sex-photos.com
 hot.ag
+hotarena.net
 hotel-aramis.com
 hoteljardinlebrea.com
 hotflick.net
@@ -2913,6 +2924,7 @@ i.frg.im
 i.gadgets360cdn.com
 i.gbc.tw
 i.genius.com
+i.gifer.com
 i.girlstop.info
 i.gosmd.gr
 i.gr-assets.com
@@ -3315,6 +3327,7 @@ images.hayneedle.com
 images.headlines.pw
 images.hgmsites.net
 images.hi67.cn
+images.hive.blog
 images.hqseek.com
 images.huffingtonpost.com
 images.idgesg.net
@@ -3841,6 +3854,7 @@ img.yavtube.com
 img.yonhapnews.co.kr
 img.youtube.com
 img.yt
+img.zcool.cn
 img.zone5.ru
 img.zvuqa.net
 img2.ruliweb.com
@@ -3864,7 +3878,6 @@ imgdino.com
 imgdist.net
 imgdrive.net
 imgfiles.plaync.com
-imgflare.com
 imgfrost.net
 imgfy.net
 imggaleri.hurriyet.com.tr
@@ -3880,6 +3893,7 @@ imgiz.com
 imgkelebek.hurriyet.com.tr
 imgkes.xyz
 imgl.krone.at
+imgmak.com
 imgmax.com
 imgmmw.mbn.co.kr
 imgp.golos.io
@@ -3913,6 +3927,7 @@ imgspice.com
 imgsrc.baidu.com
 imgsrc.ru
 imgsrv.piclick.me
+imgsto.com
 imgstudio.org
 imgtaxi.com
 imgth.com
@@ -5246,6 +5261,7 @@ ofashion.com.cn
 officialcharts.com
 offnews.bg
 ohfun.net
+ohmymag.com
 ohsohumorous.com
 oi5mmhyk8.qnssl.com
 oir.mobi
@@ -5275,6 +5291,7 @@ oneniceapp.com
 oneringtrailers.com
 onesieponatime.com
 onlifezone.com
+onlineporno.cc
 onlyasianpictures.com
 onlyfans.com
 onlyhcore.com
@@ -5481,11 +5498,13 @@ picadilist.fr
 picbaron.com
 picclickimg.com
 piccn.ihuaben.com
+picdollar.com
 picfiles.alphacoders.com
 picgym.net
 picho.st
 pichunter.com
 pickywallpapers.com
+piclambo.net
 pics.avdmm.top
 pics.definebabe.com
 pics.dmm.co.jp
@@ -5502,6 +5521,7 @@ pics.prcm.jp
 pics.r18.com
 pics.tubetubetube.com
 pics.vc
+pics4you.net
 picsart.com
 picsegg.com
 picservice.qimai.cn
@@ -5513,6 +5533,7 @@ picstatio.com
 pictoa.com
 picture-cdn.wheretoget.it
 picture-post.com
+picturedip.com
 pictures.4ever.eu
 pictures.abebooks.com
 pictures.bigtittedteens.com
@@ -5638,6 +5659,7 @@ pornoplaatjes.nl
 pornoreino.com
 pornouploads.com
 pornovoisines.com
+pornozavod.cc
 pornpaw.com
 pornpros.com
 pornrewind.com
@@ -5715,6 +5737,7 @@ promshopau.com
 pronto.com.ar
 proprofs.com
 prostitutki.today
+prostoporno.help
 prothinspo.com
 prothomalo.com
 protv.md
@@ -5975,6 +5998,7 @@ rule34.xxx
 rule34.xyz
 rule34hentai.net
 rumble.com
+rusfap.com
 russianpulse.ru
 russianpuss.com
 s-i.huffpost.com
@@ -6193,6 +6217,7 @@ siglo.mx
 sigmalive.com
 sih.avn.com
 silenzioinsala.com
+silverpic.com
 silviomessina.pw
 simdunyasi.com
 simg.chomikuj.pl
@@ -6786,6 +6811,7 @@ tgbusdata.cn
 tgfimage.rocks
 tgp.inthecrack.com
 tgstat.ru
+th.bing.com
 th.blogosfere.it
 th.cineblog.it
 th.clickblog.it
@@ -6878,6 +6904,7 @@ thum.buzzni.com
 thumb.connect360.vn
 thumb.egloos.net
 thumb.ex-cdn.com
+thumb.fvs.io
 thumb.guucdn.net
 thumb.hankooki.com
 thumb.ibb.co
@@ -6957,6 +6984,7 @@ tokyopopline.com
 tokyoteenies.com
 toledoblade.com
 tolknews.ru
+tolkorus.info
 tomatazos.buscafs.com
 ton.twitter.com
 tonikawa.com
@@ -7472,6 +7500,7 @@ wpr-public.s3.amazonaws.com
 wr3mii5n.rocketcdn.com
 write-img.srgcdn.com
 write.dcinside.com
+wsgf.org
 wsimg.com
 wspicsa.vod.nimo.tv
 wstars.net

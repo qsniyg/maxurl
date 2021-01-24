@@ -1,3 +1,28 @@
+0.16.2
+
+New features:
+
+ * Option to allow replacing plain hyperlinks, either to new content or to the media itself (#617, thanks to elvisef on github for reporting)
+ * Option to popup the document URL for pagelink rules (disabled by default)
+ * Option to only enable background CSS/mask on hold (#538, disabled by default)
+ * New `-imu-title` CSS property to customize the tooltip title when hovering over UI buttons (#622, thanks to Noodlers on discord for the idea)
+ * Support for `_ago` for date formatting (#622, thanks to Noodlers on discord for the idea)
+ * New `updated_date` property (#622, thanks to Noodlers on discord for the idea)
+ * Support for ~30 new websites (using ~10 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including DeviantART, Facebook, Gfycat/Redgifs)
+ * Multiple requests to the same media at the same time will be batched together to lessen bandwidth usage and server load
+
+Bugfixes:
+
+ * Fix crashing on certain URLs due to media_info missing (thanks to remlap on discord for reporting)
+
+Special thanks to elvisef, Noodlers, MrSeyker, remlap, doio, GoblinLegislator, LeGiTiM for their contributions and reports for this release
+
+---
+
 0.16.1
 
 This is an emergency bugfix release for the script failing to load under older browsers.
