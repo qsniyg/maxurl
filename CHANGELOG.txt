@@ -1,3 +1,21 @@
+0.16.3
+
+New features:
+
+ * Support for ~10 new websites (using ~5 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules
+
+Bugfixes:
+
+ * Fix cache-related issues where the popup would fail to load for a second time (#633, thanks to Darkwolflair on github for reporting)
+
+Special thanks to elvisef, Darkwolflair, fedesk for their contributions and reports for this release
+
+---
+
 0.16.2
 
 New features:

@@ -39,7 +39,7 @@
 // @description:zh-TW 為7700多個網站查找更大或原始圖像
 // @description:zh-HK 為7700多個網站查找更大或原始圖像
 // @namespace         http://tampermonkey.net/
-// @version           0.16.2
+// @version           0.16.3
 // @author            qsniyg
 // @homepageURL       https://qsniyg.github.io/maxurl/options.html
 // @supportURL        https://github.com/qsniyg/maxurl/issues
@@ -75,7 +75,7 @@
 //  Note that jsdelivr.net might not always be reliable, but (AFAIK) this is the only reasonable option from what greasyfork allows.
 //  I'd recommend using the Github version of the script if you encounter any issues (linked in the 'Project links' section below).
 //
-// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@0ceb4d4452055ce709a8b2f8e187e99c9ea7da67/build/rules.js
+// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@1c5192e01b9c1172227e4263116baf94c60e144a/build/rules.js
 // ==/UserScript==
 
 // If you see "A userscript wants to access a cross-origin resource.", it's used for:
@@ -13956,13 +13956,13 @@ var $$IMU_EXPORT$$;
 	                    data: bigimage_obj,
 	                    message: "Unable to get bigimage function"
 	                };
-	            } else if (bigimage_obj.nonce !== "p2784e261hglgib9") {
+	            } else if (bigimage_obj.nonce !== "18ea52k30gb9p02m") {
 	                // This could happen if for some reason the userscript manager updates the userscript,
 	                // but not the required libraries.
 	                require_rules_failed = {
 	                    type: "bad_nonce",
 	                    data: bigimage_obj.nonce,
-	                    message: "Bad nonce, expected: " + "p2784e261hglgib9"
+	                    message: "Bad nonce, expected: " + "18ea52k30gb9p02m"
 	                };
 	            } else {
 	                bigimage = bigimage_obj.bigimage;
@@ -19233,6 +19233,16 @@ var $$IMU_EXPORT$$;
 			return cb(null);
 		}
 
+		var err_cb_real = function() {
+			revoke_objecturl(last_objecturl);
+			obj.shift();
+
+			if (_nir_debug_) nir_debug("check_image_get", "check_image_get(err_cb):", obj, processing);
+
+			return check_image_get(obj, cb, processing);
+		};
+		var err_cb = err_cb_real;
+
 		if (processing.set_cache || processing.use_cache) {
 			if (!check_image_cache) {
 				var maximum_items = settings.popup_cache_itemlimit;
@@ -19324,15 +19334,15 @@ var $$IMU_EXPORT$$;
 			return;
 		}
 
+		var run_cbs = function(our_this, args) {
+			var cbs = check_image_cbs[cb_key];
+			delete check_image_cbs[cb_key];
+			array_foreach(cbs, function(cb) {
+				cb(our_this, args);
+			});
+		};
+
 		var final_cb = cb;
-		function err_cb() {
-			revoke_objecturl(last_objecturl);
-			obj.shift();
-
-			if (_nir_debug_) nir_debug("check_image_get", "check_image_get(err_cb):", obj, processing);
-
-			return check_image_get(obj, cb, processing);
-		}
 
 		var url = obj[0].url;
 
@@ -20135,19 +20145,21 @@ var $$IMU_EXPORT$$;
 
 		var cb_key = method + " " + incomplete_request + " " + url;
 		//console_log(cb_key);
+		err_cb = function() {
+			run_cbs(null, null);
+		};
 		final_cb = function() {
-			var our_this = this;
-			var args = arguments;
-
-			var cbs = check_image_cbs[cb_key];
-			delete check_image_cbs[cb_key];
-			array_foreach(cbs, function(cb) {
-				cb.apply(our_this, args);
-			});
+			run_cbs(this, arguments);
 		};
 
 		if (!(cb_key in check_image_cbs)) check_image_cbs[cb_key] = [];
-		check_image_cbs[cb_key].push(cb);
+		check_image_cbs[cb_key].push(function(our_this, args) {
+			if (!args && !our_this) {
+				return err_cb_real();
+			}
+
+			return cb.apply(our_this, args);
+		});
 
 		// avoid multiple requests to the same image at the same time (e.g. for replace images)
 		if (check_image_cbs[cb_key].length > 1) return;
@@ -20897,7 +20909,7 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		var parse_styles = function(str) {
+		var parse_styles = function(str, multi) {
 			if (typeof str !== "string")
 				return;
 
@@ -20982,9 +20994,19 @@ var $$IMU_EXPORT$$;
 				if (!is_array(c_blocks)) c_blocks = [c_blocks];
 
 				array_foreach(c_blocks, function(block) {
+					var prop_obj = {property: property, value: value, important: important};
+
 					if (!(block in blocks))
 						blocks[block] = {};
-					blocks[block][property] = {value: value, important: important};
+
+					if (multi) {
+						if (!(property in blocks[block]))
+							blocks[block][property] = [];
+
+						blocks[block][property].push(prop_obj);
+					} else {
+						blocks[block][property] = prop_obj;
+					}
 				});
 
 				current_block = next_block;
@@ -21045,7 +21067,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		function apply_styles(el, str, options) {
-			var style_blocks = parse_styles(str);
+			var style_blocks = parse_styles(str, true);
 			if (!style_blocks)
 				return;
 
@@ -21061,12 +21083,13 @@ var $$IMU_EXPORT$$;
 
 			if (options.id && ("#" + options.id) in style_blocks) {
 				var block = style_blocks["#" + options.id];
-				for (var property in block)
-					styles[property] = block[property];
+				for (var property in block) {
+					if (!(property in styles)) styles[property] = [];
+					array_extend(styles[property], block[property]);
+				}
 			}
 
-			for (var property in styles) {
-				var obj = styles[property];
+			var iter = function(property, obj) {
 				var value = obj.value;
 
 				// todo: maybe handle escape sequences with JSON_parse?
@@ -21074,10 +21097,16 @@ var $$IMU_EXPORT$$;
 					value = value.replace(/^["'](.*)["']$/, "$1");
 				}
 
-				if (options.variables) {
-					for (var variable in options.variables) {
-						value = string_replaceall(value, variable, options.variables[variable]);
+				if (options.old_variables) {
+					for (var variable in options.old_variables) {
+						value = string_replaceall(value, variable, options.old_variables[variable]);
 					}
+				}
+
+				if (options.format_vars) {
+					var formatted = format_string_single(value, options.format_vars);
+					if (!formatted) return;
+					value = formatted;
 				}
 
 				if (options.properties) {
@@ -21093,6 +21122,12 @@ var $$IMU_EXPORT$$;
 				}
 
 				el.setAttribute("data-imu-newstyle", true);
+			};
+
+			for (var property in styles) {
+				array_foreach(styles[property], function(obj) {
+					iter(property, obj);
+				});
 			}
 		}
 
@@ -21550,6 +21585,8 @@ var $$IMU_EXPORT$$;
 			if (formatted) {
 				newobj.filename = formatted;
 			}
+
+			newobj.format_vars = format_vars;
 		};
 
 		function makePopup(obj, orig_url, processing, data) {
@@ -21804,7 +21841,7 @@ var $$IMU_EXPORT$$;
 
 				apply_styles(div, settings.mouseover_styles, {
 					force_important: true,
-					variables: styles_variables
+					old_variables: styles_variables
 				});
 				outerdiv.appendChild(div);
 
@@ -22461,6 +22498,7 @@ var $$IMU_EXPORT$$;
 					apply_styles(btn, settings.mouseover_ui_styles, {
 						id: options.id,
 						force_important: true,
+						format_vars: newobj.format_vars,
 						properties: {
 							"-imu-text": function(value) {
 								// TODO: support emojis properly
@@ -23139,9 +23177,9 @@ var $$IMU_EXPORT$$;
 
 				popup_createui_func = create_ui;
 
-				create_ui();
-
 				fill_obj_filename(newobj, url, data.data.respdata);
+
+				create_ui();
 
 				var a = document_createElement("a");
 				set_el_all_initial(a);
