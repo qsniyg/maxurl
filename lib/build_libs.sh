@@ -54,7 +54,7 @@ wget https://ajax.googleapis.com/ajax/libs/shaka-player/3.0.6/shaka-player.compi
 # move exportTo outside the anonymous function scope
 echo 'var _fakeGlobal={};var exportTo={};' > shaka_global.js
 sed -i 's/var exportTo={};//g' shaka.debug.orig.js
-cat mux.lib.js shaka_global.js shaka.debug.orig.js shaka_shim.js > shaka.debug.js
+cat mux.lib.js shaka_global.js shaka.debug.orig.js > shaka.debug.js
 # XHR is same as above, to allow overriding
 # the other window.* changes fixes it failing under the firefox addon
 # disable fetch in order to force XHR
@@ -68,6 +68,8 @@ sed -i \
 	-e 's/goog\.global\.XMLHttpRequest/XMLHttpRequest/g' \
 	-e 's/\(HttpFetchPlugin.isSupported=function..{\)/\1return false;/g' \
 	-e '/\/\/# sourceMappingURL=/d' shaka.debug.js
+echo 'var lib_export = exportTo.shaka;' >> shaka.debug.js
+cat shim.js >> shaka.debug.js
 
 # untested
 wget https://unpkg.com/@ffmpeg/ffmpeg@0.9.2/dist/ffmpeg.min.js -O ffmpeg.min.orig.js
@@ -81,7 +83,7 @@ sed -i \
 wget https://unpkg.com/@ffmpeg/core@0.8.5/dist/ffmpeg-core.js -O ffmpeg-core.orig.js
 # since ffmpeg-core is being prepended, this is necessary in order to have requests work properly
 # note that the unpkg url is used instead of integrating it in the repo. this is for cache reasons, as all other scripts using ffmpeg.js will use the same url
-sed -i 's/{return [a-z]*\.locateFile\?[a-z]*\.locateFile(a,[^}]*}var/{return "https:\/\/unpkg.com\/@ffmpeg\/core@0.8.5\/dist\/" + a}var/' ffmpeg-core.orig.js
+sed -i 's/{return [a-z]*\.locateFile[?][a-z]*\.locateFile(a,[^}]*}var/{return "https:\/\/unpkg.com\/@ffmpeg\/core@0.8.5\/dist\/" + a}var/' ffmpeg-core.orig.js
 echo "var FFMPEG_CORE_WORKER_SCRIPT;var _fakeGlobal={window:window};" > ffmpeg.js
 cat ffmpeg-core.orig.js >> ffmpeg.js
 echo "" >> ffmpeg.js
