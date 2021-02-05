@@ -71,8 +71,13 @@ sed -i \
 echo 'var lib_export = exportTo.shaka;' >> shaka.debug.js
 cat shim.js >> shaka.debug.js
 
-# untested
-wget https://unpkg.com/@ffmpeg/ffmpeg@0.9.2/dist/ffmpeg.min.js -O ffmpeg.min.orig.js
+to_uricomponent() {
+	cat "$@" | node -e 'var fs = require("fs"); var data = fs.readFileSync(0, "utf8"); process.stdout.write(encodeURIComponent(data));'
+}
+
+wget https://unpkg.com/@ffmpeg/ffmpeg@0.9.7/dist/ffmpeg.min.js -O ffmpeg.min.orig.js
+wget https://unpkg.com/@ffmpeg/core@0.8.5/dist/ffmpeg-core.js -O ffmpeg-core.orig.js
+cp ffmpeg-core.orig.js ffmpeg-core.js
 # window.* and self->_fakeGlobal are for preventing leaking
 # remove sourcemapping to avoid warnings under devtools
 sed -i \
@@ -80,12 +85,25 @@ sed -i \
 	-e 's/window\.createFFmpegCore/createFFmpegCore/g' \
 	-e 's/(self,(function/(_fakeGlobal,(function/' \
 	-e '/\/\/# sourceMappingURL=/d' ffmpeg.min.orig.js
-wget https://unpkg.com/@ffmpeg/core@0.8.5/dist/ffmpeg-core.js -O ffmpeg-core.orig.js
+# prevents blob urls from being used, fixes loading under chrome
+# node is used instead of sed due to the size of ffmpeg-core.orig.js
+node <<EOF
+var fs = require("fs");
+var ffmpeg = fs.readFileSync("ffmpeg.min.orig.js", "utf8");
+var core = fs.readFileSync("ffmpeg-core.orig.js", "utf8");
+ffmpeg = ffmpeg.replace(/mainScriptUrlOrBlob:[a-zA-Z0-9]+,/, 'mainScriptUrlOrBlob:"data:application/x-javascript,' + encodeURIComponent(core) + '",');
+fs.writeFileSync("ffmpeg.min.orig.js", ffmpeg);
+EOF
 # since ffmpeg-core is being prepended, this is necessary in order to have requests work properly
 # note that the unpkg url is used instead of integrating it in the repo. this is for cache reasons, as all other scripts using ffmpeg.js will use the same url
-sed -i 's/{return [a-z]*\.locateFile[?][a-z]*\.locateFile(a,[^}]*}var/{return "https:\/\/unpkg.com\/@ffmpeg\/core@0.8.5\/dist\/" + a}var/' ffmpeg-core.orig.js
+sed -i 's/{return [a-z]*\.locateFile[?][a-z]*\.locateFile(a,[^}]*}var/{return "https:\/\/unpkg.com\/@ffmpeg\/core@0.8.5\/dist\/" + a}var/' ffmpeg-core.js
+# inject the worker directly, fixes more cors issues
+wget https://unpkg.com/@ffmpeg/core@0.8.5/dist/ffmpeg-core.worker.js -O ffmpeg-core.worker.js
+WORKER_CODE=`to_uricomponent ffmpeg-core.worker.js`
+sed -i 's/{var a=..("ffmpeg-core.worker.js");\([^}]*\.push(new Worker(a))}\)/{var a="data:application\/x-javascript,'$WORKER_CODE'";\1/g' ffmpeg-core.js
+# finally cat it all together
 echo "var FFMPEG_CORE_WORKER_SCRIPT;var _fakeGlobal={window:window};" > ffmpeg.js
-cat ffmpeg-core.orig.js >> ffmpeg.js
+cat ffmpeg-core.js >> ffmpeg.js
 echo "" >> ffmpeg.js
 cat ffmpeg.min.orig.js >> ffmpeg.js
 echo "" >> ffmpeg.js
@@ -111,6 +129,6 @@ if [ $CLEANUP -eq 1 ]; then
 		aes.orig.js aes.patched.js \
 		shaka.debug.orig.js shaka_global.js \
 		mux.orig.js mux.lib.js \
-		ffmpeg.min.orig.js ffmpeg-core.orig.js \
+		ffmpeg.min.orig.js ffmpeg-core.orig.js ffmpeg-core.js ffmpeg-core.worker.js \
 		mpd-parser.js m3u8-parser.js
 fi
