@@ -103,6 +103,7 @@ WORKER_CODE=`to_uricomponent ffmpeg-core.worker.js`
 sed -i 's/{var a=..("ffmpeg-core.worker.js");\([^}]*\.push(new Worker(a))}\)/{var a="data:application\/x-javascript,'$WORKER_CODE'";\1/g' ffmpeg-core.js
 # finally cat it all together
 echo "var FFMPEG_CORE_WORKER_SCRIPT;var _fakeGlobal={window:window};" > ffmpeg.js
+cat fetch_shim.js >> ffmpeg.js
 cat ffmpeg-core.js >> ffmpeg.js
 echo "" >> ffmpeg.js
 cat ffmpeg.min.orig.js >> ffmpeg.js
