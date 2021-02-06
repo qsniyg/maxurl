@@ -231,24 +231,36 @@ var do_request = function(request, sender) {
 					return;
 				}
 
-				var reader = new FileReader();
-				reader.onload = function() {
-					var array = new Uint8Array(reader.result);
-					var value = '';
-					for (let i = 0; i < array.length; i += 1) {
-						value += String.fromCharCode(array[i]);
-					}
+				if (false) {
+					var reader = new FileReader();
+					reader.onload = function() {
+						var array = new Uint8Array(reader.result);
+						var value = '';
+						for (let i = 0; i < array.length; i += 1) {
+							value += String.fromCharCode(array[i]);
+						}
 
+						resp._responseEncoded = {
+							value,
+							type: body.type,
+							name: body.name,
+							lastModified: body.lastModified
+						};
+
+						endcb(resp);
+					};
+					reader.readAsArrayBuffer(body);
+				} else {
+					var objurl = URL.createObjectURL(body);
 					resp._responseEncoded = {
-						value,
+						objurl: objurl,
 						type: body.type,
 						name: body.name,
 						lastModified: body.lastModified
 					};
 
 					endcb(resp);
-				};
-				reader.readAsArrayBuffer(body);
+				}
 			} else {
 				endcb(resp);
 			}
