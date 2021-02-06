@@ -91,7 +91,8 @@ node <<EOF
 var fs = require("fs");
 var ffmpeg = fs.readFileSync("ffmpeg.min.orig.js", "utf8");
 var core = fs.readFileSync("ffmpeg-core.orig.js", "utf8");
-ffmpeg = ffmpeg.replace(/mainScriptUrlOrBlob:[a-zA-Z0-9]+,/, 'mainScriptUrlOrBlob:"data:application/x-javascript,' + encodeURIComponent(core) + '",');
+//ffmpeg = ffmpeg.replace(/mainScriptUrlOrBlob:[a-zA-Z0-9]+,/, 'mainScriptUrlOrBlob:"data:application/x-javascript,' + encodeURIComponent(core) + '",');
+ffmpeg = ffmpeg.replace(/mainScriptUrlOrBlob:[a-zA-Z0-9]+,/, 'mainScriptUrlOrBlob:new Blob([decodeURIComponent("' + encodeURIComponent(core) + '")]),');
 fs.writeFileSync("ffmpeg.min.orig.js", ffmpeg);
 EOF
 # since ffmpeg-core is being prepended, this is necessary in order to have requests work properly
