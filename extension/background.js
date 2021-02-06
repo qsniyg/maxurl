@@ -70,6 +70,14 @@ var get_random_id = function(obj) {
 	return id;
 };
 
+var header_nonce = get_random_id();
+//var header_url_regex = new RegExp("^https?:\/\/[^/]+\/+#IMU-" + header_nonce + "-(.*)");
+
+var get_imu_header_name = function(header_name, type) {
+	if (!type) type = "H";
+	return "X-IMU-" + header_nonce + "-" + type + "-" + header_name;
+};
+
 var parse_headers = function(headerstr) {
 	var headers = [];
 
@@ -152,13 +160,13 @@ var do_request = function(request, sender) {
 
 		var value = headers[header];
 		if (use_header(value)) {
-			xhr.setRequestHeader("IMU--" + header, headers[header]);
+			xhr.setRequestHeader(get_imu_header_name(header), headers[header]);
 		} else {
-			xhr.setRequestHeader("IMU-D-" + header, "true");
+			xhr.setRequestHeader(get_imu_header_name(header, "D"), "true");
 		}
 	}
 
-	xhr.setRequestHeader("IMU-Verify", id);
+	//xhr.setRequestHeader("IMU-Verify", id);
 
 	var do_final = function(override, final, cb) {
 		var server_headers = null;
@@ -285,7 +293,7 @@ var do_request = function(request, sender) {
 	if (!cookie_overridden && sender.tab.cookieStoreId) {
 		get_cookies(request.url, function(cookies) {
 			if (cookies !== null) {
-				xhr.setRequestHeader("IMU--Cookie", create_cookieheader(cookies));
+				xhr.setRequestHeader(get_imu_header_name("Cookie"), create_cookieheader(cookies));
 				requests[id].cookies_added = true;
 			}
 
@@ -298,6 +306,30 @@ var do_request = function(request, sender) {
 	return id;
 };
 
+// failed experiment to try to run requests in the page
+if (false) {
+	var onBeforeRequest_listener = function(details) {
+		console.log("onBeforeRequest", details);
+
+		var header_url_match = details.url.match(header_url_regex);
+		if (header_url_match) {
+			return {
+				redirectUrl: decodeURIComponent(header_url_match[1])
+			};
+		}
+
+		return {};
+	};
+	chrome.webRequest.onBeforeRequest.addListener(
+		onBeforeRequest_listener,
+		{
+			urls: ['<all_urls>'],
+			types: ['xmlhttprequest']
+		},
+		['blocking', 'requestBody']
+	);
+}
+
 // Modify request headers if needed
 var onBeforeSendHeaders_listener = function(details) {
 	debug("onBeforeSendHeaders", details);
@@ -306,12 +338,9 @@ var onBeforeSendHeaders_listener = function(details) {
 	var new_headers = [];
 	var imu_headers = [];
 	var remove_headers = [];
-	var verify_ok = false;
 	var request_id;
 
 	if (details.tabId in redirects) {
-		verify_ok = true;
-
 		var redirect = redirects[details.tabId];
 		//delete redirects[details.tabId];
 
@@ -341,7 +370,7 @@ var onBeforeSendHeaders_listener = function(details) {
 
 		for (var header in rheaders) {
 			headers.push({
-				name: "IMU--" + header,
+				name: get_imu_header_name(header),
 				value: rheaders[header]
 			});
 		}
@@ -349,26 +378,24 @@ var onBeforeSendHeaders_listener = function(details) {
 
 	debug("Headers", headers);
 
-	headers.forEach((header) => {
-		if (header.name.startsWith("IMU--")) {
+	headers.forEach(function(header) {
+		if (!header.name.startsWith("X-IMU-" + header_nonce + "-")) {
+			new_headers.push(header);
+			return;
+		}
+
+		var simple_name = header.name.slice(("X-IMU-" + header_nonce + "-").length);
+		var wanted_header_name = simple_name.slice(2);
+
+		if (simple_name.startsWith("H-")) {
 			imu_headers.push({
-				name: header.name.slice(5),
+				name: wanted_header_name,
 				value: header.value
 			});
-		} else if (header.name.startsWith("IMU-D-")) {
-			remove_headers.push(header.name.slice(6).toLowerCase());
-		} else if (header.name === "IMU-Verify") {
-			verify_ok = header.value in requests;
-			if (verify_ok) {
-				request_id = header.value;
-			} else {
-				if (nir_debug)
-					console.warn("Invalid verification: ", header.value);
-			}
-
-			reqid_to_redid[details.requestId] = header.value;
+		} else if (simple_name.startsWith("D-")) {
+			remove_headers.push(wanted_header_name.toLowerCase());
 		} else {
-			new_headers.push(header);
+			console.error("Unknown header", header);
 		}
 	});
 
@@ -376,7 +403,6 @@ var onBeforeSendHeaders_listener = function(details) {
 		// This is useful for redirects, which strip IMU headers
 		if (details.requestId in request_headers) {
 			imu_headers = JSON.parse(JSON.stringify(request_headers[details.requestId]));
-			verify_ok = true;
 		} else if (details.tabId in override_headers) {
 			for (const override of override_headers[details.tabId]) {
 				if (override.url === details.url && override.method === details.method) {
@@ -387,8 +413,6 @@ var onBeforeSendHeaders_listener = function(details) {
 							value: override.headers[header]
 						});
 					}
-
-					verify_ok = true;
 					break;
 				}
 			}
@@ -404,9 +428,8 @@ var onBeforeSendHeaders_listener = function(details) {
 		}
 	}
 
-	if (!verify_ok) {
-		return;
-	}
+	// no need to do anything
+	if (!imu_headers.length && !remove_headers.length) return;
 
 	if (imu_headers.length > 0) {
 		request_headers[details.requestId] = imu_headers;
@@ -914,6 +937,13 @@ var extension_message_handler = (message, sender, respond) => {
 		}
 
 		requests[message.data].xhr.abort();
+	} else if (message.type === "get_request_nonce") {
+		respond({
+			type: "request_nonce",
+			data: header_nonce
+		});
+
+		return true;
 	} else if (message.type === "redirect") {
 		var tabid = message.data.tabId || sender.tab.id;
 		redirects[tabid] = message.data.obj;
