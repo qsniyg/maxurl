@@ -100,7 +100,9 @@ sed -i 's/{return [a-z]*\.locateFile[?][a-z]*\.locateFile(a,[^}]*}var/{return "h
 # inject the worker directly, fixes more cors issues
 wget https://unpkg.com/@ffmpeg/core@0.8.5/dist/ffmpeg-core.worker.js -O ffmpeg-core.worker.js
 WORKER_CODE=`to_uricomponent ffmpeg-core.worker.js`
-sed -i 's/{var a=..("ffmpeg-core.worker.js");\([^}]*\.push(new Worker(a))}\)/{var a="data:application\/x-javascript,'$WORKER_CODE'";\1/g' ffmpeg-core.js
+#sed -i 's/{var a=..("ffmpeg-core.worker.js");\([^}]*\.push(new Worker(a))}\)/{var a="data:application\/x-javascript,'$WORKER_CODE'";\1/g' ffmpeg-core.js
+# use blob instead of data, works on more sites (such as instagram)
+sed -i 's/{var a=..("ffmpeg-core.worker.js");\([^}]*\.push(new Worker(a))}\)/{var a=URL.createObjectURL(new Blob([decodeURIComponent("'$WORKER_CODE'")]));\1/g' ffmpeg-core.js
 # finally cat it all together
 echo "var FFMPEG_CORE_WORKER_SCRIPT;var _fakeGlobal={window:window};" > ffmpeg.js
 cat fetch_shim.js >> ffmpeg.js
@@ -110,6 +112,7 @@ cat ffmpeg.min.orig.js >> ffmpeg.js
 echo "" >> ffmpeg.js
 echo "var lib_export = _fakeGlobal.FFmpeg;" >> ffmpeg.js
 cat shim.js >> ffmpeg.js
+strip_whitespace ffmpeg.js
 
 wget https://unpkg.com/mpd-parser@0.15.0/dist/mpd-parser.js -O mpd-parser.js
 # location.href is to avoid resolving to the local href (breaks v.redd.it dash streams)
