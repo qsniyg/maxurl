@@ -163,6 +163,10 @@ msgstr ""
 msgid "Français"
 msgstr ""
 
+#. language.options.it.name
+msgid "Italiano"
+msgstr ""
+
 #. language.options.ko.name
 msgid "한국어"
 msgstr ""
@@ -384,7 +388,7 @@ msgid "Try finding original page/caption"
 msgstr ""
 
 #. redirect_force_page.description
-msgid "Enables methods that use API calls for finding the original page or caption"
+msgid "Enables methods that use API calls for finding the original page or caption. Note that this option does not affect finding the original media."
 msgstr ""
 
 #. redirect_force_page.example_websites[1]
@@ -408,11 +412,11 @@ msgid "Hides the tooltip after the specified number of seconds (or when the mous
 msgstr ""
 
 #. print_imu_obj.name
-msgid "Log IMU object to console"
+msgid "Log info object to console"
 msgstr ""
 
 #. print_imu_obj.description
-msgid "Prints the full IMU object to the console whenever a popup/redirect is found"
+msgid "Prints the full info object to the console whenever a popup/redirect is found"
 msgstr ""
 
 #. redirect_disable_for_responseheader.name
@@ -671,6 +675,14 @@ msgstr ""
 
 #. mouseover_exclude_imagemaps.description
 msgid "Don't pop up if the image is an image map (image with multiple clickable areas)"
+msgstr ""
+
+#. mouseover_video_autoplay.name
+msgid "Autoplay videos"
+msgstr ""
+
+#. mouseover_video_autoplay.description
+msgid "Plays videos automatically"
 msgstr ""
 
 #. mouseover_video_controls.name
@@ -1533,6 +1545,22 @@ msgstr ""
 msgid "Any mouse event outside the popup will be discarded with this option"
 msgstr ""
 
+#. enable_stream_download.name
+msgid "Enable downloading HLS/DASH streams"
+msgstr ""
+
+#. enable_stream_download.description
+msgid "Downloads and muxes the contents of the streams rather than the stream information file. This currently does not work under Firefox."
+msgstr ""
+
+#. stream_mux_mp4_over_mkv.name
+msgid "Prefer MP4 over MKV"
+msgstr ""
+
+#. stream_mux_mp4_over_mkv.description
+msgid "Tries to mux the video into mp4 instead of mkv when required. This may slightly slow down muxing as it currently needs to try muxing both."
+msgstr ""
+
 #. mouseover_add_link.name
 msgid "Link image"
 msgstr ""
@@ -2039,30 +2067,6 @@ msgstr ""
 msgid "Allows audio to be returned. Note that this is currently highly alpha, please do not expect a good user experience with this yet!"
 msgstr ""
 
-#. allow_dash_video.name
-msgid "Allow DASH streams"
-msgstr ""
-
-#. allow_dash_video.description
-msgid "Allows playback of DASH streams. Some media may not work with other websites due to hotlinking protection."
-msgstr ""
-
-#. allow_dash_video.description_userscript
-msgid "Allows playback of DASH streams. Some media may not work with other websites due to hotlinking protection, and it may even break media playback for some websites. Use with caution."
-msgstr ""
-
-#. allow_hls_video.name
-msgid "Allow HLS streams"
-msgstr ""
-
-#. allow_hls_video.description
-msgid "Allows playback of HLS streams. Some media may not work with other websites due to hotlinking protection."
-msgstr ""
-
-#. allow_hls_video.description_userscript
-msgid "Allows playback of HLS streams. Some media may not work with other websites due to hotlinking protection, and it may even break media playback for some websites. Use with caution."
-msgstr ""
-
 #. custom_xhr_for_lib.name
 msgid "Custom XHR for libraries"
 msgstr ""
@@ -2077,6 +2081,14 @@ msgstr ""
 
 #. custom_xhr_for_lib.example_websites[0]
 msgid "Kakao"
+msgstr ""
+
+#. custom_xhr_for_lib.example_websites[1]
+msgid "YouTube"
+msgstr ""
+
+#. custom_xhr_for_lib.example_websites[2]
+msgid "Instagram (downloading)"
 msgstr ""
 
 #. hls_dash_use_max.name
@@ -2200,15 +2212,17 @@ msgid "..."
 msgstr ""
 
 #. allow_thirdparty_libs.name
-msgid "Rules using 3rd-party libraries"
+msgid "Allow 3rd-party libraries"
 msgstr ""
 
 #. allow_thirdparty_libs.description
-msgid "Enables rules that use 3rd-party libraries"
+msgid "Enables using 3rd-party libraries. This is both used in rules and as a prerequisite for certain functionality."
 msgstr ""
 
 #. allow_thirdparty_libs.description_userscript
-msgid "Enables rules that use 3rd-party libraries. There is a possible (but unlikely) security risk for the userscript version"
+msgid ""
+"Enables using 3rd-party libraries. This is both used in rules and as a prerequisite for certain functionality.\n"
+"There is a possible (but unlikely) security risk for the userscript version."
 msgstr ""
 
 #. allow_thirdparty_libs.example_websites[0]
@@ -2382,12 +2396,20 @@ msgstr ""
 msgid "API key for finding larger images on Tumblr"
 msgstr ""
 
+#. twitter_use_ext.name
+msgid "Twitter: Use extension"
+msgstr ""
+
+#. twitter_use_ext.description
+msgid "Prefers `.jpg?name=orig` over `?format=jpg&name=orig`. This will possibly incur extra requests before succeeding"
+msgstr ""
+
 #. bigimage_blacklist.name
 msgid "Blacklist"
 msgstr ""
 
 #. bigimage_blacklist.description
-msgid "A list of URLs that are blacklisted from being processed"
+msgid "A list of URLs (one per line) that are blacklisted from being processed"
 msgstr ""
 
 #. bigimage_blacklist.documentation.value
@@ -2447,6 +2469,7 @@ msgid ""
 "<li><code>ext</code> - Extension (with <code>.</code> prefixed)</li>\n"
 "<li><code>caption</code> - Popup caption</li>\n"
 "<li><code>author_username</code> - Author's username</li>\n"
+"<li><code>id</code> - Post ID</li>\n"
 "<li><code>created_...</code> - Created date (see note on Date objects below)</li>\n"
 "<li><code>updated_...</code> - Updated date, this will use the <code>Last-Modified</code> header if not otherwise specified by the rule (see note on Date objects below)</li>\n"
 "<li><code>download_...</code> - Download date (see note on Date objects below)</li>\n"
@@ -2708,9 +2731,9 @@ msgid "Allows videos to be popped up"
 msgstr ""
 
 #. mouseover_allow_hlsdash.name, t2_mouseover_allow_hlsdash.name
-msgid "Popup HLS/DASH streams"
+msgid "Allow HLS/DASH streams"
 msgstr ""
 
 #. mouseover_allow_hlsdash.description, t2_mouseover_allow_hlsdash.description
-msgid "Allows HLS/DASH streams to be popped up"
+msgid "Allows playback of HLS/DASH streams"
 msgstr ""

@@ -1,15 +1,11 @@
+# it translations for Image Max URL
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: Image Max URL\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: \n"
-"PO-Revision-Date: \n"
-"Language-Team: \n"
-"X-Generator: Poedit 2.4.2\n"
-"Last-Translator: \n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Language: it\n"
 
 # Native language name (e.g. Français for French, 한국어 for Korean)
@@ -170,6 +166,10 @@ msgstr "Español"
 msgid "Français"
 msgstr "Français"
 
+#. language.options.it.name
+msgid "Italiano"
+msgstr ""
+
 #. language.options.ko.name
 msgid "한국어"
 msgstr "한국어"
@@ -187,33 +187,23 @@ msgid "Description below options"
 msgstr "Descrizione sotto le opzioni"
 
 #. settings_visible_description.description
-msgid ""
-"Shows the description below the options (otherwise the description is only "
-"shown when you hover over the option's name)"
-msgstr ""
-"Mostra la descrizione sotto le opzioni (alternativamente, la descrizione "
-"viene mostrata solo quando il mouse si trova sopra il nome dell'opzione)"
+msgid "Shows the description below the options (otherwise the description is only shown when you hover over the option's name)"
+msgstr "Mostra la descrizione sotto le opzioni (alternativamente, la descrizione viene mostrata solo quando il mouse si trova sopra il nome dell'opzione)"
 
 #. settings_show_disabled.name
 msgid "Show disabled options"
 msgstr "Mostra opzioni inattive"
 
 #. settings_show_disabled.description
-msgid ""
-"If disabled, options that are disabled due to their requirements being unmet "
-"will not be displayed"
-msgstr ""
-"Se inattivo, le opzioni che sono inattive a causa dei loro requisiti "
-"necessari non raggiunti non verranno mostrate"
+msgid "If disabled, options that are disabled due to their requirements being unmet will not be displayed"
+msgstr "Se inattivo, le opzioni che sono inattive a causa dei loro requisiti necessari non raggiunti non verranno mostrate"
 
 #. settings_show_disabled_profiles.name
 msgid "Show disabled trigger profiles"
 msgstr ""
 
 #. settings_show_disabled_profiles.description
-msgid ""
-"If disabled, options for alternate trigger profiles (options with `(#2)` "
-"after them) will not be shown if the relevant trigger isn't active"
+msgid "If disabled, options for alternate trigger profiles (options with `(#2)` after them) will not be shown if the relevant trigger isn't active"
 msgstr ""
 
 #. settings_show_requirements.name
@@ -221,9 +211,7 @@ msgid "Requirements below disabled options"
 msgstr ""
 
 #. settings_show_requirements.description
-msgid ""
-"If an option is disabled, the requirements to enable the option will be "
-"displayed below it"
+msgid "If an option is disabled, the requirements to enable the option will be displayed below it"
 msgstr ""
 
 #. check_updates.name
@@ -231,9 +219,7 @@ msgid "Check for updates"
 msgstr ""
 
 #. check_updates.description
-msgid ""
-"Periodically checks for updates. If a new update is available, it will be "
-"shown at the top of the options page"
+msgid "Periodically checks for updates. If a new update is available, it will be shown at the top of the options page"
 msgstr ""
 
 #. check_update_interval.name
@@ -285,9 +271,7 @@ msgid "Allow using browser XHR"
 msgstr ""
 
 #. allow_browser_request.description
-msgid ""
-"This allows XHR requests to be run in the browser's context if they fail in "
-"the extension (e.g. when Tracking Protection is set to High)"
+msgid "This allows XHR requests to be run in the browser's context if they fail in the extension (e.g. when Tracking Protection is set to High)"
 msgstr ""
 
 #. retry_503_times.name
@@ -295,9 +279,7 @@ msgid "Retry requests with 503 errors"
 msgstr ""
 
 #. retry_503_times.description
-msgid ""
-"Amount of times to retry a request when 503 (service unavailable) is "
-"returned by the server"
+msgid "Amount of times to retry a request when 503 (service unavailable) is returned by the server"
 msgstr ""
 
 #. retry_503_times.number_unit
@@ -309,8 +291,7 @@ msgid "Delay between 503 retries"
 msgstr ""
 
 #. retry_503_ms.description
-msgid ""
-"Time (in milliseconds) to delay between retrying requests that received 503"
+msgid "Time (in milliseconds) to delay between retrying requests that received 503"
 msgstr ""
 
 #. use_blob_over_arraybuffer.name
@@ -318,9 +299,7 @@ msgid "Use `Blob` over `ArrayBuffer`"
 msgstr ""
 
 #. use_blob_over_arraybuffer.description
-msgid ""
-"Uses `Blob`s for XHRs instead of `ArrayBuffer`s. Keep this enabled unless "
-"your userscript manager doesn't support blob requests"
+msgid "Uses `Blob`s for XHRs instead of `ArrayBuffer`s. Keep this enabled unless your userscript manager doesn't support blob requests"
 msgstr ""
 
 #. allow_live_settings_reload.name
@@ -328,9 +307,7 @@ msgid "Live settings reloading"
 msgstr ""
 
 #. allow_live_settings_reload.description
-msgid ""
-"Enables/disables live settings reloading. There shouldn't be a reason to "
-"disable this unless you're experiencing issues with this feature"
+msgid "Enables/disables live settings reloading. There shouldn't be a reason to disable this unless you're experiencing issues with this feature"
 msgstr ""
 
 #. disable_keybind_when_editing.name
@@ -338,9 +315,7 @@ msgid "Disable keybindings when editing text"
 msgstr ""
 
 #. disable_keybind_when_editing.description
-msgid ""
-"Disables IMU keybindings when key events are sent to an input area on the "
-"page"
+msgid "Disables IMU keybindings when key events are sent to an input area on the page"
 msgstr ""
 
 #. enable_gm_download.name
@@ -348,11 +323,7 @@ msgid "Use `GM_download` if available"
 msgstr ""
 
 #. enable_gm_download.description
-msgid ""
-"Prefers using `GM_download` over simple browser-based downloads, if the "
-"function is available. Some userscript managers download the entire file "
-"before displaying a save dialog, which can be undesirable for large video "
-"files"
+msgid "Prefers using `GM_download` over simple browser-based downloads, if the function is available. Some userscript managers download the entire file before displaying a save dialog, which can be undesirable for large video files"
 msgstr ""
 
 #. gm_download_max.name
@@ -360,9 +331,7 @@ msgid "Maximum size to `GM_download`"
 msgstr ""
 
 #. gm_download_max.description
-msgid ""
-"If a file is larger than this size, use a simple browser-based download "
-"instead. Set to `0` for unlimited."
+msgid "If a file is larger than this size, use a simple browser-based download instead. Set to `0` for unlimited."
 msgstr ""
 
 #. gm_download_max.number_unit
@@ -374,10 +343,7 @@ msgid "Force save dialog when downloading"
 msgstr ""
 
 #. enable_webextension_download.description
-msgid ""
-"Tries to ensure the 'save as' dialog displays when downloading. This "
-"requires the 'downloads' permission to work, and will sometimes not work "
-"when custom headers are required."
+msgid "Tries to ensure the 'save as' dialog displays when downloading. This requires the 'downloads' permission to work, and will sometimes not work when custom headers are required."
 msgstr ""
 
 #. write_to_clipboard.name
@@ -385,9 +351,7 @@ msgid "Enable writing to clipboard"
 msgstr ""
 
 #. write_to_clipboard.description
-msgid ""
-"This option does nothing on its own, but enabling it allows other "
-"functionality that require writing to the clipboard to work"
+msgid "This option does nothing on its own, but enabling it allows other functionality that require writing to the clipboard to work"
 msgstr ""
 
 #. redirect.name
@@ -395,9 +359,7 @@ msgid "Enable redirection"
 msgstr ""
 
 #. redirect.description
-msgid ""
-"Automatically redirect media opened in their own tab to their larger/"
-"original versions"
+msgid "Automatically redirect media opened in their own tab to their larger/original versions"
 msgstr ""
 
 #. redirect_history.name
@@ -413,10 +375,7 @@ msgid "Do redirection in extension"
 msgstr ""
 
 #. redirect_extension.description
-msgid ""
-"Performs the redirection in the extension instead of the content script. "
-"This is significantly faster and shouldn't cause issues in theory, but this "
-"option is kept in case of regressions"
+msgid "Performs the redirection in the extension instead of the content script. This is significantly faster and shouldn't cause issues in theory, but this option is kept in case of regressions"
 msgstr ""
 
 #. canhead_get.name
@@ -424,9 +383,7 @@ msgid "Use GET if HEAD is unsupported"
 msgstr ""
 
 #. canhead_get.description
-msgid ""
-"Use a GET request to check an image's availability, if the server does not "
-"support HEAD requests"
+msgid "Use a GET request to check an image's availability, if the server does not support HEAD requests"
 msgstr ""
 
 #. redirect_force_page.name
@@ -434,8 +391,7 @@ msgid "Try finding original page/caption"
 msgstr ""
 
 #. redirect_force_page.description
-msgid ""
-"Enables methods that use API calls for finding the original page or caption"
+msgid "Enables methods that use API calls for finding the original page or caption. Note that this option does not affect finding the original media."
 msgstr ""
 
 #. redirect_force_page.example_websites[1]
@@ -447,9 +403,7 @@ msgid "Show image URL in tooltip"
 msgstr ""
 
 #. redirect_infobox_url.description
-msgid ""
-"If the popup is needed to display the larger version of an image, display "
-"the image link in the tooltip"
+msgid "If the popup is needed to display the larger version of an image, display the image link in the tooltip"
 msgstr ""
 
 #. redirect_infobox_timeout.name
@@ -457,18 +411,15 @@ msgid "Hide tooltip after"
 msgstr ""
 
 #. redirect_infobox_timeout.description
-msgid ""
-"Hides the tooltip after the specified number of seconds (or when the mouse "
-"clicks on it). Set to 0 to never hide automatically"
+msgid "Hides the tooltip after the specified number of seconds (or when the mouse clicks on it). Set to 0 to never hide automatically"
 msgstr ""
 
 #. print_imu_obj.name
-msgid "Log IMU object to console"
+msgid "Log info object to console"
 msgstr ""
 
 #. print_imu_obj.description
-msgid ""
-"Prints the full IMU object to the console whenever a popup/redirect is found"
+msgid "Prints the full info object to the console whenever a popup/redirect is found"
 msgstr ""
 
 #. redirect_disable_for_responseheader.name
@@ -476,9 +427,7 @@ msgid "Disable when response headers need modifying"
 msgstr ""
 
 #. redirect_disable_for_responseheader.description
-msgid ""
-"This option works around Chrome's migration to manifest v3, redirecting some "
-"images to being force-downloaded"
+msgid "This option works around Chrome's migration to manifest v3, redirecting some images to being force-downloaded"
 msgstr ""
 
 #. redirect_to_no_infobox.name
@@ -486,9 +435,7 @@ msgid "Redirect to largest without issues"
 msgstr ""
 
 #. redirect_to_no_infobox.description
-msgid ""
-"Redirects to the largest image found that doesn't require custom headers or "
-"forces download"
+msgid "Redirects to the largest image found that doesn't require custom headers or forces download"
 msgstr ""
 
 #. redirect_host_html.name
@@ -496,17 +443,13 @@ msgid "Redirect for HTML pages too"
 msgstr ""
 
 #. redirect_host_html.description
-msgid ""
-"Tries redirection even if the host page is HTML. This option might be useful "
-"for dead links. However, this will also result in many normal pages being "
-"redirected to images/video, so please avoid enabling this by default!"
+msgid "Tries redirection even if the host page is HTML. This option might be useful for dead links. However, this will also result in many normal pages being redirected to images/video, so please avoid enabling this by default!"
 msgstr ""
 
 #. redirect_host_html.warning.true
 msgid ""
 "This will result in many pages being redirected to images/videos.\n"
-"I'd recommend only enabling this for the media you need it for, then "
-"disabling it after."
+"I'd recommend only enabling this for the media you need it for, then disabling it after."
 msgstr ""
 
 #. mouseover.name
@@ -514,9 +457,7 @@ msgid "Enable mouseover popup"
 msgstr ""
 
 #. mouseover.description
-msgid ""
-"Show a popup with the larger image when you mouseover an image with the "
-"trigger key held (if applicable)"
+msgid "Show a popup with the larger image when you mouseover an image with the trigger key held (if applicable)"
 msgstr ""
 
 #. mouseover_trigger_behavior.name
@@ -544,9 +485,7 @@ msgid "Triggers when you press a key sequence when your mouse is over an image"
 msgstr ""
 
 #. mouseover_trigger_behavior.options.none.description
-msgid ""
-"Disables the popup from being triggered (useful if you only want to use the "
-"context menu item)"
+msgid "Disables the popup from being triggered (useful if you only want to use the context menu item)"
 msgstr ""
 
 #. mouseover_trigger_key.name
@@ -562,9 +501,7 @@ msgid "Popup trigger key (#2)"
 msgstr ""
 
 #. mouseover_trigger_key_t2.description
-msgid ""
-"Key sequence to trigger the popup with alternate options. Search for `(#2)` "
-"to find the relevant options"
+msgid "Key sequence to trigger the popup with alternate options. Search for `(#2)` to find the relevant options"
 msgstr ""
 
 #. mouseover_trigger_delay.name
@@ -580,10 +517,7 @@ msgid "Use mouseover event"
 msgstr ""
 
 #. mouseover_trigger_mouseover.description
-msgid ""
-"Uses the mouseover event instead of mousemove to figure out where to trigger "
-"the popup. This more closely matches the way other image popup addons work, "
-"at the cost of configurability"
+msgid "Uses the mouseover event instead of mousemove to figure out where to trigger the popup. This more closely matches the way other image popup addons work, at the cost of configurability"
 msgstr ""
 
 #. mouseover_trigger_enabledisable_toggle.name
@@ -591,9 +525,7 @@ msgid "Enable/disable toggle"
 msgstr ""
 
 #. mouseover_trigger_enabledisable_toggle.description
-msgid ""
-"Controls whether the 'Popup enable/disable key' will enable or disable the "
-"popup from opening"
+msgid "Controls whether the 'Popup enable/disable key' will enable or disable the popup from opening"
 msgstr ""
 
 #. mouseover_trigger_enabledisable_toggle.options.enable.name
@@ -609,9 +541,7 @@ msgid "Popup enable/disable key"
 msgstr ""
 
 #. mouseover_trigger_prevent_key.description
-msgid ""
-"Holding down this key will enable or disable the popup from being opened, "
-"depending on the 'Enable/disable toggle' setting"
+msgid "Holding down this key will enable or disable the popup from being opened, depending on the 'Enable/disable toggle' setting"
 msgstr ""
 
 #. mouseover_allow_partial.name
@@ -621,16 +551,13 @@ msgstr ""
 #. mouseover_allow_partial.description
 msgid ""
 "This will allow the popup to open for partially loaded media.\n"
-"Partially loaded media will contain the source URL directly (where "
-"possible), whereas fully loaded media will use a blob or data URL."
+"Partially loaded media will contain the source URL directly (where possible), whereas fully loaded media will use a blob or data URL."
 msgstr ""
 
 #. mouseover_allow_partial.description_userscript
 msgid ""
-"This will allow the popup to open for partially loaded media, but this might "
-"break images that require custom headers to display properly.\n"
-"Partially loaded media will contain the source URL directly (where "
-"possible), whereas fully loaded media will use a blob or data URL."
+"This will allow the popup to open for partially loaded media, but this might break images that require custom headers to display properly.\n"
+"Partially loaded media will contain the source URL directly (where possible), whereas fully loaded media will use a blob or data URL."
 msgstr ""
 
 #. mouseover_allow_partial.options.video.name
@@ -654,11 +581,7 @@ msgid "Avoid HEAD request for partially loaded media"
 msgstr ""
 
 #. mouseover_partial_avoid_head.description
-msgid ""
-"Avoids a possibly unnecessary HEAD request before displaying partially "
-"loaded images, which further decreases the delay before opening the popup. "
-"This can cause issues if the server returns an error, but still returns an "
-"image"
+msgid "Avoids a possibly unnecessary HEAD request before displaying partially loaded images, which further decreases the delay before opening the popup. This can cause issues if the server returns an error, but still returns an image"
 msgstr ""
 
 #. mouseover_use_blob_over_data.name
@@ -666,9 +589,7 @@ msgid "Use `blob:` over `data:` URLs"
 msgstr ""
 
 #. mouseover_use_blob_over_data.description
-msgid ""
-"Blob URLs are more efficient, but aren't supported by earlier browsers. Some "
-"websites also block `blob:` URLs"
+msgid "Blob URLs are more efficient, but aren't supported by earlier browsers. Some websites also block `blob:` URLs"
 msgstr ""
 
 #. mouseover_enable_notallowed.name
@@ -676,9 +597,7 @@ msgid "Use `not-allowed` cursor when unsupported"
 msgstr ""
 
 #. mouseover_enable_notallowed.description
-msgid ""
-"If the image isn't supported, the mouse cursor will change to a `not-"
-"allowed` cursor for a brief duration"
+msgid "If the image isn't supported, the mouse cursor will change to a `not-allowed` cursor for a brief duration"
 msgstr ""
 
 #. mouseover_enable_notallowed_cant_load.name
@@ -686,9 +605,7 @@ msgid "Use `not-allowed` cursor when unable to load"
 msgstr ""
 
 #. mouseover_enable_notallowed_cant_load.description
-msgid ""
-"If the image fails to load, the mouse cursor will change to a `not-allowed` "
-"cursor for a brief duration"
+msgid "If the image fails to load, the mouse cursor will change to a `not-allowed` cursor for a brief duration"
 msgstr ""
 
 #. mouseover_notallowed_duration.name
@@ -712,9 +629,7 @@ msgid "Minimum image size"
 msgstr ""
 
 #. mouseover_minimum_size.description
-msgid ""
-"Smallest size acceptable for the popup to open (this option is ignored for "
-"background images)"
+msgid "Smallest size acceptable for the popup to open (this option is ignored for background images)"
 msgstr ""
 
 #. mouseover_exclude_backgroundimages.name
@@ -722,9 +637,7 @@ msgid "Exclude `background-image`s"
 msgstr ""
 
 #. mouseover_exclude_backgroundimages.description
-msgid ""
-"Excludes `background-image`s for the popup. Might prevent the popup from "
-"working on many images"
+msgid "Excludes `background-image`s for the popup. Might prevent the popup from working on many images"
 msgstr ""
 
 #. mouseover_exclude_imagetab.name
@@ -756,9 +669,7 @@ msgid "Popup link for linked images"
 msgstr ""
 
 #. mouseover_linked_image.description
-msgid ""
-"If the linked image cannot be made larger, pop up for the link instead of "
-"the image"
+msgid "If the linked image cannot be made larger, pop up for the link instead of the image"
 msgstr ""
 
 #. mouseover_exclude_imagemaps.name
@@ -766,9 +677,15 @@ msgid "Exclude image maps"
 msgstr ""
 
 #. mouseover_exclude_imagemaps.description
-msgid ""
-"Don't pop up if the image is an image map (image with multiple clickable "
-"areas)"
+msgid "Don't pop up if the image is an image map (image with multiple clickable areas)"
+msgstr ""
+
+#. mouseover_video_autoplay.name
+msgid "Autoplay videos"
+msgstr ""
+
+#. mouseover_video_autoplay.description
+msgid "Plays videos automatically"
 msgstr ""
 
 #. mouseover_video_controls.name
@@ -776,8 +693,7 @@ msgid "Show video controls"
 msgstr ""
 
 #. mouseover_video_controls.description
-msgid ""
-"Shows native video controls. Note that this prevents dragging under Firefox"
+msgid "Shows native video controls. Note that this prevents dragging under Firefox"
 msgstr ""
 
 #. mouseover_video_controls_key.name
@@ -793,9 +709,7 @@ msgid "Loop video"
 msgstr ""
 
 #. mouseover_video_loop.description
-msgid ""
-"Allows the video to automatically restart to the beginning after finishing "
-"playing"
+msgid "Allows the video to automatically restart to the beginning after finishing playing"
 msgstr ""
 
 #. mouseover_video_autoloop_max.name
@@ -803,9 +717,7 @@ msgid "Max duration for looping"
 msgstr ""
 
 #. mouseover_video_autoloop_max.description
-msgid ""
-"Videos longer than the specified duration will not be automatically looped. "
-"Setting this to `0` will always enable looping, regardless of duration."
+msgid "Videos longer than the specified duration will not be automatically looped. Setting this to `0` will always enable looping, regardless of duration."
 msgstr ""
 
 #. mouseover_video_playpause_key.name
@@ -861,8 +773,7 @@ msgid "Volume change amount"
 msgstr ""
 
 #. mouseover_video_volume_change_amt.description
-msgid ""
-"Percent for volume to increase/decrease when using the volume up/down keys"
+msgid "Percent for volume to increase/decrease when using the volume up/down keys"
 msgstr ""
 
 #. mouseover_video_resume_from_source.name
@@ -878,9 +789,7 @@ msgid "Resume if different length"
 msgstr ""
 
 #. mouseover_video_resume_if_different.description
-msgid ""
-"If disabled, it will not resume if the source video has a different length "
-"from the video in the popup (e.g. from a preview video to a full one)"
+msgid "If disabled, it will not resume if the source video has a different length from the video in the popup (e.g. from a preview video to a full one)"
 msgstr ""
 
 #. mouseover_video_pause_source.name
@@ -920,10 +829,7 @@ msgid "Previous frame key"
 msgstr ""
 
 #. mouseover_video_frame_prev_key.description
-msgid ""
-"Rewinds the video one \"frame\" backward. Due to current limitations, the "
-"frame size is static (but configurable), and might not match the video's "
-"framerate"
+msgid "Rewinds the video one \"frame\" backward. Due to current limitations, the frame size is static (but configurable), and might not match the video's framerate"
 msgstr ""
 
 #. mouseover_video_frame_next_key.name
@@ -931,10 +837,7 @@ msgid "Next frame key"
 msgstr ""
 
 #. mouseover_video_frame_next_key.description
-msgid ""
-"Advances the video one \"frame\" forward. Due to current limitations, the "
-"frame size is static (but configurable), and might not match the video's "
-"framerate"
+msgid "Advances the video one \"frame\" forward. Due to current limitations, the frame size is static (but configurable), and might not match the video's framerate"
 msgstr ""
 
 #. mouseover_video_framerate.name
@@ -942,8 +845,7 @@ msgid "Frame rate"
 msgstr ""
 
 #. mouseover_video_framerate.description
-msgid ""
-"Frame rate for videos to seek forward/back with the next/previous frame keys"
+msgid "Frame rate for videos to seek forward/back with the next/previous frame keys"
 msgstr ""
 
 #. mouseover_video_framerate.number_unit
@@ -1011,10 +913,7 @@ msgid "Use safe glyphs"
 msgstr ""
 
 #. mouseover_ui_use_safe_glyphs.description
-msgid ""
-"Uses glyphs that are more likely to be available on all fonts. Enable this "
-"option if the following characters render as boxes: 🡇 🡐 🡒. The 'Noto Sans "
-"Symbols2' font contains these characters."
+msgid "Uses glyphs that are more likely to be available on all fonts. Enable this option if the following characters render as boxes: 🡇 🡐 🡒. The 'Noto Sans Symbols2' font contains these characters."
 msgstr ""
 
 #. mouseover_ui_imagesize.name
@@ -1043,9 +942,7 @@ msgstr ""
 
 #. mouseover_ui_filesize.description
 msgid ""
-"Displays the media's file size on top of the UI. For the moment, this will "
-"not work with partially loaded media if 'Avoid HEAD request for partially "
-"loaded media' is enabled.\n"
+"Displays the media's file size on top of the UI. For the moment, this will not work with partially loaded media if 'Avoid HEAD request for partially loaded media' is enabled.\n"
 "CSS ID: `#sizeinfo`"
 msgstr ""
 
@@ -1064,9 +961,7 @@ msgid "Gallery counter max"
 msgstr ""
 
 #. mouseover_ui_gallerymax.description
-msgid ""
-"Maximum amount of images to check in the counter (this can be slightly CPU-"
-"intensive)"
+msgid "Maximum amount of images to check in the counter (this can be slightly CPU-intensive)"
 msgstr ""
 
 #. mouseover_ui_gallerybtns.name
@@ -1178,9 +1073,7 @@ msgid "Don't close until mouse leaves"
 msgstr ""
 
 #. mouseover_close_need_mouseout.description
-msgid ""
-"If true, this keeps the popup open even if all triggers are released if the "
-"mouse is still over the image"
+msgid "If true, this keeps the popup open even if all triggers are released if the mouse is still over the image"
 msgstr ""
 
 #. mouseover_jitter_threshold.name
@@ -1188,9 +1081,7 @@ msgid "Threshold to leave image"
 msgstr ""
 
 #. mouseover_jitter_threshold.description
-msgid ""
-"How many pixels outside of the image before the cursor is considered to have "
-"left the image"
+msgid "How many pixels outside of the image before the cursor is considered to have left the image"
 msgstr ""
 
 #. mouseover_cancel_popup_when_elout.name
@@ -1198,9 +1089,7 @@ msgid "Leaving thumbnail cancels loading"
 msgstr ""
 
 #. mouseover_cancel_popup_when_elout.description
-msgid ""
-"Cancels the current popup loading when the cursor has left the thumbnail "
-"image"
+msgid "Cancels the current popup loading when the cursor has left the thumbnail image"
 msgstr ""
 
 #. mouseover_cancel_popup_with_esc.name
@@ -1216,9 +1105,7 @@ msgid "Releasing triggers cancels loading"
 msgstr ""
 
 #. mouseover_cancel_popup_when_release.description
-msgid ""
-"Cancels the current popup loading if all/any triggers are released (as set "
-"by the \"Keep popup open until\" setting)"
+msgid "Cancels the current popup loading if all/any triggers are released (as set by the \"Keep popup open until\" setting)"
 msgstr ""
 
 #. mouseover_auto_close_popup.name
@@ -1226,8 +1113,7 @@ msgid "Automatically close after timeout"
 msgstr ""
 
 #. mouseover_auto_close_popup.description
-msgid ""
-"Closes the popup automatically after a specified period of time has elapsed"
+msgid "Closes the popup automatically after a specified period of time has elapsed"
 msgstr ""
 
 #. mouseover_auto_close_popup_time.name
@@ -1243,8 +1129,7 @@ msgid "Use hold key"
 msgstr ""
 
 #. mouseover_use_hold_key.description
-msgid ""
-"Enables the use of a hold key that, when pressed, will keep the popup open"
+msgid "Enables the use of a hold key that, when pressed, will keep the popup open"
 msgstr ""
 
 #. mouseover_hold_key.name
@@ -1268,9 +1153,7 @@ msgid "Close popup on unhold"
 msgstr ""
 
 #. mouseover_hold_close_unhold.description
-msgid ""
-"Closes the popup when the hold key is pressed again, after having previously "
-"held the popup"
+msgid "Closes the popup when the hold key is pressed again, after having previously held the popup"
 msgstr ""
 
 #. mouseover_hold_unclickthrough.name
@@ -1294,9 +1177,7 @@ msgid "Close when leaving"
 msgstr ""
 
 #. mouseover_close_el_policy.description
-msgid ""
-"Closes the popup when the mouse leaves the thumbnail element, the popup, or "
-"both"
+msgid "Closes the popup when the mouse leaves the thumbnail element, the popup, or both"
 msgstr ""
 
 #. mouseover_close_el_policy.options.thumbnail.name
@@ -1312,11 +1193,7 @@ msgid "Use invisible element when waiting"
 msgstr ""
 
 #. mouseover_wait_use_el.description
-msgid ""
-"Creates an invisible element under the cursor when waiting for the popup "
-"instead of a style element (can improve performance on websites with many "
-"elements, but prevents the cursor from clicking anything while loading the "
-"popup)"
+msgid "Creates an invisible element under the cursor when waiting for the popup instead of a style element (can improve performance on websites with many elements, but prevents the cursor from clicking anything while loading the popup)"
 msgstr ""
 
 #. mouseover_add_to_history.name
@@ -1324,8 +1201,7 @@ msgid "Add popup link to history"
 msgstr ""
 
 #. mouseover_add_to_history.description
-msgid ""
-"Adds the image/video link opened through the popup to the browser's history"
+msgid "Adds the image/video link opened through the popup to the browser's history"
 msgstr ""
 
 #. allow_remote.name
@@ -1333,15 +1209,11 @@ msgid "Allow inter-frame communication"
 msgstr ""
 
 #. allow_remote.description
-msgid ""
-"Allows communication between frames in windows, improving support for "
-"keybindings"
+msgid "Allows communication between frames in windows, improving support for keybindings"
 msgstr ""
 
 #. allow_remote.description_userscript
-msgid ""
-"Allows communication between frames in windows, improving support for "
-"keybindings. Can pose a fingerprinting risk when used through the userscript"
+msgid "Allows communication between frames in windows, improving support for keybindings. Can pose a fingerprinting risk when used through the userscript"
 msgstr ""
 
 #. mouseover_use_remote.name
@@ -1349,8 +1221,7 @@ msgid "Pop out of frames"
 msgstr ""
 
 #. mouseover_use_remote.description
-msgid ""
-"Opens the popup on the top frame instead of within iframes. Still in beta"
+msgid "Opens the popup on the top frame instead of within iframes. Still in beta"
 msgstr ""
 
 #. mouseover_zoom_behavior.name
@@ -1434,10 +1305,7 @@ msgid "Invert movement"
 msgstr ""
 
 #. mouseover_movement_inverted.description
-msgid ""
-"Inverts the movement of the mouse. For example, if the mouse moves left, the "
-"popup moves right. If disabled, it feels more like the popup is being "
-"invisibly dragged."
+msgid "Inverts the movement of the mouse. For example, if the mouse moves left, the popup moves right. If disabled, it feels more like the popup is being invisibly dragged."
 msgstr ""
 
 #. mouseover_drag_min.name
@@ -1485,9 +1353,7 @@ msgid "Vertical video scroll action"
 msgstr ""
 
 #. mouseover_scrolly_video_behavior.description
-msgid ""
-"Overrides the vertical scroll action for videos. Set to `Default` to avoid "
-"overriding the behavior."
+msgid "Overrides the vertical scroll action for videos. Set to `Default` to avoid overriding the behavior."
 msgstr ""
 
 #. mouseover_scrolly_video_invert.name
@@ -1495,9 +1361,7 @@ msgid "Invert vertical scroll seek"
 msgstr ""
 
 #. mouseover_scrolly_video_invert.description
-msgid ""
-"Inverts the seek direction when scrolling vertically: Scrolling up will seek "
-"right, scrolling down will seek left."
+msgid "Inverts the seek direction when scrolling vertically: Scrolling up will seek right, scrolling down will seek left."
 msgstr ""
 
 #. mouseover_scrollx_video_behavior.name
@@ -1505,9 +1369,7 @@ msgid "Horizontal video scroll action"
 msgstr ""
 
 #. mouseover_scrollx_video_behavior.description
-msgid ""
-"Overrides the horizontal scroll action for videos. Set to `Default` to avoid "
-"overriding the behavior."
+msgid "Overrides the horizontal scroll action for videos. Set to `Default` to avoid overriding the behavior."
 msgstr ""
 
 #. mouseover_scrolly_video_behavior.options.default.name, mouseover_scrollx_video_behavior.options.default.name
@@ -1655,9 +1517,7 @@ msgid "Hide cursor after"
 msgstr ""
 
 #. mouseover_hide_cursor_after.description
-msgid ""
-"Hides the cursor over the popup after a specified period of time (in "
-"milliseconds), 0 always hides the cursor"
+msgid "Hides the cursor over the popup after a specified period of time (in milliseconds), 0 always hides the cursor"
 msgstr ""
 
 #. mouseover_mouse_inactivity_jitter.name
@@ -1665,9 +1525,7 @@ msgid "Mouse jitter threshold"
 msgstr ""
 
 #. mouseover_mouse_inactivity_jitter.description
-msgid ""
-"Threshold for mouse movement before the mouse cursor is shown again, 0 "
-"always shows the cursor after any movement"
+msgid "Threshold for mouse movement before the mouse cursor is shown again, 0 always shows the cursor after any movement"
 msgstr ""
 
 #. mouseover_zoom_max_width.number_unit, mouseover_zoom_max_height.number_unit, mouseover_mouse_inactivity_jitter.number_unit
@@ -1679,8 +1537,7 @@ msgid "Disable pointer events"
 msgstr ""
 
 #. mouseover_clickthrough.description
-msgid ""
-"Enabling this option will allow you to click on links underneath the popup"
+msgid "Enabling this option will allow you to click on links underneath the popup"
 msgstr ""
 
 #. mouseover_mask_ignore_clicks.name
@@ -1689,6 +1546,22 @@ msgstr ""
 
 #. mouseover_mask_ignore_clicks.description
 msgid "Any mouse event outside the popup will be discarded with this option"
+msgstr ""
+
+#. enable_stream_download.name
+msgid "Enable downloading HLS/DASH streams"
+msgstr ""
+
+#. enable_stream_download.description
+msgid "Downloads and muxes the contents of the streams rather than the stream information file. This currently does not work under Firefox."
+msgstr ""
+
+#. stream_mux_mp4_over_mkv.name
+msgid "Prefer MP4 over MKV"
+msgstr ""
+
+#. stream_mux_mp4_over_mkv.description
+msgid "Tries to mux the video into mp4 instead of mkv when required. This may slightly slow down muxing as it currently needs to try muxing both."
 msgstr ""
 
 #. mouseover_add_link.name
@@ -1728,9 +1601,7 @@ msgid "Clicking link downloads"
 msgstr ""
 
 #. mouseover_download.description
-msgid ""
-"Instead of opening the link in a new tab, it will download the image/video "
-"instead"
+msgid "Instead of opening the link in a new tab, it will download the image/video instead"
 msgstr ""
 
 #. mouseover_close_key.name
@@ -1738,9 +1609,7 @@ msgid "Close key"
 msgstr ""
 
 #. mouseover_close_key.description
-msgid ""
-"Closes the popup when this key is pressed. Currently, ESC will also close "
-"the popup regardless of the value of this setting."
+msgid "Closes the popup when this key is pressed. Currently, ESC will also close the popup regardless of the value of this setting."
 msgstr ""
 
 #. mouseover_download_key.name
@@ -1764,9 +1633,7 @@ msgid "Open in background tab key"
 msgstr ""
 
 #. mouseover_open_bg_tab_key.description
-msgid ""
-"Opens the image in the popup in a new tab without switching to it when this "
-"key is pressed"
+msgid "Opens the image in the popup in a new tab without switching to it when this key is pressed"
 msgstr ""
 
 #. mouseover_copy_link_key.name
@@ -1854,9 +1721,7 @@ msgid "Fit screen key"
 msgstr ""
 
 #. mouseover_zoom_fit_key.description
-msgid ""
-"Sets the image to either be at a 100% zoom, or to fit the screen, whichever "
-"is smaller"
+msgid "Sets the image to either be at a 100% zoom, or to fit the screen, whichever is smaller"
 msgstr ""
 
 #. mouseover_fullscreen_key.name
@@ -1880,10 +1745,7 @@ msgid "Only for links that look valid"
 msgstr ""
 
 #. mouseover_only_valid_links.description
-msgid ""
-"Enabling this option will only allow links to be popped up if they look "
-"valid (such as if they have a known image/video extension, or are explicitly "
-"supported)"
+msgid "Enabling this option will only allow links to be popped up if they look valid (such as if they have a known image/video extension, or are explicitly supported)"
 msgstr ""
 
 #. mouseover_allow_self_pagelink.name
@@ -1891,9 +1753,7 @@ msgid "Popup page URL"
 msgstr ""
 
 #. mouseover_allow_self_pagelink.description
-msgid ""
-"If no element can be found, try the page URL. Only relevant for pagelink "
-"rules, such as image and video hosting websites"
+msgid "If no element can be found, try the page URL. Only relevant for pagelink rules, such as image and video hosting websites"
 msgstr ""
 
 #. mouseover_allow_iframe_el.name
@@ -1901,9 +1761,7 @@ msgid "Popup for `<iframe>`"
 msgstr ""
 
 #. mouseover_allow_iframe_el.description
-msgid ""
-"Allows `<iframe>` elements to be popped up as well. Storing images/videos in "
-"this way is rather uncommon, but it can allow embeds to be supported"
+msgid "Allows `<iframe>` elements to be popped up as well. Storing images/videos in this way is rather uncommon, but it can allow embeds to be supported"
 msgstr ""
 
 #. mouseover_allow_canvas_el.name
@@ -1911,10 +1769,7 @@ msgid "Popup for `<canvas>`"
 msgstr ""
 
 #. mouseover_allow_canvas_el.description
-msgid ""
-"Allows `<canvas>` elements to be popped up as well. This will likely cause "
-"popups with any kind of web-based games, so it's recommended to keep this "
-"disabled"
+msgid "Allows `<canvas>` elements to be popped up as well. This will likely cause popups with any kind of web-based games, so it's recommended to keep this disabled"
 msgstr ""
 
 #. mouseover_allow_svg_el.name
@@ -1922,10 +1777,7 @@ msgid "Popup for `<svg>`"
 msgstr ""
 
 #. mouseover_allow_svg_el.description
-msgid ""
-"Allows `<svg>` elements to be popped up as well. These are usually used for "
-"icons, and can occasionally cause problems for websites that overlay icons "
-"on top of images"
+msgid "Allows `<svg>` elements to be popped up as well. These are usually used for icons, and can occasionally cause problems for websites that overlay icons on top of images"
 msgstr ""
 
 #. mouseover_enable_gallery.name
@@ -1941,9 +1793,7 @@ msgid "Cycle gallery"
 msgstr ""
 
 #. mouseover_gallery_cycle.description
-msgid ""
-"Going to the previous image for the first image will lead to the last image "
-"and vice-versa"
+msgid "Going to the previous image for the first image will lead to the last image and vice-versa"
 msgstr ""
 
 #. mouseover_gallery_prev_key.name
@@ -1981,20 +1831,13 @@ msgstr ""
 #. mouseover_styles.documentation.value
 msgid ""
 "Most valid CSS is supported, with these differences:\n"
-"<ul><li>Multiline comments (<code>/* ... */</code>) are currently not "
-"supported</li>\n"
-"<li>Single comments (<code>// ...</code>) are supported, but only at the "
-"beginning of a line</li>\n"
-"<li><code>%thumburl%</code> is the URL of the thumbnail image. For example, "
-"you could use it like this: <code>background-image: url(%thumburl%)</"
-"code><br />\n"
-"The URL is properly encoded, so quotes are not necessary (but not harmful "
-"either)</li>\n"
-"<li><code>%fullurl%</code> is the URL of the full image. If IMU fails to "
-"find a larger image, it will be the same as <code>%thumburl%</code></li>\n"
+"<ul><li>Multiline comments (<code>/* ... */</code>) are currently not supported</li>\n"
+"<li>Single comments (<code>// ...</code>) are supported, but only at the beginning of a line</li>\n"
+"<li><code>%thumburl%</code> is the URL of the thumbnail image. For example, you could use it like this: <code>background-image: url(%thumburl%)</code><br />\n"
+"The URL is properly encoded, so quotes are not necessary (but not harmful either)</li>\n"
+"<li><code>%fullurl%</code> is the URL of the full image. If IMU fails to find a larger image, it will be the same as <code>%thumburl%</code></li>\n"
 "<li>Styles are <code>!important</code> by default</li></ul>\n"
-"<p>For Button CSS style, you can also customize the CSS for individual "
-"buttons through their IDs. For example:</p>\n"
+"<p>For Button CSS style, you can also customize the CSS for individual buttons through their IDs. For example:</p>\n"
 "<pre>\n"
 "#closebtn {\n"
 "  background-color: red;\n"
@@ -2030,9 +1873,7 @@ msgid "Move from thumbnail when zooming"
 msgstr ""
 
 #. mouseover_zoom_effect_move.description
-msgid ""
-"Moves the popup from the thumbnail to the final location while zooming. The "
-"animation can be a little rough"
+msgid "Moves the popup from the thumbnail to the final location while zooming. The animation can be a little rough"
 msgstr ""
 
 #. mouseover_fade_time.name
@@ -2048,9 +1889,7 @@ msgid "Enable background CSS"
 msgstr ""
 
 #. mouseover_enable_mask_styles2.description
-msgid ""
-"Toggles whether CSS styles for the background when the popup is active is "
-"enabled"
+msgid "Toggles whether CSS styles for the background when the popup is active is enabled"
 msgstr ""
 
 #. mouseover_enable_mask_styles2.options.hold.name
@@ -2066,10 +1905,7 @@ msgid "Background CSS style"
 msgstr ""
 
 #. mouseover_mask_styles2.description
-msgid ""
-"CSS style for the background when the popup is active. See the documentation "
-"for Popup CSS style for more information (the thumb/full URL variables "
-"aren't supported here)"
+msgid "CSS style for the background when the popup is active. See the documentation for Popup CSS style for more information (the thumb/full URL variables aren't supported here)"
 msgstr ""
 
 #. mouseover_mask_fade_time.name
@@ -2077,9 +1913,7 @@ msgid "Background fade"
 msgstr ""
 
 #. mouseover_mask_fade_time.description
-msgid ""
-"Fade in/out time (in milliseconds) for the page background, set to 0 to "
-"disable"
+msgid "Fade in/out time (in milliseconds) for the page background, set to 0 to disable"
 msgstr ""
 
 #. retry_503_ms.number_unit, mouseover_notallowed_duration.number_unit, mouseover_hide_cursor_after.number_unit, mouseover_fade_time.number_unit, mouseover_mask_fade_time.number_unit
@@ -2091,10 +1925,7 @@ msgid "Button CSS style"
 msgstr ""
 
 #. mouseover_ui_styles.description
-msgid ""
-"Custom CSS styles for the popup's UI buttons. See the documentation for "
-"Popup CSS style for more information (the thumb/full URL variables aren't "
-"supported here)"
+msgid "Custom CSS styles for the popup's UI buttons. See the documentation for Popup CSS style for more information (the thumb/full URL variables aren't supported here)"
 msgstr ""
 
 #. mouseover_apply_blacklist.name
@@ -2102,8 +1933,7 @@ msgid "Don't popup blacklisted images"
 msgstr ""
 
 #. mouseover_apply_blacklist.description
-msgid ""
-"This option prevents a popup from appearing altogether for blacklisted images"
+msgid "This option prevents a popup from appearing altogether for blacklisted images"
 msgstr ""
 
 #. apply_blacklist_host.name
@@ -2111,11 +1941,7 @@ msgid "Apply blacklist for host websites"
 msgstr ""
 
 #. apply_blacklist_host.description
-msgid ""
-"This option prevents the script from applying any popups to host websites "
-"that are in the blacklist. For example, adding `twitter.com` to the "
-"blacklist would prevent any popup from opening on twitter.com. If disabled, "
-"this option only applies to image URLs (such as twimg.com), not host URLs"
+msgid "This option prevents the script from applying any popups to host websites that are in the blacklist. For example, adding `twitter.com` to the blacklist would prevent any popup from opening on twitter.com. If disabled, this option only applies to image URLs (such as twimg.com), not host URLs"
 msgstr ""
 
 #. mouseover_matching_media_types.name
@@ -2123,9 +1949,7 @@ msgid "Don't popup video for image"
 msgstr ""
 
 #. mouseover_matching_media_types.description
-msgid ""
-"This option prevents the popup from loading a video when the source was an "
-"image. Vice-versa is also applied"
+msgid "This option prevents the popup from loading a video when the source was an image. Vice-versa is also applied"
 msgstr ""
 
 #. mouseover_find_els_mode.name
@@ -2138,8 +1962,7 @@ msgstr ""
 
 #. mouseover_find_els_mode.warning.full
 msgid ""
-"This will result in a much higher CPU load for websites such as Facebook, "
-"and will occasionally return the wrong element.\n"
+"This will result in a much higher CPU load for websites such as Facebook, and will occasionally return the wrong element.\n"
 "Use this option with caution."
 msgstr ""
 
@@ -2148,10 +1971,7 @@ msgid "Full"
 msgstr ""
 
 #. mouseover_find_els_mode.options.full.description
-msgid ""
-"Manually looks through every element on the page to see if the cursor is "
-"above them. This will result in a higher CPU load for websites such as "
-"Facebook, and may return the wrong element"
+msgid "Manually looks through every element on the page to see if the cursor is above them. This will result in a higher CPU load for websites such as Facebook, and may return the wrong element"
 msgstr ""
 
 #. mouseover_find_els_mode.options.hybrid.name
@@ -2159,9 +1979,7 @@ msgid "Hybrid"
 msgstr ""
 
 #. mouseover_find_els_mode.options.hybrid.description
-msgid ""
-"Looks manually through every child element of the last element found by "
-"`getElementsAtPoint`. Use this option if in doubt, it'll work on most sites"
+msgid "Looks manually through every child element of the last element found by `getElementsAtPoint`. Use this option if in doubt, it'll work on most sites"
 msgstr ""
 
 #. mouseover_find_els_mode.options.simple.name
@@ -2169,10 +1987,7 @@ msgid "Simple"
 msgstr ""
 
 #. mouseover_find_els_mode.options.simple.description
-msgid ""
-"This is the fastest option, which uses the value of `getElementsAtPoint` "
-"without modification. Works for sites that don't use pointer-events:none and "
-"shadow DOM"
+msgid "This is the fastest option, which uses the value of `getElementsAtPoint` without modification. Works for sites that don't use pointer-events:none and shadow DOM"
 msgstr ""
 
 #. popup_allow_cache.name
@@ -2200,9 +2015,7 @@ msgid "Cache item limit"
 msgstr ""
 
 #. popup_cache_itemlimit.description
-msgid ""
-"Maximum number of individual media to remain cached. Set to `0` for "
-"unlimited."
+msgid "Maximum number of individual media to remain cached. Set to `0` for unlimited."
 msgstr ""
 
 #. popup_cache_itemlimit.number_unit
@@ -2214,9 +2027,7 @@ msgid "Resume videos"
 msgstr ""
 
 #. popup_cache_resume_video.description
-msgid ""
-"If a video popup was closed then reopened, the video will resume from where "
-"it left off"
+msgid "If a video popup was closed then reopened, the video will resume from where it left off"
 msgstr ""
 
 #. website_inject_imu.name
@@ -2240,8 +2051,7 @@ msgid "IMU entry in context menu"
 msgstr ""
 
 #. extension_contextmenu.description
-msgid ""
-"Enables a custom entry for this extension in the right click/context menu"
+msgid "Enables a custom entry for this extension in the right click/context menu"
 msgstr ""
 
 #. allow_video.name
@@ -2257,43 +2067,7 @@ msgid "Audio"
 msgstr ""
 
 #. allow_audio.description
-msgid ""
-"Allows audio to be returned. Note that this is currently highly alpha, "
-"please do not expect a good user experience with this yet!"
-msgstr ""
-
-#. allow_dash_video.name
-msgid "Allow DASH streams"
-msgstr ""
-
-#. allow_dash_video.description
-msgid ""
-"Allows playback of DASH streams. Some media may not work with other websites "
-"due to hotlinking protection."
-msgstr ""
-
-#. allow_dash_video.description_userscript
-msgid ""
-"Allows playback of DASH streams. Some media may not work with other websites "
-"due to hotlinking protection, and it may even break media playback for some "
-"websites. Use with caution."
-msgstr ""
-
-#. allow_hls_video.name
-msgid "Allow HLS streams"
-msgstr ""
-
-#. allow_hls_video.description
-msgid ""
-"Allows playback of HLS streams. Some media may not work with other websites "
-"due to hotlinking protection."
-msgstr ""
-
-#. allow_hls_video.description_userscript
-msgid ""
-"Allows playback of HLS streams. Some media may not work with other websites "
-"due to hotlinking protection, and it may even break media playback for some "
-"websites. Use with caution."
+msgid "Allows audio to be returned. Note that this is currently highly alpha, please do not expect a good user experience with this yet!"
 msgstr ""
 
 #. custom_xhr_for_lib.name
@@ -2301,20 +2075,23 @@ msgid "Custom XHR for libraries"
 msgstr ""
 
 #. custom_xhr_for_lib.description
-msgid ""
-"Allows the use of more powerful XHR for 3rd-party libraries. This allows for "
-"certain DASH streams to work."
+msgid "Allows the use of more powerful XHR for 3rd-party libraries. This allows for certain DASH streams to work."
 msgstr ""
 
 #. custom_xhr_for_lib.description_userscript
-msgid ""
-"Allows the use of more powerful XHR for 3rd-party libraries. This allows for "
-"certain DASH streams to work. Using this with the userscript version "
-"currently poses a potential security risk."
+msgid "Allows the use of more powerful XHR for 3rd-party libraries. This allows for certain DASH streams to work. Using this with the userscript version currently poses a potential security risk."
 msgstr ""
 
 #. custom_xhr_for_lib.example_websites[0]
 msgid "Kakao"
+msgstr ""
+
+#. custom_xhr_for_lib.example_websites[1]
+msgid "YouTube"
+msgstr ""
+
+#. custom_xhr_for_lib.example_websites[2]
+msgid "Instagram (downloading)"
 msgstr ""
 
 #. hls_dash_use_max.name
@@ -2422,8 +2199,7 @@ msgid "Rules using API calls"
 msgstr ""
 
 #. allow_apicalls.description
-msgid ""
-"Enables rules that use API calls. Strongly recommended to keep this enabled"
+msgid "Enables rules that use API calls. Strongly recommended to keep this enabled"
 msgstr ""
 
 #. allow_apicalls.example_websites[0]
@@ -2439,17 +2215,17 @@ msgid "..."
 msgstr ""
 
 #. allow_thirdparty_libs.name
-msgid "Rules using 3rd-party libraries"
+msgid "Allow 3rd-party libraries"
 msgstr ""
 
 #. allow_thirdparty_libs.description
-msgid "Enables rules that use 3rd-party libraries"
+msgid "Enables using 3rd-party libraries. This is both used in rules and as a prerequisite for certain functionality."
 msgstr ""
 
 #. allow_thirdparty_libs.description_userscript
 msgid ""
-"Enables rules that use 3rd-party libraries. There is a possible (but "
-"unlikely) security risk for the userscript version"
+"Enables using 3rd-party libraries. This is both used in rules and as a prerequisite for certain functionality.\n"
+"There is a possible (but unlikely) security risk for the userscript version."
 msgstr ""
 
 #. allow_thirdparty_libs.example_websites[0]
@@ -2465,8 +2241,7 @@ msgid "Enables rules that execute arbitrary 3rd-party code stored on websites."
 msgstr ""
 
 #. allow_thirdparty_code.warning.true
-msgid ""
-"This could lead to security risks, please be careful when using this option!"
+msgid "This could lead to security risks, please be careful when using this option!"
 msgstr ""
 
 #. allow_bruteforce.name
@@ -2474,9 +2249,7 @@ msgid "Rules using brute-force"
 msgstr ""
 
 #. allow_bruteforce.description
-msgid ""
-"Enables rules that require using brute force (through binary search) to find "
-"the original image"
+msgid "Enables rules that require using brute force (through binary search) to find the original image"
 msgstr ""
 
 #. allow_bruteforce.example_websites[0]
@@ -2488,9 +2261,7 @@ msgid "DeviantART: Prefer size over original"
 msgstr ""
 
 #. deviantart_prefer_size.description
-msgid ""
-"Prefers a larger (but not upscaled) thumbnail image over a smaller original "
-"animated image"
+msgid "Prefers a larger (but not upscaled) thumbnail image over a smaller original animated image"
 msgstr ""
 
 #. deviantart_support_download.name
@@ -2498,9 +2269,7 @@ msgid "DeviantART: Use download links"
 msgstr ""
 
 #. deviantart_support_download.description
-msgid ""
-"Prefers using the download link (if available) by default. Note that this "
-"only works if you're logged in to DeviantART"
+msgid "Prefers using the download link (if available) by default. Note that this only works if you're logged in to DeviantART"
 msgstr ""
 
 #. ehentai_full_image.name
@@ -2508,9 +2277,7 @@ msgid "E-Hentai: Use full image"
 msgstr ""
 
 #. ehentai_full_image.description
-msgid ""
-"Prefers using full/original images if available (logged in). This is more "
-"likely to get you rate limited"
+msgid "Prefers using full/original images if available (logged in). This is more likely to get you rate limited"
 msgstr ""
 
 #. imgur_filename.name
@@ -2518,9 +2285,7 @@ msgid "Imgur: Use original filename"
 msgstr ""
 
 #. imgur_filename.description
-msgid ""
-"If the original filename (the one used to upload the image) is found, use it "
-"instead of the image ID"
+msgid "If the original filename (the one used to upload the image) is found, use it instead of the image ID"
 msgstr ""
 
 #. imgur_source.name
@@ -2528,10 +2293,7 @@ msgid "Imgur: Use source image"
 msgstr ""
 
 #. imgur_source.description
-msgid ""
-"If a source image is found for Imgur, try using it instead. Only works for "
-"old-style Imgur webpages (set `postpagebeta=0; postpagebetalogged=0` as "
-"cookies)"
+msgid "If a source image is found for Imgur, try using it instead. Only works for old-style Imgur webpages (set `postpagebeta=0; postpagebetalogged=0` as cookies)"
 msgstr ""
 
 #. instagram_use_app_api.name
@@ -2539,9 +2301,7 @@ msgid "Instagram: Use native API"
 msgstr ""
 
 #. instagram_use_app_api.description
-msgid ""
-"Uses Instagram's native API if possible, requires you to be logged into "
-"Instagram"
+msgid "Uses Instagram's native API if possible, requires you to be logged into Instagram"
 msgstr ""
 
 #. instagram_dont_use_web.name
@@ -2549,9 +2309,7 @@ msgid "Instagram: Don't use web API"
 msgstr ""
 
 #. instagram_dont_use_web.description
-msgid ""
-"Avoids using Instagram's web API if possible, which increases performance, "
-"but will occasionally sacrifice quality for videos"
+msgid "Avoids using Instagram's web API if possible, which increases performance, but will occasionally sacrifice quality for videos"
 msgstr ""
 
 #. instagram_prefer_video_quality.name
@@ -2559,10 +2317,7 @@ msgid "Instagram: Prefer quality over resolution"
 msgstr ""
 
 #. instagram_prefer_video_quality.description
-msgid ""
-"Prefers lower resolution videos that use a higher bitrate over higher "
-"resolution images. This adds a slight performance cost as it needs to fetch "
-"headers for multiple videos"
+msgid "Prefers lower resolution videos that use a higher bitrate over higher resolution images. This adds a slight performance cost as it needs to fetch headers for multiple videos"
 msgstr ""
 
 #. instagram_gallery_postlink.name
@@ -2578,9 +2333,7 @@ msgid "Snapchat: Use original media without captions"
 msgstr ""
 
 #. snapchat_orig_media.description
-msgid ""
-"Prefers using original media instead of media with captions and tags "
-"overlayed"
+msgid "Prefers using original media instead of media with captions and tags overlayed"
 msgstr ""
 
 #. tiktok_no_watermarks.name
@@ -2588,10 +2341,7 @@ msgid "TikTok: Don't use watermarked videos"
 msgstr ""
 
 #. tiktok_no_watermarks.description
-msgid ""
-"Uses non-watermarked videos for TikTok if possible. This will introduce an "
-"extra delay when loading the video as two extra requests need to be "
-"performed. It will also fail for any videos uploaded after ~late July 2020"
+msgid "Uses non-watermarked videos for TikTok if possible. This will introduce an extra delay when loading the video as two extra requests need to be performed. It will also fail for any videos uploaded after ~late July 2020"
 msgstr ""
 
 #. tiktok_thirdparty.name
@@ -2601,8 +2351,7 @@ msgstr ""
 #. tiktok_thirdparty.description
 msgid ""
 "Uses a 3rd-party watermark removal site for TikTok.\n"
-"I do not endorse any of the sites supported. They may log your IP address "
-"and videos you submit. Use this option with caution.\n"
+"I do not endorse any of the sites supported. They may log your IP address and videos you submit. Use this option with caution.\n"
 "`LQ` = Low quality, `PL` = Public log"
 msgstr ""
 
@@ -2650,45 +2399,38 @@ msgstr ""
 msgid "API key for finding larger images on Tumblr"
 msgstr ""
 
+#. twitter_use_ext.name
+msgid "Twitter: Use extension"
+msgstr ""
+
+#. twitter_use_ext.description
+msgid "Prefers `.jpg?name=orig` over `?format=jpg&name=orig`. This will possibly incur extra requests before succeeding"
+msgstr ""
+
 #. bigimage_blacklist.name
 msgid "Blacklist"
 msgstr ""
 
 #. bigimage_blacklist.description
-msgid "A list of URLs that are blacklisted from being processed"
+msgid "A list of URLs (one per line) that are blacklisted from being processed"
 msgstr ""
 
 #. bigimage_blacklist.documentation.value
 msgid ""
-"The examples below are written for the simple (glob) engine, not the regex "
-"engine. The glob engine is generally based on the UNIX glob syntax.<br />\n"
+"The examples below are written for the simple (glob) engine, not the regex engine. The glob engine is generally based on the UNIX glob syntax.<br />\n"
 "<ul><br />\n"
-"<li><code>google.com</code> will block https://google.com/, https://www."
-"google.com/, https://abcdef.google.com/, https://def.abc.google.com/, etc.</"
-"li>\n"
-"<li><code>abc.google.com</code> will block https://abc.google.com/, https://"
-"def.abc.google.com/, etc.</li>\n"
-"<li><code>*.google.com</code> will block https://www.google.com/, https://"
-"def.abc.google.com/, etc. but not https://google.com/</li>\n"
-"<li><code>google.*/</code> will block https://google.com/, https://www."
-"google.co.uk, etc.</li>\n"
-"<li><code>http://google.com</code> will block http://google.com/, but not "
-"https://google.com/, http://www.google.com/, etc.</li>\n"
-"<li><code>google.com/test</code> will block https://google.com/test, https://"
-"www.google.com/test/abcdef, but not https://google.com/, etc.</li>\n"
-"<li><code>google.com/*/test</code> will block https://google.com/abc/test, "
-"but not https://google.com/test or https://google.com/abc/def/test</li>\n"
-"<li><code>google.com/**/test</code> will block https://google.com/abc/test, "
-"https://google.com/abc/def/test, https://google.com/abc/def/ghi/test, etc. "
-"but not https://google.com/test</li>\n"
-"<li><code>g??gle.com</code> will block https://google.com/, https://gaagle."
-"com/, https://goagle.com/, etc.</li>\n"
-"<li><code>google.{com,co.uk}</code> will block https://google.com/ and "
-"https://google.co.uk/</li>\n"
-"<li><code>g[oau]ogle.com</code> will block https://google.com/, https://"
-"gaogle.com/, and http://www.guogle.com/</li>\n"
-"<li><code>g[0-9]ogle.com</code> will block https://g0ogle.com/, https://"
-"g1ogle.com/, etc. (up to https://g9ogle.com/)</li>\n"
+"<li><code>google.com</code> will block https://google.com/, https://www.google.com/, https://abcdef.google.com/, https://def.abc.google.com/, etc.</li>\n"
+"<li><code>abc.google.com</code> will block https://abc.google.com/, https://def.abc.google.com/, etc.</li>\n"
+"<li><code>*.google.com</code> will block https://www.google.com/, https://def.abc.google.com/, etc. but not https://google.com/</li>\n"
+"<li><code>google.*/</code> will block https://google.com/, https://www.google.co.uk, etc.</li>\n"
+"<li><code>http://google.com</code> will block http://google.com/, but not https://google.com/, http://www.google.com/, etc.</li>\n"
+"<li><code>google.com/test</code> will block https://google.com/test, https://www.google.com/test/abcdef, but not https://google.com/, etc.</li>\n"
+"<li><code>google.com/*/test</code> will block https://google.com/abc/test, but not https://google.com/test or https://google.com/abc/def/test</li>\n"
+"<li><code>google.com/**/test</code> will block https://google.com/abc/test, https://google.com/abc/def/test, https://google.com/abc/def/ghi/test, etc. but not https://google.com/test</li>\n"
+"<li><code>g??gle.com</code> will block https://google.com/, https://gaagle.com/, https://goagle.com/, etc.</li>\n"
+"<li><code>google.{com,co.uk}</code> will block https://google.com/ and https://google.co.uk/</li>\n"
+"<li><code>g[oau]ogle.com</code> will block https://google.com/, https://gaogle.com/, and http://www.guogle.com/</li>\n"
+"<li><code>g[0-9]ogle.com</code> will block https://g0ogle.com/, https://g1ogle.com/, etc. (up to https://g9ogle.com/)</li>\n"
 "</ul>"
 msgstr ""
 
@@ -2725,60 +2467,37 @@ msgid ""
 "<p>Variables are specified between curly brackets (<code>{}</code>).</p>\n"
 "<p>Below is a list of valid variables:</p>\n"
 "<ul><br />\n"
-"<li><code>filename</code> - Original filename (with extension, if "
-"applicable)</li>\n"
-"<li><code>filename_noext</code> - Original filename (without extension, if "
-"applicable)</li>\n"
+"<li><code>filename</code> - Original filename (with extension, if applicable)</li>\n"
+"<li><code>filename_noext</code> - Original filename (without extension, if applicable)</li>\n"
 "<li><code>ext</code> - Extension (with <code>.</code> prefixed)</li>\n"
 "<li><code>caption</code> - Popup caption</li>\n"
 "<li><code>author_username</code> - Author's username</li>\n"
-"<li><code>created_...</code> - Created date (see note on Date objects "
-"below)</li>\n"
-"<li><code>updated_...</code> - Updated date, this will use the <code>Last-"
-"Modified</code> header if not otherwise specified by the rule (see note on "
-"Date objects below)</li>\n"
-"<li><code>download_...</code> - Download date (see note on Date objects "
-"below)</li>\n"
+"<li><code>id</code> - Post ID</li>\n"
+"<li><code>created_...</code> - Created date (see note on Date objects below)</li>\n"
+"<li><code>updated_...</code> - Updated date, this will use the <code>Last-Modified</code> header if not otherwise specified by the rule (see note on Date objects below)</li>\n"
+"<li><code>download_...</code> - Download date (see note on Date objects below)</li>\n"
 "</ul><br />\n"
-"<p>You can truncate the value of a variable by adding <code>:(number)</code> "
-"before the end bracket (<code>}</code>). For example:</p>\n"
-"<code>{caption:10}</code> - Truncates the caption to be at most 10 "
-"characters long\n"
-"<p>If a variable doesn't exist, by default it will ignore the current format "
-"string and use the one on the next line, unless <code>?</code> is added "
-"before the end bracket. For example:</p>\n"
+"<p>You can truncate the value of a variable by adding <code>:(number)</code> before the end bracket (<code>}</code>). For example:</p>\n"
+"<code>{caption:10}</code> - Truncates the caption to be at most 10 characters long\n"
+"<p>If a variable doesn't exist, by default it will ignore the current format string and use the one on the next line, unless <code>?</code> is added before the end bracket. For example:</p>\n"
 "<ul><br />\n"
-"<li><code>{ext?}</code> - Will be replaced with nothing if <code>ext</code> "
-"doesn't exist</li>\n"
-"<li><code>{caption?no caption}</code> - Will be replaced with <code>no "
-"caption</code> if <code>caption</code> doesn't exist</li>\n"
+"<li><code>{ext?}</code> - Will be replaced with nothing if <code>ext</code> doesn't exist</li>\n"
+"<li><code>{caption?no caption}</code> - Will be replaced with <code>no caption</code> if <code>caption</code> doesn't exist</li>\n"
 "</ul><br />\n"
-"<p>Date objects are accessible through a number of properties. Each property "
-"can be suffixed with <code>_utc</code> to get the UTC/GMT equivalent.</p>\n"
+"<p>Date objects are accessible through a number of properties. Each property can be suffixed with <code>_utc</code> to get the UTC/GMT equivalent.</p>\n"
 "<ul><br />\n"
-"<li><code>..._iso</code> - Date in ISO format (e.g. "
-"<code>2019-12-31T23-30-56</code>). Note that <code>:</code> is replaced with "
-"<code>-</code> to avoid issues with paths under NTFS.</li>\n"
-"<li><code>..._ago</code> - Human-readable representation of the time elapsed "
-"since the date (e.g. <code>1 year and 10 months ago</code>, <code>5 months "
-"and 20 days ago</code>)</li>\n"
-"<li><code>..._unix</code> - Unix timestamp (e.g. <code>1577912345</code>)</"
-"li>\n"
-"<li><code>..._unix_ms</code> - Unix timestamp with millisecond accuracy (e."
-"g. <code>1577912345678</code>)</li>\n"
-"<li><code>..._yyyymmdd</code> - Date in YYYYMMDD format (e.g. "
-"<code>20191230</code>)</li>\n"
-"<li><code>..._hhmmss</code> - Time in HHMMSS format (e.g. <code>233056</"
-"code>)</li>\n"
+"<li><code>..._iso</code> - Date in ISO format (e.g. <code>2019-12-31T23-30-56</code>). Note that <code>:</code> is replaced with <code>-</code> to avoid issues with paths under NTFS.</li>\n"
+"<li><code>..._ago</code> - Human-readable representation of the time elapsed since the date (e.g. <code>1 year and 10 months ago</code>, <code>5 months and 20 days ago</code>)</li>\n"
+"<li><code>..._unix</code> - Unix timestamp (e.g. <code>1577912345</code>)</li>\n"
+"<li><code>..._unix_ms</code> - Unix timestamp with millisecond accuracy (e.g. <code>1577912345678</code>)</li>\n"
+"<li><code>..._yyyymmdd</code> - Date in YYYYMMDD format (e.g. <code>20191230</code>)</li>\n"
+"<li><code>..._hhmmss</code> - Time in HHMMSS format (e.g. <code>233056</code>)</li>\n"
 "<li><code>..._year</code> - Full year (e.g. <code>2019</code>)</li>\n"
 "<li><code>..._month</code> - Zero-padded month (e.g. <code>12</code>)</li>\n"
 "<li><code>..._day</code> - Zero-padded day (e.g. <code>31</code>)</li>\n"
-"<li><code>..._hours</code> - Zero-padded hours in military/24-hour format (e."
-"g. <code>23</code>)</li>\n"
-"<li><code>..._minute</code> - Zero-padded minutes (e.g. <code>30</code>)</"
-"li>\n"
-"<li><code>..._seconds</code> - Zero-padded seconds (e.g. <code>56</code>)</"
-"li>\n"
+"<li><code>..._hours</code> - Zero-padded hours in military/24-hour format (e.g. <code>23</code>)</li>\n"
+"<li><code>..._minute</code> - Zero-padded minutes (e.g. <code>30</code>)</li>\n"
+"<li><code>..._seconds</code> - Zero-padded seconds (e.g. <code>56</code>)</li>\n"
 "</ul>"
 msgstr ""
 
@@ -2803,9 +2522,7 @@ msgid "Use data URLs"
 msgstr ""
 
 #. replaceimgs_usedata.description
-msgid ""
-"Uses data:// URLs instead of image links. Disabling this may improve "
-"compatibility with some bulk image downloader extensions"
+msgid "Uses data:// URLs instead of image links. Disabling this may improve compatibility with some bulk image downloader extensions"
 msgstr ""
 
 #. replaceimgs_wait_fullyloaded.name
@@ -2813,9 +2530,7 @@ msgid "Wait until image is fully loaded"
 msgstr ""
 
 #. replaceimgs_wait_fullyloaded.description
-msgid ""
-"Waits until the image being replaced is fully loaded before moving on to the "
-"next image"
+msgid "Waits until the image being replaced is fully loaded before moving on to the next image"
 msgstr ""
 
 #. replaceimgs_totallimit.name
@@ -2843,9 +2558,7 @@ msgid "Delay between same-domain images"
 msgstr ""
 
 #. replaceimgs_delay.description
-msgid ""
-"New requests for images in the same domain will be delayed by this amount of "
-"seconds. Useful for bypassing rate limits."
+msgid "New requests for images in the same domain will be delayed by this amount of seconds. Useful for bypassing rate limits."
 msgstr ""
 
 #. redirect_infobox_timeout.number_unit, mouseover_trigger_delay.number_unit, mouseover_video_autoloop_max.number_unit, mouseover_video_seek_amount.number_unit, mouseover_auto_close_popup_time.number_unit, replaceimgs_delay.number_unit
@@ -2917,10 +2630,7 @@ msgid "Replacement CSS"
 msgstr ""
 
 #. replaceimgs_css.description
-msgid ""
-"CSS styles to apply to replaced media. See the documentation for Popup CSS "
-"style for more information (the thumb/full URL variables aren't yet "
-"supported here)"
+msgid "CSS styles to apply to replaced media. See the documentation for Popup CSS style for more information (the thumb/full URL variables aren't yet supported here)"
 msgstr ""
 
 #. replaceimgs_enable_keybinding.name, highlightimgs_enable_keybinding.name
@@ -2928,8 +2638,7 @@ msgid "Enable trigger key"
 msgstr ""
 
 #. replaceimgs_enable_keybinding.description, highlightimgs_enable_keybinding.description
-msgid ""
-"Enables the use of the trigger key to run it without needing to use the menu"
+msgid "Enables the use of the trigger key to run it without needing to use the menu"
 msgstr ""
 
 #. replaceimgs_keybinding.name, highlightimgs_keybinding.name
@@ -2977,9 +2686,7 @@ msgid "Only explicitly supported images"
 msgstr ""
 
 #. highlightimgs_onlysupported.description
-msgid ""
-"Only highlights images that can be made larger or the original version can "
-"be found"
+msgid "Only highlights images that can be made larger or the original version can be found"
 msgstr ""
 
 #. highlightimgs_css.name
@@ -2987,9 +2694,7 @@ msgid "Highlight CSS"
 msgstr ""
 
 #. highlightimgs_css.description
-msgid ""
-"CSS style to apply for highlight. See the documentation for Popup CSS style "
-"for more information (the thumb/full URL variables aren't supported here)"
+msgid "CSS style to apply for highlight. See the documentation for Popup CSS style for more information (the thumb/full URL variables aren't supported here)"
 msgstr ""
 
 #. mouseover_open_behavior.name, t2_mouseover_open_behavior.name
@@ -3029,9 +2734,9 @@ msgid "Allows videos to be popped up"
 msgstr ""
 
 #. mouseover_allow_hlsdash.name, t2_mouseover_allow_hlsdash.name
-msgid "Popup HLS/DASH streams"
+msgid "Allow HLS/DASH streams"
 msgstr ""
 
 #. mouseover_allow_hlsdash.description, t2_mouseover_allow_hlsdash.description
-msgid "Allows HLS/DASH streams to be popped up"
+msgid "Allows playback of HLS/DASH streams"
 msgstr ""
