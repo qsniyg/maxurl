@@ -120,7 +120,7 @@ separator EXTENSION_README.txt
 echo
 echo Building Firefox extension
 
-BASEFILES="LICENSE.txt manifest.json userscript.user.js lib/testcookie_slowaes.js lib/cryptojs_aes.js lib/hls.js lib/dash.all.debug.js lib/shaka.debug.js resources/logo_40.png resources/logo_48.png resources/logo_96.png resources/disabled_40.png resources/disabled_48.png resources/disabled_96.png extension/background.js extension/options.css extension/options.html extension/popup.js extension/popup.html"
+BASEFILES="LICENSE.txt manifest.json userscript.user.js lib/testcookie_slowaes.js lib/cryptojs_aes.js lib/shaka.debug.js resources/logo_40.png resources/logo_48.png resources/logo_96.png resources/disabled_40.png resources/disabled_48.png resources/disabled_96.png extension/background.js extension/options.css extension/options.html extension/popup.js extension/popup.html"
 SOURCEFILES="lib/aes1.patch lib/shim.js lib/fetch_shim.js lib/build_libs.sh EXTENSION_README.txt tools/package_extension.sh tools/remcomments.js tools/util.js"
 DIRS="extension lib resources tools"
 
@@ -183,9 +183,7 @@ extension/popup.js
 #-lib/aes1.patch
 #-lib/build_libs.sh
 lib/cryptojs_aes.js
-lib/dash.all.debug.js
 #-lib/fetch_shim.js
-lib/hls.js
 lib/shaka.debug.js
 #-lib/shim.js
 lib/testcookie_slowaes.js
