@@ -449,6 +449,7 @@ input:checked + label, button, .button, .dark .button, .button:visited, .dark .b
 }
 
 .option.trigger_profile {
+  padding-top: 0;
   margin-left: .5em;
 }
 
@@ -462,6 +463,10 @@ input:checked + label, button, .button, .dark .button, .button:visited, .dark .b
 
   text-decoration: none;
   border-bottom: 1px dashed #999;
+}
+
+.option strong.no-title {
+  border-bottom: none;
 }
 
 .option .name_td {
