@@ -66,6 +66,12 @@ msgstr ""
 msgid "subcategory_cache"
 msgstr ""
 
+msgid "category_keybinds"
+msgstr ""
+
+msgid "subcategory_keybinds_popup_actions"
+msgstr ""
+
 msgid "Mouse cursor"
 msgstr "Sposta cursore"
 
@@ -360,6 +366,14 @@ msgstr ""
 
 #. redirect.description
 msgid "Automatically redirect media opened in their own tab to their larger/original versions"
+msgstr ""
+
+#. redirect_video.name
+msgid "Allow video"
+msgstr ""
+
+#. redirect_video.description
+msgid "Allows redirecting from/to video"
 msgstr ""
 
 #. redirect_history.name
@@ -681,11 +695,11 @@ msgid "Don't pop up if the image is an image map (image with multiple clickable 
 msgstr ""
 
 #. mouseover_video_autoplay.name
-msgid "Autoplay videos"
+msgid "Autoplay"
 msgstr ""
 
 #. mouseover_video_autoplay.description
-msgid "Plays videos automatically"
+msgid "Play automatically once the popup is opened"
 msgstr ""
 
 #. mouseover_video_controls.name
@@ -705,11 +719,11 @@ msgid "Key to toggle whether the video controls are shown"
 msgstr ""
 
 #. mouseover_video_loop.name
-msgid "Loop video"
+msgid "Loop"
 msgstr ""
 
 #. mouseover_video_loop.description
-msgid "Allows the video to automatically restart to the beginning after finishing playing"
+msgid "Allows the media to automatically restart to the beginning after finishing playing"
 msgstr ""
 
 #. mouseover_video_autoloop_max.name
@@ -717,7 +731,7 @@ msgid "Max duration for looping"
 msgstr ""
 
 #. mouseover_video_autoloop_max.description
-msgid "Videos longer than the specified duration will not be automatically looped. Setting this to `0` will always enable looping, regardless of duration."
+msgid "Media longer than the specified duration will not be automatically looped. Setting this to `0` will always enable looping, regardless of duration."
 msgstr ""
 
 #. mouseover_video_playpause_key.name
@@ -725,15 +739,15 @@ msgid "Play/pause key"
 msgstr ""
 
 #. mouseover_video_playpause_key.description
-msgid "Key to toggle whether the video is playing or paused"
+msgid "Key to toggle whether the media is playing or paused"
 msgstr ""
 
 #. mouseover_video_muted.name
-msgid "Mute video"
+msgid "Mute"
 msgstr ""
 
 #. mouseover_video_muted.description
-msgid "Mutes the video by default"
+msgid "Mutes the media by default"
 msgstr ""
 
 #. mouseover_video_mute_key.name
@@ -741,7 +755,7 @@ msgid "Toggle mute key"
 msgstr ""
 
 #. mouseover_video_mute_key.description
-msgid "Key to toggle whether the video is muted or unmuted"
+msgid "Key to toggle mute"
 msgstr ""
 
 #. mouseover_video_volume.name
@@ -749,7 +763,7 @@ msgid "Default volume"
 msgstr ""
 
 #. mouseover_video_volume.description
-msgid "Default volume for the video"
+msgid "Default volume for the media"
 msgstr ""
 
 #. mouseover_video_volume_up_key.name
@@ -757,7 +771,7 @@ msgid "Volume up key"
 msgstr ""
 
 #. mouseover_video_volume_up_key.description
-msgid "Key to increase the volume for the video"
+msgid "Key to increase the volume"
 msgstr ""
 
 #. mouseover_video_volume_down_key.name
@@ -765,7 +779,7 @@ msgid "Volume down key"
 msgstr ""
 
 #. mouseover_video_volume_down_key.description
-msgid "Key to decrease the volume for the video"
+msgid "Key to decrease the volume"
 msgstr ""
 
 #. mouseover_video_volume_change_amt.name
@@ -781,7 +795,7 @@ msgid "Resume playback from source"
 msgstr ""
 
 #. mouseover_video_resume_from_source.description
-msgid "If enabled, playback will resume from where the source video left off"
+msgid "If enabled, playback will resume from where the source left off"
 msgstr ""
 
 #. mouseover_video_resume_if_different.name
@@ -789,15 +803,15 @@ msgid "Resume if different length"
 msgstr ""
 
 #. mouseover_video_resume_if_different.description
-msgid "If disabled, it will not resume if the source video has a different length from the video in the popup (e.g. from a preview video to a full one)"
+msgid "If disabled, it will not resume if the source has a different length from the media in the popup (e.g. from a preview video to a full one)"
 msgstr ""
 
 #. mouseover_video_pause_source.name
-msgid "Pause source video"
+msgid "Pause source"
 msgstr ""
 
 #. mouseover_video_pause_source.description
-msgid "Pauses the source video once the popup has opened"
+msgid "Pauses the source once the popup has opened"
 msgstr ""
 
 #. mouseover_video_seek_amount.name
@@ -813,7 +827,7 @@ msgid "Seek left key"
 msgstr ""
 
 #. mouseover_video_seek_left_key.description
-msgid "Key to seek backwards in a video by the specified amount"
+msgid "Key to seek backwards by the specified amount"
 msgstr ""
 
 #. mouseover_video_seek_right_key.name
@@ -821,7 +835,7 @@ msgid "Seek right key"
 msgstr ""
 
 #. mouseover_video_seek_right_key.description
-msgid "Key to seek forwards in a video by the specified amount"
+msgid "Key to seek forwards by the specified amount"
 msgstr ""
 
 #. mouseover_video_frame_prev_key.name
@@ -857,7 +871,7 @@ msgid "Speed down key"
 msgstr ""
 
 #. mouseover_video_speed_down_key.description
-msgid "Key to speed the video down by a specified amount"
+msgid "Key to decrease playback rate by a specified amount"
 msgstr ""
 
 #. mouseover_video_speed_up_key.name
@@ -865,7 +879,7 @@ msgid "Speed up key"
 msgstr ""
 
 #. mouseover_video_speed_up_key.description
-msgid "Key to speed the video up by a specified amount"
+msgid "Key to increase playback rate by a specified amount"
 msgstr ""
 
 #. mouseover_video_speed_amount.name
@@ -873,7 +887,7 @@ msgid "Speed up/down amount"
 msgstr ""
 
 #. mouseover_video_speed_amount.description
-msgid "How many times faster/slower to speed the video up/down"
+msgid "How much to increase/decrease the playback rate"
 msgstr ""
 
 #. mouseover_video_reset_speed_key.name
@@ -881,7 +895,7 @@ msgid "Reset speed key"
 msgstr ""
 
 #. mouseover_video_reset_speed_key.description
-msgid "Resets the video playback to normal speed"
+msgid "Resets the playback rate to normal speed"
 msgstr ""
 
 #. mouseover_ui.name
@@ -1389,7 +1403,7 @@ msgid "Override scroll outside of popup"
 msgstr ""
 
 #. scroll_override_page.description
-msgid "Scroll events performed outside of the popup are still acted on"
+msgid "Scrolling outside of the popup will also be overriden by the script"
 msgstr ""
 
 #. scroll_zoom_origin.name
@@ -2052,14 +2066,6 @@ msgstr ""
 
 #. extension_contextmenu.description
 msgid "Enables a custom entry for this extension in the right click/context menu"
-msgstr ""
-
-#. allow_video.name
-msgid "Videos"
-msgstr ""
-
-#. allow_video.description
-msgid "Allows videos to be returned"
 msgstr ""
 
 #. allow_audio.name
@@ -2726,7 +2732,7 @@ msgid "Copy link"
 msgstr ""
 
 #. mouseover_allow_video.name, t2_mouseover_allow_video.name
-msgid "Popup videos"
+msgid "Enable videos"
 msgstr ""
 
 #. mouseover_allow_video.description, t2_mouseover_allow_video.description
@@ -2739,4 +2745,20 @@ msgstr ""
 
 #. mouseover_allow_hlsdash.description, t2_mouseover_allow_hlsdash.description
 msgid "Allows playback of HLS/DASH streams"
+msgstr ""
+
+#. mouseover_allow_hlsdash.example_websites[0], t2_mouseover_allow_hlsdash.example_websites[0]
+msgid "Dailymotion"
+msgstr ""
+
+#. mouseover_allow_hlsdash.example_websites[1], t2_mouseover_allow_hlsdash.example_websites[1]
+msgid "Instagram (higher quality)"
+msgstr ""
+
+#. mouseover_allow_hlsdash.example_websites[2], t2_mouseover_allow_hlsdash.example_websites[2]
+msgid "Reddit"
+msgstr ""
+
+#. mouseover_allow_hlsdash.example_websites[3], t2_mouseover_allow_hlsdash.example_websites[3]
+msgid "YouTube (higher quality)"
 msgstr ""
