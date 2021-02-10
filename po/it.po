@@ -162,15 +162,15 @@ msgstr "Lingua per questa estensione"
 
 #. language.options.en.name
 msgid "English"
-msgstr "English"
+msgstr ""
 
 #. language.options.es.name
 msgid "Español"
-msgstr "Español"
+msgstr ""
 
 #. language.options.fr.name
 msgid "Français"
-msgstr "Français"
+msgstr ""
 
 #. language.options.it.name
 msgid "Italiano"
@@ -178,7 +178,7 @@ msgstr ""
 
 #. language.options.ko.name
 msgid "한국어"
-msgstr "한국어"
+msgstr ""
 
 #. dark_mode.name
 msgid "Dark mode"
