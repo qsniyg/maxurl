@@ -448,6 +448,11 @@ input:checked + label, button, .button, .dark .button, .button:visited, .dark .b
   padding: .8em;
 }
 
+.option.trigger_profile {
+  padding-top: 0;
+  margin-left: .5em;
+}
+
 .option table.option-table {
   border: 0;
 }
@@ -460,9 +465,17 @@ input:checked + label, button, .button, .dark .button, .button:visited, .dark .b
   border-bottom: 1px dashed #999;
 }
 
+.option strong.no-title {
+  border-bottom: none;
+}
+
 .option .name_td {
   width: 22em;
   padding-right: .5em;
+}
+
+.option.trigger_profile .name_td {
+  width: 21.5em;
 }
 
 /* this class is added for backwards compatibility */
