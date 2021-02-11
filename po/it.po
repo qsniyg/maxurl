@@ -45,6 +45,9 @@ msgstr ""
 msgid "subcategory_trigger"
 msgstr ""
 
+msgid "subcategory_popup_source"
+msgstr ""
+
 msgid "subcategory_open_behavior"
 msgstr ""
 
@@ -376,6 +379,14 @@ msgstr ""
 msgid "Allows redirecting from/to video"
 msgstr ""
 
+#. redirect_audio.name
+msgid "Allow audio"
+msgstr ""
+
+#. redirect_audio.description
+msgid "Allows redirecting from/to audio"
+msgstr ""
+
 #. redirect_history.name
 msgid "Add to history"
 msgstr ""
@@ -663,27 +674,27 @@ msgid "Excludes images that are opened in their own tabs"
 msgstr ""
 
 #. mouseover_exclude_sameimage.name
-msgid "Exclude if image URL is unchanged"
+msgid "Exclude if media URL is unchanged"
 msgstr ""
 
 #. mouseover_exclude_sameimage.description
-msgid "Don't pop up if the new image is the same as the thumbnail image"
+msgid "Don't pop up if the new URL is the same as the source"
 msgstr ""
 
 #. mouseover_only_links.name
-msgid "Only popup for linked images"
+msgid "Only popup for linked media"
 msgstr ""
 
 #. mouseover_only_links.description
-msgid "Don't pop up if the image isn't hyperlinked"
+msgid "Don't pop up if the media isn't hyperlinked"
 msgstr ""
 
 #. mouseover_linked_image.name
-msgid "Popup link for linked images"
+msgid "Popup link for linked media"
 msgstr ""
 
 #. mouseover_linked_image.description
-msgid "If the linked image cannot be made larger, pop up for the link instead of the image"
+msgid "If the linked media cannot be made larger, pop up for the link instead of the media"
 msgstr ""
 
 #. mouseover_exclude_imagemaps.name
@@ -1235,7 +1246,7 @@ msgid "Pop out of frames"
 msgstr ""
 
 #. mouseover_use_remote.description
-msgid "Opens the popup on the top frame instead of within iframes. Still in beta"
+msgid "Opens the popup on the top frame instead of within iframes. This option is still experimental."
 msgstr ""
 
 #. mouseover_zoom_behavior.name
@@ -1943,11 +1954,11 @@ msgid "Custom CSS styles for the popup's UI buttons. See the documentation for P
 msgstr ""
 
 #. mouseover_apply_blacklist.name
-msgid "Don't popup blacklisted images"
+msgid "Don't popup blacklisted URLs"
 msgstr ""
 
 #. mouseover_apply_blacklist.description
-msgid "This option prevents a popup from appearing altogether for blacklisted images"
+msgid "This option popping up for source media with blacklisted URLs. If this is disabled, the popup will open if the end URL isn't blacklisted, regardless of whether the source is blacklisted."
 msgstr ""
 
 #. apply_blacklist_host.name
@@ -1955,15 +1966,15 @@ msgid "Apply blacklist for host websites"
 msgstr ""
 
 #. apply_blacklist_host.description
-msgid "This option prevents the script from applying any popups to host websites that are in the blacklist. For example, adding `twitter.com` to the blacklist would prevent any popup from opening on twitter.com. If disabled, this option only applies to image URLs (such as twimg.com), not host URLs"
+msgid "This option prevents the script from opening any popups to host websites that are in the blacklist. For example, adding `twitter.com` to the blacklist would prevent any popup from opening on twitter.com. If disabled, this option only applies to image URLs (such as twimg.com), not host URLs"
 msgstr ""
 
 #. mouseover_matching_media_types.name
-msgid "Don't popup video for image"
+msgid "Don't popup different media type"
 msgstr ""
 
 #. mouseover_matching_media_types.description
-msgid "This option prevents the popup from loading a video when the source was an image. Vice-versa is also applied"
+msgid "This option prevents the popup from loading a video when the source was an image or vice-versa"
 msgstr ""
 
 #. mouseover_find_els_mode.name
@@ -2066,14 +2077,6 @@ msgstr ""
 
 #. extension_contextmenu.description
 msgid "Enables a custom entry for this extension in the right click/context menu"
-msgstr ""
-
-#. allow_audio.name
-msgid "Audio"
-msgstr ""
-
-#. allow_audio.description
-msgid "Allows audio to be returned. Note that this is currently highly alpha, please do not expect a good user experience with this yet!"
 msgstr ""
 
 #. custom_xhr_for_lib.name
@@ -2564,7 +2567,7 @@ msgid "Delay between same-domain images"
 msgstr ""
 
 #. replaceimgs_delay.description
-msgid "New requests for images in the same domain will be delayed by this amount of seconds. Useful for bypassing rate limits."
+msgid "New requests for images in the same domain will be delayed by this amount of seconds. Useful for avoiding rate limits."
 msgstr ""
 
 #. redirect_infobox_timeout.number_unit, mouseover_trigger_delay.number_unit, mouseover_video_autoloop_max.number_unit, mouseover_video_seek_amount.number_unit, mouseover_auto_close_popup_time.number_unit, replaceimgs_delay.number_unit
@@ -2737,6 +2740,16 @@ msgstr ""
 
 #. mouseover_allow_video.description, t2_mouseover_allow_video.description
 msgid "Allows videos to be popped up"
+msgstr ""
+
+#. mouseover_allow_audio.name, t2_mouseover_allow_audio.name
+msgid "Enable audio"
+msgstr ""
+
+#. mouseover_allow_audio.description, t2_mouseover_allow_audio.description
+msgid ""
+"Allows audio to be popped up. Note that this is currently experimental, please do not expect a good user experience with this yet!\n"
+"This option only applies to audio files. Video that contains audio is supported regardless of this option's value."
 msgstr ""
 
 #. mouseover_allow_hlsdash.name, t2_mouseover_allow_hlsdash.name
