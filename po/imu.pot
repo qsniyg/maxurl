@@ -1575,7 +1575,9 @@ msgid "Enable downloading HLS/DASH streams"
 msgstr ""
 
 #. enable_stream_download.description
-msgid "Downloads and muxes the contents of the streams rather than the stream information file. This currently does not work under Firefox."
+msgid ""
+"Downloads and muxes the contents of the streams rather than the stream information file.\n"
+"This currently does not work under Firefox."
 msgstr ""
 
 #. stream_mux_mp4_over_mkv.name
@@ -2081,11 +2083,11 @@ msgid "Custom XHR for libraries"
 msgstr ""
 
 #. custom_xhr_for_lib.description
-msgid "Allows the use of more powerful XHR for 3rd-party libraries. This allows for certain DASH streams to work."
+msgid "Allows the use of more powerful XHR (network requests) for 3rd-party libraries. This allows for certain DASH streams to work."
 msgstr ""
 
 #. custom_xhr_for_lib.description_userscript
-msgid "Allows the use of more powerful XHR for 3rd-party libraries. This allows for certain DASH streams to work. Using this with the userscript version currently poses a potential security risk."
+msgid "Allows the use of more powerful XHR  (network requests) for 3rd-party libraries. This allows for certain DASH streams to work. Using this with the userscript version currently poses a potential security risk."
 msgstr ""
 
 #. custom_xhr_for_lib.example_websites[0]
@@ -2745,8 +2747,8 @@ msgstr ""
 
 #. mouseover_allow_audio.description, t2_mouseover_allow_audio.description
 msgid ""
-"Allows audio to be popped up. Note that this is currently experimental, please do not expect a good user experience with this yet!\n"
-"This option only applies to audio files. Video that contains audio is supported regardless of this option's value."
+"Allows audio to be popped up. Currently experimental.\n"
+"This only applies to audio files. Videos that contains audio are supported regardless of this setting."
 msgstr ""
 
 #. mouseover_allow_hlsdash.name, t2_mouseover_allow_hlsdash.name
