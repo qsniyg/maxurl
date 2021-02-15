@@ -906,6 +906,14 @@ msgstr ""
 msgid "Resets the playback rate to normal speed"
 msgstr ""
 
+#. mouseover_video_screenshot_key.name
+msgid "Screenshot key"
+msgstr ""
+
+#. mouseover_video_screenshot_key.description
+msgid "Screenshots the current frame in the video"
+msgstr ""
+
 #. mouseover_ui.name
 msgid "Popup UI"
 msgstr ""
@@ -2481,12 +2489,16 @@ msgid ""
 "<li><code>caption</code> - Popup caption</li>\n"
 "<li><code>author_username</code> - Author's username</li>\n"
 "<li><code>id</code> - Post ID</li>\n"
+"<li><code>is_screenshot</code> - Blank, the line will only be processed when screenshotting a video</li>\n"
 "<li><code>created_...</code> - Created date (see note on Date objects below)</li>\n"
 "<li><code>updated_...</code> - Updated date, this will use the <code>Last-Modified</code> header if not otherwise specified by the rule (see note on Date objects below)</li>\n"
 "<li><code>download_...</code> - Download date (see note on Date objects below)</li>\n"
 "</ul><br />\n"
 "<p>You can truncate the value of a variable by adding <code>:(number)</code> before the end bracket (<code>}</code>). For example:</p>\n"
-"<code>{caption:10}</code> - Truncates the caption to be at most 10 characters long\n"
+"<ul><br />\n"
+"<li><code>{caption:10}</code> - Truncates the caption to be at most 10 characters long</li>\n"
+"<li><code>{caption:10.}</code> - Same, but will add an ellipsis (…) if the caption was truncated</li>\n"
+"</ul><br />\n"
 "<p>If a variable doesn't exist, by default it will ignore the current format string and use the one on the next line, unless <code>?</code> is added before the end bracket. For example:</p>\n"
 "<ul><br />\n"
 "<li><code>{ext?}</code> - Will be replaced with nothing if <code>ext</code> doesn't exist</li>\n"
