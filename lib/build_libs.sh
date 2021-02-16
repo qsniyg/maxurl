@@ -116,9 +116,11 @@ cat shim.js >> ffmpeg.js
 strip_whitespace ffmpeg.js
 
 wget https://unpkg.com/mpd-parser@0.15.0/dist/mpd-parser.js -O mpd-parser.js
+# isNaN prevents failing under firefox addon
 # location.href is to avoid resolving to the local href (breaks v.redd.it dash streams)
 sed -i \
 	-e 's/}(this, (function (exports/}(_fakeGlobal, (function (exports/' \
+	-e 's/window\.isNaN/isNaN/g' \
 	-e 's/window__[^ ]*\.location\.href/""/g' mpd-parser.js
 wget https://unpkg.com/m3u8-parser@4.5.0/dist/m3u8-parser.js -O m3u8-parser.js
 sed -i 's/}(this, function (exports/}(_fakeGlobal, function (exports/' m3u8-parser.js
