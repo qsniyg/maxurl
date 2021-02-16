@@ -47,22 +47,26 @@ if [ ! -z $RELEASE ]; then
     fi
 fi
 
-if [ ! -z $RELEASE ] && [ -f ./build/userscript_extr.user.js ]; then
-    grep '// imu:require_rules' ./build/userscript_extr.user.js 2>&1 >/dev/null
-    if [ $? -eq 0 ]; then
-        echo 'require_rules present in extr.user.js (commit build/rules.js)'
-        exit 1
+if [ ! -z $RELEASE ]; then
+    if [ -f ./build/userscript_extr.user.js ]; then
+        grep '// imu:require_rules' ./build/userscript_extr.user.js 2>&1 >/dev/null
+        if [ $? -eq 0 ]; then
+            echo 'require_rules present in extr.user.js (commit build/rules.js)'
+            exit 1
+        fi
+    else
+        echo "Warning: userscript_extr.user.js not available"
     fi
-else
-    echo "Warning: userscript_extr.user.js not available"
 fi
 
-if [ ! -z $RELEASE ] && [ -d site ]; then
-    echo "Updating website files"
-    cp site/style.css extension/options.css
-    cp userscript_smaller.user.js site/
-else
-    echo "Warning: website is not available, skipping website build"
+if [ ! -z $RELEASE ]; then
+    if [ -d site ]; then
+        echo "Updating website files"
+        cp site/style.css extension/options.css
+        cp userscript_smaller.user.js site/
+    else
+        echo "Warning: website is not available, skipping website build"
+    fi
 fi
 
 echo
