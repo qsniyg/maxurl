@@ -58,7 +58,7 @@ msgid "subcategory_behavior"
 msgstr ""
 
 msgid "subcategory_video"
-msgstr "영상"
+msgstr "영상/오디오"
 
 msgid "subcategory_gallery"
 msgstr ""

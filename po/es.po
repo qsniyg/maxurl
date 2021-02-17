@@ -58,7 +58,7 @@ msgid "subcategory_behavior"
 msgstr "Comportamiento del Popup"
 
 msgid "subcategory_video"
-msgstr "Video"
+msgstr ""
 
 msgid "subcategory_gallery"
 msgstr "Galeria"
