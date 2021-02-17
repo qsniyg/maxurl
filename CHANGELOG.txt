@@ -1,3 +1,41 @@
+0.17.0
+
+New features:
+
+ * Experimental option to download HLS/DASH streams (#292, disabled by default)
+  - Note that this is currently not supported under Firefox.
+ * Option to prefer muxing into MP4 over MKV when downloading streams (#643, disabled by default)
+ * Option to toggle autoplaying videos (#642, enabled by default, thanks to Noodlers on discord for the idea)
+ * Option to use Twitter URLs with extensions (#639, disabled by default, thanks to modelfe on github for reporting)
+ * Initial Italian translation (#647, thanks to Mannivu on github)
+ * Key to screenshot video (#640, bound to Shift+S by default)
+ * New `id` field for filename formatting
+ * New `is_screenshot` field for filename formatting (used to separate formats for screenshots and regular downloads)
+ * Adding `.` to the end of a truncation adds an ellipsis if the text was truncated
+ * Support for ~65 new websites (using ~40 new rules)
+
+Improvements:
+
+ * Initial work towards reorganizing the settings page. Notably, most shortcuts are now housed in their own category
+ * Various improvements/fixes to existing rules (including Instagram)
+ * Significant performance improvement for extension when querying large files
+ * Category name is added to the names of required options if they are located in a different tab (#646)
+ * Filename format variable will now be blank (instead of "download") if the filename is blank. To replicate the old behavior, use `{filename?download}{ext?}`. (thanks to remlap for reporting)
+ * Default volume can now be set regardless of whether the mute setting is enabled (affecting the default volume once unmuted)
+ * Audio support is now a profiled setting
+
+Bugfixes:
+
+ * Fix a potential infinite loop with failed dash/hls streams
+ * Fix blacklist not being applied when redirecting with background page (#639, thanks to modelfe on github for reporting)
+ * Add file extension if missing when using a formatted filename
+ * Fix settings requirements only checking the first trigger profile
+ * The popup will no longer fail to initialize if autoplay fails (thanks to remlap for reporting)
+
+Special thanks to dym-sh, Mannivu, remlap, fedesk, modelfe, GoblinLegislator, Noodlers, Regis, Art-2 for their contributions and reports for this release
+
+---
+
 0.16.3
 
 New features:
