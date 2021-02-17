@@ -36,6 +36,9 @@ msgstr ""
 msgid "category_popup"
 msgstr ""
 
+msgid "subcategory_update"
+msgstr ""
+
 msgid "subcategory_settings"
 msgstr ""
 
@@ -324,7 +327,7 @@ msgid "Disable keybindings when editing text"
 msgstr ""
 
 #. disable_keybind_when_editing.description
-msgid "Disables IMU keybindings when key events are sent to an input area on the page"
+msgid "Disables shortcuts when key events are sent to an input area on the page"
 msgstr ""
 
 #. enable_gm_download.name
