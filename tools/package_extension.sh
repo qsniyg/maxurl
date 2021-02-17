@@ -147,6 +147,12 @@ zip_tempcreate() {
 
 zip_tempcreate
 
+# firefox doesn't currently support ffmpeg.wasm (lacking proper SharedArrayBuffer support)
+# even if it were to support it, we'd still be running foreign code because a 20MB .wasm file cannot be reasonably included in the extension
+# the proper fix is likely to build our own version, or better yet, find a way to avoid use it
+sed -i 's/has_ffmpeg_lib = true/has_ffmpeg_lib = false/' tempzip/userscript.user.js
+rm tempzip/lib/ffmpeg.js
+
 zipcmd() {
     echo
     echo "Building extension package: $1"
@@ -188,7 +194,7 @@ extension/popup.js
 #-lib/build_libs.sh
 lib/cryptojs_aes.js
 #-lib/fetch_shim.js
-lib/ffmpeg.js
+#-lib/ffmpeg.js
 lib/shaka.debug.js
 lib/stream_parser.js
 #-lib/shim.js
