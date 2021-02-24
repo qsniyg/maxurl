@@ -60,6 +60,24 @@ function process_input() {
   }
 }
 
+var decodeuri_ifneeded = function(url) {
+  if (url.match(/^https?:\/\//))
+    return url;
+  if (url.match(/^https?%3[aA]/) || /^[^/]*%2[fF]/.test(url))
+    return decodeURIComponent(url);
+  if (url.match(/^https?%253[aA]/))
+    return decodeURIComponent(decodeURIComponent(url));
+  return url;
+};
+
+// thanks to MillennialDIYer on github for the idea: https://github.com/qsniyg/maxurl/issues/665#url=test
+if (window.location.hash) {
+  var hash_urlmatch = window.location.hash.match(/#url=(https?:.*)$/);
+  if (hash_urlmatch) {
+    inputel.value = decodeuri_ifneeded(hash_urlmatch[1]);
+  }
+}
+
 if (inputel.value !== "") {
   process_input();
 }
