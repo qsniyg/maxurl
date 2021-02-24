@@ -529,6 +529,14 @@ msgstr ""
 msgid "Key sequence to trigger the popup with alternate options. Search for `(#2)` to find the relevant options"
 msgstr ""
 
+#. mouseover_trigger_key_t3.name
+msgid "Popup trigger key (#3)"
+msgstr ""
+
+#. mouseover_trigger_key_t3.description
+msgid "Key sequence to trigger the popup with alternate options. Search for `(#3)` to find the relevant options"
+msgstr ""
+
 #. mouseover_trigger_delay.name
 msgid "Popup trigger delay"
 msgstr ""
@@ -2720,72 +2728,72 @@ msgstr ""
 msgid "CSS style to apply for highlight. See the documentation for Popup CSS style for more information (the thumb/full URL variables aren't supported here)"
 msgstr ""
 
-#. mouseover_open_behavior.name, t2_mouseover_open_behavior.name
+#. mouseover_open_behavior.name, t2_mouseover_open_behavior.name, t3_mouseover_open_behavior.name
 msgid "Mouseover popup action"
 msgstr ""
 
-#. mouseover_open_behavior.description, t2_mouseover_open_behavior.description
+#. mouseover_open_behavior.description, t2_mouseover_open_behavior.description, t3_mouseover_open_behavior.description
 msgid "Determines how the mouseover popup will open"
 msgstr ""
 
-#. mouseover_open_behavior.options.popup.name, mouseover_close_el_policy.options.popup.name, t2_mouseover_open_behavior.options.popup.name
+#. mouseover_open_behavior.options.popup.name, mouseover_close_el_policy.options.popup.name, t2_mouseover_open_behavior.options.popup.name, t3_mouseover_open_behavior.options.popup.name
 msgid "Popup"
 msgstr ""
 
-#. mouseover_open_behavior.options.newtab.name, t2_mouseover_open_behavior.options.newtab.name
+#. mouseover_open_behavior.options.newtab.name, t2_mouseover_open_behavior.options.newtab.name, t3_mouseover_open_behavior.options.newtab.name
 msgid "New tab"
 msgstr ""
 
-#. mouseover_open_behavior.options.newtab_bg.name, t2_mouseover_open_behavior.options.newtab_bg.name
+#. mouseover_open_behavior.options.newtab_bg.name, t2_mouseover_open_behavior.options.newtab_bg.name, t3_mouseover_open_behavior.options.newtab_bg.name
 msgid "New background tab"
 msgstr ""
 
-#. mouseover_open_behavior.options.download.name, t2_mouseover_open_behavior.options.download.name
+#. mouseover_open_behavior.options.download.name, t2_mouseover_open_behavior.options.download.name, t3_mouseover_open_behavior.options.download.name
 msgid "Download"
 msgstr ""
 
-#. mouseover_open_behavior.options.copylink.name, t2_mouseover_open_behavior.options.copylink.name
+#. mouseover_open_behavior.options.copylink.name, t2_mouseover_open_behavior.options.copylink.name, t3_mouseover_open_behavior.options.copylink.name
 msgid "Copy link"
 msgstr ""
 
-#. mouseover_allow_video.name, t2_mouseover_allow_video.name
+#. mouseover_allow_video.name, t2_mouseover_allow_video.name, t3_mouseover_allow_video.name
 msgid "Enable videos"
 msgstr ""
 
-#. mouseover_allow_video.description, t2_mouseover_allow_video.description
+#. mouseover_allow_video.description, t2_mouseover_allow_video.description, t3_mouseover_allow_video.description
 msgid "Allows videos to be popped up"
 msgstr ""
 
-#. mouseover_allow_audio.name, t2_mouseover_allow_audio.name
+#. mouseover_allow_audio.name, t2_mouseover_allow_audio.name, t3_mouseover_allow_audio.name
 msgid "Enable audio"
 msgstr ""
 
-#. mouseover_allow_audio.description, t2_mouseover_allow_audio.description
+#. mouseover_allow_audio.description, t2_mouseover_allow_audio.description, t3_mouseover_allow_audio.description
 msgid ""
 "Allows audio to be popped up. Currently experimental.\n"
 "This only applies to audio files. Videos that contains audio are supported regardless of this setting."
 msgstr ""
 
-#. mouseover_allow_hlsdash.name, t2_mouseover_allow_hlsdash.name
+#. mouseover_allow_hlsdash.name, t2_mouseover_allow_hlsdash.name, t3_mouseover_allow_hlsdash.name
 msgid "Allow HLS/DASH streams"
 msgstr ""
 
-#. mouseover_allow_hlsdash.description, t2_mouseover_allow_hlsdash.description
+#. mouseover_allow_hlsdash.description, t2_mouseover_allow_hlsdash.description, t3_mouseover_allow_hlsdash.description
 msgid "Allows playback of HLS/DASH streams"
 msgstr ""
 
-#. mouseover_allow_hlsdash.example_websites[0], t2_mouseover_allow_hlsdash.example_websites[0]
+#. mouseover_allow_hlsdash.example_websites[0], t2_mouseover_allow_hlsdash.example_websites[0], t3_mouseover_allow_hlsdash.example_websites[0]
 msgid "Dailymotion"
 msgstr ""
 
-#. mouseover_allow_hlsdash.example_websites[1], t2_mouseover_allow_hlsdash.example_websites[1]
+#. mouseover_allow_hlsdash.example_websites[1], t2_mouseover_allow_hlsdash.example_websites[1], t3_mouseover_allow_hlsdash.example_websites[1]
 msgid "Instagram (higher quality)"
 msgstr ""
 
-#. mouseover_allow_hlsdash.example_websites[2], t2_mouseover_allow_hlsdash.example_websites[2]
+#. mouseover_allow_hlsdash.example_websites[2], t2_mouseover_allow_hlsdash.example_websites[2], t3_mouseover_allow_hlsdash.example_websites[2]
 msgid "Reddit"
 msgstr ""
 
-#. mouseover_allow_hlsdash.example_websites[3], t2_mouseover_allow_hlsdash.example_websites[3]
+#. mouseover_allow_hlsdash.example_websites[3], t2_mouseover_allow_hlsdash.example_websites[3], t3_mouseover_allow_hlsdash.example_websites[3]
 msgid "YouTube (higher quality)"
 msgstr ""
