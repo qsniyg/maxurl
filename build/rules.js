@@ -3287,6 +3287,7 @@ var $__imu_get_bigimage = function(shared_variables) {
 				domain === "images.thequint.com" ||
 				domain === "images.prismic.io" ||
 				(domain === "files.vierlive.io" && string_indexof(src, "/images/") >= 0) ||
+				domain === "assets.isu.pub" ||
 				src.match(/\/demandware\.static\//) ||
 				src.match(/\?i10c=[^/]*$/) ||
 				/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|blogs.dir)|\/+uploads)\//.test(src)
@@ -3692,6 +3693,7 @@ var $__imu_get_bigimage = function(shared_variables) {
 				(domain === "media.spiked-online.com" && string_indexof(src, "/images/") >= 0) ||
 				(domain_nowww === "unicef.ie" && /\/app\/+uploads\//.test(src)) ||
 				domain === "cdn.downriversundaytimes.com" ||
+				(domain === "media.hotpress.com" && string_indexof(src, "/uploads/") >= 0) ||
 				(domain === "cdn.theathletic.com" && /\/app\/+uploads\//.test(src))
 				) {
 				src = src.replace(/-[0-9]+x[0-9]+\.([^/]*(?:[?#].*)?)$/, ".$1");
@@ -6306,6 +6308,15 @@ var $__imu_get_bigimage = function(shared_variables) {
 				};
 			}
 
+			if (domain === "q.ebaystatic.com") {
+				if (/\/pics\/+cmp\/+ui\/+imgzoomregionmask/.test(src)) {
+					return {
+						url: src,
+						bad: "mask"
+					};
+				}
+			}
+
 			if (domain_nowww === "picclickimg.com") {
 				return src
 					.replace(/:\/\/www.picclickimg.com\/d\//, "://thumbs.ebaystatic.com/d/")
@@ -7494,10 +7505,11 @@ var $__imu_get_bigimage = function(shared_variables) {
 				domain === "static.themezy.com" ||
 				domain_nowww === "hairhapi.com" ||
 				domain_nowww === "babyfashion.me" ||
+				domain === "cdn-learn.adafruit.com" ||
 				domain_nowww === "sonar.es") {
 				return src
 					.replace(/(\/attached_images\/+[0-9]+\/+)[a-z]+\/+/, "$1original/")
-					.replace(/(\/(?:system|images)\/+(?:(?:attached|item)_images|App\/+BlogBody|post_pictures|events|posts|items|articles|file_uploads|screenshots|resources|pictures)\/+(?:(?:images|photos|files|assets|pictures|posters|uploads|screenshots|previews|imgs)\/+)?(?:[0-9]{3}\/+){3})[a-z_0-9]+\/+/, "$1original/");
+					.replace(/(\/(?:(?:system|images)\/+)?(?:(?:attached|item)_images|App\/+BlogBody|post_pictures|events|posts|items|articles|file_uploads|screenshots|resources|pictures|guides)\/+(?:(?:images|photos|files|assets|pictures|posters|uploads|screenshots|previews|imgs|cropped_images)\/+)?(?:[0-9]{3}\/+){3})[a-z_0-9]+\/+/, "$1original/");
 			}
 
 			if (domain === "pgw.udn.com.tw") return src.replace(/.*\/photo\.php.*?[?&]u=([^&]*).*/, "$1");
@@ -9827,14 +9839,22 @@ var $__imu_get_bigimage = function(shared_variables) {
 			}
 
 			if (host_domain_nosub === "pornhub.com" && options.element) {
-				if (options.element.parentElement && options.element.parentElement.tagName === "A") {
-					var match = options.element.parentElement.href.match(/\/view_video\.php\?viewkey=([^&]+)/);
-					if (match) {
-						return {
-							url: options.element.parentElement.href,
-							is_pagelink: true
-						};
+				newsrc = common_functions.get_pagelink_host_el_matching(options, {
+					url_match: /^[a-z]+:\/\/[^/]+\/+view_video\.php\?(.*&)?viewkey=/,
+					el_match: function(x) {
+						return x.tagName.toLowerCase() === "video-element" && x.hasAttribute("unique-id");
 					}
+				});
+				if (newsrc) return newsrc;
+			}
+
+			if (domain_nowww === "pornkai.com") {
+				newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+view\?(?:.*&)?key=(ph[0-9a-z]+)(?:&.*)?$/, "https://pornhub.com/view_video.php?viewkey=$1");
+				if (newsrc !== src) {
+					return {
+						url: newsrc,
+						is_pagelink: true
+					};
 				}
 			}
 
@@ -15115,7 +15135,10 @@ var $__imu_get_bigimage = function(shared_variables) {
 					return decodeuri_ifneeded(newsrc);
 			}
 
-			if (domain === "image.tmdb.org") return src.replace(/\/[wh][0-9]+(?:_and[^/]*)?\/+([0-9a-zA-Z]+\.[^/.]*)$/, "/original/$1");
+			if (domain === "image.tmdb.org" ||
+				domain_nowww === "themoviedb.org") {
+				return src.replace(/\/[wh][0-9]+(?:_and[^/]*)?\/+([0-9a-zA-Z]+\.[^/.]*)$/, "/original/$1");
+			}
 
 			if (domain_nowww === "lookmovie.ag") return src.replace(/(\/images\/+[bpf]\/+)[wh][0-9]+\/+([0-9a-f]{10,}\.)/, "$1original/$2");
 
@@ -18285,6 +18308,8 @@ var $__imu_get_bigimage = function(shared_variables) {
 				domain_nosub === "freehardcore.com" ||
 				domain === "b3bepw16kz.ent-cdn.com" ||
 				domain_nosub === "deviants.com" ||
+				domain_nosub === "cuckoldplacetube.com" ||
+				domain_nosub === "alphaporno.com" ||
 				(domain_nosub === "b-cdn.net" && /^(18yos|amateurporn(?:girlfriends|tape|vidz|wives)|analcuties|asian(?:cuties|teens)|boombj|brosislove|cuteasians|d1ck|d1rty|extremejapanese|faphard(?:er)?|fi1thy|f1ix|fl1rt|freexxxhardcore|hard(?:(?:core)?teens|family|jap|milfs|moms)|hotmature|japteens|k1nk|milfz|porn(?:ouploads|n|r[yz])|roleplayers|taboofamily|teenanal|twistednuts|wanktank|extremeteens)\./.test(domain)) ||
 				domain_nosub === "hardmoms.co" ||
 				domain_nosub === "d1ck.co" ||
@@ -18339,7 +18364,7 @@ var $__imu_get_bigimage = function(shared_variables) {
 				var is_pagelink = false;
 
 				id = null;
-				match = src.match(/\/(?:videos_(?:screenshots|sources)|v?th|kvs|videos\/+th)\/+[0-9]+\/+([0-9]+)\/+(?:(?:[0-9]+x[0-9]+|screenshots)\/+|preview(?:mp4_hd|_(?:trailer|[0-9]+p|[hn]|embed_[0-9]+p))?\.)/);
+				match = src.match(/\/(?:videos_(?:screenshots|sources)|v?th|kvs|videos\/+th)\/+[0-9]+\/+([0-9]+)\/+(?:(?:[0-9]+x[0-9]+|screenshots)\/+|preview(?:mp4_hd|_(?:trailer|[0-9]+p?|[hn]|embed_[0-9]+p))?\.)/);
 				if (!match) {
 					match = src.match(/\/get_file\/+[0-9a-f]+\/+[0-9a-f]{30,}\/+[0-9a-f]\/+([0-9]+)\/+screenshots\/+/);
 				}
@@ -18420,6 +18445,7 @@ var $__imu_get_bigimage = function(shared_variables) {
 						   domain_nosub === "sexroom.xxx" ||
 						   domain_nosub === "pornalin.com" ||
 						   domain_nosub === "fapteentube.net" ||
+						   domain_nosub === "alphaporno.com" ||
 						   domain_nosub === "pornfappy.com") {
 					videos_component = "embed";
 					addslash = "";
@@ -18429,6 +18455,11 @@ var $__imu_get_bigimage = function(shared_variables) {
 					addslash = "";
 					a_component = "";
 					basedomain = "https://" + domain + "/";
+				} else if (domain_nosub === "cuckoldplacetube.com") {
+					videos_component = "embed";
+					addslash = "";
+					a_component = "";
+					basedomain = "http://www." + domain_nosub + "/";
 				} else if (domain_nosub === "mcstatic.com") {
 					basedomain = "https://www.metacafe.com/";
 					videos_component = "watch";
@@ -18916,6 +18947,9 @@ var $__imu_get_bigimage = function(shared_variables) {
 
 					var find_plainvid = function(resp) {
 						var match = resp.responseText.match(/<div id="kt_player"[^>]*>\s*<video id="main_video"[^>]+>\s*<source\s[^>]*src="([^"]+)"/);
+						if (!match) { // alphaporno.com
+							match = resp.responseText.match(/<video id="bravoplayer"[^>]+>(?:\s*<source[^>]*>){0,}\s*<source\s[^>]*src="([^"]+)"/);
+						}
 						if (!match) {
 							console_warn(cache_key, "Unable to find plain kt video for", resp);
 							return null;
@@ -43712,6 +43746,6 @@ var $__imu_get_bigimage = function(shared_variables) {
 
 			return src;
 		},
-		nonce: "30nnnbc2nc854m7o" // imu:nonce = "30nnnbc2nc854m7o"
+		nonce: "1nb9i7mkll38b1cp" // imu:nonce = "1nb9i7mkll38b1cp"
 	};
 };
