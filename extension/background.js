@@ -313,7 +313,9 @@ var do_request = function(request, sender) {
 		if (sender.tab.id) cookies_options.tabid = sender.tab.id;
 		if (sender.tab.cookieStoreId) cookies_options.store = sender.tab.cookieStoreId;
 
-		get_cookies(request.url, function(cookies) {
+		var cookie_url = request.cookie_url || request.url;
+
+		get_cookies(cookie_url, function(cookies) {
 			if (cookies !== null) {
 				xhr.setRequestHeader(get_imu_header_name("Cookie"), create_cookieheader(cookies));
 				requests[id].cookies_added = true;
