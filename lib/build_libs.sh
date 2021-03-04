@@ -130,6 +130,19 @@ echo "" >> stream_parser.js
 echo "var lib_export = { dash: _fakeGlobal.mpdParser, hls: _fakeGlobal.m3u8Parser };" >> stream_parser.js
 cat shim.js >> stream_parser.js
 
+wget https://raw.githubusercontent.com/Stuk/jszip/7c75dff02e729bd9985f15b560aa02944e14f238/dist/jszip.js -O jszip.orig.js
+sed -i \
+	-e 's/("undefined"!=typeof window.window:"undefined"!=typeof global.global:"undefined"!=typeof self.self:this)/(_fakeWindow)/g' \
+	-e 's/("undefined"!=typeof window.window:void 0!==...:"undefined"!=typeof self?self:this)/(_fakeWindow)/g' \
+	-e 's/if(typeof window!=="undefined"){g=window}/if(typeof _fakeWindow!=="undefined"){g=_fakeWindow}/g' \
+	-e 's/typeof global !== "undefined" . global/typeof _fakeWindow !== "undefined" ? _fakeWindow/g' \
+	jszip.orig.js
+echo "var _fakeWindow={};" > jszip.js
+cat jszip.orig.js >> jszip.js
+echo "" >> jszip.js
+echo "var lib_export = _fakeWindow.JSZip;" >> jszip.js
+cat shim.js >> jszip.js
+
 CLEANUP=1
 if [ $CLEANUP -eq 1 ]; then
 	rm \
@@ -137,5 +150,6 @@ if [ $CLEANUP -eq 1 ]; then
 		shaka.debug.orig.js shaka_global.js \
 		mux.orig.js mux.lib.js \
 		ffmpeg.min.orig.js ffmpeg-core.orig.js ffmpeg-core.js ffmpeg-core.worker.js \
-		mpd-parser.js m3u8-parser.js
+		mpd-parser.js m3u8-parser.js \
+		jszip.orig.js
 fi
