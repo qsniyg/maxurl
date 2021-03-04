@@ -168,7 +168,7 @@ var do_request = function(request, sender) {
 
 	//xhr.setRequestHeader("IMU-Verify", id);
 
-	var do_final = function(override, final, cb) {
+	var do_final = function(event, final, cb) {
 		var server_headers = null;
 		if (requests[id].server_headers) {
 			server_headers = requests[id].server_headers;
@@ -186,9 +186,13 @@ var do_request = function(request, sender) {
 			responseType: xhr.responseType,
 			status: xhr.status, // file:// returns 0, tracking protection also returns 0
 			realStatus: xhr.status,
-			statusText: xhr.statusText
-		};
+			statusText: xhr.statusText,
 
+			// progress
+			lengthComputable: event.lengthComputable,
+			loaded: event.loaded,
+			total: event.total
+		};
 
 		if (server_headers) {
 			var parsed_responseheaders = parse_headers(resp.responseHeaders);
@@ -270,7 +274,7 @@ var do_request = function(request, sender) {
 	};
 
 	var add_handler = function(event, final, empty) {
-		xhr[event] = function() {
+		xhr[event] = function(e) {
 			debug("XHR event: ", event);
 
 			var obj = {
@@ -284,7 +288,7 @@ var do_request = function(request, sender) {
 				return xhr_final_handler(null, obj);
 			}
 
-			do_final({}, final, function(resp) {
+			do_final(e, final, function(resp) {
 				xhr_final_handler(resp, obj);
 			});
 		};
