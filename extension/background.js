@@ -306,7 +306,13 @@ var do_request = function(request, sender) {
 		url: request.url
 	};
 
-	if (!cookie_overridden && sender.tab.cookieStoreId) {
+	if (!cookie_overridden) {
+		var cookies_options = {};
+
+		// doesn't exist for background userscript
+		if (sender.tab.id) cookies_options.tabid = sender.tab.id;
+		if (sender.tab.cookieStoreId) cookies_options.store = sender.tab.cookieStoreId;
+
 		get_cookies(request.url, function(cookies) {
 			if (cookies !== null) {
 				xhr.setRequestHeader(get_imu_header_name("Cookie"), create_cookieheader(cookies));
@@ -314,7 +320,7 @@ var do_request = function(request, sender) {
 			}
 
 			xhr.send(request.data);
-		}, { tabid: sender.tab.id, store: sender.tab.cookieStoreId });
+		}, cookies_options);
 	} else {
 		xhr.send(request.data);
 	}
@@ -848,7 +854,8 @@ function get_cookies(url, cb, options) {
 	if (!options) options = {};
 
 	var end = function (store) {
-		var base_options = { url: url, storeId: store };
+		var base_options = { url: url };
+		if (store) base_options.storeId = store;
 
 		var new_options = JSON.parse(JSON.stringify(base_options));
 		new_options.firstPartyDomain = null;
@@ -870,13 +877,16 @@ function get_cookies(url, cb, options) {
 		}
 	};
 
-	if (options.tabid && !options.store) {
+	if (!options.store) {
+		var tabid = options.tabid;
+		if (tabid === background_userscript_tabid) tabid = null;
+
 		// TODO: cache
 		try {
 			chrome.cookies.getAllCookieStores(function (stores) {
 				var store = null;
 				for (var i = 0; i < stores.length; i++) {
-					if (stores[i].tabIds.indexOf(options.tabid) >= 0) {
+					if ((tabid && stores[i].tabIds.indexOf(tabid) >= 0) || !tabid) {
 						store = stores[i].id;
 						break;
 					}
