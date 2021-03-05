@@ -1515,13 +1515,14 @@ var broadcast_message = function(message) {
 	});
 };
 
-chrome.runtime.onSuspend.addListener(function() {
+// disable for now, doesn't seem to do anything, and untested if it does anything
+/*chrome.runtime.onSuspend.addListener(function() {
 	broadcast_message({type: "suspend"});
 });
 
 chrome.runtime.onSuspendCanceled.addListener(function() {
 	broadcast_message({type: "unsuspend"});
-});
+});*/
 
 // https://stackoverflow.com/a/61074058
 chrome.runtime.onInstalled.addListener(function() {
