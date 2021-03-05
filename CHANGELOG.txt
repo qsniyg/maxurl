@@ -1,3 +1,42 @@
+0.18.0
+
+New features:
+
+ * Key to download all images from album (#284, bound to Shift+D by default)
+   * Option to control downloading unchanged media from album (enabled by default)
+   * Option to control the zip filename format
+   * Option to store all files in a top-level folder in the zip file (#674, disabled by default)
+ * An extra popup profile is added (thanks to remlap for reporting)
+ * Option to use a simpler progress bar when replacing images/downloading media (#673, enabled by default)
+ * Option to load media anonymously (#667, primarily useful for screenshots)
+ * Option to use JPG for the screenshot file format (#666, thanks to remlap for the idea)
+ * Option to replace media instead of popping up (#668, thanks to TurretBot for the idea)
+ * Support for 9 new websites (using 4 new rules)
+
+Improvements:
+
+ * Various improvements/fixes for existing rules (including DeviantArt, VK)
+ * Popping up for plain hyperlinks is now enabled by default
+ * More fine-grained progress when replacing images
+ * Extension should be automatically applied to all tabs when installing/upgrading
+ * Extension (under chrome) should unload more cleanly on existing pages when disabled/uninstalled
+
+Bugfixes:
+
+ * Replace Images will also override images with srcset (#659, thanks to InSimpleTermsJordan for reporting)
+ * Replace Images will support replacing links even if "Popup for plain hyperlinks" is disabled
+ * Replace Images will not use data urls if disabled for links
+ * HLS/DASH will not be used if disabled due to requirements being unmet (thanks to xyliaa for reporting)
+ * Downloading data urls no longer fails under the extension (thanks to remlap for reporting)
+ * Saving the video screenshot will no longer sometimes also save the video, due to keyup handlers not being properly called
+ * Certain websites that return an incorrect content-type should be better supported for the popup (#672, thanks to jollld for reporting)
+ * DeviantART will no longer log out for firefox extension (thanks to Иван Хомяков for reporting)
+ * Empty optional format variables (such as `{variable?}`) work properly now
+
+Special thanks to InSimpleTermsJordan, TurretBot, remlap, xyliaa, fedesk, jollld, Иван Хомяков, TheLastZombie for their contributions and reports for this release
+
+---
+
 0.17.0
 
 New features:

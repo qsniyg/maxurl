@@ -39,7 +39,7 @@
 // @description:zh-TW 為7700多個網站查找更大或原始圖像
 // @description:zh-HK 為7700多個網站查找更大或原始圖像
 // @namespace         http://tampermonkey.net/
-// @version           0.17.0
+// @version           0.18.0
 // @author            qsniyg
 // @homepageURL       https://qsniyg.github.io/maxurl/options.html
 // @supportURL        https://github.com/qsniyg/maxurl/issues
@@ -75,7 +75,7 @@
 //  Note that jsdelivr.net might not always be reliable, but (AFAIK) this is the only reasonable option from what greasyfork allows.
 //  I'd recommend using the Github version of the script if you encounter any issues (linked in the 'Project links' section below).
 //
-// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@2bf38d68ad20953b37ed2f01f8f49fc996343c99/build/rules.js
+// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@16f45a4eb0a421c4ad3a36dd665c957f442b08b9/build/rules.js
 // ==/UserScript==
 
 // If you see "A userscript wants to access a cross-origin resource.", it's used for:
@@ -143,7 +143,9 @@ var $$IMU_EXPORT$$;
 	var is_extension_bg = false;
 	var is_firefox_webextension = false;
 	var extension_send_message = null;
+	var extension_error_handler = function(){};
 	var extension_options_page = null;
+	var is_terminated = false;
 	var is_extension_options_page = false;
 	var is_options_page = false;
 	var is_maxurl_website = false;
@@ -170,6 +172,35 @@ var $$IMU_EXPORT$$;
 			return unsafeWindow || this.window || window;
 
 		return this.window || window;
+	};
+
+	var termination_hooks = [];
+	var is_suspended = function(full) {
+		if (is_terminated || !settings.imu_enabled) {
+			return true;
+		}
+
+		if (full && is_extension) {
+			try {
+				chrome.runtime.getURL("manifest.json");
+			} catch (e) {
+				set_terminated(true);
+				return true;
+			}
+		}
+
+		return false;
+	};
+
+	var set_terminated = function(terminated) {
+		var was_terminated = is_terminated;
+		is_terminated = terminated;
+
+		if (terminated && !was_terminated) {
+			array_foreach(termination_hooks, function(hook) {
+				hook();
+			});
+		}
 	};
 
 	try {
@@ -202,6 +233,17 @@ var $$IMU_EXPORT$$;
 			if (!is_extension)
 				return;
 
+			extension_error_handler = function(context) {
+				try {
+					var last_error = chrome.runtime.lastError;
+					if (last_error) {
+						console.error(last_error.message, context);
+					}
+				} catch (e) {
+					console.error(e);
+				}
+			};
+
 			is_extension_bg = /^([-a-z]+)extension:\/\/[^/]+\/+_generated_background_page\.html/.test(window_location);
 
 			extension_options_page = chrome.runtime.getURL("extension/options.html");
@@ -224,10 +266,35 @@ var $$IMU_EXPORT$$;
 				if (is_extension_bg) {
 					return userscript_extension_message_handler(message, respond);
 				} else {
-					return chrome.runtime.sendMessage(null, message, null, respond);
+					if (!respond || respond === nullfunc) {
+						return chrome.runtime.sendMessage(null, message);
+					} else {
+						return chrome.runtime.sendMessage(null, message, null, function() {
+							extension_error_handler(message);
+							return respond.apply(this, arguments);
+						});
+					}
 				}
 			};
+
+			if (!is_extension_bg) {
+				// firefox doesn't load the runtime listener immediately
+				setTimeout(function() {
+					var runtime_port = chrome.runtime.connect();
+					runtime_port.onDisconnect.addListener(function(e) {
+						console.error(e);
+						extension_error_handler();
+						set_terminated(true);
+					});
+				}, 10);
+			}
+
+			extension_error_handler();
 		} catch (e) {
+			if (is_extension) {
+				console.error(e);
+				extension_error_handler();
+			}
 		};
 	};
 
@@ -376,13 +443,29 @@ var $$IMU_EXPORT$$;
 				if (element === window && element.unsafeWindow)
 					element = element.unsafeWindow;
 
+				// performance
+				var suspended_check = function() {return is_suspended(true);};
+				if (event === "mousemove") {
+					suspended_check = function() {return is_suspended(false);};
+				}
+
+				var real_handler = handler;
+				var handler = function(e) {
+					if (suspended_check()) {
+						if (is_terminated) our_removeEventListener(element, event, real_handler);
+						return;
+					}
+
+					return real_handler(e);
+				};
+
 				// i??.fastpic.ru: needles are 'click' and 'popMagic'
 				var new_handler = function(e) {
 					return handler(e);
 				};
 
 				init_eventhandler_map();
-				map_set(eventhandler_map, handler, new_handler);
+				map_set(eventhandler_map, real_handler, new_handler);
 
 				EventTarget_addEventListener.call(element, event, new_handler, options);
 			};
@@ -1975,6 +2058,16 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		var is_data = false;
+		if (imu && imu.url) {
+			is_data = /^data:/.test(imu.url);
+		}
+
+		// hacky but works for now
+		if (is_data) {
+			return do_browser_download(imu, filename, cb);
+		}
+
 		if (is_extension) {
 			extension_send_message({
 				type: "download",
@@ -2017,6 +2110,19 @@ var $$IMU_EXPORT$$;
 		} else {
 			do_browser_download(imu, filename, cb);
 		}
+	};
+
+	var do_blob_download = function(blob, filename, cb) {
+		var objurl = create_objecturl(blob);
+
+		do_browser_download({
+			url: objurl,
+		}, filename);
+
+		setTimeout(function() {
+			revoke_objecturl(objurl);
+			if (cb) cb();
+		}, 500);
 	};
 
 	var multiqueue = function(options, cb) {
@@ -2073,7 +2179,13 @@ var $$IMU_EXPORT$$;
 			var known_total = 0;
 			var known_num = 0;
 			var known_progress = 0;
+			var approx = [];
 			obj_foreach(this.known_elements, function(id, obj) {
+				if (!obj.size && obj.progress_ratio) {
+					approx.push(obj);
+					return;
+				}
+
 				known_total += obj.size;
 				known_progress += obj.progress;
 				known_num++;
@@ -2081,6 +2193,22 @@ var $$IMU_EXPORT$$;
 
 			var total = this.total_size;
 			var total_accurate = true;
+
+			if (approx.length) {
+				total_accurate = false;
+
+				var average_length = 1;
+				if (known_num) {
+					average_length = known_total / known_num;
+				}
+
+				array_foreach(approx, function(obj) {
+					known_total += average_length;
+					known_progress += obj.progress_ratio * average_length;
+					known_num++;
+				});
+			}
+
 			if (!total) {
 				total = known_total;
 
@@ -2123,14 +2251,24 @@ var $$IMU_EXPORT$$;
 				};
 			}
 
-			this.known_elements[id].progress = progress;
-			this.known_elements[id].size = size;
+			if (size || !progress) {
+				this.known_elements[id].progress = progress;
+				this.known_elements[id].size = size;
+			} else if (this.known_elements[id].size) {
+				this.known_elements[id].progress = progress * this.known_elements[id].size;
+			} else {
+				this.known_elements[id].progress_ratio = progress;
+			}
 
 			this._do_cb();
 		};
 
 		this.update_progobj = function(id, progobj) {
 			this.update(id, progobj.loaded, progobj.total);
+		};
+
+		this.finish_id = function(id) {
+			this.update(id, 1);
 		};
 
 		this.finish = function() {
@@ -3705,6 +3843,7 @@ var $$IMU_EXPORT$$;
 		// thanks to 894-572 on github for the idea: https://github.com/qsniyg/maxurl/issues/30
 		mouseover_trigger_key: ["shift", "alt", "i"],
 		mouseover_trigger_key_t2: [],
+		mouseover_trigger_key_t3: [],
 		mouseover_trigger_delay: 1,
 		mouseover_trigger_mouseover: false,
 		// thanks to lnp5131 on github for the idea: https://github.com/qsniyg/maxurl/issues/421
@@ -3737,6 +3876,8 @@ var $$IMU_EXPORT$$;
 		mouseover_allow_partial: is_extension ? "media" : "video",
 		mouseover_partial_avoid_head: false,
 		mouseover_use_blob_over_data: false,
+		// https://github.com/qsniyg/maxurl/issues/667
+		popup_use_anonymous_crossorigin: false,
 		mouseover_enable_notallowed: true,
 		// thanks to Rnksts on discord for the idea
 		mouseover_enable_notallowed_cant_load: true,
@@ -3791,6 +3932,8 @@ var $$IMU_EXPORT$$;
 		// thanks to Rnksts on discord for the idea
 		mouseover_video_reset_speed_key: ["backspace"],
 		mouseover_video_screenshot_key: ["shift", "s"],
+		// thanks to remlap for the idea: https://github.com/qsniyg/maxurl/issues/666
+		popup_video_screenshot_format: "png",
 		mouseover_ui: true,
 		// thanks to Runakanta on discord for the idea
 		mouseover_ui_toggle_key: ["u"],
@@ -3856,7 +3999,7 @@ var $$IMU_EXPORT$$;
 		mouseover_clickthrough: false,
 		mouseover_mask_ignore_clicks: false,
 		// also thanks to 07416: https://github.com/qsniyg/maxurl/issues/25
-		mouseover_links: false,
+		mouseover_links: true,
 		// thanks to LoneFenris: https://github.com/qsniyg/maxurl/issues/25#issuecomment-482880122
 		mouseover_only_valid_links: true,
 		mouseover_allow_self_pagelink: false,
@@ -3868,6 +4011,12 @@ var $$IMU_EXPORT$$;
 		mouseover_gallery_prev_key: ["left"],
 		mouseover_gallery_next_key: ["right"],
 		mouseover_gallery_move_after_video: false,
+		// https://github.com/qsniyg/maxurl/issues/284
+		// thanks to shivsah on github for the inspiration: https://github.com/qsniyg/maxurl/issues/95
+		mouseover_gallery_download_key: ["shift", "d"],
+		gallery_download_unchanged: true,
+		gallery_zip_filename_format: "{host_domain_nosub}-{download_unix}\n{download_unix}",
+		gallery_zip_add_tld: false,
 		// thanks to acid-crash on github for the idea: https://github.com/qsniyg/maxurl/issues/20
 		mouseover_styles: "",
 		mouseover_enable_fade: true,
@@ -3961,6 +4110,7 @@ var $$IMU_EXPORT$$;
 		replaceimgs_domainlimit: 2,
 		replaceimgs_delay: 0,
 		replaceimgs_css: "",
+		replaceimgs_simple_progress: true,
 		highlightimgs_enable_keybinding: false,
 		highlightimgs_keybinding: ["shift", "alt", "h"],
 		highlightimgs_enable: false,
@@ -3981,7 +4131,7 @@ var $$IMU_EXPORT$$;
 
 	var user_defined_settings = {};
 
-	var num_profiles = 1;
+	var num_profiles = 2;
 
 	var settings_meta = {
 		imu_enabled: {
@@ -4360,6 +4510,10 @@ var $$IMU_EXPORT$$;
 				// thanks to lnp5131 on github for the idea: https://github.com/qsniyg/maxurl/issues/435
 				copylink: {
 					name: "Copy link"
+				},
+				// thanks to TurretBot on discord for the idea: https://github.com/qsniyg/maxurl/issues/668
+				replace: {
+					name: "Replace"
 				}
 			},
 			requires: {
@@ -4439,6 +4593,18 @@ var $$IMU_EXPORT$$;
 		mouseover_trigger_key_t2: {
 			name: "Popup trigger key (#2)",
 			description: "Key sequence to trigger the popup with alternate options. Search for `(#2)` to find the relevant options",
+			type: "keysequence",
+			keyseq_allow_none: true,
+			requires: {
+				mouseover: true,
+				mouseover_trigger_behavior: "keyboard"
+			},
+			category: "popup",
+			subcategory: "trigger"
+		},
+		mouseover_trigger_key_t3: {
+			name: "Popup trigger key (#3)",
+			description: "Key sequence to trigger the popup with alternate options. Search for `(#3)` to find the relevant options",
 			type: "keysequence",
 			keyseq_allow_none: true,
 			requires: {
@@ -4535,6 +4701,14 @@ var $$IMU_EXPORT$$;
 		mouseover_use_blob_over_data: {
 			name: "Use `blob:` over `data:` URLs",
 			description: "Blob URLs are more efficient, but aren't supported by earlier browsers. Some websites also block `blob:` URLs",
+			requires: "action:popup",
+			category: "popup",
+			subcategory: "open_behavior",
+			advanced: true
+		},
+		popup_use_anonymous_crossorigin: {
+			name: "Load media anonymously",
+			description: "Loads the media without sending any cookies or other forms of credentials. This is required to screenshot videos from other sources",
 			requires: "action:popup",
 			category: "popup",
 			subcategory: "open_behavior",
@@ -4978,6 +5152,25 @@ var $$IMU_EXPORT$$;
 			},
 			type: "keysequence",
 			category: "keybinds",
+			subcategory: "video"
+		},
+		popup_video_screenshot_format: {
+			name: "Screenshot format",
+			description: "File format to save the screenshot in",
+			requires: {
+				_condition: "action:popup",
+				mouseover_allow_video: true
+			},
+			options: {
+				_type: "or",
+				png: {
+					name: "PNG"
+				},
+				jpg: {
+					name: "JPG"
+				}
+			},
+			category: "popup",
 			subcategory: "video"
 		},
 		mouseover_ui: {
@@ -6114,6 +6307,48 @@ var $$IMU_EXPORT$$;
 			category: "keybinds",
 			subcategory: "gallery"
 		},
+		mouseover_gallery_download_key: {
+			name: "Gallery download key",
+			description: "Key to download the current gallery",
+			requires: {
+				_condition: "action:popup",
+				mouseover_enable_gallery: true
+			},
+			type: "keysequence",
+			category: "keybinds",
+			subcategory: "gallery"
+		},
+		gallery_download_unchanged: {
+			name: "Download unchanged media",
+			description: "Includes gallery items that have not been changed. Useful to potentially avoid downloading thumbnails",
+			requires: {
+				_condition: "action:popup",
+				mouseover_enable_gallery: true
+			},
+			category: "popup",
+			subcategory: "gallery"
+		},
+		gallery_zip_filename_format: {
+			name: "Zip: Filename format",
+			description: "Format string(s) for the zip filename.\nRefer to \"Filename format\" under the Rules section for documentation.\n`.zip` will be automatically suffixed if it's missing.",
+			requires: {
+				_condition: "action:popup",
+				mouseover_enable_gallery: true
+			},
+			type: "textarea",
+			category: "popup",
+			subcategory: "gallery"
+		},
+		gallery_zip_add_tld: {
+			name: "Zip: Store in subdirectory",
+			description: "Stores the files in a subdirectory with the same name as the .zip file (without the .zip extension)",
+			requires: {
+				_condition: "action:popup",
+				mouseover_enable_gallery: true
+			},
+			category: "popup",
+			subcategory: "gallery"
+		},
 		mouseover_gallery_move_after_video: {
 			name: "Move to next when video finishes",
 			description: "Moves to the next gallery item when a video finishes playing",
@@ -6444,12 +6679,8 @@ var $$IMU_EXPORT$$;
 		},
 		allow_possibly_different: {
 			name: "Possibly different images",
-			description: "Enables rules that return images that possibly differ",
+			description: "Enables rules that return images that possibly differ, usually due to server-side caching",
 			category: "rules",
-			example_websites: [
-				"YouTube video thumbnails"
-			],
-			hidden: true, // not currently used
 			onupdate: update_rule_setting
 		},
 		allow_possibly_broken: {
@@ -6748,6 +6979,10 @@ var $$IMU_EXPORT$$;
 					"<li><code>caption</code> - Popup caption</li>",
 					"<li><code>author_username</code> - Author's username</li>",
 					"<li><code>id</code> - Post ID</li>",
+					"<li><code>host_domain</code> - Domain of the host webpage</li>",
+					"<li><code>host_domain_nosub</code> - Domain (without subdomains) of the host webpage</li>",
+					"<li><code>domain</code> - Domain of the media</li>",
+					"<li><code>domain_nosub</code> - Domain (without subdomains) of the media</li>",
 					"<li><code>is_screenshot</code> - Blank, the line will only be processed when screenshotting a video</li>",
 					"<li><code>created_...</code> - Created date (see note on Date objects below)</li>",
 					"<li><code>updated_...</code> - Updated date, this will use the <code>Last-Modified</code> header if not otherwise specified by the rule (see note on Date objects below)</li>",
@@ -6937,6 +7172,13 @@ var $$IMU_EXPORT$$;
 			},
 			imu_enabled_exempt: true
 		},
+		replaceimgs_simple_progress: {
+			name: "Simple progress",
+			description: "Uses a simpler progress bar that has a fixed size for all media. This is useful to see how many images are replaced, rather than the ETA",
+			category: "extra",
+			subcategory: "replaceimages",
+			imu_enabled_exempt: true
+		},
 		highlightimgs_enable_keybinding: {
 			name: "Enable trigger key",
 			description: "Enables the use of the trigger key to run it without needing to use the menu",
@@ -7089,7 +7331,12 @@ var $$IMU_EXPORT$$;
 				var trigger_id = i + 2;
 				var profiled_setting_name = "t" + trigger_id + "_" + setting;
 
-				settings = obj_insertafter(settings, setting, profiled_setting_name, default_value);
+				var setting_before = setting;
+				if (i > 0) {
+					setting_before = "t" + (trigger_id - 1) + "_" + setting;
+				}
+
+				settings = obj_insertafter(settings, setting_before, profiled_setting_name, default_value);
 
 				var profiled_meta = deepcopy(orig_meta);
 				settings_meta[profiled_setting_name] = profiled_meta;
@@ -9035,6 +9282,13 @@ var $$IMU_EXPORT$$;
 			crc32: 2587771391,
 			crc32_size: 2632494853,
 			xhr: true
+		},
+		"jszip": {
+			name: "jszip",
+			url: "https://raw.githubusercontent.com/qsniyg/maxurl/04ded19e6a25408d7a272420778a2147983949bc/lib/jszip.js",
+			size: 99574,
+			crc32: 2493372642,
+			crc32_size: 624003151
 		}
 	};
 
@@ -9875,21 +10129,24 @@ var $$IMU_EXPORT$$;
 		return retobj;
 	};
 
+	common_functions.deviantart_url_from_id = function(do_request, api_cache, id, cb) {
+		real_api_query(api_cache, do_request, "deviantart_url_from_id:" + id, {
+			method: "HEAD",
+			url: "http://fav.me/" + id,
+			cookie_url: "https://www.deviantart.com/" // workaround
+		}, cb, function(done, resp, cache_key) {
+			done(resp.finalUrl, 6*60*60);
+		});
+	};
+
 	common_functions.deviantart_page_from_id = function(do_request, api_cache, id, cb) {
-		var cache_key = "deviantart_page_from_id:" + id;
+		common_functions.deviantart_url_from_id(do_request, api_cache, id, function(url) {
+			if (!url) return cb(null);
 
-		api_cache.fetch(cache_key, cb, function (done) {
-			do_request({
-				method: "GET",
-				url: "http://fav.me/" + id,
-				onload: function (result) {
-					if (result.status !== 200) {
-						console_log(cache_key, result);
-						return done(null, false);
-					}
-
-					done(result, 60 * 60);
-				}
+			real_api_query(api_cache, do_request, "deviantart_page_from_id:" + id, {
+				url: url
+			}, cb, function(done, resp, cache_key) {
+				done(resp, 60*60);
 			});
 		});
 	};
@@ -12307,9 +12564,56 @@ var $$IMU_EXPORT$$;
 					}
 				});
 			});
-		}
+		};
 
-		query_snaptik_1(url);
+		var query_snaptik_2 = function(url) {
+			url = url.replace(/[?#].*/, "");
+			var cache_key = site + ":" + url;
+			api_cache.fetch(cache_key, cb, function(done) {
+				// first query is to populate the cookies
+				do_request({
+					url: "https://snaptik.app/",
+					imu_mode: "document",
+					method: "GET",
+					onload: function(resp) {
+						if (resp.status !== 200) {
+							console_error(cache_key, resp);
+							return done(null, false);
+						}
+
+						do_request({
+							method: "POST",
+							url: "https://" + site + "/action_2021.php",
+							imu_mode: "xhr",
+							imu_multipart: {
+								url: url
+							},
+							headers: {
+								Origin: "https://snaptik.app",
+								Referer: "https://snaptik.app/"
+							},
+							onload: function(resp) {
+								if (resp.status !== 200) {
+									console_error(cache_key, resp);
+									return done(null, false)
+								}
+
+								var match = resp.responseText.match(/<a[^>]*\s+href=["']https?:\/\/(?:(?:sv|cdn)[0-9]*\.)?snaptik.app\/+dl\.php\?token=([^&]+)/);
+								if (!match) {
+									console_error(cache_key, "Unable to find match for", resp);
+									return done(null, false);
+								}
+
+								return done(base64_decode(decodeURIComponent(decode_entities(match[1]))), 60*60);
+							}
+						});
+					}
+				});
+			});
+		};
+
+		//query_snaptik_1(url);
+		query_snaptik_2(url);
 	};
 
 	common_functions.get_tiktok_from_musicallydown = function(site, api_cache, do_request, url, cb) {
@@ -14198,7 +14502,7 @@ var $$IMU_EXPORT$$;
 	};
 
 	var get_domain_from_url = function(url) {
-		return url.replace(/^[a-z]+:\/\/([^/]+)(?:\/+.*)?$/, "$1");
+		return url.replace(/^[a-z]+:\/\/([^/]*)(?:\/+.*)?$/, "$1");
 	};
 
 	var get_domain_nosub = function(domain) {
@@ -14350,13 +14654,13 @@ var $$IMU_EXPORT$$;
 	                    data: bigimage_obj,
 	                    message: "Unable to get bigimage function"
 	                };
-	            } else if (bigimage_obj.nonce !== "30nnnbc2nc854m7o") {
+	            } else if (bigimage_obj.nonce !== "15ma5ag1h8ea1432") {
 	                // This could happen if for some reason the userscript manager updates the userscript,
 	                // but not the required libraries.
 	                require_rules_failed = {
 	                    type: "bad_nonce",
 	                    data: bigimage_obj.nonce,
-	                    message: "Bad nonce, expected: " + "30nnnbc2nc854m7o"
+	                    message: "Bad nonce, expected: " + "15ma5ag1h8ea1432"
 	                };
 	            } else {
 	                bigimage = bigimage_obj.bigimage;
@@ -16206,6 +16510,16 @@ var $$IMU_EXPORT$$;
 		return "data:image/svg+xml," + encodeURIComponent(svgdoc);
 	};
 
+	var get_canvas_src = function(el, format) {
+		try {
+			return el.toDataURL(format);
+		} catch (e) {
+			console_error(e);
+			// "Tainted canvases may not be exported", CORS error in some pages
+			return;
+		}
+	};
+
 	var get_img_src = function(el) {
 		if (typeof el === "string")
 			return el;
@@ -16220,12 +16534,7 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (el_tagname === "CANVAS") {
-			try {
-				return el.toDataURL("image/png");
-			} catch (e) {
-				// "Tainted canvases may not be exported", CORS error in some pages
-				return;
-			}
+			return get_canvas_src("image/png");
 		}
 
 		if (el_tagname === "SVG") {
@@ -19592,6 +19901,12 @@ var $$IMU_EXPORT$$;
 		return data;
 	};
 
+	var set_common_el_properties = function(el) {
+		if (settings.popup_use_anonymous_crossorigin) {
+			el.setAttribute("crossorigin", "anonymous");
+		}
+	};
+
 	function serialize_img(img) {
 		var obj = {
 			tag: img.tagName.toLowerCase(),
@@ -19603,11 +19918,16 @@ var $$IMU_EXPORT$$;
 			volume: img.volume
 		};
 
+		if (img.hasAttribute("crossorigin")) {
+			obj.crossorigin = img.getAttribute("crossorigin");
+		}
+
 		return obj;
 	}
 
 	function deserialize_img(obj, cb) {
 		var el = document_createElement(obj.tag);
+
 		if (obj.tag === "video" || obj.tag === "audio") {
 			if (obj.autoplay) el.setAttribute("autoplay", obj.autoplay);
 			if (obj.controls) el.setAttribute("controls", obj.controls);
@@ -19619,6 +19939,8 @@ var $$IMU_EXPORT$$;
 				cb(el);
 			};
 		}
+
+		if (obj.crossorigin) el.setAttribute("crossorigin", obj.crossorigin);
 
 		el.src = obj.src;
 
@@ -19696,6 +20018,183 @@ var $$IMU_EXPORT$$;
 		// TODO: maybe check to make sure it's a blob? according to the spec, this will silently fail, but browsers may print an error
 		revoke_objecturl(image.src);
 		image.setAttribute("imu-destroyed", "true");
+	};
+
+	var create_streaming_el = function(type, processing, good_cb, err_cb) {
+		var video = document_createElement(type);
+
+		set_common_el_properties(video);
+
+		if (settings.mouseover_video_autoplay)
+			video.setAttribute("autoplay", "autoplay");
+
+		if (settings.mouseover_video_controls || type === "audio")
+			video.setAttribute("controls", "controls");
+
+		if (settings.mouseover_video_loop && !settings.mouseover_gallery_move_after_video)
+			video.setAttribute("loop", true);
+
+		var volume = parseInt(settings.mouseover_video_volume);
+		volume = Math_max(Math_min(volume, 100), 0);
+		video.volume = volume / 100.;
+
+		if (settings.mouseover_video_muted) {
+			video.muted = true;
+		}
+
+		var remove_loaded_metadata_listener = function() {
+			video.onloadedmetadata = null;
+			video.removeEventListener("loadedmetadata", loaded_metadata_listener);
+		};
+
+		var errorhandler = function(e) {
+			console_error("Error loading video", get_event_error(e));
+
+			remove_loaded_metadata_listener();
+			err_cb();
+		};
+
+		var ran_loadedmetadata_listener = false;
+		var loaded_metadata_listener = function() {
+			if (!ran_loadedmetadata_listener) {
+				ran_loadedmetadata_listener = true;
+			} else {
+				return;
+			}
+
+			video.removeEventListener("error", errorhandler, true);
+			remove_loaded_metadata_listener();
+
+			if (!processing.running) {
+				return final_cb(null);
+			}
+
+			if (video.hasAttribute("loop")) {
+				if (settings.mouseover_video_autoloop_max && settings.mouseover_video_autoloop_max < video.duration)
+					video.removeAttribute("loop");
+			}
+
+			var source_video = null;
+
+			if (processing.source && processing.source.el) {
+				var source_el = processing.source.el;
+
+				if (source_el.tagName === "SOURCE") {
+					source_el = source_el.parentElement;
+				}
+
+				if (source_el.tagName === "VIDEO") {
+					source_video = source_el;
+				}
+			}
+
+			if (settings.mouseover_video_resume_from_source && source_video && source_video.currentTime) {
+				// https://github.com/qsniyg/maxurl/issues/256
+				if (settings.mouseover_video_resume_if_different ||
+					Math_abs(source_video.duration - video.duration) < 1 || Math_abs(1 - (source_video.duration / video.duration)) < 0.01) {
+					video.currentTime = source_video.currentTime;
+				}
+			}
+
+			if (settings.mouseover_video_pause_source && source_video) {
+				source_video.pause();
+			}
+
+			run_soon(function() {
+				good_cb(video)
+			});
+		};
+
+		video.onloadedmetadata = loaded_metadata_listener;
+		video.addEventListener("loadedmetadata", loaded_metadata_listener);
+
+		video.onended = function() {
+			if (settings.mouseover_enable_gallery && settings.mouseover_gallery_move_after_video) {
+				trigger_gallery(1);
+			}
+		};
+
+		video.addEventListener("error", errorhandler, true);
+
+		return video;
+	};
+
+	var create_image_el = function(good_cb, err_cb) {
+		var img = document_createElement("img");
+		set_common_el_properties(img);
+
+		var end_cbs = function () {
+			clearInterval(height_interval);
+			img.onload = null;
+			img.onerror = null;
+		};
+
+		img.onload = function () {
+			end_cbs();
+
+			if (img.naturalWidth === 0 || img.naturalHeight === 0) {
+				if (_nir_debug_)
+					console_log("naturalWidth or naturalHeight == 0", img);
+
+				return err_cb();
+			}
+
+			good_cb(img);
+		};
+
+		img.onerror = function (e) {
+			if (_nir_debug_)
+				console_log("Error loading image", img, e);
+
+			end_cbs();
+			err_cb();
+		};
+
+		var height_interval = setInterval(function () {
+			if (img.naturalWidth !== 0 && img.naturalHeight !== 0) {
+				end_cbs();
+				good_cb(img);
+			}
+		}, 15);
+
+		return img;
+	};
+
+	var set_direct_src = function(el, src, info_obj) {
+		if (!el) return;
+
+		var set_src = function(el, src) {
+			el.src = src;
+		};
+
+		var is_incomplete = typeof src === "string" && /^https?:\/\//i.test(src);
+
+		if (is_extension && is_incomplete) {
+			extension_send_message({
+				type: "override_next_headers",
+				data: {
+					url: src,
+					method: "GET",
+					headers: info_obj.headers
+				}
+			}, function() {
+				set_src(el, src);
+			});
+		} else {
+			set_src(el, src);
+		}
+	};
+
+	var create_media_el = function(type, processing, good_cb, err_cb) {
+		if (type === "image") {
+			return create_image_el(good_cb, err_cb);
+		} else if (type === "video" || type === "audio") {
+			return create_streaming_el(type, processing, good_cb, err_cb);
+		} else {
+			console_error("Currently unsupported media type", type);
+			err_cb();
+			return null;
+		}
 	};
 
 	// TODO: maybe move to a generic reference class, like Cache?
@@ -19810,7 +20309,7 @@ var $$IMU_EXPORT$$;
 		var obj_is_probably_video = is_probably_video(obj[0]);
 		var obj_is_probably_stream = is_probably_stream(obj[0]);
 		var incomplete_request = false;
-		if (processing.incomplete_image || (obj_is_probably_stream && processing.incomplete_video))
+		if (processing.incomplete_image || (obj_is_probably_stream && processing.incomplete_video) || processing.head)
 			incomplete_request = true;
 
 		if (obj[0].need_blob || obj[0].need_data_url)
@@ -19828,6 +20327,7 @@ var $$IMU_EXPORT$$;
 
 		if (obj[0].url.match(/^data:/) && !obj[0].media_info.delivery) {
 			var img = document_createElement("img");
+			set_common_el_properties(img);
 			img.src = obj[0].url;
 			img.onload = function() {
 				cb(img, obj[0].url, obj[0]);
@@ -20002,105 +20502,9 @@ var $$IMU_EXPORT$$;
 				obj[0].filesize = parseInt(parsed_headers["content-length"]);
 			}
 
-			var create_streaming_el = function(type) {
-				var video = document_createElement(type);
-
-				if (settings.mouseover_video_autoplay)
-					video.setAttribute("autoplay", "autoplay");
-
-				if (settings.mouseover_video_controls || type === "audio")
-					video.setAttribute("controls", "controls");
-
-				if (settings.mouseover_video_loop && !settings.mouseover_gallery_move_after_video)
-					video.setAttribute("loop", true);
-
-				var volume = parseInt(settings.mouseover_video_volume);
-				volume = Math_max(Math_min(volume, 100), 0);
-				video.volume = volume / 100.;
-
-				if (settings.mouseover_video_muted) {
-					video.muted = true;
-				}
-
-				var remove_loaded_metadata_listener = function() {
-					video.onloadedmetadata = null;
-					video.removeEventListener("loadedmetadata", loaded_metadata_listener);
-				};
-
-				var errorhandler = function(e) {
-					console_error("Error loading video", get_event_error(e));
-
-					remove_loaded_metadata_listener();
-					err_cb();
-				};
-
-				var ran_loadedmetadata_listener = false;
-				var loaded_metadata_listener = function() {
-					if (!ran_loadedmetadata_listener) {
-						ran_loadedmetadata_listener = true;
-					} else {
-						return;
-					}
-
-					video.removeEventListener("error", errorhandler, true);
-					remove_loaded_metadata_listener();
-
-					if (!processing.running) {
-						return final_cb(null);
-					}
-
-					if (video.hasAttribute("loop")) {
-						if (settings.mouseover_video_autoloop_max && settings.mouseover_video_autoloop_max < video.duration)
-							video.removeAttribute("loop");
-					}
-
-					var source_video = null;
-
-					if (processing.source && processing.source.el) {
-						var sourceel = processing.source.el;
-						if (sourceel.tagName === "SOURCE") {
-							sourceel = sourceel.parentElement;
-						}
-
-						if (sourceel.tagName === "VIDEO") {
-							source_video = sourceel;
-						}
-					}
-
-					if (settings.mouseover_video_resume_from_source && source_video && source_video.currentTime) {
-						// https://github.com/qsniyg/maxurl/issues/256
-						if (settings.mouseover_video_resume_if_different ||
-							Math_abs(source_video.duration - video.duration) < 1 || Math_abs(1 - (source_video.duration / video.duration)) < 0.01) {
-							video.currentTime = source_video.currentTime;
-						}
-					}
-
-					if (settings.mouseover_video_pause_source && source_video) {
-						source_video.pause();
-					}
-
-					run_soon(function() {
-						good_cb(video)
-					});
-				};
-
-				video.onloadedmetadata = loaded_metadata_listener;
-				video.addEventListener("loadedmetadata", loaded_metadata_listener);
-
-				video.onended = function() {
-					if (settings.mouseover_enable_gallery && settings.mouseover_gallery_move_after_video) {
-						trigger_gallery(1);
-					}
-				};
-
-				video.addEventListener("error", errorhandler, true);
-
-				return video;
-			};
-
-			var set_video_src = function(video, src) {
-				if (!media_info.delivery) {
-					video.src = src;
+			var set_src = function(el, src) {
+				if (media_info.type === "image" || !media_info.delivery || processing.deny_nondirect_delivery) {
+					set_direct_src(el, src, obj[0]);
 				} else {
 					if (media_info.delivery in mediadelivery_support) {
 						var module = mediadelivery_support[media_info.delivery];
@@ -20110,7 +20514,7 @@ var $$IMU_EXPORT$$;
 								success: function() {}, // todo?
 								fail: err_cb,
 								info_obj: obj[0],
-								el: video,
+								el: el,
 								src: src
 							});
 							return;
@@ -20119,73 +20523,28 @@ var $$IMU_EXPORT$$;
 				}
 			};
 
+			var create_media = function(src, mediatype) {
+				var our_err_cb = err_cb;
+
+				// https://github.com/qsniyg/maxurl/issues/672
+				if (!mediatype && obj[0].head_wrong_contenttype && media_info.type !== "audio") {
+					our_err_cb = function() {
+						var all_mediatypes = ["video", "image"];
+						all_mediatypes.splice(array_indexof(all_mediatypes, media_info.type), 1);
+						create_media(src, all_mediatypes[0]);
+					};
+				}
+
+				if (!mediatype) mediatype = media_info.type;
+
+				var el = create_media_el(mediatype, processing, good_cb, our_err_cb);
+				set_src(el, src);
+
+				return el;
+			};
+
 			if (incomplete_request) {
-				var load_image;
-
-				if (media_info.type === "image") {
-					load_image = function () {
-						var img = document_createElement("img");
-						img.src = resp.finalUrl;
-
-						var end_cbs = function () {
-							clearInterval(height_interval);
-							img.onload = null;
-							img.onerror = null;
-						};
-
-						img.onload = function () {
-							end_cbs();
-
-							if (img.naturalWidth === 0 || img.naturalHeight === 0) {
-								if (_nir_debug_)
-									console_log("naturalWidth or naturalHeight == 0", img);
-
-								return err_cb();
-							}
-
-							good_cb(img);
-						};
-
-						img.onerror = function (e) {
-							if (_nir_debug_)
-								console_log("Error loading image", img, e);
-
-							end_cbs();
-							err_cb();
-						};
-
-						var height_interval = setInterval(function () {
-							if (img.naturalWidth !== 0 && img.naturalHeight !== 0) {
-								end_cbs();
-								good_cb(img);
-							}
-						}, 15);
-					};
-				} else if (media_info.type === "video" || media_info.type === "audio") {
-					load_image = function () {
-						var video = create_streaming_el(media_info.type);
-						set_video_src(video, resp.finalUrl);
-					};
-				} else {
-					console_error("Currently unsupported media type", media_info.type);
-					return err_cb();
-				}
-
-				if (is_extension) {
-					extension_send_message({
-						type: "override_next_headers",
-						data: {
-							url: resp.finalUrl,
-							method: "GET",
-							headers: headers
-						}
-					}, function() {
-						load_image();
-					});
-				} else {
-					load_image();
-				}
-
+				create_media(resp.finalUrl);
 				return;
 			}
 
@@ -20205,30 +20564,7 @@ var $$IMU_EXPORT$$;
 					return err_cb();
 				}
 
-				if (media_info.type === "image") {
-					var img = document_createElement("img");
-					img.src = urldata;
-					img.onload = function() {
-						// Firefox thinks SVGs have an empty naturalWidth/naturalHeight
-						if (img.naturalWidth === 0 || img.naturalHeight === 0) {
-							return err_cb();
-						}
-
-						good_cb(img);
-					};
-					img.onerror = function(e) {
-						if (_nir_debug_)
-							console_log("Error loading image", img, e);
-
-						err_cb();
-					};
-				} else if (media_info.type === "video" || media_info.type === "audio") {
-					var video = create_streaming_el(media_info.type);
-					set_video_src(video, urldata);
-				} else {
-					console_error("Currently unsupported media type", media_info.type);
-					return err_cb();
-				}
+				create_media(urldata);
 			};
 
 			if (obj[0].need_data_url || (!settings.mouseover_use_blob_over_data && !obj[0].need_blob)) {
@@ -20295,6 +20631,13 @@ var $$IMU_EXPORT$$;
 
 					if (!processing.running) {
 						do_abort();
+					}
+
+					if (processing.progress_cb && resp.lengthComputable && resp.loaded && resp.total) {
+						processing.progress_cb({
+							total: resp.total,
+							loaded: resp.loaded
+						});
 					}
 
 					if (incomplete_request && resp.readyState >= 2 && resp.responseHeaders) {
@@ -21028,6 +21371,7 @@ var $$IMU_EXPORT$$;
 				delay_handle = null;
 			}
 		}
+		termination_hooks.push(resetpopups);
 
 		function get_viewport() {
 			if (window.visualViewport) {
@@ -21954,7 +22298,7 @@ var $$IMU_EXPORT$$;
 					create_shaka(info.info_obj, info.el, info.src, info.success, info.fail);
 				},
 				active: function() {
-					return get_tprofile_setting("mouseover_allow_hlsdash");
+					return settings.allow_thirdparty_libs && get_tprofile_setting("mouseover_allow_hlsdash");
 				}
 			};
 
@@ -22386,7 +22730,7 @@ var $$IMU_EXPORT$$;
 					}
 
 					if (!usevar) {
-						if (default_value) {
+						if (typeof default_value === "string") {
 							varvalue = default_value;
 						} else {
 							return null;
@@ -22601,6 +22945,14 @@ var $$IMU_EXPORT$$;
 				filename: newobj._orig_filename
 			};
 
+			format_vars.host_domain = get_domain_from_url(window_location);
+			format_vars.host_domain_nosub = get_domain_nosub(format_vars.host_domain);
+
+			if (newobj.url && /^https?:\/\//i.test(newobj.url)) {
+				format_vars.domain = get_domain_from_url(newobj.url);
+				format_vars.domain_nosub = get_domain_nosub(format_vars.domain);
+			}
+
 			// todo: only create when needed
 			var create_date = function(name, date) {
 				var map = {
@@ -22669,10 +23021,12 @@ var $$IMU_EXPORT$$;
 				}
 			}
 
-			var ext_split = url_basename(format_vars.filename, {split_ext: true});
-			format_vars.filename_noext = ext_split[0];
-			if (wanted_ext)
-				format_vars.ext = "." + wanted_ext;
+			if (format_vars.filename) {
+				var ext_split = url_basename(format_vars.filename, {split_ext: true});
+				format_vars.filename_noext = ext_split[0];
+				if (wanted_ext)
+					format_vars.ext = "." + wanted_ext;
+			}
 
 			create_date("download", new Date());
 
@@ -22711,7 +23065,7 @@ var $$IMU_EXPORT$$;
 			}
 
 			var openb = get_tprofile_single_setting("mouseover_open_behavior");
-			if (openb === "newtab" || openb ==="newtab_bg" || openb === "download" || openb === "copylink") {
+			if (openb === "newtab" || openb ==="newtab_bg" || openb === "download" || openb === "copylink" || openb === "replace") {
 				stop_waiting();
 
 				var theobj = data.data.obj;
@@ -22721,10 +23075,11 @@ var $$IMU_EXPORT$$;
 					theobj = {url: theobj};
 				}
 
-				if (data.data.resp.finalUrl)
-					theobj.url = data.data.resp.finalUrl;
+				var resp = data.data.resp || data.data.respdata;
+				if (resp.finalUrl)
+					theobj.url = resp.finalUrl;
 
-				fill_obj_filename(theobj, theobj.url, data.data.resp);
+				fill_obj_filename(theobj, theobj.url, resp);
 				popup_obj = theobj;
 
 				if (openb === "newtab" || openb === "newtab_bg") {
@@ -22733,6 +23088,10 @@ var $$IMU_EXPORT$$;
 					download_popup_media();
 				} else if (openb === "copylink") {
 					clipboard_write_link(theobj.url);
+				} else if (openb === "replace") {
+					// todo: use popup options instead of replace images options
+					var replace_options = get_replace_images_options();
+					replace_single_media(replace_options, {el: popup_el}, data, common_functions.nullfunc);
 				}
 
 				return;
@@ -25215,10 +25574,13 @@ var $$IMU_EXPORT$$;
 			return src && (!(/^blob:/.test(src)) || !isvideo);
 		}
 
-		function find_source(els) {
+		function find_source(els, options) {
+			if (!options) options = {};
+			if (!("links" in options)) options.links = get_single_setting("mouseover_links");
+
 			//console_log(els);
 			var ok_els = [];
-			var result = _find_source(els, ok_els);
+			var result = _find_source(els, ok_els, options);
 
 			if (_nir_debug_) nir_debug("find_source", "find_source: result =", result, "ok_els =", ok_els);
 
@@ -25258,7 +25620,7 @@ var $$IMU_EXPORT$$;
 			return result;
 		}
 
-		function _find_source(els, ok_els) {
+		function _find_source(els, ok_els, options) {
 			// resetpopups() is already called in trigger_popup()
 			/*if (popups_active)
 				return;*/
@@ -26008,7 +26370,7 @@ var $$IMU_EXPORT$$;
 				if (source === null) {
 					if (ok_els.length > 0) {
 						return ok_els[0];
-					} else if (get_single_setting("mouseover_links")) {
+					} else if (options.links) {
 						if (Object.keys(links).length > 0) {
 							var our_key = null;
 
@@ -26795,10 +27157,29 @@ var $$IMU_EXPORT$$;
 
 			var old_source = source;
 
+			var incomplete_image = false;
+			var incomplete_video = false;
+
+			var partial = get_single_setting("mouseover_allow_partial");
+
+			if (partial === "media") {
+				incomplete_image = true;
+				incomplete_video = true;
+			} else if (partial === "video") {
+				incomplete_video = true;
+			}
+
+			if (is_in_iframe && can_iframe_popout()) {
+				incomplete_image = true;
+				incomplete_video = true;
+			}
+
 			return get_final_from_source(source, {
 				automatic: automatic,
 				multi: false,
 				use_head: use_head,
+				incomplete_image: incomplete_image,
+				incomplete_video: incomplete_video,
 				use_last_pos: use_last_pos
 			}, function(source_imu, source, processing, data) {
 				if (!source_imu && !source && !processing && !data) {
@@ -26962,30 +27343,20 @@ var $$IMU_EXPORT$$;
 							});
 						}
 
-						if (!options.multi) {
-							var partial = get_single_setting("mouseover_allow_partial");
-
-							if (partial === "media") {
-								processing.incomplete_image = true;
-								processing.incomplete_video = true;
-							} else if (partial === "video") {
-								processing.incomplete_video = true;
-							}
-
-							if (is_in_iframe && can_iframe_popout()) {
-								processing.incomplete_image = true;
-								processing.incomplete_video = true;
-							}
-						}
+						processing.incomplete_image = options.incomplete_image;
+						processing.incomplete_video = options.incomplete_video;
+						processing.progress_cb = options.progress_cb;
 
 						if (options.use_head) {
 							processing.head = true;
 						}
 
-						if (settings.popup_allow_cache) {
+						if (settings.popup_allow_cache && !options.deny_cache) {
 							processing.set_cache = true;
 							processing.use_cache = true;
 						}
+
+						processing.deny_nondirect_delivery = options.deny_nondirect_delivery;
 
 						if (!get_tprofile_setting("mouseover_allow_video")) {
 							processing.deny_video = true;
@@ -27168,6 +27539,52 @@ var $$IMU_EXPORT$$;
 
 			loop();
 		}
+
+		var get_gallery_elements = function(cb, origel, el) {
+			var count = 0;
+			var els_set = new_set();
+			var els = [];
+
+			var firstel = el;
+			if (!firstel)
+				firstel = real_popup_el;
+
+			if (firstel) {
+				set_add(els_set, firstel);
+				els.push(firstel);
+			}
+
+			var loop = function(nextprev, cb) {
+				wrap_gallery_func(nextprev, origel, el, function(newel) {
+					if (!newel || !is_valid_el(newel))
+						return cb();
+
+					count++;
+
+					//if (count >= max) return cb();
+
+					el = newel;
+
+					if (!set_has(els_set, el)) {
+						set_add(els_set, el);
+
+						if (nextprev) {
+							els.push(el);
+						} else {
+							els.unshift(el);
+						}
+					}
+
+					loop(nextprev, cb);
+				});
+			};
+
+			loop(false, function() {
+				loop(true, function() {
+					cb(els);
+				});
+			});
+		};
 
 		function wrap_gallery_cycle(dir, origel, el, cb) {
 			if (!el)
@@ -27534,6 +27951,140 @@ var $$IMU_EXPORT$$;
 			oldel.parentElement.removeChild(oldel);
 		};
 
+		var replace_with_replacement = function(options, el, replacement, url) {
+			var newsrc;
+
+			if (!replaced) {
+				newsrc = get_img_src(replacement);
+			}
+
+			var do_replace = false;
+			if (el.tagName === "A") {
+				if (options.plainlink_replace_link) {
+					el.href = newsrc;
+				}
+
+				if (options.plainlink_replace_text) {
+					el.textContent = newsrc;
+				}
+
+				if (options.plainlink_replace_media) {
+					do_replace = true;
+				}
+			}
+
+			var replaced = false;
+			if (do_replace || (typeof replacement !== "string" && replacement.tagName === "VIDEO")) {
+				if (typeof replacement !== "string") {
+					// todo: only replace on either blob url (hls/dash), or when the source el was a picture
+					el = replace_el(el, replacement);
+					replaced = true;
+				} else {
+					console_warn("Unable to replace", el, "due to invalid replacement:", replacement);
+					return;
+				}
+			}
+
+			if (!replaced && options.replace_imgs) {
+				// srcset can override src: https://github.com/qsniyg/maxurl/issues/659
+				if (el.hasAttribute("srcset")) {
+					el.removeAttribute("srcset");
+				}
+
+				if (get_img_src(el) !== newsrc) {
+					el.src = newsrc;
+				}
+			}
+
+			if (options.remove_constraints) {
+				el.removeAttribute("height");
+				el.removeAttribute("width");
+				el.style.setProperty("height", "auto", "important");
+				el.style.setProperty("width", "auto", "important");
+			}
+
+			if (options.replace_css) {
+				apply_styles(el, options.replace_css, {
+					force_important: true
+				});
+			}
+
+			if (options.add_links) {
+				var current = el;
+
+				while (current = current.parentElement) {
+					if (current.tagName === "A") {
+						if (!options.replace_links)
+							return;
+						else
+							break;
+					}
+				}
+
+				if (!current) {
+					current = document_createElement("a");
+
+					el.parentElement.insertBefore(current, el);
+					current.appendChild(el);
+				}
+
+				if (options.links_newtab) {
+					current.target = "_blank";
+				}
+
+				if (current.href !== url) {
+					current.href = url;
+				}
+			}
+		};
+
+		var replace_single_media = function(options, source, data, cb) {
+			var waiting = false;
+
+			if (data.data.img) {
+				replace_with_replacement(options, source.el, data.data.img, data.data.obj.url);
+			} else if (data.data.obj) {
+				var load_image = function() {
+					if (settings.replaceimgs_wait_fullyloaded && options.replace_imgs) {
+						// Preload the image, as adding onload/onerror to existing images won't fire the event
+						// todo: support videos
+						var image = new Image();
+						var finish_image = function() {
+							replace_with_replacement(options, source.el, image.src, data.data.obj.url);
+							cb();
+						};
+
+						image.onload = finish_image;
+						image.onerror = cb;
+						image.src = data.data.obj.url;
+					} else {
+						replace_with_replacement(options, source.el, data.data.obj.url, data.data.obj.url);
+						cb();
+					}
+				};
+
+				if (is_extension) {
+					extension_send_message({
+						type: "override_next_headers",
+						data: {
+							url: data.data.obj.url,
+							headers: data.data.obj.headers,
+							method: "GET"
+						}
+					}, function() {
+						load_image();
+					});
+				} else {
+					load_image();
+				}
+
+				waiting = true;
+			}
+
+			if (!waiting)
+				cb();
+		};
+
 		var replacing_imgs = false;
 		var replaceimgs_elcache = new Cache();
 		function replace_images(options) {
@@ -27552,63 +28103,123 @@ var $$IMU_EXPORT$$;
 
 			// remove non-images/videos
 			var imgs = [];
-			var parent_els = new_set();
-			for (var i = 0; i < raw_imgs.length; i++) {
-				var supported = is_img_pic_vid(raw_imgs[i]);
-				if (!supported && options.support_plainlinks && raw_imgs[i].tagName === "A") supported = true;
 
-				if (supported) {
-					imgs.push(raw_imgs[i]);
+			if (!options.all_els_ok) {
+				var parent_els = new_set();
+				for (var i = 0; i < raw_imgs.length; i++) {
+					var supported = is_img_pic_vid(raw_imgs[i]);
+					if (!supported && options.support_plainlinks && raw_imgs[i].tagName === "A") supported = true;
 
-					if (options.support_plainlinks) {
-						var parent = raw_imgs[i].parentElement;
-						while (parent) {
-							set_add(parent_els, parent);
-							parent = parent.parentElement;
+					if (supported) {
+						imgs.push(raw_imgs[i]);
+
+						if (options.support_plainlinks) {
+							var parent = raw_imgs[i].parentElement;
+							while (parent) {
+								set_add(parent_els, parent);
+								parent = parent.parentElement;
+							}
 						}
 					}
 				}
-			}
 
-			if (options.support_plainlinks) {
-				// linked media are not plainlinks
-				// fixme: does this work for non-document?
-				for (var i = 0; i < imgs.length; i++) {
-					if (imgs[i].tagName === "A" && set_has(parent_els, imgs[i])) {
-						imgs.splice(i, 1);
-						i--;
+				if (options.support_plainlinks) {
+					// linked media are not plainlinks
+					// fixme: does this work for non-document?
+					for (var i = 0; i < imgs.length; i++) {
+						if (imgs[i].tagName === "A" && set_has(parent_els, imgs[i])) {
+							imgs.splice(i, 1);
+							i--;
+						}
 					}
 				}
+			} else {
+				imgs = raw_imgs;
 			}
 
 			if (imgs.length === 0)
 				return;
 
+			var ip;
 			if (options.use_progressbar)
 				console_log("Replacing images");
 
 			var finished = 0;
 
-			var finish_img = function() {
+			var finish_img = function(id) {
 				finished++;
 
 				if (options.use_progressbar) {
-					update_progress_el(progressc_el, finished / total_imgs, true);
+					//update_progress_el(progressc_el, finished / total_imgs, true);
+					ip.finish_id(id);
 					console_log("Finished " + finished + "/" + total_imgs);
 				}
 
 				if (finished >= total_imgs) {
+					if (options.use_progressbar) {
+						update_progress_el(progressc_el, 1, true);
+					}
 					//if (options.use_progressbar) {
 					//	progressc_el.parentElement.removeChild(progressc_el);
 					//}
 
 					replacing_imgs = false;
+
+					if (options.finalcb) {
+						options.finalcb();
+					}
 				} else {
 					next_img();
 				}
 			};
 
-			var next_img = function () {
+			if (!options.replace_image_func) {
+				options.replace_image_func = function(options, our_source, cb, domain_processed_cb, progress_cb) {
+					if (options.use_elcache) {
+						if (replaceimgs_elcache.has(our_source.el)) {
+							return cb();
+						} else {
+							// Not perfect, but 5 seconds should be enough
+							replaceimgs_elcache.set(our_source.el, true, 5);
+						}
+					}
+
+					var use_head = !settings.replaceimgs_usedata;
+					var incomplete = use_head;
+					var null_if_no_change = true;
+					if (our_source.el.tagName === "A") {
+						use_head = null_if_no_change = !options.plainlink_replace_media;
+
+						// otherwise it'll request a lot of links, most of which aren't images
+						if (!null_if_no_change) {
+							null_if_no_change = !looks_like_valid_link(our_source.src, our_source.el);
+						}
+					}
+
+					get_final_from_source(our_source, {
+						automatic: true,
+						multi: true,
+						use_head: use_head,
+						incomplete_image: incomplete,
+						incomplete_video: incomplete,
+						null_if_no_change: null_if_no_change,
+						use_last_pos: false,
+						progress_cb: progress_cb
+					}, function (source_imu, source, processing, data) {
+						domain_processed_cb();
+
+						if (!data) {
+							replace_with_replacement(options, our_source.el, our_source.src, our_source.src);
+							return cb();
+						}
+
+						replace_single_media(options, source, data, cb);
+					});
+				};
+			}
+
+			var current_img_i = 0;
+			var next_img = function() {
 				var total_limit = parseInt(settings.replaceimgs_totallimit);
 				if (currently_processing > total_limit) {
 					currently_processing--;
@@ -27661,172 +28272,34 @@ var $$IMU_EXPORT$$;
 					break;
 				}
 
+				if (our_source === null && other.length > 0) {
+					our_source = other[0];
+					other.splice(0, 1);
+				}
+
+				var our_id = current_img_i;
+				current_img_i++;
+
 				if (our_source) {
-					if (options.use_elcache) {
-						if (replaceimgs_elcache.has(our_source.el)) {
-							return finish_img();
-						} else {
-							// Not perfect, but 5 seconds should be enough
-							replaceimgs_elcache.set(our_source.el, true, 5);
+					options.replace_image_func(options, our_source,
+						function() {
+							finish_img(our_id);
+						},
+						function() {
+							if (our_domain)
+								domains_processing[our_domain]--;
+						},
+						function(progobj) {
+							if (settings.replaceimgs_simple_progress) {
+								var percent = progobj.loaded / progobj.total;
+								progobj.total = 1;
+								progobj.loaded = percent;
+							}
+
+							ip.update_progobj(our_id, progobj);
 						}
-					}
-
-					var use_head = !get_single_setting("replaceimgs_usedata");
-					var null_if_no_change = true;
-					if (our_source.el.tagName === "A") {
-						use_head = null_if_no_change = !options.plainlink_replace_media;
-
-						// otherwise it'll request a lot of links, most of which aren't images
-						if (!null_if_no_change) {
-							null_if_no_change = !looks_like_valid_link(our_source.src, our_source.el);
-						}
-					}
-
-					get_final_from_source(our_source, {
-						automatic: true,
-						multi: true,
-						use_head: use_head,
-						null_if_no_change: null_if_no_change,
-						use_last_pos: false
-					}, function (source_imu, source, processing, data) {
-						if (our_domain)
-							domains_processing[our_domain]--;
-
-						var replace_func = function(el, replacement, url) {
-							var newsrc;
-
-							if (!replaced) {
-								newsrc = get_img_src(replacement);
-							}
-
-							var do_replace = false;
-							if (el.tagName === "A") {
-								if (options.plainlink_replace_link) {
-									el.href = newsrc;
-								}
-
-								if (options.plainlink_replace_text) {
-									el.textContent = newsrc;
-								}
-
-								if (options.plainlink_replace_media) {
-									do_replace = true;
-								}
-							}
-
-							var replaced = false;
-							if (do_replace || (typeof replacement !== "string" && replacement.tagName === "VIDEO")) {
-								if (typeof replacement !== "string") {
-									// todo: only replace on either blob url (hls/dash), or when the source el was a picture
-									el = replace_el(el, replacement);
-									replaced = true;
-								} else {
-									console_warn("Unable to replace", el, "due to invalid replacement:", replacement);
-									return;
-								}
-							}
-
-							if (!replaced && options.replace_imgs && get_img_src(el) !== newsrc) {
-								el.src = newsrc;
-							}
-
-							if (options.remove_constraints) {
-								el.removeAttribute("height");
-								el.removeAttribute("width");
-								el.style.setProperty("height", "auto", "important");
-								el.style.setProperty("width", "auto", "important");
-							}
-
-							if (options.replace_css) {
-								apply_styles(el, options.replace_css, {
-									force_important: true
-								});
-							}
-
-							if (options.add_links) {
-								var current = el;
-
-								while (current = current.parentElement) {
-									if (current.tagName === "A") {
-										if (!options.replace_links)
-											return;
-										else
-											break;
-									}
-								}
-
-								if (!current) {
-									current = document_createElement("a");
-
-									el.parentElement.insertBefore(current, el);
-									current.appendChild(el);
-								}
-
-								if (options.links_newtab) {
-									current.target = "_blank";
-								}
-
-								if (current.href !== url) {
-									current.href = url;
-								}
-							}
-						};
-
-						if (!data) {
-							replace_func(our_source.el, our_source.src, our_source.src);
-							return finish_img();
-						}
-
-						var waiting = false;
-						if (data.data.img) {
-							replace_func(source.el, data.data.img, data.data.obj.url);
-						} else if (data.data.obj) {
-							var load_image = function() {
-								if (settings.replaceimgs_wait_fullyloaded && options.replace_imgs) {
-									// Preload the image, as adding onload/onerror to existing images won't fire the event
-									// todo: support videos
-									var image = new Image();
-									var finish_image = function () {
-										replace_func(source.el, image.src, data.data.obj.url);
-										finish_img();
-									};
-
-									image.onload = finish_image;
-									image.onerror = finish_img;
-									image.src = data.data.obj.url;
-								} else {
-									replace_func(source.el, data.data.obj.url, data.data.obj.url);
-									finish_img();
-								}
-							};
-
-							if (is_extension) {
-								extension_send_message({
-									type: "override_next_headers",
-									data: {
-										url: data.data.obj.url,
-										headers: data.data.obj.headers,
-										method: "GET"
-									}
-								}, function() {
-									load_image();
-								});
-							} else {
-								load_image();
-							}
-
-							waiting = true;
-						}
-
-						if (!waiting)
-							finish_img();
-					});
+					);
 				} else {
-					if (our_source === null && other.length > 0) {
-						our_source = other[0];
-						other.splice(0, 1);
-					}
-
 					currently_processing--;
 				}
 			};
@@ -27846,7 +28319,8 @@ var $$IMU_EXPORT$$;
 			var total_imgs = imgs.length;
 
 			for (var i = 0; i < imgs.length; i++) {
-				var source = find_source([imgs[i]]);
+				// fixme: if find_source only returns null, it will "hang" (progress bar will never close)
+				var source = find_source([imgs[i]], {links: options.support_plainlinks});
 				if (!source) {
 					total_imgs--;
 					continue;
@@ -27873,11 +28347,20 @@ var $$IMU_EXPORT$$;
 				domains[domain[1]].push(source);
 			}
 
+			if (options.use_progressbar) {
+				ip = new ImpreciseProgress({
+					cb: function(progobj) {
+						update_progress_el(progressc_el, progobj.percent, false);
+					},
+					elements_num: total_imgs
+				});
+			}
+
 			var currently_processing = 1;
 			next_img();
 		}
 
-		var replace_images_full = function(options) {
+		var get_replace_images_options = function(options) {
 			var base_options = {
 				replace_imgs: settings.replaceimgs_replaceimgs,
 				add_links: settings.replaceimgs_addlinks,
@@ -27910,10 +28393,174 @@ var $$IMU_EXPORT$$;
 				base_options[key] = options[key];
 			}
 
+			return base_options;
+		};
+
+		var replace_images_full = function(options) {
+			var base_options = get_replace_images_options(options);
 			return replace_images(base_options);
 		};
 
 		register_menucommand("Replace images", replace_images_full);
+
+		var create_zip = function(files, foldername, cb) {
+			get_library("jszip", settings, do_request, function(lib) {
+				if (!lib) return cb(null);
+
+				var zip = new lib();
+
+				var root = zip;
+				if (foldername) {
+					root = zip.folder(foldername);
+				}
+
+				for (var filename in files) {
+					root.file(filename, files[filename]);
+				}
+
+				zip.generateAsync({type: "blob"}).then(function(data) {
+					cb(data);
+				}, function(err) {
+					console_error(err);
+					cb(null);
+				});
+			});
+		};
+
+		var download_album = function() {
+			var files = {};
+			var urls = new_set();
+			var filename = null;
+
+			var set_filename = function(obj) {
+				if (filename) return;
+
+				var our_vars = deepcopy(obj.format_vars);
+				our_vars.ext = ".zip";
+				//our_vars.filename = our_vars.filename_noext + our_vars.ext;
+				filename = get_filename_from_format(settings.gallery_zip_filename_format, our_vars);
+
+				if (!filename) filename = "download";
+				if (!/\.zip$/i.test(filename)) filename += ".zip";
+			};
+
+			var add_file = function(data, progresscb, cb) {
+				if (data.data.img) {
+					// otherwise it'll both use bandwidth and play the audio
+					if (data.data.img.tagName === "VIDEO") {
+						data.data.img.pause();
+					}
+
+					var src = get_img_src(data.data.img);
+
+					var obj = data.data.obj || {};
+					var origurl = obj.url;
+					obj = overlay_object(obj, { url: src });
+
+					if (set_has(urls, origurl)) {
+						return cb();
+					} else {
+						set_add(urls, origurl);
+					}
+
+					// todo: some kind of infoobj_to_requestobj function
+					request_chunked({
+						url: obj.url,
+						headers: obj.headers
+					}, {
+						onload: function(resp) {
+							fill_obj_filename(obj, origurl, data.data.respdata);
+							set_filename(obj);
+
+							var filename = obj.filename || "download"; // "download" should hopefully not happen
+
+							if (filename in files) {
+								var i = 1;
+
+								var new_filename;
+								var splitted = url_basename(filename, {split_ext: true});
+								do {
+									new_filename = splitted[0] + " (" + (i++) + ")";
+									if (splitted[1]) {
+										new_filename += "." + splitted[1];
+									}
+								} while (new_filename in files);
+
+								filename = new_filename;
+							}
+
+							files[filename] = resp.data;
+
+							cb();
+						},
+						onprogress: progresscb
+					});
+				} else {
+					console_error("Unable to get element from", data, source, our_source);
+					return cb();
+				}
+			};
+
+			get_gallery_elements(function(els) {
+				replace_images_full({
+					images: els,
+					all_els_ok: true,
+					replace_image_func: function(options, our_source, cb, domain_processed_cb, progress_cb) {
+						//console_log(our_source);
+
+						get_final_from_source(our_source, {
+							automatic: true,
+							multi: true,
+							use_head: false,
+							incomplete_image: false,
+							incomplete_video: true, // hack to force request_chunked
+							deny_nondirect_delivery: true,
+							deny_cache: true,
+							null_if_no_change: !settings.gallery_download_unchanged,
+							use_last_pos: false,
+							progress_cb: progress_cb
+						}, function (source_imu, source, processing, data) {
+							domain_processed_cb();
+
+							if (!data) {
+								if (typeof source === "undefined" && !settings.gallery_download_unchanged) {
+									console_warn("Not downloading unchanged image", our_source);
+								} else {
+									console_error("Unable to download", source, our_source);
+								}
+
+								return cb();
+							} else {
+								add_file(data, function(progobj) {}, cb);
+							}
+						});
+					},
+					finalcb: function() {
+						start_waiting();
+
+						if (Object.keys(files).length > 0) {
+							filename = filename || "download.zip";
+
+							var foldername = null;
+							if (settings.gallery_zip_add_tld) {
+								foldername = filename.replace(/\.zip$/i, "");
+							}
+
+							create_zip(files, foldername, function(data) {
+								if (!data) {
+									cursor_not_allowed();
+									return;
+								} else {
+									stop_waiting();
+								}
+
+								do_blob_download(data, filename);
+							});
+						}
+					}
+				});
+			});
+		};
 
 		var generate_random_class = function(name) {
 			return "imu-" + get_random_text(10) + "-" + name;
@@ -28153,7 +28800,7 @@ var $$IMU_EXPORT$$;
 		};
 
 		(function() {
-			if (!settings.imu_enabled)
+			if (is_suspended())
 				return;
 
 			// TODO: allow this to be automatically updated
@@ -28201,7 +28848,7 @@ var $$IMU_EXPORT$$;
 			}
 
 			var observe = function() {
-				if (!settings.imu_enabled)
+				if (is_suspended())
 					return;
 
 				on_new_images(get_all_valid_els_link());
@@ -28227,6 +28874,7 @@ var $$IMU_EXPORT$$;
 
 				observer.disconnect();
 			};
+			termination_hooks.push(disconnect);
 
 			var needs_observer = function() {
 				var highlight = get_single_setting("highlightimgs_auto");
@@ -28356,19 +29004,12 @@ var $$IMU_EXPORT$$;
 								var data = ffmpeg.FS("readFile", filename);
 
 								new_blob(data, function(blob) {
-									var objurl = create_objecturl(blob);
-
 									var out_ext = url_basename(filename, {split_ext: true})[1];
 									var out_filename = url_basename(popup_obj.filename || "download", {split_ext: true, known_ext: true})[0] + "." + out_ext;
 
-									do_browser_download({
-										url: objurl,
-									}, out_filename);
-
-									setTimeout(function() {
-										revoke_objecturl(objurl);
+									do_blob_download(blob, out_filename, function() {
 										ffmpeg.FS("unlink", filename);
-									}, 500);
+									});
 								});
 							});
 						});
@@ -28567,7 +29208,11 @@ var $$IMU_EXPORT$$;
 			var context = canvas.getContext("2d");
 			context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-			return cb(get_img_src(canvas));
+			var mime = "image/png";
+			var screenshot_format = get_single_setting("popup_video_screenshot_format");
+			if (screenshot_format === "jpg") mime = "image/jpeg";
+
+			return cb(get_canvas_src(canvas, mime));
 		};
 
 		var screenshot_video = function() {
@@ -28585,6 +29230,9 @@ var $$IMU_EXPORT$$;
 				var our_vars = deepcopy(popup_obj.format_vars);
 				our_vars.is_screenshot = {usable: true};
 				our_vars.ext = ".png";
+				if (get_single_setting("popup_video_screenshot_format") === "jpg") {
+					our_vars.ext = ".jpg";
+				}
 				our_vars.filename = our_vars.filename_noext + our_vars.ext;
 				var screenshot_filename = get_filename_from_format(settings.filename_format, our_vars);
 
@@ -28722,6 +29370,9 @@ var $$IMU_EXPORT$$;
 				case "screenshot_video":
 					screenshot_video();
 					return true;
+				case "download_gallery":
+					download_album();
+					return true;
 			}
 
 			return false;
@@ -28826,10 +29477,11 @@ var $$IMU_EXPORT$$;
 
 			if (settings.mouseover) {
 				if (settings.mouseover_trigger_behavior === "keyboard") {
-					var triggers = [
-						settings.mouseover_trigger_key,
-						settings.mouseover_trigger_key_t2
-					];
+					var triggers = [settings.mouseover_trigger_key];
+
+					for (var i = 0; i < num_profiles; i++) {
+						triggers.push(settings["mouseover_trigger_key_t" + (i + 2)]);
+					}
 
 					array_foreach(triggers, function(trigger, i) {
 						if (!event_in_chord(event, trigger)) return;
@@ -29030,16 +29682,24 @@ var $$IMU_EXPORT$$;
 					},
 					{
 						key: settings.mouseover_video_screenshot_key,
+						// Clear the chord because keyup might not be called due to the save dialog popup
+						clear: true,
 						action: {type: "screenshot_video"}
 					},
 					{
 						key: settings.mouseover_ui_toggle_key,
 						action: {type: "toggle_ui"}
+					},
+					{
+						key: settings.mouseover_gallery_download_key,
+						action: {type: "download_gallery"},
+						// Clear the chord because keyup might not be called due to the save dialog popup
+						clear: true
 					}
 				];
 
 				for (var i = 0; i < keybinds.length; i++) {
-					if (trigger_complete(keybinds[i].key)) {
+					if (keybinds[i].key && trigger_complete(keybinds[i].key)) {
 						if ("requires" in keybinds[i]) {
 							if (!keybinds[i].requires)
 								continue;
@@ -29437,6 +30097,10 @@ var $$IMU_EXPORT$$;
 					}
 				} else if (message.type === "remote" || message.type === "remote_reply") {
 					handle_remote_event(message);
+				} else if (message.type === "suspend") {
+					set_terminated(true);
+				} else if (message.type === "unsuspend") {
+					set_terminated(false);
 				} else {
 					general_extension_message_handler(message, sender, respond);
 				}
