@@ -24,6 +24,13 @@ var run_ready = function() {
 	});
 };
 
+var handle_error = function(context) {
+	var last_error = chrome.runtime.lastError;
+	if (last_error) {
+		console.error(JSON.stringify(last_error), context);
+	}
+}
+
 var background_userscript_tabid = "::IMU::background_userscript";
 
 var storage = null;
@@ -1498,4 +1505,42 @@ chrome.tabs.onActivated.addListener(function(activeInfo) {
 			});
 		}
 	}
+});
+
+var broadcast_message = function(message) {
+	chrome.tabs.query({}, function(tabs) {
+		for (var i = 0; i < tabs.length; i++) {
+			chrome.tabs.sendMessage(tabs[i].id, message);
+		}
+	});
+};
+
+chrome.runtime.onSuspend.addListener(function() {
+	broadcast_message({type: "suspend"});
+});
+
+chrome.runtime.onSuspendCanceled.addListener(function() {
+	broadcast_message({type: "unsuspend"});
+});
+
+// https://stackoverflow.com/a/61074058
+chrome.runtime.onInstalled.addListener(function() {
+	chrome.tabs.query({}, function(tabs) {
+		var userscript_file = chrome.runtime.getManifest().content_scripts[0].js[0];
+		for (var i = 0; i < tabs.length; i++) {
+			var tab = tabs[i];
+
+			try {
+				if (!tab || tab.discarded || !tab.url) continue;
+				if (!/^(https?|file):\/\//.test(tab.url)) continue;
+			} catch (e) {
+				console.error(e);
+				continue;
+			}
+
+			chrome.tabs.executeScript(tab.id, {
+				file: userscript_file
+			}, handle_error);
+		}
+	});
 });
