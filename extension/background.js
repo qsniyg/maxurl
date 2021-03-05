@@ -137,6 +137,9 @@ var use_header = function(value) {
 	return value !== "" && value !== null;
 };
 
+// currently used to detect if the extension is unloaded
+chrome.runtime.onConnect.addListener(function() {});
+
 var do_request = function(request, sender) {
 	debug("do_request", request, sender);
 
@@ -1550,6 +1553,3 @@ chrome.runtime.onInstalled.addListener(function() {
 		}
 	});
 });
-
-// currently used to detect if the extension is unloaded
-chrome.runtime.onConnect.addListener(function() {});
