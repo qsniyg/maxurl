@@ -628,6 +628,14 @@ msgstr ""
 msgid "Blob URLs are more efficient, but aren't supported by earlier browsers. Some websites also block `blob:` URLs"
 msgstr ""
 
+#. popup_use_anonymous_crossorigin.name
+msgid "Load media anonymously"
+msgstr ""
+
+#. popup_use_anonymous_crossorigin.description
+msgid "Loads the media without sending any cookies or other forms of credentials. This is required to screenshot videos from other sources"
+msgstr ""
+
 #. mouseover_enable_notallowed.name
 msgid "Use `not-allowed` cursor when unsupported"
 msgstr "지원되지 않을 때 허용되지 않는 커서를 사용"
@@ -926,6 +934,22 @@ msgstr ""
 
 #. mouseover_video_screenshot_key.description
 msgid "Screenshots the current frame in the video"
+msgstr ""
+
+#. popup_video_screenshot_format.name
+msgid "Screenshot format"
+msgstr ""
+
+#. popup_video_screenshot_format.description
+msgid "File format to save the screenshot in"
+msgstr ""
+
+#. popup_video_screenshot_format.options.png.name
+msgid "PNG"
+msgstr ""
+
+#. popup_video_screenshot_format.options.jpg.name
+msgid "JPG"
 msgstr ""
 
 #. mouseover_ui.name
@@ -1858,6 +1882,41 @@ msgstr ""
 msgid "Key to trigger the next gallery item"
 msgstr ""
 
+#. mouseover_gallery_download_key.name
+msgid "Gallery download key"
+msgstr ""
+
+#. mouseover_gallery_download_key.description
+msgid "Key to download the current gallery"
+msgstr ""
+
+#. gallery_download_unchanged.name
+msgid "Download unchanged media"
+msgstr ""
+
+#. gallery_download_unchanged.description
+msgid "Includes gallery items that have not been changed. Useful to potentially avoid downloading thumbnails"
+msgstr ""
+
+#. gallery_zip_filename_format.name
+msgid "Zip: Filename format"
+msgstr ""
+
+#. gallery_zip_filename_format.description
+msgid ""
+"Format string(s) for the zip filename.\n"
+"Refer to \"Filename format\" under the Rules section for documentation.\n"
+"`.zip` will be automatically suffixed if it's missing."
+msgstr ""
+
+#. gallery_zip_add_tld.name
+msgid "Zip: Store in subdirectory"
+msgstr ""
+
+#. gallery_zip_add_tld.description
+msgid "Stores the files in a subdirectory with the same name as the .zip file (without the .zip extension)"
+msgstr ""
+
 #. mouseover_gallery_move_after_video.name
 msgid "Move to next when video finishes"
 msgstr ""
@@ -2189,11 +2248,7 @@ msgid "Possibly different images"
 msgstr "다를 수 있는 이미지"
 
 #. allow_possibly_different.description
-msgid "Enables rules that return images that possibly differ"
-msgstr ""
-
-#. allow_possibly_different.example_websites[0]
-msgid "YouTube video thumbnails"
+msgid "Enables rules that return images that possibly differ, usually due to server-side caching"
 msgstr ""
 
 #. allow_possibly_broken.name
@@ -2503,6 +2558,10 @@ msgid ""
 "<li><code>caption</code> - Popup caption</li>\n"
 "<li><code>author_username</code> - Author's username</li>\n"
 "<li><code>id</code> - Post ID</li>\n"
+"<li><code>host_domain</code> - Domain of the host webpage</li>\n"
+"<li><code>host_domain_nosub</code> - Domain (without subdomains) of the host webpage</li>\n"
+"<li><code>domain</code> - Domain of the media</li>\n"
+"<li><code>domain_nosub</code> - Domain (without subdomains) of the media</li>\n"
 "<li><code>is_screenshot</code> - Blank, the line will only be processed when screenshotting a video</li>\n"
 "<li><code>created_...</code> - Created date (see note on Date objects below)</li>\n"
 "<li><code>updated_...</code> - Updated date, this will use the <code>Last-Modified</code> header if not otherwise specified by the rule (see note on Date objects below)</li>\n"
@@ -2667,6 +2726,14 @@ msgstr ""
 msgid "CSS styles to apply to replaced media. See the documentation for Popup CSS style for more information (the thumb/full URL variables aren't yet supported here)"
 msgstr ""
 
+#. replaceimgs_simple_progress.name
+msgid "Simple progress"
+msgstr ""
+
+#. replaceimgs_simple_progress.description
+msgid "Uses a simpler progress bar that has a fixed size for all media. This is useful to see how many images are replaced, rather than the ETA"
+msgstr ""
+
 #. replaceimgs_enable_keybinding.name, highlightimgs_enable_keybinding.name
 msgid "Enable trigger key"
 msgstr ""
@@ -2757,6 +2824,10 @@ msgstr ""
 
 #. mouseover_open_behavior.options.copylink.name, t2_mouseover_open_behavior.options.copylink.name, t3_mouseover_open_behavior.options.copylink.name
 msgid "Copy link"
+msgstr ""
+
+#. mouseover_open_behavior.options.replace.name, t2_mouseover_open_behavior.options.replace.name, t3_mouseover_open_behavior.options.replace.name
+msgid "Replace"
 msgstr ""
 
 #. mouseover_allow_video.name, t2_mouseover_allow_video.name, t3_mouseover_allow_video.name
