@@ -1545,3 +1545,6 @@ chrome.runtime.onInstalled.addListener(function() {
 		}
 	});
 });
+
+// currently used to detect if the extension is unloaded
+chrome.runtime.onConnect.addListener(function() {});
