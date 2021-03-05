@@ -1539,9 +1539,14 @@ chrome.runtime.onInstalled.addListener(function() {
 				continue;
 			}
 
-			chrome.tabs.executeScript(tab.id, {
-				file: userscript_file
-			}, handle_error);
+			(function(tab) {
+				// yield
+				setTimeout(function() {
+					chrome.tabs.executeScript(tab.id, {
+						file: userscript_file
+					}, function(){handle_error();});
+				}, 1);
+			})(tab);
 		}
 	});
 });
