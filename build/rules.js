@@ -25062,9 +25062,14 @@ var $__imu_get_bigimage = function(shared_variables) {
 
 			if (domain_nowww === "celebriot.com") return src.replace(/(\.[^/.]*)\.thumb_[0-9]+x[0-9]+\.[^/.]*(?:[?#].*)?$/, "$1");
 
-			if (domain_nosub === "paheal.net" ||
-				domain_nowww === "rule34hentai.net") {
-				return src.replace(/:\/\/[^/]*\/_thumbs\//, "://peach.paheal.net/_images/");
+			if (domain_nosub === "paheal.net") return src.replace(/:\/\/[^/]*\/_thumbs\//, "://peach.paheal.net/_images/");
+
+			if (domain_nowww === "rule34hentai.net") {
+				return {
+					url: src.replace(/(:\/\/[^/]*\/)_thumbs\//, "$1_images/"),
+					head_wrong_contenttype: true,
+					can_head: false
+				};
 			}
 
 			if (domain_nosub === "lovethispic.com") return src.replace(/\/uploaded_images\/+thumbs\/+/, "/uploaded_images/");
@@ -29583,7 +29588,7 @@ var $__imu_get_bigimage = function(shared_variables) {
 			}
 
 			if (domain_nosub === "userapi.com") {
-				newsrc = src.replace(/(:\/\/[^/]+\/+)impg\/+(.*?)(?:[?#].*)?$/, "$1$2");
+				newsrc = src.replace(/(:\/\/[^/]+\/+)imp[gf]\/+(.*?)(?:[?#].*)?$/, "$1$2");
 				if (newsrc !== src)
 					return newsrc;
 			}
@@ -29741,89 +29746,41 @@ var $__imu_get_bigimage = function(shared_variables) {
 					};
 
 					function request_photo(id, list, cb) {
-						var cache_key = "vk_photo:" + id;
-						api_cache.fetch(cache_key, cb, function (done) {
-							var listkey = "";
-							if (list)
-								listkey = "&list=" + list;
-							options.do_request({
-								method: "POST",
-								url: "https://vk.com/al_photos.php",
-								data: "act=show&al=1&photo=" + id + listkey,
-								headers: {
-									"Content-Type": "application/x-www-form-urlencoded",
-									"X-Requested-With": "XMLHttpRequest"
-								},
-								onload: function (result) {
-									if (result.readyState !== 4)
-										return;
+						var listkey = "";
+						if (list)
+							listkey = "&list=" + list;
 
-									try {
-										var json = JSON_parse(result.responseText);
-
-										var jsonarray = json.payload[1][3];
-										var jsonobj = null;
+						api_query("vk_photo:" + id, {
+							method: "POST",
+							url: "https://vk.com/al_photos.php?act=show",
+							data: "act=show&al=1&photo=" + id + listkey,
+							imu_mode: "xhr",
+							headers: {
+								"Content-Type": "application/x-www-form-urlencoded",
+								"X-Requested-With": "XMLHttpRequest"
+							},
+							json: true
+						}, cb, function (done, json, cache_key) {
+							var jsonarray = json.payload[1][3];
+							var jsonobj = null;
 
 
-										for (var i = 0; i < jsonarray.length; i++) {
-											if (!jsonarray[i].id)
-												continue;
+							for (var i = 0; i < jsonarray.length; i++) {
+								if (!jsonarray[i].id)
+									continue;
 
-											api_cache.set("vk_photo:" + jsonarray[i].id, jsonarray[i], 3*60*60);
+								api_cache.set("vk_photo:" + jsonarray[i].id, jsonarray[i], 3*60*60);
 
-											if (jsonarray[i].id !== id)
-												continue;
+								if (jsonarray[i].id !== id)
+									continue;
 
-											jsonobj = jsonarray[i];
-											break;
-										}
+								jsonobj = jsonarray[i];
+							}
 
-										if (jsonobj !== null)
-											done(jsonobj, 3*60*60);
-										else
-											done(null, false);
-									} catch(e) {
-										console_log("vk_photo", result);
-										console_error("vk_photo", e);
-										return done(null, false);
-									}
-
-									if (false) {
-									var match = result.responseText.match(/<!json>(\[.*?\])<!>/);
-									if (!match) {
-										return done(null, false);
-									}
-
-									try {
-										var jsonarray = JSON_parse(match[1]);
-										var jsonobj = null;
-
-
-										for (var i = 0; i < jsonarray.length; i++) {
-											if (!jsonarray[i].id)
-												continue;
-
-											api_cache.set("vk_photo:" + jsonarray[i].id, jsonarray[i], 3*60*60);
-
-											if (jsonarray[i].id !== id)
-												continue;
-
-											jsonobj = jsonarray[i];
-											break;
-										}
-
-										if (jsonobj !== null)
-											done(jsonobj, 3*60*60);
-										else
-											done(null, false);
-									} catch (e) {
-										console_log("vk_photo", result);
-										console_error("vk_photo", e);
-										done(null, false);
-									}
-									}
-								}
-							});
+							if (jsonobj !== null)
+								done(jsonobj, 3*60*60);
+							else
+								done(null, false);
 						});
 					}
 
@@ -29838,6 +29795,9 @@ var $__imu_get_bigimage = function(shared_variables) {
 								if (size > maxsize) {
 									maxsize = size;
 									maxurl = jsonobj[key + "src"];
+
+									if (false && typeof maxurl === "string")
+										maxurl = maxurl.replace(/(:\/\/[^/]+\/+)impg\/+(.*?)(?:[?#].*)?$/, "$1$2");
 								}
 							}
 						}
@@ -40382,10 +40342,23 @@ var $__imu_get_bigimage = function(shared_variables) {
 
 			if (domain === "images.mubicdn.net" ||
 				domain === "assets.mubicdn.net") {
+
 				newsrc = src.replace(/[?#].*$/, "");
 				if (newsrc !== src) return newsrc;
 
-				return src.replace(/(\/images\/+[^/]+\/+[0-9]+\/+[^/]+\/+image-)[wh][0-9]+(\.[^/.]+)$/, "$1original$2");
+				newsrc = src.replace(/(\/images\/+(?:[^/]+\/+)?(?:[0-9]+\/+[^/]+|[^/]+\/+[0-9]+)\/+images?-)[wh][0-9]+(\.[^/.]+)$/, "$1original$2");
+				if (newsrc !== src) {
+					if (/\/cache-[0-9]+-[0-9]+\//.test(src)) {
+						return {
+							url: newsrc,
+							problems: {
+								possibly_different: true
+							}
+						};
+					} else {
+						return newsrc;
+					}
+				}
 			}
 
 			if (domain === "d2t8nixuow17vt.cloudfront.net") {
@@ -42817,6 +42790,10 @@ var $__imu_get_bigimage = function(shared_variables) {
 				}
 			}
 
+			if (domain_nosub === "tvtome.com" && /^img[0-9]*\./.test(domain)) {
+				return src.replace(/(\/i\/+(?:u|tvc)\/+)[^/]+\/+([0-9]+|[0-9a-f]{20,})\./, "$1$2.");
+			}
+
 
 
 
@@ -43746,6 +43723,6 @@ var $__imu_get_bigimage = function(shared_variables) {
 
 			return src;
 		},
-		nonce: "1nb9i7mkll38b1cp" // imu:nonce = "1nb9i7mkll38b1cp"
+		nonce: "15ma5ag1h8ea1432" // imu:nonce = "15ma5ag1h8ea1432"
 	};
 };
