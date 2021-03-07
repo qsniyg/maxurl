@@ -1528,7 +1528,7 @@ chrome.runtime.onSuspendCanceled.addListener(function() {
 });*/
 
 // https://stackoverflow.com/a/61074058
-chrome.runtime.onInstalled.addListener(function() {
+var hotload = function() {
 	chrome.tabs.query({}, function(tabs) {
 		var userscript_file = chrome.runtime.getManifest().content_scripts[0].js[0];
 		for (var i = 0; i < tabs.length; i++) {
@@ -1552,4 +1552,10 @@ chrome.runtime.onInstalled.addListener(function() {
 			})(tab);
 		}
 	});
+};
+
+chrome.runtime.onInstalled.addListener(function() {
+	get_option("extension_hotreload", function(value) {
+		if (value) hotload();
+	}, true);
 });
