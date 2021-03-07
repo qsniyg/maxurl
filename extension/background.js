@@ -308,7 +308,7 @@ var do_request = function(request, sender) {
 	add_handler("onerror", true);
 	add_handler("onprogress", false);
 	add_handler("onabort", true, true);
-	add_handler("ontimeout", true, true);
+	add_handler("ontimeout", true);
 
 	requests[id] = {
 		id: id,
