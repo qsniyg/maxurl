@@ -80,7 +80,7 @@
 //     * You can control this with the "Rules using API calls" setting
 //   * Downloading the image for the popup
 //   * Querying a third-party library
-//     * You can control this with the "Rules using 3rd-party libraries" setting.
+//     * You can control this with the "Allow 3rd-party libraries" setting.
 //       3rd-party libraries are disabled by default for security reasons.
 // Search for do_request, api_query, and website_query if you want to see what the code does exactly.
 //
@@ -165,11 +165,22 @@ var $$IMU_EXPORT$$;
 	// The likely causes would be either a CDN failure, or that the userscript manager doesn't support @require.
 	var require_rules_failed = false;
 
-	var get_window = function() {
+	var get_raw_window = function() {
 		if (typeof(unsafeWindow) !== "undefined")
 			return unsafeWindow || this.window || window;
 
 		return this.window || window;
+	};
+
+	var get_window = function() {
+		var raw_window = get_raw_window();
+		// https://github.com/qsniyg/maxurl/issues/678#issuecomment-791855176
+		// userscript under firefox violentmonkey under twitter's unsafeWindow returns Sandbox, which isn't an EventTarget (breaks "message" handler)
+		// .self returns the actual window, which is an EventTarget
+		if (raw_window.self)
+			return raw_window.self;
+		else
+			return raw_window;
 	};
 
 	var termination_hooks = [];
@@ -1838,6 +1849,9 @@ var $$IMU_EXPORT$$;
 
 			if (!data.onerror)
 				data.onerror = data.onload;
+
+			if (!data.ontimeout)
+				data.ontimeout = data.onerror;
 
 			var raw_request_do = do_request_raw;
 			if (is_userscript && settings.allow_browser_request) {
@@ -4013,8 +4027,9 @@ var $$IMU_EXPORT$$;
 		// thanks to shivsah on github for the inspiration: https://github.com/qsniyg/maxurl/issues/95
 		mouseover_gallery_download_key: ["shift", "d"],
 		gallery_download_unchanged: true,
-		gallery_zip_filename_format: "{host_domain_nosub}-{download_unix}\n{download_unix}",
+		gallery_zip_filename_format: "{host_domain_nosub}-{items_amt}-{download_unix}\n{items_amt}-{download_unix}",
 		gallery_zip_add_tld: false,
+		gallery_zip_add_info_file: true,
 		// thanks to acid-crash on github for the idea: https://github.com/qsniyg/maxurl/issues/20
 		mouseover_styles: "",
 		mouseover_enable_fade: true,
@@ -4057,6 +4072,7 @@ var $$IMU_EXPORT$$;
 		website_inject_imu: true,
 		website_image: true,
 		extension_contextmenu: true,
+		extension_hotreload: true,
 		allow_watermark: false,
 		allow_smaller: false,
 		allow_possibly_different: false,
@@ -6310,7 +6326,8 @@ var $$IMU_EXPORT$$;
 			description: "Key to download the current gallery",
 			requires: {
 				_condition: "action:popup",
-				mouseover_enable_gallery: true
+				mouseover_enable_gallery: true,
+				allow_thirdparty_libs: true
 			},
 			type: "keysequence",
 			category: "keybinds",
@@ -6328,7 +6345,12 @@ var $$IMU_EXPORT$$;
 		},
 		gallery_zip_filename_format: {
 			name: "Zip: Filename format",
-			description: "Format string(s) for the zip filename.\nRefer to \"Filename format\" under the Rules section for documentation.\n`.zip` will be automatically suffixed if it's missing.",
+			description: [
+				"Format string(s) for the zip filename.",
+				"Refer to \"Filename format\" under the Rules section for documentation. The variables are set from the first loaded media.",
+				"An additional `items_amt` format variable is supported, which contains the number of items.",
+				"`.zip` will be automatically suffixed if it's missing."
+			].join("\n"),
 			requires: {
 				_condition: "action:popup",
 				mouseover_enable_gallery: true
@@ -6340,6 +6362,16 @@ var $$IMU_EXPORT$$;
 		gallery_zip_add_tld: {
 			name: "Zip: Store in subdirectory",
 			description: "Stores the files in a subdirectory with the same name as the .zip file (without the .zip extension)",
+			requires: {
+				_condition: "action:popup",
+				mouseover_enable_gallery: true
+			},
+			category: "popup",
+			subcategory: "gallery"
+		},
+		gallery_zip_add_info_file: {
+			name: "Zip: Store info file",
+			description: "Stores a `info.txt` file in the .zip containing information about the downloaded files and host page.",
 			requires: {
 				_condition: "action:popup",
 				mouseover_enable_gallery: true
@@ -6600,6 +6632,13 @@ var $$IMU_EXPORT$$;
 		extension_contextmenu: {
 			name: "IMU entry in context menu",
 			description: "Enables a custom entry for this extension in the right click/context menu",
+			extension_only: true,
+			category: "extension",
+			imu_enabled_exempt: true
+		},
+		extension_hotreload: {
+			name: "Hot (re)load",
+			description: "(Re)loads the extension on all existing pages when installing or updating",
 			extension_only: true,
 			category: "extension",
 			imu_enabled_exempt: true
@@ -10593,6 +10632,8 @@ var $$IMU_EXPORT$$;
 		if (!image_url)
 			return image_url;
 
+		if (typeof image_url === "number") return image_url; // e.g. img_i: 0, 1, 2
+
 		var newurl = image_url.replace(/.*\/([^/.]*)\.[^/.]*(?:[?#].*)?$/, "$1");
 		if (newurl === image_url) return null;
 		return newurl;
@@ -11091,6 +11132,11 @@ var $$IMU_EXPORT$$;
 				if (imageid === "first")
 					return objarr[i];
 
+				if (typeof imageid === "number") {
+					if (imageid === objarr[i].i) return objarr[i];
+					continue;
+				}
+
 				if (string_indexof(objarr[i].src, imageid) > 0)
 					return objarr[i];
 			}
@@ -11099,7 +11145,10 @@ var $$IMU_EXPORT$$;
 		}
 
 		var image_in_objarr = function(image, objarr, objarr1) {
-			var imageid = common_functions.instagram_get_imageid(image);
+			var imageid = image;
+
+			if (typeof imageid === "string" && imageid !== "first")
+				imageid = common_functions.instagram_get_imageid(image);
 
 			var largest = imageid_in_objarr(imageid, objarr);
 			if (!largest)
@@ -11123,6 +11172,7 @@ var $$IMU_EXPORT$$;
 
 		var get_maxsize_app = function(item) {
 			var images = [];
+			var total_images = 1;
 
 			var get_corrected_height = function(img, candidate) {
 				var corrected_height = candidate.height;
@@ -11133,7 +11183,7 @@ var $$IMU_EXPORT$$;
 				return corrected_height;
 			};
 
-			var parse_image = function (img) {
+			var parse_image = function (img_i, img) {
 				var candidates = img.image_versions2.candidates;
 				var maxsize = 0;
 				var maxobj = null;
@@ -11158,7 +11208,9 @@ var $$IMU_EXPORT$$;
 						username: get_username(item),
 						created: get_created_date(item),
 						width: maxobj.width,
-						height: maxobj.height
+						height: maxobj.height,
+						i: img_i + 1,
+						total_images: total_images
 					};
 				}
 
@@ -11196,11 +11248,14 @@ var $$IMU_EXPORT$$;
 			};
 
 			if ("carousel_media" in item) {
+				total_images = item.carousel_media.length;
+
 				for (var i = 0; i < item.carousel_media.length; i++) {
-					parse_image(item.carousel_media[i]);
+					parse_image(i, item.carousel_media[i]);
 				}
 			} else {
-				parse_image(item);
+				total_images = 1;
+				parse_image(i, item);
 			}
 
 			return images;
@@ -11208,8 +11263,9 @@ var $$IMU_EXPORT$$;
 
 		var get_maxsize_graphql = function(media) {
 			var images = [];
+			var total_images = 1;
 
-			var parse_image = function(node) {
+			var parse_image = function(img_i, node) {
 				var image = node.display_src;
 				if (!image)
 					image = node.display_url;
@@ -11279,33 +11335,50 @@ var $$IMU_EXPORT$$;
 					height: height,
 					video_width: vwidth,
 					video_height: vheight,
-					video_dash: vdash
+					video_dash: vdash,
+					i: img_i + 1,
+					total_images: total_images
 				});
 			};
 
 			if (media.edge_sidecar_to_children) {
 				var edges = media.edge_sidecar_to_children.edges;
+				total_images = edges.length; // is this correct?
 				for (var i = 0; i < edges.length; i++) {
 					var edge = edges[i];
 					if (edge.node)
 						edge = edge.node;
 
-					parse_image(edge);
+					parse_image(i, edge);
 				}
 			}
 
-			parse_image(media);
+			parse_image(0, media);
 
 			return images;
 		};
 
 		var raw_image_to_obj = function(image, obj, preobj) {
 			var extra = {};
+			var album_info = null;
 			if (image.caption) extra.caption = image.caption;
 			if (image.page) extra.page = image.page;
 			if (image.username) extra.author_username = image.username;
 			if (image.created) extra.created_date = image.created;
 			if (image.shortcode) extra.id = image.shortcode;
+
+			if (image.total_images && "i" in image && image.page) {
+				var links = [];
+				album_info = {"type": "links", "links": links};
+
+				// stupid hack, but 1 because !0 == !image_id == null
+				for (var i = 1; i < image.total_images + 1; i++) {
+					links.push({
+						url: image.page + "#imu-i=" + i,
+						is_current: i === image.i
+					});
+				}
+			}
 
 			if (image.video_dash) {
 				var dashurl = "data:application/dash+xml," + encodeURIComponent(image.video_dash);
@@ -11313,7 +11386,8 @@ var $$IMU_EXPORT$$;
 				preobj.push({
 					url: dashurl,
 					video: "dash",
-					extra: deepcopy(extra)
+					extra: deepcopy(extra),
+					album_info: deepcopy(album_info)
 				});
 			}
 
@@ -11321,17 +11395,20 @@ var $$IMU_EXPORT$$;
 				obj.push({
 					url: common_functions.instagram_norm_url(image.video),
 					video: true,
-					extra: deepcopy(extra)
+					extra: deepcopy(extra),
+					album_info: deepcopy(album_info)
 				});
 
 				obj.push({
 					url: common_functions.instagram_norm_url(image.src),
-					extra: deepcopy(extra)
+					extra: deepcopy(extra),
+					album_info: deepcopy(album_info)
 				});
 			} else {
 				obj.push({
 					url: common_functions.instagram_norm_url(image.src),
-					extra: deepcopy(extra)
+					extra: deepcopy(extra),
+					album_info: deepcopy(album_info)
 				});
 			}
 
@@ -11563,8 +11640,11 @@ var $$IMU_EXPORT$$;
 
 								if (image_url) {
 									var image = image_in_objarr(image_url, images, images_small);
-									if (image)
+									if (image) {
 										return cb(image_to_obj(image));
+									} else {
+										console_error("Unable to find", image_url, "in", images, images_small);
+									}
 								} else {
 									return cb(images);
 								}
@@ -16675,10 +16755,13 @@ var $$IMU_EXPORT$$;
 
 								var is_current = i == media_id;
 								if (imu_url_id) {
-									var firstobj = singleobj[0];
-									var firsturl = firstobj.url || firstobj;
-									var our_id = firsturl.match(/.*\/([^/.?#]+)(?:\.[^/]+)?(?:[?#].*)?$/)[1];
-									is_current = our_id === imu_url_id;
+									array_foreach(singleobj, function(ourobj) {
+										var url = ourobj.url || ourobj;
+										var our_id = url.match(/.*\/([^/.?#]+)(?:\.[^/]+)?(?:[?#].*)?$/)[1];
+
+										is_current = our_id === imu_url_id;
+										if (is_current) return;
+									});
 								}
 
 								album_links.push({
@@ -17711,6 +17794,7 @@ var $$IMU_EXPORT$$;
 			domain === "images.prismic.io" ||
 			(domain === "files.vierlive.io" && string_indexof(src, "/images/") >= 0) ||
 			domain === "assets.isu.pub" ||
+			(domain === "img.nbc.com" && /\/files\/+images\//.test(src)) ||
 			src.match(/\/demandware\.static\//) ||
 			src.match(/\?i10c=[^/]*$/) ||
 			/^[a-z]+:\/\/[^?]*\/wp(?:-content\/+(?:uploads|blogs.dir)|\/+uploads)\//.test(src)
@@ -18117,6 +18201,7 @@ var $$IMU_EXPORT$$;
 			(domain_nowww === "unicef.ie" && /\/app\/+uploads\//.test(src)) ||
 			domain === "cdn.downriversundaytimes.com" ||
 			(domain === "media.hotpress.com" && string_indexof(src, "/uploads/") >= 0) ||
+			(domain_nosub === "scrolller.com" && /-[0-9a-z]{5,}-[0-9]+x[0-9]+\./.test(src)) ||
 			(domain === "cdn.theathletic.com" && /\/app\/+uploads\//.test(src))
 			) {
 			src = src.replace(/-[0-9]+x[0-9]+\.([^/]*(?:[?#].*)?)$/, ".$1");
@@ -19903,9 +19988,10 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
-		if (domain_nosub === "imgbox.com" && /^[0-9]+[-.]t\./.test(domain) && options.do_request && options.cb) {
-			api_query("imgbox_redirect:" + src, {
-				url: src
+		if (domain_nosub === "imgbox.com" && /^(?:[0-9]+[-.])?t\./.test(domain) && options.do_request && options.cb) {
+			newsrc = src.replace(/^[a-z]+:\/\/(?:[0-9]+[-.])?t\./, "https://t.");
+			api_query("imgbox_redirect:" + newsrc, {
+				url: newsrc
 			}, options.cb, function(done, resp, cache_key) {
 				done(resp.finalUrl, 6*60*60);
 			});
@@ -19913,6 +19999,16 @@ var $$IMU_EXPORT$$;
 			return {
 				waiting: true
 			};
+		}
+
+		if (domain_nowww === "imgbox.com") {
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+([0-9a-zA-Z]+)(?:[?#].*)?$/,
+				run: function(cb, match) {
+					return cb("https://t.imgbox.com/" + match[1] + ".jpg");
+				}
+			});
+			if (newsrc) return newsrc;
 		}
 
 		if ((domain_nosub === "steamstatic.com" && domain.match(/cdn\.[^.]*\.steamstatic\.com/)) ||
@@ -20128,15 +20224,30 @@ var $$IMU_EXPORT$$;
 		}
 
 		if (domain === "50.7.164.242:8182" ||
-			(domain_nosub === "imgspice.com" && domain.match(/^img[0-9]*\./)) ||
-			(domain_nosub === "imageporter.com" && domain.match(/^img[0-9]*\./)) ||
-			(domain_nosub === "imagedunk.com" && domain.match(/^img[0-9]*\./)) ||
+			domain_nosub === "imgspice.com" ||
+			domain_nosub === "imageporter.com" ||
+			domain_nosub === "imagedunk.com" ||
 			domain === "main.imgclick.net" ||
-			(domain_nosub === "imagedax.net" && domain.match(/^img[0-9]*\./)) ||
-			(domain_nosub === "piclambo.net" && /^img[0-9]*\./.test(domain)) ||
-			(domain_nosub === "picturedip.com" && /^img[0-9]*\./.test(domain)) ||
-			(domain_nosub === "pixroute.com" && domain.match(/img[0-9]*\./))) {
-			newsrc = src.replace(/(\/i\/.*\/[^/.]*)_t(\.[^/.]*)$/, "$1$2");
+			domain_nosub === "imagedax.net" ||
+			domain_nosub === "piclambo.net" ||
+			domain_nosub === "picturedip.com" ||
+			domain_nosub === "pixroute.com") {
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+([a-z0-9]{5,})(?:(?:\/+[^/?#]*)?\.html)?(?:[?#].*)?$/,
+				query_for_id: "https://" + domain + "/${id}/.html",
+				process: function(done, resp, cache_key) {
+					var match = resp.responseText.match(/<img id="imgpreview" src="(https?:\/\/[^/]+\/+i\/+[^"]+)"/);
+					if (!match) {
+						console_error(cache_key, "Unable to find match for", resp);
+						return done(null, false);
+					}
+
+					return done(decode_entities(match[1]), 6*60*60);
+				}
+			});
+			if (newsrc) return newsrc;
+
+			newsrc = src.replace(/(\/i\/+(?:[0-9]+\/+)?[0-9]+\/+[a-z0-9]{5,})_t(\.[^/.]*)$/, "$1$2");
 
 			obj = {
 				url: src,
@@ -30014,8 +30125,8 @@ var $$IMU_EXPORT$$;
 			if (newsrc) return newsrc;
 		}
 
-		if (domain === "static-lvlt.xhcdn.com") {
-			if (/\/xh-tpl[0-9]*\/+images\/+pixel\./.test(src)) {
+		if (domain_nosub === "xhcdn.com") {
+			if (/\/xh-(?:tpl|desktop)[0-9]*\/+images\/+pixel\./.test(src)) {
 				return {
 					url: src,
 					bad: "mask"
@@ -30945,6 +31056,61 @@ var $$IMU_EXPORT$$;
 				return newsrc;*/
 		}
 
+		if (domain_nowww === "instagram.com") {
+			newsrc = website_query({
+				website_regex: /^[a-z]+:\/\/[^/]+\/+p\/+([^/]+)(?:\/+(?:(?:media|embed).*)?)?(?:[?#].*)?$/,
+				id: "post:${id}",
+				run: function(cb, match) {
+					var info = [{
+						type: "post",
+						subtype: "link",
+						url: "https://www.instagram.com/p/" + match[1] + "/",
+						element: options.element
+					}];
+
+					var queries = common_functions.parse_imu_hash(src);
+					if (queries) {
+						if (queries.i) {
+							info[0].image = parseInt(queries.i);
+						} else if (queries.image_url) {
+							info[0].image = queries.image_url;
+						}
+					}
+
+					if (!info[0].image) info[0].image = "first";
+
+					return common_functions.instagram_parse_el_info(
+						api_cache, options.do_request,
+						options.rule_specific.instagram_use_app_api, options.rule_specific.instagram_dont_use_web, options.rule_specific.instagram_prefer_video_quality,
+						info, options.host_url, cb);
+				}
+			});
+			if (newsrc) return newsrc;
+
+			newsrc = website_query({
+				website_regex: {
+					regex: /^[a-z]+:\/\/[^/]+\/+stories\/+([^/]+)\/+([0-9]+)\/*(?:[?#].*)?$/,
+					groups: ["user", "id"]
+				},
+				id: "story:${user}:${id}",
+				run: function(cb, match) {
+					var info = [{
+						type: "story",
+						url: "https://www.instagram.com/stories/" + match.groups.user + "/" + match.groups.id + "/",
+						element: options.element
+					}];
+
+					info[0].image = info[0].url;
+
+					return common_functions.instagram_parse_el_info(
+						api_cache, options.do_request,
+						options.rule_specific.instagram_use_app_api, options.rule_specific.instagram_dont_use_web, options.rule_specific.instagram_prefer_video_quality,
+						info, options.host_url, cb);
+				}
+			});
+			if (newsrc) return newsrc;
+		}
+
 		if (((domain_nosub === "fbcdn.net" && domain.match(/^instagram\./)) ||
 			 domain_nosub === "cdninstagram.com" ||
 			 (!src && origsrc)) &&
@@ -30989,51 +31155,6 @@ var $$IMU_EXPORT$$;
 			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+\?(?:.*&)?u=([^&]+).*?$/, "$1");
 			if (newsrc !== src)
 				return decodeURIComponent(newsrc);
-		}
-
-		if (domain_nowww === "instagram.com") {
-			newsrc = website_query({
-				website_regex: /^[a-z]+:\/\/[^/]+\/+p\/+([^/]+)(?:\/+(?:(?:media|embed).*)?)?(?:[?#].*)?$/,
-				id: "post:${id}",
-				run: function(cb, match) {
-					var info = [{
-						type: "post",
-						subtype: "link",
-						url: "https://www.instagram.com/p/" + match[1] + "/",
-						image: "first",
-						element: options.element
-					}];
-
-					return common_functions.instagram_parse_el_info(
-						api_cache, options.do_request,
-						options.rule_specific.instagram_use_app_api, options.rule_specific.instagram_dont_use_web, options.rule_specific.instagram_prefer_video_quality,
-						info, options.host_url, cb);
-				}
-			});
-			if (newsrc) return newsrc;
-
-			newsrc = website_query({
-				website_regex: {
-					regex: /^[a-z]+:\/\/[^/]+\/+stories\/+([^/]+)\/+([0-9]+)\/*(?:[?#].*)?$/,
-					groups: ["user", "id"]
-				},
-				id: "story:${user}:${id}",
-				run: function(cb, match) {
-					var info = [{
-						type: "story",
-						url: "https://www.instagram.com/stories/" + match.groups.user + "/" + match.groups.id + "/",
-						element: options.element
-					}];
-
-					info[0].image = info[0].url;
-
-					return common_functions.instagram_parse_el_info(
-						api_cache, options.do_request,
-						options.rule_specific.instagram_use_app_api, options.rule_specific.instagram_dont_use_web, options.rule_specific.instagram_prefer_video_quality,
-						info, options.host_url, cb);
-				}
-			});
-			if (newsrc) return newsrc;
 		}
 
 
@@ -32730,6 +32851,14 @@ var $$IMU_EXPORT$$;
 			domain === "jb503wdraf.ent-cdn.com" ||
 			domain_nosub === "freehardcore.com" ||
 			domain === "b3bepw16kz.ent-cdn.com" ||
+			domain_nowww === "asianpornvideo.xxx" ||
+			domain_nowww === "18pussy.porn" ||
+			domain_nowww === "fuckteen.xxx" ||
+			domain_nowww === "japanporn.tv" ||
+			domain_nowww === "18teenporno.tv" ||
+			domain_nowww === "japaneseporn.xxx" ||
+			domain_nowww === "hdteen.porn" ||
+			domain_nowww === "indiansexvideo.xxx" ||
 			domain_nosub === "deviants.com" ||
 			domain_nosub === "cuckoldplacetube.com" ||
 			domain_nosub === "alphaporno.com" ||
@@ -32995,6 +33124,8 @@ var $$IMU_EXPORT$$;
 				basedomain = "https://www.freehardcore.com/";
 			} else if (domain === "b3bepw16kz.ent-cdn.com") {
 				basedomain = "https://www.deviants.com/";
+			} else if (domain_nosub === "japaneseporn.xxx") {
+				videos_component = "u";
 			}
 
 			var detected_url = null;
@@ -35122,7 +35253,7 @@ var $$IMU_EXPORT$$;
 
 		if (domain_nosub === "turboimg.net" ||
 			domain_nosub === "turboimagehost.com") {
-			match = src.match(/\/t[0-9]+\/+([0-9]+)_([^/?#]+)(?:[?#].*)?$/);
+			match = src.match(/\/t[0-9]*\/+([0-9]+)_([^/?#]+)(?:[?#].*)?$/);
 			if (match) {
 				return {
 					url: "https://www.turboimagehost.com/p/" + match[1] + "/" + match[2] + ".html",
@@ -39480,6 +39611,8 @@ var $$IMU_EXPORT$$;
 		if (domain_nowww === "arasale.com") return src.replace(/(\/photo[0-9]*\/.*)_small[0-9]*(\.[^/.]*)(?:[?#].*)?$/, "$1$2");
 
 		if (domain_nowww === "imgth.com") return src.replace(/\/thumbs\/+/, "/images/");
+
+		if (domain_nowww === "about.me") return src.replace(/^[a-z]+:\/\/[^/]+\/+cdn-cgi\/+image\/+[^/]+\/+(https?:\/\/)/, "$1");
 
 		if (domain_nowww === "intimatecelebs.com") return src.replace(/(\.[^/.]*)\.icthumb\.[^/.]*(?:[?#].*)?$/, "$1");
 
@@ -50287,6 +50420,7 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "feurl.com" ||
 			domain_nowww === "luxubu.review" ||
 			domain_nowww === "javlove.club" ||
+			domain_nowww === "pelispng.online" ||
 			domain_nowww === "playvideo.best") {
 			var base_domain = domain_nosub;
 			if (domain_nowww === "fembed.com" ||
@@ -53321,6 +53455,8 @@ var $$IMU_EXPORT$$;
 		if (domain === "s.ecrater.com") return src.replace(/(\/stores\/+[0-9]+\/+[0-9a-f]{5,}_[0-9]+)[a-z](\.[^/.]+)(?:[?#].*)?$/, "$1b$2");
 
 		if (domain === "img.discogs.com") return src.replace(/^[a-z]+:\/\/[^/]+\/[^/]+=\/.*\/discogs-images\/([^/?#]+)\.[^/.]+(?:[?#].*)?$/, "https://www.discogs.com/image/$1");
+
+		if (domain === "i.discogs.com") return src.replace(/^[a-z]+:\/\/[^/]+\/+([-A-Z0-9]+\.[^/.?#]+)\?.*$/, "https://www.discogs.com/image/$1");
 
 		if (domain === "geo-media.beatsource.com") return src.replace(/\/image_size\/+[0-9]+x[0-9]+\/+/, "/");
 
@@ -57217,6 +57353,24 @@ var $$IMU_EXPORT$$;
 			return src.replace(/(\/i\/+(?:u|tvc)\/+)[^/]+\/+([0-9]+|[0-9a-f]{20,})\./, "$1$2.");
 		}
 
+		if (domain === "d2z1w4aiblvrwu.cloudfront.net") return src.replace(/(\/ad\/+[a-zA-Z0-9]+\/+[^/]+-)small(-[0-9]+\.)/, "$1large$2");
+
+		if (domain === "uploads.xrel.to") {
+			return src
+				.replace(/(\/attachments\/+)thumb_([0-9]+)/, "$1$2")
+				.replace(/(\/img_cover\/+movie[0-9]+-[0-9a-f]+)(\.[^/.]+)/, "$1-full$2")
+				.replace(/(\/img_mediathek)_thumb\/+(movie[0-9]+-)/, "$1/$2");
+		}
+
+		if (domain_nowww === "javteentube.com") {
+			if (/^[a-z]+:\/\/[^/]+\/+jtt\/+[a-z]+-[0-9a-z]{4}\.png(?:[?#].*)?$/.test(src)) {
+				return {
+					url: src,
+					bad: "mask"
+				};
+			}
+		}
+
 
 
 
@@ -58340,6 +58494,7 @@ var $$IMU_EXPORT$$;
 
 		if (host_domain_nosub === "instagram.com") {
 			return {
+				// FIXME: is this even needed anymore?
 				element_ok: function(el) {
 					// TODO: improve
 					if (el.tagName === "VIDEO") {
@@ -60868,7 +61023,9 @@ var $$IMU_EXPORT$$;
 	};
 
 	var keystr_is_button12 = function(keystr) {
-		return keystr === "button1" || keystr === "button2";
+		// allow rebinding right click
+		// todo: maybe add a warning if done globally (e.g. trigger key)?
+		return keystr === "button1";// || keystr === "button2";
 	}
 
 	var chord_is_only_wheel = function(chord) {
@@ -63525,7 +63682,7 @@ var $$IMU_EXPORT$$;
 			remove_loaded_metadata_listener();
 
 			if (!processing.running) {
-				return final_cb(null);
+				return err_cb(true);
 			}
 
 			if (video.hasAttribute("loop")) {
@@ -63798,7 +63955,11 @@ var $$IMU_EXPORT$$;
 			return;
 		}
 
-		var run_cbs = function(our_this, args) {
+		var run_cbs = function(our_this, args, no_propagate) {
+			if (no_propagate) {
+				return final_cb.apply(our_this, args);
+			}
+
 			//console_log("Running cbs for", our_this, args, cb_key);
 			var cbs = check_image_cbs[cb_key];
 			if (!cbs) {
@@ -64050,8 +64211,8 @@ var $$IMU_EXPORT$$;
 
 		var cb_key = method + " " + incomplete_request + " " + url;
 		//console_log(cb_key);
-		err_cb = function() {
-			run_cbs(null, null);
+		err_cb = function(no_propagate) {
+			run_cbs(null, null, no_propagate);
 		};
 		final_cb = function() {
 			run_cbs(this, arguments);
@@ -64285,7 +64446,8 @@ var $$IMU_EXPORT$$;
 					"onload",
 					"onerror",
 					"onprogress",
-					"onabort"
+					"onabort",
+					"ontimeout"
 				];
 
 				var handled = false;
@@ -64412,8 +64574,8 @@ var $$IMU_EXPORT$$;
 		var mouseAbsY = 0;
 		var mouse_frame_id = "top";
 
-		var mouseContextX = 0;
-		var mouseContextY = 0;
+		var mouseContextX = null;
+		var mouseContextY = null;
 		var mouseAbsContextX = 0;
 		var mouseAbsContextY = 0;
 
@@ -68372,9 +68534,10 @@ var $$IMU_EXPORT$$;
 						return true;
 					};
 
-					// FIXME: this is probably the source of https://github.com/qsniyg/maxurl/issues/531
-					if (is_video && !settings.mouseover_video_controls) {
+					if (is_video) {
 						img.onclick = function(e) {
+							if (img.controls) return;
+
 							if (!dragged) {
 								if (!img.paused) {
 									img.pause();
@@ -70563,7 +70726,7 @@ var $$IMU_EXPORT$$;
 
 			if (mousepos_initialized)
 				point = [mouseX, mouseY];
-			if (options.is_contextmenu)
+			if (options.is_contextmenu && mouseContextX !== null && mouseContextY !== null)
 				point = [mouseContextX, mouseContextY];
 
 			if (point === null) {
@@ -70576,6 +70739,12 @@ var $$IMU_EXPORT$$;
 
 			if (_nir_debug_)
 				console_log("trigger_popup: els =", els, "point =", point);
+
+			// clearing in order to somewhat mitigate shift+right click issues: https://github.com/qsniyg/maxurl/issues/679
+			if (options.is_contextmenu) {
+				mouseContextX = null;
+				mouseContextY = null;
+			}
 
 			var source = find_source(els);
 
@@ -71605,6 +71774,11 @@ var $$IMU_EXPORT$$;
 
 			var finished = 0;
 
+			var final_progress = 1;
+			if (options.finalcb && options.finalcb_progress) {
+				final_progress -= options.finalcb_progress;
+			}
+
 			var finish_img = function(id) {
 				finished++;
 
@@ -71616,7 +71790,7 @@ var $$IMU_EXPORT$$;
 
 				if (finished >= total_imgs) {
 					if (options.use_progressbar) {
-						update_progress_el(progressc_el, 1, true);
+						update_progress_el(progressc_el, final_progress, true);
 					}
 					//if (options.use_progressbar) {
 					//	progressc_el.parentElement.removeChild(progressc_el);
@@ -71625,7 +71799,11 @@ var $$IMU_EXPORT$$;
 					replacing_imgs = false;
 
 					if (options.finalcb) {
-						options.finalcb();
+						options.finalcb(function(progress) {
+							if (options.use_progressbar && options.finalcb_progress) {
+								update_progress_el(progressc_el, final_progress + (progress * options.finalcb_progress), true);
+							}
+						});
 					}
 				} else {
 					next_img();
@@ -71785,6 +71963,8 @@ var $$IMU_EXPORT$$;
 					continue;
 				}
 
+				source._replace_id = i;
+
 				if (!source.src) {
 					other.push(source);
 					continue;
@@ -71809,7 +71989,7 @@ var $$IMU_EXPORT$$;
 			if (options.use_progressbar) {
 				ip = new ImpreciseProgress({
 					cb: function(progobj) {
-						update_progress_el(progressc_el, progobj.percent, false);
+						update_progress_el(progressc_el, progobj.percent * final_progress, false);
 					},
 					elements_num: total_imgs
 				});
@@ -71862,7 +72042,7 @@ var $$IMU_EXPORT$$;
 
 		register_menucommand("Replace images", replace_images_full);
 
-		var create_zip = function(files, foldername, cb) {
+		var create_zip = function(files, foldername, cb, progresscb) {
 			get_library("jszip", settings, do_request, function(lib) {
 				if (!lib) return cb(null);
 
@@ -71877,7 +72057,9 @@ var $$IMU_EXPORT$$;
 					root.file(filename, files[filename]);
 				}
 
-				zip.generateAsync({type: "blob"}).then(function(data) {
+				zip.generateAsync({type: "blob"}, function(prog_info) {
+					progresscb(prog_info.percent / 100);
+				}).then(function(data) {
 					cb(data);
 				}, function(err) {
 					console_error(err);
@@ -71889,13 +72071,17 @@ var $$IMU_EXPORT$$;
 		var download_album = function() {
 			var files = {};
 			var urls = new_set();
+			var got_objs = [];
+			var infos = {};
+			var failed_infos = [];
 			var filename = null;
 
 			var set_filename = function(obj) {
-				if (filename) return;
+				if (filename || !obj) return;
 
 				var our_vars = deepcopy(obj.format_vars);
 				our_vars.ext = ".zip";
+				our_vars.items_amt = Object.keys(files).length.toString();
 				//our_vars.filename = our_vars.filename_noext + our_vars.ext;
 				filename = get_filename_from_format(settings.gallery_zip_filename_format, our_vars);
 
@@ -71903,7 +72089,118 @@ var $$IMU_EXPORT$$;
 				if (!/\.zip$/i.test(filename)) filename += ".zip";
 			};
 
-			var add_file = function(data, progresscb, cb) {
+			var get_trunc_url = function(url) {
+				if (/^https?:\/\//i.test(url)) return url;
+				return url.substr(0, 1000); // to avoid huge data urls
+			};
+
+			var get_host_info = function() {
+				var info = {};
+
+				info.url = window_location;
+				try {
+					var our_window = get_window();
+
+					var href1 = our_window.location.href;
+					if (href1 !== window_location) {
+						info.url_orig = window_location;
+						info.url = href1;
+					}
+
+					info.title = document.title;
+
+					info.download_time = new Date().toString();
+				} catch (e) {
+					console_error(e);
+				}
+
+				return info;
+			};
+
+			var get_failed_info = function(source) {
+				var info = {};
+
+				info.num_in_gallery = source._replace_id + 1;
+
+				var source_src = source.src;
+				if (source_src) info.url = get_trunc_url(source_src);
+
+				return info;
+			};
+
+			var get_info_for_file = function(filename, obj, origurl, source) {
+				var info = {};
+
+				info.num_in_gallery = source._replace_id + 1;
+
+				info.download_url = get_trunc_url(origurl);
+				if (obj.headers) info.download_headers = obj.headers;
+
+				var source_src = source.src;
+				if (source_src && source_src !== origurl) {
+					info.thumb_url = get_trunc_url(source_src);
+				}
+
+				info.filename = filename;
+				if (obj.filename !== filename) {
+					info.orig_filename = obj.filename;
+				}
+
+				if (obj.filesize) info.filesize = obj.filesize;
+
+				if (obj.extra) {
+					obj_foreach(obj.extra, function(key, value) {
+						if (value !== null && value !== "")
+							info["extra_" + key] = value;
+					});
+				}
+
+				return info;
+			};
+
+			var unix_to_dos = function(txt) {
+				return txt.replace(/\r*\n/g, "\r\n");
+			};
+
+			var get_info_file = function() {
+				var header = get_host_info();
+
+				var file = [];
+				file.push(" --- Page info ---", "");
+				file.push(JSON_stringify(header, null, "\t"));
+				file.push("", " --- Files ---", "");
+
+
+				for (var i = 0; i < got_objs.length; i++) {
+					if (!got_objs[i] || !got_objs[i].filename) continue;
+					var filename = got_objs[i].filename;
+
+					file.push(filename);
+					file.push(JSON_stringify(infos[filename], null, "\t"));
+					file.push("");
+				}
+
+				if (failed_infos.length) {
+					file.push("", " --- Failed ---", "");
+
+					array_foreach(failed_infos, function(info) {
+						file.push(JSON_stringify(info, null, "\t"));
+						file.push("");
+					});
+				}
+
+				return unix_to_dos(file.join("\n"));
+			};
+
+			var get_first_obj = function() {
+				for (var i = 0; i < got_objs.length; i++) {
+					if (!got_objs[i] || !got_objs[i].obj) continue;
+					return got_objs[i].obj;
+				}
+			};
+
+			var add_file = function(data, our_source, progresscb, cb) {
+				// fixme: if img is blob, we need to free it
 				if (data.data.img) {
 					// otherwise it'll both use bandwidth and play the audio
 					if (data.data.img.tagName === "VIDEO") {
@@ -71914,7 +72211,7 @@ var $$IMU_EXPORT$$;
 
 					var obj = data.data.obj || {};
 					var origurl = obj.url;
-					obj = overlay_object(obj, { url: src });
+					//obj = overlay_object(obj, { url: src });
 
 					if (set_has(urls, origurl)) {
 						return cb();
@@ -71924,12 +72221,11 @@ var $$IMU_EXPORT$$;
 
 					// todo: some kind of infoobj_to_requestobj function
 					request_chunked({
-						url: obj.url,
+						url: src,
 						headers: obj.headers
 					}, {
 						onload: function(resp) {
 							fill_obj_filename(obj, origurl, data.data.respdata);
-							set_filename(obj);
 
 							var filename = obj.filename || "download"; // "download" should hopefully not happen
 
@@ -71947,6 +72243,12 @@ var $$IMU_EXPORT$$;
 
 								filename = new_filename;
 							}
+
+							if (settings.gallery_zip_add_info_file) {
+								infos[filename] = get_info_for_file(filename, obj, origurl, our_source);
+							}
+
+							got_objs[our_source._replace_id] = {obj: obj, filename: filename};
 
 							files[filename] = resp.data;
 
@@ -71985,19 +72287,26 @@ var $$IMU_EXPORT$$;
 								if (typeof source === "undefined" && !settings.gallery_download_unchanged) {
 									console_warn("Not downloading unchanged image", our_source);
 								} else {
+									// source is undefined for non-existing urls too
 									console_error("Unable to download", source, our_source);
+
+									if (settings.gallery_zip_add_info_file) {
+										failed_infos.push(get_failed_info(our_source));
+									}
 								}
 
 								return cb();
 							} else {
-								add_file(data, function(progobj) {}, cb);
+								add_file(data, our_source, function(progobj) {}, cb);
 							}
 						});
 					},
-					finalcb: function() {
+					finalcb: function(onprogress) {
 						start_waiting();
 
 						if (Object.keys(files).length > 0) {
+							set_filename(get_first_obj());
+
 							filename = filename || "download.zip";
 
 							var foldername = null;
@@ -72005,7 +72314,13 @@ var $$IMU_EXPORT$$;
 								foldername = filename.replace(/\.zip$/i, "");
 							}
 
+							if (settings.gallery_zip_add_info_file) {
+								files["info.txt"] = get_info_file();
+							}
+
 							create_zip(files, foldername, function(data) {
+								onprogress(1);
+
 								if (!data) {
 									cursor_not_allowed();
 									return;
@@ -72014,9 +72329,10 @@ var $$IMU_EXPORT$$;
 								}
 
 								do_blob_download(data, filename);
-							});
+							}, onprogress);
 						}
-					}
+					},
+					finalcb_progress: 0.1
 				});
 			});
 		};
@@ -72894,6 +73210,43 @@ var $$IMU_EXPORT$$;
 			return false;
 		};
 
+		var update_contextmenu_pos = function(event) {
+			mouseContextX = event.clientX;
+			mouseContextY = event.clientY;
+
+			mouseAbsContextX = event.pageX;
+			mouseAbsContextY = event.pageY;
+		};
+
+		var do_event_return = function(event, retval) {
+			if (retval === false) {
+				try {
+					event.preventDefault();
+					event.stopImmediatePropagation();
+					event.stopPropagation();
+				} catch (e) {}
+			}
+
+			return retval;
+		};
+
+		// https://github.com/qsniyg/maxurl/issues/680
+		// contextmenu and mousedown are both run for right click, same timeStamp
+		var event_cache = new Cache();
+		var get_event_cache_key = function(event) {
+			var down = true;
+			if (event.type === "mouseup" || event.type === "keyup") down = false;
+
+			var keystrs = get_keystrs_map(event, down);
+
+			var keystrs_arr = [];
+			for (var key in keystrs) {
+				keystrs_arr.push(key + ":" + keystrs[key]);
+			}
+
+			return down + " " + keystrs_arr.join(",") + " " + event.timeStamp;
+		};
+
 		var keydown_cb = function(event) {
 			// otherwise rebinding the trigger key will fail
 			if (is_options_page)
@@ -72933,6 +73286,18 @@ var $$IMU_EXPORT$$;
 			var actions = [];
 
 			update_chord(event, true);
+
+			var event_cache_key = get_event_cache_key(event);
+			if (event_cache.has(event_cache_key)) {
+				return do_event_return(event, event_cache.get(event_cache_key));
+			}
+
+			if (is_extension && settings.extension_contextmenu && event.type === "mousedown") {
+				// https://github.com/qsniyg/maxurl/issues/679
+				if (trigger_complete(["shift", "button2"])) {
+					update_contextmenu_pos(event);
+				}
+			}
 
 			if (settings.mouseover) {
 				if (settings.mouseover_trigger_behavior === "keyboard") {
@@ -73199,14 +73564,10 @@ var $$IMU_EXPORT$$;
 			}
 
 			if (ret === false) {
-				try {
-					event.preventDefault();
-					event.stopImmediatePropagation();
-					event.stopPropagation();
-				} catch (e) {}
+				event_cache.set(event_cache_key, ret, 5);
 			}
 
-			return ret;
+			return do_event_return(event, ret);
 		};
 
 		var eventlistener_opts = {
@@ -73217,6 +73578,7 @@ var $$IMU_EXPORT$$;
 		our_addEventListener(document, 'keydown', keydown_cb, eventlistener_opts);
 		our_addEventListener(document, 'mousedown', keydown_cb, eventlistener_opts);
 		our_addEventListener(document, 'contextmenu', keydown_cb, eventlistener_opts);
+		our_addEventListener(document.body, 'contextmenu', keydown_cb, eventlistener_opts);
 		our_addEventListener(document, 'wheel', keydown_cb, eventlistener_opts);
 
 		var keyup_cb = function(event) {
@@ -73281,15 +73643,7 @@ var $$IMU_EXPORT$$;
 				}
 			}
 
-			if (ret === false) {
-				try {
-					event.preventDefault();
-					event.stopImmediatePropagation();
-					event.stopPropagation();
-				} catch (e) {}
-			}
-
-			return ret;
+			return do_event_return(event, ret);
 		};
 
 		our_addEventListener(document, 'keyup', keyup_cb, eventlistener_opts);
@@ -73565,7 +73919,7 @@ var $$IMU_EXPORT$$;
 				}
 			});
 		} else {
-			our_addEventListener(window, "message", function(event) {
+			our_addEventListener(get_window(), "message", function(event) {
 				if (_nir_debug_) {
 					console_log("window.onMessage", event);
 				}
@@ -73579,13 +73933,7 @@ var $$IMU_EXPORT$$;
 			}, false);
 		}
 
-		our_addEventListener(document, 'contextmenu', function(event) {
-			mouseContextX = event.clientX;
-			mouseContextY = event.clientY;
-
-			mouseAbsContextX = event.pageX;
-			mouseAbsContextY = event.pageY;
-		});
+		our_addEventListener(document, 'contextmenu', update_contextmenu_pos);
 
 		var last_remote_mousemove = 0;
 		var last_remote_mousemove_timer = null;
