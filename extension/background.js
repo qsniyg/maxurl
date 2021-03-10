@@ -137,6 +137,24 @@ var use_header = function(value) {
 	return value !== "" && value !== null;
 };
 
+var is_override_relevant = function(override, details) {
+	return override.url === details.url && override.method === details.method;
+};
+
+var get_overrides = function(details) {
+	var overrides = [];
+
+	if (!(details.tabId in override_headers)) return overrides;
+
+	for (const override of override_headers[details.tabId]) {
+		if (is_override_relevant(override, details)) {
+			overrides.push(override);
+		}
+	}
+
+	return overrides;
+};
+
 // currently used to detect if the extension is unloaded
 chrome.runtime.onConnect.addListener(function() {});
 
@@ -438,16 +456,16 @@ var onBeforeSendHeaders_listener = function(details) {
 		if (details.requestId in request_headers) {
 			imu_headers = JSON.parse(JSON.stringify(request_headers[details.requestId]));
 		} else if (details.tabId in override_headers) {
-			for (const override of override_headers[details.tabId]) {
-				if (override.url === details.url && override.method === details.method) {
-					imu_headers = [];
-					for (var header in override.headers) {
-						imu_headers.push({
-							name: header,
-							value: override.headers[header]
-						});
-					}
-					break;
+			var overrides = get_overrides(details);
+			if (overrides.length > 0) {
+				var override = overrides[0];
+
+				imu_headers = [];
+				for (var header in override.headers) {
+					imu_headers.push({
+						name: header,
+						value: override.headers[header]
+					});
 				}
 			}
 		}
@@ -806,18 +824,43 @@ var onHeadersReceived = function(details) {
 				data: details
 			});
 		}
+	} else {
+		// crossorigin=anonymous requests (e.g. ttloader from tiktok) can fail to load without Access-Control-Allow-Origin
+		var overrides = get_overrides(details);
+		if (overrides.length && overrides[0].anonymous) {
+			var newheaders = [];
+			details.responseHeaders.forEach(function(header) {
+				if (header.name.toLowerCase() === "access-control-allow-origin") return;
+				newheaders.push(header);
+			});
+
+			newheaders.push({
+				name: "Access-Control-Allow-Origin",
+				value: "*"
+			});
+
+			//debug(details);
+			debug("Overrides", overrides[0]);
+			debug("Old headers", details.responseHeaders);
+			debug("New headers", newheaders);
+
+			return {
+				responseHeaders: newheaders
+			};
+		}
 	}
 };
 
+var received_types = ['xmlhttprequest', 'main_frame', 'sub_frame', 'image', 'media'];
 try {
 	chrome.webRequest.onHeadersReceived.addListener(onHeadersReceived, {
 		urls: ['<all_urls>'],
-		types: ['xmlhttprequest', 'main_frame', 'sub_frame']
+		types: received_types
 	}, ['blocking', 'responseHeaders', 'extraHeaders']);
 } catch (e) {
 	chrome.webRequest.onHeadersReceived.addListener(onHeadersReceived, {
 		urls: ['<all_urls>'],
-		types: ['xmlhttprequest', 'main_frame', 'sub_frame']
+		types: received_types
 	}, ['blocking', 'responseHeaders']);
 }
 
@@ -838,7 +881,7 @@ chrome.webRequest.onResponseStarted.addListener(function(details) {
 		var new_override = [];
 		var removed = false;
 		for (const override of override_headers[details.tabId]) {
-			if (removed || override.url !== details.url || override.method !== details.method) {
+			if (removed || !is_override_relevant(override, details)) {
 				new_override.push(override);
 			} else {
 				removed = true;
@@ -1086,7 +1129,8 @@ var extension_message_handler = (message, sender, respond) => {
 		override_headers[sender.tab.id].push({
 			url: message.data.url,
 			method: message.data.method,
-			headers: message.data.headers
+			headers: message.data.headers,
+			anonymous: !!message.data.anonymous
 		});
 
 		// In order to prevent races
