@@ -1189,14 +1189,6 @@ msgstr ""
 msgid "Amount of time to elapse before automatically closing the popup"
 msgstr ""
 
-#. mouseover_use_hold_key.name
-msgid "Use hold key"
-msgstr ""
-
-#. mouseover_use_hold_key.description
-msgid "Enables the use of a hold key that, when pressed, will keep the popup open"
-msgstr ""
-
 #. mouseover_hold_key.name
 msgid "Hold key"
 msgstr ""
@@ -1902,7 +1894,8 @@ msgstr ""
 #. gallery_zip_filename_format.description
 msgid ""
 "Format string(s) for the zip filename.\n"
-"Refer to \"Filename format\" under the Rules section for documentation.\n"
+"Refer to \"Filename format\" under the Rules section for documentation. The variables are set from the first loaded media.\n"
+"An additional `items_amt` format variable is supported, which contains the number of items.\n"
 "`.zip` will be automatically suffixed if it's missing."
 msgstr ""
 
@@ -1912,6 +1905,14 @@ msgstr ""
 
 #. gallery_zip_add_tld.description
 msgid "Stores the files in a subdirectory with the same name as the .zip file (without the .zip extension)"
+msgstr ""
+
+#. gallery_zip_add_info_file.name
+msgid "Zip: Store info file"
+msgstr ""
+
+#. gallery_zip_add_info_file.description
+msgid "Stores a `info.txt` file in the .zip containing information about the downloaded files and host page."
 msgstr ""
 
 #. mouseover_gallery_move_after_video.name
@@ -2154,6 +2155,14 @@ msgstr ""
 
 #. extension_contextmenu.description
 msgid "Enables a custom entry for this extension in the right click/context menu"
+msgstr ""
+
+#. extension_hotreload.name
+msgid "Hot (re)load"
+msgstr ""
+
+#. extension_hotreload.description
+msgid "(Re)loads the extension on all existing pages when installing or updating"
 msgstr ""
 
 #. custom_xhr_for_lib.name
