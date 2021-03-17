@@ -1,3 +1,32 @@
+0.18.1
+
+New features:
+
+ * Option to add info file for zip (#682, enabled by default)
+ * New `items_amt` format variable for zip files
+ * Option to control hot (re)loading the extension (enabled by default)
+ * Right click can now be bound by itself to any shortcut. Binding this to anything global (such as the trigger key) is not recommended.
+ * Support for ~15 new websites (using ~10 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including Discogs, Instagram, Twitter)
+ * Hold key can be used with any popup configuration, the "Use hold key" option has been removed (always enabled)
+
+Bugfixes:
+
+ * Fix userscript crash under Firefox for certain websites, such as Twitter (#678, thanks to modelfe for reporting)
+ * Shift+right click should now be better supported under Firefox (#679, thanks to modelfe for reporting)
+ * Binding right click should work better (#680, #297, thanks to samwolfe2000 for reporting)
+ * Timeouts when loading will no longer hang
+ * Fix memory leak with gallery download
+ * Fix play/pause broken when native video controls are disabled, then enabled through a keybinding (#531)
+ * Anonymous requests are less likely to fail under the extension due to CORS issues (thanks to remlap for reporting)
+
+Special thanks to modelfe, PatPanacea, samwolfe2000, remlap, jollld for their contributions and reports for this release
+
+---
+
 0.18.0
 
 New features:
