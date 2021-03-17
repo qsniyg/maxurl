@@ -21,27 +21,27 @@
 // @name:zh-CN        Image Max URL
 // @name:zh-TW        Image Max URL
 // @name:zh-HK        Image Max URL
-// @description       Finds larger or original versions of images and videos for 7700+ websites, including a powerful media popup feature
-// @description:en    Finds larger or original versions of images and videos for 7700+ websites, including a powerful media popup feature
-// @description:ar    البحث عن نسخ أكبر أو أصلية من الصور لأكثر من 7700 موقع ويب
-// @description:cs    Vyhledá větší nebo původní verze obrázků a videí pro více než 7700 webů
-// @description:da    Finder større eller originale versioner af billeder og videoer til mere end 7700 websteder
-// @description:de    Sucht nach größeren oder originalen Versionen von Bildern und Videos für mehr als 7700 Websites
-// @description:el    Βρίσκει μεγαλύτερες ή πρωτότυπες εκδόσεις εικόνων και βίντεο για περισσότερους από 7700 ιστότοπους
-// @description:eo    Trovas pli grandajn aŭ originalajn versiojn de bildoj kaj filmetoj por pli ol 7700 retejoj
-// @description:es    Encuentra imágenes más grandes y originales para más de 7700 sitios
-// @description:fr    Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 7 700 sites web, y compris une puissante fonction de popup média
-// @description:ko    7700개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
-// @description:ja    7700以上のウェブサイトで高画質や原本画像を見つけ出します
-// @description:ru    Находит увеличенные или оригинальные версии изображений для более чем 7700 веб-сайтов
-// @description:bg    Намира увеличени или оригинални версии на изображения за повече от 7700 уеб сайтове
-// @description:uk    Знаходить збільшені або оригінальні версії зображень для більш ніж 7700 веб-сайтів
-// @description:zh    为7700多个网站查找更大或原始图像
-// @description:zh-CN 为7700多个网站查找更大或原始图像
-// @description:zh-TW 為7700多個網站查找更大或原始圖像
-// @description:zh-HK 為7700多個網站查找更大或原始圖像
+// @description       Finds larger or original versions of images and videos for 7800+ websites, including a powerful media popup feature
+// @description:en    Finds larger or original versions of images and videos for 7800+ websites, including a powerful media popup feature
+// @description:ar    البحث عن نسخ أكبر أو أصلية من الصور لأكثر من 7800 موقع ويب
+// @description:cs    Vyhledá větší nebo původní verze obrázků a videí pro více než 7800 webů
+// @description:da    Finder større eller originale versioner af billeder og videoer til mere end 7800 websteder
+// @description:de    Sucht nach größeren oder originalen Versionen von Bildern und Videos für mehr als 7800 Websites
+// @description:el    Βρίσκει μεγαλύτερες ή πρωτότυπες εκδόσεις εικόνων και βίντεο για περισσότερους από 7800 ιστότοπους
+// @description:eo    Trovas pli grandajn aŭ originalajn versiojn de bildoj kaj filmetoj por pli ol 7800 retejoj
+// @description:es    Encuentra imágenes más grandes y originales para más de 7800 sitios
+// @description:fr    Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 7 800 sites web, y compris une puissante fonction de popup média
+// @description:ko    7800개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
+// @description:ja    7800以上のウェブサイトで高画質や原本画像を見つけ出します
+// @description:ru    Находит увеличенные или оригинальные версии изображений для более чем 7800 веб-сайтов
+// @description:bg    Намира увеличени или оригинални версии на изображения за повече от 7800 уеб сайтове
+// @description:uk    Знаходить збільшені або оригінальні версії зображень для більш ніж 7800 веб-сайтів
+// @description:zh    为7800多个网站查找更大或原始图像
+// @description:zh-CN 为7800多个网站查找更大或原始图像
+// @description:zh-TW 為7800多個網站查找更大或原始圖像
+// @description:zh-HK 為7800多個網站查找更大或原始圖像
 // @namespace         http://tampermonkey.net/
-// @version           0.18.0
+// @version           0.18.1
 // @author            qsniyg
 // @homepageURL       https://qsniyg.github.io/maxurl/options.html
 // @supportURL        https://github.com/qsniyg/maxurl/issues
@@ -3486,12 +3486,6 @@ var $$IMU_EXPORT$$;
 		"Amount of time to elapse before automatically closing the popup": {
 			"ko": "\uD31D\uC5C5\uC744 \uC790\uB3D9\uC73C\uB85C \uB2EB\uAE30 \uC804 \uACBD\uACFC \uC2DC\uAC04"
 		},
-		"Use hold key": {
-			"ko": "\uACE0\uC815 \uD0A4 \uC0AC\uC6A9"
-		},
-		"Enables the use of a hold key that, when pressed, will keep the popup open": {
-			"ko": "\uB204\uB974\uBA74 \uD31D\uC5C5\uC774 \uC5F4\uB9B0 \uC0C1\uD0DC\uB85C \uC720\uC9C0\uB418\uB294 \uACE0\uC815 \uD0A4 \uC0AC\uC6A9"
-		},
 		"Hold key": {
 			"ko": "\uACE0\uC815 \uD0A4"
 		},
@@ -3874,7 +3868,7 @@ var $$IMU_EXPORT$$;
 		mouseover_auto_close_popup: false,
 		mouseover_auto_close_popup_time: 5,
 		// thanks to decembre on github for the idea: https://github.com/qsniyg/maxurl/issues/14#issuecomment-530760246
-		mouseover_use_hold_key: true,
+		//mouseover_use_hold_key: true,
 		mouseover_hold_key: ["i"],
 		mouseover_hold_position_center: false,
 		mouseover_hold_close_unhold: false,
@@ -5486,9 +5480,7 @@ var $$IMU_EXPORT$$;
 		mouseover_hold_key: {
 			name: "Hold key",
 			description: "Hold key that, when pressed, will keep the popup open",
-			requires: {
-				mouseover_use_hold_key: true
-			},
+			requires: "action:popup",
 			type: "keysequence",
 			category: "keybinds",
 			subcategory: "popup"
@@ -5496,18 +5488,14 @@ var $$IMU_EXPORT$$;
 		mouseover_hold_position_center: {
 			name: "Center popup on hold",
 			description: "Centers the popup to the middle of the page when the popup is held",
-			requires: {
-				mouseover_use_hold_key: true
-			},
+			requires: "action:popup",
 			category: "popup",
 			subcategory: "close_behavior"
 		},
 		mouseover_hold_close_unhold: {
 			name: "Close popup on unhold",
 			description: "Closes the popup when the hold key is pressed again, after having previously held the popup",
-			requires: {
-				mouseover_use_hold_key: true
-			},
+			requires: "action:popup",
 			category: "popup",
 			subcategory: "close_behavior"
 		},
@@ -5515,7 +5503,7 @@ var $$IMU_EXPORT$$;
 			name: "Enable pointer events on hold",
 			description: "Enables previously disabled pointer events when the popup is held",
 			requires: {
-				mouseover_use_hold_key: true,
+				_condition: "action:popup",
 				mouseover_clickthrough: true
 			},
 			category: "popup",
@@ -9579,7 +9567,7 @@ var $$IMU_EXPORT$$;
 	};
 
 	var get_meta = function(text, property) {
-		var regex = new RegExp("<meta\\s+(?:(?:property|name)=[\"']" + property + "[\"']\\s+(?:content|value|href)=[\"']([^'\"]+)[\"']|(?:content|value|href)=[\"']([^'\"]+)[\"']\\s+(?:property|name)=[\"']" + property + "[\"'])\\s*\/?>");
+		var regex = new RegExp("<meta\\s+(?:(?:property|name|itemprop)=[\"']?" + property + "[\"']?\\s+(?:content|value|href)=[\"']([^'\"]+)[\"']|(?:content|value|href)=[\"']([^'\"]+)[\"']\\s+(?:property|name|itemprop)=[\"']?" + property + "[\"']?)\\s*\/?>");
 		var match = text.match(regex);
 		if (!match)
 			return null;
@@ -10167,13 +10155,19 @@ var $$IMU_EXPORT$$;
 	};
 
 	common_functions.deviantart_url_from_id = function(do_request, api_cache, id, cb) {
-		real_api_query(api_cache, do_request, "deviantart_url_from_id:" + id, {
-			method: "HEAD",
-			url: "http://fav.me/" + id,
-			cookie_url: "https://www.deviantart.com/" // workaround
-		}, cb, function(done, resp, cache_key) {
-			done(resp.finalUrl, 6*60*60);
-		});
+		if (typeof id === "string" && /^[a-z0-9]+$/.test(id) && id.length === 7 && id[0] === "d") {
+			// 28298170368.toString(36) = "d000000"
+			var numerical_id = parseInt(id, 36) - 28298170368;
+			return cb("https://deviantart.com/a/art/" + numerical_id);
+		} else {
+			real_api_query(api_cache, do_request, "deviantart_url_from_id:" + id, {
+				method: "HEAD",
+				url: "http://fav.me/" + id, // https doesn't work
+				cookie_url: "https://www.deviantart.com/" // workaround
+			}, cb, function(done, resp, cache_key) {
+				done(resp.finalUrl, 6*60*60);
+			});
+		}
 	};
 
 	common_functions.deviantart_page_from_id = function(do_request, api_cache, id, cb) {
@@ -27271,9 +27265,13 @@ var $$IMU_EXPORT$$;
 			domain === "img.booru.org" ||
 			domain_nosub === "rule34.xxx" ||
 			domain_nowww === "realbooru.com") {
-			newsrc = src.replace(/\/(?:thumbnails|samples)(\/+[0-9]+\/+)(?:thumbnail|sample)_([0-9a-f]+\.[^/.]*)$/, "/images$1$2");
-			if (newsrc !== src)
-				return add_full_extensions(newsrc);
+			newsrc = src.replace(/\/+(?:thumbnails|samples|images)(\/+[0-9]+\/+)(?:(?:thumbnail|sample)_)?([0-9a-f]+\.[^/.]*)$/, "/images$1$2");
+			if (/\/images\/+[0-9]+\/[0-9a-f]+\./.test(newsrc))
+				return add_full_extensions(newsrc,
+					[
+						"mp4", "MP4", "jpg", "jpeg", "png", "gif", "webp",
+						"JPG", "JPEG", "PNG", "GIF"
+					], true);
 		}
 
 		if (domain === "thumbs.booru.org") return src.replace(/:\/\/[^/]*\//, "://img.booru.org/");
@@ -31343,8 +31341,7 @@ var $$IMU_EXPORT$$;
 			return src.replace(/^[a-z]+:\/\/[^/]+\/+/, "https://cdnio.luscious.net/");
 		}
 
-		if (domain_nosub === "luscious.net" &&
-			domain.match(/cdn[a-z]*\.luscious\.net/)) {
+		if (domain_nosub === "luscious.net" && /^(?:cdn[a-z]*|gifs)\./.test(domain)) {
 			newsrc = src
 				.replace(/\.[0-9]+x[0-9]+(\.[^/]*)$/, "$1")
 				.replace(/\/resized\/[0-9]+\//, "/");
@@ -32859,6 +32856,7 @@ var $$IMU_EXPORT$$;
 			domain_nowww === "japaneseporn.xxx" ||
 			domain_nowww === "hdteen.porn" ||
 			domain_nowww === "indiansexvideo.xxx" ||
+			domain_nosub === "theyarehuge.com" ||
 			domain_nosub === "deviants.com" ||
 			domain_nosub === "cuckoldplacetube.com" ||
 			domain_nosub === "alphaporno.com" ||
@@ -39618,7 +39616,12 @@ var $$IMU_EXPORT$$;
 
 		if (domain_nowww === "celebriot.com") return src.replace(/(\.[^/.]*)\.thumb_[0-9]+x[0-9]+\.[^/.]*(?:[?#].*)?$/, "$1");
 
-		if (domain_nosub === "paheal.net") return src.replace(/:\/\/[^/]*\/_thumbs\//, "://peach.paheal.net/_images/");
+		if (domain_nosub === "paheal.net") {
+			newsrc = src.replace(/:\/\/[^/]*\/_thumbs\//, "://peach.paheal.net/_images/");
+			if (string_indexof(src, "/_thumbs/") >= 0 && newsrc !== src) {
+				return fillobj_urls(add_full_extensions(newsrc, ["mp4", "jpg"], true), {});
+			}
+		}
 
 		if (domain_nowww === "rule34hentai.net") {
 			return {
@@ -40552,6 +40555,7 @@ var $$IMU_EXPORT$$;
 
 		if (domain === "cdn15764270.ahacdn.me" ||
 			domain_nowww === "pornopicshub.com" ||
+			domain === "cdn.pornopicshub.com" ||
 			domain === "cdn26375495.ahacdn.me") {
 			return src.replace(/(\/galleries\/+[^/]*\/+[0-9a-f]+\/+)[0-9]+x[0-9]+(\/+[^/]*\.[^/.]*)(?:[?#].*)?$/,
 							   "$1origin$2");
@@ -43217,7 +43221,8 @@ var $$IMU_EXPORT$$;
 							   "/$1$2");
 		}
 
-		if (domain === "tgp.inthecrack.com") {
+		if (domain === "tgp.inthecrack.com" ||
+			domain_nowww === "crack-assets.com") {
 			return {
 				url: src.replace(/\/assets\/+images\/+hosted\/+galleries\/+([-0-9a-f]{20,})/, "/assets/images/hosted/galleries/full/$1"),
 			};
@@ -45500,8 +45505,8 @@ var $$IMU_EXPORT$$;
 			};
 		}
 
-		if (domain_nosub === "alsscan.com" && /^s[0-9]*\./.test(domain)) {
-			return src.replace(/\/(sample[0-9]+)s(\.[^/.]*)(?:[?#].*)?$/, "/$1$2");
+		if (domain_nosub === "alsscan.com" && /^(?:s|adv)[0-9]*\./.test(domain)) {
+			return src.replace(/\/([a-z]*sample[0-9]+)s(\.[^/.]*)(?:[?#].*)?$/, "/$1$2");
 		}
 
 		if (domain_nowww === "mnvg.com") return src.replace(/(\/gallery\/+[0-9]+\/+[0-9]+)(\.[^/.]*)(?:[?#].*)?$/, "$1-full$2");
@@ -47541,7 +47546,8 @@ var $$IMU_EXPORT$$;
 
 		if (domain === "static.showit.co") return src.replace(/(:\/\/[^/]+\/+)[0-9]+(\/+[^/]+\/+[0-9]+\/+)/, "$199999999$2");
 
-		if (domain === "d33veqcui7lu1w.cloudfront.net") {
+		if (domain === "d33veqcui7lu1w.cloudfront.net" ||
+			domain_nowww === "wasabi-files.lbstatic.nu") {
 			regex = /(\/files\/+[^/]+\/+)[a-z_]+\/+/;
 			if (regex.test(src)) {
 				return [
@@ -48409,6 +48415,9 @@ var $$IMU_EXPORT$$;
 		if (domain_nowww === "sanet.pics") return src.replace(/(\/storage-[0-9]+\/+[0-9]+\/+)th_([^/]+)(?:[?#].*)?$/, "$1$2");
 
 		if (domain === "uploads.cdn.triller.co") {
+			newsrc = src.replace(/(\/v1\/+avatars\/+[0-9]+\/+[0-9]+_avatar\.[^/.?#]+)(?:[?#].*)?$/, "$1");
+			if (newsrc !== src) return newsrc;
+
 			newsrc = src.replace(/(\/v1\/+uploads\/+[0-9]+\/+[0-9]+)_thumbnail\.[^/.?#]+(?:[?#].*)?$/, "$1_video.mp4");
 			if (newsrc !== src) {
 				return {
@@ -48468,7 +48477,8 @@ var $$IMU_EXPORT$$;
 
 		if (domain === "image.bitautoimg.com") return src.replace(/\/appimage-[^/]+\/+mapi\/+media\/+/, "/mapi/media/");
 
-		if (amazon_container === "miscellaneous-content") {
+		if (amazon_container === "miscellaneous-content" ||
+			domain === "d2qm30jidfbm96.cloudfront.net") {
 			regex = /(\/uploads\/+bfa\/+[0-9]+\/+([0-9]+)\/+)(?:thumb|large|wl|preview|original)_([0-9]+_[0-9]+\.[^/.]+)(?:[?#].*)?$/;
 			match = src.match(regex);
 
@@ -54287,6 +54297,11 @@ var $$IMU_EXPORT$$;
 			}
 		}
 
+		if (domain === "images.megaphone.fm") {
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+[^/]+\/+[^/]+\/+s3:\/\//, "https://s3.amazonaws.com/");
+			if (newsrc !== src) return newsrc;
+		}
+
 		if (domain === "img.jvid.com") {
 			newsrc = src
 				.replace(/(:\/\/[^/]+\/+minify_image\/+)300(\/+[0-9]{5,}_[0-9]+\/+[0-9]{4}\/+(?:[0-9]{2}\/+){2}[0-9a-f]{30,}\.[^/.]+)(?:[?#].*)?$/, "$11600/3$2")
@@ -57364,6 +57379,78 @@ var $$IMU_EXPORT$$;
 
 		if (domain_nowww === "javteentube.com") {
 			if (/^[a-z]+:\/\/[^/]+\/+jtt\/+[a-z]+-[0-9a-z]{4}\.png(?:[?#].*)?$/.test(src)) {
+				return {
+					url: src,
+					bad: "mask"
+				};
+			}
+		}
+
+		if (domain === "pics.pornwatchers.com") {
+			newsrc = src.replace(/^[a-z]+:\/\/[^/]+\/+media\/+thumbs\/+((?:[0-9a-f]\/+){5}[0-9a-f]+(?:-[^/.]+)?)(?:\.mp4)?\/+[0-9a-f]+.*/, "https://cdn.pornwatchers.com/media/videos/$1.mp4");
+			if (newsrc !== src) {
+				return {
+					url: newsrc,
+					video: true
+				};
+			}
+		}
+
+		if (domain_nowww === "pornwatchers.com") {
+			newsrc = website_query({
+				website_regex: [
+					/^[a-z]+:\/\/[^/]+\/+video\/+[^/.]*-([0-9]+)\.html(?:[?#].*)?$/,
+					/^[a-z]+:\/\/[^/]+\/+embed\/+([0-9]+)(?:[?#].*)?$/
+				],
+				query_for_id: "https://www.pornwatchers.com/video/-${id}.html",
+				process: function(done, resp, cache_key) {
+					var thumbnail = get_meta(resp.responseText, "thumbnailUrl");
+					var video = strip_whitespace(get_meta(resp.responseText, "contentURL"));
+
+					var name = get_meta(resp.responseText, "name");
+					var description = get_meta(resp.responseText, "description");
+
+					var urls = [];
+
+					if (video) urls.push({url: video, video: true});
+					if (thumbnail) urls.push(thumbnail);
+
+					var obj = {
+						extra: {
+							caption: name || description,
+							page: resp.finalUrl
+						}
+					};
+
+					done(fillobj_urls(urls, obj), 6*60*60);
+				}
+			});
+			if (newsrc) return newsrc;
+		}
+
+		if (domain_nowww === "alohatube.com") {
+			match = src.match(/^[a-z]+:\/\/[^/]+\/+ktm\/+view\.cgi\?(?:.*&)?u=(https?:\/\/[^&]+)(?:[?&#].*)?$/);
+			if (match) {
+				return {
+					url: match[1],
+					is_pagelink: true
+				}
+			}
+		}
+
+		if (domain === "d29ef90wiiaj1a.cloudfront.net") return src.replace(/(\/user_[0-9a-f]{10,}_[^/.]+\.)[0-9]+x[0-9]+\./, "$1");
+
+		if (domain_nowww === "asexypanties.com" ||
+			domain_nowww === "pantiespics.net") {
+			return src.replace(/(\/galleries\/+[^/]+\/+[0-9]+)tn(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+		}
+
+		if (domain_nowww === "panty-porn.com") return src.replace(/(\/pictures\/+[^/]+\/+p[0-9]+)t(\.[^/.]+)(?:[?#].*)?$/, "$1$2");
+
+		if (domain_nowww === "pornstarsluv.com") return src.replace(/(\/media\/+images)_[0-9]+\/+/, "$1/");
+
+		if (domain === "mk0movieguide99l7786.kinstacdn.com") {
+			if (/\/wp-content\/+plugins\/+movieguide\/+images\/+overlay_[a-z]+\./.test(src)) {
 				return {
 					url: src,
 					bad: "mask"
@@ -63791,7 +63878,8 @@ var $$IMU_EXPORT$$;
 				data: {
 					url: src,
 					method: "GET",
-					headers: info_obj.headers
+					headers: info_obj.headers,
+					anonymous: el.getAttribute("crossorigin") === "anonymous"
 				}
 			}, function() {
 				set_src(el, src);
@@ -72975,6 +73063,17 @@ var $$IMU_EXPORT$$;
 			popup_hold_func();
 		};
 
+		var toggle_popup_hold = function() {
+			popup_hold = !popup_hold;
+			clear_resetpopup_timeout();
+
+			if (!popup_hold && (can_close_popup[1] || settings.mouseover_hold_close_unhold)) {
+				action_handler({type: "resetpopups"});
+			} else {
+				update_popup_hold();
+			}
+		};
+
 		var get_video_screenshot = function(video, cb) {
 			var canvas = document_createElement("canvas");
 			canvas.width = video.videoWidth;
@@ -73129,6 +73228,9 @@ var $$IMU_EXPORT$$;
 					return true;
 				case "hold":
 					update_popup_hold();
+					return true;
+				case "toggle_hold":
+					toggle_popup_hold();
 					return true;
 				case "toggle_ui":
 					toggle_popup_ui();
@@ -73338,19 +73440,6 @@ var $$IMU_EXPORT$$;
 						}
 					});
 				}
-
-				if (can_use_hold_key() && event_in_chord(event, settings.mouseover_hold_key)) {
-					if (trigger_complete(settings.mouseover_hold_key)) {
-						popup_hold = !popup_hold;
-						clear_resetpopup_timeout();
-
-						if (!popup_hold && (can_close_popup[1] || settings.mouseover_hold_close_unhold)) {
-							actions.push({type: "resetpopups"});
-						} else {
-							actions.push({type: "hold"});
-						}
-					}
-				}
 			}
 
 			if (settings.replaceimgs_enable_keybinding && trigger_complete(settings.replaceimgs_keybinding)) {
@@ -73519,6 +73608,10 @@ var $$IMU_EXPORT$$;
 						action: {type: "download_gallery"},
 						// Clear the chord because keyup might not be called due to the save dialog popup
 						clear: true
+					},
+					{
+						key: settings.mouseover_hold_key,
+						action: {type: "toggle_hold"}
 					}
 				];
 
