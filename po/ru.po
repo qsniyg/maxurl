@@ -1,0 +1,3001 @@
+# Russian translations for Image Max URL
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Image Max URL\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ru\n"
+
+# Название родного языка (например, Français для французского языка, 한국어 для корейского)
+msgid "$language_native$"
+msgstr "Русский"
+
+msgid "options_header"
+msgstr "Параметры"
+
+msgid "yes"
+msgstr "Да"
+
+msgid "no"
+msgstr "Нет"
+
+msgid "Import"
+msgstr "Импорт"
+
+msgid "Export"
+msgstr "Экспорт"
+
+msgid "Requires:"
+msgstr "Требуется:"
+
+msgid "category_redirection"
+msgstr "Перенаправление"
+
+msgid "category_popup"
+msgstr "Всплывающее окно"
+
+msgid "subcategory_update"
+msgstr "Обновление"
+
+msgid "subcategory_settings"
+msgstr "Настройки"
+
+msgid "subcategory_ui"
+msgstr "Интерфейс"
+
+msgid "subcategory_trigger"
+msgstr "Действия всплывающего окна"
+
+msgid "subcategory_popup_source"
+msgstr "Источник"
+
+msgid "subcategory_open_behavior"
+msgstr "Поведение при открытии"
+
+msgid "subcategory_close_behavior"
+msgstr "Поведение при закрытии"
+
+msgid "subcategory_behavior"
+msgstr "Поведение всплывающего окна"
+
+msgid "subcategory_video"
+msgstr "Видео/Аудио"
+
+msgid "subcategory_gallery"
+msgstr "Галерея"
+
+msgid "subcategory_popup_other"
+msgstr "Прочее"
+
+msgid "subcategory_cache"
+msgstr "Кэш"
+
+msgid "category_keybinds"
+msgstr "Горячие клавиши"
+
+msgid "subcategory_keybinds_popup_actions"
+msgstr "Действия всплывающего окна"
+
+msgid "Mouse cursor"
+msgstr "Курсор мыши"
+
+msgid "category_rules"
+msgstr "Правила"
+
+msgid "subcategory_rule_specific"
+msgstr "Специфика правил"
+
+msgid "category_website"
+msgstr "Сайты"
+
+msgid "saved_refresh_target"
+msgstr "Сохранено с обновлением цели"
+
+msgid "saved_no_refresh"
+msgstr "Сохранено без обновления"
+
+msgid "save"
+msgstr "Сохранить"
+
+msgid "record"
+msgstr "Запись"
+
+msgid "cancel"
+msgstr "Отмена"
+
+msgid "Mouseover popup (%%1) is needed to display the original version"
+msgstr "Всплывающее окно наведения курсора мыши (%%1) необходимо для отображения исходной версии"
+
+msgid "custom headers"
+msgstr "Пользовательские заголовки"
+
+msgid "forces download"
+msgstr "Скачать принудительно"
+
+msgid "Close"
+msgstr "Закрыть"
+
+msgid "Previous"
+msgstr "Предыдущее"
+
+msgid "Next"
+msgstr "Следуещее"
+
+msgid "Left Arrow"
+msgstr "Стрелка влево"
+
+msgid "Right Arrow"
+msgstr "Стрелка вправо"
+
+msgid "category_extension"
+msgstr "Расширения"
+
+msgid "rotate_left_btn"
+msgstr "Кнопка поворота влево"
+
+msgid "rotate_right_btn"
+msgstr "Кнопка поворота вправо"
+
+msgid "category_extra"
+msgstr "Дополнительно"
+
+msgid "subcategory_replaceimages"
+msgstr "Замена изображений"
+
+msgid "subcategory_highlightimages"
+msgstr "Выделение изображений"
+
+msgid "category_general"
+msgstr "Основное"
+
+#. imu_enabled.name
+msgid "Enable extension"
+msgstr "Включить расширение"
+
+#. imu_enabled.description
+msgid "Globally enables or disables the extension"
+msgstr "Включает или отключает расширение глобально"
+
+#. language.name
+msgid "Language"
+msgstr "Язык"
+
+#. language.description
+msgid "Language for this extension"
+msgstr "Язык для этого расширения"
+
+#. language.options.en.name
+msgid "English"
+msgstr "Английский"
+
+#. language.options.es.name
+msgid "Español"
+msgstr "Испанский"
+
+#. language.options.fr.name
+msgid "Français"
+msgstr "Французкий"
+
+#. language.options.it.name
+msgid "Italiano"
+msgstr "Итальянский"
+
+#. language.options.ko.name
+msgid "한국어"
+msgstr "Корейский"
+
+#. dark_mode.name
+msgid "Dark mode"
+msgstr "Тёмная тема"
+
+#. dark_mode.description
+msgid "Changes the colors to have light text on a dark background"
+msgstr "Изменяет цвета, делая текст на тёмном фоне, светлым."
+
+#. settings_visible_description.name
+msgid "Description below options"
+msgstr "Описание под параметрами"
+
+#. settings_visible_description.description
+msgid "Shows the description below the options (otherwise the description is only shown when you hover over the option's name)"
+msgstr "Показывает описание под параметрами (в противном случае описание отображается только при наведении курсора мыши на имя параметра)"
+
+#. settings_show_disabled.name
+msgid "Show disabled options"
+msgstr "Показывать отключенные параметры"
+
+#. settings_show_disabled.description
+msgid "If disabled, options that are disabled due to their requirements being unmet will not be displayed"
+msgstr "Если этот параметр отключен, то параметры, которые отключены из-за невыполнения их требований, не будут отображаться"
+
+#. settings_show_disabled_profiles.name
+msgid "Show disabled trigger profiles"
+msgstr "Показывать отключенные целевые профили"
+
+#. settings_show_disabled_profiles.description
+msgid "If disabled, options for alternate trigger profiles (options with `(#2)` after them) will not be shown if the relevant trigger isn't active"
+msgstr "Если этот параметр отключен, параметры альтернативных целевых профилей (параметры с `(#2)` после них) не будут отображаться, если соответствующий триггер не активен"
+
+#. settings_show_requirements.name
+msgid "Requirements below disabled options"
+msgstr "Требования под отключенными параметрами"
+
+#. settings_show_requirements.description
+msgid "If an option is disabled, the requirements to enable the option will be displayed below it"
+msgstr "Если параметр отключен, то под ним будут отображаться требования для его включения"
+
+#. check_updates.name
+msgid "Check for updates"
+msgstr "Проверять наличие обновлений"
+
+#. check_updates.description
+msgid "Periodically checks for updates. If a new update is available, it will be shown at the top of the options page"
+msgstr "Периодически проверяет наличие обновлений. Новое обновление будет показано в верхней части страницы параметров."
+
+#. check_update_interval.name
+msgid "Update check interval"
+msgstr "Интервал проверки обновления"
+
+#. check_update_interval.description
+msgid "How often to check for updates"
+msgstr "Как часто будет происходить проверка наличия обновлений"
+
+#. check_update_interval.number_unit
+msgid "hours"
+msgstr "ч."
+
+#. check_update_notify.name
+msgid "Notify when update is available"
+msgstr "Уведомлять о наличии обновления"
+
+#. check_update_notify.description
+msgid "Creates a browser notification when an update is available"
+msgstr "Создаёт уведомление в браузере, когда обновление доступно."
+
+#. advanced_options.name
+msgid "Show advanced settings"
+msgstr "Показывать дополнительные настройки"
+
+#. advanced_options.description
+msgid "If disabled, settings that might be harder to understand will be hidden"
+msgstr "Если отключено, то более сложные настройки, будут скрыты"
+
+#. settings_tabs.name
+msgid "Use tabs"
+msgstr "Использовать вкладки"
+
+#. settings_tabs.description
+msgid "If disabled, all settings will be shown on a single page"
+msgstr "Если отключено, все настройки будут отображаться на одной странице"
+
+#. settings_alphabetical_order.name
+msgid "Alphabetical order"
+msgstr "В алфавитном порядке"
+
+#. settings_alphabetical_order.description
+msgid "Lists options in alphabetical order"
+msgstr "Список параметров будет отсортирован в алфавитном порядке"
+
+#. allow_browser_request.name
+msgid "Allow using browser XHR"
+msgstr "Разрешить браузеру использовать XHR"
+
+#. allow_browser_request.description
+msgid "This allows XHR requests to be run in the browser's context if they fail in the extension (e.g. when Tracking Protection is set to High)"
+msgstr "Это позволяет запускать запросы XHR в контексте браузера, если они не работают в расширении (например, когда защита отслеживания установлена на Высокий уровень)"
+
+#. retry_503_times.name
+msgid "Retry requests with 503 errors"
+msgstr "Повторять запрос с ошибкой 503"
+
+#. retry_503_times.description
+msgid "Amount of times to retry a request when 503 (service unavailable) is returned by the server"
+msgstr "Количество повторных попыток запроса, когда сервер возвращает 503 (служба недоступна)"
+
+#. retry_503_times.number_unit
+msgid "times"
+msgstr "раз(а)"
+
+#. retry_503_ms.name
+msgid "Delay between 503 retries"
+msgstr "Задержка между повторами 503"
+
+#. retry_503_ms.description
+msgid "Time (in milliseconds) to delay between retrying requests that received 503"
+msgstr "Время (в миллисекундах) для задержки между повторной попыткой запросов при получении 503"
+
+#. use_blob_over_arraybuffer.name
+msgid "Use `Blob` over `ArrayBuffer`"
+msgstr "Использовать `Blob` поверх `ArrayBuffer`"
+
+#. use_blob_over_arraybuffer.description
+msgid "Uses `Blob`s for XHRs instead of `ArrayBuffer`s. Keep this enabled unless your userscript manager doesn't support blob requests"
+msgstr "Использует `Blob`ы для XHR, вместо `ArrayBuffer`ов. Оставьте это включенным, если ваш менеджер пользовательских скриптов не поддерживает запросы blob."
+
+#. allow_live_settings_reload.name
+msgid "Live settings reloading"
+msgstr "Перезагрузка настроек в реальном времени"
+
+#. allow_live_settings_reload.description
+msgid "Enables/disables live settings reloading. There shouldn't be a reason to disable this unless you're experiencing issues with this feature"
+msgstr "Включает/выключает перезагрузку параметров в реальном времени. Не должно быть причин для отключения этой функции. Отключить только если у вас есть с ней проблемы."
+
+#. disable_keybind_when_editing.name
+msgid "Disable keybindings when editing text"
+msgstr "Отключить горячие клавиши при редактировании текста"
+
+#. disable_keybind_when_editing.description
+msgid "Disables shortcuts when key events are sent to an input area on the page"
+msgstr "Отключает горячие клавиши при отправке событий клавиш в область ввода на странице"
+
+#. enable_gm_download.name
+msgid "Use `GM_download` if available"
+msgstr "Использовать `GM_download`, если доступно"
+
+#. enable_gm_download.description
+msgid "Prefers using `GM_download` over simple browser-based downloads, if the function is available. Some userscript managers download the entire file before displaying a save dialog, which can be undesirable for large video files"
+msgstr "Предпочтительно использует `GM_download` вместо простых скачиваний в браузере, если эта функция доступна. Некоторые менеджеры пользовательских скриптов скачивает весь файл перед отображением диалога сохранения, что может быть нежелательно для больших видеофайлов."
+
+#. gm_download_max.name
+msgid "Maximum size to `GM_download`"
+msgstr "Максимальный размер для `GM_download`"
+
+#. gm_download_max.description
+msgid "If a file is larger than this size, use a simple browser-based download instead. Set to `0` for unlimited."
+msgstr "Если файл больше этого размера, используется простое скачивание через браузер. `0` - неограниченно."
+
+#. gm_download_max.number_unit
+msgid "MB"
+msgstr "МБ"
+
+#. enable_webextension_download.name
+msgid "Force save dialog when downloading"
+msgstr "Принудительное диалоговое окно сохранения при скачивании"
+
+#. enable_webextension_download.description
+msgid "Tries to ensure the 'save as' dialog displays when downloading. This requires the 'downloads' permission to work, and will sometimes not work when custom headers are required."
+msgstr "Посторается обеспечить отображение диалогового окна 'Сохранить как' при скачивании. Для этого требуется разрешение на 'скачивание', и иногда не будет работать, когда требуются пользовательские заголовки."
+
+#. write_to_clipboard.name
+msgid "Enable writing to clipboard"
+msgstr "Включить запись в буфер обмена"
+
+#. write_to_clipboard.description
+msgid "This option does nothing on its own, but enabling it allows other functionality that require writing to the clipboard to work"
+msgstr "Эта опция сама по себе ничего не делает, но её включение позволяет работать другим функциям, требующим записи в буфер обмена."
+
+#. redirect.name
+msgid "Enable redirection"
+msgstr "Включить перенаправление"
+
+#. redirect.description
+msgid "Automatically redirect media opened in their own tab to their larger/original versions"
+msgstr "Автоматически перенаправляет открытое медиа на новую вкладку к их более крупныой/оригинальной версии"
+
+#. redirect_video.name
+msgid "Allow video"
+msgstr "Разрешить видео"
+
+#. redirect_video.description
+msgid "Allows redirecting from/to video"
+msgstr "Позволяет перенаправлять с/на видео"
+
+#. redirect_audio.name
+msgid "Allow audio"
+msgstr "Разрешить аудио"
+
+#. redirect_audio.description
+msgid "Allows redirecting from/to audio"
+msgstr "Позволяет перенаправлять с/на аудио"
+
+#. redirect_history.name
+msgid "Add to history"
+msgstr "Добавлять в историю"
+
+#. redirect_history.description
+msgid "Redirection will add a new entry to the browser's history"
+msgstr "Перенаправление будет добавлять новую запись в историю браузера"
+
+#. redirect_extension.name
+msgid "Do redirection in extension"
+msgstr "Делать перенаправление в расширении"
+
+#. redirect_extension.description
+msgid "Performs the redirection in the extension instead of the content script. This is significantly faster and shouldn't cause issues in theory, but this option is kept in case of regressions"
+msgstr "Выполняет перенаправление в расширении вместо скрипта содержимого. Теоритически это значительно быстрее и не должно вызывать проблем, но этот параметр сохраняется в случае регрессий."
+
+#. canhead_get.name
+msgid "Use GET if HEAD is unsupported"
+msgstr "Использовать GET, если HEAD не поддерживается"
+
+#. canhead_get.description
+msgid "Use a GET request to check an image's availability, if the server does not support HEAD requests"
+msgstr "Будет использоваться GET-запрос для проверки доступности изображения, если сервер не поддерживает запросы HEAD."
+
+#. redirect_force_page.name
+msgid "Try finding original page/caption"
+msgstr "Пытаться найти оригинальную страницу/подпись"
+
+#. redirect_force_page.description
+msgid "Enables methods that use API calls for finding the original page or caption. Note that this option does not affect finding the original media."
+msgstr "Включает методы, использующие вызовы API для поиска исходной страницы или подписи. Обратите внимание, что этот параметр не влияет на поиск исходного медиа."
+
+#. redirect_force_page.example_websites[1]
+msgid "SmugMug"
+msgstr ""
+
+#. redirect_infobox_url.name
+msgid "Show image URL in tooltip"
+msgstr "Показывать ссылку изображения во всплывающей подсказке"
+
+#. redirect_infobox_url.description
+msgid "If the popup is needed to display the larger version of an image, display the image link in the tooltip"
+msgstr "Если всплывающее окно необходимо для отображения увеличенной версии изображения, отобразите ссылку на изображение во всплывающей подсказке."
+
+#. redirect_infobox_timeout.name
+msgid "Hide tooltip after"
+msgstr "Скрыть всплывающую подсказку после"
+
+#. redirect_infobox_timeout.description
+msgid "Hides the tooltip after the specified number of seconds (or when the mouse clicks on it). Set to 0 to never hide automatically"
+msgstr "Скрывает всплывающую подсказку после указанного количества секунд (или когда мышь щёлкает по ней). 0 - автоматически никогда не скрывать."
+
+#. print_imu_obj.name
+msgid "Log info object to console"
+msgstr "Журнал информации объекта в консоли"
+
+#. print_imu_obj.description
+msgid "Prints the full info object to the console whenever a popup/redirect is found"
+msgstr "Выводит полную информацию объекта в консоль всякий раз, когда обнаруживается всплывающее окно/перенаправление"
+
+#. redirect_disable_for_responseheader.name
+msgid "Disable when response headers need modifying"
+msgstr "Отключать, когда заголовки ответов нуждаются в изменении"
+
+#. redirect_disable_for_responseheader.description
+msgid "This option works around Chrome's migration to manifest v3, redirecting some images to being force-downloaded"
+msgstr "Этот параметр работает вокруг миграции Chrome в manifest v3, перенаправляя некоторые изображения к принудительному скачиванию"
+
+#. redirect_to_no_infobox.name
+msgid "Redirect to largest without issues"
+msgstr "Перенаправлять на самое большое без проблем"
+
+#. redirect_to_no_infobox.description
+msgid "Redirects to the largest image found that doesn't require custom headers or forces download"
+msgstr "Перенаправляет на самое большое найденное изображение, которое не требует пользовательских заголовков или принудительного скачивания."
+
+#. redirect_host_html.name
+msgid "Redirect for HTML pages too"
+msgstr "Перенаправлять для HTML-страниц тоже"
+
+#. redirect_host_html.description
+msgid "Tries redirection even if the host page is HTML. This option might be useful for dead links. However, this will also result in many normal pages being redirected to images/video, so please avoid enabling this by default!"
+msgstr "Пытается перенаправить, даже если хост является страницой HTML. Этот параметр может быть полезен для мёртвых ссылок. Однако, это также приведёт к тому, что многие обычные страницы будут перенаправлены на изображения/видео, поэтому, не включайте это по умолчанию!"
+
+#. redirect_host_html.warning.true
+msgid ""
+"This will result in many pages being redirected to images/videos.\n"
+"I'd recommend only enabling this for the media you need it for, then disabling it after."
+msgstr ""
+"В результате многие страницы будут перенаправлены на изображения/видео.\n"
+"Я бы порекомендовал включать это только для тех медиа, для которых это нужно, а после затем отключить."
+
+#. mouseover.name
+msgid "Enable mouseover popup"
+msgstr "Включить всплывающее окно при наведении мыши"
+
+#. mouseover.description
+msgid "Show a popup with the larger image when you mouseover an image with the trigger key held (if applicable)"
+msgstr "Показывать всплывающее окно с увеличенным изображением при наведении курсора мыши на изображение с удерживаемой целевой клавишей (если применимо)."
+
+#. mouseover_trigger_behavior.name
+msgid "Mouseover popup trigger"
+msgstr "Действие всплывающего окна при наведении на него мыши"
+
+#. mouseover_trigger_behavior.description
+msgid "How the popup will get triggered"
+msgstr "Как будет срабатывать всплывающее окно"
+
+#. mouseover_trigger_behavior.options.mouse.name
+msgid "Mouseover"
+msgstr "При наведение курсора мыши"
+
+#. mouseover_trigger_behavior.options.mouse.description
+msgid "Triggers when your mouse is over the image"
+msgstr "Срабатывает при наведении курсора на изображении"
+
+#. mouseover_trigger_behavior.options.keyboard.name
+msgid "Key trigger"
+msgstr "При нажатии клавиши"
+
+#. mouseover_trigger_behavior.options.keyboard.description
+msgid "Triggers when you press a key sequence when your mouse is over an image"
+msgstr "Срабатывает при нажатии комбинации клавиш, когда курсор находится на изображении."
+
+#. mouseover_trigger_behavior.options.none.description
+msgid "Disables the popup from being triggered (useful if you only want to use the context menu item)"
+msgstr "Отключает срабатывание всплывающего окна (полезно, если вы хотите использовать только пункт контекстного меню)"
+
+#. mouseover_trigger_key.name
+msgid "Popup trigger key"
+msgstr "Комбинация клавиш запуска всплывающего окна"
+
+#. mouseover_trigger_key.description
+msgid "Key sequence to trigger the popup"
+msgstr "Комбинация клавиш при которой запускается всплывающее окно"
+
+#. mouseover_trigger_key_t2.name
+msgid "Popup trigger key (#2)"
+msgstr "Комбинация клавиш запуска всплывающего окна (#2)"
+
+#. mouseover_trigger_key_t2.description
+msgid "Key sequence to trigger the popup with alternate options. Search for `(#2)` to find the relevant options"
+msgstr "Комбинация клавиш при которой запускается всплывающее окно с альтернативными параметрами. Ищите `(#2)`, чтобы найти соответствующие параметры."
+
+#. mouseover_trigger_key_t3.name
+msgid "Popup trigger key (#3)"
+msgstr "Комбинация клавиш запуска всплывающего окна (#3)"
+
+#. mouseover_trigger_key_t3.description
+msgid "Key sequence to trigger the popup with alternate options. Search for `(#3)` to find the relevant options"
+msgstr "Комбинация клавиш при которой запускается всплывающее окно с альтернативными параметрами. Ищите `(#3)`, чтобы найти соответствующие параметры."
+
+#. mouseover_trigger_delay.name
+msgid "Popup trigger delay"
+msgstr "Задержка срабатывания всплывающего окна"
+
+#. mouseover_trigger_delay.description
+msgid "Delay (in seconds) before the popup shows"
+msgstr "Задержка (в секундах) до появления всплывающего окна"
+
+#. mouseover_trigger_mouseover.name
+msgid "Use mouseover event"
+msgstr "Использовать событие наведения курсора мыши"
+
+#. mouseover_trigger_mouseover.description
+msgid "Uses the mouseover event instead of mousemove to figure out where to trigger the popup. This more closely matches the way other image popup addons work, at the cost of configurability"
+msgstr "Использует событие 'наведения курсора мыши' вместо 'движения курсора мыши', чтобы выяснить, где вызвать всплывающее окно. Это более точно соответствует тому, как работают другие дополнения к всплывающим изображениям, за счёт конфигурируемости/"
+
+#. mouseover_trigger_enabledisable_toggle.name
+msgid "Enable/disable toggle"
+msgstr "Включить/Выключить"
+
+#. mouseover_trigger_enabledisable_toggle.description
+msgid "Controls whether the 'Popup enable/disable key' will enable or disable the popup from opening"
+msgstr "Управляет тем, будет ли 'Клавиша включения/отключения всплывающего окна' включать или отключать открытие всплывающего окна."
+
+#. mouseover_trigger_enabledisable_toggle.options.enable.name
+msgid "Enable"
+msgstr "Включить"
+
+#. mouseover_trigger_enabledisable_toggle.options.disable.name
+msgid "Disable"
+msgstr "Отключить"
+
+#. mouseover_trigger_prevent_key.name
+msgid "Popup enable/disable key"
+msgstr "Клавиша включения/отключения всплывающего окна"
+
+#. mouseover_trigger_prevent_key.description
+msgid "Holding down this key will enable or disable the popup from being opened, depending on the 'Enable/disable toggle' setting"
+msgstr "Удерживание этой клавиши включит или отключит всплывающее окно, в зависимости от настройки 'Включить/Выключить'."
+
+#. mouseover_allow_partial.name
+msgid "Allow showing partially loaded"
+msgstr "Разрешить показывать частично загруженные"
+
+#. mouseover_allow_partial.description
+msgid ""
+"This will allow the popup to open for partially loaded media.\n"
+"Partially loaded media will contain the source URL directly (where possible), whereas fully loaded media will use a blob or data URL."
+msgstr ""
+"Это позволит открыть всплывающее окно для частично загруженных медиа.\n"
+"Частично загруженные медиа будут содержать исходный URL напрямую (где это возможно), тогда как полностью загруженные медиа будут использовать BLOB или URL-адрес данных."
+
+#. mouseover_allow_partial.description_userscript
+msgid ""
+"This will allow the popup to open for partially loaded media, but this might break images that require custom headers to display properly.\n"
+"Partially loaded media will contain the source URL directly (where possible), whereas fully loaded media will use a blob or data URL."
+msgstr ""
+"Это позволит открыть всплывающее окно для частично загруженных медиа, но это может поломать изображения, для правильного отображения которых требуются пользовательские заголовки.\n"
+"Частично загруженные медиа будут содержать исходный URL-адрес напрямую (где это возможно), тогда как полностью загруженные медиа будут использовать BLOB или URL-адрес данных."
+
+#. mouseover_allow_partial.options.video.name
+msgid "Streams"
+msgstr "Потоки"
+
+#. mouseover_allow_partial.options.video.description
+msgid "Audio and video"
+msgstr "Аудио и видео"
+
+#. mouseover_allow_partial.options.media.name
+msgid "Media"
+msgstr "Медиа"
+
+#. mouseover_allow_partial.options.media.description
+msgid "Images, audio, and video"
+msgstr "Изображения, аудио и видео"
+
+#. mouseover_partial_avoid_head.name
+msgid "Avoid HEAD request for partially loaded media"
+msgstr "Избегать запросы HEAD для частично загруженных медиа"
+
+#. mouseover_partial_avoid_head.description
+msgid "Avoids a possibly unnecessary HEAD request before displaying partially loaded images, which further decreases the delay before opening the popup. This can cause issues if the server returns an error, but still returns an image"
+msgstr "Избегает ненужного запроса HEAD перед отображением частично загруженных изображений, что еще больше уменьшает задержку перед открытием всплывающего окна. Это может вызвать проблемы, если сервер вернёт ошибку, но все равно вернет изображение."
+
+#. mouseover_use_blob_over_data.name
+msgid "Use `blob:` over `data:` URLs"
+msgstr "Использовать `blob:` поверх `data:` URL"
+
+#. mouseover_use_blob_over_data.description
+msgid "Blob URLs are more efficient, but aren't supported by earlier browsers. Some websites also block `blob:` URLs"
+msgstr "Blob URL более эффективны, но не поддерживаются старыми браузерами. Некоторые сайты также блокируют `blob:` URL."
+
+#. popup_use_anonymous_crossorigin.name
+msgid "Load media anonymously"
+msgstr "Загружать медиа анонимно"
+
+#. popup_use_anonymous_crossorigin.description
+msgid "Loads the media without sending any cookies or other forms of credentials. This is required to screenshot videos from other sources"
+msgstr "Загружает медиа без отправки куки-файлов или других форм учётных данных. Это необходимо для скриншотов видео из других источников."
+
+#. mouseover_enable_notallowed.name
+msgid "Use `not-allowed` cursor when unsupported"
+msgstr "Использовать курсор `запрещено`, если не поддерживается"
+
+#. mouseover_enable_notallowed.description
+msgid "If the image isn't supported, the mouse cursor will change to a `not-allowed` cursor for a brief duration"
+msgstr "Если изображение не поддерживается, курсор мыши на короткое время изменится на `запрещено`."
+
+#. mouseover_enable_notallowed_cant_load.name
+msgid "Use `not-allowed` cursor when unable to load"
+msgstr "Использовать курсор `запрещено`, если невозможно загрузить"
+
+#. mouseover_enable_notallowed_cant_load.description
+msgid "If the image fails to load, the mouse cursor will change to a `not-allowed` cursor for a brief duration"
+msgstr "Если изображение не загружается, курсор мыши на короткое время изменится на `запрещено`."
+
+#. mouseover_notallowed_duration.name
+msgid "`not-allowed` cursor duration"
+msgstr "Длительность курсора `запрещено`"
+
+#. mouseover_notallowed_duration.description
+msgid "How long the `not-allowed` cursor should last"
+msgstr "Как долго отображается курсор `запрещено`"
+
+#. mouseover_exclude_page_bg.name
+msgid "Exclude page background"
+msgstr "Исключать фон страницы"
+
+#. mouseover_exclude_page_bg.description
+msgid "Excludes the page background for the popup"
+msgstr "Исключает фон страницы для всплывающего окна."
+
+#. mouseover_minimum_size.name
+msgid "Minimum image size"
+msgstr "Минимальный размер изображения"
+
+#. mouseover_minimum_size.description
+msgid "Smallest size acceptable for the popup to open (this option is ignored for background images)"
+msgstr "Наименьший размер, приемлемый для открытия всплывающего окна (этот параметр игнорируется для фоновых изображений)."
+
+#. mouseover_exclude_backgroundimages.name
+msgid "Exclude `background-image`s"
+msgstr "Исключать `background-image`"
+
+#. mouseover_exclude_backgroundimages.description
+msgid "Excludes `background-image`s for the popup. Might prevent the popup from working on many images"
+msgstr "Исключает `background-image` для всплывающего окна. Это может помешать всплывающему окну работать со многими изображениями."
+
+#. mouseover_exclude_imagetab.name
+msgid "Exclude image tabs"
+msgstr "Исключать вкладки с изображениями"
+
+#. mouseover_exclude_imagetab.description
+msgid "Excludes images that are opened in their own tabs"
+msgstr "Исключает изображения, открытые в собственных вкладках."
+
+#. mouseover_exclude_sameimage.name
+msgid "Exclude if media URL is unchanged"
+msgstr "Исключать, если ссылка медиа не изменилась"
+
+#. mouseover_exclude_sameimage.description
+msgid "Don't pop up if the new URL is the same as the source"
+msgstr "Всплывающее окно не появляется, если ссылка как у источника."
+
+#. mouseover_only_links.name
+msgid "Only popup for linked media"
+msgstr "Всплывающее окно только для медиа с ссылкой"
+
+#. mouseover_only_links.description
+msgid "Don't pop up if the media isn't hyperlinked"
+msgstr "Всплывающее окно не появляется, если медиа не имеет гиперссылки"
+
+#. mouseover_linked_image.name
+msgid "Popup link for linked media"
+msgstr "Всплывающее окно ссылки для медиа с ссылками"
+
+#. mouseover_linked_image.description
+msgid "If the linked media cannot be made larger, pop up for the link instead of the media"
+msgstr "Если медиа с ссылкой не может быть увеличено, всплывает ссылка вместо медиа."
+
+#. mouseover_exclude_imagemaps.name
+msgid "Exclude image maps"
+msgstr "Исключать карты изображений"
+
+#. mouseover_exclude_imagemaps.description
+msgid "Don't pop up if the image is an image map (image with multiple clickable areas)"
+msgstr "Всплывающее окно не появится, если изображение представляет собой карту изображения (изображение с несколькими кликальными областями)."
+
+#. mouseover_video_autoplay.name
+msgid "Autoplay"
+msgstr "Автовоспроизведение"
+
+#. mouseover_video_autoplay.description
+msgid "Play automatically once the popup is opened"
+msgstr "Автоматически воспроизводится после открытия всплывающего окна."
+
+#. mouseover_video_controls.name
+msgid "Show video controls"
+msgstr "Показывать элементы управления видео"
+
+#. mouseover_video_controls.description
+msgid "Shows native video controls. Note that this prevents dragging under Firefox"
+msgstr "Показывает встроенные средства управления видео. Обратите внимание, что это предотвращает перетаскивание под Firefox."
+
+#. mouseover_video_controls_key.name
+msgid "Toggle video controls"
+msgstr "Переключатель элементов управления видео"
+
+#. mouseover_video_controls_key.description
+msgid "Key to toggle whether the video controls are shown"
+msgstr "Клавиша для переключения отображения элементов управления видео"
+
+#. mouseover_video_loop.name
+msgid "Loop"
+msgstr "Зациклить"
+
+#. mouseover_video_loop.description
+msgid "Allows the media to automatically restart to the beginning after finishing playing"
+msgstr "Позволяет медиа автоматически перезапускаться в начало после завершения воспроизведения."
+
+#. mouseover_video_autoloop_max.name
+msgid "Max duration for looping"
+msgstr "Максимальная длительность зацикливания"
+
+#. mouseover_video_autoloop_max.description
+msgid "Media longer than the specified duration will not be automatically looped. Setting this to `0` will always enable looping, regardless of duration."
+msgstr "Медиа с дольшей указанной длительностью не будет автоматически зациклены. Установка этого значения на `0` всегда будет включать зацикливание, независимо от длительности."
+
+#. mouseover_video_playpause_key.name
+msgid "Play/pause key"
+msgstr "Кнопка воспроизведения/приостановки"
+
+#. mouseover_video_playpause_key.description
+msgid "Key to toggle whether the media is playing or paused"
+msgstr "С помощью этой кнопки, вы сможете воспроизводить или приостанавливать медиа."
+
+#. mouseover_video_muted.name
+msgid "Mute"
+msgstr "Отключать звук"
+
+#. mouseover_video_muted.description
+msgid "Mutes the media by default"
+msgstr "Отключает звук медиа по умолчанию."
+
+#. mouseover_video_mute_key.name
+msgid "Toggle mute key"
+msgstr "Кнопка отключения звука"
+
+#. mouseover_video_mute_key.description
+msgid "Key to toggle mute"
+msgstr "С помощью этой кнопки, вы сможете переключать звук."
+
+#. mouseover_video_volume.name
+msgid "Default volume"
+msgstr "Громкость по умолчанию"
+
+#. mouseover_video_volume.description
+msgid "Default volume for the media"
+msgstr "Громкость звука для медиа по умолчанию."
+
+#. mouseover_video_volume_up_key.name
+msgid "Volume up key"
+msgstr "Кнопка увеличения громкости"
+
+#. mouseover_video_volume_up_key.description
+msgid "Key to increase the volume"
+msgstr "С помощью этой кнопки, вы сможете увеличить громкость звука."
+
+#. mouseover_video_volume_down_key.name
+msgid "Volume down key"
+msgstr "Кнопка уменьшения громкости"
+
+#. mouseover_video_volume_down_key.description
+msgid "Key to decrease the volume"
+msgstr "С помощью этой кнопки, вы сможете уменьшать громкость звука."
+
+#. mouseover_video_volume_change_amt.name
+msgid "Volume change amount"
+msgstr "Величина изменения громкости"
+
+#. mouseover_video_volume_change_amt.description
+msgid "Percent for volume to increase/decrease when using the volume up/down keys"
+msgstr "Процент для увеличения/уменьшения громкости при использовании кнопок увеличения/уменьшения громкости."
+
+#. mouseover_video_resume_from_source.name
+msgid "Resume playback from source"
+msgstr "Продолжать воспроизведение из источника"
+
+#. mouseover_video_resume_from_source.description
+msgid "If enabled, playback will resume from where the source left off"
+msgstr "Если включено, воспроизведение будет возобновлено с того места, на котором остановился источник."
+
+#. mouseover_video_resume_if_different.name
+msgid "Resume if different length"
+msgstr "Возобновлять, если разная длина"
+
+#. mouseover_video_resume_if_different.description
+msgid "If disabled, it will not resume if the source has a different length from the media in the popup (e.g. from a preview video to a full one)"
+msgstr "Если отключено, то не возобновляет, если длина из источника отличается от длины медиа во всплывающем окне (например, с предпросмотра видео до полного)"
+
+#. mouseover_video_pause_source.name
+msgid "Pause source"
+msgstr "Приостанавливать из источника"
+
+#. mouseover_video_pause_source.description
+msgid "Pauses the source once the popup has opened"
+msgstr "Приостанавливает источник после открытия всплывающего окна"
+
+#. mouseover_video_seek_amount.name
+msgid "Seek amount"
+msgstr "Количество запросов"
+
+#. mouseover_video_seek_amount.description
+msgid "Amount of time to seek forward/back when using the seek keys"
+msgstr "Количество времени для запроса вперед/назад при использовании кнопок запроса."
+
+#. mouseover_video_seek_left_key.name
+msgid "Seek left key"
+msgstr "Кнопка запроса влево"
+
+#. mouseover_video_seek_left_key.description
+msgid "Key to seek backwards by the specified amount"
+msgstr "С помощью этой кнопки, вы сможете сделать запрос назад от заданого количества."
+
+#. mouseover_video_seek_right_key.name
+msgid "Seek right key"
+msgstr "Кнопка запроса вправо"
+
+#. mouseover_video_seek_right_key.description
+msgid "Key to seek forwards by the specified amount"
+msgstr "С помощью этой кнопки, вы сможете сделать запрос вперёд от заданого количества."
+
+#. mouseover_video_frame_prev_key.name
+msgid "Previous frame key"
+msgstr "Кнопка предыдущего кадра"
+
+#. mouseover_video_frame_prev_key.description
+msgid "Rewinds the video one \"frame\" backward. Due to current limitations, the frame size is static (but configurable), and might not match the video's framerate"
+msgstr "С помощью этой кнопки, вы сможете перематывать видео на один \"кадр\" назад. В связи с текущими ограничениями, размер кадра является статичным (но настраиваемым), и может не совпадать с частотой кадров видео."
+
+#. mouseover_video_frame_next_key.name
+msgid "Next frame key"
+msgstr "Кнопка следующего кадра"
+
+#. mouseover_video_frame_next_key.description
+msgid "Advances the video one \"frame\" forward. Due to current limitations, the frame size is static (but configurable), and might not match the video's framerate"
+msgstr "С помощью этой кнопки, вы сможете перематывать видео на один \"кадр\" вперёд. В связи с текущими ограничениями, размер кадра является статичным (но настраиваемым), и может не совпадать с частотой кадров видео."
+
+#. mouseover_video_framerate.name
+msgid "Frame rate"
+msgstr "Частота кадров"
+
+#. mouseover_video_framerate.description
+msgid "Frame rate for videos to seek forward/back with the next/previous frame keys"
+msgstr "Частота кадров видео для запроса вперёд/назад с помощью кнопок следующий/предыдущий кадр"
+
+#. mouseover_video_framerate.number_unit
+msgid "FPS"
+msgstr "Кадров в секунду"
+
+#. mouseover_video_speed_down_key.name
+msgid "Speed down key"
+msgstr "Кнопка уменьшения скорости"
+
+#. mouseover_video_speed_down_key.description
+msgid "Key to decrease playback rate by a specified amount"
+msgstr "С помощью этой кнопки, вы сможете уменьшить скорость воспроизведения на заданную величину."
+
+#. mouseover_video_speed_up_key.name
+msgid "Speed up key"
+msgstr "Кнопка увеличения скорости"
+
+#. mouseover_video_speed_up_key.description
+msgid "Key to increase playback rate by a specified amount"
+msgstr "С помощью этой кнопки, вы сможете увеличить скорость воспроизведения на заданную величину."
+
+#. mouseover_video_speed_amount.name
+msgid "Speed up/down amount"
+msgstr "Величина увеличения/уменьшения скорости"
+
+#. mouseover_video_speed_amount.description
+msgid "How much to increase/decrease the playback rate"
+msgstr "Насколько увеличить/уменьшить скорость воспроизведения"
+
+#. mouseover_video_reset_speed_key.name
+msgid "Reset speed key"
+msgstr "Кнопка сброса скорости"
+
+#. mouseover_video_reset_speed_key.description
+msgid "Resets the playback rate to normal speed"
+msgstr "С помощью этой кнопки, вы сможете сбросить скорость воспроизведения до нормальной скорости"
+
+#. mouseover_video_screenshot_key.name
+msgid "Screenshot key"
+msgstr "Кнопка снимка экрана"
+
+#. mouseover_video_screenshot_key.description
+msgid "Screenshots the current frame in the video"
+msgstr "С помощью этой кнопки, вы сможете сделать снимок экрана текущего кадра на видео."
+
+#. popup_video_screenshot_format.name
+msgid "Screenshot format"
+msgstr "Формат снимка экрана"
+
+#. popup_video_screenshot_format.description
+msgid "File format to save the screenshot in"
+msgstr "Формат файла для сохранения снимка экрана"
+
+#. popup_video_screenshot_format.options.png.name
+msgid "PNG"
+msgstr ""
+
+#. popup_video_screenshot_format.options.jpg.name
+msgid "JPG"
+msgstr ""
+
+#. mouseover_ui.name
+msgid "Popup UI"
+msgstr "Пользовательский интерфейс всплывающего окна"
+
+#. mouseover_ui.description
+msgid "Enables a UI on top of the popup"
+msgstr "Включает пользовательский интерфейс в верхней части всплывающего окна."
+
+#. mouseover_ui_toggle_key.name
+msgid "UI Toggle key"
+msgstr "Кнопка переключения пользовательского интерфейса"
+
+#. mouseover_ui_toggle_key.description
+msgid "Toggles the display of the UI"
+msgstr "С помощью этой кнопи, вы сможете переключать отображение пользовательского интерфейса."
+
+#. mouseover_ui_opacity.name
+msgid "Opacity"
+msgstr "Непрозрачность"
+
+#. mouseover_ui_opacity.description
+msgid "Opacity of the UI on top of the popup"
+msgstr "Непрозрачность пользовательского интерфейса в верхней части всплывающего окна."
+
+#. mouseover_ui_use_safe_glyphs.name
+msgid "Use safe glyphs"
+msgstr "Использовать безопасные глифы"
+
+#. mouseover_ui_use_safe_glyphs.description
+msgid "Uses glyphs that are more likely to be available on all fonts. Enable this option if the following characters render as boxes: 🡇 🡐 🡒. The 'Noto Sans Symbols2' font contains these characters."
+msgstr "Используются глифы, которые скорее всего, будут доступны на всех шрифтах. Включите этот параметр, если следующие символы отображаются в виде квадратиков: 🡇 🡐 🡒. Шрифт 'Noto Sans Symbols2' содержит эти символы."
+
+#. mouseover_ui_imagesize.name
+msgid "Media resolution"
+msgstr "Разрешение медиа"
+
+#. mouseover_ui_imagesize.description
+msgid ""
+"Displays the original media dimensions on top of the UI.\n"
+"CSS ID: `#sizeinfo`"
+msgstr ""
+"Отображает оригинальные размеры медиа в верхней части пользовательского интерфейса.\n"
+"Индетификатор CSS: `#sizeinfo`"
+
+#. mouseover_ui_zoomlevel.name
+msgid "Zoom percent"
+msgstr "Масштабирование в процентах"
+
+#. mouseover_ui_zoomlevel.description
+msgid ""
+"Displays the current zoom level on top of the UI.\n"
+"CSS ID: `#sizeinfo`"
+msgstr ""
+"Отображает текущий уровень масштабирования в верхней части пользовательского интерфейса.\n"
+"Индетификатор CSS: `#sizeinfo`"
+
+#. mouseover_ui_filesize.name
+msgid "File size"
+msgstr "Размер файла"
+
+#. mouseover_ui_filesize.description
+msgid ""
+"Displays the media's file size on top of the UI. For the moment, this will not work with partially loaded media if 'Avoid HEAD request for partially loaded media' is enabled.\n"
+"CSS ID: `#sizeinfo`"
+msgstr ""
+"Отображает размер файла медиа в верхней части пользовательского интерфейса. На данный момент это не будет работать с частично загруженными медиа, если включён параметр 'Избегать запроса HEAD для частично загруженных медиа'.\n"
+"Индетификатор CSS: `#sizeinfo`"
+
+#. mouseover_ui_gallerycounter.name
+msgid "Gallery counter"
+msgstr "Счётчик галереи"
+
+#. mouseover_ui_gallerycounter.description
+msgid ""
+"Enables a gallery counter on top of the UI.\n"
+"CSS ID: `#gallerycounter`"
+msgstr ""
+"Отображает счётчик галереи в верхней части пользовательского интерфейса.\n"
+"Индетификатор CSS: `#gallerycounter`"
+
+#. mouseover_ui_gallerymax.name
+msgid "Gallery counter max"
+msgstr "Максимальный счётчик галереи"
+
+#. mouseover_ui_gallerymax.description
+msgid "Maximum amount of images to check in the counter (this can be slightly CPU-intensive)"
+msgstr "Максимальное количество изображений для проверки в счётчике (это может быть слегка ресурсоёмким для процессора)"
+
+#. mouseover_ui_gallerybtns.name
+msgid "Gallery buttons"
+msgstr "Кнопки галереи"
+
+#. mouseover_ui_gallerybtns.description
+msgid ""
+"Enables buttons to go left/right in the gallery.\n"
+"CSS IDs: `#galleryprevbtn`, `#gallerynextbtn`"
+msgstr ""
+"Включает кнопки влево/вправо в галерее.\n"
+"Индетификаторы CSS: `#galleryprevbtn`, `#gallerynextbtn`"
+
+#. mouseover_ui_closebtn.name
+msgid "Close Button"
+msgstr "Кнопка закрытия"
+
+#. mouseover_ui_closebtn.description
+msgid ""
+"Enables a button to close the popup.\n"
+"CSS ID: `#closebtn`"
+msgstr ""
+"Включает кнопку для закрытия всплывающего окна.\n"
+"Индетификатор CSS: `#closebtn`"
+
+#. mouseover_ui_optionsbtn.name
+msgid "Options Button"
+msgstr "Кнопка параметров"
+
+#. mouseover_ui_optionsbtn.description
+msgid ""
+"Enables a button to go to this page.\n"
+"CSS ID: `#optionsbtn`"
+msgstr ""
+"Включает кнопку для перехода на эту страницу.\n"
+"Индетификатор CSS: `#optionsbtn`"
+
+#. mouseover_ui_downloadbtn.name
+msgid "Download Button"
+msgstr "Кнопка скачивания"
+
+#. mouseover_ui_downloadbtn.description
+msgid ""
+"Enables a button to download the image.\n"
+"CSS ID: `#downloadbtn`"
+msgstr ""
+"Включает кнопку скачивания изображения.\n"
+"Индетификатор CSS: `#downloadbtn`"
+
+#. mouseover_ui_rotationbtns.name
+msgid "Rotation Buttons"
+msgstr "Кнопки вращения"
+
+#. mouseover_ui_rotationbtns.description
+msgid ""
+"Enables buttons on the UI to rotate the image by 90 degrees.\n"
+"CSS IDs: `#rotleftbtn`, `#rotrightbtn`"
+msgstr ""
+"Включает кнопки на пользовательском интерфейсе для поворота изображения на 90 градусов.\n"
+"Индетификаторы CSS: `#rotleftbtn`, `#rotrightbtn`"
+
+#. mouseover_ui_caption.name
+msgid "Caption"
+msgstr "Подпись"
+
+#. mouseover_ui_caption.description
+msgid ""
+"Shows the image's caption (if available) at the top.\n"
+"CSS ID: `#caption`"
+msgstr ""
+"Показывает вверху подпись к изображению (если таковая имеется).\n"
+"Индетификаторы CSS: `#caption`"
+
+#. mouseover_ui_wrap_caption.name
+msgid "Wrap caption text"
+msgstr "Обернуть текст подписи"
+
+#. mouseover_ui_wrap_caption.description
+msgid "Wraps the caption if it's too long"
+msgstr "Обёртывает подпись, если она слишком длинная."
+
+#. mouseover_ui_caption_link_page.name
+msgid "Link original page in caption"
+msgstr "Ссылка на оригинальную страницу в подписи"
+
+#. mouseover_ui_caption_link_page.description
+msgid "Links the original page (if it exists) in the caption"
+msgstr "Ссылка в заголовке на оригинальную страницу (если она существует)."
+
+#. mouseover_ui_link_underline.name
+msgid "Underline links"
+msgstr "Подчёркивание ссылок"
+
+#. mouseover_ui_link_underline.description
+msgid "Adds an underline to links (such as the original page)"
+msgstr "Добавляет подчеркивание к ссылкам (например, оригинальная страница)."
+
+#. mouseover_close_behavior.name
+msgid "Keep popup open until"
+msgstr "Оставлять всплывающее окно открытым до тех пор, пока"
+
+#. mouseover_close_behavior.description
+msgid "Closes the popup when the selected condition is met"
+msgstr "Закрывает всплывающее окно при выполнении выбранного условия."
+
+#. mouseover_close_behavior.options.any.name
+msgid "Any trigger is released"
+msgstr "Любая кнопка срабатывания отпущена"
+
+#. mouseover_close_behavior.options.all.name
+msgid "All triggers are released"
+msgstr "Все кнопки срабатывания отпущены"
+
+#. mouseover_close_behavior.options.esc.name
+msgid "ESC/Close is pressed"
+msgstr "Нажато ESC/Закрыть"
+
+#. mouseover_close_need_mouseout.name
+msgid "Don't close until mouse leaves"
+msgstr "Не закрывать пока курсор мыши не будет убран"
+
+#. mouseover_close_need_mouseout.description
+msgid "If true, this keeps the popup open even if all triggers are released if the mouse is still over the image"
+msgstr "Если true, тогда если мышь всё еще находится на изображении, то всплывающее окно остаётся открытым, даже если все срабатывания отпущены."
+
+#. mouseover_jitter_threshold.name
+msgid "Threshold to leave image"
+msgstr "Порог для выхода из изображения"
+
+#. mouseover_jitter_threshold.description
+msgid "How many pixels outside of the image before the cursor is considered to have left the image"
+msgstr "Сколько пикселей за пределами изображения перед курсором считается покинувшими изображение."
+
+#. mouseover_cancel_popup_when_elout.name
+msgid "Leaving thumbnail cancels loading"
+msgstr "Отменять загрузку, если миниатюра покинута"
+
+#. mouseover_cancel_popup_when_elout.description
+msgid "Cancels the current popup loading when the cursor has left the thumbnail image"
+msgstr "Отменяет загрузку текущего всплывающего окна, когда курсор покинул миниатюру изображения."
+
+#. mouseover_cancel_popup_with_esc.name
+msgid "ESC cancels loading"
+msgstr "ESC отменяет загрузку"
+
+#. mouseover_cancel_popup_with_esc.description
+msgid "Cancels the current popup loading if ESC is pressed"
+msgstr "Отменяет загрузку текущего всплывающего окна при нажатии кноки ESC."
+
+#. mouseover_cancel_popup_when_release.name
+msgid "Releasing triggers cancels loading"
+msgstr "Отменять загрузку, если кнопки активации отпущены"
+
+#. mouseover_cancel_popup_when_release.description
+msgid "Cancels the current popup loading if all/any triggers are released (as set by the \"Keep popup open until\" setting)"
+msgstr "Отменяет загрузку текущего всплывающего окна, если все/любые кнопки срабатывания отпущены (в соответствии с настройками 'Оставлять всплывающее окно открытым до тех пор, пока'"
+
+#. mouseover_auto_close_popup.name
+msgid "Automatically close after timeout"
+msgstr "Автозакрытие после истечения времени"
+
+#. mouseover_auto_close_popup.description
+msgid "Closes the popup automatically after a specified period of time has elapsed"
+msgstr "Автоматически закрывает всплывающее окно по истечении заданного периода времени."
+
+#. mouseover_auto_close_popup_time.name
+msgid "Timeout to close popup"
+msgstr "Времени до закрытия всплывающего окна"
+
+#. mouseover_auto_close_popup_time.description
+msgid "Amount of time to elapse before automatically closing the popup"
+msgstr "Количество времени, которое должно пройти до автоматического закрытия всплывающего окна."
+
+#. mouseover_hold_key.name
+msgid "Hold key"
+msgstr "Кнопка удкрживания"
+
+#. mouseover_hold_key.description
+msgid "Hold key that, when pressed, will keep the popup open"
+msgstr "Кнопка удерживания, которая при нажатии будет оставлять всплывающее окно открытым."
+
+#. mouseover_hold_position_center.name
+msgid "Center popup on hold"
+msgstr "Центрировать всплывающее окно при удерживании"
+
+#. mouseover_hold_position_center.description
+msgid "Centers the popup to the middle of the page when the popup is held"
+msgstr "Центрирует всплывающее окно на середине страницы, когда оно удерживается."
+
+#. mouseover_hold_close_unhold.name
+msgid "Close popup on unhold"
+msgstr "Зыкрывать всплывающее окно после отпускания удержания всплывающего окна"
+
+#. mouseover_hold_close_unhold.description
+msgid "Closes the popup when the hold key is pressed again, after having previously held the popup"
+msgstr "Закрывает всплывающее окно при повторном нажатии клавиши удерживания после предыдущего удержания всплывающего окна."
+
+#. mouseover_hold_unclickthrough.name
+msgid "Enable pointer events on hold"
+msgstr "Включать события указателя при удерживании"
+
+#. mouseover_hold_unclickthrough.description
+msgid "Enables previously disabled pointer events when the popup is held"
+msgstr "Включает ранее отключенные события указателя при удерживании всплывающего окна."
+
+#. mouseover_close_click_outside.name
+msgid "Clicking outside the popup closes"
+msgstr "Закрывать при нажатии за пределами всплывающего окна"
+
+#. mouseover_close_click_outside.description
+msgid "Closes the popup when the mouse clicks outside of it"
+msgstr "Закрывает всплывающее окно при нажатии мыши за его пределами."
+
+#. mouseover_close_el_policy.name
+msgid "Close when leaving"
+msgstr "Закрывать при покидании"
+
+#. mouseover_close_el_policy.description
+msgid "Closes the popup when the mouse leaves the thumbnail element, the popup, or both"
+msgstr "Закрывает всплывающее окно, когда мышь покидает элемент миниатюры, всплывающее окно или и то, и другое."
+
+#. mouseover_close_el_policy.options.thumbnail.name
+msgid "Thumbnail"
+msgstr "Миниатюры"
+
+#. mouseover_close_el_policy.options.both.name
+msgid "Both"
+msgstr "Обоих"
+
+#. mouseover_wait_use_el.name
+msgid "Use invisible element when waiting"
+msgstr "Использовать невидимый элемент при ожидании"
+
+#. mouseover_wait_use_el.description
+msgid "Creates an invisible element under the cursor when waiting for the popup instead of a style element (can improve performance on websites with many elements, but prevents the cursor from clicking anything while loading the popup)"
+msgstr "Создаёт невидимый элемент под курсором при ожидании всплывающего окна вместо элемента стиля (может улучшить производительность на сайтах с большим количеством элементов, но не позволяет курсору нажимать на что-либо во время загрузки всплывающего окна)."
+
+#. mouseover_add_to_history.name
+msgid "Add popup link to history"
+msgstr "Добавлять всплывающую ссылку в историю"
+
+#. mouseover_add_to_history.description
+msgid "Adds the image/video link opened through the popup to the browser's history"
+msgstr "Добавляет ссылку на изображение/видео в историю браузера, открытые через всплывающее окно."
+
+#. allow_remote.name
+msgid "Allow inter-frame communication"
+msgstr "Разрешить межфреймовую связь"
+
+#. allow_remote.description
+msgid "Allows communication between frames in windows, improving support for keybindings"
+msgstr "Позволяет осуществлять связь между фреимами в Windows, улучшая поддержку привязки клавиш."
+
+#. allow_remote.description_userscript
+msgid "Allows communication between frames in windows, improving support for keybindings. Can pose a fingerprinting risk when used through the userscript"
+msgstr "Позволяет осуществлять связь между фреимами в Windows, улучшая поддержку привязки клавиш. Может представлять риск снятия отпечатков пальцев при использовании через пользовательский скрипт."
+
+#. mouseover_use_remote.name
+msgid "Pop out of frames"
+msgstr "Выходить за рамки"
+
+#. mouseover_use_remote.description
+msgid "Opens the popup on the top frame instead of within iframes. This option is still experimental."
+msgstr "Открывает всплывающее окно поверх фрейма, а не внутри iframes. Этот параметр всё ещё является экспериментальным."
+
+#. mouseover_zoom_behavior.name
+msgid "Popup default zoom"
+msgstr "Масштаб всплывающего окна по умолчанию"
+
+#. mouseover_zoom_behavior.description
+msgid "How the popup should be initially sized"
+msgstr "Каким будет изначальный размер всплывающего окна."
+
+#. mouseover_zoom_behavior.options.fit.name
+msgid "Fit to screen"
+msgstr "По размеру экрана"
+
+#. mouseover_zoom_behavior.options.fill.name
+msgid "Fill screen"
+msgstr "Заполнить экран"
+
+#. mouseover_zoom_behavior.options.full.name
+msgid "Full size"
+msgstr "Полный размер"
+
+#. mouseover_zoom_behavior.options.custom.name
+msgid "Custom size"
+msgstr "Пользовательский размер"
+
+#. mouseover_zoom_custom_percent.name
+msgid "Custom zoom percent"
+msgstr "Пользовательский процент масштабирования"
+
+#. mouseover_zoom_custom_percent.description
+msgid "Custom percent to initially size the popup"
+msgstr "Пользовательский процент для первоначального размера всплывающего окна6"
+
+#. mouseover_video_volume.number_unit, mouseover_video_volume_change_amt.number_unit, mouseover_ui_opacity.number_unit, mouseover_zoom_custom_percent.number_unit
+msgid "%"
+msgstr ""
+
+#. mouseover_zoom_max_width.name
+msgid "Maximum width"
+msgstr "Максимальная ширина"
+
+#. mouseover_zoom_max_width.description
+msgid "Maximum width for the initial popup size. Set to `0` for unlimited."
+msgstr "Максимальная ширина для начального размера всплывающего окна. `0` - неограниченная ширина."
+
+#. mouseover_zoom_max_height.name
+msgid "Maximum height"
+msgstr "Максимальная высота"
+
+#. mouseover_zoom_max_height.description
+msgid "Maximum height for the initial popup size. Set to `0` for unlimited."
+msgstr "Максимальная высота для начального размера всплывающего окна. `0` - неограниченная высота."
+
+#. mouseover_pan_behavior.name
+msgid "Popup panning method"
+msgstr "Способ панорамирования всплывающего окна"
+
+#. mouseover_pan_behavior.description
+msgid "How the popup should be panned when larger than the screen"
+msgstr "Как всплывающее окно должно быть панорамировано, когда оно больше экрана."
+
+#. mouseover_pan_behavior.options.movement.name
+msgid "Movement"
+msgstr "Перемещение"
+
+#. mouseover_pan_behavior.options.movement.description
+msgid "The popup pans as you move your mouse"
+msgstr "Всплывающее окно панорамируется когда вы перемещаете мышь."
+
+#. mouseover_pan_behavior.options.drag.name
+msgid "Drag"
+msgstr "Перетаскивание"
+
+#. mouseover_pan_behavior.options.drag.description
+msgid "Clicking and dragging pans the popup"
+msgstr "Вы можете нажать и перетаскивать панель всплывающего окна."
+
+#. mouseover_movement_inverted.name
+msgid "Invert movement"
+msgstr "Инвертировать перемещение"
+
+#. mouseover_movement_inverted.description
+msgid "Inverts the movement of the mouse. For example, if the mouse moves left, the popup moves right. If disabled, it feels more like the popup is being invisibly dragged."
+msgstr "Инвертирует перемещение мышью. Например, если мышь движется влево, всплывающее окно перемещается вправо. Если отключено, то больше похоже на то, что всплывающее окно невидимо перетаскивается."
+
+#. mouseover_drag_min.name
+msgid "Minimum drag amount"
+msgstr "Минимальное количество для перетаскивания"
+
+#. mouseover_drag_min.description
+msgid "How many pixels the mouse should move to start a drag"
+msgstr "На сколько пикселей мышь должна переместиться, чтобы начать перетаскивание."
+
+#. mouseover_minimum_size.number_unit, mouseover_jitter_threshold.number_unit, mouseover_drag_min.number_unit
+msgid "pixels"
+msgstr "пикселей"
+
+#. mouseover_scrolly_behavior.name
+msgid "Vertical scroll action"
+msgstr "Действие вертикальной прокрутки"
+
+#. mouseover_scrolly_behavior.description
+msgid "How the popup reacts to a vertical scroll/mouse wheel event"
+msgstr "Как всплывающее окно реагирует на событие вертикальной прокрутки/колеса мыши."
+
+#. mouseover_scrolly_behavior.options.zoom.name
+msgid "Zoom"
+msgstr "Масштаб"
+
+#. mouseover_scrollx_behavior.name
+msgid "Horizontal scroll action"
+msgstr "Действие горизонтальной прокрутки"
+
+#. mouseover_scrollx_behavior.description
+msgid "How the popup reacts to a horizontal scroll/mouse wheel event"
+msgstr "Как всплывающее окно реагирует на событие горизонтальной прокрутки/колеса мыши."
+
+#. mouseover_scrolly_behavior.options.pan.name, mouseover_scrollx_behavior.options.pan.name
+msgid "Pan"
+msgstr "Панель"
+
+#. mouseover_scrolly_behavior.options.gallery.name, mouseover_scrollx_behavior.options.gallery.name
+msgid "Gallery"
+msgstr "Галерея"
+
+#. mouseover_scrolly_video_behavior.name
+msgid "Vertical video scroll action"
+msgstr "Действие вертикальной прокрутки видео"
+
+#. mouseover_scrolly_video_behavior.description
+msgid "Overrides the vertical scroll action for videos. Set to `Default` to avoid overriding the behavior."
+msgstr "Переопределяет действие вертикальной прокрутки для видео. Установите значение `По умолчанию`, чтобы избежать переопределения поведения."
+
+#. mouseover_scrolly_video_invert.name
+msgid "Invert vertical scroll seek"
+msgstr "Инвертировать стремление вертикальной прокрутки"
+
+#. mouseover_scrolly_video_invert.description
+msgid "Inverts the seek direction when scrolling vertically: Scrolling up will seek right, scrolling down will seek left."
+msgstr "Инвертирует направление стремления при вертикальной прокрутке: Прокрутка вверх будет стремиться вправо, прокрутка вниз будет стремиться влево."
+
+#. mouseover_scrollx_video_behavior.name
+msgid "Horizontal video scroll action"
+msgstr "Действие горизонтальной прокрутки видео"
+
+#. mouseover_scrollx_video_behavior.description
+msgid "Overrides the horizontal scroll action for videos. Set to `Default` to avoid overriding the behavior."
+msgstr "Переопределяет действие горизонтальной прокрутки для видео. Установите значение `По умолчанию`, чтобы избежать переопределения поведения."
+
+#. mouseover_scrolly_video_behavior.options.default.name, mouseover_scrollx_video_behavior.options.default.name
+msgid "Default"
+msgstr "По умолчанию"
+
+#. mouseover_scrolly_video_behavior.options.seek.name, mouseover_scrollx_video_behavior.options.seek.name
+msgid "Seek"
+msgstr "Стремление"
+
+#. mouseover_trigger_behavior.options.none.name, mouseover_allow_partial.options.none.name, mouseover_scrolly_behavior.options.nothing.name, mouseover_scrollx_behavior.options.nothing.name, mouseover_scrolly_video_behavior.options.nothing.name, mouseover_scrollx_video_behavior.options.nothing.name
+msgid "None"
+msgstr "Ничего"
+
+#. scroll_override_page.name
+msgid "Override scroll outside of popup"
+msgstr "Переопределение прокрутки вне всплывающего окна"
+
+#. scroll_override_page.description
+msgid "Scrolling outside of the popup will also be overriden by the script"
+msgstr "Прокрутка за пределами всплывающего окна также будет переопределена скриптом."
+
+#. scroll_zoom_origin.name
+msgid "Zoom origin"
+msgstr "Начало масштабирования"
+
+#. scroll_zoom_origin.description
+msgid "The point on the image it's zoomed in/out from"
+msgstr "Точка на изображении, от которой оно увеличивается/уменьшается."
+
+#. scroll_zoom_origin.options.cursor.name
+msgid "Cursor"
+msgstr "Курсор"
+
+#. scroll_zoom_origin.options.center.name
+msgid "Center"
+msgstr "Центр"
+
+#. scroll_zoom_behavior.name
+msgid "Zoom behavior"
+msgstr "Поведение масштабирования"
+
+#. scroll_zoom_behavior.description
+msgid "How zooming should work"
+msgstr "Как будет работать масштабирование."
+
+#. scroll_zoom_behavior.options.fitfull.name
+msgid "Fit/Full"
+msgstr "По размеру/Полное"
+
+#. scroll_zoom_behavior.options.fitfull.description
+msgid "Toggles between the full size, and fit-to-screen"
+msgstr "Переключение между полным размером и по размеру экрану."
+
+#. scroll_zoom_behavior.options.incremental.name
+msgid "Incremental"
+msgstr "Пошаговое"
+
+#. scroll_incremental_mult.name
+msgid "Incremental zoom multiplier"
+msgstr "Множитель пошагового масштабирования"
+
+#. scroll_incremental_mult.description
+msgid "How much to zoom in/out by (for incremental zooming)"
+msgstr "На сколько увеличить/уменьшить масштаб (для пошагового масштабирования)."
+
+#. mouseover_video_speed_amount.number_unit, scroll_incremental_mult.number_unit
+msgid "x"
+msgstr ""
+
+#. mouseover_move_with_cursor.name
+msgid "Move with cursor"
+msgstr "Перемещение с помощью курсора"
+
+#. mouseover_move_with_cursor.description
+msgid "Moves the popup as the cursor moves"
+msgstr "Перемещает всплывающее окно по мере перемещения курсора."
+
+#. mouseover_move_within_page.name
+msgid "Move within page"
+msgstr "Перемещение внутри страницы"
+
+#. mouseover_move_within_page.description
+msgid "Ensures the popup doesn't leave the page"
+msgstr "Гарантирует, что всплывающее окно не покинет страницу."
+
+#. zoom_out_to_close.name
+msgid "Zoom out fully to close"
+msgstr "Закрывать при полном уменьшении масштаба"
+
+#. zoom_out_to_close.description
+msgid "Closes the popup if you zoom out past the minimum zoom"
+msgstr "Закрывает всплывающее окно, если вы уменьшаете масштаб, превышающий минимальный."
+
+#. scroll_past_gallery_end_to_close.name
+msgid "Scroll past gallery end to close"
+msgstr "Закрывать при прокручивании до конца галереи"
+
+#. scroll_past_gallery_end_to_close.description
+msgid "Closes the popup if you scroll past the end of the gallery"
+msgstr "Закрывает всплывающее окно, если вы прокручиваете его до конца галереи."
+
+#. mouseover_position.name
+msgid "Popup position"
+msgstr "Положение всплывающего окна"
+
+#. mouseover_position.description
+msgid "Where the popup will appear"
+msgstr "Где появится всплывающее окно."
+
+#. mouseover_position.options.cursor.name
+msgid "Cursor middle"
+msgstr "Середина курсора"
+
+#. mouseover_position.options.cursor.description
+msgid "Underneath the mouse cursor"
+msgstr "Под курсором"
+
+#. mouseover_position.options.beside_cursor.name
+msgid "Beside cursor"
+msgstr "Рядом с курсором"
+
+#. mouseover_position.options.center.name
+msgid "Page middle"
+msgstr "Середина страницы"
+
+#. mouseover_prevent_cursor_overlap.name
+msgid "Prevent cursor overlap"
+msgstr "Предотвратить перекрытие курсора"
+
+#. mouseover_prevent_cursor_overlap.description
+msgid "Prevents the image from overlapping with the cursor"
+msgstr "Предотвращает перекрытие изображение с курсором."
+
+#. mouseover_hide_cursor.name
+msgid "Hide cursor over popup"
+msgstr "Скрывать курсор на всплывающем окне"
+
+#. mouseover_hide_cursor.description
+msgid "Hides the cursor when the mouse is over the popup"
+msgstr "Скрывает курсор, когда мышь находится на всплывающем окне."
+
+#. mouseover_hide_cursor_after.name
+msgid "Hide cursor after"
+msgstr "Скрывать курсор после"
+
+#. mouseover_hide_cursor_after.description
+msgid "Hides the cursor over the popup after a specified period of time (in milliseconds), 0 always hides the cursor"
+msgstr "Скрывает курсор во всплывающем окне после определенного периода времени (в миллисекундах). `0` - всегда скрывать курсор."
+
+#. mouseover_mouse_inactivity_jitter.name
+msgid "Mouse jitter threshold"
+msgstr "Порог дрожания мыши"
+
+#. mouseover_mouse_inactivity_jitter.description
+msgid "Threshold for mouse movement before the mouse cursor is shown again, 0 always shows the cursor after any movement"
+msgstr "Порог для перемещения мыши до того, как курсор мыши будет показан снова. `0` - всегда показывать курсор после любого движения."
+
+#. mouseover_zoom_max_width.number_unit, mouseover_zoom_max_height.number_unit, mouseover_mouse_inactivity_jitter.number_unit
+msgid "px"
+msgstr "пикс."
+
+#. mouseover_clickthrough.name
+msgid "Disable pointer events"
+msgstr "Отключить события указателя"
+
+#. mouseover_clickthrough.description
+msgid "Enabling this option will allow you to click on links underneath the popup"
+msgstr "Включение этого параметра позволит вам нажимать на ссылки под всплывающим окном."
+
+#. mouseover_mask_ignore_clicks.name
+msgid "Ignore clicks outside popup"
+msgstr "Игнорировать клики вне всплывающего окна"
+
+#. mouseover_mask_ignore_clicks.description
+msgid "Any mouse event outside the popup will be discarded with this option"
+msgstr "Любое событие мыши вне всплывающего окна будет отменено этим параметром."
+
+#. enable_stream_download.name
+msgid "Enable downloading HLS/DASH streams"
+msgstr "Включить скачивание потоков HLS/DASH"
+
+#. enable_stream_download.description
+msgid ""
+"Downloads and muxes the contents of the streams rather than the stream information file.\n"
+"This currently does not work under Firefox."
+msgstr ""
+"Загружает и мультиплексирует содержимое потоков, а не информационный файл потока.\n"
+"В настоящее время это не работает в Firefox."
+
+#. stream_mux_mp4_over_mkv.name
+msgid "Prefer MP4 over MKV"
+msgstr "Предпочитать MP4, а не MKV"
+
+#. stream_mux_mp4_over_mkv.description
+msgid "Tries to mux the video into mp4 instead of mkv when required. This may slightly slow down muxing as it currently needs to try muxing both."
+msgstr "Пытается мультиплексировать видео в mp4 вместо mkv, когда это требуется. Это может слегка замедлить процесс мультиплексирования, так как в настоящее время необходимо попробовать мультиплексировать и то, и другое."
+
+#. mouseover_add_link.name
+msgid "Link image"
+msgstr "Ссылка на изображения"
+
+#. mouseover_add_link.description
+msgid "Adds a link to the image in the popup"
+msgstr "Добавляет ссылку на изображение во всплывающем окне."
+
+#. mouseover_add_video_link.name
+msgid "Link video"
+msgstr "Ссылка на видео"
+
+#. mouseover_add_video_link.description
+msgid "Adds a link to the video in the popup"
+msgstr "Добавляет ссылку на видео во всплывающем окне."
+
+#. mouseover_click_image_close.name
+msgid "Clicking image closes"
+msgstr "Закрывать изображение по нажатию на него"
+
+#. mouseover_click_image_close.description
+msgid "Clicking the popup image closes the popup"
+msgstr "Нажатие на всплывающее изображение закрывает всплывающее окно."
+
+#. mouseover_click_video_close.name
+msgid "Clicking video closes"
+msgstr "Закрывать видео по нажатию на него"
+
+#. mouseover_click_video_close.description
+msgid "Clicking the popup video closes the popup"
+msgstr "Нажатие на всплывающее видео закрывает всплывающее окно."
+
+#. mouseover_download.name
+msgid "Clicking link downloads"
+msgstr "Нажатие на ссылку скачивания"
+
+#. mouseover_download.description
+msgid "Instead of opening the link in a new tab, it will download the image/video instead"
+msgstr "Вместо того чтобы открывать ссылку в новой вкладке, она будет скачивать изображение/видео."
+
+#. mouseover_close_key.name
+msgid "Close key"
+msgstr "Клавиша закрытия"
+
+#. mouseover_close_key.description
+msgid "Closes the popup when this key is pressed. Currently, ESC will also close the popup regardless of the value of this setting."
+msgstr "При нажатии этой клавиши, закрывает всплывающее окно. В настоящее время ESC также закроет всплывающее окно независимо от значения этих настроек."
+
+#. mouseover_download_key.name
+msgid "Download key"
+msgstr "Клавиша скачивания"
+
+#. mouseover_download_key.description
+msgid "Downloads the image in the popup when this key is pressed"
+msgstr "При нажатии этой клавиши, начнёт скачивать изображение во всплывающем окне."
+
+#. mouseover_open_new_tab_key.name
+msgid "Open in new tab key"
+msgstr "Клавиша открытия в новой вкладке"
+
+#. mouseover_open_new_tab_key.description
+msgid "Opens the image in the popup in a new tab when this key is pressed"
+msgstr "При нажатии этой клавиши, открывает изображение во всплывающем окне на новой вкладке."
+
+#. mouseover_open_bg_tab_key.name
+msgid "Open in background tab key"
+msgstr "Клавиша открытия в фоновой вкладке"
+
+#. mouseover_open_bg_tab_key.description
+msgid "Opens the image in the popup in a new tab without switching to it when this key is pressed"
+msgstr "При нажатии этой клавиши, открывает изображение во всплывающем окне на новой вкладке, не переходя на неё."
+
+#. mouseover_copy_link_key.name
+msgid "Copy link key"
+msgstr "Клавиша копирования ссылки"
+
+#. mouseover_copy_link_key.description
+msgid "Copies the link of the media to the clipboard when this key is pressed"
+msgstr "При нажатии этой клавиши, копирует ссылку медиа в буфер обмена."
+
+#. mouseover_open_options_key.name
+msgid "Open options key"
+msgstr "Клавиша открытия параметров"
+
+#. mouseover_open_options_key.description
+msgid "Opens this page in a new tab when this key is pressed"
+msgstr "При нажатии этой клавиши, откроет эту страницу в новой вкладке."
+
+#. mouseover_open_orig_page_key.name
+msgid "Open original page key"
+msgstr "Клавиша открытия страницы оригинала"
+
+#. mouseover_open_orig_page_key.description
+msgid "Opens the original page (if available) when this key is pressed"
+msgstr "При нажатии этой клавиши, открывает страницу оригинала (если она доступна)."
+
+#. mouseover_rotate_left_key.name
+msgid "Rotate left key"
+msgstr "Клавиша поворота влево"
+
+#. mouseover_rotate_left_key.description
+msgid "Rotates the popup 90 degrees to the left"
+msgstr "При нажатии этой клавиши, поворачивает всплывающее окно на 90 градусов влево."
+
+#. mouseover_rotate_right_key.name
+msgid "Rotate right key"
+msgstr "Клавиша поворота вправо"
+
+#. mouseover_rotate_right_key.description
+msgid "Rotates the popup 90 degrees to the right"
+msgstr "При нажатии этой клавиши, поворачивает всплывающее окно на 90 градусов вправо."
+
+#. mouseover_flip_horizontal_key.name
+msgid "Horizontal flip key"
+msgstr "Клавиша для отражения по горизонтали"
+
+#. mouseover_flip_horizontal_key.description
+msgid "Flips the image horizontally"
+msgstr "При нажатии этой клавиши, зеркально отражает изображение по горизонтали."
+
+#. mouseover_flip_vertical_key.name
+msgid "Vertical flip key"
+msgstr "Клавиша для отражения по вертикали"
+
+#. mouseover_flip_vertical_key.description
+msgid "Flips the image vertically"
+msgstr "При нажатии этой клавиши, зеркально отражает изображение по вертикали."
+
+#. mouseover_zoom_in_key.name
+msgid "Zoom in key"
+msgstr "Клавиша увеличения масштаба"
+
+#. mouseover_zoom_in_key.description
+msgid "Incrementally zooms into the image"
+msgstr "При нажатии этой клавиши, увеличивает масштаб изображения."
+
+#. mouseover_zoom_out_key.name
+msgid "Zoom out key"
+msgstr "Клавиша уменьшения масштаба"
+
+#. mouseover_zoom_out_key.description
+msgid "Incrementally zooms out of the image"
+msgstr "При нажатии этой клавиши, уменьшает масштаб изображения."
+
+#. mouseover_zoom_full_key.name
+msgid "Full zoom key"
+msgstr "Клавиша полного масштабирования"
+
+#. mouseover_zoom_full_key.description
+msgid "Sets the image to be at a 100% zoom, even if it overflows the screen"
+msgstr "При нажатии этой клавиши, устанавливает 100%-ное масштабирование изображения, даже если оно переполняет экран."
+
+#. mouseover_zoom_fit_key.name
+msgid "Fit screen key"
+msgstr "Клавиша подгонки по размеру экрана"
+
+#. mouseover_zoom_fit_key.description
+msgid "Sets the image to either be at a 100% zoom, or to fit the screen, whichever is smaller"
+msgstr "При нажатии этой клавиши, устанавливает изображение либо со 100%-ным масштабом, либо в соответствии с размером экрана, в зависимости от того, что меньше."
+
+#. mouseover_fullscreen_key.name
+msgid "Toggle fullscreen key"
+msgstr "Клавиша переключения на весь экран"
+
+#. mouseover_fullscreen_key.description
+msgid "Toggles fullscreen mode for the image/video in the popup"
+msgstr "При нажатии этой клавиши, переключает полноэкранный режим для изображения/видео во всплывающем окне."
+
+#. mouseover_links.name
+msgid "Popup for plain hyperlinks"
+msgstr "Всплывающее окно для простых гиперссылок"
+
+#. mouseover_links.description
+msgid "Whether or not the popup should also open for plain hyperlinks"
+msgstr "Должно ли всплывающее окно также открываться для простых гиперссылок."
+
+#. mouseover_only_valid_links.name
+msgid "Only for links that look valid"
+msgstr "Только для ссылок, которые выглядят допустимо"
+
+#. mouseover_only_valid_links.description
+msgid "Enabling this option will only allow links to be popped up if they look valid (such as if they have a known image/video extension, or are explicitly supported)"
+msgstr "Включение этого параметра позволит всплывать ссылкам только в том случае, если они выглядят допустимыми (например, если они имеют известное расширение изображения/видео, или если они явно поддерживаются)."
+
+#. mouseover_allow_self_pagelink.name
+msgid "Popup page URL"
+msgstr "Всплывающее окно для URL страниц"
+
+#. mouseover_allow_self_pagelink.description
+msgid "If no element can be found, try the page URL. Only relevant for pagelink rules, such as image and video hosting websites"
+msgstr "Если ни один элемент не найден, попробуйте использовать URL-адрес страницы. Fктуально nолько для правил ссылки страницы, таких как сайты хостинга изображений и видео."
+
+#. mouseover_allow_iframe_el.name
+msgid "Popup for `<iframe>`"
+msgstr "Всплывающее окно для `<iframe>`"
+
+#. mouseover_allow_iframe_el.description
+msgid "Allows `<iframe>` elements to be popped up as well. Storing images/videos in this way is rather uncommon, but it can allow embeds to be supported"
+msgstr "Позволяет всплывать элементам `<iframe>`. Хранение изображений/видео таким образом довольно редкое явление, но оно может позволить поддерживать встраиваемые файлы."
+
+#. mouseover_allow_canvas_el.name
+msgid "Popup for `<canvas>`"
+msgstr "Всплывающее окно для `<canvas>`"
+
+#. mouseover_allow_canvas_el.description
+msgid "Allows `<canvas>` elements to be popped up as well. This will likely cause popups with any kind of web-based games, so it's recommended to keep this disabled"
+msgstr "Позволяет всплывать элементам `<canvas>`. Это, скорее всего, будет вызывать всплывающие окна с любыми веб-играми, поэтому рекомендуется отключить эту функцию."
+
+#. mouseover_allow_svg_el.name
+msgid "Popup for `<svg>`"
+msgstr "Всплывающее окно для `<svg>`"
+
+#. mouseover_allow_svg_el.description
+msgid "Allows `<svg>` elements to be popped up as well. These are usually used for icons, and can occasionally cause problems for websites that overlay icons on top of images"
+msgstr "Позволяет всплывать элементам `<svg>`. Обычно они используются для иконок и иногда могут вызывать проблемы для веб-сайтов, которые накладывают иконки поверх изображений."
+
+#. mouseover_enable_gallery.name
+msgid "Enable gallery"
+msgstr "Включить галерею"
+
+#. mouseover_enable_gallery.description
+msgid "Toggles whether gallery detection support should be enabled"
+msgstr "Переключает, должна ли быть включена поддержка обнаружения галереи."
+
+#. mouseover_gallery_cycle.name
+msgid "Cycle gallery"
+msgstr "Зациклить галерею"
+
+#. mouseover_gallery_cycle.description
+msgid "Going to the previous image for the first image will lead to the last image and vice-versa"
+msgstr "Переход к предыдущему изображению с первого изображения приведет к последнему изображению и наоборот."
+
+#. mouseover_gallery_prev_key.name
+msgid "Previous gallery item"
+msgstr "Предыдущий элемент галереи"
+
+#. mouseover_gallery_prev_key.description
+msgid "Key to trigger the previous gallery item"
+msgstr "Клавиша для запуска предыдущего элемента галереи."
+
+#. mouseover_gallery_next_key.name
+msgid "Next gallery item"
+msgstr "Следующий элемент галереи"
+
+#. mouseover_gallery_next_key.description
+msgid "Key to trigger the next gallery item"
+msgstr "Клавиша для запуска следующего элемента галереи."
+
+#. mouseover_gallery_download_key.name
+msgid "Gallery download key"
+msgstr "Клавиша скачивания галереи"
+
+#. mouseover_gallery_download_key.description
+msgid "Key to download the current gallery"
+msgstr "Клавиша для скачивания текущей галереи."
+
+#. gallery_download_unchanged.name
+msgid "Download unchanged media"
+msgstr "Скачивать медиа без изменений"
+
+#. gallery_download_unchanged.description
+msgid "Includes gallery items that have not been changed. Useful to potentially avoid downloading thumbnails"
+msgstr "Включает в себя элементы галереи, которые не были изменены. Полезно, чтобы потенциально избежать скачивания миниатюр."
+
+#. gallery_zip_filename_format.name
+msgid "Zip: Filename format"
+msgstr "Zip: Формат имени файла"
+
+#. gallery_zip_filename_format.description
+msgid ""
+"Format string(s) for the zip filename.\n"
+"Refer to \"Filename format\" under the Rules section for documentation. The variables are set from the first loaded media.\n"
+"An additional `items_amt` format variable is supported, which contains the number of items.\n"
+"`.zip` will be automatically suffixed if it's missing."
+msgstr ""
+"Формат строки(строк) для zip-файла.\n"
+"Смотрите в документации «Формат имени файла» в разделе «Правила». Переменные задаются с первого загруженного медиа.\n"
+"Поддерживается дополнительная переменная формата `items_amt`, которая содержит количество элементов.\n"
+"`.zip` будет автоматически суффиксован, если он отсутствует."
+
+#. gallery_zip_add_tld.name
+msgid "Zip: Store in subdirectory"
+msgstr "Zip: Хранить в подкаталоге"
+
+#. gallery_zip_add_tld.description
+msgid "Stores the files in a subdirectory with the same name as the .zip file (without the .zip extension)"
+msgstr "Хранит файлы в подкаталоге с тем же именем, что и zip-файл (без расширения .zip)."
+
+#. gallery_zip_add_info_file.name
+msgid "Zip: Store info file"
+msgstr "Zip: Хранить информацию файла"
+
+#. gallery_zip_add_info_file.description
+msgid "Stores a `info.txt` file in the .zip containing information about the downloaded files and host page."
+msgstr "Хранит файл `info.txt` в .zip, содержащую информацию о скачаных файлах и странице хоста."
+
+#. mouseover_gallery_move_after_video.name
+msgid "Move to next when video finishes"
+msgstr "После заканчивания видео, переходить к следующему"
+
+#. mouseover_gallery_move_after_video.description
+msgid "Moves to the next gallery item when a video finishes playing"
+msgstr "Переход к следующему элементу галереи после завершения воспроизведения видео."
+
+#. mouseover_styles.name
+msgid "Popup CSS style"
+msgstr "Стиль CSS всплывающего окна"
+
+#. mouseover_styles.description
+msgid "Custom CSS styles for the popup"
+msgstr "Пользовательские стили CSS для всплывающего окна."
+
+#. mouseover_styles.documentation.value
+msgid ""
+"Most valid CSS is supported, with these differences:\n"
+"<ul><li>Multiline comments (<code>/* ... */</code>) are currently not supported</li>\n"
+"<li>Single comments (<code>// ...</code>) are supported, but only at the beginning of a line</li>\n"
+"<li><code>%thumburl%</code> is the URL of the thumbnail image. For example, you could use it like this: <code>background-image: url(%thumburl%)</code><br />\n"
+"The URL is properly encoded, so quotes are not necessary (but not harmful either)</li>\n"
+"<li><code>%fullurl%</code> is the URL of the full image. If IMU fails to find a larger image, it will be the same as <code>%thumburl%</code></li>\n"
+"<li>Styles are <code>!important</code> by default</li></ul>\n"
+"<p>For Button CSS style, you can also customize the CSS for individual buttons through their IDs. For example:</p>\n"
+"<pre>\n"
+"#closebtn {\n"
+"  background-color: red;\n"
+"  // -imu-text allows you to set the text inside the button\n"
+"  -imu-text: \"Close\";\n"
+"  // -imu-title allows you to set the tooltip when hovering\n"
+"  -imu-title: \"Close the popup\";\n"
+"}\n"
+"#galleryprevbtn, #gallerynextbtn {\n"
+"  border-radius: 100px;\n"
+"}\n"
+"</pre>"
+msgstr ""
+"Поддерживается большинство допустимого CSS, с этими отличиями:\n"
+"<ul><li>Многострочные комментарии (<code>/* ... */</code>) в настоящее время не поддерживаются</li>\n"
+"<li>Одиночные комментарии (<code>// ...</code>) поддерживаются, но только в начале строки</li>\n"
+"<li><code>%thumburl%</code> - это URL-адрес миниатюры изображения. Например, вы можете использовать его следующим образом: <code>background-image: url(%thumburl%)</code><br />\n"
+"URL правильно закодирован, поэтому кавычки не нужны (но и не навредят)</li>\n"
+"<li><code>%fullurl%</code> - это URL-адрес полного изображения. Если IMU не может найти увеличенное изображение, оно будет таким же, как <code>%thumburl%</code></li>\n"
+"<li>Стили по умолчанию как <code>!important</code></li></ul>\n"
+"<p>Для стиля CSS кнопок, вы также можете настроить CSS для отдельных кнопок с помощью их идентификаторов. Например:</p>\n"
+"<pre>\n"
+"#closebtn {\n"
+"  background-color: red;\n"
+"  // -imu-text позволяет установить текст внутри кнопки\n"
+"  -imu-text: \"Закрыть\";\n"
+"  // -imu-title позволяет установить всплывающую подсказку при наведении курсора\n"
+"  -imu-title: \"Закрыть всплывающее окно\";\n"
+"}\n"
+"#galleryprevbtn, #gallerynextbtn {\n"
+"  border-radius: 100px;\n"
+"}\n"
+"</pre>"
+
+#. mouseover_enable_fade.name
+msgid "Enable popup fade"
+msgstr "Включить эффект затухания для всплывающего окна"
+
+#. mouseover_enable_fade.description
+msgid "Enables a fade in/out effect when the popup is opened/closed"
+msgstr "Включает эффект затухания/появления при открытии/закрытии всплывающего окна."
+
+#. mouseover_enable_zoom_effect.name
+msgid "Enable zoom effect"
+msgstr "Включить эффект масштабирования"
+
+#. mouseover_enable_zoom_effect.description
+msgid "Toggles whether the popup should 'zoom' when opened/closed"
+msgstr "Переключает, должно ли всплывающее окно 'масштабироваться' при открытии/закрытии."
+
+#. mouseover_zoom_effect_move.name
+msgid "Move from thumbnail when zooming"
+msgstr "Перемещение от миниатюры при масштабировании"
+
+#. mouseover_zoom_effect_move.description
+msgid "Moves the popup from the thumbnail to the final location while zooming. The animation can be a little rough"
+msgstr "Перемещает всплывающее окно от миниатюр до окончательного местоположения во время масштабирования. Анимация может быть немного грубой."
+
+#. mouseover_fade_time.name
+msgid "Popup animation time"
+msgstr "Время анимации всплывающего окна"
+
+#. mouseover_fade_time.description
+msgid "Fade/zoom animation duration (in milliseconds) for the popup"
+msgstr "Уменьшение/увеличение продолжительности анимации (в миллисекундах) для всплывающего окна."
+
+#. mouseover_enable_mask_styles2.name
+msgid "Enable background CSS"
+msgstr "Включить фон CSS"
+
+#. mouseover_enable_mask_styles2.description
+msgid "Toggles whether CSS styles for the background when the popup is active is enabled"
+msgstr "Переключает, включены ли стили CSS для фона, когда всплывающее окно активно."
+
+#. mouseover_enable_mask_styles2.options.hold.name
+msgid "On hold"
+msgstr "При удерживании"
+
+#. mouseover_enable_mask_styles2.options.never.name
+msgid "No"
+msgstr "Нет"
+
+#. mouseover_mask_styles2.name
+msgid "Background CSS style"
+msgstr "Стиль CSS для фона"
+
+#. mouseover_mask_styles2.description
+msgid "CSS style for the background when the popup is active. See the documentation for Popup CSS style for more information (the thumb/full URL variables aren't supported here)"
+msgstr "Стиль CSS для фона, когда всплывающее окно активно. Дополнительные сведения смотрите в документации 'Стилизация CSS всплывающего окна' (здесь не поддерживаются переменные URL thumb/full)."
+
+#. mouseover_mask_fade_time.name
+msgid "Background fade"
+msgstr "Затухание фона"
+
+#. mouseover_mask_fade_time.description
+msgid "Fade in/out time (in milliseconds) for the page background, set to 0 to disable"
+msgstr "Время затухания/появления (в миллисекундах) для фона страницы. 0 - отключить"
+
+#. retry_503_ms.number_unit, mouseover_notallowed_duration.number_unit, mouseover_hide_cursor_after.number_unit, mouseover_fade_time.number_unit, mouseover_mask_fade_time.number_unit
+msgid "ms"
+msgstr "мс"
+
+#. mouseover_ui_styles.name
+msgid "Button CSS style"
+msgstr "Стиль CSS для кнопок"
+
+#. mouseover_ui_styles.description
+msgid "Custom CSS styles for the popup's UI buttons. See the documentation for Popup CSS style for more information (the thumb/full URL variables aren't supported here)"
+msgstr "Пользовательские стили CSS для кнопок пользовательского интерфейса всплывающего окна. Дополнительные сведения смотрите в документации 'Стилизация CSS всплывающего окна' (здесь не поддерживаются переменные URL thumb/full)."
+
+#. mouseover_apply_blacklist.name
+msgid "Don't popup blacklisted URLs"
+msgstr "Не открывать чёрные списки URL-адресов во всплывающем окне"
+
+#. mouseover_apply_blacklist.description
+msgid "This option popping up for source media with blacklisted URLs. If this is disabled, the popup will open if the end URL isn't blacklisted, regardless of whether the source is blacklisted."
+msgstr "Этот параметр всплывает для оригинальных медиа с URL-адресами в чёрный список. Если этот параметр отключен, всплывающее окно откроется, если конечный URL-адрес не внесён в чёрный список, независимо от того, внесен ли источник в чёрный список."
+
+#. apply_blacklist_host.name
+msgid "Apply blacklist for host websites"
+msgstr "Применять чёрный список для хост-сайтов"
+
+#. apply_blacklist_host.description
+msgid "This option prevents the script from opening any popups to host websites that are in the blacklist. For example, adding `twitter.com` to the blacklist would prevent any popup from opening on twitter.com. If disabled, this option only applies to image URLs (such as twimg.com), not host URLs"
+msgstr "Этот параметр не позволяет скрипту открывать любые всплывающие окна сайтам, которые находятся в чёрном списке. Например, добавление `twitter.com` в чёрный список предотвратит открытие всплывающих окон на twitter.com. Если этот параметр отключен, он применяется только к URL-адресам изображений (например, twimg.com), а не URL-адресам хостов."
+
+#. mouseover_matching_media_types.name
+msgid "Don't popup different media type"
+msgstr "Нет всплывающих окон для других типов медиа"
+
+#. mouseover_matching_media_types.description
+msgid "This option prevents the popup from loading a video when the source was an image or vice-versa"
+msgstr "Этот параметр запрещает всплывающему окну загружать видео, если источником было изображение, или наоборот."
+
+#. mouseover_find_els_mode.name
+msgid "Element finding mode"
+msgstr "Режим поиска элементов"
+
+#. mouseover_find_els_mode.description
+msgid "How IMU should find the media element on the page."
+msgstr "Как IMU будет искать медиа-элементы на странице."
+
+#. mouseover_find_els_mode.warning.full
+msgid ""
+"This will result in a much higher CPU load for websites such as Facebook, and will occasionally return the wrong element.\n"
+"Use this option with caution."
+msgstr ""
+"Это приведет к гораздо более высокой загрузке процессора для таких сайтов, как Facebook, и иногда будет возвращать неправильный элемент.\n"
+"Используйте этот параметр с осторожностью."
+
+#. mouseover_find_els_mode.options.full.name
+msgid "Full"
+msgstr "Полный"
+
+#. mouseover_find_els_mode.options.full.description
+msgid "Manually looks through every element on the page to see if the cursor is above them. This will result in a higher CPU load for websites such as Facebook, and may return the wrong element"
+msgstr "Вручную просматривает каждый элемент на странице, чтобы увидеть, находится ли курсор над ними. Это приведет к более высокой загрузке процессора для таких сайтов, как Facebook, и может вернуть неправильный элемент."
+
+#. mouseover_find_els_mode.options.hybrid.name
+msgid "Hybrid"
+msgstr "Гибридный"
+
+#. mouseover_find_els_mode.options.hybrid.description
+msgid "Looks manually through every child element of the last element found by `getElementsAtPoint`. Use this option if in doubt, it'll work on most sites"
+msgstr "Просматривает вручную каждый дочерний элемент последнего элемента, найденного с помощью `getElementsAtPoint`. Используйте этот вариант, если у вас есть сомнения. Он будет работать на большинстве сайтов."
+
+#. mouseover_find_els_mode.options.simple.name
+msgid "Simple"
+msgstr "Простой"
+
+#. mouseover_find_els_mode.options.simple.description
+msgid "This is the fastest option, which uses the value of `getElementsAtPoint` without modification. Works for sites that don't use pointer-events:none and shadow DOM"
+msgstr "Это самый быстрый вариант, который использует значение `getElementsAtPoint` без изменений. Работает для сайтов, которые не используют pointer-events:none и shadow DOM."
+
+#. popup_allow_cache.name
+msgid "Use cache"
+msgstr "Использовать кэш"
+
+#. popup_allow_cache.description
+msgid "Allows use of a media cache for the popup"
+msgstr "Позволяет использовать медиа-кэш для всплывающих окон."
+
+#. popup_cache_duration.name
+msgid "Cache duration"
+msgstr "Длительность кэширования"
+
+#. popup_cache_duration.description
+msgid "How long for media to remain cached. Set to `0` for unlimited."
+msgstr "Как долго медиа будут оставаться в кэше. `0` - всегда."
+
+#. popup_cache_duration.number_unit
+msgid "minutes"
+msgstr "мин."
+
+#. popup_cache_itemlimit.name
+msgid "Cache item limit"
+msgstr "Лимит элементов кэша"
+
+#. popup_cache_itemlimit.description
+msgid "Maximum number of individual media to remain cached. Set to `0` for unlimited."
+msgstr "Максимальное количество отдельных медиа для сохранения в кэше. `0` - без ограничения."
+
+#. popup_cache_itemlimit.number_unit
+msgid "items"
+msgstr "эл."
+
+#. popup_cache_resume_video.name
+msgid "Resume videos"
+msgstr "Возобновлять видео"
+
+#. popup_cache_resume_video.description
+msgid "If a video popup was closed then reopened, the video will resume from where it left off"
+msgstr "Если всплывающее окно видео было закрыто, а затем снова открыто, видео возобновится с того места, где оно было остановлено."
+
+#. website_inject_imu.name
+msgid "Use userscript"
+msgstr "Использовать пользовательский скрипт"
+
+#. website_inject_imu.description
+msgid "Replaces the website's IMU instance with the userscript"
+msgstr "Заменяет сайт экземпляра IMU на пользовательский скрипт."
+
+#. website_image.name
+msgid "Website image preview"
+msgstr "Предпросмотр изображения сайта"
+
+#. website_image.description
+msgid "Enables a preview of the image on the Image Max URL website"
+msgstr "Включает предварительный просмотр изображения на сайте Image Max URL"
+
+#. extension_contextmenu.name
+msgid "IMU entry in context menu"
+msgstr "Добавить IMU в контекстное меню"
+
+#. extension_contextmenu.description
+msgid "Enables a custom entry for this extension in the right click/context menu"
+msgstr "Включает пользовательскую запись для этого расширения в контекстном меню (нажатие правой кнопкой мыши)."
+
+#. extension_hotreload.name
+msgid "Hot (re)load"
+msgstr "Горячая (пере)загрузка"
+
+#. extension_hotreload.description
+msgid "(Re)loads the extension on all existing pages when installing or updating"
+msgstr "(Пере)загружает расширение на всех существующих страницах при установке или обновлении."
+
+#. custom_xhr_for_lib.name
+msgid "Custom XHR for libraries"
+msgstr "Пользовательский XHR для библиотек"
+
+#. custom_xhr_for_lib.description
+msgid "Allows the use of more powerful XHR (network requests) for 3rd-party libraries. This allows for certain DASH streams to work."
+msgstr "Позволяет использовать более мощные XHR (сетевые запросы) для сторонних библиотек. Это позволяет работать определенным потокам DASH."
+
+#. custom_xhr_for_lib.description_userscript
+msgid "Allows the use of more powerful XHR  (network requests) for 3rd-party libraries. This allows for certain DASH streams to work. Using this with the userscript version currently poses a potential security risk."
+msgstr "Позволяет использовать более мощные XHR (сетевые запросы) для сторонних библиотек. Это позволяет работать определенным потокам DASH. Использование его в версии пользовательского скрипта в настоящее время представляет собой потенциальный риск для безопасности."
+
+#. custom_xhr_for_lib.example_websites[0]
+msgid "Kakao"
+msgstr ""
+
+#. custom_xhr_for_lib.example_websites[1]
+msgid "YouTube"
+msgstr ""
+
+#. custom_xhr_for_lib.example_websites[2]
+msgid "Instagram (downloading)"
+msgstr "Instagram (скачивание)"
+
+#. hls_dash_use_max.name
+msgid "HLS/DASH maximum quality"
+msgstr "Максимальное качество HLS/DASH"
+
+#. hls_dash_use_max.description
+msgid "Uses the maximum quality for HLS/DASH streams"
+msgstr "Использует максимальное качество для потоков HLS/DASH."
+
+#. max_video_quality.name
+msgid "Maximum video quality"
+msgstr "Максимальное качество видео"
+
+#. max_video_quality.description
+msgid "Maximum quality for videos"
+msgstr "Максимальное качество для видео."
+
+#. max_video_quality.options.unlimited.name
+msgid "(unlimited)"
+msgstr "(неограниченное)"
+
+#. max_video_quality.options.h2160.name
+msgid "4K"
+msgstr ""
+
+#. max_video_quality.options.h1440.name
+msgid "1440p"
+msgstr ""
+
+#. max_video_quality.options.h1080.name
+msgid "1080p"
+msgstr ""
+
+#. max_video_quality.options.h720.name
+msgid "720p"
+msgstr ""
+
+#. max_video_quality.options.h480.name
+msgid "480p"
+msgstr ""
+
+#. allow_watermark.name
+msgid "Larger watermarked images"
+msgstr "Большие изображения с водяными знаками"
+
+#. allow_watermark.description
+msgid "Enables rules that return larger images that include watermarks"
+msgstr "Включает правила, возвращающие более крупные изображения с водяными знаками."
+
+#. allow_watermark.example_websites[0]
+msgid "Stock photo websites"
+msgstr "Сайты со стоковыми фото"
+
+#. allow_smaller.name
+msgid "Smaller non-watermarked images"
+msgstr "Небольшие изображения без водяных знаков"
+
+#. allow_smaller.description
+msgid "Enables rules that return smaller images without watermarks"
+msgstr "Включает правила, возвращающие меньшие изображения без водяных знаков."
+
+#. allow_possibly_different.name
+msgid "Possibly different images"
+msgstr "Возможно, разные изображения"
+
+#. allow_possibly_different.description
+msgid "Enables rules that return images that possibly differ, usually due to server-side caching"
+msgstr "Включает правила, возвращающие изображения, которые могут отличаться, как правило, из-за кэширования на стороне сервера."
+
+#. allow_possibly_broken.name
+msgid "Possibly broken images"
+msgstr "Возможно, сломанные изображения"
+
+#. allow_possibly_broken.description
+msgid "Enables rules that return images that are possibly broken"
+msgstr "Включает правила, возвращающие изображения, которые могут быть поломаны."
+
+#. allow_possibly_upscaled.name
+msgid "Possibly upscaled images"
+msgstr "Возможно, увеличенные изображения"
+
+#. allow_possibly_upscaled.description
+msgid "Enables rules that return images that are possibly upscaled"
+msgstr "Включает правила, возвращающие изображения, которые могут быть увеличены."
+
+#. allow_thirdparty.name
+msgid "Rules using 3rd-party websites"
+msgstr "Правила использования сторонних сайтов"
+
+#. allow_thirdparty.description
+msgid "Enables rules that use 3rd-party websites"
+msgstr "Включает правила, которые используют сторонние сайты."
+
+#. allow_thirdparty.example_websites[0]
+msgid "Newsen"
+msgstr ""
+
+#. allow_apicalls.name
+msgid "Rules using API calls"
+msgstr "Правила, использующие вызовы API"
+
+#. allow_apicalls.description
+msgid "Enables rules that use API calls. Strongly recommended to keep this enabled"
+msgstr "Включает правила, использующие вызовы API. Настоятельно рекомендуется оставлять эту функцию включённой."
+
+#. allow_apicalls.example_websites[0]
+msgid "Instagram"
+msgstr ""
+
+#. redirect_force_page.example_websites[0], allow_apicalls.example_websites[1]
+msgid "Flickr"
+msgstr ""
+
+#. redirect_force_page.example_websites[2], allow_apicalls.example_websites[2]
+msgid "..."
+msgstr ""
+
+#. allow_thirdparty_libs.name
+msgid "Allow 3rd-party libraries"
+msgstr "Разрешить сторонние библиотеки"
+
+#. allow_thirdparty_libs.description
+msgid "Enables using 3rd-party libraries. This is both used in rules and as a prerequisite for certain functionality."
+msgstr "Позволяет использовать сторонние библиотеки. Это используется как в правилах, так и в качестве предварительного условия для определённой функциональности."
+
+#. allow_thirdparty_libs.description_userscript
+msgid ""
+"Enables using 3rd-party libraries. This is both used in rules and as a prerequisite for certain functionality.\n"
+"There is a possible (but unlikely) security risk for the userscript version."
+msgstr ""
+"Позволяет использовать сторонние библиотеки. Это используется как в правилах, так и в качестве предварительного условия для определённой функциональности.\n"
+"Существует возможный (но маловероятный) риск безопасности для версии пользовательского скрипта."
+
+#. allow_thirdparty_libs.example_websites[0]
+msgid "Sites using testcookie (slowAES)"
+msgstr "Сайты, использующие testcookie (slowAES)"
+
+#. allow_thirdparty_code.name
+msgid "Rules executing 3rd-party code"
+msgstr "Правила выполнения стороннего кода"
+
+#. allow_thirdparty_code.description
+msgid "Enables rules that execute arbitrary 3rd-party code stored on websites."
+msgstr "Включает правила, которые выполняют произвольный сторонний код, хранящийся на сайтах."
+
+#. allow_thirdparty_code.warning.true
+msgid "This could lead to security risks, please be careful when using this option!"
+msgstr "Это может привести к угрозам безопасности, будьте осторожны при использовании этого параметра!"
+
+#. allow_bruteforce.name
+msgid "Rules using brute-force"
+msgstr "Правила, использующие грубую силу"
+
+#. allow_bruteforce.description
+msgid "Enables rules that require using brute force (through binary search) to find the original image"
+msgstr "Включает правила, требующие использования грубой силы (через бинарный поиск) для поиска оригинального изображения."
+
+#. allow_bruteforce.example_websites[0]
+msgid "Deezer"
+msgstr ""
+
+#. deviantart_prefer_size.name
+msgid "DeviantART: Prefer size over original"
+msgstr "DeviantART: Предпочитать размер оригиналу"
+
+#. deviantart_prefer_size.description
+msgid "Prefers a larger (but not upscaled) thumbnail image over a smaller original animated image"
+msgstr "Предпочитает больше (но не увеличенное) миниатюрное изображение меньшему оригинальному анимированному изображению."
+
+#. deviantart_support_download.name
+msgid "DeviantART: Use download links"
+msgstr "DeviantART: Использовать ссылки для скачивания"
+
+#. deviantart_support_download.description
+msgid "Prefers using the download link (if available) by default. Note that this only works if you're logged in to DeviantART"
+msgstr "Предпочитает использовать ссылку для скачивания (если она доступна) по умолчанию. Обратите внимание, что это работает, только если вы вошли в свою учётную запись DeviantART."
+
+#. ehentai_full_image.name
+msgid "E-Hentai: Use full image"
+msgstr "E-Hentai: Использовать полное изображение"
+
+#. ehentai_full_image.description
+msgid "Prefers using full/original images if available (logged in). This is more likely to get you rate limited"
+msgstr "Предпочитает использовать полные/оригинальные изображения, если таковые имеются. (требуется вход). Скорее всего, это ограничит вашу скорость."
+
+#. imgur_filename.name
+msgid "Imgur: Use original filename"
+msgstr "Imgur: Использовать оригинальное имя файла"
+
+#. imgur_filename.description
+msgid "If the original filename (the one used to upload the image) is found, use it instead of the image ID"
+msgstr "Если найдено оригинальное имя файла (используемое для скачивания изображения), используйте его вместо идентификатора изображения."
+
+#. imgur_source.name
+msgid "Imgur: Use source image"
+msgstr "Imgur: Использовать изображение источника"
+
+#. imgur_source.description
+msgid "If a source image is found for Imgur, try using it instead. Only works for old-style Imgur webpages (set `postpagebeta=0; postpagebetalogged=0` as cookies)"
+msgstr "Если для Imgur найдено изображение источника, попробуйте использовать его вместо этого. Работает только для веб-страниц Imgur старого стиля (установите `postpagebeta=0; postpagebetalogged=0` как cookie)."
+
+#. instagram_use_app_api.name
+msgid "Instagram: Use native API"
+msgstr "Instagram: Использовать родной API"
+
+#. instagram_use_app_api.description
+msgid "Uses Instagram's native API if possible, requires you to be logged into Instagram"
+msgstr "Использует родной API Instagram, если это возможно. Вам потребуется войти в учётную запись Instagram."
+
+#. instagram_dont_use_web.name
+msgid "Instagram: Don't use web API"
+msgstr "Instagram: Без использования веб-API"
+
+#. instagram_dont_use_web.description
+msgid "Avoids using Instagram's web API if possible, which increases performance, but will occasionally sacrifice quality for videos"
+msgstr "Избегает использования веб-API Instagram, если это возможно, что повышает производительность, но иногда жертвует качеством видео."
+
+#. instagram_prefer_video_quality.name
+msgid "Instagram: Prefer quality over resolution"
+msgstr "Instagram: Предпочитать качество разрешению"
+
+#. instagram_prefer_video_quality.description
+msgid "Prefers lower resolution videos that use a higher bitrate over higher resolution images. This adds a slight performance cost as it needs to fetch headers for multiple videos"
+msgstr "Предпочитает видео с более низким разрешением, которые используют более высокий битрейт по сравнению с изображениями с более высоким разрешением. Это добавляет небольшие затраты на производительность, так как это нуждается в получении заголовков для нескольких видео."
+
+#. instagram_gallery_postlink.name
+msgid "Instagram: Use albums for post thumbnails"
+msgstr "Instagram: Использовать альбомы для миниатюр постов"
+
+#. instagram_gallery_postlink.description
+msgid "Queries Instagram for albums when using the popup on a post thumbnail"
+msgstr "Запросы к Instagram для альбомов при использовании всплывающего окна на миниатюре поста."
+
+#. snapchat_orig_media.name
+msgid "Snapchat: Use original media without captions"
+msgstr "Snapchat: Использовать оригинальные медиа без подписей"
+
+#. snapchat_orig_media.description
+msgid "Prefers using original media instead of media with captions and tags overlayed"
+msgstr "Предпочитает использовать оригинальные медиа вместо медиа с наложенными подписями и тегами."
+
+#. tiktok_no_watermarks.name
+msgid "TikTok: Don't use watermarked videos"
+msgstr "TikTok: Не использовать видео с водяными знаками"
+
+#. tiktok_no_watermarks.description
+msgid "Uses non-watermarked videos for TikTok if possible. This will introduce an extra delay when loading the video as two extra requests need to be performed. It will also fail for any videos uploaded after ~late July 2020"
+msgstr "По возможности использует видео без водяных знаков для TikTok. Это приведёт к дополнительной задержке при загрузке видео, так как необходимо выполнить два дополнительных запроса. Это не будет работать для любых видео, загруженных после ~конца июля 2020 года."
+
+#. tiktok_thirdparty.name
+msgid "TikTok: 3rd-party watermark removal"
+msgstr "TikTok: Удаление водяных знаков третьей стороной"
+
+#. tiktok_thirdparty.description
+msgid ""
+"Uses a 3rd-party watermark removal site for TikTok.\n"
+"I do not endorse any of the sites supported. They may log your IP address and videos you submit. Use this option with caution.\n"
+"`LQ` = Low quality, `PL` = Public log"
+msgstr ""
+"Использует сторонний сайт удаления водяных знаков для TikTok.\n"
+"Я не одобряю ни один из поддерживаемых сайтов. Они могут регистрировать ваш IP-адрес и видео, которые вы отправляете. Используйте этот параметр с осторожностью.\n"
+"`НК` = Низкое качество, `ПЖ` = Публичный журнал"
+
+#. tiktok_thirdparty.options.null.name
+msgid "(none)"
+msgstr "(ничего)"
+
+#. tiktok_thirdparty.options.ttloader.com:ttt.name
+msgid "ttloader.com"
+msgstr ""
+
+#. tiktok_thirdparty.options.onlinetik.com:ttt.name
+msgid "onlinetik.com"
+msgstr ""
+
+#. tiktok_thirdparty.options.tiktokdownloader.in:ttt.name
+msgid "tiktokdownloader.in"
+msgstr ""
+
+#. tiktok_thirdparty.options.savevideo.ninja:ttt.name
+msgid "savevideo.ninja"
+msgstr ""
+
+#. tiktok_thirdparty.options.keeptiktok.com.name
+msgid "keeptiktok.com (LQ)"
+msgstr "keeptiktok.com (НК)"
+
+#. tiktok_thirdparty.options.ssstiktok.io:1.name
+msgid "ssstiktok.io (LQ)"
+msgstr "ssstiktok.io (НК)"
+
+#. tiktok_thirdparty.options.musicallydown.com:1.name
+msgid "musicallydown.com (LQ/PL)"
+msgstr "musicallydown.com (НК/ПЖ)"
+
+#. tiktok_thirdparty.options.snaptik.app.name
+msgid "snaptik.app (LQ)"
+msgstr "snaptik.app (НК)"
+
+#. tumblr_api_key.name
+msgid "Tumblr: API key"
+msgstr "Tumblr: ключ API"
+
+#. tumblr_api_key.description
+msgid "API key for finding larger images on Tumblr"
+msgstr "Ключ API для поиска больших изображений на Tumblr"
+
+#. twitter_use_ext.name
+msgid "Twitter: Use extension"
+msgstr "Twitter: Использовать расширение"
+
+#. twitter_use_ext.description
+msgid "Prefers `.jpg?name=orig` over `?format=jpg&name=orig`. This will possibly incur extra requests before succeeding"
+msgstr "Предпочитает `.jpg?name=orig` поверх `?format=jpg&name=orig`. Это, возможно, принесёт дополнительные запросы, прежде чем завершиться."
+
+#. bigimage_blacklist.name
+msgid "Blacklist"
+msgstr "Чёрный список"
+
+#. bigimage_blacklist.description
+msgid "A list of URLs (one per line) that are blacklisted from being processed"
+msgstr "Список URL-адресов (по одному на строку), которые занесены в чёрный список для обработки."
+
+#. bigimage_blacklist.documentation.value
+msgid ""
+"The examples below are written for the simple (glob) engine, not the regex engine. The glob engine is generally based on the UNIX glob syntax.<br />\n"
+"<ul><br />\n"
+"<li><code>google.com</code> will block https://google.com/, https://www.google.com/, https://abcdef.google.com/, https://def.abc.google.com/, etc.</li>\n"
+"<li><code>abc.google.com</code> will block https://abc.google.com/, https://def.abc.google.com/, etc.</li>\n"
+"<li><code>*.google.com</code> will block https://www.google.com/, https://def.abc.google.com/, etc. but not https://google.com/</li>\n"
+"<li><code>google.*/</code> will block https://google.com/, https://www.google.co.uk, etc.</li>\n"
+"<li><code>http://google.com</code> will block http://google.com/, but not https://google.com/, http://www.google.com/, etc.</li>\n"
+"<li><code>google.com/test</code> will block https://google.com/test, https://www.google.com/test/abcdef, but not https://google.com/, etc.</li>\n"
+"<li><code>google.com/*/test</code> will block https://google.com/abc/test, but not https://google.com/test or https://google.com/abc/def/test</li>\n"
+"<li><code>google.com/**/test</code> will block https://google.com/abc/test, https://google.com/abc/def/test, https://google.com/abc/def/ghi/test, etc. but not https://google.com/test</li>\n"
+"<li><code>g??gle.com</code> will block https://google.com/, https://gaagle.com/, https://goagle.com/, etc.</li>\n"
+"<li><code>google.{com,co.uk}</code> will block https://google.com/ and https://google.co.uk/</li>\n"
+"<li><code>g[oau]ogle.com</code> will block https://google.com/, https://gaogle.com/, and http://www.guogle.com/</li>\n"
+"<li><code>g[0-9]ogle.com</code> will block https://g0ogle.com/, https://g1ogle.com/, etc. (up to https://g9ogle.com/)</li>\n"
+"</ul>"
+msgstr ""
+"Приведенные ниже примеры написаны для простого (glob) движка, а не для движка регулярных выражений. Механизм glob обычно основан на синтаксисе UNIX glob.<br />\n"
+"<ul><br />\n"
+"<li><code>google.com</code> будет блокировать https://google.com/, https://www.google.com/, https://abcdef.google.com/, https://def.abc.google.com/, и т.д.</li>\n"
+"<li><code>abc.google.com</code> будет блокировать https://abc.google.com/, https://def.abc.google.com/, и т.д.</li>\n"
+"<li><code>*.google.com</code> будет блокировать https://www.google.com/, https://def.abc.google.com/, и т.д., но не https://google.com/</li>\n"
+"<li><code>google.*/</code> будет блокировать https://google.com/, https://www.google.co.uk, и т.д.</li>\n"
+"<li><code>http://google.com</code> будет блокировать http://google.com/, но не https://google.com/, http://www.google.com/, и т.д.</li>\n"
+"<li><code>google.com/test</code> будет блокировать https://google.com/test, https://www.google.com/test/abcdef, но не https://google.com/, и т.д.</li>\n"
+"<li><code>google.com/*/test</code> будет блокировать https://google.com/abc/test, но не https://google.com/test или https://google.com/abc/def/test</li>\n"
+"<li><code>google.com/**/test</code> будет блокировать https://google.com/abc/test, https://google.com/abc/def/test, https://google.com/abc/def/ghi/test, и т.д., но не https://google.com/test</li>\n"
+"<li><code>g??gle.com</code> будет блокировать https://google.com/, https://gaagle.com/, https://goagle.com/, и т.д.</li>\n"
+"<li><code>google.{com,co.uk}</code> будет блокировать https://google.com/ и https://google.co.uk/</li>\n"
+"<li><code>g[oau]ogle.com</code> будет блокировать https://google.com/, https://gaogle.com/, и http://www.guogle.com/</li>\n"
+"<li><code>g[0-9]ogle.com</code> будет блокировать https://g0ogle.com/, https://g1ogle.com/, и т.д. (вплоть до https://g9ogle.com/)</li>\n"
+"</ul>"
+
+#. bigimage_blacklist_engine.name
+msgid "Blacklist engine"
+msgstr "Движок чёрного списка"
+
+#. bigimage_blacklist_engine.description
+msgid "How the blacklist should be processed"
+msgstr "Как следует обрабатывать чёрный список."
+
+#. bigimage_blacklist_engine.options.glob.name
+msgid "Simple (glob)"
+msgstr "Простой (glob)"
+
+#. bigimage_blacklist_engine.options.regex.name
+msgid "Regex"
+msgstr "Регулярное выражение"
+
+#. filename_format.name
+msgid "Filename format"
+msgstr "Формат имени файла"
+
+#. filename_format.description
+msgid "Format string(s) for the filename"
+msgstr "Формат строк(и) для имени файла."
+
+#. mouseover_styles.documentation.title, bigimage_blacklist.documentation.title, filename_format.documentation.title
+msgid "Documentation"
+msgstr "Документация"
+
+#. filename_format.documentation.value
+msgid ""
+"<p>Variables are specified between curly brackets (<code>{}</code>).</p>\n"
+"<p>Below is a list of valid variables:</p>\n"
+"<ul><br />\n"
+"<li><code>filename</code> - Original filename (with extension, if applicable)</li>\n"
+"<li><code>filename_noext</code> - Original filename (without extension, if applicable)</li>\n"
+"<li><code>ext</code> - Extension (with <code>.</code> prefixed)</li>\n"
+"<li><code>caption</code> - Popup caption</li>\n"
+"<li><code>author_username</code> - Author's username</li>\n"
+"<li><code>id</code> - Post ID</li>\n"
+"<li><code>host_domain</code> - Domain of the host webpage</li>\n"
+"<li><code>host_domain_nosub</code> - Domain (without subdomains) of the host webpage</li>\n"
+"<li><code>domain</code> - Domain of the media</li>\n"
+"<li><code>domain_nosub</code> - Domain (without subdomains) of the media</li>\n"
+"<li><code>is_screenshot</code> - Blank, the line will only be processed when screenshotting a video</li>\n"
+"<li><code>created_...</code> - Created date (see note on Date objects below)</li>\n"
+"<li><code>updated_...</code> - Updated date, this will use the <code>Last-Modified</code> header if not otherwise specified by the rule (see note on Date objects below)</li>\n"
+"<li><code>download_...</code> - Download date (see note on Date objects below)</li>\n"
+"</ul><br />\n"
+"<p>You can truncate the value of a variable by adding <code>:(number)</code> before the end bracket (<code>}</code>). For example:</p>\n"
+"<ul><br />\n"
+"<li><code>{caption:10}</code> - Truncates the caption to be at most 10 characters long</li>\n"
+"<li><code>{caption:10.}</code> - Same, but will add an ellipsis (…) if the caption was truncated</li>\n"
+"</ul><br />\n"
+"<p>If a variable doesn't exist, by default it will ignore the current format string and use the one on the next line, unless <code>?</code> is added before the end bracket. For example:</p>\n"
+"<ul><br />\n"
+"<li><code>{ext?}</code> - Will be replaced with nothing if <code>ext</code> doesn't exist</li>\n"
+"<li><code>{caption?no caption}</code> - Will be replaced with <code>no caption</code> if <code>caption</code> doesn't exist</li>\n"
+"</ul><br />\n"
+"<p>Date objects are accessible through a number of properties. Each property can be suffixed with <code>_utc</code> to get the UTC/GMT equivalent.</p>\n"
+"<ul><br />\n"
+"<li><code>..._iso</code> - Date in ISO format (e.g. <code>2019-12-31T23-30-56</code>). Note that <code>:</code> is replaced with <code>-</code> to avoid issues with paths under NTFS.</li>\n"
+"<li><code>..._ago</code> - Human-readable representation of the time elapsed since the date (e.g. <code>1 year and 10 months ago</code>, <code>5 months and 20 days ago</code>)</li>\n"
+"<li><code>..._unix</code> - Unix timestamp (e.g. <code>1577912345</code>)</li>\n"
+"<li><code>..._unix_ms</code> - Unix timestamp with millisecond accuracy (e.g. <code>1577912345678</code>)</li>\n"
+"<li><code>..._yyyymmdd</code> - Date in YYYYMMDD format (e.g. <code>20191230</code>)</li>\n"
+"<li><code>..._hhmmss</code> - Time in HHMMSS format (e.g. <code>233056</code>)</li>\n"
+"<li><code>..._year</code> - Full year (e.g. <code>2019</code>)</li>\n"
+"<li><code>..._month</code> - Zero-padded month (e.g. <code>12</code>)</li>\n"
+"<li><code>..._day</code> - Zero-padded day (e.g. <code>31</code>)</li>\n"
+"<li><code>..._hours</code> - Zero-padded hours in military/24-hour format (e.g. <code>23</code>)</li>\n"
+"<li><code>..._minutes</code> - Zero-padded minutes (e.g. <code>30</code>)</li>\n"
+"<li><code>..._seconds</code> - Zero-padded seconds (e.g. <code>56</code>)</li>\n"
+"</ul>"
+msgstr ""
+"<p>Переменные задаются в фигурных скобках (<code>{}</code>).</p>\n"
+"<p>Ниже приведен список допустимых переменных:</p>\n"
+"<ul><br />\n"
+"<li><code>filename</code> - Исходное имя файла (с расширением, если применимо)</li>\n"
+"<li><code>filename_noext</code> - Исходное имя файла (без расширения, если применимо)</li>\n"
+"<li><code>ext</code> - Расширение (с префиксом <code>.</code>)</li>\n"
+"<li><code>caption</code> - Всплывающая подпись</li>\n"
+"<li><code>author_username</code> - Имя пользователя автора</li>\n"
+"<li><code>id</code> - Индетификатор публикации</li>\n"
+"<li><code>host_domain</code> - Домен веб-страницы хоста</li>\n"
+"<li><code>host_domain_nosub</code> - Домен веб-страницы хоста (без поддоменов)</li>\n"
+"<li><code>domain</code> - Домен медиа</li>\n"
+"<li><code>domain_nosub</code> - Домен медиа (без поддоменов)</li>\n"
+"<li><code>is_screenshot</code> - Пустая строка будет обрабатываться только при снимке экрана видео</li>\n"
+"<li><code>created_...</code> - Дата создания (смотрите примечание по объектам 'Date' ниже)</li>\n"
+"<li><code>updated_...</code> - Дата обновления, при этом будет использоваться заголовок <code>Last-Modified</code>, если правилом не указано иное (смотрите примечание по объектам 'Date' ниже)</li>\n"
+"<li><code>download_...</code> - Дата скачивания (смотрите примечание по объектам 'Date' ниже)</li>\n"
+"</ul><br />\n"
+"<p>Вы можете усечь значение переменной, добавив <code>:(number)</code> перед закрывающейся скобой (<code>}</code>). Например:</p>\n"
+"<ul><br />\n"
+"<li><code>{caption:10}</code> - Усекает подпись до длины не более 10 символов</li>\n"
+"<li><code>{caption:10.}</code> - То же самое, но добавит многоточие (...), если подпись была усечена</li>\n"
+"</ul><br />\n"
+"<p>Если переменной не существует, то по умолчанию она будет игнорировать текущую строку формата и использовать ее в следующей строке, если только перед конечной скобкой не будет добавлен <code>?</code>. Например:</p>\n"
+"<ul><br />\n"
+"<li><code>{ext?}</code> - Будет заменён ничем, если <code>ext</code> не существует</li>\n"
+"<li><code>{caption?no caption}</code> - Будет заменён на <code>no caption</code>, если <code>caption</code> не существует</li>\n"
+"</ul><br />\n"
+"<p>Объекты даты доступны через ряд свойств. Каждое свойство может быть суффиксом <code>_utc</code>, чтобы получить эквивалент UTC/GMT.</p>\n"
+"<ul><br />\n"
+"<li><code>..._iso</code> - Дата в формате ISO (т.е. <code>2019-12-31T23-30-56</code>). Обратите внимание, что <code>:</code> заменяется на <code>-</code>, чтобы избежать проблем с путями в NTFS.</li>\n"
+"<li><code>..._ago</code> - Человекочитаемое представление времени, прошедшего с даты (т.е. <code>1 год и 10 месяцев назад</code>, <code>5 месяцев и 20 дней назад</code>)</li>\n"
+"<li><code>..._unix</code> - Временная метка Unix (т.е. <code>1577912345</code>)</li>\n"
+"<li><code>..._unix_ms</code> - Временная метка Unix с точностью до миллисекунды (т.е. <code>1577912345678</code>)</li>\n"
+"<li><code>..._yyyymmdd</code> - Дата в формате YYYYMMDD (т.е. <code>20191230</code>)</li>\n"
+"<li><code>..._hhmmss</code> - Время в формате HHMMSS (т.е. <code>233056</code>)</li>\n"
+"<li><code>..._year</code> - Год полностью (т.е. <code>2019</code>)</li>\n"
+"<li><code>..._month</code> - Месяц с нулевой подкладкой (т.е. <code>12</code>)</li>\n"
+"<li><code>..._day</code> - День с нулевой подкладкой (т.е. <code>31</code>)</li>\n"
+"<li><code>..._hours</code> - Часы с нулевой подкладкой в военном/24-часовом формате (т.е. <code>23</code>)</li>\n"
+"<li><code>..._minutes</code> - Минуты с нулевой подкладкой (т.е. <code>30</code>)</li>\n"
+"<li><code>..._seconds</code> - Секунды с нулевой подкладкой (т.е. <code>56</code>)</li>\n"
+"</ul>"
+
+#. replaceimgs_keybinding.description
+msgid "Trigger keybinding that will run the Replace Images function"
+msgstr "Вызывает привязку клавиш, которая запустит функцию замены изображений."
+
+#. replaceimgs_auto.name
+msgid "Automatically replace images"
+msgstr "Автозамена изображений"
+
+#. replaceimgs_auto.description
+msgid "Automatically replace images to larger versions on pages you view"
+msgstr "Автозамена изображений на более крупные версии на просматриваемых страницах."
+
+#. allow_bruteforce.warning.true, replaceimgs_auto.warning.true
+msgid "This could lead to rate limiting or IP bans"
+msgstr "Это может привести к ограничению скорости или блокировке IP-адреса."
+
+#. replaceimgs_usedata.name
+msgid "Use data URLs"
+msgstr "Использовать data URL"
+
+#. replaceimgs_usedata.description
+msgid "Uses data:// URLs instead of image links. Disabling this may improve compatibility with some bulk image downloader extensions"
+msgstr "Использует data:// URL вместо ссылок на изображения. Отключение этого параметра может улучшить совместимость с некоторыми расширениями массового скачивания изображений."
+
+#. replaceimgs_wait_fullyloaded.name
+msgid "Wait until image is fully loaded"
+msgstr "Ждать полную загрузку изображения"
+
+#. replaceimgs_wait_fullyloaded.description
+msgid "Waits until the image being replaced is fully loaded before moving on to the next image"
+msgstr "Ждёт пока заменяемое изображение не будет полностью загружено прежде чем перейти к следующему изображению."
+
+#. replaceimgs_totallimit.name
+msgid "Max images to process at once"
+msgstr "Максимально изображений для одновременной обработки"
+
+#. replaceimgs_totallimit.description
+msgid "The maximum amount of images to process at once"
+msgstr "Максимальное количество изображений для обработки одновременно."
+
+#. replaceimgs_domainlimit.name
+msgid "Max images per domain at once"
+msgstr "Максимально изображений на домен одновременно"
+
+#. replaceimgs_domainlimit.description
+msgid "The maximum amount of images per domain to process at once"
+msgstr "Максимальное количество изображений на домен для одновременной обработки."
+
+#. mouseover_ui_gallerymax.number_unit, replaceimgs_totallimit.number_unit, replaceimgs_domainlimit.number_unit
+msgid "images"
+msgstr "Изображения"
+
+#. replaceimgs_delay.name
+msgid "Delay between same-domain images"
+msgstr "Задержка между однодоменными изображениями."
+
+#. replaceimgs_delay.description
+msgid "New requests for images in the same domain will be delayed by this amount of seconds. Useful for avoiding rate limits."
+msgstr "Новые запросы на изображения в том же домене будут задерживаться на это количество секунд. Полезно для избежания ограничений скорости."
+
+#. redirect_infobox_timeout.number_unit, mouseover_trigger_delay.number_unit, mouseover_video_autoloop_max.number_unit, mouseover_video_seek_amount.number_unit, mouseover_auto_close_popup_time.number_unit, replaceimgs_delay.number_unit
+msgid "seconds"
+msgstr "сек."
+
+#. replaceimgs_replaceimgs.name
+msgid "Replace images"
+msgstr "Заменять изображения"
+
+#. replaceimgs_replaceimgs.description
+msgid "Replaces images to their larger versions when the button is pressed"
+msgstr "Заменяет изображения на их более крупные версии при нажатии кнопки."
+
+#. replaceimgs_addlinks.name
+msgid "Add links"
+msgstr "Добавлять ссылки"
+
+#. replaceimgs_addlinks.description
+msgid "Adds links around replaced media if a link doesn't already exist"
+msgstr "Добавляет ссылки вокруг заменённых медиа, если ссылки ещё не существует."
+
+#. replaceimgs_replacelinks.name
+msgid "Replace links"
+msgstr "Заменять ссылки"
+
+#. replaceimgs_replacelinks.description
+msgid "Replaces links if they already exist"
+msgstr "Заменяет ссылки, если они уже существуют."
+
+#. replaceimgs_plainlinks.name
+msgid "Plain hyperlinks"
+msgstr "Простые гиперссылки"
+
+#. replaceimgs_plainlinks.description
+msgid "How to treat plain (non-media) hyperlinks that link to potential media"
+msgstr "Как обращаться с простыми (немедийными) гиперссылками, которые ссылаются на потенциальные медиа."
+
+#. replaceimgs_plainlinks.options.none.name
+msgid "Ignore"
+msgstr "Игнорировать"
+
+#. replaceimgs_plainlinks.options.replace_link_text.name
+msgid "Replace link+text"
+msgstr "Заменять ссылку+текст"
+
+#. replaceimgs_plainlinks.options.replace_media.name
+msgid "Replace media"
+msgstr "Заменять медиа"
+
+#. replaceimgs_links_newtab.name
+msgid "Links open in new tab"
+msgstr "Открывать ссылки в новой вкладке"
+
+#. replaceimgs_links_newtab.description
+msgid "Clicking on a replaced link will open the media in a new tab"
+msgstr "Нажатие на заменённую ссылку откроет медиа в новой вкладке."
+
+#. replaceimgs_remove_size_constraints.name
+msgid "Remove size constraints"
+msgstr "Удалить ограничения по размеру"
+
+#. replaceimgs_remove_size_constraints.description
+msgid "Removes height/width specifiers for replaced media"
+msgstr "Удаляет спецификации высоты/ширины для заменяемых медиа."
+
+#. replaceimgs_css.name
+msgid "Replacement CSS"
+msgstr "Замена CSS"
+
+#. replaceimgs_css.description
+msgid "CSS styles to apply to replaced media. See the documentation for Popup CSS style for more information (the thumb/full URL variables aren't yet supported here)"
+msgstr "Стили CSS для применения к заменяемым медиа. Дополнительные сведения смотрите в документации 'Стилизация CSS всплывающего окна' (здесь не поддерживаются переменные URL thumb/full)."
+
+#. replaceimgs_simple_progress.name
+msgid "Simple progress"
+msgstr "Простой прогресс"
+
+#. replaceimgs_simple_progress.description
+msgid "Uses a simpler progress bar that has a fixed size for all media. This is useful to see how many images are replaced, rather than the ETA"
+msgstr "Использует более простую шкалу прогресса, которая имеет фиксированный размер для всех медиа. Это полезно для того, чтобы увидеть, сколько изображений заменено, а не ждать."
+
+#. replaceimgs_enable_keybinding.name, highlightimgs_enable_keybinding.name
+msgid "Enable trigger key"
+msgstr "Включить клавишу действия"
+
+#. replaceimgs_enable_keybinding.description, highlightimgs_enable_keybinding.description
+msgid "Enables the use of the trigger key to run it without needing to use the menu"
+msgstr "Позволяет использовать клавишу действия для запуска без необходимости использования меню."
+
+#. replaceimgs_keybinding.name, highlightimgs_keybinding.name
+msgid "Trigger key"
+msgstr "Клавиша действия"
+
+#. highlightimgs_keybinding.description
+msgid "Trigger keybinding that will run the Highlight Images function"
+msgstr "Привязка клавиши действия, которое будет запускать функцию подсветки изображений."
+
+#. highlightimgs_enable.name
+msgid "Enable button"
+msgstr "Включить кнопку"
+
+#. highlightimgs_enable.description
+msgid "Enables the 'Highlight Images' button"
+msgstr "Включает кнопку 'Подсветить изображения'."
+
+#. highlightimgs_auto.name
+msgid "Automatically highlight images"
+msgstr "Автоподсвечивать изображения"
+
+#. highlightimgs_auto.description
+msgid "Automatically highlights images as you view pages"
+msgstr "Автоматически подсвечивает изображения при просмотре страниц."
+
+#. highlightimgs_auto.options.always.name, mouseover_enable_mask_styles2.options.always.name
+msgid "Always"
+msgstr "Постоянно"
+
+#. highlightimgs_auto.options.hover.name
+msgid "Hover"
+msgstr "Наведение"
+
+#. highlightimgs_auto.options.hover.description
+msgid "When hovering over an image"
+msgstr "При наведении курсора на изображение."
+
+#. highlightimgs_auto.options.never.name
+msgid "Never"
+msgstr "Никогда"
+
+#. highlightimgs_onlysupported.name
+msgid "Only explicitly supported images"
+msgstr "Только явно поддерживаемые изображения"
+
+#. highlightimgs_onlysupported.description
+msgid "Only highlights images that can be made larger or the original version can be found"
+msgstr "Подсвечивает только изображения, которые могут быть увеличены или можно найти их оригинальную версию."
+
+#. highlightimgs_css.name
+msgid "Highlight CSS"
+msgstr "CSS подсветка"
+
+#. highlightimgs_css.description
+msgid "CSS style to apply for highlight. See the documentation for Popup CSS style for more information (the thumb/full URL variables aren't supported here)"
+msgstr "Стилизация CSS, для применения к подсветке. Дополнительные сведения смотрите в документации 'Стилизация CSS всплывающего окна' (здесь не поддерживаются переменные URL thumb/full)."
+
+#. mouseover_open_behavior.name, t2_mouseover_open_behavior.name, t3_mouseover_open_behavior.name
+msgid "Mouseover popup action"
+msgstr "Действие всплывающего окна при наведение курсора"
+
+#. mouseover_open_behavior.description, t2_mouseover_open_behavior.description, t3_mouseover_open_behavior.description
+msgid "Determines how the mouseover popup will open"
+msgstr "Определяет, как откроётся всплывающее окно при наведении курсора мыши."
+
+#. mouseover_open_behavior.options.popup.name, mouseover_close_el_policy.options.popup.name, t2_mouseover_open_behavior.options.popup.name, t3_mouseover_open_behavior.options.popup.name
+msgid "Popup"
+msgstr "Всплывающее окно"
+
+#. mouseover_open_behavior.options.newtab.name, t2_mouseover_open_behavior.options.newtab.name, t3_mouseover_open_behavior.options.newtab.name
+msgid "New tab"
+msgstr "Новая вкладка"
+
+#. mouseover_open_behavior.options.newtab_bg.name, t2_mouseover_open_behavior.options.newtab_bg.name, t3_mouseover_open_behavior.options.newtab_bg.name
+msgid "New background tab"
+msgstr "Новая фоновая вкладка"
+
+#. mouseover_open_behavior.options.download.name, t2_mouseover_open_behavior.options.download.name, t3_mouseover_open_behavior.options.download.name
+msgid "Download"
+msgstr "Скачать"
+
+#. mouseover_open_behavior.options.copylink.name, t2_mouseover_open_behavior.options.copylink.name, t3_mouseover_open_behavior.options.copylink.name
+msgid "Copy link"
+msgstr "Копировать ссылку"
+
+#. mouseover_open_behavior.options.replace.name, t2_mouseover_open_behavior.options.replace.name, t3_mouseover_open_behavior.options.replace.name
+msgid "Replace"
+msgstr "Заменить"
+
+#. mouseover_allow_video.name, t2_mouseover_allow_video.name, t3_mouseover_allow_video.name
+msgid "Enable videos"
+msgstr "Включить видео"
+
+#. mouseover_allow_video.description, t2_mouseover_allow_video.description, t3_mouseover_allow_video.description
+msgid "Allows videos to be popped up"
+msgstr "Позволяет открывать всплывающеее окно для видео"
+
+#. mouseover_allow_audio.name, t2_mouseover_allow_audio.name, t3_mouseover_allow_audio.name
+msgid "Enable audio"
+msgstr "Включить аудио"
+
+#. mouseover_allow_audio.description, t2_mouseover_allow_audio.description, t3_mouseover_allow_audio.description
+msgid ""
+"Allows audio to be popped up. Currently experimental.\n"
+"This only applies to audio files. Videos that contains audio are supported regardless of this setting."
+msgstr ""
+"Позволяет открывать всплывающее окно для аудио. В настоящее время экспериментальный.\n"
+"Это относится только к аудиофайлам. Видео, содержащие аудио, поддерживаются независимо от этой настройки."
+
+#. mouseover_allow_hlsdash.name, t2_mouseover_allow_hlsdash.name, t3_mouseover_allow_hlsdash.name
+msgid "Allow HLS/DASH streams"
+msgstr "Разрешить потоки HLS/DASH"
+
+#. mouseover_allow_hlsdash.description, t2_mouseover_allow_hlsdash.description, t3_mouseover_allow_hlsdash.description
+msgid "Allows playback of HLS/DASH streams"
+msgstr "Позволяет воспроизводить потоки HLS/DASH."
+
+#. mouseover_allow_hlsdash.example_websites[0], t2_mouseover_allow_hlsdash.example_websites[0], t3_mouseover_allow_hlsdash.example_websites[0]
+msgid "Dailymotion"
+msgstr ""
+
+#. mouseover_allow_hlsdash.example_websites[1], t2_mouseover_allow_hlsdash.example_websites[1], t3_mouseover_allow_hlsdash.example_websites[1]
+msgid "Instagram (higher quality)"
+msgstr "Instagram (более высокое качество)"
+
+#. mouseover_allow_hlsdash.example_websites[2], t2_mouseover_allow_hlsdash.example_websites[2], t3_mouseover_allow_hlsdash.example_websites[2]
+msgid "Reddit"
+msgstr ""
+
+#. mouseover_allow_hlsdash.example_websites[3], t2_mouseover_allow_hlsdash.example_websites[3], t3_mouseover_allow_hlsdash.example_websites[3]
+msgid "YouTube (higher quality)"
+msgstr "YouTube (более высокое качество)"
