@@ -103,6 +103,9 @@ var start = function(userscript) {
 		"vi": "Vietnamese",
 		"xh": "Xhosa",
 		"zh": "Chinese",
+		"zh_CN": "Chinese",
+		"zh_HK": "Chinese (Hong Kong)",
+		"zh_TW": "Chinese (Taiwan)",
 		"zu": "Zulu"
 	};
 
@@ -112,6 +115,25 @@ var start = function(userscript) {
 		return;
 	}
 	var supported_languages_json = JSON.parse(supported_languages[1]);
+
+	var strings = userscript.match(/\n\tvar strings = ({[\s\S]+?});\n/);
+	if (!strings) {
+		console.error("Unable to find strings match in userscript");
+		return;
+	}
+
+	var strings_json = JSON.parse(strings[1]);
+
+	// add languages that only have descriptions
+	if (strings_json["$description$"]) {
+		var description = strings_json["$description$"];
+		for (const lang in description) {
+			if (supported_languages_json.indexOf(lang) < 0) {
+				supported_languages_json.push(lang);
+			}
+		}
+	}
+
 	const language_options = maximage.internal.settings_meta.language.options;
 	for (var supported_language of supported_languages_json) {
 		var old_supported_language = supported_language;
@@ -142,14 +164,6 @@ var start = function(userscript) {
 
 		pofiles[supported_language].push("");
 	}
-
-	var strings = userscript.match(/\n\tvar strings = ({[\s\S]+?});\n/);
-	if (!strings) {
-		console.error("Unable to find strings match in userscript");
-		return;
-	}
-
-	var strings_json = JSON.parse(strings[1]);
 
 	for (const string in strings_json) {
 		var string_data = strings_json[string];
@@ -202,8 +216,10 @@ var start = function(userscript) {
 
 			split_value(pofiles[pofile], "msgid", string);
 
-			if (pofile !== "imu" && pofile in string_data) {
-				split_value(pofiles[pofile], "msgstr", string_data[pofile]);
+			var langcode = util.to_langcode(pofile);
+
+			if (pofile !== "imu" && langcode in string_data) {
+				split_value(pofiles[pofile], "msgstr", string_data[langcode]);
 			} else {
 				pofiles[pofile].push("msgstr \"\"");
 			}
