@@ -192,25 +192,24 @@ var get_all_strings = function() {
 
 	fs.readdir("./po", function (err, files) {
 		files.forEach(function(file) {
-			var match = file.match(/^([-_a-zA-Z]+)\.po$/)
+			var match = file.match(/^([-_a-zA-Z]+)\.pot?$/)
 			if (!match)
 				return;
 
 			var langcode = match[1];
+
+			// for comments
+			var fake_lang = false;
+			if (langcode === "imu") {
+				langcode = "en";
+				fake_lang = true;
+			}
 
 			var real_langcode = util.to_langcode(langcode); // en_US -> en-US
 
 			var langstrings = read_po("./po/" + file);
 
 			for (var string in langstrings) {
-				if (string === "$language_native$") {
-					language_options[real_langcode] = langstrings[string];
-				}
-
-				if (string === "$description$") {
-					descriptions[real_langcode] = langstrings[string];
-				}
-
 				if (string.indexOf("#comment") >= 0) {
 					var real_string = string.replace(/#.*/, "");
 					if (!(real_string in strings)) strings[real_string] = {};
@@ -221,13 +220,25 @@ var get_all_strings = function() {
 					continue;
 				}
 
+				if (fake_lang)
+					continue;
+
+				if (string === "$language_native$") {
+					language_options[real_langcode] = langstrings[string];
+				}
+
+				if (string === "$description$") {
+					descriptions[real_langcode] = langstrings[string];
+				}
+
 				if (!(string in strings))
 					strings[string] = {};
 
-				strings[string][langcode] = langstrings[string];
+				strings[string][real_langcode] = langstrings[string];
 			}
 
-			supported_languages.push(real_langcode);
+			if (!fake_lang)
+				supported_languages.push(real_langcode);
 		});
 
 		update_userscript_strings(strings);
