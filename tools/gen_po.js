@@ -34,6 +34,7 @@ var start = function(userscript) {
         "en": "English",
         "es": "Spanish",
         "fr": "French",
+        "it": "Italian",
         "ko": "Korean",
         "ru": "Russian"
     };
