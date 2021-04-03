@@ -146,11 +146,24 @@ var update_userscript_language_options = function(languages) {
 	fs.writeFileSync(filename, userscript);
 };
 
+var update_userscript_description = function(languages) {
+	var filename = "userscript.user.js"
+	var userscript = fs.readFileSync(filename).toString();
+
+	for (var key in languages) {
+		var regex = new RegExp("(// @description:" + key + " +).*");
+		userscript = userscript.replace(regex, "$1" + languages[key]);
+	}
+
+	fs.writeFileSync(filename, userscript);
+};
+
 var get_all_strings = function() {
 	var strings = {};
 
 	var supported_languages = ["en"];
 	var language_options = {"_type": "combo", "en": "English"};
+	var descriptions = {};
 
 	fs.readdir("./po", function (err, files) {
 		files.forEach(function(file) {
@@ -159,13 +172,19 @@ var get_all_strings = function() {
 				return;
 
 			var langcode = match[1];
-			var real_langcode = langcode.replace(/_/, "-").toLowerCase(); // en_US -> en-us
+
+			var real_langcode = util.to_langcode(langcode); // en_US -> en-US
+
 			var langstrings = read_po("./po/" + file);
 
 			for (var string in langstrings) {
 				if (string === "$language_native$") {
 					language_options[real_langcode] = langstrings[string];
 					continue;
+				}
+
+				if (string === "$description$") {
+					descriptions[real_langcode] = langstrings[string];
 				}
 
 				if (!(string in strings))
@@ -180,6 +199,7 @@ var get_all_strings = function() {
 		update_userscript_strings(strings);
 		update_userscript_supported_languages(supported_languages);
 		update_userscript_language_options(language_options);
+		update_userscript_description(descriptions);
 	});
 };
 
