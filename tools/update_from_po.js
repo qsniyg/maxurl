@@ -246,6 +246,20 @@ var get_all_strings = function() {
 				supported_languages.push(real_langcode);
 		});
 
+		for (const string_name in strings) {
+			var string = strings[string_name];
+			if (!("_info" in string)) continue;
+			if (!("comments" in string._info)) continue;
+
+			var comments = string._info.comments;
+			if (!comments.en) continue;
+
+			for (const lang in comments) {
+				if (lang === "en") continue;
+				if (comments[lang] === comments.en) delete comments[lang];
+			}
+		}
+
 		update_userscript_strings(strings);
 		update_userscript_supported_languages(supported_languages);
 		update_userscript_language_options(language_options);
