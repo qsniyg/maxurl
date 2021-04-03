@@ -95,6 +95,8 @@ function update() {
 				in_strings = false;
 				var strings_json = JSON.parse("{" + strings_raw.join("\n") + "}");
 
+				delete strings_json["$description$"];
+
 				for (var string in strings_json) {
 					delete strings_json[string]._info;
 					if (Object.keys(strings_json[string]).length === 0) {
