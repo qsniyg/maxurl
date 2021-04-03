@@ -34,7 +34,8 @@ var start = function(userscript) {
         "en": "English",
         "es": "Spanish",
         "fr": "French",
-        "ko": "Korean"
+        "ko": "Korean",
+        "ru": "Russian"
     };
 
     var supported_languages = userscript.match(/\n\tvar supported_languages = (\[(?:\n\t{2}"[-a-zA-Z]+",?)*\n\t\]);\n/);
