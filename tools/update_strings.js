@@ -1,6 +1,23 @@
 var util = require("./util.js");
 var maximage = require("../userscript.user.js");
 
+var get_descriptions = function(strings) {
+	var descriptions = {};
+
+	var userscript = util.read_userscript();
+	var match_regex = /\/\/ @description:([-a-zA-Z]+) +(.*)/;
+	var matches = userscript.match(new RegExp(match_regex, "g"));
+	for (const match_str of matches) {
+		var match = match_str.match(match_regex);
+		descriptions[match[1]] = match[2];
+	}
+
+	for (const lang in descriptions) {
+		var value = descriptions[lang];
+		strings["$description$"][lang] = value;
+	}
+};
+
 var process_strings = function(internal) {
 	/*for (var string in strings) {
 		if (!("en" in strings[string])) {
@@ -236,6 +253,7 @@ var process_strings = function(internal) {
 
 var start = function() {
 	var strings = process_strings(maximage.internal);
+	get_descriptions(strings);
 	util.update_userscript_strings(strings);
 };
 
