@@ -141,16 +141,6 @@ var start = function(userscript) {
 		}
 
 		pofiles[supported_language].push("");
-
-		/*pofiles[supported_language].push("# Native language name (e.g. Français for French, 한국어 for Korean)")
-		pofiles[supported_language].push("msgid \"$language_native$\"");
-		if (supported_language !== "imu" && old_supported_language in language_options) {
-			split_value(pofiles[supported_language], "msgstr", language_options[old_supported_language].name);
-		} else {
-			pofiles[supported_language].push("msgstr \"\"");
-		}*/
-
-		//pofiles[supported_language].push("");
 	}
 
 	var strings = userscript.match(/\n\tvar strings = ({[\s\S]+?});\n/);
