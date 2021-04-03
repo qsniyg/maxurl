@@ -386,6 +386,12 @@ label, button, .button, select, .tab {
   user-select: none;
 }
 
+/* for wrapping */
+.tab {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
 #options button.small {
   margin: 2px 4px;
   padding: 4px 8px;
@@ -514,6 +520,7 @@ input:checked + label, button, .button, .dark .button, .button:visited, .dark .b
   text-align: center;
   margin: 50px 10px;
   margin-bottom: 30px;
+  max-width: 700px;
 }
 
 .tab {
@@ -742,6 +749,7 @@ input:checked + label, button, .button, .dark .button, .button:visited, .dark .b
 #options .disabled .requirements {
   margin-left: 1.5em;
   margin-top: 1em;
+  width: 30em;
 }
 
 .hidden {
