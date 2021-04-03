@@ -142,15 +142,15 @@ var start = function(userscript) {
 
 		pofiles[supported_language].push("");
 
-		pofiles[supported_language].push("# Native language name (e.g. Français for French, 한국어 for Korean)")
+		/*pofiles[supported_language].push("# Native language name (e.g. Français for French, 한국어 for Korean)")
 		pofiles[supported_language].push("msgid \"$language_native$\"");
 		if (supported_language !== "imu" && old_supported_language in language_options) {
 			split_value(pofiles[supported_language], "msgstr", language_options[old_supported_language].name);
 		} else {
 			pofiles[supported_language].push("msgstr \"\"");
-		}
+		}*/
 
-		pofiles[supported_language].push("");
+		//pofiles[supported_language].push("");
 	}
 
 	var strings = userscript.match(/\n\tvar strings = ({[\s\S]+?});\n/);
@@ -164,20 +164,43 @@ var start = function(userscript) {
 	for (const string in strings_json) {
 		var string_data = strings_json[string];
 
-		var comment = null;
-		if (string_data._info) {
-			comment = "#. ";
+		var comments = {};
+		for (const pofile in pofiles) comments[pofile] = [];
 
-			var instances_text = [];
-			for (const instance of string_data._info.instances) {
-				instances_text.push(instance.setting + "." + instance.field);
+		if (string_data._info) {
+			if (string_data._info.instances) {
+				var comment = "#. ";
+
+				var instances_text = [];
+				for (const instance of string_data._info.instances) {
+					instances_text.push(instance.setting + "." + instance.field);
+				}
+
+				comment += instances_text.join(", ");
+
+				for (const pofile in pofiles) {
+					comments[pofile].push(comment);
+				}
 			}
 
-			comment += instances_text.join(", ");
+			if (string_data._info.comments) {
+				var _comments = string_data._info.comments;
+
+				for (const pofile in pofiles) {
+					var comment = null;
+					var langcode = util.to_langcode(pofile);
+					if (langcode in _comments) comment = _comments[langcode];
+					else if ("en" in _comments) comment = _comments.en;
+
+					if (comment) {
+						comments[pofile].push("# " + comment.replace(/\r?\n/g, "\n# "));
+					}
+				}
+			}
 		}
 
 		for (const pofile in pofiles) {
-			if (comment) {
+			for (const comment of comments[pofile]) {
 				pofiles[pofile].push(comment);
 			}
 
