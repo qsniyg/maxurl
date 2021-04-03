@@ -1,4 +1,4 @@
-# it translations for Image Max URL
+# Italian translations for Image Max URL
 #
 msgid ""
 msgstr ""
@@ -184,6 +184,10 @@ msgstr ""
 
 #. language.options.ko.name
 msgid "한국어"
+msgstr ""
+
+#. language.options.ru.name
+msgid "Русский"
 msgstr ""
 
 #. dark_mode.name
@@ -2101,7 +2105,7 @@ msgid "Use cache"
 msgstr ""
 
 #. popup_allow_cache.description
-msgid "Allows use of a media cache for the popup"
+msgid "Allows use of a media cache for the popup. The cache is currently stored per-page and is not persistent across page reloads."
 msgstr ""
 
 #. popup_cache_duration.name

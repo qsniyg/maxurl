@@ -8,7 +8,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: ru\n"
 
-# Название родного языка (например, Français для французского языка, 한국어 для корейского)
+# Native language name (e.g. Français for French, 한국어 for Korean)
 msgid "$language_native$"
 msgstr "Русский"
 
@@ -185,6 +185,10 @@ msgstr "Итальянский"
 #. language.options.ko.name
 msgid "한국어"
 msgstr "Корейский"
+
+#. language.options.ru.name
+msgid "Русский"
+msgstr ""
 
 #. dark_mode.name
 msgid "Dark mode"
@@ -2155,8 +2159,8 @@ msgid "Use cache"
 msgstr "Использовать кэш"
 
 #. popup_allow_cache.description
-msgid "Allows use of a media cache for the popup"
-msgstr "Позволяет использовать медиа-кэш для всплывающих окон."
+msgid "Allows use of a media cache for the popup. The cache is currently stored per-page and is not persistent across page reloads."
+msgstr ""
 
 #. popup_cache_duration.name
 msgid "Cache duration"
