@@ -189,6 +189,12 @@ var start = function(userscript) {
 			}
 		}
 
+		if ("en" in string_data && string_data.en !== string) {
+			for (const pofile in pofiles) {
+				comments[pofile].push("#. English: " + string_data.en);
+			}
+		}
+
 		for (const pofile in pofiles) {
 			for (const comment of comments[pofile]) {
 				pofiles[pofile].push(comment);

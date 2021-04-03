@@ -12,15 +12,19 @@ msgstr ""
 msgid "$language_native$"
 msgstr "Italiano"
 
+#. English: Finds larger or original versions of images and videos for 7800+ websites, including a powerful media popup and download feature
 msgid "$description$"
 msgstr ""
 
+#. English: Options
 msgid "options_header"
 msgstr "Opzioni"
 
+#. English: Yes
 msgid "yes"
 msgstr "Sì"
 
+#. English: No
 msgid "no"
 msgstr "No"
 
@@ -33,78 +37,102 @@ msgstr "Esporta"
 msgid "Requires:"
 msgstr "Richiede"
 
+#. English: Redirection
 msgid "category_redirection"
 msgstr ""
 
+#. English: Popup
 msgid "category_popup"
 msgstr ""
 
+#. English: Updates
 msgid "subcategory_update"
 msgstr ""
 
+#. English: Settings
 msgid "subcategory_settings"
 msgstr ""
 
+#. English: UI
 msgid "subcategory_ui"
 msgstr ""
 
+#. English: Trigger
 msgid "subcategory_trigger"
 msgstr ""
 
+#. English: Source
 msgid "subcategory_popup_source"
 msgstr ""
 
+#. English: Open Behavior
 msgid "subcategory_open_behavior"
 msgstr ""
 
+#. English: Close Behavior
 msgid "subcategory_close_behavior"
 msgstr ""
 
+#. English: Popup Behavior
 msgid "subcategory_behavior"
 msgstr ""
 
+#. English: Video/Audio
 msgid "subcategory_video"
 msgstr ""
 
+#. English: Gallery
 msgid "subcategory_gallery"
 msgstr ""
 
+#. English: Other
 msgid "subcategory_popup_other"
 msgstr ""
 
+#. English: Cache
 msgid "subcategory_cache"
 msgstr ""
 
+#. English: Shortcuts
 msgid "category_keybinds"
 msgstr ""
 
+#. English: Popup actions
 msgid "subcategory_keybinds_popup_actions"
 msgstr ""
 
 msgid "Mouse cursor"
 msgstr "Sposta cursore"
 
+#. English: Rules
 msgid "category_rules"
 msgstr ""
 
+#. English: Rule-specific
 msgid "subcategory_rule_specific"
 msgstr ""
 
+#. English: Website
 msgid "category_website"
 msgstr ""
 
+#. English: Saved! Refresh the target page for changes to take effect
 msgid "saved_refresh_target"
 msgstr ""
 
+#. English: Saved!
 msgid "saved_no_refresh"
 msgstr ""
 
+#. English: Save
 msgid "save"
 msgstr ""
 
+#. English: Record
 msgid "record"
 msgstr ""
 
+#. English: Cancel
 msgid "cancel"
 msgstr ""
 
@@ -132,24 +160,31 @@ msgstr "Freccia sinistra"
 msgid "Right Arrow"
 msgstr "Freccia destra"
 
+#. English: Extension
 msgid "category_extension"
 msgstr ""
 
+#. English: Rotate Left
 msgid "rotate_left_btn"
 msgstr ""
 
+#. English: Rotate Right
 msgid "rotate_right_btn"
 msgstr ""
 
+#. English: Buttons
 msgid "category_extra"
 msgstr ""
 
+#. English: Replace Images
 msgid "subcategory_replaceimages"
 msgstr ""
 
+#. English: Highlight Images
 msgid "subcategory_highlightimages"
 msgstr ""
 
+#. English: General
 msgid "category_general"
 msgstr ""
 
@@ -488,6 +523,7 @@ msgid ""
 msgstr ""
 
 #. mouseover.name
+#. English: Enable image popup
 msgid "Enable mouseover popup"
 msgstr ""
 
@@ -496,6 +532,7 @@ msgid "Show a popup with the larger image when you mouseover an image with the t
 msgstr ""
 
 #. mouseover_trigger_behavior.name
+#. English: Popup trigger
 msgid "Mouseover popup trigger"
 msgstr ""
 
@@ -2815,6 +2852,7 @@ msgid "CSS style to apply for highlight. See the documentation for Popup CSS sty
 msgstr ""
 
 #. mouseover_open_behavior.name, t2_mouseover_open_behavior.name, t3_mouseover_open_behavior.name
+#. English: Popup action
 msgid "Mouseover popup action"
 msgstr ""
 

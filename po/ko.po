@@ -12,15 +12,19 @@ msgstr ""
 msgid "$language_native$"
 msgstr "한국어"
 
+#. English: Finds larger or original versions of images and videos for 7800+ websites, including a powerful media popup and download feature
 msgid "$description$"
 msgstr "7800개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다"
 
+#. English: Options
 msgid "options_header"
 msgstr "옵션"
 
+#. English: Yes
 msgid "yes"
 msgstr "예"
 
+#. English: No
 msgid "no"
 msgstr "아니오"
 
@@ -33,78 +37,102 @@ msgstr "내보내기"
 msgid "Requires:"
 msgstr "요구사항:"
 
+#. English: Redirection
 msgid "category_redirection"
 msgstr "리디렉션"
 
+#. English: Popup
 msgid "category_popup"
 msgstr "팝업"
 
+#. English: Updates
 msgid "subcategory_update"
 msgstr ""
 
+#. English: Settings
 msgid "subcategory_settings"
 msgstr ""
 
+#. English: UI
 msgid "subcategory_ui"
 msgstr ""
 
+#. English: Trigger
 msgid "subcategory_trigger"
 msgstr "트리거"
 
+#. English: Source
 msgid "subcategory_popup_source"
 msgstr ""
 
+#. English: Open Behavior
 msgid "subcategory_open_behavior"
 msgstr "열기 동작"
 
+#. English: Close Behavior
 msgid "subcategory_close_behavior"
 msgstr "닫기 동작"
 
+#. English: Popup Behavior
 msgid "subcategory_behavior"
 msgstr ""
 
+#. English: Video/Audio
 msgid "subcategory_video"
 msgstr "영상/오디오"
 
+#. English: Gallery
 msgid "subcategory_gallery"
 msgstr ""
 
+#. English: Other
 msgid "subcategory_popup_other"
 msgstr ""
 
+#. English: Cache
 msgid "subcategory_cache"
 msgstr ""
 
+#. English: Shortcuts
 msgid "category_keybinds"
 msgstr ""
 
+#. English: Popup actions
 msgid "subcategory_keybinds_popup_actions"
 msgstr ""
 
 msgid "Mouse cursor"
 msgstr "마우스 커서"
 
+#. English: Rules
 msgid "category_rules"
 msgstr "규칙"
 
+#. English: Rule-specific
 msgid "subcategory_rule_specific"
 msgstr ""
 
+#. English: Website
 msgid "category_website"
 msgstr "웹사이트"
 
+#. English: Saved! Refresh the target page for changes to take effect
 msgid "saved_refresh_target"
 msgstr "저장됩니다. 번경사항 적용하려면 대상 웹페이지 다시 로드하십시오"
 
+#. English: Saved!
 msgid "saved_no_refresh"
 msgstr "저장됩니다"
 
+#. English: Save
 msgid "save"
 msgstr "저장"
 
+#. English: Record
 msgid "record"
 msgstr ""
 
+#. English: Cancel
 msgid "cancel"
 msgstr "취소"
 
@@ -132,24 +160,31 @@ msgstr "왼쪽 화살표"
 msgid "Right Arrow"
 msgstr "오른쪽 화살표"
 
+#. English: Extension
 msgid "category_extension"
 msgstr ""
 
+#. English: Rotate Left
 msgid "rotate_left_btn"
 msgstr ""
 
+#. English: Rotate Right
 msgid "rotate_right_btn"
 msgstr ""
 
+#. English: Buttons
 msgid "category_extra"
 msgstr ""
 
+#. English: Replace Images
 msgid "subcategory_replaceimages"
 msgstr ""
 
+#. English: Highlight Images
 msgid "subcategory_highlightimages"
 msgstr ""
 
+#. English: General
 msgid "category_general"
 msgstr "일반"
 
@@ -488,6 +523,7 @@ msgid ""
 msgstr ""
 
 #. mouseover.name
+#. English: Enable image popup
 msgid "Enable mouseover popup"
 msgstr "이미지 팝업 사용"
 
@@ -496,6 +532,7 @@ msgid "Show a popup with the larger image when you mouseover an image with the t
 msgstr "트리거 키를 누른 상태로 영상을 마우스로 가리킬 때 더 큰 이미지로 팝업 표시 (가능한 경우)"
 
 #. mouseover_trigger_behavior.name
+#. English: Popup trigger
 msgid "Mouseover popup trigger"
 msgstr "팝업 트리거"
 
@@ -2815,6 +2852,7 @@ msgid "CSS style to apply for highlight. See the documentation for Popup CSS sty
 msgstr ""
 
 #. mouseover_open_behavior.name, t2_mouseover_open_behavior.name, t3_mouseover_open_behavior.name
+#. English: Popup action
 msgid "Mouseover popup action"
 msgstr "이미지 팝업 작업"
 
