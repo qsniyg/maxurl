@@ -12,6 +12,9 @@ msgstr ""
 msgid "$language_native$"
 msgstr "Français"
 
+msgid "$description$"
+msgstr "Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 7 800 sites web, y compris une puissante fonction de popup média"
+
 msgid "options_header"
 msgstr ""
 

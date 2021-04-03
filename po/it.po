@@ -12,6 +12,9 @@ msgstr ""
 msgid "$language_native$"
 msgstr "Italiano"
 
+msgid "$description$"
+msgstr ""
+
 msgid "options_header"
 msgstr "Opzioni"
 

@@ -12,6 +12,9 @@ msgstr ""
 msgid "$language_native$"
 msgstr "Español"
 
+msgid "$description$"
+msgstr "Encuentra imágenes más grandes y originales para más de 7800 sitios"
+
 msgid "options_header"
 msgstr "Opciones"
 

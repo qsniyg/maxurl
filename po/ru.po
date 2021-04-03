@@ -12,6 +12,9 @@ msgstr ""
 msgid "$language_native$"
 msgstr "Русский"
 
+msgid "$description$"
+msgstr "Находит увеличенные или оригинальные версии изображений для более чем 7800 веб-сайтов"
+
 msgid "options_header"
 msgstr "Параметры"
 

@@ -1,5 +1,6 @@
 const fs = require("fs");
 const maximage = require("../userscript.user.js");
+const util = require("./util.js");
 
 var split_value = function(lines, cmd, value) {
 	var splitted = value.split("\n");
@@ -117,12 +118,7 @@ var start = function(userscript) {
 		if (supported_language === "en") {
 			supported_language = "imu";
 		} else {
-			supported_language = supported_language.replace(/-/, "_");
-			var splitted = supported_language.split("_");
-			if (splitted.length === 2) {
-				splitted[1] = splitted[1].toUpperCase();
-				supported_language = splitted.join("_");
-			}
+			supported_language = util.to_pocode(supported_language);
 		}
 
 		pofiles[supported_language] = [];

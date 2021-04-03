@@ -9,6 +9,9 @@ msgstr ""
 msgid "$language_native$"
 msgstr ""
 
+msgid "$description$"
+msgstr ""
+
 msgid "options_header"
 msgstr ""
 

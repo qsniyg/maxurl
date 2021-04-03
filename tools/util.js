@@ -115,3 +115,24 @@ module.exports.indent = function(lines, indentation) {
 
 	return lines;
 };
+
+var lowerfirst_upperrest = function(splitted) {
+    splitted[0] = splitted[0].toLowerCase();
+    for (var i = 1; i < splitted.length; i++) {
+        splitted[i] = splitted[i].toUpperCase();
+    }
+};
+
+module.exports.to_langcode = function(langcode) {
+    langcode = langcode.replace(/_/, "-");
+    var splitted = langcode.split("-");
+    lowerfirst_upperrest(splitted);
+    return splitted.join("-");
+};
+
+module.exports.to_pocode = function(langcode) {
+    langcode = langcode.replace(/-/, "_");
+    var splitted = langcode.split("_");
+    lowerfirst_upperrest(splitted);
+    return splitted.join("_");
+}
