@@ -161,7 +161,7 @@ msgid "Right Arrow"
 msgstr "Flèche droite"
 
 #. English: Extension
-msgid "category_extension"
+msgid "subcategory_extension"
 msgstr ""
 
 #. English: Rotate Left

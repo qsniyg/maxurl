@@ -161,7 +161,7 @@ msgid "Right Arrow"
 msgstr "Стрелка вправо"
 
 #. English: Extension
-msgid "category_extension"
+msgid "subcategory_extension"
 msgstr "Расширения"
 
 #. English: Rotate Left
