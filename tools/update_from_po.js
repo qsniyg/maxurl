@@ -50,7 +50,7 @@ var parse = function(lines) {
 			continue;
 		}
 
-		if (!line.length) {
+		if (!line.length && current_command === "msgstr") {
 			apply_current();
 			continue;
 		}
