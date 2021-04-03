@@ -11,6 +11,7 @@ var parse = function(lines) {
 	var current_ref = null;
 	var current_command = null;
 	var current_text = null;
+	var current_comment = null;
 
 	var apply_current = function() {
 		if (current_command === "msgid") {
@@ -20,7 +21,13 @@ var parse = function(lines) {
 				console.error("msgstr without msgid?", current_command, current_text);
 			} else if (current_ref !== "") {
 				strings[current_ref] = current_text;
+
+				if (current_comment) {
+					strings[current_ref + "#comment"] = current_comment;
+				}
 			}
+
+			current_comment = null;
 		}
 
 		current_command = null;
@@ -30,7 +37,25 @@ var parse = function(lines) {
 	for (var i = 0; i < lines.length; i++) {
 		var line = lines[i];
 
-		if (!line.length || line[0] === "#")
+		var match = line.match(/^#\s+(.*)$/);
+		if (match) {
+			var comment = match[1];
+			if (current_comment) {
+				current_comment += "\n";
+			} else {
+				current_comment = "";
+			}
+
+			current_comment += comment;
+			continue;
+		}
+
+		if (!line.length) {
+			apply_current();
+			continue;
+		}
+
+		if (line[0] === "#")
 			continue;
 
 		var match = line.match(/^(msg(?:id|str)) (".*")\s*$/);
@@ -180,11 +205,20 @@ var get_all_strings = function() {
 			for (var string in langstrings) {
 				if (string === "$language_native$") {
 					language_options[real_langcode] = langstrings[string];
-					continue;
 				}
 
 				if (string === "$description$") {
 					descriptions[real_langcode] = langstrings[string];
+				}
+
+				if (string.indexOf("#comment") >= 0) {
+					var real_string = string.replace(/#.*/, "");
+					if (!(real_string in strings)) strings[real_string] = {};
+					if (!("_info" in strings[real_string])) strings[real_string]._info = {};
+					if (!("comments" in strings[real_string]._info)) strings[real_string]._info.comments = {};
+
+					strings[real_string]._info.comments[real_langcode] = langstrings[string];
+					continue;
 				}
 
 				if (!(string in strings))
