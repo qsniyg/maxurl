@@ -208,6 +208,7 @@ var get_all_strings = function() {
 			var real_langcode = util.to_langcode(langcode); // en_US -> en-US
 
 			var langstrings = read_po("./po/" + file);
+			var valid_strings = 0;
 
 			for (var string in langstrings) {
 				if (string.indexOf("#comment") >= 0) {
@@ -220,15 +221,19 @@ var get_all_strings = function() {
 					continue;
 				}
 
-				if (fake_lang)
+				if (fake_lang || !langstrings[string])
 					continue;
+
+				valid_strings++;
 
 				if (string === "$language_native$") {
 					language_options[real_langcode] = langstrings[string];
+					valid_strings--;
 				}
 
 				if (string === "$description$") {
 					descriptions[real_langcode] = langstrings[string];
+					valid_strings--;
 				}
 
 				if (!(string in strings))
@@ -237,7 +242,7 @@ var get_all_strings = function() {
 				strings[string][real_langcode] = langstrings[string];
 			}
 
-			if (!fake_lang)
+			if (!fake_lang && valid_strings > 0)
 				supported_languages.push(real_langcode);
 		});
 
