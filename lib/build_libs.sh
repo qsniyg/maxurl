@@ -25,7 +25,6 @@ echo "var lib_export = slowAES;" >> testcookie_slowaes.js
 cat shim.js >> testcookie_slowaes.js
 dos2unix testcookie_slowaes.js
 strip_whitespace testcookie_slowaes.js
-unix2dos testcookie_slowaes.js
 
 wget https://github.com/video-dev/hls.js/releases/download/v0.14.13/hls.js -O hls.js
 # 1/2: don't use window.XMLHttpRequest, in order to allow overriding it
@@ -37,11 +36,14 @@ sed -i \
 echo "" >> hls.js
 echo "var lib_export = this;" >> hls.js
 strip_whitespace hls.js
+dos2unix hls.js
 
 wget https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js -O cryptojs_aes.js
 echo "" >> cryptojs_aes.js
 echo "var lib_export = CryptoJS;" >> cryptojs_aes.js
 cat shim.js >> cryptojs_aes.js
+strip_whitespace cryptojs_aes.js
+dos2unix cryptojs_aes.js
 
 wget https://unpkg.com/mux.js@5.7.0/dist/mux.js -O mux.orig.js
 echo 'var muxjs=null;' > mux.lib.js
@@ -70,6 +72,8 @@ sed -i \
 	-e '/\/\/# sourceMappingURL=/d' shaka.debug.js
 echo 'var lib_export = exportTo.shaka;' >> shaka.debug.js
 cat shim.js >> shaka.debug.js
+dos2unix shaka.debug.js
+strip_whitespace shaka.debug.js
 
 to_uricomponent() {
 	cat "$@" | node -e 'var fs = require("fs"); var data = fs.readFileSync(0, "utf8"); process.stdout.write(encodeURIComponent(data));'
@@ -113,6 +117,7 @@ cat ffmpeg.min.orig.js >> ffmpeg.js
 echo "" >> ffmpeg.js
 echo "var lib_export = _fakeGlobal.FFmpeg;" >> ffmpeg.js
 cat shim.js >> ffmpeg.js
+dos2unix ffmpeg.js
 strip_whitespace ffmpeg.js
 
 wget https://unpkg.com/mpd-parser@0.15.0/dist/mpd-parser.js -O mpd-parser.js
@@ -129,6 +134,8 @@ cat mpd-parser.js m3u8-parser.js >> stream_parser.js
 echo "" >> stream_parser.js
 echo "var lib_export = { dash: _fakeGlobal.mpdParser, hls: _fakeGlobal.m3u8Parser };" >> stream_parser.js
 cat shim.js >> stream_parser.js
+dos2unix stream_parser.js
+strip_whitespace stream_parser.js
 
 wget https://raw.githubusercontent.com/Stuk/jszip/7c75dff02e729bd9985f15b560aa02944e14f238/dist/jszip.js -O jszip.orig.js
 sed -i \
@@ -142,6 +149,7 @@ cat jszip.orig.js >> jszip.js
 echo "" >> jszip.js
 echo "var lib_export = _fakeWindow.JSZip;" >> jszip.js
 cat shim.js >> jszip.js
+# dos2unix doesn't work because it's binary
 
 CLEANUP=1
 if [ $CLEANUP -eq 1 ]; then
