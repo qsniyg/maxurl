@@ -1368,6 +1368,14 @@ msgstr "팝업 설정 시, 초기 사용자 지정 확대/축소 비율"
 msgid "%"
 msgstr ""
 
+#. mouseover_zoom_use_last.name
+msgid "Use last zoom"
+msgstr ""
+
+#. mouseover_zoom_use_last.description
+msgid "Use the last popup's zoom. Note that this is per-page."
+msgstr ""
+
 #. mouseover_zoom_max_width.name
 msgid "Maximum width"
 msgstr "최대 가로 길이"
@@ -1452,7 +1460,7 @@ msgstr ""
 msgid "Pan"
 msgstr "이동"
 
-#. mouseover_scrolly_behavior.options.gallery.name, mouseover_scrollx_behavior.options.gallery.name
+#. mouseover_scrolly_behavior.options.gallery.name, mouseover_scrollx_behavior.options.gallery.name, mouseover_zoom_use_last.options.gallery.name
 msgid "Gallery"
 msgstr ""
 
@@ -1610,6 +1618,22 @@ msgstr ""
 
 #. mouseover_prevent_cursor_overlap.description
 msgid "Prevents the image from overlapping with the cursor"
+msgstr ""
+
+#. mouseover_overflow_position_center.name
+msgid "Center popup on overflow"
+msgstr ""
+
+#. mouseover_overflow_position_center.description
+msgid "Centers the popup if its initial size overflows"
+msgstr ""
+
+#. mouseover_overflow_origin.name
+msgid "Overflow origin"
+msgstr ""
+
+#. mouseover_overflow_origin.description
+msgid "Where the popup will appear in the page if its initial size overflows"
 msgstr ""
 
 #. mouseover_hide_cursor.name
@@ -2841,7 +2865,7 @@ msgstr ""
 msgid "Automatically highlights images as you view pages"
 msgstr ""
 
-#. highlightimgs_auto.options.always.name, mouseover_enable_mask_styles2.options.always.name
+#. highlightimgs_auto.options.always.name, mouseover_enable_mask_styles2.options.always.name, mouseover_zoom_use_last.options.always.name
 msgid "Always"
 msgstr ""
 
@@ -2853,7 +2877,7 @@ msgstr ""
 msgid "When hovering over an image"
 msgstr ""
 
-#. highlightimgs_auto.options.never.name
+#. highlightimgs_auto.options.never.name, mouseover_zoom_use_last.options.never.name
 msgid "Never"
 msgstr ""
 
