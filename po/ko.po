@@ -49,6 +49,10 @@ msgstr "팝업"
 msgid "subcategory_update"
 msgstr ""
 
+#. English: 3rd-party libraries
+msgid "subcategory_libraries"
+msgstr ""
+
 #. English: Settings
 msgid "subcategory_settings"
 msgstr ""
@@ -2234,6 +2238,24 @@ msgstr ""
 
 #. custom_xhr_for_lib.example_websites[2]
 msgid "Instagram (downloading)"
+msgstr ""
+
+#. use_webarchive_for_lib.name
+msgid "Use Web Archive for libraries"
+msgstr ""
+
+#. use_webarchive_for_lib.description
+msgid ""
+"Uses archive.org's web archive instead of github for libraries and other script internals (such as the options page).\n"
+"Don't enable this unless you need to."
+msgstr ""
+
+#. lib_integrity_check.name
+msgid "Enable integrity checks"
+msgstr ""
+
+#. lib_integrity_check.description
+msgid "Runs integrity checks before loading 3rd-party libraries"
 msgstr ""
 
 #. hls_dash_use_max.name
