@@ -461,12 +461,12 @@ msgid "Use a GET request to check an image's availability, if the server does no
 msgstr "Будет использоваться GET-запрос для проверки доступности изображения, если сервер не поддерживает запросы HEAD."
 
 #. redirect_force_page.name
-msgid "Try finding original page/caption"
-msgstr "Пытаться найти оригинальную страницу/подпись"
+msgid "Try finding extra information"
+msgstr ""
 
 #. redirect_force_page.description
-msgid "Enables methods that use API calls for finding the original page or caption. Note that this option does not affect finding the original media."
-msgstr "Включает методы, использующие вызовы API для поиска исходной страницы или подписи. Обратите внимание, что этот параметр не влияет на поиск исходного медиа."
+msgid "Enables methods that use API calls for finding extra information, such as the original page, caption, or album information. Note that this option does not affect finding the original media."
+msgstr ""
 
 #. redirect_force_page.example_websites[1]
 msgid "SmugMug"

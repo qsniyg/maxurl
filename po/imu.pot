@@ -458,11 +458,11 @@ msgid "Use a GET request to check an image's availability, if the server does no
 msgstr ""
 
 #. redirect_force_page.name
-msgid "Try finding original page/caption"
+msgid "Try finding extra information"
 msgstr ""
 
 #. redirect_force_page.description
-msgid "Enables methods that use API calls for finding the original page or caption. Note that this option does not affect finding the original media."
+msgid "Enables methods that use API calls for finding extra information, such as the original page, caption, or album information. Note that this option does not affect finding the original media."
 msgstr ""
 
 #. redirect_force_page.example_websites[1]
