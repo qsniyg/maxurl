@@ -8,7 +8,12 @@
 // @name:el           Image Max URL
 // @name:eo           Image Max URL
 // @name:es           Image Max URL
+// @name:fi           Image Max URL
 // @name:fr           Image Max URL
+// @name:fr-CA        Image Max URL
+// @name:he           Image Max URL
+// @name:hu           Image Max URL
+// @name:id           Image Max URL
 // @name:ko           Image Max URL
 // @name:ja           Image Max URL
 // @name:ru           Image Max URL
@@ -18,8 +23,8 @@
 // @name:zh-CN        Image Max URL
 // @name:zh-TW        Image Max URL
 // @name:zh-HK        Image Max URL
-// @description       Finds larger or original versions of images and videos for 7800+ websites, including a powerful media popup feature
-// @description:en    Finds larger or original versions of images and videos for 7800+ websites, including a powerful media popup feature
+// @description       Finds larger or original versions of images and videos for 7800+ websites, including a powerful media popup and download feature
+// @description:en    Finds larger or original versions of images and videos for 7800+ websites, including a powerful media popup and download feature
 // @description:ar    البحث عن نسخ أكبر أو أصلية من الصور لأكثر من 7800 موقع ويب
 // @description:cs    Vyhledá větší nebo původní verze obrázků a videí pro více než 7800 webů
 // @description:da    Finder større eller originale versioner af billeder og videoer til mere end 7800 websteder
@@ -27,7 +32,12 @@
 // @description:el    Βρίσκει μεγαλύτερες ή πρωτότυπες εκδόσεις εικόνων και βίντεο για περισσότερους από 7800 ιστότοπους
 // @description:eo    Trovas pli grandajn aŭ originalajn versiojn de bildoj kaj filmetoj por pli ol 7800 retejoj
 // @description:es    Encuentra imágenes más grandes y originales para más de 7800 sitios
+// @description:fi    Etsii suurempia tai alkuperäisiä versioita kuvista ja videoista yli 7800 verkkosivustolle
 // @description:fr    Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 7 800 sites web, y compris une puissante fonction de popup média
+// @description:fr-CA Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 7 800 sites web, y compris une puissante fonction de popup média
+// @description:he    מוצא גרסאות גדולות יותר או מקוריות של תמונות וסרטונים עבור יותר מ-7800 אתרים
+// @description:hu    Több mint 7800 webhely képének és videóinak nagyobb vagy eredeti változatát találja
+// @description:id    Menemukan versi gambar dan video yang lebih besar atau orisinal untuk lebih dari 7800 situs web
 // @description:ko    7800개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
 // @description:ja    7800以上のウェブサイトで高画質や原本画像を見つけ出します
 // @description:ru    Находит увеличенные или оригинальные версии изображений для более чем 7800 веб-сайтов
@@ -38,7 +48,7 @@
 // @description:zh-TW 為7800多個網站查找更大或原始圖像
 // @description:zh-HK 為7800多個網站查找更大或原始圖像
 // @namespace         http://tampermonkey.net/
-// @version           0.18.1
+// @version           0.18.2
 // @author            qsniyg
 // @homepageURL       https://qsniyg.github.io/maxurl/options.html
 // @supportURL        https://github.com/qsniyg/maxurl/issues

@@ -1,3 +1,30 @@
+0.18.2
+
+New features:
+
+ * Russian translation (thanks to vanja-san)
+ * Option to control popup origin when overflowing (set to middle by default)
+ * Option to center the popup on overflow (disabled by default)
+ * Option to use last zoom (#701, set to albums by default, thanks to Michael82548 for the idea)
+ * Option for userscript to use web archive to load libraries (disabled by default)
+ * Option for userscript to toggle integrity checks for libraries (enabled by default)
+ * Support for ~25 new websites (using ~15 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including Discogs, Soundcloud, TikTok)
+ * Various improvements to the translation framework
+ * Various improvements to the options page
+ * Support importing settings from a URL
+
+Bugfixes:
+
+ * Fix "Page middle" popup position when overflowing
+
+Special thanks to vanja-san, AdClear247, Regis, PatPanacea, fedesk, rEnr3n, alessio89g, Michael82548, llacb47, Broly for their contributions and reports for this release
+
+---
+
 0.18.1
 
 New features:

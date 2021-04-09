@@ -519,6 +519,7 @@ assets.wonderlandmagazine.com
 assets.yande.re
 assets.yandycdn.com
 assets.yesstud.io
+assetsadobe.com
 assetsadobe2.com
 astro-austral.cl
 astro-image-resizer.s3.amazonaws.com
@@ -570,6 +571,7 @@ awanshop.co
 aws-cf.caradisiac.com
 aws-cf.imdoc.fr
 aws-foto.amateri.com
+aws.glamour.es
 aws.glamour.mx
 aws.revistavanityfair.es
 awsimages.detik.net.id
@@ -736,6 +738,7 @@ blackporn24.com
 blaqsbi.com
 blastingcdn.com
 blaxup.in
+blendermarket.com
 bliasak.bg
 blick.ch
 blob.freent.de
@@ -790,8 +793,10 @@ boobieblog.com
 boobz.dk
 book.com.tw
 book.interpark.com
+booker-small-2-fk.s3.amazonaws.com
 booklikes.com
 books.com.tw
+booksamillion.com
 bookshow.blurb.com
 booktrust.org.uk
 boombj.com
@@ -863,6 +868,7 @@ bw-1651cf0d2f737d7adeab84d339dbabd3-bcs.s3.amazonaws.com
 bw-1651cf0d2f737d7adeab84d339dbabd3-gallery.s3.amazonaws.com
 bytecdn.cn
 byteimg.com
+bytexservice.com
 bz-berlin.de
 bzqzsj.com
 c-ctrip.com
@@ -1110,6 +1116,7 @@ cdn.lesilla.filoblu.com
 cdn.letrasdemusicas.fm
 cdn.lifebuzz.com
 cdn.lipscosme.com
+cdn.livedoor.jp
 cdn.livesport.ru
 cdn.locals.com
 cdn.macrumors.com
@@ -1470,6 +1477,7 @@ cmsimg.mnet.com
 cmtimg.melon.co.kr
 cn.opendesktop.org
 cnbnews.com
+cnet.com
 cnnturk.com
 cocacolabrasil.com.br
 coconala.akamaized.net
@@ -1570,6 +1578,7 @@ creepmachine.com
 crhoy.net
 criturk.com
 crnobelo.com
+cropper.watch.aetnd.com
 crosti.ru
 crunchyroll.com
 cryengine.com
@@ -1602,6 +1611,7 @@ d.line-scdn.net
 d.newsweek.com
 d10ukrc8bht4o0.cloudfront.net
 d111vui60acwyt.cloudfront.net
+d1231c29xbpffx.cloudfront.net
 d12swbtw719y4s.cloudfront.net
 d13krdvwknzmgv.cloudfront.net
 d13vpcwfpcq1p8.cloudfront.net
@@ -1687,6 +1697,7 @@ d3373orltkomw3.cloudfront.net
 d33mzpnc91f49u.cloudfront.net
 d33veqcui7lu1w.cloudfront.net
 d343xr8tqpm2fx.cloudfront.net
+d3525k1ryd2155.cloudfront.net
 d36tnp772eyphs.cloudfront.net
 d38c5dutwb1t0j.cloudfront.net
 d395qfwg4461au.cloudfront.net
@@ -1761,6 +1772,7 @@ databasegdriveplayer.me
 databasegdriveplayer.xyz
 datanet.co.kr
 dato.porn
+datocms-assets.com
 daum.net
 daumcdn.net
 davidrevoy.com
@@ -1856,6 +1868,7 @@ dingyue.ws.126.net
 diode.zone
 directgardening.com
 disco-api.com
+discogs.com
 discord.com
 discordapp.com
 discordapp.net
@@ -1913,6 +1926,7 @@ dot.asahi.com
 dotemirates-media.s3.amazonaws.com
 doubanio.com
 doublage.qc.ca
+douyinpic.com
 down.humoruniv.org
 download-rooz.com
 download.iask.ca
@@ -3383,6 +3397,7 @@ images.in.com
 images.indianexpress.com
 images.indulgexpress.com
 images.interactives.dk
+images.internetstores.de
 images.jg-cdn.com
 images.jkn.co.kr
 images.jovempanfm.uol.com.br
@@ -3825,6 +3840,7 @@ img.purch.com
 img.qdaily.com
 img.r7.com
 img.reblog.hu
+img.redbull.com
 img.resized.co
 img.richestcelebrities.org
 img.rtvslo.si
@@ -4124,6 +4140,7 @@ jacquieetmicheltv2.net
 jagranimages.com
 jaiminisbox.com
 japan-whores.com
+japan.cnet.com
 japanator.com
 japanesebeauties.net
 japanesegirl-4you.com
@@ -4221,6 +4238,7 @@ kaixian.tv
 kakao.co.kr
 kakaocdn.net
 kakaoimg.melon.co.kr
+kake.images.worldnow.com
 kakprosto.ru
 kan.china.com
 kanal24.az
@@ -4693,6 +4711,7 @@ media.karousell.com
 media.karups.com
 media.kg-portal.ru
 media.kleinezeitung.at
+media.kohlsimg.com
 media.korea25.com
 media.lamsao.com
 media.laodong.vn
@@ -5538,6 +5557,7 @@ photos.geni.com
 photos.hancinema.net
 photos.imageevent.com
 photos.laineygossip.com
+photos.mandarinoriental.com
 photos.modelmayhem.com
 photos.smugmug.com
 photos.stories-porno.net
@@ -5776,6 +5796,7 @@ postervdom.ru
 postila.ru
 postimg.cc
 povarenok.ru
+powells.com
 powr-media.com
 ppe.pl
 ppstatic.pl
@@ -5975,6 +5996,7 @@ refinery29.com
 reforma.com
 regmedia.co.uk
 reho.st
+rei.com
 rejob-v2-images-production.s3.amazonaws.com
 religionpeace.ru
 relook.ru
@@ -7106,6 +7128,7 @@ topwam.com
 torrenthaja.com
 totalworld.s3.amazonaws.com
 tour-rest.ru
+toutiaoimg.com
 tower.jp
 townnews.com
 townsquare.media
