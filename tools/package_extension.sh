@@ -305,7 +305,7 @@ if [ ! -z $RELEASE ]; then
     echo ' * Ensure translation strings are updated'
     echo ' * Ensure xx00+ count is updated (userscript - greasyfork/oujs, reddit post, mozilla/opera, website)'
     echo ' * Ensure CHANGELOG.txt is updated'
-    echo ' * git add userscript.user.js userscript_smaller.user.js userscript.meta.js CHANGELOG.txt build/userscript_extr.user.js manifest.json sites.txt'
+    echo ' * git add userscript.user.js userscript_smaller.user.js userscript.meta.js CHANGELOG.txt build/userscript_extr.user.js build/userscript_extr_min.user.js manifest.json sites.txt'
     echo ' * git commit ('$USERVERSION')'
     echo ' * Update greasyfork, oujs, firefox, opera, changelog.txt'
     echo ' * git tag v'$USERVERSION
