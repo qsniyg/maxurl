@@ -2548,12 +2548,12 @@ msgstr ""
 msgid "onlinetik.com"
 msgstr ""
 
-#. tiktok_thirdparty.options.tiktokdownloader.in:ttt.name
-msgid "tiktokdownloader.in"
+#. tiktok_thirdparty.options.tikdowns.com:ttt.name
+msgid "tikdowns.com"
 msgstr ""
 
-#. tiktok_thirdparty.options.savevideo.ninja:ttt.name
-msgid "savevideo.ninja"
+#. tiktok_thirdparty.options.ssstiktok.net:ttt.name
+msgid "ssstiktok.net"
 msgstr ""
 
 #. tiktok_thirdparty.options.keeptiktok.com.name
