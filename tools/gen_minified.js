@@ -55,7 +55,7 @@ var out_filename = "build/userscript_extr_min.user.js";
 var reserved = ["$__imu_get_bigimage"];
 
 console.log("Minifying...");
-var prc = spawn("uglifyjs", ['-m', 'reserved=' + JSON.stringify(reserved), '-c', '-o', out_filename, '--', in_filename], {stdio: "inherit"});
+var prc = spawn("uglifyjs", ['-m', '-c', '-o', out_filename, '--', in_filename], {stdio: "inherit"});
 prc.on('close', function(code) {
 	console.log("Finished minifying");
 	if (code !== 0) {
