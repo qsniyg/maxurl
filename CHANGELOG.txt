@@ -1,3 +1,21 @@
+0.18.3
+
+New features:
+
+ * Support for ~15 new websites (using ~15 new rules)
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including Amazon)
+
+Bugfixes:
+
+ * Fix trigger failing to work due to trigger behavior being modified (thanks to anonamouse on discord for reporting)
+
+Special thanks to fireattack, anonamouse, remlap, Brendan Castaneda, Zui for their contributions and reports for this release
+
+---
+
 0.18.2
 
 New features:

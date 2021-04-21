@@ -49,7 +49,7 @@
 // @description:zh-TW 為7800多個網站查找更大或原始圖像
 // @description:zh-HK 為7800多個網站查找更大或原始圖像
 // @namespace         http://tampermonkey.net/
-// @version           0.18.2
+// @version           0.18.3
 // @author            qsniyg
 // @homepageURL       https://qsniyg.github.io/maxurl/options.html
 // @supportURL        https://github.com/qsniyg/maxurl/issues
@@ -85,7 +85,7 @@
 //  Note that jsdelivr.net might not always be reliable, but (AFAIK) this is the only reasonable option from what greasyfork allows.
 //  I'd recommend using the Github version of the script if you encounter any issues (linked in the 'Project links' section below).
 //
-// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@bd41e3b9329562b7f5b188d277b9f9c87c8d2d02/build/rules.js
+// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@cce3739b4a1c6655a895ea2413290614fde236bd/build/rules.js
 // ==/UserScript==
 
 // If you see "A userscript wants to access a cross-origin resource.", it's used for:
@@ -9638,6 +9638,18 @@ var $$IMU_EXPORT$$;
 		return ((n % m) + m) % m;
 	}
 
+	var string_to_int = function(str, alpha) {
+		var base = 0;
+
+		for (var i = 0; i < str.length; i++) {
+			var index = string_indexof(alpha, str[i]);
+			base *= alpha.length;
+			base += index;
+		}
+
+		return base;
+	};
+
 	// unused, but likely useful
 	function urlsplit(a) {
 		var protocol_split = a.split("://");
@@ -16589,13 +16601,13 @@ var $$IMU_EXPORT$$;
 	                    data: bigimage_obj,
 	                    message: "Unable to get bigimage function"
 	                };
-	            } else if (bigimage_obj.nonce !== "7i73lo2njd983152") {
+	            } else if (bigimage_obj.nonce !== "2p1i02413n4nf110") {
 	                // This could happen if for some reason the userscript manager updates the userscript,
 	                // but not the required libraries.
 	                require_rules_failed = {
 	                    type: "bad_nonce",
 	                    data: bigimage_obj.nonce,
-	                    message: "Bad nonce, expected: " + "7i73lo2njd983152"
+	                    message: "Bad nonce, expected: " + "2p1i02413n4nf110"
 	                };
 	            } else {
 	                bigimage = bigimage_obj.bigimage;
@@ -18828,13 +18840,15 @@ var $$IMU_EXPORT$$;
 					return err_cb(reason, true);
 				}
 
+				var trigger_behavior = get_single_setting("mouseover_trigger_behavior");
+
 				var mouseover;
 				if (!settings.mouseover) {
 					mouseover = "disabled";
-				} else if (settings.mouseover_trigger_behavior === "keyboard") {
+				} else if (trigger_behavior === "keyboard") {
 					// todo: maybe _t2 etc. too?
 					mouseover = get_trigger_key_text(settings.mouseover_trigger_key);
-				} else if (settings.mouseover_trigger_behavior === "mouse") {
+				} else if (trigger_behavior === "mouse") {
 					mouseover = "delay " + settings.mouseover_trigger_delay + "s";
 				}
 
@@ -28711,7 +28725,7 @@ var $$IMU_EXPORT$$;
 			if (typeof delay === "number" && delay >= 10)
 				delay = 10;
 
-			if (settings.mouseover_trigger_behavior === "mouse") {
+			if (get_single_setting("mouseover_trigger_behavior") === "mouse") {
 				delay_mouseonly = true;
 			} else {
 				delay = false;
@@ -31743,7 +31757,7 @@ var $$IMU_EXPORT$$;
 			}
 
 			if (settings.mouseover) {
-				if (settings.mouseover_trigger_behavior === "keyboard") {
+				if (get_single_setting("mouseover_trigger_behavior") === "keyboard") {
 					var triggers = [settings.mouseover_trigger_key];
 
 					for (var i = 0; i < num_profiles; i++) {
