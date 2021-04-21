@@ -36,7 +36,7 @@ fi
 if [ ! -z $RELEASE ]; then
     if [ -f ./tools/gen_minified.js ]; then
         node ./tools/gen_minified.js
-        MINVERSION=`get_userscript_version userscript_min.user.js`
+        MINVERSION=`get_userscript_version build/userscript_extr_min.user.js`
 
         if [ "$MINVERSION" != "$USERVERSION" ]; then
             echo 'Conflicting versions (userscript and minified)'
