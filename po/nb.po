@@ -1,4 +1,4 @@
-# Italian translations for Image Max URL
+# Norwegian translations for Image Max URL
 #
 msgid ""
 msgstr ""
@@ -6,36 +6,36 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: it\n"
+"Language: nb\n"
 
 # Native language name (e.g. Français for French, 한국어 for Korean)
 msgid "$language_native$"
-msgstr "Italiano"
+msgstr ""
 
 #. English: Finds larger or original versions of images and videos for 7800+ websites, including a powerful media popup and download feature
 msgid "$description$"
-msgstr "Trova versioni più grandi o originali di immagini e video per oltre 7800 siti web"
+msgstr "Finner større eller originale versjoner av bilder og videoer for mer enn 7800 nettsteder"
 
 #. English: Options
 msgid "options_header"
-msgstr "Opzioni"
+msgstr ""
 
 #. English: Yes
 msgid "yes"
-msgstr "Sì"
+msgstr ""
 
 #. English: No
 msgid "no"
-msgstr "No"
+msgstr ""
 
 msgid "Import"
-msgstr "Importa"
+msgstr ""
 
 msgid "Export"
-msgstr "Esporta"
+msgstr ""
 
 msgid "Requires:"
-msgstr "Richiede"
+msgstr ""
 
 #. English: Redirection
 msgid "category_redirection"
@@ -106,7 +106,7 @@ msgid "subcategory_keybinds_popup_actions"
 msgstr ""
 
 msgid "Mouse cursor"
-msgstr "Sposta cursore"
+msgstr ""
 
 #. English: Rules
 msgid "category_rules"
@@ -141,7 +141,7 @@ msgid "cancel"
 msgstr ""
 
 msgid "Mouseover popup (%%1) is needed to display the original version"
-msgstr "Il popup del mouse (%%1) serve a mostrare la versione originale"
+msgstr ""
 
 msgid "custom headers"
 msgstr ""
@@ -150,19 +150,19 @@ msgid "forces download"
 msgstr ""
 
 msgid "Close"
-msgstr "Chiudi"
+msgstr ""
 
 msgid "Previous"
-msgstr "Precedente"
+msgstr ""
 
 msgid "Next"
-msgstr "Prossimo"
+msgstr ""
 
 msgid "Left Arrow"
-msgstr "Freccia sinistra"
+msgstr ""
 
 msgid "Right Arrow"
-msgstr "Freccia destra"
+msgstr ""
 
 #. English: Extension
 msgid "subcategory_extension"
@@ -194,19 +194,19 @@ msgstr ""
 
 #. imu_enabled.name
 msgid "Enable extension"
-msgstr "Abilita estensione"
+msgstr ""
 
 #. imu_enabled.description
 msgid "Globally enables or disables the extension"
-msgstr "Abilita o disabilita globalmente l'estensione"
+msgstr ""
 
 #. language.name
 msgid "Language"
-msgstr "Lingua"
+msgstr ""
 
 #. language.description
 msgid "Language for this extension"
-msgstr "Lingua per questa estensione"
+msgstr ""
 
 #. language.options.en.name
 msgid "English"
@@ -234,27 +234,27 @@ msgstr ""
 
 #. dark_mode.name
 msgid "Dark mode"
-msgstr "Modalità scura"
+msgstr ""
 
 #. dark_mode.description
 msgid "Changes the colors to have light text on a dark background"
-msgstr "Cambia i colori per avere testo chiaro su sfondo scuro"
+msgstr ""
 
 #. settings_visible_description.name
 msgid "Description below options"
-msgstr "Descrizione sotto le opzioni"
+msgstr ""
 
 #. settings_visible_description.description
 msgid "Shows the description below the options (otherwise the description is only shown when you hover over the option's name)"
-msgstr "Mostra la descrizione sotto le opzioni (alternativamente, la descrizione viene mostrata solo quando il mouse si trova sopra il nome dell'opzione)"
+msgstr ""
 
 #. settings_show_disabled.name
 msgid "Show disabled options"
-msgstr "Mostra opzioni inattive"
+msgstr ""
 
 #. settings_show_disabled.description
 msgid "If disabled, options that are disabled due to their requirements being unmet will not be displayed"
-msgstr "Se inattivo, le opzioni che sono inattive a causa dei loro requisiti necessari non raggiunti non verranno mostrate"
+msgstr ""
 
 #. settings_show_disabled_profiles.name
 msgid "Show disabled trigger profiles"
