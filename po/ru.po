@@ -1982,6 +1982,22 @@ msgstr "Клавиша скачивания галереи"
 msgid "Key to download the current gallery"
 msgstr "Клавиша для скачивания текущей галереи."
 
+#. gallery_download_method.name
+msgid "Download method"
+msgstr ""
+
+#. gallery_download_method.description
+msgid "How the gallery should be downloaded"
+msgstr ""
+
+#. gallery_download_method.options.zip.name
+msgid "Zip file"
+msgstr ""
+
+#. gallery_download_method.options.jdownloader.name
+msgid "JDownloader"
+msgstr ""
+
 #. gallery_download_unchanged.name
 msgid "Download unchanged media"
 msgstr "Скачивать медиа без изменений"
@@ -1991,20 +2007,16 @@ msgid "Includes gallery items that have not been changed. Useful to potentially 
 msgstr "Включает в себя элементы галереи, которые не были изменены. Полезно, чтобы потенциально избежать скачивания миниатюр."
 
 #. gallery_zip_filename_format.name
-msgid "Zip: Filename format"
-msgstr "Zip: Формат имени файла"
+msgid "Directory/zip filename format"
+msgstr ""
 
 #. gallery_zip_filename_format.description
 msgid ""
-"Format string(s) for the zip filename.\n"
+"Format string(s) for the directory (package name for JDownloader) and zip filename (if applicable).\n"
 "Refer to \"Filename format\" under the Rules section for documentation. The variables are set from the first loaded media.\n"
 "An additional `items_amt` format variable is supported, which contains the number of items.\n"
-"`.zip` will be automatically suffixed if it's missing."
+"`.zip` will be automatically suffixed for zip filenames."
 msgstr ""
-"Формат строки(строк) для zip-файла.\n"
-"Смотрите в документации «Формат имени файла» в разделе «Правила». Переменные задаются с первого загруженного медиа.\n"
-"Поддерживается дополнительная переменная формата `items_amt`, которая содержит количество элементов.\n"
-"`.zip` будет автоматически суффиксован, если он отсутствует."
 
 #. gallery_zip_add_tld.name
 msgid "Zip: Store in subdirectory"
@@ -2013,6 +2025,14 @@ msgstr "Zip: Хранить в подкаталоге"
 #. gallery_zip_add_tld.description
 msgid "Stores the files in a subdirectory with the same name as the .zip file (without the .zip extension)"
 msgstr "Хранит файлы в подкаталоге с тем же именем, что и zip-файл (без расширения .zip)."
+
+#. gallery_jd_autostart.name
+msgid "JD: Autostart"
+msgstr ""
+
+#. gallery_jd_autostart.description
+msgid "Autostarts the download when added to JDownloader"
+msgstr ""
 
 #. gallery_zip_add_info_file.name
 msgid "Zip: Store info file"
@@ -2731,11 +2751,15 @@ msgid ""
 "<li><code>caption</code> - Popup caption</li>\n"
 "<li><code>author_username</code> - Author's username</li>\n"
 "<li><code>id</code> - Post ID</li>\n"
+"<li><code>host_title</code> - Title of the current tab/window</li>\n"
+"<li><code>host_url</code> - URL of the host webpage</li>\n"
 "<li><code>host_domain</code> - Domain of the host webpage</li>\n"
 "<li><code>host_domain_nosub</code> - Domain (without subdomains) of the host webpage</li>\n"
+"<li><code>url</code> - URL of the media</li>\n"
 "<li><code>domain</code> - Domain of the media</li>\n"
 "<li><code>domain_nosub</code> - Domain (without subdomains) of the media</li>\n"
 "<li><code>is_screenshot</code> - Blank, the line will only be processed when screenshotting a video</li>\n"
+"<li><code>prefix</code>, <code>suffix</code> - Blank by default, these variables will be automatically prefixed/suffixed to the filename if set using <code>:=</code></li>\n"
 "<li><code>created_...</code> - Created date (see note on Date objects below)</li>\n"
 "<li><code>updated_...</code> - Updated date, this will use the <code>Last-Modified</code> header if not otherwise specified by the rule (see note on Date objects below)</li>\n"
 "<li><code>download_...</code> - Download date (see note on Date objects below)</li>\n"
@@ -2752,7 +2776,19 @@ msgid ""
 "</ul><br />\n"
 "<p>You can check for equality and inequality with <code>==</code> and <code>!=</code> operators respectively. For example:</p>\n"
 "<ul><br />\n"
-"<li><code>{domain_nosub==cdninstagram.com}</code> - Will only run the current format if the domain is cdninstagram.com</li>\n"
+"<li><code>{domain_nosub==cdninstagram.com}{author_username} {id}</code> - Will only run the current format (<code>{author_username} {id}</code> in this case) if the domain is cdninstagram.com</li>\n"
+"</ul><br />\n"
+"<p>You can check if a variable contains a string with <code>/=</code> (<code>!/=</code> for the opposite). It also supports two flags, <code>r</code> (regex) and <code>c</code> (case-sensitive), if added between <code>/</code> and <code>=</code>. For example:</p>\n"
+"<ul><br />\n"
+"<li><code>{domain/=instagram}{id}</code> - Will only run the current format (<code>{id}</code>) if the domain contains <code>instagram</code></li>\n"
+"<li><code>{domain!/=instagram}{id}</code> - Likewise, but only if the domain does not contain <code>instagram</code></li>\n"
+"<li><code>{domain/r=inst.*ram}{id}</code> - Likewise, but only if the domain matches the regex <code>inst.*ram</code></li>\n"
+"<li><code>{window_title/c=Instagram}{id}</code> - Likewise, but only if the window's title contains <code>Instagram</code> (case-sensitively)</li>\n"
+"<li><code>{window_title!/rc=Inst.*ram}{id}</code> - Likewise, but only if the window's title does not match the case-sensitive regex <code>Inst.*ram</code></li>\n"
+"</ul><br />\n"
+"<p>You can set a custom variable with <code>:=</code>. For example:</p>\n"
+"<ul><br />\n"
+"<li><code>{domain_nosub==cdninstagram.com}{foo:=bar}</code> - Sets the variable <code>foo</code> to <code>bar</code> if the domain is <code>cdninstagram.com</code>. The variable can then be accessed with e.g. <code>{foo}</code></li>\n"
 "</ul><br />\n"
 "<p>Date objects are accessible through a number of properties. Each property can be suffixed with <code>_utc</code> to get the UTC/GMT equivalent.</p>\n"
 "<ul><br />\n"
