@@ -2,6 +2,11 @@
 // https://github.com/violentmonkey/violentmonkey/blob/9e672d5590aea144840681b6f2ce0c267d57fc13/src/background/utils/requests.js
 // https://github.com/violentmonkey/violentmonkey/blob/9e672d5590aea144840681b6f2ce0c267d57fc13/src/common/index.js
 
+var background_tab = null;
+chrome.tabs.query({ currentWindow: true, active: true }, function(tabs) {
+	background_tab = tabs[0];
+});
+
 var requests = {};
 var redirects = {};
 var loading_urls = {};
@@ -58,6 +63,8 @@ try {
 if (!storage) {
 	set_storage_to_local();
 }
+
+var is_firefox = navigator.userAgent.indexOf("Firefox") >= 0;
 
 var nir_debug = false;
 var debug = function() {
@@ -263,7 +270,14 @@ var do_request = function(request, sender) {
 					return;
 				}
 
-				if (false) {
+				var use_blob_url = true;
+
+				// firefox doesn't support sending blob urls to different context IDs
+				// fixme: is there a way to find our contextId? querying our background tab doesn't show this info as it's only available under MessageSender.
+				if (is_firefox && background_tab && sender.tab.cookieStoreId !== background_tab.cookieStoreId)
+					use_blob_url = false;
+
+				if (!use_blob_url) {
 					var reader = new FileReader();
 					reader.onload = function() {
 						var array = new Uint8Array(reader.result);
