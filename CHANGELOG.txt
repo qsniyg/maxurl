@@ -6,6 +6,7 @@ New features:
  * Equality and contains (+regex) operators for filename formatting
  * User-specified variables for filename formatting
  * Special variables `prefix` and `suffix` (user-set) are now automatically prefixed/suffixed to the filename
+ * Support for ~15 new websites (using ~10 new rules)
 
 Improvements:
 
