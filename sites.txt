@@ -749,6 +749,7 @@ blog.chron.com
 blog.froggi.es
 blog.hola.com
 blog.jinbo.net
+blog.pinkworld.com
 blog.wirelessanalytics.com
 blog.yellowoctopus.com.au
 blogadda.s3.amazonaws.com
@@ -989,6 +990,7 @@ cdn-prod.scalefast.com
 cdn-redfin.com
 cdn-s3.si.com
 cdn-s3.sidereel.com
+cdn-shop.adafruit.com
 cdn-stylehaus-jp.akamaized.net
 cdn-tehran.wisgoon.com
 cdn-thumbs.imagevenue.com
@@ -1862,6 +1864,7 @@ digitalimagemakerworld.com
 digitalminx.com
 digitaltrends.com
 digitalwhiplash.com
+dilangwyn.com
 dillonmarsh.com
 dimg.donga.com
 dimu.org
@@ -1890,6 +1893,7 @@ ditiw.com
 div.bg
 divahair.ro
 divnil.com
+diy-magazine.s3.amazonaws.com
 diymag.com
 dizigol.net
 diziler.com
@@ -2088,6 +2092,7 @@ em.wattpad.com
 embed.indavideo.hu
 embed.mp4.center
 embed.redtube.com
+embed.videodelivery.net
 embedly.massrelevance.com
 embeds.sunporno.com
 embedwistia-a.akamaihd.net
@@ -3503,6 +3508,8 @@ images.taboola.com
 images.techhive.com
 images.techtimes.com
 images.theconversation.com
+images.thedigitalfix.com
+images.thefacecdn.com
 images.thehollywoodgossip.com
 images.themevault.net
 images.thequint.com
@@ -3513,6 +3520,7 @@ images.treccani.it
 images.twistmagazine.com
 images.ulta.com
 images.underskog.no
+images.universal-music.de
 images.universe.com
 images.unsplash.com
 images.vanityfair.it
@@ -4009,6 +4017,7 @@ imgth.com
 imgtrend.com
 imgur.com
 imgur.dcard.tw
+imgvivo.xyz
 imgwallet.com
 imgweng.xyz
 imgwew.xyz
@@ -4558,6 +4567,7 @@ m.atcdn.co.uk
 m.baishixi.com
 m.blog.hu
 m.btdx8.com
+m.facebook.com
 m.gadzetomania.pl
 m.gjcdn.net
 m.mbcsportsplus.com
@@ -4622,6 +4632,7 @@ maximkorea.net
 maximum.fm
 maxpapendieck.com
 mb.cision.com
+mbasic.facebook.com
 mbcsportsplus.com
 mccormick.com
 mcdn.wallpapersafari.com
@@ -5324,6 +5335,7 @@ nudecelebs.world
 nudecelebspics.net
 nudejapangirls.com
 nudemodelpics.com
+nudems.com
 nudevideovixens.com
 nudevista.com
 nudiez-production.s3.amazonaws.com
@@ -5568,6 +5580,7 @@ photos.mandarinoriental.com
 photos.modelmayhem.com
 photos.smugmug.com
 photos.stories-porno.net
+photosex.biz
 photoshelter.com
 photosight.ru
 photosynthesis.bg
@@ -5664,7 +5677,6 @@ pinkfineart.com
 pinknews.co.uk
 pinkomatic.com
 pinkqueen.com
-pinkworld.com
 pinme.ru
 pirojok.net
 pisces.bbystatic.com
@@ -6650,6 +6662,7 @@ static.nrk.no
 static.nulled.to
 static.ok.co.uk
 static.ok.co.uk.s3.amazonaws.com
+static.ok.xxx
 static.onecms.io
 static.origos.hu
 static.otvfoco.com.br
@@ -6791,6 +6804,7 @@ structurecms-staging-psyclone.netdna-ssl.com
 studio-14.ru
 studio-design-assets.storage.googleapis.com
 studio-dostor.org
+studio.cults3d.com
 studiosol-a.akamaihd.net
 stuffpoint.com
 stuttgarter-nachrichten.de
@@ -7704,6 +7718,7 @@ ximg.pro
 xiongyan.tv
 xiuren.org
 xjapanese.com
+xmegadrive.com
 xnostars.com
 xnudehack.com
 xnxx.com

@@ -1,3 +1,28 @@
+0.19.0
+
+New features:
+
+ * Support for downloading album with JDownloader rather than as a zip file
+ * Equality and contains (+regex) operators for filename formatting
+ * User-specified variables for filename formatting
+ * Special variables `prefix` and `suffix` (user-set) are now automatically prefixed/suffixed to the filename
+
+Improvements:
+
+ * Various improvements/fixes to existing rules (including Facebook, Flickr, Instagram)
+ * Downloading a gallery through a zip file will now default to storing under a top-level directory
+
+Bugfixes:
+
+ * Large albums (~5000+ items) will no longer crash gallery downloading
+ * Fix dots in filenames cutting off the rest of the filename (#718, thanks to AdClear247 for reporting)
+ * Albums using `album_info` will no longer load all images
+ * Fix crashing when loading blobs on different context IDs under Firefox
+
+Special thanks to fedesk, AdClear247, elvisef, ayunami2000, dungeon_addiction, remlap, Owyn, LeGiTiM, llacb47 for their contributions and reports for this release
+
+---
+
 0.18.3
 
 New features:

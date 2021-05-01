@@ -14,10 +14,14 @@
 // @name:fr           Image Max URL
 // @name:fr-CA        Image Max URL
 // @name:he           Image Max URL
+// @name:hi           Image Max URL
 // @name:hu           Image Max URL
 // @name:id           Image Max URL
-// @name:ko           Image Max URL
+// @name:it           Image Max URL
 // @name:ja           Image Max URL
+// @name:ko           Image Max URL
+// @name:nb           Image Max URL
+// @name:nl           Image Max URL
 // @name:ru           Image Max URL
 // @name:bg           Image Max URL
 // @name:uk           Image Max URL
@@ -25,31 +29,35 @@
 // @name:zh-CN        Image Max URL
 // @name:zh-TW        Image Max URL
 // @name:zh-HK        Image Max URL
-// @description       Finds larger or original versions of images and videos for 7800+ websites, including a powerful media popup and download feature
-// @description:ar    البحث عن نسخ أكبر أو أصلية من الصور لأكثر من 7800 موقع ويب
-// @description:cs    Vyhledá větší nebo původní verze obrázků a videí pro více než 7800 webů
-// @description:da    Finder større eller originale versioner af billeder og videoer til mere end 7800 websteder
-// @description:de    Sucht nach größeren oder originalen Versionen von Bildern und Videos für mehr als 7800 Websites
-// @description:el    Βρίσκει μεγαλύτερες ή πρωτότυπες εκδόσεις εικόνων και βίντεο για περισσότερους από 7800 ιστότοπους
-// @description:eo    Trovas pli grandajn aŭ originalajn versiojn de bildoj kaj filmetoj por pli ol 7800 retejoj
-// @description:es    Encuentra imágenes más grandes y originales para más de 7800 sitios
-// @description:fi    Etsii suurempia tai alkuperäisiä versioita kuvista ja videoista yli 7800 verkkosivustolle
-// @description:fr    Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 7 800 sites web, y compris une puissante fonction de popup média
-// @description:fr-CA Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 7 800 sites web, y compris une puissante fonction de popup média
-// @description:he    מוצא גרסאות גדולות יותר או מקוריות של תמונות וסרטונים עבור יותר מ-7800 אתרים
-// @description:hu    Több mint 7800 webhely képének és videóinak nagyobb vagy eredeti változatát találja
-// @description:id    Menemukan versi gambar dan video yang lebih besar atau orisinal untuk lebih dari 7800 situs web
-// @description:ko    7800개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
-// @description:ja    7800以上のウェブサイトで高画質や原本画像を見つけ出します
-// @description:ru    Находит увеличенные или оригинальные версии изображений для более чем 7800 веб-сайтов
-// @description:bg    Намира увеличени или оригинални версии на изображения за повече от 7800 уеб сайтове
-// @description:uk    Знаходить збільшені або оригінальні версії зображень для більш ніж 7800 веб-сайтів
-// @description:zh    为7800多个网站查找更大或原始图像
-// @description:zh-CN 为7800多个网站查找更大或原始图像
-// @description:zh-TW 為7800多個網站查找更大或原始圖像
-// @description:zh-HK 為7800多個網站查找更大或原始圖像
+// @description       Finds larger or original versions of images and videos for 7900+ websites, including a powerful media popup and download feature
+// @description:ar    البحث عن نسخ أكبر أو أصلية من الصور لأكثر من 7900 موقع ويب
+// @description:cs    Vyhledá větší nebo původní verze obrázků a videí pro více než 7900 webů
+// @description:da    Finder større eller originale versioner af billeder og videoer til mere end 7900 websteder
+// @description:de    Sucht nach größeren oder originalen Versionen von Bildern und Videos für mehr als 7900 Websites
+// @description:el    Βρίσκει μεγαλύτερες ή πρωτότυπες εκδόσεις εικόνων και βίντεο για περισσότερους από 7900 ιστότοπους
+// @description:eo    Trovas pli grandajn aŭ originalajn versiojn de bildoj kaj filmetoj por pli ol 7900 retejoj
+// @description:es    Encuentra imágenes más grandes y originales para más de 7900 sitios
+// @description:fi    Etsii suurempia tai alkuperäisiä versioita kuvista ja videoista yli 7900 verkkosivustolle
+// @description:fr    Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 7 900 sites web, y compris une puissante fonction de popup média
+// @description:fr-CA Trouve des versions plus grandes ou originales d'images et de vidéos pour plus de 7 900 sites web, y compris une puissante fonction de popup média
+// @description:he    מוצא גרסאות גדולות יותר או מקוריות של תמונות וסרטונים עבור יותר מ-7900 אתרים
+// @description:hi    7900 से अधिक वेबसाइटों के लिए फ़ोटो और वीडियो के बड़े या मूल संस्करण ढूँढता है
+// @description:hu    Több mint 7900 webhely képének és videóinak nagyobb vagy eredeti változatát találja
+// @description:id    Menemukan versi gambar dan video yang lebih besar atau orisinal untuk lebih dari 7900 situs web
+// @description:it    Trova versioni più grandi o originali di immagini e video per oltre 7900 siti web
+// @description:ja    7900以上のウェブサイトで高画質や原本画像を見つけ出します
+// @description:ko    7900개 이상의 사이트에 대해 고화질이나 원본 이미지를 찾아드립니다
+// @description:nb    Finner større eller originale versjoner av bilder og videoer for mer enn 7900 nettsteder
+// @description:nl    Vindt grotere of originele versies van foto's en video's voor meer dan 7900 websites
+// @description:ru    Находит увеличенные или оригинальные версии изображений для более чем 7900 веб-сайтов
+// @description:bg    Намира увеличени или оригинални версии на изображения за повече от 7900 уеб сайтове
+// @description:uk    Знаходить збільшені або оригінальні версії зображень для більш ніж 7900 веб-сайтів
+// @description:zh    为7900多个网站查找更大或原始图像
+// @description:zh-CN 为7900多个网站查找更大或原始图像
+// @description:zh-TW 為7900多個網站查找更大或原始圖像
+// @description:zh-HK 為7900多個網站查找更大或原始圖像
 // @namespace         http://tampermonkey.net/
-// @version           0.18.3
+// @version           0.19.0
 // @author            qsniyg
 // @homepageURL       https://qsniyg.github.io/maxurl/options.html
 // @supportURL        https://github.com/qsniyg/maxurl/issues
@@ -85,7 +93,7 @@
 //  Note that jsdelivr.net might not always be reliable, but (AFAIK) this is the only reasonable option from what greasyfork allows.
 //  I'd recommend using the Github version of the script if you encounter any issues (linked in the 'Project links' section below).
 //
-// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@cce3739b4a1c6655a895ea2413290614fde236bd/build/rules.js
+// @require https://cdn.jsdelivr.net/gh/qsniyg/maxurl@83329d7a0e972b302280c7ea58c6fe9f292fa416/build/rules.js
 // ==/UserScript==
 
 // If you see "A userscript wants to access a cross-origin resource.", it's used for:
@@ -4719,12 +4727,6 @@ var $$IMU_EXPORT$$;
 		"Includes gallery items that have not been changed. Useful to potentially avoid downloading thumbnails": {
 			"ru": "\u0412\u043A\u043B\u044E\u0447\u0430\u0435\u0442 \u0432 \u0441\u0435\u0431\u044F \u044D\u043B\u0435\u043C\u0435\u043D\u0442\u044B \u0433\u0430\u043B\u0435\u0440\u0435\u0438, \u043A\u043E\u0442\u043E\u0440\u044B\u0435 \u043D\u0435 \u0431\u044B\u043B\u0438 \u0438\u0437\u043C\u0435\u043D\u0435\u043D\u044B. \u041F\u043E\u043B\u0435\u0437\u043D\u043E, \u0447\u0442\u043E\u0431\u044B \u043F\u043E\u0442\u0435\u043D\u0446\u0438\u0430\u043B\u044C\u043D\u043E \u0438\u0437\u0431\u0435\u0436\u0430\u0442\u044C \u0441\u043A\u0430\u0447\u0438\u0432\u0430\u043D\u0438\u044F \u043C\u0438\u043D\u0438\u0430\u0442\u044E\u0440."
 		},
-		"Zip: Filename format": {
-			"ru": "Zip: \u0424\u043E\u0440\u043C\u0430\u0442 \u0438\u043C\u0435\u043D\u0438 \u0444\u0430\u0439\u043B\u0430"
-		},
-		"Format string(s) for the zip filename.\nRefer to \"Filename format\" under the Rules section for documentation. The variables are set from the first loaded media.\nAn additional `items_amt` format variable is supported, which contains the number of items.\n`.zip` will be automatically suffixed if it's missing.": {
-			"ru": "\u0424\u043E\u0440\u043C\u0430\u0442 \u0441\u0442\u0440\u043E\u043A\u0438(\u0441\u0442\u0440\u043E\u043A) \u0434\u043B\u044F zip-\u0444\u0430\u0439\u043B\u0430.\n\u0421\u043C\u043E\u0442\u0440\u0438\u0442\u0435 \u0432 \u0434\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u0430\u0446\u0438\u0438 \u00AB\u0424\u043E\u0440\u043C\u0430\u0442 \u0438\u043C\u0435\u043D\u0438 \u0444\u0430\u0439\u043B\u0430\u00BB \u0432 \u0440\u0430\u0437\u0434\u0435\u043B\u0435 \u00AB\u041F\u0440\u0430\u0432\u0438\u043B\u0430\u00BB. \u041F\u0435\u0440\u0435\u043C\u0435\u043D\u043D\u044B\u0435 \u0437\u0430\u0434\u0430\u044E\u0442\u0441\u044F \u0441 \u043F\u0435\u0440\u0432\u043E\u0433\u043E \u0437\u0430\u0433\u0440\u0443\u0436\u0435\u043D\u043D\u043E\u0433\u043E \u043C\u0435\u0434\u0438\u0430.\n\u041F\u043E\u0434\u0434\u0435\u0440\u0436\u0438\u0432\u0430\u0435\u0442\u0441\u044F \u0434\u043E\u043F\u043E\u043B\u043D\u0438\u0442\u0435\u043B\u044C\u043D\u0430\u044F \u043F\u0435\u0440\u0435\u043C\u0435\u043D\u043D\u0430\u044F \u0444\u043E\u0440\u043C\u0430\u0442\u0430 `items_amt`, \u043A\u043E\u0442\u043E\u0440\u0430\u044F \u0441\u043E\u0434\u0435\u0440\u0436\u0438\u0442 \u043A\u043E\u043B\u0438\u0447\u0435\u0441\u0442\u0432\u043E \u044D\u043B\u0435\u043C\u0435\u043D\u0442\u043E\u0432.\n`.zip` \u0431\u0443\u0434\u0435\u0442 \u0430\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0441\u0443\u0444\u0444\u0438\u043A\u0441\u043E\u0432\u0430\u043D, \u0435\u0441\u043B\u0438 \u043E\u043D \u043E\u0442\u0441\u0443\u0442\u0441\u0442\u0432\u0443\u0435\u0442."
-		},
 		"Zip: Store in subdirectory": {
 			"ru": "Zip: \u0425\u0440\u0430\u043D\u0438\u0442\u044C \u0432 \u043F\u043E\u0434\u043A\u0430\u0442\u0430\u043B\u043E\u0433\u0435"
 		},
@@ -5153,9 +5155,6 @@ var $$IMU_EXPORT$$;
 		},
 		"Documentation": {
 			"ru": "\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u0430\u0446\u0438\u044F"
-		},
-		"<p>Variables are specified between curly brackets (<code>{}</code>).</p>\n<p>Below is a list of valid variables:</p>\n<ul><br />\n<li><code>filename</code> - Original filename (with extension, if applicable)</li>\n<li><code>filename_noext</code> - Original filename (without extension, if applicable)</li>\n<li><code>ext</code> - Extension (with <code>.</code> prefixed)</li>\n<li><code>caption</code> - Popup caption</li>\n<li><code>author_username</code> - Author's username</li>\n<li><code>id</code> - Post ID</li>\n<li><code>host_domain</code> - Domain of the host webpage</li>\n<li><code>host_domain_nosub</code> - Domain (without subdomains) of the host webpage</li>\n<li><code>domain</code> - Domain of the media</li>\n<li><code>domain_nosub</code> - Domain (without subdomains) of the media</li>\n<li><code>is_screenshot</code> - Blank, the line will only be processed when screenshotting a video</li>\n<li><code>created_...</code> - Created date (see note on Date objects below)</li>\n<li><code>updated_...</code> - Updated date, this will use the <code>Last-Modified</code> header if not otherwise specified by the rule (see note on Date objects below)</li>\n<li><code>download_...</code> - Download date (see note on Date objects below)</li>\n</ul><br />\n<p>You can truncate the value of a variable by adding <code>:(number)</code> before the end bracket (<code>}</code>). For example:</p>\n<ul><br />\n<li><code>{caption:10}</code> - Truncates the caption to be at most 10 characters long</li>\n<li><code>{caption:10.}</code> - Same, but will add an ellipsis (\u2026) if the caption was truncated</li>\n</ul><br />\n<p>If a variable doesn't exist, by default it will ignore the current format string and use the one on the next line, unless <code>?</code> is added before the end bracket. For example:</p>\n<ul><br />\n<li><code>{ext?}</code> - Will be replaced with nothing if <code>ext</code> doesn't exist</li>\n<li><code>{caption?no caption}</code> - Will be replaced with <code>no caption</code> if <code>caption</code> doesn't exist</li>\n</ul><br />\n<p>Date objects are accessible through a number of properties. Each property can be suffixed with <code>_utc</code> to get the UTC/GMT equivalent.</p>\n<ul><br />\n<li><code>..._iso</code> - Date in ISO format (e.g. <code>2019-12-31T23-30-56</code>). Note that <code>:</code> is replaced with <code>-</code> to avoid issues with paths under NTFS.</li>\n<li><code>..._ago</code> - Human-readable representation of the time elapsed since the date (e.g. <code>1 year and 10 months ago</code>, <code>5 months and 20 days ago</code>)</li>\n<li><code>..._unix</code> - Unix timestamp (e.g. <code>1577912345</code>)</li>\n<li><code>..._unix_ms</code> - Unix timestamp with millisecond accuracy (e.g. <code>1577912345678</code>)</li>\n<li><code>..._yyyymmdd</code> - Date in YYYYMMDD format (e.g. <code>20191230</code>)</li>\n<li><code>..._hhmmss</code> - Time in HHMMSS format (e.g. <code>233056</code>)</li>\n<li><code>..._year</code> - Full year (e.g. <code>2019</code>)</li>\n<li><code>..._month</code> - Zero-padded month (e.g. <code>12</code>)</li>\n<li><code>..._day</code> - Zero-padded day (e.g. <code>31</code>)</li>\n<li><code>..._hours</code> - Zero-padded hours in military/24-hour format (e.g. <code>23</code>)</li>\n<li><code>..._minutes</code> - Zero-padded minutes (e.g. <code>30</code>)</li>\n<li><code>..._seconds</code> - Zero-padded seconds (e.g. <code>56</code>)</li>\n</ul>": {
-			"ru": "<p>\u041F\u0435\u0440\u0435\u043C\u0435\u043D\u043D\u044B\u0435 \u0437\u0430\u0434\u0430\u044E\u0442\u0441\u044F \u0432 \u0444\u0438\u0433\u0443\u0440\u043D\u044B\u0445 \u0441\u043A\u043E\u0431\u043A\u0430\u0445 (<code>{}</code>).</p>\n<p>\u041D\u0438\u0436\u0435 \u043F\u0440\u0438\u0432\u0435\u0434\u0435\u043D \u0441\u043F\u0438\u0441\u043E\u043A \u0434\u043E\u043F\u0443\u0441\u0442\u0438\u043C\u044B\u0445 \u043F\u0435\u0440\u0435\u043C\u0435\u043D\u043D\u044B\u0445:</p>\n<ul><br />\n<li><code>filename</code> - \u0418\u0441\u0445\u043E\u0434\u043D\u043E\u0435 \u0438\u043C\u044F \u0444\u0430\u0439\u043B\u0430 (\u0441 \u0440\u0430\u0441\u0448\u0438\u0440\u0435\u043D\u0438\u0435\u043C, \u0435\u0441\u043B\u0438 \u043F\u0440\u0438\u043C\u0435\u043D\u0438\u043C\u043E)</li>\n<li><code>filename_noext</code> - \u0418\u0441\u0445\u043E\u0434\u043D\u043E\u0435 \u0438\u043C\u044F \u0444\u0430\u0439\u043B\u0430 (\u0431\u0435\u0437 \u0440\u0430\u0441\u0448\u0438\u0440\u0435\u043D\u0438\u044F, \u0435\u0441\u043B\u0438 \u043F\u0440\u0438\u043C\u0435\u043D\u0438\u043C\u043E)</li>\n<li><code>ext</code> - \u0420\u0430\u0441\u0448\u0438\u0440\u0435\u043D\u0438\u0435 (\u0441 \u043F\u0440\u0435\u0444\u0438\u043A\u0441\u043E\u043C <code>.</code>)</li>\n<li><code>caption</code> - \u0412\u0441\u043F\u043B\u044B\u0432\u0430\u044E\u0449\u0430\u044F \u043F\u043E\u0434\u043F\u0438\u0441\u044C</li>\n<li><code>author_username</code> - \u0418\u043C\u044F \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F \u0430\u0432\u0442\u043E\u0440\u0430</li>\n<li><code>id</code> - \u0418\u043D\u0434\u0435\u0442\u0438\u0444\u0438\u043A\u0430\u0442\u043E\u0440 \u043F\u0443\u0431\u043B\u0438\u043A\u0430\u0446\u0438\u0438</li>\n<li><code>host_domain</code> - \u0414\u043E\u043C\u0435\u043D \u0432\u0435\u0431-\u0441\u0442\u0440\u0430\u043D\u0438\u0446\u044B \u0445\u043E\u0441\u0442\u0430</li>\n<li><code>host_domain_nosub</code> - \u0414\u043E\u043C\u0435\u043D \u0432\u0435\u0431-\u0441\u0442\u0440\u0430\u043D\u0438\u0446\u044B \u0445\u043E\u0441\u0442\u0430 (\u0431\u0435\u0437 \u043F\u043E\u0434\u0434\u043E\u043C\u0435\u043D\u043E\u0432)</li>\n<li><code>domain</code> - \u0414\u043E\u043C\u0435\u043D \u043C\u0435\u0434\u0438\u0430</li>\n<li><code>domain_nosub</code> - \u0414\u043E\u043C\u0435\u043D \u043C\u0435\u0434\u0438\u0430 (\u0431\u0435\u0437 \u043F\u043E\u0434\u0434\u043E\u043C\u0435\u043D\u043E\u0432)</li>\n<li><code>is_screenshot</code> - \u041F\u0443\u0441\u0442\u0430\u044F \u0441\u0442\u0440\u043E\u043A\u0430 \u0431\u0443\u0434\u0435\u0442 \u043E\u0431\u0440\u0430\u0431\u0430\u0442\u044B\u0432\u0430\u0442\u044C\u0441\u044F \u0442\u043E\u043B\u044C\u043A\u043E \u043F\u0440\u0438 \u0441\u043D\u0438\u043C\u043A\u0435 \u044D\u043A\u0440\u0430\u043D\u0430 \u0432\u0438\u0434\u0435\u043E</li>\n<li><code>created_...</code> - \u0414\u0430\u0442\u0430 \u0441\u043E\u0437\u0434\u0430\u043D\u0438\u044F (\u0441\u043C\u043E\u0442\u0440\u0438\u0442\u0435 \u043F\u0440\u0438\u043C\u0435\u0447\u0430\u043D\u0438\u0435 \u043F\u043E \u043E\u0431\u044A\u0435\u043A\u0442\u0430\u043C 'Date' \u043D\u0438\u0436\u0435)</li>\n<li><code>updated_...</code> - \u0414\u0430\u0442\u0430 \u043E\u0431\u043D\u043E\u0432\u043B\u0435\u043D\u0438\u044F, \u043F\u0440\u0438 \u044D\u0442\u043E\u043C \u0431\u0443\u0434\u0435\u0442 \u0438\u0441\u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u044C\u0441\u044F \u0437\u0430\u0433\u043E\u043B\u043E\u0432\u043E\u043A <code>Last-Modified</code>, \u0435\u0441\u043B\u0438 \u043F\u0440\u0430\u0432\u0438\u043B\u043E\u043C \u043D\u0435 \u0443\u043A\u0430\u0437\u0430\u043D\u043E \u0438\u043D\u043E\u0435 (\u0441\u043C\u043E\u0442\u0440\u0438\u0442\u0435 \u043F\u0440\u0438\u043C\u0435\u0447\u0430\u043D\u0438\u0435 \u043F\u043E \u043E\u0431\u044A\u0435\u043A\u0442\u0430\u043C 'Date' \u043D\u0438\u0436\u0435)</li>\n<li><code>download_...</code> - \u0414\u0430\u0442\u0430 \u0441\u043A\u0430\u0447\u0438\u0432\u0430\u043D\u0438\u044F (\u0441\u043C\u043E\u0442\u0440\u0438\u0442\u0435 \u043F\u0440\u0438\u043C\u0435\u0447\u0430\u043D\u0438\u0435 \u043F\u043E \u043E\u0431\u044A\u0435\u043A\u0442\u0430\u043C 'Date' \u043D\u0438\u0436\u0435)</li>\n</ul><br />\n<p>\u0412\u044B \u043C\u043E\u0436\u0435\u0442\u0435 \u0443\u0441\u0435\u0447\u044C \u0437\u043D\u0430\u0447\u0435\u043D\u0438\u0435 \u043F\u0435\u0440\u0435\u043C\u0435\u043D\u043D\u043E\u0439, \u0434\u043E\u0431\u0430\u0432\u0438\u0432 <code>:(number)</code> \u043F\u0435\u0440\u0435\u0434 \u0437\u0430\u043A\u0440\u044B\u0432\u0430\u044E\u0449\u0435\u0439\u0441\u044F \u0441\u043A\u043E\u0431\u043E\u0439 (<code>}</code>). \u041D\u0430\u043F\u0440\u0438\u043C\u0435\u0440:</p>\n<ul><br />\n<li><code>{caption:10}</code> - \u0423\u0441\u0435\u043A\u0430\u0435\u0442 \u043F\u043E\u0434\u043F\u0438\u0441\u044C \u0434\u043E \u0434\u043B\u0438\u043D\u044B \u043D\u0435 \u0431\u043E\u043B\u0435\u0435 10 \u0441\u0438\u043C\u0432\u043E\u043B\u043E\u0432</li>\n<li><code>{caption:10.}</code> - \u0422\u043E \u0436\u0435 \u0441\u0430\u043C\u043E\u0435, \u043D\u043E \u0434\u043E\u0431\u0430\u0432\u0438\u0442 \u043C\u043D\u043E\u0433\u043E\u0442\u043E\u0447\u0438\u0435 (...), \u0435\u0441\u043B\u0438 \u043F\u043E\u0434\u043F\u0438\u0441\u044C \u0431\u044B\u043B\u0430 \u0443\u0441\u0435\u0447\u0435\u043D\u0430</li>\n</ul><br />\n<p>\u0415\u0441\u043B\u0438 \u043F\u0435\u0440\u0435\u043C\u0435\u043D\u043D\u043E\u0439 \u043D\u0435 \u0441\u0443\u0449\u0435\u0441\u0442\u0432\u0443\u0435\u0442, \u0442\u043E \u043F\u043E \u0443\u043C\u043E\u043B\u0447\u0430\u043D\u0438\u044E \u043E\u043D\u0430 \u0431\u0443\u0434\u0435\u0442 \u0438\u0433\u043D\u043E\u0440\u0438\u0440\u043E\u0432\u0430\u0442\u044C \u0442\u0435\u043A\u0443\u0449\u0443\u044E \u0441\u0442\u0440\u043E\u043A\u0443 \u0444\u043E\u0440\u043C\u0430\u0442\u0430 \u0438 \u0438\u0441\u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u044C \u0435\u0435 \u0432 \u0441\u043B\u0435\u0434\u0443\u044E\u0449\u0435\u0439 \u0441\u0442\u0440\u043E\u043A\u0435, \u0435\u0441\u043B\u0438 \u0442\u043E\u043B\u044C\u043A\u043E \u043F\u0435\u0440\u0435\u0434 \u043A\u043E\u043D\u0435\u0447\u043D\u043E\u0439 \u0441\u043A\u043E\u0431\u043A\u043E\u0439 \u043D\u0435 \u0431\u0443\u0434\u0435\u0442 \u0434\u043E\u0431\u0430\u0432\u043B\u0435\u043D <code>?</code>. \u041D\u0430\u043F\u0440\u0438\u043C\u0435\u0440:</p>\n<ul><br />\n<li><code>{ext?}</code> - \u0411\u0443\u0434\u0435\u0442 \u0437\u0430\u043C\u0435\u043D\u0451\u043D \u043D\u0438\u0447\u0435\u043C, \u0435\u0441\u043B\u0438 <code>ext</code> \u043D\u0435 \u0441\u0443\u0449\u0435\u0441\u0442\u0432\u0443\u0435\u0442</li>\n<li><code>{caption?no caption}</code> - \u0411\u0443\u0434\u0435\u0442 \u0437\u0430\u043C\u0435\u043D\u0451\u043D \u043D\u0430 <code>no caption</code>, \u0435\u0441\u043B\u0438 <code>caption</code> \u043D\u0435 \u0441\u0443\u0449\u0435\u0441\u0442\u0432\u0443\u0435\u0442</li>\n</ul><br />\n<p>\u041E\u0431\u044A\u0435\u043A\u0442\u044B \u0434\u0430\u0442\u044B \u0434\u043E\u0441\u0442\u0443\u043F\u043D\u044B \u0447\u0435\u0440\u0435\u0437 \u0440\u044F\u0434 \u0441\u0432\u043E\u0439\u0441\u0442\u0432. \u041A\u0430\u0436\u0434\u043E\u0435 \u0441\u0432\u043E\u0439\u0441\u0442\u0432\u043E \u043C\u043E\u0436\u0435\u0442 \u0431\u044B\u0442\u044C \u0441\u0443\u0444\u0444\u0438\u043A\u0441\u043E\u043C <code>_utc</code>, \u0447\u0442\u043E\u0431\u044B \u043F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u044D\u043A\u0432\u0438\u0432\u0430\u043B\u0435\u043D\u0442 UTC/GMT.</p>\n<ul><br />\n<li><code>..._iso</code> - \u0414\u0430\u0442\u0430 \u0432 \u0444\u043E\u0440\u043C\u0430\u0442\u0435 ISO (\u0442.\u0435. <code>2019-12-31T23-30-56</code>). \u041E\u0431\u0440\u0430\u0442\u0438\u0442\u0435 \u0432\u043D\u0438\u043C\u0430\u043D\u0438\u0435, \u0447\u0442\u043E <code>:</code> \u0437\u0430\u043C\u0435\u043D\u044F\u0435\u0442\u0441\u044F \u043D\u0430 <code>-</code>, \u0447\u0442\u043E\u0431\u044B \u0438\u0437\u0431\u0435\u0436\u0430\u0442\u044C \u043F\u0440\u043E\u0431\u043B\u0435\u043C \u0441 \u043F\u0443\u0442\u044F\u043C\u0438 \u0432 NTFS.</li>\n<li><code>..._ago</code> - \u0427\u0435\u043B\u043E\u0432\u0435\u043A\u043E\u0447\u0438\u0442\u0430\u0435\u043C\u043E\u0435 \u043F\u0440\u0435\u0434\u0441\u0442\u0430\u0432\u043B\u0435\u043D\u0438\u0435 \u0432\u0440\u0435\u043C\u0435\u043D\u0438, \u043F\u0440\u043E\u0448\u0435\u0434\u0448\u0435\u0433\u043E \u0441 \u0434\u0430\u0442\u044B (\u0442.\u0435. <code>1 \u0433\u043E\u0434 \u0438 10 \u043C\u0435\u0441\u044F\u0446\u0435\u0432 \u043D\u0430\u0437\u0430\u0434</code>, <code>5 \u043C\u0435\u0441\u044F\u0446\u0435\u0432 \u0438 20 \u0434\u043D\u0435\u0439 \u043D\u0430\u0437\u0430\u0434</code>)</li>\n<li><code>..._unix</code> - \u0412\u0440\u0435\u043C\u0435\u043D\u043D\u0430\u044F \u043C\u0435\u0442\u043A\u0430 Unix (\u0442.\u0435. <code>1577912345</code>)</li>\n<li><code>..._unix_ms</code> - \u0412\u0440\u0435\u043C\u0435\u043D\u043D\u0430\u044F \u043C\u0435\u0442\u043A\u0430 Unix \u0441 \u0442\u043E\u0447\u043D\u043E\u0441\u0442\u044C\u044E \u0434\u043E \u043C\u0438\u043B\u043B\u0438\u0441\u0435\u043A\u0443\u043D\u0434\u044B (\u0442.\u0435. <code>1577912345678</code>)</li>\n<li><code>..._yyyymmdd</code> - \u0414\u0430\u0442\u0430 \u0432 \u0444\u043E\u0440\u043C\u0430\u0442\u0435 YYYYMMDD (\u0442.\u0435. <code>20191230</code>)</li>\n<li><code>..._hhmmss</code> - \u0412\u0440\u0435\u043C\u044F \u0432 \u0444\u043E\u0440\u043C\u0430\u0442\u0435 HHMMSS (\u0442.\u0435. <code>233056</code>)</li>\n<li><code>..._year</code> - \u0413\u043E\u0434 \u043F\u043E\u043B\u043D\u043E\u0441\u0442\u044C\u044E (\u0442.\u0435. <code>2019</code>)</li>\n<li><code>..._month</code> - \u041C\u0435\u0441\u044F\u0446 \u0441 \u043D\u0443\u043B\u0435\u0432\u043E\u0439 \u043F\u043E\u0434\u043A\u043B\u0430\u0434\u043A\u043E\u0439 (\u0442.\u0435. <code>12</code>)</li>\n<li><code>..._day</code> - \u0414\u0435\u043D\u044C \u0441 \u043D\u0443\u043B\u0435\u0432\u043E\u0439 \u043F\u043E\u0434\u043A\u043B\u0430\u0434\u043A\u043E\u0439 (\u0442.\u0435. <code>31</code>)</li>\n<li><code>..._hours</code> - \u0427\u0430\u0441\u044B \u0441 \u043D\u0443\u043B\u0435\u0432\u043E\u0439 \u043F\u043E\u0434\u043A\u043B\u0430\u0434\u043A\u043E\u0439 \u0432 \u0432\u043E\u0435\u043D\u043D\u043E\u043C/24-\u0447\u0430\u0441\u043E\u0432\u043E\u043C \u0444\u043E\u0440\u043C\u0430\u0442\u0435 (\u0442.\u0435. <code>23</code>)</li>\n<li><code>..._minutes</code> - \u041C\u0438\u043D\u0443\u0442\u044B \u0441 \u043D\u0443\u043B\u0435\u0432\u043E\u0439 \u043F\u043E\u0434\u043A\u043B\u0430\u0434\u043A\u043E\u0439 (\u0442.\u0435. <code>30</code>)</li>\n<li><code>..._seconds</code> - \u0421\u0435\u043A\u0443\u043D\u0434\u044B \u0441 \u043D\u0443\u043B\u0435\u0432\u043E\u0439 \u043F\u043E\u0434\u043A\u043B\u0430\u0434\u043A\u043E\u0439 (\u0442.\u0435. <code>56</code>)</li>\n</ul>"
 		},
 		"Trigger keybinding that will run the Replace Images function": {
 			"ru": "\u0412\u044B\u0437\u044B\u0432\u0430\u0435\u0442 \u043F\u0440\u0438\u0432\u044F\u0437\u043A\u0443 \u043A\u043B\u0430\u0432\u0438\u0448, \u043A\u043E\u0442\u043E\u0440\u0430\u044F \u0437\u0430\u043F\u0443\u0441\u0442\u0438\u0442 \u0444\u0443\u043D\u043A\u0446\u0438\u044E \u0437\u0430\u043C\u0435\u043D\u044B \u0438\u0437\u043E\u0431\u0440\u0430\u0436\u0435\u043D\u0438\u0439."
@@ -5679,9 +5678,11 @@ var $$IMU_EXPORT$$;
 		// https://github.com/qsniyg/maxurl/issues/284
 		// thanks to shivsah on github for the inspiration: https://github.com/qsniyg/maxurl/issues/95
 		mouseover_gallery_download_key: ["shift", "d"],
+		gallery_download_method: "zip",
 		gallery_download_unchanged: true,
 		gallery_zip_filename_format: "{host_domain_nosub}-{items_amt}-{download_unix}\n{items_amt}-{download_unix}",
-		gallery_zip_add_tld: false,
+		gallery_jd_autostart: false,
+		gallery_zip_add_tld: true,
 		gallery_zip_add_info_file: true,
 		// thanks to acid-crash on github for the idea: https://github.com/qsniyg/maxurl/issues/20
 		mouseover_styles: "",
@@ -8054,6 +8055,27 @@ var $$IMU_EXPORT$$;
 			category: "keybinds",
 			subcategory: "gallery"
 		},
+		gallery_download_method: {
+			name: "Download method",
+			description: "How the gallery should be downloaded",
+			requires: {
+				_condition: "action:popup",
+				mouseover_enable_gallery: true
+			},
+			options: {
+				_type: "combo",
+				"zip": {
+					name: "Zip file"
+				},
+				"jdownloader": {
+					// we should probably tell the user to temporarily disable "LinkCollector: Do Link Check" (Advanced Settings)
+					// we already check for this, and jdownloader is much slower to check (one at a time)
+					name: "JDownloader"
+				}
+			},
+			category: "popup",
+			subcategory: "gallery"
+		},
 		gallery_download_unchanged: {
 			name: "Download unchanged media",
 			description: "Includes gallery items that have not been changed. Useful to potentially avoid downloading thumbnails",
@@ -8065,12 +8087,12 @@ var $$IMU_EXPORT$$;
 			subcategory: "gallery"
 		},
 		gallery_zip_filename_format: {
-			name: "Zip: Filename format",
+			name: "Directory/zip filename format",
 			description: [
-				"Format string(s) for the zip filename.",
+				"Format string(s) for the directory (package name for JDownloader) and zip filename (if applicable).",
 				"Refer to \"Filename format\" under the Rules section for documentation. The variables are set from the first loaded media.",
 				"An additional `items_amt` format variable is supported, which contains the number of items.",
-				"`.zip` will be automatically suffixed if it's missing."
+				"`.zip` will be automatically suffixed for zip filenames."
 			].join("\n"),
 			requires: {
 				_condition: "action:popup",
@@ -8085,7 +8107,17 @@ var $$IMU_EXPORT$$;
 			description: "Stores the files in a subdirectory with the same name as the .zip file (without the .zip extension)",
 			requires: {
 				_condition: "action:popup",
-				mouseover_enable_gallery: true
+				mouseover_enable_gallery: true,
+				gallery_download_method: "zip"
+			},
+			category: "popup",
+			subcategory: "gallery"
+		},
+		gallery_jd_autostart: {
+			name: "JD: Autostart",
+			description: "Autostarts the download when added to JDownloader",
+			requires: {
+				gallery_download_method: "jdownloader"
 			},
 			category: "popup",
 			subcategory: "gallery"
@@ -8095,7 +8127,8 @@ var $$IMU_EXPORT$$;
 			description: "Stores a `info.txt` file in the .zip containing information about the downloaded files and host page.",
 			requires: {
 				_condition: "action:popup",
-				mouseover_enable_gallery: true
+				mouseover_enable_gallery: true,
+				gallery_download_method: "zip"
 			},
 			category: "popup",
 			subcategory: "gallery"
@@ -8763,11 +8796,15 @@ var $$IMU_EXPORT$$;
 					"<li><code>caption</code> - Popup caption</li>",
 					"<li><code>author_username</code> - Author's username</li>",
 					"<li><code>id</code> - Post ID</li>",
+					"<li><code>host_title</code> - Title of the current tab/window</li>",
+					"<li><code>host_url</code> - URL of the host webpage</li>",
 					"<li><code>host_domain</code> - Domain of the host webpage</li>",
 					"<li><code>host_domain_nosub</code> - Domain (without subdomains) of the host webpage</li>",
+					"<li><code>url</code> - URL of the media</li>",
 					"<li><code>domain</code> - Domain of the media</li>",
 					"<li><code>domain_nosub</code> - Domain (without subdomains) of the media</li>",
 					"<li><code>is_screenshot</code> - Blank, the line will only be processed when screenshotting a video</li>",
+					"<li><code>prefix</code>, <code>suffix</code> - Blank by default, these variables will be automatically prefixed/suffixed to the filename if set using <code>:=</code></li>",
 					"<li><code>created_...</code> - Created date (see note on Date objects below)</li>",
 					"<li><code>updated_...</code> - Updated date, this will use the <code>Last-Modified</code> header if not otherwise specified by the rule (see note on Date objects below)</li>",
 					"<li><code>download_...</code> - Download date (see note on Date objects below)</li>",
@@ -8781,6 +8818,22 @@ var $$IMU_EXPORT$$;
 					"<ul><br />",
 					"<li><code>{ext?}</code> - Will be replaced with nothing if <code>ext</code> doesn't exist</li>",
 					"<li><code>{caption?no caption}</code> - Will be replaced with <code>no caption</code> if <code>caption</code> doesn't exist</li>",
+					"</ul><br />",
+					"<p>You can check for equality and inequality with <code>==</code> and <code>!=</code> operators respectively. For example:</p>",
+					"<ul><br />",
+					"<li><code>{domain_nosub==cdninstagram.com}{author_username} {id}</code> - Will only run the current format (<code>{author_username} {id}</code> in this case) if the domain is cdninstagram.com</li>",
+					"</ul><br />",
+					"<p>You can check if a variable contains a string with <code>/=</code> (<code>!/=</code> for the opposite). It also supports two flags, <code>r</code> (regex) and <code>c</code> (case-sensitive), if added between <code>/</code> and <code>=</code>. For example:</p>",
+					"<ul><br />",
+					"<li><code>{domain/=instagram}{id}</code> - Will only run the current format (<code>{id}</code>) if the domain contains <code>instagram</code></li>",
+					"<li><code>{domain!/=instagram}{id}</code> - Likewise, but only if the domain does not contain <code>instagram</code></li>",
+					"<li><code>{domain/r=inst.*ram}{id}</code> - Likewise, but only if the domain matches the regex <code>inst.*ram</code></li>",
+					"<li><code>{window_title/c=Instagram}{id}</code> - Likewise, but only if the window's title contains <code>Instagram</code> (case-sensitively)</li>",
+					"<li><code>{window_title!/rc=Inst.*ram}{id}</code> - Likewise, but only if the window's title does not match the case-sensitive regex <code>Inst.*ram</code></li>",
+					"</ul><br />",
+					"<p>You can set a custom variable with <code>:=</code>. For example:</p>",
+					"<ul><br />",
+					"<li><code>{domain_nosub==cdninstagram.com}{foo:=bar}</code> - Sets the variable <code>foo</code> to <code>bar</code> if the domain is <code>cdninstagram.com</code>. The variable can then be accessed with e.g. <code>{foo}</code></li>",
 					"</ul><br />",
 					"<p>Date objects are accessible through a number of properties. Each property can be suffixed with <code>_utc</code> to get the UTC/GMT equivalent.</p>",
 					"<ul><br />",
@@ -9762,7 +9815,7 @@ var $$IMU_EXPORT$$;
 		var match;
 		if (options.known_ext) {
 			// todo: factor out?
-			match = basename.match(/(.*)\.(mp4|mpe?g|jpe?g|jfif|png|tiff|og[agv]|m4[av]|web[pm]|mkv|avi|gif|mpd|m3u8)$/i);
+			match = basename.match(/(.*?)\.(mp4|mpe?g|jpe?g|jfif|png|tiff|og[agv]|m4[av]|web[pm]|mkv|avi|gif|mpd|m3u8|zip)$/i);
 		} else {
 			match = basename.match(/(.*)\.([^.]*)$/);
 		}
@@ -10094,7 +10147,9 @@ var $$IMU_EXPORT$$;
 
 	function get_queries(url, options) {
 		// TODO: handle things like: ?a=b&c=b#&d=e
-		var querystring = url.replace(/^[^#]*?\?/, "");
+		var querystring = url
+			.replace(/#.*/, "")
+			.replace(/^.*?\?/, "");
 		if (!querystring || querystring === url)
 			return {};
 
@@ -12466,6 +12521,13 @@ var $$IMU_EXPORT$$;
 			return newsrc;*/
 	};
 
+	// https://github.com/qsniyg/maxurl/issues/719
+	// if referer/origin is not present, "access-control-allow-origin: *" will not exist in the response headers
+	common_functions.cdninstagram_headers = {
+		Referer: "https://www.instagram.com/",
+		Origin: "https://www.instagram.com"
+	};
+
 	common_functions.instagram_parse_el_info = function(api_cache, do_request, use_app_api, dont_use_web, prefer_video_quality, info, host_url, cb) {
 		var host_is_ig = /^[a-z]+:\/\/[^/]*\.instagram\.com\//.test(host_url);
 
@@ -13214,7 +13276,9 @@ var $$IMU_EXPORT$$;
 				album_info: deepcopy(album_info)
 			});
 
-			return obj;
+			return fillobj_urls(obj, {
+				headers: deepcopy(common_functions.cdninstagram_headers)
+			});
 		};
 
 		var image_meld_largest = function(image) {
@@ -16448,6 +16512,166 @@ var $$IMU_EXPORT$$;
 		}
 	};
 
+	common_functions.do_flickr_request = function(options, url, cb) {
+		var headers = {
+			"Origin": "https://www.flickr.com",
+			"Referer": "https://www.flickr.com/",
+			"Sec-Fetch-Site": "same-site",
+			// why?
+			"Cookie": ""
+		};
+
+		return options.do_request({
+			url: url,
+			method: "GET",
+			headers: headers,
+			onload: cb
+		});
+	};
+
+	common_functions.flickr_find_api_info = function(options, api_cache, cb) {
+		api_cache.fetch("flickr_api_info", cb, function (done) {
+			common_functions.do_flickr_request(options, "https://www.flickr.com/", function (resp) {
+				var regex = /root\.YUI_config\.flickr\.api\.site_key\s*=\s*['"]([0-9a-f]+)['"]\s*;/;
+				var matchobj = resp.responseText.match(regex);
+				if (!matchobj) {
+					console_error("Unable to find Flickr API key");
+					return done(null, false);
+				}
+
+				var key = matchobj[1];
+				if (!key || typeof key !== "string") {
+					console_error("Unable to find Flickr API key");
+					return done(null, false);
+				}
+
+				regex = /root\.auth\s*=\s*({.*?});/;
+				matchobj = resp.responseText.match(regex);
+				var auth = {};
+				if (!matchobj) {
+					console_error("Unable to find Flickr auth info");
+				} else {
+					try {
+						auth = JSON_parse(matchobj[1]);
+					} catch (e) {
+						auth = {};
+						console_error("Unable to find Flickr auth info");
+					}
+				}
+
+				var reqid = "";
+				matchobj = resp.responseText.match(/root\.reqId\s*=\s*["']([0-9a-f]+)["']\s*;/);
+				if (matchobj) {
+					reqid = matchobj[1];
+				}
+
+				if ("user" in auth && "nsid" in auth.user) {
+					auth.nsid = auth.user.nsid;
+				}
+
+				var info = {
+					key: key,
+					nsid: auth.nsid,
+					csrf: auth.csrf,
+					reqId: reqid
+				};
+
+				done(info, 60 * 60);
+			});
+		});
+	}
+
+	common_functions.flickr_api_request = function(options, info, params, cb) {
+		var url = "https://api.flickr.com/services/rest?csrf=";
+
+		if (info.csrf) {
+			url += info.csrf;
+		}
+
+		url += "&api_key=" + info.key + "&format=json&hermes=1&hermesClient=1";
+
+		if (info.nsid) {
+			url += "&viewerNSID=" + info.nsid;
+		} else {
+			url += "&viewerNSID=";
+		}
+
+		if (info.reqId) {
+			url += "&reqId=" + info.reqId;
+		}
+
+		url += "&format=json&nojsoncallback=1&" + params;
+
+		common_functions.do_flickr_request(options, url, function(resp) {
+			try {
+				var json = JSON_parse(resp.responseText);
+
+				if (json.stat === "fail") {
+					console_error(json.message);
+					return cb(null);
+				}
+			} catch (e) {
+				console_error(e);
+				return cb(null);
+			}
+
+			cb(json);
+		});
+	};
+
+	common_functions.flickr_info_to_obj = function(info) {
+		var getstr = function(prop) {
+			if (!prop || typeof prop === "string")
+				return prop;
+
+			return prop._content;
+		};
+
+		var extra = {
+			caption: getstr(info.title) || getstr(info.description)
+		};
+
+		var obj = {
+			extra: extra
+		};
+
+		var pathalias;
+		if (info.owner) {
+			pathalias = getstr(info.owner.nsid);
+		} else {
+			pathalias = getstr(info.pathalias);
+		}
+		var photo_id = getstr(info.id);
+		if (pathalias && photo_id)
+			extra.page = "https://www.flickr.com/photos/" + pathalias + "/" + photo_id;
+
+		var largest = 0;
+		var largest_url = null;
+		for (var widthkey in info) {
+			var match = widthkey.match(/^width_([a-z]+)$/);
+			if (!match)
+				continue;
+
+			var key = match[1];
+			var urlkey = "url_" + key;
+			var heightkey = "height_" + key;
+
+			if (!(urlkey in info) || !(heightkey in info))
+				continue;
+
+			var our_size = info[widthkey] * info[heightkey];
+			if (our_size > largest) {
+				largest = our_size;
+				largest_url = info[urlkey];
+			}
+		}
+
+		if (largest_url)
+			obj.url = largest_url;
+
+		return obj;
+	};
+
 	var get_domain_from_url = function(url) {
 		return url.replace(/^[a-z]+:\/\/([^/]*)(?:\/+.*)?$/, "$1");
 	};
@@ -16601,13 +16825,13 @@ var $$IMU_EXPORT$$;
 	                    data: bigimage_obj,
 	                    message: "Unable to get bigimage function"
 	                };
-	            } else if (bigimage_obj.nonce !== "2p1i02413n4nf110") {
+	            } else if (bigimage_obj.nonce !== "ghoahg175oho62po") {
 	                // This could happen if for some reason the userscript manager updates the userscript,
 	                // but not the required libraries.
 	                require_rules_failed = {
 	                    type: "bad_nonce",
 	                    data: bigimage_obj.nonce,
-	                    message: "Bad nonce, expected: " + "2p1i02413n4nf110"
+	                    message: "Bad nonce, expected: " + "ghoahg175oho62po"
 	                };
 	            } else {
 	                bigimage = bigimage_obj.bigimage;
@@ -17495,8 +17719,10 @@ var $$IMU_EXPORT$$;
 
 		if (typeof result === "string") {
 			var url = result;
+
 			result = document_createElement("img");
-			result.src = url;
+			// don't set src, because otherwise the browser will try to load it
+			result.setAttribute("data-imu-fake-src", url);
 		}
 
 		if (!result.hasAttribute("imu-album-info")) {
@@ -18523,7 +18749,15 @@ var $$IMU_EXPORT$$;
 
 		// IMG or IFRAME
 		// currentSrc is used if another image is used in the srcset
-		return el.currentSrc || el.src;
+		var src = el.currentSrc || el.src;
+		if (!src && el.tagName === "IMG") {
+			// fake-src is used to avoid loading the image
+			var fake_src = el.getAttribute("data-imu-fake-src");
+			if (fake_src)
+				return fake_src;
+		}
+
+		return src;
 	};
 
 	var check_highlightimgs_supported_image = function(el) {
@@ -22898,7 +23132,9 @@ var $$IMU_EXPORT$$;
 							request_final();
 						};
 						xhr.onerror = function() {
-							console_error("Unable to load blob for", enc);
+							revoke_objecturl(enc.objurl);
+
+							console_error("Unable to load blob for", enc, xhr);
 							response.data.response = null;
 							request_final();
 						};
@@ -22933,6 +23169,14 @@ var $$IMU_EXPORT$$;
 			}
 		}
 	}
+
+	var stackoverflow_guard = function(func, i, count) {
+		if (i % count !== (count - 1)) {
+			func();
+		} else {
+			setTimeout(func, 0);
+		}
+	};
 
 	function do_mouseover() {
 		if (_nir_debug_)
@@ -23102,7 +23346,7 @@ var $$IMU_EXPORT$$;
 			waitingel.style.top = (y - (waitingsize / 2)) + "px";
 		}
 
-		function start_waiting(el, cursor) {
+		var start_waiting = function(el, cursor) {
 			if (!cursor)
 				cursor = "wait";
 
@@ -23152,13 +23396,13 @@ var $$IMU_EXPORT$$;
 			waitingel.style.display = "block";
 
 			update_waiting();
-		}
+		};
 
 		function start_progress(el) {
 			start_waiting(el, "progress");
 		}
 
-		function stop_waiting() {
+		var stop_waiting = function() {
 			if (_nir_debug_) {
 				console_log("stop_waiting");
 			}
@@ -23174,7 +23418,7 @@ var $$IMU_EXPORT$$;
 
 			if (waitingel)
 				waitingel.style.display = "none";
-		}
+		};
 
 		// camhub.cc (ublock origin blocks any setTimeout'd function with 'stop' in the name)
 		function dont_wait_anymore() {
@@ -24498,6 +24742,9 @@ var $$IMU_EXPORT$$;
 				}
 			}
 
+			// avoid modifying the source object if format_string adds new variables
+			var format_vars = shallowcopy(options.format_vars);
+
 			var iter = function(property, obj) {
 				var value = obj.value;
 
@@ -24513,7 +24760,7 @@ var $$IMU_EXPORT$$;
 				}
 
 				if (options.format_vars) {
-					var formatted = format_string_single(value, options.format_vars);
+					var formatted = format_string_single(value, format_vars);
 					if (!formatted) return;
 					value = formatted;
 				}
@@ -24701,11 +24948,43 @@ var $$IMU_EXPORT$$;
 				} else {
 					var varname = parsed[i].text;
 					var default_value = null;
+					var compare_value = null;
+					var compare_not = false;
+					var op = null;
+					var compare_flags = [];
 
 					var match = varname.match(/^([^?]+)[?](.*)$/);
 					if (match) {
 						varname = match[1];
 						default_value = match[2];
+					}
+
+					match = varname.match(/^([^!/:=]+)([!=]=)(.*)$/);
+					if (match) {
+						varname = match[1];
+						compare_value = match[3];
+						compare_not = match[2] === "!=";
+						op = "eq";
+					}
+
+					match = varname.match(/^([^!/:=]+)(!)?\/([rc]{0,2})=(.*)$/);
+					if (match) {
+						varname = match[1];
+						compare_value = match[4];
+						compare_not = match[2] === "!";
+						op = "contains";
+						var flags = match[3];
+						if (string_indexof(flags, "r") >= 0)
+							compare_flags.push("regex");
+						if (string_indexof(flags, "c") >= 0)
+							compare_flags.push("nicase");
+					}
+
+					match = varname.match(/^([^!/:=]+):=(.*)$/);
+					if (match) {
+						varname = match[1];
+						compare_value = match[2];
+						op = "set";
 					}
 
 					var varvalue = vars[varname];
@@ -24740,6 +25019,36 @@ var $$IMU_EXPORT$$;
 						}
 					}
 
+					if (op) {
+						if (usevar) {
+							if (op === "eq") {
+								usevar = varvalue === compare_value;
+							} else if (op === "contains") {
+								if (array_indexof(compare_flags, "nicase") < 0) {
+									varvalue = varvalue.toLowerCase();
+									compare_value = compare_value.toLowerCase(); // fixme: this might not be good for regex
+								}
+
+								if (array_indexof(compare_flags, "regex") >= 0) {
+									usevar = (new RegExp(compare_value)).test(varvalue);
+								} else {
+									usevar = string_indexof(varvalue, compare_value) >= 0;
+								}
+							}
+						}
+
+						// not in the usevar block because it may not exist
+						if (op === "set") {
+							vars[varname] = compare_value;
+							usevar = true;
+						}
+
+						if (compare_not)
+							usevar = !usevar;
+
+						varvalue = "";
+					}
+
 					if (!usevar) {
 						if (typeof default_value === "string") {
 							varvalue = default_value;
@@ -24752,7 +25061,8 @@ var $$IMU_EXPORT$$;
 				}
 			}
 
-			return str;
+			// if it's a {x==y}{var:=value} rule, this should return a falsey value
+			return strip_whitespace(str);
 		};
 
 		var pluralify = function(number, forms) {
@@ -24940,13 +25250,23 @@ var $$IMU_EXPORT$$;
 					newobj.filename = "download";
 				}
 
-				if (contenttype_ext && string_indexof(orig_filename, ".") < 0) {
-					if (orig_filename.length) orig_filename += "." + contenttype_ext;
+				var filename_split = url_basename(newobj.filename, {
+					split_ext: true,
+					known_ext: true
+				});
+
+				if (contenttype_ext && !filename_split[1]) {
+					if (orig_filename.length)
+						orig_filename += "." + contenttype_ext;
 					newobj.filename += "." + contenttype_ext;
 				}
 
-				wanted_ext = newobj.filename.replace(/.*\./, "");
-				if (wanted_ext === newobj.filename) wanted_ext = null;
+				filename_split = url_basename(newobj.filename, {
+					split_ext: true,
+					known_ext: true
+				});
+				if (filename_split[1])
+					wanted_ext = filename_split[1];
 			}
 
 			// to avoid formatting the filename multiple times
@@ -24956,10 +25276,20 @@ var $$IMU_EXPORT$$;
 				filename: newobj._orig_filename
 			};
 
+			format_vars.host_url = window_location;
+
 			format_vars.host_domain = get_domain_from_url(window_location);
 			format_vars.host_domain_nosub = get_domain_nosub(format_vars.host_domain);
 
+			try {
+				format_vars.host_title = document.title;
+			} catch (e) {
+				// only available for browser versions
+			}
+
 			if (newobj.url && /^https?:\/\//i.test(newobj.url)) {
+				format_vars.url = newobj.url;
+
 				format_vars.domain = get_domain_from_url(newobj.url);
 				format_vars.domain_nosub = get_domain_nosub(format_vars.domain);
 			}
@@ -25033,7 +25363,10 @@ var $$IMU_EXPORT$$;
 			}
 
 			if (format_vars.filename) {
-				var ext_split = url_basename(format_vars.filename, {split_ext: true});
+				var ext_split = url_basename(format_vars.filename, {
+					split_ext: true,
+					known_ext: true
+				});
 				format_vars.filename_noext = ext_split[0];
 				if (wanted_ext)
 					format_vars.ext = "." + wanted_ext;
@@ -25041,9 +25374,9 @@ var $$IMU_EXPORT$$;
 
 			create_date("download", new Date());
 
-			newobj.format_vars = format_vars;
+			newobj.format_vars = shallowcopy(format_vars);
 
-			var new_filename = get_filename_from_format(settings.filename_format, newobj.format_vars);
+			var new_filename = get_filename_from_format(settings.filename_format, format_vars);
 			if (new_filename) {
 				newobj.filename = new_filename;
 			} else {
@@ -25051,8 +25384,27 @@ var $$IMU_EXPORT$$;
 			}
 		};
 
+		var format_string_post = function(str, vars) {
+			if (str) {
+				if (vars.prefix)
+					str = vars.prefix + str;
+
+				if (vars.suffix)
+					str += vars.suffix;
+			}
+
+			return str;
+		};
+
 		var add_filename_ext = function(filename, format_vars) {
-			if (string_indexof(filename, ".") < 0 && format_vars.ext) {
+			filename = format_string_post(filename, format_vars);
+
+			var filename_split = url_basename(filename, {
+				split_ext: true,
+				known_ext: true
+			});
+
+			if (!filename_split[1] && format_vars.ext) {
 				filename += format_vars.ext;
 			}
 
@@ -26323,6 +26675,7 @@ var $$IMU_EXPORT$$;
 
 					var prev_images = 0;
 					var next_images = 0;
+					var gallery_calcing = false;
 
 					function get_imagesizezoom_text() {
 						var text = "";
@@ -26389,6 +26742,10 @@ var $$IMU_EXPORT$$;
 					}
 
 					var get_imagestotal_text = function() {
+						if (gallery_calcing) {
+							return _("Loading...");
+						}
+
 						if (prev_images + next_images > settings.mouseover_ui_gallerymax) {
 							return settings.mouseover_ui_gallerymax + "+";
 						} else {
@@ -26400,7 +26757,7 @@ var $$IMU_EXPORT$$;
 						if (images_total_input_active)
 							return;
 
-						if (prev_images + next_images > 0) {
+						if (prev_images + next_images > 0 || gallery_calcing) {
 							set_important_style(images_total, "display", "inline-block");
 							images_total.innerText = get_imagestotal_text();
 						} else {
@@ -26682,7 +27039,10 @@ var $$IMU_EXPORT$$;
 
 								update_imagestotal();
 							} else {
+								gallery_calcing = true;
 								count_gallery(leftright, void 0, true, void 0, void 0, function(total) {
+									gallery_calcing = false;
+
 									if (!leftright) {
 										prev_images = total;
 										cached_previmages = prev_images;
@@ -26693,6 +27053,8 @@ var $$IMU_EXPORT$$;
 
 									update_imagestotal();
 								});
+
+								setTimeout(update_imagestotal, 1);
 							}
 						}
 					};
@@ -29604,7 +29966,8 @@ var $$IMU_EXPORT$$;
 						return cb(count, newel);
 
 					el = newel;
-					loop();
+
+					stackoverflow_guard(loop, count, 100);
 				}, {is_counting: is_counting, counting_firstel: firstel});
 			};
 
@@ -29646,7 +30009,10 @@ var $$IMU_EXPORT$$;
 						}
 					}
 
-					loop(nextprev, cb);
+					// large galleries can cause stack overflows, as well as hanging the page
+					stackoverflow_guard(function() {
+						loop(nextprev, cb);
+					}, count, 100);
 				});
 			};
 
@@ -30249,7 +30615,8 @@ var $$IMU_EXPORT$$;
 						});
 					}
 				} else {
-					next_img();
+					// stack overflows are unlikely because we're mostly running from callbacks, but it may be possible if we're retrieving cached images?
+					stackoverflow_guard(next_img, finished, 100);
 				}
 			};
 
@@ -30257,6 +30624,7 @@ var $$IMU_EXPORT$$;
 				options.replace_image_func = function(options, our_source, cb, domain_processed_cb, progress_cb) {
 					if (options.use_elcache) {
 						if (replaceimgs_elcache.has(our_source.el)) {
+							domain_processed_cb();
 							return cb();
 						} else {
 							// Not perfect, but 5 seconds should be enough
@@ -30511,6 +30879,90 @@ var $$IMU_EXPORT$$;
 			});
 		};
 
+		var send_to_jdownloader = function(got_objs, foldername, cb) {
+			var do_jd_request = function(req) {
+				req.headers = {
+					Referer: "https://qsniyg.github.io/maxurl/"
+				};
+
+				do_request(req);
+			};
+
+			var jdcheck = function(cb) {
+				do_jd_request({
+					method: "GET",
+					url: "http://127.0.0.1:9666/jdcheckjson",
+					onload: function(resp) {
+						if (resp.status !== 200) {
+							console_error("Unable to connect to JDownloader", resp);
+							return cb(false);
+						} else {
+							// ensure it's valid json
+							try {
+								JSON.parse(resp.responseText);
+							} catch (e) {
+								console_error(e);
+								return cb(false);
+							}
+
+							return cb(true);
+						}
+					}
+				});
+			};
+
+			jdcheck(function(ok) {
+				if (!ok)
+					return cb(false);
+
+				var referer = null;
+				var urls = [];
+				var descs = [];
+				var fnames = [];
+				for (var i in got_objs) {
+					var gobj = got_objs[i];
+					urls.push(gobj.obj.url);
+					fnames.push(gobj.filename || "");
+					descs.push("");
+
+					if (gobj.obj.headers) {
+						var our_referer = headerobj_get(gobj.obj.headers, "referer");
+						if (our_referer)
+							referer = our_referer;
+					}
+				}
+
+				var queries = [
+					"urls=" + encodeURIComponent(urls.join("\n")),
+					"descriptions=" + encodeURIComponent(descs.join("\n")),
+					"fnames=" + encodeURIComponent(fnames.join("\n"))
+				];
+
+				if (foldername)
+					queries.push("package=" + encodeURIComponent(foldername));
+
+				// fixme!
+				if (false && referer)
+					queries.push("referer=" + referer);
+
+				if (settings.gallery_jd_autostart)
+					queries.push("autostart=1");
+
+				do_jd_request({
+					method: "GET",
+					url: "http://127.0.0.1:9666/flashgot?" + queries.join("&"),
+					onload: function(resp) {
+						if (resp.status !== 200) {
+							console_error("Error with flashgot api", resp);
+							return cb(false);
+						}
+
+						cb(true);
+					}
+				});
+			});
+		};
+
 		var download_album = function() {
 			var files = {};
 			var urls = new_set();
@@ -30519,12 +30971,16 @@ var $$IMU_EXPORT$$;
 			var failed_infos = [];
 			var filename = null;
 
-			var set_filename = function(obj) {
+			var download_method = get_single_setting("gallery_download_method");
+
+			var set_zip_filename = function(obj) {
 				if (filename || !obj) return;
 
 				var our_vars = deepcopy(obj.format_vars);
 				our_vars.ext = ".zip";
-				our_vars.items_amt = Object.keys(files).length.toString();
+
+				// got_objs is used because files is not populated for jdownloader
+				our_vars.items_amt = Object.keys(got_objs).length.toString();//Object.keys(files).length.toString();
 				//our_vars.filename = our_vars.filename_noext + our_vars.ext;
 				filename = get_filename_from_format(settings.gallery_zip_filename_format, our_vars);
 
@@ -30613,13 +31069,12 @@ var $$IMU_EXPORT$$;
 				file.push(JSON_stringify(header, null, "\t"));
 				file.push("", " --- Files ---", "");
 
-
 				for (var i = 0; i < got_objs.length; i++) {
 					if (!got_objs[i] || !got_objs[i].filename) continue;
 					var filename = got_objs[i].filename;
 
 					file.push(filename);
-					file.push(JSON_stringify(infos[filename], null, "\t"));
+					file.push(JSON_stringify(infos[i], null, "\t"));
 					file.push("");
 				}
 
@@ -30643,6 +31098,21 @@ var $$IMU_EXPORT$$;
 			};
 
 			var add_file = function(data, our_source, progresscb, cb) {
+				if (!data || !data.data || !data.data.obj) {
+					console_error("Invalid data", data, our_source);
+					return cb();
+				}
+
+				var src = data.data.obj.url;
+				if (data.data.resp) {
+					if (!data.data.resp.finalUrl) {
+						console_error("Unable to load image from", data, our_source);
+						return cb();
+					}
+
+					src = data.data.resp.finalUrl;
+				}
+
 				// fixme: if img is blob, we need to free it
 				if (data.data.img) {
 					// otherwise it'll both use bandwidth and play the audio
@@ -30650,69 +31120,84 @@ var $$IMU_EXPORT$$;
 						data.data.img.pause();
 					}
 
-					var src = get_img_src(data.data.img);
+					src = get_img_src(data.data.img);
+				}
 
-					var obj = data.data.obj || {};
-					var origurl = obj.url;
-					//obj = overlay_object(obj, { url: src });
+				var obj = data.data.obj || {};
+				var origurl = obj.url;
+				var filename = null; // to be filled by fill_filename
+				//obj = overlay_object(obj, { url: src });
 
-					if (set_has(urls, origurl)) {
-						return cb();
-					} else {
-						set_add(urls, origurl);
+				if (set_has(urls, origurl)) {
+					return cb();
+				} else {
+					set_add(urls, origurl);
+				}
+
+				var fill_filename = function(use_download) {
+					fill_obj_filename(obj, origurl, data.data.respdata);
+					filename = obj.filename;
+
+					// this should hopefully not happen
+					if (use_download && !filename)
+						filename = "download";
+
+					if (filename && filename in files) {
+						var i = 1;
+
+						var new_filename;
+						var splitted = url_basename(filename, {split_ext: true});
+						do {
+							new_filename = splitted[0] + " (" + (i++) + ")";
+							if (splitted[1]) {
+								new_filename += "." + splitted[1];
+							}
+						} while (new_filename in files);
+
+						filename = new_filename;
 					}
 
-					// todo: some kind of infoobj_to_requestobj function
-					request_chunked({
-						url: src,
-						headers: obj.headers
-					}, {
-						onload: function(resp) {
-							fill_obj_filename(obj, origurl, data.data.respdata);
+					return filename;
+				};
 
-							var filename = obj.filename || "download"; // "download" should hopefully not happen
+				var final_cb = function() {
+					if (settings.gallery_zip_add_info_file) {
+						infos[our_source._replace_id] = get_info_for_file(filename, obj, origurl, our_source);
+					}
 
-							if (filename in files) {
-								var i = 1;
+					got_objs[our_source._replace_id] = {obj: obj, filename: filename};
+					cb();
+				};
 
-								var new_filename;
-								var splitted = url_basename(filename, {split_ext: true});
-								do {
-									new_filename = splitted[0] + " (" + (i++) + ")";
-									if (splitted[1]) {
-										new_filename += "." + splitted[1];
-									}
-								} while (new_filename in files);
-
-								filename = new_filename;
-							}
-
-							if (settings.gallery_zip_add_info_file) {
-								infos[filename] = get_info_for_file(filename, obj, origurl, our_source);
-							}
-
-							got_objs[our_source._replace_id] = {obj: obj, filename: filename};
-
-							files[filename] = resp.data;
-
-							cb();
-						},
-						onprogress: progresscb
-					});
-				} else {
-					console_error("Unable to get element from", data, source, our_source);
-					return cb();
+				if (download_method === "jdownloader") {
+					fill_filename(false);
+					final_cb();
+					return;
 				}
+
+				// todo: some kind of infoobj_to_requestobj function
+				request_chunked({
+					url: src,
+					headers: obj.headers
+				}, {
+					onload: function(resp) {
+						fill_filename(true);
+
+						files[filename] = resp.data;
+						final_cb();
+					},
+					onprogress: progresscb
+				});
 			};
 
-			get_gallery_elements(function(els) {
+			var process_gallery_els = function(els) {
 				replace_images_full({
 					images: els,
 					all_els_ok: true,
 					replace_image_func: function(options, our_source, cb, domain_processed_cb, progress_cb) {
 						//console_log(our_source);
 
-						get_final_from_source(our_source, {
+						var gffs_options = {
 							automatic: true,
 							multi: true,
 							use_head: false,
@@ -30723,7 +31208,15 @@ var $$IMU_EXPORT$$;
 							null_if_no_change: !settings.gallery_download_unchanged,
 							use_last_pos: false,
 							progress_cb: progress_cb
-						}, function (source_imu, source, processing, data) {
+						};
+
+						if (download_method === "jdownloader") {
+							gffs_options.use_head = true;
+							gffs_options.incomplete_image = true;
+							gffs_options.incomplete_video = true;
+						}
+
+						get_final_from_source(our_source, gffs_options, function (source_imu, source, processing, data) {
 							domain_processed_cb();
 
 							if (!data) {
@@ -30745,23 +31238,41 @@ var $$IMU_EXPORT$$;
 						});
 					},
 					finalcb: function(onprogress) {
+						if ((download_method === "zip" && !Object.keys(files).length) ||
+							!got_objs.length) {
+							console_error("No files!");
+							onprogress(1);
+							return;
+						}
+
+						set_zip_filename(get_first_obj());
+
+						filename = filename || "download.zip";
+
+						var foldername = filename.replace(/\.zip$/i, "");
+
+						var zip_foldername = null;
+						if (settings.gallery_zip_add_tld) {
+							zip_foldername = foldername;
+						}
+
+						if (settings.gallery_zip_add_info_file) {
+							files["info.txt"] = get_info_file();
+						}
+
 						start_waiting();
+						if (download_method === "jdownloader") {
+							send_to_jdownloader(got_objs, foldername, function(ok) {
+								onprogress(1);
 
-						if (Object.keys(files).length > 0) {
-							set_filename(get_first_obj());
-
-							filename = filename || "download.zip";
-
-							var foldername = null;
-							if (settings.gallery_zip_add_tld) {
-								foldername = filename.replace(/\.zip$/i, "");
-							}
-
-							if (settings.gallery_zip_add_info_file) {
-								files["info.txt"] = get_info_file();
-							}
-
-							create_zip(files, foldername, function(data) {
+								if (!ok) {
+									cursor_not_allowed();
+								} else {
+									stop_waiting();
+								}
+							});
+						} else {
+							create_zip(files, zip_foldername, function(data) {
 								onprogress(1);
 
 								if (!data) {
@@ -30777,6 +31288,15 @@ var $$IMU_EXPORT$$;
 					},
 					finalcb_progress: 0.1
 				});
+			};
+
+			// fetching the gallery elements can take time if it's a large gallery, so let the user know we have received input
+			// no, don't do this (yet)! it'll take longer to update the css of every element than it will to fetch the gallery elements (tested with 5000)
+			//start_waiting();
+			get_gallery_elements(function(els) {
+				//stop_waiting();
+
+				process_gallery_els(els);
 			});
 		};
 
