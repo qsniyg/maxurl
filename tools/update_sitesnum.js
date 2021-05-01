@@ -6,9 +6,11 @@ const fs = require("fs");
 const process = require("process");
 process.chdir(__dirname + "/..");
 
+var userscript_smaller = util.read_userscript("userscript_smaller.user.js");
+about.get_userscript_stats(userscript_smaller);
+
 var userscript = util.read_userscript();
 
-about.get_userscript_stats(userscript);
 var sites = about.get_sites();
 var total_sites = sites.length;
 var fuzzy_sites = (((total_sites / 100)|0) * 100) | 0;
