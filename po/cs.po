@@ -12,9 +12,9 @@ msgstr ""
 msgid "$language_native$"
 msgstr ""
 
-#. English: Finds larger or original versions of images and videos for 7800+ websites, including a powerful media popup and download feature
+#. English: Finds larger or original versions of images and videos for 7900+ websites, including a powerful media popup and download feature
 msgid "$description$"
-msgstr "Vyhledá větší nebo původní verze obrázků a videí pro více než 7800 webů"
+msgstr "Vyhledá větší nebo původní verze obrázků a videí pro více než 7900 webů"
 
 #. English: Options
 msgid "options_header"
