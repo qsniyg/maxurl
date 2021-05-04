@@ -1003,13 +1003,13 @@ var xhr_final_handler = function(_data, obj) {
 	}
 };
 
-var download_with_tabs = function(tab_options, imu, respond) {
+var download_with_tabs = function(tab_options, imu, filename, respond) {
 	chrome.tabs.create(tab_options, function (tab) {
 		debug("newTab (download)", tab);
 		redirects[tab.id] = imu;
 
 		override_download[tab.id] = {
-			filename: imu.filename
+			filename: filename
 		};
 
 		respond({
@@ -1173,7 +1173,7 @@ var extension_message_handler = (message, sender, respond) => {
 		};
 
 		var do_download_with_tabs = function() {
-			download_with_tabs(tab_options, message.data.imu, respond);
+			download_with_tabs(tab_options, message.data.imu, message.data.filename, respond);
 		}
 
 		if (!message.data.force_saveas) {
@@ -1191,6 +1191,7 @@ var extension_message_handler = (message, sender, respond) => {
 				chrome.downloads.download({
 					url: message.data.imu.url,
 					headers: download_headers,
+					filename: message.data.filename,
 					saveAs: true
 				}, function(id) {
 					var do_with_tabs = false;
