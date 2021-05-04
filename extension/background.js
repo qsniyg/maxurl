@@ -348,6 +348,15 @@ var do_request = function(request, sender) {
 		url: request.url
 	};
 
+	var send_request = function() {
+		try {
+			xhr.send(request.data);
+		} catch (e) {
+			console.error(e);
+			xhr.abort();
+		}
+	};
+
 	if (!cookie_overridden) {
 		var cookies_options = {};
 
@@ -363,10 +372,10 @@ var do_request = function(request, sender) {
 				requests[id].cookies_added = true;
 			}
 
-			xhr.send(request.data);
+			send_request();
 		}, cookies_options);
 	} else {
-		xhr.send(request.data);
+		send_request();
 	}
 
 	return id;
