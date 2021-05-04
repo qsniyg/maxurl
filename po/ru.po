@@ -2807,6 +2807,14 @@ msgid ""
 "</ul>"
 msgstr ""
 
+#. filename_replace_special_underscores.name
+msgid "Replace special characters with underscores"
+msgstr ""
+
+#. filename_replace_special_underscores.description
+msgid "Replaces characters such as `/` or `\"` with `_` when downloading. Note that browsers will usually do this automatically, this is just to ensure consistent behavior."
+msgstr ""
+
 #. replaceimgs_keybinding.description
 msgid "Trigger keybinding that will run the Replace Images function"
 msgstr "Вызывает привязку клавиш, которая запустит функцию замены изображений."
