@@ -831,6 +831,7 @@ function dourl(url, post, options, cb) {
 
 	// no video support, so this is useless
 	bigimage_options.rule_specific.tiktok_no_watermarks = false;
+	bigimage_options.rule_specific.twitter_use_ext = true; // we don't want ?name=orig&format=jpg instead of .jpg?name=orig
 
 	bigimage(url, bigimage_options);
 }
