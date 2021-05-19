@@ -2693,6 +2693,7 @@ msgid ""
 "<li><code>created_...</code> - Created date (see note on Date objects below)</li>\n"
 "<li><code>updated_...</code> - Updated date, this will use the <code>Last-Modified</code> header if not otherwise specified by the rule (see note on Date objects below)</li>\n"
 "<li><code>download_...</code> - Download date (see note on Date objects below)</li>\n"
+"<li><code>date_...</code> - Created/updated date (see note on Date objects below)</li>\n"
 "</ul><br />\n"
 "<p>You can truncate the value of a variable by adding <code>:(number)</code> before the end bracket (<code>}</code>). For example:</p>\n"
 "<ul><br />\n"
@@ -2841,10 +2842,6 @@ msgstr ""
 msgid "How to treat plain (non-media) hyperlinks that link to potential media"
 msgstr ""
 
-#. replaceimgs_plainlinks.options.none.name
-msgid "Ignore"
-msgstr ""
-
 #. replaceimgs_plainlinks.options.replace_link_text.name
 msgid "Replace link+text"
 msgstr ""
@@ -2861,12 +2858,24 @@ msgstr ""
 msgid "Clicking on a replaced link will open the media in a new tab"
 msgstr ""
 
-#. replaceimgs_remove_size_constraints.name
-msgid "Remove size constraints"
+#. replaceimgs_size_constraints.name
+msgid "Size constraints"
 msgstr ""
 
-#. replaceimgs_remove_size_constraints.description
-msgid "Removes height/width specifiers for replaced media"
+#. replaceimgs_size_constraints.description
+msgid "Removes or enforces height/width specifiers for replaced media"
+msgstr ""
+
+#. replaceimgs_plainlinks.options.none.name, replaceimgs_size_constraints.options.none.name
+msgid "Ignore"
+msgstr ""
+
+#. replaceimgs_size_constraints.options.remove.name
+msgid "Remove"
+msgstr ""
+
+#. replaceimgs_size_constraints.options.force.name
+msgid "Force"
 msgstr ""
 
 #. replaceimgs_css.name
