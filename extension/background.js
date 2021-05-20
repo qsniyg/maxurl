@@ -850,17 +850,34 @@ var onHeadersReceived = function(details) {
 	} else {
 		// crossorigin=anonymous requests (e.g. ttloader from tiktok) can fail to load without Access-Control-Allow-Origin
 		var overrides = get_overrides(details);
-		if (overrides.length && overrides[0].anonymous) {
+		if (overrides.length && (overrides[0].anonymous || overrides[0].content_type)) {
+			var override_hdrs = [];
+
+			if (overrides[0].anonymous) {
+				override_hdrs.push({
+					name: "Access-Control-Allow-Origin",
+					value: "*"
+				});
+			}
+
+			if (overrides[0].content_type) {
+				override_hdrs.push({
+					name: "Content-Type",
+					value: overrides[0].content_type
+				});
+			}
+
 			var newheaders = [];
 			details.responseHeaders.forEach(function(header) {
-				if (header.name.toLowerCase() === "access-control-allow-origin") return;
+				for (const hdr of override_hdrs) {
+					if (header.name.toLowerCase() === hdr.name.toLowerCase())
+						return;
+				}
+
 				newheaders.push(header);
 			});
 
-			newheaders.push({
-				name: "Access-Control-Allow-Origin",
-				value: "*"
-			});
+			[].push.apply(newheaders, override_hdrs);
 
 			//debug(details);
 			debug("Overrides", overrides[0]);
@@ -1153,7 +1170,8 @@ var extension_message_handler = (message, sender, respond) => {
 			url: message.data.url,
 			method: message.data.method,
 			headers: message.data.headers,
-			anonymous: !!message.data.anonymous
+			anonymous: !!message.data.anonymous,
+			content_type: message.data.content_type || null
 		});
 
 		// In order to prevent races
