@@ -1282,6 +1282,14 @@ msgstr "Центрировать всплывающее окно при удер
 msgid "Centers the popup to the middle of the page when the popup is held"
 msgstr "Центрирует всплывающее окно на середине страницы, когда оно удерживается."
 
+#. popup_hold_zoom.name
+msgid "Override zoom on hold"
+msgstr ""
+
+#. popup_hold_zoom.description
+msgid "Overrides the zoom when the popup is held"
+msgstr ""
+
 #. mouseover_hold_close_unhold.name
 msgid "Close popup on unhold"
 msgstr "Зыкрывать всплывающее окно после отпускания удержания всплывающего окна"
@@ -1366,15 +1374,15 @@ msgstr "Масштаб всплывающего окна по умолчанию
 msgid "How the popup should be initially sized"
 msgstr "Каким будет изначальный размер всплывающего окна."
 
-#. mouseover_zoom_behavior.options.fit.name
+#. mouseover_zoom_behavior.options.fit.name, popup_hold_zoom.options.fit.name
 msgid "Fit to screen"
 msgstr "По размеру экрана"
 
-#. mouseover_zoom_behavior.options.fill.name
+#. mouseover_zoom_behavior.options.fill.name, popup_hold_zoom.options.fill.name
 msgid "Fill screen"
 msgstr "Заполнить экран"
 
-#. mouseover_zoom_behavior.options.full.name
+#. mouseover_zoom_behavior.options.full.name, popup_hold_zoom.options.full.name
 msgid "Full size"
 msgstr "Полный размер"
 
@@ -1522,7 +1530,7 @@ msgstr "По умолчанию"
 msgid "Seek"
 msgstr "Стремление"
 
-#. mouseover_trigger_behavior.options.none.name, mouseover_allow_partial.options.none.name, mouseover_scrolly_behavior.options.nothing.name, mouseover_scrollx_behavior.options.nothing.name, mouseover_scrolly_video_behavior.options.nothing.name, mouseover_scrollx_video_behavior.options.nothing.name
+#. mouseover_trigger_behavior.options.none.name, mouseover_allow_partial.options.none.name, mouseover_scrolly_behavior.options.nothing.name, mouseover_scrollx_behavior.options.nothing.name, mouseover_scrolly_video_behavior.options.nothing.name, mouseover_scrollx_video_behavior.options.nothing.name, popup_hold_zoom.options.none.name
 msgid "None"
 msgstr "Ничего"
 
@@ -2561,8 +2569,14 @@ msgid "Instagram: Use native API"
 msgstr "Instagram: Использовать родной API"
 
 #. instagram_use_app_api.description
-msgid "Uses Instagram's native API if possible, requires you to be logged into Instagram"
-msgstr "Использует родной API Instagram, если это возможно. Вам потребуется войти в учётную запись Instagram."
+msgid "Uses Instagram's native API if possible, requires you to be logged into Instagram. This usually allows for higher resolution images (1440x*) to be returned."
+msgstr ""
+
+#. instagram_use_app_api.warning.true
+msgid ""
+"As of a recent (May 2021) Instagram update, this option may flag your account.\n"
+"Please use a backup account if enabling this option."
+msgstr ""
 
 #. instagram_dont_use_web.name
 msgid "Instagram: Don't use web API"
@@ -2653,6 +2667,10 @@ msgstr "musicallydown.com (НК/ПЖ)"
 #. tiktok_thirdparty.options.snaptik.app.name
 msgid "snaptik.app (LQ)"
 msgstr "snaptik.app (НК)"
+
+#. tiktok_thirdparty.options.tikmate.online.name
+msgid "tikmate.online (LQ)"
+msgstr ""
 
 #. tumblr_api_key.name
 msgid "Tumblr: API key"
