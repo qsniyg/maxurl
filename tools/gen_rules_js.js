@@ -103,6 +103,7 @@ var variables_list = [
 	"fixup_js_obj",
 	"fixup_js_obj_proper",
 	"common_functions",
+	"get_domain_from_url",
 	"get_domain_nosub",
 	"looks_like_valid_link",
 	"Cache",
