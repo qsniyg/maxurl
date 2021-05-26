@@ -1,3 +1,30 @@
+0.19.1
+
+<b>Note: Instagram's native API (which finds 1440x images) is disabled by default with this release.</b> You can enable it if you wish ("Instagram: Use native API" under Rules), but it is known to flag accounts as of a recent Instagram update.
+
+New features:
+
+ * Option to keep thumbnail size when replacing images (thanks to Raitzu for the idea)
+ * Option to control zoom on hold
+ * Option to replace special characters with underscores when downloading (#746, thanks to Darkwolflair for reporting)
+ * New `date` format variable, which will use either the created or updated date when available (in that order)
+ * Support for ~70 new websites (using ~35 new rules)
+
+Improvements:
+
+* Various improvements/fixes to existing rules (including Google Images, Instagram, Reddit)
+* `updated_date` will be set to `created_date` if it doesn't exist (thanks to AdClear247 for reporting)
+
+Bugfixes:
+
+ * Use chronological order for links in JDownloader
+ * Avoid crash when network changes while requesting (thanks to AdClear247 for reporting)
+ * Forcing "Save as" dialog will no longer ignore the filename
+
+Special thanks to AdClear247, Noodlers, Liz, Anamon, jollld, C4illin, Broly, fedesk, Brendan Castaneda, M. AL-hejji, Darkwolflair, remlap, Johnny, elvisef, thomas-ed, Art-2, dym-sh, ayunami2000, VJ, Raitzu, Speedy, kellnerd for their contributions and reports for this release
+
+---
+
 0.19.0
 
 New features:
