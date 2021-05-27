@@ -717,12 +717,20 @@ msgid "Excludes the page background for the popup"
 msgstr "팝업에 대한 페이지 배경 제외"
 
 #. mouseover_minimum_size.name
-msgid "Minimum image size"
-msgstr "최소 이미지 크기"
+msgid "Minimum size"
+msgstr ""
 
 #. mouseover_minimum_size.description
-msgid "Smallest size acceptable for the popup to open (this option is ignored for background images)"
-msgstr "팝업이 열릴 수 있는 최소 크기 (백그라운드 이미지에서는 이 옵션이 무시됨)"
+msgid "Smallest size acceptable for the popup to open (this option is ignored for background images). This refers to the size of the media to be popped up, which may differ from the source media."
+msgstr ""
+
+#. popup_maximum_source_size.name
+msgid "Maximum source size"
+msgstr ""
+
+#. popup_maximum_source_size.description
+msgid "Maximum size (width/height) for the source media to allow popping up (this option is ignored for background images). Set to `0` for any size."
+msgstr ""
 
 #. mouseover_exclude_backgroundimages.name
 msgid "Exclude `background-image`s"
@@ -1440,7 +1448,7 @@ msgstr ""
 msgid "How many pixels the mouse should move to start a drag"
 msgstr ""
 
-#. mouseover_minimum_size.number_unit, mouseover_jitter_threshold.number_unit, mouseover_drag_min.number_unit
+#. mouseover_minimum_size.number_unit, mouseover_jitter_threshold.number_unit, mouseover_drag_min.number_unit, popup_maximum_source_size.number_unit
 msgid "pixels"
 msgstr ""
 

@@ -723,12 +723,20 @@ msgid "Excludes the page background for the popup"
 msgstr "Исключает фон страницы для всплывающего окна."
 
 #. mouseover_minimum_size.name
-msgid "Minimum image size"
-msgstr "Минимальный размер изображения"
+msgid "Minimum size"
+msgstr ""
 
 #. mouseover_minimum_size.description
-msgid "Smallest size acceptable for the popup to open (this option is ignored for background images)"
-msgstr "Наименьший размер, приемлемый для открытия всплывающего окна (этот параметр игнорируется для фоновых изображений)."
+msgid "Smallest size acceptable for the popup to open (this option is ignored for background images). This refers to the size of the media to be popped up, which may differ from the source media."
+msgstr ""
+
+#. popup_maximum_source_size.name
+msgid "Maximum source size"
+msgstr ""
+
+#. popup_maximum_source_size.description
+msgid "Maximum size (width/height) for the source media to allow popping up (this option is ignored for background images). Set to `0` for any size."
+msgstr ""
 
 #. mouseover_exclude_backgroundimages.name
 msgid "Exclude `background-image`s"
@@ -1466,7 +1474,7 @@ msgstr "Минимальное количество для перетаскив�
 msgid "How many pixels the mouse should move to start a drag"
 msgstr "На сколько пикселей мышь должна переместиться, чтобы начать перетаскивание."
 
-#. mouseover_minimum_size.number_unit, mouseover_jitter_threshold.number_unit, mouseover_drag_min.number_unit
+#. mouseover_minimum_size.number_unit, mouseover_jitter_threshold.number_unit, mouseover_drag_min.number_unit, popup_maximum_source_size.number_unit
 msgid "pixels"
 msgstr "пикселей"
 
